@@ -24,6 +24,7 @@ import net.minecraft.world.level.block.state.BlockState;
  */
 public final class PreviewNetworking {
 	public static final int MAX_BLOCKS = 60_000;
+	private static final Map<java.util.UUID, Map<ResourceLocation, Integer>> LAST_REQUEST = new HashMap<>();
 
 	/** C2S: please send me the preview for this blueprint. */
 	public record Request(ResourceLocation id) implements CustomPacketPayload {
@@ -60,9 +61,16 @@ public final class PreviewNetworking {
 		PayloadTypeRegistry.playC2S().register(Request.TYPE, Request.CODEC);
 		PayloadTypeRegistry.playS2C().register(Data.TYPE, Data.CODEC);
 		ServerPlayNetworking.registerGlobalReceiver(Request.TYPE, (payload, context) -> send(context.player(), payload.id()));
+		net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> LAST_REQUEST.remove(handler.player.getUUID()));
 	}
 
 	private static void send(ServerPlayer player, ResourceLocation id) {
+		// Clients ask once per blueprint; ignore repeats so a bad client can't spam big packets.
+		int now = player.getServer().getTickCount();
+		Integer last = LAST_REQUEST.computeIfAbsent(player.getUUID(), u -> new HashMap<>()).put(id, now);
+		if (last != null && now - last < 100) {
+			return;
+		}
 		BlueprintLibrary.get(player.getServer(), id).ifPresent(bp -> ServerPlayNetworking.send(player, build(bp)));
 	}
 

@@ -21,7 +21,8 @@ The owner (Jesse) does not write code: sessions are expected to work autonomousl
 - `python3 tools/blueprints/generate.py` — regenerates starter blueprints + test fixtures (needs `pip install nbtlib`)
 - `python3 tools/textures/generate.py` — regenerates textures (Pillow)
 - `tools/screenshots/run.sh` — renders the real client headless (Xvfb) and saves screenshots + a timelapse GIF
-  of builders at work; use it to check anything visual and to show the owner progress
+  of builders at work; use it to check anything visual and to show the owner progress.
+  `SCENE=table` shows the Blueprint Table screens, `SCENE=preview` the ghost preview and the status above a builder
 - If Maven Central answers **429**, wait ~20 s and retry; it is rate limiting, not a real failure.
 
 ## Layout (`src/main/java/io/github/jcondedata/aliveworkplace/`)

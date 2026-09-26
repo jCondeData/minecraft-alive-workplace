@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 0.3.0 — 2026-09-26
+
 ### Added
 - See-through preview: hold a placed blueprint to see the whole building as ghost blocks where it will stand.
   Blocks that are already built disappear from the preview, so you can watch it fill in.

@@ -30,16 +30,19 @@ Owner decisions are recorded in **Design decisions** at the bottom. Don't change
 - [x] **Materials list** on the Blueprint Table screen
 - [x] Library only lists real blueprints (ours, uploads, Structure Block saves), not other mods' world-generation pieces
 
+### Done (0.3.0)
+- [x] **Foundations**: builds on uneven ground get the gap under their floor filled down to the ground (dirt under grass, the floor's own block when it is a plain block, else cobblestone); `workplaceFoundationDepth` gamerule (12, 0 = off)
+- [x] **See-through preview**: holding a placed blueprint shows the building as translucent blocks; blocks already built disappear from it (the particle outline stays for the footprint and front edge)
+- [x] **Status above the builder's head**: build name, percentage, progress bar and what they are doing / waiting for (server sends it once a second to nearby players)
+
 ### Next
 - [ ] Materials list in the blueprint tooltip (and "what's still missing" once placed near a builder)
-- [ ] **Ghost preview** (client render of the translucent blocks) replacing the particle outline; show what's left to build on active sites
-- [ ] **Status above the builder's head** (e.g. `Starter Cottage 62% — needs 40 Glass`) via synced attachment + name-tag style renderer
 - [ ] **Build queue**: hand a busy builder more blueprints; they do them in order
 - [ ] **Crews**: several builders on one site split the steps
 - [ ] **Deconstruct** blueprint mode: take a build down and return the blocks
 - [ ] **Permissions**: only the owner (and friends they add) can command their builders; `/workplace friend add`
 - [ ] **Builder levels**: XP per block, villager level-ups from work; higher level = faster, longer reach, better trades
-- [ ] **Foundations**: fill air under the footprint down to the ground (optional per blueprint); optional ground levelling around the site
+- [ ] Optional ground levelling around the site (foundations are done; per-blueprint opt-out later)
 - [ ] Fluids (water/lava via buckets), potted plants (pot + plant), entities in templates (item frames, armor stands)
 - [ ] **Builder's house** added to village generation (so builders appear naturally)
 - [ ] Config file (`config/aliveworkplace.json`) mirroring gamerules plus supply radius, reach, max site distance

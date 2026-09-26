@@ -2,6 +2,15 @@
 
 ## Unreleased
 
+### Added
+- See-through preview: hold a placed blueprint to see the whole building as ghost blocks where it will stand.
+  Blocks that are already built disappear from the preview, so you can watch it fill in.
+- Builders show what they are working on above their heads: the build's name, percentage, a progress bar,
+  and what they are doing or waiting for (e.g. "Needs: 12 Glass").
+- Foundations: on uneven ground, builders fill the gap under the floor down to the ground (dirt under grass,
+  the floor's own block when it is a plain block, otherwise cobblestone) instead of leaving the house on stilts.
+  `workplaceFoundationDepth` gamerule sets how deep they go (default 12, 0 turns it off).
+
 ## 0.2.1 — 2026-09-26
 
 ### Fixed

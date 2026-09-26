@@ -6,7 +6,6 @@ import io.github.jcondedata.aliveworkplace.blueprint.BlueprintItem;
 import io.github.jcondedata.aliveworkplace.blueprint.BlueprintLibrary;
 import io.github.jcondedata.aliveworkplace.blueprint.StarterBlueprints;
 import io.github.jcondedata.aliveworkplace.build.BuildPlan;
-import io.github.jcondedata.aliveworkplace.build.BuildSite;
 import io.github.jcondedata.aliveworkplace.build.BuildSiteManager;
 import io.github.jcondedata.aliveworkplace.build.Builders;
 import io.github.jcondedata.aliveworkplace.registry.ModBlocks;
@@ -67,6 +66,10 @@ public class ScreenshotHarness implements ClientModInitializer {
 		}
 		if ("table".equals(System.getProperty("aliveworkplace.scene"))) {
 			tableScene(mc, mc.getSingleplayerServer());
+			return;
+		}
+		if ("preview".equals(System.getProperty("aliveworkplace.scene"))) {
+			previewScene(mc, mc.getSingleplayerServer());
 			return;
 		}
 		MinecraftServer server = mc.getSingleplayerServer();
@@ -171,6 +174,73 @@ public class ScreenshotHarness implements ClientModInitializer {
 		}
 	}
 
+	// --- See-through preview + status above the builder's head -----------------------------------
+
+	private void previewScene(Minecraft mc, MinecraftServer server) {
+		tick++;
+		if (tick == 1) {
+			mc.options.renderDistance().set(6);
+			mc.options.cloudStatus().set(CloudStatus.OFF);
+			mc.options.graphicsMode().set(GraphicsStatus.FAST);
+			mc.options.framerateLimit().set(15);
+			mc.options.hideGui = true;
+		}
+		if (tick == 20) {
+			server.execute(() -> {
+				ServerLevel level = server.overworld();
+				GameRules rules = level.getGameRules();
+				rules.getRule(GameRules.RULE_DAYLIGHT).set(false, server);
+				rules.getRule(GameRules.RULE_WEATHER_CYCLE).set(false, server);
+				rules.getRule(GameRules.RULE_DOMOBSPAWNING).set(false, server);
+				rules.getRule(ModGameRules.BUILD_DELAY).set(4, server);
+				level.setDayTime(2500);
+				BlueprintData.Placement placement = site(level, StarterBlueprints.STARTER_COTTAGE, new BlockPos(0, -60, 0));
+				// The player holds the same blueprint: ghosts show what is still to be built.
+				Blueprint blueprint = BlueprintLibrary.get(level, StarterBlueprints.STARTER_COTTAGE.id()).orElseThrow();
+				ItemStack held = BlueprintItem.create(blueprint.id(), blueprint.size());
+				held.set(io.github.jcondedata.aliveworkplace.registry.ModComponents.BLUEPRINT,
+					BlueprintItem.data(held).orElseThrow().withPlacement(java.util.Optional.of(placement)));
+				ServerPlayer player = server.getPlayerList().getPlayers().get(0);
+				player.getInventory().setItem(player.getInventory().selected, held);
+				hover(player, new Vec3(7.5, -55, 9.5), 145, 22);
+			});
+		}
+		if (tick == 140) {
+			shot(mc, "20_preview_start");
+		}
+		if (tick == 900) {
+			shot(mc, "21_preview_half_built");
+		}
+		if (tick == 920) {
+			server.execute(() -> {
+				if (builders.isEmpty()) {
+					return;
+				}
+				Villager v = builders.get(0);
+				v.setNoAi(true);
+				Vec3 eye = v.getEyePosition();
+				Vec3 cam = eye.add(2.2, 0.9, 3.2);
+				Vec3 d = eye.add(0, 0.8, 0).subtract(cam);
+				float yaw = (float) Math.toDegrees(Math.atan2(-d.x, d.z));
+				float pitch = (float) -Math.toDegrees(Math.atan2(d.y, Math.sqrt(d.x * d.x + d.z * d.z)));
+				hover(server.getPlayerList().getPlayers().get(0), cam, yaw, pitch);
+			});
+		}
+		if (tick == 1000) {
+			shot(mc, "22_status_closeup");
+		}
+		if (tick == 1020) {
+			mc.stop();
+		}
+	}
+
+	private static void hover(ServerPlayer player, Vec3 pos, float yaw, float pitch) {
+		player.setGameMode(GameType.CREATIVE);
+		player.getAbilities().flying = true;
+		player.onUpdateAbilities();
+		player.teleportTo(player.serverLevel(), pos.x, pos.y, pos.z, yaw, pitch);
+	}
+
 	private static void shot(Minecraft mc, String name) {
 		Screenshot.grab(mc.gameDirectory, name + ".png", mc.getMainRenderTarget(), msg -> {
 		});
@@ -194,7 +264,7 @@ public class ScreenshotHarness implements ClientModInitializer {
 		camera(server, WIDE, 180, 22);
 	}
 
-	private void site(ServerLevel level, StarterBlueprints.Entry entry, BlockPos anchor) {
+	private BlueprintData.Placement site(ServerLevel level, StarterBlueprints.Entry entry, BlockPos anchor) {
 		Blueprint blueprint = BlueprintLibrary.get(level, entry.id()).orElseThrow();
 		BlueprintData.Placement placement = BlueprintItem.placementAt(level.dimension().location(), blueprint.size(), anchor,
 			BlueprintItem.rotationFacing(Direction.SOUTH));
@@ -219,11 +289,12 @@ public class ScreenshotHarness implements ClientModInitializer {
 
 		Villager villager = EntityType.VILLAGER.spawn(level, anchor.offset(0, 0, 3), MobSpawnType.COMMAND);
 		if (villager == null) {
-			return;
+			return placement;
 		}
 		Builders.employ(level, villager, bench);
-		BuildSite site = Builders.start(level, villager, level.getServer().getPlayerList().getPlayers().get(0), entry.id(), placement);
+		Builders.start(level, villager, level.getServer().getPlayerList().getPlayers().get(0), entry.id(), placement);
 		builders.add(villager);
+		return placement;
 	}
 
 	private void closeUp(MinecraftServer server) {

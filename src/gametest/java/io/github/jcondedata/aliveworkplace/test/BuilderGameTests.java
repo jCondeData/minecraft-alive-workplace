@@ -4,10 +4,12 @@ import io.github.jcondedata.aliveworkplace.blueprint.Blueprint;
 import io.github.jcondedata.aliveworkplace.blueprint.BlueprintData;
 import io.github.jcondedata.aliveworkplace.blueprint.BlueprintItem;
 import io.github.jcondedata.aliveworkplace.blueprint.BlueprintLibrary;
+import io.github.jcondedata.aliveworkplace.blueprint.PreviewNetworking;
 import io.github.jcondedata.aliveworkplace.blueprint.StarterBlueprints;
 import io.github.jcondedata.aliveworkplace.build.BuildPlan;
 import io.github.jcondedata.aliveworkplace.build.BuildSite;
 import io.github.jcondedata.aliveworkplace.build.BuildSiteManager;
+import io.github.jcondedata.aliveworkplace.build.BuilderStatusSync;
 import io.github.jcondedata.aliveworkplace.build.Builders;
 import io.github.jcondedata.aliveworkplace.build.MaterialRules;
 import io.github.jcondedata.aliveworkplace.registry.ModAttachments;
@@ -326,6 +328,55 @@ public class BuilderGameTests implements FabricGameTest {
 	}
 
 	// --- helpers ---------------------------------------------------------------------------
+
+	// --- preview and status --------------------------------------------------------------------
+
+	/** The see-through preview packet carries exactly the blocks a builder places, and survives the network codec. */
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
+	public void previewCarriesTheBlocksToBuild(GameTestHelper helper) {
+		Blueprint blueprint = BlueprintLibrary.get(helper.getLevel(), StarterBlueprints.STARTER_COTTAGE.id()).orElseThrow();
+		PreviewNetworking.Data sent = PreviewNetworking.build(blueprint);
+		io.netty.buffer.ByteBuf raw = io.netty.buffer.Unpooled.buffer();
+		net.minecraft.network.RegistryFriendlyByteBuf buf = new net.minecraft.network.RegistryFriendlyByteBuf(raw, helper.getLevel().registryAccess());
+		PreviewNetworking.Data.CODEC.encode(buf, sent);
+		PreviewNetworking.Data data = PreviewNetworking.Data.CODEC.decode(buf);
+		helper.assertTrue(data.complete() && data.id().equals(blueprint.id()), "preview header wrong: " + data.id() + " complete=" + data.complete());
+
+		Map<BlockPos, BlockState> wanted = new java.util.HashMap<>();
+		for (Blueprint.Entry e : blueprint.blocks()) {
+			if (MaterialRules.classify(e.state()) != MaterialRules.Kind.SKIP || MaterialRules.isSecondaryHalf(e.state())) {
+				wanted.put(e.pos(), e.state());
+			}
+		}
+		int[] b = data.blocks();
+		helper.assertTrue(b.length == wanted.size() * 4, "preview has " + b.length / 4 + " blocks, expected " + wanted.size());
+		boolean doorTop = false;
+		for (int i = 0; i < b.length; i += 4) {
+			BlockPos pos = new BlockPos(b[i], b[i + 1], b[i + 2]);
+			BlockState state = net.minecraft.world.level.block.Block.stateById(data.palette().get(b[i + 3]));
+			helper.assertTrue(state == wanted.get(pos), "preview block at " + pos + " is " + state + ", blueprint has " + wanted.get(pos));
+			doorTop |= state.getBlock() instanceof DoorBlock && state.getValue(DoorBlock.HALF) == DoubleBlockHalf.UPPER;
+		}
+		helper.assertTrue(doorTop, "the preview should include the top half of the door");
+		helper.succeed();
+	}
+
+	/** What floats above a builder's head: the build's name, its percentage and progress. */
+	@GameTest(template = AREA, timeoutTicks = 1200)
+	public void builderStatusShowsBuildAndProgress(GameTestHelper helper) {
+		Setup s = setup(helper, TEST_HUT, HUT_ORIGIN, Rotation.NONE, hutMaterials());
+		helper.succeedWhen(() -> {
+			BuilderStatusSync.Status status = BuilderStatusSync.status(s.level(), s.site(), s.villager());
+			helper.assertTrue(status != null, "no status for a working builder");
+			helper.assertTrue(status.entityId() == s.villager().getId(), "status is for the wrong entity");
+			helper.assertTrue(status.progress() >= 0.5f, "progress still " + status.progress());
+			if (!(status.title().getContents() instanceof net.minecraft.network.chat.contents.TranslatableContents title)
+				|| !title.getKey().equals("message.aliveworkplace.overhead.title")
+				|| !java.util.Objects.equals(title.getArgs()[1], Math.round(status.progress() * 100))) {
+				throw new GameTestAssertException("unexpected title: " + status.title());
+			}
+		});
+	}
 
 	private static Setup setup(GameTestHelper helper, ResourceLocation structure, BlockPos originRel, Rotation rotation, ItemStack... chestItems) {
 		ServerLevel level = helper.getLevel();

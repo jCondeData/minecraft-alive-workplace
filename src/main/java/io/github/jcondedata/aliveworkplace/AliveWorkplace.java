@@ -2,6 +2,8 @@ package io.github.jcondedata.aliveworkplace;
 
 import io.github.jcondedata.aliveworkplace.build.BuilderEvents;
 import io.github.jcondedata.aliveworkplace.blueprint.BlueprintOutline;
+import io.github.jcondedata.aliveworkplace.blueprint.PreviewNetworking;
+import io.github.jcondedata.aliveworkplace.build.BuilderStatusSync;
 import io.github.jcondedata.aliveworkplace.command.WorkplaceCommand;
 import io.github.jcondedata.aliveworkplace.registry.ModAttachments;
 import io.github.jcondedata.aliveworkplace.registry.ModBlocks;
@@ -40,6 +42,8 @@ public class AliveWorkplace implements ModInitializer {
 
 		BuilderEvents.init();
 		TableServer.init();
+		PreviewNetworking.init();
+		BuilderStatusSync.init();
 		BlueprintOutline.init();
 		WorkplaceCommand.init();
 		LOG.info("Alive Workplace ready — go hire a builder.");

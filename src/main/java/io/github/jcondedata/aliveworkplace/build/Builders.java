@@ -164,6 +164,10 @@ public final class Builders {
 		text.append(Component.translatable("message.aliveworkplace.status.state." + site.status().name().toLowerCase()).withStyle(
 			site.status() == BuildSite.Status.WAITING_FOR_MATERIALS ? ChatFormatting.YELLOW : ChatFormatting.GRAY));
 
+		if (site.detail() != null) {
+			text.append(Component.literal("\n  "));
+			text.append(site.detail().copy().withStyle(ChatFormatting.YELLOW));
+		}
 		if (villager != null && benchPos(villager).isPresent()) {
 			List<BlockPos> supplies = SupplyContainers.find(level, benchPos(villager).get(), plan.bounds());
 			BuilderBag bag = villager.getAttachedOrCreate(ModAttachments.BUILDER_BAG);

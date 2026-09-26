@@ -2,6 +2,19 @@
 
 ## Unreleased
 
+## 0.2.1 — 2026-09-26
+
+### Fixed
+- Builders could freeze when standing on the spot they needed to build (found in the first playtest):
+  they now actually step aside, and hop if they can't.
+- Builders pick work spots that aren't where the building still needs blocks, so they stop getting in their own way.
+- Pokémon, animals and other mobs standing on a build spot get shooed off (and moved next to the site if they won't budge);
+  players in the way get a polite message. Builders work on other blocks meanwhile instead of waiting.
+- Sneak-right-clicking a builder now says what it is waiting for (e.g. "Waiting for Bulbasaur to move out of the way").
+
+### Dev
+- `./gradlew runGameTest -PbuilderDebug=true` logs every builder's decisions.
+
 ## 0.2.0 — 2026-09-26
 
 ### Added

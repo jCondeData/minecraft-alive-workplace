@@ -44,12 +44,23 @@ public final class BuildPlan {
 					   @Nullable BlockPos secondaryPos, @Nullable BlockState secondaryState) {
 	}
 
+	private final Map<BlockPos, BlockState> targets;
 	private final List<Step> clear;
 	private final List<Step> structure;
 	private final List<Step> decoration;
 	private final BoundingBox bounds;
 
 	private BuildPlan(List<Step> clear, List<Step> structure, List<Step> decoration, BoundingBox bounds) {
+		Map<BlockPos, BlockState> t = new HashMap<>();
+		for (List<Step> list : List.of(structure, decoration)) {
+			for (Step s : list) {
+				t.put(s.pos(), s.state());
+				if (s.secondaryPos() != null && s.secondaryState() != null) {
+					t.put(s.secondaryPos(), s.secondaryState());
+				}
+			}
+		}
+		this.targets = t;
 		this.clear = clear;
 		this.structure = structure;
 		this.decoration = decoration;
@@ -122,6 +133,18 @@ public final class BuildPlan {
 
 	public BoundingBox bounds() {
 		return bounds;
+	}
+
+	/**
+	 * True if the plan still has to put a solid block at {@code pos}: somewhere a builder should not
+	 * stand (or send anyone else to stand), or it will be in its own way later.
+	 */
+	public boolean needsSolidAt(Level level, BlockPos pos) {
+		BlockState wanted = targets.get(pos);
+		if (wanted == null || wanted.getCollisionShape(level, pos).isEmpty()) {
+			return false;
+		}
+		return !MaterialRules.matches(level.getBlockState(pos), wanted);
 	}
 
 	/** Blocks that will be placed (structure + decoration). */

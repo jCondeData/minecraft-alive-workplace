@@ -75,6 +75,50 @@ public class BuilderGameTests implements FabricGameTest {
 		});
 	}
 
+	/** Regression: a builder standing where the floor goes must step aside instead of freezing. */
+	@GameTest(template = AREA, timeoutTicks = 700)
+	public void builderStandingInTheFootprintStepsAside(GameTestHelper helper) {
+		Setup s = setup(helper, TEST_HUT, HUT_ORIGIN, Rotation.NONE, hutMaterials());
+		s.villager().teleportTo(helper.absolutePos(HUT_ORIGIN.offset(2, 0, 2)).getX() + 0.5,
+			helper.absolutePos(HUT_ORIGIN).getY(), helper.absolutePos(HUT_ORIGIN.offset(2, 0, 2)).getZ() + 0.5);
+		helper.succeedWhen(() -> {
+			assertBuilt(helper, s);
+			helper.assertTrue(s.site().skipped() == 0, s.site().skipped() + " block(s) were skipped");
+		});
+	}
+
+	/**
+	 * Regression for the first playtest (jungle): an overgrown site with ferns, tall grass and a bush,
+	 * and a mob that will not move off a floor spot. The builder must clear, shoo and finish.
+	 */
+	@GameTest(template = AREA, timeoutTicks = 1500)
+	public void buildsOnAnOvergrownSiteWithAMobInTheWay(GameTestHelper helper) {
+		for (int x = 5; x <= 11; x++) {
+			for (int z = 5; z <= 11; z++) {
+				helper.setBlock(new BlockPos(x, 0, z), Blocks.GRASS_BLOCK);
+				BlockPos plant = new BlockPos(x, 1, z);
+				switch ((x * 7 + z * 3) % 4) {
+					case 0 -> helper.setBlock(plant, Blocks.FERN);
+					case 1 -> helper.setBlock(plant, Blocks.SHORT_GRASS);
+					case 2 -> {
+						helper.setBlock(plant, Blocks.LARGE_FERN.defaultBlockState().setValue(net.minecraft.world.level.block.DoublePlantBlock.HALF, DoubleBlockHalf.LOWER));
+						helper.setBlock(plant.above(), Blocks.LARGE_FERN.defaultBlockState().setValue(net.minecraft.world.level.block.DoublePlantBlock.HALF, DoubleBlockHalf.UPPER));
+					}
+					default -> {
+					}
+				}
+			}
+		}
+		helper.setBlock(HUT_ORIGIN.offset(2, 1, 2), Blocks.JUNGLE_LEAVES.defaultBlockState().setValue(net.minecraft.world.level.block.LeavesBlock.PERSISTENT, true));
+		net.minecraft.world.entity.animal.Cow cow = helper.spawn(EntityType.COW, HUT_ORIGIN.offset(1, 0, 3));
+		cow.setNoAi(true); // a Pokémon that just sits there
+		Setup s = setup(helper, TEST_HUT, HUT_ORIGIN, Rotation.NONE, hutMaterials());
+		helper.succeedWhen(() -> {
+			assertBuilt(helper, s);
+			helper.assertTrue(s.site().skipped() == 0, s.site().skipped() + " block(s) were skipped");
+		});
+	}
+
 	@GameTest(template = AREA, timeoutTicks = 3000)
 	public void waitsForMaterialsThenBuilds(GameTestHelper helper) {
 		Setup s = setup(helper, TEST_HUT, HUT_ORIGIN, Rotation.NONE);

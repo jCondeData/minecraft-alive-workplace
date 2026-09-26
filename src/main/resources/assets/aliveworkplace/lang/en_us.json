@@ -94,5 +94,7 @@
   "screen.aliveworkplace.table.files_help": "Download builds from sites like Planet Minecraft or Minecraft-Schematics (.litematic or .schem), put them in this folder (Open Folder), pick one and press Upload. It becomes a blueprint everyone on the server can use.",
   "screen.aliveworkplace.table.selected_file": "Selected: %s",
   "screen.aliveworkplace.table.uploading": "Uploading %s…",
-  "screen.aliveworkplace.table.read_failed": "Could not read %s"
+  "screen.aliveworkplace.table.read_failed": "Could not read %s",
+  "message.aliveworkplace.in_the_way": "%s: excuse me, you're standing where I need to build!",
+  "message.aliveworkplace.status.blocked_by": "Waiting for %s to move out of the way (at %s %s %s)"
 }

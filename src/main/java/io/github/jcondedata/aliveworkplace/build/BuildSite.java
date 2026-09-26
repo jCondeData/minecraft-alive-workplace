@@ -46,6 +46,8 @@ public final class BuildSite {
 	private BuildPlan plan;
 	private Status status = Status.STARTING;
 	private Map<Item, Integer> missing = Map.of();
+	@Nullable
+	private net.minecraft.network.chat.Component detail;
 	private Runnable onChange = () -> {
 	};
 
@@ -218,6 +220,16 @@ public final class BuildSite {
 
 	public void setStatus(Status status) {
 		this.status = status;
+	}
+
+	/** What the builder is waiting on right now (shown in the status), or null. */
+	@Nullable
+	public net.minecraft.network.chat.Component detail() {
+		return detail;
+	}
+
+	public void setDetail(@Nullable net.minecraft.network.chat.Component detail) {
+		this.detail = detail;
 	}
 
 	public Map<Item, Integer> missing() {

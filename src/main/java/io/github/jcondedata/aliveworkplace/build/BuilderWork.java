@@ -16,7 +16,11 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.ai.behavior.Behavior;
 import net.minecraft.world.entity.ai.behavior.BlockPosTracker;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
@@ -59,13 +63,33 @@ public class BuilderWork extends Behavior<Villager> {
 
 	private enum Action { NONE, BREAK, PLACE, SKIP }
 
+	/** -Daliveworkplace.debug=true logs what every builder is doing every two seconds. */
+	private static final boolean DEBUG = Boolean.getBoolean("aliveworkplace.debug");
+
+	/** Give up walking to one spot after this long and hop instead. */
+	private static final int MAX_REACH_TICKS = 300;
+	/** Place attempts on a spot someone is standing in before moving on to other blocks. */
+	private static final int MAX_BLOCKED_ATTEMPTS = 25;
+	private static final int STEP_ASIDE_TICKS = 40;
+
 	private int workTimer;
 	private int waitTimer;
-	private int blockedTimer;
+	private int blockedAttempts;
 	private int stuckTimer;
+	private int reachTicks;
 	private double bestDistance = Double.MAX_VALUE;
 	@Nullable
 	private BlockPos trackedTarget;
+	/** Where to stand to work on {@link #trackedTarget}: in reach, and not on a spot that still needs a block. */
+	@Nullable
+	private BlockPos approachSpot;
+	/** Set when the builder is standing where it needs to build: walk here (or hop, if that fails). */
+	@Nullable
+	private BlockPos stepAsideSpot;
+	/** The block the builder must get out of while stepping aside. */
+	@Nullable
+	private BlockPos stepAsideFrom;
+	private int stepAsideTicks;
 
 	public BuilderWork() {
 		super(ImmutableMap.of(
@@ -90,7 +114,11 @@ public class BuilderWork extends Behavior<Villager> {
 		workTimer = 0;
 		waitTimer = 0;
 		stuckTimer = 0;
+		reachTicks = 0;
+		blockedAttempts = 0;
 		trackedTarget = null;
+		approachSpot = null;
+		stepAsideSpot = null;
 		villager.setDropChance(EquipmentSlot.MAINHAND, 0f);
 	}
 
@@ -116,6 +144,26 @@ public class BuilderWork extends Behavior<Villager> {
 		BlockPos bench = benchOpt.get();
 		BuilderBag bag = villager.getAttachedOrCreate(ModAttachments.BUILDER_BAG);
 		boolean free = level.getGameRules().getBoolean(ModGameRules.FREE_MATERIALS);
+
+		// 0. Getting out of its own way.
+		if (stepAsideSpot != null) {
+			boolean clear = stepAsideFrom == null || !villager.getBoundingBox().intersects(new AABB(stepAsideFrom));
+			if (clear) {
+				stepAsideSpot = null;
+			} else if (--stepAsideTicks <= 0) {
+				hop(level, villager, stepAsideSpot);
+				stepAsideSpot = null;
+			} else {
+				if (villager.blockPosition().equals(stepAsideSpot)) {
+					// Already on the right block but leaning into the build spot: shuffle to its centre.
+					villager.getBrain().eraseMemory(MemoryModuleType.WALK_TARGET);
+					villager.getMoveControl().setWantedPosition(stepAsideSpot.getX() + 0.5, stepAsideSpot.getY(), stepAsideSpot.getZ() + 0.5, SPEED);
+				} else {
+					walkTo(villager, stepAsideSpot, 0);
+				}
+				return;
+			}
+		}
 
 		// 1. Find the next step that actually needs work.
 		BuildPlan.Step step = null;
@@ -144,6 +192,12 @@ public class BuilderWork extends Behavior<Villager> {
 			return;
 		}
 
+		if (DEBUG && gameTime % 40 == 0) {
+			io.github.jcondedata.aliveworkplace.AliveWorkplace.LOG.info("[builder {}] at {} stage={} action={} target={} approach={} aside={} blocked={} stuck={} reach={} detail={}",
+				villager.getId(), villager.blockPosition().toShortString(), site.stage(), action, step.pos().toShortString(),
+				approachSpot, stepAsideSpot, blockedAttempts, stuckTimer, reachTicks, site.detail() == null ? "" : site.detail().getString());
+		}
+
 		// 2. Materials.
 		MaterialRules.Requirement requirement = null;
 		if (action == Action.PLACE) {
@@ -162,7 +216,7 @@ public class BuilderWork extends Behavior<Villager> {
 		}
 
 		// 3. Walk into reach.
-		if (!moveInReach(level, villager, site, step.pos(), REACH, true)) {
+		if (!moveInReach(level, villager, site, plan, step.pos(), REACH, true)) {
 			site.setStatus(BuildSite.Status.WORKING);
 			return;
 		}
@@ -179,7 +233,7 @@ public class BuilderWork extends Behavior<Villager> {
 		if (action == Action.BREAK) {
 			breakBlock(level, villager, bag, bench, plan, step.pos());
 		} else {
-			place(level, villager, site, bag, step, requirement, free);
+			place(level, villager, site, plan, bag, step, requirement, free);
 		}
 	}
 
@@ -218,29 +272,37 @@ public class BuilderWork extends Behavior<Villager> {
 	// --- moving ------------------------------------------------------------------------------
 
 	/**
-	 * Walks until {@code target} is within {@code reach} (eye to block centre). If the builder makes no
-	 * progress for a while — walled in, target over a gap — it hops to the nearest spot it can stand on
-	 * within reach. Returns true once in reach.
+	 * Walks until {@code target} is within {@code reach} (eye to block centre), heading for a spot that
+	 * does not still need a block (so the builder is not in its own way later). If it makes no progress
+	 * for a while, or takes too long — walled in, target over a gap — it hops to that spot instead.
+	 * Returns true once in reach.
 	 */
-	private boolean moveInReach(ServerLevel level, Villager villager, BuildSite site, BlockPos target, double reach, boolean deferIfImpossible) {
+	private boolean moveInReach(ServerLevel level, Villager villager, BuildSite site, @Nullable BuildPlan plan, BlockPos target,
+								double reach, boolean deferIfImpossible) {
 		double distance = villager.getEyePosition().distanceTo(Vec3.atCenterOf(target));
 		if (distance <= reach) {
 			villager.getBrain().eraseMemory(MemoryModuleType.WALK_TARGET);
 			trackedTarget = null;
 			return true;
 		}
-		villager.getBrain().setMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(target, SPEED, 1));
-		villager.getBrain().setMemory(MemoryModuleType.LOOK_TARGET, new BlockPosTracker(target));
 		if (!target.equals(trackedTarget)) {
 			trackedTarget = target;
 			bestDistance = distance;
 			stuckTimer = 0;
-		} else if (distance < bestDistance - 0.3) {
+			reachTicks = 0;
+			approachSpot = findStandingSpot(level, plan, target, villager.blockPosition(), null, reach - 0.5);
+		}
+		BlockPos goal = approachSpot != null ? approachSpot : target;
+		walkTo(villager, goal, approachSpot != null ? 0 : 1);
+		villager.getBrain().setMemory(MemoryModuleType.LOOK_TARGET, new BlockPosTracker(target));
+		if (distance < bestDistance - 0.3) {
 			bestDistance = distance;
 			stuckTimer = 0;
-		} else if (++stuckTimer > STUCK_TICKS) {
+		}
+		if (++stuckTimer > STUCK_TICKS || ++reachTicks > MAX_REACH_TICKS) {
 			stuckTimer = 0;
-			BlockPos spot = findStandingSpot(level, target, villager.blockPosition(), null, reach - 0.3);
+			reachTicks = 0;
+			BlockPos spot = approachSpot != null ? approachSpot : findStandingSpot(level, null, target, villager.blockPosition(), null, reach - 0.3);
 			if (spot != null) {
 				hop(level, villager, spot);
 			} else if (deferIfImpossible) {
@@ -261,9 +323,13 @@ public class BuilderWork extends Behavior<Villager> {
 		return villager.position().distanceToSqr(Vec3.atBottomCenterOf(pos)) <= distance * distance;
 	}
 
-	/** Closest place to stand (feet position) from which {@code target} is in reach, avoiding {@code avoid}. */
+	/**
+	 * Closest place to stand (feet position) from which {@code target} is in reach, avoiding {@code avoid}
+	 * and, when a plan is given, spots where the build still needs a solid block (feet or head).
+	 */
 	@Nullable
-	static BlockPos findStandingSpot(ServerLevel level, BlockPos target, BlockPos from, @Nullable AABB avoid, double maxEyeDistance) {
+	static BlockPos findStandingSpot(ServerLevel level, @Nullable BuildPlan plan, BlockPos target, BlockPos from, @Nullable AABB avoid,
+									 double maxEyeDistance) {
 		BlockPos best = null;
 		double bestScore = Double.MAX_VALUE;
 		BlockPos.MutableBlockPos p = new BlockPos.MutableBlockPos();
@@ -280,6 +346,9 @@ public class BuilderWork extends Behavior<Villager> {
 					}
 					AABB body = new AABB(p.getX() + 0.2, p.getY(), p.getZ() + 0.2, p.getX() + 0.8, p.getY() + 1.9, p.getZ() + 0.8);
 					if (body.intersects(new AABB(target)) || avoid != null && body.intersects(avoid)) {
+						continue;
+					}
+					if (plan != null && (plan.needsSolidAt(level, p) || plan.needsSolidAt(level, p.above()))) {
 						continue;
 					}
 					double score = p.distSqr(from);
@@ -329,7 +398,7 @@ public class BuilderWork extends Behavior<Villager> {
 		if (source == null) {
 			return;
 		}
-		if (!moveInReach(level, villager, site, source, CONTAINER_REACH, false)) {
+		if (!moveInReach(level, villager, site, plan, source, CONTAINER_REACH, false)) {
 			return;
 		}
 
@@ -378,7 +447,7 @@ public class BuilderWork extends Behavior<Villager> {
 	private void deposit(ServerLevel level, Villager villager, BuildSite site, BuildPlan plan, BuilderBag bag, BlockPos bench) {
 		List<BlockPos> supplies = SupplyContainers.find(level, bench, plan.bounds());
 		BlockPos target = supplies.isEmpty() ? bench : supplies.get(0);
-		if (!moveInReach(level, villager, site, target, CONTAINER_REACH, false)) {
+		if (!moveInReach(level, villager, site, plan, target, CONTAINER_REACH, false)) {
 			return;
 		}
 		Set<Item> keep = new HashSet<>();
@@ -412,7 +481,7 @@ public class BuilderWork extends Behavior<Villager> {
 		}
 	}
 
-	private void place(ServerLevel level, Villager villager, BuildSite site, BuilderBag bag, BuildPlan.Step step,
+	private void place(ServerLevel level, Villager villager, BuildSite site, BuildPlan plan, BuilderBag bag, BuildPlan.Step step,
 					   MaterialRules.Requirement requirement, boolean free) {
 		BlockPos pos = step.pos();
 		BlockState state = step.state();
@@ -430,20 +499,11 @@ public class BuilderWork extends Behavior<Villager> {
 			return;
 		}
 		if (!level.isUnobstructed(state, pos, CollisionContext.empty())) {
-			AABB blockBox = new AABB(pos);
-			if (villager.getBoundingBox().intersects(blockBox)) {
-				BlockPos spot = findStandingSpot(level, pos, villager.blockPosition(), blockBox, REACH - 0.5);
-				if (spot != null) {
-					walkTo(villager, spot, 0);
-				}
-			}
-			if (++blockedTimer > 200) {
-				blockedTimer = 0;
-				site.defer();
-			}
+			handleObstruction(level, villager, site, plan, pos);
 			return;
 		}
-		blockedTimer = 0;
+		blockedAttempts = 0;
+		site.setDetail(null);
 
 		if (!free) {
 			bag.remove(requirement.item(), requirement.count());
@@ -462,6 +522,68 @@ public class BuilderWork extends Behavior<Villager> {
 		level.playSound(null, pos, sound.getPlaceSound(), SoundSource.BLOCKS, (sound.getVolume() + 1f) / 2f, sound.getPitch() * 0.8f);
 		level.gameEvent(villager, GameEvent.BLOCK_PLACE, pos);
 		site.markPlaced();
+	}
+
+	/**
+	 * Something is standing where the next block goes. The builder steps out of its own way, shoos
+	 * animals and Pokémon, asks players to move, and after a while works on other blocks first.
+	 */
+	private void handleObstruction(ServerLevel level, Villager villager, BuildSite site, BuildPlan plan, BlockPos pos) {
+		AABB box = new AABB(pos);
+		List<Entity> blockers = level.getEntities((Entity) null, box, e -> e.isAlive() && e.blocksBuilding && !e.isSpectator());
+		if (blockers.contains(villager)) {
+			BlockPos spot = findStandingSpot(level, plan, pos, villager.blockPosition(), box, REACH - 0.5);
+			if (spot == null) {
+				spot = findStandingSpot(level, null, pos, villager.blockPosition(), box, REACH - 0.5);
+			}
+			if (spot != null && ++blockedAttempts <= MAX_BLOCKED_ATTEMPTS) {
+				stepAsideSpot = spot;
+				stepAsideFrom = pos;
+				stepAsideTicks = STEP_ASIDE_TICKS;
+			} else {
+				blockedAttempts = 0;
+				site.defer();
+			}
+			return;
+		}
+		Entity first = blockers.isEmpty() ? null : blockers.get(0);
+		for (Entity e : blockers) {
+			if (e instanceof Player player) {
+				player.displayClientMessage(Component.translatable("message.aliveworkplace.in_the_way", villager.getDisplayName()), true);
+			} else {
+				shoo(level, plan, e, pos, blockedAttempts);
+			}
+		}
+		if (first != null) {
+			site.setDetail(Component.translatable("message.aliveworkplace.status.blocked_by", first.getDisplayName(), pos.getX(), pos.getY(), pos.getZ()));
+		}
+		if (++blockedAttempts > MAX_BLOCKED_ATTEMPTS) {
+			blockedAttempts = 0;
+			site.setDetail(null);
+			site.defer(); // try the rest first; this spot is retried at the end of the stage
+		}
+	}
+
+	/** Nudges a mob off a build spot; if it keeps standing there, moves it next to the site. */
+	private static void shoo(ServerLevel level, BuildPlan plan, Entity entity, BlockPos pos, int attempt) {
+		if (attempt >= 4) {
+			BlockPos spot = findStandingSpot(level, plan, entity.blockPosition(), entity.blockPosition(), new AABB(pos), 4.0);
+			if (spot != null) {
+				level.sendParticles(ParticleTypes.POOF, entity.getX(), entity.getY() + 0.5, entity.getZ(), 4, 0.2, 0.2, 0.2, 0.01);
+				entity.teleportTo(spot.getX() + 0.5, spot.getY(), spot.getZ() + 0.5);
+				return;
+			}
+		}
+		Vec3 away = entity.position().subtract(Vec3.atCenterOf(pos)).multiply(1, 0, 1);
+		if (away.lengthSqr() < 0.01) {
+			away = new Vec3(level.random.nextDouble() - 0.5, 0, level.random.nextDouble() - 0.5);
+		}
+		away = away.normalize().scale(0.45);
+		entity.push(away.x, 0.25, away.z);
+		entity.hurtMarked = true;
+		if (entity instanceof Mob mob) {
+			mob.getNavigation().stop();
+		}
 	}
 
 	/** Copies sign text, banner patterns etc. from the blueprint — but never container contents or loot. */

@@ -54,5 +54,8 @@ The owner (Jesse) does not write code: sessions are expected to work autonomousl
 - Commit messages: short imperative subject, then what/why.
 
 ## Releasing
-Bump `mod_version` in `gradle.properties`, move *Unreleased* in `CHANGELOG.md` to the version, tag
-`vX.Y.Z` and push the tag. CI builds, tests and attaches the jar to a GitHub Release.
+Pushing tags is not allowed from the dev environment, so CI does it: bump `mod_version` in
+`gradle.properties` and move the *Unreleased* notes in `CHANGELOG.md` under a `## X.Y.Z — date` heading
+in the same commit. The first green build on `main` with a new version creates tag `vX.Y.Z` and a
+GitHub Release with the jar (pre-release while 0.x). Release after each session that adds something
+players can try (bump the minor version: 0.2.0, 0.3.0, …; patch for fixes only).

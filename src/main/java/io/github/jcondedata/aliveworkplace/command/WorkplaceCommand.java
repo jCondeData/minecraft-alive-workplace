@@ -7,6 +7,7 @@ import io.github.jcondedata.aliveworkplace.blueprint.Blueprint;
 import io.github.jcondedata.aliveworkplace.blueprint.BlueprintItem;
 import io.github.jcondedata.aliveworkplace.blueprint.BlueprintLibrary;
 import io.github.jcondedata.aliveworkplace.blueprint.Blueprints;
+import io.github.jcondedata.aliveworkplace.blueprint.io.BlueprintImporter;
 import io.github.jcondedata.aliveworkplace.build.BuildSite;
 import io.github.jcondedata.aliveworkplace.build.BuildSiteManager;
 import io.github.jcondedata.aliveworkplace.build.Builders;
@@ -31,6 +32,7 @@ import net.minecraft.world.entity.npc.Villager;
  * /workplace blueprint &lt;id&gt;        — get a blueprint item (ops)
  * /workplace sites                 — your build sites and their status (ops see all)
  * /workplace cancel &lt;site&gt;         — stop a build and get the blueprint back
+ * /workplace import                — import .litematic/.schem/.nbt files from &lt;world&gt;/aliveworkplace/import (ops)
  */
 public final class WorkplaceCommand {
 	public static void init() {
@@ -48,6 +50,9 @@ public final class WorkplaceCommand {
 					.suggests((ctx, builder) -> SharedSuggestionProvider.suggestResource(
 						BlueprintLibrary.list(ctx.getSource().getServer(), false), builder))
 					.executes(WorkplaceCommand::giveBlueprint)))
+			.then(Commands.literal("import")
+				.requires(s -> s.hasPermission(2))
+				.executes(WorkplaceCommand::importFolder))
 			.then(Commands.literal("sites")
 				.executes(WorkplaceCommand::listSites))
 			.then(Commands.literal("cancel")
@@ -62,6 +67,14 @@ public final class WorkplaceCommand {
 			ctx.getSource().sendSuccess(() -> Component.literal("  " + id).withStyle(ChatFormatting.GRAY), false);
 		}
 		return ids.size();
+	}
+
+	private static int importFolder(CommandContext<CommandSourceStack> ctx) {
+		List<Component> messages = BlueprintImporter.importFolder(ctx.getSource().getServer());
+		for (Component message : messages) {
+			ctx.getSource().sendSuccess(() -> message, true);
+		}
+		return messages.size();
 	}
 
 	private static int giveBlueprint(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {

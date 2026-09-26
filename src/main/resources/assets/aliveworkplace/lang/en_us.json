@@ -4,26 +4,21 @@
   "item.aliveworkplace.blueprint": "Blueprint",
   "item.aliveworkplace.blueprint.named": "Blueprint: %s",
   "entity.minecraft.villager.builder": "Builder",
-
   "blueprint.aliveworkplace.starter_cottage": "Starter Cottage",
   "blueprint.aliveworkplace.market_stall": "Market Stall",
   "blueprint.aliveworkplace.lookout_tower": "Lookout Tower",
-
   "direction.aliveworkplace.north": "north",
   "direction.aliveworkplace.south": "south",
   "direction.aliveworkplace.east": "east",
   "direction.aliveworkplace.west": "west",
-
   "tooltip.aliveworkplace.blueprint.size": "%s × %s × %s blocks",
   "tooltip.aliveworkplace.blueprint.place_hint": "Right-click the ground to choose where it goes",
   "tooltip.aliveworkplace.blueprint.placed": "Placed at %s %s %s, facing %s",
   "tooltip.aliveworkplace.blueprint.hand_over": "Give it to a Builder villager to start building",
-
   "message.aliveworkplace.bench.info": "Builder's Bench: %s supply chest(s) within %s blocks. Builders take materials from these chests.",
   "message.aliveworkplace.blueprint.unknown": "Unknown blueprint: %s",
   "message.aliveworkplace.blueprint.placed": "%s placed, facing %s. Sneak-right-click to turn it, then hand it to a Builder.",
   "message.aliveworkplace.blueprint.cleared": "Blueprint picked back up",
-
   "message.aliveworkplace.assign.not_placed": "Place the blueprint first: right-click the ground where the building should go.",
   "message.aliveworkplace.assign.wrong_dimension": "That blueprint is placed in another dimension.",
   "message.aliveworkplace.assign.busy": "%s is already building %s.",
@@ -31,11 +26,9 @@
   "message.aliveworkplace.assign.too_far": "That spot is %s blocks from the builder's bench — keep it within %s.",
   "message.aliveworkplace.assign.overlaps": "That spot overlaps another build in progress (%s).",
   "message.aliveworkplace.assign.started": "%s will build %s! Put the materials in chests within %s blocks of their Builder's Bench.",
-
   "message.aliveworkplace.waiting": "%s is waiting for materials to build %s. Still needed: %s",
   "message.aliveworkplace.finished": "%s finished building %s! The blueprint is back in the supply chest.",
   "message.aliveworkplace.builder_died": "Your builder died while building %s. Their tools and the blueprint dropped at %s %s %s.",
-
   "message.aliveworkplace.status.idle": "%s has no building job. Hand them a placed blueprint.",
   "message.aliveworkplace.status.no_bench": "%s has lost their Builder's Bench.",
   "message.aliveworkplace.status.builder": "Builder",
@@ -57,14 +50,27 @@
   "message.aliveworkplace.status.skipped": "%s block(s) skipped (unbuildable or unreachable)",
   "message.aliveworkplace.status.cancel": "[Cancel this build]",
   "message.aliveworkplace.status.cancel_hover": "Stops the build and gives the blueprint back. Placed blocks stay.",
-
   "command.aliveworkplace.blueprints": "%s blueprint(s) available:",
   "command.aliveworkplace.given": "Gave you a blueprint for %s",
   "command.aliveworkplace.no_sites": "No builds in progress.",
   "command.aliveworkplace.not_owner": "Only the player who started this build (or an operator) can cancel it.",
   "command.aliveworkplace.no_such_site": "No build with that id.",
   "command.aliveworkplace.cancelled": "Cancelled the build of %s.",
-
   "gamerule.workplaceFreeMaterials": "Alive Workplace: builders need no materials",
-  "gamerule.workplaceBuildDelay": "Alive Workplace: ticks per block placed by builders"
+  "gamerule.workplaceBuildDelay": "Alive Workplace: ticks per block placed by builders",
+  "message.aliveworkplace.import.done": "Imported %s (%s × %s × %s)",
+  "message.aliveworkplace.import.done_with_unknown": "Imported %s (%s × %s × %s). %s block(s) from mods that aren't installed became air.",
+  "message.aliveworkplace.import.failed": "Could not import %s: %s",
+  "message.aliveworkplace.import.nothing": "No blueprint files found. Put .litematic, .schem or .nbt files in %s",
+  "message.aliveworkplace.import.error.folder": "Could not open the import folder %s",
+  "message.aliveworkplace.import.error.not_nbt": "this isn't a Minecraft build file",
+  "message.aliveworkplace.import.error.unknown_format": "unrecognised build file (supported: .litematic, .schem, .nbt)",
+  "message.aliveworkplace.import.error.mcedit": "this is an old MCEdit .schematic — open it in WorldEdit or Litematica and save it as .schem or .litematic",
+  "message.aliveworkplace.import.error.file_too_big": "file is %s KB; the limit is %s KB",
+  "message.aliveworkplace.import.error.too_big": "build is %s × %s × %s; the limit is %s blocks in total",
+  "message.aliveworkplace.import.error.empty": "the build is empty",
+  "message.aliveworkplace.import.error.litematic.empty": "the Litematica file has no regions",
+  "message.aliveworkplace.import.error.litematic.corrupt": "the Litematica file is damaged",
+  "message.aliveworkplace.import.error.schem.corrupt": "the schematic file is damaged",
+  "message.aliveworkplace.import.error.save_failed": "the server could not save the blueprint"
 }

@@ -5,7 +5,10 @@
 	"name": "Alive Workplace GameTests",
 	"environment": "*",
 	"entrypoints": {
-		"fabric-gametest": ["io.github.jcondedata.aliveworkplace.test.BuilderGameTests"]
+		"fabric-gametest": [
+			"io.github.jcondedata.aliveworkplace.test.BuilderGameTests",
+			"io.github.jcondedata.aliveworkplace.test.ImportGameTests"
+		]
 	},
 	"depends": { "aliveworkplace": "*" }
 }

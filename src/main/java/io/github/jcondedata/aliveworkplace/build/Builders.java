@@ -143,6 +143,7 @@ public final class Builders {
 		if (site == null) {
 			tell(player, Component.translatable(benchPos(villager).isPresent()
 				? "message.aliveworkplace.status.idle" : "message.aliveworkplace.status.no_bench", villager.getDisplayName()), ChatFormatting.GRAY);
+			tell(player, Component.literal("  ").append(BuilderLevels.describe(villager)), ChatFormatting.DARK_AQUA);
 			return;
 		}
 		player.sendSystemMessage(statusText(level, site, villager));
@@ -163,6 +164,10 @@ public final class Builders {
 		text.append(Component.literal(" · ").withStyle(ChatFormatting.DARK_GRAY));
 		text.append(Component.translatable("message.aliveworkplace.status.state." + site.status().name().toLowerCase()).withStyle(
 			site.status() == BuildSite.Status.WAITING_FOR_MATERIALS ? ChatFormatting.YELLOW : ChatFormatting.GRAY));
+		if (villager != null) {
+			text.append(Component.literal("\n  "));
+			text.append(BuilderLevels.describe(villager).copy().withStyle(ChatFormatting.DARK_AQUA));
+		}
 
 		if (site.detail() != null) {
 			text.append(Component.literal("\n  "));
@@ -246,8 +251,8 @@ public final class Builders {
 		if (owner != null) {
 			tell(owner, Component.translatable("message.aliveworkplace.finished", villager.getDisplayName(), Blueprints.displayName(site.structure())), ChatFormatting.GREEN);
 		}
-		villager.setVillagerXp(villager.getVillagerXp() + 5);
 		endJob(level, villager, site);
+		BuilderLevels.onFinished(level, villager, site);
 	}
 
 	/** Stops a build. Placed blocks stay; the blueprint goes back to the owner (or the bench). */

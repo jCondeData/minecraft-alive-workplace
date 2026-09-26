@@ -205,6 +205,88 @@ def lookout_tower():
     return b
 
 
+# --- Healing Center: 11 x 8 x 9 ---------------------------------------------------------------
+def healing_center():
+    """White walls and a red roof. With Cobblemon installed the counter holds a Healing Machine
+    (without Cobblemon that block loads as air and the builder skips it)."""
+    b = Build(11, 8, 9)
+    b.fill(0, 0, 0, 10, 0, 8, "smooth_stone")
+    b.fill(1, 0, 1, 9, 0, 7, "white_concrete")
+    for y in range(1, 4):
+        b.ring(0, 0, 10, 8, y, "white_concrete")
+    b.ring(0, 0, 10, 8, 4, "red_concrete")
+    # Big front windows either side of the door, windows down each side
+    for x in (1, 2, 3, 7, 8, 9):
+        for y in (2, 3):
+            b.set(x, y, 0, "glass_pane", north=False, south=False, east=True, west=True)
+    for z in (2, 3, 5, 6):
+        for x in (0, 10):
+            b.set(x, 2, z, "glass_pane", north=True, south=True, east=False, west=False)
+    b.door(5, 1, 0, "birch_door", facing="south")
+    # Roof: a red slab over everything, a second red tier, a white emblem on top
+    b.fill(0, 5, 0, 10, 5, 8, "red_concrete")
+    b.fill(2, 6, 2, 8, 6, 6, "red_concrete")
+    b.fill(4, 7, 3, 6, 7, 5, "white_concrete")
+    b.set(5, 7, 4, "red_concrete")
+    # Counter across the room with the Healing Machine in the middle
+    for x in range(2, 9):
+        if x != 5:
+            b.set(x, 1, 5, "white_concrete")
+    b.set(5, 1, 5, "cobblemon:healing_machine", facing="north")
+    b.set(3, 2, 5, "red_carpet")
+    b.set(7, 2, 5, "red_carpet")
+    # Staff side: a bed-less rest corner and storage
+    b.set(1, 1, 7, "barrel", facing="up", open=False)
+    b.set(9, 1, 7, "barrel", facing="up", open=False)
+    b.set(2, 1, 7, "crafting_table")
+    # Waiting benches along the side walls, a red carpet to the counter
+    for z in (2, 3):
+        b.set(1, 1, z, "birch_stairs", facing="west", half="bottom", shape="straight")
+        b.set(9, 1, z, "birch_stairs", facing="east", half="bottom", shape="straight")
+    for z in range(1, 5):
+        b.set(5, 1, z, "red_carpet")
+    # Light
+    for x in (3, 7):
+        b.set(x, 4, 2, "lantern", hanging=True)
+        b.set(x, 4, 6, "lantern", hanging=True)
+    b.fill_air()
+    return b
+
+
+# --- Supply Shop: 9 x 7 x 8 -------------------------------------------------------------------
+def supply_shop():
+    """White walls and a blue roof; shelves of barrels and a shop counter."""
+    b = Build(9, 7, 8)
+    b.fill(0, 0, 0, 8, 0, 7, "smooth_stone")
+    b.fill(1, 0, 1, 7, 0, 6, "birch_planks")
+    for y in range(1, 4):
+        b.ring(0, 0, 8, 7, y, "white_concrete")
+    b.ring(0, 0, 8, 7, 4, "blue_concrete")
+    for x in (1, 2, 6, 7):
+        b.set(x, 2, 0, "glass_pane", north=False, south=False, east=True, west=True)
+        b.set(x, 3, 0, "glass_pane", north=False, south=False, east=True, west=True)
+    b.door(4, 1, 0, "birch_door", facing="south")
+    b.fill(0, 5, 0, 8, 5, 7, "blue_concrete")
+    b.fill(2, 6, 2, 6, 6, 5, "light_blue_concrete")
+    # Shelves: barrels two high along both side walls
+    for z in (2, 3, 4, 5):
+        for y in (1, 2):
+            b.set(1, y, z, "barrel", facing="east", open=False)
+            b.set(7, y, z, "barrel", facing="west", open=False)
+    # Counter at the back with a register (lantern) and a till (barrel)
+    for x in (3, 4, 5):
+        b.set(x, 1, 5, "blue_concrete")
+    b.set(3, 2, 5, "lantern", hanging=False)
+    b.set(5, 2, 5, "barrel", facing="up", open=False)
+    b.set(4, 1, 6, "birch_stairs", facing="south", half="bottom", shape="straight")  # shopkeeper's seat
+    # Welcome mat and light
+    b.set(4, 1, 1, "light_blue_carpet")
+    b.set(4, 1, 2, "light_blue_carpet")
+    b.set(4, 4, 3, "lantern", hanging=True)
+    b.fill_air()
+    return b
+
+
 # --- Gametest fixtures ------------------------------------------------------------------------
 def test_hut():
     """5x4x5 hut: floor, walls with a door and a torch, flat roof. Needs 25 cobblestone,
@@ -243,6 +325,8 @@ if __name__ == "__main__":
     starter_cottage().save(MAIN_STRUCTURES, "starter_cottage")
     market_stall().save(MAIN_STRUCTURES, "market_stall")
     lookout_tower().save(MAIN_STRUCTURES, "lookout_tower")
+    healing_center().save(MAIN_STRUCTURES, "healing_center")
+    supply_shop().save(MAIN_STRUCTURES, "supply_shop")
     test_hut().save(TEST_STRUCTURES, "test_hut")
     test_area("build_area", 17, 8, 17)
     test_area("big_area", 22, 18, 22)

@@ -16,8 +16,11 @@ public final class StarterBlueprints {
 	public static final Entry STARTER_COTTAGE = new Entry(AliveWorkplace.id("starter_cottage"), new Vec3i(9, 10, 9));
 	public static final Entry MARKET_STALL = new Entry(AliveWorkplace.id("market_stall"), new Vec3i(7, 5, 5));
 	public static final Entry LOOKOUT_TOWER = new Entry(AliveWorkplace.id("lookout_tower"), new Vec3i(7, 15, 7));
+	/** Has a Cobblemon Healing Machine on the counter; without Cobblemon that spot stays empty. */
+	public static final Entry HEALING_CENTER = new Entry(AliveWorkplace.id("healing_center"), new Vec3i(11, 8, 9));
+	public static final Entry SUPPLY_SHOP = new Entry(AliveWorkplace.id("supply_shop"), new Vec3i(9, 7, 8));
 
-	public static final List<Entry> ALL = List.of(STARTER_COTTAGE, MARKET_STALL, LOOKOUT_TOWER);
+	public static final List<Entry> ALL = List.of(STARTER_COTTAGE, MARKET_STALL, LOOKOUT_TOWER, HEALING_CENTER, SUPPLY_SHOP);
 
 	private StarterBlueprints() {
 	}

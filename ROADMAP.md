@@ -41,7 +41,8 @@ Owner decisions are recorded in **Design decisions** at the bottom. Don't change
 - [ ] **Crews**: several builders on one site split the steps
 - [ ] **Deconstruct** blueprint mode: take a build down and return the blocks
 - [ ] **Permissions**: only the owner (and friends they add) can command their builders; `/workplace friend add`
-- [ ] **Builder levels**: XP per block, villager level-ups from work; higher level = faster, longer reach, better trades
+- [x] **Builder levels**: 1 XP per 5 blocks placed + 10 per finished build, vanilla level thresholds; level-ups unlock the next trades; each level is faster (Master takes 40% of the base time per block)
+- [x] **More blueprints**: Healing Center (level 4, holds a Cobblemon Healing Machine when Cobblemon is installed) and Supply Shop (level 5)
 - [ ] Optional ground levelling around the site (foundations are done; per-blueprint opt-out later)
 - [ ] Fluids (water/lava via buckets), potted plants (pot + plant), entities in templates (item frames, armor stands)
 - [ ] **Builder's house** added to village generation (so builders appear naturally)

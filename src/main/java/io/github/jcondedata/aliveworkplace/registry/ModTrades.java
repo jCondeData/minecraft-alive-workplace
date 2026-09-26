@@ -23,10 +23,14 @@ public final class ModTrades {
 			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.GLASS, 12), new ItemStack(Items.EMERALD), 12, 20, 0.05f));
 			offers.add((entity, random) -> blueprint(StarterBlueprints.LOOKOUT_TOWER, 12));
 		});
-		TradeOfferHelper.registerVillagerOffers(ModVillagers.BUILDER, 4, offers ->
-			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 1), new ItemStack(Items.SCAFFOLDING, 12), 12, 15, 0.05f)));
-		TradeOfferHelper.registerVillagerOffers(ModVillagers.BUILDER, 5, offers ->
-			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 1), new ItemStack(Items.BRICKS, 16), 12, 30, 0.05f)));
+		TradeOfferHelper.registerVillagerOffers(ModVillagers.BUILDER, 4, offers -> {
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 1), new ItemStack(Items.SCAFFOLDING, 12), 12, 15, 0.05f));
+			offers.add((entity, random) -> blueprint(StarterBlueprints.HEALING_CENTER, 16));
+		});
+		TradeOfferHelper.registerVillagerOffers(ModVillagers.BUILDER, 5, offers -> {
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 1), new ItemStack(Items.BRICKS, 16), 12, 30, 0.05f));
+			offers.add((entity, random) -> blueprint(StarterBlueprints.SUPPLY_SHOP, 20));
+		});
 	}
 
 	private static MerchantOffer blueprint(StarterBlueprints.Entry entry, int emeralds) {

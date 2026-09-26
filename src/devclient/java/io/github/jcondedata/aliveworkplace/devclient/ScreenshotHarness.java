@@ -68,6 +68,10 @@ public class ScreenshotHarness implements ClientModInitializer {
 			tableScene(mc, mc.getSingleplayerServer());
 			return;
 		}
+		if ("gallery".equals(System.getProperty("aliveworkplace.scene"))) {
+			galleryScene(mc, mc.getSingleplayerServer());
+			return;
+		}
 		if ("preview".equals(System.getProperty("aliveworkplace.scene"))) {
 			previewScene(mc, mc.getSingleplayerServer());
 			return;
@@ -230,6 +234,46 @@ public class ScreenshotHarness implements ClientModInitializer {
 			shot(mc, "22_status_closeup");
 		}
 		if (tick == 1020) {
+			mc.stop();
+		}
+	}
+
+	// --- Gallery: every starter blueprint placed instantly, one shot each -------------------------
+
+	private void galleryScene(Minecraft mc, MinecraftServer server) {
+		tick++;
+		List<StarterBlueprints.Entry> all = StarterBlueprints.ALL;
+		if (tick == 1) {
+			mc.options.renderDistance().set(6);
+			mc.options.cloudStatus().set(CloudStatus.OFF);
+			mc.options.hideGui = true;
+		}
+		if (tick == 20) {
+			server.execute(() -> {
+				ServerLevel level = server.overworld();
+				level.getGameRules().getRule(GameRules.RULE_DAYLIGHT).set(false, server);
+				level.setDayTime(3000);
+				for (int i = 0; i < all.size(); i++) {
+					net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate t =
+						level.getStructureManager().get(all.get(i).id()).orElseThrow();
+					BlockPos origin = new BlockPos(i * 24, -60, 0);
+					t.placeInWorld(level, origin, origin, new net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings(),
+						level.getRandom(), 2);
+				}
+			});
+		}
+		int index = (tick - 60) / 60;
+		if (tick >= 60 && (tick - 60) % 60 == 0 && index < all.size()) {
+			StarterBlueprints.Entry e = all.get(index);
+			double cx = index * 24 + e.size().getX() / 2.0 + 0.5;
+			double dist = Math.max(e.size().getX(), e.size().getY()) * 1.3 + 4;
+			server.execute(() -> hover(server.getPlayerList().getPlayers().get(0),
+				new Vec3(cx + dist * 0.45, -60 + e.size().getY() * 0.7 + 2, -dist), 20, 22));
+		}
+		if (tick >= 100 && (tick - 100) % 60 == 0 && (tick - 100) / 60 < all.size()) {
+			shot(mc, "30_" + all.get((tick - 100) / 60).id().getPath());
+		}
+		if (tick == 100 + all.size() * 60) {
 			mc.stop();
 		}
 	}

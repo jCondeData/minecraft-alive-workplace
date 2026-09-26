@@ -2,6 +2,15 @@
 
 ## Unreleased
 
+### Added
+- Builders level up by building: every 5 blocks placed and every finished build earn villager XP, and they level up
+  just like villagers you trade with. Each level makes them faster (a Master builder works 2.5× as fast as a Novice)
+  and unlocks their next blueprints for sale. Their owner gets a message when they level up, and sneak-right-clicking
+  a builder shows their level and XP.
+- Two new blueprints: the **Healing Center** (white walls, red roof; sold by level 4 builders) with a Cobblemon
+  Healing Machine on the counter when Cobblemon is installed, and the **Supply Shop** (blue roof, shelves and a
+  counter; sold by level 5 builders).
+
 ## 0.3.0 — 2026-09-26
 
 ### Added

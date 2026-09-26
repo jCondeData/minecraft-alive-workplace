@@ -9,6 +9,7 @@ import io.github.jcondedata.aliveworkplace.blueprint.StarterBlueprints;
 import io.github.jcondedata.aliveworkplace.build.BuildPlan;
 import io.github.jcondedata.aliveworkplace.build.BuildSite;
 import io.github.jcondedata.aliveworkplace.build.BuildSiteManager;
+import io.github.jcondedata.aliveworkplace.build.BuilderLevels;
 import io.github.jcondedata.aliveworkplace.build.BuilderStatusSync;
 import io.github.jcondedata.aliveworkplace.build.Builders;
 import io.github.jcondedata.aliveworkplace.build.MaterialRules;
@@ -247,6 +248,48 @@ public class BuilderGameTests implements FabricGameTest {
 	@GameTest(template = BIG_AREA, timeoutTicks = 9000, batch = "starter_builds")
 	public void buildsLookoutTower(GameTestHelper helper) {
 		buildStarter(helper, StarterBlueprints.LOOKOUT_TOWER);
+	}
+
+	@GameTest(template = BIG_AREA, timeoutTicks = 9000, batch = "starter_builds")
+	public void buildsHealingCenter(GameTestHelper helper) {
+		buildStarter(helper, StarterBlueprints.HEALING_CENTER);
+	}
+
+	@GameTest(template = BIG_AREA, timeoutTicks = 9000, batch = "starter_builds")
+	public void buildsSupplyShop(GameTestHelper helper) {
+		buildStarter(helper, StarterBlueprints.SUPPLY_SHOP);
+	}
+
+	// --- builder levels --------------------------------------------------------------------
+
+	/** Building earns XP; crossing a threshold levels the builder up and unlocks the next blueprint for sale. */
+	@GameTest(template = AREA, timeoutTicks = 2400)
+	public void buildingLevelsTheBuilderUp(GameTestHelper helper) {
+		Setup s = setup(helper, TEST_HUT, HUT_ORIGIN, Rotation.NONE, hutMaterials());
+		helper.assertTrue(s.villager().getVillagerData().getLevel() == 1, "builder should start as a novice");
+		helper.succeedWhen(() -> {
+			assertBuilt(helper, s);
+			Villager v = s.villager();
+			// 85 blocks placed (/5 = 17 XP) + 10 for finishing, on top of the 1 XP employ() gives.
+			helper.assertTrue(v.getVillagerXp() >= 20, "only " + v.getVillagerXp() + " XP after a build");
+			helper.assertTrue(v.getVillagerData().getLevel() == 2, "builder is level " + v.getVillagerData().getLevel() + ", expected 2");
+			boolean sellsStall = v.getOffers().stream().anyMatch(o -> BlueprintItem.data(o.getResult())
+				.map(d -> d.structure().equals(StarterBlueprints.MARKET_STALL.id())).orElse(false));
+			helper.assertTrue(sellsStall, "a level 2 builder should sell the Market Stall");
+		});
+	}
+
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
+	public void higherLevelBuildersWorkFaster(GameTestHelper helper) {
+		helper.assertTrue(BuilderLevels.delay(8, 1) == 8, "novice delay " + BuilderLevels.delay(8, 1));
+		for (int level = 2; level <= 5; level++) {
+			helper.assertTrue(BuilderLevels.delay(8, level) < BuilderLevels.delay(8, level - 1) || BuilderLevels.delay(8, level) == 1,
+				"level " + level + " is not faster than level " + (level - 1));
+		}
+		helper.assertTrue(BuilderLevels.delay(8, 5) == 3, "master delay " + BuilderLevels.delay(8, 5));
+		helper.assertTrue(BuilderLevels.delay(0, 5) == 0, "a delay of 0 must stay 0");
+		helper.assertTrue(BuilderLevels.speedBonus(1) == 0 && BuilderLevels.speedBonus(5) == 150, "speed bonus " + BuilderLevels.speedBonus(5));
+		helper.succeed();
 	}
 
 	private void buildStarter(GameTestHelper helper, StarterBlueprints.Entry entry) {

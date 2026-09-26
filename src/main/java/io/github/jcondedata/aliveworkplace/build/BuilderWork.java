@@ -229,7 +229,7 @@ public class BuilderWork extends Behavior<Villager> {
 			workTimer--;
 			return;
 		}
-		workTimer = level.getGameRules().getInt(ModGameRules.BUILD_DELAY);
+		workTimer = BuilderLevels.delay(level, villager);
 		if (action == Action.BREAK) {
 			breakBlock(level, villager, bag, bench, plan, step.pos());
 		} else {
@@ -522,6 +522,7 @@ public class BuilderWork extends Behavior<Villager> {
 		level.playSound(null, pos, sound.getPlaceSound(), SoundSource.BLOCKS, (sound.getVolume() + 1f) / 2f, sound.getPitch() * 0.8f);
 		level.gameEvent(villager, GameEvent.BLOCK_PLACE, pos);
 		site.markPlaced();
+		BuilderLevels.onPlaced(level, villager, site);
 	}
 
 	/**

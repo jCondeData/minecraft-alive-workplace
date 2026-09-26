@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": ["BBB", "PCP", "PPP"],
+  "key": {
+    "B": { "item": "minecraft:brick" },
+    "P": { "tag": "minecraft:planks" },
+    "C": { "item": "minecraft:crafting_table" }
+  },
+  "result": { "id": "aliveworkplace:builders_bench", "count": 1 }
+}

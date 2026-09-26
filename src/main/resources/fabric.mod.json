@@ -1,0 +1,29 @@
+{
+	"schemaVersion": 1,
+	"id": "aliveworkplace",
+	"version": "${version}",
+	"name": "Alive Workplace",
+	"description": "Villagers with real jobs. Hand a Builder a blueprint and they build it — fetching materials from chests, clearing the site and placing every block.",
+	"authors": ["jCondeData"],
+	"contact": {
+		"homepage": "https://github.com/jCondeData/minecraft-alive-workplace",
+		"sources": "https://github.com/jCondeData/minecraft-alive-workplace",
+		"issues": "https://github.com/jCondeData/minecraft-alive-workplace/issues"
+	},
+	"license": "GPL-3.0-or-later",
+	"icon": "assets/aliveworkplace/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": ["io.github.jcondedata.aliveworkplace.AliveWorkplace"]
+	},
+	"mixins": ["aliveworkplace.mixins.json"],
+	"depends": {
+		"fabricloader": ">=0.16.0",
+		"minecraft": "~1.21.1",
+		"java": ">=21",
+		"fabric-api": "*"
+	},
+	"suggests": {
+		"cobblemon": "*"
+	}
+}

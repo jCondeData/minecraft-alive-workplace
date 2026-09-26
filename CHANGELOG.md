@@ -7,6 +7,9 @@
   just like villagers you trade with. Each level makes them faster (a Master builder works 2.5× as fast as a Novice)
   and unlocks their next blueprints for sale. Their owner gets a message when they level up, and sneak-right-clicking
   a builder shows their level and XP.
+- Build queue: hand a busy builder more placed blueprints (up to 5) and they build them one after another.
+  Queued builds reserve their spot, show up in `/workplace sites` and the builder's status ("Next up: …"),
+  and can be cancelled on their own.
 - Two new blueprints: the **Healing Center** (white walls, red roof; sold by level 4 builders) with a Cobblemon
   Healing Machine on the counter when Cobblemon is installed, and the **Supply Shop** (blue roof, shelves and a
   counter; sold by level 5 builders).

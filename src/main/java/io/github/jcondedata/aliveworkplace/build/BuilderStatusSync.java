@@ -52,7 +52,7 @@ public final class BuilderStatusSync {
 
 	private static void broadcast(ServerLevel level) {
 		for (BuildSite site : BuildSiteManager.get(level).all()) {
-			if (site.builder() == null) {
+			if (site.builder() == null || site.isQueued()) {
 				continue;
 			}
 			Entity entity = level.getEntity(site.builder());

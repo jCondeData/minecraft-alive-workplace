@@ -37,7 +37,7 @@ Owner decisions are recorded in **Design decisions** at the bottom. Don't change
 
 ### Next
 - [ ] Materials list in the blueprint tooltip (and "what's still missing" once placed near a builder)
-- [ ] **Build queue**: hand a busy builder more blueprints; they do them in order
+- [x] **Build queue**: hand a busy builder up to 5 more blueprints; they do them in order (queued sites reserve their spot, show in `/workplace sites` and can be cancelled)
 - [ ] **Crews**: several builders on one site split the steps
 - [ ] **Deconstruct** blueprint mode: take a build down and return the blocks
 - [ ] **Permissions**: only the owner (and friends they add) can command their builders; `/workplace friend add`

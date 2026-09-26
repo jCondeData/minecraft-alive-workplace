@@ -40,6 +40,8 @@ import org.jetbrains.annotations.Nullable;
 public final class Builders {
 	/** A build site's centre must be within this many blocks of the builder's bench. */
 	public static final int MAX_SITE_DISTANCE = 48;
+	/** How many blueprints a builder accepts on top of the one they are building. */
+	public static final int MAX_QUEUE = 5;
 
 	public static boolean isBuilder(Villager villager) {
 		return !villager.isBaby() && villager.getVillagerData().getProfession() == ModVillagers.BUILDER;
@@ -51,17 +53,49 @@ public final class Builders {
 			.map(GlobalPos::pos);
 	}
 
+	/**
+	 * The site this builder is working on. When they have none (just finished, or it was cancelled)
+	 * the next blueprint in their queue becomes the active one.
+	 */
 	@Nullable
 	public static BuildSite activeSite(ServerLevel level, Villager villager) {
 		BuilderJob job = villager.getAttached(ModAttachments.BUILDER_JOB);
-		if (job == null) {
-			return null;
-		}
-		BuildSite site = BuildSiteManager.get(level).get(job.siteId());
-		if (site == null) {
+		if (job != null) {
+			BuildSite site = BuildSiteManager.get(level).get(job.siteId());
+			if (site != null && !site.isQueued()) {
+				return site;
+			}
 			villager.removeAttached(ModAttachments.BUILDER_JOB);
 		}
-		return site;
+		return startNext(level, villager);
+	}
+
+	/** Sites waiting for this builder, in the order they were handed over. */
+	public static List<BuildSite> queue(ServerLevel level, Villager villager) {
+		List<BuildSite> out = new java.util.ArrayList<>();
+		for (BuildSite site : BuildSiteManager.get(level).all()) {
+			if (site.isQueued() && villager.getUUID().equals(site.builder())) {
+				out.add(site);
+			}
+		}
+		return out;
+	}
+
+	@Nullable
+	private static BuildSite startNext(ServerLevel level, Villager villager) {
+		List<BuildSite> queue = queue(level, villager);
+		if (queue.isEmpty()) {
+			return null;
+		}
+		BuildSite next = queue.get(0);
+		next.setQueued(false);
+		villager.setAttached(ModAttachments.BUILDER_JOB, new BuilderJob(next.id()));
+		ServerPlayer owner = level.getServer().getPlayerList().getPlayer(next.owner());
+		if (owner != null) {
+			tell(owner, Component.translatable("message.aliveworkplace.queue.next", villager.getDisplayName(),
+				Blueprints.displayName(next.structure())), ChatFormatting.GREEN);
+		}
+		return next;
 	}
 
 	// --- hand-over ---------------------------------------------------------------------------
@@ -83,9 +117,9 @@ public final class Builders {
 			return InteractionResult.CONSUME;
 		}
 		BuildSite existing = activeSite(level, villager);
-		if (existing != null) {
-			tell(player, Component.translatable("message.aliveworkplace.assign.busy", villager.getDisplayName(),
-				Blueprints.displayName(existing.structure())), ChatFormatting.YELLOW);
+		int queued = existing != null ? queue(level, villager).size() : 0;
+		if (queued >= MAX_QUEUE) {
+			tell(player, Component.translatable("message.aliveworkplace.queue.full", villager.getDisplayName(), MAX_QUEUE), ChatFormatting.YELLOW);
 			return InteractionResult.CONSUME;
 		}
 		Optional<BlockPos> bench = benchPos(villager);
@@ -113,13 +147,20 @@ public final class Builders {
 			}
 		}
 
-		BuildSite site = start(level, villager, player, data.get().structure(), placement.get());
+		BuildSite site = existing == null
+			? start(level, villager, player, data.get().structure(), placement.get())
+			: enqueue(level, villager, player, data.get().structure(), placement.get());
 		if (!player.getAbilities().instabuild) {
 			stack.shrink(1);
 		}
 		level.playSound(null, villager, SoundEvents.VILLAGER_YES, SoundSource.NEUTRAL, 1f, 1f);
-		tell(player, Component.translatable("message.aliveworkplace.assign.started", villager.getDisplayName(),
-			Blueprints.displayName(site.structure()), SupplyContainers.RADIUS), ChatFormatting.GREEN);
+		if (existing == null) {
+			tell(player, Component.translatable("message.aliveworkplace.assign.started", villager.getDisplayName(),
+				Blueprints.displayName(site.structure()), SupplyContainers.RADIUS), ChatFormatting.GREEN);
+		} else {
+			tell(player, Component.translatable("message.aliveworkplace.queue.added", villager.getDisplayName(),
+				Blueprints.displayName(site.structure()), Blueprints.displayName(existing.structure()), queued + 1), ChatFormatting.GREEN);
+		}
 		return InteractionResult.SUCCESS;
 	}
 
@@ -132,6 +173,18 @@ public final class Builders {
 			structure, placement);
 		site.setBuilder(villager.getUUID());
 		villager.setAttached(ModAttachments.BUILDER_JOB, new BuilderJob(site.id()));
+		return site;
+	}
+
+	/** Adds a site to a busy builder's queue. Also used by tests. */
+	public static BuildSite enqueue(ServerLevel level, Villager villager, @Nullable Player owner,
+									net.minecraft.resources.ResourceLocation structure, BlueprintData.Placement placement) {
+		BuildSite site = BuildSiteManager.get(level).create(
+			owner != null ? owner.getUUID() : villager.getUUID(),
+			owner != null ? owner.getGameProfile().getName() : "",
+			structure, placement);
+		site.setBuilder(villager.getUUID());
+		site.setQueued(true);
 		return site;
 	}
 
@@ -155,6 +208,13 @@ public final class Builders {
 		Component who = villager != null ? villager.getDisplayName() : Component.translatable("message.aliveworkplace.status.builder");
 		if (plan == null) {
 			return text.append(Component.translatable("message.aliveworkplace.status.blueprint_missing", site.structure().toString()).withStyle(ChatFormatting.RED));
+		}
+		if (site.isQueued()) {
+			BuildSite current = villager != null ? activeSite(level, villager) : null;
+			text.append(Component.translatable("message.aliveworkplace.status.queued", who, Blueprints.displayName(site.structure()),
+				current != null ? Blueprints.displayName(current.structure()) : Component.literal("?")).withStyle(ChatFormatting.GOLD));
+			appendCancel(text, site);
+			return text;
 		}
 		int percent = Math.round(site.progress(plan) * 100);
 		text.append(Component.translatable("message.aliveworkplace.status.header", who, Blueprints.displayName(site.structure()), percent)
@@ -186,13 +246,31 @@ public final class Builders {
 			text.append(Component.literal("\n  "));
 			text.append(Component.translatable("message.aliveworkplace.status.skipped", site.skipped()).withStyle(ChatFormatting.DARK_GRAY));
 		}
+		if (villager != null) {
+			List<BuildSite> queue = queue(level, villager);
+			if (!queue.isEmpty()) {
+				MutableComponent names = Component.empty();
+				for (int i = 0; i < queue.size(); i++) {
+					if (i > 0) {
+						names.append(", ");
+					}
+					names.append(Blueprints.displayName(queue.get(i).structure()));
+				}
+				text.append(Component.literal("\n  "));
+				text.append(Component.translatable("message.aliveworkplace.status.next", names).withStyle(ChatFormatting.GRAY));
+			}
+		}
+		appendCancel(text, site);
+		return text;
+	}
+
+	private static void appendCancel(MutableComponent text, BuildSite site) {
 		String cancel = "/workplace cancel " + site.id();
 		text.append(Component.literal("\n  "));
 		text.append(Component.translatable("message.aliveworkplace.status.cancel").withStyle(style -> style
 			.withColor(ChatFormatting.RED).withUnderlined(true)
 			.withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, cancel))
 			.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.translatable("message.aliveworkplace.status.cancel_hover")))));
-		return text;
 	}
 
 	/** Materials still needed for the rest of the build, minus what the builder carries and what is in the supply chests. */
@@ -258,21 +336,19 @@ public final class Builders {
 	/** Stops a build. Placed blocks stay; the blueprint goes back to the owner (or the bench). */
 	public static void cancel(ServerLevel level, BuildSite site) {
 		Villager villager = site.builder() != null && level.getEntity(site.builder()) instanceof Villager v ? v : null;
+		if (site.isQueued()) {
+			// Not started: nothing to tidy up on the builder, just hand the blueprint back.
+			BlockPos at = villager != null ? benchPos(villager).orElse(villager.blockPosition()) : site.placement().origin();
+			giveBack(level, site, at, villager != null ? SupplyContainers.find(level, at, null) : List.of());
+			BuildSiteManager.get(level).remove(site.id());
+			return;
+		}
 		BlockPos bench = villager != null ? benchPos(villager).orElse(villager.blockPosition()) : site.placement().origin();
 		List<BlockPos> supplies = villager != null ? SupplyContainers.find(level, bench, null) : List.of();
 		if (villager != null) {
 			emptyBag(level, villager, bench, supplies);
 		}
-		ItemStack blueprint = blueprintFor(level, site);
-		ServerPlayer owner = level.getServer().getPlayerList().getPlayer(site.owner());
-		if (owner != null && owner.getInventory().add(blueprint)) {
-			// given straight back
-		} else {
-			ItemStack rest = SupplyContainers.insert(level, supplies, blueprint);
-			if (!rest.isEmpty()) {
-				dropNear(level, bench, rest);
-			}
-		}
+		giveBack(level, site, bench, supplies);
 		if (villager != null) {
 			endJob(level, villager, site);
 		} else {
@@ -280,9 +356,27 @@ public final class Builders {
 		}
 	}
 
+	/** The blueprint goes to the owner if online, else into the supply chests, else on the ground. */
+	private static void giveBack(ServerLevel level, BuildSite site, BlockPos bench, List<BlockPos> supplies) {
+		ItemStack blueprint = blueprintFor(level, site);
+		ServerPlayer owner = level.getServer().getPlayerList().getPlayer(site.owner());
+		if (owner != null && owner.getInventory().add(blueprint)) {
+			return;
+		}
+		ItemStack rest = SupplyContainers.insert(level, supplies, blueprint);
+		if (!rest.isEmpty()) {
+			dropNear(level, bench, rest);
+		}
+	}
+
 	/** The builder died: drop its bag and the blueprint where it fell, keep what was built. */
 	public static void onBuilderDeath(ServerLevel level, Villager villager) {
-		BuildSite site = activeSite(level, villager);
+		for (BuildSite queued : queue(level, villager)) {
+			dropNear(level, villager.blockPosition(), blueprintFor(level, queued));
+			BuildSiteManager.get(level).remove(queued.id());
+		}
+		BuilderJob job = villager.getAttached(ModAttachments.BUILDER_JOB);
+		BuildSite site = job != null ? BuildSiteManager.get(level).get(job.siteId()) : null;
 		BuilderBag bag = villager.getAttached(ModAttachments.BUILDER_BAG);
 		if (bag != null) {
 			for (ItemStack stack : bag.takeAll()) {

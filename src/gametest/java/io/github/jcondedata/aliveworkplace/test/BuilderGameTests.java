@@ -260,6 +260,46 @@ public class BuilderGameTests implements FabricGameTest {
 		buildStarter(helper, StarterBlueprints.SUPPLY_SHOP);
 	}
 
+	// --- build queue -----------------------------------------------------------------------
+
+	/** A second blueprint handed to a busy builder waits its turn, then gets built. */
+	@GameTest(template = AREA, timeoutTicks = 4800)
+	public void buildsQueuedBlueprintsInOrder(GameTestHelper helper) {
+		ItemStack[] twoHuts = {new ItemStack(Items.COBBLESTONE, 50), new ItemStack(Items.OAK_PLANKS, 64), new ItemStack(Items.OAK_PLANKS, 46),
+			new ItemStack(Items.OAK_DOOR, 2), new ItemStack(Items.TORCH, 2)};
+		Setup first = setup(helper, TEST_HUT, HUT_ORIGIN, Rotation.NONE, twoHuts);
+		BuildSite second = Builders.enqueue(first.level(), first.villager(), null, TEST_HUT, placement(helper, new BlockPos(11, 2, 0), Rotation.NONE));
+		BuildPlan secondPlan = second.plan(first.level());
+		helper.assertTrue(second.isQueued(), "second site should be queued");
+		helper.assertTrue(Builders.activeSite(first.level(), first.villager()) == first.site(), "the first site should stay active");
+		AtomicBoolean startedEarly = new AtomicBoolean(false);
+		helper.onEachTick(() -> {
+			if (BuildSiteManager.get(first.level()).get(first.site().id()) != null && (second.placed() > 0 || !second.isQueued())) {
+				startedEarly.set(true);
+			}
+		});
+		helper.succeedWhen(() -> {
+			helper.assertFalse(startedEarly.get(), "the queued build started before the first one was finished");
+			assertBuilt(helper, first);
+			assertBuilt(helper, new Setup(first.level(), first.villager(), second, secondPlan));
+			Container chest = helper.getBlockEntity(CHEST);
+			helper.assertTrue(chest.countItem(ModItems.BLUEPRINT) == 2, "both blueprints should be back in the chest");
+		});
+	}
+
+	@GameTest(template = AREA)
+	public void cancellingAQueuedBuildKeepsTheCurrentOne(GameTestHelper helper) {
+		Setup s = setup(helper, TEST_HUT, HUT_ORIGIN, Rotation.NONE, hutMaterials());
+		BuildSite queued = Builders.enqueue(s.level(), s.villager(), null, TEST_HUT, placement(helper, new BlockPos(11, 2, 0), Rotation.NONE));
+		helper.assertTrue(Builders.queue(s.level(), s.villager()).size() == 1, "queue should hold one site");
+		Builders.cancel(s.level(), queued);
+		helper.assertTrue(BuildSiteManager.get(s.level()).get(queued.id()) == null, "cancelled site still exists");
+		helper.assertTrue(Builders.activeSite(s.level(), s.villager()) == s.site(), "cancelling a queued build must not stop the current one");
+		Container chest = helper.getBlockEntity(CHEST);
+		helper.assertTrue(chest.countItem(ModItems.BLUEPRINT) == 1, "the queued blueprint should be handed back");
+		helper.succeed();
+	}
+
 	// --- builder levels --------------------------------------------------------------------
 
 	/** Building earns XP; crossing a threshold levels the builder up and unlocks the next blueprint for sale. */

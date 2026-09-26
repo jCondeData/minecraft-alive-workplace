@@ -18,20 +18,24 @@ Install on the **server and every player's game**.
    Planks  Crafting Table Planks
    Planks  Planks         Planks
    ```
-2. **Get a blueprint.** Builders sell the starter blueprints (Starter Cottage, Market Stall, Lookout Tower).
+2. **Get a blueprint.** Builders sell the starter blueprints (Starter Cottage first; more as they level up).
    Operators can also use `/workplace blueprint <id>`, including anything saved with a Structure Block.
 3. **Place it.** Hold the blueprint and right-click the ground where the front of the building should go.
    It faces you, and while you hold it you see the whole building as see-through blocks, exactly where it
    will stand (the gold edge of the outline is the front). Sneak-right-click the ground to turn it;
    sneak-right-click the air to pick it back up. On uneven ground the builder fills in a foundation.
 4. **Stock the chests.** Put the materials in any chests or barrels within 8 blocks of the builder's bench.
-5. **Hand it over.** Right-click the builder with the blueprint. They start work in the morning, sleep at night,
+5. **Hand it over.** Right-click the builder with the blueprint. Busy builders take up to 5 more and build them in order. They start work in the morning, sleep at night,
    and tell you if they run out of something. What they are building, how far along it is and what they are
    waiting for floats above their head; sneak-right-click a builder with an empty hand for the full status.
 
 ![A builder at work, with the rest of the house still see-through](docs/media/preview.png)
 
 When they finish, the blueprint goes back into the supply chest so you can build it again.
+
+**Builders level up as they work**, like villagers you trade with: every level makes them faster (a Master builds
+2.5× as fast as a Novice) and unlocks new blueprints to buy — Market Stall, Lookout Tower, then the
+**Healing Center** (with a Cobblemon Healing Machine on the counter when Cobblemon is installed) and the **Supply Shop**.
 
 ## Blueprint Table: any build from the internet
 Craft a **Blueprint Table** (blue dye on top, cartography table in the middle, planks around) and right-click it.
@@ -59,7 +63,7 @@ Craft a **Blueprint Table** (blue dye on top, cartography table in the middle, p
 | `/gamerule workplaceFoundationDepth 12` | how far down builders fill under a build on uneven ground (0 = never) |
 
 ## What's next
-Builders first: builder levels, more blueprints, build queues and crews. Then miners, lumberjacks and couriers, then Cobblemon
+Builders first: crews of builders on one site, deconstructing, permissions. Then miners, lumberjacks and couriers, then Cobblemon
 trainers and Pokémon work partners. See [ROADMAP.md](ROADMAP.md).
 
 ## Building from source

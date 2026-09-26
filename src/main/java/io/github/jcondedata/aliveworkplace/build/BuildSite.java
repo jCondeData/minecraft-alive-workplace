@@ -40,6 +40,8 @@ public final class BuildSite {
 	private int placed;
 	@Nullable
 	private UUID builder;
+	/** Waiting in the builder's queue (the builder is busy with an earlier site). */
+	private boolean queued;
 
 	// Transient, recomputed as needed
 	@Nullable
@@ -224,6 +226,15 @@ public final class BuildSite {
 		onChange.run();
 	}
 
+	public boolean isQueued() {
+		return queued;
+	}
+
+	public void setQueued(boolean queued) {
+		this.queued = queued;
+		onChange.run();
+	}
+
 	public Status status() {
 		return status;
 	}
@@ -272,6 +283,9 @@ public final class BuildSite {
 		if (builder != null) {
 			tag.putUUID("builder", builder);
 		}
+		if (queued) {
+			tag.putBoolean("queued", true);
+		}
 		return tag;
 	}
 
@@ -298,6 +312,7 @@ public final class BuildSite {
 		site.skipped = tag.getInt("skipped");
 		site.placed = tag.getInt("placed");
 		site.builder = tag.hasUUID("builder") ? tag.getUUID("builder") : null;
+		site.queued = tag.getBoolean("queued");
 		return site;
 	}
 

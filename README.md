@@ -4,6 +4,8 @@ Villagers with real jobs. Hand a **Builder** a blueprint and they build it for y
 site, fetch materials from your chests, put up the walls and roof, and finish with doors, beds and
 torches.
 
+![Three builders putting up the starter blueprints](docs/media/timelapse.gif)
+
 Fabric · Minecraft 1.21.1 · built for the Cobbleverse (Cobblemon) modpack, but works without it.
 Install on the **server and every player's game**.
 

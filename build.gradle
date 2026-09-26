@@ -16,11 +16,37 @@ repositories {
 
 loom {
 	splitEnvironmentSourceSets()
+}
 
+// Dev-only screenshot harness (see tools/screenshots/README.md). Never packaged in the mod jar.
+sourceSets {
+	devclient {
+		compileClasspath += main.compileClasspath + main.output + client.compileClasspath + client.output
+		runtimeClasspath += main.runtimeClasspath + main.output + client.runtimeClasspath + client.output
+	}
+}
+
+loom {
 	mods {
 		"aliveworkplace" {
 			sourceSet sourceSets.main
 			sourceSet sourceSets.client
+		}
+		"aliveworkplace_devclient" {
+			sourceSet sourceSets.devclient
+		}
+	}
+
+	runs {
+		// Opens the "shots" world, stages a scene with builders, saves screenshots to
+		// run/screenshots/screenshots/ and quits. Needs a display: use xvfb-run on a server.
+		screenshots {
+			client()
+			name "Screenshot Client"
+			source sourceSets.devclient
+			runDir "run/screenshots"
+			programArgs "--quickPlaySingleplayer", "shots", "--width", "960", "--height", "540"
+			vmArg "-Daliveworkplace.shots=true"
 		}
 	}
 }
@@ -30,7 +56,7 @@ fabricApi {
 	// server, runs every @GameTest and exits non-zero on failure. CI runs this.
 	configureTests {
 		createSourceSet = true
-		modId = "aliveworkplace-test"
+		modId = "aliveworkplace_test"
 		enableGameTests = true
 		enableClientGameTests = false
 		eula = true

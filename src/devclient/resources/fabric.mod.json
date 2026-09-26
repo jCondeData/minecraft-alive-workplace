@@ -1,0 +1,11 @@
+{
+	"schemaVersion": 1,
+	"id": "aliveworkplace_devclient",
+	"version": "1.0.0",
+	"name": "Alive Workplace screenshot harness (dev only)",
+	"environment": "client",
+	"entrypoints": {
+		"client": ["io.github.jcondedata.aliveworkplace.devclient.ScreenshotHarness"]
+	},
+	"depends": { "aliveworkplace": "*" }
+}

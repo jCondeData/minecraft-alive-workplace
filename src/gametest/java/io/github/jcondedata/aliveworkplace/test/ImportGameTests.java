@@ -119,18 +119,18 @@ public class ImportGameTests implements FabricGameTest {
 		}
 		helper.getLevel().getGameRules().getRule(ModGameRules.BUILD_DELAY).set(2, helper.getLevel().getServer());
 		helper.setDayTime(2000);
-		helper.setBlock(new BlockPos(2, 1, 2), ModBlocks.BUILDERS_BENCH);
-		helper.setBlock(new BlockPos(2, 1, 4), Blocks.CHEST);
-		net.minecraft.world.Container chest = helper.getBlockEntity(new BlockPos(2, 1, 4));
+		helper.setBlock(new BlockPos(2, 2, 2), ModBlocks.BUILDERS_BENCH);
+		helper.setBlock(new BlockPos(2, 2, 4), Blocks.CHEST);
+		net.minecraft.world.Container chest = helper.getBlockEntity(new BlockPos(2, 2, 4));
 		chest.setItem(0, new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.COBBLESTONE, 25));
 		chest.setItem(1, new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.OAK_PLANKS, 55));
 		chest.setItem(2, new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.OAK_DOOR));
 		chest.setItem(3, new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.TORCH));
-		Villager villager = helper.spawn(EntityType.VILLAGER, new BlockPos(3, 1, 3));
-		Builders.employ(helper.getLevel(), villager, helper.absolutePos(new BlockPos(2, 1, 2)));
+		Villager villager = helper.spawn(EntityType.VILLAGER, new BlockPos(3, 2, 3));
+		Builders.employ(helper.getLevel(), villager, helper.absolutePos(new BlockPos(2, 2, 2)));
 		BuildSite site = Builders.start(helper.getLevel(), villager, null, imported.id(), new BlueprintData.Placement(
-			helper.getLevel().dimension().location(), helper.absolutePos(new BlockPos(6, 1, 6)), Rotation.NONE, Mirror.NONE));
-		BuildPlan plan = site.plan(helper.getLevel().getServer());
+			helper.getLevel().dimension().location(), helper.absolutePos(new BlockPos(6, 2, 6)), Rotation.NONE, Mirror.NONE));
+		BuildPlan plan = site.plan(helper.getLevel());
 		helper.succeedWhen(() -> {
 			helper.assertTrue(BuildSiteManager.get(helper.getLevel()).get(site.id()) == null, "still building: " + site.status());
 			List<BlockPos> unfinished = plan.unfinished(helper.getLevel());

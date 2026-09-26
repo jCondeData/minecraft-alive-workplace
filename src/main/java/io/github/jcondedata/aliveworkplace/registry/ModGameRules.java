@@ -18,6 +18,10 @@ public final class ModGameRules {
 	public static final GameRules.Key<GameRules.BooleanValue> ALLOW_UPLOADS =
 		GameRuleRegistry.register("workplaceAllowUploads", GameRules.Category.MISC, GameRuleFactory.createBooleanRule(true));
 
+	/** How deep builders fill under a build standing on uneven ground (0 = no foundations). */
+	public static final GameRules.Key<GameRules.IntegerValue> FOUNDATION_DEPTH =
+		GameRuleRegistry.register("workplaceFoundationDepth", GameRules.Category.MOBS, GameRuleFactory.createIntRule(12, 0));
+
 	public static void init() {
 	}
 

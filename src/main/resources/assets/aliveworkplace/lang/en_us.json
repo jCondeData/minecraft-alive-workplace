@@ -96,5 +96,7 @@
   "screen.aliveworkplace.table.uploading": "Uploading %s…",
   "screen.aliveworkplace.table.read_failed": "Could not read %s",
   "message.aliveworkplace.in_the_way": "%s: excuse me, you're standing where I need to build!",
-  "message.aliveworkplace.status.blocked_by": "Waiting for %s to move out of the way (at %s %s %s)"
+  "message.aliveworkplace.status.blocked_by": "Waiting for %s to move out of the way (at %s %s %s)",
+  "message.aliveworkplace.status.stage.foundation": "Laying the foundation",
+  "gamerule.workplaceFoundationDepth": "Alive Workplace: how deep builders fill under a build on uneven ground (0 = never)"
 }

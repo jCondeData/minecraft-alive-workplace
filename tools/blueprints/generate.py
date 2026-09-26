@@ -221,15 +221,17 @@ def test_hut():
 
 
 def test_area(name, w, h, d):
-    """Flat smooth-stone floor at y=0, empty above. Saved as SNBT for the gametest loader."""
+    """Flat smooth-stone floor at y=0, empty above. Saved as SNBT in the *packed* layout the gametest
+    loader expects (palette of state strings, `data` entries with a `state` string)."""
     os.makedirs(TEST_AREAS, exist_ok=True)
-    blocks = [Compound({"pos": List[Int]([Int(x), Int(0), Int(z)]), "state": Int(0)}) for x in range(w) for z in range(d)]
+    data = [Compound({"pos": List[Int]([Int(x), Int(0), Int(z)]), "state": String("minecraft:smooth_stone")})
+            for x in range(w) for z in range(d)]
     tag = Compound({
         "DataVersion": Int(DATA_VERSION),
         "size": List[Int]([Int(w), Int(h), Int(d)]),
-        "palette": List[Compound]([Compound({"Name": String("minecraft:smooth_stone")})]),
-        "blocks": List[Compound](blocks),
+        "data": List[Compound](data),
         "entities": List[Compound]([]),
+        "palette": List[String]([String("minecraft:smooth_stone")]),
     })
     path = os.path.join(TEST_AREAS, name + ".snbt")
     with open(path, "w") as f:

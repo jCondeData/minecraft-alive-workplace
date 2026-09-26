@@ -53,10 +53,11 @@ public class BuilderGameTests implements FabricGameTest {
 	private static final String BIG_AREA = "aliveworkplace_test:big_area";
 	private static final ResourceLocation TEST_HUT = ResourceLocation.fromNamespaceAndPath("aliveworkplace_test", "test_hut");
 
-	private static final BlockPos BENCH = new BlockPos(2, 1, 2);
-	private static final BlockPos CHEST = new BlockPos(2, 1, 4);
-	private static final BlockPos VILLAGER = new BlockPos(3, 1, 3);
-	private static final BlockPos HUT_ORIGIN = new BlockPos(6, 1, 6);
+	// Test areas: relative y=1 is the smooth-stone floor layer, so things stand at y=2.
+	private static final BlockPos BENCH = new BlockPos(2, 2, 2);
+	private static final BlockPos CHEST = new BlockPos(2, 2, 4);
+	private static final BlockPos VILLAGER = new BlockPos(3, 2, 3);
+	private static final BlockPos HUT_ORIGIN = new BlockPos(6, 2, 6);
 
 	private record Setup(ServerLevel level, Villager villager, BuildSite site, BuildPlan plan) {
 	}
@@ -95,8 +96,8 @@ public class BuilderGameTests implements FabricGameTest {
 	public void buildsOnAnOvergrownSiteWithAMobInTheWay(GameTestHelper helper) {
 		for (int x = 5; x <= 11; x++) {
 			for (int z = 5; z <= 11; z++) {
-				helper.setBlock(new BlockPos(x, 0, z), Blocks.GRASS_BLOCK);
-				BlockPos plant = new BlockPos(x, 1, z);
+				helper.setBlock(new BlockPos(x, 1, z), Blocks.GRASS_BLOCK);
+				BlockPos plant = new BlockPos(x, 2, z);
 				switch ((x * 7 + z * 3) % 4) {
 					case 0 -> helper.setBlock(plant, Blocks.FERN);
 					case 1 -> helper.setBlock(plant, Blocks.SHORT_GRASS);
@@ -116,6 +117,48 @@ public class BuilderGameTests implements FabricGameTest {
 		helper.succeedWhen(() -> {
 			assertBuilt(helper, s);
 			helper.assertTrue(s.site().skipped() == 0, s.site().skipped() + " block(s) were skipped");
+		});
+	}
+
+	/**
+	 * A build placed two blocks above the ground gets a foundation: every column under its floor is
+	 * filled down to the ground — except columns where the ground is already higher.
+	 */
+	@GameTest(template = AREA, timeoutTicks = 2400)
+	public void fillsAFoundationUnderAFloatingBuild(GameTestHelper helper) {
+		BlockPos origin = new BlockPos(6, 4, 6); // hut floor at y=4, ground (smooth stone) at y=1: y=2..3 to fill
+		for (int z = 6; z <= 10; z++) {
+			helper.setBlock(new BlockPos(6, 2, z), Blocks.STONE); // the x=6 row already has ground up to y=3
+			helper.setBlock(new BlockPos(6, 3, z), Blocks.STONE);
+		}
+		// floor 25 + 20 columns × 2 + 5 spare = 70 cobblestone (a chest slot holds 64)
+		ItemStack[] materials = {new ItemStack(Items.COBBLESTONE, 64), new ItemStack(Items.COBBLESTONE, 6),
+			new ItemStack(Items.OAK_PLANKS, 55), new ItemStack(Items.OAK_DOOR), new ItemStack(Items.TORCH)};
+		Setup s = setup(helper, TEST_HUT, origin, Rotation.NONE, materials);
+		helper.succeedWhen(() -> {
+			assertBuilt(helper, s);
+			for (int x = 7; x <= 10; x++) {
+				for (int z = 6; z <= 10; z++) {
+					for (int y = 2; y <= 3; y++) {
+						BlockPos p = new BlockPos(x, y, z);
+						helper.assertTrue(helper.getBlockState(p).is(Blocks.COBBLESTONE), "no foundation at " + p + ": " + helper.getBlockState(p));
+					}
+				}
+			}
+			Container chest = helper.getBlockEntity(CHEST);
+			helper.assertTrue(chest.countItem(Items.COBBLESTONE) == 5, "expected exactly 5 cobblestone left, found " + chest.countItem(Items.COBBLESTONE));
+		});
+	}
+
+	@GameTest(template = AREA, timeoutTicks = 1500, batch = "foundation_off")
+	public void foundationsCanBeTurnedOff(GameTestHelper helper) {
+		var rule = helper.getLevel().getGameRules().getRule(ModGameRules.FOUNDATION_DEPTH);
+		rule.set(0, helper.getLevel().getServer());
+		Setup s = setup(helper, TEST_HUT, new BlockPos(6, 4, 6), Rotation.NONE, hutMaterials());
+		helper.succeedWhen(() -> {
+			assertBuilt(helper, s);
+			helper.assertTrue(helper.getBlockState(new BlockPos(8, 3, 8)).isAir(), "foundation built although workplaceFoundationDepth=0");
+			rule.set(12, helper.getLevel().getServer());
 		});
 	}
 
@@ -154,9 +197,9 @@ public class BuilderGameTests implements FabricGameTest {
 
 	@GameTest(template = AREA, timeoutTicks = 2400, batch = "rotation")
 	public void buildsRotatedBlueprints(GameTestHelper helper) {
-		// Clockwise 90: template (x, z) -> (-z, x). Origin (12,1,6) puts the hut at x 8..12, z 6..10.
-		Setup s = setup(helper, TEST_HUT, new BlockPos(12, 1, 6), Rotation.CLOCKWISE_90, hutMaterials());
-		BlockPos doorRel = new BlockPos(12, 2, 8); // template door (2,1,0) -> (0,1,2) + origin
+		// Clockwise 90: template (x, z) -> (-z, x). Origin (12,2,6) puts the hut at x 8..12, z 6..10.
+		Setup s = setup(helper, TEST_HUT, new BlockPos(12, 2, 6), Rotation.CLOCKWISE_90, hutMaterials());
+		BlockPos doorRel = new BlockPos(12, 3, 8); // template door (2,1,0) -> (0,1,2) + origin
 		helper.succeedWhen(() -> {
 			assertBuilt(helper, s);
 			BlockState door = helper.getBlockState(doorRel);
@@ -207,7 +250,7 @@ public class BuilderGameTests implements FabricGameTest {
 	private void buildStarter(GameTestHelper helper, StarterBlueprints.Entry entry) {
 		Blueprint blueprint = BlueprintLibrary.get(helper.getLevel(), entry.id())
 			.orElseThrow(() -> new GameTestAssertException("missing starter blueprint " + entry.id()));
-		BuildPlan plan = BuildPlan.create(blueprint, placement(helper, new BlockPos(9, 1, 9), Rotation.NONE));
+		BuildPlan plan = BuildPlan.create(blueprint, placement(helper, new BlockPos(9, 2, 9), Rotation.NONE));
 		// Stock barrels with exactly what the plan says it needs.
 		List<ItemStack> stock = new ArrayList<>();
 		for (Map.Entry<Item, Integer> e : plan.materials().entrySet()) {
@@ -218,7 +261,7 @@ public class BuilderGameTests implements FabricGameTest {
 				left -= n;
 			}
 		}
-		BlockPos[] barrels = {new BlockPos(1, 1, 4), new BlockPos(2, 1, 4), new BlockPos(3, 1, 4), new BlockPos(4, 1, 4)};
+		BlockPos[] barrels = {new BlockPos(1, 2, 4), new BlockPos(2, 2, 4), new BlockPos(3, 2, 4), new BlockPos(4, 2, 4)};
 		for (int i = 0; i < barrels.length; i++) {
 			helper.setBlock(barrels[i], Blocks.BARREL);
 			BaseContainerBlockEntity barrel = helper.getBlockEntity(barrels[i]);
@@ -227,7 +270,7 @@ public class BuilderGameTests implements FabricGameTest {
 			}
 		}
 		helper.assertTrue(stock.size() <= barrels.length * 27, "test needs more barrels for " + entry.id());
-		Setup s = setup(helper, entry.id(), new BlockPos(9, 1, 9), Rotation.NONE);
+		Setup s = setup(helper, entry.id(), new BlockPos(9, 2, 9), Rotation.NONE);
 		helper.succeedWhen(() -> assertBuilt(helper, s));
 	}
 
@@ -270,7 +313,7 @@ public class BuilderGameTests implements FabricGameTest {
 	public void buildSitesSurviveSaveAndLoad(GameTestHelper helper) {
 		BuildSite site = new BuildSite(java.util.UUID.randomUUID(), java.util.UUID.randomUUID(), "Jesse", TEST_HUT,
 			new BlueprintData.Placement(helper.getLevel().dimension().location(), new BlockPos(1, 2, 3), Rotation.CLOCKWISE_180, Mirror.NONE));
-		BuildPlan plan = site.plan(helper.getLevel().getServer());
+		BuildPlan plan = site.plan(helper.getLevel());
 		helper.assertTrue(plan != null, "test hut blueprint missing");
 		site.advance();
 		site.defer();
@@ -294,7 +337,7 @@ public class BuilderGameTests implements FabricGameTest {
 		Villager villager = helper.spawn(EntityType.VILLAGER, VILLAGER);
 		Builders.employ(level, villager, helper.absolutePos(BENCH));
 		BuildSite site = Builders.start(level, villager, null, structure, placement(helper, originRel, rotation));
-		BuildPlan plan = site.plan(level.getServer());
+		BuildPlan plan = site.plan(level);
 		if (plan == null) {
 			throw new GameTestAssertException("blueprint not found: " + structure);
 		}

@@ -14,7 +14,7 @@ import net.minecraft.nbt.IntArrayTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.Item;
 import org.jetbrains.annotations.Nullable;
 
@@ -62,14 +62,22 @@ public final class BuildSite {
 	// --- plan & stepping -------------------------------------------------------------------
 
 	@Nullable
-	public BuildPlan plan(MinecraftServer server) {
+	public BuildPlan plan(ServerLevel level) {
 		if (plan == null) {
-			Optional<Blueprint> blueprint = BlueprintLibrary.get(server, structure);
+			Optional<Blueprint> blueprint = BlueprintLibrary.get(level.getServer(), structure);
 			if (blueprint.isEmpty()) {
 				status = Status.BLUEPRINT_MISSING;
 				return null;
 			}
-			plan = BuildPlan.create(blueprint.get(), placement);
+			int depth = level.getGameRules().getInt(io.github.jcondedata.aliveworkplace.registry.ModGameRules.FOUNDATION_DEPTH);
+			plan = BuildPlan.create(blueprint.get(), placement, level, depth);
+			if (stage == BuildPlan.Stage.FOUNDATION) {
+				// The foundation list depends on the terrain, which we have been changing: start it over
+				// (already-filled columns are skipped straight away).
+				cursor = 0;
+				retrying = false;
+				deferred.clear();
+			}
 		}
 		return plan;
 	}
@@ -159,8 +167,10 @@ public final class BuildSite {
 		}
 		int done = switch (stage) {
 			case CLEAR -> 0;
-			case STRUCTURE -> retrying ? plan.steps(BuildPlan.Stage.STRUCTURE).size() : cursor;
-			case DECORATION -> plan.steps(BuildPlan.Stage.STRUCTURE).size() + (retrying ? plan.steps(BuildPlan.Stage.DECORATION).size() : cursor);
+			case FOUNDATION -> retrying ? plan.steps(BuildPlan.Stage.FOUNDATION).size() : cursor;
+			case STRUCTURE -> plan.steps(BuildPlan.Stage.FOUNDATION).size() + (retrying ? plan.steps(BuildPlan.Stage.STRUCTURE).size() : cursor);
+			case DECORATION -> plan.steps(BuildPlan.Stage.FOUNDATION).size() + plan.steps(BuildPlan.Stage.STRUCTURE).size()
+				+ (retrying ? plan.steps(BuildPlan.Stage.DECORATION).size() : cursor);
 			case DONE -> total;
 		};
 		return Math.min(1f, done / (float) total);

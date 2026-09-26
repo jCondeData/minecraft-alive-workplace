@@ -149,7 +149,7 @@ public final class Builders {
 	}
 
 	public static Component statusText(ServerLevel level, BuildSite site, @Nullable Villager villager) {
-		BuildPlan plan = site.plan(level.getServer());
+		BuildPlan plan = site.plan(level);
 		MutableComponent text = Component.empty();
 		Component who = villager != null ? villager.getDisplayName() : Component.translatable("message.aliveworkplace.status.builder");
 		if (plan == null) {

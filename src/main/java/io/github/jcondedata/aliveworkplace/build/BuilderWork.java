@@ -133,7 +133,7 @@ public class BuilderWork extends Behavior<Villager> {
 		if (site == null) {
 			return;
 		}
-		BuildPlan plan = site.plan(level.getServer());
+		BuildPlan plan = site.plan(level);
 		if (plan == null) {
 			return;
 		}

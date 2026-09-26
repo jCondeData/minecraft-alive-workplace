@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 0.1.0 — 2026-09-26
+
 ### Added
 - Builder villager profession and the Builder's Bench workstation.
 - Blueprints: place (faces you), rotate, pick up; particle outline preview; hand to a builder to start a build.

@@ -45,3 +45,4 @@ jobs:
         with:
           files: build/libs/*.jar
           generate_release_notes: true
+          prerelease: ${{ startsWith(github.ref_name, 'v0.') }}

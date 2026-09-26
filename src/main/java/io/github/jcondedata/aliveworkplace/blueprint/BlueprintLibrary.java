@@ -1,5 +1,8 @@
 package io.github.jcondedata.aliveworkplace.blueprint;
 
+import io.github.jcondedata.aliveworkplace.AliveWorkplace;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -10,6 +13,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
+import net.minecraft.world.level.storage.LevelResource;
 
 /**
  * Where blueprints come from. Everything is backed by Minecraft's own structure template manager,
@@ -37,17 +41,19 @@ public final class BlueprintLibrary {
 		return template.map(t -> CACHE.computeIfAbsent(t, k -> Blueprint.fromTemplate(id, k, BuiltInRegistries.BLOCK.asLookup())));
 	}
 
-	/** Every structure id the server can see, minus vanilla worldgen pieces (villages, fossils...). */
-	public static List<ResourceLocation> list(MinecraftServer server, boolean includeVanillaWorldgen) {
+	/**
+	 * The blueprint library: this mod's blueprints (starter builds, imports, uploads, and anything a
+	 * datapack adds under {@code data/aliveworkplace/structure/}) plus every structure players saved
+	 * with a Structure Block. World-generation pieces from vanilla and other mods are left out; with
+	 * {@code everything} they are included (for operators' commands).
+	 */
+	public static List<ResourceLocation> list(MinecraftServer server, boolean everything) {
+		Path generated = server.getWorldPath(LevelResource.GENERATED_DIR);
 		return server.getStructureManager().listTemplates()
-			.filter(id -> includeVanillaWorldgen || !isVanillaWorldgen(id))
+			.filter(id -> everything || id.getNamespace().equals(AliveWorkplace.MOD_ID)
+				|| Files.isRegularFile(generated.resolve(id.getNamespace()).resolve("structures").resolve(id.getPath() + ".nbt")))
 			.sorted()
 			.toList();
-	}
-
-	private static boolean isVanillaWorldgen(ResourceLocation id) {
-		// Structure-block saves land in the minecraft namespace at the top level; worldgen pieces are nested.
-		return id.getNamespace().equals("minecraft") && id.getPath().contains("/");
 	}
 
 	private BlueprintLibrary() {

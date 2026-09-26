@@ -47,6 +47,8 @@ loom {
 			runDir "run/screenshots"
 			programArgs "--quickPlaySingleplayer", "shots", "--width", "960", "--height", "540"
 			vmArg "-Daliveworkplace.shots=true"
+			// ./gradlew runScreenshots -Pscene=table   (scenes: builders, table)
+			vmArg "-Daliveworkplace.scene=${project.findProperty('scene') ?: 'builders'}"
 		}
 	}
 }

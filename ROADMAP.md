@@ -23,11 +23,15 @@ Owner decisions are recorded in **Design decisions** at the bottom. Don't change
 - [x] Gamerules `workplaceFreeMaterials`, `workplaceBuildDelay`; `/workplace` command (blueprints, sites, cancel)
 - [x] Builders work a longer shift (1000–11000) and sleep at night
 
+### Done (0.2.0)
+- [x] **Blueprint Table** block + screen: browse the server's blueprint library, see size and materials, take a blueprint for a Blank Blueprint (paper + blue dye); taking the same blueprint again is how you copy one
+- [x] **Import `.litematic` and `.schem`** (Sponge/WorldEdit v1–v3) and `.nbt` → stored as structure templates in `<world>/generated/aliveworkplace/structures/`; old block names upgraded by the data fixer; unknown modded blocks become air and are counted; `/workplace import` for a server folder
+- [x] **Upload from the client** at the Blueprint Table (30 KB pieces, 8 MB limit, `workplaceAllowUploads` gamerule, ops always allowed)
+- [x] **Materials list** on the Blueprint Table screen
+- [x] Library only lists real blueprints (ours, uploads, Structure Block saves), not other mods' world-generation pieces
+
 ### Next
-- [ ] **Blueprint Table** block + screen: browse the server's blueprint library, pick one, get a blueprint; copy blueprints (Blank Blueprint = paper + blue dye)
-- [ ] **Import `.litematic` and `.schem`** (Sponge/WorldEdit v2+v3) files → convert to structure NBT in `<world>/generated/aliveworkplace/structures/`. Unknown modded blocks become air with a warning.
-- [ ] **Upload from the client** at the Blueprint Table (chunked packets, size limit, op/owner permission), so nobody has to touch the server file manager
-- [ ] **Materials list** before starting: on the Blueprint Table screen and in the blueprint tooltip once placed
+- [ ] Materials list in the blueprint tooltip (and "what's still missing" once placed near a builder)
 - [ ] **Ghost preview** (client render of the translucent blocks) replacing the particle outline; show what's left to build on active sites
 - [ ] **Status above the builder's head** (e.g. `Starter Cottage 62% — needs 40 Glass`) via synced attachment + name-tag style renderer
 - [ ] **Build queue**: hand a busy builder more blueprints; they do them in order

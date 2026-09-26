@@ -29,6 +29,18 @@ Install on the **server and every player's game**.
 
 When they finish, the blueprint goes back into the supply chest so you can build it again.
 
+## Blueprint Table: any build from the internet
+Craft a **Blueprint Table** (blue dye on top, cartography table in the middle, planks around) and right-click it.
+
+![The Blueprint Table](docs/media/blueprint-table.png)
+
+- Every blueprint on the server is listed with its size and **exactly what materials it needs**.
+- **Get Blueprint** gives you a copy for one **Blank Blueprint** (paper + blue dye makes two).
+- **Upload a File…** lists the build files in your own `blueprints` folder (**Open Folder** takes you there).
+  Download builds from sites like Planet Minecraft or Minecraft-Schematics as `.litematic` or `.schem`,
+  drop them in, pick one and press **Upload**. It becomes a blueprint everyone on the server can use.
+- Anything saved with a Structure Block shows up too.
+
 ## Commands and gamerules
 | | |
 |---|---|
@@ -36,12 +48,13 @@ When they finish, the blueprint goes back into the supply chest so you can build
 | `/workplace cancel <id>` | stop a build (placed blocks stay; you get the blueprint back) |
 | `/workplace blueprints` (op) | list every blueprint the server knows |
 | `/workplace blueprint <id>` (op) | get a blueprint item |
+| `/workplace import` (op) | import files from `<world>/aliveworkplace/import/` |
+| `/gamerule workplaceAllowUploads false` | only operators can upload blueprint files |
 | `/gamerule workplaceFreeMaterials true` | builders need no materials (creative towns) |
 | `/gamerule workplaceBuildDelay 8` | ticks per block (lower is faster) |
 
 ## What's next
-Builders first: a Blueprint Table for picking and uploading `.litematic`/`.schem` files, a
-see-through preview, build queues and crews. Then miners, lumberjacks and couriers, then Cobblemon
+Builders first: a see-through preview, status above builders' heads, build queues and crews. Then miners, lumberjacks and couriers, then Cobblemon
 trainers and Pokémon work partners. See [ROADMAP.md](ROADMAP.md).
 
 ## Building from source

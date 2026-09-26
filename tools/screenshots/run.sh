@@ -28,10 +28,12 @@ printf '%s\n' 'version:3955' 'onboardAccessibility:false' 'tutorialStep:none' 'j
   'renderClouds:"false"' 'maxFps:15' 'enableVsync:false' 'guiScale:2' 'soundCategory_master:0.0' \
   'pauseOnLostFocus:false' > run/screenshots/options.txt
 
+mkdir -p run/screenshots/blueprints && cp src/gametest/resources/fixtures/hut.litematic "run/screenshots/blueprints/Cozy Hut.litematic"
+
 # 3. Run the client (the dev-only harness stages the scene, takes shots and quits).
 LIBGL_ALWAYS_SOFTWARE=1 GALLIUM_DRIVER=llvmpipe xvfb-run -a -s "-screen 0 1280x720x24" \
-  ./gradlew runScreenshots --no-daemon > "$SCRATCH/client.log" 2>&1 || true
+  ./gradlew runScreenshots --no-daemon -Pscene="${SCENE:-builders}" > "$SCRATCH/client.log" 2>&1 || true
 grep -E "finished building|Stopping!" "$SCRATCH/client.log" || true
 
 # 4. Timelapse.
-python3 tools/screenshots/make_gif.py --every 2
+if [ "${SCENE:-builders}" = "builders" ]; then python3 tools/screenshots/make_gif.py --every 2; fi

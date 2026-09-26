@@ -65,6 +65,10 @@ public class ScreenshotHarness implements ClientModInitializer {
 		if (mc.level == null || mc.player == null || mc.getSingleplayerServer() == null) {
 			return;
 		}
+		if ("table".equals(System.getProperty("aliveworkplace.scene"))) {
+			tableScene(mc, mc.getSingleplayerServer());
+			return;
+		}
 		MinecraftServer server = mc.getSingleplayerServer();
 		tick++;
 		if (tick == 1) {
@@ -113,6 +117,56 @@ public class ScreenshotHarness implements ClientModInitializer {
 		}
 		if (tick >= GIVE_UP_AT) {
 			shot(mc, "99_timeout");
+			mc.stop();
+		}
+	}
+
+	// --- Blueprint Table scene ----------------------------------------------------------------
+
+	private static final BlockPos TABLE = new BlockPos(0, -60, -3);
+
+	private void tableScene(Minecraft mc, MinecraftServer server) {
+		tick++;
+		if (tick == 1) {
+			mc.options.renderDistance().set(4);
+			mc.options.hideGui = true;
+		}
+		if (tick == 20) {
+			server.execute(() -> {
+				ServerLevel level = server.overworld();
+				level.getGameRules().getRule(GameRules.RULE_DAYLIGHT).set(false, server);
+				level.setDayTime(6000);
+				level.setBlockAndUpdate(TABLE, ModBlocks.BLUEPRINT_TABLE.defaultBlockState());
+				ServerPlayer player = server.getPlayerList().getPlayers().get(0);
+				player.setGameMode(GameType.CREATIVE);
+				player.teleportTo(level, 0.5, -60, 0.5, 180, 30);
+			});
+		}
+		if (tick == 80) {
+			server.execute(() -> io.github.jcondedata.aliveworkplace.table.TableServer.open(server.getPlayerList().getPlayers().get(0), TABLE));
+		}
+		if (tick == 110 && mc.screen instanceof io.github.jcondedata.aliveworkplace.client.BlueprintTableScreen screen) {
+			screen.select(StarterBlueprints.STARTER_COTTAGE.id());
+		}
+		if (tick == 160) {
+			shot(mc, "10_table_library");
+			if (mc.screen instanceof io.github.jcondedata.aliveworkplace.client.BlueprintTableScreen screen) {
+				screen.showFiles();
+			}
+		}
+		if (tick == 200) {
+			shot(mc, "11_table_upload");
+			if (mc.screen instanceof io.github.jcondedata.aliveworkplace.client.BlueprintTableScreen screen) {
+				screen.upload();
+			}
+		}
+		if (tick == 280) {
+			shot(mc, "12_table_uploaded");
+		}
+		if (tick == 300) {
+			if (mc.screen == null) {
+				shot(mc, "99_no_screen");
+			}
 			mc.stop();
 		}
 	}

@@ -39,6 +39,21 @@ public class TableGameTests implements FabricGameTest {
 	}
 
 	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
+	public void libraryHasBlueprintsAndStructureBlockSavesButNotWorldgenPieces(GameTestHelper helper) {
+		var server = helper.getLevel().getServer();
+		var manager = server.getStructureManager();
+		ResourceLocation saved = ResourceLocation.withDefaultNamespace("gametest_players_house");
+		manager.getOrCreate(saved).fillFromWorld(helper.getLevel(), helper.absolutePos(TABLE), new net.minecraft.core.Vec3i(2, 2, 2), false, null);
+		helper.assertTrue(manager.save(saved), "could not save a structure like a Structure Block does");
+		List<ResourceLocation> library = io.github.jcondedata.aliveworkplace.blueprint.BlueprintLibrary.list(server, false);
+		helper.assertTrue(library.contains(StarterBlueprints.STARTER_COTTAGE.id()), "starter cottage missing from the library");
+		helper.assertTrue(library.contains(saved), "structure-block save missing from the library");
+		helper.assertTrue(library.stream().noneMatch(id -> id.getNamespace().equals("fabric-gametest-api-v1") || id.getPath().startsWith("village/")),
+			"worldgen/test structures leaked into the library: " + library);
+		helper.succeed();
+	}
+
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
 	public void materialsListMatchesTheBuild(GameTestHelper helper) {
 		var cottage = BlueprintLibrary.get(helper.getLevel(), StarterBlueprints.STARTER_COTTAGE.id()).orElseThrow();
 		List<TablePayloads.Material> materials = TableServer.materials(cottage);

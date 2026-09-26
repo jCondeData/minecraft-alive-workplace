@@ -191,7 +191,8 @@ public class BlueprintTableScreen extends Screen {
 		}
 	}
 
-	private void upload() {
+	/** Uploads the selected file (button action; public for the screenshot harness). */
+	public void upload() {
 		if (selectedFile == null || uploading) {
 			return;
 		}
@@ -270,12 +271,12 @@ public class BlueprintTableScreen extends Screen {
 			g.drawWordWrap(font, Component.translatable("screen.aliveworkplace.table.empty"), x, y, w, 0xFFAAAAAA);
 			return;
 		}
-		g.drawString(font, Blueprints.displayName(entry.id()), x, y, 0xFFFFFFFF, false);
+		g.drawString(font, font.plainSubstrByWidth(Blueprints.displayName(entry.id()).getString(), w), x, y, 0xFFFFFFFF, false);
 		y += 12;
 		g.drawString(font, Component.translatable("screen.aliveworkplace.table.size", entry.sizeX(), entry.sizeY(), entry.sizeZ(), entry.blocks()),
 			x, y, 0xFF9AA8BA, false);
 		y += 10;
-		g.drawString(font, Component.literal(entry.id().toString()), x, y, 0xFF5E6B7C, false);
+		g.drawString(font, font.plainSubstrByWidth(entry.id().toString(), w), x, y, 0xFF5E6B7C, false);
 		y += 14;
 		g.drawString(font, Component.translatable("screen.aliveworkplace.table.materials"), x, y, 0xFFFFD66B, false);
 		y += 11;

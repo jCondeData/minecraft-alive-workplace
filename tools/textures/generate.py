@@ -153,6 +153,92 @@ def blueprint_item():
     return img
 
 
+# --- Blueprint Table -------------------------------------------------------------------------
+DARK_WOOD = [rgb("#6b4a2c"), rgb("#5e4026"), rgb("#523720")]
+
+
+def table_top():
+    rnd = random.Random(11)
+    img = Image.new("RGBA", (16, 16))
+    for y in range(16):
+        for x in range(16):
+            img.putpixel((x, y), jitter(DARK_WOOD[(y // 3) % 3], rnd, 5))
+    for i in range(16):
+        for p in ((i, 0), (i, 15), (0, i), (15, i)):
+            img.putpixel(p, rgb("#3b2714"))
+    # Big sheet pinned to the board
+    paper, grid, line = rgb("#2d5fa6"), rgb("#4b7fc6"), rgb("#e8f1ff")
+    for y in range(2, 14):
+        for x in range(2, 14):
+            img.putpixel((x, y), grid if (x % 4 == 1 or y % 4 == 1) else paper)
+    for x, y in ((2, 2), (13, 2), (2, 13), (13, 13)):
+        img.putpixel((x, y), rgb("#d23c3c"))  # pins
+    # Floor plan sketch
+    for x in range(4, 12):
+        img.putpixel((x, 4), line)
+        img.putpixel((x, 11), line)
+    for y in range(4, 12):
+        img.putpixel((4, y), line)
+        img.putpixel((11, y), line)
+    for y in range(4, 8):
+        img.putpixel((8, y), line)
+    img.putpixel((7, 11), paper)  # door gap
+    # T-square along the bottom edge
+    for x in range(1, 15):
+        img.putpixel((x, 14), rgb("#e0c890"))
+    for y in range(9, 15):
+        img.putpixel((14, y), rgb("#c9ac6c"))
+    save(img, "block", "blueprint_table_top.png")
+
+
+def table_side(front=False):
+    rnd = random.Random(12 if front else 13)
+    img = Image.new("RGBA", (16, 16), T)
+    for y in range(0, 16):
+        for x in range(16):
+            img.putpixel((x, y), jitter(DARK_WOOD[1], rnd, 5))
+    for x in range(16):
+        img.putpixel((x, 0), rgb("#3b2714"))
+        img.putpixel((x, 1), rgb("#e0c890"))  # paper edge peeking over the top
+        img.putpixel((x, 2), rgb("#3b2714"))
+    for y in range(3, 16):
+        for x in (0, 1, 14, 15):
+            img.putpixel((x, y), jitter(DARK_WOOD[2], rnd, 4))
+    if front:
+        # Rack of rolled plans
+        for y in range(4, 10):
+            for x in range(2, 14):
+                img.putpixel((x, y), rgb("#2a1a0c"))
+        for cx in (3, 6, 9, 12):
+            for y in range(4, 10):
+                img.putpixel((cx, y), rgb("#2d5fa6"))
+            img.putpixel((cx, 4), rgb("#e8f1ff"))
+        for x in range(2, 14):
+            img.putpixel((x, 12), rgb("#3b2714"))
+        img.putpixel((7, 13), rgb("#c9c9c9"))
+        img.putpixel((8, 13), rgb("#c9c9c9"))
+    else:
+        for y in range(5, 14):
+            for x in range(3, 13):
+                if (x + y) % 5 == 0:
+                    img.putpixel((x, y), jitter(DARK_WOOD[0], rnd, 4))
+    save(img, "block", "blueprint_table_front.png" if front else "blueprint_table_side.png")
+
+
+def blank_blueprint_item():
+    img = Image.new("RGBA", (16, 16), T)
+    paper, grid, edge = rgb("#3a6fbd"), rgb("#5286d4"), rgb("#1a3a69")
+    for y in range(2, 15):
+        for x in range(2, 14):
+            if x in (2, 13) or y in (2, 14):
+                img.putpixel((x, y), edge)
+            else:
+                img.putpixel((x, y), grid if (x % 3 == 2 or y % 3 == 2) else paper)
+    for x in range(2, 14):
+        img.putpixel((x, 1), rgb("#79a6ea"))
+    save(img, "item", "blank_blueprint.png")
+
+
 # --- Builder villager overlay -----------------------------------------------------------------
 def builder_overlay():
     img = Image.new("RGBA", (64, 64), T)
@@ -229,3 +315,7 @@ if __name__ == "__main__":
     bench_side(front=True)
     icon(blueprint_item())
     builder_overlay()
+    table_top()
+    table_side(front=False)
+    table_side(front=True)
+    blank_blueprint_item()

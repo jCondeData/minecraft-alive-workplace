@@ -1,0 +1,33 @@
+package io.github.jcondedata.aliveworkplace.client;
+
+import io.github.jcondedata.aliveworkplace.table.TablePayloads;
+import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.minecraft.client.Minecraft;
+
+/** Client entry point: the Blueprint Table screen and its packets. */
+public class AliveWorkplaceClient implements ClientModInitializer {
+	@Override
+	public void onInitializeClient() {
+		ClientPlayNetworking.registerGlobalReceiver(TablePayloads.Open.TYPE, (payload, context) -> {
+			Minecraft mc = context.client();
+			if (mc.screen instanceof BlueprintTableScreen screen && screen.table().equals(payload.table())) {
+				screen.refresh(payload);
+			} else {
+				mc.setScreen(new BlueprintTableScreen(payload));
+			}
+		});
+		ClientPlayNetworking.registerGlobalReceiver(TablePayloads.Details.TYPE, (payload, context) -> {
+			if (context.client().screen instanceof BlueprintTableScreen screen) {
+				screen.setDetails(payload);
+			}
+		});
+		ClientPlayNetworking.registerGlobalReceiver(TablePayloads.UploadResult.TYPE, (payload, context) -> {
+			if (context.client().screen instanceof BlueprintTableScreen screen) {
+				screen.onUploadResult(payload);
+			} else if (context.client().player != null) {
+				context.client().player.displayClientMessage(payload.message(), false);
+			}
+		});
+	}
+}

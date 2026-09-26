@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [" D ", "PCP", "P P"],
+  "key": {
+    "D": { "item": "minecraft:blue_dye" },
+    "P": { "tag": "minecraft:planks" },
+    "C": { "item": "minecraft:cartography_table" }
+  },
+  "result": { "id": "aliveworkplace:blueprint_table", "count": 1 }
+}

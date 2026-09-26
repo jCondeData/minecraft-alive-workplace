@@ -10,6 +10,7 @@ import io.github.jcondedata.aliveworkplace.registry.ModGameRules;
 import io.github.jcondedata.aliveworkplace.registry.ModItems;
 import io.github.jcondedata.aliveworkplace.registry.ModTrades;
 import io.github.jcondedata.aliveworkplace.registry.ModVillagers;
+import io.github.jcondedata.aliveworkplace.table.TableServer;
 import net.fabricmc.api.ModInitializer;
 import net.minecraft.resources.ResourceLocation;
 import org.slf4j.Logger;
@@ -38,6 +39,7 @@ public class AliveWorkplace implements ModInitializer {
 		ModTrades.init();
 
 		BuilderEvents.init();
+		TableServer.init();
 		BlueprintOutline.init();
 		WorkplaceCommand.init();
 		LOG.info("Alive Workplace ready — go hire a builder.");

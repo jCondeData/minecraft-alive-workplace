@@ -94,11 +94,12 @@ public class ImportGameTests implements FabricGameTest {
 
 	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
 	public void importedFilesJoinTheLibraryWithUniqueNames(GameTestHelper helper) {
+		clearGenerated(helper, "gametest_names");
 		try {
-			BlueprintImporter.Imported first = BlueprintImporter.importBytes(helper.getLevel().getServer(), "gametest", "My Cool Hut!.litematic", bytes("hut.litematic"));
-			BlueprintImporter.Imported second = BlueprintImporter.importBytes(helper.getLevel().getServer(), "gametest", "My Cool Hut!.litematic", bytes("hut.litematic"));
-			helper.assertValueEqual(first.id().getPath(), "gametest/my_cool_hut", "first id");
-			helper.assertValueEqual(second.id().getPath(), "gametest/my_cool_hut_2", "second id");
+			BlueprintImporter.Imported first = BlueprintImporter.importBytes(helper.getLevel().getServer(), "gametest_names", "My Cool Hut!.litematic", bytes("hut.litematic"));
+			BlueprintImporter.Imported second = BlueprintImporter.importBytes(helper.getLevel().getServer(), "gametest_names", "My Cool Hut!.litematic", bytes("hut.litematic"));
+			helper.assertValueEqual(first.id().getPath(), "gametest_names/my_cool_hut", "first id");
+			helper.assertValueEqual(second.id().getPath(), "gametest_names/my_cool_hut_2", "second id");
 			helper.assertTrue(BlueprintLibrary.get(helper.getLevel(), first.id()).isPresent(), "imported blueprint not in library");
 			helper.assertTrue(BlueprintLibrary.list(helper.getLevel().getServer(), false).contains(first.id()), "imported blueprint not listed");
 		} catch (BlueprintFormatException e) {
@@ -111,7 +112,8 @@ public class ImportGameTests implements FabricGameTest {
 	public void buildersBuildImportedBlueprints(GameTestHelper helper) {
 		BlueprintImporter.Imported imported;
 		try {
-			imported = BlueprintImporter.importBytes(helper.getLevel().getServer(), "gametest", "from_worldedit.schem", bytes("hut_v2.schem"));
+			clearGenerated(helper, "gametest_build");
+			imported = BlueprintImporter.importBytes(helper.getLevel().getServer(), "gametest_build", "from_worldedit.schem", bytes("hut_v2.schem"));
 		} catch (BlueprintFormatException e) {
 			throw new GameTestAssertException("import failed: " + e.getMessage());
 		}
@@ -144,6 +146,17 @@ public class ImportGameTests implements FabricGameTest {
 				helper.getLevel().getServer().getFixerUpper(), BlueprintFiles.DEFAULT_MAX_VOLUME);
 		} catch (BlueprintFormatException e) {
 			throw new GameTestAssertException(fixture + " failed to load: " + e.getMessage());
+		}
+	}
+
+	/** The gametest world is reused between local runs: remove earlier imports so names are predictable. */
+	static void clearGenerated(GameTestHelper helper, String folder) {
+		java.nio.file.Path dir = helper.getLevel().getServer().getWorldPath(net.minecraft.world.level.storage.LevelResource.GENERATED_DIR)
+			.resolve("aliveworkplace/structures").resolve(folder);
+		try (java.util.stream.Stream<java.nio.file.Path> files = java.nio.file.Files.walk(dir)) {
+			files.sorted(java.util.Comparator.reverseOrder()).forEach(p -> p.toFile().delete());
+		} catch (IOException ignored) {
+			// nothing to clear
 		}
 	}
 

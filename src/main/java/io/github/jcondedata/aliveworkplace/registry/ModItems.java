@@ -16,6 +16,11 @@ public final class ModItems {
 		BuiltInRegistries.ITEM, AliveWorkplace.id("blueprint"), new BlueprintItem(new Item.Properties().stacksTo(1))
 	);
 
+	/** Paper + blue dye. Turned into a real blueprint at a Blueprint Table. */
+	public static final Item BLANK_BLUEPRINT = Registry.register(
+		BuiltInRegistries.ITEM, AliveWorkplace.id("blank_blueprint"), new Item(new Item.Properties())
+	);
+
 	public static final CreativeModeTab TAB = Registry.register(
 		BuiltInRegistries.CREATIVE_MODE_TAB,
 		AliveWorkplace.id("main"),
@@ -24,6 +29,8 @@ public final class ModItems {
 			.icon(() -> new ItemStack(ModBlocks.BUILDERS_BENCH))
 			.displayItems((params, output) -> {
 				output.accept(ModBlocks.BUILDERS_BENCH);
+				output.accept(ModBlocks.BLUEPRINT_TABLE);
+				output.accept(BLANK_BLUEPRINT);
 				for (StarterBlueprints.Entry entry : StarterBlueprints.ALL) {
 					output.accept(BlueprintItem.create(entry.id(), entry.size()));
 				}

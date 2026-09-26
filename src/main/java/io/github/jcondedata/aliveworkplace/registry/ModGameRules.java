@@ -14,6 +14,10 @@ public final class ModGameRules {
 	public static final GameRules.Key<GameRules.IntegerValue> BUILD_DELAY =
 		GameRuleRegistry.register("workplaceBuildDelay", GameRules.Category.MOBS, GameRuleFactory.createIntRule(8, 1));
 
+	/** When true, any player can upload blueprint files at a Blueprint Table (operators always can). */
+	public static final GameRules.Key<GameRules.BooleanValue> ALLOW_UPLOADS =
+		GameRuleRegistry.register("workplaceAllowUploads", GameRules.Category.MISC, GameRuleFactory.createBooleanRule(true));
+
 	public static void init() {
 	}
 

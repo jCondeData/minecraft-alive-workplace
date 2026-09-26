@@ -22,6 +22,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.Screenshot;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -272,6 +273,12 @@ public class ScreenshotHarness implements ClientModInitializer {
 		}
 		if (tick >= 100 && (tick - 100) % 60 == 0 && (tick - 100) / 60 < all.size()) {
 			shot(mc, "30_" + all.get((tick - 100) / 60).id().getPath());
+		}
+		if (tick == 30 || tick == 90) {
+			// Materials tooltip: the first call asks the server, a later one has the answer.
+			for (Component line : io.github.jcondedata.aliveworkplace.client.BlueprintTooltip.materialLines(StarterBlueprints.HEALING_CENTER.id())) {
+				io.github.jcondedata.aliveworkplace.AliveWorkplace.LOG.info("[tooltip] {}", line.getString());
+			}
 		}
 		if (tick == 100 + all.size() * 60) {
 			mc.stop();

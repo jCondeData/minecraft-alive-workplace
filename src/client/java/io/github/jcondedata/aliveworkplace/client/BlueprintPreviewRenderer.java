@@ -95,6 +95,22 @@ public final class BlueprintPreviewRenderer {
 		WorldRenderEvents.AFTER_TRANSLUCENT.register(BlueprintPreviewRenderer::render);
 	}
 
+	/**
+	 * The blueprint's blocks (template space) if this client has them; otherwise asks the server once
+	 * and returns null until the answer arrives.
+	 */
+	@Nullable
+	public static List<BlockState> blocks(ResourceLocation id) {
+		List<Ghost> template = TEMPLATES.get(id);
+		if (template == null) {
+			if (REQUESTED.add(id) && Minecraft.getInstance().getConnection() != null) {
+				ClientPlayNetworking.send(new PreviewNetworking.Request(id));
+			}
+			return null;
+		}
+		return template.stream().map(Ghost::state).toList();
+	}
+
 	@Nullable
 	private static BlueprintData heldPlacedBlueprint(Minecraft mc) {
 		if (mc.player == null) {

@@ -36,7 +36,8 @@ Owner decisions are recorded in **Design decisions** at the bottom. Don't change
 - [x] **Status above the builder's head**: build name, percentage, progress bar and what they are doing / waiting for (server sends it once a second to nearby players)
 
 ### Next
-- [ ] Materials list in the blueprint tooltip (and "what's still missing" once placed near a builder)
+- [x] Materials list in the blueprint tooltip (hold Shift)
+- [ ] "What's still missing" in the tooltip once a blueprint is handed over / placed near a builder's chests
 - [x] **Build queue**: hand a busy builder up to 5 more blueprints; they do them in order (queued sites reserve their spot, show in `/workplace sites` and can be cancelled)
 - [ ] **Crews**: several builders on one site split the steps
 - [ ] **Deconstruct** blueprint mode: take a build down and return the blocks

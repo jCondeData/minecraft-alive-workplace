@@ -24,7 +24,8 @@ Install on the **server and every player's game**.
    It faces you, and while you hold it you see the whole building as see-through blocks, exactly where it
    will stand (the gold edge of the outline is the front). Sneak-right-click the ground to turn it;
    sneak-right-click the air to pick it back up. On uneven ground the builder fills in a foundation.
-4. **Stock the chests.** Put the materials in any chests or barrels within 8 blocks of the builder's bench.
+4. **Stock the chests.** Put the materials in any chests or barrels within 8 blocks of the builder's bench
+   (hold Shift over the blueprint to see the list).
 5. **Hand it over.** Right-click the builder with the blueprint. Busy builders take up to 5 more and build them in order. They start work in the morning, sleep at night,
    and tell you if they run out of something. What they are building, how far along it is and what they are
    waiting for floats above their head; sneak-right-click a builder with an empty hand for the full status.

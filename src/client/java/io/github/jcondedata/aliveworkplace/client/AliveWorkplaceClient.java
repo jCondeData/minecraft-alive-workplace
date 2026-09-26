@@ -11,6 +11,7 @@ public class AliveWorkplaceClient implements ClientModInitializer {
 	public void onInitializeClient() {
 		BlueprintPreviewRenderer.init();
 		BuilderStatusRenderer.init();
+		BlueprintTooltip.init();
 		ClientPlayNetworking.registerGlobalReceiver(TablePayloads.Open.TYPE, (payload, context) -> {
 			Minecraft mc = context.client();
 			if (mc.screen instanceof BlueprintTableScreen screen && screen.table().equals(payload.table())) {

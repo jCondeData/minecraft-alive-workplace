@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 0.20.0 — 2026-09-27
+
 ### Added
 - **Pokémon Trainers** (with Cobblemon). Craft a **Training Post** (a target block on planks) and a villager becomes a
   Trainer. Right-click one with an empty hand to battle their team. Trainers start as Novices (2 Pokémon around level

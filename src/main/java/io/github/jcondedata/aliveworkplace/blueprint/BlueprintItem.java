@@ -140,6 +140,7 @@ public class BlueprintItem extends Item {
 				tooltip.add(Component.translatable("tooltip.aliveworkplace.blueprint.placed", o.getX(), o.getY(), o.getZ(),
 					Component.translatable("direction.aliveworkplace." + front.getSerializedName())).withStyle(ChatFormatting.AQUA));
 				tooltip.add(Component.translatable("tooltip.aliveworkplace.blueprint.hand_over").withStyle(ChatFormatting.GRAY));
+				tooltip.add(Component.translatable("tooltip.aliveworkplace.blueprint.deconstruct_hint").withStyle(ChatFormatting.DARK_GRAY));
 			} else {
 				tooltip.add(Component.translatable("tooltip.aliveworkplace.blueprint.place_hint").withStyle(ChatFormatting.GRAY));
 			}

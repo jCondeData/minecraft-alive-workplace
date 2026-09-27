@@ -171,6 +171,11 @@ public final class Builders {
 
 	/** Player right-clicked a builder while holding a blueprint. */
 	public static InteractionResult assign(ServerPlayer player, Villager villager, ItemStack stack) {
+		return assign(player, villager, stack, false);
+	}
+
+	/** {@code deconstruct}: take the building at the placement down instead of building it (sneak-give). */
+	public static InteractionResult assign(ServerPlayer player, Villager villager, ItemStack stack, boolean deconstruct) {
 		ServerLevel level = player.serverLevel();
 		if (isHelping(villager)) {
 			stopHelping(level, villager); // their own build comes first
@@ -222,11 +227,17 @@ public final class Builders {
 		BuildSite site = existing == null
 			? start(level, villager, player, data.get().structure(), placement.get())
 			: enqueue(level, villager, player, data.get().structure(), placement.get());
+		if (deconstruct) {
+			site.setDeconstruction();
+		}
 		if (!player.getAbilities().instabuild) {
 			stack.shrink(1);
 		}
 		level.playSound(null, villager, SoundEvents.VILLAGER_YES, SoundSource.NEUTRAL, 1f, 1f);
-		if (existing == null) {
+		if (existing == null && deconstruct) {
+			tell(player, Component.translatable("message.aliveworkplace.assign.deconstruct", villager.getDisplayName(),
+				Blueprints.displayName(site.structure()), SupplyContainers.RADIUS), ChatFormatting.GREEN);
+		} else if (existing == null) {
 			tell(player, Component.translatable("message.aliveworkplace.assign.started", villager.getDisplayName(),
 				Blueprints.displayName(site.structure()), SupplyContainers.RADIUS), ChatFormatting.GREEN);
 		} else {
@@ -310,7 +321,7 @@ public final class Builders {
 			text.append(Component.literal("\n  "));
 			text.append(site.detail().copy().withStyle(ChatFormatting.YELLOW));
 		}
-		if (villager != null && benchPos(villager).isPresent()) {
+		if (villager != null && benchPos(villager).isPresent() && !site.isDeconstruction()) {
 			List<BlockPos> supplies = SupplyContainers.find(level, benchPos(villager).get(), plan.bounds());
 			BuilderBag bag = villager.getAttachedOrCreate(ModAttachments.BUILDER_BAG);
 			site.setMissing(computeMissing(level, site, plan, bag, supplies));
@@ -428,7 +439,8 @@ public final class Builders {
 		level.playSound(null, villager, SoundEvents.VILLAGER_CELEBRATE, SoundSource.NEUTRAL, 1f, 1f);
 		ServerPlayer owner = level.getServer().getPlayerList().getPlayer(site.owner());
 		if (owner != null) {
-			tell(owner, Component.translatable("message.aliveworkplace.finished", villager.getDisplayName(), Blueprints.displayName(site.structure())), ChatFormatting.GREEN);
+			tell(owner, Component.translatable(site.isDeconstruction() ? "message.aliveworkplace.finished_deconstruct" : "message.aliveworkplace.finished",
+				villager.getDisplayName(), Blueprints.displayName(site.structure())), ChatFormatting.GREEN);
 		}
 		endJob(level, villager, site);
 		BuilderLevels.onFinished(level, villager, site);

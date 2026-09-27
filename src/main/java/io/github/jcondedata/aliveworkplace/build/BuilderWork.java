@@ -263,7 +263,9 @@ public class BuilderWork extends Behavior<Villager> {
 			return;
 		}
 		workTimer = BuilderLevels.delay(level, villager);
-		if (action == Action.BREAK) {
+		if (action == Action.BREAK && site.stage() == BuildPlan.Stage.DECONSTRUCT) {
+			takeDown(level, villager, site, bag, bench, step);
+		} else if (action == Action.BREAK) {
 			breakBlock(level, villager, bag, bench, plan, step.pos());
 		} else {
 			place(level, villager, site, plan, bag, step, requirements, free);
@@ -349,6 +351,10 @@ public class BuilderWork extends Behavior<Villager> {
 		BlockPos pos = step.pos();
 		BlockState world = level.getBlockState(pos);
 		BlockState wanted = step.state();
+		if (stage == BuildPlan.Stage.DECONSTRUCT) {
+			// Take down only what the blueprint put there; leave containers and anything else alone.
+			return MaterialRules.matches(world, wanted) && !isProtected(level, pos, world, bench) ? Action.BREAK : Action.NONE;
+		}
 		if (MaterialRules.matches(world, wanted)) {
 			return Action.NONE;
 		}
@@ -630,7 +636,8 @@ public class BuilderWork extends Behavior<Villager> {
 			return;
 		}
 		Set<Item> keep = new HashSet<>();
-		for (BuildPlan.Step s : helping ? List.<BuildPlan.Step>of() : site.upcoming(plan, LOOKAHEAD)) {
+		boolean keepNothing = helping || site.stage() == BuildPlan.Stage.DECONSTRUCT;
+		for (BuildPlan.Step s : keepNothing ? List.<BuildPlan.Step>of() : site.upcoming(plan, LOOKAHEAD)) {
 			for (MaterialRules.Requirement r : s.requirements()) {
 				keep.add(r.item());
 			}
@@ -660,6 +667,35 @@ public class BuilderWork extends Behavior<Villager> {
 				Builders.dropNear(level, bench, rest);
 			}
 		}
+	}
+
+	/**
+	 * Deconstruction: removes the block and keeps exactly what it cost to build (glass comes back as
+	 * glass, a potted flower as a pot and a flower), like a careful builder rather than a pickaxe.
+	 */
+	private void takeDown(ServerLevel level, Villager villager, BuildSite site, BuilderBag bag, BlockPos bench, BuildPlan.Step step) {
+		BlockPos pos = step.pos();
+		BlockState state = level.getBlockState(pos);
+		if (step.secondaryPos() != null) {
+			level.setBlock(step.secondaryPos(), net.minecraft.world.level.block.Blocks.AIR.defaultBlockState(), Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE);
+		}
+		level.removeBlockEntity(pos);
+		level.setBlock(pos, net.minecraft.world.level.block.Blocks.AIR.defaultBlockState(), Block.UPDATE_ALL);
+		level.levelEvent(2001, pos, Block.getId(state)); // break particles and sound
+		level.gameEvent(villager, GameEvent.BLOCK_DESTROY, pos);
+		for (MaterialRules.Requirement r : step.requirements()) {
+			int rest = bag.addAll(r.item(), r.count());
+			if (rest > 0) {
+				Builders.dropNear(level, bench, new ItemStack(r.item(), rest));
+			}
+		}
+		if (!helping) {
+			site.markPlaced();
+		} else {
+			site.countPlaced();
+			site.release(villager.getUUID());
+		}
+		BuilderLevels.onPlaced(level, villager, site);
 	}
 
 	private void place(ServerLevel level, Villager villager, BuildSite site, BuildPlan plan, BuilderBag bag, BuildPlan.Step step,

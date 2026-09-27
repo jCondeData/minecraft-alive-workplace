@@ -43,6 +43,8 @@ public final class BuildSite {
 	private UUID builder;
 	/** Waiting in the builder's queue (the builder is busy with an earlier site). */
 	private boolean queued;
+	/** Taking the build down instead of putting it up. */
+	private boolean deconstruct;
 	/** The lead builder's bench: where the supply chests are, for helpers too. Null in pre-0.6 saves. */
 	@Nullable
 	private BlockPos bench;
@@ -92,7 +94,7 @@ public final class BuildSite {
 				return null;
 			}
 			int depth = level.getGameRules().getInt(io.github.jcondedata.aliveworkplace.registry.ModGameRules.FOUNDATION_DEPTH);
-			plan = BuildPlan.create(blueprint.get(), placement, level, depth);
+			plan = deconstruct ? BuildPlan.deconstruct(blueprint.get(), placement) : BuildPlan.create(blueprint.get(), placement, level, depth);
 			if (stage == BuildPlan.Stage.FOUNDATION) {
 				// The foundation list depends on the terrain, which we have been changing: start it over
 				// (already-filled columns are skipped straight away).
@@ -254,6 +256,7 @@ public final class BuildSite {
 			case STRUCTURE -> plan.steps(BuildPlan.Stage.FOUNDATION).size() + (retrying ? plan.steps(BuildPlan.Stage.STRUCTURE).size() : cursor);
 			case DECORATION -> plan.steps(BuildPlan.Stage.FOUNDATION).size() + plan.steps(BuildPlan.Stage.STRUCTURE).size()
 				+ (retrying ? plan.steps(BuildPlan.Stage.DECORATION).size() : cursor);
+			case DECONSTRUCT -> retrying ? plan.steps(BuildPlan.Stage.DECONSTRUCT).size() : cursor;
 			case DONE -> total;
 		};
 		return Math.min(1f, done / (float) total);
@@ -317,6 +320,18 @@ public final class BuildSite {
 		onChange.run();
 	}
 
+	public boolean isDeconstruction() {
+		return deconstruct;
+	}
+
+	/** Turns a new site into a deconstruction job (call right after creating it). */
+	public void setDeconstruction() {
+		deconstruct = true;
+		stage = BuildPlan.Stage.DECONSTRUCT;
+		plan = null;
+		onChange.run();
+	}
+
 	public boolean isQueued() {
 		return queued;
 	}
@@ -377,6 +392,9 @@ public final class BuildSite {
 		if (queued) {
 			tag.putBoolean("queued", true);
 		}
+		if (deconstruct) {
+			tag.putBoolean("deconstruct", true);
+		}
 		if (bench != null) {
 			tag.putLong("bench", bench.asLong());
 		}
@@ -407,6 +425,7 @@ public final class BuildSite {
 		site.placed = tag.getInt("placed");
 		site.builder = tag.hasUUID("builder") ? tag.getUUID("builder") : null;
 		site.queued = tag.getBoolean("queued");
+		site.deconstruct = tag.getBoolean("deconstruct");
 		site.bench = tag.contains("bench", Tag.TAG_LONG) ? BlockPos.of(tag.getLong("bench")) : null;
 		return site;
 	}

@@ -35,6 +35,9 @@ Install on the **server and every player's game**.
 
 When they finish, the blueprint goes back into the supply chest so you can build it again.
 
+**Changed your mind?** Place the blueprint over the building and **sneak** while giving it to a builder: they take it
+down and put the blocks back in the chests.
+
 **More builders, faster builds.** A builder with nothing to do helps with builds near their bench (up to three helpers
 per build), sharing the chests and passing each other materials.
 

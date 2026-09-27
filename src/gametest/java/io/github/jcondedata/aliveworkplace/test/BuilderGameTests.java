@@ -260,6 +260,35 @@ public class BuilderGameTests implements FabricGameTest {
 		buildStarter(helper, StarterBlueprints.SUPPLY_SHOP);
 	}
 
+	// --- deconstruction ---------------------------------------------------------------------
+
+	/** Sneak-given blueprint: the builder takes the hut down and puts exactly its blocks in the chest. */
+	@GameTest(template = AREA, timeoutTicks = 2400)
+	public void takesABuildingDownAndReturnsTheBlocks(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate hut = level.getStructureManager().get(TEST_HUT).orElseThrow();
+		BlockPos origin = helper.absolutePos(HUT_ORIGIN);
+		hut.placeInWorld(level, origin, origin, new net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings(),
+			level.getRandom(), net.minecraft.world.level.block.Block.UPDATE_ALL);
+		BlockPos foreign = HUT_ORIGIN.offset(0, 1, 2);
+		helper.setBlock(foreign, Blocks.STONE); // not what the blueprint says: must be left alone
+		Setup s = setup(helper, TEST_HUT, HUT_ORIGIN, Rotation.NONE);
+		s.site().setDeconstruction();
+		BuildPlan plan = s.site().plan(level);
+		helper.assertTrue(plan.isDeconstruction(), "site should be taking the hut down");
+		helper.succeedWhen(() -> {
+			helper.assertTrue(BuildSiteManager.get(level).get(s.site().id()) == null, "still taking it down: " + s.site().stage()
+				+ " " + Math.round(s.site().progress(plan) * 100) + "%");
+			helper.assertTrue(plan.unfinished(level).isEmpty(), plan.unfinished(level).size() + " block(s) still standing");
+			helper.assertBlockPresent(Blocks.STONE, foreign);
+			Container chest = helper.getBlockEntity(CHEST);
+			helper.assertTrue(chest.countItem(Items.COBBLESTONE) == 25 && chest.countItem(Items.OAK_PLANKS) == 54
+					&& chest.countItem(Items.OAK_DOOR) == 1 && chest.countItem(Items.TORCH) == 1 && chest.countItem(ModItems.BLUEPRINT) == 1,
+				"chest has " + chest.countItem(Items.COBBLESTONE) + " cobblestone, " + chest.countItem(Items.OAK_PLANKS) + " planks, "
+					+ chest.countItem(Items.OAK_DOOR) + " door, " + chest.countItem(Items.TORCH) + " torch, " + chest.countItem(ModItems.BLUEPRINT) + " blueprint");
+		});
+	}
+
 	// --- build queue -----------------------------------------------------------------------
 
 	/** A second blueprint handed to a busy builder waits its turn, then gets built. */

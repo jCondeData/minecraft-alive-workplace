@@ -23,7 +23,7 @@ public final class BuilderEvents {
 				if (level.isClientSide) {
 					return InteractionResult.SUCCESS;
 				}
-				return Builders.assign((ServerPlayer) player, villager, held);
+				return Builders.assign((ServerPlayer) player, villager, held, player.isShiftKeyDown());
 			}
 			if (held.isEmpty() && player.isShiftKeyDown()) {
 				if (!level.isClientSide) {

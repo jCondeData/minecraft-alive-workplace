@@ -32,10 +32,12 @@ public final class BuildPlan {
 		STRUCTURE,
 		/** Place torches, doors, beds, plants... once there is something to attach them to. */
 		DECORATION,
+		/** Taking a build down (deconstruct mode): decorations first, then everything else top to bottom. */
+		DECONSTRUCT,
 		DONE;
 
 		public Stage next() {
-			return values()[Math.min(ordinal() + 1, DONE.ordinal())];
+			return this == DECORATION || this == DECONSTRUCT ? DONE : values()[Math.min(ordinal() + 1, DONE.ordinal())];
 		}
 	}
 
@@ -56,9 +58,15 @@ public final class BuildPlan {
 	private final List<Step> foundation;
 	private final List<Step> structure;
 	private final List<Step> decoration;
+	private final List<Step> deconstruct;
 	private final BoundingBox bounds;
 
 	private BuildPlan(List<Step> clear, List<Step> foundation, List<Step> structure, List<Step> decoration, BoundingBox bounds) {
+		this(clear, foundation, structure, decoration, List.of(), bounds);
+	}
+
+	private BuildPlan(List<Step> clear, List<Step> foundation, List<Step> structure, List<Step> decoration, List<Step> deconstruct,
+					  BoundingBox bounds) {
 		Map<BlockPos, BlockState> t = new HashMap<>();
 		for (List<Step> list : List.of(foundation, structure, decoration)) {
 			for (Step s : list) {
@@ -73,6 +81,7 @@ public final class BuildPlan {
 		this.foundation = foundation;
 		this.structure = structure;
 		this.decoration = decoration;
+		this.deconstruct = deconstruct;
 		this.bounds = bounds;
 	}
 
@@ -116,6 +125,27 @@ public final class BuildPlan {
 		structure.sort(order(bounds, false));
 		decoration.sort(order(bounds, false));
 		return new BuildPlan(List.copyOf(clear), List.copyOf(foundation), List.copyOf(structure), List.copyOf(decoration), bounds);
+	}
+
+	/**
+	 * Plan for taking the build down: every block the blueprint places, decorations first (so nothing
+	 * pops off and drops), then the rest from the top down. Blocks that are not what the blueprint says
+	 * are left alone.
+	 */
+	public static BuildPlan deconstruct(Blueprint blueprint, BlueprintData.Placement placement) {
+		BuildPlan build = create(blueprint, placement);
+		BoundingBox bounds = build.bounds();
+		List<Step> decorations = new ArrayList<>(build.decoration);
+		List<Step> structure = new ArrayList<>(build.structure);
+		decorations.sort(order(bounds, true));
+		structure.sort(order(bounds, true));
+		List<Step> steps = new ArrayList<>(decorations);
+		steps.addAll(structure);
+		return new BuildPlan(List.of(), List.of(), List.of(), List.of(), List.copyOf(steps), bounds);
+	}
+
+	public boolean isDeconstruction() {
+		return !deconstruct.isEmpty();
 	}
 
 	/**
@@ -196,6 +226,7 @@ public final class BuildPlan {
 			case FOUNDATION -> foundation;
 			case STRUCTURE -> structure;
 			case DECORATION -> decoration;
+			case DECONSTRUCT -> deconstruct;
 			case DONE -> List.of();
 		};
 	}
@@ -218,12 +249,17 @@ public final class BuildPlan {
 
 	/** Blocks that will be placed (foundation + structure + decoration). */
 	public int placeableCount() {
-		return foundation.size() + structure.size() + decoration.size();
+		return foundation.size() + structure.size() + decoration.size() + deconstruct.size();
 	}
 
 	/** Positions where the world does not (yet) look like the blueprint. Empty when the build is complete. */
 	public List<BlockPos> unfinished(Level level) {
 		List<BlockPos> out = new ArrayList<>();
+		for (Step step : deconstruct) {
+			if (MaterialRules.matches(level.getBlockState(step.pos()), step.state())) {
+				out.add(step.pos()); // still standing
+			}
+		}
 		for (Step step : foundation) {
 			if (!MaterialRules.matches(level.getBlockState(step.pos()), step.state())) {
 				out.add(step.pos());

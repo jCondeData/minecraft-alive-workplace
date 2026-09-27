@@ -6,6 +6,10 @@
 - Villages grow builder's workshops (plains, desert, savanna, snowy and taiga styles, in roughly every other new
   village): a small house with a Builder's Bench, a bed, and a chest of building supplies that sometimes holds a
   Starter Cottage or Market Stall blueprint. The villager living there becomes a builder on their own.
+- Taking buildings down: place a blueprint over a building and **sneak** while giving it to a builder. They take it
+  down carefully (torches and doors first, then from the roof down) and put every block back in the supply chests —
+  glass comes back as glass. Only blocks that match the blueprint are touched; chests, furnaces and other blocks that
+  hold things are left standing.
 
 ## 0.6.0 — 2026-09-26
 

@@ -43,7 +43,7 @@ public final class SupplyContainers {
 					if (Math.abs(p.getX() - bench.getX()) > RADIUS || Math.abs(p.getZ() - bench.getZ()) > RADIUS || Math.abs(p.getY() - bench.getY()) > VERTICAL) {
 						continue;
 					}
-					if (exclude != null && exclude.isInside(p)) {
+					if (exclude != null && exclude.isInside(p) || be instanceof io.github.jcondedata.aliveworkplace.work.PrivateContainer) {
 						continue;
 					}
 					if (storage(level, p) != null) {

@@ -61,6 +61,17 @@ public class MailGameTests implements FabricGameTest {
 		});
 	}
 
+	/** A mailbox next to a worker's chests is not one of them: nobody takes mail out or drops a haul in. */
+	@GameTest(template = AREA)
+	public void workersLeaveMailboxesAlone(GameTestHelper helper) {
+		MailboxBlockEntity box = mailbox(helper, new BlockPos(4, 2, 2), UUID.randomUUID(), "Erin");
+		box.receive(new ItemStack(Items.DIAMOND, 2));
+		helper.setBlock(new BlockPos(2, 2, 4), net.minecraft.world.level.block.Blocks.CHEST);
+		var found = io.github.jcondedata.aliveworkplace.build.SupplyContainers.find(helper.getLevel(), helper.absolutePos(new BlockPos(2, 2, 2)), null);
+		helper.assertTrue(found.size() == 1 && found.get(0).equals(helper.absolutePos(new BlockPos(2, 2, 4))), "supply containers: " + found);
+		helper.succeed();
+	}
+
 	/** Mail handed in for somewhere far away lands in the mailbox at dawn. */
 	@GameTest(template = AREA)
 	public void nightMailArrivesAtDawn(GameTestHelper helper) {

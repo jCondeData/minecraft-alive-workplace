@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+### Fixed
+- Builders, miners and other workers could take items out of a mailbox within 8 blocks of their workstation, or
+  drop their haul into it. Mailboxes are now private.
+
 ## 0.14.0 — 2026-09-27
 
 ### Added

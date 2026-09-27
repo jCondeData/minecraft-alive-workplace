@@ -18,7 +18,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
 
 /** A player's mailbox: 27 slots of mail that arrived for them, and who it belongs to. */
-public class MailboxBlockEntity extends BaseContainerBlockEntity implements ExtendedScreenHandlerFactory<BlockPos> {
+public class MailboxBlockEntity extends BaseContainerBlockEntity implements ExtendedScreenHandlerFactory<BlockPos>,
+		io.github.jcondedata.aliveworkplace.work.PrivateContainer {
 	public static final int SIZE = 27;
 
 	private NonNullList<ItemStack> items = NonNullList.withSize(SIZE, ItemStack.EMPTY);

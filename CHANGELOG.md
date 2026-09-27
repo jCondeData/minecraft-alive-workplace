@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 0.15.0 — 2026-09-27
+
 ### Added
 - **Shops.** Craft a **Shop Counter** (an emerald over planks and a chest) and place it: it's your shop, and a
   villager takes it as a **Shopkeeper**. Open the counter to set prices: in each column, the top slot is what one

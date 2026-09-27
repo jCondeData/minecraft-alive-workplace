@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 0.21.0 — 2026-09-27
+
 ### Added
 - **Trainer Leaders.** Craft a **Leader's Podium** (gold ingots either side of a Training Post, on polished andesite)
   and a villager becomes the village's Trainer Leader: they battle at Expert strength from day one, pay three times

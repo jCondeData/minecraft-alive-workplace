@@ -13,6 +13,15 @@ public final class ModComponents {
 		DataComponentType.<BlueprintData>builder().persistent(BlueprintData.CODEC).networkSynchronized(BlueprintData.STREAM_CODEC).build()
 	);
 
+	/** A Quarry Marker's corners and depth. */
+	public static final DataComponentType<io.github.jcondedata.aliveworkplace.mine.QuarryData> QUARRY = Registry.register(
+		BuiltInRegistries.DATA_COMPONENT_TYPE,
+		AliveWorkplace.id("quarry"),
+		DataComponentType.<io.github.jcondedata.aliveworkplace.mine.QuarryData>builder()
+			.persistent(io.github.jcondedata.aliveworkplace.mine.QuarryData.CODEC)
+			.networkSynchronized(io.github.jcondedata.aliveworkplace.mine.QuarryData.STREAM_CODEC).build()
+	);
+
 	public static void init() {
 	}
 

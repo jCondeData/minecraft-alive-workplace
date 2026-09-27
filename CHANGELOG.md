@@ -2,6 +2,15 @@
 
 ## Unreleased
 
+### Added
+- **Miners** — the second job. Craft a **Miner's Bench** (cobblestone, a stone pickaxe and planks) and a villager
+  without a job takes it. Mark out a quarry with a **Quarry Marker** (stick + red dye + paper): right-click two
+  opposite corners, sneak-right-click the air to choose how deep (4 to 64 blocks), then give it to the miner.
+  They dig it out layer by layer with a pickaxe from the chests near their bench (bring spares — pickaxes wear out
+  and better ones dig harder blocks), put everything they dig into those chests, light the pit with torches if
+  there are any, and never break through to lava or water. Progress shows above their heads; sneak-right-click
+  them for details. Miners level up like builders and trade coal, ores, torches and pickaxes.
+
 ## 0.7.0 — 2026-09-26
 
 ### Added

@@ -23,7 +23,26 @@ import org.joml.Vector3f;
 public final class BlueprintOutline {
 	private static final DustParticleOptions EDGE = new DustParticleOptions(new Vector3f(0.3f, 0.6f, 1.0f), 1.0f);
 	private static final DustParticleOptions FRONT = new DustParticleOptions(new Vector3f(1.0f, 0.8f, 0.2f), 1.2f);
+	private static final DustParticleOptions QUARRY = new DustParticleOptions(new Vector3f(0.9f, 0.3f, 0.2f), 1.0f);
 	private static final int INTERVAL = 10;
+
+	/** A plain box outline (quarry markers). */
+	public static void box(ServerLevel level, ServerPlayer player, BoundingBox box, DustParticleOptions particle) {
+		double x0 = box.minX(), y0 = box.minY(), z0 = box.minZ();
+		double x1 = box.maxX() + 1, y1 = box.maxY() + 1, z1 = box.maxZ() + 1;
+		line(level, player, particle, x0, y0, z0, x1, y0, z0);
+		line(level, player, particle, x0, y0, z1, x1, y0, z1);
+		line(level, player, particle, x0, y1, z0, x1, y1, z0);
+		line(level, player, particle, x0, y1, z1, x1, y1, z1);
+		line(level, player, particle, x0, y0, z0, x0, y0, z1);
+		line(level, player, particle, x1, y0, z0, x1, y0, z1);
+		line(level, player, particle, x0, y1, z0, x0, y1, z1);
+		line(level, player, particle, x1, y1, z0, x1, y1, z1);
+		line(level, player, particle, x0, y0, z0, x0, y1, z0);
+		line(level, player, particle, x1, y0, z0, x1, y1, z0);
+		line(level, player, particle, x0, y0, z1, x0, y1, z1);
+		line(level, player, particle, x1, y0, z1, x1, y1, z1);
+	}
 
 	public static void init() {
 		ServerTickEvents.END_WORLD_TICK.register(level -> {
@@ -33,6 +52,11 @@ public final class BlueprintOutline {
 			for (ServerPlayer player : level.players()) {
 				for (InteractionHand hand : InteractionHand.values()) {
 					ItemStack stack = player.getItemInHand(hand);
+					var quarry = stack.get(io.github.jcondedata.aliveworkplace.registry.ModComponents.QUARRY);
+					if (quarry != null && quarry.dimension().map(level.dimension().location()::equals).orElse(false)) {
+						quarry.area().ifPresentOrElse(box -> box(level, player, box, QUARRY),
+							() -> quarry.first().ifPresent(p -> box(level, player, new BoundingBox(p), QUARRY)));
+					}
 					BlueprintItem.data(stack).ifPresent(data -> data.placement().ifPresent(p -> {
 						if (p.dimension().equals(level.dimension().location()) && data.size().isPresent()) {
 							show(level, player, p, data.size().get());

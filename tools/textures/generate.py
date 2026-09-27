@@ -300,6 +300,112 @@ def builder_overlay():
     save(img, "entity", "zombie_villager", "profession", "builder.png")
 
 
+# --- Miner's Bench: a stone workbench with an iron plate and a pickaxe ---------------------------
+STONE = [rgb("#8a8a8a"), rgb("#7c7c7c"), rgb("#949494")]
+STONE_DARK = rgb("#5e5e5e")
+
+
+def stone(img, rnd, y0=0, y1=16):
+    for y in range(y0, y1):
+        for x in range(16):
+            mortar = y % 8 == 7 or (x + (8 if (y // 8) % 2 else 0)) % 16 == 0
+            img.putpixel((x, y), jitter(STONE_DARK if mortar else STONE[(x * 7 + y * 3) % 3], rnd, 6))
+
+
+def pickaxe(img, ox, oy, head=rgb("#c8c8c8"), head_dark=rgb("#8f8f8f"), handle=rgb("#8a5a2b")):
+    """A 9x9 pickaxe drawn diagonally with its top-left at (ox, oy)."""
+    for i in range(7):
+        img.putpixel((ox + 1 + i, oy + 7 - i), handle)
+    for x, y in ((0, 2), (1, 1), (2, 0), (3, 0), (4, 0), (5, 1), (6, 2), (7, 3), (8, 4), (2, 1), (6, 3)):
+        if 0 <= ox + x < 16 and 0 <= oy + y < 16:
+            img.putpixel((ox + x, oy + y), head if (x + y) % 3 else head_dark)
+
+
+def miners_bench_top():
+    rnd = random.Random(11)
+    img = Image.new("RGBA", (16, 16))
+    stone(img, rnd)
+    for x in range(3, 13):
+        for y in range(3, 13):
+            img.putpixel((x, y), jitter(rgb("#b9bdc2") if (x + y) % 5 else rgb("#9ea3a8"), rnd, 4))
+    for i in range(3, 13):
+        for p in ((i, 3), (i, 12), (3, i), (12, i)):
+            img.putpixel(p, rgb("#6d7176"))
+    pickaxe(img, 4, 4, head=rgb("#4a4a4a"), head_dark=rgb("#2f2f2f"), handle=rgb("#7a4a22"))
+    save(img, "block", "miners_bench_top.png")
+
+
+def miners_bench_side(front=False):
+    rnd = random.Random(12 if front else 13)
+    img = Image.new("RGBA", (16, 16))
+    stone(img, rnd, 4, 16)
+    planks(img, rnd, 0, 4)
+    for x in range(16):
+        img.putpixel((x, 3), WOOD_EDGE)
+    if front:
+        # A rack with a pickaxe and a lantern
+        for x in range(2, 14):
+            img.putpixel((x, 6), WOOD_DARK)
+        pickaxe(img, 2, 6)
+        for y in range(7, 12):
+            for x in (11, 12, 13):
+                img.putpixel((x, y), rgb("#f5c542") if 8 <= y <= 10 and x == 12 else rgb("#3d3d3d"))
+    save(img, "block", "miners_bench_front.png" if front else "miners_bench_side.png")
+
+
+def quarry_marker_item():
+    img = Image.new("RGBA", (16, 16), T)
+    # A wooden stake with a red and white flag
+    for y in range(3, 16):
+        img.putpixel((5, y), rgb("#8a5a2b"))
+        img.putpixel((6, y), rgb("#6e4a26"))
+    img.putpixel((5, 15), rgb("#55595e"))
+    img.putpixel((6, 15), rgb("#55595e"))
+    for y in range(2, 9):
+        for x in range(7, 15 - (y - 2) // 2):
+            img.putpixel((x, y), rgb("#d9362b") if (x + y) % 4 < 2 else rgb("#f2f2f2"))
+    for y in range(2, 9):
+        img.putpixel((7, y), rgb("#a3281f"))
+    save(img, "item", "quarry_marker.png")
+
+
+def miner_overlay():
+    img = Image.new("RGBA", (64, 64), T)
+    rnd = random.Random(21)
+    hat, hat_shade, hat_edge, lamp, lamp_hi = rgb("#4f5357"), rgb("#3e4145"), rgb("#2b2d30"), rgb("#f5c542"), rgb("#fff3b0")
+    for y in range(0, 8):
+        for x in range(40, 48):
+            img.putpixel((x, y), jitter(hat, rnd, 5))
+    for y in range(8, 12):
+        for x in range(32, 64):
+            c = hat_edge if y == 11 else (hat_shade if y == 10 else hat)
+            img.putpixel((x, y), jitter(c, rnd, 5))
+    # Headlamp on the front of the helmet (front face of the hat layer is x 40..47, y 8..15)
+    for x, y in ((43, 8), (44, 8), (43, 9), (44, 9)):
+        img.putpixel((x, y), lamp_hi if y == 8 else lamp)
+    img.putpixel((42, 9), rgb("#8f8f8f"))
+    img.putpixel((45, 9), rgb("#8f8f8f"))
+    for i in range(3, 13):
+        for p in ((31 + i, 48 + 3), (31 + i, 48 + 12), (31 + 3, 48 + i), (31 + 12, 48 + i)):
+            img.putpixel(p, hat_edge)
+    # Leather apron and a belt with a pickaxe
+    apron, apron_shade = rgb("#7a5230"), rgb("#5f3f24")
+    for y in range(38, 44):
+        for x in range(6, 14):
+            img.putpixel((x, y), jitter(apron, rnd, 5))
+    for y in range(44, 58):
+        for x in range(6, 14):
+            img.putpixel((x, y), jitter(apron_shade if y > 55 else apron, rnd, 5))
+    for x in range(0, 28):
+        img.putpixel((x, 55), jitter(rgb("#3d2616"), rnd, 3))
+    for y in range(56, 61):
+        img.putpixel((17, y), rgb("#7a4a22"))
+    for x in (15, 16, 18, 19):
+        img.putpixel((x, 56), rgb("#8f8f8f"))
+    save(img, "entity", "villager", "profession", "miner.png")
+    save(img, "entity", "zombie_villager", "profession", "miner.png")
+
+
 def icon(blueprint):
     big = Image.new("RGBA", (128, 128), T)
     scaled = blueprint.resize((128, 128), Image.NEAREST)
@@ -319,3 +425,8 @@ if __name__ == "__main__":
     table_side(front=False)
     table_side(front=True)
     blank_blueprint_item()
+    miners_bench_top()
+    miners_bench_side(front=False)
+    miners_bench_side(front=True)
+    quarry_marker_item()
+    miner_overlay()

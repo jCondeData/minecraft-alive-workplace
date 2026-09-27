@@ -15,7 +15,24 @@ public final class BuilderEvents {
 	public static void init() {
 		// Right-click a builder with a blueprint: hand it over. Sneak-right-click with an empty hand: status.
 		UseEntityCallback.EVENT.register((player, level, hand, entity, hit) -> {
-			if (hand != InteractionHand.MAIN_HAND || player.isSpectator() || !(entity instanceof Villager villager) || !Builders.isBuilder(villager)) {
+			if (hand != InteractionHand.MAIN_HAND || player.isSpectator() || !(entity instanceof Villager villager)) {
+				return InteractionResult.PASS;
+			}
+			if (io.github.jcondedata.aliveworkplace.mine.Miners.isMiner(villager)) {
+				ItemStack held = player.getItemInHand(hand);
+				if (held.is(ModItems.QUARRY_MARKER)) {
+					return level.isClientSide ? InteractionResult.SUCCESS
+						: io.github.jcondedata.aliveworkplace.mine.Miners.assign((ServerPlayer) player, villager, held);
+				}
+				if (held.isEmpty() && player.isShiftKeyDown()) {
+					if (!level.isClientSide) {
+						io.github.jcondedata.aliveworkplace.mine.Miners.sendStatus(player, villager);
+					}
+					return InteractionResult.SUCCESS;
+				}
+				return InteractionResult.PASS;
+			}
+			if (!Builders.isBuilder(villager)) {
 				return InteractionResult.PASS;
 			}
 			ItemStack held = player.getItemInHand(hand);
@@ -37,6 +54,7 @@ public final class BuilderEvents {
 		ServerLivingEntityEvents.AFTER_DEATH.register((entity, source) -> {
 			if (entity instanceof Villager villager && entity.level() instanceof ServerLevel level) {
 				Builders.onBuilderDeath(level, villager);
+				io.github.jcondedata.aliveworkplace.mine.Miners.onMinerDeath(level, villager);
 			}
 		});
 	}

@@ -68,6 +68,7 @@ loom {
 			vmArg "-Daliveworkplace.scene=${project.findProperty('scene') ?: 'builders'}"
 			// SCENE=village: make workshops common so every generated village shows one
 			vmArg "-Daliveworkplace.workshopWeight=${project.findProperty('workshopWeight') ?: 3}"
+			vmArg "-Daliveworkplace.debug=${project.findProperty('builderDebug') ?: 'false'}"
 		}
 		compatGameTest {
 			server()

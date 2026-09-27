@@ -148,6 +148,15 @@ public final class WorkplaceCommand {
 				Component text = Builders.statusText(level, site, builder);
 				source.sendSuccess(() -> text, false);
 			}
+			for (io.github.jcondedata.aliveworkplace.mine.QuarrySite quarry : io.github.jcondedata.aliveworkplace.mine.QuarrySiteManager.get(level).all()) {
+				if (!all && !quarry.owner().equals(me)) {
+					continue;
+				}
+				count++;
+				Villager miner = quarry.miner() != null && level.getEntity(quarry.miner()) instanceof Villager v ? v : null;
+				Component text = io.github.jcondedata.aliveworkplace.mine.Miners.statusText(level, quarry, miner);
+				source.sendSuccess(() -> text, false);
+			}
 		}
 		if (count == 0) {
 			source.sendSuccess(() -> Component.translatable("command.aliveworkplace.no_sites").withStyle(ChatFormatting.GRAY), false);
@@ -159,6 +168,16 @@ public final class WorkplaceCommand {
 		UUID id = UuidArgument.getUuid(ctx, "site");
 		CommandSourceStack source = ctx.getSource();
 		for (ServerLevel level : source.getServer().getAllLevels()) {
+			io.github.jcondedata.aliveworkplace.mine.QuarrySite quarry = io.github.jcondedata.aliveworkplace.mine.QuarrySiteManager.get(level).get(id);
+			if (quarry != null) {
+				if (!source.hasPermission(2) && (source.getEntity() == null || !io.github.jcondedata.aliveworkplace.mine.Miners.isOwnerOrOp(source.getEntity(), quarry))) {
+					source.sendFailure(Component.translatable("command.aliveworkplace.not_owner"));
+					return 0;
+				}
+				io.github.jcondedata.aliveworkplace.mine.Miners.cancel(level, quarry);
+				source.sendSuccess(() -> Component.translatable("command.aliveworkplace.quarry_cancelled"), false);
+				return 1;
+			}
 			BuildSite site = BuildSiteManager.get(level).get(id);
 			if (site == null) {
 				continue;

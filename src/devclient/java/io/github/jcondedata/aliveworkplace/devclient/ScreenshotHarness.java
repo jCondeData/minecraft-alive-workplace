@@ -70,6 +70,10 @@ public class ScreenshotHarness implements ClientModInitializer {
 			tableScene(mc, mc.getSingleplayerServer());
 			return;
 		}
+		if ("quarry".equals(System.getProperty("aliveworkplace.scene"))) {
+			quarryScene(mc, mc.getSingleplayerServer());
+			return;
+		}
 		if ("village".equals(System.getProperty("aliveworkplace.scene"))) {
 			villageScene(mc, mc.getSingleplayerServer());
 			return;
@@ -240,6 +244,64 @@ public class ScreenshotHarness implements ClientModInitializer {
 			shot(mc, "22_status_closeup");
 		}
 		if (tick == 1020) {
+			mc.stop();
+		}
+	}
+
+	// --- Quarry: a miner digs a block of stone and ore out, layer by layer ------------------------
+
+	private io.github.jcondedata.aliveworkplace.mine.QuarrySite quarry;
+
+	private void quarryScene(Minecraft mc, MinecraftServer server) {
+		tick++;
+		if (tick == 1) {
+			mc.options.renderDistance().set(6);
+			mc.options.cloudStatus().set(CloudStatus.OFF);
+			mc.options.hideGui = true;
+		}
+		if (tick == 20) {
+			server.execute(() -> {
+				ServerLevel level = server.overworld();
+				level.getGameRules().getRule(GameRules.RULE_DAYLIGHT).set(false, server);
+				level.getGameRules().getRule(GameRules.RULE_DOMOBSPAWNING).set(false, server);
+				level.getGameRules().getRule(ModGameRules.BUILD_DELAY).set(4, server);
+				level.setDayTime(2500);
+				java.util.Random rnd = new java.util.Random(4);
+				BlockPos min = new BlockPos(-3, -60, -12);
+				BlockPos max = new BlockPos(4, -55, -5);
+				for (BlockPos p : BlockPos.betweenClosed(min, max)) {
+					int r = rnd.nextInt(100);
+					level.setBlock(p, (r < 4 ? Blocks.COAL_ORE : r < 6 ? Blocks.IRON_ORE : r < 7 ? Blocks.COPPER_ORE : r < 30 ? Blocks.ANDESITE : Blocks.STONE)
+						.defaultBlockState(), 2);
+				}
+				BlockPos bench = new BlockPos(0, -60, 2);
+				level.setBlockAndUpdate(bench, ModBlocks.MINERS_BENCH.defaultBlockState());
+				level.setBlockAndUpdate(bench.east(), Blocks.CHEST.defaultBlockState());
+				level.setBlockAndUpdate(bench.east(2), Blocks.CHEST.defaultBlockState());
+				BaseContainerBlockEntity chest = (BaseContainerBlockEntity) level.getBlockEntity(bench.east());
+				chest.setItem(0, new ItemStack(net.minecraft.world.item.Items.IRON_PICKAXE));
+				chest.setItem(1, new ItemStack(net.minecraft.world.item.Items.IRON_PICKAXE));
+				chest.setItem(2, new ItemStack(net.minecraft.world.item.Items.TORCH, 16));
+				Villager miner = EntityType.VILLAGER.spawn(level, bench.south(), MobSpawnType.COMMAND);
+				io.github.jcondedata.aliveworkplace.mine.Miners.employ(level, miner, bench);
+				quarry = io.github.jcondedata.aliveworkplace.mine.Miners.start(level, miner, server.getPlayerList().getPlayers().get(0),
+					net.minecraft.world.level.levelgen.structure.BoundingBox.fromCorners(min, max), 6);
+				hover(server.getPlayerList().getPlayers().get(0), new Vec3(10.5, -50, 5.5), 135, 30);
+			});
+		}
+		if (tick > 60 && tick % 60 == 0 && doneAt < 0) {
+			shot(mc, String.format("frame_%03d", frame++));
+			server.execute(() -> allDone.set(quarry != null && io.github.jcondedata.aliveworkplace.mine.QuarrySiteManager.get(server.overworld()).get(quarry.id()) == null));
+			if (allDone.get()) {
+				doneAt = tick;
+			}
+		}
+		if (doneAt > 0 && tick == doneAt + 40) {
+			shot(mc, "50_quarry_done");
+			mc.stop();
+		}
+		if (tick >= GIVE_UP_AT) {
+			shot(mc, "99_timeout");
 			mc.stop();
 		}
 	}

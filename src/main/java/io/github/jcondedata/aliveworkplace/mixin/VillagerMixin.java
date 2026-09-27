@@ -14,7 +14,7 @@ abstract class VillagerMixin {
 	@Inject(method = "registerBrainGoals", at = @At("TAIL"))
 	private void aliveworkplace$builderSchedule(Brain<Villager> brain, CallbackInfo ci) {
 		Villager self = (Villager) (Object) this;
-		if (!self.isBaby() && self.getVillagerData().getProfession() == ModVillagers.BUILDER) {
+		if (!self.isBaby() && ModVillagers.isWorker(self.getVillagerData().getProfession())) {
 			brain.setSchedule(ModVillagers.BUILDER_SCHEDULE);
 			brain.updateActivityFromSchedule(self.level().getDayTime(), self.level().getGameTime());
 		}

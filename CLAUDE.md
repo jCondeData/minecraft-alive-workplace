@@ -26,7 +26,10 @@ The owner (Jesse) does not write code: sessions are expected to work autonomousl
 - `tools/screenshots/run.sh` — renders the real client headless (Xvfb) and saves screenshots + a timelapse GIF
   of builders at work; use it to check anything visual and to show the owner progress.
   `SCENE=table` shows the Blueprint Table screens, `SCENE=preview` the ghost preview and the status above a builder,
-  `SCENE=gallery` every starter blueprint, `SCENE=village WORKSHOP_WEIGHT=200` one village of each type with workshops
+  `SCENE=gallery` every starter blueprint, `SCENE=village WORKSHOP_WEIGHT=200` one village of each type with workshops,
+  `SCENE=quarry` a miner digging out a block of stone (then `python3 tools/screenshots/make_gif.py`). `DEBUG=true` logs
+  builder/miner decisions. Long scenes take >10 min: start run.sh in the background and poll.
+  Never `pkill -f`/`pgrep -f` a pattern that also appears in your own command line (it kills your shell).
 - If Maven Central answers **429**, wait ~20 s and retry; it is rate limiting, not a real failure.
 
 ## Layout (`src/main/java/io/github/jcondedata/aliveworkplace/`)
@@ -37,7 +40,9 @@ The owner (Jesse) does not write code: sessions are expected to work autonomousl
   (per-dimension saved data), `BuilderWork` (the villager Behavior that does the work), `Builders`
   (hand-over, status, finish, cancel), `MaterialRules` (block → item cost, stage, "is this done"),
   `SupplyContainers` (chests near the bench via Fabric transfer API), `BuilderPackages`, `BuilderEvents`
-- `mixin/` — swaps in the builder WORK package and schedule for our profession
+- `mine/` — the miner: `QuarryMarkerItem`/`QuarryData`, `QuarrySite` + `QuarrySiteManager`, `MinerWork`, `Miners`
+- `world/` — village builder's workshops (`VillageHouses`)
+- `mixin/` — swaps in the builder/miner WORK packages and schedule for our professions; accessors
 - `command/` — `/workplace`
 
 ## How the builder works (keep these invariants)

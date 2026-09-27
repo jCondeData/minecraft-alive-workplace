@@ -1,0 +1,8 @@
+{
+  "variants": {
+    "facing=north": { "model": "aliveworkplace:block/miners_bench" },
+    "facing=east":  { "model": "aliveworkplace:block/miners_bench", "y": 90 },
+    "facing=south": { "model": "aliveworkplace:block/miners_bench", "y": 180 },
+    "facing=west":  { "model": "aliveworkplace:block/miners_bench", "y": 270 }
+  }
+}

@@ -21,6 +21,8 @@ abstract class VillagerGoalPackagesMixin {
 			CallbackInfoReturnable<ImmutableList<Pair<Integer, ? extends BehaviorControl<? super Villager>>>> cir) {
 		if (profession == ModVillagers.BUILDER) {
 			cir.setReturnValue(BuilderPackages.work(speed));
+		} else if (profession == ModVillagers.MINER) {
+			cir.setReturnValue(io.github.jcondedata.aliveworkplace.mine.MinerPackages.work(speed));
 		}
 	}
 }

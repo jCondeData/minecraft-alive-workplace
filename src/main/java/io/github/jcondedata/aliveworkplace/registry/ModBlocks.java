@@ -22,6 +22,11 @@ public final class ModBlocks {
 		"blueprint_table", new BlueprintTableBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.CARTOGRAPHY_TABLE))
 	);
 
+	/** Workstation for the Miner profession; chests near it are where the miner drops off what it digs. */
+	public static final BuildersBenchBlock MINERS_BENCH = register(
+		"miners_bench", new BuildersBenchBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.SMITHING_TABLE))
+	);
+
 	private static <T extends Block> T register(String name, T block) {
 		Registry.register(BuiltInRegistries.BLOCK, AliveWorkplace.id(name), block);
 		Registry.register(BuiltInRegistries.ITEM, AliveWorkplace.id(name), new BlockItem(block, new Item.Properties()));

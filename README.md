@@ -47,6 +47,18 @@ per build), sharing the chests and passing each other materials.
 2.5× as fast as a Novice) and unlocks new blueprints to buy — Market Stall, Lookout Tower, then the
 **Healing Center** (with a Cobblemon Healing Machine on the counter when Cobblemon is installed) and the **Supply Shop**.
 
+## Miners
+![A miner digging out a quarry](docs/media/miner.gif)
+
+Craft a **Miner's Bench** (cobblestone on top, a stone pickaxe in the middle, planks around) and place it near a
+villager without a job. Then:
+1. Craft a **Quarry Marker** (stick + red dye + paper). Right-click one corner block, then the opposite corner
+   (up to 32 × 32). Sneak-right-click the air to choose the depth (4, 8, 16, 32 or 64); a red outline shows the pit.
+2. Put **pickaxes** (and some torches) in a chest within 8 blocks of the Miner's Bench.
+3. Give the marker to the miner. They dig the area out from the top down, bring everything back to the chests, and
+   leave anything touching lava or water standing so the pit stays dry. When the last pickaxe wears out they wait
+   for another.
+
 ## Blueprint Table: any build from the internet
 Craft a **Blueprint Table** (blue dye on top, cartography table in the middle, planks around) and right-click it.
 
@@ -83,7 +95,7 @@ Craft a **Blueprint Table** (blue dye on top, cartography table in the middle, p
 | `/gamerule workplaceFoundationDepth 12` | how far down builders fill under a build on uneven ground (0 = never) |
 
 ## What's next
-Next up are more jobs — miners, lumberjacks and couriers — then Cobblemon trainers and Pokémon work partners. See [ROADMAP.md](ROADMAP.md).
+Next up are more jobs — lumberjacks, farmers and couriers — then Cobblemon trainers and Pokémon work partners. See [ROADMAP.md](ROADMAP.md).
 
 ## Building from source
 ```

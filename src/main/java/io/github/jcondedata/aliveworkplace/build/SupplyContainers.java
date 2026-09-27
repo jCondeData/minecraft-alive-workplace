@@ -107,6 +107,46 @@ public final class SupplyContainers {
 		return taken;
 	}
 
+	/** First container holding an item that matches {@code test} (tools with damage, enchantments... included). */
+	@Nullable
+	public static BlockPos firstMatching(ServerLevel level, List<BlockPos> containers, java.util.function.Predicate<ItemStack> test) {
+		for (BlockPos p : containers) {
+			Storage<ItemVariant> s = storage(level, p);
+			if (s == null) {
+				continue;
+			}
+			for (var view : s.nonEmptyViews()) {
+				if (test.test(view.getResource().toStack())) {
+					return p;
+				}
+			}
+		}
+		return null;
+	}
+
+	/** Takes one item matching {@code test} (keeping its damage and enchantments); empty if there is none. */
+	public static ItemStack takeOne(ServerLevel level, List<BlockPos> containers, java.util.function.Predicate<ItemStack> test) {
+		for (BlockPos p : containers) {
+			Storage<ItemVariant> s = storage(level, p);
+			if (s == null) {
+				continue;
+			}
+			for (var view : s.nonEmptyViews()) {
+				ItemVariant variant = view.getResource();
+				if (!test.test(variant.toStack())) {
+					continue;
+				}
+				try (Transaction tx = Transaction.openOuter()) {
+					if (view.extract(variant, 1, tx) == 1) {
+						tx.commit();
+						return variant.toStack(1);
+					}
+				}
+			}
+		}
+		return ItemStack.EMPTY;
+	}
+
 	/** Puts a stack into the containers; returns whatever did not fit. */
 	public static ItemStack insert(ServerLevel level, List<BlockPos> containers, ItemStack stack) {
 		if (stack.isEmpty()) {

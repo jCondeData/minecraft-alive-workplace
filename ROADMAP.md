@@ -54,7 +54,8 @@ Owner decisions are recorded in **Design decisions** at the bottom. Don't change
 - [ ] Upgrades: blueprints can declare a next tier that builds over the previous one
 
 ## Milestone 2 — Other work jobs
-- [ ] **Miner**: given a Quarry Marker area, digs it out layer by layer, stores ore/stone in chests, places torches, never digs under itself into lava/void
+- [x] **Miner** (Miner's Bench workstation, Quarry Marker item): digs the marked area out layer by layer with pickaxes from the chests (tool tier and durability count; waits for a new one), drops everything off in the chests near the bench, lights the pit with torches from the chests, leaves blocks touching lava/water, containers and anything too hard, never goes below 5 above the world floor; levels up like builders; trades coal/ores, sells markers, torches and pickaxes
+- [ ] Miner follow-ups: ladders or stairs out of deep pits, strip-mining tunnels (not just open pits), smelting helper
 - [ ] **Lumberjack**: fells trees in an area, replants saplings, stores logs
 - [ ] **Farmer upgrade**: works marked fields beyond vanilla farmers, stores the harvest
 - [ ] **Fisher**: fishes at nearby water, stores the catch

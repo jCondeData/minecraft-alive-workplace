@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [{ "type": "minecraft:item", "name": "aliveworkplace:miners_bench" }],
+      "conditions": [{ "condition": "minecraft:survives_explosion" }]
+    }
+  ],
+  "random_sequence": "aliveworkplace:blocks/miners_bench"
+}

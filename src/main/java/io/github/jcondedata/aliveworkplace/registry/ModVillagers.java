@@ -33,6 +33,28 @@ public final class ModVillagers {
 		)
 	);
 
+	public static final ResourceLocation MINERS_BENCH_ID = AliveWorkplace.id("miners_bench");
+	public static final ResourceKey<PoiType> MINERS_BENCH_POI = ResourceKey.create(Registries.POINT_OF_INTEREST_TYPE, MINERS_BENCH_ID);
+	public static final PoiType MINERS_BENCH_POI_TYPE = PointOfInterestHelper.register(MINERS_BENCH_ID, 1, 1, ModBlocks.MINERS_BENCH);
+
+	public static final VillagerProfession MINER = Registry.register(
+		BuiltInRegistries.VILLAGER_PROFESSION,
+		AliveWorkplace.id("miner"),
+		new VillagerProfession(
+			"miner",
+			holder -> holder.is(MINERS_BENCH_POI),
+			holder -> holder.is(MINERS_BENCH_POI),
+			ImmutableSet.of(),
+			ImmutableSet.of(),
+			SoundEvents.VILLAGER_WORK_TOOLSMITH
+		)
+	);
+
+	/** Villagers whose work this mod runs: they get the long shift and our WORK package. */
+	public static boolean isWorker(VillagerProfession profession) {
+		return profession == BUILDER || profession == MINER;
+	}
+
 	/**
 	 * Builders put in a longer shift than vanilla villagers (who only WORK 2000-9000 and then
 	 * gossip): they work from early morning to dusk, then go to bed like everyone else.

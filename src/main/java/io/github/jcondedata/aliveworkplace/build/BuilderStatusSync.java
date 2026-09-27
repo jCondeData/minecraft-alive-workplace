@@ -46,6 +46,7 @@ public final class BuilderStatusSync {
 		ServerTickEvents.END_WORLD_TICK.register(level -> {
 			if (level.getGameTime() % INTERVAL == 0 && !level.players().isEmpty()) {
 				broadcast(level);
+				broadcastQuarries(level);
 			}
 		});
 	}
@@ -70,6 +71,20 @@ public final class BuilderStatusSync {
 						Component.translatable("message.aliveworkplace.status.helping", villager.getDisplayName()).withStyle(ChatFormatting.GRAY)));
 				}
 			}
+		}
+	}
+
+	private static void broadcastQuarries(ServerLevel level) {
+		for (io.github.jcondedata.aliveworkplace.mine.QuarrySite site : io.github.jcondedata.aliveworkplace.mine.QuarrySiteManager.get(level).all()) {
+			if (site.miner() == null || !(level.getEntity(site.miner()) instanceof Villager miner) || miner.isSleeping()) {
+				continue;
+			}
+			var box = site.box();
+			Component title = Component.translatable("message.aliveworkplace.overhead.quarry", box.getXSpan(), box.getZSpan(), box.getYSpan(),
+				Math.round(site.progress() * 100));
+			Component line = Component.translatable("message.aliveworkplace.quarry.state." + site.status().name().toLowerCase())
+				.withStyle(site.status() == io.github.jcondedata.aliveworkplace.mine.QuarrySite.Status.NEEDS_PICKAXE ? ChatFormatting.YELLOW : ChatFormatting.GRAY);
+			send(miner, new Status(miner.getId(), title, site.progress(), line));
 		}
 	}
 

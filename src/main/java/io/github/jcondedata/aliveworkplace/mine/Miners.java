@@ -1,0 +1,275 @@
+package io.github.jcondedata.aliveworkplace.mine;
+
+import io.github.jcondedata.aliveworkplace.build.BuilderBag;
+import io.github.jcondedata.aliveworkplace.build.BuilderJob;
+import io.github.jcondedata.aliveworkplace.build.BuilderLevels;
+import io.github.jcondedata.aliveworkplace.build.Builders;
+import io.github.jcondedata.aliveworkplace.build.Employer;
+import io.github.jcondedata.aliveworkplace.build.Friends;
+import io.github.jcondedata.aliveworkplace.build.SupplyContainers;
+import io.github.jcondedata.aliveworkplace.registry.ModAttachments;
+import io.github.jcondedata.aliveworkplace.registry.ModComponents;
+import io.github.jcondedata.aliveworkplace.registry.ModItems;
+import io.github.jcondedata.aliveworkplace.registry.ModVillagers;
+import java.util.List;
+import java.util.Optional;
+import net.minecraft.ChatFormatting;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.ClickEvent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.HoverEvent;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.npc.Villager;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.levelgen.structure.BoundingBox;
+import org.jetbrains.annotations.Nullable;
+
+/** Hiring miners for quarries: hand-over, status, finishing and cancelling. */
+public final class Miners {
+	/** A quarry must be within this many blocks of the miner's bench. */
+	public static final int MAX_DISTANCE = 64;
+
+	public static boolean isMiner(Villager villager) {
+		return !villager.isBaby() && villager.getVillagerData().getProfession() == ModVillagers.MINER;
+	}
+
+	@Nullable
+	public static QuarrySite activeSite(ServerLevel level, Villager villager) {
+		BuilderJob job = villager.getAttached(ModAttachments.MINER_JOB);
+		if (job == null) {
+			return null;
+		}
+		QuarrySite site = QuarrySiteManager.get(level).get(job.siteId());
+		if (site == null) {
+			villager.removeAttached(ModAttachments.MINER_JOB);
+		}
+		return site;
+	}
+
+	/** Player right-clicked a miner while holding a Quarry Marker. */
+	public static InteractionResult assign(ServerPlayer player, Villager villager, ItemStack stack) {
+		ServerLevel level = player.serverLevel();
+		if (!Friends.mayCommand(player, villager)) {
+			Employer employer = villager.getAttached(ModAttachments.BUILDER_EMPLOYER);
+			tell(player, Component.translatable("message.aliveworkplace.not_your_builder", villager.getDisplayName(),
+				employer != null ? employer.name() : "?", player.getGameProfile().getName()), ChatFormatting.RED);
+			return InteractionResult.CONSUME;
+		}
+		QuarryData data = QuarryMarkerItem.data(stack);
+		Optional<BoundingBox> area = data.area();
+		if (area.isEmpty()) {
+			tell(player, Component.translatable("message.aliveworkplace.quarry.not_marked"), ChatFormatting.YELLOW);
+			return InteractionResult.CONSUME;
+		}
+		if (!data.dimension().get().equals(level.dimension().location())) {
+			tell(player, Component.translatable("message.aliveworkplace.assign.wrong_dimension"), ChatFormatting.RED);
+			return InteractionResult.CONSUME;
+		}
+		QuarrySite existing = activeSite(level, villager);
+		if (existing != null) {
+			tell(player, Component.translatable("message.aliveworkplace.quarry.busy", villager.getDisplayName()), ChatFormatting.YELLOW);
+			return InteractionResult.CONSUME;
+		}
+		Optional<BlockPos> bench = Builders.benchPos(villager);
+		if (bench.isEmpty()) {
+			tell(player, Component.translatable("message.aliveworkplace.quarry.no_bench"), ChatFormatting.RED);
+			return InteractionResult.CONSUME;
+		}
+		BoundingBox box = clampToWorld(level, area.get());
+		double distance = Math.sqrt(box.getCenter().distSqr(bench.get()));
+		if (distance > MAX_DISTANCE) {
+			tell(player, Component.translatable("message.aliveworkplace.assign.too_far", (int) distance, MAX_DISTANCE), ChatFormatting.RED);
+			return InteractionResult.CONSUME;
+		}
+		if (box.isInside(bench.get())) {
+			tell(player, Component.translatable("message.aliveworkplace.quarry.over_bench"), ChatFormatting.RED);
+			return InteractionResult.CONSUME;
+		}
+		Friends.hire(player, villager);
+		QuarrySite site = start(level, villager, player, box, data.depth());
+		if (!player.getAbilities().instabuild) {
+			stack.shrink(1);
+		}
+		level.playSound(null, villager, SoundEvents.VILLAGER_YES, SoundSource.NEUTRAL, 1f, 1f);
+		tell(player, Component.translatable("message.aliveworkplace.quarry.started", villager.getDisplayName(), box.getXSpan(), box.getZSpan(),
+			box.getYSpan(), SupplyContainers.RADIUS), ChatFormatting.GREEN);
+		return InteractionResult.SUCCESS;
+	}
+
+	/** Never dig into the bottom few layers of the world (void, bedrock). */
+	static BoundingBox clampToWorld(ServerLevel level, BoundingBox box) {
+		int floor = level.getMinBuildHeight() + 5;
+		return new BoundingBox(box.minX(), Math.max(floor, box.minY()), box.minZ(), box.maxX(), Math.max(floor, box.maxY()), box.maxZ());
+	}
+
+	/** Creates the quarry and gives the miner the job. Also used by tests. */
+	public static QuarrySite start(ServerLevel level, Villager villager, @Nullable Player owner, BoundingBox box, int depth) {
+		QuarrySite site = QuarrySiteManager.get(level).create(
+			owner != null ? owner.getUUID() : villager.getUUID(),
+			owner != null ? owner.getGameProfile().getName() : "",
+			level.dimension().location(), clampToWorld(level, box), depth);
+		site.setMiner(villager.getUUID());
+		site.setBench(Builders.benchPos(villager).orElse(null));
+		villager.setAttached(ModAttachments.MINER_JOB, new BuilderJob(site.id()));
+		return site;
+	}
+
+	public static Component statusText(ServerLevel level, QuarrySite site, @Nullable Villager villager) {
+		MutableComponent text = Component.empty();
+		Component who = villager != null ? villager.getDisplayName() : Component.translatable("message.aliveworkplace.quarry.miner");
+		BoundingBox box = site.box();
+		text.append(Component.translatable("message.aliveworkplace.quarry.header", who, box.getXSpan(), box.getZSpan(), box.getYSpan(),
+			Math.round(site.progress() * 100)).withStyle(ChatFormatting.GOLD));
+		text.append(Component.literal("\n  "));
+		text.append(Component.translatable("message.aliveworkplace.quarry.state." + site.status().name().toLowerCase()).withStyle(
+			site.status() == QuarrySite.Status.NEEDS_PICKAXE ? ChatFormatting.YELLOW : ChatFormatting.GRAY));
+		text.append(Component.literal(" · ").withStyle(ChatFormatting.DARK_GRAY));
+		text.append(Component.translatable("message.aliveworkplace.quarry.counts", site.mined(), site.skipped()).withStyle(ChatFormatting.GRAY));
+		if (villager != null) {
+			text.append(Component.literal("\n  "));
+			text.append(BuilderLevels.describe(villager).copy().withStyle(ChatFormatting.DARK_AQUA));
+		}
+		String cancel = "/workplace cancel " + site.id();
+		text.append(Component.literal("\n  "));
+		text.append(Component.translatable("message.aliveworkplace.quarry.cancel").withStyle(style -> style
+			.withColor(ChatFormatting.RED).withUnderlined(true)
+			.withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, cancel))
+			.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.translatable("message.aliveworkplace.quarry.cancel_hover")))));
+		return text;
+	}
+
+	public static void sendStatus(Player player, Villager villager) {
+		ServerLevel level = (ServerLevel) villager.level();
+		QuarrySite site = activeSite(level, villager);
+		if (site == null) {
+			tell(player, Component.translatable(Builders.benchPos(villager).isPresent()
+				? "message.aliveworkplace.quarry.idle" : "message.aliveworkplace.quarry.no_bench_status", villager.getDisplayName()), ChatFormatting.GRAY);
+			tell(player, Component.literal("  ").append(BuilderLevels.describe(villager)), ChatFormatting.DARK_AQUA);
+			return;
+		}
+		player.sendSystemMessage(statusText(level, site, villager));
+	}
+
+	static void notifyNeedsPickaxe(ServerLevel level, Villager villager, QuarrySite site) {
+		ServerPlayer owner = level.getServer().getPlayerList().getPlayer(site.owner());
+		if (owner != null && site.shouldNotify(level.getGameTime(), 1200)) {
+			tell(owner, Component.translatable("message.aliveworkplace.quarry.needs_pickaxe", villager.getDisplayName(), SupplyContainers.RADIUS),
+				ChatFormatting.YELLOW);
+		}
+	}
+
+	/** Done: tools, finds and the marker go back to the chests, the owner hears how it went. */
+	static void finish(ServerLevel level, Villager villager, QuarrySite site) {
+		BlockPos bench = site.bench() != null ? site.bench() : Builders.benchPos(villager).orElse(villager.blockPosition());
+		List<BlockPos> supplies = SupplyContainers.find(level, bench, null);
+		returnEverything(level, villager, bench, supplies);
+		store(level, supplies, bench, markerFor(site));
+		level.playSound(null, villager, SoundEvents.VILLAGER_CELEBRATE, SoundSource.NEUTRAL, 1f, 1f);
+		ServerPlayer owner = level.getServer().getPlayerList().getPlayer(site.owner());
+		if (owner != null) {
+			tell(owner, Component.translatable("message.aliveworkplace.quarry.finished", villager.getDisplayName(), site.mined(), site.skipped()),
+				ChatFormatting.GREEN);
+		}
+		BuilderLevels.addXp(level, villager, 10, site.owner());
+		end(level, villager, site);
+	}
+
+	/** Stops a quarry: tools, finds and the marker go back; dug holes stay dug. */
+	public static void cancel(ServerLevel level, QuarrySite site) {
+		Villager villager = site.miner() != null && level.getEntity(site.miner()) instanceof Villager v ? v : null;
+		BlockPos bench = site.bench() != null ? site.bench() : site.box().getCenter();
+		List<BlockPos> supplies = SupplyContainers.find(level, bench, null);
+		if (villager != null) {
+			returnEverything(level, villager, bench, supplies);
+		}
+		ItemStack marker = markerFor(site);
+		ServerPlayer owner = level.getServer().getPlayerList().getPlayer(site.owner());
+		if (owner == null || !owner.getInventory().add(marker)) {
+			store(level, supplies, bench, marker);
+		}
+		if (villager != null) {
+			end(level, villager, site);
+		} else {
+			QuarrySiteManager.get(level).remove(site.id());
+		}
+	}
+
+	public static void onMinerDeath(ServerLevel level, Villager villager) {
+		QuarrySite site = activeSite(level, villager);
+		if (site != null) {
+			BlockPos at = villager.blockPosition();
+			store(level, List.of(), at, markerFor(site));
+			QuarrySiteManager.get(level).remove(site.id());
+		}
+	}
+
+	private static void end(ServerLevel level, Villager villager, QuarrySite site) {
+		QuarrySiteManager.get(level).remove(site.id());
+		villager.removeAttached(ModAttachments.MINER_JOB);
+	}
+
+	static void returnEverything(ServerLevel level, Villager villager, BlockPos bench, List<BlockPos> supplies) {
+		BuilderBag bag = villager.getAttachedOrCreate(ModAttachments.BUILDER_BAG);
+		for (ItemStack stack : bag.takeAll()) {
+			store(level, supplies, bench, stack);
+		}
+		ItemStack tool = villager.getItemBySlot(EquipmentSlot.MAINHAND);
+		if (!tool.isEmpty()) {
+			villager.setItemSlot(EquipmentSlot.MAINHAND, ItemStack.EMPTY);
+			store(level, supplies, bench, tool);
+		}
+	}
+
+	static void store(ServerLevel level, List<BlockPos> supplies, BlockPos near, ItemStack stack) {
+		ItemStack rest = SupplyContainers.insert(level, supplies, stack);
+		if (!rest.isEmpty()) {
+			net.minecraft.world.entity.item.ItemEntity item = new net.minecraft.world.entity.item.ItemEntity(level,
+				near.getX() + 0.5, near.getY() + 1.1, near.getZ() + 0.5, rest);
+			item.setDefaultPickUpDelay();
+			level.addFreshEntity(item);
+		}
+	}
+
+	private static ItemStack markerFor(QuarrySite site) {
+		ItemStack marker = new ItemStack(ModItems.QUARRY_MARKER);
+		BoundingBox box = site.box();
+		marker.set(ModComponents.QUARRY, new QuarryData(Optional.of(site.dimension()), Optional.of(new BlockPos(box.minX(), box.maxY(), box.minZ())),
+			Optional.of(new BlockPos(box.maxX(), box.maxY(), box.maxZ())), site.depth()));
+		return marker;
+	}
+
+	/** Makes {@code villager} a miner at {@code bench} right away (tests and admin tools). */
+	public static void employ(ServerLevel level, Villager villager, BlockPos bench) {
+		level.getPoiManager().take(h -> h.is(ModVillagers.MINERS_BENCH_POI), (h, p) -> p.equals(bench), bench, 1);
+		villager.getBrain().setMemory(net.minecraft.world.entity.ai.memory.MemoryModuleType.JOB_SITE, net.minecraft.core.GlobalPos.of(level.dimension(), bench));
+		villager.setVillagerData(villager.getVillagerData().setProfession(ModVillagers.MINER));
+		if (villager.getVillagerXp() == 0) {
+			villager.setVillagerXp(1);
+		}
+		villager.refreshBrain(level);
+	}
+
+	public static boolean isOwnerOrOp(Entity entity, QuarrySite site) {
+		if (entity.getUUID().equals(site.owner())) {
+			return true;
+		}
+		return entity instanceof ServerPlayer p && (p.hasPermissions(2) || Friends.get(p.getServer()).mayDirect(site.owner(), p.getUUID())
+			|| site.miner() != null && p.serverLevel().getEntity(site.miner()) instanceof Villager miner
+			&& miner.getAttached(ModAttachments.BUILDER_EMPLOYER) != null && Friends.mayCommand(p, miner));
+	}
+
+	static void tell(Player player, Component message, ChatFormatting color) {
+		player.sendSystemMessage(message.copy().withStyle(color));
+	}
+
+	private Miners() {
+	}
+}

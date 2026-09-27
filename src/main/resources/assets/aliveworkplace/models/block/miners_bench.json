@@ -1,0 +1,9 @@
+{
+  "parent": "minecraft:block/orientable_with_bottom",
+  "textures": {
+    "top": "aliveworkplace:block/miners_bench_top",
+    "bottom": "minecraft:block/cobblestone",
+    "side": "aliveworkplace:block/miners_bench_side",
+    "front": "aliveworkplace:block/miners_bench_front"
+  }
+}

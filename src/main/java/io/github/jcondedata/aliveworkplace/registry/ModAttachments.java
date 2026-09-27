@@ -36,6 +36,14 @@ public final class ModAttachments {
 	public static final AttachmentType<Integer> FARM_HARVESTED = AttachmentRegistry.create(
 		AliveWorkplace.id("farm_harvested"), builder -> builder.persistent(com.mojang.serialization.Codec.INT));
 
+	/** True for a Fisherman a player handed a fishing rod: they fish for the chests near their barrel. */
+	public static final AttachmentType<Boolean> FISHER_JOB = AttachmentRegistry.create(
+		AliveWorkplace.id("fisher_job"), builder -> builder.persistent(com.mojang.serialization.Codec.BOOL));
+
+	/** How many catches a fisherman has reeled in (shown above its head). */
+	public static final AttachmentType<Integer> FISH_CAUGHT = AttachmentRegistry.create(
+		AliveWorkplace.id("fish_caught"), builder -> builder.persistent(com.mojang.serialization.Codec.INT));
+
 	public static void init() {
 	}
 

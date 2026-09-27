@@ -2,8 +2,8 @@
 
 Villagers with real jobs. Hand a **Builder** a blueprint and they build it for you: they clear the
 site, fetch materials from your chests, put up the walls and roof, and finish with doors, beds and
-torches. **Miners** dig out quarries, **Lumberjacks** cut down and replant trees, and **Farmers** look after
-your fields, dropping everything off in your chests.
+torches. **Miners** dig out quarries, **Lumberjacks** cut down and replant trees, **Farmers** look after
+your fields and **Fishermen** fish for you, dropping everything off in your chests.
 
 ![Three builders putting up the starter blueprints](docs/media/timelapse.gif)
 
@@ -79,6 +79,12 @@ of their composter. They harvest ripe crops and plant them straight back, sow em
 grass, cut sugar cane down to its bottom block and pick pumpkins and melons. The harvest goes into the chests.
 Sneak-right-click the farmer with an empty hand to see how it's going or to stop.
 
+## Fishermen
+Hand any **Fisherman** villager (the ones with a barrel) a **fishing rod**. They walk to the nearest water within 16
+blocks of their barrel, cast from the shore and reel in fish (and the odd bit of junk), bringing the catch back to
+their barrel and any chests within 8 blocks of it. Rods wear out: put spares in the barrel. Sneak-right-click the
+fisherman with an empty hand to see how it's going or to stop.
+
 ## Blueprint Table: any build from the internet
 Craft a **Blueprint Table** (blue dye on top, cartography table in the middle, planks around) and right-click it.
 
@@ -115,7 +121,7 @@ Craft a **Blueprint Table** (blue dye on top, cartography table in the middle, p
 | `/gamerule workplaceFoundationDepth 12` | how far down builders fill under a build on uneven ground (0 = never) |
 
 ## What's next
-Next up are more jobs — fishers and couriers — then Cobblemon trainers and Pokémon work partners. See [ROADMAP.md](ROADMAP.md).
+Next up are couriers (hauling between chests), then Cobblemon trainers and Pokémon work partners. See [ROADMAP.md](ROADMAP.md).
 
 ## Building from source
 ```

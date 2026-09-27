@@ -46,6 +46,20 @@ public final class BuilderEvents {
 				}
 				return InteractionResult.PASS;
 			}
+			if (io.github.jcondedata.aliveworkplace.fish.Fishers.isFisherman(villager)) {
+				ItemStack held = player.getItemInHand(hand);
+				if (held.is(net.minecraft.world.item.Items.FISHING_ROD)) {
+					return level.isClientSide ? InteractionResult.SUCCESS
+						: io.github.jcondedata.aliveworkplace.fish.Fishers.assign((ServerPlayer) player, villager, held);
+				}
+				if (held.isEmpty() && player.isShiftKeyDown() && io.github.jcondedata.aliveworkplace.fish.Fishers.isHired(villager)) {
+					if (!level.isClientSide) {
+						io.github.jcondedata.aliveworkplace.fish.Fishers.sendStatus(player, villager);
+					}
+					return InteractionResult.SUCCESS;
+				}
+				return InteractionResult.PASS;
+			}
 			if (!Builders.isBuilder(villager)) {
 				return InteractionResult.PASS;
 			}

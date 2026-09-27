@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+### Added
+- **Fishermen fish for you.** Hand any Fisherman villager (the ones with a barrel) a fishing rod. They walk to the
+  nearest water within 16 blocks of their barrel, cast from the shore and reel in fish (and the odd bit of junk —
+  no treasure), bringing the catch back to their barrel and the chests next to it. Rods wear out; put spares in
+  the barrel. What they're doing and how much they've caught shows above their heads; sneak-right-click them for
+  details and a button to stop.
+
 ## 0.10.0 — 2026-09-27
 
 ### Added

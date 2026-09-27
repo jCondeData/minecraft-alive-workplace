@@ -193,6 +193,18 @@ public final class WorkplaceCommand {
 		}
 		// A farmer's field has no site of its own: the id is the farmer's.
 		for (ServerLevel level : source.getServer().getAllLevels()) {
+			if (level.getEntity(id) instanceof net.minecraft.world.entity.npc.Villager fisher
+				&& io.github.jcondedata.aliveworkplace.fish.Fishers.isHired(fisher)) {
+				boolean allowed = source.hasPermission(2)
+					|| source.getEntity() instanceof net.minecraft.world.entity.player.Player p && Friends.mayCommand(p, fisher);
+				if (!allowed) {
+					source.sendFailure(Component.translatable("command.aliveworkplace.not_owner"));
+					return 0;
+				}
+				io.github.jcondedata.aliveworkplace.fish.Fishers.release(level, fisher);
+				source.sendSuccess(() -> Component.translatable("command.aliveworkplace.fisher_released", fisher.getDisplayName()), false);
+				return 1;
+			}
 			if (level.getEntity(id) instanceof net.minecraft.world.entity.npc.Villager farmer
 				&& io.github.jcondedata.aliveworkplace.farm.Fields.hasField(farmer)) {
 				boolean allowed = source.hasPermission(2)

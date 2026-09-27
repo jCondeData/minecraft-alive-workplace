@@ -34,6 +34,9 @@ abstract class VillagerGoalPackagesMixin {
 			CallbackInfoReturnable<ImmutableList<Pair<Integer, ? extends BehaviorControl<? super Villager>>>> cir) {
 		if (profession == VillagerProfession.FARMER) {
 			cir.setReturnValue(io.github.jcondedata.aliveworkplace.farm.FarmerPackages.work(cir.getReturnValue()));
+		} else if (profession == VillagerProfession.FISHERMAN) {
+			cir.setReturnValue(io.github.jcondedata.aliveworkplace.work.UpgradedJob.work(cir.getReturnValue(),
+				new io.github.jcondedata.aliveworkplace.fish.FisherWork(), io.github.jcondedata.aliveworkplace.fish.Fishers::vanillaMayRun));
 		}
 	}
 }

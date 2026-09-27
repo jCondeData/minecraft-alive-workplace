@@ -195,5 +195,19 @@
   "message.aliveworkplace.field.state.needs_seeds": "needs seeds",
   "message.aliveworkplace.field.state.depositing": "bringing in the harvest",
   "message.aliveworkplace.field.state.resting": "field tended",
-  "command.aliveworkplace.field_released": "%s stopped looking after the field."
+  "command.aliveworkplace.field_released": "%s stopped looking after the field.",
+  "message.aliveworkplace.fisher.busy": "%s is already fishing for you. Put spare rods in their barrel or a chest next to it.",
+  "message.aliveworkplace.fisher.no_barrel": "This fisherman has no barrel. Place one near them first.",
+  "message.aliveworkplace.fisher.no_water": "There is no water to fish within %s blocks of this fisherman's barrel.",
+  "message.aliveworkplace.fisher.started": "%s will fish the water near their barrel for you. The catch goes into the barrel and chests within %s blocks of it; put spare fishing rods there too.",
+  "message.aliveworkplace.fisher.header": "%s — fishing for you · %s caught",
+  "message.aliveworkplace.fisher.resting": "taking a break (no rod or no water)",
+  "message.aliveworkplace.fisher.stop": "[Stop fishing for me]",
+  "message.aliveworkplace.fisher.stop_hover": "The fisherman goes back to their usual day; the rod and the catch go into their barrel.",
+  "message.aliveworkplace.fisher.title": "Fisher · %s caught",
+  "message.aliveworkplace.fisher.state.fishing": "fishing",
+  "message.aliveworkplace.fisher.state.needs_rod": "needs a fishing rod",
+  "message.aliveworkplace.fisher.state.no_water": "no water nearby",
+  "message.aliveworkplace.fisher.state.depositing": "bringing in the catch",
+  "command.aliveworkplace.fisher_released": "%s stopped fishing for you."
 }

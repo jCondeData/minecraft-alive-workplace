@@ -60,6 +60,15 @@ public final class ModAttachments {
 	public static final AttachmentType<java.util.List<io.github.jcondedata.aliveworkplace.mail.RouteData>> COURIER_ROUTES = AttachmentRegistry.create(
 		AliveWorkplace.id("courier_routes"), builder -> builder.persistent(io.github.jcondedata.aliveworkplace.mail.RouteData.CODEC.listOf()));
 
+	/** How many battles a trainer has fought (shown above its head). */
+	public static final AttachmentType<Integer> TRAINER_BATTLES = AttachmentRegistry.create(
+		AliveWorkplace.id("trainer_battles"), builder -> builder.persistent(com.mojang.serialization.Codec.INT));
+
+	/** Player → the in-game day they were last paid for beating this trainer. */
+	public static final AttachmentType<java.util.Map<java.util.UUID, Long>> TRAINER_REWARDS = AttachmentRegistry.create(
+		AliveWorkplace.id("trainer_rewards"), builder -> builder.persistent(
+			com.mojang.serialization.Codec.unboundedMap(net.minecraft.core.UUIDUtil.STRING_CODEC, com.mojang.serialization.Codec.LONG)));
+
 	public static void init() {
 	}
 

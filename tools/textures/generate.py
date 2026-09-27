@@ -1013,6 +1013,60 @@ def bard_overlay():
     save(img, "entity", "zombie_villager", "profession", "bard.png")
 
 
+# --- Training Post: a sparring post with a red and white target ---------------------------------------
+def training_post_top():
+    rnd = random.Random(201)
+    img = Image.new("RGBA", (16, 16))
+    planks(img, rnd)
+    for i in range(16):
+        for p in ((i, 0), (i, 15), (0, i), (15, i)):
+            img.putpixel(p, WOOD_EDGE)
+    for y in range(16):
+        for x in range(16):
+            d = ((x - 7.5) ** 2 + (y - 7.5) ** 2) ** 0.5
+            if d < 6.5:
+                img.putpixel((x, y), rgb("#c62828") if int(d) % 3 != 2 else rgb("#f2f2f2"))
+    save(img, "block", "training_post_top.png")
+
+
+def training_post_side(front=False):
+    rnd = random.Random(202 if front else 203)
+    img = Image.new("RGBA", (16, 16))
+    planks(img, rnd)
+    for i in range(16):
+        for p in ((i, 0), (i, 15), (0, i), (15, i)):
+            img.putpixel(p, WOOD_EDGE)
+    # A red band round the post, and on the front a white star
+    for y in (6, 7, 8, 9):
+        for x in range(1, 15):
+            img.putpixel((x, y), jitter(rgb("#c62828"), rnd, 5))
+    if front:
+        for (x, y) in ((7, 5), (8, 5), (6, 7), (7, 7), (8, 7), (9, 7), (7, 8), (8, 8), (6, 10), (9, 10), (7, 6), (8, 6), (7, 9), (8, 9)):
+            img.putpixel((x, y), rgb("#f2f2f2"))
+    save(img, "block", "training_post_front.png" if front else "training_post_side.png")
+
+
+def trainer_overlay():
+    img = Image.new("RGBA", (64, 64), T)
+    rnd = random.Random(211)
+    red, white = rgb("#c62828"), rgb("#f2f2f2")
+    # A red and white cap
+    for y in range(0, 8):
+        for x in range(40, 48):
+            img.putpixel((x, y), jitter(red if y < 5 else white, rnd, 4))
+    for y in range(8, 11):
+        for x in range(32, 64):
+            img.putpixel((x, y), jitter(white if y == 10 else red, rnd, 4))
+    for i in range(3, 13):
+        img.putpixel((31 + i, 48 + 3), red)
+    # A sporty jacket: blue with a white stripe
+    for y in range(44, 56):
+        for x in range(0, 28):
+            img.putpixel((x, y), jitter(white if y in (48, 49) else rgb("#1f5fa8"), rnd, 4))
+    save(img, "entity", "villager", "profession", "trainer.png")
+    save(img, "entity", "zombie_villager", "profession", "trainer.png")
+
+
 def icon(blueprint):
     big = Image.new("RGBA", (128, 128), T)
     scaled = blueprint.resize((128, 128), Image.NEAREST)
@@ -1069,3 +1123,7 @@ if __name__ == "__main__":
     music_stand_side(front=False)
     music_stand_side(front=True)
     bard_overlay()
+    training_post_top()
+    training_post_side(front=False)
+    training_post_side(front=True)
+    trainer_overlay()

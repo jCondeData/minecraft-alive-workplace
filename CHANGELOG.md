@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+### Added
+- **Pokémon Trainers** (with Cobblemon). Craft a **Training Post** (a target block on planks) and a villager becomes a
+  Trainer. Right-click one with an empty hand to battle their team. Trainers start as Novices (2 Pokémon around level
+  10) and rank up every time anyone battles them, all the way to Master (6 fully evolved Pokémon, level 80–100, and a
+  much smarter battle AI). Beating a trainer pays CobbleDollars (emeralds if CobbleDollars isn't installed) once a day
+  per trainer. No badges, no gyms.
+
 ## 0.19.0 — 2026-09-27
 
 ### Added

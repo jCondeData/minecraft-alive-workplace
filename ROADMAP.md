@@ -112,13 +112,21 @@ workstation, like the rest of the mod.
   adventure maps rather than jobs for villagers.
 
 ## Milestone 3 — Trainers (Cobblemon; optional dependency)
-- [ ] Optional Cobblemon integration layer (mod must still load without Cobblemon)
-- [ ] **Trainer** profession + **Training Post** workstation; trainer posts generate in villages so every village has trainers
-- [ ] 5 tiers like trade levels — Novice → Apprentice → Journeyman → Expert → Master — team size and level scale from very easy to extremely hard (Master: full team, lv 80–100, competitive sets, smarter AI, Mega Evolution if Mega Showdown allows)
-- [ ] Trainers **level up when you battle them** (XP per battle, like trading); levels are shared server-wide
-- [ ] Rewards: **CobbleDollars** only, scaling with tier; **no badges, no gyms**
+- [x] Optional Cobblemon integration layer: `compat/cobblemon` is the only code touching Cobblemon classes, called only
+  when it's loaded; Cobblemon 1.7.3 is compile-only and runs in `runCompatGameTest`
+- [x] **Trainer** profession + **Training Post** workstation: right-click (empty hand) to battle; a real Cobblemon battle
+  (`TrainerBattleActor` + `BattleRegistry.startBattle`, gen 9 singles) against the trainer's team
+- [ ] Trainer posts generate in villages so every village has trainers
+- [x] 5 tiers = villager level, Novice → Master: team 2/3/4/5/6 at lv 5–12 / 15–25 / 30–42 / 50–65 / 80–100; basic
+  Pokémon for beginners, fully evolved at the top, never legendary/mythical/ultra beast/paradox; the team is fixed per
+  trainer and tier (seeded by the villager); Novice uses Cobblemon's random AI, higher tiers `StrongBattleAI(tier)`
+- [ ] Master extras: competitive sets (items, natures, EVs), Mega Evolution if Mega Showdown allows
+- [x] Trainers **level up when you battle them** (+5 XP a battle, +3 more when they win; vanilla level thresholds);
+  levels are the villager's, so shared server-wide
+- [x] Rewards: **CobbleDollars** (100/250/500/1000/2500 by tier, via `/cobbledollars give`), once per in-game day per
+  player per trainer; emeralds when CobbleDollars isn't installed; **no badges, no gyms**
 - [ ] **Trainer Leader**: one per village, starts at Expert strength, pays the most, one rematch per in-game day, no badge
-- [ ] Use RCT API for battles/AI if it can drive arbitrary entities; otherwise Cobblemon's NPC battle API
+- [x] ~~RCT API~~: Cobblemon's own `TrainerBattleActor` battles for any villager, no RCT needed
 - [ ] Tune level numbers against the pack's RCT level caps
 
 ## Milestone 4 — Pokémon partners & Cobblemon jobs

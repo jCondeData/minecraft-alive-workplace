@@ -90,6 +90,11 @@ public final class ModBlocks {
 		"music_stand", new BuildersBenchBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.NOTE_BLOCK))
 	);
 
+	/** Workstation for Pokémon Trainers (they only battle with Cobblemon installed). */
+	public static final BuildersBenchBlock TRAINING_POST = register(
+		"training_post", new BuildersBenchBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.TARGET))
+	);
+
 	private static <T extends Block> T register(String name, T block) {
 		Registry.register(BuiltInRegistries.BLOCK, AliveWorkplace.id(name), block);
 		Registry.register(BuiltInRegistries.ITEM, AliveWorkplace.id(name), new BlockItem(block, new Item.Properties()));

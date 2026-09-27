@@ -1,0 +1,156 @@
+package io.github.jcondedata.aliveworkplace.compat.cobblemon;
+
+import com.cobblemon.mod.common.Cobblemon;
+import com.cobblemon.mod.common.api.Priority;
+import com.cobblemon.mod.common.api.battles.model.PokemonBattle;
+import com.cobblemon.mod.common.api.battles.model.ai.BattleAI;
+import com.cobblemon.mod.common.api.events.CobblemonEvents;
+import com.cobblemon.mod.common.api.pokemon.PokemonSpecies;
+import com.cobblemon.mod.common.api.storage.party.PlayerPartyStore;
+import com.cobblemon.mod.common.battles.BattleFormat;
+import com.cobblemon.mod.common.battles.BattleRegistry;
+import com.cobblemon.mod.common.battles.BattleSide;
+import com.cobblemon.mod.common.battles.BattleStartResult;
+import com.cobblemon.mod.common.battles.SuccessfulBattleStart;
+import com.cobblemon.mod.common.battles.actor.PlayerBattleActor;
+import com.cobblemon.mod.common.battles.actor.TrainerBattleActor;
+import com.cobblemon.mod.common.battles.ai.RandomBattleAI;
+import com.cobblemon.mod.common.battles.ai.StrongBattleAI;
+import com.cobblemon.mod.common.battles.pokemon.BattlePokemon;
+import com.cobblemon.mod.common.pokemon.Pokemon;
+import com.cobblemon.mod.common.pokemon.Species;
+import io.github.jcondedata.aliveworkplace.trainer.Trainers;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.Set;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.npc.Villager;
+
+/**
+ * The Cobblemon half of Trainers: building a trainer's team, starting the battle, noticing how it ended.
+ * Only touched when Cobblemon is installed.
+ */
+public final class CobblemonTrainers {
+	/** Team size and level range by tier (Novice..Master). */
+	private static final int[] SIZE = {2, 3, 4, 5, 6};
+	private static final int[] MIN_LEVEL = {5, 15, 30, 50, 80};
+	private static final int[] MAX_LEVEL = {12, 25, 42, 65, 100};
+	private static final Set<String> NOT_FOR_TRAINERS = Set.of("legendary", "mythical", "ultra_beast", "paradox");
+
+	private record Challenge(UUID trainer, UUID player) {
+	}
+
+	private static final Map<UUID, Challenge> BATTLES = new ConcurrentHashMap<>();
+	private static MinecraftServer server;
+
+	/** Called once at startup (when Cobblemon is installed): listen for battles ending. */
+	public static void init() {
+		net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents.SERVER_STARTED.register(s -> server = s);
+		CobblemonEvents.BATTLE_VICTORY.subscribe(Priority.NORMAL, event -> {
+			Challenge c = BATTLES.remove(event.getBattle().getBattleId());
+			if (c != null && server != null) {
+				boolean playerWon = event.getWinners().stream().anyMatch(a -> a.getUuid().equals(c.player()));
+				server.execute(() -> Trainers.battleOver(server, c.trainer(), c.player(), playerWon));
+			}
+		});
+		CobblemonEvents.BATTLE_FLED.subscribe(Priority.NORMAL, event -> {
+			Challenge c = BATTLES.remove(event.getBattle().getBattleId());
+			if (c != null && server != null) {
+				server.execute(() -> Trainers.battleOver(server, c.trainer(), c.player(), false));
+			}
+		});
+	}
+
+	public static boolean isBattling(Villager trainer) {
+		return BATTLES.values().stream().anyMatch(c -> c.trainer().equals(trainer.getUUID()));
+	}
+
+	/** Starts a battle between {@code player} and {@code trainer}. */
+	public static void challenge(ServerPlayer player, Villager trainer) {
+		if (BattleRegistry.getBattleByParticipatingPlayer(player) != null) {
+			return;
+		}
+		if (isBattling(trainer)) {
+			player.displayClientMessage(Component.translatable("message.aliveworkplace.trainer.busy", trainer.getDisplayName()).withStyle(ChatFormatting.YELLOW), true);
+			return;
+		}
+		PlayerPartyStore party = Cobblemon.INSTANCE.getStorage().getParty(player);
+		List<BattlePokemon> mine = party.toBattleTeam(false, true, null);
+		if (mine.isEmpty()) {
+			player.displayClientMessage(Component.translatable("message.aliveworkplace.trainer.no_team").withStyle(ChatFormatting.YELLOW), true);
+			return;
+		}
+		int tier = Trainers.tier(trainer);
+		List<BattlePokemon> theirs = new ArrayList<>();
+		for (Pokemon pokemon : team(trainer.getUUID(), tier)) {
+			theirs.add(BattlePokemon.Companion.safeCopyOf(pokemon));
+		}
+		BattleAI ai = tier <= 1 ? new RandomBattleAI() : new StrongBattleAI(tier);
+		TrainerBattleActor them = new TrainerBattleActor(Trainers.title(trainer).getString(), trainer.getUUID(), theirs, ai);
+		PlayerBattleActor us = new PlayerBattleActor(player.getUUID(), mine);
+		BattleStartResult result = BattleRegistry.startBattle(BattleFormat.Companion.getGEN_9_SINGLES(), new BattleSide(us), new BattleSide(them), false);
+		if (result instanceof SuccessfulBattleStart started) {
+			BATTLES.put(started.getBattle().getBattleId(), new Challenge(trainer.getUUID(), player.getUUID()));
+			player.sendSystemMessage(Component.translatable("message.aliveworkplace.trainer.challenge", Trainers.title(trainer), theirs.size())
+				.withStyle(ChatFormatting.GOLD));
+		} else {
+			player.displayClientMessage(Component.translatable("message.aliveworkplace.trainer.cant_start").withStyle(ChatFormatting.RED), true);
+		}
+	}
+
+	/**
+	 * The trainer's team at this tier: always the same for the same trainer and tier (seeded by the
+	 * villager), never legendaries; young Pokémon for beginners, fully evolved ones at the top.
+	 */
+	public static List<Pokemon> team(UUID trainer, int tier) {
+		int t = Math.max(1, Math.min(5, tier)) - 1;
+		Random random = new Random(trainer.getMostSignificantBits() ^ trainer.getLeastSignificantBits() ^ (31L * t));
+		List<Species> pool = new ArrayList<>();
+		for (Species species : PokemonSpecies.getImplemented()) {
+			if (species.getLabels().stream().anyMatch(NOT_FOR_TRAINERS::contains)) {
+				continue;
+			}
+			boolean basic = species.getPreEvolution() == null;
+			boolean finalForm = species.getEvolutions().isEmpty();
+			boolean fits = switch (t) {
+				case 0, 1 -> basic;
+				case 2 -> !basic || finalForm;
+				default -> finalForm;
+			};
+			if (fits) {
+				pool.add(species);
+			}
+		}
+		if (pool.isEmpty()) {
+			pool.addAll(PokemonSpecies.getImplemented());
+		}
+		pool.sort(Comparator.comparing(Species::getName));
+		List<Pokemon> team = new ArrayList<>();
+		for (int i = 0; i < SIZE[t] && !pool.isEmpty(); i++) {
+			Species species = pool.remove(random.nextInt(pool.size()));
+			int level = MIN_LEVEL[t] + random.nextInt(MAX_LEVEL[t] - MIN_LEVEL[t] + 1);
+			team.add(species.create(level));
+		}
+		return team;
+	}
+
+	/** Ends a battle as if it had been decided (tests). */
+	public static void finishForTest(PokemonBattle battle, boolean playerWon) {
+		Challenge c = BATTLES.remove(battle.getBattleId());
+		battle.end();
+		if (c != null && server != null) {
+			Trainers.battleOver(server, c.trainer(), c.player(), playerWon);
+		}
+	}
+
+	private CobblemonTrainers() {
+	}
+}

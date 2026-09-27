@@ -302,5 +302,21 @@
   "entity.minecraft.villager.bard": "Bard",
   "entity.minecraft.zombie_villager.bard": "Zombie Bard",
   "message.aliveworkplace.bard.playing": "playing %s",
-  "message.aliveworkplace.bard.tune": "playing a tune"
+  "message.aliveworkplace.bard.tune": "playing a tune",
+  "block.aliveworkplace.training_post": "Training Post",
+  "entity.minecraft.villager.trainer": "Trainer",
+  "entity.minecraft.zombie_villager.trainer": "Zombie Trainer",
+  "message.aliveworkplace.trainer.title": "%s Trainer %s",
+  "message.aliveworkplace.trainer.state": "right-click to battle · %s battles",
+  "message.aliveworkplace.trainer.no_cobblemon": "Trainers battle with Pokémon — that needs Cobblemon.",
+  "message.aliveworkplace.trainer.asleep": "%s is asleep. Come back in the morning.",
+  "message.aliveworkplace.trainer.busy": "%s is already in a battle.",
+  "message.aliveworkplace.trainer.no_team": "Your Pokémon need healing before you can battle.",
+  "message.aliveworkplace.trainer.cant_start": "The battle couldn't start.",
+  "message.aliveworkplace.trainer.challenge": "%s accepts your challenge with %s Pokémon!",
+  "message.aliveworkplace.trainer.lost": "%s won this time. Train up and try again!",
+  "message.aliveworkplace.trainer.won_dollars": "You beat %s! +%s CobbleDollars",
+  "message.aliveworkplace.trainer.won_emeralds": "You beat %s! +%s emeralds",
+  "message.aliveworkplace.trainer.won_again": "You beat %s again! (Prize money once a day per trainer.)",
+  "message.aliveworkplace.trainer.ranked_up": "%s is now a %s trainer — expect a tougher team next time."
 }

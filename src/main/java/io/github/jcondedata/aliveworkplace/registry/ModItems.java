@@ -67,6 +67,7 @@ public final class ModItems {
 				output.accept(ModBlocks.SHOP_COUNTER);
 				output.accept(ModBlocks.TRAVEL_POST);
 				output.accept(ModBlocks.MUSIC_STAND);
+				output.accept(ModBlocks.TRAINING_POST);
 				for (StarterBlueprints.Entry entry : StarterBlueprints.ALL) {
 					output.accept(BlueprintItem.create(entry.id(), entry.size()));
 				}

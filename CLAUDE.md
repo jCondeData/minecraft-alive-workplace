@@ -50,6 +50,7 @@ The owner (Jesse) does not write code: sessions are expected to work autonomousl
 - `shop/` — player shops: `ShopCounterBlock`/`ShopCounterBlockEntity` (price list), `Shops` (offers from stock, sales);
   mixins on `Villager.mobInteract` (refresh offers) and `AbstractVillager.notifyTrade` (move the goods and payment)
 - `travel/` — travel posts and ferrymen: `TravelNetwork` (saved data), `TravelPostBlock`, `TravelTicketItem`, `Ferrymen`
+- `trainer/` — Pokémon trainers: `Trainers` (tiers, prizes, XP); the battles live in `compat/cobblemon/CobblemonTrainers`
 - `bard/` — bards: `BardWork` (discs from the chests, or a made-up tune)
 - `nurse/` — nurses: `Nurses` (treating players), `NurseWork` (healing villagers nearby)
 - `compat/cobblemon/` — the only code that touches Cobblemon classes; call it only when `isModLoaded("cobblemon")`

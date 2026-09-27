@@ -4,7 +4,7 @@ Villagers with real jobs. Hand a **Builder** a blueprint and they build it for y
 site, fetch materials from your chests, put up the walls and roof, and finish with doors, beds and
 torches. **Miners** dig out quarries, **Lumberjacks** cut down and replant trees, **Farmers** look after
 your fields and **Fishermen** fish for you, dropping everything off in your chests. **Postmen** carry mail
-between players' mailboxes, **Guards** keep monsters away, **Nurses** heal you (and your Pokémon) **Shopkeepers** run your shop, **Ferrymen** take you between villages and **Bards** play music.
+between players' mailboxes, **Guards** keep monsters away, **Nurses** heal you (and your Pokémon) **Shopkeepers** run your shop, **Ferrymen** take you between villages, **Bards** play music and — with Cobblemon — **Trainers** battle you.
 
 ![Three builders putting up the starter blueprints](docs/media/timelapse.gif)
 
@@ -138,6 +138,13 @@ dimension). Use a ticket within 16 blocks of any travel post and you arrive at t
 Craft a **Music Stand** (paper on a note block) and place it near a villager without a job. Put music discs in a
 chest within 8 blocks: in the morning and in the evening the bard plays them one after another (the discs stay in the
 chest). No discs? They make up a tune on the harp.
+
+## Pokémon Trainers (with Cobblemon)
+Craft a **Training Post** (a target block on planks) and place it near a villager without a job: they become a
+**Trainer**. Right-click a trainer with an empty hand to battle. Every trainer starts as a Novice with two young
+Pokémon and ranks up as people battle them — Apprentice, Journeyman, Expert, Master — until they field six fully
+evolved Pokémon at level 80–100 and play smart. Beating one pays **CobbleDollars** (100 for a Novice up to 2,500 for a
+Master; emeralds if CobbleDollars isn't installed), once a day per trainer. No badges, no gyms.
 
 ## Blueprint Table: any build from the internet
 Craft a **Blueprint Table** (blue dye on top, cartography table in the middle, planks around) and right-click it.

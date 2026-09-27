@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    " T ",
+    "PPP"
+  ],
+  "key": {
+    "T": {
+      "item": "minecraft:target"
+    },
+    "P": {
+      "tag": "minecraft:planks"
+    }
+  },
+  "result": {
+    "id": "aliveworkplace:training_post",
+    "count": 1
+  }
+}

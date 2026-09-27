@@ -60,6 +60,16 @@ public final class BuilderEvents {
 				}
 				return InteractionResult.PASS;
 			}
+			if (io.github.jcondedata.aliveworkplace.trainer.Trainers.isTrainer(villager)) {
+				// Right-click with an empty hand: battle. Sneak to trade instead.
+				if (player.getItemInHand(hand).isEmpty() && !player.isShiftKeyDown()) {
+					if (!level.isClientSide) {
+						io.github.jcondedata.aliveworkplace.trainer.Trainers.challenge((ServerPlayer) player, villager);
+					}
+					return InteractionResult.SUCCESS;
+				}
+				return InteractionResult.PASS;
+			}
 			if (io.github.jcondedata.aliveworkplace.nurse.Nurses.isNurse(villager)) {
 				// Right-click with an empty hand: get treated. Sneak to trade instead.
 				if (player.getItemInHand(hand).isEmpty() && !player.isShiftKeyDown()) {

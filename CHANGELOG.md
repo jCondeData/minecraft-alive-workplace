@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 0.16.0 — 2026-09-27
+
 ### Added
 - **Ferrymen and travel posts.** Craft a **Travel Post** (a sign over planks and a boat), name it in an anvil if you
   like, and place it in each village or base you want to connect; a villager takes it as a **Ferryman**. Right-click a

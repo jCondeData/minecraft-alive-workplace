@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 0.10.0 — 2026-09-27
+
 ### Added
 - **Farmers look after your fields.** Craft a **Field Marker** (stick + wheat seeds + paper), right-click two
   opposite corners of a field (up to 32 × 32) and give the marker to any Farmer villager. They harvest what's

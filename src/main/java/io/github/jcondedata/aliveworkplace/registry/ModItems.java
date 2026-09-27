@@ -39,6 +39,12 @@ public final class ModItems {
 		new io.github.jcondedata.aliveworkplace.travel.TravelTicketItem(new Item.Properties().stacksTo(16))
 	);
 
+	/** Sets up a courier route for a Postman. */
+	public static final io.github.jcondedata.aliveworkplace.mail.DeliveryNoteItem DELIVERY_NOTE = Registry.register(
+		BuiltInRegistries.ITEM, AliveWorkplace.id("delivery_note"),
+		new io.github.jcondedata.aliveworkplace.mail.DeliveryNoteItem(new Item.Properties().stacksTo(1))
+	);
+
 	public static final CreativeModeTab TAB = Registry.register(
 		BuiltInRegistries.CREATIVE_MODE_TAB,
 		AliveWorkplace.id("main"),
@@ -55,6 +61,7 @@ public final class ModItems {
 				output.accept(FIELD_MARKER);
 				output.accept(ModBlocks.POSTAL_DESK);
 				output.accept(ModBlocks.MAILBOX);
+				output.accept(DELIVERY_NOTE);
 				output.accept(ModBlocks.GUARD_POST);
 				output.accept(ModBlocks.NURSE_STATION);
 				output.accept(ModBlocks.SHOP_COUNTER);

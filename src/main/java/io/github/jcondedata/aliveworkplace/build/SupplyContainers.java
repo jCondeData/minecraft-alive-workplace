@@ -185,6 +185,47 @@ public final class SupplyContainers {
 		return taken;
 	}
 
+	/** Takes up to {@code maxStacks} stacks of items matching {@code test} out of the container at {@code pos}. */
+	public static List<ItemStack> takeMatching(ServerLevel level, BlockPos pos, java.util.function.Predicate<ItemStack> test, int maxStacks) {
+		List<ItemStack> out = new ArrayList<>();
+		Storage<ItemVariant> s = storage(level, pos);
+		if (s == null) {
+			return out;
+		}
+		for (var view : s.nonEmptyViews()) {
+			if (out.size() >= maxStacks) {
+				break;
+			}
+			ItemVariant variant = view.getResource();
+			ItemStack sample = variant.toStack();
+			if (!test.test(sample)) {
+				continue;
+			}
+			try (Transaction tx = Transaction.openOuter()) {
+				long got = view.extract(variant, Math.min(view.getAmount(), sample.getMaxStackSize()), tx);
+				tx.commit();
+				if (got > 0) {
+					out.add(variant.toStack((int) got));
+				}
+			}
+		}
+		return out;
+	}
+
+	/** True if the container at {@code pos} holds anything matching {@code test}. */
+	public static boolean hasMatching(ServerLevel level, BlockPos pos, java.util.function.Predicate<ItemStack> test) {
+		Storage<ItemVariant> s = storage(level, pos);
+		if (s == null) {
+			return false;
+		}
+		for (var view : s.nonEmptyViews()) {
+			if (test.test(view.getResource().toStack())) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	/** Puts a stack into the containers; returns whatever did not fit. */
 	public static ItemStack insert(ServerLevel level, List<BlockPos> containers, ItemStack stack) {
 		if (stack.isEmpty()) {

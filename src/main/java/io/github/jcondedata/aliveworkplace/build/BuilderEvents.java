@@ -46,6 +46,20 @@ public final class BuilderEvents {
 				}
 				return InteractionResult.PASS;
 			}
+			if (io.github.jcondedata.aliveworkplace.mail.Postmen.isPostman(villager)) {
+				ItemStack held = player.getItemInHand(hand);
+				if (held.is(ModItems.DELIVERY_NOTE)) {
+					return level.isClientSide ? InteractionResult.SUCCESS
+						: io.github.jcondedata.aliveworkplace.mail.Postmen.assign((ServerPlayer) player, villager, held);
+				}
+				if (held.isEmpty() && player.isShiftKeyDown()) {
+					if (!level.isClientSide) {
+						io.github.jcondedata.aliveworkplace.mail.Postmen.sendStatus(player, villager);
+					}
+					return InteractionResult.SUCCESS;
+				}
+				return InteractionResult.PASS;
+			}
 			if (io.github.jcondedata.aliveworkplace.nurse.Nurses.isNurse(villager)) {
 				// Right-click with an empty hand: get treated. Sneak to trade instead.
 				if (player.getItemInHand(hand).isEmpty() && !player.isShiftKeyDown()) {

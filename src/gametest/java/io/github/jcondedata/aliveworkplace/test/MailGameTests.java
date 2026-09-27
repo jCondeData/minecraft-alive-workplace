@@ -72,6 +72,32 @@ public class MailGameTests implements FabricGameTest {
 		helper.succeed();
 	}
 
+	/** With no mail about, a postman runs courier routes: cobblestone goes over, the pickaxe stays. */
+	@GameTest(template = AREA, timeoutTicks = 1600)
+	public void postmanRunsACourierRoute(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		helper.setDayTime(2000);
+		BlockPos from = new BlockPos(12, 2, 4);
+		BlockPos to = new BlockPos(4, 2, 12);
+		helper.setBlock(from, net.minecraft.world.level.block.Blocks.CHEST);
+		helper.setBlock(to, net.minecraft.world.level.block.Blocks.CHEST);
+		net.minecraft.world.Container source = helper.getBlockEntity(from);
+		source.setItem(0, new ItemStack(Items.COBBLESTONE, 64));
+		source.setItem(1, new ItemStack(Items.COBBLESTONE, 30));
+		source.setItem(2, new ItemStack(Items.IRON_PICKAXE));
+		BlockPos desk = new BlockPos(2, 2, 2);
+		helper.setBlock(desk, ModBlocks.POSTAL_DESK);
+		Villager postman = helper.spawn(EntityType.VILLAGER, new BlockPos(3, 2, 3));
+		Jobs.employ(level, postman, helper.absolutePos(desk), ModVillagers.POSTAL_DESK_POI, ModVillagers.POSTMAN);
+		postman.setAttached(ModAttachments.COURIER_ROUTES, List.of(new io.github.jcondedata.aliveworkplace.mail.RouteData(
+			java.util.Optional.of(helper.absolutePos(from)), java.util.Optional.of(helper.absolutePos(to)), List.of())));
+		net.minecraft.world.Container target = helper.getBlockEntity(to);
+		helper.succeedWhen(() -> {
+			helper.assertTrue(target.countItem(Items.COBBLESTONE) == 94, target.countItem(Items.COBBLESTONE) + " cobblestone delivered");
+			helper.assertTrue(source.countItem(Items.IRON_PICKAXE) == 1, "the pickaxe should stay");
+		});
+	}
+
 	/** Mail handed in for somewhere far away lands in the mailbox at dawn. */
 	@GameTest(template = AREA)
 	public void nightMailArrivesAtDawn(GameTestHelper helper) {

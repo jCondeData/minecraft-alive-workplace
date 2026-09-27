@@ -56,6 +56,10 @@ public final class ModAttachments {
 	public static final AttachmentType<Integer> SHOP_SALES = AttachmentRegistry.create(
 		AliveWorkplace.id("shop_sales"), builder -> builder.persistent(com.mojang.serialization.Codec.INT));
 
+	/** A postman's courier routes (from Delivery Notes). */
+	public static final AttachmentType<java.util.List<io.github.jcondedata.aliveworkplace.mail.RouteData>> COURIER_ROUTES = AttachmentRegistry.create(
+		AliveWorkplace.id("courier_routes"), builder -> builder.persistent(io.github.jcondedata.aliveworkplace.mail.RouteData.CODEC.listOf()));
+
 	public static void init() {
 	}
 

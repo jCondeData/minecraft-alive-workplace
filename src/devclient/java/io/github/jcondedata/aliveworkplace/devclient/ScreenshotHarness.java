@@ -74,6 +74,10 @@ public class ScreenshotHarness implements ClientModInitializer {
 			quarryScene(mc, mc.getSingleplayerServer());
 			return;
 		}
+		if ("staff".equals(System.getProperty("aliveworkplace.scene"))) {
+			staffScene(mc, mc.getSingleplayerServer());
+			return;
+		}
 		if ("guard".equals(System.getProperty("aliveworkplace.scene"))) {
 			guardScene(mc, mc.getSingleplayerServer());
 			return;
@@ -377,6 +381,64 @@ public class ScreenshotHarness implements ClientModInitializer {
 		}
 		if (tick >= GIVE_UP_AT) {
 			shot(mc, "99_timeout");
+			mc.stop();
+		}
+	}
+
+	// --- Staff: every workstation with its villager, for a look at the textures ------------------------
+
+	private void staffScene(Minecraft mc, MinecraftServer server) {
+		tick++;
+		if (tick == 1) {
+			mc.options.renderDistance().set(4);
+			mc.options.cloudStatus().set(CloudStatus.OFF);
+			mc.options.hideGui = true;
+		}
+		if (tick == 20) {
+			server.execute(() -> {
+				ServerLevel level = server.overworld();
+				level.getGameRules().getRule(GameRules.RULE_DAYLIGHT).set(false, server);
+				level.getGameRules().getRule(GameRules.RULE_DOMOBSPAWNING).set(false, server);
+				level.setDayTime(6000);
+				var V = io.github.jcondedata.aliveworkplace.registry.ModVillagers.class;
+				Object[][] staff = {
+					{ModBlocks.BUILDERS_BENCH, io.github.jcondedata.aliveworkplace.registry.ModVillagers.BUILDERS_BENCH_POI, io.github.jcondedata.aliveworkplace.registry.ModVillagers.BUILDER},
+					{ModBlocks.MINERS_BENCH, io.github.jcondedata.aliveworkplace.registry.ModVillagers.MINERS_BENCH_POI, io.github.jcondedata.aliveworkplace.registry.ModVillagers.MINER},
+					{ModBlocks.CHOPPING_BLOCK, io.github.jcondedata.aliveworkplace.registry.ModVillagers.CHOPPING_BLOCK_POI, io.github.jcondedata.aliveworkplace.registry.ModVillagers.LUMBERJACK},
+					{ModBlocks.POSTAL_DESK, io.github.jcondedata.aliveworkplace.registry.ModVillagers.POSTAL_DESK_POI, io.github.jcondedata.aliveworkplace.registry.ModVillagers.POSTMAN},
+					{ModBlocks.GUARD_POST, io.github.jcondedata.aliveworkplace.registry.ModVillagers.GUARD_POST_POI, io.github.jcondedata.aliveworkplace.registry.ModVillagers.GUARD},
+					{ModBlocks.NURSE_STATION, io.github.jcondedata.aliveworkplace.registry.ModVillagers.NURSE_STATION_POI, io.github.jcondedata.aliveworkplace.registry.ModVillagers.NURSE},
+					{ModBlocks.SHOP_COUNTER, io.github.jcondedata.aliveworkplace.registry.ModVillagers.SHOP_COUNTER_POI, io.github.jcondedata.aliveworkplace.registry.ModVillagers.SHOPKEEPER},
+					{ModBlocks.TRAVEL_POST, io.github.jcondedata.aliveworkplace.registry.ModVillagers.TRAVEL_POST_POI, io.github.jcondedata.aliveworkplace.registry.ModVillagers.FERRYMAN},
+				};
+				for (int i = 0; i < staff.length; i++) {
+					BlockPos block = new BlockPos(i * 3 - 10, -60, 0);
+					net.minecraft.world.level.block.Block b = (net.minecraft.world.level.block.Block) staff[i][0];
+					BlockState state = b.defaultBlockState();
+					if (state.hasProperty(net.minecraft.world.level.block.HorizontalDirectionalBlock.FACING)) {
+						state = state.setValue(net.minecraft.world.level.block.HorizontalDirectionalBlock.FACING, Direction.SOUTH);
+					}
+					level.setBlockAndUpdate(block, state);
+					Villager v = EntityType.VILLAGER.spawn(level, block.south(2), MobSpawnType.COMMAND);
+					v.setNoAi(true);
+					v.setYRot(0);
+					v.setYHeadRot(0);
+					io.github.jcondedata.aliveworkplace.work.Jobs.employ(level, v, block,
+						(net.minecraft.resources.ResourceKey<net.minecraft.world.entity.ai.village.poi.PoiType>) staff[i][1],
+						(net.minecraft.world.entity.npc.VillagerProfession) staff[i][2]);
+				}
+				BlockPos mailbox = new BlockPos(14, -60, 0);
+				level.setBlockAndUpdate(mailbox, ModBlocks.MAILBOX.defaultBlockState().setValue(io.github.jcondedata.aliveworkplace.mail.MailboxBlock.FACING, Direction.SOUTH)
+					.setValue(io.github.jcondedata.aliveworkplace.mail.MailboxBlock.HAS_MAIL, true));
+				hover(server.getPlayerList().getPlayers().get(0), new Vec3(1.5, -58.2, 9.5), 180, 8);
+			});
+		}
+		if (tick == 140) {
+			shot(mc, "01_staff");
+			server.execute(() -> hover(server.getPlayerList().getPlayers().get(0), new Vec3(1.5, -55.5, 7.5), 180, 30));
+		}
+		if (tick == 200) {
+			shot(mc, "02_staff_above");
 			mc.stop();
 		}
 	}

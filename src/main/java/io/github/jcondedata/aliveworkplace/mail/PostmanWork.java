@@ -51,6 +51,14 @@ public class PostmanWork extends Behavior<Villager> {
 	private BlockPos target;
 	private int searchTimer;
 
+	/** A courier run in progress (only when there's no mail to see to). */
+	private enum HaulPhase { PICKUP, DROP, RETURN }
+
+	@Nullable
+	private RouteData haul;
+	private HaulPhase haulPhase = HaulPhase.PICKUP;
+	private int nextRoute;
+
 	public PostmanWork() {
 		super(ImmutableMap.of(
 			MemoryModuleType.JOB_SITE, MemoryStatus.VALUE_PRESENT,
@@ -98,13 +106,22 @@ public class PostmanWork extends Behavior<Villager> {
 		Parcel parcel = parcelId == null ? null : office.parcel(parcelId);
 		if (parcel == null || !stillMine(parcel, villager)) {
 			parcelId = null;
+			if (haul != null) {
+				haulTick(level, villager);
+				return;
+			}
 			if (--searchTimer > 0) {
 				idle(villager);
 				return;
 			}
 			searchTimer = 40;
 			if (!choose(level, villager, desk, office, gameTime)) {
-				idle(villager);
+				// No mail: run a courier route if one has something to carry.
+				if (startHaul(level, villager, desk)) {
+					haulTick(level, villager);
+				} else {
+					idle(villager);
+				}
 				return;
 			}
 			parcel = office.parcel(parcelId);
@@ -149,6 +166,94 @@ public class PostmanWork extends Behavior<Villager> {
 		parcelId = null;
 		searchTimer = 0;
 		holdLetters(villager, office);
+	}
+
+	// --- courier routes ---------------------------------------------------------------------------
+
+	private boolean startHaul(ServerLevel level, Villager villager, BlockPos desk) {
+		java.util.List<RouteData> routes = Postmen.routes(villager);
+		for (int i = 0; i < routes.size(); i++) {
+			RouteData route = routes.get((nextRoute + i) % routes.size());
+			if (!route.isComplete() || !route.from().get().closerThan(desk, PostOffice.ROUND) || !route.to().get().closerThan(desk, PostOffice.ROUND)) {
+				continue;
+			}
+			if (io.github.jcondedata.aliveworkplace.build.SupplyContainers.hasMatching(level, route.from().get(), route::carries)) {
+				nextRoute = (nextRoute + i + 1) % routes.size();
+				haul = route;
+				haulPhase = HaulPhase.PICKUP;
+				walker.reset();
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private void haulTick(ServerLevel level, Villager villager) {
+		RouteData route = haul;
+		if (route == null) {
+			return;
+		}
+		BUSY.add(villager);
+		io.github.jcondedata.aliveworkplace.build.BuilderBag bag = villager.getAttachedOrCreate(ModAttachments.BUILDER_BAG);
+		BlockPos from = route.from().get();
+		BlockPos to = route.to().get();
+		BlockPos target = haulPhase == HaulPhase.DROP ? to : from;
+		WorkerStatus.set(villager, Component.translatable("message.aliveworkplace.postman.title", villager.getAttachedOrElse(ModAttachments.MAIL_DELIVERED, 0)), -1f,
+			Component.translatable("message.aliveworkplace.postman.state.haul", to.getX(), to.getY(), to.getZ()).withStyle(ChatFormatting.GRAY));
+		if (!walker.walkTo(level, villager, target, 3.0)) {
+			if (walker.noSpot()) {
+				haul = null;
+			}
+			return;
+		}
+		villager.swing(InteractionHand.MAIN_HAND);
+		switch (haulPhase) {
+			case PICKUP -> {
+				java.util.List<ItemStack> taken = io.github.jcondedata.aliveworkplace.build.SupplyContainers.takeMatching(level, from, route::carries,
+					Math.max(1, bag.freeSlots() - 1));
+				for (ItemStack stack : taken) {
+					ItemStack rest = bag.add(stack);
+					if (!rest.isEmpty()) {
+						io.github.jcondedata.aliveworkplace.build.SupplyContainers.insert(level, java.util.List.of(from), rest);
+					}
+				}
+				level.playSound(null, from, SoundEvents.BARREL_OPEN, SoundSource.BLOCKS, 0.4f, 1.1f);
+				haulPhase = HaulPhase.DROP;
+				if (taken.isEmpty()) {
+					haul = null;
+				}
+			}
+			case DROP -> {
+				java.util.List<ItemStack> left = new java.util.ArrayList<>();
+				for (ItemStack stack : bag.takeAll()) {
+					ItemStack rest = io.github.jcondedata.aliveworkplace.build.SupplyContainers.insert(level, java.util.List.of(to), stack);
+					if (!rest.isEmpty()) {
+						left.add(rest);
+					}
+				}
+				level.playSound(null, to, SoundEvents.BARREL_CLOSE, SoundSource.BLOCKS, 0.4f, 1.1f);
+				left.forEach(bag::add);
+				if (left.isEmpty()) {
+					haul = null;
+					BuilderLevels.addXp(level, villager, 1, null);
+				} else {
+					haulPhase = HaulPhase.RETURN; // destination full: take the rest back
+				}
+			}
+			case RETURN -> {
+				for (ItemStack stack : bag.takeAll()) {
+					ItemStack rest = io.github.jcondedata.aliveworkplace.build.SupplyContainers.insert(level, java.util.List.of(from), stack);
+					if (!rest.isEmpty()) {
+						villager.spawnAtLocation(rest);
+					}
+				}
+				haul = null;
+			}
+		}
+		walker.reset();
+		if (haul == null) {
+			searchTimer = 100; // give the next run a moment
+		}
 	}
 
 	private static boolean stillMine(Parcel parcel, Villager villager) {

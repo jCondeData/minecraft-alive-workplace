@@ -935,6 +935,26 @@ def ferryman_overlay():
     save(img, "entity", "zombie_villager", "profession", "ferryman.png")
 
 
+def delivery_note_item():
+    img = Image.new("RGBA", (16, 16), T)
+    rnd = random.Random(171)
+    for y in range(2, 14):
+        for x in range(3, 13):
+            edge = x in (3, 12) or y in (2, 13)
+            img.putpixel((x, y), rgb("#b8ad94") if edge else jitter(rgb("#ece6d4"), rnd, 3))
+    # An arrow from one box to another
+    for (x, y) in ((5, 5), (6, 5), (5, 6), (6, 6)):
+        img.putpixel((x, y), rgb("#8a5a2b"))
+    for (x, y) in ((9, 10), (10, 10), (9, 11), (10, 11)):
+        img.putpixel((x, y), rgb("#8a5a2b"))
+    for i in range(6):
+        img.putpixel((6 + i // 2, 7 + i // 2), rgb("#2b4c8c"))
+    img.putpixel((9, 9), rgb("#2b4c8c"))
+    img.putpixel((8, 9), rgb("#2b4c8c"))
+    img.putpixel((9, 8), rgb("#2b4c8c"))
+    save(img, "item", "delivery_note.png")
+
+
 def icon(blueprint):
     big = Image.new("RGBA", (128, 128), T)
     scaled = blueprint.resize((128, 128), Image.NEAREST)
@@ -986,3 +1006,4 @@ if __name__ == "__main__":
     travel_post_side(front=True)
     ticket_item()
     ferryman_overlay()
+    delivery_note_item()

@@ -8,6 +8,8 @@ between players' mailboxes, **Guards** keep monsters away, **Nurses** heal you (
 
 ![Three builders putting up the starter blueprints](docs/media/timelapse.gif)
 
+![The miner, lumberjack, postman, guard, nurse, shopkeeper and ferryman at their workstations](docs/media/staff.png)
+
 Fabric · Minecraft 1.21.1 · built for the Cobbleverse (Cobblemon) modpack, but works without it.
 Builders understand **Chipped**, **Rechiseled** and **Supplementaries** blocks (tested with the real mods).
 Install on the **server and every player's game**.
@@ -96,6 +98,12 @@ near a villager without a job. Postmen walk their round (64 blocks around the de
 them in the right mailbox. Parcels for a mailbox outside the round (another village, another dimension) go with the
 night mail and arrive at the next dawn. Only you, your friends (`/workplace friend add`) and operators can open your
 mailbox.
+
+**Courier routes.** When there's no mail, postmen haul between your chests. Craft a **Delivery Note** (paper, a
+feather and an ink sac), right-click the container to take from and then the one to bring to (say, the quarry chest
+and the builder's chest), and give the note to a postman. They carry everything except tools, weapons and armor — or,
+if you hold an item in your other hand and right-click the air with the note, only the kinds you pick. Up to 4 routes
+per postman; sneak-right-click them to see their routes, and give them a blank note to end them.
 
 ## Guards
 ![A guard fighting off three husks](docs/media/guard.gif)

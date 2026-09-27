@@ -62,7 +62,10 @@ Owner decisions are recorded in **Design decisions** at the bottom. Don't change
 - [ ] Farmer follow-ups: bone meal from the chests, cocoa, sweet berries (they hurt villagers), a Field Marker for villages' own farms
 - [x] **Fisher** (any vanilla Fisherman): hand one a fishing rod and they fish the nearest still water within 16 blocks of their barrel (standing on the shore), reeling in the vanilla fishing loot (fish and junk, no treasure), storing every fifth catch in the barrel and chests next to it; rods wear out and spares come from those containers; vanilla routine paused while working; longer shift; `/workplace cancel <fisherman uuid>` stops it
 - [ ] Fisher follow-ups: a real bobber on the water, fishing from boats/docks, smoking the catch
-- [ ] **Courier / hauler**: moves items between marked chests (e.g. quarry → builder stash)
+- [x] **Courier / hauler** (done by Postmen): a Delivery Note marks a source and a destination container (plus an
+  optional list of items to carry; by default everything but tools, weapons and armor); a postman takes up to 4
+  routes and runs them whenever there's no mail, carrying a bagful per trip and taking back what doesn't fit; a blank
+  note ends all routes and returns the notes
 
 ## Milestone 2b — Village life (roles from MyNPCs, rebuilt as villager jobs)
 The owner pointed at *My NPCs* (MIT): admin-configured NPCs with roles. We don't copy its approach (op-made NPCs,
@@ -73,7 +76,7 @@ workstation, like the rest of the mod.
   (Postal Desk workstation) collects parcels from mailboxes within 64 blocks of the desk and delivers to recipients
   on the round; anything else is handed in and arrives at the next dawn (`PostOffice` saved data; the flag shows
   there's mail; comparators read it)
-- [ ] Postman follow-ups: the same villager runs Courier routes; letters with a written message; parcel tracking
+- [ ] Postman follow-ups: letters with a written message; parcel tracking
 - [x] **Guard** (Guard Post workstation): fights monsters (not creepers) within 24 blocks of the post at any hour
   (combat is in their CORE activity, and they never panic), with the best weapon and armor from the chests near the
   post; 40 health, heals between fights, +10% damage per level, XP per kill; night-watch schedule (patrol evening

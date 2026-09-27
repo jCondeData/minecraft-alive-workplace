@@ -29,7 +29,7 @@ The owner (Jesse) does not write code: sessions are expected to work autonomousl
   of builders at work; use it to check anything visual and to show the owner progress.
   `SCENE=table` shows the Blueprint Table screens, `SCENE=preview` the ghost preview and the status above a builder,
   `SCENE=gallery` every starter blueprint, `SCENE=village WORKSHOP_WEIGHT=200` one village of each type with workshops,
-  `SCENE=quarry` a miner digging out a block of stone, `SCENE=forest` a lumberjack felling and replanting four trees, `SCENE=farm` a farmer working a field, `SCENE=mail` the mailbox screen and a postman delivering, `SCENE=guard` a guard fighting three husks (then `python3 tools/screenshots/make_gif.py`). `DEBUG=true` logs
+  `SCENE=quarry` a miner digging out a block of stone, `SCENE=forest` a lumberjack felling and replanting four trees, `SCENE=farm` a farmer working a field, `SCENE=mail` the mailbox screen and a postman delivering, `SCENE=guard` a guard fighting three husks, `SCENE=staff` every workstation with its villager (then `python3 tools/screenshots/make_gif.py`). `DEBUG=true` logs
   builder/miner decisions. Long scenes take >10 min: start run.sh in the background and poll.
   Never `pkill -f`/`pgrep -f` a pattern that also appears in your own command line (it kills your shell).
 - If Maven Central answers **429**, wait ~20 s and retry; it is rate limiting, not a real failure.

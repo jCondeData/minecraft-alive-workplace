@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+### Added
+- **Courier routes.** Postmen now also carry things between your chests when there's no mail. Craft a **Delivery
+  Note** (paper, a feather and an ink sac), right-click the container to take from and then the one to bring to —
+  for example your miner's chest and your builder's chest — and give it to a postman. By default they carry
+  everything except tools, weapons and armor; hold an item in your other hand and right-click the air with the
+  note to carry only that kind (up to 9 kinds). A postman runs up to 4 routes; give them a blank note to end them.
+
 ## 0.16.0 — 2026-09-27
 
 ### Added

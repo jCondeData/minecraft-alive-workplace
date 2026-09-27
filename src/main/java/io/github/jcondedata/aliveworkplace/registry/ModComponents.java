@@ -40,6 +40,15 @@ public final class ModComponents {
 			.networkSynchronized(io.github.jcondedata.aliveworkplace.travel.TicketData.STREAM_CODEC).build()
 	);
 
+	/** A Delivery Note's courier route. */
+	public static final DataComponentType<io.github.jcondedata.aliveworkplace.mail.RouteData> ROUTE = Registry.register(
+		BuiltInRegistries.DATA_COMPONENT_TYPE,
+		AliveWorkplace.id("route"),
+		DataComponentType.<io.github.jcondedata.aliveworkplace.mail.RouteData>builder()
+			.persistent(io.github.jcondedata.aliveworkplace.mail.RouteData.CODEC)
+			.networkSynchronized(io.github.jcondedata.aliveworkplace.mail.RouteData.STREAM_CODEC).build()
+	);
+
 	public static void init() {
 	}
 

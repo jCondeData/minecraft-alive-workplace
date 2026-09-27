@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 0.8.0 — 2026-09-27
+
 ### Added
 - **Miners** — the second job. Craft a **Miner's Bench** (cobblestone, a stone pickaxe and planks) and a villager
   without a job takes it. Mark out a quarry with a **Quarry Marker** (stick + red dye + paper): right-click two
@@ -10,6 +12,9 @@
   and better ones dig harder blocks), put everything they dig into those chests, light the pit with torches if
   there are any, and never break through to lava or water. Progress shows above their heads; sneak-right-click
   them for details. Miners level up like builders and trade coal, ores, torches and pickaxes.
+
+### Fixed
+- The villager in a builder's workshop could become a fisherman (the workshop had a barrel) instead of a builder.
 
 ## 0.7.0 — 2026-09-26
 

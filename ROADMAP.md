@@ -39,7 +39,7 @@ Owner decisions are recorded in **Design decisions** at the bottom. Don't change
 - [x] Materials list in the blueprint tooltip (hold Shift)
 - [ ] "What's still missing" in the tooltip once a blueprint is handed over / placed near a builder's chests
 - [x] **Build queue**: hand a busy builder up to 5 more blueprints; they do them in order (queued sites reserve their spot, show in `/workplace sites` and can be cancelled)
-- [ ] **Crews**: several builders on one site split the steps
+- [x] **Crews**: idle builders with a bench within 48 blocks of a build help out (up to 3 per site): they work ahead of the lead builder on the same stage, fetch from the lead's chests, pass spare materials to each other, and go home when it's done (`workplaceBuildersHelp` gamerule)
 - [ ] **Deconstruct** blueprint mode: take a build down and return the blocks
 - [ ] **Permissions**: only the owner (and friends they add) can command their builders; `/workplace friend add`
 - [x] **Builder levels**: 1 XP per 5 blocks placed + 10 per finished build, vanilla level thresholds; level-ups unlock the next trades; each level is faster (Master takes 40% of the base time per block)

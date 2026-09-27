@@ -22,6 +22,10 @@ public final class ModGameRules {
 	public static final GameRules.Key<GameRules.IntegerValue> FOUNDATION_DEPTH =
 		GameRuleRegistry.register("workplaceFoundationDepth", GameRules.Category.MOBS, GameRuleFactory.createIntRule(12, 0));
 
+	/** When true, builders with nothing to do help with builds near their bench. */
+	public static final GameRules.Key<GameRules.BooleanValue> BUILDERS_HELP =
+		GameRuleRegistry.register("workplaceBuildersHelp", GameRules.Category.MOBS, GameRuleFactory.createBooleanRule(true));
+
 	public static void init() {
 	}
 

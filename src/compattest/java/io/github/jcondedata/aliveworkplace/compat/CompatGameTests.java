@@ -215,6 +215,7 @@ public class CompatGameTests implements FabricGameTest {
 		ServerLevel level = helper.getLevel();
 		helper.setDayTime(2000);
 		level.getGameRules().getRule(ModGameRules.BUILD_DELAY).set(2, level.getServer());
+		level.getGameRules().getRule(ModGameRules.BUILDERS_HELP).set(false, level.getServer()); // tests run side by side
 		helper.setBlock(BENCH, ModBlocks.BUILDERS_BENCH);
 		helper.setBlock(CHEST, Blocks.CHEST);
 		Container chest = helper.getBlockEntity(CHEST);

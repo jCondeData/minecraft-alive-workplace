@@ -90,6 +90,17 @@ public class BuilderWork extends Behavior<Villager> {
 	@Nullable
 	private BlockPos stepAsideFrom;
 	private int stepAsideTicks;
+	/** True while helping another builder's site (this tick). */
+	private boolean helping;
+	/** The step being worked on this tick. */
+	@Nullable
+	private BlockPos currentStep;
+	/** Steps a helper gave up on (left for the lead), for the stage in {@link #avoidStage}. */
+	private final Set<BlockPos> avoid = new HashSet<>();
+	@Nullable
+	private BuildPlan.Stage avoidStage;
+	/** How far ahead of the lead helpers look for work. */
+	private static final int HELP_WINDOW = 64;
 
 	public BuilderWork() {
 		super(ImmutableMap.of(
@@ -101,12 +112,12 @@ public class BuilderWork extends Behavior<Villager> {
 
 	@Override
 	protected boolean checkExtraStartConditions(ServerLevel level, Villager villager) {
-		return !villager.isSleeping() && Builders.activeSite(level, villager) != null;
+		return !villager.isSleeping() && Builders.workSite(level, villager) != null;
 	}
 
 	@Override
 	protected boolean canStillUse(ServerLevel level, Villager villager, long gameTime) {
-		return !villager.isSleeping() && Builders.activeSite(level, villager) != null;
+		return !villager.isSleeping() && Builders.workSite(level, villager) != null;
 	}
 
 	@Override
@@ -125,11 +136,15 @@ public class BuilderWork extends Behavior<Villager> {
 	@Override
 	protected void stop(ServerLevel level, Villager villager, long gameTime) {
 		villager.setItemSlot(EquipmentSlot.MAINHAND, ItemStack.EMPTY);
+		BuildSite site = Builders.activeSite(level, villager);
+		if (site != null) {
+			site.release(villager.getUUID());
+		}
 	}
 
 	@Override
 	protected void tick(ServerLevel level, Villager villager, long gameTime) {
-		BuildSite site = Builders.activeSite(level, villager);
+		BuildSite site = Builders.workSite(level, villager);
 		if (site == null) {
 			return;
 		}
@@ -137,7 +152,8 @@ public class BuilderWork extends Behavior<Villager> {
 		if (plan == null) {
 			return;
 		}
-		Optional<BlockPos> benchOpt = Builders.benchPos(villager);
+		helping = Builders.isHelping(villager);
+		Optional<BlockPos> benchOpt = helping ? Optional.ofNullable(site.bench()) : Builders.benchPos(villager);
 		if (benchOpt.isEmpty()) {
 			return;
 		}
@@ -168,7 +184,19 @@ public class BuilderWork extends Behavior<Villager> {
 		// 1. Find the next step that actually needs work.
 		BuildPlan.Step step = null;
 		Action action = Action.NONE;
-		for (int budget = SKIP_BUDGET; budget > 0 && !site.isDone(); budget--) {
+		if (helping) {
+			step = helperStep(level, villager, site, plan, bench);
+			if (step == null) {
+				if (!bag.isEmpty()) {
+					deposit(level, villager, site, plan, bag, bench); // hand back what it was carrying
+				} else {
+					idleNear(villager, site, plan);
+				}
+				return;
+			}
+			action = actionFor(level, site.stage(), step, bench);
+		}
+		for (int budget = SKIP_BUDGET; !helping && budget > 0 && !site.isDone(); budget--) {
 			BuildPlan.Step candidate = site.current(plan);
 			if (candidate == null) {
 				site.finishList();
@@ -178,19 +206,20 @@ public class BuilderWork extends Behavior<Villager> {
 			if (action == Action.NONE) {
 				site.advance();
 			} else if (action == Action.SKIP) {
-				site.defer();
+				site.defer(); // (lead only: helpers pick their own steps)
 			} else {
 				step = candidate;
 				break;
 			}
 		}
-		if (site.isDone()) {
+		if (!helping && site.isDone()) {
 			Builders.finish(level, villager, site);
 			return;
 		}
 		if (step == null) {
 			return;
 		}
+		currentStep = step.pos();
 
 		if (DEBUG && gameTime % 40 == 0) {
 			io.github.jcondedata.aliveworkplace.AliveWorkplace.LOG.info("[builder {}] at {} stage={} action={} target={} approach={} aside={} blocked={} stuck={} reach={} detail={}",
@@ -203,7 +232,7 @@ public class BuilderWork extends Behavior<Villager> {
 		if (action == Action.PLACE) {
 			requirements = step.requirements();
 			if (requirements.isEmpty()) {
-				site.defer();
+				defer(site, villager, step.pos());
 				return;
 			}
 			if (!free) {
@@ -221,12 +250,12 @@ public class BuilderWork extends Behavior<Villager> {
 
 		// 3. Walk into reach.
 		if (!moveInReach(level, villager, site, plan, step.pos(), REACH, true)) {
-			site.setStatus(BuildSite.Status.WORKING);
+			setStatus(site, BuildSite.Status.WORKING);
 			return;
 		}
 		villager.getBrain().setMemory(MemoryModuleType.LOOK_TARGET, new BlockPosTracker(step.pos()));
 		villager.setItemSlot(EquipmentSlot.MAINHAND, !requirements.isEmpty() ? new ItemStack(requirements.get(0).item()) : ItemStack.EMPTY);
-		site.setStatus(BuildSite.Status.WORKING);
+		setStatus(site, BuildSite.Status.WORKING);
 
 		// 4. Do the work, one block per workplaceBuildDelay ticks.
 		if (workTimer > 0) {
@@ -242,6 +271,79 @@ public class BuilderWork extends Behavior<Villager> {
 	}
 
 	// --- deciding ----------------------------------------------------------------------------
+
+	/**
+	 * A helper's next step: its current claim if that still needs work, else the first step ahead of
+	 * the lead that needs work and nobody else is on. The lead's own cursor is never touched.
+	 */
+	@Nullable
+	private BuildPlan.Step helperStep(ServerLevel level, Villager villager, BuildSite site, BuildPlan plan, BlockPos bench) {
+		if (avoidStage != site.stage()) {
+			avoid.clear();
+			avoidStage = site.stage();
+		}
+		BuildPlan.Step leads = site.current(plan);
+		BlockPos claimed = site.claim(villager.getUUID());
+		BuildPlan.Step pick = null;
+		for (BuildPlan.Step candidate : site.ahead(plan, HELP_WINDOW)) {
+			BlockPos pos = candidate.pos();
+			if (avoid.contains(pos) || leads != null && leads.pos().equals(pos) || site.claimedByOther(villager.getUUID(), pos)) {
+				continue;
+			}
+			Action a = actionFor(level, site.stage(), candidate, bench);
+			if (a != Action.BREAK && a != Action.PLACE) {
+				continue;
+			}
+			if (pos.equals(claimed)) {
+				pick = candidate;
+				break;
+			}
+			if (pick == null) {
+				pick = candidate;
+				if (claimed == null) {
+					break;
+				}
+			}
+		}
+		if (pick == null) {
+			site.release(villager.getUUID());
+			site.seen(villager.getUUID(), level.getGameTime());
+		} else {
+			site.claim(villager.getUUID(), pick.pos(), level.getGameTime());
+		}
+		return pick;
+	}
+
+	/** Nothing to help with right now (the lead is at the end of a stage): hang around the site. */
+	private static void idleNear(Villager villager, BuildSite site, BuildPlan plan) {
+		villager.setItemSlot(EquipmentSlot.MAINHAND, ItemStack.EMPTY);
+		if (site.bench() != null && !near(villager, site.bench(), 6)) {
+			walkTo(villager, site.bench(), 3);
+		}
+	}
+
+	/** A step can't be done now. The lead retries it at the end of the stage; a helper leaves it to the lead. */
+	private void defer(BuildSite site, Villager villager, BlockPos pos) {
+		if (helping) {
+			avoid.add(pos);
+			site.release(villager.getUUID());
+		} else {
+			site.defer();
+		}
+	}
+
+	/** Only the lead reports the site's status; helpers would just make it flicker. */
+	private void setStatus(BuildSite site, BuildSite.Status status) {
+		if (!helping) {
+			site.setStatus(status);
+		}
+	}
+
+	private void setDetail(BuildSite site, @Nullable Component detail) {
+		if (!helping) {
+			site.setDetail(detail);
+		}
+	}
 
 	private static Action actionFor(ServerLevel level, BuildPlan.Stage stage, BuildPlan.Step step, BlockPos bench) {
 		BlockPos pos = step.pos();
@@ -310,7 +412,7 @@ public class BuilderWork extends Behavior<Villager> {
 			if (spot != null) {
 				hop(level, villager, spot);
 			} else if (deferIfImpossible) {
-				site.defer();
+				defer(site, villager, target);
 			} else {
 				return true; // nowhere to stand next to it (odd chest placement): let them reach it anyway
 			}
@@ -398,11 +500,14 @@ public class BuilderWork extends Behavior<Villager> {
 			available += SupplyContainers.count(level, supplies, item);
 		}
 		if (available < needed) {
+			if (takeFromCrewmate(level, villager, site, plan, bag, requirement.item(), needed)) {
+				return;
+			}
 			waitForMaterials(level, villager, site, plan, bag, bench, supplies);
 			return;
 		}
 		waitTimer = 0;
-		site.setStatus(BuildSite.Status.FETCHING);
+		setStatus(site, BuildSite.Status.FETCHING);
 		BlockPos source = null;
 		for (Item item : accepted) {
 			source = SupplyContainers.firstWith(level, supplies, item);
@@ -417,10 +522,11 @@ public class BuilderWork extends Behavior<Villager> {
 			return;
 		}
 
-		// At the chest: take what the next stretch of work needs, current block first.
+		// At the chest: take what the next stretch of work needs, current block first. Helpers only
+		// take a handful for the blocks they are on, so they never sit on the lead's materials.
 		Map<Item, Integer> wanted = new LinkedHashMap<>();
-		wanted.put(requirement.item(), requirement.count());
-		for (BuildPlan.Step s : site.upcoming(plan, LOOKAHEAD)) {
+		wanted.put(requirement.item(), requirement.count() + (helping ? 3 : 0));
+		for (BuildPlan.Step s : helping ? List.<BuildPlan.Step>of() : site.upcoming(plan, LOOKAHEAD)) {
 			if (!MaterialRules.matches(level.getBlockState(s.pos()), s.state())) {
 				for (MaterialRules.Requirement r : s.requirements()) {
 					wanted.merge(r.item(), r.count(), Integer::sum);
@@ -449,17 +555,69 @@ public class BuilderWork extends Behavior<Villager> {
 		}
 	}
 
+	/**
+	 * The chests are out of something but another builder on this site is carrying spares: walk over
+	 * and get some ("pass me those planks"). Returns false if nobody has any to spare.
+	 */
+	private boolean takeFromCrewmate(ServerLevel level, Villager villager, BuildSite site, BuildPlan plan, BuilderBag bag, Item item, int needed) {
+		List<java.util.UUID> crew = new java.util.ArrayList<>(site.helpers(level.getGameTime()));
+		if (site.builder() != null) {
+			crew.add(0, site.builder());
+		}
+		for (java.util.UUID id : crew) {
+			if (id.equals(villager.getUUID()) || !(level.getEntity(id) instanceof Villager mate) || !mate.isAlive()) {
+				continue;
+			}
+			BuilderBag mateBag = mate.getAttachedOrCreate(ModAttachments.BUILDER_BAG);
+			// Whatever the mate needs for the block it is on stays with it.
+			BuildPlan.Step mateStep = id.equals(site.builder()) ? site.current(plan) : null;
+			BlockPos mateClaim = site.claim(id);
+			int keep = 0;
+			for (BuildPlan.Step s : mateStep != null ? List.of(mateStep) : List.<BuildPlan.Step>of()) {
+				for (MaterialRules.Requirement r : s.requirements()) {
+					keep += r.item() == item ? r.count() : 0;
+				}
+			}
+			if (mateClaim != null) {
+				keep += 1;
+			}
+			int spare = mateBag.count(item) - keep;
+			if (spare < needed) {
+				continue;
+			}
+			setStatus(site, BuildSite.Status.FETCHING);
+			if (!moveInReach(level, villager, site, plan, mate.blockPosition(), CONTAINER_REACH, false)) {
+				return true;
+			}
+			int take = Math.min(Math.min(spare, needed + (helping ? 3 : 32)), bag.spaceFor(item));
+			if (take > 0) {
+				mateBag.remove(item, take);
+				bag.addAll(item, take);
+				villager.getBrain().setMemory(MemoryModuleType.LOOK_TARGET, new net.minecraft.world.entity.ai.behavior.EntityTracker(mate, true));
+			}
+			return true;
+		}
+		return false;
+	}
+
 	private void waitForMaterials(ServerLevel level, Villager villager, BuildSite site, BuildPlan plan, BuilderBag bag, BlockPos bench,
 								  List<BlockPos> supplies) {
+		if (helping) {
+			// A helper doesn't wait: it leaves this block to the lead and looks for one it has materials for.
+			if (currentStep != null) {
+				defer(site, villager, currentStep);
+			}
+			return;
+		}
 		boolean firstTick = site.status() != BuildSite.Status.WAITING_FOR_MATERIALS;
-		site.setStatus(BuildSite.Status.WAITING_FOR_MATERIALS);
+		setStatus(site, BuildSite.Status.WAITING_FOR_MATERIALS);
 		if (!near(villager, bench, 3)) {
 			walkTo(villager, bench, 2);
 		}
 		if (firstTick || --waitTimer <= 0) {
 			waitTimer = WAIT_RECHECK;
 			site.setMissing(Builders.computeMissing(level, site, plan, bag, supplies));
-			if (firstTick) {
+			if (firstTick && !helping) {
 				Builders.notifyWaiting(level, villager, site);
 			}
 		}
@@ -472,7 +630,7 @@ public class BuilderWork extends Behavior<Villager> {
 			return;
 		}
 		Set<Item> keep = new HashSet<>();
-		for (BuildPlan.Step s : site.upcoming(plan, LOOKAHEAD)) {
+		for (BuildPlan.Step s : helping ? List.<BuildPlan.Step>of() : site.upcoming(plan, LOOKAHEAD)) {
 			for (MaterialRules.Requirement r : s.requirements()) {
 				keep.add(r.item());
 			}
@@ -513,12 +671,12 @@ public class BuilderWork extends Behavior<Villager> {
 		if (step.secondaryPos() != null) {
 			BlockState there = level.getBlockState(step.secondaryPos());
 			if (!there.isAir() && !there.canBeReplaced() && !MaterialRules.matches(there, step.secondaryState())) {
-				site.defer();
+				defer(site, villager, pos);
 				return;
 			}
 		}
 		if (!state.canSurvive(level, pos)) {
-			site.defer(); // nothing to attach to yet; retried at the end of the stage
+			defer(site, villager, pos); // nothing to attach to yet; retried at the end of the stage
 			return;
 		}
 		if (!level.isUnobstructed(state, pos, CollisionContext.empty())) {
@@ -526,7 +684,7 @@ public class BuilderWork extends Behavior<Villager> {
 			return;
 		}
 		blockedAttempts = 0;
-		site.setDetail(null);
+		setDetail(site, null);
 
 		if (!free) {
 			for (MaterialRules.Requirement r : requirements) {
@@ -546,7 +704,12 @@ public class BuilderWork extends Behavior<Villager> {
 		SoundType sound = state.getSoundType();
 		level.playSound(null, pos, sound.getPlaceSound(), SoundSource.BLOCKS, (sound.getVolume() + 1f) / 2f, sound.getPitch() * 0.8f);
 		level.gameEvent(villager, GameEvent.BLOCK_PLACE, pos);
-		site.markPlaced();
+		if (helping) {
+			site.countPlaced();
+			site.release(villager.getUUID());
+		} else {
+			site.markPlaced();
+		}
 		BuilderLevels.onPlaced(level, villager, site);
 	}
 
@@ -568,7 +731,7 @@ public class BuilderWork extends Behavior<Villager> {
 				stepAsideTicks = STEP_ASIDE_TICKS;
 			} else {
 				blockedAttempts = 0;
-				site.defer();
+				defer(site, villager, pos);
 			}
 			return;
 		}
@@ -581,12 +744,12 @@ public class BuilderWork extends Behavior<Villager> {
 			}
 		}
 		if (first != null) {
-			site.setDetail(Component.translatable("message.aliveworkplace.status.blocked_by", first.getDisplayName(), pos.getX(), pos.getY(), pos.getZ()));
+			setDetail(site, Component.translatable("message.aliveworkplace.status.blocked_by", first.getDisplayName(), pos.getX(), pos.getY(), pos.getZ()));
 		}
 		if (++blockedAttempts > MAX_BLOCKED_ATTEMPTS) {
 			blockedAttempts = 0;
-			site.setDetail(null);
-			site.defer(); // try the rest first; this spot is retried at the end of the stage
+			setDetail(site, null);
+			defer(site, villager, pos); // try the rest first; this spot is retried at the end of the stage
 		}
 	}
 

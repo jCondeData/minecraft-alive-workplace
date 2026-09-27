@@ -50,7 +50,7 @@ public final class BuilderLevels {
 
 	/** Called after every block the builder places. */
 	static void onPlaced(ServerLevel level, Villager villager, BuildSite site) {
-		if (site.placed() % BLOCKS_PER_XP == 0) {
+		if (site.placedBy(villager.getUUID(), true) % BLOCKS_PER_XP == 0) {
 			addXp(level, villager, 1, site.owner());
 		}
 	}

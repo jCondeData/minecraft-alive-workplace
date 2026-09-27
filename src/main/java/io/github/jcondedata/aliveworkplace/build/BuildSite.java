@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.IntArrayTag;
 import net.minecraft.nbt.NbtOps;
@@ -42,6 +43,9 @@ public final class BuildSite {
 	private UUID builder;
 	/** Waiting in the builder's queue (the builder is busy with an earlier site). */
 	private boolean queued;
+	/** The lead builder's bench: where the supply chests are, for helpers too. Null in pre-0.6 saves. */
+	@Nullable
+	private BlockPos bench;
 
 	// Transient, recomputed as needed
 	@Nullable
@@ -52,6 +56,22 @@ public final class BuildSite {
 	private net.minecraft.network.chat.Component detail;
 	private Runnable onChange = () -> {
 	};
+	/** Helpers working ahead of the lead: which step each is on, and when they last worked (game time). */
+	private final Map<UUID, BlockPos> claims = new java.util.HashMap<>();
+	private final Map<UUID, Long> helpersSeen = new java.util.HashMap<>();
+	private long lastNotified = Long.MIN_VALUE / 2;
+
+	/** True (and remembers now) if nobody was told about this site within the last {@code interval} ticks. */
+	public boolean shouldNotify(long gameTime, long interval) {
+		if (gameTime - lastNotified < interval) {
+			return false;
+		}
+		lastNotified = gameTime;
+		return true;
+	}
+
+	/** Blocks placed per builder since the site was loaded (for XP and for the crew). */
+	private final Map<UUID, Integer> placedBy = new java.util.HashMap<>();
 
 	public BuildSite(UUID id, UUID owner, String ownerName, ResourceLocation structure, BlueprintData.Placement placement) {
 		this.id = id;
@@ -103,6 +123,67 @@ public final class BuildSite {
 	public void markPlaced() {
 		placed++;
 		advance();
+	}
+
+	/** Counts a block placed by {@code builder}; returns how many that builder has placed here. */
+	public int placedBy(UUID builder, boolean add) {
+		return add ? placedBy.merge(builder, 1, Integer::sum) : placedBy.getOrDefault(builder, 0);
+	}
+
+	/** A helper placed a block ahead of the lead: count it, but the lead's cursor stays where it is. */
+	public void countPlaced() {
+		placed++;
+		onChange.run();
+	}
+
+	/**
+	 * Steps after the lead's current one in this stage, for helpers to work on. Empty while the lead
+	 * retries deferred steps (the end of a stage is left to the lead).
+	 */
+	public List<BuildPlan.Step> ahead(BuildPlan plan, int max) {
+		if (retrying || stage == BuildPlan.Stage.DONE) {
+			return List.of();
+		}
+		List<BuildPlan.Step> list = plan.steps(stage);
+		List<BuildPlan.Step> out = new ArrayList<>();
+		for (int i = cursor + 1; i < list.size() && out.size() < max; i++) {
+			out.add(list.get(i));
+		}
+		return out;
+	}
+
+	public boolean claimedByOther(UUID who, BlockPos pos) {
+		for (Map.Entry<UUID, BlockPos> e : claims.entrySet()) {
+			if (!e.getKey().equals(who) && e.getValue().equals(pos)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	@Nullable
+	public BlockPos claim(UUID who) {
+		return claims.get(who);
+	}
+
+	public void claim(UUID who, BlockPos pos, long gameTime) {
+		claims.put(who, pos);
+		helpersSeen.put(who, gameTime);
+	}
+
+	public void release(UUID who) {
+		claims.remove(who);
+	}
+
+	/** Helpers that worked on this site within the last few seconds. */
+	public List<UUID> helpers(long gameTime) {
+		helpersSeen.values().removeIf(t -> gameTime - t > 200);
+		claims.keySet().retainAll(helpersSeen.keySet());
+		return List.copyOf(helpersSeen.keySet());
+	}
+
+	public void seen(UUID helper, long gameTime) {
+		helpersSeen.put(helper, gameTime);
 	}
 
 	/** The step cannot be done yet (nothing to attach to, unreachable): try again at the end of the stage. */
@@ -226,6 +307,16 @@ public final class BuildSite {
 		onChange.run();
 	}
 
+	@Nullable
+	public BlockPos bench() {
+		return bench;
+	}
+
+	public void setBench(@Nullable BlockPos bench) {
+		this.bench = bench;
+		onChange.run();
+	}
+
 	public boolean isQueued() {
 		return queued;
 	}
@@ -286,6 +377,9 @@ public final class BuildSite {
 		if (queued) {
 			tag.putBoolean("queued", true);
 		}
+		if (bench != null) {
+			tag.putLong("bench", bench.asLong());
+		}
 		return tag;
 	}
 
@@ -313,6 +407,7 @@ public final class BuildSite {
 		site.placed = tag.getInt("placed");
 		site.builder = tag.hasUUID("builder") ? tag.getUUID("builder") : null;
 		site.queued = tag.getBoolean("queued");
+		site.bench = tag.contains("bench", Tag.TAG_LONG) ? BlockPos.of(tag.getLong("bench")) : null;
 		return site;
 	}
 

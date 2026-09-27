@@ -7,11 +7,13 @@ import io.github.jcondedata.aliveworkplace.blueprint.BlueprintLibrary;
 import io.github.jcondedata.aliveworkplace.blueprint.BlueprintOutline;
 import io.github.jcondedata.aliveworkplace.blueprint.Blueprints;
 import io.github.jcondedata.aliveworkplace.registry.ModAttachments;
+import io.github.jcondedata.aliveworkplace.registry.ModGameRules;
 import io.github.jcondedata.aliveworkplace.registry.ModVillagers;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.GlobalPos;
@@ -42,6 +44,8 @@ public final class Builders {
 	public static final int MAX_SITE_DISTANCE = 48;
 	/** How many blueprints a builder accepts on top of the one they are building. */
 	public static final int MAX_QUEUE = 5;
+	/** How many idle builders can help one site at a time. */
+	public static final int MAX_HELPERS = 3;
 
 	public static boolean isBuilder(Villager villager) {
 		return !villager.isBaby() && villager.getVillagerData().getProfession() == ModVillagers.BUILDER;
@@ -62,12 +66,77 @@ public final class Builders {
 		BuilderJob job = villager.getAttached(ModAttachments.BUILDER_JOB);
 		if (job != null) {
 			BuildSite site = BuildSiteManager.get(level).get(job.siteId());
-			if (site != null && !site.isQueued()) {
+			if (site != null && !site.isQueued() && !(job.helper() && site.isDone())) {
 				return site;
 			}
-			villager.removeAttached(ModAttachments.BUILDER_JOB);
+			if (job.helper()) {
+				stopHelping(level, villager);
+			} else {
+				villager.removeAttached(ModAttachments.BUILDER_JOB);
+			}
 		}
 		return startNext(level, villager);
+	}
+
+	/** The site to work on this shift: their own (or next queued) build, else one nearby to help with. */
+	@Nullable
+	static BuildSite workSite(ServerLevel level, Villager villager) {
+		BuildSite site = activeSite(level, villager);
+		if (site == null && villager.tickCount % 40 == 0) {
+			site = recruit(level, villager);
+		}
+		return site;
+	}
+
+	public static boolean isHelping(Villager villager) {
+		BuilderJob job = villager.getAttached(ModAttachments.BUILDER_JOB);
+		return job != null && job.helper();
+	}
+
+	/**
+	 * An idle builder looks for a build near its bench that could use a hand (gamerule
+	 * workplaceBuildersHelp) and joins it as a helper. Returns the site, or null.
+	 */
+	@Nullable
+	public static BuildSite recruit(ServerLevel level, Villager villager) {
+		if (!level.getGameRules().getBoolean(ModGameRules.BUILDERS_HELP) || villager.hasAttached(ModAttachments.BUILDER_JOB)) {
+			return null;
+		}
+		Optional<BlockPos> bench = benchPos(villager);
+		if (bench.isEmpty()) {
+			return null;
+		}
+		BuildSite best = null;
+		double bestDistance = Double.MAX_VALUE;
+		for (BuildSite site : BuildSiteManager.get(level).all()) {
+			if (site.isQueued() || site.isDone() || site.bench() == null || villager.getUUID().equals(site.builder())
+				|| site.helpers(level.getGameTime()).size() >= MAX_HELPERS) {
+				continue;
+			}
+			double distance = Math.sqrt(site.bench().distSqr(bench.get()));
+			if (distance <= MAX_SITE_DISTANCE && distance < bestDistance) {
+				best = site;
+				bestDistance = distance;
+			}
+		}
+		if (best != null) {
+			villager.setAttached(ModAttachments.BUILDER_JOB, new BuilderJob(best.id(), true));
+			best.seen(villager.getUUID(), level.getGameTime());
+		}
+		return best;
+	}
+
+	/** Stops helping: hands back anything fetched for the site and becomes idle. */
+	public static void stopHelping(ServerLevel level, Villager villager) {
+		BuilderJob job = villager.getAttached(ModAttachments.BUILDER_JOB);
+		villager.removeAttached(ModAttachments.BUILDER_JOB);
+		BuildSite site = job != null ? BuildSiteManager.get(level).get(job.siteId()) : null;
+		if (site != null) {
+			site.release(villager.getUUID());
+		}
+		BlockPos bench = site != null && site.bench() != null ? site.bench() : benchPos(villager).orElse(villager.blockPosition());
+		emptyBag(level, villager, bench, SupplyContainers.find(level, bench, null));
+		villager.setItemSlot(EquipmentSlot.MAINHAND, ItemStack.EMPTY);
 	}
 
 	/** Sites waiting for this builder, in the order they were handed over. */
@@ -103,6 +172,9 @@ public final class Builders {
 	/** Player right-clicked a builder while holding a blueprint. */
 	public static InteractionResult assign(ServerPlayer player, Villager villager, ItemStack stack) {
 		ServerLevel level = player.serverLevel();
+		if (isHelping(villager)) {
+			stopHelping(level, villager); // their own build comes first
+		}
 		Optional<BlueprintData> data = BlueprintItem.data(stack);
 		if (data.isEmpty()) {
 			return InteractionResult.PASS;
@@ -171,7 +243,11 @@ public final class Builders {
 			owner != null ? owner.getUUID() : villager.getUUID(),
 			owner != null ? owner.getGameProfile().getName() : "",
 			structure, placement);
+		if (isHelping(villager)) {
+			stopHelping(level, villager);
+		}
 		site.setBuilder(villager.getUUID());
+		site.setBench(benchPos(villager).orElse(null));
 		villager.setAttached(ModAttachments.BUILDER_JOB, new BuilderJob(site.id()));
 		return site;
 	}
@@ -184,6 +260,7 @@ public final class Builders {
 			owner != null ? owner.getGameProfile().getName() : "",
 			structure, placement);
 		site.setBuilder(villager.getUUID());
+		site.setBench(benchPos(villager).orElse(null));
 		site.setQueued(true);
 		return site;
 	}
@@ -284,11 +361,28 @@ public final class Builders {
 				}
 			}
 		}
+		// What the rest of the crew is carrying counts too: it goes into this build.
+		List<BuilderBag> bags = new java.util.ArrayList<>(List.of(bag));
+		List<UUID> crew = new java.util.ArrayList<>(site.helpers(level.getGameTime()));
+		if (site.builder() != null) {
+			crew.add(site.builder());
+		}
+		for (UUID id : crew) {
+			if (level.getEntity(id) instanceof Villager mate) {
+				BuilderBag mateBag = mate.getAttachedOrCreate(ModAttachments.BUILDER_BAG);
+				if (mateBag != bag) {
+					bags.add(mateBag);
+				}
+			}
+		}
 		Map<Item, Integer> missing = new LinkedHashMap<>();
 		for (Map.Entry<Item, Integer> e : need.entrySet()) {
 			long have = 0;
 			for (Item member : MaterialFamilies.accepted(e.getKey())) {
-				have += bag.count(member) + SupplyContainers.count(level, supplies, member);
+				have += SupplyContainers.count(level, supplies, member);
+				for (BuilderBag b : bags) {
+					have += b.count(member);
+				}
 			}
 			long shortBy = e.getValue() - have;
 			if (shortBy > 0) {
@@ -315,7 +409,8 @@ public final class Builders {
 
 	static void notifyWaiting(ServerLevel level, Villager villager, BuildSite site) {
 		ServerPlayer owner = level.getServer().getPlayerList().getPlayer(site.owner());
-		if (owner != null && !site.missing().isEmpty()) {
+		// At most once a minute per build: waiting often comes and goes while a crew passes materials around.
+		if (owner != null && !site.missing().isEmpty() && site.shouldNotify(level.getGameTime(), 1200)) {
 			tell(owner, Component.translatable("message.aliveworkplace.waiting", villager.getDisplayName(),
 				Blueprints.displayName(site.structure()), formatMissing(site, 5)), ChatFormatting.YELLOW);
 		}

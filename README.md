@@ -35,6 +35,9 @@ Install on the **server and every player's game**.
 
 When they finish, the blueprint goes back into the supply chest so you can build it again.
 
+**More builders, faster builds.** A builder with nothing to do helps with builds near their bench (up to three helpers
+per build), sharing the chests and passing each other materials.
+
 **Builders level up as they work**, like villagers you trade with: every level makes them faster (a Master builds
 2.5× as fast as a Novice) and unlocks new blueprints to buy — Market Stall, Lookout Tower, then the
 **Healing Center** (with a Cobblemon Healing Machine on the counter when Cobblemon is installed) and the **Supply Shop**.
@@ -69,10 +72,11 @@ Craft a **Blueprint Table** (blue dye on top, cartography table in the middle, p
 | `/gamerule workplaceAllowUploads false` | only operators can upload blueprint files |
 | `/gamerule workplaceFreeMaterials true` | builders need no materials (creative towns) |
 | `/gamerule workplaceBuildDelay 8` | ticks per block (lower is faster) |
+| `/gamerule workplaceBuildersHelp false` | idle builders stop helping with other builds |
 | `/gamerule workplaceFoundationDepth 12` | how far down builders fill under a build on uneven ground (0 = never) |
 
 ## What's next
-Builders first: crews of builders on one site, deconstructing, permissions. Then miners, lumberjacks and couriers, then Cobblemon
+Builders first: taking buildings down, permissions, builders' houses in villages. Then miners, lumberjacks and couriers, then Cobblemon
 trainers and Pokémon work partners. See [ROADMAP.md](ROADMAP.md).
 
 ## Building from source

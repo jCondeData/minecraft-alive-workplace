@@ -2,6 +2,18 @@
 
 ## Unreleased
 
+## 0.6.0 — 2026-09-26
+
+### Added
+- Crews: builders with nothing to do help with builds near their bench (up to 3 helpers per build). They work
+  alongside the builder in charge, share the same supply chests, pass each other spare materials, and head home when
+  the build is done. Their heads say who they're helping. Handing a helper its own blueprint takes it off the crew.
+  Turn it off with `/gamerule workplaceBuildersHelp false`.
+
+### Changed
+- "Waiting for materials" messages come at most once a minute per build, and don't count materials a crew mate is
+  already carrying as missing.
+
 ## 0.5.0 — 2026-09-26
 
 ### Added

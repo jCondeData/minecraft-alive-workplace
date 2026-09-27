@@ -34,6 +34,8 @@
   "message.aliveworkplace.queue.next": "%s is starting on %s next.",
   "message.aliveworkplace.status.queued": "%s — %s — waiting until %s is finished",
   "message.aliveworkplace.status.next": "Next up: %s",
+  "message.aliveworkplace.status.helping": "Helping %s",
+  "gamerule.workplaceBuildersHelp": "Alive Workplace: idle builders help with builds near their bench",
   "message.aliveworkplace.assign.no_bench": "This builder has no Builder's Bench. Place one near them first.",
   "message.aliveworkplace.assign.too_far": "That spot is %s blocks from the builder's bench — keep it within %s.",
   "message.aliveworkplace.assign.overlaps": "That spot overlaps another build in progress (%s).",

@@ -300,6 +300,50 @@ public class BuilderGameTests implements FabricGameTest {
 		helper.succeed();
 	}
 
+	// --- crews -------------------------------------------------------------------------------
+
+	private static final BlockPos HELPER_BENCH = new BlockPos(14, 2, 2);
+	private static final BlockPos HELPER = new BlockPos(14, 2, 3);
+
+	/** An idle builder with a bench nearby pitches in; the build finishes correctly and both earn XP. */
+	@GameTest(template = AREA, timeoutTicks = 2400, batch = "crews")
+	public void idleBuildersHelpNearbyBuilds(GameTestHelper helper) {
+		Setup s = setup(helper, TEST_HUT, HUT_ORIGIN, Rotation.NONE, hutMaterials());
+		s.level().getGameRules().getRule(ModGameRules.BUILDERS_HELP).set(true, s.level().getServer());
+		helper.setBlock(HELPER_BENCH, ModBlocks.BUILDERS_BENCH);
+		Villager mate = helper.spawn(EntityType.VILLAGER, HELPER);
+		Builders.employ(s.level(), mate, helper.absolutePos(HELPER_BENCH));
+		int mateXp = mate.getVillagerXp();
+		AtomicBoolean helped = new AtomicBoolean(false);
+		helper.onEachTick(() -> helped.compareAndSet(false, Builders.isHelping(mate)));
+		helper.succeedWhen(() -> {
+			assertBuilt(helper, s);
+			helper.assertTrue(s.site().skipped() == 0, s.site().skipped() + " block(s) were skipped");
+			helper.assertTrue(helped.get(), "the idle builder never joined in");
+			int byMate = s.site().placedBy(mate.getUUID(), false);
+			int byLead = s.site().placedBy(s.villager().getUUID(), false);
+			helper.assertTrue(byMate >= 5, "the helper placed only " + byMate + " block(s), the lead " + byLead);
+			helper.assertFalse(Builders.isHelping(mate), "the helper should stop once the build is done");
+			helper.assertTrue(mate.getAttachedOrCreate(ModAttachments.BUILDER_BAG).isEmpty(), "the helper kept materials");
+		});
+	}
+
+	/** Handing a helper its own blueprint takes it off helping. */
+	@GameTest(template = AREA, batch = "crews")
+	public void aHelperGivenItsOwnBuildLeavesTheCrew(GameTestHelper helper) {
+		Setup s = setup(helper, TEST_HUT, HUT_ORIGIN, Rotation.NONE, hutMaterials());
+		s.level().getGameRules().getRule(ModGameRules.BUILDERS_HELP).set(true, s.level().getServer());
+		helper.setBlock(HELPER_BENCH, ModBlocks.BUILDERS_BENCH);
+		Villager mate = helper.spawn(EntityType.VILLAGER, HELPER);
+		Builders.employ(s.level(), mate, helper.absolutePos(HELPER_BENCH));
+		helper.assertTrue(Builders.recruit(s.level(), mate) == s.site(), "the idle builder should join the nearby build");
+		BuildSite own = Builders.start(s.level(), mate, null, TEST_HUT, placement(helper, new BlockPos(11, 2, 0), Rotation.NONE));
+		helper.assertFalse(Builders.isHelping(mate), "still helping after getting its own build");
+		helper.assertTrue(Builders.activeSite(s.level(), mate) == own, "its own build should be active");
+		helper.assertTrue(own.bench() != null && own.bench().equals(helper.absolutePos(HELPER_BENCH)), "site should remember the bench");
+		helper.succeed();
+	}
+
 	// --- builder levels --------------------------------------------------------------------
 
 	/** Building earns XP; crossing a threshold levels the builder up and unlocks the next blueprint for sale. */
@@ -513,6 +557,9 @@ public class BuilderGameTests implements FabricGameTest {
 		ServerLevel level = helper.getLevel();
 		helper.setDayTime(2000);
 		level.getGameRules().getRule(ModGameRules.BUILD_DELAY).set(2, level.getServer());
+		// Tests in a batch run side by side: keep finished builders from wandering into other tests' builds.
+		// The crew tests (their own batch) turn helping back on.
+		level.getGameRules().getRule(ModGameRules.BUILDERS_HELP).set(false, level.getServer());
 		helper.setBlock(BENCH, ModBlocks.BUILDERS_BENCH);
 		helper.setBlock(CHEST, Blocks.CHEST);
 		fill(helper.getBlockEntity(CHEST), chestItems);

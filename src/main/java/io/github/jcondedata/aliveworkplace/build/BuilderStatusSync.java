@@ -63,10 +63,20 @@ public final class BuilderStatusSync {
 			if (status == null) {
 				continue;
 			}
-			for (ServerPlayer player : PlayerLookup.tracking(villager)) {
-				if (ServerPlayNetworking.canSend(player, Status.TYPE)) {
-					ServerPlayNetworking.send(player, status);
+			send(villager, status);
+			for (java.util.UUID helperId : site.helpers(level.getGameTime())) {
+				if (level.getEntity(helperId) instanceof Villager helper && !helper.isSleeping()) {
+					send(helper, new Status(helper.getId(), status.title(), status.progress(),
+						Component.translatable("message.aliveworkplace.status.helping", villager.getDisplayName()).withStyle(ChatFormatting.GRAY)));
 				}
+			}
+		}
+	}
+
+	private static void send(Villager villager, Status status) {
+		for (ServerPlayer player : PlayerLookup.tracking(villager)) {
+			if (ServerPlayNetworking.canSend(player, Status.TYPE)) {
+				ServerPlayNetworking.send(player, status);
 			}
 		}
 	}

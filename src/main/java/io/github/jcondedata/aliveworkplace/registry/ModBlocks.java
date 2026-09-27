@@ -71,6 +71,15 @@ public final class ModBlocks {
 		"nurse_station", new BuildersBenchBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.BIRCH_PLANKS))
 	);
 
+	/** Workstation for the Shopkeeper profession, and the shop's price list. */
+	public static final io.github.jcondedata.aliveworkplace.shop.ShopCounterBlock SHOP_COUNTER = register(
+		"shop_counter", new io.github.jcondedata.aliveworkplace.shop.ShopCounterBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.SPRUCE_PLANKS))
+	);
+
+	public static final net.minecraft.world.level.block.entity.BlockEntityType<io.github.jcondedata.aliveworkplace.shop.ShopCounterBlockEntity> SHOP_COUNTER_ENTITY =
+		Registry.register(BuiltInRegistries.BLOCK_ENTITY_TYPE, AliveWorkplace.id("shop_counter"),
+			net.minecraft.world.level.block.entity.BlockEntityType.Builder.of(io.github.jcondedata.aliveworkplace.shop.ShopCounterBlockEntity::new, SHOP_COUNTER).build(null));
+
 	private static <T extends Block> T register(String name, T block) {
 		Registry.register(BuiltInRegistries.BLOCK, AliveWorkplace.id(name), block);
 		Registry.register(BuiltInRegistries.ITEM, AliveWorkplace.id(name), new BlockItem(block, new Item.Properties()));

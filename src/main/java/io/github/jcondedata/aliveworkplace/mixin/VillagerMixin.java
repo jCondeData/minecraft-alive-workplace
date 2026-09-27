@@ -11,6 +11,17 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 /** Builders keep longer hours than other villagers (see {@link ModVillagers#BUILDER_SCHEDULE}). */
 @Mixin(Villager.class)
 abstract class VillagerMixin {
+	/** A shopkeeper's offers are whatever the shop has in stock right now. */
+	@Inject(method = "mobInteract", at = @At("HEAD"))
+	private void aliveworkplace$shopStock(net.minecraft.world.entity.player.Player player, net.minecraft.world.InteractionHand hand,
+			org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable<net.minecraft.world.InteractionResult> cir) {
+		Villager self = (Villager) (Object) this;
+		if (self.level() instanceof net.minecraft.server.level.ServerLevel level && !self.isTrading() && !self.isSleeping()
+			&& io.github.jcondedata.aliveworkplace.shop.Shops.isShopkeeper(self)) {
+			io.github.jcondedata.aliveworkplace.shop.Shops.refreshOffers(level, self);
+		}
+	}
+
 	@Inject(method = "registerBrainGoals", at = @At("TAIL"))
 	private void aliveworkplace$builderSchedule(Brain<Villager> brain, CallbackInfo ci) {
 		Villager self = (Villager) (Object) this;

@@ -147,6 +147,44 @@ public final class SupplyContainers {
 		return ItemStack.EMPTY;
 	}
 
+	/** How many items exactly like {@code template} (same components) the containers hold. */
+	public static long countMatching(ServerLevel level, List<BlockPos> containers, ItemStack template) {
+		ItemVariant variant = ItemVariant.of(template);
+		long total = 0;
+		for (BlockPos p : containers) {
+			Storage<ItemVariant> s = storage(level, p);
+			if (s == null) {
+				continue;
+			}
+			for (var view : s.nonEmptyViews()) {
+				if (view.getResource().equals(variant)) {
+					total += view.getAmount();
+				}
+			}
+		}
+		return total;
+	}
+
+	/** Takes up to {@code max} items exactly like {@code template}. Returns the amount taken. */
+	public static int extractMatching(ServerLevel level, List<BlockPos> containers, ItemStack template, int max) {
+		ItemVariant variant = ItemVariant.of(template);
+		int taken = 0;
+		for (BlockPos p : containers) {
+			if (taken >= max) {
+				break;
+			}
+			Storage<ItemVariant> s = storage(level, p);
+			if (s == null) {
+				continue;
+			}
+			try (Transaction tx = Transaction.openOuter()) {
+				taken += (int) s.extract(variant, max - taken, tx);
+				tx.commit();
+			}
+		}
+		return taken;
+	}
+
 	/** Puts a stack into the containers; returns whatever did not fit. */
 	public static ItemStack insert(ServerLevel level, List<BlockPos> containers, ItemStack stack) {
 		if (stack.isEmpty()) {

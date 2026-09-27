@@ -52,6 +52,10 @@ public final class ModAttachments {
 	public static final AttachmentType<Integer> GUARD_KILLS = AttachmentRegistry.create(
 		AliveWorkplace.id("guard_kills"), builder -> builder.persistent(com.mojang.serialization.Codec.INT));
 
+	/** How many sales a shopkeeper has made (shown above its head). */
+	public static final AttachmentType<Integer> SHOP_SALES = AttachmentRegistry.create(
+		AliveWorkplace.id("shop_sales"), builder -> builder.persistent(com.mojang.serialization.Codec.INT));
+
 	public static void init() {
 	}
 

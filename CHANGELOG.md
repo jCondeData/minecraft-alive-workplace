@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+### Added
+- **Shops.** Craft a **Shop Counter** (an emerald over planks and a chest) and place it: it's your shop, and a
+  villager takes it as a **Shopkeeper**. Open the counter to set prices: in each column, the top slot is what one
+  sale hands over (say 16 cobblestone) and the slot under it is the price (say an emerald — any item works). Put the
+  goods in chests within 8 blocks of the counter. Players trade with the shopkeeper like any villager; what's for
+  sale is whatever the chests hold, and the payment goes into the chests for you.
+
 ### Fixed
 - Builders, miners and other workers could take items out of a mailbox within 8 blocks of their workstation, or
   drop their haul into it. Mailboxes are now private.

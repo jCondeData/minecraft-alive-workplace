@@ -86,8 +86,12 @@ workstation, like the rest of the mod.
   (guards!); sells healing potions, honey, golden apples/carrots. Cobblemon is compile-only (`compat/cobblemon`),
   tested with the real Cobblemon 1.7.3 in `runCompatGameTest`
 - [ ] Nurse follow-ups: a Nurse Station in the Healing Center blueprint, Cobblemon's Healing Machine as a second workstation
-- [ ] **Shopkeeper** (their Item Trader): a Shop Counter you stock from a chest; the villager sells your items at
-  prices you set, for emeralds or CobbleDollars (when installed), and keeps the takings for you.
+- [x] **Shopkeeper** (their Item Trader): the Shop Counter (owned by whoever places it; owner, friends and ops open
+  it) is a 9×2 price list — top slot what one sale hands over, below it the price (any item); the Shopkeeper's
+  offers are rebuilt from the chests near the counter whenever someone talks to them (sold out = no stock), a sale
+  takes the goods out of those chests and puts the payment in; workers never use counters or mailboxes as supply
+  chests (`PrivateContainer`)
+- [ ] Shopkeeper follow-ups: prices in CobbleDollars when that mod is installed, a sales log for the owner
 - [ ] **Ferryman** (their Teleporter): Travel Posts in villages; pay to travel to any village post you have visited.
 - [ ] **Bard**: plays music discs from a chest near their stage in the evening while the village gathers.
 - [ ] Keep worksites loaded while their employer is online (their Chunk Loader), behind a gamerule.

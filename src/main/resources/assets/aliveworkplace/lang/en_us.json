@@ -249,5 +249,14 @@
   "message.aliveworkplace.nurse.wait": "%s just treated you. Come back in %s seconds.",
   "message.aliveworkplace.nurse.healed": "%s patched you up. Take care out there!",
   "message.aliveworkplace.nurse.healed_party": "%s patched you up and healed your %s Pokémon. Take care out there!",
-  "message.aliveworkplace.nurse.state.open": "right-click to be treated"
+  "message.aliveworkplace.nurse.state.open": "right-click to be treated",
+  "block.aliveworkplace.shop_counter": "Shop Counter",
+  "container.aliveworkplace.shop_counter": "Price list (top: what you sell · bottom: its price)",
+  "entity.minecraft.villager.shopkeeper": "Shopkeeper",
+  "entity.minecraft.zombie_villager.shopkeeper": "Zombie Shopkeeper",
+  "message.aliveworkplace.shop.placed": "Your shop counter is up. Open it to set prices: the top row is what one sale hands over, the slot below is what it costs. Stock chests within 8 blocks with the goods; a villager takes the counter and sells from them, and the takings go into those chests.",
+  "message.aliveworkplace.shop.not_yours": "This is %s's shop. Talk to the shopkeeper to buy.",
+  "message.aliveworkplace.shop.how_to": "Top row: what one sale hands over · bottom row: its price",
+  "message.aliveworkplace.shop.title": "Shop · %s sold",
+  "message.aliveworkplace.shop.state.open": "open for business"
 }

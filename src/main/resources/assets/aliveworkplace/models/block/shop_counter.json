@@ -1,0 +1,9 @@
+{
+  "parent": "minecraft:block/orientable_with_bottom",
+  "textures": {
+    "top": "aliveworkplace:block/shop_counter_top",
+    "bottom": "minecraft:block/spruce_planks",
+    "side": "aliveworkplace:block/shop_counter_side",
+    "front": "aliveworkplace:block/shop_counter_front"
+  }
+}

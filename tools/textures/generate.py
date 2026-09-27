@@ -781,6 +781,80 @@ def nurse_overlay():
     save(img, "entity", "zombie_villager", "profession", "nurse.png")
 
 
+# --- Shop Counter: a dark wood counter with a till and a little scale ----------------------------------
+SPRUCE = [rgb("#7a5a3a"), rgb("#6e5034"), rgb("#654a30")]
+
+
+def spruce(img, rnd):
+    for y in range(16):
+        for x in range(16):
+            base = SPRUCE[(y // 4) % 2] if (x + (y // 4) * 5) % 16 else rgb("#4f3a24")
+            img.putpixel((x, y), jitter(base, rnd, 5))
+        if y % 4 == 3:
+            for x in range(16):
+                img.putpixel((x, y), jitter(SPRUCE[2], rnd, 4))
+
+
+def shop_counter_top():
+    rnd = random.Random(121)
+    img = Image.new("RGBA", (16, 16))
+    spruce(img, rnd)
+    for i in range(16):
+        for p in ((i, 0), (i, 15), (0, i), (15, i)):
+            img.putpixel(p, rgb("#3b2a19"))
+    # A green felt mat with coins, and an emerald
+    for y in range(3, 10):
+        for x in range(3, 12):
+            img.putpixel((x, y), jitter(rgb("#2f6b3a"), rnd, 4))
+    for (x, y) in ((5, 5), (6, 5), (5, 6), (8, 7), (9, 7)):
+        img.putpixel((x, y), rgb("#e0b83a"))
+    for (x, y, c) in ((12, 11, "#17dd62"), (13, 11, "#0e9b44"), (12, 12, "#0e9b44"), (13, 12, "#17dd62")):
+        img.putpixel((x, y), rgb(c))
+    save(img, "block", "shop_counter_top.png")
+
+
+def shop_counter_side(front=False):
+    rnd = random.Random(122 if front else 123)
+    img = Image.new("RGBA", (16, 16))
+    spruce(img, rnd)
+    for i in range(16):
+        for p in ((i, 0), (i, 15), (0, i), (15, i)):
+            img.putpixel(p, rgb("#3b2a19"))
+    if front:
+        # A striped awning over a price board
+        for y in range(1, 5):
+            for x in range(1, 15):
+                img.putpixel((x, y), rgb("#c62828") if (x // 2) % 2 == 0 else rgb("#f2f2f2"))
+        for y in range(7, 13):
+            for x in range(3, 13):
+                img.putpixel((x, y), rgb("#2a2a2a") if x in (3, 12) or y in (7, 12) else rgb("#3e4a3e"))
+        for (x, y) in ((5, 9), (6, 9), (8, 9), (9, 10), (5, 11), (10, 9)):
+            img.putpixel((x, y), rgb("#e8e2cc"))
+    save(img, "block", "shop_counter_front.png" if front else "shop_counter_side.png")
+
+
+def shopkeeper_overlay():
+    img = Image.new("RGBA", (64, 64), T)
+    rnd = random.Random(131)
+    # A green visor band round the head
+    for y in range(8, 10):
+        for x in range(32, 64):
+            img.putpixel((x, y), jitter(rgb("#2f8f4e"), rnd, 4))
+    for i in range(3, 13):
+        img.putpixel((31 + i, 48 + 3), rgb("#2f8f4e"))
+    # A green apron with a pocket of coins
+    for y in range(44, 58):
+        for x in range(6, 14):
+            img.putpixel((x, y), jitter(rgb("#3a8f55"), rnd, 4))
+    for y in range(49, 52):
+        for x in range(8, 12):
+            img.putpixel((x, y), rgb("#2c6e41"))
+    img.putpixel((9, 49), rgb("#e0b83a"))
+    img.putpixel((10, 49), rgb("#e0b83a"))
+    save(img, "entity", "villager", "profession", "shopkeeper.png")
+    save(img, "entity", "zombie_villager", "profession", "shopkeeper.png")
+
+
 def icon(blueprint):
     big = Image.new("RGBA", (128, 128), T)
     scaled = blueprint.resize((128, 128), Image.NEAREST)
@@ -823,3 +897,7 @@ if __name__ == "__main__":
     nurse_station_side(front=False)
     nurse_station_side(front=True)
     nurse_overlay()
+    shop_counter_top()
+    shop_counter_side(front=False)
+    shop_counter_side(front=True)
+    shopkeeper_overlay()

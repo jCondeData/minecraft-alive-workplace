@@ -118,6 +118,23 @@ public final class ModVillagers {
 		)
 	);
 
+	public static final ResourceLocation SHOP_COUNTER_ID = AliveWorkplace.id("shop_counter");
+	public static final ResourceKey<PoiType> SHOP_COUNTER_POI = ResourceKey.create(Registries.POINT_OF_INTEREST_TYPE, SHOP_COUNTER_ID);
+	public static final PoiType SHOP_COUNTER_POI_TYPE = PointOfInterestHelper.register(SHOP_COUNTER_ID, 1, 1, ModBlocks.SHOP_COUNTER);
+
+	public static final VillagerProfession SHOPKEEPER = Registry.register(
+		BuiltInRegistries.VILLAGER_PROFESSION,
+		AliveWorkplace.id("shopkeeper"),
+		new VillagerProfession(
+			"shopkeeper",
+			holder -> holder.is(SHOP_COUNTER_POI),
+			holder -> holder.is(SHOP_COUNTER_POI),
+			ImmutableSet.of(),
+			ImmutableSet.of(),
+			SoundEvents.VILLAGER_WORK_LIBRARIAN
+		)
+	);
+
 	/**
 	 * Guards keep the night watch: on patrol from evening to mid-morning, asleep until early afternoon,
 	 * then out with the village. They fight whenever a monster shows up, whatever they are doing.
@@ -136,7 +153,7 @@ public final class ModVillagers {
 	/** Villagers whose work this mod runs: they get the long shift and our WORK package. */
 	public static boolean isWorker(VillagerProfession profession) {
 		return profession == BUILDER || profession == MINER || profession == LUMBERJACK || profession == POSTMAN
-			|| profession == NURSE;
+			|| profession == NURSE || profession == SHOPKEEPER;
 	}
 
 	/**

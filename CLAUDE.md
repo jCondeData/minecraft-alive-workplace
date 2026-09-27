@@ -47,6 +47,8 @@ The owner (Jesse) does not write code: sessions are expected to work autonomousl
   `FarmerPackages` (our work first, vanilla's routine wrapped in `work/Gated`), `Fields`
 - `guard/` — guards: `GuardCombat` (in their CORE package, any activity), `GuardPatrol` (WORK: gear up, patrol),
   `Guards` (who is a foe, damage, extra health); `VillagerPanicTriggerMixin` keeps them from panicking
+- `shop/` — player shops: `ShopCounterBlock`/`ShopCounterBlockEntity` (price list), `Shops` (offers from stock, sales);
+  mixins on `Villager.mobInteract` (refresh offers) and `AbstractVillager.notifyTrade` (move the goods and payment)
 - `nurse/` — nurses: `Nurses` (treating players), `NurseWork` (healing villagers nearby)
 - `compat/cobblemon/` — the only code that touches Cobblemon classes; call it only when `isModLoaded("cobblemon")`
 - `mail/` — mailboxes and postmen: `MailboxBlock`/`MailboxBlockEntity`/`MailboxMenu` (screen in client `MailboxScreen`),

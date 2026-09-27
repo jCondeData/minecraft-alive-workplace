@@ -4,7 +4,7 @@ Villagers with real jobs. Hand a **Builder** a blueprint and they build it for y
 site, fetch materials from your chests, put up the walls and roof, and finish with doors, beds and
 torches. **Miners** dig out quarries, **Lumberjacks** cut down and replant trees, **Farmers** look after
 your fields and **Fishermen** fish for you, dropping everything off in your chests. **Postmen** carry mail
-between players' mailboxes, **Guards** keep monsters away and **Nurses** heal you (and your Pokémon).
+between players' mailboxes, **Guards** keep monsters away, **Nurses** heal you (and your Pokémon) and **Shopkeepers** run your shop.
 
 ![Three builders putting up the starter blueprints](docs/media/timelapse.gif)
 
@@ -111,6 +111,13 @@ Craft a **Nurse Station** (glass bottles around a glistering melon slice, on whi
 without a job. Right-click the nurse with an empty hand to get your health back and bad effects cleared; with
 **Cobblemon** installed they heal your whole team too. Once a minute per player (less as they level up). They also
 look after hurt villagers and iron golems nearby. Sneak-right-click to trade.
+
+## Shops
+Craft a **Shop Counter** (an emerald over planks and a chest) and place it near a villager without a job: the shop is
+yours and the villager becomes its **Shopkeeper**. Open the counter to set your prices — in each column, the top slot
+is what one sale hands over (for example 16 cobblestone) and the slot below it is the price (for example 1 emerald;
+any item works). Put the goods in chests within 8 blocks of the counter. Other players buy by trading with the
+shopkeeper as usual; only what's in the chests is for sale, and the payments land in the same chests.
 
 ## Blueprint Table: any build from the internet
 Craft a **Blueprint Table** (blue dye on top, cartography table in the middle, planks around) and right-click it.

@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 0.12.0 — 2026-09-27
+
 ### Added
 - **Mail and postmen.** Craft a **Mailbox** and place it: mail for you arrives there and a red flag goes up. Open it,
   put items in the top row, write a player's name and press Send. Craft a **Postal Desk** and a villager becomes a

@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 0.18.0 — 2026-09-27
+
 ### Added
 - The **Healing Center** blueprint now has a Nurse Station behind the counter and the **Supply Shop** a Shop Counter,
   so building them brings in a nurse and a shopkeeper (the first player to open the shop's counter owns it).

@@ -64,6 +64,26 @@ Owner decisions are recorded in **Design decisions** at the bottom. Don't change
 - [ ] Fisher follow-ups: a real bobber on the water, fishing from boats/docks, smoking the catch
 - [ ] **Courier / hauler**: moves items between marked chests (e.g. quarry → builder stash)
 
+## Milestone 2b — Village life (roles from MyNPCs, rebuilt as villager jobs)
+The owner pointed at *My NPCs* (MIT): admin-configured NPCs with roles. We don't copy its approach (op-made NPCs,
+setup screens); we take the roles that fit a friends' Cobblemon server and make them jobs villagers take at a
+workstation, like the rest of the mod.
+- [ ] **Postman + Mailboxes** (their Mailman): craft a Mailbox, put items in it with a letter addressed to a player;
+  a Postman (Post Office workstation) collects and delivers to that player's mailbox. Same villager can run
+  Courier routes.
+- [ ] **Guard** (Guard Post workstation): patrols the village or your base, fights hostile mobs with the weapon and
+  armor from the post's chest, heals up at the post; leaves players, pets and Pokémon alone.
+- [ ] **Nurse** (Cobblemon, optional): takes a Cobblemon Healing Machine as workstation; talk to them to heal your
+  whole party (per-player cooldown). The Healing Center blueprint comes with one.
+- [ ] **Shopkeeper** (their Item Trader): a Shop Counter you stock from a chest; the villager sells your items at
+  prices you set, for emeralds or CobbleDollars (when installed), and keeps the takings for you.
+- [ ] **Ferryman** (their Teleporter): Travel Posts in villages; pay to travel to any village post you have visited.
+- [ ] **Bard**: plays music discs from a chest near their stage in the evening while the village gathers.
+- [ ] Keep worksites loaded while their employer is online (their Chunk Loader), behind a gamerule.
+- Cobblemon roles go to the Cobblemon milestones: Pokémon Trainer (Milestone 3), Move Tutor and Pokémon Trader (Milestone 4).
+- Not planned: Banker, Item Giver, Dialogue editor, Puppet, Spawner, Follower/Companion — tools for admins building
+  adventure maps rather than jobs for villagers.
+
 ## Milestone 3 — Trainers (Cobblemon; optional dependency)
 - [ ] Optional Cobblemon integration layer (mod must still load without Cobblemon)
 - [ ] **Trainer** profession + **Training Post** workstation; trainer posts generate in villages so every village has trainers
@@ -79,6 +99,8 @@ Owner decisions are recorded in **Design decisions** at the bottom. Don't change
 - [ ] Pokémon-themed blueprints that come with staff: Pokémon Center (Nurse), Poké Mart (Clerk, sells for CobbleDollars), Berry Farm, Fossil Lab
 - [ ] Jobs: Nurse (Healing Machine), Orchard Keeper (apricorns, berries, mints), Chef (Campfire Pot: Lure Cakes, Aprijuice), Ball Smith (apricorns → balls), Fossil Scientist
 - [ ] Cobbleworkers compatibility: villagers haul from Pokémon pasture output
+- [ ] **Move Tutor**: teaches a Pokémon moves it could learn, for items or CobbleDollars
+- [ ] **Pokémon Trader**: offers a fixed Pokémon for one you bring (species/level rules, per-player limits)
 
 ## Milestone 5 — Release
 - [ ] Publish on Modrinth and CurseForge as **Alive Workplace** (Minecraft brand rules: don't lead the name with "Minecraft")
@@ -94,6 +116,8 @@ Owner decisions are recorded in **Design decisions** at the bottom. Don't change
 - Cobblemon integration must be optional.
 - License: GPL-3.0-or-later (lets us adapt MineColonies code, which is GPL-3.0-or-later, with attribution).
 - Builds from the internet come in as files (.litematic/.schem/.nbt); we don't scrape sites. Only ship our own original builds.
+- *My NPCs* does some of what we want "in a different way" the owner doesn't love: rebuild the roles that fit the pack
+  as villager jobs (Milestone 2b), not as admin-configured NPCs.
 
 ## Notes / blocked
 - (autonomous sessions: write anything you could not finish or need the owner to decide here)

@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 0.11.0 — 2026-09-27
+
 ### Added
 - **Fishermen fish for you.** Hand any Fisherman villager (the ones with a barrel) a fishing rod. They walk to the
   nearest water within 16 blocks of their barrel, cast from the shore and reel in fish (and the odd bit of junk —

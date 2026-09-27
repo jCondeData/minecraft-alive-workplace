@@ -11,8 +11,8 @@ Builders understand **Chipped**, **Rechiseled** and **Supplementaries** blocks (
 Install on the **server and every player's game**.
 
 ## Getting started
-1. **Hire a builder.** Craft a **Builder's Bench** and place it near a villager without a job; they take it
-   like any job block.
+1. **Hire a builder.** Look for a builder's workshop in a village (newly explored villages often have one), or craft
+   a **Builder's Bench** and place it near a villager without a job; they take it like any job block.
 
    ```
    Brick   Brick          Brick

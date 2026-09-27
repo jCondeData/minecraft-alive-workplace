@@ -32,7 +32,7 @@ mkdir -p run/screenshots/blueprints && cp src/gametest/resources/fixtures/hut.li
 
 # 3. Run the client (the dev-only harness stages the scene, takes shots and quits).
 LIBGL_ALWAYS_SOFTWARE=1 GALLIUM_DRIVER=llvmpipe xvfb-run -a -s "-screen 0 1280x720x24" \
-  ./gradlew runScreenshots --no-daemon -Pscene="${SCENE:-builders}" > "$SCRATCH/client.log" 2>&1 || true
+  ./gradlew runScreenshots --no-daemon -Pscene="${SCENE:-builders}" -PworkshopWeight="${WORKSHOP_WEIGHT:-3}" > "$SCRATCH/client.log" 2>&1 || true
 grep -E "finished building|Stopping!" "$SCRATCH/client.log" || true
 
 # 4. Timelapse.

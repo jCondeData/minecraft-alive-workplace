@@ -34,6 +34,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.entity.BaseContainerBlockEntity;
 import net.minecraft.world.phys.Vec3;
 
@@ -67,6 +68,10 @@ public class ScreenshotHarness implements ClientModInitializer {
 		}
 		if ("table".equals(System.getProperty("aliveworkplace.scene"))) {
 			tableScene(mc, mc.getSingleplayerServer());
+			return;
+		}
+		if ("village".equals(System.getProperty("aliveworkplace.scene"))) {
+			villageScene(mc, mc.getSingleplayerServer());
 			return;
 		}
 		if ("gallery".equals(System.getProperty("aliveworkplace.scene"))) {
@@ -235,6 +240,89 @@ public class ScreenshotHarness implements ClientModInitializer {
 			shot(mc, "22_status_closeup");
 		}
 		if (tick == 1020) {
+			mc.stop();
+		}
+	}
+
+	// --- Villages: one of each type, find the builder's workshops, one shot each ----------------
+
+	private final List<BlockPos> workshops = new ArrayList<>();
+
+	private void villageScene(Minecraft mc, MinecraftServer server) {
+		tick++;
+		List<String> styles = io.github.jcondedata.aliveworkplace.world.VillageHouses.STYLES;
+		if (tick == 1) {
+			mc.options.renderDistance().set(6);
+			mc.options.cloudStatus().set(CloudStatus.OFF);
+			mc.options.hideGui = true;
+		}
+		if (tick == 20) {
+			server.execute(() -> {
+				ServerLevel level = server.overworld();
+				level.getGameRules().getRule(GameRules.RULE_DAYLIGHT).set(false, server);
+				level.setDayTime(3000);
+				for (int i = 0; i < styles.size(); i++) {
+					int x = i * 256;
+					server.getCommands().performPrefixedCommand(server.createCommandSourceStack().withSuppressedOutput(),
+						"forceload add " + (x - 96) + " -96 " + (x + 96) + " 96");
+				}
+			});
+		}
+		if (tick == 400) {
+			server.execute(() -> {
+				ServerLevel level = server.overworld();
+				for (int i = 0; i < styles.size(); i++) {
+					int x = i * 256;
+					net.minecraft.commands.CommandSource logger = new net.minecraft.commands.CommandSource() {
+						@Override
+						public void sendSystemMessage(net.minecraft.network.chat.Component message) {
+							io.github.jcondedata.aliveworkplace.AliveWorkplace.LOG.info("[village] command: {}", message.getString());
+						}
+
+						@Override
+						public boolean acceptsSuccess() {
+							return true;
+						}
+
+						@Override
+						public boolean acceptsFailure() {
+							return true;
+						}
+
+						@Override
+						public boolean shouldInformAdmins() {
+							return false;
+						}
+					};
+					server.getCommands().performPrefixedCommand(server.createCommandSourceStack().withSource(logger),
+						"place structure minecraft:village_" + styles.get(i) + " " + x + " -60 0");
+					BlockPos found = null;
+					int built = 0;
+					for (BlockPos p : BlockPos.betweenClosed(x - 96, -62, -96, x + 96, -52, 96)) {
+						BlockState st = level.getBlockState(p);
+						if (st.is(ModBlocks.BUILDERS_BENCH) && found == null) {
+							found = p.immutable();
+						}
+						if (st.is(Blocks.BELL) || st.is(net.minecraft.tags.BlockTags.BEDS)) {
+							built++;
+						}
+					}
+					io.github.jcondedata.aliveworkplace.AliveWorkplace.LOG.info("[village] {} village: {} bells/beds, workshop bench at {}", styles.get(i), built, found);
+					if (found != null) {
+						workshops.add(found);
+					}
+				}
+			});
+		}
+		int shots = workshops.size();
+		if (tick >= 500 && (tick - 500) % 80 == 0 && (tick - 500) / 80 < shots) {
+			BlockPos bench = workshops.get((tick - 500) / 80);
+			server.execute(() -> hover(server.getPlayerList().getPlayers().get(0), new Vec3(bench.getX() + 9.5, bench.getY() + 6, bench.getZ() + 9.5), 135, 25));
+		}
+		if (tick >= 560 && (tick - 560) % 80 == 0 && (tick - 560) / 80 < shots) {
+			shot(mc, "40_workshop_" + ((tick - 560) / 80));
+		}
+		if (tick == 580 + Math.max(1, shots) * 80) {
 			mc.stop();
 		}
 	}

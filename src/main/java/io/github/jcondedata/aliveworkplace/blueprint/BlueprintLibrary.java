@@ -50,10 +50,15 @@ public final class BlueprintLibrary {
 	public static List<ResourceLocation> list(MinecraftServer server, boolean everything) {
 		Path generated = server.getWorldPath(LevelResource.GENERATED_DIR);
 		return server.getStructureManager().listTemplates()
-			.filter(id -> everything || id.getNamespace().equals(AliveWorkplace.MOD_ID)
+			.filter(id -> everything || id.getNamespace().equals(AliveWorkplace.MOD_ID) && !isWorldgenPiece(id)
 				|| Files.isRegularFile(generated.resolve(id.getNamespace()).resolve("structures").resolve(id.getPath() + ".nbt")))
 			.sorted()
 			.toList();
+	}
+
+	/** Our village pieces ({@code aliveworkplace:village/...}) are for world generation, not the library. */
+	public static boolean isWorldgenPiece(ResourceLocation id) {
+		return id.getNamespace().equals(AliveWorkplace.MOD_ID) && (id.getPath().startsWith("village/") || id.getPath().startsWith("compat_test/"));
 	}
 
 	private BlueprintLibrary() {

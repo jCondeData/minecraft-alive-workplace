@@ -66,6 +66,8 @@ loom {
 			vmArg "-Daliveworkplace.shots=true"
 			// ./gradlew runScreenshots -Pscene=table   (scenes: builders, table)
 			vmArg "-Daliveworkplace.scene=${project.findProperty('scene') ?: 'builders'}"
+			// SCENE=village: make workshops common so every generated village shows one
+			vmArg "-Daliveworkplace.workshopWeight=${project.findProperty('workshopWeight') ?: 3}"
 		}
 		compatGameTest {
 			server()

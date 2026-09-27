@@ -167,6 +167,7 @@ Craft a **Blueprint Table** (blue dye on top, cartography table in the middle, p
 | `/gamerule workplaceBuildersHelp false` | idle builders stop helping with other builds |
 | `/gamerule workplaceBuilderOwnership false` | anyone can give orders to any builder |
 | `/gamerule workplaceFoundationDepth 12` | how far down builders fill under a build on uneven ground (0 = never) |
+| `/gamerule workplaceKeepWorkLoaded false` | builds and quarries stop when nobody is nearby (by default they keep going while the player who ordered them is online) |
 
 ## What's next
 Next up are couriers (hauling between chests), then Cobblemon trainers and Pokémon work partners. See [ROADMAP.md](ROADMAP.md).

@@ -101,7 +101,9 @@ workstation, like the rest of the mod.
   works within 16 blocks of any post and lands you next to its post
 - [ ] Ferryman follow-ups: travel posts in village generation, a boat ride animation, CobbleDollars fares
 - [ ] **Bard**: plays music discs from a chest near their stage in the evening while the village gathers.
-- [ ] Keep worksites loaded while their employer is online (their Chunk Loader), behind a gamerule.
+- [x] Keep worksites loaded while their employer is online (their Chunk Loader): builds and quarries whose owner is
+  online keep the chunks of the site, the workstation and its chests, and the worker's own chunk loaded (expiring
+  tickets renewed every 5 s; capped per job); gamerule `workplaceKeepWorkLoaded` (on)
 - Cobblemon roles go to the Cobblemon milestones: Pokémon Trainer (Milestone 3), Move Tutor and Pokémon Trader (Milestone 4).
 - Not planned: Banker, Item Giver, Dialogue editor, Puppet, Spawner, Follower/Companion — tools for admins building
   adventure maps rather than jobs for villagers.

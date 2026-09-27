@@ -30,6 +30,13 @@ public final class ModGameRules {
 	public static final GameRules.Key<GameRules.BooleanValue> BUILDER_OWNERSHIP =
 		GameRuleRegistry.register("workplaceBuilderOwnership", GameRules.Category.MOBS, GameRuleFactory.createBooleanRule(true));
 
+	/**
+	 * When true, builds and quarries keep running while the player who ordered them is online but far away
+	 * (their chunks stay loaded; nothing is kept loaded for offline players).
+	 */
+	public static final GameRules.Key<GameRules.BooleanValue> KEEP_WORK_LOADED =
+		GameRuleRegistry.register("workplaceKeepWorkLoaded", GameRules.Category.MISC, GameRuleFactory.createBooleanRule(true));
+
 	public static void init() {
 	}
 

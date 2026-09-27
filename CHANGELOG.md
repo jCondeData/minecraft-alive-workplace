@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+### Added
+- Builds and quarries keep going while you're away: as long as the player who ordered them is online, the chunks
+  with the site, the workstation, its chests and the worker stay loaded. Turn it off with
+  `/gamerule workplaceKeepWorkLoaded false`. Nothing is kept loaded for players who are offline.
+
 ## 0.17.0 — 2026-09-27
 
 ### Added

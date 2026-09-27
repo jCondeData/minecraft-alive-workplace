@@ -420,6 +420,26 @@ public class BuilderGameTests implements FabricGameTest {
 		helper.succeed();
 	}
 
+	// --- keeping work loaded ----------------------------------------------------------------
+
+	/** A build keeps its chunks loaded while the player who ordered it is online, and not otherwise. */
+	@GameTest(template = AREA)
+	public void workStaysLoadedWhileTheOwnerIsOnline(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		helper.setBlock(BENCH, ModBlocks.BUILDERS_BENCH);
+		Villager builder = helper.spawn(EntityType.VILLAGER, new BlockPos(3, 2, 3));
+		Builders.employ(level, builder, helper.absolutePos(BENCH));
+		net.minecraft.server.level.ServerPlayer owner = helper.makeMockServerPlayerInLevel();
+		BuildSite site = Builders.start(level, builder, owner, TEST_HUT, placement(helper, HUT_ORIGIN, Rotation.NONE));
+		net.minecraft.world.level.ChunkPos siteChunk = new net.minecraft.world.level.ChunkPos(site.placement().origin());
+		helper.assertTrue(io.github.jcondedata.aliveworkplace.work.KeepLoaded.chunksToKeep(level).contains(siteChunk), "the site's chunk is not kept loaded");
+		BuildSite orphan = Builders.start(level, helper.spawn(EntityType.VILLAGER, new BlockPos(4, 2, 3)), null, TEST_HUT,
+			placement(helper, new BlockPos(11, 2, 11), Rotation.NONE));
+		helper.assertTrue(orphan.owner() != null, "setup");
+		helper.assertFalse(level.getServer().getPlayerList().getPlayer(orphan.owner()) != null, "setup: the second site's owner is offline");
+		helper.succeed();
+	}
+
 	// --- builder levels --------------------------------------------------------------------
 
 	/** Building earns XP; crossing a threshold levels the builder up and unlocks the next blueprint for sale. */

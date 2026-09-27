@@ -56,7 +56,8 @@ The owner (Jesse) does not write code: sessions are expected to work autonomousl
   `PostOffice` (saved data: addresses, parcels, desks, dawn delivery), `Parcel`, `Mail` (send packet), `PostmanWork`
 - `fish/` — the fisher upgrade (vanilla Fishermen, hired with a fishing rod): `FisherWork`, `Fishers`
 - `wood/` — the lumberjack: `Trees` (what counts as a natural tree), `LumberjackWork`, `LumberjackPackages`
-- `work/` — shared by all jobs: `Walker` (movement + reach), `WorkerStatus` (overhead status for jobs without a saved site), `Jobs.employ`
+- `work/` — shared by all jobs: `Walker` (movement + reach), `WorkerStatus` (overhead status for jobs without a saved site), `Jobs.employ`,
+  `Gated`/`UpgradedJob` (vanilla jobs with extra work), `PrivateContainer` (never a supply chest), `KeepLoaded` (chunk tickets)
 - `world/` — village builder's workshops (`VillageHouses`)
 - `mixin/` — swaps in the builder/miner WORK packages and schedule for our professions; accessors
 - `command/` — `/workplace`

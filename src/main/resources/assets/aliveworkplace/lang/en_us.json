@@ -296,5 +296,6 @@
   "message.aliveworkplace.route.header": "%s — %s parcels delivered · %s courier routes",
   "message.aliveworkplace.route.line": "%s %s %s → %s %s %s: %s",
   "message.aliveworkplace.route.how_to_end": "Give them a blank Delivery Note to end all routes.",
-  "message.aliveworkplace.postman.state.haul": "carrying items to %s %s %s"
+  "message.aliveworkplace.postman.state.haul": "carrying items to %s %s %s",
+  "gamerule.workplaceKeepWorkLoaded": "Alive Workplace: builds and quarries keep going while the player who ordered them is online, even far away"
 }

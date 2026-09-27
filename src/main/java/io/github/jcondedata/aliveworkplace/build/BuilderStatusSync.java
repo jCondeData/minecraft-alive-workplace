@@ -47,6 +47,11 @@ public final class BuilderStatusSync {
 			if (level.getGameTime() % INTERVAL == 0 && !level.players().isEmpty()) {
 				broadcast(level);
 				broadcastQuarries(level);
+				for (var e : io.github.jcondedata.aliveworkplace.work.WorkerStatus.fresh(level.getGameTime()).entrySet()) {
+					if (e.getKey().level() == level && !e.getKey().isSleeping()) {
+						send(e.getKey(), new Status(e.getKey().getId(), e.getValue().title(), e.getValue().progress(), e.getValue().line()));
+					}
+				}
 			}
 		});
 	}

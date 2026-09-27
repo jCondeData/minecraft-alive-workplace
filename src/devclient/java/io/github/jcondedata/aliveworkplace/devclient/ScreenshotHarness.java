@@ -74,6 +74,10 @@ public class ScreenshotHarness implements ClientModInitializer {
 			quarryScene(mc, mc.getSingleplayerServer());
 			return;
 		}
+		if ("forest".equals(System.getProperty("aliveworkplace.scene"))) {
+			forestScene(mc, mc.getSingleplayerServer());
+			return;
+		}
 		if ("village".equals(System.getProperty("aliveworkplace.scene"))) {
 			villageScene(mc, mc.getSingleplayerServer());
 			return;
@@ -298,6 +302,62 @@ public class ScreenshotHarness implements ClientModInitializer {
 		}
 		if (doneAt > 0 && tick == doneAt + 40) {
 			shot(mc, "50_quarry_done");
+			mc.stop();
+		}
+		if (tick >= GIVE_UP_AT) {
+			shot(mc, "99_timeout");
+			mc.stop();
+		}
+	}
+
+	// --- Forest: a lumberjack cuts and replants a few trees -----------------------------------------
+
+	private Villager lumberjack;
+	private static final int FOREST_TREES = 4;
+
+	private void forestScene(Minecraft mc, MinecraftServer server) {
+		tick++;
+		if (tick == 1) {
+			mc.options.renderDistance().set(6);
+			mc.options.cloudStatus().set(CloudStatus.OFF);
+			mc.options.hideGui = true;
+		}
+		if (tick == 20) {
+			server.execute(() -> {
+				ServerLevel level = server.overworld();
+				level.getGameRules().getRule(GameRules.RULE_DAYLIGHT).set(false, server);
+				level.getGameRules().getRule(GameRules.RULE_DOMOBSPAWNING).set(false, server);
+				level.getGameRules().getRule(ModGameRules.BUILD_DELAY).set(4, server);
+				level.setDayTime(2500);
+				var features = level.registryAccess().registryOrThrow(net.minecraft.core.registries.Registries.CONFIGURED_FEATURE);
+				var kinds = List.of(net.minecraft.data.worldgen.features.TreeFeatures.OAK, net.minecraft.data.worldgen.features.TreeFeatures.BIRCH,
+					net.minecraft.data.worldgen.features.TreeFeatures.SPRUCE, net.minecraft.data.worldgen.features.TreeFeatures.OAK);
+				BlockPos[] spots = {new BlockPos(-6, -60, -6), new BlockPos(3, -60, -9), new BlockPos(9, -60, -3), new BlockPos(-4, -60, 5)};
+				net.minecraft.util.RandomSource random = net.minecraft.util.RandomSource.create(7);
+				for (int i = 0; i < spots.length; i++) {
+					features.getHolderOrThrow(kinds.get(i)).value().place(level, level.getChunkSource().getGenerator(), random, spots[i]);
+				}
+				BlockPos block = new BlockPos(1, -60, 1);
+				level.setBlockAndUpdate(block, ModBlocks.CHOPPING_BLOCK.defaultBlockState());
+				level.setBlockAndUpdate(block.east(), Blocks.CHEST.defaultBlockState());
+				BaseContainerBlockEntity chest = (BaseContainerBlockEntity) level.getBlockEntity(block.east());
+				chest.setItem(0, new ItemStack(net.minecraft.world.item.Items.IRON_AXE));
+				lumberjack = EntityType.VILLAGER.spawn(level, block.south(), MobSpawnType.COMMAND);
+				io.github.jcondedata.aliveworkplace.work.Jobs.employ(level, lumberjack, block,
+					io.github.jcondedata.aliveworkplace.registry.ModVillagers.CHOPPING_BLOCK_POI, io.github.jcondedata.aliveworkplace.registry.ModVillagers.LUMBERJACK);
+				hover(server.getPlayerList().getPlayers().get(0), new Vec3(11.5, -53, 12.5), 140, 28);
+			});
+		}
+		if (tick > 60 && tick % 40 == 0 && doneAt < 0) {
+			shot(mc, String.format("frame_%03d", frame++));
+			server.execute(() -> allDone.set(lumberjack != null
+				&& lumberjack.getAttachedOrElse(io.github.jcondedata.aliveworkplace.registry.ModAttachments.TREES_FELLED, 0) >= FOREST_TREES));
+			if (allDone.get()) {
+				doneAt = tick;
+			}
+		}
+		if (doneAt > 0 && tick == doneAt + 200) {
+			shot(mc, "50_forest_done");
 			mc.stop();
 		}
 		if (tick >= GIVE_UP_AT) {

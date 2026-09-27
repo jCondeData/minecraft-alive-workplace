@@ -406,6 +406,81 @@ def miner_overlay():
     save(img, "entity", "zombie_villager", "profession", "miner.png")
 
 
+# --- Chopping Block: a stump with an axe in it --------------------------------------------------
+BARK = [rgb("#5b4027"), rgb("#4d3520"), rgb("#6a4a2d")]
+RINGS = [rgb("#c9a26b"), rgb("#b58d57")]
+
+
+def axe(img, ox, oy):
+    """A small axe with its head at (ox, oy), handle running down-left."""
+    for i in range(6):
+        img.putpixel((ox - 1 - i, oy + 2 + i), rgb("#8a5a2b"))
+    for x, y in ((0, 0), (1, 0), (2, 0), (0, 1), (1, 1), (2, 1), (3, 1), (0, 2), (1, 2), (2, 2), (0, 3)):
+        img.putpixel((ox - 1 + x, oy - 1 + y), rgb("#c8c8c8") if (x + y) % 3 else rgb("#8f8f8f"))
+
+
+def chopping_top():
+    rnd = random.Random(31)
+    img = Image.new("RGBA", (16, 16))
+    for y in range(16):
+        for x in range(16):
+            r = max(abs(x - 7.5), abs(y - 7.5))
+            if r > 6.5:
+                c = BARK[(x + y) % 3]
+            else:
+                c = RINGS[int(r) % 2]
+            img.putpixel((x, y), jitter(c, rnd, 5))
+    for x in range(2, 14):  # the notch the axe left
+        img.putpixel((x, 7), rgb("#6e4a26"))
+    axe(img, 11, 5)
+    save(img, "block", "chopping_block_top.png")
+
+
+def chopping_side(front=False):
+    rnd = random.Random(32 if front else 33)
+    img = Image.new("RGBA", (16, 16))
+    for y in range(16):
+        for x in range(16):
+            c = BARK[(x // 3 + y // 5) % 3]
+            if x % 5 == 0:
+                c = rgb("#3e2a18")
+            img.putpixel((x, y), jitter(c, rnd, 6))
+    if front:
+        for x in range(4, 12):
+            img.putpixel((x, 3), rgb("#c9a26b"))
+        axe(img, 12, 1)
+    save(img, "block", "chopping_block_front.png" if front else "chopping_block_side.png")
+
+
+def lumberjack_overlay():
+    img = Image.new("RGBA", (64, 64), T)
+    rnd = random.Random(41)
+    hat, hat_shade, fold = rgb("#2f6b3a"), rgb("#255630"), rgb("#1e4527")
+    # A green knit beanie
+    for y in range(0, 8):
+        for x in range(40, 48):
+            img.putpixel((x, y), jitter(hat, rnd, 5))
+    for y in range(8, 12):
+        for x in range(32, 64):
+            c = fold if y >= 10 else (hat_shade if (x % 2) else hat)
+            img.putpixel((x, y), jitter(c, rnd, 5))
+    # A red and black plaid vest over the robe
+    red, dark = rgb("#b3262c"), rgb("#2a1a1a")
+    for y in range(38, 44):
+        for x in range(6, 14):
+            img.putpixel((x, y), red if (x // 2 + y // 2) % 2 else dark)
+    for y in range(44, 56):
+        for x in range(0, 28):
+            if 6 <= x < 14 and x in (9, 10):
+                continue
+            plaid = (x // 2) % 2 == 0 or (y // 2) % 2 == 0
+            img.putpixel((x, y), jitter(red if plaid else dark, rnd, 4))
+    for x in range(0, 28):
+        img.putpixel((x, 56), jitter(rgb("#4e2f1a"), rnd, 3))
+    save(img, "entity", "villager", "profession", "lumberjack.png")
+    save(img, "entity", "zombie_villager", "profession", "lumberjack.png")
+
+
 def icon(blueprint):
     big = Image.new("RGBA", (128, 128), T)
     scaled = blueprint.resize((128, 128), Image.NEAREST)
@@ -430,3 +505,7 @@ if __name__ == "__main__":
     miners_bench_side(front=True)
     quarry_marker_item()
     miner_overlay()
+    chopping_top()
+    chopping_side(front=False)
+    chopping_side(front=True)
+    lumberjack_overlay()

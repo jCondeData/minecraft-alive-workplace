@@ -39,6 +39,7 @@ public final class ModItems {
 				output.accept(BLANK_BLUEPRINT);
 				output.accept(ModBlocks.MINERS_BENCH);
 				output.accept(QUARRY_MARKER);
+				output.accept(ModBlocks.CHOPPING_BLOCK);
 				for (StarterBlueprints.Entry entry : StarterBlueprints.ALL) {
 					output.accept(BlueprintItem.create(entry.id(), entry.size()));
 				}

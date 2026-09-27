@@ -12,6 +12,7 @@ import net.minecraft.world.item.trading.MerchantOffer;
 public final class ModTrades {
 	public static void init() {
 		minerTrades();
+		lumberjackTrades();
 		TradeOfferHelper.registerVillagerOffers(ModVillagers.BUILDER, 1, offers -> {
 			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.COBBLESTONE, 20), new ItemStack(Items.EMERALD), 16, 2, 0.05f));
 			offers.add((entity, random) -> blueprint(StarterBlueprints.STARTER_COTTAGE, 6));
@@ -49,6 +50,23 @@ public final class ModTrades {
 			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 6), new ItemStack(Items.IRON_PICKAXE), 3, 15, 0.05f)));
 		TradeOfferHelper.registerVillagerOffers(ModVillagers.MINER, 5, offers ->
 			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 18), new ItemStack(Items.DIAMOND_PICKAXE), 3, 30, 0.05f)));
+	}
+
+	private static void lumberjackTrades() {
+		TradeOfferHelper.registerVillagerOffers(ModVillagers.LUMBERJACK, 1, offers -> {
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.STICK, 32), new ItemStack(Items.EMERALD), 16, 2, 0.05f));
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 1), new ItemStack(Items.OAK_LOG, 8), 12, 1, 0.05f));
+		});
+		TradeOfferHelper.registerVillagerOffers(ModVillagers.LUMBERJACK, 2, offers -> {
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.APPLE, 6), new ItemStack(Items.EMERALD), 12, 10, 0.05f));
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 1), new ItemStack(Items.SPRUCE_LOG, 8), 12, 5, 0.05f));
+		});
+		TradeOfferHelper.registerVillagerOffers(ModVillagers.LUMBERJACK, 3, offers ->
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 2), new ItemStack(Items.DARK_OAK_SAPLING, 4), 12, 20, 0.05f)));
+		TradeOfferHelper.registerVillagerOffers(ModVillagers.LUMBERJACK, 4, offers ->
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 4), new ItemStack(Items.IRON_AXE), 3, 15, 0.05f)));
+		TradeOfferHelper.registerVillagerOffers(ModVillagers.LUMBERJACK, 5, offers ->
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 3), new ItemStack(Items.CHERRY_SAPLING, 2), 6, 30, 0.05f)));
 	}
 
 	private static MerchantOffer blueprint(StarterBlueprints.Entry entry, int emeralds) {

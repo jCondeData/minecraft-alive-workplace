@@ -50,9 +50,26 @@ public final class ModVillagers {
 		)
 	);
 
+	public static final ResourceLocation CHOPPING_BLOCK_ID = AliveWorkplace.id("chopping_block");
+	public static final ResourceKey<PoiType> CHOPPING_BLOCK_POI = ResourceKey.create(Registries.POINT_OF_INTEREST_TYPE, CHOPPING_BLOCK_ID);
+	public static final PoiType CHOPPING_BLOCK_POI_TYPE = PointOfInterestHelper.register(CHOPPING_BLOCK_ID, 1, 1, ModBlocks.CHOPPING_BLOCK);
+
+	public static final VillagerProfession LUMBERJACK = Registry.register(
+		BuiltInRegistries.VILLAGER_PROFESSION,
+		AliveWorkplace.id("lumberjack"),
+		new VillagerProfession(
+			"lumberjack",
+			holder -> holder.is(CHOPPING_BLOCK_POI),
+			holder -> holder.is(CHOPPING_BLOCK_POI),
+			ImmutableSet.of(),
+			ImmutableSet.of(),
+			SoundEvents.AXE_STRIP
+		)
+	);
+
 	/** Villagers whose work this mod runs: they get the long shift and our WORK package. */
 	public static boolean isWorker(VillagerProfession profession) {
-		return profession == BUILDER || profession == MINER;
+		return profession == BUILDER || profession == MINER || profession == LUMBERJACK;
 	}
 
 	/**

@@ -1,0 +1,9 @@
+{
+  "parent": "minecraft:block/orientable_with_bottom",
+  "textures": {
+    "top": "aliveworkplace:block/chopping_block_top",
+    "bottom": "minecraft:block/oak_log_top",
+    "side": "aliveworkplace:block/chopping_block_side",
+    "front": "aliveworkplace:block/chopping_block_front"
+  }
+}

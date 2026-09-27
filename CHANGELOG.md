@@ -2,6 +2,15 @@
 
 ## Unreleased
 
+### Added
+- **Lumberjacks** — the third job. Craft a **Chopping Block** (a stone axe on top of any log) and a villager without
+  a job takes it. Put **axes** in a chest within 8 blocks of the block: the lumberjack cuts down the trees within
+  16 blocks, one at a time — leaves first, then the trunk — plants a sapling of the same wood where each tree stood,
+  and stores the logs, sticks and apples in the chests. Only real trees are cut: logs someone placed (houses, posts,
+  anything with placed leaves), blueprint builds and quarries are left alone. Axes wear out; when the last one breaks
+  they wait for another. What they're doing and how many trees they've cut shows above their heads. Lumberjacks
+  level up like the other workers and trade sticks and apples for emeralds, and sell logs, saplings and an iron axe.
+
 ## 0.8.0 — 2026-09-27
 
 ### Added

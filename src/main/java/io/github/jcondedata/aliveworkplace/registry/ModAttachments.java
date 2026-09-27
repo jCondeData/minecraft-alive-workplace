@@ -20,6 +20,10 @@ public final class ModAttachments {
 	public static final AttachmentType<BuilderJob> MINER_JOB = AttachmentRegistry.create(
 		AliveWorkplace.id("miner_job"), builder -> builder.persistent(BuilderJob.CODEC));
 
+	/** How many trees a lumberjack has cut down (shown above its head). */
+	public static final AttachmentType<Integer> TREES_FELLED = AttachmentRegistry.create(
+		AliveWorkplace.id("trees_felled"), builder -> builder.persistent(com.mojang.serialization.Codec.INT));
+
 	/** The player a builder works for (see {@code Friends}). */
 	public static final AttachmentType<io.github.jcondedata.aliveworkplace.build.Employer> BUILDER_EMPLOYER = AttachmentRegistry.create(
 		AliveWorkplace.id("builder_employer"), builder -> builder.persistent(io.github.jcondedata.aliveworkplace.build.Employer.CODEC));

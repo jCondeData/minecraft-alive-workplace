@@ -41,6 +41,8 @@ The owner (Jesse) does not write code: sessions are expected to work autonomousl
   (hand-over, status, finish, cancel), `MaterialRules` (block → item cost, stage, "is this done"),
   `SupplyContainers` (chests near the bench via Fabric transfer API), `BuilderPackages`, `BuilderEvents`
 - `mine/` — the miner: `QuarryMarkerItem`/`QuarryData`, `QuarrySite` + `QuarrySiteManager`, `MinerWork`, `Miners`
+- `wood/` — the lumberjack: `Trees` (what counts as a natural tree), `LumberjackWork`, `LumberjackPackages`
+- `work/` — shared by all jobs: `Walker` (movement + reach), `WorkerStatus` (overhead status for jobs without a saved site), `Jobs.employ`
 - `world/` — village builder's workshops (`VillageHouses`)
 - `mixin/` — swaps in the builder/miner WORK packages and schedule for our professions; accessors
 - `command/` — `/workplace`

@@ -56,7 +56,8 @@ Owner decisions are recorded in **Design decisions** at the bottom. Don't change
 ## Milestone 2 — Other work jobs
 - [x] **Miner** (Miner's Bench workstation, Quarry Marker item): digs the marked area out layer by layer with pickaxes from the chests (tool tier and durability count; waits for a new one), drops everything off in the chests near the bench, lights the pit with torches from the chests, leaves blocks touching lava/water, containers and anything too hard, never goes below 5 above the world floor; levels up like builders; trades coal/ores, sells markers, torches and pickaxes
 - [ ] Miner follow-ups: ladders or stairs out of deep pits, strip-mining tunnels (not just open pits), smelting helper
-- [ ] **Lumberjack**: fells trees in an area, replants saplings, stores logs
+- [x] **Lumberjack** (Chopping Block workstation): fells natural trees within 16 blocks of the block (only trees: at least 4 natural leaves, trunk on dirt; player-placed logs, builds and quarries are left alone), clears the leaves, replants a sapling of the same wood, keeps up to 16 saplings of each kind and stores the rest in the chests near the block; axes from those chests wear out (waits for a new one); levels up like builders; trades sticks/apples, sells logs, saplings and an iron axe
+- [ ] Lumberjack follow-ups: plant saplings on marked empty ground (tree farms), big 2×2 trees (dark oak, jungle, spruce) planted as 2×2, nether "trees" (stems/wart blocks)
 - [ ] **Farmer upgrade**: works marked fields beyond vanilla farmers, stores the harvest
 - [ ] **Fisher**: fishes at nearby water, stores the catch
 - [ ] **Courier / hauler**: moves items between marked chests (e.g. quarry → builder stash)

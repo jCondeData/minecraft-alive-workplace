@@ -85,6 +85,10 @@ public final class BuilderStatusRenderer {
 		int light = LightTexture.FULL_BRIGHT;
 		// Lines from the bottom up: status line, bar, title.
 		text(font, matrix, buffers, status.line(), 0, background, light);
+		if (status.progress() < 0) {
+			text(font, matrix, buffers, status.title(), -11, background, light); // no progress to show (lumberjacks)
+			return;
+		}
 		bar(matrix, buffers, -6, status.progress(), light);
 		text(font, matrix, buffers, status.title(), -18, background, light);
 	}

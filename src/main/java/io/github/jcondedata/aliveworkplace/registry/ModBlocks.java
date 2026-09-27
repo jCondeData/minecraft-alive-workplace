@@ -27,6 +27,16 @@ public final class ModBlocks {
 		"miners_bench", new BuildersBenchBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.SMITHING_TABLE))
 	);
 
+	/** Workstation for the Lumberjack profession: trees within 16 blocks get cut, logs go into the chests nearby. */
+	public static final BuildersBenchBlock CHOPPING_BLOCK = register(
+		"chopping_block", new BuildersBenchBlock(BlockBehaviour.Properties.of()
+			.mapColor(net.minecraft.world.level.material.MapColor.WOOD)
+			.instrument(net.minecraft.world.level.block.state.properties.NoteBlockInstrument.BASS)
+			.strength(2.0f)
+			.sound(net.minecraft.world.level.block.SoundType.WOOD)
+			.ignitedByLava())
+	);
+
 	private static <T extends Block> T register(String name, T block) {
 		Registry.register(BuiltInRegistries.BLOCK, AliveWorkplace.id(name), block);
 		Registry.register(BuiltInRegistries.ITEM, AliveWorkplace.id(name), new BlockItem(block, new Item.Properties()));

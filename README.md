@@ -2,7 +2,8 @@
 
 Villagers with real jobs. Hand a **Builder** a blueprint and they build it for you: they clear the
 site, fetch materials from your chests, put up the walls and roof, and finish with doors, beds and
-torches.
+torches. **Miners** dig out quarries and **Lumberjacks** cut down and replant trees, dropping everything off
+in your chests.
 
 ![Three builders putting up the starter blueprints](docs/media/timelapse.gif)
 
@@ -59,6 +60,13 @@ villager without a job. Then:
    leave anything touching lava or water standing so the pit stays dry. When the last pickaxe wears out they wait
    for another.
 
+## Lumberjacks
+Craft a **Chopping Block** (a stone axe on top of any log) and place it near a villager without a job, near some
+trees. Put **axes** in a chest within 8 blocks of the Chopping Block. The lumberjack cuts the trees within 16 blocks
+one at a time (leaves first, then the trunk), plants a sapling of the same wood where each tree stood, and stores
+the logs, sticks and apples in the chests. They only cut real trees: logs with placed leaves (houses, posts),
+blueprint builds and quarries are left alone. When the last axe breaks they wait for a new one.
+
 ## Blueprint Table: any build from the internet
 Craft a **Blueprint Table** (blue dye on top, cartography table in the middle, planks around) and right-click it.
 
@@ -95,7 +103,7 @@ Craft a **Blueprint Table** (blue dye on top, cartography table in the middle, p
 | `/gamerule workplaceFoundationDepth 12` | how far down builders fill under a build on uneven ground (0 = never) |
 
 ## What's next
-Next up are more jobs — lumberjacks, farmers and couriers — then Cobblemon trainers and Pokémon work partners. See [ROADMAP.md](ROADMAP.md).
+Next up are more jobs — farmers, fishers and couriers — then Cobblemon trainers and Pokémon work partners. See [ROADMAP.md](ROADMAP.md).
 
 ## Building from source
 ```

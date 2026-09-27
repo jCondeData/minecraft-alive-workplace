@@ -9,6 +9,7 @@
     "aliveworkplace:guard_post",
     "aliveworkplace:nurse_station",
     "aliveworkplace:shop_counter",
-    "aliveworkplace:travel_post"
+    "aliveworkplace:travel_post",
+    "aliveworkplace:music_stand"
   ]
 }

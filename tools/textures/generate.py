@@ -955,6 +955,64 @@ def delivery_note_item():
     save(img, "item", "delivery_note.png")
 
 
+# --- Music Stand: sheet music on a wooden stand ---------------------------------------------------------
+def music_stand_top():
+    rnd = random.Random(181)
+    img = Image.new("RGBA", (16, 16))
+    planks(img, rnd)
+    for i in range(16):
+        for p in ((i, 0), (i, 15), (0, i), (15, i)):
+            img.putpixel(p, WOOD_EDGE)
+    for y in range(3, 13):
+        for x in range(3, 13):
+            img.putpixel((x, y), jitter(rgb("#ece6d4"), rnd, 3))
+    for y in (5, 8, 11):
+        for x in range(4, 12):
+            img.putpixel((x, y), rgb("#8a8a8a"))
+    for (x, y) in ((5, 4), (8, 6), (10, 9), (6, 10)):
+        img.putpixel((x, y), rgb("#1d1f2b"))
+    save(img, "block", "music_stand_top.png")
+
+
+def music_stand_side(front=False):
+    rnd = random.Random(182 if front else 183)
+    img = Image.new("RGBA", (16, 16))
+    planks(img, rnd)
+    for i in range(16):
+        for p in ((i, 0), (i, 15), (0, i), (15, i)):
+            img.putpixel(p, WOOD_EDGE)
+    # A big note
+    for y in range(3, 11):
+        img.putpixel((10, y), rgb("#1d1f2b"))
+    for (x, y) in ((11, 3), (12, 4), (12, 5), (7, 10), (8, 10), (9, 10), (7, 11), (8, 11), (9, 11), (8, 9)):
+        img.putpixel((x, y), rgb("#1d1f2b"))
+    if front:
+        for x in range(2, 14):
+            img.putpixel((x, 13), rgb("#c62828"))
+    save(img, "block", "music_stand_front.png" if front else "music_stand_side.png")
+
+
+def bard_overlay():
+    img = Image.new("RGBA", (64, 64), T)
+    rnd = random.Random(191)
+    cap, feather = rgb("#7b2d8f"), rgb("#f2e6c9")
+    # A purple cap with a feather
+    for y in range(0, 8):
+        for x in range(40, 48):
+            img.putpixel((x, y), jitter(cap, rnd, 5))
+    for y in range(8, 11):
+        for x in range(32, 64):
+            img.putpixel((x, y), jitter(cap, rnd, 5))
+    for y in range(2, 8):
+        img.putpixel((46 - y // 3, y), feather)
+    # A purple and gold tunic
+    for y in range(44, 56):
+        for x in range(0, 28):
+            img.putpixel((x, y), jitter(rgb("#e0b83a") if x % 7 == 3 else cap, rnd, 4))
+    save(img, "entity", "villager", "profession", "bard.png")
+    save(img, "entity", "zombie_villager", "profession", "bard.png")
+
+
 def icon(blueprint):
     big = Image.new("RGBA", (128, 128), T)
     scaled = blueprint.resize((128, 128), Image.NEAREST)
@@ -1007,3 +1065,7 @@ if __name__ == "__main__":
     ticket_item()
     ferryman_overlay()
     delivery_note_item()
+    music_stand_top()
+    music_stand_side(front=False)
+    music_stand_side(front=True)
+    bard_overlay()

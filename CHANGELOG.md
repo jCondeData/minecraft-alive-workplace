@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+### Added
+- **Bards.** Craft a **Music Stand** (paper on a note block) and a villager becomes a Bard. Twice a day — a morning
+  set and an evening set while the village gathers — they play the music discs from the chests near the stand, one
+  after another (the discs stay in the chest). With no discs they make up a tune on the harp.
+
 ## 0.18.0 — 2026-09-27
 
 ### Added

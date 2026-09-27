@@ -101,7 +101,9 @@ workstation, like the rest of the mod.
   Travel Tickets to every other post you know for 1 emerald per 256 blocks (1–16; 8 across dimensions); a ticket
   works within 16 blocks of any post and lands you next to its post
 - [ ] Ferryman follow-ups: travel posts in village generation, a boat ride animation, CobbleDollars fares
-- [ ] **Bard**: plays music discs from a chest near their stage in the evening while the village gathers.
+- [x] **Bard** (Music Stand workstation): a morning set (1000–3500) and an evening set (9000–12500) at the stand,
+  playing the music discs from the chests nearby in turn (discs stay in the chest; "Now playing" like a jukebox) or,
+  with none, a made-up pentatonic harp tune with a bass beat; sells note blocks, goat horns and a few discs
 - [x] Keep worksites loaded while their employer is online (their Chunk Loader): builds and quarries whose owner is
   online keep the chunks of the site, the workstation and its chests, and the worker's own chunk loaded (expiring
   tickets renewed every 5 s; capped per job); gamerule `workplaceKeepWorkLoaded` (on)

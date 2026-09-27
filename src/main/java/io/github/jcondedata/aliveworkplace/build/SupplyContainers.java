@@ -212,6 +212,22 @@ public final class SupplyContainers {
 		return out;
 	}
 
+	/** Copies of the stacks in the container at {@code pos} that match {@code test} (nothing is taken). */
+	public static List<ItemStack> peekMatching(ServerLevel level, BlockPos pos, java.util.function.Predicate<ItemStack> test) {
+		List<ItemStack> out = new ArrayList<>();
+		Storage<ItemVariant> s = storage(level, pos);
+		if (s == null) {
+			return out;
+		}
+		for (var view : s.nonEmptyViews()) {
+			ItemStack sample = view.getResource().toStack((int) Math.min(view.getAmount(), 64));
+			if (test.test(sample)) {
+				out.add(sample);
+			}
+		}
+		return out;
+	}
+
 	/** True if the container at {@code pos} holds anything matching {@code test}. */
 	public static boolean hasMatching(ServerLevel level, BlockPos pos, java.util.function.Predicate<ItemStack> test) {
 		Storage<ItemVariant> s = storage(level, pos);

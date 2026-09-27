@@ -15,6 +15,18 @@ public final class ModTrades {
 		lumberjackTrades();
 		guardTrades();
 		nurseTrades();
+		TradeOfferHelper.registerVillagerOffers(ModVillagers.BARD, 1, offers -> {
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 2), new ItemStack(Items.NOTE_BLOCK, 2), 12, 2, 0.05f));
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.STRING, 16), new ItemStack(Items.EMERALD), 16, 2, 0.05f));
+		});
+		TradeOfferHelper.registerVillagerOffers(ModVillagers.BARD, 2, offers ->
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 1), new ItemStack(Items.GOAT_HORN), 4, 10, 0.05f)));
+		TradeOfferHelper.registerVillagerOffers(ModVillagers.BARD, 3, offers ->
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 12), new ItemStack(Items.MUSIC_DISC_CAT), 2, 20, 0.05f)));
+		TradeOfferHelper.registerVillagerOffers(ModVillagers.BARD, 4, offers ->
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 14), new ItemStack(Items.MUSIC_DISC_BLOCKS), 2, 20, 0.05f)));
+		TradeOfferHelper.registerVillagerOffers(ModVillagers.BARD, 5, offers ->
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 16), new ItemStack(Items.MUSIC_DISC_OTHERSIDE), 1, 30, 0.05f)));
 		TradeOfferHelper.registerVillagerOffers(net.minecraft.world.entity.npc.VillagerProfession.FARMER, 1, offers ->
 			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 1), new ItemStack(ModItems.FIELD_MARKER), 12, 1, 0.05f)));
 		TradeOfferHelper.registerVillagerOffers(ModVillagers.BUILDER, 1, offers -> {

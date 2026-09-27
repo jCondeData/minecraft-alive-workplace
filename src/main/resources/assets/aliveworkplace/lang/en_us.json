@@ -297,5 +297,10 @@
   "message.aliveworkplace.route.line": "%s %s %s → %s %s %s: %s",
   "message.aliveworkplace.route.how_to_end": "Give them a blank Delivery Note to end all routes.",
   "message.aliveworkplace.postman.state.haul": "carrying items to %s %s %s",
-  "gamerule.workplaceKeepWorkLoaded": "Alive Workplace: builds and quarries keep going while the player who ordered them is online, even far away"
+  "gamerule.workplaceKeepWorkLoaded": "Alive Workplace: builds and quarries keep going while the player who ordered them is online, even far away",
+  "block.aliveworkplace.music_stand": "Music Stand",
+  "entity.minecraft.villager.bard": "Bard",
+  "entity.minecraft.zombie_villager.bard": "Zombie Bard",
+  "message.aliveworkplace.bard.playing": "playing %s",
+  "message.aliveworkplace.bard.tune": "playing a tune"
 }

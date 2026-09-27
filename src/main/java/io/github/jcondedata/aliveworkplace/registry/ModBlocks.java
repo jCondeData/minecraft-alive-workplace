@@ -85,6 +85,11 @@ public final class ModBlocks {
 		"travel_post", new io.github.jcondedata.aliveworkplace.travel.TravelPostBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_PLANKS))
 	);
 
+	/** Workstation for the Bard profession: they play the music discs from the chests nearby. */
+	public static final BuildersBenchBlock MUSIC_STAND = register(
+		"music_stand", new BuildersBenchBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.NOTE_BLOCK))
+	);
+
 	private static <T extends Block> T register(String name, T block) {
 		Registry.register(BuiltInRegistries.BLOCK, AliveWorkplace.id(name), block);
 		Registry.register(BuiltInRegistries.ITEM, AliveWorkplace.id(name), new BlockItem(block, new Item.Properties()));

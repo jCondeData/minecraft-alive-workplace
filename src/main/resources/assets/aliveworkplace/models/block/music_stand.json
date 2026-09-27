@@ -1,0 +1,9 @@
+{
+  "parent": "minecraft:block/orientable_with_bottom",
+  "textures": {
+    "top": "aliveworkplace:block/music_stand_top",
+    "bottom": "minecraft:block/oak_planks",
+    "side": "aliveworkplace:block/music_stand_side",
+    "front": "aliveworkplace:block/music_stand_front"
+  }
+}

@@ -36,6 +36,9 @@ abstract class VillagerMixin {
 		} else if (!self.isBaby() && self.getVillagerData().getProfession() == ModVillagers.GUARD) {
 			brain.setSchedule(ModVillagers.GUARD_SCHEDULE);
 			brain.updateActivityFromSchedule(self.level().getDayTime(), self.level().getGameTime());
+		} else if (!self.isBaby() && self.getVillagerData().getProfession() == ModVillagers.BARD) {
+			brain.setSchedule(ModVillagers.BARD_SCHEDULE);
+			brain.updateActivityFromSchedule(self.level().getDayTime(), self.level().getGameTime());
 		}
 		io.github.jcondedata.aliveworkplace.guard.Guards.updateHealth(self);
 	}

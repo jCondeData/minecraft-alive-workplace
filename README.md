@@ -4,7 +4,7 @@ Villagers with real jobs. Hand a **Builder** a blueprint and they build it for y
 site, fetch materials from your chests, put up the walls and roof, and finish with doors, beds and
 torches. **Miners** dig out quarries, **Lumberjacks** cut down and replant trees, **Farmers** look after
 your fields and **Fishermen** fish for you, dropping everything off in your chests. **Postmen** carry mail
-between players' mailboxes, **Guards** keep monsters away, **Nurses** heal you (and your Pokémon) **Shopkeepers** run your shop and **Ferrymen** take you between villages.
+between players' mailboxes, **Guards** keep monsters away, **Nurses** heal you (and your Pokémon) **Shopkeepers** run your shop, **Ferrymen** take you between villages and **Bards** play music.
 
 ![Three builders putting up the starter blueprints](docs/media/timelapse.gif)
 
@@ -133,6 +133,11 @@ Craft a **Travel Post** (a sign over planks and a boat); name it in an anvil fir
 place it. Right-click posts to add them to the ones you know. A villager without a job takes a post as its
 **Ferryman**, who sells **Travel Tickets** to every other post you know (1 emerald per 256 blocks, 8 to another
 dimension). Use a ticket within 16 blocks of any travel post and you arrive at the ticket's post.
+
+## Bards
+Craft a **Music Stand** (paper on a note block) and place it near a villager without a job. Put music discs in a
+chest within 8 blocks: in the morning and in the evening the bard plays them one after another (the discs stay in the
+chest). No discs? They make up a tune on the harp.
 
 ## Blueprint Table: any build from the internet
 Craft a **Blueprint Table** (blue dye on top, cartography table in the middle, planks around) and right-click it.

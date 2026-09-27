@@ -152,6 +152,36 @@ public final class ModVillagers {
 		)
 	);
 
+	public static final ResourceLocation MUSIC_STAND_ID = AliveWorkplace.id("music_stand");
+	public static final ResourceKey<PoiType> MUSIC_STAND_POI = ResourceKey.create(Registries.POINT_OF_INTEREST_TYPE, MUSIC_STAND_ID);
+	public static final PoiType MUSIC_STAND_POI_TYPE = PointOfInterestHelper.register(MUSIC_STAND_ID, 1, 1, ModBlocks.MUSIC_STAND);
+
+	public static final VillagerProfession BARD = Registry.register(
+		BuiltInRegistries.VILLAGER_PROFESSION,
+		AliveWorkplace.id("bard"),
+		new VillagerProfession(
+			"bard",
+			holder -> holder.is(MUSIC_STAND_POI),
+			holder -> holder.is(MUSIC_STAND_POI),
+			ImmutableSet.of(),
+			ImmutableSet.of(),
+			SoundEvents.NOTE_BLOCK_HARP.value()
+		)
+	);
+
+	/** Bards play a morning set at the market and an evening set while the village gathers, then sleep. */
+	public static final Schedule BARD_SCHEDULE = Registry.register(
+		BuiltInRegistries.SCHEDULE,
+		AliveWorkplace.id("bard"),
+		new ScheduleBuilder(new Schedule())
+			.changeActivityAt(10, Activity.IDLE)
+			.changeActivityAt(1000, Activity.WORK)
+			.changeActivityAt(3500, Activity.IDLE)
+			.changeActivityAt(9000, Activity.WORK)
+			.changeActivityAt(12500, Activity.REST)
+			.build()
+	);
+
 	/**
 	 * Guards keep the night watch: on patrol from evening to mid-morning, asleep until early afternoon,
 	 * then out with the village. They fight whenever a monster shows up, whatever they are doing.

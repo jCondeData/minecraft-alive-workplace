@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 0.14.0 — 2026-09-27
+
 ### Added
 - **Nurses.** Craft a **Nurse Station** (glass bottles around a glistering melon slice, on white wool) and a villager
   becomes a Nurse. Right-click a nurse with an empty hand to get your health back and poison, wither and other bad

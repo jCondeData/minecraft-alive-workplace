@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 0.7.0 — 2026-09-26
+
 ### Added
 - Villages grow builder's workshops (plains, desert, savanna, snowy and taiga styles, in roughly every other new
   village): a small house with a Builder's Bench, a bed, and a chest of building supplies that sometimes holds a

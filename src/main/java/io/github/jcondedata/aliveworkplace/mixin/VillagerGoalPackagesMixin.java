@@ -27,4 +27,13 @@ abstract class VillagerGoalPackagesMixin {
 			cir.setReturnValue(io.github.jcondedata.aliveworkplace.wood.LumberjackPackages.work(speed));
 		}
 	}
+
+	/** Farmers keep their vanilla routine, paused while they have a field that needs work (see {@code Fields}). */
+	@Inject(method = "getWorkPackage", at = @At("RETURN"), cancellable = true)
+	private static void aliveworkplace$farmerWorkPackage(VillagerProfession profession, float speed,
+			CallbackInfoReturnable<ImmutableList<Pair<Integer, ? extends BehaviorControl<? super Villager>>>> cir) {
+		if (profession == VillagerProfession.FARMER) {
+			cir.setReturnValue(io.github.jcondedata.aliveworkplace.farm.FarmerPackages.work(cir.getReturnValue()));
+		}
+	}
 }

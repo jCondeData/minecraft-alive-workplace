@@ -58,7 +58,8 @@ public class LumberjackGameTests implements FabricGameTest {
 	public void lumberjackFellsATreeAndReplants(GameTestHelper helper) {
 		BlockPos base = new BlockPos(11, 2, 11);
 		growOak(helper, base);
-		Villager villager = setup(helper, new ItemStack(Items.STONE_AXE));
+		// A sapling in the chest too: the leaves drop one only 1 time in 20, and the lumberjack replants from the chests.
+		Villager villager = setup(helper, new ItemStack(Items.STONE_AXE), new ItemStack(Items.OAK_SAPLING));
 		helper.succeedWhen(() -> {
 			helper.assertBlockPresent(Blocks.OAK_SAPLING, base);
 			for (int y = 1; y < 8; y++) {

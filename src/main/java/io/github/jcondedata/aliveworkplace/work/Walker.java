@@ -143,7 +143,9 @@ public final class Walker {
 
 	public static boolean canStand(ServerLevel level, BlockPos feet) {
 		BlockState below = level.getBlockState(feet.below());
-		return below.isFaceSturdy(level, feet.below(), Direction.UP) && below.getFluidState().isEmpty()
+		boolean ground = below.isFaceSturdy(level, feet.below(), Direction.UP)
+			|| below.getBlock() instanceof net.minecraft.world.level.block.FarmBlock || below.is(net.minecraft.world.level.block.Blocks.DIRT_PATH);
+		return ground && below.getFluidState().isEmpty()
 			&& level.getBlockState(feet).getCollisionShape(level, feet).isEmpty() && level.getFluidState(feet).isEmpty()
 			&& level.getBlockState(feet.above()).getCollisionShape(level, feet.above()).isEmpty() && level.getFluidState(feet.above()).isEmpty();
 	}

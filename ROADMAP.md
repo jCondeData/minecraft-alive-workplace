@@ -58,7 +58,8 @@ Owner decisions are recorded in **Design decisions** at the bottom. Don't change
 - [ ] Miner follow-ups: ladders or stairs out of deep pits, strip-mining tunnels (not just open pits), smelting helper
 - [x] **Lumberjack** (Chopping Block workstation): fells natural trees within 16 blocks of the block (only trees: at least 4 natural leaves, trunk on dirt; player-placed logs, builds and quarries are left alone), clears the leaves, replants a sapling of the same wood, keeps up to 16 saplings of each kind and stores the rest in the chests near the block; axes from those chests wear out (waits for a new one); levels up like builders; trades sticks/apples, sells logs, saplings and an iron axe
 - [ ] Lumberjack follow-ups: plant saplings on marked empty ground (tree farms), big 2×2 trees (dark oak, jungle, spruce) planted as 2×2, nether "trees" (stems/wart blocks)
-- [ ] **Farmer upgrade**: works marked fields beyond vanilla farmers, stores the harvest
+- [x] **Farmer upgrade** (Field Marker item, any vanilla Farmer): give a farmer a marked field (up to 32×32, within 48 blocks of their composter) and they harvest ripe crops (any `CropBlock`, so modded crops too; nether wart, pumpkins/melons off a stem, sugar cane above the bottom block), plant the same crop straight back, sow empty farmland/soul sand with seeds from the chests near the composter (the crop next to it, else what there is most of), till bare dirt/grass with a hoe from the chests, and store the harvest in those chests; their vanilla routine is paused while the field needs work; longer shift like our workers; `/workplace cancel <farmer uuid>` (clickable in the status) stops it
+- [ ] Farmer follow-ups: bone meal from the chests, cocoa, sweet berries (they hurt villagers), a Field Marker for villages' own farms
 - [ ] **Fisher**: fishes at nearby water, stores the catch
 - [ ] **Courier / hauler**: moves items between marked chests (e.g. quarry → builder stash)
 

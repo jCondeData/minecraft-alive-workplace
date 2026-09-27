@@ -59,6 +59,8 @@ public class LumberjackWork extends Behavior<Villager> {
 	private int chopProgress;
 	private int chopTotal;
 	private boolean depositDue;
+	/** Stumps still waiting for a sapling (the leaves dropped none): filled from the chests after the next drop-off. */
+	private final java.util.Map<BlockPos, Block> unplanted = new java.util.LinkedHashMap<>();
 
 	public LumberjackWork() {
 		super(ImmutableMap.of(
@@ -107,18 +109,40 @@ public class LumberjackWork extends Behavior<Villager> {
 			status(villager, Phase.DEPOSITING);
 			if (walker.walkTo(level, villager, containerNear(level, block), 3.0)) {
 				deposit(level, villager, block, bag);
+				takeSaplings(level, block, bag);
 				depositDue = false;
 			}
 			return;
 		}
 
-		// 2. An axe in hand.
+		// 2. Plant the stumps the leaves gave no sapling for.
+		if (!unplanted.isEmpty()) {
+			var next = unplanted.entrySet().iterator().next();
+			BlockPos spot = next.getKey();
+			Block sapling = next.getValue();
+			if (!bag.has(sapling.asItem(), 1) || !level.getBlockState(spot).isAir() || !sapling.defaultBlockState().canSurvive(level, spot)) {
+				unplanted.remove(spot);
+				return;
+			}
+			status(villager, Phase.CHOPPING);
+			if (walker.reach(level, villager, spot, REACH)) {
+				level.setBlockAndUpdate(spot, sapling.defaultBlockState());
+				bag.remove(sapling.asItem(), 1);
+				level.playSound(null, spot, SoundEvents.GRASS_PLACE, SoundSource.BLOCKS, 0.8f, 1f);
+				unplanted.remove(spot);
+			} else if (walker.noSpot()) {
+				unplanted.remove(spot);
+			}
+			return;
+		}
+
+		// 3. An axe in hand.
 		if (!isAxe(axe)) {
 			fetchAxe(level, villager, block);
 			return;
 		}
 
-		// 3. A tree to cut.
+		// 4. A tree to cut.
 		if (tree == null || Trees.treeAt(level, tree).isEmpty()) {
 			tree = null;
 			chopProgress = 0;
@@ -134,7 +158,7 @@ public class LumberjackWork extends Behavior<Villager> {
 			}
 		}
 
-		// 4. Walk up to the trunk and chop.
+		// 5. Walk up to the trunk and chop.
 		status(villager, Phase.CHOPPING);
 		if (!walker.reach(level, villager, tree, REACH)) {
 			if (walker.noSpot()) {
@@ -165,7 +189,7 @@ public class LumberjackWork extends Behavior<Villager> {
 			return;
 		}
 		level.destroyBlockProgress(villager.getId(), tree, -1);
-		fell(level, villager, bag, axe, t);
+		fell(level, villager, bag, axe, t, unplanted);
 		tree = null;
 		chopProgress = 0;
 		searchTimer = 0;
@@ -174,7 +198,7 @@ public class LumberjackWork extends Behavior<Villager> {
 
 	// --- felling -------------------------------------------------------------------------------
 
-	private static void fell(ServerLevel level, Villager villager, BuilderBag bag, ItemStack axe, Trees.Tree t) {
+	private static void fell(ServerLevel level, Villager villager, BuilderBag bag, ItemStack axe, Trees.Tree t, java.util.Map<BlockPos, Block> unplanted) {
 		Block sapling = Trees.saplingFor(t.logState());
 		for (BlockPos leaf : t.leaves()) {
 			take(level, villager, bag, axe, leaf, false);
@@ -189,9 +213,13 @@ public class LumberjackWork extends Behavior<Villager> {
 		if (sapling != null) {
 			Item seed = sapling.asItem();
 			for (BlockPos base : t.base()) {
-				if (level.getBlockState(base).isAir() && sapling.defaultBlockState().canSurvive(level, base) && bag.has(seed, 1)) {
-					level.setBlockAndUpdate(base, sapling.defaultBlockState());
-					bag.remove(seed, 1);
+				if (level.getBlockState(base).isAir() && sapling.defaultBlockState().canSurvive(level, base)) {
+					if (bag.has(seed, 1)) {
+						level.setBlockAndUpdate(base, sapling.defaultBlockState());
+						bag.remove(seed, 1);
+					} else {
+						unplanted.put(base.immutable(), sapling);
+					}
 				}
 			}
 		}
@@ -298,6 +326,24 @@ public class LumberjackWork extends Behavior<Villager> {
 			}
 		}
 		level.playSound(null, villager.blockPosition(), SoundEvents.CHEST_CLOSE, SoundSource.BLOCKS, 0.4f, 1.1f);
+	}
+
+	/** Saplings for the stumps still waiting for one, from the chests. */
+	private void takeSaplings(ServerLevel level, BlockPos block, BuilderBag bag) {
+		if (unplanted.isEmpty()) {
+			return;
+		}
+		List<BlockPos> supplies = SupplyContainers.find(level, block, null);
+		java.util.Map<Item, Integer> needed = new java.util.HashMap<>();
+		for (Block sapling : unplanted.values()) {
+			needed.merge(sapling.asItem(), 1, Integer::sum);
+		}
+		needed.forEach((item, count) -> {
+			int missing = count - bag.count(item);
+			if (missing > 0) {
+				bag.addAll(item, SupplyContainers.extract(level, supplies, item, missing));
+			}
+		});
 	}
 
 	private static BlockPos containerNear(ServerLevel level, BlockPos block) {

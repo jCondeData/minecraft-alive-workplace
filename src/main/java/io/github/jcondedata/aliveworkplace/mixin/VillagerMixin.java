@@ -14,7 +14,8 @@ abstract class VillagerMixin {
 	@Inject(method = "registerBrainGoals", at = @At("TAIL"))
 	private void aliveworkplace$builderSchedule(Brain<Villager> brain, CallbackInfo ci) {
 		Villager self = (Villager) (Object) this;
-		if (!self.isBaby() && ModVillagers.isWorker(self.getVillagerData().getProfession())) {
+		if (!self.isBaby() && (ModVillagers.isWorker(self.getVillagerData().getProfession())
+			|| io.github.jcondedata.aliveworkplace.farm.Fields.isFarmer(self) && io.github.jcondedata.aliveworkplace.farm.Fields.hasField(self))) {
 			brain.setSchedule(ModVillagers.BUILDER_SCHEDULE);
 			brain.updateActivityFromSchedule(self.level().getDayTime(), self.level().getGameTime());
 		}

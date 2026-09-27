@@ -22,6 +22,15 @@ public final class ModComponents {
 			.networkSynchronized(io.github.jcondedata.aliveworkplace.mine.QuarryData.STREAM_CODEC).build()
 	);
 
+	/** A Field Marker's corners. */
+	public static final DataComponentType<io.github.jcondedata.aliveworkplace.farm.FieldData> FIELD = Registry.register(
+		BuiltInRegistries.DATA_COMPONENT_TYPE,
+		AliveWorkplace.id("field"),
+		DataComponentType.<io.github.jcondedata.aliveworkplace.farm.FieldData>builder()
+			.persistent(io.github.jcondedata.aliveworkplace.farm.FieldData.CODEC)
+			.networkSynchronized(io.github.jcondedata.aliveworkplace.farm.FieldData.STREAM_CODEC).build()
+	);
+
 	public static void init() {
 	}
 

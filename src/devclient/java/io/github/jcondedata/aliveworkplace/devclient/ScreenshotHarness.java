@@ -74,6 +74,10 @@ public class ScreenshotHarness implements ClientModInitializer {
 			quarryScene(mc, mc.getSingleplayerServer());
 			return;
 		}
+		if ("farm".equals(System.getProperty("aliveworkplace.scene"))) {
+			farmScene(mc, mc.getSingleplayerServer());
+			return;
+		}
 		if ("forest".equals(System.getProperty("aliveworkplace.scene"))) {
 			forestScene(mc, mc.getSingleplayerServer());
 			return;
@@ -361,6 +365,65 @@ public class ScreenshotHarness implements ClientModInitializer {
 		}
 		if (doneAt > 0 && tick == doneAt + 200) {
 			shot(mc, "50_forest_done");
+			mc.stop();
+		}
+		if (tick >= GIVE_UP_AT) {
+			shot(mc, "99_timeout");
+			mc.stop();
+		}
+	}
+
+	// --- Farm: a farmer harvests, replants, tills and sows a marked field ----------------------------
+
+	private Villager farmer;
+
+	private void farmScene(Minecraft mc, MinecraftServer server) {
+		tick++;
+		if (tick == 1) {
+			mc.options.renderDistance().set(6);
+			mc.options.cloudStatus().set(CloudStatus.OFF);
+			mc.options.hideGui = true;
+		}
+		if (tick == 20) {
+			server.execute(() -> {
+				ServerLevel level = server.overworld();
+				level.getGameRules().getRule(GameRules.RULE_DAYLIGHT).set(false, server);
+				level.getGameRules().getRule(GameRules.RULE_DOMOBSPAWNING).set(false, server);
+				level.getGameRules().getRule(GameRules.RULE_RANDOMTICKING).set(0, server);
+				level.setDayTime(2500);
+				BlockPos water = new BlockPos(0, -61, -8);
+				for (BlockPos p : BlockPos.betweenClosed(new BlockPos(-4, -61, -12), new BlockPos(4, -61, -4))) {
+					if (p.equals(water)) {
+						level.setBlockAndUpdate(p, Blocks.WATER.defaultBlockState());
+					} else if (p.getZ() <= -7) {
+						level.setBlock(p, Blocks.FARMLAND.defaultBlockState(), 2);
+						var crop = p.getX() < 0 ? Blocks.WHEAT : Blocks.CARROTS;
+						level.setBlock(p.above(), crop.defaultBlockState().setValue(net.minecraft.world.level.block.CropBlock.AGE, 7), 2);
+					}
+				}
+				BlockPos composter = new BlockPos(0, -60, 2);
+				level.setBlockAndUpdate(composter, Blocks.COMPOSTER.defaultBlockState());
+				level.setBlockAndUpdate(composter.east(), Blocks.CHEST.defaultBlockState());
+				BaseContainerBlockEntity chest = (BaseContainerBlockEntity) level.getBlockEntity(composter.east());
+				chest.setItem(0, new ItemStack(net.minecraft.world.item.Items.STONE_HOE));
+				chest.setItem(1, new ItemStack(net.minecraft.world.item.Items.WHEAT_SEEDS, 16));
+				farmer = EntityType.VILLAGER.spawn(level, composter.south(), MobSpawnType.COMMAND);
+				io.github.jcondedata.aliveworkplace.work.Jobs.employ(level, farmer, composter,
+					net.minecraft.world.entity.ai.village.poi.PoiTypes.FARMER, net.minecraft.world.entity.npc.VillagerProfession.FARMER);
+				io.github.jcondedata.aliveworkplace.farm.Fields.start(level, farmer,
+					net.minecraft.world.level.levelgen.structure.BoundingBox.fromCorners(new BlockPos(-4, -61, -12), new BlockPos(4, -61, -4)));
+				hover(server.getPlayerList().getPlayers().get(0), new Vec3(9.5, -53, 4.5), 140, 35);
+			});
+		}
+		if (tick > 60 && tick % 10 == 0 && doneAt < 0) {
+			shot(mc, String.format("frame_%03d", frame++));
+			server.execute(() -> allDone.set(tick > 300 && farmer != null && io.github.jcondedata.aliveworkplace.farm.Fields.vanillaMayRun(farmer)));
+			if (allDone.get()) {
+				doneAt = tick;
+			}
+		}
+		if (doneAt > 0 && tick == doneAt + 40) {
+			shot(mc, "50_farm_done");
 			mc.stop();
 		}
 		if (tick >= GIVE_UP_AT) {

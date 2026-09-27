@@ -27,6 +27,12 @@ public final class ModItems {
 		new io.github.jcondedata.aliveworkplace.mine.QuarryMarkerItem(new Item.Properties().stacksTo(1))
 	);
 
+	/** Marks out a field for a Farmer. */
+	public static final io.github.jcondedata.aliveworkplace.farm.FieldMarkerItem FIELD_MARKER = Registry.register(
+		BuiltInRegistries.ITEM, AliveWorkplace.id("field_marker"),
+		new io.github.jcondedata.aliveworkplace.farm.FieldMarkerItem(new Item.Properties().stacksTo(1))
+	);
+
 	public static final CreativeModeTab TAB = Registry.register(
 		BuiltInRegistries.CREATIVE_MODE_TAB,
 		AliveWorkplace.id("main"),
@@ -40,6 +46,7 @@ public final class ModItems {
 				output.accept(ModBlocks.MINERS_BENCH);
 				output.accept(QUARRY_MARKER);
 				output.accept(ModBlocks.CHOPPING_BLOCK);
+				output.accept(FIELD_MARKER);
 				for (StarterBlueprints.Entry entry : StarterBlueprints.ALL) {
 					output.accept(BlueprintItem.create(entry.id(), entry.size()));
 				}

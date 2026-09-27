@@ -369,6 +369,24 @@ def quarry_marker_item():
     save(img, "item", "quarry_marker.png")
 
 
+def field_marker_item():
+    img = Image.new("RGBA", (16, 16), T)
+    # A wooden stake with a green flag and a wheat ear
+    for y in range(3, 16):
+        img.putpixel((5, y), rgb("#8a5a2b"))
+        img.putpixel((6, y), rgb("#6e4a26"))
+    img.putpixel((5, 15), rgb("#55595e"))
+    img.putpixel((6, 15), rgb("#55595e"))
+    for y in range(2, 9):
+        for x in range(7, 15 - (y - 2) // 2):
+            img.putpixel((x, y), rgb("#4f9e2f") if (x + y) % 4 < 2 else rgb("#6fbf3f"))
+    for y in range(2, 9):
+        img.putpixel((7, y), rgb("#3a7a22"))
+    for (x, y) in ((10, 4), (11, 5), (10, 6), (11, 7), (12, 4)):
+        img.putpixel((x, y), rgb("#e0c55a"))
+    save(img, "item", "field_marker.png")
+
+
 def miner_overlay():
     img = Image.new("RGBA", (64, 64), T)
     rnd = random.Random(21)
@@ -504,6 +522,7 @@ if __name__ == "__main__":
     miners_bench_side(front=False)
     miners_bench_side(front=True)
     quarry_marker_item()
+    field_marker_item()
     miner_overlay()
     chopping_top()
     chopping_side(front=False)

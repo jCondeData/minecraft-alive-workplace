@@ -2,6 +2,20 @@
 
 ## Unreleased
 
+### Added
+- **Farmers look after your fields.** Craft a **Field Marker** (stick + wheat seeds + paper), right-click two
+  opposite corners of a field (up to 32 × 32) and give the marker to any Farmer villager. They harvest what's
+  ripe and plant the same crop straight back, sow empty farmland with seeds from the chests near their composter,
+  till bare dirt and grass with a hoe from those chests, cut sugar cane down to its bottom block, pick pumpkins
+  and melons, and put the harvest in the chests. Works with modded crops too. Their field and what they're doing
+  shows above their heads; sneak-right-click them for details and a button to stop. Farmers also sell the marker.
+
+### Changed
+- Workers can now stand on farmland and dirt paths while they work.
+
+### Fixed
+- A lumberjack whose tree dropped no sapling left the stump bare; they now bring one from the chests.
+
 ## 0.9.0 — 2026-09-27
 
 ### Added

@@ -13,6 +13,8 @@ public final class ModTrades {
 	public static void init() {
 		minerTrades();
 		lumberjackTrades();
+		TradeOfferHelper.registerVillagerOffers(net.minecraft.world.entity.npc.VillagerProfession.FARMER, 1, offers ->
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 1), new ItemStack(ModItems.FIELD_MARKER), 12, 1, 0.05f)));
 		TradeOfferHelper.registerVillagerOffers(ModVillagers.BUILDER, 1, offers -> {
 			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.COBBLESTONE, 20), new ItemStack(Items.EMERALD), 16, 2, 0.05f));
 			offers.add((entity, random) -> blueprint(StarterBlueprints.STARTER_COTTAGE, 6));

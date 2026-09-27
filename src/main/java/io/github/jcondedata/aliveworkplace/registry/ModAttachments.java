@@ -28,6 +28,14 @@ public final class ModAttachments {
 	public static final AttachmentType<io.github.jcondedata.aliveworkplace.build.Employer> BUILDER_EMPLOYER = AttachmentRegistry.create(
 		AliveWorkplace.id("builder_employer"), builder -> builder.persistent(io.github.jcondedata.aliveworkplace.build.Employer.CODEC));
 
+	/** The field a Farmer was given to look after. */
+	public static final AttachmentType<io.github.jcondedata.aliveworkplace.farm.FieldJob> FARM_FIELD = AttachmentRegistry.create(
+		AliveWorkplace.id("farm_field"), builder -> builder.persistent(io.github.jcondedata.aliveworkplace.farm.FieldJob.CODEC));
+
+	/** How many crops a farmer has harvested on their field (shown above its head). */
+	public static final AttachmentType<Integer> FARM_HARVESTED = AttachmentRegistry.create(
+		AliveWorkplace.id("farm_harvested"), builder -> builder.persistent(com.mojang.serialization.Codec.INT));
+
 	public static void init() {
 	}
 

@@ -191,6 +191,22 @@ public final class WorkplaceCommand {
 			source.sendSuccess(() -> Component.translatable("command.aliveworkplace.cancelled", Blueprints.displayName(site.structure())), false);
 			return 1;
 		}
+		// A farmer's field has no site of its own: the id is the farmer's.
+		for (ServerLevel level : source.getServer().getAllLevels()) {
+			if (level.getEntity(id) instanceof net.minecraft.world.entity.npc.Villager farmer
+				&& io.github.jcondedata.aliveworkplace.farm.Fields.hasField(farmer)) {
+				boolean allowed = source.hasPermission(2)
+					|| source.getEntity() instanceof net.minecraft.world.entity.player.Player p && Friends.mayCommand(p, farmer);
+				if (!allowed) {
+					source.sendFailure(Component.translatable("command.aliveworkplace.not_owner"));
+					return 0;
+				}
+				io.github.jcondedata.aliveworkplace.farm.Fields.release(level, farmer,
+					source.getEntity() instanceof net.minecraft.world.entity.player.Player p ? p : null);
+				source.sendSuccess(() -> Component.translatable("command.aliveworkplace.field_released", farmer.getDisplayName()), false);
+				return 1;
+			}
+		}
 		source.sendFailure(Component.translatable("command.aliveworkplace.no_such_site"));
 		return 0;
 	}

@@ -74,6 +74,10 @@ public class ScreenshotHarness implements ClientModInitializer {
 			quarryScene(mc, mc.getSingleplayerServer());
 			return;
 		}
+		if ("guard".equals(System.getProperty("aliveworkplace.scene"))) {
+			guardScene(mc, mc.getSingleplayerServer());
+			return;
+		}
 		if ("mail".equals(System.getProperty("aliveworkplace.scene"))) {
 			mailScene(mc, mc.getSingleplayerServer());
 			return;
@@ -372,6 +376,63 @@ public class ScreenshotHarness implements ClientModInitializer {
 			mc.stop();
 		}
 		if (tick >= GIVE_UP_AT) {
+			shot(mc, "99_timeout");
+			mc.stop();
+		}
+	}
+
+	// --- Guard: a guard gears up and fights off three husks ------------------------------------------
+
+	private final List<net.minecraft.world.entity.Entity> husks = new ArrayList<>();
+
+	private void guardScene(Minecraft mc, MinecraftServer server) {
+		tick++;
+		if (tick == 1) {
+			mc.options.renderDistance().set(6);
+			mc.options.cloudStatus().set(CloudStatus.OFF);
+			mc.options.hideGui = true;
+		}
+		if (tick == 20) {
+			server.execute(() -> {
+				ServerLevel level = server.overworld();
+				level.getGameRules().getRule(GameRules.RULE_DAYLIGHT).set(false, server);
+				level.getGameRules().getRule(GameRules.RULE_DOMOBSPAWNING).set(false, server);
+				level.setDayTime(2500);
+				BlockPos post = new BlockPos(0, -60, 0);
+				level.setBlockAndUpdate(post, ModBlocks.GUARD_POST.defaultBlockState().setValue(net.minecraft.world.level.block.HorizontalDirectionalBlock.FACING, Direction.SOUTH));
+				level.setBlockAndUpdate(post.east(), Blocks.CHEST.defaultBlockState());
+				BaseContainerBlockEntity chest = (BaseContainerBlockEntity) level.getBlockEntity(post.east());
+				chest.setItem(0, new ItemStack(net.minecraft.world.item.Items.IRON_SWORD));
+				chest.setItem(1, new ItemStack(net.minecraft.world.item.Items.IRON_CHESTPLATE));
+				Villager guard = EntityType.VILLAGER.spawn(level, post.south(), MobSpawnType.COMMAND);
+				io.github.jcondedata.aliveworkplace.work.Jobs.employ(level, guard, post,
+					io.github.jcondedata.aliveworkplace.registry.ModVillagers.GUARD_POST_POI, io.github.jcondedata.aliveworkplace.registry.ModVillagers.GUARD);
+				hover(server.getPlayerList().getPlayers().get(0), new Vec3(7.5, -55, 9.5), 145, 28);
+			});
+		}
+		if (tick == 140) {
+			server.execute(() -> {
+				ServerLevel level = server.overworld();
+				for (BlockPos p : List.of(new BlockPos(-10, -60, -8), new BlockPos(-12, -60, -4), new BlockPos(-8, -60, -12))) {
+					husks.add(EntityType.HUSK.spawn(level, p, MobSpawnType.COMMAND));
+				}
+			});
+		}
+		if (tick > 100 && tick % 5 == 0 && doneAt < 0) {
+			shot(mc, String.format("frame_%03d", frame++));
+			server.execute(() -> allDone.set(!husks.isEmpty() && husks.stream().noneMatch(net.minecraft.world.entity.Entity::isAlive)));
+			if (allDone.get()) {
+				doneAt = tick;
+			}
+		}
+		if (doneAt > 0 && tick < doneAt + 60 && tick % 5 == 0) {
+			shot(mc, String.format("frame_%03d", frame++));
+		}
+		if (doneAt > 0 && tick == doneAt + 80) {
+			shot(mc, "50_guard_done");
+			mc.stop();
+		}
+		if (tick >= 3000) {
 			shot(mc, "99_timeout");
 			mc.stop();
 		}

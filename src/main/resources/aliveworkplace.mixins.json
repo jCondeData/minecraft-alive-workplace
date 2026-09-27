@@ -6,7 +6,8 @@
 		"StructureTemplatePoolAccessor",
 		"VillagerAccessor",
 		"VillagerGoalPackagesMixin",
-		"VillagerMixin"
+		"VillagerMixin",
+		"VillagerPanicTriggerMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

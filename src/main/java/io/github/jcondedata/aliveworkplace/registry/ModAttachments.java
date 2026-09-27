@@ -48,6 +48,10 @@ public final class ModAttachments {
 	public static final AttachmentType<Integer> MAIL_DELIVERED = AttachmentRegistry.create(
 		AliveWorkplace.id("mail_delivered"), builder -> builder.persistent(com.mojang.serialization.Codec.INT));
 
+	/** How many monsters a guard has defeated (shown above its head). */
+	public static final AttachmentType<Integer> GUARD_KILLS = AttachmentRegistry.create(
+		AliveWorkplace.id("guard_kills"), builder -> builder.persistent(com.mojang.serialization.Codec.INT));
+
 	public static void init() {
 	}
 

@@ -19,6 +19,10 @@ abstract class VillagerMixin {
 			|| io.github.jcondedata.aliveworkplace.fish.Fishers.isFisherman(self) && io.github.jcondedata.aliveworkplace.fish.Fishers.isHired(self))) {
 			brain.setSchedule(ModVillagers.BUILDER_SCHEDULE);
 			brain.updateActivityFromSchedule(self.level().getDayTime(), self.level().getGameTime());
+		} else if (!self.isBaby() && self.getVillagerData().getProfession() == ModVillagers.GUARD) {
+			brain.setSchedule(ModVillagers.GUARD_SCHEDULE);
+			brain.updateActivityFromSchedule(self.level().getDayTime(), self.level().getGameTime());
 		}
+		io.github.jcondedata.aliveworkplace.guard.Guards.updateHealth(self);
 	}
 }

@@ -3,7 +3,8 @@
 Villagers with real jobs. Hand a **Builder** a blueprint and they build it for you: they clear the
 site, fetch materials from your chests, put up the walls and roof, and finish with doors, beds and
 torches. **Miners** dig out quarries, **Lumberjacks** cut down and replant trees, **Farmers** look after
-your fields and **Fishermen** fish for you, dropping everything off in your chests.
+your fields and **Fishermen** fish for you, dropping everything off in your chests. **Postmen** carry mail
+between players' mailboxes and **Guards** keep monsters away.
 
 ![Three builders putting up the starter blueprints](docs/media/timelapse.gif)
 
@@ -95,6 +96,15 @@ near a villager without a job. Postmen walk their round (64 blocks around the de
 them in the right mailbox. Parcels for a mailbox outside the round (another village, another dimension) go with the
 night mail and arrive at the next dawn. Only you, your friends (`/workplace friend add`) and operators can open your
 mailbox.
+
+## Guards
+![A guard fighting off three husks](docs/media/guard.gif)
+
+Craft a **Guard Post** (an iron sword over planks and a shield) and place it near a villager without a job. Put
+weapons and armor in a chest within 8 blocks of the post: the guard takes the best of it. Guards fight monsters that
+come within 24 blocks of the post at any hour (creepers excepted) and never run away. They have twice a villager's
+health and keep the night watch, sleeping in the late morning instead. Players, villagers, animals, pets and
+Pokémon are safe from them.
 
 ## Blueprint Table: any build from the internet
 Craft a **Blueprint Table** (blue dye on top, cartography table in the middle, planks around) and right-click it.

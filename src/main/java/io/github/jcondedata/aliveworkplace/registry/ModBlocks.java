@@ -61,6 +61,11 @@ public final class ModBlocks {
 		"postal_desk", new BuildersBenchBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.CARTOGRAPHY_TABLE))
 	);
 
+	/** Workstation for the Guard profession: a weapon rack; guards take their gear from the chests near it. */
+	public static final BuildersBenchBlock GUARD_POST = register(
+		"guard_post", new BuildersBenchBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.SMITHING_TABLE))
+	);
+
 	private static <T extends Block> T register(String name, T block) {
 		Registry.register(BuiltInRegistries.BLOCK, AliveWorkplace.id(name), block);
 		Registry.register(BuiltInRegistries.ITEM, AliveWorkplace.id(name), new BlockItem(block, new Item.Properties()));

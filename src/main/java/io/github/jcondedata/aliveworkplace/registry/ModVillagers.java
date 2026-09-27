@@ -84,6 +84,38 @@ public final class ModVillagers {
 		)
 	);
 
+	public static final ResourceLocation GUARD_POST_ID = AliveWorkplace.id("guard_post");
+	public static final ResourceKey<PoiType> GUARD_POST_POI = ResourceKey.create(Registries.POINT_OF_INTEREST_TYPE, GUARD_POST_ID);
+	public static final PoiType GUARD_POST_POI_TYPE = PointOfInterestHelper.register(GUARD_POST_ID, 1, 1, ModBlocks.GUARD_POST);
+
+	public static final VillagerProfession GUARD = Registry.register(
+		BuiltInRegistries.VILLAGER_PROFESSION,
+		AliveWorkplace.id("guard"),
+		new VillagerProfession(
+			"guard",
+			holder -> holder.is(GUARD_POST_POI),
+			holder -> holder.is(GUARD_POST_POI),
+			ImmutableSet.of(),
+			ImmutableSet.of(),
+			SoundEvents.VILLAGER_WORK_WEAPONSMITH
+		)
+	);
+
+	/**
+	 * Guards keep the night watch: on patrol from evening to mid-morning, asleep until early afternoon,
+	 * then out with the village. They fight whenever a monster shows up, whatever they are doing.
+	 */
+	public static final Schedule GUARD_SCHEDULE = Registry.register(
+		BuiltInRegistries.SCHEDULE,
+		AliveWorkplace.id("guard"),
+		new ScheduleBuilder(new Schedule())
+			.changeActivityAt(10, Activity.WORK)
+			.changeActivityAt(3000, Activity.REST)
+			.changeActivityAt(8000, Activity.IDLE)
+			.changeActivityAt(10500, Activity.WORK)
+			.build()
+	);
+
 	/** Villagers whose work this mod runs: they get the long shift and our WORK package. */
 	public static boolean isWorker(VillagerProfession profession) {
 		return profession == BUILDER || profession == MINER || profession == LUMBERJACK || profession == POSTMAN;

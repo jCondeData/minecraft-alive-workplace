@@ -369,8 +369,9 @@ public class BuilderGameTests implements FabricGameTest {
 
 	// --- crews -------------------------------------------------------------------------------
 
-	private static final BlockPos HELPER_BENCH = new BlockPos(14, 2, 2);
-	private static final BlockPos HELPER = new BlockPos(14, 2, 3);
+	// Close to the lead's bench (2,2,2): the neighbouring test's bench is ~22 blocks along, and must be further away.
+	private static final BlockPos HELPER_BENCH = new BlockPos(5, 2, 2);
+	private static final BlockPos HELPER = new BlockPos(5, 2, 3);
 
 	/** An idle builder with a bench nearby pitches in; the build finishes correctly and both earn XP. */
 	@GameTest(template = AREA, timeoutTicks = 2400, batch = "crews")
@@ -403,7 +404,15 @@ public class BuilderGameTests implements FabricGameTest {
 		helper.setBlock(HELPER_BENCH, ModBlocks.BUILDERS_BENCH);
 		Villager mate = helper.spawn(EntityType.VILLAGER, HELPER);
 		Builders.employ(s.level(), mate, helper.absolutePos(HELPER_BENCH));
-		helper.assertTrue(Builders.recruit(s.level(), mate) == s.site(), "the idle builder should join the nearby build");
+		// Sites left over from tests that ran earlier in this spot (their builders are gone) would compete for the helper.
+		for (BuildSite other : new java.util.ArrayList<>(io.github.jcondedata.aliveworkplace.build.BuildSiteManager.get(s.level()).all())) {
+			if (other != s.site() && (other.builder() == null || s.level().getEntity(other.builder()) == null)) {
+				io.github.jcondedata.aliveworkplace.build.BuildSiteManager.get(s.level()).remove(other.id());
+			}
+		}
+		BuildSite joined = Builders.recruit(s.level(), mate);
+		helper.assertTrue(joined == s.site(), "the idle builder should join the nearby build; joined the one at "
+			+ (joined == null ? "none" : joined.bench()));
 		BuildSite own = Builders.start(s.level(), mate, null, TEST_HUT, placement(helper, new BlockPos(11, 2, 0), Rotation.NONE));
 		helper.assertFalse(Builders.isHelping(mate), "still helping after getting its own build");
 		helper.assertTrue(Builders.activeSite(s.level(), mate) == own, "its own build should be active");

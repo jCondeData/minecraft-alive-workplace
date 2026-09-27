@@ -1,0 +1,9 @@
+{
+  "parent": "minecraft:block/orientable_with_bottom",
+  "textures": {
+    "top": "aliveworkplace:block/guard_post_top",
+    "bottom": "minecraft:block/spruce_planks",
+    "side": "aliveworkplace:block/guard_post_side",
+    "front": "aliveworkplace:block/guard_post_front"
+  }
+}

@@ -49,6 +49,7 @@ public final class ModItems {
 				output.accept(FIELD_MARKER);
 				output.accept(ModBlocks.POSTAL_DESK);
 				output.accept(ModBlocks.MAILBOX);
+				output.accept(ModBlocks.GUARD_POST);
 				for (StarterBlueprints.Entry entry : StarterBlueprints.ALL) {
 					output.accept(BlueprintItem.create(entry.id(), entry.size()));
 				}

@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+### Added
+- **Guards.** Craft a **Guard Post** (an iron sword over planks and a shield) and a villager becomes a Guard. Put
+  weapons and armor in a chest near the post and they take the best of it. Guards fight any monster that comes
+  within 24 blocks of their post, day or night — except creepers — and never run away. They have twice a villager's
+  health, heal between fights and hit harder as they level up. They keep the night watch and sleep in the late
+  morning. Players, villagers, animals, pets and Pokémon are safe from them.
+
 ## 0.12.0 — 2026-09-27
 
 ### Added

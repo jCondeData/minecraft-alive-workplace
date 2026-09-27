@@ -4,6 +4,7 @@
     "aliveworkplace:builders_bench",
     "aliveworkplace:miners_bench",
     "aliveworkplace:chopping_block",
-    "aliveworkplace:postal_desk"
+    "aliveworkplace:postal_desk",
+    "aliveworkplace:guard_post"
   ]
 }

@@ -27,7 +27,7 @@ The owner (Jesse) does not write code: sessions are expected to work autonomousl
   of builders at work; use it to check anything visual and to show the owner progress.
   `SCENE=table` shows the Blueprint Table screens, `SCENE=preview` the ghost preview and the status above a builder,
   `SCENE=gallery` every starter blueprint, `SCENE=village WORKSHOP_WEIGHT=200` one village of each type with workshops,
-  `SCENE=quarry` a miner digging out a block of stone, `SCENE=forest` a lumberjack felling and replanting four trees, `SCENE=farm` a farmer working a field, `SCENE=mail` the mailbox screen and a postman delivering (then `python3 tools/screenshots/make_gif.py`). `DEBUG=true` logs
+  `SCENE=quarry` a miner digging out a block of stone, `SCENE=forest` a lumberjack felling and replanting four trees, `SCENE=farm` a farmer working a field, `SCENE=mail` the mailbox screen and a postman delivering, `SCENE=guard` a guard fighting three husks (then `python3 tools/screenshots/make_gif.py`). `DEBUG=true` logs
   builder/miner decisions. Long scenes take >10 min: start run.sh in the background and poll.
   Never `pkill -f`/`pgrep -f` a pattern that also appears in your own command line (it kills your shell).
 - If Maven Central answers **429**, wait ~20 s and retry; it is rate limiting, not a real failure.
@@ -43,6 +43,8 @@ The owner (Jesse) does not write code: sessions are expected to work autonomousl
 - `mine/` — the miner: `QuarryMarkerItem`/`QuarryData`, `QuarrySite` + `QuarrySiteManager`, `MinerWork`, `Miners`
 - `farm/` — the farmer upgrade (vanilla Farmers): `FieldMarkerItem`/`FieldData`, `FieldJob` (attachment), `FieldWork`,
   `FarmerPackages` (our work first, vanilla's routine wrapped in `work/Gated`), `Fields`
+- `guard/` — guards: `GuardCombat` (in their CORE package, any activity), `GuardPatrol` (WORK: gear up, patrol),
+  `Guards` (who is a foe, damage, extra health); `VillagerPanicTriggerMixin` keeps them from panicking
 - `mail/` — mailboxes and postmen: `MailboxBlock`/`MailboxBlockEntity`/`MailboxMenu` (screen in client `MailboxScreen`),
   `PostOffice` (saved data: addresses, parcels, desks, dawn delivery), `Parcel`, `Mail` (send packet), `PostmanWork`
 - `fish/` — the fisher upgrade (vanilla Fishermen, hired with a fishing rod): `FisherWork`, `Fishers`

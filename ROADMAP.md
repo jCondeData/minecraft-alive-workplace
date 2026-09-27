@@ -74,8 +74,12 @@ workstation, like the rest of the mod.
   on the round; anything else is handed in and arrives at the next dawn (`PostOffice` saved data; the flag shows
   there's mail; comparators read it)
 - [ ] Postman follow-ups: the same villager runs Courier routes; letters with a written message; parcel tracking
-- [ ] **Guard** (Guard Post workstation): patrols the village or your base, fights hostile mobs with the weapon and
-  armor from the post's chest, heals up at the post; leaves players, pets and Pokémon alone.
+- [x] **Guard** (Guard Post workstation): fights monsters (not creepers) within 24 blocks of the post at any hour
+  (combat is in their CORE activity, and they never panic), with the best weapon and armor from the chests near the
+  post; 40 health, heals between fights, +10% damage per level, XP per kill; night-watch schedule (patrol evening
+  to mid-morning, sleep until early afternoon); never targets players, villagers, golems, animals, pets or Pokémon
+- [ ] Guard follow-ups: bows/crossbows (shoot creepers from range), armor shown on the villager model, guards in
+  village generation, rallying to the bell when it rings
 - [ ] **Nurse** (Cobblemon, optional): takes a Cobblemon Healing Machine as workstation; talk to them to heal your
   whole party (per-player cooldown). The Healing Center blueprint comes with one.
 - [ ] **Shopkeeper** (their Item Trader): a Shop Counter you stock from a chest; the villager sells your items at

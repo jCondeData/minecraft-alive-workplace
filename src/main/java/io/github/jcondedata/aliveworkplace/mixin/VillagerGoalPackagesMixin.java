@@ -27,6 +27,17 @@ abstract class VillagerGoalPackagesMixin {
 			cir.setReturnValue(io.github.jcondedata.aliveworkplace.wood.LumberjackPackages.work(speed));
 		} else if (profession == ModVillagers.POSTMAN) {
 			cir.setReturnValue(io.github.jcondedata.aliveworkplace.mail.PostmanPackages.work(speed));
+		} else if (profession == ModVillagers.GUARD) {
+			cir.setReturnValue(io.github.jcondedata.aliveworkplace.guard.GuardPackages.work(speed));
+		}
+	}
+
+	/** Guards fight in every activity, so their combat goes in CORE. */
+	@Inject(method = "getCorePackage", at = @At("RETURN"), cancellable = true)
+	private static void aliveworkplace$guardCorePackage(VillagerProfession profession, float speed,
+			CallbackInfoReturnable<ImmutableList<Pair<Integer, ? extends BehaviorControl<? super Villager>>>> cir) {
+		if (profession == ModVillagers.GUARD) {
+			cir.setReturnValue(io.github.jcondedata.aliveworkplace.guard.GuardPackages.core(cir.getReturnValue()));
 		}
 	}
 

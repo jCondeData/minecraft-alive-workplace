@@ -637,6 +637,77 @@ def postman_overlay():
     save(img, "entity", "zombie_villager", "profession", "postman.png")
 
 
+# --- Guard Post: a weapon rack with a sword and a shield ------------------------------------------
+def guard_post_top():
+    rnd = random.Random(81)
+    img = Image.new("RGBA", (16, 16))
+    planks(img, rnd)
+    for i in range(16):
+        for p in ((i, 0), (i, 15), (0, i), (15, i)):
+            img.putpixel(p, WOOD_EDGE)
+    # Two iron bands across the top
+    for x in range(16):
+        for y in (4, 11):
+            img.putpixel((x, y), jitter(rgb("#8f9499"), rnd, 5))
+    save(img, "block", "guard_post_top.png")
+
+
+def guard_post_side(front=False):
+    rnd = random.Random(82 if front else 83)
+    img = Image.new("RGBA", (16, 16))
+    planks(img, rnd)
+    for i in range(16):
+        for p in ((i, 0), (i, 15), (0, i), (15, i)):
+            img.putpixel(p, WOOD_EDGE)
+    if front:
+        # A sword hanging point-down next to a round blue shield with a gold boss
+        for y in range(2, 13):
+            img.putpixel((4, y), rgb("#d9dde0") if y < 10 else rgb("#6e4a26"))
+            img.putpixel((5, y), rgb("#b8bec3") if y < 10 else rgb("#553619"))
+        for x in range(2, 8):
+            img.putpixel((x, 10), rgb("#8f9499"))
+        for y in range(3, 14):
+            for x in range(8, 15):
+                dx, dy = x - 11, y - 8.5
+                if dx * dx + dy * dy <= 11:
+                    img.putpixel((x, y), jitter(rgb("#2b4c8c") if dx * dx + dy * dy <= 7 else rgb("#8f9499"), rnd, 4))
+        img.putpixel((11, 8), rgb("#e0b83a"))
+        img.putpixel((11, 9), rgb("#c89d2a"))
+    else:
+        # Iron studs
+        for (x, y) in ((3, 3), (12, 3), (3, 12), (12, 12), (7, 7), (8, 8)):
+            img.putpixel((x, y), rgb("#8f9499"))
+    save(img, "block", "guard_post_front.png" if front else "guard_post_side.png")
+
+
+def guard_overlay():
+    img = Image.new("RGBA", (64, 64), T)
+    rnd = random.Random(91)
+    iron, iron_shade, iron_dark = rgb("#c8cdd1"), rgb("#a9afb4"), rgb("#7d8388")
+    # An iron helmet
+    for y in range(0, 8):
+        for x in range(40, 48):
+            img.putpixel((x, y), jitter(iron, rnd, 5))
+    for y in range(8, 13):
+        for x in range(32, 64):
+            c = iron_dark if y == 12 else (iron_shade if y >= 11 else iron)
+            img.putpixel((x, y), jitter(c, rnd, 4))
+    for y in range(8, 12):  # nose guard
+        img.putpixel((43, y), iron_dark)
+        img.putpixel((44, y), iron_dark)
+    # A blue tabard with a gold stripe over the robe
+    blue, blue_dark, gold = rgb("#2b4c8c"), rgb("#223d70"), rgb("#e0b83a")
+    for y in range(38, 44):
+        for x in range(6, 14):
+            img.putpixel((x, y), jitter(blue, rnd, 4))
+    for y in range(44, 58):
+        for x in range(0, 28):
+            c = gold if x in (9, 10) else (blue_dark if y == 57 else blue)
+            img.putpixel((x, y), jitter(c, rnd, 4))
+    save(img, "entity", "villager", "profession", "guard.png")
+    save(img, "entity", "zombie_villager", "profession", "guard.png")
+
+
 def icon(blueprint):
     big = Image.new("RGBA", (128, 128), T)
     scaled = blueprint.resize((128, 128), Image.NEAREST)
@@ -671,3 +742,7 @@ if __name__ == "__main__":
     postal_desk_side(front=True)
     mailbox_textures()
     postman_overlay()
+    guard_post_top()
+    guard_post_side(front=False)
+    guard_post_side(front=True)
+    guard_overlay()

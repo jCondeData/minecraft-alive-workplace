@@ -43,26 +43,17 @@ public class MinerWork extends Behavior<Villager> {
 	private static final double CONTAINER_REACH = 3.0;
 	private static final float SPEED = 0.6f;
 	private static final int SKIP_BUDGET = 128;
-	private static final int STUCK_TICKS = 80;
-	private static final int MAX_WALK_TICKS = 240;
 	private static final int TORCH_EVERY = 6;
 	private static final boolean DEBUG = Boolean.getBoolean("aliveworkplace.debug");
 
 	private enum Errand { NONE, DEPOSIT, FETCH_PICKAXE }
 
 	@Nullable
-	private BlockPos walkingTo;
-	private int stuckTicks;
-	private int walkTicks;
-	private double bestDistance;
-	@Nullable
-	private BlockPos standSpot;
-	@Nullable
 	private BlockPos digging;
 	private int digProgress;
 	private int digTotal;
 	private int sinceTorch;
-	private int nudgeTicks;
+	private final io.github.jcondedata.aliveworkplace.work.Walker walker = new io.github.jcondedata.aliveworkplace.work.Walker(SPEED);
 
 	public MinerWork() {
 		super(ImmutableMap.of(
@@ -84,8 +75,7 @@ public class MinerWork extends Behavior<Villager> {
 
 	@Override
 	protected void start(ServerLevel level, Villager villager, long gameTime) {
-		walkingTo = null;
-		standSpot = null;
+		walker.reset();
 		digging = null;
 		villager.setDropChance(EquipmentSlot.MAINHAND, 0f);
 	}
@@ -150,11 +140,10 @@ public class MinerWork extends Behavior<Villager> {
 		// 4. Get within reach, then dig.
 		site.setStatus(QuarrySite.Status.WORKING);
 		if (DEBUG && gameTime % 40 == 0) {
-			io.github.jcondedata.aliveworkplace.AliveWorkplace.LOG.info("[miner {}] at {} target={} inReach={} stand={} walking={} stuck={} pick={}",
-				villager.getId(), villager.position(), target.toShortString(), inReach(villager, target), standSpot, walkingTo, stuckTicks, pick);
+			io.github.jcondedata.aliveworkplace.AliveWorkplace.LOG.info("[miner {}] at {} target={} pick={}",
+				villager.getId(), villager.position(), target.toShortString(), pick);
 		}
-		if (!inReach(villager, target)) {
-			approach(level, villager, site, target);
+		if (!approach(level, villager, site, target)) {
 			return;
 		}
 		villager.getBrain().eraseMemory(MemoryModuleType.WALK_TARGET);
@@ -321,107 +310,18 @@ public class MinerWork extends Behavior<Villager> {
 
 	// --- moving --------------------------------------------------------------------------------
 
-	private static boolean inReach(Villager villager, BlockPos target) {
-		return villager.getEyePosition().distanceTo(Vec3.atCenterOf(target)) <= REACH;
-	}
-
-	/** Walks until {@code pos} is within {@code reach}; hops there if it gets stuck. True when there. */
 	private boolean walkTo(ServerLevel level, Villager villager, BlockPos pos, double reach) {
-		return walk(level, villager, pos, reach, false);
-	}
-
-	/**
-	 * {@code standOn}: walk onto {@code pos} itself (feet within {@code reach} of the block's floor centre);
-	 * otherwise get the eyes within {@code reach} of the block (chests, benches).
-	 */
-	private boolean walk(ServerLevel level, Villager villager, BlockPos pos, double reach, boolean standOn) {
-		double distance = standOn ? villager.position().distanceTo(Vec3.atBottomCenterOf(pos)) : villager.getEyePosition().distanceTo(Vec3.atCenterOf(pos));
-		if (distance <= reach) {
-			villager.getBrain().eraseMemory(MemoryModuleType.WALK_TARGET);
-			walkingTo = null;
-			return true;
-		}
-		if (!pos.equals(walkingTo)) {
-			walkingTo = pos;
-			stuckTicks = 0;
-			walkTicks = 0;
-			bestDistance = distance;
-		}
-		villager.getBrain().setMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(pos, SPEED, standOn ? 0 : 1));
-		villager.getBrain().setMemory(MemoryModuleType.LOOK_TARGET, new BlockPosTracker(pos));
-		if (distance < bestDistance - 0.3) {
-			bestDistance = distance;
-			stuckTicks = 0;
-		}
-		if (++stuckTicks > STUCK_TICKS || ++walkTicks > MAX_WALK_TICKS) {
-			BlockPos spot = standOn ? pos : standingSpot(level, pos, villager.blockPosition(), reach);
-			if (spot != null) {
-				hop(level, villager, spot);
-			}
-			stuckTicks = 0;
-			walkTicks = 0;
-		}
-		return false;
+		return walker.walkTo(level, villager, pos, reach);
 	}
 
 	/** Walks to a spot the target can be dug from; hops down into the pit when there is no way to walk. */
-	private void approach(ServerLevel level, Villager villager, QuarrySite site, BlockPos target) {
-		if (standSpot == null || !canStand(level, standSpot) || villagerEyeFrom(standSpot).distanceTo(Vec3.atCenterOf(target)) > REACH - 0.3) {
-			standSpot = standingSpot(level, target, villager.blockPosition(), REACH);
-			walkingTo = null;
-			if (standSpot == null) {
-				site.advance(false, true); // nowhere to dig it from: leave it
-				return;
-			}
+	private boolean approach(ServerLevel level, Villager villager, QuarrySite site, BlockPos target) {
+		if (walker.reach(level, villager, target, REACH)) {
+			return true;
 		}
-		if (walk(level, villager, standSpot, 0.35, true) || villager.blockPosition().equals(standSpot)) {
-			// On the spot but leaning out of reach: shuffle to the middle of the block, or hop there.
-			villager.getMoveControl().setWantedPosition(standSpot.getX() + 0.5, standSpot.getY(), standSpot.getZ() + 0.5, SPEED);
-			if (++nudgeTicks > 20) {
-				hop(level, villager, standSpot);
-				nudgeTicks = 0;
-			}
-		} else {
-			nudgeTicks = 0;
+		if (walker.noSpot()) {
+			site.advance(false, true); // nowhere to dig it from: leave it
 		}
-	}
-
-	private static Vec3 villagerEyeFrom(BlockPos feet) {
-		return new Vec3(feet.getX() + 0.5, feet.getY() + 1.62, feet.getZ() + 0.5);
-	}
-
-	/** Nearest place (to {@code from}) with solid ground and room to stand, from which {@code target} is in reach. */
-	@Nullable
-	static BlockPos standingSpot(ServerLevel level, BlockPos target, BlockPos from, double reach) {
-		BlockPos best = null;
-		double bestScore = Double.MAX_VALUE;
-		for (BlockPos p : BlockPos.betweenClosed(target.offset(-4, -2, -4), target.offset(4, 3, 4))) {
-			if (p.equals(target) || p.equals(target.below()) || !canStand(level, p)) {
-				continue;
-			}
-			if (villagerEyeFrom(p).distanceTo(Vec3.atCenterOf(target)) > reach - 0.3) {
-				continue;
-			}
-			double score = p.distSqr(from);
-			if (score < bestScore) {
-				bestScore = score;
-				best = p.immutable();
-			}
-		}
-		return best;
-	}
-
-	private static boolean canStand(ServerLevel level, BlockPos feet) {
-		BlockState below = level.getBlockState(feet.below());
-		return below.isFaceSturdy(level, feet.below(), Direction.UP) && below.getFluidState().isEmpty()
-			&& level.getBlockState(feet).getCollisionShape(level, feet).isEmpty() && level.getFluidState(feet).isEmpty()
-			&& level.getBlockState(feet.above()).getCollisionShape(level, feet.above()).isEmpty() && level.getFluidState(feet.above()).isEmpty();
-	}
-
-	private static void hop(ServerLevel level, Villager villager, BlockPos spot) {
-		level.sendParticles(net.minecraft.core.particles.ParticleTypes.POOF, villager.getX(), villager.getY() + 0.5, villager.getZ(), 6, 0.2, 0.3, 0.2, 0.01);
-		villager.getBrain().eraseMemory(MemoryModuleType.WALK_TARGET);
-		villager.teleportTo(spot.getX() + 0.5, spot.getY(), spot.getZ() + 0.5);
-		villager.resetFallDistance();
+		return false;
 	}
 }

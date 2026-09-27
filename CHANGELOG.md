@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 0.13.0 — 2026-09-27
+
 ### Added
 - **Guards.** Craft a **Guard Post** (an iron sword over planks and a shield) and a villager becomes a Guard. Put
   weapons and armor in a chest near the post and they take the best of it. Guards fight any monster that comes

@@ -1,0 +1,9 @@
+{
+  "parent": "minecraft:block/orientable_with_bottom",
+  "textures": {
+    "top": "aliveworkplace:block/nurse_station_top",
+    "bottom": "minecraft:block/birch_planks",
+    "side": "aliveworkplace:block/nurse_station_side",
+    "front": "aliveworkplace:block/nurse_station_front"
+  }
+}

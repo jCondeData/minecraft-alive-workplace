@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+### Added
+- **Nurses.** Craft a **Nurse Station** (glass bottles around a glistering melon slice, on white wool) and a villager
+  becomes a Nurse. Right-click a nurse with an empty hand to get your health back and poison, wither and other bad
+  effects cleared — and with Cobblemon installed, your whole team healed too (not during a battle). Once a minute per
+  player, less as the nurse levels up. While at work, nurses also look after hurt villagers and iron golems nearby,
+  guards included. Sneak-right-click to trade: they sell healing potions, honey and golden food.
+
 ## 0.13.0 — 2026-09-27
 
 ### Added

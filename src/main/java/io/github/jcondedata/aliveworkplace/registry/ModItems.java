@@ -50,6 +50,7 @@ public final class ModItems {
 				output.accept(ModBlocks.POSTAL_DESK);
 				output.accept(ModBlocks.MAILBOX);
 				output.accept(ModBlocks.GUARD_POST);
+				output.accept(ModBlocks.NURSE_STATION);
 				for (StarterBlueprints.Entry entry : StarterBlueprints.ALL) {
 					output.accept(BlueprintItem.create(entry.id(), entry.size()));
 				}

@@ -708,6 +708,79 @@ def guard_overlay():
     save(img, "entity", "zombie_villager", "profession", "guard.png")
 
 
+# --- Nurse Station: a white counter with a pink heart, tonics on the front -------------------------
+PINK, PINK_DARK = rgb("#e86a9a"), rgb("#c24d7c")
+
+
+def heart(img, ox, oy):
+    shape = ["01100110", "11111111", "11111111", "01111110", "00111100", "00011000"]
+    for y, row in enumerate(shape):
+        for x, c in enumerate(row):
+            if c == "1":
+                img.putpixel((ox + x, oy + y), PINK if y < 4 else PINK_DARK)
+
+
+def nurse_station_top():
+    rnd = random.Random(101)
+    img = Image.new("RGBA", (16, 16))
+    for y in range(16):
+        for x in range(16):
+            img.putpixel((x, y), jitter(rgb("#f1efe9"), rnd, 4))
+    for i in range(16):
+        for p in ((i, 0), (i, 15), (0, i), (15, i)):
+            img.putpixel(p, rgb("#c9c4b8"))
+    heart(img, 4, 5)
+    save(img, "block", "nurse_station_top.png")
+
+
+def nurse_station_side(front=False):
+    rnd = random.Random(102 if front else 103)
+    img = Image.new("RGBA", (16, 16))
+    for y in range(16):
+        for x in range(16):
+            img.putpixel((x, y), jitter(rgb("#ebe8e0"), rnd, 4))
+    for i in range(16):
+        img.putpixel((i, 0), rgb("#c9c4b8"))
+        img.putpixel((i, 15), rgb("#a9a498"))
+    for x in range(16):
+        img.putpixel((x, 7), PINK_DARK)
+    if front:
+        # A shelf of tonic bottles
+        for i, col in enumerate((rgb("#e86a9a"), rgb("#6ac1e8"), rgb("#e8d56a"), rgb("#e86a9a"))):
+            x0 = 2 + i * 3
+            for y in range(9, 14):
+                for x in range(x0, x0 + 2):
+                    img.putpixel((x, y), col if y > 10 else rgb("#d9f2f7"))
+            img.putpixel((x0, 8), rgb("#8a5a2b"))
+            img.putpixel((x0 + 1, 8), rgb("#8a5a2b"))
+        heart(img, 4, 1)
+    save(img, "block", "nurse_station_front.png" if front else "nurse_station_side.png")
+
+
+def nurse_overlay():
+    img = Image.new("RGBA", (64, 64), T)
+    rnd = random.Random(111)
+    white, shade = rgb("#f4f4f2"), rgb("#dcdcd8")
+    # A small white cap with a pink heart on the front
+    for y in range(0, 8):
+        for x in range(40, 48):
+            img.putpixel((x, y), jitter(white, rnd, 3))
+    for y in range(8, 11):
+        for x in range(32, 64):
+            img.putpixel((x, y), jitter(shade if y == 10 else white, rnd, 3))
+    img.putpixel((43, 9), PINK)
+    img.putpixel((44, 9), PINK)
+    # A white apron with a pink trim over the robe
+    for y in range(44, 58):
+        for x in range(6, 14):
+            img.putpixel((x, y), jitter(white if y < 57 else PINK, rnd, 3))
+    for y in range(38, 44):
+        for x in range(6, 14):
+            img.putpixel((x, y), jitter(white, rnd, 3))
+    save(img, "entity", "villager", "profession", "nurse.png")
+    save(img, "entity", "zombie_villager", "profession", "nurse.png")
+
+
 def icon(blueprint):
     big = Image.new("RGBA", (128, 128), T)
     scaled = blueprint.resize((128, 128), Image.NEAREST)
@@ -746,3 +819,7 @@ if __name__ == "__main__":
     guard_post_side(front=False)
     guard_post_side(front=True)
     guard_overlay()
+    nurse_station_top()
+    nurse_station_side(front=False)
+    nurse_station_side(front=True)
+    nurse_overlay()

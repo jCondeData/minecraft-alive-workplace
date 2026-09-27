@@ -46,6 +46,16 @@ public final class BuilderEvents {
 				}
 				return InteractionResult.PASS;
 			}
+			if (io.github.jcondedata.aliveworkplace.nurse.Nurses.isNurse(villager)) {
+				// Right-click with an empty hand: get treated. Sneak to trade instead.
+				if (player.getItemInHand(hand).isEmpty() && !player.isShiftKeyDown()) {
+					if (!level.isClientSide) {
+						io.github.jcondedata.aliveworkplace.nurse.Nurses.treat((ServerPlayer) player, villager);
+					}
+					return InteractionResult.SUCCESS;
+				}
+				return InteractionResult.PASS;
+			}
 			if (io.github.jcondedata.aliveworkplace.fish.Fishers.isFisherman(villager)) {
 				ItemStack held = player.getItemInHand(hand);
 				if (held.is(net.minecraft.world.item.Items.FISHING_ROD)) {

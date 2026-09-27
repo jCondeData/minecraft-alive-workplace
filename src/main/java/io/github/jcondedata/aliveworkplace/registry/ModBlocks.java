@@ -66,6 +66,11 @@ public final class ModBlocks {
 		"guard_post", new BuildersBenchBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.SMITHING_TABLE))
 	);
 
+	/** Workstation for the Nurse profession: a counter with bandages and tonics. */
+	public static final BuildersBenchBlock NURSE_STATION = register(
+		"nurse_station", new BuildersBenchBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.BIRCH_PLANKS))
+	);
+
 	private static <T extends Block> T register(String name, T block) {
 		Registry.register(BuiltInRegistries.BLOCK, AliveWorkplace.id(name), block);
 		Registry.register(BuiltInRegistries.ITEM, AliveWorkplace.id(name), new BlockItem(block, new Item.Properties()));

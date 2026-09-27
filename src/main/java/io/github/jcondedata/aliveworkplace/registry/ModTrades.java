@@ -14,6 +14,7 @@ public final class ModTrades {
 		minerTrades();
 		lumberjackTrades();
 		guardTrades();
+		nurseTrades();
 		TradeOfferHelper.registerVillagerOffers(net.minecraft.world.entity.npc.VillagerProfession.FARMER, 1, offers ->
 			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 1), new ItemStack(ModItems.FIELD_MARKER), 12, 1, 0.05f)));
 		TradeOfferHelper.registerVillagerOffers(ModVillagers.BUILDER, 1, offers -> {
@@ -87,6 +88,23 @@ public final class ModTrades {
 			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 8), new ItemStack(Items.CROSSBOW), 3, 15, 0.05f)));
 		TradeOfferHelper.registerVillagerOffers(ModVillagers.GUARD, 5, offers ->
 			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 20), new ItemStack(Items.DIAMOND_SWORD), 2, 30, 0.05f)));
+	}
+
+	private static void nurseTrades() {
+		TradeOfferHelper.registerVillagerOffers(ModVillagers.NURSE, 1, offers -> {
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.GLISTERING_MELON_SLICE, 4), new ItemStack(Items.EMERALD), 12, 2, 0.05f));
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 3),
+				net.minecraft.world.item.alchemy.PotionContents.createItemStack(Items.POTION, net.minecraft.world.item.alchemy.Potions.HEALING), 6, 5, 0.05f));
+		});
+		TradeOfferHelper.registerVillagerOffers(ModVillagers.NURSE, 2, offers ->
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 4),
+				net.minecraft.world.item.alchemy.PotionContents.createItemStack(Items.POTION, net.minecraft.world.item.alchemy.Potions.REGENERATION), 6, 10, 0.05f)));
+		TradeOfferHelper.registerVillagerOffers(ModVillagers.NURSE, 3, offers ->
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 2), new ItemStack(Items.HONEY_BOTTLE, 3), 12, 15, 0.05f)));
+		TradeOfferHelper.registerVillagerOffers(ModVillagers.NURSE, 4, offers ->
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 8), new ItemStack(Items.GOLDEN_APPLE), 4, 20, 0.05f)));
+		TradeOfferHelper.registerVillagerOffers(ModVillagers.NURSE, 5, offers ->
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 12), new ItemStack(Items.GOLDEN_CARROT, 8), 8, 30, 0.05f)));
 	}
 
 	private static MerchantOffer blueprint(StarterBlueprints.Entry entry, int emeralds) {

@@ -15,7 +15,8 @@
 			"io.github.jcondedata.aliveworkplace.test.FarmerGameTests",
 			"io.github.jcondedata.aliveworkplace.test.FisherGameTests",
 			"io.github.jcondedata.aliveworkplace.test.MailGameTests",
-			"io.github.jcondedata.aliveworkplace.test.GuardGameTests"
+			"io.github.jcondedata.aliveworkplace.test.GuardGameTests",
+			"io.github.jcondedata.aliveworkplace.test.NurseGameTests"
 		]
 	},
 	"depends": { "aliveworkplace": "*" }

@@ -240,5 +240,14 @@
   "message.aliveworkplace.guard.title": "Guard · %s defeated",
   "message.aliveworkplace.guard.state.patrolling": "on patrol",
   "message.aliveworkplace.guard.state.gearing_up": "getting better gear",
-  "message.aliveworkplace.guard.state.fighting": "fighting %s"
+  "message.aliveworkplace.guard.state.fighting": "fighting %s",
+  "block.aliveworkplace.nurse_station": "Nurse Station",
+  "entity.minecraft.villager.nurse": "Nurse",
+  "entity.minecraft.zombie_villager.nurse": "Zombie Nurse",
+  "message.aliveworkplace.nurse.asleep": "%s is asleep. Come back in the morning.",
+  "message.aliveworkplace.nurse.in_battle": "Finish your battle first.",
+  "message.aliveworkplace.nurse.wait": "%s just treated you. Come back in %s seconds.",
+  "message.aliveworkplace.nurse.healed": "%s patched you up. Take care out there!",
+  "message.aliveworkplace.nurse.healed_party": "%s patched you up and healed your %s Pokémon. Take care out there!",
+  "message.aliveworkplace.nurse.state.open": "right-click to be treated"
 }

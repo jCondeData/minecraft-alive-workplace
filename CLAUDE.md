@@ -16,9 +16,11 @@ The owner (Jesse) does not write code: sessions are expected to work autonomousl
 ## Commands
 - `./gradlew build` — compile + jar + gametests (CI runs exactly this)
 - `./gradlew runGameTest` — only the gametests (~10 s of game time, ~1 min total)
-- `./gradlew runCompatGameTest` — gametests in `src/compattest` with Chipped, Rechiseled, Supplementaries (+ libraries)
+- `./gradlew runCompatGameTest` — gametests in `src/compattest` with Chipped, Rechiseled, Supplementaries, Cobblemon (+ libraries)
   installed from Modrinth maven (`compatMods` in `build.gradle`; bundled jars are unpacked into `build/compat-nested`).
-  Part of `build`. Add a mod from the pack here when adding support for it.
+  Part of `build`. Add a mod from the pack here when adding support for it. Nested jars are unpacked recursively
+  (Cobblemon → Fabric Language Kotlin → Kotlin libraries). The Kotlin Gradle plugin is applied only so Loom remaps
+  Kotlin metadata in Cobblemon; without it Cobblemon crashes in dev with `ClassNotFoundException: net.minecraft.class_…`.
 - `./gradlew genSources` — decompiled Minecraft sources for reading vanilla code; they land in
   `.gradle/loom-cache/minecraftMaven/net/minecraft/minecraft-common-*/**/**-sources.jar` (unzip and grep)
 - `python3 tools/blueprints/generate.py` — regenerates starter blueprints + test fixtures (needs `pip install nbtlib`)
@@ -45,6 +47,8 @@ The owner (Jesse) does not write code: sessions are expected to work autonomousl
   `FarmerPackages` (our work first, vanilla's routine wrapped in `work/Gated`), `Fields`
 - `guard/` — guards: `GuardCombat` (in their CORE package, any activity), `GuardPatrol` (WORK: gear up, patrol),
   `Guards` (who is a foe, damage, extra health); `VillagerPanicTriggerMixin` keeps them from panicking
+- `nurse/` — nurses: `Nurses` (treating players), `NurseWork` (healing villagers nearby)
+- `compat/cobblemon/` — the only code that touches Cobblemon classes; call it only when `isModLoaded("cobblemon")`
 - `mail/` — mailboxes and postmen: `MailboxBlock`/`MailboxBlockEntity`/`MailboxMenu` (screen in client `MailboxScreen`),
   `PostOffice` (saved data: addresses, parcels, desks, dawn delivery), `Parcel`, `Mail` (send packet), `PostmanWork`
 - `fish/` — the fisher upgrade (vanilla Fishermen, hired with a fishing rod): `FisherWork`, `Fishers`

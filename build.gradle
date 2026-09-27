@@ -1,6 +1,9 @@
 plugins {
 	id 'net.fabricmc.fabric-loom-remap' version "${loom_version}"
 	id 'maven-publish'
+	// No Kotlin code here: Loom only remaps the Kotlin metadata of mods like Cobblemon (which the compat
+	// tests run) when this plugin is applied. The stdlib is not added (kotlin.stdlib.default.dependency).
+	id 'org.jetbrains.kotlin.jvm' version '2.2.20'
 }
 
 version = project.mod_version
@@ -111,6 +114,7 @@ ext.compatMods = [
 	"maven.modrinth:supermartijn642s-core-lib:blDCgrqh",   // 1.1.21
 	"maven.modrinth:supermartijn642s-config-lib:euSlaAtA", // 1.1.8
 	"maven.modrinth:fusion-connected-textures:6fQXv7Yl",   // Fusion 1.2.12
+	"maven.modrinth:cobblemon:kF7CvxTo",        // Cobblemon 1.7.3 (bundles Fabric Language Kotlin)
 ]
 
 /** Unpacks the jars nested in the compat mods (META-INF/jars) into build/compat-nested. */
@@ -119,7 +123,9 @@ def compatNestedJars(List<String> mods) {
 	def resolved = configurations.detachedConfiguration(*mods.collect { dependencies.create(it) })
 	resolved.transitive = false
 	def jars = []
-	resolved.resolve().each { mod ->
+	// Nested jars can nest jars of their own (Cobblemon → Fabric Language Kotlin → the Kotlin libraries).
+	def unpack
+	unpack = { File mod ->
 		zipTree(mod).matching { include "META-INF/jars/*.jar" }.each { nested ->
 			def target = new File(out, nested.name)
 			if (!target.exists()) {
@@ -127,8 +133,10 @@ def compatNestedJars(List<String> mods) {
 				target.bytes = nested.bytes
 			}
 			jars << target
+			unpack(target)
 		}
 	}
+	resolved.resolve().each { unpack(it) }
 	return jars
 }
 
@@ -137,6 +145,10 @@ dependencies {
 	mappings loom.officialMojangMappings()
 	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
+
+	// Cobblemon is optional: compiled against for compat/cobblemon, never a runtime dependency.
+	modCompileOnly "maven.modrinth:cobblemon:kF7CvxTo"          // Cobblemon 1.7.3
+	compileOnly "org.jetbrains.kotlin:kotlin-stdlib:2.1.21"
 
 	// Only loaded by runCompatGameTest: the releases in the Cobbleverse pack (Modrinth version ids).
 	compatMods.each { modCompattestRuntimeOnly it }

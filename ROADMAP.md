@@ -80,8 +80,12 @@ workstation, like the rest of the mod.
   to mid-morning, sleep until early afternoon); never targets players, villagers, golems, animals, pets or Pokémon
 - [ ] Guard follow-ups: bows/crossbows (shoot creepers from range), armor shown on the villager model, guards in
   village generation, rallying to the bell when it rings
-- [ ] **Nurse** (Cobblemon, optional): takes a Cobblemon Healing Machine as workstation; talk to them to heal your
-  whole party (per-player cooldown). The Healing Center blueprint comes with one.
+- [x] **Nurse** (Nurse Station workstation): right-click with an empty hand (sneak to trade) to get full health and
+  harmful effects cleared, and with Cobblemon installed the whole party healed (not mid-battle); per-player
+  cooldown of a minute, shorter as the nurse levels; at work they also heal hurt villagers and iron golems nearby
+  (guards!); sells healing potions, honey, golden apples/carrots. Cobblemon is compile-only (`compat/cobblemon`),
+  tested with the real Cobblemon 1.7.3 in `runCompatGameTest`
+- [ ] Nurse follow-ups: a Nurse Station in the Healing Center blueprint, Cobblemon's Healing Machine as a second workstation
 - [ ] **Shopkeeper** (their Item Trader): a Shop Counter you stock from a chest; the villager sells your items at
   prices you set, for emeralds or CobbleDollars (when installed), and keeps the takings for you.
 - [ ] **Ferryman** (their Teleporter): Travel Posts in villages; pay to travel to any village post you have visited.

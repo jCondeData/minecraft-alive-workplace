@@ -6,8 +6,15 @@
 	"environment": "*",
 	"entrypoints": {
 		"fabric-gametest": [
-			"io.github.jcondedata.aliveworkplace.compat.CompatGameTests"
+			"io.github.jcondedata.aliveworkplace.compat.CompatGameTests",
+			"io.github.jcondedata.aliveworkplace.compat.CobblemonCompatTests"
 		]
 	},
-	"depends": { "aliveworkplace": "*", "chipped": "*", "supplementaries": "*", "rechiseled": "*" }
+	"depends": {
+		"aliveworkplace": "*",
+		"chipped": "*",
+		"supplementaries": "*",
+		"rechiseled": "*",
+		"cobblemon": "*"
+	}
 }

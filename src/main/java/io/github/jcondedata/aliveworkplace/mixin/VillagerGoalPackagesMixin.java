@@ -29,6 +29,8 @@ abstract class VillagerGoalPackagesMixin {
 			cir.setReturnValue(io.github.jcondedata.aliveworkplace.mail.PostmanPackages.work(speed));
 		} else if (profession == ModVillagers.GUARD) {
 			cir.setReturnValue(io.github.jcondedata.aliveworkplace.guard.GuardPackages.work(speed));
+		} else if (profession == ModVillagers.NURSE) {
+			cir.setReturnValue(io.github.jcondedata.aliveworkplace.nurse.NursePackages.work(speed));
 		}
 	}
 

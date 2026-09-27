@@ -4,7 +4,7 @@ Villagers with real jobs. Hand a **Builder** a blueprint and they build it for y
 site, fetch materials from your chests, put up the walls and roof, and finish with doors, beds and
 torches. **Miners** dig out quarries, **Lumberjacks** cut down and replant trees, **Farmers** look after
 your fields and **Fishermen** fish for you, dropping everything off in your chests. **Postmen** carry mail
-between players' mailboxes and **Guards** keep monsters away.
+between players' mailboxes, **Guards** keep monsters away and **Nurses** heal you (and your Pokémon).
 
 ![Three builders putting up the starter blueprints](docs/media/timelapse.gif)
 
@@ -105,6 +105,12 @@ weapons and armor in a chest within 8 blocks of the post: the guard takes the be
 come within 24 blocks of the post at any hour (creepers excepted) and never run away. They have twice a villager's
 health and keep the night watch, sleeping in the late morning instead. Players, villagers, animals, pets and
 Pokémon are safe from them.
+
+## Nurses
+Craft a **Nurse Station** (glass bottles around a glistering melon slice, on white wool) and place it near a villager
+without a job. Right-click the nurse with an empty hand to get your health back and bad effects cleared; with
+**Cobblemon** installed they heal your whole team too. Once a minute per player (less as they level up). They also
+look after hurt villagers and iron golems nearby. Sneak-right-click to trade.
 
 ## Blueprint Table: any build from the internet
 Craft a **Blueprint Table** (blue dye on top, cartography table in the middle, planks around) and right-click it.

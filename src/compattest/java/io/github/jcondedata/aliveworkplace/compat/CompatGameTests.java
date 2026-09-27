@@ -54,7 +54,7 @@ import net.minecraft.world.phys.Vec3;
  * chest and lets a real builder villager rebuild it.
  */
 public class CompatGameTests implements FabricGameTest {
-	private static final String AREA = "aliveworkplace_compat:build_area";
+	static final String AREA = "aliveworkplace_compat:build_area";
 	private static final BlockPos BENCH = new BlockPos(2, 2, 2);
 	private static final BlockPos CHEST = new BlockPos(2, 2, 4);
 	private static final BlockPos VILLAGER = new BlockPos(3, 2, 3);

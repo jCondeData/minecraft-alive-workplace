@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 0.17.0 — 2026-09-27
+
 ### Added
 - **Courier routes.** Postmen now also carry things between your chests when there's no mail. Craft a **Delivery
   Note** (paper, a feather and an ink sac), right-click the container to take from and then the one to bring to —

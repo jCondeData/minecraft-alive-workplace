@@ -68,9 +68,12 @@ Owner decisions are recorded in **Design decisions** at the bottom. Don't change
 The owner pointed at *My NPCs* (MIT): admin-configured NPCs with roles. We don't copy its approach (op-made NPCs,
 setup screens); we take the roles that fit a friends' Cobblemon server and make them jobs villagers take at a
 workstation, like the rest of the mod.
-- [ ] **Postman + Mailboxes** (their Mailman): craft a Mailbox, put items in it with a letter addressed to a player;
-  a Postman (Post Office workstation) collects and delivers to that player's mailbox. Same villager can run
-  Courier routes.
+- [x] **Postman + Mailboxes** (their Mailman): a Mailbox belongs to whoever places it (their newest one is their
+  address; owner, friends and ops can open it); its screen posts the outgoing row to a named player; a Postman
+  (Postal Desk workstation) collects parcels from mailboxes within 64 blocks of the desk and delivers to recipients
+  on the round; anything else is handed in and arrives at the next dawn (`PostOffice` saved data; the flag shows
+  there's mail; comparators read it)
+- [ ] Postman follow-ups: the same villager runs Courier routes; letters with a written message; parcel tracking
 - [ ] **Guard** (Guard Post workstation): patrols the village or your base, fights hostile mobs with the weapon and
   armor from the post's chest, heals up at the post; leaves players, pets and Pokémon alone.
 - [ ] **Nurse** (Cobblemon, optional): takes a Cobblemon Healing Machine as workstation; talk to them to heal your

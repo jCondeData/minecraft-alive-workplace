@@ -1,1 +1,9 @@
-{ "replace": false, "values": ["aliveworkplace:builders_bench", "aliveworkplace:miners_bench", "aliveworkplace:chopping_block"] }
+{
+  "replace": false,
+  "values": [
+    "aliveworkplace:builders_bench",
+    "aliveworkplace:miners_bench",
+    "aliveworkplace:chopping_block",
+    "aliveworkplace:postal_desk"
+  ]
+}

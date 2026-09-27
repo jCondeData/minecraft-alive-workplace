@@ -499,6 +499,144 @@ def lumberjack_overlay():
     save(img, "entity", "zombie_villager", "profession", "lumberjack.png")
 
 
+# --- Postal Desk and Mailbox ----------------------------------------------------------------------
+def postal_desk_top():
+    rnd = random.Random(51)
+    img = Image.new("RGBA", (16, 16))
+    planks(img, rnd)
+    for i in range(16):
+        for p in ((i, 0), (i, 15), (0, i), (15, i)):
+            img.putpixel(p, WOOD_EDGE)
+    # Green blotter with two envelopes and a stamp
+    for y in range(3, 12):
+        for x in range(2, 11):
+            img.putpixel((x, y), jitter(rgb("#3f6b45"), rnd, 4))
+    for (ex, ey) in ((3, 4), (5, 8)):
+        for y in range(ey, ey + 3):
+            for x in range(ex, ex + 5):
+                img.putpixel((x, y), jitter(rgb("#ece6d4"), rnd, 3))
+        img.putpixel((ex + 4, ey), rgb("#c0392b"))
+        img.putpixel((ex + 1, ey + 1), rgb("#b8ad94"))
+        img.putpixel((ex + 2, ey + 1), rgb("#b8ad94"))
+    # Ink pot and quill
+    for (x, y) in ((12, 4), (13, 4), (12, 5), (13, 5)):
+        img.putpixel((x, y), rgb("#1d1f2b"))
+    for i in range(4):
+        img.putpixel((13 - i, 9 + i), rgb("#f2f2f2"))
+    save(img, "block", "postal_desk_top.png")
+
+
+def postal_desk_side(front=False):
+    rnd = random.Random(52 if front else 53)
+    img = Image.new("RGBA", (16, 16))
+    planks(img, rnd)
+    for i in range(16):
+        for p in ((i, 0), (i, 15), (0, i), (15, i)):
+            img.putpixel(p, WOOD_EDGE)
+    if front:
+        # Pigeonholes with letters in some of them
+        for cy in range(3):
+            for cx in range(3):
+                x0, y0 = 2 + cx * 4, 2 + cy * 4
+                for y in range(y0, y0 + 4):
+                    for x in range(x0, x0 + 4):
+                        edge = x in (x0, x0 + 3) or y in (y0, y0 + 3)
+                        img.putpixel((x, y), WOOD_EDGE if edge else rgb("#3b2714"))
+                if (cx + cy) % 2 == 0:
+                    for x in range(x0 + 1, x0 + 3):
+                        img.putpixel((x, y0 + 2), rgb("#ece6d4"))
+                        img.putpixel((x, y0 + 1), rgb("#ece6d4") if cx == 1 else rgb("#d9cfb4"))
+    else:
+        # A drawer with a brass handle
+        for y in range(5, 11):
+            for x in range(3, 13):
+                edge = x in (3, 12) or y in (5, 10)
+                if edge:
+                    img.putpixel((x, y), WOOD_EDGE)
+        img.putpixel((7, 7), rgb("#d4a93a"))
+        img.putpixel((8, 7), rgb("#d4a93a"))
+        img.putpixel((7, 8), rgb("#a67f22"))
+        img.putpixel((8, 8), rgb("#a67f22"))
+    save(img, "block", "postal_desk_front.png" if front else "postal_desk_side.png")
+
+
+MAIL_BLUE = [rgb("#3a5f9e"), rgb("#355890"), rgb("#4068a8")]
+
+
+def mailbox_textures():
+    rnd = random.Random(61)
+    side = Image.new("RGBA", (16, 16))
+    for y in range(16):
+        for x in range(16):
+            side.putpixel((x, y), jitter(MAIL_BLUE[(x + y) % 3 == 0], rnd, 4))
+    for i in range(16):
+        side.putpixel((i, 0), rgb("#5a82c4"))
+        side.putpixel((i, 15), rgb("#25406b"))
+    for (x, y) in ((2, 2), (13, 2), (2, 13), (13, 13)):
+        side.putpixel((x, y), rgb("#9fb3d6"))
+    save(side, "block", "mailbox_side.png")
+
+    front = side.copy()
+    for x in range(4, 12):
+        front.putpixel((x, 5), rgb("#10182a"))
+        front.putpixel((x, 6), rgb("#1b2740"))
+    for y in range(9, 12):
+        for x in range(5, 11):
+            front.putpixel((x, y), rgb("#e8e2cc") if y != 11 else rgb("#b8ad94"))
+    front.putpixel((12, 10), rgb("#d4a93a"))
+    save(front, "block", "mailbox_front.png")
+
+    top = Image.new("RGBA", (16, 16))
+    for y in range(16):
+        for x in range(16):
+            top.putpixel((x, y), jitter(rgb("#4a74b8") if x % 4 else rgb("#3f65a3"), rnd, 3))
+    save(top, "block", "mailbox_top.png")
+
+    post = Image.new("RGBA", (16, 16))
+    for y in range(16):
+        for x in range(16):
+            post.putpixel((x, y), jitter(WOOD[1] if x % 3 else WOOD_DARK, rnd, 5))
+    save(post, "block", "mailbox_post.png")
+
+    flag = Image.new("RGBA", (16, 16))
+    for y in range(16):
+        for x in range(16):
+            flag.putpixel((x, y), jitter(rgb("#c62828"), rnd, 6))
+    save(flag, "block", "mailbox_flag.png")
+
+
+def postman_overlay():
+    img = Image.new("RGBA", (64, 64), T)
+    rnd = random.Random(71)
+    cap, cap_shade, band = rgb("#2b4c8c"), rgb("#233f75"), rgb("#1a1a1a")
+    # A navy peaked cap with a gold badge
+    for y in range(0, 8):
+        for x in range(40, 48):
+            img.putpixel((x, y), jitter(cap, rnd, 4))
+    for y in range(8, 12):
+        for x in range(32, 64):
+            c = band if y == 11 else (cap_shade if y == 10 else cap)
+            img.putpixel((x, y), jitter(c, rnd, 4))
+    img.putpixel((43, 9), rgb("#e0b83a"))
+    img.putpixel((44, 9), rgb("#e0b83a"))
+    # Visor on the rim ring (front edge)
+    for i in range(3, 13):
+        img.putpixel((31 + i, 48 + 3), band)
+    # Leather satchel strap across the robe and the bag on the hip
+    strap, bag, bag_dark = rgb("#7a4a22"), rgb("#8f5a2c"), rgb("#5e3a1a")
+    for y in range(44, 56):
+        x = 6 + (y - 44) * 8 // 12
+        img.putpixel((x, y), strap)
+        img.putpixel((min(x + 1, 13), y), strap)
+    for y in range(50, 57):
+        for x in range(14, 20):
+            img.putpixel((x, y), jitter(bag_dark if y in (50, 56) or x in (14, 19) else bag, rnd, 4))
+    img.putpixel((16, 52), rgb("#ece6d4"))
+    img.putpixel((17, 52), rgb("#ece6d4"))
+    save(img, "entity", "villager", "profession", "postman.png")
+    save(img, "entity", "zombie_villager", "profession", "postman.png")
+
+
 def icon(blueprint):
     big = Image.new("RGBA", (128, 128), T)
     scaled = blueprint.resize((128, 128), Image.NEAREST)
@@ -528,3 +666,8 @@ if __name__ == "__main__":
     chopping_side(front=False)
     chopping_side(front=True)
     lumberjack_overlay()
+    postal_desk_top()
+    postal_desk_side(front=False)
+    postal_desk_side(front=True)
+    mailbox_textures()
+    postman_overlay()

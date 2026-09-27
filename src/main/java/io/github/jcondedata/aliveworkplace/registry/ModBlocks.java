@@ -37,6 +37,30 @@ public final class ModBlocks {
 			.ignitedByLava())
 	);
 
+	/** A player's mailbox: mail for them arrives here, and they post parcels from it. */
+	public static final io.github.jcondedata.aliveworkplace.mail.MailboxBlock MAILBOX = register(
+		"mailbox", new io.github.jcondedata.aliveworkplace.mail.MailboxBlock(BlockBehaviour.Properties.of()
+			.mapColor(net.minecraft.world.level.material.MapColor.COLOR_BLUE)
+			.strength(1.5f)
+			.sound(net.minecraft.world.level.block.SoundType.LANTERN)
+			.noOcclusion())
+	);
+
+	public static final net.minecraft.world.level.block.entity.BlockEntityType<io.github.jcondedata.aliveworkplace.mail.MailboxBlockEntity> MAILBOX_ENTITY =
+		Registry.register(BuiltInRegistries.BLOCK_ENTITY_TYPE, AliveWorkplace.id("mailbox"),
+			net.minecraft.world.level.block.entity.BlockEntityType.Builder.of(io.github.jcondedata.aliveworkplace.mail.MailboxBlockEntity::new, MAILBOX).build(null));
+
+	public static final net.minecraft.world.inventory.MenuType<io.github.jcondedata.aliveworkplace.mail.MailboxMenu> MAILBOX_MENU =
+		Registry.register(BuiltInRegistries.MENU, AliveWorkplace.id("mailbox"),
+			new net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerType<>(
+				(id, inventory, pos) -> new io.github.jcondedata.aliveworkplace.mail.MailboxMenu(id, inventory, pos),
+				net.minecraft.core.BlockPos.STREAM_CODEC));
+
+	/** Workstation for the Postman profession: they collect and deliver mail within 64 blocks of it. */
+	public static final BuildersBenchBlock POSTAL_DESK = register(
+		"postal_desk", new BuildersBenchBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.CARTOGRAPHY_TABLE))
+	);
+
 	private static <T extends Block> T register(String name, T block) {
 		Registry.register(BuiltInRegistries.BLOCK, AliveWorkplace.id(name), block);
 		Registry.register(BuiltInRegistries.ITEM, AliveWorkplace.id(name), new BlockItem(block, new Item.Properties()));

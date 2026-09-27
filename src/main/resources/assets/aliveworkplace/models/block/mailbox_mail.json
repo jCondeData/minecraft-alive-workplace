@@ -1,0 +1,182 @@
+{
+  "parent": "minecraft:block/block",
+  "textures": {
+    "particle": "aliveworkplace:block/mailbox_side",
+    "side": "aliveworkplace:block/mailbox_side",
+    "front": "aliveworkplace:block/mailbox_front",
+    "top": "aliveworkplace:block/mailbox_top",
+    "post": "aliveworkplace:block/mailbox_post",
+    "flag": "aliveworkplace:block/mailbox_flag"
+  },
+  "elements": [
+    {
+      "from": [
+        6.5,
+        0,
+        6.5
+      ],
+      "to": [
+        9.5,
+        8,
+        9.5
+      ],
+      "faces": {
+        "north": {
+          "texture": "#post",
+          "uv": [
+            6.5,
+            0,
+            9.5,
+            8
+          ]
+        },
+        "south": {
+          "texture": "#post",
+          "uv": [
+            6.5,
+            0,
+            9.5,
+            8
+          ]
+        },
+        "east": {
+          "texture": "#post",
+          "uv": [
+            6.5,
+            0,
+            9.5,
+            8
+          ]
+        },
+        "west": {
+          "texture": "#post",
+          "uv": [
+            6.5,
+            0,
+            9.5,
+            8
+          ]
+        },
+        "up": {
+          "texture": "#post",
+          "uv": [
+            6.5,
+            6.5,
+            9.5,
+            9.5
+          ]
+        },
+        "down": {
+          "texture": "#post",
+          "uv": [
+            6.5,
+            6.5,
+            9.5,
+            9.5
+          ],
+          "cullface": "down"
+        }
+      }
+    },
+    {
+      "from": [
+        3,
+        8,
+        2
+      ],
+      "to": [
+        13,
+        15,
+        14
+      ],
+      "faces": {
+        "north": {
+          "texture": "#front",
+          "uv": [
+            3,
+            1,
+            13,
+            8
+          ]
+        },
+        "south": {
+          "texture": "#side",
+          "uv": [
+            3,
+            1,
+            13,
+            8
+          ]
+        },
+        "east": {
+          "texture": "#side",
+          "uv": [
+            2,
+            1,
+            14,
+            8
+          ]
+        },
+        "west": {
+          "texture": "#side",
+          "uv": [
+            2,
+            1,
+            14,
+            8
+          ]
+        },
+        "up": {
+          "texture": "#top",
+          "uv": [
+            3,
+            2,
+            13,
+            14
+          ]
+        },
+        "down": {
+          "texture": "#side",
+          "uv": [
+            3,
+            2,
+            13,
+            14
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        13,
+        9,
+        10
+      ],
+      "to": [
+        14,
+        16,
+        12
+      ],
+      "faces": {
+        "north": {
+          "texture": "#flag"
+        },
+        "south": {
+          "texture": "#flag"
+        },
+        "east": {
+          "texture": "#flag"
+        },
+        "west": {
+          "texture": "#flag"
+        },
+        "up": {
+          "texture": "#flag"
+        },
+        "down": {
+          "texture": "#flag"
+        }
+      }
+    }
+  ]
+}

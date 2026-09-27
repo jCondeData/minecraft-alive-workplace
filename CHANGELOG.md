@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+### Added
+- **Mail and postmen.** Craft a **Mailbox** and place it: mail for you arrives there and a red flag goes up. Open it,
+  put items in the top row, write a player's name and press Send. Craft a **Postal Desk** and a villager becomes a
+  **Postman**: they collect parcels from mailboxes within 64 blocks of the desk and carry them to the recipient's
+  mailbox. Parcels for mailboxes further away go with the night mail and arrive at dawn. Players hear when mail
+  arrives and when theirs was delivered.
+
 ## 0.11.0 — 2026-09-27
 
 ### Added

@@ -85,6 +85,17 @@ blocks of their barrel, cast from the shore and reel in fish (and the odd bit of
 their barrel and any chests within 8 blocks of it. Rods wear out: put spares in the barrel. Sneak-right-click the
 fisherman with an empty hand to see how it's going or to stop.
 
+## Mail and postmen
+![The mailbox screen](docs/media/mailbox.png)
+
+Craft a **Mailbox** (iron nuggets around a chest, on a fence) and place it: it's yours, and mail sent to you arrives
+there (the red flag goes up). To send something, open your mailbox, put items in the top row, write a player's name
+and press **Send**. A **Postman** picks it up: craft a **Postal Desk** (paper over planks and a chest) and place it
+near a villager without a job. Postmen walk their round (64 blocks around the desk), collecting parcels and putting
+them in the right mailbox. Parcels for a mailbox outside the round (another village, another dimension) go with the
+night mail and arrive at the next dawn. Only you, your friends (`/workplace friend add`) and operators can open your
+mailbox.
+
 ## Blueprint Table: any build from the internet
 Craft a **Blueprint Table** (blue dye on top, cartography table in the middle, planks around) and right-click it.
 

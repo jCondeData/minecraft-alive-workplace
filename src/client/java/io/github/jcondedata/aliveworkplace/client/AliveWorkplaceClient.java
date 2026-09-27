@@ -12,6 +12,7 @@ public class AliveWorkplaceClient implements ClientModInitializer {
 		BlueprintPreviewRenderer.init();
 		BuilderStatusRenderer.init();
 		BlueprintTooltip.init();
+		net.minecraft.client.gui.screens.MenuScreens.register(io.github.jcondedata.aliveworkplace.registry.ModBlocks.MAILBOX_MENU, MailboxScreen::new);
 		ClientPlayNetworking.registerGlobalReceiver(TablePayloads.Open.TYPE, (payload, context) -> {
 			Minecraft mc = context.client();
 			if (mc.screen instanceof BlueprintTableScreen screen && screen.table().equals(payload.table())) {

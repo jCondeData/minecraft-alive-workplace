@@ -13,7 +13,8 @@
 			"io.github.jcondedata.aliveworkplace.test.MinerGameTests",
 			"io.github.jcondedata.aliveworkplace.test.LumberjackGameTests",
 			"io.github.jcondedata.aliveworkplace.test.FarmerGameTests",
-			"io.github.jcondedata.aliveworkplace.test.FisherGameTests"
+			"io.github.jcondedata.aliveworkplace.test.FisherGameTests",
+			"io.github.jcondedata.aliveworkplace.test.MailGameTests"
 		]
 	},
 	"depends": { "aliveworkplace": "*" }

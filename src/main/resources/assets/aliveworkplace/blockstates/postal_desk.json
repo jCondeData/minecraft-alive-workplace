@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "aliveworkplace:block/postal_desk"
+    },
+    "facing=east": {
+      "model": "aliveworkplace:block/postal_desk",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "aliveworkplace:block/postal_desk",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "aliveworkplace:block/postal_desk",
+      "y": 270
+    }
+  }
+}

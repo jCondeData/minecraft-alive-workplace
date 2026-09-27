@@ -1,0 +1,9 @@
+{
+  "parent": "minecraft:block/orientable_with_bottom",
+  "textures": {
+    "top": "aliveworkplace:block/postal_desk_top",
+    "bottom": "minecraft:block/oak_planks",
+    "side": "aliveworkplace:block/postal_desk_side",
+    "front": "aliveworkplace:block/postal_desk_front"
+  }
+}

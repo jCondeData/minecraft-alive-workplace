@@ -47,6 +47,7 @@ public class AliveWorkplace implements ModInitializer {
 		io.github.jcondedata.aliveworkplace.world.VillageHouses.init();
 		io.github.jcondedata.aliveworkplace.farm.Fields.init();
 		io.github.jcondedata.aliveworkplace.fish.Fishers.init();
+		io.github.jcondedata.aliveworkplace.mail.Mail.init();
 		io.github.jcondedata.aliveworkplace.build.MaterialFamilies.init();
 		BlueprintOutline.init();
 		WorkplaceCommand.init();

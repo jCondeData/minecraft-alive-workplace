@@ -1,0 +1,84 @@
+package io.github.jcondedata.aliveworkplace.mail;
+
+import com.mojang.authlib.GameProfile;
+import io.github.jcondedata.aliveworkplace.AliveWorkplace;
+import java.util.List;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
+import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.minecraft.ChatFormatting;
+import net.minecraft.core.GlobalPos;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.item.ItemStack;
+
+/** Posting parcels from a mailbox, and the dawn delivery of long-distance mail. */
+public final class Mail {
+	/** C2S: send what's in the outgoing row of the open mailbox to this player. */
+	public record Send(String to) implements CustomPacketPayload {
+		public static final Type<Send> TYPE = new Type<>(AliveWorkplace.id("mail_send"));
+		public static final StreamCodec<RegistryFriendlyByteBuf, Send> CODEC = StreamCodec.composite(
+			ByteBufCodecs.stringUtf8(32), Send::to, Send::new);
+
+		@Override
+		public Type<? extends CustomPacketPayload> type() {
+			return TYPE;
+		}
+	}
+
+	public static void init() {
+		PayloadTypeRegistry.playC2S().register(Send.TYPE, Send.CODEC);
+		ServerPlayNetworking.registerGlobalReceiver(Send.TYPE, (payload, context) -> send(context.player(), payload.to()));
+		ServerTickEvents.END_SERVER_TICK.register(server -> PostOffice.get(server).tick(server));
+	}
+
+	static void send(ServerPlayer player, String toName) {
+		if (!(player.containerMenu instanceof MailboxMenu menu) || menu.mailbox() == null) {
+			return;
+		}
+		String name = toName.trim();
+		if (name.isEmpty()) {
+			tell(player, Component.translatable("message.aliveworkplace.mail.no_name"), ChatFormatting.YELLOW);
+			return;
+		}
+		if (!menu.hasOutgoing()) {
+			tell(player, Component.translatable("message.aliveworkplace.mail.nothing"), ChatFormatting.YELLOW);
+			return;
+		}
+		ServerPlayer online = player.server.getPlayerList().getPlayerByName(name);
+		GameProfile profile = online != null ? online.getGameProfile()
+			: player.server.getProfileCache() != null ? player.server.getProfileCache().get(name).orElse(null) : null;
+		if (profile == null) {
+			tell(player, Component.translatable("message.aliveworkplace.mail.unknown", name), ChatFormatting.RED);
+			return;
+		}
+		PostOffice office = PostOffice.get(player.server);
+		if (office.mailboxOf(profile.getId()) == null) {
+			tell(player, Component.translatable("message.aliveworkplace.mail.no_mailbox", profile.getName()), ChatFormatting.RED);
+			return;
+		}
+		List<ItemStack> items = menu.takeOutgoing();
+		GlobalPos origin = GlobalPos.of(player.level().dimension(), menu.pos());
+		long now = player.level().getGameTime();
+		office.post(player.getUUID(), player.getGameProfile().getName(), profile.getId(), profile.getName(), origin, now, items);
+		int count = items.stream().mapToInt(ItemStack::getCount).sum();
+		player.level().playSound(null, menu.pos(), SoundEvents.BOOK_PAGE_TURN, SoundSource.BLOCKS, 1f, 1f);
+		tell(player, Component.translatable("message.aliveworkplace.mail.posted", count, profile.getName()), ChatFormatting.GREEN);
+		if (!office.isServed(origin, now)) {
+			tell(player, Component.translatable("message.aliveworkplace.mail.no_postman", PostOffice.ROUND), ChatFormatting.YELLOW);
+		}
+	}
+
+	private static void tell(ServerPlayer player, Component message, ChatFormatting color) {
+		player.sendSystemMessage(message.copy().withStyle(color));
+	}
+
+	private Mail() {
+	}
+}

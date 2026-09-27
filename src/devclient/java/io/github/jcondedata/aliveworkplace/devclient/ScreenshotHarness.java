@@ -74,6 +74,10 @@ public class ScreenshotHarness implements ClientModInitializer {
 			quarryScene(mc, mc.getSingleplayerServer());
 			return;
 		}
+		if ("mail".equals(System.getProperty("aliveworkplace.scene"))) {
+			mailScene(mc, mc.getSingleplayerServer());
+			return;
+		}
 		if ("farm".equals(System.getProperty("aliveworkplace.scene"))) {
 			farmScene(mc, mc.getSingleplayerServer());
 			return;
@@ -365,6 +369,86 @@ public class ScreenshotHarness implements ClientModInitializer {
 		}
 		if (doneAt > 0 && tick == doneAt + 200) {
 			shot(mc, "50_forest_done");
+			mc.stop();
+		}
+		if (tick >= GIVE_UP_AT) {
+			shot(mc, "99_timeout");
+			mc.stop();
+		}
+	}
+
+	// --- Mail: the mailbox screen, then a postman carrying a parcel to a friend's mailbox --------------
+
+	private java.util.UUID parcelId;
+
+	private void mailScene(Minecraft mc, MinecraftServer server) {
+		tick++;
+		BlockPos mine = new BlockPos(3, -60, -2);
+		BlockPos theirs = new BlockPos(-9, -60, -12);
+		if (tick == 1) {
+			mc.options.renderDistance().set(6);
+			mc.options.cloudStatus().set(CloudStatus.OFF);
+		}
+		if (tick == 20) {
+			server.execute(() -> {
+				ServerLevel level = server.overworld();
+				ServerPlayer player = server.getPlayerList().getPlayers().get(0);
+				level.getGameRules().getRule(GameRules.RULE_DAYLIGHT).set(false, server);
+				level.getGameRules().getRule(GameRules.RULE_DOMOBSPAWNING).set(false, server);
+				level.setDayTime(2500);
+				var office = io.github.jcondedata.aliveworkplace.mail.PostOffice.get(server);
+				level.setBlockAndUpdate(mine, ModBlocks.MAILBOX.defaultBlockState().setValue(io.github.jcondedata.aliveworkplace.mail.MailboxBlock.FACING, Direction.SOUTH));
+				var box = (io.github.jcondedata.aliveworkplace.mail.MailboxBlockEntity) level.getBlockEntity(mine);
+				box.setOwner(player.getUUID(), player.getGameProfile().getName());
+				office.register(player.getUUID(), net.minecraft.core.GlobalPos.of(level.dimension(), mine));
+				box.receive(new ItemStack(net.minecraft.world.item.Items.DIAMOND, 5));
+				box.receive(new ItemStack(net.minecraft.world.item.Items.COOKED_SALMON, 12));
+				box.receive(new ItemStack(net.minecraft.world.item.Items.WRITTEN_BOOK));
+				java.util.UUID friend = java.util.UUID.nameUUIDFromBytes("friend".getBytes());
+				level.setBlockAndUpdate(theirs, ModBlocks.MAILBOX.defaultBlockState().setValue(io.github.jcondedata.aliveworkplace.mail.MailboxBlock.FACING, Direction.SOUTH));
+				((io.github.jcondedata.aliveworkplace.mail.MailboxBlockEntity) level.getBlockEntity(theirs)).setOwner(friend, "Friend");
+				office.register(friend, net.minecraft.core.GlobalPos.of(level.dimension(), theirs));
+				BlockPos desk = new BlockPos(0, -60, 3);
+				level.setBlockAndUpdate(desk, ModBlocks.POSTAL_DESK.defaultBlockState());
+				Villager postman = EntityType.VILLAGER.spawn(level, desk.south(), MobSpawnType.COMMAND);
+				io.github.jcondedata.aliveworkplace.work.Jobs.employ(level, postman, desk,
+					io.github.jcondedata.aliveworkplace.registry.ModVillagers.POSTAL_DESK_POI, io.github.jcondedata.aliveworkplace.registry.ModVillagers.POSTMAN);
+				hover(player, new Vec3(4.5, -58, 3.5), 170, 30); // within reach, or the menu closes at once
+				player.openMenu(box);
+			});
+		}
+		if (tick == 80 && mc.screen instanceof io.github.jcondedata.aliveworkplace.client.MailboxScreen) {
+			for (var child : mc.screen.children()) {
+				if (child instanceof net.minecraft.client.gui.components.EditBox edit) {
+					edit.setValue("Friend");
+				}
+			}
+		}
+		if (tick == 100) {
+			shot(mc, "01_mailbox_screen");
+		}
+		if (tick == 110) {
+			mc.setScreen(null);
+			mc.options.hideGui = true;
+			server.execute(() -> {
+				ServerLevel level = server.overworld();
+				ServerPlayer player = server.getPlayerList().getPlayers().get(0);
+				hover(player, new Vec3(8.5, -53, 6.5), 135, 32);
+				java.util.UUID friend = java.util.UUID.nameUUIDFromBytes("friend".getBytes());
+				parcelId = io.github.jcondedata.aliveworkplace.mail.PostOffice.get(server).post(player.getUUID(), player.getGameProfile().getName(), friend,
+					"Friend", net.minecraft.core.GlobalPos.of(level.dimension(), mine), level.getGameTime(),
+					List.of(new ItemStack(net.minecraft.world.item.Items.CAKE))).id();
+			});
+		}
+		if (tick > 120 && tick % 10 == 0 && doneAt < 0) {
+			shot(mc, String.format("frame_%03d", frame++));
+			server.execute(() -> allDone.set(parcelId != null && io.github.jcondedata.aliveworkplace.mail.PostOffice.get(server).parcel(parcelId) == null));
+			if (allDone.get()) {
+				doneAt = tick;
+			}
+		}
+		if (doneAt > 0 && tick == doneAt + 40) {
+			shot(mc, "50_mail_delivered");
 			mc.stop();
 		}
 		if (tick >= GIVE_UP_AT) {

@@ -67,9 +67,26 @@ public final class ModVillagers {
 		)
 	);
 
+	public static final ResourceLocation POSTAL_DESK_ID = AliveWorkplace.id("postal_desk");
+	public static final ResourceKey<PoiType> POSTAL_DESK_POI = ResourceKey.create(Registries.POINT_OF_INTEREST_TYPE, POSTAL_DESK_ID);
+	public static final PoiType POSTAL_DESK_POI_TYPE = PointOfInterestHelper.register(POSTAL_DESK_ID, 1, 1, ModBlocks.POSTAL_DESK);
+
+	public static final VillagerProfession POSTMAN = Registry.register(
+		BuiltInRegistries.VILLAGER_PROFESSION,
+		AliveWorkplace.id("postman"),
+		new VillagerProfession(
+			"postman",
+			holder -> holder.is(POSTAL_DESK_POI),
+			holder -> holder.is(POSTAL_DESK_POI),
+			ImmutableSet.of(),
+			ImmutableSet.of(),
+			SoundEvents.VILLAGER_WORK_CARTOGRAPHER
+		)
+	);
+
 	/** Villagers whose work this mod runs: they get the long shift and our WORK package. */
 	public static boolean isWorker(VillagerProfession profession) {
-		return profession == BUILDER || profession == MINER || profession == LUMBERJACK;
+		return profession == BUILDER || profession == MINER || profession == LUMBERJACK || profession == POSTMAN;
 	}
 
 	/**

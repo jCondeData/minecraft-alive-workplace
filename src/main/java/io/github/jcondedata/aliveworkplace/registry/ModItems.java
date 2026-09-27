@@ -47,6 +47,8 @@ public final class ModItems {
 				output.accept(QUARRY_MARKER);
 				output.accept(ModBlocks.CHOPPING_BLOCK);
 				output.accept(FIELD_MARKER);
+				output.accept(ModBlocks.POSTAL_DESK);
+				output.accept(ModBlocks.MAILBOX);
 				for (StarterBlueprints.Entry entry : StarterBlueprints.ALL) {
 					output.accept(BlueprintItem.create(entry.id(), entry.size()));
 				}

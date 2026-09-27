@@ -44,6 +44,10 @@ public final class ModAttachments {
 	public static final AttachmentType<Integer> FISH_CAUGHT = AttachmentRegistry.create(
 		AliveWorkplace.id("fish_caught"), builder -> builder.persistent(com.mojang.serialization.Codec.INT));
 
+	/** How many parcels a postman has delivered (shown above its head). */
+	public static final AttachmentType<Integer> MAIL_DELIVERED = AttachmentRegistry.create(
+		AliveWorkplace.id("mail_delivered"), builder -> builder.persistent(com.mojang.serialization.Codec.INT));
+
 	public static void init() {
 	}
 

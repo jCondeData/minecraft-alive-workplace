@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 0.9.0 — 2026-09-27
+
 ### Added
 - **Lumberjacks** — the third job. Craft a **Chopping Block** (a stone axe on top of any log) and a villager without
   a job takes it. Put **axes** in a chest within 8 blocks of the block: the lumberjack cuts down the trees within

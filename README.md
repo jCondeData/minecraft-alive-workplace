@@ -61,6 +61,8 @@ villager without a job. Then:
    for another.
 
 ## Lumberjacks
+![A lumberjack cutting and replanting trees](docs/media/lumberjack.gif)
+
 Craft a **Chopping Block** (a stone axe on top of any log) and place it near a villager without a job, near some
 trees. Put **axes** in a chest within 8 blocks of the Chopping Block. The lumberjack cuts the trees within 16 blocks
 one at a time (leaves first, then the trunk), plants a sapling of the same wood where each tree stood, and stores

@@ -348,13 +348,16 @@ public class ScreenshotHarness implements ClientModInitializer {
 				hover(server.getPlayerList().getPlayers().get(0), new Vec3(11.5, -53, 12.5), 140, 28);
 			});
 		}
-		if (tick > 60 && tick % 40 == 0 && doneAt < 0) {
+		if (tick > 60 && tick % 10 == 0 && doneAt < 0) {
 			shot(mc, String.format("frame_%03d", frame++));
 			server.execute(() -> allDone.set(lumberjack != null
 				&& lumberjack.getAttachedOrElse(io.github.jcondedata.aliveworkplace.registry.ModAttachments.TREES_FELLED, 0) >= FOREST_TREES));
 			if (allDone.get()) {
 				doneAt = tick;
 			}
+		}
+		if (doneAt > 0 && tick < doneAt + 100 && tick % 10 == 0) {
+			shot(mc, String.format("frame_%03d", frame++)); // the last sapling goes in
 		}
 		if (doneAt > 0 && tick == doneAt + 200) {
 			shot(mc, "50_forest_done");

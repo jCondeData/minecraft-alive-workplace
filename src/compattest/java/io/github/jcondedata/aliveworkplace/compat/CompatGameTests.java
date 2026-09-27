@@ -59,6 +59,7 @@ public class CompatGameTests implements FabricGameTest {
 	private static final BlockPos CHEST = new BlockPos(2, 2, 4);
 	private static final BlockPos VILLAGER = new BlockPos(3, 2, 3);
 	private static final BlockPos ORIGIN = new BlockPos(6, 2, 6);
+	private static final java.util.concurrent.atomic.AtomicInteger BLUEPRINTS = new java.util.concurrent.atomic.AtomicInteger();
 
 	// --- Chipped ----------------------------------------------------------------------------
 
@@ -107,8 +108,8 @@ public class CompatGameTests implements FabricGameTest {
 		helper.succeedWhen(() -> {
 			assertBuilt(helper, s);
 			for (Map.Entry<BlockPos, BlockState> e : design.entrySet()) {
-				helper.assertBlockState(ORIGIN.offset(e.getKey()), st -> st.getBlock() == e.getValue().getBlock(),
-					() -> "expected " + BuiltInRegistries.BLOCK.getKey(e.getValue().getBlock()));
+				BlockState there = s.level().getBlockState(s.at(e.getKey()));
+				helper.assertTrue(there.getBlock() == e.getValue().getBlock(), "expected " + BuiltInRegistries.BLOCK.getKey(e.getValue().getBlock()) + ", found " + there);
 			}
 			Container chest = helper.getBlockEntity(CHEST);
 			helper.assertTrue(chest.countItem(Items.OAK_PLANKS) == 0 && chest.countItem(Items.COBBLESTONE) == 0, "all plain blocks should have been used");
@@ -136,6 +137,16 @@ public class CompatGameTests implements FabricGameTest {
 	 */
 	@GameTest(template = AREA, timeoutTicks = 2400)
 	public void buildsSupplementariesBlocksWithoutFreeItems(GameTestHelper helper) {
+		supplementariesCorner(helper, Rotation.NONE);
+	}
+
+	/** Same corner turned 90°: the way sign's pending rotation must not make the builder redo it forever. */
+	@GameTest(template = AREA, timeoutTicks = 2400)
+	public void buildsTurnedSupplementariesBlocks(GameTestHelper helper) {
+		supplementariesCorner(helper, Rotation.CLOCKWISE_90);
+	}
+
+	private void supplementariesCorner(GameTestHelper helper, Rotation rotation) {
 		ServerLevel level = helper.getLevel();
 		// Build the original in the test area with the real items, as a player would.
 		ServerPlayer player = helper.makeMockServerPlayerInLevel();
@@ -163,7 +174,7 @@ public class CompatGameTests implements FabricGameTest {
 			}
 		}
 		ResourceLocation id = blueprintFrom(helper, "supplementaries_corner", design, data);
-		Setup s = setup(helper, id,
+		Setup s = setup(helper, id, rotation,
 			new ItemStack(Items.STONE_BRICKS, 2), new ItemStack(Items.OAK_FENCE), new ItemStack(item("supplementaries:way_sign_oak")),
 			new ItemStack(Items.FLOWER_POT), new ItemStack(Items.POPPY), new ItemStack(item("supplementaries:jar")),
 			new ItemStack(item("supplementaries:item_shelf")));
@@ -175,12 +186,12 @@ public class CompatGameTests implements FabricGameTest {
 				helper.assertTrue(left.isEmpty() || left.getItem() == io.github.jcondedata.aliveworkplace.registry.ModItems.BLUEPRINT,
 					"left over in the chest: " + left);
 			}
-			BlockEntity sign = level.getBlockEntity(helper.absolutePos(ORIGIN.offset(0, 1, 0)));
+			BlockEntity sign = level.getBlockEntity(s.at(new BlockPos(0, 1, 0)));
 			CompoundTag signData = sign.saveWithoutMetadata(level.registryAccess());
 			helper.assertTrue(signData.getCompound("Mimic").getString("Name").equals("minecraft:oak_fence")
 				&& signData.getCompound("SignDown").getBoolean("Active"), "way sign lost its fence or its sign: " + signData);
-			Container jar = (Container) level.getBlockEntity(helper.absolutePos(ORIGIN.offset(4, 0, 0)));
-			Container shelf = (Container) level.getBlockEntity(helper.absolutePos(ORIGIN.offset(4, 1, 1)));
+			Container jar = (Container) level.getBlockEntity(s.at(new BlockPos(4, 0, 0)));
+			Container shelf = (Container) level.getBlockEntity(s.at(new BlockPos(4, 1, 1)));
 			helper.assertTrue(jar.isEmpty(), "the builder filled the jar for free: " + jar.getItem(0));
 			helper.assertTrue(shelf.isEmpty(), "the builder put a free diamond on the shelf");
 		});
@@ -189,9 +200,18 @@ public class CompatGameTests implements FabricGameTest {
 	// --- helpers ------------------------------------------------------------------------------
 
 	private record Setup(ServerLevel level, Villager villager, BuildSite site, BuildPlan plan) {
+		/** World position of a block of the blueprint (template coordinates). */
+		BlockPos at(BlockPos template) {
+			BlueprintData.Placement p = site.placement();
+			return p.origin().offset(StructureTemplate.transform(template, p.mirror(), p.rotation(), BlockPos.ZERO));
+		}
 	}
 
 	private static Setup setup(GameTestHelper helper, ResourceLocation structure, ItemStack... chestItems) {
+		return setup(helper, structure, Rotation.NONE, chestItems);
+	}
+
+	private static Setup setup(GameTestHelper helper, ResourceLocation structure, Rotation rotation, ItemStack... chestItems) {
 		ServerLevel level = helper.getLevel();
 		helper.setDayTime(2000);
 		level.getGameRules().getRule(ModGameRules.BUILD_DELAY).set(2, level.getServer());
@@ -203,7 +223,7 @@ public class CompatGameTests implements FabricGameTest {
 		}
 		Villager villager = helper.spawn(EntityType.VILLAGER, VILLAGER);
 		Builders.employ(level, villager, helper.absolutePos(BENCH));
-		BlueprintData.Placement placement = new BlueprintData.Placement(level.dimension().location(), helper.absolutePos(ORIGIN), Rotation.NONE, Mirror.NONE);
+		BlueprintData.Placement placement = new BlueprintData.Placement(level.dimension().location(), helper.absolutePos(ORIGIN), rotation, Mirror.NONE);
 		BuildSite site = Builders.start(level, villager, null, structure, placement);
 		BuildPlan plan = site.plan(level);
 		if (plan == null) {
@@ -240,7 +260,7 @@ public class CompatGameTests implements FabricGameTest {
 	 */
 	private static ResourceLocation blueprintFrom(GameTestHelper helper, String name, Map<BlockPos, BlockState> design, Map<BlockPos, CompoundTag> data) {
 		ServerLevel level = helper.getLevel();
-		ResourceLocation id = AliveWorkplace.id("compat_test/" + name + "_" + level.getGameTime());
+		ResourceLocation id = AliveWorkplace.id("compat_test/" + name + "_" + BLUEPRINTS.incrementAndGet());
 		Vec3i size = new Vec3i(1, 1, 1);
 		for (BlockPos p : design.keySet()) {
 			size = new Vec3i(Math.max(size.getX(), p.getX() + 1), Math.max(size.getY(), p.getY() + 1), Math.max(size.getZ(), p.getZ() + 1));

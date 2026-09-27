@@ -2,10 +2,12 @@
 
 ## Unreleased
 
+## 0.5.0 — 2026-09-26
+
 ### Added
 - Works with **Chipped** and **Rechiseled**: builds that use their block variants (herringbone oak planks, oak beams…)
   can be built from the plain block — the builder "chips" it on the spot, just like the workbench or chisel does for free.
-  Missing-material messages name the plain block ("needs 12 Oak Planks").
+  Missing-material messages, the Blueprint Table and the blueprint tooltip name the plain block ("12 Oak Planks").
 - Works with **Supplementaries**: way signs (they cost the fence and the sign), rope knots, timber frames, flower
   boxes, jars, item shelves, flags, blackboards and the rest build correctly. Book piles are left out (they're made of books).
 - Potted plants are built (they cost a flower pot and the plant) instead of being skipped.

@@ -69,7 +69,7 @@ public final class BlueprintTooltip {
 		for (BlockState state : blocks) {
 			if (MaterialRules.classify(state) != MaterialRules.Kind.SKIP) {
 				for (MaterialRules.Requirement r : MaterialRules.requirements(state, null)) {
-					count.merge(r.item(), r.count(), Integer::sum);
+					count.merge(io.github.jcondedata.aliveworkplace.build.MaterialFamilies.key(r.item()), r.count(), Integer::sum);
 				}
 			}
 		}

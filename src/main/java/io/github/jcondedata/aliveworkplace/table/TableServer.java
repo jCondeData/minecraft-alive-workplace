@@ -80,8 +80,13 @@ public final class TableServer {
 	public static List<TablePayloads.Material> materials(Blueprint blueprint) {
 		BuildPlan plan = BuildPlan.create(blueprint, new BlueprintData.Placement(ResourceLocation.withDefaultNamespace("overworld"),
 			BlockPos.ZERO, Rotation.NONE, Mirror.NONE));
-		List<TablePayloads.Material> out = new ArrayList<>();
+		// Chipped/Rechiseled variants are listed as the plain block they are made from.
+		Map<Item, Integer> grouped = new java.util.LinkedHashMap<>();
 		for (Map.Entry<Item, Integer> e : plan.materials().entrySet()) {
+			grouped.merge(io.github.jcondedata.aliveworkplace.build.MaterialFamilies.key(e.getKey()), e.getValue(), Integer::sum);
+		}
+		List<TablePayloads.Material> out = new ArrayList<>();
+		for (Map.Entry<Item, Integer> e : grouped.entrySet()) {
 			out.add(new TablePayloads.Material(BuiltInRegistries.ITEM.getKey(e.getKey()), e.getValue()));
 		}
 		out.sort(Comparator.comparingInt(TablePayloads.Material::count).reversed());

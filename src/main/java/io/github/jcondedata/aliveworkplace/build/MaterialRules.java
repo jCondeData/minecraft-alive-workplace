@@ -89,7 +89,9 @@ public final class MaterialRules {
 	private static final Set<String> VOLATILE_PROPERTY_NAMES = Set.of(
 		"north", "east", "south", "west", "up", "down", "shape", "waterlogged", "powered", "open", "lit",
 		"distance", "persistent", "snowy", "occupied", "triggered", "attached", "disarmed", "in_wall", "has_book",
-		"has_record", "bottom", "berries", "age", "stage", "moisture", "power", "note", "instrument"
+		"has_record", "bottom", "berries", "age", "stage", "moisture", "power", "note", "instrument",
+		// Supplementaries: a pending rotation its block entity applies (and clears) when it loads
+		"rotate_tile"
 	);
 
 	public static Kind classify(BlockState state) {

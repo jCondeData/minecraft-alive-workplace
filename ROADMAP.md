@@ -45,7 +45,9 @@ Owner decisions are recorded in **Design decisions** at the bottom. Don't change
 - [x] **Builder levels**: 1 XP per 5 blocks placed + 10 per finished build, vanilla level thresholds; level-ups unlock the next trades; each level is faster (Master takes 40% of the base time per block)
 - [x] **More blueprints**: Healing Center (level 4, holds a Cobblemon Healing Machine when Cobblemon is installed) and Supply Shop (level 5)
 - [ ] Optional ground levelling around the site (foundations are done; per-blueprint opt-out later)
-- [ ] Fluids (water/lava via buckets), potted plants (pot + plant), entities in templates (item frames, armor stands)
+- [x] Potted plants (cost a flower pot + the plant)
+- [x] **Building-mod support** (tested with the real mods in `src/compattest`): Chipped and Rechiseled variants can be built from the plain block (free conversions, like their workbench/chisel); Supplementaries blocks build correctly (way signs cost the fence and the sign, rope knots the rope and the fence), and no blueprint data can hand out items, mobs or locked safes (containers never get contents)
+- [ ] Fluids (water/lava via buckets), entities in templates (item frames, armor stands)
 - [ ] **Builder's house** added to village generation (so builders appear naturally)
 - [ ] Config file (`config/aliveworkplace.json`) mirroring gamerules plus supply radius, reach, max site distance
 - [ ] Upgrades: blueprints can declare a next tier that builds over the previous one

@@ -7,6 +7,7 @@ torches.
 ![Three builders putting up the starter blueprints](docs/media/timelapse.gif)
 
 Fabric · Minecraft 1.21.1 · built for the Cobbleverse (Cobblemon) modpack, but works without it.
+Builders understand **Chipped**, **Rechiseled** and **Supplementaries** blocks (tested with the real mods).
 Install on the **server and every player's game**.
 
 ## Getting started
@@ -49,6 +50,13 @@ Craft a **Blueprint Table** (blue dye on top, cartography table in the middle, p
   Download builds from sites like Planet Minecraft or Minecraft-Schematics as `.litematic` or `.schem`,
   drop them in, pick one and press **Upload**. It becomes a blueprint everyone on the server can use.
 - Anything saved with a Structure Block shows up too.
+
+## Builds that use other mods
+- **Chipped / Rechiseled** variants: stock the plain block (oak planks, stone bricks…) and the builder turns it into
+  whichever variant the blueprint uses, just as the Chipped workbench or the chisel would for free.
+- **Supplementaries**: way signs need the fence and the sign, rope knots the rope and the fence, potted plants a pot and
+  the plant. Jars, shelves, safes and other containers are built empty — blueprints never hand out items.
+- Blocks from mods that aren't installed turn into air and are left out.
 
 ## Commands and gamerules
 | | |

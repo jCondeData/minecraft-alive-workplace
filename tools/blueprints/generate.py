@@ -20,6 +20,7 @@ ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 MAIN_STRUCTURES = os.path.join(ROOT, "src/main/resources/data/aliveworkplace/structure")
 TEST_STRUCTURES = os.path.join(ROOT, "src/gametest/resources/data/aliveworkplace_test/structure")
 TEST_AREAS = os.path.join(ROOT, "src/gametest/resources/data/aliveworkplace_test/gametest/structure")
+COMPAT_AREAS = os.path.join(ROOT, "src/compattest/resources/data/aliveworkplace_compat/gametest/structure")
 DATA_VERSION = 3955  # Minecraft 1.21.1
 
 
@@ -302,10 +303,10 @@ def test_hut():
     return b
 
 
-def test_area(name, w, h, d):
+def test_area(name, w, h, d, folder=TEST_AREAS):
     """Flat smooth-stone floor at y=0, empty above. Saved as SNBT in the *packed* layout the gametest
     loader expects (palette of state strings, `data` entries with a `state` string)."""
-    os.makedirs(TEST_AREAS, exist_ok=True)
+    os.makedirs(folder, exist_ok=True)
     data = [Compound({"pos": List[Int]([Int(x), Int(0), Int(z)]), "state": String("minecraft:smooth_stone")})
             for x in range(w) for z in range(d)]
     tag = Compound({
@@ -315,7 +316,7 @@ def test_area(name, w, h, d):
         "entities": List[Compound]([]),
         "palette": List[String]([String("minecraft:smooth_stone")]),
     })
-    path = os.path.join(TEST_AREAS, name + ".snbt")
+    path = os.path.join(folder, name + ".snbt")
     with open(path, "w") as f:
         f.write(nbtlib.serialize_tag(tag))
     print(f"{name}: test area {w}x{h}x{d} -> {os.path.relpath(path, ROOT)}")
@@ -330,3 +331,4 @@ if __name__ == "__main__":
     test_hut().save(TEST_STRUCTURES, "test_hut")
     test_area("build_area", 17, 8, 17)
     test_area("big_area", 22, 18, 22)
+    test_area("build_area", 17, 8, 17, COMPAT_AREAS)

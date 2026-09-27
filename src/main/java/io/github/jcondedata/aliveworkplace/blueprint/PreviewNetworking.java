@@ -80,7 +80,7 @@ public final class PreviewNetworking {
 		List<Blueprint.Entry> shown = new ArrayList<>();
 		for (Blueprint.Entry e : blueprint.blocks()) {
 			BlockState state = e.state();
-			if (state.isAir() || MaterialRules.classify(state) == MaterialRules.Kind.SKIP && !MaterialRules.isSecondaryHalf(state)) {
+			if (state.isAir() || MaterialRules.classify(state, e.nbt()) == MaterialRules.Kind.SKIP && !MaterialRules.isSecondaryHalf(state)) {
 				continue;
 			}
 			shown.add(e);

@@ -1,10 +1,13 @@
 package io.github.jcondedata.aliveworkplace.build;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.AbstractBannerBlock;
@@ -90,14 +93,44 @@ public final class MaterialRules {
 	);
 
 	public static Kind classify(BlockState state) {
+		return classify(state, null);
+	}
+
+	/** Like {@link #classify(BlockState)}, taking the block-entity data into account (see {@link #requirements}). */
+	public static Kind classify(BlockState state, @Nullable CompoundTag nbt) {
 		Block block = state.getBlock();
-		if (state.isAir() || NEVER_PLACE.contains(block) || block instanceof LiquidBlock) {
+		if (state.isAir() || NEVER_PLACE.contains(block) || block instanceof LiquidBlock || ModdedBlocks.neverPlace(block)) {
 			return Kind.SKIP;
 		}
-		if (isSecondaryHalf(state) || requirement(state).isEmpty()) {
+		if (isSecondaryHalf(state) || requirements(state, nbt).isEmpty()) {
 			return Kind.SKIP;
 		}
 		return needsSupport(block) ? Kind.DECORATION : Kind.STRUCTURE;
+	}
+
+	/**
+	 * Everything placing this block uses up. Most blocks cost their own item; a potted plant costs a
+	 * flower pot and the plant; blocks that wrap another block (a Supplementaries way sign on a fence)
+	 * also cost that block. Empty if the block cannot be built.
+	 */
+	public static List<Requirement> requirements(BlockState state, @Nullable CompoundTag nbt) {
+		Block block = state.getBlock();
+		List<Requirement> out = new ArrayList<>(2);
+		if (block instanceof FlowerPotBlock pot && block != Blocks.FLOWER_POT) {
+			out.add(new Requirement(Items.FLOWER_POT, 1));
+			Item plant = pot.getPotted().asItem();
+			if (plant != Items.AIR) {
+				out.add(new Requirement(plant, 1));
+			}
+			return out;
+		}
+		if (!ModdedBlocks.costFromDataOnly(block)) {
+			requirement(state).ifPresent(out::add);
+		}
+		if (nbt != null && (!out.isEmpty() || ModdedBlocks.costFromDataOnly(block))) {
+			ModdedBlocks.extraCosts(block, nbt, out);
+		}
+		return out;
 	}
 
 	private static boolean needsSupport(Block b) {

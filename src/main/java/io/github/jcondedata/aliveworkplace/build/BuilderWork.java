@@ -199,16 +199,20 @@ public class BuilderWork extends Behavior<Villager> {
 		}
 
 		// 2. Materials.
-		MaterialRules.Requirement requirement = null;
+		List<MaterialRules.Requirement> requirements = List.of();
 		if (action == Action.PLACE) {
-			requirement = MaterialRules.requirement(step.state()).orElse(null);
-			if (requirement == null) {
+			requirements = step.requirements();
+			if (requirements.isEmpty()) {
 				site.defer();
 				return;
 			}
-			if (!free && !bag.has(requirement.item(), requirement.count())) {
-				fetch(level, villager, site, plan, bag, bench, requirement);
-				return;
+			if (!free) {
+				for (MaterialRules.Requirement r : requirements) {
+					if (!bag.has(r.item(), r.count())) {
+						fetch(level, villager, site, plan, bag, bench, r);
+						return;
+					}
+				}
 			}
 		} else if (bag.freeSlots() == 0) {
 			deposit(level, villager, site, plan, bag, bench);
@@ -221,7 +225,7 @@ public class BuilderWork extends Behavior<Villager> {
 			return;
 		}
 		villager.getBrain().setMemory(MemoryModuleType.LOOK_TARGET, new BlockPosTracker(step.pos()));
-		villager.setItemSlot(EquipmentSlot.MAINHAND, requirement != null ? new ItemStack(requirement.item()) : ItemStack.EMPTY);
+		villager.setItemSlot(EquipmentSlot.MAINHAND, !requirements.isEmpty() ? new ItemStack(requirements.get(0).item()) : ItemStack.EMPTY);
 		site.setStatus(BuildSite.Status.WORKING);
 
 		// 4. Do the work, one block per workplaceBuildDelay ticks.
@@ -233,7 +237,7 @@ public class BuilderWork extends Behavior<Villager> {
 		if (action == Action.BREAK) {
 			breakBlock(level, villager, bag, bench, plan, step.pos());
 		} else {
-			place(level, villager, site, plan, bag, step, requirement, free);
+			place(level, villager, site, plan, bag, step, requirements, free);
 		}
 	}
 
@@ -253,7 +257,7 @@ public class BuilderWork extends Behavior<Villager> {
 				return Action.NONE;
 			}
 			boolean wantedEmpty = wanted.isAir();
-			if (!wantedEmpty && (world.canBeReplaced() || MaterialRules.classify(wanted) == MaterialRules.Kind.SKIP)) {
+			if (!wantedEmpty && (world.canBeReplaced() || MaterialRules.classify(wanted, step.nbt()) == MaterialRules.Kind.SKIP)) {
 				return Action.NONE; // placing will overwrite it, or we leave this spot alone
 			}
 			return isProtected(level, pos, world, bench) ? Action.NONE : Action.BREAK;
@@ -388,13 +392,24 @@ public class BuilderWork extends Behavior<Villager> {
 		}
 		List<BlockPos> supplies = SupplyContainers.find(level, bench, plan.bounds());
 		int needed = requirement.count() - bag.count(requirement.item());
-		if (SupplyContainers.count(level, supplies, requirement.item()) < needed) {
+		List<Item> accepted = MaterialFamilies.accepted(requirement.item());
+		long available = 0;
+		for (Item item : accepted) {
+			available += SupplyContainers.count(level, supplies, item);
+		}
+		if (available < needed) {
 			waitForMaterials(level, villager, site, plan, bag, bench, supplies);
 			return;
 		}
 		waitTimer = 0;
 		site.setStatus(BuildSite.Status.FETCHING);
-		BlockPos source = SupplyContainers.firstWith(level, supplies, requirement.item());
+		BlockPos source = null;
+		for (Item item : accepted) {
+			source = SupplyContainers.firstWith(level, supplies, item);
+			if (source != null) {
+				break;
+			}
+		}
 		if (source == null) {
 			return;
 		}
@@ -407,20 +422,26 @@ public class BuilderWork extends Behavior<Villager> {
 		wanted.put(requirement.item(), requirement.count());
 		for (BuildPlan.Step s : site.upcoming(plan, LOOKAHEAD)) {
 			if (!MaterialRules.matches(level.getBlockState(s.pos()), s.state())) {
-				MaterialRules.requirement(s.state()).ifPresent(r -> wanted.merge(r.item(), r.count(), Integer::sum));
+				for (MaterialRules.Requirement r : s.requirements()) {
+					wanted.merge(r.item(), r.count(), Integer::sum);
+				}
 			}
 		}
 		boolean tookAny = false;
 		for (Map.Entry<Item, Integer> e : wanted.entrySet()) {
 			int want = e.getValue() - bag.count(e.getKey());
 			int take = Math.min(want, bag.spaceFor(e.getKey()));
-			if (take <= 0) {
-				continue;
-			}
-			int got = SupplyContainers.extract(level, supplies, e.getKey(), take);
-			if (got > 0) {
-				tookAny = true;
-				bag.addAll(e.getKey(), got);
+			// The exact block first; otherwise a free variant of it (Chipped), turned into the one we need.
+			for (Item source2 : MaterialFamilies.accepted(e.getKey())) {
+				if (take <= 0) {
+					break;
+				}
+				int got = SupplyContainers.extract(level, supplies, source2, take);
+				if (got > 0) {
+					tookAny = true;
+					bag.addAll(e.getKey(), got);
+					take -= got;
+				}
 			}
 		}
 		if (tookAny) {
@@ -452,7 +473,9 @@ public class BuilderWork extends Behavior<Villager> {
 		}
 		Set<Item> keep = new HashSet<>();
 		for (BuildPlan.Step s : site.upcoming(plan, LOOKAHEAD)) {
-			MaterialRules.requirement(s.state()).ifPresent(r -> keep.add(r.item()));
+			for (MaterialRules.Requirement r : s.requirements()) {
+				keep.add(r.item());
+			}
 		}
 		List<ItemStack> junk = bag.takeAllExcept(keep);
 		if (junk.isEmpty()) {
@@ -482,7 +505,7 @@ public class BuilderWork extends Behavior<Villager> {
 	}
 
 	private void place(ServerLevel level, Villager villager, BuildSite site, BuildPlan plan, BuilderBag bag, BuildPlan.Step step,
-					   MaterialRules.Requirement requirement, boolean free) {
+					   List<MaterialRules.Requirement> requirements, boolean free) {
 		BlockPos pos = step.pos();
 		BlockState state = step.state();
 
@@ -506,7 +529,9 @@ public class BuilderWork extends Behavior<Villager> {
 		site.setDetail(null);
 
 		if (!free) {
-			bag.remove(requirement.item(), requirement.count());
+			for (MaterialRules.Requirement r : requirements) {
+				bag.remove(r.item(), r.count());
+			}
 		}
 		if (step.secondaryPos() != null && step.secondaryState() != null) {
 			level.setBlock(pos, state, Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE);
@@ -596,9 +621,9 @@ public class BuilderWork extends Behavior<Villager> {
 		if (blockEntity == null) {
 			return;
 		}
-		CompoundTag tag = nbt.copy();
-		for (String key : new String[]{"Items", "LootTable", "LootTableSeed", "RecordItem", "Book", "item", "Bees", "SpawnData", "SpawnPotentials"}) {
-			tag.remove(key);
+		CompoundTag tag = BlockEntityData.sanitize(level, pos, state, blockEntity, nbt);
+		if (tag == null) {
+			return;
 		}
 		try {
 			blockEntity.loadWithComponents(tag, level.registryAccess());

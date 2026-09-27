@@ -11,7 +11,11 @@ base {
 }
 
 repositories {
-	// Cobblemon + friends will be added here when the optional Cobblemon integration lands.
+	// Other mods, only for the compatibility tests (never bundled, never required).
+	maven {
+		url = "https://api.modrinth.com/maven"
+		content { includeGroup "maven.modrinth" }
+	}
 }
 
 loom {
@@ -24,6 +28,16 @@ sourceSets {
 		compileClasspath += main.compileClasspath + main.output + client.compileClasspath + client.output
 		runtimeClasspath += main.runtimeClasspath + main.output + client.runtimeClasspath + client.output
 	}
+	// Compatibility tests: in-game tests that run with other popular building mods installed
+	// (Chipped, Rechiseled, Supplementaries). `./gradlew runCompatGameTest`; also part of `build`.
+	compattest {
+		compileClasspath += main.compileClasspath + main.output
+		runtimeClasspath += main.runtimeClasspath + main.output
+	}
+}
+
+loom {
+	createRemapConfigurations(sourceSets.compattest)
 }
 
 loom {
@@ -34,6 +48,9 @@ loom {
 		}
 		"aliveworkplace_devclient" {
 			sourceSet sourceSets.devclient
+		}
+		"aliveworkplace_compat" {
+			sourceSet sourceSets.compattest
 		}
 	}
 
@@ -49,6 +66,15 @@ loom {
 			vmArg "-Daliveworkplace.shots=true"
 			// ./gradlew runScreenshots -Pscene=table   (scenes: builders, table)
 			vmArg "-Daliveworkplace.scene=${project.findProperty('scene') ?: 'builders'}"
+		}
+		compatGameTest {
+			server()
+			name "Compat Game Test"
+			source sourceSets.compattest
+			runDir "build/run/compatGameTest"
+			vmArg "-Dfabric-api.gametest"
+			vmArg "-Dfabric-api.gametest.report-file=${project.layout.buildDirectory.get().asFile}/junit-compat.xml"
+			ideConfigGenerated false
 		}
 	}
 }
@@ -72,11 +98,59 @@ tasks.matching { it.name == "runGameTest" }.configureEach {
 	}
 }
 
+ext.compatMods = [
+	"maven.modrinth:chipped:6h2mVZcb",          // Chipped 4.0.2
+	"maven.modrinth:resourceful-lib:Hf91FuVF",  // Resourceful Lib 3.0.12
+	"maven.modrinth:athena-ctm:JfyYsWKP",       // Athena 4.0.6
+	"maven.modrinth:supplementaries:h8FyJ2as",  // Supplementaries 3.9.9
+	"maven.modrinth:moonlight:lje3uEuU",        // Moonlight 3.6.8
+	"maven.modrinth:rechiseled:Whwd5n82",       // Rechiseled 1.2.4
+	"maven.modrinth:supermartijn642s-core-lib:blDCgrqh",   // 1.1.21
+	"maven.modrinth:supermartijn642s-config-lib:euSlaAtA", // 1.1.8
+	"maven.modrinth:fusion-connected-textures:6fQXv7Yl",   // Fusion 1.2.12
+]
+
+/** Unpacks the jars nested in the compat mods (META-INF/jars) into build/compat-nested. */
+def compatNestedJars(List<String> mods) {
+	def out = file("build/compat-nested")
+	def resolved = configurations.detachedConfiguration(*mods.collect { dependencies.create(it) })
+	resolved.transitive = false
+	def jars = []
+	resolved.resolve().each { mod ->
+		zipTree(mod).matching { include "META-INF/jars/*.jar" }.each { nested ->
+			def target = new File(out, nested.name)
+			if (!target.exists()) {
+				out.mkdirs()
+				target.bytes = nested.bytes
+			}
+			jars << target
+		}
+	}
+	return jars
+}
+
 dependencies {
 	minecraft "com.mojang:minecraft:${project.minecraft_version}"
 	mappings loom.officialMojangMappings()
 	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
+
+	// Only loaded by runCompatGameTest: the releases in the Cobbleverse pack (Modrinth version ids).
+	compatMods.each { modCompattestRuntimeOnly it }
+	// Loom drops the libraries these mods bundle inside themselves, so add those back.
+	modCompattestRuntimeOnly files(compatNestedJars(compatMods))
+}
+
+// The compat test server needs an accepted EULA in its run directory, like runGameTest.
+tasks.matching { it.name == "runCompatGameTest" }.configureEach {
+	doFirst {
+		def dir = file("build/run/compatGameTest")
+		dir.mkdirs()
+		new File(dir, "eula.txt").text = "eula=true\n"
+	}
+}
+tasks.matching { it.name == "build" }.configureEach {
+	dependsOn "runCompatGameTest"
 }
 
 processResources {

@@ -2,6 +2,22 @@
 
 ## Unreleased
 
+### Added
+- Works with **Chipped** and **Rechiseled**: builds that use their block variants (herringbone oak planks, oak beams…)
+  can be built from the plain block — the builder "chips" it on the spot, just like the workbench or chisel does for free.
+  Missing-material messages name the plain block ("needs 12 Oak Planks").
+- Works with **Supplementaries**: way signs (they cost the fence and the sign), rope knots, timber frames, flower
+  boxes, jars, item shelves, flags, blackboards and the rest build correctly. Book piles are left out (they're made of books).
+- Potted plants are built (they cost a flower pot and the plant) instead of being skipped.
+
+### Fixed
+- Blueprint block data can no longer hand out free items or mobs from any mod: containers (chests, jars, shelves,
+  safes…) are always built empty, and item or mob data hidden inside other blocks is removed. Safes and locks are
+  never copied with their old owner or password.
+
+### Dev
+- `./gradlew runCompatGameTest` (part of `build`) runs in-game tests with Chipped, Rechiseled and Supplementaries installed.
+
 ## 0.4.0 — 2026-09-26
 
 ### Added

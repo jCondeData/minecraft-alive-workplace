@@ -1,0 +1,13 @@
+{
+	"schemaVersion": 1,
+	"id": "aliveworkplace_compat",
+	"version": "1.0.0",
+	"name": "Alive Workplace compatibility tests",
+	"environment": "*",
+	"entrypoints": {
+		"fabric-gametest": [
+			"io.github.jcondedata.aliveworkplace.compat.CompatGameTests"
+		]
+	},
+	"depends": { "aliveworkplace": "*", "chipped": "*", "supplementaries": "*", "rechiseled": "*" }
+}

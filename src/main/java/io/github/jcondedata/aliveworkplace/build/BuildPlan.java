@@ -45,6 +45,10 @@ public final class BuildPlan {
 	 */
 	public record Step(BlockPos pos, BlockState state, @Nullable CompoundTag nbt,
 					   @Nullable BlockPos secondaryPos, @Nullable BlockState secondaryState) {
+		/** What placing this step uses up (see {@link MaterialRules#requirements}). */
+		public List<MaterialRules.Requirement> requirements() {
+			return MaterialRules.requirements(state, nbt);
+		}
 	}
 
 	private final Map<BlockPos, BlockState> targets;
@@ -93,7 +97,7 @@ public final class BuildPlan {
 		List<Step> structure = new ArrayList<>();
 		List<Step> decoration = new ArrayList<>();
 		for (Step step : byPos.values()) {
-			MaterialRules.Kind kind = MaterialRules.classify(step.state());
+			MaterialRules.Kind kind = MaterialRules.classify(step.state(), step.nbt());
 			if (kind == MaterialRules.Kind.SKIP) {
 				continue;
 			}
@@ -248,7 +252,9 @@ public final class BuildPlan {
 		Map<Item, Integer> out = new java.util.LinkedHashMap<>();
 		for (List<Step> list : List.of(foundation, structure, decoration)) {
 			for (Step step : list) {
-				MaterialRules.requirement(step.state()).ifPresent(r -> out.merge(r.item(), r.count(), Integer::sum));
+				for (MaterialRules.Requirement r : step.requirements()) {
+					out.merge(r.item(), r.count(), Integer::sum);
+				}
 			}
 		}
 		return out;

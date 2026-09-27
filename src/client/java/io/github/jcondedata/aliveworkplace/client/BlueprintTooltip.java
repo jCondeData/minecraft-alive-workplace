@@ -68,7 +68,9 @@ public final class BlueprintTooltip {
 		Map<Item, Integer> count = new LinkedHashMap<>();
 		for (BlockState state : blocks) {
 			if (MaterialRules.classify(state) != MaterialRules.Kind.SKIP) {
-				MaterialRules.requirement(state).ifPresent(r -> count.merge(r.item(), r.count(), Integer::sum));
+				for (MaterialRules.Requirement r : MaterialRules.requirements(state, null)) {
+					count.merge(r.item(), r.count(), Integer::sum);
+				}
 			}
 		}
 		List<Map.Entry<Item, Integer>> sorted = new ArrayList<>(count.entrySet());

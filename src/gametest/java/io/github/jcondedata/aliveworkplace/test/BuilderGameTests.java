@@ -378,6 +378,54 @@ public class BuilderGameTests implements FabricGameTest {
 	}
 
 	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
+	public void pottedPlantsCostAPotAndThePlant(GameTestHelper helper) {
+		List<MaterialRules.Requirement> poppy = MaterialRules.requirements(Blocks.POTTED_POPPY.defaultBlockState(), null);
+		helper.assertTrue(poppy.equals(List.of(new MaterialRules.Requirement(Items.FLOWER_POT, 1), new MaterialRules.Requirement(Items.POPPY, 1))),
+			"potted poppy costs " + poppy);
+		helper.assertTrue(MaterialRules.classify(Blocks.POTTED_CACTUS.defaultBlockState()) == MaterialRules.Kind.DECORATION, "potted plants go in the decoration pass");
+		helper.assertTrue(MaterialRules.requirements(Blocks.FLOWER_POT.defaultBlockState(), null).size() == 1, "an empty pot costs just the pot");
+		helper.succeed();
+	}
+
+	/** Blueprint block data can carry looks (sign text) but never free items or mobs. */
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
+	public void blueprintDataNeverHandsOutItems(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		helper.setBlock(new BlockPos(0, 1, 0), Blocks.CHEST);
+		helper.setBlock(new BlockPos(1, 1, 0), Blocks.OAK_SIGN);
+		BlockPos chestPos = helper.absolutePos(new BlockPos(0, 1, 0));
+		BlockPos signPos = helper.absolutePos(new BlockPos(1, 1, 0));
+		CompoundTag chestData = new CompoundTag();
+		net.minecraft.nbt.ListTag items = new net.minecraft.nbt.ListTag();
+		CompoundTag diamond = new CompoundTag();
+		diamond.putString("id", "minecraft:diamond");
+		diamond.putInt("count", 64);
+		items.add(diamond);
+		chestData.put("Items", items);
+		chestData.putString("CustomName", "\"Loot\"");
+		CompoundTag chestOut = io.github.jcondedata.aliveworkplace.build.BlockEntityData.sanitize(level, chestPos, level.getBlockState(chestPos),
+			level.getBlockEntity(chestPos), chestData);
+		helper.assertTrue(chestOut != null && chestOut.getAllKeys().equals(java.util.Set.of("CustomName")), "chest data should keep only its name: " + chestOut);
+
+		CompoundTag signData = new CompoundTag();
+		CompoundTag front = new CompoundTag();
+		front.putString("color", "black");
+		signData.put("front_text", front);
+		CompoundTag hidden = new CompoundTag();
+		hidden.put("stash", diamond.copy());
+		CompoundTag cow = new CompoundTag();
+		cow.putString("id", "minecraft:cow");
+		hidden.put("pet", cow);
+		signData.put("extra", hidden);
+		CompoundTag signOut = io.github.jcondedata.aliveworkplace.build.BlockEntityData.sanitize(level, signPos, level.getBlockState(signPos),
+			level.getBlockEntity(signPos), signData);
+		helper.assertTrue(signOut != null && signOut.contains("front_text"), "sign text should be kept: " + signOut);
+		helper.assertTrue(!signOut.getCompound("extra").contains("stash") && !signOut.getCompound("extra").contains("pet"),
+			"nested items and mobs should be removed: " + signOut);
+		helper.succeed();
+	}
+
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
 	public void blueprintPlacementRoundTrips(GameTestHelper helper) {
 		Vec3i size = new Vec3i(9, 10, 7);
 		ResourceLocation dim = helper.getLevel().dimension().location();

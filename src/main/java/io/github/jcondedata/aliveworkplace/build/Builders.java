@@ -275,15 +275,21 @@ public final class Builders {
 
 	/** Materials still needed for the rest of the build, minus what the builder carries and what is in the supply chests. */
 	public static Map<Item, Integer> computeMissing(ServerLevel level, BuildSite site, BuildPlan plan, BuilderBag bag, List<BlockPos> supplies) {
+		// Grouped by material family (Chipped variants count as their plain block), named by the plain block.
 		Map<Item, Integer> need = new LinkedHashMap<>();
 		for (BuildPlan.Step step : site.upcoming(plan, Integer.MAX_VALUE)) {
 			if (!MaterialRules.matches(level.getBlockState(step.pos()), step.state())) {
-				MaterialRules.requirement(step.state()).ifPresent(r -> need.merge(r.item(), r.count(), Integer::sum));
+				for (MaterialRules.Requirement r : step.requirements()) {
+					need.merge(MaterialFamilies.key(r.item()), r.count(), Integer::sum);
+				}
 			}
 		}
 		Map<Item, Integer> missing = new LinkedHashMap<>();
 		for (Map.Entry<Item, Integer> e : need.entrySet()) {
-			long have = bag.count(e.getKey()) + SupplyContainers.count(level, supplies, e.getKey());
+			long have = 0;
+			for (Item member : MaterialFamilies.accepted(e.getKey())) {
+				have += bag.count(member) + SupplyContainers.count(level, supplies, member);
+			}
 			long shortBy = e.getValue() - have;
 			if (shortBy > 0) {
 				missing.put(e.getKey(), (int) shortBy);

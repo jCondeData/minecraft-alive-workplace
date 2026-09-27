@@ -16,6 +16,9 @@ The owner (Jesse) does not write code: sessions are expected to work autonomousl
 ## Commands
 - `./gradlew build` — compile + jar + gametests (CI runs exactly this)
 - `./gradlew runGameTest` — only the gametests (~10 s of game time, ~1 min total)
+- `./gradlew runCompatGameTest` — gametests in `src/compattest` with Chipped, Rechiseled, Supplementaries (+ libraries)
+  installed from Modrinth maven (`compatMods` in `build.gradle`; bundled jars are unpacked into `build/compat-nested`).
+  Part of `build`. Add a mod from the pack here when adding support for it.
 - `./gradlew genSources` — decompiled Minecraft sources for reading vanilla code; they land in
   `.gradle/loom-cache/minecraftMaven/net/minecraft/minecraft-common-*/**/**-sources.jar` (unzip and grep)
 - `python3 tools/blueprints/generate.py` — regenerates starter blueprints + test fixtures (needs `pip install nbtlib`)
@@ -49,6 +52,8 @@ The owner (Jesse) does not write code: sessions are expected to work autonomousl
 - Art is original (draw it in `tools/textures/generate.py`); starter builds are original.
 - Code from GPL-3.0(-or-later) projects such as MineColonies may be adapted **with attribution in the file header**.
   Don't copy code from All-Rights-Reserved mods.
+- Support for other building mods goes by block/item/tag ids or their data files (`ModdedBlocks`, `MaterialFamilies`),
+  never by their classes, and gets a compat test.
 - Cobblemon/RCT/CobbleDollars support must be **optional**: put it in a separate package loaded only when
   `FabricLoader.isModLoaded("cobblemon")`, add them as `modCompileOnly`, never a hard `depends`.
 - Don't break existing saves: new saved fields need defaults; don't rename registry ids.

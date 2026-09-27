@@ -41,7 +41,7 @@ Owner decisions are recorded in **Design decisions** at the bottom. Don't change
 - [x] **Build queue**: hand a busy builder up to 5 more blueprints; they do them in order (queued sites reserve their spot, show in `/workplace sites` and can be cancelled)
 - [x] **Crews**: idle builders with a bench within 48 blocks of a build help out (up to 3 per site): they work ahead of the lead builder on the same stage, fetch from the lead's chests, pass spare materials to each other, and go home when it's done (`workplaceBuildersHelp` gamerule)
 - [x] **Deconstruct**: sneak-give a placed blueprint to a builder and they take that building down (decorations first, then top-down), returning exactly what each block cost to the supply chests; blocks that differ from the blueprint and anything that holds items are left standing
-- [ ] **Permissions**: only the owner (and friends they add) can command their builders; `/workplace friend add`
+- [x] **Permissions**: a builder works for whoever hires it first (hands it a blueprint); only that player, their friends (`/workplace friend add|remove|list`) and ops can give it blueprints or cancel its builds; hired builders only help their employer's and friends' builds (`workplaceBuilderOwnership` gamerule)
 - [x] **Builder levels**: 1 XP per 5 blocks placed + 10 per finished build, vanilla level thresholds; level-ups unlock the next trades; each level is faster (Master takes 40% of the base time per block)
 - [x] **More blueprints**: Healing Center (level 4, holds a Cobblemon Healing Machine when Cobblemon is installed) and Supply Shop (level 5)
 - [ ] Optional ground levelling around the site (foundations are done; per-blueprint opt-out later)

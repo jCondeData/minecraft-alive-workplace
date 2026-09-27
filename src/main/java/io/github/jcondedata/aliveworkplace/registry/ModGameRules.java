@@ -26,6 +26,10 @@ public final class ModGameRules {
 	public static final GameRules.Key<GameRules.BooleanValue> BUILDERS_HELP =
 		GameRuleRegistry.register("workplaceBuildersHelp", GameRules.Category.MOBS, GameRuleFactory.createBooleanRule(true));
 
+	/** When true, a builder only takes orders from the player who hired it, their friends and operators. */
+	public static final GameRules.Key<GameRules.BooleanValue> BUILDER_OWNERSHIP =
+		GameRuleRegistry.register("workplaceBuilderOwnership", GameRules.Category.MOBS, GameRuleFactory.createBooleanRule(true));
+
 	public static void init() {
 	}
 

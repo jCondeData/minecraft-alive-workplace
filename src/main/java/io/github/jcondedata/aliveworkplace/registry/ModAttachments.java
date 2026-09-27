@@ -16,6 +16,10 @@ public final class ModAttachments {
 	public static final AttachmentType<BuilderBag> BUILDER_BAG = AttachmentRegistry.create(
 		AliveWorkplace.id("builder_bag"), builder -> builder.persistent(BuilderBag.CODEC).initializer(BuilderBag::new));
 
+	/** The player a builder works for (see {@code Friends}). */
+	public static final AttachmentType<io.github.jcondedata.aliveworkplace.build.Employer> BUILDER_EMPLOYER = AttachmentRegistry.create(
+		AliveWorkplace.id("builder_employer"), builder -> builder.persistent(io.github.jcondedata.aliveworkplace.build.Employer.CODEC));
+
 	public static void init() {
 	}
 

@@ -19,6 +19,9 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.SharedSuggestionProvider;
+import com.mojang.authlib.GameProfile;
+import io.github.jcondedata.aliveworkplace.build.Friends;
+import net.minecraft.commands.arguments.GameProfileArgument;
 import net.minecraft.commands.arguments.ResourceLocationArgument;
 import net.minecraft.commands.arguments.UuidArgument;
 import net.minecraft.network.chat.Component;
@@ -33,6 +36,7 @@ import net.minecraft.world.entity.npc.Villager;
  * /workplace sites                 — your build sites and their status (ops see all)
  * /workplace cancel &lt;site&gt;         — stop a build and get the blueprint back
  * /workplace import                — import .litematic/.schem/.nbt files from &lt;world&gt;/aliveworkplace/import (ops)
+ * /workplace friend add|remove &lt;player&gt;, /workplace friend list — who may give orders to your builders
  */
 public final class WorkplaceCommand {
 	public static void init() {
@@ -57,7 +61,46 @@ public final class WorkplaceCommand {
 				.executes(WorkplaceCommand::listSites))
 			.then(Commands.literal("cancel")
 				.then(Commands.argument("site", UuidArgument.uuid())
-					.executes(WorkplaceCommand::cancel))));
+					.executes(WorkplaceCommand::cancel)))
+			.then(Commands.literal("friend")
+				.then(Commands.literal("add")
+					.then(Commands.argument("player", GameProfileArgument.gameProfile())
+						.executes(ctx -> friend(ctx, true))))
+				.then(Commands.literal("remove")
+					.then(Commands.argument("player", GameProfileArgument.gameProfile())
+						.executes(ctx -> friend(ctx, false))))
+				.then(Commands.literal("list")
+					.executes(WorkplaceCommand::listFriends))));
+	}
+
+	private static int friend(CommandContext<CommandSourceStack> ctx, boolean add) throws CommandSyntaxException {
+		ServerPlayer me = ctx.getSource().getPlayerOrException();
+		Friends friends = Friends.get(ctx.getSource().getServer());
+		int changed = 0;
+		for (GameProfile profile : GameProfileArgument.getGameProfiles(ctx, "player")) {
+			if (profile.getId().equals(me.getUUID())) {
+				ctx.getSource().sendFailure(Component.translatable("command.aliveworkplace.friend.self"));
+				continue;
+			}
+			boolean ok = add ? friends.add(me.getUUID(), profile.getId(), profile.getName()) : friends.remove(me.getUUID(), profile.getId());
+			String key = add ? (ok ? "command.aliveworkplace.friend.added" : "command.aliveworkplace.friend.already")
+				: (ok ? "command.aliveworkplace.friend.removed" : "command.aliveworkplace.friend.not_found");
+			ctx.getSource().sendSuccess(() -> Component.translatable(key, profile.getName()).withStyle(ok ? ChatFormatting.GREEN : ChatFormatting.GRAY), false);
+			changed += ok ? 1 : 0;
+		}
+		return changed;
+	}
+
+	private static int listFriends(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
+		ServerPlayer me = ctx.getSource().getPlayerOrException();
+		java.util.Map<UUID, String> list = Friends.get(ctx.getSource().getServer()).of(me.getUUID());
+		if (list.isEmpty()) {
+			ctx.getSource().sendSuccess(() -> Component.translatable("command.aliveworkplace.friend.none").withStyle(ChatFormatting.GRAY), false);
+		} else {
+			String names = String.join(", ", list.values());
+			ctx.getSource().sendSuccess(() -> Component.translatable("command.aliveworkplace.friend.list", names).withStyle(ChatFormatting.GOLD), false);
+		}
+		return list.size();
 	}
 
 	private static int listBlueprints(CommandContext<CommandSourceStack> ctx) {

@@ -27,7 +27,9 @@ Install on the **server and every player's game**.
    sneak-right-click the air to pick it back up. On uneven ground the builder fills in a foundation.
 4. **Stock the chests.** Put the materials in any chests or barrels within 8 blocks of the builder's bench
    (hold Shift over the blueprint to see the list).
-5. **Hand it over.** Right-click the builder with the blueprint. Busy builders take up to 5 more and build them in order. They start work in the morning, sleep at night,
+5. **Hand it over.** Right-click the builder with the blueprint. The first player to do that hires the builder;
+   after that it takes orders from them and the friends they add (`/workplace friend add <player>`).
+   Busy builders take up to 5 more blueprints and build them in order. They start work in the morning, sleep at night,
    and tell you if they run out of something. What they are building, how far along it is and what they are
    waiting for floats above their head; sneak-right-click a builder with an empty hand for the full status.
 
@@ -69,6 +71,7 @@ Craft a **Blueprint Table** (blue dye on top, cartography table in the middle, p
 |---|---|
 | `/workplace sites` | your builds in progress, with a cancel button |
 | `/workplace cancel <id>` | stop a build (placed blocks stay; you get the blueprint back) |
+| `/workplace friend add <player>` | let a friend give orders to your builders (`remove`, `list` too) |
 | `/workplace blueprints` (op) | list every blueprint the server knows |
 | `/workplace blueprint <id>` (op) | get a blueprint item |
 | `/workplace import` (op) | import files from `<world>/aliveworkplace/import/` |
@@ -76,11 +79,11 @@ Craft a **Blueprint Table** (blue dye on top, cartography table in the middle, p
 | `/gamerule workplaceFreeMaterials true` | builders need no materials (creative towns) |
 | `/gamerule workplaceBuildDelay 8` | ticks per block (lower is faster) |
 | `/gamerule workplaceBuildersHelp false` | idle builders stop helping with other builds |
+| `/gamerule workplaceBuilderOwnership false` | anyone can give orders to any builder |
 | `/gamerule workplaceFoundationDepth 12` | how far down builders fill under a build on uneven ground (0 = never) |
 
 ## What's next
-Builders first: taking buildings down, permissions, builders' houses in villages. Then miners, lumberjacks and couriers, then Cobblemon
-trainers and Pokémon work partners. See [ROADMAP.md](ROADMAP.md).
+Next up are more jobs — miners, lumberjacks and couriers — then Cobblemon trainers and Pokémon work partners. See [ROADMAP.md](ROADMAP.md).
 
 ## Building from source
 ```

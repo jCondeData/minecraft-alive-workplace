@@ -108,7 +108,12 @@ public final class Builders {
 		}
 		BuildSite best = null;
 		double bestDistance = Double.MAX_VALUE;
+		Employer employer = villager.getAttached(ModAttachments.BUILDER_EMPLOYER);
+		boolean ownership = level.getGameRules().getBoolean(ModGameRules.BUILDER_OWNERSHIP);
 		for (BuildSite site : BuildSiteManager.get(level).all()) {
+			if (ownership && employer != null && !Friends.get(level.getServer()).mayDirect(employer.id(), site.owner())) {
+				continue; // a hired builder only helps its employer and their friends
+			}
 			if (site.isQueued() || site.isDone() || site.bench() == null || villager.getUUID().equals(site.builder())
 				|| site.helpers(level.getGameTime()).size() >= MAX_HELPERS) {
 				continue;
@@ -177,6 +182,12 @@ public final class Builders {
 	/** {@code deconstruct}: take the building at the placement down instead of building it (sneak-give). */
 	public static InteractionResult assign(ServerPlayer player, Villager villager, ItemStack stack, boolean deconstruct) {
 		ServerLevel level = player.serverLevel();
+		if (!Friends.mayCommand(player, villager)) {
+			Employer employer = villager.getAttached(ModAttachments.BUILDER_EMPLOYER);
+			tell(player, Component.translatable("message.aliveworkplace.not_your_builder", villager.getDisplayName(),
+				employer != null ? employer.name() : "?", player.getGameProfile().getName()), ChatFormatting.RED);
+			return InteractionResult.CONSUME;
+		}
 		if (isHelping(villager)) {
 			stopHelping(level, villager); // their own build comes first
 		}
@@ -224,6 +235,7 @@ public final class Builders {
 			}
 		}
 
+		Friends.hire(player, villager);
 		BuildSite site = existing == null
 			? start(level, villager, player, data.get().structure(), placement.get())
 			: enqueue(level, villager, player, data.get().structure(), placement.get());
@@ -315,6 +327,11 @@ public final class Builders {
 		if (villager != null) {
 			text.append(Component.literal("\n  "));
 			text.append(BuilderLevels.describe(villager).copy().withStyle(ChatFormatting.DARK_AQUA));
+			Employer employer = villager.getAttached(ModAttachments.BUILDER_EMPLOYER);
+			if (employer != null) {
+				text.append(Component.literal(" · ").withStyle(ChatFormatting.DARK_GRAY));
+				text.append(Component.translatable("message.aliveworkplace.status.works_for", employer.name()).withStyle(ChatFormatting.DARK_AQUA));
+			}
 		}
 
 		if (site.detail() != null) {
@@ -559,8 +576,23 @@ public final class Builders {
 		villager.refreshBrain(level);
 	}
 
+	/**
+	 * Who may cancel a build: whoever handed it over and their friends, the builder's employer (and
+	 * theirs), and operators — or anyone when workplaceBuilderOwnership is off.
+	 */
 	public static boolean isOwnerOrOp(Entity entity, BuildSite site) {
-		return entity.getUUID().equals(site.owner()) || entity instanceof ServerPlayer p && p.hasPermissions(2);
+		if (entity.getUUID().equals(site.owner())) {
+			return true;
+		}
+		if (!(entity instanceof ServerPlayer p)) {
+			return false;
+		}
+		if (p.hasPermissions(2) || !p.serverLevel().getGameRules().getBoolean(ModGameRules.BUILDER_OWNERSHIP)
+			|| Friends.get(p.getServer()).mayDirect(site.owner(), p.getUUID())) {
+			return true;
+		}
+		return site.builder() != null && p.serverLevel().getEntity(site.builder()) instanceof Villager builder
+			&& builder.getAttached(ModAttachments.BUILDER_EMPLOYER) != null && Friends.mayCommand(p, builder);
 	}
 
 	private Builders() {

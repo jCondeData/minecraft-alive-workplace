@@ -10,6 +10,10 @@
   down carefully (torches and doors first, then from the roof down) and put every block back in the supply chests —
   glass comes back as glass. Only blocks that match the blueprint are touched; chests, furnaces and other blocks that
   hold things are left standing.
+- Builders have a boss: the first player to hand a builder a blueprint hires it. After that only they, the friends
+  they add with `/workplace friend add <player>` (and operators) can give it blueprints or cancel its builds, and it
+  only helps its boss's and their friends' builds. `/workplace friend list` and `/workplace friend remove` manage the
+  list; `/gamerule workplaceBuilderOwnership false` turns this off.
 
 ## 0.6.0 — 2026-09-26
 

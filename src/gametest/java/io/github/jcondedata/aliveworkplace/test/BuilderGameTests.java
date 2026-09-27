@@ -289,6 +289,44 @@ public class BuilderGameTests implements FabricGameTest {
 		});
 	}
 
+	// --- permissions -------------------------------------------------------------------------
+
+	/** A builder takes orders from its employer and their friends only (operators aside). */
+	@GameTest(template = AREA)
+	public void buildersOnlyTakeOrdersFromTheirEmployerAndFriends(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		level.getGameRules().getRule(ModGameRules.BUILDER_OWNERSHIP).set(true, level.getServer());
+		helper.setBlock(BENCH, ModBlocks.BUILDERS_BENCH);
+		Villager villager = helper.spawn(EntityType.VILLAGER, VILLAGER);
+		Builders.employ(level, villager, helper.absolutePos(BENCH));
+		net.minecraft.server.level.ServerPlayer boss = helper.makeMockServerPlayerInLevel();
+		net.minecraft.server.level.ServerPlayer stranger = helper.makeMockServerPlayerInLevel();
+		helper.assertTrue(io.github.jcondedata.aliveworkplace.build.Friends.mayCommand(stranger, villager), "an unhired builder takes anyone's orders");
+		villager.setAttached(ModAttachments.BUILDER_EMPLOYER, new io.github.jcondedata.aliveworkplace.build.Employer(boss.getUUID(), "boss"));
+		helper.assertTrue(io.github.jcondedata.aliveworkplace.build.Friends.mayCommand(boss, villager), "the employer must be obeyed");
+		helper.assertFalse(io.github.jcondedata.aliveworkplace.build.Friends.mayCommand(stranger, villager), "a stranger must not give orders");
+
+		// A stranger's blueprint is refused and stays in their hand.
+		ItemStack blueprint = BlueprintItem.create(TEST_HUT, new Vec3i(5, 4, 5));
+		blueprint.set(io.github.jcondedata.aliveworkplace.registry.ModComponents.BLUEPRINT,
+			BlueprintItem.data(blueprint).orElseThrow().withPlacement(Optional.of(placement(helper, HUT_ORIGIN, Rotation.NONE))));
+		Builders.assign(stranger, villager, blueprint);
+		helper.assertTrue(Builders.activeSite(level, villager) == null && blueprint.getCount() == 1, "the stranger's blueprint was taken");
+
+		io.github.jcondedata.aliveworkplace.build.Friends friends = io.github.jcondedata.aliveworkplace.build.Friends.get(level.getServer());
+		friends.add(boss.getUUID(), stranger.getUUID(), "friend");
+		try {
+			helper.assertTrue(io.github.jcondedata.aliveworkplace.build.Friends.mayCommand(stranger, villager), "a friend may give orders");
+			Builders.assign(stranger, villager, blueprint);
+			BuildSite site = Builders.activeSite(level, villager);
+			helper.assertTrue(site != null, "the friend's blueprint should start a build");
+			helper.assertTrue(Builders.isOwnerOrOp(boss, site), "the employer may cancel a friend's build for their builder");
+		} finally {
+			friends.remove(boss.getUUID(), stranger.getUUID());
+		}
+		helper.succeed();
+	}
+
 	// --- build queue -----------------------------------------------------------------------
 
 	/** A second blueprint handed to a busy builder waits its turn, then gets built. */

@@ -88,7 +88,8 @@ workstation, like the rest of the mod.
   cooldown of a minute, shorter as the nurse levels; at work they also heal hurt villagers and iron golems nearby
   (guards!); sells healing potions, honey, golden apples/carrots. Cobblemon is compile-only (`compat/cobblemon`),
   tested with the real Cobblemon 1.7.3 in `runCompatGameTest`
-- [ ] Nurse follow-ups: a Nurse Station in the Healing Center blueprint, Cobblemon's Healing Machine as a second workstation
+- [x] Nurse Station in the Healing Center blueprint; Shop Counter in the Supply Shop blueprint
+- [ ] Nurse follow-ups: Cobblemon's Healing Machine as a second workstation
 - [x] **Shopkeeper** (their Item Trader): the Shop Counter (owned by whoever places it; owner, friends and ops open
   it) is a 9×2 price list — top slot what one sale hands over, below it the price (any item); the Shopkeeper's
   offers are rebuilt from the chests near the counter whenever someone talks to them (sold out = no stock), a sale

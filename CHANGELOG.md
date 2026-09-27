@@ -3,6 +3,8 @@
 ## Unreleased
 
 ### Added
+- The **Healing Center** blueprint now has a Nurse Station behind the counter and the **Supply Shop** a Shop Counter,
+  so building them brings in a nurse and a shopkeeper (the first player to open the shop's counter owns it).
 - Builds and quarries keep going while you're away: as long as the player who ordered them is online, the chunks
   with the site, the workstation, its chests and the worker stay loaded. Turn it off with
   `/gamerule workplaceKeepWorkLoaded false`. Nothing is kept loaded for players who are offline.

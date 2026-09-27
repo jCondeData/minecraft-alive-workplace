@@ -49,7 +49,8 @@ per build), sharing the chests and passing each other materials.
 
 **Builders level up as they work**, like villagers you trade with: every level makes them faster (a Master builds
 2.5× as fast as a Novice) and unlocks new blueprints to buy — Market Stall, Lookout Tower, then the
-**Healing Center** (with a Cobblemon Healing Machine on the counter when Cobblemon is installed) and the **Supply Shop**.
+**Healing Center** (with a Nurse Station, and a Cobblemon Healing Machine on the counter when Cobblemon is installed)
+and the **Supply Shop** (with a Shop Counter) — build them and a nurse and a shopkeeper move in.
 
 ## Miners
 ![A miner digging out a quarry](docs/media/miner.gif)

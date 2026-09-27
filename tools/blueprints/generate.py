@@ -245,10 +245,10 @@ def healing_center():
     b.set(5, 1, 5, "cobblemon:healing_machine", facing="north")
     b.set(3, 2, 5, "red_carpet")
     b.set(7, 2, 5, "red_carpet")
-    # Staff side: a bed-less rest corner and storage
+    # Staff side: the Nurse Station (a villager moves in as the nurse) and storage
     b.set(1, 1, 7, "barrel", facing="up", open=False)
     b.set(9, 1, 7, "barrel", facing="up", open=False)
-    b.set(2, 1, 7, "crafting_table")
+    b.set(2, 1, 7, "aliveworkplace:nurse_station", facing="south")
     # Waiting benches along the side walls, a red carpet to the counter
     for z in (2, 3):
         b.set(1, 1, z, "birch_stairs", facing="west", half="bottom", shape="straight")
@@ -265,7 +265,7 @@ def healing_center():
 
 # --- Supply Shop: 9 x 7 x 8 -------------------------------------------------------------------
 def supply_shop():
-    """White walls and a blue roof; shelves of barrels and a shop counter."""
+    """White walls and a blue roof; shelves of barrels and a Shop Counter."""
     b = Build(9, 7, 8)
     b.fill(0, 0, 0, 8, 0, 7, "smooth_stone")
     b.fill(1, 0, 1, 7, 0, 6, "birch_planks")
@@ -283,9 +283,11 @@ def supply_shop():
         for y in (1, 2):
             b.set(1, y, z, "barrel", facing="east", open=False)
             b.set(7, y, z, "barrel", facing="west", open=False)
-    # Counter at the back with a register (lantern) and a till (barrel)
-    for x in (3, 4, 5):
+    # Counter at the back with a register (lantern) and a till (barrel); the middle of it is the Shop
+    # Counter (a villager moves in as shopkeeper, the barrels are the stock; first to open it owns the shop)
+    for x in (3, 5):
         b.set(x, 1, 5, "blue_concrete")
+    b.set(4, 1, 5, "aliveworkplace:shop_counter", facing="south")
     b.set(3, 2, 5, "lantern", hanging=False)
     b.set(5, 2, 5, "barrel", facing="up", open=False)
     b.set(4, 1, 6, "birch_stairs", facing="south", half="bottom", shape="straight")  # shopkeeper's seat

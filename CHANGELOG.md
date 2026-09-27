@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+### Added
+- **Ferrymen and travel posts.** Craft a **Travel Post** (a sign over planks and a boat), name it in an anvil if you
+  like, and place it in each village or base you want to connect; a villager takes it as a **Ferryman**. Right-click a
+  post to add it to the posts you know. A ferryman sells **Travel Tickets** to every other post you know — 1 emerald
+  per 256 blocks. Use a ticket near any travel post and you arrive next to the ticket's post.
+
 ## 0.15.0 — 2026-09-27
 
 ### Added

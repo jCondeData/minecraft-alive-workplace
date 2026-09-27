@@ -80,6 +80,11 @@ public final class ModBlocks {
 		Registry.register(BuiltInRegistries.BLOCK_ENTITY_TYPE, AliveWorkplace.id("shop_counter"),
 			net.minecraft.world.level.block.entity.BlockEntityType.Builder.of(io.github.jcondedata.aliveworkplace.shop.ShopCounterBlockEntity::new, SHOP_COUNTER).build(null));
 
+	/** A stop on the travel network, and the Ferryman's workstation. */
+	public static final io.github.jcondedata.aliveworkplace.travel.TravelPostBlock TRAVEL_POST = register(
+		"travel_post", new io.github.jcondedata.aliveworkplace.travel.TravelPostBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_PLANKS))
+	);
+
 	private static <T extends Block> T register(String name, T block) {
 		Registry.register(BuiltInRegistries.BLOCK, AliveWorkplace.id(name), block);
 		Registry.register(BuiltInRegistries.ITEM, AliveWorkplace.id(name), new BlockItem(block, new Item.Properties()));

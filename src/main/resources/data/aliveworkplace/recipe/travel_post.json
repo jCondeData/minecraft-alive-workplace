@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    " S ",
+    "PBP"
+  ],
+  "key": {
+    "S": {
+      "tag": "minecraft:signs"
+    },
+    "B": {
+      "tag": "minecraft:boats"
+    },
+    "P": {
+      "tag": "minecraft:planks"
+    }
+  },
+  "result": {
+    "id": "aliveworkplace:travel_post",
+    "count": 1
+  }
+}

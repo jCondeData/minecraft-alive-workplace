@@ -33,6 +33,8 @@ abstract class VillagerGoalPackagesMixin {
 			cir.setReturnValue(io.github.jcondedata.aliveworkplace.nurse.NursePackages.work(speed));
 		} else if (profession == ModVillagers.SHOPKEEPER) {
 			cir.setReturnValue(io.github.jcondedata.aliveworkplace.shop.ShopkeeperPackages.work(speed));
+		} else if (profession == ModVillagers.FERRYMAN) {
+			cir.setReturnValue(io.github.jcondedata.aliveworkplace.travel.FerrymanPackages.work(speed));
 		}
 	}
 

@@ -92,7 +92,11 @@ workstation, like the rest of the mod.
   takes the goods out of those chests and puts the payment in; workers never use counters or mailboxes as supply
   chests (`PrivateContainer`)
 - [ ] Shopkeeper follow-ups: prices in CobbleDollars when that mod is installed, a sales log for the owner
-- [ ] **Ferryman** (their Teleporter): Travel Posts in villages; pay to travel to any village post you have visited.
+- [x] **Ferryman** (their Teleporter): Travel Posts (named in an anvil) form one network (`TravelNetwork` saved
+  data); right-clicking a post, placing it or talking to its ferryman adds it to the posts you know; a Ferryman sells
+  Travel Tickets to every other post you know for 1 emerald per 256 blocks (1–16; 8 across dimensions); a ticket
+  works within 16 blocks of any post and lands you next to its post
+- [ ] Ferryman follow-ups: travel posts in village generation, a boat ride animation, CobbleDollars fares
 - [ ] **Bard**: plays music discs from a chest near their stage in the evening while the village gathers.
 - [ ] Keep worksites loaded while their employer is online (their Chunk Loader), behind a gamerule.
 - Cobblemon roles go to the Cobblemon milestones: Pokémon Trainer (Milestone 3), Move Tutor and Pokémon Trader (Milestone 4).

@@ -258,5 +258,20 @@
   "message.aliveworkplace.shop.not_yours": "This is %s's shop. Talk to the shopkeeper to buy.",
   "message.aliveworkplace.shop.how_to": "Top row: what one sale hands over · bottom row: its price",
   "message.aliveworkplace.shop.title": "Shop · %s sold",
-  "message.aliveworkplace.shop.state.open": "open for business"
+  "message.aliveworkplace.shop.state.open": "open for business",
+  "block.aliveworkplace.travel_post": "Travel Post",
+  "item.aliveworkplace.travel_ticket": "Travel Ticket",
+  "item.aliveworkplace.travel_ticket.to": "Ticket to %s",
+  "tooltip.aliveworkplace.ticket.where": "Travel post at %s, %s",
+  "tooltip.aliveworkplace.ticket.how": "Use it within 16 blocks of any travel post to go there",
+  "entity.minecraft.villager.ferryman": "Ferryman",
+  "entity.minecraft.zombie_villager.ferryman": "Zombie Ferryman",
+  "message.aliveworkplace.travel.default_name": "Post at %s, %s",
+  "message.aliveworkplace.travel.placed": "Travel post \"%s\" is up. A villager can take it as a Ferryman; players who right-click it can travel here from other posts. (Name the post in an anvil before placing it.)",
+  "message.aliveworkplace.travel.found": "Found the travel post \"%s\"! Ferrymen elsewhere can now take you here. You know %s other posts.",
+  "message.aliveworkplace.travel.known": "Travel post \"%s\" · you know %s other posts",
+  "message.aliveworkplace.travel.nowhere": "You don't know any other travel posts yet. Find one and right-click it.",
+  "message.aliveworkplace.travel.gone": "The travel post \"%s\" isn't there any more.",
+  "message.aliveworkplace.travel.not_at_post": "Use your ticket within %s blocks of a travel post.",
+  "message.aliveworkplace.travel.arrived": "Welcome to %s!"
 }

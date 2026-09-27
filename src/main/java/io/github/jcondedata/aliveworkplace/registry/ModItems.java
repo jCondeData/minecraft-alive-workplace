@@ -33,6 +33,12 @@ public final class ModItems {
 		new io.github.jcondedata.aliveworkplace.farm.FieldMarkerItem(new Item.Properties().stacksTo(1))
 	);
 
+	/** A ferry ticket to one travel post, sold by Ferrymen. */
+	public static final io.github.jcondedata.aliveworkplace.travel.TravelTicketItem TRAVEL_TICKET = Registry.register(
+		BuiltInRegistries.ITEM, AliveWorkplace.id("travel_ticket"),
+		new io.github.jcondedata.aliveworkplace.travel.TravelTicketItem(new Item.Properties().stacksTo(16))
+	);
+
 	public static final CreativeModeTab TAB = Registry.register(
 		BuiltInRegistries.CREATIVE_MODE_TAB,
 		AliveWorkplace.id("main"),
@@ -52,6 +58,7 @@ public final class ModItems {
 				output.accept(ModBlocks.GUARD_POST);
 				output.accept(ModBlocks.NURSE_STATION);
 				output.accept(ModBlocks.SHOP_COUNTER);
+				output.accept(ModBlocks.TRAVEL_POST);
 				for (StarterBlueprints.Entry entry : StarterBlueprints.ALL) {
 					output.accept(BlueprintItem.create(entry.id(), entry.size()));
 				}

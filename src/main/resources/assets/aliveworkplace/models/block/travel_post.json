@@ -1,0 +1,9 @@
+{
+  "parent": "minecraft:block/orientable_with_bottom",
+  "textures": {
+    "top": "aliveworkplace:block/travel_post_top",
+    "bottom": "minecraft:block/oak_planks",
+    "side": "aliveworkplace:block/travel_post_side",
+    "front": "aliveworkplace:block/travel_post_front"
+  }
+}

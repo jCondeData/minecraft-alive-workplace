@@ -135,6 +135,23 @@ public final class ModVillagers {
 		)
 	);
 
+	public static final ResourceLocation TRAVEL_POST_ID = AliveWorkplace.id("travel_post");
+	public static final ResourceKey<PoiType> TRAVEL_POST_POI = ResourceKey.create(Registries.POINT_OF_INTEREST_TYPE, TRAVEL_POST_ID);
+	public static final PoiType TRAVEL_POST_POI_TYPE = PointOfInterestHelper.register(TRAVEL_POST_ID, 1, 1, ModBlocks.TRAVEL_POST);
+
+	public static final VillagerProfession FERRYMAN = Registry.register(
+		BuiltInRegistries.VILLAGER_PROFESSION,
+		AliveWorkplace.id("ferryman"),
+		new VillagerProfession(
+			"ferryman",
+			holder -> holder.is(TRAVEL_POST_POI),
+			holder -> holder.is(TRAVEL_POST_POI),
+			ImmutableSet.of(),
+			ImmutableSet.of(),
+			SoundEvents.VILLAGER_WORK_FISHERMAN
+		)
+	);
+
 	/**
 	 * Guards keep the night watch: on patrol from evening to mid-morning, asleep until early afternoon,
 	 * then out with the village. They fight whenever a monster shows up, whatever they are doing.
@@ -153,7 +170,7 @@ public final class ModVillagers {
 	/** Villagers whose work this mod runs: they get the long shift and our WORK package. */
 	public static boolean isWorker(VillagerProfession profession) {
 		return profession == BUILDER || profession == MINER || profession == LUMBERJACK || profession == POSTMAN
-			|| profession == NURSE || profession == SHOPKEEPER;
+			|| profession == NURSE || profession == SHOPKEEPER || profession == FERRYMAN;
 	}
 
 	/**

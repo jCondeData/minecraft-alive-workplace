@@ -855,6 +855,86 @@ def shopkeeper_overlay():
     save(img, "entity", "zombie_villager", "profession", "shopkeeper.png")
 
 
+# --- Travel Post and tickets -----------------------------------------------------------------------
+def travel_post_top():
+    rnd = random.Random(141)
+    img = Image.new("RGBA", (16, 16))
+    planks(img, rnd)
+    for i in range(16):
+        for p in ((i, 0), (i, 15), (0, i), (15, i)):
+            img.putpixel(p, WOOD_EDGE)
+    # A compass rose
+    for i in range(3, 13):
+        img.putpixel((7, i), rgb("#3b2714"))
+        img.putpixel((i, 7), rgb("#3b2714"))
+    img.putpixel((7, 3), rgb("#c62828"))
+    img.putpixel((7, 4), rgb("#c62828"))
+    save(img, "block", "travel_post_top.png")
+
+
+def travel_post_side(front=False):
+    rnd = random.Random(142 if front else 143)
+    img = Image.new("RGBA", (16, 16))
+    planks(img, rnd)
+    for i in range(16):
+        for p in ((i, 0), (i, 15), (0, i), (15, i)):
+            img.putpixel(p, WOOD_EDGE)
+    # Two arrow boards pointing different ways
+    for y0, right in ((3, True), (9, False)):
+        for y in range(y0, y0 + 4):
+            for x in range(2, 14):
+                img.putpixel((x, y), jitter(rgb("#d9c49a"), rnd, 4))
+        tip = 14 if right else 1
+        for dy in range(4):
+            img.putpixel((tip, y0 + dy), rgb("#d9c49a") if dy in (1, 2) else WOOD_EDGE)
+        for x in range(4, 12, 2):
+            img.putpixel((x, y0 + 1 + (x // 2) % 2), rgb("#3b2714"))
+    if front:
+        for (x, y) in ((7, 0), (8, 0), (7, 15), (8, 15)):
+            img.putpixel((x, y), rgb("#2b4c8c"))
+    save(img, "block", "travel_post_front.png" if front else "travel_post_side.png")
+
+
+def ticket_item():
+    img = Image.new("RGBA", (16, 16), T)
+    rnd = random.Random(151)
+    for y in range(4, 12):
+        for x in range(1, 15):
+            edge = x in (1, 14) or y in (4, 11)
+            img.putpixel((x, y), rgb("#b89b62") if edge else jitter(rgb("#eadcb4"), rnd, 4))
+    for y in range(5, 11, 2):  # the perforated stub
+        img.putpixel((11, y), rgb("#b89b62"))
+    for x in range(3, 10):
+        img.putpixel((x, 6), rgb("#2b4c8c"))
+    for x in range(3, 8):
+        img.putpixel((x, 8), rgb("#8a8a8a"))
+    img.putpixel((12, 7), rgb("#c62828"))
+    img.putpixel((13, 8), rgb("#c62828"))
+    save(img, "item", "travel_ticket.png")
+
+
+def ferryman_overlay():
+    img = Image.new("RGBA", (64, 64), T)
+    rnd = random.Random(161)
+    straw, straw_dark = rgb("#e3c86b"), rgb("#b89b3e")
+    # A straw hat
+    for y in range(0, 8):
+        for x in range(40, 48):
+            img.putpixel((x, y), jitter(straw, rnd, 6))
+    for y in range(8, 11):
+        for x in range(32, 64):
+            img.putpixel((x, y), jitter(straw_dark if y == 10 else straw, rnd, 5))
+    for i in range(1, 15):
+        for p in ((31 + i, 48 + 1), (31 + i, 48 + 14), (31 + 1, 48 + i), (31 + 14, 48 + i)):
+            img.putpixel(p, straw_dark)
+    # A blue and white striped shirt
+    for y in range(44, 56):
+        for x in range(0, 28):
+            img.putpixel((x, y), jitter(rgb("#2b4c8c") if (y // 2) % 2 else rgb("#eeeeee"), rnd, 3))
+    save(img, "entity", "villager", "profession", "ferryman.png")
+    save(img, "entity", "zombie_villager", "profession", "ferryman.png")
+
+
 def icon(blueprint):
     big = Image.new("RGBA", (128, 128), T)
     scaled = blueprint.resize((128, 128), Image.NEAREST)
@@ -901,3 +981,8 @@ if __name__ == "__main__":
     shop_counter_side(front=False)
     shop_counter_side(front=True)
     shopkeeper_overlay()
+    travel_post_top()
+    travel_post_side(front=False)
+    travel_post_side(front=True)
+    ticket_item()
+    ferryman_overlay()

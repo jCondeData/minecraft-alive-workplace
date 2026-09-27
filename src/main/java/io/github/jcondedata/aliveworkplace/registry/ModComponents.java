@@ -31,6 +31,15 @@ public final class ModComponents {
 			.networkSynchronized(io.github.jcondedata.aliveworkplace.farm.FieldData.STREAM_CODEC).build()
 	);
 
+	/** Where a Travel Ticket goes. */
+	public static final DataComponentType<io.github.jcondedata.aliveworkplace.travel.TicketData> TICKET = Registry.register(
+		BuiltInRegistries.DATA_COMPONENT_TYPE,
+		AliveWorkplace.id("ticket"),
+		DataComponentType.<io.github.jcondedata.aliveworkplace.travel.TicketData>builder()
+			.persistent(io.github.jcondedata.aliveworkplace.travel.TicketData.CODEC)
+			.networkSynchronized(io.github.jcondedata.aliveworkplace.travel.TicketData.STREAM_CODEC).build()
+	);
+
 	public static void init() {
 	}
 

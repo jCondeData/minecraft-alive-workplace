@@ -33,17 +33,41 @@ public final class Trainers {
 	public static final int XP_PER_BATTLE = 5;
 	public static final int XP_FOR_WIN = 3;
 
+	/** Leaders pay this many times a trainer's prize. */
+	private static final int LEADER_PRIZE_FACTOR = 3;
+	/** Only one leader per village: another leader this close with more experience takes the challenges. */
+	private static final int VILLAGE = 64;
+
 	public static boolean isTrainer(Villager villager) {
-		return !villager.isBaby() && villager.getVillagerData().getProfession() == ModVillagers.TRAINER;
+		return !villager.isBaby() && (villager.getVillagerData().getProfession() == ModVillagers.TRAINER || isLeader(villager));
 	}
 
-	/** 1 (Novice) to 5 (Master). */
+	public static boolean isLeader(Villager villager) {
+		return !villager.isBaby() && villager.getVillagerData().getProfession() == ModVillagers.TRAINER_LEADER;
+	}
+
+	/** 1 (Novice) to 5 (Master). Leaders start at Expert. */
 	public static int tier(Villager villager) {
-		return BuilderLevels.level(villager);
+		int level = BuilderLevels.level(villager);
+		return isLeader(villager) ? Math.max(4, level) : level;
 	}
 
 	public static Component title(Villager villager) {
-		return Component.translatable("message.aliveworkplace.trainer.title", BuilderLevels.levelName(tier(villager)), villager.getDisplayName());
+		return isLeader(villager)
+			? Component.translatable("message.aliveworkplace.trainer.leader_title", villager.getDisplayName())
+			: Component.translatable("message.aliveworkplace.trainer.title", BuilderLevels.levelName(tier(villager)), villager.getDisplayName());
+	}
+
+	/** The leader who takes challenges in this village (the most experienced one within {@link #VILLAGE} blocks). */
+	static Villager seniorLeader(Villager leader) {
+		Villager best = leader;
+		for (Villager other : leader.level().getEntitiesOfClass(Villager.class, leader.getBoundingBox().inflate(VILLAGE), Trainers::isLeader)) {
+			if (other.getVillagerXp() > best.getVillagerXp()
+				|| other.getVillagerXp() == best.getVillagerXp() && other.getUUID().compareTo(best.getUUID()) < 0) {
+				best = other;
+			}
+		}
+		return best;
 	}
 
 	/** Right-click on a trainer: challenge them. */
@@ -55,6 +79,24 @@ public final class Trainers {
 		if (trainer.isSleeping()) {
 			player.displayClientMessage(Component.translatable("message.aliveworkplace.trainer.asleep", trainer.getDisplayName()).withStyle(ChatFormatting.GRAY), true);
 			return;
+		}
+		if (isLeader(trainer)) {
+			Villager senior = seniorLeader(trainer);
+			if (senior != trainer) {
+				player.displayClientMessage(Component.translatable("message.aliveworkplace.trainer.not_the_leader", senior.getDisplayName())
+					.withStyle(ChatFormatting.YELLOW), true);
+				return;
+			}
+			long day = trainer.level().getDayTime() / 24000L;
+			Long last = trainer.getAttachedOrElse(ModAttachments.LEADER_CHALLENGES, Map.<UUID, Long>of()).get(player.getUUID());
+			if (last != null && last == day) {
+				player.displayClientMessage(Component.translatable("message.aliveworkplace.trainer.leader_tomorrow", trainer.getDisplayName())
+					.withStyle(ChatFormatting.YELLOW), true);
+				return;
+			}
+			Map<UUID, Long> seen = new HashMap<>(trainer.getAttachedOrElse(ModAttachments.LEADER_CHALLENGES, Map.of()));
+			seen.put(player.getUUID(), day);
+			trainer.setAttached(ModAttachments.LEADER_CHALLENGES, Map.copyOf(seen));
 		}
 		io.github.jcondedata.aliveworkplace.compat.cobblemon.CobblemonTrainers.challenge(player, trainer);
 	}
@@ -94,13 +136,14 @@ public final class Trainers {
 
 	private static void pay(MinecraftServer server, ServerPlayer player, int tier, Villager trainer) {
 		int i = Math.max(0, Math.min(4, tier - 1));
+		int factor = isLeader(trainer) ? LEADER_PRIZE_FACTOR : 1;
 		if (COBBLEDOLLARS) {
-			int prize = PRIZE[i];
+			int prize = PRIZE[i] * factor;
 			server.getCommands().performPrefixedCommand(server.createCommandSourceStack().withSuppressedOutput(),
 				"cobbledollars give " + player.getGameProfile().getName() + " " + prize);
 			player.sendSystemMessage(Component.translatable("message.aliveworkplace.trainer.won_dollars", trainer.getDisplayName(), prize).withStyle(ChatFormatting.GREEN));
 		} else {
-			ItemStack prize = new ItemStack(Items.EMERALD, EMERALDS[i]);
+			ItemStack prize = new ItemStack(Items.EMERALD, EMERALDS[i] * factor);
 			player.sendSystemMessage(Component.translatable("message.aliveworkplace.trainer.won_emeralds", trainer.getDisplayName(), prize.getCount())
 				.withStyle(ChatFormatting.GREEN));
 			if (!player.getInventory().add(prize)) {

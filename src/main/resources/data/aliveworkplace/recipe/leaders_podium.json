@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "GTG",
+    "SSS"
+  ],
+  "key": {
+    "G": {
+      "item": "minecraft:gold_ingot"
+    },
+    "T": {
+      "item": "aliveworkplace:training_post"
+    },
+    "S": {
+      "item": "minecraft:polished_andesite"
+    }
+  },
+  "result": {
+    "id": "aliveworkplace:leaders_podium",
+    "count": 1
+  }
+}

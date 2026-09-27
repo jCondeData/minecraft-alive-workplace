@@ -125,7 +125,9 @@ workstation, like the rest of the mod.
   levels are the villager's, so shared server-wide
 - [x] Rewards: **CobbleDollars** (100/250/500/1000/2500 by tier, via `/cobbledollars give`), once per in-game day per
   player per trainer; emeralds when CobbleDollars isn't installed; **no badges, no gyms**
-- [ ] **Trainer Leader**: one per village, starts at Expert strength, pays the most, one rematch per in-game day, no badge
+- [x] **Trainer Leader** (Leader's Podium: gold, a Training Post and polished andesite): battles at Expert strength from
+  the start (Master once they reach level 5), pays 3× a trainer's prize, one challenge per player per in-game day;
+  if a village has several, only the most experienced within 64 blocks takes challenges; no badge
 - [x] ~~RCT API~~: Cobblemon's own `TrainerBattleActor` battles for any villager, no RCT needed
 - [ ] Tune level numbers against the pack's RCT level caps
 

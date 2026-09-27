@@ -1,6 +1,7 @@
 {
   "replace": false,
   "values": [
-    "aliveworkplace:mailbox"
+    "aliveworkplace:mailbox",
+    "aliveworkplace:leaders_podium"
   ]
 }

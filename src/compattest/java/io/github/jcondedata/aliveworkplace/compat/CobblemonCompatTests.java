@@ -84,4 +84,28 @@ public class CobblemonCompatTests implements FabricGameTest {
 		helper.assertTrue(trainer.getAttachedOrElse(io.github.jcondedata.aliveworkplace.registry.ModAttachments.TRAINER_BATTLES, 0) == 1, "battle not counted");
 		helper.succeed();
 	}
+
+	/** A Trainer Leader starts at Expert strength, pays three times the prize, and takes one challenge a day per player. */
+	@GameTest(template = AREA, timeoutTicks = 400)
+	public void leaderStartsStrongAndPaysMore(GameTestHelper helper) {
+		helper.setDayTime(2000);
+		BlockPos podium = new BlockPos(2, 1, 2);
+		helper.setBlock(podium, ModBlocks.LEADERS_PODIUM);
+		Villager leader = helper.spawn(EntityType.VILLAGER, new BlockPos(3, 1, 3));
+		Jobs.employ(helper.getLevel(), leader, helper.absolutePos(podium), ModVillagers.LEADERS_PODIUM_POI, ModVillagers.TRAINER_LEADER);
+		helper.assertTrue(io.github.jcondedata.aliveworkplace.trainer.Trainers.tier(leader) == 4, "a new leader should battle at Expert strength");
+
+		ServerPlayer player = helper.makeMockServerPlayerInLevel();
+		player.setGameMode(GameType.SURVIVAL);
+		Cobblemon.INSTANCE.getStorage().getParty(player).add(PokemonProperties.Companion.parse("squirtle level=60", " ", "=").create());
+		io.github.jcondedata.aliveworkplace.trainer.Trainers.challenge(player, leader);
+		var battle = com.cobblemon.mod.common.battles.BattleRegistry.getBattleByParticipatingPlayer(player);
+		helper.assertTrue(battle != null, "no battle started");
+		io.github.jcondedata.aliveworkplace.compat.cobblemon.CobblemonTrainers.finishForTest(battle, true);
+		helper.assertTrue(player.getInventory().countItem(net.minecraft.world.item.Items.EMERALD) == 24, "expert prize x3 = 24 emeralds, got "
+			+ player.getInventory().countItem(net.minecraft.world.item.Items.EMERALD));
+		io.github.jcondedata.aliveworkplace.trainer.Trainers.challenge(player, leader);
+		helper.assertTrue(com.cobblemon.mod.common.battles.BattleRegistry.getBattleByParticipatingPlayer(player) == null, "a second challenge the same day");
+		helper.succeed();
+	}
 }

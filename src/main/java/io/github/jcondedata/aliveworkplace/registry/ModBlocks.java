@@ -95,6 +95,11 @@ public final class ModBlocks {
 		"training_post", new BuildersBenchBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.TARGET))
 	);
 
+	/** Workstation for the village's Trainer Leader. */
+	public static final BuildersBenchBlock LEADERS_PODIUM = register(
+		"leaders_podium", new BuildersBenchBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.POLISHED_ANDESITE))
+	);
+
 	private static <T extends Block> T register(String name, T block) {
 		Registry.register(BuiltInRegistries.BLOCK, AliveWorkplace.id(name), block);
 		Registry.register(BuiltInRegistries.ITEM, AliveWorkplace.id(name), new BlockItem(block, new Item.Properties()));

@@ -1067,6 +1067,50 @@ def trainer_overlay():
     save(img, "entity", "zombie_villager", "profession", "trainer.png")
 
 
+# --- Leader's Podium: polished stone with gold trim and a star -----------------------------------------
+def leaders_podium(face):
+    rnd = random.Random({"top": 221, "side": 222, "front": 223}[face])
+    img = Image.new("RGBA", (16, 16))
+    for y in range(16):
+        for x in range(16):
+            img.putpixel((x, y), jitter(rgb("#9a9d9f"), rnd, 5))
+    gold = rgb("#e0b83a")
+    for i in range(16):
+        for p in ((i, 0), (i, 15), (0, i), (15, i)):
+            img.putpixel(p, gold)
+    if face in ("top", "front"):
+        star = ["...##...", "...##...", "########", ".######.", "..####..", ".##..##.", "##....##"]
+        for y, row in enumerate(star):
+            for x, c in enumerate(row):
+                if c == "#":
+                    img.putpixel((4 + x, 4 + y), gold if face == "front" else rgb("#c62828"))
+    save(img, "block", "leaders_podium_" + face + ".png")
+
+
+def leader_overlay():
+    img = Image.new("RGBA", (64, 64), T)
+    rnd = random.Random(231)
+    gold, dark = rgb("#e0b83a"), rgb("#2a2a2a")
+    # A black cap with a gold band
+    for y in range(0, 8):
+        for x in range(40, 48):
+            img.putpixel((x, y), jitter(dark, rnd, 4))
+    for y in range(8, 11):
+        for x in range(32, 64):
+            img.putpixel((x, y), jitter(gold if y == 9 else dark, rnd, 4))
+    for i in range(3, 13):
+        img.putpixel((31 + i, 48 + 3), dark)
+    # A long dark coat with gold buttons
+    for y in range(44, 58):
+        for x in range(0, 28):
+            img.putpixel((x, y), jitter(rgb("#3a3a4a"), rnd, 4))
+    for y in range(45, 57, 3):
+        img.putpixel((9, y), gold)
+        img.putpixel((10, y), gold)
+    save(img, "entity", "villager", "profession", "trainer_leader.png")
+    save(img, "entity", "zombie_villager", "profession", "trainer_leader.png")
+
+
 def icon(blueprint):
     big = Image.new("RGBA", (128, 128), T)
     scaled = blueprint.resize((128, 128), Image.NEAREST)
@@ -1127,3 +1171,6 @@ if __name__ == "__main__":
     training_post_side(front=False)
     training_post_side(front=True)
     trainer_overlay()
+    for face in ("top", "side", "front"):
+        leaders_podium(face)
+    leader_overlay()

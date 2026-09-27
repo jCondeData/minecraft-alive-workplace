@@ -69,6 +69,11 @@ public final class ModAttachments {
 		AliveWorkplace.id("trainer_rewards"), builder -> builder.persistent(
 			com.mojang.serialization.Codec.unboundedMap(net.minecraft.core.UUIDUtil.STRING_CODEC, com.mojang.serialization.Codec.LONG)));
 
+	/** Player → the in-game day they last challenged this Trainer Leader (one challenge a day). */
+	public static final AttachmentType<java.util.Map<java.util.UUID, Long>> LEADER_CHALLENGES = AttachmentRegistry.create(
+		AliveWorkplace.id("leader_challenges"), builder -> builder.persistent(
+			com.mojang.serialization.Codec.unboundedMap(net.minecraft.core.UUIDUtil.STRING_CODEC, com.mojang.serialization.Codec.LONG)));
+
 	public static void init() {
 	}
 

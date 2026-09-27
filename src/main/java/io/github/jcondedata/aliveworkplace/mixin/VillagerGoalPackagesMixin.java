@@ -37,7 +37,7 @@ abstract class VillagerGoalPackagesMixin {
 			cir.setReturnValue(io.github.jcondedata.aliveworkplace.travel.FerrymanPackages.work(speed));
 		} else if (profession == ModVillagers.BARD) {
 			cir.setReturnValue(io.github.jcondedata.aliveworkplace.bard.BardPackages.work(speed));
-		} else if (profession == ModVillagers.TRAINER) {
+		} else if (profession == ModVillagers.TRAINER || profession == ModVillagers.TRAINER_LEADER) {
 			cir.setReturnValue(io.github.jcondedata.aliveworkplace.trainer.TrainerPackages.work(speed));
 		}
 	}

@@ -1,0 +1,9 @@
+{
+  "parent": "minecraft:block/orientable_with_bottom",
+  "textures": {
+    "top": "aliveworkplace:block/leaders_podium_top",
+    "bottom": "minecraft:block/polished_andesite",
+    "side": "aliveworkplace:block/leaders_podium_side",
+    "front": "aliveworkplace:block/leaders_podium_front"
+  }
+}

@@ -146,6 +146,10 @@ Pokémon and ranks up as people battle them — Apprentice, Journeyman, Expert, 
 evolved Pokémon at level 80–100 and play smart. Beating one pays **CobbleDollars** (100 for a Novice up to 2,500 for a
 Master; emeralds if CobbleDollars isn't installed), once a day per trainer. No badges, no gyms.
 
+Each village can also have one **Trainer Leader**: craft a **Leader's Podium** (gold ingots either side of a Training
+Post, on polished andesite). The leader battles at Expert strength from the start, pays three times the prize, and
+takes one challenge a day from each player.
+
 ## Blueprint Table: any build from the internet
 Craft a **Blueprint Table** (blue dye on top, cartography table in the middle, planks around) and right-click it.
 

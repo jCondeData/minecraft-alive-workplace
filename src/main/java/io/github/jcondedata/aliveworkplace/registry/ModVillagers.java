@@ -199,6 +199,23 @@ public final class ModVillagers {
 		)
 	);
 
+	public static final ResourceLocation LEADERS_PODIUM_ID = AliveWorkplace.id("leaders_podium");
+	public static final ResourceKey<PoiType> LEADERS_PODIUM_POI = ResourceKey.create(Registries.POINT_OF_INTEREST_TYPE, LEADERS_PODIUM_ID);
+	public static final PoiType LEADERS_PODIUM_POI_TYPE = PointOfInterestHelper.register(LEADERS_PODIUM_ID, 1, 1, ModBlocks.LEADERS_PODIUM);
+
+	public static final VillagerProfession TRAINER_LEADER = Registry.register(
+		BuiltInRegistries.VILLAGER_PROFESSION,
+		AliveWorkplace.id("trainer_leader"),
+		new VillagerProfession(
+			"trainer_leader",
+			holder -> holder.is(LEADERS_PODIUM_POI),
+			holder -> holder.is(LEADERS_PODIUM_POI),
+			ImmutableSet.of(),
+			ImmutableSet.of(),
+			SoundEvents.VILLAGER_WORK_ARMORER
+		)
+	);
+
 	/**
 	 * Guards keep the night watch: on patrol from evening to mid-morning, asleep until early afternoon,
 	 * then out with the village. They fight whenever a monster shows up, whatever they are doing.
@@ -218,7 +235,7 @@ public final class ModVillagers {
 	public static boolean isWorker(VillagerProfession profession) {
 		return profession == BUILDER || profession == MINER || profession == LUMBERJACK || profession == POSTMAN
 			|| profession == NURSE || profession == SHOPKEEPER || profession == FERRYMAN
-			|| profession == TRAINER;
+			|| profession == TRAINER || profession == TRAINER_LEADER;
 	}
 
 	/**

@@ -65,6 +65,59 @@ public class FarmerGameTests implements FabricGameTest {
 		helper.succeed();
 	}
 
+	/**
+	 * A village farmer takes on the farm by their composter by themselves once there's a chest by it: the harvest goes
+	 * into the chest, but they keep some food (bread from the wheat) to share with the village.
+	 */
+	@GameTest(template = AREA, timeoutTicks = 3000)
+	public void villageFarmerTakesOnTheirFarm(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		helper.setDayTime(2000);
+		for (BlockPos p : BlockPos.betweenClosed(new BlockPos(6, 1, 6), new BlockPos(10, 1, 10))) {
+			helper.setBlock(p, p.getX() == 8 ? Blocks.WATER.defaultBlockState() : Blocks.FARMLAND.defaultBlockState());
+			if (p.getX() != 8) {
+				helper.setBlock(p.above(), (p.getX() < 8 ? Blocks.WHEAT : Blocks.CARROTS).defaultBlockState().setValue(CropBlock.AGE, 7));
+			}
+		}
+		helper.setBlock(COMPOSTER, Blocks.COMPOSTER);
+		helper.setBlock(CHEST, Blocks.CHEST);
+		Villager villager = helper.spawn(EntityType.VILLAGER, new BlockPos(3, 2, 3));
+		Jobs.employ(level, villager, helper.absolutePos(COMPOSTER), PoiTypes.FARMER, VillagerProfession.FARMER);
+		helper.succeedWhen(() -> {
+			var job = villager.getAttached(io.github.jcondedata.aliveworkplace.registry.ModAttachments.FARM_FIELD);
+			helper.assertTrue(job != null && job.adopted(), "the farmer didn't take the farm on");
+			Container chest = helper.getBlockEntity(CHEST);
+			helper.assertTrue(chest.countItem(Items.WHEAT) + chest.countItem(Items.CARROT) > 0, "no harvest in the chest");
+			var pockets = villager.getInventory();
+			helper.assertTrue(pockets.countItem(Items.BREAD) > 0 || pockets.countItem(Items.CARROT) > 0, "the farmer kept no food to share");
+		});
+	}
+
+	/** Stop a farmer's self-adopted farm and they leave it alone; no chest by the composter, no farm taken on either. */
+	@GameTest(template = AREA, timeoutTicks = 1200)
+	public void villageFarmersStayStoppedAndNeedAChest(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		helper.setDayTime(2000);
+		for (BlockPos p : BlockPos.betweenClosed(new BlockPos(6, 1, 6), new BlockPos(9, 1, 9))) {
+			helper.setBlock(p, Blocks.FARMLAND);
+		}
+		helper.setBlock(COMPOSTER, Blocks.COMPOSTER);
+		Villager villager = helper.spawn(EntityType.VILLAGER, new BlockPos(3, 2, 3));
+		Jobs.employ(level, villager, helper.absolutePos(COMPOSTER), PoiTypes.FARMER, VillagerProfession.FARMER);
+		helper.runAfterDelay(Fields.ADOPT_EVERY + 20, () -> {
+			helper.assertFalse(Fields.hasField(villager), "took the farm on with nowhere to put the harvest");
+			helper.setBlock(CHEST, Blocks.CHEST);
+		});
+		helper.runAfterDelay(2L * Fields.ADOPT_EVERY + 60, () -> {
+			helper.assertTrue(Fields.hasField(villager), "didn't take the farm on once there was a chest");
+			Fields.release(level, villager, null);
+		});
+		helper.runAfterDelay(4L * Fields.ADOPT_EVERY + 100, () -> {
+			helper.assertFalse(Fields.hasField(villager), "took the farm on again after being stopped");
+			helper.succeed();
+		});
+	}
+
 	/** Ripe wheat is cut, wheat goes back in the ground at once, the harvest ends up in the chest. */
 	@GameTest(template = AREA, timeoutTicks = 3000)
 	public void farmerHarvestsAndReplants(GameTestHelper helper) {

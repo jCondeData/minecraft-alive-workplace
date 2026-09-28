@@ -56,6 +56,10 @@ public final class ModAttachments {
 	public static final AttachmentType<io.github.jcondedata.aliveworkplace.farm.FieldJob> FARM_FIELD = AttachmentRegistry.create(
 		AliveWorkplace.id("farm_field"), builder -> builder.persistent(io.github.jcondedata.aliveworkplace.farm.FieldJob.CODEC));
 
+	/** True once a player stopped a farmer's self-adopted farm: they don't take it on again by themselves. */
+	public static final AttachmentType<Boolean> NO_AUTO_FARM = AttachmentRegistry.create(
+		AliveWorkplace.id("no_auto_farm"), builder -> builder.persistent(com.mojang.serialization.Codec.BOOL));
+
 	/** How many crops a farmer has harvested on their field (shown above its head). */
 	public static final AttachmentType<Integer> FARM_HARVESTED = AttachmentRegistry.create(
 		AliveWorkplace.id("farm_harvested"), builder -> builder.persistent(com.mojang.serialization.Codec.INT));

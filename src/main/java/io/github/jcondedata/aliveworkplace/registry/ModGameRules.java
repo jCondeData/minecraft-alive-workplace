@@ -44,6 +44,13 @@ public final class ModGameRules {
 	public static final GameRules.Key<GameRules.IntegerValue> LEVEL_GROUND =
 		GameRuleRegistry.register("workplaceLevelGround", GameRules.Category.MOBS, GameRuleFactory.createIntRule(2, 0, 8));
 
+	/**
+	 * When true, a village farmer with no field takes on the farm by their composter by themselves, as soon as there's a
+	 * chest near the composter for the harvest.
+	 */
+	public static final GameRules.Key<GameRules.BooleanValue> VILLAGE_FARMS =
+		GameRuleRegistry.register("workplaceVillageFarms", GameRules.Category.MOBS, GameRuleFactory.createBooleanRule(true));
+
 	public static void init() {
 	}
 

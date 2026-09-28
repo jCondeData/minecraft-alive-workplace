@@ -192,9 +192,12 @@ picked for their leaves and planted again. Sweet berry bushes, cocoa pods and gl
 the farmer uses it on the growing crops. The harvest goes into the chests.
 Sneak-right-click the farmer with an empty hand to see how it's going or to stop.
 
-**A village's own farm.** Give a farmer a **blank** Field Marker (no corners marked) and they take on the farm by their
-composter: the farmland nearest to it, within 16 blocks, and everything joined to that, across the water channels
-between the rows too. Handy for the farmers a village comes with.
+**A village's own farm.** Village farmers look after the farm by their composter **by themselves** as soon as there's a
+chest within 8 blocks of the composter: the farmland nearest to it, within 16 blocks, and everything joined to that,
+across the water channels between the rows too. The harvest goes into the chest, but they keep some food on them
+(wheat baked into bread) to share with the other villagers, so the village keeps growing. Stop one with the link in
+their status and they leave it alone; `/gamerule workplaceVillageFarms false` turns it off everywhere. A blank Field
+Marker does the same for any farmer straight away.
 
 ## Fishermen
 ![A fisherman villager with a bobber out on the pond](docs/media/fisherman.png)
@@ -414,6 +417,7 @@ Craft a **Blueprint Table** (blue dye on top, cartography table in the middle, p
 | `/gamerule workplaceBuilderOwnership false` | anyone can give orders to any builder |
 | `/gamerule workplaceFoundationDepth 12` | how far down builders fill under a build on uneven ground (0 = never) |
 | `/gamerule workplaceLevelGround 0` | builders leave the ground around their builds alone (default 2 blocks, up to 8) |
+| `/gamerule workplaceVillageFarms false` | village farmers don't take on the farm by their composter by themselves |
 | `/gamerule workplaceKeepWorkLoaded false` | builds and quarries stop when nobody is nearby (by default they keep going while the player who ordered them is online) |
 
 **Server config** — `config/aliveworkplace.json` is written with the defaults the first time the game starts (edit it

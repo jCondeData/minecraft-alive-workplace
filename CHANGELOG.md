@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+## 0.69.0 — 2026-09-28
+
+### Added
+- **Village farmers look after their farm by themselves**: put a chest near a village farmer's composter and they take
+  on the farm there — harvest, replant, till — and fill the chest. They keep some food (wheat baked into bread) to share
+  with the other villagers, so the village still grows. Stop one from their status and they leave it alone for good;
+  the gamerule `workplaceVillageFarms` turns it off.
+
 ## 0.68.1 — 2026-09-28
 
 ### Fixed

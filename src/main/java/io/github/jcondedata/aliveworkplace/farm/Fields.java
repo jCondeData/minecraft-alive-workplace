@@ -110,10 +110,11 @@ public final class Fields {
 			return InteractionResult.CONSUME;
 		}
 		FieldJob old = villager.getAttached(ModAttachments.FARM_FIELD);
-		if (old != null && !player.getAbilities().instabuild) {
+		if (old != null && !old.adopted() && !player.getAbilities().instabuild) {
 			give(player, markerFor(level, old)); // swapping fields: the old marker comes back
 		}
 		Friends.hire(player, villager);
+		villager.removeAttached(ModAttachments.NO_AUTO_FARM);
 		start(level, villager, box);
 		if (!player.getAbilities().instabuild) {
 			stack.shrink(1);
@@ -178,6 +179,33 @@ public final class Fields {
 		return Optional.of(new BoundingBox(minX, minY, minZ, maxX, maxY, maxZ));
 	}
 
+	/** How often (ticks) a village farmer without a field looks at the farm by their composter. */
+	public static final int ADOPT_EVERY = 200;
+
+	/**
+	 * A village farmer with no field takes on the farm by their composter by themselves (see {@link #farmNear}) once
+	 * there's a chest near the composter for the harvest — unless the gamerule is off or a player stopped them before.
+	 * Returns true when they did.
+	 */
+	static boolean adoptOwnFarm(ServerLevel level, Villager villager) {
+		if (!isFarmer(villager) || hasField(villager) || villager.getAttachedOrElse(ModAttachments.NO_AUTO_FARM, false)
+			|| !level.getGameRules().getBoolean(io.github.jcondedata.aliveworkplace.registry.ModGameRules.VILLAGE_FARMS)) {
+			return false;
+		}
+		Optional<BlockPos> composter = Builders.benchPos(villager);
+		if (composter.isEmpty() || SupplyContainers.find(level, composter.get(), null).isEmpty()) {
+			return false;
+		}
+		Optional<BoundingBox> farm = farmNear(level, composter.get());
+		if (farm.isEmpty()) {
+			return false;
+		}
+		villager.setAttached(ModAttachments.FARM_FIELD, new FieldJob(farm.get(), true));
+		// The longer shift of a farmer with a field (the brain itself is left alone: this runs while it ticks).
+		villager.getBrain().setSchedule(io.github.jcondedata.aliveworkplace.registry.ModVillagers.BUILDER_SCHEDULE);
+		return true;
+	}
+
 	/** Gives the farmer the field. Also used by tests. */
 	public static void start(ServerLevel level, Villager villager, BoundingBox box) {
 		villager.setAttached(ModAttachments.FARM_FIELD, new FieldJob(box));
@@ -201,9 +229,13 @@ public final class Fields {
 			villager.setItemSlot(EquipmentSlot.MAINHAND, ItemStack.EMPTY);
 			store(level, supplies, composter, tool);
 		}
-		ItemStack marker = markerFor(level, job);
-		if (player == null || !player.getInventory().add(marker)) {
-			store(level, supplies, composter, marker);
+		if (job.adopted()) {
+			villager.setAttached(ModAttachments.NO_AUTO_FARM, true); // stopped for good: they don't take it on again
+		} else {
+			ItemStack marker = markerFor(level, job);
+			if (player == null || !player.getInventory().add(marker)) {
+				store(level, supplies, composter, marker);
+			}
 		}
 		villager.removeAttached(ModAttachments.FARM_FIELD);
 		villager.refreshBrain(level);
@@ -211,7 +243,7 @@ public final class Fields {
 
 	public static void onDeath(ServerLevel level, Villager villager) {
 		FieldJob job = villager.getAttached(ModAttachments.FARM_FIELD);
-		if (job != null) {
+		if (job != null && !job.adopted()) {
 			store(level, List.of(), villager.blockPosition(), markerFor(level, job));
 		}
 	}

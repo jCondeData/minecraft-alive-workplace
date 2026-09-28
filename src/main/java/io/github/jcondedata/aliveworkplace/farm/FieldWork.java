@@ -107,6 +107,9 @@ public class FieldWork extends Behavior<Villager> {
 
 	@Override
 	protected boolean checkExtraStartConditions(ServerLevel level, Villager villager) {
+		if (!villager.hasAttached(ModAttachments.FARM_FIELD) && (villager.tickCount + villager.getId()) % Fields.ADOPT_EVERY == 0) {
+			Fields.adoptOwnFarm(level, villager);
+		}
 		return canWork(villager);
 	}
 
@@ -409,10 +412,52 @@ public class FieldWork extends Behavior<Villager> {
 			}
 		}
 		level.playSound(null, pos, SoundEvents.CROP_BREAK, SoundSource.BLOCKS, 0.8f, 1f);
+		FieldJob job = villager.getAttached(ModAttachments.FARM_FIELD);
+		if (job != null && job.adopted()) {
+			keepFood(villager, bag); // a village's own farmer feeds the village; a player's field all goes to the chests
+		}
 		int harvested = villager.getAttachedOrElse(ModAttachments.FARM_HARVESTED, 0) + 1;
 		villager.setAttached(ModAttachments.FARM_HARVESTED, harvested);
 		if (harvested % HARVESTS_PER_XP == 0) {
 			BuilderLevels.addXp(level, villager, 1, null);
+		}
+	}
+
+	/** Food points (bread 4, carrot, potato, beetroot 1) a farmer keeps on them to share with the village. */
+	static final int FOOD_KEPT = 36;
+
+	/**
+	 * Villagers breed and feed each other with the food they carry, and vanilla farmers are where it comes from: some of
+	 * the harvest stays on the farmer (their own inventory, which vanilla shares out; wheat as bread), the rest goes to
+	 * the chests.
+	 */
+	static void keepFood(Villager villager, BuilderBag bag) {
+		net.minecraft.world.SimpleContainer inventory = villager.getInventory();
+		int points = 0;
+		for (int i = 0; i < inventory.getContainerSize(); i++) {
+			ItemStack stack = inventory.getItem(i);
+			points += Villager.FOOD_POINTS.getOrDefault(stack.getItem(), 0) * stack.getCount();
+		}
+		for (Item food : Villager.FOOD_POINTS.keySet()) {
+			int each = Villager.FOOD_POINTS.get(food);
+			while (points < FOOD_KEPT && bag.has(food, 1)) {
+				int count = Math.min(bag.count(food), (FOOD_KEPT - points + each - 1) / each);
+				ItemStack rest = inventory.addItem(new ItemStack(food, count));
+				int moved = count - rest.getCount();
+				if (moved <= 0) {
+					return; // their pockets are full
+				}
+				bag.remove(food, moved);
+				points += moved * each;
+			}
+		}
+		// Wheat is baked into bread, three to a loaf, as vanilla farmers do at their composter.
+		while (points < FOOD_KEPT && bag.has(Items.WHEAT, 3)) {
+			if (!inventory.addItem(new ItemStack(Items.BREAD)).isEmpty()) {
+				return;
+			}
+			bag.remove(Items.WHEAT, 3);
+			points += Villager.FOOD_POINTS.get(Items.BREAD);
 		}
 	}
 

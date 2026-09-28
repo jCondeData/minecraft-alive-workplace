@@ -294,6 +294,21 @@ workstation, like the rest of the mod.
   forms that evolve, never legendary etc.), level ≥ tier minimum − 10, for a Pokémon at the top of their range,
   shiny 1 in 4
 
+## Milestone 6 — The village as one (owner, 2026-09-28)
+Villagers work as a unit: what one worker makes, the others can use. No particular building is required anywhere
+(packs add their own villages): a "village" is workers whose workstations are near each other.
+- [x] Village farmers take on the farm by their composter by themselves (`Fields.adoptOwnFarm`, every 200 ticks, gamerule
+  `workplaceVillageFarms`) once there's a chest by the composter; the harvest goes to those chests, but they keep ~36
+  food points on them (wheat baked into bread) that vanilla shares out, so the village still breeds. A player stopping
+  it sets `NO_AUTO_FARM`; a player's own field (marker) delivers everything to the chests as before
+- [ ] Shared chests: workers whose workstations are within ~48 blocks share supply chests (same employer or friends; unhired
+  village workers with each other); a worker missing something fetches it from another worker's chests
+- [ ] **Porter** + **Storehouse** block (the porter's workstation; the chests around it are the village store): hauls
+  surplus into the store and delivers what workers are missing; storehouse blueprints in many styles, any blueprint
+  with the block counts; villages sometimes generate one
+- [ ] Requests: workers post what they're missing, producers do that first, a board at the storehouse shows it
+- [ ] Carpenter/Mason: turns logs and cobblestone into building blocks for the builders' requests
+
 ## Milestone 5 — Release
 - [ ] Publish on Modrinth and CurseForge as **Alive Workplace** (Minecraft brand rules: don't lead the name with "Minecraft")
 - [x] Screenshots/GIFs through the README, and an at-a-glance table of every job (workstation, what goes in the chests,
@@ -317,11 +332,10 @@ workstation, like the rest of the mod.
 - Cobblemon integration must be optional.
 - License: GPL-3.0-or-later (lets us adapt MineColonies code, which is GPL-3.0-or-later, with attribution).
 - Builds from the internet come in as files (.litematic/.schem/.nbt); we don't scrape sites. Only ship our own original builds.
+- Villagers act as a cohesive unit (Milestone 6). Automatic where possible; keyed on blocks, never on a particular
+  structure, because packs add their own villages. Village farmers harvest into nearby chests.
 - *My NPCs* does some of what we want "in a different way" the owner doesn't love: rebuild the roles that fit the pack
   as villager jobs (Milestone 2b), not as admin-configured NPCs.
 
 ## Notes / blocked
 - (autonomous sessions: write anything you could not finish or need the owner to decide here)
-- Owner decision: should village farmers take on their farm **by themselves**, with no marker? It would make every
-  village's farmers harvest into nearby chests (or drop the harvest by the composter) instead of sharing bread the
-  vanilla way. For now a blank Field Marker does it farmer by farmer.

@@ -181,7 +181,8 @@ dependencies {
 	// Screenshots of Cobblemon features (SCENE=tutor): ./gradlew runScreenshots -Pcobblemon=true
 	if (project.findProperty("cobblemon") == "true") {
 		modDevclientRuntimeOnly "maven.modrinth:cobblemon:kF7CvxTo"
-		modDevclientRuntimeOnly files(compatNestedJars(["maven.modrinth:cobblemon:kF7CvxTo"]))
+		modDevclientRuntimeOnly "maven.modrinth:cobbledollars:cqsHXSXe"
+		modDevclientRuntimeOnly files(compatNestedJars(["maven.modrinth:cobblemon:kF7CvxTo", "maven.modrinth:cobbledollars:cqsHXSXe"]))
 	}
 }
 

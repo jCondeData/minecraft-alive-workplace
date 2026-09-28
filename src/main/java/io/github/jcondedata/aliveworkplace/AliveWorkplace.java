@@ -41,6 +41,7 @@ public class AliveWorkplace implements ModInitializer {
 		ModTrades.init();
 
 		BuilderEvents.init();
+		io.github.jcondedata.aliveworkplace.shop.ShopLedger.init();
 		TableServer.init();
 		PreviewNetworking.init();
 		BuilderStatusSync.init();

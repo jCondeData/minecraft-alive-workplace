@@ -55,6 +55,95 @@ public final class Ferrymen {
 		}
 	}
 
+	/** First slot of the destinations in the ferry screen. */
+	public static final int FIRST_DESTINATION_SLOT = 18;
+
+	/**
+	 * With CobbleDollars: the ferry screen, a ticket to every post the player knows, paid in CobbleDollars (the
+	 * emerald fare × {@link io.github.jcondedata.aliveworkplace.work.Money#DOLLARS_PER_EMERALD}), two clicks to buy.
+	 */
+	public static void openMenu(ServerPlayer player, Villager villager) {
+		if (!(villager.level() instanceof ServerLevel level) || postOf(level, villager) == null) {
+			return;
+		}
+		TravelNetwork.get(level.getServer()).visit(player.getUUID(), postOf(level, villager));
+		if (TravelNetwork.get(level.getServer()).known(player.getUUID(), postOf(level, villager)).isEmpty()) {
+			player.displayClientMessage(Component.translatable("message.aliveworkplace.travel.nowhere").withStyle(ChatFormatting.YELLOW), true);
+			return;
+		}
+		java.util.UUID[] pending = {null};
+		io.github.jcondedata.aliveworkplace.work.ChoiceMenu.open(player, villager.getDisplayName(),
+			p -> villager.isAlive() && !villager.isSleeping() && p.isAlive() && p.distanceTo(villager) <= 8,
+			menu -> render(menu, player, villager, pending));
+	}
+
+	/** The ferry screen without showing it (tests). */
+	public static io.github.jcondedata.aliveworkplace.work.ChoiceMenu menuForTest(ServerPlayer player, Villager villager) {
+		java.util.UUID[] pending = {null};
+		return io.github.jcondedata.aliveworkplace.work.ChoiceMenu.detached(player, menu -> render(menu, player, villager, pending));
+	}
+
+	private static void render(io.github.jcondedata.aliveworkplace.work.ChoiceMenu menu, ServerPlayer player, Villager villager, java.util.UUID[] pending) {
+		menu.clearButtons();
+		ServerLevel level = (ServerLevel) villager.level();
+		TravelNetwork.Post here = postOf(level, villager);
+		if (here == null) {
+			return;
+		}
+		java.util.List<TravelNetwork.Post> known = TravelNetwork.get(level.getServer()).known(player.getUUID(), here);
+		for (int i = 0; i < known.size() && FIRST_DESTINATION_SLOT + i < io.github.jcondedata.aliveworkplace.work.ChoiceMenu.SIZE; i++) {
+			TravelNetwork.Post post = known.get(i);
+			int emeralds = TravelNetwork.fare(here.pos(), post.pos());
+			long dollars = (long) emeralds * io.github.jcondedata.aliveworkplace.work.Money.DOLLARS_PER_EMERALD;
+			boolean chosen = post.id().equals(pending[0]);
+			ItemStack icon = ticket(post);
+			icon.set(net.minecraft.core.component.DataComponents.CUSTOM_NAME, Component.literal(post.name()).withStyle(st -> st.withItalic(false)));
+			java.util.List<Component> lines = new java.util.ArrayList<>();
+			lines.add(Component.translatable("message.aliveworkplace.travel.fare", io.github.jcondedata.aliveworkplace.work.Money.describe(dollars, emeralds))
+				.withStyle(io.github.jcondedata.aliveworkplace.work.Money.canAfford(player, dollars, emeralds) ? ChatFormatting.GREEN : ChatFormatting.RED));
+			lines.add(chosen
+				? Component.translatable("message.aliveworkplace.travel.confirm", post.name()).withStyle(ChatFormatting.YELLOW)
+				: Component.translatable("message.aliveworkplace.shop.menu.click").withStyle(ChatFormatting.GRAY));
+			icon.set(net.minecraft.core.component.DataComponents.LORE, new net.minecraft.world.item.component.ItemLore(
+				lines.stream().map(l -> (Component) l.copy().withStyle(st -> st.withItalic(false))).toList()));
+			if (chosen) {
+				icon.set(net.minecraft.core.component.DataComponents.ENCHANTMENT_GLINT_OVERRIDE, true);
+			}
+			menu.button(FIRST_DESTINATION_SLOT + i, icon, p -> {
+				if (!post.id().equals(pending[0])) {
+					pending[0] = post.id();
+				} else {
+					pending[0] = null;
+					buyTicket(p, post, dollars, emeralds);
+				}
+				render(menu, player, villager, pending);
+			});
+		}
+		menu.divider(1);
+		ItemStack info = new ItemStack(net.minecraft.world.item.Items.OAK_BOAT);
+		info.set(net.minecraft.core.component.DataComponents.CUSTOM_NAME, Component.literal(here.name()).withStyle(st -> st.withItalic(false)));
+		info.set(net.minecraft.core.component.DataComponents.LORE, new net.minecraft.world.item.component.ItemLore(java.util.stream.Stream.of(
+				Component.translatable("message.aliveworkplace.tutor.info_money", io.github.jcondedata.aliveworkplace.work.Money.balance(player))
+					.withStyle(ChatFormatting.GREEN),
+				Component.translatable("message.aliveworkplace.travel.menu_help").withStyle(ChatFormatting.GRAY))
+			.map(l -> (Component) l.copy().withStyle(st -> st.withItalic(false))).toList()));
+		menu.button(4, info, null);
+	}
+
+	private static void buyTicket(ServerPlayer player, TravelNetwork.Post post, long dollars, int emeralds) {
+		if (!io.github.jcondedata.aliveworkplace.work.Money.charge(player, dollars, emeralds)) {
+			player.displayClientMessage(Component.translatable("message.aliveworkplace.shop.too_poor",
+				io.github.jcondedata.aliveworkplace.work.Money.describe(dollars, emeralds)).withStyle(ChatFormatting.RED), true);
+			return;
+		}
+		ItemStack ticket = ticket(post);
+		if (!player.getInventory().add(ticket)) {
+			player.drop(ticket, false);
+		}
+		player.level().playSound(null, player.blockPosition(), SoundEvents.VILLAGER_YES, SoundSource.NEUTRAL, 0.6f, 1f);
+		player.displayClientMessage(Component.translatable("message.aliveworkplace.travel.bought", post.name()).withStyle(ChatFormatting.GREEN), true);
+	}
+
 	public static ItemStack ticket(TravelNetwork.Post post) {
 		ItemStack ticket = new ItemStack(ModItems.TRAVEL_TICKET);
 		ticket.set(ModComponents.TICKET, new TicketData(post.id(), post.pos(), post.name()));

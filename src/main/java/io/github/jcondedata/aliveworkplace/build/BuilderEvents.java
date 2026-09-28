@@ -80,6 +80,26 @@ public final class BuilderEvents {
 				}
 				return InteractionResult.PASS;
 			}
+			if (io.github.jcondedata.aliveworkplace.shop.Shops.isShopkeeper(villager) && io.github.jcondedata.aliveworkplace.work.Money.cobbleDollars()) {
+				// With CobbleDollars: right-click with an empty hand opens the shop (pay in CobbleDollars). Sneak for the trade screen.
+				if (player.getItemInHand(hand).isEmpty() && !player.isShiftKeyDown()) {
+					if (!level.isClientSide) {
+						io.github.jcondedata.aliveworkplace.shop.Shops.openMenu((ServerPlayer) player, villager);
+					}
+					return InteractionResult.SUCCESS;
+				}
+				return InteractionResult.PASS;
+			}
+			if (io.github.jcondedata.aliveworkplace.travel.Ferrymen.isFerryman(villager) && io.github.jcondedata.aliveworkplace.work.Money.cobbleDollars()) {
+				// With CobbleDollars: right-click with an empty hand for tickets paid in CobbleDollars. Sneak for the trade screen.
+				if (player.getItemInHand(hand).isEmpty() && !player.isShiftKeyDown()) {
+					if (!level.isClientSide) {
+						io.github.jcondedata.aliveworkplace.travel.Ferrymen.openMenu((ServerPlayer) player, villager);
+					}
+					return InteractionResult.SUCCESS;
+				}
+				return InteractionResult.PASS;
+			}
 			if (io.github.jcondedata.aliveworkplace.tutor.Tutors.isTutor(villager)) {
 				// Right-click with an empty hand: lessons. Sneak to trade instead.
 				if (player.getItemInHand(hand).isEmpty() && !player.isShiftKeyDown()) {

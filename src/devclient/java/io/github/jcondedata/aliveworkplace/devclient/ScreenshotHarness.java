@@ -102,6 +102,10 @@ public class ScreenshotHarness implements ClientModInitializer {
 			missingScene(mc, mc.getSingleplayerServer());
 			return;
 		}
+		if ("shop".equals(System.getProperty("aliveworkplace.scene"))) {
+			shopScene(mc, mc.getSingleplayerServer());
+			return;
+		}
 		if ("orchard".equals(System.getProperty("aliveworkplace.scene"))) {
 			orchardScene(mc, mc.getSingleplayerServer());
 			return;
@@ -338,6 +342,59 @@ public class ScreenshotHarness implements ClientModInitializer {
 		}
 		if (tick >= GIVE_UP_AT) {
 			shot(mc, "99_timeout");
+			mc.stop();
+		}
+	}
+
+	// --- Shop: the shop screen with CobbleDollars prices ---------------------------------------------
+
+	private void shopScene(Minecraft mc, MinecraftServer server) {
+		tick++;
+		if (tick == 1) {
+			mc.options.renderDistance().set(6);
+			mc.options.cloudStatus().set(CloudStatus.OFF);
+		}
+		if (tick == 40) {
+			server.execute(() -> {
+				ServerLevel level = server.overworld();
+				ServerPlayer player = server.getPlayerList().getPlayers().get(0);
+				level.getGameRules().getRule(GameRules.RULE_DAYLIGHT).set(false, server);
+				level.getGameRules().getRule(GameRules.RULE_DOMOBSPAWNING).set(false, server);
+				level.setDayTime(2500);
+				BlockPos counterPos = new BlockPos(0, -60, 3);
+				level.setBlockAndUpdate(counterPos, ModBlocks.SHOP_COUNTER.defaultBlockState());
+				level.setBlockAndUpdate(counterPos.east(), Blocks.CHEST.defaultBlockState());
+				var counter = (io.github.jcondedata.aliveworkplace.shop.ShopCounterBlockEntity) level.getBlockEntity(counterPos);
+				counter.setOwner(java.util.UUID.randomUUID(), "Jesse");
+				int columns = io.github.jcondedata.aliveworkplace.shop.ShopCounterBlockEntity.COLUMNS;
+				Object[][] stock = {
+					{new ItemStack(net.minecraft.world.item.Items.OAK_LOG, 16), 2}, {new ItemStack(net.minecraft.world.item.Items.BREAD, 6), 1},
+					{new ItemStack(net.minecraft.world.item.Items.TORCH, 32), 1}, {new ItemStack(net.minecraft.world.item.Items.IRON_INGOT, 8), 5},
+					{new ItemStack(net.minecraft.world.item.Items.GOLDEN_APPLE, 1), 12}};
+				BaseContainerBlockEntity chest = (BaseContainerBlockEntity) level.getBlockEntity(counterPos.east());
+				for (int i = 0; i < stock.length; i++) {
+					ItemStack goods = (ItemStack) stock[i][0];
+					counter.setItem(i, goods.copy());
+					counter.setItem(columns + i, new ItemStack(net.minecraft.world.item.Items.EMERALD, (Integer) stock[i][1]));
+					chest.setItem(i, goods.copyWithCount(Math.min(64, goods.getCount() * 4)));
+				}
+				Villager keeper = EntityType.VILLAGER.spawn(level, counterPos.south(), MobSpawnType.COMMAND);
+				io.github.jcondedata.aliveworkplace.work.Jobs.employ(level, keeper, counterPos,
+					io.github.jcondedata.aliveworkplace.registry.ModVillagers.SHOP_COUNTER_POI, io.github.jcondedata.aliveworkplace.registry.ModVillagers.SHOPKEEPER);
+				player.setGameMode(GameType.SURVIVAL);
+				io.github.jcondedata.aliveworkplace.compat.cobbledollars.CobbleDollarsBank.add(player, 1500);
+				player.teleportTo(level, 2.5, -60, 6.5, 135, 20);
+				io.github.jcondedata.aliveworkplace.shop.Shops.openMenu(player, keeper);
+			});
+		}
+		if (tick == 90) {
+			mc.getToasts().clear();
+			pointAt(mc, io.github.jcondedata.aliveworkplace.shop.Shops.FIRST_GOODS_SLOT + 3);
+		}
+		if (tick == 100) {
+			shot(mc, "01_shop_menu");
+		}
+		if (tick == 110) {
 			mc.stop();
 		}
 	}

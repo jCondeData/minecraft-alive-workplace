@@ -149,11 +149,21 @@ is what one sale hands over (for example 16 cobblestone) and the slot below it i
 any item works). Put the goods in chests within 8 blocks of the counter. Other players buy by trading with the
 shopkeeper as usual; only what's in the chests is for sale, and the payments land in the same chests.
 
+**With CobbleDollars** (the Cobbleverse pack's money), right-clicking the shopkeeper opens the shop's own screen
+instead: everything in stock, with emerald prices shown in CobbleDollars (100 per emerald). Click an item, then
+click it again to buy. The CobbleDollars go straight to the owner — or, if they're offline, the next time they
+join. Items priced in something other than emeralds are paid with those items, as before. Sneak-right-click the
+shopkeeper for the usual trade screen. The owner can sneak-right-click the counter to see the latest sales.
+
+![The shop screen with CobbleDollars prices](docs/media/shop.png)
+
 ## Ferrymen and travel posts
 Craft a **Travel Post** (a sign over planks and a boat); name it in an anvil first if you want ("Riverside"), then
 place it. Right-click posts to add them to the ones you know. A villager without a job takes a post as its
 **Ferryman**, who sells **Travel Tickets** to every other post you know (1 emerald per 256 blocks, 8 to another
-dimension). Use a ticket within 16 blocks of any travel post and you arrive at the ticket's post.
+dimension). Use a ticket within 16 blocks of any travel post and you arrive at the ticket's post. With CobbleDollars,
+right-clicking the ferryman shows your destinations with fares in CobbleDollars (100 per emerald); click one twice
+to buy its ticket, or sneak-right-click to pay in emeralds.
 
 ## Bards
 Craft a **Music Stand** (paper on a note block) and place it near a villager without a job. Put music discs in a

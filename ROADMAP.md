@@ -112,12 +112,16 @@ workstation, like the rest of the mod.
   offers are rebuilt from the chests near the counter whenever someone talks to them (sold out = no stock), a sale
   takes the goods out of those chests and puts the payment in; workers never use counters or mailboxes as supply
   chests (`PrivateContainer`)
-- [ ] Shopkeeper follow-ups: prices in CobbleDollars when that mod is installed, a sales log for the owner
+- [x] Shopkeeper: with CobbleDollars, right-click opens a shop screen (`ChoiceMenu`): emerald prices paid in
+  CobbleDollars (×100) straight to the owner (`ShopLedger` holds them for offline owners until they join), other
+  prices in items; sneak for the vanilla trade screen. Sales log (last 20) on the counter, shown on sneak-right-click
+- [ ] Shopkeeper follow-ups: prices set directly in CobbleDollars (not via emeralds), sales in the overhead
 - [x] **Ferryman** (their Teleporter): Travel Posts (named in an anvil) form one network (`TravelNetwork` saved
   data); right-clicking a post, placing it or talking to its ferryman adds it to the posts you know; a Ferryman sells
   Travel Tickets to every other post you know for 1 emerald per 256 blocks (1–16; 8 across dimensions); a ticket
   works within 16 blocks of any post and lands you next to its post
-- [ ] Ferryman follow-ups: travel posts in village generation, a boat ride animation, CobbleDollars fares
+- [x] Ferryman: with CobbleDollars, right-click shows destinations with fares in CobbleDollars (×100), two clicks buy the ticket
+- [ ] Ferryman follow-ups: travel posts in village generation, a boat ride animation
 - [x] **Bard** (Music Stand workstation): a morning set (1000–3500) and an evening set (9000–12500) at the stand,
   playing the music discs from the chests nearby in turn (discs stay in the chest; "Now playing" like a jukebox) or,
   with none, a made-up pentatonic harp tune with a bass beat; sells note blocks, goat horns and a few discs

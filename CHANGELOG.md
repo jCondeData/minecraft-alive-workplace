@@ -2,6 +2,18 @@
 
 ## Unreleased
 
+## 0.35.0 — 2026-09-27
+
+### Added
+- **Shops take CobbleDollars.** With CobbleDollars installed, right-clicking a shopkeeper opens the shop's own screen:
+  everything in stock, emerald prices shown and paid in CobbleDollars (100 per emerald), two clicks to buy. The money
+  goes straight to the shop's owner, or waits for them until they next join. Sneak-right-click for the old trade
+  screen.
+- **Shop sales log**: the owner sneak-right-clicks the Shop Counter to see the latest sales (who bought what, for how
+  much, on which day) and the shop's totals.
+- **Ferry fares in CobbleDollars**: with CobbleDollars, a ferryman's screen lists your destinations with their fares
+  in CobbleDollars; two clicks buy the ticket.
+
 ### Fixed
 - Every new workshop, guard house, clinic and other staffed house now gets a jobless adult villager. They used to come
   from the village's own villager pool, which sometimes gave a nitwit (who never works), a baby or, with

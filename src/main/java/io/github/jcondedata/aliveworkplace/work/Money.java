@@ -13,6 +13,9 @@ import net.minecraft.world.item.Items;
  * changes under us, we quietly fall back to emeralds instead of crashing.
  */
 public final class Money {
+	/** What an emerald price comes to in CobbleDollars (lessons, shop prices, fares). */
+	public static final int DOLLARS_PER_EMERALD = 100;
+
 	private static boolean cobbleDollars = FabricLoader.getInstance().isModLoaded("cobbledollars");
 
 	/** Whether prices and prizes are in CobbleDollars right now. */

@@ -87,6 +87,10 @@ public class ShopCounterBlock extends BaseEntityBlock {
 				.withStyle(ChatFormatting.YELLOW), true);
 			return InteractionResult.CONSUME;
 		}
+		if (player.isShiftKeyDown()) {
+			Shops.sendLog(serverPlayer, counter);
+			return InteractionResult.CONSUME;
+		}
 		player.openMenu(counter);
 		player.displayClientMessage(Component.translatable("message.aliveworkplace.shop.how_to").withStyle(ChatFormatting.GRAY), true);
 		return InteractionResult.CONSUME;

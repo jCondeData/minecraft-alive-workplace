@@ -350,4 +350,95 @@ public class CobblemonCompatTests implements FabricGameTest {
 			helper.assertTrue(helper.getBlockState(berry).getValue(berryAge) < com.cobblemon.mod.common.block.BerryBlock.FRUIT_AGE, "the berry plant should grow again");
 		});
 	}
+
+	/** With CobbleDollars, the shop screen sells emerald-priced goods for CobbleDollars (100 each) paid to the owner. */
+	@GameTest(template = AREA)
+	public void shopSellsForCobbleDollars(GameTestHelper helper) {
+		var level = helper.getLevel();
+		helper.setDayTime(2000);
+		BlockPos counterPos = new BlockPos(2, 1, 2);
+		BlockPos chestPos = new BlockPos(2, 1, 4);
+		helper.setBlock(counterPos, ModBlocks.SHOP_COUNTER);
+		helper.setBlock(chestPos, net.minecraft.world.level.block.Blocks.CHEST);
+		var counter = (io.github.jcondedata.aliveworkplace.shop.ShopCounterBlockEntity) helper.getBlockEntity(counterPos);
+		int columns = io.github.jcondedata.aliveworkplace.shop.ShopCounterBlockEntity.COLUMNS;
+		counter.setItem(0, new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.COBBLESTONE, 16));
+		counter.setItem(columns, new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.EMERALD, 2));
+		counter.setItem(1, new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.BREAD, 1)); // none in stock
+		counter.setItem(columns + 1, new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.EMERALD, 1));
+		counter.setItem(2, new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.OAK_LOG, 8));
+		counter.setItem(columns + 2, new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.DIAMOND, 1)); // items only
+		net.minecraft.world.Container chest = helper.getBlockEntity(chestPos);
+		chest.setItem(0, new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.COBBLESTONE, 40));
+		chest.setItem(1, new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.OAK_LOG, 16));
+
+		ServerPlayer owner = helper.makeMockServerPlayerInLevel();
+		counter.setOwner(owner.getUUID(), owner.getGameProfile().getName());
+		Villager keeper = helper.spawn(EntityType.VILLAGER, new BlockPos(3, 1, 3));
+		Jobs.employ(level, keeper, helper.absolutePos(counterPos), ModVillagers.SHOP_COUNTER_POI, ModVillagers.SHOPKEEPER);
+		ServerPlayer buyer = helper.makeMockServerPlayerInLevel();
+		buyer.setGameMode(GameType.SURVIVAL);
+		io.github.jcondedata.aliveworkplace.compat.cobbledollars.CobbleDollarsBank.add(buyer, 500);
+		long ownerBefore = io.github.jcondedata.aliveworkplace.compat.cobbledollars.CobbleDollarsBank.balance(owner);
+
+		int first = io.github.jcondedata.aliveworkplace.shop.Shops.FIRST_GOODS_SLOT;
+		var menu = io.github.jcondedata.aliveworkplace.shop.Shops.menuForTest(buyer, keeper);
+		helper.assertTrue(menu.icon(first).is(net.minecraft.world.item.Items.COBBLESTONE), "cobblestone should be on sale");
+		helper.assertTrue(menu.icon(first + 1).isEmpty() || !menu.icon(first + 1).is(net.minecraft.world.item.Items.BREAD), "bread is out of stock");
+		helper.assertTrue(menu.icon(first + 2).is(net.minecraft.world.item.Items.OAK_LOG), "logs should be on sale");
+		menu.press(first, buyer);
+		helper.assertTrue(io.github.jcondedata.aliveworkplace.compat.cobbledollars.CobbleDollarsBank.balance(buyer) == 500, "one click only chooses");
+		menu.press(first, buyer);
+		helper.assertTrue(io.github.jcondedata.aliveworkplace.compat.cobbledollars.CobbleDollarsBank.balance(buyer) == 300,
+			"buyer has " + io.github.jcondedata.aliveworkplace.compat.cobbledollars.CobbleDollarsBank.balance(buyer));
+		helper.assertTrue(io.github.jcondedata.aliveworkplace.compat.cobbledollars.CobbleDollarsBank.balance(owner) == ownerBefore + 200, "the owner was not paid");
+		helper.assertTrue(buyer.getInventory().countItem(net.minecraft.world.item.Items.COBBLESTONE) == 16, "the buyer didn't get the goods");
+		helper.assertTrue(chest.countItem(net.minecraft.world.item.Items.COBBLESTONE) == 24, chest.countItem(net.minecraft.world.item.Items.COBBLESTONE) + " left in stock");
+		helper.assertTrue(counter.sales().size() == 1 && counter.sales().get(0).dollars() == 200, "sales log: " + counter.sales());
+
+		// A diamond price is paid in diamonds, into the chests.
+		buyer.getInventory().add(new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.DIAMOND));
+		menu.press(first + 2, buyer);
+		menu.press(first + 2, buyer);
+		helper.assertTrue(buyer.getInventory().countItem(net.minecraft.world.item.Items.DIAMOND) == 0
+			&& buyer.getInventory().countItem(net.minecraft.world.item.Items.OAK_LOG) == 8, "the log sale went wrong");
+		helper.assertTrue(chest.countItem(net.minecraft.world.item.Items.DIAMOND) == 1, "the diamond should be in the shop's chest");
+
+		// An owner who is offline gets paid when they come back.
+		java.util.UUID away = java.util.UUID.randomUUID();
+		counter.setOwner(away, "Away");
+		helper.assertTrue(io.github.jcondedata.aliveworkplace.shop.Shops.buy(buyer, keeper, 0), "second cobblestone sale failed");
+		helper.assertTrue(io.github.jcondedata.aliveworkplace.shop.ShopLedger.get(level.getServer()).pending(away) == 200, "takings for an offline owner not kept");
+		helper.succeed();
+	}
+
+	/** With CobbleDollars, a ferryman's screen sells tickets for CobbleDollars (the emerald fare × 100). */
+	@GameTest(template = AREA)
+	public void ferrymanSellsTicketsForCobbleDollars(GameTestHelper helper) {
+		helper.setDayTime(2000);
+		var dim = helper.getLevel().dimension();
+		var network = io.github.jcondedata.aliveworkplace.travel.TravelNetwork.get(helper.getLevel().getServer());
+		BlockPos home = new BlockPos(2, 1, 2);
+		BlockPos away = new BlockPos(14, 1, 14);
+		helper.setBlock(home, ModBlocks.TRAVEL_POST);
+		helper.setBlock(away, ModBlocks.TRAVEL_POST);
+		network.add(net.minecraft.core.GlobalPos.of(dim, helper.absolutePos(home)), "Harbour");
+		var awayPost = network.add(net.minecraft.core.GlobalPos.of(dim, helper.absolutePos(away)), "Lighthouse");
+		ServerPlayer player = helper.makeMockServerPlayerInLevel();
+		player.setGameMode(GameType.SURVIVAL);
+		network.visit(player.getUUID(), awayPost);
+		io.github.jcondedata.aliveworkplace.compat.cobbledollars.CobbleDollarsBank.add(player, 250);
+		Villager ferryman = helper.spawn(EntityType.VILLAGER, new BlockPos(3, 1, 3));
+		Jobs.employ(helper.getLevel(), ferryman, helper.absolutePos(home), ModVillagers.TRAVEL_POST_POI, ModVillagers.FERRYMAN);
+
+		int slot = io.github.jcondedata.aliveworkplace.travel.Ferrymen.FIRST_DESTINATION_SLOT;
+		var menu = io.github.jcondedata.aliveworkplace.travel.Ferrymen.menuForTest(player, ferryman);
+		helper.assertTrue(menu.icon(slot).is(io.github.jcondedata.aliveworkplace.registry.ModItems.TRAVEL_TICKET), "no ticket to the Lighthouse on offer");
+		menu.press(slot, player);
+		menu.press(slot, player);
+		long left = io.github.jcondedata.aliveworkplace.compat.cobbledollars.CobbleDollarsBank.balance(player);
+		helper.assertTrue(left == 150, "a short trip should cost 100 CobbleDollars, the player has " + left + " left");
+		helper.assertTrue(player.getInventory().countItem(io.github.jcondedata.aliveworkplace.registry.ModItems.TRAVEL_TICKET) == 1, "no ticket in the inventory");
+		helper.succeed();
+	}
 }

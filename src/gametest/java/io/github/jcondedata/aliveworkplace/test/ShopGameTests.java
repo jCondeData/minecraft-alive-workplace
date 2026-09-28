@@ -58,6 +58,9 @@ public class ShopGameTests implements FabricGameTest {
 		helper.assertTrue(chest.countItem(Items.EMERALD) == 1, "payment not in the chest");
 		helper.assertTrue(counter.goods(0).getCount() == 16, "the price list lost its sample");
 		helper.assertTrue(shopkeeper.getAttachedOrElse(ModAttachments.SHOP_SALES, 0) == 1, "sale not counted");
+		var log = counter.sales();
+		helper.assertTrue(log.size() == 1 && log.get(0).goods().is(Items.COBBLESTONE) && log.get(0).paid().is(Items.EMERALD)
+			&& log.get(0).buyer().equals(customer.getGameProfile().getName()), "sales log: " + log);
 		helper.assertFalse(SupplyContainers.find(helper.getLevel(), helper.absolutePos(COUNTER), null).contains(helper.absolutePos(COUNTER)),
 			"the price list must not count as stock");
 		helper.succeed();

@@ -25,10 +25,20 @@ import org.jetbrains.annotations.Nullable;
 public class ShopCounterBlockEntity extends BaseContainerBlockEntity implements PrivateContainer {
 	public static final int COLUMNS = 9;
 
+	/** How many sales the log keeps. */
+	public static final int LOG_SIZE = 20;
+
+	/** One sale: on which in-game day, to whom, what, and for how many CobbleDollars or which items. */
+	public record Sale(long day, String buyer, ItemStack goods, long dollars, ItemStack paid) {
+	}
+
 	private NonNullList<ItemStack> items = NonNullList.withSize(COLUMNS * 2, ItemStack.EMPTY);
 	@Nullable
 	private UUID owner;
 	private String ownerName = "";
+	private final java.util.ArrayDeque<Sale> sales = new java.util.ArrayDeque<>();
+	private long totalDollars;
+	private int totalSales;
 
 	public ShopCounterBlockEntity(BlockPos pos, BlockState state) {
 		super(ModBlocks.SHOP_COUNTER_ENTITY, pos, state);
@@ -47,6 +57,30 @@ public class ShopCounterBlockEntity extends BaseContainerBlockEntity implements 
 		this.owner = owner;
 		this.ownerName = name;
 		setChanged();
+	}
+
+	/** Notes a sale in the log (newest first, the oldest drop off). */
+	public void logSale(Sale sale) {
+		sales.addFirst(sale);
+		while (sales.size() > LOG_SIZE) {
+			sales.removeLast();
+		}
+		totalSales++;
+		totalDollars += sale.dollars();
+		setChanged();
+	}
+
+	/** The most recent sales, newest first. */
+	public java.util.List<Sale> sales() {
+		return java.util.List.copyOf(sales);
+	}
+
+	public int totalSales() {
+		return totalSales;
+	}
+
+	public long totalDollars() {
+		return totalDollars;
 	}
 
 	/** What one sale in {@code column} hands over (empty if the column is unused). */
@@ -91,6 +125,16 @@ public class ShopCounterBlockEntity extends BaseContainerBlockEntity implements 
 		ContainerHelper.loadAllItems(tag, items, registries);
 		owner = tag.hasUUID("owner") ? tag.getUUID("owner") : null;
 		ownerName = tag.getString("ownerName");
+		sales.clear();
+		net.minecraft.nbt.ListTag log = tag.getList("sales", net.minecraft.nbt.Tag.TAG_COMPOUND);
+		for (int i = 0; i < log.size(); i++) {
+			CompoundTag sale = log.getCompound(i);
+			sales.addLast(new Sale(sale.getLong("day"), sale.getString("buyer"),
+				ItemStack.parseOptional(registries, sale.getCompound("goods")), sale.getLong("dollars"),
+				ItemStack.parseOptional(registries, sale.getCompound("paid"))));
+		}
+		totalSales = tag.getInt("totalSales");
+		totalDollars = tag.getLong("totalDollars");
 	}
 
 	@Override
@@ -101,5 +145,18 @@ public class ShopCounterBlockEntity extends BaseContainerBlockEntity implements 
 			tag.putUUID("owner", owner);
 		}
 		tag.putString("ownerName", ownerName);
+		net.minecraft.nbt.ListTag log = new net.minecraft.nbt.ListTag();
+		for (Sale sale : sales) {
+			CompoundTag entry = new CompoundTag();
+			entry.putLong("day", sale.day());
+			entry.putString("buyer", sale.buyer());
+			entry.put("goods", sale.goods().saveOptional(registries));
+			entry.putLong("dollars", sale.dollars());
+			entry.put("paid", sale.paid().saveOptional(registries));
+			log.add(entry);
+		}
+		tag.put("sales", log);
+		tag.putInt("totalSales", totalSales);
+		tag.putLong("totalDollars", totalDollars);
 	}
 }

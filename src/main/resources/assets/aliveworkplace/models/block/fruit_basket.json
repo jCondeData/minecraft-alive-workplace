@@ -1,0 +1,9 @@
+{
+  "parent": "minecraft:block/orientable_with_bottom",
+  "textures": {
+    "top": "aliveworkplace:block/fruit_basket_top",
+    "bottom": "aliveworkplace:block/fruit_basket_side",
+    "side": "aliveworkplace:block/fruit_basket_side",
+    "front": "aliveworkplace:block/fruit_basket_front"
+  }
+}

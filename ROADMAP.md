@@ -158,7 +158,14 @@ workstation, like the rest of the mod.
 ## Milestone 4 — Pokémon partners & Cobblemon jobs
 - [ ] Assign one of your Pokémon to a villager; it follows them and boosts the job by type (Fighting → building, Ground/Rock → mining, Grass → farming, Water → fishing, Fire → smelting, Flying → hauling)
 - [ ] Pokémon-themed blueprints that come with staff: Pokémon Center (Nurse), Poké Mart (Clerk, sells for CobbleDollars), Berry Farm, Fossil Lab
-- [ ] Jobs: Nurse (Healing Machine), Orchard Keeper (apricorns, berries, mints), Chef (Campfire Pot: Lure Cakes, Aprijuice), Ball Smith (apricorns → balls), Fossil Scientist
+- [x] **Orchard Keeper** (Fruit Basket workstation): picks ripe sweet berries, glow berries, cocoa and, with Cobblemon,
+  apricorns and berry plants within 16 blocks (plants stay and regrow; berry plants through Cobblemon's own harvest, so
+  yields and mulch work as for players), stores the harvest in the chests by the basket; reaches 6 blocks up with a
+  picking pole; `Walker` no longer stands workers in berry bushes, fire, powder snow or cobwebs. Trades fruit
+  (apricorns, Cobblemon berries and apricorn seeds with Cobblemon)
+- [ ] Orchard Keeper follow-ups: mints (they have to be broken and replanted), a village orchard house, planting
+  apricorn seeds and berries from the chests
+- [ ] Jobs: Nurse (Healing Machine), Chef (Campfire Pot: Lure Cakes, Aprijuice), Ball Smith (apricorns → balls), Fossil Scientist
 - [ ] Cobbleworkers compatibility: villagers haul from Pokémon pasture output
 - [x] **Move Tutor** (Tutor's Desk workstation): right-click (empty hand) opens a lesson screen (`work/ChoiceMenu`, a
   server-side six-row chest of buttons, no client screen needed): the party on top, the chosen Pokémon's tutor/TM/egg

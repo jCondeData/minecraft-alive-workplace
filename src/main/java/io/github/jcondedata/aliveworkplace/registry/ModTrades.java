@@ -17,6 +17,7 @@ public final class ModTrades {
 		nurseTrades();
 		tutorTrades();
 		pokemonTraderTrades();
+		orchardKeeperTrades();
 		TradeOfferHelper.registerVillagerOffers(ModVillagers.BARD, 1, offers -> {
 			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 2), new ItemStack(Items.NOTE_BLOCK, 2), 12, 2, 0.05f));
 			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.STRING, 16), new ItemStack(Items.EMERALD), 16, 2, 0.05f));
@@ -141,6 +142,33 @@ public final class ModTrades {
 			offers.add((entity, random) -> cobblemon("ability_capsule", 24, 1, 2, 30));
 		});
 	}
+
+	/** Orchard Keepers buy and sell fruit; with Cobblemon, apricorns and berries too. */
+	private static void orchardKeeperTrades() {
+		TradeOfferHelper.registerVillagerOffers(ModVillagers.ORCHARD_KEEPER, 1, offers -> {
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.SWEET_BERRIES, 22), new ItemStack(Items.EMERALD), 16, 2, 0.05f));
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 1), new ItemStack(Items.APPLE, 5), 12, 1, 0.05f));
+		});
+		TradeOfferHelper.registerVillagerOffers(ModVillagers.ORCHARD_KEEPER, 2, offers -> {
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.COCOA_BEANS, 12), new ItemStack(Items.EMERALD), 16, 10, 0.05f));
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 1), new ItemStack(Items.GLOW_BERRIES, 6), 12, 5, 0.05f));
+		});
+		TradeOfferHelper.registerVillagerOffers(ModVillagers.ORCHARD_KEEPER, 3, offers -> {
+			offers.add((entity, random) -> cobblemon(APRICORNS[random.nextInt(APRICORNS.length)] + "_apricorn", 1, 4, 12, 15));
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.GLOW_BERRIES, 16), new ItemStack(Items.EMERALD), 12, 15, 0.05f));
+		});
+		TradeOfferHelper.registerVillagerOffers(ModVillagers.ORCHARD_KEEPER, 4, offers -> {
+			offers.add((entity, random) -> cobblemon(BERRIES[random.nextInt(BERRIES.length)] + "_berry", 3, 2, 8, 20));
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 5), new ItemStack(Items.GOLDEN_CARROT, 3), 8, 20, 0.05f));
+		});
+		TradeOfferHelper.registerVillagerOffers(ModVillagers.ORCHARD_KEEPER, 5, offers -> {
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 8), new ItemStack(Items.GOLDEN_APPLE), 4, 30, 0.05f));
+			offers.add((entity, random) -> cobblemon(APRICORNS[random.nextInt(APRICORNS.length)] + "_apricorn_seed", 6, 1, 4, 30));
+		});
+	}
+
+	private static final String[] APRICORNS = {"red", "yellow", "green", "blue", "pink", "black", "white"};
+	private static final String[] BERRIES = {"oran", "sitrus", "lum", "leppa", "pecha", "cheri", "chesto", "rawst", "aspear", "persim"};
 
 	/** Emeralds for a Cobblemon item, or no offer when Cobblemon (or that item) isn't there. */
 	private static MerchantOffer cobblemon(String item, int emeralds, int count, int uses, int xp) {

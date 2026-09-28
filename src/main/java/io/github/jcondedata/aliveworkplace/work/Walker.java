@@ -22,6 +22,8 @@ public final class Walker {
 	private static final int MAX_WALK_TICKS = 240;
 
 	private final float speed;
+	/** How far below a target a worker may stand to reach it (fruit pickers reach up into trees). */
+	private int below = 2;
 	@Nullable
 	private BlockPos walkingTo;
 	private int stuckTicks;
@@ -33,6 +35,12 @@ public final class Walker {
 
 	public Walker(float speed) {
 		this.speed = speed;
+	}
+
+	/** Lets the worker reach targets up to {@code blocks} above where it stands (default 2). */
+	public Walker reachingUp(int blocks) {
+		this.below = blocks;
+		return this;
 	}
 
 	/** Forget where we were going (a new job, a restart). */
@@ -58,7 +66,7 @@ public final class Walker {
 			return true;
 		}
 		if (standSpot == null || !canStand(level, standSpot) || eyeFrom(standSpot).distanceTo(Vec3.atCenterOf(target)) > reach - 0.3) {
-			standSpot = standingSpot(level, target, villager.blockPosition(), reach);
+			standSpot = standingSpot(level, target, villager.blockPosition(), reach, below);
 			walkingTo = null;
 			if (standSpot == null) {
 				noSpot = true;
@@ -123,9 +131,15 @@ public final class Walker {
 	/** Nearest place (to {@code from}) with solid ground and room to stand, from which {@code target} is in reach. */
 	@Nullable
 	public static BlockPos standingSpot(ServerLevel level, BlockPos target, BlockPos from, double reach) {
+		return standingSpot(level, target, from, reach, 2);
+	}
+
+	/** {@link #standingSpot(ServerLevel, BlockPos, BlockPos, double)}, looking up to {@code below} blocks under the target. */
+	@Nullable
+	public static BlockPos standingSpot(ServerLevel level, BlockPos target, BlockPos from, double reach, int below) {
 		BlockPos best = null;
 		double bestScore = Double.MAX_VALUE;
-		for (BlockPos p : BlockPos.betweenClosed(target.offset(-4, -2, -4), target.offset(4, 3, 4))) {
+		for (BlockPos p : BlockPos.betweenClosed(target.offset(-4, -below, -4), target.offset(4, 3, 4))) {
 			if (p.equals(target) || p.equals(target.below()) || !canStand(level, p)) {
 				continue;
 			}
@@ -142,12 +156,24 @@ public final class Walker {
 	}
 
 	public static boolean canStand(ServerLevel level, BlockPos feet) {
+		if (hurts(level.getBlockState(feet))) {
+			return false;
+		}
 		BlockState below = level.getBlockState(feet.below());
 		boolean ground = below.isFaceSturdy(level, feet.below(), Direction.UP)
 			|| below.getBlock() instanceof net.minecraft.world.level.block.FarmBlock || below.is(net.minecraft.world.level.block.Blocks.DIRT_PATH);
 		return ground && below.getFluidState().isEmpty()
 			&& level.getBlockState(feet).getCollisionShape(level, feet).isEmpty() && level.getFluidState(feet).isEmpty()
 			&& level.getBlockState(feet.above()).getCollisionShape(level, feet.above()).isEmpty() && level.getFluidState(feet.above()).isEmpty();
+	}
+
+	/** Blocks with no collision that still hurt or trap whoever stands in them. */
+	private static boolean hurts(BlockState state) {
+		return state.getBlock() instanceof net.minecraft.world.level.block.SweetBerryBushBlock
+			|| state.getBlock() instanceof net.minecraft.world.level.block.BaseFireBlock
+			|| state.getBlock() instanceof net.minecraft.world.level.block.PowderSnowBlock
+			|| state.getBlock() instanceof net.minecraft.world.level.block.WitherRoseBlock
+			|| state.getBlock() instanceof net.minecraft.world.level.block.WebBlock;
 	}
 
 	public static void hop(ServerLevel level, Villager villager, BlockPos spot) {

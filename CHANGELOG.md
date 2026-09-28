@@ -2,6 +2,16 @@
 
 ## Unreleased
 
+## 0.33.0 — 2026-09-27
+
+### Added
+- **Orchard Keepers** (Fruit Basket workstation): they pick ripe sweet berries, glow berries and cocoa pods — and,
+  with Cobblemon, apricorns and berry plants — within 16 blocks of the basket, and store the harvest in the chests
+  nearby. The plants are picked, not broken, so they grow again. They trade fruit, apricorns and berries.
+
+### Fixed
+- Workers no longer choose a berry bush, fire, powder snow or a cobweb as a place to stand.
+
 ## 0.32.0 — 2026-09-27
 
 ### Added

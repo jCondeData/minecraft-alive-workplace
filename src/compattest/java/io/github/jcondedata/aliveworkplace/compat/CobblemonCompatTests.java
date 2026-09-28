@@ -298,4 +298,56 @@ public class CobblemonCompatTests implements FabricGameTest {
 		helper.assertTrue(com.cobblemon.mod.common.battles.BattleRegistry.getBattleByParticipatingPlayer(player) == null, "a second challenge the same day");
 		helper.succeed();
 	}
+
+	/** An Orchard Keeper picks a ripe apricorn and a ripe berry plant; both stay to grow again. */
+	@GameTest(template = AREA, timeoutTicks = 1600)
+	public void orchardKeeperPicksApricornsAndBerries(GameTestHelper helper) {
+		var level = helper.getLevel();
+		helper.setDayTime(2000);
+		BlockPos basket = new BlockPos(2, 1, 2);
+		BlockPos chestPos = new BlockPos(2, 1, 4);
+		helper.setBlock(basket, ModBlocks.FRUIT_BASKET);
+		helper.setBlock(chestPos, net.minecraft.world.level.block.Blocks.CHEST);
+
+		// An apricorn hanging off apricorn leaves.
+		BlockPos leaves = new BlockPos(10, 3, 10);
+		var leafState = com.cobblemon.mod.common.CobblemonBlocks.APRICORN_LEAVES.defaultBlockState();
+		if (leafState.hasProperty(net.minecraft.world.level.block.LeavesBlock.PERSISTENT)) {
+			leafState = leafState.setValue(net.minecraft.world.level.block.LeavesBlock.PERSISTENT, true);
+		}
+		helper.setBlock(leaves, leafState);
+		BlockPos apricorn = new BlockPos(11, 3, 10);
+		var apricornAge = com.cobblemon.mod.common.block.ApricornBlock.Companion.getAGE();
+		helper.setBlock(apricorn, com.cobblemon.mod.common.CobblemonBlocks.RED_APRICORN.defaultBlockState()
+			.setValue(net.minecraft.world.level.block.HorizontalDirectionalBlock.FACING, net.minecraft.core.Direction.WEST)
+			.setValue(apricornAge, com.cobblemon.mod.common.block.ApricornBlock.MAX_AGE));
+		helper.assertTrue(io.github.jcondedata.aliveworkplace.orchard.Fruit.isRipe(helper.getBlockState(apricorn)), "a grown apricorn should be ripe");
+		helper.assertTrue(!io.github.jcondedata.aliveworkplace.orchard.Fruit.isRipe(helper.getBlockState(apricorn).setValue(apricornAge, 1)), "a small apricorn is not ripe");
+
+		// A berry plant in fruit, on farmland.
+		BlockPos berry = new BlockPos(6, 1, 11);
+		helper.setBlock(berry.below(), net.minecraft.world.level.block.Blocks.FARMLAND.defaultBlockState().setValue(net.minecraft.world.level.block.FarmBlock.MOISTURE, 7));
+		var berryAge = com.cobblemon.mod.common.block.BerryBlock.Companion.getAGE();
+		helper.setBlock(berry, com.cobblemon.mod.common.CobblemonBlocks.ORAN_BERRY.defaultBlockState().setValue(berryAge, com.cobblemon.mod.common.block.BerryBlock.FRUIT_AGE));
+		if (level.getBlockEntity(helper.absolutePos(berry)) instanceof com.cobblemon.mod.common.block.entity.BerryBlockEntity plant) {
+			plant.generateSimpleYields();
+		} else {
+			helper.fail("the berry plant has no block entity");
+		}
+		helper.assertTrue(io.github.jcondedata.aliveworkplace.orchard.Fruit.isRipe(helper.getBlockState(berry)), "a berry plant in fruit should be ripe");
+
+		Villager keeper = helper.spawn(EntityType.VILLAGER, new BlockPos(3, 1, 3));
+		Jobs.employ(level, keeper, helper.absolutePos(basket), ModVillagers.FRUIT_BASKET_POI, ModVillagers.ORCHARD_KEEPER);
+		helper.succeedWhen(() -> {
+			net.minecraft.world.Container chest = helper.getBlockEntity(chestPos);
+			var red = com.cobblemon.mod.common.CobblemonItems.RED_APRICORN;
+			var oran = com.cobblemon.mod.common.CobblemonItems.ORAN_BERRY;
+			helper.assertTrue(chest.countItem(red) >= 1, "no apricorn in the chest");
+			helper.assertTrue(chest.countItem(oran) >= 1, "no oran berries in the chest");
+			helper.assertBlockPresent(com.cobblemon.mod.common.CobblemonBlocks.RED_APRICORN, apricorn);
+			helper.assertTrue(helper.getBlockState(apricorn).getValue(apricornAge) < com.cobblemon.mod.common.block.ApricornBlock.MAX_AGE, "the apricorn should start again");
+			helper.assertBlockPresent(com.cobblemon.mod.common.CobblemonBlocks.ORAN_BERRY, berry);
+			helper.assertTrue(helper.getBlockState(berry).getValue(berryAge) < com.cobblemon.mod.common.block.BerryBlock.FRUIT_AGE, "the berry plant should grow again");
+		});
+	}
 }

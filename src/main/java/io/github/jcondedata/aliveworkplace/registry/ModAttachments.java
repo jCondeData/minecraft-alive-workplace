@@ -24,6 +24,10 @@ public final class ModAttachments {
 	public static final AttachmentType<Integer> TREES_FELLED = AttachmentRegistry.create(
 		AliveWorkplace.id("trees_felled"), builder -> builder.persistent(com.mojang.serialization.Codec.INT));
 
+	/** How much fruit an Orchard Keeper has picked (shown above its head). */
+	public static final AttachmentType<Integer> FRUIT_PICKED = AttachmentRegistry.create(
+		AliveWorkplace.id("fruit_picked"), builder -> builder.persistent(com.mojang.serialization.Codec.INT));
+
 	/** The player a builder works for (see {@code Friends}). */
 	public static final AttachmentType<io.github.jcondedata.aliveworkplace.build.Employer> BUILDER_EMPLOYER = AttachmentRegistry.create(
 		AliveWorkplace.id("builder_employer"), builder -> builder.persistent(io.github.jcondedata.aliveworkplace.build.Employer.CODEC));

@@ -250,6 +250,23 @@ public final class ModVillagers {
 		)
 	);
 
+	public static final ResourceLocation FRUIT_BASKET_ID = AliveWorkplace.id("fruit_basket");
+	public static final ResourceKey<PoiType> FRUIT_BASKET_POI = ResourceKey.create(Registries.POINT_OF_INTEREST_TYPE, FRUIT_BASKET_ID);
+	public static final PoiType FRUIT_BASKET_POI_TYPE = PointOfInterestHelper.register(FRUIT_BASKET_ID, 1, 1, ModBlocks.FRUIT_BASKET);
+
+	public static final VillagerProfession ORCHARD_KEEPER = Registry.register(
+		BuiltInRegistries.VILLAGER_PROFESSION,
+		AliveWorkplace.id("orchard_keeper"),
+		new VillagerProfession(
+			"orchard_keeper",
+			holder -> holder.is(FRUIT_BASKET_POI),
+			holder -> holder.is(FRUIT_BASKET_POI),
+			ImmutableSet.of(),
+			ImmutableSet.of(),
+			SoundEvents.VILLAGER_WORK_FARMER
+		)
+	);
+
 	/**
 	 * Guards keep the night watch: on patrol from evening to mid-morning, asleep until early afternoon,
 	 * then out with the village. They fight whenever a monster shows up, whatever they are doing.
@@ -269,7 +286,8 @@ public final class ModVillagers {
 	public static boolean isWorker(VillagerProfession profession) {
 		return profession == BUILDER || profession == MINER || profession == LUMBERJACK || profession == POSTMAN
 			|| profession == NURSE || profession == SHOPKEEPER || profession == FERRYMAN
-			|| profession == TRAINER || profession == TRAINER_LEADER || profession == TUTOR || profession == POKEMON_TRADER;
+			|| profession == TRAINER || profession == TRAINER_LEADER || profession == TUTOR || profession == POKEMON_TRADER
+			|| profession == ORCHARD_KEEPER;
 	}
 
 	/**

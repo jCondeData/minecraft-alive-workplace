@@ -2,7 +2,7 @@
 
 Villagers with real jobs. Hand a **Builder** a blueprint and they build it for you: they clear the
 site, fetch materials from your chests, put up the walls and roof, and finish with doors, beds and
-torches. **Miners** dig out quarries, **Lumberjacks** cut down and replant trees, **Farmers** look after
+torches. **Miners** dig out quarries, **Lumberjacks** cut down and replant trees, **Orchard Keepers** pick berries, cocoa and apricorns, **Farmers** look after
 your fields and **Fishermen** fish for you, dropping everything off in your chests. **Postmen** carry mail
 between players' mailboxes, **Guards** keep monsters away, **Nurses** heal you (and your Pokémon),
 **Shopkeepers** run your shop, **Ferrymen** take you between villages, **Bards** play music and — with Cobblemon —
@@ -81,6 +81,15 @@ trees. Put **axes** in a chest within 8 blocks of the Chopping Block. The lumber
 one at a time (leaves first, then the trunk), plants a sapling of the same wood where each tree stood, and stores
 the logs, sticks and apples in the chests. They only cut real trees: logs with placed leaves (houses, posts),
 blueprint builds and quarries are left alone. When the last axe breaks they wait for a new one.
+
+## Orchard Keepers
+![An orchard keeper picking berries, cocoa and apricorns](docs/media/orchard.gif)
+
+Craft a **Fruit Basket** (two sticks in the top corners, then sweet berries, a plank, sweet berries) and place it near a villager
+without a job, in your orchard. The keeper walks round everything within 16 blocks of the basket and picks whatever
+is ripe: **sweet berries**, **glow berries**, **cocoa pods** and — with Cobblemon — **apricorns** and **berry
+plants**. The plants are picked, not broken, so they grow again. The harvest goes into the chests within 8 blocks of
+the basket. They reach up into trees with a picking pole and never step into a berry bush.
 
 ## Farmers
 ![A farmer harvesting, replanting and sowing a field](docs/media/farmer.gif)

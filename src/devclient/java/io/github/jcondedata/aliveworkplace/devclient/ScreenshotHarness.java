@@ -102,6 +102,10 @@ public class ScreenshotHarness implements ClientModInitializer {
 			missingScene(mc, mc.getSingleplayerServer());
 			return;
 		}
+		if ("orchard".equals(System.getProperty("aliveworkplace.scene"))) {
+			orchardScene(mc, mc.getSingleplayerServer());
+			return;
+		}
 		if ("forest".equals(System.getProperty("aliveworkplace.scene"))) {
 			forestScene(mc, mc.getSingleplayerServer());
 			return;
@@ -330,6 +334,125 @@ public class ScreenshotHarness implements ClientModInitializer {
 		}
 		if (doneAt > 0 && tick == doneAt + 40) {
 			shot(mc, "50_quarry_done");
+			mc.stop();
+		}
+		if (tick >= GIVE_UP_AT) {
+			shot(mc, "99_timeout");
+			mc.stop();
+		}
+	}
+
+	// --- Orchard: an orchard keeper picks berries, cocoa and (with Cobblemon) apricorns and berry plants -----
+
+	private Villager keeper;
+	private int orchardFruit;
+
+	private static BlockState cobblemonBlock(String id) {
+		return net.minecraft.core.registries.BuiltInRegistries.BLOCK.getOptional(net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("cobblemon", id))
+			.map(net.minecraft.world.level.block.Block::defaultBlockState).orElse(null);
+	}
+
+	private static <T extends Comparable<T>> BlockState with(BlockState state, String property, T value) {
+		for (var p : state.getProperties()) {
+			if (p.getName().equals(property)) {
+				@SuppressWarnings("unchecked")
+				var typed = (net.minecraft.world.level.block.state.properties.Property<T>) p;
+				return state.setValue(typed, value);
+			}
+		}
+		return state;
+	}
+
+	private void orchardScene(Minecraft mc, MinecraftServer server) {
+		tick++;
+		if (tick == 1) {
+			mc.options.renderDistance().set(6);
+			mc.options.cloudStatus().set(CloudStatus.OFF);
+			mc.options.hideGui = true;
+		}
+		if (tick == 20) {
+			server.execute(() -> {
+				ServerLevel level = server.overworld();
+				level.getGameRules().getRule(GameRules.RULE_DAYLIGHT).set(false, server);
+				level.getGameRules().getRule(GameRules.RULE_DOMOBSPAWNING).set(false, server);
+				level.getGameRules().getRule(GameRules.RULE_RANDOMTICKING).set(0, server);
+				level.getGameRules().getRule(ModGameRules.BUILD_DELAY).set(6, server);
+				server.getCommands().performPrefixedCommand(server.createCommandSourceStack().withSuppressedOutput(), "gamerule doPokemonSpawning false");
+				level.setDayTime(2500);
+				int fruit = 0;
+				// A hedge of sweet berry bushes.
+				for (int x = -5; x <= -1; x++) {
+					level.setBlockAndUpdate(new BlockPos(x, -60, 5), Blocks.SWEET_BERRY_BUSH.defaultBlockState()
+						.setValue(net.minecraft.world.level.block.SweetBerryBushBlock.AGE, 3));
+					fruit++;
+				}
+				// A jungle trunk with cocoa pods.
+				for (int y = -60; y <= -56; y++) {
+					level.setBlockAndUpdate(new BlockPos(-7, y, -2), Blocks.JUNGLE_LOG.defaultBlockState());
+				}
+				for (int y = -59; y <= -57; y++) {
+					level.setBlockAndUpdate(new BlockPos(-6, y, -2), Blocks.COCOA.defaultBlockState()
+						.setValue(net.minecraft.world.level.block.CocoaBlock.FACING, Direction.WEST).setValue(net.minecraft.world.level.block.CocoaBlock.AGE, 2));
+					fruit++;
+				}
+				// With Cobblemon: an apricorn tree and a bed of berry plants.
+				BlockState leaves = cobblemonBlock("apricorn_leaves");
+				if (leaves != null) {
+					leaves = with(leaves, "persistent", true);
+					for (int y = -60; y <= -56; y++) {
+						level.setBlockAndUpdate(new BlockPos(6, y, -2), cobblemonBlock("apricorn_log"));
+					}
+					for (BlockPos p : BlockPos.betweenClosed(new BlockPos(5, -56, -3), new BlockPos(7, -55, -1))) {
+						if (!(p.getX() == 6 && p.getZ() == -2 && p.getY() == -56)) {
+							level.setBlockAndUpdate(p, leaves);
+						}
+					}
+					level.setBlockAndUpdate(new BlockPos(6, -54, -2), leaves);
+					Object[][] apricorns = {{"red_apricorn", new BlockPos(4, -56, -2), Direction.EAST}, {"yellow_apricorn", new BlockPos(8, -56, -2), Direction.WEST},
+						{"blue_apricorn", new BlockPos(6, -56, 0), Direction.NORTH}, {"pink_apricorn", new BlockPos(5, -56, 0), Direction.NORTH}};
+					for (Object[] a : apricorns) {
+						BlockState state = with(with(cobblemonBlock((String) a[0]), "facing", (Direction) a[2]), "age", 3);
+						level.setBlockAndUpdate((BlockPos) a[1], state);
+						fruit++;
+					}
+					String[] berries = {"oran_berry", "pecha_berry", "cheri_berry"};
+					for (int i = 0; i < berries.length; i++) {
+						BlockPos p = new BlockPos(3 + i, -60, 5);
+						level.setBlockAndUpdate(p.below(), Blocks.FARMLAND.defaultBlockState().setValue(net.minecraft.world.level.block.FarmBlock.MOISTURE, 7));
+						level.setBlockAndUpdate(p, with(cobblemonBlock(berries[i]), "age", 5));
+						if (level.getBlockEntity(p) instanceof com.cobblemon.mod.common.block.entity.BerryBlockEntity plant) {
+							plant.generateSimpleYields();
+						}
+						fruit++;
+					}
+				}
+				orchardFruit = fruit;
+				BlockPos basket = new BlockPos(0, -60, 0);
+				level.setBlockAndUpdate(basket, ModBlocks.FRUIT_BASKET.defaultBlockState()
+					.setValue(net.minecraft.world.level.block.HorizontalDirectionalBlock.FACING, Direction.SOUTH));
+				level.setBlockAndUpdate(basket.east(), Blocks.CHEST.defaultBlockState());
+				keeper = EntityType.VILLAGER.spawn(level, basket.south(), MobSpawnType.COMMAND);
+				io.github.jcondedata.aliveworkplace.work.Jobs.employ(level, keeper, basket,
+					io.github.jcondedata.aliveworkplace.registry.ModVillagers.FRUIT_BASKET_POI, io.github.jcondedata.aliveworkplace.registry.ModVillagers.ORCHARD_KEEPER);
+				hover(server.getPlayerList().getPlayers().get(0), new Vec3(0.5, -55.5, 10.5), 180, 24);
+			});
+		}
+		if (tick == 80) {
+			shot(mc, "10_orchard_start");
+		}
+		if (tick > 60 && tick % 10 == 0 && doneAt < 0) {
+			shot(mc, String.format("frame_%03d", frame++));
+			server.execute(() -> allDone.set(keeper != null
+				&& keeper.getAttachedOrElse(io.github.jcondedata.aliveworkplace.registry.ModAttachments.FRUIT_PICKED, 0) >= orchardFruit));
+			if (allDone.get()) {
+				doneAt = tick;
+			}
+		}
+		if (doneAt > 0 && tick < doneAt + 200 && tick % 10 == 0) {
+			shot(mc, String.format("frame_%03d", frame++)); // the harvest goes to the chest
+		}
+		if (doneAt > 0 && tick == doneAt + 200) {
+			shot(mc, "50_orchard_done");
 			mc.stop();
 		}
 		if (tick >= GIVE_UP_AT) {

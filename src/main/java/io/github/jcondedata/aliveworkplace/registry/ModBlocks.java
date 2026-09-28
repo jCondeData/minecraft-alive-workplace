@@ -110,6 +110,11 @@ public final class ModBlocks {
 		"trade_board", new BuildersBenchBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_PLANKS))
 	);
 
+	/** Workstation for the Orchard Keeper: ripe fruit within 16 blocks gets picked and stored in the chests nearby. */
+	public static final BuildersBenchBlock FRUIT_BASKET = register(
+		"fruit_basket", new BuildersBenchBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.BARREL))
+	);
+
 	private static <T extends Block> T register(String name, T block) {
 		Registry.register(BuiltInRegistries.BLOCK, AliveWorkplace.id(name), block);
 		Registry.register(BuiltInRegistries.ITEM, AliveWorkplace.id(name), new BlockItem(block, new Item.Properties()));

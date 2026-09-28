@@ -1235,6 +1235,83 @@ def pokemon_trader_overlay():
     save(img, "entity", "zombie_villager", "profession", "pokemon_trader.png")
 
 
+# --- Fruit Basket: a wicker basket heaped with fruit ---------------------------------------------------
+WICKER = [rgb("#c9a063"), rgb("#b08546"), rgb("#9a7038")]
+
+
+def wicker(img, rnd, y0=0, y1=16):
+    for y in range(y0, y1):
+        for x in range(16):
+            weave = ((x // 2) + (y // 2)) % 2
+            c = WICKER[weave] if (x + y) % 5 else WICKER[2]
+            img.putpixel((x, y), jitter(c, rnd, 6))
+
+
+def fruit_basket(face):
+    rnd = random.Random({"top": 281, "side": 282, "front": 283}[face])
+    img = Image.new("RGBA", (16, 16))
+    wicker(img, rnd)
+    rim = rgb("#7a5328")
+    if face == "top":
+        # Fruit heaped inside the rim: apples, berries, a yellow apricorn and a cocoa pod
+        for y in range(2, 14):
+            for x in range(2, 14):
+                img.putpixel((x, y), jitter(rgb("#5e3d1c"), rnd, 4))
+        fruit = [((3, 3), rgb("#c62828")), ((8, 2), rgb("#e8b923")), ((3, 8), rgb("#2e7d32")),
+                 ((8, 8), rgb("#c62828")), ((10, 5), rgb("#1565c0")), ((6, 10), rgb("#e07a1f"))]
+        for (fx, fy), c in fruit:
+            for y in range(fy, fy + 3):
+                for x in range(fx, fx + 3):
+                    if (x - fx, y - fy) not in ((0, 0), (2, 0), (0, 2), (2, 2)):
+                        img.putpixel((x, y), jitter(c, rnd, 10))
+            img.putpixel((fx + 1, fy + 1), tuple(min(255, v + 60) for v in c[:3]) + (255,))  # shine
+        for (bx, by) in ((12, 11), (11, 12), (12, 12), (5, 5), (6, 6)):
+            img.putpixel((bx, by), rgb("#8e1b3a"))
+        for i in range(16):
+            for p in ((i, 0), (i, 15), (0, i), (15, i), (i, 1), (i, 14), (1, i), (14, i)):
+                img.putpixel(p, jitter(rim, rnd, 5))
+    else:
+        for x in range(16):
+            img.putpixel((x, 0), jitter(rim, rnd, 5))
+            img.putpixel((x, 1), jitter(rim, rnd, 5))
+            img.putpixel((x, 15), jitter(rim, rnd, 5))
+        if face == "front":
+            # A little wooden tag with a leaf on it
+            for y in range(6, 11):
+                for x in range(5, 11):
+                    img.putpixel((x, y), jitter(rgb("#e8d5a8"), rnd, 3))
+            for (lx, ly) in ((7, 8), (8, 7), (8, 8), (9, 7)):
+                img.putpixel((lx, ly), rgb("#3f8a3a"))
+            img.putpixel((7, 9), rgb("#6b4a2b"))
+    save(img, "block", "fruit_basket_" + face + ".png")
+
+
+def orchard_keeper_overlay():
+    img = Image.new("RGBA", (64, 64), T)
+    rnd = random.Random(291)
+    straw, straw_dark, band = rgb("#e3c26b"), rgb("#c9a44a"), rgb("#b3262c")
+    # A wide straw sun hat with a red band
+    for y in range(0, 8):
+        for x in range(40, 48):
+            img.putpixel((x, y), jitter(straw if (x + y) % 3 else straw_dark, rnd, 5))
+    for y in range(8, 12):
+        for x in range(32, 64):
+            c = band if y == 8 else (straw if (x + y) % 3 else straw_dark)
+            img.putpixel((x, y), jitter(c, rnd, 5))
+    # A green gardening apron with a fruit-stained pocket
+    apron, pocket = rgb("#4e7d3a"), rgb("#3e6630")
+    for y in range(44, 58):
+        for x in range(4, 24):
+            img.putpixel((x, y), jitter(apron, rnd, 4))
+    for y in range(49, 54):
+        for x in range(8, 14):
+            img.putpixel((x, y), jitter(pocket, rnd, 3))
+    img.putpixel((10, 50), rgb("#c62828"))
+    img.putpixel((12, 51), rgb("#8e1b3a"))
+    save(img, "entity", "villager", "profession", "orchard_keeper.png")
+    save(img, "entity", "zombie_villager", "profession", "orchard_keeper.png")
+
+
 def icon(blueprint):
     big = Image.new("RGBA", (128, 128), T)
     scaled = blueprint.resize((128, 128), Image.NEAREST)
@@ -1305,3 +1382,6 @@ if __name__ == "__main__":
     for face in ("top", "side", "front"):
         trade_board(face)
     pokemon_trader_overlay()
+    for face in ("top", "side", "front"):
+        fruit_basket(face)
+    orchard_keeper_overlay()

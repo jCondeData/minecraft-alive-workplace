@@ -80,6 +80,33 @@ and it lines up exactly over it; the builder takes off what changes and builds o
 else. Once a builder finishes a building that has an upgrade, **they sell its blueprint** (and tell you). The
 upgrades are in the Blueprint Table too. Your own blueprints work the same way (`my_house` → `my_house_2`).
 
+## All the jobs at a glance
+Place the workstation near a villager without a job and they take it. Chests (or barrels) within 8 blocks of it are
+where they take tools and supplies from and where their work goes.
+
+| Job | Workstation | In the chests nearby | Then |
+| --- | --- | --- | --- |
+| Builder | Builder's Bench | the building materials | hand them a placed blueprint |
+| Miner | Miner's Bench | pickaxes, torches (ladders for a shaft) | hand them a marked Quarry Marker |
+| Lumberjack | Chopping Block | axes (saplings, bone meal) | nothing — or a Field Marker for a tree farm |
+| Orchard Keeper | Fruit Basket | berries and seeds to plant, a hoe | nothing — or a Field Marker for an orchard |
+| Farmer | Composter (vanilla) | seeds, a hoe, bone meal | a Field Marker (blank: their own farm) |
+| Fisherman | Barrel (vanilla) | spare rods (coal for a smoker) | hand them a fishing rod |
+| Postman | Postal Desk | — | Mailboxes for mail; Delivery Notes for hauling |
+| Guard | Guard Post | weapons, armor, a bow or crossbow and arrows | nothing |
+| Nurse | Nurse Station | — | right-click them to be healed |
+| Shopkeeper | Shop Counter | the goods to sell | set the prices in the counter |
+| Ferryman | Travel Post | — | buy a Travel Ticket from them |
+| Bard | Music Stand | music discs | nothing |
+| Trainer (Cobblemon) | Training Post | — | right-click them to battle |
+| Trainer Leader (Cobblemon) | Leader's Podium | — | right-click them to battle, once a day |
+| Move Tutor (Cobblemon) | Tutor's Desk | — | right-click them for lessons |
+| Ball Smith (Cobblemon) | Ball Workbench | apricorns and copper, iron, gold or diamonds | sneak-right-click them to choose the balls |
+| Pokémon Trader (Cobblemon) | Trade Board | — | right-click them to trade |
+
+Sneak-right-click a builder, miner, lumberjack, orchard keeper, farmer, fisherman or postman with an empty hand to see
+what they're doing and how to stop them. The recipes are in each job's section below (and in the recipe book).
+
 ## Miners
 ![A miner digging out a quarry](docs/media/miner.gif)
 

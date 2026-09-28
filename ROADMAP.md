@@ -296,7 +296,8 @@ workstation, like the rest of the mod.
 
 ## Milestone 5 — Release
 - [ ] Publish on Modrinth and CurseForge as **Alive Workplace** (Minecraft brand rules: don't lead the name with "Minecraft")
-- [ ] Screenshots/GIFs, a short wiki (how to build, how to import blueprints)
+- [x] Screenshots/GIFs through the README, and an at-a-glance table of every job (workstation, what goes in the chests,
+  what to hand them); the README is the guide (how to build, how to import blueprints) rather than a separate wiki
 - [x] Compat tests with the pack's (1.7.42) building mods — Handcrafted, Beautify, CobbleFurnies, Carved Wood, Moar
   Concrete (every block has a cost; a sample of each gets built) — and storage: Sophisticated Storage (fixed: counts
   used `Long.MAX_VALUE`, which it reads as 0), Tom's Simple Storage (network blocks skipped as supply chests).

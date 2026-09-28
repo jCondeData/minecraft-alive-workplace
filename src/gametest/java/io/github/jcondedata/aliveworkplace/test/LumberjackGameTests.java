@@ -13,6 +13,7 @@ import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestAssertException;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.npc.Villager;
@@ -26,6 +27,13 @@ public class LumberjackGameTests implements FabricGameTest {
 	private static final String AREA = "aliveworkplace_test:big_area";
 	private static final BlockPos BLOCK = new BlockPos(2, 2, 2);
 	private static final BlockPos CHEST = new BlockPos(2, 2, 4);
+	/**
+	 * Trees grown with the same random numbers every run, so a test sees the same tree each time (a huge fungus grows
+	 * twice as tall one time in twelve, a mangrove's roots vary...).
+	 */
+	private static RandomSource shapes() {
+		return RandomSource.create(20260928L);
+	}
 
 	private static Villager setup(GameTestHelper helper, ItemStack... chest) {
 		ServerLevel level = helper.getLevel();
@@ -47,7 +55,7 @@ public class LumberjackGameTests implements FabricGameTest {
 		ServerLevel level = helper.getLevel();
 		helper.setBlock(base.below(), Blocks.GRASS_BLOCK);
 		var feature = level.registryAccess().registryOrThrow(Registries.CONFIGURED_FEATURE).getHolderOrThrow(TreeFeatures.OAK).value();
-		boolean grown = feature.place(level, level.getChunkSource().getGenerator(), level.getRandom(), helper.absolutePos(base));
+		boolean grown = feature.place(level, level.getChunkSource().getGenerator(), shapes(), helper.absolutePos(base));
 		if (!grown) {
 			throw new GameTestAssertException("could not grow the test tree");
 		}
@@ -117,7 +125,7 @@ public class LumberjackGameTests implements FabricGameTest {
 	private static void grow(GameTestHelper helper, BlockPos base, net.minecraft.resources.ResourceKey<net.minecraft.world.level.levelgen.feature.ConfiguredFeature<?, ?>> tree) {
 		ServerLevel level = helper.getLevel();
 		var feature = level.registryAccess().registryOrThrow(Registries.CONFIGURED_FEATURE).getHolderOrThrow(tree).value();
-		if (!feature.place(level, level.getChunkSource().getGenerator(), level.getRandom(), helper.absolutePos(base))) {
+		if (!feature.place(level, level.getChunkSource().getGenerator(), shapes(), helper.absolutePos(base))) {
 			throw new GameTestAssertException("could not grow " + tree.location());
 		}
 	}
@@ -216,7 +224,7 @@ public class LumberjackGameTests implements FabricGameTest {
 			helper.setBlock(p, Blocks.GRASS_BLOCK);
 		}
 		var feature = level.registryAccess().registryOrThrow(Registries.CONFIGURED_FEATURE).getHolderOrThrow(TreeFeatures.DARK_OAK).value();
-		if (!feature.place(level, level.getChunkSource().getGenerator(), level.getRandom(), helper.absolutePos(base))) {
+		if (!feature.place(level, level.getChunkSource().getGenerator(), shapes(), helper.absolutePos(base))) {
 			throw new GameTestAssertException("could not grow the dark oak");
 		}
 		Villager villager = setup(helper, new ItemStack(Items.STONE_AXE), new ItemStack(Items.DARK_OAK_SAPLING, 4));
@@ -235,7 +243,7 @@ public class LumberjackGameTests implements FabricGameTest {
 		BlockPos base = new BlockPos(11, 2, 11);
 		helper.setBlock(base.below(), Blocks.CRIMSON_NYLIUM);
 		var feature = level.registryAccess().registryOrThrow(Registries.CONFIGURED_FEATURE).getHolderOrThrow(TreeFeatures.CRIMSON_FUNGUS_PLANTED).value();
-		if (!feature.place(level, level.getChunkSource().getGenerator(), level.getRandom(), helper.absolutePos(base))) {
+		if (!feature.place(level, level.getChunkSource().getGenerator(), shapes(), helper.absolutePos(base))) {
 			throw new GameTestAssertException("could not grow the fungus");
 		}
 		helper.assertTrue(io.github.jcondedata.aliveworkplace.wood.Trees.treeAt(level, helper.absolutePos(base)).isPresent(), "a huge fungus should count as a tree");

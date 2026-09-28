@@ -43,6 +43,10 @@ The owner (Jesse) does not write code: sessions are expected to work autonomousl
 - `tools/packtest/run.sh` — boots a real Cobbleverse server (every pack mod, production Fabric) with the newest
   `build/libs` jar, generates a vanilla and a Repurposed Structures village and looks for our workstations. Needs
   ~6 GB RAM, ~5 min; don't run it alongside a Gradle build (memory).
+- Tests that grow trees with a vanilla feature pass a fixed `RandomSource` (see `LumberjackGameTests.shapes()`): with
+  the level's random, a huge fungus grows twice as tall one time in twelve and CI failed on a shape nobody had seen.
+- CI logs are readable without a token: `curl -sL https://api.github.com/repos/jCondeData/minecraft-alive-workplace/actions/jobs/<job id>/logs`
+  (job ids from `.../actions/runs/<run id>/jobs`).
 - If Maven Central answers **429**, wait ~20 s and retry; it is rate limiting, not a real failure.
 
 ## Layout (`src/main/java/io/github/jcondedata/aliveworkplace/`)

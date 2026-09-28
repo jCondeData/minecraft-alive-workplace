@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+## 0.65.1 — 2026-09-28
+
+### Fixed
+- A test that grew a random huge fungus sometimes failed, which stopped 0.64.0 from being released on its own: test trees
+  now grow the same shape every run. **0.64.0's Fire-type partners** (a Fire-type Pokémon pastured near a Miner's Bench
+  or a fisherman's barrel smelts 8 of the ores or fish in each furnace there whenever the worker tends it) are in
+  0.65.0 and later.
+
 ## 0.65.0 — 2026-09-28
 
 ### Added

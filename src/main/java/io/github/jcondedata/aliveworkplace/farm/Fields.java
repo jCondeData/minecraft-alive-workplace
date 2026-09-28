@@ -74,6 +74,22 @@ public final class Fields {
 		}
 		FieldData data = FieldMarkerItem.data(stack);
 		Optional<BoundingBox> area = data.area();
+		boolean adopted = false;
+		if (area.isEmpty() && data.first().isEmpty()) {
+			// A blank marker: the farmer takes on the farm by their composter (a village's own field).
+			Optional<BlockPos> composter = Builders.benchPos(villager);
+			if (composter.isEmpty()) {
+				tell(player, Component.translatable("message.aliveworkplace.field.no_composter"), ChatFormatting.RED);
+				return InteractionResult.CONSUME;
+			}
+			area = farmNear(level, composter.get());
+			if (area.isEmpty()) {
+				tell(player, Component.translatable("message.aliveworkplace.field.no_farm", FARM_SEARCH), ChatFormatting.YELLOW);
+				return InteractionResult.CONSUME;
+			}
+			data = new FieldData(Optional.of(level.dimension().location()), Optional.empty(), Optional.empty());
+			adopted = true;
+		}
 		if (area.isEmpty()) {
 			tell(player, Component.translatable("message.aliveworkplace.field.not_marked"), ChatFormatting.YELLOW);
 			return InteractionResult.CONSUME;
@@ -103,9 +119,63 @@ public final class Fields {
 			stack.shrink(1);
 		}
 		level.playSound(null, villager, SoundEvents.VILLAGER_YES, SoundSource.NEUTRAL, 1f, 1f);
-		tell(player, Component.translatable("message.aliveworkplace.field.started", villager.getDisplayName(), box.getXSpan(), box.getZSpan(),
-			SupplyContainers.RADIUS), ChatFormatting.GREEN);
+		tell(player, Component.translatable(adopted ? "message.aliveworkplace.field.adopted" : "message.aliveworkplace.field.started",
+			villager.getDisplayName(), box.getXSpan(), box.getZSpan(), SupplyContainers.RADIUS), ChatFormatting.GREEN);
 		return InteractionResult.SUCCESS;
+	}
+
+	/** How far from the composter a blank marker looks for the farm. */
+	public static final int FARM_SEARCH = 16;
+
+	/**
+	 * The farm by a composter, for a blank Field Marker: the farmland nearest to it (within {@link #FARM_SEARCH} blocks)
+	 * and all the farmland joined to that, across the water channels between the rows too, kept within
+	 * {@link FieldData#MAX_SIDE} a side. Empty if there's no farmland near.
+	 */
+	public static Optional<BoundingBox> farmNear(ServerLevel level, BlockPos composter) {
+		BlockPos start = null;
+		for (BlockPos p : BlockPos.betweenClosed(composter.offset(-FARM_SEARCH, -4, -FARM_SEARCH), composter.offset(FARM_SEARCH, 4, FARM_SEARCH))) {
+			if (level.getBlockState(p).getBlock() instanceof net.minecraft.world.level.block.FarmBlock
+				&& (start == null || p.distSqr(composter) < start.distSqr(composter))) {
+				start = p.immutable();
+			}
+		}
+		if (start == null) {
+			return Optional.empty();
+		}
+		int half = FieldData.MAX_SIDE / 2;
+		BoundingBox limit = new BoundingBox(start.getX() - half + 1, start.getY() - 2, start.getZ() - half + 1,
+			start.getX() + half, start.getY() + 2, start.getZ() + half);
+		java.util.Set<BlockPos> seen = new java.util.HashSet<>();
+		java.util.ArrayDeque<BlockPos> queue = new java.util.ArrayDeque<>();
+		seen.add(start);
+		queue.add(start);
+		int minX = start.getX(), minY = start.getY(), minZ = start.getZ(), maxX = minX, maxY = minY, maxZ = minZ;
+		while (!queue.isEmpty() && seen.size() < 4096) {
+			BlockPos p = queue.poll();
+			if (level.getBlockState(p).getBlock() instanceof net.minecraft.world.level.block.FarmBlock) {
+				minX = Math.min(minX, p.getX());
+				minY = Math.min(minY, p.getY());
+				minZ = Math.min(minZ, p.getZ());
+				maxX = Math.max(maxX, p.getX());
+				maxY = Math.max(maxY, p.getY());
+				maxZ = Math.max(maxZ, p.getZ());
+			}
+			for (net.minecraft.core.Direction d : net.minecraft.core.Direction.Plane.HORIZONTAL) {
+				for (int dy = -1; dy <= 1; dy++) {
+					BlockPos n = p.relative(d).above(dy);
+					if (!limit.isInside(n) || seen.contains(n)) {
+						continue;
+					}
+					net.minecraft.world.level.block.state.BlockState st = level.getBlockState(n);
+					if (st.getBlock() instanceof net.minecraft.world.level.block.FarmBlock || dy == 0 && st.getFluidState().is(net.minecraft.tags.FluidTags.WATER)) {
+						seen.add(n);
+						queue.add(n);
+					}
+				}
+			}
+		}
+		return Optional.of(new BoundingBox(minX, minY, minZ, maxX, maxY, maxZ));
 	}
 
 	/** Gives the farmer the field. Also used by tests. */

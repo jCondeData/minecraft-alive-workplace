@@ -117,7 +117,9 @@ Owner decisions are recorded in **Design decisions** at the bottom. Don't change
 - [x] Farmer: bone meal from the chests (task FERTILIZE, only when nothing else needs doing; crops, stems, cocoa, berry
   bushes, never grass; up to 16 kept in the bag); sweet berries, cocoa, glow berries (and Cobblemon fruit) in a field
   are picked with `orchard/Fruit` and left to grow again (villagers never stand in berry bushes: `Walker.canStand`)
-- [ ] Farmer follow-ups: a Field Marker for villages' own farms (village farmers adopting their farm automatically)
+- [x] Village farms: a blank Field Marker given to a farmer adopts the farm by their composter (`Fields.farmNear`: the
+  farmland nearest it within 16, flood-filled across water channels, up to 32 × 32). Fully automatic adoption without a
+  marker is left out on purpose: it would change every village's farmers (see Notes)
 - [x] **Fisher** (any vanilla Fisherman): hand one a fishing rod and they fish the nearest still water within 16 blocks of their barrel (standing on the shore), reeling in the vanilla fishing loot (fish and junk, no treasure), storing every fifth catch in the barrel and chests next to it; rods wear out and spares come from those containers; vanilla routine paused while working; longer shift; `/workplace cancel <fisherman uuid>` stops it
 - [x] Fishers smoke the catch: at every drop-off `work/Furnaces.tend` loads raw fish (`#fishes` with a recipe for that
   furnace type) into smokers/furnaces near the barrel, with coal/charcoal, and brings the cooked fish out
@@ -303,3 +305,6 @@ workstation, like the rest of the mod.
 
 ## Notes / blocked
 - (autonomous sessions: write anything you could not finish or need the owner to decide here)
+- Owner decision: should village farmers take on their farm **by themselves**, with no marker? It would make every
+  village's farmers harvest into nearby chests (or drop the harvest by the composter) instead of sharing bread the
+  vanilla way. For now a blank Field Marker does it farmer by farmer.

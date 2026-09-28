@@ -160,6 +160,10 @@ picked for their leaves and planted again. Sweet berry bushes, cocoa pods and gl
 the farmer uses it on the growing crops. The harvest goes into the chests.
 Sneak-right-click the farmer with an empty hand to see how it's going or to stop.
 
+**A village's own farm.** Give a farmer a **blank** Field Marker (no corners marked) and they take on the farm by their
+composter: the farmland nearest to it, within 16 blocks, and everything joined to that, across the water channels
+between the rows too. Handy for the farmers a village comes with.
+
 ## Fishermen
 Hand any **Fisherman** villager (the ones with a barrel) a **fishing rod**. They walk to the nearest water within 16
 blocks of their barrel, cast from the shore and reel in fish (and the odd bit of junk), bringing the catch back to

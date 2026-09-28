@@ -40,6 +40,31 @@ public class FarmerGameTests implements FabricGameTest {
 		return villager;
 	}
 
+	/**
+	 * A blank Field Marker given to a farmer: they take on the farm by their composter — both halves of it, across the
+	 * water channel — and not the farmland further off.
+	 */
+	@GameTest(template = AREA, timeoutTicks = 200)
+	public void farmerTakesOnTheFarmByTheComposter(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		for (BlockPos p : BlockPos.betweenClosed(new BlockPos(6, 1, 6), new BlockPos(14, 1, 14))) {
+			helper.setBlock(p, p.getX() == 10 ? Blocks.WATER : Blocks.FARMLAND);
+		}
+		for (BlockPos p : BlockPos.betweenClosed(new BlockPos(18, 1, 18), new BlockPos(20, 1, 20))) {
+			helper.setBlock(p, Blocks.FARMLAND); // someone else's field
+		}
+		helper.setBlock(COMPOSTER, Blocks.COMPOSTER);
+		Villager villager = helper.spawn(EntityType.VILLAGER, new BlockPos(3, 2, 3));
+		Jobs.employ(level, villager, helper.absolutePos(COMPOSTER), PoiTypes.FARMER, VillagerProfession.FARMER);
+		net.minecraft.server.level.ServerPlayer player = helper.makeMockServerPlayerInLevel();
+		ItemStack blank = new ItemStack(io.github.jcondedata.aliveworkplace.registry.ModItems.FIELD_MARKER);
+		helper.assertTrue(Fields.assign(player, villager, blank).consumesAction() && Fields.hasField(villager), "the farmer didn't take the farm on");
+		BoundingBox box = villager.getAttached(io.github.jcondedata.aliveworkplace.registry.ModAttachments.FARM_FIELD).box();
+		BoundingBox expected = BoundingBox.fromCorners(helper.absolutePos(new BlockPos(6, 1, 6)), helper.absolutePos(new BlockPos(14, 1, 14)));
+		helper.assertTrue(box.equals(expected), "took on " + box + " instead of " + expected);
+		helper.succeed();
+	}
+
 	/** Ripe wheat is cut, wheat goes back in the ground at once, the harvest ends up in the chest. */
 	@GameTest(template = AREA, timeoutTicks = 3000)
 	public void farmerHarvestsAndReplants(GameTestHelper helper) {

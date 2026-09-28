@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+## 0.61.0 — 2026-09-28
+
+### Added
+- **Village farms**: give a farmer a blank Field Marker (no corners marked) and they take on the farm by their
+  composter — the nearest farmland within 16 blocks and everything joined to it, across the water channels too.
+
 ## 0.60.0 — 2026-09-28
 
 ### Added

@@ -62,6 +62,33 @@ public class MailGameTests implements FabricGameTest {
 	}
 
 	/** A letter is a written book from the sender; /workplace mail tells both ends where a parcel is. */
+	/**
+	 * Parcels for a player with no mailbox wait at the post office through the dawn, and are picked up by right-clicking
+	 * a Postal Desk.
+	 */
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
+	public void parcelsWaitAtThePostalDesk(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		net.minecraft.server.level.ServerPlayer player = helper.makeMockServerPlayerInLevel();
+		PostOffice office = PostOffice.get(level.getServer());
+		Parcel parcel = office.post(UUID.randomUUID(), "Alex", player.getUUID(), player.getGameProfile().getName(),
+			GlobalPos.of(level.dimension(), helper.absolutePos(BlockPos.ZERO)), level.getGameTime(), List.of(new ItemStack(Items.DIAMOND, 3)));
+		parcel.setStatus(Parcel.Status.IN_TRANSIT);
+		office.dawn(level.getServer());
+		helper.assertTrue(office.parcel(parcel.id()) != null, "a parcel for someone with no mailbox should wait, not vanish");
+		helper.assertTrue(io.github.jcondedata.aliveworkplace.mail.Mail.tracking(level.getServer(), player.getUUID()).get(0).getString().contains("Postal Desk"),
+			"tracking should say where to pick it up");
+
+		BlockPos desk = new BlockPos(0, 1, 0);
+		helper.setBlock(desk, ModBlocks.POSTAL_DESK);
+		net.minecraft.world.level.block.state.BlockState state = helper.getBlockState(desk);
+		state.useWithoutItem(level, player, new net.minecraft.world.phys.BlockHitResult(
+			net.minecraft.world.phys.Vec3.atCenterOf(helper.absolutePos(desk)), net.minecraft.core.Direction.UP, helper.absolutePos(desk), false));
+		helper.assertTrue(player.getInventory().countItem(Items.DIAMOND) == 3, "the parcel's diamonds should be in the player's inventory");
+		helper.assertTrue(office.parcel(parcel.id()) == null, "the parcel should be gone once picked up");
+		helper.succeed();
+	}
+
 	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
 	public void lettersAndTracking(GameTestHelper helper) {
 		ItemStack letter = io.github.jcondedata.aliveworkplace.mail.Mail.letter("Alice", "See you at the market!");

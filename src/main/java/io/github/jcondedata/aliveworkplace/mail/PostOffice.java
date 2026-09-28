@@ -136,6 +136,7 @@ public final class PostOffice extends SavedData {
 	public void dawn(MinecraftServer server) {
 		Iterator<Parcel> it = parcels.iterator();
 		List<Parcel> delivered = new ArrayList<>();
+		Map<UUID, Integer> waiting = new HashMap<>();
 		while (it.hasNext()) {
 			Parcel parcel = it.next();
 			if (parcel.status() != Parcel.Status.IN_TRANSIT) {
@@ -143,10 +144,19 @@ public final class PostOffice extends SavedData {
 			}
 			if (deliver(server, parcel)) {
 				delivered.add(parcel);
+			} else if (!mailboxes.containsKey(parcel.to())) {
+				waiting.merge(parcel.to(), 1, Integer::sum);
 			}
 		}
 		parcels.removeAll(delivered);
 		setDirty();
+		// No mailbox to deliver to: the parcels wait at the post office.
+		waiting.forEach((player, count) -> {
+			ServerPlayer online = server.getPlayerList().getPlayer(player);
+			if (online != null) {
+				online.sendSystemMessage(Component.translatable("message.aliveworkplace.mail.waiting_at_desk", count).withStyle(ChatFormatting.GOLD));
+			}
+		});
 	}
 
 	/**

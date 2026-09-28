@@ -185,6 +185,10 @@ night mail and arrive at the next dawn (or at once, by air mail, with a Flying-t
 Only you, your friends (`/workplace friend add`) and operators can open your
 mailbox.
 
+**The post office.** No mailbox? Mail for you waits at the post office: right-click any **Postal Desk** and you get
+every parcel handed in for you (you're told at dawn when some are waiting). That works for night mail on its way to
+your mailbox too, if you'd rather not wait for dawn.
+
 **Courier routes.** When there's no mail, postmen haul between your chests. Craft a **Delivery Note** (paper, a
 feather and an ink sac), right-click the container to take from and then the one to bring to (say, the quarry chest
 and the builder's chest), and give the note to a postman. They carry everything except tools, weapons and armor — or,

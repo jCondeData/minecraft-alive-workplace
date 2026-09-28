@@ -45,6 +45,11 @@ public class BuildersBenchBlock extends HorizontalDirectionalBlock {
 
 	@Override
 	protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
+		if (level instanceof ServerLevel && state.is(io.github.jcondedata.aliveworkplace.registry.ModBlocks.POSTAL_DESK)
+			&& player instanceof net.minecraft.server.level.ServerPlayer serverPlayer
+			&& io.github.jcondedata.aliveworkplace.mail.Mail.collectAtDesk(serverPlayer) > 0) {
+			return InteractionResult.SUCCESS; // the post office's lockers: parcels waiting for them
+		}
 		if (level instanceof ServerLevel serverLevel) {
 			int chests = SupplyContainers.find(serverLevel, pos, null).size();
 			player.displayClientMessage(Component.translatable("message.aliveworkplace.bench.info", chests, SupplyContainers.RADIUS), false);

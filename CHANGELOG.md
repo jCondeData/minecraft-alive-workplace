@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+## 0.62.0 — 2026-09-28
+
+### Added
+- **The post office**: mail for a player with no mailbox waits at the post office — right-click any Postal Desk to pick
+  up every parcel handed in for you (night mail on its way to your mailbox too). At dawn you're told when some are
+  waiting, and `/workplace mail` says where they are. Before, such parcels were stuck for good.
+
 ## 0.61.0 — 2026-09-28
 
 ### Added

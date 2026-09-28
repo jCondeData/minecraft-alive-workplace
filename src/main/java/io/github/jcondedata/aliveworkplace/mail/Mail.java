@@ -110,12 +110,50 @@ public final class Mail {
 			Component where = switch (parcel.status()) {
 				case AWAITING_PICKUP -> Component.translatable("message.aliveworkplace.mail.status.awaiting_pickup");
 				case CARRIED -> Component.translatable("message.aliveworkplace.mail.status.carried");
-				case IN_TRANSIT -> Component.translatable("message.aliveworkplace.mail.status.in_transit");
+				case IN_TRANSIT -> Component.translatable(PostOffice.get(server).mailboxOf(parcel.to()) == null
+					? "message.aliveworkplace.mail.status.at_desk" : "message.aliveworkplace.mail.status.in_transit");
 			};
 			out.add(Component.translatable(sent ? "message.aliveworkplace.mail.track_to" : "message.aliveworkplace.mail.track_from",
 				sent ? parcel.toName() : parcel.fromName(), parcel.count(), where).withStyle(sent ? ChatFormatting.GRAY : ChatFormatting.GOLD));
 		}
 		return out;
+	}
+
+	/**
+	 * The post office's lockers: at any Postal Desk a player collects every parcel handed in for them (the ones that go
+	 * out with the night mail — and wait there for good when they have no mailbox). Returns how many they collected.
+	 */
+	public static int collectAtDesk(ServerPlayer player) {
+		PostOffice office = PostOffice.get(player.getServer());
+		List<Parcel> mine = new java.util.ArrayList<>();
+		for (Parcel parcel : office.parcels()) {
+			if (parcel.to().equals(player.getUUID()) && parcel.status() == Parcel.Status.IN_TRANSIT) {
+				mine.add(parcel);
+			}
+		}
+		if (mine.isEmpty()) {
+			player.displayClientMessage(Component.translatable("message.aliveworkplace.mail.none_at_desk").withStyle(ChatFormatting.GRAY), true);
+			return 0;
+		}
+		java.util.Set<String> senders = new java.util.LinkedHashSet<>();
+		for (Parcel parcel : mine) {
+			for (ItemStack stack : parcel.items()) {
+				ItemStack copy = stack.copy();
+				if (!player.getInventory().add(copy)) {
+					player.drop(copy, false);
+				}
+			}
+			office.remove(parcel);
+			senders.add(parcel.fromName());
+			ServerPlayer sender = player.getServer().getPlayerList().getPlayer(parcel.from());
+			if (sender != null && !parcel.from().equals(parcel.to())) {
+				sender.sendSystemMessage(Component.translatable("message.aliveworkplace.mail.delivered", parcel.toName()).withStyle(ChatFormatting.GRAY));
+			}
+		}
+		player.level().playSound(null, player.blockPosition(), net.minecraft.sounds.SoundEvents.BUNDLE_DROP_CONTENTS,
+			net.minecraft.sounds.SoundSource.PLAYERS, 0.8f, 1f);
+		tell(player, Component.translatable("message.aliveworkplace.mail.collected", mine.size(), String.join(", ", senders)), ChatFormatting.GOLD);
+		return mine.size();
 	}
 
 	private static void tell(ServerPlayer player, Component message, ChatFormatting color) {

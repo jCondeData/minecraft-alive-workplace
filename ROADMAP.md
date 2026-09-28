@@ -141,7 +141,9 @@ workstation, like the rest of the mod.
 - [x] Letters (a "Letter:" line on the mailbox screen: the parcel gets a written book from the sender with it on the page;
   a letter can go on its own) and tracking (`/workplace mail`, `Mail.tracking`: each parcel to or from you and whether
   it's waiting for pickup, in a postman's bag or in the night mail; **[Track]** after posting)
-- [ ] Postman follow-ups: parcel lockers at the Postal Desk for players without a mailbox
+- [x] Parcel lockers: right-clicking any Postal Desk hands a player every parcel handed in for them (`Mail.collectAtDesk`;
+  IN_TRANSIT parcels, which for a player with no mailbox wait there for good); a dawn message tells them; tracking says
+  "waiting at the post office"
 - [x] **Guard** (Guard Post workstation): fights monsters (not creepers) within 24 blocks of the post at any hour
   (combat is in their CORE activity, and they never panic), with the best weapon and armor from the chests near the
   post; 40 health, heals between fights, +10% damage per level, XP per kill; night-watch schedule (patrol evening

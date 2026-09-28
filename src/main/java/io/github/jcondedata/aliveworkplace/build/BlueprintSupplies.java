@@ -80,6 +80,11 @@ public final class BlueprintSupplies {
 				}
 			}
 		}
+		for (BuildPlan.EntityStep entity : plan.entities()) {
+			if (!BuildEntities.isPresent(level, entity)) {
+				need.merge(entity.cost(), 1, Integer::sum);
+			}
+		}
 		List<SupplyReport.Missing> missing = new ArrayList<>();
 		for (Map.Entry<Item, Integer> e : need.entrySet()) {
 			long have = 0;

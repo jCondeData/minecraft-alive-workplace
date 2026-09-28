@@ -66,7 +66,16 @@ public final class BuildPlan {
 		}
 	}
 
+	/**
+	 * An entity to put up once the build is finished (item frame, painting, armor stand): where in the
+	 * world, its data (without contents), and how to turn it to match the placement.
+	 */
+	public record EntityStep(net.minecraft.world.phys.Vec3 pos, CompoundTag nbt, Item cost,
+							 net.minecraft.world.level.block.Rotation rotation, net.minecraft.world.level.block.Mirror mirror) {
+	}
+
 	private final Map<BlockPos, BlockState> targets;
+	private List<EntityStep> entities = List.of();
 	private final List<Step> clear;
 	private final List<Step> foundation;
 	private final List<Step> structure;
@@ -142,8 +151,24 @@ public final class BuildPlan {
 		structure.sort(order(bounds, false));
 		decoration.sort(order(bounds, false));
 		List<Step> landscape = level != null && landscapeMargin > 0 ? landscape(level, bounds, landscapeMargin) : List.of();
-		return new BuildPlan(List.copyOf(clear), List.copyOf(foundation), List.copyOf(structure), List.copyOf(decoration),
+		BuildPlan plan = new BuildPlan(List.copyOf(clear), List.copyOf(foundation), List.copyOf(structure), List.copyOf(decoration),
 			List.copyOf(landscape), List.of(), bounds);
+		List<EntityStep> entities = new ArrayList<>();
+		net.minecraft.world.phys.Vec3 origin = net.minecraft.world.phys.Vec3.atLowerCornerOf(placement.origin());
+		for (Blueprint.EntityEntry entity : blueprint.entities()) {
+			Item cost = io.github.jcondedata.aliveworkplace.blueprint.BlueprintEntities.cost(entity.nbt());
+			if (cost != net.minecraft.world.item.Items.AIR) {
+				net.minecraft.world.phys.Vec3 pos = StructureTemplate.transform(entity.pos(), placement.mirror(), placement.rotation(), BlockPos.ZERO).add(origin);
+				entities.add(new EntityStep(pos, entity.nbt(), cost, placement.rotation(), placement.mirror()));
+			}
+		}
+		plan.entities = List.copyOf(entities);
+		return plan;
+	}
+
+	/** Entities to put up when the build is finished. */
+	public List<EntityStep> entities() {
+		return entities;
 	}
 
 	/**
@@ -363,7 +388,7 @@ public final class BuildPlan {
 		return out;
 	}
 
-	/** Total materials for the whole build (what a player needs to gather). */
+	/** Total materials for the whole build (what a player needs to gather), item frames and the like included. */
 	public Map<Item, Integer> materials() {
 		Map<Item, Integer> out = new java.util.LinkedHashMap<>();
 		for (List<Step> list : List.of(foundation, structure, decoration)) {
@@ -372,6 +397,9 @@ public final class BuildPlan {
 					out.merge(r.item(), r.count(), Integer::sum);
 				}
 			}
+		}
+		for (EntityStep entity : entities) {
+			out.merge(entity.cost(), 1, Integer::sum);
 		}
 		return out;
 	}

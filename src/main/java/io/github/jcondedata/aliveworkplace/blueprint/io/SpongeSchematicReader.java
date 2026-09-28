@@ -123,7 +123,28 @@ final class SpongeSchematicReader {
 			nbt = nbt != null && state.hasBlockEntity() ? BlueprintFiles.withBlockEntityId(states.fixBlockEntity(nbt), state) : null;
 			entries.add(new Blueprint.Entry(pos, BlueprintFiles.normalizeAir(state), nbt));
 		}
-		return new Blueprint(id, size, List.copyOf(entries));
+		List<Blueprint.EntityEntry> entities = new ArrayList<>();
+		ListTag entityList = s.getList("Entities", Tag.TAG_COMPOUND);
+		for (int i = 0; i < entityList.size(); i++) {
+			CompoundTag e = entityList.getCompound(i);
+			ListTag p = e.getList("Pos", Tag.TAG_DOUBLE);
+			CompoundTag entityData;
+			if (e.contains("Data", Tag.TAG_COMPOUND)) {
+				entityData = e.getCompound("Data").copy(); // v3
+			} else {
+				entityData = e.copy(); // v2: data next to Pos and Id
+				entityData.remove("Pos");
+				entityData.remove("Id");
+			}
+			if (e.contains("Id")) {
+				entityData.putString("id", e.getString("Id"));
+			}
+			CompoundTag clean = io.github.jcondedata.aliveworkplace.blueprint.BlueprintEntities.clean(states.fixEntity(entityData));
+			if (p.size() == 3 && clean != null) {
+				entities.add(new Blueprint.EntityEntry(new net.minecraft.world.phys.Vec3(p.getDouble(0), p.getDouble(1), p.getDouble(2)), clean));
+			}
+		}
+		return new Blueprint(id, size, List.copyOf(entries), List.copyOf(entities));
 	}
 
 	private SpongeSchematicReader() {

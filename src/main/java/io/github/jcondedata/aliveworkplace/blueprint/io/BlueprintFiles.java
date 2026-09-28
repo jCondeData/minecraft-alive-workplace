@@ -140,7 +140,24 @@ public final class BlueprintFiles {
 		tag.put("size", size);
 		tag.put("palette", palette);
 		tag.put("blocks", blocks);
-		tag.put("entities", new ListTag());
+		ListTag entities = new ListTag();
+		for (Blueprint.EntityEntry entity : blueprint.entities()) {
+			CompoundTag e = new CompoundTag();
+			ListTag pos = new ListTag();
+			pos.add(net.minecraft.nbt.DoubleTag.valueOf(entity.pos().x));
+			pos.add(net.minecraft.nbt.DoubleTag.valueOf(entity.pos().y));
+			pos.add(net.minecraft.nbt.DoubleTag.valueOf(entity.pos().z));
+			e.put("pos", pos);
+			BlockPos block = BlockPos.containing(entity.pos());
+			ListTag blockPos = new ListTag();
+			blockPos.add(IntTag.valueOf(block.getX()));
+			blockPos.add(IntTag.valueOf(block.getY()));
+			blockPos.add(IntTag.valueOf(block.getZ()));
+			e.put("blockPos", blockPos);
+			e.put("nbt", entity.nbt().copy());
+			entities.add(e);
+		}
+		tag.put("entities", entities);
 		tag.putInt("DataVersion", SharedConstants.getCurrentVersion().getDataVersion().getVersion());
 		return tag;
 	}

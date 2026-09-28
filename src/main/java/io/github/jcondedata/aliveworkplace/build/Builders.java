@@ -450,6 +450,9 @@ public final class Builders {
 		BlockPos bench = benchPos(villager).orElse(villager.blockPosition());
 		List<BlockPos> supplies = SupplyContainers.find(level, bench, null);
 		emptyBag(level, villager, bench, supplies);
+		// Item frames, paintings and armor stands go up last, from the chests.
+		BuildPlan plan = site.isDeconstruction() ? null : site.plan(level);
+		int entitiesLeft = plan == null ? 0 : BuildEntities.placeAll(level, plan, supplies);
 		returnBlueprint(level, site, bench, supplies);
 
 		level.sendParticles(ParticleTypes.HAPPY_VILLAGER, villager.getX(), villager.getY() + 1.8, villager.getZ(), 12, 0.5, 0.5, 0.5, 0.0);
@@ -458,6 +461,9 @@ public final class Builders {
 		if (owner != null) {
 			tell(owner, Component.translatable(site.isDeconstruction() ? "message.aliveworkplace.finished_deconstruct" : "message.aliveworkplace.finished",
 				villager.getDisplayName(), Blueprints.displayName(site.structure())), ChatFormatting.GREEN);
+			if (entitiesLeft > 0) {
+				tell(owner, Component.translatable("message.aliveworkplace.entities_left", entitiesLeft), ChatFormatting.YELLOW);
+			}
 		}
 		endJob(level, villager, site);
 		BuilderLevels.onFinished(level, villager, site);

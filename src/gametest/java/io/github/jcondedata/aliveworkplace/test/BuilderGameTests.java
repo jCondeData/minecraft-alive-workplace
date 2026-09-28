@@ -144,6 +144,66 @@ public class BuilderGameTests implements FabricGameTest {
 		});
 	}
 
+	/**
+	 * A blueprint with an item frame and an armor stand (captured with a diamond in the frame and a helmet on
+	 * the stand): built turned a quarter, both go up empty, turned with the build, paid for from the chest.
+	 */
+	@GameTest(template = AREA, timeoutTicks = 2400)
+	public void builderPutsUpFramesAndStandsEmpty(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		BlockPos src = new BlockPos(12, 2, 12);
+		for (int x = 0; x < 3; x++) {
+			for (int y = 0; y < 2; y++) {
+				helper.setBlock(src.offset(x, y, 0), Blocks.COBBLESTONE);
+			}
+		}
+		net.minecraft.world.entity.decoration.ItemFrame frame = new net.minecraft.world.entity.decoration.ItemFrame(level,
+			helper.absolutePos(src.offset(1, 1, 1)), Direction.SOUTH);
+		frame.setItem(new ItemStack(Items.DIAMOND));
+		level.addFreshEntity(frame);
+		net.minecraft.world.entity.decoration.ArmorStand stand = EntityType.ARMOR_STAND.create(level);
+		BlockPos standAt = helper.absolutePos(src.offset(0, 0, 1));
+		stand.moveTo(standAt.getX() + 0.5, standAt.getY(), standAt.getZ() + 0.5, 0, 0);
+		stand.setItemSlot(net.minecraft.world.entity.EquipmentSlot.HEAD, new ItemStack(Items.DIAMOND_HELMET));
+		level.addFreshEntity(stand);
+		ResourceLocation id = ResourceLocation.fromNamespaceAndPath("aliveworkplace_test", "gallery_" + Long.toHexString(level.getGameTime()));
+		level.getStructureManager().getOrCreate(id).fillFromWorld(level, helper.absolutePos(src), new Vec3i(3, 2, 2), true, Blocks.STRUCTURE_VOID);
+		frame.discard();
+		stand.discard();
+		for (int x = 0; x < 3; x++) {
+			for (int y = 0; y < 2; y++) {
+				helper.setBlock(src.offset(x, y, 0), Blocks.AIR);
+			}
+		}
+
+		Blueprint blueprint = BlueprintLibrary.get(level, id).orElseThrow();
+		helper.assertTrue(blueprint.entities().size() == 2, "entities in the blueprint: " + blueprint.entities());
+		helper.assertTrue(blueprint.entities().stream().noneMatch(e -> e.nbt().contains("Item") || e.nbt().contains("ArmorItems")),
+			"contents were copied into the blueprint");
+		Blueprint again = Blueprint.fromStructureNbt(id, io.github.jcondedata.aliveworkplace.blueprint.io.BlueprintFiles.toStructureNbt(blueprint),
+			net.minecraft.core.registries.BuiltInRegistries.BLOCK.asLookup());
+		helper.assertTrue(again.entities().size() == 2, "entities lost when saved and read back");
+
+		Setup s = setup(helper, id, HUT_ORIGIN, Rotation.CLOCKWISE_90, new ItemStack(Items.COBBLESTONE, 6), new ItemStack(Items.ITEM_FRAME),
+			new ItemStack(Items.ARMOR_STAND));
+		helper.assertTrue(s.plan().entities().size() == 2, "entities in the plan");
+		helper.succeedWhen(() -> {
+			assertBuilt(helper, s);
+			List<net.minecraft.world.entity.decoration.ItemFrame> frames = level.getEntitiesOfClass(net.minecraft.world.entity.decoration.ItemFrame.class,
+				new net.minecraft.world.phys.AABB(helper.absolutePos(new BlockPos(0, 0, 0))).expandTowards(17, 8, 17));
+			frames.removeIf(f -> f == frame);
+			helper.assertTrue(frames.size() == 1, frames.size() + " item frames");
+			helper.assertTrue(frames.get(0).getItem().isEmpty(), "the frame came with its diamond");
+			helper.assertTrue(frames.get(0).getDirection() == Direction.WEST, "the frame faces " + frames.get(0).getDirection() + ", not west");
+			List<net.minecraft.world.entity.decoration.ArmorStand> stands = level.getEntitiesOfClass(net.minecraft.world.entity.decoration.ArmorStand.class,
+				new net.minecraft.world.phys.AABB(helper.absolutePos(new BlockPos(0, 0, 0))).expandTowards(17, 8, 17), e -> e != stand);
+			helper.assertTrue(stands.size() == 1, stands.size() + " armor stands");
+			helper.assertTrue(stands.get(0).getItemBySlot(net.minecraft.world.entity.EquipmentSlot.HEAD).isEmpty(), "the stand came with its helmet");
+			Container chest = helper.getBlockEntity(CHEST);
+			helper.assertTrue(chest.countItem(Items.ITEM_FRAME) == 0 && chest.countItem(Items.ARMOR_STAND) == 0, "not paid for from the chest");
+		});
+	}
+
 	/** With levelling turned off, the ground around a build stays as it was. */
 	@GameTest(template = AREA, timeoutTicks = 2400)
 	public void levellingCanBeTurnedOff(GameTestHelper helper) {

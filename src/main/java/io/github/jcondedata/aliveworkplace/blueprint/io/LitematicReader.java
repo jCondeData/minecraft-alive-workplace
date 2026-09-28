@@ -29,7 +29,7 @@ final class LitematicReader {
 		}
 
 		// First pass: bounds of every region in schematic space.
-		record Region(String name, CompoundTag tag, BlockPos min, Vec3i size) {
+		record Region(String name, CompoundTag tag, BlockPos position, BlockPos min, Vec3i size) {
 		}
 		List<Region> list = new ArrayList<>();
 		int minX = Integer.MAX_VALUE, minY = Integer.MAX_VALUE, minZ = Integer.MAX_VALUE;
@@ -44,7 +44,7 @@ final class LitematicReader {
 				rawSize.getX() < 0 ? pos.getX() + rawSize.getX() + 1 : pos.getX(),
 				rawSize.getY() < 0 ? pos.getY() + rawSize.getY() + 1 : pos.getY(),
 				rawSize.getZ() < 0 ? pos.getZ() + rawSize.getZ() + 1 : pos.getZ());
-			Region region = new Region(name, r, min, new Vec3i(sx, sy, sz));
+			Region region = new Region(name, r, pos, min, new Vec3i(sx, sy, sz));
 			list.add(region);
 			minX = Math.min(minX, min.getX());
 			minY = Math.min(minY, min.getY());
@@ -57,8 +57,21 @@ final class LitematicReader {
 		BlueprintFiles.checkVolume(size, maxVolume);
 
 		Map<BlockPos, Blueprint.Entry> entries = new HashMap<>();
+		List<Blueprint.EntityEntry> entities = new ArrayList<>();
 		for (Region region : list) {
 			CompoundTag r = region.tag();
+			// Entity positions are relative to the region's Position corner.
+			ListTag entityList = r.getList("Entities", Tag.TAG_COMPOUND);
+			for (int i = 0; i < entityList.size(); i++) {
+				CompoundTag e = states.fixEntity(entityList.getCompound(i));
+				ListTag p = e.getList("Pos", Tag.TAG_DOUBLE);
+				CompoundTag clean = io.github.jcondedata.aliveworkplace.blueprint.BlueprintEntities.clean(e);
+				if (p.size() == 3 && clean != null) {
+					entities.add(new Blueprint.EntityEntry(new net.minecraft.world.phys.Vec3(
+						p.getDouble(0) + region.position().getX() - minX, p.getDouble(1) + region.position().getY() - minY,
+						p.getDouble(2) + region.position().getZ() - minZ), clean));
+				}
+			}
 			ListTag paletteTag = r.getList("BlockStatePalette", Tag.TAG_COMPOUND);
 			BlockState[] palette = new BlockState[paletteTag.size()];
 			for (int i = 0; i < palette.length; i++) {
@@ -103,7 +116,7 @@ final class LitematicReader {
 				}
 			}
 		}
-		return new Blueprint(id, size, List.copyOf(entries.values()));
+		return new Blueprint(id, size, List.copyOf(entries.values()), List.copyOf(entities));
 	}
 
 	/** Litematica's packed array: entries are {@code bits} wide and may straddle two longs. */

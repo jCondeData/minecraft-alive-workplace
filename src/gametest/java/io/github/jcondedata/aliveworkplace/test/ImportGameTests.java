@@ -154,7 +154,15 @@ public class ImportGameTests implements FabricGameTest {
 		java.nio.file.Path dir = helper.getLevel().getServer().getWorldPath(net.minecraft.world.level.storage.LevelResource.GENERATED_DIR)
 			.resolve("aliveworkplace/structures").resolve(folder);
 		try (java.util.stream.Stream<java.nio.file.Path> files = java.nio.file.Files.walk(dir)) {
-			files.sorted(java.util.Comparator.reverseOrder()).forEach(p -> p.toFile().delete());
+			files.sorted(java.util.Comparator.reverseOrder()).forEach(p -> {
+				// Forget it in the template manager too: another test may have loaded it (e.g. by listing the library).
+				String name = p.getFileName().toString();
+				if (name.endsWith(".nbt")) {
+					helper.getLevel().getServer().getStructureManager().remove(io.github.jcondedata.aliveworkplace.AliveWorkplace.id(
+						folder + "/" + name.substring(0, name.length() - 4)));
+				}
+				p.toFile().delete();
+			});
 		} catch (IOException ignored) {
 			// nothing to clear
 		}

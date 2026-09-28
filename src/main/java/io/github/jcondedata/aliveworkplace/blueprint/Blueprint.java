@@ -14,6 +14,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
+import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -24,8 +25,19 @@ import org.jetbrains.annotations.Nullable;
  * <p>All import formats (.nbt structure templates today; .schem / .litematic later) are converted
  * into this model so the builder AI only needs to understand one thing.
  */
-public record Blueprint(ResourceLocation id, Vec3i size, List<Entry> blocks) {
+public record Blueprint(ResourceLocation id, Vec3i size, List<Entry> blocks, List<EntityEntry> entities) {
 	public record Entry(BlockPos pos, BlockState state, @Nullable CompoundTag nbt) {
+	}
+
+	/**
+	 * An entity the builder puts up (item frame, glow item frame, painting, armor stand): where, relative to
+	 * the template origin, and its data without contents (see {@link BlueprintEntities#clean}).
+	 */
+	public record EntityEntry(Vec3 pos, CompoundTag nbt) {
+	}
+
+	public Blueprint(ResourceLocation id, Vec3i size, List<Entry> blocks) {
+		this(id, size, blocks, List.of());
 	}
 
 	/** Reads a vanilla structure template (already data-fixed by the template manager). */
@@ -59,7 +71,17 @@ public record Blueprint(ResourceLocation id, Vec3i size, List<Entry> blocks) {
 			CompoundTag nbt = b.contains("nbt", Tag.TAG_COMPOUND) ? b.getCompound("nbt") : null;
 			entries.add(new Entry(new BlockPos(p.getInt(0), p.getInt(1), p.getInt(2)), state, nbt));
 		}
-		return new Blueprint(id, size, List.copyOf(entries));
+		List<EntityEntry> entities = new ArrayList<>();
+		ListTag entitiesTag = tag.getList("entities", Tag.TAG_COMPOUND);
+		for (int i = 0; i < entitiesTag.size(); i++) {
+			CompoundTag e = entitiesTag.getCompound(i);
+			ListTag p = e.getList("pos", Tag.TAG_DOUBLE);
+			CompoundTag nbt = BlueprintEntities.clean(e.getCompound("nbt"));
+			if (p.size() == 3 && nbt != null) {
+				entities.add(new EntityEntry(new Vec3(p.getDouble(0), p.getDouble(1), p.getDouble(2)), nbt));
+			}
+		}
+		return new Blueprint(id, size, List.copyOf(entries), List.copyOf(entities));
 	}
 
 	/** Number of non-air blocks — what a player would call the size of the job. */

@@ -113,6 +113,7 @@
   "message.aliveworkplace.status.stage.decoration": "Finishing touches",
   "message.aliveworkplace.status.stage.done": "Done",
   "message.aliveworkplace.status.stage.landscape": "Levelling the ground around it",
+  "message.aliveworkplace.entities_left": "%s item frame(s), painting(s) or armor stand(s) weren't put up: put them in the chests and hand the blueprint over again.",
   "gamerule.workplaceLevelGround": "Alive Workplace: how many blocks around a finished build the builder levels the ground (0 = never)",
   "message.aliveworkplace.status.state.starting": "starting",
   "message.aliveworkplace.status.state.working": "working",

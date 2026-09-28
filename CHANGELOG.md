@@ -6,6 +6,10 @@
 - **Water and lava in blueprints**: fountains, pools and fireplaces get built too. The builder pours each still water
   or lava block from a bucket in the chests once the walls are up (flowing water fills in by itself) and puts the
   empty bucket back. Blueprint materials list the buckets.
+- **Item frames, paintings and armor stands in blueprints** go up when the building is finished, paid for with an
+  item frame, painting or armor stand from the chests, and turned to match the building. They're always put up
+  empty: a blueprint never hands out what was in a frame or on a stand. Works with structure files, .litematic and
+  .schem. If some are missing, the builder says so; stock them and hand the blueprint over again.
 
 ## 0.26.0 — 2026-09-27
 

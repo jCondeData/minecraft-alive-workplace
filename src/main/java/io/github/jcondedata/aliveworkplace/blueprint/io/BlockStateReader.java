@@ -81,6 +81,14 @@ final class BlockStateReader {
 		return tag;
 	}
 
+	/** Upgrades entity data (item frames, paintings, armor stands) written by an older version. */
+	CompoundTag fixEntity(CompoundTag tag) {
+		if (fromVersion > 0 && fromVersion < currentVersion) {
+			return (CompoundTag) fixer.update(References.ENTITY, new Dynamic<Tag>(NbtOps.INSTANCE, tag), fromVersion, currentVersion).getValue();
+		}
+		return tag;
+	}
+
 	int unknownBlocks() {
 		return unknown;
 	}

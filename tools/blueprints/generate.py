@@ -498,9 +498,18 @@ def ball_workshop(b, style):
     b.set(1, 1, 3, "anvil", facing="north")
 
 
+def ferry_house(b, style):
+    """A Travel Post (it joins the travel network under a village name) and a bench for passengers."""
+    b.set(1, 1, 6, "aliveworkplace:travel_post", facing="east")
+    b.set(1, 1, 4, "spruce_stairs", facing="east", half="bottom", shape="straight", waterlogged=False)
+    b.set(1, 1, 3, "spruce_stairs", facing="east", half="bottom", shape="straight", waterlogged=False)
+    b.set(1, 2, 5, "lantern", hanging=False, waterlogged=False)
+    b.set(1, 1, 5, "spruce_planks")
+
+
 VILLAGE_HOUSES = {"trainers_house": trainers_house, "guard_house": guard_house, "clinic": clinic, "post_office": post_office,
                   "leaders_hall": leaders_hall, "school": school, "trade_hall": trade_hall, "orchard_house": orchard_house,
-                  "ball_workshop": ball_workshop}
+                  "ball_workshop": ball_workshop, "ferry_house": ferry_house}
 
 
 # --- Gametest fixtures ------------------------------------------------------------------

@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+## 0.39.0 — 2026-09-28
+
+### Added
+- **Ferry houses** in villages: a travel post with a ferryman, which joins the travel network under a village name
+  ("Willowbrook", "Amberhollow"…) the first time someone uses it. Right-click it once and ferrymen elsewhere sell
+  tickets there.
+
 ## 0.38.0 — 2026-09-28
 
 ### Added

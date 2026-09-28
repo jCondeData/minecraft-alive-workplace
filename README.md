@@ -6,7 +6,7 @@ torches. **Miners** dig out quarries, **Lumberjacks** cut down and replant trees
 your fields and **Fishermen** fish for you, dropping everything off in your chests. **Postmen** carry mail
 between players' mailboxes, **Guards** keep monsters away, **Nurses** heal you (and your Pokémon),
 **Shopkeepers** run your shop, **Ferrymen** take you between villages, **Bards** play music and — with Cobblemon —
-**Trainers** battle you, **Move Tutors** teach your Pokémon new moves, **Ball Smiths** make Poké Balls and **Pokémon Traders** swap Pokémon with you. Villages grow workshops, guard houses, clinics, post offices and orchard houses on their own — and with Cobblemon,
+**Trainers** battle you, **Move Tutors** teach your Pokémon new moves, **Ball Smiths** make Poké Balls and **Pokémon Traders** swap Pokémon with you. Villages grow workshops, guard houses, clinics, post offices, orchard houses and ferry houses on their own — and with Cobblemon,
 trainer's houses, Trainer Leader halls, schools, trade halls and ball workshops (Repurposed Structures' villages too).
 
 ![Three builders putting up the starter blueprints](docs/media/timelapse.gif)
@@ -166,7 +166,9 @@ place it. Right-click posts to add them to the ones you know. A villager without
 **Ferryman**, who sells **Travel Tickets** to every other post you know (1 emerald per 256 blocks, 8 to another
 dimension). Use a ticket within 16 blocks of any travel post and you arrive at the ticket's post. With CobbleDollars,
 right-clicking the ferryman shows your destinations with fares in CobbleDollars (100 per emerald); click one twice
-to buy its ticket, or sneak-right-click to pay in emeralds.
+to buy its ticket, or sneak-right-click to pay in emeralds. Many villages have a **ferry house** with a travel post
+and a ferryman already: the post joins the network under a village name ("Willowbrook"), so right-click it once and
+it's on your list.
 
 ## Bards
 Craft a **Music Stand** (paper on a note block) and place it near a villager without a job. Put music discs in a

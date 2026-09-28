@@ -69,10 +69,10 @@ public class TravelPostBlock extends HorizontalDirectionalBlock {
 	protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
 		if (level instanceof ServerLevel serverLevel && player instanceof ServerPlayer serverPlayer) {
 			TravelNetwork network = TravelNetwork.get(serverLevel.getServer());
-			TravelNetwork.Post post = network.at(GlobalPos.of(level.dimension(), pos));
+			// A post nobody placed (it came with a village) joins the network under a village name.
+			TravelNetwork.Post post = network.atOrAdd(serverLevel, pos);
 			if (post == null) {
-				post = network.add(GlobalPos.of(level.dimension(), pos),
-					Component.translatable("message.aliveworkplace.travel.default_name", pos.getX(), pos.getZ()).getString());
+				return InteractionResult.CONSUME;
 			}
 			boolean found = network.visit(serverPlayer.getUUID(), post);
 			int others = network.known(serverPlayer.getUUID(), post).size();

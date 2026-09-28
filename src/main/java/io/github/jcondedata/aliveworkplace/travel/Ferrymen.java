@@ -34,7 +34,7 @@ public final class Ferrymen {
 	@Nullable
 	public static TravelNetwork.Post postOf(ServerLevel level, Villager villager) {
 		BlockPos pos = Builders.benchPos(villager).orElse(null);
-		return pos == null ? null : TravelNetwork.get(level.getServer()).at(GlobalPos.of(level.dimension(), pos));
+		return pos == null ? null : TravelNetwork.get(level.getServer()).atOrAdd(level, pos);
 	}
 
 	/** Offers: a ticket to every other post {@code player} has found, priced by distance. */

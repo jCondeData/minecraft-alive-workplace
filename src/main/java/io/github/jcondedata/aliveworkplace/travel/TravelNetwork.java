@@ -53,6 +53,29 @@ public final class TravelNetwork extends SavedData {
 	}
 
 	@Nullable
+	private static final String[] NAME_START = {"Oak", "Willow", "Maple", "Birch", "Stone", "River", "Sun", "Moon", "Fern", "Amber",
+		"Pine", "Clover", "Honey", "Misty", "Silver", "Copper", "Apple", "Berry", "Cedar", "Hazel", "Elder", "Lark", "Robin", "Thistle"};
+	private static final String[] NAME_END = {"brook", "field", "ford", "haven", "hollow", "ridge", "dale", "wick", "stead", "mere",
+		"vale", "crest", "bury", "ton", "port", "moor"};
+
+	/** A name for a post nobody named (one that came with a village): the same every time for the same spot. */
+	public static String villageName(BlockPos pos) {
+		long seed = pos.asLong() * 0x9E3779B97F4A7C15L;
+		java.util.Random random = new java.util.Random(seed);
+		return NAME_START[random.nextInt(NAME_START.length)] + NAME_END[random.nextInt(NAME_END.length)];
+	}
+
+	/** The post at {@code pos}, adding it under a village name if the block is there but not yet on the network. */
+	@org.jetbrains.annotations.Nullable
+	public Post atOrAdd(net.minecraft.server.level.ServerLevel level, BlockPos pos) {
+		GlobalPos where = GlobalPos.of(level.dimension(), pos);
+		Post post = at(where);
+		if (post == null && level.getBlockState(pos).getBlock() instanceof TravelPostBlock) {
+			post = add(where, villageName(pos));
+		}
+		return post;
+	}
+
 	public Post at(GlobalPos pos) {
 		for (Post p : posts.values()) {
 			if (p.pos().equals(pos)) {

@@ -56,4 +56,20 @@ public class TravelGameTests implements FabricGameTest {
 		helper.assertTrue(player.blockPosition().closerThan(helper.absolutePos(away), 4), "arrived at " + player.blockPosition());
 		helper.succeed();
 	}
+
+	/** A travel post that came with a village (nobody placed it) joins the network under a made-up village name. */
+	@GameTest(template = AREA)
+	public void villagePostsJoinTheNetwork(GameTestHelper helper) {
+		helper.setDayTime(2000);
+		BlockPos postPos = new BlockPos(4, 2, 4);
+		helper.setBlock(postPos, ModBlocks.TRAVEL_POST);
+		Villager ferryman = helper.spawn(EntityType.VILLAGER, new BlockPos(5, 2, 5));
+		Jobs.employ(helper.getLevel(), ferryman, helper.absolutePos(postPos), ModVillagers.TRAVEL_POST_POI, ModVillagers.FERRYMAN);
+		TravelNetwork.Post post = Ferrymen.postOf(helper.getLevel(), ferryman);
+		helper.assertTrue(post != null, "the village post didn't join the network");
+		helper.assertTrue(post.name().equals(TravelNetwork.villageName(helper.absolutePos(postPos))), "named " + post.name());
+		helper.assertTrue(post.name().matches("[A-Z][a-z]+"), "not a village name: " + post.name());
+		helper.assertTrue(Ferrymen.postOf(helper.getLevel(), ferryman).id().equals(post.id()), "added twice");
+		helper.succeed();
+	}
 }

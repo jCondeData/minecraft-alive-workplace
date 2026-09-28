@@ -152,7 +152,8 @@ how it's going or to stop.
 
 Craft a **Mailbox** (iron nuggets around a chest, on a fence) and place it: it's yours, and mail sent to you arrives
 there (the red flag goes up). To send something, open your mailbox, put items in the top row, write a player's name
-and press **Send**. A **Postman** picks it up: craft a **Postal Desk** (paper over planks and a chest) and place it
+and press **Send**. Write something in the **Letter** line and it goes along as a letter (a book they can read), or on
+its own if the top row is empty. `/workplace mail` (or **[Track]** after sending) shows where your parcels are. A **Postman** picks it up: craft a **Postal Desk** (paper over planks and a chest) and place it
 near a villager without a job. Postmen walk their round (64 blocks around the desk), collecting parcels and putting
 them in the right mailbox. Parcels for a mailbox outside the round (another village, another dimension) go with the
 night mail and arrive at the next dawn. Only you, your friends (`/workplace friend add`) and operators can open your
@@ -317,6 +318,7 @@ Craft a **Blueprint Table** (blue dye on top, cartography table in the middle, p
 | | |
 |---|---|
 | `/workplace sites` | your builds in progress, with a cancel button |
+| `/workplace mail` | parcels on their way to and from you, and where they are |
 | `/workplace cancel <id>` | stop a build (placed blocks stay; you get the blueprint back) |
 | `/workplace friend add <player>` | let a friend give orders to your builders (`remove`, `list` too) |
 | `/workplace blueprints` (op) | list every blueprint the server knows |

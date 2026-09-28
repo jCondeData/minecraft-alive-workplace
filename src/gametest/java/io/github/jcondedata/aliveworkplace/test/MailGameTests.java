@@ -61,6 +61,35 @@ public class MailGameTests implements FabricGameTest {
 		});
 	}
 
+	/** A letter is a written book from the sender; /workplace mail tells both ends where a parcel is. */
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
+	public void lettersAndTracking(GameTestHelper helper) {
+		ItemStack letter = io.github.jcondedata.aliveworkplace.mail.Mail.letter("Alice", "See you at the market!");
+		var content = letter.get(net.minecraft.core.component.DataComponents.WRITTEN_BOOK_CONTENT);
+		helper.assertTrue(letter.is(Items.WRITTEN_BOOK) && content != null, "a letter should be a written book");
+		helper.assertTrue(content.author().equals("Alice") && content.title().raw().equals("Letter from Alice"), "title/author: " + content.title().raw() + " / " + content.author());
+		helper.assertTrue(content.pages().get(0).raw().getString().equals("See you at the market!"), "page: " + content.pages().get(0).raw().getString());
+
+		ServerLevel level = helper.getLevel();
+		UUID alice = UUID.randomUUID();
+		UUID bob = UUID.randomUUID();
+		PostOffice office = PostOffice.get(level.getServer());
+		Parcel parcel = office.post(alice, "Alice", bob, "Bob", GlobalPos.of(level.dimension(), helper.absolutePos(new BlockPos(0, 1, 0))), level.getGameTime(),
+			List.of(letter, new ItemStack(Items.APPLE, 2)));
+		try {
+			var sent = io.github.jcondedata.aliveworkplace.mail.Mail.tracking(level.getServer(), alice);
+			var coming = io.github.jcondedata.aliveworkplace.mail.Mail.tracking(level.getServer(), bob);
+			helper.assertTrue(sent.size() == 1 && sent.get(0).getString().equals("To Bob: 3 items, waiting in the sender's mailbox for a postman"),
+				"Alice sees: " + sent.stream().map(net.minecraft.network.chat.Component::getString).toList());
+			helper.assertTrue(coming.size() == 1 && coming.get(0).getString().startsWith("From Alice: 3 items"),
+				"Bob sees: " + coming.stream().map(net.minecraft.network.chat.Component::getString).toList());
+			helper.assertTrue(io.github.jcondedata.aliveworkplace.mail.Mail.tracking(level.getServer(), UUID.randomUUID()).isEmpty(), "a stranger sees mail");
+		} finally {
+			office.remove(parcel);
+		}
+		helper.succeed();
+	}
+
 	/** A mailbox next to a worker's chests is not one of them: nobody takes mail out or drops a haul in. */
 	@GameTest(template = AREA)
 	public void workersLeaveMailboxesAlone(GameTestHelper helper) {

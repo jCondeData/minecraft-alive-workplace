@@ -25,11 +25,12 @@ public class MailboxScreen extends AbstractContainerScreen<MailboxMenu> {
 	private static final int TEXT = 0xFF404040;
 
 	private EditBox to;
+	private EditBox message;
 
 	public MailboxScreen(MailboxMenu menu, Inventory inventory, Component title) {
 		super(menu, inventory, title);
 		imageWidth = 176;
-		imageHeight = 222;
+		imageHeight = 240;
 		inventoryLabelY = MailboxMenu.INVENTORY_Y - 11;
 	}
 
@@ -40,6 +41,10 @@ public class MailboxScreen extends AbstractContainerScreen<MailboxMenu> {
 		to.setMaxLength(16);
 		to.setHint(Component.translatable("screen.aliveworkplace.mailbox.to_hint"));
 		addRenderableWidget(to);
+		message = new EditBox(font, leftPos + 48, topPos + 34, 120, 14, Component.translatable("screen.aliveworkplace.mailbox.message"));
+		message.setMaxLength(Mail.MAX_MESSAGE);
+		message.setHint(Component.translatable("screen.aliveworkplace.mailbox.message_hint"));
+		addRenderableWidget(message);
 		addRenderableWidget(Button.builder(Component.translatable("screen.aliveworkplace.mailbox.send"), b -> send())
 			.bounds(leftPos + 122, topPos + 14, 46, 18).build());
 	}
@@ -47,18 +52,21 @@ public class MailboxScreen extends AbstractContainerScreen<MailboxMenu> {
 	private void send() {
 		String name = to.getValue().trim();
 		if (!name.isEmpty()) {
-			ClientPlayNetworking.send(new Mail.Send(name));
+			ClientPlayNetworking.send(new Mail.Send(name, message.getValue()));
+			message.setValue("");
 		}
 	}
 
 	@Override
 	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-		if (to.isFocused() && keyCode != 256) {
-			if (keyCode == 257 || keyCode == 335) { // Enter sends
-				send();
-				return true;
+		for (EditBox box : new EditBox[]{to, message}) {
+			if (box.isFocused() && keyCode != 256) {
+				if (keyCode == 257 || keyCode == 335) { // Enter sends
+					send();
+					return true;
+				}
+				return box.keyPressed(keyCode, scanCode, modifiers) || box.canConsumeInput() || super.keyPressed(keyCode, scanCode, modifiers);
 			}
-			return to.keyPressed(keyCode, scanCode, modifiers) || to.canConsumeInput() || super.keyPressed(keyCode, scanCode, modifiers);
 		}
 		return super.keyPressed(keyCode, scanCode, modifiers);
 	}
@@ -82,6 +90,7 @@ public class MailboxScreen extends AbstractContainerScreen<MailboxMenu> {
 	protected void renderLabels(GuiGraphics g, int mouseX, int mouseY) {
 		g.drawString(font, title, 8, 5, TEXT, false);
 		g.drawString(font, Component.translatable("screen.aliveworkplace.mailbox.to"), 8, 19, TEXT, false);
+		g.drawString(font, Component.translatable("screen.aliveworkplace.mailbox.message"), 8, 37, TEXT, false);
 		g.drawString(font, Component.translatable("screen.aliveworkplace.mailbox.inbox"), 8, MailboxMenu.INBOX_Y - 11, TEXT, false);
 		g.drawString(font, playerInventoryTitle, 8, inventoryLabelY, TEXT, false);
 	}

@@ -59,6 +59,8 @@ public final class WorkplaceCommand {
 				.executes(WorkplaceCommand::importFolder))
 			.then(Commands.literal("sites")
 				.executes(WorkplaceCommand::listSites))
+			.then(Commands.literal("mail")
+				.executes(WorkplaceCommand::trackMail))
 			.then(Commands.literal("cancel")
 				.then(Commands.argument("site", UuidArgument.uuid())
 					.executes(WorkplaceCommand::cancel)))
@@ -131,6 +133,21 @@ public final class WorkplaceCommand {
 		player.getInventory().placeItemBackInInventory(BlueprintItem.create(id, blueprint.get().size()));
 		ctx.getSource().sendSuccess(() -> Component.translatable("command.aliveworkplace.given", Blueprints.displayName(id)), false);
 		return 1;
+	}
+
+	/** Parcels on their way to and from the player: waiting for a postman, carried, or travelling overnight. */
+	private static int trackMail(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
+		ServerPlayer me = ctx.getSource().getPlayerOrException();
+		List<Component> lines = io.github.jcondedata.aliveworkplace.mail.Mail.tracking(ctx.getSource().getServer(), me.getUUID());
+		if (lines.isEmpty()) {
+			ctx.getSource().sendSuccess(() -> Component.translatable("command.aliveworkplace.mail_none"), false);
+			return 0;
+		}
+		ctx.getSource().sendSuccess(() -> Component.translatable("command.aliveworkplace.mail_header").withStyle(ChatFormatting.GOLD), false);
+		for (Component line : lines) {
+			ctx.getSource().sendSuccess(() -> line, false);
+		}
+		return lines.size();
 	}
 
 	private static int listSites(CommandContext<CommandSourceStack> ctx) {

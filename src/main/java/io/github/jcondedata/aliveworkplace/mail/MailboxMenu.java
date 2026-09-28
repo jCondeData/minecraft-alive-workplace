@@ -19,10 +19,10 @@ import org.jetbrains.annotations.Nullable;
  */
 public class MailboxMenu extends AbstractContainerMenu {
 	public static final int OUT = 9;
-	public static final int OUT_Y = 36;
-	public static final int INBOX_Y = 70;
-	public static final int INVENTORY_Y = 140;
-	public static final int HOTBAR_Y = 198;
+	public static final int OUT_Y = 54;
+	public static final int INBOX_Y = 88;
+	public static final int INVENTORY_Y = 158;
+	public static final int HOTBAR_Y = 216;
 	private static final int INBOX_START = OUT;
 	private static final int PLAYER_START = OUT + MailboxBlockEntity.SIZE;
 	private static final int END = PLAYER_START + 36;

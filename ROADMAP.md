@@ -123,7 +123,10 @@ workstation, like the rest of the mod.
   (Postal Desk workstation) collects parcels from mailboxes within 64 blocks of the desk and delivers to recipients
   on the round; anything else is handed in and arrives at the next dawn (`PostOffice` saved data; the flag shows
   there's mail; comparators read it)
-- [ ] Postman follow-ups: letters with a written message; parcel tracking
+- [x] Letters (a "Letter:" line on the mailbox screen: the parcel gets a written book from the sender with it on the page;
+  a letter can go on its own) and tracking (`/workplace mail`, `Mail.tracking`: each parcel to or from you and whether
+  it's waiting for pickup, in a postman's bag or in the night mail; **[Track]** after posting)
+- [ ] Postman follow-ups: parcel lockers at the Postal Desk for players without a mailbox
 - [x] **Guard** (Guard Post workstation): fights monsters (not creepers) within 24 blocks of the post at any hour
   (combat is in their CORE activity, and they never panic), with the best weapon and armor from the chests near the
   post; 40 health, heals between fights, +10% damage per level, XP per kill; night-watch schedule (patrol evening

@@ -806,9 +806,11 @@ public class ScreenshotHarness implements ClientModInitializer {
 			});
 		}
 		if (tick == 80 && mc.screen instanceof io.github.jcondedata.aliveworkplace.client.MailboxScreen) {
+			String[] texts = {"Friend", "Diamonds for the new roof!"};
+			int n = 0;
 			for (var child : mc.screen.children()) {
-				if (child instanceof net.minecraft.client.gui.components.EditBox edit) {
-					edit.setValue("Friend");
+				if (child instanceof net.minecraft.client.gui.components.EditBox edit && n < texts.length) {
+					edit.setValue(texts[n++]);
 				}
 			}
 		}

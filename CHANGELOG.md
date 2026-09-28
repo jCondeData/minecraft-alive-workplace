@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+## 0.51.0 — 2026-09-28
+
+### Added
+- **Letters**: the mailbox screen has a *Letter* line. Whatever you write there goes with the parcel as a letter (a
+  book the recipient can read), or on its own if you're not sending anything else.
+- **Mail tracking**: `/workplace mail` (or **[Track]** after posting) lists the parcels on their way to and from you
+  and where they are: waiting for a postman, in a postman's bag, or in the night mail.
+
 ## 0.50.0 — 2026-09-28
 
 ### Added

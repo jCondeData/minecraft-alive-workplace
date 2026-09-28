@@ -434,13 +434,32 @@ public class ScreenshotHarness implements ClientModInitializer {
 				keeper = EntityType.VILLAGER.spawn(level, basket.south(), MobSpawnType.COMMAND);
 				io.github.jcondedata.aliveworkplace.work.Jobs.employ(level, keeper, basket,
 					io.github.jcondedata.aliveworkplace.registry.ModVillagers.FRUIT_BASKET_POI, io.github.jcondedata.aliveworkplace.registry.ModVillagers.ORCHARD_KEEPER);
+				// A Bulbasaur in a pasture nearby helps (a Pokémon partner).
+				if (leaves != null) {
+					BlockPos pasture = new BlockPos(-3, -60, -2);
+					level.setBlockAndUpdate(pasture, with(with(cobblemonBlock("pasture"), "waterlogged", false), "part", com.cobblemon.mod.common.block.PastureBlock.PasturePart.BOTTOM));
+					level.setBlockAndUpdate(pasture.above(), with(with(cobblemonBlock("pasture"), "waterlogged", false), "part", com.cobblemon.mod.common.block.PastureBlock.PasturePart.TOP));
+					ServerPlayer player = server.getPlayerList().getPlayers().get(0);
+					var bulbasaur = com.cobblemon.mod.common.api.pokemon.PokemonProperties.Companion.parse("bulbasaur level=12", " ", "=").create();
+					com.cobblemon.mod.common.Cobblemon.INSTANCE.getStorage().getPC(player).add(bulbasaur);
+					if (level.getBlockEntity(pasture) instanceof com.cobblemon.mod.common.block.entity.PokemonPastureBlockEntity pen) {
+						pen.tether(player, bulbasaur, Direction.SOUTH);
+					}
+				}
 				hover(server.getPlayerList().getPlayers().get(0), new Vec3(0.5, -55.5, 10.5), 180, 24);
 			});
 		}
 		if (tick == 80) {
 			shot(mc, "10_orchard_start");
 		}
-		if (tick > 60 && tick % 10 == 0 && doneAt < 0) {
+		if (tick == 150) {
+			server.execute(() -> hover(server.getPlayerList().getPlayers().get(0), keeper.position().add(0, 1.2, 3.5), 180, 8));
+		}
+		if (tick == 175) {
+			shot(mc, "20_orchard_partner");
+			server.execute(() -> hover(server.getPlayerList().getPlayers().get(0), new Vec3(0.5, -55.5, 10.5), 180, 24));
+		}
+		if (tick > 60 && tick % 10 == 0 && doneAt < 0 && (tick < 150 || tick > 185)) {
 			shot(mc, String.format("frame_%03d", frame++));
 			server.execute(() -> allDone.set(keeper != null
 				&& keeper.getAttachedOrElse(io.github.jcondedata.aliveworkplace.registry.ModAttachments.FRUIT_PICKED, 0) >= orchardFruit));

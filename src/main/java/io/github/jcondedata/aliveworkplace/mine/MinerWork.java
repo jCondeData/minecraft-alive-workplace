@@ -197,7 +197,7 @@ public class MinerWork extends Behavior<Villager> {
 			float hardness = state.getDestroySpeed(level, target);
 			float speed = Math.max(1f, pick.getDestroySpeed(state));
 			int ticks = (int) Math.ceil(hardness * 30f / speed);
-			digTotal = Math.max(2, BuilderLevels.delay(Math.max(2, ticks), BuilderLevels.level(villager)));
+			digTotal = Math.max(2, BuilderLevels.delay(Math.max(2, ticks), villager));
 		}
 		digProgress++;
 		if (digProgress % 4 == 0) {

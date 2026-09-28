@@ -156,7 +156,13 @@ workstation, like the rest of the mod.
   players); the scaling is tested with a given cap, and the fallback without RCT
 
 ## Milestone 4 — Pokémon partners & Cobblemon jobs
-- [ ] Assign one of your Pokémon to a villager; it follows them and boosts the job by type (Fighting → building, Ground/Rock → mining, Grass → farming, Water → fishing, Fire → smelting, Flying → hauling)
+- [x] **Pokémon partners**, the Cobblemon way: Pokémon in a Pasture Block within 16 blocks of a workstation help when
+  their type suits the job (`work/Partners`: builder Fighting/Rock/Steel, miner Ground/Rock/Steel, lumberjack
+  Grass/Bug/Fighting, orchard Grass/Bug/Flying, farmer Grass/Ground/Water, fisher Water/Ice, nurse
+  Fairy/Normal/Psychic), −15% work time each, up to 3; shown overhead and in the status message. Pastures instead of
+  a follow-a-villager Pokémon: no new UI, and the Pokémon stay safe in the owner's PC
+- [ ] Partner follow-ups: Fire types for a future smelter, Flying types speeding up postmen, guards fighting beside
+  Fighting/Dragon types
 - [ ] Pokémon-themed blueprints that come with staff: Pokémon Center (Nurse), Poké Mart (Clerk, sells for CobbleDollars), Berry Farm, Fossil Lab
 - [x] **Orchard Keeper** (Fruit Basket workstation): picks ripe sweet berries, glow berries, cocoa and, with Cobblemon,
   apricorns and berry plants within 16 blocks (plants stay and regrow; berry plants through Cobblemon's own harvest, so
@@ -166,7 +172,10 @@ workstation, like the rest of the mod.
 - [ ] Orchard Keeper follow-ups: mints (they have to be broken and replanted), a village orchard house, planting
   apricorn seeds and berries from the chests
 - [ ] Jobs: Nurse (Healing Machine), Chef (Campfire Pot: Lure Cakes, Aprijuice), Ball Smith (apricorns → balls), Fossil Scientist
-- [ ] Cobbleworkers compatibility: villagers haul from Pokémon pasture output
+- [x] Cobbleworkers compatibility (compat-tested with Cobbleworkers 2.0.5): courier routes can start or end at a
+  Pasture Block (`work/Pastures`: every container within 8 blocks, where Cobbleworkers' Pokémon deposit); pastured
+  Pokémon count as partners whether or not they work for Cobbleworkers. Cobbleworkers only deposits into chests,
+  barrels and gilded chests, so mailboxes and shop counters are safe from it
 - [x] **Move Tutor** (Tutor's Desk workstation): right-click (empty hand) opens a lesson screen (`work/ChoiceMenu`, a
   server-side six-row chest of buttons, no client screen needed): the party on top, the chosen Pokémon's tutor/TM/egg
   moves it can't use yet below, paged; click twice to pay emeralds and teach (into the moveset if there's room, else

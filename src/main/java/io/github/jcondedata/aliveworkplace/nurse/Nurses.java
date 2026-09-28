@@ -44,7 +44,7 @@ public final class Nurses {
 			return;
 		}
 		long now = level.getGameTime();
-		int cooldown = BuilderLevels.delay(COOLDOWN, BuilderLevels.level(nurse));
+		int cooldown = BuilderLevels.delay(COOLDOWN, nurse);
 		Long last = LAST_TREATED.get(player.getUUID());
 		if (last != null && now - last < cooldown) {
 			tell(player, Component.translatable("message.aliveworkplace.nurse.wait", nurse.getDisplayName(), (cooldown - (now - last)) / 20 + 1),

@@ -94,6 +94,12 @@ public final class BuilderStatusSync {
 	}
 
 	private static void send(Villager villager, Status status) {
+		java.util.List<Component> partners = io.github.jcondedata.aliveworkplace.work.Partners.helpers(villager);
+		if (!partners.isEmpty()) {
+			status = new Status(status.entityId(), status.title(), status.progress(), status.line().copy()
+				.append(Component.translatable("message.aliveworkplace.partners.overhead", io.github.jcondedata.aliveworkplace.work.Partners.names(partners))
+					.withStyle(ChatFormatting.GREEN)));
+		}
 		for (ServerPlayer player : PlayerLookup.tracking(villager)) {
 			if (ServerPlayNetworking.canSend(player, Status.TYPE)) {
 				ServerPlayNetworking.send(player, status);

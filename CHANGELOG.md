@@ -2,6 +2,16 @@
 
 ## Unreleased
 
+## 0.34.0 — 2026-09-27
+
+### Added
+- **Pokémon partners** (with Cobblemon): Pokémon kept in a Pasture Block within 16 blocks of a workstation help that
+  villager when their type suits the job — Fighting/Rock/Steel types build, Ground/Rock/Steel types mine, Grass
+  types tend orchards, trees and fields, Water types fish, and so on. Each cuts the work time by 15% (up to three);
+  the villager's overhead line says who is helping.
+- **Cobbleworkers support**: a postman's courier route can start at a Pasture Block and empties every chest and
+  barrel around it (where Cobbleworkers' Pokémon put what they gather).
+
 ## 0.33.0 — 2026-09-27
 
 ### Added

@@ -122,7 +122,9 @@ mailbox.
 feather and an ink sac), right-click the container to take from and then the one to bring to (say, the quarry chest
 and the builder's chest), and give the note to a postman. They carry everything except tools, weapons and armor — or,
 if you hold an item in your other hand and right-click the air with the note, only the kinds you pick. Up to 4 routes
-per postman; sneak-right-click them to see their routes, and give them a blank note to end them.
+per postman; sneak-right-click them to see their routes, and give them a blank note to end them. With Cobblemon, a
+route can start at a **Pasture Block**: the postman empties every chest and barrel within 8 blocks of it — where
+Cobbleworkers' Pokémon put what they gather.
 
 ## Guards
 ![A guard fighting off three husks](docs/media/guard.gif)
@@ -196,6 +198,27 @@ A new trader has one offer of a young Pokémon; with every trade they rank up, a
 50–70, now and then a shiny one.
 
 ![A Pokémon Trader's offers and your party](docs/media/pokemon-trader.png)
+
+## Pokémon partners and Cobbleworkers (with Cobblemon)
+![A Bulbasaur from a pasture helping an orchard keeper](docs/media/partners.png)
+
+Pokémon you keep in a **Pasture Block** within 16 blocks of a villager's workstation help with the job when their
+type suits it — each one cuts the time the work takes by 15%, up to three:
+
+| Job | Helpful types |
+| --- | --- |
+| Builder | Fighting, Rock, Steel |
+| Miner | Ground, Rock, Steel |
+| Lumberjack | Grass, Bug, Fighting |
+| Orchard Keeper | Grass, Bug, Flying |
+| Farmer | Grass, Ground, Water |
+| Fisherman | Water, Ice |
+| Nurse | Fairy, Normal, Psychic |
+
+The line above the villager's head says who is helping ("· with Machop"), and sneak-right-clicking a worker shows
+how much faster they are. It works with [Cobbleworkers](https://modrinth.com/mod/cobbleworkers) too: the same
+Pokémon can work the pasture for Cobbleworkers and help the villager at the same time, and a postman's courier route
+from the pasture (see *Courier routes*) takes what they gather to wherever it is needed.
 
 ## Blueprint Table: any build from the internet
 Craft a **Blueprint Table** (blue dye on top, cartography table in the middle, planks around) and right-click it.

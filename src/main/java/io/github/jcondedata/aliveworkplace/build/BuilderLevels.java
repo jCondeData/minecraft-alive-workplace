@@ -35,7 +35,12 @@ public final class BuilderLevels {
 
 	/** Ticks between blocks for this builder. */
 	public static int delay(ServerLevel level, Villager villager) {
-		return delay(level.getGameRules().getInt(ModGameRules.BUILD_DELAY), level(villager));
+		return delay(level.getGameRules().getInt(ModGameRules.BUILD_DELAY), villager);
+	}
+
+	/** {@code baseDelay} for this villager: shorter with each level, and with Pokémon partners helping. */
+	public static int delay(int baseDelay, Villager villager) {
+		return Math.round(delay(baseDelay, level(villager)) * io.github.jcondedata.aliveworkplace.work.Partners.factor(villager));
 	}
 
 	public static int delay(int baseDelay, int villagerLevel) {
@@ -86,14 +91,20 @@ public final class BuilderLevels {
 		return Component.translatable("merchant.level." + Math.max(1, Math.min(5, level)));
 	}
 
-	/** "Apprentice · 35/70 XP · 18% faster" for the status message. */
+	/** "Apprentice · 35/70 XP · 18% faster" for the status message (plus any Pokémon helping). */
 	public static Component describe(Villager villager) {
 		int lvl = level(villager);
-		if (!VillagerData.canLevelUp(lvl)) {
-			return Component.translatable("message.aliveworkplace.status.level_max", levelName(lvl), speedBonus(lvl));
+		net.minecraft.network.chat.MutableComponent out = !VillagerData.canLevelUp(lvl)
+			? Component.translatable("message.aliveworkplace.status.level_max", levelName(lvl), speedBonus(lvl))
+			: Component.translatable("message.aliveworkplace.status.level", levelName(lvl), villager.getVillagerXp(),
+				VillagerData.getMaxXpPerLevel(lvl), speedBonus(lvl));
+		java.util.List<Component> partners = io.github.jcondedata.aliveworkplace.work.Partners.helpers(villager);
+		if (!partners.isEmpty()) {
+			int faster = Math.round(100f / io.github.jcondedata.aliveworkplace.work.Partners.factor(villager)) - 100;
+			out.append(Component.translatable("message.aliveworkplace.partners.status",
+				io.github.jcondedata.aliveworkplace.work.Partners.names(partners), faster).withStyle(ChatFormatting.GREEN));
 		}
-		return Component.translatable("message.aliveworkplace.status.level", levelName(lvl), villager.getVillagerXp(),
-			VillagerData.getMaxXpPerLevel(lvl), speedBonus(lvl));
+		return out;
 	}
 
 	private BuilderLevels() {

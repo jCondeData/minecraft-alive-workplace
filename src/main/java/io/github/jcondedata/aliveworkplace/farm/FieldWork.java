@@ -219,7 +219,7 @@ public class FieldWork extends Behavior<Villager> {
 			return;
 		}
 		villager.getBrain().setMemory(MemoryModuleType.LOOK_TARGET, new BlockPosTracker(task.pos()));
-		int time = BuilderLevels.delay(task.kind() == Kind.PLANT ? 8 : 12, BuilderLevels.level(villager));
+		int time = BuilderLevels.delay(task.kind() == Kind.PLANT ? 8 : 12, villager);
 		if (progress++ == 0) {
 			villager.swing(InteractionHand.MAIN_HAND);
 		}

@@ -136,6 +136,7 @@ ext.compatMods = [
 	"maven.modrinth:9jxwkYQL:ZLVrtF0Q",         // Sophisticated Core 1.2.9.21
 	"maven.modrinth:ohNO6lps:N5qzq0XV",         // Forge Config API Port 21.1.6 (for Sophisticated Core)
 	"maven.modrinth:XZNI4Cpy:GwLz79tK",         // Tom's Simple Storage 2.3.0
+	"maven.modrinth:cobbleworkers:qW3KB1li",    // Cobbleworkers 2.0.5 for Cobblemon 1.7 (pasture Pokémon jobs; not in the pack)
 ]
 
 /** Unpacks the jars nested in the compat mods (META-INF/jars) into build/compat-nested. */

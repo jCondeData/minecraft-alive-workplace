@@ -17,7 +17,7 @@ The owner (Jesse) does not write code: sessions are expected to work autonomousl
 - `./gradlew build` — compile + jar + gametests (CI runs exactly this)
 - `./gradlew runGameTest` — only the gametests (~10 s of game time, ~1 min total)
 - `./gradlew runCompatGameTest` — gametests in `src/compattest` with Chipped, Rechiseled, Supplementaries, Cobblemon, Repurposed Structures, CobbleDollars, and the pack's
-  Handcrafted, Beautify, CobbleFurnies, Carved Wood, Moar Concrete, Sophisticated Storage, Tom's Storage (+ libraries)
+  Handcrafted, Beautify, CobbleFurnies, Carved Wood, Moar Concrete, Sophisticated Storage, Tom's Storage, and Cobbleworkers (not in the pack) (+ libraries)
   installed from Modrinth maven (`compatMods` in `build.gradle`; bundled jars are unpacked into `build/compat-nested`).
   Part of `build`. Add a mod from the pack here when adding support for it. Nested jars are unpacked recursively
   (Cobblemon → Fabric Language Kotlin → Kotlin libraries). The Kotlin Gradle plugin is applied only so Loom remaps
@@ -70,6 +70,7 @@ The owner (Jesse) does not write code: sessions are expected to work autonomousl
   berry plants in `compat/cobblemon/CobblemonOrchard`
 - `work/` — shared by all jobs: `Walker` (movement + reach), `WorkerStatus` (overhead status for jobs without a saved site), `Jobs.employ`,
   `ChoiceMenu` (a server-side chest screen of buttons: menus without client code), `DeskPackages` (WORK for jobs players visit),
+  `Partners` (pastured Pokémon speeding up a job; the lookup is `compat/cobblemon/CobblemonPartners`), `Pastures` (a Pasture Block as a courier stop),
   `Gated`/`UpgradedJob` (vanilla jobs with extra work), `PrivateContainer` (never a supply chest), `KeepLoaded` (chunk tickets)
 - `world/` — our houses in village generation (`VillageHouses`: builder's workshops, guard houses, clinics, post offices;
   with Cobblemon trainer's houses, leader's halls, schools, trade halls; the NBT comes from `tools/blueprints/generate.py`,

@@ -47,8 +47,12 @@ public class DeliveryNoteItem extends Item {
 			player.displayClientMessage(Component.translatable("message.aliveworkplace.route.reset"), true);
 			return InteractionResult.SUCCESS;
 		}
-		if (ItemStorage.SIDED.find(context.getLevel(), pos, null) == null
-			|| context.getLevel().getBlockEntity(pos) instanceof io.github.jcondedata.aliveworkplace.work.PrivateContainer) {
+		boolean pasture = io.github.jcondedata.aliveworkplace.work.Pastures.isPasture(context.getLevel().getBlockState(pos));
+		if (pasture && context.getLevel().getBlockState(pos.below()).is(context.getLevel().getBlockState(pos).getBlock())) {
+			pos = pos.below(); // the top half: use the pasture's base
+		}
+		if (!pasture && (ItemStorage.SIDED.find(context.getLevel(), pos, null) == null
+			|| context.getLevel().getBlockEntity(pos) instanceof io.github.jcondedata.aliveworkplace.work.PrivateContainer)) {
 			player.displayClientMessage(Component.translatable("message.aliveworkplace.route.not_container").withStyle(ChatFormatting.YELLOW), true);
 			return InteractionResult.FAIL;
 		}

@@ -142,7 +142,7 @@ public class OrchardWork extends Behavior<Villager> {
 			return;
 		}
 		villager.getBrain().setMemory(MemoryModuleType.LOOK_TARGET, new BlockPosTracker(fruit));
-		if (++pickTimer < BuilderLevels.delay(PICK_DELAY, BuilderLevels.level(villager))) {
+		if (++pickTimer < BuilderLevels.delay(PICK_DELAY, villager)) {
 			return;
 		}
 		pickTimer = 0;

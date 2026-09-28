@@ -177,7 +177,8 @@ public class PostmanWork extends Behavior<Villager> {
 			if (!route.isComplete() || !route.from().get().closerThan(desk, PostOffice.ROUND) || !route.to().get().closerThan(desk, PostOffice.ROUND)) {
 				continue;
 			}
-			if (io.github.jcondedata.aliveworkplace.build.SupplyContainers.hasMatching(level, route.from().get(), route::carries)) {
+			if (io.github.jcondedata.aliveworkplace.work.Pastures.containers(level, route.from().get()).stream()
+				.anyMatch(c -> io.github.jcondedata.aliveworkplace.build.SupplyContainers.hasMatching(level, c, route::carries))) {
 				nextRoute = (nextRoute + i + 1) % routes.size();
 				haul = route;
 				haulPhase = HaulPhase.PICKUP;
@@ -197,7 +198,15 @@ public class PostmanWork extends Behavior<Villager> {
 		io.github.jcondedata.aliveworkplace.build.BuilderBag bag = villager.getAttachedOrCreate(ModAttachments.BUILDER_BAG);
 		BlockPos from = route.from().get();
 		BlockPos to = route.to().get();
-		BlockPos target = haulPhase == HaulPhase.DROP ? to : from;
+		// A pasture stands for the chests around it (Cobbleworkers' Pokémon fill those): go to the one in use.
+		java.util.List<BlockPos> sources = io.github.jcondedata.aliveworkplace.work.Pastures.containers(level, from);
+		java.util.List<BlockPos> targets = io.github.jcondedata.aliveworkplace.work.Pastures.containers(level, to);
+		BlockPos target = switch (haulPhase) {
+			case PICKUP -> sources.stream().filter(c -> io.github.jcondedata.aliveworkplace.build.SupplyContainers.hasMatching(level, c, route::carries))
+				.findFirst().orElse(from);
+			case DROP -> targets.isEmpty() ? to : targets.get(0);
+			case RETURN -> sources.isEmpty() ? from : sources.get(0);
+		};
 		WorkerStatus.set(villager, Component.translatable("message.aliveworkplace.postman.title", villager.getAttachedOrElse(ModAttachments.MAIL_DELIVERED, 0)), -1f,
 			Component.translatable("message.aliveworkplace.postman.state.haul", to.getX(), to.getY(), to.getZ()).withStyle(ChatFormatting.GRAY));
 		if (!walker.walkTo(level, villager, target, 3.0)) {
@@ -209,15 +218,21 @@ public class PostmanWork extends Behavior<Villager> {
 		villager.swing(InteractionHand.MAIN_HAND);
 		switch (haulPhase) {
 			case PICKUP -> {
-				java.util.List<ItemStack> taken = io.github.jcondedata.aliveworkplace.build.SupplyContainers.takeMatching(level, from, route::carries,
-					Math.max(1, bag.freeSlots() - 1));
+				java.util.List<ItemStack> taken = new java.util.ArrayList<>();
+				for (BlockPos source : sources) {
+					int room = Math.max(1, bag.freeSlots() - 1) - taken.size();
+					if (room <= 0) {
+						break;
+					}
+					taken.addAll(io.github.jcondedata.aliveworkplace.build.SupplyContainers.takeMatching(level, source, route::carries, room));
+				}
 				for (ItemStack stack : taken) {
 					ItemStack rest = bag.add(stack);
 					if (!rest.isEmpty()) {
-						io.github.jcondedata.aliveworkplace.build.SupplyContainers.insert(level, java.util.List.of(from), rest);
+						io.github.jcondedata.aliveworkplace.build.SupplyContainers.insert(level, sources, rest);
 					}
 				}
-				level.playSound(null, from, SoundEvents.BARREL_OPEN, SoundSource.BLOCKS, 0.4f, 1.1f);
+				level.playSound(null, target, SoundEvents.BARREL_OPEN, SoundSource.BLOCKS, 0.4f, 1.1f);
 				haulPhase = HaulPhase.DROP;
 				if (taken.isEmpty()) {
 					haul = null;
@@ -226,12 +241,12 @@ public class PostmanWork extends Behavior<Villager> {
 			case DROP -> {
 				java.util.List<ItemStack> left = new java.util.ArrayList<>();
 				for (ItemStack stack : bag.takeAll()) {
-					ItemStack rest = io.github.jcondedata.aliveworkplace.build.SupplyContainers.insert(level, java.util.List.of(to), stack);
+					ItemStack rest = io.github.jcondedata.aliveworkplace.build.SupplyContainers.insert(level, targets, stack);
 					if (!rest.isEmpty()) {
 						left.add(rest);
 					}
 				}
-				level.playSound(null, to, SoundEvents.BARREL_CLOSE, SoundSource.BLOCKS, 0.4f, 1.1f);
+				level.playSound(null, target, SoundEvents.BARREL_CLOSE, SoundSource.BLOCKS, 0.4f, 1.1f);
 				left.forEach(bag::add);
 				if (left.isEmpty()) {
 					haul = null;
@@ -242,7 +257,7 @@ public class PostmanWork extends Behavior<Villager> {
 			}
 			case RETURN -> {
 				for (ItemStack stack : bag.takeAll()) {
-					ItemStack rest = io.github.jcondedata.aliveworkplace.build.SupplyContainers.insert(level, java.util.List.of(from), stack);
+					ItemStack rest = io.github.jcondedata.aliveworkplace.build.SupplyContainers.insert(level, sources, stack);
 					if (!rest.isEmpty()) {
 						villager.spawnAtLocation(rest);
 					}

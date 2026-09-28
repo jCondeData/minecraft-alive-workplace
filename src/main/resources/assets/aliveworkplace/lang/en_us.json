@@ -290,7 +290,7 @@
   "tooltip.aliveworkplace.route.how": "Right-click the container to take from, then the one to bring to. Hold an item in your other hand and right-click the air to carry only that.",
   "tooltip.aliveworkplace.route.hand_over": "Give it to a Postman",
   "message.aliveworkplace.route.reset": "Delivery note cleared.",
-  "message.aliveworkplace.route.not_container": "That's not a container a courier can use.",
+  "message.aliveworkplace.route.not_container": "That's not a container or a Pasture Block a courier can use.",
   "message.aliveworkplace.route.from": "Take from %s %s %s. Now right-click where it should go.",
   "message.aliveworkplace.route.to": "Bring to %s %s %s. Give the note to a Postman.",
   "message.aliveworkplace.route.filter_add": "Carry %s",
@@ -395,5 +395,8 @@
   "message.aliveworkplace.orchard.title": "Orchard Keeper · %s picked",
   "message.aliveworkplace.orchard.state.looking": "waiting for fruit to ripen",
   "message.aliveworkplace.orchard.state.picking": "picking fruit",
-  "message.aliveworkplace.orchard.state.depositing": "taking the harvest to the chests"
+  "message.aliveworkplace.orchard.state.depositing": "taking the harvest to the chests",
+  "message.aliveworkplace.partners.and": " and ",
+  "message.aliveworkplace.partners.status": " · %s helping from the pasture (%s%% faster)",
+  "message.aliveworkplace.partners.overhead": " · with %s"
 }

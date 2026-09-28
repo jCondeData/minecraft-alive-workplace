@@ -177,7 +177,7 @@ public class LumberjackWork extends Behavior<Villager> {
 			BlockState log = level.getBlockState(tree);
 			float perLog = Math.max(2f, log.getDestroySpeed(level, tree) * 30f / Math.max(1f, axe.getDestroySpeed(log)));
 			int total = (int) Math.ceil(perLog * Math.min(t.logs().size(), 24)); // big trees don't take forever
-			chopTotal = Math.max(10, BuilderLevels.delay(total, BuilderLevels.level(villager)));
+			chopTotal = Math.max(10, BuilderLevels.delay(total, villager));
 		}
 		chopProgress++;
 		if (chopProgress % 5 == 0) {

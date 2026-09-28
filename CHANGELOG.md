@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 0.26.0 — 2026-09-27
+
 ### Added
 - **Ground levelling**: when a building is finished, the builder tidies the ground two blocks around it — natural dirt,
   stone, sand and grass sticking up above the floor is dug away (up to 6 blocks high) and holes at floor level are

@@ -6,9 +6,8 @@
 
 ### Fixed
 - A Master trainer's Pokémon that can learn hardly any attacks on its side (say a physical attacker with mostly
-  special moves) now gets its best attacks of either kind; a Smeargle keeps Sketch. A test caught a Smeargle and
-  stopped 0.68.0 from being released, so **0.68.0's fishing bobbers** (fishermen cast a bobber that floats on the
-  water on a line from their rod and dips when a fish bites) come with this version.
+  special moves) now gets its best attacks of either kind; a Smeargle keeps Sketch. (A test that picked random teams
+  caught a Smeargle and failed one of 0.68.0's builds; it now checks 40 teams every time.)
 
 ### Changed
 - The README starts with a table of every job: its workstation, what goes in the chests and what to hand the villager.

@@ -66,10 +66,13 @@ public final class KeepLoaded {
 	}
 
 	private static void add(Set<ChunkPos> out, ServerLevel level, BoundingBox area, @Nullable BlockPos bench, UUID worker) {
+		// A new box: BoundingBox.encapsulate changes the box it's called on, and `area` may be a quarry's own box
+		// (before 0.45.0 this grew every quarry of an online owner to take in the ground around the Miner's Bench).
 		BoundingBox box = area;
 		if (bench != null) {
-			box = box.encapsulate(bench.offset(-SupplyContainers.RADIUS, 0, -SupplyContainers.RADIUS))
-				.encapsulate(bench.offset(SupplyContainers.RADIUS, 0, SupplyContainers.RADIUS));
+			int r = SupplyContainers.RADIUS;
+			box = new BoundingBox(Math.min(area.minX(), bench.getX() - r), area.minY(), Math.min(area.minZ(), bench.getZ() - r),
+				Math.max(area.maxX(), bench.getX() + r), area.maxY(), Math.max(area.maxZ(), bench.getZ() + r));
 		}
 		Set<ChunkPos> job = new HashSet<>();
 		for (int cx = box.minX() >> 4; cx <= box.maxX() >> 4; cx++) {

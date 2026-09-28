@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+### Fixed
+- **Miners no longer dig up the ground around their Miner's Bench.** Since 0.18.0, keeping a quarry loaded while its
+  owner was online stretched the quarry to take in everything within 8 blocks of the bench (and down to the bench's
+  level), so the miner dug that too. Quarries started from now on stay the size you marked; a quarry already under
+  way may have been stretched already: sneak-right-click the miner, click **[Stop this quarry]**, and give them the
+  marker they hand back (it still has your corners).
+
 ## 0.44.0 — 2026-09-28
 
 ### Added

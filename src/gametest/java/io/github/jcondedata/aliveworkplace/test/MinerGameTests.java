@@ -79,6 +79,24 @@ public class MinerGameTests implements FabricGameTest {
 		});
 	}
 
+	/**
+	 * Keeping a quarry's chunks loaded (its owner online) must not change the quarry: before 0.45.0 it grew the box to
+	 * take in the ground around the Miner's Bench, and the miner dug that up too.
+	 */
+	@GameTest(template = AREA)
+	public void keepingAQuarryLoadedLeavesItsBoxAlone(GameTestHelper helper) {
+		BlockPos min = new BlockPos(8, 2, 8);
+		BlockPos max = new BlockPos(11, 4, 11);
+		fillStone(helper, min, max);
+		net.minecraft.server.level.ServerPlayer owner = helper.makeMockServerPlayerInLevel();
+		Setup s = setup(helper, min, max, new ItemStack(Items.IRON_PICKAXE));
+		QuarrySite site = Miners.start(s.level(), s.miner(), owner, BoundingBox.fromCorners(helper.absolutePos(min), helper.absolutePos(max)), 3);
+		BoundingBox before = new BoundingBox(site.box().minX(), site.box().minY(), site.box().minZ(), site.box().maxX(), site.box().maxY(), site.box().maxZ());
+		io.github.jcondedata.aliveworkplace.work.KeepLoaded.chunksToKeep(s.level());
+		helper.assertTrue(site.box().equals(before), "keeping the quarry loaded changed its box from " + before + " to " + site.box());
+		helper.succeed();
+	}
+
 	/** A block of stone taller than the miner: it has to get on top and work its way down. */
 	@GameTest(template = "aliveworkplace_test:big_area", timeoutTicks = 8000)
 	public void minerDigsDownThroughATallBlock(GameTestHelper helper) {

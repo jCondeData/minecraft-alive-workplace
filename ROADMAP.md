@@ -86,7 +86,11 @@ Owner decisions are recorded in **Design decisions** at the bottom. Don't change
   wall from the one above and a block lower, spiralling down from the corner nearest the bench; loose steps (sand,
   gravel, torches) are dug and filled, gaps in the pit wall filled with cobblestone/stone from the bag (topped up
   from the chests); quarries started before this keep digging without stairs
-- [ ] Miner follow-ups: strip-mining tunnels (not just open pits), smelting helper
+- [x] Smelting helper (`Smelting.tend`, at every drop-off and at the end): furnaces/blast furnaces within the supply radius
+  of the bench get raw ores and ore blocks (`c:raw_materials`, `c:ores`, if that furnace has a recipe) a stack at a
+  time and coal/charcoal (up to 16) from the chests; results go into the chests; other items in a furnace are left
+  alone. Furnaces no longer count as supply containers (things could land in their input slot)
+- [ ] Miner follow-ups: strip-mining tunnels (not just open pits)
 - [x] **Lumberjack** (Chopping Block workstation): fells natural trees within 16 blocks of the block (only trees: at least 4 natural leaves, trunk on dirt; player-placed logs, builds and quarries are left alone), clears the leaves, replants a sapling of the same wood, keeps up to 16 saplings of each kind and stores the rest in the chests near the block; axes from those chests wear out (waits for a new one); levels up like builders; trades sticks/apples, sells logs, saplings and an iron axe
 - [ ] Lumberjack follow-ups: plant saplings on marked empty ground (tree farms), big 2×2 trees (dark oak, jungle, spruce) planted as 2×2, nether "trees" (stems/wart blocks)
 - [x] **Farmer upgrade** (Field Marker item, any vanilla Farmer): give a farmer a marked field (up to 32×32, within 48 blocks of their composter) and they harvest ripe crops (any `CropBlock`, so modded crops too; nether wart, pumpkins/melons off a stem, sugar cane above the bottom block), plant the same crop straight back, sow empty farmland/soul sand with seeds from the chests near the composter (the crop next to it, else what there is most of), till bare dirt/grass with a hoe from the chests, and store the harvest in those chests; their vanilla routine is paused while the field needs work; longer shift like our workers; `/workplace cancel <farmer uuid>` (clickable in the status) stops it

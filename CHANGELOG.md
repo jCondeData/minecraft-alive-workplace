@@ -2,6 +2,17 @@
 
 ## Unreleased
 
+## 0.46.0 — 2026-09-28
+
+### Added
+- **Miners smelt their ore**: put a furnace or blast furnace near the Miner's Bench and coal or charcoal in the
+  chests. At every drop-off the miner takes the finished ingots out into the chests, loads raw ores and ore blocks
+  in, and tops up the coal. Anything you put in a furnace yourself is left alone.
+
+### Changed
+- Furnaces, blast furnaces and smokers near a workstation no longer count as supply chests (a builder or miner could
+  put leftovers into their input slot).
+
 ## 0.45.1 — 2026-09-28
 
 The first release with the 0.44.0 and 0.45.0 changes below (a flaky test stopped those builds before they were released).

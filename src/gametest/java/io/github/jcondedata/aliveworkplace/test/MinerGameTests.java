@@ -188,6 +188,35 @@ public class MinerGameTests implements FabricGameTest {
 		helper.succeed();
 	}
 
+	/**
+	 * A blast furnace by the bench: the miner's raw iron goes in with coal from the chest, and once it's smelted the
+	 * ingots come back out into the chest. The cobblestone in the chest stays there.
+	 */
+	@GameTest(template = AREA, timeoutTicks = 3000)
+	public void minerSmeltsOreInAFurnaceByTheBench(GameTestHelper helper) {
+		BlockPos min = new BlockPos(8, 2, 8);
+		BlockPos max = new BlockPos(10, 2, 10);
+		for (BlockPos p : BlockPos.betweenClosed(min, max)) {
+			helper.setBlock(p, Blocks.IRON_ORE);
+		}
+		BlockPos furnacePos = new BlockPos(4, 2, 2);
+		helper.setBlock(furnacePos, Blocks.BLAST_FURNACE);
+		Setup s = setup(helper, min, max, new ItemStack(Items.STONE_PICKAXE), new ItemStack(Items.COAL, 4), new ItemStack(Items.COBBLESTONE, 10));
+		helper.succeedWhen(() -> {
+			helper.assertTrue(finished(s), "still digging: " + Math.round(s.site().progress() * 100) + "%");
+			net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity furnace = helper.getBlockEntity(furnacePos);
+			helper.assertTrue(furnace.getItem(0).isEmpty() && furnace.getItem(2).getCount() == 9,
+				"furnace: in " + furnace.getItem(0) + ", fuel " + furnace.getItem(1) + ", out " + furnace.getItem(2));
+			Container chest = helper.getBlockEntity(CHEST);
+			helper.assertTrue(chest.countItem(Items.RAW_IRON) == 0, "raw iron left in the chest");
+			helper.assertTrue(chest.countItem(Items.COBBLESTONE) == 10, "the cobblestone went into the furnace");
+			// Next drop-off: the ingots come out.
+			io.github.jcondedata.aliveworkplace.mine.Smelting.tend(s.level(), helper.absolutePos(BENCH),
+				io.github.jcondedata.aliveworkplace.build.SupplyContainers.find(s.level(), helper.absolutePos(BENCH), null));
+			helper.assertTrue(chest.countItem(Items.IRON_INGOT) == 9 && furnace.getItem(2).isEmpty(), "the ingots didn't come out: " + chest.countItem(Items.IRON_INGOT));
+		});
+	}
+
 	/** A block of stone taller than the miner: it has to get on top and work its way down. */
 	@GameTest(template = "aliveworkplace_test:big_area", timeoutTicks = 8000)
 	public void minerDigsDownThroughATallBlock(GameTestHelper helper) {

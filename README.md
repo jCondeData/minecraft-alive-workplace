@@ -91,6 +91,10 @@ villager without a job. Then:
 each a block along the wall from the one above, so steps spiral down the walls from the corner nearest the bench.
 Sand and gravel steps are swapped for cobblestone, and gaps (caves) are filled in with stone from the chests.
 
+**Smelting.** Put a furnace or blast furnace within 8 blocks of the Miner's Bench and some coal or charcoal in the
+chests. Every time the miner drops off a haul they take the finished ingots out into the chests, load the raw ores
+(and any ore blocks) in, and top up the coal. Anything you put in a furnace yourself is left alone.
+
 ## Lumberjacks
 ![A lumberjack cutting and replanting trees](docs/media/lumberjack.gif)
 

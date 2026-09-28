@@ -28,8 +28,24 @@ public final class SupplyContainers {
 	public static int RADIUS = 8;
 	private static final int VERTICAL = 4;
 
-	/** Storage positions near {@code bench}, nearest first, skipping any inside {@code exclude}. */
+	/**
+	 * Storage positions near {@code bench}, nearest first, skipping any inside {@code exclude}. Furnaces are not
+	 * storage (anything could end up in their input slot); miners tend them on purpose, see {@link #furnaces}.
+	 */
 	public static List<BlockPos> find(ServerLevel level, BlockPos bench, @Nullable BoundingBox exclude) {
+		return near(level, bench, be -> !(exclude != null && exclude.isInside(be.getBlockPos()))
+			&& !(be instanceof io.github.jcondedata.aliveworkplace.work.PrivateContainer)
+			&& !(be instanceof net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity)
+			&& !ModdedBlocks.isStorageNetwork(be.getBlockState().getBlock())
+			&& storage(level, be.getBlockPos()) != null);
+	}
+
+	/** Furnaces, blast furnaces and smokers near {@code bench}, nearest first. */
+	public static List<BlockPos> furnaces(ServerLevel level, BlockPos bench) {
+		return near(level, bench, be -> be instanceof net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity);
+	}
+
+	private static List<BlockPos> near(ServerLevel level, BlockPos bench, java.util.function.Predicate<BlockEntity> keep) {
 		List<BlockPos> found = new ArrayList<>();
 		int minCx = SectionPos.blockToSectionCoord(bench.getX() - RADIUS), maxCx = SectionPos.blockToSectionCoord(bench.getX() + RADIUS);
 		int minCz = SectionPos.blockToSectionCoord(bench.getZ() - RADIUS), maxCz = SectionPos.blockToSectionCoord(bench.getZ() + RADIUS);
@@ -44,11 +60,7 @@ public final class SupplyContainers {
 					if (Math.abs(p.getX() - bench.getX()) > RADIUS || Math.abs(p.getZ() - bench.getZ()) > RADIUS || Math.abs(p.getY() - bench.getY()) > VERTICAL) {
 						continue;
 					}
-					if (exclude != null && exclude.isInside(p) || be instanceof io.github.jcondedata.aliveworkplace.work.PrivateContainer
-						|| ModdedBlocks.isStorageNetwork(be.getBlockState().getBlock())) {
-						continue;
-					}
-					if (storage(level, p) != null) {
+					if (keep.test(be)) {
 						found.add(p.immutable());
 					}
 				}

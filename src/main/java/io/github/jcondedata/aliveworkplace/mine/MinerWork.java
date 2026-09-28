@@ -8,6 +8,7 @@ import io.github.jcondedata.aliveworkplace.build.SupplyContainers;
 import io.github.jcondedata.aliveworkplace.registry.ModAttachments;
 import io.github.jcondedata.aliveworkplace.registry.ModBlocks;
 import java.util.List;
+import net.fabricmc.fabric.api.tag.convention.v2.ConventionalBlockTags;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
@@ -177,6 +178,9 @@ public class MinerWork extends Behavior<Villager> {
 	 */
 	private static Verdict verdict(ServerLevel level, QuarrySite site, BlockPos pos, ItemStack pick, BuilderBag bag) {
 		BlockState state = level.getBlockState(pos);
+		if (site.isStripMine() && !site.isTunnel(pos) && !state.is(ConventionalBlockTags.ORES)) {
+			return Verdict.KEEP; // the rock between the tunnels (ores in it are dug like anything else)
+		}
 		if (site.isStep(pos)) {
 			if (state.isCollisionShapeFullBlock(level, pos) && !(state.getBlock() instanceof FallingBlock)) {
 				return Verdict.KEEP;

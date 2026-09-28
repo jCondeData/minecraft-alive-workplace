@@ -117,6 +117,9 @@ public final class Miners {
 		}
 		Friends.hire(player, villager);
 		QuarrySite site = start(level, villager, player, box, data.depth());
+		if (data.isStripMine()) {
+			site.setStripMine(true);
+		}
 		if (!player.getAbilities().instabuild) {
 			stack.shrink(1);
 		}

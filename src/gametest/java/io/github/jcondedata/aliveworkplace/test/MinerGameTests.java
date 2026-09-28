@@ -1,6 +1,7 @@
 package io.github.jcondedata.aliveworkplace.test;
 
 import io.github.jcondedata.aliveworkplace.mine.Miners;
+import io.github.jcondedata.aliveworkplace.mine.QuarryData;
 import io.github.jcondedata.aliveworkplace.mine.QuarrySite;
 import io.github.jcondedata.aliveworkplace.mine.QuarrySiteManager;
 import io.github.jcondedata.aliveworkplace.registry.ModBlocks;
@@ -214,6 +215,40 @@ public class MinerGameTests implements FabricGameTest {
 			io.github.jcondedata.aliveworkplace.mine.Smelting.tend(s.level(), helper.absolutePos(BENCH),
 				io.github.jcondedata.aliveworkplace.build.SupplyContainers.find(s.level(), helper.absolutePos(BENCH), null));
 			helper.assertTrue(chest.countItem(Items.IRON_INGOT) == 9 && furnace.getItem(2).isEmpty(), "the ingots didn't come out: " + chest.countItem(Items.IRON_INGOT));
+		});
+	}
+
+	/**
+	 * A 7 × 7 strip mine in a block of stone: 2-high tunnels on every third row, joined at the end nearest the bench,
+	 * the rock between them left standing, but the ores in that rock dug out.
+	 */
+	@GameTest(template = AREA, timeoutTicks = 4000)
+	public void minerDigsAStripMine(GameTestHelper helper) {
+		fillStone(helper, new BlockPos(5, 2, 5), new BlockPos(13, 5, 13));
+		BlockPos min = new BlockPos(6, 3, 6);
+		BlockPos max = new BlockPos(12, 4, 12);
+		BlockPos coal = new BlockPos(9, 4, 7);  // in the rock between the first two tunnels
+		BlockPos iron = new BlockPos(10, 3, 11);
+		helper.setBlock(coal, Blocks.COAL_ORE);
+		helper.setBlock(iron, Blocks.IRON_ORE);
+		Setup s = setup(helper, min, max, new ItemStack(Items.STONE_PICKAXE));
+		s.site().setStripMine(true);
+		helper.assertTrue(QuarryData.EMPTY.withDepth(QuarryData.STRIP_MINE).isStripMine(), "depth 2 on the marker is a strip mine");
+		helper.succeedWhen(() -> {
+			helper.assertTrue(finished(s), "still digging: " + Math.round(s.site().progress() * 100) + "% (" + s.site().status() + "), miner at "
+				+ helper.relativePos(s.miner().blockPosition()));
+			for (BlockPos p : BlockPos.betweenClosed(min, max)) {
+				int row = p.getZ() - min.getZ();
+				boolean tunnel = row % 3 == 0 || p.getX() == min.getX(); // tunnels along x; the cross tunnel on the bench's side
+				if (tunnel || p.equals(coal) || p.equals(iron)) {
+					helper.assertBlockPresent(Blocks.AIR, p);
+				} else {
+					helper.assertBlockPresent(Blocks.STONE, p);
+				}
+			}
+			helper.assertBlockPresent(Blocks.STONE, new BlockPos(8, 5, 6)); // the roof stays
+			Container chest = helper.getBlockEntity(CHEST);
+			helper.assertTrue(chest.countItem(Items.COAL) == 1 && chest.countItem(Items.RAW_IRON) == 1, "the ores in the rock should be in the chest");
 		});
 	}
 

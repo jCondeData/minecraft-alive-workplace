@@ -34,6 +34,8 @@ public final class QuarrySite {
 	private boolean stairs;
 	/** Where along the walls the top step is (see {@link #wallIndex}). */
 	private int stairStart;
+	/** Tunnels with rock between them instead of an open pit (see {@link #isTunnel}). */
+	private boolean stripMine;
 	/** Saved by a version before 0.45.0, which could stretch the quarry over its bench (see {@link #looksStretched}). */
 	private boolean fromOldVersion;
 
@@ -122,6 +124,41 @@ public final class QuarrySite {
 	 */
 	public boolean looksStretched() {
 		return fromOldVersion && bench != null && box.isInside(bench);
+	}
+
+	public boolean isStripMine() {
+		return stripMine;
+	}
+
+	/** Makes this a strip mine (no stairs: it's only as deep as a tunnel). */
+	public void setStripMine(boolean stripMine) {
+		this.stripMine = stripMine;
+		if (stripMine) {
+			stairs = false;
+		}
+		onChange.run();
+	}
+
+	/**
+	 * In a strip mine, whether {@code pos} is part of a tunnel: tunnels run along the longer side of the area, every
+	 * third row (two rows of rock between them, each touching a tunnel), joined by a cross tunnel at the end nearest
+	 * the bench. The rock between them is left, apart from the ores in it.
+	 */
+	public boolean isTunnel(BlockPos pos) {
+		boolean alongX = box.getXSpan() >= box.getZSpan();
+		int across = alongX ? pos.getZ() - box.minZ() : pos.getX() - box.minX();
+		if (across % 3 == 0) {
+			return true;
+		}
+		int along = alongX ? pos.getX() - box.minX() : pos.getZ() - box.minZ();
+		int length = alongX ? box.getXSpan() : box.getZSpan();
+		int crossAt = 0;
+		if (bench != null) {
+			int b = alongX ? bench.getX() : bench.getZ();
+			int lo = alongX ? box.minX() : box.minZ();
+			crossAt = Math.abs(b - lo) <= Math.abs(b - (lo + length - 1)) ? 0 : length - 1;
+		}
+		return along == crossAt;
 	}
 
 	public boolean hasStairs() {
@@ -268,6 +305,9 @@ public final class QuarrySite {
 			tag.putLong("bench", bench.asLong());
 		}
 		tag.putBoolean("stairs", stairs);
+		if (stripMine) {
+			tag.putBoolean("strip_mine", true);
+		}
 		tag.putInt("stair_start", stairStart);
 		return tag;
 	}
@@ -289,6 +329,7 @@ public final class QuarrySite {
 		site.fromOldVersion = !tag.contains("stairs");
 		site.stairs = tag.getBoolean("stairs"); // false for quarries started before stairs existed
 		site.stairStart = tag.getInt("stair_start");
+		site.stripMine = tag.getBoolean("strip_mine");
 		return site;
 	}
 }

@@ -2,6 +2,16 @@
 
 ## Unreleased
 
+## 0.47.0 — 2026-09-28
+
+### Added
+- **Strip mines**: sneak-right-click the air with a Quarry Marker until it says *Strip mine*, then mark the corners at
+  head height. The miner digs 2-high tunnels with 2 blocks of rock between them (and one across the end nearest the
+  bench), and digs out any ore in that rock: all the ore for about a third of the digging.
+
+### Changed
+- A villager who becomes a guard gets the extra health straight away (40), instead of starting at 20 and healing up.
+
 ## 0.46.0 — 2026-09-28
 
 ### Added

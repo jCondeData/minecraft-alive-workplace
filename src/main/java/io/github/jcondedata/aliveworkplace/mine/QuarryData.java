@@ -16,7 +16,9 @@ import net.minecraft.world.level.levelgen.structure.BoundingBox;
  * to dig. The quarry is the rectangle between the corners, from the higher corner down {@code depth} blocks.
  */
 public record QuarryData(Optional<ResourceLocation> dimension, Optional<BlockPos> first, Optional<BlockPos> second, int depth) {
-	public static final List<Integer> DEPTHS = List.of(4, 8, 16, 32, 64);
+	/** The last choice, 2, is a strip mine: 2-high tunnels with 2 blocks of rock between them (see {@link #isStripMine}). */
+	public static final List<Integer> DEPTHS = List.of(4, 8, 16, 32, 64, 2);
+	public static final int STRIP_MINE = 2;
 	public static final int DEFAULT_DEPTH = 16;
 	/** Largest side of a quarry, so a miner's job stays a sensible size. */
 	public static final int MAX_SIDE = 32;
@@ -31,6 +33,11 @@ public record QuarryData(Optional<ResourceLocation> dimension, Optional<BlockPos
 	).apply(i, QuarryData::new));
 
 	public static final StreamCodec<RegistryFriendlyByteBuf, QuarryData> STREAM_CODEC = ByteBufCodecs.fromCodecWithRegistries(CODEC);
+
+	/** A strip mine instead of an open pit: tunnels at the height of the marked blocks and the one below. */
+	public boolean isStripMine() {
+		return depth == STRIP_MINE;
+	}
 
 	public boolean isComplete() {
 		return dimension.isPresent() && first.isPresent() && second.isPresent();

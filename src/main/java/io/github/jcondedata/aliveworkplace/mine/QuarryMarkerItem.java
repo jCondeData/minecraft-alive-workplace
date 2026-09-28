@@ -60,7 +60,8 @@ public class QuarryMarkerItem extends Item {
 		}
 		QuarryData done = new QuarryData(Optional.of(dim), Optional.of(first), Optional.of(pos), data.depth());
 		stack.set(ModComponents.QUARRY, done);
-		player.displayClientMessage(Component.translatable("message.aliveworkplace.quarry.marked", w, d, data.depth()), false);
+		player.displayClientMessage(data.isStripMine() ? Component.translatable("message.aliveworkplace.quarry.marked_strip", w, d)
+			: Component.translatable("message.aliveworkplace.quarry.marked", w, d, data.depth()), false);
 		return InteractionResult.SUCCESS;
 	}
 
@@ -74,7 +75,8 @@ public class QuarryMarkerItem extends Item {
 			QuarryData data = data(stack);
 			QuarryData deeper = data.withDepth(data.nextDepth());
 			stack.set(ModComponents.QUARRY, deeper);
-			player.displayClientMessage(Component.translatable("message.aliveworkplace.quarry.depth", deeper.depth()), true);
+			player.displayClientMessage(deeper.isStripMine() ? Component.translatable("message.aliveworkplace.quarry.strip_mine")
+				: Component.translatable("message.aliveworkplace.quarry.depth", deeper.depth()), true);
 		}
 		return InteractionResultHolder.sidedSuccess(stack, level.isClientSide);
 	}
@@ -85,14 +87,15 @@ public class QuarryMarkerItem extends Item {
 		Optional<BoundingBox> area = data.area();
 		if (area.isPresent()) {
 			BoundingBox box = area.get();
-			tooltip.add(Component.translatable("tooltip.aliveworkplace.quarry.area", box.getXSpan(), box.getZSpan(), box.getYSpan(),
-				box.minX(), box.maxY(), box.minZ()).withStyle(ChatFormatting.AQUA));
+			tooltip.add(Component.translatable(data.isStripMine() ? "tooltip.aliveworkplace.quarry.strip_area" : "tooltip.aliveworkplace.quarry.area",
+				box.getXSpan(), box.getZSpan(), box.getYSpan(), box.minX(), box.maxY(), box.minZ()).withStyle(ChatFormatting.AQUA));
 			tooltip.add(Component.translatable("tooltip.aliveworkplace.quarry.hand_over").withStyle(ChatFormatting.GRAY));
 		} else if (data.first().isPresent()) {
 			tooltip.add(Component.translatable("tooltip.aliveworkplace.quarry.second").withStyle(ChatFormatting.GRAY));
 		} else {
 			tooltip.add(Component.translatable("tooltip.aliveworkplace.quarry.first").withStyle(ChatFormatting.GRAY));
 		}
-		tooltip.add(Component.translatable("tooltip.aliveworkplace.quarry.depth", data.depth()).withStyle(ChatFormatting.DARK_GRAY));
+		tooltip.add(data.isStripMine() ? Component.translatable("tooltip.aliveworkplace.quarry.strip_mine").withStyle(ChatFormatting.DARK_GRAY)
+			: Component.translatable("tooltip.aliveworkplace.quarry.depth", data.depth()).withStyle(ChatFormatting.DARK_GRAY));
 	}
 }

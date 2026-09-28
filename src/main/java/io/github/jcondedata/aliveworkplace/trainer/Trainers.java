@@ -13,8 +13,6 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.npc.Villager;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 
 /**
  * Pokémon Trainers (with Cobblemon installed): villagers at a Training Post who battle players. A
@@ -24,7 +22,6 @@ import net.minecraft.world.item.Items;
  */
 public final class Trainers {
 	public static final boolean COBBLEMON = FabricLoader.getInstance().isModLoaded("cobblemon");
-	private static final boolean COBBLEDOLLARS = FabricLoader.getInstance().isModLoaded("cobbledollars");
 	/** CobbleDollars for a win, by tier (Novice..Master). */
 	private static final int[] PRIZE = {100, 250, 500, 1000, 2500};
 	/** Without CobbleDollars: emeralds instead. */
@@ -145,19 +142,12 @@ public final class Trainers {
 	private static void pay(MinecraftServer server, ServerPlayer player, int tier, Villager trainer) {
 		int i = Math.max(0, Math.min(4, tier - 1));
 		int factor = isLeader(trainer) ? LEADER_PRIZE_FACTOR : 1;
-		if (COBBLEDOLLARS) {
-			int prize = PRIZE[i] * factor;
-			server.getCommands().performPrefixedCommand(server.createCommandSourceStack().withSuppressedOutput(),
-				"cobbledollars give " + player.getGameProfile().getName() + " " + prize);
-			player.sendSystemMessage(Component.translatable("message.aliveworkplace.trainer.won_dollars", trainer.getDisplayName(), prize).withStyle(ChatFormatting.GREEN));
-		} else {
-			ItemStack prize = new ItemStack(Items.EMERALD, EMERALDS[i] * factor);
-			player.sendSystemMessage(Component.translatable("message.aliveworkplace.trainer.won_emeralds", trainer.getDisplayName(), prize.getCount())
-				.withStyle(ChatFormatting.GREEN));
-			if (!player.getInventory().add(prize)) {
-				player.drop(prize, false);
-			}
-		}
+		int dollars = PRIZE[i] * factor;
+		int emeralds = EMERALDS[i] * factor;
+		io.github.jcondedata.aliveworkplace.work.Money.pay(player, dollars, emeralds);
+		player.sendSystemMessage(io.github.jcondedata.aliveworkplace.work.Money.cobbleDollars()
+			? Component.translatable("message.aliveworkplace.trainer.won_dollars", trainer.getDisplayName(), dollars).withStyle(ChatFormatting.GREEN)
+			: Component.translatable("message.aliveworkplace.trainer.won_emeralds", trainer.getDisplayName(), emeralds).withStyle(ChatFormatting.GREEN));
 	}
 
 	private static Villager find(MinecraftServer server, UUID id) {

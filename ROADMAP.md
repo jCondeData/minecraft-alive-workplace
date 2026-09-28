@@ -158,7 +158,10 @@ workstation, like the rest of the mod.
   moves it can't use yet below, paged; click twice to pay emeralds and teach (into the moveset if there's room, else
   the benched moves it can swap in). Grade 1–5 by power (≤50/70/85/100/more; status 3; egg +1), price 3/6/10/16/24;
   a tutor teaches up to their level and gains 2 + grade XP a lesson
-- [ ] Move Tutor follow-ups: CobbleDollars prices, tutors in village generation
+- [x] Move Tutor prices in CobbleDollars (100 per emerald: 300–2,400) through `work/Money` (CobbleDollars balance via
+  `compat/cobbledollars/CobbleDollarsBank`, the only code touching it; falls back to emeralds without the mod or if
+  its API changes); trainer prizes use it too; compat-tested with CobbleDollars 2.0.0 Beta-5.1 (the pack's version)
+- [ ] Move Tutor follow-ups: tutors in village generation
 - [x] **Pokémon Trader** (Trade Board workstation): the day's offers (seeded by trader and day, the same for everyone):
   their Pokémon (young ones for beginners, fully evolved at the top; never legendary/mythical/ultra beast/paradox) for
   any of yours of a type they don't have, level ≥ theirs − 5; 1/2/2/3/3 offers at lv 5–15 / 15–25 / 25–35 / 35–50 /

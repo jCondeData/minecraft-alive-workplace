@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+### Changed
+- **Move Tutor lessons cost CobbleDollars** when that mod is installed (300 to 2,400, the money you win from
+  trainers); emeralds as before without it. Trainer prizes now go straight into your CobbleDollars balance instead
+  of through a command.
+
 ### Added
 - **Repurposed Structures villages** (in the Cobbleverse pack) now grow our builder's workshops, trainer's houses,
   guard houses, clinics and post offices too, in the closest matching style (birch and oak villages get plains

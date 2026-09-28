@@ -79,7 +79,8 @@ public class CobblemonCompatTests implements FabricGameTest {
 		helper.assertTrue(battle != null, "no battle started");
 		int xpBefore = trainer.getVillagerXp();
 		io.github.jcondedata.aliveworkplace.compat.cobblemon.CobblemonTrainers.finishForTest(battle, true);
-		helper.assertTrue(player.getInventory().countItem(net.minecraft.world.item.Items.EMERALD) == 1, "no prize (1 emerald without CobbleDollars)");
+		helper.assertTrue(io.github.jcondedata.aliveworkplace.work.Money.cobbleDollars(), "CobbleDollars is installed here");
+		helper.assertTrue(io.github.jcondedata.aliveworkplace.compat.cobbledollars.CobbleDollarsBank.balance(player) == 100, "a Novice's prize is 100 CobbleDollars, got " + io.github.jcondedata.aliveworkplace.compat.cobbledollars.CobbleDollarsBank.balance(player));
 		helper.assertTrue(trainer.getVillagerXp() > xpBefore, "the trainer got no XP from the battle");
 		helper.assertTrue(trainer.getAttachedOrElse(io.github.jcondedata.aliveworkplace.registry.ModAttachments.TRAINER_BATTLES, 0) == 1, "battle not counted");
 		helper.succeed();
@@ -95,13 +96,13 @@ public class CobblemonCompatTests implements FabricGameTest {
 		return tutor;
 	}
 
-	/** A Master tutor teaches a move for emeralds: two clicks on the lesson, and the Pokémon can use it. */
+	/** A Master tutor teaches a move for CobbleDollars: two clicks on the lesson, and the Pokémon can use it. */
 	@GameTest(template = AREA)
 	public void tutorTeachesAMove(GameTestHelper helper) {
 		Villager tutor = tutor(helper, 5);
 		ServerPlayer player = helper.makeMockServerPlayerInLevel();
 		player.setGameMode(GameType.SURVIVAL);
-		player.getInventory().add(new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.EMERALD, 64));
+		io.github.jcondedata.aliveworkplace.compat.cobbledollars.CobbleDollarsBank.add(player, 10_000);
 		Pokemon pokemon = PokemonProperties.Companion.parse("bulbasaur level=20", " ", "=").create();
 		Cobblemon.INSTANCE.getStorage().getParty(player).add(pokemon);
 
@@ -113,14 +114,14 @@ public class CobblemonCompatTests implements FabricGameTest {
 		int slot = io.github.jcondedata.aliveworkplace.compat.cobblemon.CobblemonTutors.FIRST_MOVE_SLOT + index;
 		helper.assertTrue(menu.icon(0).getItem() instanceof com.cobblemon.mod.common.item.PokemonItem, "the party isn't shown");
 		menu.press(slot, player);
-		helper.assertTrue(player.getInventory().countItem(net.minecraft.world.item.Items.EMERALD) == 64, "the first click already paid");
+		helper.assertTrue(io.github.jcondedata.aliveworkplace.compat.cobbledollars.CobbleDollarsBank.balance(player) == 10_000, "the first click already paid");
 		menu.press(slot, player);
 		String name = lesson.move().getName();
 		boolean knows = pokemon.getAllAccessibleMoves().stream().anyMatch(m -> m.getName().equals(name))
 			|| pokemon.getMoveSet().getMoves().stream().anyMatch(m -> m.getName().equals(name));
 		helper.assertTrue(knows, "the Pokémon didn't learn " + name);
-		helper.assertTrue(player.getInventory().countItem(net.minecraft.world.item.Items.EMERALD) == 64 - lesson.price(),
-			"paid " + (64 - player.getInventory().countItem(net.minecraft.world.item.Items.EMERALD)) + ", expected " + lesson.price());
+		helper.assertTrue(io.github.jcondedata.aliveworkplace.compat.cobbledollars.CobbleDollarsBank.balance(player) == 10_000 - lesson.dollars(),
+			"paid " + (10_000 - io.github.jcondedata.aliveworkplace.compat.cobbledollars.CobbleDollarsBank.balance(player)) + ", expected " + lesson.dollars());
 		helper.assertTrue(tutor.getAttachedOrElse(io.github.jcondedata.aliveworkplace.registry.ModAttachments.TUTOR_LESSONS, 0) == 1, "lesson not counted");
 		String title = io.github.jcondedata.aliveworkplace.tutor.Tutors.title(tutor).getString();
 		helper.assertTrue(title.equals("Master Move Tutor"), "title: " + title);
@@ -135,7 +136,7 @@ public class CobblemonCompatTests implements FabricGameTest {
 		Villager tutor = tutor(helper, 1);
 		ServerPlayer player = helper.makeMockServerPlayerInLevel();
 		player.setGameMode(GameType.SURVIVAL);
-		player.getInventory().add(new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.EMERALD, 64));
+		io.github.jcondedata.aliveworkplace.compat.cobbledollars.CobbleDollarsBank.add(player, 10_000);
 		Pokemon pokemon = PokemonProperties.Companion.parse("charmander level=20", " ", "=").create();
 		Cobblemon.INSTANCE.getStorage().getParty(player).add(pokemon);
 		var lessons = io.github.jcondedata.aliveworkplace.compat.cobblemon.CobblemonTutors.lessons(pokemon);
@@ -152,10 +153,10 @@ public class CobblemonCompatTests implements FabricGameTest {
 		helper.assertTrue(menu.icon(slot).is(net.minecraft.world.item.Items.PAPER), "a lesson beyond the tutor should be greyed out");
 		menu.press(slot, player);
 		menu.press(slot, player);
-		helper.assertTrue(player.getInventory().countItem(net.minecraft.world.item.Items.EMERALD) == 64, "a Novice gave a hard lesson");
+		helper.assertTrue(io.github.jcondedata.aliveworkplace.compat.cobbledollars.CobbleDollarsBank.balance(player) == 10_000, "a Novice gave a hard lesson");
 
 		if (lessons.get(0).grade() == 1) {
-			player.getInventory().clearContent();
+			io.github.jcondedata.aliveworkplace.compat.cobbledollars.CobbleDollarsBank.take(player, io.github.jcondedata.aliveworkplace.compat.cobbledollars.CobbleDollarsBank.balance(player));
 			int easy = io.github.jcondedata.aliveworkplace.compat.cobblemon.CobblemonTutors.FIRST_MOVE_SLOT;
 			menu.press(easy, player);
 			menu.press(easy, player);
@@ -272,8 +273,7 @@ public class CobblemonCompatTests implements FabricGameTest {
 		var battle = com.cobblemon.mod.common.battles.BattleRegistry.getBattleByParticipatingPlayer(player);
 		helper.assertTrue(battle != null, "no battle started");
 		io.github.jcondedata.aliveworkplace.compat.cobblemon.CobblemonTrainers.finishForTest(battle, true);
-		helper.assertTrue(player.getInventory().countItem(net.minecraft.world.item.Items.EMERALD) == 24, "expert prize x3 = 24 emeralds, got "
-			+ player.getInventory().countItem(net.minecraft.world.item.Items.EMERALD));
+		helper.assertTrue(io.github.jcondedata.aliveworkplace.compat.cobbledollars.CobbleDollarsBank.balance(player) == 3000, "expert prize x3 = 3000 CobbleDollars, got " + io.github.jcondedata.aliveworkplace.compat.cobbledollars.CobbleDollarsBank.balance(player));
 		io.github.jcondedata.aliveworkplace.trainer.Trainers.challenge(player, leader);
 		helper.assertTrue(com.cobblemon.mod.common.battles.BattleRegistry.getBattleByParticipatingPlayer(player) == null, "a second challenge the same day");
 		helper.succeed();

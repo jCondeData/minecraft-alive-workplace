@@ -16,7 +16,7 @@ The owner (Jesse) does not write code: sessions are expected to work autonomousl
 ## Commands
 - `./gradlew build` — compile + jar + gametests (CI runs exactly this)
 - `./gradlew runGameTest` — only the gametests (~10 s of game time, ~1 min total)
-- `./gradlew runCompatGameTest` — gametests in `src/compattest` with Chipped, Rechiseled, Supplementaries, Cobblemon, Repurposed Structures (+ libraries)
+- `./gradlew runCompatGameTest` — gametests in `src/compattest` with Chipped, Rechiseled, Supplementaries, Cobblemon, Repurposed Structures, CobbleDollars (+ libraries)
   installed from Modrinth maven (`compatMods` in `build.gradle`; bundled jars are unpacked into `build/compat-nested`).
   Part of `build`. Add a mod from the pack here when adding support for it. Nested jars are unpacked recursively
   (Cobblemon → Fabric Language Kotlin → Kotlin libraries). The Kotlin Gradle plugin is applied only so Loom remaps
@@ -56,6 +56,7 @@ The owner (Jesse) does not write code: sessions are expected to work autonomousl
 - `bard/` — bards: `BardWork` (discs from the chests, or a made-up tune)
 - `nurse/` — nurses: `Nurses` (treating players), `NurseWork` (healing villagers nearby)
 - `compat/cobblemon/` — the only code that touches Cobblemon classes; call it only when `isModLoaded("cobblemon")`
+- `compat/cobbledollars/` — the only code touching CobbleDollars (balances); use it through `work/Money` (CobbleDollars or emeralds)
 - `mail/` — mailboxes and postmen: `MailboxBlock`/`MailboxBlockEntity`/`MailboxMenu` (screen in client `MailboxScreen`),
   `PostOffice` (saved data: addresses, parcels, desks, dawn delivery), `Parcel`, `Mail` (send packet), `PostmanWork`
 - `fish/` — the fisher upgrade (vanilla Fishermen, hired with a fishing rod): `FisherWork`, `Fishers`

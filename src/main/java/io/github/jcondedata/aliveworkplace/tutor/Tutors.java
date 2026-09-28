@@ -12,8 +12,8 @@ import net.minecraft.world.entity.npc.Villager;
 
 /**
  * Move Tutors (with Cobblemon installed): villagers at a Tutor's Desk who teach your Pokémon moves they
- * can learn but won't pick up by levelling (tutor, TM and egg moves), for emeralds. A tutor's level
- * decides how strong a move they can teach; they level up from every lesson.
+ * can learn but won't pick up by levelling (tutor, TM and egg moves), for CobbleDollars (emeralds without
+ * that mod). A tutor's level decides how strong a move they can teach; they level up from every lesson.
  */
 public final class Tutors {
 	public static final boolean COBBLEMON = FabricLoader.getInstance().isModLoaded("cobblemon");
@@ -42,6 +42,11 @@ public final class Tutors {
 
 	public static int price(int grade) {
 		return PRICE[Math.max(1, Math.min(5, grade)) - 1];
+	}
+
+	/** The same lesson in CobbleDollars (used when that mod is installed): 100 per emerald. */
+	public static long dollars(int grade) {
+		return price(grade) * 100L;
 	}
 
 	/** "Journeyman Move Tutor", or "Journeyman Move Tutor Ada" for a named one. */

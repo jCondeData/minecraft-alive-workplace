@@ -168,7 +168,8 @@ than four, otherwise you can swap it in from the moves page of its summary.
 
 ![A Move Tutor's lessons for Pikachu](docs/media/tutor.png)
 
-Lessons cost emeralds: 3 for a weak move, up to 24 for the strongest (egg moves count as one step harder). A new tutor
+Lessons cost CobbleDollars: 300 for a weak move, up to 2,400 for the strongest (egg moves count as one step harder;
+without CobbleDollars installed, 3 to 24 emeralds). A new tutor
 only teaches weaker moves; they rank up with every lesson they give, and a Master teaches everything. Tutors also buy
 paper and books, if you need emeralds.
 

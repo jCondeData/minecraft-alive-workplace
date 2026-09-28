@@ -122,6 +122,7 @@ ext.compatMods = [
 	"maven.modrinth:cobblemon:kF7CvxTo",        // Cobblemon 1.7.3 (bundles Fabric Language Kotlin)
 	"maven.modrinth:repurposed-structures-fabric:4uDzF4B9", // Repurposed Structures 7.5.21 (villages)
 	"maven.modrinth:midnightlib:vqqujBpd",      // MidnightLib 1.7.5 (for Repurposed Structures)
+	"maven.modrinth:cobbledollars:cqsHXSXe",    // CobbleDollars 2.0.0 Beta-5.1 (the pack's money)
 ]
 
 /** Unpacks the jars nested in the compat mods (META-INF/jars) into build/compat-nested. */
@@ -155,6 +156,7 @@ dependencies {
 
 	// Cobblemon is optional: compiled against for compat/cobblemon, never a runtime dependency.
 	modCompileOnly "maven.modrinth:cobblemon:kF7CvxTo"          // Cobblemon 1.7.3
+	modCompileOnly "maven.modrinth:cobbledollars:cqsHXSXe"      // CobbleDollars 2.0.0 Beta-5.1 (optional too)
 	compileOnly "org.jetbrains.kotlin:kotlin-stdlib:2.1.21"
 
 	// Only loaded by runCompatGameTest: the releases in the Cobbleverse pack (Modrinth version ids).

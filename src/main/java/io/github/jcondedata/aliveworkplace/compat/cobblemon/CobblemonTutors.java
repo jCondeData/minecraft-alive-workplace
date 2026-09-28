@@ -52,6 +52,10 @@ public final class CobblemonTutors {
 		public int price() {
 			return Tutors.price(grade);
 		}
+
+		public long dollars() {
+			return Tutors.dollars(grade);
+		}
 	}
 
 	/**
@@ -171,8 +175,6 @@ public final class CobblemonTutors {
 		List<Lesson> lessons = chosen == null ? List.of() : lessons(chosen);
 		int pages = Math.max(1, (lessons.size() + PAGE - 1) / PAGE);
 		state.page = Math.max(0, Math.min(pages - 1, state.page));
-		int emeralds = player.getInventory().countItem(Items.EMERALD);
-		boolean free = player.getAbilities().instabuild;
 		for (int i = 0; i < PAGE; i++) {
 			int index = state.page * PAGE + i;
 			if (index >= lessons.size()) {
@@ -181,7 +183,8 @@ public final class CobblemonTutors {
 			Lesson lesson = lessons.get(index);
 			boolean canTeach = lesson.grade() <= tier;
 			boolean pending = lesson.move().getName().equals(state.pending);
-			menu.button(FIRST_MOVE_SLOT + i, lessonIcon(lesson, chosen, canTeach, pending, free || emeralds >= lesson.price()),
+			menu.button(FIRST_MOVE_SLOT + i, lessonIcon(lesson, chosen, canTeach, pending,
+				io.github.jcondedata.aliveworkplace.work.Money.canAfford(player, lesson.dollars(), lesson.price())),
 				!canTeach ? null : p -> {
 					if (!lesson.move().getName().equals(state.pending)) {
 						state.pending = lesson.move().getName();
@@ -209,7 +212,8 @@ public final class CobblemonTutors {
 		ItemStack info = named(Items.BOOK, Tutors.title(tutor));
 		info.set(DataComponents.LORE, lore(
 			Component.translatable("message.aliveworkplace.tutor.info_level", BuilderLevels.levelName(tier)).withStyle(ChatFormatting.GRAY),
-			Component.translatable("message.aliveworkplace.tutor.info_emeralds", emeralds).withStyle(ChatFormatting.GREEN),
+			Component.translatable("message.aliveworkplace.tutor.info_money", io.github.jcondedata.aliveworkplace.work.Money.balance(player))
+				.withStyle(ChatFormatting.GREEN),
 			lessons.isEmpty() ? null : Component.translatable("message.aliveworkplace.tutor.info_page", state.page + 1, pages).withStyle(ChatFormatting.DARK_GRAY)));
 		menu.button(INFO, info, null);
 	}
@@ -238,7 +242,8 @@ public final class CobblemonTutors {
 		if (!canTeach) {
 			lines.add(Component.translatable("message.aliveworkplace.tutor.needs_tier", BuilderLevels.levelName(lesson.grade())).withStyle(ChatFormatting.RED));
 		} else {
-			lines.add(Component.translatable("message.aliveworkplace.tutor.price", lesson.price())
+			lines.add(Component.translatable("message.aliveworkplace.tutor.price",
+				io.github.jcondedata.aliveworkplace.work.Money.describe(lesson.dollars(), lesson.price()))
 				.withStyle(affordable ? ChatFormatting.GREEN : ChatFormatting.RED));
 			lines.add(pending && pokemon != null
 				? Component.translatable("message.aliveworkplace.tutor.confirm", move.getDisplayName(), pokemon.getDisplayName(false)).withStyle(ChatFormatting.YELLOW)
@@ -263,13 +268,10 @@ public final class CobblemonTutors {
 		if (!inParty || lesson.grade() > Tutors.tier(tutor) || !lessons(pokemon).stream().anyMatch(l -> l.move().getName().equals(lesson.move().getName()))) {
 			return;
 		}
-		int price = lesson.price();
-		if (!player.getAbilities().instabuild) {
-			if (player.getInventory().countItem(Items.EMERALD) < price) {
-				player.displayClientMessage(Component.translatable("message.aliveworkplace.tutor.too_poor", price).withStyle(ChatFormatting.RED), true);
-				return;
-			}
-			player.getInventory().clearOrCountMatchingItems(s -> s.is(Items.EMERALD), price, player.inventoryMenu.getCraftSlots());
+		if (!io.github.jcondedata.aliveworkplace.work.Money.charge(player, lesson.dollars(), lesson.price())) {
+			player.displayClientMessage(Component.translatable("message.aliveworkplace.tutor.too_poor",
+				io.github.jcondedata.aliveworkplace.work.Money.describe(lesson.dollars(), lesson.price())).withStyle(ChatFormatting.RED), true);
+			return;
 		}
 		boolean inMoves = teach(pokemon, lesson.move());
 		player.sendSystemMessage(Component.translatable(inMoves ? "message.aliveworkplace.tutor.learned" : "message.aliveworkplace.tutor.learned_benched",

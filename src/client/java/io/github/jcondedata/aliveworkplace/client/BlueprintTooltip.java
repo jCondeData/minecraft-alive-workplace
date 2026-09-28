@@ -2,6 +2,8 @@ package io.github.jcondedata.aliveworkplace.client;
 
 import io.github.jcondedata.aliveworkplace.blueprint.BlueprintData;
 import io.github.jcondedata.aliveworkplace.blueprint.BlueprintItem;
+import io.github.jcondedata.aliveworkplace.blueprint.SupplyReport;
+import io.github.jcondedata.aliveworkplace.registry.ModComponents;
 import io.github.jcondedata.aliveworkplace.build.MaterialRules;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -28,6 +30,15 @@ public final class BlueprintTooltip {
 			if (data == null) {
 				return;
 			}
+			SupplyReport report = stack.get(ModComponents.SUPPLY_REPORT);
+			if (report != null && report.bench().isPresent()) {
+				lines.addAll(missingLines(report, Screen.hasShiftDown()));
+				return;
+			}
+			if (report != null) {
+				lines.add(Component.translatable("tooltip.aliveworkplace.blueprint.no_bench",
+					io.github.jcondedata.aliveworkplace.build.Builders.MAX_SITE_DISTANCE).withStyle(ChatFormatting.RED));
+			}
 			if (!Screen.hasShiftDown()) {
 				lines.add(Component.translatable("tooltip.aliveworkplace.blueprint.materials_hint").withStyle(ChatFormatting.DARK_GRAY));
 				return;
@@ -52,6 +63,28 @@ public final class BlueprintTooltip {
 		}
 		if (materials.size() > MAX_LINES) {
 			lines.add(Component.translatable("tooltip.aliveworkplace.blueprint.more", materials.size() - MAX_LINES).withStyle(ChatFormatting.DARK_GRAY));
+		}
+		return lines;
+	}
+
+	/** A placed blueprint near a Builder's Bench: what the chests there are still short of. */
+	public static List<Component> missingLines(SupplyReport report, boolean detailed) {
+		if (report.missing().isEmpty()) {
+			return List.of(Component.translatable("tooltip.aliveworkplace.blueprint.all_there").withStyle(ChatFormatting.GREEN));
+		}
+		if (!detailed) {
+			return List.of(Component.translatable("tooltip.aliveworkplace.blueprint.missing_summary", report.totalMissing())
+				.withStyle(ChatFormatting.YELLOW));
+		}
+		List<Component> lines = new ArrayList<>();
+		lines.add(Component.translatable("tooltip.aliveworkplace.blueprint.missing").withStyle(ChatFormatting.YELLOW));
+		for (int i = 0; i < Math.min(MAX_LINES, report.missing().size()); i++) {
+			SupplyReport.Missing m = report.missing().get(i);
+			lines.add(Component.translatable("tooltip.aliveworkplace.blueprint.material", m.count(), m.item().getDescription())
+				.withStyle(ChatFormatting.GRAY));
+		}
+		if (report.missing().size() > MAX_LINES) {
+			lines.add(Component.translatable("tooltip.aliveworkplace.blueprint.more", report.missing().size() - MAX_LINES).withStyle(ChatFormatting.DARK_GRAY));
 		}
 		return lines;
 	}

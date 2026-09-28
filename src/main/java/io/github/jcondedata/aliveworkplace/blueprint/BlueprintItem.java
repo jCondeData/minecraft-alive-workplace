@@ -130,6 +130,20 @@ public class BlueprintItem extends Item {
 		return InteractionResultHolder.pass(stack);
 	}
 
+	/** Keeps the "still missing" list of a placed blueprint up to date (see {@code BlueprintSupplies}). */
+	@Override
+	public void inventoryTick(ItemStack stack, Level level, net.minecraft.world.entity.Entity entity, int slot, boolean selected) {
+		if (level instanceof ServerLevel server && entity instanceof Player) {
+			io.github.jcondedata.aliveworkplace.build.BlueprintSupplies.tick(server, stack, slot);
+		}
+	}
+
+	/** The "still missing" list changing isn't a new item: no re-equip bob in the hand. */
+	@Override
+	public boolean allowComponentsUpdateAnimation(Player player, InteractionHand hand, ItemStack oldStack, ItemStack newStack) {
+		return false;
+	}
+
 	@Override
 	public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
 		data(stack).ifPresent(d -> {

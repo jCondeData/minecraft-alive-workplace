@@ -49,6 +49,14 @@ public final class ModComponents {
 			.networkSynchronized(io.github.jcondedata.aliveworkplace.mail.RouteData.STREAM_CODEC).build()
 	);
 
+	/** What a placed blueprint still needs from the builder's chests (kept fresh by the server, never saved). */
+	public static final DataComponentType<io.github.jcondedata.aliveworkplace.blueprint.SupplyReport> SUPPLY_REPORT = Registry.register(
+		BuiltInRegistries.DATA_COMPONENT_TYPE,
+		AliveWorkplace.id("supply_report"),
+		DataComponentType.<io.github.jcondedata.aliveworkplace.blueprint.SupplyReport>builder()
+			.networkSynchronized(io.github.jcondedata.aliveworkplace.blueprint.SupplyReport.STREAM_CODEC).build()
+	);
+
 	public static void init() {
 	}
 

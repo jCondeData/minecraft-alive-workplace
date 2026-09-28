@@ -98,6 +98,10 @@ public class ScreenshotHarness implements ClientModInitializer {
 			traderScene(mc, mc.getSingleplayerServer());
 			return;
 		}
+		if ("missing".equals(System.getProperty("aliveworkplace.scene"))) {
+			missingScene(mc, mc.getSingleplayerServer());
+			return;
+		}
 		if ("forest".equals(System.getProperty("aliveworkplace.scene"))) {
 			forestScene(mc, mc.getSingleplayerServer());
 			return;
@@ -636,6 +640,56 @@ public class ScreenshotHarness implements ClientModInitializer {
 		}
 	}
 
+	// --- Missing: a placed blueprint's tooltip says what the builder's chests are short of ------------
+
+	private void missingScene(Minecraft mc, MinecraftServer server) {
+		tick++;
+		if (tick == 1) {
+			mc.options.renderDistance().set(6);
+			mc.options.cloudStatus().set(CloudStatus.OFF);
+		}
+		if (tick == 40) {
+			server.execute(() -> {
+				ServerLevel level = server.overworld();
+				ServerPlayer player = server.getPlayerList().getPlayers().get(0);
+				level.getGameRules().getRule(GameRules.RULE_DAYLIGHT).set(false, server);
+				level.setDayTime(2500);
+				BlockPos bench = new BlockPos(0, -60, 3);
+				level.setBlockAndUpdate(bench, ModBlocks.BUILDERS_BENCH.defaultBlockState());
+				level.setBlockAndUpdate(bench.east(), net.minecraft.world.level.block.Blocks.CHEST.defaultBlockState());
+				if (level.getBlockEntity(bench.east()) instanceof net.minecraft.world.Container chest) {
+					chest.setItem(0, new ItemStack(net.minecraft.world.item.Items.OAK_PLANKS, 64));
+					chest.setItem(1, new ItemStack(net.minecraft.world.item.Items.COBBLESTONE, 64));
+				}
+				ItemStack blueprint = io.github.jcondedata.aliveworkplace.blueprint.BlueprintItem.create(StarterBlueprints.STARTER_COTTAGE.id(), null);
+				var bp = io.github.jcondedata.aliveworkplace.blueprint.BlueprintLibrary.get(level, StarterBlueprints.STARTER_COTTAGE.id()).orElseThrow();
+				var placement = io.github.jcondedata.aliveworkplace.blueprint.BlueprintItem.placementAt(level.dimension().location(), bp.size(),
+					new BlockPos(0, -60, 12), net.minecraft.world.level.block.Rotation.NONE);
+				blueprint.set(io.github.jcondedata.aliveworkplace.registry.ModComponents.BLUEPRINT,
+					io.github.jcondedata.aliveworkplace.blueprint.BlueprintItem.data(blueprint).orElseThrow().withSize(bp.size()).withPlacement(java.util.Optional.of(placement)));
+				player.getInventory().setItem(0, blueprint);
+				player.setGameMode(GameType.SURVIVAL);
+				player.teleportTo(level, 2.5, -60, 6.5, 180, 10);
+			});
+		}
+		if (tick == 120) {
+			mc.setScreen(new net.minecraft.client.gui.screens.inventory.InventoryScreen(mc.player));
+		}
+		if (tick == 130) {
+			double scale = mc.getWindow().getGuiScale();
+			int left = (mc.getWindow().getGuiScaledWidth() - 176) / 2;
+			int top = (mc.getWindow().getGuiScaledHeight() - 166) / 2;
+			setMouse(mc, (left + 8 + 8) * scale, (top + 142 + 8) * scale);
+		}
+		if (tick == 150) {
+			mc.getToasts().clear();
+			shot(mc, "01_blueprint_missing");
+		}
+		if (tick == 160) {
+			mc.stop();
+		}
+	}
+
 	// --- Trader: the Pokémon Trader's offers (needs Cobblemon too) ------------------------------------
 
 	private void traderScene(Minecraft mc, MinecraftServer server) {
@@ -704,8 +758,11 @@ public class ScreenshotHarness implements ClientModInitializer {
 		double scale = mc.getWindow().getGuiScale();
 		int left = (mc.getWindow().getGuiScaledWidth() - 176) / 2;
 		int top = (mc.getWindow().getGuiScaledHeight() - 222) / 2;
-		double x = (left + 8 + (slot % 9) * 18 + 8) * scale;
-		double y = (top + 18 + (slot / 9) * 18 + 8) * scale;
+		setMouse(mc, (left + 8 + (slot % 9) * 18 + 8) * scale, (top + 18 + (slot / 9) * 18 + 8) * scale);
+	}
+
+	/** Puts the mouse at window pixel ({@code x}, {@code y}); the harness has no real mouse. */
+	private static void setMouse(Minecraft mc, double x, double y) {
 		try {
 			var xpos = net.minecraft.client.MouseHandler.class.getDeclaredField("xpos");
 			var ypos = net.minecraft.client.MouseHandler.class.getDeclaredField("ypos");

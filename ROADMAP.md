@@ -37,7 +37,10 @@ Owner decisions are recorded in **Design decisions** at the bottom. Don't change
 
 ### Next
 - [x] Materials list in the blueprint tooltip (hold Shift)
-- [ ] "What's still missing" in the tooltip once a blueprint is handed over / placed near a builder's chests
+- [x] "What's still missing" in the tooltip of a placed blueprint: every 2 s while it's in a player's inventory the
+  server compares its plan (blocks already in place skipped, foundation included) with the chests by the nearest
+  Builder's Bench within 48 blocks and stores the shortfall in a synced, unsaved component (`SupplyReport`); after
+  hand-over the builder's own status and sneak-click list cover it
 - [x] **Build queue**: hand a busy builder up to 5 more blueprints; they do them in order (queued sites reserve their spot, show in `/workplace sites` and can be cancelled)
 - [x] **Crews**: idle builders with a bench within 48 blocks of a build help out (up to 3 per site): they work ahead of the lead builder on the same stage, fetch from the lead's chests, pass spare materials to each other, and go home when it's done (`workplaceBuildersHelp` gamerule)
 - [x] **Deconstruct**: sneak-give a placed blueprint to a builder and they take that building down (decorations first, then top-down), returning exactly what each block cost to the supply chests; blocks that differ from the blueprint and anything that holds items are left standing

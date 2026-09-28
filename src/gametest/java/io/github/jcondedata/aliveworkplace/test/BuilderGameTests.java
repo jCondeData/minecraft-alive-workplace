@@ -649,6 +649,65 @@ public class BuilderGameTests implements FabricGameTest {
 		});
 	}
 
+	// --- what's still missing ----------------------------------------------------------------
+
+	/** A placed blueprint knows what the chests by the nearest bench are short of; blocks already in place don't count. */
+	@GameTest(template = AREA)
+	public void placedBlueprintKnowsWhatsMissing(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		helper.setBlock(BENCH, ModBlocks.BUILDERS_BENCH);
+		helper.setBlock(CHEST, Blocks.CHEST);
+		BlueprintData.Placement placement = placement(helper, HUT_ORIGIN, Rotation.NONE);
+		BlueprintData data = BlueprintItem.data(BlueprintItem.create(TEST_HUT, new Vec3i(5, 4, 5))).orElseThrow().withPlacement(Optional.of(placement));
+		helper.runAfterDelay(2, () -> { // the bench becomes a point of interest a moment after it's placed
+			BuildPlan plan = BuildPlan.create(BlueprintLibrary.get(level, TEST_HUT).orElseThrow(), placement);
+			Map<Item, Integer> need = plan.materials();
+			Container chest = helper.getBlockEntity(CHEST);
+			int slot = 0;
+			for (Map.Entry<Item, Integer> e : need.entrySet()) {
+				if (e.getKey() != Items.OAK_PLANKS) {
+					slot = stock(chest, slot, e.getKey(), e.getValue());
+				}
+			}
+			var report = io.github.jcondedata.aliveworkplace.build.BlueprintSupplies.check(level, data).orElseThrow();
+			helper.assertTrue(report.bench().equals(Optional.of(helper.absolutePos(BENCH))) && report.chests() == 1, "bench and chests: " + report);
+			helper.assertTrue(report.missing().size() == 1, "only planks should be missing: " + report.missing());
+			int planks = missing(report, Items.OAK_PLANKS);
+			helper.assertTrue(planks == need.get(Items.OAK_PLANKS), "planks missing " + planks + " of " + need.get(Items.OAK_PLANKS));
+
+			// A plank already where the blueprint wants one doesn't have to come from the chests.
+			BuildPlan.Step plankStep = plan.steps(BuildPlan.Stage.STRUCTURE).stream().filter(s -> s.state().is(Blocks.OAK_PLANKS)).findFirst().orElseThrow();
+			level.setBlockAndUpdate(plankStep.pos(), plankStep.state());
+			int after = missing(io.github.jcondedata.aliveworkplace.build.BlueprintSupplies.check(level, data).orElseThrow(), Items.OAK_PLANKS);
+			helper.assertTrue(after == planks - 1, "a plank in place still counted: " + after);
+
+			stock(chest, slot, Items.OAK_PLANKS, planks);
+			helper.assertTrue(io.github.jcondedata.aliveworkplace.build.BlueprintSupplies.check(level, data).orElseThrow().missing().isEmpty(),
+				"everything is in the chest");
+
+			// The item carries the report for its tooltip.
+			ItemStack stack = BlueprintItem.create(TEST_HUT, new Vec3i(5, 4, 5));
+			stack.set(io.github.jcondedata.aliveworkplace.registry.ModComponents.BLUEPRINT, data);
+			io.github.jcondedata.aliveworkplace.build.BlueprintSupplies.tick(level, stack, (int) ((40 - level.getGameTime() % 40) % 40));
+			var carried = stack.get(io.github.jcondedata.aliveworkplace.registry.ModComponents.SUPPLY_REPORT);
+			helper.assertTrue(carried != null && carried.missing().isEmpty(), "the item has no report: " + carried);
+			helper.succeed();
+		});
+	}
+
+	private static int stock(Container chest, int slot, Item item, int count) {
+		while (count > 0) {
+			int n = Math.min(count, item.getDefaultMaxStackSize());
+			chest.setItem(slot++, new ItemStack(item, n));
+			count -= n;
+		}
+		return slot;
+	}
+
+	private static int missing(io.github.jcondedata.aliveworkplace.blueprint.SupplyReport report, Item item) {
+		return report.missing().stream().filter(m -> m.item() == item).mapToInt(io.github.jcondedata.aliveworkplace.blueprint.SupplyReport.Missing::count).sum();
+	}
+
 	private static Setup setup(GameTestHelper helper, ResourceLocation structure, BlockPos originRel, Rotation rotation, ItemStack... chestItems) {
 		ServerLevel level = helper.getLevel();
 		helper.setDayTime(2000);

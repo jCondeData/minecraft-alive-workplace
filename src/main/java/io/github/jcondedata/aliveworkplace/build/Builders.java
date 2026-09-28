@@ -466,6 +466,11 @@ public final class Builders {
 				tell(owner, Component.translatable("message.aliveworkplace.entities_left", entitiesLeft), ChatFormatting.YELLOW);
 			}
 		}
+		if (site.isDeconstruction()) {
+			BuildSiteManager.get(level).forgetFinished(site.placement());
+		} else {
+			BuildSiteManager.get(level).recordFinished(site.structure(), site.placement(), site.owner());
+		}
 		endJob(level, villager, site);
 		BuilderLevels.onFinished(level, villager, site);
 	}

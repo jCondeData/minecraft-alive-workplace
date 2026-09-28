@@ -96,6 +96,19 @@ public class BlueprintItem extends Item {
 		Vec3i size = blueprint.get().size();
 		ResourceLocation dimension = level.dimension().location();
 
+		// An upgrade clicked onto the finished building it upgrades lines up with it exactly.
+		Optional<io.github.jcondedata.aliveworkplace.build.BuildSiteManager.Finished> base = player.isShiftKeyDown() ? Optional.empty()
+			: BlueprintUpgrades.baseOf(current.structure()).flatMap(id -> io.github.jcondedata.aliveworkplace.build.BuildSiteManager.get(level)
+				.finishedAt(level, id, context.getClickedPos()));
+		if (base.isPresent()) {
+			BlueprintData.Placement over = base.get().placement();
+			context.getItemInHand().set(ModComponents.BLUEPRINT, current.withSize(size).withPlacement(Optional.of(over)));
+			player.displayClientMessage(Component.translatable("message.aliveworkplace.blueprint.upgrade",
+				Blueprints.displayName(base.get().structure()), Blueprints.displayName(current.structure())).withStyle(ChatFormatting.GREEN), true);
+			BlueprintOutline.show(level, player, over, size);
+			return InteractionResult.CONSUME;
+		}
+
 		BlueprintData.Placement placement;
 		if (player.isShiftKeyDown() && current.placement().isPresent() && current.placement().get().dimension().equals(dimension)) {
 			BlueprintData.Placement old = current.placement().get();

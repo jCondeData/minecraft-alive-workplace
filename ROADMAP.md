@@ -69,7 +69,11 @@ Owner decisions are recorded in **Design decisions** at the bottom. Don't change
 - [x] Config file (`config/aliveworkplace.json`, `WorkplaceConfig`): supply radius, max site distance, guard/lumberjack/
   orchard/fisher/partner radii, postman range, CobbleDollars per emerald; written with defaults, clamped, applied at
   startup (per-world tuning stays in the gamerules; the texts that say "within 8 blocks" still say 8)
-- [ ] Upgrades: blueprints can declare a next tier that builds over the previous one
+- [x] Upgrades by name (`BlueprintUpgrades`: `<name>_2` upgrades `<name>`, `_3` upgrades `_2`…); builds finished by
+  builders are remembered per dimension (`BuildSiteManager.finished`, forgotten when taken down); an upgrade clicked
+  onto one snaps to its placement; the builder clears what changed and keeps what matches. Starter Cottage II ships
+  (second storey)
+- [ ] Upgrade follow-ups: upgrades for the other starter builds; builders selling the upgrade once they've built the base
 
 ## Milestone 2 — Other work jobs
 - [x] **Miner** (Miner's Bench workstation, Quarry Marker item): digs the marked area out layer by layer with pickaxes from the chests (tool tier and durability count; waits for a new one), drops everything off in the chests near the bench, lights the pit with torches from the chests, leaves blocks touching lava/water, containers and anything too hard, never goes below 5 above the world floor; levels up like builders; trades coal/ores, sells markers, torches and pickaxes

@@ -155,6 +155,89 @@ def starter_cottage():
     return b
 
 
+# --- Starter Cottage, upgraded: the same ground floor with a second storey on top -----------------------
+def starter_cottage_2():
+    """Upgrade of the Starter Cottage (same origin and front): the ground floor is identical, so a builder only
+    takes the old roof off and adds the upper floor, a ladder, a new roof and a balcony window."""
+    b = Build(9, 14, 9)
+    # Ground floor: exactly the Starter Cottage's
+    b.fill(0, 0, 0, 8, 0, 8, "cobblestone")
+    b.fill(1, 0, 1, 7, 0, 7, "oak_planks")
+    for y in range(1, 4):
+        b.ring(0, 0, 8, 8, y, "oak_planks")
+        for x, z in ((0, 0), (8, 0), (0, 8), (8, 8)):
+            b.set(x, y, z, "oak_log", axis="y")
+    for x in (2, 6):
+        b.set(x, 2, 0, "glass_pane", north=False, south=False, east=True, west=True)
+        b.set(x, 2, 8, "glass_pane", north=False, south=False, east=True, west=True)
+    for x in (0, 8):
+        b.set(x, 2, 4, "glass_pane", north=True, south=True, east=False, west=False)
+    b.door(4, 1, 0, "oak_door", facing="south")
+    b.bed(7, 1, 6, "red", facing="south")
+    b.set(1, 1, 7, "crafting_table")
+    b.set(2, 1, 7, "chest", facing="north", type="single")
+    b.set(1, 1, 6, "furnace", facing="east", lit=False)
+    b.set(1, 1, 1, "barrel", facing="up", open=False)
+    b.set(7, 1, 1, "oak_stairs", facing="west", half="bottom", shape="straight")
+    b.set(6, 1, 1, "oak_fence", north=False, south=False, east=False, west=False)
+    b.set(6, 2, 1, "oak_pressure_plate", powered=False)
+    b.set(1, 1, 4, "white_carpet")
+    b.set(4, 3, 1, "wall_torch", facing="south")
+    b.set(4, 3, 7, "wall_torch", facing="north")
+    # The old top plate becomes the upper floor's rim; planks fill it in, with a hole for the ladder
+    for x in range(0, 9):
+        b.set(x, 4, 0, "oak_log", axis="x")
+        b.set(x, 4, 8, "oak_log", axis="x")
+    for z in range(1, 8):
+        b.set(0, 4, z, "oak_log", axis="z")
+        b.set(8, 4, z, "oak_log", axis="z")
+    b.fill(1, 4, 1, 7, 4, 7, "spruce_planks")
+    for y in range(1, 6):
+        b.set(7, y, 3, "ladder", facing="west", waterlogged=False)
+    # Upper storey: spruce walls between log corners, windows all round
+    for y in range(5, 8):
+        b.ring(0, 0, 8, 8, y, "spruce_planks")
+        for x, z in ((0, 0), (8, 0), (0, 8), (8, 8)):
+            b.set(x, y, z, "oak_log", axis="y")
+    for x in (2, 6):
+        b.set(x, 6, 0, "glass_pane", north=False, south=False, east=True, west=True)
+        b.set(x, 6, 8, "glass_pane", north=False, south=False, east=True, west=True)
+    for x in (0, 8):
+        b.set(x, 6, 3, "glass_pane", north=True, south=True, east=False, west=False)
+        b.set(x, 6, 5, "glass_pane", north=True, south=True, east=False, west=False)
+    # A tall front window over the door
+    b.set(4, 5, 0, "glass_pane", north=False, south=False, east=True, west=True)
+    b.set(4, 6, 0, "glass_pane", north=False, south=False, east=True, west=True)
+    for x in range(0, 9):
+        b.set(x, 8, 0, "oak_log", axis="x")
+        b.set(x, 8, 8, "oak_log", axis="x")
+    for z in range(1, 8):
+        b.set(0, 8, z, "oak_log", axis="z")
+        b.set(8, 8, z, "oak_log", axis="z")
+    # Roof: the same gable, one storey higher
+    for i, y in enumerate(range(9, 13)):
+        for x in range(0, 9):
+            b.set(x, y, i, "spruce_stairs", facing="south", half="bottom", shape="straight")
+            b.set(x, y, 8 - i, "spruce_stairs", facing="north", half="bottom", shape="straight")
+        for z in range(i + 1, 8 - i):
+            b.set(0, y, z, "oak_planks")
+            b.set(8, y, z, "oak_planks")
+    for x in range(0, 9):
+        b.set(x, 13, 4, "spruce_slab", type="bottom")
+    b.set(0, 10, 4, "glass_pane", north=True, south=True, east=False, west=False)
+    b.set(8, 10, 4, "glass_pane", north=True, south=True, east=False, west=False)
+    # Upstairs: a second bed, bookshelves, a rug and a lantern
+    b.bed(1, 5, 6, "light_blue", facing="south")
+    b.set(1, 5, 2, "bookshelf")
+    b.set(2, 5, 7, "bookshelf")
+    b.set(3, 5, 7, "chest", facing="north", type="single")
+    b.fill(3, 5, 3, 5, 5, 5, "light_blue_carpet")
+    b.set(1, 6, 2, "lantern", hanging=False, waterlogged=False)  # on the bookshelf
+    b.set(4, 7, 1, "wall_torch", facing="south")
+    b.fill_air()
+    return b
+
+
 # --- Market Stall: 7 x 5 x 5 ------------------------------------------------------------------
 def market_stall():
     b = Build(7, 5, 5)
@@ -548,6 +631,7 @@ def test_area(name, w, h, d, folder=TEST_AREAS):
 
 if __name__ == "__main__":
     starter_cottage().save(MAIN_STRUCTURES, "starter_cottage")
+    starter_cottage_2().save(MAIN_STRUCTURES, "starter_cottage_2")
     market_stall().save(MAIN_STRUCTURES, "market_stall")
     lookout_tower().save(MAIN_STRUCTURES, "lookout_tower")
     healing_center().save(MAIN_STRUCTURES, "healing_center")

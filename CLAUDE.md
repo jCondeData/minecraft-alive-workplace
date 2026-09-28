@@ -43,7 +43,8 @@ The owner (Jesse) does not write code: sessions are expected to work autonomousl
 ## Layout (`src/main/java/io/github/jcondedata/aliveworkplace/`)
 - `registry/` — blocks, items, data components, attachments, profession/POI/schedule, gamerules, trades
 - `blueprint/` — `Blueprint` (format-independent model), `BlueprintLibrary` (backed by the vanilla
-  structure template manager), `BlueprintItem`, `BlueprintOutline` (particle preview), `StarterBlueprints`
+  structure template manager), `BlueprintItem`, `BlueprintOutline` (particle preview), `StarterBlueprints`,
+  `BlueprintUpgrades` (`<name>_2` upgrades `<name>`; finished builds are remembered in `BuildSiteManager`)
 - `build/` — the builder: `BuildPlan` (ordered steps per stage), `BuildSite` + `BuildSiteManager`
   (per-dimension saved data), `BuilderWork` (the villager Behavior that does the work), `Builders`
   (hand-over, status, finish, cancel), `MaterialRules` (block → item cost, stage, "is this done"),

@@ -22,6 +22,46 @@ public final class BuildSiteManager extends SavedData {
 
 	private final Map<UUID, BuildSite> sites = new LinkedHashMap<>();
 
+	/** A building a builder finished here: what, where and for whom (so an upgrade can line up with it). */
+	public record Finished(ResourceLocation structure, BlueprintData.Placement placement, UUID owner) {
+	}
+
+	/** Most finished buildings remembered per dimension (the oldest are forgotten first). */
+	private static final int MAX_FINISHED = 2000;
+	private final java.util.ArrayDeque<Finished> finished = new java.util.ArrayDeque<>();
+
+	/** Remembers a finished building (replacing an older one on the same spot, such as the tier it upgraded). */
+	public void recordFinished(ResourceLocation structure, BlueprintData.Placement placement, UUID owner) {
+		finished.removeIf(f -> f.placement().equals(placement));
+		finished.addLast(new Finished(structure, placement, owner));
+		while (finished.size() > MAX_FINISHED) {
+			finished.removeFirst();
+		}
+		setDirty();
+	}
+
+	/** Forgets the building on this spot (it was taken down). */
+	public void forgetFinished(BlueprintData.Placement placement) {
+		if (finished.removeIf(f -> f.placement().equals(placement))) {
+			setDirty();
+		}
+	}
+
+	/** The finished building of {@code structure} whose outline contains {@code pos}, if any. */
+	public java.util.Optional<Finished> finishedAt(ServerLevel level, ResourceLocation structure, net.minecraft.core.BlockPos pos) {
+		for (Finished f : finished) {
+			if (f.structure().equals(structure) && f.placement().dimension().equals(level.dimension().location())) {
+				boolean inside = io.github.jcondedata.aliveworkplace.blueprint.BlueprintLibrary.get(level, structure)
+					.map(b -> io.github.jcondedata.aliveworkplace.blueprint.BlueprintOutline.bounds(f.placement(), b.size()).isInside(pos))
+					.orElse(false);
+				if (inside) {
+					return java.util.Optional.of(f);
+				}
+			}
+		}
+		return java.util.Optional.empty();
+	}
+
 	public static BuildSiteManager get(ServerLevel level) {
 		return level.getDataStorage().computeIfAbsent(new SavedData.Factory<>(BuildSiteManager::new, BuildSiteManager::load, null), NAME);
 	}
@@ -64,6 +104,15 @@ public final class BuildSiteManager extends SavedData {
 			list.add(site.save());
 		}
 		tag.put("sites", list);
+		ListTag done = new ListTag();
+		for (Finished f : finished) {
+			CompoundTag entry = new CompoundTag();
+			entry.putString("structure", f.structure().toString());
+			entry.put("placement", BlueprintData.Placement.CODEC.encodeStart(net.minecraft.nbt.NbtOps.INSTANCE, f.placement()).getOrThrow());
+			entry.putUUID("owner", f.owner());
+			done.add(entry);
+		}
+		tag.put("finished", done);
 		return tag;
 	}
 
@@ -74,6 +123,15 @@ public final class BuildSiteManager extends SavedData {
 			BuildSite site = BuildSite.load(list.getCompound(i));
 			if (site != null) {
 				manager.add(site);
+			}
+		}
+		ListTag done = tag.getList("finished", Tag.TAG_COMPOUND);
+		for (int i = 0; i < done.size(); i++) {
+			CompoundTag entry = done.getCompound(i);
+			ResourceLocation structure = ResourceLocation.tryParse(entry.getString("structure"));
+			var placement = BlueprintData.Placement.CODEC.parse(net.minecraft.nbt.NbtOps.INSTANCE, entry.get("placement")).result();
+			if (structure != null && placement.isPresent() && entry.hasUUID("owner")) {
+				manager.finished.addLast(new Finished(structure, placement.get(), entry.getUUID("owner")));
 			}
 		}
 		manager.setDirty(false);

@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+## 0.43.0 — 2026-09-28
+
+### Added
+- **Upgrades**: the new **Starter Cottage II** blueprint adds a second storey to a finished Starter Cottage. Right-click
+  the cottage with it and it lines up exactly; the builder only takes the old roof off and builds what's new. Your
+  own blueprints can have upgrades too: name them `my_house_2`, `my_house_3`…
+
 ## 0.42.0 — 2026-09-28
 
 ### Added

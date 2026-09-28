@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 import net.fabricmc.fabric.api.gametest.v1.FabricGameTest;
@@ -125,6 +126,54 @@ public class BuilderGameTests implements FabricGameTest {
 			assertBuilt(helper, s);
 			helper.assertBlockPresent(Blocks.DIRT, mound);
 			helper.assertBlockPresent(Blocks.AIR, hole);
+		});
+	}
+
+	/**
+	 * Upgrades: Starter Cottage II clicked onto a finished Starter Cottage lines up with it, and a builder only takes
+	 * the old roof off and builds the new storey — the ground floor stays, furniture and all.
+	 */
+	@GameTest(template = AREA, timeoutTicks = 6000)
+	public void builderUpgradesAFinishedCottage(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		BlockPos originRel = new BlockPos(8, 2, 8);
+		BlueprintData.Placement placement = placement(helper, originRel, Rotation.NONE);
+		level.getStructureManager().get(StarterBlueprints.STARTER_COTTAGE.id()).orElseThrow()
+			.placeInWorld(level, helper.absolutePos(originRel), helper.absolutePos(originRel), new StructurePlaceSettings(), level.getRandom(), 2);
+		BuildSiteManager.get(level).recordFinished(StarterBlueprints.STARTER_COTTAGE.id(), placement, java.util.UUID.randomUUID());
+		helper.assertTrue(io.github.jcondedata.aliveworkplace.blueprint.BlueprintUpgrades.baseOf(StarterBlueprints.STARTER_COTTAGE_2.id())
+			.equals(Optional.of(StarterBlueprints.STARTER_COTTAGE.id())), "starter_cottage_2 should upgrade starter_cottage");
+
+		// Clicking the upgrade onto the cottage lines it up exactly.
+		net.minecraft.server.level.ServerPlayer player = helper.makeMockServerPlayerInLevel();
+		ItemStack upgrade = BlueprintItem.create(StarterBlueprints.STARTER_COTTAGE_2.id(), StarterBlueprints.STARTER_COTTAGE_2.size());
+		player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, upgrade);
+		BlockPos wall = helper.absolutePos(originRel.offset(0, 1, 3));
+		upgrade.useOn(new net.minecraft.world.item.context.UseOnContext(player, net.minecraft.world.InteractionHand.MAIN_HAND,
+			new net.minecraft.world.phys.BlockHitResult(net.minecraft.world.phys.Vec3.atCenterOf(wall), net.minecraft.core.Direction.WEST, wall, false)));
+		helper.assertTrue(BlueprintItem.data(player.getMainHandItem()).flatMap(BlueprintData::placement).equals(Optional.of(placement)),
+			"the upgrade didn't line up: " + BlueprintItem.data(player.getMainHandItem()).flatMap(BlueprintData::placement));
+
+		// Stock only what the upgrade still needs, then build it.
+		helper.setBlock(BENCH, ModBlocks.BUILDERS_BENCH);
+		var report = io.github.jcondedata.aliveworkplace.build.BlueprintSupplies.check(level,
+			new BlueprintData(StarterBlueprints.STARTER_COTTAGE_2.id(), Optional.of(StarterBlueprints.STARTER_COTTAGE_2.size()), Optional.of(placement)))
+			.orElseThrow(() -> new GameTestAssertException("no supply report"));
+		List<ItemStack> stacks = new java.util.ArrayList<>();
+		for (var m : report.missing()) {
+			for (int left = m.count(); left > 0; left -= m.item().getDefaultMaxStackSize()) {
+				stacks.add(new ItemStack(m.item(), Math.min(left, m.item().getDefaultMaxStackSize())));
+			}
+		}
+		helper.assertTrue(stacks.size() <= 27, "the upgrade needs " + stacks.size() + " stacks: more than a chest");
+		ItemStack[] needed = stacks.toArray(ItemStack[]::new);
+		Setup s = setup(helper, StarterBlueprints.STARTER_COTTAGE_2.id(), originRel, Rotation.NONE, needed);
+		int total = s.plan().steps(BuildPlan.Stage.STRUCTURE).size() + s.plan().steps(BuildPlan.Stage.DECORATION).size();
+		helper.succeedWhen(() -> {
+			assertBuilt(helper, s);
+			helper.assertBlockPresent(Blocks.RED_BED, originRel.offset(7, 1, 6));
+			helper.assertBlockPresent(Blocks.LIGHT_BLUE_BED, originRel.offset(1, 5, 6));
+			helper.assertTrue(s.site().placed() < total * 0.8, "placed " + s.site().placed() + " of " + total + " blocks: the ground floor should have been kept");
 		});
 	}
 

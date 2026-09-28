@@ -62,6 +62,13 @@ per build), sharing the chests and passing each other materials.
 **Healing Center** (with a Nurse Station, and a Cobblemon Healing Machine on the counter when Cobblemon is installed)
 and the **Supply Shop** (with a Shop Counter) — build them and a nurse and a shopkeeper move in.
 
+![The Starter Cottage II next to a Starter Cottage](docs/media/cottage-upgrade.png)
+
+**Upgrades.** A blueprint named like another with `_2` on the end (`_3` after that…) is its upgrade: the **Starter
+Cottage II** (from the Blueprint Table) adds a second storey to the Starter Cottage. Right-click a finished cottage
+with the upgrade and it lines up exactly over it; the builder takes the old roof off and builds only what's new,
+keeping the ground floor and everything in it. Your own blueprints work the same way (`my_house` → `my_house_2`).
+
 ## Miners
 ![A miner digging out a quarry](docs/media/miner.gif)
 

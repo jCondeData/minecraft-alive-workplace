@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+### Added
+- Villages grow more of our houses: a **trainer's house** (often — most new villages get one), a **guard house** with a
+  chest of starting gear, a **clinic** and a **post office**, each in the village's own style and with a villager who
+  takes the job. Only villages generated after updating get them.
+
 ## 0.21.0 — 2026-09-27
 
 ### Added

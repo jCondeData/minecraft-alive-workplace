@@ -372,6 +372,89 @@ def builders_workshop(style):
     return b
 
 
+# --- Other village houses: the same small house, fitted out for another job ---------------------------
+def staffed_house(style, fit_out):
+    """7 x 8 x 8 like the builder's workshop (street at z = 0, a bed, a villager spawn), with the inside
+    fitted out by {@code fit_out(b, style)} for another job."""
+    floor, walls, corners, stairs, slab, door, bed = VILLAGE_STYLES[style]
+    b = Build(7, 8, 8)
+    for x in range(7):
+        b.set(x, 0, 0, "structure_void")
+    b.set(3, 1, 0, "jigsaw", orientation="north_up")
+    b.set_nbt(3, 1, 0, Compound({
+        "name": String("minecraft:building_entrance"), "target": String("minecraft:building_entrance"),
+        "pool": String("minecraft:empty"), "final_state": String("minecraft:structure_void"),
+        "joint": String("aligned"), "id": String("minecraft:jigsaw"),
+        "selection_priority": Int(0), "placement_priority": Int(0)}))
+    b.fill(0, 0, 1, 6, 0, 7, floor)
+    for y in range(1, 4):
+        b.ring(0, 1, 6, 7, y, walls)
+        for x, z in ((0, 1), (6, 1), (0, 7), (6, 7)):
+            b.set(x, y, z, corners, **({"axis": "y"} if "log" in corners else {}))
+    b.door(3, 1, 1, door, facing="south")
+    for x in (1, 5):
+        b.set(x, 2, 1, "glass_pane", north=False, south=False, east=True, west=True)
+    for z in (3, 5):
+        b.set(0, 2, z, "glass_pane", north=True, south=True, east=False, west=False)
+        b.set(6, 2, z, "glass_pane", north=True, south=True, east=False, west=False)
+    for i, y in enumerate(range(4, 7)):
+        for z in range(1, 8):
+            b.set(i, y, z, stairs, facing="east", half="bottom", shape="straight")
+            b.set(6 - i, y, z, stairs, facing="west", half="bottom", shape="straight")
+    for z in range(1, 8):
+        b.set(3, 7, z, slab, type="bottom")
+    for y, (x0, x1) in ((4, (1, 5)), (5, (2, 4)), (6, (3, 3))):
+        for x in range(x0, x1 + 1):
+            b.set(x, y, 1, walls)
+            b.set(x, y, 7, walls)
+    fit_out(b, style)
+    b.bed(5, 1, 5, bed.replace("_bed", ""), facing="south")
+    b.set(3, 3, 6, "wall_torch", facing="north")
+    b.set(3, 3, 2, "wall_torch", facing="south")
+    b.set(3, 0, 4, "jigsaw", orientation="up_north")
+    b.set_nbt(3, 0, 4, Compound({
+        "name": String("minecraft:bottom"), "target": String("minecraft:bottom"),
+        "pool": String(f"minecraft:village/{style}/villagers"), "final_state": String("minecraft:" + floor),
+        "joint": String("rollable"), "id": String("minecraft:jigsaw"),
+        "selection_priority": Int(0), "placement_priority": Int(0)}))
+    b.fill_air()
+    return b
+
+
+def trainers_house(b, style):
+    """A Training Post, a sparring target and a trophy shelf."""
+    b.set(1, 1, 6, "aliveworkplace:training_post", facing="east")
+    b.set(1, 1, 3, "target")
+    b.set(1, 2, 3, "target")
+    b.set(1, 1, 5, "bookshelf")
+    b.set(1, 2, 5, "flower_pot")
+
+
+def guard_house(b, style):
+    """A Guard Post and a chest of starting gear."""
+    b.set(1, 1, 6, "aliveworkplace:guard_post", facing="east")
+    b.set(1, 1, 5, "chest", facing="east", type="single", waterlogged=False)
+    b.set_nbt(1, 1, 5, Compound({"LootTable": String("aliveworkplace:chests/village_guard_house"), "id": String("minecraft:chest")}))
+    b.set(1, 1, 3, "anvil", facing="north")
+
+
+def clinic(b, style):
+    """A Nurse Station and a couple of beds' worth of care: a cauldron, flowers."""
+    b.set(1, 1, 6, "aliveworkplace:nurse_station", facing="east")
+    b.set(1, 1, 3, "cauldron")
+    b.set(1, 1, 4, "potted_poppy")
+
+
+def post_office(b, style):
+    """A Postal Desk with a sorting shelf."""
+    b.set(1, 1, 6, "aliveworkplace:postal_desk", facing="east")
+    b.set(1, 1, 5, "chiseled_bookshelf", facing="east")
+    b.set(1, 1, 3, "lectern", facing="east", has_book=False, powered=False)
+
+
+VILLAGE_HOUSES = {"trainers_house": trainers_house, "guard_house": guard_house, "clinic": clinic, "post_office": post_office}
+
+
 # --- Gametest fixtures ------------------------------------------------------------------
 def test_hut():
     """5x4x5 hut: floor, walls with a door and a torch, flat roof. Needs 25 cobblestone,
@@ -414,6 +497,8 @@ if __name__ == "__main__":
     supply_shop().save(MAIN_STRUCTURES, "supply_shop")
     for style in VILLAGE_STYLES:
         builders_workshop(style).save(VILLAGE_STRUCTURES, f"{style}_builders_workshop")
+        for name, fit_out in VILLAGE_HOUSES.items():
+            staffed_house(style, fit_out).save(VILLAGE_STRUCTURES, f"{style}_{name}")
     test_hut().save(TEST_STRUCTURES, "test_hut")
     test_area("build_area", 17, 8, 17)
     test_area("big_area", 22, 18, 22)

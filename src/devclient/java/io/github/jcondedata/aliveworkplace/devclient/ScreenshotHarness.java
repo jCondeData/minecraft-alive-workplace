@@ -642,6 +642,7 @@ public class ScreenshotHarness implements ClientModInitializer {
 	// --- Villages: one of each type, find the builder's workshops, one shot each ----------------
 
 	private final List<BlockPos> workshops = new ArrayList<>();
+	private final List<BlockPos> otherHouses = new ArrayList<>();
 
 	private void villageScene(Minecraft mc, MinecraftServer server) {
 		tick++;
@@ -698,6 +699,11 @@ public class ScreenshotHarness implements ClientModInitializer {
 						if (st.is(ModBlocks.BUILDERS_BENCH) && found == null) {
 							found = p.immutable();
 						}
+						for (net.minecraft.world.level.block.Block job : List.of(ModBlocks.TRAINING_POST, ModBlocks.GUARD_POST, ModBlocks.NURSE_STATION, ModBlocks.POSTAL_DESK)) {
+							if (st.is(job) && otherHouses.stream().noneMatch(h -> level.getBlockState(h).is(job))) {
+								otherHouses.add(p.immutable());
+							}
+						}
 						if (st.is(Blocks.BELL) || st.is(net.minecraft.tags.BlockTags.BEDS)) {
 							built++;
 						}
@@ -707,6 +713,7 @@ public class ScreenshotHarness implements ClientModInitializer {
 						workshops.add(found);
 					}
 				}
+				workshops.addAll(otherHouses);
 			});
 		}
 		int shots = workshops.size();

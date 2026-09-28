@@ -116,7 +116,9 @@ workstation, like the rest of the mod.
   when it's loaded; Cobblemon 1.7.3 is compile-only and runs in `runCompatGameTest`
 - [x] **Trainer** profession + **Training Post** workstation: right-click (empty hand) to battle; a real Cobblemon battle
   (`TrainerBattleActor` + `BattleRegistry.startBattle`, gen 9 singles) against the trainer's team
-- [ ] Trainer posts generate in villages so every village has trainers
+- [x] Trainer posts generate in villages: a **trainer's house** (Training Post, targets, a bed, a villager spawn) in all
+  5 village types at weight 6, plus **guard houses** (3, with a chest of starting gear), **clinics** (2) and **post
+  offices** (2) — same 7×8×8 shell as the builder's workshop (`staffed_house` in `tools/blueprints/generate.py`)
 - [x] 5 tiers = villager level, Novice → Master: team 2/3/4/5/6 at lv 5–12 / 15–25 / 30–42 / 50–65 / 80–100; basic
   Pokémon for beginners, fully evolved at the top, never legendary/mythical/ultra beast/paradox; the team is fixed per
   trainer and tier (seeded by the villager); Novice uses Cobblemon's random AI, higher tiers `StrongBattleAI(tier)`

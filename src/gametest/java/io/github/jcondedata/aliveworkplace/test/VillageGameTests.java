@@ -20,7 +20,7 @@ import net.minecraft.world.level.levelgen.structure.pools.StructureTemplatePool;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 
-/** Builder's workshops in villages. */
+/** Our houses in villages. */
 public class VillageGameTests implements FabricGameTest {
 	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
 	public void everyVillageTypeCanGrowABuildersWorkshop(GameTestHelper helper) {
@@ -46,6 +46,30 @@ public class VillageGameTests implements FabricGameTest {
 				.map(StructureTemplate.StructureBlockInfo::nbt)
 				.anyMatch(n -> n != null && n.getString("LootTable").equals("aliveworkplace:chests/village_builders_workshop"));
 			helper.assertTrue(loot, workshop + " should have a supply chest");
+		}
+		helper.succeed();
+	}
+
+	/** Trainer's houses, guard houses, clinics and post offices: in every village type's pool, each with its job block. */
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
+	public void everyVillageTypeCanGrowTheOtherHouses(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		var pools = level.registryAccess().registryOrThrow(Registries.TEMPLATE_POOL);
+		java.util.Map<String, net.minecraft.world.level.block.Block> houses = java.util.Map.of(
+			"trainers_house", ModBlocks.TRAINING_POST, "guard_house", ModBlocks.GUARD_POST,
+			"clinic", ModBlocks.NURSE_STATION, "post_office", ModBlocks.POSTAL_DESK);
+		for (String style : VillageHouses.STYLES) {
+			StructureTemplatePool pool = pools.get(VillageHouses.housePool(style));
+			for (var house : houses.entrySet()) {
+				var id = io.github.jcondedata.aliveworkplace.AliveWorkplace.id("village/" + style + "_" + house.getKey());
+				boolean listed = ((StructureTemplatePoolAccessor) pool).aliveworkplace$rawTemplates().stream()
+					.anyMatch(p -> p.getFirst().toString().contains(id.toString()));
+				helper.assertTrue(listed, style + " villages can't grow a " + house.getKey());
+				StructureTemplate template = level.getStructureManager().get(id)
+					.orElseThrow(() -> new net.minecraft.gametest.framework.GameTestAssertException("missing " + id));
+				helper.assertTrue(template.filterBlocks(BlockPos.ZERO, new StructurePlaceSettings(), house.getValue()).size() == 1,
+					id + " should have one " + house.getValue().getName().getString());
+			}
 		}
 		helper.succeed();
 	}

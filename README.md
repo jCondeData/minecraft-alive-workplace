@@ -4,7 +4,9 @@ Villagers with real jobs. Hand a **Builder** a blueprint and they build it for y
 site, fetch materials from your chests, put up the walls and roof, and finish with doors, beds and
 torches. **Miners** dig out quarries, **Lumberjacks** cut down and replant trees, **Farmers** look after
 your fields and **Fishermen** fish for you, dropping everything off in your chests. **Postmen** carry mail
-between players' mailboxes, **Guards** keep monsters away, **Nurses** heal you (and your Pokémon) **Shopkeepers** run your shop, **Ferrymen** take you between villages, **Bards** play music and — with Cobblemon — **Trainers** battle you.
+between players' mailboxes, **Guards** keep monsters away, **Nurses** heal you (and your Pokémon),
+**Shopkeepers** run your shop, **Ferrymen** take you between villages, **Bards** play music and — with Cobblemon —
+**Trainers** battle you. Villages grow workshops, trainer's houses, guard houses, clinics and post offices on their own.
 
 ![Three builders putting up the starter blueprints](docs/media/timelapse.gif)
 

@@ -17,10 +17,10 @@ import net.minecraft.world.level.levelgen.structure.pools.StructureTemplatePool;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessorList;
 
 /**
- * Villages grow a builder's workshop now and then: a small house with a Builder's Bench, a chest of
- * building supplies and a villager who takes the bench, so builders turn up without players having
- * to make one. Added to the vanilla house pools (and to any data pack's replacement of them) when
- * the server starts.
+ * Villages grow our kinds of houses now and then: a builder's workshop (a Builder's Bench, a chest of
+ * building supplies), a trainer's house, a guard house, a clinic and a post office, each with a bed and a
+ * villager who takes the job block, so these workers turn up without players having to make them. Added
+ * to the vanilla house pools (and to any data pack's replacement of them) when the server starts.
  */
 public final class VillageHouses {
 	public static final List<String> STYLES = List.of("plains", "desert", "savanna", "snowy", "taiga");
@@ -29,6 +29,22 @@ public final class VillageHouses {
 	 * other village a workshop. (-Daliveworkplace.workshopWeight overrides it for screenshots.)
 	 */
 	private static final int WEIGHT = Integer.getInteger("aliveworkplace.workshopWeight", 3);
+
+	/**
+	 * The other staffed houses and their weights. Trainers' houses are the most common, so most villages have
+	 * someone to battle (-Daliveworkplace.houseWeight overrides all of them for screenshots).
+	 */
+	private static final java.util.Map<String, Integer> HOUSES = houses();
+
+	private static java.util.Map<String, Integer> houses() {
+		Integer override = Integer.getInteger("aliveworkplace.houseWeight");
+		java.util.Map<String, Integer> out = new java.util.LinkedHashMap<>();
+		out.put("trainers_house", override != null ? override : 6);
+		out.put("guard_house", override != null ? override : 3);
+		out.put("clinic", override != null ? override : 2);
+		out.put("post_office", override != null ? override : 2);
+		return out;
+	}
 
 	public static void init() {
 		ServerLifecycleEvents.SERVER_STARTING.register(VillageHouses::addWorkshops);
@@ -52,16 +68,25 @@ public final class VillageHouses {
 			if (pool == null) {
 				continue;
 			}
-			StructurePoolElement workshop = StructurePoolElement.legacy(workshop(style).toString(), none)
-				.apply(StructureTemplatePool.Projection.RIGID);
-			StructureTemplatePoolAccessor access = (StructureTemplatePoolAccessor) pool;
-			for (int i = 0; i < WEIGHT; i++) {
-				access.aliveworkplace$templates().add(workshop);
+			add(pool, workshop(style), WEIGHT, none);
+			for (var house : HOUSES.entrySet()) {
+				add(pool, AliveWorkplace.id("village/" + style + "_" + house.getKey()), house.getValue(), none);
 			}
-			List<Pair<StructurePoolElement, Integer>> raw = new ArrayList<>(access.aliveworkplace$rawTemplates());
-			raw.add(Pair.of(workshop, WEIGHT));
-			access.aliveworkplace$setRawTemplates(raw);
 		}
+	}
+
+	private static void add(StructureTemplatePool pool, ResourceLocation template, int weight, Holder<StructureProcessorList> none) {
+		if (weight <= 0) {
+			return;
+		}
+		StructurePoolElement element = StructurePoolElement.legacy(template.toString(), none).apply(StructureTemplatePool.Projection.RIGID);
+		StructureTemplatePoolAccessor access = (StructureTemplatePoolAccessor) pool;
+		for (int i = 0; i < weight; i++) {
+			access.aliveworkplace$templates().add(element);
+		}
+		List<Pair<StructurePoolElement, Integer>> raw = new ArrayList<>(access.aliveworkplace$rawTemplates());
+		raw.add(Pair.of(element, weight));
+		access.aliveworkplace$setRawTemplates(raw);
 	}
 
 	private VillageHouses() {

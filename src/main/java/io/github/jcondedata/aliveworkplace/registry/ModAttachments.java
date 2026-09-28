@@ -24,6 +24,14 @@ public final class ModAttachments {
 	public static final AttachmentType<Integer> TREES_FELLED = AttachmentRegistry.create(
 		AliveWorkplace.id("trees_felled"), builder -> builder.persistent(com.mojang.serialization.Codec.INT));
 
+	/** The tree farm a lumberjack keeps planted (a Field Marker's area; saved on the villager). */
+	public static final AttachmentType<io.github.jcondedata.aliveworkplace.farm.FieldJob> TREE_FARM = AttachmentRegistry.create(
+		AliveWorkplace.id("tree_farm"), builder -> builder.persistent(io.github.jcondedata.aliveworkplace.farm.FieldJob.CODEC));
+
+	/** How many saplings a lumberjack has planted on their tree farm. */
+	public static final AttachmentType<Integer> SAPLINGS_PLANTED = AttachmentRegistry.create(
+		AliveWorkplace.id("saplings_planted"), builder -> builder.persistent(com.mojang.serialization.Codec.INT));
+
 	/** How many Poké Balls a Ball Smith has made (shown above its head). */
 	public static final AttachmentType<Integer> BALLS_MADE = AttachmentRegistry.create(
 		AliveWorkplace.id("balls_made"), builder -> builder.persistent(com.mojang.serialization.Codec.INT));

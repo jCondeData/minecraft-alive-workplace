@@ -71,6 +71,92 @@ public class LumberjackGameTests implements FabricGameTest {
 		});
 	}
 
+	/** A tree farm (a Field Marker's area): saplings from the chest go in a grid, 3 apart, on the grass. */
+	@GameTest(template = AREA, timeoutTicks = 2400)
+	public void lumberjackPlantsATreeFarm(GameTestHelper helper) {
+		for (BlockPos p : BlockPos.betweenClosed(new BlockPos(10, 1, 10), new BlockPos(16, 1, 16))) {
+			helper.setBlock(p, Blocks.GRASS_BLOCK);
+		}
+		Villager villager = setup(helper, new ItemStack(Items.OAK_SAPLING, 20));
+		io.github.jcondedata.aliveworkplace.wood.TreeFarms.start(villager,
+			net.minecraft.world.level.levelgen.structure.BoundingBox.fromCorners(helper.absolutePos(new BlockPos(10, 1, 10)), helper.absolutePos(new BlockPos(16, 1, 16))));
+		helper.succeedWhen(() -> {
+			for (int x = 10; x <= 16; x++) {
+				for (int z = 10; z <= 16; z++) {
+					BlockPos spot = new BlockPos(x, 2, z);
+					boolean grid = (x - 10) % 3 == 0 && (z - 10) % 3 == 0;
+					var state = helper.getBlockState(spot);
+					if (grid) {
+						helper.assertTrue(state.is(Blocks.OAK_SAPLING) || state.is(Blocks.OAK_LOG), "nothing planted at " + spot + ": " + state);
+					} else {
+						helper.assertFalse(state.is(Blocks.OAK_SAPLING), "a sapling off the grid at " + spot);
+					}
+				}
+			}
+			helper.assertTrue(villager.getAttachedOrElse(ModAttachments.SAPLINGS_PLANTED, 0) == 9, "planted " + villager.getAttachedOrElse(ModAttachments.SAPLINGS_PLANTED, 0));
+		});
+	}
+
+	/** A tree on the tree farm is felled even when it's further from the Chopping Block than the lumberjack looks. */
+	@GameTest(template = AREA, timeoutTicks = 3000)
+	public void lumberjackFellsTreesOnAFarFarm(GameTestHelper helper) {
+		BlockPos base = new BlockPos(19, 2, 19); // 17 blocks out: beyond the 16 the lumberjack searches by itself
+		growOak(helper, base);
+		Villager villager = setup(helper, new ItemStack(Items.STONE_AXE), new ItemStack(Items.OAK_SAPLING, 2));
+		io.github.jcondedata.aliveworkplace.wood.TreeFarms.start(villager,
+			net.minecraft.world.level.levelgen.structure.BoundingBox.fromCorners(helper.absolutePos(new BlockPos(18, 1, 18)), helper.absolutePos(new BlockPos(20, 1, 20))));
+		helper.succeedWhen(() -> {
+			helper.assertTrue(villager.getAttachedOrElse(ModAttachments.TREES_FELLED, 0) == 1, "the farm's tree wasn't felled");
+			for (int y = 1; y < 6; y++) {
+				helper.assertBlockNotPresent(Blocks.OAK_LOG, base.above(y));
+			}
+		});
+	}
+
+	/** A dark oak (a 2 × 2 trunk) is replanted as four saplings in a square: one wouldn't grow. */
+	@GameTest(template = AREA, timeoutTicks = 3000)
+	public void lumberjackReplantsADarkOakAsFour(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		BlockPos base = new BlockPos(11, 2, 11);
+		for (BlockPos p : BlockPos.betweenClosed(new BlockPos(10, 1, 10), new BlockPos(13, 1, 13))) {
+			helper.setBlock(p, Blocks.GRASS_BLOCK);
+		}
+		var feature = level.registryAccess().registryOrThrow(Registries.CONFIGURED_FEATURE).getHolderOrThrow(TreeFeatures.DARK_OAK).value();
+		if (!feature.place(level, level.getChunkSource().getGenerator(), level.getRandom(), helper.absolutePos(base))) {
+			throw new GameTestAssertException("could not grow the dark oak");
+		}
+		Villager villager = setup(helper, new ItemStack(Items.STONE_AXE), new ItemStack(Items.DARK_OAK_SAPLING, 4));
+		helper.succeedWhen(() -> {
+			helper.assertTrue(villager.getAttachedOrElse(ModAttachments.TREES_FELLED, 0) == 1, "the dark oak wasn't felled");
+			for (BlockPos p : new BlockPos[]{base, base.east(), base.south(), base.east().south()}) {
+				helper.assertBlockPresent(Blocks.DARK_OAK_SAPLING, p);
+			}
+		});
+	}
+
+	/** A huge crimson fungus on nylium is a tree too: felled, cap and all, and a crimson fungus planted back. */
+	@GameTest(template = AREA, timeoutTicks = 3000)
+	public void lumberjackFellsAHugeFungus(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		BlockPos base = new BlockPos(11, 2, 11);
+		helper.setBlock(base.below(), Blocks.CRIMSON_NYLIUM);
+		var feature = level.registryAccess().registryOrThrow(Registries.CONFIGURED_FEATURE).getHolderOrThrow(TreeFeatures.CRIMSON_FUNGUS_PLANTED).value();
+		if (!feature.place(level, level.getChunkSource().getGenerator(), level.getRandom(), helper.absolutePos(base))) {
+			throw new GameTestAssertException("could not grow the fungus");
+		}
+		helper.assertTrue(io.github.jcondedata.aliveworkplace.wood.Trees.treeAt(level, helper.absolutePos(base)).isPresent(), "a huge fungus should count as a tree");
+		Villager villager = setup(helper, new ItemStack(Items.STONE_AXE), new ItemStack(Items.CRIMSON_FUNGUS));
+		helper.succeedWhen(() -> {
+			helper.assertTrue(villager.getAttachedOrElse(ModAttachments.TREES_FELLED, 0) == 1, "the fungus wasn't felled");
+			helper.assertBlockPresent(Blocks.CRIMSON_FUNGUS, base);
+			for (int y = 1; y < 8; y++) {
+				helper.assertBlockNotPresent(Blocks.CRIMSON_STEM, base.above(y));
+			}
+			Container chest = helper.getBlockEntity(CHEST);
+			helper.assertTrue(chest.countItem(Items.CRIMSON_STEM) >= 4, "only " + chest.countItem(Items.CRIMSON_STEM) + " stems in the chest");
+		});
+	}
+
 	/** A log post with leaves someone placed is part of a build, not a tree: it stays. */
 	@GameTest(template = AREA, timeoutTicks = 1200)
 	public void lumberjackLeavesBuiltLogsAlone(GameTestHelper helper) {

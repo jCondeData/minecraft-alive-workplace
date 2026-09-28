@@ -108,7 +108,14 @@ Craft a **Chopping Block** (a stone axe on top of any log) and place it near a v
 trees. Put **axes** in a chest within 8 blocks of the Chopping Block. The lumberjack cuts the trees within 16 blocks
 one at a time (leaves first, then the trunk), plants a sapling of the same wood where each tree stood, and stores
 the logs, sticks and apples in the chests. They only cut real trees: logs with placed leaves (houses, posts),
-blueprint builds and quarries are left alone. When the last axe breaks they wait for a new one.
+blueprint builds and quarries are left alone. When the last axe breaks they wait for a new one. Dark oaks (and other
+2 × 2 trunks) get four saplings back in a square, and huge crimson and warped fungi standing on nylium count as
+trees too (a fungus is planted back).
+
+**Tree farms.** Mark an area with a **Field Marker** (the farmer's marker, up to 32 × 32 and within 48 blocks of the
+Chopping Block) and give it to the lumberjack. They keep it planted with saplings from the chests, in a grid three
+blocks apart (dark oak in 2 × 2 squares four apart), and fell what grows there, even if it's further out than the
+16 blocks they'd look on their own. Sneak-right-click them with an empty hand to see the farm or stop it.
 
 ## Orchard Keepers
 ![An orchard keeper picking berries, cocoa and apricorns](docs/media/orchard.gif)

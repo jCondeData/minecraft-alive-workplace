@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+## 0.48.0 — 2026-09-28
+
+### Added
+- **Tree farms**: give a lumberjack a Field Marker with an area marked (within 48 blocks of their Chopping Block) and
+  they keep it planted with saplings from the chests, in a grid three blocks apart, and fell the trees that grow
+  there. Dark oak goes in as 2 × 2 squares. Sneak-right-click the lumberjack to see the farm or stop it.
+- Lumberjacks fell **huge crimson and warped fungi** standing on nylium, and plant a fungus back.
+
 ## 0.47.0 — 2026-09-28
 
 ### Added

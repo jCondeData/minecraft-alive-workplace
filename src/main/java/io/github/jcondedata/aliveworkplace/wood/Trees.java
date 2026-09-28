@@ -21,7 +21,8 @@ import org.jetbrains.annotations.Nullable;
 /**
  * Recognising trees. A tree is a group of touching logs that carries natural leaves (leaves that
  * grew, not ones a player placed) and stands on dirt; log walls, cabins and log piles have no natural
- * leaves, so they are never cut down.
+ * leaves, so they are never cut down. Huge nether fungi count too: stems on nylium under a cap of wart
+ * blocks (wart blocks have no "placed by a player" mark, so the cap must sit on stems that stand on nylium).
  */
 public final class Trees {
 	/** Bigger than any vanilla tree (a big jungle tree is ~150 logs); anything larger is not a tree. */
@@ -41,8 +42,22 @@ public final class Trees {
 	}
 
 	private static boolean isNaturalLeaves(BlockState state) {
-		return state.getBlock() instanceof LeavesBlock && state.hasProperty(LeavesBlock.PERSISTENT) && !state.getValue(LeavesBlock.PERSISTENT);
+		return state.getBlock() instanceof LeavesBlock && state.hasProperty(LeavesBlock.PERSISTENT) && !state.getValue(LeavesBlock.PERSISTENT)
+			|| isFungusCap(state);
 	}
+
+	/** The "leaves" of a huge fungus: wart blocks and shroomlights. */
+	private static boolean isFungusCap(BlockState state) {
+		return state.is(BlockTags.WART_BLOCKS) || state.is(Blocks.SHROOMLIGHT);
+	}
+
+	/** What a tree can grow on: dirt and grass, or nylium for nether fungi. */
+	public static boolean isGround(BlockState state) {
+		return state.is(BlockTags.DIRT) || state.is(BlockTags.NYLIUM);
+	}
+
+	/** A huge fungus's cap spreads up to this far from the stem. */
+	private static final int CAP_REACH = 4;
 
 	/** The tree {@code start} belongs to, or empty if it isn't part of a (natural, grown) tree. */
 	public static Optional<Tree> treeAt(ServerLevel level, BlockPos start) {
@@ -82,12 +97,21 @@ public final class Trees {
 		if (leaves.size() < MIN_LEAVES) {
 			return Optional.empty();
 		}
+		int stemX = start.getX();
+		int stemZ = start.getZ();
 		while (!leafQueue.isEmpty() && leaves.size() < 1500) {
 			BlockPos p = leafQueue.poll();
 			BlockState st = level.getBlockState(p);
-			int distance = st.hasProperty(LeavesBlock.DISTANCE) ? st.getValue(LeavesBlock.DISTANCE) : LEAF_REACH;
-			if (distance >= LEAF_REACH) {
-				continue;
+			if (isFungusCap(st)) {
+				// No distance on wart blocks: follow the cap as far as a huge fungus's reaches from its stem.
+				if (Math.abs(p.getX() - stemX) >= CAP_REACH || Math.abs(p.getZ() - stemZ) >= CAP_REACH) {
+					continue;
+				}
+			} else {
+				int distance = st.hasProperty(LeavesBlock.DISTANCE) ? st.getValue(LeavesBlock.DISTANCE) : LEAF_REACH;
+				if (distance >= LEAF_REACH) {
+					continue;
+				}
 			}
 			for (BlockPos n : new BlockPos[]{p.above(), p.below(), p.north(), p.south(), p.east(), p.west()}) {
 				if (!leaves.contains(n) && isNaturalLeaves(level.getBlockState(n))) {
@@ -101,7 +125,7 @@ public final class Trees {
 		int bottom = sortedLogs.get(0).getY();
 		List<BlockPos> base = new ArrayList<>();
 		for (BlockPos log : sortedLogs) {
-			if (log.getY() == bottom && level.getBlockState(log.below()).is(BlockTags.DIRT)) {
+			if (log.getY() == bottom && isGround(level.getBlockState(log.below()))) {
 				base.add(log);
 			}
 		}
@@ -121,6 +145,11 @@ public final class Trees {
 		String path = id.getPath().replace("stripped_", "");
 		if (path.equals("mangrove_log")) {
 			return Blocks.MANGROVE_PROPAGULE;
+		}
+		if (path.endsWith("_stem")) {
+			// crimson_stem → crimson_fungus
+			ResourceLocation fungus = ResourceLocation.fromNamespaceAndPath(id.getNamespace(), path.substring(0, path.length() - 5) + "_fungus");
+			return BuiltInRegistries.BLOCK.getOptional(fungus).orElse(null);
 		}
 		if (!path.endsWith("_log")) {
 			return null;

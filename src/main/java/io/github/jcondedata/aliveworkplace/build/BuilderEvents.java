@@ -32,6 +32,20 @@ public final class BuilderEvents {
 				}
 				return InteractionResult.PASS;
 			}
+			if (io.github.jcondedata.aliveworkplace.wood.TreeFarms.isLumberjack(villager)) {
+				ItemStack held = player.getItemInHand(hand);
+				if (held.is(ModItems.FIELD_MARKER)) {
+					return level.isClientSide ? InteractionResult.SUCCESS
+						: io.github.jcondedata.aliveworkplace.wood.TreeFarms.assign((ServerPlayer) player, villager, held);
+				}
+				if (held.isEmpty() && player.isShiftKeyDown() && io.github.jcondedata.aliveworkplace.wood.TreeFarms.farm(villager) != null) {
+					if (!level.isClientSide) {
+						io.github.jcondedata.aliveworkplace.wood.TreeFarms.sendStatus(player, villager);
+					}
+					return InteractionResult.SUCCESS;
+				}
+				return InteractionResult.PASS;
+			}
 			if (io.github.jcondedata.aliveworkplace.farm.Fields.isFarmer(villager)) {
 				ItemStack held = player.getItemInHand(hand);
 				if (held.is(ModItems.FIELD_MARKER)) {
@@ -158,6 +172,7 @@ public final class BuilderEvents {
 				Builders.onBuilderDeath(level, villager);
 				io.github.jcondedata.aliveworkplace.mine.Miners.onMinerDeath(level, villager);
 				io.github.jcondedata.aliveworkplace.farm.Fields.onDeath(level, villager);
+				io.github.jcondedata.aliveworkplace.wood.TreeFarms.onDeath(level, villager);
 			} else if (entity.level() instanceof ServerLevel level) {
 				io.github.jcondedata.aliveworkplace.guard.GuardCombat.onFoeKilled(level, entity, source);
 			}

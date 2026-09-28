@@ -50,7 +50,7 @@ public class LumberjackWork extends Behavior<Villager> {
 	private static final int SEARCH_EVERY = 60;
 	private static final int KEEP_SAPLINGS = 16;
 
-	private enum Phase { LOOKING, CHOPPING, NEEDS_AXE, DEPOSITING }
+	private enum Phase { LOOKING, CHOPPING, NEEDS_AXE, DEPOSITING, PLANTING }
 
 	private final Walker walker = new Walker(SPEED);
 	@Nullable
@@ -136,6 +136,12 @@ public class LumberjackWork extends Behavior<Villager> {
 			return;
 		}
 
+		// 2b. Keep the tree farm planted (saplings from the bag, topped up from the chests).
+		BoundingBox farm = TreeFarms.farm(villager);
+		if (farm != null && tree == null && plantFarm(level, villager, block, bag, farm)) {
+			return;
+		}
+
 		// 3. An axe in hand.
 		if (!isAxe(axe)) {
 			fetchAxe(level, villager, block);
@@ -151,7 +157,7 @@ public class LumberjackWork extends Behavior<Villager> {
 				return;
 			}
 			searchTimer = SEARCH_EVERY;
-			tree = findTree(level, block, villager.blockPosition());
+			tree = findTree(level, block, villager.blockPosition(), farm);
 			if (tree == null) {
 				status(villager, Phase.LOOKING);
 				return;
@@ -248,7 +254,7 @@ public class LumberjackWork extends Behavior<Villager> {
 
 	/** Nearest natural tree to the villager within {@link #RADIUS} of the Chopping Block (outside builds and quarries). */
 	@Nullable
-	private static BlockPos findTree(ServerLevel level, BlockPos block, BlockPos from) {
+	private static BlockPos findTree(ServerLevel level, BlockPos block, BlockPos from, @Nullable BoundingBox farm) {
 		List<BoundingBox> keepOut = new java.util.ArrayList<>();
 		for (BuildSite site : BuildSiteManager.get(level).all()) {
 			io.github.jcondedata.aliveworkplace.blueprint.BlueprintLibrary.get(level, site.structure())
@@ -261,9 +267,15 @@ public class LumberjackWork extends Behavior<Villager> {
 		BlockPos best = null;
 		double bestDistance = Double.MAX_VALUE;
 		Set<BlockPos> checked = new java.util.HashSet<>();
-		for (BlockPos p : BlockPos.betweenClosed(block.offset(-RADIUS, -6, -RADIUS), block.offset(RADIUS, 10, RADIUS))) {
+		Iterable<BlockPos> around = BlockPos.betweenClosed(block.offset(-RADIUS, -6, -RADIUS), block.offset(RADIUS, 10, RADIUS));
+		if (farm != null) {
+			// The tree farm too, even where it's further out than the lumberjack would look on their own.
+			around = com.google.common.collect.Iterables.concat(around,
+				BlockPos.betweenClosed(farm.minX(), farm.minY() - 2, farm.minZ(), farm.maxX(), farm.maxY() + 4, farm.maxZ()));
+		}
+		for (BlockPos p : around) {
 			BlockState state = level.getBlockState(p);
-			if (!Trees.isLog(state) || !level.getBlockState(p.below()).is(net.minecraft.tags.BlockTags.DIRT)) {
+			if (!Trees.isLog(state) || !Trees.isGround(level.getBlockState(p.below()))) {
 				continue; // only trunks standing on the ground
 			}
 			BlockPos trunk = p.immutable();
@@ -284,6 +296,63 @@ public class LumberjackWork extends Behavior<Villager> {
 			}
 		}
 		return best;
+	}
+
+	// --- the tree farm --------------------------------------------------------------------------
+
+	@Nullable
+	private BlockPos plantSpot;
+	private int plantSearchTimer;
+
+	/**
+	 * Plants the next empty spot of the farm. Returns false when there's nothing to plant (the farm is full, or there
+	 * are no saplings in the bag or the chests), so the lumberjack gets on with felling.
+	 */
+	private boolean plantFarm(ServerLevel level, Villager villager, BlockPos block, BuilderBag bag, BoundingBox farm) {
+		Block sapling = TreeFarms.saplingToPlant(bag);
+		if (sapling == null) {
+			// Nothing in the bag: fetch some from the chests, if there are any and the farm has room.
+			if (--plantSearchTimer > 0) {
+				return false;
+			}
+			plantSearchTimer = SEARCH_EVERY;
+			List<BlockPos> supplies = SupplyContainers.find(level, block, null);
+			BlockPos chest = SupplyContainers.firstMatching(level, supplies, s -> s.is(ItemTags.SAPLINGS));
+			if (chest == null) {
+				return false;
+			}
+			ItemStack sample = SupplyContainers.peekMatching(level, chest, s -> s.is(ItemTags.SAPLINGS)).stream().findFirst().orElse(ItemStack.EMPTY);
+			if (sample.isEmpty() || !(sample.getItem() instanceof net.minecraft.world.item.BlockItem item)
+				|| TreeFarms.nextSpot(level, farm, item.getBlock(), villager.blockPosition()).isEmpty()) {
+				return false;
+			}
+			status(villager, Phase.PLANTING);
+			plantSearchTimer = 0;
+			if (walker.walkTo(level, villager, chest, 3.0)) {
+				bag.addAll(sample.getItem(), SupplyContainers.extract(level, supplies, sample.getItem(), KEEP_SAPLINGS));
+			}
+			return true;
+		}
+		if (plantSpot == null) {
+			if (--plantSearchTimer > 0) {
+				return false;
+			}
+			plantSearchTimer = SEARCH_EVERY;
+			plantSpot = TreeFarms.nextSpot(level, farm, sapling, villager.blockPosition()).orElse(null);
+			if (plantSpot == null) {
+				return false; // the farm is full
+			}
+			walker.reset();
+		}
+		status(villager, Phase.PLANTING);
+		if (walker.reach(level, villager, plantSpot, REACH)) {
+			TreeFarms.plant(level, villager, bag, sapling, plantSpot);
+			plantSpot = null;
+			plantSearchTimer = 0;
+		} else if (walker.noSpot()) {
+			plantSpot = null;
+		}
+		return true;
 	}
 
 	// --- errands -------------------------------------------------------------------------------

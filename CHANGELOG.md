@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 0.28.0 — 2026-09-27
+
 ### Changed
 - **Move Tutor lessons cost CobbleDollars** when that mod is installed (300 to 2,400, the money you win from
   trainers); emeralds as before without it. Trainer prizes now go straight into your CobbleDollars balance instead

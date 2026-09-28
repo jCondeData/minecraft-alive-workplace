@@ -258,6 +258,53 @@ public class BuilderGameTests implements FabricGameTest {
 		});
 	}
 
+	/**
+	 * The village as one: the builder's chest is empty, but a miner in the village has the materials in theirs — the
+	 * builder walks over and takes them.
+	 */
+	@GameTest(template = AREA, timeoutTicks = 3000, batch = "village_share")
+	public void builderTakesMaterialsFromAnotherWorkersChest(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		io.github.jcondedata.aliveworkplace.work.Village.RADIUS = 48;
+		BlockPos minersBench = new BlockPos(14, 2, 2);
+		BlockPos minersChest = new BlockPos(14, 2, 4);
+		helper.setBlock(minersBench, ModBlocks.MINERS_BENCH);
+		helper.setBlock(minersChest, Blocks.CHEST);
+		fill(helper.getBlockEntity(minersChest), hutMaterials());
+		Villager miner = helper.spawn(EntityType.VILLAGER, new BlockPos(13, 2, 3));
+		io.github.jcondedata.aliveworkplace.mine.Miners.employ(helper.getLevel(), miner, helper.absolutePos(minersBench));
+		Setup s = setup(helper, TEST_HUT, HUT_ORIGIN, Rotation.NONE);
+		helper.succeedWhen(() -> {
+			assertBuilt(helper, s);
+			io.github.jcondedata.aliveworkplace.work.Village.RADIUS = 0;
+		});
+	}
+
+	/** Workers hired by different players who aren't friends keep to their own chests: the builder waits. */
+	@GameTest(template = AREA, timeoutTicks = 400, batch = "village_strangers")
+	public void workersOfDifferentPlayersDontShare(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		io.github.jcondedata.aliveworkplace.work.Village.RADIUS = 48;
+		BlockPos minersBench = new BlockPos(14, 2, 2);
+		BlockPos minersChest = new BlockPos(14, 2, 4);
+		helper.setBlock(minersBench, ModBlocks.MINERS_BENCH);
+		helper.setBlock(minersChest, Blocks.CHEST);
+		fill(helper.getBlockEntity(minersChest), hutMaterials());
+		Villager miner = helper.spawn(EntityType.VILLAGER, new BlockPos(13, 2, 3));
+		io.github.jcondedata.aliveworkplace.mine.Miners.employ(helper.getLevel(), miner, helper.absolutePos(minersBench));
+		miner.setAttached(ModAttachments.BUILDER_EMPLOYER, new io.github.jcondedata.aliveworkplace.build.Employer(java.util.UUID.randomUUID(), "Bea"));
+		Setup s = setup(helper, TEST_HUT, HUT_ORIGIN, Rotation.NONE);
+		s.villager().setAttached(ModAttachments.BUILDER_EMPLOYER, new io.github.jcondedata.aliveworkplace.build.Employer(java.util.UUID.randomUUID(), "Al"));
+		helper.assertFalse(io.github.jcondedata.aliveworkplace.work.Village.sharesWith(helper.getLevel(), s.villager(), miner), "strangers' workers share");
+		helper.runAfterDelay(300, () -> {
+			helper.assertTrue(s.site().status() == BuildSite.Status.WAITING_FOR_MATERIALS, "the builder should wait, not " + s.site().status());
+			Container chest = helper.getBlockEntity(minersChest);
+			helper.assertTrue(chest.countItem(Items.COBBLESTONE) == 25, "the builder took from a stranger's miner");
+			io.github.jcondedata.aliveworkplace.work.Village.RADIUS = 0;
+			helper.succeed();
+		});
+	}
+
 	/** A blueprint with a pool: the builder pours the water from a bucket and keeps the empty bucket. */
 	@GameTest(template = AREA, timeoutTicks = 2400)
 	public void builderPoursWaterFromABucket(GameTestHelper helper) {

@@ -162,8 +162,10 @@ public class FieldWork extends Behavior<Villager> {
 			tasks = scan(level, field);
 			skipped.clear();
 			List<BlockPos> supplies = SupplyContainers.find(level, station, null);
-			chestsHaveSeeds = SupplyContainers.firstMatching(level, supplies, FieldWork::isSeed) != null;
-			chestsHaveHoe = SupplyContainers.firstMatching(level, supplies, FieldWork::isHoe) != null;
+			chestsHaveSeeds = SupplyContainers.firstMatching(level, supplies, FieldWork::isSeed) != null
+				|| io.github.jcondedata.aliveworkplace.work.Village.find(level, villager, station, null, FieldWork::isSeed) != null;
+			chestsHaveHoe = SupplyContainers.firstMatching(level, supplies, FieldWork::isHoe) != null
+				|| io.github.jcondedata.aliveworkplace.work.Village.find(level, villager, station, null, FieldWork::isHoe) != null;
 			chestsHaveBoneMeal = SupplyContainers.firstMatching(level, supplies, s -> s.is(Items.BONE_MEAL)) != null;
 		}
 
@@ -586,6 +588,14 @@ public class FieldWork extends Behavior<Villager> {
 	private void fetch(ServerLevel level, Villager villager, BlockPos station, BuilderBag bag, boolean seeds) {
 		List<BlockPos> supplies = SupplyContainers.find(level, station, null);
 		BlockPos chest = SupplyContainers.firstMatching(level, supplies, seeds ? FieldWork::isSeed : FieldWork::isHoe);
+		if (chest == null) {
+			// Another worker in the village may have some.
+			io.github.jcondedata.aliveworkplace.work.Village.Find elsewhere = io.github.jcondedata.aliveworkplace.work.Village.find(level, villager, station, null, seeds ? FieldWork::isSeed : FieldWork::isHoe);
+			if (elsewhere != null) {
+				supplies = elsewhere.stash().chests();
+				chest = elsewhere.chest();
+			}
+		}
 		if (chest == null) {
 			if (seeds) {
 				chestsHaveSeeds = false;

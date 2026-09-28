@@ -528,6 +528,14 @@ public class LumberjackWork extends Behavior<Villager> {
 		List<BlockPos> supplies = SupplyContainers.find(level, block, null);
 		BlockPos chest = SupplyContainers.firstMatching(level, supplies, LumberjackWork::isAxe);
 		if (chest == null) {
+			// Another worker in the village may have a spare.
+			io.github.jcondedata.aliveworkplace.work.Village.Find elsewhere = io.github.jcondedata.aliveworkplace.work.Village.find(level, villager, block, null, LumberjackWork::isAxe);
+			if (elsewhere != null) {
+				supplies = elsewhere.stash().chests();
+				chest = elsewhere.chest();
+			}
+		}
+		if (chest == null) {
 			status(villager, Phase.NEEDS_AXE);
 			walker.walkTo(level, villager, block, 3.0);
 			return;

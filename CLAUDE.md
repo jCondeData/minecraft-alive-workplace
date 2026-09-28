@@ -82,7 +82,8 @@ The owner (Jesse) does not write code: sessions are expected to work autonomousl
 - `smith/` — the ball smith: `BallRecipes` (Cobblemon ball recipes by tag and tier), `BallSmithWork`, `BallSmithPackages`
 - `orchard/` — the orchard keeper: `Fruit` (what's ripe, picking it), `OrchardWork`, `OrchardPackages`; Cobblemon apricorns and
   berry plants in `compat/cobblemon/CobblemonOrchard`
-- `work/` — shared by all jobs: `Walker` (movement + reach), `WorkerStatus` (overhead status for jobs without a saved site), `Jobs.employ`,
+- `work/` — shared by all jobs: `Village` (workers near each other share chests; off in gametests unless a test turns
+  it on), `Walker` (movement + reach), `WorkerStatus` (overhead status for jobs without a saved site), `Jobs.employ`,
   `ChoiceMenu` (a server-side chest screen of buttons: menus without client code), `DeskPackages` (WORK for jobs players visit),
   `Partners` (pastured Pokémon speeding up a job; the lookup is `compat/cobblemon/CobblemonPartners`), `Pastures` (a Pasture Block as a courier stop),
   `Gated`/`UpgradedJob` (vanilla jobs with extra work), `PrivateContainer` (never a supply chest), `KeepLoaded` (chunk tickets)

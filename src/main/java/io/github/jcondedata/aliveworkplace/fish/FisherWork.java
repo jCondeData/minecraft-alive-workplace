@@ -145,6 +145,14 @@ public class FisherWork extends Behavior<Villager> {
 			List<BlockPos> supplies = SupplyContainers.find(level, barrel, null);
 			BlockPos chest = SupplyContainers.firstMatching(level, supplies, FisherWork::isRod);
 			if (chest == null) {
+				// Another worker in the village may have a spare rod.
+				io.github.jcondedata.aliveworkplace.work.Village.Find elsewhere = io.github.jcondedata.aliveworkplace.work.Village.find(level, villager, barrel, null, FisherWork::isRod);
+				if (elsewhere != null) {
+					supplies = elsewhere.stash().chests();
+					chest = elsewhere.chest();
+				}
+			}
+			if (chest == null) {
 				if (!bag.isEmpty()) {
 					catches = CATCHES_PER_TRIP; // take what we have home first
 					return;

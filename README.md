@@ -107,6 +107,13 @@ where they take tools and supplies from and where their work goes.
 Sneak-right-click a builder, miner, lumberjack, orchard keeper, farmer, fisherman or postman with an empty hand to see
 what they're doing and how to stop them. The recipes are in each job's section below (and in the recipe book).
 
+**Villages work together.** Workers whose workstations are within 48 blocks of each other share their chests: a builder
+short of stone takes it from the miner's chests, a lumberjack with a broken axe takes a spare from the builder's. What a
+worker makes still goes into its own chests; the others come and get it. No particular building is needed, so it works
+in any village (from any mod) and in your own base. Only workers who answer to the same people share: the ones hired by
+you or your friends (`/workplace friend add`), and village workers nobody has hired with each other — a friend's
+builder won't empty your miner's chests unless you've made them your friend.
+
 ## Miners
 ![A miner digging out a quarry](docs/media/miner.gif)
 
@@ -431,6 +438,7 @@ and restart; out-of-range values are clamped):
 | `lumberjackRadius`, `orchardRadius`, `fisherRadius` | 16 | how far lumberjacks cut, orchard keepers pick and fishers look for water |
 | `partnerRadius` | 16 | how close to a workstation pastured Pokémon must be to help |
 | `postmanRange` | 64 | how far a postman walks to deliver (mail going farther arrives at dawn) |
+| `villageRadius` | 48 | workers whose workstations are this close together share their chests (0 turns sharing off) |
 | `dollarsPerEmerald` | 100 | CobbleDollars per emerald for lessons, shop prices and fares |
 
 ## What's next

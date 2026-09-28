@@ -301,8 +301,11 @@ Villagers work as a unit: what one worker makes, the others can use. No particul
   `workplaceVillageFarms`) once there's a chest by the composter; the harvest goes to those chests, but they keep ~36
   food points on them (wheat baked into bread) that vanilla shares out, so the village still breeds. A player stopping
   it sets `NO_AUTO_FARM`; a player's own field (marker) delivers everything to the chests as before
-- [ ] Shared chests: workers whose workstations are within ~48 blocks share supply chests (same employer or friends; unhired
-  village workers with each other); a worker missing something fetches it from another worker's chests
+- [x] Shared chests (`work/Village`): workers whose workstations are within `villageRadius` (48) share supply chests — same
+  employer or a friend of the giver's owner; unhired village workers with each other. Builders fetch materials (and
+  count them as not missing), miners pickaxes, lumberjacks axes, farmers seeds and hoes, fishers rods from a
+  village-mate's chests when their own have none; output stays in the maker's chests. Off in gametests
+  (`-Dfabric-api.gametest`); the village tests switch it on in batches of their own
 - [ ] **Porter** + **Storehouse** block (the porter's workstation; the chests around it are the village store): hauls
   surplus into the store and delivers what workers are missing; storehouse blueprints in many styles, any blueprint
   with the block counts; villages sometimes generate one

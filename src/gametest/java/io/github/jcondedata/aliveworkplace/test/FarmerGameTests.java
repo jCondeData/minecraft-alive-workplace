@@ -69,8 +69,9 @@ public class FarmerGameTests implements FabricGameTest {
 	 * A village farmer takes on the farm by their composter by themselves once there's a chest by it: the harvest goes
 	 * into the chest, but they keep some food (bread from the wheat) to share with the village.
 	 */
-	@GameTest(template = AREA, timeoutTicks = 3000)
+	@GameTest(template = AREA, timeoutTicks = 3000, batch = "village_farm")
 	public void villageFarmerTakesOnTheirFarm(GameTestHelper helper) {
+		Leftovers.clear(helper); // a farmer from a neighbouring test would pick these crops too
 		ServerLevel level = helper.getLevel();
 		helper.setDayTime(2000);
 		for (BlockPos p : BlockPos.betweenClosed(new BlockPos(6, 1, 6), new BlockPos(10, 1, 10))) {
@@ -87,7 +88,10 @@ public class FarmerGameTests implements FabricGameTest {
 			var job = villager.getAttached(io.github.jcondedata.aliveworkplace.registry.ModAttachments.FARM_FIELD);
 			helper.assertTrue(job != null && job.adopted(), "the farmer didn't take the farm on");
 			Container chest = helper.getBlockEntity(CHEST);
-			helper.assertTrue(chest.countItem(Items.WHEAT) + chest.countItem(Items.CARROT) > 0, "no harvest in the chest");
+			helper.assertTrue(chest.countItem(Items.WHEAT) + chest.countItem(Items.CARROT) > 0, "no harvest in the chest; harvested "
+				+ villager.getAttachedOrElse(io.github.jcondedata.aliveworkplace.registry.ModAttachments.FARM_HARVESTED, 0) + ", bag "
+				+ villager.getAttachedOrCreate(io.github.jcondedata.aliveworkplace.registry.ModAttachments.BUILDER_BAG).stacks() + ", pockets "
+				+ villager.getInventory().getItems() + ", chest " + chest.getItem(0) + " " + chest.getItem(1));
 			var pockets = villager.getInventory();
 			helper.assertTrue(pockets.countItem(Items.BREAD) > 0 || pockets.countItem(Items.CARROT) > 0, "the farmer kept no food to share");
 		});

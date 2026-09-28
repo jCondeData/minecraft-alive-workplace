@@ -461,6 +461,14 @@ public class MinerWork extends Behavior<Villager> {
 		List<BlockPos> supplies = SupplyContainers.find(level, bench, site.box());
 		BlockPos chest = SupplyContainers.firstMatching(level, supplies, MinerWork::isPickaxe);
 		if (chest == null) {
+			// Another worker in the village may have a spare.
+			io.github.jcondedata.aliveworkplace.work.Village.Find elsewhere = io.github.jcondedata.aliveworkplace.work.Village.find(level, villager, bench, site.box(), MinerWork::isPickaxe);
+			if (elsewhere != null) {
+				supplies = elsewhere.stash().chests();
+				chest = elsewhere.chest();
+			}
+		}
+		if (chest == null) {
 			site.setStatus(QuarrySite.Status.NEEDS_PICKAXE);
 			walkTo(level, villager, bench, 3);
 			Miners.notifyNeedsPickaxe(level, villager, site);
@@ -474,6 +482,7 @@ public class MinerWork extends Behavior<Villager> {
 			villager.setItemSlot(EquipmentSlot.MAINHAND, pick);
 			level.playSound(null, chest, SoundEvents.CHEST_OPEN, SoundSource.BLOCKS, 0.4f, 1.1f);
 		}
+		supplies = SupplyContainers.find(level, bench, site.box()); // the rest from our own chests
 		topUpTorches(level, supplies, bag);
 		topUpFiller(level, site, supplies, bag);
 		topUpLadders(level, site, supplies, bag);

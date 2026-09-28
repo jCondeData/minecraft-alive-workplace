@@ -1,5 +1,7 @@
 package io.github.jcondedata.aliveworkplace.build;
 
+import io.github.jcondedata.aliveworkplace.work.Village;
+
 import com.google.common.collect.ImmutableMap;
 import io.github.jcondedata.aliveworkplace.registry.ModAttachments;
 import io.github.jcondedata.aliveworkplace.registry.ModGameRules;
@@ -528,6 +530,16 @@ public class BuilderWork extends Behavior<Villager> {
 			if (takeFromCrewmate(level, villager, site, plan, bag, requirement.item(), needed)) {
 				return;
 			}
+			// Nothing in our chests: another worker in the village may have it (the miner's stone, the lumberjack's logs).
+			Village.Find elsewhere = Village.find(level, villager, bench, plan.bounds(), stack -> accepted.contains(stack.getItem()));
+			if (elsewhere != null) {
+				waitTimer = 0;
+				setStatus(site, BuildSite.Status.FETCHING);
+				if (moveInReach(level, villager, site, plan, elsewhere.chest(), CONTAINER_REACH, false)) {
+					takeWanted(level, site, plan, bag, requirement, elsewhere.stash().chests(), elsewhere.chest());
+				}
+				return;
+			}
 			waitForMaterials(level, villager, site, plan, bag, bench, supplies);
 			return;
 		}
@@ -546,9 +558,15 @@ public class BuilderWork extends Behavior<Villager> {
 		if (!moveInReach(level, villager, site, plan, source, CONTAINER_REACH, false)) {
 			return;
 		}
+		takeWanted(level, site, plan, bag, requirement, supplies, source);
+	}
 
-		// At the chest: take what the next stretch of work needs, current block first. Helpers only
-		// take a handful for the blocks they are on, so they never sit on the lead's materials.
+	/**
+	 * At the chest: take what the next stretch of work needs from {@code supplies} (the chests there), current block
+	 * first. Helpers only take a handful for the blocks they are on, so they never sit on the lead's materials.
+	 */
+	private void takeWanted(ServerLevel level, BuildSite site, BuildPlan plan, BuilderBag bag, MaterialRules.Requirement requirement,
+							List<BlockPos> supplies, BlockPos source) {
 		Map<Item, Integer> wanted = new LinkedHashMap<>();
 		wanted.put(requirement.item(), requirement.count() + (helping ? 3 : 0));
 		for (BuildPlan.Step s : helping ? List.<BuildPlan.Step>of() : site.upcoming(plan, LOOKAHEAD)) {
@@ -641,7 +659,9 @@ public class BuilderWork extends Behavior<Villager> {
 		}
 		if (firstTick || --waitTimer <= 0) {
 			waitTimer = WAIT_RECHECK;
-			site.setMissing(Builders.computeMissing(level, site, plan, bag, supplies));
+			// What the whole village has counts: it isn't missing if another worker's chests hold it.
+			site.setMissing(Builders.computeMissing(level, site, plan, bag,
+				io.github.jcondedata.aliveworkplace.work.Village.allChests(level, villager, bench, plan.bounds())));
 			if (firstTick && !helping) {
 				Builders.notifyWaiting(level, villager, site);
 			}

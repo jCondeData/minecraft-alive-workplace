@@ -2,6 +2,15 @@
 
 ## Unreleased
 
+## 0.70.0 — 2026-09-28
+
+### Added
+- **Villages work together**: workers whose workstations are within 48 blocks of each other share their chests. A
+  builder out of stone walks over and takes it from the miner's chests; a miner, lumberjack, farmer or fisherman whose
+  tool broke takes a spare from another worker's chests, and farmers take seeds the same way. Only workers who answer to
+  the same people share (hired by you or your friends; village workers nobody has hired with each other). The distance
+  is `villageRadius` in `config/aliveworkplace.json` (0 turns it off).
+
 ## 0.69.0 — 2026-09-28
 
 ### Added

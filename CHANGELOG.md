@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 0.30.0 — 2026-09-27
+
 ### Changed
 - **Trainers match your Radical Cobblemon Trainers level cap** (RCT is in the Cobbleverse pack): their Pokémon go
   no higher than your cap −6 (Novice), −3, ±0, +3 or +5 (Master). Weaker teams stay as they are. Without RCT nothing

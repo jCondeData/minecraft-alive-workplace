@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 0.32.0 — 2026-09-27
+
 ### Added
 - Villages grow three more houses with Cobblemon installed: a **Trainer Leader's hall** (common, so most villages
   get a leader), a **school** with a Move Tutor and a **trade hall** with a Pokémon Trader. Without Cobblemon,

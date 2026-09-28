@@ -11,6 +11,7 @@
   "message.aliveworkplace.lumberjack.state.needs_axe": "needs an axe in a chest nearby",
   "message.aliveworkplace.lumberjack.state.depositing": "dropping off logs",
   "message.aliveworkplace.lumberjack.state.planting": "planting the tree farm",
+  "message.aliveworkplace.lumberjack.state.fertilizing": "giving the saplings bone meal",
   "message.aliveworkplace.tree_farm.no_block": "This lumberjack has no Chopping Block. Place one near them first.",
   "message.aliveworkplace.tree_farm.started": "%s will keep the %s × %s tree farm planted and fell the trees that grow there. Put saplings (and an axe) in a chest within %s blocks of their Chopping Block.",
   "message.aliveworkplace.tree_farm.header": "%s — tree farm %s × %s at %s %s %s",

@@ -113,6 +113,100 @@ public class LumberjackGameTests implements FabricGameTest {
 		});
 	}
 
+	/** Grows the vanilla tree {@code tree} at {@code base} on {@code ground}. */
+	private static void grow(GameTestHelper helper, BlockPos base, net.minecraft.resources.ResourceKey<net.minecraft.world.level.levelgen.feature.ConfiguredFeature<?, ?>> tree) {
+		ServerLevel level = helper.getLevel();
+		var feature = level.registryAccess().registryOrThrow(Registries.CONFIGURED_FEATURE).getHolderOrThrow(tree).value();
+		if (!feature.place(level, level.getChunkSource().getGenerator(), level.getRandom(), helper.absolutePos(base))) {
+			throw new GameTestAssertException("could not grow " + tree.location());
+		}
+	}
+
+	/**
+	 * A mangrove stands on its roots, where nothing can be planted: it's still a tree, felled (the roots stay), and a
+	 * propagule goes in close by, in the water over the mud.
+	 */
+	@GameTest(template = AREA, timeoutTicks = 3000, batch = "mangrove")
+	public void lumberjackFellsAMangroveAndPlantsAPropagule(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		ServerLevel level = helper.getLevel();
+		BlockPos base = new BlockPos(12, 2, 12);
+		for (BlockPos p : BlockPos.betweenClosed(new BlockPos(8, 1, 8), new BlockPos(16, 1, 16))) {
+			helper.setBlock(p, Blocks.MUD);
+			helper.setBlock(p.above(), Blocks.WATER);
+		}
+		grow(helper, base, TreeFeatures.MANGROVE);
+		helper.assertTrue(io.github.jcondedata.aliveworkplace.wood.Trees.treeAt(level, lowestLog(helper, base)).isPresent(),
+			"a mangrove on its roots should count as a tree");
+		Villager villager = setup(helper, new ItemStack(Items.STONE_AXE), new ItemStack(Items.MANGROVE_PROPAGULE, 2));
+		helper.succeedWhen(() -> {
+			helper.assertTrue(villager.getAttachedOrElse(ModAttachments.TREES_FELLED, 0) >= 1, "the mangrove wasn't felled");
+			boolean planted = false;
+			for (BlockPos p : BlockPos.betweenClosed(base.offset(-4, -3, -4), base.offset(4, 1, 4))) {
+				var state = helper.getBlockState(p);
+				planted |= state.is(Blocks.MANGROVE_PROPAGULE) && !state.getValue(net.minecraft.world.level.block.MangrovePropaguleBlock.HANGING);
+			}
+			helper.assertTrue(planted, "no propagule planted by the old mangrove");
+		});
+	}
+
+	/** The lowest log above {@code base} (a grown mangrove's trunk starts a little way up, on its roots). */
+	private static BlockPos lowestLog(GameTestHelper helper, BlockPos base) {
+		for (int y = -2; y < 8; y++) {
+			if (helper.getBlockState(base.above(y)).is(net.minecraft.tags.BlockTags.LOGS)) {
+				return helper.absolutePos(base.above(y));
+			}
+		}
+		throw new GameTestAssertException("no trunk above " + base);
+	}
+
+	/** An azalea tree (oak logs, azalea leaves) is replanted as an azalea bush, not an oak sapling. */
+	@GameTest(template = AREA, timeoutTicks = 3000)
+	public void lumberjackReplantsAnAzalea(GameTestHelper helper) {
+		BlockPos base = new BlockPos(11, 2, 11);
+		helper.setBlock(base.below(), Blocks.ROOTED_DIRT);
+		grow(helper, base, TreeFeatures.AZALEA_TREE);
+		Villager villager = setup(helper, new ItemStack(Items.STONE_AXE), new ItemStack(Items.AZALEA));
+		helper.succeedWhen(() -> {
+			helper.assertTrue(villager.getAttachedOrElse(ModAttachments.TREES_FELLED, 0) == 1, "the azalea tree wasn't felled");
+			var state = helper.getBlockState(base);
+			helper.assertTrue(state.is(Blocks.AZALEA) || state.is(Blocks.FLOWERING_AZALEA), "expected an azalea at the stump, found " + state);
+		});
+	}
+
+	/** A cherry tree comes down and a cherry sapling goes back. */
+	@GameTest(template = AREA, timeoutTicks = 3000)
+	public void lumberjackFellsACherryTree(GameTestHelper helper) {
+		BlockPos base = new BlockPos(11, 2, 11);
+		helper.setBlock(base.below(), Blocks.GRASS_BLOCK);
+		grow(helper, base, TreeFeatures.CHERRY);
+		Villager villager = setup(helper, new ItemStack(Items.STONE_AXE), new ItemStack(Items.CHERRY_SAPLING));
+		helper.succeedWhen(() -> {
+			helper.assertTrue(villager.getAttachedOrElse(ModAttachments.TREES_FELLED, 0) == 1, "the cherry tree wasn't felled");
+			helper.assertBlockPresent(Blocks.CHERRY_SAPLING, base);
+			for (int y = 1; y < 6; y++) {
+				helper.assertBlockNotPresent(Blocks.CHERRY_LOG, base.above(y));
+			}
+		});
+	}
+
+	/** With bone meal in the chests, the sapling on the tree farm is grown on the spot, then felled. */
+	@GameTest(template = AREA, timeoutTicks = 3000)
+	public void lumberjackGrowsTheFarmWithBoneMeal(GameTestHelper helper) {
+		for (BlockPos p : BlockPos.betweenClosed(new BlockPos(10, 1, 10), new BlockPos(12, 1, 12))) {
+			helper.setBlock(p, Blocks.GRASS_BLOCK);
+		}
+		Villager villager = setup(helper, new ItemStack(Items.STONE_AXE), new ItemStack(Items.OAK_SAPLING), new ItemStack(Items.BONE_MEAL, 32));
+		io.github.jcondedata.aliveworkplace.wood.TreeFarms.start(villager,
+			net.minecraft.world.level.levelgen.structure.BoundingBox.fromCorners(helper.absolutePos(new BlockPos(10, 1, 10)), helper.absolutePos(new BlockPos(12, 1, 12))));
+		helper.succeedWhen(() -> {
+			helper.assertTrue(villager.getAttachedOrElse(ModAttachments.TREES_FELLED, 0) >= 1, "the farm's sapling wasn't grown and felled");
+			Container chest = helper.getBlockEntity(CHEST);
+			int left = chest.countItem(Items.BONE_MEAL) + villager.getAttachedOrCreate(ModAttachments.BUILDER_BAG).count(Items.BONE_MEAL);
+			helper.assertTrue(left < 32, "no bone meal used");
+		});
+	}
+
 	/** A dark oak (a 2 × 2 trunk) is replanted as four saplings in a square: one wouldn't grow. */
 	@GameTest(template = AREA, timeoutTicks = 3000)
 	public void lumberjackReplantsADarkOakAsFour(GameTestHelper helper) {

@@ -162,9 +162,15 @@ public final class Walker {
 		BlockState below = level.getBlockState(feet.below());
 		boolean ground = below.isFaceSturdy(level, feet.below(), Direction.UP)
 			|| below.getBlock() instanceof net.minecraft.world.level.block.FarmBlock || below.is(net.minecraft.world.level.block.Blocks.DIRT_PATH);
-		return ground && below.getFluidState().isEmpty()
-			&& passable(level, feet) && level.getFluidState(feet).isEmpty()
+		// (Waterlogged ground is still ground: a mangrove's roots, a slab in a stream.)
+		return ground
+			&& passable(level, feet) && (level.getFluidState(feet).isEmpty() || shallowWater(level, feet))
 			&& passable(level, feet.above()) && level.getFluidState(feet.above()).isEmpty();
+	}
+
+	/** Water up to the knees, head in the air: fine to stand in (a swamp, a stream). */
+	private static boolean shallowWater(ServerLevel level, BlockPos feet) {
+		return level.getFluidState(feet).is(net.minecraft.tags.FluidTags.WATER) && level.getFluidState(feet.above()).isEmpty();
 	}
 
 	/** Nothing to bump into (a ladder counts as nothing: you stand in it, as in a miner's shaft). */

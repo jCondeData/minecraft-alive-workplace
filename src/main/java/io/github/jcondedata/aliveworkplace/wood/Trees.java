@@ -51,9 +51,9 @@ public final class Trees {
 		return state.is(BlockTags.WART_BLOCKS) || state.is(Blocks.SHROOMLIGHT);
 	}
 
-	/** What a tree can grow on: dirt and grass, or nylium for nether fungi. */
+	/** What a tree can grow on: dirt, grass and mud, nylium for nether fungi, and a mangrove's own roots. */
 	public static boolean isGround(BlockState state) {
-		return state.is(BlockTags.DIRT) || state.is(BlockTags.NYLIUM);
+		return state.is(BlockTags.DIRT) || state.is(BlockTags.NYLIUM) || state.is(Blocks.MANGROVE_ROOTS);
 	}
 
 	/** A huge fungus's cap spreads up to this far from the stem. */
@@ -136,6 +136,67 @@ public final class Trees {
 		List<BlockPos> sortedLeaves = new ArrayList<>(leaves);
 		sortedLeaves.sort(Comparator.comparingInt((BlockPos p) -> p.getY()).reversed());
 		return Optional.of(new Tree(sortedLogs, sortedLeaves, base, level.getBlockState(sortedLogs.get(0))));
+	}
+
+	/** The sapling that grows this tree: an azalea for an azalea tree (oak logs, azalea leaves), else {@link #saplingFor(BlockState)}. */
+	@Nullable
+	public static Block saplingFor(ServerLevel level, Tree tree) {
+		for (BlockPos leaf : tree.leaves()) {
+			BlockState state = level.getBlockState(leaf);
+			if (state.is(Blocks.AZALEA_LEAVES) || state.is(Blocks.FLOWERING_AZALEA_LEAVES)) {
+				return Blocks.AZALEA;
+			}
+		}
+		return saplingFor(tree.logState());
+	}
+
+	/**
+	 * Where to plant the new tree once {@code tree} is down: where its trunk stood, or if nothing grows there (a
+	 * mangrove stands on its roots) the nearest spot close by that takes the sapling — in the water over mud, for a
+	 * mangrove propagule. A 2 × 2 trunk is replanted as four or not at all.
+	 */
+	public static List<BlockPos> replantSpots(ServerLevel level, Tree tree, Block sapling) {
+		List<BlockPos> spots = new ArrayList<>();
+		for (BlockPos base : tree.base()) {
+			if (canPlant(level, base, sapling)) {
+				spots.add(base);
+			}
+		}
+		if (!spots.isEmpty() || tree.base().size() > 1) {
+			return spots;
+		}
+		BlockPos base = tree.base().get(0);
+		BlockPos best = null;
+		for (BlockPos p : BlockPos.betweenClosed(base.offset(-REPLANT_REACH, -5, -REPLANT_REACH), base.offset(REPLANT_REACH, 0, REPLANT_REACH))) {
+			if ((best == null || p.distSqr(base) < best.distSqr(base)) && canPlant(level, p, sapling)) {
+				best = p.immutable();
+			}
+		}
+		return best == null ? List.of() : List.of(best);
+	}
+
+	/** How far from the old trunk a sapling may go when the trunk's own spot won't take one. */
+	private static final int REPLANT_REACH = 3;
+
+	/** Whether {@code sapling} can go in at {@code pos}: air (or still water, for one that can stand in it) over ground it grows on. */
+	public static boolean canPlant(ServerLevel level, BlockPos pos, Block sapling) {
+		BlockState at = level.getBlockState(pos);
+		BlockState plant = sapling.defaultBlockState();
+		boolean water = at.getBlock() instanceof net.minecraft.world.level.block.LiquidBlock && at.getFluidState().isSource()
+			&& at.getFluidState().is(net.minecraft.tags.FluidTags.WATER);
+		if (!at.isAir() && !(water && plant.hasProperty(net.minecraft.world.level.block.state.properties.BlockStateProperties.WATERLOGGED))) {
+			return false;
+		}
+		return plant.canSurvive(level, pos);
+	}
+
+	/** The block to set when planting {@code sapling} at {@code pos} (waterlogged in water). */
+	public static BlockState plantState(ServerLevel level, BlockPos pos, Block sapling) {
+		BlockState plant = sapling.defaultBlockState();
+		if (plant.hasProperty(net.minecraft.world.level.block.state.properties.BlockStateProperties.WATERLOGGED) && !level.getFluidState(pos).isEmpty()) {
+			plant = plant.setValue(net.minecraft.world.level.block.state.properties.BlockStateProperties.WATERLOGGED, true);
+		}
+		return plant;
 	}
 
 	/** The sapling that grows this kind of tree: oak_log → oak_sapling (and modded woods named the same way). */

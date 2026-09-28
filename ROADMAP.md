@@ -106,7 +106,13 @@ Owner decisions are recorded in **Design decisions** at the bottom. Don't change
   planted on dirt in a grid 3 apart (dark oak: 2 × 2 squares 4 apart), trees in the farm felled even beyond the 16-block
   search; status and `/workplace cancel <uuid>`. 2 × 2 trunks already replant all four base spots (gametest with a dark
   oak). Huge nether fungi: stems on nylium with a wart-block cap (within 4 of the stem) count as trees, fungus replanted
-- [ ] Lumberjack follow-ups: bone meal on the tree farm, mangroves (roots), azalea/cherry specifics
+- [x] Lumberjack follow-ups: mangroves (their roots count as ground; `Trees.replantSpots` finds a spot near the old
+  trunk when it won't take a sapling, waterlogged propagules in the water over mud), azalea trees replanted as an
+  azalea (their leaves give them away), cherry trees tested; bone meal from the chests for the farm's saplings and
+  the ones they replanted when there's nothing to fell (16 at most per sapling); chopping from the lowest log anyone
+  can stand in reach of, unreachable trees skipped until the next one falls. Workers may stand in shallow water and
+  on waterlogged blocks (`Walker.canStand`)
+- [ ] Lumberjack follow-ups: stripping logs on request, charcoal from the furnaces
 - [x] **Farmer upgrade** (Field Marker item, any vanilla Farmer): give a farmer a marked field (up to 32×32, within 48 blocks of their composter) and they harvest ripe crops (any `CropBlock`, so modded crops too; nether wart, pumpkins/melons off a stem, sugar cane above the bottom block), plant the same crop straight back, sow empty farmland/soul sand with seeds from the chests near the composter (the crop next to it, else what there is most of), till bare dirt/grass with a hoe from the chests, and store the harvest in those chests; their vanilla routine is paused while the field needs work; longer shift like our workers; `/workplace cancel <farmer uuid>` (clickable in the status) stops it
 - [x] Farmer: bone meal from the chests (task FERTILIZE, only when nothing else needs doing; crops, stems, cocoa, berry
   bushes, never grass; up to 16 kept in the bag); sweet berries, cocoa, glow berries (and Cobblemon fruit) in a field

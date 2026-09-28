@@ -121,7 +121,12 @@ one at a time (leaves first, then the trunk), plants a sapling of the same wood 
 the logs, sticks and apples in the chests. They only cut real trees: logs with placed leaves (houses, posts),
 blueprint builds and quarries are left alone. When the last axe breaks they wait for a new one. Dark oaks (and other
 2 × 2 trunks) get four saplings back in a square, and huge crimson and warped fungi standing on nylium count as
-trees too (a fungus is planted back).
+trees too (a fungus is planted back). **Mangroves** are felled down to their roots (the roots stay) and a propagule
+goes in close by, in the water over the mud; **azalea trees** get an azalea bush back, and **cherry trees** a cherry
+sapling.
+
+**Bone meal.** Put bone meal in the chests and, whenever there's no grown tree to fell, the lumberjack gives it to the
+saplings on their tree farm and the ones they replanted, until they grow (an azalea bush only grows with bone meal).
 
 **Tree farms.** Mark an area with a **Field Marker** (the farmer's marker, up to 32 × 32 and within 48 blocks of the
 Chopping Block) and give it to the lumberjack. They keep it planted with saplings from the chests, in a grid three

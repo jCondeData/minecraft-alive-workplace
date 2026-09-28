@@ -31,6 +31,7 @@ import net.minecraft.world.entity.ai.memory.MemoryStatus;
 import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
@@ -49,8 +50,13 @@ public class LumberjackWork extends Behavior<Villager> {
 	private static final float SPEED = 0.6f;
 	private static final int SEARCH_EVERY = 60;
 	private static final int KEEP_SAPLINGS = 16;
+	/** Bone meal kept in the bag for the saplings. */
+	private static final int KEEP_BONE_MEAL = 16;
+	/** Bone meal given to one sapling before giving up on it (a lone dark oak sapling never grows). */
+	private static final int MAX_FEEDS = 16;
+	private static final int FEED_EVERY = 10;
 
-	private enum Phase { LOOKING, CHOPPING, NEEDS_AXE, DEPOSITING, PLANTING }
+	private enum Phase { LOOKING, CHOPPING, NEEDS_AXE, DEPOSITING, PLANTING, FERTILIZING }
 
 	private final Walker walker = new Walker(SPEED);
 	@Nullable
@@ -61,6 +67,13 @@ public class LumberjackWork extends Behavior<Villager> {
 	private boolean depositDue;
 	/** Stumps still waiting for a sapling (the leaves dropped none): filled from the chests after the next drop-off. */
 	private final java.util.Map<BlockPos, Block> unplanted = new java.util.LinkedHashMap<>();
+	/** Saplings this lumberjack planted where a tree came down (the farm's are found by looking): bone meal goes to these. */
+	private final Set<BlockPos> replanted = new java.util.HashSet<>();
+	/** Bone meal given to each sapling so far. */
+	private final java.util.Map<BlockPos, Integer> fed = new java.util.HashMap<>();
+	@Nullable
+	private BlockPos feeding;
+	private int feedTimer;
 
 	public LumberjackWork() {
 		super(ImmutableMap.of(
@@ -110,6 +123,7 @@ public class LumberjackWork extends Behavior<Villager> {
 			if (walker.walkTo(level, villager, containerNear(level, block), 3.0)) {
 				deposit(level, villager, block, bag);
 				takeSaplings(level, block, bag);
+				takeBoneMeal(level, block, bag, TreeFarms.farm(villager), false);
 				depositDue = false;
 			}
 			return;
@@ -120,16 +134,17 @@ public class LumberjackWork extends Behavior<Villager> {
 			var next = unplanted.entrySet().iterator().next();
 			BlockPos spot = next.getKey();
 			Block sapling = next.getValue();
-			if (!bag.has(sapling.asItem(), 1) || !level.getBlockState(spot).isAir() || !sapling.defaultBlockState().canSurvive(level, spot)) {
+			if (!bag.has(sapling.asItem(), 1) || !Trees.canPlant(level, spot, sapling)) {
 				unplanted.remove(spot);
 				return;
 			}
 			status(villager, Phase.CHOPPING);
 			if (walker.reach(level, villager, spot, REACH)) {
-				level.setBlockAndUpdate(spot, sapling.defaultBlockState());
+				level.setBlockAndUpdate(spot, Trees.plantState(level, spot, sapling));
 				bag.remove(sapling.asItem(), 1);
 				level.playSound(null, spot, SoundEvents.GRASS_PLACE, SoundSource.BLOCKS, 0.8f, 1f);
 				unplanted.remove(spot);
+				replanted.add(spot);
 			} else if (walker.noSpot()) {
 				unplanted.remove(spot);
 			}
@@ -148,31 +163,48 @@ public class LumberjackWork extends Behavior<Villager> {
 			return;
 		}
 
-		// 4. A tree to cut.
+		// 4. A tree to cut (and while there's none, bone meal for the young ones).
 		if (tree == null || Trees.treeAt(level, tree).isEmpty()) {
 			tree = null;
+			chopAt = null;
 			chopProgress = 0;
+			if (feeding != null && feed(level, villager, block, bag)) {
+				return;
+			}
 			if (--searchTimer > 0) {
 				status(villager, Phase.LOOKING);
 				return;
 			}
 			searchTimer = SEARCH_EVERY;
-			tree = findTree(level, block, villager.blockPosition(), farm);
+			tree = findTree(level, block, villager.blockPosition(), farm, unreachable);
 			if (tree == null) {
-				status(villager, Phase.LOOKING);
+				feeding = findSapling(level, villager.blockPosition(), farm);
+				walker.reset();
+				status(villager, feeding != null ? Phase.FERTILIZING : Phase.LOOKING);
 				return;
 			}
 		}
 
-		// 5. Walk up to the trunk and chop.
+		// 5. Walk up to the trunk and chop (from wherever a log of it can be reached: a mangrove's trunk stands high on its roots).
 		status(villager, Phase.CHOPPING);
-		if (!walker.reach(level, villager, tree, REACH)) {
+		if (chopAt == null || !Trees.isLog(level.getBlockState(chopAt))) {
+			chopAt = reachableLog(level, tree, villager.blockPosition());
+			if (chopAt == null) {
+				unreachable.add(tree); // can't get at it: look for another
+				tree = null;
+				return;
+			}
+			walker.reset();
+		}
+		if (!walker.reach(level, villager, chopAt, REACH)) {
 			if (walker.noSpot()) {
-				tree = null; // can't get at it: look for another
+				unreachable.add(tree);
+				tree = null;
+				chopAt = null;
 			}
 			return;
 		}
-		villager.getBrain().setMemory(MemoryModuleType.LOOK_TARGET, new BlockPosTracker(tree));
+		villager.getBrain().setMemory(MemoryModuleType.LOOK_TARGET, new BlockPosTracker(chopAt));
 		Optional<Trees.Tree> found = Trees.treeAt(level, tree);
 		if (found.isEmpty()) {
 			tree = null;
@@ -195,17 +227,45 @@ public class LumberjackWork extends Behavior<Villager> {
 			return;
 		}
 		level.destroyBlockProgress(villager.getId(), tree, -1);
-		fell(level, villager, bag, axe, t, unplanted);
+		fell(level, villager, bag, axe, t, unplanted, replanted);
 		tree = null;
+		chopAt = null;
+		unreachable.clear(); // the ground has changed: worth another look
 		chopProgress = 0;
 		searchTimer = 0;
 		depositDue = true;
 	}
 
+	/** Trees that couldn't be got at (lowest log), skipped until the next one comes down. */
+	private final Set<BlockPos> unreachable = new java.util.HashSet<>();
+
+	/** The log being chopped at: the lowest of the tree that someone can stand within reach of. */
+	@Nullable
+	private BlockPos chopAt;
+
+	@Nullable
+	private static BlockPos reachableLog(ServerLevel level, BlockPos tree, BlockPos from) {
+		Optional<Trees.Tree> t = Trees.treeAt(level, tree);
+		if (t.isEmpty()) {
+			return null;
+		}
+		int checked = 0;
+		for (BlockPos log : t.get().logs()) { // lowest first
+			if (Walker.standingSpot(level, log, from, REACH) != null) {
+				return log;
+			}
+			if (++checked >= 24) {
+				break;
+			}
+		}
+		return null;
+	}
+
 	// --- felling -------------------------------------------------------------------------------
 
-	private static void fell(ServerLevel level, Villager villager, BuilderBag bag, ItemStack axe, Trees.Tree t, java.util.Map<BlockPos, Block> unplanted) {
-		Block sapling = Trees.saplingFor(t.logState());
+	private static void fell(ServerLevel level, Villager villager, BuilderBag bag, ItemStack axe, Trees.Tree t, java.util.Map<BlockPos, Block> unplanted,
+							 Set<BlockPos> replanted) {
+		Block sapling = Trees.saplingFor(level, t);
 		for (BlockPos leaf : t.leaves()) {
 			take(level, villager, bag, axe, leaf, false);
 		}
@@ -217,15 +277,17 @@ public class LumberjackWork extends Behavior<Villager> {
 		}
 		// A new tree where the old one stood.
 		if (sapling != null) {
+			if (sapling == net.minecraft.world.level.block.Blocks.AZALEA && !bag.has(sapling.asItem(), 1) && bag.has(Items.FLOWERING_AZALEA, 1)) {
+				sapling = net.minecraft.world.level.block.Blocks.FLOWERING_AZALEA; // grows the same tree
+			}
 			Item seed = sapling.asItem();
-			for (BlockPos base : t.base()) {
-				if (level.getBlockState(base).isAir() && sapling.defaultBlockState().canSurvive(level, base)) {
-					if (bag.has(seed, 1)) {
-						level.setBlockAndUpdate(base, sapling.defaultBlockState());
-						bag.remove(seed, 1);
-					} else {
-						unplanted.put(base.immutable(), sapling);
-					}
+			for (BlockPos spot : Trees.replantSpots(level, t, sapling)) {
+				if (bag.has(seed, 1)) {
+					level.setBlockAndUpdate(spot, Trees.plantState(level, spot, sapling));
+					bag.remove(seed, 1);
+					replanted.add(spot.immutable());
+				} else {
+					unplanted.put(spot.immutable(), sapling);
 				}
 			}
 		}
@@ -254,7 +316,7 @@ public class LumberjackWork extends Behavior<Villager> {
 
 	/** Nearest natural tree to the villager within {@link #RADIUS} of the Chopping Block (outside builds and quarries). */
 	@Nullable
-	private static BlockPos findTree(ServerLevel level, BlockPos block, BlockPos from, @Nullable BoundingBox farm) {
+	private static BlockPos findTree(ServerLevel level, BlockPos block, BlockPos from, @Nullable BoundingBox farm, Set<BlockPos> unreachable) {
 		List<BoundingBox> keepOut = new java.util.ArrayList<>();
 		for (BuildSite site : BuildSiteManager.get(level).all()) {
 			io.github.jcondedata.aliveworkplace.blueprint.BlueprintLibrary.get(level, site.structure())
@@ -279,7 +341,7 @@ public class LumberjackWork extends Behavior<Villager> {
 				continue; // only trunks standing on the ground
 			}
 			BlockPos trunk = p.immutable();
-			if (checked.contains(trunk) || keepOut.stream().anyMatch(b -> b.isInside(trunk))) {
+			if (checked.contains(trunk) || unreachable.contains(trunk) || keepOut.stream().anyMatch(b -> b.isInside(trunk))) {
 				continue;
 			}
 			double d = trunk.distSqr(from);
@@ -287,6 +349,10 @@ public class LumberjackWork extends Behavior<Villager> {
 				continue;
 			}
 			Optional<Trees.Tree> t = Trees.treeAt(level, trunk);
+			if (t.isPresent() && unreachable.contains(t.get().lowest())) {
+				checked.addAll(t.get().base());
+				continue;
+			}
 			if (t.isPresent()) {
 				checked.addAll(t.get().base());
 				best = t.get().lowest();
@@ -296,6 +362,103 @@ public class LumberjackWork extends Behavior<Villager> {
 			}
 		}
 		return best;
+	}
+
+	// --- bone meal -----------------------------------------------------------------------------
+
+	/**
+	 * The nearest sapling to feed: on the tree farm, or one this lumberjack replanted. Saplings that had
+	 * {@link #MAX_FEEDS} bone meal without growing are left alone.
+	 */
+	@Nullable
+	private BlockPos findSapling(ServerLevel level, BlockPos from, @Nullable BoundingBox farm) {
+		replanted.removeIf(p -> !isFeedable(level, p));
+		fed.keySet().removeIf(p -> !level.getBlockState(p).is(net.minecraft.tags.BlockTags.SAPLINGS));
+		List<BlockPos> candidates = new java.util.ArrayList<>(replanted);
+		if (farm != null) {
+			for (BlockPos p : BlockPos.betweenClosed(farm.minX(), farm.minY() - 2, farm.minZ(), farm.maxX(), farm.maxY() + 2, farm.maxZ())) {
+				if (isFeedable(level, p)) {
+					candidates.add(p.immutable());
+				}
+			}
+		}
+		BlockPos best = null;
+		for (BlockPos p : candidates) {
+			if (fed.getOrDefault(p, 0) < MAX_FEEDS && (best == null || p.distSqr(from) < best.distSqr(from))) {
+				best = p;
+			}
+		}
+		return best;
+	}
+
+	private static boolean isFeedable(ServerLevel level, BlockPos pos) {
+		BlockState state = level.getBlockState(pos);
+		return state.is(net.minecraft.tags.BlockTags.SAPLINGS) && state.getBlock() instanceof net.minecraft.world.level.block.BonemealableBlock b
+			&& b.isValidBonemealTarget(level, pos, state);
+	}
+
+	/**
+	 * Walks to the sapling being fed and gives it bone meal now and then until it grows (fetching bone meal from the
+	 * chests first). False once done with it, or when there's no bone meal.
+	 */
+	private boolean feed(ServerLevel level, Villager villager, BlockPos block, BuilderBag bag) {
+		BlockPos pos = feeding;
+		if (pos == null || !isFeedable(level, pos) || fed.getOrDefault(pos, 0) >= MAX_FEEDS) {
+			feeding = null;
+			return false;
+		}
+		if (!bag.has(Items.BONE_MEAL, 1)) {
+			List<BlockPos> supplies = SupplyContainers.find(level, block, null);
+			BlockPos chest = SupplyContainers.firstMatching(level, supplies, st -> st.is(Items.BONE_MEAL));
+			if (chest == null) {
+				feeding = null;
+				return false;
+			}
+			status(villager, Phase.FERTILIZING);
+			if (walker.walkTo(level, villager, chest, 3.0)) {
+				takeBoneMeal(level, block, bag, null, true);
+			}
+			return true;
+		}
+		status(villager, Phase.FERTILIZING);
+		if (!walker.reach(level, villager, pos, REACH)) {
+			if (walker.noSpot()) {
+				fed.put(pos, MAX_FEEDS);
+				feeding = null;
+			}
+			return true;
+		}
+		villager.getBrain().setMemory(MemoryModuleType.LOOK_TARGET, new BlockPosTracker(pos));
+		if (--feedTimer > 0) {
+			return true;
+		}
+		feedTimer = FEED_EVERY;
+		if (net.minecraft.world.item.BoneMealItem.growCrop(new ItemStack(Items.BONE_MEAL), level, pos)) {
+			villager.swing(InteractionHand.MAIN_HAND);
+			level.levelEvent(net.minecraft.world.level.block.LevelEvent.PARTICLES_AND_SOUND_PLANT_GROWTH, pos, 15);
+			bag.remove(Items.BONE_MEAL, 1);
+			fed.merge(pos, 1, Integer::sum);
+		}
+		if (!level.getBlockState(pos).is(net.minecraft.tags.BlockTags.SAPLINGS)) {
+			// It grew: the next look round finds the tree.
+			fed.remove(pos);
+			replanted.remove(pos);
+			feeding = null;
+			searchTimer = 0;
+		}
+		return true;
+	}
+
+	/** Bone meal from the chests, when there are saplings to feed (or {@code now}, on the way to one). */
+	private void takeBoneMeal(ServerLevel level, BlockPos block, BuilderBag bag, @Nullable BoundingBox farm, boolean now) {
+		if (!now && farm == null && replanted.isEmpty() || bag.count(Items.BONE_MEAL) >= KEEP_BONE_MEAL / 2) {
+			return;
+		}
+		List<BlockPos> supplies = SupplyContainers.find(level, block, null);
+		int got = SupplyContainers.extract(level, supplies, Items.BONE_MEAL, KEEP_BONE_MEAL - bag.count(Items.BONE_MEAL));
+		if (got > 0) {
+			bag.addAll(Items.BONE_MEAL, got);
+		}
 	}
 
 	// --- the tree farm --------------------------------------------------------------------------
@@ -382,9 +545,10 @@ public class LumberjackWork extends Behavior<Villager> {
 	private static void deposit(ServerLevel level, Villager villager, BlockPos block, BuilderBag bag) {
 		List<BlockPos> supplies = SupplyContainers.find(level, block, null);
 		for (ItemStack stack : bag.takeAll()) {
-			// Keep a few saplings for replanting; everything else goes in the chests.
-			if (stack.is(ItemTags.SAPLINGS) && bag.count(stack.getItem()) < KEEP_SAPLINGS) {
-				int keep = Math.min(stack.getCount(), KEEP_SAPLINGS - bag.count(stack.getItem()));
+			// Keep a few saplings for replanting (and the bone meal); everything else goes in the chests.
+			int keepUpTo = stack.is(ItemTags.SAPLINGS) ? KEEP_SAPLINGS : stack.is(Items.BONE_MEAL) ? KEEP_BONE_MEAL : 0;
+			if (bag.count(stack.getItem()) < keepUpTo) {
+				int keep = Math.min(stack.getCount(), keepUpTo - bag.count(stack.getItem()));
 				bag.add(stack.split(keep));
 			}
 			if (!stack.isEmpty()) {

@@ -2,6 +2,19 @@
 
 ## Unreleased
 
+## 0.60.0 — 2026-09-28
+
+### Added
+- **Lumberjacks fell mangroves**, down to the roots (the roots stay), and plant a propagule close by in the water over
+  the mud. **Azalea trees** get an azalea bush back instead of an oak sapling; **cherry trees** a cherry sapling.
+- **Lumberjacks use bone meal**: with bone meal in the chests, whenever there's no grown tree to fell they give it to
+  the saplings on their tree farm and the ones they replanted until they grow.
+
+### Changed
+- Workers (builders, miners, lumberjacks and the rest) can now stand in shallow water and on waterlogged blocks, so
+  they get to work in swamps and streams. A lumberjack chops a tree from wherever one of its logs can be reached, and
+  skips trees nobody can get to instead of trying the same one forever.
+
 ## 0.59.0 — 2026-09-28
 
 ### Added

@@ -39,7 +39,7 @@ public final class VillageHouses {
 	private static final java.util.Map<String, Integer> HOUSES = houses();
 
 	/** Houses whose job only works with Cobblemon: villages without it don't grow them. */
-	public static final java.util.Set<String> COBBLEMON_HOUSES = java.util.Set.of("trainers_house", "leaders_hall", "school", "trade_hall");
+	public static final java.util.Set<String> COBBLEMON_HOUSES = java.util.Set.of("trainers_house", "leaders_hall", "school", "trade_hall", "ball_workshop");
 
 	private static java.util.Map<String, Integer> houses() {
 		Integer override = Integer.getInteger("aliveworkplace.houseWeight");
@@ -52,6 +52,8 @@ public final class VillageHouses {
 		out.put("leaders_hall", override != null ? override : 5);
 		out.put("school", override != null ? override : 2);
 		out.put("trade_hall", override != null ? override : 2);
+		out.put("orchard_house", override != null ? override : 2);
+		out.put("ball_workshop", override != null ? override : 2);
 		return out;
 	}
 

@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+## 0.37.0 — 2026-09-28
+
+### Added
+- Villages grow **orchard houses** (a Fruit Basket, a chest of fruit and an indoor bed of sweet berry bushes) and, with
+  Cobblemon, **ball workshops** (a Ball Workbench and a chest of copper and dye), each with a villager to work there.
+
 ## 0.36.0 — 2026-09-28
 
 ### Added

@@ -479,8 +479,28 @@ def trade_hall(b, style):
     b.set(1, 1, 3, "potted_fern")
 
 
+def orchard_house(b, style):
+    """A Fruit Basket, a chest for the harvest and an indoor bed of sweet berry bushes to pick."""
+    b.set(1, 1, 6, "aliveworkplace:fruit_basket", facing="east")
+    b.set(1, 1, 5, "chest", facing="east", type="single", waterlogged=False)
+    b.set_nbt(1, 1, 5, Compound({"LootTable": String("aliveworkplace:chests/village_orchard"), "id": String("minecraft:chest")}))
+    for x in (2, 3):
+        b.set(x, 0, 6, "grass_block", snowy=False)
+        b.set(x, 1, 6, "sweet_berry_bush", age=3)
+    b.set(1, 1, 3, "potted_azalea_bush")
+
+
+def ball_workshop(b, style):
+    """A Ball Workbench, a chest of copper and dye, and an anvil."""
+    b.set(1, 1, 6, "aliveworkplace:ball_workbench", facing="east")
+    b.set(1, 1, 5, "chest", facing="east", type="single", waterlogged=False)
+    b.set_nbt(1, 1, 5, Compound({"LootTable": String("aliveworkplace:chests/village_ball_workshop"), "id": String("minecraft:chest")}))
+    b.set(1, 1, 3, "anvil", facing="north")
+
+
 VILLAGE_HOUSES = {"trainers_house": trainers_house, "guard_house": guard_house, "clinic": clinic, "post_office": post_office,
-                  "leaders_hall": leaders_hall, "school": school, "trade_hall": trade_hall}
+                  "leaders_hall": leaders_hall, "school": school, "trade_hall": trade_hall, "orchard_house": orchard_house,
+                  "ball_workshop": ball_workshop}
 
 
 # --- Gametest fixtures ------------------------------------------------------------------

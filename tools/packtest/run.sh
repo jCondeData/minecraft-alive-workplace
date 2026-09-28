@@ -60,7 +60,7 @@ say "forceload add 720 320 880 480" 20
 say "place structure repurposed_structures:village_birch 400 70 400" 40
 say "place structure minecraft:village_plains 800 70 400" 40
 for x in 400 800; do
-  for poi in builders_bench training_post guard_post nurse_station postal_desk; do
+  for poi in builders_bench training_post guard_post nurse_station postal_desk leaders_podium tutors_desk trade_board fruit_basket ball_workbench; do
     say "execute positioned $x 70 400 run locate poi aliveworkplace:$poi" 2
   done
 done

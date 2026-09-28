@@ -96,8 +96,10 @@ workstation, like the rest of the mod.
   (combat is in their CORE activity, and they never panic), with the best weapon and armor from the chests near the
   post; 40 health, heals between fights, +10% damage per level, XP per kill; night-watch schedule (patrol evening
   to mid-morning, sleep until early afternoon); never targets players, villagers, golems, animals, pets or Pokémon
-- [ ] Guard follow-ups: bows/crossbows (shoot creepers from range), armor shown on the villager model, guards in
-  village generation, rallying to the bell when it rings
+- [x] Guards answer the village bell (`GuardRally`): a listener first in their CORE package takes vanilla's
+  HEARD_BELL_TIME memory (so they never hide) and rallies them to the nearest bell (meeting POI within 40) for
+  90 s; their combat centres on the bell meanwhile, patrol waits
+- [ ] Guard follow-ups: bows/crossbows (shoot creepers from range), armor shown on the villager model
 - [x] **Nurse** (Nurse Station workstation): right-click with an empty hand (sneak to trade) to get full health and
   harmful effects cleared, and with Cobblemon installed the whole party healed (not mid-battle); per-player
   cooldown of a minute, shorter as the nurse levels; at work they also heal hurt villagers and iron golems nearby
@@ -180,7 +182,10 @@ workstation, like the rest of the mod.
   used `Long.MAX_VALUE`, which it reads as 0), Tom's Simple Storage (network blocks skipped as supply chests).
   Lucky's Cozyhome can't be loaded in the Mojang-mapped dev environment (its `getItems()` clashes on remap), so it's
   untested; Chipped and Supplementaries aren't in the pack but stay tested
-- [ ] Test inside the full Cobbleverse 1.7.x pack (mod conflicts, performance with many builders)
+- [x] Boot test in the full Cobbleverse 1.7.42 pack (`tools/packtest/run.sh`: all 136 mods + this jar on a real
+  Fabric server): starts clean, commands and templates work, a Repurposed Structures birch village generated with
+  a trainer's house and a post office
+- [ ] Performance with many builders in the full pack; a play session in the pack's client
 
 ---
 

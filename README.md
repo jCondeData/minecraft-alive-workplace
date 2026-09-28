@@ -122,7 +122,8 @@ Craft a **Guard Post** (an iron sword over planks and a shield) and place it nea
 weapons and armor in a chest within 8 blocks of the post: the guard takes the best of it. Guards fight monsters that
 come within 24 blocks of the post at any hour (creepers excepted) and never run away. They have twice a villager's
 health and keep the night watch, sleeping in the late morning instead. Players, villagers, animals, pets and
-Pokémon are safe from them.
+Pokémon are safe from them. **Ring the village bell** and, while everyone else runs home to hide, the guards head
+for the bell and fight anything near it for a minute and a half.
 
 ## Nurses
 Craft a **Nurse Station** (glass bottles around a glistering melon slice, on white wool) and place it near a villager

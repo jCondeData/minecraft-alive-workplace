@@ -57,6 +57,21 @@ public class GuardGameTests implements FabricGameTest {
 		});
 	}
 
+	/** When the village bell rings, a guard heads for the bell instead of hiding with everyone else. */
+	@GameTest(template = AREA, timeoutTicks = 600)
+	public void guardAnswersTheBell(GameTestHelper helper) {
+		Villager guard = guard(helper, new ItemStack(Items.IRON_SWORD));
+		BlockPos bell = new BlockPos(18, 2, 18);
+		helper.setBlock(bell, Blocks.BELL);
+		helper.runAfterDelay(5, () -> ((net.minecraft.world.level.block.BellBlock) Blocks.BELL)
+			.attemptToRing(helper.getLevel(), helper.absolutePos(bell), net.minecraft.core.Direction.NORTH));
+		helper.succeedWhen(() -> {
+			helper.assertTrue(io.github.jcondedata.aliveworkplace.guard.GuardRally.isRallying(guard), "not answering the bell");
+			helper.assertTrue(guard.blockPosition().closerThan(helper.absolutePos(bell), 5), "the guard is at " + helper.relativePos(guard.blockPosition()));
+			helper.assertFalse(guard.getBrain().isActive(Activity.HIDE), "the guard went to hide");
+		});
+	}
+
 	/** Animals are nobody's enemy. */
 	@GameTest(template = AREA, timeoutTicks = 400)
 	public void guardLeavesAnimalsAlone(GameTestHelper helper) {

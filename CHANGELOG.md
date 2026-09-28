@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+### Added
+- **Guards answer the village bell.** Ring it and, while everyone else runs home to hide, the guards head for the
+  bell and fight anything near it for a minute and a half.
+
+### Checked
+- Booted a real Cobbleverse 1.7.42 server (all 136 mods) with Alive Workplace: it starts cleanly, and Repurposed
+  Structures villages generate with our houses.
+
 ## 0.30.0 — 2026-09-27
 
 ### Changed

@@ -248,6 +248,7 @@
   "message.aliveworkplace.guard.state.patrolling": "on patrol",
   "message.aliveworkplace.guard.state.gearing_up": "getting better gear",
   "message.aliveworkplace.guard.state.fighting": "fighting %s",
+  "message.aliveworkplace.guard.state.rally": "answering the bell",
   "block.aliveworkplace.nurse_station": "Nurse Station",
   "entity.minecraft.villager.nurse": "Nurse",
   "entity.minecraft.zombie_villager.nurse": "Zombie Nurse",

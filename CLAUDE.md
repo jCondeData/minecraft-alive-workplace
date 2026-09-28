@@ -33,6 +33,9 @@ The owner (Jesse) does not write code: sessions are expected to work autonomousl
   `SCENE=quarry` a miner digging out a block of stone, `SCENE=forest` a lumberjack felling and replanting four trees, `SCENE=farm` a farmer working a field, `SCENE=mail` the mailbox screen and a postman delivering, `SCENE=guard` a guard fighting three husks, `SCENE=staff` every workstation with its villager (then `python3 tools/screenshots/make_gif.py`), `SCENE=missing` a placed blueprint's "still missing" tooltip, `SCENE=tutor` the Move Tutor's lesson screen and `SCENE=trader` a Pokémon Trader's offers (both add Cobblemon to the client: `-Pcobblemon=true`). `DEBUG=true` logs
   builder/miner decisions. Long scenes take >10 min: start run.sh in the background and poll.
   Never `pkill -f`/`pgrep -f` a pattern that also appears in your own command line (it kills your shell).
+- `tools/packtest/run.sh` — boots a real Cobbleverse server (every pack mod, production Fabric) with the newest
+  `build/libs` jar, generates a vanilla and a Repurposed Structures village and looks for our workstations. Needs
+  ~6 GB RAM, ~5 min; don't run it alongside a Gradle build (memory).
 - If Maven Central answers **429**, wait ~20 s and retry; it is rate limiting, not a real failure.
 
 ## Layout (`src/main/java/io/github/jcondedata/aliveworkplace/`)
@@ -46,7 +49,7 @@ The owner (Jesse) does not write code: sessions are expected to work autonomousl
 - `mine/` — the miner: `QuarryMarkerItem`/`QuarryData`, `QuarrySite` + `QuarrySiteManager`, `MinerWork`, `Miners`
 - `farm/` — the farmer upgrade (vanilla Farmers): `FieldMarkerItem`/`FieldData`, `FieldJob` (attachment), `FieldWork`,
   `FarmerPackages` (our work first, vanilla's routine wrapped in `work/Gated`), `Fields`
-- `guard/` — guards: `GuardCombat` (in their CORE package, any activity), `GuardPatrol` (WORK: gear up, patrol),
+- `guard/` — guards: `GuardCombat` (in their CORE package, any activity), `GuardRally` (answering the bell), `GuardPatrol` (WORK: gear up, patrol),
   `Guards` (who is a foe, damage, extra health); `VillagerPanicTriggerMixin` keeps them from panicking
 - `shop/` — player shops: `ShopCounterBlock`/`ShopCounterBlockEntity` (price list), `Shops` (offers from stock, sales);
   mixins on `Villager.mobInteract` (refresh offers) and `AbstractVillager.notifyTrade` (move the goods and payment)

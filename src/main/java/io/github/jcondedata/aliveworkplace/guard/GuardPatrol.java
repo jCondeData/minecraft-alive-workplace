@@ -70,7 +70,7 @@ public class GuardPatrol extends Behavior<Villager> {
 
 	@Override
 	protected void tick(ServerLevel level, Villager villager, long gameTime) {
-		if (GuardCombat.isFighting(villager)) {
+		if (GuardCombat.isFighting(villager) || GuardRally.isRallying(villager)) {
 			waypoint = null;
 			return;
 		}

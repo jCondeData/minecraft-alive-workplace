@@ -151,7 +151,7 @@ public class GuardCombat extends Behavior<Villager> {
 	/** Nearest monster in the guard's area that they can see (or that is right next to them). */
 	@Nullable
 	private static LivingEntity findFoe(ServerLevel level, Villager villager) {
-		BlockPos center = Builders.benchPos(villager).orElse(villager.blockPosition());
+		BlockPos center = center(villager);
 		AABB area = new AABB(center).inflate(Guards.RADIUS, 8, Guards.RADIUS);
 		return level.getEntitiesOfClass(LivingEntity.class, area, Guards::isFoe).stream()
 			.filter(e -> villager.hasLineOfSight(e) || villager.distanceToSqr(e) < 16)
@@ -160,8 +160,12 @@ public class GuardCombat extends Behavior<Villager> {
 	}
 
 	private static boolean inArea(Villager villager, LivingEntity foe) {
-		BlockPos center = Builders.benchPos(villager).orElse(villager.blockPosition());
-		return foe.blockPosition().closerThan(center, Guards.RADIUS + 8);
+		return foe.blockPosition().closerThan(center(villager), Guards.RADIUS + 8);
+	}
+
+	/** Where the guard keeps watch: the bell while answering it, else their Guard Post. */
+	private static BlockPos center(Villager villager) {
+		return GuardRally.rallyPoint(villager).orElseGet(() -> Builders.benchPos(villager).orElse(villager.blockPosition()));
 	}
 
 	static Component title(Villager villager) {

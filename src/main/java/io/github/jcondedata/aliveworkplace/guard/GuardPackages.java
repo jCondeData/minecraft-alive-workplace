@@ -18,10 +18,12 @@ public final class GuardPackages {
 		);
 	}
 
-	/** Vanilla's CORE package plus {@link GuardCombat} first. */
+	/** Vanilla's CORE package with the bell listener, {@link GuardRally} and {@link GuardCombat} first. */
 	public static ImmutableList<Pair<Integer, ? extends BehaviorControl<? super Villager>>> core(
 			ImmutableList<Pair<Integer, ? extends BehaviorControl<? super Villager>>> vanilla) {
 		return ImmutableList.<Pair<Integer, ? extends BehaviorControl<? super Villager>>>builder()
+			.add(Pair.of(0, GuardRally.listener()))
+			.add(Pair.of(0, new GuardRally()))
 			.add(Pair.of(0, new GuardCombat()))
 			.addAll(vanilla)
 			.build();

@@ -197,7 +197,7 @@ public class CobblemonCompatTests implements FabricGameTest {
 		var novice = io.github.jcondedata.aliveworkplace.compat.cobblemon.CobblemonTraders.offers(id, 1, 7);
 		helper.assertTrue(novice.equals(io.github.jcondedata.aliveworkplace.compat.cobblemon.CobblemonTraders.offers(id, 1, 7)), "offers changed within a day");
 		var master = io.github.jcondedata.aliveworkplace.compat.cobblemon.CobblemonTraders.offers(id, 5, 7);
-		helper.assertTrue(novice.size() == 1 && master.size() == 3, "offer counts " + novice.size() + " / " + master.size());
+		helper.assertTrue(novice.size() == 1 && master.size() == 4, "offer counts (a Master adds a special request) " + novice.size() + " / " + master.size());
 		helper.assertTrue(novice.stream().allMatch(o -> o.level() >= 5 && o.level() <= 15), "novice levels");
 		helper.assertTrue(master.stream().allMatch(o -> o.level() >= 50 && o.level() <= 70), "master levels");
 		java.util.Set<String> species = new java.util.HashSet<>();
@@ -511,5 +511,45 @@ public class CobblemonCompatTests implements FabricGameTest {
 			int leaves = chest.countItem(com.cobblemon.mod.common.CobblemonItems.RED_MINT_LEAF);
 			helper.assertTrue(leaves >= 8, "only " + leaves + " mint leaves in the chest");
 		});
+	}
+
+	/** Expert and Master traders add a special request for one particular Pokémon line; beginners don't. */
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
+	public void expertTradersMakeASpecialRequest(GameTestHelper helper) {
+		java.util.UUID id = java.util.UUID.randomUUID();
+		var expert = io.github.jcondedata.aliveworkplace.compat.cobblemon.CobblemonTraders.offers(id, 4, 3);
+		helper.assertTrue(expert.size() == 4, expert.size() + " offers for an Expert");
+		var special = expert.get(3);
+		helper.assertTrue(special.wantedSpecies() != null, "no special request");
+		helper.assertTrue(special.wantedSpecies().getPreEvolution() == null, "the request should name the first of a line");
+		Pokemon fits = special.wantedSpecies().create(special.minLevel());
+		helper.assertTrue(special.refusal(fits) == null, "the requested Pokémon was refused: " + special.refusal(fits));
+		Pokemon other = PokemonProperties.Companion.parse(special.wantedSpecies().getName().equalsIgnoreCase("magikarp") ? "eevee" : "magikarp",
+			" ", "=").create();
+		other.setLevel(Math.max(other.getLevel(), special.minLevel()));
+		helper.assertTrue(special.refusal(other) != null, "a Pokémon from another line was accepted");
+		helper.assertTrue(expert.subList(0, 3).stream().allMatch(o -> o.wantedSpecies() == null), "only the last offer is a special request");
+		var novice = io.github.jcondedata.aliveworkplace.compat.cobblemon.CobblemonTraders.offers(id, 1, 3);
+		helper.assertTrue(novice.stream().allMatch(o -> o.wantedSpecies() == null), "a Novice made a special request");
+		helper.succeed();
+	}
+
+	/** Expert and Master trainers bring trained teams: top IVs, EVs, a matching nature and a held item; Novices don't. */
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
+	public void strongTrainersBringTrainedTeams(GameTestHelper helper) {
+		java.util.UUID id = java.util.UUID.randomUUID();
+		for (Pokemon p : io.github.jcondedata.aliveworkplace.compat.cobblemon.CobblemonTrainers.team(id, 5)) {
+			helper.assertTrue(p.getIvs().get(com.cobblemon.mod.common.api.pokemon.stats.Stats.SPEED) == 31
+				&& p.getIvs().get(com.cobblemon.mod.common.api.pokemon.stats.Stats.HP) == 31, p.getSpecies().getName() + " IVs");
+			helper.assertTrue(p.getEvs().get(com.cobblemon.mod.common.api.pokemon.stats.Stats.SPEED) == 252, p.getSpecies().getName() + " EVs");
+			helper.assertTrue(p.getNature() == com.cobblemon.mod.common.api.pokemon.Natures.ADAMANT
+				|| p.getNature() == com.cobblemon.mod.common.api.pokemon.Natures.MODEST, p.getSpecies().getName() + " nature " + p.getNature().getName());
+			helper.assertTrue(!p.heldItem().isEmpty(), p.getSpecies().getName() + " holds nothing");
+			helper.assertTrue(p.getCurrentHealth() == p.getMaxHealth(), p.getSpecies().getName() + " isn't at full health");
+		}
+		for (Pokemon p : io.github.jcondedata.aliveworkplace.compat.cobblemon.CobblemonTrainers.team(id, 1)) {
+			helper.assertTrue(p.heldItem().isEmpty(), "a Novice's " + p.getSpecies().getName() + " holds an item");
+		}
+		helper.succeed();
 	}
 }

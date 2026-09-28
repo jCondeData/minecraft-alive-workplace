@@ -47,8 +47,15 @@ public final class CobblemonTraders {
 	private static final int INFO = 8;
 	private static final Vector4f GREYED = new Vector4f(0.35f, 0.35f, 0.35f, 1f);
 
-	/** One of the day's offers: their Pokémon (species, level, shiny) for yours of {@code wanted} type, level {@code minLevel}+. */
-	public record Offer(Species species, int level, boolean shiny, ElementalType wanted, int minLevel) {
+	/**
+	 * One of the day's offers: their Pokémon (species, level, shiny) for yours of {@code wanted} type, level
+	 * {@code minLevel}+ — or, for a special request, of {@code wantedSpecies}' evolution family.
+	 */
+	public record Offer(Species species, int level, boolean shiny, ElementalType wanted, int minLevel, @Nullable Species wantedSpecies) {
+		public Offer(Species species, int level, boolean shiny, ElementalType wanted, int minLevel) {
+			this(species, level, shiny, wanted, minLevel, null);
+		}
+
 		Pokemon create() {
 			Pokemon pokemon = species.create(level);
 			pokemon.setShiny(shiny);
@@ -60,6 +67,12 @@ public final class CobblemonTraders {
 		public Component refusal(Pokemon pokemon) {
 			if (!pokemon.getTradeable()) {
 				return Component.translatable("message.aliveworkplace.pokemon_trader.untradeable");
+			}
+			if (wantedSpecies != null) {
+				if (root(pokemon.getSpecies()) != root(wantedSpecies)) {
+					return Component.translatable("message.aliveworkplace.pokemon_trader.wrong_species", wantedSpecies.getTranslatedName());
+				}
+				return pokemon.getLevel() < minLevel ? Component.translatable("message.aliveworkplace.pokemon_trader.too_low", minLevel) : null;
 			}
 			boolean typeFits = false;
 			for (ElementalType type : pokemon.getTypes()) {
@@ -113,7 +126,33 @@ public final class CobblemonTraders {
 			int minLevel = Math.max(5, (level - 5) / 5 * 5);
 			offers.add(new Offer(species, level, shiny, type, minLevel));
 		}
+		// Experts and Masters make one special request a day: a particular Pokémon (any of its evolutions), for
+		// one of theirs at the top of their range, shiny one time in four.
+		if (t >= 3 && !pool.isEmpty()) {
+			List<Species> requests = new ArrayList<>();
+			for (Species s : PokemonSpecies.getImplemented()) {
+				if (s.getPreEvolution() == null && !s.getEvolutions().isEmpty() && s.getLabels().stream().noneMatch(NOT_FOR_TRADE::contains)) {
+					requests.add(s);
+				}
+			}
+			requests.sort(Comparator.comparing(Species::getName));
+			if (!requests.isEmpty()) {
+				Species species = pool.remove(random.nextInt(pool.size()));
+				Species wanted = requests.get(random.nextInt(requests.size()));
+				int minLevel = MIN_LEVEL[t] - 10;
+				offers.add(new Offer(species, MAX_LEVEL[t], random.nextInt(4) == 0, wanted.getPrimaryType(), minLevel, wanted));
+			}
+		}
 		return offers;
+	}
+
+	/** The first form of a Pokémon's evolution line (Charizard → Charmander). */
+	static Species root(Species species) {
+		Species current = species;
+		for (int i = 0; i < 5 && current.getPreEvolution() != null; i++) {
+			current = current.getPreEvolution().getSpecies();
+		}
+		return current;
 	}
 
 	/** What's on the screen: the offer being looked at and a Pokémon waiting for the second click. */
@@ -153,8 +192,11 @@ public final class CobblemonTraders {
 			icon.set(DataComponents.CUSTOM_NAME, plain(pokemonName(offer.species().getTranslatedName(), offer.level(), offer.shiny())));
 			icon.set(DataComponents.LORE, lore(
 				types(offer.species().getTypes()),
-				Component.translatable("message.aliveworkplace.pokemon_trader.wants", offer.wanted().getDisplayName().copy()
-					.withColor(offer.wanted().getHue()), offer.minLevel()).withStyle(ChatFormatting.YELLOW),
+				offer.wantedSpecies() != null
+					? Component.translatable("message.aliveworkplace.pokemon_trader.wants_species", offer.wantedSpecies().getTranslatedName(),
+						offer.minLevel()).withStyle(ChatFormatting.LIGHT_PURPLE)
+					: Component.translatable("message.aliveworkplace.pokemon_trader.wants", offer.wanted().getDisplayName().copy()
+						.withColor(offer.wanted().getHue()), offer.minLevel()).withStyle(ChatFormatting.YELLOW),
 				Component.translatable("message.aliveworkplace.pokemon_trader.pick_offer").withStyle(ChatFormatting.GRAY)));
 			if (i == state.offer) {
 				icon.set(DataComponents.ENCHANTMENT_GLINT_OVERRIDE, true);

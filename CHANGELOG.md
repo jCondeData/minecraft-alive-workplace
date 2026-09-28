@@ -2,6 +2,18 @@
 
 ## Unreleased
 
+## 0.40.0 — 2026-09-28
+
+### Changed
+- **Stronger trainers bring trained teams**: from Journeyman their Pokémon have better IVs, and Experts, Masters and
+  Trainer Leaders add EVs, a fitting nature and a held item (Life Orb, Leftovers, Choice items, Focus Sash…). Same
+  species as before. With an RCT level cap, the same trained Pokémon are simply brought down to the cap.
+
+### Added
+- **Special requests** from Expert and Master Pokémon Traders: besides their usual offers, one a day asks for a
+  particular Pokémon (any of its evolutions will do) and gives one of theirs at the top of their range — shiny one
+  time in four.
+
 ## 0.39.0 — 2026-09-28
 
 ### Added

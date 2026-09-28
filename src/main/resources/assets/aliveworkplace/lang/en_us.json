@@ -383,6 +383,8 @@
   "message.aliveworkplace.pokemon_trader.come_back": "You've traded here today. New offers tomorrow!",
   "message.aliveworkplace.pokemon_trader.untradeable": "This Pokémon can't be traded",
   "message.aliveworkplace.pokemon_trader.wrong_type": "Not a %s type",
+  "message.aliveworkplace.pokemon_trader.wants_species": "Special request: a %s (or one of its evolutions), Lv. %s or higher",
+  "message.aliveworkplace.pokemon_trader.wrong_species": "Not a %s or one of its evolutions",
   "message.aliveworkplace.pokemon_trader.too_low": "Needs to be Lv. %s or higher",
   "message.aliveworkplace.pokemon_trader.click": "Click to offer this Pokémon",
   "message.aliveworkplace.pokemon_trader.confirm": "Click again to trade %s for %s",

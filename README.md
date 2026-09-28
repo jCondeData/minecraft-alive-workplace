@@ -179,7 +179,8 @@ chest). No discs? They make up a tune on the harp.
 Craft a **Training Post** (a target block on planks) and place it near a villager without a job: they become a
 **Trainer**. Right-click a trainer with an empty hand to battle. Every trainer starts as a Novice with two young
 Pokémon and ranks up as people battle them — Apprentice, Journeyman, Expert, Master — until they field six fully
-evolved Pokémon at level 80–100 and play smart. Beating one pays **CobbleDollars** (100 for a Novice up to 2,500 for a
+evolved Pokémon at level 80–100 and play smart. From Journeyman their Pokémon have better IVs; Experts and Masters
+also bring EVs, a matching nature (Adamant or Modest) and a held item (Life Orb, Leftovers, a Choice item…). Beating one pays **CobbleDollars** (100 for a Novice up to 2,500 for a
 Master; emeralds if CobbleDollars isn't installed), once a day per trainer. No badges, no gyms.
 With **Radical Cobblemon Trainers** installed (it is in the Cobbleverse pack), a trainer's Pokémon never go above
 your level cap by more than their rank allows: a Novice stays 6 levels under your cap, a Journeyman meets it, a
@@ -222,7 +223,8 @@ offers — "my Tinkaton, level 62, for any Fighting type, level 55 or higher". P
 Pokémon that fits (the rest are greyed out, with the reason), and click it twice to swap. A held item comes back to
 you. Offers change every in-game day and are the same for everyone; each player gets one trade per trader per day.
 A new trader has one offer of a young Pokémon; with every trade they rank up, and a Master has three offers at level
-50–70, now and then a shiny one.
+50–70, now and then a shiny one. Experts and Masters also make a **special request** each day: a particular Pokémon
+(any of its evolutions will do) for one of theirs at the top of their range — shiny one time in four.
 
 ![A Pokémon Trader's offers and your party](docs/media/pokemon-trader.png)
 

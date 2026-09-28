@@ -1,5 +1,7 @@
 package io.github.jcondedata.aliveworkplace.compat.cobblemon;
 
+import com.cobblemon.mod.common.CobblemonItems;
+import com.cobblemon.mod.common.api.pokemon.stats.Stats;
 import com.cobblemon.mod.common.Cobblemon;
 import com.cobblemon.mod.common.api.Priority;
 import com.cobblemon.mod.common.api.battles.model.PokemonBattle;
@@ -142,9 +144,42 @@ public final class CobblemonTrainers {
 		for (int i = 0; i < SIZE[t] && !pool.isEmpty(); i++) {
 			Species species = pool.remove(random.nextInt(pool.size()));
 			int level = MIN_LEVEL[t] + random.nextInt(MAX_LEVEL[t] - MIN_LEVEL[t] + 1);
-			team.add(species.create(level));
+			Pokemon pokemon = species.create(level);
+			// Its own random, so training doesn't change which species the trainer picks.
+			train(pokemon, t, new Random(trainer.getLeastSignificantBits() ^ (7919L * (i + 1)) ^ (131L * t)));
+			team.add(pokemon);
 		}
 		return team;
+	}
+
+	/**
+	 * Competitive touches for the stronger trainers: better IVs from Journeyman (15+), Expert (25+) and Master
+	 * (31); from Expert, EVs in their better attacking stat and Speed, a nature to match (Adamant or Modest)
+	 * and a held item suited to that.
+	 */
+	static void train(Pokemon pokemon, int t, Random random) {
+		if (t < 2) {
+			return;
+		}
+		int minIv = t == 2 ? 15 : t == 3 ? 25 : 31;
+		for (Stats stat : List.of(Stats.HP, Stats.ATTACK, Stats.DEFENCE, Stats.SPECIAL_ATTACK, Stats.SPECIAL_DEFENCE, Stats.SPEED)) {
+			pokemon.getIvs().set(stat, minIv + random.nextInt(32 - minIv));
+		}
+		if (t >= 3) {
+			Map<com.cobblemon.mod.common.api.pokemon.stats.Stat, Integer> base = pokemon.getForm().getBaseStats();
+			boolean physical = base.getOrDefault(Stats.ATTACK, 0) >= base.getOrDefault(Stats.SPECIAL_ATTACK, 0);
+			pokemon.getEvs().set(physical ? Stats.ATTACK : Stats.SPECIAL_ATTACK, 252);
+			pokemon.getEvs().set(Stats.SPEED, 252);
+			pokemon.getEvs().set(Stats.HP, 4);
+			pokemon.setNature(physical ? com.cobblemon.mod.common.api.pokemon.Natures.ADAMANT : com.cobblemon.mod.common.api.pokemon.Natures.MODEST);
+			List<net.minecraft.world.item.Item> items = physical
+				? List.of(CobblemonItems.LIFE_ORB, CobblemonItems.CHOICE_BAND, CobblemonItems.MUSCLE_BAND, CobblemonItems.LEFTOVERS,
+					CobblemonItems.SITRUS_BERRY, CobblemonItems.FOCUS_SASH, CobblemonItems.EXPERT_BELT, CobblemonItems.CHOICE_SCARF)
+				: List.of(CobblemonItems.LIFE_ORB, CobblemonItems.CHOICE_SPECS, CobblemonItems.WISE_GLASSES, CobblemonItems.LEFTOVERS,
+					CobblemonItems.SITRUS_BERRY, CobblemonItems.FOCUS_SASH, CobblemonItems.EXPERT_BELT, CobblemonItems.ASSAULT_VEST);
+			pokemon.swapHeldItem(new net.minecraft.world.item.ItemStack(items.get(random.nextInt(items.size()))), false, false);
+		}
+		pokemon.heal();
 	}
 
 	/**
@@ -157,7 +192,11 @@ public final class CobblemonTrainers {
 		List<Pokemon> out = new ArrayList<>();
 		for (int i = 0; i < team.size(); i++) {
 			Pokemon pokemon = team.get(i);
-			out.add(pokemon.getLevel() <= ceiling ? pokemon : pokemon.getSpecies().create(Math.max(1, ceiling - i % 3)));
+			if (pokemon.getLevel() > ceiling) {
+				pokemon.setLevel(Math.max(1, ceiling - i % 3)); // same Pokémon, training and all, just younger
+				pokemon.heal();
+			}
+			out.add(pokemon);
 		}
 		return out;
 	}

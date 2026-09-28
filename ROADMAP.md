@@ -148,7 +148,10 @@ workstation, like the rest of the mod.
 - [x] 5 tiers = villager level, Novice → Master: team 2/3/4/5/6 at lv 5–12 / 15–25 / 30–42 / 50–65 / 80–100; basic
   Pokémon for beginners, fully evolved at the top, never legendary/mythical/ultra beast/paradox; the team is fixed per
   trainer and tier (seeded by the villager); Novice uses Cobblemon's random AI, higher tiers `StrongBattleAI(tier)`
-- [ ] Master extras: competitive sets (items, natures, EVs), Mega Evolution if Mega Showdown allows
+- [x] Trained teams: IVs 15+/25+/31 from Journeyman/Expert/Master; Expert and Master get 252 Atk-or-SpA/252 Spe/4 HP
+  EVs, Adamant or Modest, and a held item from a list for that side (`CobblemonTrainers.train`, its own seed so the
+  species don't change); RCT capping now lowers the level of the same Pokémon instead of re-creating it
+- [ ] Master extras: movesets chosen for the held item/nature, Mega Evolution if Mega Showdown allows
 - [x] Trainers **level up when you battle them** (+5 XP a battle, +3 more when they win; vanilla level thresholds);
   levels are the villager's, so shared server-wide
 - [x] Rewards: **CobbleDollars** (100/250/500/1000/2500 by tier, via `/cobbledollars give`), once per in-game day per
@@ -207,7 +210,9 @@ workstation, like the rest of the mod.
   50–70, 1 in 10 shiny at Master; one trade per player per trader per in-game day; the Pokémon you give must be
   tradeable, its held item comes back; 6 XP a trade. Sneak for item trades (balls, candies, ability capsule)
 - [x] Traders in village generation (a trade hall, weight 2, Cobblemon only)
-- [ ] Pokémon Trader follow-ups: species wanted by name at higher tiers
+- [x] Special requests: Expert/Master traders add a daily fourth offer that wants one evolution line by name (first
+  forms that evolve, never legendary etc.), level ≥ tier minimum − 10, for a Pokémon at the top of their range,
+  shiny 1 in 4
 
 ## Milestone 5 — Release
 - [ ] Publish on Modrinth and CurseForge as **Alive Workplace** (Minecraft brand rules: don't lead the name with "Minecraft")

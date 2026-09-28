@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+## 0.57.0 — 2026-09-28
+
+### Added
+- **Guards show their armor**: the helmet, chestplate, leggings and boots a guard wears are drawn on them, fitted to
+  the villager's shape (dyed leather and enchantment shine included). Any villager wearing armor shows it the same way.
+
 ## 0.56.0 — 2026-09-28
 
 ### Added

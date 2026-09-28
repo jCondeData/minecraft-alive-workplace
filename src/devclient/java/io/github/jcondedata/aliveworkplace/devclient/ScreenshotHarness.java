@@ -712,6 +712,8 @@ public class ScreenshotHarness implements ClientModInitializer {
 
 	private final List<net.minecraft.world.entity.Entity> husks = new ArrayList<>();
 
+	private Villager guardForShot;
+
 	private void guardScene(Minecraft mc, MinecraftServer server) {
 		tick++;
 		if (tick == 1) {
@@ -732,8 +734,47 @@ public class ScreenshotHarness implements ClientModInitializer {
 				chest.setItem(0, new ItemStack(net.minecraft.world.item.Items.IRON_SWORD));
 				chest.setItem(1, new ItemStack(net.minecraft.world.item.Items.IRON_CHESTPLATE));
 				Villager guard = EntityType.VILLAGER.spawn(level, post.south(), MobSpawnType.COMMAND);
+				guardForShot = guard;
+				guard.setItemSlot(net.minecraft.world.entity.EquipmentSlot.HEAD, new ItemStack(net.minecraft.world.item.Items.IRON_HELMET));
+				guard.setItemSlot(net.minecraft.world.entity.EquipmentSlot.FEET, new ItemStack(net.minecraft.world.item.Items.IRON_BOOTS));
+				guard.setItemSlot(net.minecraft.world.entity.EquipmentSlot.CHEST, new ItemStack(net.minecraft.world.item.Items.IRON_CHESTPLATE));
+				guard.setItemSlot(net.minecraft.world.entity.EquipmentSlot.LEGS, new ItemStack(net.minecraft.world.item.Items.CHAINMAIL_LEGGINGS));
 				io.github.jcondedata.aliveworkplace.work.Jobs.employ(level, guard, post,
 					io.github.jcondedata.aliveworkplace.registry.ModVillagers.GUARD_POST_POI, io.github.jcondedata.aliveworkplace.registry.ModVillagers.GUARD);
+				hover(server.getPlayerList().getPlayers().get(0), new Vec3(7.5, -55, 9.5), 145, 28);
+			});
+		}
+		if (tick == 110 && guardForShot != null) {
+			// A close look at the guard in their armor, before the husks come.
+			server.execute(() -> {
+				Villager g = guardForShot;
+				// Slimes from the superflat world's slime chunks would draw the guard away.
+				for (net.minecraft.world.entity.monster.Slime slime : g.level().getEntitiesOfClass(net.minecraft.world.entity.monster.Slime.class,
+					g.getBoundingBox().inflate(64))) {
+					slime.discard();
+				}
+				g.setTarget(null);
+				g.getBrain().eraseMemory(net.minecraft.world.entity.ai.memory.MemoryModuleType.ATTACK_TARGET);
+				g.getNavigation().stop();
+				g.setNoAi(true);
+				g.setYRot(-34.5f);
+				g.setYHeadRot(-34.5f);
+				g.setYBodyRot(-34.5f);
+				hover(server.getPlayerList().getPlayers().get(0), new Vec3(g.getX() + 2.2, g.getY() + 1.9, g.getZ() + 3.2), 146, 18);
+			});
+		}
+		if (tick == 125) {
+			shot(mc, "10_guard_armor");
+			server.execute(() -> {
+				guardForShot.setYRot(60f);
+				guardForShot.setYHeadRot(60f);
+				guardForShot.setYBodyRot(60f);
+			});
+		}
+		if (tick == 132) {
+			shot(mc, "11_guard_armor_side");
+			server.execute(() -> {
+				guardForShot.setNoAi(false);
 				hover(server.getPlayerList().getPlayers().get(0), new Vec3(7.5, -55, 9.5), 145, 28);
 			});
 		}

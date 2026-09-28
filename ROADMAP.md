@@ -139,14 +139,16 @@ workstation, like the rest of the mod.
   never with someone else near the line of fire; arrow kills count
 - [x] Guards use crossbows (`Guards.isBow` takes any bow or crossbow; a crossbow outranks a bow, so the guard swaps;
   faster, straighter, critical bolts every 30 ticks)
-- [ ] Guard follow-ups: armor shown on the villager model (needs a render layer fitted to the villager model)
+- [x] Guard follow-ups: armor shown on the villager model (a render layer fitted to the villager: helmet raised to the taller head, shoulder pieces on the folded arms)
 - [x] **Nurse** (Nurse Station workstation): right-click with an empty hand (sneak to trade) to get full health and
   harmful effects cleared, and with Cobblemon installed the whole party healed (not mid-battle); per-player
   cooldown of a minute, shorter as the nurse levels; at work they also heal hurt villagers and iron golems nearby
   (guards!); sells healing potions, honey, golden apples/carrots. Cobblemon is compile-only (`compat/cobblemon`),
   tested with the real Cobblemon 1.7.3 in `runCompatGameTest`
 - [x] Nurse Station in the Healing Center blueprint; Shop Counter in the Supply Shop blueprint
-- [ ] Nurse follow-ups: Cobblemon's Healing Machine as a second workstation
+- [x] ~~Healing Machine as a second Nurse workstation~~: not possible — Cobblemon already makes a villager at a Healing
+  Machine its own Nurse (POI `cobblemon:nurse`), and a block can only be one kind of workstation. Our Nurse Station
+  stays the Nurse's workstation (the Healing Center blueprint has both, so it gets both nurses)
 - [x] **Shopkeeper** (their Item Trader): the Shop Counter (owned by whoever places it; owner, friends and ops open
   it) is a 9×2 price list — top slot what one sale hands over, below it the price (any item); the Shopkeeper's
   offers are rebuilt from the chests near the counter whenever someone talks to them (sold out = no stock), a sale
@@ -237,7 +239,7 @@ workstation, like the rest of the mod.
 - [x] Ball workshops in village generation (weight 2, Cobblemon only: a Ball Workbench and a chest of copper and dye)
 - [x] Ball Smith orders (`BallSmiths`, attachment `BALL_ORDERS`): sneak-right-click opens a `ChoiceMenu` of every ball
   kind; picked ones glow and are the only ones made; none picked = anything (as before)
-- [ ] Jobs: Nurse (Healing Machine), Chef (Campfire Pot: Lure Cakes, Aprijuice), Fossil Scientist
+- [ ] Jobs: Chef (Campfire Pot: Lure Cakes, Aprijuice), Fossil Scientist
 - [x] Cobbleworkers compatibility (compat-tested with Cobbleworkers 2.0.5): courier routes can start or end at a
   Pasture Block (`work/Pastures`: every container within 8 blocks, where Cobbleworkers' Pokémon deposit); pastured
   Pokémon count as partners whether or not they work for Cobbleworkers. Cobbleworkers only deposits into chests,

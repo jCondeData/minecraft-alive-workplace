@@ -186,6 +186,11 @@ health and keep the night watch, sleeping in the late morning instead. Players, 
 Pokémon are safe from them. **Ring the village bell** and, while everyone else runs home to hide, the guards head
 for the bell and fight anything near it for a minute and a half.
 
+![A guard in an iron helmet, chestplate and boots](docs/media/guard-armor.png)
+
+The armor a guard wears shows on them: helmet, chestplate (with shoulder pieces on the folded arms), leggings under
+the robe and boots — any armor, including dyed leather and enchanted pieces.
+
 ## Nurses
 Craft a **Nurse Station** (glass bottles around a glistering melon slice, on white wool) and place it near a villager
 without a job. Right-click the nurse with an empty hand to get your health back and bad effects cleared; with

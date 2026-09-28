@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+## 0.55.0 — 2026-09-28
+
+### Added
+- **Ball Smith orders**: sneak-right-click a Ball Smith with an empty hand to choose which balls they make. With
+  nothing chosen they make whatever the chests have the makings for, as before.
+
 ## 0.54.0 — 2026-09-28
 
 ### Added

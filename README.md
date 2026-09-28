@@ -266,6 +266,9 @@ level up (iron at Apprentice, gold at Journeyman, diamonds at Expert). They take
 make and stop making a kind once the chests hold 64 of it. They never make Master Balls. Pair them with an Orchard
 Keeper (or Cobbleworkers' apricorn pickers) for a steady supply.
 
+**Orders.** Sneak-right-click the smith with an empty hand to pick which balls they make: click a ball to ask for it
+(it glows), click again to stop. With nothing picked they make whatever the chests have the makings for.
+
 ## Pokémon Traders (with Cobblemon)
 Craft a **Trade Board** (an item frame on planks) and place it near a villager without a job: they become a
 **Pokémon Trader**. Right-click them with an empty hand (sneak to buy Poké Balls and candies instead) to see today's

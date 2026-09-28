@@ -233,7 +233,8 @@ workstation, like the rest of the mod.
   `tier_N_poke_ball_materials` metal; copper 1 … diamond 4, up to the smith's level; never the Master Ball), taking
   turns between kinds and stopping at 64 of a kind; Steel/Fire partners help
 - [x] Ball workshops in village generation (weight 2, Cobblemon only: a Ball Workbench and a chest of copper and dye)
-- [ ] Ball Smith follow-ups: a way to choose which balls to make
+- [x] Ball Smith orders (`BallSmiths`, attachment `BALL_ORDERS`): sneak-right-click opens a `ChoiceMenu` of every ball
+  kind; picked ones glow and are the only ones made; none picked = anything (as before)
 - [ ] Jobs: Nurse (Healing Machine), Chef (Campfire Pot: Lure Cakes, Aprijuice), Fossil Scientist
 - [x] Cobbleworkers compatibility (compat-tested with Cobbleworkers 2.0.5): courier routes can start or end at a
   Pasture Block (`work/Pastures`: every container within 8 blocks, where Cobbleworkers' Pokémon deposit); pastured

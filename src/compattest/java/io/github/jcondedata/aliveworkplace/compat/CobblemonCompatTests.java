@@ -530,6 +530,38 @@ public class CobblemonCompatTests implements FabricGameTest {
 		});
 	}
 
+	/** Orders: asked only for Azure Balls, the smith leaves the red apricorns alone even though it could make Poké Balls. */
+	@GameTest(template = AREA, timeoutTicks = 2400)
+	public void ballSmithTakesOrders(GameTestHelper helper) {
+		helper.setDayTime(2000);
+		BlockPos bench = new BlockPos(2, 2, 2); // y = 1 is this area's floor
+		BlockPos chestPos = new BlockPos(2, 2, 4);
+		helper.setBlock(bench, ModBlocks.BALL_WORKBENCH);
+		helper.setBlock(chestPos, net.minecraft.world.level.block.Blocks.CHEST);
+		net.minecraft.world.Container chest = helper.getBlockEntity(chestPos);
+		chest.setItem(0, new net.minecraft.world.item.ItemStack(com.cobblemon.mod.common.CobblemonItems.RED_APRICORN, 8));
+		chest.setItem(1, new net.minecraft.world.item.ItemStack(com.cobblemon.mod.common.CobblemonItems.BLUE_APRICORN, 8));
+		chest.setItem(2, new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.COPPER_INGOT, 4));
+		Villager smith = helper.spawn(EntityType.VILLAGER, new BlockPos(3, 2, 3));
+		Jobs.employ(helper.getLevel(), smith, helper.absolutePos(bench), ModVillagers.BALL_WORKBENCH_POI, ModVillagers.BALL_SMITH);
+		ServerPlayer player = helper.makeMockServerPlayerInLevel();
+		var menu = io.github.jcondedata.aliveworkplace.smith.BallSmiths.ordersMenuForTest(player, smith);
+		int azure = -1;
+		for (int slot = io.github.jcondedata.aliveworkplace.smith.BallSmiths.FIRST_BALL_SLOT; slot < io.github.jcondedata.aliveworkplace.work.ChoiceMenu.SIZE; slot++) {
+			if (menu.icon(slot).is(com.cobblemon.mod.common.CobblemonItems.AZURE_BALL)) {
+				azure = slot;
+			}
+		}
+		helper.assertTrue(azure >= 0, "no Azure Ball on the orders screen");
+		menu.press(azure, player);
+		helper.assertTrue(io.github.jcondedata.aliveworkplace.smith.BallSmiths.orders(smith).size() == 1, "orders: " + io.github.jcondedata.aliveworkplace.smith.BallSmiths.orders(smith));
+		helper.succeedWhen(() -> {
+			helper.assertTrue(chest.countItem(com.cobblemon.mod.common.CobblemonItems.AZURE_BALL) >= 1, "no Azure Balls made");
+			helper.assertTrue(chest.countItem(com.cobblemon.mod.common.CobblemonItems.POKE_BALL) == 0
+				&& chest.countItem(com.cobblemon.mod.common.CobblemonItems.RED_APRICORN) == 8, "made Poké Balls nobody asked for");
+		});
+	}
+
 	/** A Farmer's field of Cobblemon mints: ripe ones are picked (leaves to the chest) and planted again. */
 	@GameTest(template = AREA, timeoutTicks = 2400)
 	public void farmerHarvestsCobblemonMints(GameTestHelper helper) {

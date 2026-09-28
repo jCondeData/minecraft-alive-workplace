@@ -36,6 +36,10 @@ public final class ModAttachments {
 	public static final AttachmentType<Integer> SAPLINGS_PLANTED = AttachmentRegistry.create(
 		AliveWorkplace.id("saplings_planted"), builder -> builder.persistent(com.mojang.serialization.Codec.INT));
 
+	/** The balls a Ball Smith has been asked to make (item ids; none: anything they can). */
+	public static final AttachmentType<java.util.List<net.minecraft.resources.ResourceLocation>> BALL_ORDERS = AttachmentRegistry.create(
+		AliveWorkplace.id("ball_orders"), builder -> builder.persistent(net.minecraft.resources.ResourceLocation.CODEC.listOf()));
+
 	/** How many Poké Balls a Ball Smith has made (shown above its head). */
 	public static final AttachmentType<Integer> BALLS_MADE = AttachmentRegistry.create(
 		AliveWorkplace.id("balls_made"), builder -> builder.persistent(com.mojang.serialization.Codec.INT));

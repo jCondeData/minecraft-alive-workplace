@@ -120,7 +120,7 @@ public class BallSmithWork extends Behavior<Villager> {
 		boolean anyStocked = false;
 		for (int i = 0; i < recipes.size(); i++) {
 			BallRecipes.BallRecipe recipe = recipes.get((next + i) % recipes.size());
-			if (recipe.tier() > tier || BallRecipes.plan(stock, recipe) == null) {
+			if (recipe.tier() > tier || !BallSmiths.wants(villager, recipe.result()) || BallRecipes.plan(stock, recipe) == null) {
 				continue;
 			}
 			if (stock.getOrDefault(recipe.result().getItem(), 0L) >= KEEP) {

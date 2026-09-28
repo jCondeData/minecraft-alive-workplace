@@ -32,6 +32,16 @@ public final class BuilderEvents {
 				}
 				return InteractionResult.PASS;
 			}
+			if (io.github.jcondedata.aliveworkplace.smith.BallSmiths.isSmith(villager)) {
+				// Sneak-right-click with an empty hand: which balls to make. Otherwise the usual trades.
+				if (player.getItemInHand(hand).isEmpty() && player.isShiftKeyDown()) {
+					if (!level.isClientSide) {
+						io.github.jcondedata.aliveworkplace.smith.BallSmiths.openOrders((ServerPlayer) player, villager);
+					}
+					return InteractionResult.SUCCESS;
+				}
+				return InteractionResult.PASS;
+			}
 			if (io.github.jcondedata.aliveworkplace.orchard.Orchards.isKeeper(villager)) {
 				ItemStack held = player.getItemInHand(hand);
 				if (held.is(ModItems.FIELD_MARKER)) {

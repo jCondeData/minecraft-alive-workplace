@@ -178,8 +178,84 @@ public final class CobblemonTrainers {
 				: List.of(CobblemonItems.LIFE_ORB, CobblemonItems.CHOICE_SPECS, CobblemonItems.WISE_GLASSES, CobblemonItems.LEFTOVERS,
 					CobblemonItems.SITRUS_BERRY, CobblemonItems.FOCUS_SASH, CobblemonItems.EXPERT_BELT, CobblemonItems.ASSAULT_VEST);
 			pokemon.swapHeldItem(new net.minecraft.world.item.ItemStack(items.get(random.nextInt(items.size()))), false, false);
+			if (t >= 4) {
+				pickMoves(pokemon, physical, random);
+			}
 		}
 		pokemon.heal();
+	}
+
+	/** Moves a Master's team never gets: they charge, recharge, knock the user out or only work in odd situations. */
+	private static final java.util.Set<String> AWKWARD_MOVES = java.util.Set.of("hyperbeam", "gigaimpact", "blastburn", "frenzyplant",
+		"hydrocannon", "rockwrecker", "roaroftime", "eternabeam", "prismaticlaser", "meteorassault", "solarbeam", "solarblade", "skyattack",
+		"razorwind", "skullbash", "freezeshock", "iceburn", "geomancy", "meteorbeam", "electroshot", "explosion", "selfdestruct",
+		"mistyexplosion", "focuspunch", "dreameater", "synchronoise", "lastresort", "belch", "steelbeam", "mindblown", "futuresight",
+		"doomdesire", "shelltrap", "beakblast", "burnup", "doubleshock", "fling", "naturalgift", "spitup", "snore", "sleeptalk",
+		"skydrop", "bide", "counter", "mirrorcoat", "metalburst", "endeavor", "present", "magnitude", "trumpcard", "crushgrip",
+		"wringout", "punishment", "payback", "avalanche", "revenge", "fakeout", "firstimpression", "suckerpunch", "thunderclap", "upperhand");
+
+	/**
+	 * A Master's moveset, to go with the nature and held item: four attacks on the side it was trained for (physical or
+	 * special), from everything it can learn — the strongest after accuracy, same-type attacks counting half again,
+	 * and each new move of a type it doesn't have yet preferred, so the four cover more.
+	 */
+	static void pickMoves(Pokemon pokemon, boolean physical, Random random) {
+		com.cobblemon.mod.common.api.pokemon.moves.Learnset learnset = pokemon.getForm().getMoves();
+		java.util.Set<com.cobblemon.mod.common.api.moves.MoveTemplate> pool = new java.util.LinkedHashSet<>(learnset.getLevelUpMovesUpTo(pokemon.getLevel()));
+		pool.addAll(learnset.getTmMoves());
+		pool.addAll(learnset.getTutorMoves());
+		pool.addAll(learnset.getEggMoves());
+		com.cobblemon.mod.common.api.moves.categories.DamageCategory side = physical
+			? com.cobblemon.mod.common.api.moves.categories.DamageCategories.INSTANCE.getPHYSICAL()
+			: com.cobblemon.mod.common.api.moves.categories.DamageCategories.INSTANCE.getSPECIAL();
+		java.util.Set<com.cobblemon.mod.common.api.types.ElementalType> own = new java.util.HashSet<>();
+		pokemon.getTypes().forEach(own::add);
+		List<com.cobblemon.mod.common.api.moves.MoveTemplate> chosen = new ArrayList<>();
+		java.util.Set<com.cobblemon.mod.common.api.types.ElementalType> covered = new java.util.HashSet<>();
+		while (chosen.size() < 4) {
+			com.cobblemon.mod.common.api.moves.MoveTemplate best = null;
+			double bestScore = 0;
+			for (com.cobblemon.mod.common.api.moves.MoveTemplate move : pool) {
+				if (chosen.contains(move) || move.getDamageCategory() != side || move.getPower() <= 0 || AWKWARD_MOVES.contains(move.getName())) {
+					continue;
+				}
+				double accuracy = move.getAccuracy() <= 0 ? 100 : Math.min(100, move.getAccuracy());
+				double score = move.getPower() * accuracy / 100.0;
+				if (own.contains(move.getElementalType())) {
+					score *= 1.5;
+				}
+				if (covered.contains(move.getElementalType())) {
+					score *= 0.5;
+				}
+				score *= 1 + random.nextDouble() * 0.1; // two trainers with the same Pokémon needn't have the same four
+				if (score > bestScore) {
+					bestScore = score;
+					best = move;
+				}
+			}
+			if (best == null) {
+				break;
+			}
+			chosen.add(best);
+			covered.add(best.getElementalType());
+		}
+		if (chosen.size() < 2) {
+			return; // hardly any attacks on that side: it keeps the moves it grew up with
+		}
+		List<com.cobblemon.mod.common.api.moves.Move> keep = new ArrayList<>();
+		for (com.cobblemon.mod.common.api.moves.Move old : pokemon.getMoveSet().getMoves()) {
+			if (chosen.size() + keep.size() < 4 && chosen.stream().noneMatch(m -> m.getName().equals(old.getName()))) {
+				keep.add(old);
+			}
+		}
+		pokemon.getMoveSet().clear();
+		int slot = 0;
+		for (com.cobblemon.mod.common.api.moves.MoveTemplate move : chosen) {
+			pokemon.getMoveSet().setMove(slot++, move.create());
+		}
+		for (com.cobblemon.mod.common.api.moves.Move old : keep) {
+			pokemon.getMoveSet().setMove(slot++, old);
+		}
 	}
 
 	/**

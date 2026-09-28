@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+## 0.67.0 — 2026-09-28
+
+### Added
+- **Master trainers' Pokémon have real movesets** (with Cobblemon): four strong attacks that fit their nature and held
+  item, picked from everything they can learn — their own type first, then moves covering other types. No more
+  level-up leftovers on a level 100 team.
+
 ## 0.66.0 — 2026-09-28
 
 ### Added

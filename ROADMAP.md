@@ -213,7 +213,10 @@ workstation, like the rest of the mod.
 - [x] Trained teams: IVs 15+/25+/31 from Journeyman/Expert/Master; Expert and Master get 252 Atk-or-SpA/252 Spe/4 HP
   EVs, Adamant or Modest, and a held item from a list for that side (`CobblemonTrainers.train`, its own seed so the
   species don't change); RCT capping now lowers the level of the same Pokémon instead of re-creating it
-- [ ] Master extras: movesets chosen for the held item/nature, Mega Evolution if Mega Showdown allows
+- [x] Master movesets (`CobblemonTrainers.pickMoves`): four attacks on the trained side (physical for Adamant, special
+  for Modest) from level-up/TM/tutor/egg moves, power × accuracy, STAB ×1.5, repeated types halved; charge/recharge/
+  self-KO/situational moves left out
+- [ ] Master extras: Mega Evolution if Mega Showdown allows
 - [x] Trainers **level up when you battle them** (+5 XP a battle, +3 more when they win; vanilla level thresholds);
   levels are the villager's, so shared server-wide
 - [x] Rewards: **CobbleDollars** (100/250/500/1000/2500 by tier, via `/cobbledollars give`), once per in-game day per

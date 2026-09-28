@@ -18,7 +18,10 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Blocks;
 
-/** Guards on a real (headless) server. */
+/**
+ * Guards on a real (headless) server. Each test runs in a batch of its own: guards look for foes 24 blocks around and
+ * for gear 8 blocks around, further than the 5-block gap between test areas, so neighbouring tests got in the way.
+ */
 public class GuardGameTests implements FabricGameTest {
 	private static final String AREA = "aliveworkplace_test:big_area";
 	private static final BlockPos POST = new BlockPos(2, 2, 2);
@@ -38,7 +41,7 @@ public class GuardGameTests implements FabricGameTest {
 	}
 
 	/** A guard gears up from the chest, takes on a husk and wins, without ever panicking. */
-	@GameTest(template = AREA, timeoutTicks = 1200)
+	@GameTest(template = AREA, timeoutTicks = 1200, batch = "guardDefeatsAHusk")
 	public void guardDefeatsAHusk(GameTestHelper helper) {
 		Villager guard = guard(helper, new ItemStack(Items.WOODEN_SWORD), new ItemStack(Items.IRON_SWORD), new ItemStack(Items.IRON_CHESTPLATE));
 		helper.runAfterDelay(80, () -> helper.spawn(EntityType.HUSK, new BlockPos(12, 2, 12)));
@@ -58,7 +61,7 @@ public class GuardGameTests implements FabricGameTest {
 	}
 
 	/** When the village bell rings, a guard heads for the bell instead of hiding with everyone else. */
-	@GameTest(template = AREA, timeoutTicks = 600)
+	@GameTest(template = AREA, timeoutTicks = 600, batch = "guardAnswersTheBell")
 	public void guardAnswersTheBell(GameTestHelper helper) {
 		Villager guard = guard(helper, new ItemStack(Items.IRON_SWORD));
 		BlockPos bell = new BlockPos(18, 2, 18);
@@ -73,7 +76,7 @@ public class GuardGameTests implements FabricGameTest {
 	}
 
 	/** Animals are nobody's enemy. */
-	@GameTest(template = AREA, timeoutTicks = 400)
+	@GameTest(template = AREA, timeoutTicks = 400, batch = "guardLeavesAnimalsAlone")
 	public void guardLeavesAnimalsAlone(GameTestHelper helper) {
 		guard(helper, new ItemStack(Items.IRON_SWORD));
 		Cow cow = helper.spawn(EntityType.COW, new BlockPos(5, 2, 5));
@@ -84,7 +87,7 @@ public class GuardGameTests implements FabricGameTest {
 	}
 
 	/** A guard with a bow from the chest shoots a creeper from a safe distance (and it never blows up). */
-	@GameTest(template = AREA, timeoutTicks = 1600)
+	@GameTest(template = AREA, timeoutTicks = 1600, batch = "guardShootsACreeper")
 	public void guardShootsACreeper(GameTestHelper helper) {
 		Villager guard = guard(helper, new ItemStack(Items.IRON_SWORD), new ItemStack(Items.BOW));
 		boolean[] exploded = {false};

@@ -4,6 +4,8 @@
 
 ## 0.45.1 — 2026-09-28
 
+The first release with the 0.44.0 and 0.45.0 changes below (a flaky test stopped those builds before they were released).
+
 ### Fixed
 - Quarries that the bug fixed in 0.45.0 had already stretched over the ground around the Miner's Bench now stop by
   themselves, before the miner digs any more: the miner hands back a blank Quarry Marker and tells you (if you're

@@ -150,7 +150,7 @@ public class BuilderGameTests implements FabricGameTest {
 	 * Upgrades: Starter Cottage II clicked onto a finished Starter Cottage lines up with it, and a builder only takes
 	 * the old roof off and builds the new storey — the ground floor stays, furniture and all.
 	 */
-	@GameTest(template = AREA, timeoutTicks = 6000)
+	@GameTest(template = AREA, timeoutTicks = 14000, batch = "cottage_upgrade") // alone: in a shared batch builders next door pitched in
 	public void builderUpgradesAFinishedCottage(GameTestHelper helper) {
 		ServerLevel level = helper.getLevel();
 		BlockPos originRel = new BlockPos(8, 2, 8);

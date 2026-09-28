@@ -142,8 +142,10 @@ Sneak-right-click the farmer with an empty hand to see how it's going or to stop
 ## Fishermen
 Hand any **Fisherman** villager (the ones with a barrel) a **fishing rod**. They walk to the nearest water within 16
 blocks of their barrel, cast from the shore and reel in fish (and the odd bit of junk), bringing the catch back to
-their barrel and any chests within 8 blocks of it. Rods wear out: put spares in the barrel. Sneak-right-click the
-fisherman with an empty hand to see how it's going or to stop.
+their barrel and any chests within 8 blocks of it. Rods wear out: put spares in the barrel. Put a **smoker** (or
+furnace) next to the barrel and some coal or charcoal in it, and the raw cod and salmon go into the smoker instead,
+with the cooked fish coming back out at the next drop-off. Sneak-right-click the fisherman with an empty hand to see
+how it's going or to stop.
 
 ## Mail and postmen
 ![The mailbox screen](docs/media/mailbox.png)

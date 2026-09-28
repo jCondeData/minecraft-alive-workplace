@@ -86,7 +86,7 @@ Owner decisions are recorded in **Design decisions** at the bottom. Don't change
   wall from the one above and a block lower, spiralling down from the corner nearest the bench; loose steps (sand,
   gravel, torches) are dug and filled, gaps in the pit wall filled with cobblestone/stone from the bag (topped up
   from the chests); quarries started before this keep digging without stairs
-- [x] Smelting helper (`Smelting.tend`, at every drop-off and at the end): furnaces/blast furnaces within the supply radius
+- [x] Smelting helper (`work/Furnaces.tend`, at every drop-off and at the end): furnaces/blast furnaces within the supply radius
   of the bench get raw ores and ore blocks (`c:raw_materials`, `c:ores`, if that furnace has a recipe) a stack at a
   time and coal/charcoal (up to 16) from the chests; results go into the chests; other items in a furnace are left
   alone. Furnaces no longer count as supply containers (things could land in their input slot)
@@ -106,7 +106,9 @@ Owner decisions are recorded in **Design decisions** at the bottom. Don't change
   are picked with `orchard/Fruit` and left to grow again (villagers never stand in berry bushes: `Walker.canStand`)
 - [ ] Farmer follow-ups: a Field Marker for villages' own farms (village farmers adopting their farm automatically)
 - [x] **Fisher** (any vanilla Fisherman): hand one a fishing rod and they fish the nearest still water within 16 blocks of their barrel (standing on the shore), reeling in the vanilla fishing loot (fish and junk, no treasure), storing every fifth catch in the barrel and chests next to it; rods wear out and spares come from those containers; vanilla routine paused while working; longer shift; `/workplace cancel <fisherman uuid>` stops it
-- [ ] Fisher follow-ups: a real bobber on the water, fishing from boats/docks, smoking the catch
+- [x] Fishers smoke the catch: at every drop-off `work/Furnaces.tend` loads raw fish (`#fishes` with a recipe for that
+  furnace type) into smokers/furnaces near the barrel, with coal/charcoal, and brings the cooked fish out
+- [ ] Fisher follow-ups: a real bobber on the water (vanilla's hook needs a player owner), fishing from boats
 - [x] **Courier / hauler** (done by Postmen): a Delivery Note marks a source and a destination container (plus an
   optional list of items to carry; by default everything but tools, weapons and armor); a postman takes up to 4
   routes and runs them whenever there's no mail, carrying a bagful per trip and taking back what doesn't fit; a blank

@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+## 0.50.0 — 2026-09-28
+
+### Added
+- **Fishers smoke their catch**: put a smoker (or furnace) near the fisherman's barrel and coal or charcoal in the
+  barrel. At every drop-off the raw cod and salmon go in and the cooked fish come out into the barrel.
+
 ## 0.49.0 — 2026-09-28
 
 ### Added

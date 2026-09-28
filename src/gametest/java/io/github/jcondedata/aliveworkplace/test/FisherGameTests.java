@@ -58,6 +58,27 @@ public class FisherGameTests implements FabricGameTest {
 		});
 	}
 
+	/** A smoker next to the barrel: the raw cod and salmon go into it with charcoal from the barrel, not into the barrel. */
+	@GameTest(template = AREA, timeoutTicks = 3000)
+	public void fishermanSmokesTheCatch(GameTestHelper helper) {
+		Villager villager = fisherman(helper);
+		BlockPos smokerPos = new BlockPos(2, 2, 4);
+		helper.setBlock(smokerPos, Blocks.SMOKER);
+		Container barrel = helper.getBlockEntity(BARREL);
+		barrel.setItem(0, new ItemStack(Items.CHARCOAL, 8));
+		barrel.setItem(1, new ItemStack(Items.COOKED_SALMON, 3)); // already cooked: stays put
+		Fishers.start(helper.getLevel(), villager, new ItemStack(Items.FISHING_ROD));
+		helper.succeedWhen(() -> {
+			int caught = villager.getAttachedOrElse(ModAttachments.FISH_CAUGHT, 0);
+			helper.assertTrue(caught >= 5, "only " + caught + " caught");
+			helper.assertTrue(barrel.countItem(Items.COD) + barrel.countItem(Items.SALMON) == 0, "raw fish left in the barrel");
+			helper.assertTrue(barrel.countItem(Items.COOKED_SALMON) >= 3, "the cooked salmon went into the smoker");
+			net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity smoker = helper.getBlockEntity(smokerPos);
+			boolean loaded = !smoker.getItem(0).isEmpty() || !smoker.getItem(2).isEmpty();
+			helper.assertTrue(!loaded || smoker.getItem(1).is(Items.CHARCOAL) || helper.getBlockState(smokerPos).getValue(net.minecraft.world.level.block.AbstractFurnaceBlock.LIT), "fish in the smoker but no fuel");
+		});
+	}
+
 	/** When the rod breaks, the next one comes out of the barrel. */
 	@GameTest(template = AREA, timeoutTicks = 3000)
 	public void fishermanTakesASpareRod(GameTestHelper helper) {

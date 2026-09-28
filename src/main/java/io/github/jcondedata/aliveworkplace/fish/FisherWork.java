@@ -294,6 +294,7 @@ public class FisherWork extends Behavior<Villager> {
 				Block.popResource(level, barrel.above(), rest);
 			}
 		}
+		io.github.jcondedata.aliveworkplace.work.Furnaces.tend(level, barrel, supplies, io.github.jcondedata.aliveworkplace.work.Furnaces::isFish);
 		level.playSound(null, barrel, SoundEvents.BARREL_CLOSE, SoundSource.BLOCKS, 0.4f, 1.1f);
 	}
 

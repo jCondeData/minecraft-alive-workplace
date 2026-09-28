@@ -371,7 +371,7 @@ public class MinerWork extends Behavior<Villager> {
 		}
 		topUpTorches(level, supplies, bag);
 		topUpFiller(level, site, supplies, bag);
-		Smelting.tend(level, bench, supplies);
+		io.github.jcondedata.aliveworkplace.work.Furnaces.tend(level, bench, supplies, io.github.jcondedata.aliveworkplace.work.Furnaces::isOre);
 		level.playSound(null, villager.blockPosition(), SoundEvents.CHEST_CLOSE, SoundSource.BLOCKS, 0.4f, 1.1f);
 	}
 

@@ -198,7 +198,7 @@ public final class Miners {
 		List<BlockPos> supplies = SupplyContainers.find(level, bench, null);
 		returnEverything(level, villager, bench, supplies);
 		store(level, supplies, bench, markerFor(site));
-		Smelting.tend(level, bench, supplies);
+		io.github.jcondedata.aliveworkplace.work.Furnaces.tend(level, bench, supplies, io.github.jcondedata.aliveworkplace.work.Furnaces::isOre);
 		level.playSound(null, villager, SoundEvents.VILLAGER_CELEBRATE, SoundSource.NEUTRAL, 1f, 1f);
 		ServerPlayer owner = level.getServer().getPlayerList().getPlayer(site.owner());
 		if (owner != null) {

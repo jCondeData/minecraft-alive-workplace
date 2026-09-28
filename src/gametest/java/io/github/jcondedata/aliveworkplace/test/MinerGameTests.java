@@ -212,8 +212,9 @@ public class MinerGameTests implements FabricGameTest {
 			helper.assertTrue(chest.countItem(Items.RAW_IRON) == 0, "raw iron left in the chest");
 			helper.assertTrue(chest.countItem(Items.COBBLESTONE) == 10, "the cobblestone went into the furnace");
 			// Next drop-off: the ingots come out.
-			io.github.jcondedata.aliveworkplace.mine.Smelting.tend(s.level(), helper.absolutePos(BENCH),
-				io.github.jcondedata.aliveworkplace.build.SupplyContainers.find(s.level(), helper.absolutePos(BENCH), null));
+			io.github.jcondedata.aliveworkplace.work.Furnaces.tend(s.level(), helper.absolutePos(BENCH),
+				io.github.jcondedata.aliveworkplace.build.SupplyContainers.find(s.level(), helper.absolutePos(BENCH), null),
+				io.github.jcondedata.aliveworkplace.work.Furnaces::isOre);
 			helper.assertTrue(chest.countItem(Items.IRON_INGOT) == 9 && furnace.getItem(2).isEmpty(), "the ingots didn't come out: " + chest.countItem(Items.IRON_INGOT));
 		});
 	}

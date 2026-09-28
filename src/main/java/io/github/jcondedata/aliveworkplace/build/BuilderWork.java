@@ -222,8 +222,8 @@ public class BuilderWork extends Behavior<Villager> {
 		currentStep = step.pos();
 
 		if (DEBUG && gameTime % 40 == 0) {
-			io.github.jcondedata.aliveworkplace.AliveWorkplace.LOG.info("[builder {}] at {} stage={} action={} target={} approach={} aside={} blocked={} stuck={} reach={} detail={}",
-				villager.getId(), villager.blockPosition().toShortString(), site.stage(), action, step.pos().toShortString(),
+			io.github.jcondedata.aliveworkplace.AliveWorkplace.LOG.info("[builder {}] t={} at {} stage={} action={} target={} approach={} aside={} blocked={} stuck={} reach={} detail={}",
+				villager.getId(), level.getDayTime() % 24000, villager.blockPosition().toShortString(), site.stage(), action, step.pos().toShortString(),
 				approachSpot, stepAsideSpot, blockedAttempts, stuckTimer, reachTicks, site.detail() == null ? "" : site.detail().getString());
 		}
 

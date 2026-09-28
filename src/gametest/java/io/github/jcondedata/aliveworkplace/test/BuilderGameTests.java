@@ -150,7 +150,9 @@ public class BuilderGameTests implements FabricGameTest {
 	 * Upgrades: Starter Cottage II clicked onto a finished Starter Cottage lines up with it, and a builder only takes
 	 * the old roof off and builds the new storey — the ground floor stays, furniture and all.
 	 */
-	@GameTest(template = AREA, timeoutTicks = 14000, batch = "cottage_upgrade") // alone: in a shared batch builders next door pitched in
+	// BIG_AREA: the upgraded cottage is 14 tall, and whatever sticks out of a test area stays in the world for the next
+	// batch built on that spot (an old upper storey hanging over the next test's cottage stranded its builder on it).
+	@GameTest(template = BIG_AREA, timeoutTicks = 14000, batch = "cottage_upgrade")
 	public void builderUpgradesAFinishedCottage(GameTestHelper helper) {
 		Leftovers.clear(helper);
 		ServerLevel level = helper.getLevel();
@@ -993,7 +995,10 @@ public class BuilderGameTests implements FabricGameTest {
 	private static void assertBuilt(GameTestHelper helper, Setup s) {
 		helper.assertTrue(BuildSiteManager.get(s.level()).get(s.site().id()) == null,
 			"still building: stage=" + s.site().stage() + " status=" + s.site().status() + " progress=" + Math.round(s.site().progress(s.plan()) * 100)
-				+ "% missing=" + s.site().missing());
+				+ "% missing=" + s.site().missing() + " builder: alive=" + s.villager().isAlive() + " at " + helper.relativePos(s.villager().blockPosition())
+				+ " activity=" + s.villager().getBrain().getActiveNonCoreActivity() + " sleeping=" + s.villager().isSleeping()
+				+ " jobsite=" + s.villager().getBrain().getMemory(net.minecraft.world.entity.ai.memory.MemoryModuleType.JOB_SITE)
+				+ " time=" + (s.level().getDayTime() % 24000) + " running=" + s.villager().getBrain().getRunningBehaviors());
 		List<BlockPos> unfinished = s.plan().unfinished(s.level());
 		if (!unfinished.isEmpty()) {
 			String sample = unfinished.stream().limit(5)

@@ -161,7 +161,8 @@ and press **Send**. Write something in the **Letter** line and it goes along as 
 its own if the top row is empty. `/workplace mail` (or **[Track]** after sending) shows where your parcels are. A **Postman** picks it up: craft a **Postal Desk** (paper over planks and a chest) and place it
 near a villager without a job. Postmen walk their round (64 blocks around the desk), collecting parcels and putting
 them in the right mailbox. Parcels for a mailbox outside the round (another village, another dimension) go with the
-night mail and arrive at the next dawn. Only you, your friends (`/workplace friend add`) and operators can open your
+night mail and arrive at the next dawn (or at once, by air mail, with a Flying-type Pokémon pastured by the desk).
+Only you, your friends (`/workplace friend add`) and operators can open your
 mailbox.
 
 **Courier routes.** When there's no mail, postmen haul between your chests. Craft a **Delivery Note** (paper, a
@@ -297,6 +298,7 @@ type suits it — each one cuts the time the work takes by 15%, up to three:
 | Fisherman | Water, Ice |
 | Nurse | Fairy, Normal, Psychic |
 | Ball Smith | Steel, Fire |
+| Postman | Flying: **air mail** — parcels for mailboxes outside the round go straight there instead of at dawn |
 
 The line above the villager's head says who is helping ("· with Machop"), and sneak-right-clicking a worker shows
 how much faster they are. It works with [Cobbleworkers](https://modrinth.com/mod/cobbleworkers) too: the same

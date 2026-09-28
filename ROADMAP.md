@@ -213,7 +213,9 @@ workstation, like the rest of the mod.
   Grass/Bug/Fighting, orchard Grass/Bug/Flying, farmer Grass/Ground/Water, fisher Water/Ice, nurse
   Fairy/Normal/Psychic), −15% work time each, up to 3; shown overhead and in the status message. Pastures instead of
   a follow-a-villager Pokémon: no new UI, and the Pokémon stay safe in the owner's PC
-- [ ] Partner follow-ups: Fire types for a future smelter, Flying types speeding up postmen, guards fighting beside
+- [x] Air mail: a Flying-type partner by the Postal Desk delivers a handed-in parcel for outside the round at once
+  (instead of with the dawn mail)
+- [ ] Partner follow-ups: Fire types speeding the furnaces workers tend, guards fighting beside their Pokémon
   Fighting/Dragon types
 - [ ] Pokémon-themed blueprints that come with staff: Pokémon Center (Nurse), Poké Mart (Clerk, sells for CobbleDollars), Berry Farm, Fossil Lab
 - [x] **Orchard Keeper** (Fruit Basket workstation): picks ripe sweet berries, glow berries, cocoa and, with Cobblemon,

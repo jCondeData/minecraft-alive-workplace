@@ -157,9 +157,16 @@ public class PostmanWork extends Behavior<Villager> {
 				}
 			}
 			case HAND_IN -> {
-				parcel.setStatus(Parcel.Status.IN_TRANSIT);
-				parcel.claim(null, gameTime);
-				level.playSound(null, target, SoundEvents.BOOK_PUT, SoundSource.NEUTRAL, 1f, 0.9f);
+				if (!io.github.jcondedata.aliveworkplace.work.Partners.helpers(villager).isEmpty() && office.deliver(level.getServer(), parcel)) {
+					// Air mail: a Flying-type partner by the desk takes it there straight away.
+					office.remove(parcel);
+					level.playSound(null, target, SoundEvents.PHANTOM_FLAP, SoundSource.NEUTRAL, 0.8f, 1.4f);
+					villager.setAttached(ModAttachments.MAIL_DELIVERED, villager.getAttachedOrElse(ModAttachments.MAIL_DELIVERED, 0) + 1);
+				} else {
+					parcel.setStatus(Parcel.Status.IN_TRANSIT);
+					parcel.claim(null, gameTime);
+					level.playSound(null, target, SoundEvents.BOOK_PUT, SoundSource.NEUTRAL, 1f, 0.9f);
+				}
 			}
 		}
 		office.changed();

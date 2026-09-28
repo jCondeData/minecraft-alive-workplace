@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+## 0.56.0 — 2026-09-28
+
+### Added
+- **Air mail**: with a Flying-type Pokémon in a pasture near the Postal Desk, parcels for mailboxes outside the
+  postman's round are delivered as soon as they're handed in, instead of with the next dawn's mail.
+
 ## 0.55.0 — 2026-09-28
 
 ### Added

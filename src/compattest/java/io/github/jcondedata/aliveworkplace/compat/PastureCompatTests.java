@@ -79,6 +79,49 @@ public class PastureCompatTests implements FabricGameTest {
 		});
 	}
 
+	/**
+	 * Air mail: with a Flying-type Pokémon pastured by the Postal Desk, a parcel for a mailbox outside the postman's
+	 * round goes straight there when it's handed in, instead of waiting for the dawn mail. (Alone: it shrinks the round.)
+	 */
+	@GameTest(template = AREA, timeoutTicks = 1600, batch = "air_mail")
+	public void flyingPartnersSendAirMail(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		helper.setDayTime(2000);
+		int round = io.github.jcondedata.aliveworkplace.mail.PostOffice.ROUND;
+		io.github.jcondedata.aliveworkplace.mail.PostOffice.ROUND = 8;
+		BlockPos desk = new BlockPos(2, 2, 2);
+		helper.setBlock(desk, ModBlocks.POSTAL_DESK);
+		Villager postman = helper.spawn(EntityType.VILLAGER, new BlockPos(3, 2, 3));
+		Jobs.employ(level, postman, helper.absolutePos(desk), ModVillagers.POSTAL_DESK_POI, ModVillagers.POSTMAN);
+		BlockPos pasture = pasture(helper, new BlockPos(6, 2, 2));
+		pastured(helper, pasture, helper.makeMockServerPlayerInLevel(), "pidgey", Direction.SOUTH);
+
+		java.util.UUID alice = java.util.UUID.randomUUID();
+		java.util.UUID bob = java.util.UUID.randomUUID();
+		BlockPos from = new BlockPos(4, 2, 6);
+		BlockPos to = new BlockPos(14, 2, 14); // more than 8 from the desk: outside the round
+		var office = io.github.jcondedata.aliveworkplace.mail.PostOffice.get(level.getServer());
+		for (var box : new Object[][]{{from, alice, "Alice"}, {to, bob, "Bob"}}) {
+			helper.setBlock((BlockPos) box[0], ModBlocks.MAILBOX);
+			((io.github.jcondedata.aliveworkplace.mail.MailboxBlockEntity) helper.getBlockEntity((BlockPos) box[0])).setOwner((java.util.UUID) box[1], (String) box[2]);
+			office.register((java.util.UUID) box[1], net.minecraft.core.GlobalPos.of(level.dimension(), helper.absolutePos((BlockPos) box[0])));
+		}
+		var parcel = office.post(alice, "Alice", bob, "Bob", net.minecraft.core.GlobalPos.of(level.dimension(), helper.absolutePos(from)), level.getGameTime(),
+			List.of(new ItemStack(net.minecraft.world.item.Items.DIAMOND, 2)));
+		var bobs = (io.github.jcondedata.aliveworkplace.mail.MailboxBlockEntity) helper.getBlockEntity(to);
+		helper.succeedWhen(() -> {
+			helper.assertTrue(bobs.countItem(net.minecraft.world.item.Items.DIAMOND) == 2, "Bob's mailbox is still empty (parcel " +
+				(office.parcel(parcel.id()) == null ? "gone" : office.parcel(parcel.id()).status()) + ")");
+			helper.assertTrue(office.parcel(parcel.id()) == null, "the parcel is still on its way");
+			io.github.jcondedata.aliveworkplace.mail.PostOffice.ROUND = round;
+		});
+		helper.onEachTick(() -> {
+			if (helper.getTick() >= 1590) {
+				io.github.jcondedata.aliveworkplace.mail.PostOffice.ROUND = round; // put it back even if the test fails
+			}
+		});
+	}
+
 	/** A courier route from a pasture empties the chests around it (where Cobbleworkers' Pokémon put their finds). */
 	@GameTest(template = AREA, timeoutTicks = 1600)
 	public void courierHaulsFromAPasture(GameTestHelper helper) {

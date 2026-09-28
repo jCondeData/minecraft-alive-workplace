@@ -39,6 +39,11 @@ public class GuardCombat extends Behavior<Villager> {
 	private static final double REACH_SQR = 2.6 * 2.6;
 	private static final float CHASE_SPEED = 0.75f;
 	private static final int XP_PER_KILL = 2;
+	/** Guards with a bow shoot foes up to this far away, and keep creepers at least {@link #CREEPER_DISTANCE} away. */
+	static final double BOW_RANGE = 16;
+	private static final double CREEPER_DISTANCE = 7;
+	private static final double MELEE_FROM = 4.5;
+	private static final int SHOT_COOLDOWN = 22;
 
 	/** Guards in a fight right now (their patrol waits). */
 	private static final Set<Villager> FIGHTING = Collections.newSetFromMap(new WeakHashMap<>());
@@ -82,7 +87,7 @@ public class GuardCombat extends Behavior<Villager> {
 
 	@Override
 	protected boolean canStillUse(ServerLevel level, Villager villager, long gameTime) {
-		return target != null && Guards.isFoe(target) && target.level() == level && inArea(villager, target)
+		return target != null && Guards.isFoe(target, villager) && target.level() == level && inArea(villager, target)
 			&& villager.distanceToSqr(target) < 40 * 40;
 	}
 
@@ -116,6 +121,28 @@ public class GuardCombat extends Behavior<Villager> {
 		if (cooldown > 0) {
 			cooldown--;
 		}
+		// With a bow: shoot creepers, fliers and anything still a few steps off; back away from creepers.
+		double distance = Math.sqrt(villager.distanceToSqr(foe));
+		boolean creeper = foe instanceof net.minecraft.world.entity.monster.Creeper;
+		if (Guards.hasBow(villager) && villager.hasLineOfSight(foe) && distance <= BOW_RANGE
+			&& (creeper || foe instanceof net.minecraft.world.entity.FlyingMob || distance > MELEE_FROM)) {
+			if (creeper && distance < CREEPER_DISTANCE) {
+				backAway(villager, foe);
+			} else {
+				villager.getBrain().eraseMemory(MemoryModuleType.WALK_TARGET);
+				villager.getNavigation().stop();
+			}
+			if (cooldown == 0 && clearShot(level, villager, foe)) {
+				shoot(level, villager, foe);
+				cooldown = SHOT_COOLDOWN;
+			}
+			return;
+		}
+		if (creeper) {
+			// No bow any more (it broke): leave the creeper be.
+			target = null;
+			return;
+		}
 		if (villager.distanceToSqr(foe) > REACH_SQR || !villager.hasLineOfSight(foe)) {
 			villager.getBrain().setMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(new EntityTracker(foe, false), CHASE_SPEED, 1));
 			return;
@@ -148,12 +175,58 @@ public class GuardCombat extends Behavior<Villager> {
 		}
 	}
 
+	/** Steps away from a creeper (it would blow up next to the guard). */
+	private static void backAway(Villager villager, LivingEntity foe) {
+		net.minecraft.world.phys.Vec3 away = villager.position().subtract(foe.position()).multiply(1, 0, 1);
+		if (away.lengthSqr() < 1.0E-4) {
+			away = new net.minecraft.world.phys.Vec3(1, 0, 0);
+		}
+		net.minecraft.world.phys.Vec3 to = villager.position().add(away.normalize().scale(CREEPER_DISTANCE));
+		villager.getBrain().setMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(BlockPos.containing(to), CHASE_SPEED + 0.1f, 0));
+	}
+
+	/** Nobody but the foe near the line of fire (the arrow could hit a villager, a player or a pet). */
+	private static boolean clearShot(ServerLevel level, Villager villager, LivingEntity foe) {
+		net.minecraft.world.phys.Vec3 from = villager.getEyePosition();
+		net.minecraft.world.phys.Vec3 to = foe.getBoundingBox().getCenter();
+		return level.getEntitiesOfClass(LivingEntity.class, new AABB(from, to).inflate(1.0),
+			e -> e != villager && e != foe && !Guards.isFoe(e, villager) && e.getBoundingBox().inflate(0.6).clip(from, to).isPresent()).isEmpty();
+	}
+
+	/** Looses an arrow at the foe, like a skeleton; the arrow can't be picked up. */
+	private static void shoot(ServerLevel level, Villager villager, LivingEntity foe) {
+		ItemStack bow = villager.getItemBySlot(EquipmentSlot.OFFHAND);
+		net.minecraft.world.entity.projectile.AbstractArrow arrow = net.minecraft.world.entity.projectile.ProjectileUtil.getMobArrow(
+			villager, new ItemStack(net.minecraft.world.item.Items.ARROW), 1.0f, bow);
+		double dx = foe.getX() - villager.getX();
+		double dy = foe.getY(0.3333) - arrow.getY();
+		double dz = foe.getZ() - villager.getZ();
+		double flat = Math.sqrt(dx * dx + dz * dz);
+		arrow.shoot(dx, dy + flat * 0.2, dz, 1.6f, 4f);
+		arrow.setBaseDamage(arrow.getBaseDamage() * Guards.levelBonus(villager));
+		arrow.pickup = net.minecraft.world.entity.projectile.AbstractArrow.Pickup.DISALLOWED;
+		level.addFreshEntity(arrow);
+		level.playSound(null, villager.getX(), villager.getY(), villager.getZ(), net.minecraft.sounds.SoundEvents.SKELETON_SHOOT,
+			net.minecraft.sounds.SoundSource.NEUTRAL, 1f, 1f / (villager.getRandom().nextFloat() * 0.4f + 0.8f));
+		villager.swing(InteractionHand.OFF_HAND);
+		bow.hurtAndBreak(1, villager, EquipmentSlot.OFFHAND);
+	}
+
+	/** Counts a kill made with an arrow (called when a foe dies). */
+	public static void onFoeKilled(ServerLevel level, LivingEntity foe, DamageSource source) {
+		if (source.getDirectEntity() instanceof net.minecraft.world.entity.projectile.AbstractArrow arrow
+			&& source.getEntity() instanceof Villager guard && Guards.isGuard(guard)) {
+			guard.setAttached(ModAttachments.GUARD_KILLS, guard.getAttachedOrElse(ModAttachments.GUARD_KILLS, 0) + 1);
+			BuilderLevels.addXp(level, guard, XP_PER_KILL, null);
+		}
+	}
+
 	/** Nearest monster in the guard's area that they can see (or that is right next to them). */
 	@Nullable
 	private static LivingEntity findFoe(ServerLevel level, Villager villager) {
 		BlockPos center = center(villager);
 		AABB area = new AABB(center).inflate(Guards.RADIUS, 8, Guards.RADIUS);
-		return level.getEntitiesOfClass(LivingEntity.class, area, Guards::isFoe).stream()
+		return level.getEntitiesOfClass(LivingEntity.class, area, e -> Guards.isFoe(e, villager)).stream()
 			.filter(e -> villager.hasLineOfSight(e) || villager.distanceToSqr(e) < 16)
 			.min(Comparator.comparingDouble(villager::distanceToSqr))
 			.orElse(null);

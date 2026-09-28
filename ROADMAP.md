@@ -99,7 +99,10 @@ workstation, like the rest of the mod.
 - [x] Guards answer the village bell (`GuardRally`): a listener first in their CORE package takes vanilla's
   HEARD_BELL_TIME memory (so they never hide) and rallies them to the nearest bell (meeting POI within 40) for
   90 s; their combat centres on the bell meanwhile, patrol waits
-- [ ] Guard follow-ups: bows/crossbows (shoot creepers from range), armor shown on the villager model
+- [x] Guards with bows: a bow from the chests goes in the off hand; creepers become foes (shot from 7+ blocks,
+  backing away), fliers and anything farther than 4.5 blocks get arrows (no ammo needed, arrows can't be picked up),
+  never with someone else near the line of fire; arrow kills count
+- [ ] Guard follow-ups: crossbows, armor shown on the villager model
 - [x] **Nurse** (Nurse Station workstation): right-click with an empty hand (sneak to trade) to get full health and
   harmful effects cleared, and with Cobblemon installed the whole party healed (not mid-battle); per-player
   cooldown of a minute, shorter as the nurse levels; at work they also heal hurt villagers and iron golems nearby

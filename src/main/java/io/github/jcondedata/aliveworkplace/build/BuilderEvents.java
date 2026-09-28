@@ -158,6 +158,8 @@ public final class BuilderEvents {
 				Builders.onBuilderDeath(level, villager);
 				io.github.jcondedata.aliveworkplace.mine.Miners.onMinerDeath(level, villager);
 				io.github.jcondedata.aliveworkplace.farm.Fields.onDeath(level, villager);
+			} else if (entity.level() instanceof ServerLevel level) {
+				io.github.jcondedata.aliveworkplace.guard.GuardCombat.onFoeKilled(level, entity, source);
 			}
 		});
 	}

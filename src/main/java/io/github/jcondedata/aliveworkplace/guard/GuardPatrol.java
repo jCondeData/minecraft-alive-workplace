@@ -63,6 +63,7 @@ public class GuardPatrol extends Behavior<Villager> {
 		walker.reset();
 		waypoint = null;
 		villager.setDropChance(EquipmentSlot.MAINHAND, 0f);
+		villager.setDropChance(EquipmentSlot.OFFHAND, 0f);
 		for (EquipmentSlot slot : ARMOR) {
 			villager.setDropChance(slot, 0f);
 		}
@@ -122,6 +123,9 @@ public class GuardPatrol extends Behavior<Villager> {
 
 	/** True if {@code stack} beats what the guard has in that slot. */
 	static boolean isUpgrade(Villager villager, ItemStack stack) {
+		if (Guards.isBow(stack)) {
+			return !Guards.hasBow(villager);
+		}
 		if (Guards.isWeapon(stack)) {
 			return Guards.baseDamage(stack) > Guards.baseDamage(villager.getItemBySlot(EquipmentSlot.MAINHAND));
 		}
@@ -137,6 +141,9 @@ public class GuardPatrol extends Behavior<Villager> {
 		// Each swap raises the bar, so a few rounds end with the best piece of each kind.
 		for (int i = 0; i < 4 && take(level, villager, chests, EquipmentSlot.MAINHAND, stack -> Guards.isWeapon(stack)
 			&& Guards.baseDamage(stack) > Guards.baseDamage(villager.getItemBySlot(EquipmentSlot.MAINHAND))); i++) {
+		}
+		if (!Guards.hasBow(villager)) {
+			take(level, villager, chests, EquipmentSlot.OFFHAND, Guards::isBow);
 		}
 		for (EquipmentSlot slot : ARMOR) {
 			for (int i = 0; i < 4 && take(level, villager, chests, slot, stack -> stack.getItem() instanceof ArmorItem armor

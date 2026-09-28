@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+## 0.38.0 — 2026-09-28
+
+### Added
+- **Guards use bows.** Put a bow in a guard's chest and they carry it: they shoot creepers from a safe distance
+  (backing away if one comes close), shoot fliers and pick off monsters before they get close, then switch to the
+  sword. They never shoot while a player, villager or pet is in the line of fire.
+
 ### Checked
 - Farmers look after fields of Cobblemon mints too: ripe mints are picked (the leaves go to the chest) and planted
   again. Now covered by a test.

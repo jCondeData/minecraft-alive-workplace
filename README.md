@@ -132,7 +132,9 @@ Cobbleworkers' Pokémon put what they gather.
 
 Craft a **Guard Post** (an iron sword over planks and a shield) and place it near a villager without a job. Put
 weapons and armor in a chest within 8 blocks of the post: the guard takes the best of it. Guards fight monsters that
-come within 24 blocks of the post at any hour (creepers excepted) and never run away. They have twice a villager's
+come within 24 blocks of the post at any hour and never run away. Give them a **bow** (in the same chest) and they
+also shoot creepers from a safe distance — without one they leave creepers alone — and pick off other monsters
+before they get close; they never shoot when a player, villager or pet is in the way. They have twice a villager's
 health and keep the night watch, sleeping in the late morning instead. Players, villagers, animals, pets and
 Pokémon are safe from them. **Ring the village bell** and, while everyone else runs home to hide, the guards head
 for the bell and fight anything near it for a minute and a half.

@@ -82,4 +82,29 @@ public class GuardGameTests implements FabricGameTest {
 			helper.succeed();
 		});
 	}
+
+	/** A guard with a bow from the chest shoots a creeper from a safe distance (and it never blows up). */
+	@GameTest(template = AREA, timeoutTicks = 1600)
+	public void guardShootsACreeper(GameTestHelper helper) {
+		Villager guard = guard(helper, new ItemStack(Items.IRON_SWORD), new ItemStack(Items.BOW));
+		boolean[] exploded = {false};
+		helper.runAfterDelay(100, () -> {
+			helper.assertTrue(guard.getItemBySlot(EquipmentSlot.OFFHAND).is(Items.BOW), "the guard didn't take the bow");
+			var creeper = helper.spawn(EntityType.CREEPER, new BlockPos(15, 2, 15));
+			creeper.setPersistenceRequired();
+		});
+		helper.onEachTick(() -> {
+			if (!helper.getLevel().getEntitiesOfClass(net.minecraft.world.entity.monster.Creeper.class, new net.minecraft.world.phys.AABB(helper.absolutePos(BlockPos.ZERO)).inflate(40),
+				c -> c.getSwellDir() > 0 && c.getSwelling(1f) > 0.9f).isEmpty()) {
+				exploded[0] = true;
+			}
+		});
+		helper.succeedWhen(() -> {
+			helper.assertTrue(helper.getTick() > 100, "not yet");
+			helper.assertEntityNotPresent(EntityType.CREEPER);
+			helper.assertFalse(exploded[0], "the creeper got close enough to go off");
+			helper.assertTrue(guard.isAlive() && guard.getHealth() > 30, "the guard got hurt: " + guard.getHealth());
+			helper.assertTrue(guard.getAttachedOrElse(ModAttachments.GUARD_KILLS, 0) == 1, "the arrow kill wasn't counted");
+		});
+	}
 }

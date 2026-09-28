@@ -32,10 +32,24 @@ public final class Guards {
 
 	/**
 	 * Monsters only: never players, villagers, golems, pets or Pokémon. Creepers are left alone (a guard
-	 * with a sword would only set them off).
+	 * with a sword would only set them off) — unless the guard has a bow (see {@link #isFoe(LivingEntity, Villager)}).
 	 */
 	public static boolean isFoe(LivingEntity entity) {
 		return entity.isAlive() && (entity instanceof Monster || entity instanceof Slime) && !(entity instanceof Creeper);
+	}
+
+	/** A foe for this guard: any monster, and creepers too once the guard carries a bow. */
+	public static boolean isFoe(LivingEntity entity, Villager guard) {
+		return isFoe(entity) || entity.isAlive() && entity instanceof Creeper && hasBow(guard);
+	}
+
+	/** A bow a guard can shoot with (kept in their off hand). */
+	public static boolean isBow(ItemStack stack) {
+		return !stack.isEmpty() && stack.getItem() instanceof net.minecraft.world.item.BowItem && stack.isDamageableItem();
+	}
+
+	public static boolean hasBow(Villager guard) {
+		return isBow(guard.getItemBySlot(EquipmentSlot.OFFHAND));
 	}
 
 	/** Damage of one swing with {@code weapon} (fists: 1), before enchantments. */

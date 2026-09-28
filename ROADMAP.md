@@ -62,7 +62,9 @@ Owner decisions are recorded in **Design decisions** at the bottom. Don't change
   put up in `Builders.finish` for their item from the chests, rotated like a structure template (`BuildEntities`);
   counted in materials and the "still missing" report
 - [x] **Builder's workshop** in village generation (all 5 village types, weight 3 in the house pools ≈ every other village): a Builder's Bench, a supply chest (`aliveworkplace:chests/village_builders_workshop`, sometimes a starter blueprint) and a villager who takes the bench
-- [ ] Builder's workshops for modded villages (Towns and Towers etc.) — add their house pools by id
+- [x] Our houses in modded villages: the Cobbleverse pack (1.7.42) has **Repurposed Structures** (no Towns and Towers),
+  so the workshop and staffed houses join its 11 overworld village house pools (`VillageHouses.MODDED_HOUSE_POOLS`,
+  closest vanilla style each; not crimson/warped/ocean); it uses vanilla jigsaw names; compat-tested with RS 7.5.21
 - [ ] Config file (`config/aliveworkplace.json`) mirroring gamerules plus supply radius, reach, max site distance
 - [ ] Upgrades: blueprints can declare a next tier that builds over the previous one
 

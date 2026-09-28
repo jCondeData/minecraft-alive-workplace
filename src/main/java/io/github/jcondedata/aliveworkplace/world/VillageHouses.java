@@ -20,7 +20,8 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProc
  * Villages grow our kinds of houses now and then: a builder's workshop (a Builder's Bench, a chest of
  * building supplies), a trainer's house, a guard house, a clinic and a post office, each with a bed and a
  * villager who takes the job block, so these workers turn up without players having to make them. Added
- * to the vanilla house pools (and to any data pack's replacement of them) when the server starts.
+ * to the vanilla house pools (and to any data pack's replacement of them) and to Repurposed Structures'
+ * villages when the server starts.
  */
 public final class VillageHouses {
 	public static final List<String> STYLES = List.of("plains", "desert", "savanna", "snowy", "taiga");
@@ -46,6 +47,26 @@ public final class VillageHouses {
 		return out;
 	}
 
+	/**
+	 * Other mods' villages: their house pool and the style of ours that fits it best. Pools that aren't
+	 * there (the mod isn't installed) are skipped. Repurposed Structures uses vanilla's jigsaw names, so our
+	 * houses join its streets like vanilla ones; nether and ocean villages are left alone.
+	 */
+	public static final java.util.Map<ResourceLocation, String> MODDED_HOUSE_POOLS = moddedPools();
+
+	private static java.util.Map<ResourceLocation, String> moddedPools() {
+		java.util.Map<ResourceLocation, String> out = new java.util.LinkedHashMap<>();
+		String[][] rs = {
+			{"badlands", "desert"}, {"bamboo", "savanna"}, {"birch", "plains"}, {"cherry", "plains"}, {"dark_forest", "taiga"},
+			{"giant_taiga", "taiga"}, {"jungle", "savanna"}, {"mountains", "taiga"}, {"mushroom", "plains"}, {"oak", "plains"},
+			{"swamp", "plains"}
+		};
+		for (String[] village : rs) {
+			out.put(ResourceLocation.fromNamespaceAndPath("repurposed_structures", "villages/" + village[0] + "/houses"), village[1]);
+		}
+		return out;
+	}
+
 	public static void init() {
 		ServerLifecycleEvents.SERVER_STARTING.register(VillageHouses::addWorkshops);
 	}
@@ -63,11 +84,17 @@ public final class VillageHouses {
 		Registry<StructureProcessorList> processors = server.registryAccess().registryOrThrow(Registries.PROCESSOR_LIST);
 		Holder<StructureProcessorList> none = processors.getHolderOrThrow(
 			ResourceKey.create(Registries.PROCESSOR_LIST, ResourceLocation.withDefaultNamespace("empty")));
+		java.util.Map<ResourceLocation, String> targets = new java.util.LinkedHashMap<>();
 		for (String style : STYLES) {
-			StructureTemplatePool pool = pools.get(housePool(style));
+			targets.put(housePool(style), style);
+		}
+		targets.putAll(MODDED_HOUSE_POOLS);
+		for (var target : targets.entrySet()) {
+			StructureTemplatePool pool = pools.get(target.getKey());
 			if (pool == null) {
 				continue;
 			}
+			String style = target.getValue();
 			add(pool, workshop(style), WEIGHT, none);
 			for (var house : HOUSES.entrySet()) {
 				add(pool, AliveWorkplace.id("village/" + style + "_" + house.getKey()), house.getValue(), none);

@@ -7,7 +7,8 @@
 	"entrypoints": {
 		"fabric-gametest": [
 			"io.github.jcondedata.aliveworkplace.compat.CompatGameTests",
-			"io.github.jcondedata.aliveworkplace.compat.CobblemonCompatTests"
+			"io.github.jcondedata.aliveworkplace.compat.CobblemonCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.VillageCompatTests"
 		]
 	},
 	"depends": {
@@ -15,6 +16,7 @@
 		"chipped": "*",
 		"supplementaries": "*",
 		"rechiseled": "*",
-		"cobblemon": "*"
+		"cobblemon": "*",
+		"repurposed_structures": "*"
 	}
 }

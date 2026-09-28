@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+### Added
+- **Repurposed Structures villages** (in the Cobbleverse pack) now grow our builder's workshops, trainer's houses,
+  guard houses, clinics and post offices too, in the closest matching style (birch and oak villages get plains
+  houses, badlands desert ones, and so on). Nether and ocean villages are left alone.
+
 ## 0.27.0 — 2026-09-27
 
 ### Added

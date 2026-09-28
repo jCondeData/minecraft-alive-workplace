@@ -120,6 +120,8 @@ ext.compatMods = [
 	"maven.modrinth:supermartijn642s-config-lib:euSlaAtA", // 1.1.8
 	"maven.modrinth:fusion-connected-textures:6fQXv7Yl",   // Fusion 1.2.12
 	"maven.modrinth:cobblemon:kF7CvxTo",        // Cobblemon 1.7.3 (bundles Fabric Language Kotlin)
+	"maven.modrinth:repurposed-structures-fabric:4uDzF4B9", // Repurposed Structures 7.5.21 (villages)
+	"maven.modrinth:midnightlib:vqqujBpd",      // MidnightLib 1.7.5 (for Repurposed Structures)
 ]
 
 /** Unpacks the jars nested in the compat mods (META-INF/jars) into build/compat-nested. */

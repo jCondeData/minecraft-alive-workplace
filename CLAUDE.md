@@ -16,7 +16,7 @@ The owner (Jesse) does not write code: sessions are expected to work autonomousl
 ## Commands
 - `./gradlew build` — compile + jar + gametests (CI runs exactly this)
 - `./gradlew runGameTest` — only the gametests (~10 s of game time, ~1 min total)
-- `./gradlew runCompatGameTest` — gametests in `src/compattest` with Chipped, Rechiseled, Supplementaries, Cobblemon (+ libraries)
+- `./gradlew runCompatGameTest` — gametests in `src/compattest` with Chipped, Rechiseled, Supplementaries, Cobblemon, Repurposed Structures (+ libraries)
   installed from Modrinth maven (`compatMods` in `build.gradle`; bundled jars are unpacked into `build/compat-nested`).
   Part of `build`. Add a mod from the pack here when adding support for it. Nested jars are unpacked recursively
   (Cobblemon → Fabric Language Kotlin → Kotlin libraries). The Kotlin Gradle plugin is applied only so Loom remaps

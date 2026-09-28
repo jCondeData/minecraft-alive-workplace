@@ -2,6 +2,17 @@
 
 ## Unreleased
 
+## 0.58.0 — 2026-09-28
+
+### Added
+- **Starter Cottage III**: the third tier of the cottage adds a kitchen wing on the east side (a smoker, a barrel, a
+  table and its own door) with a roof terrace on top, reached through a new door from the upper floor. Builders who
+  finish a Starter Cottage II now sell it.
+
+### Fixed
+- An upgrade that puts a door (or a bed) where there was a wall: the builder now takes down the bit of wall where the
+  door's top half goes, instead of skipping the door.
+
 ## 0.57.0 — 2026-09-28
 
 ### Added

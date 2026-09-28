@@ -374,7 +374,10 @@ public class BuilderWork extends Behavior<Villager> {
 				return Action.NONE;
 			}
 			boolean wantedEmpty = wanted.isAir();
-			if (!wantedEmpty && (world.canBeReplaced() || MaterialRules.classify(wanted, step.nbt()) == MaterialRules.Kind.SKIP)) {
+			// The top of a door or the head of a bed isn't placed on its own, but it needs the spot free: an upgrade
+			// putting a door where a wall was has to take that bit of wall down first.
+			boolean skipped = MaterialRules.classify(wanted, step.nbt()) == MaterialRules.Kind.SKIP && !MaterialRules.isSecondaryHalf(wanted);
+			if (!wantedEmpty && (world.canBeReplaced() || skipped)) {
 				return Action.NONE; // placing will overwrite it, or we leave this spot alone
 			}
 			return isProtected(level, pos, world, bench) ? Action.NONE : Action.BREAK;

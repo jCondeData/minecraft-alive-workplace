@@ -1234,6 +1234,7 @@ public class ScreenshotHarness implements ClientModInitializer {
 			server.execute(() -> {
 				ServerLevel level = server.overworld();
 				level.getGameRules().getRule(GameRules.RULE_DAYLIGHT).set(false, server);
+				level.getGameRules().getRule(GameRules.RULE_DOMOBSPAWNING).set(false, server);
 				level.setDayTime(3000);
 				for (int i = 0; i < all.size(); i++) {
 					net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate t =
@@ -1241,6 +1242,16 @@ public class ScreenshotHarness implements ClientModInitializer {
 					BlockPos origin = new BlockPos(i * 24, -60, 0);
 					t.placeInWorld(level, origin, origin, new net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings(),
 						level.getRandom(), 2);
+				}
+			});
+		}
+		if (tick % 20 == 0) {
+			// Slimes from the superflat world's slime chunks hop into the shots.
+			server.execute(() -> {
+				for (net.minecraft.world.entity.Entity e : server.overworld().getAllEntities()) {
+					if (e instanceof net.minecraft.world.entity.monster.Slime) {
+						e.discard();
+					}
 				}
 			});
 		}

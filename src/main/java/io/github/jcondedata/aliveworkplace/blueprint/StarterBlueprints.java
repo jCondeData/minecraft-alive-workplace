@@ -16,6 +16,8 @@ public final class StarterBlueprints {
 	public static final Entry STARTER_COTTAGE = new Entry(AliveWorkplace.id("starter_cottage"), new Vec3i(9, 10, 9));
 	/** The Starter Cottage with a second storey: an upgrade (same ground floor, lines up over a finished cottage). */
 	public static final Entry STARTER_COTTAGE_2 = new Entry(AliveWorkplace.id("starter_cottage_2"), new Vec3i(9, 14, 9));
+	/** Cottage II with a kitchen wing to the east (a roof terrace on top): an upgrade that grows sideways. */
+	public static final Entry STARTER_COTTAGE_3 = new Entry(AliveWorkplace.id("starter_cottage_3"), new Vec3i(15, 14, 9));
 	public static final Entry MARKET_STALL = new Entry(AliveWorkplace.id("market_stall"), new Vec3i(7, 5, 5));
 	/** A second stall alongside, with a Shop Counter. */
 	public static final Entry MARKET_STALL_2 = new Entry(AliveWorkplace.id("market_stall_2"), new Vec3i(13, 5, 5));
@@ -30,7 +32,7 @@ public final class StarterBlueprints {
 	/** A storeroom and the shopkeeper's bedroom upstairs. */
 	public static final Entry SUPPLY_SHOP_2 = new Entry(AliveWorkplace.id("supply_shop_2"), new Vec3i(9, 12, 8));
 
-	public static final List<Entry> ALL = List.of(STARTER_COTTAGE, STARTER_COTTAGE_2, MARKET_STALL, MARKET_STALL_2, LOOKOUT_TOWER, LOOKOUT_TOWER_2,
+	public static final List<Entry> ALL = List.of(STARTER_COTTAGE, STARTER_COTTAGE_2, STARTER_COTTAGE_3, MARKET_STALL, MARKET_STALL_2, LOOKOUT_TOWER, LOOKOUT_TOWER_2,
 		HEALING_CENTER, HEALING_CENTER_2, SUPPLY_SHOP, SUPPLY_SHOP_2);
 
 	private StarterBlueprints() {

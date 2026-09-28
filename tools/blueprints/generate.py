@@ -254,6 +254,63 @@ def starter_cottage_2():
     return b
 
 
+# --- Starter Cottage III: Cottage II with a kitchen wing to the east and a roof terrace on it -----------------------
+def starter_cottage_3():
+    """Upgrade of Starter Cottage II (same origin and front): a one-storey wing grows out of the east wall, with a
+    doorway through from the ground floor and a door from the upper floor onto the wing's roof terrace. The wing
+    stands on ground the cottage never used, so a builder clears whatever is there first."""
+    b = starter_cottage_2().grow(15, 14, 9)
+    # Wing floor (x 9-14, z 1-7): cobblestone rim, planks inside
+    b.fill(9, 0, 1, 14, 0, 7, "cobblestone")
+    b.fill(9, 0, 2, 13, 0, 6, "oak_planks")
+    # Walls y1-3, log corners; the cottage's east wall is the wing's fourth side
+    for y in range(1, 4):
+        for x in range(9, 15):
+            b.set(x, y, 1, "oak_planks")
+            b.set(x, y, 7, "oak_planks")
+        for z in range(1, 8):
+            b.set(14, y, z, "oak_planks")
+        b.set(14, y, 1, "oak_log", axis="y")
+        b.set(14, y, 7, "oak_log", axis="y")
+    for x in (10, 12):
+        b.set(x, 2, 1, "glass_pane", north=False, south=False, east=True, west=True)
+        b.set(x, 2, 7, "glass_pane", north=False, south=False, east=True, west=True)
+    for z in (2, 6):
+        b.set(14, 2, z, "glass_pane", north=True, south=True, east=False, west=False)
+    # A door out of the wing, and a doorway through the cottage's east wall where its window was
+    b.door(14, 1, 4, "oak_door", facing="west")
+    b.clear(8, 1, 4, 8, 2, 4)
+    # Kitchen: a smoker and a barrel, a table with two seats, torches
+    b.set(13, 1, 2, "smoker", facing="west", lit=False)
+    b.set(12, 1, 2, "barrel", facing="up", open=False)
+    b.set(11, 1, 6, "oak_fence", north=False, south=False, east=False, west=False)
+    b.set(11, 2, 6, "oak_pressure_plate", powered=False)
+    b.set(10, 1, 6, "oak_stairs", facing="west", half="bottom", shape="straight")
+    b.set(12, 1, 6, "oak_stairs", facing="east", half="bottom", shape="straight")
+    b.set(11, 3, 2, "wall_torch", facing="south")
+    b.set(11, 3, 6, "wall_torch", facing="north")
+    # Roof terrace: a log rim round spruce planks, a railing, lanterns on the far corners
+    for x in range(9, 15):
+        b.set(x, 4, 1, "oak_log", axis="x")
+        b.set(x, 4, 7, "oak_log", axis="x")
+    for z in range(2, 7):
+        b.set(14, 4, z, "oak_log", axis="z")
+    b.fill(9, 4, 2, 13, 4, 6, "spruce_planks")
+    for x in range(9, 14):
+        b.set(x, 5, 1, "oak_fence", north=False, south=False, east=True, west=True)
+        b.set(x, 5, 7, "oak_fence", north=False, south=False, east=True, west=True)
+    for z in range(2, 7):
+        b.set(14, 5, z, "oak_fence", north=True, south=True, east=False, west=False)
+    b.set(14, 5, 1, "oak_fence", north=False, south=True, east=False, west=True)
+    b.set(14, 5, 7, "oak_fence", north=True, south=False, east=False, west=True)
+    b.set(14, 6, 1, "lantern", hanging=False, waterlogged=False)
+    b.set(14, 6, 7, "lantern", hanging=False, waterlogged=False)
+    # The door out onto it from the upper floor
+    b.door(8, 5, 4, "oak_door", facing="west")
+    b.fill_air()
+    return b
+
+
 # --- Market Stall: 7 x 5 x 5 ------------------------------------------------------------------
 def market_stall():
     b = Build(7, 5, 5)
@@ -762,6 +819,7 @@ def test_area(name, w, h, d, folder=TEST_AREAS):
 if __name__ == "__main__":
     starter_cottage().save(MAIN_STRUCTURES, "starter_cottage")
     starter_cottage_2().save(MAIN_STRUCTURES, "starter_cottage_2")
+    starter_cottage_3().save(MAIN_STRUCTURES, "starter_cottage_3")
     market_stall().save(MAIN_STRUCTURES, "market_stall")
     market_stall_2().save(MAIN_STRUCTURES, "market_stall_2")
     lookout_tower().save(MAIN_STRUCTURES, "lookout_tower")

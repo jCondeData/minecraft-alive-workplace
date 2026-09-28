@@ -77,8 +77,10 @@ Owner decisions are recorded in **Design decisions** at the bottom. Don't change
   Post, a bell and a pointed roof; Healing Center II: a ward with four beds; Supply Shop II: a storeroom and bedroom
   upstairs); a builder who finishes a build with an upgrade adds its blueprint to their trades (`UpgradeOffers`, 6–32
   emeralds by size) and tells the owner
-- [ ] Upgrade follow-ups: third tiers (Starter Cottage III…), an upgrade that grows sideways and needs the ground
-  there cleared first (works, but untested with big builds)
+- [x] Third tier that grows sideways: Starter Cottage III (a kitchen wing east of Cottage II with a roof terrace and a
+  door onto it from the upper floor); gametest builds it over a finished Cottage II with a mound where the wing goes.
+  Found and fixed on the way: clearing left the wall where a new door's top half goes, so the door was skipped
+- [ ] Upgrade follow-ups: third tiers for the other starter builds
 
 ## Milestone 2 — Other work jobs
 - [x] **Miner** (Miner's Bench workstation, Quarry Marker item): digs the marked area out layer by layer with pickaxes from the chests (tool tier and durability count; waits for a new one), drops everything off in the chests near the bench, lights the pit with torches from the chests, leaves blocks touching lava/water, containers and anything too hard, never goes below 5 above the world floor; levels up like builders; trades coal/ores, sells markers, torches and pickaxes

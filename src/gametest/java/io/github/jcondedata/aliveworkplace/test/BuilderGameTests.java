@@ -197,6 +197,67 @@ public class BuilderGameTests implements FabricGameTest {
 		});
 	}
 
+	/**
+	 * An upgrade that grows sideways: Starter Cottage III clicked onto a finished Cottage II lines up with it, and a
+	 * builder clears the mound where the new wing goes, builds the wing and its roof terrace, and knocks the doorway
+	 * through — the two storeys already there stay.
+	 */
+	@GameTest(template = BIG_AREA, timeoutTicks = 14000, batch = "cottage_wing")
+	public void builderGrowsACottageSideways(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		ServerLevel level = helper.getLevel();
+		BlockPos originRel = new BlockPos(3, 2, 6);
+		BlueprintData.Placement placement = placement(helper, originRel, Rotation.NONE);
+		level.getStructureManager().get(StarterBlueprints.STARTER_COTTAGE_2.id()).orElseThrow()
+			.placeInWorld(level, helper.absolutePos(originRel), helper.absolutePos(originRel), new StructurePlaceSettings(), level.getRandom(), 2);
+		BuildSiteManager.get(level).recordFinished(StarterBlueprints.STARTER_COTTAGE_2.id(), placement, java.util.UUID.randomUUID());
+		helper.assertTrue(io.github.jcondedata.aliveworkplace.blueprint.BlueprintUpgrades.upgradeOf(StarterBlueprints.STARTER_COTTAGE_2.id())
+			.equals(StarterBlueprints.STARTER_COTTAGE_3.id()), "starter_cottage_3 should upgrade starter_cottage_2");
+		// Where the wing goes: a mound of dirt and a stray block of cobblestone.
+		for (int x = 13; x <= 15; x++) {
+			for (int z = 8; z <= 10; z++) {
+				helper.setBlock(new BlockPos(x, 2, z), Blocks.DIRT);
+				helper.setBlock(new BlockPos(x, 3, z), Blocks.GRASS_BLOCK);
+			}
+		}
+		helper.setBlock(new BlockPos(16, 2, 12), Blocks.COBBLESTONE);
+
+		// Clicking the upgrade onto the cottage's west wall lines it up exactly.
+		net.minecraft.server.level.ServerPlayer player = helper.makeMockServerPlayerInLevel();
+		ItemStack upgrade = BlueprintItem.create(StarterBlueprints.STARTER_COTTAGE_3.id(), StarterBlueprints.STARTER_COTTAGE_3.size());
+		player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, upgrade);
+		BlockPos wall = helper.absolutePos(originRel.offset(0, 1, 3));
+		upgrade.useOn(new net.minecraft.world.item.context.UseOnContext(player, net.minecraft.world.InteractionHand.MAIN_HAND,
+			new net.minecraft.world.phys.BlockHitResult(net.minecraft.world.phys.Vec3.atCenterOf(wall), net.minecraft.core.Direction.WEST, wall, false)));
+		helper.assertTrue(BlueprintItem.data(player.getMainHandItem()).flatMap(BlueprintData::placement).equals(Optional.of(placement)),
+			"the upgrade didn't line up: " + BlueprintItem.data(player.getMainHandItem()).flatMap(BlueprintData::placement));
+
+		helper.setBlock(BENCH, ModBlocks.BUILDERS_BENCH);
+		var report = io.github.jcondedata.aliveworkplace.build.BlueprintSupplies.check(level,
+			new BlueprintData(StarterBlueprints.STARTER_COTTAGE_3.id(), Optional.of(StarterBlueprints.STARTER_COTTAGE_3.size()), Optional.of(placement)))
+			.orElseThrow(() -> new GameTestAssertException("no supply report"));
+		List<ItemStack> stacks = new java.util.ArrayList<>();
+		for (var m : report.missing()) {
+			for (int left = m.count(); left > 0; left -= m.item().getDefaultMaxStackSize()) {
+				stacks.add(new ItemStack(m.item(), Math.min(left, m.item().getDefaultMaxStackSize())));
+			}
+		}
+		helper.assertTrue(stacks.size() <= 27, "the upgrade needs " + stacks.size() + " stacks: more than a chest");
+		Setup s = setup(helper, StarterBlueprints.STARTER_COTTAGE_3.id(), originRel, Rotation.NONE, stacks.toArray(ItemStack[]::new));
+		int total = s.plan().steps(BuildPlan.Stage.STRUCTURE).size() + s.plan().steps(BuildPlan.Stage.DECORATION).size();
+		helper.succeedWhen(() -> {
+			assertBuilt(helper, s);
+			helper.assertBlockPresent(Blocks.AIR, originRel.offset(10, 1, 3)); // where the mound was
+			helper.assertBlockPresent(Blocks.AIR, originRel.offset(8, 1, 4)); // the doorway through
+			helper.assertBlockPresent(Blocks.SMOKER, originRel.offset(13, 1, 2));
+			helper.assertBlockPresent(Blocks.OAK_DOOR, originRel.offset(8, 5, 4)); // out onto the terrace
+			helper.assertBlockPresent(Blocks.LANTERN, originRel.offset(14, 6, 7));
+			helper.assertBlockPresent(Blocks.RED_BED, originRel.offset(7, 1, 6));
+			helper.assertBlockPresent(Blocks.LIGHT_BLUE_BED, originRel.offset(1, 5, 6));
+			helper.assertTrue(s.site().placed() < total * 0.4, "placed " + s.site().placed() + " of " + total + " blocks: the cottage should have been kept");
+		});
+	}
+
 	/** A blueprint with a pool: the builder pours the water from a bucket and keeps the empty bucket. */
 	@GameTest(template = AREA, timeoutTicks = 2400)
 	public void builderPoursWaterFromABucket(GameTestHelper helper) {
@@ -757,7 +818,7 @@ public class BuilderGameTests implements FabricGameTest {
 			long kept = base.blocks().stream().filter(e -> !e.state().isAir() && e.state().equals(up.get(e.pos()))).count();
 			helper.assertTrue(kept >= solid * 0.6, entry.id() + " keeps only " + kept + " of " + baseId.get() + "'s " + solid + " blocks");
 		}
-		helper.assertTrue(upgrades == 5, "expected 5 starter upgrades, found " + upgrades);
+		helper.assertTrue(upgrades == 6, "expected 6 starter upgrades, found " + upgrades);
 		helper.succeed();
 	}
 
@@ -1002,7 +1063,7 @@ public class BuilderGameTests implements FabricGameTest {
 		List<BlockPos> unfinished = s.plan().unfinished(s.level());
 		if (!unfinished.isEmpty()) {
 			String sample = unfinished.stream().limit(5)
-				.map(p -> helper.relativePos(p) + "=" + s.level().getBlockState(p))
+				.map(p -> helper.relativePos(p) + " (blueprint " + p.subtract(s.site().placement().origin()).toShortString() + ")=" + s.level().getBlockState(p))
 				.collect(Collectors.joining(", "));
 			throw new GameTestAssertException(unfinished.size() + " block(s) wrong after the build, e.g. " + sample);
 		}

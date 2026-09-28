@@ -47,7 +47,11 @@ Owner decisions are recorded in **Design decisions** at the bottom. Don't change
 - [x] **Permissions**: a builder works for whoever hires it first (hands it a blueprint); only that player, their friends (`/workplace friend add|remove|list`) and ops can give it blueprints or cancel its builds; hired builders only help their employer's and friends' builds (`workplaceBuilderOwnership` gamerule)
 - [x] **Builder levels**: 1 XP per 5 blocks placed + 10 per finished build, vanilla level thresholds; level-ups unlock the next trades; each level is faster (Master takes 40% of the base time per block)
 - [x] **More blueprints**: Healing Center (level 4, holds a Cobblemon Healing Machine when Cobblemon is installed) and Supply Shop (level 5)
-- [ ] Optional ground levelling around the site (foundations are done; per-blueprint opt-out later)
+- [x] Ground levelling around the site: a LANDSCAPE stage after DECORATION digs natural ground (dirt/sand/stone/
+  gravel/clay/terracotta/snow, grass and ferns; not trees, flowers, farmland, paths, block entities) out of a ring
+  `workplaceLevelGround` blocks wide (default 2, 0 = off) from the floor up to 6 blocks, then fills holes at floor
+  level with dirt up to 3 deep (never water); it skips holes rather than wait for dirt
+- [ ] Per-blueprint opt-out of levelling (e.g. builds meant to sit in a hillside)
 - [x] Potted plants (cost a flower pot + the plant)
 - [x] **Building-mod support** (tested with the real mods in `src/compattest`): Chipped and Rechiseled variants can be built from the plain block (free conversions, like their workbench/chisel); Supplementaries blocks build correctly (way signs cost the fence and the sign, rope knots the rope and the fence), and no blueprint data can hand out items, mobs or locked safes (containers never get contents)
 - [ ] Fluids (water/lava via buckets), entities in templates (item frames, armor stands)

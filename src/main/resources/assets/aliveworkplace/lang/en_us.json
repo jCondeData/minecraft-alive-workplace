@@ -112,6 +112,8 @@
   "message.aliveworkplace.status.stage.structure": "Building the structure",
   "message.aliveworkplace.status.stage.decoration": "Finishing touches",
   "message.aliveworkplace.status.stage.done": "Done",
+  "message.aliveworkplace.status.stage.landscape": "Levelling the ground around it",
+  "gamerule.workplaceLevelGround": "Alive Workplace: how many blocks around a finished build the builder levels the ground (0 = never)",
   "message.aliveworkplace.status.state.starting": "starting",
   "message.aliveworkplace.status.state.working": "working",
   "message.aliveworkplace.status.state.fetching": "fetching materials",

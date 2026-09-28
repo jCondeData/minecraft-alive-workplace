@@ -79,6 +79,47 @@ public class BuilderGameTests implements FabricGameTest {
 		});
 	}
 
+	/** Once the hut is up, the builder levels the ground around it: a mound and a rock dug away, a hole filled. */
+	@GameTest(template = AREA, timeoutTicks = 3000)
+	public void builderLevelsTheGroundAroundABuild(GameTestHelper helper) {
+		BlockPos mound = new BlockPos(5, 2, 8);
+		BlockPos rock = new BlockPos(12, 2, 7);
+		BlockPos hole = new BlockPos(8, 1, 11);
+		BlockPos crate = new BlockPos(12, 2, 10);
+		helper.setBlock(mound, Blocks.DIRT);
+		helper.setBlock(mound.above(), Blocks.GRASS_BLOCK);
+		helper.setBlock(rock, Blocks.STONE);
+		helper.setBlock(hole, Blocks.AIR);
+		helper.setBlock(crate, Blocks.OAK_PLANKS); // something built: stays
+		ItemStack[] materials = java.util.stream.Stream.concat(java.util.Arrays.stream(hutMaterials()),
+			java.util.stream.Stream.of(new ItemStack(Items.DIRT, 4))).toArray(ItemStack[]::new);
+		Setup s = setup(helper, TEST_HUT, HUT_ORIGIN, Rotation.NONE, materials);
+		helper.succeedWhen(() -> {
+			assertBuilt(helper, s);
+			helper.assertBlockPresent(Blocks.AIR, mound);
+			helper.assertBlockPresent(Blocks.AIR, mound.above());
+			helper.assertBlockPresent(Blocks.AIR, rock);
+			helper.assertBlockPresent(Blocks.DIRT, hole);
+			helper.assertBlockPresent(Blocks.OAK_PLANKS, crate);
+		});
+	}
+
+	/** With levelling turned off, the ground around a build stays as it was. */
+	@GameTest(template = AREA, timeoutTicks = 2400)
+	public void levellingCanBeTurnedOff(GameTestHelper helper) {
+		BuildPlan plan = BuildPlan.create(BlueprintLibrary.get(helper.getLevel(), TEST_HUT).orElseThrow(),
+			placement(helper, HUT_ORIGIN, Rotation.NONE), helper.getLevel(), 12, 0);
+		helper.assertTrue(plan.steps(BuildPlan.Stage.LANDSCAPE).isEmpty(), "landscaping planned with a margin of 0");
+		helper.setBlock(new BlockPos(5, 2, 8), Blocks.DIRT);
+		BuildPlan levelled = BuildPlan.create(BlueprintLibrary.get(helper.getLevel(), TEST_HUT).orElseThrow(),
+			placement(helper, HUT_ORIGIN, Rotation.NONE), helper.getLevel(), 12, 2);
+		helper.assertTrue(levelled.steps(BuildPlan.Stage.LANDSCAPE).stream().anyMatch(st -> st.pos().equals(helper.absolutePos(new BlockPos(5, 2, 8)))),
+			"the mound isn't in the landscaping plan");
+		helper.assertTrue(levelled.steps(BuildPlan.Stage.LANDSCAPE).stream().noneMatch(st -> st.pos().getY() > helper.absolutePos(HUT_ORIGIN).getY() + 3),
+			"landscaping above the build's height");
+		helper.succeed();
+	}
+
 	/** Regression: a builder standing where the floor goes must step aside instead of freezing. */
 	@GameTest(template = AREA, timeoutTicks = 700)
 	public void builderStandingInTheFootprintStepsAside(GameTestHelper helper) {

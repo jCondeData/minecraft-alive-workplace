@@ -30,7 +30,9 @@ Install on the **server and every player's game**.
 3. **Place it.** Hold the blueprint and right-click the ground where the front of the building should go.
    It faces you, and while you hold it you see the whole building as see-through blocks, exactly where it
    will stand (the gold edge of the outline is the front). Sneak-right-click the ground to turn it;
-   sneak-right-click the air to pick it back up. On uneven ground the builder fills in a foundation.
+   sneak-right-click the air to pick it back up. On uneven ground the builder fills in a foundation, and when the
+   building is finished they level the ground two blocks around it (dirt, stone and grass above the floor dug away,
+   holes filled with dirt; trees, flowers and anything built are left alone).
 4. **Stock the chests.** Put the materials in any chests or barrels within 8 blocks of the builder's bench
    (hold Shift over the blueprint to see the list). Once the blueprint is placed, its tooltip counts what the chests
    by the nearest bench are still short of — blocks already standing in place don't count — so you know when you're
@@ -212,6 +214,7 @@ Craft a **Blueprint Table** (blue dye on top, cartography table in the middle, p
 | `/gamerule workplaceBuildersHelp false` | idle builders stop helping with other builds |
 | `/gamerule workplaceBuilderOwnership false` | anyone can give orders to any builder |
 | `/gamerule workplaceFoundationDepth 12` | how far down builders fill under a build on uneven ground (0 = never) |
+| `/gamerule workplaceLevelGround 0` | builders leave the ground around their builds alone (default 2 blocks, up to 8) |
 | `/gamerule workplaceKeepWorkLoaded false` | builds and quarries stop when nobody is nearby (by default they keep going while the player who ordered them is online) |
 
 ## What's next

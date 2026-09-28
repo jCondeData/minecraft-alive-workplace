@@ -94,10 +94,11 @@ public final class BuildSite {
 				return null;
 			}
 			int depth = level.getGameRules().getInt(io.github.jcondedata.aliveworkplace.registry.ModGameRules.FOUNDATION_DEPTH);
-			plan = deconstruct ? BuildPlan.deconstruct(blueprint.get(), placement) : BuildPlan.create(blueprint.get(), placement, level, depth);
-			if (stage == BuildPlan.Stage.FOUNDATION) {
-				// The foundation list depends on the terrain, which we have been changing: start it over
-				// (already-filled columns are skipped straight away).
+			int margin = level.getGameRules().getInt(io.github.jcondedata.aliveworkplace.registry.ModGameRules.LEVEL_GROUND);
+			plan = deconstruct ? BuildPlan.deconstruct(blueprint.get(), placement) : BuildPlan.create(blueprint.get(), placement, level, depth, margin);
+			if (stage == BuildPlan.Stage.FOUNDATION || stage == BuildPlan.Stage.LANDSCAPE) {
+				// The foundation and landscaping lists depend on the terrain, which we have been changing:
+				// start over (what's already done is skipped straight away).
 				cursor = 0;
 				retrying = false;
 				deferred.clear();
@@ -217,7 +218,8 @@ public final class BuildSite {
 		BuildPlan.Stage s = stage;
 		boolean first = true;
 		while (s != BuildPlan.Stage.DONE && out.size() < max) {
-			if (s != BuildPlan.Stage.CLEAR) {
+			// Clearing needs nothing; landscaping uses the dirt it digs up and never holds a build up.
+			if (s != BuildPlan.Stage.CLEAR && s != BuildPlan.Stage.LANDSCAPE) {
 				List<BuildPlan.Step> list = plan.steps(s);
 				if (first && retrying) {
 					for (int i = cursor; i < deferred.size() && out.size() < max; i++) {
@@ -257,7 +259,7 @@ public final class BuildSite {
 			case DECORATION -> plan.steps(BuildPlan.Stage.FOUNDATION).size() + plan.steps(BuildPlan.Stage.STRUCTURE).size()
 				+ (retrying ? plan.steps(BuildPlan.Stage.DECORATION).size() : cursor);
 			case DECONSTRUCT -> retrying ? plan.steps(BuildPlan.Stage.DECONSTRUCT).size() : cursor;
-			case DONE -> total;
+			case LANDSCAPE, DONE -> total; // the building itself is finished
 		};
 		return Math.min(1f, done / (float) total);
 	}

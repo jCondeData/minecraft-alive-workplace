@@ -360,6 +360,15 @@ public class BuilderWork extends Behavior<Villager> {
 		}
 		boolean worldEmpty = world.isAir() || world.getBlock() instanceof LiquidBlock;
 
+		if (stage == BuildPlan.Stage.LANDSCAPE) {
+			if (wanted.isAir()) {
+				// Dig away natural ground only; whatever else has turned up there since stays.
+				return !worldEmpty && BuildPlan.isTerrain(world) && !isProtected(level, pos, world, bench) ? Action.BREAK : Action.NONE;
+			}
+			// Fill a hole: only into air or grass, never over something else.
+			return world.isAir() || world.canBeReplaced() && world.getFluidState().isEmpty() ? Action.PLACE : Action.NONE;
+		}
+
 		if (stage == BuildPlan.Stage.CLEAR) {
 			if (worldEmpty) {
 				return Action.NONE;
@@ -506,6 +515,13 @@ public class BuilderWork extends Behavior<Villager> {
 			available += SupplyContainers.count(level, supplies, item);
 		}
 		if (available < needed) {
+			if (site.stage() == BuildPlan.Stage.LANDSCAPE) {
+				// Out of dirt for tidying up: leave that hole rather than wait (the building is finished).
+				if (currentStep != null) {
+					defer(site, villager, currentStep);
+				}
+				return;
+			}
 			if (takeFromCrewmate(level, villager, site, plan, bag, requirement.item(), needed)) {
 				return;
 			}

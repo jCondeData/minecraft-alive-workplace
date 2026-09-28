@@ -32,14 +32,27 @@ public final class BuildPlan {
 		STRUCTURE,
 		/** Place torches, doors, beds, plants... once there is something to attach them to. */
 		DECORATION,
+		/** Tidy the ground around the build: dig away natural ground above its floor, fill holes at floor level. */
+		LANDSCAPE,
 		/** Taking a build down (deconstruct mode): decorations first, then everything else top to bottom. */
 		DECONSTRUCT,
 		DONE;
 
 		public Stage next() {
-			return this == DECORATION || this == DECONSTRUCT ? DONE : values()[Math.min(ordinal() + 1, DONE.ordinal())];
+			return switch (this) {
+				case CLEAR -> FOUNDATION;
+				case FOUNDATION -> STRUCTURE;
+				case STRUCTURE -> DECORATION;
+				case DECORATION -> LANDSCAPE;
+				default -> DONE;
+			};
 		}
 	}
+
+	/** How deep a hole next to a build gets filled. */
+	private static final int LANDSCAPE_FILL_DEPTH = 3;
+	/** How high above the floor ground next to a build gets dug away (a hillside stays a hillside above that). */
+	private static final int LANDSCAPE_CUT_HEIGHT = 6;
 
 	/**
 	 * One unit of work. For two-block blocks (doors, beds, tall flowers) {@code secondaryPos/State}
@@ -58,15 +71,12 @@ public final class BuildPlan {
 	private final List<Step> foundation;
 	private final List<Step> structure;
 	private final List<Step> decoration;
+	private final List<Step> landscape;
 	private final List<Step> deconstruct;
 	private final BoundingBox bounds;
 
-	private BuildPlan(List<Step> clear, List<Step> foundation, List<Step> structure, List<Step> decoration, BoundingBox bounds) {
-		this(clear, foundation, structure, decoration, List.of(), bounds);
-	}
-
-	private BuildPlan(List<Step> clear, List<Step> foundation, List<Step> structure, List<Step> decoration, List<Step> deconstruct,
-					  BoundingBox bounds) {
+	private BuildPlan(List<Step> clear, List<Step> foundation, List<Step> structure, List<Step> decoration, List<Step> landscape,
+					  List<Step> deconstruct, BoundingBox bounds) {
 		Map<BlockPos, BlockState> t = new HashMap<>();
 		for (List<Step> list : List.of(foundation, structure, decoration)) {
 			for (Step s : list) {
@@ -81,6 +91,7 @@ public final class BuildPlan {
 		this.foundation = foundation;
 		this.structure = structure;
 		this.decoration = decoration;
+		this.landscape = landscape;
 		this.deconstruct = deconstruct;
 		this.bounds = bounds;
 	}
@@ -95,6 +106,12 @@ public final class BuildPlan {
 	 * {@code maxFoundationDepth} blocks deep (0 = no foundation).
 	 */
 	public static BuildPlan create(Blueprint blueprint, BlueprintData.Placement placement, @Nullable Level level, int maxFoundationDepth) {
+		return create(blueprint, placement, level, maxFoundationDepth, 0);
+	}
+
+	/** ... and levels the ground up to {@code landscapeMargin} blocks around it once it's built (0 = don't). */
+	public static BuildPlan create(Blueprint blueprint, BlueprintData.Placement placement, @Nullable Level level, int maxFoundationDepth,
+								   int landscapeMargin) {
 		Map<BlockPos, Step> byPos = new HashMap<>();
 		for (Blueprint.Entry entry : blueprint.blocks()) {
 			BlockPos world = placement.origin().offset(StructureTemplate.transform(entry.pos(), placement.mirror(), placement.rotation(), BlockPos.ZERO));
@@ -124,7 +141,69 @@ public final class BuildPlan {
 		foundation.sort(order(bounds, false));
 		structure.sort(order(bounds, false));
 		decoration.sort(order(bounds, false));
-		return new BuildPlan(List.copyOf(clear), List.copyOf(foundation), List.copyOf(structure), List.copyOf(decoration), bounds);
+		List<Step> landscape = level != null && landscapeMargin > 0 ? landscape(level, bounds, landscapeMargin) : List.of();
+		return new BuildPlan(List.copyOf(clear), List.copyOf(foundation), List.copyOf(structure), List.copyOf(decoration),
+			List.copyOf(landscape), List.of(), bounds);
+	}
+
+	/**
+	 * Around the build, {@code margin} blocks out: natural ground above the build's floor is dug away, up to
+	 * {@value #LANDSCAPE_CUT_HEIGHT} blocks up (top down; trees, flowers, farmland and anything built are
+	 * left alone), then holes at floor level
+	 * are filled with dirt, up to {@value #LANDSCAPE_FILL_DEPTH} deep (bottom up; water is left alone).
+	 */
+	private static List<Step> landscape(Level level, BoundingBox bounds, int margin) {
+		List<Step> cut = new ArrayList<>();
+		List<Step> fill = new ArrayList<>();
+		int ground = bounds.minY() - 1;
+		BlockState air = net.minecraft.world.level.block.Blocks.AIR.defaultBlockState();
+		BlockState dirt = net.minecraft.world.level.block.Blocks.DIRT.defaultBlockState();
+		for (int x = bounds.minX() - margin; x <= bounds.maxX() + margin; x++) {
+			for (int z = bounds.minZ() - margin; z <= bounds.maxZ() + margin; z++) {
+				if (x >= bounds.minX() && x <= bounds.maxX() && z >= bounds.minZ() && z <= bounds.maxZ()) {
+					continue; // the build itself
+				}
+				for (int y = Math.min(bounds.maxY(), ground + LANDSCAPE_CUT_HEIGHT); y > ground; y--) {
+					BlockPos p = new BlockPos(x, y, z);
+					if (level.isLoaded(p) && isTerrain(level.getBlockState(p))) {
+						cut.add(new Step(p, air, null, null, null));
+					}
+				}
+				for (int d = 0; d < LANDSCAPE_FILL_DEPTH; d++) {
+					BlockPos p = new BlockPos(x, ground - d, z);
+					if (p.getY() < level.getMinBuildHeight() || !level.isLoaded(p) || isGround(level, p) || !level.getFluidState(p).isEmpty()) {
+						break;
+					}
+					fill.add(new Step(p, dirt, null, null, null));
+				}
+			}
+		}
+		cut.sort(order(bounds, true));
+		fill.sort(order(bounds, false));
+		List<Step> out = new ArrayList<>(cut);
+		out.addAll(fill);
+		return out;
+	}
+
+	/**
+	 * Natural ground a builder may dig away around a build: dirt, grass, sand, stone, gravel, clay,
+	 * terracotta, snow, and grass or ferns growing on it. Not trees, flowers, farmland, paths or ores.
+	 */
+	public static boolean isTerrain(BlockState state) {
+		if (state.isAir() || !state.getFluidState().isEmpty() || state.hasBlockEntity()) {
+			return false;
+		}
+		if (state.is(net.minecraft.tags.BlockTags.DIRT) || state.is(net.minecraft.tags.BlockTags.SAND)
+			|| state.is(net.minecraft.tags.BlockTags.BASE_STONE_OVERWORLD) || state.is(net.minecraft.tags.BlockTags.TERRACOTTA)) {
+			return true;
+		}
+		net.minecraft.world.level.block.Block b = state.getBlock();
+		if (b == net.minecraft.world.level.block.Blocks.GRAVEL || b == net.minecraft.world.level.block.Blocks.CLAY
+			|| b == net.minecraft.world.level.block.Blocks.SNOW || b == net.minecraft.world.level.block.Blocks.SNOW_BLOCK
+			|| b == net.minecraft.world.level.block.Blocks.SANDSTONE || b == net.minecraft.world.level.block.Blocks.RED_SANDSTONE) {
+			return true;
+		}
+		return state.canBeReplaced() && !state.is(net.minecraft.tags.BlockTags.FLOWERS);
 	}
 
 	/**
@@ -141,7 +220,7 @@ public final class BuildPlan {
 		structure.sort(order(bounds, true));
 		List<Step> steps = new ArrayList<>(decorations);
 		steps.addAll(structure);
-		return new BuildPlan(List.of(), List.of(), List.of(), List.of(), List.copyOf(steps), bounds);
+		return new BuildPlan(List.of(), List.of(), List.of(), List.of(), List.of(), List.copyOf(steps), bounds);
 	}
 
 	public boolean isDeconstruction() {
@@ -226,6 +305,7 @@ public final class BuildPlan {
 			case FOUNDATION -> foundation;
 			case STRUCTURE -> structure;
 			case DECORATION -> decoration;
+			case LANDSCAPE -> landscape;
 			case DECONSTRUCT -> deconstruct;
 			case DONE -> List.of();
 		};

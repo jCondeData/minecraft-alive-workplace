@@ -37,6 +37,13 @@ public final class ModGameRules {
 	public static final GameRules.Key<GameRules.BooleanValue> KEEP_WORK_LOADED =
 		GameRuleRegistry.register("workplaceKeepWorkLoaded", GameRules.Category.MISC, GameRuleFactory.createBooleanRule(true));
 
+	/**
+	 * How many blocks around a finished build the builder levels: natural ground sticking up above the
+	 * build's floor is dug away and holes at floor level are filled with dirt (0 = leave the ground alone).
+	 */
+	public static final GameRules.Key<GameRules.IntegerValue> LEVEL_GROUND =
+		GameRuleRegistry.register("workplaceLevelGround", GameRules.Category.MOBS, GameRuleFactory.createIntRule(2, 0, 8));
+
 	public static void init() {
 	}
 

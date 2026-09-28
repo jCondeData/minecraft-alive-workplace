@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+### Added
+- **Ground levelling**: when a building is finished, the builder tidies the ground two blocks around it — natural dirt,
+  stone, sand and grass sticking up above the floor is dug away (up to 6 blocks high) and holes at floor level are
+  filled with dirt. Trees, flowers, farmland, water and anything built are left alone, and it never holds a build
+  up waiting for dirt. `/gamerule workplaceLevelGround` sets the width (0 turns it off).
+
 ## 0.25.0 — 2026-09-27
 
 ### Added

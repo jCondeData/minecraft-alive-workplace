@@ -70,7 +70,9 @@ The owner (Jesse) does not write code: sessions are expected to work autonomousl
 
 ## How the builder works (keep these invariants)
 - All progress lives in `BuildSite` (saved). `BuilderWork` must stay restartable at any tick.
-- Stages: CLEAR (top-down) → STRUCTURE (bottom-up) → DECORATION (things that need support) → DONE.
+- Stages: CLEAR (top-down) → FOUNDATION → STRUCTURE (bottom-up) → DECORATION (things that need support) → LANDSCAPE
+  (natural ground around the build dug away / holes filled; never waits for materials) → DONE. FOUNDATION and
+  LANDSCAPE lists depend on the terrain, so a site loaded mid-stage restarts that list (done steps are skipped).
   Steps that can't be done yet are deferred once, then skipped (counted in `skipped`).
 - "Done" checks use `MaterialRules.matches`, which ignores neighbour-dependent properties.
 - Blueprint conventions: front is the template's z=0 side; y=0 sits on the clicked block's top.

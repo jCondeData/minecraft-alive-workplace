@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+## 0.36.0 — 2026-09-28
+
+### Added
+- **Ball Smiths** (Ball Workbench, with Cobblemon): they turn the apricorns and ingots in the chests nearby into Poké
+  Balls with Cobblemon's own recipes — copper balls at first, then iron, gold and diamond ones as they level up —
+  taking turns between kinds and stopping at 64 of each. Steel and Fire Pokémon in a pasture nearby help.
+
 ## 0.35.0 — 2026-09-27
 
 ### Added

@@ -304,19 +304,19 @@ public class CobblemonCompatTests implements FabricGameTest {
 	public void orchardKeeperPicksApricornsAndBerries(GameTestHelper helper) {
 		var level = helper.getLevel();
 		helper.setDayTime(2000);
-		BlockPos basket = new BlockPos(2, 1, 2);
-		BlockPos chestPos = new BlockPos(2, 1, 4);
+		BlockPos basket = new BlockPos(2, 2, 2); // y = 1 is this area's floor
+		BlockPos chestPos = new BlockPos(2, 2, 4);
 		helper.setBlock(basket, ModBlocks.FRUIT_BASKET);
 		helper.setBlock(chestPos, net.minecraft.world.level.block.Blocks.CHEST);
 
 		// An apricorn hanging off apricorn leaves.
-		BlockPos leaves = new BlockPos(10, 3, 10);
+		BlockPos leaves = new BlockPos(10, 4, 10);
 		var leafState = com.cobblemon.mod.common.CobblemonBlocks.APRICORN_LEAVES.defaultBlockState();
 		if (leafState.hasProperty(net.minecraft.world.level.block.LeavesBlock.PERSISTENT)) {
 			leafState = leafState.setValue(net.minecraft.world.level.block.LeavesBlock.PERSISTENT, true);
 		}
 		helper.setBlock(leaves, leafState);
-		BlockPos apricorn = new BlockPos(11, 3, 10);
+		BlockPos apricorn = new BlockPos(11, 4, 10);
 		var apricornAge = com.cobblemon.mod.common.block.ApricornBlock.Companion.getAGE();
 		helper.setBlock(apricorn, com.cobblemon.mod.common.CobblemonBlocks.RED_APRICORN.defaultBlockState()
 			.setValue(net.minecraft.world.level.block.HorizontalDirectionalBlock.FACING, net.minecraft.core.Direction.WEST)
@@ -325,7 +325,7 @@ public class CobblemonCompatTests implements FabricGameTest {
 		helper.assertTrue(!io.github.jcondedata.aliveworkplace.orchard.Fruit.isRipe(helper.getBlockState(apricorn).setValue(apricornAge, 1)), "a small apricorn is not ripe");
 
 		// A berry plant in fruit, on farmland.
-		BlockPos berry = new BlockPos(6, 1, 11);
+		BlockPos berry = new BlockPos(6, 2, 11);
 		helper.setBlock(berry.below(), net.minecraft.world.level.block.Blocks.FARMLAND.defaultBlockState().setValue(net.minecraft.world.level.block.FarmBlock.MOISTURE, 7));
 		var berryAge = com.cobblemon.mod.common.block.BerryBlock.Companion.getAGE();
 		helper.setBlock(berry, com.cobblemon.mod.common.CobblemonBlocks.ORAN_BERRY.defaultBlockState().setValue(berryAge, com.cobblemon.mod.common.block.BerryBlock.FRUIT_AGE));
@@ -336,7 +336,7 @@ public class CobblemonCompatTests implements FabricGameTest {
 		}
 		helper.assertTrue(io.github.jcondedata.aliveworkplace.orchard.Fruit.isRipe(helper.getBlockState(berry)), "a berry plant in fruit should be ripe");
 
-		Villager keeper = helper.spawn(EntityType.VILLAGER, new BlockPos(3, 1, 3));
+		Villager keeper = helper.spawn(EntityType.VILLAGER, new BlockPos(3, 2, 3));
 		Jobs.employ(level, keeper, helper.absolutePos(basket), ModVillagers.FRUIT_BASKET_POI, ModVillagers.ORCHARD_KEEPER);
 		helper.succeedWhen(() -> {
 			net.minecraft.world.Container chest = helper.getBlockEntity(chestPos);
@@ -440,5 +440,40 @@ public class CobblemonCompatTests implements FabricGameTest {
 		helper.assertTrue(left == 150, "a short trip should cost 100 CobbleDollars, the player has " + left + " left");
 		helper.assertTrue(player.getInventory().countItem(io.github.jcondedata.aliveworkplace.registry.ModItems.TRAVEL_TICKET) == 1, "no ticket in the inventory");
 		helper.succeed();
+	}
+
+	/** A novice Ball Smith turns red apricorns and copper into Poké Balls, and leaves Great Ball makings for later. */
+	@GameTest(template = AREA, timeoutTicks = 1400)
+	public void ballSmithMakesPokeBalls(GameTestHelper helper) {
+		var recipes = io.github.jcondedata.aliveworkplace.smith.BallRecipes.all(helper.getLevel());
+		java.util.function.Function<String, Integer> tierOf = id -> recipes.stream()
+			.filter(r -> net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(r.result().getItem()).getPath().equals(id))
+			.map(io.github.jcondedata.aliveworkplace.smith.BallRecipes.BallRecipe::tier).findFirst().orElse(-1);
+		helper.assertTrue(tierOf.apply("poke_ball") == 1 && tierOf.apply("great_ball") == 2 && tierOf.apply("ultra_ball") == 3,
+			"ball tiers: poke " + tierOf.apply("poke_ball") + ", great " + tierOf.apply("great_ball") + ", ultra " + tierOf.apply("ultra_ball"));
+		helper.assertTrue(tierOf.apply("master_ball") == -1, "a smith must never make Master Balls");
+
+		helper.setDayTime(2000);
+		BlockPos bench = new BlockPos(2, 2, 2); // y = 1 is this area's floor
+		BlockPos chestPos = new BlockPos(2, 2, 4);
+		helper.setBlock(bench, ModBlocks.BALL_WORKBENCH);
+		helper.setBlock(chestPos, net.minecraft.world.level.block.Blocks.CHEST);
+		net.minecraft.world.Container chest = helper.getBlockEntity(chestPos);
+		chest.setItem(0, new net.minecraft.world.item.ItemStack(com.cobblemon.mod.common.CobblemonItems.RED_APRICORN, 8));
+		chest.setItem(1, new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.COPPER_INGOT, 2));
+		// Great Ball makings (with the red apricorns): too hard for a novice. Two blue aren't enough for an Azure Ball.
+		chest.setItem(2, new net.minecraft.world.item.ItemStack(com.cobblemon.mod.common.CobblemonItems.BLUE_APRICORN, 2));
+		chest.setItem(3, new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.IRON_INGOT, 1));
+		Villager smith = helper.spawn(EntityType.VILLAGER, new BlockPos(3, 2, 3));
+		Jobs.employ(helper.getLevel(), smith, helper.absolutePos(bench), ModVillagers.BALL_WORKBENCH_POI, ModVillagers.BALL_SMITH);
+		helper.succeedWhen(() -> {
+			helper.assertTrue(chest.countItem(com.cobblemon.mod.common.CobblemonItems.POKE_BALL) == 8,
+				chest.countItem(com.cobblemon.mod.common.CobblemonItems.POKE_BALL) + " Poké Balls made");
+			helper.assertTrue(chest.countItem(com.cobblemon.mod.common.CobblemonItems.RED_APRICORN) == 0
+				&& chest.countItem(net.minecraft.world.item.Items.COPPER_INGOT) == 0, "the makings weren't used up");
+			helper.assertTrue(chest.countItem(com.cobblemon.mod.common.CobblemonItems.BLUE_APRICORN) == 2
+				&& chest.countItem(net.minecraft.world.item.Items.IRON_INGOT) == 1, "a novice shouldn't make Great Balls");
+			helper.assertTrue(smith.getAttachedOrElse(io.github.jcondedata.aliveworkplace.registry.ModAttachments.BALLS_MADE, 0) == 8, "balls not counted");
+		});
 	}
 }

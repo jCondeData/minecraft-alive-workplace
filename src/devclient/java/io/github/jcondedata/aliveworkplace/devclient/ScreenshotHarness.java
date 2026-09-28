@@ -102,6 +102,10 @@ public class ScreenshotHarness implements ClientModInitializer {
 			missingScene(mc, mc.getSingleplayerServer());
 			return;
 		}
+		if ("smith".equals(System.getProperty("aliveworkplace.scene"))) {
+			smithScene(mc, mc.getSingleplayerServer());
+			return;
+		}
 		if ("shop".equals(System.getProperty("aliveworkplace.scene"))) {
 			shopScene(mc, mc.getSingleplayerServer());
 			return;
@@ -342,6 +346,51 @@ public class ScreenshotHarness implements ClientModInitializer {
 		}
 		if (tick >= GIVE_UP_AT) {
 			shot(mc, "99_timeout");
+			mc.stop();
+		}
+	}
+
+	// --- Smith: a Ball Smith at the Ball Workbench, next to an Orchard Keeper's basket ----------------------
+
+	private void smithScene(Minecraft mc, MinecraftServer server) {
+		tick++;
+		if (tick == 1) {
+			mc.options.renderDistance().set(6);
+			mc.options.cloudStatus().set(CloudStatus.OFF);
+			mc.options.hideGui = true;
+		}
+		if (tick == 30) {
+			server.execute(() -> {
+				ServerLevel level = server.overworld();
+				level.getGameRules().getRule(GameRules.RULE_DAYLIGHT).set(false, server);
+				level.getGameRules().getRule(GameRules.RULE_DOMOBSPAWNING).set(false, server);
+				server.getCommands().performPrefixedCommand(server.createCommandSourceStack().withSuppressedOutput(), "gamerule doPokemonSpawning false");
+				level.setDayTime(2500);
+				BlockPos bench = new BlockPos(0, -60, 0);
+				level.setBlockAndUpdate(bench, ModBlocks.BALL_WORKBENCH.defaultBlockState()
+					.setValue(net.minecraft.world.level.block.HorizontalDirectionalBlock.FACING, Direction.SOUTH));
+				level.setBlockAndUpdate(bench.east(), Blocks.CHEST.defaultBlockState());
+				BaseContainerBlockEntity chest = (BaseContainerBlockEntity) level.getBlockEntity(bench.east());
+				chest.setItem(0, new ItemStack(com.cobblemon.mod.common.CobblemonItems.RED_APRICORN, 32));
+				chest.setItem(1, new ItemStack(com.cobblemon.mod.common.CobblemonItems.BLUE_APRICORN, 16));
+				chest.setItem(2, new ItemStack(net.minecraft.world.item.Items.COPPER_INGOT, 8));
+				chest.setItem(3, new ItemStack(net.minecraft.world.item.Items.IRON_INGOT, 4));
+				Villager smith = EntityType.VILLAGER.spawn(level, bench.south(), MobSpawnType.COMMAND);
+				io.github.jcondedata.aliveworkplace.work.Jobs.employ(level, smith, bench,
+					io.github.jcondedata.aliveworkplace.registry.ModVillagers.BALL_WORKBENCH_POI, io.github.jcondedata.aliveworkplace.registry.ModVillagers.BALL_SMITH);
+				BlockPos basket = new BlockPos(-3, -60, 0);
+				level.setBlockAndUpdate(basket, ModBlocks.FRUIT_BASKET.defaultBlockState()
+					.setValue(net.minecraft.world.level.block.HorizontalDirectionalBlock.FACING, Direction.SOUTH));
+				Villager keeper = EntityType.VILLAGER.spawn(level, basket.south(), MobSpawnType.COMMAND);
+				io.github.jcondedata.aliveworkplace.work.Jobs.employ(level, keeper, basket,
+					io.github.jcondedata.aliveworkplace.registry.ModVillagers.FRUIT_BASKET_POI, io.github.jcondedata.aliveworkplace.registry.ModVillagers.ORCHARD_KEEPER);
+				hover(server.getPlayerList().getPlayers().get(0), new Vec3(-0.5, -58.3, 5.5), 180, 12);
+			});
+		}
+		if (tick == 330) {
+			shot(mc, "01_smith_working");
+		}
+		if (tick == 340) {
 			mc.stop();
 		}
 	}

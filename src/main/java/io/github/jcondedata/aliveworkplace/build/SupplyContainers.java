@@ -77,6 +77,24 @@ public final class SupplyContainers {
 		return total;
 	}
 
+	/** How many of each plain item (no extra components) the containers hold together. */
+	public static java.util.Map<Item, Long> contents(ServerLevel level, List<BlockPos> containers) {
+		java.util.Map<Item, Long> out = new java.util.HashMap<>();
+		for (BlockPos p : containers) {
+			Storage<ItemVariant> s = storage(level, p);
+			if (s == null) {
+				continue;
+			}
+			for (var view : s.nonEmptyViews()) {
+				ItemVariant variant = view.getResource();
+				if (variant.getComponents().isEmpty()) {
+					out.merge(variant.getItem(), view.getAmount(), Long::sum);
+				}
+			}
+		}
+		return out;
+	}
+
 	/** First container (in list order) holding at least one {@code item}. */
 	@Nullable
 	public static BlockPos firstWith(ServerLevel level, List<BlockPos> containers, Item item) {

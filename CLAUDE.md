@@ -9,6 +9,8 @@ The owner (Jesse) does not write code: sessions are expected to work autonomousl
 1. `git pull`, read `ROADMAP.md` (priorities + owner decisions) and the latest `CHANGELOG.md` entries.
 2. Pick the **next unchecked roadmap item(s)** in order. Keep each change reviewable (one feature per commit/PR).
 3. Implement with **gametests** for any behaviour (see `src/gametest`). Pure-logic checks can use `FabricGameTest.EMPTY_STRUCTURE`.
+   In both test areas (`big_area`, `build_area`) helper **y = 1 is the floor**: put blocks and villagers at y = 2 (a villager spawned
+   at y = 1 is inside the floor and suffocates within ~200 ticks; older compat tests that finish quickly still use y = 1).
 4. Run `./gradlew build` — this compiles, packages and runs every gametest on a headless server. **Never push a red build.**
 5. Tick the roadmap box, add a `CHANGELOG.md` line under *Unreleased*, commit, push to `main`.
 6. If blocked or a decision belongs to the owner, write it under *Notes / blocked* in `ROADMAP.md` and move on to the next item.
@@ -30,7 +32,7 @@ The owner (Jesse) does not write code: sessions are expected to work autonomousl
   of builders at work; use it to check anything visual and to show the owner progress.
   `SCENE=table` shows the Blueprint Table screens, `SCENE=preview` the ghost preview and the status above a builder,
   `SCENE=gallery` every starter blueprint, `SCENE=village WORKSHOP_WEIGHT=200` one village of each type with workshops (`HOUSE_WEIGHT=60` for the other houses),
-  `SCENE=quarry` a miner digging out a block of stone, `SCENE=forest` a lumberjack felling and replanting four trees, `SCENE=orchard` an orchard keeper picking (adds Cobblemon for apricorns and berries), `SCENE=farm` a farmer working a field, `SCENE=mail` the mailbox screen and a postman delivering, `SCENE=guard` a guard fighting three husks, `SCENE=staff` every workstation with its villager (then `python3 tools/screenshots/make_gif.py`), `SCENE=missing` a placed blueprint's "still missing" tooltip, `SCENE=tutor` the Move Tutor's lesson screen, `SCENE=trader` a Pokémon Trader's offers and `SCENE=shop` the CobbleDollars shop screen (these add Cobblemon and CobbleDollars to the client: `-Pcobblemon=true`). `DEBUG=true` logs
+  `SCENE=quarry` a miner digging out a block of stone, `SCENE=forest` a lumberjack felling and replanting four trees, `SCENE=orchard` an orchard keeper picking (adds Cobblemon for apricorns and berries), `SCENE=farm` a farmer working a field, `SCENE=mail` the mailbox screen and a postman delivering, `SCENE=guard` a guard fighting three husks, `SCENE=staff` every workstation with its villager (then `python3 tools/screenshots/make_gif.py`), `SCENE=missing` a placed blueprint's "still missing" tooltip, `SCENE=tutor` the Move Tutor's lesson screen, `SCENE=trader` a Pokémon Trader's offers `SCENE=shop` the CobbleDollars shop screen and `SCENE=smith` a Ball Smith and an Orchard Keeper at work (these add Cobblemon and CobbleDollars to the client: `-Pcobblemon=true`). `DEBUG=true` logs
   builder/miner decisions. Long scenes take >10 min: start run.sh in the background and poll.
   Never `pkill -f`/`pgrep -f` a pattern that also appears in your own command line (it kills your shell).
 - `tools/packtest/run.sh` — boots a real Cobbleverse server (every pack mod, production Fabric) with the newest
@@ -67,6 +69,7 @@ The owner (Jesse) does not write code: sessions are expected to work autonomousl
   `PostOffice` (saved data: addresses, parcels, desks, dawn delivery), `Parcel`, `Mail` (send packet), `PostmanWork`
 - `fish/` — the fisher upgrade (vanilla Fishermen, hired with a fishing rod): `FisherWork`, `Fishers`
 - `wood/` — the lumberjack: `Trees` (what counts as a natural tree), `LumberjackWork`, `LumberjackPackages`
+- `smith/` — the ball smith: `BallRecipes` (Cobblemon ball recipes by tag and tier), `BallSmithWork`, `BallSmithPackages`
 - `orchard/` — the orchard keeper: `Fruit` (what's ripe, picking it), `OrchardWork`, `OrchardPackages`; Cobblemon apricorns and
   berry plants in `compat/cobblemon/CobblemonOrchard`
 - `work/` — shared by all jobs: `Walker` (movement + reach), `WorkerStatus` (overhead status for jobs without a saved site), `Jobs.employ`,

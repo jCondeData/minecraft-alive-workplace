@@ -72,6 +72,7 @@ public final class ModItems {
 				output.accept(ModBlocks.TUTORS_DESK);
 				output.accept(ModBlocks.TRADE_BOARD);
 				output.accept(ModBlocks.FRUIT_BASKET);
+				output.accept(ModBlocks.BALL_WORKBENCH);
 				for (StarterBlueprints.Entry entry : StarterBlueprints.ALL) {
 					output.accept(BlueprintItem.create(entry.id(), entry.size()));
 				}

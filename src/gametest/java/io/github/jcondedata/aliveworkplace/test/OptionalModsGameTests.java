@@ -33,4 +33,13 @@ public class OptionalModsGameTests implements FabricGameTest {
 		helper.assertTrue(RctLevelCaps.levelCap(helper.makeMockServerPlayerInLevel()).isEmpty(), "a level cap without RCT");
 		helper.succeed();
 	}
+
+	/** Without Cobblemon there are no Poké Ball recipes, so a Ball Smith has nothing to make (and nothing breaks). */
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
+	public void noBallRecipesWithoutCobblemon(GameTestHelper helper) {
+		helper.assertTrue(io.github.jcondedata.aliveworkplace.smith.BallRecipes.all(helper.getLevel()).isEmpty(), "ball recipes without Cobblemon");
+		helper.assertTrue(io.github.jcondedata.aliveworkplace.work.Partners.helpers(helper.spawn(net.minecraft.world.entity.EntityType.VILLAGER,
+			new net.minecraft.core.BlockPos(1, 2, 1))).isEmpty(), "Pokémon partners without Cobblemon");
+		helper.succeed();
+	}
 }

@@ -6,7 +6,7 @@ torches. **Miners** dig out quarries, **Lumberjacks** cut down and replant trees
 your fields and **Fishermen** fish for you, dropping everything off in your chests. **Postmen** carry mail
 between players' mailboxes, **Guards** keep monsters away, **Nurses** heal you (and your Pokémon),
 **Shopkeepers** run your shop, **Ferrymen** take you between villages, **Bards** play music and — with Cobblemon —
-**Trainers** battle you, **Move Tutors** teach your Pokémon new moves and **Pokémon Traders** swap Pokémon with you. Villages grow workshops, guard houses, clinics and post offices on their own — and with Cobblemon, trainer's houses,
+**Trainers** battle you, **Move Tutors** teach your Pokémon new moves, **Ball Smiths** make Poké Balls and **Pokémon Traders** swap Pokémon with you. Villages grow workshops, guard houses, clinics and post offices on their own — and with Cobblemon, trainer's houses,
 Trainer Leader halls, schools and trade halls (Repurposed Structures' villages too).
 
 ![Three builders putting up the starter blueprints](docs/media/timelapse.gif)
@@ -198,6 +198,18 @@ without CobbleDollars installed, 3 to 24 emeralds). A new tutor
 only teaches weaker moves; they rank up with every lesson they give, and a Master teaches everything. Tutors also buy
 paper and books, if you need emeralds.
 
+## Ball Smiths (with Cobblemon)
+![A Ball Smith making Azure Balls next to an Orchard Keeper](docs/media/ball-smith.png)
+
+Craft a **Ball Workbench** (red dye, a copper ingot and white dye over planks either side of a smithing table) and
+place it near a villager without a job: they become a **Ball Smith**. Put apricorns and ball metals in chests within
+8 blocks — copper ingots for Poké Balls and the other basic balls, iron for Great Balls and friends, gold for Ultra
+Balls, diamonds for the rarest — and the smith turns them into balls with Cobblemon's own recipes, a batch of four at
+a time, and puts the balls back in the chests. A new smith only works copper; they learn the harder balls as they
+level up (iron at Apprentice, gold at Journeyman, diamonds at Expert). They take turns between the kinds they can
+make and stop making a kind once the chests hold 64 of it. They never make Master Balls. Pair them with an Orchard
+Keeper (or Cobbleworkers' apricorn pickers) for a steady supply.
+
 ## Pokémon Traders (with Cobblemon)
 Craft a **Trade Board** (an item frame on planks) and place it near a villager without a job: they become a
 **Pokémon Trader**. Right-click them with an empty hand (sneak to buy Poké Balls and candies instead) to see today's
@@ -224,6 +236,7 @@ type suits it — each one cuts the time the work takes by 15%, up to three:
 | Farmer | Grass, Ground, Water |
 | Fisherman | Water, Ice |
 | Nurse | Fairy, Normal, Psychic |
+| Ball Smith | Steel, Fire |
 
 The line above the villager's head says who is helping ("· with Machop"), and sneak-right-clicking a worker shows
 how much faster they are. It works with [Cobbleworkers](https://modrinth.com/mod/cobbleworkers) too: the same

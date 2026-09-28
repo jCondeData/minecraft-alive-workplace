@@ -58,13 +58,13 @@ public class PastureCompatTests implements FabricGameTest {
 	public void pasturedPokemonHelpTheVillagerNearby(GameTestHelper helper) {
 		helper.assertTrue(FabricLoader.getInstance().isModLoaded("cobbleworkers"), "Cobbleworkers should be installed for this test");
 		ServerLevel level = helper.getLevel();
-		BlockPos bench = new BlockPos(2, 1, 2);
+		BlockPos bench = new BlockPos(2, 2, 2); // y = 1 is this area's floor
 		helper.setBlock(bench, ModBlocks.BUILDERS_BENCH);
-		Villager builder = helper.spawn(EntityType.VILLAGER, new BlockPos(3, 1, 3));
+		Villager builder = helper.spawn(EntityType.VILLAGER, new BlockPos(3, 2, 3));
 		Jobs.employ(level, builder, helper.absolutePos(bench), ModVillagers.BUILDERS_BENCH_POI, ModVillagers.BUILDER);
 		helper.assertTrue(BuilderLevels.delay(100, builder) == 100, "a novice without help takes the full time");
 
-		BlockPos pasture = pasture(helper, new BlockPos(10, 1, 10));
+		BlockPos pasture = pasture(helper, new BlockPos(10, 2, 10));
 		ServerPlayer player = helper.makeMockServerPlayerInLevel();
 		pastured(helper, pasture, player, "machop", Direction.NORTH);
 		pastured(helper, pasture, player, "pikachu", Direction.WEST);
@@ -84,10 +84,10 @@ public class PastureCompatTests implements FabricGameTest {
 	public void courierHaulsFromAPasture(GameTestHelper helper) {
 		ServerLevel level = helper.getLevel();
 		helper.setDayTime(2000);
-		BlockPos pasture = pasture(helper, new BlockPos(11, 1, 11));
-		BlockPos berries = new BlockPos(13, 1, 11);
-		BlockPos apricorns = new BlockPos(11, 1, 14);
-		BlockPos drop = new BlockPos(2, 1, 6);
+		BlockPos pasture = pasture(helper, new BlockPos(11, 2, 11));
+		BlockPos berries = new BlockPos(13, 2, 11);
+		BlockPos apricorns = new BlockPos(11, 2, 14);
+		BlockPos drop = new BlockPos(2, 2, 6);
 		for (BlockPos p : List.of(berries, apricorns, drop)) {
 			helper.setBlock(p, Blocks.CHEST);
 		}
@@ -95,9 +95,9 @@ public class PastureCompatTests implements FabricGameTest {
 		((Container) helper.getBlockEntity(apricorns)).setItem(3, new ItemStack(CobblemonItems.RED_APRICORN, 6));
 		helper.assertTrue(Pastures.containers(level, pasture).size() == 2, "containers around the pasture: " + Pastures.containers(level, pasture));
 
-		BlockPos desk = new BlockPos(2, 1, 2);
+		BlockPos desk = new BlockPos(2, 2, 2);
 		helper.setBlock(desk, ModBlocks.POSTAL_DESK);
-		Villager postman = helper.spawn(EntityType.VILLAGER, new BlockPos(3, 1, 3));
+		Villager postman = helper.spawn(EntityType.VILLAGER, new BlockPos(3, 2, 3));
 		Jobs.employ(level, postman, helper.absolutePos(desk), ModVillagers.POSTAL_DESK_POI, ModVillagers.POSTMAN);
 		postman.setAttached(ModAttachments.COURIER_ROUTES, List.of(new RouteData(Optional.of(pasture), Optional.of(helper.absolutePos(drop)), List.of())));
 		Container target = helper.getBlockEntity(drop);

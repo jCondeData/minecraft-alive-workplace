@@ -54,6 +54,9 @@ public final class Partners {
 		if (profession == VillagerProfession.FISHERMAN) {
 			return Set.of("water", "ice");
 		}
+		if (profession == ModVillagers.BALL_SMITH) {
+			return Set.of("steel", "fire");
+		}
 		if (profession == ModVillagers.NURSE) {
 			return Set.of("fairy", "normal", "psychic");
 		}

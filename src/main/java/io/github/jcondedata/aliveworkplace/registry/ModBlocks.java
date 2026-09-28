@@ -115,6 +115,11 @@ public final class ModBlocks {
 		"fruit_basket", new BuildersBenchBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.BARREL))
 	);
 
+	/** Workstation for the Ball Smith: Poké Balls from the apricorns and metals in the chests nearby (with Cobblemon). */
+	public static final BuildersBenchBlock BALL_WORKBENCH = register(
+		"ball_workbench", new BuildersBenchBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.SMITHING_TABLE))
+	);
+
 	private static <T extends Block> T register(String name, T block) {
 		Registry.register(BuiltInRegistries.BLOCK, AliveWorkplace.id(name), block);
 		Registry.register(BuiltInRegistries.ITEM, AliveWorkplace.id(name), new BlockItem(block, new Item.Properties()));

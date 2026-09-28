@@ -18,6 +18,7 @@ public final class ModTrades {
 		tutorTrades();
 		pokemonTraderTrades();
 		orchardKeeperTrades();
+		ballSmithTrades();
 		TradeOfferHelper.registerVillagerOffers(ModVillagers.BARD, 1, offers -> {
 			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 2), new ItemStack(Items.NOTE_BLOCK, 2), 12, 2, 0.05f));
 			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.STRING, 16), new ItemStack(Items.EMERALD), 16, 2, 0.05f));
@@ -165,6 +166,28 @@ public final class ModTrades {
 			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 8), new ItemStack(Items.GOLDEN_APPLE), 4, 30, 0.05f));
 			offers.add((entity, random) -> cobblemon(APRICORNS[random.nextInt(APRICORNS.length)] + "_apricorn_seed", 6, 1, 4, 30));
 		});
+	}
+
+	/** Ball Smiths buy apricorns and copper, and sell balls (nothing but the copper without Cobblemon). */
+	private static void ballSmithTrades() {
+		TradeOfferHelper.registerVillagerOffers(ModVillagers.BALL_SMITH, 1, offers -> {
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.COPPER_INGOT, 8), new ItemStack(Items.EMERALD), 16, 2, 0.05f));
+			offers.add((entity, random) -> cobblemon("poke_ball", 1, 4, 16, 1));
+		});
+		TradeOfferHelper.registerVillagerOffers(ModVillagers.BALL_SMITH, 2, offers -> {
+			offers.add((entity, random) -> net.minecraft.core.registries.BuiltInRegistries.ITEM
+				.getOptional(net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("cobblemon", APRICORNS[random.nextInt(APRICORNS.length)] + "_apricorn"))
+				.map(item -> new MerchantOffer(new ItemCost(item, 12), new ItemStack(Items.EMERALD), 16, 10, 0.05f)).orElse(null));
+			offers.add((entity, random) -> cobblemon("great_ball", 2, 4, 12, 5));
+		});
+		TradeOfferHelper.registerVillagerOffers(ModVillagers.BALL_SMITH, 3, offers ->
+			offers.add((entity, random) -> cobblemon("ultra_ball", 4, 4, 12, 15)));
+		TradeOfferHelper.registerVillagerOffers(ModVillagers.BALL_SMITH, 4, offers -> {
+			String[] special = {"quick_ball", "dusk_ball", "timer_ball", "net_ball", "dive_ball", "heavy_ball", "level_ball", "lure_ball", "moon_ball"};
+			offers.add((entity, random) -> cobblemon(special[random.nextInt(special.length)], 5, 2, 8, 20));
+		});
+		TradeOfferHelper.registerVillagerOffers(ModVillagers.BALL_SMITH, 5, offers ->
+			offers.add((entity, random) -> cobblemon("premier_ball", 1, 8, 8, 30)));
 	}
 
 	private static final String[] APRICORNS = {"red", "yellow", "green", "blue", "pink", "black", "white"};

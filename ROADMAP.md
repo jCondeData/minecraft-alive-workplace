@@ -175,7 +175,12 @@ workstation, like the rest of the mod.
   (apricorns, Cobblemon berries and apricorn seeds with Cobblemon)
 - [ ] Orchard Keeper follow-ups: mints (they have to be broken and replanted), a village orchard house, planting
   apricorn seeds and berries from the chests
-- [ ] Jobs: Nurse (Healing Machine), Chef (Campfire Pot: Lure Cakes, Aprijuice), Ball Smith (apricorns → balls), Fossil Scientist
+- [x] **Ball Smith** (Ball Workbench): makes Poké Balls from the apricorns and ball metals in the chests with
+  Cobblemon's own crafting recipes (`smith/BallRecipes`: results in `#cobblemon:poke_balls` using a
+  `tier_N_poke_ball_materials` metal; copper 1 … diamond 4, up to the smith's level; never the Master Ball), taking
+  turns between kinds and stopping at 64 of a kind; Steel/Fire partners help
+- [ ] Ball Smith follow-ups: a village house for them, a way to choose which balls to make
+- [ ] Jobs: Nurse (Healing Machine), Chef (Campfire Pot: Lure Cakes, Aprijuice), Fossil Scientist
 - [x] Cobbleworkers compatibility (compat-tested with Cobbleworkers 2.0.5): courier routes can start or end at a
   Pasture Block (`work/Pastures`: every container within 8 blocks, where Cobbleworkers' Pokémon deposit); pastured
   Pokémon count as partners whether or not they work for Cobbleworkers. Cobbleworkers only deposits into chests,

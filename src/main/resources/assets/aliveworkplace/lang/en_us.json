@@ -421,5 +421,12 @@
   "message.aliveworkplace.travel.fare": "Fare: %s",
   "message.aliveworkplace.travel.confirm": "Click again to buy a ticket to %s",
   "message.aliveworkplace.travel.menu_help": "Pick a destination, then use the ticket near any travel post. Sneak-right-click the ferryman to pay in emeralds instead.",
-  "message.aliveworkplace.travel.bought": "Ticket to %s bought: use it near a travel post."
+  "message.aliveworkplace.travel.bought": "Ticket to %s bought: use it near a travel post.",
+  "block.aliveworkplace.ball_workbench": "Ball Workbench",
+  "entity.minecraft.villager.ball_smith": "Ball Smith",
+  "entity.minecraft.zombie_villager.ball_smith": "Zombie Ball Smith",
+  "message.aliveworkplace.ball_smith.title": "Ball Smith · %s made",
+  "message.aliveworkplace.ball_smith.state.crafting": "making %s",
+  "message.aliveworkplace.ball_smith.state.waiting": "needs apricorns and ball metal in a chest",
+  "message.aliveworkplace.ball_smith.state.stocked": "the chests are full of balls"
 }

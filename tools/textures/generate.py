@@ -1312,6 +1312,69 @@ def orchard_keeper_overlay():
     save(img, "entity", "zombie_villager", "profession", "orchard_keeper.png")
 
 
+# --- Ball Workbench: a smith's bench with Poké Ball halves on it ---------------------------------------
+def ball_workbench(face):
+    rnd = random.Random({"top": 301, "side": 302, "front": 303}[face])
+    img = Image.new("RGBA", (16, 16))
+    planks(img, rnd)
+    iron, iron_dark = rgb("#9aa0a6"), rgb("#6b7075")
+    if face == "top":
+        # A steel plate with a finished ball and two halves waiting to be joined
+        for y in range(1, 15):
+            for x in range(1, 15):
+                img.putpixel((x, y), jitter(iron if (x + y) % 7 else iron_dark, rnd, 5))
+
+        def ball(cx, cy, top, bottom=rgb("#f2f2f2"), r=3):
+            for y in range(cy - r, cy + r + 1):
+                for x in range(cx - r, cx + r + 1):
+                    if (x - cx) ** 2 + (y - cy) ** 2 <= r * r + 1:
+                        c = top if y < cy else (rgb("#1f1f1f") if y == cy else bottom)
+                        img.putpixel((x, y), c)
+            img.putpixel((cx, cy), rgb("#f2f2f2"))
+        ball(5, 5, rgb("#d32f2f"))
+        ball(11, 10, rgb("#1e63c4"))
+        for x in range(9, 14):
+            img.putpixel((x, 3), rgb("#e8b923"))  # a gold ingot
+            img.putpixel((x, 4), rgb("#c99a14"))
+    else:
+        for x in range(16):
+            for y in (0, 1):
+                img.putpixel((x, y), jitter(iron_dark, rnd, 4))
+        if face == "front":
+            # A red and white ball painted on the front
+            for y in range(6, 13):
+                for x in range(5, 12):
+                    if (x - 8) ** 2 + (y - 9) ** 2 <= 10:
+                        img.putpixel((x, y), rgb("#d32f2f") if y < 9 else (rgb("#1f1f1f") if y == 9 else rgb("#f2f2f2")))
+            img.putpixel((8, 9), rgb("#f2f2f2"))
+    save(img, "block", "ball_workbench_" + face + ".png")
+
+
+def ball_smith_overlay():
+    img = Image.new("RGBA", (64, 64), T)
+    rnd = random.Random(311)
+    leather, dark, lens = rgb("#7a4a26"), rgb("#4e2f1a"), rgb("#8fd3ff")
+    # A leather cap with goggles pushed up on it
+    for y in range(0, 8):
+        for x in range(40, 48):
+            img.putpixel((x, y), jitter(leather, rnd, 5))
+    for y in range(8, 10):
+        for x in range(32, 64):
+            img.putpixel((x, y), jitter(dark if y == 9 else leather, rnd, 4))
+    for x in (41, 42, 45, 46):
+        img.putpixel((x, 8), lens)
+    # A leather apron with a red and white ball stitched on
+    for y in range(44, 58):
+        for x in range(4, 24):
+            img.putpixel((x, y), jitter(leather, rnd, 4))
+    for y in range(48, 53):
+        for x in range(10, 15):
+            if (x - 12) ** 2 + (y - 50) ** 2 <= 5:
+                img.putpixel((x, y), rgb("#d32f2f") if y < 50 else (rgb("#1f1f1f") if y == 50 else rgb("#f2f2f2")))
+    save(img, "entity", "villager", "profession", "ball_smith.png")
+    save(img, "entity", "zombie_villager", "profession", "ball_smith.png")
+
+
 def icon(blueprint):
     big = Image.new("RGBA", (128, 128), T)
     scaled = blueprint.resize((128, 128), Image.NEAREST)
@@ -1385,3 +1448,6 @@ if __name__ == "__main__":
     for face in ("top", "side", "front"):
         fruit_basket(face)
     orchard_keeper_overlay()
+    for face in ("top", "side", "front"):
+        ball_workbench(face)
+    ball_smith_overlay()

@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "aliveworkplace:block/ball_workbench"
+    },
+    "facing=east": {
+      "model": "aliveworkplace:block/ball_workbench",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "aliveworkplace:block/ball_workbench",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "aliveworkplace:block/ball_workbench",
+      "y": 270
+    }
+  }
+}

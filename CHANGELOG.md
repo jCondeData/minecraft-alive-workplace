@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 0.25.0 — 2026-09-27
+
 ### Added
 - **What's still missing**: a placed blueprint's tooltip now says what the chests by the nearest Builder's Bench
   are short of (hold Shift for the list), or that everything is there. Blocks already standing where the blueprint

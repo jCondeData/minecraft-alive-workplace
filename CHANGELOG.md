@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 0.23.0 — 2026-09-27
+
 ### Added
 - **Move Tutors** (with Cobblemon). Craft a **Tutor's Desk** (a book on planks) for a villager and right-click them:
   pick one of your Pokémon and a move it could learn (tutor, TM and egg moves), click twice, pay in emeralds and it

@@ -21,19 +21,28 @@ public final class StarterBlueprints {
 	public static final Entry MARKET_STALL = new Entry(AliveWorkplace.id("market_stall"), new Vec3i(7, 5, 5));
 	/** A second stall alongside, with a Shop Counter. */
 	public static final Entry MARKET_STALL_2 = new Entry(AliveWorkplace.id("market_stall_2"), new Vec3i(13, 5, 5));
+	/** A storeroom shed behind the stalls. */
+	public static final Entry MARKET_STALL_3 = new Entry(AliveWorkplace.id("market_stall_3"), new Vec3i(13, 5, 10));
 	public static final Entry LOOKOUT_TOWER = new Entry(AliveWorkplace.id("lookout_tower"), new Vec3i(7, 15, 7));
 	/** A Guard Post at the foot of the ladder and a bell under a pointed roof. */
 	public static final Entry LOOKOUT_TOWER_2 = new Entry(AliveWorkplace.id("lookout_tower_2"), new Vec3i(7, 18, 7));
+	/** A guardhouse beside the tower: a second Guard Post and two bunks. */
+	public static final Entry LOOKOUT_TOWER_3 = new Entry(AliveWorkplace.id("lookout_tower_3"), new Vec3i(13, 18, 7));
 	/** Has a Cobblemon Healing Machine on the counter; without Cobblemon that spot stays empty. */
 	public static final Entry HEALING_CENTER = new Entry(AliveWorkplace.id("healing_center"), new Vec3i(11, 8, 9));
 	/** A ward with four beds behind the counter. */
 	public static final Entry HEALING_CENTER_2 = new Entry(AliveWorkplace.id("healing_center_2"), new Vec3i(11, 8, 13));
+	/** A berry garden behind the ward with a Fruit Basket. */
+	public static final Entry HEALING_CENTER_3 = new Entry(AliveWorkplace.id("healing_center_3"), new Vec3i(11, 8, 18));
 	public static final Entry SUPPLY_SHOP = new Entry(AliveWorkplace.id("supply_shop"), new Vec3i(9, 7, 8));
 	/** A storeroom and the shopkeeper's bedroom upstairs. */
 	public static final Entry SUPPLY_SHOP_2 = new Entry(AliveWorkplace.id("supply_shop_2"), new Vec3i(9, 12, 8));
 
-	public static final List<Entry> ALL = List.of(STARTER_COTTAGE, STARTER_COTTAGE_2, STARTER_COTTAGE_3, MARKET_STALL, MARKET_STALL_2, LOOKOUT_TOWER, LOOKOUT_TOWER_2,
-		HEALING_CENTER, HEALING_CENTER_2, SUPPLY_SHOP, SUPPLY_SHOP_2);
+	/** A post office annex with a Postal Desk. */
+	public static final Entry SUPPLY_SHOP_3 = new Entry(AliveWorkplace.id("supply_shop_3"), new Vec3i(15, 12, 8));
+
+	public static final List<Entry> ALL = List.of(STARTER_COTTAGE, STARTER_COTTAGE_2, STARTER_COTTAGE_3, MARKET_STALL, MARKET_STALL_2, MARKET_STALL_3,
+		LOOKOUT_TOWER, LOOKOUT_TOWER_2, LOOKOUT_TOWER_3, HEALING_CENTER, HEALING_CENTER_2, HEALING_CENTER_3, SUPPLY_SHOP, SUPPLY_SHOP_2, SUPPLY_SHOP_3);
 
 	private StarterBlueprints() {
 	}

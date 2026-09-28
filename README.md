@@ -65,13 +65,17 @@ and the **Supply Shop** (with a Shop Counter) — build them and a nurse and a s
 ![The Starter Cottage II next to a Starter Cottage](docs/media/cottage-upgrade.png)
 ![Market Stall II, Lookout Tower II, Healing Center II and Supply Shop II next to the builds they upgrade](docs/media/starter-upgrades.png)
 ![Starter Cottage III: the two-storey cottage with a kitchen wing and a roof terrace on the side](docs/media/cottage-3.png)
+![From behind: Market Stall III's storeroom, Lookout Tower III's guardhouse, Healing Center III's berry garden and Supply Shop III's post office](docs/media/third-tiers.png)
 
 **Upgrades.** A blueprint named like another with `_2` on the end (`_3` after that…) is its upgrade. Every starter
 build has one: the **Starter Cottage II** adds a second storey, the **Market Stall II** a second stall with a Shop
 Counter, the **Lookout Tower II** a Guard Post, a bell and a pointed roof, the **Healing Center II** a ward with four
 beds, and the **Supply Shop II** a storeroom and a bedroom upstairs. The cottage goes one step further: the **Starter
 Cottage III** adds a kitchen wing on the side with a roof terrace, reached through a new door upstairs (the builder
-clears the ground where the wing goes first). Right-click a finished building with its upgrade
+clears the ground where the wing goes first). The others have a third tier too, each bringing a new villager: the
+**Market Stall III** a storeroom shed behind the stalls, the **Lookout Tower III** a guardhouse with a second Guard
+Post and two bunks, the **Healing Center III** a fenced berry garden with a Fruit Basket (an orchard keeper), and the
+**Supply Shop III** a post office annex with a Postal Desk (a postman). Right-click a finished building with its upgrade
 and it lines up exactly over it; the builder takes off what changes and builds only what's new, keeping everything
 else. Once a builder finishes a building that has an upgrade, **they sell its blueprint** (and tell you). The
 upgrades are in the Blueprint Table too. Your own blueprints work the same way (`my_house` → `my_house_2`).

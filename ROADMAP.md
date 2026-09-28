@@ -80,7 +80,9 @@ Owner decisions are recorded in **Design decisions** at the bottom. Don't change
 - [x] Third tier that grows sideways: Starter Cottage III (a kitchen wing east of Cottage II with a roof terrace and a
   door onto it from the upper floor); gametest builds it over a finished Cottage II with a mound where the wing goes.
   Found and fixed on the way: clearing left the wall where a new door's top half goes, so the door was skipped
-- [ ] Upgrade follow-ups: third tiers for the other starter builds
+- [x] Third tiers for the other starter builds, each adding a job: Market Stall III (a storeroom shed), Lookout Tower III
+  (a guardhouse: second Guard Post, two bunks), Healing Center III (a berry garden with a Fruit Basket), Supply Shop III
+  (a post office annex with a Postal Desk). The gallery scene also shoots each build from behind (`31_*_back.png`)
 
 ## Milestone 2 — Other work jobs
 - [x] **Miner** (Miner's Bench workstation, Quarry Marker item): digs the marked area out layer by layer with pickaxes from the chests (tool tier and durability count; waits for a new one), drops everything off in the chests near the bench, lights the pit with torches from the chests, leaves blocks touching lava/water, containers and anything too hard, never goes below 5 above the world floor; levels up like builders; trades coal/ores, sells markers, torches and pickaxes

@@ -1266,6 +1266,18 @@ public class ScreenshotHarness implements ClientModInitializer {
 		if (tick >= 100 && (tick - 100) % 60 == 0 && (tick - 100) / 60 < all.size()) {
 			shot(mc, "30_" + all.get((tick - 100) / 60).id().getPath());
 		}
+		// And from behind, where upgrades often add their part.
+		if (tick >= 105 && (tick - 105) % 60 == 0 && (tick - 105) / 60 < all.size()) {
+			int i = (tick - 105) / 60;
+			StarterBlueprints.Entry e = all.get(i);
+			double cx = i * 24 + e.size().getX() / 2.0 + 0.5;
+			double dist = Math.max(e.size().getX(), e.size().getY()) * 1.3 + 4;
+			server.execute(() -> hover(server.getPlayerList().getPlayers().get(0),
+				new Vec3(cx + dist * 0.45, -60 + e.size().getY() * 0.7 + 4, e.size().getZ() + dist), 200, 26));
+		}
+		if (tick >= 118 && (tick - 118) % 60 == 0 && (tick - 118) / 60 < all.size()) {
+			shot(mc, "31_" + all.get((tick - 118) / 60).id().getPath() + "_back");
+		}
 		if (tick == 30 || tick == 90) {
 			// Materials tooltip: the first call asks the server, a later one has the answer.
 			for (Component line : io.github.jcondedata.aliveworkplace.client.BlueprintTooltip.materialLines(StarterBlueprints.HEALING_CENTER.id())) {

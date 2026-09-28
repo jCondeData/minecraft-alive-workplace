@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+## 0.65.0 — 2026-09-28
+
+### Added
+- **Third tiers for every starter build**, each bringing a new villager: Market Stall III (a storeroom shed with chests
+  behind the stalls), Lookout Tower III (a guardhouse with a second Guard Post and two bunks), Healing Center III (a
+  fenced berry garden with a Fruit Basket for an orchard keeper) and Supply Shop III (a post office annex with a Postal
+  Desk). Builders who finish a tier II sell the tier III.
+
 ## 0.64.0 — 2026-09-28
 
 ### Added

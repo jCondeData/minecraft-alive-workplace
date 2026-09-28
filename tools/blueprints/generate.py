@@ -397,6 +397,31 @@ def market_stall_2():
     b.fill_air()
     return b
 
+# --- Market Stall III: a storeroom shed behind the two stalls ------------------------------------------
+def market_stall_3():
+    """Upgrade of Market Stall II: a shed behind the stalls, reached through a door behind the second stall, with chests
+    and a workbench for the stock (within reach of the Shop Counter, so the shopkeeper sells from it too)."""
+    b = market_stall_2().grow(13, 5, 10)
+    b.fill(1, 0, 5, 11, 0, 9, "spruce_planks")
+    for y in range(1, 4):
+        b.ring(1, 5, 11, 9, y, "spruce_planks")
+        for x, z in ((1, 5), (11, 5), (1, 9), (11, 9)):
+            b.set(x, y, z, "spruce_log", axis="y")
+    b.fill(1, 4, 5, 11, 4, 9, "spruce_slab", type="bottom", waterlogged=False)
+    b.door(9, 1, 5, "spruce_door", facing="south")  # behind the second stall (a post stands behind the first's middle)
+    for x in (3, 9):
+        b.set(x, 2, 9, "glass_pane", north=False, south=False, east=True, west=True, waterlogged=False)
+    for x in (1, 11):
+        b.set(x, 2, 7, "glass_pane", north=True, south=True, east=False, west=False, waterlogged=False)
+    for x in (2, 4, 8, 10):
+        b.set(x, 1, 8, "chest", facing="north", type="single", waterlogged=False)
+    b.set(6, 1, 8, "crafting_table")
+    b.set(2, 1, 6, "hay_block", axis="y")
+    b.set(10, 1, 6, "hay_block", axis="y")
+    b.set(6, 3, 7, "lantern", hanging=True, waterlogged=False)
+    b.fill_air()
+    return b
+
 
 # --- Lookout Tower, upgraded: a guard post with a bell under a pointed roof --------------------------------
 def lookout_tower_2():
@@ -419,6 +444,27 @@ def lookout_tower_2():
     b.set(3, 15, 3, "bell", attachment="ceiling", facing="north", powered=False)
     for x in (1, 5):
         b.set(x, 14, 3, "lantern", hanging=True, waterlogged=False)
+    b.fill_air()
+    return b
+
+# --- Lookout Tower III: a guardhouse beside the tower --------------------------------------------------
+def lookout_tower_3():
+    """Upgrade of Lookout Tower II: a stone guardhouse against the tower's east side with a second Guard Post, a chest
+    for gear and two bunks (a second villager moves in as a guard)."""
+    b = lookout_tower_2().grow(13, 18, 7)
+    b.fill(7, 0, 1, 12, 0, 5, "stone_bricks")
+    for y in range(1, 4):
+        b.ring(7, 1, 12, 5, y, "stone_bricks")
+    b.ring(7, 1, 12, 5, 4, "spruce_planks")
+    b.fill(7, 5, 1, 12, 5, 5, "spruce_slab", type="bottom", waterlogged=False)
+    b.door(9, 1, 1, "spruce_door", facing="south")
+    b.set(11, 2, 1, "glass_pane", north=False, south=False, east=True, west=True, waterlogged=False)
+    b.set(12, 2, 3, "glass_pane", north=True, south=True, east=False, west=False, waterlogged=False)
+    b.set(8, 1, 3, "aliveworkplace:guard_post", facing="east")
+    b.set(8, 1, 4, "chest", facing="east", type="single", waterlogged=False)
+    b.bed(10, 1, 3, "white", facing="south")
+    b.bed(11, 1, 3, "white", facing="south")
+    b.set(10, 3, 2, "wall_torch", facing="south")
     b.fill_air()
     return b
 
@@ -495,6 +541,32 @@ def healing_center_2():
     b.fill_air()
     return b
 
+# --- Healing Center III: a berry garden behind the ward -------------------------------------------------
+def healing_center_3():
+    """Upgrade of Healing Center II: a fenced garden behind the ward with sweet berry bushes, a Fruit Basket and a
+    chest (a villager moves in as the orchard keeper and picks the berries)."""
+    b = healing_center_2().grow(11, 8, 18)
+    b.fill(0, 0, 13, 10, 0, 17, "grass_block", snowy=False)
+    for x in range(0, 11):
+        b.set(x, 1, 13, "birch_fence", north=False, south=False, east=x < 10, west=x > 0, waterlogged=False)
+        b.set(x, 1, 17, "birch_fence", north=False, south=False, east=x < 10, west=x > 0, waterlogged=False)
+    for z in range(14, 17):
+        b.set(0, 1, z, "birch_fence", north=True, south=True, east=False, west=False, waterlogged=False)
+        if z != 15:
+            b.set(10, 1, z, "birch_fence", north=True, south=True, east=False, west=False, waterlogged=False)
+    b.set(10, 1, 15, "birch_fence_gate", facing="east", open=False, in_wall=False, powered=False)
+    for x in (3, 5, 7, 9):
+        b.set(x, 1, 15, "sweet_berry_bush", age=0)
+    for z in (14, 16):
+        for x in range(3, 10):
+            b.set(x, 0, z, "coarse_dirt")
+    b.set(1, 1, 14, "aliveworkplace:fruit_basket", facing="east")
+    b.set(1, 1, 16, "chest", facing="east", type="single", waterlogged=False)
+    for x in (0, 10):
+        b.set(x, 2, 17, "lantern", hanging=False, waterlogged=False)
+    b.fill_air()
+    return b
+
 
 # --- Supply Shop: 9 x 7 x 8 -------------------------------------------------------------------
 def supply_shop():
@@ -557,6 +629,39 @@ def supply_shop_2():
         b.set(7, 6, z, "barrel", facing="west", open=False)
     b.fill(3, 6, 2, 5, 6, 4, "light_blue_carpet")
     b.set(4, 9, 3, "lantern", hanging=True, waterlogged=False)
+    b.fill_air()
+    return b
+
+# --- Supply Shop III: a post office annex --------------------------------------------------------------
+def supply_shop_3():
+    """Upgrade of Supply Shop II: a one-storey annex on the east side, through a doorway from the shop, with a Postal
+    Desk and a chest (a villager moves in as the postman: the shop's goods can go out by mail)."""
+    b = supply_shop_2().grow(15, 12, 8)
+    b.fill(9, 0, 0, 14, 0, 6, "smooth_stone")
+    b.fill(9, 0, 1, 13, 0, 5, "birch_planks")
+    for y in range(1, 4):
+        for x in range(9, 15):
+            b.set(x, y, 0, "white_concrete")
+            b.set(x, y, 6, "white_concrete")
+        for z in range(1, 6):
+            b.set(14, y, z, "white_concrete")
+    for x in range(9, 15):
+        b.set(x, 4, 0, "blue_concrete")
+        b.set(x, 4, 6, "blue_concrete")
+    for z in range(1, 6):
+        b.set(14, 4, z, "blue_concrete")
+    b.fill(9, 5, 0, 14, 5, 6, "blue_concrete")
+    b.clear(8, 1, 1, 8, 2, 1)  # a doorway through the shop's east wall
+    b.door(11, 1, 0, "birch_door", facing="south")
+    for x in (9, 13):
+        b.set(x, 2, 0, "glass_pane", north=False, south=False, east=True, west=True, waterlogged=False)
+    for z in (2, 4):
+        b.set(14, 2, z, "glass_pane", north=True, south=True, east=False, west=False, waterlogged=False)
+    b.set(13, 1, 4, "aliveworkplace:postal_desk", facing="west")
+    b.set(13, 1, 2, "chest", facing="west", type="single", waterlogged=False)
+    b.set(10, 1, 5, "birch_stairs", facing="south", half="bottom", shape="straight", waterlogged=False)
+    b.set(11, 1, 3, "light_blue_carpet")
+    b.set(11, 4, 3, "lantern", hanging=True, waterlogged=False)
     b.fill_air()
     return b
 
@@ -822,12 +927,16 @@ if __name__ == "__main__":
     starter_cottage_3().save(MAIN_STRUCTURES, "starter_cottage_3")
     market_stall().save(MAIN_STRUCTURES, "market_stall")
     market_stall_2().save(MAIN_STRUCTURES, "market_stall_2")
+    market_stall_3().save(MAIN_STRUCTURES, "market_stall_3")
     lookout_tower().save(MAIN_STRUCTURES, "lookout_tower")
     lookout_tower_2().save(MAIN_STRUCTURES, "lookout_tower_2")
+    lookout_tower_3().save(MAIN_STRUCTURES, "lookout_tower_3")
     healing_center().save(MAIN_STRUCTURES, "healing_center")
     healing_center_2().save(MAIN_STRUCTURES, "healing_center_2")
+    healing_center_3().save(MAIN_STRUCTURES, "healing_center_3")
     supply_shop().save(MAIN_STRUCTURES, "supply_shop")
     supply_shop_2().save(MAIN_STRUCTURES, "supply_shop_2")
+    supply_shop_3().save(MAIN_STRUCTURES, "supply_shop_3")
     for style in VILLAGE_STYLES:
         builders_workshop(style).save(VILLAGE_STRUCTURES, f"{style}_builders_workshop")
         for name, fit_out in VILLAGE_HOUSES.items():

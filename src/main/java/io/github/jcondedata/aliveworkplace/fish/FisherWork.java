@@ -67,6 +67,9 @@ public class FisherWork extends Behavior<Villager> {
 	private int waited;
 	private int biteAt;
 	private int catches;
+	/** The bobber on the water while casting (only for show). */
+	@Nullable
+	private FishingBobber bobber;
 
 	public FisherWork() {
 		super(ImmutableMap.of(
@@ -105,6 +108,15 @@ public class FisherWork extends Behavior<Villager> {
 	@Override
 	protected void stop(ServerLevel level, Villager villager, long gameTime) {
 		RESTING.remove(villager);
+		reelUp();
+	}
+
+	/** Takes the bobber out of the water. */
+	private void reelUp() {
+		if (bobber != null) {
+			bobber.discard();
+			bobber = null;
+		}
 	}
 
 	@Override
@@ -176,6 +188,7 @@ public class FisherWork extends Behavior<Villager> {
 		status(villager, Phase.FISHING);
 		if (!walker.reach(level, villager, water, REACH)) {
 			waited = 0;
+			reelUp();
 			if (walker.noSpot()) {
 				unreachable.add(water);
 				water = null;
@@ -185,6 +198,8 @@ public class FisherWork extends Behavior<Villager> {
 		villager.getBrain().setMemory(MemoryModuleType.LOOK_TARGET, new BlockPosTracker(water));
 		Vec3 bobber = Vec3.atCenterOf(water).add(0, 0.45, 0);
 		if (waited++ == 0) {
+			reelUp();
+			this.bobber = FishingBobber.cast(level, villager, bobber);
 			villager.swing(InteractionHand.MAIN_HAND);
 			level.playSound(null, villager.blockPosition(), SoundEvents.FISHING_BOBBER_THROW, SoundSource.NEUTRAL, 0.5f, 0.4f + level.random.nextFloat() * 0.4f);
 			biteAt = BuilderLevels.delay(level, villager) * (15 + level.random.nextInt(46));
@@ -195,8 +210,13 @@ public class FisherWork extends Behavior<Villager> {
 			level.sendParticles(ParticleTypes.FISHING, bobber.x, bobber.y, bobber.z, 2, 0.05, 0, 0.05, 0);
 		}
 		if (waited < Math.max(20, biteAt)) {
+			if (this.bobber != null && waited >= Math.max(20, biteAt) - 12 && !this.bobber.biting()) {
+				this.bobber.setBiting(true); // a bite: the bobber goes under
+				level.sendParticles(ParticleTypes.BUBBLE, bobber.x, bobber.y, bobber.z, 6, 0.1, 0.05, 0.1, 0.05);
+			}
 			return;
 		}
+		reelUp();
 		reelIn(level, villager, bag, rod, bobber);
 		waited = 0;
 		catches++;

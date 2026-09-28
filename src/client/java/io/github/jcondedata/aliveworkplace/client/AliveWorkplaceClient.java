@@ -13,6 +13,8 @@ public class AliveWorkplaceClient implements ClientModInitializer {
 		BuilderStatusRenderer.init();
 		BlueprintTooltip.init();
 		net.minecraft.client.gui.screens.MenuScreens.register(io.github.jcondedata.aliveworkplace.registry.ModBlocks.MAILBOX_MENU, MailboxScreen::new);
+		net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(io.github.jcondedata.aliveworkplace.registry.ModEntities.FISHING_BOBBER,
+			BobberRenderer::new);
 		// Guards' armor, drawn on the villager model.
 		net.fabricmc.fabric.api.client.rendering.v1.LivingEntityFeatureRendererRegistrationCallback.EVENT.register((type, renderer, helper, context) -> {
 			if (renderer instanceof net.minecraft.client.renderer.entity.VillagerRenderer villagers) {

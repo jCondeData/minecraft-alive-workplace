@@ -58,6 +58,21 @@ public class FisherGameTests implements FabricGameTest {
 		});
 	}
 
+	/** While fishing, a bobber floats on the pond on the end of the fisherman's line; it's gone once they stop. */
+	@GameTest(template = AREA, timeoutTicks = 1200)
+	public void fishermanCastsABobber(GameTestHelper helper) {
+		Villager villager = fisherman(helper);
+		Fishers.start(helper.getLevel(), villager, new ItemStack(Items.FISHING_ROD));
+		helper.succeedWhen(() -> {
+			var bobbers = helper.getLevel().getEntitiesOfClass(io.github.jcondedata.aliveworkplace.fish.FishingBobber.class, helper.getBounds());
+			helper.assertTrue(bobbers.size() == 1, bobbers.size() + " bobbers out");
+			var bobber = bobbers.get(0);
+			helper.assertTrue(bobber.owner() == villager, "the bobber isn't on the fisherman's line");
+			helper.assertTrue(helper.getLevel().getBlockState(bobber.blockPosition()).is(Blocks.WATER),
+				"the bobber isn't on the water: " + helper.relativePos(bobber.blockPosition()));
+		});
+	}
+
 	/** A smoker next to the barrel: the raw cod and salmon go into it with charcoal from the barrel, not into the barrel. */
 	@GameTest(template = AREA, timeoutTicks = 3000)
 	public void fishermanSmokesTheCatch(GameTestHelper helper) {

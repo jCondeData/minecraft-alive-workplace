@@ -125,7 +125,10 @@ Owner decisions are recorded in **Design decisions** at the bottom. Don't change
 - [x] **Fisher** (any vanilla Fisherman): hand one a fishing rod and they fish the nearest still water within 16 blocks of their barrel (standing on the shore), reeling in the vanilla fishing loot (fish and junk, no treasure), storing every fifth catch in the barrel and chests next to it; rods wear out and spares come from those containers; vanilla routine paused while working; longer shift; `/workplace cancel <fisherman uuid>` stops it
 - [x] Fishers smoke the catch: at every drop-off `work/Furnaces.tend` loads raw fish (`#fishes` with a recipe for that
   furnace type) into smokers/furnaces near the barrel, with coal/charcoal, and brings the cooked fish out
-- [ ] Fisher follow-ups: a real bobber on the water (vanilla's hook needs a player owner), fishing from boats
+- [x] A bobber on the water (`fish/FishingBobber`, entity `aliveworkplace:fishing_bobber`, never saved): cast with each
+  throw, dips a moment before the bite, gone on reeling in; the client draws the vanilla bobber picture and a line to
+  the rod (`BobberRenderer`); `SCENE=fish` screenshots it
+- [ ] Fisher follow-ups: fishing from boats
 - [x] **Courier / hauler** (done by Postmen): a Delivery Note marks a source and a destination container (plus an
   optional list of items to carry; by default everything but tools, weapons and armor); a postman takes up to 4
   routes and runs them whenever there's no mail, carrying a bagful per trip and taking back what doesn't fit; a blank

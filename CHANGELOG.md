@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+## 0.68.0 — 2026-09-28
+
+### Added
+- **Fishermen cast a real bobber**: it floats on the water on the end of a line from their rod, dips under when a fish
+  bites, and comes back in with the catch.
+
 ## 0.67.0 — 2026-09-28
 
 ### Added

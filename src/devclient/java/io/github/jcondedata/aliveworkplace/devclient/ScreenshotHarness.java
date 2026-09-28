@@ -126,6 +126,10 @@ public class ScreenshotHarness implements ClientModInitializer {
 			galleryScene(mc, mc.getSingleplayerServer());
 			return;
 		}
+		if ("fish".equals(System.getProperty("aliveworkplace.scene"))) {
+			fishScene(mc, mc.getSingleplayerServer());
+			return;
+		}
 		if ("preview".equals(System.getProperty("aliveworkplace.scene"))) {
 			previewScene(mc, mc.getSingleplayerServer());
 			return;
@@ -1216,6 +1220,43 @@ public class ScreenshotHarness implements ClientModInitializer {
 			shot(mc, "40_workshop_" + ((tick - 560) / 80));
 		}
 		if (tick == 580 + Math.max(1, shots) * 80) {
+			mc.stop();
+		}
+	}
+
+	// --- Fish: a fisherman casting into a pond (the bobber and its line) --------------------------
+
+	private void fishScene(Minecraft mc, MinecraftServer server) {
+		tick++;
+		if (tick == 1) {
+			mc.options.renderDistance().set(6);
+			mc.options.cloudStatus().set(CloudStatus.OFF);
+			mc.options.hideGui = true;
+		}
+		if (tick == 20) {
+			server.execute(() -> {
+				ServerLevel level = server.overworld();
+				level.getGameRules().getRule(GameRules.RULE_DAYLIGHT).set(false, server);
+				level.getGameRules().getRule(GameRules.RULE_DOMOBSPAWNING).set(false, server);
+				level.setDayTime(2500);
+				BlockPos barrel = new BlockPos(0, -60, 0);
+				level.setBlockAndUpdate(barrel, Blocks.BARREL.defaultBlockState());
+				for (BlockPos p : BlockPos.betweenClosed(new BlockPos(2, -61, 2), new BlockPos(6, -61, 6))) {
+					level.setBlockAndUpdate(p, Blocks.WATER.defaultBlockState());
+				}
+				Villager fisher = EntityType.VILLAGER.spawn(level, new BlockPos(1, -60, 1), MobSpawnType.COMMAND);
+				io.github.jcondedata.aliveworkplace.work.Jobs.employ(level, fisher, barrel, net.minecraft.world.entity.ai.village.poi.PoiTypes.FISHERMAN,
+					net.minecraft.world.entity.npc.VillagerProfession.FISHERMAN);
+				io.github.jcondedata.aliveworkplace.fish.Fishers.start(level, fisher, new ItemStack(net.minecraft.world.item.Items.FISHING_ROD));
+				hover(server.getPlayerList().getPlayers().get(0), new Vec3(-3.5, -57.2, 7.5), 215, 28);
+			});
+		}
+		for (int i = 0; i < 6; i++) {
+			if (tick == 120 + i * 30) {
+				shot(mc, "60_fish_" + i);
+			}
+		}
+		if (tick == 320) {
 			mc.stop();
 		}
 	}

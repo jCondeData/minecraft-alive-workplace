@@ -37,6 +37,7 @@ public class AliveWorkplace implements ModInitializer {
 		ModBlocks.init();
 		ModItems.init();
 		ModVillagers.init();
+		io.github.jcondedata.aliveworkplace.registry.ModEntities.init();
 		ModAttachments.init();
 		ModGameRules.init();
 		ModTrades.init();

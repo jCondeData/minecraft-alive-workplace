@@ -170,8 +170,11 @@ composter: the farmland nearest to it, within 16 blocks, and everything joined t
 between the rows too. Handy for the farmers a village comes with.
 
 ## Fishermen
+![A fisherman villager with a bobber out on the pond](docs/media/fisherman.png)
+
 Hand any **Fisherman** villager (the ones with a barrel) a **fishing rod**. They walk to the nearest water within 16
-blocks of their barrel, cast from the shore and reel in fish (and the odd bit of junk), bringing the catch back to
+blocks of their barrel, cast from the shore — the bobber floats on the water on the end of their line and goes under
+when a fish bites — and reel in fish (and the odd bit of junk), bringing the catch back to
 their barrel and any chests within 8 blocks of it. Rods wear out: put spares in the barrel. Put a **smoker** (or
 furnace) next to the barrel and some coal or charcoal in it, and the raw cod and salmon go into the smoker instead,
 with the cooked fish coming back out at the next drop-off. Sneak-right-click the fisherman with an empty hand to see

@@ -435,5 +435,10 @@
   "message.aliveworkplace.blueprint.level_off": "The builder will leave the ground around this build as it is (right-click the air again to switch back).",
   "tooltip.aliveworkplace.blueprint.no_levelling": "Ground around it left as it is",
   "blueprint.aliveworkplace.starter_cottage_2": "Starter Cottage II",
+  "blueprint.aliveworkplace.market_stall_2": "Market Stall II",
+  "blueprint.aliveworkplace.lookout_tower_2": "Lookout Tower II",
+  "blueprint.aliveworkplace.healing_center_2": "Healing Center II",
+  "blueprint.aliveworkplace.supply_shop_2": "Supply Shop II",
+  "message.aliveworkplace.upgrade_for_sale": "%s now sells the %s blueprint: trade with them to build the upgrade.",
   "message.aliveworkplace.blueprint.upgrade": "Lined up over the %s: give the %s to a builder to upgrade it."
 }

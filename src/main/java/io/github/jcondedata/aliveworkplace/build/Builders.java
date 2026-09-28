@@ -470,6 +470,13 @@ public final class Builders {
 			BuildSiteManager.get(level).forgetFinished(site.placement());
 		} else {
 			BuildSiteManager.get(level).recordFinished(site.structure(), site.placement(), site.owner());
+			// Built something that has an upgrade: the builder sells its blueprint from now on.
+			UpgradeOffers.offer(level, villager, site.structure()).ifPresent(upgrade -> {
+				if (owner != null) {
+					tell(owner, Component.translatable("message.aliveworkplace.upgrade_for_sale", villager.getDisplayName(),
+						Blueprints.displayName(upgrade)), ChatFormatting.AQUA);
+				}
+			});
 		}
 		endJob(level, villager, site);
 		BuilderLevels.onFinished(level, villager, site);

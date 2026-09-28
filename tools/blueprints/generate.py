@@ -52,6 +52,22 @@ class Build:
         self.nbt = getattr(self, "nbt", {})
         self.nbt[(x, y, z)] = nbt
 
+    def grow(self, w, h, d):
+        """A bigger copy of this build (air left out), for an upgrade drawn on top of its base."""
+        b = Build(w, h, d)
+        for pos, block in self.blocks.items():
+            if block[0] != "minecraft:air":
+                b.blocks[pos] = block
+        b.nbt = dict(getattr(self, "nbt", {}))
+        return b
+
+    def clear(self, x0, y0, z0, x1, y1, z1):
+        """Takes blocks out again (they become air when the build is saved)."""
+        for x in range(min(x0, x1), max(x0, x1) + 1):
+            for y in range(min(y0, y1), max(y0, y1) + 1):
+                for z in range(min(z0, z1), max(z0, z1) + 1):
+                    self.blocks.pop((x, y, z), None)
+
     def fill_air(self):
         for x in range(self.w):
             for y in range(self.h):
@@ -298,6 +314,58 @@ def lookout_tower():
     return b
 
 
+# --- Market Stall, upgraded: a second stall alongside with a Shop Counter -----------------------------
+def market_stall_2():
+    """Upgrade of the Market Stall: a second stall shares its right-hand posts, under a blue canopy, with a Shop
+    Counter between two barrels of stock (a villager moves in as shopkeeper; the first player to open it owns it)."""
+    b = market_stall().grow(13, 5, 5)
+    b.fill(7, 0, 0, 12, 0, 4, "spruce_planks")
+    for z in (0, 4):
+        for y in range(1, 4):
+            b.set(12, y, z, "spruce_fence")
+    b.set(7, 1, 1, "barrel", facing="up", open=False)
+    b.set(8, 1, 1, "spruce_planks")
+    b.set(9, 1, 1, "aliveworkplace:shop_counter", facing="south")
+    b.set(10, 1, 1, "spruce_planks")
+    b.set(11, 1, 1, "barrel", facing="up", open=False)
+    b.set(8, 2, 1, "potted_cornflower")
+    b.set(10, 2, 1, "lantern", hanging=False, waterlogged=False)
+    # Back shelf: more stock either side of the shopkeeper's stool
+    b.set(8, 1, 3, "barrel", facing="up", open=False)
+    b.set(9, 1, 3, "spruce_stairs", facing="south", half="bottom", shape="straight", waterlogged=False)
+    b.set(10, 1, 3, "barrel", facing="up", open=False)
+    for x in range(7, 13):
+        for z in range(0, 5):
+            b.set(x, 4, z, "blue_wool" if x % 2 == 0 else "white_wool")
+    b.fill_air()
+    return b
+
+
+# --- Lookout Tower, upgraded: a guard post with a bell under a pointed roof --------------------------------
+def lookout_tower_2():
+    """Upgrade of the Lookout Tower: a Guard Post and a chest for gear at the foot of the ladder (a villager moves
+    in as a guard), and a pointed roof over the platform with a bell to call the guards and a lightning rod."""
+    b = lookout_tower().grow(7, 18, 7)
+    b.set(2, 1, 3, "aliveworkplace:guard_post", facing="east")
+    b.set(4, 1, 3, "chest", facing="west", type="single", waterlogged=False)
+    b.clear(0, 14, 0, 6, 14, 6)  # the flat slab roof
+    b.clear(3, 13, 3, 3, 13, 3)  # and the lantern under it
+    for y, lo, hi in ((14, 0, 6), (15, 1, 5), (16, 2, 4)):
+        for x in range(lo, hi + 1):
+            b.set(x, y, lo, "spruce_stairs", facing="south", half="bottom", shape="straight", waterlogged=False)
+            b.set(x, y, hi, "spruce_stairs", facing="north", half="bottom", shape="straight", waterlogged=False)
+        for z in range(lo + 1, hi):
+            b.set(lo, y, z, "spruce_stairs", facing="east", half="bottom", shape="straight", waterlogged=False)
+            b.set(hi, y, z, "spruce_stairs", facing="west", half="bottom", shape="straight", waterlogged=False)
+    b.set(3, 16, 3, "spruce_planks")
+    b.set(3, 17, 3, "lightning_rod", facing="up", powered=False, waterlogged=False)
+    b.set(3, 15, 3, "bell", attachment="ceiling", facing="north", powered=False)
+    for x in (1, 5):
+        b.set(x, 14, 3, "lantern", hanging=True, waterlogged=False)
+    b.fill_air()
+    return b
+
+
 # --- Healing Center: 11 x 8 x 9 ---------------------------------------------------------------
 def healing_center():
     """White walls and a red roof. With Cobblemon installed the counter holds a Healing Machine
@@ -346,6 +414,31 @@ def healing_center():
     return b
 
 
+# --- Healing Center, upgraded: a ward with four beds behind the counter --------------------------------
+def healing_center_2():
+    """Upgrade of the Healing Center: a door in the back wall opens into a ward with four beds (villagers who sleep
+    there are in the nurse's reach) under the same red roof."""
+    b = healing_center().grow(11, 8, 13)
+    b.fill(0, 0, 9, 10, 0, 12, "smooth_stone")
+    b.fill(1, 0, 9, 9, 0, 11, "white_concrete")
+    for y in range(1, 4):
+        b.ring(0, 8, 10, 12, y, "white_concrete")
+    b.ring(0, 8, 10, 12, 4, "red_concrete")
+    b.fill(0, 5, 9, 10, 5, 12, "red_concrete")
+    b.door(5, 1, 8, "birch_door", facing="south")
+    for x in (0, 10):
+        b.set(x, 2, 10, "glass_pane", north=True, south=True, east=False, west=False)
+    for x in (2, 3, 7, 8):
+        b.set(x, 2, 12, "glass_pane", north=False, south=False, east=True, west=True)
+    for x in (1, 3, 7, 9):
+        b.bed(x, 1, 10, "white", facing="south")
+    b.set(5, 1, 11, "potted_poppy")
+    for x in (3, 7):
+        b.set(x, 4, 10, "lantern", hanging=True, waterlogged=False)
+    b.fill_air()
+    return b
+
+
 # --- Supply Shop: 9 x 7 x 8 -------------------------------------------------------------------
 def supply_shop():
     """White walls and a blue roof; shelves of barrels and a Shop Counter."""
@@ -378,6 +471,35 @@ def supply_shop():
     b.set(4, 1, 1, "light_blue_carpet")
     b.set(4, 1, 2, "light_blue_carpet")
     b.set(4, 4, 3, "lantern", hanging=True)
+    b.fill_air()
+    return b
+
+
+# --- Supply Shop, upgraded: a storeroom and the shopkeeper's bedroom upstairs -----------------------------
+def supply_shop_2():
+    """Upgrade of the Supply Shop: a second storey up a ladder behind the shelves, with a bed, a chest and more
+    barrels of stock (still close enough to the Shop Counter to sell from)."""
+    b = supply_shop().grow(9, 12, 8)
+    b.clear(2, 6, 2, 6, 6, 5)  # the old light blue roof tier
+    b.fill(1, 5, 1, 7, 5, 6, "birch_planks")
+    for y in range(1, 6):
+        b.set(7, y, 6, "ladder", facing="west", waterlogged=False)
+    for y in range(6, 9):
+        b.ring(0, 0, 8, 7, y, "white_concrete")
+    b.ring(0, 0, 8, 7, 9, "blue_concrete")
+    b.fill(0, 10, 0, 8, 10, 7, "blue_concrete")
+    b.fill(2, 11, 2, 6, 11, 5, "light_blue_concrete")
+    for x in (1, 2, 6, 7):
+        b.set(x, 7, 0, "glass_pane", north=False, south=False, east=True, west=True)
+    for x in (0, 8):
+        for z in (3, 4):
+            b.set(x, 7, z, "glass_pane", north=True, south=True, east=False, west=False)
+    b.bed(1, 6, 5, "blue", facing="south")
+    b.set(3, 6, 6, "chest", facing="north", type="single", waterlogged=False)
+    for z in (1, 2, 3):
+        b.set(7, 6, z, "barrel", facing="west", open=False)
+    b.fill(3, 6, 2, 5, 6, 4, "light_blue_carpet")
+    b.set(4, 9, 3, "lantern", hanging=True, waterlogged=False)
     b.fill_air()
     return b
 
@@ -610,6 +732,14 @@ def test_hut():
     return b
 
 
+def test_hut_2():
+    """The test hut's upgrade: a lantern on the roof (a builder sells it once they've built the hut)."""
+    b = test_hut().grow(5, 5, 5)
+    b.set(2, 4, 2, "lantern", hanging=False, waterlogged=False)
+    b.fill_air()
+    return b
+
+
 def test_area(name, w, h, d, folder=TEST_AREAS):
     """Flat smooth-stone floor at y=0, empty above. Saved as SNBT in the *packed* layout the gametest
     loader expects (palette of state strings, `data` entries with a `state` string)."""
@@ -633,14 +763,19 @@ if __name__ == "__main__":
     starter_cottage().save(MAIN_STRUCTURES, "starter_cottage")
     starter_cottage_2().save(MAIN_STRUCTURES, "starter_cottage_2")
     market_stall().save(MAIN_STRUCTURES, "market_stall")
+    market_stall_2().save(MAIN_STRUCTURES, "market_stall_2")
     lookout_tower().save(MAIN_STRUCTURES, "lookout_tower")
+    lookout_tower_2().save(MAIN_STRUCTURES, "lookout_tower_2")
     healing_center().save(MAIN_STRUCTURES, "healing_center")
+    healing_center_2().save(MAIN_STRUCTURES, "healing_center_2")
     supply_shop().save(MAIN_STRUCTURES, "supply_shop")
+    supply_shop_2().save(MAIN_STRUCTURES, "supply_shop_2")
     for style in VILLAGE_STYLES:
         builders_workshop(style).save(VILLAGE_STRUCTURES, f"{style}_builders_workshop")
         for name, fit_out in VILLAGE_HOUSES.items():
             staffed_house(style, fit_out).save(VILLAGE_STRUCTURES, f"{style}_{name}")
     test_hut().save(TEST_STRUCTURES, "test_hut")
+    test_hut_2().save(TEST_STRUCTURES, "test_hut_2")
     test_area("build_area", 17, 8, 17)
     test_area("big_area", 22, 18, 22)
     test_area("build_area", 17, 8, 17, COMPAT_AREAS)

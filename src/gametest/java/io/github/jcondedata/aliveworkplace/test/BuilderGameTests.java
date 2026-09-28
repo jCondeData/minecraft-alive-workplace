@@ -80,6 +80,23 @@ public class BuilderGameTests implements FabricGameTest {
 		});
 	}
 
+	/** A builder who finishes the test hut sells its upgrade (test_hut_2) from then on, and says so. */
+	@GameTest(template = AREA, timeoutTicks = 2400)
+	public void builderSellsTheUpgradeOfWhatTheyBuilt(GameTestHelper helper) {
+		ResourceLocation upgrade = ResourceLocation.fromNamespaceAndPath("aliveworkplace_test", "test_hut_2");
+		helper.assertTrue(io.github.jcondedata.aliveworkplace.blueprint.BlueprintUpgrades.upgradeOf(TEST_HUT).equals(upgrade), "test_hut's upgrade should be test_hut_2");
+		helper.assertTrue(io.github.jcondedata.aliveworkplace.blueprint.BlueprintUpgrades.upgradeOf(upgrade).getPath().equals("test_hut_3"), "test_hut_2's upgrade should be test_hut_3");
+		Setup s = setup(helper, TEST_HUT, HUT_ORIGIN, Rotation.NONE, hutMaterials());
+		helper.assertFalse(io.github.jcondedata.aliveworkplace.build.UpgradeOffers.sells(s.villager(), upgrade), "the builder sold the upgrade before building the hut");
+		helper.succeedWhen(() -> {
+			assertBuilt(helper, s);
+			helper.assertTrue(io.github.jcondedata.aliveworkplace.build.UpgradeOffers.sells(s.villager(), upgrade), "the builder doesn't sell the hut's upgrade");
+			// Building it again doesn't add a second trade; there is no test_hut_3 to sell.
+			helper.assertTrue(io.github.jcondedata.aliveworkplace.build.UpgradeOffers.offer(helper.getLevel(), s.villager(), TEST_HUT).isEmpty(), "offered the upgrade twice");
+			helper.assertTrue(io.github.jcondedata.aliveworkplace.build.UpgradeOffers.offer(helper.getLevel(), s.villager(), upgrade).isEmpty(), "offered an upgrade that doesn't exist");
+		});
+	}
+
 	/** Once the hut is up, the builder levels the ground around it: a mound and a rock dug away, a hole filled. */
 	@GameTest(template = AREA, timeoutTicks = 3000)
 	public void builderLevelsTheGroundAroundABuild(GameTestHelper helper) {
@@ -714,6 +731,32 @@ public class BuilderGameTests implements FabricGameTest {
 	}
 
 	// --- pure logic ------------------------------------------------------------------------
+
+	/** Every starter build has an upgrade that keeps most of it (so a builder only builds what's new). */
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
+	public void starterUpgradesKeepMostOfTheirBase(GameTestHelper helper) {
+		int upgrades = 0;
+		for (StarterBlueprints.Entry entry : StarterBlueprints.ALL) {
+			Optional<ResourceLocation> baseId = io.github.jcondedata.aliveworkplace.blueprint.BlueprintUpgrades.baseOf(entry.id());
+			if (baseId.isEmpty()) {
+				helper.assertTrue(BlueprintLibrary.get(helper.getLevel(), io.github.jcondedata.aliveworkplace.blueprint.BlueprintUpgrades.upgradeOf(entry.id())).isPresent(),
+					entry.id() + " has no upgrade");
+				continue;
+			}
+			upgrades++;
+			Blueprint base = BlueprintLibrary.get(helper.getLevel(), baseId.get()).orElseThrow();
+			Blueprint upgrade = BlueprintLibrary.get(helper.getLevel(), entry.id()).orElseThrow();
+			helper.assertTrue(upgrade.size().getX() >= base.size().getX() && upgrade.size().getY() >= base.size().getY() && upgrade.size().getZ() >= base.size().getZ(),
+				entry.id() + " is smaller than " + baseId.get());
+			Map<BlockPos, BlockState> up = new java.util.HashMap<>();
+			upgrade.blocks().forEach(e -> up.put(e.pos(), e.state()));
+			long solid = base.blocks().stream().filter(e -> !e.state().isAir()).count();
+			long kept = base.blocks().stream().filter(e -> !e.state().isAir() && e.state().equals(up.get(e.pos()))).count();
+			helper.assertTrue(kept >= solid * 0.6, entry.id() + " keeps only " + kept + " of " + baseId.get() + "'s " + solid + " blocks");
+		}
+		helper.assertTrue(upgrades == 5, "expected 5 starter upgrades, found " + upgrades);
+		helper.succeed();
+	}
 
 	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
 	public void starterBlueprintsMatchTheirDeclaredSizesAndAreBuildable(GameTestHelper helper) {

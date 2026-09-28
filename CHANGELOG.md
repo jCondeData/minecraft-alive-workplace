@@ -2,6 +2,15 @@
 
 ## Unreleased
 
+## 0.44.0 — 2026-09-28
+
+### Added
+- **An upgrade for every starter build**: **Market Stall II** (a second stall with a Shop Counter), **Lookout Tower II**
+  (a Guard Post at the foot of the ladder, a bell and a pointed roof), **Healing Center II** (a ward with four beds)
+  and **Supply Shop II** (a storeroom and the shopkeeper's bedroom upstairs).
+- **Builders sell upgrades**: once a builder finishes a build that has an upgrade, they add its blueprint to their
+  trades and tell you. Works for your own blueprints too (`my_house` → `my_house_2`).
+
 ## 0.43.0 — 2026-09-28
 
 ### Added

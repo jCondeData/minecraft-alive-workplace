@@ -17,12 +17,21 @@ public final class StarterBlueprints {
 	/** The Starter Cottage with a second storey: an upgrade (same ground floor, lines up over a finished cottage). */
 	public static final Entry STARTER_COTTAGE_2 = new Entry(AliveWorkplace.id("starter_cottage_2"), new Vec3i(9, 14, 9));
 	public static final Entry MARKET_STALL = new Entry(AliveWorkplace.id("market_stall"), new Vec3i(7, 5, 5));
+	/** A second stall alongside, with a Shop Counter. */
+	public static final Entry MARKET_STALL_2 = new Entry(AliveWorkplace.id("market_stall_2"), new Vec3i(13, 5, 5));
 	public static final Entry LOOKOUT_TOWER = new Entry(AliveWorkplace.id("lookout_tower"), new Vec3i(7, 15, 7));
+	/** A Guard Post at the foot of the ladder and a bell under a pointed roof. */
+	public static final Entry LOOKOUT_TOWER_2 = new Entry(AliveWorkplace.id("lookout_tower_2"), new Vec3i(7, 18, 7));
 	/** Has a Cobblemon Healing Machine on the counter; without Cobblemon that spot stays empty. */
 	public static final Entry HEALING_CENTER = new Entry(AliveWorkplace.id("healing_center"), new Vec3i(11, 8, 9));
+	/** A ward with four beds behind the counter. */
+	public static final Entry HEALING_CENTER_2 = new Entry(AliveWorkplace.id("healing_center_2"), new Vec3i(11, 8, 13));
 	public static final Entry SUPPLY_SHOP = new Entry(AliveWorkplace.id("supply_shop"), new Vec3i(9, 7, 8));
+	/** A storeroom and the shopkeeper's bedroom upstairs. */
+	public static final Entry SUPPLY_SHOP_2 = new Entry(AliveWorkplace.id("supply_shop_2"), new Vec3i(9, 12, 8));
 
-	public static final List<Entry> ALL = List.of(STARTER_COTTAGE, STARTER_COTTAGE_2, MARKET_STALL, LOOKOUT_TOWER, HEALING_CENTER, SUPPLY_SHOP);
+	public static final List<Entry> ALL = List.of(STARTER_COTTAGE, STARTER_COTTAGE_2, MARKET_STALL, MARKET_STALL_2, LOOKOUT_TOWER, LOOKOUT_TOWER_2,
+		HEALING_CENTER, HEALING_CENTER_2, SUPPLY_SHOP, SUPPLY_SHOP_2);
 
 	private StarterBlueprints() {
 	}

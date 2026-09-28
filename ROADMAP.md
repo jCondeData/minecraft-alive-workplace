@@ -73,7 +73,12 @@ Owner decisions are recorded in **Design decisions** at the bottom. Don't change
   builders are remembered per dimension (`BuildSiteManager.finished`, forgotten when taken down); an upgrade clicked
   onto one snaps to its placement; the builder clears what changed and keeps what matches. Starter Cottage II ships
   (second storey)
-- [ ] Upgrade follow-ups: upgrades for the other starter builds; builders selling the upgrade once they've built the base
+- [x] Upgrades for every starter build (Market Stall II: a second stall with a Shop Counter; Lookout Tower II: a Guard
+  Post, a bell and a pointed roof; Healing Center II: a ward with four beds; Supply Shop II: a storeroom and bedroom
+  upstairs); a builder who finishes a build with an upgrade adds its blueprint to their trades (`UpgradeOffers`, 6–32
+  emeralds by size) and tells the owner
+- [ ] Upgrade follow-ups: third tiers (Starter Cottage III…), an upgrade that grows sideways and needs the ground
+  there cleared first (works, but untested with big builds)
 
 ## Milestone 2 — Other work jobs
 - [x] **Miner** (Miner's Bench workstation, Quarry Marker item): digs the marked area out layer by layer with pickaxes from the chests (tool tier and durability count; waits for a new one), drops everything off in the chests near the bench, lights the pit with torches from the chests, leaves blocks touching lava/water, containers and anything too hard, never goes below 5 above the world floor; levels up like builders; trades coal/ores, sells markers, torches and pickaxes

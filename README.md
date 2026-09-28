@@ -63,11 +63,15 @@ per build), sharing the chests and passing each other materials.
 and the **Supply Shop** (with a Shop Counter) — build them and a nurse and a shopkeeper move in.
 
 ![The Starter Cottage II next to a Starter Cottage](docs/media/cottage-upgrade.png)
+![Market Stall II, Lookout Tower II, Healing Center II and Supply Shop II next to the builds they upgrade](docs/media/starter-upgrades.png)
 
-**Upgrades.** A blueprint named like another with `_2` on the end (`_3` after that…) is its upgrade: the **Starter
-Cottage II** (from the Blueprint Table) adds a second storey to the Starter Cottage. Right-click a finished cottage
-with the upgrade and it lines up exactly over it; the builder takes the old roof off and builds only what's new,
-keeping the ground floor and everything in it. Your own blueprints work the same way (`my_house` → `my_house_2`).
+**Upgrades.** A blueprint named like another with `_2` on the end (`_3` after that…) is its upgrade. Every starter
+build has one: the **Starter Cottage II** adds a second storey, the **Market Stall II** a second stall with a Shop
+Counter, the **Lookout Tower II** a Guard Post, a bell and a pointed roof, the **Healing Center II** a ward with four
+beds, and the **Supply Shop II** a storeroom and a bedroom upstairs. Right-click a finished building with its upgrade
+and it lines up exactly over it; the builder takes off what changes and builds only what's new, keeping everything
+else. Once a builder finishes a building that has an upgrade, **they sell its blueprint** (and tell you). The
+upgrades are in the Blueprint Table too. Your own blueprints work the same way (`my_house` → `my_house_2`).
 
 ## Miners
 ![A miner digging out a quarry](docs/media/miner.gif)

@@ -253,6 +253,83 @@ public class MinerGameTests implements FabricGameTest {
 		});
 	}
 
+	/**
+	 * A strip mine at a set height under the marked corners: the miner digs a ladder shaft down from the corner nearest
+	 * the bench — sealing off the water beside it and getting past a cave in its way — digs the tunnels, and puts the
+	 * last two ladders up at the foot of the shaft.
+	 */
+	@GameTest(template = "aliveworkplace_test:big_area", timeoutTicks = 9000, batch = "shaft")
+	public void minerDigsALadderShaftDownToAStripMine(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		fillStone(helper, new BlockPos(5, 2, 6), new BlockPos(15, 14, 12));
+		BlockPos min = new BlockPos(6, 3, 7);
+		BlockPos max = new BlockPos(14, 4, 11);
+		BlockPos water = new BlockPos(7, 10, 7);  // beside the shaft
+		helper.setBlock(water, Blocks.WATER);
+		for (int y = 7; y <= 8; y++) {             // a cave the shaft goes through
+			helper.setBlock(new BlockPos(6, y, 7), Blocks.AIR);
+			helper.setBlock(new BlockPos(7, y, 8), Blocks.AIR);
+			helper.setBlock(new BlockPos(7, y, 7), Blocks.AIR);
+		}
+		Setup s = setup(helper, min, max, new ItemStack(Items.IRON_PICKAXE), new ItemStack(Items.LADDER, 16), new ItemStack(Items.TORCH, 8));
+		s.site().setStripMine(true);
+		int ground = helper.absolutePos(new BlockPos(0, 14, 0)).getY();
+		helper.assertTrue(Miners.shaftStart(s.level(), s.site(), ground + 3) == ground, "the shaft should start at the ground, not in the air above it");
+		s.site().setShaft(ground);
+		helper.assertTrue(s.site().shaftColumn().getX() == helper.absolutePos(min).getX() && s.site().shaftColumn().getZ() == helper.absolutePos(min).getZ(),
+			"the shaft should come down at the corner nearest the bench, not " + helper.relativePos(s.site().shaftColumn()));
+		helper.succeedWhen(() -> {
+			helper.assertTrue(finished(s), "still digging: " + Math.round(s.site().progress() * 100) + "% (" + s.site().status() + ", "
+				+ s.site().phase() + " at " + (s.site().current() == null ? "-" : helper.relativePos(s.site().current())) + "), "
+				+ s.site().skipped() + " skipped, miner at " + helper.relativePos(s.miner().blockPosition()));
+			for (int y = 3; y <= 14; y++) {
+				helper.assertBlockPresent(Blocks.LADDER, new BlockPos(6, y, 7));
+			}
+			helper.assertTrue(helper.getBlockState(water).getFluidState().isEmpty(), "the water beside the shaft should be sealed off");
+			for (BlockPos p : BlockPos.betweenClosed(min, max)) {
+				if (p.getX() == 6 && p.getZ() == 7) {
+					continue; // the foot of the shaft
+				}
+				boolean tunnel = (p.getZ() - min.getZ()) % 3 == 0 || p.getX() == min.getX();
+				helper.assertBlockPresent(tunnel ? Blocks.AIR : Blocks.STONE, p);
+			}
+			helper.assertTrue(s.miner().isAlive(), "the miner didn't make it");
+		});
+	}
+
+	/** The marker's choices: pits, a strip mine here, then strip mines down a shaft; strip mines may be longer. */
+	@GameTest(template = net.fabricmc.fabric.api.gametest.v1.FabricGameTest.EMPTY_STRUCTURE)
+	public void quarryMarkerOffersStripMinesDownAShaft(GameTestHelper helper) {
+		QuarryData data = new QuarryData(java.util.Optional.of(helper.getLevel().dimension().location()), java.util.Optional.of(new BlockPos(0, 70, 0)),
+			java.util.Optional.of(new BlockPos(40, 68, 9)), 64);
+		java.util.List<String> seen = new java.util.ArrayList<>();
+		for (int i = 0; i < 5; i++) {
+			data = data.next();
+			seen.add(data.depth() + data.stripLevel().map(l -> "@" + l).orElse(""));
+		}
+		helper.assertTrue(seen.equals(java.util.List.of("2", "2@16", "2@-16", "2@-53", "4")), "the marker cycles " + seen);
+		QuarryData diamonds = data.withDepth(QuarryData.STRIP_MINE).next().next().next();
+		helper.assertTrue(diamonds.stripLevel().equals(java.util.Optional.of(-53)), "expected diamonds, got " + diamonds);
+		BoundingBox box = diamonds.area(-59).orElseThrow();
+		helper.assertTrue(box.minY() == -53 && box.maxY() == -52 && box.getXSpan() == 41 && box.getZSpan() == 10, "tunnels at " + box);
+		helper.assertTrue(diamonds.shaftTop(-59).equals(java.util.OptionalInt.of(70)), "the shaft starts at the marked corners");
+		helper.assertTrue(diamonds.area(-40).orElseThrow().minY() == -40, "never below the world's floor");
+		QuarryData above = new QuarryData(diamonds.dimension(), java.util.Optional.of(new BlockPos(0, 10, 0)), java.util.Optional.of(new BlockPos(9, 10, 9)),
+			QuarryData.STRIP_MINE, java.util.Optional.of(16));
+		helper.assertTrue(above.shaftTop(-59).isEmpty() && above.area(-59).orElseThrow().maxY() == 10, "a height above the corners: tunnels at the corners");
+		helper.assertTrue(QuarryData.fits(64, 32, true) && !QuarryData.fits(64, 33, true) && !QuarryData.fits(40, 10, false) && QuarryData.fits(32, 32, false),
+			"size limits");
+
+		// Saved and loaded, the shaft stays.
+		QuarrySite site = new QuarrySite(java.util.UUID.randomUUID(), java.util.UUID.randomUUID(), "", helper.getLevel().dimension().location(), box, 2);
+		site.setStripMine(true);
+		site.setShaft(70);
+		QuarrySite loaded = QuarrySite.load(site.save());
+		helper.assertTrue(loaded != null && loaded.hasShaft() && loaded.shaftTop() == 70 && loaded.total() == site.total()
+			&& loaded.at(0).getY() == 70 && loaded.phase() == QuarrySite.Phase.SHAFT, "the shaft wasn't saved");
+		helper.succeed();
+	}
+
 	/** A block of stone taller than the miner: it has to get on top and work its way down. */
 	@GameTest(template = "aliveworkplace_test:big_area", timeoutTicks = 8000)
 	public void minerDigsDownThroughATallBlock(GameTestHelper helper) {

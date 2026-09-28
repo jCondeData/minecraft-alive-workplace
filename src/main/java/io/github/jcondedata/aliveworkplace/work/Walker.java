@@ -163,8 +163,14 @@ public final class Walker {
 		boolean ground = below.isFaceSturdy(level, feet.below(), Direction.UP)
 			|| below.getBlock() instanceof net.minecraft.world.level.block.FarmBlock || below.is(net.minecraft.world.level.block.Blocks.DIRT_PATH);
 		return ground && below.getFluidState().isEmpty()
-			&& level.getBlockState(feet).getCollisionShape(level, feet).isEmpty() && level.getFluidState(feet).isEmpty()
-			&& level.getBlockState(feet.above()).getCollisionShape(level, feet.above()).isEmpty() && level.getFluidState(feet.above()).isEmpty();
+			&& passable(level, feet) && level.getFluidState(feet).isEmpty()
+			&& passable(level, feet.above()) && level.getFluidState(feet.above()).isEmpty();
+	}
+
+	/** Nothing to bump into (a ladder counts as nothing: you stand in it, as in a miner's shaft). */
+	private static boolean passable(ServerLevel level, BlockPos pos) {
+		BlockState state = level.getBlockState(pos);
+		return state.getCollisionShape(level, pos).isEmpty() || state.getBlock() instanceof net.minecraft.world.level.block.LadderBlock;
 	}
 
 	/** Blocks with no collision that still hurt or trap whoever stands in them. */

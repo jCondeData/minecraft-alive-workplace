@@ -14,7 +14,16 @@ import org.jetbrains.annotations.Nullable;
  * the world in {@link QuarrySiteManager}, so the miner picks up where it left off.
  */
 public final class QuarrySite {
-	public enum Status { WORKING, NEEDS_PICKAXE, DEPOSITING, DONE }
+	public enum Status { WORKING, NEEDS_PICKAXE, NEEDS_LADDERS, DEPOSITING, DONE }
+
+	/**
+	 * Where the cursor is: down the ladder shaft (strip mines at a set height), in the quarry itself, or putting the
+	 * last ladders up at the foot of the shaft.
+	 */
+	public enum Phase { SHAFT, PIT, LADDERS }
+
+	/** No ladder shaft (see {@link #setShaft}). */
+	private static final int NO_SHAFT = Integer.MIN_VALUE;
 
 	private final UUID id;
 	private final UUID owner;
@@ -36,6 +45,8 @@ public final class QuarrySite {
 	private int stairStart;
 	/** Tunnels with rock between them instead of an open pit (see {@link #isTunnel}). */
 	private boolean stripMine;
+	/** Top of the ladder shaft down to a strip mine, or {@link #NO_SHAFT}. */
+	private int shaftTop = NO_SHAFT;
 	/** Saved by a version before 0.45.0, which could stretch the quarry over its bench (see {@link #looksStretched}). */
 	private boolean fromOldVersion;
 
@@ -53,12 +64,27 @@ public final class QuarrySite {
 		this.depth = depth;
 	}
 
+	/** Every step: the shaft (if any), each block of the quarry, and the two ladders at the foot of the shaft. */
 	public long total() {
+		return shaftLength() + boxVolume() + (hasShaft() ? 2 : 0);
+	}
+
+	private long boxVolume() {
 		return (long) box.getXSpan() * box.getYSpan() * box.getZSpan();
 	}
 
 	/** The block at position {@code index} in digging order. */
 	public BlockPos at(long index) {
+		int shaft = shaftLength();
+		if (index < shaft) {
+			BlockPos column = shaftColumn();
+			return new BlockPos(column.getX(), shaftTop - (int) index, column.getZ());
+		}
+		index -= shaft;
+		if (index >= boxVolume()) {
+			BlockPos column = shaftColumn();
+			return new BlockPos(column.getX(), box.maxY() - (int) (index - boxVolume()), column.getZ());
+		}
 		int w = box.getXSpan();
 		int d = box.getZSpan();
 		long layerSize = (long) w * d;
@@ -77,9 +103,81 @@ public final class QuarrySite {
 		return cursor >= total();
 	}
 
+	public Phase phase() {
+		if (cursor < shaftLength()) {
+			return Phase.SHAFT;
+		}
+		return cursor < shaftLength() + boxVolume() ? Phase.PIT : Phase.LADDERS;
+	}
+
+	// --- ladder shaft ------------------------------------------------------------------------
+
+	/** Gives this strip mine a ladder shaft down from {@code top} (the marked corners' height). */
+	public void setShaft(int top) {
+		shaftTop = top;
+		onChange.run();
+	}
+
+	public boolean hasShaft() {
+		return shaftTop != NO_SHAFT && shaftTop > box.maxY();
+	}
+
+	/** Shaft blocks above the tunnels (the two in the tunnel are dug with it). */
+	public int shaftLength() {
+		return hasShaft() ? shaftTop - box.maxY() : 0;
+	}
+
+	public int shaftTop() {
+		return shaftTop;
+	}
+
+	/**
+	 * Where the shaft comes down (any y): the corner of the area where the first tunnel meets the cross tunnel, on
+	 * the bench's side, so the way up is the way home.
+	 */
+	public BlockPos shaftColumn() {
+		boolean alongX = box.getXSpan() >= box.getZSpan();
+		int along = crossTunnelAt();
+		return alongX ? new BlockPos(box.minX() + along, box.maxY(), box.minZ()) : new BlockPos(box.minX(), box.maxY(), box.minZ() + along);
+	}
+
+	/** The side of the shaft the ladders hang on: out of the area, across the tunnels (rock the miner never digs). */
+	public net.minecraft.core.Direction ladderWall() {
+		return box.getXSpan() >= box.getZSpan() ? net.minecraft.core.Direction.NORTH : net.minecraft.core.Direction.WEST;
+	}
+
+	/** Whether {@code pos} is in the shaft, from its top down to the tunnel floor. */
+	public boolean inShaft(BlockPos pos) {
+		if (!hasShaft()) {
+			return false;
+		}
+		BlockPos column = shaftColumn();
+		return pos.getX() == column.getX() && pos.getZ() == column.getZ() && pos.getY() >= box.minY() && pos.getY() <= shaftTop;
+	}
+
+	/** The shaft step being worked on: it gets its ladder once dug (so digging it doesn't move the cursor on). */
+	public boolean awaitsLadder(BlockPos pos) {
+		return phase() != Phase.PIT && pos.equals(current());
+	}
+
+	/** Gives up on the shaft (something in the way): the miner makes its own way down, the tunnels still get dug. */
+	public void skipShaft() {
+		if (phase() == Phase.SHAFT) {
+			cursor = shaftLength();
+			skipped++;
+			onChange.run();
+		}
+	}
+
 	@Nullable
 	public BlockPos current() {
 		return isDone() ? null : at(cursor);
+	}
+
+	/** A block dug without moving on (a shaft step, which gets its ladder next). */
+	public void countMined() {
+		mined++;
+		onChange.run();
 	}
 
 	public void advance(boolean dug, boolean skip) {
@@ -151,14 +249,19 @@ public final class QuarrySite {
 			return true;
 		}
 		int along = alongX ? pos.getX() - box.minX() : pos.getZ() - box.minZ();
+		return along == crossTunnelAt();
+	}
+
+	/** How far along the tunnels the cross tunnel is: the end nearest the bench. */
+	private int crossTunnelAt() {
+		boolean alongX = box.getXSpan() >= box.getZSpan();
 		int length = alongX ? box.getXSpan() : box.getZSpan();
-		int crossAt = 0;
-		if (bench != null) {
-			int b = alongX ? bench.getX() : bench.getZ();
-			int lo = alongX ? box.minX() : box.minZ();
-			crossAt = Math.abs(b - lo) <= Math.abs(b - (lo + length - 1)) ? 0 : length - 1;
+		if (bench == null) {
+			return 0;
 		}
-		return along == crossAt;
+		int b = alongX ? bench.getX() : bench.getZ();
+		int lo = alongX ? box.minX() : box.minZ();
+		return Math.abs(b - lo) <= Math.abs(b - (lo + length - 1)) ? 0 : length - 1;
 	}
 
 	public boolean hasStairs() {
@@ -309,6 +412,9 @@ public final class QuarrySite {
 			tag.putBoolean("strip_mine", true);
 		}
 		tag.putInt("stair_start", stairStart);
+		if (shaftTop != NO_SHAFT) {
+			tag.putInt("shaft_top", shaftTop);
+		}
 		return tag;
 	}
 
@@ -330,6 +436,7 @@ public final class QuarrySite {
 		site.stairs = tag.getBoolean("stairs"); // false for quarries started before stairs existed
 		site.stairStart = tag.getInt("stair_start");
 		site.stripMine = tag.getBoolean("strip_mine");
+		site.shaftTop = tag.contains("shaft_top", Tag.TAG_INT) ? tag.getInt("shaft_top") : NO_SHAFT;
 		return site;
 	}
 }

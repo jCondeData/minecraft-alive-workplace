@@ -86,7 +86,8 @@ public final class Miners {
 			return InteractionResult.CONSUME;
 		}
 		QuarryData data = QuarryMarkerItem.data(stack);
-		Optional<BoundingBox> area = data.area();
+		int floor = level.getMinBuildHeight() + 5;
+		Optional<BoundingBox> area = data.area(floor);
 		if (area.isEmpty()) {
 			tell(player, Component.translatable("message.aliveworkplace.quarry.not_marked"), ChatFormatting.YELLOW);
 			return InteractionResult.CONSUME;
@@ -105,8 +106,16 @@ public final class Miners {
 			tell(player, Component.translatable("message.aliveworkplace.quarry.no_bench"), ChatFormatting.RED);
 			return InteractionResult.CONSUME;
 		}
+		if (!QuarryData.fits(area.get().getXSpan(), area.get().getZSpan(), data.isStripMine())) {
+			tell(player, QuarryMarkerItem.tooBig(area.get().getXSpan(), area.get().getZSpan(), data.isStripMine()), ChatFormatting.RED);
+			return InteractionResult.CONSUME;
+		}
 		BoundingBox box = clampToWorld(level, area.get());
-		double distance = Math.sqrt(box.getCenter().distSqr(bench.get()));
+		java.util.OptionalInt shaft = data.shaftTop(floor);
+		BlockPos center = box.getCenter();
+		// Down a shaft, the way there is straight down: only the distance across counts.
+		double distance = Math.sqrt(shaft.isPresent() ? new BlockPos(center.getX(), bench.get().getY(), center.getZ()).distSqr(bench.get())
+			: center.distSqr(bench.get()));
 		if (distance > MAX_DISTANCE) {
 			tell(player, Component.translatable("message.aliveworkplace.assign.too_far", (int) distance, MAX_DISTANCE), ChatFormatting.RED);
 			return InteractionResult.CONSUME;
@@ -120,13 +129,38 @@ public final class Miners {
 		if (data.isStripMine()) {
 			site.setStripMine(true);
 		}
+		if (shaft.isPresent()) {
+			site.setShaft(shaftStart(level, site, shaft.getAsInt()));
+		}
 		if (!player.getAbilities().instabuild) {
 			stack.shrink(1);
 		}
 		level.playSound(null, villager, SoundEvents.VILLAGER_YES, SoundSource.NEUTRAL, 1f, 1f);
-		tell(player, Component.translatable("message.aliveworkplace.quarry.started", villager.getDisplayName(), box.getXSpan(), box.getZSpan(),
-			box.getYSpan(), SupplyContainers.RADIUS), ChatFormatting.GREEN);
+		if (site.hasShaft()) {
+			tell(player, Component.translatable("message.aliveworkplace.quarry.started_shaft", villager.getDisplayName(), box.minY(), box.getXSpan(),
+				box.getZSpan(), site.shaftLength() + 2, SupplyContainers.RADIUS), ChatFormatting.GREEN);
+		} else {
+			tell(player, Component.translatable("message.aliveworkplace.quarry.started", villager.getDisplayName(), box.getXSpan(), box.getZSpan(),
+				box.getYSpan(), SupplyContainers.RADIUS), ChatFormatting.GREEN);
+		}
 		return InteractionResult.SUCCESS;
+	}
+
+	/**
+	 * Where a ladder shaft starts: the marked height, or lower where the corner it comes down at is lower ground (it
+	 * starts at the first block that isn't open air, instead of standing a ladder tower up to the marked height).
+	 */
+	public static int shaftStart(ServerLevel level, QuarrySite site, int top) {
+		BlockPos column = site.shaftColumn();
+		int y = top;
+		while (y > site.box().maxY() + 1) {
+			net.minecraft.world.level.block.state.BlockState state = level.getBlockState(new BlockPos(column.getX(), y, column.getZ()));
+			if (!state.isAir() && !(state.canBeReplaced() && state.getFluidState().isEmpty())) {
+				break;
+			}
+			y--;
+		}
+		return y;
 	}
 
 	/** Never dig into the bottom few layers of the world (void, bedrock). */
@@ -156,7 +190,7 @@ public final class Miners {
 			Math.round(site.progress() * 100)).withStyle(ChatFormatting.GOLD));
 		text.append(Component.literal("\n  "));
 		text.append(Component.translatable("message.aliveworkplace.quarry.state." + site.status().name().toLowerCase()).withStyle(
-			site.status() == QuarrySite.Status.NEEDS_PICKAXE ? ChatFormatting.YELLOW : ChatFormatting.GRAY));
+			site.status() == QuarrySite.Status.NEEDS_PICKAXE || site.status() == QuarrySite.Status.NEEDS_LADDERS ? ChatFormatting.YELLOW : ChatFormatting.GRAY));
 		text.append(Component.literal(" · ").withStyle(ChatFormatting.DARK_GRAY));
 		text.append(Component.translatable("message.aliveworkplace.quarry.counts", site.mined(), site.skipped()).withStyle(ChatFormatting.GRAY));
 		if (villager != null) {
@@ -188,6 +222,14 @@ public final class Miners {
 		ServerPlayer owner = level.getServer().getPlayerList().getPlayer(site.owner());
 		if (owner != null && site.shouldNotify(level.getGameTime(), 1200)) {
 			tell(owner, Component.translatable("message.aliveworkplace.quarry.needs_pickaxe", villager.getDisplayName(), SupplyContainers.RADIUS),
+				ChatFormatting.YELLOW);
+		}
+	}
+
+	static void notifyNeedsLadders(ServerLevel level, Villager villager, QuarrySite site) {
+		ServerPlayer owner = level.getServer().getPlayerList().getPlayer(site.owner());
+		if (owner != null && site.shouldNotify(level.getGameTime(), 1200)) {
+			tell(owner, Component.translatable("message.aliveworkplace.quarry.needs_ladders", villager.getDisplayName(), SupplyContainers.RADIUS),
 				ChatFormatting.YELLOW);
 		}
 	}
@@ -271,8 +313,10 @@ public final class Miners {
 	private static ItemStack markerFor(QuarrySite site) {
 		ItemStack marker = new ItemStack(ModItems.QUARRY_MARKER);
 		BoundingBox box = site.box();
-		marker.set(ModComponents.QUARRY, new QuarryData(Optional.of(site.dimension()), Optional.of(new BlockPos(box.minX(), box.maxY(), box.minZ())),
-			Optional.of(new BlockPos(box.maxX(), box.maxY(), box.maxZ())), site.depth()));
+		// A strip mine down a shaft: the corners on the ground again, and the height it was dug at.
+		int top = site.hasShaft() ? site.shaftTop() : box.maxY();
+		marker.set(ModComponents.QUARRY, new QuarryData(Optional.of(site.dimension()), Optional.of(new BlockPos(box.minX(), top, box.minZ())),
+			Optional.of(new BlockPos(box.maxX(), top, box.maxZ())), site.depth(), site.hasShaft() ? Optional.of(box.minY()) : Optional.empty()));
 		return marker;
 	}
 

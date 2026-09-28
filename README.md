@@ -82,7 +82,8 @@ upgrades are in the Blueprint Table too. Your own blueprints work the same way (
 Craft a **Miner's Bench** (cobblestone on top, a stone pickaxe in the middle, planks around) and place it near a
 villager without a job. Then:
 1. Craft a **Quarry Marker** (stick + red dye + paper). Right-click one corner block, then the opposite corner
-   (up to 32 × 32). Sneak-right-click the air to choose the depth (4, 8, 16, 32 or 64) or a **strip mine**; a red
+   (up to 32 × 32). Sneak-right-click the air to choose the depth (4, 8, 16, 32 or 64) or a **strip mine** (here or
+   down a shaft); a red
    outline shows the area.
 2. Put **pickaxes** (and some torches) in a chest within 8 blocks of the Miner's Bench.
 3. Give the marker to the miner. They dig the area out from the top down, bring everything back to the chests, and
@@ -98,7 +99,14 @@ Sand and gravel steps are swapped for cobblestone, and gaps (caves) are filled i
 **Strip mines.** The last choice on the marker digs tunnels instead of a pit: 2 high (the marked blocks and the ones
 below them, so mark the corners at head height), along the longer side of the area, with 2 blocks of rock between
 them and a tunnel across the end nearest the bench. The rock stays, but any ore in it is dug out: about a third of
-the digging for all the ore.
+the digging for all the ore. Strip mines can be up to 64 blocks long (and 32 wide).
+
+**Strip mines down a shaft.** After the strip mine, the marker offers strip mines at set heights: **Y=16** (iron, and
+ancient debris in the Nether), **Y=-16** (redstone, gold and lapis) and **Y=-53** (diamonds). Mark the corners on the
+ground: the miner digs a 1-wide ladder shaft straight down from the corner nearest the bench, then the tunnels at that
+height, and puts ladders all the way up — about one ladder per block of depth, from the chests (they wait for more if
+they run out). On the way down they seal off any water or lava beside the shaft with stone and put a block under
+themselves before digging into a cave, so they never fall.
 
 **Smelting.** Put a furnace or blast furnace within 8 blocks of the Miner's Bench and some coal or charcoal in the
 chests. Every time the miner drops off a haul they take the finished ingots out into the chests, load the raw ores

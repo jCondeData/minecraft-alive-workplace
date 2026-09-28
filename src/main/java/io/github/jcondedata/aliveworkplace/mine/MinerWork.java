@@ -106,12 +106,32 @@ public class MinerWork extends Behavior<Villager> {
 		}
 		BuilderBag bag = villager.getAttachedOrCreate(ModAttachments.BUILDER_BAG);
 
-		// 1. Next block that needs digging (or a step of the stairs that needs filling in).
+		// 1. Next block that needs digging (or a step of the stairs that needs filling in, or a ladder in the shaft).
 		BlockPos target = null;
 		boolean fill = false;
+		boolean ladder = false;
 		ItemStack pick = villager.getItemBySlot(EquipmentSlot.MAINHAND);
 		for (int budget = SKIP_BUDGET; budget > 0 && !site.isDone(); budget--) {
 			BlockPos pos = site.current();
+			if (site.phase() != QuarrySite.Phase.PIT) {
+				ShaftJob job = shaftJob(level, site, pos, pick, bag);
+				if (job.kind() == Verdict.EMPTY) {
+					site.advance(false, false);
+					continue;
+				}
+				if (job.kind() == Verdict.LEAVE) {
+					if (site.phase() == QuarrySite.Phase.SHAFT) {
+						site.skipShaft();
+					} else {
+						site.advance(false, true);
+					}
+					continue;
+				}
+				target = job.pos();
+				fill = job.kind() == Verdict.FILL;
+				ladder = job.kind() == Verdict.LADDER;
+				break;
+			}
 			Verdict v = verdict(level, site, pos, pick, bag);
 			if (v == Verdict.DIG || v == Verdict.FILL) {
 				target = pos;
@@ -130,9 +150,17 @@ public class MinerWork extends Behavior<Villager> {
 			return;
 		}
 
-		// 2. A pickaxe in hand.
-		if (!fill && !isPickaxe(pick)) {
+		// 2. A pickaxe in hand (ladders for the shaft, blocks to seal it with).
+		if (!fill && !ladder && !isPickaxe(pick)) {
 			fetchPickaxe(level, villager, site, bench, bag);
+			return;
+		}
+		if (ladder && !bag.has(Items.LADDER, 1)) {
+			fetchLadders(level, villager, site, bench, bag);
+			return;
+		}
+		if (fill && filler(bag) == null) {
+			fetchFiller(level, villager, site, bench, bag);
 			return;
 		}
 
@@ -156,8 +184,10 @@ public class MinerWork extends Behavior<Villager> {
 		}
 		villager.getBrain().eraseMemory(MemoryModuleType.WALK_TARGET);
 		villager.getBrain().setMemory(MemoryModuleType.LOOK_TARGET, new BlockPosTracker(target));
-		if (fill) {
-			placeStep(level, villager, site, bag, target);
+		if (ladder) {
+			placeLadder(level, villager, site, bag, target);
+		} else if (fill) {
+			placeStep(level, villager, site, bag, target, site.phase() == QuarrySite.Phase.PIT);
 		} else {
 			dig(level, villager, site, bag, pick, target);
 		}
@@ -165,7 +195,64 @@ public class MinerWork extends Behavior<Villager> {
 
 	// --- what to dig ---------------------------------------------------------------------------
 
-	private enum Verdict { DIG, EMPTY, LEAVE, KEEP, FILL }
+	private enum Verdict { DIG, EMPTY, LEAVE, KEEP, FILL, LADDER }
+
+	/** What to do for a step of the ladder shaft, and where (sealing it may mean filling in the block beside it). */
+	private record ShaftJob(Verdict kind, BlockPos pos) {
+	}
+
+	/**
+	 * A step of the ladder shaft down to a strip mine, dug top-down: first the block underneath is made solid (never
+	 * dig out what you'd fall through: a cave under the shaft gets a block to stand on, dug out again next), water and
+	 * lava beside it are sealed off and the wall the ladder hangs on filled in; then the block is dug and its ladder put
+	 * up. At the foot of the shaft (after the tunnels) only the ladders go in. EMPTY = done, move on; LEAVE = can't be
+	 * dug (the shaft is given up).
+	 */
+	private static ShaftJob shaftJob(ServerLevel level, QuarrySite site, BlockPos pos, ItemStack pick, BuilderBag bag) {
+		BlockState state = level.getBlockState(pos);
+		if (state.getBlock() instanceof net.minecraft.world.level.block.LadderBlock) {
+			return new ShaftJob(Verdict.EMPTY, pos);
+		}
+		boolean shaft = site.phase() == QuarrySite.Phase.SHAFT;
+		Direction wall = site.ladderWall();
+		if (shaft && !solid(level, pos.below())) {
+			return new ShaftJob(Verdict.FILL, pos.below());
+		}
+		for (Direction d : Direction.Plane.HORIZONTAL) {
+			if (!shaft && d != wall) {
+				continue; // in the tunnel: the tunnels are open on purpose
+			}
+			BlockPos side = pos.relative(d);
+			BlockState at = level.getBlockState(side);
+			if (!at.getFluidState().isEmpty() || d == wall && !solid(level, side)) {
+				if (MaterialRules.isProtected(at, at.getDestroySpeed(level, side))) {
+					return new ShaftJob(Verdict.LEAVE, pos);
+				}
+				return new ShaftJob(Verdict.FILL, side);
+			}
+		}
+		if (!state.getFluidState().isEmpty() && state.getCollisionShape(level, pos).isEmpty()) {
+			return new ShaftJob(shaft ? Verdict.FILL : Verdict.EMPTY, pos);
+		}
+		if (state.isAir() || state.canBeReplaced() || state.is(Blocks.TORCH) || state.is(Blocks.WALL_TORCH)) {
+			return new ShaftJob(Verdict.LADDER, pos);
+		}
+		if (!shaft) {
+			return new ShaftJob(Verdict.EMPTY, pos); // something the tunnel pass left standing: no ladder there
+		}
+		float hardness = state.getDestroySpeed(level, pos);
+		if (hardness < 0 || MaterialRules.isProtected(state, hardness) || state.is(ModBlocks.BUILDERS_BENCH) || state.is(ModBlocks.MINERS_BENCH)
+			|| pos.equals(site.bench()) || isPickaxe(pick) && state.requiresCorrectToolForDrops() && !pick.isCorrectToolForDrops(state)) {
+			return new ShaftJob(Verdict.LEAVE, pos);
+		}
+		return new ShaftJob(Verdict.DIG, pos);
+	}
+
+	/** Solid enough to stand on or hang a ladder on, and no liquid. */
+	private static boolean solid(ServerLevel level, BlockPos pos) {
+		BlockState state = level.getBlockState(pos);
+		return state.isCollisionShapeFullBlock(level, pos) && state.getFluidState().isEmpty();
+	}
 
 	/** What the miner fills gaps in the stairs with, from the bag (the first one there is). */
 	static final List<Item> FILLERS = List.of(Items.COBBLESTONE, Items.COBBLED_DEEPSLATE, Items.STONE, Items.DEEPSLATE, Items.ANDESITE,
@@ -237,11 +324,16 @@ public class MinerWork extends Behavior<Villager> {
 		return null;
 	}
 
-	/** Puts a block from the bag where a step is missing. Anyone standing there is lifted onto it. */
-	private static void placeStep(ServerLevel level, Villager villager, QuarrySite site, BuilderBag bag, BlockPos pos) {
+	/**
+	 * Puts a block from the bag where a step is missing (or to seal the shaft: then the cursor stays put). Anyone
+	 * standing there is lifted onto it.
+	 */
+	private static void placeStep(ServerLevel level, Villager villager, QuarrySite site, BuilderBag bag, BlockPos pos, boolean advance) {
 		Item item = filler(bag);
 		if (item == null) {
-			site.advance(false, false);
+			if (advance) {
+				site.advance(false, false);
+			}
 			return;
 		}
 		AABB space = new AABB(pos);
@@ -256,6 +348,26 @@ public class MinerWork extends Behavior<Villager> {
 		for (LivingEntity standing : level.getEntitiesOfClass(LivingEntity.class, space)) {
 			standing.teleportTo(standing.getX(), pos.getY() + 1, standing.getZ());
 		}
+		if (advance) {
+			site.advance(false, false);
+		}
+	}
+
+	/** Hangs a ladder from the bag in the shaft (a torch there goes back in the bag). */
+	private static void placeLadder(ServerLevel level, Villager villager, QuarrySite site, BuilderBag bag, BlockPos pos) {
+		BlockState ladder = Blocks.LADDER.defaultBlockState().setValue(net.minecraft.world.level.block.LadderBlock.FACING, site.ladderWall().getOpposite());
+		if (!ladder.canSurvive(level, pos)) {
+			site.advance(false, true);
+			return;
+		}
+		BlockState there = level.getBlockState(pos);
+		if (there.is(Blocks.TORCH) || there.is(Blocks.WALL_TORCH)) {
+			bag.addAll(Items.TORCH, 1);
+		}
+		villager.swing(InteractionHand.MAIN_HAND);
+		level.setBlockAndUpdate(pos, ladder);
+		level.playSound(null, pos, SoundEvents.LADDER_PLACE, SoundSource.BLOCKS, 1f, 1f);
+		bag.remove(Items.LADDER, 1);
 		site.advance(false, false);
 	}
 
@@ -298,7 +410,9 @@ public class MinerWork extends Behavior<Villager> {
 		}
 		pick.hurtAndBreak(1, villager, EquipmentSlot.MAINHAND);
 		boolean torch = state.is(Blocks.TORCH) || state.is(Blocks.WALL_TORCH);
-		if (!site.isStep(target)) {
+		if (site.awaitsLadder(target)) {
+			site.countMined(); // the ladder goes in next, then the cursor moves on
+		} else if (!site.isStep(target)) {
 			site.advance(!torch, false);
 		} // else a loose step (sand, gravel...): the same spot gets filled in next
 
@@ -307,7 +421,7 @@ public class MinerWork extends Behavior<Villager> {
 		}
 		if (++sinceTorch >= TORCH_EVERY) {
 			sinceTorch = 0;
-			lightUp(level, villager, bag);
+			lightUp(level, villager, site, bag);
 		}
 	}
 
@@ -328,10 +442,10 @@ public class MinerWork extends Behavior<Villager> {
 		}
 	}
 
-	/** Dark down here? Put a torch down where the miner stands (if it brought any). */
-	private static void lightUp(ServerLevel level, Villager villager, BuilderBag bag) {
+	/** Dark down here? Put a torch down where the miner stands (if it brought any; not in the ladder shaft). */
+	private static void lightUp(ServerLevel level, Villager villager, QuarrySite site, BuilderBag bag) {
 		BlockPos feet = villager.blockPosition();
-		if (!bag.has(Items.TORCH, 1) || level.getBrightness(LightLayer.BLOCK, feet) >= 8 || level.getBrightness(LightLayer.SKY, feet) >= 8) {
+		if (site.inShaft(feet) || !bag.has(Items.TORCH, 1) || level.getBrightness(LightLayer.BLOCK, feet) >= 8 || level.getBrightness(LightLayer.SKY, feet) >= 8) {
 			return;
 		}
 		BlockState torch = Blocks.TORCH.defaultBlockState();
@@ -362,15 +476,64 @@ public class MinerWork extends Behavior<Villager> {
 		}
 		topUpTorches(level, supplies, bag);
 		topUpFiller(level, site, supplies, bag);
+		topUpLadders(level, site, supplies, bag);
+	}
+
+	/** Ladders for the shaft from the chests; with none there, wait by the bench and tell the owner. */
+	private void fetchLadders(ServerLevel level, Villager villager, QuarrySite site, BlockPos bench, BuilderBag bag) {
+		List<BlockPos> supplies = SupplyContainers.find(level, bench, site.box());
+		BlockPos chest = SupplyContainers.firstMatching(level, supplies, stack -> stack.is(Items.LADDER));
+		if (chest == null) {
+			site.setStatus(QuarrySite.Status.NEEDS_LADDERS);
+			walkTo(level, villager, bench, 3);
+			Miners.notifyNeedsLadders(level, villager, site);
+			return;
+		}
+		if (walkTo(level, villager, chest, CONTAINER_REACH)) {
+			topUpLadders(level, site, supplies, bag);
+			topUpTorches(level, supplies, bag);
+			level.playSound(null, chest, SoundEvents.CHEST_OPEN, SoundSource.BLOCKS, 0.4f, 1.1f);
+		}
+	}
+
+	/** Blocks to seal the shaft with from the chests; with none there, the miner gives up on the shaft. */
+	private void fetchFiller(ServerLevel level, Villager villager, QuarrySite site, BlockPos bench, BuilderBag bag) {
+		List<BlockPos> supplies = SupplyContainers.find(level, bench, site.box());
+		BlockPos chest = SupplyContainers.firstMatching(level, supplies, stack -> FILLERS.contains(stack.getItem()));
+		if (chest == null) {
+			if (site.phase() == QuarrySite.Phase.SHAFT) {
+				site.skipShaft();
+			} else {
+				site.advance(false, true);
+			}
+			return;
+		}
+		if (walkTo(level, villager, chest, CONTAINER_REACH)) {
+			topUpFiller(level, site, supplies, bag);
+		}
+	}
+
+	private static void topUpLadders(ServerLevel level, QuarrySite site, List<BlockPos> supplies, BuilderBag bag) {
+		if (!site.hasShaft() || site.phase() == QuarrySite.Phase.PIT) {
+			return;
+		}
+		int have = bag.count(Items.LADDER);
+		if (have < 16) {
+			int got = SupplyContainers.extract(level, supplies, Items.LADDER, 64 - have);
+			if (got > 0) {
+				bag.addAll(Items.LADDER, got);
+			}
+		}
 	}
 
 	private static void deposit(ServerLevel level, Villager villager, QuarrySite site, BlockPos bench, BuilderBag bag) {
 		List<BlockPos> supplies = SupplyContainers.find(level, bench, null);
-		for (ItemStack stack : bag.takeAllExcept(java.util.Set.of(Items.TORCH))) {
+		for (ItemStack stack : bag.takeAllExcept(java.util.Set.of(Items.TORCH, Items.LADDER))) {
 			Miners.store(level, supplies, bench, stack);
 		}
 		topUpTorches(level, supplies, bag);
 		topUpFiller(level, site, supplies, bag);
+		topUpLadders(level, site, supplies, bag);
 		io.github.jcondedata.aliveworkplace.work.Furnaces.tend(level, bench, supplies, io.github.jcondedata.aliveworkplace.work.Furnaces::isOre);
 		level.playSound(null, villager.blockPosition(), SoundEvents.CHEST_CLOSE, SoundSource.BLOCKS, 0.4f, 1.1f);
 	}
@@ -387,7 +550,7 @@ public class MinerWork extends Behavior<Villager> {
 
 	/** A few blocks to fill gaps in the stairs with, taken back out of the chests. */
 	private static void topUpFiller(ServerLevel level, QuarrySite site, List<BlockPos> supplies, BuilderBag bag) {
-		if (!site.hasStairs() || filler(bag) != null) {
+		if (!site.hasStairs() && !site.hasShaft() || filler(bag) != null) {
 			return;
 		}
 		for (Item item : FILLERS) {
@@ -416,7 +579,11 @@ public class MinerWork extends Behavior<Villager> {
 			return true;
 		}
 		if (walker.noSpot()) {
-			site.advance(false, true); // nowhere to dig it from: leave it
+			if (site.phase() == QuarrySite.Phase.SHAFT) {
+				site.skipShaft(); // stuck in the shaft: make its own way down
+			} else {
+				site.advance(false, true); // nowhere to dig it from: leave it
+			}
 		}
 		return false;
 	}

@@ -41,27 +41,33 @@ public class QuarryMarkerItem extends Item {
 		BlockPos pos = context.getClickedPos();
 		var dim = context.getLevel().dimension().location();
 		if (player.isShiftKeyDown()) {
-			stack.set(ModComponents.QUARRY, new QuarryData(Optional.empty(), Optional.empty(), Optional.empty(), data.depth()));
+			stack.set(ModComponents.QUARRY, new QuarryData(Optional.empty(), Optional.empty(), Optional.empty(), data.depth(), data.stripLevel()));
 			player.displayClientMessage(Component.translatable("message.aliveworkplace.quarry.reset"), true);
 			return InteractionResult.SUCCESS;
 		}
 		if (data.first().isEmpty() || data.isComplete() || !data.dimension().map(dim::equals).orElse(false)) {
-			stack.set(ModComponents.QUARRY, new QuarryData(Optional.of(dim), Optional.of(pos), Optional.empty(), data.depth()));
+			stack.set(ModComponents.QUARRY, new QuarryData(Optional.of(dim), Optional.of(pos), Optional.empty(), data.depth(), data.stripLevel()));
 			player.displayClientMessage(Component.translatable("message.aliveworkplace.quarry.first", pos.getX(), pos.getY(), pos.getZ()), true);
 			return InteractionResult.SUCCESS;
 		}
 		BlockPos first = data.first().get();
 		int w = Math.abs(first.getX() - pos.getX()) + 1;
 		int d = Math.abs(first.getZ() - pos.getZ()) + 1;
-		if (w > QuarryData.MAX_SIDE || d > QuarryData.MAX_SIDE) {
-			player.displayClientMessage(Component.translatable("message.aliveworkplace.quarry.too_big", w, d, QuarryData.MAX_SIDE)
-				.withStyle(ChatFormatting.RED), true);
+		if (!QuarryData.fits(w, d, data.isStripMine())) {
+			player.displayClientMessage(tooBig(w, d, data.isStripMine()).withStyle(ChatFormatting.RED), true);
 			return InteractionResult.FAIL;
 		}
-		QuarryData done = new QuarryData(Optional.of(dim), Optional.of(first), Optional.of(pos), data.depth());
+		QuarryData done = new QuarryData(Optional.of(dim), Optional.of(first), Optional.of(pos), data.depth(), data.stripLevel());
 		stack.set(ModComponents.QUARRY, done);
-		player.displayClientMessage(data.isStripMine() ? Component.translatable("message.aliveworkplace.quarry.marked_strip", w, d)
-			: Component.translatable("message.aliveworkplace.quarry.marked", w, d, data.depth()), false);
+		Component message;
+		if (done.shaftTop(Integer.MIN_VALUE).isPresent()) {
+			message = Component.translatable("message.aliveworkplace.quarry.marked_strip_level", w, d, done.stripLevel().get());
+		} else if (data.isStripMine()) {
+			message = Component.translatable("message.aliveworkplace.quarry.marked_strip", w, d);
+		} else {
+			message = Component.translatable("message.aliveworkplace.quarry.marked", w, d, data.depth());
+		}
+		player.displayClientMessage(message, false);
 		return InteractionResult.SUCCESS;
 	}
 
@@ -73,10 +79,23 @@ public class QuarryMarkerItem extends Item {
 		}
 		if (!level.isClientSide) {
 			QuarryData data = data(stack);
-			QuarryData deeper = data.withDepth(data.nextDepth());
-			stack.set(ModComponents.QUARRY, deeper);
-			player.displayClientMessage(deeper.isStripMine() ? Component.translatable("message.aliveworkplace.quarry.strip_mine")
-				: Component.translatable("message.aliveworkplace.quarry.depth", deeper.depth()), true);
+			QuarryData next = data.next();
+			stack.set(ModComponents.QUARRY, next);
+			Component message;
+			if (next.stripLevel().isPresent()) {
+				message = Component.translatable("message.aliveworkplace.quarry.strip_level", next.stripLevel().get(), oresAt(next.stripLevel().get()));
+			} else if (next.isStripMine()) {
+				message = Component.translatable("message.aliveworkplace.quarry.strip_mine");
+			} else {
+				message = Component.translatable("message.aliveworkplace.quarry.depth", next.depth());
+			}
+			player.displayClientMessage(message, true);
+			if (next.isComplete()) {
+				BoundingBox box = next.area().orElseThrow();
+				if (!QuarryData.fits(box.getXSpan(), box.getZSpan(), next.isStripMine())) {
+					player.displayClientMessage(tooBig(box.getXSpan(), box.getZSpan(), next.isStripMine()).withStyle(ChatFormatting.RED), false);
+				}
+			}
 		}
 		return InteractionResultHolder.sidedSuccess(stack, level.isClientSide);
 	}
@@ -87,15 +106,38 @@ public class QuarryMarkerItem extends Item {
 		Optional<BoundingBox> area = data.area();
 		if (area.isPresent()) {
 			BoundingBox box = area.get();
-			tooltip.add(Component.translatable(data.isStripMine() ? "tooltip.aliveworkplace.quarry.strip_area" : "tooltip.aliveworkplace.quarry.area",
-				box.getXSpan(), box.getZSpan(), box.getYSpan(), box.minX(), box.maxY(), box.minZ()).withStyle(ChatFormatting.AQUA));
+			java.util.OptionalInt shaft = data.shaftTop(Integer.MIN_VALUE);
+			if (shaft.isPresent()) {
+				tooltip.add(Component.translatable("tooltip.aliveworkplace.quarry.strip_shaft_area", box.getXSpan(), box.getZSpan(), box.minY(),
+					box.minX(), shaft.getAsInt(), box.minZ()).withStyle(ChatFormatting.AQUA));
+			} else {
+				tooltip.add(Component.translatable(data.isStripMine() ? "tooltip.aliveworkplace.quarry.strip_area" : "tooltip.aliveworkplace.quarry.area",
+					box.getXSpan(), box.getZSpan(), box.getYSpan(), box.minX(), box.maxY(), box.minZ()).withStyle(ChatFormatting.AQUA));
+			}
 			tooltip.add(Component.translatable("tooltip.aliveworkplace.quarry.hand_over").withStyle(ChatFormatting.GRAY));
 		} else if (data.first().isPresent()) {
 			tooltip.add(Component.translatable("tooltip.aliveworkplace.quarry.second").withStyle(ChatFormatting.GRAY));
 		} else {
 			tooltip.add(Component.translatable("tooltip.aliveworkplace.quarry.first").withStyle(ChatFormatting.GRAY));
 		}
-		tooltip.add(data.isStripMine() ? Component.translatable("tooltip.aliveworkplace.quarry.strip_mine").withStyle(ChatFormatting.DARK_GRAY)
-			: Component.translatable("tooltip.aliveworkplace.quarry.depth", data.depth()).withStyle(ChatFormatting.DARK_GRAY));
+		Component mode;
+		if (data.stripLevel().isPresent() && data.isStripMine()) {
+			mode = Component.translatable("tooltip.aliveworkplace.quarry.strip_level", data.stripLevel().get(), oresAt(data.stripLevel().get()));
+		} else if (data.isStripMine()) {
+			mode = Component.translatable("tooltip.aliveworkplace.quarry.strip_mine");
+		} else {
+			mode = Component.translatable("tooltip.aliveworkplace.quarry.depth", data.depth());
+		}
+		tooltip.add(mode.copy().withStyle(ChatFormatting.DARK_GRAY));
+	}
+
+	/** What's worth digging for at that height ("diamonds"). */
+	static Component oresAt(int level) {
+		return Component.translatable("message.aliveworkplace.quarry.ores." + (level < 0 ? "minus_" + -level : String.valueOf(level)));
+	}
+
+	static net.minecraft.network.chat.MutableComponent tooBig(int w, int d, boolean stripMine) {
+		return stripMine ? Component.translatable("message.aliveworkplace.quarry.too_long", w, d, QuarryData.MAX_TUNNEL, QuarryData.MAX_SIDE)
+			: Component.translatable("message.aliveworkplace.quarry.too_big", w, d, QuarryData.MAX_SIDE);
 	}
 }

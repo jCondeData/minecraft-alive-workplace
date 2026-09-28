@@ -2,6 +2,16 @@
 
 ## Unreleased
 
+## 0.59.0 — 2026-09-28
+
+### Added
+- **Strip mines down a ladder shaft**: after "strip mine" the Quarry Marker now offers strip mines at Y=16 (iron;
+  ancient debris in the Nether), Y=-16 (redstone, gold, lapis) and Y=-53 (diamonds). Mark the corners on the ground and
+  the miner digs a ladder shaft down from the corner nearest their bench, digs the tunnels there, and ladders the
+  shaft all the way up (ladders from the chests). Water and lava beside the shaft are sealed off, and caves in its way
+  are bridged so the miner never falls.
+- Strip mines can be up to 64 blocks long (still up to 32 wide).
+
 ## 0.58.0 — 2026-09-28
 
 ### Added

@@ -95,7 +95,12 @@ Owner decisions are recorded in **Design decisions** at the bottom. Don't change
 - [x] Strip mines (the marker's last depth choice, `QuarryData.STRIP_MINE`): 2-high tunnels along the longer side on
   every third row, joined by a cross tunnel at the end nearest the bench (`QuarrySite.isTunnel`); the rock between is
   kept except blocks in `c:ores`; no stairs
-- [ ] Miner follow-ups: longer tunnels than 32 blocks, a ladder shaft down to a strip mine
+- [x] Strip mines up to 64 long (`QuarryData.MAX_TUNNEL`; 32 wide) and at set heights down a ladder shaft
+  (`QuarryData.STRIP_LEVELS` 16 / -16 / -53 after "strip mine here" on the marker; `QuarrySite` phases SHAFT → PIT →
+  LADDERS): the shaft comes down at the cross tunnel's corner on the bench's side, ladders on the wall across the
+  tunnels; below each step made solid first (caves), water/lava beside it sealed with filler; ladders from the chests
+  (waits, "needs ladders"); given up (tunnels still dug) if something undiggable is in the way
+- [ ] Miner follow-ups: a lit shaft (torches on the wall opposite the ladders), a choice of height by typing it
 - [x] **Lumberjack** (Chopping Block workstation): fells natural trees within 16 blocks of the block (only trees: at least 4 natural leaves, trunk on dirt; player-placed logs, builds and quarries are left alone), clears the leaves, replants a sapling of the same wood, keeps up to 16 saplings of each kind and stores the rest in the chests near the block; axes from those chests wear out (waits for a new one); levels up like builders; trades sticks/apples, sells logs, saplings and an iron axe
 - [x] Tree farms (`TreeFarms`, a Field Marker given to a lumberjack, attachment `TREE_FARM`): saplings from the bag/chests
   planted on dirt in a grid 3 apart (dark oak: 2 × 2 squares 4 apart), trees in the farm felled even beyond the 16-block

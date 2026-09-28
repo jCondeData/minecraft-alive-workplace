@@ -29,7 +29,7 @@ The owner (Jesse) does not write code: sessions are expected to work autonomousl
   of builders at work; use it to check anything visual and to show the owner progress.
   `SCENE=table` shows the Blueprint Table screens, `SCENE=preview` the ghost preview and the status above a builder,
   `SCENE=gallery` every starter blueprint, `SCENE=village WORKSHOP_WEIGHT=200` one village of each type with workshops (`HOUSE_WEIGHT=60` for the other houses),
-  `SCENE=quarry` a miner digging out a block of stone, `SCENE=forest` a lumberjack felling and replanting four trees, `SCENE=farm` a farmer working a field, `SCENE=mail` the mailbox screen and a postman delivering, `SCENE=guard` a guard fighting three husks, `SCENE=staff` every workstation with its villager (then `python3 tools/screenshots/make_gif.py`). `DEBUG=true` logs
+  `SCENE=quarry` a miner digging out a block of stone, `SCENE=forest` a lumberjack felling and replanting four trees, `SCENE=farm` a farmer working a field, `SCENE=mail` the mailbox screen and a postman delivering, `SCENE=guard` a guard fighting three husks, `SCENE=staff` every workstation with its villager (then `python3 tools/screenshots/make_gif.py`), `SCENE=tutor` the Move Tutor's lesson screen (adds Cobblemon to the client: `-Pcobblemon=true`). `DEBUG=true` logs
   builder/miner decisions. Long scenes take >10 min: start run.sh in the background and poll.
   Never `pkill -f`/`pgrep -f` a pattern that also appears in your own command line (it kills your shell).
 - If Maven Central answers **429**, wait ~20 s and retry; it is rate limiting, not a real failure.
@@ -51,6 +51,7 @@ The owner (Jesse) does not write code: sessions are expected to work autonomousl
   mixins on `Villager.mobInteract` (refresh offers) and `AbstractVillager.notifyTrade` (move the goods and payment)
 - `travel/` — travel posts and ferrymen: `TravelNetwork` (saved data), `TravelPostBlock`, `TravelTicketItem`, `Ferrymen`
 - `trainer/` — Pokémon trainers: `Trainers` (tiers, prizes, XP); the battles live in `compat/cobblemon/CobblemonTrainers`
+- `tutor/` — Move Tutors: `Tutors` (grades, prices, XP); lessons and the screen live in `compat/cobblemon/CobblemonTutors`
 - `bard/` — bards: `BardWork` (discs from the chests, or a made-up tune)
 - `nurse/` — nurses: `Nurses` (treating players), `NurseWork` (healing villagers nearby)
 - `compat/cobblemon/` — the only code that touches Cobblemon classes; call it only when `isModLoaded("cobblemon")`
@@ -59,6 +60,7 @@ The owner (Jesse) does not write code: sessions are expected to work autonomousl
 - `fish/` — the fisher upgrade (vanilla Fishermen, hired with a fishing rod): `FisherWork`, `Fishers`
 - `wood/` — the lumberjack: `Trees` (what counts as a natural tree), `LumberjackWork`, `LumberjackPackages`
 - `work/` — shared by all jobs: `Walker` (movement + reach), `WorkerStatus` (overhead status for jobs without a saved site), `Jobs.employ`,
+  `ChoiceMenu` (a server-side chest screen of buttons: menus without client code),
   `Gated`/`UpgradedJob` (vanilla jobs with extra work), `PrivateContainer` (never a supply chest), `KeepLoaded` (chunk tickets)
 - `world/` — our houses in village generation (`VillageHouses`: builder's workshops, trainer's houses, guard houses,
   clinics, post offices; the NBT comes from `tools/blueprints/generate.py`)

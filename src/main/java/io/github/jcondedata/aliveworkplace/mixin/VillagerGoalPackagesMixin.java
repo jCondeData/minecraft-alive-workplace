@@ -39,6 +39,8 @@ abstract class VillagerGoalPackagesMixin {
 			cir.setReturnValue(io.github.jcondedata.aliveworkplace.bard.BardPackages.work(speed));
 		} else if (profession == ModVillagers.TRAINER || profession == ModVillagers.TRAINER_LEADER) {
 			cir.setReturnValue(io.github.jcondedata.aliveworkplace.trainer.TrainerPackages.work(speed));
+		} else if (profession == ModVillagers.TUTOR) {
+			cir.setReturnValue(io.github.jcondedata.aliveworkplace.tutor.TutorPackages.work(speed));
 		}
 	}
 

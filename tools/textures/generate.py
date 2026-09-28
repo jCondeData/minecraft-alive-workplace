@@ -1111,6 +1111,80 @@ def leader_overlay():
     save(img, "entity", "zombie_villager", "profession", "trainer_leader.png")
 
 
+# --- Tutor's Desk: an open book and an inkwell on a desk ------------------------------------------------
+def tutors_desk_top():
+    rnd = random.Random(241)
+    img = Image.new("RGBA", (16, 16))
+    planks(img, rnd)
+    for i in range(16):
+        for p in ((i, 0), (i, 15), (0, i), (15, i)):
+            img.putpixel(p, WOOD_EDGE)
+    # An open book: two pages with lines of text and a spine down the middle
+    for y in range(3, 12):
+        for x in range(2, 12):
+            img.putpixel((x, y), jitter(rgb("#efe7d2"), rnd, 3))
+    for y in range(3, 12):
+        img.putpixel((7, y), rgb("#8a5a2b"))
+    for y in (5, 7, 9):
+        for x in list(range(3, 6)) + list(range(8, 11)):
+            img.putpixel((x, y), rgb("#6d6d7a"))
+    # An inkwell and a quill
+    for (x, y) in ((12, 11), (13, 11), (12, 12), (13, 12)):
+        img.putpixel((x, y), rgb("#1d1f2b"))
+    for i in range(4):
+        img.putpixel((13 - i // 2 + 1, 10 - i), rgb("#f2f2f2"))
+    save(img, "block", "tutors_desk_top.png")
+
+
+def tutors_desk_side(front=False):
+    rnd = random.Random(242 if front else 243)
+    img = Image.new("RGBA", (16, 16))
+    planks(img, rnd)
+    for i in range(16):
+        for p in ((i, 0), (i, 15), (0, i), (15, i)):
+            img.putpixel(p, WOOD_EDGE)
+    # A row of book spines under the desk top
+    colors = ["#a33b3b", "#3b5ea3", "#3b8a4a", "#c9a23a", "#6b3ba3"]
+    for x in range(1, 15):
+        c = rgb(colors[x % len(colors)])
+        for y in range(3, 8 if x % 3 else 7):
+            img.putpixel((x, y), jitter(c, rnd, 6))
+    if front:
+        # A drawer with a brass knob
+        for x in range(3, 13):
+            img.putpixel((x, 9), WOOD_EDGE)
+            img.putpixel((x, 13), WOOD_EDGE)
+        for y in range(9, 14):
+            img.putpixel((3, y), WOOD_EDGE)
+            img.putpixel((12, y), WOOD_EDGE)
+        img.putpixel((7, 11), rgb("#e0b83a"))
+        img.putpixel((8, 11), rgb("#e0b83a"))
+    save(img, "block", "tutors_desk_front.png" if front else "tutors_desk_side.png")
+
+
+def tutor_overlay():
+    img = Image.new("RGBA", (64, 64), T)
+    rnd = random.Random(251)
+    black, gold, robe = rgb("#1f1f24"), rgb("#e0b83a"), rgb("#2f5d3a")
+    # A mortarboard with a gold tassel
+    for y in range(0, 8):
+        for x in range(40, 48):
+            img.putpixel((x, y), jitter(black, rnd, 3))
+    img.putpixel((43, 3), gold)
+    img.putpixel((44, 4), gold)
+    for y in range(8, 10):
+        for x in range(32, 64):
+            img.putpixel((x, y), jitter(black, rnd, 3))
+    for y in (10, 11):
+        img.putpixel((47, y), gold)
+    # A green scholar's robe with a white collar
+    for y in range(44, 58):
+        for x in range(0, 28):
+            img.putpixel((x, y), jitter(rgb("#f2f2f2") if y == 44 else robe, rnd, 4))
+    save(img, "entity", "villager", "profession", "tutor.png")
+    save(img, "entity", "zombie_villager", "profession", "tutor.png")
+
+
 def icon(blueprint):
     big = Image.new("RGBA", (128, 128), T)
     scaled = blueprint.resize((128, 128), Image.NEAREST)
@@ -1174,3 +1248,7 @@ if __name__ == "__main__":
     for face in ("top", "side", "front"):
         leaders_podium(face)
     leader_overlay()
+    tutors_desk_top()
+    tutors_desk_side(front=False)
+    tutors_desk_side(front=True)
+    tutor_overlay()

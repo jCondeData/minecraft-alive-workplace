@@ -74,6 +74,10 @@ public final class ModAttachments {
 		AliveWorkplace.id("leader_challenges"), builder -> builder.persistent(
 			com.mojang.serialization.Codec.unboundedMap(net.minecraft.core.UUIDUtil.STRING_CODEC, com.mojang.serialization.Codec.LONG)));
 
+	/** Lessons a Move Tutor has given. */
+	public static final AttachmentType<Integer> TUTOR_LESSONS = AttachmentRegistry.create(
+		AliveWorkplace.id("tutor_lessons"), builder -> builder.persistent(com.mojang.serialization.Codec.INT));
+
 	public static void init() {
 	}
 

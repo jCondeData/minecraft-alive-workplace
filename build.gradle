@@ -41,6 +41,7 @@ sourceSets {
 
 loom {
 	createRemapConfigurations(sourceSets.compattest)
+	createRemapConfigurations(sourceSets.devclient)
 }
 
 loom {
@@ -158,6 +159,12 @@ dependencies {
 	compatMods.each { modCompattestRuntimeOnly it }
 	// Loom drops the libraries these mods bundle inside themselves, so add those back.
 	modCompattestRuntimeOnly files(compatNestedJars(compatMods))
+
+	// Screenshots of Cobblemon features (SCENE=tutor): ./gradlew runScreenshots -Pcobblemon=true
+	if (project.findProperty("cobblemon") == "true") {
+		modDevclientRuntimeOnly "maven.modrinth:cobblemon:kF7CvxTo"
+		modDevclientRuntimeOnly files(compatNestedJars(["maven.modrinth:cobblemon:kF7CvxTo"]))
+	}
 }
 
 // The compat test server needs an accepted EULA in its run directory, like runGameTest.

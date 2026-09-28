@@ -100,6 +100,11 @@ public final class ModBlocks {
 		"leaders_podium", new BuildersBenchBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.POLISHED_ANDESITE))
 	);
 
+	/** Workstation for Move Tutors (they only teach with Cobblemon installed). */
+	public static final BuildersBenchBlock TUTORS_DESK = register(
+		"tutors_desk", new BuildersBenchBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.BOOKSHELF))
+	);
+
 	private static <T extends Block> T register(String name, T block) {
 		Registry.register(BuiltInRegistries.BLOCK, AliveWorkplace.id(name), block);
 		Registry.register(BuiltInRegistries.ITEM, AliveWorkplace.id(name), new BlockItem(block, new Item.Properties()));

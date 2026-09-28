@@ -2,6 +2,15 @@
 
 ## Unreleased
 
+### Added
+- **Move Tutors** (with Cobblemon). Craft a **Tutor's Desk** (a book on planks) for a villager and right-click them:
+  pick one of your Pokémon and a move it could learn (tutor, TM and egg moves), click twice, pay in emeralds and it
+  knows the move — straight into its moves if there's room, otherwise ready to swap in from its summary. New tutors
+  teach weaker moves; they rank up with every lesson until a Master teaches anything. Tutors buy paper and books too.
+
+### Fixed
+- Trainers without a name tag no longer show their job twice ("Novice Trainer Trainer").
+
 ## 0.22.0 — 2026-09-27
 
 ### Added

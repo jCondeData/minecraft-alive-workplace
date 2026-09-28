@@ -52,10 +52,18 @@ public final class Trainers {
 		return isLeader(villager) ? Math.max(4, level) : level;
 	}
 
+	/** "Novice Trainer" / "Trainer Leader", with the villager's name after it when they have one. */
 	public static Component title(Villager villager) {
-		return isLeader(villager)
-			? Component.translatable("message.aliveworkplace.trainer.leader_title", villager.getDisplayName())
-			: Component.translatable("message.aliveworkplace.trainer.title", BuilderLevels.levelName(tier(villager)), villager.getDisplayName());
+		boolean named = villager.hasCustomName();
+		if (isLeader(villager)) {
+			return named
+				? Component.translatable("message.aliveworkplace.trainer.leader_title_named", villager.getCustomName())
+				: Component.translatable("message.aliveworkplace.trainer.leader_title");
+		}
+		Component rank = BuilderLevels.levelName(tier(villager));
+		return named
+			? Component.translatable("message.aliveworkplace.trainer.title_named", rank, villager.getCustomName())
+			: Component.translatable("message.aliveworkplace.trainer.title", rank);
 	}
 
 	/** The leader who takes challenges in this village (the most experienced one within {@link #VILLAGE} blocks). */

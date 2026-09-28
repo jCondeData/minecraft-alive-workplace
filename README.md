@@ -6,7 +6,7 @@ torches. **Miners** dig out quarries, **Lumberjacks** cut down and replant trees
 your fields and **Fishermen** fish for you, dropping everything off in your chests. **Postmen** carry mail
 between players' mailboxes, **Guards** keep monsters away, **Nurses** heal you (and your Pokémon),
 **Shopkeepers** run your shop, **Ferrymen** take you between villages, **Bards** play music and — with Cobblemon —
-**Trainers** battle you. Villages grow workshops, trainer's houses, guard houses, clinics and post offices on their own.
+**Trainers** battle you and **Move Tutors** teach your Pokémon new moves. Villages grow workshops, trainer's houses, guard houses, clinics and post offices on their own.
 
 ![Three builders putting up the starter blueprints](docs/media/timelapse.gif)
 
@@ -152,6 +152,19 @@ Each village can also have one **Trainer Leader**: craft a **Leader's Podium** (
 Post, on polished andesite). The leader battles at Expert strength from the start, pays three times the prize, and
 takes one challenge a day from each player.
 
+## Move Tutors (with Cobblemon)
+Craft a **Tutor's Desk** (a book on planks) and place it near a villager without a job: they become a **Move Tutor**.
+Right-click them with an empty hand (sneak to trade instead) to open their lessons: pick one of your Pokémon at the
+top, then a move it could learn but won't get from levelling — tutor moves, TM moves and egg moves. Click a lesson
+once to choose it and again to pay and teach it. The move goes straight into the Pokémon's moves if it knows fewer
+than four, otherwise you can swap it in from the moves page of its summary.
+
+![A Move Tutor's lessons for Pikachu](docs/media/tutor.png)
+
+Lessons cost emeralds: 3 for a weak move, up to 24 for the strongest (egg moves count as one step harder). A new tutor
+only teaches weaker moves; they rank up with every lesson they give, and a Master teaches everything. Tutors also buy
+paper and books, if you need emeralds.
+
 ## Blueprint Table: any build from the internet
 Craft a **Blueprint Table** (blue dye on top, cartography table in the middle, planks around) and right-click it.
 
@@ -189,7 +202,7 @@ Craft a **Blueprint Table** (blue dye on top, cartography table in the middle, p
 | `/gamerule workplaceKeepWorkLoaded false` | builds and quarries stop when nobody is nearby (by default they keep going while the player who ordered them is online) |
 
 ## What's next
-Next up are couriers (hauling between chests), then Cobblemon trainers and Pokémon work partners. See [ROADMAP.md](ROADMAP.md).
+Next up is the Pokémon Trader, then Pokémon work partners and Cobblemon jobs. See [ROADMAP.md](ROADMAP.md).
 
 ## Building from source
 ```

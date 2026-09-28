@@ -85,6 +85,90 @@ public class CobblemonCompatTests implements FabricGameTest {
 		helper.succeed();
 	}
 
+	private static Villager tutor(GameTestHelper helper, int level) {
+		helper.setDayTime(2000);
+		BlockPos desk = new BlockPos(2, 1, 2);
+		helper.setBlock(desk, ModBlocks.TUTORS_DESK);
+		Villager tutor = helper.spawn(EntityType.VILLAGER, new BlockPos(3, 1, 3));
+		Jobs.employ(helper.getLevel(), tutor, helper.absolutePos(desk), ModVillagers.TUTORS_DESK_POI, ModVillagers.TUTOR);
+		tutor.setVillagerData(tutor.getVillagerData().setLevel(level));
+		return tutor;
+	}
+
+	/** A Master tutor teaches a move for emeralds: two clicks on the lesson, and the Pokémon can use it. */
+	@GameTest(template = AREA)
+	public void tutorTeachesAMove(GameTestHelper helper) {
+		Villager tutor = tutor(helper, 5);
+		ServerPlayer player = helper.makeMockServerPlayerInLevel();
+		player.setGameMode(GameType.SURVIVAL);
+		player.getInventory().add(new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.EMERALD, 64));
+		Pokemon pokemon = PokemonProperties.Companion.parse("bulbasaur level=20", " ", "=").create();
+		Cobblemon.INSTANCE.getStorage().getParty(player).add(pokemon);
+
+		var lessons = io.github.jcondedata.aliveworkplace.compat.cobblemon.CobblemonTutors.lessons(pokemon);
+		helper.assertTrue(!lessons.isEmpty(), "Bulbasaur has nothing to learn from a tutor");
+		int index = Math.min(lessons.size() - 1, 26); // the hardest lesson on the first page: a Master can teach it
+		var lesson = lessons.get(index);
+		var menu = io.github.jcondedata.aliveworkplace.compat.cobblemon.CobblemonTutors.menuForTest(player, tutor);
+		int slot = io.github.jcondedata.aliveworkplace.compat.cobblemon.CobblemonTutors.FIRST_MOVE_SLOT + index;
+		helper.assertTrue(menu.icon(0).getItem() instanceof com.cobblemon.mod.common.item.PokemonItem, "the party isn't shown");
+		menu.press(slot, player);
+		helper.assertTrue(player.getInventory().countItem(net.minecraft.world.item.Items.EMERALD) == 64, "the first click already paid");
+		menu.press(slot, player);
+		String name = lesson.move().getName();
+		boolean knows = pokemon.getAllAccessibleMoves().stream().anyMatch(m -> m.getName().equals(name))
+			|| pokemon.getMoveSet().getMoves().stream().anyMatch(m -> m.getName().equals(name));
+		helper.assertTrue(knows, "the Pokémon didn't learn " + name);
+		helper.assertTrue(player.getInventory().countItem(net.minecraft.world.item.Items.EMERALD) == 64 - lesson.price(),
+			"paid " + (64 - player.getInventory().countItem(net.minecraft.world.item.Items.EMERALD)) + ", expected " + lesson.price());
+		helper.assertTrue(tutor.getAttachedOrElse(io.github.jcondedata.aliveworkplace.registry.ModAttachments.TUTOR_LESSONS, 0) == 1, "lesson not counted");
+		String title = io.github.jcondedata.aliveworkplace.tutor.Tutors.title(tutor).getString();
+		helper.assertTrue(title.equals("Master Move Tutor"), "title: " + title);
+		helper.assertTrue(io.github.jcondedata.aliveworkplace.compat.cobblemon.CobblemonTutors.lessons(pokemon).stream()
+			.noneMatch(l -> l.move().getName().equals(name)), "the lesson is still offered");
+		helper.succeed();
+	}
+
+	/** A Novice tutor only teaches easy moves, and nobody gets a lesson they can't pay for. */
+	@GameTest(template = AREA)
+	public void noviceTutorsTeachEasyMovesForPayment(GameTestHelper helper) {
+		Villager tutor = tutor(helper, 1);
+		ServerPlayer player = helper.makeMockServerPlayerInLevel();
+		player.setGameMode(GameType.SURVIVAL);
+		player.getInventory().add(new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.EMERALD, 64));
+		Pokemon pokemon = PokemonProperties.Companion.parse("charmander level=20", " ", "=").create();
+		Cobblemon.INSTANCE.getStorage().getParty(player).add(pokemon);
+		var lessons = io.github.jcondedata.aliveworkplace.compat.cobblemon.CobblemonTutors.lessons(pokemon);
+		var menu = io.github.jcondedata.aliveworkplace.compat.cobblemon.CobblemonTutors.menuForTest(player, tutor);
+		int hard = -1;
+		for (int i = 0; i < Math.min(27, lessons.size()); i++) {
+			if (lessons.get(i).grade() > 1) {
+				hard = i;
+				break;
+			}
+		}
+		helper.assertTrue(hard >= 0, "Charmander has no hard lessons on the first page");
+		int slot = io.github.jcondedata.aliveworkplace.compat.cobblemon.CobblemonTutors.FIRST_MOVE_SLOT + hard;
+		helper.assertTrue(menu.icon(slot).is(net.minecraft.world.item.Items.PAPER), "a lesson beyond the tutor should be greyed out");
+		menu.press(slot, player);
+		menu.press(slot, player);
+		helper.assertTrue(player.getInventory().countItem(net.minecraft.world.item.Items.EMERALD) == 64, "a Novice gave a hard lesson");
+
+		if (lessons.get(0).grade() == 1) {
+			player.getInventory().clearContent();
+			int easy = io.github.jcondedata.aliveworkplace.compat.cobblemon.CobblemonTutors.FIRST_MOVE_SLOT;
+			menu.press(easy, player);
+			menu.press(easy, player);
+			helper.assertTrue(tutor.getAttachedOrElse(io.github.jcondedata.aliveworkplace.registry.ModAttachments.TUTOR_LESSONS, 0) == 0,
+				"a lesson without payment");
+		}
+		helper.assertTrue(io.github.jcondedata.aliveworkplace.tutor.Tutors.grade(40, false) == 1
+			&& io.github.jcondedata.aliveworkplace.tutor.Tutors.grade(90, false) == 4
+			&& io.github.jcondedata.aliveworkplace.tutor.Tutors.grade(120, true) == 5
+			&& io.github.jcondedata.aliveworkplace.tutor.Tutors.grade(0, false) == 3, "grades");
+		helper.succeed();
+	}
+
 	/** A Trainer Leader starts at Expert strength, pays three times the prize, and takes one challenge a day per player. */
 	@GameTest(template = AREA, timeoutTicks = 400)
 	public void leaderStartsStrongAndPaysMore(GameTestHelper helper) {

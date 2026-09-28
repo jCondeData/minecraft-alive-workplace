@@ -15,6 +15,7 @@ public final class ModTrades {
 		lumberjackTrades();
 		guardTrades();
 		nurseTrades();
+		tutorTrades();
 		TradeOfferHelper.registerVillagerOffers(ModVillagers.BARD, 1, offers -> {
 			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 2), new ItemStack(Items.NOTE_BLOCK, 2), 12, 2, 0.05f));
 			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.STRING, 16), new ItemStack(Items.EMERALD), 16, 2, 0.05f));
@@ -100,6 +101,22 @@ public final class ModTrades {
 			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 8), new ItemStack(Items.CROSSBOW), 3, 15, 0.05f)));
 		TradeOfferHelper.registerVillagerOffers(ModVillagers.GUARD, 5, offers ->
 			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 20), new ItemStack(Items.DIAMOND_SWORD), 2, 30, 0.05f)));
+	}
+
+	/** Tutors buy paper and books (emeralds for lessons) and sell a few things for the study. */
+	private static void tutorTrades() {
+		TradeOfferHelper.registerVillagerOffers(ModVillagers.TUTOR, 1, offers -> {
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.PAPER, 24), new ItemStack(Items.EMERALD), 16, 2, 0.05f));
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 1), new ItemStack(Items.BOOK), 12, 1, 0.05f));
+		});
+		TradeOfferHelper.registerVillagerOffers(ModVillagers.TUTOR, 2, offers ->
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.BOOK, 4), new ItemStack(Items.EMERALD), 12, 10, 0.05f)));
+		TradeOfferHelper.registerVillagerOffers(ModVillagers.TUTOR, 3, offers ->
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 3), new ItemStack(Items.EXPERIENCE_BOTTLE), 12, 20, 0.05f)));
+		TradeOfferHelper.registerVillagerOffers(ModVillagers.TUTOR, 4, offers ->
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.WRITABLE_BOOK, 2), new ItemStack(Items.EMERALD), 12, 30, 0.05f)));
+		TradeOfferHelper.registerVillagerOffers(ModVillagers.TUTOR, 5, offers ->
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 20), new ItemStack(Items.NAME_TAG), 4, 30, 0.05f)));
 	}
 
 	private static void nurseTrades() {

@@ -138,7 +138,12 @@ workstation, like the rest of the mod.
 - [ ] Pokémon-themed blueprints that come with staff: Pokémon Center (Nurse), Poké Mart (Clerk, sells for CobbleDollars), Berry Farm, Fossil Lab
 - [ ] Jobs: Nurse (Healing Machine), Orchard Keeper (apricorns, berries, mints), Chef (Campfire Pot: Lure Cakes, Aprijuice), Ball Smith (apricorns → balls), Fossil Scientist
 - [ ] Cobbleworkers compatibility: villagers haul from Pokémon pasture output
-- [ ] **Move Tutor**: teaches a Pokémon moves it could learn, for items or CobbleDollars
+- [x] **Move Tutor** (Tutor's Desk workstation): right-click (empty hand) opens a lesson screen (`work/ChoiceMenu`, a
+  server-side six-row chest of buttons, no client screen needed): the party on top, the chosen Pokémon's tutor/TM/egg
+  moves it can't use yet below, paged; click twice to pay emeralds and teach (into the moveset if there's room, else
+  the benched moves it can swap in). Grade 1–5 by power (≤50/70/85/100/more; status 3; egg +1), price 3/6/10/16/24;
+  a tutor teaches up to their level and gains 2 + grade XP a lesson
+- [ ] Move Tutor follow-ups: CobbleDollars prices, tutors in village generation
 - [ ] **Pokémon Trader**: offers a fixed Pokémon for one you bring (species/level rules, per-player limits)
 
 ## Milestone 5 — Release

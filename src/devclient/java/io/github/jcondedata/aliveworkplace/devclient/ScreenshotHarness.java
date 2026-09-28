@@ -90,6 +90,10 @@ public class ScreenshotHarness implements ClientModInitializer {
 			farmScene(mc, mc.getSingleplayerServer());
 			return;
 		}
+		if ("tutor".equals(System.getProperty("aliveworkplace.scene"))) {
+			tutorScene(mc, mc.getSingleplayerServer());
+			return;
+		}
 		if ("forest".equals(System.getProperty("aliveworkplace.scene"))) {
 			forestScene(mc, mc.getSingleplayerServer());
 			return;
@@ -577,6 +581,73 @@ public class ScreenshotHarness implements ClientModInitializer {
 		if (tick >= GIVE_UP_AT) {
 			shot(mc, "99_timeout");
 			mc.stop();
+		}
+	}
+
+	// --- Tutor: the Move Tutor's lesson screen (needs Cobblemon: run.sh adds it for this scene) ------
+
+	private void tutorScene(Minecraft mc, MinecraftServer server) {
+		tick++;
+		if (tick == 1) {
+			mc.options.renderDistance().set(6);
+			mc.options.cloudStatus().set(CloudStatus.OFF);
+		}
+		if (tick == 40) {
+			server.execute(() -> {
+				ServerLevel level = server.overworld();
+				ServerPlayer player = server.getPlayerList().getPlayers().get(0);
+				level.getGameRules().getRule(GameRules.RULE_DAYLIGHT).set(false, server);
+				level.getGameRules().getRule(GameRules.RULE_DOMOBSPAWNING).set(false, server);
+				level.setDayTime(2500);
+				BlockPos desk = new BlockPos(0, -60, 3);
+				level.setBlockAndUpdate(desk, ModBlocks.TUTORS_DESK.defaultBlockState());
+				Villager tutor = EntityType.VILLAGER.spawn(level, desk.south(), MobSpawnType.COMMAND);
+				io.github.jcondedata.aliveworkplace.work.Jobs.employ(level, tutor, desk,
+					io.github.jcondedata.aliveworkplace.registry.ModVillagers.TUTORS_DESK_POI, io.github.jcondedata.aliveworkplace.registry.ModVillagers.TUTOR);
+				tutor.setVillagerData(tutor.getVillagerData().setLevel(3));
+				var party = com.cobblemon.mod.common.Cobblemon.INSTANCE.getStorage().getParty(player);
+				for (String spec : List.of("pikachu level=30", "bulbasaur level=24", "eevee level=18")) {
+					party.add(com.cobblemon.mod.common.api.pokemon.PokemonProperties.Companion.parse(spec, " ", "=").create());
+				}
+				player.setGameMode(GameType.SURVIVAL);
+				player.getInventory().add(new ItemStack(net.minecraft.world.item.Items.EMERALD, 40));
+				player.teleportTo(level, 2.5, -60, 5.5, 135, 20);
+				io.github.jcondedata.aliveworkplace.tutor.Tutors.open(player, tutor);
+			});
+		}
+		if (tick == 90) {
+			mc.getToasts().clear();
+			pointAt(mc, 13); // an empty slot, so no tooltip covers the screen
+		}
+		if (tick == 100) {
+			shot(mc, "01_tutor_screen");
+			pointAt(mc, 19); // the second lesson: its tooltip
+		}
+		if (tick == 120) {
+			mc.getToasts().clear();
+			shot(mc, "02_tutor_lesson");
+		}
+		if (tick == 130) {
+			mc.stop();
+		}
+	}
+
+	/** Moves the mouse over slot {@code slot} of an open six-row chest screen. */
+	private static void pointAt(Minecraft mc, int slot) {
+		double scale = mc.getWindow().getGuiScale();
+		int left = (mc.getWindow().getGuiScaledWidth() - 176) / 2;
+		int top = (mc.getWindow().getGuiScaledHeight() - 222) / 2;
+		double x = (left + 8 + (slot % 9) * 18 + 8) * scale;
+		double y = (top + 18 + (slot / 9) * 18 + 8) * scale;
+		try {
+			var xpos = net.minecraft.client.MouseHandler.class.getDeclaredField("xpos");
+			var ypos = net.minecraft.client.MouseHandler.class.getDeclaredField("ypos");
+			xpos.setAccessible(true);
+			ypos.setAccessible(true);
+			xpos.setDouble(mc.mouseHandler, x);
+			ypos.setDouble(mc.mouseHandler, y);
+		} catch (ReflectiveOperationException e) {
+			throw new IllegalStateException(e);
 		}
 	}
 

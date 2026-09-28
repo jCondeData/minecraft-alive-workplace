@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 0.29.0 — 2026-09-27
+
 ### Fixed
 - Builders (and every other worker) saw **Sophisticated Storage** chests and barrels as empty and waited for
   materials that were right there. They now use them like any chest.

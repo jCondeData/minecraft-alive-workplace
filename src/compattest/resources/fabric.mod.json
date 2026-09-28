@@ -8,7 +8,8 @@
 		"fabric-gametest": [
 			"io.github.jcondedata.aliveworkplace.compat.CompatGameTests",
 			"io.github.jcondedata.aliveworkplace.compat.CobblemonCompatTests",
-			"io.github.jcondedata.aliveworkplace.compat.VillageCompatTests"
+			"io.github.jcondedata.aliveworkplace.compat.VillageCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.PackModsCompatTests"
 		]
 	},
 	"depends": {
@@ -18,6 +19,13 @@
 		"rechiseled": "*",
 		"cobblemon": "*",
 		"repurposed_structures": "*",
-		"cobbledollars": "*"
+		"cobbledollars": "*",
+		"handcrafted": "*",
+		"beautify": "*",
+		"cobblefurnies": "*",
+		"carved_wood": "*",
+		"moarconcrete": "*",
+		"sophisticatedstorage": "*",
+		"toms_storage": "*"
 	}
 }

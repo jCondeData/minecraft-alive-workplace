@@ -172,6 +172,11 @@ workstation, like the rest of the mod.
 ## Milestone 5 — Release
 - [ ] Publish on Modrinth and CurseForge as **Alive Workplace** (Minecraft brand rules: don't lead the name with "Minecraft")
 - [ ] Screenshots/GIFs, a short wiki (how to build, how to import blueprints)
+- [x] Compat tests with the pack's (1.7.42) building mods — Handcrafted, Beautify, CobbleFurnies, Carved Wood, Moar
+  Concrete (every block has a cost; a sample of each gets built) — and storage: Sophisticated Storage (fixed: counts
+  used `Long.MAX_VALUE`, which it reads as 0), Tom's Simple Storage (network blocks skipped as supply chests).
+  Lucky's Cozyhome can't be loaded in the Mojang-mapped dev environment (its `getItems()` clashes on remap), so it's
+  untested; Chipped and Supplementaries aren't in the pack but stay tested
 - [ ] Test inside the full Cobbleverse 1.7.x pack (mod conflicts, performance with many builders)
 
 ---

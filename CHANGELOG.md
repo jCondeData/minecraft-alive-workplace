@@ -2,6 +2,16 @@
 
 ## Unreleased
 
+### Fixed
+- Builders (and every other worker) saw **Sophisticated Storage** chests and barrels as empty and waited for
+  materials that were right there. They now use them like any chest.
+
+### Changed
+- Storage-network blocks (Tom's Storage connectors, terminals and cables; the Sophisticated Storage controller and
+  its links) no longer count as supply chests, so the chests behind them aren't counted twice.
+- Tested with the Cobbleverse pack's own building mods: Handcrafted, Beautify, CobbleFurnies, Carved Wood and Moar
+  Concrete (every block builds and costs its item).
+
 ## 0.28.0 — 2026-09-27
 
 ### Changed

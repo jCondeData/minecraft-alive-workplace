@@ -123,6 +123,19 @@ ext.compatMods = [
 	"maven.modrinth:repurposed-structures-fabric:4uDzF4B9", // Repurposed Structures 7.5.21 (villages)
 	"maven.modrinth:midnightlib:vqqujBpd",      // MidnightLib 1.7.5 (for Repurposed Structures)
 	"maven.modrinth:cobbledollars:cqsHXSXe",    // CobbleDollars 2.0.0 Beta-5.1 (the pack's money)
+	// The Cobbleverse pack's (1.7.42) building and storage mods
+	"maven.modrinth:pJmCFF0p:f0pKpUWd",         // Handcrafted 4.0.3
+	"maven.modrinth:DhSSvaxs:ZyaUkJxq",         // Beautify 2.0.0
+	"maven.modrinth:9s6osm5g:HpMb5wGb",         // Cloth Config 15.0.140 (for Beautify)
+	// (Lucky's Cozyhome Refurnished can't load here: its getItems() clashes with the Mojang-mapped name in dev.)
+	"maven.modrinth:AXY1OO9m:54k31lEX",         // CobbleFurnies 1.2
+	"maven.modrinth:lhGA9TYQ:Wto0RchG",         // Architectury 13.0.8 (for CobbleFurnies)
+	"maven.modrinth:WuwijfrW:h1wI9HyK",         // Carved Wood 1.9.7-B
+	"maven.modrinth:lXDzrLAm:hG50ZysI",         // Moar Concrete 1.3.1
+	"maven.modrinth:iHtpVwJL:kjNlOByJ",         // Sophisticated Storage 1.3.7.9
+	"maven.modrinth:9jxwkYQL:ZLVrtF0Q",         // Sophisticated Core 1.2.9.21
+	"maven.modrinth:ohNO6lps:N5qzq0XV",         // Forge Config API Port 21.1.6 (for Sophisticated Core)
+	"maven.modrinth:XZNI4Cpy:GwLz79tK",         // Tom's Simple Storage 2.3.0
 ]
 
 /** Unpacks the jars nested in the compat mods (META-INF/jars) into build/compat-nested. */

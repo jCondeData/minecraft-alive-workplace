@@ -201,6 +201,11 @@ Craft a **Blueprint Table** (blue dye on top, cartography table in the middle, p
   whichever variant the blueprint uses, just as the Chipped workbench or the chisel would for free.
 - **Supplementaries**: way signs need the fence and the sign, rope knots the rope and the fence, potted plants a pot and
   the plant. Jars, shelves, safes and other containers are built empty — blueprints never hand out items.
+- **Handcrafted, Beautify, CobbleFurnies, Carved Wood, Moar Concrete** (the Cobbleverse pack's building mods): every
+  block costs its own item and builds like any other (tested with the real mods).
+- **Storage mods**: Sophisticated Storage chests and barrels and Tom's Storage filing cabinets near the bench work as
+  supply chests. Storage-network blocks (Tom's connectors and terminals, the Sophisticated controller) are skipped,
+  so nothing is counted twice — the builder uses the chests themselves.
 - Blocks from mods that aren't installed turn into air and are left out.
 
 ## Commands and gamerules

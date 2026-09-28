@@ -20,7 +20,8 @@ import org.jetbrains.annotations.Nullable;
 
 /**
  * The builder's supply stash: every storage block near the Builder's Bench. Goes through Fabric's
- * transfer API, so modded storage (Sophisticated Storage, Tom's Storage, ...) works too.
+ * transfer API, so modded storage (Sophisticated Storage chests and barrels, Tom's filing cabinets...)
+ * works too; storage-network access points are skipped so nothing is counted twice.
  */
 public final class SupplyContainers {
 	/** Horizontal search radius around the bench. */
@@ -43,7 +44,8 @@ public final class SupplyContainers {
 					if (Math.abs(p.getX() - bench.getX()) > RADIUS || Math.abs(p.getZ() - bench.getZ()) > RADIUS || Math.abs(p.getY() - bench.getY()) > VERTICAL) {
 						continue;
 					}
-					if (exclude != null && exclude.isInside(p) || be instanceof io.github.jcondedata.aliveworkplace.work.PrivateContainer) {
+					if (exclude != null && exclude.isInside(p) || be instanceof io.github.jcondedata.aliveworkplace.work.PrivateContainer
+						|| ModdedBlocks.isStorageNetwork(be.getBlockState().getBlock())) {
 						continue;
 					}
 					if (storage(level, p) != null) {
@@ -68,7 +70,8 @@ public final class SupplyContainers {
 		for (BlockPos p : containers) {
 			Storage<ItemVariant> s = storage(level, p);
 			if (s != null) {
-				total += StorageUtil.simulateExtract(s, variant, Long.MAX_VALUE, null);
+				// Integer.MAX_VALUE, not Long.MAX_VALUE: some storages (Sophisticated Storage) turn the amount into an int.
+				total += StorageUtil.simulateExtract(s, variant, Integer.MAX_VALUE, null);
 			}
 		}
 		return total;

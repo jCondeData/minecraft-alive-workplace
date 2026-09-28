@@ -32,6 +32,25 @@ final class ModdedBlocks {
 		ResourceLocation.fromNamespaceAndPath(SUPP, "way_sign_wall")
 	);
 
+	/**
+	 * Storage-network access points: they show the contents of chests elsewhere, which workers would then
+	 * count twice (once through the network, once in the chest itself). Workers use the chests directly.
+	 * Tom's Simple Storage: everything but the filing cabinet (which holds items itself); Sophisticated
+	 * Storage: the controller and its links and I/O blocks.
+	 */
+	private static final Set<ResourceLocation> STORAGE_NETWORK = Set.of(
+		ResourceLocation.fromNamespaceAndPath("sophisticatedstorage", "controller"),
+		ResourceLocation.fromNamespaceAndPath("sophisticatedstorage", "storage_link"),
+		ResourceLocation.fromNamespaceAndPath("sophisticatedstorage", "storage_io"),
+		ResourceLocation.fromNamespaceAndPath("sophisticatedstorage", "storage_input"),
+		ResourceLocation.fromNamespaceAndPath("sophisticatedstorage", "storage_output")
+	);
+
+	static boolean isStorageNetwork(Block block) {
+		ResourceLocation id = BuiltInRegistries.BLOCK.getKey(block);
+		return STORAGE_NETWORK.contains(id) || id.getNamespace().equals("toms_storage") && !id.getPath().equals("filing_cabinet");
+	}
+
 	static boolean neverPlace(Block block) {
 		return NEVER_PLACE.contains(BuiltInRegistries.BLOCK.getKey(block));
 	}

@@ -55,10 +55,10 @@ import net.minecraft.world.phys.Vec3;
  */
 public class CompatGameTests implements FabricGameTest {
 	static final String AREA = "aliveworkplace_compat:build_area";
-	private static final BlockPos BENCH = new BlockPos(2, 2, 2);
-	private static final BlockPos CHEST = new BlockPos(2, 2, 4);
+	static final BlockPos BENCH = new BlockPos(2, 2, 2);
+	static final BlockPos CHEST = new BlockPos(2, 2, 4);
 	private static final BlockPos VILLAGER = new BlockPos(3, 2, 3);
-	private static final BlockPos ORIGIN = new BlockPos(6, 2, 6);
+	static final BlockPos ORIGIN = new BlockPos(6, 2, 6);
 	private static final java.util.concurrent.atomic.AtomicInteger BLUEPRINTS = new java.util.concurrent.atomic.AtomicInteger();
 
 	// --- Chipped ----------------------------------------------------------------------------
@@ -199,7 +199,7 @@ public class CompatGameTests implements FabricGameTest {
 
 	// --- helpers ------------------------------------------------------------------------------
 
-	private record Setup(ServerLevel level, Villager villager, BuildSite site, BuildPlan plan) {
+	record Setup(ServerLevel level, Villager villager, BuildSite site, BuildPlan plan) {
 		/** World position of a block of the blueprint (template coordinates). */
 		BlockPos at(BlockPos template) {
 			BlueprintData.Placement p = site.placement();
@@ -207,11 +207,11 @@ public class CompatGameTests implements FabricGameTest {
 		}
 	}
 
-	private static Setup setup(GameTestHelper helper, ResourceLocation structure, ItemStack... chestItems) {
+	static Setup setup(GameTestHelper helper, ResourceLocation structure, ItemStack... chestItems) {
 		return setup(helper, structure, Rotation.NONE, chestItems);
 	}
 
-	private static Setup setup(GameTestHelper helper, ResourceLocation structure, Rotation rotation, ItemStack... chestItems) {
+	static Setup setup(GameTestHelper helper, ResourceLocation structure, Rotation rotation, ItemStack... chestItems) {
 		ServerLevel level = helper.getLevel();
 		helper.setDayTime(2000);
 		level.getGameRules().getRule(ModGameRules.BUILD_DELAY).set(2, level.getServer());
@@ -233,7 +233,7 @@ public class CompatGameTests implements FabricGameTest {
 		return new Setup(level, villager, site, plan);
 	}
 
-	private static void assertBuilt(GameTestHelper helper, Setup s) {
+	static void assertBuilt(GameTestHelper helper, Setup s) {
 		helper.assertTrue(BuildSiteManager.get(s.level()).get(s.site().id()) == null,
 			"still building: stage=" + s.site().stage() + " status=" + s.site().status() + " missing=" + s.site().missing());
 		List<BlockPos> unfinished = s.plan().unfinished(s.level());
@@ -259,7 +259,7 @@ public class CompatGameTests implements FabricGameTest {
 	 * Registers a blueprint made of {@code design} (positions relative to its origin) and clears the
 	 * test area where it was, so the builder starts from nothing.
 	 */
-	private static ResourceLocation blueprintFrom(GameTestHelper helper, String name, Map<BlockPos, BlockState> design, Map<BlockPos, CompoundTag> data) {
+	static ResourceLocation blueprintFrom(GameTestHelper helper, String name, Map<BlockPos, BlockState> design, Map<BlockPos, CompoundTag> data) {
 		ServerLevel level = helper.getLevel();
 		ResourceLocation id = AliveWorkplace.id("compat_test/" + name + "_" + BLUEPRINTS.incrementAndGet());
 		Vec3i size = new Vec3i(1, 1, 1);

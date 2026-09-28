@@ -83,6 +83,19 @@ public final class BuildSite {
 		this.placement = placement;
 	}
 
+	/** Whether the ground around the build gets levelled (the blueprint's switch; the gamerule sets how wide). */
+	private boolean levelGround = true;
+
+	public boolean levelGround() {
+		return levelGround;
+	}
+
+	public void setLevelGround(boolean levelGround) {
+		this.levelGround = levelGround;
+		plan = null; // the landscaping list depends on it
+		onChange.run();
+	}
+
 	// --- plan & stepping -------------------------------------------------------------------
 
 	@Nullable
@@ -94,7 +107,7 @@ public final class BuildSite {
 				return null;
 			}
 			int depth = level.getGameRules().getInt(io.github.jcondedata.aliveworkplace.registry.ModGameRules.FOUNDATION_DEPTH);
-			int margin = level.getGameRules().getInt(io.github.jcondedata.aliveworkplace.registry.ModGameRules.LEVEL_GROUND);
+			int margin = levelGround ? level.getGameRules().getInt(io.github.jcondedata.aliveworkplace.registry.ModGameRules.LEVEL_GROUND) : 0;
 			plan = deconstruct ? BuildPlan.deconstruct(blueprint.get(), placement) : BuildPlan.create(blueprint.get(), placement, level, depth, margin);
 			if (stage == BuildPlan.Stage.FOUNDATION || stage == BuildPlan.Stage.LANDSCAPE) {
 				// The foundation and landscaping lists depend on the terrain, which we have been changing:
@@ -397,6 +410,9 @@ public final class BuildSite {
 		if (deconstruct) {
 			tag.putBoolean("deconstruct", true);
 		}
+		if (!levelGround) {
+			tag.putBoolean("no_level_ground", true);
+		}
 		if (bench != null) {
 			tag.putLong("bench", bench.asLong());
 		}
@@ -428,6 +444,7 @@ public final class BuildSite {
 		site.builder = tag.hasUUID("builder") ? tag.getUUID("builder") : null;
 		site.queued = tag.getBoolean("queued");
 		site.deconstruct = tag.getBoolean("deconstruct");
+		site.levelGround = !tag.getBoolean("no_level_ground");
 		site.bench = tag.contains("bench", Tag.TAG_LONG) ? BlockPos.of(tag.getLong("bench")) : null;
 		return site;
 	}

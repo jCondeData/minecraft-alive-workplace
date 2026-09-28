@@ -51,7 +51,8 @@ Owner decisions are recorded in **Design decisions** at the bottom. Don't change
   gravel/clay/terracotta/snow, grass and ferns; not trees, flowers, farmland, paths, block entities) out of a ring
   `workplaceLevelGround` blocks wide (default 2, 0 = off) from the floor up to 6 blocks, then fills holes at floor
   level with dirt up to 3 deep (never water); it skips holes rather than wait for dirt
-- [ ] Per-blueprint opt-out of levelling (e.g. builds meant to sit in a hillside)
+- [x] Per-blueprint opt-out of levelling: right-click the air with a blueprint to switch it (`BlueprintData.levelGround`,
+  default on, carried to `BuildSite` and saved as `no_level_ground`); shown in the tooltip
 - [x] Potted plants (cost a flower pot + the plant)
 - [x] **Building-mod support** (tested with the real mods in `src/compattest`): Chipped and Rechiseled variants can be built from the plain block (free conversions, like their workbench/chisel); Supplementaries blocks build correctly (way signs cost the fence and the sign, rope knots the rope and the fence), and no blueprint data can hand out items, mobs or locked safes (containers never get contents)
 - [x] Fluids: still water/lava (any fluid with a bucket) is a DECORATION step costing its filled bucket; the empty

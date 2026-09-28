@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+## 0.41.0 — 2026-09-28
+
+### Added
+- **Leave the ground as it is, per build**: right-click the air with a blueprint to switch off levelling around that
+  build (for houses meant to sit in a hillside); right-click again to switch it back. The tooltip shows it.
+
 ## 0.40.0 — 2026-09-28
 
 ### Changed

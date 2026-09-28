@@ -22,22 +22,32 @@ import net.minecraft.world.level.block.Rotation;
  * @param structure id of a structure template (datapack structure, structure-block save or imported file)
  * @param size      template size, filled in by the server the first time it sees the blueprint
  * @param placement where the build goes; empty until the player right-clicks the ground
+ * @param levelGround whether the builder levels the natural ground around it (right-click the air to switch)
  */
-public record BlueprintData(ResourceLocation structure, Optional<Vec3i> size, Optional<Placement> placement) {
+public record BlueprintData(ResourceLocation structure, Optional<Vec3i> size, Optional<Placement> placement, boolean levelGround) {
 	public static final Codec<BlueprintData> CODEC = RecordCodecBuilder.create(i -> i.group(
 		ResourceLocation.CODEC.fieldOf("structure").forGetter(BlueprintData::structure),
 		Vec3i.CODEC.optionalFieldOf("size").forGetter(BlueprintData::size),
-		Placement.CODEC.optionalFieldOf("placement").forGetter(BlueprintData::placement)
+		Placement.CODEC.optionalFieldOf("placement").forGetter(BlueprintData::placement),
+		Codec.BOOL.optionalFieldOf("level_ground", true).forGetter(BlueprintData::levelGround)
 	).apply(i, BlueprintData::new));
+
+	public BlueprintData(ResourceLocation structure, Optional<Vec3i> size, Optional<Placement> placement) {
+		this(structure, size, placement, true);
+	}
+
+	public BlueprintData withLevelGround(boolean level) {
+		return new BlueprintData(structure, size, placement, level);
+	}
 
 	public static final StreamCodec<RegistryFriendlyByteBuf, BlueprintData> STREAM_CODEC = ByteBufCodecs.fromCodecWithRegistries(CODEC);
 
 	public BlueprintData withPlacement(Optional<Placement> newPlacement) {
-		return new BlueprintData(structure, size, newPlacement);
+		return new BlueprintData(structure, size, newPlacement, levelGround);
 	}
 
 	public BlueprintData withSize(Vec3i newSize) {
-		return new BlueprintData(structure, Optional.of(newSize), placement);
+		return new BlueprintData(structure, Optional.of(newSize), placement, levelGround);
 	}
 
 	/**

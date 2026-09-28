@@ -104,6 +104,30 @@ public class BuilderGameTests implements FabricGameTest {
 		});
 	}
 
+	/** A blueprint switched to "leave the ground" (right-click the air with it): the mound and the hole stay. */
+	@GameTest(template = AREA, timeoutTicks = 2400)
+	public void blueprintCanLeaveTheGroundAsItIs(GameTestHelper helper) {
+		// The switch on the item.
+		net.minecraft.server.level.ServerPlayer player = helper.makeMockServerPlayerInLevel();
+		ItemStack stack = io.github.jcondedata.aliveworkplace.blueprint.BlueprintItem.create(TEST_HUT, null);
+		player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, stack);
+		stack.use(helper.getLevel(), player, net.minecraft.world.InteractionHand.MAIN_HAND);
+		helper.assertFalse(io.github.jcondedata.aliveworkplace.blueprint.BlueprintItem.data(player.getMainHandItem()).orElseThrow().levelGround(),
+			"right-clicking the air didn't switch levelling off");
+
+		BlockPos mound = new BlockPos(5, 2, 8);
+		BlockPos hole = new BlockPos(8, 1, 11);
+		helper.setBlock(mound, Blocks.DIRT);
+		helper.setBlock(hole, Blocks.AIR);
+		Setup s = setup(helper, TEST_HUT, HUT_ORIGIN, Rotation.NONE, hutMaterials());
+		s.site().setLevelGround(false);
+		helper.succeedWhen(() -> {
+			assertBuilt(helper, s);
+			helper.assertBlockPresent(Blocks.DIRT, mound);
+			helper.assertBlockPresent(Blocks.AIR, hole);
+		});
+	}
+
 	/** A blueprint with a pool: the builder pours the water from a bucket and keeps the empty bucket. */
 	@GameTest(template = AREA, timeoutTicks = 2400)
 	public void builderPoursWaterFromABucket(GameTestHelper helper) {

@@ -127,6 +127,16 @@ public class BlueprintItem extends Item {
 			}
 			return InteractionResultHolder.sidedSuccess(stack, level.isClientSide);
 		}
+		if (!player.isShiftKeyDown() && data.isPresent()) {
+			// Right-click the air: switch levelling the ground around this build on or off.
+			if (!level.isClientSide) {
+				boolean now = !data.get().levelGround();
+				stack.set(ModComponents.BLUEPRINT, data.get().withLevelGround(now));
+				player.displayClientMessage(Component.translatable(now ? "message.aliveworkplace.blueprint.level_on"
+					: "message.aliveworkplace.blueprint.level_off").withStyle(now ? ChatFormatting.GREEN : ChatFormatting.YELLOW), true);
+			}
+			return InteractionResultHolder.sidedSuccess(stack, level.isClientSide);
+		}
 		return InteractionResultHolder.pass(stack);
 	}
 
@@ -148,6 +158,9 @@ public class BlueprintItem extends Item {
 	public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
 		data(stack).ifPresent(d -> {
 			d.size().ifPresent(s -> tooltip.add(Component.translatable("tooltip.aliveworkplace.blueprint.size", s.getX(), s.getY(), s.getZ()).withStyle(ChatFormatting.GRAY)));
+			if (!d.levelGround()) {
+				tooltip.add(Component.translatable("tooltip.aliveworkplace.blueprint.no_levelling").withStyle(ChatFormatting.YELLOW));
+			}
 			if (d.placement().isPresent()) {
 				BlockPos o = d.placement().get().origin();
 				Direction front = d.placement().get().rotation().rotate(Direction.NORTH);

@@ -242,6 +242,7 @@ public final class Builders {
 		if (deconstruct) {
 			site.setDeconstruction();
 		}
+		site.setLevelGround(data.get().levelGround());
 		if (!player.getAbilities().instabuild) {
 			stack.shrink(1);
 		}

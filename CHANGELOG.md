@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+## 0.66.0 — 2026-09-28
+
+### Added
+- **Orchard keepers till the ground for berries** (with Cobblemon): put a hoe in the chests by the Fruit Basket and they
+  till grass and dirt in their orchard into farmland to plant Cobblemon berries — no need to prepare the farmland first.
+
 ## 0.65.1 — 2026-09-28
 
 ### Fixed

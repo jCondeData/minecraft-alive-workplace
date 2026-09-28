@@ -254,7 +254,9 @@ workstation, like the rest of the mod.
   chests (sweet berries; with Cobblemon berries and apricorn seeds) planted like a player would (`BlockItem.place`, so
   berry block entities are set up) in a grid 2 apart (apricorns 3), each kind where it can grow (berries need farmland);
   fruit in the orchard is picked beyond the 16-block search. Shared marker plumbing in `work/AreaJobs` (tree farms too)
-- [ ] Orchard follow-ups: tilling the ground for berries, glow berries under ceilings
+- [x] Orchard keepers till for berries: with a hoe in hand (fetched from the chests) grass/dirt/path in the orchard is
+  tilled into farmland for a Cobblemon berry (`Orchards.needsTilling`; berries keep their farmland from drying out)
+- [ ] Orchard follow-ups: glow berries under ceilings
 - [x] **Ball Smith** (Ball Workbench): makes Poké Balls from the apricorns and ball metals in the chests with
   Cobblemon's own crafting recipes (`smith/BallRecipes`: results in `#cobblemon:poke_balls` using a
   `tier_N_poke_ball_materials` metal; copper 1 … diamond 4, up to the smith's level; never the Master Ball), taking

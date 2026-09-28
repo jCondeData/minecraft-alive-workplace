@@ -39,6 +39,11 @@ public final class CobblemonOrchard {
 			|| stack.getItem() instanceof com.cobblemon.mod.common.item.berry.BerryItem;
 	}
 
+	/** Berries are planted in farmland (Cobblemon's berry soil); a berry plant keeps its farmland from drying out. */
+	public static boolean needsFarmland(ItemStack stack) {
+		return stack.getItem() instanceof com.cobblemon.mod.common.item.berry.BerryItem;
+	}
+
 	/** Apricorn seeds grow into small trees, so they're planted further apart. */
 	public static boolean growsIntoTree(ItemStack stack) {
 		return stack.getItem() instanceof com.cobblemon.mod.common.item.ApricornSeedItem;

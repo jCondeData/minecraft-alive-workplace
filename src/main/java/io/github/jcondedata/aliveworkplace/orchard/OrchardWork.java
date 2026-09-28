@@ -225,9 +225,12 @@ public class OrchardWork extends Behavior<Villager> {
 	 */
 	private boolean choosePlanting(ServerLevel level, Villager villager, BlockPos basket, BuilderBag bag,
 		net.minecraft.world.level.levelgen.structure.BoundingBox orchard) {
-		// Seeds in the bag first (each kind until one has somewhere to go: berries want farmland, bushes and trees dirt).
+		// Seeds in the bag first (each kind until one has somewhere to go: berries want farmland — or grass to till, with a
+		// hoe in hand or in the chests — bushes and trees dirt).
+		List<BlockPos> supplies = SupplyContainers.find(level, basket, null);
+		boolean canTill = Orchards.isHoe(villager.getMainHandItem()) || SupplyContainers.firstMatching(level, supplies, Orchards::isHoe) != null;
 		for (ItemStack seed : Orchards.seedsCarried(bag)) {
-			BlockPos spot = Orchards.nextSpot(level, orchard, seed, villager.blockPosition()).orElse(null);
+			BlockPos spot = Orchards.nextSpot(level, orchard, seed, villager.blockPosition(), canTill).orElse(null);
 			if (spot != null) {
 				plantSpot = spot;
 				plantSeed = seed;
@@ -236,10 +239,9 @@ public class OrchardWork extends Behavior<Villager> {
 			}
 		}
 		// Then the chests.
-		List<BlockPos> supplies = SupplyContainers.find(level, basket, null);
 		for (BlockPos chest : supplies) {
 			for (ItemStack sample : SupplyContainers.peekMatching(level, chest, Orchards::isSeed)) {
-				if (!bag.has(sample.getItem(), 1) && Orchards.nextSpot(level, orchard, sample, villager.blockPosition()).isPresent()) {
+				if (!bag.has(sample.getItem(), 1) && Orchards.nextSpot(level, orchard, sample, villager.blockPosition(), canTill).isPresent()) {
 					seedChest = chest;
 					plantSeed = sample.copyWithCount(1);
 					walker.reset();
@@ -263,6 +265,24 @@ public class OrchardWork extends Behavior<Villager> {
 			return;
 		}
 		if (plantSpot == null) {
+			return;
+		}
+		if (Orchards.needsTilling(level, plantSpot, plantSeed) && !Orchards.isHoe(villager.getMainHandItem())) {
+			// A hoe from the chests to till the ground for the berry.
+			List<BlockPos> supplies = SupplyContainers.find(level, basket, null);
+			BlockPos chest = SupplyContainers.firstMatching(level, supplies, Orchards::isHoe);
+			if (chest == null) {
+				plantSpot = null;
+				return;
+			}
+			if (walker.walkTo(level, villager, chest, 3.0)) {
+				ItemStack hoe = SupplyContainers.takeOne(level, supplies, Orchards::isHoe);
+				if (!hoe.isEmpty()) {
+					villager.setItemSlot(net.minecraft.world.entity.EquipmentSlot.MAINHAND, hoe);
+					villager.setDropChance(net.minecraft.world.entity.EquipmentSlot.MAINHAND, 2f); // it's the owner's: dropped, not lost
+				}
+				walker.reset();
+			}
 			return;
 		}
 		if (walker.reach(level, villager, plantSpot, REACH)) {

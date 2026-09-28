@@ -102,6 +102,11 @@ public final class Orchards {
 
 	/** The next empty spot for {@code seed} in the orchard's grid, nearest to {@code near}; empty if it's full. */
 	static Optional<BlockPos> nextSpot(ServerLevel level, BoundingBox orchard, ItemStack seed, BlockPos near) {
+		return nextSpot(level, orchard, seed, near, false);
+	}
+
+	/** {@link #nextSpot}, counting grass and dirt that could be tilled for a berry when {@code canTill} (a hoe to hand). */
+	static Optional<BlockPos> nextSpot(ServerLevel level, BoundingBox orchard, ItemStack seed, BlockPos near, boolean canTill) {
 		if (!(seed.getItem() instanceof BlockItem item)) {
 			return Optional.empty();
 		}
@@ -112,7 +117,8 @@ public final class Orchards {
 		for (int x = orchard.minX(); x <= orchard.maxX(); x += spacing) {
 			for (int z = orchard.minZ(); z <= orchard.maxZ(); z += spacing) {
 				BlockPos spot = ground(level, orchard, x, z);
-				if (spot == null || !planted.canSurvive(level, spot) || !level.getBlockState(spot.above()).isAir()) {
+				if (spot == null || !(planted.canSurvive(level, spot) || canTill && needsTilling(level, spot, seed))
+					|| !level.getBlockState(spot.above()).isAir()) {
 					continue;
 				}
 				double d = spot.distSqr(near);
@@ -144,12 +150,36 @@ public final class Orchards {
 		return null;
 	}
 
+	/** A berry for grass or dirt: it wants the ground tilled into farmland first. */
+	static boolean needsTilling(ServerLevel level, BlockPos spot, ItemStack seed) {
+		if (!COBBLEMON || !CobblemonOrchard.needsFarmland(seed)) {
+			return false;
+		}
+		BlockState ground = level.getBlockState(spot.below());
+		return ground.is(net.minecraft.world.level.block.Blocks.GRASS_BLOCK) || ground.is(net.minecraft.world.level.block.Blocks.DIRT)
+			|| ground.is(net.minecraft.world.level.block.Blocks.DIRT_PATH);
+	}
+
+	public static boolean isHoe(ItemStack stack) {
+		return !stack.isEmpty() && stack.is(net.minecraft.tags.ItemTags.HOES);
+	}
+
 	/** Plants one {@code seed} at {@code spot} the way a player would (so Cobblemon's berry plants get set up right). */
 	static boolean plant(ServerLevel level, Villager villager, BuilderBag bag, ItemStack seed, BlockPos spot) {
 		if (!(seed.getItem() instanceof BlockItem item) || !bag.has(seed.getItem(), 1)) {
 			return false;
 		}
 		BlockPos ground = spot.below();
+		if (needsTilling(level, spot, seed)) {
+			// Till it with the hoe in hand, as a player would.
+			ItemStack hoe = villager.getItemBySlot(net.minecraft.world.entity.EquipmentSlot.MAINHAND);
+			if (!isHoe(hoe)) {
+				return false;
+			}
+			level.setBlockAndUpdate(ground, net.minecraft.world.level.block.Blocks.FARMLAND.defaultBlockState());
+			level.playSound(null, ground, SoundEvents.HOE_TILL, SoundSource.BLOCKS, 1f, 1f);
+			hoe.hurtAndBreak(1, villager, net.minecraft.world.entity.EquipmentSlot.MAINHAND);
+		}
 		BlockPlaceContext context = new BlockPlaceContext(level, null, InteractionHand.MAIN_HAND, seed.copyWithCount(1),
 			new BlockHitResult(Vec3.atCenterOf(ground).add(0, 0.5, 0), Direction.UP, ground, false));
 		if (!item.place(context).consumesAction()) {

@@ -148,7 +148,8 @@ the basket. They reach up into trees with a picking pole and never step into a b
 
 **Planting an orchard.** Mark an area with a **Field Marker** (within 48 blocks of the basket) and give it to the
 keeper. They plant it from the chests: sweet berries as bushes two blocks apart on grass or dirt, and with Cobblemon
-berries (on farmland) and apricorn seeds (on grass or dirt, three apart), then pick what grows there too.
+berries (on farmland — put a **hoe** in the chests and they till grass and dirt for them) and apricorn seeds (on grass
+or dirt, three apart), then pick what grows there too.
 Sneak-right-click the keeper with an empty hand to see the orchard or stop it.
 
 ## Farmers

@@ -338,6 +338,38 @@ public class CobblemonCompatTests implements FabricGameTest {
 		});
 	}
 
+	/** With a hoe in the chest, an Orchard Keeper tills grass into farmland for berries. */
+	@GameTest(template = AREA, timeoutTicks = 1600)
+	public void orchardKeeperTillsGrassForBerries(GameTestHelper helper) {
+		var level = helper.getLevel();
+		helper.setDayTime(2000);
+		BlockPos basket = new BlockPos(2, 2, 2);
+		BlockPos chestPos = new BlockPos(2, 2, 4);
+		helper.setBlock(basket, ModBlocks.FRUIT_BASKET);
+		helper.setBlock(chestPos, net.minecraft.world.level.block.Blocks.CHEST);
+		for (BlockPos p : BlockPos.betweenClosed(new BlockPos(8, 1, 8), new BlockPos(10, 1, 10))) {
+			helper.setBlock(p, net.minecraft.world.level.block.Blocks.GRASS_BLOCK);
+		}
+		net.minecraft.world.Container chest = helper.getBlockEntity(chestPos);
+		chest.setItem(0, new net.minecraft.world.item.ItemStack(com.cobblemon.mod.common.CobblemonItems.ORAN_BERRY, 2));
+		chest.setItem(1, new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.WOODEN_HOE));
+		Villager keeper = helper.spawn(EntityType.VILLAGER, new BlockPos(3, 2, 3));
+		Jobs.employ(level, keeper, helper.absolutePos(basket), ModVillagers.FRUIT_BASKET_POI, ModVillagers.ORCHARD_KEEPER);
+		io.github.jcondedata.aliveworkplace.orchard.Orchards.start(keeper,
+			net.minecraft.world.level.levelgen.structure.BoundingBox.fromCorners(helper.absolutePos(new BlockPos(8, 1, 8)), helper.absolutePos(new BlockPos(10, 1, 10))));
+		helper.succeedWhen(() -> {
+			int berries = 0;
+			for (BlockPos p : BlockPos.betweenClosed(new BlockPos(8, 2, 8), new BlockPos(10, 2, 10))) {
+				if (helper.getBlockState(p).getBlock() instanceof com.cobblemon.mod.common.block.BerryBlock) {
+					berries++;
+					helper.assertBlockPresent(net.minecraft.world.level.block.Blocks.FARMLAND, p.below());
+				}
+			}
+			helper.assertTrue(berries == 2, berries + " berry plants");
+			helper.assertTrue(keeper.getMainHandItem().is(net.minecraft.world.item.Items.WOODEN_HOE), "the keeper should hold the hoe");
+		});
+	}
+
 	/** An Orchard Keeper picks a ripe apricorn and a ripe berry plant; both stay to grow again. */
 	@GameTest(template = AREA, timeoutTicks = 1600)
 	public void orchardKeeperPicksApricornsAndBerries(GameTestHelper helper) {

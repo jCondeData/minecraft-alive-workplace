@@ -50,8 +50,30 @@ public final class Miners {
 		QuarrySite site = QuarrySiteManager.get(level).get(job.siteId());
 		if (site == null) {
 			villager.removeAttached(ModAttachments.MINER_JOB);
+		} else if (site.looksStretched()) {
+			stopStretched(level, site);
+			return null;
 		}
 		return site;
+	}
+
+	/**
+	 * Stops a quarry an old version stretched over the ground around the Miner's Bench (see
+	 * {@link QuarrySite#looksStretched}), before the miner digs any more of it. The marker comes back blank: its corners
+	 * would be the stretched ones.
+	 */
+	static void stopStretched(ServerLevel level, QuarrySite site) {
+		io.github.jcondedata.aliveworkplace.AliveWorkplace.LOG.warn("Stopped quarry {} of {}: it had been stretched over its Miner's Bench at {} by a bug before 0.45.0",
+			site.id(), site.ownerName(), site.bench());
+		ItemStack blank = new ItemStack(ModItems.QUARRY_MARKER);
+		blank.set(ModComponents.QUARRY, new QuarryData(Optional.empty(), Optional.empty(), Optional.empty(), site.depth()));
+		Villager villager = site.miner() != null && level.getEntity(site.miner()) instanceof Villager v ? v : null;
+		ServerPlayer owner = level.getServer().getPlayerList().getPlayer(site.owner());
+		if (owner != null) {
+			tell(owner, Component.translatable("message.aliveworkplace.quarry.stretched",
+				villager != null ? villager.getDisplayName() : Component.translatable("entity.minecraft.villager")), ChatFormatting.YELLOW);
+		}
+		cancel(level, site, blank);
 	}
 
 	/** Player right-clicked a miner while holding a Quarry Marker. */
@@ -185,13 +207,16 @@ public final class Miners {
 
 	/** Stops a quarry: tools, finds and the marker go back; dug holes stay dug. */
 	public static void cancel(ServerLevel level, QuarrySite site) {
+		cancel(level, site, markerFor(site));
+	}
+
+	private static void cancel(ServerLevel level, QuarrySite site, ItemStack marker) {
 		Villager villager = site.miner() != null && level.getEntity(site.miner()) instanceof Villager v ? v : null;
 		BlockPos bench = site.bench() != null ? site.bench() : site.box().getCenter();
 		List<BlockPos> supplies = SupplyContainers.find(level, bench, null);
 		if (villager != null) {
 			returnEverything(level, villager, bench, supplies);
 		}
-		ItemStack marker = markerFor(site);
 		ServerPlayer owner = level.getServer().getPlayerList().getPlayer(site.owner());
 		if (owner == null || !owner.getInventory().add(marker)) {
 			store(level, supplies, bench, marker);

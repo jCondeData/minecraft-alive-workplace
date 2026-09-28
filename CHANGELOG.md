@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+## 0.45.1 — 2026-09-28
+
+### Fixed
+- Quarries that the bug fixed in 0.45.0 had already stretched over the ground around the Miner's Bench now stop by
+  themselves, before the miner digs any more: the miner hands back a blank Quarry Marker and tells you (if you're
+  online) to mark the corners again. (The advice in 0.45.0 to reuse the returned marker was wrong: it carried the
+  stretched corners.)
+
 ## 0.45.0 — 2026-09-28
 
 ### Added

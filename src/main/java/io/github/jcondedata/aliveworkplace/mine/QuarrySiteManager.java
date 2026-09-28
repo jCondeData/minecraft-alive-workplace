@@ -36,6 +36,11 @@ public final class QuarrySiteManager extends SavedData {
 		setDirty();
 	}
 
+	/** Puts a saved quarry back (used by tests). */
+	public void restore(QuarrySite site) {
+		add(site);
+	}
+
 	@Nullable
 	public QuarrySite get(UUID id) {
 		return sites.get(id);

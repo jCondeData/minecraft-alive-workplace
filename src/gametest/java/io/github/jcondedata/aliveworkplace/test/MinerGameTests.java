@@ -144,6 +144,50 @@ public class MinerGameTests implements FabricGameTest {
 		helper.succeed();
 	}
 
+	/**
+	 * A quarry saved by an older version with its bench inside the box (stretched by the chunk-loading bug) is stopped
+	 * before the miner digs any of it, and the marker comes back blank.
+	 */
+	@GameTest(template = AREA)
+	public void stretchedOldQuarryIsStopped(GameTestHelper helper) {
+		BlockPos min = new BlockPos(8, 2, 8);
+		BlockPos max = new BlockPos(10, 3, 10);
+		fillStone(helper, min, max);
+		Setup s = setup(helper, min, max, new ItemStack(Items.IRON_PICKAXE));
+		{
+			net.minecraft.nbt.CompoundTag old = s.site().save();
+			old.remove("stairs");
+			old.remove("stair_start");
+			old.putUUID("id", java.util.UUID.randomUUID());
+			BlockPos bench = helper.absolutePos(BENCH);
+			BlockPos far = helper.absolutePos(max);
+			old.putIntArray("box", new int[]{bench.getX() - 8, bench.getY(), bench.getZ() - 8, far.getX(), far.getY(), far.getZ()});
+			QuarrySite stretched = QuarrySite.load(old);
+			helper.assertTrue(stretched != null && stretched.looksStretched(), "the old quarry should look stretched");
+			QuarrySiteManager.get(s.level()).remove(s.site().id());
+			QuarrySiteManager.get(s.level()).restore(stretched);
+			s.miner().setAttached(io.github.jcondedata.aliveworkplace.registry.ModAttachments.MINER_JOB,
+				new io.github.jcondedata.aliveworkplace.build.BuilderJob(stretched.id(), false));
+			helper.assertTrue(Miners.activeSite(s.level(), s.miner()) == null, "the stretched quarry is still going");
+			helper.assertTrue(QuarrySiteManager.get(s.level()).get(stretched.id()) == null, "the stretched quarry wasn't removed");
+		}
+		Container chest = helper.getBlockEntity(CHEST);
+		ItemStack marker = ItemStack.EMPTY;
+		for (int i = 0; i < chest.getContainerSize(); i++) {
+			if (chest.getItem(i).is(ModItems.QUARRY_MARKER)) {
+				marker = chest.getItem(i);
+			}
+		}
+		helper.assertFalse(marker.isEmpty(), "no marker in the chest");
+		helper.assertTrue(marker.get(io.github.jcondedata.aliveworkplace.registry.ModComponents.QUARRY).first().isEmpty(), "the marker should come back blank");
+		// A quarry saved by this version is never taken for a stretched one, even with its bench inside.
+		net.minecraft.nbt.CompoundTag current = s.site().save();
+		BlockPos bench = helper.absolutePos(BENCH);
+		current.putIntArray("box", new int[]{bench.getX() - 1, bench.getY() - 1, bench.getZ() - 1, bench.getX() + 1, bench.getY() + 1, bench.getZ() + 1});
+		helper.assertFalse(QuarrySite.load(current).looksStretched(), "a new quarry shouldn't look stretched");
+		helper.succeed();
+	}
+
 	/** A block of stone taller than the miner: it has to get on top and work its way down. */
 	@GameTest(template = "aliveworkplace_test:big_area", timeoutTicks = 8000)
 	public void minerDigsDownThroughATallBlock(GameTestHelper helper) {

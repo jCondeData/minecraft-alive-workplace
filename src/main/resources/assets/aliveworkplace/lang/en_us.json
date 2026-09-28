@@ -40,6 +40,7 @@
   "message.aliveworkplace.quarry.state.depositing": "dropping off",
   "message.aliveworkplace.quarry.state.done": "done",
   "message.aliveworkplace.quarry.cancel": "[Stop this quarry]",
+  "message.aliveworkplace.quarry.stretched": "%s stopped digging: an old bug had stretched their quarry over the ground around their Miner's Bench. They gave the Quarry Marker back blank: mark the quarry's corners again and hand it over.",
   "message.aliveworkplace.quarry.cancel_hover": "Stops digging and gives the marker back. What was dug stays dug.",
   "message.aliveworkplace.overhead.quarry": "Quarry %s×%s×%s · %s%%",
   "command.aliveworkplace.quarry_cancelled": "Stopped the quarry.",

@@ -34,6 +34,8 @@ public final class QuarrySite {
 	private boolean stairs;
 	/** Where along the walls the top step is (see {@link #wallIndex}). */
 	private int stairStart;
+	/** Saved by a version before 0.45.0, which could stretch the quarry over its bench (see {@link #looksStretched}). */
+	private boolean fromOldVersion;
 
 	private Status status = Status.WORKING;
 	private long lastNotified = Long.MIN_VALUE / 2;
@@ -112,6 +114,14 @@ public final class QuarrySite {
 			}
 		}
 		onChange.run();
+	}
+
+	/**
+	 * Before 0.45.0, keeping a quarry loaded grew its box to take in the ground within the supply radius of the bench
+	 * (bench included). A quarry from then whose box holds its own bench was almost certainly stretched like that.
+	 */
+	public boolean looksStretched() {
+		return fromOldVersion && bench != null && box.isInside(bench);
 	}
 
 	public boolean hasStairs() {
@@ -276,6 +286,7 @@ public final class QuarrySite {
 		site.skipped = tag.getInt("skipped");
 		site.miner = tag.hasUUID("miner") ? tag.getUUID("miner") : null;
 		site.bench = tag.contains("bench", Tag.TAG_LONG) ? BlockPos.of(tag.getLong("bench")) : null;
+		site.fromOldVersion = !tag.contains("stairs");
 		site.stairs = tag.getBoolean("stairs"); // false for quarries started before stairs existed
 		site.stairStart = tag.getInt("stair_start");
 		return site;

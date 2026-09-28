@@ -30,6 +30,27 @@ public class ShopGameTests implements FabricGameTest {
 	 * A Price Tag renamed "250" prices a column at 250 CobbleDollars; without CobbleDollars that's 3 emeralds (at 100
 	 * a piece, rounded up), on the trade screen and when bought, and the emeralds go into the shop's chest.
 	 */
+	/** A Price Tag's price is set with the buttons on its screen (no anvil needed), and can be rubbed out again. */
+	@GameTest(template = net.fabricmc.fabric.api.gametest.v1.FabricGameTest.EMPTY_STRUCTURE)
+	public void priceTagsAreSetWithButtons(GameTestHelper helper) {
+		net.minecraft.server.level.ServerPlayer player = helper.makeMockServerPlayerInLevel();
+		player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, new ItemStack(io.github.jcondedata.aliveworkplace.registry.ModItems.PRICE_TAG, 4));
+		var menu = io.github.jcondedata.aliveworkplace.shop.PriceTagItem.menuForTest(player, net.minecraft.world.InteractionHand.MAIN_HAND);
+		int first = io.github.jcondedata.aliveworkplace.shop.PriceTagItem.FIRST_STEP_SLOT;
+		menu.press(first + 7, player); // +100
+		menu.press(first + 6, player); // +10
+		menu.press(first + 6, player); // +10
+		menu.press(first + 5, player); // +1
+		menu.press(first + 3, player); // -1
+		menu.press(first + 5, player); // +1
+		ItemStack tag = player.getMainHandItem();
+		helper.assertTrue(io.github.jcondedata.aliveworkplace.shop.PriceTagItem.dollars(tag) == 121, "the tag says " + tag.getHoverName().getString());
+		helper.assertTrue(menu.icon(first + 4).getHoverName().getString().contains("121"), "the screen should show the price");
+		menu.press(first, player); // -1000: nothing left
+		helper.assertTrue(io.github.jcondedata.aliveworkplace.shop.PriceTagItem.dollars(tag) == -1, "the price should be rubbed out");
+		helper.succeed();
+	}
+
 	@GameTest(template = AREA)
 	public void priceTagsWithoutCobbleDollarsCostEmeralds(GameTestHelper helper) {
 		ItemStack tag = new ItemStack(io.github.jcondedata.aliveworkplace.registry.ModItems.PRICE_TAG);

@@ -11,8 +11,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 
 /**
- * A price in money rather than items: rename the tag in an anvil to a number ("250") and put it in a Shop Counter's
- * price row. With CobbleDollars that's 250 CobbleDollars; without, it's paid in emeralds at the configured rate
+ * A price in money rather than items: right-click the tag to set the price with buttons (or rename it in an anvil to a
+ * number, "250") and put it in a Shop Counter's price row. With CobbleDollars that's 250 CobbleDollars; without, it's paid in emeralds at the configured rate
  * (rounded up, at least one).
  */
 public class PriceTagItem extends Item {
@@ -38,6 +38,71 @@ public class PriceTagItem extends Item {
 		}
 		long value = Long.parseLong(digits);
 		return value > 0 && value <= MAX ? value : -1;
+	}
+
+	/** Writes {@code price} on the tag (as renaming it in an anvil would); 0 or less rubs it out. */
+	public static void setPrice(ItemStack tag, long price) {
+		if (price <= 0) {
+			tag.remove(DataComponents.CUSTOM_NAME);
+		} else {
+			tag.set(DataComponents.CUSTOM_NAME, Component.literal(String.valueOf(Math.min(price, MAX))));
+		}
+	}
+
+	// --- the price screen: right-click the tag -------------------------------------------------------
+
+	/** The buttons, left to right on the middle row: taking off or adding on. */
+	static final int[] STEPS = {-1000, -100, -10, -1, 0, 1, 10, 100, 1000};
+	/** Slot of the first button (the price itself sits in the middle of the row). */
+	public static final int FIRST_STEP_SLOT = 18;
+	static final int DONE_SLOT = 40;
+
+	@Override
+	public net.minecraft.world.InteractionResultHolder<ItemStack> use(net.minecraft.world.level.Level level, net.minecraft.world.entity.player.Player player,
+																	  net.minecraft.world.InteractionHand hand) {
+		ItemStack stack = player.getItemInHand(hand);
+		if (player instanceof net.minecraft.server.level.ServerPlayer serverPlayer) {
+			io.github.jcondedata.aliveworkplace.work.ChoiceMenu.open(serverPlayer, Component.translatable("screen.aliveworkplace.price_tag.title"),
+				p -> p.isAlive() && p.getItemInHand(hand).is(ModItems.PRICE_TAG), menu -> render(menu, serverPlayer, hand));
+		}
+		return net.minecraft.world.InteractionResultHolder.sidedSuccess(stack, level.isClientSide);
+	}
+
+	/** The same screen, not shown to anyone (tests). */
+	public static io.github.jcondedata.aliveworkplace.work.ChoiceMenu menuForTest(net.minecraft.server.level.ServerPlayer player, net.minecraft.world.InteractionHand hand) {
+		return io.github.jcondedata.aliveworkplace.work.ChoiceMenu.detached(player, menu -> render(menu, player, hand));
+	}
+
+	private static void render(io.github.jcondedata.aliveworkplace.work.ChoiceMenu menu, net.minecraft.server.level.ServerPlayer player,
+							   net.minecraft.world.InteractionHand hand) {
+		menu.clearButtons();
+		long price = Math.max(0, dollars(player.getItemInHand(hand)));
+		ItemStack shown = new ItemStack(ModItems.PRICE_TAG);
+		shown.set(DataComponents.CUSTOM_NAME, (price > 0
+			? Component.translatable("screen.aliveworkplace.price_tag.price", price, Money.describe(price, emeralds(price)))
+			: Component.translatable("screen.aliveworkplace.price_tag.none")).copy().withStyle(style -> style.withItalic(false).withColor(ChatFormatting.GOLD)));
+		menu.button(4, shown.copy(), null);
+		for (int i = 0; i < STEPS.length; i++) {
+			int step = STEPS[i];
+			if (step == 0) {
+				menu.button(FIRST_STEP_SLOT + i, shown.copy(), null);
+				continue;
+			}
+			ItemStack icon = new ItemStack(step < 0 ? net.minecraft.world.item.Items.RED_DYE : net.minecraft.world.item.Items.LIME_DYE);
+			icon.set(DataComponents.CUSTOM_NAME, Component.literal((step > 0 ? "+" : "") + step)
+				.withStyle(style -> style.withItalic(false).withColor(step < 0 ? ChatFormatting.RED : ChatFormatting.GREEN)));
+			menu.button(FIRST_STEP_SLOT + i, icon, p -> {
+				ItemStack tag = p.getItemInHand(hand);
+				if (tag.is(ModItems.PRICE_TAG)) {
+					setPrice(tag, Math.max(0, Math.max(0, dollars(tag)) + step));
+					render(menu, player, hand);
+				}
+			});
+		}
+		ItemStack done = new ItemStack(net.minecraft.world.item.Items.PAPER);
+		done.set(DataComponents.CUSTOM_NAME, Component.translatable("screen.aliveworkplace.price_tag.done")
+			.withStyle(style -> style.withItalic(false).withColor(ChatFormatting.WHITE)));
+		menu.button(DONE_SLOT, done, net.minecraft.server.level.ServerPlayer::closeContainer);
 	}
 
 	/** The same price in emeralds, for servers without CobbleDollars (and the vanilla trade screen). */

@@ -177,7 +177,8 @@ workstation, like the rest of the mod.
 - [x] Price Tags (`PriceTagItem`, renamed in an anvil to a number): a column priced in CobbleDollars directly; without
   CobbleDollars (and on the vanilla trade screen) it costs the same in emeralds, rounded up. The shopkeeper's overhead
   already counts sales
-- [ ] Shopkeeper follow-ups: a way to set a Price Tag without an anvil (typing the price on the counter)
+- [x] Price Tags set without an anvil: right-click one for a `ChoiceMenu` of −1000/−100/−10/−1/+1/+10/+100/+1000
+  buttons (`PriceTagItem.setPrice` writes the number as its name, like the anvil)
 - [x] **Ferryman** (their Teleporter): Travel Posts (named in an anvil) form one network (`TravelNetwork` saved
   data); right-clicking a post, placing it or talking to its ferryman adds it to the posts you know; a Ferryman sells
   Travel Tickets to every other post you know for 1 emerald per 256 blocks (1–16; 8 across dimensions); a ticket

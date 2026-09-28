@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+## 0.63.0 — 2026-09-28
+
+### Added
+- **Price Tags without an anvil**: right-click a Price Tag to set its price with +/− buttons (1, 10, 100, 1000). Renaming
+  it in an anvil still works.
+
 ## 0.62.0 — 2026-09-28
 
 ### Added

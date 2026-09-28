@@ -89,8 +89,13 @@ public final class CobblemonTrainers {
 			return;
 		}
 		int tier = Trainers.tier(trainer);
+		List<Pokemon> team = team(trainer.getUUID(), tier);
+		java.util.OptionalInt cap = io.github.jcondedata.aliveworkplace.compat.rct.RctLevelCaps.levelCap(player);
+		if (cap.isPresent()) {
+			team = scaleToCap(team, tier, cap.getAsInt());
+		}
 		List<BattlePokemon> theirs = new ArrayList<>();
-		for (Pokemon pokemon : team(trainer.getUUID(), tier)) {
+		for (Pokemon pokemon : team) {
 			theirs.add(BattlePokemon.Companion.safeCopyOf(pokemon));
 		}
 		BattleAI ai = tier <= 1 ? new RandomBattleAI() : new StrongBattleAI(tier);
@@ -140,6 +145,21 @@ public final class CobblemonTrainers {
 			team.add(species.create(level));
 		}
 		return team;
+	}
+
+	/**
+	 * With Radical Cobblemon Trainers: no Pokémon above the tier's ceiling for this player's level cap (see
+	 * {@link Trainers#capCeiling}), so a village's trainers stay beatable for new players and tough for
+	 * everyone. Lower-level teams are left as they are.
+	 */
+	public static List<Pokemon> scaleToCap(List<Pokemon> team, int tier, int levelCap) {
+		int ceiling = Trainers.capCeiling(tier, levelCap);
+		List<Pokemon> out = new ArrayList<>();
+		for (int i = 0; i < team.size(); i++) {
+			Pokemon pokemon = team.get(i);
+			out.add(pokemon.getLevel() <= ceiling ? pokemon : pokemon.getSpecies().create(Math.max(1, ceiling - i % 3)));
+		}
+		return out;
 	}
 
 	/** Ends a battle as if it had been decided (tests). */

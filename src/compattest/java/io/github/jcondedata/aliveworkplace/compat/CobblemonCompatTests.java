@@ -60,6 +60,26 @@ public class CobblemonCompatTests implements FabricGameTest {
 		helper.succeed();
 	}
 
+	/** With Radical Cobblemon Trainers' level caps: a Master's team comes down to just over the cap; small teams stay as they are. */
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
+	public void trainerTeamsMatchALevelCap(GameTestHelper helper) {
+		java.util.UUID id = java.util.UUID.randomUUID();
+		java.util.List<Pokemon> master = io.github.jcondedata.aliveworkplace.compat.cobblemon.CobblemonTrainers.team(id, 5);
+		java.util.List<Pokemon> capped = io.github.jcondedata.aliveworkplace.compat.cobblemon.CobblemonTrainers.scaleToCap(master, 5, 20);
+		helper.assertTrue(capped.size() == master.size(), "the team lost members");
+		helper.assertTrue(capped.stream().allMatch(p -> p.getLevel() <= 25 && p.getLevel() >= 23), "capped levels: "
+			+ capped.stream().map(Pokemon::getLevel).toList());
+		for (int i = 0; i < master.size(); i++) {
+			helper.assertTrue(capped.get(i).getSpecies() == master.get(i).getSpecies(), "a capped team changed species");
+		}
+		java.util.List<Pokemon> novice = io.github.jcondedata.aliveworkplace.compat.cobblemon.CobblemonTrainers.team(id, 1);
+		java.util.List<Pokemon> same = io.github.jcondedata.aliveworkplace.compat.cobblemon.CobblemonTrainers.scaleToCap(novice, 1, 50);
+		helper.assertTrue(same.equals(novice), "a Novice team below the cap was changed");
+		helper.assertTrue(io.github.jcondedata.aliveworkplace.trainer.Trainers.capCeiling(1, 20) == 14
+			&& io.github.jcondedata.aliveworkplace.trainer.Trainers.capCeiling(5, 20) == 25, "ceilings");
+		helper.succeed();
+	}
+
 	/** A player challenges a trainer: a real battle starts; winning pays and both sides learn from it. */
 	@GameTest(template = AREA, timeoutTicks = 400)
 	public void trainerBattleStartsAndPays(GameTestHelper helper) {

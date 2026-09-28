@@ -30,6 +30,12 @@ public final class Trainers {
 	public static final int XP_PER_BATTLE = 5;
 	public static final int XP_FOR_WIN = 3;
 
+	/**
+	 * With Radical Cobblemon Trainers, the highest level a trainer's Pokémon have against a player, relative
+	 * to that player's level cap, by tier: a Novice stays well under it, a Master goes a little over.
+	 */
+	private static final int[] CAP_OFFSET = {-6, -3, 0, 3, 5};
+
 	/** Leaders pay this many times a trainer's prize. */
 	private static final int LEADER_PRIZE_FACTOR = 3;
 	/** Only one leader per village: another leader this close with more experience takes the challenges. */
@@ -50,6 +56,11 @@ public final class Trainers {
 	}
 
 	/** "Novice Trainer" / "Trainer Leader", with the villager's name after it when they have one. */
+	/** The highest level a tier's Pokémon have against a player with this RCT level cap. */
+	public static int capCeiling(int tier, int levelCap) {
+		return Math.max(1, levelCap + CAP_OFFSET[Math.max(1, Math.min(5, tier)) - 1]);
+	}
+
 	public static Component title(Villager villager) {
 		boolean named = villager.hasCustomName();
 		if (isLeader(villager)) {

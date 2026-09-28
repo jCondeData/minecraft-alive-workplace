@@ -146,7 +146,10 @@ workstation, like the rest of the mod.
   the start (Master once they reach level 5), pays 3× a trainer's prize, one challenge per player per in-game day;
   if a village has several, only the most experienced within 64 blocks takes challenges; no badge
 - [x] ~~RCT API~~: Cobblemon's own `TrainerBattleActor` battles for any villager, no RCT needed
-- [ ] Tune level numbers against the pack's RCT level caps
+- [x] Tune levels against the pack's RCT level caps: RCT 0.18.1 (in the pack) exposes `LevelUtils.levelCap(Player)`;
+  read by reflection (`compat/rct/RctLevelCaps`, no dependency), a tier's ceiling is cap −6/−3/0/+3/+5; Pokémon above
+  it are re-created at the ceiling (same species). Not compat-tested with RCT itself (it spawns trainers around test
+  players); the scaling is tested with a given cap, and the fallback without RCT
 
 ## Milestone 4 — Pokémon partners & Cobblemon jobs
 - [ ] Assign one of your Pokémon to a villager; it follows them and boosts the job by type (Fighting → building, Ground/Rock → mining, Grass → farming, Water → fishing, Fire → smelting, Flying → hauling)

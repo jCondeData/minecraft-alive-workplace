@@ -58,6 +58,7 @@ The owner (Jesse) does not write code: sessions are expected to work autonomousl
 - `nurse/` — nurses: `Nurses` (treating players), `NurseWork` (healing villagers nearby)
 - `compat/cobblemon/` — the only code that touches Cobblemon classes; call it only when `isModLoaded("cobblemon")`
 - `compat/cobbledollars/` — the only code touching CobbleDollars (balances); use it through `work/Money` (CobbleDollars or emeralds)
+- `compat/rct/` — Radical Cobblemon Trainers' level cap, by reflection (no dependency at all)
 - `mail/` — mailboxes and postmen: `MailboxBlock`/`MailboxBlockEntity`/`MailboxMenu` (screen in client `MailboxScreen`),
   `PostOffice` (saved data: addresses, parcels, desks, dawn delivery), `Parcel`, `Mail` (send packet), `PostmanWork`
 - `fish/` — the fisher upgrade (vanilla Fishermen, hired with a fishing rod): `FisherWork`, `Fishers`

@@ -154,6 +154,9 @@ Craft a **Training Post** (a target block on planks) and place it near a village
 Pokémon and ranks up as people battle them — Apprentice, Journeyman, Expert, Master — until they field six fully
 evolved Pokémon at level 80–100 and play smart. Beating one pays **CobbleDollars** (100 for a Novice up to 2,500 for a
 Master; emeralds if CobbleDollars isn't installed), once a day per trainer. No badges, no gyms.
+With **Radical Cobblemon Trainers** installed (it is in the Cobbleverse pack), a trainer's Pokémon never go above
+your level cap by more than their rank allows: a Novice stays 6 levels under your cap, a Journeyman meets it, a
+Master goes 5 over. So the village's Master is a real fight whether you're new or far along.
 
 Each village can also have one **Trainer Leader**: craft a **Leader's Podium** (gold ingots either side of a Training
 Post, on polished andesite). The leader battles at Expert strength from the start, pays three times the prize, and

@@ -47,7 +47,7 @@ import org.jetbrains.annotations.Nullable;
  */
 public class FisherWork extends Behavior<Villager> {
 	/** How far from the barrel the fisherman looks for water. */
-	public static final int RADIUS = 16;
+	public static int RADIUS = 16;
 	static final double REACH = 4.5;
 	private static final float SPEED = 0.55f;
 	private static final int SEARCH_EVERY = 100;

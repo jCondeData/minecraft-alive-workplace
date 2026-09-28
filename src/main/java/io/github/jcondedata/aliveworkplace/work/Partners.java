@@ -23,7 +23,7 @@ import net.minecraft.world.entity.npc.VillagerProfession;
  * Any pasture works, including ones whose Pokémon also work for Cobbleworkers.
  */
 public final class Partners {
-	public static final int RADIUS = 16;
+	public static int RADIUS = 16;
 	public static final int MAX = 3;
 	public static final float PER_PARTNER = 0.15f;
 	private static final int RECHECK_TICKS = 100;

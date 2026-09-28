@@ -21,7 +21,7 @@ import net.minecraft.world.item.component.ItemAttributeModifiers;
 /** What makes a guard a guard: who they fight, how hard they hit, which gear is better. */
 public final class Guards {
 	/** How far from the Guard Post a guard patrols and chases. */
-	public static final int RADIUS = 24;
+	public static int RADIUS = 24;
 	private static final ResourceLocation HEALTH_BONUS = AliveWorkplace.id("guard_health");
 	/** Guards are tougher than other villagers: 40 health instead of 20. */
 	private static final double EXTRA_HEALTH = 20;

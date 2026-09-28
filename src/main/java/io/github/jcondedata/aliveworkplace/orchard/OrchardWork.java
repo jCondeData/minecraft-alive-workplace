@@ -35,7 +35,7 @@ import org.jetbrains.annotations.Nullable;
  */
 public class OrchardWork extends Behavior<Villager> {
 	/** How far from the Fruit Basket the keeper picks. */
-	public static final int RADIUS = 16;
+	public static int RADIUS = 16;
 	private static final int DOWN = 4;
 	private static final int UP = 10;
 	/** The picking pole. */

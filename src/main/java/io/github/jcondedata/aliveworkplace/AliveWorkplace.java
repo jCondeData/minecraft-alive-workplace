@@ -32,6 +32,7 @@ public class AliveWorkplace implements ModInitializer {
 
 	@Override
 	public void onInitialize() {
+		WorkplaceConfig.loadAndApply(net.fabricmc.loader.api.FabricLoader.getInstance().getConfigDir());
 		ModComponents.init();
 		ModBlocks.init();
 		ModItems.init();

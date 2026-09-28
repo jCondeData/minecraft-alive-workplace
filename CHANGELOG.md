@@ -2,6 +2,16 @@
 
 ## Unreleased
 
+## 0.42.0 — 2026-09-28
+
+### Added
+- **Server config file** `config/aliveworkplace.json`: how far supply chests, builds, guards, lumberjacks, orchard
+  keepers, fishers, Pokémon partners and postmen reach, and how many CobbleDollars an emerald price is worth.
+
+### Fixed
+- A guard with a bow no longer ignores a creeper that's out of bow range: they walk closer (keeping their distance)
+  and shoot.
+
 ## 0.41.0 — 2026-09-28
 
 ### Added

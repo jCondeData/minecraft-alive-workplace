@@ -293,6 +293,19 @@ Craft a **Blueprint Table** (blue dye on top, cartography table in the middle, p
 | `/gamerule workplaceLevelGround 0` | builders leave the ground around their builds alone (default 2 blocks, up to 8) |
 | `/gamerule workplaceKeepWorkLoaded false` | builds and quarries stop when nobody is nearby (by default they keep going while the player who ordered them is online) |
 
+**Server config** — `config/aliveworkplace.json` is written with the defaults the first time the game starts (edit it
+and restart; out-of-range values are clamped):
+
+| Option | Default | What it does |
+| --- | --- | --- |
+| `supplyRadius` | 8 | chests and barrels this close to a workstation are its supply chests |
+| `maxSiteDistance` | 48 | how far from their bench a builder takes a build |
+| `guardRadius` | 24 | how far from the Guard Post guards patrol and fight |
+| `lumberjackRadius`, `orchardRadius`, `fisherRadius` | 16 | how far lumberjacks cut, orchard keepers pick and fishers look for water |
+| `partnerRadius` | 16 | how close to a workstation pastured Pokémon must be to help |
+| `postmanRange` | 64 | how far a postman walks to deliver (mail going farther arrives at dawn) |
+| `dollarsPerEmerald` | 100 | CobbleDollars per emerald for lessons, shop prices and fares |
+
 ## What's next
 Next up are Pokémon work partners and Cobblemon jobs (Orchard Keeper, Ball Smith, Chef). See [ROADMAP.md](ROADMAP.md).
 

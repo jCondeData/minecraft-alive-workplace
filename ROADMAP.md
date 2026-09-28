@@ -66,7 +66,9 @@ Owner decisions are recorded in **Design decisions** at the bottom. Don't change
 - [x] Our houses in modded villages: the Cobbleverse pack (1.7.42) has **Repurposed Structures** (no Towns and Towers),
   so the workshop and staffed houses join its 11 overworld village house pools (`VillageHouses.MODDED_HOUSE_POOLS`,
   closest vanilla style each; not crimson/warped/ocean); it uses vanilla jigsaw names; compat-tested with RS 7.5.21
-- [ ] Config file (`config/aliveworkplace.json`) mirroring gamerules plus supply radius, reach, max site distance
+- [x] Config file (`config/aliveworkplace.json`, `WorkplaceConfig`): supply radius, max site distance, guard/lumberjack/
+  orchard/fisher/partner radii, postman range, CobbleDollars per emerald; written with defaults, clamped, applied at
+  startup (per-world tuning stays in the gamerules; the texts that say "within 8 blocks" still say 8)
 - [ ] Upgrades: blueprints can declare a next tier that builds over the previous one
 
 ## Milestone 2 — Other work jobs

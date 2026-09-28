@@ -81,6 +81,8 @@ The owner (Jesse) does not write code: sessions are expected to work autonomousl
   which must keep exactly one job block per house — a vanilla one would give the villager the wrong job)
 - `mixin/` — swaps in the builder/miner WORK packages and schedule for our professions; accessors
 - `command/` — `/workplace`
+- `WorkplaceConfig` — `config/aliveworkplace.json` (radii, postman range, CobbleDollars per emerald); the tunable
+  distances are non-final statics (`SupplyContainers.RADIUS`, `Guards.RADIUS`, …) that it sets at startup
 
 ## How the builder works (keep these invariants)
 - All progress lives in `BuildSite` (saved). `BuilderWork` must stay restartable at any tick.

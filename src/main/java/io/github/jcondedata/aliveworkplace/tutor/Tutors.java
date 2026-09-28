@@ -46,7 +46,7 @@ public final class Tutors {
 
 	/** The same lesson in CobbleDollars (used when that mod is installed): 100 per emerald. */
 	public static long dollars(int grade) {
-		return price(grade) * 100L;
+		return price(grade) * (long) io.github.jcondedata.aliveworkplace.work.Money.DOLLARS_PER_EMERALD;
 	}
 
 	/** "Journeyman Move Tutor", or "Journeyman Move Tutor Ada" for a named one. */

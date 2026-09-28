@@ -25,7 +25,7 @@ import org.jetbrains.annotations.Nullable;
  */
 public final class SupplyContainers {
 	/** Horizontal search radius around the bench. */
-	public static final int RADIUS = 8;
+	public static int RADIUS = 8;
 	private static final int VERTICAL = 4;
 
 	/** Storage positions near {@code bench}, nearest first, skipping any inside {@code exclude}. */

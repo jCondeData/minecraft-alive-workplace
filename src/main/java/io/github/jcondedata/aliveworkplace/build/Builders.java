@@ -41,7 +41,7 @@ import org.jetbrains.annotations.Nullable;
 /** Builder job lifecycle: hand over a blueprint, report status, finish, cancel. */
 public final class Builders {
 	/** A build site's centre must be within this many blocks of the builder's bench. */
-	public static final int MAX_SITE_DISTANCE = 48;
+	public static int MAX_SITE_DISTANCE = 48;
 	/** How many blueprints a builder accepts on top of the one they are building. */
 	public static final int MAX_QUEUE = 5;
 	/** How many idle builders can help one site at a time. */

@@ -30,7 +30,7 @@ import org.jetbrains.annotations.Nullable;
 public final class PostOffice extends SavedData {
 	private static final String NAME = "aliveworkplace_mail";
 	/** A postman's round: mailboxes this close to their Postal Desk. */
-	public static final int ROUND = 64;
+	public static int ROUND = 64;
 	/** A desk counts as staffed if its postman worked within this many ticks. */
 	private static final long DESK_FRESH = 24000;
 

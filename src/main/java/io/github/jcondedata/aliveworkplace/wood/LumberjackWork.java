@@ -44,7 +44,7 @@ import org.jetbrains.annotations.Nullable;
  */
 public class LumberjackWork extends Behavior<Villager> {
 	/** How far from the Chopping Block the lumberjack looks for trees. */
-	public static final int RADIUS = 16;
+	public static int RADIUS = 16;
 	static final double REACH = 4.0;
 	private static final float SPEED = 0.6f;
 	private static final int SEARCH_EVERY = 60;

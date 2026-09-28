@@ -124,8 +124,13 @@ public class GuardCombat extends Behavior<Villager> {
 		// With a bow: shoot creepers, fliers and anything still a few steps off; back away from creepers.
 		double distance = Math.sqrt(villager.distanceToSqr(foe));
 		boolean creeper = foe instanceof net.minecraft.world.entity.monster.Creeper;
-		if (Guards.hasBow(villager) && villager.hasLineOfSight(foe) && distance <= BOW_RANGE
-			&& (creeper || foe instanceof net.minecraft.world.entity.FlyingMob || distance > MELEE_FROM)) {
+		if (Guards.hasBow(villager) && (creeper || foe instanceof net.minecraft.world.entity.FlyingMob || distance > MELEE_FROM)) {
+			if (distance > BOW_RANGE || !villager.hasLineOfSight(foe)) {
+				// Out of range or out of sight: close in (not too close to a creeper).
+				villager.getBrain().setMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(new EntityTracker(foe, false), CHASE_SPEED,
+					creeper ? (int) CREEPER_DISTANCE + 1 : 1));
+				return;
+			}
 			if (creeper && distance < CREEPER_DISTANCE) {
 				backAway(villager, foe);
 			} else {

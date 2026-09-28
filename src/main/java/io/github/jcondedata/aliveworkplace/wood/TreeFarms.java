@@ -1,6 +1,7 @@
 package io.github.jcondedata.aliveworkplace.wood;
 
 import io.github.jcondedata.aliveworkplace.build.BuilderBag;
+import io.github.jcondedata.aliveworkplace.work.AreaJobs;
 import io.github.jcondedata.aliveworkplace.build.BuilderLevels;
 import io.github.jcondedata.aliveworkplace.build.Builders;
 import io.github.jcondedata.aliveworkplace.build.Employer;
@@ -67,49 +68,7 @@ public final class TreeFarms {
 
 	/** Player right-clicked a lumberjack while holding a Field Marker. */
 	public static InteractionResult assign(ServerPlayer player, Villager villager, ItemStack stack) {
-		ServerLevel level = player.serverLevel();
-		if (!Friends.mayCommand(player, villager)) {
-			Employer employer = villager.getAttached(ModAttachments.BUILDER_EMPLOYER);
-			tell(player, Component.translatable("message.aliveworkplace.not_your_builder", villager.getDisplayName(),
-				employer != null ? employer.name() : "?", player.getGameProfile().getName()), ChatFormatting.RED);
-			return InteractionResult.CONSUME;
-		}
-		FieldData data = FieldMarkerItem.data(stack);
-		Optional<BoundingBox> area = data.area();
-		if (area.isEmpty()) {
-			tell(player, Component.translatable("message.aliveworkplace.field.not_marked"), ChatFormatting.YELLOW);
-			return InteractionResult.CONSUME;
-		}
-		if (!data.dimension().get().equals(level.dimension().location())) {
-			tell(player, Component.translatable("message.aliveworkplace.assign.wrong_dimension"), ChatFormatting.RED);
-			return InteractionResult.CONSUME;
-		}
-		Optional<BlockPos> block = Builders.benchPos(villager);
-		if (block.isEmpty()) {
-			tell(player, Component.translatable("message.aliveworkplace.tree_farm.no_block"), ChatFormatting.RED);
-			return InteractionResult.CONSUME;
-		}
-		BoundingBox box = area.get();
-		double distance = Math.sqrt(box.getCenter().distSqr(block.get()));
-		if (distance > MAX_DISTANCE) {
-			tell(player, Component.translatable("message.aliveworkplace.assign.too_far", (int) distance, MAX_DISTANCE), ChatFormatting.RED);
-			return InteractionResult.CONSUME;
-		}
-		FieldJob old = villager.getAttached(ModAttachments.TREE_FARM);
-		if (old != null && !player.getAbilities().instabuild) {
-			if (!player.getInventory().add(markerFor(level, old))) {
-				player.drop(markerFor(level, old), false);
-			}
-		}
-		Friends.hire(player, villager);
-		start(villager, box);
-		if (!player.getAbilities().instabuild) {
-			stack.shrink(1);
-		}
-		level.playSound(null, villager, SoundEvents.VILLAGER_YES, SoundSource.NEUTRAL, 1f, 1f);
-		tell(player, Component.translatable("message.aliveworkplace.tree_farm.started", villager.getDisplayName(), box.getXSpan(), box.getZSpan(),
-			SupplyContainers.RADIUS), ChatFormatting.GREEN);
-		return InteractionResult.SUCCESS;
+		return AreaJobs.assign(player, villager, stack, ModAttachments.TREE_FARM, "tree_farm");
 	}
 
 	/** Gives the lumberjack the tree farm. Also used by tests. */
@@ -119,48 +78,19 @@ public final class TreeFarms {
 
 	/** Stops planting the farm: the marker goes to {@code player} (or the chests). The trees stay. */
 	public static void release(ServerLevel level, Villager villager, @Nullable Player player) {
-		FieldJob job = villager.getAttached(ModAttachments.TREE_FARM);
-		if (job == null) {
-			return;
-		}
-		ItemStack marker = markerFor(level, job);
-		if (player == null || !player.getInventory().add(marker)) {
-			BlockPos block = Builders.benchPos(villager).orElse(villager.blockPosition());
-			ItemStack rest = SupplyContainers.insert(level, SupplyContainers.find(level, block, null), marker);
-			if (!rest.isEmpty()) {
-				Block.popResource(level, block.above(), rest);
-			}
-		}
-		villager.removeAttached(ModAttachments.TREE_FARM);
+		AreaJobs.release(level, villager, player, ModAttachments.TREE_FARM);
 	}
 
 	public static void onDeath(ServerLevel level, Villager villager) {
-		FieldJob job = villager.getAttached(ModAttachments.TREE_FARM);
-		if (job != null) {
-			Block.popResource(level, villager.blockPosition(), markerFor(level, job));
-		}
+		AreaJobs.onDeath(level, villager, ModAttachments.TREE_FARM);
 	}
 
 	public static void sendStatus(Player player, Villager villager) {
 		BoundingBox box = farm(villager);
-		if (box == null) {
-			return;
+		if (box != null) {
+			AreaJobs.sendStatus(player, villager, box, "tree_farm", Component.translatable("message.aliveworkplace.tree_farm.counts",
+				villager.getAttachedOrElse(ModAttachments.TREES_FELLED, 0), villager.getAttachedOrElse(ModAttachments.SAPLINGS_PLANTED, 0)));
 		}
-		MutableComponent text = Component.empty();
-		text.append(Component.translatable("message.aliveworkplace.tree_farm.header", villager.getDisplayName(), box.getXSpan(), box.getZSpan(),
-			box.minX(), box.minY(), box.minZ()).withStyle(ChatFormatting.GOLD));
-		text.append(Component.literal("\n  "));
-		text.append(Component.translatable("message.aliveworkplace.tree_farm.counts", villager.getAttachedOrElse(ModAttachments.TREES_FELLED, 0),
-			villager.getAttachedOrElse(ModAttachments.SAPLINGS_PLANTED, 0)).withStyle(ChatFormatting.GRAY));
-		text.append(Component.literal("\n  "));
-		text.append(BuilderLevels.describe(villager).copy().withStyle(ChatFormatting.DARK_AQUA));
-		String stop = "/workplace cancel " + villager.getUUID();
-		text.append(Component.literal("\n  "));
-		text.append(Component.translatable("message.aliveworkplace.tree_farm.stop").withStyle(style -> style
-			.withColor(ChatFormatting.RED).withUnderlined(true)
-			.withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, stop))
-			.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.translatable("message.aliveworkplace.tree_farm.stop_hover")))));
-		player.sendSystemMessage(text);
 	}
 
 	// --- planting ------------------------------------------------------------------------------
@@ -241,18 +171,6 @@ public final class TreeFarms {
 		level.playSound(null, spot, SoundEvents.GRASS_PLACE, SoundSource.BLOCKS, 0.8f, 1f);
 		villager.setAttached(ModAttachments.SAPLINGS_PLANTED, villager.getAttachedOrElse(ModAttachments.SAPLINGS_PLANTED, 0) + square.length);
 		return true;
-	}
-
-	static ItemStack markerFor(ServerLevel level, FieldJob job) {
-		ItemStack marker = new ItemStack(ModItems.FIELD_MARKER);
-		BoundingBox box = job.box();
-		marker.set(ModComponents.FIELD, new FieldData(Optional.of(level.dimension().location()),
-			Optional.of(new BlockPos(box.minX(), box.minY(), box.minZ())), Optional.of(new BlockPos(box.maxX(), box.maxY(), box.maxZ()))));
-		return marker;
-	}
-
-	private static void tell(Player player, Component message, ChatFormatting color) {
-		player.sendSystemMessage(message.copy().withStyle(color));
 	}
 
 	private TreeFarms() {

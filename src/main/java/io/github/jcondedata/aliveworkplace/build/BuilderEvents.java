@@ -32,6 +32,20 @@ public final class BuilderEvents {
 				}
 				return InteractionResult.PASS;
 			}
+			if (io.github.jcondedata.aliveworkplace.orchard.Orchards.isKeeper(villager)) {
+				ItemStack held = player.getItemInHand(hand);
+				if (held.is(ModItems.FIELD_MARKER)) {
+					return level.isClientSide ? InteractionResult.SUCCESS
+						: io.github.jcondedata.aliveworkplace.orchard.Orchards.assign((ServerPlayer) player, villager, held);
+				}
+				if (held.isEmpty() && player.isShiftKeyDown() && io.github.jcondedata.aliveworkplace.orchard.Orchards.orchard(villager) != null) {
+					if (!level.isClientSide) {
+						io.github.jcondedata.aliveworkplace.orchard.Orchards.sendStatus(player, villager);
+					}
+					return InteractionResult.SUCCESS;
+				}
+				return InteractionResult.PASS;
+			}
 			if (io.github.jcondedata.aliveworkplace.wood.TreeFarms.isLumberjack(villager)) {
 				ItemStack held = player.getItemInHand(hand);
 				if (held.is(ModItems.FIELD_MARKER)) {
@@ -173,6 +187,7 @@ public final class BuilderEvents {
 				io.github.jcondedata.aliveworkplace.mine.Miners.onMinerDeath(level, villager);
 				io.github.jcondedata.aliveworkplace.farm.Fields.onDeath(level, villager);
 				io.github.jcondedata.aliveworkplace.wood.TreeFarms.onDeath(level, villager);
+				io.github.jcondedata.aliveworkplace.orchard.Orchards.onDeath(level, villager);
 			} else if (entity.level() instanceof ServerLevel level) {
 				io.github.jcondedata.aliveworkplace.guard.GuardCombat.onFoeKilled(level, entity, source);
 			}

@@ -299,6 +299,45 @@ public class CobblemonCompatTests implements FabricGameTest {
 		helper.succeed();
 	}
 
+	/** An orchard with Cobblemon: berries and an apricorn seed from the chest go into the ground as plants. */
+	@GameTest(template = AREA, timeoutTicks = 2400, batch = "cobblemon_orchard_planting")
+	public void orchardKeeperPlantsApricornsAndBerries(GameTestHelper helper) {
+		var level = helper.getLevel();
+		helper.setDayTime(2000);
+		BlockPos basket = new BlockPos(2, 2, 2); // y = 1 is this area's floor
+		BlockPos chestPos = new BlockPos(2, 2, 4);
+		helper.setBlock(basket, ModBlocks.FRUIT_BASKET);
+		helper.setBlock(chestPos, net.minecraft.world.level.block.Blocks.CHEST);
+		// Berries grow on farmland (the column by the water), apricorns on grass.
+		for (BlockPos p : BlockPos.betweenClosed(new BlockPos(8, 1, 8), new BlockPos(12, 1, 12))) {
+			helper.setBlock(p, p.getX() == 8 ? net.minecraft.world.level.block.Blocks.FARMLAND.defaultBlockState().setValue(net.minecraft.world.level.block.FarmBlock.MOISTURE, 7)
+				: net.minecraft.world.level.block.Blocks.GRASS_BLOCK.defaultBlockState());
+		}
+		helper.setBlock(new BlockPos(7, 1, 10), net.minecraft.world.level.block.Blocks.WATER);
+		net.minecraft.world.Container chest = helper.getBlockEntity(chestPos);
+		chest.setItem(0, new net.minecraft.world.item.ItemStack(com.cobblemon.mod.common.CobblemonItems.ORAN_BERRY, 2));
+		chest.setItem(1, new net.minecraft.world.item.ItemStack(com.cobblemon.mod.common.CobblemonItems.RED_APRICORN_SEED, 1));
+		Villager keeper = helper.spawn(EntityType.VILLAGER, new BlockPos(3, 2, 3));
+		Jobs.employ(level, keeper, helper.absolutePos(basket), ModVillagers.FRUIT_BASKET_POI, ModVillagers.ORCHARD_KEEPER);
+		io.github.jcondedata.aliveworkplace.orchard.Orchards.start(keeper,
+			net.minecraft.world.level.levelgen.structure.BoundingBox.fromCorners(helper.absolutePos(new BlockPos(8, 1, 8)), helper.absolutePos(new BlockPos(12, 1, 12))));
+		helper.succeedWhen(() -> {
+			int berries = 0;
+			int saplings = 0;
+			for (BlockPos p : BlockPos.betweenClosed(new BlockPos(8, 2, 8), new BlockPos(12, 2, 12))) {
+				var block = helper.getBlockState(p).getBlock();
+				if (block instanceof com.cobblemon.mod.common.block.BerryBlock) {
+					berries++;
+				} else if (block instanceof com.cobblemon.mod.common.block.ApricornSaplingBlock) {
+					saplings++;
+				}
+			}
+			helper.assertTrue(berries == 2 && saplings == 1, berries + " berry plants and " + saplings + " apricorn saplings");
+			helper.assertTrue(chest.countItem(com.cobblemon.mod.common.CobblemonItems.ORAN_BERRY) == 0
+				&& chest.countItem(com.cobblemon.mod.common.CobblemonItems.RED_APRICORN_SEED) == 0, "seeds left in the chest");
+		});
+	}
+
 	/** An Orchard Keeper picks a ripe apricorn and a ripe berry plant; both stay to grow again. */
 	@GameTest(template = AREA, timeoutTicks = 1600)
 	public void orchardKeeperPicksApricornsAndBerries(GameTestHelper helper) {

@@ -126,6 +126,11 @@ is ripe: **sweet berries**, **glow berries**, **cocoa pods** and — with Cobble
 plants**. The plants are picked, not broken, so they grow again. The harvest goes into the chests within 8 blocks of
 the basket. They reach up into trees with a picking pole and never step into a berry bush.
 
+**Planting an orchard.** Mark an area with a **Field Marker** (within 48 blocks of the basket) and give it to the
+keeper. They plant it from the chests: sweet berries as bushes two blocks apart on grass or dirt, and with Cobblemon
+berries (on farmland) and apricorn seeds (on grass or dirt, three apart), then pick what grows there too.
+Sneak-right-click the keeper with an empty hand to see the orchard or stop it.
+
 ## Farmers
 ![A farmer harvesting, replanting and sowing a field](docs/media/farmer.gif)
 

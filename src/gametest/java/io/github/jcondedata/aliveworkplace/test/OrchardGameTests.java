@@ -44,6 +44,38 @@ public class OrchardGameTests implements FabricGameTest {
 		helper.setBlock(pos, Blocks.SWEET_BERRY_BUSH.defaultBlockState().setValue(SweetBerryBushBlock.AGE, age));
 	}
 
+	/**
+	 * An orchard (a Field Marker's area): sweet berries from the chest planted as bushes in a grid, 2 apart. Alone in its
+	 * batch: the keeper picks ripe fruit within 16 blocks first, and the next test's bushes are that close.
+	 */
+	@GameTest(template = AREA, timeoutTicks = 2400, batch = "orchard_planting")
+	public void orchardKeeperPlantsTheOrchard(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		for (BlockPos p : BlockPos.betweenClosed(new BlockPos(10, 1, 10), new BlockPos(14, 1, 14))) {
+			helper.setBlock(p, Blocks.GRASS_BLOCK);
+		}
+		Villager villager = keeper(helper);
+		net.minecraft.world.Container chest = helper.getBlockEntity(CHEST);
+		chest.setItem(0, new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.SWEET_BERRIES, 20));
+		io.github.jcondedata.aliveworkplace.orchard.Orchards.start(villager,
+			net.minecraft.world.level.levelgen.structure.BoundingBox.fromCorners(helper.absolutePos(new BlockPos(10, 1, 10)), helper.absolutePos(new BlockPos(14, 1, 14))));
+		helper.succeedWhen(() -> {
+			for (int x = 10; x <= 14; x++) {
+				for (int z = 10; z <= 14; z++) {
+					BlockPos spot = new BlockPos(x, 2, z);
+					boolean grid = (x - 10) % 2 == 0 && (z - 10) % 2 == 0;
+					if (grid) {
+						helper.assertBlockPresent(Blocks.SWEET_BERRY_BUSH, spot);
+					} else {
+						helper.assertBlockNotPresent(Blocks.SWEET_BERRY_BUSH, spot);
+					}
+				}
+			}
+			int planted = villager.getAttachedOrElse(io.github.jcondedata.aliveworkplace.registry.ModAttachments.SAPLINGS_PLANTED, 0);
+			helper.assertTrue(planted == 9, "planted " + planted);
+		});
+	}
+
 	/** Ripe berries, a cocoa pod and glow berries all get picked into the chest; the plants stay to grow again. */
 	@GameTest(template = AREA, timeoutTicks = 2400)
 	public void orchardKeeperPicksRipeFruit(GameTestHelper helper) {

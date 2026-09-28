@@ -33,6 +33,17 @@ public final class CobblemonOrchard {
 		return state.getBlock() instanceof ApricornBlock || state.getBlock() instanceof BerryBlock;
 	}
 
+	/** Apricorn seeds and berries: what an Orchard Keeper plants in their orchard. */
+	public static boolean isSeed(ItemStack stack) {
+		return stack.getItem() instanceof com.cobblemon.mod.common.item.ApricornSeedItem
+			|| stack.getItem() instanceof com.cobblemon.mod.common.item.berry.BerryItem;
+	}
+
+	/** Apricorn seeds grow into small trees, so they're planted further apart. */
+	public static boolean growsIntoTree(ItemStack stack) {
+		return stack.getItem() instanceof com.cobblemon.mod.common.item.ApricornSeedItem;
+	}
+
 	/** Picks ripe Cobblemon fruit: the apricorn comes off (it grows again), the berry plant goes back to flowering. */
 	public static List<ItemStack> pick(ServerLevel level, BlockPos pos, Entity picker) {
 		BlockState state = level.getBlockState(pos);

@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+## 0.54.0 — 2026-09-28
+
+### Added
+- **Orchard Keepers plant orchards**: give one a Field Marker with an area marked and they plant it from the chests
+  by the Fruit Basket — sweet berry bushes, and with Cobblemon berries (on farmland) and apricorn trees — then pick
+  what grows there. Sneak-right-click the keeper to see the orchard or stop it.
+
 ## 0.53.0 — 2026-09-28
 
 ### Added

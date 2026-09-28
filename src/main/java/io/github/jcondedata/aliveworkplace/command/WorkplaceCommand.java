@@ -222,6 +222,19 @@ public final class WorkplaceCommand {
 				source.sendSuccess(() -> Component.translatable("command.aliveworkplace.fisher_released", fisher.getDisplayName()), false);
 				return 1;
 			}
+			if (level.getEntity(id) instanceof net.minecraft.world.entity.npc.Villager keeper
+				&& io.github.jcondedata.aliveworkplace.orchard.Orchards.orchard(keeper) != null) {
+				boolean allowed = source.hasPermission(2)
+					|| source.getEntity() instanceof net.minecraft.world.entity.player.Player p && Friends.mayCommand(p, keeper);
+				if (!allowed) {
+					source.sendFailure(Component.translatable("command.aliveworkplace.not_owner"));
+					return 0;
+				}
+				io.github.jcondedata.aliveworkplace.orchard.Orchards.release(level, keeper,
+					source.getEntity() instanceof net.minecraft.world.entity.player.Player p ? p : null);
+				source.sendSuccess(() -> Component.translatable("command.aliveworkplace.orchard_released", keeper.getDisplayName()), false);
+				return 1;
+			}
 			if (level.getEntity(id) instanceof net.minecraft.world.entity.npc.Villager lumberjack
 				&& io.github.jcondedata.aliveworkplace.wood.TreeFarms.farm(lumberjack) != null) {
 				boolean allowed = source.hasPermission(2)

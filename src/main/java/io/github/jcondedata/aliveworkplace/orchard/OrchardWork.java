@@ -50,7 +50,10 @@ public class OrchardWork extends Behavior<Villager> {
 	private static final int GIVE_UP = 300;
 	private static final int SKIP_FOR = 2400;
 
-	private enum Phase { LOOKING, PICKING, DEPOSITING }
+	private enum Phase { LOOKING, PICKING, DEPOSITING, PLANTING }
+
+	/** Seeds of a kind taken from the chests at a time for the orchard. */
+	private static final int SEEDS = 16;
 
 	private final Walker walker = new Walker(SPEED).reachingUp(6);
 	/** Ripe fruit found by the last look round, picked nearest first. */
@@ -62,6 +65,12 @@ public class OrchardWork extends Behavior<Villager> {
 	private int tryingFor;
 	private int pickTimer;
 	private boolean depositDue;
+	/** Where the next seed goes in the orchard, and which seed. */
+	@Nullable
+	private BlockPos plantSpot;
+	private ItemStack plantSeed = ItemStack.EMPTY;
+	@Nullable
+	private BlockPos seedChest;
 
 	public OrchardWork() {
 		super(ImmutableMap.of(
@@ -107,6 +116,13 @@ public class OrchardWork extends Behavior<Villager> {
 			return;
 		}
 
+		// 1b. Planting the orchard (between rounds of picking).
+		net.minecraft.world.level.levelgen.structure.BoundingBox orchard = Orchards.orchard(villager);
+		if (orchard != null && (plantSpot != null || seedChest != null)) {
+			plant(level, villager, basket, bag);
+			return;
+		}
+
 		// 2. Next ripe fruit.
 		if (fruit == null || !Fruit.isRipe(level.getBlockState(fruit))) {
 			fruit = next(level, villager);
@@ -117,8 +133,11 @@ public class OrchardWork extends Behavior<Villager> {
 					return;
 				}
 				searchTimer = SEARCH_EVERY;
-				ripe.addAll(findFruit(level, basket, gameTime, unreachable));
+				ripe.addAll(findFruit(level, basket, orchard, gameTime, unreachable));
 				fruit = next(level, villager);
+				if (fruit == null && orchard != null && choosePlanting(level, villager, basket, bag, orchard)) {
+					return;
+				}
 				if (fruit == null) {
 					// Nothing ripe: take in what was picked, then wait by the basket.
 					status(villager, Phase.LOOKING);
@@ -176,16 +195,94 @@ public class OrchardWork extends Behavior<Villager> {
 		return best;
 	}
 
-	/** Every ripe fruit within {@link #RADIUS} of the basket that hasn't been given up on lately. */
-	static List<BlockPos> findFruit(ServerLevel level, BlockPos basket, long now, Map<BlockPos, Long> unreachable) {
+	/** Every ripe fruit within {@link #RADIUS} of the basket (and in the orchard) that hasn't been given up on lately. */
+	static List<BlockPos> findFruit(ServerLevel level, BlockPos basket, @Nullable net.minecraft.world.level.levelgen.structure.BoundingBox orchard,
+		long now, Map<BlockPos, Long> unreachable) {
 		unreachable.values().removeIf(until -> until < now);
 		List<BlockPos> found = new ArrayList<>();
-		for (BlockPos p : BlockPos.betweenClosed(basket.offset(-RADIUS, -DOWN, -RADIUS), basket.offset(RADIUS, UP, RADIUS))) {
+		Iterable<BlockPos> around = BlockPos.betweenClosed(basket.offset(-RADIUS, -DOWN, -RADIUS), basket.offset(RADIUS, UP, RADIUS));
+		if (orchard != null) {
+			around = com.google.common.collect.Iterables.concat(around,
+				BlockPos.betweenClosed(orchard.minX(), orchard.minY() - 2, orchard.minZ(), orchard.maxX(), orchard.maxY() + 6, orchard.maxZ()));
+		}
+		java.util.Set<BlockPos> seen = new java.util.HashSet<>();
+		for (BlockPos p : around) {
+			if (!seen.add(p.immutable())) {
+				continue;
+			}
 			if (Fruit.isRipe(level.getBlockState(p)) && !unreachable.containsKey(p)) {
 				found.add(p.immutable());
 			}
 		}
 		return found;
+	}
+
+	// --- the orchard -------------------------------------------------------------------------------
+
+	/**
+	 * Nothing ripe: find an empty spot in the orchard for a seed from the bag, or go and fetch seeds from the chests if
+	 * there's room. Returns false when there's nothing to plant.
+	 */
+	private boolean choosePlanting(ServerLevel level, Villager villager, BlockPos basket, BuilderBag bag,
+		net.minecraft.world.level.levelgen.structure.BoundingBox orchard) {
+		// Seeds in the bag first (each kind until one has somewhere to go: berries want farmland, bushes and trees dirt).
+		for (ItemStack seed : Orchards.seedsCarried(bag)) {
+			BlockPos spot = Orchards.nextSpot(level, orchard, seed, villager.blockPosition()).orElse(null);
+			if (spot != null) {
+				plantSpot = spot;
+				plantSeed = seed;
+				walker.reset();
+				return true;
+			}
+		}
+		// Then the chests.
+		List<BlockPos> supplies = SupplyContainers.find(level, basket, null);
+		for (BlockPos chest : supplies) {
+			for (ItemStack sample : SupplyContainers.peekMatching(level, chest, Orchards::isSeed)) {
+				if (!bag.has(sample.getItem(), 1) && Orchards.nextSpot(level, orchard, sample, villager.blockPosition()).isPresent()) {
+					seedChest = chest;
+					plantSeed = sample.copyWithCount(1);
+					walker.reset();
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	/** Fetches the seeds, or walks to the spot and plants. */
+	private void plant(ServerLevel level, Villager villager, BlockPos basket, BuilderBag bag) {
+		status(villager, Phase.PLANTING);
+		if (seedChest != null) {
+			if (walker.walkTo(level, villager, seedChest, 3.0)) {
+				List<BlockPos> supplies = SupplyContainers.find(level, basket, null);
+				bag.addAll(plantSeed.getItem(), SupplyContainers.extract(level, supplies, plantSeed.getItem(), SEEDS));
+				seedChest = null;
+				searchTimer = 0; // look for a spot straight away
+			}
+			return;
+		}
+		if (plantSpot == null) {
+			return;
+		}
+		if (walker.reach(level, villager, plantSpot, REACH)) {
+			if (villager.getBoundingBox().intersects(new net.minecraft.world.phys.AABB(plantSpot))) {
+				// Standing on the spot: step off first (a berry bush would prick them).
+				for (net.minecraft.core.Direction d : net.minecraft.core.Direction.Plane.HORIZONTAL) {
+					if (Walker.canStand(level, plantSpot.relative(d))) {
+						Walker.hop(level, villager, plantSpot.relative(d));
+						break;
+					}
+				}
+				return;
+			}
+			villager.swing(InteractionHand.MAIN_HAND);
+			Orchards.plant(level, villager, bag, plantSeed, plantSpot);
+			plantSpot = null;
+			searchTimer = 0;
+		} else if (walker.noSpot()) {
+			plantSpot = null;
+		}
 	}
 
 	private static int carried(BuilderBag bag) {

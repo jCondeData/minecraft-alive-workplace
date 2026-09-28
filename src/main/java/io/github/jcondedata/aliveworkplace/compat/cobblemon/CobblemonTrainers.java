@@ -195,19 +195,40 @@ public final class CobblemonTrainers {
 		"wringout", "punishment", "payback", "avalanche", "revenge", "fakeout", "firstimpression", "suckerpunch", "thunderclap", "upperhand");
 
 	/**
+	 * Every attack {@code pokemon} could know — from its level-up moves so far, TMs, tutors and eggs — on {@code side}
+	 * (physical or special; null for both), leaving out {@link #AWKWARD_MOVES}.
+	 */
+	public static List<com.cobblemon.mod.common.api.moves.MoveTemplate> attackPool(Pokemon pokemon,
+		@org.jetbrains.annotations.Nullable com.cobblemon.mod.common.api.moves.categories.DamageCategory side) {
+		com.cobblemon.mod.common.api.pokemon.moves.Learnset learnset = pokemon.getForm().getMoves();
+		java.util.Set<com.cobblemon.mod.common.api.moves.MoveTemplate> all = new java.util.LinkedHashSet<>(learnset.getLevelUpMovesUpTo(pokemon.getLevel()));
+		all.addAll(learnset.getTmMoves());
+		all.addAll(learnset.getTutorMoves());
+		all.addAll(learnset.getEggMoves());
+		List<com.cobblemon.mod.common.api.moves.MoveTemplate> out = new ArrayList<>();
+		for (com.cobblemon.mod.common.api.moves.MoveTemplate move : all) {
+			if (move.getPower() > 0 && !AWKWARD_MOVES.contains(move.getName())
+				&& (side == null ? move.getDamageCategory() != com.cobblemon.mod.common.api.moves.categories.DamageCategories.INSTANCE.getSTATUS()
+				: move.getDamageCategory() == side)) {
+				out.add(move);
+			}
+		}
+		return out;
+	}
+
+	/**
 	 * A Master's moveset, to go with the nature and held item: four attacks on the side it was trained for (physical or
 	 * special), from everything it can learn — the strongest after accuracy, same-type attacks counting half again,
 	 * and each new move of a type it doesn't have yet preferred, so the four cover more.
 	 */
 	static void pickMoves(Pokemon pokemon, boolean physical, Random random) {
-		com.cobblemon.mod.common.api.pokemon.moves.Learnset learnset = pokemon.getForm().getMoves();
-		java.util.Set<com.cobblemon.mod.common.api.moves.MoveTemplate> pool = new java.util.LinkedHashSet<>(learnset.getLevelUpMovesUpTo(pokemon.getLevel()));
-		pool.addAll(learnset.getTmMoves());
-		pool.addAll(learnset.getTutorMoves());
-		pool.addAll(learnset.getEggMoves());
 		com.cobblemon.mod.common.api.moves.categories.DamageCategory side = physical
 			? com.cobblemon.mod.common.api.moves.categories.DamageCategories.INSTANCE.getPHYSICAL()
 			: com.cobblemon.mod.common.api.moves.categories.DamageCategories.INSTANCE.getSPECIAL();
+		List<com.cobblemon.mod.common.api.moves.MoveTemplate> pool = attackPool(pokemon, side);
+		if (pool.size() < 2) {
+			pool = attackPool(pokemon, null); // few attacks on its side: any attacks it has (and Smeargle keeps Sketch)
+		}
 		java.util.Set<com.cobblemon.mod.common.api.types.ElementalType> own = new java.util.HashSet<>();
 		pokemon.getTypes().forEach(own::add);
 		List<com.cobblemon.mod.common.api.moves.MoveTemplate> chosen = new ArrayList<>();
@@ -216,7 +237,7 @@ public final class CobblemonTrainers {
 			com.cobblemon.mod.common.api.moves.MoveTemplate best = null;
 			double bestScore = 0;
 			for (com.cobblemon.mod.common.api.moves.MoveTemplate move : pool) {
-				if (chosen.contains(move) || move.getDamageCategory() != side || move.getPower() <= 0 || AWKWARD_MOVES.contains(move.getName())) {
+				if (chosen.contains(move)) {
 					continue;
 				}
 				double accuracy = move.getAccuracy() <= 0 ? 100 : Math.min(100, move.getAccuracy());

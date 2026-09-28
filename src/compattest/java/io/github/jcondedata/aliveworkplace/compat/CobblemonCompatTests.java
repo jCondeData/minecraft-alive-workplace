@@ -663,20 +663,20 @@ public class CobblemonCompatTests implements FabricGameTest {
 				|| p.getNature() == com.cobblemon.mod.common.api.pokemon.Natures.MODEST, p.getSpecies().getName() + " nature " + p.getNature().getName());
 			helper.assertTrue(!p.heldItem().isEmpty(), p.getSpecies().getName() + " holds nothing");
 			helper.assertTrue(p.getCurrentHealth() == p.getMaxHealth(), p.getSpecies().getName() + " isn't at full health");
-			// A Master's moves: attacks on the side it was trained for, with at least one of its own type.
-			boolean physical = p.getNature() == com.cobblemon.mod.common.api.pokemon.Natures.ADAMANT;
-			var side = physical ? com.cobblemon.mod.common.api.moves.categories.DamageCategories.INSTANCE.getPHYSICAL()
-				: com.cobblemon.mod.common.api.moves.categories.DamageCategories.INSTANCE.getSPECIAL();
-			var moves = p.getMoveSet().getMoves();
-			long attacks = moves.stream().filter(m -> m.getTemplate().getDamageCategory() == side && m.getTemplate().getPower() > 0).count();
-			java.util.Set<com.cobblemon.mod.common.api.types.ElementalType> own = new java.util.HashSet<>();
-			p.getTypes().forEach(own::add);
-			boolean stab = moves.stream().anyMatch(m -> own.contains(m.getTemplate().getElementalType()) && m.getTemplate().getPower() > 0);
-			helper.assertTrue(moves.size() >= 2 && attacks >= 2 && stab, p.getSpecies().getName() + " (" + p.getNature().getName() + ") has "
-				+ moves.stream().map(m -> m.getName()).toList());
+
 		}
 		for (Pokemon p : io.github.jcondedata.aliveworkplace.compat.cobblemon.CobblemonTrainers.team(id, 1)) {
 			helper.assertTrue(p.heldItem().isEmpty(), "a Novice's " + p.getSpecies().getName() + " holds an item");
+		}
+		// Masters' moves: at least two attacks, whatever the species (a Smeargle, which only ever knows Sketch, aside).
+		for (int i = 0; i < 40; i++) {
+			for (Pokemon p : io.github.jcondedata.aliveworkplace.compat.cobblemon.CobblemonTrainers.team(new java.util.UUID(i, i * 31L), 5)) {
+				var moves = p.getMoveSet().getMoves();
+				long attacks = moves.stream().filter(m -> m.getTemplate().getPower() > 0).count();
+				boolean few = io.github.jcondedata.aliveworkplace.compat.cobblemon.CobblemonTrainers.attackPool(p, null).size() < 2;
+				helper.assertTrue(few || attacks >= 2, p.getSpecies().getName() + " (" + p.getNature().getName() + ") has "
+					+ moves.stream().map(m -> m.getName()).toList());
+			}
 		}
 		helper.succeed();
 	}

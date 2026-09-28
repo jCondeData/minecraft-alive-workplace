@@ -365,7 +365,7 @@ def builders_workshop(style):
     b.set(3, 0, 4, "jigsaw", orientation="up_north")
     b.set_nbt(3, 0, 4, Compound({
         "name": String("minecraft:bottom"), "target": String("minecraft:bottom"),
-        "pool": String(f"minecraft:village/{style}/villagers"), "final_state": String("minecraft:" + floor),
+        "pool": String(f"aliveworkplace:village/{style}/workers"), "final_state": String("minecraft:" + floor),
         "joint": String("rollable"), "id": String("minecraft:jigsaw"),
         "selection_priority": Int(0), "placement_priority": Int(0)}))
     b.fill_air()
@@ -414,7 +414,7 @@ def staffed_house(style, fit_out):
     b.set(3, 0, 4, "jigsaw", orientation="up_north")
     b.set_nbt(3, 0, 4, Compound({
         "name": String("minecraft:bottom"), "target": String("minecraft:bottom"),
-        "pool": String(f"minecraft:village/{style}/villagers"), "final_state": String("minecraft:" + floor),
+        "pool": String(f"aliveworkplace:village/{style}/workers"), "final_state": String("minecraft:" + floor),
         "joint": String("rollable"), "id": String("minecraft:jigsaw"),
         "selection_priority": Int(0), "placement_priority": Int(0)}))
     b.fill_air()

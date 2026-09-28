@@ -40,8 +40,16 @@ public class VillageGameTests implements FabricGameTest {
 			helper.assertTrue(benches.size() == 1, workshop + " should have one Builder's Bench");
 			List<StructureTemplate.StructureBlockInfo> jigsaws = template.filterBlocks(BlockPos.ZERO, new StructurePlaceSettings(), Blocks.JIGSAW);
 			boolean entrance = jigsaws.stream().anyMatch(j -> j.nbt() != null && j.nbt().getString("name").equals("minecraft:building_entrance"));
-			boolean villager = jigsaws.stream().anyMatch(j -> j.nbt() != null && j.nbt().getString("pool").equals("minecraft:village/" + style + "/villagers"));
+			boolean villager = jigsaws.stream().anyMatch(j -> j.nbt() != null && j.nbt().getString("pool").equals("aliveworkplace:village/" + style + "/workers"));
 			helper.assertTrue(entrance && villager, workshop + " needs a street connection and a villager spawn");
+			// Only jobless adults move in (the village's own pool can give a nitwit, a baby or, with CobbleDollars, a merchant).
+			StructureTemplatePool workers = pools.get(io.github.jcondedata.aliveworkplace.AliveWorkplace.id("village/" + style + "/workers"));
+			helper.assertTrue(workers != null, "no worker pool for " + style);
+			var elements = ((StructureTemplatePoolAccessor) workers).aliveworkplace$rawTemplates();
+			helper.assertTrue(elements.size() == 1 && elements.get(0).getFirst().toString().contains("minecraft:village/" + style + "/villagers/unemployed"),
+				style + " worker pool: " + elements);
+			helper.assertTrue(level.getStructureManager().get(net.minecraft.resources.ResourceLocation.withDefaultNamespace("village/" + style + "/villagers/unemployed")).isPresent(),
+				"no vanilla unemployed villager template for " + style);
 			boolean loot = template.filterBlocks(BlockPos.ZERO, new StructurePlaceSettings(), Blocks.CHEST).stream()
 				.map(StructureTemplate.StructureBlockInfo::nbt)
 				.anyMatch(n -> n != null && n.getString("LootTable").equals("aliveworkplace:chests/village_builders_workshop"));

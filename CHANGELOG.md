@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+### Fixed
+- Every new workshop, guard house, clinic and other staffed house now gets a jobless adult villager. They used to come
+  from the village's own villager pool, which sometimes gave a nitwit (who never works), a baby or, with
+  CobbleDollars, a Cobble Merchant.
+
 ## 0.34.0 — 2026-09-27
 
 ### Added

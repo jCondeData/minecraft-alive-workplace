@@ -476,4 +476,40 @@ public class CobblemonCompatTests implements FabricGameTest {
 			helper.assertTrue(smith.getAttachedOrElse(io.github.jcondedata.aliveworkplace.registry.ModAttachments.BALLS_MADE, 0) == 8, "balls not counted");
 		});
 	}
+
+	/** A Farmer's field of Cobblemon mints: ripe ones are picked (leaves to the chest) and planted again. */
+	@GameTest(template = AREA, timeoutTicks = 2400)
+	public void farmerHarvestsCobblemonMints(GameTestHelper helper) {
+		var level = helper.getLevel();
+		helper.setDayTime(2000);
+		var mint = com.cobblemon.mod.common.CobblemonBlocks.INSTANCE.getRED_MINT();
+		BlockPos water = new BlockPos(9, 1, 9);
+		for (BlockPos p : BlockPos.betweenClosed(new BlockPos(8, 1, 8), new BlockPos(10, 1, 10))) {
+			if (p.equals(water)) {
+				helper.setBlock(p, net.minecraft.world.level.block.Blocks.WATER);
+			} else {
+				helper.setBlock(p, net.minecraft.world.level.block.Blocks.FARMLAND);
+				helper.setBlock(p.above(), mint.getStateForAge(mint.getMaxAge()));
+			}
+		}
+		BlockPos composter = new BlockPos(2, 2, 2);
+		BlockPos chestPos = new BlockPos(2, 2, 4);
+		helper.setBlock(composter, net.minecraft.world.level.block.Blocks.COMPOSTER);
+		helper.setBlock(chestPos, net.minecraft.world.level.block.Blocks.CHEST);
+		Villager farmer = helper.spawn(EntityType.VILLAGER, new BlockPos(3, 2, 3));
+		Jobs.employ(level, farmer, helper.absolutePos(composter), net.minecraft.world.entity.ai.village.poi.PoiTypes.FARMER,
+			net.minecraft.world.entity.npc.VillagerProfession.FARMER);
+		io.github.jcondedata.aliveworkplace.farm.Fields.start(level, farmer, net.minecraft.world.level.levelgen.structure.BoundingBox.fromCorners(
+			helper.absolutePos(new BlockPos(8, 1, 8)), helper.absolutePos(new BlockPos(10, 1, 10))));
+		net.minecraft.world.Container chest = helper.getBlockEntity(chestPos);
+		helper.succeedWhen(() -> {
+			for (BlockPos p : BlockPos.betweenClosed(new BlockPos(8, 2, 8), new BlockPos(10, 2, 10))) {
+				if (!p.below().equals(water)) {
+					helper.assertBlockPresent(mint, p);
+				}
+			}
+			int leaves = chest.countItem(com.cobblemon.mod.common.CobblemonItems.RED_MINT_LEAF);
+			helper.assertTrue(leaves >= 8, "only " + leaves + " mint leaves in the chest");
+		});
+	}
 }

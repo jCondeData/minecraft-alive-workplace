@@ -29,6 +29,15 @@ public class VillageCompatTests implements FabricGameTest {
 				helper.assertTrue(found, id + " missing from " + entry.getKey());
 			}
 		}
+		// Cobblemon replaces the vanilla plains house pool with its own file: ours must still be in it.
+		for (String style : VillageHouses.STYLES) {
+			StructureTemplatePool pool = pools.get(VillageHouses.housePool(style));
+			for (String house : VillageHouses.houseNames()) {
+				String id = "aliveworkplace:village/" + style + "_" + house;
+				helper.assertTrue(((StructureTemplatePoolAccessor) pool).aliveworkplace$templates().stream().anyMatch(e -> e.toString().contains(id)),
+					id + " missing from the vanilla " + style + " village houses (with Cobblemon's pools)");
+			}
+		}
 		// Nether and ocean villages are left alone.
 		StructureTemplatePool crimson = pools.get(ResourceLocation.fromNamespaceAndPath("repurposed_structures", "villages/crimson/houses"));
 		helper.assertTrue(crimson == null || ((StructureTemplatePoolAccessor) crimson).aliveworkplace$templates().stream()

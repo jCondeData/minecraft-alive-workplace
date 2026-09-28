@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+### Checked
+- Farmers look after fields of Cobblemon mints too: ripe mints are picked (the leaves go to the chest) and planted
+  again. Now covered by a test.
+- A full Cobbleverse server boots cleanly with 0.37.0, and a new Repurposed Structures village had a workshop, a Trainer
+  Leader's hall and an orchard house.
+
 ## 0.37.0 — 2026-09-28
 
 ### Added

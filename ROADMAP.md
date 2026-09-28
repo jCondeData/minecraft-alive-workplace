@@ -174,8 +174,8 @@ workstation, like the rest of the mod.
   picking pole; `Walker` no longer stands workers in berry bushes, fire, powder snow or cobwebs. Trades fruit
   (apricorns, Cobblemon berries and apricorn seeds with Cobblemon)
 - [x] Orchard houses in village generation (weight 2, every village: a Fruit Basket, a harvest chest, an indoor berry bed)
-- [ ] Orchard Keeper follow-ups: mints (they have to be broken and replanted), planting apricorn seeds and berries from
-  the chests
+- [x] Cobblemon mints: a Farmer's field handles them (they're crops: harvested for leaves and replanted); compat-tested
+- [ ] Orchard Keeper follow-ups: planting apricorn seeds and berries from the chests
 - [x] **Ball Smith** (Ball Workbench): makes Poké Balls from the apricorns and ball metals in the chests with
   Cobblemon's own crafting recipes (`smith/BallRecipes`: results in `#cobblemon:poke_balls` using a
   `tier_N_poke_ball_materials` metal; copper 1 … diamond 4, up to the smith's level; never the Master Ball), taking

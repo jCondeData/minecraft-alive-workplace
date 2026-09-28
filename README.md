@@ -98,7 +98,8 @@ Any **Farmer** villager (the ones with a composter) can look after a field for y
 wheat seeds + paper), right-click one corner block of the field and then the opposite corner (up to 32 × 32), and
 give the marker to the farmer. Put **seeds** (and a **hoe**, if there is bare dirt to till) in a chest within 8 blocks
 of their composter. They harvest ripe crops and plant them straight back, sow empty farmland, till bare dirt and
-grass, cut sugar cane down to its bottom block and pick pumpkins and melons. The harvest goes into the chests.
+grass, cut sugar cane down to its bottom block and pick pumpkins and melons — and Cobblemon's mints, which are
+picked for their leaves and planted again. The harvest goes into the chests.
 Sneak-right-click the farmer with an empty hand to see how it's going or to stop.
 
 ## Fishermen

@@ -101,7 +101,10 @@ Owner decisions are recorded in **Design decisions** at the bottom. Don't change
   oak). Huge nether fungi: stems on nylium with a wart-block cap (within 4 of the stem) count as trees, fungus replanted
 - [ ] Lumberjack follow-ups: bone meal on the tree farm, mangroves (roots), azalea/cherry specifics
 - [x] **Farmer upgrade** (Field Marker item, any vanilla Farmer): give a farmer a marked field (up to 32×32, within 48 blocks of their composter) and they harvest ripe crops (any `CropBlock`, so modded crops too; nether wart, pumpkins/melons off a stem, sugar cane above the bottom block), plant the same crop straight back, sow empty farmland/soul sand with seeds from the chests near the composter (the crop next to it, else what there is most of), till bare dirt/grass with a hoe from the chests, and store the harvest in those chests; their vanilla routine is paused while the field needs work; longer shift like our workers; `/workplace cancel <farmer uuid>` (clickable in the status) stops it
-- [ ] Farmer follow-ups: bone meal from the chests, cocoa, sweet berries (they hurt villagers), a Field Marker for villages' own farms
+- [x] Farmer: bone meal from the chests (task FERTILIZE, only when nothing else needs doing; crops, stems, cocoa, berry
+  bushes, never grass; up to 16 kept in the bag); sweet berries, cocoa, glow berries (and Cobblemon fruit) in a field
+  are picked with `orchard/Fruit` and left to grow again (villagers never stand in berry bushes: `Walker.canStand`)
+- [ ] Farmer follow-ups: a Field Marker for villages' own farms (village farmers adopting their farm automatically)
 - [x] **Fisher** (any vanilla Fisherman): hand one a fishing rod and they fish the nearest still water within 16 blocks of their barrel (standing on the shore), reeling in the vanilla fishing loot (fish and junk, no treasure), storing every fifth catch in the barrel and chests next to it; rods wear out and spares come from those containers; vanilla routine paused while working; longer shift; `/workplace cancel <fisherman uuid>` stops it
 - [ ] Fisher follow-ups: a real bobber on the water, fishing from boats/docks, smoking the catch
 - [x] **Courier / hauler** (done by Postmen): a Delivery Note marks a source and a destination container (plus an

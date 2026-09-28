@@ -42,6 +42,14 @@ import net.minecraft.world.level.block.FarmBlock;
 import net.minecraft.world.level.block.NetherWartBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
+import net.minecraft.world.level.block.BonemealableBlock;
+import net.minecraft.world.level.block.StemBlock;
+import net.minecraft.world.level.block.CocoaBlock;
+import net.minecraft.world.level.block.SweetBerryBushBlock;
+import net.minecraft.world.item.BoneMealItem;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.block.LevelEvent;
+import io.github.jcondedata.aliveworkplace.orchard.Fruit;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -61,7 +69,10 @@ public class FieldWork extends Behavior<Villager> {
 
 	enum Phase { TENDING, NEEDS_SEEDS, DEPOSITING, RESTING }
 
-	enum Kind { HARVEST, PLANT, TILL }
+	enum Kind { HARVEST, PLANT, TILL, FERTILIZE }
+
+	/** Bone meal a farmer keeps in the bag; the rest stays in the chests. */
+	static final int KEEP_BONE_MEAL = 16;
 
 	record Task(Kind kind, BlockPos pos) {
 	}
@@ -80,6 +91,7 @@ public class FieldWork extends Behavior<Villager> {
 	private boolean depositDue;
 	private boolean chestsHaveSeeds;
 	private boolean chestsHaveHoe;
+	private boolean chestsHaveBoneMeal;
 
 	public FieldWork() {
 		super(ImmutableMap.of(
@@ -149,37 +161,54 @@ public class FieldWork extends Behavior<Villager> {
 			List<BlockPos> supplies = SupplyContainers.find(level, station, null);
 			chestsHaveSeeds = SupplyContainers.firstMatching(level, supplies, FieldWork::isSeed) != null;
 			chestsHaveHoe = SupplyContainers.firstMatching(level, supplies, FieldWork::isHoe) != null;
+			chestsHaveBoneMeal = SupplyContainers.firstMatching(level, supplies, s -> s.is(Items.BONE_MEAL)) != null;
 		}
 
 		// 3. Pick the nearest job that can be done with what we carry (or can fetch).
 		boolean hasSeeds = hasSeeds(bag);
 		boolean hasHoe = isHoe(villager.getItemBySlot(EquipmentSlot.MAINHAND));
+		boolean hasBoneMeal = bag.has(Items.BONE_MEAL, 1);
 		if (current == null || !stillNeeded(level, field, current)) {
 			current = null;
 			progress = 0;
 			boolean wantsSeeds = false;
 			boolean wantsHoe = false;
+			boolean wantsBoneMeal = false;
 			Task best = null;
 			double bestDistance = Double.MAX_VALUE;
-			for (Task t : tasks) {
-				if (skipped.contains(t.pos())) {
-					continue;
+			// Bone meal comes last: only once there's nothing to harvest, sow or till.
+			for (boolean fertilizing : new boolean[]{false, true}) {
+				for (Task t : tasks) {
+					if (skipped.contains(t.pos()) || (t.kind() == Kind.FERTILIZE) != fertilizing) {
+						continue;
+					}
+					boolean doable = switch (t.kind()) {
+						case HARVEST -> true;
+						case PLANT -> hasSeeds;
+						case TILL -> hasSeeds && hasHoe;
+						case FERTILIZE -> hasBoneMeal;
+					};
+					if (!doable) {
+						wantsSeeds |= (t.kind() == Kind.PLANT || t.kind() == Kind.TILL) && !hasSeeds;
+						wantsHoe |= t.kind() == Kind.TILL && !hasHoe;
+						wantsBoneMeal |= t.kind() == Kind.FERTILIZE;
+						continue;
+					}
+					double d = t.pos().distSqr(villager.blockPosition());
+					if (d < bestDistance) {
+						bestDistance = d;
+						best = t;
+					}
 				}
-				boolean doable = switch (t.kind()) {
-					case HARVEST -> true;
-					case PLANT -> hasSeeds;
-					case TILL -> hasSeeds && hasHoe;
-				};
-				if (!doable) {
-					wantsSeeds |= t.kind() != Kind.HARVEST && !hasSeeds;
-					wantsHoe |= t.kind() == Kind.TILL && !hasHoe;
-					continue;
+				if (best != null) {
+					break;
 				}
-				double d = t.pos().distSqr(villager.blockPosition());
-				if (d < bestDistance) {
-					bestDistance = d;
-					best = t;
-				}
+			}
+			if (best == null && wantsBoneMeal && !wantsSeeds && chestsHaveBoneMeal) {
+				rest(villager, false);
+				status(villager, field, Phase.TENDING);
+				fetchBoneMeal(level, villager, station, bag);
+				return;
 			}
 			if (best == null) {
 				// Nothing we can do with what we carry: fetch seeds or a hoe if the chests have them.
@@ -219,7 +248,7 @@ public class FieldWork extends Behavior<Villager> {
 			return;
 		}
 		villager.getBrain().setMemory(MemoryModuleType.LOOK_TARGET, new BlockPosTracker(task.pos()));
-		int time = BuilderLevels.delay(task.kind() == Kind.PLANT ? 8 : 12, villager);
+		int time = BuilderLevels.delay(task.kind() == Kind.PLANT || task.kind() == Kind.FERTILIZE ? 8 : 12, villager);
 		if (progress++ == 0) {
 			villager.swing(InteractionHand.MAIN_HAND);
 		}
@@ -236,6 +265,7 @@ public class FieldWork extends Behavior<Villager> {
 				}
 			}
 			case TILL -> till(level, villager, bag, task.pos());
+			case FERTILIZE -> fertilize(level, bag, task.pos());
 		}
 	}
 
@@ -277,6 +307,9 @@ public class FieldWork extends Behavior<Villager> {
 		if (isRipe(level, pos, state)) {
 			return Kind.HARVEST;
 		}
+		if (isGrowing(state) && ((BonemealableBlock) state.getBlock()).isValidBonemealTarget(level, pos, state)) {
+			return Kind.FERTILIZE;
+		}
 		boolean ground = pos.getY() >= field.minY() - 1 && pos.getY() <= field.maxY();
 		if (!ground) {
 			return null;
@@ -313,7 +346,25 @@ public class FieldWork extends Behavior<Villager> {
 			// The second block of a cane: cut from here up, leave the bottom one to grow back.
 			return level.getBlockState(pos.below()).is(Blocks.SUGAR_CANE) && !level.getBlockState(pos.below(2)).is(Blocks.SUGAR_CANE);
 		}
-		return false;
+		// Sweet berries, cocoa pods, glow berries (and apricorns and berries with Cobblemon): picked, not cut.
+		return Fruit.isRipe(state);
+	}
+
+	/** Something planted that bone meal would bring on: crops, stems, cocoa, berry bushes (not grass: it'd sprout flowers). */
+	private static boolean isGrowing(BlockState state) {
+		Block block = state.getBlock();
+		return block instanceof BonemealableBlock && (block instanceof CropBlock || block instanceof StemBlock
+			|| block instanceof CocoaBlock || block instanceof SweetBerryBushBlock);
+	}
+
+	private static void fertilize(ServerLevel level, BuilderBag bag, BlockPos pos) {
+		if (!bag.has(Items.BONE_MEAL, 1)) {
+			return;
+		}
+		if (BoneMealItem.growCrop(new ItemStack(Items.BONE_MEAL), level, pos)) {
+			bag.remove(Items.BONE_MEAL, 1);
+			level.levelEvent(LevelEvent.PARTICLES_AND_SOUND_PLANT_GROWTH, pos, 15);
+		}
 	}
 
 	private static boolean isWeed(BlockState state) {
@@ -329,7 +380,14 @@ public class FieldWork extends Behavior<Villager> {
 
 	private static void harvest(ServerLevel level, Villager villager, BuilderBag bag, BlockPos pos) {
 		BlockState state = level.getBlockState(pos);
-		if (state.is(Blocks.SUGAR_CANE)) {
+		if (!(state.getBlock() instanceof CropBlock) && Fruit.isRipe(state)) {
+			for (ItemStack fruit : Fruit.pick(level, pos, villager)) {
+				ItemStack rest = bag.add(fruit);
+				if (!rest.isEmpty()) {
+					Block.popResource(level, pos, rest);
+				}
+			}
+		} else if (state.is(Blocks.SUGAR_CANE)) {
 			BlockPos top = pos;
 			while (level.getBlockState(top.above()).is(Blocks.SUGAR_CANE)) {
 				top = top.above();
@@ -458,11 +516,25 @@ public class FieldWork extends Behavior<Villager> {
 	/** Anything in the bag worth carrying to the chests (not just the seeds we keep). */
 	private static boolean hasHarvest(BuilderBag bag) {
 		for (ItemStack stack : bag.stacks()) {
-			if (!stack.isEmpty() && (!isSeed(stack) || bag.count(stack.getItem()) > KEEP_SEEDS)) {
+			if (!stack.isEmpty() && !stack.is(Items.BONE_MEAL) && (!isSeed(stack) || bag.count(stack.getItem()) > KEEP_SEEDS)) {
 				return true;
 			}
 		}
 		return false;
+	}
+
+	/** Walks to the chests and takes some bone meal. */
+	private void fetchBoneMeal(ServerLevel level, Villager villager, BlockPos station, BuilderBag bag) {
+		List<BlockPos> supplies = SupplyContainers.find(level, station, null);
+		BlockPos chest = SupplyContainers.firstWith(level, supplies, Items.BONE_MEAL);
+		if (chest == null) {
+			chestsHaveBoneMeal = false;
+			return;
+		}
+		if (walker.walkTo(level, villager, chest, 3.0)) {
+			bag.addAll(Items.BONE_MEAL, SupplyContainers.extract(level, supplies, Items.BONE_MEAL, KEEP_BONE_MEAL));
+			level.playSound(null, chest, SoundEvents.CHEST_OPEN, SoundSource.BLOCKS, 0.4f, 1.1f);
+		}
 	}
 
 	/** Walks to the chests and takes seeds (the kind there is most of) or a hoe. */
@@ -505,6 +577,8 @@ public class FieldWork extends Behavior<Villager> {
 			if (isSeed(stack) && bag.count(stack.getItem()) < KEEP_SEEDS) {
 				int keep = Math.min(stack.getCount(), KEEP_SEEDS - bag.count(stack.getItem()));
 				bag.add(stack.split(keep));
+			} else if (stack.is(Items.BONE_MEAL) && bag.count(Items.BONE_MEAL) < KEEP_BONE_MEAL) {
+				bag.add(stack.split(Math.min(stack.getCount(), KEEP_BONE_MEAL - bag.count(Items.BONE_MEAL))));
 			}
 			if (!stack.isEmpty()) {
 				ItemStack rest = SupplyContainers.insert(level, supplies, stack);

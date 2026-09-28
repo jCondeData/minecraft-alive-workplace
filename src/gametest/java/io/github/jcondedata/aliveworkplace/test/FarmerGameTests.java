@@ -66,6 +66,49 @@ public class FarmerGameTests implements FabricGameTest {
 		});
 	}
 
+	/** Sweet berries and cocoa in the field are picked (the bush and the pod stay to grow again), into the chest. */
+	@GameTest(template = AREA, timeoutTicks = 2400)
+	public void farmerPicksBerriesAndCocoa(GameTestHelper helper) {
+		BlockPos bush = new BlockPos(9, 2, 9);
+		BlockPos log = new BlockPos(11, 2, 9);
+		BlockPos pod = new BlockPos(11, 2, 10);
+		for (BlockPos p : BlockPos.betweenClosed(new BlockPos(8, 1, 8), new BlockPos(12, 1, 11))) {
+			helper.setBlock(p, Blocks.GRASS_BLOCK);
+		}
+		helper.setBlock(bush, Blocks.SWEET_BERRY_BUSH.defaultBlockState().setValue(net.minecraft.world.level.block.SweetBerryBushBlock.AGE, 3));
+		helper.setBlock(log, Blocks.JUNGLE_LOG);
+		helper.setBlock(pod, Blocks.COCOA.defaultBlockState().setValue(net.minecraft.world.level.block.CocoaBlock.FACING, net.minecraft.core.Direction.NORTH)
+			.setValue(net.minecraft.world.level.block.CocoaBlock.AGE, 2));
+		// No hoe and no seeds in the chest: the grass stays grass, the farmer only picks.
+		farmer(helper, new BlockPos(8, 1, 8), new BlockPos(12, 1, 11));
+		helper.succeedWhen(() -> {
+			helper.assertTrue(helper.getBlockState(bush).getValue(net.minecraft.world.level.block.SweetBerryBushBlock.AGE) == 1, "berries not picked");
+			helper.assertTrue(helper.getBlockState(pod).is(Blocks.COCOA) && helper.getBlockState(pod).getValue(net.minecraft.world.level.block.CocoaBlock.AGE) == 0,
+				"cocoa not picked: " + helper.getBlockState(pod));
+			Container chest = helper.getBlockEntity(CHEST);
+			helper.assertTrue(chest.countItem(Items.SWEET_BERRIES) >= 2 && chest.countItem(Items.COCOA_BEANS) >= 2,
+				"chest: " + chest.countItem(Items.SWEET_BERRIES) + " berries, " + chest.countItem(Items.COCOA_BEANS) + " cocoa beans");
+		});
+	}
+
+	/** Once everything's sown, bone meal from the chest brings the crops on: they're harvested long before they'd ripen. */
+	@GameTest(template = AREA, timeoutTicks = 2000)
+	public void farmerUsesBoneMeal(GameTestHelper helper) {
+		BlockPos water = new BlockPos(10, 1, 9);
+		for (BlockPos p : BlockPos.betweenClosed(new BlockPos(8, 1, 8), new BlockPos(12, 1, 8))) {
+			helper.setBlock(p, Blocks.FARMLAND);
+			helper.setBlock(p.above(), Blocks.WHEAT);
+		}
+		helper.setBlock(water, Blocks.WATER);
+		Villager villager = farmer(helper, new BlockPos(8, 1, 8), new BlockPos(12, 1, 8), new ItemStack(Items.BONE_MEAL, 40));
+		helper.succeedWhen(() -> {
+			int harvested = villager.getAttachedOrElse(ModAttachments.FARM_HARVESTED, 0);
+			helper.assertTrue(harvested >= 5, "only " + harvested + " harvested");
+			Container chest = helper.getBlockEntity(CHEST);
+			helper.assertTrue(chest.countItem(Items.WHEAT) >= 5, "only " + chest.countItem(Items.WHEAT) + " wheat in the chest");
+		});
+	}
+
 	/** Bare grass is tilled with the hoe from the chest and sown with the carrots from the chest. */
 	@GameTest(template = AREA, timeoutTicks = 3000)
 	public void farmerTillsAndSowsFromTheChest(GameTestHelper helper) {

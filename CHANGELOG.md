@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+## 0.49.0 — 2026-09-28
+
+### Added
+- **Farmers use bone meal**: put bone meal in the chest by the composter and, once the field is sown and nothing is
+  ripe, the farmer uses it on the growing crops (never on grass).
+- **Farmers pick sweet berries and cocoa** (and glow berries) growing in their field, leaving the plants to grow again.
+
 ## 0.48.0 — 2026-09-28
 
 ### Added

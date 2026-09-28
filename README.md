@@ -134,7 +134,9 @@ wheat seeds + paper), right-click one corner block of the field and then the opp
 give the marker to the farmer. Put **seeds** (and a **hoe**, if there is bare dirt to till) in a chest within 8 blocks
 of their composter. They harvest ripe crops and plant them straight back, sow empty farmland, till bare dirt and
 grass, cut sugar cane down to its bottom block and pick pumpkins and melons — and Cobblemon's mints, which are
-picked for their leaves and planted again. The harvest goes into the chests.
+picked for their leaves and planted again. Sweet berry bushes, cocoa pods and glow berries in the field are picked
+(the plant stays to grow again). Put **bone meal** in the chest too and, once everything's sown and nothing is ripe,
+the farmer uses it on the growing crops. The harvest goes into the chests.
 Sneak-right-click the farmer with an empty hand to see how it's going or to stop.
 
 ## Fishermen

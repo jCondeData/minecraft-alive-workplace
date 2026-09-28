@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+### Added
+- **Water and lava in blueprints**: fountains, pools and fireplaces get built too. The builder pours each still water
+  or lava block from a bucket in the chests once the walls are up (flowing water fills in by itself) and puts the
+  empty bucket back. Blueprint materials list the buckets.
+
 ## 0.26.0 — 2026-09-27
 
 ### Added

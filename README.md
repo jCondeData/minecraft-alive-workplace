@@ -33,6 +33,7 @@ Install on the **server and every player's game**.
    sneak-right-click the air to pick it back up. On uneven ground the builder fills in a foundation, and when the
    building is finished they level the ground two blocks around it (dirt, stone and grass above the floor dug away,
    holes filled with dirt; trees, flowers and anything built are left alone).
+   Water and lava in a blueprint are poured from buckets in the chests (the empty buckets go back).
 4. **Stock the chests.** Put the materials in any chests or barrels within 8 blocks of the builder's bench
    (hold Shift over the blueprint to see the list). Once the blueprint is placed, its tooltip counts what the chests
    by the nearest bench are still short of — blocks already standing in place don't count — so you know when you're

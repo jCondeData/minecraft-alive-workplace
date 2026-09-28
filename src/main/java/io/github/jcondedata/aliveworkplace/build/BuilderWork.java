@@ -741,6 +741,14 @@ public class BuilderWork extends Behavior<Villager> {
 		if (!free) {
 			for (MaterialRules.Requirement r : requirements) {
 				bag.remove(r.item(), r.count());
+				// What's left over goes back in the bag (the empty bucket after pouring water).
+				ItemStack leftover = r.item().getCraftingRemainingItem() == null ? ItemStack.EMPTY : new ItemStack(r.item().getCraftingRemainingItem(), r.count());
+				if (!leftover.isEmpty()) {
+					ItemStack rest = bag.add(leftover);
+					if (!rest.isEmpty()) {
+						Builders.dropNear(level, pos, rest);
+					}
+				}
 			}
 		}
 		if (step.secondaryPos() != null && step.secondaryState() != null) {
@@ -753,8 +761,13 @@ public class BuilderWork extends Behavior<Villager> {
 		}
 		applyBlockEntityData(level, pos, state, step.nbt());
 
-		SoundType sound = state.getSoundType();
-		level.playSound(null, pos, sound.getPlaceSound(), SoundSource.BLOCKS, (sound.getVolume() + 1f) / 2f, sound.getPitch() * 0.8f);
+		if (state.getBlock() instanceof LiquidBlock) {
+			level.playSound(null, pos, state.getFluidState().is(net.minecraft.tags.FluidTags.LAVA) ? SoundEvents.BUCKET_EMPTY_LAVA : SoundEvents.BUCKET_EMPTY,
+				SoundSource.BLOCKS, 1f, 1f);
+		} else {
+			SoundType sound = state.getSoundType();
+			level.playSound(null, pos, sound.getPlaceSound(), SoundSource.BLOCKS, (sound.getVolume() + 1f) / 2f, sound.getPitch() * 0.8f);
+		}
 		level.gameEvent(villager, GameEvent.BLOCK_PLACE, pos);
 		if (helping) {
 			site.countPlaced();

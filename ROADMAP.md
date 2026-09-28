@@ -54,7 +54,9 @@ Owner decisions are recorded in **Design decisions** at the bottom. Don't change
 - [ ] Per-blueprint opt-out of levelling (e.g. builds meant to sit in a hillside)
 - [x] Potted plants (cost a flower pot + the plant)
 - [x] **Building-mod support** (tested with the real mods in `src/compattest`): Chipped and Rechiseled variants can be built from the plain block (free conversions, like their workbench/chisel); Supplementaries blocks build correctly (way signs cost the fence and the sign, rope knots the rope and the fence), and no blueprint data can hand out items, mobs or locked safes (containers never get contents)
-- [ ] Fluids (water/lava via buckets), entities in templates (item frames, armor stands)
+- [x] Fluids: still water/lava (any fluid with a bucket) is a DECORATION step costing its filled bucket; the empty
+  bucket (the item's crafting remainder) goes back in the bag; flowing liquid is skipped; waterlogging is still stripped
+- [ ] Entities in templates (item frames, armor stands, paintings), placed empty
 - [x] **Builder's workshop** in village generation (all 5 village types, weight 3 in the house pools ≈ every other village): a Builder's Bench, a supply chest (`aliveworkplace:chests/village_builders_workshop`, sometimes a starter blueprint) and a villager who takes the bench
 - [ ] Builder's workshops for modded villages (Towns and Towers etc.) — add their house pools by id
 - [ ] Config file (`config/aliveworkplace.json`) mirroring gamerules plus supply radius, reach, max site distance

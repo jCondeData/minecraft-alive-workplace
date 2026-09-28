@@ -101,8 +101,12 @@ public final class MaterialRules {
 	/** Like {@link #classify(BlockState)}, taking the block-entity data into account (see {@link #requirements}). */
 	public static Kind classify(BlockState state, @Nullable CompoundTag nbt) {
 		Block block = state.getBlock();
-		if (state.isAir() || NEVER_PLACE.contains(block) || block instanceof LiquidBlock || ModdedBlocks.neverPlace(block)) {
+		if (state.isAir() || NEVER_PLACE.contains(block) || ModdedBlocks.neverPlace(block)) {
 			return Kind.SKIP;
+		}
+		if (block instanceof LiquidBlock) {
+			// Still water or lava is poured from a bucket once the walls are up; flowing liquid comes by itself.
+			return state.getFluidState().isSource() && bucket(state) != Items.AIR ? Kind.DECORATION : Kind.SKIP;
 		}
 		if (isSecondaryHalf(state) || requirements(state, nbt).isEmpty()) {
 			return Kind.SKIP;
@@ -182,6 +186,10 @@ public final class MaterialRules {
 	/** The item (and how many) consumed to place this state. Empty if it cannot be built. */
 	public static Optional<Requirement> requirement(BlockState state) {
 		Block block = state.getBlock();
+		if (block instanceof LiquidBlock) {
+			Item bucket = state.getFluidState().isSource() ? bucket(state) : Items.AIR;
+			return bucket == Items.AIR ? Optional.empty() : Optional.of(new Requirement(bucket, 1));
+		}
 		Item item = SUBSTITUTES.getOrDefault(block, block.asItem());
 		if (item == Items.AIR) {
 			return Optional.empty();
@@ -201,6 +209,11 @@ public final class MaterialRules {
 			count = state.getValue(BlockStateProperties.LAYERS);
 		}
 		return Optional.of(new Requirement(item, count));
+	}
+
+	/** The filled bucket that pours this liquid (a water bucket for water), or air if there is none. */
+	public static Item bucket(BlockState state) {
+		return state.getFluidState().getType().getBucket();
 	}
 
 	/** Adjust a blueprint state before placing it: no free water, no decaying leaves. */

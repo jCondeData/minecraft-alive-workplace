@@ -104,6 +104,46 @@ public class BuilderGameTests implements FabricGameTest {
 		});
 	}
 
+	/** A blueprint with a pool: the builder pours the water from a bucket and keeps the empty bucket. */
+	@GameTest(template = AREA, timeoutTicks = 2400)
+	public void builderPoursWaterFromABucket(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		helper.assertTrue(MaterialRules.classify(Blocks.WATER.defaultBlockState()) == MaterialRules.Kind.DECORATION, "still water should be poured");
+		helper.assertTrue(MaterialRules.classify(Blocks.WATER.defaultBlockState().setValue(net.minecraft.world.level.block.LiquidBlock.LEVEL, 3))
+			== MaterialRules.Kind.SKIP, "flowing water should be left to flow");
+		helper.assertTrue(MaterialRules.requirements(Blocks.LAVA.defaultBlockState(), null).equals(List.of(new MaterialRules.Requirement(Items.LAVA_BUCKET, 1))),
+			"lava costs a lava bucket");
+
+		// The blueprint: a 3x2x3 cobblestone basin with still water in the middle, captured from the world.
+		BlockPos src = new BlockPos(12, 2, 12);
+		for (int x = 0; x < 3; x++) {
+			for (int z = 0; z < 3; z++) {
+				helper.setBlock(src.offset(x, 0, z), Blocks.COBBLESTONE);
+				helper.setBlock(src.offset(x, 1, z), x == 1 && z == 1 ? Blocks.WATER : Blocks.COBBLESTONE);
+			}
+		}
+		ResourceLocation pool = ResourceLocation.fromNamespaceAndPath("aliveworkplace_test", "pool_" + Long.toHexString(level.getGameTime()));
+		net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate template = level.getStructureManager().getOrCreate(pool);
+		template.fillFromWorld(level, helper.absolutePos(src), new Vec3i(3, 2, 3), false, Blocks.STRUCTURE_VOID);
+		for (int x = 0; x < 3; x++) {
+			for (int z = 0; z < 3; z++) {
+				helper.setBlock(src.offset(x, 1, z), Blocks.AIR);
+				helper.setBlock(src.offset(x, 0, z), Blocks.AIR);
+			}
+		}
+
+		Setup s = setup(helper, pool, HUT_ORIGIN, Rotation.NONE, new ItemStack(Items.COBBLESTONE, 17), new ItemStack(Items.WATER_BUCKET));
+		BlockPos middle = HUT_ORIGIN.offset(1, 1, 1);
+		helper.succeedWhen(() -> {
+			assertBuilt(helper, s);
+			helper.assertTrue(helper.getBlockState(middle).getFluidState().isSource(), "no still water in the middle: " + helper.getBlockState(middle));
+			Container chest = helper.getBlockEntity(CHEST);
+			int buckets = chest.countItem(Items.BUCKET) + s.villager().getAttachedOrCreate(ModAttachments.BUILDER_BAG).count(Items.BUCKET);
+			helper.assertTrue(buckets == 1, "the empty bucket went missing (" + buckets + ")");
+			helper.assertTrue(chest.countItem(Items.WATER_BUCKET) == 0, "the water bucket wasn't used");
+		});
+	}
+
 	/** With levelling turned off, the ground around a build stays as it was. */
 	@GameTest(template = AREA, timeoutTicks = 2400)
 	public void levellingCanBeTurnedOff(GameTestHelper helper) {

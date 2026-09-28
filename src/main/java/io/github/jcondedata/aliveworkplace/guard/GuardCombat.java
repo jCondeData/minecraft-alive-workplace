@@ -44,6 +44,8 @@ public class GuardCombat extends Behavior<Villager> {
 	private static final double CREEPER_DISTANCE = 7;
 	private static final double MELEE_FROM = 4.5;
 	private static final int SHOT_COOLDOWN = 22;
+	/** Crossbows take longer to load, but their bolts fly faster and straighter. */
+	private static final int CROSSBOW_COOLDOWN = 30;
 
 	/** Guards in a fight right now (their patrol waits). */
 	private static final Set<Villager> FIGHTING = Collections.newSetFromMap(new WeakHashMap<>());
@@ -139,7 +141,7 @@ public class GuardCombat extends Behavior<Villager> {
 			}
 			if (cooldown == 0 && clearShot(level, villager, foe)) {
 				shoot(level, villager, foe);
-				cooldown = SHOT_COOLDOWN;
+				cooldown = Guards.isCrossbow(villager.getItemBySlot(EquipmentSlot.OFFHAND)) ? CROSSBOW_COOLDOWN : SHOT_COOLDOWN;
 			}
 			return;
 		}
@@ -207,11 +209,18 @@ public class GuardCombat extends Behavior<Villager> {
 		double dy = foe.getY(0.3333) - arrow.getY();
 		double dz = foe.getZ() - villager.getZ();
 		double flat = Math.sqrt(dx * dx + dz * dz);
-		arrow.shoot(dx, dy + flat * 0.2, dz, 1.6f, 4f);
+		boolean crossbow = Guards.isCrossbow(bow);
+		if (crossbow) {
+			arrow.setCritArrow(true);
+			arrow.shoot(dx, dy + flat * 0.1, dz, 2.6f, 1.5f);
+		} else {
+			arrow.shoot(dx, dy + flat * 0.2, dz, 1.6f, 4f);
+		}
 		arrow.setBaseDamage(arrow.getBaseDamage() * Guards.levelBonus(villager));
 		arrow.pickup = net.minecraft.world.entity.projectile.AbstractArrow.Pickup.DISALLOWED;
 		level.addFreshEntity(arrow);
-		level.playSound(null, villager.getX(), villager.getY(), villager.getZ(), net.minecraft.sounds.SoundEvents.SKELETON_SHOOT,
+		level.playSound(null, villager.getX(), villager.getY(), villager.getZ(),
+			crossbow ? net.minecraft.sounds.SoundEvents.CROSSBOW_SHOOT : net.minecraft.sounds.SoundEvents.SKELETON_SHOOT,
 			net.minecraft.sounds.SoundSource.NEUTRAL, 1f, 1f / (villager.getRandom().nextFloat() * 0.4f + 0.8f));
 		villager.swing(InteractionHand.OFF_HAND);
 		bow.hurtAndBreak(1, villager, EquipmentSlot.OFFHAND);

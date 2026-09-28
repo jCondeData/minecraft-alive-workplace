@@ -124,7 +124,7 @@ public class GuardPatrol extends Behavior<Villager> {
 	/** True if {@code stack} beats what the guard has in that slot. */
 	static boolean isUpgrade(Villager villager, ItemStack stack) {
 		if (Guards.isBow(stack)) {
-			return !Guards.hasBow(villager);
+			return Guards.rangedRank(stack) > Guards.rangedRank(villager.getItemBySlot(EquipmentSlot.OFFHAND));
 		}
 		if (Guards.isWeapon(stack)) {
 			return Guards.baseDamage(stack) > Guards.baseDamage(villager.getItemBySlot(EquipmentSlot.MAINHAND));
@@ -142,8 +142,8 @@ public class GuardPatrol extends Behavior<Villager> {
 		for (int i = 0; i < 4 && take(level, villager, chests, EquipmentSlot.MAINHAND, stack -> Guards.isWeapon(stack)
 			&& Guards.baseDamage(stack) > Guards.baseDamage(villager.getItemBySlot(EquipmentSlot.MAINHAND))); i++) {
 		}
-		if (!Guards.hasBow(villager)) {
-			take(level, villager, chests, EquipmentSlot.OFFHAND, Guards::isBow);
+		for (int i = 0; i < 2 && take(level, villager, chests, EquipmentSlot.OFFHAND, stack -> Guards.isBow(stack)
+			&& Guards.rangedRank(stack) > Guards.rangedRank(villager.getItemBySlot(EquipmentSlot.OFFHAND))); i++) {
 		}
 		for (EquipmentSlot slot : ARMOR) {
 			for (int i = 0; i < 4 && take(level, villager, chests, slot, stack -> stack.getItem() instanceof ArmorItem armor

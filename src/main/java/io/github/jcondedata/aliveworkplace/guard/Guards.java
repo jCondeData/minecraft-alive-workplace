@@ -44,8 +44,19 @@ public final class Guards {
 	}
 
 	/** A bow a guard can shoot with (kept in their off hand). */
+	/** A bow or a crossbow (anything that shoots arrows and wears out). */
 	public static boolean isBow(ItemStack stack) {
-		return !stack.isEmpty() && stack.getItem() instanceof net.minecraft.world.item.BowItem && stack.isDamageableItem();
+		return !stack.isEmpty() && (stack.getItem() instanceof net.minecraft.world.item.BowItem
+			|| stack.getItem() instanceof net.minecraft.world.item.CrossbowItem) && stack.isDamageableItem();
+	}
+
+	public static boolean isCrossbow(ItemStack stack) {
+		return !stack.isEmpty() && stack.getItem() instanceof net.minecraft.world.item.CrossbowItem;
+	}
+
+	/** Crossbows hit harder than bows: a guard trades a bow for one. */
+	static int rangedRank(ItemStack stack) {
+		return !isBow(stack) ? 0 : isCrossbow(stack) ? 2 : 1;
 	}
 
 	public static boolean hasBow(Villager guard) {

@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+## 0.52.0 — 2026-09-28
+
+### Added
+- **Guards use crossbows**: a crossbow in the guard's chest beats a bow. Bolts fly faster and straighter and hit
+  harder; the guard reloads a little slower than with a bow.
+
 ## 0.51.0 — 2026-09-28
 
 ### Added

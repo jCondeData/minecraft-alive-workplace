@@ -99,6 +99,31 @@ public class GuardGameTests implements FabricGameTest {
 		});
 	}
 
+	/** A crossbow beats a bow: the guard takes the crossbow, and shoots a creeper with it before it can go off. */
+	@GameTest(template = AREA, timeoutTicks = 1600, batch = "guardUsesACrossbow")
+	public void guardUsesACrossbow(GameTestHelper helper) {
+		Villager guard = guard(helper, new ItemStack(Items.IRON_SWORD), new ItemStack(Items.BOW), new ItemStack(Items.CROSSBOW));
+		boolean[] exploded = {false};
+		helper.runAfterDelay(100, () -> {
+			helper.assertTrue(guard.getItemBySlot(EquipmentSlot.OFFHAND).is(Items.CROSSBOW), "the guard didn't take the crossbow: " + guard.getItemBySlot(EquipmentSlot.OFFHAND));
+			helper.spawn(EntityType.CREEPER, new BlockPos(15, 2, 15)).setPersistenceRequired();
+		});
+		helper.onEachTick(() -> {
+			if (!helper.getLevel().getEntitiesOfClass(net.minecraft.world.entity.monster.Creeper.class, new net.minecraft.world.phys.AABB(helper.absolutePos(BlockPos.ZERO)).inflate(40),
+				c -> c.getSwellDir() > 0 && c.getSwelling(1f) > 0.9f).isEmpty()) {
+				exploded[0] = true;
+			}
+		});
+		helper.succeedWhen(() -> {
+			helper.assertTrue(helper.getTick() > 100, "not yet");
+			helper.assertEntityNotPresent(EntityType.CREEPER);
+			helper.assertFalse(exploded[0], "the creeper got close enough to go off");
+			helper.assertTrue(guard.getAttachedOrElse(ModAttachments.GUARD_KILLS, 0) == 1, "the kill wasn't counted");
+			Container chest = helper.getBlockEntity(CHEST);
+			helper.assertTrue(chest.countItem(Items.BOW) == 1, "the bow should still be in the chest");
+		});
+	}
+
 	/** A guard with a bow from the chest shoots a creeper from a safe distance (and it never blows up). */
 	@GameTest(template = AREA, timeoutTicks = 1600, batch = "guardShootsACreeper")
 	public void guardShootsACreeper(GameTestHelper helper) {

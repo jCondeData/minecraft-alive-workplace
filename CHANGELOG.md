@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 0.31.0 — 2026-09-27
+
 ### Added
 - **Guards answer the village bell.** Ring it and, while everyone else runs home to hide, the guards head for the
   bell and fight anything near it for a minute and a half.

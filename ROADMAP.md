@@ -148,6 +148,8 @@ workstation, like the rest of the mod.
   the start (Master once they reach level 5), pays 3× a trainer's prize, one challenge per player per in-game day;
   if a village has several, only the most experienced within 64 blocks takes challenges; no badge
 - [x] ~~RCT API~~: Cobblemon's own `TrainerBattleActor` battles for any villager, no RCT needed
+- [x] Leader's halls in village generation (weight 5, so most villages grow one — the owner wants a leader per
+  village; several are fine, the most experienced takes challenges); Pokémon houses only when Cobblemon is installed
 - [x] Tune levels against the pack's RCT level caps: RCT 0.18.1 (in the pack) exposes `LevelUtils.levelCap(Player)`;
   read by reflection (`compat/rct/RctLevelCaps`, no dependency), a tier's ceiling is cap −6/−3/0/+3/+5; Pokémon above
   it are re-created at the ceiling (same species). Not compat-tested with RCT itself (it spawns trainers around test
@@ -166,13 +168,14 @@ workstation, like the rest of the mod.
 - [x] Move Tutor prices in CobbleDollars (100 per emerald: 300–2,400) through `work/Money` (CobbleDollars balance via
   `compat/cobbledollars/CobbleDollarsBank`, the only code touching it; falls back to emeralds without the mod or if
   its API changes); trainer prizes use it too; compat-tested with CobbleDollars 2.0.0 Beta-5.1 (the pack's version)
-- [ ] Move Tutor follow-ups: tutors in village generation
+- [x] Tutors in village generation (a school, weight 2, Cobblemon only)
 - [x] **Pokémon Trader** (Trade Board workstation): the day's offers (seeded by trader and day, the same for everyone):
   their Pokémon (young ones for beginners, fully evolved at the top; never legendary/mythical/ultra beast/paradox) for
   any of yours of a type they don't have, level ≥ theirs − 5; 1/2/2/3/3 offers at lv 5–15 / 15–25 / 25–35 / 35–50 /
   50–70, 1 in 10 shiny at Master; one trade per player per trader per in-game day; the Pokémon you give must be
   tradeable, its held item comes back; 6 XP a trade. Sneak for item trades (balls, candies, ability capsule)
-- [ ] Pokémon Trader follow-ups: species wanted by name at higher tiers, traders in village generation
+- [x] Traders in village generation (a trade hall, weight 2, Cobblemon only)
+- [ ] Pokémon Trader follow-ups: species wanted by name at higher tiers
 
 ## Milestone 5 — Release
 - [ ] Publish on Modrinth and CurseForge as **Alive Workplace** (Minecraft brand rules: don't lead the name with "Minecraft")

@@ -18,7 +18,8 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProc
 
 /**
  * Villages grow our kinds of houses now and then: a builder's workshop (a Builder's Bench, a chest of
- * building supplies), a trainer's house, a guard house, a clinic and a post office, each with a bed and a
+ * building supplies), a guard house, a clinic, a post office and — with Cobblemon — a trainer's house, a
+ * Trainer Leader's hall, a school (Move Tutor) and a trade hall (Pokémon Trader), each with a bed and a
  * villager who takes the job block, so these workers turn up without players having to make them. Added
  * to the vanilla house pools (and to any data pack's replacement of them) and to Repurposed Structures'
  * villages when the server starts.
@@ -37,6 +38,9 @@ public final class VillageHouses {
 	 */
 	private static final java.util.Map<String, Integer> HOUSES = houses();
 
+	/** Houses whose job only works with Cobblemon: villages without it don't grow them. */
+	public static final java.util.Set<String> COBBLEMON_HOUSES = java.util.Set.of("trainers_house", "leaders_hall", "school", "trade_hall");
+
 	private static java.util.Map<String, Integer> houses() {
 		Integer override = Integer.getInteger("aliveworkplace.houseWeight");
 		java.util.Map<String, Integer> out = new java.util.LinkedHashMap<>();
@@ -44,7 +48,17 @@ public final class VillageHouses {
 		out.put("guard_house", override != null ? override : 3);
 		out.put("clinic", override != null ? override : 2);
 		out.put("post_office", override != null ? override : 2);
+		// The village's Trainer Leader: common enough that most villages have one.
+		out.put("leaders_hall", override != null ? override : 5);
+		out.put("school", override != null ? override : 2);
+		out.put("trade_hall", override != null ? override : 2);
 		return out;
+	}
+
+	/** The staffed houses (besides the workshop) villages grow here, by name. */
+	public static java.util.List<String> houseNames() {
+		boolean cobblemon = net.fabricmc.loader.api.FabricLoader.getInstance().isModLoaded("cobblemon");
+		return HOUSES.keySet().stream().filter(h -> cobblemon || !COBBLEMON_HOUSES.contains(h)).toList();
 	}
 
 	/**
@@ -96,8 +110,8 @@ public final class VillageHouses {
 			}
 			String style = target.getValue();
 			add(pool, workshop(style), WEIGHT, none);
-			for (var house : HOUSES.entrySet()) {
-				add(pool, AliveWorkplace.id("village/" + style + "_" + house.getKey()), house.getValue(), none);
+			for (String house : houseNames()) {
+				add(pool, AliveWorkplace.id("village/" + style + "_" + house), HOUSES.get(house), none);
 			}
 		}
 	}

@@ -69,8 +69,9 @@ The owner (Jesse) does not write code: sessions are expected to work autonomousl
 - `work/` — shared by all jobs: `Walker` (movement + reach), `WorkerStatus` (overhead status for jobs without a saved site), `Jobs.employ`,
   `ChoiceMenu` (a server-side chest screen of buttons: menus without client code), `DeskPackages` (WORK for jobs players visit),
   `Gated`/`UpgradedJob` (vanilla jobs with extra work), `PrivateContainer` (never a supply chest), `KeepLoaded` (chunk tickets)
-- `world/` — our houses in village generation (`VillageHouses`: builder's workshops, trainer's houses, guard houses,
-  clinics, post offices; the NBT comes from `tools/blueprints/generate.py`)
+- `world/` — our houses in village generation (`VillageHouses`: builder's workshops, guard houses, clinics, post offices;
+  with Cobblemon trainer's houses, leader's halls, schools, trade halls; the NBT comes from `tools/blueprints/generate.py`,
+  which must keep exactly one job block per house — a vanilla one would give the villager the wrong job)
 - `mixin/` — swaps in the builder/miner WORK packages and schedule for our professions; accessors
 - `command/` — `/workplace`
 

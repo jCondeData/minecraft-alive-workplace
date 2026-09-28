@@ -2,6 +2,15 @@
 
 ## Unreleased
 
+### Added
+- Villages grow three more houses with Cobblemon installed: a **Trainer Leader's hall** (common, so most villages
+  get a leader), a **school** with a Move Tutor and a **trade hall** with a Pokémon Trader. Without Cobblemon,
+  villages no longer grow trainer's houses (their villagers had nothing to do).
+
+### Fixed
+- The villager moving into a new clinic or post office could become a leatherworker or librarian (the house had a
+  cauldron or a lectern). Those are gone; every staffed house now has exactly one job block.
+
 ## 0.31.0 — 2026-09-27
 
 ### Added

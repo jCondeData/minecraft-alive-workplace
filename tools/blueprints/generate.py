@@ -438,10 +438,12 @@ def guard_house(b, style):
     b.set(1, 1, 3, "anvil", facing="north")
 
 
+# No vanilla job blocks in these houses (a cauldron, lectern, barrel...): the villager who moves in could
+# take that job instead of ours.
 def clinic(b, style):
-    """A Nurse Station and a couple of beds' worth of care: a cauldron, flowers."""
+    """A Nurse Station, a cot and flowers."""
     b.set(1, 1, 6, "aliveworkplace:nurse_station", facing="east")
-    b.set(1, 1, 3, "cauldron")
+    b.set(1, 1, 3, "white_carpet")
     b.set(1, 1, 4, "potted_poppy")
 
 
@@ -449,10 +451,36 @@ def post_office(b, style):
     """A Postal Desk with a sorting shelf."""
     b.set(1, 1, 6, "aliveworkplace:postal_desk", facing="east")
     b.set(1, 1, 5, "chiseled_bookshelf", facing="east")
-    b.set(1, 1, 3, "lectern", facing="east", has_book=False, powered=False)
+    b.set(1, 1, 3, "bookshelf")
 
 
-VILLAGE_HOUSES = {"trainers_house": trainers_house, "guard_house": guard_house, "clinic": clinic, "post_office": post_office}
+def leaders_hall(b, style):
+    """The Trainer Leader's Podium between two polished andesite pillars, and a target to spar with."""
+    b.set(1, 1, 6, "aliveworkplace:leaders_podium", facing="east")
+    b.set(1, 1, 5, "polished_andesite")
+    b.set(1, 2, 5, "polished_andesite")
+    b.set(1, 1, 3, "target")
+    b.set(1, 2, 3, "lantern", hanging=False, waterlogged=False)
+
+
+def school(b, style):
+    """A Tutor's Desk and bookshelves."""
+    b.set(1, 1, 6, "aliveworkplace:tutors_desk", facing="east")
+    b.set(1, 1, 5, "bookshelf")
+    b.set(1, 2, 5, "bookshelf")
+    b.set(1, 1, 3, "bookshelf")
+    b.set(1, 2, 3, "flower_pot")
+
+
+def trade_hall(b, style):
+    """A Trade Board and somewhere to sit down and haggle."""
+    b.set(1, 1, 6, "aliveworkplace:trade_board", facing="east")
+    b.set(1, 1, 4, "oak_stairs", facing="east", half="bottom", shape="straight", waterlogged=False)
+    b.set(1, 1, 3, "potted_fern")
+
+
+VILLAGE_HOUSES = {"trainers_house": trainers_house, "guard_house": guard_house, "clinic": clinic, "post_office": post_office,
+                  "leaders_hall": leaders_hall, "school": school, "trade_hall": trade_hall}
 
 
 # --- Gametest fixtures ------------------------------------------------------------------

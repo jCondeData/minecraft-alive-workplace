@@ -19,7 +19,11 @@ public class VillageCompatTests implements FabricGameTest {
 			StructureTemplatePool pool = pools.get(entry.getKey());
 			helper.assertTrue(pool != null, "no pool " + entry.getKey() + " (did Repurposed Structures rename it?)");
 			String style = entry.getValue();
-			for (String house : new String[]{"builders_workshop", "trainers_house", "guard_house", "clinic", "post_office"}) {
+			java.util.List<String> houses = new java.util.ArrayList<>(VillageHouses.houseNames());
+			houses.add("builders_workshop");
+			helper.assertTrue(houses.contains("leaders_hall") && houses.contains("school") && houses.contains("trade_hall"),
+				"Cobblemon is installed: the Pokémon houses should be in: " + houses);
+			for (String house : houses) {
 				String id = "aliveworkplace:village/" + style + "_" + house;
 				boolean found = ((StructureTemplatePoolAccessor) pool).aliveworkplace$templates().stream().anyMatch(e -> e.toString().contains(id));
 				helper.assertTrue(found, id + " missing from " + entry.getKey());

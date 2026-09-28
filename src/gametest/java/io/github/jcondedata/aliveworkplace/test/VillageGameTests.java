@@ -57,21 +57,49 @@ public class VillageGameTests implements FabricGameTest {
 		var pools = level.registryAccess().registryOrThrow(Registries.TEMPLATE_POOL);
 		java.util.Map<String, net.minecraft.world.level.block.Block> houses = java.util.Map.of(
 			"trainers_house", ModBlocks.TRAINING_POST, "guard_house", ModBlocks.GUARD_POST,
-			"clinic", ModBlocks.NURSE_STATION, "post_office", ModBlocks.POSTAL_DESK);
+			"clinic", ModBlocks.NURSE_STATION, "post_office", ModBlocks.POSTAL_DESK, "leaders_hall", ModBlocks.LEADERS_PODIUM,
+			"school", ModBlocks.TUTORS_DESK, "trade_hall", ModBlocks.TRADE_BOARD);
+		// No Cobblemon here: the Pokémon houses stay out of the pools.
+		helper.assertTrue(VillageHouses.houseNames().equals(List.of("guard_house", "clinic", "post_office")),
+			"houses without Cobblemon: " + VillageHouses.houseNames());
 		for (String style : VillageHouses.STYLES) {
 			StructureTemplatePool pool = pools.get(VillageHouses.housePool(style));
 			for (var house : houses.entrySet()) {
 				var id = io.github.jcondedata.aliveworkplace.AliveWorkplace.id("village/" + style + "_" + house.getKey());
 				boolean listed = ((StructureTemplatePoolAccessor) pool).aliveworkplace$rawTemplates().stream()
 					.anyMatch(p -> p.getFirst().toString().contains(id.toString()));
-				helper.assertTrue(listed, style + " villages can't grow a " + house.getKey());
+				helper.assertTrue(listed == VillageHouses.houseNames().contains(house.getKey()),
+					style + " villages " + (listed ? "grow" : "can't grow") + " a " + house.getKey());
 				StructureTemplate template = level.getStructureManager().get(id)
 					.orElseThrow(() -> new net.minecraft.gametest.framework.GameTestAssertException("missing " + id));
 				helper.assertTrue(template.filterBlocks(BlockPos.ZERO, new StructurePlaceSettings(), house.getValue()).size() == 1,
 					id + " should have one " + house.getValue().getName().getString());
+				// Exactly one job block, so the villager who moves in takes ours (a lectern would make a librarian).
+				long jobSites = jobSites(template);
+				helper.assertTrue(jobSites == 1, id + " has " + jobSites + " job blocks");
 			}
 		}
 		helper.succeed();
+	}
+
+	/** Job-site blocks (ours and vanilla's) in a template. */
+	private static long jobSites(StructureTemplate template) {
+		net.minecraft.nbt.CompoundTag tag = template.save(new net.minecraft.nbt.CompoundTag());
+		net.minecraft.nbt.ListTag palette = tag.getList("palette", net.minecraft.nbt.Tag.TAG_COMPOUND);
+		java.util.List<net.minecraft.world.level.block.state.BlockState> states = new java.util.ArrayList<>();
+		for (int i = 0; i < palette.size(); i++) {
+			states.add(net.minecraft.nbt.NbtUtils.readBlockState(net.minecraft.core.registries.BuiltInRegistries.BLOCK.asLookup(), palette.getCompound(i)));
+		}
+		long count = 0;
+		net.minecraft.nbt.ListTag blocks = tag.getList("blocks", net.minecraft.nbt.Tag.TAG_COMPOUND);
+		for (int i = 0; i < blocks.size(); i++) {
+			var state = states.get(blocks.getCompound(i).getInt("state"));
+			if (net.minecraft.world.entity.ai.village.poi.PoiTypes.forState(state)
+				.filter(h -> h.is(net.minecraft.tags.PoiTypeTags.ACQUIRABLE_JOB_SITE)).isPresent()) {
+				count++;
+			}
+		}
+		return count;
 	}
 
 	/** A jobless villager inside a freshly generated workshop takes the bench and becomes a builder. */

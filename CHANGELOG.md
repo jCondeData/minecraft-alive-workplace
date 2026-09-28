@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 0.24.0 — 2026-09-27
+
 ### Added
 - **Pokémon Traders** (with Cobblemon). Craft a **Trade Board** (an item frame on planks) for a villager and
   right-click them to see today's offers: one of their Pokémon for any of yours of a given type and level. Pick an

@@ -396,6 +396,20 @@ public class CobblemonCompatTests implements FabricGameTest {
 		helper.assertTrue(chest.countItem(net.minecraft.world.item.Items.COBBLESTONE) == 24, chest.countItem(net.minecraft.world.item.Items.COBBLESTONE) + " left in stock");
 		helper.assertTrue(counter.sales().size() == 1 && counter.sales().get(0).dollars() == 200, "sales log: " + counter.sales());
 
+		// A Price Tag renamed "150" charges exactly 150 CobbleDollars.
+		net.minecraft.world.item.ItemStack tag = new net.minecraft.world.item.ItemStack(io.github.jcondedata.aliveworkplace.registry.ModItems.PRICE_TAG);
+		tag.set(net.minecraft.core.component.DataComponents.CUSTOM_NAME, net.minecraft.network.chat.Component.literal("150"));
+		counter.setItem(columns + 2, tag);
+		helper.assertTrue(io.github.jcondedata.aliveworkplace.shop.Shops.buy(buyer, keeper, 2), "the price-tag sale didn't go through");
+		helper.assertTrue(io.github.jcondedata.aliveworkplace.compat.cobbledollars.CobbleDollarsBank.balance(buyer) == 150,
+			"after the tag sale the buyer has " + io.github.jcondedata.aliveworkplace.compat.cobbledollars.CobbleDollarsBank.balance(buyer));
+		helper.assertTrue(io.github.jcondedata.aliveworkplace.compat.cobbledollars.CobbleDollarsBank.balance(owner) == ownerBefore + 350, "the owner wasn't paid for the tag sale");
+		counter.setItem(columns + 2, new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.DIAMOND, 1));
+		helper.assertTrue(chest.countItem(net.minecraft.world.item.Items.OAK_LOG) == 8, "the tag sale should have taken 8 logs");
+		chest.setItem(1, new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.OAK_LOG, 16));
+		buyer.getInventory().clearOrCountMatchingItems(st -> st.is(net.minecraft.world.item.Items.OAK_LOG), 8, buyer.inventoryMenu.getCraftSlots());
+		io.github.jcondedata.aliveworkplace.compat.cobbledollars.CobbleDollarsBank.add(buyer, 150); // back to 300 for the rest
+
 		// A diamond price is paid in diamonds, into the chests.
 		buyer.getInventory().add(new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.DIAMOND));
 		menu.press(first + 2, buyer);

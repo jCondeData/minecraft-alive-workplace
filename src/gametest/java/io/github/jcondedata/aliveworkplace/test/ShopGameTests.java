@@ -26,6 +26,44 @@ public class ShopGameTests implements FabricGameTest {
 	private static final BlockPos CHEST = new BlockPos(2, 2, 4);
 
 	/** Offers come from the price list and the stock; a sale moves the goods out and the payment in. */
+	/**
+	 * A Price Tag renamed "250" prices a column at 250 CobbleDollars; without CobbleDollars that's 3 emeralds (at 100
+	 * a piece, rounded up), on the trade screen and when bought, and the emeralds go into the shop's chest.
+	 */
+	@GameTest(template = AREA)
+	public void priceTagsWithoutCobbleDollarsCostEmeralds(GameTestHelper helper) {
+		ItemStack tag = new ItemStack(io.github.jcondedata.aliveworkplace.registry.ModItems.PRICE_TAG);
+		helper.assertTrue(io.github.jcondedata.aliveworkplace.shop.PriceTagItem.dollars(tag) == -1, "a blank tag has no price");
+		tag.set(net.minecraft.core.component.DataComponents.CUSTOM_NAME, net.minecraft.network.chat.Component.literal("250 CD"));
+		helper.assertTrue(io.github.jcondedata.aliveworkplace.shop.PriceTagItem.dollars(tag) == 250, "the tag should say 250");
+		helper.assertTrue(io.github.jcondedata.aliveworkplace.shop.Shops.dollarPrice(tag) == 250 && io.github.jcondedata.aliveworkplace.shop.Shops.emeraldPrice(tag) == 3,
+			"250 CobbleDollars should be 3 emeralds");
+
+		helper.setBlock(COUNTER, ModBlocks.SHOP_COUNTER);
+		ShopCounterBlockEntity counter = helper.getBlockEntity(COUNTER);
+		counter.setOwner(UUID.randomUUID(), "Frank");
+		counter.setItem(0, new ItemStack(Items.COBBLESTONE, 16));
+		counter.setItem(ShopCounterBlockEntity.COLUMNS, tag);
+		helper.setBlock(CHEST, Blocks.CHEST);
+		Container chest = helper.getBlockEntity(CHEST);
+		chest.setItem(0, new ItemStack(Items.COBBLESTONE, 64));
+		Villager shopkeeper = helper.spawn(EntityType.VILLAGER, new BlockPos(3, 2, 3));
+		Jobs.employ(helper.getLevel(), shopkeeper, helper.absolutePos(COUNTER), ModVillagers.SHOP_COUNTER_POI, ModVillagers.SHOPKEEPER);
+		io.github.jcondedata.aliveworkplace.shop.Shops.refreshOffers(helper.getLevel(), shopkeeper);
+		MerchantOffer offer = shopkeeper.getOffers().get(0);
+		helper.assertTrue(offer.getCostA().is(Items.EMERALD) && offer.getCostA().getCount() == 3, "the trade screen should ask 3 emeralds, not " + offer.getCostA());
+
+		net.minecraft.server.level.ServerPlayer buyer = helper.makeMockServerPlayerInLevel();
+		buyer.setGameMode(net.minecraft.world.level.GameType.SURVIVAL);
+		buyer.getInventory().add(new ItemStack(Items.EMERALD, 5));
+		helper.assertTrue(io.github.jcondedata.aliveworkplace.shop.Shops.buy(buyer, shopkeeper, 0), "the sale didn't go through");
+		helper.assertTrue(buyer.getInventory().countItem(Items.EMERALD) == 2 && buyer.getInventory().countItem(Items.COBBLESTONE) == 16,
+			"buyer has " + buyer.getInventory().countItem(Items.EMERALD) + " emeralds, " + buyer.getInventory().countItem(Items.COBBLESTONE) + " cobblestone");
+		helper.assertTrue(chest.countItem(Items.EMERALD) == 3 && chest.countItem(io.github.jcondedata.aliveworkplace.registry.ModItems.PRICE_TAG) == 0,
+			"the chest should hold the 3 emeralds");
+		helper.succeed();
+	}
+
 	@GameTest(template = AREA)
 	public void shopkeeperSellsFromTheChests(GameTestHelper helper) {
 		helper.setBlock(COUNTER, ModBlocks.SHOP_COUNTER);

@@ -955,6 +955,30 @@ def delivery_note_item():
     save(img, "item", "delivery_note.png")
 
 
+def price_tag_item():
+    """A paper tag with a gold ring and a string, and a coin mark on it."""
+    img = Image.new("RGBA", (16, 16), T)
+    rnd = random.Random(173)
+    # The tag: a paper rectangle cut to a point on the left
+    for y in range(5, 12):
+        for x in range(4, 14):
+            cut = x - 4 < abs(y - 8) - 1
+            if cut:
+                continue
+            edge = x == 13 or y in (5, 11) or x - 4 == abs(y - 8) - 1
+            img.putpixel((x, y), rgb("#b8a27a") if edge else jitter(rgb("#f1e3bf"), rnd, 3))
+    # The hole with a gold ring, and the string going up and away
+    img.putpixel((6, 8), rgb("#e0b83a"))
+    for (x, y) in ((5, 7), (4, 6), (3, 5), (3, 4), (2, 3), (2, 2)):
+        img.putpixel((x, y), rgb("#8a8a8a"))
+    # A gold coin mark
+    for (x, y) in ((9, 7), (10, 7), (8, 8), (11, 8), (9, 9), (10, 9)):
+        img.putpixel((x, y), rgb("#c99a1a"))
+    img.putpixel((9, 8), rgb("#f2d15a"))
+    img.putpixel((10, 8), rgb("#f2d15a"))
+    save(img, "item", "price_tag.png")
+
+
 # --- Music Stand: sheet music on a wooden stand ---------------------------------------------------------
 def music_stand_top():
     rnd = random.Random(181)
@@ -1427,6 +1451,7 @@ if __name__ == "__main__":
     ticket_item()
     ferryman_overlay()
     delivery_note_item()
+    price_tag_item()
     music_stand_top()
     music_stand_side(front=False)
     music_stand_side(front=True)

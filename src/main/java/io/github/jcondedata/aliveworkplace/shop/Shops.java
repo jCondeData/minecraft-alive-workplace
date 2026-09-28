@@ -53,8 +53,10 @@ public final class Shops {
 			if (available < 1) {
 				continue;
 			}
-			offers.add(new MerchantOffer(new ItemCost(price.getItem(), price.getCount()), goods.copy(),
-				(int) Math.min(available, MAX_USES), 1, 0f));
+			// A Price Tag can't be handed over: the vanilla trade screen asks for the same price in emeralds.
+			ItemCost cost = PriceTagItem.dollars(price) > 0 ? new ItemCost(net.minecraft.world.item.Items.EMERALD, emeraldPrice(price))
+				: new ItemCost(price.getItem(), price.getCount());
+			offers.add(new MerchantOffer(cost, goods.copy(), (int) Math.min(available, MAX_USES), 1, 0f));
 		}
 	}
 
@@ -82,10 +84,23 @@ public final class Shops {
 	public static final int FIRST_GOODS_SLOT = 18;
 	private static final int INFO_SLOT = 4;
 
-	/** The price of a column in CobbleDollars (emerald prices only), or -1 if it can only be paid in items. */
+	/** The price of a column in CobbleDollars (emeralds, or a Price Tag), or -1 if it can only be paid in items. */
 	public static long dollarPrice(ItemStack price) {
+		long tag = PriceTagItem.dollars(price);
+		if (tag > 0) {
+			return tag;
+		}
 		return price.is(net.minecraft.world.item.Items.EMERALD) && price.getComponentsPatch().isEmpty()
 			? (long) price.getCount() * io.github.jcondedata.aliveworkplace.work.Money.DOLLARS_PER_EMERALD : -1;
+	}
+
+	/** The same price in emeralds (for a Price Tag: converted, rounded up), or -1 for an item price. */
+	public static int emeraldPrice(ItemStack price) {
+		long tag = PriceTagItem.dollars(price);
+		if (tag > 0) {
+			return PriceTagItem.emeralds(tag);
+		}
+		return dollarPrice(price) >= 0 ? price.getCount() : -1;
 	}
 
 	/** Opens the shop's own screen (with CobbleDollars installed): the goods in stock, bought with two clicks. */
@@ -173,8 +188,8 @@ public final class Shops {
 	/** "300 CobbleDollars" for an emerald price, otherwise the items ("2 Diamond"). */
 	public static net.minecraft.network.chat.Component priceText(ItemStack price) {
 		long dollars = dollarPrice(price);
-		if (dollars >= 0 && io.github.jcondedata.aliveworkplace.work.Money.cobbleDollars()) {
-			return io.github.jcondedata.aliveworkplace.work.Money.describe(dollars, price.getCount());
+		if (dollars >= 0 && (io.github.jcondedata.aliveworkplace.work.Money.cobbleDollars() || PriceTagItem.dollars(price) > 0)) {
+			return io.github.jcondedata.aliveworkplace.work.Money.describe(dollars, emeraldPrice(price));
 		}
 		return net.minecraft.network.chat.Component.translatable("message.aliveworkplace.shop.items", price.getCount(), price.getHoverName());
 	}
@@ -182,7 +197,7 @@ public final class Shops {
 	private static boolean canPay(net.minecraft.server.level.ServerPlayer player, ItemStack price) {
 		long dollars = dollarPrice(price);
 		if (dollars >= 0) {
-			return io.github.jcondedata.aliveworkplace.work.Money.canAfford(player, dollars, price.getCount());
+			return io.github.jcondedata.aliveworkplace.work.Money.canAfford(player, dollars, emeraldPrice(price));
 		}
 		return player.getAbilities().instabuild || countLike(player, price) >= price.getCount();
 	}
@@ -222,8 +237,10 @@ public final class Shops {
 		}
 		long dollars = dollarPrice(price);
 		boolean inDollars = dollars >= 0 && io.github.jcondedata.aliveworkplace.work.Money.cobbleDollars();
-		if (inDollars) {
-			if (!io.github.jcondedata.aliveworkplace.work.Money.charge(player, dollars, price.getCount())) {
+		// A Price Tag without CobbleDollars: paid in emeralds, which go into the shop's chests.
+		boolean tagInEmeralds = !inDollars && PriceTagItem.dollars(price) > 0;
+		if (inDollars || tagInEmeralds) {
+			if (!io.github.jcondedata.aliveworkplace.work.Money.charge(player, dollars, emeraldPrice(price))) {
 				player.displayClientMessage(net.minecraft.network.chat.Component.translatable("message.aliveworkplace.shop.too_poor", priceText(price))
 					.withStyle(net.minecraft.ChatFormatting.RED), true);
 				return false;
@@ -247,12 +264,14 @@ public final class Shops {
 				ShopLedger.payOwner(level.getServer(), counter.owner(), dollars);
 				tellOwner(level, counter, player, goods, priceText(price));
 			}
+		} else if (tagInEmeralds) {
+			store(level, chests, at, new ItemStack(net.minecraft.world.item.Items.EMERALD, emeraldPrice(price)));
 		} else {
 			store(level, chests, at, price.copy());
 		}
 		villager.setAttached(ModAttachments.SHOP_SALES, villager.getAttachedOrElse(ModAttachments.SHOP_SALES, 0) + 1);
 		counter.logSale(new ShopCounterBlockEntity.Sale(level.getDayTime() / 24000L, player.getGameProfile().getName(), goods,
-			inDollars ? dollars : 0, inDollars ? ItemStack.EMPTY : price));
+			inDollars ? dollars : 0, inDollars ? ItemStack.EMPTY : tagInEmeralds ? new ItemStack(net.minecraft.world.item.Items.EMERALD, emeraldPrice(price)) : price));
 		level.playSound(null, villager, net.minecraft.sounds.SoundEvents.VILLAGER_YES, net.minecraft.sounds.SoundSource.NEUTRAL, 0.6f, 1f);
 		player.displayClientMessage(net.minecraft.network.chat.Component.translatable("message.aliveworkplace.shop.bought",
 			goods.getCount(), goods.getHoverName(), priceText(price)).withStyle(net.minecraft.ChatFormatting.GREEN), true);

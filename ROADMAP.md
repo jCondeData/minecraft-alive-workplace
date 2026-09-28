@@ -155,7 +155,10 @@ workstation, like the rest of the mod.
 - [x] Shopkeeper: with CobbleDollars, right-click opens a shop screen (`ChoiceMenu`): emerald prices paid in
   CobbleDollars (×100) straight to the owner (`ShopLedger` holds them for offline owners until they join), other
   prices in items; sneak for the vanilla trade screen. Sales log (last 20) on the counter, shown on sneak-right-click
-- [ ] Shopkeeper follow-ups: prices set directly in CobbleDollars (not via emeralds), sales in the overhead
+- [x] Price Tags (`PriceTagItem`, renamed in an anvil to a number): a column priced in CobbleDollars directly; without
+  CobbleDollars (and on the vanilla trade screen) it costs the same in emeralds, rounded up. The shopkeeper's overhead
+  already counts sales
+- [ ] Shopkeeper follow-ups: a way to set a Price Tag without an anvil (typing the price on the counter)
 - [x] **Ferryman** (their Teleporter): Travel Posts (named in an anvil) form one network (`TravelNetwork` saved
   data); right-clicking a post, placing it or talking to its ferryman adds it to the posts you know; a Ferryman sells
   Travel Tickets to every other post you know for 1 emerald per 256 blocks (1–16; 8 across dimensions); a ticket

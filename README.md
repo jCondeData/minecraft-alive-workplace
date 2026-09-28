@@ -199,6 +199,10 @@ click it again to buy. The CobbleDollars go straight to the owner — or, if the
 join. Items priced in something other than emeralds are paid with those items, as before. Sneak-right-click the
 shopkeeper for the usual trade screen. The owner can sneak-right-click the counter to see the latest sales.
 
+**Price Tags** set a price in CobbleDollars directly: craft them (paper, a gold nugget and string make four), rename
+one in an anvil to the price — say `250` — and put it in a counter's price row. That column then costs 250
+CobbleDollars. Without CobbleDollars a tag is paid in emeralds (100 CobbleDollars to the emerald, rounded up).
+
 ![The shop screen with CobbleDollars prices](docs/media/shop.png)
 
 ## Ferrymen and travel posts

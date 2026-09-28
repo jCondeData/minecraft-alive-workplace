@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+## 0.53.0 — 2026-09-28
+
+### Added
+- **Price Tags** for shops: craft them from paper, a gold nugget and string, rename one in an anvil to a price
+  (`250`) and put it in a Shop Counter's price row. The column then costs exactly that many CobbleDollars; without
+  CobbleDollars it's paid in emeralds (100 to the emerald, rounded up).
+
 ## 0.52.0 — 2026-09-28
 
 ### Added

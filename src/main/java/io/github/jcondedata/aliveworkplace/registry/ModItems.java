@@ -45,6 +45,12 @@ public final class ModItems {
 		new io.github.jcondedata.aliveworkplace.mail.DeliveryNoteItem(new Item.Properties().stacksTo(1))
 	);
 
+	/** A price in CobbleDollars (the number it's renamed to) for a Shop Counter's price row. */
+	public static final io.github.jcondedata.aliveworkplace.shop.PriceTagItem PRICE_TAG = Registry.register(
+		BuiltInRegistries.ITEM, AliveWorkplace.id("price_tag"),
+		new io.github.jcondedata.aliveworkplace.shop.PriceTagItem(new Item.Properties().stacksTo(16))
+	);
+
 	public static final CreativeModeTab TAB = Registry.register(
 		BuiltInRegistries.CREATIVE_MODE_TAB,
 		AliveWorkplace.id("main"),
@@ -65,6 +71,7 @@ public final class ModItems {
 				output.accept(ModBlocks.GUARD_POST);
 				output.accept(ModBlocks.NURSE_STATION);
 				output.accept(ModBlocks.SHOP_COUNTER);
+				output.accept(PRICE_TAG);
 				output.accept(ModBlocks.TRAVEL_POST);
 				output.accept(ModBlocks.MUSIC_STAND);
 				output.accept(ModBlocks.TRAINING_POST);

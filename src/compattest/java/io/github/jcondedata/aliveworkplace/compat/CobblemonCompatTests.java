@@ -169,6 +169,92 @@ public class CobblemonCompatTests implements FabricGameTest {
 		helper.succeed();
 	}
 
+	/** A trader's offers: the same all day, different on other days, more and stronger at higher tiers. */
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
+	public void traderOffersChangeDaily(GameTestHelper helper) {
+		java.util.UUID id = java.util.UUID.randomUUID();
+		var novice = io.github.jcondedata.aliveworkplace.compat.cobblemon.CobblemonTraders.offers(id, 1, 7);
+		helper.assertTrue(novice.equals(io.github.jcondedata.aliveworkplace.compat.cobblemon.CobblemonTraders.offers(id, 1, 7)), "offers changed within a day");
+		var master = io.github.jcondedata.aliveworkplace.compat.cobblemon.CobblemonTraders.offers(id, 5, 7);
+		helper.assertTrue(novice.size() == 1 && master.size() == 3, "offer counts " + novice.size() + " / " + master.size());
+		helper.assertTrue(novice.stream().allMatch(o -> o.level() >= 5 && o.level() <= 15), "novice levels");
+		helper.assertTrue(master.stream().allMatch(o -> o.level() >= 50 && o.level() <= 70), "master levels");
+		java.util.Set<String> species = new java.util.HashSet<>();
+		for (long day = 0; day < 10; day++) {
+			for (var offer : io.github.jcondedata.aliveworkplace.compat.cobblemon.CobblemonTraders.offers(id, 3, day)) {
+				species.add(offer.species().getName());
+				for (var type : offer.species().getTypes()) {
+					helper.assertTrue(!type.getName().equals(offer.wanted().getName()), "a trader wants the type they give away");
+				}
+				helper.assertTrue(offer.minLevel() <= offer.level() && offer.minLevel() >= 5, "wanted level " + offer.minLevel());
+			}
+		}
+		helper.assertTrue(species.size() >= 5, "offers barely change between days: " + species);
+		helper.succeed();
+	}
+
+	/** A fitting Pokémon is swapped for the trader's; one that doesn't fit stays; one trade a day. */
+	@GameTest(template = AREA)
+	public void traderSwapsPokemonOnceADay(GameTestHelper helper) {
+		helper.setDayTime(2000);
+		BlockPos board = new BlockPos(2, 1, 2);
+		helper.setBlock(board, ModBlocks.TRADE_BOARD);
+		Villager trader = helper.spawn(EntityType.VILLAGER, new BlockPos(3, 1, 3));
+		Jobs.employ(helper.getLevel(), trader, helper.absolutePos(board), ModVillagers.TRADE_BOARD_POI, ModVillagers.POKEMON_TRADER);
+		ServerPlayer player = helper.makeMockServerPlayerInLevel();
+		player.setGameMode(GameType.SURVIVAL);
+		PlayerPartyStore party = Cobblemon.INSTANCE.getStorage().getParty(player);
+
+		var offer = io.github.jcondedata.aliveworkplace.compat.cobblemon.CobblemonTraders.offers(trader).get(0);
+		String wanted = offer.wanted().getName();
+		java.util.List<com.cobblemon.mod.common.pokemon.Species> all = new java.util.ArrayList<>(com.cobblemon.mod.common.api.pokemon.PokemonSpecies.getImplemented());
+		all.sort(java.util.Comparator.comparing(com.cobblemon.mod.common.pokemon.Species::getName));
+		java.util.function.Predicate<com.cobblemon.mod.common.pokemon.Species> fits = s -> {
+			for (var type : s.getTypes()) {
+				if (type.getName().equals(wanted)) {
+					return true;
+				}
+			}
+			return false;
+		};
+		Pokemon wrong = all.stream().filter(fits.negate()).findFirst().orElseThrow().create(offer.minLevel() + 5);
+		Pokemon mine = all.stream().filter(fits).findFirst().orElseThrow().create(offer.minLevel() + 5);
+		party.add(wrong);
+		party.add(mine);
+
+		var menu = io.github.jcondedata.aliveworkplace.compat.cobblemon.CobblemonTraders.menuForTest(player, trader);
+		int first = io.github.jcondedata.aliveworkplace.compat.cobblemon.CobblemonTraders.FIRST_PARTY_SLOT;
+		menu.press(first, player);
+		menu.press(first, player);
+		helper.assertTrue(contains(party, wrong), "a Pokémon of the wrong type was traded away");
+		menu.press(first + 1, player);
+		helper.assertTrue(contains(party, mine), "the first click already traded");
+		menu.press(first + 1, player);
+		helper.assertFalse(contains(party, mine), "the fitting Pokémon is still in the party");
+		boolean got = false;
+		for (Pokemon p : party) {
+			got |= p.getSpecies() == offer.species() && p.getLevel() == offer.level();
+		}
+		helper.assertTrue(got, "the trader's " + offer.species().getName() + " didn't arrive");
+		helper.assertTrue(trader.getAttachedOrElse(io.github.jcondedata.aliveworkplace.registry.ModAttachments.POKEMON_TRADE_COUNT, 0) == 1, "trade not counted");
+
+		Pokemon another = all.stream().filter(fits).findFirst().orElseThrow().create(offer.minLevel() + 5);
+		party.add(another);
+		helper.assertFalse(io.github.jcondedata.aliveworkplace.compat.cobblemon.CobblemonTraders.trade(player, trader, another, offer),
+			"a second trade the same day");
+		helper.assertTrue(contains(party, another), "the second Pokémon left the party");
+		helper.succeed();
+	}
+
+	private static boolean contains(PlayerPartyStore party, Pokemon pokemon) {
+		for (Pokemon p : party) {
+			if (p == pokemon) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	/** A Trainer Leader starts at Expert strength, pays three times the prize, and takes one challenge a day per player. */
 	@GameTest(template = AREA, timeoutTicks = 400)
 	public void leaderStartsStrongAndPaysMore(GameTestHelper helper) {

@@ -1185,6 +1185,56 @@ def tutor_overlay():
     save(img, "entity", "zombie_villager", "profession", "tutor.png")
 
 
+# --- Trade Board: a cork board with notes pinned to it -------------------------------------------------
+def trade_board(face):
+    rnd = random.Random({"top": 261, "side": 262, "front": 263}[face])
+    img = Image.new("RGBA", (16, 16))
+    planks(img, rnd)
+    for i in range(16):
+        for p in ((i, 0), (i, 15), (0, i), (15, i)):
+            img.putpixel(p, WOOD_EDGE)
+    if face in ("side", "front"):
+        # Cork
+        for y in range(2, 14):
+            for x in range(2, 14):
+                img.putpixel((x, y), jitter(rgb("#b88a55"), rnd, 10))
+    if face == "front":
+        # Three notes, each with a red pin and a line of writing
+        for (nx, ny) in ((3, 3), (9, 4), (5, 9)):
+            for y in range(ny, ny + 4):
+                for x in range(nx, nx + 4):
+                    img.putpixel((x, y), jitter(rgb("#f2ecd9"), rnd, 3))
+            img.putpixel((nx + 1, ny), rgb("#c62828"))
+            img.putpixel((nx + 1, ny + 2), rgb("#6d6d7a"))
+            img.putpixel((nx + 2, ny + 2), rgb("#6d6d7a"))
+    if face == "side":
+        img.putpixel((7, 7), rgb("#f2ecd9"))
+        img.putpixel((8, 7), rgb("#f2ecd9"))
+    save(img, "block", "trade_board_" + face + ".png")
+
+
+def pokemon_trader_overlay():
+    img = Image.new("RGBA", (64, 64), T)
+    rnd = random.Random(271)
+    teal, strap, white = rgb("#1f7a78"), rgb("#6b4a2b"), rgb("#f2f2f2")
+    # A teal cap with a white peak line
+    for y in range(0, 8):
+        for x in range(40, 48):
+            img.putpixel((x, y), jitter(teal, rnd, 4))
+    for y in range(8, 11):
+        for x in range(32, 64):
+            img.putpixel((x, y), jitter(white if y == 10 else teal, rnd, 4))
+    # A teal waistcoat with a satchel strap across it
+    for y in range(44, 56):
+        for x in range(0, 28):
+            img.putpixel((x, y), jitter(teal, rnd, 4))
+    for i in range(12):
+        img.putpixel((2 + i, 44 + i), strap)
+        img.putpixel((3 + i, 44 + i), strap)
+    save(img, "entity", "villager", "profession", "pokemon_trader.png")
+    save(img, "entity", "zombie_villager", "profession", "pokemon_trader.png")
+
+
 def icon(blueprint):
     big = Image.new("RGBA", (128, 128), T)
     scaled = blueprint.resize((128, 128), Image.NEAREST)
@@ -1252,3 +1302,6 @@ if __name__ == "__main__":
     tutors_desk_side(front=False)
     tutors_desk_side(front=True)
     tutor_overlay()
+    for face in ("top", "side", "front"):
+        trade_board(face)
+    pokemon_trader_overlay()

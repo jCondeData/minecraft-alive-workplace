@@ -33,7 +33,7 @@ mkdir -p run/screenshots/blueprints && cp src/gametest/resources/fixtures/hut.li
 # 3. Run the client (the dev-only harness stages the scene, takes shots and quits).
 LIBGL_ALWAYS_SOFTWARE=1 GALLIUM_DRIVER=llvmpipe xvfb-run -a -s "-screen 0 1280x720x24" \
   ./gradlew runScreenshots --no-daemon -Pscene="${SCENE:-builders}" -PworkshopWeight="${WORKSHOP_WEIGHT:-3}" ${HOUSE_WEIGHT:+-PhouseWeight=$HOUSE_WEIGHT} \
-    -Pcobblemon="$([ "${SCENE:-}" = tutor ] && echo true || echo false)" -PbuilderDebug="${DEBUG:-false}" > "$SCRATCH/client.log" 2>&1 || true
+    -Pcobblemon="$(case "${SCENE:-}" in tutor|trader) echo true;; *) echo false;; esac)" -PbuilderDebug="${DEBUG:-false}" > "$SCRATCH/client.log" 2>&1 || true
 cp "$SCRATCH/client.log" run/screenshots/client.log 2>/dev/null || true
 grep -E "finished building|Stopping!" "$SCRATCH/client.log" || true
 

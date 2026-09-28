@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "aliveworkplace:block/trade_board"
+    },
+    "facing=east": {
+      "model": "aliveworkplace:block/trade_board",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "aliveworkplace:block/trade_board",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "aliveworkplace:block/trade_board",
+      "y": 270
+    }
+  }
+}

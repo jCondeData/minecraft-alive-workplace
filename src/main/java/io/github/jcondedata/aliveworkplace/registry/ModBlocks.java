@@ -105,6 +105,11 @@ public final class ModBlocks {
 		"tutors_desk", new BuildersBenchBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.BOOKSHELF))
 	);
 
+	/** Workstation for Pokémon Traders (they only trade with Cobblemon installed). */
+	public static final BuildersBenchBlock TRADE_BOARD = register(
+		"trade_board", new BuildersBenchBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_PLANKS))
+	);
+
 	private static <T extends Block> T register(String name, T block) {
 		Registry.register(BuiltInRegistries.BLOCK, AliveWorkplace.id(name), block);
 		Registry.register(BuiltInRegistries.ITEM, AliveWorkplace.id(name), new BlockItem(block, new Item.Properties()));

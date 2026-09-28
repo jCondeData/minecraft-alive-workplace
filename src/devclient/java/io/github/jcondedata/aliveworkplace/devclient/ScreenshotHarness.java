@@ -94,6 +94,10 @@ public class ScreenshotHarness implements ClientModInitializer {
 			tutorScene(mc, mc.getSingleplayerServer());
 			return;
 		}
+		if ("trader".equals(System.getProperty("aliveworkplace.scene"))) {
+			traderScene(mc, mc.getSingleplayerServer());
+			return;
+		}
 		if ("forest".equals(System.getProperty("aliveworkplace.scene"))) {
 			forestScene(mc, mc.getSingleplayerServer());
 			return;
@@ -628,6 +632,69 @@ public class ScreenshotHarness implements ClientModInitializer {
 			shot(mc, "02_tutor_lesson");
 		}
 		if (tick == 130) {
+			mc.stop();
+		}
+	}
+
+	// --- Trader: the Pokémon Trader's offers (needs Cobblemon too) ------------------------------------
+
+	private void traderScene(Minecraft mc, MinecraftServer server) {
+		tick++;
+		if (tick == 1) {
+			mc.options.renderDistance().set(6);
+			mc.options.cloudStatus().set(CloudStatus.OFF);
+		}
+		if (tick == 40) {
+			server.execute(() -> {
+				ServerLevel level = server.overworld();
+				ServerPlayer player = server.getPlayerList().getPlayers().get(0);
+				level.getGameRules().getRule(GameRules.RULE_DAYLIGHT).set(false, server);
+				level.getGameRules().getRule(GameRules.RULE_DOMOBSPAWNING).set(false, server);
+				level.setDayTime(2500);
+				BlockPos board = new BlockPos(0, -60, 3);
+				level.setBlockAndUpdate(board, ModBlocks.TRADE_BOARD.defaultBlockState());
+				Villager trader = EntityType.VILLAGER.spawn(level, board.south(), MobSpawnType.COMMAND);
+				io.github.jcondedata.aliveworkplace.work.Jobs.employ(level, trader, board,
+					io.github.jcondedata.aliveworkplace.registry.ModVillagers.TRADE_BOARD_POI,
+					io.github.jcondedata.aliveworkplace.registry.ModVillagers.POKEMON_TRADER);
+				trader.setVillagerData(trader.getVillagerData().setLevel(5));
+				var offer = io.github.jcondedata.aliveworkplace.compat.cobblemon.CobblemonTraders.offers(trader).get(0);
+				var party = com.cobblemon.mod.common.Cobblemon.INSTANCE.getStorage().getParty(player);
+				party.add(com.cobblemon.mod.common.api.pokemon.PokemonProperties.Companion.parse("pikachu level=30", " ", "=").create());
+				// One that fits the first offer.
+				for (var species : com.cobblemon.mod.common.api.pokemon.PokemonSpecies.getImplemented()) {
+					boolean fits = false;
+					for (var type : species.getTypes()) {
+						fits |= type.getName().equals(offer.wanted().getName());
+					}
+					if (fits && species.getEvolutions().isEmpty()) {
+						party.add(species.create(offer.minLevel() + 3));
+						break;
+					}
+				}
+				party.add(com.cobblemon.mod.common.api.pokemon.PokemonProperties.Companion.parse("eevee level=12", " ", "=").create());
+				player.setGameMode(GameType.SURVIVAL);
+				player.teleportTo(level, 2.5, -60, 5.5, 135, 20);
+				io.github.jcondedata.aliveworkplace.trader.PokemonTraders.open(player, trader);
+			});
+		}
+		if (tick == 90) {
+			mc.getToasts().clear();
+			pointAt(mc, 0); // the first offer
+		}
+		if (tick == 100) {
+			shot(mc, "01_trader_offer");
+			pointAt(mc, 19); // the Pokémon that fits
+		}
+		if (tick == 120) {
+			mc.getToasts().clear();
+			shot(mc, "02_trader_party");
+			pointAt(mc, 18); // one that doesn't
+		}
+		if (tick == 140) {
+			shot(mc, "03_trader_refused");
+		}
+		if (tick == 150) {
 			mc.stop();
 		}
 	}

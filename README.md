@@ -6,7 +6,7 @@ torches. **Miners** dig out quarries, **Lumberjacks** cut down and replant trees
 your fields and **Fishermen** fish for you, dropping everything off in your chests. **Postmen** carry mail
 between players' mailboxes, **Guards** keep monsters away, **Nurses** heal you (and your Pokémon),
 **Shopkeepers** run your shop, **Ferrymen** take you between villages, **Bards** play music and — with Cobblemon —
-**Trainers** battle you and **Move Tutors** teach your Pokémon new moves. Villages grow workshops, trainer's houses, guard houses, clinics and post offices on their own.
+**Trainers** battle you, **Move Tutors** teach your Pokémon new moves and **Pokémon Traders** swap Pokémon with you. Villages grow workshops, trainer's houses, guard houses, clinics and post offices on their own.
 
 ![Three builders putting up the starter blueprints](docs/media/timelapse.gif)
 
@@ -165,6 +165,17 @@ Lessons cost emeralds: 3 for a weak move, up to 24 for the strongest (egg moves 
 only teaches weaker moves; they rank up with every lesson they give, and a Master teaches everything. Tutors also buy
 paper and books, if you need emeralds.
 
+## Pokémon Traders (with Cobblemon)
+Craft a **Trade Board** (an item frame on planks) and place it near a villager without a job: they become a
+**Pokémon Trader**. Right-click them with an empty hand (sneak to buy Poké Balls and candies instead) to see today's
+offers — "my Tinkaton, level 62, for any Fighting type, level 55 or higher". Pick an offer, then one of your
+Pokémon that fits (the rest are greyed out, with the reason), and click it twice to swap. A held item comes back to
+you. Offers change every in-game day and are the same for everyone; each player gets one trade per trader per day.
+A new trader has one offer of a young Pokémon; with every trade they rank up, and a Master has three offers at level
+50–70, now and then a shiny one.
+
+![A Pokémon Trader's offers and your party](docs/media/pokemon-trader.png)
+
 ## Blueprint Table: any build from the internet
 Craft a **Blueprint Table** (blue dye on top, cartography table in the middle, planks around) and right-click it.
 
@@ -202,7 +213,7 @@ Craft a **Blueprint Table** (blue dye on top, cartography table in the middle, p
 | `/gamerule workplaceKeepWorkLoaded false` | builds and quarries stop when nobody is nearby (by default they keep going while the player who ordered them is online) |
 
 ## What's next
-Next up is the Pokémon Trader, then Pokémon work partners and Cobblemon jobs. See [ROADMAP.md](ROADMAP.md).
+Next up are Pokémon work partners and Cobblemon jobs (Orchard Keeper, Ball Smith, Chef). See [ROADMAP.md](ROADMAP.md).
 
 ## Building from source
 ```

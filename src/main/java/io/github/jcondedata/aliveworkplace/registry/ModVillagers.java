@@ -233,6 +233,23 @@ public final class ModVillagers {
 		)
 	);
 
+	public static final ResourceLocation TRADE_BOARD_ID = AliveWorkplace.id("trade_board");
+	public static final ResourceKey<PoiType> TRADE_BOARD_POI = ResourceKey.create(Registries.POINT_OF_INTEREST_TYPE, TRADE_BOARD_ID);
+	public static final PoiType TRADE_BOARD_POI_TYPE = PointOfInterestHelper.register(TRADE_BOARD_ID, 1, 1, ModBlocks.TRADE_BOARD);
+
+	public static final VillagerProfession POKEMON_TRADER = Registry.register(
+		BuiltInRegistries.VILLAGER_PROFESSION,
+		AliveWorkplace.id("pokemon_trader"),
+		new VillagerProfession(
+			"pokemon_trader",
+			holder -> holder.is(TRADE_BOARD_POI),
+			holder -> holder.is(TRADE_BOARD_POI),
+			ImmutableSet.of(),
+			ImmutableSet.of(),
+			SoundEvents.VILLAGER_WORK_CARTOGRAPHER
+		)
+	);
+
 	/**
 	 * Guards keep the night watch: on patrol from evening to mid-morning, asleep until early afternoon,
 	 * then out with the village. They fight whenever a monster shows up, whatever they are doing.
@@ -252,7 +269,7 @@ public final class ModVillagers {
 	public static boolean isWorker(VillagerProfession profession) {
 		return profession == BUILDER || profession == MINER || profession == LUMBERJACK || profession == POSTMAN
 			|| profession == NURSE || profession == SHOPKEEPER || profession == FERRYMAN
-			|| profession == TRAINER || profession == TRAINER_LEADER || profession == TUTOR;
+			|| profession == TRAINER || profession == TRAINER_LEADER || profession == TUTOR || profession == POKEMON_TRADER;
 	}
 
 	/**

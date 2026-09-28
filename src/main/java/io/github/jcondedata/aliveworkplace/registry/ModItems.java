@@ -70,6 +70,7 @@ public final class ModItems {
 				output.accept(ModBlocks.TRAINING_POST);
 				output.accept(ModBlocks.LEADERS_PODIUM);
 				output.accept(ModBlocks.TUTORS_DESK);
+				output.accept(ModBlocks.TRADE_BOARD);
 				for (StarterBlueprints.Entry entry : StarterBlueprints.ALL) {
 					output.accept(BlueprintItem.create(entry.id(), entry.size()));
 				}

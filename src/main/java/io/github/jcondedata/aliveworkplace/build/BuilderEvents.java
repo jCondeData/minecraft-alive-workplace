@@ -70,6 +70,16 @@ public final class BuilderEvents {
 				}
 				return InteractionResult.PASS;
 			}
+			if (io.github.jcondedata.aliveworkplace.trader.PokemonTraders.isTrader(villager)) {
+				// Right-click with an empty hand: the day's Pokémon trades. Sneak to trade items instead.
+				if (player.getItemInHand(hand).isEmpty() && !player.isShiftKeyDown()) {
+					if (!level.isClientSide) {
+						io.github.jcondedata.aliveworkplace.trader.PokemonTraders.open((ServerPlayer) player, villager);
+					}
+					return InteractionResult.SUCCESS;
+				}
+				return InteractionResult.PASS;
+			}
 			if (io.github.jcondedata.aliveworkplace.tutor.Tutors.isTutor(villager)) {
 				// Right-click with an empty hand: lessons. Sneak to trade instead.
 				if (player.getItemInHand(hand).isEmpty() && !player.isShiftKeyDown()) {

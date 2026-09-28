@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+### Added
+- **Pokémon Traders** (with Cobblemon). Craft a **Trade Board** (an item frame on planks) for a villager and
+  right-click them to see today's offers: one of their Pokémon for any of yours of a given type and level. Pick an
+  offer and a Pokémon that fits, click twice, and they swap (held items come back to you). New offers every in-game
+  day, one trade per player per trader per day; traders rank up with every trade — more offers, stronger Pokémon,
+  the odd shiny at Master. Sneak-right-click to buy Poké Balls, Exp. Candy, Rare Candy and more for emeralds.
+
 ## 0.23.0 — 2026-09-27
 
 ### Added

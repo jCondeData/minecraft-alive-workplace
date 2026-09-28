@@ -16,6 +16,7 @@ public final class ModTrades {
 		guardTrades();
 		nurseTrades();
 		tutorTrades();
+		pokemonTraderTrades();
 		TradeOfferHelper.registerVillagerOffers(ModVillagers.BARD, 1, offers -> {
 			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 2), new ItemStack(Items.NOTE_BLOCK, 2), 12, 2, 0.05f));
 			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.STRING, 16), new ItemStack(Items.EMERALD), 16, 2, 0.05f));
@@ -117,6 +118,36 @@ public final class ModTrades {
 			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.WRITABLE_BOOK, 2), new ItemStack(Items.EMERALD), 12, 30, 0.05f)));
 		TradeOfferHelper.registerVillagerOffers(ModVillagers.TUTOR, 5, offers ->
 			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 20), new ItemStack(Items.NAME_TAG), 4, 30, 0.05f)));
+	}
+
+	/** Pokémon Traders sell Cobblemon's balls and candies (nothing when Cobblemon isn't installed). */
+	private static void pokemonTraderTrades() {
+		TradeOfferHelper.registerVillagerOffers(ModVillagers.POKEMON_TRADER, 1, offers -> {
+			offers.add((entity, random) -> cobblemon("poke_ball", 1, 4, 16, 1));
+			offers.add((entity, random) -> net.minecraft.core.registries.BuiltInRegistries.ITEM
+				.getOptional(net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("cobblemon", "red_apricorn"))
+				.map(item -> new MerchantOffer(new ItemCost(item, 8), new ItemStack(Items.EMERALD), 16, 2, 0.05f)).orElse(null));
+		});
+		TradeOfferHelper.registerVillagerOffers(ModVillagers.POKEMON_TRADER, 2, offers -> {
+			offers.add((entity, random) -> cobblemon("great_ball", 1, 2, 12, 5));
+			offers.add((entity, random) -> cobblemon("exp_candy_m", 2, 1, 12, 10));
+		});
+		TradeOfferHelper.registerVillagerOffers(ModVillagers.POKEMON_TRADER, 3, offers ->
+			offers.add((entity, random) -> cobblemon("ultra_ball", 2, 1, 12, 15)));
+		TradeOfferHelper.registerVillagerOffers(ModVillagers.POKEMON_TRADER, 4, offers ->
+			offers.add((entity, random) -> cobblemon("exp_candy_l", 6, 1, 8, 20)));
+		TradeOfferHelper.registerVillagerOffers(ModVillagers.POKEMON_TRADER, 5, offers -> {
+			offers.add((entity, random) -> cobblemon("rare_candy", 12, 1, 4, 30));
+			offers.add((entity, random) -> cobblemon("ability_capsule", 24, 1, 2, 30));
+		});
+	}
+
+	/** Emeralds for a Cobblemon item, or no offer when Cobblemon (or that item) isn't there. */
+	private static MerchantOffer cobblemon(String item, int emeralds, int count, int uses, int xp) {
+		return net.minecraft.core.registries.BuiltInRegistries.ITEM
+			.getOptional(net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("cobblemon", item))
+			.map(i -> new MerchantOffer(new ItemCost(Items.EMERALD, emeralds), new ItemStack(i, count), uses, xp, 0.05f))
+			.orElse(null);
 	}
 
 	private static void nurseTrades() {

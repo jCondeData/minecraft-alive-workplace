@@ -78,6 +78,15 @@ public final class ModAttachments {
 	public static final AttachmentType<Integer> TUTOR_LESSONS = AttachmentRegistry.create(
 		AliveWorkplace.id("tutor_lessons"), builder -> builder.persistent(com.mojang.serialization.Codec.INT));
 
+	/** Player → the in-game day they last traded with this Pokémon Trader. */
+	public static final AttachmentType<java.util.Map<java.util.UUID, Long>> POKEMON_TRADES = AttachmentRegistry.create(
+		AliveWorkplace.id("pokemon_trades"), builder -> builder.persistent(
+			com.mojang.serialization.Codec.unboundedMap(net.minecraft.core.UUIDUtil.STRING_CODEC, com.mojang.serialization.Codec.LONG)));
+
+	/** Trades a Pokémon Trader has made. */
+	public static final AttachmentType<Integer> POKEMON_TRADE_COUNT = AttachmentRegistry.create(
+		AliveWorkplace.id("pokemon_trade_count"), builder -> builder.persistent(com.mojang.serialization.Codec.INT));
+
 	public static void init() {
 	}
 

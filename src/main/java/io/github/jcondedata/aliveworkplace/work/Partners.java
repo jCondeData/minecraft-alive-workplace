@@ -60,6 +60,9 @@ public final class Partners {
 		if (profession == ModVillagers.NURSE) {
 			return Set.of("fairy", "normal", "psychic");
 		}
+		if (profession == ModVillagers.PORTER) {
+			return Set.of("fighting", "normal"); // strong arms: more carried each trip
+		}
 		if (profession == ModVillagers.POSTMAN) {
 			return Set.of("flying"); // air mail: parcels for far away go at once instead of at dawn
 		}

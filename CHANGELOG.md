@@ -2,6 +2,21 @@
 
 ## Unreleased
 
+## 0.71.0 — 2026-09-28
+
+### Added
+- **Porters and the Storehouse**: a new job. Craft a Storehouse (three planks over a barrel, a chest and a barrel), put
+  chests around it, and a villager becomes a Porter who walks round the village's workers and carries what they make —
+  ore, logs, crops, fish, fruit — to the storehouse chests, leaving what each job needs (tools, torches, seeds, saplings,
+  some stone). Builders and everyone else find things in the storehouse. A storehouse you place is yours: its porter only
+  carries for your workers and your friends'.
+- **Storehouse builds**: the Storehouse Shed blueprint (sold by porters, and in the Blueprint Table) with two upgrades,
+  Storehouse II (a second bay) and Storehouse III (a stone warehouse behind); villages of every type sometimes grow a
+  small storehouse with a porter.
+
+### Fixed
+- A double chest's items were counted twice by the workers (a builder could think it had enough when it didn't).
+
 ## 0.70.0 — 2026-09-28
 
 ### Added

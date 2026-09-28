@@ -1399,6 +1399,81 @@ def ball_smith_overlay():
     save(img, "entity", "zombie_villager", "profession", "ball_smith.png")
 
 
+# --- Storehouse: a stack of crates with the porter's ledger -------------------------------------------
+def storehouse(face):
+    rnd = random.Random({"top": 321, "side": 322, "front": 323}[face])
+    img = Image.new("RGBA", (16, 16))
+    planks(img, rnd)
+    frame, frame_dark = rgb("#6e4a26"), rgb("#553619")
+    rope, rope_dark = rgb("#d8c08a"), rgb("#a8905a")
+    # A dark frame round the edge: every face is the side of a crate
+    for i in range(16):
+        for p in ((i, 0), (i, 15), (0, i), (15, i)):
+            img.putpixel(p, jitter(frame_dark, rnd, 4))
+        for p in ((i, 1), (i, 14), (1, i), (14, i)):
+            img.putpixel(p, jitter(frame, rnd, 4))
+    if face == "top":
+        # The lid: two cross battens and a rope tied round it
+        for i in range(2, 14):
+            img.putpixel((i, 7), jitter(frame, rnd, 4))
+            img.putpixel((i, 8), jitter(frame_dark, rnd, 4))
+            img.putpixel((7, i), jitter(rope, rnd, 6))
+            img.putpixel((8, i), jitter(rope_dark, rnd, 6))
+        for (x, y) in ((6, 6), (9, 6), (6, 9), (9, 9), (7, 7), (8, 8)):
+            img.putpixel((x, y), rope)
+    elif face == "side":
+        # A diagonal brace, like a shipping crate
+        for i in range(2, 14):
+            img.putpixel((i, 15 - i), jitter(frame, rnd, 4))
+            img.putpixel((i, 16 - i if i > 2 else 13), jitter(frame_dark, rnd, 4))
+    else:
+        # The ledger hanging on a nail: a paper board with lines and a tally
+        paper, ink = rgb("#ece3c8"), rgb("#4a3b2a")
+        for y in range(4, 13):
+            for x in range(4, 12):
+                img.putpixel((x, y), jitter(paper, rnd, 3))
+        for x in range(4, 12):
+            img.putpixel((x, 4), jitter(frame_dark, rnd, 3))  # the clip
+        for y in (6, 8, 10):
+            for x in range(5, 11):
+                if (x + y) % 4:
+                    img.putpixel((x, y), ink)
+        for x in (8, 9, 10):
+            img.putpixel((x, 11), rgb("#b3262c"))  # a red tick at the bottom
+        img.putpixel((7, 3), rgb("#9aa0a6"))
+        img.putpixel((8, 3), rgb("#9aa0a6"))
+    save(img, "block", "storehouse_" + face + ".png")
+
+
+def porter_overlay():
+    img = Image.new("RGBA", (64, 64), T)
+    rnd = random.Random(331)
+    cap, cap_dark = rgb("#6b5a3e"), rgb("#4f422d")
+    # A flat wool cap
+    for y in range(0, 8):
+        for x in range(40, 48):
+            img.putpixel((x, y), jitter(cap, rnd, 5))
+    for y in range(8, 11):
+        for x in range(32, 64):
+            img.putpixel((x, y), jitter(cap_dark if y == 10 else cap, rnd, 5))
+    for i in range(3, 13):
+        img.putpixel((31 + i, 48 + 3), cap_dark)  # the peak
+    # A canvas vest with leather carrying straps and a coil of rope on the belt
+    vest, strap, rope = rgb("#8c8a6a"), rgb("#6b4226"), rgb("#d8c08a")
+    for y in range(44, 58):
+        for x in range(4, 24):
+            img.putpixel((x, y), jitter(vest, rnd, 5))
+    for y in range(44, 58):
+        for x in (7, 8, 19, 20):
+            img.putpixel((x, y), jitter(strap, rnd, 4))
+    for x in range(4, 24):
+        img.putpixel((x, 53), jitter(strap, rnd, 3))
+    for (x, y) in ((12, 54), (13, 54), (14, 54), (11, 55), (15, 55), (12, 56), (13, 56), (14, 56)):
+        img.putpixel((x, y), rope)
+    save(img, "entity", "villager", "profession", "porter.png")
+    save(img, "entity", "zombie_villager", "profession", "porter.png")
+
+
 def icon(blueprint):
     big = Image.new("RGBA", (128, 128), T)
     scaled = blueprint.resize((128, 128), Image.NEAREST)
@@ -1476,3 +1551,6 @@ if __name__ == "__main__":
     for face in ("top", "side", "front"):
         ball_workbench(face)
     ball_smith_overlay()
+    for face in ("top", "side", "front"):
+        storehouse(face)
+    porter_overlay()

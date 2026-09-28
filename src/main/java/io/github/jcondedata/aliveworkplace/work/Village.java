@@ -39,14 +39,18 @@ public final class Village {
 	private static final int RECHECK_TICKS = 100;
 
 	/** A worker's chests: the ones within the supply radius of their workstation. */
-	public record Stash(BlockPos station, List<BlockPos> chests) {
+	public record Stash(BlockPos station, VillagerProfession job, List<BlockPos> chests) {
 	}
 
 	/** Something found in a village-mate's stash, and the chest it's in. */
 	public record Find(Stash stash, BlockPos chest) {
 	}
 
-	private record Cached(long until, BlockPos station, List<BlockPos> mates) {
+	/** A village-mate: their workstation and their job. */
+	public record Mate(BlockPos station, VillagerProfession job) {
+	}
+
+	private record Cached(long until, BlockPos station, List<Mate> mates) {
 	}
 
 	private static final Map<Villager, Cached> CACHE = new WeakHashMap<>();
@@ -58,7 +62,7 @@ public final class Village {
 		}
 		VillagerProfession job = villager.getVillagerData().getProfession();
 		return job == ModVillagers.BUILDER || job == ModVillagers.MINER || job == ModVillagers.LUMBERJACK || job == ModVillagers.ORCHARD_KEEPER
-			|| job == ModVillagers.BALL_SMITH || Fields.isFarmer(villager) && Fields.hasField(villager)
+			|| job == ModVillagers.BALL_SMITH || job == ModVillagers.PORTER || Fields.isFarmer(villager) && Fields.hasField(villager)
 			|| Fishers.isFisherman(villager) && Fishers.isHired(villager);
 	}
 
@@ -72,8 +76,8 @@ public final class Village {
 		return Friends.get(level.getServer()).mayDirect(giverBoss.id(), takerBoss.id());
 	}
 
-	/** Workstations of the workers {@code villager} may take from, nearest first (their own not included). */
-	static List<BlockPos> mateStations(ServerLevel level, Villager villager, BlockPos station) {
+	/** The workers {@code villager} may take from, nearest first (not counting workers at the same workstation). */
+	public static List<Mate> mates(ServerLevel level, Villager villager, BlockPos station) {
 		long now = level.getGameTime();
 		synchronized (CACHE) {
 			Cached cached = CACHE.get(villager);
@@ -81,19 +85,21 @@ public final class Village {
 				return cached.mates();
 			}
 		}
-		List<BlockPos> out = new ArrayList<>();
+		List<Mate> out = new ArrayList<>();
 		if (takesPart(villager)) {
 			double radiusSqr = (double) RADIUS * RADIUS;
+			Set<BlockPos> seen = new HashSet<>();
 			for (Villager other : level.getEntitiesOfClass(Villager.class, new AABB(station).inflate(RADIUS + 16),
 				v -> v != villager && v.isAlive() && takesPart(v))) {
 				BlockPos theirs = Builders.benchPos(other).orElse(null);
-				if (theirs != null && !theirs.equals(station) && theirs.distSqr(station) <= radiusSqr && sharesWith(level, villager, other)) {
-					out.add(theirs);
+				if (theirs != null && !theirs.equals(station) && theirs.distSqr(station) <= radiusSqr && sharesWith(level, villager, other)
+					&& seen.add(theirs)) {
+					out.add(new Mate(theirs.immutable(), other.getVillagerData().getProfession()));
 				}
 			}
-			out.sort(Comparator.comparingDouble(p -> p.distSqr(station)));
+			out.sort(Comparator.comparingDouble(m -> m.station().distSqr(station)));
 		}
-		List<BlockPos> mates = List.copyOf(out);
+		List<Mate> mates = List.copyOf(out);
 		synchronized (CACHE) {
 			CACHE.put(villager, new Cached(now + RECHECK_TICKS, station.immutable(), mates));
 		}
@@ -114,15 +120,15 @@ public final class Village {
 	public static List<Stash> stashes(ServerLevel level, Villager villager, BlockPos station, @Nullable BoundingBox exclude) {
 		Set<BlockPos> seen = new HashSet<>(SupplyContainers.find(level, station, exclude));
 		List<Stash> out = new ArrayList<>();
-		for (BlockPos mate : mateStations(level, villager, station)) {
+		for (Mate mate : mates(level, villager, station)) {
 			List<BlockPos> chests = new ArrayList<>();
-			for (BlockPos chest : SupplyContainers.find(level, mate, exclude)) {
+			for (BlockPos chest : SupplyContainers.find(level, mate.station(), exclude)) {
 				if (seen.add(chest)) {
 					chests.add(chest);
 				}
 			}
 			if (!chests.isEmpty()) {
-				out.add(new Stash(mate, chests));
+				out.add(new Stash(mate.station(), mate.job(), chests));
 			}
 		}
 		return out;

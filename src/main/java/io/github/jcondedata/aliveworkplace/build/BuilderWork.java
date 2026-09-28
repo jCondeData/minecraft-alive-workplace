@@ -783,6 +783,9 @@ public class BuilderWork extends Behavior<Villager> {
 			level.setBlock(pos, shaped.isAir() ? state : shaped, Block.UPDATE_ALL);
 		}
 		applyBlockEntityData(level, pos, state, step.nbt());
+		if (state.is(io.github.jcondedata.aliveworkplace.registry.ModBlocks.STOREHOUSE)) {
+			io.github.jcondedata.aliveworkplace.store.Porters.onBuilt(level, pos, site);
+		}
 
 		if (state.getBlock() instanceof LiquidBlock) {
 			level.playSound(null, pos, state.getFluidState().is(net.minecraft.tags.FluidTags.LAVA) ? SoundEvents.BUCKET_EMPTY_LAVA : SoundEvents.BUCKET_EMPTY,

@@ -56,6 +56,8 @@ public final class VillageHouses {
 		out.put("ball_workshop", override != null ? override : 2);
 		// Travel posts: common, so most villages end up on the travel network.
 		out.put("ferry_house", override != null ? override : 4);
+		// The village's store and its porter.
+		out.put("storehouse", override != null ? override : 3);
 		return out;
 	}
 

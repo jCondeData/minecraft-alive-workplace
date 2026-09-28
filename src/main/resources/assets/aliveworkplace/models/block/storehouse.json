@@ -1,0 +1,9 @@
+{
+  "parent": "minecraft:block/orientable_with_bottom",
+  "textures": {
+    "top": "aliveworkplace:block/storehouse_top",
+    "bottom": "aliveworkplace:block/storehouse_side",
+    "side": "aliveworkplace:block/storehouse_side",
+    "front": "aliveworkplace:block/storehouse_front"
+  }
+}

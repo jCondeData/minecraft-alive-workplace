@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "aliveworkplace:block/storehouse"
+    },
+    "facing=east": {
+      "model": "aliveworkplace:block/storehouse",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "aliveworkplace:block/storehouse",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "aliveworkplace:block/storehouse",
+      "y": 270
+    }
+  }
+}

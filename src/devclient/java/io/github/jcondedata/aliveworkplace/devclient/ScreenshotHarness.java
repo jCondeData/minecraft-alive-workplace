@@ -106,6 +106,10 @@ public class ScreenshotHarness implements ClientModInitializer {
 			smithScene(mc, mc.getSingleplayerServer());
 			return;
 		}
+		if ("porter".equals(System.getProperty("aliveworkplace.scene"))) {
+			porterScene(mc, mc.getSingleplayerServer());
+			return;
+		}
 		if ("shop".equals(System.getProperty("aliveworkplace.scene"))) {
 			shopScene(mc, mc.getSingleplayerServer());
 			return;
@@ -400,6 +404,58 @@ public class ScreenshotHarness implements ClientModInitializer {
 			shot(mc, "01_smith_working");
 		}
 		if (tick == 340) {
+			mc.stop();
+		}
+	}
+
+	// --- Porter: carrying a miner's goods to the storehouse ------------------------------------------
+
+	private void porterScene(Minecraft mc, MinecraftServer server) {
+		tick++;
+		if (tick == 1) {
+			mc.options.renderDistance().set(6);
+			mc.options.cloudStatus().set(CloudStatus.OFF);
+			mc.options.hideGui = true;
+		}
+		if (tick == 30) {
+			server.execute(() -> {
+				ServerLevel level = server.overworld();
+				level.getGameRules().getRule(GameRules.RULE_DAYLIGHT).set(false, server);
+				level.getGameRules().getRule(GameRules.RULE_DOMOBSPAWNING).set(false, server);
+				level.setDayTime(2500);
+				BlockPos bench = new BlockPos(-5, -60, 0);
+				level.setBlockAndUpdate(bench, ModBlocks.MINERS_BENCH.defaultBlockState()
+					.setValue(net.minecraft.world.level.block.HorizontalDirectionalBlock.FACING, Direction.SOUTH));
+				level.setBlockAndUpdate(bench.west(), Blocks.CHEST.defaultBlockState().setValue(net.minecraft.world.level.block.ChestBlock.FACING, Direction.SOUTH));
+				BaseContainerBlockEntity chest = (BaseContainerBlockEntity) level.getBlockEntity(bench.west());
+				for (int i = 0; i < 6; i++) {
+					chest.setItem(i, new ItemStack(net.minecraft.world.item.Items.COBBLESTONE, 64));
+				}
+				chest.setItem(6, new ItemStack(net.minecraft.world.item.Items.RAW_IRON, 24));
+				chest.setItem(7, new ItemStack(net.minecraft.world.item.Items.COAL, 30));
+				chest.setItem(8, new ItemStack(net.minecraft.world.item.Items.TORCH, 16));
+				Villager miner = EntityType.VILLAGER.spawn(level, bench.south(), MobSpawnType.COMMAND);
+				miner.setNoAi(true);
+				io.github.jcondedata.aliveworkplace.mine.Miners.employ(level, miner, bench);
+				BlockPos storehouse = new BlockPos(5, -60, 0);
+				level.setBlockAndUpdate(storehouse, ModBlocks.STOREHOUSE.defaultBlockState()
+					.setValue(io.github.jcondedata.aliveworkplace.store.StorehouseBlock.FACING, Direction.SOUTH));
+				level.setBlockAndUpdate(storehouse.east(), Blocks.BARREL.defaultBlockState()
+					.setValue(net.minecraft.world.level.block.BarrelBlock.FACING, Direction.UP));
+				level.setBlockAndUpdate(storehouse.west(), Blocks.CHEST.defaultBlockState().setValue(net.minecraft.world.level.block.ChestBlock.FACING, Direction.SOUTH));
+				Villager porter = EntityType.VILLAGER.spawn(level, storehouse.south(), MobSpawnType.COMMAND);
+				io.github.jcondedata.aliveworkplace.store.Porters.employ(level, porter, storehouse);
+				hover(server.getPlayerList().getPlayers().get(0), new Vec3(0.5, -57.0, 8.5), 180, 20);
+			});
+		}
+		if (tick >= 50 && tick <= 350 && tick % 25 == 0) {
+			shot(mc, String.format("%02d_porter", tick / 25));
+		}
+		if (tick == 360) {
+			server.execute(() -> hover(server.getPlayerList().getPlayers().get(0), new Vec3(5.5, -58.3, 4.5), 180, 20));
+		}
+		if (tick == 420) {
+			shot(mc, "20_storehouse_closeup");
 			mc.stop();
 		}
 	}

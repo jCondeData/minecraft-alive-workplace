@@ -255,7 +255,7 @@ public class MinerWork extends Behavior<Villager> {
 	}
 
 	/** What the miner fills gaps in the stairs with, from the bag (the first one there is). */
-	static final List<Item> FILLERS = List.of(Items.COBBLESTONE, Items.COBBLED_DEEPSLATE, Items.STONE, Items.DEEPSLATE, Items.ANDESITE,
+	public static final List<Item> FILLERS = List.of(Items.COBBLESTONE, Items.COBBLED_DEEPSLATE, Items.STONE, Items.DEEPSLATE, Items.ANDESITE,
 		Items.DIORITE, Items.GRANITE, Items.TUFF, Items.DIRT, Items.NETHERRACK, Items.BLACKSTONE, Items.END_STONE);
 
 	/**

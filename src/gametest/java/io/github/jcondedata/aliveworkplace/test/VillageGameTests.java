@@ -63,13 +63,20 @@ public class VillageGameTests implements FabricGameTest {
 	public void everyVillageTypeCanGrowTheOtherHouses(GameTestHelper helper) {
 		ServerLevel level = helper.getLevel();
 		var pools = level.registryAccess().registryOrThrow(Registries.TEMPLATE_POOL);
-		java.util.Map<String, net.minecraft.world.level.block.Block> houses = java.util.Map.of(
-			"trainers_house", ModBlocks.TRAINING_POST, "guard_house", ModBlocks.GUARD_POST,
-			"clinic", ModBlocks.NURSE_STATION, "post_office", ModBlocks.POSTAL_DESK, "leaders_hall", ModBlocks.LEADERS_PODIUM,
-			"school", ModBlocks.TUTORS_DESK, "trade_hall", ModBlocks.TRADE_BOARD, "orchard_house", ModBlocks.FRUIT_BASKET,
-			"ball_workshop", ModBlocks.BALL_WORKBENCH, "ferry_house", ModBlocks.TRAVEL_POST);
+		java.util.Map<String, net.minecraft.world.level.block.Block> houses = java.util.Map.ofEntries(
+			java.util.Map.entry("trainers_house", ModBlocks.TRAINING_POST),
+			java.util.Map.entry("guard_house", ModBlocks.GUARD_POST),
+			java.util.Map.entry("clinic", ModBlocks.NURSE_STATION),
+			java.util.Map.entry("post_office", ModBlocks.POSTAL_DESK),
+			java.util.Map.entry("leaders_hall", ModBlocks.LEADERS_PODIUM),
+			java.util.Map.entry("school", ModBlocks.TUTORS_DESK),
+			java.util.Map.entry("trade_hall", ModBlocks.TRADE_BOARD),
+			java.util.Map.entry("orchard_house", ModBlocks.FRUIT_BASKET),
+			java.util.Map.entry("ball_workshop", ModBlocks.BALL_WORKBENCH),
+			java.util.Map.entry("ferry_house", ModBlocks.TRAVEL_POST),
+			java.util.Map.entry("storehouse", ModBlocks.STOREHOUSE));
 		// No Cobblemon here: the Pokémon houses stay out of the pools.
-		helper.assertTrue(VillageHouses.houseNames().equals(List.of("guard_house", "clinic", "post_office", "orchard_house", "ferry_house")),
+		helper.assertTrue(VillageHouses.houseNames().equals(List.of("guard_house", "clinic", "post_office", "orchard_house", "ferry_house", "storehouse")),
 			"houses without Cobblemon: " + VillageHouses.houseNames());
 		for (String style : VillageHouses.STYLES) {
 			StructureTemplatePool pool = pools.get(VillageHouses.housePool(style));

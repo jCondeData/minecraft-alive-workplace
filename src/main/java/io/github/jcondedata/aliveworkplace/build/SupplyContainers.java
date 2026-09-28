@@ -60,7 +60,7 @@ public final class SupplyContainers {
 					if (Math.abs(p.getX() - bench.getX()) > RADIUS || Math.abs(p.getZ() - bench.getZ()) > RADIUS || Math.abs(p.getY() - bench.getY()) > VERTICAL) {
 						continue;
 					}
-					if (keep.test(be)) {
+					if (keep.test(be) && !otherHalfFound(be, found)) {
 						found.add(p.immutable());
 					}
 				}
@@ -68,6 +68,34 @@ public final class SupplyContainers {
 		}
 		found.sort(Comparator.comparingDouble(p -> p.distSqr(bench)));
 		return found;
+	}
+
+	/** A double chest is one container: only one of its halves is listed (both halves hold the same items). */
+	private static boolean otherHalfFound(BlockEntity be, List<BlockPos> found) {
+		net.minecraft.world.level.block.state.BlockState state = be.getBlockState();
+		if (!(state.getBlock() instanceof net.minecraft.world.level.block.ChestBlock)
+			|| !state.hasProperty(net.minecraft.world.level.block.ChestBlock.TYPE)
+			|| state.getValue(net.minecraft.world.level.block.ChestBlock.TYPE) == net.minecraft.world.level.block.state.properties.ChestType.SINGLE) {
+			return false;
+		}
+		return found.contains(be.getBlockPos().relative(net.minecraft.world.level.block.ChestBlock.getConnectedDirection(state)));
+	}
+
+	/** Empty slots across the containers (a rough measure of room: stacks that are there can still grow). */
+	public static int freeSlots(ServerLevel level, List<BlockPos> containers) {
+		int free = 0;
+		for (BlockPos p : containers) {
+			Storage<ItemVariant> s = storage(level, p);
+			if (s == null) {
+				continue;
+			}
+			for (var view : s) {
+				if (view.isResourceBlank()) {
+					free++;
+				}
+			}
+		}
+		return free;
 	}
 
 	@Nullable

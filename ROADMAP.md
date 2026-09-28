@@ -309,6 +309,13 @@ Villagers work as a unit: what one worker makes, the others can use. No particul
 - [ ] **Porter** + **Storehouse** block (the porter's workstation; the chests around it are the village store): hauls
   surplus into the store and delivers what workers are missing; storehouse blueprints in many styles, any blueprint
   with the block counts; villages sometimes generate one
+  - [x] Storehouse block (block entity with the placer as owner; a builder's build belongs to the build's owner; the
+    porter's employer follows the storehouse), Porter job (`store/`), `PorterWork` hauling each job's goods
+    (`Porters.keeps`: what the job needs stays) from village-mates' stashes worth ≥16 items; 9 stacks a trip +3 a level,
+    +3 a Fighting/Normal partner. Double chests now listed once by `SupplyContainers.find`
+  - [x] Storehouse blueprints (starter builds `storehouse`, `_2`, `_3`; the porter sells the first) and a storehouse house in
+    every village style (weight 3, `village_storehouse` loot in one chest)
+  - [ ] Deliveries: the porter brings what a worker is missing (after Requests)
 - [ ] Requests: workers post what they're missing, producers do that first, a board at the storehouse shows it
 - [ ] Carpenter/Mason: turns logs and cobblestone into building blocks for the builders' requests
 

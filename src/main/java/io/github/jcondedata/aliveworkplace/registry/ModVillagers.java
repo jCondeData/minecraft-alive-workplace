@@ -284,6 +284,24 @@ public final class ModVillagers {
 		)
 	);
 
+	public static final ResourceLocation STOREHOUSE_ID = AliveWorkplace.id("storehouse");
+	public static final ResourceKey<PoiType> STOREHOUSE_POI = ResourceKey.create(Registries.POINT_OF_INTEREST_TYPE, STOREHOUSE_ID);
+	public static final PoiType STOREHOUSE_POI_TYPE = PointOfInterestHelper.register(STOREHOUSE_ID, 1, 1, ModBlocks.STOREHOUSE);
+
+	/** Keeps the village's storehouse: carries what the other workers make into the chests by the Storehouse. */
+	public static final VillagerProfession PORTER = Registry.register(
+		BuiltInRegistries.VILLAGER_PROFESSION,
+		AliveWorkplace.id("porter"),
+		new VillagerProfession(
+			"porter",
+			holder -> holder.is(STOREHOUSE_POI),
+			holder -> holder.is(STOREHOUSE_POI),
+			ImmutableSet.of(),
+			ImmutableSet.of(),
+			SoundEvents.BARREL_OPEN
+		)
+	);
+
 	/**
 	 * Guards keep the night watch: on patrol from evening to mid-morning, asleep until early afternoon,
 	 * then out with the village. They fight whenever a monster shows up, whatever they are doing.
@@ -304,7 +322,7 @@ public final class ModVillagers {
 		return profession == BUILDER || profession == MINER || profession == LUMBERJACK || profession == POSTMAN
 			|| profession == NURSE || profession == SHOPKEEPER || profession == FERRYMAN
 			|| profession == TRAINER || profession == TRAINER_LEADER || profession == TUTOR || profession == POKEMON_TRADER
-			|| profession == ORCHARD_KEEPER || profession == BALL_SMITH;
+			|| profession == ORCHARD_KEEPER || profession == BALL_SMITH || profession == PORTER;
 	}
 
 	/**

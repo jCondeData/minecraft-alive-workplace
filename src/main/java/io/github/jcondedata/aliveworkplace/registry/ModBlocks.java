@@ -120,6 +120,15 @@ public final class ModBlocks {
 		"ball_workbench", new BuildersBenchBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.SMITHING_TABLE))
 	);
 
+	/** Workstation for the Porter: the chests near it are the village's storehouse. Whoever places it owns it. */
+	public static final io.github.jcondedata.aliveworkplace.store.StorehouseBlock STOREHOUSE = register(
+		"storehouse", new io.github.jcondedata.aliveworkplace.store.StorehouseBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.BARREL))
+	);
+
+	public static final net.minecraft.world.level.block.entity.BlockEntityType<io.github.jcondedata.aliveworkplace.store.StorehouseBlockEntity> STOREHOUSE_ENTITY =
+		Registry.register(BuiltInRegistries.BLOCK_ENTITY_TYPE, AliveWorkplace.id("storehouse"),
+			net.minecraft.world.level.block.entity.BlockEntityType.Builder.of(io.github.jcondedata.aliveworkplace.store.StorehouseBlockEntity::new, STOREHOUSE).build(null));
+
 	private static <T extends Block> T register(String name, T block) {
 		Registry.register(BuiltInRegistries.BLOCK, AliveWorkplace.id(name), block);
 		Registry.register(BuiltInRegistries.ITEM, AliveWorkplace.id(name), new BlockItem(block, new Item.Properties()));

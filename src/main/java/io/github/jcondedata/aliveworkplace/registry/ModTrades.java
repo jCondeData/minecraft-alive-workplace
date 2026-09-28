@@ -19,6 +19,7 @@ public final class ModTrades {
 		pokemonTraderTrades();
 		orchardKeeperTrades();
 		ballSmithTrades();
+		porterTrades();
 		TradeOfferHelper.registerVillagerOffers(ModVillagers.BARD, 1, offers -> {
 			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 2), new ItemStack(Items.NOTE_BLOCK, 2), 12, 2, 0.05f));
 			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.STRING, 16), new ItemStack(Items.EMERALD), 16, 2, 0.05f));
@@ -53,6 +54,24 @@ public final class ModTrades {
 			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 1), new ItemStack(Items.BRICKS, 16), 12, 30, 0.05f));
 			offers.add((entity, random) -> blueprint(StarterBlueprints.SUPPLY_SHOP, 20));
 		});
+	}
+
+	/** Porters deal in the everyday things a storehouse is full of. */
+	private static void porterTrades() {
+		TradeOfferHelper.registerVillagerOffers(ModVillagers.PORTER, 1, offers -> {
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 1), new ItemStack(Items.CHEST, 2), 12, 2, 0.05f));
+			offers.add((entity, random) -> blueprint(StarterBlueprints.STOREHOUSE, 6));
+		});
+		TradeOfferHelper.registerVillagerOffers(ModVillagers.PORTER, 2, offers -> {
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 1), new ItemStack(Items.BARREL, 2), 12, 5, 0.05f));
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.LEATHER, 6), new ItemStack(Items.EMERALD), 12, 10, 0.05f));
+		});
+		TradeOfferHelper.registerVillagerOffers(ModVillagers.PORTER, 3, offers ->
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 2), new ItemStack(Items.LEAD, 2), 6, 15, 0.05f)));
+		TradeOfferHelper.registerVillagerOffers(ModVillagers.PORTER, 4, offers ->
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 4), new ItemStack(Items.CHEST_MINECART), 4, 20, 0.05f)));
+		TradeOfferHelper.registerVillagerOffers(ModVillagers.PORTER, 5, offers ->
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 12), new ItemStack(Items.SHULKER_SHELL), 2, 30, 0.05f)));
 	}
 
 	private static void minerTrades() {

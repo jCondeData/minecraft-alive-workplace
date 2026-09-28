@@ -44,6 +44,10 @@ public final class ModAttachments {
 	public static final AttachmentType<Integer> BALLS_MADE = AttachmentRegistry.create(
 		AliveWorkplace.id("balls_made"), builder -> builder.persistent(com.mojang.serialization.Codec.INT));
 
+	/** How many items a Porter has carried to the storehouse (shown above its head). */
+	public static final AttachmentType<Integer> ITEMS_CARRIED = AttachmentRegistry.create(
+		AliveWorkplace.id("items_carried"), builder -> builder.persistent(com.mojang.serialization.Codec.INT));
+
 	/** How much fruit an Orchard Keeper has picked (shown above its head). */
 	public static final AttachmentType<Integer> FRUIT_PICKED = AttachmentRegistry.create(
 		AliveWorkplace.id("fruit_picked"), builder -> builder.persistent(com.mojang.serialization.Codec.INT));

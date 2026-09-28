@@ -3,10 +3,10 @@
 Villagers with real jobs. Hand a **Builder** a blueprint and they build it for you: they clear the
 site, fetch materials from your chests, put up the walls and roof, and finish with doors, beds and
 torches. **Miners** dig out quarries, **Lumberjacks** cut down and replant trees, **Orchard Keepers** pick berries, cocoa and apricorns, **Farmers** look after
-your fields and **Fishermen** fish for you, dropping everything off in your chests. **Postmen** carry mail
+your fields and **Fishermen** fish for you, dropping everything off in your chests. **Porters** gather it all in the village storehouse, **Postmen** carry mail
 between players' mailboxes, **Guards** keep monsters away, **Nurses** heal you (and your Pokémon),
 **Shopkeepers** run your shop, **Ferrymen** take you between villages, **Bards** play music and — with Cobblemon —
-**Trainers** battle you, **Move Tutors** teach your Pokémon new moves, **Ball Smiths** make Poké Balls and **Pokémon Traders** swap Pokémon with you. Villages grow workshops, guard houses, clinics, post offices, orchard houses and ferry houses on their own — and with Cobblemon,
+**Trainers** battle you, **Move Tutors** teach your Pokémon new moves, **Ball Smiths** make Poké Balls and **Pokémon Traders** swap Pokémon with you. Villages grow workshops, guard houses, clinics, post offices, orchard houses, ferry houses and storehouses on their own — and with Cobblemon,
 trainer's houses, Trainer Leader halls, schools, trade halls and ball workshops (Repurposed Structures' villages too).
 
 ![Three builders putting up the starter blueprints](docs/media/timelapse.gif)
@@ -92,6 +92,7 @@ where they take tools and supplies from and where their work goes.
 | Orchard Keeper | Fruit Basket | berries and seeds to plant, a hoe | nothing — or a Field Marker for an orchard |
 | Farmer | Composter (vanilla) | seeds, a hoe, bone meal | a Field Marker (blank: their own farm) |
 | Fisherman | Barrel (vanilla) | spare rods (coal for a smoker) | hand them a fishing rod |
+| Porter | Storehouse | empty chests: the village's store | nothing |
 | Postman | Postal Desk | — | Mailboxes for mail; Delivery Notes for hauling |
 | Guard | Guard Post | weapons, armor, a bow or crossbow and arrows | nothing |
 | Nurse | Nurse Station | — | right-click them to be healed |
@@ -112,7 +113,8 @@ short of stone takes it from the miner's chests, a lumberjack with a broken axe 
 worker makes still goes into its own chests; the others come and get it. No particular building is needed, so it works
 in any village (from any mod) and in your own base. Only workers who answer to the same people share: the ones hired by
 you or your friends (`/workplace friend add`), and village workers nobody has hired with each other — a friend's
-builder won't empty your miner's chests unless you've made them your friend.
+builder won't empty your miner's chests unless you've made them your friend. A **Porter** (see *Porters and the
+storehouse*) gathers what everyone makes in one place.
 
 ## Miners
 ![A miner digging out a quarry](docs/media/miner.gif)
@@ -216,6 +218,27 @@ their barrel and any chests within 8 blocks of it. Rods wear out: put spares in 
 furnace) next to the barrel and some coal or charcoal in it, and the raw cod and salmon go into the smoker instead,
 with the cooked fish coming back out at the next drop-off. Sneak-right-click the fisherman with an empty hand to see
 how it's going or to stop.
+
+## Porters and the storehouse
+![A porter carrying a miner's stone and ore to the storehouse](docs/media/porter.png)
+
+Craft a **Storehouse** (three planks over a barrel, a chest and a barrel), put chests or barrels within 8 blocks of it
+and a villager without a job becomes a **Porter**. The porter walks round the other workers of the village and carries
+what they make to the storehouse chests: the miner's ore, coal and spare stone, the lumberjack's logs, the farmer's
+harvest, the fisherman's catch, the orchard keeper's fruit. They leave what each job needs: tools, the miner's torches
+and ladders and some stone for the stairs, seeds and saplings, bone meal, and ore or fish waiting for a furnace next to
+the worker. Builders and ball smiths have nothing to carry away. A worker's goods have to add up to 16 items to be worth
+the walk.
+
+The storehouse is part of the village's stock, so a builder short of stone finds it there. Right-click the Storehouse
+to see how full it is. One you place (or have a builder build) is yours: its porter works for you, and only carries for
+your workers and your friends'. A village's own storehouse carries for the village's workers. A porter carries 9 stacks
+a trip, 3 more at each level.
+
+**Storehouse builds.** Porters sell the **Storehouse Shed** blueprint (it's in the Blueprint Table too): an open timber
+shed with a Storehouse and eight chests. **Storehouse II** adds a second bay with eight more, and **Storehouse III** a
+stone warehouse behind with sixteen more. Any building of your own with a Storehouse in it works just as well, and
+villages sometimes grow a storehouse of their own.
 
 ## Mail and postmen
 ![The mailbox screen](docs/media/mailbox.png)
@@ -375,6 +398,7 @@ type suits it — each one cuts the time the work takes by 15%, up to three:
 | Fisherman | Water, Ice |
 | Nurse | Fairy, Normal, Psychic |
 | Ball Smith | Steel, Fire |
+| Porter | Fighting, Normal: each carries 3 more stacks a trip |
 | Postman | Flying: **air mail** — parcels for mailboxes outside the round go straight there instead of at dawn |
 | Miner, Fisherman (their furnaces) | Fire: each time the worker tends a furnace or smoker by the workstation, every Fire-type partner smelts 8 of what's in it on the spot, no coal needed |
 

@@ -542,7 +542,7 @@ public class FieldWork extends Behavior<Villager> {
 
 	// --- errands ----------------------------------------------------------------------------------
 
-	static boolean isSeed(ItemStack stack) {
+	public static boolean isSeed(ItemStack stack) {
 		return !stack.isEmpty() && stack.getItem() instanceof BlockItem bi
 			&& (bi.getBlock().defaultBlockState().is(BlockTags.CROPS) || bi.getBlock() instanceof NetherWartBlock);
 	}

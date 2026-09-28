@@ -666,6 +666,108 @@ def supply_shop_3():
     return b
 
 
+# --- Storehouse: the Porter's workstation and the village's store ------------------------------------
+def storehouse_chests(b, xs, z, facing, ys=(1, 2)):
+    for x in xs:
+        for y in ys:
+            b.set(x, y, z, "chest", facing=facing, type="single", waterlogged=False)
+
+
+def storehouse():
+    """7 x 6 x 6: an open-fronted timber shed with a Storehouse and eight chests along the back wall (a villager
+    moves in as the porter and fills them with what the village's workers make)."""
+    b = Build(7, 6, 6)
+    b.fill(0, 0, 0, 6, 0, 5, "cobblestone")
+    b.fill(1, 0, 1, 5, 0, 4, "spruce_planks")
+    for x, z in ((0, 0), (6, 0), (0, 5), (6, 5)):
+        for y in range(1, 4):
+            b.set(x, y, z, "oak_log", axis="y")
+    for y in range(1, 4):
+        for z in range(1, 5):
+            b.set(0, y, z, "spruce_planks")
+            b.set(6, y, z, "spruce_planks")
+        for x in range(1, 6):
+            b.set(x, y, 5, "spruce_planks")
+    for x in (0, 6):
+        b.set(x, 2, 2, "glass_pane", north=True, south=True, east=False, west=False, waterlogged=False)
+    # A lean-to roof, low at the open front
+    for x in range(7):
+        b.set(x, 4, 0, "spruce_stairs", facing="south", half="bottom", shape="straight", waterlogged=False)
+        for z in range(1, 6):
+            b.set(x, 4, z, "spruce_planks")
+        b.set(x, 5, 1, "spruce_stairs", facing="south", half="bottom", shape="straight", waterlogged=False)
+        for z in range(2, 6):
+            b.set(x, 5, z, "spruce_slab", type="bottom", waterlogged=False)
+    # The Storehouse between two stacks of chests, a lantern on top
+    b.set(3, 1, 4, "aliveworkplace:storehouse", facing="north")
+    b.set(3, 2, 4, "lantern", hanging=False, waterlogged=False)
+    storehouse_chests(b, (1, 2, 4, 5), 4, "north")
+    b.set(1, 1, 1, "hay_block", axis="y")
+    b.set(5, 1, 1, "hay_block", axis="y")
+    b.set(3, 3, 1, "lantern", hanging=True, waterlogged=False)
+    b.fill_air()
+    return b
+
+
+def storehouse_2():
+    """Upgrade of the Storehouse: a second bay to the east through a doorway, eight more chests (a gap in the middle
+    of them for the door the third tier puts there)."""
+    b = storehouse().grow(13, 6, 6)
+    b.fill(7, 0, 0, 12, 0, 5, "cobblestone")
+    b.fill(7, 0, 1, 11, 0, 4, "spruce_planks")
+    for z in (0, 5):
+        for y in range(1, 4):
+            b.set(12, y, z, "oak_log", axis="y")
+    for y in range(1, 4):
+        for z in range(1, 5):
+            b.set(12, y, z, "spruce_planks")
+        for x in range(7, 12):
+            b.set(x, y, 5, "spruce_planks")
+    b.set(12, 2, 2, "glass_pane", north=True, south=True, east=False, west=False, waterlogged=False)
+    b.clear(6, 1, 2, 6, 2, 3)  # the doorway between the bays
+    for x in range(7, 13):
+        b.set(x, 4, 0, "spruce_stairs", facing="south", half="bottom", shape="straight", waterlogged=False)
+        for z in range(1, 6):
+            b.set(x, 4, z, "spruce_planks")
+        b.set(x, 5, 1, "spruce_stairs", facing="south", half="bottom", shape="straight", waterlogged=False)
+        for z in range(2, 6):
+            b.set(x, 5, z, "spruce_slab", type="bottom", waterlogged=False)
+    storehouse_chests(b, (7, 8, 10, 11), 4, "north")
+    b.set(11, 1, 1, "hay_block", axis="y")
+    b.set(9, 3, 1, "lantern", hanging=True, waterlogged=False)
+    b.fill_air()
+    return b
+
+
+def storehouse_3():
+    """Upgrade of Storehouse II: a stone warehouse behind both bays, through a door in the east bay's back wall, with
+    sixteen more chests between spruce posts."""
+    b = storehouse_2().grow(13, 7, 12)
+    b.fill(0, 0, 6, 12, 0, 11, "stone_bricks")
+    b.fill(1, 0, 6, 11, 0, 10, "spruce_planks")
+    for y in range(1, 5):
+        for z in range(6, 12):
+            b.set(0, y, z, "stone_bricks")
+            b.set(12, y, z, "stone_bricks")
+        for x in range(1, 12):
+            b.set(x, y, 11, "stone_bricks")
+    for z in (8, 9):
+        b.set(0, 2, z, "glass_pane", north=True, south=True, east=False, west=False, waterlogged=False)
+        b.set(12, 2, z, "glass_pane", north=True, south=True, east=False, west=False, waterlogged=False)
+    b.fill(0, 5, 6, 12, 5, 11, "spruce_planks")
+    b.fill(1, 6, 7, 11, 6, 10, "spruce_slab", type="bottom", waterlogged=False)
+    b.clear(9, 1, 5, 9, 2, 5)
+    b.door(9, 1, 5, "spruce_door", facing="south")
+    storehouse_chests(b, (1, 2, 4, 5, 7, 8, 10, 11), 10, "north")
+    for x in (3, 6, 9):
+        for y in (1, 2):
+            b.set(x, y, 10, "stripped_spruce_log", axis="y")
+    for x in (3, 9):
+        b.set(x, 4, 8, "lantern", hanging=True, waterlogged=False)
+    b.fill_air()
+    return b
+
+
 # --- Village builder's workshops: one per village type, added to the vanilla house pools ------
 VILLAGE_STYLES = {
     #          floor              walls            corners                 roof stairs         roof slab            door           bed
@@ -874,9 +976,19 @@ def ferry_house(b, style):
     b.set(1, 1, 5, "spruce_planks")
 
 
+def storehouse_room(b, style):
+    """A Storehouse and four empty chests: the village's store (the porter who moves in fills them)."""
+    b.set(1, 1, 6, "aliveworkplace:storehouse", facing="east")
+    for z in (4, 5):
+        for y in (1, 2):
+            b.set(1, y, z, "chest", facing="east", type="single", waterlogged=False)
+    b.set_nbt(1, 1, 5, Compound({"LootTable": String("aliveworkplace:chests/village_storehouse"), "id": String("minecraft:chest")}))
+    b.set(1, 1, 3, "hay_block", axis="y")
+
+
 VILLAGE_HOUSES = {"trainers_house": trainers_house, "guard_house": guard_house, "clinic": clinic, "post_office": post_office,
                   "leaders_hall": leaders_hall, "school": school, "trade_hall": trade_hall, "orchard_house": orchard_house,
-                  "ball_workshop": ball_workshop, "ferry_house": ferry_house}
+                  "ball_workshop": ball_workshop, "ferry_house": ferry_house, "storehouse": storehouse_room}
 
 
 # --- Gametest fixtures ------------------------------------------------------------------
@@ -937,6 +1049,9 @@ if __name__ == "__main__":
     supply_shop().save(MAIN_STRUCTURES, "supply_shop")
     supply_shop_2().save(MAIN_STRUCTURES, "supply_shop_2")
     supply_shop_3().save(MAIN_STRUCTURES, "supply_shop_3")
+    storehouse().save(MAIN_STRUCTURES, "storehouse")
+    storehouse_2().save(MAIN_STRUCTURES, "storehouse_2")
+    storehouse_3().save(MAIN_STRUCTURES, "storehouse_3")
     for style in VILLAGE_STYLES:
         builders_workshop(style).save(VILLAGE_STRUCTURES, f"{style}_builders_workshop")
         for name, fit_out in VILLAGE_HOUSES.items():

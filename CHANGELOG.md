@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+## 0.64.0 — 2026-09-28
+
+### Added
+- **Fire-type partners at the furnaces** (with Cobblemon): a Fire-type Pokémon pastured near a Miner's Bench or a
+  fisherman's barrel smelts 8 of the ores (or fish) in each furnace there every time the worker tends it — on the
+  spot, no coal, straight into the chests. Up to three partners.
+
 ## 0.63.0 — 2026-09-28
 
 ### Added

@@ -329,6 +329,7 @@ type suits it — each one cuts the time the work takes by 15%, up to three:
 | Nurse | Fairy, Normal, Psychic |
 | Ball Smith | Steel, Fire |
 | Postman | Flying: **air mail** — parcels for mailboxes outside the round go straight there instead of at dawn |
+| Miner, Fisherman (their furnaces) | Fire: each time the worker tends a furnace or smoker by the workstation, every Fire-type partner smelts 8 of what's in it on the spot, no coal needed |
 
 The line above the villager's head says who is helping ("· with Machop"), and sneak-right-clicking a worker shows
 how much faster they are. It works with [Cobbleworkers](https://modrinth.com/mod/cobbleworkers) too: the same

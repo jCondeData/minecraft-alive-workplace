@@ -79,6 +79,31 @@ public class PastureCompatTests implements FabricGameTest {
 		});
 	}
 
+	/** A Charmander pastured near a Miner's Bench smelts 8 of the ores in the furnace there each time it's tended. */
+	@GameTest(template = AREA, timeoutTicks = 200)
+	public void fireTypesSmeltAtTheFurnaces(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		BlockPos bench = new BlockPos(2, 2, 2);
+		BlockPos chest = new BlockPos(2, 2, 4);
+		BlockPos furnace = new BlockPos(4, 2, 2);
+		helper.setBlock(bench, ModBlocks.MINERS_BENCH);
+		helper.setBlock(chest, net.minecraft.world.level.block.Blocks.CHEST);
+		helper.setBlock(furnace, net.minecraft.world.level.block.Blocks.FURNACE);
+		var oven = (net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity) helper.getBlockEntity(furnace);
+		oven.setItem(0, new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.RAW_IRON, 20));
+		BlockPos pasture = pasture(helper, new BlockPos(10, 2, 10));
+		ServerPlayer player = helper.makeMockServerPlayerInLevel();
+		pastured(helper, pasture, player, "charmander", Direction.NORTH);
+		helper.runAfterDelay(10, () -> {
+			var supplies = io.github.jcondedata.aliveworkplace.build.SupplyContainers.find(level, helper.absolutePos(bench), null);
+			io.github.jcondedata.aliveworkplace.work.Furnaces.tend(level, helper.absolutePos(bench), supplies, io.github.jcondedata.aliveworkplace.work.Furnaces::isOre);
+			net.minecraft.world.Container box = helper.getBlockEntity(chest);
+			helper.assertTrue(box.countItem(net.minecraft.world.item.Items.IRON_INGOT) == 8, "the chest has " + box.countItem(net.minecraft.world.item.Items.IRON_INGOT) + " ingots");
+			helper.assertTrue(oven.getItem(0).getCount() == 12, "the furnace has " + oven.getItem(0));
+			helper.succeed();
+		});
+	}
+
 	/**
 	 * Air mail: with a Flying-type Pokémon pastured by the Postal Desk, a parcel for a mailbox outside the postman's
 	 * round goes straight there when it's handed in, instead of waiting for the dawn mail. (Alone: it shrinks the round.)

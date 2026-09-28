@@ -235,7 +235,10 @@ workstation, like the rest of the mod.
   a follow-a-villager Pokémon: no new UI, and the Pokémon stay safe in the owner's PC
 - [x] Air mail: a Flying-type partner by the Postal Desk delivers a handed-in parcel for outside the round at once
   (instead of with the dawn mail)
-- [ ] Partner follow-ups: Fire types speeding the furnaces workers tend, guards fighting beside their Pokémon
+- [x] Fire-type partners at the furnaces (`Furnaces.blaze`): each time a worker tends a furnace/smoker, each Fire-type
+  Pokémon pastured near the workstation (up to 3) smelts 8 of the worker's goods in it at once, fuel-free, straight
+  into the chests (only while there's room)
+- [ ] Partner follow-ups: guards fighting beside their Pokémon
   Fighting/Dragon types
 - [ ] Pokémon-themed blueprints that come with staff: Pokémon Center (Nurse), Poké Mart (Clerk, sells for CobbleDollars), Berry Farm, Fossil Lab
 - [x] **Orchard Keeper** (Fruit Basket workstation): picks ripe sweet berries, glow berries, cocoa and, with Cobblemon,

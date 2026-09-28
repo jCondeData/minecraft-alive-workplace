@@ -32,12 +32,71 @@ public final class Furnaces {
 	 */
 	public static int tend(ServerLevel level, BlockPos station, List<BlockPos> supplies, Predicate<Item> goods) {
 		int moved = 0;
+		int fire = -1;
 		for (BlockPos pos : SupplyContainers.furnaces(level, station)) {
 			if (level.getBlockEntity(pos) instanceof AbstractFurnaceBlockEntity furnace) {
 				moved += tend(level, furnace, supplies, goods);
+				if (fire < 0) {
+					fire = firePartners(level, station);
+				}
+				if (fire > 0) {
+					moved += blaze(level, furnace, pos, supplies, goods, fire * PER_FIRE_PARTNER);
+				}
 			}
 		}
 		return moved;
+	}
+
+	/** Items a Fire-type partner smelts on the spot, per furnace, each time a worker tends it. */
+	public static final int PER_FIRE_PARTNER = 8;
+
+	/** Fire-type Pokémon pastured near the workstation (with Cobblemon; at most {@link Partners#MAX}). */
+	static int firePartners(ServerLevel level, BlockPos station) {
+		if (!net.fabricmc.loader.api.FabricLoader.getInstance().isModLoaded("cobblemon")) {
+			return 0;
+		}
+		return io.github.jcondedata.aliveworkplace.compat.cobblemon.CobblemonPartners.helpers(level, station, Partners.RADIUS, java.util.Set.of("fire"),
+			Partners.MAX).size();
+	}
+
+	/**
+	 * A Fire-type partner's help: up to {@code count} of what's waiting in the furnace is smelted at once, no fuel
+	 * used, and goes straight into the chests (only as much as there's room for). Returns how many were smelted.
+	 */
+	static int blaze(ServerLevel level, AbstractFurnaceBlockEntity furnace, BlockPos pos, List<BlockPos> supplies, Predicate<Item> goods, int count) {
+		ItemStack in = furnace.getItem(0);
+		if (in.isEmpty() || !goods.test(in.getItem())) {
+			return 0;
+		}
+		ItemStack each = result(level, furnace, in.getItem());
+		if (each.isEmpty()) {
+			return 0;
+		}
+		int done = 0;
+		for (int i = 0; i < Math.min(count, in.getCount()); i++) {
+			ItemStack rest = SupplyContainers.insert(level, supplies, each.copy());
+			if (!rest.isEmpty()) {
+				break; // the chests are full: the furnace carries on as usual
+			}
+			done++;
+		}
+		if (done > 0) {
+			in.shrink(done);
+			furnace.setChanged();
+			level.sendParticles(net.minecraft.core.particles.ParticleTypes.FLAME, pos.getX() + 0.5, pos.getY() + 1.1, pos.getZ() + 0.5, 8, 0.25, 0.1, 0.25, 0.02);
+			level.playSound(null, pos, net.minecraft.sounds.SoundEvents.FIRECHARGE_USE, net.minecraft.sounds.SoundSource.BLOCKS, 0.4f, 1.2f);
+		}
+		return done;
+	}
+
+	/** What one {@code item} smelts into in this furnace, or empty. */
+	static ItemStack result(ServerLevel level, AbstractFurnaceBlockEntity furnace, Item item) {
+		SingleRecipeInput input = new SingleRecipeInput(new ItemStack(item));
+		RecipeType<? extends net.minecraft.world.item.crafting.AbstractCookingRecipe> type = furnace instanceof BlastFurnaceBlockEntity ? RecipeType.BLASTING
+			: furnace instanceof SmokerBlockEntity ? RecipeType.SMOKING : RecipeType.SMELTING;
+		return level.getRecipeManager().getRecipeFor(type, input, level)
+			.map(r -> r.value().assemble(input, level.registryAccess()))
+			.orElse(ItemStack.EMPTY);
 	}
 
 	private static int tend(ServerLevel level, AbstractFurnaceBlockEntity furnace, List<BlockPos> supplies, Predicate<Item> goods) {

@@ -85,6 +85,12 @@ villager without a job. Then:
    leave anything touching lava or water standing so the pit stays dry. When the last pickaxe wears out they wait
    for another.
 
+![Steps left in the wall of a finished quarry](docs/media/quarry-stairs.png)
+
+**Stairs out of the pit.** In a pit at least 3 × 3 and 3 deep, the miner leaves one block per layer standing as a step,
+each a block along the wall from the one above, so steps spiral down the walls from the corner nearest the bench.
+Sand and gravel steps are swapped for cobblestone, and gaps (caves) are filled in with stone from the chests.
+
 ## Lumberjacks
 ![A lumberjack cutting and replanting trees](docs/media/lumberjack.gif)
 

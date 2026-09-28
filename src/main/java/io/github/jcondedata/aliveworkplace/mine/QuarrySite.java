@@ -30,6 +30,11 @@ public final class QuarrySite {
 	@Nullable
 	private BlockPos bench;
 
+	/** Leave a staircase of steps spiralling down the pit walls (quarries from before 0.45 don't). */
+	private boolean stairs;
+	/** Where along the walls the top step is (see {@link #wallIndex}). */
+	private int stairStart;
+
 	private Status status = Status.WORKING;
 	private long lastNotified = Long.MIN_VALUE / 2;
 	private Runnable onChange = () -> {
@@ -82,6 +87,81 @@ public final class QuarrySite {
 			skipped++;
 		}
 		onChange.run();
+	}
+
+	// --- stairs ------------------------------------------------------------------------------
+
+	/** Smallest pit that gets stairs: 3 × 3 across and 3 deep (anything shallower you can climb out of). */
+	public static final int STAIRS_MIN = 3;
+
+	/** Plans the stairs: on if the pit is big enough, starting at the wall nearest {@code bench} (the way out). */
+	public void planStairs(@Nullable BlockPos bench) {
+		stairs = box.getXSpan() >= STAIRS_MIN && box.getZSpan() >= STAIRS_MIN && box.getYSpan() >= STAIRS_MIN;
+		stairStart = 0;
+		if (bench != null) {
+			double best = Double.MAX_VALUE;
+			for (int x = box.minX(); x <= box.maxX(); x++) {
+				for (int z = box.minZ(); z <= box.maxZ(); z++) {
+					int i = wallIndex(x, z);
+					double dist = i < 0 ? Double.MAX_VALUE : Math.pow(x - bench.getX(), 2) + Math.pow(z - bench.getZ(), 2);
+					if (dist < best) {
+						best = dist;
+						stairStart = i;
+					}
+				}
+			}
+		}
+		onChange.run();
+	}
+
+	public boolean hasStairs() {
+		return stairs;
+	}
+
+	public void setStairs(boolean stairs) {
+		this.stairs = stairs;
+		onChange.run();
+	}
+
+	/** Blocks around the edge of one layer. */
+	private int wallLength() {
+		return 2 * (box.getXSpan() - 1) + 2 * (box.getZSpan() - 1);
+	}
+
+	/** Where (x, z) is along the edge of the pit, going round: 0 at the north-west corner, then east; -1 inside. */
+	int wallIndex(int x, int z) {
+		int w = box.getXSpan();
+		int d = box.getZSpan();
+		int lx = x - box.minX();
+		int lz = z - box.minZ();
+		if (lx < 0 || lz < 0 || lx >= w || lz >= d) {
+			return -1;
+		}
+		if (lz == 0) {
+			return lx;
+		}
+		if (lx == w - 1) {
+			return (w - 1) + lz;
+		}
+		if (lz == d - 1) {
+			return (w - 1) + (d - 1) + (w - 1 - lx);
+		}
+		if (lx == 0) {
+			return 2 * (w - 1) + (d - 1) + (d - 1 - lz);
+		}
+		return -1;
+	}
+
+	/**
+	 * Whether the block at {@code pos} is a step of the stairs: one block per layer, each one along the wall from the
+	 * one above and a block lower, so the steps spiral down the pit walls. Steps are left standing (or filled in).
+	 */
+	public boolean isStep(BlockPos pos) {
+		if (!stairs || !box.isInside(pos)) {
+			return false;
+		}
+		int i = wallIndex(pos.getX(), pos.getZ());
+		return i >= 0 && i == Math.floorMod(stairStart + (box.maxY() - pos.getY()), wallLength());
 	}
 
 	public float progress() {
@@ -177,6 +257,8 @@ public final class QuarrySite {
 		if (bench != null) {
 			tag.putLong("bench", bench.asLong());
 		}
+		tag.putBoolean("stairs", stairs);
+		tag.putInt("stair_start", stairStart);
 		return tag;
 	}
 
@@ -194,6 +276,8 @@ public final class QuarrySite {
 		site.skipped = tag.getInt("skipped");
 		site.miner = tag.hasUUID("miner") ? tag.getUUID("miner") : null;
 		site.bench = tag.contains("bench", Tag.TAG_LONG) ? BlockPos.of(tag.getLong("bench")) : null;
+		site.stairs = tag.getBoolean("stairs"); // false for quarries started before stairs existed
+		site.stairStart = tag.getInt("stair_start");
 		return site;
 	}
 }

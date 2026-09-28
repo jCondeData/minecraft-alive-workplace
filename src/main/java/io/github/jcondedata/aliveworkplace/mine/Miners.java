@@ -118,6 +118,7 @@ public final class Miners {
 			level.dimension().location(), clampToWorld(level, box), depth);
 		site.setMiner(villager.getUUID());
 		site.setBench(Builders.benchPos(villager).orElse(null));
+		site.planStairs(site.bench());
 		villager.setAttached(ModAttachments.MINER_JOB, new BuilderJob(site.id()));
 		return site;
 	}

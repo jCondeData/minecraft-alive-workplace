@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+## 0.45.0 — 2026-09-28
+
+### Added
+- **Stairs out of the pit**: miners leave a staircase spiralling down the walls of quarries at least 3 × 3 and 3 deep
+  (one step per layer, starting at the corner nearest the bench), so you and they can walk out. Sand and gravel steps
+  are swapped for cobblestone and gaps are filled in. Quarries started before this update keep digging without stairs.
+
 ### Fixed
 - **Miners no longer dig up the ground around their Miner's Bench.** Since 0.18.0, keeping a quarry loaded while its
   owner was online stretched the quarry to take in everything within 8 blocks of the bench (and down to the bench's

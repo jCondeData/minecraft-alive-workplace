@@ -65,6 +65,7 @@ public class MinerGameTests implements FabricGameTest {
 		helper.setBlock(new BlockPos(7, 3, 7), Blocks.COAL_ORE);
 		helper.setBlock(new BlockPos(8, 2, 8), Blocks.IRON_ORE);
 		Setup s = setup(helper, min, max, new ItemStack(Items.STONE_PICKAXE));
+		s.site().setStairs(false); // everything dug out (stairs: see minerLeavesStairsDownThePit)
 		helper.succeedWhen(() -> {
 			helper.assertTrue(finished(s), "still digging: " + Math.round(s.site().progress() * 100) + "% (" + s.site().status() + "), "
 				+ s.site().mined() + " dug, " + s.site().skipped() + " left");
@@ -76,6 +77,52 @@ public class MinerGameTests implements FabricGameTest {
 			helper.assertTrue(chest.countItem(Items.COAL) == 1 && chest.countItem(Items.RAW_IRON) == 1, "the ores should be in the chest");
 			helper.assertTrue(chest.countItem(Items.STONE_PICKAXE) == 1, "the pickaxe should be back in the chest");
 			helper.assertTrue(chest.countItem(ModItems.QUARRY_MARKER) == 1, "the marker should be back in the chest");
+		});
+	}
+
+	/**
+	 * A 5×5 pit 5 deep, cut into the ground: one block per layer is left as a step, each along the wall from the one
+	 * above, so the steps spiral down the walls. A sand step is swapped for cobblestone, a gap (a cave) filled in.
+	 */
+	@GameTest(template = AREA, timeoutTicks = 6000)
+	public void minerLeavesStairsDownThePit(GameTestHelper helper) {
+		BlockPos min = new BlockPos(6, 2, 6);
+		BlockPos max = new BlockPos(10, 6, 10);
+		fillStone(helper, new BlockPos(5, 2, 5), new BlockPos(11, 6, 11)); // the pit and the ground around it
+		Setup s = setup(helper, min, max, new ItemStack(Items.IRON_PICKAXE));
+		helper.assertTrue(s.site().hasStairs(), "a 5x5x5 quarry should get stairs");
+		BlockPos[] steps = new BlockPos[5];
+		for (BlockPos p : BlockPos.betweenClosed(min, max)) {
+			if (s.site().isStep(helper.absolutePos(p))) {
+				int layer = max.getY() - p.getY();
+				helper.assertTrue(steps[layer] == null, "two steps in layer " + layer);
+				steps[layer] = p.immutable();
+			}
+		}
+		for (int layer = 0; layer < 5; layer++) {
+			helper.assertTrue(steps[layer] != null, "no step in layer " + layer);
+			if (layer > 0) {
+				int dx = Math.abs(steps[layer].getX() - steps[layer - 1].getX());
+				int dz = Math.abs(steps[layer].getZ() - steps[layer - 1].getZ());
+				helper.assertTrue(dx + dz == 1, "step " + layer + " at " + steps[layer] + " isn't next to step " + (layer - 1) + " at " + steps[layer - 1]);
+			}
+		}
+		helper.assertTrue(steps[0].equals(new BlockPos(6, 6, 6)), "the stairs should start at the corner nearest the bench, not " + steps[0]);
+		helper.setBlock(steps[2], Blocks.SAND);
+		helper.setBlock(steps[3], Blocks.AIR);
+		helper.succeedWhen(() -> {
+			helper.assertTrue(finished(s), "still digging: " + Math.round(s.site().progress() * 100) + "% (" + s.site().status() + "), "
+				+ s.site().mined() + " dug, " + s.site().skipped() + " left, miner at " + helper.relativePos(s.miner().blockPosition()));
+			for (BlockPos p : BlockPos.betweenClosed(min, max)) {
+				int layer = max.getY() - p.getY();
+				if (p.equals(steps[layer])) {
+					helper.assertBlockPresent(layer == 2 || layer == 3 ? Blocks.COBBLESTONE : Blocks.STONE, p);
+				} else {
+					helper.assertBlockPresent(Blocks.AIR, p);
+				}
+			}
+			Container chest = helper.getBlockEntity(CHEST);
+			helper.assertTrue(chest.countItem(Items.SAND) == 1, "the sand step should be in the chest");
 		});
 	}
 

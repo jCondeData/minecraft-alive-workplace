@@ -22,14 +22,19 @@ import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.ai.memory.MemoryStatus;
 import net.minecraft.world.entity.ai.memory.WalkTarget;
 import net.minecraft.world.entity.npc.Villager;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.FallingBlock;
 import net.minecraft.world.level.block.WallTorchBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
@@ -100,14 +105,16 @@ public class MinerWork extends Behavior<Villager> {
 		}
 		BuilderBag bag = villager.getAttachedOrCreate(ModAttachments.BUILDER_BAG);
 
-		// 1. Next block that needs digging.
+		// 1. Next block that needs digging (or a step of the stairs that needs filling in).
 		BlockPos target = null;
+		boolean fill = false;
 		ItemStack pick = villager.getItemBySlot(EquipmentSlot.MAINHAND);
 		for (int budget = SKIP_BUDGET; budget > 0 && !site.isDone(); budget--) {
 			BlockPos pos = site.current();
-			Verdict v = verdict(level, site, pos, pick);
-			if (v == Verdict.DIG) {
+			Verdict v = verdict(level, site, pos, pick, bag);
+			if (v == Verdict.DIG || v == Verdict.FILL) {
 				target = pos;
+				fill = v == Verdict.FILL;
 				break;
 			}
 			site.advance(false, v == Verdict.LEAVE);
@@ -123,7 +130,7 @@ public class MinerWork extends Behavior<Villager> {
 		}
 
 		// 2. A pickaxe in hand.
-		if (!isPickaxe(pick)) {
+		if (!fill && !isPickaxe(pick)) {
 			fetchPickaxe(level, villager, site, bench, bag);
 			return;
 		}
@@ -132,7 +139,7 @@ public class MinerWork extends Behavior<Villager> {
 		if (bag.freeSlots() < 2) {
 			site.setStatus(QuarrySite.Status.DEPOSITING);
 			if (walkTo(level, villager, containerNear(level, bench), CONTAINER_REACH)) {
-				deposit(level, villager, bench, bag);
+				deposit(level, villager, site, bench, bag);
 			}
 			return;
 		}
@@ -148,19 +155,37 @@ public class MinerWork extends Behavior<Villager> {
 		}
 		villager.getBrain().eraseMemory(MemoryModuleType.WALK_TARGET);
 		villager.getBrain().setMemory(MemoryModuleType.LOOK_TARGET, new BlockPosTracker(target));
-		dig(level, villager, site, bag, pick, target);
+		if (fill) {
+			placeStep(level, villager, site, bag, target);
+		} else {
+			dig(level, villager, site, bag, pick, target);
+		}
 	}
 
 	// --- what to dig ---------------------------------------------------------------------------
 
-	private enum Verdict { DIG, EMPTY, LEAVE }
+	private enum Verdict { DIG, EMPTY, LEAVE, KEEP, FILL }
+
+	/** What the miner fills gaps in the stairs with, from the bag (the first one there is). */
+	static final List<Item> FILLERS = List.of(Items.COBBLESTONE, Items.COBBLED_DEEPSLATE, Items.STONE, Items.DEEPSLATE, Items.ANDESITE,
+		Items.DIORITE, Items.GRANITE, Items.TUFF, Items.DIRT, Items.NETHERRACK, Items.BLACKSTONE, Items.END_STONE);
 
 	/**
 	 * DIG the block, move on because the spot is EMPTY (air, fluid), or LEAVE it standing: unbreakable,
-	 * a container or workstation, too hard for the pickaxe, or next to lava or water.
+	 * a container or workstation, too hard for the pickaxe, or next to lava or water. Steps of the stairs are
+	 * KEPT when solid, FILLED in when there's a gap in the pit wall (sand and gravel are dug out first).
 	 */
-	private static Verdict verdict(ServerLevel level, QuarrySite site, BlockPos pos, ItemStack pick) {
+	private static Verdict verdict(ServerLevel level, QuarrySite site, BlockPos pos, ItemStack pick, BuilderBag bag) {
 		BlockState state = level.getBlockState(pos);
+		if (site.isStep(pos)) {
+			if (state.isCollisionShapeFullBlock(level, pos) && !(state.getBlock() instanceof FallingBlock)) {
+				return Verdict.KEEP;
+			}
+			if (state.isAir() || state.canBeReplaced() && state.getFluidState().isEmpty()) {
+				return inPitWall(level, site, pos) && filler(bag) != null ? Verdict.FILL : Verdict.EMPTY;
+			}
+			// Sand, gravel, a torch...: dug out like any other block, then filled in.
+		}
 		if (state.isAir() || !state.getFluidState().isEmpty() && state.getCollisionShape(level, pos).isEmpty()) {
 			return Verdict.EMPTY;
 		}
@@ -181,6 +206,53 @@ public class MinerWork extends Behavior<Villager> {
 			}
 		}
 		return Verdict.DIG;
+	}
+
+	/** A step with ground beside it outside the pit: a gap there would break the stairs. Steps above the ground aren't needed. */
+	private static boolean inPitWall(ServerLevel level, QuarrySite site, BlockPos pos) {
+		for (Direction d : Direction.Plane.HORIZONTAL) {
+			BlockPos next = pos.relative(d);
+			if (site.box().isInside(next)) {
+				continue;
+			}
+			BlockState outside = level.getBlockState(next);
+			if (outside.blocksMotion() || !outside.getFluidState().isEmpty()) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	@Nullable
+	static Item filler(BuilderBag bag) {
+		for (Item item : FILLERS) {
+			if (bag.has(item, 1)) {
+				return item;
+			}
+		}
+		return null;
+	}
+
+	/** Puts a block from the bag where a step is missing. Anyone standing there is lifted onto it. */
+	private static void placeStep(ServerLevel level, Villager villager, QuarrySite site, BuilderBag bag, BlockPos pos) {
+		Item item = filler(bag);
+		if (item == null) {
+			site.advance(false, false);
+			return;
+		}
+		AABB space = new AABB(pos);
+		if (!level.getEntitiesOfClass(net.minecraft.world.entity.player.Player.class, space).isEmpty()) {
+			return; // wait for the player to move
+		}
+		BlockState state = ((BlockItem) item).getBlock().defaultBlockState();
+		villager.swing(InteractionHand.MAIN_HAND);
+		level.setBlockAndUpdate(pos, state);
+		level.playSound(null, pos, state.getSoundType().getPlaceSound(), SoundSource.BLOCKS, 1f, 1f);
+		bag.remove(item, 1);
+		for (LivingEntity standing : level.getEntitiesOfClass(LivingEntity.class, space)) {
+			standing.teleportTo(standing.getX(), pos.getY() + 1, standing.getZ());
+		}
+		site.advance(false, false);
 	}
 
 	static boolean isPickaxe(ItemStack stack) {
@@ -222,7 +294,10 @@ public class MinerWork extends Behavior<Villager> {
 		}
 		pick.hurtAndBreak(1, villager, EquipmentSlot.MAINHAND);
 		boolean torch = state.is(Blocks.TORCH) || state.is(Blocks.WALL_TORCH);
-		site.advance(!torch, false);
+		if (!site.isStep(target)) {
+			site.advance(!torch, false);
+		} // else a loose step (sand, gravel...): the same spot gets filled in next
+
 		if (!torch && site.mined() % 10 == 0) {
 			BuilderLevels.addXp(level, villager, 1, site.owner());
 		}
@@ -282,14 +357,16 @@ public class MinerWork extends Behavior<Villager> {
 			level.playSound(null, chest, SoundEvents.CHEST_OPEN, SoundSource.BLOCKS, 0.4f, 1.1f);
 		}
 		topUpTorches(level, supplies, bag);
+		topUpFiller(level, site, supplies, bag);
 	}
 
-	private static void deposit(ServerLevel level, Villager villager, BlockPos bench, BuilderBag bag) {
+	private static void deposit(ServerLevel level, Villager villager, QuarrySite site, BlockPos bench, BuilderBag bag) {
 		List<BlockPos> supplies = SupplyContainers.find(level, bench, null);
 		for (ItemStack stack : bag.takeAllExcept(java.util.Set.of(Items.TORCH))) {
 			Miners.store(level, supplies, bench, stack);
 		}
 		topUpTorches(level, supplies, bag);
+		topUpFiller(level, site, supplies, bag);
 		level.playSound(null, villager.blockPosition(), SoundEvents.CHEST_CLOSE, SoundSource.BLOCKS, 0.4f, 1.1f);
 	}
 
@@ -299,6 +376,20 @@ public class MinerWork extends Behavior<Villager> {
 			int got = SupplyContainers.extract(level, supplies, Items.TORCH, 16 - have);
 			if (got > 0) {
 				bag.addAll(Items.TORCH, got);
+			}
+		}
+	}
+
+	/** A few blocks to fill gaps in the stairs with, taken back out of the chests. */
+	private static void topUpFiller(ServerLevel level, QuarrySite site, List<BlockPos> supplies, BuilderBag bag) {
+		if (!site.hasStairs() || filler(bag) != null) {
+			return;
+		}
+		for (Item item : FILLERS) {
+			int got = SupplyContainers.extract(level, supplies, item, 8);
+			if (got > 0) {
+				bag.addAll(item, got);
+				return;
 			}
 		}
 	}

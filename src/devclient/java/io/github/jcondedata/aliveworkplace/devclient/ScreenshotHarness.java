@@ -313,6 +313,11 @@ public class ScreenshotHarness implements ClientModInitializer {
 				java.util.Random rnd = new java.util.Random(4);
 				BlockPos min = new BlockPos(-3, -60, -12);
 				BlockPos max = new BlockPos(4, -55, -5);
+				// A low hill around the quarry, so the pit is cut into the ground (and the stairs down its walls show).
+				for (BlockPos p : BlockPos.betweenClosed(min.offset(-3, 0, -3), max.offset(3, 0, 3))) {
+					level.setBlock(p, (p.getY() == max.getY() ? Blocks.GRASS_BLOCK : p.getY() >= max.getY() - 2 ? Blocks.DIRT : Blocks.STONE)
+						.defaultBlockState(), 2);
+				}
 				for (BlockPos p : BlockPos.betweenClosed(min, max)) {
 					int r = rnd.nextInt(100);
 					level.setBlock(p, (r < 4 ? Blocks.COAL_ORE : r < 6 ? Blocks.IRON_ORE : r < 7 ? Blocks.COPPER_ORE : r < 30 ? Blocks.ANDESITE : Blocks.STONE)
@@ -330,7 +335,7 @@ public class ScreenshotHarness implements ClientModInitializer {
 				io.github.jcondedata.aliveworkplace.mine.Miners.employ(level, miner, bench);
 				quarry = io.github.jcondedata.aliveworkplace.mine.Miners.start(level, miner, server.getPlayerList().getPlayers().get(0),
 					net.minecraft.world.level.levelgen.structure.BoundingBox.fromCorners(min, max), 6);
-				hover(server.getPlayerList().getPlayers().get(0), new Vec3(10.5, -50, 5.5), 135, 30);
+				hover(server.getPlayerList().getPlayers().get(0), new Vec3(-8.5, -47, -18.5), -45, 38);
 			});
 		}
 		if (tick > 60 && tick % 60 == 0 && doneAt < 0) {

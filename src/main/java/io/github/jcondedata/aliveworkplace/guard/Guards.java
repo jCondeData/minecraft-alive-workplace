@@ -89,6 +89,7 @@ public final class Guards {
 		boolean has = health.getModifier(HEALTH_BONUS) != null;
 		if (guard && !has) {
 			health.addPermanentModifier(new AttributeModifier(HEALTH_BONUS, EXTRA_HEALTH, AttributeModifier.Operation.ADD_VALUE));
+			villager.setHealth(villager.getHealth() + (float) EXTRA_HEALTH); // a new guard starts with the extra health too
 		} else if (!guard && has) {
 			health.removeModifier(HEALTH_BONUS);
 			villager.setHealth(Math.min(villager.getHealth(), villager.getMaxHealth()));

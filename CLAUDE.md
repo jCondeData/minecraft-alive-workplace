@@ -11,6 +11,10 @@ The owner (Jesse) does not write code: sessions are expected to work autonomousl
 3. Implement with **gametests** for any behaviour (see `src/gametest`). Pure-logic checks can use `FabricGameTest.EMPTY_STRUCTURE`.
    In both test areas (`big_area`, `build_area`) helper **y = 1 is the floor**: put blocks and villagers at y = 2 (a villager spawned
    at y = 1 is inside the floor and suffocates within ~200 ticks; older compat tests that finish quickly still use y = 1).
+   Tests in one batch run side by side 5 blocks apart, and entities that wander outside a test area survive into later
+   batches at the same spot. A test that can be disturbed by neighbours (guards, long builds) gets `batch = "<its name>"`
+   and calls `Leftovers.clear(helper)` first. To hunt a flaky test, a temporary `@GameTestGenerator` returning a dozen
+   copies of it (each in its own batch) shows the failure rate in one run.
 4. Run `./gradlew build` — this compiles, packages and runs every gametest on a headless server. **Never push a red build.**
 5. Tick the roadmap box, add a `CHANGELOG.md` line under *Unreleased*, commit, push to `main`.
 6. If blocked or a decision belongs to the owner, write it under *Notes / blocked* in `ROADMAP.md` and move on to the next item.

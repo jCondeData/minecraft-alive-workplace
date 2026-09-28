@@ -152,6 +152,7 @@ public class BuilderGameTests implements FabricGameTest {
 	 */
 	@GameTest(template = AREA, timeoutTicks = 14000, batch = "cottage_upgrade") // alone: in a shared batch builders next door pitched in
 	public void builderUpgradesAFinishedCottage(GameTestHelper helper) {
+		Leftovers.clear(helper);
 		ServerLevel level = helper.getLevel();
 		BlockPos originRel = new BlockPos(8, 2, 8);
 		BlueprintData.Placement placement = placement(helper, originRel, Rotation.NONE);

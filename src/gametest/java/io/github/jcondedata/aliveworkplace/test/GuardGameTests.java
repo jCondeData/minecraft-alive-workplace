@@ -28,6 +28,7 @@ public class GuardGameTests implements FabricGameTest {
 	private static final BlockPos CHEST = new BlockPos(2, 2, 4);
 
 	private static Villager guard(GameTestHelper helper, ItemStack... chest) {
+		Leftovers.clear(helper); // each guard test runs alone
 		helper.setDayTime(2000); // all tests share the clock; guards fight at any hour anyway
 		helper.setBlock(POST, ModBlocks.GUARD_POST);
 		helper.setBlock(CHEST, Blocks.CHEST);
@@ -54,7 +55,8 @@ public class GuardGameTests implements FabricGameTest {
 			helper.assertEntityNotPresent(EntityType.HUSK);
 			helper.assertTrue(guard.isAlive(), "the guard died");
 			helper.assertTrue(guard.getAttachedOrElse(ModAttachments.GUARD_KILLS, 0) == 1, "kill not counted");
-			helper.assertTrue(guard.getItemBySlot(EquipmentSlot.MAINHAND).is(Items.IRON_SWORD), "not holding the best sword");
+			helper.assertTrue(guard.getItemBySlot(EquipmentSlot.MAINHAND).is(Items.IRON_SWORD), "not holding the best sword: " + guard.getItemBySlot(EquipmentSlot.MAINHAND)
+				+ ", chest: " + helper.<net.minecraft.world.level.block.entity.ChestBlockEntity>getBlockEntity(CHEST).getItem(0) + " " + helper.<net.minecraft.world.level.block.entity.ChestBlockEntity>getBlockEntity(CHEST).getItem(1) + " " + helper.<net.minecraft.world.level.block.entity.ChestBlockEntity>getBlockEntity(CHEST).getItem(2));
 			helper.assertTrue(guard.getItemBySlot(EquipmentSlot.CHEST).is(Items.IRON_CHESTPLATE), "no chestplate");
 			helper.assertTrue(guard.getMaxHealth() == 40f, "guards should have 40 health");
 		});
@@ -86,6 +88,17 @@ public class GuardGameTests implements FabricGameTest {
 		});
 	}
 
+	private static final java.util.Map<java.util.UUID, String> HURT_BY = new java.util.concurrent.ConcurrentHashMap<>();
+
+	static {
+		net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents.AFTER_DAMAGE.register((entity, source, base, taken, blocked) -> {
+			if (entity instanceof Villager) {
+				HURT_BY.merge(entity.getUUID(), source.getMsgId() + (source.getEntity() != null ? "/" + source.getEntity().getType().toShortString() : "")
+					+ " " + taken + " at " + entity.level().getGameTime(), (a, b) -> a + ", " + b);
+			}
+		});
+	}
+
 	/** A guard with a bow from the chest shoots a creeper from a safe distance (and it never blows up). */
 	@GameTest(template = AREA, timeoutTicks = 1600, batch = "guardShootsACreeper")
 	public void guardShootsACreeper(GameTestHelper helper) {
@@ -106,7 +119,7 @@ public class GuardGameTests implements FabricGameTest {
 			helper.assertTrue(helper.getTick() > 100, "not yet");
 			helper.assertEntityNotPresent(EntityType.CREEPER);
 			helper.assertFalse(exploded[0], "the creeper got close enough to go off");
-			helper.assertTrue(guard.isAlive() && guard.getHealth() > 30, "the guard got hurt: " + guard.getHealth());
+			helper.assertTrue(guard.isAlive() && guard.getHealth() > 30, "the guard got hurt: " + guard.getHealth() + " (" + HURT_BY.get(guard.getUUID()) + ")");
 			helper.assertTrue(guard.getAttachedOrElse(ModAttachments.GUARD_KILLS, 0) == 1, "the arrow kill wasn't counted");
 		});
 	}

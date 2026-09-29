@@ -49,4 +49,36 @@ public class ScribeGameTests implements FabricGameTest {
 			Village.RADIUS = 0;
 		});
 	}
+
+	/** Bookshelves round the table (two out, the way a player's table wants them) make a librarian's enchantments stronger. */
+	@GameTest(template = AREA, batch = "scribe_shelves")
+	public void bookshelvesStrengthenEnchanting(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		BlockPos table = new BlockPos(10, 2, 10);
+		helper.setBlock(table, Blocks.ENCHANTING_TABLE);
+		BlockPos lectern = new BlockPos(10, 2, 6);
+		helper.setBlock(lectern, Blocks.LECTERN);
+		var level = helper.getLevel();
+		helper.assertTrue(io.github.jcondedata.aliveworkplace.scribe.EnchantWork.shelves(level, helper.absolutePos(table)) == 0, "shelves without any");
+		int placed = 0;
+		for (int dx = -2; dx <= 2; dx++) {
+			for (int dz = -2; dz <= 2; dz++) {
+				if ((Math.abs(dx) == 2 || Math.abs(dz) == 2) && !(dx == 0 && dz == -2)) {
+					helper.setBlock(table.offset(dx, 0, dz), Blocks.BOOKSHELF);
+					placed++;
+				}
+			}
+		}
+		helper.assertTrue(placed == 15, "the ring has " + placed);
+		helper.assertTrue(io.github.jcondedata.aliveworkplace.scribe.EnchantWork.shelves(level, helper.absolutePos(table)) == 15, "a full ring should count 15");
+		helper.assertTrue(helper.absolutePos(table).equals(io.github.jcondedata.aliveworkplace.scribe.EnchantWork.table(level, helper.absolutePos(lectern))),
+			"the lectern should find the table");
+		Villager novice = helper.spawn(EntityType.VILLAGER, new BlockPos(12, 2, 6));
+		helper.assertTrue(io.github.jcondedata.aliveworkplace.scribe.EnchantWork.strength(novice, 0) == 10, "a novice without shelves");
+		helper.assertTrue(io.github.jcondedata.aliveworkplace.scribe.EnchantWork.strength(novice, 15) == 15, "a novice with fifteen shelves");
+		// Something in between (a carpet) and the shelf stops counting, as at a player's table.
+		helper.setBlock(table.offset(1, 0, 1), Blocks.WHITE_CARPET);
+		helper.assertTrue(io.github.jcondedata.aliveworkplace.scribe.EnchantWork.shelves(level, helper.absolutePos(table)) < 15, "a blocked shelf still counts");
+		helper.succeed();
+	}
 }

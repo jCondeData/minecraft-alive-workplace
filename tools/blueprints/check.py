@@ -11,6 +11,17 @@ STANDS = ("lantern", "flower_pot", "potted_", "_carpet", "candle", "torch", "pre
 GRAVITY = ("minecraft:sand", "minecraft:red_sand", "minecraft:gravel", "concrete_powder", "anvil")
 
 
+def holds_centre(block):
+    """Whether a lantern can hang under {@code block}: its underside is solid at the middle (a full block, a bottom slab
+    or bottom-half stairs, a fence, wall, chain or pane) — not top-half stairs or slabs, trapdoors, leaves on nothing."""
+    name, props = block
+    short = name.split(":")[1]
+    if short.endswith("_stairs") or short.endswith("_slab"):
+        return props.get("half", props.get("type")) in ("bottom", "double")
+    return not (short.endswith("_trapdoor") or short.endswith("_carpet") or short.endswith("lantern") or "button" in short
+                or short.endswith("_sign") or short.endswith("_banner") or "torch" in short)
+
+
 def check(b):
     """What's wrong with build {@code b}, as lines of text (empty if nothing)."""
     blocks = {p: (n, dict(props)) for p, (n, props) in b.blocks.items() if n not in AIR}
@@ -37,7 +48,8 @@ def check(b):
         bad = None
         if short == "lantern" or short == "soul_lantern":
             if props.get("hanging") == "true":
-                bad = above is None and "hangs from nothing"
+                bad = (above is None and "hangs from nothing") or (not holds_centre(above) and "hangs from " + above[0][10:]
+                                                                   + " (the game drops it: nothing under its middle)")
             else:
                 bad = y > 0 and below is None and "stands on air"
         elif short == "ladder":

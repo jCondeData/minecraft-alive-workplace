@@ -1584,6 +1584,8 @@ def library():
     b = Build(13, 15, 12)
     library_hall(b)
     gable_roof(b, 0, 12, 1, 11, 6, LIBRARY_ROOF, axis="z", gable="stone_bricks", gable_at=(2, 10), ridge=LIBRARY_ROOF)
+    for z in range(3, 10):  # a collar beam under the ridge (the builder stands on it to lay the ridge's ends)
+        log(b, 6, 9, z, "dark_oak_log", axis="z")
     for z in (2, 10):
         pane(b, 6, 8, z)
         pane(b, 6, 9, z)
@@ -1636,41 +1638,152 @@ def library_2():
     return b
 
 
-# --- Ranch: a stable with a fenced paddock ---------------------------------------------------------------------
+# --- Library III: the enchanting room behind the reading hall ---------------------------------------------------------
+def library_3():
+    """Upgrade of Library II: an enchanting room behind the reading hall, through a door beside the desk — an Enchanting
+    Table ringed by fifteen bookshelves (a full table's worth), a lectern (a villager moves in as a librarian, who enchants
+    the workers' gear there) and a chest for the lapis, candles on the shelves, under its own lower slate roof.
+    18 x 15 x 20."""
+    b = library_2().grow(18, 15, 20)
+    # The wing: walls x 3-9, z 10-18 (the hall's back wall is its front), a storey lower than the hall
+    plinth(b, 3, 10, 9, 18, FOUNDATION_MIX, floor="spruce_planks")
+    for y in range(1, 5):
+        for z in range(11, 19):
+            for x in (3, 9):
+                b.set(x, y, z, BRICK_WALL_MIX.at(x, y, z))
+        for x in range(4, 9):
+            b.set(x, y, 18, BRICK_WALL_MIX.at(x, y, 18))
+    for x, z in ((3, 18), (9, 18)):
+        box(b, x, 1, z, x, 4, z, "polished_andesite")
+    for x, face in ((2, "east"), (10, "west")):  # a buttress between the windows on each side
+        b.set(x, 0, 14, "stone_bricks")
+        b.set(x, 1, 14, "stone_bricks")
+        stairs(b, x, 2, 14, STONE_BRICK, face)
+    for z in (12, 16):
+        window(b, 3, 2, z, "west", height=2, sill=STONE_BRICK, lintel=STONE_BRICK)
+        window(b, 9, 2, z, "east", height=2, sill=STONE_BRICK, lintel=STONE_BRICK)
+    window(b, 6, 2, 18, "south", height=2, sill=STONE_BRICK, lintel=STONE_BRICK)
+    b.clear(6, 1, 11, 6, 1, 11)  # the hall's back window looks into the room now: its sill comes off
+    door(b, 8, 1, 10, "dark_oak_door", "south")
+    # The Enchanting Table and its ring of fifteen shelves (the gap in front is the way in)
+    b.set(6, 1, 15, "enchanting_table")
+    for x in range(4, 9):
+        for z in (13, 17):
+            if (x, z) != (6, 13):
+                b.set(x, 1, z, "bookshelf")
+    for z in range(14, 17):
+        b.set(4, 1, z, "bookshelf")
+        b.set(8, 1, z, "bookshelf")
+    for x, z in ((4, 13), (8, 13), (4, 17), (8, 17)):
+        b.set(x, 2, z, "candle", candles=3, lit=True, waterlogged=False)
+    b.set(4, 1, 11, "lectern", facing="east", has_book=False, powered=False)
+    b.set(4, 1, 12, "chest", facing="east", type="single", waterlogged=False)
+    b.set(8, 1, 12, "potted_fern")
+    for z in range(11, 18):
+        log(b, 6, 5, z, "dark_oak_log", axis="z")  # a beam down the room for the lanterns
+    lantern(b, 6, 4, 12, hanging=True)
+    lantern(b, 6, 4, 16, hanging=True)
+    gable_roof(b, 2, 10, 11, 19, 5, LIBRARY_ROOF, axis="z", gable="stone_bricks", gable_at=(18,), ridge=LIBRARY_ROOF)
+    pane(b, 6, 6, 18)
+    b.set(6, 7, 18, "chiseled_stone_bricks")
+    b.fill_air()
+    return b
+
+
+# --- Ranch: a barn with a fenced paddock -------------------------------------------------------------------------
+# Design (after the Minecraft Architect review): a barn of three masses — a hayloft gable to the paddock (x 4-8, the
+# barn doors open under the loft door) over two lower stable aisles under one long roof (x 1-11, z 7-11) — spruce
+# boards on a dark oak frame and a stone footing under a dark slate roof with spruce soffits; hay and lanterns for
+# colour. II: a lower stable wing to the east and a brick silo under a slate cone at its end.
 RANCH_FRAME = "dark_oak_log"
-RANCH_ROOF = SPRUCE
+RANCH_ROOF = DEEPSLATE_TILE
 
 
-def ranch_stable(b, x0, x1, trough=True):
-    """A stable across the back (walls x0-x1, z 8-11): a cobble footing, a dark oak frame with spruce boards, its front
-    open onto the paddock between the posts, a hay loft under the roof beams."""
-    plinth(b, x0, 8, x1, 11, STONE_MIX, floor="coarse_dirt")
-    for y in (1, 2, 3):
+def barn_walls(b, x0, z0, x1, z1, y1, posts_at):
+    """Spruce board walls (x0..x1, z0..z1) from y 1 to {@code y1} on a stone footing, dark oak posts at {@code posts_at}."""
+    for y in range(1, y1 + 1):
         for x in range(x0, x1 + 1):
-            b.set(x, y, 11, "spruce_planks")
-        for z in range(9, 11):
-            b.set(x0, y, z, "spruce_planks")
-            b.set(x1, y, z, "spruce_planks")
-    posts(b, [(x, z) for x in range(x0, x1 + 1, 3) for z in (8, 11)] + [(x1, 8), (x1, 11)], 1, 3, RANCH_FRAME)
-    beam_ring(b, x0, 8, x1, 11, 4, RANCH_FRAME)
-    for x in range(x0 + 1, x1):  # the loft: beams across, hay on them
-        log(b, x, 4, 9, RANCH_FRAME, axis="x")
-        log(b, x, 4, 10, RANCH_FRAME, axis="x")
-    for x in (x0 + 1, x0 + 2, x1 - 2, x1 - 1):
-        b.set(x, 5, 10, "hay_block", axis="x")
-    b.set(x1 - 1, 5, 9, "hay_block", axis="z")
-    for x in range(x0 + 1, x1, 4):
-        lantern(b, x + 1, 3, 9, hanging=True)
-    if trough:
-        b.set(x0 + 2, 1, 10, "aliveworkplace:feed_trough", facing="north")
-        b.set(x0 + 1, 1, 10, "chest", facing="east", type="single", waterlogged=False)
-    b.set(x1 - 1, 1, 10, "hay_block", axis="y")
-    b.set(x1 - 1, 2, 10, "hay_block", axis="x")
-    b.set(x1 - 2, 1, 10, "water_cauldron", level=3)
+            for z in range(z0, z1 + 1):
+                if x in (x0, x1) or z in (z0, z1):
+                    b.set(x, y, z, "spruce_planks")
+    posts(b, posts_at, 1, y1, RANCH_FRAME)
+
+
+def ranch_barn(b):
+    """The barn: stable aisles (walls x 1-11, z 7-11) and the hayloft gable (x 4-8) stepping out to z 5, its doors open
+    onto the paddock; the Feed Trough inside facing them, hay in the loft and the stalls."""
+    plinth(b, 1, 7, 11, 11, STONE_MIX, floor="coarse_dirt")
+    plinth(b, 4, 5, 8, 7, STONE_MIX, floor="coarse_dirt")
+    for x in range(5, 8):
+        b.set(x, 0, 7, "coarse_dirt")
+        b.set(x, 0, 5, "coarse_dirt")  # the doorway's threshold
+    barn_walls(b, 1, 7, 11, 11, 4, [(1, 7), (4, 7), (8, 7), (11, 7), (1, 11), (4, 11), (8, 11), (11, 11)])
+    b.clear(5, 1, 7, 7, 4, 7)  # the aisles open into the gable
+    barn_walls(b, 4, 5, 8, 7, 4, [(4, 5), (8, 5)])
+    b.clear(5, 1, 5, 7, 3, 5)  # the barn doors (open)
+    b.clear(5, 1, 6, 7, 4, 6)
+    for x in range(5, 8):
+        log(b, x, 4, 5, RANCH_FRAME, axis="x")
+    for x in (4, 8):  # the doors swung back against the front
+        for y in (1, 2, 3):
+            trapdoor(b, x, y, 4, "spruce_trapdoor", "north", open_=True)
+    beam_ring(b, 1, 7, 11, 11, 5, RANCH_FRAME)
+    for z in (5, 6):
+        log(b, 4, 5, z, RANCH_FRAME, axis="z")
+        log(b, 8, 5, z, RANCH_FRAME, axis="z")
+    # The loft over the doors, its door in the gable, hay stacked inside
+    for x in range(5, 8):
+        for z in range(6, 10):
+            b.set(x, 5, z, "spruce_planks")
+    b.set(5, 6, 7, "hay_block", axis="z")
+    b.set(7, 6, 7, "hay_block", axis="z")
+    b.set(6, 6, 8, "hay_block", axis="x")
+    b.set(7, 6, 8, "hay_block", axis="y")
+    # Windows with shutters in the aisles, the back and the ends
+    for x in (2, 10):
+        window(b, x, 2, 7, "north", shutters="spruce_trapdoor", sill=SPRUCE)
+    for x in (2, 6, 10):
+        window(b, x, 2, 11, "south", sill=SPRUCE)
+    window(b, 1, 2, 9, "west", shutters="spruce_trapdoor", sill=SPRUCE)
+    window(b, 11, 2, 9, "east", shutters="spruce_trapdoor", sill=SPRUCE)
+    # Inside: the Feed Trough facing the doors, water, a chest; stalls with hay; tie beams with lanterns
+    b.set(6, 1, 10, "aliveworkplace:feed_trough", facing="north")
+    b.set(5, 1, 10, "chest", facing="north", type="single", waterlogged=False)
+    b.set(7, 1, 10, "water_cauldron", level=3)
+    for x in (3, 9):
+        fence(b, x, 1, 9, "spruce_fence")  # stall rails
+    b.set(2, 1, 10, "hay_block", axis="y")
+    b.set(2, 2, 10, "hay_block", axis="x")
+    b.set(10, 1, 10, "hay_block", axis="y")
+    for x in (2, 3, 9, 10):
+        log(b, x, 5, 9, RANCH_FRAME, axis="x")
+    lantern(b, 2, 4, 9, hanging=True)
+    lantern(b, 10, 4, 9, hanging=True)
+    lantern(b, 6, 4, 8, hanging=True)
+
+
+def barn_roofs(b, extra=()):
+    """The long roof over the aisles and the hayloft gable running into it (plus any more roofs, see {@code roofs})."""
+    roofs(b,
+          lambda t: gable_roof(t, 0, 12, 6, 12, 5, RANCH_ROOF, axis="x", gable="spruce_planks", gable_at=(1, 11),
+                               ridge=RANCH_ROOF, eave_trim=SPRUCE),
+          lambda t: gable_roof(t, 3, 9, 4, 9, 5, RANCH_ROOF, axis="z", gable="spruce_planks", gable_at=(5,),
+                               ridge=RANCH_ROOF, eave_trim=SPRUCE),
+          *extra)
+    b.clear(6, 5, 5, 6, 6, 5)  # the loft door
+    for x in (5, 7):
+        trapdoor(b, x, 5, 4, "spruce_trapdoor", "north", open_=True)
+        trapdoor(b, x, 6, 4, "spruce_trapdoor", "north", open_=True)
+    lantern(b, 6, 7, 4, hanging=True)  # under the ridge's end, over the loft door
+    for x in (3, 9):  # either side of the barn doors: on a bracket under the eaves
+        fence(b, x, 4, 4, "spruce_fence")
+        lantern(b, x, 3, 4, hanging=True)
+    b.set(6, 8, 9, "deepslate_tiles")  # where the ridges meet: a weathervane
+    b.set(6, 9, 9, "lightning_rod", facing="up", powered=False, waterlogged=False)
 
 
 def paddock(b, x0, x1, z0, z1, gate_x):
-    """A fence round the paddock (x0-x1, z0 to the stable at z1), a gate at the front with lamps on its posts."""
+    """A fence round the paddock (x0-x1, z0 to the barn at z1), a gate at the front with lamps on its posts."""
     for x in range(x0, x1 + 1):
         fence(b, x, 0, z0, "spruce_fence")
     for z in range(z0, z1 + 1):
@@ -1683,41 +1796,74 @@ def paddock(b, x0, x1, z0, z1, gate_x):
 
 
 def ranch():
-    """13 x 10 x 13: a ranch — a timber stable across the back with a Feed Trough, a water trough, hay down below and up
-    in the loft, and a fenced paddock in front with a gate between two lamps."""
+    """13 x 10 x 13: a ranch — a barn of spruce boards on a dark oak frame, its hayloft gable facing the paddock with
+    the barn doors open under the loft door, stable aisles either side under one long roof, the Feed Trough inside with
+    water and hay; and a fenced paddock in front with a gate between two lamps, a hay bale and a water trough."""
     b = Build(13, 10, 13)
-    ranch_stable(b, 1, 11)
-    paddock(b, 0, 12, 0, 8, 6)
-    gable_roof(b, 0, 12, 7, 12, 4, RANCH_ROOF, axis="x", gable="spruce_planks", gable_at=(1, 11), ridge=SPRUCE)
-    # In the paddock: a hay bale to eat from, a tie post
-    b.set(3, 0, 3, "hay_block", axis="y")
-    fence(b, 9, 0, 3, "spruce_fence")
-    fence(b, 9, 1, 3, "spruce_fence")
+    ranch_barn(b)
+    paddock(b, 0, 12, 0, 7, 6)
+    barn_roofs(b)
+    # In the paddock: a hay bale to eat from, a water trough, a tie post
+    b.set(2, 0, 2, "hay_block", axis="y")
+    b.set(9, 0, 2, "water_cauldron", level=3)
+    b.set(10, 0, 2, "water_cauldron", level=3)
+    fence(b, 3, 0, 5, "spruce_fence")
+    fence(b, 3, 1, 5, "spruce_fence")
     b.fill_air()
     return b
 
 
 def ranch_2():
-    """Upgrade of the Ranch (same origin and front): the paddock doubled to the east with a second stable (more stalls,
-    more hay) and a saddle rack. 20 x 10 x 13."""
-    b = ranch().grow(20, 10, 13)
-    b.clear(12, 0, 1, 12, 9, 7)  # the old east fence
-    b.clear(12, 4, 7, 12, 9, 12)  # the old roof's east overhang
-    ranch_stable(b, 12, 18, trough=False)
-    for y in (1, 2, 3):
-        for z in range(9, 11):
-            b.set(11, y, z, "air")  # one long stable now
-            b.set(12, y, z, "air")
-    paddock(b, 0, 19, 0, 8, 6)
-    for x in (13, 14, 15):
-        b.set(x, 0, 0, "spruce_fence", north=False, south=False, east=False, west=False, waterlogged=False)
+    """Upgrade of the Ranch (same origin and front): the paddock doubled to the east, a lower stable wing through the
+    barn's east end (more stalls, a saddle rack, more hay) and a brick silo under a dark cone at its end. 20 x 13 x 13."""
+    b = ranch().grow(20, 13, 13)
+    b.clear(12, 0, 1, 12, 1, 7)  # the old east fence
+    b.clear(12, 2, 7, 12, 3, 7)
+    # The wing: walls x 11-15, z 7-11, a storey of stalls
+    plinth(b, 11, 7, 15, 11, STONE_MIX, floor="coarse_dirt")
+    barn_walls(b, 12, 7, 15, 11, 3, [(15, 7), (15, 11)])
+    for z in (8, 9, 10):
+        for y in (1, 2, 3):
+            b.set(12, y, z, "air")  # open into the wing from its own side...
+    for y in (1, 2):
+        b.set(11, y, 9, "air")  # ...through a doorway in the barn's end
+    b.set(11, 3, 9, "spruce_planks")
+    beam_ring(b, 12, 7, 15, 11, 4, RANCH_FRAME)
+    window(b, 14, 2, 7, "north", shutters="spruce_trapdoor", sill=SPRUCE)
+    window(b, 14, 2, 11, "south", sill=SPRUCE)
+    for x in (13, 14):
+        trapdoor(b, x, 2, 10, "spruce_trapdoor", "north", half="top")  # a saddle rack
+    b.set(14, 1, 10, "barrel", facing="up", open=False)
+    b.set(13, 1, 8, "hay_block", axis="y")
+    b.set(14, 1, 8, "hay_block", axis="x")
+    lantern(b, 13, 3, 9, hanging=True)
+    log(b, 13, 4, 9, RANCH_FRAME, axis="x")
+    log(b, 14, 4, 9, RANCH_FRAME, axis="x")
+    # The silo: bricks with stone hoops (x 16-18, z 8-10), hay inside, a cone on top
+    for y in range(0, 9):
+        for x in range(16, 19):
+            for z in range(8, 11):
+                if (x, z) == (17, 9):
+                    b.set(x, y, z, "hay_block", axis="y") if y > 0 else b.set(x, y, z, "stone_bricks")
+                elif y == 0 or y in (4, 8):
+                    b.set(x, y, z, "stone_bricks")
+                else:
+                    b.set(x, y, z, "bricks")
+    b.set(17, 6, 8, "air")  # the hatch the grain goes in by
+    trapdoor(b, 17, 6, 7, "spruce_trapdoor", "north", open_=True)
+    hip_roof(b, 15, 19, 7, 11, 9, RANCH_ROOF)
+    b.set(17, 11, 9, "deepslate_tiles")
+    b.set(17, 12, 9, "lightning_rod", facing="up", powered=False, waterlogged=False)
+    # The roofs again, with the wing's lower one dying into the barn's end
+    barn_roofs(b, extra=(lambda t: gable_roof(t, 12, 16, 6, 12, 4, RANCH_ROOF, axis="x", gable="spruce_planks",
+                                                gable_at=(15,), ridge=RANCH_ROOF, eave_trim=SPRUCE),))
+    # The paddock doubled, a second gate
+    paddock(b, 0, 19, 0, 7, 6)
+    for x in (14, 16):
+        fence(b, x, 1, 0, "spruce_fence")
+        lantern(b, x, 2, 0)
     b.set(15, 0, 0, "spruce_fence_gate", facing="south", open=False, powered=False, in_wall=False)
-    gable_roof(b, 0, 19, 7, 12, 4, RANCH_ROOF, axis="x", gable="spruce_planks", gable_at=(1, 18), ridge=SPRUCE)
-    # A saddle rack: armor stand? no — trapdoors on the wall with a barrel of tack
-    for x in (14, 15, 16):
-        trapdoor(b, x, 2, 10, "spruce_trapdoor", "north", half="top")
-    b.set(17, 1, 10, "hay_block", axis="y")
-    b.set(16, 5, 10, "hay_block", axis="x")
+    b.set(13, 0, 3, "hay_block", axis="y")
     b.fill_air()
     return b
 

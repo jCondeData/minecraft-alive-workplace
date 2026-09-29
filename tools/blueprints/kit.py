@@ -436,6 +436,29 @@ def hip_roof(b, x0, x1, z0, z1, y, fam, cap=None, steep=False, rings=None):
     return y + i * rise
 
 
+def roofs(b, *draws):
+    """Roofs that run into each other (a cross gable, a lower wing): each of {@code draws} draws one roof on a Build.
+    Where two cover the same column the one reaching higher wins (ties: the later one) and the other's blocks there are
+    left out, so a lower ridge dies into the higher slope, the valleys meet, and nothing pokes through or hangs inside."""
+    layers = []
+    for draw in draws:
+        t = Build(b.w, b.h, b.d)
+        draw(t)
+        tops = {}
+        for (x, y, z) in t.blocks:
+            tops[(x, z)] = max(y, tops.get((x, z), -1))
+        layers.append((t.blocks, tops))
+    winner = {}
+    for i, (_, tops) in enumerate(layers):
+        for col, top in tops.items():
+            if col not in winner or top >= layers[winner[col]][1][col]:
+                winner[col] = i
+    for i, (blocks, _) in enumerate(layers):
+        for (x, y, z), block in blocks.items():
+            if winner[(x, z)] == i:
+                b.blocks[(x, y, z)] = block
+
+
 def chimney(b, x, z, y0, y1, name=STONE_MIX, smoke=True):
     """A stone column from y0 to y1 with a campfire (smoking) or a slab on top."""
     for y in range(y0, y1 + 1):

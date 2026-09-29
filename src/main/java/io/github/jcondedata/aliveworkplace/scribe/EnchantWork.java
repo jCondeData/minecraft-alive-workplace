@@ -44,11 +44,15 @@ import org.jetbrains.annotations.Nullable;
  * A Librarian with an Enchanting Table near their lectern enchants the village's gear: a guard's weapon, bow and armor,
  * a miner's pickaxe, a lumberjack's axe — whatever a worker has in hand or on that isn't enchanted yet — walking up to
  * them with the lapis from their chests (or the storehouse). How strong the enchantment is goes by the librarian's
- * level: {@link #BASE_LEVEL} plus {@link #PER_LEVEL} per level (a Master enchants like a full enchanting table).
+ * level: {@link #BASE_LEVEL} plus {@link #PER_LEVEL} per level (a Master enchants like a full enchanting table), and one
+ * more for every {@link #SHELVES_PER_LEVEL} bookshelves round the table, placed the way a player's table wants them (up
+ * to {@link #MAX_STRENGTH}): a Library III's ring of fifteen gives a Novice the power of a Journeyman.
  */
 public class EnchantWork extends Behavior<Villager> {
 	static final int BASE_LEVEL = 5;
 	static final int PER_LEVEL = 5;
+	static final int SHELVES_PER_LEVEL = 3;
+	static final int MAX_STRENGTH = 30;
 	private static final float SPEED = 0.55f;
 	private static final double REACH = 2.5;
 	private static final int LOOK_EVERY = 200;
@@ -92,9 +96,13 @@ public class EnchantWork extends Behavior<Villager> {
 		return Math.max(1, Math.min(3, (strength + 9) / 10));
 	}
 
-	/** How strong this librarian's enchantments are. */
-	static int strength(Villager villager) {
-		return BASE_LEVEL + PER_LEVEL * BuilderLevels.level(villager);
+	/** How strong this librarian's enchantments are, with {@code shelves} bookshelves round the table. */
+	public static int strength(Villager villager, int shelves) {
+		return strength(BuilderLevels.level(villager), shelves);
+	}
+
+	static int strength(int level, int shelves) {
+		return Math.min(MAX_STRENGTH, BASE_LEVEL + PER_LEVEL * level + Math.min(15, shelves) / SHELVES_PER_LEVEL);
 	}
 
 	@Override
@@ -132,7 +140,7 @@ public class EnchantWork extends Behavior<Villager> {
 				return;
 			}
 			lookTimer = LOOK_EVERY;
-			if (!hasTable(level, station) || Village.RADIUS <= 0) {
+			if (table(level, station) == null || Village.RADIUS <= 0) {
 				return;
 			}
 			job = choose(level, villager, station);
@@ -142,7 +150,13 @@ public class EnchantWork extends Behavior<Villager> {
 			walker.reset();
 		}
 		busy(villager, true);
-		int lapis = lapisFor(strength(villager));
+		BlockPos table = table(level, station);
+		if (table == null) {
+			job = null;
+			return;
+		}
+		int strength = strength(villager, shelves(level, table));
+		int lapis = lapisFor(strength);
 		if (bag.count(Items.LAPIS_LAZULI) < lapis) {
 			status(villager, "fetching");
 			List<BlockPos> sources = sources(level, villager, station);
@@ -171,7 +185,7 @@ public class EnchantWork extends Behavior<Villager> {
 			return;
 		}
 		var tag = level.registryAccess().registryOrThrow(Registries.ENCHANTMENT).getTag(EnchantmentTags.IN_ENCHANTING_TABLE);
-		net.minecraft.world.item.enchantment.EnchantmentHelper.enchantItem(level.random, gear, strength(villager), level.registryAccess(), tag);
+		net.minecraft.world.item.enchantment.EnchantmentHelper.enchantItem(level.random, gear, strength, level.registryAccess(), tag);
 		worker.setItemSlot(job.slot(), gear);
 		bag.remove(Items.LAPIS_LAZULI, lapis);
 		villager.swing(InteractionHand.MAIN_HAND);
@@ -184,15 +198,33 @@ public class EnchantWork extends Behavior<Villager> {
 		walker.reset();
 	}
 
-	/** An Enchanting Table near the lectern. */
-	static boolean hasTable(ServerLevel level, BlockPos station) {
+	/** The Enchanting Table near the lectern (the one with the most bookshelves), or null. */
+	@Nullable
+	public static BlockPos table(ServerLevel level, BlockPos station) {
 		int r = SupplyContainers.RADIUS;
+		BlockPos best = null;
+		int bestShelves = -1;
 		for (BlockPos p : BlockPos.betweenClosed(station.offset(-r, -2, -r), station.offset(r, 2, r))) {
 			if (level.getBlockState(p).is(Blocks.ENCHANTING_TABLE)) {
-				return true;
+				int shelves = shelves(level, p);
+				if (shelves > bestShelves) {
+					best = p.immutable();
+					bestShelves = shelves;
+				}
 			}
 		}
-		return false;
+		return best;
+	}
+
+	/** Bookshelves powering the table at {@code table}, counted the way a player's table counts them. */
+	public static int shelves(ServerLevel level, BlockPos table) {
+		int n = 0;
+		for (BlockPos offset : net.minecraft.world.level.block.EnchantingTableBlock.BOOKSHELF_OFFSETS) {
+			if (net.minecraft.world.level.block.EnchantingTableBlock.isValidBookShelf(level, table, offset)) {
+				n++;
+			}
+		}
+		return n;
 	}
 
 	/** Gear worth enchanting: something enchantable that isn't enchanted yet. */

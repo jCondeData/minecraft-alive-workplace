@@ -74,10 +74,12 @@ public final class StarterBlueprints {
 	public static final Entry LIBRARY = new Entry(AliveWorkplace.id("library"), new Vec3i(13, 15, 12));
 	/** A study tower with a second Scholar's Desk. */
 	public static final Entry LIBRARY_2 = new Entry(AliveWorkplace.id("library_2"), new Vec3i(18, 15, 12));
-	/** A stable with a Feed Trough and a fenced paddock. */
+	/** An enchanting room behind the hall: an Enchanting Table ringed by fifteen bookshelves and a lectern for a librarian. */
+	public static final Entry LIBRARY_3 = new Entry(AliveWorkplace.id("library_3"), new Vec3i(18, 15, 20));
+	/** A barn (a hayloft gable over two stable aisles) with a Feed Trough, and a fenced paddock. */
 	public static final Entry RANCH = new Entry(AliveWorkplace.id("ranch"), new Vec3i(13, 10, 13));
-	/** The paddock doubled and a second stable. */
-	public static final Entry RANCH_2 = new Entry(AliveWorkplace.id("ranch_2"), new Vec3i(20, 10, 13));
+	/** The paddock doubled, a stable wing and a brick silo. */
+	public static final Entry RANCH_2 = new Entry(AliveWorkplace.id("ranch_2"), new Vec3i(20, 13, 13));
 	/** Beehives on posts in a meadow, and a honey shed with the Apiary. */
 	public static final Entry APIARY_GARDEN = new Entry(AliveWorkplace.id("apiary_garden"), new Vec3i(11, 8, 11));
 	/** The meadow runs on with four more hives. */
@@ -158,7 +160,7 @@ public final class StarterBlueprints {
 		STOREHOUSE, STOREHOUSE_2, STOREHOUSE_3, BERRY_FARM, BERRY_FARM_2, RESEARCH_LAB, RESEARCH_LAB_2,
 		TERRACE, TERRACE_2, INN, INN_2, STONE_HOUSE, STONE_HOUSE_2, STONE_HOUSE_3, BARRACKS, BARRACKS_2, TINKERS_WORKSHOP, TINKERS_WORKSHOP_2, NETHER_GATE, NETHER_GATE_2,
 		COMPOST_YARD, COMPOST_YARD_2, SIFTING_SHED, SIFTING_SHED_2,
-		SCHOOLHOUSE, SCHOOLHOUSE_2, LIBRARY, LIBRARY_2, RANCH, RANCH_2, APIARY_GARDEN, APIARY_GARDEN_2, FLOWER_SHOP, FLOWER_SHOP_2, GRAVEYARD, GRAVEYARD_2);
+		SCHOOLHOUSE, SCHOOLHOUSE_2, LIBRARY, LIBRARY_2, LIBRARY_3, RANCH, RANCH_2, APIARY_GARDEN, APIARY_GARDEN_2, FLOWER_SHOP, FLOWER_SHOP_2, GRAVEYARD, GRAVEYARD_2);
 
 	/** The decorations (in the Blueprint Table with the rest; near a Village Hall they make the village prettier). */
 	public static final List<Entry> DECORATIONS = List.of(WELL, WELL_2, STREET_LAMP, PARK_BENCH, FOUNTAIN, GAZEBO, MARKET_SQUARE, CHAPEL);

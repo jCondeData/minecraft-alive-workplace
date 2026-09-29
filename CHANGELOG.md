@@ -4,8 +4,14 @@
 
 ### Added
 - **Warding** (research, after Fortification): explosions no longer break blocks in the village.
+- **Library III**: an enchanting room behind the reading hall, under its own lower slate roof — an Enchanting Table
+  ringed by fifteen bookshelves with candles, a lectern (a librarian moves in) and a chest for the lapis.
 
 ### Changed
+- The **Ranch** is a proper barn now: a hayloft gable with open barn doors facing the paddock, stable aisles either
+  side under a slate roof; the Ranch II adds a stable wing and a brick silo.
+- Librarians enchant stronger with bookshelves round their table: a level more for every three (a full ring of fifteen
+  lifts a Novice from level 10 to 15; a Master stays at 30).
 - The Market Stall's striped awning is a finer slope (carpet steps between the stripes).
 
 ## 0.132.0 — 2026-09-29

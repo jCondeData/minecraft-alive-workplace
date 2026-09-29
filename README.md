@@ -84,7 +84,9 @@ boxes, roofs that overhang on every side, chimneys that smoke, lanterns and benc
 
 **Buildings for the new jobs** (in the Blueprint Table, each with an upgrade): the **Schoolhouse** (a Teacher's Desk
 before a blackboard; II adds a fenced schoolyard), the **Library** (a Scholar's Desk among the shelves; II a study tower
-with a second desk), the **Ranch** (a stable with a Feed Trough and a paddock; II doubles it), the **Apiary Garden**
+with a second desk; III an enchanting room behind the hall: an Enchanting Table ringed by fifteen bookshelves and a
+lectern, so a librarian moves in), the **Ranch** (a barn — a hayloft gable over two stable aisles — with a Feed Trough, and a paddock; II doubles
+the paddock and adds a stable wing and a brick silo), the **Apiary Garden**
 (hives on posts in a meadow and a honey shed with the Apiary; II four more hives), the **Flower Shop** (a Flower Stand
 behind display windows; II a greenhouse) and the **Graveyard** (a walled churchyard with a mortuary and an Undertaker's
 Table; II a lych-gate).
@@ -673,6 +675,8 @@ starts. Sneak-right-click a cleric with a glass bottle to hire them for your own
 the village's gear: they walk up to a guard and enchant the weapon, armor or bow they wear, then the tools the other
 workers have in hand (a miner's pickaxe, a lumberjack's axe), one piece at a time, with lapis from their chest (or the
 storehouse) — like an enchanting table at level 10 for a Novice up to level 30 for a Master, 1 to 3 lapis a piece.
+Bookshelves round the table (two blocks out with nothing in between, as for your own table) add a level for every three,
+so a full ring of fifteen — the Library III's enchanting room has one — lifts a Novice to level 15.
 They also make the books, bookshelves, lecterns and paper a builder nearby is waiting for. Sneak-right-click one with
 lapis to hire them for your own workers.
 

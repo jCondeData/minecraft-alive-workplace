@@ -93,6 +93,7 @@ if __name__ == "__main__":
     school_building_2().save(MAIN_STRUCTURES, "schoolhouse_2")
     library().save(MAIN_STRUCTURES, "library")
     library_2().save(MAIN_STRUCTURES, "library_2")
+    library_3().save(MAIN_STRUCTURES, "library_3")
     ranch().save(MAIN_STRUCTURES, "ranch")
     ranch_2().save(MAIN_STRUCTURES, "ranch_2")
     apiary_garden().save(MAIN_STRUCTURES, "apiary_garden")
@@ -130,4 +131,5 @@ if __name__ == "__main__":
     test_hut_2().save(TEST_STRUCTURES, "test_hut_2")
     test_area("build_area", 17, 8, 17)
     test_area("big_area", 22, 18, 22)
+    test_area("huge_area", 30, 20, 30)
     test_area("build_area", 17, 8, 17, COMPAT_AREAS)

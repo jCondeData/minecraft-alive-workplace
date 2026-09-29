@@ -155,6 +155,12 @@ harder — good in a guard), **Cheerful** (makes the village happier, 1% each up
 or **Frugal** (eats every other day). Traits are part of who a villager is and never change. `villagerNames` and
 `villagerTraits` in the config turn them off.
 
+**Sickness.** Now and then a villager in a village with a hall falls ill — more often when they're hungry or have no
+bed. The ill sneeze, walk slowly and work at half pace; they get well by themselves after three days, or at once when a
+**Nurse** gives them a **honey bottle**, a **bucket of milk** or a **potion of healing or regeneration** from the chest
+by her station (she looks for the ill within 32 blocks, and asks on the requests board when she has nothing to give).
+The hall's list says who's ill. `villagerSickness` in the config turns it off.
+
 ![A builder on the hall's list: Dara, a Novice Builder, Clever and Nimble](docs/media/people.png)
 
 **The village grows.** At most once a day, when there's a **free bed**, **16 meals in the store** and the wellbeing is
@@ -603,7 +609,8 @@ the robe and boots — any armor, including dyed leather and enchanted pieces.
 Craft a **Nurse Station** (glass bottles around a glistering melon slice, on white wool) and place it near a villager
 without a job. Right-click the nurse with an empty hand to get your health back and bad effects cleared; with
 **Cobblemon** installed they heal your whole team too. Once a minute per player (less as they level up). They also
-look after hurt villagers and iron golems nearby. Sneak-right-click to trade.
+look after hurt villagers and iron golems nearby, and cure the village's ill with a honey bottle, a bucket of milk or
+a healing potion from the chest by the station (see *Sickness*). Sneak-right-click to trade.
 
 ## Shops
 Craft a **Shop Counter** (an emerald over planks and a chest) and place it near a villager without a job: the shop is
@@ -809,6 +816,7 @@ and restart; out-of-range values are clamped):
 | `villageGrowthCap` | 40 | a village with a hall stops having babies at this many villagers (0: villages don't grow) |
 | `villagerNames` | true | villagers in a village with a Village Hall get names |
 | `villagerTraits` | true | villagers have traits (diligent, lazy, nimble, clever, strong, cheerful, glutton, frugal) |
+| `villagerSickness` | true | villagers in a village with a Village Hall fall ill now and then (a Nurse cures them) |
 | `villageRadius` | 48 | workers whose workstations are this close together share their chests (0 turns sharing off) |
 | `dollarsPerEmerald` | 100 | CobbleDollars per emerald for lessons, shop prices and fares |
 

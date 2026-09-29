@@ -50,6 +50,8 @@ public final class WorkplaceConfig {
 	public boolean villagerNames = true;
 	/** Villagers have traits (diligent, lazy, nimble...). */
 	public boolean villagerTraits = true;
+	/** Villagers in a village with a Village Hall fall ill now and then (a Nurse cures them). */
+	public boolean villagerSickness = true;
 	/** What an emerald price comes to in CobbleDollars (lessons, shops, fares). */
 	public int dollarsPerEmerald = 100;
 
@@ -127,6 +129,7 @@ public final class WorkplaceConfig {
 		// Off in gametests (a trait picked by chance would change a test's numbers); the people tests turn them on.
 		io.github.jcondedata.aliveworkplace.people.Names.ENABLED = villagerNames && System.getProperty("fabric-api.gametest") == null;
 		io.github.jcondedata.aliveworkplace.people.Traits.ENABLED = villagerTraits && System.getProperty("fabric-api.gametest") == null;
+		io.github.jcondedata.aliveworkplace.people.Sickness.ENABLED = villagerSickness && System.getProperty("fabric-api.gametest") == null;
 		io.github.jcondedata.aliveworkplace.build.Paths.ENABLED = builderPaths && System.getProperty("fabric-api.gametest") == null;
 	}
 }

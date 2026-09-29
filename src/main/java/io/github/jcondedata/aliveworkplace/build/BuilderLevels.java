@@ -41,7 +41,8 @@ public final class BuilderLevels {
 	/** {@code baseDelay} for this villager: shorter with each level, with Pokémon partners helping and in a well-kept village. */
 	public static int delay(int baseDelay, Villager villager) {
 		return Math.round(delay(baseDelay, level(villager)) * io.github.jcondedata.aliveworkplace.work.Partners.factor(villager)
-			* io.github.jcondedata.aliveworkplace.hall.VillageNeeds.factor(villager) * io.github.jcondedata.aliveworkplace.people.Traits.pace(villager));
+			* io.github.jcondedata.aliveworkplace.hall.VillageNeeds.factor(villager) * io.github.jcondedata.aliveworkplace.people.Traits.pace(villager)
+			* io.github.jcondedata.aliveworkplace.people.Sickness.pace(villager));
 	}
 
 	public static int delay(int baseDelay, int villagerLevel) {

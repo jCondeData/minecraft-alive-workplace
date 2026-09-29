@@ -519,8 +519,10 @@ Every villager a person you get to know, the way MineColonies' citizens are — 
   ±10%, in `BuilderLevels.delay`), Nimble (walks 15% faster, in `Walker.requestWalk`), Clever (a quarter more XP, in
   `BuilderLevels.addXp`), Strong (guards hit 15% harder), Cheerful (1% wellbeing each, up to 5%), Glutton/Frugal (eat
   twice a day / every other day); on the hall's list; `villagerTraits` in the config; off in gametests but for their own
-- [ ] Sickness: a hungry, homeless or cold villager can fall ill now and then; the ill stop working and rest in bed;
-  a Nurse cures them (with honey or a healing potion from her chest), or they get well by themselves in a few days
+- [x] Sickness: in a village with a hall a grown villager falls ill now and then (2% a day, +8% hungry, +4% without a
+  bed; `people/Sickness`, rolled in the hall's round); the ill work at half pace, walk slowly and sneeze, and get well
+  after three days — or at once when a Nurse (`NurseWork`, 32 blocks) gives them a honey bottle, milk or a healing or
+  regeneration potion from her chest (she asks on the requests board when there's none); `villagerSickness` in the config
 - [ ] The village chronicle: births, deaths, revivals, arrivals, finished buildings, quests and research — a page of the
   Village Hall
 - [ ] Running the village from the hall: give a jobless villager a free workstation, call everyone home

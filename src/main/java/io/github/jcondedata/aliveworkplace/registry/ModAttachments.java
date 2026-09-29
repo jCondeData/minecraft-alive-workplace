@@ -124,6 +124,14 @@ public final class ModAttachments {
 	public static final AttachmentType<Long> LAST_MEAL = AttachmentRegistry.create(
 		AliveWorkplace.id("last_meal"), builder -> builder.persistent(com.mojang.serialization.Codec.LONG));
 
+	/** When a villager fell ill (see {@code people/Sickness}); absent while they're well. */
+	public static final AttachmentType<Long> ILL_SINCE = AttachmentRegistry.create(
+		AliveWorkplace.id("ill_since"), builder -> builder.persistent(com.mojang.serialization.Codec.LONG));
+
+	/** How many villagers a Nurse has cured. */
+	public static final AttachmentType<Integer> VILLAGERS_CURED = AttachmentRegistry.create(
+		AliveWorkplace.id("villagers_cured"), builder -> builder.persistent(com.mojang.serialization.Codec.INT));
+
 	/** How many horses a Rancher has tamed (shown above its head). */
 	public static final AttachmentType<Integer> HORSES_TAMED = AttachmentRegistry.create(
 		AliveWorkplace.id("horses_tamed"), builder -> builder.persistent(com.mojang.serialization.Codec.INT));

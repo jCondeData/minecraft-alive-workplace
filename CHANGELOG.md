@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+## 0.112.0 — 2026-09-29
+
+### Added
+- **Sickness**: in a village with a Village Hall villagers fall ill now and then (more often hungry or without a bed);
+  the ill work at half pace until they get well after three days, or a **Nurse** cures them with honey, milk or a
+  healing potion from her chest. (`villagerSickness` in the config.)
+
 ## 0.111.0 — 2026-09-29
 
 ### Added

@@ -181,4 +181,50 @@ public class PeopleGameTests implements FabricGameTest {
 		helper.assertTrue(Math.abs(with - without - 0.01f) < 0.001f, "wellbeing " + without + " -> " + with);
 		helper.succeed();
 	}
+
+	/** The ill work at half pace and walk slowly; they get well by themselves after a few days. Hunger and no bed make it likelier. */
+	@GameTest(template = AREA)
+	public void illVillagersWorkSlowlyAndGetWell(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		Villager villager = helper.spawn(EntityType.VILLAGER, new BlockPos(5, 2, 5));
+		int well = BuilderLevels.delay(100, villager);
+		float chance = io.github.jcondedata.aliveworkplace.people.Sickness.dailyChance(level, villager);
+		villager.setAttached(ModAttachments.LAST_MEAL, level.getGameTime() - 2 * VillageNeeds.DAY);
+		helper.assertTrue(io.github.jcondedata.aliveworkplace.people.Sickness.dailyChance(level, villager) > chance, "hunger doesn't matter");
+		io.github.jcondedata.aliveworkplace.people.Sickness.fallIll(level, villager);
+		helper.assertTrue(io.github.jcondedata.aliveworkplace.people.Sickness.isIll(villager), "not ill");
+		helper.assertTrue(BuilderLevels.delay(100, villager) == 2 * well, "ill pace: " + BuilderLevels.delay(100, villager) + " vs " + well);
+		helper.assertTrue(villager.hasEffect(net.minecraft.world.effect.MobEffects.MOVEMENT_SLOWDOWN), "not slowed");
+		io.github.jcondedata.aliveworkplace.people.Sickness.round(level, villager, 40);
+		helper.assertTrue(io.github.jcondedata.aliveworkplace.people.Sickness.isIll(villager), "got well at once");
+		villager.setAttached(ModAttachments.ILL_SINCE, level.getGameTime() - io.github.jcondedata.aliveworkplace.people.Sickness.RECOVERY);
+		io.github.jcondedata.aliveworkplace.people.Sickness.round(level, villager, 40);
+		helper.assertFalse(io.github.jcondedata.aliveworkplace.people.Sickness.isIll(villager), "still ill after the illness ran its course");
+		helper.assertTrue(BuilderLevels.delay(100, villager) == well, "still slow");
+		helper.succeed();
+	}
+
+	/** A nurse cures the ill with a remedy from her chest (the empty bottle goes back), or asks for one. */
+	@GameTest(template = AREA, timeoutTicks = 400)
+	public void aNurseCuresTheIll(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		Villager nurse = NurseGameTests.nurse(helper);
+		helper.setBlock(new BlockPos(2, 2, 4), net.minecraft.world.level.block.Blocks.CHEST);
+		net.minecraft.world.Container chest = helper.getBlockEntity(new BlockPos(2, 2, 4));
+		Villager patient = helper.spawn(EntityType.VILLAGER, new BlockPos(12, 2, 12));
+		io.github.jcondedata.aliveworkplace.people.Sickness.fallIll(level, patient);
+		helper.runAfterDelay(120, () -> {
+			helper.assertTrue(io.github.jcondedata.aliveworkplace.people.Sickness.isIll(patient), "cured without a remedy");
+			boolean asked = io.github.jcondedata.aliveworkplace.work.Requests.of(level, nurse).stream()
+				.anyMatch(r -> r.accepts().test(new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.HONEY_BOTTLE)));
+			helper.assertTrue(asked, "the nurse didn't ask for a remedy: " + io.github.jcondedata.aliveworkplace.work.Requests.of(level, nurse));
+			chest.setItem(0, new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.HONEY_BOTTLE));
+		});
+		helper.runAfterDelay(125, () -> helper.succeedWhen(() -> {
+			helper.assertFalse(io.github.jcondedata.aliveworkplace.people.Sickness.isIll(patient), "still ill");
+			helper.assertTrue(chest.countItem(net.minecraft.world.item.Items.GLASS_BOTTLE) == 1 && chest.countItem(net.minecraft.world.item.Items.HONEY_BOTTLE) == 0,
+				"chest: " + chest.countItem(net.minecraft.world.item.Items.HONEY_BOTTLE) + " honey, " + chest.countItem(net.minecraft.world.item.Items.GLASS_BOTTLE) + " bottles");
+			helper.assertTrue(nurse.getAttachedOrElse(ModAttachments.VILLAGERS_CURED, 0) == 1, "cured count");
+		}));
+	}
 }

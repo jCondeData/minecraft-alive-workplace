@@ -124,6 +124,7 @@ public final class VillageNeeds {
 			if (villager.isBaby()) {
 				continue;
 			}
+			io.github.jcondedata.aliveworkplace.people.Sickness.round(level, villager, (int) (DAY / CHECK_EVERY));
 			Long meal = villager.getAttached(ModAttachments.LAST_MEAL);
 			if (meal == null) {
 				villager.setAttached(ModAttachments.LAST_MEAL, now); // new to the village: they ate before they came

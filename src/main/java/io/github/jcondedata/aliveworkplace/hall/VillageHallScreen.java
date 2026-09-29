@@ -225,6 +225,9 @@ public final class VillageHallScreen {
 		if (io.github.jcondedata.aliveworkplace.school.Schools.isSchooled(villager)) {
 			lore.add(line("screen.aliveworkplace.hall.schooled", ChatFormatting.GRAY));
 		}
+		if (io.github.jcondedata.aliveworkplace.people.Sickness.isIll(villager)) {
+			lore.add(line("screen.aliveworkplace.hall.ill", ChatFormatting.RED));
+		}
 		if (VillageNeeds.isHungry(villager, level.getGameTime())) {
 			lore.add(line("screen.aliveworkplace.hall.hungry", ChatFormatting.RED));
 		}

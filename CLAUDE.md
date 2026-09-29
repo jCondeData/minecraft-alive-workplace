@@ -110,7 +110,8 @@ The owner (Jesse) does not write code: sessions are expected to work autonomousl
   hall → beauty → wellbeing; the builds are `StarterBlueprints.DECORATIONS`, drawn in `tools/blueprints/decor.py`)
 - `people/` — villagers as people: `Names` (first names for villagers in a hall's village, given in
   `VillageNeeds.check`), `Traits` (one or two per villager from the UUID; read by `BuilderLevels`, `Walker`, `Guards`,
-  `VillageNeeds`; off in gametests unless a test turns them on)
+  `VillageNeeds`; off in gametests unless a test turns them on), `Sickness` (falling ill in the hall's round, half pace;
+  cured by `nurse/NurseWork` with a remedy)
 - `research/` — the Scholar (Scholar's Desk): `Research` (the tree, kept in the Village Hall; bonuses read by
   `VillageNeeds`, `Guards`, `Partners`, `Schools`), `ScholarWork`, `ResearchScreen`; `research/*` blueprints are hidden
   from the Blueprint Table (`BlueprintLibrary.isWorldgenPiece`)

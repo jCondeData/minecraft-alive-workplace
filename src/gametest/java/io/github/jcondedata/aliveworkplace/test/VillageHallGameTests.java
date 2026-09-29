@@ -2,6 +2,7 @@ package io.github.jcondedata.aliveworkplace.test;
 
 import io.github.jcondedata.aliveworkplace.hall.VillageHallScreen;
 import io.github.jcondedata.aliveworkplace.hall.VillageHalls;
+import io.github.jcondedata.aliveworkplace.hall.VillageGrowth;
 import io.github.jcondedata.aliveworkplace.hall.VillageNeeds;
 import io.github.jcondedata.aliveworkplace.registry.ModAttachments;
 import io.github.jcondedata.aliveworkplace.registry.ModBlocks;
@@ -156,6 +157,42 @@ public class VillageHallGameTests implements net.fabricmc.fabric.api.gametest.v1
 			VillageNeeds.forget();
 			int delay = io.github.jcondedata.aliveworkplace.build.BuilderLevels.delay(100, builder);
 			helper.assertTrue(delay == 125, "delay in a hungry village: " + delay);
+			helper.succeed();
+		});
+	}
+
+	/** With a free bed, 16 meals in the store and a happy village, two villagers have a baby; the family eats 8 meals. */
+	@GameTest(template = AREA, timeoutTicks = 100, batch = "aVillageWithFoodAndABedGrows")
+	public void aVillageWithFoodAndABedGrows(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		int radius = VillageHalls.RADIUS;
+		VillageHalls.RADIUS = 16;
+		Leftovers.after(helper, () -> VillageHalls.RADIUS = radius);
+		ServerLevel level = helper.getLevel();
+		helper.setBlock(new BlockPos(17, 2, 17), ModBlocks.STOREHOUSE);
+		helper.setBlock(new BlockPos(17, 2, 19), Blocks.CHEST);
+		Container chest = helper.getBlockEntity(new BlockPos(17, 2, 19));
+		chest.setItem(0, new ItemStack(Items.BREAD, 15));
+		helper.spawn(EntityType.VILLAGER, new BlockPos(8, 2, 8));
+		helper.spawn(EntityType.VILLAGER, new BlockPos(9, 2, 8));
+		for (int x : new int[] {3, 5, 7}) {
+			helper.setBlock(new BlockPos(x, 2, 15), Blocks.RED_BED.defaultBlockState().setValue(BedBlock.FACING, Direction.SOUTH).setValue(BedBlock.PART, BedPart.FOOT));
+			helper.setBlock(new BlockPos(x, 2, 16), Blocks.RED_BED.defaultBlockState().setValue(BedBlock.FACING, Direction.SOUTH).setValue(BedBlock.PART, BedPart.HEAD));
+		}
+		helper.setBlock(HALL, ModBlocks.VILLAGE_HALL);
+		BlockPos hall = helper.absolutePos(HALL);
+		VillageNeeds.Needs happy = new VillageNeeds.Needs(2, 2, 2, 2, 2, 0, 1f);
+		helper.runAfterDelay(5, () -> {
+			helper.assertTrue(VillageGrowth.blocker(level, hall, happy, 0) == VillageGrowth.Blocker.FOOD, "15 meals: "
+				+ VillageGrowth.blocker(level, hall, happy, 0));
+			chest.setItem(1, new ItemStack(Items.BAKED_POTATO, 5));
+			helper.assertTrue(VillageGrowth.blocker(level, hall, happy, level.getGameTime() - 100) == VillageGrowth.Blocker.TOO_SOON, "a baby just born");
+			helper.assertTrue(VillageGrowth.blocker(level, hall, new VillageNeeds.Needs(2, 0, 2, 0, 0, 0, 0.2f), 0) == VillageGrowth.Blocker.WELLBEING,
+				"an unhappy village grows");
+			Villager baby = VillageGrowth.grow(level, hall, happy, 0);
+			helper.assertTrue(baby != null && baby.isBaby() && baby.isAlive(), "no baby");
+			int meals = chest.countItem(Items.BREAD) + chest.countItem(Items.BAKED_POTATO);
+			helper.assertTrue(meals == 12, "meals left: " + meals);
 			helper.succeed();
 		});
 	}

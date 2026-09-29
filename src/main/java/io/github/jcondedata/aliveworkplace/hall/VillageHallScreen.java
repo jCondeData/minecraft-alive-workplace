@@ -77,10 +77,16 @@ public final class VillageHallScreen {
 
 		menu.button(NAME, icon(Items.NAME_TAG, VillageHalls.name(level, hall).copy(), ChatFormatting.GOLD,
 			line("screen.aliveworkplace.hall.rename", ChatFormatting.DARK_GRAY)), null);
+		VillageNeeds.Needs needs = VillageNeeds.count(level, hall);
+		VillageHallBlockEntity entity = level.getBlockEntity(hall) instanceof VillageHallBlockEntity e ? e : null;
+		VillageGrowth.Blocker growth = VillageGrowth.blocker(level, hall, needs, entity == null ? 0 : entity.lastBirth());
 		menu.button(PEOPLE, icon(Items.EMERALD, Component.translatable("screen.aliveworkplace.hall.villagers", census.villagers()), ChatFormatting.WHITE,
 			line(Component.translatable("screen.aliveworkplace.hall.workers", census.workers().size()), ChatFormatting.GRAY),
 			line(Component.translatable("screen.aliveworkplace.hall.jobless", census.jobless().size()), ChatFormatting.GRAY),
-			line(Component.translatable("screen.aliveworkplace.hall.children", census.children()), ChatFormatting.GRAY)), null);
+			line(Component.translatable("screen.aliveworkplace.hall.children", census.children()), ChatFormatting.GRAY),
+			line(Component.translatable("screen.aliveworkplace.hall.born", entity == null ? 0 : entity.births()), ChatFormatting.GRAY),
+			line(Component.translatable("screen.aliveworkplace.hall.growth." + growth.name().toLowerCase(), VillageGrowth.FOOD_NEEDED,
+				Math.round(VillageGrowth.WELLBEING_NEEDED * 100), VillageGrowth.CAP), growth == VillageGrowth.Blocker.NONE ? ChatFormatting.GREEN : ChatFormatting.YELLOW)), null);
 		menu.button(BEDS, icon(Items.RED_BED, Component.translatable("screen.aliveworkplace.hall.beds", census.beds()), ChatFormatting.WHITE,
 			line(Component.translatable("screen.aliveworkplace.hall.free_beds", census.freeBeds()),
 				census.freeBeds() > 0 ? ChatFormatting.GREEN : ChatFormatting.YELLOW)), null);
@@ -89,7 +95,7 @@ public final class VillageHallScreen {
 		menu.button(GUARDS, icon(Items.IRON_SWORD, Component.translatable("screen.aliveworkplace.hall.guards", census.guards()), ChatFormatting.WHITE,
 			line(census.guards() > 0 ? "screen.aliveworkplace.hall.guarded" : "screen.aliveworkplace.hall.unguarded",
 				census.guards() > 0 ? ChatFormatting.GRAY : ChatFormatting.YELLOW)), null);
-		menu.button(WELLBEING, wellbeingIcon(VillageNeeds.count(level, hall)), null);
+		menu.button(WELLBEING, wellbeingIcon(needs), null);
 		menu.button(REQUESTS, requestsIcon(census.requests()), null);
 		menu.button(BUILDS, buildsIcon(census.builds()), null);
 		menu.divider(1);

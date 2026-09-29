@@ -109,6 +109,15 @@ by their beds. The hall's **Wellbeing** shows how it's going, and it sets the pa
 they're hungry and sleep rough. The villagers the hall lists say when they're hungry or have no bed. Without a hall,
 work goes at the usual pace.
 
+**The village grows.** At most once a day, when there's a **free bed**, **16 meals in the store** and the wellbeing is
+at least 50%, the two villagers nearest the free bed have a baby (the family eats 8 meals for it), up to 40 villagers
+(`villageGrowthCap`). The hall's villager count says what the village still needs to grow. So build houses: the
+**Terrace** (two narrow homes, four beds; the **Terrace II** adds a third home) and the **Inn** (a tavern below, three
+guest rooms with six beds above; the **Inn II** adds a stable with a Feed Trough, and a rancher moves in) are in the
+Blueprint Table.
+
+![The Terrace II and the Inn II](docs/media/houses.png)
+
 ## All the jobs at a glance
 Place the workstation near a villager without a job and they take it. Chests (or barrels) within 8 blocks of it are
 where they take tools and supplies from and where their work goes.
@@ -704,6 +713,7 @@ and restart; out-of-range values are clamped):
 | `partnerRadius` | 16 | how close to a workstation pastured Pokémon must be to help |
 | `postmanRange` | 64 | how far a postman walks to deliver (mail going farther arrives at dawn) |
 | `villageHallRadius` | 64 | how far from a Village Hall its village reaches |
+| `villageGrowthCap` | 40 | a village with a hall stops having babies at this many villagers (0: villages don't grow) |
 | `villageRadius` | 48 | workers whose workstations are this close together share their chests (0 turns sharing off) |
 | `dollarsPerEmerald` | 100 | CobbleDollars per emerald for lessons, shop prices and fares |
 

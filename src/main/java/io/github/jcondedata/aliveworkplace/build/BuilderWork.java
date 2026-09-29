@@ -61,6 +61,8 @@ public class BuilderWork extends Behavior<Villager> {
 	/** Already-finished steps skipped per tick (cheap checks). */
 	private static final int SKIP_BUDGET = 256;
 	private static final int STUCK_TICKS = 100;
+	/** How long a builder with no path to where it's going waits before hopping there. */
+	private static final int NO_PATH_TICKS = 30;
 	private static final int WAIT_RECHECK = 100;
 
 	private enum Action { NONE, BREAK, PLACE, SKIP }
@@ -425,7 +427,9 @@ public class BuilderWork extends Behavior<Villager> {
 			bestDistance = distance;
 			stuckTimer = 0;
 		}
-		if (++stuckTimer > STUCK_TICKS || ++reachTicks > MAX_REACH_TICKS) {
+		// No path there at all (walled in upstairs, the other side of a party wall): hop after a short beat, not the full wait.
+		boolean noPath = villager.getBrain().hasMemoryValue(MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE);
+		if (++stuckTimer > (noPath ? NO_PATH_TICKS : STUCK_TICKS) || ++reachTicks > MAX_REACH_TICKS) {
 			stuckTimer = 0;
 			reachTicks = 0;
 			BlockPos spot = approachSpot != null ? approachSpot : findStandingSpot(level, null, target, villager.blockPosition(), null, reach - 0.3);

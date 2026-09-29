@@ -19,6 +19,9 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 	/** How the village is doing, from the last round (not saved: the first tick counts again). */
 	@Nullable
 	private VillageNeeds.Needs needs;
+	/** When the last baby was born here (0: never), and how many have been. */
+	private long lastBirth;
+	private int births;
 
 	public VillageHallBlockEntity(BlockPos pos, BlockState state) {
 		super(ModBlocks.VILLAGE_HALL_ENTITY, pos, state);
@@ -46,7 +49,26 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 		if (level instanceof net.minecraft.server.level.ServerLevel server
 			&& (hall.needs == null || Math.floorMod(level.getGameTime() + pos.hashCode(), VillageNeeds.CHECK_EVERY) == 0)) {
 			hall.needs = VillageNeeds.check(server, pos);
+			if (VillageGrowth.grow(server, pos, hall.needs, hall.lastBirth) != null) {
+				hall.lastBirth = level.getGameTime();
+				hall.births++;
+				hall.setChanged();
+			}
 		}
+	}
+
+	public long lastBirth() {
+		return lastBirth;
+	}
+
+	public int births() {
+		return births;
+	}
+
+	/** When the last baby was born (tests). */
+	public void setLastBirth(long time) {
+		lastBirth = time;
+		setChanged();
 	}
 
 	public void setCustomName(@Nullable Component name) {
@@ -58,6 +80,8 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 	protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
 		super.loadAdditional(tag, registries);
 		name = tag.contains("CustomName", 8) ? parseCustomNameSafe(tag.getString("CustomName"), registries) : null;
+		lastBirth = tag.getLong("lastBirth");
+		births = tag.getInt("births");
 	}
 
 	@Override
@@ -66,6 +90,8 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 		if (name != null) {
 			tag.putString("CustomName", Component.Serializer.toJson(name, registries));
 		}
+		tag.putLong("lastBirth", lastBirth);
+		tag.putInt("births", births);
 	}
 
 	@Override

@@ -2,6 +2,19 @@
 
 ## Unreleased
 
+## 0.99.0 — 2026-09-29
+
+### Added
+- **Villages grow**: with a Village Hall, when there's a free bed, 16 meals in the store and the village is doing well,
+  two villagers have a baby (at most one a day, up to 40 villagers — `villageGrowthCap`). The hall says what the
+  village still needs to grow.
+- **Terrace** and **Inn** blueprints (with upgrades): row houses with four beds (six in the Terrace II) and an inn with
+  a tavern and six beds (the Inn II adds a stable with a Feed Trough). In the Blueprint Table.
+
+### Changed
+- Builders with no way to walk to where they need to be (upstairs by a ladder, behind a party wall) hop there after
+  a moment instead of trying for five seconds: builds with upper floors go a lot quicker.
+
 ## 0.98.0 — 2026-09-29
 
 ### Added

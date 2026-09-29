@@ -57,9 +57,19 @@ public final class StarterBlueprints {
 	/** A museum hall beside it with a big skeleton on show. */
 	public static final Entry RESEARCH_LAB_2 = new Entry(AliveWorkplace.id("research_lab_2"), new Vec3i(18, 10, 11));
 
+	/** Two row houses of two storeys, four beds: building houses grows a village with a Village Hall. */
+	public static final Entry TERRACE = new Entry(AliveWorkplace.id("terrace"), new Vec3i(13, 16, 10));
+	/** A third home on the east end: six beds. */
+	public static final Entry TERRACE_2 = new Entry(AliveWorkplace.id("terrace_2"), new Vec3i(18, 16, 10));
+	/** A tavern below, three guest rooms with six beds above. */
+	public static final Entry INN = new Entry(AliveWorkplace.id("inn"), new Vec3i(13, 16, 13));
+	/** A stable on the side with a Feed Trough: a rancher moves in. */
+	public static final Entry INN_2 = new Entry(AliveWorkplace.id("inn_2"), new Vec3i(19, 16, 13));
+
 	public static final List<Entry> ALL = List.of(STARTER_COTTAGE, STARTER_COTTAGE_2, STARTER_COTTAGE_3, MARKET_STALL, MARKET_STALL_2, MARKET_STALL_3,
 		LOOKOUT_TOWER, LOOKOUT_TOWER_2, LOOKOUT_TOWER_3, HEALING_CENTER, HEALING_CENTER_2, HEALING_CENTER_3, SUPPLY_SHOP, SUPPLY_SHOP_2, SUPPLY_SHOP_3,
-		STOREHOUSE, STOREHOUSE_2, STOREHOUSE_3, BERRY_FARM, BERRY_FARM_2, RESEARCH_LAB, RESEARCH_LAB_2);
+		STOREHOUSE, STOREHOUSE_2, STOREHOUSE_3, BERRY_FARM, BERRY_FARM_2, RESEARCH_LAB, RESEARCH_LAB_2,
+		TERRACE, TERRACE_2, INN, INN_2);
 
 	private StarterBlueprints() {
 	}

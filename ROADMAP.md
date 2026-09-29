@@ -445,8 +445,13 @@ loop: ore → ingots → the tools, weapons and armor the other workers wear out
   Storehouses' chests (`#aliveworkplace:not_villager_food` and food with effects excluded); wellbeing = 40% fed +
   30% in a bed + 30% safe (half guards, one per 10 villagers; half block light ≥ 8 at their bed); the work delay
   multiplier goes 1.25 → 1 → 0.8 over 0 → 50% → 100%, through `BuilderLevels.delay`, so every job that uses it)
-- [ ] **Growth**: new villagers when there are free beds and food in store; housing blueprints (cottages, terraces,
-  an inn) so building houses grows the village
+- [x] **Growth**: new villagers when there are free beds and food in store; housing blueprints (cottages, terraces,
+  an inn) so building houses grows the village (`hall/VillageGrowth`: once a day at most, a free bed (HOME POI with
+  space), 16 meals in the store and 50% wellbeing → the two grown villagers nearest the bed have a baby, 8 meals eaten,
+  up to `villageGrowthCap` (40); the hall shows what's missing. Starter builds **Terrace**/**Terrace II** (4/6 beds) and
+  **Inn**/**Inn II** (6 beds; II adds a stable with a Feed Trough). Builders with no path to where they're going now
+  hop after 30 ticks instead of 100 (upper storeys reached by ladders, party walls): builds with them finish a day
+  sooner)
 - [ ] **School**: a Teacher (new job) teaches the village children; grown-ups who went to school start a level up
 - [ ] **Recruiting**: an Innkeeper (new job) hosts travellers; hire one for emeralds or CobbleDollars
 - [ ] **Graveyard**: a villager who dies leaves a grave; an Undertaker (new job) can bring them back, job and level kept
@@ -518,5 +523,5 @@ loop: ore → ingots → the tools, weapons and armor the other workers wear out
 - 2026-09-29: two scheduled sessions ran at the same time and both built the Miltank milking and plantation-crop items;
   the second one's work was dropped for the first's. If sessions overlap again, the later one should take items further
   down the list (as the Training Dummy was) or the schedule should be spread out (owner).
-- 2026-09-29: session `01Xw8jqb` is working down **Milestone 9** in order (Village Hall and Needs done; next Growth,
+- 2026-09-29: session `01Xw8jqb` is working down **Milestone 9** in order (Village Hall, Needs and Growth done; next
   School, …); a session running at the same time should take Milestone 10 and on, to keep out of each other's way.

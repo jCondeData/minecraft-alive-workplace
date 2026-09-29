@@ -64,6 +64,12 @@ public final class VillageHouses {
 		out.put("kitchen", override != null ? override : 2);
 		// The fossil scientist (Cobblemon only).
 		out.put("fossil_lab", override != null ? override : 2);
+		// The florist, the rancher, the teacher, the innkeeper and the undertaker.
+		out.put("flower_shop", override != null ? override : 2);
+		out.put("ranch_house", override != null ? override : 2);
+		out.put("schoolhouse", override != null ? override : 2);
+		out.put("inn_room", override != null ? override : 2);
+		out.put("mortuary", override != null ? override : 1);
 		return out;
 	}
 

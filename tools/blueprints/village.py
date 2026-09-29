@@ -254,10 +254,57 @@ def fossil_lab(b, style):
     b.set(1, 2, 3, "bone_block", axis="y")
 
 
+def flower_shop(b, style):
+    """A Flower Stand, a chest of bone meal and flowers, and pots on the sill: the florist grows the village's flowers."""
+    b.set(1, 1, 6, "aliveworkplace:flower_stand", facing="east")
+    b.set(1, 1, 5, "chest", facing="east", type="single", waterlogged=False)
+    b.set_nbt(1, 1, 5, Compound({"LootTable": String("aliveworkplace:chests/village_flower_shop"), "id": String("minecraft:chest")}))
+    b.set(1, 1, 3, "potted_red_tulip")
+    b.set(2, 1, 3, "potted_oxeye_daisy")
+
+
+def ranch_house(b, style):
+    """A Feed Trough, a chest of feed and a hay bale: the rancher tames and breeds the horses round the village."""
+    b.set(1, 1, 6, "aliveworkplace:feed_trough", facing="east")
+    b.set(1, 1, 5, "chest", facing="east", type="single", waterlogged=False)
+    b.set_nbt(1, 1, 5, Compound({"LootTable": String("aliveworkplace:chests/village_ranch"), "id": String("minecraft:chest")}))
+    b.set(1, 1, 3, "hay_block", axis="y")
+    b.set(1, 2, 3, "hay_block", axis="x")
+
+
+def schoolhouse(b, style):
+    """A Teacher's Desk facing two benches, and a shelf of books: the teacher gives the village's children lessons."""
+    b.set(1, 1, 6, "aliveworkplace:teachers_desk", facing="east")
+    for z in (4, 5):
+        b.set(3, 1, z, "oak_stairs", facing="west", half="bottom", shape="straight", waterlogged=False)
+    b.set(1, 1, 3, "bookshelf")
+    b.set(1, 2, 3, "flower_pot")
+
+
+def inn_room(b, style):
+    """An Inn Counter, a chest of bread and a stool: the innkeeper takes in travellers (the house's bed is for guests)."""
+    b.set(1, 1, 6, "aliveworkplace:inn_counter", facing="east")
+    b.set(1, 1, 5, "chest", facing="east", type="single", waterlogged=False)
+    b.set_nbt(1, 1, 5, Compound({"LootTable": String("aliveworkplace:chests/village_inn"), "id": String("minecraft:chest")}))
+    b.set(2, 1, 4, "oak_stairs", facing="west", half="bottom", shape="straight", waterlogged=False)
+    b.set(1, 1, 3, "hay_block", axis="y")
+
+
+def mortuary(b, style):
+    """An Undertaker's Table, a chest (now and then with a golden apple) and candles: the undertaker brings the village's
+    dead back."""
+    b.set(1, 1, 6, "aliveworkplace:undertakers_table", facing="east")
+    b.set(1, 1, 5, "chest", facing="east", type="single", waterlogged=False)
+    b.set_nbt(1, 1, 5, Compound({"LootTable": String("aliveworkplace:chests/village_mortuary"), "id": String("minecraft:chest")}))
+    b.set(1, 1, 3, "polished_andesite")
+    b.set(1, 2, 3, "candle", candles=3, lit=False, waterlogged=False)
+
+
 VILLAGE_HOUSES = {"trainers_house": trainers_house, "guard_house": guard_house, "clinic": clinic, "post_office": post_office,
                   "leaders_hall": leaders_hall, "school": school, "trade_hall": trade_hall, "orchard_house": orchard_house,
                   "ball_workshop": ball_workshop, "ferry_house": ferry_house, "storehouse": storehouse_room,
                   "carpenters_workshop": carpenters_workshop, "kitchen": kitchen,
-                  "fossil_lab": fossil_lab}
+                  "fossil_lab": fossil_lab, "flower_shop": flower_shop, "ranch_house": ranch_house,
+                  "schoolhouse": schoolhouse, "inn_room": inn_room, "mortuary": mortuary}
 
 

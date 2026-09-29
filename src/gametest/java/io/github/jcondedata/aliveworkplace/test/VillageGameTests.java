@@ -77,16 +77,22 @@ public class VillageGameTests implements FabricGameTest {
 			java.util.Map.entry("storehouse", ModBlocks.STOREHOUSE),
 			java.util.Map.entry("carpenters_workshop", ModBlocks.CARPENTERS_BENCH),
 			java.util.Map.entry("kitchen", ModBlocks.KITCHEN_STOVE),
-			java.util.Map.entry("fossil_lab", ModBlocks.FOSSIL_LAB));
+			java.util.Map.entry("fossil_lab", ModBlocks.FOSSIL_LAB),
+			java.util.Map.entry("flower_shop", ModBlocks.FLOWER_STAND),
+			java.util.Map.entry("ranch_house", ModBlocks.FEED_TROUGH),
+			java.util.Map.entry("schoolhouse", ModBlocks.TEACHERS_DESK),
+			java.util.Map.entry("inn_room", ModBlocks.INN_COUNTER),
+			java.util.Map.entry("mortuary", ModBlocks.UNDERTAKERS_TABLE));
 		// No Cobblemon here: the Pokémon houses stay out of the pools.
-		helper.assertTrue(VillageHouses.houseNames().equals(List.of("guard_house", "clinic", "post_office", "orchard_house", "ferry_house", "storehouse", "carpenters_workshop", "kitchen")),
+		helper.assertTrue(VillageHouses.houseNames().equals(List.of("guard_house", "clinic", "post_office", "orchard_house", "ferry_house", "storehouse", "carpenters_workshop", "kitchen",
+				"flower_shop", "ranch_house", "schoolhouse", "inn_room", "mortuary")),
 			"houses without Cobblemon: " + VillageHouses.houseNames());
 		for (String style : VillageHouses.STYLES) {
 			StructureTemplatePool pool = pools.get(VillageHouses.housePool(style));
 			for (var house : houses.entrySet()) {
 				var id = io.github.jcondedata.aliveworkplace.AliveWorkplace.id("village/" + style + "_" + house.getKey());
 				boolean listed = ((StructureTemplatePoolAccessor) pool).aliveworkplace$rawTemplates().stream()
-					.anyMatch(p -> p.getFirst().toString().contains(id.toString()));
+					.anyMatch(p -> p.getFirst().toString().matches(".*" + java.util.regex.Pattern.quote(id.toString()) + "(?![a-z_0-9]).*"));
 				helper.assertTrue(listed == VillageHouses.houseNames().contains(house.getKey()),
 					style + " villages " + (listed ? "grow" : "can't grow") + " a " + house.getKey());
 				StructureTemplate template = level.getStructureManager().get(id)

@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+## 0.106.0 — 2026-09-29
+
+### Added
+- Villages now grow a **flower shop** (florist), a **ranch house** (rancher), a **schoolhouse** (teacher), an **inn**
+  (innkeeper) and a **mortuary** (undertaker) now and then, in every village style, each with its job block, a chest
+  of starting supplies and a bed.
+
 ## 0.105.0 — 2026-09-29
 
 ### Added

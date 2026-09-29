@@ -46,9 +46,10 @@ class Shifted:
 
 def village_house(style, fit_out):
     """9 x 10 x 10. The street connects at the front (z = 0, left as the ground it lands on); a timber-framed house on a
-    stone plinth (walls x 1-7, z 2-8) with its gable to the street, shuttered windows, a lantern by the door; inside a bed,
+    stone plinth (walls x 1-7, z 2-8) with its gable to the street, shuttered windows, a lantern over the door; inside a bed,
     a villager spawn and {@code fit_out(b, style)}: the job block and what goes with it (drawn for the interior x 1-5,
-    z 2-6 of the first houses, moved in by one). Desert houses have a flat roof with a parapet instead."""
+    z 2-6 of the first houses, moved in by one). Desert houses have a flat roof with a parapet instead, the roof beams'
+    ends showing under it."""
     s = VILLAGE_STYLES[style]
     b = Build(9, 10, 10)
     for x in range(9):
@@ -89,6 +90,12 @@ def village_house(style, fit_out):
             b.set(x, 4, 1, "orange_wool" if x != 4 else "white_wool")
         lantern(b, 3, 3, 1, hanging=True)
         lantern(b, 5, 3, 1, hanging=True)
+        # The ends of the roof beams stick out of the walls under the parapet
+        for z in (3, 5, 7):
+            log(b, 0, 4, z, "stripped_jungle_log", axis="x")
+            log(b, 8, 4, z, "stripped_jungle_log", axis="x")
+        for x in (2, 4, 6):
+            log(b, x, 4, 9, "stripped_jungle_log", axis="z")
     else:
         gable_roof(b, 0, 8, 1, 9, 4, s.roof, axis="z", gable=s.infill, gable_at=(2, 8), eave_trim=s.roof)
         b.set(4, 5, 2, s.frame, **frame_axis)
@@ -99,9 +106,9 @@ def village_house(style, fit_out):
         stairs(b, 3, 3, 1, s.roof, "west", top=True)
         stairs(b, 5, 3, 1, s.roof, "east", top=True)
         slab(b, 4, 4, 1, s.roof)
-        lantern(b, 3, 3, 1, hanging=True) if False else None
-        b.set(5, 3, 1, "lantern", hanging=True, waterlogged=False) if False else None
     b.set(4, 3, 1, "air")
+    if not s.flat:
+        lantern(b, 4, 3, 1, hanging=True)  # under the hood's slab, over the way in
     fit_out(Shifted(b, 1, 1), style)
     b.bed(6, 1, 6, s.bed, facing="south")
     lantern(b, 4, 3, 5, hanging=True)

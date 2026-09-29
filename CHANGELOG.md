@@ -13,6 +13,10 @@
   that runs on round the study tower, a soffit under the eaves and lamps at the steps; each home of the Terrace gets a
   dormer over its bedroom window; the Graveyard's lych-gate a little slate roof. The Inn, Tinker's Workshop, Nether
   Gate and Berry Farm passed the review as they are.
+- **Walls and village houses** (round 2, third batch): moss low on the Stone Wall, the Wall Tower (with a spruce band
+  at its top floor) and the Gatehouse (with a portcullis drawn up under its outer arch and lanterns either side of the
+  way in); new village houses get a lantern over the door, and desert ones the ends of their roof beams showing under
+  the parapet. The well, fountain, gazebo, street lamp, park bench and palisade passed as they are.
 
 ## 0.135.0 — 2026-09-29
 

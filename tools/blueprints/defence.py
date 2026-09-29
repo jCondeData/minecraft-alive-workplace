@@ -53,7 +53,7 @@ def stone_wall():
         for z in (1, 2):
             b.set(x, 0, z, STONE_MIX.at(x, 0, z))
             for y in range(1, 4):
-                b.set(x, y, z, BRICK_WALL_MIX.at(x, y, z))
+                b.set(x, y, z, (MOSSY_BRICK_MIX if y == 1 else BRICK_WALL_MIX).at(x, y, z))
         # battlements: merlons and crenels along the outside
         if x % 2 == 0:
             b.set(x, 4, 2, "stone_bricks")
@@ -72,6 +72,12 @@ def wall_tower():
     b = Build(5, 10, 5)
     plinth(b, 0, 0, 4, 4, STONE_MIX, floor="cobblestone")
     walls(b, 0, 0, 4, 4, 1, 6, BRICK_WALL_MIX)
+    walls(b, 0, 0, 4, 4, 1, 2, MOSSY_BRICK_MIX)  # moss low down
+    for i in range(1, 4):  # a spruce band at the top floor, between the corners
+        log(b, i, 6, 0, "spruce_log", axis="x")
+        log(b, i, 6, 4, "spruce_log", axis="x")
+        log(b, 0, 6, i, "spruce_log", axis="z")
+        log(b, 4, 6, i, "spruce_log", axis="z")
     for x, z in ((0, 0), (4, 0), (0, 4), (4, 4)):
         box(b, x, 1, z, x, 6, z, "stone_bricks")
     door(b, 2, 1, 0, "spruce_door", "south")
@@ -103,7 +109,7 @@ def gate_tower(b, x0):
             b.set(x, 0, z, STONE_MIX.at(x, 0, z))
             for y in range(1, 7):
                 if x in (x0, x0 + 2) or z in (1, 3) or y == 6:
-                    b.set(x, y, z, "stone_bricks" if (x in (x0, x0 + 2) and z in (1, 3)) else BRICK_WALL_MIX.at(x, y, z))
+                    b.set(x, y, z, "stone_bricks" if (x in (x0, x0 + 2) and z in (1, 3)) else (MOSSY_BRICK_MIX if y <= 2 else BRICK_WALL_MIX).at(x, y, z))
             if (x + z) % 2 == 0:
                 b.set(x, 7, z, "stone_bricks")
                 slab(b, x, 8, z, STONE_BRICK)
@@ -143,7 +149,11 @@ def gatehouse():
         b.set(x, 1, 2, "stone_bricks")
         b.set(x, 2, 2, "stone_bricks")
     lantern(b, 5, 3, 1, hanging=True)
-    lantern(b, 5, 3, 3, hanging=True)
+    # The portcullis, drawn up under the outer arch, and lanterns either side of the way in
+    for x in range(4, 7):
+        b.set(x, 3, 3, "iron_bars")
+    for x in (3, 7):
+        lantern(b, x, 1, 4)
     # Ladders up the towers' inner faces, to the walkway
     for x in (1, 9):
         for y in range(0, 7):

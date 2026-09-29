@@ -716,8 +716,10 @@ standard, "even go back and improve upon other builds you've already pushed").
 - [x] … inn I–II, library I–II, terrace I–II, tinker's workshop I–II, nether gate I–II, graveyard I–II, berry farm I–II
   (library I–III: timbered gables with studs and a king post, the top beam round the tower, a soffit, lamps; terrace:
   a wall dormer per home, `terrace_roof`; graveyard II: a gabled lych-gate; the rest passed as they are)
-- [ ] … the decorations (well I–II, fountain, gazebo, street lamp, park bench) and defences (palisade, gatehouse, wall
-  tower, stone wall), and one more pass over the village houses in all five styles
+- [x] … the decorations (well I–II, fountain, gazebo, street lamp, park bench) and defences (palisade, gatehouse, wall
+  tower, stone wall), and one more pass over the village houses in all five styles (moss low on the stone defences, a
+  band on the wall tower, a portcullis and lanterns at the gatehouse; village houses: a lantern over the door, vigas on
+  desert ones; the decorations and palisade passed as they are)
 - [x] Village protection (owner, 2026-09-29: "a setting would be better"): `hall/VillageProtection`, owner and
   `protected` on the `VillageHallBlockEntity` (the placer; an unowned hall goes to whoever protects it first), shift-click
   the hall's name tag; inside `VillageHalls.RADIUS` (horizontal, any height) only the owner, their `Friends` and ops may

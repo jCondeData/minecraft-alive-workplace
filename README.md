@@ -130,8 +130,8 @@ remembers it. `marketDays` in the config turns it off.
 **Upgrades.** A blueprint named like another with `_2` on the end (`_3` after that…) is its upgrade. Every starter
 build has one: the **Starter Cottage II** adds a timber upper storey jettied out over the front and back, the **Market
 Stall II** a second stall with a Shop Counter, the **Lookout Tower II** a Guard Post, a bell and a steep pointed spire
-over the platform, the **Healing Center II** a ward with four beds, the **Supply Shop II** the shopkeeper's rooms
-upstairs, the **Storehouse II** a second bay, the **Berry Farm II** a pergola of glow berries and the **Research Lab
+over the platform, the **Healing Center II** a ward with four beds under a lower roof behind the hall, the **Supply
+Shop II** the shopkeeper's house behind the shop (a bed, a chest, more stock, a chimney), the **Storehouse II** a second bay, the **Berry Farm II** a pergola of glow berries and the **Research Lab
 II** a museum hall with a skeleton under a glass ridge. Most go one step further, each third tier bringing a new
 villager or room: the **Starter Cottage III** a kitchen wing with its own door (the builder clears the ground where it
 goes first), the **Market Stall III** a storeroom behind the stalls, the **Lookout Tower III** a guardhouse with a

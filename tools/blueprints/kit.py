@@ -116,6 +116,9 @@ class Build:
         nbtlib.File(self.to_nbt()).save(path, gzipped=True)
         solid = sum(1 for n, _ in self.blocks.values() if n != "minecraft:air")
         print(f"{name}: {self.w}x{self.h}x{self.d}, {solid} blocks -> {os.path.relpath(path, ROOT)}")
+        from check import check
+        for problem in check(self):
+            print(f"  CHECK {name}: {problem}")
 
 
 

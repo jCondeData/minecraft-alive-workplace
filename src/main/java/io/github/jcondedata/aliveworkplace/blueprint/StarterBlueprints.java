@@ -29,17 +29,17 @@ public final class StarterBlueprints {
 	/** A guardhouse beside the tower: a second Guard Post and two bunks. */
 	public static final Entry LOOKOUT_TOWER_3 = new Entry(AliveWorkplace.id("lookout_tower_3"), new Vec3i(14, 23, 7));
 	/** Has a Cobblemon Healing Machine on the counter; without Cobblemon that spot stays empty. */
-	public static final Entry HEALING_CENTER = new Entry(AliveWorkplace.id("healing_center"), new Vec3i(11, 10, 9));
+	public static final Entry HEALING_CENTER = new Entry(AliveWorkplace.id("healing_center"), new Vec3i(11, 10, 10));
 	/** A ward with four beds behind the counter. */
-	public static final Entry HEALING_CENTER_2 = new Entry(AliveWorkplace.id("healing_center_2"), new Vec3i(11, 10, 13));
+	public static final Entry HEALING_CENTER_2 = new Entry(AliveWorkplace.id("healing_center_2"), new Vec3i(11, 10, 16));
 	/** A berry garden behind the ward with a Fruit Basket. */
-	public static final Entry HEALING_CENTER_3 = new Entry(AliveWorkplace.id("healing_center_3"), new Vec3i(11, 10, 19));
-	public static final Entry SUPPLY_SHOP = new Entry(AliveWorkplace.id("supply_shop"), new Vec3i(11, 10, 9));
+	public static final Entry HEALING_CENTER_3 = new Entry(AliveWorkplace.id("healing_center_3"), new Vec3i(11, 10, 22));
+	public static final Entry SUPPLY_SHOP = new Entry(AliveWorkplace.id("supply_shop"), new Vec3i(11, 11, 10));
 	/** A storeroom and the shopkeeper's bedroom upstairs. */
-	public static final Entry SUPPLY_SHOP_2 = new Entry(AliveWorkplace.id("supply_shop_2"), new Vec3i(11, 14, 9));
+	public static final Entry SUPPLY_SHOP_2 = new Entry(AliveWorkplace.id("supply_shop_2"), new Vec3i(11, 11, 16));
 
 	/** A post office annex with a Postal Desk. */
-	public static final Entry SUPPLY_SHOP_3 = new Entry(AliveWorkplace.id("supply_shop_3"), new Vec3i(17, 14, 9));
+	public static final Entry SUPPLY_SHOP_3 = new Entry(AliveWorkplace.id("supply_shop_3"), new Vec3i(17, 11, 16));
 
 	/** An open timber shed with a Storehouse and eight chests: a porter moves in. */
 	public static final Entry STOREHOUSE = new Entry(AliveWorkplace.id("storehouse"), new Vec3i(9, 9, 9));

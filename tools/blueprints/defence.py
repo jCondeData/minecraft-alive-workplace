@@ -186,6 +186,30 @@ def barracks_hall(b):
     lantern(b, 4, 3, 5, hanging=True)
     lantern(b, 8, 3, 5, hanging=True)
     hip_roof(b, 0, 12, 1, 9, 4, DEEPSLATE_TILE)
+    # Depth: lintels over the windows, buttresses down the sides and the back, a gabled stone porch over the door
+    for x in (3, 9):
+        stairs(b, x, 3, 1, STONE_BRICK, "south", top=True)
+        stairs(b, x, 3, 9, STONE_BRICK, "north", top=True)
+    for z in (3, 7):
+        for x, face in ((0, "east"), (12, "west")):
+            b.set(x, 1, z, "stone_bricks")
+            stairs(b, x, 2, z, STONE_BRICK, face)
+    for x in (4, 8):
+        b.set(x, 1, 9, "stone_bricks")
+        stairs(b, x, 2, 9, STONE_BRICK, "north")
+    for x in (5, 7):
+        for y in (1, 2, 3):
+            b.set(x, y, 0, "stone_bricks" if y != 2 else "chiseled_stone_bricks")
+        b.set(x, 3, 1, "stone_bricks")
+    for x in range(5, 8):
+        log(b, x, 4, 0, BARRACKS_FRAME, axis="x")
+    gable_roof(b, 4, 8, 0, 2, 5, DEEPSLATE_TILE, axis="z", gable="stone_bricks", gable_at=(0,), eave_trim=STONE_BRICK)
+    b.set(6, 5, 0, "chiseled_stone_bricks")
+    for x in range(5, 8):
+        b.set(x, 0, 0, "stone_bricks")
+        b.set(x, 0, 1, "stone_bricks")
+    b.set(6, 0, 0, "stone_brick_stairs", facing="south", half="bottom", shape="straight", waterlogged=False)
+    lantern(b, 6, 3, 0, hanging=True)
     # The yard out front: two training dummies and a lamp
     b.set(2, 0, 0, "aliveworkplace:training_dummy", facing="south")
     b.set(10, 0, 0, "aliveworkplace:training_dummy", facing="south")

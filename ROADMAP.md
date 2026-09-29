@@ -636,6 +636,10 @@ ones we lack, our way.
   `festival_day`): every 8 days (a day per village from the hall's position) with 6+ villagers, or called with a cake
   from hall slot 14 (3 days' rest); 9000–13000: villagers off work gather at the bell, a feast from the store, Hero of the
   Village for players in the area, fireworks from 11500; +15 mood for 2 days; `festivals` in the config
+- [x] Build review with the owner's Minecraft Architect skill (its lint over all 181 structures, its renderer and
+  critique): `tools/blueprints/check.py` runs on every save (floating blocks, unsupported lanterns/pots/ladders);
+  Healing Center I–III and Supply Shop I–III redrawn (masses, bays, contrasting roofs), Barracks porch and buttresses,
+  village house shell (contrasting roofs, chimney, door hood, flower boxes); STYLE.md has the review rules
 - [x] Seven more research topics (`Research.Topic`: LOGISTICS → `PorterWork.capacity`, CRAFTSMANSHIP → `CrafterWork` craft
   timer, MEDICINE → `Sickness.dailyChance`, FORTIFICATION → `Guards.block`, COMMERCE → `MarketDays` + `Mercenaries.price`,
   EXPEDITIONS → `Netherworkers.expeditionFactor` (and explorers' rest), GREEN_THUMB → `CompostWork.layersPerBoneMeal`);

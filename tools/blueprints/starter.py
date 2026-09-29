@@ -100,7 +100,8 @@ def starter_cottage_2():
         log(b, x, 9, 5, COTTAGE_FRAME)
         pane(b, x, 10, 5)
     lantern(b, 5, 9, 5, hanging=False)
-    b.set(5, 8, 5, "spruce_planks")
+    for x in range(2, 9):  # a tie beam across the attic, the lantern standing on it
+        log(b, x, 8, 5, "stripped_spruce_log", axis="x")
     chimney(b, 0, 5, 0, 14, STONE_MIX)
     b.fill_air()
     return b
@@ -318,6 +319,7 @@ def lookout_tower_2():
     b.set(3, 12, 3, "bell", attachment="floor", facing="north", powered=False)
     for x, z in ((1, 1), (5, 1), (1, 5), (5, 5)):
         lantern(b, x, 14, z, hanging=True)
+        b.set(x, 15, z, "chain", axis="y", waterlogged=False)  # from the roof's underside
     b.fill_air()
     return b
 
@@ -367,7 +369,8 @@ def lookout_tower_3():
     b.bed(11, 1, 3, "white", facing="south")
     b.set(11, 1, 2, "anvil", facing="north")
     lantern(b, 9, 3, 3, hanging=True)
-    b.set(9, 4, 3, "spruce_planks")
+    for z in range(1, 6):  # a tie beam across the guardhouse, the lantern hanging from it
+        log(b, 9, 4, z, "stripped_spruce_log", axis="z")
     b.fill_air()
     return b
 
@@ -405,189 +408,307 @@ def heart_sign(b, x0, y_top, z):
     concrete_sign(b, x0, y_top, z, HEART_SIGN)
 
 
-def healing_center_hall(b):
-    """The hall (walls x 1-9, z 1-7): a glass front round the door under a white canopy, the counter with the Healing
-    Machine, the Nurse Station behind it, benches, plants."""
-    plinth(b, 1, 1, 9, 7, "smooth_stone", floor="white_concrete")
-    walls(b, 1, 1, 9, 7, 1, 4, "white_concrete")
-    for x in (2, 4, 6, 8):
-        glass_column(b, x, 1, 3, 1)
-    door(b, 5, 1, 1, "birch_door", "south")
-    pane(b, 5, 3, 1)
-    stairs(b, 5, 0, 0, "smooth_quartz_stairs", "south")
-    for x in range(3, 8):  # a canopy over the door
-        slab(b, x, 4, 0, "smooth_quartz_slab", top=True)
-    for z in (3, 5):
-        window(b, 1, 2, z, "west", height=2)
-        window(b, 9, 2, z, "east", height=2)
-    # The counter across the hall with the Healing Machine in the middle, the nurse behind it
+CLINIC_FRAME = "stripped_dark_oak_log"
+CLINIC_WALL = Mix((8, "white_concrete"), (2, "polished_diorite"), seed=21)
+CLINIC_ROOF = RED_NETHER_BRICK
+CLINIC_TRIM = DARK_OAK
+
+
+def clinic_hall(b):
+    """The hall (walls x 1-9, z 2-8): white plaster between dark posts on a stone plinth, the long side to the street
+    with the door in the middle bay under a gabled porch; inside the counter with the Healing Machine, the Nurse Station
+    behind it, benches and plants, tie beams across for the lanterns (and for the builder to reach the ridge from)."""
+    skirt(b, 1, 2, 9, 8, STONE_BRICK)
+    plinth(b, 1, 2, 9, 8, MOSSY_BRICK_MIX, floor="smooth_quartz")
+    walls(b, 1, 2, 9, 8, 1, 3, CLINIC_WALL)
+    posts(b, [(x, z) for x in (1, 4, 6, 9) for z in (2, 8)] + [(x, 5) for x in (1, 9)], 1, 3, CLINIC_FRAME)
+    beam_ring(b, 1, 2, 9, 8, 4, CLINIC_FRAME)
+    # The front: a window in each outer bay, the door in the middle one
+    for x0 in (2, 7):
+        window(b, x0, 2, 2, "north", width=2, height=1, shutters="dark_oak_trapdoor", sill=STONE_BRICK)
+    door(b, 5, 1, 2, "birch_door", "south")
+    pane(b, 5, 3, 2)
+    # The sides and the back
+    for z0 in (3, 6):
+        window(b, 1, 2, z0, "west", width=2, height=1, shutters="dark_oak_trapdoor", sill=STONE_BRICK)
+        window(b, 9, 2, z0, "east", width=2, height=1, shutters="dark_oak_trapdoor", sill=STONE_BRICK)
+    for x0 in (2, 7):
+        window(b, x0, 2, 8, "south", width=2, height=1, shutters="dark_oak_trapdoor", sill=STONE_BRICK)
+    pane(b, 5, 2, 8)
+    # Inside: the counter across the hall with the Healing Machine in the middle, the nurse behind it
     for x in range(2, 9):
         if x != 5:
-            b.set(x, 1, 5, "white_concrete")
-            slab(b, x, 2, 5, "smooth_quartz_slab")
-    b.set(5, 1, 5, "cobblemon:healing_machine", facing="north")
-    b.set(3, 1, 6, "aliveworkplace:nurse_station", facing="south")
-    b.set(7, 1, 6, "barrel", facing="up", open=False)
-    b.set(8, 1, 6, "barrel", facing="up", open=False)
-    for z in (2, 3):
+            b.set(x, 1, 6, "white_concrete")
+            slab(b, x, 2, 6, "smooth_quartz_slab")
+    b.set(5, 1, 6, "cobblemon:healing_machine", facing="north")
+    b.set(3, 1, 7, "aliveworkplace:nurse_station", facing="south")
+    b.set(7, 1, 7, "chest", facing="north", type="single", waterlogged=False)
+    b.set(8, 1, 7, "potted_azalea_bush")
+    for z in (3, 4):
         stairs(b, 2, 1, z, "birch_stairs", "west")
         stairs(b, 8, 1, z, "birch_stairs", "east")
-    b.set(2, 1, 4, "potted_azalea_bush")
-    b.set(8, 1, 4, "potted_azalea_bush")
-    for z in range(2, 5):
+    b.set(2, 1, 5, "potted_azalea_bush")
+    b.set(8, 1, 5, "potted_azalea_bush")
+    for z in range(3, 6):
         b.set(5, 1, z, "red_carpet")
     for x in (3, 7):
-        lantern(b, x, 4, 3, hanging=True)
+        for z in range(3, 8):
+            log(b, x, 4, z, CLINIC_FRAME, axis="z")
+        lantern(b, x, 3, 4, hanging=True)
+
+
+def clinic_roof(b, back=9):
+    """The red roof over the hall (ridge along it, gables at the ends with a small window each) and the porch's
+    little gable in front, lower, over the door: posts, a beam, lanterns either side."""
+    gable_roof(b, 0, 10, 1, back, 5, CLINIC_ROOF, axis="x", gable=CLINIC_WALL, gable_at=(1, 9), eave_trim=CLINIC_TRIM)
+    for x in (1, 9):
+        log(b, x, 5, 5, CLINIC_FRAME, axis="x")
+        pane(b, x, 6, 5)
+        pane(b, x, 7, 5)
+    # The porch: a cross gable over the door bay, higher than the eaves (its ridge meets the roof's), on two posts
+    b.clear(4, 4, 1, 6, 5, 1)  # the eave comes off where the porch runs in
+    for x in (4, 6):
+        posts(b, [(x, 0)], 1, 4, CLINIC_FRAME)
+        log(b, x, 5, 0, CLINIC_FRAME, axis="z")
+        log(b, x, 5, 1, CLINIC_FRAME, axis="z")
+    log(b, 5, 5, 0, CLINIC_FRAME, axis="x")
+    gable_roof(b, 3, 7, 0, 3, 6, CLINIC_ROOF, axis="z", gable=CLINIC_WALL, gable_at=(0,), eave_trim=CLINIC_TRIM)
+    pane(b, 5, 6, 0)  # a little window in the porch's gable, a king post over it
+    log(b, 5, 7, 0, CLINIC_FRAME)
+    box(b, 4, 0, 0, 6, 0, 1, "polished_andesite")
+    lantern(b, 5, 4, 0, hanging=True)
+
+
+def clinic_garden_front(b):
+    """Flower beds either side of the porch along the plinth."""
+    for x in (1, 2, 8, 9):
+        b.set(x, 0, 1, "grass_block", snowy=False)
+    for x, plant in ((1, "red_tulip"), (2, "azure_bluet"), (8, "azure_bluet"), (9, "red_tulip")):
+        b.set(x, 1, 1, plant)
 
 
 def healing_center():
-    """11 x 10 x 9: the hall under a red roof, a heart sign over the door (with Cobblemon the counter holds a Healing
-    Machine; without, that block loads as air and the builder skips it)."""
-    b = Build(11, 10, 9)
-    healing_center_hall(b)
-    red_roof(b, 0, 10, 0, 8, 5)
-    heart_sign(b, 3, 9, 0)
+    """11 x 10 x 10: a white clinic under a red roof, dark posts, a gabled porch with a red heart over the door (with
+    Cobblemon the counter holds a Healing Machine; without, that block loads as air and the builder skips it)."""
+    b = Build(11, 10, 10)
+    clinic_hall(b)
+    clinic_roof(b)
+    clinic_garden_front(b)
     b.fill_air()
     return b
 
 
-# --- Healing Center, upgraded: a ward with four beds behind the counter --------------------------------
-def healing_center_2():
-    """Upgrade of the Healing Center: a door in the back wall opens into a ward with four beds (villagers who sleep there
-    are in the nurse's reach) under the same red roof, now over both. 11 x 10 x 13."""
-    b = Build(11, 10, 13)
-    healing_center_hall(b)
-    plinth(b, 1, 7, 9, 11, "smooth_stone", floor="white_concrete")
-    walls(b, 1, 7, 9, 11, 1, 4, "white_concrete")
-    door(b, 5, 1, 7, "birch_door", "south")
-    for z in (9,):
-        window(b, 1, 2, z, "west", height=2)
-        window(b, 9, 2, z, "east", height=2)
-    for x in (3, 7):
-        window(b, x, 2, 11, "south", height=2)
-    for x in (2, 4, 6, 8):
+# --- Healing Center, upgraded: a ward behind the hall ---------------------------------------------------
+def clinic_ward(b):
+    """The ward (walls x 3-7, z 8-14) behind the hall, a door through from behind the counter: four beds (villagers who
+    sleep there are in the nurse's reach), its own lower roof running back, a chimney on the east side."""
+    skirt(b, 3, 9, 7, 14, STONE_BRICK)
+    for z in range(9, 15):
+        for x in (3, 7):
+            b.set(x, 0, z, MOSSY_BRICK_MIX.at(x, 0, z))
+    for x in range(3, 8):
+        b.set(x, 0, 14, MOSSY_BRICK_MIX.at(x, 0, 14))
+    box(b, 4, 0, 9, 6, 0, 13, "smooth_quartz")
+    for z in range(9, 15):
+        for x in (3, 7):
+            for y in (1, 2, 3):
+                b.set(x, y, z, CLINIC_WALL.at(x, y, z))
+    for x in range(4, 7):
+        for y in (1, 2, 3):
+            b.set(x, y, 14, CLINIC_WALL.at(x, y, 14))
+    posts(b, [(3, 11), (7, 11), (3, 14), (7, 14)], 1, 3, CLINIC_FRAME)
+    for z in range(9, 15):
+        log(b, 3, 4, z, CLINIC_FRAME, axis="z")
+        log(b, 7, 4, z, CLINIC_FRAME, axis="z")
+        log(b, 5, 4, z, CLINIC_FRAME, axis="z")  # a beam down the middle, for the lantern (and the builder)
+    for x in range(4, 7):
+        log(b, x, 4, 14, CLINIC_FRAME, axis="x")
+    b.set(5, 2, 8, "air")
+    door(b, 5, 1, 8, "birch_door", "south")
+    for z in (9, 12):
+        window(b, 3, 2, z + (1 if z == 12 else 0), "west", sill=STONE_BRICK)
+        window(b, 7, 2, z + (1 if z == 12 else 0), "east", sill=STONE_BRICK)
+    window(b, 5, 2, 14, "south", sill=STONE_BRICK)
+    for x in (4, 6):
         b.bed(x, 1, 9, "white", facing="south")
-    b.set(3, 1, 10, "potted_poppy")
-    b.set(7, 1, 10, "potted_poppy")
-    for x in (3, 7):
-        lantern(b, x, 4, 9, hanging=True)
-    red_roof(b, 0, 10, 0, 12, 5)
-    heart_sign(b, 3, 9, 0)
+        b.bed(x, 1, 12, "white", facing="south")
+    for z in range(9, 14):
+        b.set(5, 1, z, "red_carpet")
+    lantern(b, 5, 3, 11, hanging=True)
+    gable_roof(b, 2, 8, 9, 15, 4, CLINIC_ROOF, axis="z", gable=CLINIC_WALL, gable_at=(14,), eave_trim=CLINIC_TRIM)
+    chimney(b, 8, 12, 0, 7, BRICK_WALL_MIX)
+
+
+def healing_center_2():
+    """Upgrade of the Healing Center: a ward with four beds behind the hall under its own lower roof, a chimney beside
+    it. 11 x 10 x 16."""
+    b = healing_center().grow(11, 10, 16)
+    clinic_ward(b)
     b.fill_air()
     return b
 
 
 # --- Healing Center III: a berry garden behind the ward -------------------------------------------------
 def healing_center_3():
-    """Upgrade of Healing Center II: a raised garden behind the ward, edged in stone and fenced, with sweet berry bushes
-    either side of a path, a Fruit Basket and a chest (a villager moves in as the orchard keeper and picks the berries),
-    lamps and a bench. 11 x 10 x 19."""
-    b = healing_center_2().grow(11, 10, 19)
-    walls(b, 0, 13, 10, 18, 0, 0, "stone_bricks")
-    box(b, 1, 0, 14, 9, 0, 17, "grass_block", snowy=False)
-    for z in range(13, 18):
+    """Upgrade of Healing Center II: a fenced garden behind the ward, sweet berry bushes either side of a path, a Fruit
+    Basket and a chest (a villager moves in as the orchard keeper and picks the berries), lamps and benches, and a back
+    door out of the ward. 11 x 10 x 22."""
+    b = healing_center_2().grow(11, 10, 22)
+    walls(b, 0, 16, 10, 21, 0, 0, "stone_bricks")
+    box(b, 1, 0, 17, 9, 0, 20, "grass_block", snowy=False)
+    for z in range(15, 21):
         b.set(5, 0, z, "dirt_path")
-    door(b, 5, 1, 11, "birch_door", "north") if False else None
     for x in range(0, 11):
-        fence(b, x, 1, 18, "birch_fence")
-    for z in range(13, 18):
-        fence(b, 0, 1, z, "birch_fence")
-        fence(b, 10, 1, z, "birch_fence")
-    b.set(10, 1, 15, "birch_fence_gate", facing="east", open=False, in_wall=False, powered=False)
+        fence(b, x, 1, 21, "dark_oak_fence")
+    for z in range(16, 21):
+        fence(b, 0, 1, z, "dark_oak_fence")
+        fence(b, 10, 1, z, "dark_oak_fence")
+    b.set(10, 1, 18, "dark_oak_fence_gate", facing="east", open=False, in_wall=False, powered=False)
     for x in (1, 2, 3, 7, 8, 9):
-        for z in (14, 16):
-            b.set(x, 1, z, "sweet_berry_bush", age=0) if (x + z) % 2 == 0 else b.set(x, 1, z, "rose_bush", half="lower")
-    for x in (1, 2, 3, 7, 8, 9):
-        for z in (14, 16):
-            if b.get(x, 1, z)[0] == "minecraft:rose_bush":
+        for z in (17, 19):
+            if (x + z) % 2 == 0:
+                b.set(x, 1, z, "sweet_berry_bush", age=0)
+            else:
+                b.set(x, 1, z, "rose_bush", half="lower")
                 b.set(x, 2, z, "rose_bush", half="upper")
-    b.set(4, 1, 17, "aliveworkplace:fruit_basket", facing="north")
-    b.set(6, 1, 17, "chest", facing="north", type="single", waterlogged=False)
-    for x, z in ((0, 18), (10, 18)):
+    b.set(4, 1, 20, "aliveworkplace:fruit_basket", facing="north")
+    b.set(6, 1, 20, "chest", facing="north", type="single", waterlogged=False)
+    for x, z in ((0, 21), (10, 21)):
         lantern(b, x, 2, z)
-    stairs(b, 1, 1, 17, "birch_stairs", "south")
-    stairs(b, 9, 1, 17, "birch_stairs", "south")
-    # A back door out of the ward into the garden
-    door(b, 5, 1, 11, "birch_door", "north")
+    stairs(b, 1, 1, 20, "dark_oak_stairs", "south")
+    stairs(b, 9, 1, 20, "dark_oak_stairs", "south")
+    b.set(5, 2, 14, "air")
+    door(b, 5, 1, 14, "birch_door", "north")
     b.fill_air()
     return b
 
 
-# --- Supply Shop: the Healing Center's blue neighbour: display windows under an awning ------------------------
-def shop_floor(b):
-    """The shop (walls x 1-9, z 1-7): display windows either side of the door under a striped awning, shelves of barrels
-    down both sides, the Shop Counter at the back (a villager moves in as shopkeeper; the barrels are the stock, the first
-    player to open it owns the shop)."""
-    plinth(b, 1, 1, 9, 7, "smooth_stone", floor="birch_planks")
-    walls(b, 1, 1, 9, 7, 1, 4, "white_concrete")
-    for x0 in (2, 6):
-        window(b, x0, 2, 1, "north", width=3, height=2)
-        for x in range(x0, x0 + 3):
-            slab(b, x, 1, 2, "birch_slab", top=True)  # the display shelf behind the glass
-            trapdoor(b, x, 1, 0, "birch_trapdoor", "north", open_=True)
-    b.set(3, 2, 2, "potted_cactus")
-    b.set(7, 2, 2, "potted_bamboo")
-    door(b, 5, 1, 1, "birch_door", "south")
-    pane(b, 5, 3, 1)
-    stairs(b, 5, 0, 0, "smooth_quartz_stairs", "south")
-    for x in range(1, 10):  # the awning over the front
-        b.set(x, 4, 0, "blue_wool" if x % 2 else "white_wool")
-    for z in (3, 5):
-        window(b, 1, 2, z, "west", height=2)
-    window(b, 9, 2, 3, "east", height=2)
+# --- Supply Shop: a timber shop with its gable to the street, display windows under a striped awning ---------
+SHOP_FRAME_LOG = "stripped_spruce_log"
+SHOP_PLASTER = Mix((8, "white_concrete"), (2, "polished_diorite"), seed=22)
+SHOP_ROOF = Family("dark_prismarine", "dark_prismarine_stairs", "dark_prismarine_slab")
+
+
+def shop_hall(b):
+    """The shop (walls x 1-9, z 2-8), its gable to the street: white plaster between spruce posts on a stone plinth, a
+    display window either side of the door under a blue-and-white awning; inside shelves of barrels down both sides, the
+    Shop Counter at the back (a villager moves in as shopkeeper; the barrels are the stock, the first player to open it
+    owns the shop), tie beams across for the lantern (and for the builder)."""
+    skirt(b, 1, 2, 9, 8, STONE_BRICK)
+    plinth(b, 1, 2, 9, 8, MOSSY_BRICK_MIX, floor="spruce_planks")
+    walls(b, 1, 2, 9, 8, 1, 4, SHOP_PLASTER)
+    posts(b, [(x, z) for x in (1, 4, 6, 9) for z in (2, 8)] + [(x, 5) for x in (1, 9)], 1, 4, SHOP_FRAME_LOG)
+    beam_ring(b, 1, 2, 9, 8, 5, SHOP_FRAME_LOG)
+    # The shop front: two display windows (a shelf behind the glass), the door between, the awning over all three
+    for x0 in (2, 7):
+        for x in (x0, x0 + 1):
+            for y in (1, 2):
+                pane(b, x, y, 2)
+            slab(b, x, 1, 3, "spruce_slab", top=True)
+        pane(b, x0, 3, 2, "glass_pane") if False else None
+    b.set(2, 2, 3, "potted_cactus")
+    b.set(8, 2, 3, "potted_bamboo")
+    door(b, 5, 1, 2, "spruce_door", "south")
+    pane(b, 5, 3, 2)
+    stairs(b, 5, 0, 1, STONE_BRICK, "south")
+    for x in range(1, 10):
+        b.set(x, 4, 1, "blue_wool" if x % 2 else "white_wool")
+    # The sides and the back
+    for z0 in (3, 6):
+        window(b, 1, 2, z0, "west", width=2, shutters="spruce_trapdoor", sill=SPRUCE)
+        window(b, 9, 2, z0, "east", width=2, shutters="spruce_trapdoor", sill=SPRUCE)
+    for x0 in (2, 7):
+        window(b, x0, 2, 8, "south", width=2, shutters="spruce_trapdoor", sill=SPRUCE)
     # Shelves: barrels two high down both sides; the counter at the back with the Shop Counter in the middle
-    for z in (2, 3, 4):
+    for z in (4, 5):
         for y in (1, 2):
             b.set(2, y, z, "barrel", facing="east", open=False)
             b.set(8, y, z, "barrel", facing="west", open=False)
     for x in (3, 4, 6, 7):
-        b.set(x, 1, 5, "blue_concrete")
-        slab(b, x, 2, 5, "smooth_quartz_slab")
-    b.set(5, 1, 5, "aliveworkplace:shop_counter", facing="south")
-    b.set(3, 2, 5, "lantern", hanging=False, waterlogged=False)
-    b.set(7, 2, 5, "barrel", facing="up", open=False)
-    stairs(b, 5, 1, 6, "birch_stairs", "south")  # the shopkeeper's seat
-    b.set(5, 1, 2, "light_blue_carpet")
+        b.set(x, 1, 6, "spruce_planks")
+        slab(b, x, 2, 6, "spruce_slab")
+    b.set(5, 1, 6, "aliveworkplace:shop_counter", facing="south")
+    b.set(3, 2, 6, "lantern", hanging=False, waterlogged=False)
+    stairs(b, 5, 1, 7, SPRUCE, "south")  # the shopkeeper's seat
     b.set(5, 1, 3, "light_blue_carpet")
+    b.set(5, 1, 4, "light_blue_carpet")
+    for z in (3, 7):
+        for x in range(2, 9):
+            log(b, x, 5, z, SHOP_FRAME_LOG, axis="x")
     lantern(b, 5, 4, 3, hanging=True)
+    lantern(b, 5, 4, 7, hanging=True)
+
+
+def shop_roof(b):
+    """The blue-slate roof, ridge running back from the street; the front gable with a tall window over the awning,
+    lamps either side of the door."""
+    gable_roof(b, 0, 10, 1, 9, 5, SHOP_ROOF, axis="z", gable=SHOP_PLASTER, gable_at=(2, 8), eave_trim=SPRUCE)
+    for z in (2, 8):
+        pane(b, 5, 6, z)
+        pane(b, 5, 7, z)
+        stairs(b, 5, 8, z, SPRUCE, "north" if z == 2 else "south", top=True)
+        log(b, 5, 9, z, SHOP_FRAME_LOG)
+        for x in (3, 7):  # studs in the gable
+            log(b, x, 6, z, SHOP_FRAME_LOG)
+            log(b, x, 7, z, SHOP_FRAME_LOG)
+    for x in (0, 10):
+        lamp_post(b, x, 0, 1, "spruce_fence", height=2)
 
 
 def supply_shop():
-    """11 x 10 x 9: white walls under a stepped blue roof, a shopping-bag sign over the door."""
-    b = Build(11, 10, 9)
-    shop_floor(b)
-    step_roof(b, 0, 10, 0, 8, 5, "blue_concrete")
-    concrete_sign(b, 3, 9, 0, BAG_SIGN)
+    """11 x 11 x 10: a timber shop with its gable to the street under a blue-slate roof, display windows either side of
+    the door under a striped awning."""
+    b = Build(11, 11, 10)
+    shop_hall(b)
+    shop_roof(b)
     b.fill_air()
     return b
 
 
-# --- Supply Shop, upgraded: the shopkeeper's rooms upstairs -------------------------------------------------
+# --- Supply Shop, upgraded: the shopkeeper's house behind ---------------------------------------------------
+def shop_house(b):
+    """The shopkeeper's house (walls x 2-8, z 9-14) behind the shop, its roof across it (a T), through a door behind the
+    counter: a bed, a chest, a stove, more stock, a chimney."""
+    skirt(b, 2, 9, 8, 14, STONE_BRICK)
+    plinth(b, 2, 8, 8, 14, MOSSY_BRICK_MIX, floor="spruce_planks")
+    for z in range(9, 15):
+        for x in (2, 8):
+            for y in (1, 2, 3):
+                b.set(x, y, z, SHOP_PLASTER.at(x, y, z))
+    for x in range(3, 8):
+        for y in (1, 2, 3):
+            b.set(x, y, 14, SHOP_PLASTER.at(x, y, 14))
+    posts(b, [(2, 11), (8, 11), (2, 14), (8, 14), (5, 14)], 1, 3, SHOP_FRAME_LOG)
+    for z in range(9, 15):
+        log(b, 2, 4, z, SHOP_FRAME_LOG, axis="z")
+        log(b, 8, 4, z, SHOP_FRAME_LOG, axis="z")
+    for x in range(3, 8):
+        log(b, x, 4, 14, SHOP_FRAME_LOG, axis="x")
+        log(b, x, 4, 11, SHOP_FRAME_LOG, axis="x")
+    b.set(5, 2, 8, "air")
+    door(b, 5, 1, 8, "spruce_door", "south")
+    stairs(b, 5, 1, 7, SPRUCE, "west")  # the seat turned, so the door opens
+    window(b, 2, 2, 12, "west", width=2, shutters="spruce_trapdoor", sill=SPRUCE)
+    window(b, 8, 2, 12, "east", width=2, shutters="spruce_trapdoor", sill=SPRUCE)
+    window(b, 3, 2, 14, "south", sill=SPRUCE)
+    window(b, 7, 2, 14, "south", sill=SPRUCE)
+    b.bed(3, 1, 12, "blue", facing="south")
+    b.set(3, 1, 10, "chest", facing="east", type="single", waterlogged=False)
+    b.set(7, 1, 13, "barrel", facing="up", open=False)
+    b.set(7, 1, 12, "barrel", facing="up", open=False)
+    b.set(7, 2, 13, "barrel", facing="up", open=False)
+    b.set(4, 1, 13, "potted_fern")
+    box(b, 4, 1, 10, 6, 1, 11, "light_blue_carpet")
+    lantern(b, 5, 3, 11, hanging=True)
+    gable_roof(b, 1, 9, 9, 15, 4, SHOP_ROOF, axis="x", gable=SHOP_PLASTER, gable_at=(2, 8), eave_trim=SPRUCE)
+    chimney(b, 5, 15, 0, 9, BRICK_WALL_MIX)
+
+
 def supply_shop_2():
-    """Upgrade of the Supply Shop: the roof goes up a storey; the old roof's edge stays as a blue band round the new
-    upper floor, with a bed, a chest and more stock up a ladder behind the shelves (still in reach of the Shop Counter).
-    11 x 14 x 9."""
-    b = Build(11, 14, 9)
-    shop_floor(b)
-    box(b, 0, 5, 0, 10, 5, 8, "blue_concrete")
-    box(b, 2, 5, 2, 8, 5, 6, "birch_planks")
-    walls(b, 1, 1, 9, 7, 6, 8, "white_concrete")
-    for x0 in (2, 6):
-        window(b, x0, 7, 1, "north", width=3)
-    for z in (3, 5):
-        window(b, 1, 7, z, "west")
-        window(b, 9, 7, z, "east")
-    for y in range(1, 7):
-        b.set(8, y, 6, "ladder", facing="west", waterlogged=False)
-    b.bed(2, 6, 5, "blue", facing="south")
-    b.set(3, 6, 6, "chest", facing="north", type="single", waterlogged=False)
-    for z in (2, 3):
-        b.set(8, 6, z, "barrel", facing="west", open=False)
-    box(b, 4, 6, 3, 6, 6, 4, "light_blue_carpet")
-    b.set(2, 6, 2, "potted_fern")
-    lantern(b, 5, 8, 4, hanging=True)
-    step_roof(b, 0, 10, 0, 8, 9, "blue_concrete")
-    concrete_sign(b, 3, 13, 0, BAG_SIGN)
+    """Upgrade of the Supply Shop: the shopkeeper's house behind, its roof across the shop's (a T), with a bed, a chest,
+    more stock and a chimney. 11 x 11 x 16."""
+    b = supply_shop().grow(11, 11, 16)
+    shop_house(b)
     b.fill_air()
     return b
 
@@ -595,36 +716,42 @@ def supply_shop_2():
 # --- Supply Shop III: a post office annex --------------------------------------------------------------
 def supply_shop_3():
     """Upgrade of Supply Shop II: a one-storey post office on the east side, set back a little, through a doorway from the
-    shop, with a Postal Desk and a chest (a villager moves in as the postman: the shop's goods can go out by mail) and a
-    bench out front. 17 x 14 x 9."""
-    b = supply_shop_2().grow(17, 14, 9)
-    plinth(b, 9, 2, 15, 7, "smooth_stone", floor="birch_planks")
-    for y in range(1, 5):
+    shop, with a Postal Desk and a chest (a villager moves in as the postman: the shop's goods can go out by mail), its
+    own blue awning and a bench out front. 17 x 11 x 16."""
+    b = supply_shop_2().grow(17, 11, 16)
+    skirt(b, 10, 3, 15, 8, STONE_BRICK)
+    plinth(b, 9, 3, 15, 8, MOSSY_BRICK_MIX, floor="spruce_planks")
+    for y in range(1, 4):
         for x in range(10, 16):
-            b.set(x, y, 2, "white_concrete")
-            b.set(x, y, 7, "white_concrete")
-        for z in range(3, 7):
-            b.set(15, y, z, "white_concrete")
-    for y in (1, 2):
-        b.set(9, y, 6, "air")  # through from the shop
-    door(b, 12, 1, 2, "birch_door", "south")
-    stairs(b, 12, 0, 1, "smooth_quartz_stairs", "south")
-    window(b, 10, 2, 2, "north", height=2)
-    window(b, 14, 2, 2, "north", height=2)
-    window(b, 15, 2, 4, "east", width=2, height=2)
+            b.set(x, y, 3, SHOP_PLASTER.at(x, y, 3))
+            b.set(x, y, 8, SHOP_PLASTER.at(x, y, 8))
+        for z in range(4, 8):
+            b.set(15, y, z, SHOP_PLASTER.at(15, y, z))
+    posts(b, [(12, 3), (15, 3), (15, 8), (12, 8)], 1, 3, SHOP_FRAME_LOG)
     for x in range(10, 16):
-        b.set(x, 4, 1, "blue_wool" if x % 2 else "white_wool")
-    box(b, 10, 5, 1, 16, 5, 8, "blue_concrete")
-    walls(b, 10, 2, 15, 7, 6, 6, "blue_concrete")
-    box(b, 11, 7, 3, 14, 7, 6, "white_concrete")
+        log(b, x, 4, 3, SHOP_FRAME_LOG, axis="x")
+        log(b, x, 4, 8, SHOP_FRAME_LOG, axis="x")
+    for z in range(4, 8):
+        log(b, 15, 4, z, SHOP_FRAME_LOG, axis="z")
+    for y in (1, 2):
+        b.set(9, y, 6, "air")  # through from the shop, between the east windows
+    b.set(9, 2, 6, "air")
+    door(b, 13, 1, 3, "spruce_door", "south")
+    stairs(b, 13, 0, 2, STONE_BRICK, "south")
+    window(b, 10, 2, 3, "north", sill=SPRUCE)
+    window(b, 15, 2, 5, "east", width=2, shutters="spruce_trapdoor", sill=SPRUCE)
+    for x in range(10, 17):
+        b.set(x, 4, 2, "blue_wool" if x % 2 else "white_wool")
+    gable_roof(b, 9, 16, 2, 9, 5, SHOP_ROOF, axis="x", gable=SHOP_PLASTER, gable_at=(15,), eave_trim=SPRUCE)
     b.set(14, 1, 6, "aliveworkplace:postal_desk", facing="west")
-    b.set(14, 1, 3, "chest", facing="west", type="single", waterlogged=False)
-    b.set(10, 1, 3, "chiseled_bookshelf", facing="east")
-    stairs(b, 11, 1, 6, "birch_stairs", "south")
-    b.set(12, 1, 4, "light_blue_carpet")
-    lantern(b, 12, 4, 4, hanging=True)
-    stairs(b, 14, 0, 1, "birch_stairs", "south")
-    stairs(b, 15, 0, 1, "birch_stairs", "south")
+    b.set(14, 1, 4, "chest", facing="west", type="single", waterlogged=False)
+    b.set(10, 1, 4, "chiseled_bookshelf", facing="east")
+    b.set(12, 1, 5, "light_blue_carpet")
+    lantern(b, 12, 3, 5, hanging=True)
+    for z in range(4, 8):
+        log(b, 12, 4, z, SHOP_FRAME_LOG, axis="z")
+    stairs(b, 15, 0, 1, SPRUCE, "south")
+    stairs(b, 16, 0, 1, SPRUCE, "south")
     b.fill_air()
     return b
 
@@ -731,7 +858,8 @@ def storehouse_3():
     gable_roof(b, 0, 15, 7, 15, 5, DARK_OAK, axis="x", gable="birch_planks", gable_at=(1, 14))
     for x in (4, 11):
         lantern(b, x, 4, 11, hanging=True)
-        b.set(x, 5, 11, "spruce_planks")
+        for z in range(8, 15):  # tie beams across the back range, a lantern hanging from each
+            log(b, x, 5, z, "stripped_spruce_log", axis="z")
     b.fill_air()
     return b
 
@@ -1069,6 +1197,7 @@ def terrace_2():
     terrace_colours(b, 7, 10, "oak_planks")
     for x in (3, 9, 13):
         window(b, x, 2, 8, "south", height=1, sill=SPRUCE)
+    b.blocks[(14, 1, 1)] = b.blocks[(13, 1, 1)]  # the flower box runs on under the lantern
     lantern(b, 14, 2, 1)
     lamp_post(b, 17, 0, 1, "spruce_fence", height=2)
     b.fill_air()
@@ -1697,6 +1826,7 @@ def flower_shop_front(b):
             pane(b, x, y, 2)
     for x in (3, 5):
         pane(b, x, 2, 2)
+        b.set(x, 0, 1, "mossy_stone_bricks")  # a little pedestal each side of the step
         b.set(x, 1, 1, "potted_red_tulip" if x == 3 else "potted_allium")
     # The awning: red and white wool stripes, a slab lip
     for x in range(1, 8):

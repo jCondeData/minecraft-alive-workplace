@@ -21,6 +21,31 @@ that make a build look *built* instead of boxy. Check a new or changed build wit
 7. **Small life.** Lanterns (hanging from beams, standing on flower boxes or fence posts), barrels and hay by the door, a
    bench, flowers, a lamp post at a corner.
 
+## What the review looks for (after the Minecraft Architect skill's design rules)
+
+- **More than one box.** A main mass plus one or two smaller ones — a porch with its own gable, a lower wing (a T or
+  an L), a lean-to, a chimney, a tower. Neighbouring masses differ in eave *and* ridge height; a wing 2 blocks narrower
+  gets a lower ridge at the same pitch. A cross gable over the door should rise above the main eaves so its ridge meets
+  the main roof (the Healing Center's porch), not hide under it.
+- **Palette 60/30/10, 3–4 core materials.** Darkest at the foundation, lighter going up; the roof contrasts with the
+  walls (a spruce roof over oak and plaster, dark oak over spruce; never walls and roof in one wood). Weathering in
+  clusters low down, not single-block confetti.
+- **Bays.** Posts every 3–4 blocks, windows and doors centred in the bays and stacked across floors, never on a post or
+  at a corner. With a door in the middle of a 9-wide wall, posts at 1, 4, 6, 9. Odd widths, so a door and a ridge can
+  sit in the middle. No flat panel wider than about 6 — a big gable gets studs, a window and a king post.
+- **Roofs.** One pitch per building, a 1-block overhang with a soffit (`eave_trim`), the ridge along the long side.
+  Keep the roof within a storey or two of height.
+- **One glass type** per building (panes or blocks, not both); light at every door.
+- Builds for builders use blocks a player can gather: white concrete with a little polished diorite reads as plaster;
+  calcite is for village houses (placed by world generation, never paid for).
+
+## Checks run on every save
+
+`generate.py` runs `check.py` on each build it saves and prints `CHECK <name>: ...` for what would look broken in the
+game: blocks held up by nothing, lanterns hanging from nothing or standing on air, pots and carpets on air, ladders with
+no wall behind them, doors missing a half, sand and gravel over air. The bottom layer stands on the ground, so pots and
+lamps at y 0 are fine. A clean run prints no CHECK lines.
+
 ## Rules the mod needs (the tests check most of them)
 
 - Front is z = 0 (north); y = 0 sits on the clicked block. Put the door on the front with a stair step at y 0 before it.
@@ -40,12 +65,15 @@ that make a build look *built* instead of boxy. Check a new or changed build wit
   job), the street jigsaw at the front and the villager-spawn jigsaw in the floor.
 - `finish()` (run by `fill_air`) works out stair corners and fence/pane/wall connections, so draw stairs straight and
   fences unconnected and let it join them up.
-- Original designs only: no logos, characters or copies of other people's builds (the Healing Center's sign is a heart,
-  the Supply Shop's a shopping bag).
+- Original designs only: no logos, characters or copies of other people's builds (the Healing Center is known by its white walls
+  and red roof, the Supply Shop by its blue-slate roof and striped awning).
 
 ## Seeing a build
 
-The fastest check is a render of the .nbt with [Lodestone](https://www.npmjs.com/package/@mattzh72/lodestone) in
+With the Minecraft Architect skill installed, its renderer gives four views and a contact sheet of any .nbt in seconds:
+`node <skill>/scripts/render.mjs <file.nbt> --out <dir> --views nw,ne,north,se` (our front is the north side, so `nw`
+and `north` show it; `--zoom 1.3` for a close look at a porch). Review with its critique questions, fix the two to four
+things that show most, render again. Otherwise the fastest check is a render of the .nbt with [Lodestone](https://www.npmjs.com/package/@mattzh72/lodestone) in
 headless Chromium (a few seconds a build); the real game is `SCENE=gallery tools/screenshots/run.sh` (every starter
 blueprint built in the client, front and back). Look at a build from the front and the back, low down as a player
 would: if a wall is a flat plane of one block, give it a frame, a window with shutters or a change of material.

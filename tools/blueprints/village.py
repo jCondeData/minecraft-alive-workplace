@@ -9,16 +9,18 @@ class VillageStyle:
         self.trapdoor, self.fence, self.bed, self.floor, self.flat = trapdoor, fence, bed, floor, flat
 
 
+# (each roof contrasts with its walls: a spruce roof over oak and plaster, dark oak over spruce, acacia over pale walls)
 VILLAGE_STYLES = {
-    "plains": VillageStyle(STONE_MIX, "oak_log", "white_terracotta", OAK, "oak_door", "oak_trapdoor", "oak_fence", "red", "oak_planks"),
+    "plains": VillageStyle(STONE_MIX, "oak_log", Mix((7, "calcite"), (3, "white_concrete"), seed=9), SPRUCE, "oak_door", "oak_trapdoor",
+                           "oak_fence", "red", "oak_planks"),
     "desert": VillageStyle("smooth_sandstone", "cut_sandstone", "sandstone", SMOOTH_SANDSTONE, "jungle_door", "jungle_trapdoor",
                            "jungle_fence", "yellow", "smooth_sandstone", flat=True),
-    "savanna": VillageStyle(STONE_MIX, "acacia_log", "orange_terracotta", ACACIA, "acacia_door", "acacia_trapdoor", "acacia_fence",
+    "savanna": VillageStyle(STONE_MIX, "acacia_log", "white_terracotta", ACACIA, "acacia_door", "acacia_trapdoor", "acacia_fence",
                             "orange", "acacia_planks"),
-    "snowy": VillageStyle(Mix((6, "stone_bricks"), (3, "cobblestone"), (2, "diorite"), seed=7), "stripped_spruce_log", "white_terracotta",
-                          SPRUCE, "spruce_door", "spruce_trapdoor", "spruce_fence", "light_blue", "spruce_planks"),
+    "snowy": VillageStyle(Mix((6, "stone_bricks"), (3, "cobblestone"), (2, "diorite"), seed=7), "stripped_spruce_log", "calcite",
+                          DARK_OAK, "spruce_door", "spruce_trapdoor", "spruce_fence", "light_blue", "spruce_planks"),
     "taiga": VillageStyle(Mix((6, "cobblestone"), (2, "mossy_cobblestone"), (2, "stone"), seed=8), "spruce_log", "spruce_planks",
-                          SPRUCE, "spruce_door", "spruce_trapdoor", "spruce_fence", "brown", "spruce_planks"),
+                          DARK_OAK, "spruce_door", "spruce_trapdoor", "spruce_fence", "brown", "spruce_planks"),
 }
 VILLAGE_STRUCTURES = os.path.join(MAIN_STRUCTURES, "village")
 
@@ -69,8 +71,8 @@ def village_house(style, fit_out):
         walls(b, 1, 2, 7, 8, 4, 4, s.frame)
     door(b, 4, 1, 2, s.door, "south")
     stairs(b, 4, 0, 1, s.roof, "south")
-    for x in (2, 6):
-        window(b, x, 2, 2, "north", shutters=s.trapdoor)
+    for x, plant in ((2, "potted_red_tulip"), (6, "potted_oxeye_daisy")):
+        window(b, x, 2, 2, "north", shutters=s.trapdoor, flowers=(s.trapdoor, [plant]))
     for z in (4, 6):
         window(b, 1, 2, z, "west", shutters=s.trapdoor)
         window(b, 7, 2, z, "east", shutters=s.trapdoor)
@@ -88,17 +90,23 @@ def village_house(style, fit_out):
         lantern(b, 3, 3, 1, hanging=True)
         lantern(b, 5, 3, 1, hanging=True)
     else:
-        gable_roof(b, 0, 8, 1, 9, 4, s.roof, axis="z", gable=s.infill, gable_at=(2, 8))
+        gable_roof(b, 0, 8, 1, 9, 4, s.roof, axis="z", gable=s.infill, gable_at=(2, 8), eave_trim=s.roof)
         b.set(4, 5, 2, s.frame, **frame_axis)
         pane(b, 4, 6, 2)
         b.set(4, 5, 8, s.frame, **frame_axis)
+        chimney(b, 4, 9, 0, 8, s.plinth)  # up the back gable
+        # A hood over the door
+        stairs(b, 3, 3, 1, s.roof, "west", top=True)
+        stairs(b, 5, 3, 1, s.roof, "east", top=True)
+        slab(b, 4, 4, 1, s.roof)
         lantern(b, 3, 3, 1, hanging=True) if False else None
         b.set(5, 3, 1, "lantern", hanging=True, waterlogged=False) if False else None
     b.set(4, 3, 1, "air")
     fit_out(Shifted(b, 1, 1), style)
     b.bed(6, 1, 6, s.bed, facing="south")
     lantern(b, 4, 3, 5, hanging=True)
-    b.set(4, 4, 5, s.frame, **({"axis": "x"} if "log" in s.frame else {}))
+    for x in range(2, 7):  # a tie beam across the room, wall to wall, the lantern hanging from it
+        b.set(x, 4, 5, s.frame, **({"axis": "x"} if "log" in s.frame else {}))
     b.set(4, 0, 5, "jigsaw", orientation="up_north")
     floor_name = s.floor
     b.set_nbt(4, 0, 5, Compound({

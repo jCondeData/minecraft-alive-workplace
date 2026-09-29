@@ -1475,5 +1475,16 @@
   "message.aliveworkplace.florist.state.pot": "filling a flower pot",
   "message.aliveworkplace.florist.state.deposit": "putting the flowers away",
   "message.aliveworkplace.florist.state.no_chest": "needs a chest by the flower stand",
-  "message.aliveworkplace.florist.state.no_bone_meal": "needs bone meal to grow flowers"
+  "message.aliveworkplace.florist.state.no_bone_meal": "needs bone meal to grow flowers",
+  "message.aliveworkplace.protection.denied": "%s is %s's village: only they and their friends can change things here",
+  "message.aliveworkplace.protection.on": "%s is protected: only you, your friends (/workplace friend add) and operators can build, break or open things in it",
+  "message.aliveworkplace.protection.off": "%s is open again: anyone can build and break things in it",
+  "message.aliveworkplace.protection.not_owner": "Only %s, who owns this hall, can change its protection",
+  "message.aliveworkplace.protection.disabled": "Village protection is turned off on this server",
+  "screen.aliveworkplace.hall.protected": "Protected: only %s and their friends can build here",
+  "screen.aliveworkplace.hall.unprotected": "Not protected (owner: %s)",
+  "screen.aliveworkplace.hall.unowned": "Not protected (no owner yet)",
+  "screen.aliveworkplace.hall.protect_click": "Shift-click: protect the village (the hall's owner)",
+  "chronicle.aliveworkplace.protected": "%s protected the village",
+  "chronicle.aliveworkplace.unprotected": "%s opened the village to everyone"
 }

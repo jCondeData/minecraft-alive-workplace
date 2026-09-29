@@ -10,6 +10,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.core.BlockPos;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
@@ -35,6 +36,8 @@ import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import org.jetbrains.annotations.Nullable;
 
@@ -88,6 +91,18 @@ public interface Platform {
 	/** When a player right-clicks an entity; anything but {@link InteractionResult#PASS} stops the click there. */
 	void onUseEntity(UseEntity handler);
 
+	/** Before a player breaks a block (on the server); false keeps the block. */
+	void allowBreakBlock(BreakBlock check);
+
+	/** When a player right-clicks a block (on both sides); anything but {@link InteractionResult#PASS} stops the click there. */
+	void onUseBlock(UseBlock handler);
+
+	/** When a player uses the item in their hand in the air (a bucket...); false stops it. */
+	void allowUseItem(UseItem check);
+
+	/** When a player attacks an entity; false stops the attack. */
+	void allowAttackEntity(AttackEntity check);
+
 	/** Before a living entity takes damage on the server; false cancels it. */
 	void allowDamage(AllowDamage check);
 
@@ -109,6 +124,26 @@ public interface Platform {
 	@FunctionalInterface
 	interface UseEntity {
 		InteractionResult use(Player player, Level level, InteractionHand hand, Entity entity, @Nullable EntityHitResult hit);
+	}
+
+	@FunctionalInterface
+	interface BreakBlock {
+		boolean allow(Level level, Player player, BlockPos pos, BlockState state);
+	}
+
+	@FunctionalInterface
+	interface UseBlock {
+		InteractionResult use(Player player, Level level, InteractionHand hand, BlockHitResult hit);
+	}
+
+	@FunctionalInterface
+	interface UseItem {
+		boolean allow(Player player, Level level, InteractionHand hand);
+	}
+
+	@FunctionalInterface
+	interface AttackEntity {
+		boolean allow(Player player, Level level, Entity entity);
 	}
 
 	@FunctionalInterface

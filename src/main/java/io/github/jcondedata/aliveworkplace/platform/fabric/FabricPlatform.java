@@ -18,7 +18,11 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.CommonLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerEntityEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
+import net.fabricmc.fabric.api.event.player.AttackEntityCallback;
+import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
+import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.fabricmc.fabric.api.event.player.UseEntityCallback;
+import net.fabricmc.fabric.api.event.player.UseItemCallback;
 import net.fabricmc.fabric.api.gamerule.v1.GameRuleFactory;
 import net.fabricmc.fabric.api.gamerule.v1.GameRuleRegistry;
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
@@ -47,6 +51,8 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
@@ -137,6 +143,28 @@ public final class FabricPlatform implements Platform {
 	@Override
 	public void onUseEntity(UseEntity handler) {
 		UseEntityCallback.EVENT.register(handler::use);
+	}
+
+	@Override
+	public void allowBreakBlock(BreakBlock check) {
+		PlayerBlockBreakEvents.BEFORE.register((level, player, pos, state, blockEntity) -> check.allow(level, player, pos, state));
+	}
+
+	@Override
+	public void onUseBlock(UseBlock handler) {
+		UseBlockCallback.EVENT.register(handler::use);
+	}
+
+	@Override
+	public void allowUseItem(UseItem check) {
+		UseItemCallback.EVENT.register((player, level, hand) -> check.allow(player, level, hand)
+			? InteractionResultHolder.pass(player.getItemInHand(hand)) : InteractionResultHolder.fail(player.getItemInHand(hand)));
+	}
+
+	@Override
+	public void allowAttackEntity(AttackEntity check) {
+		AttackEntityCallback.EVENT.register((player, level, hand, entity, hit) -> check.allow(player, level, entity)
+			? InteractionResult.PASS : InteractionResult.FAIL);
 	}
 
 	@Override

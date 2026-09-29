@@ -77,6 +77,10 @@ public class VillageHallBlock extends BaseEntityBlock {
 	@Override
 	public void setPlacedBy(Level level, BlockPos pos, BlockState state, @Nullable net.minecraft.world.entity.LivingEntity placer, ItemStack stack) {
 		super.setPlacedBy(level, pos, state, placer, stack);
+		if (level instanceof net.minecraft.server.level.ServerLevel && level.getBlockEntity(pos) instanceof VillageHallBlockEntity entity
+			&& entity.owner() == null && placer instanceof net.minecraft.world.entity.player.Player player) {
+			entity.setOwner(player.getUUID(), player.getGameProfile().getName());
+		}
 		if (level instanceof net.minecraft.server.level.ServerLevel server && level.getBlockEntity(pos) instanceof VillageHallBlockEntity entity
 			&& entity.chronicle().isEmpty()) {
 			Chronicle.record(server, pos, Chronicle.Kind.FOUNDED, placer != null

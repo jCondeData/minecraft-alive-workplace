@@ -58,6 +58,7 @@ public final class AliveWorkplace {
 		io.github.jcondedata.aliveworkplace.guard.Escorts.init();
 		io.github.jcondedata.aliveworkplace.hall.Festivals.init();
 		io.github.jcondedata.aliveworkplace.people.Chatter.init();
+		io.github.jcondedata.aliveworkplace.hall.VillageProtection.init();
 		io.github.jcondedata.aliveworkplace.ranch.PokemonChores.init();
 		io.github.jcondedata.aliveworkplace.blueprint.BlueprintStyles.init();
 		integrations.run();

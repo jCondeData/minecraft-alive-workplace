@@ -37,6 +37,10 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 	private long festivalCalled = -100;
 	/** The treasury, in hundredths of an emerald, and the day it last took the village's takings (see {@link Treasury}). */
 	private int treasury;
+	@Nullable
+	private java.util.UUID owner;
+	private String ownerName = "";
+	private boolean protectedVillage;
 	private long lastTaxDay = -1;
 	/** The day of the last market (see {@link MarketDays}). */
 	private long lastMarketDay = -1;
@@ -189,6 +193,49 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 		setChanged();
 	}
 
+	/** Whoever placed the hall (or claimed it first); null for a hall nobody has claimed. See {@link VillageProtection}. */
+	@Nullable
+	public java.util.UUID owner() {
+		return owner;
+	}
+
+	public String ownerName() {
+		return ownerName;
+	}
+
+	public void setOwner(@Nullable java.util.UUID owner, String name) {
+		this.owner = owner;
+		this.ownerName = name;
+		setChanged();
+	}
+
+	/** Whether the owner keeps other players from changing things in the village (off unless they turn it on). */
+	public boolean isProtected() {
+		return protectedVillage;
+	}
+
+	public void setProtected(boolean on) {
+		protectedVillage = on;
+		setChanged();
+		if (level != null) {
+			VillageProtection.mark(level, worldPosition, on);
+		}
+	}
+
+	@Override
+	public void setLevel(net.minecraft.world.level.Level level) {
+		super.setLevel(level);
+		VillageProtection.mark(level, worldPosition, protectedVillage);
+	}
+
+	@Override
+	public void setRemoved() {
+		super.setRemoved();
+		if (level != null) {
+			VillageProtection.mark(level, worldPosition, false);
+		}
+	}
+
 	public int treasury() {
 		return treasury;
 	}
@@ -242,6 +289,9 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 		feastDay = tag.contains("feastDay") ? Nbt.getLong(tag, "feastDay") : -1;
 		festivalCalled = tag.contains("festivalCalled") ? Nbt.getLong(tag, "festivalCalled") : -100;
 		treasury = Nbt.getInt(tag, "treasury");
+		owner = Nbt.hasUuid(tag, "owner") ? Nbt.getUuid(tag, "owner") : null;
+		ownerName = Nbt.getString(tag, "ownerName");
+		protectedVillage = Nbt.getBoolean(tag, "protected");
 		lastTaxDay = tag.contains("lastTaxDay") ? Nbt.getLong(tag, "lastTaxDay") : -1;
 		int r = Nbt.getInt(tag, "rank");
 		rank = VillageRanks.Rank.values()[Math.max(0, Math.min(VillageRanks.Rank.values().length - 1, r))];
@@ -275,6 +325,11 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 		tag.putLong("feastDay", feastDay);
 		tag.putLong("festivalCalled", festivalCalled);
 		tag.putInt("treasury", treasury);
+		if (owner != null) {
+			Nbt.putUuid(tag, "owner", owner);
+			tag.putString("ownerName", ownerName);
+		}
+		tag.putBoolean("protected", protectedVillage);
 		tag.putLong("lastTaxDay", lastTaxDay);
 		tag.putInt("rank", rank.ordinal());
 		io.github.jcondedata.aliveworkplace.research.Research.State.CODEC.encodeStart(net.minecraft.nbt.NbtOps.INSTANCE, research).result()

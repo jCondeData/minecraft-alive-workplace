@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+### Added
+- **Village protection** (a setting on the Village Hall, off until its owner turns it on): shift-click the hall's name
+  tag and only you, your friends (`/workplace friend add`) and operators can break, place or open things in the village,
+  or hurt its villagers and animals; everyone can still come in, open doors, trade and ring the bell. Whoever places the
+  hall owns it (an older hall goes to whoever protects it first); `villageProtection` in the config switches it off.
+
 ## 0.134.0 — 2026-09-29
 
 ### Added

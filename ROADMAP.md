@@ -713,6 +713,12 @@ standard, "even go back and improve upon other builds you've already pushed").
 - [ ] … inn I–II, library I–II, terrace I–II, tinker's workshop I–II, nether gate I–II, graveyard I–II, berry farm I–II
 - [ ] … the decorations (well I–II, fountain, gazebo, street lamp, park bench) and defences (palisade, gatehouse, wall
   tower, stone wall), and one more pass over the village houses in all five styles
+- [x] Village protection (owner, 2026-09-29: "a setting would be better"): `hall/VillageProtection`, owner and
+  `protected` on the `VillageHallBlockEntity` (the placer; an unowned hall goes to whoever protects it first), shift-click
+  the hall's name tag; inside `VillageHalls.RADIUS` (horizontal, any height) only the owner, their `Friends` and ops may
+  break/place/use blocks (doors, gates, buttons, levers, bells, crafting tables and mailboxes stay open), empty buckets, or
+  hurt villagers, golems, animals, armor stands and frames; platform hooks `allowBreakBlock`, `onUseBlock`,
+  `allowUseItem`, `allowAttackEntity`; `villageProtection` in the config
 - [ ] Homes: a villager's home is the finished building their bed is in; a tier II house lifts their mood (+5), tier III
   more (+10); the hall's list says where each lives, and "What next?" suggests upgrading when most live in tier I houses
   or none at all
@@ -757,15 +763,14 @@ standard, "even go back and improve upon other builds you've already pushed").
   (plinth, frame, depth, overhanging roofs, varied outline, texture, small details) and is checked in a render first.
   Open-source builds may be used only if their licence allows it and they're credited; so far everything is original.
 
+- **Village protection** (2026-09-29): a setting on the Village Hall, off unless its owner turns it on.
+
 - **Multi-version** (2026-09-29): follow the minecraft-mod-engineer skill. Keep today's feature packages (the build
   enforces the layers on them); no partial 26.3 release; jar names `<ver>+<mc>` from the Stonecutter phase; feature
   work pauses for phases 0–2 (Milestone 19).
 
 ## Notes / blocked
 - (autonomous sessions: write anything you could not finish or need the owner to decide here)
-- 2026-09-29 (owner's call): **village protection**, MineColonies-style — should a village with a Village Hall keep
-  players who aren't its owner's friends from breaking, placing or opening things inside it? On a friends' server it may
-  only get in the way; if wanted, it would be a setting on the hall (off unless the hall's owner turns it on).
 - 2026-09-29: two scheduled sessions ran at the same time and both built the Miltank milking and plantation-crop items;
   the second one's work was dropped for the first's. If sessions overlap again, the later one should take items further
   down the list (as the Training Dummy was) or the schedule should be spread out (owner).

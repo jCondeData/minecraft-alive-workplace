@@ -806,6 +806,14 @@ well-kept hamlet: 3 emeralds a day). The hall's name tag (the top-left icon of i
 to collect (CobbleDollars when the pack has them). It holds up to a stack a rank; `villageTreasury` and
 `treasuryPerWorker` (hundredths of an emerald) in the config.
 
+**Protecting the village.** Whoever places the Village Hall owns it. Shift-click the hall's name tag (top left of its
+screen) to protect the village: inside the hall's area (64 blocks across the map from it, at any height) only you, your
+friends (`/workplace friend add <player>`) and operators can break or place blocks, open chests and other blocks, empty
+buckets, or hurt the villagers, golems and animals. Anyone can still walk in, open doors and gates, press buttons, ring
+the bell, use a crafting table, trade with the villagers and open their own mailbox. Shift-click again to open the
+village up. It's off until you turn it on; a hall placed before 0.135.0 goes to whoever protects it first. The server can
+switch the setting off with `villageProtection` in the config.
+
 **What next?** The compass at the right end of the hall's middle row lists what the village lacks, most pressing first —
 a builder, beds, food in the store, a Storehouse, guards (one per ten villagers), a bandit camp nearby and where, the ill,
 villagers sleeping in the dark, the jobless, a scholar, decorations, the next upgrade of a finished building, and what
@@ -1062,6 +1070,7 @@ and restart; out-of-range values are clamped):
 | `marketDays` | true | a village with a Village Hall and a Market Square holds a market once a week |
 | `villageRaids` | true | monsters raid villages with a Village Hall and 8 or more villagers at night now and then |
 | `villageRadius` | 48 | workers whose workstations are this close together share their chests (0 turns sharing off) |
+| `villageProtection` | true | a Village Hall's owner may protect the village from other players (shift-click the hall's name tag; off until they do) |
 | `dollarsPerEmerald` | 100 | CobbleDollars per emerald for lessons, shop prices and fares |
 
 ## Performance

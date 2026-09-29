@@ -119,9 +119,17 @@ public final class VillageHallScreen {
 		nameLore.add(line(Component.translatable("screen.aliveworkplace.hall.treasury",
 			io.github.jcondedata.aliveworkplace.work.Money.describe((long) treasury * io.github.jcondedata.aliveworkplace.work.Money.DOLLARS_PER_EMERALD, treasury)),
 			treasury > 0 ? ChatFormatting.GREEN : ChatFormatting.GRAY));
+		if (VillageProtection.ENABLED && level.getBlockEntity(hall) instanceof VillageHallBlockEntity owned) {
+			nameLore.add(line(owned.isProtected()
+				? Component.translatable("screen.aliveworkplace.hall.protected", owned.ownerName())
+				: owned.owner() == null ? Component.translatable("screen.aliveworkplace.hall.unowned")
+				: Component.translatable("screen.aliveworkplace.hall.unprotected", owned.ownerName()),
+				owned.isProtected() ? ChatFormatting.GREEN : ChatFormatting.GRAY));
+			nameLore.add(line("screen.aliveworkplace.hall.protect_click", ChatFormatting.DARK_GRAY));
+		}
 		nameLore.add(line("screen.aliveworkplace.hall.rename", ChatFormatting.DARK_GRAY));
 		menu.button(NAME, icon(Items.NAME_TAG, VillageHalls.name(level, hall).copy(), ChatFormatting.GOLD, nameLore.toArray(Component[]::new)), p -> {
-			Chat.chat(p, Treasury.collect(level, hall, p));
+			Chat.chat(p, menu.shiftClicked() ? VillageProtection.toggle(level, hall, p) : Treasury.collect(level, hall, p));
 			refresh(menu, level, hall, shown);
 		});
 		VillageNeeds.Needs needs = VillageNeeds.count(level, hall);

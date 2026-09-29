@@ -70,6 +70,8 @@ public final class WorkplaceConfig {
 	public boolean villagerCouples = true;
 	/** Villages with a Village Hall put by takings every morning for players to collect at the hall. */
 	public boolean villageTreasury = true;
+	/** A Village Hall's owner may protect the village from other players (a setting on the hall, off until they turn it on). */
+	public boolean villageProtection = true;
 	/** Hundredths of an emerald each worker brings the treasury a day (before wellbeing and rank). */
 	public int treasuryPerWorker = 20;
 	/** What an emerald price comes to in CobbleDollars (lessons, shops, fares). */
@@ -161,6 +163,7 @@ public final class WorkplaceConfig {
 		io.github.jcondedata.aliveworkplace.people.Chatter.ENABLED = villagerChatter && System.getProperty("fabric-api.gametest") == null;
 		io.github.jcondedata.aliveworkplace.people.Couples.ENABLED = villagerCouples && System.getProperty("fabric-api.gametest") == null;
 		io.github.jcondedata.aliveworkplace.hall.Treasury.ENABLED = villageTreasury && System.getProperty("fabric-api.gametest") == null;
+		io.github.jcondedata.aliveworkplace.hall.VillageProtection.ENABLED = villageProtection;
 		io.github.jcondedata.aliveworkplace.build.Paths.ENABLED = builderPaths && System.getProperty("fabric-api.gametest") == null;
 	}
 }

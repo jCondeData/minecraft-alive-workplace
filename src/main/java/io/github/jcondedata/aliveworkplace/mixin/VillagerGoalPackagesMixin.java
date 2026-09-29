@@ -111,6 +111,10 @@ abstract class VillagerGoalPackagesMixin {
 			// Leatherworkers dye what the builders nearby are waiting for.
 			cir.setReturnValue(io.github.jcondedata.aliveworkplace.work.UpgradedJob.work(cir.getReturnValue(),
 				new io.github.jcondedata.aliveworkplace.craft.DyerWork(), io.github.jcondedata.aliveworkplace.craft.CrafterWork::vanillaMayRun));
+		} else if (profession == VillagerProfession.CLERIC) {
+			// Clerics brew potions for the guards at their brewing stand.
+			cir.setReturnValue(io.github.jcondedata.aliveworkplace.work.UpgradedJob.work(cir.getReturnValue(),
+				new io.github.jcondedata.aliveworkplace.brew.AlchemistWork(), v -> !io.github.jcondedata.aliveworkplace.brew.AlchemistWork.isBusy(v)));
 		} else if (profession == VillagerProfession.FISHERMAN) {
 			cir.setReturnValue(io.github.jcondedata.aliveworkplace.work.UpgradedJob.work(cir.getReturnValue(),
 				new io.github.jcondedata.aliveworkplace.fish.FisherWork(), io.github.jcondedata.aliveworkplace.fish.Fishers::vanillaMayRun));

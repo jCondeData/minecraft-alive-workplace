@@ -3,7 +3,7 @@
 Villagers with real jobs. Hand a **Builder** a blueprint and they build it for you: they clear the
 site, fetch materials from your chests, put up the walls and roof, and finish with doors, beds and
 torches. **Miners** dig out quarries, **Lumberjacks** cut down and replant trees, **Orchard Keepers** pick berries, cocoa and apricorns, **Farmers** look after
-your fields and **Fishermen** fish for you, dropping everything off in your chests. **Porters** gather it all in the village storehouse, **Carpenters** and **Masons** make what the builders are missing, **Armorers** smelt the ore and make the guards' armor, **Toolsmiths** make the workers' tools, **Weaponsmiths** mend the village's gear, **Fletchers** make the guards' bows and arrows, **Shepherds** and **Butchers** look after the sheep and the herd, **Chefs** cook for the village, **Postmen** carry mail
+your fields and **Fishermen** fish for you, dropping everything off in your chests. **Porters** gather it all in the village storehouse, **Carpenters** and **Masons** make what the builders are missing, **Armorers** smelt the ore and make the guards' armor, **Toolsmiths** make the workers' tools, **Weaponsmiths** mend the village's gear, **Fletchers** make the guards' bows and arrows, **Shepherds** and **Butchers** look after the sheep and the herd, **Clerics** brew potions for the guards, **Chefs** cook for the village, **Postmen** carry mail
 between players' mailboxes, **Guards** keep monsters away, **Nurses** heal you (and your Pokémon),
 **Shopkeepers** run your shop, **Ferrymen** take you between villages, **Bards** play music and — with Cobblemon —
 **Trainers** battle you, **Move Tutors** teach your Pokémon new moves, **Ball Smiths** make Poké Balls, **Pokémon Traders** swap Pokémon with you and **Fossil Scientists** revive fossils. Villages grow workshops, guard houses, clinics, post offices, orchard houses, ferry houses, storehouses, carpenter's workshops and kitchens on their own — and with Cobblemon,
@@ -103,6 +103,7 @@ where they take tools and supplies from and where their work goes.
 | Fletcher | Fletching Table (vanilla) | sticks, string, iron (glowstone for spectral arrows) | nothing — or sneak-right-click with flint to hire them |
 | Shepherd | Loom (vanilla) | shears, wheat | nothing — or sneak-right-click with shears to hire them |
 | Butcher (herder) | Smoker (vanilla) | empty buckets, wheat/carrots/seeds | nothing — or sneak-right-click with a lead to hire them |
+| Cleric (alchemist) | Brewing Stand (vanilla) | nether wart, glistering melon, ghast tears, blaze powder, bottles | nothing — or sneak-right-click with a glass bottle to hire them |
 | Postman | Postal Desk | — | Mailboxes for mail; Delivery Notes for hauling |
 | Guard | Guard Post | weapons, armor, a bow or crossbow and arrows | nothing |
 | Nurse | Nurse Station | — | right-click them to be healed |
@@ -322,6 +323,14 @@ feathers picked up, cows milked into the empty buckets in the chest (up to 4 buc
 milk and eggs. Sneak-right-click a butcher with a lead to hire them for your own herd: a hired butcher also keeps each
 kind at 10 grown animals, taking the rest for meat and leather — never babies, named or leashed animals. Everything
 goes into the chests, and a porter carries the wool, eggs and meat on to the storehouse.
+
+## Clerics: potions for the guards
+**Clerics** (the vanilla villager at a brewing stand) brew what the guards need — potions of healing, regeneration and
+strength, three of each — from the chest by the stand: nether wart, a glistering melon slice, a ghast tear or blaze
+powder, with blaze powder as fuel, and water bottles (or glass bottles they fill at water or a cauldron nearby). A
+guard of the village with fewer than two potions gets one brought to the chest by their Guard Post; guards carry up to
+three, drink a healing or regeneration potion when they fall below half health, and a strength potion as a fight
+starts. Sneak-right-click a cleric with a glass bottle to hire them for your own guards.
 
 ## Chefs
 ![A chef cooking at the Kitchen Stove](docs/media/chef.png)

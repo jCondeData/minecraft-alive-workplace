@@ -78,6 +78,57 @@ public final class Guards {
 		return n;
 	}
 
+	/** Healing, regeneration and strength potions the guard carries (in their bag). */
+	public static int potions(Villager guard) {
+		int n = 0;
+		for (ItemStack stack : guard.getAttachedOrCreate(io.github.jcondedata.aliveworkplace.registry.ModAttachments.BUILDER_BAG).stacks()) {
+			if (io.github.jcondedata.aliveworkplace.brew.AlchemistWork.isGuardPotion(stack)) {
+				n += stack.getCount();
+			}
+		}
+		return n;
+	}
+
+	/** Potions a guard carries at most. */
+	public static final int POTIONS = 3;
+
+	/**
+	 * A guard below half health drinks a healing or regeneration potion they carry; at the start of a fight, a strength
+	 * potion if they aren't strong already. Returns whether they drank.
+	 */
+	public static boolean drink(Villager guard, boolean fightStarting) {
+		var bag = guard.getAttachedOrCreate(io.github.jcondedata.aliveworkplace.registry.ModAttachments.BUILDER_BAG);
+		boolean hurt = guard.getHealth() < guard.getMaxHealth() / 2;
+		ItemStack potion = ItemStack.EMPTY;
+		if (hurt) {
+			potion = bag.takeFirst(s -> io.github.jcondedata.aliveworkplace.brew.AlchemistWork.isGuardPotion(s) && !isStrength(s));
+		}
+		if (potion.isEmpty() && fightStarting && !guard.hasEffect(net.minecraft.world.effect.MobEffects.DAMAGE_BOOST)) {
+			potion = bag.takeFirst(Guards::isStrength);
+		}
+		if (potion.isEmpty()) {
+			return false;
+		}
+		var contents = potion.get(DataComponents.POTION_CONTENTS);
+		if (contents != null) {
+			contents.forEachEffect(effect -> {
+				if (effect.getEffect().value().isInstantenous()) {
+					effect.getEffect().value().applyInstantenousEffect(guard, guard, guard, effect.getAmplifier(), 1.0);
+				} else {
+					guard.addEffect(new net.minecraft.world.effect.MobEffectInstance(effect));
+				}
+			});
+		}
+		guard.level().playSound(null, guard, net.minecraft.sounds.SoundEvents.GENERIC_DRINK, net.minecraft.sounds.SoundSource.NEUTRAL, 1f, 1f);
+		return true;
+	}
+
+	private static boolean isStrength(ItemStack stack) {
+		var contents = stack.get(DataComponents.POTION_CONTENTS);
+		return contents != null && contents.potion().map(p -> p.is(net.minecraft.world.item.alchemy.Potions.STRENGTH)
+			|| p.is(net.minecraft.world.item.alchemy.Potions.STRONG_STRENGTH) || p.is(net.minecraft.world.item.alchemy.Potions.LONG_STRENGTH)).orElse(false);
+	}
+
 	public static boolean hasBow(Villager guard) {
 		return isBow(guard.getItemBySlot(EquipmentSlot.OFFHAND));
 	}

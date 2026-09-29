@@ -30,6 +30,7 @@
 			"io.github.jcondedata.aliveworkplace.test.FletcherGameTests",
 			"io.github.jcondedata.aliveworkplace.test.ShepherdGameTests",
 			"io.github.jcondedata.aliveworkplace.test.HerderGameTests",
+			"io.github.jcondedata.aliveworkplace.test.AlchemistGameTests",
 			"io.github.jcondedata.aliveworkplace.test.OptionalModsGameTests"
 		]
 	},

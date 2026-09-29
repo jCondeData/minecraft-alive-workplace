@@ -180,6 +180,12 @@ public final class BuilderEvents {
 				return level.isClientSide ? InteractionResult.SUCCESS
 					: io.github.jcondedata.aliveworkplace.smelt.Smelters.hire((ServerPlayer) player, villager);
 			}
+			if (player.isShiftKeyDown() && player.getItemInHand(hand).is(net.minecraft.world.item.Items.GLASS_BOTTLE)
+					&& io.github.jcondedata.aliveworkplace.brew.AlchemistWork.isAlchemist(villager)) {
+				return level.isClientSide ? InteractionResult.SUCCESS
+					: io.github.jcondedata.aliveworkplace.work.Hiring.hire((ServerPlayer) player, villager,
+						net.minecraft.network.chat.Component.translatable("message.aliveworkplace.alchemist.hired", villager.getDisplayName()));
+			}
 			if (player.isShiftKeyDown() && player.getItemInHand(hand).is(net.minecraft.world.item.Items.LEAD)
 					&& io.github.jcondedata.aliveworkplace.ranch.HerderWork.isHerder(villager)) {
 				return level.isClientSide ? InteractionResult.SUCCESS

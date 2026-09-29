@@ -647,5 +647,12 @@
   "message.aliveworkplace.herder.state.deposit": "putting it all away",
   "message.aliveworkplace.herder.state.no_chest": "needs a chest by the smoker",
   "message.aliveworkplace.herder.hired": "%s keeps your herd now: the animals within %s blocks of the smoker are bred up to %s of each kind, and the extra grown ones go for meat.",
-  "message.aliveworkplace.dyer.title": "Dyer · %s made"
+  "message.aliveworkplace.dyer.title": "Dyer · %s made",
+  "message.aliveworkplace.alchemist.title": "Cleric · %s potions brewed",
+  "message.aliveworkplace.alchemist.state.idle": "nothing to brew",
+  "message.aliveworkplace.alchemist.state.brewing": "brewing",
+  "message.aliveworkplace.alchemist.state.filling": "filling bottles",
+  "message.aliveworkplace.alchemist.state.delivering": "bringing a potion to a guard",
+  "message.aliveworkplace.alchemist.state.no_chest": "needs a chest by the brewing stand",
+  "message.aliveworkplace.alchemist.hired": "%s brews for your guards now."
 }

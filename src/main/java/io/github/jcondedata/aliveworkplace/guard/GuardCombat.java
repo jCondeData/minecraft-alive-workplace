@@ -72,9 +72,10 @@ public class GuardCombat extends Behavior<Villager> {
 		if (!Guards.isGuard(villager)) {
 			return false;
 		}
-		// Between fights: heal slowly and keep the guard's extra health.
+		// Between fights: heal slowly (a potion if badly hurt) and keep the guard's extra health.
 		if (++calm % 40 == 0 && villager.getHealth() < villager.getMaxHealth()) {
 			villager.heal(1f);
+			Guards.drink(villager, false);
 		}
 		if (calm % 200 == 0) {
 			Guards.updateHealth(villager);
@@ -100,6 +101,7 @@ public class GuardCombat extends Behavior<Villager> {
 		}
 		FIGHTING.add(villager);
 		cooldown = 0;
+		Guards.drink(villager, true);
 	}
 
 	@Override
@@ -122,6 +124,9 @@ public class GuardCombat extends Behavior<Villager> {
 			Component.translatable("message.aliveworkplace.guard.state.fighting", foe.getDisplayName()).withStyle(ChatFormatting.RED));
 		if (cooldown > 0) {
 			cooldown--;
+		}
+		if (gameTime % 20 == 0) {
+			Guards.drink(villager, false); // badly hurt: a healing potion
 		}
 		// With a bow: shoot creepers, fliers and anything still a few steps off; back away from creepers.
 		double distance = Math.sqrt(villager.distanceToSqr(foe));

@@ -5,6 +5,7 @@
 	"mixins": [
 		"AbstractVillagerMixin",
 		"AxeItemAccessor",
+		"BrewingStandAccessor",
 		"StructureTemplatePoolAccessor",
 		"VillagerAccessor",
 		"VillagerGoalPackagesMixin",

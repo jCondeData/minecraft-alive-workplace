@@ -36,8 +36,20 @@ public final class SupplyContainers {
 		return near(level, bench, be -> !(exclude != null && exclude.isInside(be.getBlockPos()))
 			&& !(be instanceof io.github.jcondedata.aliveworkplace.work.PrivateContainer)
 			&& !(be instanceof net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity)
+			&& !isMachine(be)
 			&& !ModdedBlocks.isStorageNetwork(be.getBlockState().getBlock())
 			&& storage(level, be.getBlockPos()) != null);
+	}
+
+	/**
+	 * Blocks that hold items for their own work, not as storage: a brewing stand's bottles, a jukebox's disc, a lectern's
+	 * book, a crafter's grid.
+	 */
+	static boolean isMachine(BlockEntity be) {
+		return be instanceof net.minecraft.world.level.block.entity.BrewingStandBlockEntity
+			|| be instanceof net.minecraft.world.level.block.entity.JukeboxBlockEntity
+			|| be instanceof net.minecraft.world.level.block.entity.LecternBlockEntity
+			|| be instanceof net.minecraft.world.level.block.entity.CrafterBlockEntity;
 	}
 
 	/** Furnaces, blast furnaces and smokers near {@code bench}, nearest first. */

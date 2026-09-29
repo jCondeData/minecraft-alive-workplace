@@ -2,6 +2,20 @@
 
 ## Unreleased
 
+## 0.86.0 — 2026-09-29
+
+### Added
+- **Clerics brew potions for the guards**: healing, regeneration and strength from the chest by their brewing stand
+  (they fill glass bottles at water or a cauldron), and take them to guards who are short. Sneak-right-click with a
+  glass bottle to hire one.
+- **Guards drink potions**: a guard carries up to three, drinks healing or regeneration below half health and
+  strength as a fight starts.
+
+### Fixed
+- Brewing stands, jukeboxes, lecterns and crafters near a workstation are no longer treated as chests (a builder
+  could take the potions out of a brewing stand).
+- A village farmer test that could fail on an unlucky harvest.
+
 ## 0.85.0 — 2026-09-28
 
 ### Added

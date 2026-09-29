@@ -84,6 +84,8 @@ public class FarmerGameTests implements FabricGameTest {
 		helper.setBlock(CHEST, Blocks.CHEST);
 		Villager villager = helper.spawn(EntityType.VILLAGER, new BlockPos(3, 2, 3));
 		Jobs.employ(level, villager, helper.absolutePos(COMPOSTER), PoiTypes.FARMER, VillagerProfession.FARMER);
+		// Food to share already in their pockets: without it, an unlucky harvest could all go to the share (CI saw it).
+		villager.getInventory().addItem(new ItemStack(Items.BREAD, 9));
 		helper.succeedWhen(() -> {
 			var job = villager.getAttached(io.github.jcondedata.aliveworkplace.registry.ModAttachments.FARM_FIELD);
 			helper.assertTrue(job != null && job.adopted(), "the farmer didn't take the farm on");

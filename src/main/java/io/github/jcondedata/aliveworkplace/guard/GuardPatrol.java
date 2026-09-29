@@ -83,6 +83,7 @@ public class GuardPatrol extends Behavior<Villager> {
 		if (gearChest == null && --gearTimer <= 0) {
 			gearTimer = GEAR_CHECK_EVERY;
 			gearChest = SupplyContainers.firstMatching(level, SupplyContainers.find(level, post, null), stack -> isUpgrade(villager, stack)
+				|| io.github.jcondedata.aliveworkplace.brew.AlchemistWork.isGuardPotion(stack) && Guards.potions(villager) < Guards.POTIONS
 				|| Guards.isSpecialArrow(stack) && (Guards.hasBow(villager) || SupplyContainers.firstMatching(level,
 					SupplyContainers.find(level, post, null), Guards::isBow) != null) && Guards.quiver(villager) < Guards.QUIVER / 2);
 		}
@@ -150,6 +151,19 @@ public class GuardPatrol extends Behavior<Villager> {
 		for (EquipmentSlot slot : ARMOR) {
 			for (int i = 0; i < 4 && take(level, villager, chests, slot, stack -> stack.getItem() instanceof ArmorItem armor
 				&& armor.getEquipmentSlot() == slot && Guards.armorValue(stack) > Guards.armorValue(villager.getItemBySlot(slot))); i++) {
+			}
+		}
+		// Healing, regeneration and strength potions, a few.
+		var potionBag = villager.getAttachedOrCreate(io.github.jcondedata.aliveworkplace.registry.ModAttachments.BUILDER_BAG);
+		for (int i = Guards.potions(villager); i < Guards.POTIONS; i++) {
+			ItemStack potion = SupplyContainers.takeOne(level, chests, io.github.jcondedata.aliveworkplace.brew.AlchemistWork::isGuardPotion);
+			if (potion.isEmpty()) {
+				break;
+			}
+			ItemStack rest = potionBag.add(potion);
+			if (!rest.isEmpty()) {
+				SupplyContainers.insert(level, chests, rest);
+				break;
 			}
 		}
 		// Spectral and tipped arrows fill the quiver.

@@ -395,8 +395,11 @@ loop: ore → ingots → the tools, weapons and armor the other workers wear out
   leather goods (item frames, books' leather) (`craft/DyerWork`: a `CrafterWork` serving builders but only for coloured
   items by name (`<colour>_…`, `…_dye`); concrete from its powder, hardened in the cauldron, the powder mixed first if
   needed (`CrafterWork.wants`/`planFor` hooks). Leather goods are the carpenter's already)
-- [ ] **Cleric → Alchemist** (brewing stand): brews healing, regeneration and strength potions from the chests; guards
-  drink them in a fight, nurses use them
+- [x] **Cleric → Alchemist** (brewing stand): brews healing, regeneration and strength potions from the chests; guards
+  drink them in a fight, nurses use them (`brew/AlchemistWork`: tends the stand with the game's `PotionBrewing` mixes,
+  water → awkward → the potion that's short (3 of each kept), fills glass bottles at water/cauldrons, takes potions to
+  guards with fewer than 2; guards carry 3 (`Guards.drink`: healing/regeneration below half health, strength as a fight
+  starts). Brewing stands, jukeboxes, lecterns and crafters are no longer counted as chests. Nurses: not yet)
 - [ ] **Librarian → Scribe** (lectern): books and bookshelves for builders; enchants workers' tools and guards' gear with
   lapis
 - [ ] **Cartographer → Explorer** (cartography table): day-long expeditions with food and a weapon, bringing back finds

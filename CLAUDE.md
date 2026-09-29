@@ -233,7 +233,8 @@ container: `source <minecraft-mod-engineer skill>/scripts/setup_env.sh`; then pr
 
 ## Rules
 - Player-visible text goes through `assets/aliveworkplace/lang/en_us.json`.
-- Art is original (draw it in `tools/textures/generate.py`); starter builds are original.
+- Art is original (draw it in `tools/textures/generate.py`); starter builds are original. **For now, draw no new
+  textures or item/block art** (owner, 2026-09-29: his pixel-art skill will do skins and models); reuse what exists.
 - Code from GPL-3.0(-or-later) projects such as MineColonies may be adapted **with attribution in the file header**.
   Don't copy code from All-Rights-Reserved mods.
 - Support for other building mods goes by block/item/tag ids or their data files (`ModdedBlocks`, `MaterialFamilies`),

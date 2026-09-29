@@ -764,6 +764,8 @@ standard, "even go back and improve upon other builds you've already pushed").
   Open-source builds may be used only if their licence allows it and they're credited; so far everything is original.
 
 - **Village protection** (2026-09-29): a setting on the Village Hall, off unless its owner turns it on.
+- **No new pixel art for now** (2026-09-29): the owner is making a pixel-art skill for textures, skins and models; until
+  it's handed over, don't draw new textures or item/block art (reuse existing textures and vanilla ones). Builds are fine.
 
 - **Multi-version** (2026-09-29): follow the minecraft-mod-engineer skill. Keep today's feature packages (the build
   enforces the layers on them); no partial 26.3 release; jar names `<ver>+<mc>` from the Stonecutter phase; feature

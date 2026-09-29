@@ -120,6 +120,16 @@ public final class ModBlocks {
 		"apiary", new BuildersBenchBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.BARREL))
 	);
 
+	/** Workstation for the Florist: flowers grown in the garden round it, empty flower pots in the village filled. */
+	public static final BuildersBenchBlock FLOWER_STAND = register(
+		"flower_stand", new BuildersBenchBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_PLANKS))
+	);
+
+	/** Workstation for the Rancher: horses tamed, saddled and bred round it; with Cobblemon, pastured Pokémon groomed. */
+	public static final BuildersBenchBlock FEED_TROUGH = register(
+		"feed_trough", new BuildersBenchBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_PLANKS))
+	);
+
 	/** Workstation for the Ball Smith: Poké Balls from the apricorns and metals in the chests nearby (with Cobblemon). */
 	public static final BuildersBenchBlock BALL_WORKBENCH = register(
 		"ball_workbench", new BuildersBenchBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.SMITHING_TABLE))

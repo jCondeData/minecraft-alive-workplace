@@ -84,6 +84,14 @@ public final class ModAttachments {
 	public static final AttachmentType<Integer> ITEMS_ENCHANTED = AttachmentRegistry.create(
 		AliveWorkplace.id("items_enchanted"), builder -> builder.persistent(com.mojang.serialization.Codec.INT));
 
+	/** How many horses a Rancher has tamed (shown above its head). */
+	public static final AttachmentType<Integer> HORSES_TAMED = AttachmentRegistry.create(
+		AliveWorkplace.id("horses_tamed"), builder -> builder.persistent(com.mojang.serialization.Codec.INT));
+
+	/** How many flowers a Florist has grown (shown above its head). */
+	public static final AttachmentType<Integer> FLOWERS_GROWN = AttachmentRegistry.create(
+		AliveWorkplace.id("flowers_grown"), builder -> builder.persistent(com.mojang.serialization.Codec.INT));
+
 	/** How many beehives a Beekeeper has harvested (shown above its head). */
 	public static final AttachmentType<Integer> HIVES_HARVESTED = AttachmentRegistry.create(
 		AliveWorkplace.id("hives_harvested"), builder -> builder.persistent(com.mojang.serialization.Codec.INT));

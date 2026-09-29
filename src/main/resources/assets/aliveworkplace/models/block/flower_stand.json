@@ -1,0 +1,9 @@
+{
+  "parent": "minecraft:block/orientable_with_bottom",
+  "textures": {
+    "top": "aliveworkplace:block/flower_stand_top",
+    "bottom": "aliveworkplace:block/flower_stand_side",
+    "side": "aliveworkplace:block/flower_stand_side",
+    "front": "aliveworkplace:block/flower_stand_front"
+  }
+}

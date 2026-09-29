@@ -1,0 +1,9 @@
+{
+  "parent": "minecraft:block/orientable_with_bottom",
+  "textures": {
+    "top": "aliveworkplace:block/feed_trough_top",
+    "bottom": "aliveworkplace:block/feed_trough_side",
+    "side": "aliveworkplace:block/feed_trough_side",
+    "front": "aliveworkplace:block/feed_trough_front"
+  }
+}

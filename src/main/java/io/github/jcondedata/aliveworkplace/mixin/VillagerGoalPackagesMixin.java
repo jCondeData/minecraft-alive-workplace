@@ -27,6 +27,10 @@ abstract class VillagerGoalPackagesMixin {
 			cir.setReturnValue(io.github.jcondedata.aliveworkplace.wood.LumberjackPackages.work(speed));
 		} else if (profession == ModVillagers.BALL_SMITH) {
 			cir.setReturnValue(io.github.jcondedata.aliveworkplace.smith.BallSmithPackages.work(speed));
+		} else if (profession == ModVillagers.RANCHER) {
+			cir.setReturnValue(io.github.jcondedata.aliveworkplace.ranch.RancherPackages.work(speed));
+		} else if (profession == ModVillagers.FLORIST) {
+			cir.setReturnValue(io.github.jcondedata.aliveworkplace.flower.FloristPackages.work(speed));
 		} else if (profession == ModVillagers.BEEKEEPER) {
 			cir.setReturnValue(io.github.jcondedata.aliveworkplace.bee.BeekeeperPackages.work(speed));
 		} else if (profession == ModVillagers.ORCHARD_KEEPER) {

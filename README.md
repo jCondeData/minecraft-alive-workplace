@@ -96,6 +96,8 @@ where they take tools and supplies from and where their work goes.
 | Orchard Keeper | Fruit Basket | berries and seeds to plant, a hoe | nothing — or a Field Marker for an orchard |
 | Farmer | Composter (vanilla) | seeds, a hoe, bone meal | a Field Marker (blank: their own farm) |
 | Beekeeper | Apiary | glass bottles or shears, flowers | nothing (beehives within 16 blocks) |
+| Florist | Flower Stand | bone meal (flowers to pot) | nothing (grass round the stand) |
+| Rancher | Feed Trough | golden carrots, hay, saddles, horse armor (berries) | nothing (horses within 16 blocks) |
 | Fisherman | Barrel (vanilla) | spare rods (coal for a smoker) | hand them a fishing rod |
 | Porter | Storehouse | empty chests: the village's store | nothing |
 | Carpenter | Carpenter's Bench | — (uses the builders' wood) | nothing |
@@ -252,6 +254,24 @@ when it's harvested (they don't go for villagers). With **flowers** in the chest
 fewer than four near it, and feed pairs of bees flowers to breed until there are three bees a hive. The honey goes in
 the chests (a porter carries it on). Pastured Bug and Grass Pokémon (Combee!) make them quicker. They trade honey,
 honeycomb, candles, beehives and honey blocks.
+
+## Florists
+Craft a **Flower Stand** (three flowers over planks with a flower pot in the middle) and a villager takes it and becomes
+a **Florist**. The grass within 5 blocks of the stand is their garden: with **bone meal** in the chests (a farmer's
+composter makes it) they bring up the biome's flowers there and pick them — weeding out the grass that comes up with
+them — and bone meal on a tall flower (a sunflower, lilac, rose bush or peony) gives another of it. The flowers go in
+the chests (while there are fewer than 64), where the dyer and the builders of the village find them. **Empty flower
+pots** within 24 blocks of the stand get a flower each. Pastured Grass and Fairy Pokémon make them quicker.
+
+## Ranchers
+Craft a **Feed Trough** (planks round a hay bale) and a villager takes it and becomes a **Rancher**. Wild **horses,
+donkeys and llamas** within 16 blocks are broken in — a few tries each, the horse rearing until it gives in — and the
+tamed ones get the **saddles**, **horse armor** and **carpets** (for llamas) you leave in the chests by the trough. With
+**golden carrots** or golden apples in the chests they breed the horses and donkeys, with hay bales the llamas and with
+cactus the camels, up to 8 of a kind. With Cobblemon the Pokémon in **Pasture Blocks** near the trough are groomed once
+a day: their friendship goes up by 4, and by 6 more when there's a berry in the chests for a treat (never the berries
+that lower EVs) — a pasture by the ranch is the place for an Eevee or a Golbat that evolves by friendship. Pastured
+Normal and Ground Pokémon calm the wild horses quicker.
 
 ## Fishermen
 ![A fisherman villager with a bobber out on the pond](docs/media/fisherman.png)

@@ -19,6 +19,7 @@ public final class ModTrades {
 		pokemonTraderTrades();
 		orchardKeeperTrades();
 		beekeeperTrades();
+		rancherTrades();
 		ballSmithTrades();
 		porterTrades();
 		carpenterTrades();
@@ -222,6 +223,30 @@ public final class ModTrades {
 	}
 
 	/** Orchard Keepers buy and sell fruit; with Cobblemon, apricorns and berries too. */
+	/** Ranchers buy hay and apples for the herd, and sell what riders need. */
+	private static void rancherTrades() {
+		TradeOfferHelper.registerVillagerOffers(ModVillagers.RANCHER, 1, offers -> {
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.WHEAT, 20), new ItemStack(Items.EMERALD), 16, 2, 0.05f));
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 2), new ItemStack(Items.LEAD), 12, 1, 0.05f));
+		});
+		TradeOfferHelper.registerVillagerOffers(ModVillagers.RANCHER, 2, offers -> {
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.APPLE, 10), new ItemStack(Items.EMERALD), 16, 10, 0.05f));
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 6), new ItemStack(Items.SADDLE), 6, 5, 0.05f));
+		});
+		TradeOfferHelper.registerVillagerOffers(ModVillagers.RANCHER, 3, offers -> {
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.HAY_BLOCK, 4), new ItemStack(Items.EMERALD), 16, 15, 0.05f));
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 4), new ItemStack(Items.LEATHER_HORSE_ARMOR), 6, 15, 0.05f));
+		});
+		TradeOfferHelper.registerVillagerOffers(ModVillagers.RANCHER, 4, offers -> {
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 3), new ItemStack(Items.GOLDEN_CARROT, 3), 12, 20, 0.05f));
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 8), new ItemStack(Items.IRON_HORSE_ARMOR), 4, 20, 0.05f));
+		});
+		TradeOfferHelper.registerVillagerOffers(ModVillagers.RANCHER, 5, offers -> {
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 12), new ItemStack(Items.GOLDEN_HORSE_ARMOR), 3, 30, 0.05f));
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 16), new ItemStack(Items.NAME_TAG), 3, 30, 0.05f));
+		});
+	}
+
 	/** Beekeepers buy flowers and bottles, and sell what the hives make. */
 	private static void beekeeperTrades() {
 		TradeOfferHelper.registerVillagerOffers(ModVillagers.BEEKEEPER, 1, offers -> {

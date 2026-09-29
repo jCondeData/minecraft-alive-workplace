@@ -104,6 +104,33 @@ public final class CobblemonPartners {
 		return parsed.matches(pokemon.getPokemon());
 	}
 
+	/** A Pokémon's friendship (-1 for anything that isn't a Pokémon). */
+	public static int friendship(net.minecraft.world.entity.Entity entity) {
+		return entity instanceof PokemonEntity pokemon ? pokemon.getPokemon().getFriendship() : -1;
+	}
+
+	/** Whether a Pokémon's friendship can still go up. */
+	public static boolean canBefriend(net.minecraft.world.entity.Entity entity) {
+		if (!(entity instanceof PokemonEntity pokemon)) {
+			return false;
+		}
+		Pokemon p = pokemon.getPokemon();
+		return p.getFriendship() < com.cobblemon.mod.common.Cobblemon.INSTANCE.getConfig().getMaxPokemonFriendship();
+	}
+
+	/** Raises a Pokémon's friendship by {@code amount} (no higher than the most there is), with hearts; true if it went up. */
+	public static boolean befriend(ServerLevel level, net.minecraft.world.entity.Entity entity, int amount) {
+		if (!canBefriend(entity)) {
+			return false;
+		}
+		PokemonEntity pokemon = (PokemonEntity) entity;
+		int before = pokemon.getPokemon().getFriendship();
+		pokemon.getPokemon().incrementFriendship(amount, true);
+		level.sendParticles(net.minecraft.core.particles.ParticleTypes.HEART, entity.getX(), entity.getY() + entity.getBbHeight() + 0.3, entity.getZ(),
+			3, 0.3, 0.2, 0.3, 0.0);
+		return pokemon.getPokemon().getFriendship() > before;
+	}
+
 	/** A Pokémon kept in a Pasture Block. */
 	public static boolean isPastured(net.minecraft.world.entity.Entity entity) {
 		return entity instanceof PokemonEntity pokemon && pokemon.getTethering() != null;

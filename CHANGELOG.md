@@ -2,9 +2,26 @@
 
 ## Unreleased
 
+## 0.96.0 — 2026-09-29
+
 ### Added
 - **Training Dummy** (hay bale, sticks and wool): guards spar with one near their Guard Post between fights and gain
   experience from it, up to Expert. Players can give it a whack too.
+
+## 0.95.0 — 2026-09-29
+
+### Added
+- **Ranchers** (new job, Feed Trough workstation): they break in the wild horses, donkeys and llamas round the trough,
+  put the saddles, horse armor and carpets from the chests on the tamed ones, and breed them (golden carrots for
+  horses, hay for llamas, cactus for camels). With Cobblemon they groom the pastured Pokémon nearby once a day, raising
+  their friendship — more with a berry from the chests as a treat.
+
+## 0.94.0 — 2026-09-29
+
+### Added
+- **Florists** (new job, Flower Stand workstation): they grow the biome's flowers with bone meal on the grass round
+  their stand (and more tall flowers from tall flowers), pick them into the chests for the dyer and the builders, and
+  fill the empty flower pots within 24 blocks.
 
 ## 0.93.0 — 2026-09-29
 

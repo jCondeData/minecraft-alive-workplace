@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 0.130.0 — 2026-09-29
+
 ### Added
 - **Seven more research topics** for the scholars: Logistics (porters carry more), Craftsmanship (crafters faster),
   Medicine (less illness), Fortification (guards turn aside blows), Commerce (more market traders, cheaper mercenaries),

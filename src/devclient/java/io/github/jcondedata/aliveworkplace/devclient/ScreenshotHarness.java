@@ -102,6 +102,10 @@ public class ScreenshotHarness implements ClientModInitializer {
 			missingScene(mc, mc.getSingleplayerServer());
 			return;
 		}
+		if ("battle".equals(System.getProperty("aliveworkplace.scene"))) {
+			battleScene(mc, mc.getSingleplayerServer());
+			return;
+		}
 		if ("smith".equals(System.getProperty("aliveworkplace.scene"))) {
 			smithScene(mc, mc.getSingleplayerServer());
 			return;
@@ -1180,6 +1184,120 @@ public class ScreenshotHarness implements ClientModInitializer {
 	}
 
 	// --- Trader: the Pokémon Trader's offers (needs Cobblemon too) ------------------------------------
+
+	private Villager battleTrainer;
+	private final AtomicBoolean megaSeen = new AtomicBoolean(false);
+	private final AtomicBoolean battleOver = new AtomicBoolean(false);
+	private int battleShots;
+
+	/**
+	 * SCENE=battle (Cobblemon + Mega Showdown): the player challenges a Master trainer whose lead holds its Mega Stone.
+	 * The trainer's Pokémon come out beside them and Mega Evolve; the player's side always uses its first move.
+	 */
+	private void battleScene(Minecraft mc, MinecraftServer server) {
+		tick++;
+		if (tick == 1) {
+			mc.options.renderDistance().set(6);
+			mc.options.cloudStatus().set(CloudStatus.OFF);
+		}
+		if (tick == 40) {
+			server.execute(() -> {
+				ServerLevel level = server.overworld();
+				ServerPlayer player = server.getPlayerList().getPlayers().get(0);
+				level.getGameRules().getRule(GameRules.RULE_DAYLIGHT).set(false, server);
+				level.getGameRules().getRule(GameRules.RULE_DOMOBSPAWNING).set(false, server);
+				level.setDayTime(2500);
+				com.cobblemon.mod.common.api.events.CobblemonEvents.MEGA_EVOLUTION.subscribe(com.cobblemon.mod.common.api.Priority.NORMAL, event -> {
+					megaSeen.set(true);
+					System.out.println("[battle scene] MEGA EVOLUTION: " + event.getPokemon().getEffectedPokemon().getSpecies().getName());
+					return kotlin.Unit.INSTANCE;
+				});
+				// A trainer whose Master team leads with the Pokémon holding the Mega Stone.
+				java.util.UUID id = null;
+				for (int i = 0; i < 500 && id == null; i++) {
+					java.util.UUID u = new java.util.UUID(0xba771eL, i);
+					var team = io.github.jcondedata.aliveworkplace.compat.cobblemon.CobblemonTrainers.team(u, 5);
+					if (!team.isEmpty() && io.github.jcondedata.aliveworkplace.compat.cobblemon.CobblemonMegas.holdsItsStone(team.get(0))) {
+						id = u;
+					}
+				}
+				System.out.println("[battle scene] trainer " + id);
+				BlockPos post = new BlockPos(0, -60, 6);
+				level.setBlockAndUpdate(post, ModBlocks.TRAINING_POST.defaultBlockState());
+				Villager trainer = new Villager(EntityType.VILLAGER, level);
+				trainer.setUUID(id);
+				trainer.moveTo(0.5, -60, 5.5, 180, 0);
+				level.addFreshEntity(trainer);
+				io.github.jcondedata.aliveworkplace.work.Jobs.employ(level, trainer, post,
+					io.github.jcondedata.aliveworkplace.registry.ModVillagers.TRAINING_POST_POI, io.github.jcondedata.aliveworkplace.registry.ModVillagers.TRAINER);
+				trainer.setVillagerData(trainer.getVillagerData().setLevel(5));
+				battleTrainer = trainer;
+				var party = com.cobblemon.mod.common.Cobblemon.INSTANCE.getStorage().getParty(player);
+				for (String p : List.of("snorlax level=100", "blissey level=100", "skarmory level=100", "tyranitar level=100", "dragonite level=100", "garchomp level=100")) {
+					party.add(com.cobblemon.mod.common.api.pokemon.PokemonProperties.Companion.parse(p, " ", "=").create());
+				}
+				player.setGameMode(GameType.SURVIVAL);
+				player.teleportTo(level, 0.5, -60, -6.5, 0, 10);
+			});
+		}
+		if (tick == 80) {
+			server.execute(() -> io.github.jcondedata.aliveworkplace.trainer.Trainers.challenge(server.getPlayerList().getPlayers().get(0), battleTrainer));
+		}
+		if (tick > 80 && tick % 4 == 0) {
+			server.execute(() -> {
+				ServerPlayer player = server.getPlayerList().getPlayers().get(0);
+				var battle = com.cobblemon.mod.common.battles.BattleRegistry.getBattleByParticipatingPlayer(player);
+				if (battle == null) {
+					battleOver.set(tick > 200);
+					return;
+				}
+				var us = battle.getActor(player);
+				if (tick % 100 == 0) {
+					StringBuilder state = new StringBuilder("[battle scene] tick " + tick + " turn " + battle.getTurn());
+					battle.getActors().forEach(a -> state.append(" | ").append(a.getName().getString()).append(" request=").append(a.getRequest() != null)
+						.append(" mustChoose=").append(a.getMustChoose()).append(" responses=").append(a.getResponses().size()));
+					System.out.println(state);
+				}
+				if (us == null || us.getRequest() == null || !us.getMustChoose() || !us.getResponses().isEmpty()) {
+					return;
+				}
+				var request = us.getRequest();
+				List<com.cobblemon.mod.common.battles.ShowdownActionResponse> choice = new ArrayList<>();
+				if (request.getForceSwitch() != null && request.getForceSwitch().contains(true)) {
+					// Send in the next Pokémon that can still fight.
+					for (var pokemon : us.getPokemonList()) {
+						if (pokemon.getHealth() > 0 && us.getActivePokemon().stream().noneMatch(a -> a.getBattlePokemon() == pokemon)) {
+							choice.add(new com.cobblemon.mod.common.battles.SwitchActionResponse(pokemon.getUuid()));
+							break;
+						}
+					}
+				} else if (request.getActive() != null && !request.getActive().isEmpty()) {
+					var moves = request.getActive().get(0).getMoves();
+					var usable = moves.stream().filter(m -> m.canBeUsed()).findFirst().orElse(moves.get(0));
+					var targets = usable.getTargets(us.getActivePokemon().get(0));
+					String target = targets == null || targets.isEmpty() ? null : targets.stream().map(t -> t.getPNX())
+						.filter(pnx -> pnx.startsWith("p2")).findFirst().orElse(targets.get(0).getPNX());
+					choice.add(new com.cobblemon.mod.common.battles.MoveActionResponse(usable.getId(), target, null));
+				}
+				if (!choice.isEmpty()) {
+					us.setActionResponses(choice);
+				}
+			});
+		}
+		if (tick > 100 && tick % 10 == 0 && battleShots < 250) {
+			// Keep an eye on the trainer's side.
+			server.execute(() -> {
+				ServerPlayer player = server.getPlayerList().getPlayers().get(0);
+				player.teleportTo(server.overworld(), 8.5, -58.2, 2.5, 72, 14);
+			});
+			shot(mc, String.format("battle_%03d", battleShots++));
+		}
+		if ((battleOver.get() || tick >= 8000) && tick % 20 == 0) {
+			System.out.println("[battle scene] over at tick " + tick + ", mega " + megaSeen.get());
+			shot(mc, "99_battle_end");
+			mc.stop();
+		}
+	}
 
 	private void traderScene(Minecraft mc, MinecraftServer server) {
 		tick++;

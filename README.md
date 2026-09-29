@@ -391,6 +391,13 @@ With **Radical Cobblemon Trainers** installed (it is in the Cobbleverse pack), a
 your level cap by more than their rank allows: a Novice stays 6 levels under your cap, a Journeyman meets it, a
 Master goes 5 over. So the village's Master is a real fight whether you're new or far along.
 
+![A Master trainer's Ampharos Mega Evolving beside them](docs/media/trainer-mega.gif)
+
+Trainers send their Pokémon out beside them, the way you do, and call them back when the battle is over. With
+**Mega Showdown** installed (it is in the Cobbleverse pack), one Pokémon on every Master's team holds its Mega Stone —
+their ace, and if none of their team can Mega Evolve, the last one is swapped for one that can — and the trainer Mega
+Evolves it as soon as it comes out.
+
 Each village can also have one **Trainer Leader**: craft a **Leader's Podium** (gold ingots either side of a Training
 Post, on polished andesite). The leader battles at Expert strength from the start, pays three times the prize, and
 takes one challenge a day from each player.

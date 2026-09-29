@@ -15,7 +15,6 @@ import com.cobblemon.mod.common.battles.BattleSide;
 import com.cobblemon.mod.common.battles.BattleStartResult;
 import com.cobblemon.mod.common.battles.SuccessfulBattleStart;
 import com.cobblemon.mod.common.battles.actor.PlayerBattleActor;
-import com.cobblemon.mod.common.battles.actor.TrainerBattleActor;
 import com.cobblemon.mod.common.battles.ai.RandomBattleAI;
 import com.cobblemon.mod.common.battles.ai.StrongBattleAI;
 import com.cobblemon.mod.common.battles.pokemon.BattlePokemon;
@@ -56,6 +55,7 @@ public final class CobblemonTrainers {
 	/** Called once at startup (when Cobblemon is installed): listen for battles ending. */
 	public static void init() {
 		net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents.SERVER_STARTED.register(s -> server = s);
+		VillagerTrainerActor.init();
 		CobblemonEvents.BATTLE_VICTORY.subscribe(Priority.NORMAL, event -> {
 			Challenge c = BATTLES.remove(event.getBattle().getBattleId());
 			if (c != null && server != null) {
@@ -98,10 +98,11 @@ public final class CobblemonTrainers {
 		}
 		List<BattlePokemon> theirs = new ArrayList<>();
 		for (Pokemon pokemon : team) {
+			pokemon.getPersistentData().putBoolean(VillagerTrainerActor.TRAINER_POKEMON, true);
 			theirs.add(BattlePokemon.Companion.safeCopyOf(pokemon));
 		}
-		BattleAI ai = tier <= 1 ? new RandomBattleAI() : new StrongBattleAI(tier);
-		TrainerBattleActor them = new TrainerBattleActor(Trainers.title(trainer).getString(), trainer.getUUID(), theirs, ai);
+		BattleAI ai = tier <= 1 ? new RandomBattleAI() : CobblemonMegas.megaEvolving(new StrongBattleAI(tier));
+		VillagerTrainerActor them = new VillagerTrainerActor(trainer, Trainers.title(trainer).getString(), theirs, ai);
 		PlayerBattleActor us = new PlayerBattleActor(player.getUUID(), mine);
 		BattleStartResult result = BattleRegistry.startBattle(BattleFormat.Companion.getGEN_9_SINGLES(), new BattleSide(us), new BattleSide(them), false);
 		if (result instanceof SuccessfulBattleStart started) {
@@ -148,6 +149,9 @@ public final class CobblemonTrainers {
 			// Its own random, so training doesn't change which species the trainer picks.
 			train(pokemon, t, new Random(trainer.getLeastSignificantBits() ^ (7919L * (i + 1)) ^ (131L * t)));
 			team.add(pokemon);
+		}
+		if (t == 4) {
+			CobblemonMegas.megaAce(team, t, new Random(trainer.getMostSignificantBits() ^ 0x4D454741L));
 		}
 		return team;
 	}

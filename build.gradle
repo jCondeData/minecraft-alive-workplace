@@ -137,6 +137,9 @@ ext.compatMods = [
 	"maven.modrinth:ohNO6lps:N5qzq0XV",         // Forge Config API Port 21.1.6 (for Sophisticated Core)
 	"maven.modrinth:XZNI4Cpy:GwLz79tK",         // Tom's Simple Storage 2.3.0
 	"maven.modrinth:cobbleworkers:qW3KB1li",    // Cobbleworkers 2.0.5 for Cobblemon 1.7 (pasture Pokémon jobs; not in the pack)
+	"maven.modrinth:SszvX85I:Y6di9Ram",         // Mega Showdown 1.8.4 (Mega Evolution for Master trainers)
+	"maven.modrinth:jtmvUHXj:Xlt4eWBe",         // Accessories 1.1.0-beta.53 (for Mega Showdown)
+	"maven.modrinth:ccKDOlHs:JB1fLQnc",         // owo-lib 0.12.15.4 (for Accessories)
 ]
 
 /** Unpacks the jars nested in the compat mods (META-INF/jars) into build/compat-nested. */
@@ -149,6 +152,10 @@ def compatNestedJars(List<String> mods) {
 	def unpack
 	unpack = { File mod ->
 		zipTree(mod).matching { include "META-INF/jars/*.jar" }.each { nested ->
+			// owo-sentinel only warns that owo-lib is missing, and refuses to load next to it.
+			if (nested.name.startsWith("owo-sentinel")) {
+				return
+			}
 			def target = new File(out, nested.name)
 			if (!target.exists()) {
 				out.mkdirs()
@@ -183,6 +190,12 @@ dependencies {
 		modDevclientRuntimeOnly "maven.modrinth:cobblemon:kF7CvxTo"
 		modDevclientRuntimeOnly "maven.modrinth:cobbledollars:cqsHXSXe"
 		modDevclientRuntimeOnly files(compatNestedJars(["maven.modrinth:cobblemon:kF7CvxTo", "maven.modrinth:cobbledollars:cqsHXSXe"]))
+	}
+	// SCENE=battle: Mega Showdown too (-Pmega=true), for a Master trainer's Mega Evolution.
+	if (project.findProperty("mega") == "true") {
+		def mega = ["maven.modrinth:SszvX85I:Y6di9Ram", "maven.modrinth:jtmvUHXj:Xlt4eWBe", "maven.modrinth:ccKDOlHs:JB1fLQnc", "maven.modrinth:lhGA9TYQ:Wto0RchG"]
+		mega.each { modDevclientRuntimeOnly it }
+		modDevclientRuntimeOnly files(compatNestedJars(mega))
 	}
 }
 

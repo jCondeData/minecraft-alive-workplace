@@ -5,12 +5,16 @@
 	"name": "Alive Workplace compatibility tests",
 	"environment": "*",
 	"entrypoints": {
+		"main": [
+			"io.github.jcondedata.aliveworkplace.compat.CompatTestSetup"
+		],
 		"fabric-gametest": [
 			"io.github.jcondedata.aliveworkplace.compat.CompatGameTests",
 			"io.github.jcondedata.aliveworkplace.compat.CobblemonCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.VillageCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.PackModsCompatTests",
-			"io.github.jcondedata.aliveworkplace.compat.PastureCompatTests"
+			"io.github.jcondedata.aliveworkplace.compat.PastureCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.MegaCompatTests"
 		]
 	},
 	"depends": {
@@ -19,6 +23,7 @@
 		"supplementaries": "*",
 		"rechiseled": "*",
 		"cobblemon": "*",
+		"mega_showdown": "*",
 		"repurposed_structures": "*",
 		"cobbledollars": "*",
 		"handcrafted": "*",

@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+## 0.79.0 — 2026-09-28
+
+### Added
+- **Trainers send their Pokémon out** beside them in battle (and call them back afterwards), like players do.
+- **Mega Evolution** (with Mega Showdown, which is in the Cobbleverse pack): every Master trainer's team has an ace
+  holding its Mega Stone, and the trainer Mega Evolves it in battle.
+
 ## 0.78.0 — 2026-09-28
 
 ### Added

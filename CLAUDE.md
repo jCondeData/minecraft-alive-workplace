@@ -23,11 +23,13 @@ The owner (Jesse) does not write code: sessions are expected to work autonomousl
 ## Commands
 - `./gradlew build` — compile + jar + gametests (CI runs exactly this)
 - `./gradlew runGameTest` — only the gametests (~10 s of game time, ~1 min total)
-- `./gradlew runCompatGameTest` — gametests in `src/compattest` with Chipped, Rechiseled, Supplementaries, Cobblemon, Repurposed Structures, CobbleDollars, and the pack's
+- `./gradlew runCompatGameTest` — gametests in `src/compattest` with Chipped, Rechiseled, Supplementaries, Cobblemon, Repurposed Structures, CobbleDollars, Mega Showdown (+ Accessories, owo-lib), and the pack's
   Handcrafted, Beautify, CobbleFurnies, Carved Wood, Moar Concrete, Sophisticated Storage, Tom's Storage, and Cobbleworkers (not in the pack) (+ libraries)
   installed from Modrinth maven (`compatMods` in `build.gradle`; bundled jars are unpacked into `build/compat-nested`).
   Part of `build`. Add a mod from the pack here when adding support for it. Nested jars are unpacked recursively
-  (Cobblemon → Fabric Language Kotlin → Kotlin libraries). The Kotlin Gradle plugin is applied only so Loom remaps
+  (Cobblemon → Fabric Language Kotlin → Kotlin libraries); owo-sentinel is skipped (it refuses to load next to owo-lib).
+  `CompatTestSetup` fires Architectury's server-starting event for the game test server (Architectury only fires it
+  for dedicated/integrated servers, and Mega Showdown sets up on it). The Kotlin Gradle plugin is applied only so Loom remaps
   Kotlin metadata in Cobblemon; without it Cobblemon crashes in dev with `ClassNotFoundException: net.minecraft.class_…`.
 - `./gradlew genSources` — decompiled Minecraft sources for reading vanilla code; they land in
   `.gradle/loom-cache/minecraftMaven/net/minecraft/minecraft-common-*/**/**-sources.jar` (unzip and grep)
@@ -37,7 +39,7 @@ The owner (Jesse) does not write code: sessions are expected to work autonomousl
   of builders at work; use it to check anything visual and to show the owner progress.
   `SCENE=table` shows the Blueprint Table screens, `SCENE=preview` the ghost preview and the status above a builder,
   `SCENE=gallery` every starter blueprint (front and back), `SCENE=village WORKSHOP_WEIGHT=200` one village of each type with workshops (`HOUSE_WEIGHT=60` for the other houses),
-  `SCENE=quarry` a miner digging out a block of stone, `SCENE=forest` a lumberjack felling and replanting four trees, `SCENE=orchard` an orchard keeper picking (adds Cobblemon for apricorns and berries), `SCENE=farm` a farmer working a field, `SCENE=fish` a fisherman with a bobber out, `SCENE=carpenter` a carpenter making a builder's woodwork, `SCENE=chef` a chef cooking, `SCENE=porter` a porter carrying a miner's goods to the storehouse (and the requests board), `SCENE=mail` the mailbox screen and a postman delivering, `SCENE=guard` a close-up of a guard in armor, then fighting three husks (`SCENE=guard_pokemon`: with a Machop and a Dratini from a pasture joining in), `SCENE=staff` every workstation with its villager (then `python3 tools/screenshots/make_gif.py`), `SCENE=missing` a placed blueprint's "still missing" tooltip, `SCENE=tutor` the Move Tutor's lesson screen, `SCENE=trader` a Pokémon Trader's offers `SCENE=shop` the CobbleDollars shop screen and `SCENE=smith` a Ball Smith and an Orchard Keeper at work (these and `guard_pokemon` add Cobblemon and CobbleDollars to the client: `-Pcobblemon=true`). `DEBUG=true` logs
+  `SCENE=quarry` a miner digging out a block of stone, `SCENE=forest` a lumberjack felling and replanting four trees, `SCENE=orchard` an orchard keeper picking (adds Cobblemon for apricorns and berries), `SCENE=farm` a farmer working a field, `SCENE=fish` a fisherman with a bobber out, `SCENE=carpenter` a carpenter making a builder's woodwork, `SCENE=chef` a chef cooking, `SCENE=porter` a porter carrying a miner's goods to the storehouse (and the requests board), `SCENE=mail` the mailbox screen and a postman delivering, `SCENE=guard` a close-up of a guard in armor, then fighting three husks (`SCENE=guard_pokemon`: with a Machop and a Dratini from a pasture joining in), `SCENE=staff` every workstation with its villager (then `python3 tools/screenshots/make_gif.py`), `SCENE=missing` a placed blueprint's "still missing" tooltip, `SCENE=tutor` the Move Tutor's lesson screen, `SCENE=trader` a Pokémon Trader's offers `SCENE=shop` the CobbleDollars shop screen, `SCENE=battle` a player battling a Master trainer whose Ampharos Mega Evolves (adds Mega Showdown too: `-Pmega=true`; the scene picks the player's moves, so it is also the end-to-end check that trainer battles work — the game test server can't play a battle out) and `SCENE=smith` a Ball Smith and an Orchard Keeper at work (these and `guard_pokemon` add Cobblemon and CobbleDollars to the client: `-Pcobblemon=true`). `DEBUG=true` logs
   builder/miner decisions. Long scenes take >10 min: start run.sh in the background and poll.
   Never `pkill -f`/`pgrep -f` a pattern that also appears in your own command line (it kills your shell).
 - `tools/packtest/run.sh` — boots a real Cobbleverse server (every pack mod, production Fabric) with the newest
@@ -76,7 +78,9 @@ The owner (Jesse) does not write code: sessions are expected to work autonomousl
 - `trader/` — Pokémon Traders: `PokemonTraders` (one trade a day, XP); offers and the swap live in `compat/cobblemon/CobblemonTraders`
 - `bard/` — bards: `BardWork` (discs from the chests, or a made-up tune)
 - `nurse/` — nurses: `Nurses` (treating players), `NurseWork` (healing villagers nearby)
-- `compat/cobblemon/` — the only code that touches Cobblemon classes; call it only when `isModLoaded("cobblemon")`
+- `compat/cobblemon/` — the only code that touches Cobblemon classes; call it only when `isModLoaded("cobblemon")`;
+  trainers battle through `VillagerTrainerActor` (entity-backed: Pokémon sent out beside the villager), `CobblemonMegas`
+  (Mega Stones and the Mega-Evolving AI, with Mega Showdown by item id)
 - `compat/cobbledollars/` — the only code touching CobbleDollars (balances); use it through `work/Money` (CobbleDollars or emeralds)
 - `compat/rct/` — Radical Cobblemon Trainers' level cap, by reflection (no dependency at all)
 - `mail/` — mailboxes and postmen: `MailboxBlock`/`MailboxBlockEntity`/`MailboxMenu` (screen in client `MailboxScreen`),

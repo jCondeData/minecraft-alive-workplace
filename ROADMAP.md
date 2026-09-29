@@ -228,7 +228,12 @@ workstation, like the rest of the mod.
 - [x] Master movesets (`CobblemonTrainers.pickMoves`): four attacks on the trained side (physical for Adamant, special
   for Modest) from level-up/TM/tutor/egg moves, power × accuracy, STAB ×1.5, repeated types halved; charge/recharge/
   self-KO/situational moves left out
-- [ ] Master extras: Mega Evolution if Mega Showdown allows
+- [x] Master extras: Mega Evolution with Mega Showdown (`compat/cobblemon/CobblemonMegas`, by item id only): a Master's
+  team always has one Pokémon holding its own Mega Stone (the last swapped for a Mega-capable one if needed), and the
+  battle AI adds the `mega` gimmick when Showdown offers it. Trainers now battle through `VillagerTrainerActor` (backed
+  by the villager: their Pokémon are sent out beside them and recalled after; strays are removed on load), which Mega
+  Showdown needs to show the Mega Evolution. Checked in a real client (`SCENE=battle`); the game test server can't
+  play a battle out
 - [x] Trainers **level up when you battle them** (+5 XP a battle, +3 more when they win; vanilla level thresholds);
   levels are the villager's, so shared server-wide
 - [x] Rewards: **CobbleDollars** (100/250/500/1000/2500 by tier, via `/cobbledollars give`), once per in-game day per

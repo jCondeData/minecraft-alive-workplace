@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "FFF",
+    "PTP"
+  ],
+  "key": {
+    "F": {
+      "tag": "minecraft:small_flowers"
+    },
+    "P": {
+      "tag": "minecraft:planks"
+    },
+    "T": {
+      "item": "minecraft:flower_pot"
+    }
+  },
+  "result": {
+    "id": "aliveworkplace:flower_stand",
+    "count": 1
+  }
+}

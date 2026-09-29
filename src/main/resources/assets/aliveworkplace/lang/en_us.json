@@ -704,5 +704,16 @@
   "message.aliveworkplace.beekeeper.state.breed": "feeding two bees flowers",
   "message.aliveworkplace.beekeeper.state.deposit": "putting the honey away",
   "message.aliveworkplace.beekeeper.state.no_chest": "needs a chest by the apiary",
-  "message.aliveworkplace.beekeeper.state.no_hives": "no beehives within %s blocks"
+  "message.aliveworkplace.beekeeper.state.no_hives": "no beehives within %s blocks",
+  "block.aliveworkplace.flower_stand": "Flower Stand",
+  "entity.minecraft.villager.florist": "Florist",
+  "entity.minecraft.zombie_villager.florist": "Zombie Florist",
+  "message.aliveworkplace.florist.title": "Florist · %s flowers grown",
+  "message.aliveworkplace.florist.state.none": "tending the garden",
+  "message.aliveworkplace.florist.state.grow": "growing flowers",
+  "message.aliveworkplace.florist.state.pick": "picking flowers",
+  "message.aliveworkplace.florist.state.pot": "filling a flower pot",
+  "message.aliveworkplace.florist.state.deposit": "putting the flowers away",
+  "message.aliveworkplace.florist.state.no_chest": "needs a chest by the flower stand",
+  "message.aliveworkplace.florist.state.no_bone_meal": "needs bone meal to grow flowers"
 }

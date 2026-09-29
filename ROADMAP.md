@@ -425,8 +425,9 @@ loop: ore → ingots → the tools, weapons and armor the other workers wear out
   campfire under the hive, flowers planted for the bees; with Cobblemon, Combee/Vespiquen partners (`bee/BeekeeperWork`:
   hives found through the POI manager within 16 blocks of the Apiary instead of a marked area; bottles, then shears
   once 16 honey bottles are stored; bees bred up to 3 a hive; Bug/Grass partners)
-- [ ] **Florist** (new job): grows flowers with bone meal for the dyer and the builders, fills flower pots around the
-  village
+- [x] **Florist** (new job): grows flowers with bone meal for the dyer and the builders, fills flower pots around the
+  village (`flower/FloristWork`, Flower Stand block: bone meal on the garden's grass and on tall flowers, picking and
+  weeding within 5 blocks, empty pots within 24 blocks filled)
 - [ ] **Rancher** (new job, stable): tames and breeds horses and donkeys; with Cobblemon a Pokémon ranch — pastured
   Pokémon groomed (friendship), fed berries, their drops collected
 

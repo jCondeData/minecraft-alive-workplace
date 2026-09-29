@@ -96,6 +96,7 @@ where they take tools and supplies from and where their work goes.
 | Orchard Keeper | Fruit Basket | berries and seeds to plant, a hoe | nothing — or a Field Marker for an orchard |
 | Farmer | Composter (vanilla) | seeds, a hoe, bone meal | a Field Marker (blank: their own farm) |
 | Beekeeper | Apiary | glass bottles or shears, flowers | nothing (beehives within 16 blocks) |
+| Florist | Flower Stand | bone meal (flowers to pot) | nothing (grass round the stand) |
 | Fisherman | Barrel (vanilla) | spare rods (coal for a smoker) | hand them a fishing rod |
 | Porter | Storehouse | empty chests: the village's store | nothing |
 | Carpenter | Carpenter's Bench | — (uses the builders' wood) | nothing |
@@ -252,6 +253,14 @@ when it's harvested (they don't go for villagers). With **flowers** in the chest
 fewer than four near it, and feed pairs of bees flowers to breed until there are three bees a hive. The honey goes in
 the chests (a porter carries it on). Pastured Bug and Grass Pokémon (Combee!) make them quicker. They trade honey,
 honeycomb, candles, beehives and honey blocks.
+
+## Florists
+Craft a **Flower Stand** (three flowers over planks with a flower pot in the middle) and a villager takes it and becomes
+a **Florist**. The grass within 5 blocks of the stand is their garden: with **bone meal** in the chests (a farmer's
+composter makes it) they bring up the biome's flowers there and pick them — weeding out the grass that comes up with
+them — and bone meal on a tall flower (a sunflower, lilac, rose bush or peony) gives another of it. The flowers go in
+the chests (while there are fewer than 64), where the dyer and the builders of the village find them. **Empty flower
+pots** within 24 blocks of the stand get a flower each. Pastured Grass and Fairy Pokémon make them quicker.
 
 ## Fishermen
 ![A fisherman villager with a bobber out on the pond](docs/media/fisherman.png)

@@ -1418,6 +1418,71 @@ def beekeeper_overlay():
     save(img, "entity", "zombie_villager", "profession", "beekeeper.png")
 
 
+# --- Flower Stand: the florist's workstation, a wooden stand of potted flowers ------------------------------
+def flower_stand(face):
+    rnd = random.Random({"top": 321, "side": 322, "front": 323}[face])
+    img = Image.new("RGBA", (16, 16))
+    planks(img, rnd)
+    edge = rgb("#5a3d20")
+    if face == "top":
+        # Four pots of flowers seen from above: red, yellow, blue, pink blooms with green leaves
+        soil, pot = rgb("#4a3321"), rgb("#9c5a3c")
+        blooms = [rgb("#d83a3a"), rgb("#f2c93b"), rgb("#4a7fd6"), rgb("#e889b8")]
+        for i, (px, py) in enumerate(((2, 2), (9, 2), (2, 9), (9, 9))):
+            for y in range(py, py + 5):
+                for x in range(px, px + 5):
+                    ring = x in (px, px + 4) or y in (py, py + 4)
+                    img.putpixel((x, y), jitter(pot if ring else soil, rnd, 5))
+            for (lx, ly) in ((px + 1, py + 2), (px + 3, py + 2)):
+                img.putpixel((lx, ly), rgb("#3f8a3a"))
+            for (bx, by) in ((px + 2, py + 1), (px + 2, py + 2), (px + 2, py + 3), (px + 1, py + 1), (px + 3, py + 3)):
+                img.putpixel((bx, by), jitter(blooms[i], rnd, 10))
+        for i in range(16):
+            for p in ((i, 0), (i, 15), (0, i), (15, i)):
+                img.putpixel(p, jitter(edge, rnd, 4))
+    else:
+        for x in range(16):
+            img.putpixel((x, 0), jitter(edge, rnd, 4))
+            img.putpixel((x, 15), jitter(edge, rnd, 4))
+        # A painted green band with flowers along it (front: a little bouquet)
+        for y in range(4, 8):
+            for x in range(1, 15):
+                img.putpixel((x, y), jitter(rgb("#5f9a4e"), rnd, 5))
+        for i, x in enumerate(range(2, 15, 3)):
+            img.putpixel((x, 5), [rgb("#d83a3a"), rgb("#f2c93b"), rgb("#ffffff"), rgb("#4a7fd6"), rgb("#e889b8")][i % 5])
+        if face == "front":
+            for y in range(9, 14):
+                img.putpixel((8, y), rgb("#3f8a3a"))
+            for (bx, by, c) in ((7, 9, "#d83a3a"), (9, 9, "#f2c93b"), (8, 8, "#e889b8"), (6, 10, "#4a7fd6"), (10, 10, "#ffffff")):
+                img.putpixel((bx, by), rgb(c))
+            for x in range(6, 11):
+                img.putpixel((x, 13), rgb("#c7a8e0"))  # a ribbon
+    save(img, "block", "flower_stand_" + face + ".png")
+
+
+def florist_overlay():
+    img = Image.new("RGBA", (64, 64), T)
+    rnd = random.Random(331)
+    # A crown of flowers round the head
+    colours = [rgb("#d83a3a"), rgb("#f2c93b"), rgb("#ffffff"), rgb("#4a7fd6"), rgb("#e889b8")]
+    for x in range(32, 64):
+        img.putpixel((x, 9), jitter(rgb("#3f8a3a"), rnd, 8))
+        if x % 2 == 0:
+            img.putpixel((x, 8), colours[(x // 2) % len(colours)])
+    # A leaf-green apron with a pocket of cut flowers
+    apron = rgb("#6aa05a")
+    for y in range(44, 58):
+        for x in range(4, 24):
+            img.putpixel((x, y), jitter(apron, rnd, 4))
+    for y in range(49, 54):
+        for x in range(8, 14):
+            img.putpixel((x, y), jitter(rgb("#558a47"), rnd, 3))
+    for (fx, fy, c) in ((9, 48, 0), (11, 47, 1), (12, 48, 4)):
+        img.putpixel((fx, fy), colours[c])
+    save(img, "entity", "villager", "profession", "florist.png")
+    save(img, "entity", "zombie_villager", "profession", "florist.png")
+
+
 # --- Ball Workbench: a smith's bench with Poké Ball halves on it ---------------------------------------
 def ball_workbench(face):
     rnd = random.Random({"top": 301, "side": 302, "front": 303}[face])
@@ -1845,3 +1910,6 @@ if __name__ == "__main__":
     for face in ("top", "side", "front"):
         apiary(face)
     beekeeper_overlay()
+    for face in ("top", "side", "front"):
+        flower_stand(face)
+    florist_overlay()

@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "aliveworkplace:block/flower_stand"
+    },
+    "facing=east": {
+      "model": "aliveworkplace:block/flower_stand",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "aliveworkplace:block/flower_stand",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "aliveworkplace:block/flower_stand",
+      "y": 270
+    }
+  }
+}

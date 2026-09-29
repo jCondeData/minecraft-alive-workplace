@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+## 0.94.0 — 2026-09-29
+
+### Added
+- **Florists** (new job, Flower Stand workstation): they grow the biome's flowers with bone meal on the grass round
+  their stand (and more tall flowers from tall flowers), pick them into the chests for the dyer and the builders, and
+  fill the empty flower pots within 24 blocks.
+
 ## 0.93.0 — 2026-09-29
 
 ### Added

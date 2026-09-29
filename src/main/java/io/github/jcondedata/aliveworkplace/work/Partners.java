@@ -84,6 +84,9 @@ public final class Partners {
 		if (profession == ModVillagers.PORTER) {
 			return Set.of("fighting", "normal"); // strong arms: more carried each trip
 		}
+		if (profession == ModVillagers.FLORIST) {
+			return Set.of("grass", "fairy"); // Bellossom, Comfey, Flabébé...
+		}
 		if (profession == ModVillagers.BEEKEEPER) {
 			return Set.of("bug", "grass"); // Combee and friends: quicker harvests
 		}

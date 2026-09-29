@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+## 0.93.0 — 2026-09-29
+
+### Added
+- **Beekeepers** (new job, Apiary workstation): they harvest the beehives within 16 blocks — honey bottles with glass
+  bottles from the chests, honeycomb with shears — keep the hives in flowers and breed bees up to three a hive. A
+  campfire under a hive keeps the bees calm.
+
 ## 0.92.0 — 2026-09-29
 
 ### Added

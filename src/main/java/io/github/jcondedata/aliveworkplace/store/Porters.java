@@ -110,6 +110,10 @@ public final class Porters {
 		if (job == VillagerProfession.SHEPHERD) {
 			return stack.is(Items.WHEAT) ? KEEP_BREEDING_FOOD : 0; // wheat to breed with; the wool goes
 		}
+		if (job == ModVillagers.BEEKEEPER) {
+			// Bottles to fill and flowers for the bees stay; the honey and honeycomb go.
+			return stack.is(Items.GLASS_BOTTLE) ? 16 : stack.is(net.minecraft.tags.ItemTags.SMALL_FLOWERS) ? KEEP_BREEDING_FOOD : 0;
+		}
 		if (job == VillagerProfession.CARTOGRAPHER) {
 			// An explorer keeps rations and maps; what they bring back goes to the storehouse.
 			return io.github.jcondedata.aliveworkplace.explore.Explorers.isFood(stack) ? KEEP_BREEDING_FOOD

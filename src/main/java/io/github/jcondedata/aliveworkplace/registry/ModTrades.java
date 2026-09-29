@@ -18,6 +18,7 @@ public final class ModTrades {
 		tutorTrades();
 		pokemonTraderTrades();
 		orchardKeeperTrades();
+		beekeeperTrades();
 		ballSmithTrades();
 		porterTrades();
 		carpenterTrades();
@@ -221,6 +222,28 @@ public final class ModTrades {
 	}
 
 	/** Orchard Keepers buy and sell fruit; with Cobblemon, apricorns and berries too. */
+	/** Beekeepers buy flowers and bottles, and sell what the hives make. */
+	private static void beekeeperTrades() {
+		TradeOfferHelper.registerVillagerOffers(ModVillagers.BEEKEEPER, 1, offers -> {
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.DANDELION, 12), new ItemStack(Items.EMERALD), 16, 2, 0.05f));
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 1), new ItemStack(Items.HONEY_BOTTLE, 2), 12, 1, 0.05f));
+		});
+		TradeOfferHelper.registerVillagerOffers(ModVillagers.BEEKEEPER, 2, offers -> {
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.GLASS_BOTTLE, 12), new ItemStack(Items.EMERALD), 16, 10, 0.05f));
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 1), new ItemStack(Items.HONEYCOMB, 4), 12, 5, 0.05f));
+		});
+		TradeOfferHelper.registerVillagerOffers(ModVillagers.BEEKEEPER, 3, offers -> {
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.POPPY, 12), new ItemStack(Items.EMERALD), 16, 15, 0.05f));
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 2), new ItemStack(Items.CANDLE, 4), 12, 15, 0.05f));
+		});
+		TradeOfferHelper.registerVillagerOffers(ModVillagers.BEEKEEPER, 4, offers -> {
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 3), new ItemStack(Items.BEEHIVE), 6, 20, 0.05f));
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 2), new ItemStack(Items.HONEY_BLOCK), 8, 20, 0.05f));
+		});
+		TradeOfferHelper.registerVillagerOffers(ModVillagers.BEEKEEPER, 5, offers ->
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 4), new ItemStack(Items.HONEYCOMB_BLOCK, 2), 8, 30, 0.05f)));
+	}
+
 	private static void orchardKeeperTrades() {
 		TradeOfferHelper.registerVillagerOffers(ModVillagers.ORCHARD_KEEPER, 1, offers -> {
 			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.SWEET_BERRIES, 22), new ItemStack(Items.EMERALD), 16, 2, 0.05f));

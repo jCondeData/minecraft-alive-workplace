@@ -1336,6 +1336,88 @@ def orchard_keeper_overlay():
     save(img, "entity", "zombie_villager", "profession", "orchard_keeper.png")
 
 
+# --- Apiary: the beekeeper's workstation, a little hive box on legs with a honeycomb top ---------------------
+def apiary(face):
+    rnd = random.Random({"top": 301, "side": 302, "front": 303}[face])
+    img = Image.new("RGBA", (16, 16))
+    planks(img, rnd)
+    frame = rgb("#6b4a2b")
+    if face == "top":
+        # A frame of honeycomb: amber hexagons with darker walls, one cell capped with wax
+        wall, honey, light, wax = rgb("#9a6412"), rgb("#e0a526"), rgb("#f4c54a"), rgb("#f6e3a1")
+        for y in range(1, 15):
+            for x in range(1, 15):
+                img.putpixel((x, y), jitter(honey, rnd, 6))
+        for y in range(1, 15):
+            for x in range(1, 15):
+                row = (y - 1) // 3
+                off = 2 if row % 2 else 0
+                if (y - 1) % 3 == 0 or (x + off) % 4 == 0:
+                    img.putpixel((x, y), jitter(wall, rnd, 5))
+        for (hx, hy) in ((2, 2), (6, 5), (10, 8), (3, 11)):
+            img.putpixel((hx, hy), light)
+        for (wx, wy) in ((9, 2), (10, 2), (9, 3), (10, 3)):
+            img.putpixel((wx, wy), wax)
+        for i in range(16):
+            for p in ((i, 0), (i, 15), (0, i), (15, i)):
+                img.putpixel(p, jitter(frame, rnd, 4))
+    else:
+        # Painted boards: pale yellow with a dark band, and (front) an entrance slit with a bee by it
+        paint, band = rgb("#e9d27a"), rgb("#3b2a14")
+        for y in range(2, 14):
+            for x in range(1, 15):
+                img.putpixel((x, y), jitter(paint, rnd, 5) if y % 4 else jitter(rgb("#d8bf63"), rnd, 4))
+        for x in range(16):
+            img.putpixel((x, 0), jitter(frame, rnd, 4))
+            img.putpixel((x, 1), jitter(frame, rnd, 4))
+            img.putpixel((x, 14), jitter(frame, rnd, 4))
+            img.putpixel((x, 15), jitter(frame, rnd, 4))
+        for y in range(2, 14):
+            img.putpixel((0, y), jitter(frame, rnd, 4))
+            img.putpixel((15, y), jitter(frame, rnd, 4))
+        if face == "front":
+            for x in range(4, 12):
+                img.putpixel((x, 11), band)
+                img.putpixel((x, 12), rgb("#1f160a"))
+            # A bee: yellow and black stripes, white wings
+            bee = [((9, 6), "#f2c12e"), ((10, 6), "#1c1c1c"), ((11, 6), "#f2c12e"), ((9, 7), "#f2c12e"),
+                   ((10, 7), "#1c1c1c"), ((11, 7), "#f2c12e"), ((10, 5), "#e8f4ff"), ((11, 5), "#e8f4ff"), ((12, 6), "#1c1c1c")]
+            for (bx, by), c in bee:
+                img.putpixel((bx, by), rgb(c))
+            for (dx, dy) in ((4, 5), (5, 6), (6, 5)):
+                img.putpixel((dx, dy), rgb("#c9a33a"))  # its flight path
+    save(img, "block", "apiary_" + face + ".png")
+
+
+def beekeeper_overlay():
+    img = Image.new("RGBA", (64, 64), T)
+    rnd = random.Random(311)
+    cream, cream_dark, mesh = rgb("#efe6cf"), rgb("#d6ccb0"), rgb("#2b2b2b", 120)
+    # A round hat with a veil of mesh hanging over the face
+    for y in range(0, 8):
+        for x in range(40, 48):
+            img.putpixel((x, y), jitter(cream if (x + y) % 3 else cream_dark, rnd, 4))
+    for y in range(8, 10):
+        for x in range(32, 64):
+            img.putpixel((x, y), jitter(cream_dark, rnd, 4))
+    for y in range(10, 18):
+        for x in range(32, 64):
+            if (x + y) % 2 == 0:
+                img.putpixel((x, y), mesh)
+    # A pale suit with a honey-coloured patch on the chest
+    suit, patch = rgb("#f1ecde"), rgb("#e0a526")
+    for y in range(38, 60):
+        for x in range(0, 28):
+            img.putpixel((x, y), jitter(suit if (x * 3 + y) % 7 else cream_dark, rnd, 3))
+    for y in range(46, 50):
+        for x in range(8, 12):
+            img.putpixel((x, y), jitter(patch, rnd, 6))
+    img.putpixel((9, 47), rgb("#1c1c1c"))
+    img.putpixel((10, 48), rgb("#1c1c1c"))
+    save(img, "entity", "villager", "profession", "beekeeper.png")
+    save(img, "entity", "zombie_villager", "profession", "beekeeper.png")
+
+
 # --- Ball Workbench: a smith's bench with Poké Ball halves on it ---------------------------------------
 def ball_workbench(face):
     rnd = random.Random({"top": 301, "side": 302, "front": 303}[face])
@@ -1760,3 +1842,6 @@ if __name__ == "__main__":
     for face in ("top", "side", "front"):
         fossil_lab(face)
     fossil_scientist_overlay()
+    for face in ("top", "side", "front"):
+        apiary(face)
+    beekeeper_overlay()

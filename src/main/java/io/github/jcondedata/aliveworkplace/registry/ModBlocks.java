@@ -115,6 +115,11 @@ public final class ModBlocks {
 		"fruit_basket", new BuildersBenchBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.BARREL))
 	);
 
+	/** Workstation for the Beekeeper: the beehives within 16 blocks are harvested, kept in flowers and filled with bees. */
+	public static final BuildersBenchBlock APIARY = register(
+		"apiary", new BuildersBenchBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.BARREL))
+	);
+
 	/** Workstation for the Ball Smith: Poké Balls from the apricorns and metals in the chests nearby (with Cobblemon). */
 	public static final BuildersBenchBlock BALL_WORKBENCH = register(
 		"ball_workbench", new BuildersBenchBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.SMITHING_TABLE))

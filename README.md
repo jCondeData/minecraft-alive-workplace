@@ -95,6 +95,7 @@ where they take tools and supplies from and where their work goes.
 | Lumberjack | Chopping Block | axes (saplings, bone meal) | nothing — or a Field Marker for a tree farm |
 | Orchard Keeper | Fruit Basket | berries and seeds to plant, a hoe | nothing — or a Field Marker for an orchard |
 | Farmer | Composter (vanilla) | seeds, a hoe, bone meal | a Field Marker (blank: their own farm) |
+| Beekeeper | Apiary | glass bottles or shears, flowers | nothing (beehives within 16 blocks) |
 | Fisherman | Barrel (vanilla) | spare rods (coal for a smoker) | hand them a fishing rod |
 | Porter | Storehouse | empty chests: the village's store | nothing |
 | Carpenter | Carpenter's Bench | — (uses the builders' wood) | nothing |
@@ -241,6 +242,16 @@ across the water channels between the rows too. The harvest goes into the chest,
 (wheat baked into bread) to share with the other villagers, so the village keeps growing. Stop one with the link in
 their status and they leave it alone; `/gamerule workplaceVillageFarms false` turns it off everywhere. A blank Field
 Marker does the same for any farmer straight away.
+
+## Beekeepers
+Craft an **Apiary** (three sticks over planks with a flower in the middle) and a villager takes it and becomes a
+**Beekeeper**. They look after the beehives and bee nests within 16 blocks: a full hive is harvested with a **glass
+bottle** from the chests by the Apiary (a honey bottle) or with **shears** (three honeycomb; they switch to honeycomb
+once the chests have 16 honey bottles). Put a lit campfire under a hive and the bees stay calm; otherwise they fly out
+when it's harvested (they don't go for villagers). With **flowers** in the chests they plant them round any hive with
+fewer than four near it, and feed pairs of bees flowers to breed until there are three bees a hive. The honey goes in
+the chests (a porter carries it on). Pastured Bug and Grass Pokémon (Combee!) make them quicker. They trade honey,
+honeycomb, candles, beehives and honey blocks.
 
 ## Fishermen
 ![A fisherman villager with a bobber out on the pond](docs/media/fisherman.png)

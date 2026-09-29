@@ -693,5 +693,16 @@
   "structure.minecraft.shipwreck": "Shipwreck",
   "structure.minecraft.shipwreck_beached": "Shipwreck",
   "structure.minecraft.ocean_ruin_cold": "Ocean Ruins",
-  "structure.minecraft.ocean_ruin_warm": "Ocean Ruins"
+  "structure.minecraft.ocean_ruin_warm": "Ocean Ruins",
+  "block.aliveworkplace.apiary": "Apiary",
+  "entity.minecraft.villager.beekeeper": "Beekeeper",
+  "entity.minecraft.zombie_villager.beekeeper": "Zombie Beekeeper",
+  "message.aliveworkplace.beekeeper.title": "Beekeeper · %s harvests",
+  "message.aliveworkplace.beekeeper.state.none": "watching the bees",
+  "message.aliveworkplace.beekeeper.state.harvest": "harvesting a hive",
+  "message.aliveworkplace.beekeeper.state.plant": "planting flowers for the bees",
+  "message.aliveworkplace.beekeeper.state.breed": "feeding two bees flowers",
+  "message.aliveworkplace.beekeeper.state.deposit": "putting the honey away",
+  "message.aliveworkplace.beekeeper.state.no_chest": "needs a chest by the apiary",
+  "message.aliveworkplace.beekeeper.state.no_hives": "no beehives within %s blocks"
 }

@@ -27,7 +27,12 @@ public final class Crafting {
 		/** The crafting table's (shaped and shapeless; special recipes like fireworks are skipped). */
 		CRAFTING,
 		/** The stonecutter's: one block in, one or more out. */
-		STONECUTTING
+		STONECUTTING,
+		/**
+		 * A cook's: the smoker's (cooked meat and fish, baked potatoes), the crafting table's (bread, pies, stews...) and,
+		 * with Cobblemon, its Campfire Pot's (Poké Snacks, Aprijuice, candies...), found by recipe type id.
+		 */
+		KITCHEN
 	}
 
 	/** Recipes this deep below the thing asked for may be used for its ingredients (fences: sticks from planks from logs). */
@@ -210,10 +215,24 @@ public final class Crafting {
 			byResult = index.byResult().get(kind);
 			if (byResult == null) {
 				byResult = new HashMap<>();
-				List<? extends RecipeHolder<?>> all = kind == Kind.CRAFTING ? manager.getAllRecipesFor(RecipeType.CRAFTING)
-					: manager.getAllRecipesFor(RecipeType.STONECUTTING);
+				List<RecipeHolder<?>> all = new ArrayList<>();
+				switch (kind) {
+					case CRAFTING -> all.addAll(manager.getAllRecipesFor(RecipeType.CRAFTING));
+					case STONECUTTING -> all.addAll(manager.getAllRecipesFor(RecipeType.STONECUTTING));
+					case KITCHEN -> {
+						// Pot dishes first (a Poké Puff is made in the pot even if some mod adds a crafting recipe too).
+						for (RecipeHolder<?> holder : manager.getRecipes()) {
+							if (isCookingPot(holder.value().getType())) {
+								all.add(holder);
+							}
+						}
+						all.addAll(manager.getAllRecipesFor(RecipeType.SMOKING));
+						all.addAll(manager.getAllRecipesFor(RecipeType.CRAFTING));
+					}
+				}
 				for (RecipeHolder<?> holder : all) {
-					if (holder.value().isSpecial()) {
+					// Special recipes (fireworks, map copies) and ones that don't list their ingredients can't be planned.
+					if (holder.value().isSpecial() || holder.value().getIngredients().stream().allMatch(Ingredient::isEmpty)) {
 						continue;
 					}
 					ItemStack out = holder.value().getResultItem(level.registryAccess());
@@ -225,6 +244,12 @@ public final class Crafting {
 			}
 		}
 		return byResult.getOrDefault(target, List.of());
+	}
+
+	/** A Cobblemon Campfire Pot recipe type ({@code cobblemon:cooking_pot}...), by id: no Cobblemon classes needed. */
+	static boolean isCookingPot(RecipeType<?> type) {
+		net.minecraft.resources.ResourceLocation id = net.minecraft.core.registries.BuiltInRegistries.RECIPE_TYPE.getKey(type);
+		return id != null && id.getNamespace().equals("cobblemon") && id.getPath().contains("cooking_pot");
 	}
 
 	private Crafting() {

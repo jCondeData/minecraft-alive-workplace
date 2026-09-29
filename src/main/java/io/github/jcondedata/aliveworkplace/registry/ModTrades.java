@@ -21,6 +21,7 @@ public final class ModTrades {
 		ballSmithTrades();
 		porterTrades();
 		carpenterTrades();
+		chefTrades();
 		TradeOfferHelper.registerVillagerOffers(ModVillagers.BARD, 1, offers -> {
 			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 2), new ItemStack(Items.NOTE_BLOCK, 2), 12, 2, 0.05f));
 			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.STRING, 16), new ItemStack(Items.EMERALD), 16, 2, 0.05f));
@@ -91,6 +92,24 @@ public final class ModTrades {
 			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 3), new ItemStack(Items.SCAFFOLDING, 16), 12, 20, 0.05f)));
 		TradeOfferHelper.registerVillagerOffers(ModVillagers.CARPENTER, 5, offers ->
 			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 6), new ItemStack(Items.CHISELED_BOOKSHELF, 1), 6, 30, 0.05f)));
+	}
+
+	/** Chefs buy the village's produce and sell what they cook. */
+	private static void chefTrades() {
+		TradeOfferHelper.registerVillagerOffers(ModVillagers.CHEF, 1, offers -> {
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.POTATO, 26), new ItemStack(Items.EMERALD), 16, 2, 0.05f));
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 1), new ItemStack(Items.BREAD, 6), 16, 1, 0.05f));
+		});
+		TradeOfferHelper.registerVillagerOffers(ModVillagers.CHEF, 2, offers -> {
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.SUGAR, 16), new ItemStack(Items.EMERALD), 16, 10, 0.05f));
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 1), new ItemStack(Items.PUMPKIN_PIE, 4), 12, 5, 0.05f));
+		});
+		TradeOfferHelper.registerVillagerOffers(ModVillagers.CHEF, 3, offers ->
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 1), new ItemStack(Items.COOKED_BEEF, 5), 12, 15, 0.05f)));
+		TradeOfferHelper.registerVillagerOffers(ModVillagers.CHEF, 4, offers ->
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 2), new ItemStack(Items.CAKE), 6, 20, 0.05f)));
+		TradeOfferHelper.registerVillagerOffers(ModVillagers.CHEF, 5, offers ->
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 3), new ItemStack(Items.GOLDEN_CARROT, 3), 12, 30, 0.05f)));
 	}
 
 	private static void minerTrades() {

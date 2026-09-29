@@ -995,10 +995,20 @@ def carpenters_workshop(b, style):
     b.set(1, 1, 2, "oak_fence", north=False, south=False, east=False, west=False, waterlogged=False)
 
 
+def kitchen(b, style):
+    """A Kitchen Stove, a chest of the village's produce and a little table: the chef cooks for the village."""
+    b.set(1, 1, 6, "aliveworkplace:kitchen_stove", facing="east")
+    b.set(1, 1, 5, "chest", facing="east", type="single", waterlogged=False)
+    b.set_nbt(1, 1, 5, Compound({"LootTable": String("aliveworkplace:chests/village_kitchen"), "id": String("minecraft:chest")}))
+    b.set(1, 1, 3, "oak_fence", north=False, south=False, east=False, west=False, waterlogged=False)
+    b.set(1, 2, 3, "oak_pressure_plate", powered=False)
+    b.set(2, 1, 3, "oak_stairs", facing="west", half="bottom", shape="straight", waterlogged=False)
+
+
 VILLAGE_HOUSES = {"trainers_house": trainers_house, "guard_house": guard_house, "clinic": clinic, "post_office": post_office,
                   "leaders_hall": leaders_hall, "school": school, "trade_hall": trade_hall, "orchard_house": orchard_house,
                   "ball_workshop": ball_workshop, "ferry_house": ferry_house, "storehouse": storehouse_room,
-                  "carpenters_workshop": carpenters_workshop}
+                  "carpenters_workshop": carpenters_workshop, "kitchen": kitchen}
 
 
 # --- Gametest fixtures ------------------------------------------------------------------

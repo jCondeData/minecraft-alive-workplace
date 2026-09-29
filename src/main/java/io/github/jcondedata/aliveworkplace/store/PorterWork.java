@@ -222,10 +222,10 @@ public class PorterWork extends Behavior<Villager> {
 		return null;
 	}
 
-	/** Builders, ball smiths and other porters: there's never anything to carry away from them. */
+	/** Builders, ball smiths, chefs and other porters: there's never anything to carry away from them. */
 	private static boolean carriesNothingFrom(VillagerProfession job) {
 		return job == io.github.jcondedata.aliveworkplace.registry.ModVillagers.BUILDER || job == io.github.jcondedata.aliveworkplace.registry.ModVillagers.BALL_SMITH
-			|| job == io.github.jcondedata.aliveworkplace.registry.ModVillagers.PORTER;
+			|| job == io.github.jcondedata.aliveworkplace.registry.ModVillagers.PORTER || job == io.github.jcondedata.aliveworkplace.registry.ModVillagers.CHEF;
 	}
 
 	/** What the porter may take from this stash: each kind of goods and how many (beyond what the worker keeps). */

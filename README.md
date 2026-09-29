@@ -3,10 +3,10 @@
 Villagers with real jobs. Hand a **Builder** a blueprint and they build it for you: they clear the
 site, fetch materials from your chests, put up the walls and roof, and finish with doors, beds and
 torches. **Miners** dig out quarries, **Lumberjacks** cut down and replant trees, **Orchard Keepers** pick berries, cocoa and apricorns, **Farmers** look after
-your fields and **Fishermen** fish for you, dropping everything off in your chests. **Porters** gather it all in the village storehouse, **Carpenters** and **Masons** make what the builders are missing, **Postmen** carry mail
+your fields and **Fishermen** fish for you, dropping everything off in your chests. **Porters** gather it all in the village storehouse, **Carpenters** and **Masons** make what the builders are missing, **Chefs** cook for the village, **Postmen** carry mail
 between players' mailboxes, **Guards** keep monsters away, **Nurses** heal you (and your Pokémon),
 **Shopkeepers** run your shop, **Ferrymen** take you between villages, **Bards** play music and — with Cobblemon —
-**Trainers** battle you, **Move Tutors** teach your Pokémon new moves, **Ball Smiths** make Poké Balls and **Pokémon Traders** swap Pokémon with you. Villages grow workshops, guard houses, clinics, post offices, orchard houses, ferry houses, storehouses and carpenter's workshops on their own — and with Cobblemon,
+**Trainers** battle you, **Move Tutors** teach your Pokémon new moves, **Ball Smiths** make Poké Balls and **Pokémon Traders** swap Pokémon with you. Villages grow workshops, guard houses, clinics, post offices, orchard houses, ferry houses, storehouses, carpenter's workshops and kitchens on their own — and with Cobblemon,
 trainer's houses, Trainer Leader halls, schools, trade halls and ball workshops (Repurposed Structures' villages too).
 
 ![Three builders putting up the starter blueprints](docs/media/timelapse.gif)
@@ -95,6 +95,7 @@ where they take tools and supplies from and where their work goes.
 | Porter | Storehouse | empty chests: the village's store | nothing |
 | Carpenter | Carpenter's Bench | — (uses the builders' wood) | nothing |
 | Mason | Stonecutter (vanilla) | — (uses the builders' stone) | nothing |
+| Chef | Kitchen Stove | the makings: wheat, raw meat and fish, potatoes... | nothing |
 | Postman | Postal Desk | — | Mailboxes for mail; Delivery Notes for hauling |
 | Guard | Guard Post | weapons, armor, a bow or crossbow and arrows | nothing |
 | Nurse | Nurse Station | — | right-click them to be healed |
@@ -263,6 +264,17 @@ want. **Masons** (vanilla villagers at a stonecutter) do the same with the stone
 slabs and walls cut from stone — and go about their usual day in between. Villages sometimes grow a carpenter's
 workshop.
 
+## Chefs
+![A chef cooking at the Kitchen Stove](docs/media/chef.png)
+
+Craft a **Kitchen Stove** (five iron ingots round a smoker, over three cobblestone) and a villager becomes a **Chef**.
+Put the makings in a chest within 8 blocks and the chef cooks, a batch at a time, whatever there's enough for: bread,
+cookies, pumpkin pie, cake, the stews, and everything a smoker cooks (steak, chicken, fish, baked potatoes). With
+Cobblemon they also cook what its Campfire Pot does — **Poké Bait**, **Poké Snacks**, **Poké Cakes**, candied apples and
+**Aprijuice** — with Cobblemon's own recipes. What's cooked goes into the same chests, and they stop making a dish once
+there are 16 of it. With a porter in the village, the chef also takes the makings from the storehouse, so the farms'
+and fishermen's spare harvest turns into food without anyone lifting a finger. Villages sometimes grow a kitchen.
+
 ## Mail and postmen
 ![The mailbox screen](docs/media/mailbox.png)
 
@@ -423,6 +435,7 @@ type suits it — each one cuts the time the work takes by 15%, up to three:
 | Ball Smith | Steel, Fire |
 | Porter | Fighting, Normal: each carries 3 more stacks a trip |
 | Carpenter, Mason | Fighting, Rock, Steel |
+| Chef | Fire, Normal |
 | Postman | Flying: **air mail** — parcels for mailboxes outside the round go straight there instead of at dawn |
 | Miner, Fisherman (their furnaces) | Fire: each time the worker tends a furnace or smoker by the workstation, every Fire-type partner smelts 8 of what's in it on the spot, no coal needed |
 
@@ -496,7 +509,7 @@ Workplace's own code is about a tenth of that; the rest is what any 80 villagers
 around. (`PERF=true tools/packtest/run.sh` runs the test.)
 
 ## What's next
-Next up are the Chef and the Fossil Scientist (with Cobblemon). See [ROADMAP.md](ROADMAP.md).
+Next up is the Fossil Scientist (with Cobblemon). See [ROADMAP.md](ROADMAP.md).
 
 ## Building from source
 ```

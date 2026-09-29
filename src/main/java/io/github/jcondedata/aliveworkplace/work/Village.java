@@ -62,7 +62,7 @@ public final class Village {
 		}
 		VillagerProfession job = villager.getVillagerData().getProfession();
 		return job == ModVillagers.BUILDER || job == ModVillagers.MINER || job == ModVillagers.LUMBERJACK || job == ModVillagers.ORCHARD_KEEPER
-			|| job == ModVillagers.BALL_SMITH || job == ModVillagers.PORTER || Fields.isFarmer(villager) && Fields.hasField(villager)
+			|| job == ModVillagers.BALL_SMITH || job == ModVillagers.PORTER || job == ModVillagers.CHEF || Fields.isFarmer(villager) && Fields.hasField(villager)
 			|| Fishers.isFisherman(villager) && Fishers.isHired(villager);
 	}
 

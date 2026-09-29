@@ -60,6 +60,8 @@ public final class VillageHouses {
 		out.put("storehouse", override != null ? override : 3);
 		// The carpenter who makes what the village's builders are waiting for.
 		out.put("carpenters_workshop", override != null ? override : 2);
+		// The chef who cooks for the village.
+		out.put("kitchen", override != null ? override : 2);
 		return out;
 	}
 

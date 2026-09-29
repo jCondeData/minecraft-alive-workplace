@@ -550,5 +550,14 @@
   "message.aliveworkplace.crafter.state.fetching": "fetching what %s %s take",
   "message.aliveworkplace.crafter.state.crafting": "making %s %s",
   "message.aliveworkplace.crafter.state.delivering": "taking %s %s to the builder",
-  "message.aliveworkplace.crafter.state.tidying": "putting things away"
+  "message.aliveworkplace.crafter.state.tidying": "putting things away",
+  "block.aliveworkplace.kitchen_stove": "Kitchen Stove",
+  "entity.minecraft.villager.chef": "Chef",
+  "entity.minecraft.zombie_villager.chef": "Zombie Chef",
+  "message.aliveworkplace.chef.title": "Chef · %s cooked",
+  "message.aliveworkplace.chef.state.idle": "nothing to cook right now",
+  "message.aliveworkplace.chef.state.fetching": "fetching what %s %s take",
+  "message.aliveworkplace.chef.state.crafting": "cooking %s %s",
+  "message.aliveworkplace.chef.state.delivering": "putting %s %s away",
+  "message.aliveworkplace.chef.state.tidying": "putting things away"
 }

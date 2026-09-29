@@ -106,6 +106,10 @@ public class ScreenshotHarness implements ClientModInitializer {
 			smithScene(mc, mc.getSingleplayerServer());
 			return;
 		}
+		if ("chef".equals(System.getProperty("aliveworkplace.scene"))) {
+			chefScene(mc, mc.getSingleplayerServer());
+			return;
+		}
 		if ("carpenter".equals(System.getProperty("aliveworkplace.scene"))) {
 			carpenterScene(mc, mc.getSingleplayerServer());
 			return;
@@ -408,6 +412,45 @@ public class ScreenshotHarness implements ClientModInitializer {
 			shot(mc, "01_smith_working");
 		}
 		if (tick == 340) {
+			mc.stop();
+		}
+	}
+
+	// --- Chef: cooking at the Kitchen Stove -----------------------------------------------------------
+
+	private void chefScene(Minecraft mc, MinecraftServer server) {
+		tick++;
+		if (tick == 1) {
+			mc.options.renderDistance().set(6);
+			mc.options.cloudStatus().set(CloudStatus.OFF);
+			mc.options.hideGui = true;
+		}
+		if (tick == 30) {
+			server.execute(() -> {
+				ServerLevel level = server.overworld();
+				level.getGameRules().getRule(GameRules.RULE_DAYLIGHT).set(false, server);
+				level.getGameRules().getRule(GameRules.RULE_DOMOBSPAWNING).set(false, server);
+				level.setDayTime(2500);
+				BlockPos stove = new BlockPos(0, -60, 0);
+				level.setBlockAndUpdate(stove, ModBlocks.KITCHEN_STOVE.defaultBlockState()
+					.setValue(net.minecraft.world.level.block.HorizontalDirectionalBlock.FACING, Direction.SOUTH));
+				level.setBlockAndUpdate(stove.east(), Blocks.CHEST.defaultBlockState().setValue(net.minecraft.world.level.block.ChestBlock.FACING, Direction.SOUTH));
+				level.setBlockAndUpdate(stove.west(), Blocks.CHEST.defaultBlockState().setValue(net.minecraft.world.level.block.ChestBlock.FACING, Direction.SOUTH));
+				BaseContainerBlockEntity chest = (BaseContainerBlockEntity) level.getBlockEntity(stove.east());
+				chest.setItem(0, new ItemStack(net.minecraft.world.item.Items.WHEAT, 24));
+				chest.setItem(1, new ItemStack(net.minecraft.world.item.Items.BEEF, 8));
+				chest.setItem(2, new ItemStack(net.minecraft.world.item.Items.POTATO, 8));
+				chest.setItem(3, new ItemStack(net.minecraft.world.item.Items.COD, 6));
+				Villager chef = EntityType.VILLAGER.spawn(level, stove.south(), MobSpawnType.COMMAND);
+				io.github.jcondedata.aliveworkplace.work.Jobs.employ(level, chef, stove,
+					io.github.jcondedata.aliveworkplace.registry.ModVillagers.KITCHEN_STOVE_POI, io.github.jcondedata.aliveworkplace.registry.ModVillagers.CHEF);
+				hover(server.getPlayerList().getPlayers().get(0), new Vec3(0.5, -58.3, 5.0), 180, 14);
+			});
+		}
+		if (tick >= 100 && tick <= 700 && tick % 50 == 0) {
+			shot(mc, String.format("%02d_chef", tick / 50));
+		}
+		if (tick == 710) {
 			mc.stop();
 		}
 	}

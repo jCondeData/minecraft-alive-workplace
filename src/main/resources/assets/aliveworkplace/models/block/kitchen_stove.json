@@ -1,0 +1,9 @@
+{
+  "parent": "minecraft:block/orientable_with_bottom",
+  "textures": {
+    "top": "aliveworkplace:block/kitchen_stove_top",
+    "bottom": "aliveworkplace:block/kitchen_stove_side",
+    "side": "aliveworkplace:block/kitchen_stove_side",
+    "front": "aliveworkplace:block/kitchen_stove_front"
+  }
+}

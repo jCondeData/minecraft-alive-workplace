@@ -2,6 +2,15 @@
 
 ## Unreleased
 
+## 0.74.0 — 2026-09-28
+
+### Added
+- **Chefs**: a new job at the Kitchen Stove (five iron ingots round a smoker, over three cobblestone). The chef cooks
+  whatever the chests nearby have the makings for — bread, cookies, pumpkin pie, cake, stews, steak, fish, baked
+  potatoes — and with Cobblemon its Campfire Pot dishes: Poké Bait, Poké Snacks, Poké Cakes, candied apples and
+  Aprijuice. They stop at 16 of each dish, and take the makings from the village's storehouse too. Villages sometimes
+  grow a kitchen.
+
 ## 0.73.1 — 2026-09-28
 
 ### Changed

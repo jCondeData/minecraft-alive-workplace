@@ -1542,6 +1542,73 @@ def carpenter_overlay():
     save(img, "entity", "zombie_villager", "profession", "carpenter.png")
 
 
+# --- Kitchen Stove: an iron range with a pot on top and a fire in the oven -------------------------------
+def kitchen_stove(face):
+    rnd = random.Random({"top": 361, "side": 362, "front": 363}[face])
+    img = Image.new("RGBA", (16, 16))
+    iron, iron_dark, iron_light = rgb("#4a4d52"), rgb("#2f3134"), rgb("#6b6f75")
+    for y in range(16):
+        for x in range(16):
+            img.putpixel((x, y), jitter(iron if (x + y) % 5 else iron_dark, rnd, 5))
+    for i in range(16):
+        for p in ((i, 0), (0, i), (15, i), (i, 15)):
+            img.putpixel(p, jitter(iron_dark, rnd, 3))
+    if face == "top":
+        # A copper pot of stew on one burner, a ring on the other
+        for y in range(2, 11):
+            for x in range(2, 11):
+                d = (x - 6) ** 2 + (y - 6) ** 2
+                if d <= 16:
+                    img.putpixel((x, y), jitter(rgb("#b8733a") if d > 9 else rgb("#d98a2b"), rnd, 6))
+        for (x, y) in ((5, 5), (7, 6), (6, 7)):
+            img.putpixel((x, y), rgb("#f3c35a"))  # bubbles
+        for y in range(9, 15):
+            for x in range(9, 15):
+                d = (x - 11.5) ** 2 + (y - 11.5) ** 2
+                if 4 <= d <= 9:
+                    img.putpixel((x, y), rgb("#c0392b"))
+    else:
+        for x in range(1, 15):
+            img.putpixel((x, 2), jitter(iron_light, rnd, 4))
+        if face == "front":
+            # The oven door: a window onto the fire and a brass handle
+            for y in range(5, 13):
+                for x in range(3, 13):
+                    img.putpixel((x, y), jitter(iron_dark, rnd, 3))
+            for y in range(7, 11):
+                for x in range(5, 11):
+                    img.putpixel((x, y), jitter(rgb("#f39c12") if y > 8 else rgb("#e74c3c"), rnd, 10))
+            for x in range(5, 11):
+                img.putpixel((x, 4), rgb("#c9a227"))
+        else:
+            for y in (6, 8, 10):
+                for x in range(4, 12):
+                    img.putpixel((x, y), iron_dark)  # vents
+    save(img, "block", "kitchen_stove_" + face + ".png")
+
+
+def chef_overlay():
+    img = Image.new("RGBA", (64, 64), T)
+    rnd = random.Random(371)
+    white, shade = rgb("#f4f4f4"), rgb("#d9d9d9")
+    # A tall white chef's hat
+    for y in range(0, 8):
+        for x in range(40, 48):
+            img.putpixel((x, y), jitter(white if (x + y) % 4 else shade, rnd, 3))
+    for y in range(8, 16):
+        for x in range(32, 64):
+            img.putpixel((x, y), jitter(white if (x * 3 + y) % 7 else shade, rnd, 3))
+    # A white apron with a red neckerchief
+    for y in range(44, 58):
+        for x in range(4, 24):
+            img.putpixel((x, y), jitter(white if (x + y) % 6 else shade, rnd, 3))
+    for x in range(8, 20):
+        img.putpixel((x, 44), rgb("#c0392b"))
+        img.putpixel((x, 45), rgb("#a93226"))
+    save(img, "entity", "villager", "profession", "chef.png")
+    save(img, "entity", "zombie_villager", "profession", "chef.png")
+
+
 def icon(blueprint):
     big = Image.new("RGBA", (128, 128), T)
     scaled = blueprint.resize((128, 128), Image.NEAREST)
@@ -1625,3 +1692,6 @@ if __name__ == "__main__":
     for face in ("top", "side", "front"):
         carpenters_bench(face)
     carpenter_overlay()
+    for face in ("top", "side", "front"):
+        kitchen_stove(face)
+    chef_overlay()

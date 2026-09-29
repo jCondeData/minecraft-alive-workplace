@@ -527,6 +527,30 @@ public class CobblemonCompatTests implements FabricGameTest {
 		helper.succeed();
 	}
 
+	/** With Cobblemon a chef also cooks in the Campfire Pot's way: Poké Bait from honey, mushrooms and wheat (the bottles come back). */
+	@GameTest(template = AREA, timeoutTicks = 2400)
+	public void chefCooksPokeBait(GameTestHelper helper) {
+		var bait = net.minecraft.core.registries.BuiltInRegistries.ITEM.get(net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("cobblemon", "poke_bait"));
+		helper.assertTrue(bait != net.minecraft.world.item.Items.AIR, "no cobblemon:poke_bait");
+		helper.assertTrue(io.github.jcondedata.aliveworkplace.craft.Chefs.menu(helper.getLevel()).contains(bait), "Poké Bait isn't on the menu");
+		helper.setDayTime(2000);
+		BlockPos stove = new BlockPos(2, 2, 2);
+		BlockPos chestPos = new BlockPos(2, 2, 4);
+		helper.setBlock(stove, ModBlocks.KITCHEN_STOVE);
+		helper.setBlock(chestPos, net.minecraft.world.level.block.Blocks.CHEST);
+		net.minecraft.world.Container chest = helper.getBlockEntity(chestPos);
+		chest.setItem(0, new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.HONEY_BOTTLE, 2));
+		chest.setItem(1, new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.BROWN_MUSHROOM, 2));
+		chest.setItem(2, new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.WHEAT, 2));
+		Villager chef = helper.spawn(EntityType.VILLAGER, new BlockPos(3, 2, 3));
+		Jobs.employ(helper.getLevel(), chef, helper.absolutePos(stove), ModVillagers.KITCHEN_STOVE_POI, ModVillagers.CHEF);
+		helper.succeedWhen(() -> {
+			helper.assertTrue(chest.countItem(bait) == 8, chest.countItem(bait) + " Poké Bait cooked");
+			helper.assertTrue(chest.countItem(net.minecraft.world.item.Items.GLASS_BOTTLE) == 2, "the honey bottles didn't come back empty");
+			helper.assertTrue(chest.countItem(net.minecraft.world.item.Items.WHEAT) == 0, "wheat left");
+		});
+	}
+
 	/** A novice Ball Smith turns red apricorns and copper into Poké Balls, and leaves Great Ball makings for later. */
 	@GameTest(template = AREA, timeoutTicks = 1400)
 	public void ballSmithMakesPokeBalls(GameTestHelper helper) {

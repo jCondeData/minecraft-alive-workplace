@@ -134,6 +134,11 @@ public final class ModBlocks {
 		"carpenters_bench", new BuildersBenchBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.CRAFTING_TABLE))
 	);
 
+	/** Workstation for the Chef: they cook here, from the chests nearby and the village's storehouse. */
+	public static final BuildersBenchBlock KITCHEN_STOVE = register(
+		"kitchen_stove", new BuildersBenchBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.SMOKER).lightLevel(state -> 7))
+	);
+
 	private static <T extends Block> T register(String name, T block) {
 		Registry.register(BuiltInRegistries.BLOCK, AliveWorkplace.id(name), block);
 		Registry.register(BuiltInRegistries.ITEM, AliveWorkplace.id(name), new BlockItem(block, new Item.Properties()));

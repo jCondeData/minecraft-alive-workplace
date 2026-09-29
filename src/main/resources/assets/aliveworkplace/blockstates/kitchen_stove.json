@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "aliveworkplace:block/kitchen_stove"
+    },
+    "facing=east": {
+      "model": "aliveworkplace:block/kitchen_stove",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "aliveworkplace:block/kitchen_stove",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "aliveworkplace:block/kitchen_stove",
+      "y": 270
+    }
+  }
+}

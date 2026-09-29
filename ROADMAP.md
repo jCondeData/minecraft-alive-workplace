@@ -270,7 +270,11 @@ workstation, like the rest of the mod.
 - [x] Ball workshops in village generation (weight 2, Cobblemon only: a Ball Workbench and a chest of copper and dye)
 - [x] Ball Smith orders (`BallSmiths`, attachment `BALL_ORDERS`): sneak-right-click opens a `ChoiceMenu` of every ball
   kind; picked ones glow and are the only ones made; none picked = anything (as before)
-- [ ] Jobs: Chef (Campfire Pot: Lure Cakes, Aprijuice), Fossil Scientist
+- [x] Chef (Kitchen Stove, `craft/ChefWork` on the crafter's fetch-cook-deliver loop with `Crafting.Kind.KITCHEN`: smoker +
+  crafting + Cobblemon's Campfire Pot recipes found by recipe type id, no Cobblemon classes): cooks `Chefs.menu` in turn
+  from its chests and the village's storehouses, up to 16 of each, a batch of up to 8 (halving to what there's makings
+  for); a kitchen in village generation; Fire/Normal partners
+- [ ] Fossil Scientist
 - [x] Cobbleworkers compatibility (compat-tested with Cobbleworkers 2.0.5): courier routes can start or end at a
   Pasture Block (`work/Pastures`: every container within 8 blocks, where Cobbleworkers' Pokémon deposit); pastured
   Pokémon count as partners whether or not they work for Cobbleworkers. Cobbleworkers only deposits into chests,

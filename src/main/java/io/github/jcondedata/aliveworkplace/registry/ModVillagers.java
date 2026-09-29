@@ -320,6 +320,24 @@ public final class ModVillagers {
 		)
 	);
 
+	public static final ResourceLocation KITCHEN_STOVE_ID = AliveWorkplace.id("kitchen_stove");
+	public static final ResourceKey<PoiType> KITCHEN_STOVE_POI = ResourceKey.create(Registries.POINT_OF_INTEREST_TYPE, KITCHEN_STOVE_ID);
+	public static final PoiType KITCHEN_STOVE_POI_TYPE = PointOfInterestHelper.register(KITCHEN_STOVE_ID, 1, 1, ModBlocks.KITCHEN_STOVE);
+
+	/** Cooks for the village: bread, pies, cooked meat and fish, and with Cobblemon Poké Snacks, Poké Bait and Aprijuice. */
+	public static final VillagerProfession CHEF = Registry.register(
+		BuiltInRegistries.VILLAGER_PROFESSION,
+		AliveWorkplace.id("chef"),
+		new VillagerProfession(
+			"chef",
+			holder -> holder.is(KITCHEN_STOVE_POI),
+			holder -> holder.is(KITCHEN_STOVE_POI),
+			ImmutableSet.of(),
+			ImmutableSet.of(),
+			SoundEvents.SMOKER_SMOKE
+		)
+	);
+
 	/**
 	 * Guards keep the night watch: on patrol from evening to mid-morning, asleep until early afternoon,
 	 * then out with the village. They fight whenever a monster shows up, whatever they are doing.
@@ -340,7 +358,7 @@ public final class ModVillagers {
 		return profession == BUILDER || profession == MINER || profession == LUMBERJACK || profession == POSTMAN
 			|| profession == NURSE || profession == SHOPKEEPER || profession == FERRYMAN
 			|| profession == TRAINER || profession == TRAINER_LEADER || profession == TUTOR || profession == POKEMON_TRADER
-			|| profession == ORCHARD_KEEPER || profession == BALL_SMITH || profession == PORTER || profession == CARPENTER;
+			|| profession == ORCHARD_KEEPER || profession == BALL_SMITH || profession == PORTER || profession == CARPENTER || profession == CHEF;
 	}
 
 	/**

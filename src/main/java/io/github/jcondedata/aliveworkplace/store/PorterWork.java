@@ -273,7 +273,7 @@ public class PorterWork extends Behavior<Villager> {
 	/** Stacks this porter carries in one trip. */
 	static int capacity(Villager villager) {
 		int stacks = BASE_STACKS + STACKS_PER_LEVEL * (BuilderLevels.level(villager) - 1)
-			+ STACKS_PER_PARTNER * Math.min(Partners.MAX, Partners.helpers(villager).size());
+			+ STACKS_PER_PARTNER * Math.min(Partners.max(villager), Partners.helpers(villager).size());
 		return Math.min(BuilderBag.SLOTS, stacks);
 	}
 

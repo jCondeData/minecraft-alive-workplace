@@ -1231,3 +1231,78 @@ def inn_2():
     fence(b, 18, 1, 1, "spruce_fence")
     b.fill_air()
     return b
+
+
+# --- Town Hall (research): a stone hall under a hipped roof with a bell tower over the door ------------------------
+HALL_FRAME = "dark_oak_log"
+HALL_ROOF = DEEPSLATE_TILE
+
+
+def town_hall():
+    """13 x 16 x 13, drawn up by a village's scholars (Architecture research): a tall stone hall — the Village Hall block
+    at the head of a council table, benches, bookshelves, lamps on the beams — under a hipped slate roof, entered through
+    a bell tower that stands out in front with a pointed cap."""
+    b = Build(13, 16, 13)
+    # The hall: walls x 1-11, z 3-11, five high
+    plinth(b, 1, 3, 11, 11, FOUNDATION_MIX, floor="polished_andesite")
+    walls(b, 1, 3, 11, 11, 1, 5, BRICK_WALL_MIX)
+    for x, z in ((1, 3), (11, 3), (1, 11), (11, 11), (1, 7), (11, 7)):
+        box(b, x, 1, z, x, 5, z, "polished_andesite")
+    for z in (5, 9):
+        window(b, 1, 2, z, "west", height=3, sill=STONE_BRICK, lintel=STONE_BRICK)
+        window(b, 11, 2, z, "east", height=3, sill=STONE_BRICK, lintel=STONE_BRICK)
+    for x in (3, 9):
+        window(b, x, 2, 3, "north", height=3, sill=STONE_BRICK, lintel=STONE_BRICK)
+    window(b, 4, 3, 11, "south", width=5, height=2, sill=STONE_BRICK)
+    beam_ring(b, 1, 3, 11, 11, 6, HALL_FRAME)
+    for z in (6, 9):  # tie beams for the lamps
+        for x in range(2, 11):
+            log(b, x, 5, z, HALL_FRAME, axis="x")
+        lantern(b, 4, 4, z, hanging=True)
+        lantern(b, 8, 4, z, hanging=True)
+    # The council: the Village Hall at the head of a long table, benches along the walls, bookshelves at the back
+    b.set(6, 1, 10, "aliveworkplace:village_hall", facing="north")
+    for z in range(5, 9):
+        slab(b, 6, 1, z, DARK_OAK, top=True)
+        stairs(b, 5, 1, z, DARK_OAK, "west")
+        stairs(b, 7, 1, z, DARK_OAK, "east")
+    for x in (2, 10):
+        for z in (5, 6, 8, 9):
+            stairs(b, x, 1, z, DARK_OAK, "east" if x == 2 else "west")
+    for x in (2, 3, 9, 10):
+        for y in (1, 2, 3):
+            b.set(x, y, 10, "bookshelf")
+    box(b, 4, 1, 4, 8, 1, 4, "red_carpet")
+    # The hipped slate roof
+    hip_roof(b, 0, 12, 2, 12, 6, HALL_ROOF)
+    # The tower in front: x 5-7, z 1-3, through the hall's front wall; the door at its foot, the belfry at the top
+    for y in range(1, 12):
+        for x in range(5, 8):
+            for z in range(1, 4):
+                if x in (5, 7) or z in (1, 3):
+                    corner = x in (5, 7) and z in (1, 3)
+                    b.set(x, y, z, "polished_andesite" if corner else BRICK_WALL_MIX)
+                else:
+                    b.set(x, y, z, "air")
+    box(b, 5, 0, 1, 7, 0, 3, FOUNDATION_MIX)  # the tower's footing
+    b.set(6, 0, 2, "polished_andesite")
+    door(b, 6, 1, 1, "dark_oak_door", "south")
+    stairs(b, 6, 0, 0, STONE_BRICK, "south")
+    b.set(6, 3, 1, "chiseled_stone_bricks")
+    for y in (1, 2):
+        b.set(6, y, 3, "air")  # through into the hall
+    pane(b, 6, 5, 1)
+    pane(b, 6, 6, 1)
+    for (x, z) in ((6, 1), (5, 2), (7, 2)):  # the belfry's openings
+        for y in (9, 10):
+            b.set(x, y, z, "air")
+    b.set(6, 11, 2, "polished_andesite")
+    b.set(6, 10, 2, "bell", attachment="ceiling", facing="north", powered=False)
+    for (x, z) in ((5, 1), (7, 1), (5, 3), (7, 3)):
+        b.set(x, 11, z, "chiseled_stone_bricks")
+    hip_roof(b, 4, 8, 0, 4, 12, HALL_ROOF)
+    # Out front: lamp posts either side of the tower
+    lamp_post(b, 3, 0, 1, "dark_oak_fence", height=2)
+    lamp_post(b, 9, 0, 1, "dark_oak_fence", height=2)
+    b.fill_air()
+    return b

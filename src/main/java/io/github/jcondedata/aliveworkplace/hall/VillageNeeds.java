@@ -93,10 +93,17 @@ public final class VillageNeeds {
 			return pace.factor();
 		}
 		float factor = VillageHalls.nearest(level, villager.blockPosition())
-			.map(pos -> level.getBlockEntity(pos) instanceof VillageHallBlockEntity hall && hall.needs() != null ? hall.needs().factor() : 1f)
+			.map(pos -> level.getBlockEntity(pos) instanceof VillageHallBlockEntity hall
+				? (hall.needs() != null ? hall.needs().factor() : 1f) * swiftHands(hall.research().level(io.github.jcondedata.aliveworkplace.research.Research.Topic.SWIFT_HANDS))
+				: 1f)
 			.orElse(1f);
 		PACE.put(villager, new Pace(factor, now + PACE_TICKS));
 		return factor;
+	}
+
+	/** The work delay multiplier from the Swift Hands research: 5% faster a level. */
+	static float swiftHands(int level) {
+		return 1f / (1f + 0.05f * level);
 	}
 
 	/** Forget the villagers' paces (tests). */
@@ -154,7 +161,10 @@ public final class VillageNeeds {
 		float housedShare = villagers == 0 ? 1f : housed / (float) villagers;
 		float guarded = Math.min(1f, guards / (float) Math.max(1, (villagers + VILLAGERS_PER_GUARD - 1) / VILLAGERS_PER_GUARD));
 		float litShare = villagers == 0 ? 1f : lit / (float) villagers;
-		return new Needs(adults, fed, villagers, housed, lit, guards, wellbeing(fedShare, housedShare, 0.5f * guarded + 0.5f * litShare));
+		int hearth = level.getBlockEntity(hall) instanceof VillageHallBlockEntity entity
+			? entity.research().level(io.github.jcondedata.aliveworkplace.research.Research.Topic.HEARTH) : 0;
+		float wellbeing = Math.min(1f, wellbeing(fedShare, housedShare, 0.5f * guarded + 0.5f * litShare) + 0.1f * hearth);
+		return new Needs(adults, fed, villagers, housed, lit, guards, wellbeing);
 	}
 
 	/** A grown villager who hasn't eaten in the last day. */

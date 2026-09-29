@@ -84,6 +84,10 @@ public final class ModAttachments {
 	public static final AttachmentType<Integer> ITEMS_ENCHANTED = AttachmentRegistry.create(
 		AliveWorkplace.id("items_enchanted"), builder -> builder.persistent(com.mojang.serialization.Codec.INT));
 
+	/** How many research levels a Scholar has finished (shown above its head). */
+	public static final AttachmentType<Integer> RESEARCH_DONE = AttachmentRegistry.create(
+		AliveWorkplace.id("research_done"), builder -> builder.persistent(com.mojang.serialization.Codec.INT));
+
 	/** How many villagers an Undertaker has brought back (shown above its head). */
 	public static final AttachmentType<Integer> VILLAGERS_REVIVED = AttachmentRegistry.create(
 		AliveWorkplace.id("villagers_revived"), builder -> builder.persistent(com.mojang.serialization.Codec.INT));

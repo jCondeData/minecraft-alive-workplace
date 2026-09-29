@@ -26,6 +26,8 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 	private java.util.List<VillageQuests.Quest> quests = java.util.List.of();
 	private long lastQuestDay = -1;
 	private int questsDone;
+	/** The village's research (see {@code research/Research}). */
+	private io.github.jcondedata.aliveworkplace.research.Research.State research = io.github.jcondedata.aliveworkplace.research.Research.State.EMPTY;
 
 	public VillageHallBlockEntity(BlockPos pos, BlockState state) {
 		super(ModBlocks.VILLAGE_HALL_ENTITY, pos, state);
@@ -60,6 +62,15 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 				hall.setChanged();
 			}
 		}
+	}
+
+	public io.github.jcondedata.aliveworkplace.research.Research.State research() {
+		return research;
+	}
+
+	public void setResearch(io.github.jcondedata.aliveworkplace.research.Research.State research) {
+		this.research = research;
+		setChanged();
 	}
 
 	public java.util.List<VillageQuests.Quest> quests() {
@@ -118,6 +129,8 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 			.result().map(java.util.List::copyOf).orElse(java.util.List.of());
 		lastQuestDay = tag.contains("lastQuestDay") ? tag.getLong("lastQuestDay") : -1;
 		questsDone = tag.getInt("questsDone");
+		research = io.github.jcondedata.aliveworkplace.research.Research.State.CODEC.parse(net.minecraft.nbt.NbtOps.INSTANCE, tag.get("research"))
+			.result().orElse(io.github.jcondedata.aliveworkplace.research.Research.State.EMPTY);
 	}
 
 	@Override
@@ -131,6 +144,8 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 		VillageQuests.Quest.CODEC.listOf().encodeStart(net.minecraft.nbt.NbtOps.INSTANCE, quests).result().ifPresent(t -> tag.put("quests", t));
 		tag.putLong("lastQuestDay", lastQuestDay);
 		tag.putInt("questsDone", questsDone);
+		io.github.jcondedata.aliveworkplace.research.Research.State.CODEC.encodeStart(net.minecraft.nbt.NbtOps.INSTANCE, research).result()
+			.ifPresent(t -> tag.put("research", t));
 	}
 
 	@Override

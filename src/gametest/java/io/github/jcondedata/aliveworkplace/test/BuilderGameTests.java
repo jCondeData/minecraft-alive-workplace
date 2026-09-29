@@ -827,6 +827,11 @@ public class BuilderGameTests implements FabricGameTest {
 	}
 
 	@GameTest(template = BIG_AREA, timeoutTicks = 30000, batch = "starter_builds_2")
+	public void buildsTownHall(GameTestHelper helper) {
+		buildStarter(helper, StarterBlueprints.TOWN_HALL);
+	}
+
+	@GameTest(template = BIG_AREA, timeoutTicks = 30000, batch = "starter_builds_2")
 	public void buildsInn(GameTestHelper helper) {
 		buildStarter(helper, StarterBlueprints.INN);
 	}

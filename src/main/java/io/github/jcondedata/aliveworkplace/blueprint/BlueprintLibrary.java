@@ -56,9 +56,10 @@ public final class BlueprintLibrary {
 			.toList();
 	}
 
-	/** Our village pieces ({@code aliveworkplace:village/...}) are for world generation, not the library. */
+	/** Our village pieces ({@code aliveworkplace:village/...}) are for world generation, not the library; research blueprints come from scholars. */
 	public static boolean isWorldgenPiece(ResourceLocation id) {
-		return id.getNamespace().equals(AliveWorkplace.MOD_ID) && (id.getPath().startsWith("village/") || id.getPath().startsWith("compat_test/"));
+		return id.getNamespace().equals(AliveWorkplace.MOD_ID) && (id.getPath().startsWith("village/") || id.getPath().startsWith("compat_test/")
+			|| id.getPath().startsWith("research/")); // research/: drawn up by a village's scholars (see research/Research)
 	}
 
 	private BlueprintLibrary() {

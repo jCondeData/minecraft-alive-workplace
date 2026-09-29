@@ -140,6 +140,22 @@ an Expert (CobbleDollars at the usual rate with CobbleDollars installed). They j
 workstation and start at their level, with the trades of every level on the way. Travellers nobody hires move on after
 two days. Until they're hired they won't take a job.
 
+**Research.** Craft a **Scholar's Desk** (a feather between two books, over a bookshelf between planks, on two legs)
+in a village with a Village Hall and a villager becomes a **Scholar**. Sneak-right-click them with an empty hand for
+the village's **research tree** and click a topic to research it next; the scholar takes the cost from the chests by
+the desk (paper, books and emeralds — on the requests board if they're missing) and works it out at the desk, a couple
+of minutes a level (quicker with pastured Psychic Pokémon, and several scholars share the work). Every level is a
+bonus for the whole village:
+
+| Topic | Levels | Bonus a level | First needs |
+| --- | --- | --- | --- |
+| Swift Hands | 3 | every job 5% faster | — |
+| Hearth | 2 | wellbeing 10% higher | — |
+| Drill | 3 | guards hit 10% harder | — |
+| Kinship | 2 | one more Pokémon partner per worker | Swift Hands I |
+| Lore | 1 | schooled children start as Journeymen | Hearth I |
+| Architecture | 1 | the **Town Hall** blueprint (a stone hall with a bell tower and a Village Hall inside) | Swift Hands II, Hearth I |
+
 **Graves and Undertakers.** A grown villager with a job (or a name) who dies leaves a **grave** where they fell —
 right-click it to read who lies there. Craft an **Undertaker's Table** (two candles and a lily of the valley over dark
 oak planks) and a villager becomes an **Undertaker**: with a **golden apple**, a **healing potion** or a **totem of
@@ -160,6 +176,7 @@ where they take tools and supplies from and where their work goes.
 | Farmer | Composter (vanilla) | seeds, a hoe, bone meal | a Field Marker (blank: their own farm) |
 | Beekeeper | Apiary | glass bottles or shears, flowers | nothing (beehives within 16 blocks) |
 | Florist | Flower Stand | bone meal (flowers to pot) | nothing (grass round the stand) |
+| Scholar | Scholar's Desk | paper, books, emeralds | sneak-right-click: pick the research |
 | Undertaker | Undertaker's Table | golden apples, healing potions or totems | nothing (graves within 32 blocks) |
 | Innkeeper | Inn Counter | — | nothing (hire the travellers who come to stay) |
 | Teacher | Teacher's Desk | — | nothing (children within 32 blocks) |

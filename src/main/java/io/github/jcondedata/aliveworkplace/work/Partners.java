@@ -84,6 +84,9 @@ public final class Partners {
 		if (profession == ModVillagers.PORTER) {
 			return Set.of("fighting", "normal"); // strong arms: more carried each trip
 		}
+		if (profession == ModVillagers.SCHOLAR) {
+			return Set.of("psychic"); // Abra, Espeon, Metagross...: research goes quicker
+		}
 		if (profession == ModVillagers.TEACHER) {
 			return Set.of("psychic", "normal"); // Alakazam, Chansey, Blissey...: lessons go quicker
 		}
@@ -126,7 +129,7 @@ public final class Partners {
 		}
 		BlockPos site = villager.getBrain().getMemory(MemoryModuleType.JOB_SITE)
 			.filter(p -> p.dimension() == level.dimension()).map(GlobalPos::pos).orElse(null);
-		List<Component> names = site == null ? List.of() : CobblemonPartners.helpers(level, site, RADIUS, types, MAX);
+		List<Component> names = site == null ? List.of() : CobblemonPartners.helpers(level, site, RADIUS, types, max(villager));
 		synchronized (CACHE) {
 			CACHE.put(villager, new Cached(now + RECHECK_TICKS, names));
 		}
@@ -140,9 +143,17 @@ public final class Partners {
 		}
 	}
 
-	/** How much of the usual time the job takes with its helpers (1 without any). */
+	/** How much of the usual time the job takes with its helpers (1 without any; never below {@link #FLOOR}). */
 	public static float factor(Villager villager) {
-		return 1f - PER_PARTNER * Math.min(MAX, helpers(villager).size());
+		return Math.max(FLOOR, 1f - PER_PARTNER * Math.min(max(villager), helpers(villager).size()));
+	}
+
+	/** The least time a job can take with helpers, as a share of the usual. */
+	public static final float FLOOR = 0.4f;
+
+	/** Partners a worker can have: {@link #MAX}, and one more for each level of the village's Kinship research. */
+	public static int max(Villager villager) {
+		return MAX + io.github.jcondedata.aliveworkplace.research.Research.level(villager, io.github.jcondedata.aliveworkplace.research.Research.Topic.KINSHIP);
 	}
 
 	/** "Machop", "Machop and Geodude", "Machop, Geodude and Onix". */

@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+## 0.104.0 — 2026-09-29
+
+### Added
+- **Scholars and research** (new job, Scholar's Desk): a research tree kept in the Village Hall, paid for in paper,
+  books and emeralds — Swift Hands (every job faster), Hearth (wellbeing), Drill (guards hit harder), Kinship (more
+  Pokémon partners), Lore (schooled children start as Journeymen) and Architecture, which draws up the **Town Hall**
+  blueprint: a stone hall with a bell tower and a Village Hall inside. Sneak-right-click a scholar to choose.
+
 ## 0.103.0 — 2026-09-29
 
 ### Added

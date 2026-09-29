@@ -144,6 +144,11 @@ public final class ModBlocks {
 		Registry.register(BuiltInRegistries.BLOCK_ENTITY_TYPE, AliveWorkplace.id("storehouse"),
 			net.minecraft.world.level.block.entity.BlockEntityType.Builder.of(io.github.jcondedata.aliveworkplace.store.StorehouseBlockEntity::new, STOREHOUSE).build(null));
 
+	/** Workstation for the Scholar: the village's research is done here (a Village Hall keeps it). */
+	public static final BuildersBenchBlock SCHOLARS_DESK = register(
+		"scholars_desk", new BuildersBenchBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.BOOKSHELF))
+	);
+
 	/** Workstation for the Undertaker: the graves nearby are tended, and the villagers in them brought back. */
 	public static final BuildersBenchBlock UNDERTAKERS_TABLE = register(
 		"undertakers_table", new BuildersBenchBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.DARK_OAK_PLANKS))

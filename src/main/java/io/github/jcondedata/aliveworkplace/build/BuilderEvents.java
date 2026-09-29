@@ -18,6 +18,14 @@ public final class BuilderEvents {
 			if (hand != InteractionHand.MAIN_HAND || player.isSpectator() || !(entity instanceof Villager villager)) {
 				return InteractionResult.PASS;
 			}
+			// A scholar, sneak-right-clicked with an empty hand: the village's research.
+			if (player.isShiftKeyDown() && player.getItemInHand(hand).isEmpty()
+				&& villager.getVillagerData().getProfession() == io.github.jcondedata.aliveworkplace.registry.ModVillagers.SCHOLAR) {
+				if (!level.isClientSide) {
+					io.github.jcondedata.aliveworkplace.research.ResearchScreen.open((ServerPlayer) player, villager);
+				}
+				return InteractionResult.SUCCESS;
+			}
 			// A traveller staying at an inn: the screen to hire them.
 			if (!level.isClientSide && io.github.jcondedata.aliveworkplace.inn.Innkeepers.isTraveller(villager)) {
 				io.github.jcondedata.aliveworkplace.inn.Innkeepers.openHire((ServerPlayer) player, villager);

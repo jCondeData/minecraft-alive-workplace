@@ -1,0 +1,9 @@
+{
+  "parent": "minecraft:block/orientable_with_bottom",
+  "textures": {
+    "top": "aliveworkplace:block/scholars_desk_top",
+    "bottom": "aliveworkplace:block/scholars_desk_side",
+    "side": "aliveworkplace:block/scholars_desk_side",
+    "front": "aliveworkplace:block/scholars_desk_front"
+  }
+}

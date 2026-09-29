@@ -306,6 +306,23 @@ public final class ModVillagers {
 	public static final ResourceKey<PoiType> VILLAGE_HALL_POI = ResourceKey.create(Registries.POINT_OF_INTEREST_TYPE, VILLAGE_HALL_ID);
 	public static final PoiType VILLAGE_HALL_POI_TYPE = PointOfInterestHelper.register(VILLAGE_HALL_ID, 0, 1, ModBlocks.VILLAGE_HALL);
 
+	public static final ResourceLocation SCHOLARS_DESK_ID = AliveWorkplace.id("scholars_desk");
+	public static final ResourceKey<PoiType> SCHOLARS_DESK_POI = ResourceKey.create(Registries.POINT_OF_INTEREST_TYPE, SCHOLARS_DESK_ID);
+	public static final PoiType SCHOLARS_DESK_POI_TYPE = PointOfInterestHelper.register(SCHOLARS_DESK_ID, 1, 1, ModBlocks.SCHOLARS_DESK);
+
+	public static final VillagerProfession SCHOLAR = Registry.register(
+		BuiltInRegistries.VILLAGER_PROFESSION,
+		AliveWorkplace.id("scholar"),
+		new VillagerProfession(
+			"scholar",
+			holder -> holder.is(SCHOLARS_DESK_POI),
+			holder -> holder.is(SCHOLARS_DESK_POI),
+			ImmutableSet.of(),
+			ImmutableSet.of(),
+			SoundEvents.VILLAGER_WORK_LIBRARIAN
+		)
+	);
+
 	/** Graves: points of interest nobody works at, so an undertaker finds the ones nearby quickly. */
 	public static final ResourceLocation GRAVE_ID = AliveWorkplace.id("grave");
 	public static final ResourceKey<PoiType> GRAVE_POI = ResourceKey.create(Registries.POINT_OF_INTEREST_TYPE, GRAVE_ID);
@@ -489,7 +506,7 @@ public final class ModVillagers {
 			|| profession == NURSE || profession == SHOPKEEPER || profession == FERRYMAN
 			|| profession == TRAINER || profession == TRAINER_LEADER || profession == TUTOR || profession == POKEMON_TRADER
 			|| profession == ORCHARD_KEEPER || profession == BALL_SMITH || profession == PORTER || profession == CARPENTER || profession == CHEF || profession == FOSSIL_SCIENTIST
-			|| profession == BEEKEEPER || profession == FLORIST || profession == RANCHER || profession == TEACHER || profession == INNKEEPER || profession == UNDERTAKER;
+			|| profession == BEEKEEPER || profession == FLORIST || profession == RANCHER || profession == TEACHER || profession == INNKEEPER || profession == UNDERTAKER || profession == SCHOLAR;
 	}
 
 	/**

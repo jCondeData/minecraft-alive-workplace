@@ -146,9 +146,10 @@ public final class Guards {
 		return damage[0];
 	}
 
-	/** Levels make guards hit harder too: +10% per level above Novice. */
+	/** Levels make guards hit harder too: +10% per level above Novice, and +10% per level of the village's Drill research. */
 	public static float levelBonus(Villager villager) {
-		return 1f + 0.1f * (BuilderLevels.level(villager) - 1);
+		return (1f + 0.1f * (BuilderLevels.level(villager) - 1))
+			* (1f + 0.1f * io.github.jcondedata.aliveworkplace.research.Research.level(villager, io.github.jcondedata.aliveworkplace.research.Research.Topic.DRILL));
 	}
 
 	public static boolean isWeapon(ItemStack stack) {

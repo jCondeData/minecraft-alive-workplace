@@ -61,7 +61,9 @@ public final class Schools {
 
 	/** The level a villager starts their first job at: Apprentice after school, a hired traveller's own level, else Novice. */
 	public static int headStartLevel(Villager villager) {
-		return Math.max(isSchooled(villager) ? 2 : 1, Math.min(VillagerData.MAX_VILLAGER_LEVEL, villager.getAttachedOrElse(ModAttachments.HEAD_START, 1)));
+		int school = isSchooled(villager)
+			? 2 + io.github.jcondedata.aliveworkplace.research.Research.level(villager, io.github.jcondedata.aliveworkplace.research.Research.Topic.LORE) : 1;
+		return Math.max(school, Math.min(VillagerData.MAX_VILLAGER_LEVEL, villager.getAttachedOrElse(ModAttachments.HEAD_START, 1)));
 	}
 
 	/** A villager's head start at their first job: the trades of every level on the way, up to their start level. */

@@ -92,9 +92,11 @@ public final class ModItems {
 				output.accept(ModBlocks.TEACHERS_DESK);
 				output.accept(ModBlocks.INN_COUNTER);
 				output.accept(ModBlocks.UNDERTAKERS_TABLE);
+				output.accept(ModBlocks.SCHOLARS_DESK);
 				for (StarterBlueprints.Entry entry : StarterBlueprints.ALL) {
 					output.accept(BlueprintItem.create(entry.id(), entry.size()));
 				}
+				output.accept(BlueprintItem.create(StarterBlueprints.TOWN_HALL.id(), StarterBlueprints.TOWN_HALL.size()));
 			})
 			.build()
 	);

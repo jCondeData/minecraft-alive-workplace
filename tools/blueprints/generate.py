@@ -82,6 +82,7 @@ if __name__ == "__main__":
     terrace_2().save(MAIN_STRUCTURES, "terrace_2")
     inn().save(MAIN_STRUCTURES, "inn")
     inn_2().save(MAIN_STRUCTURES, "inn_2")
+    town_hall().save(os.path.join(MAIN_STRUCTURES, "research"), "town_hall")
     for style in VILLAGE_STYLES:
         builders_workshop(style).save(VILLAGE_STRUCTURES, f"{style}_builders_workshop")
         for name, fit_out in VILLAGE_HOUSES.items():

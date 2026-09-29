@@ -485,8 +485,13 @@ loop: ore → ingots → the tools, weapons and armor the other workers wear out
 - [ ] Walls and gates: blueprints; guards shut the gates at night
 
 ## Milestone 11 — Research
-- [ ] **Scholar** (new job, University): a research tree paid in paper, books and emeralds unlocking village-wide
-  bonuses (faster builders, bigger bags, more partners, tougher guards, new blueprints)
+- [x] **Scholar** (new job, University): a research tree paid in paper, books and emeralds unlocking village-wide
+  bonuses (faster builders, bigger bags, more partners, tougher guards, new blueprints) (`research/`: Scholar's Desk;
+  the tree is kept in the Village Hall's block entity: Swift Hands (5% a level through `VillageNeeds.factor`), Hearth
+  (+10% wellbeing), Drill (guards +10% damage through `Guards.levelBonus`), Kinship (+1 partner through
+  `Partners.max`, pace floor 40%), Lore (schooled → Journeyman), Architecture (the `research/town_hall` blueprint,
+  hidden from the Blueprint Table, put in the scholar's chest). "Bigger bags" left out: the builder's bag size is
+  part of saved data)
 
 ## Milestone 12 — More to build
 - [ ] Every starter building in 2–3 styles (timber, stone, Cobblemon-themed) up to tier III, and the new jobs' buildings
@@ -539,5 +544,5 @@ loop: ore → ingots → the tools, weapons and armor the other workers wear out
   the second one's work was dropped for the first's. If sessions overlap again, the later one should take items further
   down the list (as the Training Dummy was) or the schedule should be spread out (owner).
 - 2026-09-29: session `01Xw8jqb` worked down **Milestone 9** (all done: Village Hall, Needs, Growth, School,
-  Recruiting, Graveyard, Village quests) and goes on with **Milestone 11** (Research) and then **Milestone 12** (builds);
+  Recruiting, Graveyard, Village quests) and Milestone 11 (Research), and goes on with **Milestone 12** (builds);
   a session running at the same time should keep to Milestone 10 (Defence), to keep out of each other's way.

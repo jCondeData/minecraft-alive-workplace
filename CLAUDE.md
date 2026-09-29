@@ -103,6 +103,9 @@ The owner (Jesse) does not write code: sessions are expected to work autonomousl
   `VillageNeeds` (meals from the store, beds, safety → wellbeing → the work pace in `BuilderLevels.delay`),
   `VillageGrowth` (a baby a day at most with a free bed, food and wellbeing), `VillageQuests` (quests for players, kept
   in the hall's block entity; the hall screen's quests page)
+- `research/` — the Scholar (Scholar's Desk): `Research` (the tree, kept in the Village Hall; bonuses read by
+  `VillageNeeds`, `Guards`, `Partners`, `Schools`), `ScholarWork`, `ResearchScreen`; `research/*` blueprints are hidden
+  from the Blueprint Table (`BlueprintLibrary.isWorldgenPiece`)
 - `grave/` — graves and the Undertaker: `GraveBlock`/`GraveBlockEntity` (the villager's NBT), `Graves` (left on death,
   revival), `UndertakerWork`
 - `inn/` — the Innkeeper (Inn Counter): `InnkeeperWork` (a traveller each morning), `Innkeepers` (arrivals, the hire

@@ -365,7 +365,7 @@ public class SmelterWork extends Behavior<Villager> {
 
 	/** Stacks of ore this smelter fetches in one trip. */
 	static int stacks(Villager villager) {
-		return Math.min(BuilderBag.SLOTS, BASE_STACKS + BuilderLevels.level(villager) - 1 + Math.min(Partners.MAX, Partners.helpers(villager).size()));
+		return Math.min(BuilderBag.SLOTS, BASE_STACKS + BuilderLevels.level(villager) - 1 + Math.min(Partners.max(villager), Partners.helpers(villager).size()));
 	}
 
 	/** Items waiting in the output slots of the furnaces by the workstation. */

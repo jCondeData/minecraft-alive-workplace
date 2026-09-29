@@ -1839,6 +1839,73 @@ def undertaker_overlay():
     save(img, "entity", "zombie_villager", "profession", "undertaker.png")
 
 
+# --- Scholar's Desk: a desk under books, with a globe and an open tome -----------------------------------------------
+def scholars_desk(face):
+    rnd = random.Random({"top": 441, "side": 442, "front": 443}[face])
+    img = Image.new("RGBA", (16, 16))
+    planks(img, rnd)
+    edge = rgb("#4a3219")
+    if face == "top":
+        for i in range(16):
+            for p in ((i, 0), (i, 15), (0, i), (15, i)):
+                img.putpixel(p, jitter(edge, rnd, 3))
+        # an open tome (red binding) and a little globe
+        for y in range(6, 13):
+            for x in range(2, 11):
+                img.putpixel((x, y), jitter(rgb("#e9dfbf"), rnd, 4))
+        for x in range(2, 11):
+            img.putpixel((x, 13), rgb("#8c2f1c"))
+        for y in range(6, 13):
+            img.putpixel((6, y), rgb("#b3a57f"))
+        for y in (7, 9, 11):
+            for x in (3, 4, 5, 7, 8, 9):
+                if (x * y) % 4:
+                    img.putpixel((x, y), rgb("#5e5a52"))
+        for (gx, gy) in ((11, 2), (12, 2), (13, 2), (11, 3), (13, 3), (11, 4), (12, 4), (13, 4)):
+            img.putpixel((gx, gy), rgb("#3d6fb0"))
+        img.putpixel((12, 3), rgb("#4f9a45"))
+        img.putpixel((12, 5), rgb("#b8871f"))
+    else:
+        # shelves of books and scrolls
+        for row in (1, 8):
+            for x in range(1, 15):
+                img.putpixel((x, row + 6), jitter(edge, rnd, 3))
+            colours = [rgb("#7b2d26"), rgb("#2f4f7a"), rgb("#3f6b3a"), rgb("#8a6a2a"), rgb("#5a3a6a"), rgb("#e0d7bd")]
+            x = 1
+            while x < 15:
+                c = colours[rnd.randrange(len(colours))]
+                h = rnd.randint(4, 6)
+                for y in range(row + 6 - h, row + 6):
+                    img.putpixel((x, y), jitter(c, rnd, 6))
+                x += 1
+        if face == "front":
+            for x in range(6, 10):  # a brass nameplate
+                img.putpixel((x, 15), rgb("#d9a441"))
+    save(img, "block", "scholars_desk_" + face + ".png")
+
+
+def scholar_overlay():
+    img = Image.new("RGBA", (64, 64), T)
+    rnd = random.Random(451)
+    # a black square cap with a gold tassel (hat layer), a dark blue gown with a white collar
+    cap = rgb("#1c1c22")
+    for y in range(0, 8):
+        for x in range(40, 48):
+            img.putpixel((x, y), jitter(cap, rnd, 3))
+    for x in range(32, 64):
+        img.putpixel((x, 8), jitter(cap, rnd, 3))
+    for y in range(9, 12):
+        img.putpixel((33, y), rgb("#e8b830"))
+    gown = rgb("#243a66")
+    for y in range(44, 62):
+        for x in range(0, 24):
+            img.putpixel((x, y), jitter(gown, rnd, 4))
+    for x in range(7, 13):
+        img.putpixel((x, 44), rgb("#f2f2f2"))
+    save(img, "entity", "villager", "profession", "scholar.png")
+    save(img, "entity", "zombie_villager", "profession", "scholar.png")
+
+
 # --- Feed Trough: the rancher's workstation, a plank trough full of hay ----------------------------------------
 def feed_trough(face):
     rnd = random.Random({"top": 341, "side": 342, "front": 343}[face])
@@ -2344,6 +2411,9 @@ if __name__ == "__main__":
     for face in ("top", "side", "front"):
         undertakers_table(face)
     undertaker_overlay()
+    for face in ("top", "side", "front"):
+        scholars_desk(face)
+    scholar_overlay()
     rancher_overlay()
     for part in ("burlap", "face", "straw", "post"):
         training_dummy(part)

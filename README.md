@@ -91,7 +91,7 @@ the paddock and adds a stable wing and a brick silo), the **Apiary Garden**
 behind display windows; II a greenhouse) and the **Graveyard** (a walled churchyard with a mortuary and an Undertaker's
 Table; II a lych-gate).
 
-![The Schoolhouse II, Library II, Ranch II, Apiary Garden II, Flower Shop II and Graveyard II](docs/media/job-buildings.png)
+![The Schoolhouse II, Library III, Ranch II, Apiary Garden II, Flower Shop II and Graveyard II](docs/media/job-buildings.png)
 
 **Paths.** When a builder finishes a building they lay a **dirt path** from its door to the heart of the village —
 the meeting bell or the Village Hall within 48 blocks (their bench if there's neither) — round water, trees and other

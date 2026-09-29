@@ -26,6 +26,11 @@ public final class ModItems {
 		BuiltInRegistries.ITEM, AliveWorkplace.id("scan_tool"), new io.github.jcondedata.aliveworkplace.blueprint.ScanToolItem(new Item.Properties().stacksTo(1))
 	);
 
+	/** Draws up shapes (walls, towers, domes...) as blueprints for the builders. */
+	public static final io.github.jcondedata.aliveworkplace.blueprint.ShapePlannerItem SHAPE_PLANNER = Registry.register(
+		BuiltInRegistries.ITEM, AliveWorkplace.id("shape_planner"), new io.github.jcondedata.aliveworkplace.blueprint.ShapePlannerItem(new Item.Properties().stacksTo(1))
+	);
+
 	/** A route for a guard to patrol. */
 	public static final io.github.jcondedata.aliveworkplace.guard.PatrolMapItem PATROL_MAP = Registry.register(
 		BuiltInRegistries.ITEM, AliveWorkplace.id("patrol_map"), new io.github.jcondedata.aliveworkplace.guard.PatrolMapItem(new Item.Properties().stacksTo(1))
@@ -84,6 +89,7 @@ public final class ModItems {
 				output.accept(ModBlocks.BLUEPRINT_TABLE);
 				output.accept(BLANK_BLUEPRINT);
 				output.accept(SCAN_TOOL);
+				output.accept(SHAPE_PLANNER);
 				output.accept(PATROL_MAP);
 				output.accept(RALLY_BANNER);
 				output.accept(VILLAGE_LEDGER);

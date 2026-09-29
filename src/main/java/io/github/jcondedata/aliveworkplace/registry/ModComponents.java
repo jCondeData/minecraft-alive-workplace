@@ -49,6 +49,15 @@ public final class ModComponents {
 			.networkSynchronized(io.github.jcondedata.aliveworkplace.guard.PatrolMapItem.Route.STREAM_CODEC).build()
 	);
 
+	/** What a Shape Planner is set to draw. */
+	public static final DataComponentType<io.github.jcondedata.aliveworkplace.blueprint.Shapes.Settings> SHAPE = Registry.register(
+		BuiltInRegistries.DATA_COMPONENT_TYPE,
+		AliveWorkplace.id("shape"),
+		DataComponentType.<io.github.jcondedata.aliveworkplace.blueprint.Shapes.Settings>builder()
+			.persistent(io.github.jcondedata.aliveworkplace.blueprint.Shapes.Settings.CODEC)
+			.networkSynchronized(io.github.jcondedata.aliveworkplace.blueprint.Shapes.Settings.STREAM_CODEC).build()
+	);
+
 	/** The Village Hall a Village Ledger is bound to. */
 	public static final DataComponentType<io.github.jcondedata.aliveworkplace.hall.VillageLedgerItem.Ledger> LEDGER = Registry.register(
 		BuiltInRegistries.DATA_COMPONENT_TYPE,

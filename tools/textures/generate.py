@@ -391,6 +391,27 @@ def scan_tool_item():
     save(img, "item", "scan_tool.png")
 
 
+def shape_planner_item():
+    img = Image.new("RGBA", (16, 16), T)
+    rnd = random.Random(577)
+    # A blueprint sheet with a circle and a pyramid drawn in white, a brass drafting compass standing on it
+    paper, edge, line = rgb("#3f6fb8"), rgb("#2c4f86"), rgb("#dce9fb")
+    for y in range(2, 15):
+        for x in range(1, 13):
+            img.putpixel((x, y), jitter(edge if x in (1, 12) or y in (2, 14) else paper, rnd, 5))
+    for x, y in ((4, 4), (5, 4), (6, 4), (3, 5), (7, 5), (3, 6), (7, 6), (3, 7), (7, 7), (4, 8), (5, 8), (6, 8)):
+        img.putpixel((x, y), line)  # the circle
+    for x, y in ((7, 10), (6, 11), (8, 11), (5, 12), (9, 12), (4, 13), (5, 13), (6, 13), (7, 13), (8, 13), (9, 13), (10, 13)):
+        img.putpixel((x, y), line)  # the pyramid
+    brass, dark = rgb("#e0b04a"), rgb("#8a5a1f")
+    img.putpixel((13, 1), dark)
+    img.putpixel((13, 2), brass)
+    for i in range(10):  # two legs spreading from the hinge
+        img.putpixel((12 - i // 3, 3 + i), brass if i % 2 else dark)
+        img.putpixel((14 - i // 5, 3 + i), brass)
+    save(img, "item", "shape_planner.png")
+
+
 def patrol_map_item():
     img = Image.new("RGBA", (16, 16), T)
     rnd = random.Random(551)
@@ -2769,6 +2790,7 @@ if __name__ == "__main__":
     patrol_map_item()
     rally_banner_item()
     village_ledger_item()
+    shape_planner_item()
     ferryman_overlay()
     delivery_note_item()
     price_tag_item()

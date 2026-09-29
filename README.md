@@ -113,6 +113,13 @@ in the Blueprint Table for everyone. Rename the tool in an anvil first to name t
 "Cozy Cabin 2" for its upgrade. The low-Z (north) side is the front and the lowest layer sits on the ground; turn it any
 way you like when you place it.
 
+**Shape Planner: walls, towers and domes.** Craft a **Shape Planner** (a Blank Blueprint and a compass) and right-click
+the air with it: pick a **box** (a wall, a floor, a room), a **cylinder** (a tower or a ring wall), a **dome**, a
+**sphere**, a **cone**, a **pyramid** or an **arch**, its width, height and depth (1 to 32; shift-click for steps of 5),
+solid or hollow, and one of the building blocks you carry. **Draw the blueprint** turns a Blank Blueprint into a
+blueprint of it; hand it to a builder like any other. Hollow shapes are cleared inside (a tower's inside is dug out
+down to its floor, a dome's down to the ground), and the arch leaves its way through open.
+
 ![The Starter Cottage II as drawn, in Stonework, Sandstone, Dark Oak and Cherry](docs/media/styles.png)
 
 **Decorations.** The Blueprint Table also has the small builds that make a village a place: a **Well** (II puts a

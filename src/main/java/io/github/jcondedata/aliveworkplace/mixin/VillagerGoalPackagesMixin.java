@@ -107,6 +107,10 @@ abstract class VillagerGoalPackagesMixin {
 			// Butchers look after the cows, pigs, chickens and rabbits around their smoker.
 			cir.setReturnValue(io.github.jcondedata.aliveworkplace.work.UpgradedJob.work(cir.getReturnValue(),
 				new io.github.jcondedata.aliveworkplace.ranch.HerderWork(), v -> !io.github.jcondedata.aliveworkplace.ranch.RanchWork.isBusy(v)));
+		} else if (profession == VillagerProfession.LEATHERWORKER) {
+			// Leatherworkers dye what the builders nearby are waiting for.
+			cir.setReturnValue(io.github.jcondedata.aliveworkplace.work.UpgradedJob.work(cir.getReturnValue(),
+				new io.github.jcondedata.aliveworkplace.craft.DyerWork(), io.github.jcondedata.aliveworkplace.craft.CrafterWork::vanillaMayRun));
 		} else if (profession == VillagerProfession.FISHERMAN) {
 			cir.setReturnValue(io.github.jcondedata.aliveworkplace.work.UpgradedJob.work(cir.getReturnValue(),
 				new io.github.jcondedata.aliveworkplace.fish.FisherWork(), io.github.jcondedata.aliveworkplace.fish.Fishers::vanillaMayRun));

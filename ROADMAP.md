@@ -391,16 +391,18 @@ loop: ore → ingots → the tools, weapons and armor the other workers wear out
   culling only when hired — a lead — above 10 grown of a kind; milk into chest buckets up to 4; chefs take milk and eggs
   from the butcher's chests)
 - [ ] Herder follow-up: with Cobblemon, milk pastured Miltank (Cobblemon milks only through a player's interaction)
-- [ ] **Leatherworker → Dyer** (cauldron): dyes from flowers, dyed wool/terracotta/glass/concrete for builders' requests,
-  leather goods (item frames, books' leather)
+- [x] **Leatherworker → Dyer** (cauldron): dyes from flowers, dyed wool/terracotta/glass/concrete for builders' requests,
+  leather goods (item frames, books' leather) (`craft/DyerWork`: a `CrafterWork` serving builders but only for coloured
+  items by name (`<colour>_…`, `…_dye`); concrete from its powder, hardened in the cauldron, the powder mixed first if
+  needed (`CrafterWork.wants`/`planFor` hooks). Leather goods are the carpenter's already)
 - [ ] **Cleric → Alchemist** (brewing stand): brews healing, regeneration and strength potions from the chests; guards
   drink them in a fight, nurses use them
 - [ ] **Librarian → Scribe** (lectern): books and bookshelves for builders; enchants workers' tools and guards' gear with
   lapis
 - [ ] **Cartographer → Explorer** (cartography table): day-long expeditions with food and a weapon, bringing back finds
   (MineColonies' expeditions/nether worker); explorer maps to nearby structures for players
-- [ ] Mason extras: crushing (cobblestone → gravel → sand), glass from sand in a furnace, concrete powder hardened in
-  water (MineColonies' crusher, glassblower, concrete mixer)
+- [ ] Mason extras: crushing (cobblestone → gravel → sand), glass from sand in a furnace (MineColonies' crusher,
+  glassblower); concrete powder hardened in water is done by the dyer
 
 ## Milestone 8 — Growing things
 - [ ] Farmer fields grow the plantation crops too: bamboo, cactus, kelp, vines, mushrooms, nether wart (MineColonies'

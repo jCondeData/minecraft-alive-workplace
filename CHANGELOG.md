@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+## 0.85.0 — 2026-09-28
+
+### Added
+- **Leatherworkers dye for the builders**: coloured wool, carpet, glass, terracotta, candles, beds and dyes a builder
+  is waiting for are made from what the builder can get at, and concrete powder is hardened into concrete in the
+  cauldron.
+
 ## 0.84.0 — 2026-09-28
 
 ### Added

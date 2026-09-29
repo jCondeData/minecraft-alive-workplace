@@ -95,6 +95,7 @@ where they take tools and supplies from and where their work goes.
 | Porter | Storehouse | empty chests: the village's store | nothing |
 | Carpenter | Carpenter's Bench | — (uses the builders' wood) | nothing |
 | Mason | Stonecutter (vanilla) | — (uses the builders' stone) | nothing |
+| Leatherworker (dyer) | Cauldron (vanilla) | — (uses the builders' wool, flowers, powder...) | nothing |
 | Chef | Kitchen Stove | the makings: wheat, raw meat and fish, potatoes... | nothing |
 | Armorer (smelter) | Blast Furnace (vanilla) | ore and coal (or nothing: they fetch it) | nothing — or sneak-right-click with coal to hire them |
 | Toolsmith | Smithing Table (vanilla) | diamonds, if you want diamond tools | nothing — or sneak-right-click with an iron ingot to hire them |
@@ -267,7 +268,7 @@ shed with a Storehouse and eight chests. **Storehouse II** adds a second bay wit
 stone warehouse behind with sixteen more. Any building of your own with a Storehouse in it works just as well, and
 villages sometimes grow a storehouse of their own.
 
-## Carpenters and masons
+## Carpenters, masons and dyers
 ![A carpenter taking the spruce fences they made to a builder](docs/media/carpenter.png)
 ![The Market Stall finished from nothing but spruce logs: the carpenter made the planks, fences, barrels and composter](docs/media/carpenter-stall.png)
 
@@ -278,7 +279,10 @@ game's own crafting recipes (modded ones too) and takes it to the builder's ches
 planks from the builder's logs, sticks, torches, glass panes... up to two steps down count, so fences come from logs by
 way of planks and sticks. Only what the rest of the build doesn't need is used: planks for stairs, but not the planks the walls still
 want. **Masons** (vanilla villagers at a stonecutter) do the same with the stonecutter's recipes — stone bricks, stairs,
-slabs and walls cut from stone — and go about their usual day in between. Villages sometimes grow a carpenter's
+slabs and walls cut from stone — and go about their usual day in between. **Leatherworkers** (vanilla villagers at a
+cauldron) are the village's dyers: anything coloured a builder is waiting for — wool, carpet, stained glass,
+terracotta, candles, beds, dyes from flowers — they make the same way, and they harden concrete powder into concrete
+in the cauldron (mixing the powder from sand, gravel and dye first if need be). Villages sometimes grow a carpenter's
 workshop.
 
 ## Armorers, toolsmiths, weaponsmiths and fletchers

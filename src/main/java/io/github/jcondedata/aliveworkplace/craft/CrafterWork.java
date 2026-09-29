@@ -363,13 +363,16 @@ public class CrafterWork extends Behavior<Villager> {
 			List<Map.Entry<Item, Integer>> missing = new ArrayList<>(site.missing().entrySet());
 			missing.sort(Map.Entry.<Item, Integer>comparingByValue().reversed());
 			for (Map.Entry<Item, Integer> want : missing) {
+				if (!wants(want.getKey())) {
+					continue;
+				}
 				String claim = builder.getUUID() + "|" + BuiltInRegistries.ITEM.getKey(want.getKey());
 				synchronized (CLAIMS) {
 					if (CLAIMS.containsKey(claim)) {
 						continue;
 					}
 				}
-				Crafting.Plan made = Crafting.plan(level, kind, want.getKey(), want.getValue(), usable);
+				Crafting.Plan made = planFor(level, want.getKey(), want.getValue(), usable);
 				if (!fits(made)) {
 					continue;
 				}
@@ -380,6 +383,17 @@ public class CrafterWork extends Behavior<Villager> {
 			}
 		}
 		return null;
+	}
+
+	/** Whether this crafter makes {@code item} for builders (everything its recipes make, unless a job says otherwise). */
+	protected boolean wants(Item item) {
+		return true;
+	}
+
+	/** How to make {@code count} of {@code item} from {@code usable} (the recipes of this crafter's kind), or null. */
+	@Nullable
+	protected Crafting.Plan planFor(ServerLevel level, Item item, int count, Map<Item, Long> usable) {
+		return Crafting.plan(level, kind, item, count, usable);
 	}
 
 	/** Whether another crafter is on {@code claim} (a request they took); forgets claims that ran out. */

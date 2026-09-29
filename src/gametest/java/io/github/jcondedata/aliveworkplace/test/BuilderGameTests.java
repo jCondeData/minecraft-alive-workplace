@@ -415,6 +415,37 @@ public class BuilderGameTests implements FabricGameTest {
 		});
 	}
 
+	/** A builder short of white concrete and red wool: the village's leatherworker hardens the powder and dyes the wool. */
+	@GameTest(template = AREA, timeoutTicks = 3000, batch = "dyer")
+	public void dyerMakesTheConcreteAndRedWoolTheBuilderNeeds(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		io.github.jcondedata.aliveworkplace.work.Village.RADIUS = 48;
+		ServerLevel level = helper.getLevel();
+		BlockPos src = new BlockPos(12, 2, 12);
+		for (int x = 0; x < 3; x++) {
+			helper.setBlock(src.offset(x, 0, 0), Blocks.WHITE_CONCRETE);
+			helper.setBlock(src.offset(x, 0, 1), Blocks.RED_WOOL);
+		}
+		ResourceLocation wall = ResourceLocation.fromNamespaceAndPath("aliveworkplace_test", "coloured_" + Long.toHexString(level.getGameTime()));
+		level.getStructureManager().getOrCreate(wall).fillFromWorld(level, helper.absolutePos(src), new Vec3i(3, 1, 2), false, Blocks.STRUCTURE_VOID);
+		for (int x = 0; x < 3; x++) {
+			helper.setBlock(src.offset(x, 0, 0), Blocks.AIR);
+			helper.setBlock(src.offset(x, 0, 1), Blocks.AIR);
+		}
+		Setup s = setup(helper, wall, HUT_ORIGIN, Rotation.NONE, new ItemStack(Items.WHITE_CONCRETE_POWDER, 3), new ItemStack(Items.WHITE_WOOL, 3),
+			new ItemStack(Items.POPPY, 3));
+		BlockPos cauldron = new BlockPos(14, 2, 2);
+		helper.setBlock(cauldron, Blocks.CAULDRON);
+		Villager dyer = helper.spawn(EntityType.VILLAGER, new BlockPos(14, 2, 3));
+		io.github.jcondedata.aliveworkplace.work.Jobs.employ(level, dyer, helper.absolutePos(cauldron), net.minecraft.world.entity.ai.village.poi.PoiTypes.LEATHERWORKER,
+			VillagerProfession.LEATHERWORKER);
+		helper.succeedWhen(() -> {
+			assertBuilt(helper, s);
+			helper.assertTrue(dyer.getAttachedOrElse(ModAttachments.ITEMS_CRAFTED, 0) == 6, "the dyer made " + dyer.getAttachedOrElse(ModAttachments.ITEMS_CRAFTED, 0));
+			io.github.jcondedata.aliveworkplace.work.Village.RADIUS = 0;
+		});
+	}
+
 	/** A builder waiting for stripped logs: the village's lumberjack strips them from the logs in its chest. */
 	@GameTest(template = AREA, timeoutTicks = 2400, batch = "stripped_logs")
 	public void lumberjackStripsLogsForTheBuilder(GameTestHelper helper) {

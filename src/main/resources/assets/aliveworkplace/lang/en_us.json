@@ -646,5 +646,6 @@
   "message.aliveworkplace.herder.state.breed": "feeding a pair to breed",
   "message.aliveworkplace.herder.state.deposit": "putting it all away",
   "message.aliveworkplace.herder.state.no_chest": "needs a chest by the smoker",
-  "message.aliveworkplace.herder.hired": "%s keeps your herd now: the animals within %s blocks of the smoker are bred up to %s of each kind, and the extra grown ones go for meat."
+  "message.aliveworkplace.herder.hired": "%s keeps your herd now: the animals within %s blocks of the smoker are bred up to %s of each kind, and the extra grown ones go for meat.",
+  "message.aliveworkplace.dyer.title": "Dyer · %s made"
 }

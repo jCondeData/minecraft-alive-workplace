@@ -1,0 +1,9 @@
+{
+  "parent": "minecraft:block/orientable_with_bottom",
+  "textures": {
+    "top": "aliveworkplace:block/village_hall_top",
+    "bottom": "aliveworkplace:block/village_hall_side",
+    "side": "aliveworkplace:block/village_hall_side",
+    "front": "aliveworkplace:block/village_hall_front"
+  }
+}

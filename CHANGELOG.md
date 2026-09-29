@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+## 0.97.0 — 2026-09-29
+
+### Added
+- **Village Hall** (new block): right-click it for the village at a glance — villagers, beds, food in store, guards,
+  requests and buildings going up, then everyone who lives there with their job, level, what they're doing and waiting
+  for and where they are. Click a villager to make them glow. The village gets a made-up name, or use a Name Tag on the
+  hall to name it.
+
 ## 0.96.0 — 2026-09-29
 
 ### Added

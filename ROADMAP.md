@@ -435,8 +435,10 @@ loop: ore → ingots → the tools, weapons and armor the other workers wear out
   Pokémon drops stay the butcher's chores)
 
 ## Milestone 9 — Village life (the colony layer, keyed on blocks)
-- [ ] **Village Hall** block (near the bell): the village at a glance — every worker with job, level, status and what
-  they're waiting for; beds, food in store, guards, requests; the village's name
+- [x] **Village Hall** block (near the bell): the village at a glance — every worker with job, level, status and what
+  they're waiting for; beds, food in store, guards, requests; the village's name (`hall/`: a chest-style screen with no
+  client code, everyone within `villageHallRadius` (64); workers as their workstation stacked to their level, click to
+  make them glow; a made-up name until a Name Tag names it; a POI nobody works at so the nearest hall is quick to find)
 - [ ] **Needs**: villagers eat (the chef's food, from the store), sleep in beds and like a safe, lit village; a
   well-kept village works up to 25% faster, a hungry one slower; shown in the Village Hall
 - [ ] **Growth**: new villagers when there are free beds and food in store; housing blueprints (cottages, terraces,
@@ -512,3 +514,5 @@ loop: ore → ingots → the tools, weapons and armor the other workers wear out
 - 2026-09-29: two scheduled sessions ran at the same time and both built the Miltank milking and plantation-crop items;
   the second one's work was dropped for the first's. If sessions overlap again, the later one should take items further
   down the list (as the Training Dummy was) or the schedule should be spread out (owner).
+- 2026-09-29: session `01Xw8jqb` is working down **Milestone 9** in order (Village Hall done; next Needs, Growth,
+  School, …); a session running at the same time should take Milestone 10 and on, to keep out of each other's way.

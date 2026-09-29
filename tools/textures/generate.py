@@ -1542,6 +1542,72 @@ def florist_overlay():
     save(img, "entity", "zombie_villager", "profession", "florist.png")
 
 
+# --- Village Hall: a dark timber block with a notice board on the front and a village map on top -------------------
+def village_hall(face):
+    rnd = random.Random({"top": 361, "side": 362, "front": 363}[face])
+    img = Image.new("RGBA", (16, 16))
+    dark = [rgb("#4a3321"), rgb("#553b26"), rgb("#3f2b1b")]
+    frame = rgb("#2c1d12")
+    for y in range(16):
+        for x in range(16):
+            img.putpixel((x, y), jitter(dark[(y // 4) % 2] if (x + (y // 4) * 3) % 16 else dark[2], rnd, 5))
+    for i in range(16):
+        for p in ((i, 0), (i, 15), (0, i), (15, i)):
+            img.putpixel(p, jitter(frame, rnd, 3))
+    if face == "top":
+        # A village map: green fields, a blue river, little roofs and a gold star for the hall
+        for y in range(2, 14):
+            for x in range(2, 14):
+                img.putpixel((x, y), jitter(rgb("#e8d9a8"), rnd, 6))
+        for y in range(2, 14):
+            rx = 4 + (y // 3) % 2
+            img.putpixel((rx, y), rgb("#4d7fc4"))
+            img.putpixel((rx + 1, y), rgb("#6b9bd6"))
+        for (fx, fy) in ((8, 3), (9, 3), (8, 4), (9, 4), (11, 10), (12, 10), (11, 11), (12, 11)):
+            img.putpixel((fx, fy), jitter(rgb("#6fa04a"), rnd, 6))
+        for (hx, hy) in ((10, 6), (7, 9), (12, 7), (8, 12)):
+            img.putpixel((hx, hy), rgb("#a4452e"))
+        for (sx, sy) in ((9, 8), (8, 8), (10, 8), (9, 7), (9, 9)):
+            img.putpixel((sx, sy), rgb("#e8b830"))
+    elif face == "front":
+        # A cork notice board with pinned papers, under a little bell
+        for y in range(6, 14):
+            for x in range(2, 14):
+                img.putpixel((x, y), jitter(rgb("#b98a55"), rnd, 8))
+        papers = [((3, 7), (6, 10), rgb("#f2ecd8")), ((8, 7), (12, 10), rgb("#efe3c2")), ((7, 11), (10, 13), rgb("#f4f0e4")),
+                  ((3, 11), (5, 13), rgb("#e9dfc6"))]
+        for (x0, y0), (x1, y1), c in papers:
+            for y in range(y0, y1):
+                for x in range(x0, x1):
+                    img.putpixel((x, y), jitter(c, rnd, 4))
+            for x in range(x0 + 1, x1 - 1, 1):  # a line of writing
+                if (x + y0) % 2 == 0:
+                    img.putpixel((x, y0 + 1), rgb("#6d6a63"))
+            img.putpixel((x0 + (x1 - x0) // 2, y0), rgb("#c8302a"))  # the pin
+        # the bell
+        gold, gold_dark = rgb("#f0c33c"), rgb("#b8871f")
+        for (bx, by) in ((7, 1), (8, 1), (7, 2), (8, 2), (6, 3), (7, 3), (8, 3), (9, 3)):
+            img.putpixel((bx, by), gold)
+        for bx in range(5, 11):  # the flared rim
+            img.putpixel((bx, 4), gold_dark if bx in (5, 10) else gold)
+        img.putpixel((9, 2), gold_dark)
+        img.putpixel((9, 3), gold_dark)
+    else:
+        # Bookshelf-like records on the sides
+        for row in (3, 9):
+            for x in range(2, 14):
+                img.putpixel((x, row + 5), jitter(frame, rnd, 3))
+            colours = [rgb("#7b2d26"), rgb("#2f4f7a"), rgb("#3f6b3a"), rgb("#8a6a2a"), rgb("#5a3a6a")]
+            x = 2
+            while x < 14:
+                c = colours[rnd.randrange(len(colours))]
+                h = rnd.randint(3, 5)
+                for y in range(row + 5 - h, row + 5):
+                    img.putpixel((x, y), jitter(c, rnd, 6))
+                x += 1 if rnd.random() < 0.8 else 2
+    save(img, "block", "village_hall_" + face + ".png")
+
+
 # --- Feed Trough: the rancher's workstation, a plank trough full of hay ----------------------------------------
 def feed_trough(face):
     rnd = random.Random({"top": 341, "side": 342, "front": 343}[face])
@@ -2035,6 +2101,8 @@ if __name__ == "__main__":
     florist_overlay()
     for face in ("top", "side", "front"):
         feed_trough(face)
+    for face in ("top", "side", "front"):
+        village_hall(face)
     rancher_overlay()
     for part in ("burlap", "face", "straw", "post"):
         training_dummy(part)

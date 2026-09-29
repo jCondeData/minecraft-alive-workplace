@@ -118,6 +118,10 @@ public class ScreenshotHarness implements ClientModInitializer {
 			carpenterScene(mc, mc.getSingleplayerServer());
 			return;
 		}
+		if ("hall".equals(System.getProperty("aliveworkplace.scene"))) {
+			hallScene(mc, mc.getSingleplayerServer());
+			return;
+		}
 		if ("porter".equals(System.getProperty("aliveworkplace.scene"))) {
 			porterScene(mc, mc.getSingleplayerServer());
 			return;
@@ -509,6 +513,101 @@ public class ScreenshotHarness implements ClientModInitializer {
 			shot(mc, "30_carpenter_closeup");
 			mc.stop();
 		}
+	}
+
+	// --- Village Hall: the village at a glance ----------------------------------------------------------
+
+	private void hallScene(Minecraft mc, MinecraftServer server) {
+		tick++;
+		if (tick == 1) {
+			mc.options.renderDistance().set(6);
+			mc.options.cloudStatus().set(CloudStatus.OFF);
+		}
+		if (tick == 30) {
+			server.execute(() -> {
+				ServerLevel level = server.overworld();
+				level.getGameRules().getRule(GameRules.RULE_DAYLIGHT).set(false, server);
+				level.getGameRules().getRule(GameRules.RULE_DOMOBSPAWNING).set(false, server);
+				level.setDayTime(2500);
+				BlockPos hall = new BlockPos(0, -60, 3);
+				level.setBlockAndUpdate(hall, ModBlocks.VILLAGE_HALL.defaultBlockState()
+					.setValue(io.github.jcondedata.aliveworkplace.hall.VillageHallBlock.FACING, Direction.SOUTH));
+				// A builder waiting for materials, a lumberjack without an axe, a porter with food in the store, a guard, a
+				// rancher, a florist, one villager without a job and a child; three beds.
+				BlockPos builderBench = new BlockPos(-8, -60, -6);
+				level.setBlockAndUpdate(builderBench, ModBlocks.BUILDERS_BENCH.defaultBlockState());
+				Villager builder = EntityType.VILLAGER.spawn(level, builderBench.south(), MobSpawnType.COMMAND);
+				Builders.employ(level, builder, builderBench);
+				Builders.start(level, builder, null, StarterBlueprints.MARKET_STALL.id(),
+					new BlueprintData.Placement(level.dimension().location(), new BlockPos(-18, -60, -16),
+						net.minecraft.world.level.block.Rotation.NONE, net.minecraft.world.level.block.Mirror.NONE));
+				BlockPos chopping = new BlockPos(8, -60, -6);
+				level.setBlockAndUpdate(chopping, ModBlocks.CHOPPING_BLOCK.defaultBlockState());
+				level.setBlockAndUpdate(chopping.east(), Blocks.CHEST.defaultBlockState());
+				Villager lumberjack = EntityType.VILLAGER.spawn(level, chopping.south(), MobSpawnType.COMMAND);
+				io.github.jcondedata.aliveworkplace.work.Jobs.employ(level, lumberjack, chopping,
+					io.github.jcondedata.aliveworkplace.registry.ModVillagers.CHOPPING_BLOCK_POI, io.github.jcondedata.aliveworkplace.registry.ModVillagers.LUMBERJACK);
+				BlockPos storehouse = new BlockPos(10, -60, 8);
+				level.setBlockAndUpdate(storehouse, ModBlocks.STOREHOUSE.defaultBlockState());
+				level.setBlockAndUpdate(storehouse.east(), Blocks.CHEST.defaultBlockState());
+				BaseContainerBlockEntity store = (BaseContainerBlockEntity) level.getBlockEntity(storehouse.east());
+				store.setItem(0, new ItemStack(net.minecraft.world.item.Items.BREAD, 32));
+				store.setItem(1, new ItemStack(net.minecraft.world.item.Items.BAKED_POTATO, 18));
+				store.setItem(2, new ItemStack(net.minecraft.world.item.Items.APPLE, 9));
+				Villager porter = EntityType.VILLAGER.spawn(level, storehouse.south(), MobSpawnType.COMMAND);
+				io.github.jcondedata.aliveworkplace.store.Porters.employ(level, porter, storehouse);
+				employ(level, new BlockPos(-10, -60, 8), ModBlocks.GUARD_POST, io.github.jcondedata.aliveworkplace.registry.ModVillagers.GUARD_POST_POI,
+					io.github.jcondedata.aliveworkplace.registry.ModVillagers.GUARD);
+				employ(level, new BlockPos(-4, -60, 14), ModBlocks.FEED_TROUGH, io.github.jcondedata.aliveworkplace.registry.ModVillagers.FEED_TROUGH_POI,
+					io.github.jcondedata.aliveworkplace.registry.ModVillagers.RANCHER);
+				employ(level, new BlockPos(5, -60, 14), ModBlocks.FLOWER_STAND, io.github.jcondedata.aliveworkplace.registry.ModVillagers.FLOWER_STAND_POI,
+					io.github.jcondedata.aliveworkplace.registry.ModVillagers.FLORIST);
+				EntityType.VILLAGER.spawn(level, new BlockPos(2, -60, 6), MobSpawnType.COMMAND);
+				Villager child = EntityType.VILLAGER.spawn(level, new BlockPos(-2, -60, 6), MobSpawnType.COMMAND);
+				child.setAge(-24000);
+				for (int x = -3; x <= 1; x += 2) {
+					level.setBlockAndUpdate(new BlockPos(x, -60, -2), Blocks.RED_BED.defaultBlockState()
+						.setValue(net.minecraft.world.level.block.BedBlock.FACING, Direction.SOUTH)
+						.setValue(net.minecraft.world.level.block.BedBlock.PART, net.minecraft.world.level.block.state.properties.BedPart.FOOT));
+					level.setBlockAndUpdate(new BlockPos(x, -60, -1), Blocks.RED_BED.defaultBlockState()
+						.setValue(net.minecraft.world.level.block.BedBlock.FACING, Direction.SOUTH)
+						.setValue(net.minecraft.world.level.block.BedBlock.PART, net.minecraft.world.level.block.state.properties.BedPart.HEAD));
+				}
+				hover(server.getPlayerList().getPlayers().get(0), new Vec3(0.5, -58.3, 7.5), 180, 20);
+			});
+		}
+		if (tick == 200) {
+			shot(mc, "01_hall_block");
+			server.execute(() -> io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.open(server.getPlayerList().getPlayers().get(0), new BlockPos(0, -60, 3)));
+		}
+		if (tick == 220) {
+			pointAt(mc, 1);
+		}
+		if (tick == 230) {
+			shot(mc, "02_hall_people");
+			pointAt(mc, 18);
+		}
+		if (tick == 245) {
+			shot(mc, "03_hall_builder");
+			pointAt(mc, 5);
+		}
+		if (tick == 260) {
+			shot(mc, "04_hall_requests");
+			pointAt(mc, 19);
+		}
+		if (tick == 275) {
+			shot(mc, "05_hall_worker");
+			mc.stop();
+		}
+	}
+
+	private static void employ(ServerLevel level, BlockPos pos, net.minecraft.world.level.block.Block station,
+							   net.minecraft.resources.ResourceKey<net.minecraft.world.entity.ai.village.poi.PoiType> poi,
+							   net.minecraft.world.entity.npc.VillagerProfession job) {
+		level.setBlockAndUpdate(pos, station.defaultBlockState());
+		level.setBlockAndUpdate(pos.east(), Blocks.CHEST.defaultBlockState());
+		Villager villager = EntityType.VILLAGER.spawn(level, pos.south(), MobSpawnType.COMMAND);
+		io.github.jcondedata.aliveworkplace.work.Jobs.employ(level, villager, pos, poi, job);
 	}
 
 	// --- Porter: carrying a miner's goods to the storehouse ------------------------------------------

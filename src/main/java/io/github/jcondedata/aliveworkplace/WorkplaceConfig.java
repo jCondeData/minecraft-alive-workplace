@@ -40,6 +40,8 @@ public final class WorkplaceConfig {
 	public int postmanRange = 64;
 	/** Workers whose workstations are this close together are one village and share their chests. */
 	public int villageRadius = 48;
+	/** How far from a Village Hall its village reaches. */
+	public int villageHallRadius = 64;
 	/** What an emerald price comes to in CobbleDollars (lessons, shops, fares). */
 	public int dollarsPerEmerald = 100;
 
@@ -88,6 +90,7 @@ public final class WorkplaceConfig {
 		explorerRange = clamp(explorerRange, 16, 128);
 		postmanRange = clamp(postmanRange, 16, 256);
 		villageRadius = clamp(villageRadius, 0, 128);
+		villageHallRadius = clamp(villageHallRadius, 16, 160);
 		dollarsPerEmerald = clamp(dollarsPerEmerald, 1, 10_000);
 	}
 
@@ -110,5 +113,6 @@ public final class WorkplaceConfig {
 		// switch sharing on in batches of their own.
 		io.github.jcondedata.aliveworkplace.work.Village.RADIUS = System.getProperty("fabric-api.gametest") != null ? 0 : villageRadius;
 		Money.DOLLARS_PER_EMERALD = dollarsPerEmerald;
+		io.github.jcondedata.aliveworkplace.hall.VillageHalls.RADIUS = villageHallRadius;
 	}
 }

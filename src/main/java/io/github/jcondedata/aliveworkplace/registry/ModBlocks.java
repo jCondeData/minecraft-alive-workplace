@@ -144,6 +144,15 @@ public final class ModBlocks {
 		Registry.register(BuiltInRegistries.BLOCK_ENTITY_TYPE, AliveWorkplace.id("storehouse"),
 			net.minecraft.world.level.block.entity.BlockEntityType.Builder.of(io.github.jcondedata.aliveworkplace.store.StorehouseBlockEntity::new, STOREHOUSE).build(null));
 
+	/** The Village Hall: the village at a glance (right-click), and the village's name. */
+	public static final io.github.jcondedata.aliveworkplace.hall.VillageHallBlock VILLAGE_HALL = register(
+		"village_hall", new io.github.jcondedata.aliveworkplace.hall.VillageHallBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.BOOKSHELF))
+	);
+
+	public static final net.minecraft.world.level.block.entity.BlockEntityType<io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity> VILLAGE_HALL_ENTITY =
+		Registry.register(BuiltInRegistries.BLOCK_ENTITY_TYPE, AliveWorkplace.id("village_hall"),
+			net.minecraft.world.level.block.entity.BlockEntityType.Builder.of(io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity::new, VILLAGE_HALL).build(null));
+
 	/** Workstation for the Carpenter: they make what the builders nearby are waiting for, here. */
 	public static final BuildersBenchBlock CARPENTERS_BENCH = register(
 		"carpenters_bench", new BuildersBenchBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.CRAFTING_TABLE))

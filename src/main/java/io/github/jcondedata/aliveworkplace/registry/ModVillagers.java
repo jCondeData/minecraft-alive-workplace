@@ -301,6 +301,11 @@ public final class ModVillagers {
 		)
 	);
 
+	/** The Village Hall: a point of interest nobody works at, so the nearest hall is quick to find. */
+	public static final ResourceLocation VILLAGE_HALL_ID = AliveWorkplace.id("village_hall");
+	public static final ResourceKey<PoiType> VILLAGE_HALL_POI = ResourceKey.create(Registries.POINT_OF_INTEREST_TYPE, VILLAGE_HALL_ID);
+	public static final PoiType VILLAGE_HALL_POI_TYPE = PointOfInterestHelper.register(VILLAGE_HALL_ID, 0, 1, ModBlocks.VILLAGE_HALL);
+
 	public static final ResourceLocation FEED_TROUGH_ID = AliveWorkplace.id("feed_trough");
 	public static final ResourceKey<PoiType> FEED_TROUGH_POI = ResourceKey.create(Registries.POINT_OF_INTEREST_TYPE, FEED_TROUGH_ID);
 	public static final PoiType FEED_TROUGH_POI_TYPE = PointOfInterestHelper.register(FEED_TROUGH_ID, 1, 1, ModBlocks.FEED_TROUGH);

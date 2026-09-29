@@ -84,6 +84,23 @@ and it lines up exactly over it; the builder takes off what changes and builds o
 else. Once a builder finishes a building that has an upgrade, **they sell its blueprint** (and tell you). The
 upgrades are in the Blueprint Table too. Your own blueprints work the same way (`my_house` → `my_house_2`).
 
+## The Village Hall
+![The Village Hall's screen: the village's numbers over everyone who lives there](docs/media/village_hall.png)
+
+Craft a **Village Hall** (gold, a book and gold over planks with an emerald in the middle) and put it in the middle
+of your village — by the bell is a good spot. Right-click it for the village at a glance, everyone within 64 blocks:
+
+- **the numbers**: how many villagers (with a job, without one, children), beds and how many are free, the food in the
+  store (in the chests by the Storehouses and Kitchen Stoves), guards, everything the workers are waiting for and the
+  buildings going up, with how far along they are;
+- **everyone who lives there**, each worker shown as their workstation (stacked as high as their level): their job,
+  level and XP, what they're doing right now ("Market Stall · 45%", "needs bone meal to grow flowers"), what they're
+  waiting for and where they are ("11 blocks north-west"). **Click one to make them glow** for ten seconds, so you
+  can find them.
+
+The village gets a made-up name (*Thornholm*, *Ashford*...); use a **Name Tag** with a name on the hall to call it
+whatever you like (the tag isn't used up). The hall keeps the name when you break and move it.
+
 ## All the jobs at a glance
 Place the workstation near a villager without a job and they take it. Chests (or barrels) within 8 blocks of it are
 where they take tools and supplies from and where their work goes.
@@ -678,6 +695,7 @@ and restart; out-of-range values are clamped):
 | `lumberjackRadius`, `orchardRadius`, `fisherRadius` | 16 | how far lumberjacks cut, orchard keepers pick and fishers look for water |
 | `partnerRadius` | 16 | how close to a workstation pastured Pokémon must be to help |
 | `postmanRange` | 64 | how far a postman walks to deliver (mail going farther arrives at dawn) |
+| `villageHallRadius` | 64 | how far from a Village Hall its village reaches |
 | `villageRadius` | 48 | workers whose workstations are this close together share their chests (0 turns sharing off) |
 | `dollarsPerEmerald` | 100 | CobbleDollars per emerald for lessons, shop prices and fares |
 

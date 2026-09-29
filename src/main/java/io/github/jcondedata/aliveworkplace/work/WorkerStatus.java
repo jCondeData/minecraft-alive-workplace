@@ -20,6 +20,13 @@ public final class WorkerStatus {
 		STATUS.put(villager, new Entry(title, progress, line, villager.level().getGameTime()));
 	}
 
+	/** What {@code villager} was last up to, if it's recent (null if not). */
+	@org.jetbrains.annotations.Nullable
+	public static synchronized Entry get(Villager villager, long gameTime) {
+		Entry entry = STATUS.get(villager);
+		return entry != null && gameTime - entry.gameTime() <= 100 ? entry : null;
+	}
+
 	public static synchronized Map<Villager, Entry> fresh(long gameTime) {
 		STATUS.entrySet().removeIf(e -> e.getKey().isRemoved() || gameTime - e.getValue().gameTime() > 100);
 		return Map.copyOf(STATUS);

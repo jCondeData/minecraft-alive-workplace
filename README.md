@@ -109,6 +109,7 @@ where they take tools and supplies from and where their work goes.
 | Butcher (herder) | Smoker (vanilla) | empty buckets, wheat/carrots/seeds | nothing — or sneak-right-click with a lead to hire them |
 | Cleric (alchemist) | Brewing Stand (vanilla) | nether wart, glistering melon, ghast tears, blaze powder, bottles | nothing — or sneak-right-click with a glass bottle to hire them |
 | Librarian (scribe) | Lectern (vanilla) + an Enchanting Table | lapis | nothing — or sneak-right-click with lapis to hire them |
+| Cartographer (explorer) | Cartography Table (vanilla) | food (bread, cooked meat...), a sword or axe, empty maps | nothing — or sneak-right-click with a compass to hire them |
 | Postman | Postal Desk | — | Mailboxes for mail; Delivery Notes for hauling |
 | Guard | Guard Post | weapons, armor, a bow or crossbow and arrows | nothing |
 | Nurse | Nurse Station | — | right-click them to be healed |
@@ -345,6 +346,21 @@ workers have in hand (a miner's pickaxe, a lumberjack's axe), one piece at a tim
 storehouse) — like an enchanting table at level 10 for a Novice up to level 30 for a Master, 1 to 3 lapis a piece.
 They also make the books, bookshelves, lecterns and paper a builder nearby is waiting for. Sneak-right-click one with
 lapis to hire them for your own workers.
+
+## Cartographers: expeditions and explorer maps
+**Cartographers** (the vanilla villager at a cartography table) go exploring. With **food** in the chests by their table
+(bread, baked potatoes, cooked meat, stew — one ration a stop; raw meat and rotten flesh won't do), they pack up and set
+out on an expedition: a string of stops out in the land around the village, up to 48 blocks from the table
+(`explorerRange` in the config), searching each for what the land has — flint, feathers, string, clay, nuggets, the odd
+emerald, name tag or diamond, and what each biome adds: saplings and apples in forests, cocoa and bamboo in jungles,
+cactus in deserts, gold in badlands, kelp and shells on beaches, snowballs and ice in the snow. With a **sword or axe**
+in the chests they take it along and hunt as well (meat, bones, gunpowder, the rare ender pearl), wearing it down a
+little every stop. Back home, the finds go in the chests (a porter carries them to the storehouse), they rest, and go
+out again. Leave **empty maps** there too and every third expedition they draw an **Explorer's Map** to a place nearby
+nobody has a map to yet — a village, a temple, an outpost, a ruined portal, trail ruins, a shipwreck — named and marked
+like the vanilla explorer maps. With Cobblemon, expeditions also turn up apricorns, berries, Poké Balls, Exp. Candy and,
+rarely, evolution stones and fossils (for the Fossil Scientist). Pastured Flying and Ground Pokémon shorten their searches
+and rests. They only go where the world is running (near a player). Sneak-right-click one with a compass to hire them.
 
 ## Chefs
 ![A chef cooking at the Kitchen Stove](docs/media/chef.png)

@@ -108,6 +108,11 @@ public final class Porters {
 		if (job == VillagerProfession.SHEPHERD) {
 			return stack.is(Items.WHEAT) ? KEEP_BREEDING_FOOD : 0; // wheat to breed with; the wool goes
 		}
+		if (job == VillagerProfession.CARTOGRAPHER) {
+			// An explorer keeps rations and maps; what they bring back goes to the storehouse.
+			return io.github.jcondedata.aliveworkplace.explore.Explorers.isFood(stack) ? KEEP_BREEDING_FOOD
+				: stack.is(Items.MAP) || stack.is(Items.FILLED_MAP) || stack.is(Items.PAPER) || stack.is(Items.COMPASS) ? ALL : 0;
+		}
 		if (job == VillagerProfession.FISHERMAN) {
 			return furnaceNear && Furnaces.isFish(stack.getItem()) ? ALL : 0;
 		}

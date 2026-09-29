@@ -29,6 +29,11 @@ final class Leftovers {
 	 */
 	static void village(GameTestHelper helper, int radius) {
 		io.github.jcondedata.aliveworkplace.work.Village.RADIUS = radius;
+		after(helper, () -> io.github.jcondedata.aliveworkplace.work.Village.RADIUS = 0);
+	}
+
+	/** Runs {@code reset} when the test ends, passed or failed (a setting the test changed for itself). */
+	static void after(GameTestHelper helper, Runnable reset) {
 		try {
 			java.lang.reflect.Field field = GameTestHelper.class.getDeclaredField("testInfo");
 			field.setAccessible(true);
@@ -40,12 +45,12 @@ final class Leftovers {
 
 				@Override
 				public void testPassed(net.minecraft.gametest.framework.GameTestInfo test, net.minecraft.gametest.framework.GameTestRunner runner) {
-					io.github.jcondedata.aliveworkplace.work.Village.RADIUS = 0;
+					reset.run();
 				}
 
 				@Override
 				public void testFailed(net.minecraft.gametest.framework.GameTestInfo test, net.minecraft.gametest.framework.GameTestRunner runner) {
-					io.github.jcondedata.aliveworkplace.work.Village.RADIUS = 0;
+					reset.run();
 				}
 
 				@Override

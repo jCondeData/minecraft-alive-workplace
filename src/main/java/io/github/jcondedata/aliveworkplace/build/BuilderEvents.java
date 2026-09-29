@@ -186,6 +186,11 @@ public final class BuilderEvents {
 					: io.github.jcondedata.aliveworkplace.work.Hiring.hire((ServerPlayer) player, villager,
 						net.minecraft.network.chat.Component.translatable("message.aliveworkplace.scribe.hired", villager.getDisplayName()));
 			}
+			if (player.isShiftKeyDown() && player.getItemInHand(hand).is(net.minecraft.world.item.Items.COMPASS)
+					&& io.github.jcondedata.aliveworkplace.explore.Explorers.isExplorer(villager)) {
+				return level.isClientSide ? InteractionResult.SUCCESS
+					: io.github.jcondedata.aliveworkplace.explore.Explorers.hire((ServerPlayer) player, villager);
+			}
 			if (player.isShiftKeyDown() && player.getItemInHand(hand).is(net.minecraft.world.item.Items.GLASS_BOTTLE)
 					&& io.github.jcondedata.aliveworkplace.brew.AlchemistWork.isAlchemist(villager)) {
 				return level.isClientSide ? InteractionResult.SUCCESS

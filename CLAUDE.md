@@ -95,6 +95,9 @@ The owner (Jesse) does not write code: sessions are expected to work autonomousl
 - `ranch/` — animals around a workstation: `RanchWork` (collect drops, breed up to a cap, the job's own tending),
   `ShepherdWork` (vanilla Shepherds: shearing, incl. pastured Pokémon), `HerderWork` (vanilla Butchers: milk, eggs, culling when hired)
 - `scribe/` — `EnchantWork`: vanilla Librarians with an Enchanting Table enchanting the workers' gear (books for builders: `craft/ScribeWork`)
+- `explore/` — `ExplorerWork`: vanilla Cartographers on expeditions (food and a weapon from the chests, finds from the
+  `explorer/*` loot tables, the Cobblemon one behind a `fabric:load_conditions`), `Explorers` (food/weapon rules, maps to
+  places in the `explorer_maps` structure tag)
 - `brew/` — `AlchemistWork`: vanilla Clerics brewing healing/regeneration/strength for the guards (`Guards.drink`)
 - `fish/` — the fisher upgrade (vanilla Fishermen, hired with a fishing rod): `FisherWork`, `Fishers`
 - `wood/` — the lumberjack: `Trees` (what counts as a natural tree), `LumberjackWork`, `LumberjackPackages`

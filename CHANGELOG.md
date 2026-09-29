@@ -2,6 +2,15 @@
 
 ## Unreleased
 
+## 0.90.0 — 2026-09-29
+
+### Added
+- **Cartographers go exploring**: with food from the chests by their cartography table (and a sword or axe if there is
+  one) they set out on expeditions around the village and bring back what the land has — flint, clay, nuggets, the odd
+  emerald or diamond, each biome's own finds, meat and monster drops when armed, and with Cobblemon apricorns, berries,
+  evolution stones and fossils. Every third expedition, with an empty map in the chests, they draw an Explorer's Map
+  to a place nearby. Hire one with a compass (sneak-right-click); `explorerRange` in the config.
+
 ## 0.89.0 — 2026-09-29
 
 ### Changed

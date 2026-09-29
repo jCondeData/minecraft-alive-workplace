@@ -84,6 +84,14 @@ public final class ModAttachments {
 	public static final AttachmentType<Integer> ITEMS_ENCHANTED = AttachmentRegistry.create(
 		AliveWorkplace.id("items_enchanted"), builder -> builder.persistent(com.mojang.serialization.Codec.INT));
 
+	/** How many expeditions a Cartographer has come back from (shown above its head). */
+	public static final AttachmentType<Integer> EXPEDITIONS = AttachmentRegistry.create(
+		AliveWorkplace.id("expeditions"), builder -> builder.persistent(com.mojang.serialization.Codec.INT));
+
+	/** How many maps to places nearby a Cartographer has drawn. */
+	public static final AttachmentType<Integer> MAPS_CHARTED = AttachmentRegistry.create(
+		AliveWorkplace.id("maps_charted"), builder -> builder.persistent(com.mojang.serialization.Codec.INT));
+
 	/** How many items a Porter has carried to the storehouse (shown above its head). */
 	public static final AttachmentType<Integer> ITEMS_CARRIED = AttachmentRegistry.create(
 		AliveWorkplace.id("items_carried"), builder -> builder.persistent(com.mojang.serialization.Codec.INT));

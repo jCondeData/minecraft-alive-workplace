@@ -32,6 +32,8 @@ public final class WorkplaceConfig {
 	public int lumberjackRadius = 16;
 	public int orchardRadius = 16;
 	public int fisherRadius = 16;
+	/** How far from their cartography table explorers go on an expedition. */
+	public int explorerRange = 48;
 	/** How far from a workstation pastured Pokémon count as partners. */
 	public int partnerRadius = 16;
 	/** How far from the Postal Desk a postman walks to deliver (farther mail arrives at dawn). */
@@ -83,6 +85,7 @@ public final class WorkplaceConfig {
 		orchardRadius = clamp(orchardRadius, 4, 48);
 		fisherRadius = clamp(fisherRadius, 4, 48);
 		partnerRadius = clamp(partnerRadius, 4, 48);
+		explorerRange = clamp(explorerRange, 16, 128);
 		postmanRange = clamp(postmanRange, 16, 256);
 		villageRadius = clamp(villageRadius, 0, 128);
 		dollarsPerEmerald = clamp(dollarsPerEmerald, 1, 10_000);
@@ -101,6 +104,7 @@ public final class WorkplaceConfig {
 		OrchardWork.RADIUS = orchardRadius;
 		FisherWork.RADIUS = fisherRadius;
 		Partners.RADIUS = partnerRadius;
+		io.github.jcondedata.aliveworkplace.explore.ExplorerWork.RANGE = explorerRange;
 		PostOffice.ROUND = postmanRange;
 		// Gametests run side by side: workers sharing chests across them would mix the tests up. The village tests
 		// switch sharing on in batches of their own.

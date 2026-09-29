@@ -45,6 +45,26 @@ public class CobblemonCompatTests implements FabricGameTest {
 	}
 
 	/** Trainer teams: the same for the same trainer and tier, bigger and stronger as the tier goes up, no legendaries. */
+	/** With Cobblemon, explorers find apricorns, berries, Poké Balls, evolution stones and fossils too. */
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
+	public void explorersFindCobblemonThings(GameTestHelper helper) {
+		var table = helper.getLevel().getServer().reloadableRegistries().getLootTable(io.github.jcondedata.aliveworkplace.explore.Explorers.COBBLEMON);
+		helper.assertTrue(table != net.minecraft.world.level.storage.loot.LootTable.EMPTY, "the Cobblemon finds table didn't load");
+		Villager explorer = helper.spawn(EntityType.VILLAGER, new BlockPos(0, 1, 0));
+		java.util.Set<String> found = new java.util.HashSet<>();
+		for (int i = 0; i < 200; i++) {
+			for (var stack : io.github.jcondedata.aliveworkplace.explore.Explorers.finds(helper.getLevel(), explorer, helper.absolutePos(new BlockPos(0, 1, 0)), false)) {
+				var id = net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(stack.getItem());
+				if (id.getNamespace().equals("cobblemon")) {
+					found.add(id.getPath());
+				}
+			}
+		}
+		helper.assertTrue(found.size() >= 5, "only found " + found);
+		explorer.discard();
+		helper.succeed();
+	}
+
 	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
 	public void trainerTeamsScaleWithTier(GameTestHelper helper) {
 		java.util.UUID id = java.util.UUID.randomUUID();

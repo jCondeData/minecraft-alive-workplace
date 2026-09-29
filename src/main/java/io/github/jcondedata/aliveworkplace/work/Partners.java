@@ -84,6 +84,9 @@ public final class Partners {
 		if (profession == ModVillagers.PORTER) {
 			return Set.of("fighting", "normal"); // strong arms: more carried each trip
 		}
+		if (profession == VillagerProfession.CARTOGRAPHER) {
+			return Set.of("flying", "ground"); // scouting ahead, digging up finds: shorter searches and rests
+		}
 		if (profession == ModVillagers.GUARD) {
 			return Set.of("fighting", "dragon"); // they join the fight (guard/GuardPartners)
 		}

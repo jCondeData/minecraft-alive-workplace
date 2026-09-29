@@ -404,8 +404,12 @@ loop: ore → ingots → the tools, weapons and armor the other workers wear out
   lapis (`craft/ScribeWork`: books, bookshelves, lecterns, paper for builders; `scribe/EnchantWork`: needs an Enchanting
   Table within 8 of the lectern; walks to the worker and enchants gear they wear/hold that isn't enchanted — guards
   first — at strength 5 + 5 × level with the table's enchantments, 1–3 lapis from its chests or the storehouse)
-- [ ] **Cartographer → Explorer** (cartography table): day-long expeditions with food and a weapon, bringing back finds
-  (MineColonies' expeditions/nether worker); explorer maps to nearby structures for players
+- [x] **Cartographer → Explorer** (cartography table): day-long expeditions with food and a weapon, bringing back finds
+  (MineColonies' expeditions/nether worker); explorer maps to nearby structures for players (`explore/ExplorerWork`:
+  stops up to `explorerRange` from the table, only in entity-ticking chunks, one ration each; finds from the
+  `explorer/finds`, `explorer/hunting` and — loaded only with Cobblemon via a Fabric resource condition —
+  `explorer/cobblemon` loot tables; every third trip an empty map becomes a map to the nearest structure in the
+  `aliveworkplace:explorer_maps` tag not yet on a map)
 - [x] Mason extras: crushing (cobblestone → gravel → sand), glass from sand in a furnace (MineColonies' crusher,
   glassblower); concrete powder hardened in water is done by the dyer (`craft/MasonWork`: crushing up to two steps,
   glass when a furnace is by the stonecutter, a coal/charcoal per 8)

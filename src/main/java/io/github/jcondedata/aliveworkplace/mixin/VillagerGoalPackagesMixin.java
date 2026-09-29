@@ -120,6 +120,10 @@ abstract class VillagerGoalPackagesMixin {
 			cir.setReturnValue(io.github.jcondedata.aliveworkplace.work.UpgradedJob.work(cir.getReturnValue(),
 				new io.github.jcondedata.aliveworkplace.craft.ScribeWork(), new io.github.jcondedata.aliveworkplace.scribe.EnchantWork(),
 				v -> io.github.jcondedata.aliveworkplace.craft.CrafterWork.vanillaMayRun(v) && !io.github.jcondedata.aliveworkplace.scribe.EnchantWork.isBusy(v)));
+		} else if (profession == VillagerProfession.CARTOGRAPHER) {
+			// Cartographers go out exploring from their cartography table and bring back what they find.
+			cir.setReturnValue(io.github.jcondedata.aliveworkplace.work.UpgradedJob.work(cir.getReturnValue(),
+				new io.github.jcondedata.aliveworkplace.explore.ExplorerWork(), v -> !io.github.jcondedata.aliveworkplace.explore.ExplorerWork.isBusy(v)));
 		} else if (profession == VillagerProfession.FISHERMAN) {
 			cir.setReturnValue(io.github.jcondedata.aliveworkplace.work.UpgradedJob.work(cir.getReturnValue(),
 				new io.github.jcondedata.aliveworkplace.fish.FisherWork(), io.github.jcondedata.aliveworkplace.fish.Fishers::vanillaMayRun));

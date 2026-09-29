@@ -106,7 +106,7 @@ where they take tools and supplies from and where their work goes.
 | Weaponsmith | Grindstone (vanilla) | worn gear to mend (and what mends it: ingots, planks...) | nothing — or sneak-right-click with an iron ingot to hire them |
 | Fletcher | Fletching Table (vanilla) | sticks, string, iron (glowstone for spectral arrows) | nothing — or sneak-right-click with flint to hire them |
 | Shepherd | Loom (vanilla) | shears, wheat | nothing — or sneak-right-click with shears to hire them |
-| Butcher (herder) | Smoker (vanilla) | empty buckets, wheat/carrots/seeds | nothing — or sneak-right-click with a lead to hire them |
+| Butcher (herder) | Smoker (vanilla) | empty buckets, wheat/carrots/seeds (with Cobblemon: bottles, a brush, bone meal) | nothing — or sneak-right-click with a lead to hire them |
 | Cleric (alchemist) | Brewing Stand (vanilla) | nether wart, glistering melon, ghast tears, blaze powder, bottles | nothing — or sneak-right-click with a glass bottle to hire them |
 | Librarian (scribe) | Lectern (vanilla) + an Enchanting Table | lapis | nothing — or sneak-right-click with lapis to hire them |
 | Cartographer (explorer) | Cartography Table (vanilla) | food (bread, cooked meat...), a sword or axe, empty maps | nothing — or sneak-right-click with a compass to hire them |
@@ -330,6 +330,14 @@ feathers picked up, cows milked into the empty buckets in the chest (up to 4 buc
 milk and eggs. Sneak-right-click a butcher with a lead to hire them for your own herd: a hired butcher also keeps each
 kind at 10 grown animals, taking the rest for meat and leather — never babies, named or leashed animals. Everything
 goes into the chests, and a porter carries the wool, eggs and meat on to the storehouse.
+
+**With Cobblemon, butchers also look after the Pokémon in a Pasture Block** near their smoker, doing everything
+Cobblemon lets a player do with an item in hand: with a bucket in the chest they milk a Miltank (or a female Gogoat,
+Skiddo or Bouffalant) and fill it with lava from a Slugma, Numel or Camerupt; with a glass bottle, Moomoo Milk from a
+Miltank or honey from a Vespiquen; with a brush, feathers from the birds, string from Cottonee, coal from Rolycoly and
+many more (the brush wears down); with bone meal, cactus from a Cacnea, saplings from Exeggutor and Abomasnow, lily
+pads from Lotad. Each Pokémon at most every two minutes (longer where Cobblemon says so). The list comes from
+Cobblemon's own data, so a data pack that adds interactions adds chores too.
 
 ## Clerics: potions for the guards
 **Clerics** (the vanilla villager at a brewing stand) brew what the guards need — potions of healing, regeneration and

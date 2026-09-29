@@ -390,7 +390,9 @@ loop: ore → ingots → the tools, weapons and armor the other workers wear out
   collects eggs and milk, takes the surplus for meat and leather (never babies or named animals) (`ranch/HerderWork`:
   culling only when hired — a lead — above 10 grown of a kind; milk into chest buckets up to 4; chefs take milk and eggs
   from the butcher's chests)
-- [ ] Herder follow-up: with Cobblemon, milk pastured Miltank (Cobblemon milks only through a player's interaction)
+- [x] Herder follow-up: with Cobblemon, milk pastured Miltank (`ranch/PokemonChores`: reads Cobblemon's
+  `pokemon_interactions` data — milking, brushing, bone meal, lava and honey, 139 chores — and the butcher does them for
+  pastured Pokémon with the item from the chests; at least 2400 ticks between the same chore on one Pokémon)
 - [x] **Leatherworker → Dyer** (cauldron): dyes from flowers, dyed wool/terracotta/glass/concrete for builders' requests,
   leather goods (item frames, books' leather) (`craft/DyerWork`: a `CrafterWork` serving builders but only for coloured
   items by name (`<colour>_…`, `…_dye`); concrete from its powder, hardened in the cauldron, the powder mixed first if

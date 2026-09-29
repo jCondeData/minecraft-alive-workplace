@@ -103,7 +103,9 @@ public final class Porters {
 		}
 		if (job == VillagerProfession.BUTCHER) {
 			// Food to breed with, and empty buckets to milk into; the eggs, milk and meat go.
-			return stack.is(Items.BUCKET) ? 16 : io.github.jcondedata.aliveworkplace.ranch.HerderWork.isBreedingFood(stack.getItem()) ? KEEP_BREEDING_FOOD : 0;
+			// (and bottles and bone meal for the pastured Pokémon's chores, with Cobblemon)
+			return stack.is(Items.BUCKET) || stack.is(Items.GLASS_BOTTLE) || stack.is(Items.BONE_MEAL) ? 16
+				: io.github.jcondedata.aliveworkplace.ranch.HerderWork.isBreedingFood(stack.getItem()) ? KEEP_BREEDING_FOOD : 0;
 		}
 		if (job == VillagerProfession.SHEPHERD) {
 			return stack.is(Items.WHEAT) ? KEEP_BREEDING_FOOD : 0; // wheat to breed with; the wool goes

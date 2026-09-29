@@ -87,6 +87,23 @@ public final class CobblemonPartners {
 		return pokemon.getPrimaryType().getName().toLowerCase(java.util.Locale.ROOT);
 	}
 
+	/** Every Pokémon in a Pasture Block within {@code radius} of {@code center}. */
+	public static List<net.minecraft.world.entity.Entity> pastured(ServerLevel level, BlockPos center, int radius) {
+		return List.copyOf(level.getEntitiesOfClass(PokemonEntity.class, new AABB(center).inflate(radius, 6, radius),
+			e -> e.isAlive() && e.getTethering() != null));
+	}
+
+	private static final java.util.Map<String, com.cobblemon.mod.common.api.pokemon.PokemonProperties> PROPERTIES = new java.util.concurrent.ConcurrentHashMap<>();
+
+	/** Whether {@code entity} is a Pokémon matching Cobblemon properties like {@code "miltank"} or {@code "gogoat gender=female"}. */
+	public static boolean matches(net.minecraft.world.entity.Entity entity, String properties) {
+		if (!(entity instanceof PokemonEntity pokemon)) {
+			return false;
+		}
+		var parsed = PROPERTIES.computeIfAbsent(properties, p -> com.cobblemon.mod.common.api.pokemon.PokemonProperties.Companion.parse(p, " ", "="));
+		return parsed.matches(pokemon.getPokemon());
+	}
+
 	/** A Pokémon kept in a Pasture Block. */
 	public static boolean isPastured(net.minecraft.world.entity.Entity entity) {
 		return entity instanceof PokemonEntity pokemon && pokemon.getTethering() != null;

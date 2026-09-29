@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+## 0.91.0 — 2026-09-29
+
+### Added
+- **Butchers tend pastured Pokémon** (with Cobblemon): with a bucket, bottle, brush or bone meal in the chest by their
+  smoker they do what a player can do to the Pokémon in a Pasture Block nearby — milk a Miltank, fill a bucket with lava
+  from a Slugma, brush birds for feathers and Cottonee for string, bone-meal a Cacnea for cactus — all 139 of
+  Cobblemon's item interactions, read from its data.
+
 ## 0.90.0 — 2026-09-29
 
 ### Added

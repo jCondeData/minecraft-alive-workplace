@@ -43,6 +43,9 @@ public class HerderWork extends RanchWork {
 	static final int CULL_ABOVE = CAP + 2;
 
 	private boolean culling;
+	/** With Cobblemon: the chore for a pastured Pokémon being done now (milking a Miltank, brushing a Pidgeotto...). */
+	@Nullable
+	private PokemonChores.Job chore;
 
 	public static boolean isHerder(Villager villager) {
 		return !villager.isBaby() && villager.getVillagerData().getProfession() == VillagerProfession.BUTCHER;
@@ -68,6 +71,7 @@ public class HerderWork extends RanchWork {
 	@Nullable
 	@Override
 	protected Entity tendTarget(ServerLevel level, Villager villager, BlockPos station, List<BlockPos> own) {
+		chore = null;
 		List<Animal> animals = animals(level, station);
 		// A hired herder keeps the herd from growing past the pen.
 		if (villager.getAttached(ModAttachments.BUILDER_EMPLOYER) != null) {
@@ -84,21 +88,33 @@ public class HerderWork extends RanchWork {
 				}
 			}
 		}
+		culling = false;
 		// Milk, while there are empty buckets and not much milk yet.
 		if (SupplyContainers.count(level, own, Items.MILK_BUCKET) < MILK && SupplyContainers.firstWith(level, own, Items.BUCKET) != null) {
 			Animal cow = animals.stream().filter(a -> a instanceof Cow && !a.isBaby()).min(Comparator.comparingDouble(villager::distanceToSqr)).orElse(null);
 			if (cow != null) {
-				culling = false;
 				return cow;
 			}
 		}
-		return null;
+		// The pastured Pokémon's chores, with what they take in the chests.
+		chore = PokemonChores.next(level, station, RADIUS, own, villager.getAttachedOrCreate(ModAttachments.BUILDER_BAG));
+		return chore != null ? chore.pokemon() : null;
 	}
 
 	/** An empty bucket in the bag before going to milk. */
 	@Nullable
 	@Override
 	protected Boolean prepare(ServerLevel level, Villager villager, List<BlockPos> own, BuilderBag bag) {
+		if (chore != null) {
+			if (bag.stacks().stream().anyMatch(chore.chore()::accepts)) {
+				return true;
+			}
+			if (!walker.walkTo(level, villager, own.get(0), 3.0)) {
+				return false;
+			}
+			walker.reset();
+			return PokemonChores.fetch(level, chore, own, bag) ? true : null;
+		}
 		if (culling || bag.count(Items.BUCKET) > 0) {
 			return true;
 		}
@@ -125,6 +141,15 @@ public class HerderWork extends RanchWork {
 			}
 			return false;
 		}
+		if (chore != null) {
+			if (PokemonChores.perform(level, chore, bag)) {
+				villager.swing(InteractionHand.MAIN_HAND);
+				villager.setAttached(ModAttachments.POKEMON_TENDED, villager.getAttachedOrElse(ModAttachments.POKEMON_TENDED, 0) + 1);
+				BuilderLevels.addXp(level, villager, 1, null);
+			}
+			chore = null;
+			return false;
+		}
 		if (animal instanceof Cow cow && !cow.isBaby() && bag.remove(Items.BUCKET, 1) == 1) {
 			bag.add(new ItemStack(Items.MILK_BUCKET));
 			villager.swing(InteractionHand.MAIN_HAND);
@@ -138,7 +163,7 @@ public class HerderWork extends RanchWork {
 	@Override
 	protected void status(Villager villager, Task task, boolean noChest) {
 		Component title = Component.translatable("message.aliveworkplace.herder.title", villager.getAttachedOrElse(ModAttachments.MILK_COLLECTED, 0));
-		String state = noChest ? "no_chest" : task == Task.TEND ? (culling ? "culling" : "milking") : task.name().toLowerCase();
+		String state = noChest ? "no_chest" : task == Task.TEND ? (culling ? "culling" : chore != null ? "pokemon" : "milking") : task.name().toLowerCase();
 		WorkerStatus.set(villager, title, -1f, Component.translatable("message.aliveworkplace.herder.state." + state)
 			.withStyle(noChest ? ChatFormatting.YELLOW : ChatFormatting.GRAY));
 	}

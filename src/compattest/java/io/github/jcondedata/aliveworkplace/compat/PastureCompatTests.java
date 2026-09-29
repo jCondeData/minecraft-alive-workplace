@@ -233,4 +233,45 @@ public class PastureCompatTests implements FabricGameTest {
 			helper.assertTrue(shepherd.getAttachedOrElse(ModAttachments.ANIMALS_SHEARED, 0) >= 1, "nothing sheared");
 		});
 	}
+
+	/** A butcher does the pastured Pokémon's chores from Cobblemon's data: a Miltank milked, a Pidgey brushed for feathers. */
+	@GameTest(template = AREA, timeoutTicks = 2400, batch = "herder_pokemon")
+	public void butcherMilksAMiltankAndBrushesAPidgey(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		helper.setDayTime(2000);
+		io.github.jcondedata.aliveworkplace.ranch.PokemonChores.forget();
+		helper.assertTrue(io.github.jcondedata.aliveworkplace.ranch.PokemonChores.chores().size() > 100,
+			"only " + io.github.jcondedata.aliveworkplace.ranch.PokemonChores.chores().size() + " chores read");
+		helper.setBlock(new BlockPos(2, 2, 2), Blocks.SMOKER);
+		helper.setBlock(new BlockPos(2, 2, 4), Blocks.CHEST);
+		Container chest = helper.getBlockEntity(new BlockPos(2, 2, 4));
+		chest.setItem(0, new ItemStack(net.minecraft.world.item.Items.BUCKET));
+		chest.setItem(1, new ItemStack(net.minecraft.world.item.Items.BRUSH));
+		for (int i = 0; i < 4; i++) {
+			chest.setItem(2 + i, new ItemStack(net.minecraft.world.item.Items.MILK_BUCKET)); // no cows to milk: plenty already
+		}
+		Villager butcher = helper.spawn(EntityType.VILLAGER, new BlockPos(3, 2, 3));
+		Jobs.employ(level, butcher, helper.absolutePos(new BlockPos(2, 2, 2)), net.minecraft.world.entity.ai.village.poi.PoiTypes.BUTCHER,
+			net.minecraft.world.entity.npc.VillagerProfession.BUTCHER);
+		BlockPos pasture = pasture(helper, new BlockPos(10, 2, 10));
+		ServerPlayer player = helper.makeMockServerPlayerInLevel();
+		pastured(helper, pasture, player, "miltank", Direction.NORTH);
+		pastured(helper, pasture, player, "pidgey", Direction.WEST);
+		helper.succeedWhen(() -> {
+			int milk = 0;
+			boolean feathers = false;
+			boolean wornBrush = false;
+			for (int i = 0; i < chest.getContainerSize(); i++) {
+				ItemStack stack = chest.getItem(i);
+				milk += stack.is(net.minecraft.world.item.Items.MILK_BUCKET) ? 1 : 0;
+				feathers |= stack.is(net.minecraft.world.item.Items.FEATHER);
+				wornBrush |= stack.is(net.minecraft.world.item.Items.BRUSH) && stack.getDamageValue() >= 8;
+			}
+			helper.assertTrue(milk == 5, "milk buckets: " + milk);
+			helper.assertTrue(feathers, "no feathers from the Pidgey");
+			helper.assertTrue(wornBrush, "the brush isn't back, worn");
+			helper.assertTrue(butcher.getAttachedOrElse(ModAttachments.POKEMON_TENDED, 0) >= 2, "chores done: "
+				+ butcher.getAttachedOrElse(ModAttachments.POKEMON_TENDED, 0));
+		});
+	}
 }

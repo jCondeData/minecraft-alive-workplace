@@ -641,6 +641,7 @@
   "message.aliveworkplace.herder.title": "Butcher · %s buckets of milk",
   "message.aliveworkplace.herder.state.none": "watching the herd",
   "message.aliveworkplace.herder.state.milking": "milking",
+  "message.aliveworkplace.herder.state.pokemon": "tending a pastured Pokémon",
   "message.aliveworkplace.herder.state.culling": "taking one for meat",
   "message.aliveworkplace.herder.state.collect": "picking up eggs",
   "message.aliveworkplace.herder.state.breed": "feeding a pair to breed",

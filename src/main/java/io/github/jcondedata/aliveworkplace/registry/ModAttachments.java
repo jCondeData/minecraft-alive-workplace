@@ -84,6 +84,10 @@ public final class ModAttachments {
 	public static final AttachmentType<Integer> ITEMS_ENCHANTED = AttachmentRegistry.create(
 		AliveWorkplace.id("items_enchanted"), builder -> builder.persistent(com.mojang.serialization.Codec.INT));
 
+	/** How many chores a Butcher has done for pastured Pokémon (milking, brushing...). */
+	public static final AttachmentType<Integer> POKEMON_TENDED = AttachmentRegistry.create(
+		AliveWorkplace.id("pokemon_tended"), builder -> builder.persistent(com.mojang.serialization.Codec.INT));
+
 	/** How many expeditions a Cartographer has come back from (shown above its head). */
 	public static final AttachmentType<Integer> EXPEDITIONS = AttachmentRegistry.create(
 		AliveWorkplace.id("expeditions"), builder -> builder.persistent(com.mojang.serialization.Codec.INT));

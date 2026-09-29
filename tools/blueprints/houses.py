@@ -145,3 +145,52 @@ def stone_house_3():
     box(b, 4, 1, 9, 6, 1, 10, "green_carpet")
     b.fill_air()
     return b
+
+
+# --- The settlers' camp: what a Settler's Wagon sets up ------------------------------------------------------------
+def settlers_camp():
+    """11 x 5 x 9: a settlers' camp in the wild — a covered wagon on four wheels with the supply chest in it, a Builder's
+    Bench beside it with a lamp, a campfire with log seats in front and two bedrolls. Placed at once by the Settler's
+    Wagon (not built): {@code camp/} blueprints aren't in the Blueprint Table."""
+    b = Build(11, 5, 9)
+    # The wagon: x 2-8, z 3-5, its bed a block up on two axles and four wheels
+    for x in range(2, 9):
+        for z in (3, 4, 5):
+            b.set(x, 1, z, "spruce_planks")
+    for x in (3, 7):
+        for z in (3, 4, 5):
+            fence(b, x, 0, z, "dark_oak_fence")
+        trapdoor(b, x, 0, 2, "dark_oak_trapdoor", "north", open_=True)
+        trapdoor(b, x, 0, 6, "dark_oak_trapdoor", "south", open_=True)
+    # Its sides and the canvas
+    for x in range(2, 9):
+        for z, face in ((3, "south"), (5, "north")):
+            if x in (2, 8):
+                fence(b, x, 2, z, "spruce_fence")
+    for x in range(3, 8):
+        b.set(x, 2, 3, "white_wool")
+        b.set(x, 2, 5, "white_wool")
+        b.set(x, 3, 4, "white_wool")
+        stairs(b, x, 3, 3, "minecraft:smooth_quartz_stairs", "south")  # the canvas rounds over the top (placed at once, never built)
+        stairs(b, x, 3, 5, "minecraft:smooth_quartz_stairs", "north")
+    # The tongue out of the front
+    fence(b, 1, 1, 4, "dark_oak_fence")
+    fence(b, 0, 1, 4, "dark_oak_fence")
+    # The load: the supply chest (a loot table fills it), a hay bale, a pumpkin
+    b.set_nbt(5, 2, 4, Compound({"LootTable": String("aliveworkplace:chests/settlers_wagon"), "id": String("minecraft:chest")}))
+    b.set(5, 2, 4, "chest", facing="west", type="single", waterlogged=False)
+    b.set(4, 2, 4, "hay_block", axis="x")
+    b.set(6, 2, 4, "pumpkin")
+    # The Builder's Bench beside the wagon, a lamp on a post
+    b.set(9, 0, 3, "aliveworkplace:builders_bench", facing="west")
+    lamp_post(b, 10, 0, 2, "spruce_fence", height=2)
+    # The campfire in front, with logs to sit on
+    b.set(5, 0, 0, "campfire", facing="north", lit=True, signal_fire=False, waterlogged=False)
+    log(b, 3, 0, 0, "stripped_spruce_log", axis="z")
+    log(b, 7, 0, 0, "stripped_spruce_log", axis="z")
+    # Two bedrolls behind the wagon
+    b.bed(2, 0, 8, "brown", facing="west")
+    b.bed(8, 0, 8, "brown", facing="east")
+    b.set(5, 0, 8, "potted_fern")
+    b.fill_air()
+    return b

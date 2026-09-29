@@ -118,6 +118,10 @@ public class ScreenshotHarness implements ClientModInitializer {
 			carpenterScene(mc, mc.getSingleplayerServer());
 			return;
 		}
+		if ("camp".equals(System.getProperty("aliveworkplace.scene"))) {
+			campScene(mc, mc.getSingleplayerServer());
+			return;
+		}
 		if ("hall".equals(System.getProperty("aliveworkplace.scene"))) {
 			hallScene(mc, mc.getSingleplayerServer());
 			return;
@@ -517,6 +521,41 @@ public class ScreenshotHarness implements ClientModInitializer {
 	}
 
 	// --- Village Hall: the village at a glance ----------------------------------------------------------
+
+	// --- Camp: a Settler's Wagon used on open ground --------------------------------------------------
+
+	private void campScene(Minecraft mc, MinecraftServer server) {
+		tick++;
+		if (tick == 1) {
+			mc.options.renderDistance().set(6);
+			mc.options.cloudStatus().set(CloudStatus.OFF);
+			mc.options.hideGui = true;
+		}
+		if (tick == 30) {
+			server.execute(() -> {
+				ServerLevel level = server.overworld();
+				level.getGameRules().getRule(GameRules.RULE_DAYLIGHT).set(false, server);
+				level.getGameRules().getRule(GameRules.RULE_DOMOBSPAWNING).set(false, server);
+				level.setDayTime(12600);
+				ServerPlayer player = server.getPlayerList().getPlayers().get(0);
+				hover(player, new Vec3(0.5, -57.5, -6.5), 0, 20);
+				io.github.jcondedata.aliveworkplace.camp.SettlersWagonItem.makeCamp(level, player, new BlockPos(0, -60, 0));
+			});
+		}
+		if (tick == 60) {
+			server.execute(() -> hoverLookingAt(server.getPlayerList().getPlayers().get(0), new Vec3(-7.5, -55.5, -6.5), new Vec3(0.5, -59, 4.5)));
+		}
+		if (tick == 140) {
+			shot(mc, "01_camp");
+		}
+		if (tick == 150) {
+			server.execute(() -> hoverLookingAt(server.getPlayerList().getPlayers().get(0), new Vec3(8.5, -56.5, 12.5), new Vec3(0.5, -59, 4.5)));
+		}
+		if (tick == 220) {
+			shot(mc, "02_camp_back");
+			mc.stop();
+		}
+	}
 
 	private void hallScene(Minecraft mc, MinecraftServer server) {
 		tick++;

@@ -103,6 +103,7 @@ if __name__ == "__main__":
     stone_house().save(MAIN_STRUCTURES, "stone_house")
     stone_house_2().save(MAIN_STRUCTURES, "stone_house_2")
     stone_house_3().save(MAIN_STRUCTURES, "stone_house_3")
+    settlers_camp().save(os.path.join(MAIN_STRUCTURES, "camp"), "settlers_camp")
     for style in VILLAGE_STYLES:
         builders_workshop(style).save(VILLAGE_STRUCTURES, f"{style}_builders_workshop")
         for name, fit_out in VILLAGE_HOUSES.items():

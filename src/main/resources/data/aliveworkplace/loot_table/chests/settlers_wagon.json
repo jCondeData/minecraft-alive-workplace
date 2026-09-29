@@ -1,0 +1,56 @@
+{
+  "type": "minecraft:chest",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [{ "type": "minecraft:item", "name": "minecraft:oak_log",
+        "functions": [{ "function": "minecraft:set_count", "count": 32 }] }]
+    },
+    {
+      "rolls": 1,
+      "entries": [{ "type": "minecraft:item", "name": "minecraft:oak_planks",
+        "functions": [{ "function": "minecraft:set_count", "count": 48 }] }]
+    },
+    {
+      "rolls": 1,
+      "entries": [{ "type": "minecraft:item", "name": "minecraft:cobblestone",
+        "functions": [{ "function": "minecraft:set_count", "count": 64 }] }]
+    },
+    {
+      "rolls": 1,
+      "entries": [{ "type": "minecraft:item", "name": "minecraft:bread",
+        "functions": [{ "function": "minecraft:set_count", "count": 24 }] }]
+    },
+    {
+      "rolls": 1,
+      "entries": [{ "type": "minecraft:item", "name": "minecraft:torch",
+        "functions": [{ "function": "minecraft:set_count", "count": 16 }] }]
+    },
+    {
+      "rolls": 1,
+      "entries": [{ "type": "minecraft:item", "name": "minecraft:glass_pane",
+        "functions": [{ "function": "minecraft:set_count", "count": 12 }] }]
+    },
+    {
+      "rolls": 1,
+      "entries": [{ "type": "minecraft:item", "name": "aliveworkplace:village_hall" }]
+    },
+    {
+      "rolls": 1,
+      "entries": [{ "type": "minecraft:item", "name": "aliveworkplace:blueprint",
+        "functions": [{ "function": "minecraft:set_components",
+          "components": { "aliveworkplace:blueprint": { "structure": "aliveworkplace:starter_cottage", "size": [11, 12, 10] } } }] }]
+    },
+    {
+      "rolls": 1,
+      "entries": [{ "type": "minecraft:item", "name": "aliveworkplace:blueprint",
+        "functions": [{ "function": "minecraft:set_components",
+          "components": { "aliveworkplace:blueprint": { "structure": "aliveworkplace:storehouse", "size": [9, 9, 9] } } }] }]
+    },
+    {
+      "rolls": 1,
+      "entries": [{ "type": "minecraft:item", "name": "aliveworkplace:blank_blueprint",
+        "functions": [{ "function": "minecraft:set_count", "count": 2 }] }]
+    }
+  ]
+}

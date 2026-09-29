@@ -18,6 +18,14 @@ Builders understand **Chipped**, **Rechiseled** and **Supplementaries** blocks (
 Install on the **server and every player's game**.
 
 ## Getting started
+**No village nearby?** Craft a **Settler's Wagon** (three white wool over two hay bales and a block of emerald, over a
+chest between planks) and right-click open ground: two settlers make camp there — a covered wagon with a chest of
+supplies (logs, planks, cobblestone, bread, torches, the Starter Cottage and Storehouse blueprints and a **Village
+Hall**), a Builder's Bench, a campfire and two bedrolls. The first settler is your builder from the start; the other
+takes whatever job you give them. Put the Village Hall down and you have a village.
+
+![A settlers' camp at dusk: the covered wagon, the campfire, the builder](docs/media/camp.png)
+
 1. **Hire a builder.** Look for a builder's workshop in a village (newly explored villages often have one), or craft
    a **Builder's Bench** and place it near a villager without a job; they take it like any job block.
 
@@ -31,7 +39,7 @@ Install on the **server and every player's game**.
 3. **Place it.** Hold the blueprint and right-click the ground where the front of the building should go.
    It faces you, and while you hold it you see the whole building as see-through blocks, exactly where it
    will stand (the gold edge of the outline is the front). Sneak-right-click the ground to turn it;
-   sneak-right-click the air to pick it back up. On uneven ground the builder fills in a foundation, and when the
+   sneak-right-click the air to pick it back up (before it's placed, that opens its styles instead: see *Styles*). On uneven ground the builder fills in a foundation, and when the
    building is finished they level the ground two blocks around it (dirt, stone and grass above the floor dug away,
    holes filled with dirt; trees, flowers and anything built are left alone). For a build meant to sit in a
    hillside, right-click the air with its blueprint to switch that off for this build (the tooltip says so).

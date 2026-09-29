@@ -51,6 +51,12 @@ public final class ModItems {
 		new io.github.jcondedata.aliveworkplace.shop.PriceTagItem(new Item.Properties().stacksTo(16))
 	);
 
+	/** Two settlers make camp where it's used: a covered wagon, supplies, a Builder's Bench. */
+	public static final io.github.jcondedata.aliveworkplace.camp.SettlersWagonItem SETTLERS_WAGON = Registry.register(
+		BuiltInRegistries.ITEM, AliveWorkplace.id("settlers_wagon"),
+		new io.github.jcondedata.aliveworkplace.camp.SettlersWagonItem(new Item.Properties().stacksTo(1))
+	);
+
 	public static final CreativeModeTab TAB = Registry.register(
 		BuiltInRegistries.CREATIVE_MODE_TAB,
 		AliveWorkplace.id("main"),
@@ -93,6 +99,7 @@ public final class ModItems {
 				output.accept(ModBlocks.INN_COUNTER);
 				output.accept(ModBlocks.UNDERTAKERS_TABLE);
 				output.accept(ModBlocks.SCHOLARS_DESK);
+				output.accept(SETTLERS_WAGON);
 				for (StarterBlueprints.Entry entry : StarterBlueprints.ALL) {
 					output.accept(BlueprintItem.create(entry.id(), entry.size()));
 				}

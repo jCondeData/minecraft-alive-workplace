@@ -913,6 +913,34 @@ def ticket_item():
     save(img, "item", "travel_ticket.png")
 
 
+def settlers_wagon_item():
+    """A covered wagon from the side: a white canvas hood over a brown box, two dark wheels."""
+    img = Image.new("RGBA", (16, 16), T)
+    rnd = random.Random(173)
+    canvas, shade = rgb("#f2eee4"), rgb("#cfc8b8")
+    for y in range(2, 9):
+        for x in range(2, 14):
+            inside = (x - 8) ** 2 / 36 + (y - 8.5) ** 2 / 42 <= 1
+            if inside:
+                img.putpixel((x, y), jitter(shade if y >= 7 or x in (2, 13) else canvas, rnd, 4))
+    for x in (5, 8, 11):  # the hoops under the canvas
+        for y in range(3, 8):
+            if img.getpixel((x, y))[3]:
+                img.putpixel((x, y), shade)
+    for y in range(8, 11):
+        for x in range(1, 15):
+            img.putpixel((x, y), rgb("#5c3a1e") if y == 10 or x in (1, 14) else jitter(rgb("#8a5a2b"), rnd, 6))
+    for cx in (4, 11):  # the wheels
+        for y in range(10, 16):
+            for x in range(cx - 2, cx + 3):
+                d = (x - cx) ** 2 + (y - 12.5) ** 2
+                if d <= 6.5:
+                    img.putpixel((x, y), rgb("#2e2016") if d >= 3 else rgb("#6b4a2b"))
+        img.putpixel((cx, 12), rgb("#1e140c"))
+    img.putpixel((0, 9), rgb("#5c3a1e"))  # the tongue
+    save(img, "item", "settlers_wagon.png")
+
+
 def ferryman_overlay():
     img = Image.new("RGBA", (64, 64), T)
     rnd = random.Random(161)
@@ -2352,6 +2380,7 @@ if __name__ == "__main__":
     travel_post_side(front=False)
     travel_post_side(front=True)
     ticket_item()
+    settlers_wagon_item()
     ferryman_overlay()
     delivery_note_item()
     price_tag_item()

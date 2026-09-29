@@ -532,8 +532,11 @@ Every villager a person you get to know, the way MineColonies' citizens are — 
   village but who wandered off (`recall`, looked for within 192 blocks, set down beside the hall)
 
 ## Milestone 14 — Founding and linking villages
-- [ ] A Settler's Wagon: an item that sets up camp in the wild — a covered wagon, a Builder's Bench, a chest of
-  starting supplies and two settlers (one a builder) — so a village can start anywhere
+- [x] A Settler's Wagon: an item that sets up camp in the wild — a covered wagon, a Builder's Bench, a chest of
+  starting supplies and two settlers (one a builder) — so a village can start anywhere (`camp/SettlersWagonItem`: the
+  `camp/settlers_camp` blueprint from `houses.py` placed at once facing the player if the spot is open enough; the
+  chest's loot table `chests/settlers_wagon` has a Village Hall and two blueprints; the first settler is employed at
+  the bench a tick later, when the bench is a workstation)
 - [ ] Caravans: villages with a Village Hall and a Travel Post send what they have plenty of to each other
 - [ ] Market days: a village with a Market Square holds a market once a week; traders from other villages come
 

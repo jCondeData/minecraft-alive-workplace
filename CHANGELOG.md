@@ -2,6 +2,16 @@
 
 ## Unreleased
 
+## 0.115.0 — 2026-09-29
+
+### Added
+- The **Settler's Wagon**: right-click open ground and two settlers make camp — a covered wagon with a chest of
+  supplies (and a Village Hall), a Builder's Bench, a campfire and two bedrolls. One settler is your builder from the
+  start. A village can begin anywhere.
+
+### Fixed
+- The blueprints in village builder's workshops' chests showed old sizes before they were placed.
+
 ## 0.114.0 — 2026-09-29
 
 ### Added

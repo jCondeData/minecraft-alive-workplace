@@ -227,4 +227,42 @@ public class PeopleGameTests implements FabricGameTest {
 			helper.assertTrue(nurse.getAttachedOrElse(ModAttachments.VILLAGERS_CURED, 0) == 1, "cured count");
 		}));
 	}
+
+	/** A child remembers its parents; grown up and without a job, they take up a parent's trade at a free workstation. */
+	@GameTest(template = AREA, timeoutTicks = 100, batch = "familiesKeepTheTrade")
+	public void familiesKeepTheTrade(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		int radius = VillageHalls.RADIUS;
+		VillageHalls.RADIUS = 16;
+		Leftovers.after(helper, () -> VillageHalls.RADIUS = radius);
+		ServerLevel level = helper.getLevel();
+		helper.setBlock(HALL, ModBlocks.VILLAGE_HALL);
+		helper.setBlock(new BlockPos(3, 2, 3), ModBlocks.BUILDERS_BENCH);
+		helper.setBlock(new BlockPos(17, 2, 3), ModBlocks.BUILDERS_BENCH);
+		BlockPos hall = helper.absolutePos(HALL);
+		Villager mother = helper.spawn(EntityType.VILLAGER, new BlockPos(4, 2, 4));
+		Villager father = helper.spawn(EntityType.VILLAGER, new BlockPos(6, 2, 4));
+		father.setVillagerData(father.getVillagerData().setProfession(net.minecraft.world.entity.npc.VillagerProfession.NONE));
+		helper.runAfterDelay(2, () -> {
+			io.github.jcondedata.aliveworkplace.work.Jobs.employ(level, mother, helper.absolutePos(new BlockPos(3, 2, 3)),
+				io.github.jcondedata.aliveworkplace.registry.ModVillagers.BUILDERS_BENCH_POI, io.github.jcondedata.aliveworkplace.registry.ModVillagers.BUILDER);
+			mother.setCustomName(Component.literal("Wren"));
+			father.setCustomName(Component.literal("Bram"));
+			// The vanilla way: the baby knows its parents.
+			Villager baby = mother.getBreedOffspring(level, father);
+			helper.assertTrue(baby != null && io.github.jcondedata.aliveworkplace.people.Families.parents(baby) != null, "the baby doesn't know its parents");
+			// A grown child without a job.
+			Villager child = helper.spawn(EntityType.VILLAGER, new BlockPos(9, 2, 9));
+			child.setVillagerData(child.getVillagerData().setProfession(net.minecraft.world.entity.npc.VillagerProfession.NONE));
+			io.github.jcondedata.aliveworkplace.people.Families.born(child, mother, father);
+			VillageNeeds.check(level, hall);
+			var parents = io.github.jcondedata.aliveworkplace.people.Families.parents(child);
+			helper.assertTrue(parents.grownUp() && parents.mother().getString().equals("Wren"), "parents: " + parents);
+			helper.assertTrue(child.getVillagerData().getProfession() == io.github.jcondedata.aliveworkplace.registry.ModVillagers.BUILDER,
+				"the child is a " + child.getVillagerData().getProfession());
+			var chronicle = ((io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(hall)).chronicle();
+			helper.assertTrue(chronicle.size() >= 2, "chronicle: " + chronicle);
+			helper.succeed();
+		});
+	}
 }

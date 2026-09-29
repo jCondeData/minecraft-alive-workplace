@@ -103,6 +103,7 @@ public final class VillageGrowth {
 		baby.finalizeSpawn(level, level.getCurrentDifficultyAt(mother.blockPosition()), MobSpawnType.BREEDING, null);
 		baby.setVillagerData(baby.getVillagerData().setType((level.random.nextBoolean() ? mother : father).getVillagerData().getType()));
 		baby.setAge(-24000);
+		io.github.jcondedata.aliveworkplace.people.Families.born(baby, mother, father);
 		level.addFreshEntityWithPassengers(baby);
 		List<BlockPos> store = VillageNeeds.store(level, hall);
 		for (int i = 0; i < MEALS; i++) {

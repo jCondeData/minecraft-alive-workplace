@@ -125,6 +125,7 @@ public final class VillageNeeds {
 				continue;
 			}
 			io.github.jcondedata.aliveworkplace.people.Sickness.round(level, villager, (int) (DAY / CHECK_EVERY));
+			io.github.jcondedata.aliveworkplace.people.Families.round(level, hall, villager);
 			Long meal = villager.getAttached(ModAttachments.LAST_MEAL);
 			if (meal == null) {
 				villager.setAttached(ModAttachments.LAST_MEAL, now); // new to the village: they ate before they came

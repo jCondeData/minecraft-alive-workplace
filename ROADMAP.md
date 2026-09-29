@@ -569,8 +569,10 @@ Every villager a person you get to know, the way MineColonies' citizens are — 
   counted in the hall's round (`hall/VillageRanks`, kept in the hall); each rank pays — quests 25% more a rank, one more
   caravan route a rank, three traders on market day from a Town, room for ten more villagers a rank — and a rank up
   is celebrated (fireworks, chat) and goes in the chronicle; the hall's name icon shows the rank and what the next needs
-- [ ] Families: a baby remembers its parents (the hall's list says whose child it is); grown children take a job near
-  their parents' home when there's one
+- [x] Families: a baby remembers its parents (the hall's list says whose child it is); grown children take up a parent's
+  trade (`people/Families`: `PARENTS` on the baby — names and trades — from `VillageGrowth` and, by a mixin on
+  `getBreedOffspring`, vanilla breeding; in the hall's round a child who has grown up goes in the chronicle, and a
+  grown child without a job takes a free workstation of a parent's trade)
 - [ ] Moods: each villager's own mood from their day (fed, a bed, a job, well, their traits, decorations and friends
   near home), with the reasons on the hall's list; the unhappy work slower
 

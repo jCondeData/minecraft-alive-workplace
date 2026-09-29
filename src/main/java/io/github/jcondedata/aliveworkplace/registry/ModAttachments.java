@@ -124,6 +124,10 @@ public final class ModAttachments {
 	public static final AttachmentType<Long> LAST_MEAL = AttachmentRegistry.create(
 		AliveWorkplace.id("last_meal"), builder -> builder.persistent(com.mojang.serialization.Codec.LONG));
 
+	/** A villager's parents (see {@code people/Families}). */
+	public static final AttachmentType<io.github.jcondedata.aliveworkplace.people.Families.Parents> PARENTS = AttachmentRegistry.create(
+		AliveWorkplace.id("parents"), builder -> builder.persistent(io.github.jcondedata.aliveworkplace.people.Families.Parents.CODEC));
+
 	/** When a villager fell ill (see {@code people/Sickness}); absent while they're well. */
 	public static final AttachmentType<Long> ILL_SINCE = AttachmentRegistry.create(
 		AliveWorkplace.id("ill_since"), builder -> builder.persistent(com.mojang.serialization.Codec.LONG));

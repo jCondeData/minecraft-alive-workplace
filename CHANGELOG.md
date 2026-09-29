@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+## 0.122.0 — 2026-09-29
+
+### Added
+- **Families**: babies remember their parents (the hall's list says whose child they are); grown up and without a job,
+  they take up a parent's trade when the village has a free workstation for it. The chronicle notes it.
+
 ## 0.121.0 — 2026-09-29
 
 ### Added

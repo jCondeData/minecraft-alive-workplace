@@ -198,6 +198,9 @@ The hall's list says who's ill. `villagerSickness` in the config turns it off.
 
 ![A builder on the hall's list: Dara, a Novice Builder, Clever and Nimble](docs/media/people.png)
 
+**Families.** A baby remembers its parents — the hall's list says whose child they are. When they grow up the chronicle
+says so, and a grown child without a job **takes up a parent's trade** if the village has a free workstation for it.
+
 **The village grows.** At most once a day, when there's a **free bed**, **16 meals in the store** and the wellbeing is
 at least 50%, the two villagers nearest the free bed have a baby (the family eats 8 meals for it), up to 40 villagers
 (`villageGrowthCap`). The hall's villager count says what the village still needs to grow. So build houses: the

@@ -25,6 +25,16 @@ abstract class VillagerMixin {
 		}
 	}
 
+	/** A baby had the vanilla way remembers its parents. */
+	@Inject(method = "getBreedOffspring(Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/world/entity/AgeableMob;)Lnet/minecraft/world/entity/npc/Villager;",
+		at = @At("RETURN"))
+	private void aliveworkplace$parents(net.minecraft.server.level.ServerLevel level, net.minecraft.world.entity.AgeableMob partner,
+			org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable<Villager> cir) {
+		if (cir.getReturnValue() != null && partner instanceof Villager other) {
+			io.github.jcondedata.aliveworkplace.people.Families.born(cir.getReturnValue(), (Villager) (Object) this, other);
+		}
+	}
+
 	/** Set when a villager who went to school is taking their first job: they start a level up once it's set. */
 	@org.spongepowered.asm.mixin.Unique
 	private boolean aliveworkplace$headStart;

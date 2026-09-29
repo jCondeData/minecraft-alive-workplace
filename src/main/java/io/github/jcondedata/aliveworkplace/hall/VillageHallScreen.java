@@ -384,6 +384,10 @@ public final class VillageHallScreen {
 		for (Component doing : doing(level, villager)) {
 			lore.add(plain(doing, ChatFormatting.WHITE));
 		}
+		io.github.jcondedata.aliveworkplace.people.Families.Parents parents = io.github.jcondedata.aliveworkplace.people.Families.parents(villager);
+		if (parents != null) {
+			lore.add(line(Component.translatable("screen.aliveworkplace.hall.child_of", parents.mother(), parents.father()), ChatFormatting.GRAY));
+		}
 		if (io.github.jcondedata.aliveworkplace.school.Schools.isSchooled(villager)) {
 			lore.add(line("screen.aliveworkplace.hall.schooled", ChatFormatting.GRAY));
 		}

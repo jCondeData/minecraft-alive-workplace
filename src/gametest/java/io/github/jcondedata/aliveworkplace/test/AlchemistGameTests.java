@@ -60,7 +60,7 @@ public class AlchemistGameTests implements FabricGameTest {
 	@GameTest(template = AREA, timeoutTicks = 1600, batch = "cleric_delivers")
 	public void clericBringsAPotionToTheGuard(GameTestHelper helper) {
 		Leftovers.clear(helper);
-		Village.RADIUS = 48;
+		Leftovers.village(helper, 48);
 		helper.setDayTime(2000);
 		cleric(helper);
 		Container chest = helper.getBlockEntity(CHEST);

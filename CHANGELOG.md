@@ -2,6 +2,17 @@
 
 ## Unreleased
 
+## 0.87.0 — 2026-09-29
+
+### Added
+- **Librarians enchant the village's gear**: with an Enchanting Table near their lectern and lapis in their chest, they
+  enchant the guards' weapons, armor and bows and the other workers' tools, stronger as they level up. They also make
+  books, bookshelves and lecterns for the builders. Sneak-right-click with lapis to hire one.
+
+### Fixed
+- Tests that turn village sharing on now turn it off again even when they fail (one failure could fail the next
+  batches).
+
 ## 0.86.0 — 2026-09-29
 
 ### Added

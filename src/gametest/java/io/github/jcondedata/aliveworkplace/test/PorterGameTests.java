@@ -82,7 +82,7 @@ public class PorterGameTests implements FabricGameTest {
 	@GameTest(template = AREA, timeoutTicks = 1600, batch = "porter_carries")
 	public void porterCarriesTheMinersGoodsToTheStorehouse(GameTestHelper helper) {
 		Leftovers.clear(helper);
-		Village.RADIUS = 48;
+		Leftovers.village(helper, 48);
 		Villager miner = miner(helper);
 		Container minersChest = helper.getBlockEntity(MINERS_CHEST);
 		minersChest.setItem(0, new ItemStack(Items.COBBLESTONE, 64));
@@ -111,7 +111,7 @@ public class PorterGameTests implements FabricGameTest {
 	@GameTest(template = AREA, timeoutTicks = 400, batch = "porter_strangers")
 	public void porterLeavesStrangersWorkersAlone(GameTestHelper helper) {
 		Leftovers.clear(helper);
-		Village.RADIUS = 48;
+		Leftovers.village(helper, 48);
 		Villager miner = miner(helper);
 		miner.setAttached(ModAttachments.BUILDER_EMPLOYER, new Employer(UUID.randomUUID(), "Bea"));
 		Container minersChest = helper.getBlockEntity(MINERS_CHEST);

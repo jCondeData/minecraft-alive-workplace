@@ -266,7 +266,7 @@ public class BuilderGameTests implements FabricGameTest {
 	@GameTest(template = AREA, timeoutTicks = 3000, batch = "village_share")
 	public void builderTakesMaterialsFromAnotherWorkersChest(GameTestHelper helper) {
 		Leftovers.clear(helper);
-		io.github.jcondedata.aliveworkplace.work.Village.RADIUS = 48;
+		Leftovers.village(helper, 48);
 		BlockPos minersBench = new BlockPos(14, 2, 2);
 		BlockPos minersChest = new BlockPos(14, 2, 4);
 		helper.setBlock(minersBench, ModBlocks.MINERS_BENCH);
@@ -285,7 +285,7 @@ public class BuilderGameTests implements FabricGameTest {
 	@GameTest(template = AREA, timeoutTicks = 400, batch = "village_strangers")
 	public void workersOfDifferentPlayersDontShare(GameTestHelper helper) {
 		Leftovers.clear(helper);
-		io.github.jcondedata.aliveworkplace.work.Village.RADIUS = 48;
+		Leftovers.village(helper, 48);
 		BlockPos minersBench = new BlockPos(14, 2, 2);
 		BlockPos minersChest = new BlockPos(14, 2, 4);
 		helper.setBlock(minersBench, ModBlocks.MINERS_BENCH);
@@ -310,7 +310,7 @@ public class BuilderGameTests implements FabricGameTest {
 	@GameTest(template = AREA, timeoutTicks = 600, batch = "storehouse_board")
 	public void storehouseBoardShowsWhatTheBuilderIsMissing(GameTestHelper helper) {
 		Leftovers.clear(helper);
-		io.github.jcondedata.aliveworkplace.work.Village.RADIUS = 48;
+		Leftovers.village(helper, 48);
 		// Everything but the cobblestone.
 		Setup s = setup(helper, TEST_HUT, HUT_ORIGIN, Rotation.NONE, new ItemStack(Items.OAK_PLANKS, 55), new ItemStack(Items.OAK_DOOR),
 			new ItemStack(Items.TORCH));
@@ -369,7 +369,7 @@ public class BuilderGameTests implements FabricGameTest {
 	@GameTest(template = AREA, timeoutTicks = 2400, batch = "carpenter")
 	public void carpenterMakesTheDoorTheBuilderNeeds(GameTestHelper helper) {
 		Leftovers.clear(helper);
-		io.github.jcondedata.aliveworkplace.work.Village.RADIUS = 48;
+		Leftovers.village(helper, 48);
 		// 55 planks for the hut and 6 to spare, but no door.
 		Setup s = setup(helper, TEST_HUT, HUT_ORIGIN, Rotation.NONE, new ItemStack(Items.COBBLESTONE, 25), new ItemStack(Items.OAK_PLANKS, 61),
 			new ItemStack(Items.TORCH));
@@ -391,7 +391,7 @@ public class BuilderGameTests implements FabricGameTest {
 	@GameTest(template = AREA, timeoutTicks = 2400, batch = "mason")
 	public void masonCutsTheStoneBricksTheBuilderNeeds(GameTestHelper helper) {
 		Leftovers.clear(helper);
-		io.github.jcondedata.aliveworkplace.work.Village.RADIUS = 48;
+		Leftovers.village(helper, 48);
 		ServerLevel level = helper.getLevel();
 		BlockPos src = new BlockPos(12, 2, 12);
 		for (int x = 0; x < 3; x++) {
@@ -419,7 +419,7 @@ public class BuilderGameTests implements FabricGameTest {
 	@GameTest(template = AREA, timeoutTicks = 3000, batch = "dyer")
 	public void dyerMakesTheConcreteAndRedWoolTheBuilderNeeds(GameTestHelper helper) {
 		Leftovers.clear(helper);
-		io.github.jcondedata.aliveworkplace.work.Village.RADIUS = 48;
+		Leftovers.village(helper, 48);
 		ServerLevel level = helper.getLevel();
 		BlockPos src = new BlockPos(12, 2, 12);
 		for (int x = 0; x < 3; x++) {
@@ -450,7 +450,7 @@ public class BuilderGameTests implements FabricGameTest {
 	@GameTest(template = AREA, timeoutTicks = 2400, batch = "stripped_logs")
 	public void lumberjackStripsLogsForTheBuilder(GameTestHelper helper) {
 		Leftovers.clear(helper);
-		io.github.jcondedata.aliveworkplace.work.Village.RADIUS = 48;
+		Leftovers.village(helper, 48);
 		ServerLevel level = helper.getLevel();
 		BlockPos src = new BlockPos(12, 2, 12);
 		for (int x = 0; x < 3; x++) {

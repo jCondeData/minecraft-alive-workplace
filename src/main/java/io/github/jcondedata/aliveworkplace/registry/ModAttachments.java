@@ -80,6 +80,10 @@ public final class ModAttachments {
 	public static final AttachmentType<Integer> POTIONS_BREWED = AttachmentRegistry.create(
 		AliveWorkplace.id("potions_brewed"), builder -> builder.persistent(com.mojang.serialization.Codec.INT));
 
+	/** How many pieces of gear a Librarian has enchanted (shown above its head). */
+	public static final AttachmentType<Integer> ITEMS_ENCHANTED = AttachmentRegistry.create(
+		AliveWorkplace.id("items_enchanted"), builder -> builder.persistent(com.mojang.serialization.Codec.INT));
+
 	/** How many items a Porter has carried to the storehouse (shown above its head). */
 	public static final AttachmentType<Integer> ITEMS_CARRIED = AttachmentRegistry.create(
 		AliveWorkplace.id("items_carried"), builder -> builder.persistent(com.mojang.serialization.Codec.INT));

@@ -32,7 +32,7 @@ public class FletcherGameTests implements FabricGameTest {
 	@GameTest(template = AREA, timeoutTicks = 1600, batch = "fletcher_bow")
 	public void fletcherMakesABowForTheGuard(GameTestHelper helper) {
 		Leftovers.clear(helper);
-		Village.RADIUS = 48;
+		Leftovers.village(helper, 48);
 		helper.setDayTime(2000);
 		helper.setBlock(TABLE, Blocks.FLETCHING_TABLE);
 		helper.setBlock(CHEST, Blocks.CHEST);
@@ -58,7 +58,7 @@ public class FletcherGameTests implements FabricGameTest {
 	@GameTest(template = AREA, timeoutTicks = 1600, batch = "fletcher_arrows")
 	public void fletcherMakesSpectralArrowsForTheGuard(GameTestHelper helper) {
 		Leftovers.clear(helper);
-		Village.RADIUS = 48;
+		Leftovers.village(helper, 48);
 		helper.setDayTime(2000);
 		helper.setBlock(TABLE, Blocks.FLETCHING_TABLE);
 		helper.setBlock(CHEST, Blocks.CHEST);

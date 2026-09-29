@@ -3,7 +3,7 @@
 Villagers with real jobs. Hand a **Builder** a blueprint and they build it for you: they clear the
 site, fetch materials from your chests, put up the walls and roof, and finish with doors, beds and
 torches. **Miners** dig out quarries, **Lumberjacks** cut down and replant trees, **Orchard Keepers** pick berries, cocoa and apricorns, **Farmers** look after
-your fields and **Fishermen** fish for you, dropping everything off in your chests. **Porters** gather it all in the village storehouse, **Carpenters** and **Masons** make what the builders are missing, **Armorers** smelt the ore and make the guards' armor, **Toolsmiths** make the workers' tools, **Weaponsmiths** mend the village's gear, **Fletchers** make the guards' bows and arrows, **Shepherds** and **Butchers** look after the sheep and the herd, **Clerics** brew potions for the guards, **Chefs** cook for the village, **Postmen** carry mail
+your fields and **Fishermen** fish for you, dropping everything off in your chests. **Porters** gather it all in the village storehouse, **Carpenters** and **Masons** make what the builders are missing, **Armorers** smelt the ore and make the guards' armor, **Toolsmiths** make the workers' tools, **Weaponsmiths** mend the village's gear, **Fletchers** make the guards' bows and arrows, **Shepherds** and **Butchers** look after the sheep and the herd, **Clerics** brew potions for the guards, **Librarians** enchant the village's gear, **Chefs** cook for the village, **Postmen** carry mail
 between players' mailboxes, **Guards** keep monsters away, **Nurses** heal you (and your Pokémon),
 **Shopkeepers** run your shop, **Ferrymen** take you between villages, **Bards** play music and — with Cobblemon —
 **Trainers** battle you, **Move Tutors** teach your Pokémon new moves, **Ball Smiths** make Poké Balls, **Pokémon Traders** swap Pokémon with you and **Fossil Scientists** revive fossils. Villages grow workshops, guard houses, clinics, post offices, orchard houses, ferry houses, storehouses, carpenter's workshops and kitchens on their own — and with Cobblemon,
@@ -104,6 +104,7 @@ where they take tools and supplies from and where their work goes.
 | Shepherd | Loom (vanilla) | shears, wheat | nothing — or sneak-right-click with shears to hire them |
 | Butcher (herder) | Smoker (vanilla) | empty buckets, wheat/carrots/seeds | nothing — or sneak-right-click with a lead to hire them |
 | Cleric (alchemist) | Brewing Stand (vanilla) | nether wart, glistering melon, ghast tears, blaze powder, bottles | nothing — or sneak-right-click with a glass bottle to hire them |
+| Librarian (scribe) | Lectern (vanilla) + an Enchanting Table | lapis | nothing — or sneak-right-click with lapis to hire them |
 | Postman | Postal Desk | — | Mailboxes for mail; Delivery Notes for hauling |
 | Guard | Guard Post | weapons, armor, a bow or crossbow and arrows | nothing |
 | Nurse | Nurse Station | — | right-click them to be healed |
@@ -331,6 +332,14 @@ powder, with blaze powder as fuel, and water bottles (or glass bottles they fill
 guard of the village with fewer than two potions gets one brought to the chest by their Guard Post; guards carry up to
 three, drink a healing or regeneration potion when they fall below half health, and a strength potion as a fight
 starts. Sneak-right-click a cleric with a glass bottle to hire them for your own guards.
+
+## Librarians: enchanted gear
+**Librarians** (the vanilla villager at a lectern) with an **Enchanting Table** within 8 blocks of their lectern enchant
+the village's gear: they walk up to a guard and enchant the weapon, armor or bow they wear, then the tools the other
+workers have in hand (a miner's pickaxe, a lumberjack's axe), one piece at a time, with lapis from their chest (or the
+storehouse) — like an enchanting table at level 10 for a Novice up to level 30 for a Master, 1 to 3 lapis a piece.
+They also make the books, bookshelves, lecterns and paper a builder nearby is waiting for. Sneak-right-click one with
+lapis to hire them for your own workers.
 
 ## Chefs
 ![A chef cooking at the Kitchen Stove](docs/media/chef.png)

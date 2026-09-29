@@ -23,6 +23,41 @@ final class Leftovers {
 		}
 	}
 
+	/**
+	 * Turns village sharing on for this test ({@code Village.RADIUS}, normally off in tests) and off again when the test
+	 * ends, passed or failed — a failed test that left it on made the next batches' builders share chests and fail too.
+	 */
+	static void village(GameTestHelper helper, int radius) {
+		io.github.jcondedata.aliveworkplace.work.Village.RADIUS = radius;
+		try {
+			java.lang.reflect.Field field = GameTestHelper.class.getDeclaredField("testInfo");
+			field.setAccessible(true);
+			net.minecraft.gametest.framework.GameTestInfo info = (net.minecraft.gametest.framework.GameTestInfo) field.get(helper);
+			info.addListener(new net.minecraft.gametest.framework.GameTestListener() {
+				@Override
+				public void testStructureLoaded(net.minecraft.gametest.framework.GameTestInfo test) {
+				}
+
+				@Override
+				public void testPassed(net.minecraft.gametest.framework.GameTestInfo test, net.minecraft.gametest.framework.GameTestRunner runner) {
+					io.github.jcondedata.aliveworkplace.work.Village.RADIUS = 0;
+				}
+
+				@Override
+				public void testFailed(net.minecraft.gametest.framework.GameTestInfo test, net.minecraft.gametest.framework.GameTestRunner runner) {
+					io.github.jcondedata.aliveworkplace.work.Village.RADIUS = 0;
+				}
+
+				@Override
+				public void testAddedForRerun(net.minecraft.gametest.framework.GameTestInfo old, net.minecraft.gametest.framework.GameTestInfo test,
+						net.minecraft.gametest.framework.GameTestRunner runner) {
+				}
+			});
+		} catch (ReflectiveOperationException e) {
+			throw new IllegalStateException(e);
+		}
+	}
+
 	private Leftovers() {
 	}
 }

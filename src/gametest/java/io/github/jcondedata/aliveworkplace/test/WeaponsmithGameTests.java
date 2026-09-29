@@ -55,7 +55,7 @@ public class WeaponsmithGameTests implements FabricGameTest {
 	@GameTest(template = AREA, timeoutTicks = 1600, batch = "weaponsmith_sword")
 	public void weaponsmithMakesASwordForTheGuard(GameTestHelper helper) {
 		Leftovers.clear(helper);
-		Village.RADIUS = 48;
+		Leftovers.village(helper, 48);
 		helper.setDayTime(2000);
 		weaponsmith(helper);
 		Container chest = helper.getBlockEntity(CHEST);
@@ -74,7 +74,7 @@ public class WeaponsmithGameTests implements FabricGameTest {
 	@GameTest(template = AREA, timeoutTicks = 2000, batch = "weaponsmith_guard_gear")
 	public void weaponsmithMendsTheGuardsWornHelmet(GameTestHelper helper) {
 		Leftovers.clear(helper);
-		Village.RADIUS = 48;
+		Leftovers.village(helper, 48);
 		helper.setDayTime(2000);
 		weaponsmith(helper);
 		Container chest = helper.getBlockEntity(CHEST);

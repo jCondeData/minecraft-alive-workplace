@@ -59,7 +59,7 @@ public class SmelterGameTests implements FabricGameTest {
 	@GameTest(template = AREA, timeoutTicks = 2400, batch = "smelter_fetches")
 	public void armorerFetchesOreFromTheStorehouse(GameTestHelper helper) {
 		Leftovers.clear(helper);
-		Village.RADIUS = 48;
+		Leftovers.village(helper, 48);
 		helper.setDayTime(2000);
 		helper.setBlock(STOREHOUSE, ModBlocks.STOREHOUSE);
 		helper.setBlock(STORE_CHEST, Blocks.CHEST);
@@ -82,7 +82,7 @@ public class SmelterGameTests implements FabricGameTest {
 	@GameTest(template = AREA, timeoutTicks = 1600, batch = "smelter_armor")
 	public void armorerMakesAChestplateForTheGuard(GameTestHelper helper) {
 		Leftovers.clear(helper);
-		Village.RADIUS = 48;
+		Leftovers.village(helper, 48);
 		helper.setDayTime(2000);
 		Villager smelter = smelter(helper);
 		Container chest = helper.getBlockEntity(CHEST);

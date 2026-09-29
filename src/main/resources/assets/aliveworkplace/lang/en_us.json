@@ -654,5 +654,10 @@
   "message.aliveworkplace.alchemist.state.filling": "filling bottles",
   "message.aliveworkplace.alchemist.state.delivering": "bringing a potion to a guard",
   "message.aliveworkplace.alchemist.state.no_chest": "needs a chest by the brewing stand",
-  "message.aliveworkplace.alchemist.hired": "%s brews for your guards now."
+  "message.aliveworkplace.alchemist.hired": "%s brews for your guards now.",
+  "message.aliveworkplace.scribe.title": "Librarian · %s enchanted",
+  "message.aliveworkplace.scribe_crafting.title": "Librarian · %s made",
+  "message.aliveworkplace.scribe.state.fetching": "fetching lapis",
+  "message.aliveworkplace.scribe.state.enchanting": "enchanting a worker's gear",
+  "message.aliveworkplace.scribe.hired": "%s enchants your workers' gear now (with an Enchanting Table near their lectern and lapis in the chest)."
 }

@@ -28,7 +28,7 @@ public class ToolsmithGameTests implements FabricGameTest {
 	@GameTest(template = AREA, timeoutTicks = 2400, batch = "toolsmith_pickaxe")
 	public void toolsmithMakesAPickaxeForTheMiner(GameTestHelper helper) {
 		Leftovers.clear(helper);
-		Village.RADIUS = 48;
+		Leftovers.village(helper, 48);
 		helper.setDayTime(2000);
 		var level = helper.getLevel();
 		// The miner, waiting for a pickaxe.

@@ -400,8 +400,10 @@ loop: ore → ingots → the tools, weapons and armor the other workers wear out
   water → awkward → the potion that's short (3 of each kept), fills glass bottles at water/cauldrons, takes potions to
   guards with fewer than 2; guards carry 3 (`Guards.drink`: healing/regeneration below half health, strength as a fight
   starts). Brewing stands, jukeboxes, lecterns and crafters are no longer counted as chests. Nurses: not yet)
-- [ ] **Librarian → Scribe** (lectern): books and bookshelves for builders; enchants workers' tools and guards' gear with
-  lapis
+- [x] **Librarian → Scribe** (lectern): books and bookshelves for builders; enchants workers' tools and guards' gear with
+  lapis (`craft/ScribeWork`: books, bookshelves, lecterns, paper for builders; `scribe/EnchantWork`: needs an Enchanting
+  Table within 8 of the lectern; walks to the worker and enchants gear they wear/hold that isn't enchanted — guards
+  first — at strength 5 + 5 × level with the table's enchantments, 1–3 lapis from its chests or the storehouse)
 - [ ] **Cartographer → Explorer** (cartography table): day-long expeditions with food and a weapon, bringing back finds
   (MineColonies' expeditions/nether worker); explorer maps to nearby structures for players
 - [ ] Mason extras: crushing (cobblestone → gravel → sand), glass from sand in a furnace (MineColonies' crusher,

@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 0.136.0 — 2026-09-29
+
 ### Added
 - **Homes**: a villager's home is the building a builder put up that their bed is in. A tier II house (a Stone House II,
   a Cottage II...) makes its people happier (+5), tier III more (+10); the Village Hall's list says where each villager

@@ -789,3 +789,6 @@ standard, "even go back and improve upon other builds you've already pushed").
 - 2026-09-29: session `01Xw8jqb` worked down **Milestone 9** (all done: Village Hall, Needs, Growth, School,
   Recruiting, Graveyard, Village quests) and Milestone 11 (Research), and goes on with **Milestone 12** (builds);
   a session running at the same time should keep to Milestone 10 (Defence), to keep out of each other's way.
+- 2026-09-29: `VillageGameTests.aVillagerMovesIntoTheWorkshop` failed once on CI (commit 49ae713: the villager never
+  took the bench in 2400 ticks) and passed on the next push; 17 runs in a row passed locally. If it fails again, look for
+  leftover blocks from earlier batches blocking the way to the bench.

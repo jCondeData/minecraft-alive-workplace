@@ -409,4 +409,45 @@ public class VillageHallGameTests implements net.fabricmc.fabric.api.gametest.v1
 			helper.succeed();
 		});
 	}
+
+	/** Once a week, in the morning, a village with a Market Square holds a market: traders come, one with a blueprint to sell. */
+	@GameTest(template = AREA, timeoutTicks = 100, batch = "marketDayBringsTraders")
+	public void marketDayBringsTraders(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		int radius = VillageHalls.RADIUS;
+		boolean enabled = io.github.jcondedata.aliveworkplace.hall.MarketDays.ENABLED;
+		VillageHalls.RADIUS = 32;
+		io.github.jcondedata.aliveworkplace.hall.MarketDays.ENABLED = true;
+		ServerLevel level = helper.getLevel();
+		helper.setBlock(new BlockPos(20, 2, 20), ModBlocks.VILLAGE_HALL);
+		BlockPos hall = helper.absolutePos(new BlockPos(20, 2, 20));
+		var sites = io.github.jcondedata.aliveworkplace.build.BuildSiteManager.get(level);
+		var placement = new io.github.jcondedata.aliveworkplace.blueprint.BlueprintData.Placement(level.dimension().location(),
+			helper.absolutePos(new BlockPos(2, 2, 2)), net.minecraft.world.level.block.Rotation.NONE, net.minecraft.world.level.block.Mirror.NONE);
+		Leftovers.after(helper, () -> {
+			VillageHalls.RADIUS = radius;
+			io.github.jcondedata.aliveworkplace.hall.MarketDays.ENABLED = enabled;
+			sites.forgetFinished(placement);
+		});
+		var entity = (io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(hall);
+		helper.assertTrue(io.github.jcondedata.aliveworkplace.hall.MarketDays.square(level, hall).isEmpty(), "a square before one was built");
+		sites.recordFinished(io.github.jcondedata.aliveworkplace.blueprint.StarterBlueprints.MARKET_SQUARE.id(), placement, java.util.UUID.randomUUID());
+		helper.assertTrue(io.github.jcondedata.aliveworkplace.hall.MarketDays.square(level, hall).isPresent(), "no square");
+		// A market morning: the day after one that divides evenly.
+		long day = 7;
+		while (Math.floorMod(day + hall.hashCode(), io.github.jcondedata.aliveworkplace.hall.MarketDays.EVERY_DAYS) != 0) {
+			day++;
+		}
+		helper.setDayTime((int) ((day - 1) * 24000 + 2000));
+		helper.assertTrue(io.github.jcondedata.aliveworkplace.hall.MarketDays.isMarketMorning(level, hall, -1), "not market day");
+		helper.assertTrue(io.github.jcondedata.aliveworkplace.hall.MarketDays.tick(level, hall, entity), "no market");
+		helper.assertFalse(io.github.jcondedata.aliveworkplace.hall.MarketDays.tick(level, hall, entity), "two markets in a day");
+		var traders = level.getEntitiesOfClass(net.minecraft.world.entity.npc.WanderingTrader.class, new net.minecraft.world.phys.AABB(hall).inflate(30));
+		helper.assertTrue(traders.size() == io.github.jcondedata.aliveworkplace.hall.MarketDays.TRADERS, "traders: " + traders.size());
+		helper.assertTrue(traders.stream().allMatch(t -> t.getOffers().stream().anyMatch(o -> o.getResult().is(io.github.jcondedata.aliveworkplace.registry.ModItems.BLUEPRINT))),
+			"a trader without a blueprint");
+		helper.assertTrue(entity.chronicle().stream().anyMatch(e -> e.kind() == io.github.jcondedata.aliveworkplace.hall.Chronicle.Kind.MARKET), "not in the chronicle");
+		traders.forEach(net.minecraft.world.entity.Entity::discard);
+		helper.succeed();
+	}
 }

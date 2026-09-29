@@ -52,6 +52,8 @@ public final class WorkplaceConfig {
 	public boolean villagerTraits = true;
 	/** Villagers in a village with a Village Hall fall ill now and then (a Nurse cures them). */
 	public boolean villagerSickness = true;
+	/** A village with a Village Hall and a Market Square holds a market once a week. */
+	public boolean marketDays = true;
 	/** What an emerald price comes to in CobbleDollars (lessons, shops, fares). */
 	public int dollarsPerEmerald = 100;
 
@@ -130,6 +132,7 @@ public final class WorkplaceConfig {
 		io.github.jcondedata.aliveworkplace.people.Names.ENABLED = villagerNames && System.getProperty("fabric-api.gametest") == null;
 		io.github.jcondedata.aliveworkplace.people.Traits.ENABLED = villagerTraits && System.getProperty("fabric-api.gametest") == null;
 		io.github.jcondedata.aliveworkplace.people.Sickness.ENABLED = villagerSickness && System.getProperty("fabric-api.gametest") == null;
+		io.github.jcondedata.aliveworkplace.hall.MarketDays.ENABLED = marketDays && System.getProperty("fabric-api.gametest") == null;
 		io.github.jcondedata.aliveworkplace.build.Paths.ENABLED = builderPaths && System.getProperty("fabric-api.gametest") == null;
 	}
 }

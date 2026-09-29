@@ -26,6 +26,8 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 	private java.util.List<VillageQuests.Quest> quests = java.util.List.of();
 	private long lastQuestDay = -1;
 	private int questsDone;
+	/** The day of the last market (see {@link MarketDays}). */
+	private long lastMarketDay = -1;
 	/** What happened in the village, oldest first (see {@link Chronicle}). */
 	private java.util.List<Chronicle.Entry> chronicle = new java.util.ArrayList<>();
 	/** The village's research (see {@code research/Research}). */
@@ -58,6 +60,7 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 			&& (hall.needs == null || Math.floorMod(level.getGameTime() + pos.hashCode(), VillageNeeds.CHECK_EVERY) == 0)) {
 			hall.needs = VillageNeeds.check(server, pos);
 			VillageQuests.tick(server, pos, hall);
+			MarketDays.tick(server, pos, hall);
 			if (VillageGrowth.grow(server, pos, hall.needs, hall.lastBirth) != null) {
 				hall.lastBirth = level.getGameTime();
 				hall.births++;
@@ -106,6 +109,15 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 		setChanged();
 	}
 
+	public long lastMarketDay() {
+		return lastMarketDay;
+	}
+
+	public void setLastMarketDay(long day) {
+		lastMarketDay = day;
+		setChanged();
+	}
+
 	public int questsDone() {
 		return questsDone;
 	}
@@ -144,6 +156,7 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 			.result().map(java.util.List::copyOf).orElse(java.util.List.of());
 		lastQuestDay = tag.contains("lastQuestDay") ? tag.getLong("lastQuestDay") : -1;
 		questsDone = tag.getInt("questsDone");
+		lastMarketDay = tag.contains("lastMarketDay") ? tag.getLong("lastMarketDay") : -1;
 		research = io.github.jcondedata.aliveworkplace.research.Research.State.CODEC.parse(net.minecraft.nbt.NbtOps.INSTANCE, tag.get("research"))
 			.result().orElse(io.github.jcondedata.aliveworkplace.research.Research.State.EMPTY);
 		chronicle = new java.util.ArrayList<>();
@@ -168,6 +181,7 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 		VillageQuests.Quest.CODEC.listOf().encodeStart(net.minecraft.nbt.NbtOps.INSTANCE, quests).result().ifPresent(t -> tag.put("quests", t));
 		tag.putLong("lastQuestDay", lastQuestDay);
 		tag.putInt("questsDone", questsDone);
+		tag.putLong("lastMarketDay", lastMarketDay);
 		io.github.jcondedata.aliveworkplace.research.Research.State.CODEC.encodeStart(net.minecraft.nbt.NbtOps.INSTANCE, research).result()
 			.ifPresent(t -> tag.put("research", t));
 		net.minecraft.nbt.ListTag lines = new net.minecraft.nbt.ListTag();

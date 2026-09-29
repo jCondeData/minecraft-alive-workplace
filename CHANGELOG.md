@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+## 0.116.0 — 2026-09-29
+
+### Added
+- **Market days**: once a week a village with a Village Hall and a Market Square holds a market — two travelling
+  traders come to the square for the day, each with a blueprint to sell too. (`marketDays` in the config.)
+
 ## 0.115.0 — 2026-09-29
 
 ### Added

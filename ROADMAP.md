@@ -538,7 +538,10 @@ Every villager a person you get to know, the way MineColonies' citizens are — 
   chest's loot table `chests/settlers_wagon` has a Village Hall and two blueprints; the first settler is employed at
   the bench a tick later, when the bench is a workstation)
 - [ ] Caravans: villages with a Village Hall and a Travel Post send what they have plenty of to each other
-- [ ] Market days: a village with a Market Square holds a market once a week; traders from other villages come
+- [x] Market days: a village with a Village Hall and a finished Market Square holds a market once a week, in the
+  morning (`hall/MarketDays`, in the hall's round; the day depends on the hall so villages differ): two wandering
+  traders come to the square until nightfall, each with a blueprint to sell as well (a starter building, often in a
+  style, or a decoration, 6 emeralds); players in the village are told, the chronicle notes it; `marketDays` in the config
 
 ## Milestone 5 — Release
 - [ ] Publish on Modrinth and CurseForge as **Alive Workplace** (Minecraft brand rules: don't lead the name with "Minecraft")

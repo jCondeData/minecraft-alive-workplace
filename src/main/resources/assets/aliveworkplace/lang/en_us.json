@@ -949,6 +949,8 @@
   "chronicle.aliveworkplace.someone": "Someone",
   "chronicle.aliveworkplace.research": "The scholars finished %s (%s)",
   "chronicle.aliveworkplace.master": "%s became a Master %s",
+  "chronicle.aliveworkplace.market": "Market day: %s traders came to the Market Square",
+  "message.aliveworkplace.market.day": "It's market day in %s: traders have come to the Market Square",
   "screen.aliveworkplace.hall.trait": "%s (%s)",
   "screen.aliveworkplace.hall.beauty": "Beauty: %s · decorations add %s%% (up to %s%%)",
   "screen.aliveworkplace.hall.wellbeing_hint": "Food in the store, a bed each, guards, light and decorations keep a village happy",

@@ -109,6 +109,11 @@ square 5), and every point is 1% more wellbeing, up to 10%.
 
 ![The Well II, the Street Lamp, the Park Bench, the Fountain, the Gazebo and the Market Square](docs/media/decorations.png)
 
+**Market days.** A village with a Village Hall and a Market Square holds a **market** once a week, in the morning:
+two travelling traders come to the square with their wares until nightfall, each also selling a blueprint (a starter
+building, often in another style, or a decoration) for 6 emeralds. Everyone in the village is told, and the chronicle
+remembers it. `marketDays` in the config turns it off.
+
 **Upgrades.** A blueprint named like another with `_2` on the end (`_3` after that…) is its upgrade. Every starter
 build has one: the **Starter Cottage II** adds a timber upper storey jettied out over the front and back, the **Market
 Stall II** a second stall with a Shop Counter, the **Lookout Tower II** a Guard Post, a bell and a steep pointed spire
@@ -835,6 +840,7 @@ and restart; out-of-range values are clamped):
 | `villagerNames` | true | villagers in a village with a Village Hall get names |
 | `villagerTraits` | true | villagers have traits (diligent, lazy, nimble, clever, strong, cheerful, glutton, frugal) |
 | `villagerSickness` | true | villagers in a village with a Village Hall fall ill now and then (a Nurse cures them) |
+| `marketDays` | true | a village with a Village Hall and a Market Square holds a market once a week |
 | `villageRadius` | 48 | workers whose workstations are this close together share their chests (0 turns sharing off) |
 | `dollarsPerEmerald` | 100 | CobbleDollars per emerald for lessons, shop prices and fares |
 

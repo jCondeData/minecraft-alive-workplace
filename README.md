@@ -617,6 +617,15 @@ health and keep the night watch, sleeping in the late morning instead. Players, 
 Pokémon are safe from them. **Ring the village bell** and, while everyone else runs home to hide, the guards head
 for the bell and fight anything near it for a minute and a half.
 
+**Raids.** A village with a Village Hall and at least 8 villagers may be **raided by monsters** at night (at most every
+three nights; the bigger the village, the likelier — from 15% a night up to 35% — and the bigger the raid, 3 monsters
+and one more for every four villagers; the more guards, the more of the raiders come in iron). Zombies, skeletons and
+spiders gather at the edge of the village and go for its villagers; the village bell rings, so the guards rally and
+everyone else hides, and players in the village are told. While the village is raided every guard defends all of it,
+not just the ground round their post. The raid is over when the raiders are dead — or at dawn, when the last ones
+flee. The chronicle remembers every raid. In a **pillager raid** guards don't hide either: they patrol and fight
+anywhere in the raid's area. `villageRaids` in the config turns our raids off.
+
 **Training Dummy** (a hay bale on sticks with wool on top): place one within 12 blocks of a Guard Post and, when
 there's nothing to fight, the guard spars with it every couple of minutes during the day — a point of experience every
 four hits, up to Expert; Masters are only made in real fights. Hit it yourself and it puffs straw too.
@@ -847,6 +856,7 @@ and restart; out-of-range values are clamped):
 | `villagerTraits` | true | villagers have traits (diligent, lazy, nimble, clever, strong, cheerful, glutton, frugal) |
 | `villagerSickness` | true | villagers in a village with a Village Hall fall ill now and then (a Nurse cures them) |
 | `marketDays` | true | a village with a Village Hall and a Market Square holds a market once a week |
+| `villageRaids` | true | monsters raid villages with a Village Hall and 8 or more villagers at night now and then |
 | `villageRadius` | 48 | workers whose workstations are this close together share their chests (0 turns sharing off) |
 | `dollarsPerEmerald` | 100 | CobbleDollars per emerald for lessons, shop prices and fares |
 

@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+## 0.118.0 — 2026-09-29
+
+### Added
+- **Village raids**: at night, monsters may raid a village with a Village Hall and 8 or more villagers — more often and
+  in greater numbers the bigger it is, some in iron when it has many guards. The bell rings, the guards defend the whole
+  village, and the chronicle remembers it. (`villageRaids` in the config.)
+- In a pillager raid, guards no longer hide: they patrol and fight across the raid's area.
+
 ## 0.117.0 — 2026-09-29
 
 ### Added

@@ -26,6 +26,8 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 	private java.util.List<VillageQuests.Quest> quests = java.util.List.of();
 	private long lastQuestDay = -1;
 	private int questsDone;
+	/** The day of the last raid on the village (see {@code guard/VillageRaids}). */
+	private long lastRaidDay = -100;
 	/** The day of the last market (see {@link MarketDays}). */
 	private long lastMarketDay = -1;
 	/** What happened in the village, oldest first (see {@link Chronicle}). */
@@ -61,7 +63,12 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 			hall.needs = VillageNeeds.check(server, pos);
 			VillageQuests.tick(server, pos, hall);
 			MarketDays.tick(server, pos, hall);
-			Caravans.round(server, pos, VillageHalls.census(server, pos));
+			VillageHalls.Census census = VillageHalls.census(server, pos);
+			Caravans.round(server, pos, census);
+			io.github.jcondedata.aliveworkplace.guard.VillageRaids.tick(server, pos, census.villagers(), census.guards(), hall.lastRaidDay, day -> {
+				hall.lastRaidDay = day;
+				hall.setChanged();
+			});
 			if (VillageGrowth.grow(server, pos, hall.needs, hall.lastBirth) != null) {
 				hall.lastBirth = level.getGameTime();
 				hall.births++;
@@ -158,6 +165,7 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 		lastQuestDay = tag.contains("lastQuestDay") ? tag.getLong("lastQuestDay") : -1;
 		questsDone = tag.getInt("questsDone");
 		lastMarketDay = tag.contains("lastMarketDay") ? tag.getLong("lastMarketDay") : -1;
+		lastRaidDay = tag.contains("lastRaidDay") ? tag.getLong("lastRaidDay") : -100;
 		research = io.github.jcondedata.aliveworkplace.research.Research.State.CODEC.parse(net.minecraft.nbt.NbtOps.INSTANCE, tag.get("research"))
 			.result().orElse(io.github.jcondedata.aliveworkplace.research.Research.State.EMPTY);
 		chronicle = new java.util.ArrayList<>();
@@ -183,6 +191,7 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 		tag.putLong("lastQuestDay", lastQuestDay);
 		tag.putInt("questsDone", questsDone);
 		tag.putLong("lastMarketDay", lastMarketDay);
+		tag.putLong("lastRaidDay", lastRaidDay);
 		io.github.jcondedata.aliveworkplace.research.Research.State.CODEC.encodeStart(net.minecraft.nbt.NbtOps.INSTANCE, research).result()
 			.ifPresent(t -> tag.put("research", t));
 		net.minecraft.nbt.ListTag lines = new net.minecraft.nbt.ListTag();

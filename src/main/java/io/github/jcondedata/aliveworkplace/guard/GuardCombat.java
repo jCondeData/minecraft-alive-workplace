@@ -7,6 +7,7 @@ import io.github.jcondedata.aliveworkplace.registry.ModAttachments;
 import io.github.jcondedata.aliveworkplace.work.WorkerStatus;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Optional;
 import java.util.Set;
 import java.util.WeakHashMap;
 import net.minecraft.ChatFormatting;
@@ -250,7 +251,8 @@ public class GuardCombat extends Behavior<Villager> {
 	@Nullable
 	private static LivingEntity findFoe(ServerLevel level, Villager villager) {
 		BlockPos center = center(villager);
-		AABB area = new AABB(center).inflate(Guards.RADIUS, 8, Guards.RADIUS);
+		// In a raid, the whole village (or the pillagers' raid area) is the guard's to defend.
+		AABB area = VillageRaids.raidArea(level, center).orElseGet(() -> new AABB(center).inflate(Guards.RADIUS, 8, Guards.RADIUS));
 		return level.getEntitiesOfClass(LivingEntity.class, area, e -> Guards.isFoe(e, villager)).stream()
 			.filter(e -> villager.hasLineOfSight(e) || villager.distanceToSqr(e) < 16)
 			.min(Comparator.comparingDouble(villager::distanceToSqr))
@@ -258,7 +260,14 @@ public class GuardCombat extends Behavior<Villager> {
 	}
 
 	private static boolean inArea(Villager villager, LivingEntity foe) {
-		return foe.blockPosition().closerThan(center(villager), Guards.RADIUS + 8);
+		BlockPos center = center(villager);
+		if (villager.level() instanceof ServerLevel level) {
+			Optional<AABB> raid = VillageRaids.raidArea(level, center);
+			if (raid.isPresent()) {
+				return raid.get().inflate(8).contains(foe.position());
+			}
+		}
+		return foe.blockPosition().closerThan(center, Guards.RADIUS + 8);
 	}
 
 	/** Where the guard keeps watch: the bell while answering it, else their Guard Post. */

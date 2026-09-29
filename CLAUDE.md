@@ -75,7 +75,8 @@ The owner (Jesse) does not write code: sessions are expected to work autonomousl
 - `mine/` — the miner: `QuarryMarkerItem`/`QuarryData`, `QuarrySite` + `QuarrySiteManager`, `MinerWork`, `Miners`
 - `farm/` — the farmer upgrade (vanilla Farmers): `FieldMarkerItem`/`FieldData`, `FieldJob` (attachment), `FieldWork`,
   `FarmerPackages` (our work first, vanilla's routine wrapped in `work/Gated`), `Fields`
-- `guard/` — guards: `GuardCombat` (in their CORE package, any activity), `GuardRally` (answering the bell), `GuardPatrol` (WORK: gear up, patrol),
+- `guard/` — guards: `VillageRaids` (monster raids on hall villages at night; `raidArea` widens where guards fight),
+  `GuardCombat` (in their CORE package, any activity), `GuardRally` (answering the bell), `GuardPatrol` (WORK: gear up, patrol),
   `Guards` (who is a foe, damage, extra health); `VillagerPanicTriggerMixin` keeps them from panicking
 - `shop/` — player shops: `ShopCounterBlock`/`ShopCounterBlockEntity` (price list, sales log), `Shops` (offers from stock, sales,
   the CobbleDollars shop screen), `ShopLedger` (CobbleDollars owed to offline owners);

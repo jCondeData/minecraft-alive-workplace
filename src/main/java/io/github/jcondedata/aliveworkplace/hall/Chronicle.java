@@ -19,7 +19,7 @@ public final class Chronicle {
 	public enum Kind {
 		FOUNDED(Items.BELL), BIRTH(Items.EGG), DEATH(Items.BONE), REVIVED(Items.TOTEM_OF_UNDYING), ARRIVED(Items.LEATHER_BOOTS),
 		JOINED(Items.NAME_TAG), BUILT(Items.BRICKS), QUEST(Items.MAP), RESEARCH(Items.ENCHANTED_BOOK), MASTER(Items.EXPERIENCE_BOTTLE),
-		MARKET(Items.EMERALD), CARAVAN(Items.CHEST_MINECART);
+		MARKET(Items.EMERALD), CARAVAN(Items.CHEST_MINECART), RAID(Items.ZOMBIE_HEAD);
 
 		public final Item icon;
 

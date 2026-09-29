@@ -480,8 +480,13 @@ loop: ore → ingots → the tools, weapons and armor the other workers wear out
   within 12 blocks (again every 400 ticks while there's none), hits it 12 times a second apart, 1 XP every 4 hits.
   Not yet in the guard houses of village generation. Taken ahead of Milestone 9 because another session was working
   down those items at the same time)
-- [ ] Village raids: monster raids on bigger villages at night, scaled by village size and guard strength, the bell
-  rung as warning; vanilla pillager raids answered by every guard
+- [x] Village raids: monster raids on bigger villages at night, scaled by village size and guard strength, the bell
+  rung as warning; vanilla pillager raids answered by every guard (`guard/VillageRaids`, from the hall's round: villages
+  with a hall and 8+ villagers, 15% a night + 1% a villager over 8, at most 35%, three days apart; 3 + villagers/4
+  zombies, skeletons and spiders, plus guards/2 in iron, gather 60% of the way to the edge and target villagers; the
+  bell is rung, players told, the chronicle notes the raid and how it ended; while raided every guard in the village
+  defends all of it (`raidArea`), as in a vanilla raid's area; guards' RAID/PRE_RAID packages are a patrol, not hiding;
+  `villageRaids` in the config, off in gametests)
 - [ ] Walls and gates: blueprints; guards shut the gates at night
 
 ## Milestone 11 — Research
@@ -593,6 +598,9 @@ Every villager a person you get to know, the way MineColonies' citizens are — 
 - 2026-09-29: two scheduled sessions ran at the same time and both built the Miltank milking and plantation-crop items;
   the second one's work was dropped for the first's. If sessions overlap again, the later one should take items further
   down the list (as the Training Dummy was) or the schedule should be spread out (owner).
+- 2026-09-29 (later): the session working Milestone 10 hadn't pushed since 0.96.0 (the Training Dummy) for many hours,
+  so session `01Xw8jqb` took Milestone 10's remaining items too, starting with raids. If that session comes back, it
+  should pull first and take the items still open.
 - 2026-09-29: session `01Xw8jqb` worked down **Milestone 9** (all done: Village Hall, Needs, Growth, School,
   Recruiting, Graveyard, Village quests) and Milestone 11 (Research), and goes on with **Milestone 12** (builds);
   a session running at the same time should keep to Milestone 10 (Defence), to keep out of each other's way.

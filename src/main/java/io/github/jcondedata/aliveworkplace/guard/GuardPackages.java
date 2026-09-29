@@ -18,6 +18,15 @@ public final class GuardPackages {
 		);
 	}
 
+	/** In a pillager raid (and before it): patrol instead of hiding, back to the day's routine once it's over. */
+	public static ImmutableList<Pair<Integer, ? extends BehaviorControl<? super Villager>>> raid(float speed) {
+		return ImmutableList.<Pair<Integer, ? extends BehaviorControl<? super Villager>>>of(
+			Pair.of(0, new GuardPatrol()),
+			Pair.of(10, SetLookAndInteract.create(EntityType.PLAYER, 4)),
+			Pair.of(99, net.minecraft.world.entity.ai.behavior.ResetRaidStatus.create())
+		);
+	}
+
 	/** Vanilla's CORE package with the bell listener, {@link GuardRally} and {@link GuardCombat} first. */
 	public static ImmutableList<Pair<Integer, ? extends BehaviorControl<? super Villager>>> core(
 			ImmutableList<Pair<Integer, ? extends BehaviorControl<? super Villager>>> vanilla) {

@@ -118,6 +118,12 @@ Blueprint Table.
 
 ![The Terrace II and the Inn II](docs/media/houses.png)
 
+**School.** Craft a **Teacher's Desk** (a book over three planks, on two legs) and a villager takes it and becomes a
+**Teacher**. In the day they call the children within 32 blocks over to the desk and give them lessons; a child who's
+had a couple of minutes of lessons has been to school, and when they grow up and take a job they **start as an
+Apprentice** (with the Novice and Apprentice trades) instead of a Novice. The hall's list says who went to school.
+Pastured Psychic and Normal Pokémon make the lessons go quicker.
+
 ## All the jobs at a glance
 Place the workstation near a villager without a job and they take it. Chests (or barrels) within 8 blocks of it are
 where they take tools and supplies from and where their work goes.
@@ -131,6 +137,7 @@ where they take tools and supplies from and where their work goes.
 | Farmer | Composter (vanilla) | seeds, a hoe, bone meal | a Field Marker (blank: their own farm) |
 | Beekeeper | Apiary | glass bottles or shears, flowers | nothing (beehives within 16 blocks) |
 | Florist | Flower Stand | bone meal (flowers to pot) | nothing (grass round the stand) |
+| Teacher | Teacher's Desk | — | nothing (children within 32 blocks) |
 | Rancher | Feed Trough | golden carrots, hay, saddles, horse armor (berries) | nothing (horses within 16 blocks) |
 | Fisherman | Barrel (vanilla) | spare rods (coal for a smoker) | hand them a fishing rod |
 | Porter | Storehouse | empty chests: the village's store | nothing |

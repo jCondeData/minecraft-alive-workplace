@@ -452,7 +452,10 @@ loop: ore → ingots → the tools, weapons and armor the other workers wear out
   **Inn**/**Inn II** (6 beds; II adds a stable with a Feed Trough). Builders with no path to where they're going now
   hop after 30 ticks instead of 100 (upper storeys reached by ladders, party walls): builds with them finish a day
   sooner)
-- [ ] **School**: a Teacher (new job) teaches the village children; grown-ups who went to school start a level up
+- [x] **School**: a Teacher (new job) teaches the village children; grown-ups who went to school start a level up
+  (`school/`: Teacher's Desk; in WORK hours the teacher calls unschooled children within 32 blocks to the desk (their
+  walk target) and each one within 5 blocks gets lessons; 2400 ticks of lessons → schooled. A `VillagerMixin` hook on
+  `setVillagerData` gives a schooled villager's first job its Novice trades, then levels them to Apprentice)
 - [ ] **Recruiting**: an Innkeeper (new job) hosts travellers; hire one for emeralds or CobbleDollars
 - [ ] **Graveyard**: a villager who dies leaves a grave; an Undertaker (new job) can bring them back, job and level kept
 - [ ] **Village quests**: villagers post jobs for players (bring items, beat a trainer, clear monsters) for rewards
@@ -523,5 +526,5 @@ loop: ore → ingots → the tools, weapons and armor the other workers wear out
 - 2026-09-29: two scheduled sessions ran at the same time and both built the Miltank milking and plantation-crop items;
   the second one's work was dropped for the first's. If sessions overlap again, the later one should take items further
   down the list (as the Training Dummy was) or the schedule should be spread out (owner).
-- 2026-09-29: session `01Xw8jqb` is working down **Milestone 9** in order (Village Hall, Needs and Growth done; next
-  School, …); a session running at the same time should take Milestone 10 and on, to keep out of each other's way.
+- 2026-09-29: session `01Xw8jqb` is working down **Milestone 9** in order (Village Hall, Needs, Growth and School done; next
+  Recruiting, …); a session running at the same time should take Milestone 10 and on, to keep out of each other's way.

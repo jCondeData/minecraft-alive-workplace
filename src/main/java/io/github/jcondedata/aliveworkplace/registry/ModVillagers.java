@@ -306,6 +306,23 @@ public final class ModVillagers {
 	public static final ResourceKey<PoiType> VILLAGE_HALL_POI = ResourceKey.create(Registries.POINT_OF_INTEREST_TYPE, VILLAGE_HALL_ID);
 	public static final PoiType VILLAGE_HALL_POI_TYPE = PointOfInterestHelper.register(VILLAGE_HALL_ID, 0, 1, ModBlocks.VILLAGE_HALL);
 
+	public static final ResourceLocation TEACHERS_DESK_ID = AliveWorkplace.id("teachers_desk");
+	public static final ResourceKey<PoiType> TEACHERS_DESK_POI = ResourceKey.create(Registries.POINT_OF_INTEREST_TYPE, TEACHERS_DESK_ID);
+	public static final PoiType TEACHERS_DESK_POI_TYPE = PointOfInterestHelper.register(TEACHERS_DESK_ID, 1, 1, ModBlocks.TEACHERS_DESK);
+
+	public static final VillagerProfession TEACHER = Registry.register(
+		BuiltInRegistries.VILLAGER_PROFESSION,
+		AliveWorkplace.id("teacher"),
+		new VillagerProfession(
+			"teacher",
+			holder -> holder.is(TEACHERS_DESK_POI),
+			holder -> holder.is(TEACHERS_DESK_POI),
+			ImmutableSet.of(),
+			ImmutableSet.of(),
+			SoundEvents.VILLAGER_WORK_LIBRARIAN
+		)
+	);
+
 	public static final ResourceLocation FEED_TROUGH_ID = AliveWorkplace.id("feed_trough");
 	public static final ResourceKey<PoiType> FEED_TROUGH_POI = ResourceKey.create(Registries.POINT_OF_INTEREST_TYPE, FEED_TROUGH_ID);
 	public static final PoiType FEED_TROUGH_POI_TYPE = PointOfInterestHelper.register(FEED_TROUGH_ID, 1, 1, ModBlocks.FEED_TROUGH);
@@ -433,7 +450,7 @@ public final class ModVillagers {
 			|| profession == NURSE || profession == SHOPKEEPER || profession == FERRYMAN
 			|| profession == TRAINER || profession == TRAINER_LEADER || profession == TUTOR || profession == POKEMON_TRADER
 			|| profession == ORCHARD_KEEPER || profession == BALL_SMITH || profession == PORTER || profession == CARPENTER || profession == CHEF || profession == FOSSIL_SCIENTIST
-			|| profession == BEEKEEPER || profession == FLORIST || profession == RANCHER;
+			|| profession == BEEKEEPER || profession == FLORIST || profession == RANCHER || profession == TEACHER;
 	}
 
 	/**

@@ -145,6 +145,9 @@ public final class VillageHallScreen {
 		for (Component doing : doing(level, villager)) {
 			lore.add(plain(doing, ChatFormatting.WHITE));
 		}
+		if (io.github.jcondedata.aliveworkplace.school.Schools.isSchooled(villager)) {
+			lore.add(line("screen.aliveworkplace.hall.schooled", ChatFormatting.GRAY));
+		}
 		if (VillageNeeds.isHungry(villager, level.getGameTime())) {
 			lore.add(line("screen.aliveworkplace.hall.hungry", ChatFormatting.RED));
 		}

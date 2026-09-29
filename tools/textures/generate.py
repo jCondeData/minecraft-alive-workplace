@@ -1608,6 +1608,83 @@ def village_hall(face):
     save(img, "block", "village_hall_" + face + ".png")
 
 
+# --- Teacher's Desk: a desk with an open book on top and a chalkboard on the front ---------------------------------
+def teachers_desk(face):
+    rnd = random.Random({"top": 371, "side": 372, "front": 373}[face])
+    img = Image.new("RGBA", (16, 16))
+    planks(img, rnd)
+    edge = rgb("#5a3d20")
+    if face == "top":
+        for i in range(16):
+            for p in ((i, 0), (i, 15), (0, i), (15, i)):
+                img.putpixel(p, jitter(edge, rnd, 4))
+        # an open book, an apple and a stick of chalk
+        for y in range(4, 11):
+            for x in range(3, 12):
+                img.putpixel((x, y), jitter(rgb("#f1ead6"), rnd, 4))
+        for y in range(4, 11):
+            img.putpixel((7, y), rgb("#b9ae93"))
+        for y in (5, 7, 9):
+            for x in (4, 5, 6, 8, 9, 10):
+                if (x + y) % 3:
+                    img.putpixel((x, y), rgb("#6d6a63"))
+        for x in range(3, 12):
+            img.putpixel((x, 11), rgb("#7b2d26"))
+        for (ax, ay) in ((12, 2), (13, 2), (12, 3), (13, 3)):
+            img.putpixel((ax, ay), rgb("#c8302a"))
+        img.putpixel((13, 1), rgb("#3f8a3a"))
+        for x in range(2, 5):
+            img.putpixel((x, 13), rgb("#f4f4f4"))
+    elif face == "front":
+        # the chalkboard in a wooden frame, with sums chalked on it
+        for y in range(2, 13):
+            for x in range(1, 15):
+                img.putpixel((x, y), jitter(rgb("#2f4a3a"), rnd, 5))
+        for x in range(1, 15):
+            img.putpixel((x, 1), edge)
+            img.putpixel((x, 13), edge)
+        for y in range(1, 14):
+            img.putpixel((0, y), edge)
+            img.putpixel((15, y), edge)
+        chalk = rgb("#e8ebe4")
+        for (cx, cy) in ((3, 4), (4, 4), (5, 4), (4, 3), (4, 5),  # +
+                         (8, 4), (9, 4), (10, 4), (8, 5), (10, 5), (8, 6), (9, 6), (10, 6),  # a letter
+                         (3, 9), (4, 9), (5, 9), (7, 9), (8, 9), (10, 9), (11, 9), (12, 9), (3, 10), (7, 11), (11, 11)):
+            img.putpixel((cx, cy), chalk)
+        for x in range(2, 14):  # the chalk ledge
+            img.putpixel((x, 14), rgb("#8a6a3a"))
+    else:
+        # a drawer with a brass knob
+        for y in range(5, 11):
+            for x in range(3, 13):
+                if x in (3, 12) or y in (5, 10):
+                    img.putpixel((x, y), jitter(edge, rnd, 4))
+        img.putpixel((7, 7), rgb("#d9a441"))
+        img.putpixel((8, 7), rgb("#d9a441"))
+    save(img, "block", "teachers_desk_" + face + ".png")
+
+
+def teacher_overlay():
+    img = Image.new("RGBA", (64, 64), T)
+    rnd = random.Random(381)
+    # round glasses on the face (head front is x 8-15, y 8-15)
+    frame = rgb("#2b2b2b")
+    for (gx, gy) in ((9, 11), (10, 11), (11, 11), (12, 11), (13, 11), (14, 11), (9, 12), (11, 12), (12, 12), (14, 12)):
+        img.putpixel((gx, gy), frame)
+    img.putpixel((10, 12), rgb("#cfe6f2", 170))
+    img.putpixel((13, 12), rgb("#cfe6f2", 170))
+    # a green cardigan over the robe, buttoned
+    cardigan = rgb("#3f6b4a")
+    for y in range(44, 58):
+        for x in range(4, 24):
+            if x in (9, 10) and y < 56:
+                img.putpixel((x, y), rgb("#d9c89a") if y % 3 == 0 else cardigan)
+                continue
+            img.putpixel((x, y), jitter(cardigan, rnd, 5))
+    save(img, "entity", "villager", "profession", "teacher.png")
+    save(img, "entity", "zombie_villager", "profession", "teacher.png")
+
+
 # --- Feed Trough: the rancher's workstation, a plank trough full of hay ----------------------------------------
 def feed_trough(face):
     rnd = random.Random({"top": 341, "side": 342, "front": 343}[face])
@@ -2103,6 +2180,9 @@ if __name__ == "__main__":
         feed_trough(face)
     for face in ("top", "side", "front"):
         village_hall(face)
+    for face in ("top", "side", "front"):
+        teachers_desk(face)
+    teacher_overlay()
     rancher_overlay()
     for part in ("burlap", "face", "straw", "post"):
         training_dummy(part)

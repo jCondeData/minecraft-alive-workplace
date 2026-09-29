@@ -89,6 +89,7 @@ public final class ModItems {
 				output.accept(ModBlocks.FEED_TROUGH);
 				output.accept(ModBlocks.TRAINING_DUMMY);
 				output.accept(ModBlocks.VILLAGE_HALL);
+				output.accept(ModBlocks.TEACHERS_DESK);
 				for (StarterBlueprints.Entry entry : StarterBlueprints.ALL) {
 					output.accept(BlueprintItem.create(entry.id(), entry.size()));
 				}

@@ -84,6 +84,18 @@ public final class ModAttachments {
 	public static final AttachmentType<Integer> ITEMS_ENCHANTED = AttachmentRegistry.create(
 		AliveWorkplace.id("items_enchanted"), builder -> builder.persistent(com.mojang.serialization.Codec.INT));
 
+	/** Whether a villager went to school as a child (a Teacher's lessons), and how many ticks of lessons they've had. */
+	public static final AttachmentType<Boolean> SCHOOLED = AttachmentRegistry.create(
+		AliveWorkplace.id("schooled"), builder -> builder.persistent(com.mojang.serialization.Codec.BOOL));
+	public static final AttachmentType<Integer> LESSONS = AttachmentRegistry.create(
+		AliveWorkplace.id("lessons"), builder -> builder.persistent(com.mojang.serialization.Codec.INT));
+	/** Set once a schooled villager has had their head start at their first job. */
+	public static final AttachmentType<Boolean> SCHOOL_BONUS = AttachmentRegistry.create(
+		AliveWorkplace.id("school_bonus"), builder -> builder.persistent(com.mojang.serialization.Codec.BOOL));
+	/** How many children a Teacher has seen through school (shown above its head). */
+	public static final AttachmentType<Integer> PUPILS_TAUGHT = AttachmentRegistry.create(
+		AliveWorkplace.id("pupils_taught"), builder -> builder.persistent(com.mojang.serialization.Codec.INT));
+
 	/** When a villager last ate (game time; a Village Hall feeds its villagers from the store once a day). */
 	public static final AttachmentType<Long> LAST_MEAL = AttachmentRegistry.create(
 		AliveWorkplace.id("last_meal"), builder -> builder.persistent(com.mojang.serialization.Codec.LONG));

@@ -84,6 +84,9 @@ public final class Partners {
 		if (profession == ModVillagers.PORTER) {
 			return Set.of("fighting", "normal"); // strong arms: more carried each trip
 		}
+		if (profession == ModVillagers.TEACHER) {
+			return Set.of("psychic", "normal"); // Alakazam, Chansey, Blissey...: lessons go quicker
+		}
 		if (profession == ModVillagers.RANCHER) {
 			return Set.of("normal", "ground"); // Tauros, Mudbray, Ponyta's cousins: wild horses calm down quicker
 		}

@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+## 0.100.0 — 2026-09-29
+
+### Added
+- **Teachers** (new job, Teacher's Desk): in the day they call the village's children over for lessons. A child who's
+  been to school starts their first job as an Apprentice, with the Novice and Apprentice trades.
+
 ## 0.99.0 — 2026-09-29
 
 ### Added

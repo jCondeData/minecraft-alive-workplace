@@ -20,6 +20,7 @@ public final class ModTrades {
 		orchardKeeperTrades();
 		beekeeperTrades();
 		rancherTrades();
+		teacherTrades();
 		ballSmithTrades();
 		porterTrades();
 		carpenterTrades();
@@ -223,6 +224,28 @@ public final class ModTrades {
 	}
 
 	/** Orchard Keepers buy and sell fruit; with Cobblemon, apricorns and berries too. */
+	/** Teachers buy paper and sell what lessons are made of. */
+	private static void teacherTrades() {
+		TradeOfferHelper.registerVillagerOffers(ModVillagers.TEACHER, 1, offers -> {
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.PAPER, 24), new ItemStack(Items.EMERALD), 16, 2, 0.05f));
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 1), new ItemStack(Items.BOOK), 12, 1, 0.05f));
+		});
+		TradeOfferHelper.registerVillagerOffers(ModVillagers.TEACHER, 2, offers -> {
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.INK_SAC, 5), new ItemStack(Items.EMERALD), 16, 10, 0.05f));
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 2), new ItemStack(Items.WRITABLE_BOOK), 12, 5, 0.05f));
+		});
+		TradeOfferHelper.registerVillagerOffers(ModVillagers.TEACHER, 3, offers -> {
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.FEATHER, 16), new ItemStack(Items.EMERALD), 16, 15, 0.05f));
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 3), new ItemStack(Items.MAP), 8, 15, 0.05f));
+		});
+		TradeOfferHelper.registerVillagerOffers(ModVillagers.TEACHER, 4, offers -> {
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 5), new ItemStack(Items.BOOKSHELF), 6, 20, 0.05f));
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 4), new ItemStack(Items.CLOCK), 4, 20, 0.05f));
+		});
+		TradeOfferHelper.registerVillagerOffers(ModVillagers.TEACHER, 5, offers ->
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 8), new ItemStack(Items.EXPERIENCE_BOTTLE, 4), 6, 30, 0.05f)));
+	}
+
 	/** Ranchers buy hay and apples for the herd, and sell what riders need. */
 	private static void rancherTrades() {
 		TradeOfferHelper.registerVillagerOffers(ModVillagers.RANCHER, 1, offers -> {

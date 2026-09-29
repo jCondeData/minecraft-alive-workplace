@@ -25,6 +25,25 @@ abstract class VillagerMixin {
 		}
 	}
 
+	/** Set when a villager who went to school is taking their first job: they start a level up once it's set. */
+	@org.spongepowered.asm.mixin.Unique
+	private boolean aliveworkplace$headStart;
+
+	@Inject(method = "setVillagerData", at = @At("HEAD"))
+	private void aliveworkplace$schoolBefore(net.minecraft.world.entity.npc.VillagerData data, CallbackInfo ci) {
+		Villager self = (Villager) (Object) this;
+		aliveworkplace$headStart = !self.level().isClientSide && self.tickCount > 0
+			&& io.github.jcondedata.aliveworkplace.school.Schools.startsAhead(self, self.getVillagerData(), data);
+	}
+
+	@Inject(method = "setVillagerData", at = @At("TAIL"))
+	private void aliveworkplace$schoolAfter(net.minecraft.world.entity.npc.VillagerData data, CallbackInfo ci) {
+		if (aliveworkplace$headStart) {
+			aliveworkplace$headStart = false;
+			io.github.jcondedata.aliveworkplace.school.Schools.headStart((Villager) (Object) this);
+		}
+	}
+
 	@Inject(method = "registerBrainGoals", at = @At("TAIL"))
 	private void aliveworkplace$builderSchedule(Brain<Villager> brain, CallbackInfo ci) {
 		Villager self = (Villager) (Object) this;

@@ -798,6 +798,12 @@ grows), centred on the hall, with a banner on every building the builders finish
 white homes, blue school and library, pink healing, yellow stores and shops, lime farms, black towers and barracks,
 orange workshops, light blue wells and fountains — and the workplaces named. The map's tooltip has the legend.
 
+**Treasury.** Every morning a village with a Village Hall puts by its takings: a fifth of an emerald a worker, from half
+that in a badly kept village to half as much again in a well-kept one, and a quarter more a rank (ten workers in a
+well-kept hamlet: 3 emeralds a day). The hall's name tag (the top-left icon of its screen) shows what's there — click it
+to collect (CobbleDollars when the pack has them). It holds up to a stack a rank; `villageTreasury` and
+`treasuryPerWorker` (hundredths of an emerald) in the config.
+
 **What next?** The compass at the right end of the hall's middle row lists what the village lacks, most pressing first —
 a builder, beds, food in the store, a Storehouse, guards (one per ten villagers), a bandit camp nearby and where, the ill,
 villagers sleeping in the dark, the jobless, a scholar, decorations, the next upgrade of a finished building, and what

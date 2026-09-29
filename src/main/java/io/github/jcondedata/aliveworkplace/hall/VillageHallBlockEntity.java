@@ -34,6 +34,9 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 	private long festivalDay = -1;
 	private long feastDay = -1;
 	private long festivalCalled = -100;
+	/** The treasury, in hundredths of an emerald, and the day it last took the village's takings (see {@link Treasury}). */
+	private int treasury;
+	private long lastTaxDay = -1;
 	/** The day of the last market (see {@link MarketDays}). */
 	private long lastMarketDay = -1;
 	/** What happened in the village, oldest first (see {@link Chronicle}). */
@@ -76,6 +79,9 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 			io.github.jcondedata.aliveworkplace.guard.BanditCamps.round(server, pos);
 			Festivals.round(server, pos, hall, census.villagers());
 			io.github.jcondedata.aliveworkplace.people.Couples.round(server, pos);
+			if (Treasury.ENABLED) {
+				Treasury.round(server, pos, hall, census.workers().size());
+			}
 			io.github.jcondedata.aliveworkplace.guard.VillageRaids.tick(server, pos, census.villagers(), census.guards(), hall.lastRaidDay, day -> {
 				hall.lastRaidDay = day;
 				hall.setChanged();
@@ -182,6 +188,24 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 		setChanged();
 	}
 
+	public int treasury() {
+		return treasury;
+	}
+
+	public void setTreasury(int cents) {
+		treasury = Math.max(0, cents);
+		setChanged();
+	}
+
+	public long lastTaxDay() {
+		return lastTaxDay;
+	}
+
+	public void setLastTaxDay(long day) {
+		lastTaxDay = day;
+		setChanged();
+	}
+
 	public long lastBirth() {
 		return lastBirth;
 	}
@@ -216,6 +240,8 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 		festivalDay = tag.contains("festivalDay") ? tag.getLong("festivalDay") : -1;
 		feastDay = tag.contains("feastDay") ? tag.getLong("feastDay") : -1;
 		festivalCalled = tag.contains("festivalCalled") ? tag.getLong("festivalCalled") : -100;
+		treasury = tag.getInt("treasury");
+		lastTaxDay = tag.contains("lastTaxDay") ? tag.getLong("lastTaxDay") : -1;
 		int r = tag.getInt("rank");
 		rank = VillageRanks.Rank.values()[Math.max(0, Math.min(VillageRanks.Rank.values().length - 1, r))];
 		research = io.github.jcondedata.aliveworkplace.research.Research.State.CODEC.parse(net.minecraft.nbt.NbtOps.INSTANCE, tag.get("research"))
@@ -247,6 +273,8 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 		tag.putLong("festivalDay", festivalDay);
 		tag.putLong("feastDay", feastDay);
 		tag.putLong("festivalCalled", festivalCalled);
+		tag.putInt("treasury", treasury);
+		tag.putLong("lastTaxDay", lastTaxDay);
 		tag.putInt("rank", rank.ordinal());
 		io.github.jcondedata.aliveworkplace.research.Research.State.CODEC.encodeStart(net.minecraft.nbt.NbtOps.INSTANCE, research).result()
 			.ifPresent(t -> tag.put("research", t));

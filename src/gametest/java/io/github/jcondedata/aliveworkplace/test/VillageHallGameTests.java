@@ -260,6 +260,44 @@ public class VillageHallGameTests implements net.fabricmc.fabric.api.gametest.v1
 		});
 	}
 
+	/** The treasury takes a day's takings each morning (more for a well-kept village); a player collects them at the hall. */
+	@GameTest(template = AREA, timeoutTicks = 100, batch = "theTreasuryFillsAndIsCollected")
+	public void theTreasuryFillsAndIsCollected(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		int radius = VillageHalls.RADIUS;
+		VillageHalls.RADIUS = 16;
+		ServerLevel level = helper.getLevel();
+		ServerPlayer player = helper.makeMockServerPlayerInLevel();
+		Leftovers.after(helper, () -> {
+			VillageHalls.RADIUS = radius;
+			level.getServer().getPlayerList().remove(player);
+		});
+		helper.assertTrue(io.github.jcondedata.aliveworkplace.hall.Treasury.takings(10, 1f, io.github.jcondedata.aliveworkplace.hall.VillageRanks.Rank.HAMLET) == 300,
+			"ten workers in a well-kept hamlet: 3 emeralds a day");
+		helper.assertTrue(io.github.jcondedata.aliveworkplace.hall.Treasury.takings(10, 0f, io.github.jcondedata.aliveworkplace.hall.VillageRanks.Rank.HAMLET) == 100,
+			"badly kept: a third of that");
+		helper.assertTrue(io.github.jcondedata.aliveworkplace.hall.Treasury.takings(10, 1f, io.github.jcondedata.aliveworkplace.hall.VillageRanks.Rank.CITY) == 525,
+			"a city: 75% more");
+		helper.setBlock(HALL, ModBlocks.VILLAGE_HALL);
+		BlockPos hall = helper.absolutePos(HALL);
+		io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity entity = (io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(hall);
+		long today = io.github.jcondedata.aliveworkplace.hall.Chronicle.day(level);
+		io.github.jcondedata.aliveworkplace.hall.Treasury.round(level, hall, entity, 10);
+		helper.assertTrue(entity.treasury() == 0 && entity.lastTaxDay() == today, "a new hall takes nothing on its first day");
+		entity.setLastTaxDay(today - 1);
+		io.github.jcondedata.aliveworkplace.hall.Treasury.round(level, hall, entity, 10);
+		helper.assertTrue(entity.treasury() > 0, "no takings after a day");
+		int before = entity.treasury();
+		io.github.jcondedata.aliveworkplace.hall.Treasury.round(level, hall, entity, 10);
+		helper.assertTrue(entity.treasury() == before, "takings twice in a day");
+		entity.setTreasury(250);
+		ChoiceMenu menu = VillageHallScreen.forTest(player, hall);
+		menu.press(0, player); // the hall's name: collect
+		helper.assertTrue(player.getInventory().countItem(Items.EMERALD) == 2, "emeralds: " + player.getInventory().countItem(Items.EMERALD));
+		helper.assertTrue(entity.treasury() == 50, "the change stays: " + entity.treasury());
+		helper.succeed();
+	}
+
 	/** "What next?": the hall says what the village lacks — a builder, beds, food, a store, guards, jobs, the next rank. */
 	@GameTest(template = AREA, timeoutTicks = 100, batch = "villageAdviceSaysWhatsMissing")
 	public void villageAdviceSaysWhatsMissing(GameTestHelper helper) {

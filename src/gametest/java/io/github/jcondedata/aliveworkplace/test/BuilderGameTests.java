@@ -866,6 +866,17 @@ public class BuilderGameTests implements FabricGameTest {
 		buildStarter(helper, StarterBlueprints.INN);
 	}
 
+	@GameTest(template = BIG_AREA, timeoutTicks = 30000, batch = "starter_builds_4")
+	public void buildsStoneHouse(GameTestHelper helper) {
+		buildStarter(helper, StarterBlueprints.STONE_HOUSE);
+	}
+
+	/** The whole Stone House III from bare ground (it's deeper than a starter build, so it starts further back). */
+	@GameTest(template = BIG_AREA, timeoutTicks = 40000, batch = "starter_builds_5")
+	public void buildsStoneHouseIII(GameTestHelper helper) {
+		buildStarter(helper, StarterBlueprints.STONE_HOUSE_3, new BlockPos(9, 2, 8));
+	}
+
 	@GameTest(template = BIG_AREA, timeoutTicks = 12000, batch = "decorations")
 	public void buildsWell(GameTestHelper helper) {
 		buildStarter(helper, StarterBlueprints.WELL_2);
@@ -1109,9 +1120,13 @@ public class BuilderGameTests implements FabricGameTest {
 	}
 
 	private void buildStarter(GameTestHelper helper, StarterBlueprints.Entry entry) {
+		buildStarter(helper, entry, new BlockPos(9, 2, 9));
+	}
+
+	private void buildStarter(GameTestHelper helper, StarterBlueprints.Entry entry, BlockPos origin) {
 		Blueprint blueprint = BlueprintLibrary.get(helper.getLevel(), entry.id())
 			.orElseThrow(() -> new GameTestAssertException("missing starter blueprint " + entry.id()));
-		BuildPlan plan = BuildPlan.create(blueprint, placement(helper, new BlockPos(9, 2, 9), Rotation.NONE));
+		BuildPlan plan = BuildPlan.create(blueprint, placement(helper, origin, Rotation.NONE));
 		// Stock barrels with exactly what the plan says it needs.
 		List<ItemStack> stock = new ArrayList<>();
 		for (Map.Entry<Item, Integer> e : plan.materials().entrySet()) {
@@ -1132,7 +1147,7 @@ public class BuilderGameTests implements FabricGameTest {
 			}
 		}
 		helper.assertTrue(stock.size() <= barrels.length * 27, "test needs more barrels for " + entry.id());
-		Setup s = setup(helper, entry.id(), new BlockPos(9, 2, 9), Rotation.NONE);
+		Setup s = setup(helper, entry.id(), origin, Rotation.NONE);
 		helper.succeedWhen(() -> assertBuilt(helper, s));
 	}
 
@@ -1160,7 +1175,7 @@ public class BuilderGameTests implements FabricGameTest {
 			long kept = base.blocks().stream().filter(e -> !e.state().isAir() && e.state().equals(up.get(e.pos()))).count();
 			helper.assertTrue(kept >= solid * 0.6, entry.id() + " keeps only " + kept + " of " + baseId.get() + "'s " + solid + " blocks");
 		}
-		helper.assertTrue(upgrades == 22, "expected 22 starter upgrades, found " + upgrades);
+		helper.assertTrue(upgrades == 24, "expected 24 starter upgrades, found " + upgrades);
 		helper.succeed();
 	}
 

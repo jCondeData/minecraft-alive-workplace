@@ -91,6 +91,13 @@ public final class StarterBlueprints {
 	/** A lych-gate over the way in. */
 	public static final Entry GRAVEYARD_2 = new Entry(AliveWorkplace.id("graveyard_2"), new Vec3i(13, 11, 13));
 
+	/** A stone cottage with a bed downstairs and one in the attic. */
+	public static final Entry STONE_HOUSE = new Entry(AliveWorkplace.id("stone_house"), new Vec3i(11, 11, 9));
+	/** A timber-framed upper storey with two more beds. */
+	public static final Entry STONE_HOUSE_2 = new Entry(AliveWorkplace.id("stone_house_2"), new Vec3i(11, 16, 9));
+	/** A stone wing at the back with two more beds. */
+	public static final Entry STONE_HOUSE_3 = new Entry(AliveWorkplace.id("stone_house_3"), new Vec3i(11, 16, 14));
+
 	/** Decorations: a well with a lantern on a chain over the water. */
 	public static final Entry WELL = new Entry(AliveWorkplace.id("well"), new Vec3i(7, 5, 7));
 	/** A roof over the well, benches and lamp posts. */
@@ -112,7 +119,7 @@ public final class StarterBlueprints {
 	public static final List<Entry> ALL = List.of(STARTER_COTTAGE, STARTER_COTTAGE_2, STARTER_COTTAGE_3, MARKET_STALL, MARKET_STALL_2, MARKET_STALL_3,
 		LOOKOUT_TOWER, LOOKOUT_TOWER_2, LOOKOUT_TOWER_3, HEALING_CENTER, HEALING_CENTER_2, HEALING_CENTER_3, SUPPLY_SHOP, SUPPLY_SHOP_2, SUPPLY_SHOP_3,
 		STOREHOUSE, STOREHOUSE_2, STOREHOUSE_3, BERRY_FARM, BERRY_FARM_2, RESEARCH_LAB, RESEARCH_LAB_2,
-		TERRACE, TERRACE_2, INN, INN_2,
+		TERRACE, TERRACE_2, INN, INN_2, STONE_HOUSE, STONE_HOUSE_2, STONE_HOUSE_3,
 		SCHOOLHOUSE, SCHOOLHOUSE_2, LIBRARY, LIBRARY_2, RANCH, RANCH_2, APIARY_GARDEN, APIARY_GARDEN_2, FLOWER_SHOP, FLOWER_SHOP_2, GRAVEYARD, GRAVEYARD_2);
 
 	/** The decorations (in the Blueprint Table with the rest; near a Village Hall they make the village prettier). */

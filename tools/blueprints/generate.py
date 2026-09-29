@@ -12,6 +12,7 @@ from kit import *
 from starter import *
 from village import *
 from decor import *
+from houses import *
 
 
 # --- Gametest fixtures ------------------------------------------------------------------
@@ -99,6 +100,9 @@ if __name__ == "__main__":
     for name, draw in (("well", well), ("well_2", well_2), ("street_lamp", street_lamp), ("park_bench", park_bench),
                        ("fountain", fountain), ("gazebo", gazebo), ("market_square", market_square)):
         draw().save(MAIN_STRUCTURES, name)
+    stone_house().save(MAIN_STRUCTURES, "stone_house")
+    stone_house_2().save(MAIN_STRUCTURES, "stone_house_2")
+    stone_house_3().save(MAIN_STRUCTURES, "stone_house_3")
     for style in VILLAGE_STYLES:
         builders_workshop(style).save(VILLAGE_STRUCTURES, f"{style}_builders_workshop")
         for name, fit_out in VILLAGE_HOUSES.items():

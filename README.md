@@ -143,9 +143,11 @@ at least 50%, the two villagers nearest the free bed have a baby (the family eat
 (`villageGrowthCap`). The hall's villager count says what the village still needs to grow. So build houses: the
 **Terrace** (two narrow homes, four beds; the **Terrace II** adds a third home) and the **Inn** (a tavern below, three
 guest rooms with six beds above; the **Inn II** adds a stable with a Feed Trough, and a rancher moves in) are in the
-Blueprint Table.
+Blueprint Table. The **Stone House** grows in three tiers: a stone cottage with a bed downstairs and one in the attic,
+then (**II**) a timber-framed upper storey with two more beds, then (**III**) a stone wing at the back with two more.
 
 ![The Terrace II and the Inn II](docs/media/houses.png)
+![The Stone House I, II and III](docs/media/stone-house.png)
 
 **School.** Craft a **Teacher's Desk** (a book over three planks, on two legs) and a villager takes it and becomes a
 **Teacher**. In the day they call the children within 32 blocks over to the desk and give them lessons; a child who's

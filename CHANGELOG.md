@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+## 0.109.0 — 2026-09-29
+
+### Added
+- The **Stone House** in three tiers (Blueprint Table): a stone cottage with two beds, II a timber-framed upper storey
+  with two more, III a stone wing at the back with two more.
+
 ## 0.108.0 — 2026-09-29
 
 ### Added

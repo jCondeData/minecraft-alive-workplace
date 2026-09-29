@@ -43,14 +43,21 @@ public final class Mercenaries {
 		return level.getEntitiesOfClass(Villager.class, VillageHalls.area(hall), v -> v.isAlive() && isMercenary(v));
 	}
 
+	/** What a band costs at the hall at {@code hall} in emeralds: less with Commerce researched. */
+	public static int price(ServerLevel level, BlockPos hall) {
+		return Math.max(1, PRICE_EMERALDS - 3 * io.github.jcondedata.aliveworkplace.research.Research.at(level, hall)
+			.level(io.github.jcondedata.aliveworkplace.research.Research.Topic.COMMERCE));
+	}
+
 	/** {@code player} hires a band at the hall at {@code hall}; returns what to tell them. */
 	public static Component hire(ServerLevel level, BlockPos hall, ServerPlayer player) {
 		if (!near(level, hall).isEmpty()) {
 			return Component.translatable("message.aliveworkplace.mercenaries.already").withStyle(ChatFormatting.YELLOW);
 		}
-		long dollars = (long) PRICE_EMERALDS * Money.DOLLARS_PER_EMERALD;
-		if (!Money.charge(player, dollars, PRICE_EMERALDS)) {
-			return Component.translatable("message.aliveworkplace.mercenaries.cant_afford", Money.describe(dollars, PRICE_EMERALDS))
+		int price = price(level, hall);
+		long dollars = (long) price * Money.DOLLARS_PER_EMERALD;
+		if (!Money.charge(player, dollars, price)) {
+			return Component.translatable("message.aliveworkplace.mercenaries.cant_afford", Money.describe(dollars, price))
 				.withStyle(ChatFormatting.RED);
 		}
 		long until = level.getGameTime() + Math.max(MIN_STAY, (24000 - level.getDayTime() % 24000) % 24000);

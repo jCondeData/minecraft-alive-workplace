@@ -78,6 +78,12 @@ public final class Guards {
 	 * and then — the shield takes the wear, the attacker is pushed back. Returns true if blocked.
 	 */
 	public static boolean block(Villager guard, net.minecraft.world.damagesource.DamageSource source, float amount) {
+		if (isGuard(guard) && !source.is(net.minecraft.tags.DamageTypeTags.BYPASSES_ARMOR) && guard.getRandom().nextFloat()
+				< 0.1f * io.github.jcondedata.aliveworkplace.research.Research.level(guard, io.github.jcondedata.aliveworkplace.research.Research.Topic.FORTIFICATION)) {
+			// Fortification: the blow turned aside by drilled footwork and good steel.
+			guard.level().playSound(null, guard.blockPosition(), net.minecraft.sounds.SoundEvents.ANVIL_LAND, net.minecraft.sounds.SoundSource.NEUTRAL, 0.3f, 1.8f);
+			return true;
+		}
 		if (!isGuard(guard) || !isShield(guard.getItemBySlot(EquipmentSlot.OFFHAND))
 			|| source.is(net.minecraft.tags.DamageTypeTags.BYPASSES_SHIELD) || source.getSourcePosition() == null) {
 			return false;

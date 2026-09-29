@@ -409,7 +409,7 @@ public class ExplorerWork extends Behavior<Villager> {
 		}
 		stopsDone = 0;
 		phase = Phase.IDLE;
-		restUntil = now + (long) (REST_TICKS * Partners.factor(villager));
+		restUntil = now + (long) (REST_TICKS * Partners.factor(villager) * io.github.jcondedata.aliveworkplace.nether.Netherworkers.expeditionFactor(villager));
 		busy(villager, false);
 		walker.reset();
 	}

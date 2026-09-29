@@ -221,7 +221,8 @@ public class CrafterWork extends Behavior<Villager> {
 		villager.getBrain().setMemory(MemoryModuleType.LOOK_TARGET, new BlockPosTracker(station));
 		int crafts = job.plan().steps().stream().mapToInt(Crafting.Step::times).sum();
 		if (timer < 0) {
-			timer = Math.max(20, BuilderLevels.delay(CRAFT_TICKS * crafts, villager));
+			timer = Math.max(20, Math.round(BuilderLevels.delay(CRAFT_TICKS * crafts, villager) * (1f - 0.15f
+				* io.github.jcondedata.aliveworkplace.research.Research.level(villager, io.github.jcondedata.aliveworkplace.research.Research.Topic.CRAFTSMANSHIP))));
 		}
 		if (timer % 10 == 0) {
 			villager.swing(InteractionHand.MAIN_HAND);

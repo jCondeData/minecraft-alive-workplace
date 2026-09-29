@@ -208,7 +208,7 @@ public final class Netherworkers {
 			}
 		}
 		long now = level.getGameTime();
-		int ticks = Math.max(20, BuilderLevels.delay(TRIP_TICKS, villager));
+		int ticks = Math.max(20, Math.round(BuilderLevels.delay(TRIP_TICKS, villager) * expeditionFactor(villager)));
 		villager.setAttached(ModAttachments.NETHER_TRIP, new Trip(now, now + ticks, portal.immutable(), kitOf(bag)));
 		puff(level, villager);
 		level.playSound(null, portal, SoundEvents.PORTAL_TRIGGER, SoundSource.NEUTRAL, 0.4f, 1.2f);
@@ -216,6 +216,11 @@ public final class Netherworkers {
 		villager.getNavigation().stop();
 		park(villager, portal);
 		return true;
+	}
+
+	/** Expeditions: trips 20% shorter a level. */
+	public static float expeditionFactor(Villager villager) {
+		return 1f - 0.2f * io.github.jcondedata.aliveworkplace.research.Research.level(villager, io.github.jcondedata.aliveworkplace.research.Research.Topic.EXPEDITIONS);
 	}
 
 	/**

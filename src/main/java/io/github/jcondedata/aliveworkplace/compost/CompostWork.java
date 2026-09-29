@@ -73,6 +73,11 @@ public class CompostWork extends Behavior<Villager> {
 		return !villager.isBaby() && villager.getVillagerData().getProfession() == ModVillagers.COMPOSTER;
 	}
 
+	/** Layers a bone meal takes this composter: fewer with Green Thumb researched. */
+	public static float layersPerBoneMeal(Villager villager) {
+		return LEVELS_PER_BONE_MEAL - io.github.jcondedata.aliveworkplace.research.Research.level(villager, io.github.jcondedata.aliveworkplace.research.Research.Topic.GREEN_THUMB);
+	}
+
 	/** How much of a layer of compost {@code stack} makes (0: it can't be composted). */
 	public static float layers(ItemStack stack) {
 		if (stack.is(Items.ROTTEN_FLESH) || stack.is(Items.POISONOUS_POTATO) || stack.is(Items.SPIDER_EYE)) {
@@ -109,7 +114,7 @@ public class CompostWork extends Behavior<Villager> {
 		}
 		boolean atBin = walker.walkTo(level, villager, bin, 2.5);
 		WorkerStatus.set(villager, Component.translatable("message.aliveworkplace.composter.title", villager.getAttachedOrElse(ModAttachments.BONE_MEAL_MADE, 0)),
-			villager.getAttachedOrElse(ModAttachments.COMPOST_LAYERS, 0f) / LEVELS_PER_BONE_MEAL,
+			villager.getAttachedOrElse(ModAttachments.COMPOST_LAYERS, 0f) / layersPerBoneMeal(villager),
 			Component.translatable("message.aliveworkplace.composter.state." + state).withStyle(state.equals("needs") ? ChatFormatting.YELLOW : ChatFormatting.GRAY));
 		if (!atBin || --timer > 0) {
 			return;
@@ -142,8 +147,9 @@ public class CompostWork extends Behavior<Villager> {
 		Requests.clear(villager);
 		float layers = villager.getAttachedOrElse(ModAttachments.COMPOST_LAYERS, 0f) + layers(scrap);
 		int made = 0;
-		while (layers >= LEVELS_PER_BONE_MEAL) {
-			layers -= LEVELS_PER_BONE_MEAL;
+		float perMeal = layersPerBoneMeal(villager);
+		while (layers >= perMeal) {
+			layers -= perMeal;
 			made++;
 		}
 		villager.setAttached(ModAttachments.COMPOST_LAYERS, layers);

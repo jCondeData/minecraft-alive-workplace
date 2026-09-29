@@ -161,8 +161,8 @@ public final class VillageHallScreen {
 		menu.button(MERCENARIES, icon(Items.IRON_SWORD, Component.translatable("screen.aliveworkplace.hall.mercenaries"), ChatFormatting.WHITE,
 			line(band > 0 ? Component.translatable("screen.aliveworkplace.hall.mercenaries_here", band)
 				: Component.translatable("screen.aliveworkplace.hall.mercenaries_hint", io.github.jcondedata.aliveworkplace.guard.Mercenaries.BAND,
-					io.github.jcondedata.aliveworkplace.work.Money.describe((long) io.github.jcondedata.aliveworkplace.guard.Mercenaries.PRICE_EMERALDS
-						* io.github.jcondedata.aliveworkplace.work.Money.DOLLARS_PER_EMERALD, io.github.jcondedata.aliveworkplace.guard.Mercenaries.PRICE_EMERALDS)),
+					io.github.jcondedata.aliveworkplace.work.Money.describe((long) io.github.jcondedata.aliveworkplace.guard.Mercenaries.price(level, hall)
+						* io.github.jcondedata.aliveworkplace.work.Money.DOLLARS_PER_EMERALD, io.github.jcondedata.aliveworkplace.guard.Mercenaries.price(level, hall))),
 				band > 0 ? ChatFormatting.GREEN : ChatFormatting.GRAY)), p -> {
 			p.displayClientMessage(io.github.jcondedata.aliveworkplace.guard.Mercenaries.hire(level, hall, p), false);
 			refresh(menu, level, hall, shown);

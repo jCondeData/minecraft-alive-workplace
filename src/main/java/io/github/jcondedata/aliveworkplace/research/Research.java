@@ -26,7 +26,14 @@ import org.jetbrains.annotations.Nullable;
  * <li>Drill: guards hit 10% harder a level;</li>
  * <li>Kinship (after Swift Hands I): one more Pokémon partner per worker a level;</li>
  * <li>Lore (after Hearth I): children who went to school start as Journeymen;</li>
- * <li>Architecture (after Swift Hands II and Hearth I): the scholars draw up the Town Hall blueprint.</li>
+ * <li>Architecture (after Swift Hands II and Hearth I): the scholars draw up the Town Hall blueprint;</li>
+ * <li>Logistics (after Swift Hands I): porters carry 3 more stacks a level;</li>
+ * <li>Craftsmanship (after Swift Hands I): carpenters, masons, tinkerers, chefs and the other crafters 15% faster a level;</li>
+ * <li>Medicine (after Hearth I): villagers a third as likely to fall ill a level;</li>
+ * <li>Fortification (after Drill I): guards turn aside one blow in ten a level;</li>
+ * <li>Commerce (after Hearth I): one more trader on market days and mercenaries 3 emeralds cheaper a level;</li>
+ * <li>Expeditions (after Logistics I): explorers and netherworkers back 20% sooner a level;</li>
+ * <li>Green Thumb (after Hearth I): a layer less compost a bone meal a level.</li>
  * </ul>
  */
 public final class Research {
@@ -36,7 +43,14 @@ public final class Research {
 		DRILL(3, Items.IRON_SWORD),
 		KINSHIP(2, Items.LEAD),
 		LORE(1, Items.WRITABLE_BOOK),
-		ARCHITECTURE(1, Items.BRICKS);
+		ARCHITECTURE(1, Items.BRICKS),
+		LOGISTICS(2, Items.CHEST_MINECART),
+		CRAFTSMANSHIP(2, Items.CRAFTING_TABLE),
+		MEDICINE(2, Items.GOLDEN_APPLE),
+		FORTIFICATION(2, Items.SHIELD),
+		COMMERCE(2, Items.EMERALD),
+		EXPEDITIONS(2, Items.COMPASS),
+		GREEN_THUMB(2, Items.BONE_MEAL);
 
 		public final int maxLevel;
 		public final Item icon;
@@ -74,6 +88,10 @@ public final class Research {
 				case KINSHIP -> Map.of(SWIFT_HANDS, 1);
 				case LORE -> Map.of(HEARTH, 1);
 				case ARCHITECTURE -> Map.of(SWIFT_HANDS, 2, HEARTH, 1);
+				case LOGISTICS, CRAFTSMANSHIP -> Map.of(SWIFT_HANDS, 1);
+				case MEDICINE, COMMERCE, GREEN_THUMB -> Map.of(HEARTH, 1);
+				case FORTIFICATION -> Map.of(DRILL, 1);
+				case EXPEDITIONS -> Map.of(LOGISTICS, 1);
 				default -> Map.of();
 			};
 		}

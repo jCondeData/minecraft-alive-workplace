@@ -68,7 +68,9 @@ public final class Sickness {
 
 	/** The chance a day that {@code villager} falls ill: higher when hungry, higher again without a bed. */
 	public static float dailyChance(ServerLevel level, Villager villager) {
-		return DAILY + (VillageNeeds.isHungry(villager, level.getGameTime()) ? HUNGRY : 0f) + (VillageNeeds.bed(level, villager) == null ? HOMELESS : 0f);
+		float chance = DAILY + (VillageNeeds.isHungry(villager, level.getGameTime()) ? HUNGRY : 0f) + (VillageNeeds.bed(level, villager) == null ? HOMELESS : 0f);
+		// Medicine: a third less likely a level.
+		return chance * (1f - io.github.jcondedata.aliveworkplace.research.Research.level(villager, io.github.jcondedata.aliveworkplace.research.Research.Topic.MEDICINE) / 3f);
 	}
 
 	public static void fallIll(ServerLevel level, Villager villager) {

@@ -265,6 +265,13 @@ bonus for the whole village:
 | Kinship | 2 | one more Pokémon partner per worker | Swift Hands I |
 | Lore | 1 | schooled children start as Journeymen | Hearth I |
 | Architecture | 1 | the **Town Hall** blueprint (a stone hall with a bell tower and a Village Hall inside) | Swift Hands II, Hearth I |
+| Logistics | 2 | porters carry 3 more stacks | Swift Hands I |
+| Craftsmanship | 2 | carpenters, masons, tinkerers, chefs and other crafters 15% faster | Swift Hands I |
+| Medicine | 2 | villagers a third less likely to fall ill | Hearth I |
+| Fortification | 2 | guards turn aside one blow in ten | Drill I |
+| Commerce | 2 | one more market trader, mercenaries 3 emeralds cheaper | Hearth I |
+| Expeditions | 2 | explorers and netherworkers back 20% sooner | Logistics I |
+| Green Thumb | 2 | composters need a layer less compost a bone meal | Hearth I |
 
 **Graves and Undertakers.** A grown villager with a job (or a name) who dies leaves a **grave** where they fell —
 right-click it to read who lies there. Craft an **Undertaker's Table** (two candles and a lily of the valley over dark

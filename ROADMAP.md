@@ -621,6 +621,10 @@ ones we lack, our way.
 - [x] Repairs (`build/Upkeep`: an idle builder looks every 1200 ticks at the finished builds they look after within 48 of
   the bench; `BuildPlan.repair` fills only open spots, `BuildSite.repair` starts at STRUCTURE, no blueprint handed back;
   `builderRepairs` in the config, off in gametests)
+- [x] Seven more research topics (`Research.Topic`: LOGISTICS → `PorterWork.capacity`, CRAFTSMANSHIP → `CrafterWork` craft
+  timer, MEDICINE → `Sickness.dailyChance`, FORTIFICATION → `Guards.block`, COMMERCE → `MarketDays` + `Mercenaries.price`,
+  EXPEDITIONS → `Netherworkers.expeditionFactor` (and explorers' rest), GREEN_THUMB → `CompostWork.layersPerBoneMeal`);
+  the research screen shows 13 topics on two rows
 - [x] Mason's kiln (`Crafting.Kind.KILN`: smelting to building blocks and brick items + stonecutting + crafting, used only
   for plans that fire something, with a furnace by the stonecutter; `CrafterWork.withFuel` shared with the tinkerer)
 

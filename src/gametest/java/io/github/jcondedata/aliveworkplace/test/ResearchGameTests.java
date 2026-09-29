@@ -102,4 +102,32 @@ public class ResearchGameTests implements net.fabricmc.fabric.api.gametest.v1.Fa
 		BlockPos hall = helper.absolutePos(HALL);
 		return new Setup(level, hall, (VillageHallBlockEntity) level.getBlockEntity(hall), helper.getBlockEntity(CHEST), scholar, player);
 	}
+
+	/**
+	 * The new topics unlock after what they need, and their bonuses show up: Commerce II makes mercenaries 6 emeralds
+	 * cheaper, Green Thumb II a bone meal three layers of compost, Medicine II illness a third as likely.
+	 */
+	@GameTest(template = AREA, timeoutTicks = 100, batch = "researchBonuses")
+	public void researchBonuses(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		ServerLevel level = helper.getLevel();
+		helper.setBlock(HALL, ModBlocks.VILLAGE_HALL);
+		Villager villager = helper.spawn(EntityType.VILLAGER, new BlockPos(15, 2, 15));
+		helper.runAfterDelay(2, () -> {
+			VillageHallBlockEntity entity = (VillageHallBlockEntity) level.getBlockEntity(helper.absolutePos(HALL));
+			helper.assertFalse(Research.State.EMPTY.available(Research.Topic.EXPEDITIONS), "Expeditions without Logistics");
+			helper.assertTrue(new Research.State(Map.of("logistics", 1), Optional.empty(), 0, false).available(Research.Topic.EXPEDITIONS),
+				"Expeditions locked after Logistics I");
+			float before = io.github.jcondedata.aliveworkplace.people.Sickness.dailyChance(level, villager);
+			entity.setResearch(new Research.State(Map.of("hearth", 1, "commerce", 2, "green_thumb", 2, "medicine", 2), Optional.empty(), 0, false));
+			Research.forget();
+			helper.assertTrue(io.github.jcondedata.aliveworkplace.guard.Mercenaries.price(level, helper.absolutePos(HALL))
+				== io.github.jcondedata.aliveworkplace.guard.Mercenaries.PRICE_EMERALDS - 6, "mercenaries' price");
+			helper.assertTrue(io.github.jcondedata.aliveworkplace.compost.CompostWork.layersPerBoneMeal(villager) == 3f, "compost layers");
+			float after = io.github.jcondedata.aliveworkplace.people.Sickness.dailyChance(level, villager);
+			helper.assertTrue(Math.abs(after - before / 3f) < 1e-4, "illness " + before + " -> " + after);
+			Research.forget();
+			helper.succeed();
+		});
+	}
 }

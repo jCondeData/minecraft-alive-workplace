@@ -74,7 +74,8 @@ public final class MarketDays {
 	/** The traders come to the square at {@code square}. */
 	public static List<WanderingTrader> hold(ServerLevel level, BlockPos hall, BlockPos square) {
 		List<WanderingTrader> traders = new ArrayList<>();
-		int traders_ = VillageRanks.marketTraders(VillageRanks.of(level, hall));
+		int traders_ = VillageRanks.marketTraders(VillageRanks.of(level, hall))
+			+ io.github.jcondedata.aliveworkplace.research.Research.at(level, hall).level(io.github.jcondedata.aliveworkplace.research.Research.Topic.COMMERCE);
 		for (int i = 0; i < traders_; i++) {
 			BlockPos spot = spot(level, square, i);
 			if (spot == null) {

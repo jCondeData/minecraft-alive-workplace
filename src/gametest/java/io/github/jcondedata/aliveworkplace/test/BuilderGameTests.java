@@ -904,6 +904,11 @@ public class BuilderGameTests implements FabricGameTest {
 		buildStarter(helper, StarterBlueprints.WALL_TOWER);
 	}
 
+	@GameTest(template = BIG_AREA, timeoutTicks = 30000, batch = "starter_builds_5")
+	public void buildsBarracks(GameTestHelper helper) {
+		buildStarter(helper, StarterBlueprints.BARRACKS);
+	}
+
 	@GameTest(template = BIG_AREA, timeoutTicks = 30000, batch = "defences")
 	public void buildsGatehouse(GameTestHelper helper) {
 		buildStarter(helper, StarterBlueprints.GATEHOUSE);
@@ -1207,7 +1212,7 @@ public class BuilderGameTests implements FabricGameTest {
 			long kept = base.blocks().stream().filter(e -> !e.state().isAir() && e.state().equals(up.get(e.pos()))).count();
 			helper.assertTrue(kept >= solid * 0.6, entry.id() + " keeps only " + kept + " of " + baseId.get() + "'s " + solid + " blocks");
 		}
-		helper.assertTrue(upgrades == 24, "expected 24 starter upgrades, found " + upgrades);
+		helper.assertTrue(upgrades == 25, "expected 25 starter upgrades, found " + upgrades);
 		helper.succeed();
 	}
 

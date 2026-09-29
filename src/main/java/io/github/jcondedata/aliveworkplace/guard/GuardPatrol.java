@@ -104,7 +104,7 @@ public class GuardPatrol extends Behavior<Villager> {
 		if (gearChest == null && --gearTimer <= 0) {
 			gearTimer = GEAR_CHECK_EVERY;
 			gearChest = SupplyContainers.firstMatching(level, SupplyContainers.find(level, post, null), stack -> isUpgrade(villager, stack)
-				|| io.github.jcondedata.aliveworkplace.brew.AlchemistWork.isGuardPotion(stack) && Guards.potions(villager) < Guards.POTIONS
+				|| io.github.jcondedata.aliveworkplace.brew.AlchemistWork.isGuardPotion(stack) && Guards.potions(villager) < Guards.potionsFor(villager)
 				|| Guards.isSpecialArrow(stack) && (Guards.hasBow(villager) || SupplyContainers.firstMatching(level,
 					SupplyContainers.find(level, post, null), Guards::isBow) != null) && Guards.quiver(villager) < Guards.QUIVER / 2);
 		}
@@ -219,7 +219,12 @@ public class GuardPatrol extends Behavior<Villager> {
 	/** True if {@code stack} beats what the guard has in that slot. */
 	static boolean isUpgrade(Villager villager, ItemStack stack) {
 		if (Guards.isBow(stack)) {
-			return Guards.rangedRank(stack) > Guards.rangedRank(villager.getItemBySlot(EquipmentSlot.OFFHAND));
+			Guards.Kind kind = Guards.kind(villager);
+			return (kind == Guards.Kind.GUARD || kind == Guards.Kind.ARCHER)
+				&& Guards.rangedRank(stack) > Guards.rangedRank(villager.getItemBySlot(EquipmentSlot.OFFHAND));
+		}
+		if (Guards.isShield(stack)) {
+			return villager.getItemBySlot(EquipmentSlot.OFFHAND).isEmpty();
 		}
 		if (Guards.isWeapon(stack)) {
 			return Guards.baseDamage(stack) > Guards.baseDamage(villager.getItemBySlot(EquipmentSlot.MAINHAND));
@@ -231,14 +236,27 @@ public class GuardPatrol extends Behavior<Villager> {
 		return false;
 	}
 
+	/** {@link #equipBest} (tests). */
+	public static void equipBestForTest(ServerLevel level, Villager villager, List<BlockPos> chests) {
+		equipBest(level, villager, chests);
+	}
+
 	/** Swaps in the best weapon and armor from the chests; what they had goes back in. */
 	static void equipBest(ServerLevel level, Villager villager, List<BlockPos> chests) {
 		// Each swap raises the bar, so a few rounds end with the best piece of each kind.
 		for (int i = 0; i < 4 && take(level, villager, chests, EquipmentSlot.MAINHAND, stack -> Guards.isWeapon(stack)
 			&& Guards.baseDamage(stack) > Guards.baseDamage(villager.getItemBySlot(EquipmentSlot.MAINHAND))); i++) {
 		}
-		for (int i = 0; i < 2 && take(level, villager, chests, EquipmentSlot.OFFHAND, stack -> Guards.isBow(stack)
-			&& Guards.rangedRank(stack) > Guards.rangedRank(villager.getItemBySlot(EquipmentSlot.OFFHAND))); i++) {
+		// The off hand makes the kind of guard: a bow for an archer (or a better one), else a shield for a knight. A knight or
+		// a medic (a potion handed to them) keeps what they hold.
+		Guards.Kind kind = Guards.kind(villager);
+		if (kind == Guards.Kind.GUARD || kind == Guards.Kind.ARCHER) {
+			for (int i = 0; i < 2 && take(level, villager, chests, EquipmentSlot.OFFHAND, stack -> Guards.isBow(stack)
+				&& Guards.rangedRank(stack) > Guards.rangedRank(villager.getItemBySlot(EquipmentSlot.OFFHAND))); i++) {
+			}
+		}
+		if (villager.getItemBySlot(EquipmentSlot.OFFHAND).isEmpty()) {
+			take(level, villager, chests, EquipmentSlot.OFFHAND, Guards::isShield);
 		}
 		for (EquipmentSlot slot : ARMOR) {
 			for (int i = 0; i < 4 && take(level, villager, chests, slot, stack -> stack.getItem() instanceof ArmorItem armor
@@ -247,7 +265,7 @@ public class GuardPatrol extends Behavior<Villager> {
 		}
 		// Healing, regeneration and strength potions, a few.
 		var potionBag = villager.getAttachedOrCreate(io.github.jcondedata.aliveworkplace.registry.ModAttachments.BUILDER_BAG);
-		for (int i = Guards.potions(villager); i < Guards.POTIONS; i++) {
+		for (int i = Guards.potions(villager); i < Guards.potionsFor(villager); i++) {
 			ItemStack potion = SupplyContainers.takeOne(level, chests, io.github.jcondedata.aliveworkplace.brew.AlchemistWork::isGuardPotion);
 			if (potion.isEmpty()) {
 				break;

@@ -26,6 +26,125 @@ public final class Guards {
 	/** Guards are tougher than other villagers: 40 health instead of 20. */
 	private static final double EXTRA_HEALTH = 20;
 
+	/** What kind of guard someone is, from what they hold in their off hand. */
+	public enum Kind {
+		/** A sword and nothing else. */
+		GUARD,
+		/** A bow or a crossbow: shoots, keeps creepers at a distance. */
+		ARCHER,
+		/** A shield: blocks blows from in front. */
+		KNIGHT,
+		/** A healing or regeneration potion in hand: tends the wounded with the potions they carry. */
+		MEDIC;
+
+		public net.minecraft.network.chat.Component title() {
+			return net.minecraft.network.chat.Component.translatable("guard_kind.aliveworkplace." + name().toLowerCase(java.util.Locale.ROOT));
+		}
+	}
+
+	public static Kind kind(Villager guard) {
+		ItemStack off = guard.getItemBySlot(EquipmentSlot.OFFHAND);
+		if (isBow(off)) {
+			return Kind.ARCHER;
+		}
+		if (isShield(off)) {
+			return Kind.KNIGHT;
+		}
+		if (isMedicine(off)) {
+			return Kind.MEDIC;
+		}
+		return Kind.GUARD;
+	}
+
+	public static boolean isShield(ItemStack stack) {
+		return !stack.isEmpty() && stack.getItem() instanceof net.minecraft.world.item.ShieldItem;
+	}
+
+	/** A healing or regeneration potion (what a medic holds and uses). */
+	public static boolean isMedicine(ItemStack stack) {
+		var contents = stack.get(DataComponents.POTION_CONTENTS);
+		return contents != null && (stack.is(net.minecraft.world.item.Items.POTION) || stack.is(net.minecraft.world.item.Items.SPLASH_POTION))
+			&& java.util.stream.StreamSupport.stream(contents.getAllEffects().spliterator(), false)
+				.anyMatch(e -> e.is(net.minecraft.world.effect.MobEffects.HEAL) || e.is(net.minecraft.world.effect.MobEffects.REGENERATION));
+	}
+
+	/** The chance a knight blocks a blow from in front: 60%, 5% more a level, at most 85%. */
+	public static float blockChance(Villager guard) {
+		return Math.min(0.85f, 0.6f + 0.05f * (BuilderLevels.level(guard) - 1));
+	}
+
+	/**
+	 * A knight's shield: a blow from in front (not one that goes through shields, like fire or a fall) is blocked, now
+	 * and then — the shield takes the wear, the attacker is pushed back. Returns true if blocked.
+	 */
+	public static boolean block(Villager guard, net.minecraft.world.damagesource.DamageSource source, float amount) {
+		if (!isGuard(guard) || !isShield(guard.getItemBySlot(EquipmentSlot.OFFHAND))
+			|| source.is(net.minecraft.tags.DamageTypeTags.BYPASSES_SHIELD) || source.getSourcePosition() == null) {
+			return false;
+		}
+		net.minecraft.world.phys.Vec3 to = source.getSourcePosition().subtract(guard.position()).multiply(1, 0, 1);
+		net.minecraft.world.phys.Vec3 look = guard.getViewVector(1f).multiply(1, 0, 1);
+		if (to.lengthSqr() < 1.0E-4 || look.lengthSqr() < 1.0E-4 || to.normalize().dot(look.normalize()) < 0.2) {
+			return false;
+		}
+		if (guard.getRandom().nextFloat() >= blockChance(guard)) {
+			return false;
+		}
+		ItemStack shield = guard.getItemBySlot(EquipmentSlot.OFFHAND);
+		shield.hurtAndBreak(1 + (int) Math.floor(amount), guard, EquipmentSlot.OFFHAND);
+		guard.level().playSound(null, guard.blockPosition(), net.minecraft.sounds.SoundEvents.SHIELD_BLOCK, net.minecraft.sounds.SoundSource.NEUTRAL,
+			1f, 0.8f + guard.getRandom().nextFloat() * 0.4f);
+		if (source.getDirectEntity() instanceof LivingEntity attacker) {
+			attacker.knockback(0.5, guard.getX() - attacker.getX(), guard.getZ() - attacker.getZ());
+		}
+		return true;
+	}
+
+	/** Potions a guard carries at most: a medic twice as many. */
+	public static int potionsFor(Villager guard) {
+		return kind(guard) == Kind.MEDIC ? POTIONS * 2 : POTIONS;
+	}
+
+	/** How far a medic looks for the wounded. */
+	public static final int MEDIC_RANGE = 12;
+
+	/**
+	 * A medic tends the wounded: the most hurt guard or villager within {@link #MEDIC_RANGE} below 60% health gets a healing
+	 * or regeneration potion from the medic's bag (never the one in hand). Returns who was treated, or null.
+	 */
+	@org.jetbrains.annotations.Nullable
+	public static LivingEntity tendWounded(net.minecraft.server.level.ServerLevel level, Villager medic) {
+		if (kind(medic) != Kind.MEDIC) {
+			return null;
+		}
+		var bag = medic.getAttachedOrCreate(io.github.jcondedata.aliveworkplace.registry.ModAttachments.BUILDER_BAG);
+		LivingEntity patient = level.getEntitiesOfClass(LivingEntity.class, medic.getBoundingBox().inflate(MEDIC_RANGE, 4, MEDIC_RANGE),
+				e -> e.isAlive() && (e instanceof Villager || e instanceof net.minecraft.world.entity.animal.IronGolem) && e.getHealth() < e.getMaxHealth() * 0.6f)
+			.stream().min(java.util.Comparator.comparingDouble(e -> e.getHealth() / e.getMaxHealth())).orElse(null);
+		if (patient == null) {
+			return null;
+		}
+		ItemStack potion = bag.takeFirst(Guards::isMedicine);
+		if (potion.isEmpty()) {
+			return null;
+		}
+		var contents = potion.get(DataComponents.POTION_CONTENTS);
+		if (contents != null) {
+			contents.forEachEffect(effect -> {
+				if (effect.getEffect().value().isInstantenous()) {
+					effect.getEffect().value().applyInstantenousEffect(medic, medic, patient, effect.getAmplifier(), 1.0);
+				} else {
+					patient.addEffect(new net.minecraft.world.effect.MobEffectInstance(effect));
+				}
+			});
+		}
+		medic.swing(net.minecraft.world.InteractionHand.OFF_HAND);
+		level.sendParticles(net.minecraft.core.particles.ParticleTypes.HEART, patient.getX(), patient.getY() + patient.getBbHeight() + 0.3, patient.getZ(),
+			4, 0.3, 0.2, 0.3, 0);
+		level.playSound(null, patient.blockPosition(), net.minecraft.sounds.SoundEvents.SPLASH_POTION_BREAK, net.minecraft.sounds.SoundSource.NEUTRAL, 0.6f, 1.2f);
+		return patient;
+	}
+
 	public static boolean isGuard(Villager villager) {
 		return !villager.isBaby() && villager.getVillagerData().getProfession() == ModVillagers.GUARD;
 	}

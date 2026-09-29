@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+## 0.120.0 — 2026-09-29
+
+### Added
+- **Kinds of guard**: a guard with a shield is a **Knight** and blocks blows from in front; one holding a healing
+  potion is a **Medic** and gives potions to the wounded; with a bow, an **Archer** as before. Sneak-right-click a guard
+  with one of these to hand it over.
+- The **Barracks** (two Guard Posts, bunks, training dummies) and the **Barracks II** (two more).
+
 ## 0.119.0 — 2026-09-29
 
 ### Added

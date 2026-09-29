@@ -473,8 +473,16 @@ loop: ore → ingots → the tools, weapons and armor the other workers wear out
   `Trainers.battleOver`; paid through `Money`)
 
 ## Milestone 10 — Defence
-- [ ] Guard kinds by gear: Knight (sword and shield, blocks), Archer (exists), Medic (heals other guards with potions),
-  Cavalry (on a horse); a Barracks blueprint with several Guard Posts
+- [x] Guard kinds by gear: Knight (sword and shield, blocks), Archer (exists), Medic (heals other guards with potions);
+  a Barracks blueprint with several Guard Posts (`Guards.Kind` from the off hand: bow/crossbow → Archer, shield →
+  Knight, a healing/regeneration potion → Medic; knights block blows from in front, 60% + 5% a level up to 85%, never
+  fire, falls and the like (`Guards.block`, Fabric's ALLOW_DAMAGE); medics carry six potions and give them to the most
+  hurt villager or golem within 12 blocks below 60% health (`Guards.tendWounded`); gearing up takes a bow or, with the
+  off hand empty and no bow, a shield — a knight or medic keeps theirs; sneak-right-click a guard with a bow,
+  crossbow, shield or healing potion to hand it over; the kind shows over their head. Barracks I–II in `defence.py`:
+  two, then four Guard Posts)
+- [ ] Cavalry: guards on horseback (a tamed, saddled horse by the post) — left for later: villagers steering horses
+  needs its own movement code
 - [x] Training: guards spar on a Training Dummy between fights for XP (`guard/TrainingDummyBlock`, crafted from a hay bale,
   sticks and wool; `GuardPatrol`: by day, every 2400 ticks a guard below Expert looks for the dummy nearest its post
   within 12 blocks (again every 400 ticks while there's none), hits it 12 times a second apart, 1 XP every 4 hits.

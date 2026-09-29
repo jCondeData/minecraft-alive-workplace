@@ -150,3 +150,94 @@ def gatehouse():
             b.set(x, y, 0, "ladder", facing="north", waterlogged=False)
     b.fill_air()
     return b
+
+
+# --- Barracks: a stone hall for guards --------------------------------------------------------------------------------
+BARRACKS_FRAME = "dark_oak_log"
+
+
+def barracks_hall(b):
+    """The barracks every tier shares (walls x 1-11, z 2-8): two Guard Posts at the back with the armory chest and an
+    anvil between them, two bunks, barred windows, a slate hip roof, training dummies out front."""
+    plinth(b, 1, 2, 11, 8, STONE_MIX, floor="spruce_planks")
+    walls(b, 1, 2, 11, 8, 1, 3, BRICK_WALL_MIX)
+    posts(b, [(1, 2), (11, 2), (1, 8), (11, 8)], 1, 3, "stone_bricks")
+    beam_ring(b, 1, 2, 11, 8, 4, BARRACKS_FRAME)
+    door(b, 6, 1, 2, "dark_oak_door", "south")
+    stairs(b, 6, 0, 1, STONE_BRICK, "south")
+    b.set(6, 3, 2, "chiseled_stone_bricks")
+    for x in (3, 9):
+        window(b, x, 2, 2, "north", height=1, glass="iron_bars", sill=STONE_BRICK)
+        window(b, x, 2, 8, "south", height=1, glass="iron_bars")
+    for x, side in ((1, "west"), (11, "east")):
+        window(b, x, 2, 5, side, height=1, glass="iron_bars", sill=STONE_BRICK)
+    # The Guard Posts, the armory chest, an anvil
+    b.set(3, 1, 7, "aliveworkplace:guard_post", facing="north")
+    b.set(9, 1, 7, "aliveworkplace:guard_post", facing="north")
+    b.set(6, 1, 7, "chest", facing="north", type="single", waterlogged=False)
+    b.set(7, 1, 7, "anvil", facing="east")
+    b.set(5, 1, 7, "chest", facing="north", type="single", waterlogged=False)
+    # Two bunks by the front wall
+    b.bed(2, 1, 4, "red", facing="north")
+    b.bed(10, 1, 4, "red", facing="north")
+    # A tie beam with the lamps
+    for x in range(2, 11):
+        log(b, x, 4, 5, BARRACKS_FRAME, axis="x")
+    lantern(b, 4, 3, 5, hanging=True)
+    lantern(b, 8, 3, 5, hanging=True)
+    hip_roof(b, 0, 12, 1, 9, 4, DEEPSLATE_TILE)
+    # The yard out front: two training dummies and a lamp
+    b.set(2, 0, 0, "aliveworkplace:training_dummy", facing="south")
+    b.set(10, 0, 0, "aliveworkplace:training_dummy", facing="south")
+    lamp_post(b, 12, 0, 0, "dark_oak_fence", height=2)
+
+
+def barracks():
+    """13 x 10 x 11: a stone barracks with two Guard Posts (two guards move in), an armory chest, bunks and training
+    dummies out front."""
+    b = Build(13, 10, 11)
+    barracks_hall(b)
+    b.fill_air()
+    return b
+
+
+def barracks_2():
+    """Upgrade of the Barracks (same origin and front): a wing to the east, through a doorway, with two more Guard
+    Posts and bunks under its own roof. 19 x 10 x 11."""
+    b = barracks().grow(19, 10, 11)
+    # The east window's shutters/sill come off; the window becomes the doorway into the wing
+    b.clear(12, 1, 4, 12, 3, 6)
+    for y in (1, 2):
+        b.set(11, y, 5, "air")
+    b.set(11, 3, 5, "stone_bricks")
+    # Wing walls: x 11-17, z 3-8 (the barracks' east wall is its west side)
+    plinth(b, 11, 3, 17, 8, STONE_MIX, floor="spruce_planks")
+    b.set(11, 0, 5, "spruce_planks")
+    for y in range(1, 4):
+        for x in range(12, 18):
+            b.set(x, y, 3, BRICK_WALL_MIX.at(x, y, 3))
+            b.set(x, y, 8, BRICK_WALL_MIX.at(x, y, 8))
+        for z in range(4, 8):
+            b.set(17, y, z, BRICK_WALL_MIX.at(17, y, z))
+    posts(b, [(17, 3), (17, 8)], 1, 3, "stone_bricks")
+    for x in range(12, 18):
+        log(b, x, 4, 3, BARRACKS_FRAME, axis="x")
+        log(b, x, 4, 8, BARRACKS_FRAME, axis="x")
+    for z in range(4, 8):
+        log(b, 17, 4, z, BARRACKS_FRAME, axis="z")
+    window(b, 17, 2, 5, "east", height=1, glass="iron_bars", sill=STONE_BRICK)
+    window(b, 14, 2, 3, "north", height=1, glass="iron_bars", sill=STONE_BRICK)
+    b.set(13, 1, 7, "aliveworkplace:guard_post", facing="north")
+    b.set(16, 1, 7, "aliveworkplace:guard_post", facing="north")
+    b.set(15, 1, 7, "chest", facing="north", type="single", waterlogged=False)
+    b.bed(13, 1, 5, "red", facing="north")
+    b.bed(16, 1, 5, "red", facing="north")
+    for x in range(12, 17):
+        log(b, x, 4, 6, BARRACKS_FRAME, axis="x")
+    lantern(b, 14, 3, 6, hanging=True)
+    # Its roof, lower than the barracks', the main roof's eave kept over the join
+    keep = {p: v for p, v in b.blocks.items() if p[0] == 12 and p[1] >= 4}
+    gable_roof(b, 12, 18, 2, 9, 4, DEEPSLATE_TILE, axis="x", gable=BRICK_WALL_MIX, gable_at=(17, 17))
+    b.blocks.update(keep)
+    b.fill_air()
+    return b

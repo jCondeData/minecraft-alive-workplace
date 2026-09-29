@@ -165,4 +165,78 @@ public class GuardGameTests implements FabricGameTest {
 			helper.assertTrue(expert.getAttachedOrElse(ModAttachments.DUMMY_HITS, 0) == 0, "the expert trained");
 		});
 	}
+
+	private static ItemStack healing() {
+		return net.minecraft.world.item.alchemy.PotionContents.createItemStack(Items.POTION, net.minecraft.world.item.alchemy.Potions.HEALING);
+	}
+
+	/** What a guard holds in their off hand makes their kind; a knight or a medic keeps what they hold when a bow turns up. */
+	@GameTest(template = AREA, batch = "guardKindsByGear")
+	public void guardKindsByGear(GameTestHelper helper) {
+		Villager guard = guard(helper);
+		helper.assertTrue(io.github.jcondedata.aliveworkplace.guard.Guards.kind(guard) == io.github.jcondedata.aliveworkplace.guard.Guards.Kind.GUARD, "plain");
+		guard.setItemSlot(EquipmentSlot.OFFHAND, new ItemStack(Items.BOW));
+		helper.assertTrue(io.github.jcondedata.aliveworkplace.guard.Guards.kind(guard) == io.github.jcondedata.aliveworkplace.guard.Guards.Kind.ARCHER, "archer");
+		guard.setItemSlot(EquipmentSlot.OFFHAND, new ItemStack(Items.SHIELD));
+		helper.assertTrue(io.github.jcondedata.aliveworkplace.guard.Guards.kind(guard) == io.github.jcondedata.aliveworkplace.guard.Guards.Kind.KNIGHT, "knight");
+		guard.setItemSlot(EquipmentSlot.OFFHAND, healing());
+		helper.assertTrue(io.github.jcondedata.aliveworkplace.guard.Guards.kind(guard) == io.github.jcondedata.aliveworkplace.guard.Guards.Kind.MEDIC, "medic");
+		// Gearing up: a knight keeps the shield though there's a bow; a plain guard with only a shield there becomes a knight.
+		guard.setItemSlot(EquipmentSlot.OFFHAND, new ItemStack(Items.SHIELD));
+		Container chest = helper.getBlockEntity(CHEST);
+		chest.setItem(0, new ItemStack(Items.BOW));
+		io.github.jcondedata.aliveworkplace.guard.GuardPatrol.equipBestForTest(helper.getLevel(), guard, java.util.List.of(helper.absolutePos(CHEST)));
+		helper.assertTrue(guard.getItemBySlot(EquipmentSlot.OFFHAND).is(Items.SHIELD), "the knight took the bow");
+		guard.setItemSlot(EquipmentSlot.OFFHAND, ItemStack.EMPTY);
+		chest.setItem(0, new ItemStack(Items.SHIELD));
+		io.github.jcondedata.aliveworkplace.guard.GuardPatrol.equipBestForTest(helper.getLevel(), guard, java.util.List.of(helper.absolutePos(CHEST)));
+		helper.assertTrue(guard.getItemBySlot(EquipmentSlot.OFFHAND).is(Items.SHIELD), "the guard didn't take the shield");
+		helper.succeed();
+	}
+
+	/** A knight blocks some blows from in front, none from behind, and never a fall. */
+	@GameTest(template = AREA, batch = "aKnightBlocks")
+	public void aKnightBlocks(GameTestHelper helper) {
+		Villager guard = guard(helper);
+		guard.setItemSlot(EquipmentSlot.OFFHAND, new ItemStack(Items.SHIELD));
+		guard.moveTo(helper.absoluteVec(new net.minecraft.world.phys.Vec3(10.5, 2, 10.5)));
+		guard.setYRot(0f);
+		guard.setYHeadRot(0f);
+		guard.setYBodyRot(0f);
+		guard.setXRot(0f);
+		net.minecraft.world.phys.Vec3 look = guard.getViewVector(1f);
+		BlockPos frontPos = BlockPos.containing(guard.position().add(look.scale(3)));
+		BlockPos backPos = BlockPos.containing(guard.position().subtract(look.scale(3)));
+		var front = EntityType.ZOMBIE.create(helper.getLevel());
+		front.moveTo(net.minecraft.world.phys.Vec3.atBottomCenterOf(frontPos));
+		var back = EntityType.ZOMBIE.create(helper.getLevel());
+		back.moveTo(net.minecraft.world.phys.Vec3.atBottomCenterOf(backPos));
+		int blocked = 0;
+		for (int i = 0; i < 200; i++) {
+			guard.getItemBySlot(EquipmentSlot.OFFHAND).setDamageValue(0);
+			if (io.github.jcondedata.aliveworkplace.guard.Guards.block(guard, helper.getLevel().damageSources().mobAttack(front), 2f)) {
+				blocked++;
+			}
+			helper.assertFalse(io.github.jcondedata.aliveworkplace.guard.Guards.block(guard, helper.getLevel().damageSources().mobAttack(back), 2f), "blocked from behind");
+			helper.assertFalse(io.github.jcondedata.aliveworkplace.guard.Guards.block(guard, helper.getLevel().damageSources().fall(), 2f), "blocked a fall");
+		}
+		helper.assertTrue(blocked > 80 && blocked < 160, "blocked " + blocked + " of 200 (60% expected)");
+		helper.succeed();
+	}
+
+	/** A medic gives the most hurt villager nearby a healing potion from their bag, keeping the one in hand. */
+	@GameTest(template = AREA, batch = "aMedicTendsTheWounded")
+	public void aMedicTendsTheWounded(GameTestHelper helper) {
+		Villager medic = guard(helper);
+		medic.setItemSlot(EquipmentSlot.OFFHAND, healing());
+		var bag = medic.getAttachedOrCreate(ModAttachments.BUILDER_BAG);
+		bag.add(healing());
+		Villager patient = helper.spawn(EntityType.VILLAGER, new BlockPos(8, 2, 8));
+		patient.setHealth(4f);
+		net.minecraft.world.entity.LivingEntity treated = io.github.jcondedata.aliveworkplace.guard.Guards.tendWounded(helper.getLevel(), medic);
+		helper.assertTrue(treated == patient && patient.getHealth() > 4f, "not treated: " + patient.getHealth());
+		helper.assertTrue(io.github.jcondedata.aliveworkplace.guard.Guards.kind(medic) == io.github.jcondedata.aliveworkplace.guard.Guards.Kind.MEDIC, "used the potion in hand");
+		helper.assertTrue(io.github.jcondedata.aliveworkplace.guard.Guards.tendWounded(helper.getLevel(), medic) == null, "treated without potions");
+		helper.succeed();
+	}
 }

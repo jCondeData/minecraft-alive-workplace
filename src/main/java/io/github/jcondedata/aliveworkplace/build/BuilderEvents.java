@@ -26,6 +26,27 @@ public final class BuilderEvents {
 				}
 				return InteractionResult.SUCCESS;
 			}
+			// A guard, sneak-right-clicked with a bow, crossbow, shield or healing potion: they hold it, and that makes their kind.
+			if (player.isShiftKeyDown() && io.github.jcondedata.aliveworkplace.guard.Guards.isGuard(villager)) {
+				ItemStack held = player.getItemInHand(hand);
+				if (io.github.jcondedata.aliveworkplace.guard.Guards.isBow(held) || io.github.jcondedata.aliveworkplace.guard.Guards.isShield(held)
+					|| io.github.jcondedata.aliveworkplace.guard.Guards.isMedicine(held)) {
+					if (!level.isClientSide) {
+						ItemStack old = villager.getItemBySlot(net.minecraft.world.entity.EquipmentSlot.OFFHAND);
+						villager.setItemSlot(net.minecraft.world.entity.EquipmentSlot.OFFHAND, held.split(1));
+						villager.setDropChance(net.minecraft.world.entity.EquipmentSlot.OFFHAND, 0f);
+						if (!old.isEmpty() && !player.getInventory().add(old)) {
+							player.drop(old, false);
+						}
+						player.displayClientMessage(net.minecraft.network.chat.Component.translatable("message.aliveworkplace.guard.kind",
+							villager.getDisplayName(), io.github.jcondedata.aliveworkplace.guard.Guards.kind(villager).title())
+							.withStyle(net.minecraft.ChatFormatting.GREEN), true);
+						level.playSound(null, villager.blockPosition(), net.minecraft.sounds.SoundEvents.ARMOR_EQUIP_GENERIC.value(),
+							net.minecraft.sounds.SoundSource.NEUTRAL, 1f, 1f);
+					}
+					return InteractionResult.SUCCESS;
+				}
+			}
 			// A traveller staying at an inn: the screen to hire them.
 			if (!level.isClientSide && io.github.jcondedata.aliveworkplace.inn.Innkeepers.isTraveller(villager)) {
 				io.github.jcondedata.aliveworkplace.inn.Innkeepers.openHire((ServerPlayer) player, villager);
@@ -272,6 +293,9 @@ public final class BuilderEvents {
 			return InteractionResult.PASS;
 		});
 
+		// Knights block blows from in front with their shield.
+		ServerLivingEntityEvents.ALLOW_DAMAGE.register((entity, source, amount) ->
+			!(entity instanceof Villager villager && !entity.level().isClientSide && io.github.jcondedata.aliveworkplace.guard.Guards.block(villager, source, amount)));
 		ServerLivingEntityEvents.AFTER_DEATH.register((entity, source) -> {
 			if (entity instanceof Villager villager && entity.level() instanceof ServerLevel level) {
 				Builders.onBuilderDeath(level, villager);

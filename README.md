@@ -617,6 +617,14 @@ health and keep the night watch, sleeping in the late morning instead. Players, 
 Pokémon are safe from them. **Ring the village bell** and, while everyone else runs home to hide, the guards head
 for the bell and fight anything near it for a minute and a half.
 
+**Kinds of guard.** What a guard holds in their other hand makes them an **Archer** (a bow or crossbow), a **Knight**
+(a shield: they block most blows from in front — 60%, more as they level up — and the shield takes the wear) or a
+**Medic** (a healing or regeneration potion: they carry six potions and give them to the most hurt villager or golem
+nearby). Guards gear up with a bow if there's one in their chest, or else a shield; to choose yourself,
+**sneak-right-click a guard with a bow, crossbow, shield or healing potion** and they take it (you get back what they
+held). Their kind shows over their head. The **Barracks** (Blueprint Table) houses two guards — two Guard Posts, an
+armory chest, bunks and training dummies out front — and the **Barracks II** adds a wing for two more.
+
 **Raids.** A village with a Village Hall and at least 8 villagers may be **raided by monsters** at night (at most every
 three nights; the bigger the village, the likelier — from 15% a night up to 35% — and the bigger the raid, 3 monsters
 and one more for every four villagers; the more guards, the more of the raiders come in iron). Zombies, skeletons and

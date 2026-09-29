@@ -81,6 +81,9 @@ public class GuardCombat extends Behavior<Villager> {
 		if (calm % 200 == 0) {
 			Guards.updateHealth(villager);
 		}
+		if (calm % 40 == 0) {
+			Guards.tendWounded(level, villager);
+		}
 		if (--searchTimer > 0) {
 			return false;
 		}
@@ -128,6 +131,9 @@ public class GuardCombat extends Behavior<Villager> {
 		}
 		if (gameTime % 20 == 0) {
 			Guards.drink(villager, false); // badly hurt: a healing potion
+		}
+		if (gameTime % 40 == 0) {
+			Guards.tendWounded(level, villager);
 		}
 		// With a bow: shoot creepers, fliers and anything still a few steps off; back away from creepers.
 		double distance = Math.sqrt(villager.distanceToSqr(foe));
@@ -276,6 +282,7 @@ public class GuardCombat extends Behavior<Villager> {
 	}
 
 	static Component title(Villager villager) {
-		return Component.translatable("message.aliveworkplace.guard.title", villager.getAttachedOrElse(ModAttachments.GUARD_KILLS, 0));
+		return Component.translatable("message.aliveworkplace.guard.title_kind", Guards.kind(villager).title(),
+			villager.getAttachedOrElse(ModAttachments.GUARD_KILLS, 0));
 	}
 }

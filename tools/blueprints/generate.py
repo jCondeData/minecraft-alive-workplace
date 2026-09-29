@@ -106,7 +106,7 @@ if __name__ == "__main__":
     stone_house_3().save(MAIN_STRUCTURES, "stone_house_3")
     settlers_camp().save(os.path.join(MAIN_STRUCTURES, "camp"), "settlers_camp")
     for name, draw in (("palisade", palisade), ("palisade_gate", palisade_gate), ("stone_wall", stone_wall), ("wall_tower", wall_tower),
-                       ("gatehouse", gatehouse)):
+                       ("gatehouse", gatehouse), ("barracks", barracks), ("barracks_2", barracks_2)):
         draw().save(MAIN_STRUCTURES, name)
     for style in VILLAGE_STYLES:
         builders_workshop(style).save(VILLAGE_STRUCTURES, f"{style}_builders_workshop")

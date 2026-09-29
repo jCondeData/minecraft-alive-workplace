@@ -41,7 +41,7 @@ public final class BuilderLevels {
 	/** {@code baseDelay} for this villager: shorter with each level, with Pokémon partners helping and in a well-kept village. */
 	public static int delay(int baseDelay, Villager villager) {
 		return Math.round(delay(baseDelay, level(villager)) * io.github.jcondedata.aliveworkplace.work.Partners.factor(villager)
-			* io.github.jcondedata.aliveworkplace.hall.VillageNeeds.factor(villager));
+			* io.github.jcondedata.aliveworkplace.hall.VillageNeeds.factor(villager) * io.github.jcondedata.aliveworkplace.people.Traits.pace(villager));
 	}
 
 	public static int delay(int baseDelay, int villagerLevel) {
@@ -67,7 +67,7 @@ public final class BuilderLevels {
 
 	/** Adds XP and levels the villager up (possibly several times) when it crosses a threshold. */
 	public static void addXp(ServerLevel level, Villager villager, int xp, @Nullable UUID owner) {
-		villager.setVillagerXp(villager.getVillagerXp() + xp);
+		villager.setVillagerXp(villager.getVillagerXp() + io.github.jcondedata.aliveworkplace.people.Traits.xp(villager, xp, level.random));
 		boolean leveled = false;
 		while (VillagerData.canLevelUp(villager.getVillagerData().getLevel())
 			&& villager.getVillagerXp() >= VillagerData.getMaxXpPerLevel(villager.getVillagerData().getLevel())) {

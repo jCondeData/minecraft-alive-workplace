@@ -108,6 +108,9 @@ The owner (Jesse) does not write code: sessions are expected to work autonomousl
   `VillageGrowth` (a baby a day at most with a free bed, food and wellbeing), `VillageQuests` (quests for players, kept
   in the hall's block entity; the hall screen's quests page), `Decorations` (finished decoration blueprints near the
   hall → beauty → wellbeing; the builds are `StarterBlueprints.DECORATIONS`, drawn in `tools/blueprints/decor.py`)
+- `people/` — villagers as people: `Names` (first names for villagers in a hall's village, given in
+  `VillageNeeds.check`), `Traits` (one or two per villager from the UUID; read by `BuilderLevels`, `Walker`, `Guards`,
+  `VillageNeeds`; off in gametests unless a test turns them on)
 - `research/` — the Scholar (Scholar's Desk): `Research` (the tree, kept in the Village Hall; bonuses read by
   `VillageNeeds`, `Guards`, `Partners`, `Schools`), `ScholarWork`, `ResearchScreen`; `research/*` blueprints are hidden
   from the Blueprint Table (`BlueprintLibrary.isWorldgenPiece`)

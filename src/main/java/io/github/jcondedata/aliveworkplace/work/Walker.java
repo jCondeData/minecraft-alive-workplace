@@ -59,7 +59,7 @@ public final class Walker {
 		if (brain.hasMemoryValue(MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE) && retryWait + 1 < RETRY_TICKS) {
 			return retryWait + 1;
 		}
-		brain.setMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(pos, speed, closeEnough));
+		brain.setMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(pos, speed * io.github.jcondedata.aliveworkplace.people.Traits.speed(villager), closeEnough));
 		return 0;
 	}
 

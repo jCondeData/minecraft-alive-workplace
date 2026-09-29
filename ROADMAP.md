@@ -511,6 +511,26 @@ loop: ore → ingots → the tools, weapons and armor the other workers wear out
   natural ground and out of the building; the builder turns grass and dirt on it into dirt path while idle, up to 96
   blocks a building; `builderPaths` in the config, off in gametests but for the path test)
 
+## Milestone 13 — The villagers as people
+Every villager a person you get to know, the way MineColonies' citizens are — but for the villagers already in the world.
+- [x] Names: villagers in a village with a Village Hall get a first name of their own (`people/Names`: 80 in the
+  language file, one per villager while they last; a Name Tag's name stays; `villagerNames` in the config)
+- [x] Traits: one or two per villager, from their UUID so they never change (`people/Traits`): Diligent/Lazy (work pace
+  ±10%, in `BuilderLevels.delay`), Nimble (walks 15% faster, in `Walker.requestWalk`), Clever (a quarter more XP, in
+  `BuilderLevels.addXp`), Strong (guards hit 15% harder), Cheerful (1% wellbeing each, up to 5%), Glutton/Frugal (eat
+  twice a day / every other day); on the hall's list; `villagerTraits` in the config; off in gametests but for their own
+- [ ] Sickness: a hungry, homeless or cold villager can fall ill now and then; the ill stop working and rest in bed;
+  a Nurse cures them (with honey or a healing potion from her chest), or they get well by themselves in a few days
+- [ ] The village chronicle: births, deaths, revivals, arrivals, finished buildings, quests and research — a page of the
+  Village Hall
+- [ ] Running the village from the hall: give a jobless villager a free workstation, call everyone home
+
+## Milestone 14 — Founding and linking villages
+- [ ] A Settler's Wagon: an item that sets up camp in the wild — a covered wagon, a Builder's Bench, a chest of
+  starting supplies and two settlers (one a builder) — so a village can start anywhere
+- [ ] Caravans: villages with a Village Hall and a Travel Post send what they have plenty of to each other
+- [ ] Market days: a village with a Market Square holds a market once a week; traders from other villages come
+
 ## Milestone 5 — Release
 - [ ] Publish on Modrinth and CurseForge as **Alive Workplace** (Minecraft brand rules: don't lead the name with "Minecraft")
 - [x] Screenshots/GIFs through the README, and an at-a-glance table of every job (workstation, what goes in the chests,

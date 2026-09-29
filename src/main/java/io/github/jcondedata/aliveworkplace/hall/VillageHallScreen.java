@@ -210,6 +210,15 @@ public final class VillageHallScreen {
 		if (working) {
 			lore.add(line(levelLine(villager), ChatFormatting.GRAY));
 		}
+		List<io.github.jcondedata.aliveworkplace.people.Traits.Trait> traits = io.github.jcondedata.aliveworkplace.people.Traits.of(villager);
+		if (!traits.isEmpty()) {
+			net.minecraft.network.chat.MutableComponent list = Component.empty();
+			for (int i = 0; i < traits.size(); i++) {
+				list.append(i == 0 ? Component.empty() : Component.literal(", "))
+					.append(Component.translatable("screen.aliveworkplace.hall.trait", traits.get(i).title(), traits.get(i).description()));
+			}
+			lore.add(line(Component.translatable("screen.aliveworkplace.hall.traits", list), ChatFormatting.AQUA));
+		}
 		for (Component doing : doing(level, villager)) {
 			lore.add(plain(doing, ChatFormatting.WHITE));
 		}

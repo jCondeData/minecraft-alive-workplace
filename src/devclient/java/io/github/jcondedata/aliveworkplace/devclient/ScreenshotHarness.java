@@ -577,6 +577,10 @@ public class ScreenshotHarness implements ClientModInitializer {
 				hover(server.getPlayerList().getPlayers().get(0), new Vec3(0.5, -58.3, 7.5), 180, 20);
 			});
 		}
+		if (tick == 190) {
+			// The hall's first round: everyone gets a name.
+			server.execute(() -> io.github.jcondedata.aliveworkplace.hall.VillageNeeds.check(server.overworld(), new BlockPos(0, -60, 3)));
+		}
 		if (tick == 200) {
 			shot(mc, "01_hall_block");
 			server.execute(() -> io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.open(server.getPlayerList().getPlayers().get(0), new BlockPos(0, -60, 3)));

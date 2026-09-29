@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+## 0.111.0 — 2026-09-29
+
+### Added
+- **Names**: villagers in a village with a Village Hall get a first name of their own.
+- **Traits**: every villager has one or two — Diligent, Lazy, Nimble, Clever, Strong, Cheerful, Glutton or Frugal —
+  that change how fast they work and walk, how quickly they learn, how hard they hit, how often they eat and how happy
+  the village is. The hall lists them. (`villagerNames`, `villagerTraits` in the config.)
+
 ## 0.110.0 — 2026-09-29
 
 ### Added

@@ -148,6 +148,15 @@ by their beds, and decorations round the village (see *Decorations* above). The 
 they're hungry and sleep rough. The villagers the hall lists say when they're hungry or have no bed. Without a hall,
 work goes at the usual pace.
 
+**People.** In a village with a hall every villager gets a **name** of their own (look at them, or see the hall's
+list; a Name Tag's name stays) and every villager has a **trait** or two, which the hall lists: **Diligent** (works 10%
+faster), **Lazy** (10% slower), **Nimble** (walks 15% faster), **Clever** (learns a quarter faster), **Strong** (hits 15%
+harder — good in a guard), **Cheerful** (makes the village happier, 1% each up to 5%), **Glutton** (eats twice a day)
+or **Frugal** (eats every other day). Traits are part of who a villager is and never change. `villagerNames` and
+`villagerTraits` in the config turn them off.
+
+![A builder on the hall's list: Dara, a Novice Builder, Clever and Nimble](docs/media/people.png)
+
 **The village grows.** At most once a day, when there's a **free bed**, **16 meals in the store** and the wellbeing is
 at least 50%, the two villagers nearest the free bed have a baby (the family eats 8 meals for it), up to 40 villagers
 (`villageGrowthCap`). The hall's villager count says what the village still needs to grow. So build houses: the
@@ -798,6 +807,8 @@ and restart; out-of-range values are clamped):
 | `villageHallRadius` | 64 | how far from a Village Hall its village reaches |
 | `builderPaths` | true | builders lay a dirt path from each finished building to the village's bell or hall |
 | `villageGrowthCap` | 40 | a village with a hall stops having babies at this many villagers (0: villages don't grow) |
+| `villagerNames` | true | villagers in a village with a Village Hall get names |
+| `villagerTraits` | true | villagers have traits (diligent, lazy, nimble, clever, strong, cheerful, glutton, frugal) |
 | `villageRadius` | 48 | workers whose workstations are this close together share their chests (0 turns sharing off) |
 | `dollarsPerEmerald` | 100 | CobbleDollars per emerald for lessons, shop prices and fares |
 

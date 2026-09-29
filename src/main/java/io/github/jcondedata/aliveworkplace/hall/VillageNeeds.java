@@ -118,11 +118,16 @@ public final class VillageNeeds {
 	public static Needs check(ServerLevel level, BlockPos hall) {
 		long now = level.getGameTime();
 		List<BlockPos> store = null;
-		for (Villager villager : level.getEntitiesOfClass(Villager.class, VillageHalls.area(hall), v -> v.isAlive() && !v.isBaby())) {
+		List<Villager> everyone = level.getEntitiesOfClass(Villager.class, VillageHalls.area(hall), Villager::isAlive);
+		io.github.jcondedata.aliveworkplace.people.Names.nameEveryone(everyone);
+		for (Villager villager : everyone) {
+			if (villager.isBaby()) {
+				continue;
+			}
 			Long meal = villager.getAttached(ModAttachments.LAST_MEAL);
 			if (meal == null) {
 				villager.setAttached(ModAttachments.LAST_MEAL, now); // new to the village: they ate before they came
-			} else if (now - meal >= DAY) {
+			} else if (now - meal >= io.github.jcondedata.aliveworkplace.people.Traits.mealEvery(villager, DAY)) {
 				if (store == null) {
 					store = store(level, hall);
 				}
@@ -141,10 +146,14 @@ public final class VillageNeeds {
 		int housed = 0;
 		int lit = 0;
 		int guards = 0;
+		int cheerful = 0;
 		for (Villager villager : level.getEntitiesOfClass(Villager.class, VillageHalls.area(hall), Villager::isAlive)) {
 			villagers++;
 			if (!villager.isBaby()) {
 				adults++;
+				if (io.github.jcondedata.aliveworkplace.people.Traits.has(villager, io.github.jcondedata.aliveworkplace.people.Traits.Trait.CHEERFUL)) {
+					cheerful++;
+				}
 				if (!isHungry(villager, now)) {
 					fed++;
 				}
@@ -167,14 +176,15 @@ public final class VillageNeeds {
 		int hearth = level.getBlockEntity(hall) instanceof VillageHallBlockEntity entity
 			? entity.research().level(io.github.jcondedata.aliveworkplace.research.Research.Topic.HEARTH) : 0;
 		int beauty = Decorations.beauty(level, hall);
-		float wellbeing = Math.min(1f, wellbeing(fedShare, housedShare, 0.5f * guarded + 0.5f * litShare) + 0.1f * hearth + Decorations.bonus(beauty));
+		float cheer = Math.min(io.github.jcondedata.aliveworkplace.people.Traits.MAX_CHEER, cheerful * io.github.jcondedata.aliveworkplace.people.Traits.CHEER);
+		float wellbeing = Math.min(1f, wellbeing(fedShare, housedShare, 0.5f * guarded + 0.5f * litShare) + 0.1f * hearth + Decorations.bonus(beauty) + cheer);
 		return new Needs(adults, fed, villagers, housed, lit, guards, beauty, wellbeing);
 	}
 
 	/** A grown villager who hasn't eaten in the last day. */
 	public static boolean isHungry(Villager villager, long now) {
 		Long meal = villager.getAttached(ModAttachments.LAST_MEAL);
-		return !villager.isBaby() && meal != null && now - meal >= DAY;
+		return !villager.isBaby() && meal != null && now - meal >= io.github.jcondedata.aliveworkplace.people.Traits.mealEvery(villager, DAY);
 	}
 
 	/** The bed a villager sleeps in (in this dimension), or null. */

@@ -6,6 +6,7 @@
 		"AbstractVillagerMixin",
 		"AxeItemAccessor",
 		"BrewingStandAccessor",
+		"EntityAccessor",
 		"ExplosionMixin",
 		"StructureTemplatePoolAccessor",
 		"VillagerAccessor",

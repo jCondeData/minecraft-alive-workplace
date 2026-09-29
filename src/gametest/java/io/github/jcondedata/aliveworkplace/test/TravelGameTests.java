@@ -24,8 +24,8 @@ public class TravelGameTests implements FabricGameTest {
 	private static final String AREA = "aliveworkplace_test:big_area";
 
 	/** A ferryman sells tickets to the posts you know (not the one you're at); a ticket takes you there. */
-	//$ gametest AREA
-	@GameTest(template = AREA)
+	//$ gametest_ticks AREA '200'
+	@GameTest(template = AREA, timeoutTicks = 200)
 	public void ferrymanSellsTicketsThatWork(GameTestHelper helper) {
 		helper.setDayTime(2000);
 		BlockPos home = new BlockPos(2, 2, 2);
@@ -54,8 +54,20 @@ public class TravelGameTests implements FabricGameTest {
 		ItemStack ticket = offer.getResult().copy();
 		player.moveTo(helper.absolutePos(new BlockPos(4, 2, 4)).getCenter());
 		helper.assertTrue(Ferrymen.travel(player, ticket), "the ticket did not work at a post");
-		helper.assertTrue(player.blockPosition().closerThan(helper.absolutePos(away), 4), "arrived at " + player.blockPosition());
-		helper.succeed();
+		// A boat ride first, the ferryman at the oars; then over there, the boat gone and the ferryman back at his post
+		helper.assertTrue(player.getVehicle() != null && io.github.jcondedata.aliveworkplace.mc.Boats.isBoat(player.getVehicle()), "not in a boat");
+		helper.assertTrue(ferryman.getVehicle() == player.getVehicle() && player.getVehicle().getFirstPassenger() == ferryman,
+			"the ferryman isn't rowing");
+		helper.assertFalse(Ferrymen.travel(player, ticket), "a second ticket worked mid-ride");
+		helper.runAfterDelay(io.github.jcondedata.aliveworkplace.travel.FerryRides.RIDE_TICKS + 2, () -> {
+			helper.assertTrue(player.getVehicle() == null, "still in the boat");
+			helper.assertTrue(player.blockPosition().closerThan(helper.absolutePos(away), 4), "arrived at " + helper.relativePos(player.blockPosition()));
+			helper.assertTrue(ferryman.getVehicle() == null && ferryman.blockPosition().closerThan(helper.absolutePos(new BlockPos(3, 2, 3)), 3),
+				"the ferryman didn't get back: " + helper.relativePos(ferryman.blockPosition()));
+			helper.assertTrue(helper.getLevel().getEntitiesOfClass(net.minecraft.world.entity.vehicle.Boat.class, helper.getBounds().inflate(8)).isEmpty(),
+				"the boat was left behind");
+			helper.succeed();
+		});
 	}
 
 	/** A travel post that came with a village (nobody placed it) joins the network under a made-up village name. */

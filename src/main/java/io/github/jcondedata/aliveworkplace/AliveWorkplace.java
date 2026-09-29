@@ -52,6 +52,7 @@ public final class AliveWorkplace {
 		io.github.jcondedata.aliveworkplace.world.VillageHouses.init();
 		io.github.jcondedata.aliveworkplace.farm.Fields.init();
 		io.github.jcondedata.aliveworkplace.fish.Fishers.init();
+		io.github.jcondedata.aliveworkplace.travel.FerryRides.init();
 		io.github.jcondedata.aliveworkplace.mail.Mail.init();
 		io.github.jcondedata.aliveworkplace.work.KeepLoaded.init();
 		io.github.jcondedata.aliveworkplace.guard.GuardPartners.init();

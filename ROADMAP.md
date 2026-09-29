@@ -204,7 +204,11 @@ workstation, like the rest of the mod.
 - [x] Ferryman: with CobbleDollars, right-click shows destinations with fares in CobbleDollars (×100), two clicks buy the ticket
 - [x] Ferry houses in village generation (weight 4, every village): the post joins the network when first used
   (right-click, or its ferryman), named from a list of village names seeded by its position
-- [ ] *(polish)* Ferryman follow-ups: a boat ride animation
+- [x] *(polish)* Ferryman follow-ups: a boat ride animation (`travel/FerryRides`: a ticket seats the player in a boat
+  where they stand, the post's ferryman — if one is within 10 blocks — at the oars (`mc/Boats.atOars` puts him first
+  among the passengers, so the server steers rather than the player's client) rowing it off on water; after 35 ticks
+  the view fades (blindness) and at 60 they land by the destination post; getting out early lands them at once, so
+  does leaving the game; one ride at a time; ride boats left by a restart are removed on load)
 - [x] **Bard** (Music Stand workstation): a morning set (1000–3500) and an evening set (9000–12500) at the stand,
   playing the music discs from the chests nearby in turn (discs stay in the chest; "Now playing" like a jukebox) or,
   with none, a made-up pentatonic harp tune with a bass beat; sells note blocks, goat horns and a few discs

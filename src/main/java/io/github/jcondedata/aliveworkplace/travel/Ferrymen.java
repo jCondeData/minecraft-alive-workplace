@@ -151,7 +151,7 @@ public final class Ferrymen {
 		return ticket;
 	}
 
-	/** Uses a ticket: from near any travel post, to the ticket's post. True if the player went. */
+	/** Uses a ticket: from near any travel post, a boat ride to the ticket's post ({@link FerryRides}). True if they set off. */
 	public static boolean travel(ServerPlayer player, ItemStack ticket) {
 		TicketData data = ticket.get(ModComponents.TICKET);
 		if (data == null) {
@@ -171,12 +171,10 @@ public final class Ferrymen {
 		if (level == null) {
 			return false;
 		}
-		BlockPos spot = landing(level, destination.pos().pos());
-		player.level().playSound(null, player.blockPosition(), SoundEvents.BOAT_PADDLE_WATER, SoundSource.PLAYERS, 1f, 1f);
-		player.teleportTo(level, spot.getX() + 0.5, spot.getY(), spot.getZ() + 0.5, player.getYRot(), player.getXRot());
-		level.playSound(null, spot, SoundEvents.BOAT_PADDLE_WATER, SoundSource.PLAYERS, 1f, 0.9f);
-		network.visit(player.getUUID(), destination);
-		Chat.actionBar(player, Component.translatable("message.aliveworkplace.travel.arrived", destination.name()).withStyle(ChatFormatting.GREEN));
+		if (FerryRides.riding(player)) {
+			return false; // (one ride at a time)
+		}
+		FerryRides.start(player, level, landing(level, destination.pos().pos()), destination);
 		return true;
 	}
 

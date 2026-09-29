@@ -345,6 +345,7 @@
   "message.aliveworkplace.travel.gone": "The travel post \"%s\" isn't there any more.",
   "message.aliveworkplace.travel.not_at_post": "Use your ticket within %s blocks of a travel post.",
   "message.aliveworkplace.travel.arrived": "Welcome to %s!",
+  "message.aliveworkplace.travel.setting_off": "Setting off for %s…",
   "item.aliveworkplace.delivery_note": "Delivery Note",
   "tooltip.aliveworkplace.route.from": "From %s %s %s",
   "tooltip.aliveworkplace.route.to": "To %s %s %s",

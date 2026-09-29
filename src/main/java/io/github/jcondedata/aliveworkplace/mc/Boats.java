@@ -69,6 +69,18 @@ public final class Boats {
 		return left;
 	}
 
+	/**
+	 * Seats {@code rower} first in {@code boat}, where the one who steers sits (the game puts a player first, whose own
+	 * client would then steer): with a villager at the oars the server moves the boat, player and all.
+	 */
+	public static void atOars(Entity boat, Entity rower) {
+		java.util.List<Entity> seats = new java.util.ArrayList<>(boat.getPassengers());
+		if (seats.remove(rower)) {
+			seats.add(0, rower);
+			((io.github.jcondedata.aliveworkplace.mixin.EntityAccessor) boat).aliveworkplace$setPassengers(com.google.common.collect.ImmutableList.copyOf(seats));
+		}
+	}
+
 	/** Oars in: the boat drifts to a stop. */
 	public static void rest(Entity boat) {
 		if (boat instanceof Boat b) {

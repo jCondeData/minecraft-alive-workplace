@@ -95,6 +95,10 @@ public final class Porters {
 		if (job == VillagerProfession.FARMER) {
 			return stack.is(Items.BONE_MEAL) ? ALL : FieldWork.isSeed(stack) ? KEEP_SEEDS : 0;
 		}
+		if (job == VillagerProfession.ARMORER) {
+			// A smelter keeps its ore, and iron for armor; the other ingots go to the storehouse.
+			return Furnaces.isOre(stack.getItem()) ? ALL : stack.is(Items.IRON_INGOT) ? io.github.jcondedata.aliveworkplace.smelt.Smelters.KEEP_INGOTS : 0;
+		}
 		if (job == VillagerProfession.FISHERMAN) {
 			return furnaceNear && Furnaces.isFish(stack.getItem()) ? ALL : 0;
 		}

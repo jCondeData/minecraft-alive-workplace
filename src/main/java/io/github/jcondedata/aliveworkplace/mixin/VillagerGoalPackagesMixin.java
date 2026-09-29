@@ -82,6 +82,10 @@ abstract class VillagerGoalPackagesMixin {
 			cir.setReturnValue(io.github.jcondedata.aliveworkplace.work.UpgradedJob.work(cir.getReturnValue(),
 				new io.github.jcondedata.aliveworkplace.craft.CrafterWork(io.github.jcondedata.aliveworkplace.craft.Crafting.Kind.STONECUTTING, false),
 				io.github.jcondedata.aliveworkplace.craft.CrafterWork::vanillaMayRun));
+		} else if (profession == VillagerProfession.ARMORER) {
+			// Armorers smelt the village's ore at their blast furnace, and go about their day when there's none.
+			cir.setReturnValue(io.github.jcondedata.aliveworkplace.work.UpgradedJob.work(cir.getReturnValue(),
+				new io.github.jcondedata.aliveworkplace.smelt.SmelterWork(), io.github.jcondedata.aliveworkplace.smelt.Smelters::vanillaMayRun));
 		} else if (profession == VillagerProfession.FISHERMAN) {
 			cir.setReturnValue(io.github.jcondedata.aliveworkplace.work.UpgradedJob.work(cir.getReturnValue(),
 				new io.github.jcondedata.aliveworkplace.fish.FisherWork(), io.github.jcondedata.aliveworkplace.fish.Fishers::vanillaMayRun));

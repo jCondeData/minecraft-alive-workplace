@@ -591,5 +591,15 @@
   "blueprint.aliveworkplace.research_lab_2": "Research Lab II",
   "death.attack.aliveworkplace.pokemonMove": "%1$s was knocked out by %2$s's Pokémon",
   "death.attack.aliveworkplace.pokemonMove.player": "%1$s was knocked out by %2$s's Pokémon",
-  "death.attack.aliveworkplace.pokemonMove.item": "%1$s was knocked out by %2$s's Pokémon"
+  "death.attack.aliveworkplace.pokemonMove.item": "%1$s was knocked out by %2$s's Pokémon",
+  "message.aliveworkplace.smelter.title": "Armorer · %s ingots smelted",
+  "message.aliveworkplace.smelter.state.idle": "no ore to smelt",
+  "message.aliveworkplace.smelter.state.smelting": "smelting",
+  "message.aliveworkplace.smelter.state.fetching_ore": "fetching ore from the %s",
+  "message.aliveworkplace.smelter.state.fetching_fuel": "fetching fuel from the %s",
+  "message.aliveworkplace.smelter.state.storing": "putting it in the chests",
+  "message.aliveworkplace.smelter.state.no_chest": "needs a chest by the blast furnace",
+  "message.aliveworkplace.smelter.state.making_armor": "making %s for %s",
+  "message.aliveworkplace.smelter.state.delivering_armor": "bringing the %s to %s",
+  "message.aliveworkplace.smelter.hired": "%s smelts for you now: ore in the chests within %s blocks of the blast furnace, or from your miners and storehouse."
 }

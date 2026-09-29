@@ -2,6 +2,15 @@
 
 ## Unreleased
 
+## 0.80.0 — 2026-09-28
+
+### Added
+- **Armorers smelt for the village**: an Armorer with a chest by their blast furnace smelts the ore in it with coal or
+  charcoal, and fetches more ore (and fuel) from the storehouse and from miners who don't smelt their own. A porter
+  takes the ingots to the storehouse.
+- **Armorers make the guards' armor**: a guard with nothing in an armor slot gets an iron piece made from the
+  armorer's iron and brought to their Guard Post's chest. Right-click an armorer with coal to hire them.
+
 ## 0.79.0 — 2026-09-28
 
 ### Added

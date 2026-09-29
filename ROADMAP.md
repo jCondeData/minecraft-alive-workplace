@@ -360,9 +360,12 @@ Villagers work as a unit: what one worker makes, the others can use. No particul
 The vanilla professions that still only trade get real work, like Farmers, Fishermen and Masons already have
 (`work/UpgradedJob`: our work first, vanilla's routine when there's none). Together they close the village's supply
 loop: ore → ingots → the tools, weapons and armor the other workers wear out. Each posts and answers `Requests`.
-- [ ] **Armorer → Smelter** (blast furnace): smelts raw metal and ores from the village's chests in the blast furnace
+- [x] **Armorer → Smelter** (blast furnace): smelts raw metal and ores from the village's chests in the blast furnace
   and furnaces nearby, keeps them fuelled (charcoal from lumberjacks, coal from miners), ingots to the storehouse;
-  makes armor for guards who lack a piece
+  makes armor for guards who lack a piece (`smelt/SmelterWork` through `UpgradedJob`: every Armorer with a chest by its
+  blast furnace; tends with `Furnaces.tend`; fetches ore/fuel a stash can spare by `Porters.keeps` — all of it at the
+  storehouse, none from other smelters; keeps 24 iron; iron pieces by the game's recipe for guards with an empty slot
+  and nothing for it in their chests; coal in hand hires one; Fire/Steel partners)
 - [ ] **Toolsmith → Blacksmith** (smithing table): makes the tools workers are waiting for (miners' pickaxes, lumberjacks'
   axes, hoes, shears, fishing rods) with the game's recipes; iron → diamond → netherite as materials allow
 - [ ] **Weaponsmith** (grindstone): repairs worn tools, weapons and armor from workers' chests (two worn ones into one,

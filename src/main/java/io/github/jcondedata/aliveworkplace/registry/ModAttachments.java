@@ -56,6 +56,14 @@ public final class ModAttachments {
 	public static final AttachmentType<Integer> FOSSILS_REVIVED = AttachmentRegistry.create(
 		AliveWorkplace.id("fossils_revived"), builder -> builder.persistent(com.mojang.serialization.Codec.INT));
 
+	/** How many ingots an Armorer has smelted (shown above its head). */
+	public static final AttachmentType<Integer> INGOTS_SMELTED = AttachmentRegistry.create(
+		AliveWorkplace.id("ingots_smelted"), builder -> builder.persistent(com.mojang.serialization.Codec.INT));
+
+	/** How many pieces of armor an Armorer has made for the guards. */
+	public static final AttachmentType<Integer> ARMOR_MADE = AttachmentRegistry.create(
+		AliveWorkplace.id("armor_made"), builder -> builder.persistent(com.mojang.serialization.Codec.INT));
+
 	/** How many items a Porter has carried to the storehouse (shown above its head). */
 	public static final AttachmentType<Integer> ITEMS_CARRIED = AttachmentRegistry.create(
 		AliveWorkplace.id("items_carried"), builder -> builder.persistent(com.mojang.serialization.Codec.INT));

@@ -24,6 +24,7 @@
 			"io.github.jcondedata.aliveworkplace.test.BardGameTests",
 			"io.github.jcondedata.aliveworkplace.test.PorterGameTests",
 			"io.github.jcondedata.aliveworkplace.test.ChefGameTests",
+			"io.github.jcondedata.aliveworkplace.test.SmelterGameTests",
 			"io.github.jcondedata.aliveworkplace.test.OptionalModsGameTests"
 		]
 	},

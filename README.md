@@ -3,7 +3,7 @@
 Villagers with real jobs. Hand a **Builder** a blueprint and they build it for you: they clear the
 site, fetch materials from your chests, put up the walls and roof, and finish with doors, beds and
 torches. **Miners** dig out quarries, **Lumberjacks** cut down and replant trees, **Orchard Keepers** pick berries, cocoa and apricorns, **Farmers** look after
-your fields and **Fishermen** fish for you, dropping everything off in your chests. **Porters** gather it all in the village storehouse, **Carpenters** and **Masons** make what the builders are missing, **Chefs** cook for the village, **Postmen** carry mail
+your fields and **Fishermen** fish for you, dropping everything off in your chests. **Porters** gather it all in the village storehouse, **Carpenters** and **Masons** make what the builders are missing, **Armorers** smelt the ore and make the guards' armor, **Chefs** cook for the village, **Postmen** carry mail
 between players' mailboxes, **Guards** keep monsters away, **Nurses** heal you (and your Pokémon),
 **Shopkeepers** run your shop, **Ferrymen** take you between villages, **Bards** play music and — with Cobblemon —
 **Trainers** battle you, **Move Tutors** teach your Pokémon new moves, **Ball Smiths** make Poké Balls, **Pokémon Traders** swap Pokémon with you and **Fossil Scientists** revive fossils. Villages grow workshops, guard houses, clinics, post offices, orchard houses, ferry houses, storehouses, carpenter's workshops and kitchens on their own — and with Cobblemon,
@@ -96,6 +96,7 @@ where they take tools and supplies from and where their work goes.
 | Carpenter | Carpenter's Bench | — (uses the builders' wood) | nothing |
 | Mason | Stonecutter (vanilla) | — (uses the builders' stone) | nothing |
 | Chef | Kitchen Stove | the makings: wheat, raw meat and fish, potatoes... | nothing |
+| Armorer (smelter) | Blast Furnace (vanilla) | ore and coal (or nothing: they fetch it) | nothing — or coal in hand to hire them |
 | Postman | Postal Desk | — | Mailboxes for mail; Delivery Notes for hauling |
 | Guard | Guard Post | weapons, armor, a bow or crossbow and arrows | nothing |
 | Nurse | Nurse Station | — | right-click them to be healed |
@@ -274,6 +275,16 @@ way of planks and sticks. Only what the rest of the build doesn't need is used: 
 want. **Masons** (vanilla villagers at a stonecutter) do the same with the stonecutter's recipes — stone bricks, stairs,
 slabs and walls cut from stone — and go about their usual day in between. Villages sometimes grow a carpenter's
 workshop.
+
+## Armorers: the village's smelters
+Every **Armorer** (the vanilla villager at a blast furnace) with a chest within 8 blocks of their blast furnace
+smelts the village's ore: raw metal and ore blocks from that chest go into the blast furnace (and any furnaces
+nearby) with coal or charcoal, and the ingots come out into the chest. When the chest runs out, they fetch ore — and
+the fuel to smelt it — from the storehouse and from miners who don't smelt their own, and a porter carries the ingots
+on to the storehouse (the armorer keeps 24 iron ingots). They also look after the guards: a guard of the village with
+nothing on their head, chest, legs or feet, and nothing for it in their chests, gets a piece — made from the iron in
+the armorer's chest and brought to the chests by the Guard Post. Right-click an armorer with coal or charcoal to hire
+them, so they work with your own miners and guards too. Between jobs they go about their usual day.
 
 ## Chefs
 ![A chef cooking at the Kitchen Stove](docs/media/chef.png)
@@ -467,6 +478,7 @@ type suits it — each one cuts the time the work takes by 15%, up to three:
 | Orchard Keeper | Grass, Bug, Flying |
 | Farmer | Grass, Ground, Water |
 | Fisherman | Water, Ice |
+| Armorer | Fire, Steel: one more stack of ore each trip each (and Fire types smelt some on the spot) |
 | Nurse | Fairy, Normal, Psychic |
 | Ball Smith | Steel, Fire |
 | Porter | Fighting, Normal: each carries 3 more stacks a trip |

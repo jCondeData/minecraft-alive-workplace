@@ -66,6 +66,9 @@ public final class Partners {
 		if (profession == ModVillagers.FOSSIL_SCIENTIST) {
 			return Set.of("rock", "psychic");
 		}
+		if (profession == VillagerProfession.ARMORER) {
+			return Set.of("fire", "steel"); // more ore each trip (and Fire types smelt some on the spot)
+		}
 		if (profession == ModVillagers.CHEF) {
 			return Set.of("fire", "normal");
 		}

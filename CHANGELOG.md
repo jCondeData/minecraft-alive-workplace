@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+## 0.101.0 — 2026-09-29
+
+### Added
+- **Innkeepers** (new job, Inn Counter; the Inn blueprint has one): each morning, while there's a free bed, a traveller
+  comes to stay. Travellers know a trade already (Apprentice, Journeyman, now and then Expert): right-click one to hire
+  them for emeralds or CobbleDollars, and they join the village and start their first job at that level. Unhired
+  travellers move on after two days.
+
 ## 0.100.0 — 2026-09-29
 
 ### Added

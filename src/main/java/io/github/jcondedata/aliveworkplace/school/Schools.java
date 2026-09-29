@@ -56,15 +56,23 @@ public final class Schools {
 	public static boolean startsAhead(Villager villager, VillagerData old, VillagerData now) {
 		return old.getProfession() == VillagerProfession.NONE && now.getProfession() != VillagerProfession.NONE
 			&& now.getProfession() != VillagerProfession.NITWIT && now.getLevel() == 1 && villager.getVillagerXp() == 0
-			&& !villager.isBaby() && isSchooled(villager) && !villager.getAttachedOrElse(ModAttachments.SCHOOL_BONUS, false);
+			&& !villager.isBaby() && headStartLevel(villager) > 1 && !villager.getAttachedOrElse(ModAttachments.SCHOOL_BONUS, false);
 	}
 
-	/** A schooled villager's head start at their first job: their Novice trades, then up to Apprentice. */
+	/** The level a villager starts their first job at: Apprentice after school, a hired traveller's own level, else Novice. */
+	public static int headStartLevel(Villager villager) {
+		return Math.max(isSchooled(villager) ? 2 : 1, Math.min(VillagerData.MAX_VILLAGER_LEVEL, villager.getAttachedOrElse(ModAttachments.HEAD_START, 1)));
+	}
+
+	/** A villager's head start at their first job: the trades of every level on the way, up to their start level. */
 	public static void headStart(Villager villager) {
 		villager.setAttached(ModAttachments.SCHOOL_BONUS, true);
 		villager.getOffers(); // the Novice trades first
-		villager.setVillagerXp(VillagerData.getMinXpPerLevel(2));
-		((io.github.jcondedata.aliveworkplace.mixin.VillagerAccessor) villager).aliveworkplace$increaseMerchantCareer();
+		int target = headStartLevel(villager);
+		while (villager.getVillagerData().getLevel() < target) {
+			villager.setVillagerXp(VillagerData.getMinXpPerLevel(villager.getVillagerData().getLevel() + 1));
+			((io.github.jcondedata.aliveworkplace.mixin.VillagerAccessor) villager).aliveworkplace$increaseMerchantCareer();
+		}
 	}
 
 	private Schools() {

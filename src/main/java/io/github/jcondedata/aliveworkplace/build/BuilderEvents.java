@@ -18,6 +18,11 @@ public final class BuilderEvents {
 			if (hand != InteractionHand.MAIN_HAND || player.isSpectator() || !(entity instanceof Villager villager)) {
 				return InteractionResult.PASS;
 			}
+			// A traveller staying at an inn: the screen to hire them.
+			if (!level.isClientSide && io.github.jcondedata.aliveworkplace.inn.Innkeepers.isTraveller(villager)) {
+				io.github.jcondedata.aliveworkplace.inn.Innkeepers.openHire((ServerPlayer) player, villager);
+				return InteractionResult.SUCCESS;
+			}
 			if (io.github.jcondedata.aliveworkplace.mine.Miners.isMiner(villager)) {
 				ItemStack held = player.getItemInHand(hand);
 				if (held.is(ModItems.QUARRY_MARKER)) {

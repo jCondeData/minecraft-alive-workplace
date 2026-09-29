@@ -102,6 +102,8 @@ The owner (Jesse) does not write code: sessions are expected to work autonomousl
   everyone within `RADIUS`, nearest hall by POI), `VillageHallScreen` (a `ChoiceMenu`: numbers, then every villager),
   `VillageNeeds` (meals from the store, beds, safety → wellbeing → the work pace in `BuilderLevels.delay`),
   `VillageGrowth` (a baby a day at most with a free bed, food and wellbeing)
+- `inn/` — the Innkeeper (Inn Counter): `InnkeeperWork` (a traveller each morning), `Innkeepers` (arrivals, the hire
+  screen, departures), `Traveller` (attachment); hired travellers start at their level through `Schools.headStart`
 - `school/` — the Teacher (Teacher's Desk): `TeacherWork` (calls the children in, lessons), `Schools` (schooled
   children start their first job as Apprentices, through `VillagerMixin` on `setVillagerData`)
 - `explore/` — `ExplorerWork`: vanilla Cartographers on expeditions (food and a weapon from the chests, finds from the

@@ -124,6 +124,15 @@ had a couple of minutes of lessons has been to school, and when they grow up and
 Apprentice** (with the Novice and Apprentice trades) instead of a Novice. The hall's list says who went to school.
 Pastured Psychic and Normal Pokémon make the lessons go quicker.
 
+**Innkeepers and travellers.** Craft an **Inn Counter** (bread, a lantern and bread over planks) — or build the
+**Inn**, which has one at the end of its bar — and a villager takes it and becomes an **Innkeeper**. Each morning,
+while there's a free bed within 32 blocks and fewer than two guests, a **traveller** comes to stay (you're told in
+chat). Travellers already know a trade: most are Apprentices or Journeymen, now and then an Expert (more often at a
+better innkeeper's inn). Right-click one to **hire them**: 8 emeralds for an Apprentice, 16 for a Journeyman, 32 for
+an Expert (CobbleDollars at the usual rate with CobbleDollars installed). They join your village, take the first free
+workstation and start at their level, with the trades of every level on the way. Travellers nobody hires move on after
+two days. Until they're hired they won't take a job.
+
 ## All the jobs at a glance
 Place the workstation near a villager without a job and they take it. Chests (or barrels) within 8 blocks of it are
 where they take tools and supplies from and where their work goes.
@@ -137,6 +146,7 @@ where they take tools and supplies from and where their work goes.
 | Farmer | Composter (vanilla) | seeds, a hoe, bone meal | a Field Marker (blank: their own farm) |
 | Beekeeper | Apiary | glass bottles or shears, flowers | nothing (beehives within 16 blocks) |
 | Florist | Flower Stand | bone meal (flowers to pot) | nothing (grass round the stand) |
+| Innkeeper | Inn Counter | — | nothing (hire the travellers who come to stay) |
 | Teacher | Teacher's Desk | — | nothing (children within 32 blocks) |
 | Rancher | Feed Trough | golden carrots, hay, saddles, horse armor (berries) | nothing (horses within 16 blocks) |
 | Fisherman | Barrel (vanilla) | spare rods (coal for a smoker) | hand them a fishing rod |

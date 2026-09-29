@@ -144,6 +144,11 @@ public final class ModBlocks {
 		Registry.register(BuiltInRegistries.BLOCK_ENTITY_TYPE, AliveWorkplace.id("storehouse"),
 			net.minecraft.world.level.block.entity.BlockEntityType.Builder.of(io.github.jcondedata.aliveworkplace.store.StorehouseBlockEntity::new, STOREHOUSE).build(null));
 
+	/** Workstation for the Innkeeper: travellers come to stay at the inn, and can be hired. */
+	public static final BuildersBenchBlock INN_COUNTER = register(
+		"inn_counter", new BuildersBenchBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_PLANKS))
+	);
+
 	/** Workstation for the Teacher: the village's children come here for lessons. */
 	public static final BuildersBenchBlock TEACHERS_DESK = register(
 		"teachers_desk", new BuildersBenchBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_PLANKS))

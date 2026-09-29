@@ -1,0 +1,9 @@
+{
+  "parent": "minecraft:block/orientable_with_bottom",
+  "textures": {
+    "top": "aliveworkplace:block/inn_counter_top",
+    "bottom": "aliveworkplace:block/inn_counter_side",
+    "side": "aliveworkplace:block/inn_counter_side",
+    "front": "aliveworkplace:block/inn_counter_front"
+  }
+}

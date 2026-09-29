@@ -306,6 +306,23 @@ public final class ModVillagers {
 	public static final ResourceKey<PoiType> VILLAGE_HALL_POI = ResourceKey.create(Registries.POINT_OF_INTEREST_TYPE, VILLAGE_HALL_ID);
 	public static final PoiType VILLAGE_HALL_POI_TYPE = PointOfInterestHelper.register(VILLAGE_HALL_ID, 0, 1, ModBlocks.VILLAGE_HALL);
 
+	public static final ResourceLocation INN_COUNTER_ID = AliveWorkplace.id("inn_counter");
+	public static final ResourceKey<PoiType> INN_COUNTER_POI = ResourceKey.create(Registries.POINT_OF_INTEREST_TYPE, INN_COUNTER_ID);
+	public static final PoiType INN_COUNTER_POI_TYPE = PointOfInterestHelper.register(INN_COUNTER_ID, 1, 1, ModBlocks.INN_COUNTER);
+
+	public static final VillagerProfession INNKEEPER = Registry.register(
+		BuiltInRegistries.VILLAGER_PROFESSION,
+		AliveWorkplace.id("innkeeper"),
+		new VillagerProfession(
+			"innkeeper",
+			holder -> holder.is(INN_COUNTER_POI),
+			holder -> holder.is(INN_COUNTER_POI),
+			ImmutableSet.of(),
+			ImmutableSet.of(),
+			SoundEvents.VILLAGER_WORK_BUTCHER
+		)
+	);
+
 	public static final ResourceLocation TEACHERS_DESK_ID = AliveWorkplace.id("teachers_desk");
 	public static final ResourceKey<PoiType> TEACHERS_DESK_POI = ResourceKey.create(Registries.POINT_OF_INTEREST_TYPE, TEACHERS_DESK_ID);
 	public static final PoiType TEACHERS_DESK_POI_TYPE = PointOfInterestHelper.register(TEACHERS_DESK_ID, 1, 1, ModBlocks.TEACHERS_DESK);
@@ -450,7 +467,7 @@ public final class ModVillagers {
 			|| profession == NURSE || profession == SHOPKEEPER || profession == FERRYMAN
 			|| profession == TRAINER || profession == TRAINER_LEADER || profession == TUTOR || profession == POKEMON_TRADER
 			|| profession == ORCHARD_KEEPER || profession == BALL_SMITH || profession == PORTER || profession == CARPENTER || profession == CHEF || profession == FOSSIL_SCIENTIST
-			|| profession == BEEKEEPER || profession == FLORIST || profession == RANCHER || profession == TEACHER;
+			|| profession == BEEKEEPER || profession == FLORIST || profession == RANCHER || profession == TEACHER || profession == INNKEEPER;
 	}
 
 	/**

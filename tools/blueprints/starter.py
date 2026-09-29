@@ -1082,8 +1082,9 @@ INN_ROOF = SPRUCE
 
 
 def inn():
-    """13 x 16 x 13: a two-storey inn with its gable to the street — a stone tavern downstairs (a bar of barrels, a
-    hearth, tables and benches), three guest rooms with six beds under the steep spruce roof, a lamp over the door."""
+    """13 x 16 x 13: a two-storey inn with its gable to the street — a stone tavern downstairs (a bar of barrels with an
+    Inn Counter at its end: an innkeeper moves in, a hearth, tables and benches), three guest rooms with six beds under
+    the steep spruce roof, a lamp over the door."""
     b = Build(13, 16, 13)
     # Stone storey: walls x 1-11, z 2-11
     plinth(b, 1, 2, 11, 11, FOUNDATION_MIX, floor="spruce_planks")
@@ -1112,8 +1113,9 @@ def inn():
         window(b, 11, 2, z, "east", height=2, shutters="spruce_trapdoor", sill=SPRUCE)
     window(b, 4, 2, 11, "south", width=2, height=1, sill=SPRUCE)
     # The tavern: a bar along the back, a hearth on the east wall, two tables with benches
-    for x in range(2, 9):
-        slab(b, x, 1, 9, SPRUCE, double=True) if x in (2, 8) else stairs(b, x, 1, 9, SPRUCE, "north", top=True)
+    for x in range(2, 8):
+        slab(b, x, 1, 9, SPRUCE, double=True) if x == 2 else stairs(b, x, 1, 9, SPRUCE, "north", top=True)
+    b.set(8, 1, 9, "aliveworkplace:inn_counter", facing="north")  # the innkeeper's end of the bar
     for x in (2, 4, 6):
         b.set(x, 1, 10, "barrel", facing="north", open=False)
     b.set(3, 1, 10, "barrel", facing="up", open=False)

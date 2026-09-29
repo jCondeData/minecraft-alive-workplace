@@ -456,7 +456,11 @@ loop: ore → ingots → the tools, weapons and armor the other workers wear out
   (`school/`: Teacher's Desk; in WORK hours the teacher calls unschooled children within 32 blocks to the desk (their
   walk target) and each one within 5 blocks gets lessons; 2400 ticks of lessons → schooled. A `VillagerMixin` hook on
   `setVillagerData` gives a schooled villager's first job its Novice trades, then levels them to Apprentice)
-- [ ] **Recruiting**: an Innkeeper (new job) hosts travellers; hire one for emeralds or CobbleDollars
+- [x] **Recruiting**: an Innkeeper (new job) hosts travellers; hire one for emeralds or CobbleDollars (`inn/`: Inn
+  Counter (also in the Inn blueprint); a traveller a morning while there's a free bed within 32 blocks and < 2 guests;
+  travellers are nitwits with a `Traveller` attachment (a level 2–4) until hired through a `ChoiceMenu`, then
+  profession NONE with `HEAD_START` = their level, which `Schools.headStart` applies at their first job; unhired ones
+  leave after two days when no player is within 24 blocks)
 - [ ] **Graveyard**: a villager who dies leaves a grave; an Undertaker (new job) can bring them back, job and level kept
 - [ ] **Village quests**: villagers post jobs for players (bring items, beat a trainer, clear monsters) for rewards
 
@@ -526,5 +530,5 @@ loop: ore → ingots → the tools, weapons and armor the other workers wear out
 - 2026-09-29: two scheduled sessions ran at the same time and both built the Miltank milking and plantation-crop items;
   the second one's work was dropped for the first's. If sessions overlap again, the later one should take items further
   down the list (as the Training Dummy was) or the schedule should be spread out (owner).
-- 2026-09-29: session `01Xw8jqb` is working down **Milestone 9** in order (Village Hall, Needs, Growth and School done; next
-  Recruiting, …); a session running at the same time should take Milestone 10 and on, to keep out of each other's way.
+- 2026-09-29: session `01Xw8jqb` is working down **Milestone 9** in order (Village Hall, Needs, Growth, School and
+  Recruiting done; next Graveyard, Village quests); a session running at the same time should take Milestone 10 and on, to keep out of each other's way.

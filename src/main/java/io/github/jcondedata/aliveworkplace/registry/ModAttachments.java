@@ -84,6 +84,18 @@ public final class ModAttachments {
 	public static final AttachmentType<Integer> ITEMS_ENCHANTED = AttachmentRegistry.create(
 		AliveWorkplace.id("items_enchanted"), builder -> builder.persistent(com.mojang.serialization.Codec.INT));
 
+	/** A traveller staying at an inn (until hired or their stay is over). */
+	public static final AttachmentType<io.github.jcondedata.aliveworkplace.inn.Traveller> TRAVELLER = AttachmentRegistry.create(
+		AliveWorkplace.id("traveller"), builder -> builder.persistent(io.github.jcondedata.aliveworkplace.inn.Traveller.CODEC));
+	/** The level a hired traveller starts their first job at. */
+	public static final AttachmentType<Integer> HEAD_START = AttachmentRegistry.create(
+		AliveWorkplace.id("head_start"), builder -> builder.persistent(com.mojang.serialization.Codec.INT));
+	/** The day an Innkeeper last took in a traveller, and how many they've hosted. */
+	public static final AttachmentType<Long> LAST_GUEST_DAY = AttachmentRegistry.create(
+		AliveWorkplace.id("last_guest_day"), builder -> builder.persistent(com.mojang.serialization.Codec.LONG));
+	public static final AttachmentType<Integer> GUESTS_HOSTED = AttachmentRegistry.create(
+		AliveWorkplace.id("guests_hosted"), builder -> builder.persistent(com.mojang.serialization.Codec.INT));
+
 	/** Whether a villager went to school as a child (a Teacher's lessons), and how many ticks of lessons they've had. */
 	public static final AttachmentType<Boolean> SCHOOLED = AttachmentRegistry.create(
 		AliveWorkplace.id("schooled"), builder -> builder.persistent(com.mojang.serialization.Codec.BOOL));

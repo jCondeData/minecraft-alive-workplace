@@ -1685,6 +1685,74 @@ def teacher_overlay():
     save(img, "entity", "zombie_villager", "profession", "teacher.png")
 
 
+# --- Inn Counter: a panelled counter with a service bell and the guest book on top ---------------------------------
+def inn_counter(face):
+    rnd = random.Random({"top": 391, "side": 392, "front": 393}[face])
+    img = Image.new("RGBA", (16, 16))
+    dark = [rgb("#6b4526"), rgb("#5e3c21"), rgb("#4d311b")]
+    for y in range(16):
+        for x in range(16):
+            img.putpixel((x, y), jitter(dark[(y // 4) % 2] if (x + (y // 4) * 5) % 16 else dark[2], rnd, 5))
+    edge = rgb("#3a2414")
+    if face == "top":
+        for i in range(16):
+            for p in ((i, 0), (i, 15), (0, i), (15, i)):
+                img.putpixel(p, jitter(edge, rnd, 3))
+        # the guest book with a quill
+        for y in range(3, 10):
+            for x in range(2, 9):
+                img.putpixel((x, y), jitter(rgb("#efe6cf"), rnd, 4))
+        for y in range(3, 10):
+            img.putpixel((5, y), rgb("#b9ae93"))
+        for y in (4, 6, 8):
+            for x in (3, 4, 6, 7):
+                img.putpixel((x, y), rgb("#6d6a63"))
+        for (qx, qy) in ((9, 2), (10, 3), (10, 2), (11, 1)):
+            img.putpixel((qx, qy), rgb("#f4f4f4"))
+        # the service bell
+        gold, dark_gold = rgb("#f0c33c"), rgb("#b8871f")
+        for (bx, by) in ((11, 10), (12, 10), (10, 11), (11, 11), (12, 11), (13, 11), (10, 12), (11, 12), (12, 12), (13, 12)):
+            img.putpixel((bx, by), gold)
+        img.putpixel((13, 12), dark_gold)
+        img.putpixel((11, 9), dark_gold)
+    else:
+        # raised panels under a moulded top
+        for x in range(16):
+            img.putpixel((x, 0), jitter(rgb("#8a5a33"), rnd, 4))
+            img.putpixel((x, 1), jitter(edge, rnd, 3))
+            img.putpixel((x, 15), jitter(edge, rnd, 3))
+        for x0 in (2, 9):
+            for y in range(4, 13):
+                for x in range(x0, x0 + 5):
+                    if x in (x0, x0 + 4) or y in (4, 12):
+                        img.putpixel((x, y), jitter(edge, rnd, 3))
+                    else:
+                        img.putpixel((x, y), jitter(rgb("#7a4f2b"), rnd, 4))
+        if face == "front":
+            # a little brass plaque between the panels
+            for x in range(6, 10):
+                img.putpixel((x, 2), rgb("#d9a441"))
+                img.putpixel((x, 3), rgb("#b8871f"))
+    save(img, "block", "inn_counter_" + face + ".png")
+
+
+def innkeeper_overlay():
+    img = Image.new("RGBA", (64, 64), T)
+    rnd = random.Random(401)
+    # a white apron over the robe, tied at the waist, and a red neckerchief
+    apron = rgb("#ecebe4")
+    for y in range(47, 62):
+        for x in range(6, 14):
+            img.putpixel((x, y), jitter(apron, rnd, 4))
+    for x in range(4, 24):
+        img.putpixel((x, 48), rgb("#c9c6ba"))
+    for x in range(7, 13):
+        img.putpixel((x, 44), rgb("#b3262c"))
+        img.putpixel((x, 45), rgb("#b3262c"))
+    save(img, "entity", "villager", "profession", "innkeeper.png")
+    save(img, "entity", "zombie_villager", "profession", "innkeeper.png")
+
+
 # --- Feed Trough: the rancher's workstation, a plank trough full of hay ----------------------------------------
 def feed_trough(face):
     rnd = random.Random({"top": 341, "side": 342, "front": 343}[face])
@@ -2183,6 +2251,9 @@ if __name__ == "__main__":
     for face in ("top", "side", "front"):
         teachers_desk(face)
     teacher_overlay()
+    for face in ("top", "side", "front"):
+        inn_counter(face)
+    innkeeper_overlay()
     rancher_overlay()
     for part in ("burlap", "face", "straw", "post"):
         training_dummy(part)

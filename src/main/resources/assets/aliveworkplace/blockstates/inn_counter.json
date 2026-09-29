@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "aliveworkplace:block/inn_counter"
+    },
+    "facing=east": {
+      "model": "aliveworkplace:block/inn_counter",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "aliveworkplace:block/inn_counter",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "aliveworkplace:block/inn_counter",
+      "y": 270
+    }
+  }
+}

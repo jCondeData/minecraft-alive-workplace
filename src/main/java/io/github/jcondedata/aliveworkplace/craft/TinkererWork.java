@@ -94,29 +94,7 @@ public class TinkererWork extends CrafterWork {
 	/** {@code plan} with a coal or charcoal for every {@link #SMELTS_PER_FUEL} ore it fires; null if there's too little. */
 	@Nullable
 	static Crafting.Plan withFuel(ServerLevel level, Crafting.Plan plan, Map<Item, Long> usable) {
-		int smelts = 0;
-		for (Crafting.Step step : plan.steps()) {
-			if (Crafting.isFired(level, step)) {
-				smelts += step.times();
-			}
-		}
-		if (smelts == 0) {
-			return plan;
-		}
-		int fuel = (smelts + SMELTS_PER_FUEL - 1) / SMELTS_PER_FUEL;
-		Item coal = null;
-		for (Item option : List.of(Items.COAL, Items.CHARCOAL)) {
-			if (usable.getOrDefault(option, 0L) - plan.takes().getOrDefault(option, 0) >= fuel) {
-				coal = option;
-				break;
-			}
-		}
-		if (coal == null) {
-			return null;
-		}
-		Map<Item, Integer> takes = new LinkedHashMap<>(plan.takes());
-		takes.merge(coal, fuel, Integer::sum);
-		return new Crafting.Plan(plan.target(), plan.count(), plan.steps(), takes, plan.makes());
+		return withFuel(level, plan, usable, Crafting.Kind.WORKSHOP, SMELTS_PER_FUEL);
 	}
 
 	@Override

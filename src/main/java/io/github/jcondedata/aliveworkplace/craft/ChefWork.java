@@ -28,6 +28,10 @@ public class ChefWork extends CrafterWork {
 	@Nullable
 	@Override
 	protected Job choose(ServerLevel level, Villager villager, BlockPos station) {
+		Job order = chooseOrder(level, villager, station);
+		if (order != null) {
+			return order; // the store's orders first
+		}
 		List<BlockPos> own = SupplyContainers.find(level, station, null);
 		List<BlockPos> sources = new ArrayList<>(own);
 		for (Village.Stash stash : Village.stashes(level, villager, station, null)) {

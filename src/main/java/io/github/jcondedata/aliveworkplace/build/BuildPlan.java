@@ -253,6 +253,28 @@ public final class BuildPlan {
 	}
 
 	/**
+	 * A repair of a finished build: only the blocks that are missing now (where the world has air, water, grass or the
+	 * like), in the usual order — nothing is cleared (what players put inside stays), no foundation, no landscaping.
+	 */
+	public static BuildPlan repair(Blueprint blueprint, BlueprintData.Placement placement, Level level) {
+		BuildPlan build = create(blueprint, placement);
+		List<Step> structure = build.structure.stream().filter(s -> missing(level, s)).toList();
+		List<Step> decoration = build.decoration.stream().filter(s -> missing(level, s)).toList();
+		return new BuildPlan(List.of(), List.of(), structure, decoration, List.of(), List.of(), build.bounds);
+	}
+
+	/** Whether {@code step}'s block is gone: the spot is open (air, water, plants) and not already what it should be. */
+	static boolean missing(Level level, Step step) {
+		BlockState world = level.getBlockState(step.pos());
+		return !step.state().isAir() && world.canBeReplaced() && !MaterialRules.matches(world, step.state());
+	}
+
+	/** Blocks a repair would put back (0: nothing's missing). */
+	public int size() {
+		return clear.size() + foundation.size() + structure.size() + decoration.size() + landscape.size() + deconstruct.size();
+	}
+
+	/**
 	 * Under every solid block of the bottom layer, fill down to the first solid ground (leaves, plants,
 	 * snow and water don't count as ground). The fill uses the block above it when that is a plain full
 	 * block (so a cobblestone rim gets a cobblestone footing), otherwise cobblestone; grass becomes dirt.

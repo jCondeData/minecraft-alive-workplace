@@ -334,7 +334,7 @@ public class CrafterWork extends Behavior<Villager> {
 	protected Job choose(ServerLevel level, Villager villager, BlockPos station) {
 		int radius = Math.max(0, Village.RADIUS);
 		if (radius == 0) {
-			return null;
+			return chooseOrder(level, villager, station);
 		}
 		long now = level.getGameTime();
 		synchronized (CLAIMS) {
@@ -386,6 +386,50 @@ public class CrafterWork extends Behavior<Villager> {
 				return new Job(builderStation, area, made, claim, sources);
 			}
 		}
+		return chooseOrder(level, villager, station);
+	}
+
+	/**
+	 * A stock order to fill (see {@link io.github.jcondedata.aliveworkplace.store.StockOrders}): the first thing a storehouse
+	 * near our workstation is short of that we can make from what's in its store, without dipping into what's kept for
+	 * its other orders. Only storehouses our employer shares with (an unhired crafter serves any).
+	 */
+	@Nullable
+	protected Job chooseOrder(ServerLevel level, Villager villager, BlockPos station) {
+		long now = level.getGameTime();
+		io.github.jcondedata.aliveworkplace.build.Employer boss = villager.getAttached(ModAttachments.BUILDER_EMPLOYER);
+		List<BlockPos> storehouses = level.getPoiManager().findAll(h -> h.is(io.github.jcondedata.aliveworkplace.registry.ModVillagers.STOREHOUSE_POI),
+				p -> true, station, io.github.jcondedata.aliveworkplace.store.StockOrders.RANGE, net.minecraft.world.entity.ai.village.poi.PoiManager.Occupancy.ANY)
+			.map(BlockPos::immutable).sorted(java.util.Comparator.comparingDouble(p -> p.distSqr(station))).toList();
+		for (BlockPos storehouse : storehouses) {
+			Map<Item, Integer> orders = io.github.jcondedata.aliveworkplace.store.StockOrders.of(level, storehouse);
+			if (orders.isEmpty() || boss != null && !Village.sameSide(level, boss, io.github.jcondedata.aliveworkplace.store.Porters.owner(level, storehouse))) {
+				continue;
+			}
+			List<BlockPos> store = SupplyContainers.find(level, storehouse, null);
+			if (store.isEmpty()) {
+				continue;
+			}
+			Map<Item, Long> stock = SupplyContainers.contents(level, store);
+			Map<Item, Long> usable = new HashMap<>(stock);
+			orders.forEach((item, keep) -> usable.computeIfPresent(item, (k, n) -> n > keep ? n - keep : null));
+			for (Map.Entry<Item, Integer> order : orders.entrySet()) {
+				long have = stock.getOrDefault(order.getKey(), 0L);
+				if (have >= order.getValue() || !wants(order.getKey())) {
+					continue;
+				}
+				String claim = "stock|" + storehouse.asLong() + "|" + BuiltInRegistries.ITEM.getKey(order.getKey());
+				if (claimed(claim, now)) {
+					continue;
+				}
+				Crafting.Plan plan = planFor(level, order.getKey(), (int) Math.min(64, order.getValue() - have), usable);
+				if (!fits(plan)) {
+					continue;
+				}
+				claim(claim, now);
+				return new Job(storehouse, null, plan, claim, store);
+			}
+		}
 		return null;
 	}
 
@@ -413,6 +457,37 @@ public class CrafterWork extends Behavior<Villager> {
 		synchronized (CLAIMS) {
 			CLAIMS.put(claim, now + CLAIM_TICKS);
 		}
+	}
+
+	/**
+	 * {@code plan} (of {@code kind}) with a coal or charcoal for every {@code perFuel} things it fires; null if there's too
+	 * little fuel in {@code usable}. A plan that fires nothing comes back as it is.
+	 */
+	@Nullable
+	protected static Crafting.Plan withFuel(ServerLevel level, Crafting.Plan plan, Map<Item, Long> usable, Crafting.Kind kind, int perFuel) {
+		int fired = 0;
+		for (Crafting.Step step : plan.steps()) {
+			if (Crafting.isFired(level, kind, step)) {
+				fired += step.times();
+			}
+		}
+		if (fired == 0) {
+			return plan;
+		}
+		int fuel = (fired + perFuel - 1) / perFuel;
+		for (Item coal : List.of(net.minecraft.world.item.Items.COAL, net.minecraft.world.item.Items.CHARCOAL)) {
+			if (usable.getOrDefault(coal, 0L) - plan.takes().getOrDefault(coal, 0) >= fuel) {
+				Map<Item, Integer> takes = new LinkedHashMap<>(plan.takes());
+				takes.merge(coal, fuel, Integer::sum);
+				return new Crafting.Plan(plan.target(), plan.count(), plan.steps(), takes, plan.makes());
+			}
+		}
+		return null;
+	}
+
+	/** Whether {@code plan} (of {@code kind}) fires anything. */
+	protected static boolean fires(ServerLevel level, Crafting.Plan plan, Crafting.Kind kind) {
+		return plan.steps().stream().anyMatch(step -> Crafting.isFired(level, kind, step));
 	}
 
 	/** Whether a plan is worth doing and fits in the bag. */

@@ -33,7 +33,11 @@ import org.jetbrains.annotations.Nullable;
  */
 public final class StorehouseBoard {
 	static final int INFO_SLOT = 4;
-	static final int FIRST_REQUEST = 9;
+	/** The stock orders (and, on their page, adding the item in hand). */
+	public static final int ORDERS_SLOT = 8;
+	/** Back to the requests, on the orders page. */
+	public static final int BACK_SLOT = 0;
+	public static final int FIRST_REQUEST = 9;
 
 	public static void open(ServerPlayer player, BlockPos storehouse) {
 		ServerLevel level = player.serverLevel();
@@ -63,6 +67,14 @@ public final class StorehouseBoard {
 			plain(Component.translatable(requests.isEmpty() ? "screen.aliveworkplace.storehouse.nothing" : "screen.aliveworkplace.storehouse.click"),
 				ChatFormatting.GRAY))));
 		menu.button(INFO_SLOT, info, null);
+		ItemStack ordersIcon = new ItemStack(Items.WRITABLE_BOOK);
+		int orders = StockOrders.of(level, storehouse).size();
+		ordersIcon.set(DataComponents.CUSTOM_NAME, plain(Component.translatable("screen.aliveworkplace.storehouse.orders", orders), ChatFormatting.AQUA));
+		ordersIcon.set(DataComponents.LORE, new ItemLore(List.of(plain(Component.translatable("screen.aliveworkplace.storehouse.orders_hint"), ChatFormatting.GRAY))));
+		menu.button(ORDERS_SLOT, ordersIcon, p -> {
+			renderOrders(menu, level, storehouse, p);
+			menu.broadcastChanges();
+		});
 		int slot = FIRST_REQUEST;
 		for (Requests.Request request : requests) {
 			if (slot >= ChoiceMenu.SIZE) {
@@ -78,6 +90,61 @@ public final class StorehouseBoard {
 					p.displayClientMessage(Component.translatable("message.aliveworkplace.storehouse.none", request.what()).withStyle(ChatFormatting.YELLOW), true);
 				}
 				render(menu, level, storehouse, p);
+				menu.broadcastChanges();
+			});
+		}
+	}
+
+	/**
+	 * The orders page: each order (click: keep more, past the most it's dropped), and the item in the player's hand to
+	 * order it.
+	 */
+	static void renderOrders(ChoiceMenu menu, ServerLevel level, BlockPos storehouse, ServerPlayer viewer) {
+		menu.clearButtons();
+		ItemStack back = new ItemStack(Items.ARROW);
+		back.set(DataComponents.CUSTOM_NAME, plain(Component.translatable("screen.aliveworkplace.storehouse.back"), ChatFormatting.WHITE));
+		menu.button(BACK_SLOT, back, p -> {
+			render(menu, level, storehouse, p);
+			menu.broadcastChanges();
+		});
+		ItemStack info = new ItemStack(Items.WRITABLE_BOOK);
+		info.set(DataComponents.CUSTOM_NAME, plain(Component.translatable("screen.aliveworkplace.storehouse.orders_title"), ChatFormatting.GOLD));
+		info.set(DataComponents.LORE, new ItemLore(List.of(plain(Component.translatable("screen.aliveworkplace.storehouse.orders_how"), ChatFormatting.GRAY),
+			plain(Component.translatable("screen.aliveworkplace.storehouse.orders_who"), ChatFormatting.GRAY))));
+		menu.button(INFO_SLOT, info, null);
+		ItemStack held = viewer.getMainHandItem();
+		if (!held.isEmpty() && !StockOrders.of(level, storehouse).containsKey(held.getItem())) {
+			ItemStack add = held.copyWithCount(1);
+			add.set(DataComponents.CUSTOM_NAME, plain(Component.translatable("screen.aliveworkplace.storehouse.order_add", held.getHoverName(),
+				StockOrders.STEPS.get(0)), ChatFormatting.GREEN));
+			menu.button(ORDERS_SLOT, add, p -> {
+				StockOrders.cycle(level, storehouse, held.getItem());
+				level.playSound(null, p.blockPosition(), SoundEvents.BOOK_PAGE_TURN, SoundSource.PLAYERS, 0.8f, 1f);
+				renderOrders(menu, level, storehouse, p);
+				menu.broadcastChanges();
+			});
+		}
+		List<BlockPos> store = SupplyContainers.find(level, storehouse, null);
+		int slot = FIRST_REQUEST;
+		for (var order : StockOrders.of(level, storehouse).entrySet()) {
+			if (slot >= ChoiceMenu.SIZE) {
+				break;
+			}
+			net.minecraft.world.item.Item item = order.getKey();
+			long have = SupplyContainers.count(level, store, item);
+			ItemStack icon = new ItemStack(item, (int) Math.max(1, Math.min(99, order.getValue())));
+			icon.set(DataComponents.CUSTOM_NAME, plain(Component.translatable("screen.aliveworkplace.storehouse.order", order.getValue(), item.getDescription()),
+				have >= order.getValue() ? ChatFormatting.GREEN : ChatFormatting.YELLOW));
+			int step = StockOrders.STEPS.indexOf(order.getValue());
+			icon.set(DataComponents.LORE, new ItemLore(List.of(
+				plain(Component.translatable("screen.aliveworkplace.storehouse.order_have", have), ChatFormatting.GRAY),
+				plain(step >= 0 && step + 1 < StockOrders.STEPS.size()
+					? Component.translatable("screen.aliveworkplace.storehouse.order_more", StockOrders.STEPS.get(step + 1))
+					: Component.translatable("screen.aliveworkplace.storehouse.order_drop"), ChatFormatting.DARK_GRAY))));
+			menu.button(slot++, icon, p -> {
+				StockOrders.cycle(level, storehouse, item);
+				level.playSound(null, p.blockPosition(), SoundEvents.BOOK_PAGE_TURN, SoundSource.PLAYERS, 0.8f, 1.2f);
+				renderOrders(menu, level, storehouse, p);
 				menu.broadcastChanges();
 			});
 		}

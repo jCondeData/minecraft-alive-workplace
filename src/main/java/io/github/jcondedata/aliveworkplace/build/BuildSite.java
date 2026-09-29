@@ -45,6 +45,8 @@ public final class BuildSite {
 	private boolean queued;
 	/** Taking the build down instead of putting it up. */
 	private boolean deconstruct;
+	/** Putting back what's missing from a finished build (see {@link BuildPlan#repair}). */
+	private boolean repair;
 	/** The lead builder's bench: where the supply chests are, for helpers too. Null in pre-0.6 saves. */
 	@Nullable
 	private BlockPos bench;
@@ -108,7 +110,9 @@ public final class BuildSite {
 			}
 			int depth = level.getGameRules().getInt(io.github.jcondedata.aliveworkplace.registry.ModGameRules.FOUNDATION_DEPTH);
 			int margin = levelGround ? level.getGameRules().getInt(io.github.jcondedata.aliveworkplace.registry.ModGameRules.LEVEL_GROUND) : 0;
-			plan = deconstruct ? BuildPlan.deconstruct(blueprint.get(), placement) : BuildPlan.create(blueprint.get(), placement, level, depth, margin);
+			plan = deconstruct ? BuildPlan.deconstruct(blueprint.get(), placement)
+				: repair ? BuildPlan.repair(blueprint.get(), placement, level)
+				: BuildPlan.create(blueprint.get(), placement, level, depth, margin);
 			if (stage == BuildPlan.Stage.FOUNDATION || stage == BuildPlan.Stage.LANDSCAPE) {
 				// The foundation and landscaping lists depend on the terrain, which we have been changing:
 				// start over (what's already done is skipped straight away).
@@ -339,6 +343,19 @@ public final class BuildSite {
 		return deconstruct;
 	}
 
+	public boolean isRepair() {
+		return repair;
+	}
+
+	/** Turns a new site into a repair (call right after creating it): straight to the structure, nothing cleared. */
+	public void setRepair() {
+		repair = true;
+		stage = BuildPlan.Stage.STRUCTURE;
+		cursor = 0;
+		plan = null;
+		onChange.run();
+	}
+
 	/** Turns a new site into a deconstruction job (call right after creating it). */
 	public void setDeconstruction() {
 		deconstruct = true;
@@ -410,6 +427,9 @@ public final class BuildSite {
 		if (deconstruct) {
 			tag.putBoolean("deconstruct", true);
 		}
+		if (repair) {
+			tag.putBoolean("repair", true);
+		}
 		if (!levelGround) {
 			tag.putBoolean("no_level_ground", true);
 		}
@@ -444,6 +464,7 @@ public final class BuildSite {
 		site.builder = tag.hasUUID("builder") ? tag.getUUID("builder") : null;
 		site.queued = tag.getBoolean("queued");
 		site.deconstruct = tag.getBoolean("deconstruct");
+		site.repair = tag.getBoolean("repair");
 		site.levelGround = !tag.getBoolean("no_level_ground");
 		site.bench = tag.contains("bench", Tag.TAG_LONG) ? BlockPos.of(tag.getLong("bench")) : null;
 		return site;

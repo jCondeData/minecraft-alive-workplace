@@ -461,6 +461,18 @@ public final class Builders {
 		emptyBag(level, villager, bench, supplies);
 		// Item frames, paintings and armor stands go up last, from the chests.
 		BuildPlan plan = site.isDeconstruction() ? null : site.plan(level);
+		if (site.isRepair()) {
+			// A repair: nothing to hand back, nothing new to sell, the building's already on the books.
+			level.sendParticles(ParticleTypes.HAPPY_VILLAGER, villager.getX(), villager.getY() + 1.8, villager.getZ(), 12, 0.5, 0.5, 0.5, 0.0);
+			ServerPlayer owner = level.getServer().getPlayerList().getPlayer(site.owner());
+			if (owner != null) {
+				tell(owner, Component.translatable("message.aliveworkplace.repaired", villager.getDisplayName(), Blueprints.displayName(site.structure())),
+					ChatFormatting.GREEN);
+			}
+			endJob(level, villager, site);
+			BuilderLevels.addXp(level, villager, 2, site.owner());
+			return;
+		}
 		int entitiesLeft = plan == null ? 0 : BuildEntities.placeAll(level, plan, supplies);
 		if (plan != null) {
 			lightPortals(level, plan.bounds(), supplies);

@@ -54,6 +54,8 @@ public final class WorkplaceConfig {
 	public boolean villagerSickness = true;
 	/** Villagers in a village with a Village Hall have moods that change how fast they work. */
 	public boolean villagerMoods = true;
+	/** Idle builders repair the buildings they finished when blocks go missing. */
+	public boolean builderRepairs = true;
 	/** A village with a Village Hall and a Market Square holds a market once a week. */
 	public boolean marketDays = true;
 	/** Monsters raid bigger villages with a Village Hall at night now and then. */
@@ -137,6 +139,7 @@ public final class WorkplaceConfig {
 		io.github.jcondedata.aliveworkplace.people.Traits.ENABLED = villagerTraits && System.getProperty("fabric-api.gametest") == null;
 		io.github.jcondedata.aliveworkplace.people.Sickness.ENABLED = villagerSickness && System.getProperty("fabric-api.gametest") == null;
 		io.github.jcondedata.aliveworkplace.people.Moods.ENABLED = villagerMoods && System.getProperty("fabric-api.gametest") == null;
+		io.github.jcondedata.aliveworkplace.build.Upkeep.ENABLED = builderRepairs && System.getProperty("fabric-api.gametest") == null;
 		io.github.jcondedata.aliveworkplace.hall.MarketDays.ENABLED = marketDays && System.getProperty("fabric-api.gametest") == null;
 		io.github.jcondedata.aliveworkplace.guard.VillageRaids.ENABLED = villageRaids && System.getProperty("fabric-api.gametest") == null;
 		io.github.jcondedata.aliveworkplace.build.Paths.ENABLED = builderPaths && System.getProperty("fabric-api.gametest") == null;

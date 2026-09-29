@@ -129,6 +129,37 @@ public class PorterGameTests implements FabricGameTest {
 		});
 	}
 
+	/**
+	 * A stock order: "keep 32 oak planks" set on the Storehouse's board; the carpenter nearby makes them from the logs in the
+	 * store and brings them to the store.
+	 */
+	@GameTest(template = AREA, timeoutTicks = 1200, batch = "stock_orders")
+	public void carpenterFillsAStockOrder(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		helper.setBlock(STOREHOUSE, ModBlocks.STOREHOUSE);
+		helper.setBlock(STORE_CHEST, Blocks.CHEST);
+		Container store = helper.getBlockEntity(STORE_CHEST);
+		store.setItem(0, new ItemStack(Items.OAK_LOG, 16));
+		net.minecraft.server.level.ServerPlayer player = helper.makeMockServerPlayerInLevel();
+		player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, new ItemStack(Items.OAK_PLANKS));
+		var menu = io.github.jcondedata.aliveworkplace.store.StorehouseBoard.boardForTest(player, helper.absolutePos(STOREHOUSE));
+		menu.press(io.github.jcondedata.aliveworkplace.store.StorehouseBoard.ORDERS_SLOT, player); // the orders page
+		menu.press(io.github.jcondedata.aliveworkplace.store.StorehouseBoard.ORDERS_SLOT, player); // order the planks in hand: keep 16
+		menu.press(io.github.jcondedata.aliveworkplace.store.StorehouseBoard.FIRST_REQUEST, player); // keep 32
+		helper.getLevel().getServer().getPlayerList().remove(player);
+		var orders = io.github.jcondedata.aliveworkplace.store.StockOrders.of(helper.getLevel(), helper.absolutePos(STOREHOUSE));
+		helper.assertTrue(orders.equals(java.util.Map.of(Items.OAK_PLANKS, 32)), "orders " + orders);
+		BlockPos bench = new BlockPos(14, 2, 14);
+		helper.setBlock(bench, ModBlocks.CARPENTERS_BENCH);
+		Villager carpenter = helper.spawn(EntityType.VILLAGER, new BlockPos(14, 2, 15));
+		io.github.jcondedata.aliveworkplace.work.Jobs.employ(helper.getLevel(), carpenter, helper.absolutePos(bench), ModVillagers.CARPENTERS_BENCH_POI,
+			ModVillagers.CARPENTER);
+		helper.succeedWhen(() -> {
+			helper.assertTrue(store.countItem(Items.OAK_PLANKS) >= 32, "planks in the store: " + store.countItem(Items.OAK_PLANKS));
+			helper.assertTrue(store.countItem(Items.OAK_LOG) == 8, "logs left: " + store.countItem(Items.OAK_LOG));
+		});
+	}
+
 	/** A porter works for the storehouse's owner, and leaves the chests of someone else's workers alone. */
 	@GameTest(template = AREA, timeoutTicks = 400, batch = "porter_strangers")
 	public void porterLeavesStrangersWorkersAlone(GameTestHelper helper) {

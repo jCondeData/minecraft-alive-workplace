@@ -37,7 +37,13 @@ public final class Crafting {
 		 * A tinkerer's: the blast furnace's for metal (raw ore and ore into ingots; worn tools and armour are never melted
 		 * down), then the crafting table's.
 		 */
-		WORKSHOP
+		WORKSHOP,
+		/**
+		 * A mason's kiln: the furnace's for building blocks (stone, smooth stone, glass, terracotta, cracked bricks, and brick
+		 * and nether brick items — never food, ingots or melted-down gear), the stonecutter's and the crafting table's
+		 * (clay into bricks into a brick block). A mason only uses it for a plan with something fired in it.
+		 */
+		KILN
 	}
 
 	/** Recipes this deep below the thing asked for may be used for its ingredients (fences: sticks from planks from logs). */
@@ -234,6 +240,18 @@ public final class Crafting {
 						all.addAll(manager.getAllRecipesFor(RecipeType.SMOKING));
 						all.addAll(manager.getAllRecipesFor(RecipeType.CRAFTING));
 					}
+					case KILN -> {
+						for (RecipeHolder<?> holder : manager.getAllRecipesFor(RecipeType.SMELTING)) {
+							ItemStack result = holder.value().getResultItem(level.registryAccess());
+							if (!meltsGear(holder.value()) && !result.has(net.minecraft.core.component.DataComponents.FOOD)
+									&& (result.getItem() instanceof net.minecraft.world.item.BlockItem || result.is(net.minecraft.world.item.Items.BRICK)
+									|| result.is(net.minecraft.world.item.Items.NETHER_BRICK))) {
+								all.add(holder);
+							}
+						}
+						all.addAll(manager.getAllRecipesFor(RecipeType.STONECUTTING));
+						all.addAll(manager.getAllRecipesFor(RecipeType.CRAFTING));
+					}
 					case WORKSHOP -> {
 						for (RecipeHolder<?> holder : manager.getAllRecipesFor(RecipeType.BLASTING)) {
 							if (!meltsGear(holder.value())) {
@@ -273,12 +291,18 @@ public final class Crafting {
 
 	/** Whether {@code step} is fired in a blast furnace (one item in, by a blasting recipe) rather than crafted. */
 	public static boolean isFired(ServerLevel level, Step step) {
+		return isFired(level, Kind.WORKSHOP, step);
+	}
+
+	/** Whether {@code step}, in a plan of {@code kind}, is fired (a blasting or smelting recipe) rather than crafted or cut. */
+	public static boolean isFired(ServerLevel level, Kind kind, Step step) {
 		if (step.in().size() != 1) {
 			return false;
 		}
 		Item in = step.in().keySet().iterator().next();
-		for (RecipeHolder<?> holder : recipesFor(level, Kind.WORKSHOP, step.out().getItem())) {
-			if (holder.value().getType() == RecipeType.BLASTING && holder.value().getIngredients().get(0).test(new ItemStack(in))) {
+		for (RecipeHolder<?> holder : recipesFor(level, kind, step.out().getItem())) {
+			RecipeType<?> type = holder.value().getType();
+			if ((type == RecipeType.BLASTING || type == RecipeType.SMELTING) && holder.value().getIngredients().get(0).test(new ItemStack(in))) {
 				return true;
 			}
 		}

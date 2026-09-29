@@ -614,6 +614,16 @@ ones we lack, our way.
 - [x] Composter (`compost/CompostWork`, the Compost Bin): compostables (vanilla chances as shares, rotten flesh ½) from the
   bin's chests or the storehouse; 5 layers a bone meal; Poison/Grass partners; a compost yard in village generation
 
+## Milestone 18 — The village works for you
+- [x] Stock orders (`store/StockOrders`, kept on the `StorehouseBlockEntity`, set on the board's orders page): crafters
+  within 48 blocks whose employer shares with the storehouse's owner (or unhired ones) make what's short from the store
+  (`CrafterWork.chooseOrder`, after the builders' requests; chefs first), not dipping into other orders' stock
+- [x] Repairs (`build/Upkeep`: an idle builder looks every 1200 ticks at the finished builds they look after within 48 of
+  the bench; `BuildPlan.repair` fills only open spots, `BuildSite.repair` starts at STRUCTURE, no blueprint handed back;
+  `builderRepairs` in the config, off in gametests)
+- [x] Mason's kiln (`Crafting.Kind.KILN`: smelting to building blocks and brick items + stonecutting + crafting, used only
+  for plans that fire something, with a furnace by the stonecutter; `CrafterWork.withFuel` shared with the tinkerer)
+
 ## Milestone 5 — Release
 - [ ] Publish on Modrinth and CurseForge as **Alive Workplace** (Minecraft brand rules: don't lead the name with "Minecraft")
 - [x] Screenshots/GIFs through the README, and an at-a-glance table of every job (workstation, what goes in the chests,

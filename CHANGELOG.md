@@ -2,6 +2,15 @@
 
 ## Unreleased
 
+## 0.129.0 — 2026-09-29
+
+### Added
+- **Stock orders** at the Storehouse: "keep 64 stone bricks" — the village's crafters make what runs short from what's in
+  the store.
+- **Repairs**: idle builders put back the blocks missing from the buildings they finished (only holes are filled).
+- Masons are the village's **kiln**: with a furnace by the stonecutter they fire stone, smooth stone, terracotta,
+  bricks and nether bricks for the builders.
+
 ## 0.128.0 — 2026-09-29
 
 ### Added

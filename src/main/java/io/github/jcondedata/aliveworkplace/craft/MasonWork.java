@@ -13,9 +13,10 @@ import net.minecraft.world.item.Items;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * A vanilla Mason's work for the builders nearby: the stonecutter's recipes, and the village's crusher and glassblower
- * besides — cobblestone crushed to gravel and gravel to sand at the stonecutter, and sand fired into glass when there's a
- * furnace by the stonecutter (a coal or charcoal for every {@link #GLASS_PER_FUEL}).
+ * A vanilla Mason's work for the builders nearby: the stonecutter's recipes, and the village's crusher, glassblower and
+ * kiln besides — cobblestone crushed to gravel and gravel to sand at the stonecutter, and, when there's a furnace by the
+ * stonecutter, sand fired into glass and the rest of the kiln's work ({@link Crafting.Kind#KILN}: stone, smooth stone,
+ * terracotta, bricks from clay...), a coal or charcoal for every {@link #GLASS_PER_FUEL} things fired.
  */
 public class MasonWork extends CrafterWork {
 	/** Glass fired per coal or charcoal (a furnace's rate). */
@@ -56,7 +57,16 @@ public class MasonWork extends CrafterWork {
 		if (CRUSHED.containsKey(item)) {
 			return convert(level, item, n, usable, null, 0);
 		}
-		return super.planFor(level, item, count, usable);
+		Crafting.Plan cut = super.planFor(level, item, count, usable);
+		if (fits(cut) || !hasFurnace(level)) {
+			return cut;
+		}
+		// The kiln: stone, smooth stone, terracotta, bricks... fired in the furnace by the stonecutter (and cut or laid after).
+		Crafting.Plan kiln = Crafting.plan(level, Crafting.Kind.KILN, item, count, usable);
+		if (kiln == null || !fires(level, kiln, Crafting.Kind.KILN)) {
+			return cut;
+		}
+		return withFuel(level, kiln, usable, Crafting.Kind.KILN, GLASS_PER_FUEL);
 	}
 
 	/**

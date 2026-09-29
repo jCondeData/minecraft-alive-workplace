@@ -62,6 +62,11 @@ When they finish, the blueprint goes back into the supply chest so you can build
 **Changed your mind?** Place the blueprint over the building and **sneak** while giving it to a builder: they take it
 down and put the blocks back in the chests.
 
+**Repairs.** Builders look after what they've built: now and then an idle builder walks round the buildings they (or
+whoever they work for) finished near their bench, and when blocks are missing — a creeper's hole, a raid, a broken
+window — they put them back from their chests. Only holes are filled: anything you've put in or changed since stays as
+it is. `builderRepairs` in the config turns it off.
+
 **More builders, faster builds.** A builder with nothing to do helps with builds near their bench (up to three helpers
 per build), sharing the chests and passing each other materials.
 
@@ -539,6 +544,12 @@ The storehouse is part of the village's stock, so a builder short of stone finds
 your workers and your friends'. A village's own storehouse carries for the village's workers. A porter carries 9 stacks
 a trip, 3 more at each level.
 
+**Stock orders.** Click the book on the Storehouse's board to see its stock orders, hold an item and click it at the
+top right to order it: the village's crafters keep that many in the store, making what runs short from what's there —
+carpenters anything from the crafting table, masons stone and bricks, tinkerers redstone and iron parts, chefs food.
+Click an order to keep more (16, 32, 64, 128, 256; once more drops it). What's kept for one order isn't used up for
+another.
+
 **Drop Box.** Craft one from a barrel and a hopper and put it anywhere within 48 blocks of the storehouse: whatever you
 drop in it — a pile of loot from a trip, tools, anything — the porter takes to the storehouse first, all of it. Workers
 never help themselves from a Drop Box.
@@ -567,8 +578,10 @@ game's own crafting recipes (modded ones too) and takes it to the builder's ches
 planks from the builder's logs, sticks, torches, glass panes... up to two steps down count, so fences come from logs by
 way of planks and sticks. Only what the rest of the build doesn't need is used: planks for stairs, but not the planks the walls still
 want. **Masons** (vanilla villagers at a stonecutter) do the same with the stonecutter's recipes — stone bricks, stairs,
-slabs and walls cut from stone — and crush cobblestone into gravel and gravel into sand, and fire sand into glass when
-there's a furnace by the stonecutter (a coal for every 8); they go about their usual day in between. **Leatherworkers** (vanilla villagers at a
+slabs and walls cut from stone — and crush cobblestone into gravel and gravel into sand, and with a furnace by the
+stonecutter they are the village's **kiln**: sand fired into glass, cobblestone into stone and smooth stone, clay into
+terracotta and bricks (laid into brick blocks), netherrack into nether bricks — a coal for every 8 things fired; they
+go about their usual day in between. **Leatherworkers** (vanilla villagers at a
 cauldron) are the village's dyers: anything coloured a builder is waiting for — wool, carpet, stained glass,
 terracotta, candles, beds, dyes from flowers — they make the same way, and they harden concrete powder into concrete
 in the cauldron (mixing the powder from sand, gravel and dye first if need be). Villages sometimes grow a carpenter's

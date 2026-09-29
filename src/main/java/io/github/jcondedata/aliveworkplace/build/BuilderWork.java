@@ -198,7 +198,7 @@ public class BuilderWork extends Behavior<Villager> {
 				}
 				return;
 			}
-			action = actionFor(level, site.stage(), step, bench);
+			action = actionFor(level, site, step, bench);
 		}
 		for (int budget = SKIP_BUDGET; !helping && budget > 0 && !site.isDone(); budget--) {
 			BuildPlan.Step candidate = site.current(plan);
@@ -206,7 +206,7 @@ public class BuilderWork extends Behavior<Villager> {
 				site.finishList();
 				continue;
 			}
-			action = actionFor(level, site.stage(), candidate, bench);
+			action = actionFor(level, site, candidate, bench);
 			if (action == Action.NONE) {
 				site.advance();
 			} else if (action == Action.SKIP) {
@@ -296,7 +296,7 @@ public class BuilderWork extends Behavior<Villager> {
 			if (avoid.contains(pos) || leads != null && leads.pos().equals(pos) || site.claimedByOther(villager.getUUID(), pos)) {
 				continue;
 			}
-			Action a = actionFor(level, site.stage(), candidate, bench);
+			Action a = actionFor(level, site, candidate, bench);
 			if (a != Action.BREAK && a != Action.PLACE) {
 				continue;
 			}
@@ -351,7 +351,8 @@ public class BuilderWork extends Behavior<Villager> {
 		}
 	}
 
-	private static Action actionFor(ServerLevel level, BuildPlan.Stage stage, BuildPlan.Step step, BlockPos bench) {
+	private static Action actionFor(ServerLevel level, BuildSite site, BuildPlan.Step step, BlockPos bench) {
+		BuildPlan.Stage stage = site.stage();
 		BlockPos pos = step.pos();
 		BlockState world = level.getBlockState(pos);
 		BlockState wanted = step.state();
@@ -388,6 +389,9 @@ public class BuilderWork extends Behavior<Villager> {
 		}
 
 		if (!worldEmpty && !world.canBeReplaced()) {
+			if (site.isRepair()) {
+				return Action.NONE; // something's been put there since: a repair only fills holes
+			}
 			return isProtected(level, pos, world, bench) ? Action.SKIP : Action.BREAK;
 		}
 		return Action.PLACE;

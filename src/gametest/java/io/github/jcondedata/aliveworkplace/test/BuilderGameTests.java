@@ -476,6 +476,38 @@ public class BuilderGameTests implements FabricGameTest {
 		});
 	}
 
+	/**
+	 * A builder short of smooth stone and a block of bricks, with cobblestone, clay and coal: the mason fires the
+	 * cobblestone into stone and smooth stone and the clay into bricks in the furnace by the stonecutter, and lays the bricks.
+	 */
+	@GameTest(template = AREA, timeoutTicks = 3000, batch = "mason_kiln")
+	public void masonFiresSmoothStoneAndBricksForTheBuilder(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		Leftovers.village(helper, 48);
+		ServerLevel level = helper.getLevel();
+		BlockPos src = new BlockPos(12, 2, 12);
+		helper.setBlock(src, Blocks.SMOOTH_STONE);
+		helper.setBlock(src.offset(1, 0, 0), Blocks.SMOOTH_STONE);
+		helper.setBlock(src.offset(2, 0, 0), Blocks.BRICKS);
+		ResourceLocation wall = ResourceLocation.fromNamespaceAndPath("aliveworkplace_test", "kiln_" + Long.toHexString(level.getGameTime()));
+		level.getStructureManager().getOrCreate(wall).fillFromWorld(level, helper.absolutePos(src), new Vec3i(3, 1, 1), false, Blocks.STRUCTURE_VOID);
+		for (int x = 0; x < 3; x++) {
+			helper.setBlock(src.offset(x, 0, 0), Blocks.AIR);
+		}
+		Setup s = setup(helper, wall, HUT_ORIGIN, Rotation.NONE, new ItemStack(Items.COBBLESTONE, 2), new ItemStack(Items.CLAY_BALL, 4),
+			new ItemStack(Items.COAL, 2));
+		BlockPos cutter = new BlockPos(14, 2, 2);
+		helper.setBlock(cutter, Blocks.STONECUTTER);
+		helper.setBlock(new BlockPos(16, 2, 2), Blocks.FURNACE);
+		Villager mason = helper.spawn(EntityType.VILLAGER, new BlockPos(14, 2, 3));
+		io.github.jcondedata.aliveworkplace.work.Jobs.employ(level, mason, helper.absolutePos(cutter), net.minecraft.world.entity.ai.village.poi.PoiTypes.MASON,
+			VillagerProfession.MASON);
+		helper.succeedWhen(() -> {
+			assertBuilt(helper, s);
+			helper.assertTrue(mason.getAttachedOrElse(ModAttachments.ITEMS_CRAFTED, 0) == 3, "the mason made " + mason.getAttachedOrElse(ModAttachments.ITEMS_CRAFTED, 0));
+		});
+	}
+
 	/** A builder short of white concrete and red wool: the village's leatherworker hardens the powder and dyes the wool. */
 	@GameTest(template = AREA, timeoutTicks = 3000, batch = "dyer")
 	public void dyerMakesTheConcreteAndRedWoolTheBuilderNeeds(GameTestHelper helper) {
@@ -921,6 +953,52 @@ public class BuilderGameTests implements FabricGameTest {
 	@GameTest(template = BIG_AREA, timeoutTicks = 40000, batch = "starter_builds_7")
 	public void buildsNetherGateII(GameTestHelper helper) {
 		buildStarter(helper, StarterBlueprints.NETHER_GATE_2, new BlockPos(7, 2, 8)); // (15 wide: further left)
+	}
+
+	/**
+	 * Upkeep: a finished wall with a block knocked out and another spot bricked up with stone since — the idle builder
+	 * puts back the missing plank from their chest, leaves the stone, hands out no blueprint, and is done.
+	 */
+	@GameTest(template = AREA, timeoutTicks = 1200, batch = "upkeep")
+	public void builderRepairsAFinishedBuilding(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		boolean was = io.github.jcondedata.aliveworkplace.build.Upkeep.ENABLED;
+		io.github.jcondedata.aliveworkplace.build.Upkeep.ENABLED = true;
+		Leftovers.after(helper, () -> io.github.jcondedata.aliveworkplace.build.Upkeep.ENABLED = was);
+		ServerLevel level = helper.getLevel();
+		BlockPos src = new BlockPos(6, 2, 6);
+		for (int x = 0; x < 4; x++) {
+			helper.setBlock(src.offset(x, 0, 0), Blocks.OAK_PLANKS);
+		}
+		ResourceLocation wall = ResourceLocation.fromNamespaceAndPath("aliveworkplace_test", "upkeep_" + Long.toHexString(level.getGameTime()));
+		level.getStructureManager().getOrCreate(wall).fillFromWorld(level, helper.absolutePos(src), new Vec3i(4, 1, 1), false, Blocks.STRUCTURE_VOID);
+		helper.setBlock(src.offset(1, 0, 0), Blocks.AIR); // knocked out
+		helper.setBlock(src.offset(2, 0, 0), Blocks.STONE); // bricked up by a player
+		helper.setBlock(CHEST, Blocks.CHEST);
+		Container chest = helper.getBlockEntity(CHEST);
+		chest.setItem(0, new ItemStack(Items.OAK_PLANKS, 4));
+		BlockPos bench = new BlockPos(2, 2, 2);
+		helper.setBlock(bench, ModBlocks.BUILDERS_BENCH);
+		Villager builder = helper.spawn(EntityType.VILLAGER, new BlockPos(3, 2, 3));
+		io.github.jcondedata.aliveworkplace.build.Builders.employ(level, builder, helper.absolutePos(bench));
+		var placement = new io.github.jcondedata.aliveworkplace.blueprint.BlueprintData.Placement(level.dimension().location(), helper.absolutePos(src),
+			Rotation.NONE, net.minecraft.world.level.block.Mirror.NONE);
+		BuildSiteManager.get(level).recordFinished(wall, placement, builder.getUUID());
+		helper.runAfterDelay(2, () -> {
+			// (the builder may have looked already)
+			var site = builder.hasAttached(ModAttachments.BUILDER_JOB) ? io.github.jcondedata.aliveworkplace.build.Builders.activeSite(level, builder)
+				: io.github.jcondedata.aliveworkplace.build.Upkeep.look(level, builder);
+			helper.assertTrue(site != null && site.isRepair(), "no repair started");
+		});
+		helper.succeedWhen(() -> {
+			helper.assertBlockPresent(Blocks.OAK_PLANKS, src.offset(1, 0, 0));
+			helper.assertBlockPresent(Blocks.STONE, src.offset(2, 0, 0));
+			helper.assertFalse(builder.hasAttached(ModAttachments.BUILDER_JOB), "still repairing");
+			helper.assertTrue(chest.countItem(Items.OAK_PLANKS) == 3, "planks left: " + chest.countItem(Items.OAK_PLANKS));
+			helper.assertTrue(chest.countItem(io.github.jcondedata.aliveworkplace.registry.ModItems.BLUEPRINT) == 0, "a blueprint was handed out");
+			helper.assertTrue(io.github.jcondedata.aliveworkplace.build.Upkeep.look(level, builder) == null
+				|| !builder.hasAttached(ModAttachments.BUILDER_JOB), "nothing left to repair");
+		});
 	}
 
 	/** An empty portal frame in a finished build is lit with a flint and steel from the chests (a use of it). */

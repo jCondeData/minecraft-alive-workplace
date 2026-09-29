@@ -139,7 +139,7 @@ public class ExplorerWork extends Behavior<Villager> {
 		if (station == null) {
 			return;
 		}
-		BuilderBag bag = villager.getAttachedOrCreate(ModAttachments.BUILDER_BAG);
+		BuilderBag bag = ModAttachments.BUILDER_BAG.getOrCreate(villager);
 		switch (phase) {
 			case IDLE -> idle(level, villager, station, bag, gameTime);
 			case PACKING -> pack(level, villager, station, bag);
@@ -400,8 +400,8 @@ public class ExplorerWork extends Behavior<Villager> {
 		villager.swing(InteractionHand.MAIN_HAND);
 		level.playSound(null, target, SoundEvents.CHEST_CLOSE, SoundSource.BLOCKS, 0.4f, 1.0f);
 		if (stopsDone > 0) {
-			int trips = villager.getAttachedOrElse(ModAttachments.EXPEDITIONS, 0) + 1;
-			villager.setAttached(ModAttachments.EXPEDITIONS, trips);
+			int trips = ModAttachments.EXPEDITIONS.getOrElse(villager, 0) + 1;
+			ModAttachments.EXPEDITIONS.set(villager, trips);
 			BuilderLevels.addXp(level, villager, 3, null);
 			if (trips % MAP_EVERY == 0) {
 				chart(level, villager, station, own);
@@ -428,12 +428,12 @@ public class ExplorerWork extends Behavior<Villager> {
 		if (!rest.isEmpty()) {
 			Block.popResource(level, station.above(), rest);
 		}
-		villager.setAttached(ModAttachments.MAPS_CHARTED, villager.getAttachedOrElse(ModAttachments.MAPS_CHARTED, 0) + 1);
+		ModAttachments.MAPS_CHARTED.set(villager, ModAttachments.MAPS_CHARTED.getOrElse(villager, 0) + 1);
 		level.playSound(null, station, SoundEvents.VILLAGER_WORK_CARTOGRAPHER, SoundSource.NEUTRAL, 1f, 1f);
 	}
 
 	private static void status(Villager villager, String state, Object... args) {
-		Component title = Component.translatable("message.aliveworkplace.explorer.title", villager.getAttachedOrElse(ModAttachments.EXPEDITIONS, 0));
+		Component title = Component.translatable("message.aliveworkplace.explorer.title", ModAttachments.EXPEDITIONS.getOrElse(villager, 0));
 		boolean warn = state.equals("needs_food") || state.equals("no_chest");
 		WorkerStatus.set(villager, title, -1f, Component.translatable("message.aliveworkplace.explorer.state." + state, args)
 			.withStyle(warn ? ChatFormatting.YELLOW : ChatFormatting.GRAY));

@@ -143,7 +143,7 @@ public class CrafterWork extends Behavior<Villager> {
 		if (station == null) {
 			return;
 		}
-		BuilderBag bag = villager.getAttachedOrCreate(ModAttachments.BUILDER_BAG);
+		BuilderBag bag = ModAttachments.BUILDER_BAG.getOrCreate(villager);
 		if (job == null) {
 			if (!bag.isEmpty()) {
 				tidy(level, villager, station, bag);
@@ -244,7 +244,7 @@ public class CrafterWork extends Behavior<Villager> {
 		List<ItemStack> extra = apply(bag, job.plan());
 		if (extra != null) {
 			extra.forEach(stack -> Block.popResource(level, station.above(), stack));
-			villager.setAttached(ModAttachments.ITEMS_CRAFTED, villager.getAttachedOrElse(ModAttachments.ITEMS_CRAFTED, 0) + job.plan().count());
+			ModAttachments.ITEMS_CRAFTED.set(villager, ModAttachments.ITEMS_CRAFTED.getOrElse(villager, 0) + job.plan().count());
 			BuilderLevels.addXp(level, villager, Math.max(1, crafts / 2), null);
 		}
 		phase = Phase.DELIVERING;
@@ -398,7 +398,7 @@ public class CrafterWork extends Behavior<Villager> {
 	@Nullable
 	protected Job chooseOrder(ServerLevel level, Villager villager, BlockPos station) {
 		long now = level.getGameTime();
-		io.github.jcondedata.aliveworkplace.build.Employer boss = villager.getAttached(ModAttachments.BUILDER_EMPLOYER);
+		io.github.jcondedata.aliveworkplace.build.Employer boss = ModAttachments.BUILDER_EMPLOYER.get(villager);
 		List<BlockPos> storehouses = level.getPoiManager().findAll(h -> h.is(io.github.jcondedata.aliveworkplace.registry.ModVillagers.STOREHOUSE_POI),
 				p -> true, station, io.github.jcondedata.aliveworkplace.store.StockOrders.RANGE, net.minecraft.world.entity.ai.village.poi.PoiManager.Occupancy.ANY)
 			.map(BlockPos::immutable).sorted(java.util.Comparator.comparingDouble(p -> p.distSqr(station))).toList();
@@ -519,7 +519,7 @@ public class CrafterWork extends Behavior<Villager> {
 		if (phase == Phase.IDLE && !alwaysShowStatus) {
 			return;
 		}
-		Component title = Component.translatable("message.aliveworkplace." + who + ".title", villager.getAttachedOrElse(ModAttachments.ITEMS_CRAFTED, 0));
+		Component title = Component.translatable("message.aliveworkplace." + who + ".title", ModAttachments.ITEMS_CRAFTED.getOrElse(villager, 0));
 		Component line = job != null && phase != Phase.TIDYING
 			? Component.translatable("message.aliveworkplace." + lines + ".state." + phase.name().toLowerCase(), job.plan().count(),
 				job.plan().target().getDescription())

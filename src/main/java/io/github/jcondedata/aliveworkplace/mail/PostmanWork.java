@@ -145,8 +145,8 @@ public class PostmanWork extends Behavior<Villager> {
 				if (office.deliver(level.getServer(), parcel)) {
 					office.remove(parcel);
 					level.playSound(null, target, SoundEvents.BOOK_PUT, SoundSource.NEUTRAL, 1f, 1f);
-					int delivered = villager.getAttachedOrElse(ModAttachments.MAIL_DELIVERED, 0) + 1;
-					villager.setAttached(ModAttachments.MAIL_DELIVERED, delivered);
+					int delivered = ModAttachments.MAIL_DELIVERED.getOrElse(villager, 0) + 1;
+					ModAttachments.MAIL_DELIVERED.set(villager, delivered);
 					if (delivered % DELIVERIES_PER_XP == 0) {
 						BuilderLevels.addXp(level, villager, 1, null);
 					}
@@ -161,7 +161,7 @@ public class PostmanWork extends Behavior<Villager> {
 					// Air mail: a Flying-type partner by the desk takes it there straight away.
 					office.remove(parcel);
 					level.playSound(null, target, SoundEvents.PHANTOM_FLAP, SoundSource.NEUTRAL, 0.8f, 1.4f);
-					villager.setAttached(ModAttachments.MAIL_DELIVERED, villager.getAttachedOrElse(ModAttachments.MAIL_DELIVERED, 0) + 1);
+					ModAttachments.MAIL_DELIVERED.set(villager, ModAttachments.MAIL_DELIVERED.getOrElse(villager, 0) + 1);
 				} else {
 					parcel.setStatus(Parcel.Status.IN_TRANSIT);
 					parcel.claim(null, gameTime);
@@ -202,7 +202,7 @@ public class PostmanWork extends Behavior<Villager> {
 			return;
 		}
 		BUSY.add(villager);
-		io.github.jcondedata.aliveworkplace.build.BuilderBag bag = villager.getAttachedOrCreate(ModAttachments.BUILDER_BAG);
+		io.github.jcondedata.aliveworkplace.build.BuilderBag bag = ModAttachments.BUILDER_BAG.getOrCreate(villager);
 		BlockPos from = route.from().get();
 		BlockPos to = route.to().get();
 		// A pasture stands for the chests around it (Cobbleworkers' Pokémon fill those): go to the one in use.
@@ -214,7 +214,7 @@ public class PostmanWork extends Behavior<Villager> {
 			case DROP -> targets.isEmpty() ? to : targets.get(0);
 			case RETURN -> sources.isEmpty() ? from : sources.get(0);
 		};
-		WorkerStatus.set(villager, Component.translatable("message.aliveworkplace.postman.title", villager.getAttachedOrElse(ModAttachments.MAIL_DELIVERED, 0)), -1f,
+		WorkerStatus.set(villager, Component.translatable("message.aliveworkplace.postman.title", ModAttachments.MAIL_DELIVERED.getOrElse(villager, 0)), -1f,
 			Component.translatable("message.aliveworkplace.postman.state.haul", to.getX(), to.getY(), to.getZ()).withStyle(ChatFormatting.GRAY));
 		if (!walker.walkTo(level, villager, target, 3.0)) {
 			if (walker.noSpot()) {
@@ -333,7 +333,7 @@ public class PostmanWork extends Behavior<Villager> {
 
 	private static void idle(Villager villager) {
 		BUSY.remove(villager);
-		int delivered = villager.getAttachedOrElse(ModAttachments.MAIL_DELIVERED, 0);
+		int delivered = ModAttachments.MAIL_DELIVERED.getOrElse(villager, 0);
 		WorkerStatus.set(villager, Component.translatable("message.aliveworkplace.postman.title", delivered), -1f,
 			Component.translatable("message.aliveworkplace.postman.state.idle").withStyle(ChatFormatting.GRAY));
 	}
@@ -350,7 +350,7 @@ public class PostmanWork extends Behavior<Villager> {
 	}
 
 	private static void status(Villager villager, Mode mode, Parcel parcel) {
-		int delivered = villager.getAttachedOrElse(ModAttachments.MAIL_DELIVERED, 0);
+		int delivered = ModAttachments.MAIL_DELIVERED.getOrElse(villager, 0);
 		Component line = switch (mode) {
 			case PICKUP -> Component.translatable("message.aliveworkplace.postman.state.pickup", parcel.fromName());
 			case DELIVER -> Component.translatable("message.aliveworkplace.postman.state.deliver", parcel.toName());

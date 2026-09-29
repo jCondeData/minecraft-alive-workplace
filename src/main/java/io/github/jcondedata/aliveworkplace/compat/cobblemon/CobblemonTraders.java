@@ -9,6 +9,7 @@ import com.cobblemon.mod.common.battles.BattleRegistry;
 import com.cobblemon.mod.common.item.PokemonItem;
 import com.cobblemon.mod.common.pokemon.Pokemon;
 import com.cobblemon.mod.common.pokemon.Species;
+import io.github.jcondedata.aliveworkplace.mc.Chat;
 import io.github.jcondedata.aliveworkplace.trader.PokemonTraders;
 import io.github.jcondedata.aliveworkplace.work.ChoiceMenu;
 import java.util.ArrayList;
@@ -164,7 +165,7 @@ public final class CobblemonTraders {
 
 	public static void open(ServerPlayer player, Villager trader) {
 		if (BattleRegistry.getBattleByParticipatingPlayer(player) != null) {
-			player.displayClientMessage(Component.translatable("message.aliveworkplace.pokemon_trader.in_battle").withStyle(ChatFormatting.YELLOW), true);
+			Chat.actionBar(player, Component.translatable("message.aliveworkplace.pokemon_trader.in_battle").withStyle(ChatFormatting.YELLOW));
 			return;
 		}
 		State state = new State();

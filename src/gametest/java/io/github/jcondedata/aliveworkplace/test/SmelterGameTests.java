@@ -50,7 +50,7 @@ public class SmelterGameTests implements FabricGameTest {
 		chest.setItem(1, new ItemStack(Items.COAL, 2));
 		helper.succeedWhen(() -> {
 			helper.assertTrue(chest.countItem(Items.IRON_INGOT) == 4, "iron ingots in the chest: " + chest.countItem(Items.IRON_INGOT));
-			int smelted = smelter.getAttachedOrElse(ModAttachments.INGOTS_SMELTED, 0);
+			int smelted = ModAttachments.INGOTS_SMELTED.getOrElse(smelter, 0);
 			helper.assertTrue(smelted == 4, "smelted " + smelted);
 		});
 	}
@@ -96,7 +96,7 @@ public class SmelterGameTests implements FabricGameTest {
 			boolean delivered = guard.getItemBySlot(EquipmentSlot.CHEST).is(Items.IRON_CHESTPLATE) || guardsChest.countItem(Items.IRON_CHESTPLATE) == 1;
 			helper.assertTrue(delivered, "no chestplate for the guard");
 			helper.assertTrue(chest.countItem(Items.IRON_INGOT) == 0, "iron left: " + chest.countItem(Items.IRON_INGOT));
-			helper.assertTrue(smelter.getAttachedOrElse(ModAttachments.ARMOR_MADE, 0) == 1, "armor made: " + smelter.getAttachedOrElse(ModAttachments.ARMOR_MADE, 0));
+			helper.assertTrue(ModAttachments.ARMOR_MADE.getOrElse(smelter, 0) == 1, "armor made: " + ModAttachments.ARMOR_MADE.getOrElse(smelter, 0));
 			Village.RADIUS = 0;
 		});
 	}

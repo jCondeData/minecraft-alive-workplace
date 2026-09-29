@@ -33,7 +33,7 @@ public final class BuilderPackages {
 	}
 
 	private static boolean idle(Villager villager) {
-		return !villager.hasAttached(ModAttachments.BUILDER_JOB) && !PathWork.hasPath(villager);
+		return !ModAttachments.BUILDER_JOB.has(villager) && !PathWork.hasPath(villager);
 	}
 
 	private BuilderPackages() {

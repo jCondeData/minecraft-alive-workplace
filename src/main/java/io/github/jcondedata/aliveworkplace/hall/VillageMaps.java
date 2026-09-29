@@ -5,6 +5,7 @@ import io.github.jcondedata.aliveworkplace.blueprint.BlueprintOutline;
 import io.github.jcondedata.aliveworkplace.blueprint.BlueprintStyles;
 import io.github.jcondedata.aliveworkplace.blueprint.Blueprints;
 import io.github.jcondedata.aliveworkplace.build.BuildSiteManager;
+import io.github.jcondedata.aliveworkplace.mc.Ids;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
@@ -131,7 +132,7 @@ public final class VillageMaps {
 			counts.merge(kind.get(), 1, Integer::sum);
 		}
 		CompoundTag tag = new CompoundTag();
-		tag.putString("dimension", level.dimension().location().toString());
+		tag.putString("dimension", Ids.of(level.dimension()).toString());
 		tag.putInt("xCenter", hall.getX());
 		tag.putInt("zCenter", hall.getZ());
 		tag.putByte("scale", (byte) 0);

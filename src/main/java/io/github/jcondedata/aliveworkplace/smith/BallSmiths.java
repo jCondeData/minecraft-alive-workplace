@@ -2,6 +2,7 @@ package io.github.jcondedata.aliveworkplace.smith;
 
 import io.github.jcondedata.aliveworkplace.build.BuilderLevels;
 import io.github.jcondedata.aliveworkplace.build.Friends;
+import io.github.jcondedata.aliveworkplace.mc.Chat;
 import io.github.jcondedata.aliveworkplace.registry.ModAttachments;
 import io.github.jcondedata.aliveworkplace.registry.ModVillagers;
 import io.github.jcondedata.aliveworkplace.work.ChoiceMenu;
@@ -37,7 +38,7 @@ public final class BallSmiths {
 
 	/** The balls this smith has been asked for; empty means anything. */
 	public static List<ResourceLocation> orders(Villager villager) {
-		return villager.getAttachedOrElse(ModAttachments.BALL_ORDERS, List.of());
+		return ModAttachments.BALL_ORDERS.getOrElse(villager, List.of());
 	}
 
 	/** Whether the smith should make this ball. */
@@ -54,17 +55,17 @@ public final class BallSmiths {
 			orders.add(id);
 		}
 		if (orders.isEmpty()) {
-			villager.removeAttached(ModAttachments.BALL_ORDERS);
+			ModAttachments.BALL_ORDERS.remove(villager);
 		} else {
-			villager.setAttached(ModAttachments.BALL_ORDERS, List.copyOf(orders));
+			ModAttachments.BALL_ORDERS.set(villager, List.copyOf(orders));
 		}
 	}
 
 	/** Opens the orders screen (owner, friends and ops only; the first to give orders hires the smith). */
 	public static void openOrders(ServerPlayer player, Villager villager) {
 		if (!Friends.mayCommand(player, villager)) {
-			player.displayClientMessage(Component.translatable("message.aliveworkplace.ball_smith.not_yours", villager.getDisplayName())
-				.withStyle(ChatFormatting.RED), true);
+			Chat.actionBar(player, Component.translatable("message.aliveworkplace.ball_smith.not_yours", villager.getDisplayName())
+				.withStyle(ChatFormatting.RED));
 			return;
 		}
 		Friends.hire(player, villager);

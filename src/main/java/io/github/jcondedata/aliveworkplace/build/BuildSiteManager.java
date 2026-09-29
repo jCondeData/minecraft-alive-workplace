@@ -1,6 +1,8 @@
 package io.github.jcondedata.aliveworkplace.build;
 
 import io.github.jcondedata.aliveworkplace.blueprint.BlueprintData;
+import io.github.jcondedata.aliveworkplace.mc.Ids;
+import io.github.jcondedata.aliveworkplace.mc.Nbt;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -51,7 +53,7 @@ public final class BuildSiteManager extends SavedData {
 	public List<Finished> finishedNear(ServerLevel level, net.minecraft.core.BlockPos pos, int radius) {
 		List<Finished> out = new java.util.ArrayList<>();
 		for (Finished f : finished) {
-			if (f.placement().dimension().equals(level.dimension().location()) && f.placement().origin().distSqr(pos) <= (double) radius * radius) {
+			if (f.placement().dimension().equals(Ids.of(level.dimension())) && f.placement().origin().distSqr(pos) <= (double) radius * radius) {
 				out.add(f);
 			}
 		}
@@ -61,7 +63,7 @@ public final class BuildSiteManager extends SavedData {
 	/** The finished building of {@code structure} whose outline contains {@code pos}, if any. */
 	public java.util.Optional<Finished> finishedAt(ServerLevel level, ResourceLocation structure, net.minecraft.core.BlockPos pos) {
 		for (Finished f : finished) {
-			if (f.structure().equals(structure) && f.placement().dimension().equals(level.dimension().location())) {
+			if (f.structure().equals(structure) && f.placement().dimension().equals(Ids.of(level.dimension()))) {
 				boolean inside = io.github.jcondedata.aliveworkplace.blueprint.BlueprintLibrary.get(level, structure)
 					.map(b -> io.github.jcondedata.aliveworkplace.blueprint.BlueprintOutline.bounds(f.placement(), b.size()).isInside(pos))
 					.orElse(false);
@@ -120,7 +122,7 @@ public final class BuildSiteManager extends SavedData {
 			CompoundTag entry = new CompoundTag();
 			entry.putString("structure", f.structure().toString());
 			entry.put("placement", BlueprintData.Placement.CODEC.encodeStart(net.minecraft.nbt.NbtOps.INSTANCE, f.placement()).getOrThrow());
-			entry.putUUID("owner", f.owner());
+			Nbt.putUuid(entry, "owner", f.owner());
 			done.add(entry);
 		}
 		tag.put("finished", done);
@@ -129,20 +131,20 @@ public final class BuildSiteManager extends SavedData {
 
 	private static BuildSiteManager load(CompoundTag tag, HolderLookup.Provider registries) {
 		BuildSiteManager manager = new BuildSiteManager();
-		ListTag list = tag.getList("sites", Tag.TAG_COMPOUND);
+		ListTag list = Nbt.getList(tag, "sites", Tag.TAG_COMPOUND);
 		for (int i = 0; i < list.size(); i++) {
-			BuildSite site = BuildSite.load(list.getCompound(i));
+			BuildSite site = BuildSite.load(Nbt.compoundAt(list, i));
 			if (site != null) {
 				manager.add(site);
 			}
 		}
-		ListTag done = tag.getList("finished", Tag.TAG_COMPOUND);
+		ListTag done = Nbt.getList(tag, "finished", Tag.TAG_COMPOUND);
 		for (int i = 0; i < done.size(); i++) {
-			CompoundTag entry = done.getCompound(i);
-			ResourceLocation structure = ResourceLocation.tryParse(entry.getString("structure"));
+			CompoundTag entry = Nbt.compoundAt(done, i);
+			ResourceLocation structure = ResourceLocation.tryParse(Nbt.getString(entry, "structure"));
 			var placement = BlueprintData.Placement.CODEC.parse(net.minecraft.nbt.NbtOps.INSTANCE, entry.get("placement")).result();
-			if (structure != null && placement.isPresent() && entry.hasUUID("owner")) {
-				manager.finished.addLast(new Finished(structure, placement.get(), entry.getUUID("owner")));
+			if (structure != null && placement.isPresent() && Nbt.hasUuid(entry, "owner")) {
+				manager.finished.addLast(new Finished(structure, placement.get(), Nbt.getUuid(entry, "owner")));
 			}
 		}
 		manager.setDirty(false);

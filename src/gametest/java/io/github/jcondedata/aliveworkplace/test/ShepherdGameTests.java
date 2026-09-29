@@ -44,7 +44,7 @@ public class ShepherdGameTests implements FabricGameTest {
 				}
 			}
 			helper.assertTrue(wool >= 2, "wool in the chest: " + wool);
-			helper.assertTrue(shepherd.getAttachedOrElse(ModAttachments.ANIMALS_SHEARED, 0) == 2, "sheared " + shepherd.getAttachedOrElse(ModAttachments.ANIMALS_SHEARED, 0));
+			helper.assertTrue(ModAttachments.ANIMALS_SHEARED.getOrElse(shepherd, 0) == 2, "sheared " + ModAttachments.ANIMALS_SHEARED.getOrElse(shepherd, 0));
 		});
 	}
 

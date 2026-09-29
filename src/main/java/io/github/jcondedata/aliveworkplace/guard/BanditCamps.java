@@ -6,6 +6,8 @@ import io.github.jcondedata.aliveworkplace.hall.VillageHallScreen;
 import io.github.jcondedata.aliveworkplace.hall.VillageHalls;
 import io.github.jcondedata.aliveworkplace.hall.VillageNeeds;
 import io.github.jcondedata.aliveworkplace.hall.VillageRanks;
+import io.github.jcondedata.aliveworkplace.mc.Chat;
+import io.github.jcondedata.aliveworkplace.mc.Nbt;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -213,8 +215,8 @@ public final class BanditCamps {
 		data.setDirty();
 		Component where = VillageHallScreen.where(hall, middle);
 		for (ServerPlayer player : players(level, hall)) {
-			player.displayClientMessage(Component.translatable("message.aliveworkplace.bandits.camp", VillageHalls.name(level, hall), where)
-				.withStyle(ChatFormatting.RED), false);
+			Chat.chat(player, Component.translatable("message.aliveworkplace.bandits.camp", VillageHalls.name(level, hall), where)
+				.withStyle(ChatFormatting.RED));
 		}
 		Chronicle.record(level, hall, Chronicle.Kind.RAID, Component.translatable("chronicle.aliveworkplace.bandit_camp", where));
 		AliveWorkplace.LOG.info("Bandits made camp at {} near the village hall at {}", middle, hall);
@@ -308,7 +310,7 @@ public final class BanditCamps {
 		Component who = by instanceof ServerPlayer || by instanceof net.minecraft.world.entity.npc.Villager ? by.getDisplayName() : null;
 		Component name = VillageHalls.name(level, camp.hall());
 		for (ServerPlayer player : players(level, camp.hall())) {
-			player.displayClientMessage(Component.translatable("message.aliveworkplace.bandits.broken_up", name).withStyle(ChatFormatting.GREEN), false);
+			Chat.chat(player, Component.translatable("message.aliveworkplace.bandits.broken_up", name).withStyle(ChatFormatting.GREEN));
 		}
 		Chronicle.record(level, camp.hall(), Chronicle.Kind.RAID, who != null
 			? Component.translatable("chronicle.aliveworkplace.bandit_camp_broken_by", who)
@@ -354,7 +356,7 @@ public final class BanditCamps {
 				CompoundTag c = new CompoundTag();
 				c.putLong("pos", camp.pos().asLong());
 				c.putLong("hall", camp.hall().asLong());
-				c.putUUID("chief", camp.chief());
+				Nbt.putUuid(c, "chief", camp.chief());
 				c.putLong("day", camp.day());
 				list.add(c);
 			}
@@ -372,17 +374,17 @@ public final class BanditCamps {
 
 		static Data load(CompoundTag tag, HolderLookup.Provider registries) {
 			Data data = new Data();
-			ListTag list = tag.getList("camps", Tag.TAG_COMPOUND);
+			ListTag list = Nbt.getList(tag, "camps", Tag.TAG_COMPOUND);
 			for (int i = 0; i < list.size(); i++) {
-				CompoundTag c = list.getCompound(i);
-				if (c.hasUUID("chief")) {
-					Camp camp = new Camp(BlockPos.of(c.getLong("pos")), BlockPos.of(c.getLong("hall")), c.getUUID("chief"), c.getLong("day"));
+				CompoundTag c = Nbt.compoundAt(list, i);
+				if (Nbt.hasUuid(c, "chief")) {
+					Camp camp = new Camp(BlockPos.of(Nbt.getLong(c, "pos")), BlockPos.of(Nbt.getLong(c, "hall")), Nbt.getUuid(c, "chief"), Nbt.getLong(c, "day"));
 					data.camps.put(camp.hall(), camp);
 				}
 			}
-			ListTag cleared = tag.getList("broken_up", Tag.TAG_COMPOUND);
+			ListTag cleared = Nbt.getList(tag, "broken_up", Tag.TAG_COMPOUND);
 			for (int i = 0; i < cleared.size(); i++) {
-				data.lastBrokenUp.put(BlockPos.of(cleared.getCompound(i).getLong("hall")), cleared.getCompound(i).getLong("day"));
+				data.lastBrokenUp.put(BlockPos.of(Nbt.getLong(Nbt.compoundAt(cleared, i), "hall")), Nbt.getLong(Nbt.compoundAt(cleared, i), "day"));
 			}
 			return data;
 		}

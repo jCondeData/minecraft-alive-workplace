@@ -2,6 +2,8 @@ package io.github.jcondedata.aliveworkplace.shop;
 
 import io.github.jcondedata.aliveworkplace.build.Builders;
 import io.github.jcondedata.aliveworkplace.build.SupplyContainers;
+import io.github.jcondedata.aliveworkplace.mc.Chat;
+import io.github.jcondedata.aliveworkplace.mc.Players;
 import io.github.jcondedata.aliveworkplace.registry.ModAttachments;
 import io.github.jcondedata.aliveworkplace.registry.ModVillagers;
 import java.util.List;
@@ -72,7 +74,7 @@ public final class Shops {
 		SupplyContainers.extractMatching(level, chests, goods, goods.getCount());
 		store(level, chests, at, offer.getCostA().copy());
 		store(level, chests, at, offer.getCostB().copy());
-		villager.setAttached(ModAttachments.SHOP_SALES, villager.getAttachedOrElse(ModAttachments.SHOP_SALES, 0) + 1);
+		ModAttachments.SHOP_SALES.set(villager, ModAttachments.SHOP_SALES.getOrElse(villager, 0) + 1);
 		net.minecraft.world.entity.player.Player buyer = villager.getTradingPlayer();
 		counter.logSale(new ShopCounterBlockEntity.Sale(level.getDayTime() / 24000L, buyer == null ? "?" : buyer.getGameProfile().getName(),
 			goods.copy(), 0, offer.getCostA().copy()));
@@ -106,8 +108,8 @@ public final class Shops {
 	/** Opens the shop's own screen (with CobbleDollars installed): the goods in stock, bought with two clicks. */
 	public static void openMenu(net.minecraft.server.level.ServerPlayer player, Villager villager) {
 		if (!(villager.level() instanceof ServerLevel level) || counter(level, villager).isEmpty()) {
-			player.displayClientMessage(net.minecraft.network.chat.Component.translatable("message.aliveworkplace.shop.closed")
-				.withStyle(net.minecraft.ChatFormatting.YELLOW), true);
+			Chat.actionBar(player, net.minecraft.network.chat.Component.translatable("message.aliveworkplace.shop.closed")
+				.withStyle(net.minecraft.ChatFormatting.YELLOW));
 			return;
 		}
 		int[] pending = {-1};
@@ -204,7 +206,7 @@ public final class Shops {
 
 	private static int countLike(net.minecraft.server.level.ServerPlayer player, ItemStack price) {
 		int n = 0;
-		for (ItemStack s : player.getInventory().items) {
+		for (ItemStack s : Players.mainItems(player)) {
 			if (ItemStack.isSameItemSameComponents(s, price)) {
 				n += s.getCount();
 			}
@@ -231,8 +233,8 @@ public final class Shops {
 		BlockPos at = counter.getBlockPos();
 		List<BlockPos> chests = SupplyContainers.find(level, at, null);
 		if (SupplyContainers.countMatching(level, chests, goods) < goods.getCount()) {
-			player.displayClientMessage(net.minecraft.network.chat.Component.translatable("message.aliveworkplace.shop.sold_out", goods.getHoverName())
-				.withStyle(net.minecraft.ChatFormatting.YELLOW), true);
+			Chat.actionBar(player, net.minecraft.network.chat.Component.translatable("message.aliveworkplace.shop.sold_out", goods.getHoverName())
+				.withStyle(net.minecraft.ChatFormatting.YELLOW));
 			return false;
 		}
 		long dollars = dollarPrice(price);
@@ -241,14 +243,14 @@ public final class Shops {
 		boolean tagInEmeralds = !inDollars && PriceTagItem.dollars(price) > 0;
 		if (inDollars || tagInEmeralds) {
 			if (!io.github.jcondedata.aliveworkplace.work.Money.charge(player, dollars, emeraldPrice(price))) {
-				player.displayClientMessage(net.minecraft.network.chat.Component.translatable("message.aliveworkplace.shop.too_poor", priceText(price))
-					.withStyle(net.minecraft.ChatFormatting.RED), true);
+				Chat.actionBar(player, net.minecraft.network.chat.Component.translatable("message.aliveworkplace.shop.too_poor", priceText(price))
+					.withStyle(net.minecraft.ChatFormatting.RED));
 				return false;
 			}
 		} else if (!player.getAbilities().instabuild) {
 			if (countLike(player, price) < price.getCount()) {
-				player.displayClientMessage(net.minecraft.network.chat.Component.translatable("message.aliveworkplace.shop.too_poor", priceText(price))
-					.withStyle(net.minecraft.ChatFormatting.RED), true);
+				Chat.actionBar(player, net.minecraft.network.chat.Component.translatable("message.aliveworkplace.shop.too_poor", priceText(price))
+					.withStyle(net.minecraft.ChatFormatting.RED));
 				return false;
 			}
 			player.getInventory().clearOrCountMatchingItems(s -> ItemStack.isSameItemSameComponents(s, price), price.getCount(),
@@ -269,12 +271,12 @@ public final class Shops {
 		} else {
 			store(level, chests, at, price.copy());
 		}
-		villager.setAttached(ModAttachments.SHOP_SALES, villager.getAttachedOrElse(ModAttachments.SHOP_SALES, 0) + 1);
+		ModAttachments.SHOP_SALES.set(villager, ModAttachments.SHOP_SALES.getOrElse(villager, 0) + 1);
 		counter.logSale(new ShopCounterBlockEntity.Sale(level.getDayTime() / 24000L, player.getGameProfile().getName(), goods,
 			inDollars ? dollars : 0, inDollars ? ItemStack.EMPTY : tagInEmeralds ? new ItemStack(net.minecraft.world.item.Items.EMERALD, emeraldPrice(price)) : price));
 		level.playSound(null, villager, net.minecraft.sounds.SoundEvents.VILLAGER_YES, net.minecraft.sounds.SoundSource.NEUTRAL, 0.6f, 1f);
-		player.displayClientMessage(net.minecraft.network.chat.Component.translatable("message.aliveworkplace.shop.bought",
-			goods.getCount(), goods.getHoverName(), priceText(price)).withStyle(net.minecraft.ChatFormatting.GREEN), true);
+		Chat.actionBar(player, net.minecraft.network.chat.Component.translatable("message.aliveworkplace.shop.bought",
+			goods.getCount(), goods.getHoverName(), priceText(price)).withStyle(net.minecraft.ChatFormatting.GREEN));
 		return true;
 	}
 
@@ -282,8 +284,8 @@ public final class Shops {
 			net.minecraft.network.chat.Component price) {
 		net.minecraft.server.level.ServerPlayer owner = counter.owner() == null ? null : level.getServer().getPlayerList().getPlayer(counter.owner());
 		if (owner != null && owner != buyer) {
-			owner.displayClientMessage(net.minecraft.network.chat.Component.translatable("message.aliveworkplace.shop.owner_sale",
-				buyer.getGameProfile().getName(), goods.getCount(), goods.getHoverName(), price).withStyle(net.minecraft.ChatFormatting.GREEN), true);
+			Chat.actionBar(owner, net.minecraft.network.chat.Component.translatable("message.aliveworkplace.shop.owner_sale",
+				buyer.getGameProfile().getName(), goods.getCount(), goods.getHoverName(), price).withStyle(net.minecraft.ChatFormatting.GREEN));
 		}
 	}
 

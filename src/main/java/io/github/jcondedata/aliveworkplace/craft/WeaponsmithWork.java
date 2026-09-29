@@ -53,9 +53,9 @@ public class WeaponsmithWork extends CrafterWork {
 		}
 		Map<Item, Long> stock = null;
 		long now = level.getGameTime();
-		var boss = villager.getAttached(ModAttachments.BUILDER_EMPLOYER);
+		var boss = ModAttachments.BUILDER_EMPLOYER.get(villager);
 		for (Villager guard : level.getEntitiesOfClass(Villager.class, new AABB(station).inflate(Village.RADIUS),
-				v -> v.isAlive() && Guards.isGuard(v) && Village.sameSide(level, v.getAttached(ModAttachments.BUILDER_EMPLOYER), boss))) {
+				v -> v.isAlive() && Guards.isGuard(v) && Village.sameSide(level, ModAttachments.BUILDER_EMPLOYER.get(v), boss))) {
 			BlockPos post = Builders.benchPos(guard).orElse(null);
 			if (post == null || Guards.isWeapon(guard.getItemBySlot(EquipmentSlot.MAINHAND))) {
 				continue;

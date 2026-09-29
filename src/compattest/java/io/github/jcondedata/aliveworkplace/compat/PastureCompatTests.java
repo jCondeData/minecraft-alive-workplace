@@ -169,7 +169,7 @@ public class PastureCompatTests implements FabricGameTest {
 		helper.setBlock(desk, ModBlocks.POSTAL_DESK);
 		Villager postman = helper.spawn(EntityType.VILLAGER, new BlockPos(3, 2, 3));
 		Jobs.employ(level, postman, helper.absolutePos(desk), ModVillagers.POSTAL_DESK_POI, ModVillagers.POSTMAN);
-		postman.setAttached(ModAttachments.COURIER_ROUTES, List.of(new RouteData(Optional.of(pasture), Optional.of(helper.absolutePos(drop)), List.of())));
+		ModAttachments.COURIER_ROUTES.set(postman, List.of(new RouteData(Optional.of(pasture), Optional.of(helper.absolutePos(drop)), List.of())));
 		Container target = helper.getBlockEntity(drop);
 		helper.succeedWhen(() -> {
 			helper.assertTrue(target.countItem(CobblemonItems.ORAN_BERRY) == 20, target.countItem(CobblemonItems.ORAN_BERRY) + " berries delivered");
@@ -230,7 +230,7 @@ public class PastureCompatTests implements FabricGameTest {
 		helper.succeedWhen(() -> {
 			var entity = wooloo.getEntity();
 			helper.assertTrue(entity != null && !entity.readyForShearing(), "the Wooloo isn't sheared");
-			helper.assertTrue(shepherd.getAttachedOrElse(ModAttachments.ANIMALS_SHEARED, 0) >= 1, "nothing sheared");
+			helper.assertTrue(ModAttachments.ANIMALS_SHEARED.getOrElse(shepherd, 0) >= 1, "nothing sheared");
 		});
 	}
 
@@ -270,8 +270,8 @@ public class PastureCompatTests implements FabricGameTest {
 			helper.assertTrue(milk == 5, "milk buckets: " + milk);
 			helper.assertTrue(feathers, "no feathers from the Pidgey");
 			helper.assertTrue(wornBrush, "the brush isn't back, worn");
-			helper.assertTrue(butcher.getAttachedOrElse(ModAttachments.POKEMON_TENDED, 0) >= 2, "chores done: "
-				+ butcher.getAttachedOrElse(ModAttachments.POKEMON_TENDED, 0));
+			helper.assertTrue(ModAttachments.POKEMON_TENDED.getOrElse(butcher, 0) >= 2, "chores done: "
+				+ ModAttachments.POKEMON_TENDED.getOrElse(butcher, 0));
 		});
 	}
 	/** A rancher grooms a pastured Eevee once a day, with an Oran Berry from the chest as a treat: friendship goes up. */
@@ -294,8 +294,8 @@ public class PastureCompatTests implements FabricGameTest {
 		helper.succeedWhen(() -> {
 			helper.assertTrue(eevee.getFriendship() == before + groomed, "friendship " + before + " -> " + eevee.getFriendship());
 			helper.assertTrue(chest.countItem(CobblemonItems.ORAN_BERRY) == 2, "berries left: " + chest.countItem(CobblemonItems.ORAN_BERRY));
-			helper.assertTrue(rancher.getAttachedOrElse(ModAttachments.POKEMON_TENDED, 0) == 1, "groomed: "
-				+ rancher.getAttachedOrElse(ModAttachments.POKEMON_TENDED, 0));
+			helper.assertTrue(ModAttachments.POKEMON_TENDED.getOrElse(rancher, 0) == 1, "groomed: "
+				+ ModAttachments.POKEMON_TENDED.getOrElse(rancher, 0));
 		});
 	}
 }

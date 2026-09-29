@@ -120,7 +120,7 @@ public class FieldWork extends Behavior<Villager> {
 
 	@Override
 	protected boolean checkExtraStartConditions(ServerLevel level, Villager villager) {
-		if (!villager.hasAttached(ModAttachments.FARM_FIELD) && (villager.tickCount + villager.getId()) % Fields.ADOPT_EVERY == 0) {
+		if (!ModAttachments.FARM_FIELD.has(villager) && (villager.tickCount + villager.getId()) % Fields.ADOPT_EVERY == 0) {
 			Fields.adoptOwnFarm(level, villager);
 		}
 		return canWork(villager);
@@ -132,7 +132,7 @@ public class FieldWork extends Behavior<Villager> {
 	}
 
 	private static boolean canWork(Villager villager) {
-		return !villager.isSleeping() && villager.hasAttached(ModAttachments.FARM_FIELD) && Builders.benchPos(villager).isPresent();
+		return !villager.isSleeping() && ModAttachments.FARM_FIELD.has(villager) && Builders.benchPos(villager).isPresent();
 	}
 
 	@Override
@@ -150,13 +150,13 @@ public class FieldWork extends Behavior<Villager> {
 
 	@Override
 	protected void tick(ServerLevel level, Villager villager, long gameTime) {
-		FieldJob job = villager.getAttached(ModAttachments.FARM_FIELD);
+		FieldJob job = ModAttachments.FARM_FIELD.get(villager);
 		BlockPos station = Builders.benchPos(villager).orElse(null);
 		if (job == null || station == null) {
 			return;
 		}
 		BoundingBox field = job.box();
-		BuilderBag bag = villager.getAttachedOrCreate(ModAttachments.BUILDER_BAG);
+		BuilderBag bag = ModAttachments.BUILDER_BAG.getOrCreate(villager);
 
 		// 1. Harvest goes to the chests when the bag fills up, and after every round of the field.
 		if (depositDue || bag.freeSlots() < 3) {
@@ -485,12 +485,12 @@ public class FieldWork extends Behavior<Villager> {
 			}
 		}
 		level.playSound(null, pos, SoundEvents.CROP_BREAK, SoundSource.BLOCKS, 0.8f, 1f);
-		FieldJob job = villager.getAttached(ModAttachments.FARM_FIELD);
+		FieldJob job = ModAttachments.FARM_FIELD.get(villager);
 		if (job != null && job.adopted()) {
 			keepFood(villager, bag); // a village's own farmer feeds the village; a player's field all goes to the chests
 		}
-		int harvested = villager.getAttachedOrElse(ModAttachments.FARM_HARVESTED, 0) + 1;
-		villager.setAttached(ModAttachments.FARM_HARVESTED, harvested);
+		int harvested = ModAttachments.FARM_HARVESTED.getOrElse(villager, 0) + 1;
+		ModAttachments.FARM_HARVESTED.set(villager, harvested);
 		if (harvested % HARVESTS_PER_XP == 0) {
 			BuilderLevels.addXp(level, villager, 1, null);
 		}
@@ -826,7 +826,7 @@ public class FieldWork extends Behavior<Villager> {
 		} else {
 			io.github.jcondedata.aliveworkplace.work.Requests.clear(villager);
 		}
-		int harvested = villager.getAttachedOrElse(ModAttachments.FARM_HARVESTED, 0);
+		int harvested = ModAttachments.FARM_HARVESTED.getOrElse(villager, 0);
 		Component title = Component.translatable("message.aliveworkplace.field.title", field.getXSpan(), field.getZSpan(), harvested);
 		Component line = Component.translatable("message.aliveworkplace.field.state." + phase.name().toLowerCase())
 			.withStyle(phase == Phase.NEEDS_SEEDS ? ChatFormatting.YELLOW : ChatFormatting.GRAY);

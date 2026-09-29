@@ -57,8 +57,8 @@ public class GraveGameTests implements net.fabricmc.fabric.api.gametest.v1.Fabri
 				"back as " + back.getVillagerData());
 			helper.assertTrue(back.getCustomName() != null && back.getCustomName().getString().equals("Mira"), "the name is lost");
 			helper.assertTrue(chest.countItem(Items.GOLDEN_APPLE) == 1, "golden apples left: " + chest.countItem(Items.GOLDEN_APPLE));
-			helper.assertTrue(undertaker.getAttachedOrElse(ModAttachments.VILLAGERS_REVIVED, 0) == 1, "revived: "
-				+ undertaker.getAttachedOrElse(ModAttachments.VILLAGERS_REVIVED, 0));
+			helper.assertTrue(ModAttachments.VILLAGERS_REVIVED.getOrElse(undertaker, 0) == 1, "revived: "
+				+ ModAttachments.VILLAGERS_REVIVED.getOrElse(undertaker, 0));
 		});
 	}
 

@@ -167,8 +167,7 @@ public class MinerGameTests implements FabricGameTest {
 			helper.assertTrue(stretched != null && stretched.looksStretched(), "the old quarry should look stretched");
 			QuarrySiteManager.get(s.level()).remove(s.site().id());
 			QuarrySiteManager.get(s.level()).restore(stretched);
-			s.miner().setAttached(io.github.jcondedata.aliveworkplace.registry.ModAttachments.MINER_JOB,
-				new io.github.jcondedata.aliveworkplace.build.BuilderJob(stretched.id(), false));
+			io.github.jcondedata.aliveworkplace.registry.ModAttachments.MINER_JOB.set(s.miner(), new io.github.jcondedata.aliveworkplace.build.BuilderJob(stretched.id(), false));
 			helper.assertTrue(Miners.activeSite(s.level(), s.miner()) == null, "the stretched quarry is still going");
 			helper.assertTrue(QuarrySiteManager.get(s.level()).get(stretched.id()) == null, "the stretched quarry wasn't removed");
 		}

@@ -1,5 +1,7 @@
 package io.github.jcondedata.aliveworkplace.work;
 
+import io.github.jcondedata.aliveworkplace.mc.Rules;
+import io.github.jcondedata.aliveworkplace.platform.Platform;
 import io.github.jcondedata.aliveworkplace.blueprint.BlueprintLibrary;
 import io.github.jcondedata.aliveworkplace.blueprint.BlueprintOutline;
 import io.github.jcondedata.aliveworkplace.build.BuildSite;
@@ -12,7 +14,6 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.TicketType;
@@ -36,8 +37,8 @@ public final class KeepLoaded {
 	private static final int MAX_CHUNKS_PER_JOB = 36;
 
 	public static void init() {
-		ServerTickEvents.END_WORLD_TICK.register(level -> {
-			if (level.getGameTime() % EVERY == 0 && level.getGameRules().getBoolean(ModGameRules.KEEP_WORK_LOADED)) {
+		Platform.get().onLevelTick(level -> {
+			if (level.getGameTime() % EVERY == 0 && Rules.on(level, ModGameRules.KEEP_WORK_LOADED)) {
 				for (ChunkPos chunk : chunksToKeep(level)) {
 					level.getChunkSource().addRegionTicket(WORK, chunk, DISTANCE, chunk);
 				}

@@ -72,7 +72,7 @@ public final class Village {
 
 	/** Whether {@code taker} may help themselves to {@code giver}'s chests. */
 	public static boolean sharesWith(ServerLevel level, Villager taker, Villager giver) {
-		return sameSide(level, taker.getAttached(ModAttachments.BUILDER_EMPLOYER), giver.getAttached(ModAttachments.BUILDER_EMPLOYER));
+		return sameSide(level, ModAttachments.BUILDER_EMPLOYER.get(taker), ModAttachments.BUILDER_EMPLOYER.get(giver));
 	}
 
 	/**
@@ -95,7 +95,7 @@ public final class Village {
 		double radiusSqr = (double) RADIUS * RADIUS;
 		for (Villager v : level.getEntitiesOfClass(Villager.class, new AABB(pos).inflate(RADIUS + 16), v -> v.isAlive() && takesPart(v))) {
 			BlockPos theirs = Builders.benchPos(v).orElse(null);
-			if (theirs != null && theirs.distSqr(pos) <= radiusSqr && sameSide(level, boss, v.getAttached(ModAttachments.BUILDER_EMPLOYER))) {
+			if (theirs != null && theirs.distSqr(pos) <= radiusSqr && sameSide(level, boss, ModAttachments.BUILDER_EMPLOYER.get(v))) {
 				out.add(v);
 			}
 		}

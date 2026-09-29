@@ -22,12 +22,12 @@ public class TravelTicketItem extends Item {
 	@Override
 	public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
 		ItemStack stack = player.getItemInHand(hand);
-		if (!level.isClientSide && player instanceof ServerPlayer serverPlayer) {
+		if (!level.isClientSide() && player instanceof ServerPlayer serverPlayer) {
 			if (Ferrymen.travel(serverPlayer, stack) && !player.getAbilities().instabuild) {
 				stack.shrink(1);
 			}
 		}
-		return InteractionResultHolder.sidedSuccess(stack, level.isClientSide);
+		return InteractionResultHolder.sidedSuccess(stack, level.isClientSide());
 	}
 
 	@Override

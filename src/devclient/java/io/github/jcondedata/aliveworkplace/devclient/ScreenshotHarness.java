@@ -900,7 +900,7 @@ public class ScreenshotHarness implements ClientModInitializer {
 		if (tick > 60 && tick % 10 == 0 && doneAt < 0 && (tick < 150 || tick > 185)) {
 			shot(mc, String.format("frame_%03d", frame++));
 			server.execute(() -> allDone.set(keeper != null
-				&& keeper.getAttachedOrElse(io.github.jcondedata.aliveworkplace.registry.ModAttachments.FRUIT_PICKED, 0) >= orchardFruit));
+				&& io.github.jcondedata.aliveworkplace.registry.ModAttachments.FRUIT_PICKED.getOrElse(keeper, 0) >= orchardFruit));
 			if (allDone.get()) {
 				doneAt = tick;
 			}
@@ -959,7 +959,7 @@ public class ScreenshotHarness implements ClientModInitializer {
 		if (tick > 60 && tick % 10 == 0 && doneAt < 0) {
 			shot(mc, String.format("frame_%03d", frame++));
 			server.execute(() -> allDone.set(lumberjack != null
-				&& lumberjack.getAttachedOrElse(io.github.jcondedata.aliveworkplace.registry.ModAttachments.TREES_FELLED, 0) >= FOREST_TREES));
+				&& io.github.jcondedata.aliveworkplace.registry.ModAttachments.TREES_FELLED.getOrElse(lumberjack, 0) >= FOREST_TREES));
 			if (allDone.get()) {
 				doneAt = tick;
 			}
@@ -1158,7 +1158,7 @@ public class ScreenshotHarness implements ClientModInitializer {
 			server.execute(() -> hover(server.getPlayerList().getPlayers().get(0), new Vec3(7.5, -58.2, 4.2), 100, 16));
 		}
 		if (doneAt > 0 && tick > doneAt + 80 && tick % 5 == 0 && trainedAt < 0 && guardForShot != null
-			&& guardForShot.getAttachedOrElse(io.github.jcondedata.aliveworkplace.registry.ModAttachments.DUMMY_HITS, 0) >= 2) {
+			&& io.github.jcondedata.aliveworkplace.registry.ModAttachments.DUMMY_HITS.getOrElse(guardForShot, 0) >= 2) {
 			trainedAt = tick;
 		}
 		if (trainedAt > 0 && tick > trainedAt && tick <= trainedAt + 40 && tick % 4 == 0) {
@@ -1213,7 +1213,7 @@ public class ScreenshotHarness implements ClientModInitializer {
 				io.github.jcondedata.aliveworkplace.work.Jobs.employ(level, postman, desk,
 					io.github.jcondedata.aliveworkplace.registry.ModVillagers.POSTAL_DESK_POI, io.github.jcondedata.aliveworkplace.registry.ModVillagers.POSTMAN);
 				hover(player, new Vec3(4.5, -58, 3.5), 170, 30); // within reach, or the menu closes at once
-				player.openMenu(box);
+				io.github.jcondedata.aliveworkplace.platform.Platform.get().openMenu(player, box, box.getBlockPos());
 			});
 		}
 		if (tick == 80 && mc.screen instanceof io.github.jcondedata.aliveworkplace.client.MailboxScreen) {

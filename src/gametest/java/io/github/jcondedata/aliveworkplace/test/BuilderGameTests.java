@@ -79,7 +79,7 @@ public class BuilderGameTests implements FabricGameTest {
 			Container chest = helper.getBlockEntity(CHEST);
 			helper.assertTrue(chest.countItem(Items.OAK_PLANKS) == 0, "planks left in chest: " + chest.countItem(Items.OAK_PLANKS));
 			helper.assertTrue(chest.countItem(ModItems.BLUEPRINT) == 1, "blueprint was not returned to the chest");
-			helper.assertTrue(!s.villager().hasAttached(ModAttachments.BUILDER_JOB), "villager still has a job");
+			helper.assertTrue(!ModAttachments.BUILDER_JOB.has(s.villager()), "villager still has a job");
 		});
 	}
 
@@ -295,9 +295,9 @@ public class BuilderGameTests implements FabricGameTest {
 		fill(helper.getBlockEntity(minersChest), hutMaterials());
 		Villager miner = helper.spawn(EntityType.VILLAGER, new BlockPos(13, 2, 3));
 		io.github.jcondedata.aliveworkplace.mine.Miners.employ(helper.getLevel(), miner, helper.absolutePos(minersBench));
-		miner.setAttached(ModAttachments.BUILDER_EMPLOYER, new io.github.jcondedata.aliveworkplace.build.Employer(java.util.UUID.randomUUID(), "Bea"));
+		ModAttachments.BUILDER_EMPLOYER.set(miner, new io.github.jcondedata.aliveworkplace.build.Employer(java.util.UUID.randomUUID(), "Bea"));
 		Setup s = setup(helper, TEST_HUT, HUT_ORIGIN, Rotation.NONE);
-		s.villager().setAttached(ModAttachments.BUILDER_EMPLOYER, new io.github.jcondedata.aliveworkplace.build.Employer(java.util.UUID.randomUUID(), "Al"));
+		ModAttachments.BUILDER_EMPLOYER.set(s.villager(), new io.github.jcondedata.aliveworkplace.build.Employer(java.util.UUID.randomUUID(), "Al"));
 		helper.assertFalse(io.github.jcondedata.aliveworkplace.work.Village.sharesWith(helper.getLevel(), s.villager(), miner), "strangers' workers share");
 		helper.runAfterDelay(300, () -> {
 			helper.assertTrue(s.site().status() == BuildSite.Status.WAITING_FOR_MATERIALS, "the builder should wait, not " + s.site().status());
@@ -384,7 +384,7 @@ public class BuilderGameTests implements FabricGameTest {
 			assertBuilt(helper, s);
 			Container chest = helper.getBlockEntity(CHEST);
 			helper.assertTrue(chest.countItem(Items.OAK_DOOR) == 2, "the two spare doors should be in the chest, not " + chest.countItem(Items.OAK_DOOR));
-			helper.assertTrue(carpenter.getAttachedOrElse(ModAttachments.ITEMS_CRAFTED, 0) == 3, "the carpenter made " + carpenter.getAttachedOrElse(ModAttachments.ITEMS_CRAFTED, 0));
+			helper.assertTrue(ModAttachments.ITEMS_CRAFTED.getOrElse(carpenter, 0) == 3, "the carpenter made " + ModAttachments.ITEMS_CRAFTED.getOrElse(carpenter, 0));
 			io.github.jcondedata.aliveworkplace.work.Village.RADIUS = 0;
 		});
 	}
@@ -412,7 +412,7 @@ public class BuilderGameTests implements FabricGameTest {
 			VillagerProfession.MASON);
 		helper.succeedWhen(() -> {
 			assertBuilt(helper, s);
-			helper.assertTrue(mason.getAttachedOrElse(ModAttachments.ITEMS_CRAFTED, 0) == 3, "the mason cut " + mason.getAttachedOrElse(ModAttachments.ITEMS_CRAFTED, 0));
+			helper.assertTrue(ModAttachments.ITEMS_CRAFTED.getOrElse(mason, 0) == 3, "the mason cut " + ModAttachments.ITEMS_CRAFTED.getOrElse(mason, 0));
 			io.github.jcondedata.aliveworkplace.work.Village.RADIUS = 0;
 		});
 	}
@@ -443,7 +443,7 @@ public class BuilderGameTests implements FabricGameTest {
 			Container chest = helper.getBlockEntity(CHEST);
 			helper.assertTrue(chest.countItem(Items.IRON_BARS) == 13, "the 13 spare bars should be in the chest, not " + chest.countItem(Items.IRON_BARS));
 			helper.assertTrue(chest.countItem(Items.RAW_IRON) == 0 && chest.countItem(Items.COAL) == 0, "the ore and the coal should be used up");
-			helper.assertTrue(tinkerer.getAttachedOrElse(ModAttachments.ITEMS_CRAFTED, 0) == 16, "the tinkerer made " + tinkerer.getAttachedOrElse(ModAttachments.ITEMS_CRAFTED, 0));
+			helper.assertTrue(ModAttachments.ITEMS_CRAFTED.getOrElse(tinkerer, 0) == 16, "the tinkerer made " + ModAttachments.ITEMS_CRAFTED.getOrElse(tinkerer, 0));
 			io.github.jcondedata.aliveworkplace.work.Village.RADIUS = 0;
 		});
 	}
@@ -474,7 +474,7 @@ public class BuilderGameTests implements FabricGameTest {
 			VillagerProfession.MASON);
 		helper.succeedWhen(() -> {
 			assertBuilt(helper, s);
-			helper.assertTrue(mason.getAttachedOrElse(ModAttachments.ITEMS_CRAFTED, 0) == 6, "the mason made " + mason.getAttachedOrElse(ModAttachments.ITEMS_CRAFTED, 0));
+			helper.assertTrue(ModAttachments.ITEMS_CRAFTED.getOrElse(mason, 0) == 6, "the mason made " + ModAttachments.ITEMS_CRAFTED.getOrElse(mason, 0));
 		});
 	}
 
@@ -506,7 +506,7 @@ public class BuilderGameTests implements FabricGameTest {
 			VillagerProfession.MASON);
 		helper.succeedWhen(() -> {
 			assertBuilt(helper, s);
-			helper.assertTrue(mason.getAttachedOrElse(ModAttachments.ITEMS_CRAFTED, 0) == 3, "the mason made " + mason.getAttachedOrElse(ModAttachments.ITEMS_CRAFTED, 0));
+			helper.assertTrue(ModAttachments.ITEMS_CRAFTED.getOrElse(mason, 0) == 3, "the mason made " + ModAttachments.ITEMS_CRAFTED.getOrElse(mason, 0));
 		});
 	}
 
@@ -536,7 +536,7 @@ public class BuilderGameTests implements FabricGameTest {
 			VillagerProfession.LEATHERWORKER);
 		helper.succeedWhen(() -> {
 			assertBuilt(helper, s);
-			helper.assertTrue(dyer.getAttachedOrElse(ModAttachments.ITEMS_CRAFTED, 0) == 6, "the dyer made " + dyer.getAttachedOrElse(ModAttachments.ITEMS_CRAFTED, 0));
+			helper.assertTrue(ModAttachments.ITEMS_CRAFTED.getOrElse(dyer, 0) == 6, "the dyer made " + ModAttachments.ITEMS_CRAFTED.getOrElse(dyer, 0));
 			io.github.jcondedata.aliveworkplace.work.Village.RADIUS = 0;
 		});
 	}
@@ -608,7 +608,7 @@ public class BuilderGameTests implements FabricGameTest {
 			assertBuilt(helper, s);
 			helper.assertTrue(helper.getBlockState(middle).getFluidState().isSource(), "no still water in the middle: " + helper.getBlockState(middle));
 			Container chest = helper.getBlockEntity(CHEST);
-			int buckets = chest.countItem(Items.BUCKET) + s.villager().getAttachedOrCreate(ModAttachments.BUILDER_BAG).count(Items.BUCKET);
+			int buckets = chest.countItem(Items.BUCKET) + ModAttachments.BUILDER_BAG.getOrCreate(s.villager()).count(Items.BUCKET);
 			helper.assertTrue(buckets == 1, "the empty bucket went missing (" + buckets + ")");
 			helper.assertTrue(chest.countItem(Items.WATER_BUCKET) == 0, "the water bucket wasn't used");
 		});
@@ -828,7 +828,7 @@ public class BuilderGameTests implements FabricGameTest {
 		helper.runAfterDelay(120, () -> Builders.cancel(s.level(), s.site()));
 		helper.succeedWhen(() -> {
 			helper.assertTrue(BuildSiteManager.get(s.level()).get(s.site().id()) == null, "site still exists");
-			helper.assertTrue(!s.villager().hasAttached(ModAttachments.BUILDER_JOB), "villager still has the job");
+			helper.assertTrue(!ModAttachments.BUILDER_JOB.has(s.villager()), "villager still has the job");
 			Container chest = helper.getBlockEntity(CHEST);
 			helper.assertTrue(chest.countItem(ModItems.BLUEPRINT) == 1, "blueprint not returned");
 		});
@@ -1007,18 +1007,18 @@ public class BuilderGameTests implements FabricGameTest {
 		BuildSiteManager.get(level).recordFinished(wall, placement, builder.getUUID());
 		helper.runAfterDelay(2, () -> {
 			// (the builder may have looked already)
-			var site = builder.hasAttached(ModAttachments.BUILDER_JOB) ? io.github.jcondedata.aliveworkplace.build.Builders.activeSite(level, builder)
+			var site = ModAttachments.BUILDER_JOB.has(builder) ? io.github.jcondedata.aliveworkplace.build.Builders.activeSite(level, builder)
 				: io.github.jcondedata.aliveworkplace.build.Upkeep.look(level, builder);
 			helper.assertTrue(site != null && site.isRepair(), "no repair started");
 		});
 		helper.succeedWhen(() -> {
 			helper.assertBlockPresent(Blocks.OAK_PLANKS, src.offset(1, 0, 0));
 			helper.assertBlockPresent(Blocks.STONE, src.offset(2, 0, 0));
-			helper.assertFalse(builder.hasAttached(ModAttachments.BUILDER_JOB), "still repairing");
+			helper.assertFalse(ModAttachments.BUILDER_JOB.has(builder), "still repairing");
 			helper.assertTrue(chest.countItem(Items.OAK_PLANKS) == 3, "planks left: " + chest.countItem(Items.OAK_PLANKS));
 			helper.assertTrue(chest.countItem(io.github.jcondedata.aliveworkplace.registry.ModItems.BLUEPRINT) == 0, "a blueprint was handed out");
 			helper.assertTrue(io.github.jcondedata.aliveworkplace.build.Upkeep.look(level, builder) == null
-				|| !builder.hasAttached(ModAttachments.BUILDER_JOB), "nothing left to repair");
+				|| !ModAttachments.BUILDER_JOB.has(builder), "nothing left to repair");
 		});
 	}
 
@@ -1190,7 +1190,7 @@ public class BuilderGameTests implements FabricGameTest {
 		net.minecraft.server.level.ServerPlayer boss = helper.makeMockServerPlayerInLevel();
 		net.minecraft.server.level.ServerPlayer stranger = helper.makeMockServerPlayerInLevel();
 		helper.assertTrue(io.github.jcondedata.aliveworkplace.build.Friends.mayCommand(stranger, villager), "an unhired builder takes anyone's orders");
-		villager.setAttached(ModAttachments.BUILDER_EMPLOYER, new io.github.jcondedata.aliveworkplace.build.Employer(boss.getUUID(), "boss"));
+		ModAttachments.BUILDER_EMPLOYER.set(villager, new io.github.jcondedata.aliveworkplace.build.Employer(boss.getUUID(), "boss"));
 		helper.assertTrue(io.github.jcondedata.aliveworkplace.build.Friends.mayCommand(boss, villager), "the employer must be obeyed");
 		helper.assertFalse(io.github.jcondedata.aliveworkplace.build.Friends.mayCommand(stranger, villager), "a stranger must not give orders");
 
@@ -1280,7 +1280,7 @@ public class BuilderGameTests implements FabricGameTest {
 			int byLead = s.site().placedBy(s.villager().getUUID(), false);
 			helper.assertTrue(byMate >= 5, "the helper placed only " + byMate + " block(s), the lead " + byLead);
 			helper.assertFalse(Builders.isHelping(mate), "the helper should stop once the build is done");
-			helper.assertTrue(mate.getAttachedOrCreate(ModAttachments.BUILDER_BAG).isEmpty(), "the helper kept materials");
+			helper.assertTrue(ModAttachments.BUILDER_BAG.getOrCreate(mate).isEmpty(), "the helper kept materials");
 		});
 	}
 
@@ -1585,8 +1585,8 @@ public class BuilderGameTests implements FabricGameTest {
 		Setup s = setup(helper, TEST_HUT, HUT_ORIGIN, Rotation.NONE, hutMaterials());
 		helper.succeedWhen(() -> {
 			helper.assertTrue(BuildSiteManager.get(s.level()).get(s.site().id()) == null, "still building");
-			helper.assertTrue(!s.villager().hasAttached(ModAttachments.PATH), "still laying the path: "
-				+ s.villager().getAttachedOrElse(ModAttachments.PATH, java.util.List.of()).size() + " to go");
+			helper.assertTrue(!ModAttachments.PATH.has(s.villager()), "still laying the path: "
+				+ ModAttachments.PATH.getOrElse(s.villager(), java.util.List.of()).size() + " to go");
 			int path = 0;
 			for (int x = 0; x < 17; x++) {
 				for (int z = 0; z < 17; z++) {

@@ -5,6 +5,9 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.jcondedata.aliveworkplace.AliveWorkplace;
 import io.github.jcondedata.aliveworkplace.blueprint.io.BlueprintFiles;
 import io.github.jcondedata.aliveworkplace.blueprint.io.BlueprintImporter;
+import io.github.jcondedata.aliveworkplace.mc.Chat;
+import io.github.jcondedata.aliveworkplace.mc.Lookup;
+import io.github.jcondedata.aliveworkplace.mc.Players;
 import io.github.jcondedata.aliveworkplace.registry.ModComponents;
 import io.github.jcondedata.aliveworkplace.registry.ModItems;
 import io.github.jcondedata.aliveworkplace.work.ChoiceMenu;
@@ -299,8 +302,8 @@ public final class Shapes {
 			s.block().getBlock().getName()).withStyle(ChatFormatting.GRAY))));
 		menu.button(INFO, info, null);
 		menu.button(DRAW, label(new ItemStack(ModItems.BLANK_BLUEPRINT), Component.translatable("screen.aliveworkplace.shapes.draw"), true), p -> {
-			Component result = draw(player.serverLevel(), player, current(player, hand));
-			player.displayClientMessage(result, false);
+			Component result = draw(Players.level(player), player, current(player, hand));
+			Chat.chat(player, result);
 			player.closeContainer();
 		});
 	}
@@ -371,7 +374,7 @@ public final class Shapes {
 		StructureTemplateManager manager = level.getServer().getStructureManager();
 		if (manager.get(id).isEmpty()) {
 			StructureTemplate template = manager.getOrCreate(id);
-			template.load(BuiltInRegistries.BLOCK.asLookup(), BlueprintFiles.toStructureNbt(blueprint(id, settings)));
+			template.load(Lookup.lookup(BuiltInRegistries.BLOCK), BlueprintFiles.toStructureNbt(blueprint(id, settings)));
 			template.setAuthor(player.getGameProfile().getName());
 			if (!manager.save(id)) {
 				manager.remove(id);

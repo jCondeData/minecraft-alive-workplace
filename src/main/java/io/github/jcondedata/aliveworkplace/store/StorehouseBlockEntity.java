@@ -1,6 +1,8 @@
 package io.github.jcondedata.aliveworkplace.store;
 
 import io.github.jcondedata.aliveworkplace.build.Employer;
+import io.github.jcondedata.aliveworkplace.mc.Lookup;
+import io.github.jcondedata.aliveworkplace.mc.Nbt;
 import io.github.jcondedata.aliveworkplace.registry.ModBlocks;
 import java.util.UUID;
 import net.minecraft.core.BlockPos;
@@ -46,14 +48,14 @@ public class StorehouseBlockEntity extends BlockEntity {
 	@Override
 	protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
 		super.loadAdditional(tag, registries);
-		owner = tag.hasUUID("owner") ? tag.getUUID("owner") : null;
-		ownerName = tag.getString("ownerName");
+		owner = Nbt.hasUuid(tag, "owner") ? Nbt.getUuid(tag, "owner") : null;
+		ownerName = Nbt.getString(tag, "ownerName");
 		orders = new java.util.LinkedHashMap<>();
-		for (net.minecraft.nbt.Tag t : tag.getList("orders", net.minecraft.nbt.Tag.TAG_COMPOUND)) {
+		for (net.minecraft.nbt.Tag t : Nbt.getList(tag, "orders", net.minecraft.nbt.Tag.TAG_COMPOUND)) {
 			CompoundTag order = (CompoundTag) t;
-			net.minecraft.resources.ResourceLocation id = net.minecraft.resources.ResourceLocation.tryParse(order.getString("item"));
+			net.minecraft.resources.ResourceLocation id = net.minecraft.resources.ResourceLocation.tryParse(Nbt.getString(order, "item"));
 			if (id != null && net.minecraft.core.registries.BuiltInRegistries.ITEM.containsKey(id)) {
-				orders.put(net.minecraft.core.registries.BuiltInRegistries.ITEM.get(id), Math.max(1, order.getInt("keep")));
+				orders.put(Lookup.value(net.minecraft.core.registries.BuiltInRegistries.ITEM, id), Math.max(1, Nbt.getInt(order, "keep")));
 			}
 		}
 	}
@@ -62,7 +64,7 @@ public class StorehouseBlockEntity extends BlockEntity {
 	protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
 		super.saveAdditional(tag, registries);
 		if (owner != null) {
-			tag.putUUID("owner", owner);
+			Nbt.putUuid(tag, "owner", owner);
 			tag.putString("ownerName", ownerName);
 		}
 		if (!orders.isEmpty()) {

@@ -28,7 +28,7 @@ public final class MinerPackages {
 	}
 
 	private static boolean idle(Villager villager) {
-		return !villager.hasAttached(ModAttachments.MINER_JOB);
+		return !ModAttachments.MINER_JOB.has(villager);
 	}
 
 	private MinerPackages() {

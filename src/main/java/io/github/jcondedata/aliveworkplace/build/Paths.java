@@ -67,9 +67,9 @@ public final class Paths {
 			}
 		}
 		if (!path.isEmpty()) {
-			List<BlockPos> all = new ArrayList<>(builder.getAttachedOrElse(ModAttachments.PATH, List.of()));
+			List<BlockPos> all = new ArrayList<>(ModAttachments.PATH.getOrElse(builder, List.of()));
 			all.addAll(path);
-			builder.setAttached(ModAttachments.PATH, List.copyOf(all));
+			ModAttachments.PATH.set(builder, List.copyOf(all));
 		}
 	}
 

@@ -1,6 +1,8 @@
 package io.github.jcondedata.aliveworkplace.grave;
 
 import com.mojang.serialization.MapCodec;
+import io.github.jcondedata.aliveworkplace.mc.Chat;
+import io.github.jcondedata.aliveworkplace.mc.Interact;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionResult;
@@ -75,9 +77,9 @@ public class GraveBlock extends BaseEntityBlock {
 
 	@Override
 	protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
-		if (!level.isClientSide && level.getBlockEntity(pos) instanceof GraveBlockEntity grave) {
-			player.displayClientMessage(Graves.epitaph(grave), false);
+		if (!level.isClientSide() && level.getBlockEntity(pos) instanceof GraveBlockEntity grave) {
+			Chat.chat(player, Graves.epitaph(grave));
 		}
-		return InteractionResult.sidedSuccess(level.isClientSide);
+		return Interact.success(level.isClientSide());
 	}
 }

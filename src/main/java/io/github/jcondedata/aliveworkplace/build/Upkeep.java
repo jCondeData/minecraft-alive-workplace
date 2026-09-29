@@ -41,7 +41,7 @@ public final class Upkeep {
 
 		@Override
 		protected boolean checkExtraStartConditions(ServerLevel level, Villager villager) {
-			if (!ENABLED || !Builders.isBuilder(villager) || villager.hasAttached(ModAttachments.BUILDER_JOB) || Builders.isHelping(villager)) {
+			if (!ENABLED || !Builders.isBuilder(villager) || ModAttachments.BUILDER_JOB.has(villager) || Builders.isHelping(villager)) {
 				return false;
 			}
 			long now = level.getGameTime();
@@ -61,7 +61,7 @@ public final class Upkeep {
 
 	/** Whose buildings {@code builder} looks after: their employer's (and friends'), or their own if nobody hired them. */
 	static boolean looksAfter(ServerLevel level, Villager builder, UUID owner) {
-		Employer boss = builder.getAttached(ModAttachments.BUILDER_EMPLOYER);
+		Employer boss = ModAttachments.BUILDER_EMPLOYER.get(builder);
 		if (boss == null) {
 			return owner.equals(builder.getUUID());
 		}
@@ -93,7 +93,7 @@ public final class Upkeep {
 			site.setRepair();
 			site.setBuilder(builder.getUUID());
 			site.setBench(bench);
-			builder.setAttached(ModAttachments.BUILDER_JOB, new BuilderJob(site.id()));
+			ModAttachments.BUILDER_JOB.set(builder, new BuilderJob(site.id()));
 			if (owner != null) {
 				Builders.tell(owner, Component.translatable("message.aliveworkplace.repairing", builder.getDisplayName(), Blueprints.displayName(f.structure()),
 					missing), ChatFormatting.AQUA);

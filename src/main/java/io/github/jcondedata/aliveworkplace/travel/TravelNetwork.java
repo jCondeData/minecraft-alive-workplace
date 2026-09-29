@@ -1,5 +1,6 @@
 package io.github.jcondedata.aliveworkplace.travel;
 
+import io.github.jcondedata.aliveworkplace.mc.Nbt;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -145,7 +146,7 @@ public final class TravelNetwork extends SavedData {
 		ListTag list = new ListTag();
 		for (Post p : posts.values()) {
 			CompoundTag e = new CompoundTag();
-			e.putUUID("id", p.id());
+			Nbt.putUuid(e, "id", p.id());
 			GlobalPos.CODEC.encodeStart(NbtOps.INSTANCE, p.pos()).result().ifPresent(t -> e.put("pos", t));
 			e.putString("name", p.name());
 			list.add(e);
@@ -155,8 +156,8 @@ public final class TravelNetwork extends SavedData {
 		visited.forEach((player, ids) -> {
 			for (UUID id : ids) {
 				CompoundTag e = new CompoundTag();
-				e.putUUID("player", player);
-				e.putUUID("post", id);
+				Nbt.putUuid(e, "player", player);
+				Nbt.putUuid(e, "post", id);
 				seen.add(e);
 			}
 		});
@@ -166,18 +167,18 @@ public final class TravelNetwork extends SavedData {
 
 	private static TravelNetwork load(CompoundTag tag, HolderLookup.Provider registries) {
 		TravelNetwork out = new TravelNetwork();
-		for (Tag t : tag.getList("posts", Tag.TAG_COMPOUND)) {
+		for (Tag t : Nbt.getList(tag, "posts", Tag.TAG_COMPOUND)) {
 			CompoundTag e = (CompoundTag) t;
 			Tag posTag = e.get("pos");
 			GlobalPos pos = posTag == null ? null : GlobalPos.CODEC.parse(NbtOps.INSTANCE, posTag).result().orElse(null);
-			if (e.hasUUID("id") && pos != null) {
-				out.posts.put(e.getUUID("id"), new Post(e.getUUID("id"), pos, e.getString("name")));
+			if (Nbt.hasUuid(e, "id") && pos != null) {
+				out.posts.put(Nbt.getUuid(e, "id"), new Post(Nbt.getUuid(e, "id"), pos, Nbt.getString(e, "name")));
 			}
 		}
-		for (Tag t : tag.getList("visited", Tag.TAG_COMPOUND)) {
+		for (Tag t : Nbt.getList(tag, "visited", Tag.TAG_COMPOUND)) {
 			CompoundTag e = (CompoundTag) t;
-			if (e.hasUUID("player") && e.hasUUID("post")) {
-				out.visited.computeIfAbsent(e.getUUID("player"), p -> new HashSet<>()).add(e.getUUID("post"));
+			if (Nbt.hasUuid(e, "player") && Nbt.hasUuid(e, "post")) {
+				out.visited.computeIfAbsent(Nbt.getUuid(e, "player"), p -> new HashSet<>()).add(Nbt.getUuid(e, "post"));
 			}
 		}
 		return out;

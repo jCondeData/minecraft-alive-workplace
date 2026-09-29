@@ -132,11 +132,11 @@ public final class Graves {
 		villager.setHealth(villager.getMaxHealth());
 		villager.deathTime = 0;
 		// The work they were doing was handed back when they died.
-		villager.removeAttached(ModAttachments.BUILDER_JOB);
-		villager.removeAttached(ModAttachments.MINER_JOB);
-		villager.removeAttached(ModAttachments.TREE_FARM);
-		villager.removeAttached(ModAttachments.ORCHARD);
-		villager.removeAttached(ModAttachments.FARM_FIELD);
+		ModAttachments.BUILDER_JOB.remove(villager);
+		ModAttachments.MINER_JOB.remove(villager);
+		ModAttachments.TREE_FARM.remove(villager);
+		ModAttachments.ORCHARD.remove(villager);
+		ModAttachments.FARM_FIELD.remove(villager);
 		level.removeBlock(pos, false);
 		if (!level.addFreshEntity(villager)) {
 			return null;

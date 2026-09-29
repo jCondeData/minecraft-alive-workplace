@@ -119,7 +119,7 @@ public class VillageHallGameTests implements net.fabricmc.fabric.api.gametest.v1
 		chest.setItem(1, new ItemStack(Items.BREAD, 3));
 		Villager[] villagers = {helper.spawn(EntityType.VILLAGER, new BlockPos(8, 2, 8)), helper.spawn(EntityType.VILLAGER, new BlockPos(9, 2, 8))};
 		for (Villager v : villagers) {
-			v.setAttached(ModAttachments.LAST_MEAL, level.getGameTime() - VillageNeeds.DAY - 1);
+			ModAttachments.LAST_MEAL.set(v, level.getGameTime() - VillageNeeds.DAY - 1);
 		}
 		helper.setBlock(HALL, ModBlocks.VILLAGE_HALL);
 		helper.runAfterDelay(5, () -> {
@@ -150,7 +150,7 @@ public class VillageHallGameTests implements net.fabricmc.fabric.api.gametest.v1
 		helper.setBlock(new BlockPos(5, 2, 5), ModBlocks.BUILDERS_BENCH);
 		Villager builder = helper.spawn(EntityType.VILLAGER, new BlockPos(6, 2, 6));
 		Jobs.employ(level, builder, helper.absolutePos(new BlockPos(5, 2, 5)), ModVillagers.BUILDERS_BENCH_POI, ModVillagers.BUILDER);
-		builder.setAttached(ModAttachments.LAST_MEAL, level.getGameTime() - 2 * VillageNeeds.DAY);
+		ModAttachments.LAST_MEAL.set(builder, level.getGameTime() - 2 * VillageNeeds.DAY);
 		VillageNeeds.forget();
 		helper.assertTrue(io.github.jcondedata.aliveworkplace.build.BuilderLevels.delay(100, builder) == 100, "no hall: usual pace");
 		helper.setBlock(HALL, ModBlocks.VILLAGE_HALL);
@@ -697,7 +697,7 @@ public class VillageHallGameTests implements net.fabricmc.fabric.api.gametest.v1
 				helper.assertTrue(again.getContents() instanceof net.minecraft.network.chat.contents.TranslatableContents t
 					&& t.getKey().equals("message.aliveworkplace.mercenaries.already"), "a second band: " + again.getString());
 				for (var merc : band) {
-					merc.setAttached(ModAttachments.MERCENARY_UNTIL, level.getGameTime());
+					ModAttachments.MERCENARY_UNTIL.set(merc, level.getGameTime());
 					io.github.jcondedata.aliveworkplace.guard.Mercenaries.tick(merc);
 				}
 				helper.assertTrue(band.stream().allMatch(net.minecraft.world.entity.Entity::isRemoved), "the band didn't leave");
@@ -755,7 +755,7 @@ public class VillageHallGameTests implements net.fabricmc.fabric.api.gametest.v1
 			helper.assertTrue(io.github.jcondedata.aliveworkplace.hall.Festivals.isOn(level, hall), "the festival isn't on after work");
 			io.github.jcondedata.aliveworkplace.hall.Festivals.round(level, hall, entity, villagers.size());
 			for (Villager v : villagers) {
-				helper.assertTrue(v.hasAttached(ModAttachments.FESTIVAL_DAY) && v.hasAttached(ModAttachments.LAST_MEAL), "didn't feast: " + v);
+				helper.assertTrue(ModAttachments.FESTIVAL_DAY.has(v) && ModAttachments.LAST_MEAL.has(v), "didn't feast: " + v);
 				var mood = io.github.jcondedata.aliveworkplace.people.Moods.work(level, v);
 				helper.assertTrue(mood.good().stream().anyMatch(c -> c.getString().contains("festival")), "mood: " + mood.good());
 			}

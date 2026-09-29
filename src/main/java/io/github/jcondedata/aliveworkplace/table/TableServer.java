@@ -1,5 +1,9 @@
 package io.github.jcondedata.aliveworkplace.table;
 
+import io.github.jcondedata.aliveworkplace.mc.Chat;
+import io.github.jcondedata.aliveworkplace.mc.Players;
+import io.github.jcondedata.aliveworkplace.mc.Rules;
+import io.github.jcondedata.aliveworkplace.platform.Platform;
 import io.github.jcondedata.aliveworkplace.AliveWorkplace;
 import io.github.jcondedata.aliveworkplace.blueprint.Blueprint;
 import io.github.jcondedata.aliveworkplace.blueprint.BlueprintData;
@@ -20,9 +24,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
-import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
-import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
-import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -47,22 +48,19 @@ public final class TableServer {
 	}
 
 	public static void init() {
-		PayloadTypeRegistry.playS2C().register(TablePayloads.Open.TYPE, TablePayloads.Open.CODEC);
-		PayloadTypeRegistry.playS2C().register(TablePayloads.Details.TYPE, TablePayloads.Details.CODEC);
-		PayloadTypeRegistry.playS2C().register(TablePayloads.UploadResult.TYPE, TablePayloads.UploadResult.CODEC);
-		PayloadTypeRegistry.playC2S().register(TablePayloads.RequestDetails.TYPE, TablePayloads.RequestDetails.CODEC);
-		PayloadTypeRegistry.playC2S().register(TablePayloads.Take.TYPE, TablePayloads.Take.CODEC);
-		PayloadTypeRegistry.playC2S().register(TablePayloads.UploadChunk.TYPE, TablePayloads.UploadChunk.CODEC);
+		Platform.get().clientbound(TablePayloads.Open.TYPE, TablePayloads.Open.CODEC);
+		Platform.get().clientbound(TablePayloads.Details.TYPE, TablePayloads.Details.CODEC);
+		Platform.get().clientbound(TablePayloads.UploadResult.TYPE, TablePayloads.UploadResult.CODEC);
 
-		ServerPlayNetworking.registerGlobalReceiver(TablePayloads.RequestDetails.TYPE, (payload, context) -> details(context.player(), payload.id()));
-		ServerPlayNetworking.registerGlobalReceiver(TablePayloads.Take.TYPE, (payload, context) -> take(context.player(), payload.table(), payload.id()));
-		ServerPlayNetworking.registerGlobalReceiver(TablePayloads.UploadChunk.TYPE, (payload, context) -> upload(context.player(), payload));
-		ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> UPLOADS.remove(handler.getPlayer().getUUID()));
+		Platform.get().serverbound(TablePayloads.RequestDetails.TYPE, TablePayloads.RequestDetails.CODEC, (payload, player) -> details(player, payload.id()));
+		Platform.get().serverbound(TablePayloads.Take.TYPE, TablePayloads.Take.CODEC, (payload, player) -> take(player, payload.table(), payload.id()));
+		Platform.get().serverbound(TablePayloads.UploadChunk.TYPE, TablePayloads.UploadChunk.CODEC, (payload, player) -> upload(player, payload));
+		Platform.get().onPlayerLeave(player -> UPLOADS.remove(player.getUUID()));
 	}
 
 	/** Opens (or refreshes) the table screen for {@code player}. */
 	public static void open(ServerPlayer player, BlockPos table) {
-		ServerPlayNetworking.send(player, new TablePayloads.Open(table, listing(player.getServer()), canUpload(player)));
+		Platform.get().send(player, new TablePayloads.Open(table, listing(player.level().getServer()), canUpload(player)));
 	}
 
 	public static List<TablePayloads.Entry> listing(MinecraftServer server) {
@@ -94,11 +92,11 @@ public final class TableServer {
 	}
 
 	public static boolean canUpload(ServerPlayer player) {
-		return player.hasPermissions(2) || player.serverLevel().getGameRules().getBoolean(ModGameRules.ALLOW_UPLOADS);
+		return player.hasPermissions(2) || Rules.on(Players.level(player), ModGameRules.ALLOW_UPLOADS);
 	}
 
 	private static void details(ServerPlayer player, ResourceLocation id) {
-		BlueprintLibrary.get(player.getServer(), id).ifPresent(bp -> ServerPlayNetworking.send(player, new TablePayloads.Details(id, materials(bp))));
+		BlueprintLibrary.get(player.level().getServer(), id).ifPresent(bp -> Platform.get().send(player, new TablePayloads.Details(id, materials(bp))));
 	}
 
 	private static boolean atTable(ServerPlayer player, BlockPos table) {
@@ -111,7 +109,7 @@ public final class TableServer {
 		if (!atTable(player, table)) {
 			return false;
 		}
-		Optional<Blueprint> blueprint = BlueprintLibrary.get(player.getServer(), id);
+		Optional<Blueprint> blueprint = BlueprintLibrary.get(player.level().getServer(), id);
 		if (blueprint.isEmpty()) {
 			player.sendSystemMessage(Component.translatable("message.aliveworkplace.blueprint.unknown", id.toString()).withStyle(ChatFormatting.RED));
 			return false;
@@ -126,14 +124,14 @@ public final class TableServer {
 				}
 			}
 			if (slot < 0) {
-				player.displayClientMessage(Component.translatable("message.aliveworkplace.table.need_blank").withStyle(ChatFormatting.YELLOW), true);
+				Chat.actionBar(player, Component.translatable("message.aliveworkplace.table.need_blank").withStyle(ChatFormatting.YELLOW));
 				return false;
 			}
 			inventory.removeItem(slot, 1);
 		}
 		player.getInventory().placeItemBackInInventory(BlueprintItem.create(id, blueprint.get().size()));
 		player.level().playSound(null, table, SoundEvents.UI_CARTOGRAPHY_TABLE_TAKE_RESULT, SoundSource.BLOCKS, 1f, 1f);
-		player.displayClientMessage(Component.translatable("message.aliveworkplace.table.took", Blueprints.displayName(id)), true);
+		Chat.actionBar(player, Component.translatable("message.aliveworkplace.table.took", Blueprints.displayName(id)));
 		return true;
 	}
 
@@ -177,7 +175,7 @@ public final class TableServer {
 		UPLOADS.remove(uuid);
 		try {
 			String folder = "uploads/" + BlueprintImporter.sanitizeFolder(player.getGameProfile().getName());
-			BlueprintImporter.Imported imported = BlueprintImporter.importBytes(player.getServer(), folder, current.fileName(), current.data());
+			BlueprintImporter.Imported imported = BlueprintImporter.importBytes(player.level().getServer(), folder, current.fileName(), current.data());
 			reply(player, true, imported.summary(), imported.id());
 			open(player, chunk.table());
 		} catch (BlueprintFormatException e) {
@@ -186,7 +184,7 @@ public final class TableServer {
 	}
 
 	private static void reply(ServerPlayer player, boolean ok, Component message, ResourceLocation id) {
-		ServerPlayNetworking.send(player, new TablePayloads.UploadResult(ok, message, Optional.ofNullable(id)));
+		Platform.get().send(player, new TablePayloads.UploadResult(ok, message, Optional.ofNullable(id)));
 	}
 
 	private TableServer() {

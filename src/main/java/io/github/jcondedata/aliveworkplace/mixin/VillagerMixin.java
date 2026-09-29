@@ -64,7 +64,7 @@ abstract class VillagerMixin {
 	@Inject(method = "setVillagerData", at = @At("HEAD"))
 	private void aliveworkplace$schoolBefore(net.minecraft.world.entity.npc.VillagerData data, CallbackInfo ci) {
 		Villager self = (Villager) (Object) this;
-		aliveworkplace$headStart = !self.level().isClientSide && self.tickCount > 0
+		aliveworkplace$headStart = !self.level().isClientSide() && self.tickCount > 0
 			&& io.github.jcondedata.aliveworkplace.school.Schools.startsAhead(self, self.getVillagerData(), data);
 	}
 

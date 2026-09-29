@@ -3,6 +3,7 @@ package io.github.jcondedata.aliveworkplace.guard;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.jcondedata.aliveworkplace.build.Friends;
+import io.github.jcondedata.aliveworkplace.mc.Chat;
 import io.github.jcondedata.aliveworkplace.registry.ModComponents;
 import java.util.ArrayList;
 import java.util.List;
@@ -61,22 +62,22 @@ public class RallyBannerItem extends Item {
 	@Override
 	public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
 		ItemStack stack = player.getItemInHand(hand);
-		if (level.isClientSide) {
+		if (level.isClientSide()) {
 			return InteractionResultHolder.success(stack);
 		}
 		Rally rally = rally(stack);
 		if (rally.guards().isEmpty()) {
-			player.displayClientMessage(Component.translatable("message.aliveworkplace.rally.no_guards").withStyle(ChatFormatting.YELLOW), true);
+			Chat.actionBar(player, Component.translatable("message.aliveworkplace.rally.no_guards").withStyle(ChatFormatting.YELLOW));
 			return InteractionResultHolder.fail(stack);
 		}
 		boolean raised = !rally.raised();
 		stack.set(ModComponents.RALLY, new Rally(rally.guards(), raised));
 		if (raised) {
 			level.playSound(null, player.blockPosition(), SoundEvents.RAID_HORN.value(), SoundSource.PLAYERS, 0.5f, 1.3f);
-			player.displayClientMessage(Component.translatable("message.aliveworkplace.rally.raised", rally.guards().size()).withStyle(ChatFormatting.GOLD), true);
+			Chat.actionBar(player, Component.translatable("message.aliveworkplace.rally.raised", rally.guards().size()).withStyle(ChatFormatting.GOLD));
 		} else {
 			level.playSound(null, player.blockPosition(), SoundEvents.ARMOR_EQUIP_LEATHER.value(), SoundSource.PLAYERS, 1f, 0.8f);
-			player.displayClientMessage(Component.translatable("message.aliveworkplace.rally.lowered").withStyle(ChatFormatting.GRAY), true);
+			Chat.actionBar(player, Component.translatable("message.aliveworkplace.rally.lowered").withStyle(ChatFormatting.GRAY));
 		}
 		return InteractionResultHolder.success(stack);
 	}
@@ -84,24 +85,24 @@ public class RallyBannerItem extends Item {
 	/** Enlists {@code guard} under the banner, or lets them go if they're on it already. */
 	public static InteractionResult enlist(ServerPlayer player, Villager guard, ItemStack banner) {
 		if (!Friends.mayCommand(player, guard)) {
-			player.displayClientMessage(Component.translatable("message.aliveworkplace.rally.not_yours", guard.getDisplayName()).withStyle(ChatFormatting.RED), true);
+			Chat.actionBar(player, Component.translatable("message.aliveworkplace.rally.not_yours", guard.getDisplayName()).withStyle(ChatFormatting.RED));
 			return InteractionResult.FAIL;
 		}
 		Rally rally = rally(banner);
 		List<UUID> guards = new ArrayList<>(rally.guards());
 		if (guards.remove(guard.getUUID())) {
 			banner.set(ModComponents.RALLY, new Rally(List.copyOf(guards), rally.raised() && !guards.isEmpty()));
-			player.displayClientMessage(Component.translatable("message.aliveworkplace.rally.released", guard.getDisplayName()), true);
+			Chat.actionBar(player, Component.translatable("message.aliveworkplace.rally.released", guard.getDisplayName()));
 			return InteractionResult.SUCCESS;
 		}
 		if (guards.size() >= MAX_GUARDS) {
-			player.displayClientMessage(Component.translatable("message.aliveworkplace.rally.full", MAX_GUARDS).withStyle(ChatFormatting.YELLOW), true);
+			Chat.actionBar(player, Component.translatable("message.aliveworkplace.rally.full", MAX_GUARDS).withStyle(ChatFormatting.YELLOW));
 			return InteractionResult.FAIL;
 		}
 		guards.add(guard.getUUID());
 		banner.set(ModComponents.RALLY, new Rally(List.copyOf(guards), rally.raised()));
-		player.displayClientMessage(Component.translatable("message.aliveworkplace.rally.enlisted", guard.getDisplayName(), guards.size())
-			.withStyle(ChatFormatting.GREEN), true);
+		Chat.actionBar(player, Component.translatable("message.aliveworkplace.rally.enlisted", guard.getDisplayName(), guards.size())
+			.withStyle(ChatFormatting.GREEN));
 		guard.playSound(SoundEvents.VILLAGER_YES, 1f, 1f);
 		return InteractionResult.SUCCESS;
 	}

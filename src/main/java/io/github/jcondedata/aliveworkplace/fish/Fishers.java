@@ -1,5 +1,8 @@
 package io.github.jcondedata.aliveworkplace.fish;
 
+import io.github.jcondedata.aliveworkplace.mc.Chat;
+import io.github.jcondedata.aliveworkplace.mc.Players;
+import io.github.jcondedata.aliveworkplace.platform.Platform;
 import io.github.jcondedata.aliveworkplace.build.BuilderBag;
 import io.github.jcondedata.aliveworkplace.build.BuilderLevels;
 import io.github.jcondedata.aliveworkplace.build.Builders;
@@ -11,7 +14,6 @@ import io.github.jcondedata.aliveworkplace.registry.ModVillagers;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerEntityEvents;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.ClickEvent;
@@ -38,7 +40,7 @@ import org.jetbrains.annotations.Nullable;
 public final class Fishers {
 	public static void init() {
 		// Saved fishermen load their job after the brain is built: give them the longer shift now.
-		ServerEntityEvents.ENTITY_LOAD.register((entity, level) -> {
+		Platform.get().onEntityLoad((entity, level) -> {
 			if (entity instanceof Villager villager && isHired(villager) && isFisherman(villager)
 				&& villager.getBrain().getSchedule() != ModVillagers.BUILDER_SCHEDULE) {
 				villager.refreshBrain(level);
@@ -51,7 +53,7 @@ public final class Fishers {
 	}
 
 	public static boolean isHired(Villager villager) {
-		return villager.getAttachedOrElse(ModAttachments.FISHER_JOB, false);
+		return ModAttachments.FISHER_JOB.getOrElse(villager, false);
 	}
 
 	/** Vanilla fisherman behaviour runs when not hired, or when there is no rod or no water to fish. */
@@ -61,9 +63,9 @@ public final class Fishers {
 
 	/** Player right-clicked a fisherman while holding a fishing rod. */
 	public static InteractionResult assign(ServerPlayer player, Villager villager, ItemStack rod) {
-		ServerLevel level = player.serverLevel();
+		ServerLevel level = Players.level(player);
 		if (!Friends.mayCommand(player, villager)) {
-			Employer employer = villager.getAttached(ModAttachments.BUILDER_EMPLOYER);
+			Employer employer = ModAttachments.BUILDER_EMPLOYER.get(villager);
 			tell(player, Component.translatable("message.aliveworkplace.not_your_builder", villager.getDisplayName(),
 				employer != null ? employer.name() : "?", player.getGameProfile().getName()), ChatFormatting.RED);
 			return InteractionResult.CONSUME;
@@ -93,10 +95,10 @@ public final class Fishers {
 	public static void start(ServerLevel level, Villager villager, ItemStack rod) {
 		ItemStack old = villager.getItemBySlot(EquipmentSlot.MAINHAND);
 		if (!old.isEmpty()) {
-			villager.getAttachedOrCreate(ModAttachments.BUILDER_BAG).add(old);
+			ModAttachments.BUILDER_BAG.getOrCreate(villager).add(old);
 		}
 		villager.setItemSlot(EquipmentSlot.MAINHAND, rod);
-		villager.setAttached(ModAttachments.FISHER_JOB, true);
+		ModAttachments.FISHER_JOB.set(villager, true);
 		villager.refreshBrain(level);
 	}
 
@@ -107,7 +109,7 @@ public final class Fishers {
 		}
 		BlockPos barrel = Builders.benchPos(villager).orElse(villager.blockPosition());
 		List<BlockPos> supplies = SupplyContainers.find(level, barrel, null);
-		BuilderBag bag = villager.getAttachedOrCreate(ModAttachments.BUILDER_BAG);
+		BuilderBag bag = ModAttachments.BUILDER_BAG.getOrCreate(villager);
 		for (ItemStack stack : bag.takeAll()) {
 			store(level, supplies, barrel, stack);
 		}
@@ -116,14 +118,14 @@ public final class Fishers {
 			villager.setItemSlot(EquipmentSlot.MAINHAND, ItemStack.EMPTY);
 			store(level, supplies, barrel, rod);
 		}
-		villager.removeAttached(ModAttachments.FISHER_JOB);
+		ModAttachments.FISHER_JOB.remove(villager);
 		villager.refreshBrain(level);
 	}
 
 	public static void sendStatus(Player player, Villager villager) {
 		MutableComponent text = Component.empty();
 		text.append(Component.translatable("message.aliveworkplace.fisher.header", villager.getDisplayName(),
-			villager.getAttachedOrElse(ModAttachments.FISH_CAUGHT, 0)).withStyle(ChatFormatting.GOLD));
+			ModAttachments.FISH_CAUGHT.getOrElse(villager, 0)).withStyle(ChatFormatting.GOLD));
 		text.append(Component.literal("\n  "));
 		text.append(Component.translatable(FisherWork.isResting(villager) ? "message.aliveworkplace.fisher.resting"
 			: "message.aliveworkplace.fisher.state.fishing").withStyle(ChatFormatting.GRAY));
@@ -135,7 +137,7 @@ public final class Fishers {
 			.withColor(ChatFormatting.RED).withUnderlined(true)
 			.withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, stop))
 			.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.translatable("message.aliveworkplace.fisher.stop_hover")))));
-		player.sendSystemMessage(text);
+		Chat.system(player, text);
 	}
 
 	private static void store(ServerLevel level, List<BlockPos> supplies, BlockPos near, ItemStack stack) {
@@ -149,7 +151,7 @@ public final class Fishers {
 
 	private static void tell(@Nullable Player player, Component message, ChatFormatting color) {
 		if (player != null) {
-			player.sendSystemMessage(message.copy().withStyle(color));
+			Chat.system(player, message.copy().withStyle(color));
 		}
 	}
 

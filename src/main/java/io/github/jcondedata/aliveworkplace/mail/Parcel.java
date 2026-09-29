@@ -1,5 +1,6 @@
 package io.github.jcondedata.aliveworkplace.mail;
 
+import io.github.jcondedata.aliveworkplace.mc.Nbt;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -113,10 +114,10 @@ public final class Parcel {
 
 	CompoundTag save(HolderLookup.Provider registries) {
 		CompoundTag tag = new CompoundTag();
-		tag.putUUID("id", id);
-		tag.putUUID("from", from);
+		Nbt.putUuid(tag, "id", id);
+		Nbt.putUuid(tag, "from", from);
 		tag.putString("fromName", fromName);
-		tag.putUUID("to", to);
+		Nbt.putUuid(tag, "to", to);
 		tag.putString("toName", toName);
 		GlobalPos.CODEC.encodeStart(NbtOps.INSTANCE, origin).result().ifPresent(t -> tag.put("origin", t));
 		tag.putLong("sentAt", sentAt);
@@ -129,7 +130,7 @@ public final class Parcel {
 		tag.put("items", list);
 		tag.putString("status", status.name());
 		if (carrier != null) {
-			tag.putUUID("carrier", carrier);
+			Nbt.putUuid(tag, "carrier", carrier);
 			tag.putLong("claimedAt", claimedAt);
 		}
 		return tag;
@@ -143,7 +144,7 @@ public final class Parcel {
 
 	@Nullable
 	static Parcel load(CompoundTag tag, HolderLookup.Provider registries) {
-		if (!tag.hasUUID("id") || !tag.hasUUID("from") || !tag.hasUUID("to")) {
+		if (!Nbt.hasUuid(tag, "id") || !Nbt.hasUuid(tag, "from") || !Nbt.hasUuid(tag, "to")) {
 			return null;
 		}
 		GlobalPos origin = readPos(tag, "origin");
@@ -151,19 +152,19 @@ public final class Parcel {
 			return null;
 		}
 		List<ItemStack> items = new ArrayList<>();
-		for (Tag t : tag.getList("items", Tag.TAG_COMPOUND)) {
+		for (Tag t : Nbt.getList(tag, "items", Tag.TAG_COMPOUND)) {
 			ItemStack.parse(registries, t).ifPresent(items::add);
 		}
 		Status status;
 		try {
-			status = Status.valueOf(tag.getString("status"));
+			status = Status.valueOf(Nbt.getString(tag, "status"));
 		} catch (IllegalArgumentException e) {
 			status = Status.IN_TRANSIT;
 		}
-		Parcel parcel = new Parcel(tag.getUUID("id"), tag.getUUID("from"), tag.getString("fromName"), tag.getUUID("to"), tag.getString("toName"),
-			origin, tag.getLong("sentAt"), items, status);
-		if (tag.hasUUID("carrier")) {
-			parcel.claim(tag.getUUID("carrier"), tag.getLong("claimedAt"));
+		Parcel parcel = new Parcel(Nbt.getUuid(tag, "id"), Nbt.getUuid(tag, "from"), Nbt.getString(tag, "fromName"), Nbt.getUuid(tag, "to"), Nbt.getString(tag, "toName"),
+			origin, Nbt.getLong(tag, "sentAt"), items, status);
+		if (Nbt.hasUuid(tag, "carrier")) {
+			parcel.claim(Nbt.getUuid(tag, "carrier"), Nbt.getLong(tag, "claimedAt"));
 		}
 		return parcel;
 	}

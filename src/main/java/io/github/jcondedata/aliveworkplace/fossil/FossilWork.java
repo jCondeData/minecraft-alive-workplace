@@ -125,7 +125,7 @@ public class FossilWork extends Behavior<Villager> {
 	}
 
 	private static void status(Villager villager, Revival current, String state) {
-		Component title = Component.translatable("message.aliveworkplace.fossil.title", villager.getAttachedOrElse(ModAttachments.FOSSILS_REVIVED, 0));
+		Component title = Component.translatable("message.aliveworkplace.fossil.title", ModAttachments.FOSSILS_REVIVED.getOrElse(villager, 0));
 		Component line = current != null
 			? Component.translatable("message.aliveworkplace.fossil.state.reviving", FossilScientists.what(current.items()), current.ownerName())
 				.withStyle(ChatFormatting.GRAY)

@@ -1,5 +1,6 @@
 package io.github.jcondedata.aliveworkplace.hall;
 
+import io.github.jcondedata.aliveworkplace.mc.Nbt;
 import io.github.jcondedata.aliveworkplace.registry.ModBlocks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
@@ -228,31 +229,31 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 	@Override
 	protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
 		super.loadAdditional(tag, registries);
-		name = tag.contains("CustomName", 8) ? parseCustomNameSafe(tag.getString("CustomName"), registries) : null;
-		lastBirth = tag.getLong("lastBirth");
-		births = tag.getInt("births");
+		name = Nbt.has(tag, "CustomName", 8) ? parseCustomNameSafe(Nbt.getString(tag, "CustomName"), registries) : null;
+		lastBirth = Nbt.getLong(tag, "lastBirth");
+		births = Nbt.getInt(tag, "births");
 		quests = VillageQuests.Quest.CODEC.listOf().parse(net.minecraft.nbt.NbtOps.INSTANCE, tag.get("quests"))
 			.result().map(java.util.List::copyOf).orElse(java.util.List.of());
-		lastQuestDay = tag.contains("lastQuestDay") ? tag.getLong("lastQuestDay") : -1;
-		questsDone = tag.getInt("questsDone");
-		lastMarketDay = tag.contains("lastMarketDay") ? tag.getLong("lastMarketDay") : -1;
-		lastRaidDay = tag.contains("lastRaidDay") ? tag.getLong("lastRaidDay") : -100;
-		festivalDay = tag.contains("festivalDay") ? tag.getLong("festivalDay") : -1;
-		feastDay = tag.contains("feastDay") ? tag.getLong("feastDay") : -1;
-		festivalCalled = tag.contains("festivalCalled") ? tag.getLong("festivalCalled") : -100;
-		treasury = tag.getInt("treasury");
-		lastTaxDay = tag.contains("lastTaxDay") ? tag.getLong("lastTaxDay") : -1;
-		int r = tag.getInt("rank");
+		lastQuestDay = tag.contains("lastQuestDay") ? Nbt.getLong(tag, "lastQuestDay") : -1;
+		questsDone = Nbt.getInt(tag, "questsDone");
+		lastMarketDay = tag.contains("lastMarketDay") ? Nbt.getLong(tag, "lastMarketDay") : -1;
+		lastRaidDay = tag.contains("lastRaidDay") ? Nbt.getLong(tag, "lastRaidDay") : -100;
+		festivalDay = tag.contains("festivalDay") ? Nbt.getLong(tag, "festivalDay") : -1;
+		feastDay = tag.contains("feastDay") ? Nbt.getLong(tag, "feastDay") : -1;
+		festivalCalled = tag.contains("festivalCalled") ? Nbt.getLong(tag, "festivalCalled") : -100;
+		treasury = Nbt.getInt(tag, "treasury");
+		lastTaxDay = tag.contains("lastTaxDay") ? Nbt.getLong(tag, "lastTaxDay") : -1;
+		int r = Nbt.getInt(tag, "rank");
 		rank = VillageRanks.Rank.values()[Math.max(0, Math.min(VillageRanks.Rank.values().length - 1, r))];
 		research = io.github.jcondedata.aliveworkplace.research.Research.State.CODEC.parse(net.minecraft.nbt.NbtOps.INSTANCE, tag.get("research"))
 			.result().orElse(io.github.jcondedata.aliveworkplace.research.Research.State.EMPTY);
 		chronicle = new java.util.ArrayList<>();
-		net.minecraft.nbt.ListTag lines = tag.getList("chronicle", net.minecraft.nbt.Tag.TAG_COMPOUND);
+		net.minecraft.nbt.ListTag lines = Nbt.getList(tag, "chronicle", net.minecraft.nbt.Tag.TAG_COMPOUND);
 		for (int i = 0; i < lines.size(); i++) {
-			CompoundTag line = lines.getCompound(i);
-			Component text = parseCustomNameSafe(line.getString("text"), registries);
+			CompoundTag line = Nbt.compoundAt(lines, i);
+			Component text = parseCustomNameSafe(Nbt.getString(line, "text"), registries);
 			if (text != null) {
-				chronicle.add(new Chronicle.Entry(line.getLong("day"), Chronicle.Kind.parse(line.getString("kind")), text));
+				chronicle.add(new Chronicle.Entry(Nbt.getLong(line, "day"), Chronicle.Kind.parse(Nbt.getString(line, "kind")), text));
 			}
 		}
 	}

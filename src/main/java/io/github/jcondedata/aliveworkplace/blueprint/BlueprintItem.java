@@ -1,5 +1,7 @@
 package io.github.jcondedata.aliveworkplace.blueprint;
 
+import io.github.jcondedata.aliveworkplace.mc.Chat;
+import io.github.jcondedata.aliveworkplace.mc.Ids;
 import io.github.jcondedata.aliveworkplace.registry.ModComponents;
 import io.github.jcondedata.aliveworkplace.registry.ModItems;
 import java.util.List;
@@ -95,11 +97,11 @@ public class BlueprintItem extends Item {
 		BlueprintData current = data.get();
 		Optional<Blueprint> blueprint = BlueprintLibrary.get(level, current.structure());
 		if (blueprint.isEmpty()) {
-			player.displayClientMessage(Component.translatable("message.aliveworkplace.blueprint.unknown", current.structure().toString()).withStyle(ChatFormatting.RED), true);
+			Chat.actionBar(player, Component.translatable("message.aliveworkplace.blueprint.unknown", current.structure().toString()).withStyle(ChatFormatting.RED));
 			return InteractionResult.FAIL;
 		}
 		Vec3i size = blueprint.get().size();
-		ResourceLocation dimension = level.dimension().location();
+		ResourceLocation dimension = Ids.of(level.dimension());
 
 		// An upgrade clicked onto the finished building it upgrades lines up with it exactly.
 		Optional<io.github.jcondedata.aliveworkplace.build.BuildSiteManager.Finished> base = player.isShiftKeyDown() ? Optional.empty()
@@ -108,8 +110,8 @@ public class BlueprintItem extends Item {
 		if (base.isPresent()) {
 			BlueprintData.Placement over = base.get().placement();
 			context.getItemInHand().set(ModComponents.BLUEPRINT, current.withSize(size).withPlacement(Optional.of(over)));
-			player.displayClientMessage(Component.translatable("message.aliveworkplace.blueprint.upgrade",
-				Blueprints.displayName(base.get().structure()), Blueprints.displayName(current.structure())).withStyle(ChatFormatting.GREEN), true);
+			Chat.actionBar(player, Component.translatable("message.aliveworkplace.blueprint.upgrade",
+				Blueprints.displayName(base.get().structure()), Blueprints.displayName(current.structure())).withStyle(ChatFormatting.GREEN));
 			BlueprintOutline.show(level, player, over, size);
 			return InteractionResult.CONSUME;
 		}
@@ -125,11 +127,11 @@ public class BlueprintItem extends Item {
 
 		context.getItemInHand().set(ModComponents.BLUEPRINT, current.withSize(size).withPlacement(Optional.of(placement)));
 		Direction front = placement.rotation().rotate(Direction.NORTH);
-		player.displayClientMessage(Component.translatable(
+		Chat.actionBar(player, Component.translatable(
 			"message.aliveworkplace.blueprint.placed",
 			Blueprints.displayName(current.structure()),
 			Component.translatable("direction.aliveworkplace." + front.getSerializedName())
-		), true);
+		));
 		BlueprintOutline.show(level, player, placement, size);
 		return InteractionResult.CONSUME;
 	}
@@ -139,28 +141,28 @@ public class BlueprintItem extends Item {
 		ItemStack stack = player.getItemInHand(hand);
 		Optional<BlueprintData> data = data(stack);
 		if (player.isShiftKeyDown() && data.isPresent() && data.get().placement().isPresent()) {
-			if (!level.isClientSide) {
+			if (!level.isClientSide()) {
 				stack.set(ModComponents.BLUEPRINT, data.get().withPlacement(Optional.empty()));
-				player.displayClientMessage(Component.translatable("message.aliveworkplace.blueprint.cleared"), true);
+				Chat.actionBar(player, Component.translatable("message.aliveworkplace.blueprint.cleared"));
 			}
-			return InteractionResultHolder.sidedSuccess(stack, level.isClientSide);
+			return InteractionResultHolder.sidedSuccess(stack, level.isClientSide());
 		}
 		if (player.isShiftKeyDown() && data.isPresent()) {
 			// Sneak-right-click the air (not placed): pick the style it's built in.
 			if (player instanceof net.minecraft.server.level.ServerPlayer server) {
 				StylePicker.open(server, hand);
 			}
-			return InteractionResultHolder.sidedSuccess(stack, level.isClientSide);
+			return InteractionResultHolder.sidedSuccess(stack, level.isClientSide());
 		}
 		if (!player.isShiftKeyDown() && data.isPresent()) {
 			// Right-click the air: switch levelling the ground around this build on or off.
-			if (!level.isClientSide) {
+			if (!level.isClientSide()) {
 				boolean now = !data.get().levelGround();
 				stack.set(ModComponents.BLUEPRINT, data.get().withLevelGround(now));
-				player.displayClientMessage(Component.translatable(now ? "message.aliveworkplace.blueprint.level_on"
-					: "message.aliveworkplace.blueprint.level_off").withStyle(now ? ChatFormatting.GREEN : ChatFormatting.YELLOW), true);
+				Chat.actionBar(player, Component.translatable(now ? "message.aliveworkplace.blueprint.level_on"
+					: "message.aliveworkplace.blueprint.level_off").withStyle(now ? ChatFormatting.GREEN : ChatFormatting.YELLOW));
 			}
-			return InteractionResultHolder.sidedSuccess(stack, level.isClientSide);
+			return InteractionResultHolder.sidedSuccess(stack, level.isClientSide());
 		}
 		return InteractionResultHolder.pass(stack);
 	}

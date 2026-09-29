@@ -100,7 +100,7 @@ public class PorterGameTests implements FabricGameTest {
 			helper.assertTrue(minersChest.countItem(Items.COBBLESTONE) == Porters.KEEP_FILLER, "the miner should keep some stone");
 			helper.assertTrue(minersChest.countItem(Items.TORCH) == 16 && minersChest.countItem(Items.IRON_PICKAXE) == 1, "the miner's gear went too");
 			helper.assertTrue(store.countItem(Items.TORCH) == 0 && store.countItem(Items.IRON_PICKAXE) == 0, "the porter took the miner's gear");
-			int carried = porter.getAttachedOrElse(ModAttachments.ITEMS_CARRIED, 0);
+			int carried = ModAttachments.ITEMS_CARRIED.getOrElse(porter, 0);
 			helper.assertTrue(carried == 96 + 20 + 10, "carried " + carried);
 			helper.assertTrue(miner.isAlive(), "the miner is gone");
 			Village.RADIUS = 0;
@@ -167,7 +167,7 @@ public class PorterGameTests implements FabricGameTest {
 		Leftovers.clear(helper);
 		Leftovers.village(helper, 48);
 		Villager miner = miner(helper);
-		miner.setAttached(ModAttachments.BUILDER_EMPLOYER, new Employer(UUID.randomUUID(), "Bea"));
+		ModAttachments.BUILDER_EMPLOYER.set(miner, new Employer(UUID.randomUUID(), "Bea"));
 		Container minersChest = helper.getBlockEntity(MINERS_CHEST);
 		minersChest.setItem(0, new ItemStack(Items.RAW_IRON, 40));
 		UUID al = UUID.randomUUID();
@@ -176,7 +176,7 @@ public class PorterGameTests implements FabricGameTest {
 		storehouse.setOwner(al, "Al");
 		Villager porter = porter(helper);
 		helper.runAfterDelay(300, () -> {
-			Employer boss = porter.getAttached(ModAttachments.BUILDER_EMPLOYER);
+			Employer boss = ModAttachments.BUILDER_EMPLOYER.get(porter);
 			helper.assertTrue(boss != null && boss.id().equals(al), "the porter should work for the storehouse's owner, not " + boss);
 			helper.assertTrue(minersChest.countItem(Items.RAW_IRON) == 40, "the porter took from a stranger's miner");
 			Village.RADIUS = 0;

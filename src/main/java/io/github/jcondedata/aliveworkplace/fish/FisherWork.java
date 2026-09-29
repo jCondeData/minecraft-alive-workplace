@@ -125,7 +125,7 @@ public class FisherWork extends Behavior<Villager> {
 		if (barrel == null) {
 			return;
 		}
-		BuilderBag bag = villager.getAttachedOrCreate(ModAttachments.BUILDER_BAG);
+		BuilderBag bag = ModAttachments.BUILDER_BAG.getOrCreate(villager);
 
 		// 1. Bring the catch in every few fish, or when the bag fills up.
 		if (catches >= CATCHES_PER_TRIP || bag.freeSlots() < 3) {
@@ -255,8 +255,8 @@ public class FisherWork extends Behavior<Villager> {
 		level.sendParticles(ParticleTypes.SPLASH, bobber.x, bobber.y, bobber.z, 12, 0.2, 0, 0.2, 0);
 		level.playSound(null, villager.blockPosition(), SoundEvents.FISHING_BOBBER_RETRIEVE, SoundSource.NEUTRAL, 0.8f, 1f);
 		rod.hurtAndBreak(1, villager, EquipmentSlot.MAINHAND);
-		int caught = villager.getAttachedOrElse(ModAttachments.FISH_CAUGHT, 0) + 1;
-		villager.setAttached(ModAttachments.FISH_CAUGHT, caught);
+		int caught = ModAttachments.FISH_CAUGHT.getOrElse(villager, 0) + 1;
+		ModAttachments.FISH_CAUGHT.set(villager, caught);
 		if (caught % CATCHES_PER_XP == 0) {
 			BuilderLevels.addXp(level, villager, 1, null);
 		}
@@ -332,7 +332,7 @@ public class FisherWork extends Behavior<Villager> {
 		} else {
 			io.github.jcondedata.aliveworkplace.work.Requests.clear(villager);
 		}
-		int caught = villager.getAttachedOrElse(ModAttachments.FISH_CAUGHT, 0);
+		int caught = ModAttachments.FISH_CAUGHT.getOrElse(villager, 0);
 		Component title = Component.translatable("message.aliveworkplace.fisher.title", caught);
 		Component line = Component.translatable("message.aliveworkplace.fisher.state." + phase.name().toLowerCase())
 			.withStyle(phase == Phase.NEEDS_ROD || phase == Phase.NO_WATER ? ChatFormatting.YELLOW : ChatFormatting.GRAY);

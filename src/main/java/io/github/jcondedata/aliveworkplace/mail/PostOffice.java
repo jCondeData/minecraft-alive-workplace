@@ -1,5 +1,6 @@
 package io.github.jcondedata.aliveworkplace.mail;
 
+import io.github.jcondedata.aliveworkplace.mc.Nbt;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -204,7 +205,7 @@ public final class PostOffice extends SavedData {
 		ListTag boxes = new ListTag();
 		mailboxes.forEach((player, pos) -> {
 			CompoundTag e = new CompoundTag();
-			e.putUUID("player", player);
+			Nbt.putUuid(e, "player", player);
 			GlobalPos.CODEC.encodeStart(NbtOps.INSTANCE, pos).result().ifPresent(t -> e.put("pos", t));
 			boxes.add(e);
 		});
@@ -228,27 +229,27 @@ public final class PostOffice extends SavedData {
 
 	private static PostOffice load(CompoundTag tag, HolderLookup.Provider registries) {
 		PostOffice out = new PostOffice();
-		for (Tag t : tag.getList("mailboxes", Tag.TAG_COMPOUND)) {
+		for (Tag t : Nbt.getList(tag, "mailboxes", Tag.TAG_COMPOUND)) {
 			CompoundTag e = (CompoundTag) t;
 			GlobalPos pos = Parcel.readPos(e, "pos");
-			if (e.hasUUID("player") && pos != null) {
-				out.mailboxes.put(e.getUUID("player"), pos);
+			if (Nbt.hasUuid(e, "player") && pos != null) {
+				out.mailboxes.put(Nbt.getUuid(e, "player"), pos);
 			}
 		}
-		for (Tag t : tag.getList("parcels", Tag.TAG_COMPOUND)) {
+		for (Tag t : Nbt.getList(tag, "parcels", Tag.TAG_COMPOUND)) {
 			Parcel p = Parcel.load((CompoundTag) t, registries);
 			if (p != null) {
 				out.parcels.add(p);
 			}
 		}
-		for (Tag t : tag.getList("desks", Tag.TAG_COMPOUND)) {
+		for (Tag t : Nbt.getList(tag, "desks", Tag.TAG_COMPOUND)) {
 			CompoundTag e = (CompoundTag) t;
 			GlobalPos pos = Parcel.readPos(e, "pos");
 			if (pos != null) {
-				out.desks.put(pos, e.getLong("seen"));
+				out.desks.put(pos, Nbt.getLong(e, "seen"));
 			}
 		}
-		out.lastDay = tag.contains("lastDay") ? tag.getLong("lastDay") : -1;
+		out.lastDay = tag.contains("lastDay") ? Nbt.getLong(tag, "lastDay") : -1;
 		return out;
 	}
 }

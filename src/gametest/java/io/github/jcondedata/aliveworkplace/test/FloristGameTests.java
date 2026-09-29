@@ -38,7 +38,7 @@ public class FloristGameTests implements net.fabricmc.fabric.api.gametest.v1.Fab
 				flowers += chest.getItem(i).is(ItemTags.SMALL_FLOWERS) ? chest.getItem(i).getCount() : 0;
 			}
 			helper.assertTrue(flowers >= 3, flowers + " flowers in the chest");
-			helper.assertTrue(florist.getAttachedOrElse(ModAttachments.FLOWERS_GROWN, 0) >= 3, "flowers grown");
+			helper.assertTrue(ModAttachments.FLOWERS_GROWN.getOrElse(florist, 0) >= 3, "flowers grown");
 		});
 	}
 

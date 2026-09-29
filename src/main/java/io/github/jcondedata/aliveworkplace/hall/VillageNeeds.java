@@ -126,9 +126,9 @@ public final class VillageNeeds {
 			}
 			io.github.jcondedata.aliveworkplace.people.Sickness.round(level, villager, (int) (DAY / CHECK_EVERY));
 			io.github.jcondedata.aliveworkplace.people.Families.round(level, hall, villager);
-			Long meal = villager.getAttached(ModAttachments.LAST_MEAL);
+			Long meal = ModAttachments.LAST_MEAL.get(villager);
 			if (meal == null) {
-				villager.setAttached(ModAttachments.LAST_MEAL, now); // new to the village: they ate before they came
+				ModAttachments.LAST_MEAL.set(villager, now); // new to the village: they ate before they came
 			} else if (now - meal >= io.github.jcondedata.aliveworkplace.people.Traits.mealEvery(villager, DAY)) {
 				if (store == null) {
 					store = store(level, hall);
@@ -187,7 +187,7 @@ public final class VillageNeeds {
 
 	/** A grown villager who hasn't eaten in the last day. */
 	public static boolean isHungry(Villager villager, long now) {
-		Long meal = villager.getAttached(ModAttachments.LAST_MEAL);
+		Long meal = ModAttachments.LAST_MEAL.get(villager);
 		return !villager.isBaby() && meal != null && now - meal >= io.github.jcondedata.aliveworkplace.people.Traits.mealEvery(villager, DAY);
 	}
 
@@ -226,7 +226,7 @@ public final class VillageNeeds {
 			return false;
 		}
 		io.github.jcondedata.aliveworkplace.people.Diet.ate(villager, meal);
-		villager.setAttached(ModAttachments.LAST_MEAL, level.getGameTime());
+		ModAttachments.LAST_MEAL.set(villager, level.getGameTime());
 		villager.heal(4f);
 		level.sendParticles(new ItemParticleOption(ParticleTypes.ITEM, meal), villager.getX(), villager.getEyeY() - 0.2, villager.getZ(),
 			8, 0.15, 0.1, 0.15, 0.05);

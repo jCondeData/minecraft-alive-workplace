@@ -57,7 +57,7 @@ public final class TreeFarms {
 
 	@Nullable
 	public static BoundingBox farm(Villager villager) {
-		FieldJob job = villager.getAttached(ModAttachments.TREE_FARM);
+		FieldJob job = ModAttachments.TREE_FARM.get(villager);
 		return job == null ? null : job.box();
 	}
 
@@ -73,7 +73,7 @@ public final class TreeFarms {
 
 	/** Gives the lumberjack the tree farm. Also used by tests. */
 	public static void start(Villager villager, BoundingBox box) {
-		villager.setAttached(ModAttachments.TREE_FARM, new FieldJob(box));
+		ModAttachments.TREE_FARM.set(villager, new FieldJob(box));
 	}
 
 	/** Stops planting the farm: the marker goes to {@code player} (or the chests). The trees stay. */
@@ -89,7 +89,7 @@ public final class TreeFarms {
 		BoundingBox box = farm(villager);
 		if (box != null) {
 			AreaJobs.sendStatus(player, villager, box, "tree_farm", Component.translatable("message.aliveworkplace.tree_farm.counts",
-				villager.getAttachedOrElse(ModAttachments.TREES_FELLED, 0), villager.getAttachedOrElse(ModAttachments.SAPLINGS_PLANTED, 0)));
+				ModAttachments.TREES_FELLED.getOrElse(villager, 0), ModAttachments.SAPLINGS_PLANTED.getOrElse(villager, 0)));
 		}
 	}
 
@@ -169,7 +169,7 @@ public final class TreeFarms {
 		}
 		bag.remove(item, square.length);
 		level.playSound(null, spot, SoundEvents.GRASS_PLACE, SoundSource.BLOCKS, 0.8f, 1f);
-		villager.setAttached(ModAttachments.SAPLINGS_PLANTED, villager.getAttachedOrElse(ModAttachments.SAPLINGS_PLANTED, 0) + square.length);
+		ModAttachments.SAPLINGS_PLANTED.set(villager, ModAttachments.SAPLINGS_PLANTED.getOrElse(villager, 0) + square.length);
 		return true;
 	}
 

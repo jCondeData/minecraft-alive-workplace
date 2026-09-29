@@ -124,7 +124,7 @@ public class FloristWork extends Behavior<Villager> {
 			status(villager, "no_chest");
 			return;
 		}
-		BuilderBag bag = villager.getAttachedOrCreate(ModAttachments.BUILDER_BAG);
+		BuilderBag bag = ModAttachments.BUILDER_BAG.getOrCreate(villager);
 		if (task == Task.NONE) {
 			if (--lookTimer > 0) {
 				status(villager, idle);
@@ -326,8 +326,8 @@ public class FloristWork extends Behavior<Villager> {
 		if (count <= 0) {
 			return;
 		}
-		int grown = villager.getAttachedOrElse(ModAttachments.FLOWERS_GROWN, 0);
-		villager.setAttached(ModAttachments.FLOWERS_GROWN, grown + count);
+		int grown = ModAttachments.FLOWERS_GROWN.getOrElse(villager, 0);
+		ModAttachments.FLOWERS_GROWN.set(villager, grown + count);
 		if ((grown + count) / 8 > grown / 8) {
 			BuilderLevels.addXp(level, villager, 1, null);
 		}
@@ -433,7 +433,7 @@ public class FloristWork extends Behavior<Villager> {
 	}
 
 	private static void status(Villager villager, String state) {
-		Component title = Component.translatable("message.aliveworkplace.florist.title", villager.getAttachedOrElse(ModAttachments.FLOWERS_GROWN, 0));
+		Component title = Component.translatable("message.aliveworkplace.florist.title", ModAttachments.FLOWERS_GROWN.getOrElse(villager, 0));
 		boolean warn = state.equals("no_chest") || state.equals("no_bone_meal");
 		WorkerStatus.set(villager, title, -1f, Component.translatable("message.aliveworkplace.florist.state." + state)
 			.withStyle(warn ? ChatFormatting.YELLOW : ChatFormatting.GRAY));

@@ -7,6 +7,9 @@ import io.github.jcondedata.aliveworkplace.build.Builders;
 import io.github.jcondedata.aliveworkplace.build.Employer;
 import io.github.jcondedata.aliveworkplace.build.Friends;
 import io.github.jcondedata.aliveworkplace.build.SupplyContainers;
+import io.github.jcondedata.aliveworkplace.mc.Chat;
+import io.github.jcondedata.aliveworkplace.mc.Ids;
+import io.github.jcondedata.aliveworkplace.mc.Players;
 import io.github.jcondedata.aliveworkplace.registry.ModAttachments;
 import io.github.jcondedata.aliveworkplace.registry.ModComponents;
 import io.github.jcondedata.aliveworkplace.registry.ModItems;
@@ -43,13 +46,13 @@ public final class Miners {
 
 	@Nullable
 	public static QuarrySite activeSite(ServerLevel level, Villager villager) {
-		BuilderJob job = villager.getAttached(ModAttachments.MINER_JOB);
+		BuilderJob job = ModAttachments.MINER_JOB.get(villager);
 		if (job == null) {
 			return null;
 		}
 		QuarrySite site = QuarrySiteManager.get(level).get(job.siteId());
 		if (site == null) {
-			villager.removeAttached(ModAttachments.MINER_JOB);
+			ModAttachments.MINER_JOB.remove(villager);
 		} else if (site.looksStretched()) {
 			stopStretched(level, site);
 			return null;
@@ -78,9 +81,9 @@ public final class Miners {
 
 	/** Player right-clicked a miner while holding a Quarry Marker. */
 	public static InteractionResult assign(ServerPlayer player, Villager villager, ItemStack stack) {
-		ServerLevel level = player.serverLevel();
+		ServerLevel level = Players.level(player);
 		if (!Friends.mayCommand(player, villager)) {
-			Employer employer = villager.getAttached(ModAttachments.BUILDER_EMPLOYER);
+			Employer employer = ModAttachments.BUILDER_EMPLOYER.get(villager);
 			tell(player, Component.translatable("message.aliveworkplace.not_your_builder", villager.getDisplayName(),
 				employer != null ? employer.name() : "?", player.getGameProfile().getName()), ChatFormatting.RED);
 			return InteractionResult.CONSUME;
@@ -92,7 +95,7 @@ public final class Miners {
 			tell(player, Component.translatable("message.aliveworkplace.quarry.not_marked"), ChatFormatting.YELLOW);
 			return InteractionResult.CONSUME;
 		}
-		if (!data.dimension().get().equals(level.dimension().location())) {
+		if (!data.dimension().get().equals(Ids.of(level.dimension()))) {
 			tell(player, Component.translatable("message.aliveworkplace.assign.wrong_dimension"), ChatFormatting.RED);
 			return InteractionResult.CONSUME;
 		}
@@ -174,11 +177,11 @@ public final class Miners {
 		QuarrySite site = QuarrySiteManager.get(level).create(
 			owner != null ? owner.getUUID() : villager.getUUID(),
 			owner != null ? owner.getGameProfile().getName() : "",
-			level.dimension().location(), clampToWorld(level, box), depth);
+			Ids.of(level.dimension()), clampToWorld(level, box), depth);
 		site.setMiner(villager.getUUID());
 		site.setBench(Builders.benchPos(villager).orElse(null));
 		site.planStairs(site.bench());
-		villager.setAttached(ModAttachments.MINER_JOB, new BuilderJob(site.id()));
+		ModAttachments.MINER_JOB.set(villager, new BuilderJob(site.id()));
 		return site;
 	}
 
@@ -215,7 +218,7 @@ public final class Miners {
 			tell(player, Component.literal("  ").append(BuilderLevels.describe(villager)), ChatFormatting.DARK_AQUA);
 			return;
 		}
-		player.sendSystemMessage(statusText(level, site, villager));
+		Chat.system(player, statusText(level, site, villager));
 	}
 
 	static void notifyNeedsPickaxe(ServerLevel level, Villager villager, QuarrySite site) {
@@ -285,11 +288,11 @@ public final class Miners {
 
 	private static void end(ServerLevel level, Villager villager, QuarrySite site) {
 		QuarrySiteManager.get(level).remove(site.id());
-		villager.removeAttached(ModAttachments.MINER_JOB);
+		ModAttachments.MINER_JOB.remove(villager);
 	}
 
 	static void returnEverything(ServerLevel level, Villager villager, BlockPos bench, List<BlockPos> supplies) {
-		BuilderBag bag = villager.getAttachedOrCreate(ModAttachments.BUILDER_BAG);
+		BuilderBag bag = ModAttachments.BUILDER_BAG.getOrCreate(villager);
 		for (ItemStack stack : bag.takeAll()) {
 			store(level, supplies, bench, stack);
 		}
@@ -335,13 +338,13 @@ public final class Miners {
 		if (entity.getUUID().equals(site.owner())) {
 			return true;
 		}
-		return entity instanceof ServerPlayer p && (p.hasPermissions(2) || Friends.get(p.getServer()).mayDirect(site.owner(), p.getUUID())
-			|| site.miner() != null && p.serverLevel().getEntity(site.miner()) instanceof Villager miner
-			&& miner.getAttached(ModAttachments.BUILDER_EMPLOYER) != null && Friends.mayCommand(p, miner));
+		return entity instanceof ServerPlayer p && (p.hasPermissions(2) || Friends.get(p.level().getServer()).mayDirect(site.owner(), p.getUUID())
+			|| site.miner() != null && Players.level(p).getEntity(site.miner()) instanceof Villager miner
+			&& ModAttachments.BUILDER_EMPLOYER.get(miner) != null && Friends.mayCommand(p, miner));
 	}
 
 	static void tell(Player player, Component message, ChatFormatting color) {
-		player.sendSystemMessage(message.copy().withStyle(color));
+		Chat.system(player, message.copy().withStyle(color));
 	}
 
 	private Miners() {

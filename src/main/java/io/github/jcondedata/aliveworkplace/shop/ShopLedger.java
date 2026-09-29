@@ -1,10 +1,11 @@
 package io.github.jcondedata.aliveworkplace.shop;
 
+import io.github.jcondedata.aliveworkplace.mc.Nbt;
+import io.github.jcondedata.aliveworkplace.platform.Platform;
 import io.github.jcondedata.aliveworkplace.work.Money;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
-import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
@@ -27,7 +28,7 @@ public final class ShopLedger extends SavedData {
 	}
 
 	public static void init() {
-		ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> collect(handler.getPlayer()));
+		Platform.get().onPlayerJoin(ShopLedger::collect);
 	}
 
 	/** Pays {@code dollars} to the shop's owner now if they are online, or when they next join. */
@@ -72,10 +73,10 @@ public final class ShopLedger extends SavedData {
 
 	private static ShopLedger load(CompoundTag tag, HolderLookup.Provider registries) {
 		ShopLedger ledger = new ShopLedger();
-		CompoundTag owed = tag.getCompound("pending");
-		for (String key : owed.getAllKeys()) {
+		CompoundTag owed = Nbt.getCompound(tag, "pending");
+		for (String key : Nbt.keys(owed)) {
 			try {
-				ledger.pending.put(UUID.fromString(key), owed.getLong(key));
+				ledger.pending.put(UUID.fromString(key), Nbt.getLong(owed, key));
 			} catch (IllegalArgumentException ignored) {
 				// not a player id
 			}

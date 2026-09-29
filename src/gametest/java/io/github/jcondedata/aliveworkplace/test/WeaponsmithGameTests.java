@@ -39,7 +39,7 @@ public class WeaponsmithGameTests implements FabricGameTest {
 		chest.setItem(0, pickaxe);
 		chest.setItem(1, new ItemStack(Items.IRON_INGOT, 3));
 		helper.succeedWhen(() -> {
-			helper.assertTrue(smith.getAttachedOrElse(ModAttachments.ITEMS_MENDED, 0) == 1, "mended " + smith.getAttachedOrElse(ModAttachments.ITEMS_MENDED, 0));
+			helper.assertTrue(ModAttachments.ITEMS_MENDED.getOrElse(smith, 0) == 1, "mended " + ModAttachments.ITEMS_MENDED.getOrElse(smith, 0));
 			int damage = -1;
 			for (int i = 0; i < chest.getContainerSize(); i++) {
 				if (chest.getItem(i).is(Items.IRON_PICKAXE)) {

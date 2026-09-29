@@ -29,7 +29,7 @@ public class ShapePlannerItem extends Item {
 		if (player instanceof ServerPlayer serverPlayer) {
 			Shapes.open(serverPlayer, hand);
 		}
-		return InteractionResultHolder.sidedSuccess(stack, level.isClientSide);
+		return InteractionResultHolder.sidedSuccess(stack, level.isClientSide());
 	}
 
 	@Override

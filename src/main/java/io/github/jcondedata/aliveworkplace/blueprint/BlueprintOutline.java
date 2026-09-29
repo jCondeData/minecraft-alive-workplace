@@ -1,6 +1,7 @@
 package io.github.jcondedata.aliveworkplace.blueprint;
 
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
+import io.github.jcondedata.aliveworkplace.mc.Ids;
+import io.github.jcondedata.aliveworkplace.platform.Platform;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Vec3i;
@@ -48,7 +49,7 @@ public final class BlueprintOutline {
 	}
 
 	public static void init() {
-		ServerTickEvents.END_WORLD_TICK.register(level -> {
+		Platform.get().onLevelTick(level -> {
 			if (level.getGameTime() % INTERVAL != 0) {
 				return;
 			}
@@ -56,17 +57,17 @@ public final class BlueprintOutline {
 				for (InteractionHand hand : InteractionHand.values()) {
 					ItemStack stack = player.getItemInHand(hand);
 					var quarry = stack.get(io.github.jcondedata.aliveworkplace.registry.ModComponents.QUARRY);
-					if (quarry != null && quarry.dimension().map(level.dimension().location()::equals).orElse(false)) {
+					if (quarry != null && quarry.dimension().map(Ids.of(level.dimension())::equals).orElse(false)) {
 						quarry.area().ifPresentOrElse(box -> box(level, player, box, QUARRY),
 							() -> quarry.first().ifPresent(p -> box(level, player, new BoundingBox(p), QUARRY)));
 					}
 					var field = stack.get(io.github.jcondedata.aliveworkplace.registry.ModComponents.FIELD);
-					if (field != null && field.dimension().map(level.dimension().location()::equals).orElse(false)) {
+					if (field != null && field.dimension().map(Ids.of(level.dimension())::equals).orElse(false)) {
 						field.area().ifPresentOrElse(box -> box(level, player, box, FIELD),
 							() -> field.first().ifPresent(p -> box(level, player, new BoundingBox(p), FIELD)));
 					}
 					var patrol = stack.get(io.github.jcondedata.aliveworkplace.registry.ModComponents.PATROL);
-					if (patrol != null && patrol.dimension().map(level.dimension().location()::equals).orElse(false)) {
+					if (patrol != null && patrol.dimension().map(Ids.of(level.dimension())::equals).orElse(false)) {
 						BlockPos last = null;
 						for (BlockPos p : patrol.points()) {
 							box(level, player, new BoundingBox(p), PATROL);
@@ -77,12 +78,12 @@ public final class BlueprintOutline {
 						}
 					}
 					var scan = stack.get(io.github.jcondedata.aliveworkplace.registry.ModComponents.SCAN);
-					if (scan != null && scan.dimension().map(level.dimension().location()::equals).orElse(false)) {
+					if (scan != null && scan.dimension().map(Ids.of(level.dimension())::equals).orElse(false)) {
 						scan.area().ifPresentOrElse(box -> box(level, player, box, SCAN),
 							() -> scan.first().ifPresent(p -> box(level, player, new BoundingBox(p), SCAN)));
 					}
 					BlueprintItem.data(stack).ifPresent(data -> data.placement().ifPresent(p -> {
-						if (p.dimension().equals(level.dimension().location()) && data.size().isPresent()) {
+						if (p.dimension().equals(Ids.of(level.dimension())) && data.size().isPresent()) {
 							show(level, player, p, data.size().get());
 						}
 					}));

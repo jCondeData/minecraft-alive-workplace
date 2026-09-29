@@ -2,6 +2,7 @@ package io.github.jcondedata.aliveworkplace.store;
 
 import com.mojang.serialization.MapCodec;
 import io.github.jcondedata.aliveworkplace.build.SupplyContainers;
+import io.github.jcondedata.aliveworkplace.mc.Interact;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerPlayer;
@@ -76,6 +77,6 @@ public class StorehouseBlock extends BaseEntityBlock {
 		if (player instanceof ServerPlayer serverPlayer) {
 			StorehouseBoard.open(serverPlayer, pos);
 		}
-		return InteractionResult.sidedSuccess(level.isClientSide);
+		return Interact.success(level.isClientSide());
 	}
 }

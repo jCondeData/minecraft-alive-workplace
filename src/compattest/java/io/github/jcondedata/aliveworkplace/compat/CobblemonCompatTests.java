@@ -137,7 +137,7 @@ public class CobblemonCompatTests implements FabricGameTest {
 		helper.assertTrue(io.github.jcondedata.aliveworkplace.work.Money.cobbleDollars(), "CobbleDollars is installed here");
 		helper.assertTrue(io.github.jcondedata.aliveworkplace.compat.cobbledollars.CobbleDollarsBank.balance(player) == 100, "a Novice's prize is 100 CobbleDollars, got " + io.github.jcondedata.aliveworkplace.compat.cobbledollars.CobbleDollarsBank.balance(player));
 		helper.assertTrue(trainer.getVillagerXp() > xpBefore, "the trainer got no XP from the battle");
-		helper.assertTrue(trainer.getAttachedOrElse(io.github.jcondedata.aliveworkplace.registry.ModAttachments.TRAINER_BATTLES, 0) == 1, "battle not counted");
+		helper.assertTrue(io.github.jcondedata.aliveworkplace.registry.ModAttachments.TRAINER_BATTLES.getOrElse(trainer, 0) == 1, "battle not counted");
 		helper.succeed();
 	}
 
@@ -177,7 +177,7 @@ public class CobblemonCompatTests implements FabricGameTest {
 		helper.assertTrue(knows, "the Pokémon didn't learn " + name);
 		helper.assertTrue(io.github.jcondedata.aliveworkplace.compat.cobbledollars.CobbleDollarsBank.balance(player) == 10_000 - lesson.dollars(),
 			"paid " + (10_000 - io.github.jcondedata.aliveworkplace.compat.cobbledollars.CobbleDollarsBank.balance(player)) + ", expected " + lesson.dollars());
-		helper.assertTrue(tutor.getAttachedOrElse(io.github.jcondedata.aliveworkplace.registry.ModAttachments.TUTOR_LESSONS, 0) == 1, "lesson not counted");
+		helper.assertTrue(io.github.jcondedata.aliveworkplace.registry.ModAttachments.TUTOR_LESSONS.getOrElse(tutor, 0) == 1, "lesson not counted");
 		String title = io.github.jcondedata.aliveworkplace.tutor.Tutors.title(tutor).getString();
 		helper.assertTrue(title.equals("Master Move Tutor"), "title: " + title);
 		helper.assertTrue(io.github.jcondedata.aliveworkplace.compat.cobblemon.CobblemonTutors.lessons(pokemon).stream()
@@ -215,7 +215,7 @@ public class CobblemonCompatTests implements FabricGameTest {
 			int easy = io.github.jcondedata.aliveworkplace.compat.cobblemon.CobblemonTutors.FIRST_MOVE_SLOT;
 			menu.press(easy, player);
 			menu.press(easy, player);
-			helper.assertTrue(tutor.getAttachedOrElse(io.github.jcondedata.aliveworkplace.registry.ModAttachments.TUTOR_LESSONS, 0) == 0,
+			helper.assertTrue(io.github.jcondedata.aliveworkplace.registry.ModAttachments.TUTOR_LESSONS.getOrElse(tutor, 0) == 0,
 				"a lesson without payment");
 		}
 		helper.assertTrue(io.github.jcondedata.aliveworkplace.tutor.Tutors.grade(40, false) == 1
@@ -292,7 +292,7 @@ public class CobblemonCompatTests implements FabricGameTest {
 			got |= p.getSpecies() == offer.species() && p.getLevel() == offer.level();
 		}
 		helper.assertTrue(got, "the trader's " + offer.species().getName() + " didn't arrive");
-		helper.assertTrue(trader.getAttachedOrElse(io.github.jcondedata.aliveworkplace.registry.ModAttachments.POKEMON_TRADE_COUNT, 0) == 1, "trade not counted");
+		helper.assertTrue(io.github.jcondedata.aliveworkplace.registry.ModAttachments.POKEMON_TRADE_COUNT.getOrElse(trader, 0) == 1, "trade not counted");
 
 		Pokemon another = all.stream().filter(fits).findFirst().orElseThrow().create(offer.minLevel() + 5);
 		party.add(another);
@@ -633,7 +633,7 @@ public class CobblemonCompatTests implements FabricGameTest {
 			}
 			helper.assertTrue(kabuto, "no Kabuto in the party yet");
 			helper.assertTrue(io.github.jcondedata.aliveworkplace.fossil.FossilScientists.queue(scientist).isEmpty(), "the revival is still queued");
-			helper.assertTrue(scientist.getAttachedOrElse(io.github.jcondedata.aliveworkplace.registry.ModAttachments.FOSSILS_REVIVED, 0) == 1, "not counted");
+			helper.assertTrue(io.github.jcondedata.aliveworkplace.registry.ModAttachments.FOSSILS_REVIVED.getOrElse(scientist, 0) == 1, "not counted");
 			io.github.jcondedata.aliveworkplace.fossil.FossilScientists.REVIVE_TICKS = usual;
 		});
 	}
@@ -693,7 +693,7 @@ public class CobblemonCompatTests implements FabricGameTest {
 				&& chest.countItem(net.minecraft.world.item.Items.COPPER_INGOT) == 0, "the makings weren't used up");
 			helper.assertTrue(chest.countItem(com.cobblemon.mod.common.CobblemonItems.BLUE_APRICORN) == 2
 				&& chest.countItem(net.minecraft.world.item.Items.IRON_INGOT) == 1, "a novice shouldn't make Great Balls");
-			helper.assertTrue(smith.getAttachedOrElse(io.github.jcondedata.aliveworkplace.registry.ModAttachments.BALLS_MADE, 0) == 8, "balls not counted");
+			helper.assertTrue(io.github.jcondedata.aliveworkplace.registry.ModAttachments.BALLS_MADE.getOrElse(smith, 0) == 8, "balls not counted");
 		});
 	}
 

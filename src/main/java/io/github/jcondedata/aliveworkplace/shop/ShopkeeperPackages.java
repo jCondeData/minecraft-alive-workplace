@@ -21,7 +21,7 @@ public final class ShopkeeperPackages {
 	public static ImmutableList<Pair<Integer, ? extends BehaviorControl<? super Villager>>> work(float speed) {
 		return ImmutableList.<Pair<Integer, ? extends BehaviorControl<? super Villager>>>of(
 			Pair.of(0, BehaviorBuilder.<Villager>triggerIf(v -> {
-				WorkerStatus.set(v, Component.translatable("message.aliveworkplace.shop.title", v.getAttachedOrElse(ModAttachments.SHOP_SALES, 0)), -1f,
+				WorkerStatus.set(v, Component.translatable("message.aliveworkplace.shop.title", ModAttachments.SHOP_SALES.getOrElse(v, 0)), -1f,
 					Component.translatable("message.aliveworkplace.shop.state.open").withStyle(ChatFormatting.GRAY));
 				return false;
 			})),

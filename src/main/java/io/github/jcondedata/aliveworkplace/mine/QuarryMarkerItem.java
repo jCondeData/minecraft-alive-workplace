@@ -1,5 +1,7 @@
 package io.github.jcondedata.aliveworkplace.mine;
 
+import io.github.jcondedata.aliveworkplace.mc.Chat;
+import io.github.jcondedata.aliveworkplace.mc.Ids;
 import io.github.jcondedata.aliveworkplace.registry.ModComponents;
 import java.util.List;
 import java.util.Optional;
@@ -34,27 +36,27 @@ public class QuarryMarkerItem extends Item {
 	public InteractionResult useOn(UseOnContext context) {
 		Player player = context.getPlayer();
 		ItemStack stack = context.getItemInHand();
-		if (context.getLevel().isClientSide || player == null) {
+		if (context.getLevel().isClientSide() || player == null) {
 			return InteractionResult.SUCCESS;
 		}
 		QuarryData data = data(stack);
 		BlockPos pos = context.getClickedPos();
-		var dim = context.getLevel().dimension().location();
+		var dim = Ids.of(context.getLevel().dimension());
 		if (player.isShiftKeyDown()) {
 			stack.set(ModComponents.QUARRY, new QuarryData(Optional.empty(), Optional.empty(), Optional.empty(), data.depth(), data.stripLevel()));
-			player.displayClientMessage(Component.translatable("message.aliveworkplace.quarry.reset"), true);
+			Chat.actionBar(player, Component.translatable("message.aliveworkplace.quarry.reset"));
 			return InteractionResult.SUCCESS;
 		}
 		if (data.first().isEmpty() || data.isComplete() || !data.dimension().map(dim::equals).orElse(false)) {
 			stack.set(ModComponents.QUARRY, new QuarryData(Optional.of(dim), Optional.of(pos), Optional.empty(), data.depth(), data.stripLevel()));
-			player.displayClientMessage(Component.translatable("message.aliveworkplace.quarry.first", pos.getX(), pos.getY(), pos.getZ()), true);
+			Chat.actionBar(player, Component.translatable("message.aliveworkplace.quarry.first", pos.getX(), pos.getY(), pos.getZ()));
 			return InteractionResult.SUCCESS;
 		}
 		BlockPos first = data.first().get();
 		int w = Math.abs(first.getX() - pos.getX()) + 1;
 		int d = Math.abs(first.getZ() - pos.getZ()) + 1;
 		if (!QuarryData.fits(w, d, data.isStripMine())) {
-			player.displayClientMessage(tooBig(w, d, data.isStripMine()).withStyle(ChatFormatting.RED), true);
+			Chat.actionBar(player, tooBig(w, d, data.isStripMine()).withStyle(ChatFormatting.RED));
 			return InteractionResult.FAIL;
 		}
 		QuarryData done = new QuarryData(Optional.of(dim), Optional.of(first), Optional.of(pos), data.depth(), data.stripLevel());
@@ -67,7 +69,7 @@ public class QuarryMarkerItem extends Item {
 		} else {
 			message = Component.translatable("message.aliveworkplace.quarry.marked", w, d, data.depth());
 		}
-		player.displayClientMessage(message, false);
+		Chat.chat(player, message);
 		return InteractionResult.SUCCESS;
 	}
 
@@ -77,7 +79,7 @@ public class QuarryMarkerItem extends Item {
 		if (!player.isShiftKeyDown()) {
 			return InteractionResultHolder.pass(stack);
 		}
-		if (!level.isClientSide) {
+		if (!level.isClientSide()) {
 			QuarryData data = data(stack);
 			QuarryData next = data.next();
 			stack.set(ModComponents.QUARRY, next);
@@ -89,15 +91,15 @@ public class QuarryMarkerItem extends Item {
 			} else {
 				message = Component.translatable("message.aliveworkplace.quarry.depth", next.depth());
 			}
-			player.displayClientMessage(message, true);
+			Chat.actionBar(player, message);
 			if (next.isComplete()) {
 				BoundingBox box = next.area().orElseThrow();
 				if (!QuarryData.fits(box.getXSpan(), box.getZSpan(), next.isStripMine())) {
-					player.displayClientMessage(tooBig(box.getXSpan(), box.getZSpan(), next.isStripMine()).withStyle(ChatFormatting.RED), false);
+					Chat.chat(player, tooBig(box.getXSpan(), box.getZSpan(), next.isStripMine()).withStyle(ChatFormatting.RED));
 				}
 			}
 		}
-		return InteractionResultHolder.sidedSuccess(stack, level.isClientSide);
+		return InteractionResultHolder.sidedSuccess(stack, level.isClientSide());
 	}
 
 	@Override

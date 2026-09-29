@@ -9,6 +9,7 @@ import com.cobblemon.mod.common.battles.pokemon.BattlePokemon;
 import com.cobblemon.mod.common.entity.pokemon.PokemonEntity;
 import com.cobblemon.mod.common.net.messages.client.battle.BattleEndPacket;
 import com.cobblemon.mod.common.util.LocalizationUtilsKt;
+import io.github.jcondedata.aliveworkplace.mc.Nbt;
 import java.util.List;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerEntityEvents;
 import net.minecraft.network.chat.Component;
@@ -42,7 +43,7 @@ final class VillagerTrainerActor extends AIBattleActor implements EntityBackedBa
 	static void init() {
 		ServerEntityEvents.ENTITY_LOAD.register((entity, level) -> {
 			if (entity instanceof PokemonEntity pokemon && pokemon.getBattleId() == null
-					&& pokemon.getPokemon().getPersistentData().getBoolean(TRAINER_POKEMON)) {
+					&& Nbt.getBoolean(pokemon.getPokemon().getPersistentData(), TRAINER_POKEMON)) {
 				pokemon.discard();
 			}
 		});

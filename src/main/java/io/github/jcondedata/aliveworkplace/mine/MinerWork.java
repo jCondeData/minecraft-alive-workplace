@@ -8,7 +8,6 @@ import io.github.jcondedata.aliveworkplace.build.SupplyContainers;
 import io.github.jcondedata.aliveworkplace.registry.ModAttachments;
 import io.github.jcondedata.aliveworkplace.registry.ModBlocks;
 import java.util.List;
-import net.fabricmc.fabric.api.tag.convention.v2.ConventionalBlockTags;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
@@ -45,6 +44,9 @@ import org.jetbrains.annotations.Nullable;
  * away from lava and water. Restartable at any tick; progress lives in {@link QuarrySite}.
  */
 public class MinerWork extends Behavior<Villager> {
+	/** The common {@code c:ores} tag (shared by mods; Fabric API fills it in). */
+	private static final net.minecraft.tags.TagKey<net.minecraft.world.level.block.Block> ORES = net.minecraft.tags.TagKey.create(
+		net.minecraft.core.registries.Registries.BLOCK, net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("c", "ores"));
 	static final double REACH = 4.5;
 	private static final double CONTAINER_REACH = 3.0;
 	private static final float SPEED = 0.6f;
@@ -104,7 +106,7 @@ public class MinerWork extends Behavior<Villager> {
 		if (bench == null) {
 			return;
 		}
-		BuilderBag bag = villager.getAttachedOrCreate(ModAttachments.BUILDER_BAG);
+		BuilderBag bag = ModAttachments.BUILDER_BAG.getOrCreate(villager);
 
 		// 1. Next block that needs digging (or a step of the stairs that needs filling in, or a ladder in the shaft).
 		BlockPos target = null;
@@ -265,7 +267,7 @@ public class MinerWork extends Behavior<Villager> {
 	 */
 	private static Verdict verdict(ServerLevel level, QuarrySite site, BlockPos pos, ItemStack pick, BuilderBag bag) {
 		BlockState state = level.getBlockState(pos);
-		if (site.isStripMine() && !site.isTunnel(pos) && !state.is(ConventionalBlockTags.ORES)) {
+		if (site.isStripMine() && !site.isTunnel(pos) && !state.is(ORES)) {
 			return Verdict.KEEP; // the rock between the tunnels (ores in it are dug like anything else)
 		}
 		if (site.isStep(pos)) {

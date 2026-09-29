@@ -2,6 +2,8 @@ package io.github.jcondedata.aliveworkplace.shop;
 
 import com.mojang.serialization.MapCodec;
 import io.github.jcondedata.aliveworkplace.build.Friends;
+import io.github.jcondedata.aliveworkplace.mc.Chat;
+import io.github.jcondedata.aliveworkplace.mc.Interact;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -69,22 +71,22 @@ public class ShopCounterBlock extends BaseEntityBlock {
 		super.setPlacedBy(level, pos, state, placer, stack);
 		if (placer instanceof ServerPlayer player && level.getBlockEntity(pos) instanceof ShopCounterBlockEntity counter) {
 			counter.setOwner(player.getUUID(), player.getGameProfile().getName());
-			player.displayClientMessage(Component.translatable("message.aliveworkplace.shop.placed"), false);
+			Chat.chat(player, Component.translatable("message.aliveworkplace.shop.placed"));
 		}
 	}
 
 	@Override
 	protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
 		if (!(player instanceof ServerPlayer serverPlayer) || !(level.getBlockEntity(pos) instanceof ShopCounterBlockEntity counter)) {
-			return InteractionResult.sidedSuccess(level.isClientSide);
+			return Interact.success(level.isClientSide());
 		}
 		if (counter.owner() == null) {
 			counter.setOwner(serverPlayer.getUUID(), serverPlayer.getGameProfile().getName());
 		}
 		boolean mine = serverPlayer.hasPermissions(2) || Friends.get(serverPlayer.server).mayDirect(counter.owner(), serverPlayer.getUUID());
 		if (!mine) {
-			player.displayClientMessage(Component.translatable("message.aliveworkplace.shop.not_yours", counter.ownerName())
-				.withStyle(ChatFormatting.YELLOW), true);
+			Chat.actionBar(player, Component.translatable("message.aliveworkplace.shop.not_yours", counter.ownerName())
+				.withStyle(ChatFormatting.YELLOW));
 			return InteractionResult.CONSUME;
 		}
 		if (player.isShiftKeyDown()) {
@@ -92,7 +94,7 @@ public class ShopCounterBlock extends BaseEntityBlock {
 			return InteractionResult.CONSUME;
 		}
 		player.openMenu(counter);
-		player.displayClientMessage(Component.translatable("message.aliveworkplace.shop.how_to").withStyle(ChatFormatting.GRAY), true);
+		Chat.actionBar(player, Component.translatable("message.aliveworkplace.shop.how_to").withStyle(ChatFormatting.GRAY));
 		return InteractionResult.CONSUME;
 	}
 

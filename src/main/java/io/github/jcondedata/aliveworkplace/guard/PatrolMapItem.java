@@ -2,6 +2,8 @@ package io.github.jcondedata.aliveworkplace.guard;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import io.github.jcondedata.aliveworkplace.mc.Chat;
+import io.github.jcondedata.aliveworkplace.mc.Ids;
 import io.github.jcondedata.aliveworkplace.registry.ModAttachments;
 import io.github.jcondedata.aliveworkplace.registry.ModComponents;
 import java.util.ArrayList;
@@ -57,26 +59,26 @@ public class PatrolMapItem extends Item {
 	@Override
 	public InteractionResult useOn(UseOnContext context) {
 		Player player = context.getPlayer();
-		if (context.getLevel().isClientSide || player == null) {
+		if (context.getLevel().isClientSide() || player == null) {
 			return InteractionResult.SUCCESS;
 		}
 		ItemStack stack = context.getItemInHand();
 		if (player.isShiftKeyDown()) {
 			stack.set(ModComponents.PATROL, Route.EMPTY);
-			player.displayClientMessage(Component.translatable("message.aliveworkplace.patrol.cleared"), true);
+			Chat.actionBar(player, Component.translatable("message.aliveworkplace.patrol.cleared"));
 			return InteractionResult.SUCCESS;
 		}
 		Route route = route(stack);
-		ResourceLocation dim = context.getLevel().dimension().location();
+		ResourceLocation dim = Ids.of(context.getLevel().dimension());
 		List<BlockPos> points = route.dimension().map(dim::equals).orElse(true) ? new ArrayList<>(route.points()) : new ArrayList<>();
 		if (points.size() >= MAX_POINTS) {
-			player.displayClientMessage(Component.translatable("message.aliveworkplace.patrol.full", MAX_POINTS).withStyle(ChatFormatting.YELLOW), true);
+			Chat.actionBar(player, Component.translatable("message.aliveworkplace.patrol.full", MAX_POINTS).withStyle(ChatFormatting.YELLOW));
 			return InteractionResult.FAIL;
 		}
 		BlockPos point = context.getClickedPos().above();
 		points.add(point);
 		stack.set(ModComponents.PATROL, new Route(Optional.of(dim), List.copyOf(points)));
-		player.displayClientMessage(Component.translatable("message.aliveworkplace.patrol.point", points.size(), point.getX(), point.getY(), point.getZ()), true);
+		Chat.actionBar(player, Component.translatable("message.aliveworkplace.patrol.point", points.size(), point.getX(), point.getY(), point.getZ()));
 		context.getLevel().playSound(null, point, SoundEvents.UI_CARTOGRAPHY_TABLE_TAKE_RESULT, SoundSource.PLAYERS, 0.6f, 1.2f);
 		return InteractionResult.SUCCESS;
 	}
@@ -85,17 +87,17 @@ public class PatrolMapItem extends Item {
 	public static InteractionResult giveTo(ServerPlayer player, Villager guard, ItemStack map) {
 		Route route = route(map);
 		if (route.points().isEmpty()) {
-			guard.removeAttached(ModAttachments.PATROL_ROUTE);
-			player.displayClientMessage(Component.translatable("message.aliveworkplace.patrol.taken", guard.getDisplayName()), true);
+			ModAttachments.PATROL_ROUTE.remove(guard);
+			Chat.actionBar(player, Component.translatable("message.aliveworkplace.patrol.taken", guard.getDisplayName()));
 			return InteractionResult.SUCCESS;
 		}
-		if (!route.dimension().map(player.level().dimension().location()::equals).orElse(false)) {
-			player.displayClientMessage(Component.translatable("message.aliveworkplace.patrol.elsewhere").withStyle(ChatFormatting.YELLOW), true);
+		if (!route.dimension().map(Ids.of(player.level().dimension())::equals).orElse(false)) {
+			Chat.actionBar(player, Component.translatable("message.aliveworkplace.patrol.elsewhere").withStyle(ChatFormatting.YELLOW));
 			return InteractionResult.FAIL;
 		}
-		guard.setAttached(ModAttachments.PATROL_ROUTE, route.points());
-		player.displayClientMessage(Component.translatable("message.aliveworkplace.patrol.given", guard.getDisplayName(), route.points().size())
-			.withStyle(ChatFormatting.GREEN), true);
+		ModAttachments.PATROL_ROUTE.set(guard, route.points());
+		Chat.actionBar(player, Component.translatable("message.aliveworkplace.patrol.given", guard.getDisplayName(), route.points().size())
+			.withStyle(ChatFormatting.GREEN));
 		guard.playSound(SoundEvents.VILLAGER_YES, 1f, 1f);
 		return InteractionResult.SUCCESS;
 	}

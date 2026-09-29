@@ -169,7 +169,7 @@ public class GuardPatrol extends Behavior<Villager> {
 			return;
 		}
 		if (walker.walkTo(level, villager, waypoint, 2.0) || walker.noSpot()) {
-			boolean routed = villager.hasAttached(io.github.jcondedata.aliveworkplace.registry.ModAttachments.PATROL_ROUTE);
+			boolean routed = io.github.jcondedata.aliveworkplace.registry.ModAttachments.PATROL_ROUTE.has(villager);
 			waypoint = null;
 			wait = routed ? 20 + level.random.nextInt(40) : 60 + level.random.nextInt(100);
 		}
@@ -178,7 +178,7 @@ public class GuardPatrol extends Behavior<Villager> {
 	/** The next point on the guard's route (within reach of the post), or null without a route. */
 	@Nullable
 	private BlockPos nextOnRoute(Villager villager, BlockPos post) {
-		java.util.List<BlockPos> route = villager.getAttached(io.github.jcondedata.aliveworkplace.registry.ModAttachments.PATROL_ROUTE);
+		java.util.List<BlockPos> route = io.github.jcondedata.aliveworkplace.registry.ModAttachments.PATROL_ROUTE.get(villager);
 		if (route == null || route.isEmpty()) {
 			return null;
 		}
@@ -236,8 +236,7 @@ public class GuardPatrol extends Behavior<Villager> {
 		villager.swing(net.minecraft.world.InteractionHand.MAIN_HAND);
 		TrainingDummyBlock.hit(level, dummy);
 		hits++;
-		villager.setAttached(io.github.jcondedata.aliveworkplace.registry.ModAttachments.DUMMY_HITS,
-			villager.getAttachedOrElse(io.github.jcondedata.aliveworkplace.registry.ModAttachments.DUMMY_HITS, 0) + 1);
+		io.github.jcondedata.aliveworkplace.registry.ModAttachments.DUMMY_HITS.set(villager, io.github.jcondedata.aliveworkplace.registry.ModAttachments.DUMMY_HITS.getOrElse(villager, 0) + 1);
 		if (hits % HITS_PER_XP == 0 && canTrain(villager)) {
 			io.github.jcondedata.aliveworkplace.build.BuilderLevels.addXp(level, villager, 1, null);
 		}
@@ -301,7 +300,7 @@ public class GuardPatrol extends Behavior<Villager> {
 			}
 		}
 		// Healing, regeneration and strength potions, a few.
-		var potionBag = villager.getAttachedOrCreate(io.github.jcondedata.aliveworkplace.registry.ModAttachments.BUILDER_BAG);
+		var potionBag = io.github.jcondedata.aliveworkplace.registry.ModAttachments.BUILDER_BAG.getOrCreate(villager);
 		for (int i = Guards.potions(villager); i < Guards.potionsFor(villager); i++) {
 			ItemStack potion = SupplyContainers.takeOne(level, chests, io.github.jcondedata.aliveworkplace.brew.AlchemistWork::isGuardPotion);
 			if (potion.isEmpty()) {
@@ -315,7 +314,7 @@ public class GuardPatrol extends Behavior<Villager> {
 		}
 		// Spectral and tipped arrows fill the quiver.
 		if (Guards.hasBow(villager)) {
-			var bag = villager.getAttachedOrCreate(io.github.jcondedata.aliveworkplace.registry.ModAttachments.BUILDER_BAG);
+			var bag = io.github.jcondedata.aliveworkplace.registry.ModAttachments.BUILDER_BAG.getOrCreate(villager);
 			int room = Guards.QUIVER - Guards.quiver(villager);
 			while (room > 0) {
 				BlockPos chest = SupplyContainers.firstMatching(level, chests, Guards::isSpecialArrow);

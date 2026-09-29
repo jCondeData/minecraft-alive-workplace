@@ -3,6 +3,7 @@ package io.github.jcondedata.aliveworkplace.mail;
 import io.github.jcondedata.aliveworkplace.build.Builders;
 import io.github.jcondedata.aliveworkplace.build.Employer;
 import io.github.jcondedata.aliveworkplace.build.Friends;
+import io.github.jcondedata.aliveworkplace.mc.Chat;
 import io.github.jcondedata.aliveworkplace.registry.ModAttachments;
 import io.github.jcondedata.aliveworkplace.registry.ModComponents;
 import io.github.jcondedata.aliveworkplace.registry.ModItems;
@@ -30,13 +31,13 @@ public final class Postmen {
 	}
 
 	public static List<RouteData> routes(Villager villager) {
-		return villager.getAttachedOrElse(ModAttachments.COURIER_ROUTES, List.of());
+		return ModAttachments.COURIER_ROUTES.getOrElse(villager, List.of());
 	}
 
 	/** Player gave a postman a Delivery Note: add its route, or (a blank note) end all routes. */
 	public static InteractionResult assign(ServerPlayer player, Villager postman, ItemStack note) {
 		if (!Friends.mayCommand(player, postman)) {
-			Employer employer = postman.getAttached(ModAttachments.BUILDER_EMPLOYER);
+			Employer employer = ModAttachments.BUILDER_EMPLOYER.get(postman);
 			tell(player, Component.translatable("message.aliveworkplace.not_your_builder", postman.getDisplayName(),
 				employer != null ? employer.name() : "?", player.getGameProfile().getName()), ChatFormatting.RED);
 			return InteractionResult.CONSUME;
@@ -55,7 +56,7 @@ public final class Postmen {
 					player.drop(back, false);
 				}
 			}
-			postman.removeAttached(ModAttachments.COURIER_ROUTES);
+			ModAttachments.COURIER_ROUTES.remove(postman);
 			tell(player, Component.translatable("message.aliveworkplace.route.cleared", postman.getDisplayName(), routes.size()), ChatFormatting.GREEN);
 			return InteractionResult.SUCCESS;
 		}
@@ -74,7 +75,7 @@ public final class Postmen {
 		}
 		Friends.hire(player, postman);
 		routes.add(route);
-		postman.setAttached(ModAttachments.COURIER_ROUTES, List.copyOf(routes));
+		ModAttachments.COURIER_ROUTES.set(postman, List.copyOf(routes));
 		if (!player.getAbilities().instabuild) {
 			note.shrink(1);
 		}
@@ -86,7 +87,7 @@ public final class Postmen {
 	public static void sendStatus(Player player, Villager postman) {
 		List<RouteData> routes = routes(postman);
 		MutableComponent text = Component.translatable("message.aliveworkplace.route.header", postman.getDisplayName(),
-			postman.getAttachedOrElse(ModAttachments.MAIL_DELIVERED, 0), routes.size()).withStyle(ChatFormatting.GOLD);
+			ModAttachments.MAIL_DELIVERED.getOrElse(postman, 0), routes.size()).withStyle(ChatFormatting.GOLD);
 		for (RouteData r : routes) {
 			BlockPos f = r.from().orElse(BlockPos.ZERO);
 			BlockPos t = r.to().orElse(BlockPos.ZERO);
@@ -100,11 +101,11 @@ public final class Postmen {
 			text.append(Component.literal("\n  "));
 			text.append(Component.translatable("message.aliveworkplace.route.how_to_end").withStyle(ChatFormatting.DARK_GRAY));
 		}
-		player.sendSystemMessage(text);
+		Chat.system(player, text);
 	}
 
 	private static void tell(Player player, Component message, ChatFormatting color) {
-		player.sendSystemMessage(message.copy().withStyle(color));
+		Chat.system(player, message.copy().withStyle(color));
 	}
 
 	private Postmen() {

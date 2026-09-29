@@ -1,10 +1,10 @@
 package io.github.jcondedata.aliveworkplace.work;
 
 import io.github.jcondedata.aliveworkplace.build.SupplyContainers;
+import io.github.jcondedata.aliveworkplace.mc.Recipes;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
-import net.fabricmc.fabric.api.tag.convention.v2.ConventionalItemTags;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.ItemTags;
@@ -23,6 +23,11 @@ import net.minecraft.world.level.block.entity.SmokerBlockEntity;
  * from the chests keeps them burning. Anything else in a furnace was put there by a player and is left alone.
  */
 public final class Furnaces {
+	/** The common {@code c:raw_materials} and {@code c:ores} item tags (shared by mods; Fabric API fills them in). */
+	private static final net.minecraft.tags.TagKey<net.minecraft.world.item.Item> RAW_MATERIALS = net.minecraft.tags.TagKey.create(
+		net.minecraft.core.registries.Registries.ITEM, net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("c", "raw_materials"));
+	private static final net.minecraft.tags.TagKey<net.minecraft.world.item.Item> ORE_ITEMS = net.minecraft.tags.TagKey.create(
+		net.minecraft.core.registries.Registries.ITEM, net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("c", "ores"));
 	/** Coal kept in a furnace's fuel slot while it has ore to smelt. */
 	static final int FUEL = 16;
 
@@ -90,8 +95,8 @@ public final class Furnaces {
 		SingleRecipeInput input = new SingleRecipeInput(new ItemStack(item));
 		RecipeType<? extends net.minecraft.world.item.crafting.AbstractCookingRecipe> type = furnace instanceof BlastFurnaceBlockEntity ? RecipeType.BLASTING
 			: furnace instanceof SmokerBlockEntity ? RecipeType.SMOKING : RecipeType.SMELTING;
-		return level.getRecipeManager().getRecipeFor(type, input, level)
-			.map(r -> r.value().assemble(input, level.registryAccess()))
+		return Recipes.find(Recipes.manager(level), type, input, level)
+			.map(r -> Recipes.assemble(r.value(), input, level.registryAccess()))
 			.orElse(ItemStack.EMPTY);
 	}
 
@@ -145,7 +150,7 @@ public final class Furnaces {
 	/** Raw ores and ore blocks (by the common {@code c:} tags, so modded ores count too): what miners smelt. */
 	public static boolean isOre(Item item) {
 		ItemStack stack = new ItemStack(item);
-		return stack.is(ConventionalItemTags.RAW_MATERIALS) || stack.is(ConventionalItemTags.ORES);
+		return stack.is(RAW_MATERIALS) || stack.is(ORE_ITEMS);
 	}
 
 	/** Raw fish: what fishers put in a smoker or furnace (cooked fish have no recipe, so they're never loaded). */
@@ -159,12 +164,12 @@ public final class Furnaces {
 			: furnace instanceof SmokerBlockEntity ? RecipeType.SMOKING : RecipeType.SMELTING;
 		SingleRecipeInput input = new SingleRecipeInput(new ItemStack(item));
 		if (type == RecipeType.BLASTING) {
-			return level.getRecipeManager().getRecipeFor(RecipeType.BLASTING, input, level).isPresent();
+			return Recipes.find(Recipes.manager(level), RecipeType.BLASTING, input, level).isPresent();
 		}
 		if (type == RecipeType.SMOKING) {
-			return level.getRecipeManager().getRecipeFor(RecipeType.SMOKING, input, level).isPresent();
+			return Recipes.find(Recipes.manager(level), RecipeType.SMOKING, input, level).isPresent();
 		}
-		return level.getRecipeManager().getRecipeFor(RecipeType.SMELTING, input, level).isPresent();
+		return Recipes.find(Recipes.manager(level), RecipeType.SMELTING, input, level).isPresent();
 	}
 
 	private Furnaces() {

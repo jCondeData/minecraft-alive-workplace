@@ -45,7 +45,7 @@ public class ScribeGameTests implements FabricGameTest {
 		helper.succeedWhen(() -> {
 			helper.assertTrue(guard.getItemBySlot(EquipmentSlot.MAINHAND).isEnchanted(), "the sword isn't enchanted");
 			helper.assertTrue(chest.countItem(Items.LAPIS_LAZULI) < 3, "no lapis used");
-			helper.assertTrue(librarian.getAttachedOrElse(ModAttachments.ITEMS_ENCHANTED, 0) >= 1, "nothing enchanted");
+			helper.assertTrue(ModAttachments.ITEMS_ENCHANTED.getOrElse(librarian, 0) >= 1, "nothing enchanted");
 			Village.RADIUS = 0;
 		});
 	}

@@ -1,5 +1,8 @@
 package io.github.jcondedata.aliveworkplace.command;
 
+import io.github.jcondedata.aliveworkplace.mc.Chat;
+import io.github.jcondedata.aliveworkplace.mc.Players;
+import io.github.jcondedata.aliveworkplace.platform.Platform;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -14,7 +17,6 @@ import io.github.jcondedata.aliveworkplace.build.Builders;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -41,7 +43,7 @@ import net.minecraft.world.entity.npc.Villager;
  */
 public final class WorkplaceCommand {
 	public static void init() {
-		CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> register(dispatcher));
+		Platform.get().onRegisterCommands(dispatcher -> register(dispatcher));
 	}
 
 	private static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
@@ -89,7 +91,7 @@ public final class WorkplaceCommand {
 			ctx.getSource().sendFailure(Component.translatable("message.aliveworkplace.quarry.strip_command.no_marker"));
 			return 0;
 		}
-		ServerLevel level = player.serverLevel();
+		ServerLevel level = Players.level(player);
 		int low = level.getMinBuildHeight() + 1;
 		int high = level.getMaxBuildHeight() - 3;
 		if (height < low || height > high) {
@@ -98,8 +100,8 @@ public final class WorkplaceCommand {
 		}
 		io.github.jcondedata.aliveworkplace.mine.QuarryData data = io.github.jcondedata.aliveworkplace.mine.QuarryMarkerItem.data(marker).withStripLevel(height);
 		marker.set(io.github.jcondedata.aliveworkplace.registry.ModComponents.QUARRY, data);
-		player.displayClientMessage(Component.translatable("message.aliveworkplace.quarry.strip_level", height,
-			io.github.jcondedata.aliveworkplace.mine.QuarryMarkerItem.oresAt(height)), false);
+		Chat.chat(player, Component.translatable("message.aliveworkplace.quarry.strip_level", height,
+			io.github.jcondedata.aliveworkplace.mine.QuarryMarkerItem.oresAt(height)));
 		return 1;
 	}
 

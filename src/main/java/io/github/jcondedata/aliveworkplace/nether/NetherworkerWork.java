@@ -98,7 +98,7 @@ public class NetherworkerWork extends Behavior<Villager> {
 		if (brazier == null) {
 			return;
 		}
-		BuilderBag bag = villager.getAttachedOrCreate(ModAttachments.BUILDER_BAG);
+		BuilderBag bag = ModAttachments.BUILDER_BAG.getOrCreate(villager);
 		switch (phase) {
 			case PACKING -> pack(level, villager, brazier, bag);
 			case TO_PORTAL -> toPortal(level, villager, bag, gameTime);

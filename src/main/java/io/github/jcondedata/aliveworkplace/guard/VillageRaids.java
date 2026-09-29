@@ -3,6 +3,7 @@ package io.github.jcondedata.aliveworkplace.guard;
 import io.github.jcondedata.aliveworkplace.hall.Chronicle;
 import io.github.jcondedata.aliveworkplace.hall.VillageHalls;
 import io.github.jcondedata.aliveworkplace.hall.VillageNeeds;
+import io.github.jcondedata.aliveworkplace.mc.Chat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -173,7 +174,7 @@ public final class VillageRaids {
 		Component name = VillageHalls.name(level, hall);
 		String kind = camp.isPresent() ? "bandits" : "begins";
 		for (ServerPlayer player : players(level, hall)) {
-			player.displayClientMessage(Component.translatable("message.aliveworkplace.raid." + kind, spawned, name).withStyle(ChatFormatting.RED), false);
+			Chat.chat(player, Component.translatable("message.aliveworkplace.raid." + kind, spawned, name).withStyle(ChatFormatting.RED));
 		}
 		Chronicle.record(level, hall, Chronicle.Kind.RAID, Component.translatable(camp.isPresent() ? "chronicle.aliveworkplace.bandit_raid" : "chronicle.aliveworkplace.raid", spawned));
 		return raid;
@@ -183,8 +184,8 @@ public final class VillageRaids {
 		ACTIVE.remove(hall);
 		Component name = VillageHalls.name(level, hall);
 		for (ServerPlayer player : players(level, hall)) {
-			player.displayClientMessage(Component.translatable(fled ? "message.aliveworkplace.raid.fled" : "message.aliveworkplace.raid.won", name)
-				.withStyle(ChatFormatting.GREEN), false);
+			Chat.chat(player, Component.translatable(fled ? "message.aliveworkplace.raid.fled" : "message.aliveworkplace.raid.won", name)
+				.withStyle(ChatFormatting.GREEN));
 		}
 		Chronicle.record(level, hall, Chronicle.Kind.RAID, Component.translatable(fled ? "chronicle.aliveworkplace.raid_fled" : "chronicle.aliveworkplace.raid_won",
 			raid.raiders()));

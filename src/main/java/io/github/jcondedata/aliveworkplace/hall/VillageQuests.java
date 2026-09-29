@@ -3,6 +3,9 @@ package io.github.jcondedata.aliveworkplace.hall;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.jcondedata.aliveworkplace.build.SupplyContainers;
+import io.github.jcondedata.aliveworkplace.mc.Chat;
+import io.github.jcondedata.aliveworkplace.mc.Lookup;
+import io.github.jcondedata.aliveworkplace.mc.Players;
 import io.github.jcondedata.aliveworkplace.registry.ModVillagers;
 import io.github.jcondedata.aliveworkplace.work.Money;
 import io.github.jcondedata.aliveworkplace.work.Requests;
@@ -67,7 +70,7 @@ public final class VillageQuests {
 		).apply(i, Quest::new));
 
 		public Item itemType() {
-			return BuiltInRegistries.ITEM.get(ResourceLocation.parse(item));
+			return Lookup.value(BuiltInRegistries.ITEM, ResourceLocation.parse(item));
 		}
 
 		public int left() {
@@ -155,7 +158,7 @@ public final class VillageQuests {
 		Component text = Component.translatable("message.aliveworkplace.quest.posted", VillageHalls.name(level, hall), describe(quest))
 			.withStyle(ChatFormatting.GOLD);
 		for (ServerPlayer player : level.getPlayers(p -> p.distanceToSqr(hall.getCenter()) < (double) VillageHalls.RADIUS * VillageHalls.RADIUS)) {
-			player.displayClientMessage(text, false);
+			Chat.chat(player, text);
 		}
 	}
 
@@ -173,7 +176,7 @@ public final class VillageQuests {
 	 * or the village store. Returns how many were handed in; completes the quest (and pays) when that's the last of it.
 	 */
 	public static int handIn(ServerPlayer player, BlockPos hall, UUID questId) {
-		ServerLevel level = player.serverLevel();
+		ServerLevel level = Players.level(player);
 		if (!(level.getBlockEntity(hall) instanceof VillageHallBlockEntity entity)) {
 			return 0;
 		}
@@ -225,8 +228,8 @@ public final class VillageQuests {
 			player != null ? player.getDisplayName() : Component.translatable("chronicle.aliveworkplace.someone"), describe(quest)), true);
 		if (player != null) {
 			Money.pay(player, (long) quest.reward() * Money.DOLLARS_PER_EMERALD, quest.reward());
-			player.displayClientMessage(Component.translatable("message.aliveworkplace.quest.done", describe(quest), Money.describe(
-				(long) quest.reward() * Money.DOLLARS_PER_EMERALD, quest.reward())).withStyle(ChatFormatting.GREEN), false);
+			Chat.chat(player, Component.translatable("message.aliveworkplace.quest.done", describe(quest), Money.describe(
+				(long) quest.reward() * Money.DOLLARS_PER_EMERALD, quest.reward())).withStyle(ChatFormatting.GREEN));
 			level.playSound(null, player.blockPosition(), SoundEvents.PLAYER_LEVELUP, SoundSource.PLAYERS, 0.6f, 1.3f);
 		}
 	}

@@ -1,12 +1,14 @@
 package io.github.jcondedata.aliveworkplace.fossil;
 
+import io.github.jcondedata.aliveworkplace.mc.Chat;
+import io.github.jcondedata.aliveworkplace.mc.Lookup;
+import io.github.jcondedata.aliveworkplace.platform.Platform;
 import io.github.jcondedata.aliveworkplace.build.BuilderLevels;
 import io.github.jcondedata.aliveworkplace.registry.ModAttachments;
 import io.github.jcondedata.aliveworkplace.registry.ModVillagers;
 import io.github.jcondedata.aliveworkplace.work.Money;
 import java.util.ArrayList;
 import java.util.List;
-import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
@@ -27,7 +29,7 @@ import net.minecraft.world.item.ItemStack;
  * the next time you're online. It's Cobblemon's own revival (the same Pokémon its machine gives), without the machine.
  */
 public final class FossilScientists {
-	public static final boolean COBBLEMON = FabricLoader.getInstance().isModLoaded("cobblemon");
+	public static final boolean COBBLEMON = Platform.get().isModLoaded("cobblemon");
 	/** Ticks of work a revival takes for a novice (shorter at each level and with Pokémon partners). Tests shorten it. */
 	public static int REVIVE_TICKS = 3600;
 	/** Price of a revival, in emeralds (or CobbleDollars at the usual rate). */
@@ -46,14 +48,14 @@ public final class FossilScientists {
 	}
 
 	public static List<Revival> queue(Villager villager) {
-		return villager.getAttachedOrElse(ModAttachments.FOSSIL_REVIVALS, List.of());
+		return ModAttachments.FOSSIL_REVIVALS.getOrElse(villager, List.of());
 	}
 
 	static void setQueue(Villager villager, List<Revival> queue) {
 		if (queue.isEmpty()) {
-			villager.removeAttached(ModAttachments.FOSSIL_REVIVALS);
+			ModAttachments.FOSSIL_REVIVALS.remove(villager);
 		} else {
-			villager.setAttached(ModAttachments.FOSSIL_REVIVALS, List.copyOf(queue));
+			ModAttachments.FOSSIL_REVIVALS.set(villager, List.copyOf(queue));
 		}
 	}
 
@@ -136,7 +138,7 @@ public final class FossilScientists {
 			delivered++;
 			tell(player, Component.translatable("message.aliveworkplace.fossil.revived", scientist.getDisplayName(), pokemon), ChatFormatting.GREEN);
 			level.playSound(null, player.blockPosition(), SoundEvents.PLAYER_LEVELUP, SoundSource.PLAYERS, 0.6f, 1.4f);
-			scientist.setAttached(ModAttachments.FOSSILS_REVIVED, scientist.getAttachedOrElse(ModAttachments.FOSSILS_REVIVED, 0) + 1);
+			ModAttachments.FOSSILS_REVIVED.set(scientist, ModAttachments.FOSSILS_REVIVED.getOrElse(scientist, 0) + 1);
 			BuilderLevels.addXp(level, scientist, XP_PER_REVIVAL, player.getUUID());
 		}
 		if (delivered > 0) {
@@ -152,13 +154,13 @@ public final class FossilScientists {
 			if (i > 0) {
 				out.append(Component.translatable("message.aliveworkplace.partners.and"));
 			}
-			out.append(BuiltInRegistries.ITEM.get(items.get(i)).getDescription());
+			out.append(Lookup.value(BuiltInRegistries.ITEM, items.get(i)).getDescription());
 		}
 		return out;
 	}
 
 	static void tell(Player player, Component text, ChatFormatting color) {
-		player.sendSystemMessage(text.copy().withStyle(color));
+		Chat.system(player, text.copy().withStyle(color));
 	}
 
 	private FossilScientists() {

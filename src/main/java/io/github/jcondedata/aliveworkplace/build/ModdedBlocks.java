@@ -1,5 +1,7 @@
 package io.github.jcondedata.aliveworkplace.build;
 
+import io.github.jcondedata.aliveworkplace.mc.Lookup;
+import io.github.jcondedata.aliveworkplace.mc.Nbt;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -63,11 +65,11 @@ final class ModdedBlocks {
 	static void extraCosts(Block block, CompoundTag nbt, List<MaterialRules.Requirement> out) {
 		// Blocks that wrap another block (Moonlight "Mimic": way signs and rope knots on fences, filled
 		// timber frames, and other mods using the same library) also cost the wrapped block.
-		if (nbt.contains("Mimic", Tag.TAG_COMPOUND)) {
-			String name = nbt.getCompound("Mimic").getString("Name");
+		if (Nbt.has(nbt, "Mimic", Tag.TAG_COMPOUND)) {
+			String name = Nbt.getString(Nbt.getCompound(nbt, "Mimic"), "Name");
 			ResourceLocation id = ResourceLocation.tryParse(name);
 			if (id != null) {
-				Block held = BuiltInRegistries.BLOCK.get(id);
+				Block held = Lookup.value(BuiltInRegistries.BLOCK, id);
 				Item item = held.asItem();
 				if (held != Blocks.AIR && item != Items.AIR) {
 					out.add(new MaterialRules.Requirement(item, 1));
@@ -76,8 +78,8 @@ final class ModdedBlocks {
 		}
 		// Supplementaries way signs: one sign item per arm, in the arm's wood.
 		for (String arm : new String[]{"SignUp", "SignDown"}) {
-			if (nbt.contains(arm, Tag.TAG_COMPOUND) && nbt.getCompound(arm).getBoolean("Active")) {
-				waySign(nbt.getCompound(arm).getString("WoodType")).ifPresent(item -> out.add(new MaterialRules.Requirement(item, 1)));
+			if (Nbt.has(nbt, arm, Tag.TAG_COMPOUND) && Nbt.getBoolean(Nbt.getCompound(nbt, arm), "Active")) {
+				waySign(Nbt.getString(Nbt.getCompound(nbt, arm), "WoodType")).ifPresent(item -> out.add(new MaterialRules.Requirement(item, 1)));
 			}
 		}
 	}

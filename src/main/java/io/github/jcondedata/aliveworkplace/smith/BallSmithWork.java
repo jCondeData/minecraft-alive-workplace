@@ -150,13 +150,13 @@ public class BallSmithWork extends Behavior<Villager> {
 			Block.popResource(level, bench.above(), rest);
 		}
 		level.playSound(null, bench, SoundEvents.ANVIL_USE, SoundSource.BLOCKS, 0.3f, 1.6f);
-		villager.setAttached(ModAttachments.BALLS_MADE, villager.getAttachedOrElse(ModAttachments.BALLS_MADE, 0) + made);
+		ModAttachments.BALLS_MADE.set(villager, ModAttachments.BALLS_MADE.getOrElse(villager, 0) + made);
 		BuilderLevels.addXp(level, villager, recipe.tier(), null);
 		return true;
 	}
 
 	private static void status(Villager villager, Phase phase, @Nullable BallRecipes.BallRecipe making) {
-		Component title = Component.translatable("message.aliveworkplace.ball_smith.title", villager.getAttachedOrElse(ModAttachments.BALLS_MADE, 0));
+		Component title = Component.translatable("message.aliveworkplace.ball_smith.title", ModAttachments.BALLS_MADE.getOrElse(villager, 0));
 		Component line = making != null
 			? Component.translatable("message.aliveworkplace.ball_smith.state.crafting", making.result().getHoverName()).withStyle(ChatFormatting.GRAY)
 			: Component.translatable("message.aliveworkplace.ball_smith.state." + phase.name().toLowerCase())

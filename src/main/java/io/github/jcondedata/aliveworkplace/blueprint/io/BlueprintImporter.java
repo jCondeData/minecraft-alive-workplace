@@ -2,6 +2,7 @@ package io.github.jcondedata.aliveworkplace.blueprint.io;
 
 import io.github.jcondedata.aliveworkplace.AliveWorkplace;
 import io.github.jcondedata.aliveworkplace.blueprint.Blueprint;
+import io.github.jcondedata.aliveworkplace.mc.Lookup;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -46,7 +47,7 @@ public final class BlueprintImporter {
 			throw new BlueprintFormatException("empty");
 		}
 		StructureTemplate template = manager.getOrCreate(id);
-		template.load(BuiltInRegistries.BLOCK.asLookup(), BlueprintFiles.toStructureNbt(result.blueprint()));
+		template.load(Lookup.lookup(BuiltInRegistries.BLOCK), BlueprintFiles.toStructureNbt(result.blueprint()));
 		if (!manager.save(id)) {
 			manager.remove(id);
 			throw new BlueprintFormatException("save_failed");

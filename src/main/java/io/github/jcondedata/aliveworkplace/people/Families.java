@@ -39,12 +39,12 @@ public final class Families {
 
 	/** Notes {@code mother} and {@code father} as {@code baby}'s parents. */
 	public static void born(Villager baby, Villager mother, Villager father) {
-		baby.setAttached(ModAttachments.PARENTS, new Parents(mother.getDisplayName(), father.getDisplayName(), job(mother), job(father), false));
+		ModAttachments.PARENTS.set(baby, new Parents(mother.getDisplayName(), father.getDisplayName(), job(mother), job(father), false));
 	}
 
 	@Nullable
 	public static Parents parents(Villager villager) {
-		return villager.getAttached(ModAttachments.PARENTS);
+		return ModAttachments.PARENTS.get(villager);
 	}
 
 	private static String job(Villager villager) {
@@ -62,7 +62,7 @@ public final class Families {
 			return;
 		}
 		if (!parents.grownUp()) {
-			villager.setAttached(ModAttachments.PARENTS, parents.grown());
+			ModAttachments.PARENTS.set(villager, parents.grown());
 			Chronicle.record(level, hall, Chronicle.Kind.BIRTH, Component.translatable("chronicle.aliveworkplace.grown_up", villager.getDisplayName(),
 				parents.mother(), parents.father()));
 		}

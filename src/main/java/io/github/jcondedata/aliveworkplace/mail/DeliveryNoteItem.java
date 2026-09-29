@@ -1,10 +1,11 @@
 package io.github.jcondedata.aliveworkplace.mail;
 
+import io.github.jcondedata.aliveworkplace.mc.Chat;
 import io.github.jcondedata.aliveworkplace.registry.ModComponents;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import net.fabricmc.fabric.api.transfer.v1.item.ItemStorage;
+import io.github.jcondedata.aliveworkplace.platform.Platform;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -36,7 +37,7 @@ public class DeliveryNoteItem extends Item {
 	@Override
 	public InteractionResult useOn(UseOnContext context) {
 		Player player = context.getPlayer();
-		if (context.getLevel().isClientSide || player == null) {
+		if (context.getLevel().isClientSide() || player == null) {
 			return InteractionResult.SUCCESS;
 		}
 		ItemStack stack = context.getItemInHand();
@@ -44,24 +45,24 @@ public class DeliveryNoteItem extends Item {
 		BlockPos pos = context.getClickedPos();
 		if (player.isShiftKeyDown()) {
 			stack.set(ModComponents.ROUTE, new RouteData(Optional.empty(), Optional.empty(), data.filter()));
-			player.displayClientMessage(Component.translatable("message.aliveworkplace.route.reset"), true);
+			Chat.actionBar(player, Component.translatable("message.aliveworkplace.route.reset"));
 			return InteractionResult.SUCCESS;
 		}
 		boolean pasture = io.github.jcondedata.aliveworkplace.work.Pastures.isPasture(context.getLevel().getBlockState(pos));
 		if (pasture && context.getLevel().getBlockState(pos.below()).is(context.getLevel().getBlockState(pos).getBlock())) {
 			pos = pos.below(); // the top half: use the pasture's base
 		}
-		if (!pasture && (ItemStorage.SIDED.find(context.getLevel(), pos, null) == null
+		if (!pasture && (!Platform.get().items().isStore(context.getLevel(), pos)
 			|| context.getLevel().getBlockEntity(pos) instanceof io.github.jcondedata.aliveworkplace.work.PrivateContainer)) {
-			player.displayClientMessage(Component.translatable("message.aliveworkplace.route.not_container").withStyle(ChatFormatting.YELLOW), true);
+			Chat.actionBar(player, Component.translatable("message.aliveworkplace.route.not_container").withStyle(ChatFormatting.YELLOW));
 			return InteractionResult.FAIL;
 		}
 		if (data.from().isEmpty() || data.isComplete()) {
 			stack.set(ModComponents.ROUTE, new RouteData(Optional.of(pos), Optional.empty(), data.filter()));
-			player.displayClientMessage(Component.translatable("message.aliveworkplace.route.from", pos.getX(), pos.getY(), pos.getZ()), true);
+			Chat.actionBar(player, Component.translatable("message.aliveworkplace.route.from", pos.getX(), pos.getY(), pos.getZ()));
 		} else {
 			stack.set(ModComponents.ROUTE, new RouteData(data.from(), Optional.of(pos), data.filter()));
-			player.displayClientMessage(Component.translatable("message.aliveworkplace.route.to", pos.getX(), pos.getY(), pos.getZ()), false);
+			Chat.chat(player, Component.translatable("message.aliveworkplace.route.to", pos.getX(), pos.getY(), pos.getZ()));
 		}
 		return InteractionResult.SUCCESS;
 	}
@@ -77,10 +78,10 @@ public class DeliveryNoteItem extends Item {
 			RouteData next = data(stack).toggle(other.getItem());
 			stack.set(ModComponents.ROUTE, next);
 			boolean added = next.filter().contains(other.getItem());
-			player.displayClientMessage(Component.translatable(added ? "message.aliveworkplace.route.filter_add" : "message.aliveworkplace.route.filter_remove",
-				other.getHoverName()), true);
+			Chat.actionBar(player, Component.translatable(added ? "message.aliveworkplace.route.filter_add" : "message.aliveworkplace.route.filter_remove",
+				other.getHoverName()));
 		}
-		return InteractionResultHolder.sidedSuccess(stack, level.isClientSide);
+		return InteractionResultHolder.sidedSuccess(stack, level.isClientSide());
 	}
 
 	@Override

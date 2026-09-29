@@ -123,7 +123,7 @@ public class BeekeeperWork extends Behavior<Villager> {
 			status(villager, "no_chest");
 			return;
 		}
-		BuilderBag bag = villager.getAttachedOrCreate(ModAttachments.BUILDER_BAG);
+		BuilderBag bag = ModAttachments.BUILDER_BAG.getOrCreate(villager);
 		if (task == Task.NONE) {
 			if (--lookTimer > 0) {
 				status(villager, idle, RADIUS);
@@ -295,7 +295,7 @@ public class BeekeeperWork extends Behavior<Villager> {
 		if (level.getBlockEntity(target) instanceof BeehiveBlockEntity hive && !hive.isFireNearby()) {
 			hive.emptyAllLivingFromHive(null, state, BeehiveBlockEntity.BeeReleaseStatus.EMERGENCY);
 		}
-		villager.setAttached(ModAttachments.HIVES_HARVESTED, villager.getAttachedOrElse(ModAttachments.HIVES_HARVESTED, 0) + 1);
+		ModAttachments.HIVES_HARVESTED.set(villager, ModAttachments.HIVES_HARVESTED.getOrElse(villager, 0) + 1);
 		BuilderLevels.addXp(level, villager, 2, null);
 		done();
 	}
@@ -436,7 +436,7 @@ public class BeekeeperWork extends Behavior<Villager> {
 	}
 
 	private static void status(Villager villager, String state, Object... args) {
-		Component title = Component.translatable("message.aliveworkplace.beekeeper.title", villager.getAttachedOrElse(ModAttachments.HIVES_HARVESTED, 0));
+		Component title = Component.translatable("message.aliveworkplace.beekeeper.title", ModAttachments.HIVES_HARVESTED.getOrElse(villager, 0));
 		boolean warn = state.equals("no_chest") || state.equals("no_hives");
 		WorkerStatus.set(villager, title, -1f, Component.translatable("message.aliveworkplace.beekeeper.state." + state, args)
 			.withStyle(warn ? ChatFormatting.YELLOW : ChatFormatting.GRAY));

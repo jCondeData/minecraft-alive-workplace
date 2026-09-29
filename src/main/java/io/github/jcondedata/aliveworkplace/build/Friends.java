@@ -1,5 +1,7 @@
 package io.github.jcondedata.aliveworkplace.build;
 
+import io.github.jcondedata.aliveworkplace.mc.Nbt;
+import io.github.jcondedata.aliveworkplace.mc.Rules;
 import io.github.jcondedata.aliveworkplace.registry.ModAttachments;
 import io.github.jcondedata.aliveworkplace.registry.ModGameRules;
 import java.util.HashMap;
@@ -56,20 +58,20 @@ public final class Friends extends SavedData {
 
 	/** True if {@code player} may give this builder orders (hand over blueprints). */
 	public static boolean mayCommand(Player player, Villager builder) {
-		if (!player.level().getGameRules().getBoolean(ModGameRules.BUILDER_OWNERSHIP) || player.hasPermissions(2)) {
+		if (!Rules.on(player.level(), ModGameRules.BUILDER_OWNERSHIP) || player.hasPermissions(2)) {
 			return true;
 		}
-		Employer employer = builder.getAttached(ModAttachments.BUILDER_EMPLOYER);
-		return employer == null || player.getServer() == null || get(player.getServer()).mayDirect(employer.id(), player.getUUID());
+		Employer employer = ModAttachments.BUILDER_EMPLOYER.get(builder);
+		return employer == null || player.level().getServer() == null || get(player.level().getServer()).mayDirect(employer.id(), player.getUUID());
 	}
 
 	/** The builder's employer, hiring {@code player} as one if it has none yet. */
 	@Nullable
 	public static Employer hire(ServerPlayer player, Villager builder) {
-		Employer employer = builder.getAttached(ModAttachments.BUILDER_EMPLOYER);
+		Employer employer = ModAttachments.BUILDER_EMPLOYER.get(builder);
 		if (employer == null) {
 			employer = new Employer(player.getUUID(), player.getGameProfile().getName());
-			builder.setAttached(ModAttachments.BUILDER_EMPLOYER, employer);
+			ModAttachments.BUILDER_EMPLOYER.set(builder, employer);
 		}
 		return employer;
 	}
@@ -80,8 +82,8 @@ public final class Friends extends SavedData {
 		for (Map.Entry<UUID, Map<UUID, String>> e : friends.entrySet()) {
 			for (Map.Entry<UUID, String> f : e.getValue().entrySet()) {
 				CompoundTag entry = new CompoundTag();
-				entry.putUUID("player", e.getKey());
-				entry.putUUID("friend", f.getKey());
+				Nbt.putUuid(entry, "player", e.getKey());
+				Nbt.putUuid(entry, "friend", f.getKey());
 				entry.putString("name", f.getValue());
 				list.add(entry);
 			}
@@ -92,10 +94,10 @@ public final class Friends extends SavedData {
 
 	private static Friends load(CompoundTag tag, HolderLookup.Provider registries) {
 		Friends out = new Friends();
-		for (Tag t : tag.getList("friends", Tag.TAG_COMPOUND)) {
+		for (Tag t : Nbt.getList(tag, "friends", Tag.TAG_COMPOUND)) {
 			CompoundTag entry = (CompoundTag) t;
-			if (entry.hasUUID("player") && entry.hasUUID("friend")) {
-				out.friends.computeIfAbsent(entry.getUUID("player"), p -> new LinkedHashMap<>()).put(entry.getUUID("friend"), entry.getString("name"));
+			if (Nbt.hasUuid(entry, "player") && Nbt.hasUuid(entry, "friend")) {
+				out.friends.computeIfAbsent(Nbt.getUuid(entry, "player"), p -> new LinkedHashMap<>()).put(Nbt.getUuid(entry, "friend"), Nbt.getString(entry, "name"));
 			}
 		}
 		return out;

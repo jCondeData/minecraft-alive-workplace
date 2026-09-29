@@ -51,7 +51,7 @@ public class FisherGameTests implements FabricGameTest {
 		Villager villager = fisherman(helper);
 		Fishers.start(helper.getLevel(), villager, new ItemStack(Items.FISHING_ROD));
 		helper.succeedWhen(() -> {
-			int caught = villager.getAttachedOrElse(ModAttachments.FISH_CAUGHT, 0);
+			int caught = ModAttachments.FISH_CAUGHT.getOrElse(villager, 0);
 			helper.assertTrue(caught >= 5, "only " + caught + " caught");
 			Container barrel = helper.getBlockEntity(BARREL);
 			helper.assertTrue(stored(barrel) >= 5, "only " + stored(barrel) + " items in the barrel");
@@ -84,7 +84,7 @@ public class FisherGameTests implements FabricGameTest {
 		barrel.setItem(1, new ItemStack(Items.COOKED_SALMON, 3)); // already cooked: stays put
 		Fishers.start(helper.getLevel(), villager, new ItemStack(Items.FISHING_ROD));
 		helper.succeedWhen(() -> {
-			int caught = villager.getAttachedOrElse(ModAttachments.FISH_CAUGHT, 0);
+			int caught = ModAttachments.FISH_CAUGHT.getOrElse(villager, 0);
 			helper.assertTrue(caught >= 5, "only " + caught + " caught");
 			helper.assertTrue(barrel.countItem(Items.COD) + barrel.countItem(Items.SALMON) == 0, "raw fish left in the barrel");
 			helper.assertTrue(barrel.countItem(Items.COOKED_SALMON) >= 3, "the cooked salmon went into the smoker");
@@ -104,7 +104,7 @@ public class FisherGameTests implements FabricGameTest {
 		worn.setDamageValue(worn.getMaxDamage() - 1); // breaks on the first catch
 		Fishers.start(helper.getLevel(), villager, worn);
 		helper.succeedWhen(() -> {
-			helper.assertTrue(villager.getAttachedOrElse(ModAttachments.FISH_CAUGHT, 0) >= 2, "no second catch yet");
+			helper.assertTrue(ModAttachments.FISH_CAUGHT.getOrElse(villager, 0) >= 2, "no second catch yet");
 			helper.assertTrue(villager.getItemBySlot(EquipmentSlot.MAINHAND).is(Items.FISHING_ROD), "no rod in hand");
 			helper.assertTrue(barrel.countItem(Items.FISHING_ROD) == 0, "the spare rod is still in the barrel");
 		});

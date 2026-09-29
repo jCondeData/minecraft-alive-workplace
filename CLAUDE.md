@@ -8,6 +8,24 @@ The owner (Jesse) does not write code: sessions are expected to work autonomousl
 For mod work use the **minecraft-mod-engineer** skill (not the older minecraft-mod-dev). We're moving to its
 multi-version layout in phases (ROADMAP, Milestone 19); until phase 2 lands there's one version, 1.21.1.
 
+## Layers (enforced by `./gradlew checkLayers`, part of `build`)
+The feature packages keep their names (owner's decision), but everything outside `platform/fabric/`, `compat/` and
+`mixin/` is **core** and follows the skill's rules:
+- **The loader only through `platform/`.** `Platform.get()` (found through `META-INF/services`) has mod checks, the config
+  folder, events (`onServerTick`, `onLevelTick`, `onEntityLoad`, `onUseEntity`, `allowDamage`...), packets
+  (`clientbound`/`serverbound`/`send`), data reload listeners, POI/trade/game-rule/creative-tab registration, menus with
+  data, `Attachment` (data saved on villagers: declare with `Attachment.saved(name, codec)` in `registry/ModAttachments`,
+  then `ModAttachments.X.get(villager)`/`set`/`getOrElse`...) and `ItemStores` (chests and modded storage). Fabric's side is
+  `platform/fabric/`; its entrypoint `AliveWorkplaceFabric` calls `AliveWorkplace.init(Compat::init)`.
+- **Other mods only through `compat/`** and extension points (below).
+- **Minecraft APIs that change between versions through `mc/`**: `Chat` (chat/action bar), `Nbt` (reading saved data,
+  UUIDs), `Players.level`, `Damage.hurt`, `Ids.of(key)`, `Lookup` (registries), `Recipes`, `Interact.success`, `Rules`
+  (game rules), `Reg` (registering blocks, items, block entities, entities). Use them instead of the raw calls; use
+  `level.isClientSide()` (the method) and `entity.level().getServer()`. Version switches (`//?`) only go in `mc/` and
+  `platform/`.
+- Allowed imports in core: Minecraft, the JDK, `com.mojang`, Gson/Guava, JetBrains annotations, slf4j, JOML, fastutil
+  and our own packages (not `compat.*` or `platform.fabric.*`). The check also refuses Fabric's attachment methods.
+
 **Gradle runs on JDK 25** (Minecraft 1.21.1 still compiles and runs on the Java 21 toolchain it fetches). Once per
 container: `source <minecraft-mod-engineer skill>/scripts/setup_env.sh`; then prefix Gradle commands with
 `export JAVA_HOME=/root/.local/jdk-25 PATH=/root/.local/jdk-25/bin:$PATH;`. With 7 GB of RAM add `--max-workers=1`.
@@ -79,7 +97,7 @@ container: `source <minecraft-mod-engineer skill>/scripts/setup_env.sh`; then pr
 - `build/` — the builder: `BuildPlan` (ordered steps per stage), `BuildSite` + `BuildSiteManager`
   (per-dimension saved data), `BuilderWork` (the villager Behavior that does the work), `Builders`
   (hand-over, status, finish, cancel), `MaterialRules` (block → item cost, stage, "is this done"),
-  `SupplyContainers` (chests near the bench via Fabric transfer API), `BuilderPackages`, `BuilderEvents`
+  `SupplyContainers` (chests near the bench, through `platform/ItemStores`: Fabric's transfer API), `BuilderPackages`, `BuilderEvents`
 - `build/Paths`, `build/PathWork` — the dirt path a builder lays from a finished building to the bell or Village Hall
 - `mine/` — the miner: `QuarryMarkerItem`/`QuarryData`, `QuarrySite` + `QuarrySiteManager`, `MinerWork`, `Miners`
 - `farm/` — the farmer upgrade (vanilla Farmers): `FieldMarkerItem`/`FieldData`, `FieldJob` (attachment), `FieldWork`,
@@ -97,6 +115,9 @@ container: `source <minecraft-mod-engineer skill>/scripts/setup_env.sh`; then pr
 - `trader/` — Pokémon Traders: `PokemonTraders` (one trade a day, XP); offers and the swap live in `compat/cobblemon/CobblemonTraders`
 - `bard/` — bards: `BardWork` (discs from the chests, or a made-up tune)
 - `nurse/` — nurses: `Nurses` (treating players), `NurseWork` (healing villagers nearby)
+- `platform/` — what the mod needs from its loader (`Platform`, `Attachment`, `ItemStores`); `platform/fabric/` is the
+  Fabric side and the only place (with `compat/` and `mixin/`) that may use Fabric API
+- `mc/` — version adapters, one small static method per Minecraft behaviour that changes between versions (see Layers)
 - `compat/Compat` — turns on the integrations that are installed (`init`, with a tested version range each; a failure
   leaves that integration off); the rest of the mod reaches them only through extension points (`work/Extension`:
   `PokemonPartners`, `Bank`, `orchard/PokemonFruit`, `fossil/FossilLab`, `ranch/DaycareDesk`, `trainer/TrainerBattles`,

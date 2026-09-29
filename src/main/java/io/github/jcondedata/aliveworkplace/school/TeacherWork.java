@@ -93,7 +93,7 @@ public class TeacherWork extends Behavior<Villager> {
 			inClass++;
 			child.getBrain().setMemory(MemoryModuleType.LOOK_TARGET, new EntityTracker(villager, true));
 			if (Schools.teach(level, child, lesson)) {
-				villager.setAttached(ModAttachments.PUPILS_TAUGHT, villager.getAttachedOrElse(ModAttachments.PUPILS_TAUGHT, 0) + 1);
+				ModAttachments.PUPILS_TAUGHT.set(villager, ModAttachments.PUPILS_TAUGHT.getOrElse(villager, 0) + 1);
 				BuilderLevels.addXp(level, villager, 3, null);
 			}
 		}
@@ -106,7 +106,7 @@ public class TeacherWork extends Behavior<Villager> {
 	}
 
 	private void status(Villager villager) {
-		Component title = Component.translatable("message.aliveworkplace.teacher.title", villager.getAttachedOrElse(ModAttachments.PUPILS_TAUGHT, 0));
+		Component title = Component.translatable("message.aliveworkplace.teacher.title", ModAttachments.PUPILS_TAUGHT.getOrElse(villager, 0));
 		Component line = inClass > 0 ? Component.translatable("message.aliveworkplace.teacher.state.teaching", inClass)
 			: called > 0 ? Component.translatable("message.aliveworkplace.teacher.state.calling", called)
 			: Component.translatable("message.aliveworkplace.teacher.state.none");

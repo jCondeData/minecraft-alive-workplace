@@ -3,6 +3,7 @@ package io.github.jcondedata.aliveworkplace.bard;
 import com.google.common.collect.ImmutableMap;
 import io.github.jcondedata.aliveworkplace.build.Builders;
 import io.github.jcondedata.aliveworkplace.build.SupplyContainers;
+import io.github.jcondedata.aliveworkplace.mc.Lookup;
 import io.github.jcondedata.aliveworkplace.work.Walker;
 import io.github.jcondedata.aliveworkplace.work.WorkerStatus;
 import java.util.Collections;
@@ -109,7 +110,7 @@ public class BardWork extends Behavior<Villager> {
 			song = next;
 			songTicks = 0;
 			PLAYING.put(villager, next);
-			int id = level.registryAccess().registryOrThrow(Registries.JUKEBOX_SONG).getId(next.value());
+			int id = Lookup.registry(level.registryAccess(), Registries.JUKEBOX_SONG).getId(next.value());
 			level.levelEvent(null, 1010, stand, id);
 			villager.swing(InteractionHand.MAIN_HAND);
 			WorkerStatus.set(villager, Component.translatable("entity.minecraft.villager.bard"), -1f,

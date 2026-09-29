@@ -3,6 +3,8 @@ package io.github.jcondedata.aliveworkplace.research;
 import io.github.jcondedata.aliveworkplace.build.BuilderLevels;
 import io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity;
 import io.github.jcondedata.aliveworkplace.hall.VillageHalls;
+import io.github.jcondedata.aliveworkplace.mc.Chat;
+import io.github.jcondedata.aliveworkplace.mc.Players;
 import io.github.jcondedata.aliveworkplace.work.ChoiceMenu;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,10 +28,10 @@ public final class ResearchScreen {
 	public static final int[] TOPIC_SLOTS = {19, 20, 21, 22, 23, 24, 25, 28, 29, 30, 31, 32, 33, 34};
 
 	public static void open(ServerPlayer player, Villager scholar) {
-		ServerLevel level = player.serverLevel();
+		ServerLevel level = Players.level(player);
 		BlockPos hall = VillageHalls.nearest(level, scholar.blockPosition()).orElse(null);
 		if (hall == null) {
-			player.displayClientMessage(Component.translatable("message.aliveworkplace.scholar.state.no_hall").withStyle(ChatFormatting.YELLOW), true);
+			Chat.actionBar(player, Component.translatable("message.aliveworkplace.scholar.state.no_hall").withStyle(ChatFormatting.YELLOW));
 			return;
 		}
 		ChoiceMenu.open(player, Component.translatable("screen.aliveworkplace.research.title", VillageHalls.name(level, hall)),
@@ -38,7 +40,7 @@ public final class ResearchScreen {
 
 	/** The same screen, not shown to anyone (tests). */
 	public static ChoiceMenu forTest(ServerPlayer player, BlockPos hall) {
-		return ChoiceMenu.detached(player, menu -> render(menu, player.serverLevel(), hall));
+		return ChoiceMenu.detached(player, menu -> render(menu, Players.level(player), hall));
 	}
 
 	static void render(ChoiceMenu menu, ServerLevel level, BlockPos hall) {
@@ -70,13 +72,13 @@ public final class ResearchScreen {
 				Research.State now = entity.research();
 				Research.Topic busy = now.currentTopic();
 				if (busy != null && now.paid()) {
-					p.displayClientMessage(Component.translatable("message.aliveworkplace.research.busy", busy.title()).withStyle(ChatFormatting.YELLOW), true);
+					Chat.actionBar(p, Component.translatable("message.aliveworkplace.research.busy", busy.title()).withStyle(ChatFormatting.YELLOW));
 				} else if (!now.available(topic)) {
-					p.displayClientMessage(Component.translatable("message.aliveworkplace.research.locked", topic.title()).withStyle(ChatFormatting.YELLOW), true);
+					Chat.actionBar(p, Component.translatable("message.aliveworkplace.research.locked", topic.title()).withStyle(ChatFormatting.YELLOW));
 				} else {
 					entity.setResearch(now.choose(topic));
 					level.playSound(null, p.blockPosition(), SoundEvents.BOOK_PAGE_TURN, SoundSource.PLAYERS, 1f, 1f);
-					p.displayClientMessage(Component.translatable("message.aliveworkplace.research.chosen", topic.title()).withStyle(ChatFormatting.GREEN), true);
+					Chat.actionBar(p, Component.translatable("message.aliveworkplace.research.chosen", topic.title()).withStyle(ChatFormatting.GREEN));
 				}
 				render(menu, level, hall);
 				menu.broadcastChanges();

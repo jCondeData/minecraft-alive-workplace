@@ -56,7 +56,7 @@ public class SifterGameTests implements FabricGameTest {
 		}
 		helper.assertTrue(chest.countItem(Items.GRAVEL) == 0, "gravel left: " + chest.countItem(Items.GRAVEL));
 		helper.assertTrue(chest.countItem(Items.FLINT) > 0, "no flint from 40 gravel");
-		helper.assertTrue(sifter.getAttachedOrElse(ModAttachments.BLOCKS_SIFTED, 0) == 40, "counted " + sifter.getAttachedOrElse(ModAttachments.BLOCKS_SIFTED, 0));
+		helper.assertTrue(ModAttachments.BLOCKS_SIFTED.getOrElse(sifter, 0) == 40, "counted " + ModAttachments.BLOCKS_SIFTED.getOrElse(sifter, 0));
 		// Nothing left to sift: they ask for gravel.
 		helper.assertTrue(SifterWork.sift(helper.getLevel(), sifter, helper.absolutePos(SIEVE)) == null, "sifted air");
 		helper.assertTrue(Requests.of(helper.getLevel(), sifter).stream().anyMatch(r -> r.accepts().test(new ItemStack(Items.GRAVEL))), "no request for gravel");

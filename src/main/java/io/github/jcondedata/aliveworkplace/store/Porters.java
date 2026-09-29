@@ -52,14 +52,14 @@ public final class Porters {
 	/** A porter works for whoever owns their storehouse, and for the village if nobody does. */
 	static void answerToOwner(ServerLevel level, Villager porter, BlockPos storehouse) {
 		Employer owner = owner(level, storehouse);
-		Employer now = porter.getAttached(ModAttachments.BUILDER_EMPLOYER);
+		Employer now = ModAttachments.BUILDER_EMPLOYER.get(porter);
 		if (Objects.equals(owner == null ? null : owner.id(), now == null ? null : now.id())) {
 			return;
 		}
 		if (owner == null) {
-			porter.removeAttached(ModAttachments.BUILDER_EMPLOYER);
+			ModAttachments.BUILDER_EMPLOYER.remove(porter);
 		} else {
-			porter.setAttached(ModAttachments.BUILDER_EMPLOYER, owner);
+			ModAttachments.BUILDER_EMPLOYER.set(porter, owner);
 		}
 		io.github.jcondedata.aliveworkplace.work.Village.forget(porter);
 	}

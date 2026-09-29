@@ -1,5 +1,6 @@
 package io.github.jcondedata.aliveworkplace.ranch;
 
+import io.github.jcondedata.aliveworkplace.platform.Platform;
 import io.github.jcondedata.aliveworkplace.work.PokemonPartners;
 import io.github.jcondedata.aliveworkplace.build.BuilderBag;
 import io.github.jcondedata.aliveworkplace.build.BuilderLevels;
@@ -15,7 +16,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
-import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
@@ -58,7 +58,7 @@ public class RancherWork extends RanchWork {
 	public static long GROOM_EVERY = 24000;
 	/** How much a failed try calms a wild horse down (out of its temper, 100 for a horse). */
 	static final int CALMER = 20;
-	private static final boolean COBBLEMON = FabricLoader.getInstance().isModLoaded("cobblemon");
+	private static final boolean COBBLEMON = Platform.get().isModLoaded("cobblemon");
 	private static final TagKey<Item> BERRIES = TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath("cobblemon", "berries"));
 	/** Berries that lower a Pokémon's EVs: players keep them for that, so they're never a treat. */
 	private static final TagKey<Item> FRIENDSHIP_BERRIES = TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath("cobblemon", "berries/friendship"));
@@ -137,7 +137,7 @@ public class RancherWork extends RanchWork {
 			return wild;
 		}
 		// Saddles on the tamed ones, while there are saddles in the chests.
-		BuilderBag bag = villager.getAttachedOrCreate(ModAttachments.BUILDER_BAG);
+		BuilderBag bag = ModAttachments.BUILDER_BAG.getOrCreate(villager);
 		if (bag.count(Items.SADDLE) > 0 || SupplyContainers.firstWith(level, own, Items.SADDLE) != null) {
 			Animal bare = animals.stream().filter(a -> a instanceof AbstractHorse h && h.isSaddleable() && !h.isSaddled() && !h.isVehicle())
 				.min(nearest).orElse(null);
@@ -236,12 +236,12 @@ public class RancherWork extends RanchWork {
 		if (chore == Chore.TAME && animal instanceof AbstractHorse horse && !horse.isTamed()) {
 			if (level.random.nextInt(horse.getMaxTemper()) < horse.getTemper()) {
 				horse.setTamed(true);
-				Employer boss = villager.getAttached(ModAttachments.BUILDER_EMPLOYER);
+				Employer boss = ModAttachments.BUILDER_EMPLOYER.get(villager);
 				if (boss != null) {
 					horse.setOwnerUUID(boss.id());
 				}
 				level.broadcastEntityEvent(horse, (byte) 7); // hearts
-				villager.setAttached(ModAttachments.HORSES_TAMED, villager.getAttachedOrElse(ModAttachments.HORSES_TAMED, 0) + 1);
+				ModAttachments.HORSES_TAMED.set(villager, ModAttachments.HORSES_TAMED.getOrElse(villager, 0) + 1);
 				BuilderLevels.addXp(level, villager, 2, null);
 			} else {
 				// Partners (Rapidash, Tauros...) calm them down quicker.
@@ -276,7 +276,7 @@ public class RancherWork extends RanchWork {
 			}
 			level.playSound(null, animal.blockPosition(), SoundEvents.BRUSH_GENERIC, SoundSource.NEUTRAL, 0.8f, 1f);
 			if (PokemonPartners.EXTENSION.call(p -> p.befriend(level, animal, amount), false)) {
-				villager.setAttached(ModAttachments.POKEMON_TENDED, villager.getAttachedOrElse(ModAttachments.POKEMON_TENDED, 0) + 1);
+				ModAttachments.POKEMON_TENDED.set(villager, ModAttachments.POKEMON_TENDED.getOrElse(villager, 0) + 1);
 				BuilderLevels.addXp(level, villager, 1, null);
 			}
 			GROOMED.put(animal.getUUID(), level.getGameTime());
@@ -287,7 +287,7 @@ public class RancherWork extends RanchWork {
 
 	@Override
 	protected void status(Villager villager, Task task, boolean noChest) {
-		Component title = Component.translatable("message.aliveworkplace.rancher.title", villager.getAttachedOrElse(ModAttachments.HORSES_TAMED, 0));
+		Component title = Component.translatable("message.aliveworkplace.rancher.title", ModAttachments.HORSES_TAMED.getOrElse(villager, 0));
 		String state = noChest ? "no_chest" : task == Task.TEND && chore != null ? chore.name().toLowerCase() : task == Task.TEND ? "none"
 			: task.name().toLowerCase();
 		WorkerStatus.set(villager, title, -1f, Component.translatable("message.aliveworkplace.rancher.state." + state)

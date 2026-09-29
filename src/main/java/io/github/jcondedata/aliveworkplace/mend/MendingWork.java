@@ -127,7 +127,7 @@ public class MendingWork extends Behavior<Villager> {
 		if (station == null) {
 			return;
 		}
-		BuilderBag bag = villager.getAttachedOrCreate(ModAttachments.BUILDER_BAG);
+		BuilderBag bag = ModAttachments.BUILDER_BAG.getOrCreate(villager);
 		if (job == null) {
 			if (!bag.isEmpty()) {
 				tidy(level, villager, station, bag);
@@ -217,7 +217,7 @@ public class MendingWork extends Behavior<Villager> {
 			int per = Math.max(1, (int) (piece.getMaxDamage() * PER_UNIT));
 			piece.setDamageValue(Math.max(0, piece.getDamageValue() - units * per));
 			level.playSound(null, station, SoundEvents.ANVIL_USE, SoundSource.BLOCKS, 0.5f, 1.1f);
-			villager.setAttached(ModAttachments.ITEMS_MENDED, villager.getAttachedOrElse(ModAttachments.ITEMS_MENDED, 0) + 1);
+			ModAttachments.ITEMS_MENDED.set(villager, ModAttachments.ITEMS_MENDED.getOrElse(villager, 0) + 1);
 			BuilderLevels.addXp(level, villager, 2, null);
 		}
 		if (!piece.isEmpty()) {
@@ -281,9 +281,9 @@ public class MendingWork extends Behavior<Villager> {
 		List<BlockPos> materials = new ArrayList<>(own);
 		Set<BlockPos> places = new LinkedHashSet<>(own);
 		if (Village.RADIUS > 0) {
-			var boss = villager.getAttached(ModAttachments.BUILDER_EMPLOYER);
+			var boss = ModAttachments.BUILDER_EMPLOYER.get(villager);
 			for (Villager guard : level.getEntitiesOfClass(Villager.class, new AABB(station).inflate(Village.RADIUS),
-					v -> v.isAlive() && Guards.isGuard(v) && Village.sameSide(level, v.getAttached(ModAttachments.BUILDER_EMPLOYER), boss))) {
+					v -> v.isAlive() && Guards.isGuard(v) && Village.sameSide(level, ModAttachments.BUILDER_EMPLOYER.get(v), boss))) {
 				Builders.benchPos(guard).ifPresent(post -> places.addAll(SupplyContainers.find(level, post, null)));
 			}
 			for (Village.Stash stash : Village.stashes(level, villager, station, null)) {
@@ -317,7 +317,7 @@ public class MendingWork extends Behavior<Villager> {
 	}
 
 	private void status(Villager villager, Phase phase) {
-		Component title = Component.translatable("message.aliveworkplace.weaponsmith.title", villager.getAttachedOrElse(ModAttachments.ITEMS_MENDED, 0));
+		Component title = Component.translatable("message.aliveworkplace.weaponsmith.title", ModAttachments.ITEMS_MENDED.getOrElse(villager, 0));
 		Component line = job != null && phase != Phase.TIDYING
 			? Component.translatable("message.aliveworkplace.weaponsmith.state." + phase.name().toLowerCase(), job.item().getHoverName())
 			: Component.translatable("message.aliveworkplace.weaponsmith.state." + phase.name().toLowerCase());

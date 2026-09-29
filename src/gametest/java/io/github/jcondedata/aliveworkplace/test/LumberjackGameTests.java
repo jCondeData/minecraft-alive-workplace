@@ -118,7 +118,7 @@ public class LumberjackGameTests implements FabricGameTest {
 			}
 			Container chest = helper.getBlockEntity(CHEST);
 			helper.assertTrue(chest.countItem(Items.OAK_LOG) >= 4, "only " + chest.countItem(Items.OAK_LOG) + " logs in the chest");
-			helper.assertTrue(villager.getAttachedOrElse(ModAttachments.TREES_FELLED, 0) == 1, "tree count not updated");
+			helper.assertTrue(ModAttachments.TREES_FELLED.getOrElse(villager, 0) == 1, "tree count not updated");
 		});
 	}
 
@@ -144,7 +144,7 @@ public class LumberjackGameTests implements FabricGameTest {
 					}
 				}
 			}
-			helper.assertTrue(villager.getAttachedOrElse(ModAttachments.SAPLINGS_PLANTED, 0) == 9, "planted " + villager.getAttachedOrElse(ModAttachments.SAPLINGS_PLANTED, 0));
+			helper.assertTrue(ModAttachments.SAPLINGS_PLANTED.getOrElse(villager, 0) == 9, "planted " + ModAttachments.SAPLINGS_PLANTED.getOrElse(villager, 0));
 		});
 	}
 
@@ -157,7 +157,7 @@ public class LumberjackGameTests implements FabricGameTest {
 		io.github.jcondedata.aliveworkplace.wood.TreeFarms.start(villager,
 			net.minecraft.world.level.levelgen.structure.BoundingBox.fromCorners(helper.absolutePos(new BlockPos(18, 1, 18)), helper.absolutePos(new BlockPos(20, 1, 20))));
 		helper.succeedWhen(() -> {
-			helper.assertTrue(villager.getAttachedOrElse(ModAttachments.TREES_FELLED, 0) == 1, "the farm's tree wasn't felled");
+			helper.assertTrue(ModAttachments.TREES_FELLED.getOrElse(villager, 0) == 1, "the farm's tree wasn't felled");
 			for (int y = 1; y < 6; y++) {
 				helper.assertBlockNotPresent(Blocks.OAK_LOG, base.above(y));
 			}
@@ -191,7 +191,7 @@ public class LumberjackGameTests implements FabricGameTest {
 			"a mangrove on its roots should count as a tree");
 		Villager villager = setup(helper, new ItemStack(Items.STONE_AXE), new ItemStack(Items.MANGROVE_PROPAGULE, 2));
 		helper.succeedWhen(() -> {
-			helper.assertTrue(villager.getAttachedOrElse(ModAttachments.TREES_FELLED, 0) >= 1, "the mangrove wasn't felled");
+			helper.assertTrue(ModAttachments.TREES_FELLED.getOrElse(villager, 0) >= 1, "the mangrove wasn't felled");
 			boolean planted = false;
 			for (BlockPos p : BlockPos.betweenClosed(base.offset(-4, -3, -4), base.offset(4, 1, 4))) {
 				var state = helper.getBlockState(p);
@@ -219,7 +219,7 @@ public class LumberjackGameTests implements FabricGameTest {
 		grow(helper, base, TreeFeatures.AZALEA_TREE);
 		Villager villager = setup(helper, new ItemStack(Items.STONE_AXE), new ItemStack(Items.AZALEA));
 		helper.succeedWhen(() -> {
-			helper.assertTrue(villager.getAttachedOrElse(ModAttachments.TREES_FELLED, 0) == 1, "the azalea tree wasn't felled");
+			helper.assertTrue(ModAttachments.TREES_FELLED.getOrElse(villager, 0) == 1, "the azalea tree wasn't felled");
 			var state = helper.getBlockState(base);
 			helper.assertTrue(state.is(Blocks.AZALEA) || state.is(Blocks.FLOWERING_AZALEA), "expected an azalea at the stump, found " + state);
 		});
@@ -233,7 +233,7 @@ public class LumberjackGameTests implements FabricGameTest {
 		grow(helper, base, TreeFeatures.CHERRY);
 		Villager villager = setup(helper, new ItemStack(Items.STONE_AXE), new ItemStack(Items.CHERRY_SAPLING));
 		helper.succeedWhen(() -> {
-			helper.assertTrue(villager.getAttachedOrElse(ModAttachments.TREES_FELLED, 0) == 1, "the cherry tree wasn't felled");
+			helper.assertTrue(ModAttachments.TREES_FELLED.getOrElse(villager, 0) == 1, "the cherry tree wasn't felled");
 			helper.assertBlockPresent(Blocks.CHERRY_SAPLING, base);
 			for (int y = 1; y < 6; y++) {
 				helper.assertBlockNotPresent(Blocks.CHERRY_LOG, base.above(y));
@@ -251,9 +251,9 @@ public class LumberjackGameTests implements FabricGameTest {
 		io.github.jcondedata.aliveworkplace.wood.TreeFarms.start(villager,
 			net.minecraft.world.level.levelgen.structure.BoundingBox.fromCorners(helper.absolutePos(new BlockPos(10, 1, 10)), helper.absolutePos(new BlockPos(12, 1, 12))));
 		helper.succeedWhen(() -> {
-			helper.assertTrue(villager.getAttachedOrElse(ModAttachments.TREES_FELLED, 0) >= 1, "the farm's sapling wasn't grown and felled");
+			helper.assertTrue(ModAttachments.TREES_FELLED.getOrElse(villager, 0) >= 1, "the farm's sapling wasn't grown and felled");
 			Container chest = helper.getBlockEntity(CHEST);
-			int left = chest.countItem(Items.BONE_MEAL) + villager.getAttachedOrCreate(ModAttachments.BUILDER_BAG).count(Items.BONE_MEAL);
+			int left = chest.countItem(Items.BONE_MEAL) + ModAttachments.BUILDER_BAG.getOrCreate(villager).count(Items.BONE_MEAL);
 			helper.assertTrue(left < 32, "no bone meal used");
 		});
 	}
@@ -272,7 +272,7 @@ public class LumberjackGameTests implements FabricGameTest {
 		}
 		Villager villager = setup(helper, new ItemStack(Items.STONE_AXE), new ItemStack(Items.DARK_OAK_SAPLING, 4));
 		helper.succeedWhen(() -> {
-			helper.assertTrue(villager.getAttachedOrElse(ModAttachments.TREES_FELLED, 0) == 1, "the dark oak wasn't felled");
+			helper.assertTrue(ModAttachments.TREES_FELLED.getOrElse(villager, 0) == 1, "the dark oak wasn't felled");
 			for (BlockPos p : new BlockPos[]{base, base.east(), base.south(), base.east().south()}) {
 				helper.assertBlockPresent(Blocks.DARK_OAK_SAPLING, p);
 			}
@@ -292,7 +292,7 @@ public class LumberjackGameTests implements FabricGameTest {
 		helper.assertTrue(io.github.jcondedata.aliveworkplace.wood.Trees.treeAt(level, helper.absolutePos(base)).isPresent(), "a huge fungus should count as a tree");
 		Villager villager = setup(helper, new ItemStack(Items.STONE_AXE), new ItemStack(Items.CRIMSON_FUNGUS));
 		helper.succeedWhen(() -> {
-			helper.assertTrue(villager.getAttachedOrElse(ModAttachments.TREES_FELLED, 0) == 1, "the fungus wasn't felled");
+			helper.assertTrue(ModAttachments.TREES_FELLED.getOrElse(villager, 0) == 1, "the fungus wasn't felled");
 			helper.assertBlockPresent(Blocks.CRIMSON_FUNGUS, base);
 			for (int y = 1; y < 8; y++) {
 				helper.assertBlockNotPresent(Blocks.CRIMSON_STEM, base.above(y));

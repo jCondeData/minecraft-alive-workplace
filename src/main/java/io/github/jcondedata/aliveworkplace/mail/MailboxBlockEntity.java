@@ -1,7 +1,7 @@
 package io.github.jcondedata.aliveworkplace.mail;
 
+import io.github.jcondedata.aliveworkplace.mc.Nbt;
 import io.github.jcondedata.aliveworkplace.registry.ModBlocks;
-import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
 import net.minecraft.server.level.ServerPlayer;
 import java.util.UUID;
 import net.minecraft.core.BlockPos;
@@ -18,8 +18,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
 
 /** A player's mailbox: 27 slots of mail that arrived for them, and who it belongs to. */
-public class MailboxBlockEntity extends BaseContainerBlockEntity implements ExtendedScreenHandlerFactory<BlockPos>,
-		io.github.jcondedata.aliveworkplace.work.PrivateContainer {
+public class MailboxBlockEntity extends BaseContainerBlockEntity implements io.github.jcondedata.aliveworkplace.work.PrivateContainer {
 	public static final int SIZE = 27;
 
 	private NonNullList<ItemStack> items = NonNullList.withSize(SIZE, ItemStack.EMPTY);
@@ -70,7 +69,7 @@ public class MailboxBlockEntity extends BaseContainerBlockEntity implements Exte
 	@Override
 	public void setChanged() {
 		super.setChanged();
-		if (level != null && !level.isClientSide) {
+		if (level != null && !level.isClientSide()) {
 			BlockState state = getBlockState();
 			boolean hasMail = !isEmpty();
 			if (state.hasProperty(MailboxBlock.HAS_MAIL) && state.getValue(MailboxBlock.HAS_MAIL) != hasMail) {
@@ -101,11 +100,6 @@ public class MailboxBlockEntity extends BaseContainerBlockEntity implements Exte
 	}
 
 	@Override
-	public BlockPos getScreenOpeningData(ServerPlayer player) {
-		return worldPosition;
-	}
-
-	@Override
 	public int getContainerSize() {
 		return SIZE;
 	}
@@ -115,8 +109,8 @@ public class MailboxBlockEntity extends BaseContainerBlockEntity implements Exte
 		super.loadAdditional(tag, registries);
 		items = NonNullList.withSize(SIZE, ItemStack.EMPTY);
 		ContainerHelper.loadAllItems(tag, items, registries);
-		owner = tag.hasUUID("owner") ? tag.getUUID("owner") : null;
-		ownerName = tag.getString("ownerName");
+		owner = Nbt.hasUuid(tag, "owner") ? Nbt.getUuid(tag, "owner") : null;
+		ownerName = Nbt.getString(tag, "ownerName");
 	}
 
 	@Override
@@ -124,7 +118,7 @@ public class MailboxBlockEntity extends BaseContainerBlockEntity implements Exte
 		super.saveAdditional(tag, registries);
 		ContainerHelper.saveAllItems(tag, items, registries);
 		if (owner != null) {
-			tag.putUUID("owner", owner);
+			Nbt.putUuid(tag, "owner", owner);
 		}
 		tag.putString("ownerName", ownerName);
 	}

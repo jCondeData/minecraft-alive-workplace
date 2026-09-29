@@ -1,12 +1,13 @@
 package io.github.jcondedata.aliveworkplace.trader;
 
+import io.github.jcondedata.aliveworkplace.mc.Chat;
+import io.github.jcondedata.aliveworkplace.platform.Platform;
 import io.github.jcondedata.aliveworkplace.build.BuilderLevels;
 import io.github.jcondedata.aliveworkplace.registry.ModAttachments;
 import io.github.jcondedata.aliveworkplace.registry.ModVillagers;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
-import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
@@ -20,7 +21,7 @@ import net.minecraft.world.entity.npc.Villager;
  * stronger Pokémon.
  */
 public final class PokemonTraders {
-	public static final boolean COBBLEMON = FabricLoader.getInstance().isModLoaded("cobblemon");
+	public static final boolean COBBLEMON = Platform.get().isModLoaded("cobblemon");
 	/** How far a player can walk from the trader before the trade screen closes. */
 	public static final double REACH = 8;
 	/** Trader XP for every trade. */
@@ -49,19 +50,19 @@ public final class PokemonTraders {
 
 	/** Whether {@code player} has already traded with this trader today. */
 	public static boolean tradedToday(Villager trader, UUID player) {
-		Long last = trader.getAttachedOrElse(ModAttachments.POKEMON_TRADES, Map.<UUID, Long>of()).get(player);
+		Long last = ModAttachments.POKEMON_TRADES.getOrElse(trader, Map.<UUID, Long>of()).get(player);
 		return last != null && last == day(trader);
 	}
 
 	/** Right-click on a trader: the trade screen. */
 	public static void open(ServerPlayer player, Villager trader) {
 		if (!COBBLEMON) {
-			player.displayClientMessage(Component.translatable("message.aliveworkplace.pokemon_trader.no_cobblemon").withStyle(ChatFormatting.GRAY), true);
+			Chat.actionBar(player, Component.translatable("message.aliveworkplace.pokemon_trader.no_cobblemon").withStyle(ChatFormatting.GRAY));
 			return;
 		}
 		if (trader.isSleeping()) {
-			player.displayClientMessage(Component.translatable("message.aliveworkplace.pokemon_trader.asleep", trader.getDisplayName())
-				.withStyle(ChatFormatting.GRAY), true);
+			Chat.actionBar(player, Component.translatable("message.aliveworkplace.pokemon_trader.asleep", trader.getDisplayName())
+				.withStyle(ChatFormatting.GRAY));
 			return;
 		}
 		PokemonTrades.EXTENSION.run(trades -> trades.open(player, trader));
@@ -69,12 +70,12 @@ public final class PokemonTraders {
 
 	/** A trade went through: remember it for today, and the trader gains experience. */
 	public static void traded(ServerPlayer player, Villager trader) {
-		Map<UUID, Long> trades = new HashMap<>(trader.getAttachedOrElse(ModAttachments.POKEMON_TRADES, Map.of()));
+		Map<UUID, Long> trades = new HashMap<>(ModAttachments.POKEMON_TRADES.getOrElse(trader, Map.of()));
 		long today = day(trader);
 		trades.values().removeIf(d -> d < today - 1); // forget old days
 		trades.put(player.getUUID(), today);
-		trader.setAttached(ModAttachments.POKEMON_TRADES, Map.copyOf(trades));
-		trader.setAttached(ModAttachments.POKEMON_TRADE_COUNT, trader.getAttachedOrElse(ModAttachments.POKEMON_TRADE_COUNT, 0) + 1);
+		ModAttachments.POKEMON_TRADES.set(trader, Map.copyOf(trades));
+		ModAttachments.POKEMON_TRADE_COUNT.set(trader, ModAttachments.POKEMON_TRADE_COUNT.getOrElse(trader, 0) + 1);
 		int tierBefore = tier(trader);
 		BuilderLevels.addXp((ServerLevel) trader.level(), trader, XP_PER_TRADE, null);
 		if (tier(trader) > tierBefore) {

@@ -1,5 +1,8 @@
 package io.github.jcondedata.aliveworkplace.guard;
 
+import io.github.jcondedata.aliveworkplace.mc.Damage;
+import io.github.jcondedata.aliveworkplace.mc.Lookup;
+import io.github.jcondedata.aliveworkplace.platform.Platform;
 import java.util.List;
 import io.github.jcondedata.aliveworkplace.work.PokemonPartners;
 import io.github.jcondedata.aliveworkplace.AliveWorkplace;
@@ -7,8 +10,6 @@ import io.github.jcondedata.aliveworkplace.registry.ModVillagers;
 import io.github.jcondedata.aliveworkplace.work.Partners;
 import java.util.Map;
 import java.util.WeakHashMap;
-import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
-import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.GlobalPos;
 import net.minecraft.core.particles.ParticleOptions;
@@ -36,14 +37,14 @@ public final class GuardPartners {
 	static final double REACH = 20;
 	/** A Pokémon uses a move at most this often. */
 	static final int COOLDOWN = 20;
-	private static final boolean COBBLEMON = FabricLoader.getInstance().isModLoaded("cobblemon");
+	private static final boolean COBBLEMON = Platform.get().isModLoaded("cobblemon");
 	private static final Map<Entity, Long> LAST_MOVE = new WeakHashMap<>();
 
 	public static void init() {
 		if (!COBBLEMON) {
 			return;
 		}
-		ServerLivingEntityEvents.AFTER_DAMAGE.register((entity, source, baseDamage, damage, blocked) -> {
+		Platform.get().afterDamage((entity, source, baseDamage, damage, blocked) -> {
 			if (!blocked && damage > 0 && !source.is(POKEMON_MOVE) && source.getEntity() instanceof Villager guard
 				&& Guards.isGuard(guard) && entity.level() instanceof ServerLevel level && Guards.isFoe(entity, guard)) {
 				join(level, guard, entity);
@@ -63,7 +64,7 @@ public final class GuardPartners {
 		if (post == null) {
 			return 0;
 		}
-		var holder = level.registryAccess().registryOrThrow(Registries.DAMAGE_TYPE).getHolder(POKEMON_MOVE).orElse(null);
+		var holder = Lookup.holder(Lookup.registry(level.registryAccess(), Registries.DAMAGE_TYPE), POKEMON_MOVE).orElse(null);
 		if (holder == null) {
 			return 0;
 		}
@@ -84,7 +85,7 @@ public final class GuardPartners {
 			}
 			trail(level, pokemon, foe, fighter.type());
 			PokemonPartners.EXTENSION.run(p -> p.useMove(level, pokemon, foe, fighter.type()));
-			foe.hurt(new DamageSource(holder, pokemon, guard), damage(fighter.level()));
+			Damage.hurt(foe, new DamageSource(holder, pokemon, guard), damage(fighter.level()));
 			joined++;
 		}
 		return joined;

@@ -1,5 +1,6 @@
 package io.github.jcondedata.aliveworkplace.ranch;
 
+import io.github.jcondedata.aliveworkplace.platform.Platform;
 import io.github.jcondedata.aliveworkplace.build.BuilderBag;
 import io.github.jcondedata.aliveworkplace.build.BuilderLevels;
 import io.github.jcondedata.aliveworkplace.build.SupplyContainers;
@@ -8,7 +9,6 @@ import io.github.jcondedata.aliveworkplace.work.WorkerStatus;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
-import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -34,7 +34,7 @@ import org.jetbrains.annotations.Nullable;
  * sheep with wheat up to {@link RanchWork#CAP}, and put it all in the chests by the loom.
  */
 public class ShepherdWork extends RanchWork {
-	private static final boolean COBBLEMON = FabricLoader.getInstance().isModLoaded("cobblemon");
+	private static final boolean COBBLEMON = Platform.get().isModLoaded("cobblemon");
 
 	public static boolean isShepherd(Villager villager) {
 		return !villager.isBaby() && villager.getVillagerData().getProfession() == VillagerProfession.SHEPHERD;
@@ -110,14 +110,14 @@ public class ShepherdWork extends RanchWork {
 		((Shearable) animal).shear(SoundSource.NEUTRAL);
 		villager.swing(InteractionHand.MAIN_HAND);
 		shears.hurtAndBreak(1, villager, EquipmentSlot.MAINHAND);
-		villager.setAttached(ModAttachments.ANIMALS_SHEARED, villager.getAttachedOrElse(ModAttachments.ANIMALS_SHEARED, 0) + 1);
+		ModAttachments.ANIMALS_SHEARED.set(villager, ModAttachments.ANIMALS_SHEARED.getOrElse(villager, 0) + 1);
 		BuilderLevels.addXp(level, villager, 1, null);
 		return false; // done with this one
 	}
 
 	@Override
 	protected void status(Villager villager, Task task, boolean noChest) {
-		Component title = Component.translatable("message.aliveworkplace.shepherd.title", villager.getAttachedOrElse(ModAttachments.ANIMALS_SHEARED, 0));
+		Component title = Component.translatable("message.aliveworkplace.shepherd.title", ModAttachments.ANIMALS_SHEARED.getOrElse(villager, 0));
 		String state = noChest ? "no_chest" : task.name().toLowerCase();
 		WorkerStatus.set(villager, title, -1f, Component.translatable("message.aliveworkplace.shepherd.state." + state)
 			.withStyle(noChest ? ChatFormatting.YELLOW : ChatFormatting.GRAY));

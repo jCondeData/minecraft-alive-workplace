@@ -60,7 +60,7 @@ public class ToolsmithGameTests implements FabricGameTest {
 				helper.absolutePos(new BlockPos(10, 2, 20))).stream().map(r -> r.what().getString()).toList()
 				+ ", stashes " + Village.stashes(level, toolsmith, helper.absolutePos(new BlockPos(10, 2, 20)), null).stream().map(st -> st.job().name()).toList()
 				+ ", busy " + io.github.jcondedata.aliveworkplace.craft.CrafterWork.isBusy(toolsmith)
-				+ ", bag " + toolsmith.getAttachedOrCreate(io.github.jcondedata.aliveworkplace.registry.ModAttachments.BUILDER_BAG).stacks()
+				+ ", bag " + io.github.jcondedata.aliveworkplace.registry.ModAttachments.BUILDER_BAG.getOrCreate(toolsmith).stacks()
 				+ ", activity " + toolsmith.getBrain().getActiveNonCoreActivity() + ", job " + toolsmith.getVillagerData().getProfession());
 			helper.assertTrue(store.countItem(Items.IRON_INGOT) == 0, "iron left in the storehouse: " + store.countItem(Items.IRON_INGOT));
 			Village.RADIUS = 0;

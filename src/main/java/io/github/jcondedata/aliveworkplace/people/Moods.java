@@ -69,7 +69,7 @@ public final class Moods {
 		if (VillageNeeds.isHungry(villager, now)) {
 			score -= 20;
 			bad.add(reason("hungry"));
-		} else if (villager.hasAttached(ModAttachments.LAST_MEAL)) {
+		} else if (ModAttachments.LAST_MEAL.has(villager)) {
 			score += 15;
 			good.add(reason("fed"));
 		}

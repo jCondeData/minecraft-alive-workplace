@@ -37,8 +37,8 @@ public class SchoolGameTests implements net.fabricmc.fabric.api.gametest.v1.Fabr
 			for (Villager child : children) {
 				helper.assertTrue(Schools.isSchooled(child), "a child hasn't been to school: " + Schools.lessons(child) + " ticks of lessons");
 			}
-			helper.assertTrue(teacher.getAttachedOrElse(ModAttachments.PUPILS_TAUGHT, 0) == 2, "pupils: "
-				+ teacher.getAttachedOrElse(ModAttachments.PUPILS_TAUGHT, 0));
+			helper.assertTrue(ModAttachments.PUPILS_TAUGHT.getOrElse(teacher, 0) == 2, "pupils: "
+				+ ModAttachments.PUPILS_TAUGHT.getOrElse(teacher, 0));
 		});
 	}
 
@@ -50,7 +50,7 @@ public class SchoolGameTests implements net.fabricmc.fabric.api.gametest.v1.Fabr
 		helper.setBlock(new BlockPos(15, 2, 5), ModBlocks.BUILDERS_BENCH);
 		Villager schooled = helper.spawn(EntityType.VILLAGER, new BlockPos(6, 2, 6));
 		Villager other = helper.spawn(EntityType.VILLAGER, new BlockPos(14, 2, 6));
-		schooled.setAttached(ModAttachments.SCHOOLED, true);
+		ModAttachments.SCHOOLED.set(schooled, true);
 		helper.runAfterDelay(2, () -> {
 			Jobs.employ(level, schooled, helper.absolutePos(new BlockPos(5, 2, 5)), ModVillagers.BUILDERS_BENCH_POI, ModVillagers.BUILDER);
 			Jobs.employ(level, other, helper.absolutePos(new BlockPos(15, 2, 5)), ModVillagers.BUILDERS_BENCH_POI, ModVillagers.BUILDER);

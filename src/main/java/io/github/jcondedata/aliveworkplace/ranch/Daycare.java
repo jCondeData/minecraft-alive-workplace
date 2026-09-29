@@ -1,11 +1,11 @@
 package io.github.jcondedata.aliveworkplace.ranch;
 
+import io.github.jcondedata.aliveworkplace.platform.Platform;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.jcondedata.aliveworkplace.registry.ModAttachments;
 import java.util.List;
 import java.util.UUID;
-import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.core.UUIDUtil;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
@@ -20,7 +20,7 @@ import net.minecraft.world.entity.npc.Villager;
  * trainers' PCs. The screen and the Pokémon live in {@code compat/cobblemon/CobblemonDaycare}.
  */
 public final class Daycare {
-	public static final boolean COBBLEMON = FabricLoader.getInstance().isModLoaded("cobblemon");
+	public static final boolean COBBLEMON = Platform.get().isModLoaded("cobblemon");
 	public static final int MAX_PER_PLAYER = 2;
 	/** Most Pokémon one rancher looks after. */
 	public static final int MAX_BOARDERS = 8;
@@ -37,14 +37,14 @@ public final class Daycare {
 	}
 
 	public static List<Boarder> boarders(Villager rancher) {
-		return rancher.getAttachedOrElse(ModAttachments.DAYCARE, List.of());
+		return ModAttachments.DAYCARE.getOrElse(rancher, List.of());
 	}
 
 	public static void setBoarders(Villager rancher, List<Boarder> boarders) {
 		if (boarders.isEmpty()) {
-			rancher.removeAttached(ModAttachments.DAYCARE);
+			ModAttachments.DAYCARE.remove(rancher);
 		} else {
-			rancher.setAttached(ModAttachments.DAYCARE, List.copyOf(boarders));
+			ModAttachments.DAYCARE.set(rancher, List.copyOf(boarders));
 		}
 	}
 

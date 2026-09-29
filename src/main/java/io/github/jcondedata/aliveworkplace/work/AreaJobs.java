@@ -8,11 +8,14 @@ import io.github.jcondedata.aliveworkplace.build.SupplyContainers;
 import io.github.jcondedata.aliveworkplace.farm.FieldData;
 import io.github.jcondedata.aliveworkplace.farm.FieldJob;
 import io.github.jcondedata.aliveworkplace.farm.FieldMarkerItem;
+import io.github.jcondedata.aliveworkplace.mc.Chat;
+import io.github.jcondedata.aliveworkplace.mc.Ids;
+import io.github.jcondedata.aliveworkplace.mc.Players;
 import io.github.jcondedata.aliveworkplace.registry.ModAttachments;
 import io.github.jcondedata.aliveworkplace.registry.ModComponents;
 import io.github.jcondedata.aliveworkplace.registry.ModItems;
 import java.util.Optional;
-import net.fabricmc.fabric.api.attachment.v1.AttachmentType;
+import io.github.jcondedata.aliveworkplace.platform.Attachment;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.ClickEvent;
@@ -42,10 +45,10 @@ public final class AreaJobs {
 	public static final int MAX_DISTANCE = 48;
 
 	/** Player right-clicked the worker while holding a Field Marker: the marked area becomes theirs to look after. */
-	public static InteractionResult assign(ServerPlayer player, Villager villager, ItemStack stack, AttachmentType<FieldJob> type, String kind) {
-		ServerLevel level = player.serverLevel();
+	public static InteractionResult assign(ServerPlayer player, Villager villager, ItemStack stack, Attachment<FieldJob> type, String kind) {
+		ServerLevel level = Players.level(player);
 		if (!Friends.mayCommand(player, villager)) {
-			Employer employer = villager.getAttached(ModAttachments.BUILDER_EMPLOYER);
+			Employer employer = ModAttachments.BUILDER_EMPLOYER.get(villager);
 			tell(player, Component.translatable("message.aliveworkplace.not_your_builder", villager.getDisplayName(),
 				employer != null ? employer.name() : "?", player.getGameProfile().getName()), ChatFormatting.RED);
 			return InteractionResult.CONSUME;
@@ -56,7 +59,7 @@ public final class AreaJobs {
 			tell(player, Component.translatable("message.aliveworkplace.field.not_marked"), ChatFormatting.YELLOW);
 			return InteractionResult.CONSUME;
 		}
-		if (!data.dimension().get().equals(level.dimension().location())) {
+		if (!data.dimension().get().equals(Ids.of(level.dimension()))) {
 			tell(player, Component.translatable("message.aliveworkplace.assign.wrong_dimension"), ChatFormatting.RED);
 			return InteractionResult.CONSUME;
 		}
@@ -71,7 +74,7 @@ public final class AreaJobs {
 			tell(player, Component.translatable("message.aliveworkplace.assign.too_far", (int) distance, MAX_DISTANCE), ChatFormatting.RED);
 			return InteractionResult.CONSUME;
 		}
-		FieldJob old = villager.getAttached(type);
+		FieldJob old = type.get(villager);
 		if (old != null && !player.getAbilities().instabuild) {
 			ItemStack back = markerFor(level, old);
 			if (!player.getInventory().add(back)) {
@@ -79,7 +82,7 @@ public final class AreaJobs {
 			}
 		}
 		Friends.hire(player, villager);
-		villager.setAttached(type, new FieldJob(box));
+		type.set(villager, new FieldJob(box));
 		if (!player.getAbilities().instabuild) {
 			stack.shrink(1);
 		}
@@ -90,8 +93,8 @@ public final class AreaJobs {
 	}
 
 	/** Takes the area back: the marker goes to {@code player} (or the chests by the workstation). What grew there stays. */
-	public static void release(ServerLevel level, Villager villager, @Nullable Player player, AttachmentType<FieldJob> type) {
-		FieldJob job = villager.getAttached(type);
+	public static void release(ServerLevel level, Villager villager, @Nullable Player player, Attachment<FieldJob> type) {
+		FieldJob job = type.get(villager);
 		if (job == null) {
 			return;
 		}
@@ -103,12 +106,12 @@ public final class AreaJobs {
 				Block.popResource(level, station.above(), rest);
 			}
 		}
-		villager.removeAttached(type);
+		type.remove(villager);
 	}
 
 	/** The marker drops where the worker died. */
-	public static void onDeath(ServerLevel level, Villager villager, AttachmentType<FieldJob> type) {
-		FieldJob job = villager.getAttached(type);
+	public static void onDeath(ServerLevel level, Villager villager, Attachment<FieldJob> type) {
+		FieldJob job = type.get(villager);
 		if (job != null) {
 			Block.popResource(level, villager.blockPosition(), markerFor(level, job));
 		}
@@ -129,19 +132,19 @@ public final class AreaJobs {
 			.withColor(ChatFormatting.RED).withUnderlined(true)
 			.withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, stop))
 			.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.translatable("message.aliveworkplace." + kind + ".stop_hover")))));
-		player.sendSystemMessage(text);
+		Chat.system(player, text);
 	}
 
 	public static ItemStack markerFor(ServerLevel level, FieldJob job) {
 		ItemStack marker = new ItemStack(ModItems.FIELD_MARKER);
 		BoundingBox box = job.box();
-		marker.set(ModComponents.FIELD, new FieldData(Optional.of(level.dimension().location()),
+		marker.set(ModComponents.FIELD, new FieldData(Optional.of(Ids.of(level.dimension())),
 			Optional.of(new BlockPos(box.minX(), box.minY(), box.minZ())), Optional.of(new BlockPos(box.maxX(), box.maxY(), box.maxZ()))));
 		return marker;
 	}
 
 	private static void tell(Player player, Component message, ChatFormatting color) {
-		player.sendSystemMessage(message.copy().withStyle(color));
+		Chat.system(player, message.copy().withStyle(color));
 	}
 
 	private AreaJobs() {

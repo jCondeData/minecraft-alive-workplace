@@ -46,7 +46,7 @@ public class ResearchGameTests implements net.fabricmc.fabric.api.gametest.v1.Fa
 				helper.assertTrue(s.entity().research().level(Research.Topic.SWIFT_HANDS) == 1, "Swift Hands: " + s.entity().research());
 				helper.assertTrue(s.chest().countItem(Items.PAPER) == 4 && s.chest().countItem(Items.EMERALD) == 1, "paper "
 					+ s.chest().countItem(Items.PAPER) + ", emeralds " + s.chest().countItem(Items.EMERALD));
-				helper.assertTrue(s.scholar().getAttachedOrElse(ModAttachments.RESEARCH_DONE, 0) == 1, "research done");
+				helper.assertTrue(ModAttachments.RESEARCH_DONE.getOrElse(s.scholar(), 0) == 1, "research done");
 			});
 		});
 	}

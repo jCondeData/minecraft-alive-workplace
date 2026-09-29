@@ -211,6 +211,85 @@ tasks.matching { it.name == "build" }.configureEach {
 	dependsOn "runCompatGameTest"
 }
 
+// Layer rules (CLAUDE.md, "Layers"). Every package outside platform/fabric/, compat/ and mixin/ is "core": it may use
+// Minecraft, the JDK, the libraries Minecraft ships and our own code, but reaches the mod loader only through platform/
+// (Platform), other mods only through compat/ (extension points), and keeps version switches (//? guards) in mc/ and
+// platform/. This keeps new Minecraft versions, Fabric API changes and other mods' updates to one small place each.
+def checkLayers = tasks.register("checkLayers") {
+	group = "verification"
+	description = "Fails if a feature package uses loader or other-mod code directly, or contains a version switch"
+	def root = file("src/main/java/io/github/jcondedata/aliveworkplace")
+	def sources = fileTree(root) { include "**/*.java" }
+	inputs.files(sources)
+	def report = layout.buildDirectory.file("checkLayers.txt")
+	outputs.file(report)
+	doLast {
+		def allowed = ["java.", "javax.", "net.minecraft.", "com.mojang.", "com.google.gson.", "com.google.common.",
+			"org.jetbrains.annotations.", "org.slf4j.", "org.joml.", "it.unimi.dsi.fastutil.", "io.github.jcondedata.aliveworkplace."]
+		def problems = []
+		sources.files.sort().each { f ->
+			def rel = root.toPath().relativize(f.toPath()).toString().replace("\\", "/")
+			if (rel.startsWith("platform/fabric/") || rel.startsWith("compat/") || rel.startsWith("mixin/")) {
+				return
+			}
+			boolean guardsAllowed = rel.startsWith("mc/") || rel.startsWith("platform/")
+			boolean inComment = false
+			f.readLines("UTF-8").eachWithIndex { line, i ->
+				def t = line.trim()
+				def where = "${rel}:${i + 1}"
+				if (t.startsWith("//?") || t.startsWith("/*?")) {
+					if (!guardsAllowed) {
+						problems << "${where}: version switch outside mc/ or platform/ (write an adapter in mc/)"
+					}
+					return
+				}
+				if (inComment) {
+					if (t.contains("*/")) {
+						inComment = false
+					}
+					return
+				}
+				if (t.startsWith("/*")) {
+					inComment = !t.contains("*/")
+					return
+				}
+				if (t.startsWith("//") || t.startsWith("*")) {
+					return
+				}
+				def code = t.replaceAll(/"(?:[^"\\]|\\.)*"/, '""').replaceAll(/\/\/.*$/, "")
+				def imp = (code =~ /^import\s+(?:static\s+)?([\w.]+)/)
+				if (imp.find()) {
+					def name = imp.group(1)
+					if (!allowed.any { name.startsWith(it) }) {
+						problems << "${where}: imports ${name} (only Minecraft, the JDK and our own code; other mods go through compat/)"
+					}
+				}
+				if (code.contains("net.fabricmc.")) {
+					problems << "${where}: uses Fabric directly (go through platform/Platform)"
+				}
+				if (code =~ /\.aliveworkplace\.compat\./) {
+					problems << "${where}: uses compat/ directly (add an extension point; compat/Compat fills it in)"
+				}
+				if (code =~ /\.aliveworkplace\.platform\.fabric\./) {
+					problems << "${where}: uses platform/fabric/ directly (go through platform/Platform)"
+				}
+				if (code =~ /\b(get|set|has|remove)Attached\w*\(/) {
+					problems << "${where}: Fabric data attachment method (use platform/Attachment)"
+				}
+			}
+		}
+		def out = report.get().asFile
+		out.parentFile.mkdirs()
+		out.text = problems.join("\n") + "\n"
+		if (!problems.isEmpty()) {
+			throw new GradleException("Layer rule violations (see CLAUDE.md, \"Layers\"):\n" + problems.join("\n"))
+		}
+	}
+}
+tasks.named("check") {
+	dependsOn checkLayers
+}
+
 processResources {
 	def version = project.version
 	inputs.property "version", version

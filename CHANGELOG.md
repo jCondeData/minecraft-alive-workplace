@@ -13,6 +13,9 @@
 - Under the hood, no gameplay changes: the build uses Gradle 9.8 on JDK 25 and Loom 1.18.2 (the game still runs on
   Java 21); the Cobblemon and CobbleDollars integrations plug in through the mod's own extension points and switch
   themselves off with a line in the log, instead of crashing, if a future version of those mods changes its API.
+- Under the hood, no gameplay changes: everything the mod needs from Fabric now goes through one small layer
+  (`platform/`), and the Minecraft calls that change in newer versions through another (`mc/`); the build checks that
+  the rest of the mod keeps to that, which is what will let one codebase build for newer Minecraft versions later.
 
 ## 0.133.0 — 2026-09-29
 

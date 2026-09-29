@@ -56,7 +56,7 @@ public class CompostGameTests implements FabricGameTest {
 		}
 		helper.assertTrue(chest.countItem(Items.ROTTEN_FLESH) == 0 && chest.countItem(Items.BONE_MEAL) == 1,
 			"flesh " + chest.countItem(Items.ROTTEN_FLESH) + ", bone meal " + chest.countItem(Items.BONE_MEAL));
-		helper.assertTrue(composter.getAttachedOrElse(ModAttachments.BONE_MEAL_MADE, 0) == 1, "counted");
+		helper.assertTrue(ModAttachments.BONE_MEAL_MADE.getOrElse(composter, 0) == 1, "counted");
 		helper.assertFalse(CompostWork.compost(helper.getLevel(), composter, helper.absolutePos(BIN)), "composted air");
 		helper.assertTrue(!Requests.of(helper.getLevel(), composter).isEmpty(), "no request for scraps");
 		helper.succeed();

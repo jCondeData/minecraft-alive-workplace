@@ -10,6 +10,7 @@ import com.cobblemon.mod.common.battles.BattleRegistry;
 import com.cobblemon.mod.common.item.PokemonItem;
 import com.cobblemon.mod.common.pokemon.Pokemon;
 import io.github.jcondedata.aliveworkplace.build.BuilderLevels;
+import io.github.jcondedata.aliveworkplace.mc.Chat;
 import io.github.jcondedata.aliveworkplace.tutor.Tutors;
 import io.github.jcondedata.aliveworkplace.work.ChoiceMenu;
 import java.util.ArrayList;
@@ -110,12 +111,12 @@ public final class CobblemonTutors {
 
 	public static void open(ServerPlayer player, Villager tutor) {
 		if (BattleRegistry.getBattleByParticipatingPlayer(player) != null) {
-			player.displayClientMessage(Component.translatable("message.aliveworkplace.tutor.in_battle").withStyle(ChatFormatting.YELLOW), true);
+			Chat.actionBar(player, Component.translatable("message.aliveworkplace.tutor.in_battle").withStyle(ChatFormatting.YELLOW));
 			return;
 		}
 		PlayerPartyStore party = Cobblemon.INSTANCE.getStorage().getParty(player);
 		if (party.occupied() == 0) {
-			player.displayClientMessage(Component.translatable("message.aliveworkplace.tutor.no_pokemon").withStyle(ChatFormatting.YELLOW), true);
+			Chat.actionBar(player, Component.translatable("message.aliveworkplace.tutor.no_pokemon").withStyle(ChatFormatting.YELLOW));
 			return;
 		}
 		State state = new State();
@@ -269,8 +270,8 @@ public final class CobblemonTutors {
 			return;
 		}
 		if (!io.github.jcondedata.aliveworkplace.work.Money.charge(player, lesson.dollars(), lesson.price())) {
-			player.displayClientMessage(Component.translatable("message.aliveworkplace.tutor.too_poor",
-				io.github.jcondedata.aliveworkplace.work.Money.describe(lesson.dollars(), lesson.price())).withStyle(ChatFormatting.RED), true);
+			Chat.actionBar(player, Component.translatable("message.aliveworkplace.tutor.too_poor",
+				io.github.jcondedata.aliveworkplace.work.Money.describe(lesson.dollars(), lesson.price())).withStyle(ChatFormatting.RED));
 			return;
 		}
 		boolean inMoves = teach(pokemon, lesson.move());

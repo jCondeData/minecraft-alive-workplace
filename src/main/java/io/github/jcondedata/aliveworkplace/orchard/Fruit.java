@@ -1,8 +1,8 @@
 package io.github.jcondedata.aliveworkplace.orchard;
 
+import io.github.jcondedata.aliveworkplace.platform.Platform;
 import java.util.ArrayList;
 import java.util.List;
-import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
@@ -23,7 +23,7 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
  * harvesting it.
  */
 public final class Fruit {
-	private static final boolean COBBLEMON = FabricLoader.getInstance().isModLoaded("cobblemon");
+	private static final boolean COBBLEMON = Platform.get().isModLoaded("cobblemon");
 
 	/** Ready to pick? */
 	public static boolean isRipe(BlockState state) {

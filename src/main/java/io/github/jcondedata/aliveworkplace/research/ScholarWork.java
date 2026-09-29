@@ -8,6 +8,7 @@ import io.github.jcondedata.aliveworkplace.build.Builders;
 import io.github.jcondedata.aliveworkplace.build.SupplyContainers;
 import io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity;
 import io.github.jcondedata.aliveworkplace.hall.VillageHalls;
+import io.github.jcondedata.aliveworkplace.mc.Chat;
 import io.github.jcondedata.aliveworkplace.registry.ModAttachments;
 import io.github.jcondedata.aliveworkplace.registry.ModVillagers;
 import io.github.jcondedata.aliveworkplace.work.Partners;
@@ -89,7 +90,7 @@ public class ScholarWork extends Behavior<Villager> {
 		timer = EVERY;
 		work(level, villager, desk, atDesk);
 		WorkerStatus.set(villager, Component.translatable("message.aliveworkplace.scholar.title",
-				villager.getAttachedOrElse(ModAttachments.RESEARCH_DONE, 0)), -1f,
+				ModAttachments.RESEARCH_DONE.getOrElse(villager, 0)), -1f,
 			Component.translatable("message.aliveworkplace.scholar.state." + state, detail)
 				.withStyle(state.equals("needs") || state.equals("no_hall") ? ChatFormatting.YELLOW : ChatFormatting.GRAY));
 	}
@@ -150,14 +151,14 @@ public class ScholarWork extends Behavior<Villager> {
 							   Research.Topic topic, int lvl) {
 		entity.setResearch(entity.research().finish());
 		Research.forget();
-		villager.setAttached(ModAttachments.RESEARCH_DONE, villager.getAttachedOrElse(ModAttachments.RESEARCH_DONE, 0) + 1);
+		ModAttachments.RESEARCH_DONE.set(villager, ModAttachments.RESEARCH_DONE.getOrElse(villager, 0) + 1);
 		BuilderLevels.addXp(level, villager, 5, null);
 		level.playSound(null, desk, SoundEvents.PLAYER_LEVELUP, SoundSource.BLOCKS, 0.8f, 1.2f);
 		Component text = Component.translatable("message.aliveworkplace.research.done", VillageHalls.name(level, hall),
 			Component.translatable("research.aliveworkplace.level", topic.title(), BuilderLevels.levelName(lvl)), topic.effect())
 			.withStyle(ChatFormatting.AQUA);
 		for (ServerPlayer player : level.getPlayers(p -> p.distanceToSqr(hall.getCenter()) < (double) VillageHalls.RADIUS * VillageHalls.RADIUS)) {
-			player.displayClientMessage(text, false);
+			Chat.chat(player, text);
 		}
 		io.github.jcondedata.aliveworkplace.hall.Chronicle.record(level, hall, io.github.jcondedata.aliveworkplace.hall.Chronicle.Kind.RESEARCH, Component.translatable("chronicle.aliveworkplace.research",
 			Component.translatable("research.aliveworkplace.level", topic.title(), BuilderLevels.levelName(lvl)), villager.getDisplayName()));

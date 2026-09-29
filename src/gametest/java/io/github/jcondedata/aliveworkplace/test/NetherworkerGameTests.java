@@ -130,7 +130,7 @@ public class NetherworkerGameTests implements FabricGameTest {
 			helper.assertTrue(nether, "nothing from the Nether in the chest");
 			helper.assertTrue(!pick.isEmpty() && pick.getDamageValue() > 0, "the pickaxe should be back, worn");
 			helper.assertTrue(chest.countItem(Items.IRON_SWORD) == 1 && chest.countItem(Items.IRON_CHESTPLATE) == 1, "the sword and armor should be back");
-			helper.assertTrue(villager.getAttachedOrElse(ModAttachments.NETHER_TRIPS, 0) == 1, "trips: " + villager.getAttachedOrElse(ModAttachments.NETHER_TRIPS, 0));
+			helper.assertTrue(ModAttachments.NETHER_TRIPS.getOrElse(villager, 0) == 1, "trips: " + ModAttachments.NETHER_TRIPS.getOrElse(villager, 0));
 		});
 	}
 

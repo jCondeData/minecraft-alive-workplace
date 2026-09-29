@@ -39,7 +39,7 @@ public class ChefGameTests implements FabricGameTest {
 			helper.assertTrue(chest.countItem(Items.COOKED_BEEF) == 4 && chest.countItem(Items.BEEF) == 0,
 				chest.countItem(Items.COOKED_BEEF) + " cooked beef, " + chest.countItem(Items.BEEF) + " raw left");
 			helper.assertTrue(chest.countItem(Items.OAK_PLANKS) == 20, "the chef used the planks");
-			helper.assertTrue(chef.getAttachedOrElse(ModAttachments.ITEMS_CRAFTED, 0) == 7, "cooked " + chef.getAttachedOrElse(ModAttachments.ITEMS_CRAFTED, 0));
+			helper.assertTrue(ModAttachments.ITEMS_CRAFTED.getOrElse(chef, 0) == 7, "cooked " + ModAttachments.ITEMS_CRAFTED.getOrElse(chef, 0));
 		});
 	}
 }

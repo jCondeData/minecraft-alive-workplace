@@ -1,5 +1,7 @@
 package io.github.jcondedata.aliveworkplace.blueprint;
 
+import io.github.jcondedata.aliveworkplace.mc.Lookup;
+import io.github.jcondedata.aliveworkplace.platform.Platform;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -16,15 +18,12 @@ import java.util.Optional;
 import java.util.WeakHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
-import net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener;
-import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;
@@ -44,7 +43,7 @@ import org.jetbrains.annotations.Nullable;
  * build sites, previews, material lists, upgrades ({@code <name>_2} of a styled id is the styled upgrade) — works for
  * styled blueprints unchanged.
  */
-public final class BlueprintStyles implements SimpleSynchronousResourceReloadListener {
+public final class BlueprintStyles implements ResourceManagerReloadListener {
 	private static final ResourceLocation ID = AliveWorkplace.id("blueprint_styles");
 	public static final String FOLDER = "blueprint_styles";
 	private static final String PREFIX = "styled/";
@@ -92,12 +91,7 @@ public final class BlueprintStyles implements SimpleSynchronousResourceReloadLis
 	private static final Map<String, Map<Block, Block>> SWAPS = new HashMap<>();
 
 	public static void init() {
-		ResourceManagerHelper.get(PackType.SERVER_DATA).registerReloadListener(new BlueprintStyles());
-	}
-
-	@Override
-	public ResourceLocation getFabricId() {
-		return ID;
+		Platform.get().onDataReload(ID, new BlueprintStyles());
 	}
 
 	@Override
@@ -131,7 +125,7 @@ public final class BlueprintStyles implements SimpleSynchronousResourceReloadLis
 	static Style read(String name, JsonObject json) {
 		if (json.has("requires")) {
 			for (JsonElement mod : json.getAsJsonArray("requires")) {
-				if (!FabricLoader.getInstance().isModLoaded(mod.getAsString())) {
+				if (!Platform.get().isModLoaded(mod.getAsString())) {
 					return null;
 				}
 			}
@@ -219,7 +213,7 @@ public final class BlueprintStyles implements SimpleSynchronousResourceReloadLis
 		for (Rule rule : style.rules()) {
 			ResourceLocation target = rule.apply(id);
 			if (target != null && BuiltInRegistries.BLOCK.containsKey(target)) {
-				return BuiltInRegistries.BLOCK.get(target);
+				return Lookup.value(BuiltInRegistries.BLOCK, target);
 			}
 		}
 		return block;

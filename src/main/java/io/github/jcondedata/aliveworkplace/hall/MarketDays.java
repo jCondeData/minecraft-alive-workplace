@@ -5,6 +5,7 @@ import io.github.jcondedata.aliveworkplace.blueprint.BlueprintLibrary;
 import io.github.jcondedata.aliveworkplace.blueprint.BlueprintStyles;
 import io.github.jcondedata.aliveworkplace.blueprint.StarterBlueprints;
 import io.github.jcondedata.aliveworkplace.build.BuildSiteManager;
+import io.github.jcondedata.aliveworkplace.mc.Chat;
 import io.github.jcondedata.aliveworkplace.work.Walker;
 import java.util.ArrayList;
 import java.util.List;
@@ -96,7 +97,7 @@ public final class MarketDays {
 		level.playSound(null, square, SoundEvents.BELL_BLOCK, SoundSource.BLOCKS, 1.5f, 1.2f);
 		Component name = VillageHalls.name(level, hall);
 		for (ServerPlayer player : level.getPlayers(p -> p.blockPosition().distSqr(hall) <= (double) VillageHalls.RADIUS * VillageHalls.RADIUS)) {
-			player.displayClientMessage(Component.translatable("message.aliveworkplace.market.day", name).withStyle(ChatFormatting.GOLD), false);
+			Chat.chat(player, Component.translatable("message.aliveworkplace.market.day", name).withStyle(ChatFormatting.GOLD));
 		}
 		Chronicle.record(level, hall, Chronicle.Kind.MARKET, Component.translatable("chronicle.aliveworkplace.market", traders.size()), true);
 		return traders;

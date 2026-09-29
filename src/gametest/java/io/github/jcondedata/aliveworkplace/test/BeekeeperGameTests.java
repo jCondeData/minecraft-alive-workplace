@@ -36,7 +36,7 @@ public class BeekeeperGameTests implements FabricGameTest {
 			helper.assertTrue(chest.countItem(Items.HONEY_BOTTLE) == 1 && chest.countItem(Items.GLASS_BOTTLE) == 1,
 				"honey " + chest.countItem(Items.HONEY_BOTTLE) + ", bottles " + chest.countItem(Items.GLASS_BOTTLE));
 			helper.assertTrue(helper.getBlockState(HIVE).getValue(BeehiveBlock.HONEY_LEVEL) == 0, "the hive is still full");
-			helper.assertTrue(keeper.getAttachedOrElse(ModAttachments.HIVES_HARVESTED, 0) == 1, "harvests counted");
+			helper.assertTrue(ModAttachments.HIVES_HARVESTED.getOrElse(keeper, 0) == 1, "harvests counted");
 		});
 	}
 

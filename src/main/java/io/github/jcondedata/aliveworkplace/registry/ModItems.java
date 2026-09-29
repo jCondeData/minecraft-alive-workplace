@@ -1,9 +1,10 @@
 package io.github.jcondedata.aliveworkplace.registry;
 
+import io.github.jcondedata.aliveworkplace.platform.Platform;
 import io.github.jcondedata.aliveworkplace.AliveWorkplace;
+import io.github.jcondedata.aliveworkplace.mc.Reg;
 import io.github.jcondedata.aliveworkplace.blueprint.BlueprintItem;
 import io.github.jcondedata.aliveworkplace.blueprint.StarterBlueprints;
-import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
@@ -12,76 +13,44 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 
 public final class ModItems {
-	public static final BlueprintItem BLUEPRINT = Registry.register(
-		BuiltInRegistries.ITEM, AliveWorkplace.id("blueprint"), new BlueprintItem(new Item.Properties().stacksTo(1))
-	);
+	public static final BlueprintItem BLUEPRINT = Reg.item("blueprint", BlueprintItem::new, new Item.Properties().stacksTo(1));
 
 	/** Paper + blue dye. Turned into a real blueprint at a Blueprint Table. */
-	public static final Item BLANK_BLUEPRINT = Registry.register(
-		BuiltInRegistries.ITEM, AliveWorkplace.id("blank_blueprint"), new Item(new Item.Properties())
-	);
+	public static final Item BLANK_BLUEPRINT = Reg.item("blank_blueprint", Item::new, new Item.Properties());
 
 	/** Turns something built in the world into a blueprint. */
-	public static final io.github.jcondedata.aliveworkplace.blueprint.ScanToolItem SCAN_TOOL = Registry.register(
-		BuiltInRegistries.ITEM, AliveWorkplace.id("scan_tool"), new io.github.jcondedata.aliveworkplace.blueprint.ScanToolItem(new Item.Properties().stacksTo(1))
-	);
+	public static final io.github.jcondedata.aliveworkplace.blueprint.ScanToolItem SCAN_TOOL = Reg.item("scan_tool", io.github.jcondedata.aliveworkplace.blueprint.ScanToolItem::new, new Item.Properties().stacksTo(1));
 
 	/** Draws up shapes (walls, towers, domes...) as blueprints for the builders. */
-	public static final io.github.jcondedata.aliveworkplace.blueprint.ShapePlannerItem SHAPE_PLANNER = Registry.register(
-		BuiltInRegistries.ITEM, AliveWorkplace.id("shape_planner"), new io.github.jcondedata.aliveworkplace.blueprint.ShapePlannerItem(new Item.Properties().stacksTo(1))
-	);
+	public static final io.github.jcondedata.aliveworkplace.blueprint.ShapePlannerItem SHAPE_PLANNER = Reg.item("shape_planner", io.github.jcondedata.aliveworkplace.blueprint.ShapePlannerItem::new, new Item.Properties().stacksTo(1));
 
 	/** A route for a guard to patrol. */
-	public static final io.github.jcondedata.aliveworkplace.guard.PatrolMapItem PATROL_MAP = Registry.register(
-		BuiltInRegistries.ITEM, AliveWorkplace.id("patrol_map"), new io.github.jcondedata.aliveworkplace.guard.PatrolMapItem(new Item.Properties().stacksTo(1))
-	);
-	public static final io.github.jcondedata.aliveworkplace.hall.VillageLedgerItem VILLAGE_LEDGER = Registry.register(
-		BuiltInRegistries.ITEM, AliveWorkplace.id("village_ledger"), new io.github.jcondedata.aliveworkplace.hall.VillageLedgerItem(new Item.Properties().stacksTo(1))
-	);
-	public static final io.github.jcondedata.aliveworkplace.guard.RallyBannerItem RALLY_BANNER = Registry.register(
-		BuiltInRegistries.ITEM, AliveWorkplace.id("rally_banner"), new io.github.jcondedata.aliveworkplace.guard.RallyBannerItem(new Item.Properties().stacksTo(1))
-	);
+	public static final io.github.jcondedata.aliveworkplace.guard.PatrolMapItem PATROL_MAP = Reg.item("patrol_map", io.github.jcondedata.aliveworkplace.guard.PatrolMapItem::new, new Item.Properties().stacksTo(1));
+	public static final io.github.jcondedata.aliveworkplace.hall.VillageLedgerItem VILLAGE_LEDGER = Reg.item("village_ledger", io.github.jcondedata.aliveworkplace.hall.VillageLedgerItem::new, new Item.Properties().stacksTo(1));
+	public static final io.github.jcondedata.aliveworkplace.guard.RallyBannerItem RALLY_BANNER = Reg.item("rally_banner", io.github.jcondedata.aliveworkplace.guard.RallyBannerItem::new, new Item.Properties().stacksTo(1));
 
 	/** Marks out a quarry for a Miner. */
-	public static final io.github.jcondedata.aliveworkplace.mine.QuarryMarkerItem QUARRY_MARKER = Registry.register(
-		BuiltInRegistries.ITEM, AliveWorkplace.id("quarry_marker"),
-		new io.github.jcondedata.aliveworkplace.mine.QuarryMarkerItem(new Item.Properties().stacksTo(1))
-	);
+	public static final io.github.jcondedata.aliveworkplace.mine.QuarryMarkerItem QUARRY_MARKER = Reg.item("quarry_marker", io.github.jcondedata.aliveworkplace.mine.QuarryMarkerItem::new, new Item.Properties().stacksTo(1));
 
 	/** Marks out a field for a Farmer. */
-	public static final io.github.jcondedata.aliveworkplace.farm.FieldMarkerItem FIELD_MARKER = Registry.register(
-		BuiltInRegistries.ITEM, AliveWorkplace.id("field_marker"),
-		new io.github.jcondedata.aliveworkplace.farm.FieldMarkerItem(new Item.Properties().stacksTo(1))
-	);
+	public static final io.github.jcondedata.aliveworkplace.farm.FieldMarkerItem FIELD_MARKER = Reg.item("field_marker", io.github.jcondedata.aliveworkplace.farm.FieldMarkerItem::new, new Item.Properties().stacksTo(1));
 
 	/** A ferry ticket to one travel post, sold by Ferrymen. */
-	public static final io.github.jcondedata.aliveworkplace.travel.TravelTicketItem TRAVEL_TICKET = Registry.register(
-		BuiltInRegistries.ITEM, AliveWorkplace.id("travel_ticket"),
-		new io.github.jcondedata.aliveworkplace.travel.TravelTicketItem(new Item.Properties().stacksTo(16))
-	);
+	public static final io.github.jcondedata.aliveworkplace.travel.TravelTicketItem TRAVEL_TICKET = Reg.item("travel_ticket", io.github.jcondedata.aliveworkplace.travel.TravelTicketItem::new, new Item.Properties().stacksTo(16));
 
 	/** Sets up a courier route for a Postman. */
-	public static final io.github.jcondedata.aliveworkplace.mail.DeliveryNoteItem DELIVERY_NOTE = Registry.register(
-		BuiltInRegistries.ITEM, AliveWorkplace.id("delivery_note"),
-		new io.github.jcondedata.aliveworkplace.mail.DeliveryNoteItem(new Item.Properties().stacksTo(1))
-	);
+	public static final io.github.jcondedata.aliveworkplace.mail.DeliveryNoteItem DELIVERY_NOTE = Reg.item("delivery_note", io.github.jcondedata.aliveworkplace.mail.DeliveryNoteItem::new, new Item.Properties().stacksTo(1));
 
 	/** A price in CobbleDollars (the number it's renamed to) for a Shop Counter's price row. */
-	public static final io.github.jcondedata.aliveworkplace.shop.PriceTagItem PRICE_TAG = Registry.register(
-		BuiltInRegistries.ITEM, AliveWorkplace.id("price_tag"),
-		new io.github.jcondedata.aliveworkplace.shop.PriceTagItem(new Item.Properties().stacksTo(16))
-	);
+	public static final io.github.jcondedata.aliveworkplace.shop.PriceTagItem PRICE_TAG = Reg.item("price_tag", io.github.jcondedata.aliveworkplace.shop.PriceTagItem::new, new Item.Properties().stacksTo(16));
 
 	/** Two settlers make camp where it's used: a covered wagon, supplies, a Builder's Bench. */
-	public static final io.github.jcondedata.aliveworkplace.camp.SettlersWagonItem SETTLERS_WAGON = Registry.register(
-		BuiltInRegistries.ITEM, AliveWorkplace.id("settlers_wagon"),
-		new io.github.jcondedata.aliveworkplace.camp.SettlersWagonItem(new Item.Properties().stacksTo(1))
-	);
+	public static final io.github.jcondedata.aliveworkplace.camp.SettlersWagonItem SETTLERS_WAGON = Reg.item("settlers_wagon", io.github.jcondedata.aliveworkplace.camp.SettlersWagonItem::new, new Item.Properties().stacksTo(1));
 
 	public static final CreativeModeTab TAB = Registry.register(
 		BuiltInRegistries.CREATIVE_MODE_TAB,
 		AliveWorkplace.id("main"),
-		FabricItemGroup.builder()
+		Platform.get().creativeTab()
 			.title(Component.translatable("itemGroup.aliveworkplace"))
 			.icon(() -> new ItemStack(ModBlocks.BUILDERS_BENCH))
 			.displayItems((params, output) -> {

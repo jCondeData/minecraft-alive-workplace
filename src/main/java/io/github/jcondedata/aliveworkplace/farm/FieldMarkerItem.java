@@ -1,5 +1,7 @@
 package io.github.jcondedata.aliveworkplace.farm;
 
+import io.github.jcondedata.aliveworkplace.mc.Chat;
+import io.github.jcondedata.aliveworkplace.mc.Ids;
 import io.github.jcondedata.aliveworkplace.registry.ModComponents;
 import java.util.List;
 import java.util.Optional;
@@ -31,32 +33,32 @@ public class FieldMarkerItem extends Item {
 	public InteractionResult useOn(UseOnContext context) {
 		Player player = context.getPlayer();
 		ItemStack stack = context.getItemInHand();
-		if (context.getLevel().isClientSide || player == null) {
+		if (context.getLevel().isClientSide() || player == null) {
 			return InteractionResult.SUCCESS;
 		}
 		FieldData data = data(stack);
 		BlockPos pos = context.getClickedPos();
-		var dim = context.getLevel().dimension().location();
+		var dim = Ids.of(context.getLevel().dimension());
 		if (player.isShiftKeyDown()) {
 			stack.set(ModComponents.FIELD, FieldData.EMPTY);
-			player.displayClientMessage(Component.translatable("message.aliveworkplace.field.reset"), true);
+			Chat.actionBar(player, Component.translatable("message.aliveworkplace.field.reset"));
 			return InteractionResult.SUCCESS;
 		}
 		if (data.first().isEmpty() || data.isComplete() || !data.dimension().map(dim::equals).orElse(false)) {
 			stack.set(ModComponents.FIELD, new FieldData(Optional.of(dim), Optional.of(pos), Optional.empty()));
-			player.displayClientMessage(Component.translatable("message.aliveworkplace.field.first", pos.getX(), pos.getY(), pos.getZ()), true);
+			Chat.actionBar(player, Component.translatable("message.aliveworkplace.field.first", pos.getX(), pos.getY(), pos.getZ()));
 			return InteractionResult.SUCCESS;
 		}
 		BlockPos first = data.first().get();
 		int w = Math.abs(first.getX() - pos.getX()) + 1;
 		int d = Math.abs(first.getZ() - pos.getZ()) + 1;
 		if (w > FieldData.MAX_SIDE || d > FieldData.MAX_SIDE) {
-			player.displayClientMessage(Component.translatable("message.aliveworkplace.field.too_big", w, d, FieldData.MAX_SIDE)
-				.withStyle(ChatFormatting.RED), true);
+			Chat.actionBar(player, Component.translatable("message.aliveworkplace.field.too_big", w, d, FieldData.MAX_SIDE)
+				.withStyle(ChatFormatting.RED));
 			return InteractionResult.FAIL;
 		}
 		stack.set(ModComponents.FIELD, new FieldData(Optional.of(dim), Optional.of(first), Optional.of(pos)));
-		player.displayClientMessage(Component.translatable("message.aliveworkplace.field.marked", w, d), false);
+		Chat.chat(player, Component.translatable("message.aliveworkplace.field.marked", w, d));
 		return InteractionResult.SUCCESS;
 	}
 

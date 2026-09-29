@@ -2,6 +2,8 @@ package io.github.jcondedata.aliveworkplace.blueprint.io;
 
 import com.mojang.datafixers.DataFixer;
 import io.github.jcondedata.aliveworkplace.blueprint.Blueprint;
+import io.github.jcondedata.aliveworkplace.mc.Lookup;
+import io.github.jcondedata.aliveworkplace.mc.Nbt;
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
@@ -53,20 +55,20 @@ public final class BlueprintFiles {
 		}
 
 		if (LitematicReader.looksLike(root)) {
-			BlockStateReader states = new BlockStateReader(fixer, root.getInt("MinecraftDataVersion"));
+			BlockStateReader states = new BlockStateReader(fixer, Nbt.getInt(root, "MinecraftDataVersion"));
 			return new Result(LitematicReader.read(id, root, states, maxVolume), "litematic", states.unknownBlocks());
 		}
 		if (SpongeSchematicReader.looksLike(root)) {
 			BlockStateReader states = new BlockStateReader(fixer, SpongeSchematicReader.dataVersion(root));
 			return new Result(SpongeSchematicReader.read(id, root, states, maxVolume), "schem", states.unknownBlocks());
 		}
-		if (root.contains("size", Tag.TAG_LIST) && root.contains("blocks", Tag.TAG_LIST)) {
+		if (Nbt.has(root, "size", Tag.TAG_LIST) && Nbt.has(root, "blocks", Tag.TAG_LIST)) {
 			CompoundTag fixed = DataFixTypes.STRUCTURE.updateToCurrentVersion(fixer, root, NbtUtils.getDataVersion(root, 500));
-			ListTag s = fixed.getList("size", Tag.TAG_INT);
-			checkVolume(new Vec3i(s.getInt(0), s.getInt(1), s.getInt(2)), maxVolume);
-			return new Result(Blueprint.fromStructureNbt(id, fixed, BuiltInRegistries.BLOCK.asLookup()), "nbt", 0);
+			ListTag s = Nbt.getList(fixed, "size", Tag.TAG_INT);
+			checkVolume(new Vec3i(Nbt.intAt(s, 0), Nbt.intAt(s, 1), Nbt.intAt(s, 2)), maxVolume);
+			return new Result(Blueprint.fromStructureNbt(id, fixed, Lookup.lookup(BuiltInRegistries.BLOCK)), "nbt", 0);
 		}
-		if (root.contains("Blocks", Tag.TAG_BYTE_ARRAY) && root.contains("Materials")) {
+		if (Nbt.has(root, "Blocks", Tag.TAG_BYTE_ARRAY) && root.contains("Materials")) {
 			throw new BlueprintFormatException("mcedit");
 		}
 		throw new BlueprintFormatException("unknown_format");

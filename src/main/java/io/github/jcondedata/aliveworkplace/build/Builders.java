@@ -6,6 +6,10 @@ import io.github.jcondedata.aliveworkplace.blueprint.BlueprintItem;
 import io.github.jcondedata.aliveworkplace.blueprint.BlueprintLibrary;
 import io.github.jcondedata.aliveworkplace.blueprint.BlueprintOutline;
 import io.github.jcondedata.aliveworkplace.blueprint.Blueprints;
+import io.github.jcondedata.aliveworkplace.mc.Chat;
+import io.github.jcondedata.aliveworkplace.mc.Ids;
+import io.github.jcondedata.aliveworkplace.mc.Players;
+import io.github.jcondedata.aliveworkplace.mc.Rules;
 import io.github.jcondedata.aliveworkplace.registry.ModAttachments;
 import io.github.jcondedata.aliveworkplace.registry.ModGameRules;
 import io.github.jcondedata.aliveworkplace.registry.ModVillagers;
@@ -63,7 +67,7 @@ public final class Builders {
 	 */
 	@Nullable
 	public static BuildSite activeSite(ServerLevel level, Villager villager) {
-		BuilderJob job = villager.getAttached(ModAttachments.BUILDER_JOB);
+		BuilderJob job = ModAttachments.BUILDER_JOB.get(villager);
 		if (job != null) {
 			BuildSite site = BuildSiteManager.get(level).get(job.siteId());
 			if (site != null && !site.isQueued() && !(job.helper() && site.isDone())) {
@@ -72,7 +76,7 @@ public final class Builders {
 			if (job.helper()) {
 				stopHelping(level, villager);
 			} else {
-				villager.removeAttached(ModAttachments.BUILDER_JOB);
+				ModAttachments.BUILDER_JOB.remove(villager);
 			}
 		}
 		return startNext(level, villager);
@@ -89,7 +93,7 @@ public final class Builders {
 	}
 
 	public static boolean isHelping(Villager villager) {
-		BuilderJob job = villager.getAttached(ModAttachments.BUILDER_JOB);
+		BuilderJob job = ModAttachments.BUILDER_JOB.get(villager);
 		return job != null && job.helper();
 	}
 
@@ -99,7 +103,7 @@ public final class Builders {
 	 */
 	@Nullable
 	public static BuildSite recruit(ServerLevel level, Villager villager) {
-		if (!level.getGameRules().getBoolean(ModGameRules.BUILDERS_HELP) || villager.hasAttached(ModAttachments.BUILDER_JOB)) {
+		if (!Rules.on(level, ModGameRules.BUILDERS_HELP) || ModAttachments.BUILDER_JOB.has(villager)) {
 			return null;
 		}
 		Optional<BlockPos> bench = benchPos(villager);
@@ -108,8 +112,8 @@ public final class Builders {
 		}
 		BuildSite best = null;
 		double bestDistance = Double.MAX_VALUE;
-		Employer employer = villager.getAttached(ModAttachments.BUILDER_EMPLOYER);
-		boolean ownership = level.getGameRules().getBoolean(ModGameRules.BUILDER_OWNERSHIP);
+		Employer employer = ModAttachments.BUILDER_EMPLOYER.get(villager);
+		boolean ownership = Rules.on(level, ModGameRules.BUILDER_OWNERSHIP);
 		for (BuildSite site : BuildSiteManager.get(level).all()) {
 			if (ownership && employer != null && !Friends.get(level.getServer()).mayDirect(employer.id(), site.owner())) {
 				continue; // a hired builder only helps its employer and their friends
@@ -125,7 +129,7 @@ public final class Builders {
 			}
 		}
 		if (best != null) {
-			villager.setAttached(ModAttachments.BUILDER_JOB, new BuilderJob(best.id(), true));
+			ModAttachments.BUILDER_JOB.set(villager, new BuilderJob(best.id(), true));
 			best.seen(villager.getUUID(), level.getGameTime());
 		}
 		return best;
@@ -133,8 +137,8 @@ public final class Builders {
 
 	/** Stops helping: hands back anything fetched for the site and becomes idle. */
 	public static void stopHelping(ServerLevel level, Villager villager) {
-		BuilderJob job = villager.getAttached(ModAttachments.BUILDER_JOB);
-		villager.removeAttached(ModAttachments.BUILDER_JOB);
+		BuilderJob job = ModAttachments.BUILDER_JOB.get(villager);
+		ModAttachments.BUILDER_JOB.remove(villager);
 		BuildSite site = job != null ? BuildSiteManager.get(level).get(job.siteId()) : null;
 		if (site != null) {
 			site.release(villager.getUUID());
@@ -163,7 +167,7 @@ public final class Builders {
 		}
 		BuildSite next = queue.get(0);
 		next.setQueued(false);
-		villager.setAttached(ModAttachments.BUILDER_JOB, new BuilderJob(next.id()));
+		ModAttachments.BUILDER_JOB.set(villager, new BuilderJob(next.id()));
 		ServerPlayer owner = level.getServer().getPlayerList().getPlayer(next.owner());
 		if (owner != null) {
 			tell(owner, Component.translatable("message.aliveworkplace.queue.next", villager.getDisplayName(),
@@ -181,9 +185,9 @@ public final class Builders {
 
 	/** {@code deconstruct}: take the building at the placement down instead of building it (sneak-give). */
 	public static InteractionResult assign(ServerPlayer player, Villager villager, ItemStack stack, boolean deconstruct) {
-		ServerLevel level = player.serverLevel();
+		ServerLevel level = Players.level(player);
 		if (!Friends.mayCommand(player, villager)) {
-			Employer employer = villager.getAttached(ModAttachments.BUILDER_EMPLOYER);
+			Employer employer = ModAttachments.BUILDER_EMPLOYER.get(villager);
 			tell(player, Component.translatable("message.aliveworkplace.not_your_builder", villager.getDisplayName(),
 				employer != null ? employer.name() : "?", player.getGameProfile().getName()), ChatFormatting.RED);
 			return InteractionResult.CONSUME;
@@ -200,7 +204,7 @@ public final class Builders {
 			tell(player, Component.translatable("message.aliveworkplace.assign.not_placed"), ChatFormatting.YELLOW);
 			return InteractionResult.CONSUME;
 		}
-		if (!placement.get().dimension().equals(level.dimension().location())) {
+		if (!placement.get().dimension().equals(Ids.of(level.dimension()))) {
 			tell(player, Component.translatable("message.aliveworkplace.assign.wrong_dimension"), ChatFormatting.RED);
 			return InteractionResult.CONSUME;
 		}
@@ -272,7 +276,7 @@ public final class Builders {
 		}
 		site.setBuilder(villager.getUUID());
 		site.setBench(benchPos(villager).orElse(null));
-		villager.setAttached(ModAttachments.BUILDER_JOB, new BuilderJob(site.id()));
+		ModAttachments.BUILDER_JOB.set(villager, new BuilderJob(site.id()));
 		return site;
 	}
 
@@ -300,7 +304,7 @@ public final class Builders {
 			tell(player, Component.literal("  ").append(BuilderLevels.describe(villager)), ChatFormatting.DARK_AQUA);
 			return;
 		}
-		player.sendSystemMessage(statusText(level, site, villager));
+		Chat.system(player, statusText(level, site, villager));
 	}
 
 	public static Component statusText(ServerLevel level, BuildSite site, @Nullable Villager villager) {
@@ -328,7 +332,7 @@ public final class Builders {
 		if (villager != null) {
 			text.append(Component.literal("\n  "));
 			text.append(BuilderLevels.describe(villager).copy().withStyle(ChatFormatting.DARK_AQUA));
-			Employer employer = villager.getAttached(ModAttachments.BUILDER_EMPLOYER);
+			Employer employer = ModAttachments.BUILDER_EMPLOYER.get(villager);
 			if (employer != null) {
 				text.append(Component.literal(" · ").withStyle(ChatFormatting.DARK_GRAY));
 				text.append(Component.translatable("message.aliveworkplace.status.works_for", employer.name()).withStyle(ChatFormatting.DARK_AQUA));
@@ -341,7 +345,7 @@ public final class Builders {
 		}
 		if (villager != null && benchPos(villager).isPresent() && !site.isDeconstruction()) {
 			List<BlockPos> supplies = SupplyContainers.find(level, benchPos(villager).get(), plan.bounds());
-			BuilderBag bag = villager.getAttachedOrCreate(ModAttachments.BUILDER_BAG);
+			BuilderBag bag = ModAttachments.BUILDER_BAG.getOrCreate(villager);
 			site.setMissing(computeMissing(level, site, plan, bag, supplies));
 		}
 		if (!site.missing().isEmpty()) {
@@ -406,7 +410,7 @@ public final class Builders {
 		}
 		for (UUID id : crew) {
 			if (level.getEntity(id) instanceof Villager mate) {
-				BuilderBag mateBag = mate.getAttachedOrCreate(ModAttachments.BUILDER_BAG);
+				BuilderBag mateBag = ModAttachments.BUILDER_BAG.getOrCreate(mate);
 				if (mateBag != bag) {
 					bags.add(mateBag);
 				}
@@ -585,9 +589,9 @@ public final class Builders {
 			dropNear(level, villager.blockPosition(), blueprintFor(level, queued));
 			BuildSiteManager.get(level).remove(queued.id());
 		}
-		BuilderJob job = villager.getAttached(ModAttachments.BUILDER_JOB);
+		BuilderJob job = ModAttachments.BUILDER_JOB.get(villager);
 		BuildSite site = job != null ? BuildSiteManager.get(level).get(job.siteId()) : null;
-		BuilderBag bag = villager.getAttached(ModAttachments.BUILDER_BAG);
+		BuilderBag bag = ModAttachments.BUILDER_BAG.get(villager);
 		if (bag != null) {
 			for (ItemStack stack : bag.takeAll()) {
 				dropNear(level, villager.blockPosition(), stack);
@@ -606,13 +610,13 @@ public final class Builders {
 
 	private static void endJob(ServerLevel level, Villager villager, BuildSite site) {
 		BuildSiteManager.get(level).remove(site.id());
-		villager.removeAttached(ModAttachments.BUILDER_JOB);
+		ModAttachments.BUILDER_JOB.remove(villager);
 		villager.setItemSlot(EquipmentSlot.MAINHAND, ItemStack.EMPTY);
 		villager.getBrain().eraseMemory(MemoryModuleType.WALK_TARGET);
 	}
 
 	private static void emptyBag(ServerLevel level, Villager villager, BlockPos bench, List<BlockPos> supplies) {
-		BuilderBag bag = villager.getAttachedOrCreate(ModAttachments.BUILDER_BAG);
+		BuilderBag bag = ModAttachments.BUILDER_BAG.getOrCreate(villager);
 		for (ItemStack stack : bag.takeAll()) {
 			ItemStack rest = SupplyContainers.insert(level, supplies, stack);
 			if (!rest.isEmpty()) {
@@ -639,7 +643,7 @@ public final class Builders {
 	}
 
 	static void tell(Player player, Component message, ChatFormatting color) {
-		player.sendSystemMessage(message.copy().withStyle(color));
+		Chat.system(player, message.copy().withStyle(color));
 	}
 
 	/**
@@ -667,12 +671,12 @@ public final class Builders {
 		if (!(entity instanceof ServerPlayer p)) {
 			return false;
 		}
-		if (p.hasPermissions(2) || !p.serverLevel().getGameRules().getBoolean(ModGameRules.BUILDER_OWNERSHIP)
-			|| Friends.get(p.getServer()).mayDirect(site.owner(), p.getUUID())) {
+		if (p.hasPermissions(2) || !Rules.on(Players.level(p), ModGameRules.BUILDER_OWNERSHIP)
+			|| Friends.get(p.level().getServer()).mayDirect(site.owner(), p.getUUID())) {
 			return true;
 		}
-		return site.builder() != null && p.serverLevel().getEntity(site.builder()) instanceof Villager builder
-			&& builder.getAttached(ModAttachments.BUILDER_EMPLOYER) != null && Friends.mayCommand(p, builder);
+		return site.builder() != null && Players.level(p).getEntity(site.builder()) instanceof Villager builder
+			&& ModAttachments.BUILDER_EMPLOYER.get(builder) != null && Friends.mayCommand(p, builder);
 	}
 
 	private Builders() {

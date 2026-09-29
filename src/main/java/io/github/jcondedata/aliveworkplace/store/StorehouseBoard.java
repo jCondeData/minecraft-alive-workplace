@@ -4,6 +4,8 @@ import io.github.jcondedata.aliveworkplace.build.BuildSite;
 import io.github.jcondedata.aliveworkplace.build.Builders;
 import io.github.jcondedata.aliveworkplace.build.Employer;
 import io.github.jcondedata.aliveworkplace.build.SupplyContainers;
+import io.github.jcondedata.aliveworkplace.mc.Chat;
+import io.github.jcondedata.aliveworkplace.mc.Players;
 import io.github.jcondedata.aliveworkplace.work.ChoiceMenu;
 import io.github.jcondedata.aliveworkplace.work.Requests;
 import java.util.ArrayList;
@@ -40,7 +42,7 @@ public final class StorehouseBoard {
 	public static final int FIRST_REQUEST = 9;
 
 	public static void open(ServerPlayer player, BlockPos storehouse) {
-		ServerLevel level = player.serverLevel();
+		ServerLevel level = Players.level(player);
 		Employer owner = Porters.owner(level, storehouse);
 		Component title = owner == null ? Component.translatable("screen.aliveworkplace.storehouse.village")
 			: Component.translatable("screen.aliveworkplace.storehouse.owned", owner.name());
@@ -52,7 +54,7 @@ public final class StorehouseBoard {
 
 	/** The same board, not shown to anyone (tests). */
 	public static ChoiceMenu boardForTest(ServerPlayer player, BlockPos storehouse) {
-		return ChoiceMenu.detached(player, menu -> render(menu, player.serverLevel(), storehouse, player));
+		return ChoiceMenu.detached(player, menu -> render(menu, Players.level(player), storehouse, player));
 	}
 
 	private static void render(ChoiceMenu menu, ServerLevel level, BlockPos storehouse, ServerPlayer viewer) {
@@ -83,11 +85,11 @@ public final class StorehouseBoard {
 			menu.button(slot++, icon(level, request, store, viewer), p -> {
 				int given = give(p, request);
 				if (given > 0) {
-					p.displayClientMessage(Component.translatable("message.aliveworkplace.storehouse.gave", given, request.what(), job(request))
-						.withStyle(ChatFormatting.GREEN), true);
+					Chat.actionBar(p, Component.translatable("message.aliveworkplace.storehouse.gave", given, request.what(), job(request))
+						.withStyle(ChatFormatting.GREEN));
 					level.playSound(null, p.blockPosition(), SoundEvents.BUNDLE_INSERT, SoundSource.PLAYERS, 0.8f, 1f);
 				} else {
-					p.displayClientMessage(Component.translatable("message.aliveworkplace.storehouse.none", request.what()).withStyle(ChatFormatting.YELLOW), true);
+					Chat.actionBar(p, Component.translatable("message.aliveworkplace.storehouse.none", request.what()).withStyle(ChatFormatting.YELLOW));
 				}
 				render(menu, level, storehouse, p);
 				menu.broadcastChanges();
@@ -172,7 +174,7 @@ public final class StorehouseBoard {
 
 	/** Moves up to what's asked for from {@code player}'s inventory into the worker's chests; returns how many. */
 	static int give(ServerPlayer player, Requests.Request request) {
-		ServerLevel level = player.serverLevel();
+		ServerLevel level = Players.level(player);
 		List<BlockPos> chests = SupplyContainers.find(level, request.station(), buildArea(level, request));
 		if (chests.isEmpty()) {
 			return 0;

@@ -1,11 +1,8 @@
 package io.github.jcondedata.aliveworkplace.build;
 
+import io.github.jcondedata.aliveworkplace.platform.Platform;
 import io.github.jcondedata.aliveworkplace.AliveWorkplace;
 import io.github.jcondedata.aliveworkplace.blueprint.Blueprints;
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
-import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
-import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
-import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
@@ -42,8 +39,8 @@ public final class BuilderStatusSync {
 	}
 
 	public static void init() {
-		PayloadTypeRegistry.playS2C().register(Status.TYPE, Status.CODEC);
-		ServerTickEvents.END_WORLD_TICK.register(level -> {
+		Platform.get().clientbound(Status.TYPE, Status.CODEC);
+		Platform.get().onLevelTick(level -> {
 			if (level.getGameTime() % INTERVAL == 0 && !level.players().isEmpty()) {
 				broadcast(level);
 				broadcastQuarries(level);
@@ -100,9 +97,9 @@ public final class BuilderStatusSync {
 				.append(Component.translatable("message.aliveworkplace.partners.overhead", io.github.jcondedata.aliveworkplace.work.Partners.names(partners))
 					.withStyle(ChatFormatting.GREEN)));
 		}
-		for (ServerPlayer player : PlayerLookup.tracking(villager)) {
-			if (ServerPlayNetworking.canSend(player, Status.TYPE)) {
-				ServerPlayNetworking.send(player, status);
+		for (ServerPlayer player : Platform.get().tracking(villager)) {
+			if (Platform.get().canSend(player, Status.TYPE)) {
+				Platform.get().send(player, status);
 			}
 		}
 	}

@@ -54,7 +54,7 @@ public class GuardGameTests implements FabricGameTest {
 		helper.succeedWhen(() -> {
 			helper.assertEntityNotPresent(EntityType.HUSK);
 			helper.assertTrue(guard.isAlive(), "the guard died");
-			helper.assertTrue(guard.getAttachedOrElse(ModAttachments.GUARD_KILLS, 0) == 1, "kill not counted");
+			helper.assertTrue(ModAttachments.GUARD_KILLS.getOrElse(guard, 0) == 1, "kill not counted");
 			helper.assertTrue(guard.getItemBySlot(EquipmentSlot.MAINHAND).is(Items.IRON_SWORD), "not holding the best sword: " + guard.getItemBySlot(EquipmentSlot.MAINHAND)
 				+ ", chest: " + helper.<net.minecraft.world.level.block.entity.ChestBlockEntity>getBlockEntity(CHEST).getItem(0) + " " + helper.<net.minecraft.world.level.block.entity.ChestBlockEntity>getBlockEntity(CHEST).getItem(1) + " " + helper.<net.minecraft.world.level.block.entity.ChestBlockEntity>getBlockEntity(CHEST).getItem(2));
 			helper.assertTrue(guard.getItemBySlot(EquipmentSlot.CHEST).is(Items.IRON_CHESTPLATE), "no chestplate");
@@ -118,7 +118,7 @@ public class GuardGameTests implements FabricGameTest {
 			helper.assertTrue(helper.getTick() > 100, "not yet");
 			helper.assertEntityNotPresent(EntityType.CREEPER);
 			helper.assertFalse(exploded[0], "the creeper got close enough to go off");
-			helper.assertTrue(guard.getAttachedOrElse(ModAttachments.GUARD_KILLS, 0) == 1, "the kill wasn't counted");
+			helper.assertTrue(ModAttachments.GUARD_KILLS.getOrElse(guard, 0) == 1, "the kill wasn't counted");
 			Container chest = helper.getBlockEntity(CHEST);
 			helper.assertTrue(chest.countItem(Items.BOW) == 1, "the bow should still be in the chest");
 		});
@@ -145,7 +145,7 @@ public class GuardGameTests implements FabricGameTest {
 			helper.assertEntityNotPresent(EntityType.CREEPER);
 			helper.assertFalse(exploded[0], "the creeper got close enough to go off");
 			helper.assertTrue(guard.isAlive() && guard.getHealth() > 30, "the guard got hurt: " + guard.getHealth() + " (" + HURT_BY.get(guard.getUUID()) + ")");
-			helper.assertTrue(guard.getAttachedOrElse(ModAttachments.GUARD_KILLS, 0) == 1, "the arrow kill wasn't counted");
+			helper.assertTrue(ModAttachments.GUARD_KILLS.getOrElse(guard, 0) == 1, "the arrow kill wasn't counted");
 		});
 	}
 
@@ -159,10 +159,10 @@ public class GuardGameTests implements FabricGameTest {
 		Jobs.employ(helper.getLevel(), expert, helper.absolutePos(new BlockPos(14, 2, 2)), ModVillagers.GUARD_POST_POI, ModVillagers.GUARD);
 		expert.setVillagerData(expert.getVillagerData().setLevel(4));
 		helper.succeedWhen(() -> {
-			helper.assertTrue(guard.getAttachedOrElse(ModAttachments.DUMMY_HITS, 0) >= io.github.jcondedata.aliveworkplace.guard.GuardPatrol.HITS_PER_XP,
-				"hits: " + guard.getAttachedOrElse(ModAttachments.DUMMY_HITS, 0));
+			helper.assertTrue(ModAttachments.DUMMY_HITS.getOrElse(guard, 0) >= io.github.jcondedata.aliveworkplace.guard.GuardPatrol.HITS_PER_XP,
+				"hits: " + ModAttachments.DUMMY_HITS.getOrElse(guard, 0));
 			helper.assertTrue(guard.getVillagerXp() >= 1, "no experience from training");
-			helper.assertTrue(expert.getAttachedOrElse(ModAttachments.DUMMY_HITS, 0) == 0, "the expert trained");
+			helper.assertTrue(ModAttachments.DUMMY_HITS.getOrElse(expert, 0) == 0, "the expert trained");
 		});
 	}
 
@@ -229,7 +229,7 @@ public class GuardGameTests implements FabricGameTest {
 	public void aMedicTendsTheWounded(GameTestHelper helper) {
 		Villager medic = guard(helper);
 		medic.setItemSlot(EquipmentSlot.OFFHAND, healing());
-		var bag = medic.getAttachedOrCreate(ModAttachments.BUILDER_BAG);
+		var bag = ModAttachments.BUILDER_BAG.getOrCreate(medic);
 		bag.add(healing());
 		Villager patient = helper.spawn(EntityType.VILLAGER, new BlockPos(8, 2, 8));
 		patient.setHealth(4f);
@@ -252,7 +252,7 @@ public class GuardGameTests implements FabricGameTest {
 			java.util.Optional.of(helper.getLevel().dimension().location()), java.util.List.of(helper.absolutePos(a), helper.absolutePos(b))));
 		io.github.jcondedata.aliveworkplace.guard.PatrolMapItem.giveTo(player, guard, map);
 		helper.getLevel().getServer().getPlayerList().remove(player);
-		helper.assertTrue(guard.getAttachedOrElse(io.github.jcondedata.aliveworkplace.registry.ModAttachments.PATROL_ROUTE, java.util.List.of()).size() == 2,
+		helper.assertTrue(io.github.jcondedata.aliveworkplace.registry.ModAttachments.PATROL_ROUTE.getOrElse(guard, java.util.List.of()).size() == 2,
 			"the route wasn't handed over");
 		boolean[] reached = {false, false};
 		helper.onEachTick(() -> {

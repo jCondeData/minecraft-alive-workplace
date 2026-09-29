@@ -160,7 +160,7 @@ public abstract class RanchWork extends Behavior<Villager> {
 			status(villager, Task.NONE, true);
 			return;
 		}
-		BuilderBag bag = villager.getAttachedOrCreate(ModAttachments.BUILDER_BAG);
+		BuilderBag bag = ModAttachments.BUILDER_BAG.getOrCreate(villager);
 		if (task == Task.NONE) {
 			if (--lookTimer > 0) {
 				status(villager, Task.NONE, false);

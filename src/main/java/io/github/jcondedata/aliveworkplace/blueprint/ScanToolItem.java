@@ -3,6 +3,8 @@ package io.github.jcondedata.aliveworkplace.blueprint;
 import io.github.jcondedata.aliveworkplace.AliveWorkplace;
 import io.github.jcondedata.aliveworkplace.blueprint.io.BlueprintImporter;
 import io.github.jcondedata.aliveworkplace.farm.FieldData;
+import io.github.jcondedata.aliveworkplace.mc.Chat;
+import io.github.jcondedata.aliveworkplace.mc.Ids;
 import io.github.jcondedata.aliveworkplace.registry.ModComponents;
 import io.github.jcondedata.aliveworkplace.registry.ModItems;
 import java.util.List;
@@ -54,30 +56,30 @@ public class ScanToolItem extends Item {
 	public InteractionResult useOn(UseOnContext context) {
 		Player player = context.getPlayer();
 		ItemStack stack = context.getItemInHand();
-		if (context.getLevel().isClientSide || player == null) {
+		if (context.getLevel().isClientSide() || player == null) {
 			return InteractionResult.SUCCESS;
 		}
 		FieldData data = data(stack);
 		BlockPos pos = context.getClickedPos();
-		var dim = context.getLevel().dimension().location();
+		var dim = Ids.of(context.getLevel().dimension());
 		if (player.isShiftKeyDown()) {
 			stack.set(ModComponents.SCAN, FieldData.EMPTY);
-			player.displayClientMessage(Component.translatable("message.aliveworkplace.scan.reset"), true);
+			Chat.actionBar(player, Component.translatable("message.aliveworkplace.scan.reset"));
 			return InteractionResult.SUCCESS;
 		}
 		if (data.first().isEmpty() || data.isComplete() || !data.dimension().map(dim::equals).orElse(false)) {
 			stack.set(ModComponents.SCAN, new FieldData(Optional.of(dim), Optional.of(pos), Optional.empty()));
-			player.displayClientMessage(Component.translatable("message.aliveworkplace.scan.first", pos.getX(), pos.getY(), pos.getZ()), true);
+			Chat.actionBar(player, Component.translatable("message.aliveworkplace.scan.first", pos.getX(), pos.getY(), pos.getZ()));
 			return InteractionResult.SUCCESS;
 		}
 		FieldData done = new FieldData(Optional.of(dim), data.first(), Optional.of(pos));
 		BoundingBox box = done.area().orElseThrow();
 		if (!fits(box)) {
-			player.displayClientMessage(tooBig(box).withStyle(ChatFormatting.RED), true);
+			Chat.actionBar(player, tooBig(box).withStyle(ChatFormatting.RED));
 			return InteractionResult.FAIL;
 		}
 		stack.set(ModComponents.SCAN, done);
-		player.displayClientMessage(Component.translatable("message.aliveworkplace.scan.marked", box.getXSpan(), box.getYSpan(), box.getZSpan()), false);
+		Chat.chat(player, Component.translatable("message.aliveworkplace.scan.marked", box.getXSpan(), box.getYSpan(), box.getZSpan()));
 		return InteractionResult.SUCCESS;
 	}
 
@@ -89,15 +91,15 @@ public class ScanToolItem extends Item {
 		}
 		if (level instanceof ServerLevel serverLevel && player instanceof ServerPlayer serverPlayer) {
 			FieldData data = data(stack);
-			if (!data.isComplete() || !data.dimension().get().equals(level.dimension().location())) {
-				player.displayClientMessage(Component.translatable("message.aliveworkplace.scan.unmarked").withStyle(ChatFormatting.YELLOW), true);
+			if (!data.isComplete() || !data.dimension().get().equals(Ids.of(level.dimension()))) {
+				Chat.actionBar(player, Component.translatable("message.aliveworkplace.scan.unmarked").withStyle(ChatFormatting.YELLOW));
 			} else {
 				String name = stack.has(DataComponents.CUSTOM_NAME) ? stack.getHoverName().getString() : player.getGameProfile().getName() + "s_build";
 				Component result = save(serverLevel, serverPlayer, data.area().get(), name);
-				player.displayClientMessage(result, false);
+				Chat.chat(player, result);
 			}
 		}
-		return InteractionResultHolder.sidedSuccess(stack, level.isClientSide);
+		return InteractionResultHolder.sidedSuccess(stack, level.isClientSide());
 	}
 
 	static boolean fits(BoundingBox box) {

@@ -1,5 +1,6 @@
 package io.github.jcondedata.aliveworkplace.people;
 
+import io.github.jcondedata.aliveworkplace.platform.Platform;
 import io.github.jcondedata.aliveworkplace.guard.BanditCamps;
 import io.github.jcondedata.aliveworkplace.guard.VillageRaids;
 import io.github.jcondedata.aliveworkplace.hall.Chronicle;
@@ -14,7 +15,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -51,7 +51,7 @@ public final class Chatter {
 	private static final Map<UUID, Long> LAST = new HashMap<>();
 
 	public static void init() {
-		ServerTickEvents.END_WORLD_TICK.register(level -> {
+		Platform.get().onLevelTick(level -> {
 			if (ENABLED && level.getGameTime() % CHECK_EVERY == 0) {
 				tick(level);
 			}

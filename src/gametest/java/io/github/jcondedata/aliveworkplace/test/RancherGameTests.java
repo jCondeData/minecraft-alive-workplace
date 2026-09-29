@@ -33,8 +33,8 @@ public class RancherGameTests implements net.fabricmc.fabric.api.gametest.v1.Fab
 		helper.succeedWhen(() -> {
 			helper.assertTrue(horse.isTamed(), "the horse isn't tamed");
 			helper.assertTrue(horse.isSaddled(), "the horse isn't saddled");
-			helper.assertTrue(rancher.getAttachedOrElse(ModAttachments.HORSES_TAMED, 0) == 1, "horses tamed: "
-				+ rancher.getAttachedOrElse(ModAttachments.HORSES_TAMED, 0));
+			helper.assertTrue(ModAttachments.HORSES_TAMED.getOrElse(rancher, 0) == 1, "horses tamed: "
+				+ ModAttachments.HORSES_TAMED.getOrElse(rancher, 0));
 		});
 	}
 

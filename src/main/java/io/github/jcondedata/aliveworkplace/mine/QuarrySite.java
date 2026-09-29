@@ -1,5 +1,6 @@
 package io.github.jcondedata.aliveworkplace.mine;
 
+import io.github.jcondedata.aliveworkplace.mc.Nbt;
 import java.util.UUID;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -392,8 +393,8 @@ public final class QuarrySite {
 
 	public CompoundTag save() {
 		CompoundTag tag = new CompoundTag();
-		tag.putUUID("id", id);
-		tag.putUUID("owner", owner);
+		Nbt.putUuid(tag, "id", id);
+		Nbt.putUuid(tag, "owner", owner);
 		tag.putString("owner_name", ownerName);
 		tag.putString("dimension", dimension.toString());
 		tag.putIntArray("box", new int[]{box.minX(), box.minY(), box.minZ(), box.maxX(), box.maxY(), box.maxZ()});
@@ -402,7 +403,7 @@ public final class QuarrySite {
 		tag.putInt("mined", mined);
 		tag.putInt("skipped", skipped);
 		if (miner != null) {
-			tag.putUUID("miner", miner);
+			Nbt.putUuid(tag, "miner", miner);
 		}
 		if (bench != null) {
 			tag.putLong("bench", bench.asLong());
@@ -420,23 +421,23 @@ public final class QuarrySite {
 
 	@Nullable
 	public static QuarrySite load(CompoundTag tag) {
-		int[] b = tag.getIntArray("box");
-		ResourceLocation dim = ResourceLocation.tryParse(tag.getString("dimension"));
-		if (b.length != 6 || dim == null || !tag.hasUUID("id") || !tag.hasUUID("owner")) {
+		int[] b = Nbt.getIntArray(tag, "box");
+		ResourceLocation dim = ResourceLocation.tryParse(Nbt.getString(tag, "dimension"));
+		if (b.length != 6 || dim == null || !Nbt.hasUuid(tag, "id") || !Nbt.hasUuid(tag, "owner")) {
 			return null;
 		}
-		QuarrySite site = new QuarrySite(tag.getUUID("id"), tag.getUUID("owner"), tag.getString("owner_name"), dim,
-			new BoundingBox(b[0], b[1], b[2], b[3], b[4], b[5]), tag.getInt("depth"));
-		site.cursor = tag.getLong("cursor");
-		site.mined = tag.getInt("mined");
-		site.skipped = tag.getInt("skipped");
-		site.miner = tag.hasUUID("miner") ? tag.getUUID("miner") : null;
-		site.bench = tag.contains("bench", Tag.TAG_LONG) ? BlockPos.of(tag.getLong("bench")) : null;
+		QuarrySite site = new QuarrySite(Nbt.getUuid(tag, "id"), Nbt.getUuid(tag, "owner"), Nbt.getString(tag, "owner_name"), dim,
+			new BoundingBox(b[0], b[1], b[2], b[3], b[4], b[5]), Nbt.getInt(tag, "depth"));
+		site.cursor = Nbt.getLong(tag, "cursor");
+		site.mined = Nbt.getInt(tag, "mined");
+		site.skipped = Nbt.getInt(tag, "skipped");
+		site.miner = Nbt.hasUuid(tag, "miner") ? Nbt.getUuid(tag, "miner") : null;
+		site.bench = Nbt.has(tag, "bench", Tag.TAG_LONG) ? BlockPos.of(Nbt.getLong(tag, "bench")) : null;
 		site.fromOldVersion = !tag.contains("stairs");
-		site.stairs = tag.getBoolean("stairs"); // false for quarries started before stairs existed
-		site.stairStart = tag.getInt("stair_start");
-		site.stripMine = tag.getBoolean("strip_mine");
-		site.shaftTop = tag.contains("shaft_top", Tag.TAG_INT) ? tag.getInt("shaft_top") : NO_SHAFT;
+		site.stairs = Nbt.getBoolean(tag, "stairs"); // false for quarries started before stairs existed
+		site.stairStart = Nbt.getInt(tag, "stair_start");
+		site.stripMine = Nbt.getBoolean(tag, "strip_mine");
+		site.shaftTop = Nbt.has(tag, "shaft_top", Tag.TAG_INT) ? Nbt.getInt(tag, "shaft_top") : NO_SHAFT;
 		return site;
 	}
 }

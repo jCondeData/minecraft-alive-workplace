@@ -1,6 +1,7 @@
 package io.github.jcondedata.aliveworkplace.travel;
 
 import io.github.jcondedata.aliveworkplace.build.Builders;
+import io.github.jcondedata.aliveworkplace.mc.Chat;
 import io.github.jcondedata.aliveworkplace.registry.ModComponents;
 import io.github.jcondedata.aliveworkplace.registry.ModItems;
 import io.github.jcondedata.aliveworkplace.registry.ModVillagers;
@@ -51,7 +52,7 @@ public final class Ferrymen {
 			offers.add(new MerchantOffer(new ItemCost(Items.EMERALD, TravelNetwork.fare(here.pos(), post.pos())), ticket(post), 99, 1, 0f));
 		}
 		if (offers.isEmpty()) {
-			player.displayClientMessage(Component.translatable("message.aliveworkplace.travel.nowhere").withStyle(ChatFormatting.YELLOW), true);
+			Chat.actionBar(player, Component.translatable("message.aliveworkplace.travel.nowhere").withStyle(ChatFormatting.YELLOW));
 		}
 	}
 
@@ -68,7 +69,7 @@ public final class Ferrymen {
 		}
 		TravelNetwork.get(level.getServer()).visit(player.getUUID(), postOf(level, villager));
 		if (TravelNetwork.get(level.getServer()).known(player.getUUID(), postOf(level, villager)).isEmpty()) {
-			player.displayClientMessage(Component.translatable("message.aliveworkplace.travel.nowhere").withStyle(ChatFormatting.YELLOW), true);
+			Chat.actionBar(player, Component.translatable("message.aliveworkplace.travel.nowhere").withStyle(ChatFormatting.YELLOW));
 			return;
 		}
 		java.util.UUID[] pending = {null};
@@ -132,8 +133,8 @@ public final class Ferrymen {
 
 	private static void buyTicket(ServerPlayer player, TravelNetwork.Post post, long dollars, int emeralds) {
 		if (!io.github.jcondedata.aliveworkplace.work.Money.charge(player, dollars, emeralds)) {
-			player.displayClientMessage(Component.translatable("message.aliveworkplace.shop.too_poor",
-				io.github.jcondedata.aliveworkplace.work.Money.describe(dollars, emeralds)).withStyle(ChatFormatting.RED), true);
+			Chat.actionBar(player, Component.translatable("message.aliveworkplace.shop.too_poor",
+				io.github.jcondedata.aliveworkplace.work.Money.describe(dollars, emeralds)).withStyle(ChatFormatting.RED));
 			return;
 		}
 		ItemStack ticket = ticket(post);
@@ -141,7 +142,7 @@ public final class Ferrymen {
 			player.drop(ticket, false);
 		}
 		player.level().playSound(null, player.blockPosition(), SoundEvents.VILLAGER_YES, SoundSource.NEUTRAL, 0.6f, 1f);
-		player.displayClientMessage(Component.translatable("message.aliveworkplace.travel.bought", post.name()).withStyle(ChatFormatting.GREEN), true);
+		Chat.actionBar(player, Component.translatable("message.aliveworkplace.travel.bought", post.name()).withStyle(ChatFormatting.GREEN));
 	}
 
 	public static ItemStack ticket(TravelNetwork.Post post) {
@@ -159,11 +160,11 @@ public final class Ferrymen {
 		TravelNetwork network = TravelNetwork.get(player.server);
 		TravelNetwork.Post destination = network.post(data.post());
 		if (destination == null) {
-			player.displayClientMessage(Component.translatable("message.aliveworkplace.travel.gone", data.name()).withStyle(ChatFormatting.RED), true);
+			Chat.actionBar(player, Component.translatable("message.aliveworkplace.travel.gone", data.name()).withStyle(ChatFormatting.RED));
 			return false;
 		}
 		if (network.near(GlobalPos.of(player.level().dimension(), player.blockPosition()), USE_RANGE) == null) {
-			player.displayClientMessage(Component.translatable("message.aliveworkplace.travel.not_at_post", USE_RANGE).withStyle(ChatFormatting.YELLOW), true);
+			Chat.actionBar(player, Component.translatable("message.aliveworkplace.travel.not_at_post", USE_RANGE).withStyle(ChatFormatting.YELLOW));
 			return false;
 		}
 		ServerLevel level = player.server.getLevel(destination.pos().dimension());
@@ -175,7 +176,7 @@ public final class Ferrymen {
 		player.teleportTo(level, spot.getX() + 0.5, spot.getY(), spot.getZ() + 0.5, player.getYRot(), player.getXRot());
 		level.playSound(null, spot, SoundEvents.BOAT_PADDLE_WATER, SoundSource.PLAYERS, 1f, 0.9f);
 		network.visit(player.getUUID(), destination);
-		player.displayClientMessage(Component.translatable("message.aliveworkplace.travel.arrived", destination.name()).withStyle(ChatFormatting.GREEN), true);
+		Chat.actionBar(player, Component.translatable("message.aliveworkplace.travel.arrived", destination.name()).withStyle(ChatFormatting.GREEN));
 		return true;
 	}
 

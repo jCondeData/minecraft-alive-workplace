@@ -687,9 +687,12 @@ pack boot test pass.
   CobbleDollars, RCT and Mega Showdown in `suggests`; the 21 direct calls from 16 files into `compat/` moved behind
   extension points (`work/Extension`) that `compat/Compat.init` fills after `isModLoaded`, fail-soft on `LinkageError`,
   each integration with a tested version range
-- [ ] Phase 1: `platform/` (loader calls: `isModLoaded`, config dir, events, creative tab, payloads, POIs, game rules,
-  reload listeners), `mc/` adapters for the calls that change by 26.3, `isClientSide()`/`level().getServer()` now, and a
-  `checkLayers` task that enforces the layers on today's feature packages (no move to `core/`)
+- [x] Phase 1: `platform/` (loader calls: `isModLoaded`, config dir, events, creative tab, payloads, POIs, game rules,
+  reload listeners, villager attachments, item storage, menus with data), `mc/` adapters for the calls that change by
+  26.3, `isClientSide()`/`level().getServer()` now, and a `checkLayers` task that enforces the layers on today's
+  feature packages (no move to `core/`). Left for phase 3, where they need per-version code in the files themselves:
+  `Item.use`/`useItemOn` return types (`InteractionResultHolder`, `ItemInteractionResult`), `appendHoverText`
+  overrides, block entity save/load, schedules, trades as data, the client
 - [ ] Phase 2: Stonecutter with only the 1.21.1 node (`vcsVersion = "1.21.1"`), our build logic carried over (gametest,
   compattest, devclient, screenshots, packtest), compat files behind `//? if <mod>`, `//$ gametest` swaps; jar names
   become `alive-workplace-<ver>+1.21.1.jar` with the pack install, CI tagging and a note of what changes on the server

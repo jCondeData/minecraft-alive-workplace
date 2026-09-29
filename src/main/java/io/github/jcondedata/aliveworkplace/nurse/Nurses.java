@@ -1,11 +1,13 @@
 package io.github.jcondedata.aliveworkplace.nurse;
 
+import io.github.jcondedata.aliveworkplace.mc.Chat;
+import io.github.jcondedata.aliveworkplace.mc.Players;
+import io.github.jcondedata.aliveworkplace.platform.Platform;
 import io.github.jcondedata.aliveworkplace.build.BuilderLevels;
 import io.github.jcondedata.aliveworkplace.registry.ModVillagers;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
-import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
@@ -26,7 +28,7 @@ import net.minecraft.world.entity.npc.Villager;
 public final class Nurses {
 	/** Ticks between treatments for one player, at Novice level. */
 	public static final int COOLDOWN = 1200;
-	private static final boolean COBBLEMON = FabricLoader.getInstance().isModLoaded("cobblemon");
+	private static final boolean COBBLEMON = Platform.get().isModLoaded("cobblemon");
 	private static final Map<UUID, Long> LAST_TREATED = new HashMap<>();
 
 	public static boolean isNurse(Villager villager) {
@@ -34,7 +36,7 @@ public final class Nurses {
 	}
 
 	public static void treat(ServerPlayer player, Villager nurse) {
-		ServerLevel level = player.serverLevel();
+		ServerLevel level = Players.level(player);
 		if (nurse.isSleeping()) {
 			tell(player, Component.translatable("message.aliveworkplace.nurse.asleep", nurse.getDisplayName()), ChatFormatting.GRAY);
 			return;
@@ -78,7 +80,7 @@ public final class Nurses {
 	}
 
 	private static void tell(ServerPlayer player, Component message, ChatFormatting color) {
-		player.displayClientMessage(message.copy().withStyle(color), true);
+		Chat.actionBar(player, message.copy().withStyle(color));
 	}
 
 	private Nurses() {

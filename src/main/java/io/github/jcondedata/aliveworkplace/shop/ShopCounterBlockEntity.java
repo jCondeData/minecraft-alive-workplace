@@ -1,5 +1,6 @@
 package io.github.jcondedata.aliveworkplace.shop;
 
+import io.github.jcondedata.aliveworkplace.mc.Nbt;
 import io.github.jcondedata.aliveworkplace.registry.ModBlocks;
 import io.github.jcondedata.aliveworkplace.work.PrivateContainer;
 import java.util.UUID;
@@ -123,18 +124,18 @@ public class ShopCounterBlockEntity extends BaseContainerBlockEntity implements 
 		super.loadAdditional(tag, registries);
 		items = NonNullList.withSize(COLUMNS * 2, ItemStack.EMPTY);
 		ContainerHelper.loadAllItems(tag, items, registries);
-		owner = tag.hasUUID("owner") ? tag.getUUID("owner") : null;
-		ownerName = tag.getString("ownerName");
+		owner = Nbt.hasUuid(tag, "owner") ? Nbt.getUuid(tag, "owner") : null;
+		ownerName = Nbt.getString(tag, "ownerName");
 		sales.clear();
-		net.minecraft.nbt.ListTag log = tag.getList("sales", net.minecraft.nbt.Tag.TAG_COMPOUND);
+		net.minecraft.nbt.ListTag log = Nbt.getList(tag, "sales", net.minecraft.nbt.Tag.TAG_COMPOUND);
 		for (int i = 0; i < log.size(); i++) {
-			CompoundTag sale = log.getCompound(i);
-			sales.addLast(new Sale(sale.getLong("day"), sale.getString("buyer"),
-				ItemStack.parseOptional(registries, sale.getCompound("goods")), sale.getLong("dollars"),
-				ItemStack.parseOptional(registries, sale.getCompound("paid"))));
+			CompoundTag sale = Nbt.compoundAt(log, i);
+			sales.addLast(new Sale(Nbt.getLong(sale, "day"), Nbt.getString(sale, "buyer"),
+				ItemStack.parseOptional(registries, Nbt.getCompound(sale, "goods")), Nbt.getLong(sale, "dollars"),
+				ItemStack.parseOptional(registries, Nbt.getCompound(sale, "paid"))));
 		}
-		totalSales = tag.getInt("totalSales");
-		totalDollars = tag.getLong("totalDollars");
+		totalSales = Nbt.getInt(tag, "totalSales");
+		totalDollars = Nbt.getLong(tag, "totalDollars");
 	}
 
 	@Override
@@ -142,7 +143,7 @@ public class ShopCounterBlockEntity extends BaseContainerBlockEntity implements 
 		super.saveAdditional(tag, registries);
 		ContainerHelper.saveAllItems(tag, items, registries);
 		if (owner != null) {
-			tag.putUUID("owner", owner);
+			Nbt.putUuid(tag, "owner", owner);
 		}
 		tag.putString("ownerName", ownerName);
 		net.minecraft.nbt.ListTag log = new net.minecraft.nbt.ListTag();

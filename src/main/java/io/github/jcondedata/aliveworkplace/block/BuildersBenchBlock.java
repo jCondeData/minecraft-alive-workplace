@@ -2,6 +2,8 @@ package io.github.jcondedata.aliveworkplace.block;
 
 import com.mojang.serialization.MapCodec;
 import io.github.jcondedata.aliveworkplace.build.SupplyContainers;
+import io.github.jcondedata.aliveworkplace.mc.Chat;
+import io.github.jcondedata.aliveworkplace.mc.Interact;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
@@ -52,8 +54,8 @@ public class BuildersBenchBlock extends HorizontalDirectionalBlock {
 		}
 		if (level instanceof ServerLevel serverLevel) {
 			int chests = SupplyContainers.find(serverLevel, pos, null).size();
-			player.displayClientMessage(Component.translatable("message.aliveworkplace.bench.info", chests, SupplyContainers.RADIUS), false);
+			Chat.chat(player, Component.translatable("message.aliveworkplace.bench.info", chests, SupplyContainers.RADIUS));
 		}
-		return InteractionResult.sidedSuccess(level.isClientSide);
+		return Interact.success(level.isClientSide());
 	}
 }

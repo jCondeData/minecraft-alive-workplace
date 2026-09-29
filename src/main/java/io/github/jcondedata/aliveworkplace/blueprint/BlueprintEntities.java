@@ -1,5 +1,6 @@
 package io.github.jcondedata.aliveworkplace.blueprint;
 
+import io.github.jcondedata.aliveworkplace.mc.Nbt;
 import java.util.Map;
 import java.util.Set;
 import net.minecraft.nbt.CompoundTag;
@@ -31,8 +32,8 @@ public final class BlueprintEntities {
 	/** A copy of {@code nbt} that is safe to build from, or null if it isn't an entity builders put up. */
 	@Nullable
 	public static CompoundTag clean(CompoundTag nbt) {
-		String id = nbt.getString("id");
-		if (!COST.containsKey(id) || nbt.getBoolean("Marker")) {
+		String id = Nbt.getString(nbt, "id");
+		if (!COST.containsKey(id) || Nbt.getBoolean(nbt, "Marker")) {
 			return null; // marker armor stands are technical, not decoration
 		}
 		CompoundTag out = nbt.copy();
@@ -44,7 +45,7 @@ public final class BlueprintEntities {
 
 	/** The item that putting this entity up uses (air if it isn't one we build). */
 	public static Item cost(CompoundTag nbt) {
-		return COST.getOrDefault(nbt.getString("id"), Items.AIR);
+		return COST.getOrDefault(Nbt.getString(nbt, "id"), Items.AIR);
 	}
 
 	private BlueprintEntities() {

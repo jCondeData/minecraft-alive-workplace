@@ -1,11 +1,12 @@
 package io.github.jcondedata.aliveworkplace.world;
 
+import io.github.jcondedata.aliveworkplace.mc.Lookup;
+import io.github.jcondedata.aliveworkplace.platform.Platform;
 import com.mojang.datafixers.util.Pair;
 import io.github.jcondedata.aliveworkplace.AliveWorkplace;
 import io.github.jcondedata.aliveworkplace.mixin.StructureTemplatePoolAccessor;
 import java.util.ArrayList;
 import java.util.List;
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
@@ -79,7 +80,7 @@ public final class VillageHouses {
 
 	/** The staffed houses (besides the workshop) villages grow here, by name. */
 	public static java.util.List<String> houseNames() {
-		boolean cobblemon = net.fabricmc.loader.api.FabricLoader.getInstance().isModLoaded("cobblemon");
+		boolean cobblemon = Platform.get().isModLoaded("cobblemon");
 		return HOUSES.keySet().stream().filter(h -> cobblemon || !COBBLEMON_HOUSES.contains(h)).toList();
 	}
 
@@ -104,7 +105,7 @@ public final class VillageHouses {
 	}
 
 	public static void init() {
-		ServerLifecycleEvents.SERVER_STARTING.register(VillageHouses::addWorkshops);
+		Platform.get().onServerStarting(VillageHouses::addWorkshops);
 	}
 
 	public static ResourceLocation workshop(String style) {
@@ -116,17 +117,16 @@ public final class VillageHouses {
 	}
 
 	private static void addWorkshops(MinecraftServer server) {
-		Registry<StructureTemplatePool> pools = server.registryAccess().registryOrThrow(Registries.TEMPLATE_POOL);
-		Registry<StructureProcessorList> processors = server.registryAccess().registryOrThrow(Registries.PROCESSOR_LIST);
-		Holder<StructureProcessorList> none = processors.getHolderOrThrow(
-			ResourceKey.create(Registries.PROCESSOR_LIST, ResourceLocation.withDefaultNamespace("empty")));
+		Registry<StructureTemplatePool> pools = Lookup.registry(server.registryAccess(), Registries.TEMPLATE_POOL);
+		Registry<StructureProcessorList> processors = Lookup.registry(server.registryAccess(), Registries.PROCESSOR_LIST);
+		Holder<StructureProcessorList> none = Lookup.holderOrThrow(processors, ResourceKey.create(Registries.PROCESSOR_LIST, ResourceLocation.withDefaultNamespace("empty")));
 		java.util.Map<ResourceLocation, String> targets = new java.util.LinkedHashMap<>();
 		for (String style : STYLES) {
 			targets.put(housePool(style), style);
 		}
 		targets.putAll(MODDED_HOUSE_POOLS);
 		for (var target : targets.entrySet()) {
-			StructureTemplatePool pool = pools.get(target.getKey());
+			StructureTemplatePool pool = Lookup.value(pools, target.getKey());
 			if (pool == null) {
 				continue;
 			}

@@ -1,12 +1,13 @@
 package io.github.jcondedata.aliveworkplace.hall;
 
+import io.github.jcondedata.aliveworkplace.mc.Chat;
+import io.github.jcondedata.aliveworkplace.platform.Platform;
 import io.github.jcondedata.aliveworkplace.registry.ModAttachments;
 import it.unimi.dsi.fastutil.ints.IntList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponents;
@@ -62,7 +63,7 @@ public final class Festivals {
 	private static final Map<ResourceKey<Level>, Set<BlockPos>> ON = new ConcurrentHashMap<>();
 
 	public static void init() {
-		ServerTickEvents.END_WORLD_TICK.register(level -> {
+		Platform.get().onLevelTick(level -> {
 			if (level.getGameTime() % TICK_EVERY == 0) {
 				tick(level);
 			}
@@ -130,8 +131,8 @@ public final class Festivals {
 		boolean today = day == Chronicle.day(level);
 		Component name = VillageHalls.name(level, hall);
 		for (ServerPlayer player : level.getPlayers(p -> p.blockPosition().distSqr(hall) <= (double) (VillageHalls.RADIUS + 32) * (VillageHalls.RADIUS + 32))) {
-			player.displayClientMessage(Component.translatable(today ? "message.aliveworkplace.festival.today" : "message.aliveworkplace.festival.tomorrow", name)
-				.withStyle(ChatFormatting.GOLD), false);
+			Chat.chat(player, Component.translatable(today ? "message.aliveworkplace.festival.today" : "message.aliveworkplace.festival.tomorrow", name)
+				.withStyle(ChatFormatting.GOLD));
 		}
 	}
 
@@ -177,7 +178,7 @@ public final class Festivals {
 		int fed = 0;
 		for (Villager villager : level.getEntitiesOfClass(Villager.class, VillageHalls.area(hall), Villager::isAlive)) {
 			villagers++;
-			villager.setAttached(ModAttachments.FESTIVAL_DAY, today);
+			ModAttachments.FESTIVAL_DAY.set(villager, today);
 			if (!villager.isBaby() && VillageNeeds.eat(level, villager, store)) {
 				fed++;
 			}
@@ -190,7 +191,7 @@ public final class Festivals {
 
 	/** True if {@code villager} came to a festival in the last {@link #MOOD_DAYS} days. */
 	public static boolean enjoyedLately(ServerLevel level, Villager villager) {
-		Long day = villager.getAttached(ModAttachments.FESTIVAL_DAY);
+		Long day = ModAttachments.FESTIVAL_DAY.get(villager);
 		return day != null && Chronicle.day(level) - day <= MOOD_DAYS;
 	}
 
@@ -236,7 +237,7 @@ public final class Festivals {
 			villager.getJumpControl().jump();
 			level.sendParticles(ParticleTypes.NOTE, villager.getX(), villager.getY() + 2.2, villager.getZ(), 1, 0.2, 0.1, 0.2, level.random.nextDouble());
 		}
-		villager.setAttached(ModAttachments.FESTIVAL_DAY, Chronicle.day(level));
+		ModAttachments.FESTIVAL_DAY.set(villager, Chronicle.day(level));
 	}
 
 	/** A firework from {@code at}, in two or three of the festival's colours. */

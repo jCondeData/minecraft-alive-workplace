@@ -1,9 +1,10 @@
 package io.github.jcondedata.aliveworkplace.tutor;
 
+import io.github.jcondedata.aliveworkplace.mc.Chat;
+import io.github.jcondedata.aliveworkplace.platform.Platform;
 import io.github.jcondedata.aliveworkplace.build.BuilderLevels;
 import io.github.jcondedata.aliveworkplace.registry.ModAttachments;
 import io.github.jcondedata.aliveworkplace.registry.ModVillagers;
-import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
@@ -16,7 +17,7 @@ import net.minecraft.world.entity.npc.Villager;
  * that mod). A tutor's level decides how strong a move they can teach; they level up from every lesson.
  */
 public final class Tutors {
-	public static final boolean COBBLEMON = FabricLoader.getInstance().isModLoaded("cobblemon");
+	public static final boolean COBBLEMON = Platform.get().isModLoaded("cobblemon");
 	/** Emeralds for a lesson, by grade (1..5). */
 	private static final int[] PRICE = {3, 6, 10, 16, 24};
 	/** How far a player can walk from the tutor before the lesson screen closes. */
@@ -60,11 +61,11 @@ public final class Tutors {
 	/** Right-click on a tutor: the lesson screen. */
 	public static void open(ServerPlayer player, Villager tutor) {
 		if (!COBBLEMON) {
-			player.displayClientMessage(Component.translatable("message.aliveworkplace.tutor.no_cobblemon").withStyle(ChatFormatting.GRAY), true);
+			Chat.actionBar(player, Component.translatable("message.aliveworkplace.tutor.no_cobblemon").withStyle(ChatFormatting.GRAY));
 			return;
 		}
 		if (tutor.isSleeping()) {
-			player.displayClientMessage(Component.translatable("message.aliveworkplace.tutor.asleep", tutor.getDisplayName()).withStyle(ChatFormatting.GRAY), true);
+			Chat.actionBar(player, Component.translatable("message.aliveworkplace.tutor.asleep", tutor.getDisplayName()).withStyle(ChatFormatting.GRAY));
 			return;
 		}
 		MoveLessons.EXTENSION.run(lessons -> lessons.open(player, tutor));
@@ -73,7 +74,7 @@ public final class Tutors {
 	/** A lesson was given: count it, and the tutor learns from teaching. */
 	public static void taught(ServerPlayer player, Villager tutor, int grade) {
 		int tierBefore = tier(tutor);
-		tutor.setAttached(ModAttachments.TUTOR_LESSONS, tutor.getAttachedOrElse(ModAttachments.TUTOR_LESSONS, 0) + 1);
+		ModAttachments.TUTOR_LESSONS.set(tutor, ModAttachments.TUTOR_LESSONS.getOrElse(tutor, 0) + 1);
 		BuilderLevels.addXp((ServerLevel) tutor.level(), tutor, 2 + grade, null);
 		if (tier(tutor) > tierBefore) {
 			player.sendSystemMessage(Component.translatable("message.aliveworkplace.tutor.ranked_up", tutor.getDisplayName(),

@@ -4,6 +4,7 @@ import io.github.jcondedata.aliveworkplace.build.BuildPlan;
 import io.github.jcondedata.aliveworkplace.build.BuildSite;
 import io.github.jcondedata.aliveworkplace.build.BuildSiteManager;
 import io.github.jcondedata.aliveworkplace.build.SupplyContainers;
+import io.github.jcondedata.aliveworkplace.mc.Ids;
 import io.github.jcondedata.aliveworkplace.registry.ModVillagers;
 import io.github.jcondedata.aliveworkplace.work.Requests;
 import java.util.ArrayList;
@@ -115,7 +116,7 @@ public final class VillageHalls {
 	static List<Build> builds(ServerLevel level, BlockPos hall) {
 		List<Build> out = new ArrayList<>();
 		for (BuildSite site : BuildSiteManager.get(level).all()) {
-			if (site.isDone() || site.isQueued() || !site.placement().dimension().equals(level.dimension().location())
+			if (site.isDone() || site.isQueued() || !site.placement().dimension().equals(Ids.of(level.dimension()))
 				|| site.placement().origin().distSqr(hall) > (double) RADIUS * RADIUS) {
 				continue;
 			}

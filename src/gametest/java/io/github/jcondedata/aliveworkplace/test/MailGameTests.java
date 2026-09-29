@@ -57,7 +57,7 @@ public class MailGameTests implements FabricGameTest {
 			helper.assertTrue(bobs.countItem(Items.COBBLESTONE) == 5 && bobs.countItem(Items.APPLE) == 2, "Bob's mailbox is still empty");
 			helper.assertBlockProperty(to, MailboxBlock.HAS_MAIL, true);
 			helper.assertTrue(office.parcel(parcel.id()) == null, "the parcel is still on its way");
-			helper.assertTrue(postman.getAttachedOrElse(ModAttachments.MAIL_DELIVERED, 0) == 1, "delivery not counted");
+			helper.assertTrue(ModAttachments.MAIL_DELIVERED.getOrElse(postman, 0) == 1, "delivery not counted");
 		});
 	}
 
@@ -145,7 +145,7 @@ public class MailGameTests implements FabricGameTest {
 		helper.setBlock(desk, ModBlocks.POSTAL_DESK);
 		Villager postman = helper.spawn(EntityType.VILLAGER, new BlockPos(3, 2, 3));
 		Jobs.employ(level, postman, helper.absolutePos(desk), ModVillagers.POSTAL_DESK_POI, ModVillagers.POSTMAN);
-		postman.setAttached(ModAttachments.COURIER_ROUTES, List.of(new io.github.jcondedata.aliveworkplace.mail.RouteData(
+		ModAttachments.COURIER_ROUTES.set(postman, List.of(new io.github.jcondedata.aliveworkplace.mail.RouteData(
 			java.util.Optional.of(helper.absolutePos(from)), java.util.Optional.of(helper.absolutePos(to)), List.of())));
 		net.minecraft.world.Container target = helper.getBlockEntity(to);
 		helper.succeedWhen(() -> {

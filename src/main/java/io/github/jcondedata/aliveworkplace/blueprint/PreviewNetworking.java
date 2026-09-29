@@ -1,13 +1,12 @@
 package io.github.jcondedata.aliveworkplace.blueprint;
 
+import io.github.jcondedata.aliveworkplace.platform.Platform;
 import io.github.jcondedata.aliveworkplace.AliveWorkplace;
 import io.github.jcondedata.aliveworkplace.build.MaterialRules;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
-import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -58,20 +57,19 @@ public final class PreviewNetworking {
 	}
 
 	public static void init() {
-		PayloadTypeRegistry.playC2S().register(Request.TYPE, Request.CODEC);
-		PayloadTypeRegistry.playS2C().register(Data.TYPE, Data.CODEC);
-		ServerPlayNetworking.registerGlobalReceiver(Request.TYPE, (payload, context) -> send(context.player(), payload.id()));
-		net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> LAST_REQUEST.remove(handler.player.getUUID()));
+		Platform.get().clientbound(Data.TYPE, Data.CODEC);
+		Platform.get().serverbound(Request.TYPE, Request.CODEC, (payload, player) -> send(player, payload.id()));
+		Platform.get().onPlayerLeave(player -> LAST_REQUEST.remove(player.getUUID()));
 	}
 
 	private static void send(ServerPlayer player, ResourceLocation id) {
 		// Clients ask once per blueprint; ignore repeats so a bad client can't spam big packets.
-		int now = player.getServer().getTickCount();
+		int now = player.level().getServer().getTickCount();
 		Integer last = LAST_REQUEST.computeIfAbsent(player.getUUID(), u -> new HashMap<>()).put(id, now);
 		if (last != null && now - last < 100) {
 			return;
 		}
-		BlueprintLibrary.get(player.getServer(), id).ifPresent(bp -> ServerPlayNetworking.send(player, build(bp)));
+		BlueprintLibrary.get(player.level().getServer(), id).ifPresent(bp -> Platform.get().send(player, build(bp)));
 	}
 
 	public static Data build(Blueprint blueprint) {

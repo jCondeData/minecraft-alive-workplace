@@ -14,7 +14,7 @@
 	"icon": "assets/aliveworkplace/icon.png",
 	"environment": "*",
 	"entrypoints": {
-		"main": ["io.github.jcondedata.aliveworkplace.AliveWorkplace"],
+		"main": ["io.github.jcondedata.aliveworkplace.platform.fabric.AliveWorkplaceFabric"],
 		"client": ["io.github.jcondedata.aliveworkplace.client.AliveWorkplaceClient"]
 	},
 	"mixins": ["aliveworkplace.mixins.json"],

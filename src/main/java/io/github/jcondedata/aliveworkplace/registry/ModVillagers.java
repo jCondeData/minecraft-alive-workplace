@@ -1,8 +1,8 @@
 package io.github.jcondedata.aliveworkplace.registry;
 
+import io.github.jcondedata.aliveworkplace.platform.Platform;
 import com.google.common.collect.ImmutableSet;
 import io.github.jcondedata.aliveworkplace.AliveWorkplace;
-import net.fabricmc.fabric.api.object.builder.v1.world.poi.PointOfInterestHelper;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
@@ -18,7 +18,7 @@ import net.minecraft.world.entity.schedule.ScheduleBuilder;
 public final class ModVillagers {
 	public static final ResourceLocation BENCH_ID = AliveWorkplace.id("builders_bench");
 	public static final ResourceKey<PoiType> BUILDERS_BENCH_POI = ResourceKey.create(Registries.POINT_OF_INTEREST_TYPE, BENCH_ID);
-	public static final PoiType BUILDERS_BENCH_POI_TYPE = PointOfInterestHelper.register(BENCH_ID, 1, 1, ModBlocks.BUILDERS_BENCH);
+	public static final PoiType BUILDERS_BENCH_POI_TYPE = Platform.get().registerPoi(BENCH_ID, 1, 1, ModBlocks.BUILDERS_BENCH);
 
 	public static final VillagerProfession BUILDER = Registry.register(
 		BuiltInRegistries.VILLAGER_PROFESSION,
@@ -35,7 +35,7 @@ public final class ModVillagers {
 
 	public static final ResourceLocation MINERS_BENCH_ID = AliveWorkplace.id("miners_bench");
 	public static final ResourceKey<PoiType> MINERS_BENCH_POI = ResourceKey.create(Registries.POINT_OF_INTEREST_TYPE, MINERS_BENCH_ID);
-	public static final PoiType MINERS_BENCH_POI_TYPE = PointOfInterestHelper.register(MINERS_BENCH_ID, 1, 1, ModBlocks.MINERS_BENCH);
+	public static final PoiType MINERS_BENCH_POI_TYPE = Platform.get().registerPoi(MINERS_BENCH_ID, 1, 1, ModBlocks.MINERS_BENCH);
 
 	public static final VillagerProfession MINER = Registry.register(
 		BuiltInRegistries.VILLAGER_PROFESSION,
@@ -52,7 +52,7 @@ public final class ModVillagers {
 
 	public static final ResourceLocation CHOPPING_BLOCK_ID = AliveWorkplace.id("chopping_block");
 	public static final ResourceKey<PoiType> CHOPPING_BLOCK_POI = ResourceKey.create(Registries.POINT_OF_INTEREST_TYPE, CHOPPING_BLOCK_ID);
-	public static final PoiType CHOPPING_BLOCK_POI_TYPE = PointOfInterestHelper.register(CHOPPING_BLOCK_ID, 1, 1, ModBlocks.CHOPPING_BLOCK);
+	public static final PoiType CHOPPING_BLOCK_POI_TYPE = Platform.get().registerPoi(CHOPPING_BLOCK_ID, 1, 1, ModBlocks.CHOPPING_BLOCK);
 
 	public static final VillagerProfession LUMBERJACK = Registry.register(
 		BuiltInRegistries.VILLAGER_PROFESSION,
@@ -69,7 +69,7 @@ public final class ModVillagers {
 
 	public static final ResourceLocation POSTAL_DESK_ID = AliveWorkplace.id("postal_desk");
 	public static final ResourceKey<PoiType> POSTAL_DESK_POI = ResourceKey.create(Registries.POINT_OF_INTEREST_TYPE, POSTAL_DESK_ID);
-	public static final PoiType POSTAL_DESK_POI_TYPE = PointOfInterestHelper.register(POSTAL_DESK_ID, 1, 1, ModBlocks.POSTAL_DESK);
+	public static final PoiType POSTAL_DESK_POI_TYPE = Platform.get().registerPoi(POSTAL_DESK_ID, 1, 1, ModBlocks.POSTAL_DESK);
 
 	public static final VillagerProfession POSTMAN = Registry.register(
 		BuiltInRegistries.VILLAGER_PROFESSION,
@@ -86,7 +86,7 @@ public final class ModVillagers {
 
 	public static final ResourceLocation GUARD_POST_ID = AliveWorkplace.id("guard_post");
 	public static final ResourceKey<PoiType> GUARD_POST_POI = ResourceKey.create(Registries.POINT_OF_INTEREST_TYPE, GUARD_POST_ID);
-	public static final PoiType GUARD_POST_POI_TYPE = PointOfInterestHelper.register(GUARD_POST_ID, 1, 1, ModBlocks.GUARD_POST);
+	public static final PoiType GUARD_POST_POI_TYPE = Platform.get().registerPoi(GUARD_POST_ID, 1, 1, ModBlocks.GUARD_POST);
 
 	public static final VillagerProfession GUARD = Registry.register(
 		BuiltInRegistries.VILLAGER_PROFESSION,
@@ -103,7 +103,7 @@ public final class ModVillagers {
 
 	public static final ResourceLocation NURSE_STATION_ID = AliveWorkplace.id("nurse_station");
 	public static final ResourceKey<PoiType> NURSE_STATION_POI = ResourceKey.create(Registries.POINT_OF_INTEREST_TYPE, NURSE_STATION_ID);
-	public static final PoiType NURSE_STATION_POI_TYPE = PointOfInterestHelper.register(NURSE_STATION_ID, 1, 1, ModBlocks.NURSE_STATION);
+	public static final PoiType NURSE_STATION_POI_TYPE = Platform.get().registerPoi(NURSE_STATION_ID, 1, 1, ModBlocks.NURSE_STATION);
 
 	public static final VillagerProfession NURSE = Registry.register(
 		BuiltInRegistries.VILLAGER_PROFESSION,
@@ -120,7 +120,7 @@ public final class ModVillagers {
 
 	public static final ResourceLocation SHOP_COUNTER_ID = AliveWorkplace.id("shop_counter");
 	public static final ResourceKey<PoiType> SHOP_COUNTER_POI = ResourceKey.create(Registries.POINT_OF_INTEREST_TYPE, SHOP_COUNTER_ID);
-	public static final PoiType SHOP_COUNTER_POI_TYPE = PointOfInterestHelper.register(SHOP_COUNTER_ID, 1, 1, ModBlocks.SHOP_COUNTER);
+	public static final PoiType SHOP_COUNTER_POI_TYPE = Platform.get().registerPoi(SHOP_COUNTER_ID, 1, 1, ModBlocks.SHOP_COUNTER);
 
 	public static final VillagerProfession SHOPKEEPER = Registry.register(
 		BuiltInRegistries.VILLAGER_PROFESSION,
@@ -137,7 +137,7 @@ public final class ModVillagers {
 
 	public static final ResourceLocation TRAVEL_POST_ID = AliveWorkplace.id("travel_post");
 	public static final ResourceKey<PoiType> TRAVEL_POST_POI = ResourceKey.create(Registries.POINT_OF_INTEREST_TYPE, TRAVEL_POST_ID);
-	public static final PoiType TRAVEL_POST_POI_TYPE = PointOfInterestHelper.register(TRAVEL_POST_ID, 1, 1, ModBlocks.TRAVEL_POST);
+	public static final PoiType TRAVEL_POST_POI_TYPE = Platform.get().registerPoi(TRAVEL_POST_ID, 1, 1, ModBlocks.TRAVEL_POST);
 
 	public static final VillagerProfession FERRYMAN = Registry.register(
 		BuiltInRegistries.VILLAGER_PROFESSION,
@@ -154,7 +154,7 @@ public final class ModVillagers {
 
 	public static final ResourceLocation MUSIC_STAND_ID = AliveWorkplace.id("music_stand");
 	public static final ResourceKey<PoiType> MUSIC_STAND_POI = ResourceKey.create(Registries.POINT_OF_INTEREST_TYPE, MUSIC_STAND_ID);
-	public static final PoiType MUSIC_STAND_POI_TYPE = PointOfInterestHelper.register(MUSIC_STAND_ID, 1, 1, ModBlocks.MUSIC_STAND);
+	public static final PoiType MUSIC_STAND_POI_TYPE = Platform.get().registerPoi(MUSIC_STAND_ID, 1, 1, ModBlocks.MUSIC_STAND);
 
 	public static final VillagerProfession BARD = Registry.register(
 		BuiltInRegistries.VILLAGER_PROFESSION,
@@ -184,7 +184,7 @@ public final class ModVillagers {
 
 	public static final ResourceLocation TRAINING_POST_ID = AliveWorkplace.id("training_post");
 	public static final ResourceKey<PoiType> TRAINING_POST_POI = ResourceKey.create(Registries.POINT_OF_INTEREST_TYPE, TRAINING_POST_ID);
-	public static final PoiType TRAINING_POST_POI_TYPE = PointOfInterestHelper.register(TRAINING_POST_ID, 1, 1, ModBlocks.TRAINING_POST);
+	public static final PoiType TRAINING_POST_POI_TYPE = Platform.get().registerPoi(TRAINING_POST_ID, 1, 1, ModBlocks.TRAINING_POST);
 
 	public static final VillagerProfession TRAINER = Registry.register(
 		BuiltInRegistries.VILLAGER_PROFESSION,
@@ -201,7 +201,7 @@ public final class ModVillagers {
 
 	public static final ResourceLocation LEADERS_PODIUM_ID = AliveWorkplace.id("leaders_podium");
 	public static final ResourceKey<PoiType> LEADERS_PODIUM_POI = ResourceKey.create(Registries.POINT_OF_INTEREST_TYPE, LEADERS_PODIUM_ID);
-	public static final PoiType LEADERS_PODIUM_POI_TYPE = PointOfInterestHelper.register(LEADERS_PODIUM_ID, 1, 1, ModBlocks.LEADERS_PODIUM);
+	public static final PoiType LEADERS_PODIUM_POI_TYPE = Platform.get().registerPoi(LEADERS_PODIUM_ID, 1, 1, ModBlocks.LEADERS_PODIUM);
 
 	public static final VillagerProfession TRAINER_LEADER = Registry.register(
 		BuiltInRegistries.VILLAGER_PROFESSION,
@@ -218,7 +218,7 @@ public final class ModVillagers {
 
 	public static final ResourceLocation TUTORS_DESK_ID = AliveWorkplace.id("tutors_desk");
 	public static final ResourceKey<PoiType> TUTORS_DESK_POI = ResourceKey.create(Registries.POINT_OF_INTEREST_TYPE, TUTORS_DESK_ID);
-	public static final PoiType TUTORS_DESK_POI_TYPE = PointOfInterestHelper.register(TUTORS_DESK_ID, 1, 1, ModBlocks.TUTORS_DESK);
+	public static final PoiType TUTORS_DESK_POI_TYPE = Platform.get().registerPoi(TUTORS_DESK_ID, 1, 1, ModBlocks.TUTORS_DESK);
 
 	public static final VillagerProfession TUTOR = Registry.register(
 		BuiltInRegistries.VILLAGER_PROFESSION,
@@ -235,7 +235,7 @@ public final class ModVillagers {
 
 	public static final ResourceLocation TRADE_BOARD_ID = AliveWorkplace.id("trade_board");
 	public static final ResourceKey<PoiType> TRADE_BOARD_POI = ResourceKey.create(Registries.POINT_OF_INTEREST_TYPE, TRADE_BOARD_ID);
-	public static final PoiType TRADE_BOARD_POI_TYPE = PointOfInterestHelper.register(TRADE_BOARD_ID, 1, 1, ModBlocks.TRADE_BOARD);
+	public static final PoiType TRADE_BOARD_POI_TYPE = Platform.get().registerPoi(TRADE_BOARD_ID, 1, 1, ModBlocks.TRADE_BOARD);
 
 	public static final VillagerProfession POKEMON_TRADER = Registry.register(
 		BuiltInRegistries.VILLAGER_PROFESSION,
@@ -252,7 +252,7 @@ public final class ModVillagers {
 
 	public static final ResourceLocation FRUIT_BASKET_ID = AliveWorkplace.id("fruit_basket");
 	public static final ResourceKey<PoiType> FRUIT_BASKET_POI = ResourceKey.create(Registries.POINT_OF_INTEREST_TYPE, FRUIT_BASKET_ID);
-	public static final PoiType FRUIT_BASKET_POI_TYPE = PointOfInterestHelper.register(FRUIT_BASKET_ID, 1, 1, ModBlocks.FRUIT_BASKET);
+	public static final PoiType FRUIT_BASKET_POI_TYPE = Platform.get().registerPoi(FRUIT_BASKET_ID, 1, 1, ModBlocks.FRUIT_BASKET);
 
 	public static final VillagerProfession ORCHARD_KEEPER = Registry.register(
 		BuiltInRegistries.VILLAGER_PROFESSION,
@@ -269,7 +269,7 @@ public final class ModVillagers {
 
 	public static final ResourceLocation APIARY_ID = AliveWorkplace.id("apiary");
 	public static final ResourceKey<PoiType> APIARY_POI = ResourceKey.create(Registries.POINT_OF_INTEREST_TYPE, APIARY_ID);
-	public static final PoiType APIARY_POI_TYPE = PointOfInterestHelper.register(APIARY_ID, 1, 1, ModBlocks.APIARY);
+	public static final PoiType APIARY_POI_TYPE = Platform.get().registerPoi(APIARY_ID, 1, 1, ModBlocks.APIARY);
 
 	public static final VillagerProfession BEEKEEPER = Registry.register(
 		BuiltInRegistries.VILLAGER_PROFESSION,
@@ -286,7 +286,7 @@ public final class ModVillagers {
 
 	public static final ResourceLocation FLOWER_STAND_ID = AliveWorkplace.id("flower_stand");
 	public static final ResourceKey<PoiType> FLOWER_STAND_POI = ResourceKey.create(Registries.POINT_OF_INTEREST_TYPE, FLOWER_STAND_ID);
-	public static final PoiType FLOWER_STAND_POI_TYPE = PointOfInterestHelper.register(FLOWER_STAND_ID, 1, 1, ModBlocks.FLOWER_STAND);
+	public static final PoiType FLOWER_STAND_POI_TYPE = Platform.get().registerPoi(FLOWER_STAND_ID, 1, 1, ModBlocks.FLOWER_STAND);
 
 	public static final VillagerProfession FLORIST = Registry.register(
 		BuiltInRegistries.VILLAGER_PROFESSION,
@@ -304,16 +304,16 @@ public final class ModVillagers {
 	/** The Village Hall: a point of interest nobody works at, so the nearest hall is quick to find. */
 	public static final ResourceLocation VILLAGE_HALL_ID = AliveWorkplace.id("village_hall");
 	public static final ResourceKey<PoiType> VILLAGE_HALL_POI = ResourceKey.create(Registries.POINT_OF_INTEREST_TYPE, VILLAGE_HALL_ID);
-	public static final PoiType VILLAGE_HALL_POI_TYPE = PointOfInterestHelper.register(VILLAGE_HALL_ID, 0, 1, ModBlocks.VILLAGE_HALL);
+	public static final PoiType VILLAGE_HALL_POI_TYPE = Platform.get().registerPoi(VILLAGE_HALL_ID, 0, 1, ModBlocks.VILLAGE_HALL);
 
 	/** Drop Boxes: a point of interest nobody works at, so the porters find them quickly. */
 	public static final ResourceLocation DROP_BOX_ID = AliveWorkplace.id("drop_box");
 	public static final ResourceKey<PoiType> DROP_BOX_POI = ResourceKey.create(Registries.POINT_OF_INTEREST_TYPE, DROP_BOX_ID);
-	public static final PoiType DROP_BOX_POI_TYPE = PointOfInterestHelper.register(DROP_BOX_ID, 0, 1, ModBlocks.DROP_BOX);
+	public static final PoiType DROP_BOX_POI_TYPE = Platform.get().registerPoi(DROP_BOX_ID, 0, 1, ModBlocks.DROP_BOX);
 
 	public static final ResourceLocation SIEVE_ID = AliveWorkplace.id("sieve");
 	public static final ResourceKey<PoiType> SIEVE_POI = ResourceKey.create(Registries.POINT_OF_INTEREST_TYPE, SIEVE_ID);
-	public static final PoiType SIEVE_POI_TYPE = PointOfInterestHelper.register(SIEVE_ID, 1, 1, ModBlocks.SIEVE);
+	public static final PoiType SIEVE_POI_TYPE = Platform.get().registerPoi(SIEVE_ID, 1, 1, ModBlocks.SIEVE);
 
 	public static final VillagerProfession SIFTER = Registry.register(
 		BuiltInRegistries.VILLAGER_PROFESSION,
@@ -330,7 +330,7 @@ public final class ModVillagers {
 
 	public static final ResourceLocation TINKERS_BENCH_ID = AliveWorkplace.id("tinkers_bench");
 	public static final ResourceKey<PoiType> TINKERS_BENCH_POI = ResourceKey.create(Registries.POINT_OF_INTEREST_TYPE, TINKERS_BENCH_ID);
-	public static final PoiType TINKERS_BENCH_POI_TYPE = PointOfInterestHelper.register(TINKERS_BENCH_ID, 1, 1, ModBlocks.TINKERS_BENCH);
+	public static final PoiType TINKERS_BENCH_POI_TYPE = Platform.get().registerPoi(TINKERS_BENCH_ID, 1, 1, ModBlocks.TINKERS_BENCH);
 
 	public static final VillagerProfession TINKERER = Registry.register(
 		BuiltInRegistries.VILLAGER_PROFESSION,
@@ -347,7 +347,7 @@ public final class ModVillagers {
 
 	public static final ResourceLocation NETHER_BRAZIER_ID = AliveWorkplace.id("nether_brazier");
 	public static final ResourceKey<PoiType> NETHER_BRAZIER_POI = ResourceKey.create(Registries.POINT_OF_INTEREST_TYPE, NETHER_BRAZIER_ID);
-	public static final PoiType NETHER_BRAZIER_POI_TYPE = PointOfInterestHelper.register(NETHER_BRAZIER_ID, 1, 1, ModBlocks.NETHER_BRAZIER);
+	public static final PoiType NETHER_BRAZIER_POI_TYPE = Platform.get().registerPoi(NETHER_BRAZIER_ID, 1, 1, ModBlocks.NETHER_BRAZIER);
 
 	public static final VillagerProfession NETHERWORKER = Registry.register(
 		BuiltInRegistries.VILLAGER_PROFESSION,
@@ -364,7 +364,7 @@ public final class ModVillagers {
 
 	public static final ResourceLocation COMPOST_BIN_ID = AliveWorkplace.id("compost_bin");
 	public static final ResourceKey<PoiType> COMPOST_BIN_POI = ResourceKey.create(Registries.POINT_OF_INTEREST_TYPE, COMPOST_BIN_ID);
-	public static final PoiType COMPOST_BIN_POI_TYPE = PointOfInterestHelper.register(COMPOST_BIN_ID, 1, 1, ModBlocks.COMPOST_BIN);
+	public static final PoiType COMPOST_BIN_POI_TYPE = Platform.get().registerPoi(COMPOST_BIN_ID, 1, 1, ModBlocks.COMPOST_BIN);
 
 	public static final VillagerProfession COMPOSTER = Registry.register(
 		BuiltInRegistries.VILLAGER_PROFESSION,
@@ -381,7 +381,7 @@ public final class ModVillagers {
 
 	public static final ResourceLocation SCHOLARS_DESK_ID = AliveWorkplace.id("scholars_desk");
 	public static final ResourceKey<PoiType> SCHOLARS_DESK_POI = ResourceKey.create(Registries.POINT_OF_INTEREST_TYPE, SCHOLARS_DESK_ID);
-	public static final PoiType SCHOLARS_DESK_POI_TYPE = PointOfInterestHelper.register(SCHOLARS_DESK_ID, 1, 1, ModBlocks.SCHOLARS_DESK);
+	public static final PoiType SCHOLARS_DESK_POI_TYPE = Platform.get().registerPoi(SCHOLARS_DESK_ID, 1, 1, ModBlocks.SCHOLARS_DESK);
 
 	public static final VillagerProfession SCHOLAR = Registry.register(
 		BuiltInRegistries.VILLAGER_PROFESSION,
@@ -399,11 +399,11 @@ public final class ModVillagers {
 	/** Graves: points of interest nobody works at, so an undertaker finds the ones nearby quickly. */
 	public static final ResourceLocation GRAVE_ID = AliveWorkplace.id("grave");
 	public static final ResourceKey<PoiType> GRAVE_POI = ResourceKey.create(Registries.POINT_OF_INTEREST_TYPE, GRAVE_ID);
-	public static final PoiType GRAVE_POI_TYPE = PointOfInterestHelper.register(GRAVE_ID, 0, 1, ModBlocks.GRAVE);
+	public static final PoiType GRAVE_POI_TYPE = Platform.get().registerPoi(GRAVE_ID, 0, 1, ModBlocks.GRAVE);
 
 	public static final ResourceLocation UNDERTAKERS_TABLE_ID = AliveWorkplace.id("undertakers_table");
 	public static final ResourceKey<PoiType> UNDERTAKERS_TABLE_POI = ResourceKey.create(Registries.POINT_OF_INTEREST_TYPE, UNDERTAKERS_TABLE_ID);
-	public static final PoiType UNDERTAKERS_TABLE_POI_TYPE = PointOfInterestHelper.register(UNDERTAKERS_TABLE_ID, 1, 1, ModBlocks.UNDERTAKERS_TABLE);
+	public static final PoiType UNDERTAKERS_TABLE_POI_TYPE = Platform.get().registerPoi(UNDERTAKERS_TABLE_ID, 1, 1, ModBlocks.UNDERTAKERS_TABLE);
 
 	public static final VillagerProfession UNDERTAKER = Registry.register(
 		BuiltInRegistries.VILLAGER_PROFESSION,
@@ -420,7 +420,7 @@ public final class ModVillagers {
 
 	public static final ResourceLocation INN_COUNTER_ID = AliveWorkplace.id("inn_counter");
 	public static final ResourceKey<PoiType> INN_COUNTER_POI = ResourceKey.create(Registries.POINT_OF_INTEREST_TYPE, INN_COUNTER_ID);
-	public static final PoiType INN_COUNTER_POI_TYPE = PointOfInterestHelper.register(INN_COUNTER_ID, 1, 1, ModBlocks.INN_COUNTER);
+	public static final PoiType INN_COUNTER_POI_TYPE = Platform.get().registerPoi(INN_COUNTER_ID, 1, 1, ModBlocks.INN_COUNTER);
 
 	public static final VillagerProfession INNKEEPER = Registry.register(
 		BuiltInRegistries.VILLAGER_PROFESSION,
@@ -437,7 +437,7 @@ public final class ModVillagers {
 
 	public static final ResourceLocation TEACHERS_DESK_ID = AliveWorkplace.id("teachers_desk");
 	public static final ResourceKey<PoiType> TEACHERS_DESK_POI = ResourceKey.create(Registries.POINT_OF_INTEREST_TYPE, TEACHERS_DESK_ID);
-	public static final PoiType TEACHERS_DESK_POI_TYPE = PointOfInterestHelper.register(TEACHERS_DESK_ID, 1, 1, ModBlocks.TEACHERS_DESK);
+	public static final PoiType TEACHERS_DESK_POI_TYPE = Platform.get().registerPoi(TEACHERS_DESK_ID, 1, 1, ModBlocks.TEACHERS_DESK);
 
 	public static final VillagerProfession TEACHER = Registry.register(
 		BuiltInRegistries.VILLAGER_PROFESSION,
@@ -454,7 +454,7 @@ public final class ModVillagers {
 
 	public static final ResourceLocation FEED_TROUGH_ID = AliveWorkplace.id("feed_trough");
 	public static final ResourceKey<PoiType> FEED_TROUGH_POI = ResourceKey.create(Registries.POINT_OF_INTEREST_TYPE, FEED_TROUGH_ID);
-	public static final PoiType FEED_TROUGH_POI_TYPE = PointOfInterestHelper.register(FEED_TROUGH_ID, 1, 1, ModBlocks.FEED_TROUGH);
+	public static final PoiType FEED_TROUGH_POI_TYPE = Platform.get().registerPoi(FEED_TROUGH_ID, 1, 1, ModBlocks.FEED_TROUGH);
 
 	public static final VillagerProfession RANCHER = Registry.register(
 		BuiltInRegistries.VILLAGER_PROFESSION,
@@ -471,7 +471,7 @@ public final class ModVillagers {
 
 	public static final ResourceLocation BALL_WORKBENCH_ID = AliveWorkplace.id("ball_workbench");
 	public static final ResourceKey<PoiType> BALL_WORKBENCH_POI = ResourceKey.create(Registries.POINT_OF_INTEREST_TYPE, BALL_WORKBENCH_ID);
-	public static final PoiType BALL_WORKBENCH_POI_TYPE = PointOfInterestHelper.register(BALL_WORKBENCH_ID, 1, 1, ModBlocks.BALL_WORKBENCH);
+	public static final PoiType BALL_WORKBENCH_POI_TYPE = Platform.get().registerPoi(BALL_WORKBENCH_ID, 1, 1, ModBlocks.BALL_WORKBENCH);
 
 	public static final VillagerProfession BALL_SMITH = Registry.register(
 		BuiltInRegistries.VILLAGER_PROFESSION,
@@ -488,7 +488,7 @@ public final class ModVillagers {
 
 	public static final ResourceLocation STOREHOUSE_ID = AliveWorkplace.id("storehouse");
 	public static final ResourceKey<PoiType> STOREHOUSE_POI = ResourceKey.create(Registries.POINT_OF_INTEREST_TYPE, STOREHOUSE_ID);
-	public static final PoiType STOREHOUSE_POI_TYPE = PointOfInterestHelper.register(STOREHOUSE_ID, 1, 1, ModBlocks.STOREHOUSE);
+	public static final PoiType STOREHOUSE_POI_TYPE = Platform.get().registerPoi(STOREHOUSE_ID, 1, 1, ModBlocks.STOREHOUSE);
 
 	/** Keeps the village's storehouse: carries what the other workers make into the chests by the Storehouse. */
 	public static final VillagerProfession PORTER = Registry.register(
@@ -506,7 +506,7 @@ public final class ModVillagers {
 
 	public static final ResourceLocation CARPENTERS_BENCH_ID = AliveWorkplace.id("carpenters_bench");
 	public static final ResourceKey<PoiType> CARPENTERS_BENCH_POI = ResourceKey.create(Registries.POINT_OF_INTEREST_TYPE, CARPENTERS_BENCH_ID);
-	public static final PoiType CARPENTERS_BENCH_POI_TYPE = PointOfInterestHelper.register(CARPENTERS_BENCH_ID, 1, 1, ModBlocks.CARPENTERS_BENCH);
+	public static final PoiType CARPENTERS_BENCH_POI_TYPE = Platform.get().registerPoi(CARPENTERS_BENCH_ID, 1, 1, ModBlocks.CARPENTERS_BENCH);
 
 	/** Makes what the builders nearby are waiting for (stairs, doors, fences, planks...) with the crafting table's recipes. */
 	public static final VillagerProfession CARPENTER = Registry.register(
@@ -524,7 +524,7 @@ public final class ModVillagers {
 
 	public static final ResourceLocation KITCHEN_STOVE_ID = AliveWorkplace.id("kitchen_stove");
 	public static final ResourceKey<PoiType> KITCHEN_STOVE_POI = ResourceKey.create(Registries.POINT_OF_INTEREST_TYPE, KITCHEN_STOVE_ID);
-	public static final PoiType KITCHEN_STOVE_POI_TYPE = PointOfInterestHelper.register(KITCHEN_STOVE_ID, 1, 1, ModBlocks.KITCHEN_STOVE);
+	public static final PoiType KITCHEN_STOVE_POI_TYPE = Platform.get().registerPoi(KITCHEN_STOVE_ID, 1, 1, ModBlocks.KITCHEN_STOVE);
 
 	/** Cooks for the village: bread, pies, cooked meat and fish, and with Cobblemon Poké Snacks, Poké Bait and Aprijuice. */
 	public static final VillagerProfession CHEF = Registry.register(
@@ -542,7 +542,7 @@ public final class ModVillagers {
 
 	public static final ResourceLocation FOSSIL_LAB_ID = AliveWorkplace.id("fossil_lab");
 	public static final ResourceKey<PoiType> FOSSIL_LAB_POI = ResourceKey.create(Registries.POINT_OF_INTEREST_TYPE, FOSSIL_LAB_ID);
-	public static final PoiType FOSSIL_LAB_POI_TYPE = PointOfInterestHelper.register(FOSSIL_LAB_ID, 1, 1, ModBlocks.FOSSIL_LAB);
+	public static final PoiType FOSSIL_LAB_POI_TYPE = Platform.get().registerPoi(FOSSIL_LAB_ID, 1, 1, ModBlocks.FOSSIL_LAB);
 
 	/** Revives fossils for players, for a price (only with Cobblemon installed). */
 	public static final VillagerProfession FOSSIL_SCIENTIST = Registry.register(

@@ -1,5 +1,6 @@
 package io.github.jcondedata.aliveworkplace.craft;
 
+import io.github.jcondedata.aliveworkplace.mc.Recipes;
 import io.github.jcondedata.aliveworkplace.registry.ModVillagers;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
@@ -36,8 +37,8 @@ public final class Chefs {
 	 */
 	public static List<Item> menu(ServerLevel level) {
 		Set<Item> out = new LinkedHashSet<>();
-		for (RecipeHolder<?> holder : level.getRecipeManager().getAllRecipesFor(RecipeType.SMOKING)) {
-			ItemStack result = holder.value().getResultItem(level.registryAccess());
+		for (RecipeHolder<?> holder : Recipes.all(Recipes.manager(level), RecipeType.SMOKING)) {
+			ItemStack result = Recipes.result(holder.value(), level.registryAccess());
 			if (!result.isEmpty() && result.getComponentsPatch().isEmpty()) {
 				out.add(result.getItem());
 			}

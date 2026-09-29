@@ -1,5 +1,6 @@
 package io.github.jcondedata.aliveworkplace.craft;
 
+import io.github.jcondedata.aliveworkplace.mc.Recipes;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -132,7 +133,7 @@ public final class Crafting {
 		}
 		for (RecipeHolder<?> holder : recipesFor(level, kind, target)) {
 			Recipe<?> recipe = holder.value();
-			ItemStack out = recipe.getResultItem(level.registryAccess());
+			ItemStack out = Recipes.result(recipe, level.registryAccess());
 			if (out.isEmpty() || !out.is(target) || !out.getComponentsPatch().isEmpty()) {
 				continue;
 			}
@@ -140,7 +141,7 @@ public final class Crafting {
 			// Try it on a copy, so a recipe that doesn't work out leaves everything as it was.
 			Pool trial = pool.copy();
 			List<Step> trialSteps = new ArrayList<>();
-			Map<Item, Integer> in = choose(level, kind, recipe.getIngredients(), times, trial, trialSteps, depth);
+			Map<Item, Integer> in = choose(level, kind, Recipes.ingredients(recipe), times, trial, trialSteps, depth);
 			if (in == null) {
 				continue;
 			}
@@ -166,7 +167,7 @@ public final class Crafting {
 				continue;
 			}
 			List<Item> options = new ArrayList<>();
-			for (ItemStack option : ingredient.getItems()) {
+			for (ItemStack option : Recipes.options(ingredient)) {
 				if (option.getComponentsPatch().isEmpty() && !options.contains(option.getItem())) {
 					options.add(option.getItem());
 				}
@@ -212,7 +213,7 @@ public final class Crafting {
 
 	/** The recipes of this kind that make {@code target} (indexed once per recipe reload). */
 	static List<RecipeHolder<?>> recipesFor(ServerLevel level, Kind kind, Item target) {
-		RecipeManager manager = level.getRecipeManager();
+		RecipeManager manager = Recipes.manager(level);
 		Index index;
 		synchronized (INDEX) {
 			index = INDEX.get(level);
@@ -228,45 +229,45 @@ public final class Crafting {
 				byResult = new HashMap<>();
 				List<RecipeHolder<?>> all = new ArrayList<>();
 				switch (kind) {
-					case CRAFTING -> all.addAll(manager.getAllRecipesFor(RecipeType.CRAFTING));
-					case STONECUTTING -> all.addAll(manager.getAllRecipesFor(RecipeType.STONECUTTING));
+					case CRAFTING -> all.addAll(Recipes.all(manager, RecipeType.CRAFTING));
+					case STONECUTTING -> all.addAll(Recipes.all(manager, RecipeType.STONECUTTING));
 					case KITCHEN -> {
 						// Pot dishes first (a Poké Puff is made in the pot even if some mod adds a crafting recipe too).
-						for (RecipeHolder<?> holder : manager.getRecipes()) {
+						for (RecipeHolder<?> holder : Recipes.all(manager)) {
 							if (isCookingPot(holder.value().getType())) {
 								all.add(holder);
 							}
 						}
-						all.addAll(manager.getAllRecipesFor(RecipeType.SMOKING));
-						all.addAll(manager.getAllRecipesFor(RecipeType.CRAFTING));
+						all.addAll(Recipes.all(manager, RecipeType.SMOKING));
+						all.addAll(Recipes.all(manager, RecipeType.CRAFTING));
 					}
 					case KILN -> {
-						for (RecipeHolder<?> holder : manager.getAllRecipesFor(RecipeType.SMELTING)) {
-							ItemStack result = holder.value().getResultItem(level.registryAccess());
+						for (RecipeHolder<?> holder : Recipes.all(manager, RecipeType.SMELTING)) {
+							ItemStack result = Recipes.result(holder.value(), level.registryAccess());
 							if (!meltsGear(holder.value()) && !result.has(net.minecraft.core.component.DataComponents.FOOD)
 									&& (result.getItem() instanceof net.minecraft.world.item.BlockItem || result.is(net.minecraft.world.item.Items.BRICK)
 									|| result.is(net.minecraft.world.item.Items.NETHER_BRICK))) {
 								all.add(holder);
 							}
 						}
-						all.addAll(manager.getAllRecipesFor(RecipeType.STONECUTTING));
-						all.addAll(manager.getAllRecipesFor(RecipeType.CRAFTING));
+						all.addAll(Recipes.all(manager, RecipeType.STONECUTTING));
+						all.addAll(Recipes.all(manager, RecipeType.CRAFTING));
 					}
 					case WORKSHOP -> {
-						for (RecipeHolder<?> holder : manager.getAllRecipesFor(RecipeType.BLASTING)) {
+						for (RecipeHolder<?> holder : Recipes.all(manager, RecipeType.BLASTING)) {
 							if (!meltsGear(holder.value())) {
 								all.add(holder);
 							}
 						}
-						all.addAll(manager.getAllRecipesFor(RecipeType.CRAFTING));
+						all.addAll(Recipes.all(manager, RecipeType.CRAFTING));
 					}
 				}
 				for (RecipeHolder<?> holder : all) {
 					// Special recipes (fireworks, map copies) and ones that don't list their ingredients can't be planned.
-					if (holder.value().isSpecial() || holder.value().getIngredients().stream().allMatch(Ingredient::isEmpty)) {
+					if (holder.value().isSpecial() || Recipes.ingredients(holder.value()).stream().allMatch(Ingredient::isEmpty)) {
 						continue;
 					}
-					ItemStack out = holder.value().getResultItem(level.registryAccess());
+					ItemStack out = Recipes.result(holder.value(), level.registryAccess());
 					if (!out.isEmpty()) {
 						byResult.computeIfAbsent(out.getItem(), k -> new ArrayList<>()).add(holder);
 					}
@@ -279,8 +280,8 @@ public final class Crafting {
 
 	/** Whether a recipe melts down something with durability (iron tools into nuggets): the tinkerer leaves those alone. */
 	private static boolean meltsGear(Recipe<?> recipe) {
-		for (Ingredient ingredient : recipe.getIngredients()) {
-			for (ItemStack option : ingredient.getItems()) {
+		for (Ingredient ingredient : Recipes.ingredients(recipe)) {
+			for (ItemStack option : Recipes.options(ingredient)) {
 				if (option.isDamageableItem()) {
 					return true;
 				}
@@ -302,7 +303,7 @@ public final class Crafting {
 		Item in = step.in().keySet().iterator().next();
 		for (RecipeHolder<?> holder : recipesFor(level, kind, step.out().getItem())) {
 			RecipeType<?> type = holder.value().getType();
-			if ((type == RecipeType.BLASTING || type == RecipeType.SMELTING) && holder.value().getIngredients().get(0).test(new ItemStack(in))) {
+			if ((type == RecipeType.BLASTING || type == RecipeType.SMELTING) && Recipes.ingredients(holder.value()).get(0).test(new ItemStack(in))) {
 				return true;
 			}
 		}

@@ -61,7 +61,7 @@ public class FishingBobber extends Entity {
 	@Override
 	public void tick() {
 		super.tick();
-		if (!level().isClientSide) {
+		if (!level().isClientSide()) {
 			Villager owner = owner();
 			if (owner == null || !owner.isAlive() || owner.distanceToSqr(this) > 16 * 16 || tickCount > MAX_AGE) {
 				discard();

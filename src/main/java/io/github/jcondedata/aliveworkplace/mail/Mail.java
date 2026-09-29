@@ -1,11 +1,10 @@
 package io.github.jcondedata.aliveworkplace.mail;
 
+import io.github.jcondedata.aliveworkplace.mc.Chat;
+import io.github.jcondedata.aliveworkplace.platform.Platform;
 import com.mojang.authlib.GameProfile;
 import io.github.jcondedata.aliveworkplace.AliveWorkplace;
 import java.util.List;
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
-import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
-import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.GlobalPos;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -36,9 +35,8 @@ public final class Mail {
 	}
 
 	public static void init() {
-		PayloadTypeRegistry.playC2S().register(Send.TYPE, Send.CODEC);
-		ServerPlayNetworking.registerGlobalReceiver(Send.TYPE, (payload, context) -> send(context.player(), payload.to(), payload.message()));
-		ServerTickEvents.END_SERVER_TICK.register(server -> PostOffice.get(server).tick(server));
+		Platform.get().serverbound(Send.TYPE, Send.CODEC, (payload, player) -> send(player, payload.to(), payload.message()));
+		Platform.get().onServerTick(server -> PostOffice.get(server).tick(server));
 	}
 
 	static void send(ServerPlayer player, String toName, String message) {
@@ -124,7 +122,7 @@ public final class Mail {
 	 * out with the night mail — and wait there for good when they have no mailbox). Returns how many they collected.
 	 */
 	public static int collectAtDesk(ServerPlayer player) {
-		PostOffice office = PostOffice.get(player.getServer());
+		PostOffice office = PostOffice.get(player.level().getServer());
 		List<Parcel> mine = new java.util.ArrayList<>();
 		for (Parcel parcel : office.parcels()) {
 			if (parcel.to().equals(player.getUUID()) && parcel.status() == Parcel.Status.IN_TRANSIT) {
@@ -132,7 +130,7 @@ public final class Mail {
 			}
 		}
 		if (mine.isEmpty()) {
-			player.displayClientMessage(Component.translatable("message.aliveworkplace.mail.none_at_desk").withStyle(ChatFormatting.GRAY), true);
+			Chat.actionBar(player, Component.translatable("message.aliveworkplace.mail.none_at_desk").withStyle(ChatFormatting.GRAY));
 			return 0;
 		}
 		java.util.Set<String> senders = new java.util.LinkedHashSet<>();
@@ -145,7 +143,7 @@ public final class Mail {
 			}
 			office.remove(parcel);
 			senders.add(parcel.fromName());
-			ServerPlayer sender = player.getServer().getPlayerList().getPlayer(parcel.from());
+			ServerPlayer sender = player.level().getServer().getPlayerList().getPlayer(parcel.from());
 			if (sender != null && !parcel.from().equals(parcel.to())) {
 				sender.sendSystemMessage(Component.translatable("message.aliveworkplace.mail.delivered", parcel.toName()).withStyle(ChatFormatting.GRAY));
 			}

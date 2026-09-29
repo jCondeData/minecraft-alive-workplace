@@ -1,6 +1,7 @@
 package io.github.jcondedata.aliveworkplace.store;
 
 import com.mojang.serialization.MapCodec;
+import io.github.jcondedata.aliveworkplace.mc.Interact;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionResult;
@@ -42,10 +43,10 @@ public class DropBoxBlock extends BaseEntityBlock {
 
 	@Override
 	protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
-		if (!level.isClientSide && level.getBlockEntity(pos) instanceof DropBoxBlockEntity box) {
+		if (!level.isClientSide() && level.getBlockEntity(pos) instanceof DropBoxBlockEntity box) {
 			player.openMenu(box);
 		}
-		return InteractionResult.sidedSuccess(level.isClientSide);
+		return Interact.success(level.isClientSide());
 	}
 
 	@Override

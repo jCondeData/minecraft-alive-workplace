@@ -1,5 +1,7 @@
 package io.github.jcondedata.aliveworkplace.ranch;
 
+import io.github.jcondedata.aliveworkplace.mc.Lookup;
+import io.github.jcondedata.aliveworkplace.platform.Platform;
 import io.github.jcondedata.aliveworkplace.work.PokemonPartners;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -15,17 +17,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.function.Predicate;
-import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
-import net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener;
-import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.TagKey;
@@ -44,9 +43,9 @@ import org.jetbrains.annotations.Nullable;
  * otherwise never stop brushing). Only the chores with plain results are done (not the ones that run a script, like
  * trimming a Furfrou). Nothing is read or done without Cobblemon.
  */
-public final class PokemonChores implements SimpleSynchronousResourceReloadListener {
+public final class PokemonChores implements ResourceManagerReloadListener {
 	private static final ResourceLocation ID = AliveWorkplace.id("pokemon_chores");
-	private static final boolean COBBLEMON = FabricLoader.getInstance().isModLoaded("cobblemon");
+	private static final boolean COBBLEMON = Platform.get().isModLoaded("cobblemon");
 	/** The least time between two of the same chore on one Pokémon. */
 	public static long MIN_COOLDOWN = 2400;
 
@@ -66,7 +65,7 @@ public final class PokemonChores implements SimpleSynchronousResourceReloadListe
 				return tag != null && stack.is(TagKey.create(Registries.ITEM, tag));
 			}
 			ResourceLocation item = ResourceLocation.tryParse(takes);
-			return item != null && stack.is(BuiltInRegistries.ITEM.get(item));
+			return item != null && stack.is(Lookup.value(BuiltInRegistries.ITEM, item));
 		}
 	}
 
@@ -79,17 +78,12 @@ public final class PokemonChores implements SimpleSynchronousResourceReloadListe
 
 	public static void init() {
 		if (COBBLEMON) {
-			ResourceManagerHelper.get(PackType.SERVER_DATA).registerReloadListener(new PokemonChores());
+			Platform.get().onDataReload(ID, new PokemonChores());
 		}
 	}
 
 	public static List<Chore> chores() {
 		return chores;
-	}
-
-	@Override
-	public ResourceLocation getFabricId() {
-		return ID;
 	}
 
 	@Override

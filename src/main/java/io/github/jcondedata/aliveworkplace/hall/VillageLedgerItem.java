@@ -2,6 +2,7 @@ package io.github.jcondedata.aliveworkplace.hall;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import io.github.jcondedata.aliveworkplace.mc.Chat;
 import io.github.jcondedata.aliveworkplace.registry.ModBlocks;
 import io.github.jcondedata.aliveworkplace.registry.ModComponents;
 import java.util.List;
@@ -47,7 +48,7 @@ public class VillageLedgerItem extends Item {
 	public static void bind(ServerLevel level, ServerPlayer player, ItemStack stack, net.minecraft.core.BlockPos hall) {
 		Component name = VillageHalls.name(level, hall);
 		stack.set(ModComponents.LEDGER, new Ledger(GlobalPos.of(level.dimension(), hall.immutable()), name));
-		player.displayClientMessage(Component.translatable("message.aliveworkplace.ledger.bound", name).withStyle(ChatFormatting.GREEN), true);
+		Chat.actionBar(player, Component.translatable("message.aliveworkplace.ledger.bound", name).withStyle(ChatFormatting.GREEN));
 		level.playSound(null, hall, SoundEvents.BOOK_PAGE_TURN, SoundSource.PLAYERS, 1f, 1f);
 	}
 
@@ -59,12 +60,12 @@ public class VillageLedgerItem extends Item {
 		}
 		Ledger ledger = stack.get(ModComponents.LEDGER);
 		if (ledger == null) {
-			player.displayClientMessage(Component.translatable("message.aliveworkplace.ledger.unbound").withStyle(ChatFormatting.YELLOW), true);
+			Chat.actionBar(player, Component.translatable("message.aliveworkplace.ledger.unbound").withStyle(ChatFormatting.YELLOW));
 			return InteractionResultHolder.fail(stack);
 		}
 		if (!ledger.hall().dimension().equals(level.dimension()) || !server.isLoaded(ledger.hall().pos())
 			|| !server.getBlockState(ledger.hall().pos()).is(ModBlocks.VILLAGE_HALL)) {
-			player.displayClientMessage(Component.translatable("message.aliveworkplace.ledger.too_far", ledger.name()).withStyle(ChatFormatting.YELLOW), true);
+			Chat.actionBar(player, Component.translatable("message.aliveworkplace.ledger.too_far", ledger.name()).withStyle(ChatFormatting.YELLOW));
 			return InteractionResultHolder.fail(stack);
 		}
 		VillageHallScreen.openRemote(serverPlayer, ledger.hall().pos());

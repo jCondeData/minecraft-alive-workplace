@@ -3,6 +3,8 @@ package io.github.jcondedata.aliveworkplace.build;
 import io.github.jcondedata.aliveworkplace.blueprint.Blueprint;
 import io.github.jcondedata.aliveworkplace.blueprint.BlueprintData;
 import io.github.jcondedata.aliveworkplace.blueprint.BlueprintLibrary;
+import io.github.jcondedata.aliveworkplace.mc.Nbt;
+import io.github.jcondedata.aliveworkplace.mc.Rules;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -108,8 +110,8 @@ public final class BuildSite {
 				status = Status.BLUEPRINT_MISSING;
 				return null;
 			}
-			int depth = level.getGameRules().getInt(io.github.jcondedata.aliveworkplace.registry.ModGameRules.FOUNDATION_DEPTH);
-			int margin = levelGround ? level.getGameRules().getInt(io.github.jcondedata.aliveworkplace.registry.ModGameRules.LEVEL_GROUND) : 0;
+			int depth = Rules.number(level, io.github.jcondedata.aliveworkplace.registry.ModGameRules.FOUNDATION_DEPTH);
+			int margin = levelGround ? Rules.number(level, io.github.jcondedata.aliveworkplace.registry.ModGameRules.LEVEL_GROUND) : 0;
 			plan = deconstruct ? BuildPlan.deconstruct(blueprint.get(), placement)
 				: repair ? BuildPlan.repair(blueprint.get(), placement, level)
 				: BuildPlan.create(blueprint.get(), placement, level, depth, margin);
@@ -407,8 +409,8 @@ public final class BuildSite {
 
 	public CompoundTag save() {
 		CompoundTag tag = new CompoundTag();
-		tag.putUUID("id", id);
-		tag.putUUID("owner", owner);
+		Nbt.putUuid(tag, "id", id);
+		Nbt.putUuid(tag, "owner", owner);
 		tag.putString("owner_name", ownerName);
 		tag.putString("structure", structure.toString());
 		tag.put("placement", BlueprintData.Placement.CODEC.encodeStart(NbtOps.INSTANCE, placement).getOrThrow());
@@ -419,7 +421,7 @@ public final class BuildSite {
 		tag.putInt("skipped", skipped);
 		tag.putInt("placed", placed);
 		if (builder != null) {
-			tag.putUUID("builder", builder);
+			Nbt.putUuid(tag, "builder", builder);
 		}
 		if (queued) {
 			tag.putBoolean("queued", true);
@@ -441,32 +443,32 @@ public final class BuildSite {
 
 	@Nullable
 	public static BuildSite load(CompoundTag tag) {
-		ResourceLocation structure = ResourceLocation.tryParse(tag.getString("structure"));
+		ResourceLocation structure = ResourceLocation.tryParse(Nbt.getString(tag, "structure"));
 		Optional<BlueprintData.Placement> placement = BlueprintData.Placement.CODEC.parse(NbtOps.INSTANCE, tag.get("placement")).result();
-		if (structure == null || placement.isEmpty() || !tag.hasUUID("id") || !tag.hasUUID("owner")) {
+		if (structure == null || placement.isEmpty() || !Nbt.hasUuid(tag, "id") || !Nbt.hasUuid(tag, "owner")) {
 			return null;
 		}
-		BuildSite site = new BuildSite(tag.getUUID("id"), tag.getUUID("owner"), tag.getString("owner_name"), structure, placement.get());
+		BuildSite site = new BuildSite(Nbt.getUuid(tag, "id"), Nbt.getUuid(tag, "owner"), Nbt.getString(tag, "owner_name"), structure, placement.get());
 		try {
-			site.stage = BuildPlan.Stage.valueOf(tag.getString("stage"));
+			site.stage = BuildPlan.Stage.valueOf(Nbt.getString(tag, "stage"));
 		} catch (IllegalArgumentException e) {
 			site.stage = BuildPlan.Stage.CLEAR;
 		}
-		site.cursor = tag.getInt("cursor");
-		site.retrying = tag.getBoolean("retrying");
-		if (tag.contains("deferred", Tag.TAG_INT_ARRAY)) {
+		site.cursor = Nbt.getInt(tag, "cursor");
+		site.retrying = Nbt.getBoolean(tag, "retrying");
+		if (Nbt.has(tag, "deferred", Tag.TAG_INT_ARRAY)) {
 			for (int i : ((IntArrayTag) tag.get("deferred")).getAsIntArray()) {
 				site.deferred.add(i);
 			}
 		}
-		site.skipped = tag.getInt("skipped");
-		site.placed = tag.getInt("placed");
-		site.builder = tag.hasUUID("builder") ? tag.getUUID("builder") : null;
-		site.queued = tag.getBoolean("queued");
-		site.deconstruct = tag.getBoolean("deconstruct");
-		site.repair = tag.getBoolean("repair");
-		site.levelGround = !tag.getBoolean("no_level_ground");
-		site.bench = tag.contains("bench", Tag.TAG_LONG) ? BlockPos.of(tag.getLong("bench")) : null;
+		site.skipped = Nbt.getInt(tag, "skipped");
+		site.placed = Nbt.getInt(tag, "placed");
+		site.builder = Nbt.hasUuid(tag, "builder") ? Nbt.getUuid(tag, "builder") : null;
+		site.queued = Nbt.getBoolean(tag, "queued");
+		site.deconstruct = Nbt.getBoolean(tag, "deconstruct");
+		site.repair = Nbt.getBoolean(tag, "repair");
+		site.levelGround = !Nbt.getBoolean(tag, "no_level_ground");
+		site.bench = Nbt.has(tag, "bench", Tag.TAG_LONG) ? BlockPos.of(Nbt.getLong(tag, "bench")) : null;
 		return site;
 	}
 

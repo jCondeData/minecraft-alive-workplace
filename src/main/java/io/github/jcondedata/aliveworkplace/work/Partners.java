@@ -1,11 +1,11 @@
 package io.github.jcondedata.aliveworkplace.work;
 
+import io.github.jcondedata.aliveworkplace.platform.Platform;
 import io.github.jcondedata.aliveworkplace.registry.ModVillagers;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.WeakHashMap;
-import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.GlobalPos;
 import net.minecraft.network.chat.Component;
@@ -26,7 +26,7 @@ public final class Partners {
 	public static final int MAX = 3;
 	public static final float PER_PARTNER = 0.15f;
 	private static final int RECHECK_TICKS = 100;
-	private static final boolean COBBLEMON = FabricLoader.getInstance().isModLoaded("cobblemon");
+	private static final boolean COBBLEMON = Platform.get().isModLoaded("cobblemon");
 
 	private record Cached(long until, List<Component> names) {
 	}

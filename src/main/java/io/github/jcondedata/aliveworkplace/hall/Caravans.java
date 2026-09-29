@@ -1,6 +1,8 @@
 package io.github.jcondedata.aliveworkplace.hall;
 
 import io.github.jcondedata.aliveworkplace.build.SupplyContainers;
+import io.github.jcondedata.aliveworkplace.mc.Lookup;
+import io.github.jcondedata.aliveworkplace.mc.Nbt;
 import io.github.jcondedata.aliveworkplace.registry.ModVillagers;
 import io.github.jcondedata.aliveworkplace.work.Requests;
 import java.util.ArrayList;
@@ -202,34 +204,34 @@ public final class Caravans {
 
 		static Data load(CompoundTag tag, HolderLookup.Provider registries) {
 			Data data = new Data();
-			ListTag list = tag.getList("villages", Tag.TAG_COMPOUND);
+			ListTag list = Nbt.getList(tag, "villages", Tag.TAG_COMPOUND);
 			for (int i = 0; i < list.size(); i++) {
-				CompoundTag t = list.getCompound(i);
-				BlockPos hall = BlockPos.of(t.getLong("hall"));
-				Component name = Component.Serializer.fromJson(t.getString("name"), registries);
+				CompoundTag t = Nbt.compoundAt(list, i);
+				BlockPos hall = BlockPos.of(Nbt.getLong(t, "hall"));
+				Component name = Component.Serializer.fromJson(Nbt.getString(t, "name"), registries);
 				List<Want> wants = new ArrayList<>();
-				ListTag wl = t.getList("wants", Tag.TAG_COMPOUND);
+				ListTag wl = Nbt.getList(t, "wants", Tag.TAG_COMPOUND);
 				for (int j = 0; j < wl.size(); j++) {
-					ResourceLocation id = ResourceLocation.tryParse(wl.getCompound(j).getString("item"));
+					ResourceLocation id = ResourceLocation.tryParse(Nbt.getString(Nbt.compoundAt(wl, j), "item"));
 					if (id != null && BuiltInRegistries.ITEM.containsKey(id)) {
-						wants.add(new Want(BuiltInRegistries.ITEM.get(id), wl.getCompound(j).getInt("count")));
+						wants.add(new Want(Lookup.value(BuiltInRegistries.ITEM, id), Nbt.getInt(Nbt.compoundAt(wl, j), "count")));
 					}
 				}
-				data.villages.put(hall, new Village(hall, name == null ? Component.empty() : name, List.copyOf(wants), t.getLong("lastCaravanDay")));
-				ListTag rl = t.getList("routes", Tag.TAG_COMPOUND);
+				data.villages.put(hall, new Village(hall, name == null ? Component.empty() : name, List.copyOf(wants), Nbt.getLong(t, "lastCaravanDay")));
+				ListTag rl = Nbt.getList(t, "routes", Tag.TAG_COMPOUND);
 				for (int j = 0; j < rl.size(); j++) {
-					data.routes.computeIfAbsent(hall, k -> new LinkedHashSet<>()).add(BlockPos.of(rl.getCompound(j).getLong("to")));
+					data.routes.computeIfAbsent(hall, k -> new LinkedHashSet<>()).add(BlockPos.of(Nbt.getLong(Nbt.compoundAt(rl, j), "to")));
 				}
 			}
-			ListTag road = tag.getList("road", Tag.TAG_COMPOUND);
+			ListTag road = Nbt.getList(tag, "road", Tag.TAG_COMPOUND);
 			for (int i = 0; i < road.size(); i++) {
-				CompoundTag t = road.getCompound(i);
+				CompoundTag t = Nbt.compoundAt(road, i);
 				List<ItemStack> goods = new ArrayList<>();
-				ListTag gl = t.getList("goods", Tag.TAG_COMPOUND);
+				ListTag gl = Nbt.getList(t, "goods", Tag.TAG_COMPOUND);
 				for (int j = 0; j < gl.size(); j++) {
-					ItemStack.parse(registries, gl.getCompound(j)).ifPresent(goods::add);
+					ItemStack.parse(registries, Nbt.compoundAt(gl, j)).ifPresent(goods::add);
 				}
-				data.onTheRoad.add(new Shipment(BlockPos.of(t.getLong("from")), BlockPos.of(t.getLong("to")), goods, t.getLong("arrives")));
+				data.onTheRoad.add(new Shipment(BlockPos.of(Nbt.getLong(t, "from")), BlockPos.of(Nbt.getLong(t, "to")), goods, Nbt.getLong(t, "arrives")));
 			}
 			return data;
 		}

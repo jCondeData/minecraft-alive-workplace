@@ -52,7 +52,7 @@ public class AlchemistGameTests implements FabricGameTest {
 				}
 			}
 			helper.assertTrue(potions == 3, "healing potions in the chest: " + potions);
-			helper.assertTrue(cleric.getAttachedOrElse(ModAttachments.POTIONS_BREWED, 0) == 3, "brewed " + cleric.getAttachedOrElse(ModAttachments.POTIONS_BREWED, 0));
+			helper.assertTrue(ModAttachments.POTIONS_BREWED.getOrElse(cleric, 0) == 3, "brewed " + ModAttachments.POTIONS_BREWED.getOrElse(cleric, 0));
 		});
 	}
 
@@ -91,7 +91,7 @@ public class AlchemistGameTests implements FabricGameTest {
 		helper.setBlock(POST, ModBlocks.GUARD_POST);
 		Villager guard = helper.spawn(EntityType.VILLAGER, new BlockPos(18, 2, 18));
 		Jobs.employ(helper.getLevel(), guard, helper.absolutePos(POST), ModVillagers.GUARD_POST_POI, ModVillagers.GUARD);
-		guard.getAttachedOrCreate(ModAttachments.BUILDER_BAG).add(PotionContents.createItemStack(Items.POTION, Potions.HEALING));
+		ModAttachments.BUILDER_BAG.getOrCreate(guard).add(PotionContents.createItemStack(Items.POTION, Potions.HEALING));
 		helper.runAfterDelay(5, () -> guard.setHealth(12f));
 		helper.succeedWhen(() -> {
 			helper.assertTrue(Guards.potions(guard) == 0, "the potion is still in the bag");

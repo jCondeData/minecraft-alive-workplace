@@ -1,5 +1,6 @@
 package io.github.jcondedata.aliveworkplace.guard;
 
+import io.github.jcondedata.aliveworkplace.platform.Platform;
 import io.github.jcondedata.aliveworkplace.build.Builders;
 import io.github.jcondedata.aliveworkplace.registry.ModItems;
 import io.github.jcondedata.aliveworkplace.work.Walker;
@@ -7,7 +8,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -46,7 +46,7 @@ public final class Escorts {
 	private static Map<UUID, UUID> leaders = Map.of();
 
 	public static void init() {
-		ServerTickEvents.END_SERVER_TICK.register(server -> {
+		Platform.get().onServerTick(server -> {
 			if (server.getTickCount() % SCAN == 0) {
 				scan(server);
 			}

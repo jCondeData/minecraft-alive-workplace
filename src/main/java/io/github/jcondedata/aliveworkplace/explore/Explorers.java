@@ -3,6 +3,8 @@ package io.github.jcondedata.aliveworkplace.explore;
 import com.mojang.datafixers.util.Pair;
 import io.github.jcondedata.aliveworkplace.AliveWorkplace;
 import io.github.jcondedata.aliveworkplace.build.BuilderLevels;
+import io.github.jcondedata.aliveworkplace.mc.Ids;
+import io.github.jcondedata.aliveworkplace.mc.Lookup;
 import io.github.jcondedata.aliveworkplace.work.Hiring;
 import java.util.ArrayList;
 import java.util.List;
@@ -109,7 +111,7 @@ public final class Explorers {
 		if (!level.getServer().getWorldData().worldGenOptions().generateStructures()) {
 			return null;
 		}
-		Optional<HolderSet.Named<Structure>> places = level.registryAccess().registryOrThrow(Registries.STRUCTURE).getTag(MAP_PLACES);
+		Optional<HolderSet.Named<Structure>> places = Lookup.tag(Lookup.registry(level.registryAccess(), Registries.STRUCTURE), MAP_PLACES);
 		if (places.isEmpty()) {
 			return null;
 		}
@@ -129,7 +131,7 @@ public final class Explorers {
 
 	/** The map marker for a place: the village or temple icons vanilla maps use, a red X for the rest. */
 	static Holder<MapDecorationType> marker(Holder<Structure> structure) {
-		String path = structure.unwrapKey().map(k -> k.location().getPath()).orElse("");
+		String path = structure.unwrapKey().map(k -> Ids.of(k).getPath()).orElse("");
 		if (path.contains("village")) {
 			return path.contains("desert") ? MapDecorationTypes.DESERT_VILLAGE : path.contains("savanna") ? MapDecorationTypes.SAVANNA_VILLAGE
 				: path.contains("snowy") ? MapDecorationTypes.SNOWY_VILLAGE : path.contains("taiga") ? MapDecorationTypes.TAIGA_VILLAGE

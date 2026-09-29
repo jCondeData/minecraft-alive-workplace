@@ -1,5 +1,6 @@
 package io.github.jcondedata.aliveworkplace.blueprint;
 
+import io.github.jcondedata.aliveworkplace.mc.Chat;
 import io.github.jcondedata.aliveworkplace.registry.ModComponents;
 import io.github.jcondedata.aliveworkplace.registry.ModItems;
 import io.github.jcondedata.aliveworkplace.work.ChoiceMenu;
@@ -74,8 +75,8 @@ public final class StylePicker {
 			ResourceLocation now = BlueprintStyles.styled(data.structure(), style);
 			stack.set(ModComponents.BLUEPRINT, data.withStructure(now));
 			player.level().playSound(null, player.blockPosition(), SoundEvents.BOOK_PAGE_TURN, SoundSource.PLAYERS, 1f, 1.2f);
-			player.displayClientMessage(Component.translatable("message.aliveworkplace.styles.chosen", Blueprints.displayName(now))
-				.withStyle(ChatFormatting.GREEN), true);
+			Chat.actionBar(player, Component.translatable("message.aliveworkplace.styles.chosen", Blueprints.displayName(now))
+				.withStyle(ChatFormatting.GREEN));
 			render(menu, player, hand);
 		});
 	}
@@ -86,8 +87,8 @@ public final class StylePicker {
 			boolean flip = !data.mirrored();
 			stack.set(ModComponents.BLUEPRINT, data.withMirrored(flip));
 			player.level().playSound(null, player.blockPosition(), SoundEvents.BOOK_PAGE_TURN, SoundSource.PLAYERS, 1f, 0.9f);
-			player.displayClientMessage(Component.translatable(flip ? "message.aliveworkplace.styles.mirrored" : "message.aliveworkplace.styles.unmirrored")
-				.withStyle(ChatFormatting.GREEN), true);
+			Chat.actionBar(player, Component.translatable(flip ? "message.aliveworkplace.styles.mirrored" : "message.aliveworkplace.styles.unmirrored")
+				.withStyle(ChatFormatting.GREEN));
 			render(menu, player, hand);
 		});
 	}

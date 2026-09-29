@@ -1,6 +1,7 @@
 package io.github.jcondedata.aliveworkplace.blueprint.io;
 
 import io.github.jcondedata.aliveworkplace.blueprint.Blueprint;
+import io.github.jcondedata.aliveworkplace.mc.Nbt;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -26,68 +27,68 @@ final class SpongeSchematicReader {
 	static boolean looksLike(CompoundTag root) {
 		CompoundTag s = unwrap(root);
 		return s.contains("Width") && s.contains("Height") && s.contains("Length")
-			&& (s.contains("Palette", Tag.TAG_COMPOUND) || s.contains("Blocks", Tag.TAG_COMPOUND));
+			&& (Nbt.has(s, "Palette", Tag.TAG_COMPOUND) || Nbt.has(s, "Blocks", Tag.TAG_COMPOUND));
 	}
 
 	static CompoundTag unwrap(CompoundTag root) {
-		return root.contains("Schematic", Tag.TAG_COMPOUND) ? root.getCompound("Schematic") : root;
+		return Nbt.has(root, "Schematic", Tag.TAG_COMPOUND) ? Nbt.getCompound(root, "Schematic") : root;
 	}
 
 	static int dataVersion(CompoundTag root) {
 		CompoundTag s = unwrap(root);
-		return s.contains("DataVersion") ? s.getInt("DataVersion") : V1_DATA_VERSION;
+		return s.contains("DataVersion") ? Nbt.getInt(s, "DataVersion") : V1_DATA_VERSION;
 	}
 
 	static Blueprint read(ResourceLocation id, CompoundTag root, BlockStateReader states, long maxVolume) throws BlueprintFormatException {
 		CompoundTag s = unwrap(root);
-		int version = s.getInt("Version");
-		int width = s.getShort("Width") & 0xFFFF;
-		int height = s.getShort("Height") & 0xFFFF;
-		int length = s.getShort("Length") & 0xFFFF;
+		int version = Nbt.getInt(s, "Version");
+		int width = Nbt.getShort(s, "Width") & 0xFFFF;
+		int height = Nbt.getShort(s, "Height") & 0xFFFF;
+		int length = Nbt.getShort(s, "Length") & 0xFFFF;
 		Vec3i size = new Vec3i(width, height, length);
 		BlueprintFiles.checkVolume(size, maxVolume);
 
 		CompoundTag paletteTag;
 		byte[] data;
 		ListTag blockEntities;
-		boolean nested = version >= 3 || s.contains("Blocks", Tag.TAG_COMPOUND);
+		boolean nested = version >= 3 || Nbt.has(s, "Blocks", Tag.TAG_COMPOUND);
 		if (nested) {
-			CompoundTag blocks = s.getCompound("Blocks");
-			paletteTag = blocks.getCompound("Palette");
-			data = blocks.getByteArray("Data");
-			blockEntities = blocks.getList("BlockEntities", Tag.TAG_COMPOUND);
+			CompoundTag blocks = Nbt.getCompound(s, "Blocks");
+			paletteTag = Nbt.getCompound(blocks, "Palette");
+			data = Nbt.getByteArray(blocks, "Data");
+			blockEntities = Nbt.getList(blocks, "BlockEntities", Tag.TAG_COMPOUND);
 		} else {
-			paletteTag = s.getCompound("Palette");
-			data = s.getByteArray("BlockData");
-			blockEntities = s.contains("BlockEntities") ? s.getList("BlockEntities", Tag.TAG_COMPOUND) : s.getList("TileEntities", Tag.TAG_COMPOUND);
+			paletteTag = Nbt.getCompound(s, "Palette");
+			data = Nbt.getByteArray(s, "BlockData");
+			blockEntities = s.contains("BlockEntities") ? Nbt.getList(s, "BlockEntities", Tag.TAG_COMPOUND) : Nbt.getList(s, "TileEntities", Tag.TAG_COMPOUND);
 		}
 
 		int paletteSize = 0;
-		for (String key : paletteTag.getAllKeys()) {
-			paletteSize = Math.max(paletteSize, paletteTag.getInt(key) + 1);
+		for (String key : Nbt.keys(paletteTag)) {
+			paletteSize = Math.max(paletteSize, Nbt.getInt(paletteTag, key) + 1);
 		}
 		BlockState[] palette = new BlockState[paletteSize];
-		for (String key : paletteTag.getAllKeys()) {
-			palette[paletteTag.getInt(key)] = states.fromString(key);
+		for (String key : Nbt.keys(paletteTag)) {
+			palette[Nbt.getInt(paletteTag, key)] = states.fromString(key);
 		}
 
 		Map<BlockPos, CompoundTag> tiles = new HashMap<>();
 		for (int i = 0; i < blockEntities.size(); i++) {
-			CompoundTag be = blockEntities.getCompound(i);
-			int[] pos = be.getIntArray("Pos");
+			CompoundTag be = Nbt.compoundAt(blockEntities, i);
+			int[] pos = Nbt.getIntArray(be, "Pos");
 			if (pos.length != 3) {
 				continue;
 			}
 			CompoundTag nbt;
-			if (be.contains("Data", Tag.TAG_COMPOUND)) {
-				nbt = be.getCompound("Data").copy(); // v3
+			if (Nbt.has(be, "Data", Tag.TAG_COMPOUND)) {
+				nbt = Nbt.getCompound(be, "Data").copy(); // v3
 			} else {
 				nbt = be.copy(); // v1/v2: data lives next to Pos and Id
 				nbt.remove("Pos");
 				nbt.remove("Id");
 			}
 			if (be.contains("Id")) {
-				nbt.putString("id", be.getString("Id"));
+				nbt.putString("id", Nbt.getString(be, "Id"));
 			}
 			tiles.put(new BlockPos(pos[0], pos[1], pos[2]), nbt);
 		}
@@ -124,24 +125,24 @@ final class SpongeSchematicReader {
 			entries.add(new Blueprint.Entry(pos, BlueprintFiles.normalizeAir(state), nbt));
 		}
 		List<Blueprint.EntityEntry> entities = new ArrayList<>();
-		ListTag entityList = s.getList("Entities", Tag.TAG_COMPOUND);
+		ListTag entityList = Nbt.getList(s, "Entities", Tag.TAG_COMPOUND);
 		for (int i = 0; i < entityList.size(); i++) {
-			CompoundTag e = entityList.getCompound(i);
-			ListTag p = e.getList("Pos", Tag.TAG_DOUBLE);
+			CompoundTag e = Nbt.compoundAt(entityList, i);
+			ListTag p = Nbt.getList(e, "Pos", Tag.TAG_DOUBLE);
 			CompoundTag entityData;
-			if (e.contains("Data", Tag.TAG_COMPOUND)) {
-				entityData = e.getCompound("Data").copy(); // v3
+			if (Nbt.has(e, "Data", Tag.TAG_COMPOUND)) {
+				entityData = Nbt.getCompound(e, "Data").copy(); // v3
 			} else {
 				entityData = e.copy(); // v2: data next to Pos and Id
 				entityData.remove("Pos");
 				entityData.remove("Id");
 			}
 			if (e.contains("Id")) {
-				entityData.putString("id", e.getString("Id"));
+				entityData.putString("id", Nbt.getString(e, "Id"));
 			}
 			CompoundTag clean = io.github.jcondedata.aliveworkplace.blueprint.BlueprintEntities.clean(states.fixEntity(entityData));
 			if (p.size() == 3 && clean != null) {
-				entities.add(new Blueprint.EntityEntry(new net.minecraft.world.phys.Vec3(p.getDouble(0), p.getDouble(1), p.getDouble(2)), clean));
+				entities.add(new Blueprint.EntityEntry(new net.minecraft.world.phys.Vec3(Nbt.doubleAt(p, 0), Nbt.doubleAt(p, 1), Nbt.doubleAt(p, 2)), clean));
 			}
 		}
 		return new Blueprint(id, size, List.copyOf(entries), List.copyOf(entities));

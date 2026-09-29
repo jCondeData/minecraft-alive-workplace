@@ -71,7 +71,7 @@ public class OrchardGameTests implements FabricGameTest {
 					}
 				}
 			}
-			int planted = villager.getAttachedOrElse(io.github.jcondedata.aliveworkplace.registry.ModAttachments.SAPLINGS_PLANTED, 0);
+			int planted = io.github.jcondedata.aliveworkplace.registry.ModAttachments.SAPLINGS_PLANTED.getOrElse(villager, 0);
 			helper.assertTrue(planted == 9, "planted " + planted);
 		});
 	}
@@ -94,10 +94,9 @@ public class OrchardGameTests implements FabricGameTest {
 					helper.assertBlockPresent(Blocks.CAVE_VINES, new BlockPos(x, 4, z));
 				}
 			}
-			int planted = villager.getAttachedOrElse(io.github.jcondedata.aliveworkplace.registry.ModAttachments.SAPLINGS_PLANTED, 0);
+			int planted = io.github.jcondedata.aliveworkplace.registry.ModAttachments.SAPLINGS_PLANTED.getOrElse(villager, 0);
 			helper.assertTrue(planted == 4, "planted " + planted);
-			helper.assertTrue(chest.countItem(net.minecraft.world.item.Items.GLOW_BERRIES) + villager.getAttachedOrCreate(
-				io.github.jcondedata.aliveworkplace.registry.ModAttachments.BUILDER_BAG).count(net.minecraft.world.item.Items.GLOW_BERRIES) == 6,
+			helper.assertTrue(chest.countItem(net.minecraft.world.item.Items.GLOW_BERRIES) + io.github.jcondedata.aliveworkplace.registry.ModAttachments.BUILDER_BAG.getOrCreate(villager).count(net.minecraft.world.item.Items.GLOW_BERRIES) == 6,
 				"glow berries used: " + (10 - chest.countItem(net.minecraft.world.item.Items.GLOW_BERRIES)));
 		});
 	}
@@ -133,8 +132,8 @@ public class OrchardGameTests implements FabricGameTest {
 			}
 			helper.assertBlockPresent(Blocks.COCOA, pod);
 			helper.assertBlockPresent(Blocks.CAVE_VINES, vine);
-			helper.assertTrue(villager.getAttachedOrElse(ModAttachments.FRUIT_PICKED, 0) >= 5,
-				"picked count is " + villager.getAttachedOrElse(ModAttachments.FRUIT_PICKED, 0));
+			helper.assertTrue(ModAttachments.FRUIT_PICKED.getOrElse(villager, 0) >= 5,
+				"picked count is " + ModAttachments.FRUIT_PICKED.getOrElse(villager, 0));
 			helper.assertTrue(villager.getHealth() >= villager.getMaxHealth(), "the keeper got scratched by the bushes");
 		});
 	}

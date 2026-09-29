@@ -123,7 +123,7 @@ public final class Guards {
 		if (kind(medic) != Kind.MEDIC) {
 			return null;
 		}
-		var bag = medic.getAttachedOrCreate(io.github.jcondedata.aliveworkplace.registry.ModAttachments.BUILDER_BAG);
+		var bag = io.github.jcondedata.aliveworkplace.registry.ModAttachments.BUILDER_BAG.getOrCreate(medic);
 		LivingEntity patient = level.getEntitiesOfClass(LivingEntity.class, medic.getBoundingBox().inflate(MEDIC_RANGE, 4, MEDIC_RANGE),
 				e -> e.isAlive() && (e instanceof Villager || e instanceof net.minecraft.world.entity.animal.IronGolem) && e.getHealth() < e.getMaxHealth() * 0.6f)
 			.stream().min(java.util.Comparator.comparingDouble(e -> e.getHealth() / e.getMaxHealth())).orElse(null);
@@ -195,7 +195,7 @@ public final class Guards {
 	/** How many special arrows the guard carries (in their bag). */
 	public static int quiver(Villager guard) {
 		int n = 0;
-		for (ItemStack stack : guard.getAttachedOrCreate(io.github.jcondedata.aliveworkplace.registry.ModAttachments.BUILDER_BAG).stacks()) {
+		for (ItemStack stack : io.github.jcondedata.aliveworkplace.registry.ModAttachments.BUILDER_BAG.getOrCreate(guard).stacks()) {
 			if (isSpecialArrow(stack)) {
 				n += stack.getCount();
 			}
@@ -206,7 +206,7 @@ public final class Guards {
 	/** Healing, regeneration and strength potions the guard carries (in their bag). */
 	public static int potions(Villager guard) {
 		int n = 0;
-		for (ItemStack stack : guard.getAttachedOrCreate(io.github.jcondedata.aliveworkplace.registry.ModAttachments.BUILDER_BAG).stacks()) {
+		for (ItemStack stack : io.github.jcondedata.aliveworkplace.registry.ModAttachments.BUILDER_BAG.getOrCreate(guard).stacks()) {
 			if (io.github.jcondedata.aliveworkplace.brew.AlchemistWork.isGuardPotion(stack)) {
 				n += stack.getCount();
 			}
@@ -222,7 +222,7 @@ public final class Guards {
 	 * potion if they aren't strong already. Returns whether they drank.
 	 */
 	public static boolean drink(Villager guard, boolean fightStarting) {
-		var bag = guard.getAttachedOrCreate(io.github.jcondedata.aliveworkplace.registry.ModAttachments.BUILDER_BAG);
+		var bag = io.github.jcondedata.aliveworkplace.registry.ModAttachments.BUILDER_BAG.getOrCreate(guard);
 		boolean hurt = guard.getHealth() < guard.getMaxHealth() / 2;
 		ItemStack potion = ItemStack.EMPTY;
 		if (hurt) {

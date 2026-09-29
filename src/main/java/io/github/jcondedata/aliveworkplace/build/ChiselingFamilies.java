@@ -1,5 +1,7 @@
 package io.github.jcondedata.aliveworkplace.build;
 
+import io.github.jcondedata.aliveworkplace.mc.Lookup;
+import io.github.jcondedata.aliveworkplace.platform.Platform;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -8,13 +10,11 @@ import java.io.Reader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
-import net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 
@@ -24,16 +24,11 @@ import net.minecraft.world.item.Items;
  * (see {@link MaterialFamilies}); slabs and stairs form their own families. Nothing happens when
  * Rechiseled is not installed.
  */
-final class ChiselingFamilies implements SimpleSynchronousResourceReloadListener {
+final class ChiselingFamilies implements ResourceManagerReloadListener {
 	private static final ResourceLocation ID = AliveWorkplace.id("chiseling_families");
 
 	static void init() {
-		ResourceManagerHelper.get(PackType.SERVER_DATA).registerReloadListener(new ChiselingFamilies());
-	}
-
-	@Override
-	public ResourceLocation getFabricId() {
-		return ID;
+		Platform.get().onDataReload(ID, new ChiselingFamilies());
 	}
 
 	@Override
@@ -77,7 +72,7 @@ final class ChiselingFamilies implements SimpleSynchronousResourceReloadListener
 		if (id == null) {
 			return;
 		}
-		Item item = BuiltInRegistries.ITEM.get(id);
+		Item item = Lookup.value(BuiltInRegistries.ITEM, id);
 		if (item != Items.AIR && !family.contains(item)) {
 			family.add(item);
 		}

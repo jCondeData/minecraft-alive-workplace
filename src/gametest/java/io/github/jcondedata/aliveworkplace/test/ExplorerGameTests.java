@@ -43,7 +43,7 @@ public class ExplorerGameTests implements FabricGameTest {
 		Container chest = helper.getBlockEntity(CHEST);
 		chest.setItem(0, new ItemStack(Items.BREAD, 4));
 		helper.succeedWhen(() -> {
-			helper.assertTrue(explorer.getAttachedOrElse(ModAttachments.EXPEDITIONS, 0) >= 1, "no expedition finished yet");
+			helper.assertTrue(ModAttachments.EXPEDITIONS.getOrElse(explorer, 0) >= 1, "no expedition finished yet");
 			int bread = 0;
 			boolean finds = false;
 			for (int i = 0; i < chest.getContainerSize(); i++) {
@@ -67,7 +67,7 @@ public class ExplorerGameTests implements FabricGameTest {
 		chest.setItem(0, new ItemStack(Items.COOKED_BEEF, 3));
 		chest.setItem(1, new ItemStack(Items.IRON_SWORD));
 		helper.succeedWhen(() -> {
-			helper.assertTrue(explorer.getAttachedOrElse(ModAttachments.EXPEDITIONS, 0) >= 1, "no expedition finished yet");
+			helper.assertTrue(ModAttachments.EXPEDITIONS.getOrElse(explorer, 0) >= 1, "no expedition finished yet");
 			boolean hunted = false;
 			boolean worn = false;
 			for (int i = 0; i < chest.getContainerSize(); i++) {
@@ -93,7 +93,7 @@ public class ExplorerGameTests implements FabricGameTest {
 		helper.runAtTickTime(300, () -> {
 			helper.assertTrue(!ExplorerWork.isBusy(explorer), "set out without food");
 			helper.assertTrue(chest.getItem(0).getCount() == 8 && chest.getItem(1).is(Items.IRON_SWORD), "took from the chest");
-			helper.assertTrue(explorer.getAttachedOrElse(ModAttachments.EXPEDITIONS, 0) == 0, "went on an expedition");
+			helper.assertTrue(ModAttachments.EXPEDITIONS.getOrElse(explorer, 0) == 0, "went on an expedition");
 			helper.succeed();
 		});
 	}

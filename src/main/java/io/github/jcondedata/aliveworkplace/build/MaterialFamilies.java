@@ -1,11 +1,11 @@
 package io.github.jcondedata.aliveworkplace.build;
 
+import io.github.jcondedata.aliveworkplace.platform.Platform;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import net.fabricmc.fabric.api.event.lifecycle.v1.CommonLifecycleEvents;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.item.Item;
@@ -27,7 +27,7 @@ public final class MaterialFamilies {
 	private static volatile List<List<Item>> dataFamilies = List.of();
 
 	public static void init() {
-		CommonLifecycleEvents.TAGS_LOADED.register((registries, client) -> families = null);
+		Platform.get().onTagsLoaded(() -> families = null);
 		ChiselingFamilies.init();
 	}
 

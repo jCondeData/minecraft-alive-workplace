@@ -7,6 +7,7 @@ import io.github.jcondedata.aliveworkplace.build.Builders;
 import io.github.jcondedata.aliveworkplace.build.SupplyContainers;
 import io.github.jcondedata.aliveworkplace.craft.CrafterWork;
 import io.github.jcondedata.aliveworkplace.guard.Guards;
+import io.github.jcondedata.aliveworkplace.mc.Lookup;
 import io.github.jcondedata.aliveworkplace.registry.ModAttachments;
 import io.github.jcondedata.aliveworkplace.registry.ModVillagers;
 import io.github.jcondedata.aliveworkplace.work.Village;
@@ -133,7 +134,7 @@ public class EnchantWork extends Behavior<Villager> {
 		if (station == null) {
 			return;
 		}
-		BuilderBag bag = villager.getAttachedOrCreate(ModAttachments.BUILDER_BAG);
+		BuilderBag bag = ModAttachments.BUILDER_BAG.getOrCreate(villager);
 		if (job == null) {
 			busy(villager, false);
 			if (--lookTimer > 0) {
@@ -184,14 +185,14 @@ public class EnchantWork extends Behavior<Villager> {
 			walker.walkTo(level, villager, worker.blockPosition(), REACH - 0.5);
 			return;
 		}
-		var tag = level.registryAccess().registryOrThrow(Registries.ENCHANTMENT).getTag(EnchantmentTags.IN_ENCHANTING_TABLE);
+		var tag = Lookup.tag(Lookup.registry(level.registryAccess(), Registries.ENCHANTMENT), EnchantmentTags.IN_ENCHANTING_TABLE);
 		net.minecraft.world.item.enchantment.EnchantmentHelper.enchantItem(level.random, gear, strength, level.registryAccess(), tag);
 		worker.setItemSlot(job.slot(), gear);
 		bag.remove(Items.LAPIS_LAZULI, lapis);
 		villager.swing(InteractionHand.MAIN_HAND);
 		level.playSound(null, worker.blockPosition(), SoundEvents.ENCHANTMENT_TABLE_USE, SoundSource.NEUTRAL, 1f, 1f);
 		level.sendParticles(ParticleTypes.ENCHANT, worker.getX(), worker.getY() + 1.2, worker.getZ(), 30, 0.4, 0.6, 0.4, 0.5);
-		villager.setAttached(ModAttachments.ITEMS_ENCHANTED, villager.getAttachedOrElse(ModAttachments.ITEMS_ENCHANTED, 0) + 1);
+		ModAttachments.ITEMS_ENCHANTED.set(villager, ModAttachments.ITEMS_ENCHANTED.getOrElse(villager, 0) + 1);
 		BuilderLevels.addXp(level, villager, 3, null);
 		job = null;
 		lookTimer = 40;
@@ -249,9 +250,9 @@ public class EnchantWork extends Behavior<Villager> {
 		if (SupplyContainers.firstWith(level, sources(level, villager, station), Items.LAPIS_LAZULI) == null) {
 			return null;
 		}
-		var boss = villager.getAttached(ModAttachments.BUILDER_EMPLOYER);
+		var boss = ModAttachments.BUILDER_EMPLOYER.get(villager);
 		List<Villager> near = level.getEntitiesOfClass(Villager.class, new AABB(station).inflate(Village.RADIUS),
-			v -> v != villager && v.isAlive() && !v.isBaby() && Village.sameSide(level, v.getAttached(ModAttachments.BUILDER_EMPLOYER), boss));
+			v -> v != villager && v.isAlive() && !v.isBaby() && Village.sameSide(level, ModAttachments.BUILDER_EMPLOYER.get(v), boss));
 		for (Villager guard : near) {
 			if (!Guards.isGuard(guard)) {
 				continue;
@@ -272,7 +273,7 @@ public class EnchantWork extends Behavior<Villager> {
 	}
 
 	private static void status(Villager villager, String state) {
-		Component title = Component.translatable("message.aliveworkplace.scribe.title", villager.getAttachedOrElse(ModAttachments.ITEMS_ENCHANTED, 0));
+		Component title = Component.translatable("message.aliveworkplace.scribe.title", ModAttachments.ITEMS_ENCHANTED.getOrElse(villager, 0));
 		WorkerStatus.set(villager, title, -1f, Component.translatable("message.aliveworkplace.scribe.state." + state).withStyle(ChatFormatting.GRAY));
 	}
 }

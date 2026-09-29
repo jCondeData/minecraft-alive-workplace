@@ -109,7 +109,7 @@ public class TinkererWork extends CrafterWork {
 		if (bench == null) {
 			return;
 		}
-		if (patient == null && !isBusy(villager) && villager.getAttachedOrCreate(ModAttachments.BUILDER_BAG).isEmpty() && --mendLook <= 0) {
+		if (patient == null && !isBusy(villager) && ModAttachments.BUILDER_BAG.getOrCreate(villager).isEmpty() && --mendLook <= 0) {
 			mendLook = MEND_LOOK_EVERY;
 			patient = findPatient(level, bench);
 			if (patient != null) {
@@ -159,7 +159,7 @@ public class TinkererWork extends CrafterWork {
 			letGo();
 			return;
 		}
-		BuilderBag bag = villager.getAttachedOrCreate(ModAttachments.BUILDER_BAG);
+		BuilderBag bag = ModAttachments.BUILDER_BAG.getOrCreate(villager);
 		if (bag.count(Items.IRON_INGOT) == 0) {
 			status(villager, "fetching", golem);
 			List<BlockPos> sources = ironSources(level, villager, bench);
@@ -199,7 +199,7 @@ public class TinkererWork extends CrafterWork {
 		golem.heal(HEAL_PER_INGOT);
 		villager.swing(InteractionHand.MAIN_HAND);
 		level.playSound(null, golem.blockPosition(), SoundEvents.IRON_GOLEM_REPAIR, SoundSource.NEUTRAL, 1f, 1f + (level.random.nextFloat() - level.random.nextFloat()) * 0.2f);
-		villager.setAttached(ModAttachments.GOLEM_REPAIRS, villager.getAttachedOrElse(ModAttachments.GOLEM_REPAIRS, 0) + 1);
+		ModAttachments.GOLEM_REPAIRS.set(villager, ModAttachments.GOLEM_REPAIRS.getOrElse(villager, 0) + 1);
 		if (golem.getHealth() >= golem.getMaxHealth()) {
 			letGo(); // what's left of the ingots goes back to the bench's chests
 		}
@@ -216,7 +216,7 @@ public class TinkererWork extends CrafterWork {
 	}
 
 	private static void status(Villager villager, String state, IronGolem golem) {
-		WorkerStatus.set(villager, Component.translatable("message.aliveworkplace.tinkerer.title", villager.getAttachedOrElse(ModAttachments.ITEMS_CRAFTED, 0)),
+		WorkerStatus.set(villager, Component.translatable("message.aliveworkplace.tinkerer.title", ModAttachments.ITEMS_CRAFTED.getOrElse(villager, 0)),
 			golem.getHealth() / golem.getMaxHealth(), Component.translatable("message.aliveworkplace.tinkerer.state." + state).withStyle(ChatFormatting.GRAY));
 	}
 }

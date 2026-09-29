@@ -53,7 +53,7 @@ public class HerderGameTests implements FabricGameTest {
 		Leftovers.clear(helper);
 		helper.setDayTime(2000);
 		Villager butcher = butcher(helper);
-		butcher.setAttached(ModAttachments.BUILDER_EMPLOYER, new Employer(UUID.randomUUID(), "Al"));
+		ModAttachments.BUILDER_EMPLOYER.set(butcher, new Employer(UUID.randomUUID(), "Al"));
 		List<Chicken> chickens = new ArrayList<>();
 		for (int i = 0; i < 12; i++) {
 			Chicken chicken = helper.spawn(EntityType.CHICKEN, new BlockPos(7 + i % 4, 2, 7 + i / 4));

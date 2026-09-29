@@ -3,6 +3,7 @@ package io.github.jcondedata.aliveworkplace.guard;
 import com.google.common.collect.ImmutableMap;
 import io.github.jcondedata.aliveworkplace.build.BuilderLevels;
 import io.github.jcondedata.aliveworkplace.build.Builders;
+import io.github.jcondedata.aliveworkplace.mc.Damage;
 import io.github.jcondedata.aliveworkplace.registry.ModAttachments;
 import io.github.jcondedata.aliveworkplace.work.WorkerStatus;
 import java.util.Collections;
@@ -181,7 +182,7 @@ public class GuardCombat extends Behavior<Villager> {
 		float damage = Guards.baseDamage(weapon) * Guards.levelBonus(villager);
 		damage = EnchantmentHelper.modifyDamage(level, weapon, foe, source, damage);
 		villager.swing(InteractionHand.MAIN_HAND);
-		if (!foe.hurt(source, damage)) {
+		if (!Damage.hurt(foe, source, damage)) {
 			return;
 		}
 		foe.knockback(0.4, villager.getX() - foe.getX(), villager.getZ() - foe.getZ());
@@ -190,7 +191,7 @@ public class GuardCombat extends Behavior<Villager> {
 			weapon.hurtAndBreak(1, villager, EquipmentSlot.MAINHAND);
 		}
 		if (!foe.isAlive()) {
-			villager.setAttached(ModAttachments.GUARD_KILLS, villager.getAttachedOrElse(ModAttachments.GUARD_KILLS, 0) + 1);
+			ModAttachments.GUARD_KILLS.set(villager, ModAttachments.GUARD_KILLS.getOrElse(villager, 0) + 1);
 			BuilderLevels.addXp(level, villager, XP_PER_KILL, null);
 		}
 	}
@@ -217,10 +218,10 @@ public class GuardCombat extends Behavior<Villager> {
 	private static void shoot(ServerLevel level, Villager villager, LivingEntity foe) {
 		ItemStack bow = villager.getItemBySlot(EquipmentSlot.OFFHAND);
 		// A spectral or tipped arrow from the quiver if there's one; plain ones never run out.
-		ItemStack special = villager.getAttachedOrCreate(ModAttachments.BUILDER_BAG).takeFirst(Guards::isSpecialArrow);
+		ItemStack special = ModAttachments.BUILDER_BAG.getOrCreate(villager).takeFirst(Guards::isSpecialArrow);
 		ItemStack ammo = special.isEmpty() ? new ItemStack(net.minecraft.world.item.Items.ARROW) : special.split(1);
 		if (!special.isEmpty()) {
-			villager.getAttachedOrCreate(ModAttachments.BUILDER_BAG).add(special);
+			ModAttachments.BUILDER_BAG.getOrCreate(villager).add(special);
 		}
 		net.minecraft.world.entity.projectile.AbstractArrow arrow = net.minecraft.world.entity.projectile.ProjectileUtil.getMobArrow(
 			villager, ammo, 1.0f, bow);
@@ -249,7 +250,7 @@ public class GuardCombat extends Behavior<Villager> {
 	public static void onFoeKilled(ServerLevel level, LivingEntity foe, DamageSource source) {
 		if ((source.getDirectEntity() instanceof net.minecraft.world.entity.projectile.AbstractArrow || source.is(GuardPartners.POKEMON_MOVE))
 			&& source.getEntity() instanceof Villager guard && Guards.isGuard(guard)) {
-			guard.setAttached(ModAttachments.GUARD_KILLS, guard.getAttachedOrElse(ModAttachments.GUARD_KILLS, 0) + 1);
+			ModAttachments.GUARD_KILLS.set(guard, ModAttachments.GUARD_KILLS.getOrElse(guard, 0) + 1);
 			BuilderLevels.addXp(level, guard, XP_PER_KILL, null);
 		}
 	}
@@ -300,6 +301,6 @@ public class GuardCombat extends Behavior<Villager> {
 
 	static Component title(Villager villager) {
 		return Component.translatable("message.aliveworkplace.guard.title_kind", Guards.kind(villager).title(),
-			villager.getAttachedOrElse(ModAttachments.GUARD_KILLS, 0));
+			ModAttachments.GUARD_KILLS.getOrElse(villager, 0));
 	}
 }

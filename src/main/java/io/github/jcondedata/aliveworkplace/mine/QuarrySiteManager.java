@@ -1,5 +1,6 @@
 package io.github.jcondedata.aliveworkplace.mine;
 
+import io.github.jcondedata.aliveworkplace.mc.Nbt;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -68,7 +69,7 @@ public final class QuarrySiteManager extends SavedData {
 
 	private static QuarrySiteManager load(CompoundTag tag, HolderLookup.Provider registries) {
 		QuarrySiteManager manager = new QuarrySiteManager();
-		for (Tag t : tag.getList("quarries", Tag.TAG_COMPOUND)) {
+		for (Tag t : Nbt.getList(tag, "quarries", Tag.TAG_COMPOUND)) {
 			QuarrySite site = QuarrySite.load((CompoundTag) t);
 			if (site != null) {
 				manager.add(site);

@@ -3,6 +3,8 @@ package io.github.jcondedata.aliveworkplace.blueprint.io;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.datafixers.DataFixer;
 import com.mojang.serialization.Dynamic;
+import io.github.jcondedata.aliveworkplace.mc.Lookup;
+import io.github.jcondedata.aliveworkplace.mc.Nbt;
 import net.minecraft.SharedConstants;
 import net.minecraft.commands.arguments.blocks.BlockStateParser;
 import net.minecraft.core.HolderLookup;
@@ -33,7 +35,7 @@ final class BlockStateReader {
 	private int unknown;
 
 	BlockStateReader(DataFixer fixer, int fromVersion) {
-		this.blocks = BuiltInRegistries.BLOCK.asLookup();
+		this.blocks = Lookup.lookup(BuiltInRegistries.BLOCK);
 		this.fixer = fixer;
 		this.fromVersion = fromVersion;
 	}
@@ -44,12 +46,12 @@ final class BlockStateReader {
 		if (fromVersion > 0 && fromVersion < currentVersion) {
 			fixed = (CompoundTag) fixer.update(References.BLOCK_STATE, new Dynamic<Tag>(NbtOps.INSTANCE, tag), fromVersion, currentVersion).getValue();
 		}
-		ResourceLocation id = ResourceLocation.tryParse(fixed.getString("Name"));
+		ResourceLocation id = ResourceLocation.tryParse(Nbt.getString(fixed, "Name"));
 		if (id == null || !BuiltInRegistries.BLOCK.containsKey(id)) {
 			unknown++;
 			return Blocks.AIR.defaultBlockState();
 		}
-		return NbtUtils.readBlockState(BuiltInRegistries.BLOCK.asLookup(), fixed);
+		return NbtUtils.readBlockState(Lookup.lookup(BuiltInRegistries.BLOCK), fixed);
 	}
 
 	/** Palette entry as a string, e.g. {@code minecraft:oak_stairs[facing=east]} (Sponge/WorldEdit). */
@@ -69,7 +71,7 @@ final class BlockStateReader {
 			return BlockStateParser.parseForBlock(blocks, fixed, false).blockState();
 		} catch (CommandSyntaxException e) {
 			// Unknown property values (e.g. from a newer version): fall back to the block's default state.
-			return BuiltInRegistries.BLOCK.get(ResourceKey.create(Registries.BLOCK, id)).defaultBlockState();
+			return Lookup.value(BuiltInRegistries.BLOCK, ResourceKey.create(Registries.BLOCK, id)).defaultBlockState();
 		}
 	}
 

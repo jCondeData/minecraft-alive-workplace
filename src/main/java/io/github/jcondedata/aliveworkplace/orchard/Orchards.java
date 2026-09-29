@@ -1,12 +1,12 @@
 package io.github.jcondedata.aliveworkplace.orchard;
 
+import io.github.jcondedata.aliveworkplace.platform.Platform;
 import io.github.jcondedata.aliveworkplace.build.BuilderBag;
 import io.github.jcondedata.aliveworkplace.farm.FieldJob;
 import io.github.jcondedata.aliveworkplace.registry.ModAttachments;
 import io.github.jcondedata.aliveworkplace.registry.ModVillagers;
 import io.github.jcondedata.aliveworkplace.work.AreaJobs;
 import java.util.Optional;
-import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
@@ -34,7 +34,7 @@ import org.jetbrains.annotations.Nullable;
  * what grows there even beyond the 16 blocks they'd look on their own.
  */
 public final class Orchards {
-	private static final boolean COBBLEMON = FabricLoader.getInstance().isModLoaded("cobblemon");
+	private static final boolean COBBLEMON = Platform.get().isModLoaded("cobblemon");
 	/** Blocks between plants: 2 for bushes and berry plants, 3 for apricorn trees. */
 	static final int SPACING = 2;
 	static final int SPACING_TREES = 3;
@@ -45,7 +45,7 @@ public final class Orchards {
 
 	@Nullable
 	public static BoundingBox orchard(Villager villager) {
-		FieldJob job = villager.getAttached(ModAttachments.ORCHARD);
+		FieldJob job = ModAttachments.ORCHARD.get(villager);
 		return job == null ? null : job.box();
 	}
 
@@ -55,7 +55,7 @@ public final class Orchards {
 
 	/** Gives the keeper the orchard. Also used by tests. */
 	public static void start(Villager villager, BoundingBox box) {
-		villager.setAttached(ModAttachments.ORCHARD, new FieldJob(box));
+		ModAttachments.ORCHARD.set(villager, new FieldJob(box));
 	}
 
 	public static void release(ServerLevel level, Villager villager, @Nullable Player player) {
@@ -70,7 +70,7 @@ public final class Orchards {
 		BoundingBox box = orchard(villager);
 		if (box != null) {
 			AreaJobs.sendStatus(player, villager, box, "orchard_area", Component.translatable("message.aliveworkplace.orchard_area.counts",
-				villager.getAttachedOrElse(ModAttachments.FRUIT_PICKED, 0), villager.getAttachedOrElse(ModAttachments.SAPLINGS_PLANTED, 0)));
+				ModAttachments.FRUIT_PICKED.getOrElse(villager, 0), ModAttachments.SAPLINGS_PLANTED.getOrElse(villager, 0)));
 		}
 	}
 
@@ -211,7 +211,7 @@ public final class Orchards {
 		}
 		bag.remove(seed.getItem(), 1);
 		level.playSound(null, spot, SoundEvents.SWEET_BERRY_BUSH_PLACE, SoundSource.BLOCKS, 0.8f, 1f);
-		villager.setAttached(ModAttachments.SAPLINGS_PLANTED, villager.getAttachedOrElse(ModAttachments.SAPLINGS_PLANTED, 0) + 1);
+		ModAttachments.SAPLINGS_PLANTED.set(villager, ModAttachments.SAPLINGS_PLANTED.getOrElse(villager, 0) + 1);
 		return true;
 	}
 

@@ -1,6 +1,7 @@
 package io.github.jcondedata.aliveworkplace.table;
 
 import com.mojang.serialization.MapCodec;
+import io.github.jcondedata.aliveworkplace.mc.Interact;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerPlayer;
@@ -46,6 +47,6 @@ public class BlueprintTableBlock extends HorizontalDirectionalBlock {
 		if (player instanceof ServerPlayer serverPlayer) {
 			TableServer.open(serverPlayer, pos);
 		}
-		return InteractionResult.sidedSuccess(level.isClientSide);
+		return Interact.success(level.isClientSide());
 	}
 }

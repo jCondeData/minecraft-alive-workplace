@@ -1,6 +1,7 @@
 package io.github.jcondedata.aliveworkplace.hall;
 
 import io.github.jcondedata.aliveworkplace.build.BuildSiteManager;
+import io.github.jcondedata.aliveworkplace.mc.Chat;
 import java.util.Locale;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
@@ -106,7 +107,7 @@ public final class VillageRanks {
 	static void celebrate(ServerLevel level, BlockPos hall, Rank rank) {
 		Component name = VillageHalls.name(level, hall);
 		for (ServerPlayer player : level.getPlayers(p -> p.blockPosition().distSqr(hall) <= (double) VillageHalls.RADIUS * VillageHalls.RADIUS)) {
-			player.displayClientMessage(Component.translatable("message.aliveworkplace.rank.up", name, rank.title()).withStyle(ChatFormatting.GOLD), false);
+			Chat.chat(player, Component.translatable("message.aliveworkplace.rank.up", name, rank.title()).withStyle(ChatFormatting.GOLD));
 		}
 		Chronicle.record(level, hall, Chronicle.Kind.RANK, Component.translatable("chronicle.aliveworkplace.rank", rank.title()), true);
 		level.playSound(null, hall, SoundEvents.UI_TOAST_CHALLENGE_COMPLETE, SoundSource.BLOCKS, 1f, 1f);

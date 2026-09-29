@@ -67,7 +67,7 @@ public class InnkeeperWork extends Behavior<Villager> {
 		timer = EVERY;
 		tend(level, villager, counter);
 		WorkerStatus.set(villager, Component.translatable("message.aliveworkplace.innkeeper.title",
-				villager.getAttachedOrElse(ModAttachments.GUESTS_HOSTED, 0)), -1f,
+				ModAttachments.GUESTS_HOSTED.getOrElse(villager, 0)), -1f,
 			Component.translatable("message.aliveworkplace.innkeeper.state." + state, Innkeepers.guests(level, counter).size())
 				.withStyle(state.equals("no_bed") ? ChatFormatting.YELLOW : ChatFormatting.GRAY));
 	}
@@ -90,10 +90,10 @@ public class InnkeeperWork extends Behavior<Villager> {
 			return;
 		}
 		long day = level.getDayTime() / 24000;
-		if (level.getDayTime() % 24000 < MORNING && villager.getAttachedOrElse(ModAttachments.LAST_GUEST_DAY, -1L) < day) {
+		if (level.getDayTime() % 24000 < MORNING && ModAttachments.LAST_GUEST_DAY.getOrElse(villager, -1L) < day) {
 			if (Innkeepers.arrive(level, villager, counter) != null) {
-				villager.setAttached(ModAttachments.LAST_GUEST_DAY, day);
-				villager.setAttached(ModAttachments.GUESTS_HOSTED, villager.getAttachedOrElse(ModAttachments.GUESTS_HOSTED, 0) + 1);
+				ModAttachments.LAST_GUEST_DAY.set(villager, day);
+				ModAttachments.GUESTS_HOSTED.set(villager, ModAttachments.GUESTS_HOSTED.getOrElse(villager, 0) + 1);
 				BuilderLevels.addXp(level, villager, 3, null);
 			}
 		}

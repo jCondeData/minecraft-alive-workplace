@@ -1,5 +1,7 @@
 package io.github.jcondedata.aliveworkplace.build;
 
+import io.github.jcondedata.aliveworkplace.mc.Nbt;
+import io.github.jcondedata.aliveworkplace.mc.Rules;
 import io.github.jcondedata.aliveworkplace.registry.ModGameRules;
 import java.util.List;
 import java.util.Optional;
@@ -23,7 +25,7 @@ import net.minecraft.core.BlockPos;
 public final class BuildEntities {
 	/** Puts up whatever isn't there yet; returns how many were left out for lack of materials or a wall. */
 	public static int placeAll(ServerLevel level, BuildPlan plan, List<BlockPos> supplies) {
-		boolean free = level.getGameRules().getBoolean(ModGameRules.FREE_MATERIALS);
+		boolean free = Rules.on(level, ModGameRules.FREE_MATERIALS);
 		int left = 0;
 		for (BuildPlan.EntityStep step : plan.entities()) {
 			if (isPresent(level, step)) {
@@ -53,7 +55,7 @@ public final class BuildEntities {
 
 	/** The same kind of entity is already standing (or hanging) where this one goes. */
 	public static boolean isPresent(ServerLevel level, BuildPlan.EntityStep step) {
-		Optional<EntityType<?>> type = EntityType.byString(step.nbt().getString("id"));
+		Optional<EntityType<?>> type = EntityType.byString(Nbt.getString(step.nbt(), "id"));
 		if (type.isEmpty()) {
 			return true; // nothing we could put up
 		}

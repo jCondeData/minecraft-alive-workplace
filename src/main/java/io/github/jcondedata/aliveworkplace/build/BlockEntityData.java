@@ -1,6 +1,7 @@
 package io.github.jcondedata.aliveworkplace.build;
 
-import net.fabricmc.fabric.api.transfer.v1.item.ItemStorage;
+import io.github.jcondedata.aliveworkplace.mc.Nbt;
+import io.github.jcondedata.aliveworkplace.platform.Platform;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
@@ -34,11 +35,11 @@ public final class BlockEntityData {
 	public static CompoundTag sanitize(ServerLevel level, BlockPos pos, BlockState state, BlockEntity blockEntity, CompoundTag nbt) {
 		if (isStorage(level, pos, state, blockEntity)) {
 			// Containers (chests, barrels, jars, shelves, safes...): only the name, never the contents.
-			if (!nbt.contains("CustomName", Tag.TAG_STRING)) {
+			if (!Nbt.has(nbt, "CustomName", Tag.TAG_STRING)) {
 				return null;
 			}
 			CompoundTag named = new CompoundTag();
-			named.putString("CustomName", nbt.getString("CustomName"));
+			named.putString("CustomName", Nbt.getString(nbt, "CustomName"));
 			return named;
 		}
 		CompoundTag tag = nbt.copy();
@@ -54,7 +55,7 @@ public final class BlockEntityData {
 			return true;
 		}
 		try {
-			return ItemStorage.SIDED.find(level, pos, state, blockEntity, null) != null;
+			return Platform.get().items().isStore(level, pos, state, blockEntity);
 		} catch (RuntimeException e) {
 			return false;
 		}
@@ -62,7 +63,7 @@ public final class BlockEntityData {
 
 	/** Removes every nested compound that is an item stack or an entity (anything with an item/entity "id"). */
 	static void stripStacksAndEntities(CompoundTag tag) {
-		for (String key : tag.getAllKeys().toArray(String[]::new)) {
+		for (String key : Nbt.keys(tag).toArray(String[]::new)) {
 			Tag child = tag.get(key);
 			if (child instanceof CompoundTag compound) {
 				if (isStackOrEntity(compound)) {
@@ -92,10 +93,10 @@ public final class BlockEntityData {
 	}
 
 	private static boolean isStackOrEntity(CompoundTag compound) {
-		if (!compound.contains("id", Tag.TAG_STRING)) {
+		if (!Nbt.has(compound, "id", Tag.TAG_STRING)) {
 			return false;
 		}
-		ResourceLocation id = ResourceLocation.tryParse(compound.getString("id"));
+		ResourceLocation id = ResourceLocation.tryParse(Nbt.getString(compound, "id"));
 		return id != null && (BuiltInRegistries.ITEM.containsKey(id) || BuiltInRegistries.ENTITY_TYPE.containsKey(id));
 	}
 

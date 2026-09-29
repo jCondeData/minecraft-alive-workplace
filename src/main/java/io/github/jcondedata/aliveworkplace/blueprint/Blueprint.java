@@ -1,5 +1,6 @@
 package io.github.jcondedata.aliveworkplace.blueprint;
 
+import io.github.jcondedata.aliveworkplace.mc.Nbt;
 import java.util.ArrayList;
 import java.util.List;
 import net.minecraft.core.BlockPos;
@@ -47,38 +48,38 @@ public record Blueprint(ResourceLocation id, Vec3i size, List<Entry> blocks, Lis
 
 	/** Reads the vanilla structure NBT layout: size, palette(s), blocks[{pos, state, nbt}]. */
 	public static Blueprint fromStructureNbt(ResourceLocation id, CompoundTag tag, HolderGetter<Block> blockLookup) {
-		ListTag sizeTag = tag.getList("size", Tag.TAG_INT);
-		Vec3i size = new Vec3i(sizeTag.getInt(0), sizeTag.getInt(1), sizeTag.getInt(2));
+		ListTag sizeTag = Nbt.getList(tag, "size", Tag.TAG_INT);
+		Vec3i size = new Vec3i(Nbt.intAt(sizeTag, 0), Nbt.intAt(sizeTag, 1), Nbt.intAt(sizeTag, 2));
 
-		ListTag paletteTag = tag.contains("palettes", Tag.TAG_LIST)
-			? tag.getList("palettes", Tag.TAG_LIST).getList(0)
-			: tag.getList("palette", Tag.TAG_COMPOUND);
+		ListTag paletteTag = Nbt.has(tag, "palettes", Tag.TAG_LIST)
+			? Nbt.listAt(Nbt.getList(tag, "palettes", Tag.TAG_LIST), 0)
+			: Nbt.getList(tag, "palette", Tag.TAG_COMPOUND);
 		List<BlockState> palette = new ArrayList<>(paletteTag.size());
 		for (int i = 0; i < paletteTag.size(); i++) {
-			palette.add(NbtUtils.readBlockState(blockLookup, paletteTag.getCompound(i)));
+			palette.add(NbtUtils.readBlockState(blockLookup, Nbt.compoundAt(paletteTag, i)));
 		}
 
-		ListTag blocksTag = tag.getList("blocks", Tag.TAG_COMPOUND);
+		ListTag blocksTag = Nbt.getList(tag, "blocks", Tag.TAG_COMPOUND);
 		List<Entry> entries = new ArrayList<>(blocksTag.size());
 		for (int i = 0; i < blocksTag.size(); i++) {
-			CompoundTag b = blocksTag.getCompound(i);
-			ListTag p = b.getList("pos", Tag.TAG_INT);
-			int stateIndex = b.getInt("state");
+			CompoundTag b = Nbt.compoundAt(blocksTag, i);
+			ListTag p = Nbt.getList(b, "pos", Tag.TAG_INT);
+			int stateIndex = Nbt.getInt(b, "state");
 			BlockState state = stateIndex >= 0 && stateIndex < palette.size() ? palette.get(stateIndex) : Blocks.AIR.defaultBlockState();
 			if (state.is(Blocks.STRUCTURE_VOID)) {
 				continue;
 			}
-			CompoundTag nbt = b.contains("nbt", Tag.TAG_COMPOUND) ? b.getCompound("nbt") : null;
-			entries.add(new Entry(new BlockPos(p.getInt(0), p.getInt(1), p.getInt(2)), state, nbt));
+			CompoundTag nbt = Nbt.has(b, "nbt", Tag.TAG_COMPOUND) ? Nbt.getCompound(b, "nbt") : null;
+			entries.add(new Entry(new BlockPos(Nbt.intAt(p, 0), Nbt.intAt(p, 1), Nbt.intAt(p, 2)), state, nbt));
 		}
 		List<EntityEntry> entities = new ArrayList<>();
-		ListTag entitiesTag = tag.getList("entities", Tag.TAG_COMPOUND);
+		ListTag entitiesTag = Nbt.getList(tag, "entities", Tag.TAG_COMPOUND);
 		for (int i = 0; i < entitiesTag.size(); i++) {
-			CompoundTag e = entitiesTag.getCompound(i);
-			ListTag p = e.getList("pos", Tag.TAG_DOUBLE);
-			CompoundTag nbt = BlueprintEntities.clean(e.getCompound("nbt"));
+			CompoundTag e = Nbt.compoundAt(entitiesTag, i);
+			ListTag p = Nbt.getList(e, "pos", Tag.TAG_DOUBLE);
+			CompoundTag nbt = BlueprintEntities.clean(Nbt.getCompound(e, "nbt"));
 			if (p.size() == 3 && nbt != null) {
-				entities.add(new EntityEntry(new Vec3(p.getDouble(0), p.getDouble(1), p.getDouble(2)), nbt));
+				entities.add(new EntityEntry(new Vec3(Nbt.doubleAt(p, 0), Nbt.doubleAt(p, 1), Nbt.doubleAt(p, 2)), nbt));
 			}
 		}
 		return new Blueprint(id, size, List.copyOf(entries), List.copyOf(entities));

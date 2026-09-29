@@ -27,22 +27,22 @@ public final class Diet {
 
 	/** {@code villager} had {@code meal}: remember it. */
 	public static void ate(Villager villager, ItemStack meal) {
-		List<ResourceLocation> recent = new ArrayList<>(villager.getAttachedOrElse(ModAttachments.RECENT_MEALS, List.of()));
+		List<ResourceLocation> recent = new ArrayList<>(ModAttachments.RECENT_MEALS.getOrElse(villager, List.of()));
 		recent.add(BuiltInRegistries.ITEM.getKey(meal.getItem()));
 		while (recent.size() > REMEMBERED) {
 			recent.remove(0);
 		}
-		villager.setAttached(ModAttachments.RECENT_MEALS, List.copyOf(recent));
+		ModAttachments.RECENT_MEALS.set(villager, List.copyOf(recent));
 	}
 
 	/** Whether {@code meal} is among the last meals {@code villager} had. */
 	public static boolean hadLately(Villager villager, ItemStack meal) {
-		return villager.getAttachedOrElse(ModAttachments.RECENT_MEALS, List.of()).contains(BuiltInRegistries.ITEM.getKey(meal.getItem()));
+		return ModAttachments.RECENT_MEALS.getOrElse(villager, List.of()).contains(BuiltInRegistries.ITEM.getKey(meal.getItem()));
 	}
 
 	/** How {@code villager}'s diet is going. */
 	public static Kind of(Villager villager) {
-		List<ResourceLocation> recent = villager.getAttachedOrElse(ModAttachments.RECENT_MEALS, List.of());
+		List<ResourceLocation> recent = ModAttachments.RECENT_MEALS.getOrElse(villager, List.of());
 		if (recent.size() < ENOUGH) {
 			return Kind.UNKNOWN;
 		}

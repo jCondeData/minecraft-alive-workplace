@@ -20,6 +20,7 @@ import com.cobblemon.mod.common.battles.ai.StrongBattleAI;
 import com.cobblemon.mod.common.battles.pokemon.BattlePokemon;
 import com.cobblemon.mod.common.pokemon.Pokemon;
 import com.cobblemon.mod.common.pokemon.Species;
+import io.github.jcondedata.aliveworkplace.mc.Chat;
 import io.github.jcondedata.aliveworkplace.trainer.Trainers;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -81,13 +82,13 @@ public final class CobblemonTrainers {
 			return;
 		}
 		if (isBattling(trainer)) {
-			player.displayClientMessage(Component.translatable("message.aliveworkplace.trainer.busy", trainer.getDisplayName()).withStyle(ChatFormatting.YELLOW), true);
+			Chat.actionBar(player, Component.translatable("message.aliveworkplace.trainer.busy", trainer.getDisplayName()).withStyle(ChatFormatting.YELLOW));
 			return;
 		}
 		PlayerPartyStore party = Cobblemon.INSTANCE.getStorage().getParty(player);
 		List<BattlePokemon> mine = party.toBattleTeam(false, true, null);
 		if (mine.isEmpty()) {
-			player.displayClientMessage(Component.translatable("message.aliveworkplace.trainer.no_team").withStyle(ChatFormatting.YELLOW), true);
+			Chat.actionBar(player, Component.translatable("message.aliveworkplace.trainer.no_team").withStyle(ChatFormatting.YELLOW));
 			return;
 		}
 		int tier = Trainers.tier(trainer);
@@ -110,7 +111,7 @@ public final class CobblemonTrainers {
 			player.sendSystemMessage(Component.translatable("message.aliveworkplace.trainer.challenge", Trainers.title(trainer), theirs.size())
 				.withStyle(ChatFormatting.GOLD));
 		} else {
-			player.displayClientMessage(Component.translatable("message.aliveworkplace.trainer.cant_start").withStyle(ChatFormatting.RED), true);
+			Chat.actionBar(player, Component.translatable("message.aliveworkplace.trainer.cant_start").withStyle(ChatFormatting.RED));
 		}
 	}
 

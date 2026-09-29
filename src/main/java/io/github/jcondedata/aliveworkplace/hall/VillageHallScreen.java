@@ -4,6 +4,8 @@ import io.github.jcondedata.aliveworkplace.build.BuildSite;
 import io.github.jcondedata.aliveworkplace.build.BuilderLevels;
 import io.github.jcondedata.aliveworkplace.build.BuilderStatusSync;
 import io.github.jcondedata.aliveworkplace.build.Builders;
+import io.github.jcondedata.aliveworkplace.mc.Chat;
+import io.github.jcondedata.aliveworkplace.mc.Players;
 import io.github.jcondedata.aliveworkplace.mine.Miners;
 import io.github.jcondedata.aliveworkplace.mine.QuarrySite;
 import io.github.jcondedata.aliveworkplace.registry.ModBlocks;
@@ -75,7 +77,7 @@ public final class VillageHallScreen {
 	static final int GLOW_TICKS = 200;
 
 	public static void open(ServerPlayer player, BlockPos hall) {
-		ServerLevel level = player.serverLevel();
+		ServerLevel level = Players.level(player);
 		ChoiceMenu.open(player, Component.translatable("screen.aliveworkplace.hall.title", VillageHalls.name(level, hall)),
 			p -> p.isAlive() && level.getBlockState(hall).is(ModBlocks.VILLAGE_HALL) && p.position().distanceToSqr(Vec3.atCenterOf(hall)) <= 64,
 			menu -> render(menu, level, hall, 0));
@@ -83,7 +85,7 @@ public final class VillageHallScreen {
 
 	/** The screen opened from afar with a Village Ledger (it stays open while the hall stands). */
 	public static void openRemote(ServerPlayer player, BlockPos hall) {
-		ServerLevel level = player.serverLevel();
+		ServerLevel level = Players.level(player);
 		ChoiceMenu.open(player, Component.translatable("screen.aliveworkplace.hall.title", VillageHalls.name(level, hall)),
 			p -> p.isAlive() && p.level() == level && level.isLoaded(hall) && level.getBlockState(hall).is(ModBlocks.VILLAGE_HALL),
 			menu -> render(menu, level, hall, 0));
@@ -91,7 +93,7 @@ public final class VillageHallScreen {
 
 	/** The same screen, not shown to anyone (tests). */
 	public static ChoiceMenu forTest(ServerPlayer player, BlockPos hall) {
-		return ChoiceMenu.detached(player, menu -> render(menu, player.serverLevel(), hall, 0));
+		return ChoiceMenu.detached(player, menu -> render(menu, Players.level(player), hall, 0));
 	}
 
 	static void render(ChoiceMenu menu, ServerLevel level, BlockPos hall, int page) {
@@ -119,7 +121,7 @@ public final class VillageHallScreen {
 			treasury > 0 ? ChatFormatting.GREEN : ChatFormatting.GRAY));
 		nameLore.add(line("screen.aliveworkplace.hall.rename", ChatFormatting.DARK_GRAY));
 		menu.button(NAME, icon(Items.NAME_TAG, VillageHalls.name(level, hall).copy(), ChatFormatting.GOLD, nameLore.toArray(Component[]::new)), p -> {
-			p.displayClientMessage(Treasury.collect(level, hall, p), false);
+			Chat.chat(p, Treasury.collect(level, hall, p));
 			refresh(menu, level, hall, shown);
 		});
 		VillageNeeds.Needs needs = VillageNeeds.count(level, hall);
@@ -180,13 +182,13 @@ public final class VillageHallScreen {
 		});
 		menu.button(MAP, icon(Items.FILLED_MAP, Component.translatable("screen.aliveworkplace.hall.map"), ChatFormatting.WHITE,
 			line(Component.translatable("screen.aliveworkplace.hall.map_hint"), ChatFormatting.GRAY)), p -> {
-			p.displayClientMessage(VillageMaps.draw(level, hall, p), false);
+			Chat.chat(p, VillageMaps.draw(level, hall, p));
 		});
 		menu.button(RECALL, icon(Items.BELL, Component.translatable("screen.aliveworkplace.hall.recall"), ChatFormatting.WHITE,
 			line(Component.translatable("screen.aliveworkplace.hall.recall_hint"), ChatFormatting.GRAY)), p -> {
 			int came = VillageHalls.recall(level, hall);
-			p.displayClientMessage(Component.translatable(came == 0 ? "message.aliveworkplace.hall.recall_none" : "message.aliveworkplace.hall.recalled", came)
-				.withStyle(came == 0 ? ChatFormatting.GRAY : ChatFormatting.GREEN), true);
+			Chat.actionBar(p, Component.translatable(came == 0 ? "message.aliveworkplace.hall.recall_none" : "message.aliveworkplace.hall.recalled", came)
+				.withStyle(came == 0 ? ChatFormatting.GRAY : ChatFormatting.GREEN));
 			if (came > 0) {
 				level.playSound(null, hall, SoundEvents.BELL_BLOCK, SoundSource.BLOCKS, 1f, 1f);
 			}
@@ -199,7 +201,7 @@ public final class VillageHallScreen {
 					io.github.jcondedata.aliveworkplace.work.Money.describe((long) io.github.jcondedata.aliveworkplace.guard.Mercenaries.price(level, hall)
 						* io.github.jcondedata.aliveworkplace.work.Money.DOLLARS_PER_EMERALD, io.github.jcondedata.aliveworkplace.guard.Mercenaries.price(level, hall))),
 				band > 0 ? ChatFormatting.GREEN : ChatFormatting.GRAY)), p -> {
-			p.displayClientMessage(io.github.jcondedata.aliveworkplace.guard.Mercenaries.hire(level, hall, p), false);
+			Chat.chat(p, io.github.jcondedata.aliveworkplace.guard.Mercenaries.hire(level, hall, p));
 			refresh(menu, level, hall, shown);
 		});
 		long festival = entity == null ? -1 : Festivals.nextDay(level, hall, entity);
@@ -209,7 +211,7 @@ public final class VillageHallScreen {
 				: inDays <= 0 ? Component.translatable("screen.aliveworkplace.hall.festival_today")
 				: Component.translatable("screen.aliveworkplace.hall.festival_in", inDays), ChatFormatting.GOLD),
 			line("screen.aliveworkplace.hall.festival_hint", ChatFormatting.GRAY)), p -> {
-			p.displayClientMessage(Festivals.call(level, hall, p), false);
+			Chat.chat(p, Festivals.call(level, hall, p));
 			refresh(menu, level, hall, shown);
 		});
 		if (pages > 1) {
@@ -238,8 +240,8 @@ public final class VillageHallScreen {
 
 	private static void glow(ServerLevel level, Villager villager, ServerPlayer p) {
 		villager.addEffect(new MobEffectInstance(MobEffects.GLOWING, GLOW_TICKS, 0, false, false));
-		p.displayClientMessage(Component.translatable("message.aliveworkplace.hall.glowing", villager.getDisplayName())
-			.withStyle(ChatFormatting.GREEN), true);
+		Chat.actionBar(p, Component.translatable("message.aliveworkplace.hall.glowing", villager.getDisplayName())
+			.withStyle(ChatFormatting.GREEN));
 		level.playSound(null, p.blockPosition(), SoundEvents.AMETHYST_BLOCK_CHIME, SoundSource.PLAYERS, 0.6f, 1.2f);
 	}
 
@@ -262,12 +264,12 @@ public final class VillageHallScreen {
 				line(where(hall, station.pos()), ChatFormatting.GRAY),
 				line(Component.translatable("screen.aliveworkplace.hall.give_job", villager.getDisplayName(), job), ChatFormatting.GREEN)), p -> {
 				if (VillageHalls.assign(level, villager, station)) {
-					p.displayClientMessage(Component.translatable("message.aliveworkplace.hall.assigned", villager.getDisplayName(), job)
-						.withStyle(ChatFormatting.GREEN), true);
+					Chat.actionBar(p, Component.translatable("message.aliveworkplace.hall.assigned", villager.getDisplayName(), job)
+						.withStyle(ChatFormatting.GREEN));
 					level.playSound(null, p.blockPosition(), SoundEvents.VILLAGER_YES, SoundSource.NEUTRAL, 0.8f, 1f);
 					refresh(menu, level, hall, page);
 				} else {
-					p.displayClientMessage(Component.translatable("message.aliveworkplace.hall.not_assigned").withStyle(ChatFormatting.YELLOW), true);
+					Chat.actionBar(p, Component.translatable("message.aliveworkplace.hall.not_assigned").withStyle(ChatFormatting.YELLOW));
 					renderJobs(menu, level, hall, villager, page);
 					menu.broadcastChanges();
 				}
@@ -340,9 +342,9 @@ public final class VillageHallScreen {
 				int max = VillageRanks.caravanRoutes(VillageRanks.of(level, hall));
 				boolean on = data.toggleRoute(hall, other.hall(), max);
 				boolean wasOn = sending;
-				p.displayClientMessage(Component.translatable(on ? "message.aliveworkplace.hall.route_started"
+				Chat.actionBar(p, Component.translatable(on ? "message.aliveworkplace.hall.route_started"
 					: wasOn ? "message.aliveworkplace.hall.route_stopped" : "message.aliveworkplace.hall.route_full", other.name(), max)
-					.withStyle(on ? ChatFormatting.GREEN : ChatFormatting.YELLOW), true);
+					.withStyle(on ? ChatFormatting.GREEN : ChatFormatting.YELLOW));
 				renderRoutes(menu, level, hall);
 				menu.broadcastChanges();
 			});
@@ -388,8 +390,8 @@ public final class VillageHallScreen {
 			menu.button(QUEST_SLOTS[i], questIcon(level, quest, viewer), quest.kind() != VillageQuests.Kind.BRING ? null : p -> {
 				int given = VillageQuests.handIn(p, hall, quest.id());
 				if (given == 0) {
-					p.displayClientMessage(Component.translatable("message.aliveworkplace.quest.nothing", quest.itemType().getDescription())
-						.withStyle(ChatFormatting.YELLOW), true);
+					Chat.actionBar(p, Component.translatable("message.aliveworkplace.quest.nothing", quest.itemType().getDescription())
+						.withStyle(ChatFormatting.YELLOW));
 				} else {
 					level.playSound(null, p.blockPosition(), SoundEvents.BUNDLE_INSERT, SoundSource.PLAYERS, 0.8f, 1f);
 				}

@@ -150,7 +150,7 @@ public class AlchemistWork extends Behavior<Villager> {
 			status(villager, Phase.NO_CHEST);
 			return;
 		}
-		BuilderBag bag = villager.getAttachedOrCreate(ModAttachments.BUILDER_BAG);
+		BuilderBag bag = ModAttachments.BUILDER_BAG.getOrCreate(villager);
 		switch (phase) {
 			case BREWING -> {
 				status(villager, Phase.BREWING);
@@ -301,7 +301,7 @@ public class AlchemistWork extends Behavior<Villager> {
 					ItemStack rest = SupplyContainers.insert(level, own, potion);
 					stand.setItem(i, rest);
 					if (rest.isEmpty()) {
-						villager.setAttached(ModAttachments.POTIONS_BREWED, villager.getAttachedOrElse(ModAttachments.POTIONS_BREWED, 0) + 1);
+						ModAttachments.POTIONS_BREWED.set(villager, ModAttachments.POTIONS_BREWED.getOrElse(villager, 0) + 1);
 					}
 				}
 			}
@@ -413,9 +413,9 @@ public class AlchemistWork extends Behavior<Villager> {
 		if (Village.RADIUS <= 0 || SupplyContainers.firstMatching(level, own, AlchemistWork::isGuardPotion) == null) {
 			return false;
 		}
-		var boss = villager.getAttached(ModAttachments.BUILDER_EMPLOYER);
+		var boss = ModAttachments.BUILDER_EMPLOYER.get(villager);
 		for (Villager g : level.getEntitiesOfClass(Villager.class, new AABB(station).inflate(Village.RADIUS),
-				v -> v.isAlive() && Guards.isGuard(v) && Village.sameSide(level, v.getAttached(ModAttachments.BUILDER_EMPLOYER), boss))) {
+				v -> v.isAlive() && Guards.isGuard(v) && Village.sameSide(level, ModAttachments.BUILDER_EMPLOYER.get(v), boss))) {
 			BlockPos post = Builders.benchPos(g).orElse(null);
 			if (post == null) {
 				continue;
@@ -473,7 +473,7 @@ public class AlchemistWork extends Behavior<Villager> {
 	}
 
 	private void status(Villager villager, Phase phase) {
-		Component title = Component.translatable("message.aliveworkplace.alchemist.title", villager.getAttachedOrElse(ModAttachments.POTIONS_BREWED, 0));
+		Component title = Component.translatable("message.aliveworkplace.alchemist.title", ModAttachments.POTIONS_BREWED.getOrElse(villager, 0));
 		WorkerStatus.set(villager, title, -1f, Component.translatable("message.aliveworkplace.alchemist.state." + phase.name().toLowerCase())
 			.withStyle(phase == Phase.NO_CHEST ? ChatFormatting.YELLOW : ChatFormatting.GRAY));
 	}

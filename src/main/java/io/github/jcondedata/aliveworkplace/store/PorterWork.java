@@ -102,7 +102,7 @@ public class PorterWork extends Behavior<Villager> {
 			status(villager, Phase.NO_CHESTS, null);
 			return;
 		}
-		BuilderBag bag = villager.getAttachedOrCreate(ModAttachments.BUILDER_BAG);
+		BuilderBag bag = ModAttachments.BUILDER_BAG.getOrCreate(villager);
 		if (!bag.isEmpty() && target == null) {
 			storeAll(level, villager, store, bag);
 			return;
@@ -182,7 +182,7 @@ public class PorterWork extends Behavior<Villager> {
 		if (stored > 0) {
 			villager.swing(InteractionHand.MAIN_HAND);
 			level.playSound(null, store.get(0), SoundEvents.BARREL_CLOSE, SoundSource.BLOCKS, 0.5f, 1.0f);
-			villager.setAttached(ModAttachments.ITEMS_CARRIED, villager.getAttachedOrElse(ModAttachments.ITEMS_CARRIED, 0) + stored);
+			ModAttachments.ITEMS_CARRIED.set(villager, ModAttachments.ITEMS_CARRIED.getOrElse(villager, 0) + stored);
 			BuilderLevels.addXp(level, villager, Math.max(1, stacks / 2), null);
 		}
 		villager.setItemSlot(EquipmentSlot.MAINHAND, ItemStack.EMPTY);
@@ -297,7 +297,7 @@ public class PorterWork extends Behavior<Villager> {
 	}
 
 	private void status(Villager villager, Phase phase, @Nullable VillagerProfession from) {
-		Component title = Component.translatable("message.aliveworkplace.porter.title", villager.getAttachedOrElse(ModAttachments.ITEMS_CARRIED, 0));
+		Component title = Component.translatable("message.aliveworkplace.porter.title", ModAttachments.ITEMS_CARRIED.getOrElse(villager, 0));
 		Component line = from != null
 			? Component.translatable("message.aliveworkplace.porter.state.collecting", Component.translatable("entity.minecraft.villager." + from.name()))
 				.withStyle(ChatFormatting.GRAY)

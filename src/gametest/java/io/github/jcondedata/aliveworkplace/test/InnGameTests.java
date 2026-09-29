@@ -48,8 +48,8 @@ public class InnGameTests implements net.fabricmc.fabric.api.gametest.v1.FabricG
 			Villager guest = guests.get(0);
 			helper.assertTrue(guest.getVillagerData().getProfession() == VillagerProfession.NITWIT, "a traveller takes no job");
 			helper.assertTrue(Innkeepers.traveller(guest).level() >= 2, "level " + Innkeepers.traveller(guest).level());
-			helper.assertTrue(innkeeper.getAttachedOrElse(ModAttachments.GUESTS_HOSTED, 0) == 1, "hosted: "
-				+ innkeeper.getAttachedOrElse(ModAttachments.GUESTS_HOSTED, 0));
+			helper.assertTrue(ModAttachments.GUESTS_HOSTED.getOrElse(innkeeper, 0) == 1, "hosted: "
+				+ ModAttachments.GUESTS_HOSTED.getOrElse(innkeeper, 0));
 			Innkeepers.STAY = 10; // their stay is over
 			helper.runAfterDelay(250, () -> {
 				helper.assertTrue(!guest.isAlive(), "the traveller didn't move on");
@@ -65,7 +65,7 @@ public class InnGameTests implements net.fabricmc.fabric.api.gametest.v1.FabricG
 		helper.setBlock(new BlockPos(5, 2, 5), ModBlocks.BUILDERS_BENCH);
 		Villager guest = helper.spawn(EntityType.VILLAGER, new BlockPos(6, 2, 6));
 		guest.setVillagerData(guest.getVillagerData().setProfession(VillagerProfession.NITWIT));
-		guest.setAttached(ModAttachments.TRAVELLER, new Traveller(level.getGameTime(), 3));
+		ModAttachments.TRAVELLER.set(guest, new Traveller(level.getGameTime(), 3));
 		ServerPlayer player = helper.makeMockServerPlayerInLevel();
 		player.setGameMode(net.minecraft.world.level.GameType.SURVIVAL); // creative players pay nothing
 		player.getInventory().add(new ItemStack(Items.EMERALD, 10));

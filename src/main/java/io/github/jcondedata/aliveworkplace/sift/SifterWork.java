@@ -1,5 +1,7 @@
 package io.github.jcondedata.aliveworkplace.sift;
 
+import io.github.jcondedata.aliveworkplace.mc.Ids;
+import io.github.jcondedata.aliveworkplace.platform.Platform;
 import com.google.common.collect.ImmutableMap;
 import io.github.jcondedata.aliveworkplace.AliveWorkplace;
 import io.github.jcondedata.aliveworkplace.build.BuilderLevels;
@@ -102,7 +104,7 @@ public class SifterWork extends Behavior<Villager> {
 			return;
 		}
 		boolean atSieve = walker.walkTo(level, villager, sieve, 2.5);
-		WorkerStatus.set(villager, Component.translatable("message.aliveworkplace.sifter.title", villager.getAttachedOrElse(ModAttachments.BLOCKS_SIFTED, 0)),
+		WorkerStatus.set(villager, Component.translatable("message.aliveworkplace.sifter.title", ModAttachments.BLOCKS_SIFTED.getOrElse(villager, 0)),
 			-1f, Component.translatable("message.aliveworkplace.sifter.state." + state).withStyle(state.equals("needs") ? ChatFormatting.YELLOW : ChatFormatting.GRAY));
 		if (!atSieve || --timer > 0) {
 			return;
@@ -127,10 +129,10 @@ public class SifterWork extends Behavior<Villager> {
 			.withParameter(LootContextParams.THIS_ENTITY, villager)
 			.create(LootContextParamSets.GIFT);
 		List<ItemStack> found = new java.util.ArrayList<>(table.getRandomItems(params));
-		if (net.fabricmc.loader.api.FabricLoader.getInstance().isModLoaded("cobblemon")) {
+		if (Platform.get().isModLoaded("cobblemon")) {
 			// Now and then an evolution stone (a table that loads only with Cobblemon; missing tables are empty).
 			ResourceKey<LootTable> extra = ResourceKey.create(Registries.LOOT_TABLE,
-				AliveWorkplace.id("sifting/cobblemon/" + SIFTABLE.get(block.getItem()).location().getPath().substring("sifting/".length())));
+				AliveWorkplace.id("sifting/cobblemon/" + Ids.of(SIFTABLE.get(block.getItem())).getPath().substring("sifting/".length())));
 			found.addAll(level.getServer().reloadableRegistries().getLootTable(extra).getRandomItems(params));
 		}
 		for (ItemStack stack : found) {
@@ -144,8 +146,8 @@ public class SifterWork extends Behavior<Villager> {
 		level.sendParticles(new BlockParticleOption(ParticleTypes.FALLING_DUST, shown.defaultBlockState()), sieve.getX() + 0.5, sieve.getY() + 1.1,
 			sieve.getZ() + 0.5, 12, 0.3, 0.05, 0.3, 0);
 		level.playSound(null, sieve, block.is(Items.SAND) ? SoundEvents.SAND_BREAK : SoundEvents.GRAVEL_BREAK, SoundSource.BLOCKS, 0.6f, 1.1f);
-		int sifted = villager.getAttachedOrElse(ModAttachments.BLOCKS_SIFTED, 0) + 1;
-		villager.setAttached(ModAttachments.BLOCKS_SIFTED, sifted);
+		int sifted = ModAttachments.BLOCKS_SIFTED.getOrElse(villager, 0) + 1;
+		ModAttachments.BLOCKS_SIFTED.set(villager, sifted);
 		if (sifted % 4 == 0) {
 			BuilderLevels.addXp(level, villager, 1, null);
 		}

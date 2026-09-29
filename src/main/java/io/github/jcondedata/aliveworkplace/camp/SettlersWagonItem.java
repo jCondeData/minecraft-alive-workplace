@@ -5,6 +5,8 @@ import io.github.jcondedata.aliveworkplace.blueprint.BlueprintData;
 import io.github.jcondedata.aliveworkplace.blueprint.BlueprintItem;
 import io.github.jcondedata.aliveworkplace.build.Builders;
 import io.github.jcondedata.aliveworkplace.build.Friends;
+import io.github.jcondedata.aliveworkplace.mc.Chat;
+import io.github.jcondedata.aliveworkplace.mc.Ids;
 import io.github.jcondedata.aliveworkplace.registry.ModBlocks;
 import io.github.jcondedata.aliveworkplace.work.Walker;
 import java.util.ArrayList;
@@ -63,8 +65,8 @@ public class SettlersWagonItem extends Item {
 		if (!player.getAbilities().instabuild) {
 			context.getItemInHand().shrink(1);
 		}
-		player.displayClientMessage(Component.translatable("message.aliveworkplace.camp.made", settlers.get(0).getDisplayName(),
-			settlers.get(1).getDisplayName()).withStyle(ChatFormatting.GREEN), false);
+		Chat.chat(player, Component.translatable("message.aliveworkplace.camp.made", settlers.get(0).getDisplayName(),
+			settlers.get(1).getDisplayName()).withStyle(ChatFormatting.GREEN));
 		return InteractionResult.CONSUME;
 	}
 
@@ -78,7 +80,7 @@ public class SettlersWagonItem extends Item {
 			return List.of();
 		}
 		Vec3i size = template.getSize();
-		BlueprintData.Placement placement = BlueprintItem.placementAt(level.dimension().location(), size, front,
+		BlueprintData.Placement placement = BlueprintItem.placementAt(Ids.of(level.dimension()), size, front,
 			BlueprintItem.rotationFacing(player.getDirection().getOpposite()));
 		StructurePlaceSettings settings = new StructurePlaceSettings().setRotation(placement.rotation());
 		BoundingBox box = template.getBoundingBox(settings, placement.origin());
@@ -99,7 +101,7 @@ public class SettlersWagonItem extends Item {
 			}
 		}
 		if (inTheWay > MAX_IN_THE_WAY || noGround > box.getXSpan() * box.getZSpan() / 3) {
-			player.displayClientMessage(Component.translatable("message.aliveworkplace.camp.no_room").withStyle(ChatFormatting.YELLOW), true);
+			Chat.actionBar(player, Component.translatable("message.aliveworkplace.camp.no_room").withStyle(ChatFormatting.YELLOW));
 			return List.of();
 		}
 		for (BlockPos p : BlockPos.betweenClosed(box.minX(), box.minY(), box.minZ(), box.maxX(), box.maxY(), box.maxZ())) {

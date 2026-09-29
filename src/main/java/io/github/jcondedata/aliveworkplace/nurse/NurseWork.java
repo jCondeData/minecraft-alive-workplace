@@ -99,7 +99,7 @@ public class NurseWork extends Behavior<Villager> {
 		Sickness.recover(level, patient);
 		level.sendParticles(ParticleTypes.HEART, patient.getX(), patient.getY() + patient.getBbHeight() + 0.3, patient.getZ(), 4, 0.3, 0.2, 0.3, 0);
 		level.playSound(null, patient.blockPosition(), SoundEvents.GENERIC_DRINK, SoundSource.NEUTRAL, 0.6f, 1.1f);
-		nurse.setAttached(ModAttachments.VILLAGERS_CURED, nurse.getAttachedOrElse(ModAttachments.VILLAGERS_CURED, 0) + 1);
+		ModAttachments.VILLAGERS_CURED.set(nurse, ModAttachments.VILLAGERS_CURED.getOrElse(nurse, 0) + 1);
 		BuilderLevels.addXp(level, nurse, 2, null);
 		return Component.translatable("message.aliveworkplace.nurse.state.cured", patient.getDisplayName()).withStyle(ChatFormatting.GREEN);
 	}

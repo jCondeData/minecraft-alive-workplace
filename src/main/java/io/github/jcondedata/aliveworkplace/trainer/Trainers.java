@@ -1,12 +1,13 @@
 package io.github.jcondedata.aliveworkplace.trainer;
 
+import io.github.jcondedata.aliveworkplace.mc.Chat;
+import io.github.jcondedata.aliveworkplace.platform.Platform;
 import io.github.jcondedata.aliveworkplace.build.BuilderLevels;
 import io.github.jcondedata.aliveworkplace.registry.ModAttachments;
 import io.github.jcondedata.aliveworkplace.registry.ModVillagers;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
-import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
@@ -21,7 +22,7 @@ import net.minecraft.world.entity.npc.Villager;
  * CobbleDollars (emeralds without that mod) once per in-game day per player. No badges, no gyms.
  */
 public final class Trainers {
-	public static final boolean COBBLEMON = FabricLoader.getInstance().isModLoaded("cobblemon");
+	public static final boolean COBBLEMON = Platform.get().isModLoaded("cobblemon");
 	/** CobbleDollars for a win, by tier (Novice..Master). */
 	private static final int[] PRIZE = {100, 250, 500, 1000, 2500};
 	/** Without CobbleDollars: emeralds instead. */
@@ -89,31 +90,31 @@ public final class Trainers {
 	/** Right-click on a trainer: challenge them. */
 	public static void challenge(ServerPlayer player, Villager trainer) {
 		if (!COBBLEMON) {
-			player.displayClientMessage(Component.translatable("message.aliveworkplace.trainer.no_cobblemon").withStyle(ChatFormatting.GRAY), true);
+			Chat.actionBar(player, Component.translatable("message.aliveworkplace.trainer.no_cobblemon").withStyle(ChatFormatting.GRAY));
 			return;
 		}
 		if (trainer.isSleeping()) {
-			player.displayClientMessage(Component.translatable("message.aliveworkplace.trainer.asleep", trainer.getDisplayName()).withStyle(ChatFormatting.GRAY), true);
+			Chat.actionBar(player, Component.translatable("message.aliveworkplace.trainer.asleep", trainer.getDisplayName()).withStyle(ChatFormatting.GRAY));
 			return;
 		}
 		if (isLeader(trainer)) {
 			Villager senior = seniorLeader(trainer);
 			if (senior != trainer) {
-				player.displayClientMessage(Component.translatable("message.aliveworkplace.trainer.not_the_leader", senior.getDisplayName())
-					.withStyle(ChatFormatting.YELLOW), true);
+				Chat.actionBar(player, Component.translatable("message.aliveworkplace.trainer.not_the_leader", senior.getDisplayName())
+					.withStyle(ChatFormatting.YELLOW));
 				return;
 			}
 			long day = trainer.level().getDayTime() / 24000L;
-			Long last = trainer.getAttachedOrElse(ModAttachments.LEADER_CHALLENGES, Map.<UUID, Long>of()).get(player.getUUID());
+			Long last = ModAttachments.LEADER_CHALLENGES.getOrElse(trainer, Map.<UUID, Long>of()).get(player.getUUID());
 			io.github.jcondedata.aliveworkplace.hall.VillageQuests.onTrainerBeaten((ServerLevel) trainer.level(), trainer, player);
 			if (last != null && last == day) {
-				player.displayClientMessage(Component.translatable("message.aliveworkplace.trainer.leader_tomorrow", trainer.getDisplayName())
-					.withStyle(ChatFormatting.YELLOW), true);
+				Chat.actionBar(player, Component.translatable("message.aliveworkplace.trainer.leader_tomorrow", trainer.getDisplayName())
+					.withStyle(ChatFormatting.YELLOW));
 				return;
 			}
-			Map<UUID, Long> seen = new HashMap<>(trainer.getAttachedOrElse(ModAttachments.LEADER_CHALLENGES, Map.of()));
+			Map<UUID, Long> seen = new HashMap<>(ModAttachments.LEADER_CHALLENGES.getOrElse(trainer, Map.of()));
 			seen.put(player.getUUID(), day);
-			trainer.setAttached(ModAttachments.LEADER_CHALLENGES, Map.copyOf(seen));
+			ModAttachments.LEADER_CHALLENGES.set(trainer, Map.copyOf(seen));
 		}
 		TrainerBattles.EXTENSION.run(battles -> battles.challenge(player, trainer));
 	}
@@ -126,7 +127,7 @@ public final class Trainers {
 			return;
 		}
 		int tierBefore = tier(trainer);
-		trainer.setAttached(ModAttachments.TRAINER_BATTLES, trainer.getAttachedOrElse(ModAttachments.TRAINER_BATTLES, 0) + 1);
+		ModAttachments.TRAINER_BATTLES.set(trainer, ModAttachments.TRAINER_BATTLES.getOrElse(trainer, 0) + 1);
 		BuilderLevels.addXp((ServerLevel) trainer.level(), trainer, XP_PER_BATTLE + (playerWon ? 0 : XP_FOR_WIN), null);
 		if (player == null) {
 			return;
@@ -135,13 +136,13 @@ public final class Trainers {
 			player.sendSystemMessage(Component.translatable("message.aliveworkplace.trainer.lost", trainer.getDisplayName()).withStyle(ChatFormatting.GRAY));
 		} else {
 			long day = trainer.level().getDayTime() / 24000L;
-			Map<UUID, Long> paid = new HashMap<>(trainer.getAttachedOrElse(ModAttachments.TRAINER_REWARDS, Map.of()));
+			Map<UUID, Long> paid = new HashMap<>(ModAttachments.TRAINER_REWARDS.getOrElse(trainer, Map.of()));
 			Long last = paid.get(playerId);
 			if (last != null && last == day) {
 				player.sendSystemMessage(Component.translatable("message.aliveworkplace.trainer.won_again", trainer.getDisplayName()).withStyle(ChatFormatting.GREEN));
 			} else {
 				paid.put(playerId, day);
-				trainer.setAttached(ModAttachments.TRAINER_REWARDS, Map.copyOf(paid));
+				ModAttachments.TRAINER_REWARDS.set(trainer, Map.copyOf(paid));
 				pay(server, player, tierBefore, trainer);
 			}
 		}

@@ -1,5 +1,8 @@
 package io.github.jcondedata.aliveworkplace.command;
 
+import io.github.jcondedata.aliveworkplace.mc.Ids;
+import io.github.jcondedata.aliveworkplace.mc.Rules;
+import io.github.jcondedata.aliveworkplace.platform.Platform;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import io.github.jcondedata.aliveworkplace.blueprint.BlueprintData;
 import io.github.jcondedata.aliveworkplace.blueprint.BlueprintUpgrades;
@@ -12,7 +15,6 @@ import io.github.jcondedata.aliveworkplace.registry.ModVillagers;
 import io.github.jcondedata.aliveworkplace.store.Porters;
 import io.github.jcondedata.aliveworkplace.work.Jobs;
 import java.util.List;
-import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.core.BlockPos;
@@ -50,7 +52,7 @@ public final class Benchmark {
 		if (!Boolean.getBoolean("aliveworkplace.benchmark")) {
 			return;
 		}
-		CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> dispatcher.register(
+		Platform.get().onRegisterCommands(dispatcher -> dispatcher.register(
 			Commands.literal("workplace").then(Commands.literal("benchmark")
 				.requires(s -> s.hasPermission(4))
 				.then(Commands.argument("plots", IntegerArgumentType.integer(1, 100))
@@ -59,8 +61,8 @@ public final class Benchmark {
 
 	static int run(CommandSourceStack source, int plots) {
 		ServerLevel level = source.getLevel();
-		level.getGameRules().getRule(ModGameRules.FREE_MATERIALS).set(true, source.getServer());
-		level.getGameRules().getRule(GameRules.RULE_DAYLIGHT).set(false, source.getServer());
+		Rules.set(level, ModGameRules.FREE_MATERIALS, true, source.getServer());
+		Rules.set(level, GameRules.RULE_DAYLIGHT, false, source.getServer());
 		level.setDayTime(1500);
 		BlockPos origin = BlockPos.containing(source.getPosition());
 		List<StarterBlueprints.Entry> builds = StarterBlueprints.ALL.stream()
@@ -77,7 +79,7 @@ public final class Benchmark {
 				Builders.employ(level, builder, bench);
 				StarterBlueprints.Entry build = builds.get(i % builds.size());
 				Builders.start(level, builder, null, build.id(),
-					new BlueprintData.Placement(level.dimension().location(), ground(level, x + 3, z + 3), Rotation.NONE, Mirror.NONE));
+					new BlueprintData.Placement(Ids.of(level.dimension()), ground(level, x + 3, z + 3), Rotation.NONE, Mirror.NONE));
 				workers++;
 			}
 			BlockPos side = ground(level, x + 20, z + 2);

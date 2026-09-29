@@ -35,7 +35,7 @@ public final class Mercenaries {
 	public static final long MIN_STAY = 6000;
 
 	public static boolean isMercenary(Villager villager) {
-		return villager.hasAttached(ModAttachments.MERCENARY_UNTIL);
+		return ModAttachments.MERCENARY_UNTIL.has(villager);
 	}
 
 	/** The band at the hall now (hired and not gone yet). */
@@ -72,7 +72,7 @@ public final class Mercenaries {
 			merc.finalizeSpawn(level, level.getCurrentDifficultyAt(at), MobSpawnType.EVENT, null);
 			merc.setVillagerData(merc.getVillagerData().setProfession(ModVillagers.GUARD).setLevel(3));
 			merc.setVillagerXp(70); // keeps the profession without a guard post
-			merc.setAttached(ModAttachments.MERCENARY_UNTIL, until);
+			ModAttachments.MERCENARY_UNTIL.set(merc, until);
 			merc.setCustomName(Component.translatable("entity.aliveworkplace.mercenary"));
 			merc.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.IRON_SWORD));
 			merc.setItemSlot(EquipmentSlot.HEAD, new ItemStack(Items.IRON_HELMET));
@@ -94,7 +94,7 @@ public final class Mercenaries {
 
 	/** Every server tick of a villager: a mercenary whose time is up leaves. */
 	public static void tick(Villager villager) {
-		Long until = villager.getAttached(ModAttachments.MERCENARY_UNTIL);
+		Long until = ModAttachments.MERCENARY_UNTIL.get(villager);
 		if (until == null || !(villager.level() instanceof ServerLevel level) || level.getGameTime() < until) {
 			return;
 		}

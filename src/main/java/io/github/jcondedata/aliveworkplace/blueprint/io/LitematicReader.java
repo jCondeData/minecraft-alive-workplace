@@ -1,6 +1,7 @@
 package io.github.jcondedata.aliveworkplace.blueprint.io;
 
 import io.github.jcondedata.aliveworkplace.blueprint.Blueprint;
+import io.github.jcondedata.aliveworkplace.mc.Nbt;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -19,11 +20,11 @@ import net.minecraft.world.level.block.state.BlockState;
  */
 final class LitematicReader {
 	static boolean looksLike(CompoundTag root) {
-		return root.contains("Regions", Tag.TAG_COMPOUND);
+		return Nbt.has(root, "Regions", Tag.TAG_COMPOUND);
 	}
 
 	static Blueprint read(ResourceLocation id, CompoundTag root, BlockStateReader states, long maxVolume) throws BlueprintFormatException {
-		CompoundTag regions = root.getCompound("Regions");
+		CompoundTag regions = Nbt.getCompound(root, "Regions");
 		if (regions.isEmpty()) {
 			throw new BlueprintFormatException("litematic.empty");
 		}
@@ -34,10 +35,10 @@ final class LitematicReader {
 		List<Region> list = new ArrayList<>();
 		int minX = Integer.MAX_VALUE, minY = Integer.MAX_VALUE, minZ = Integer.MAX_VALUE;
 		int maxX = Integer.MIN_VALUE, maxY = Integer.MIN_VALUE, maxZ = Integer.MIN_VALUE;
-		for (String name : regions.getAllKeys()) {
-			CompoundTag r = regions.getCompound(name);
-			BlockPos pos = readPos(r.getCompound("Position"));
-			BlockPos rawSize = readPos(r.getCompound("Size"));
+		for (String name : Nbt.keys(regions)) {
+			CompoundTag r = Nbt.getCompound(regions, name);
+			BlockPos pos = readPos(Nbt.getCompound(r, "Position"));
+			BlockPos rawSize = readPos(Nbt.getCompound(r, "Size"));
 			// Negative sizes mean the region extends in the negative direction from Position.
 			int sx = Math.abs(rawSize.getX()), sy = Math.abs(rawSize.getY()), sz = Math.abs(rawSize.getZ());
 			BlockPos min = new BlockPos(
@@ -61,23 +62,23 @@ final class LitematicReader {
 		for (Region region : list) {
 			CompoundTag r = region.tag();
 			// Entity positions are relative to the region's Position corner.
-			ListTag entityList = r.getList("Entities", Tag.TAG_COMPOUND);
+			ListTag entityList = Nbt.getList(r, "Entities", Tag.TAG_COMPOUND);
 			for (int i = 0; i < entityList.size(); i++) {
-				CompoundTag e = states.fixEntity(entityList.getCompound(i));
-				ListTag p = e.getList("Pos", Tag.TAG_DOUBLE);
+				CompoundTag e = states.fixEntity(Nbt.compoundAt(entityList, i));
+				ListTag p = Nbt.getList(e, "Pos", Tag.TAG_DOUBLE);
 				CompoundTag clean = io.github.jcondedata.aliveworkplace.blueprint.BlueprintEntities.clean(e);
 				if (p.size() == 3 && clean != null) {
 					entities.add(new Blueprint.EntityEntry(new net.minecraft.world.phys.Vec3(
-						p.getDouble(0) + region.position().getX() - minX, p.getDouble(1) + region.position().getY() - minY,
-						p.getDouble(2) + region.position().getZ() - minZ), clean));
+						Nbt.doubleAt(p, 0) + region.position().getX() - minX, Nbt.doubleAt(p, 1) + region.position().getY() - minY,
+						Nbt.doubleAt(p, 2) + region.position().getZ() - minZ), clean));
 				}
 			}
-			ListTag paletteTag = r.getList("BlockStatePalette", Tag.TAG_COMPOUND);
+			ListTag paletteTag = Nbt.getList(r, "BlockStatePalette", Tag.TAG_COMPOUND);
 			BlockState[] palette = new BlockState[paletteTag.size()];
 			for (int i = 0; i < palette.length; i++) {
-				palette[i] = states.fromCompound(paletteTag.getCompound(i));
+				palette[i] = states.fromCompound(Nbt.compoundAt(paletteTag, i));
 			}
-			long[] data = r.getLongArray("BlockStates");
+			long[] data = Nbt.getLongArray(r, "BlockStates");
 			int sx = region.size().getX(), sy = region.size().getY(), sz = region.size().getZ();
 			int bits = Math.max(2, 32 - Integer.numberOfLeadingZeros(Math.max(1, palette.length - 1)));
 			long volume = (long) sx * sy * sz;
@@ -87,10 +88,10 @@ final class LitematicReader {
 			BlockPos offset = region.min().offset(-minX, -minY, -minZ);
 
 			Map<BlockPos, CompoundTag> blockEntities = new HashMap<>();
-			ListTag tes = r.getList("TileEntities", Tag.TAG_COMPOUND);
+			ListTag tes = Nbt.getList(r, "TileEntities", Tag.TAG_COMPOUND);
 			for (int i = 0; i < tes.size(); i++) {
-				CompoundTag te = tes.getCompound(i).copy();
-				BlockPos p = new BlockPos(te.getInt("x"), te.getInt("y"), te.getInt("z"));
+				CompoundTag te = Nbt.compoundAt(tes, i).copy();
+				BlockPos p = new BlockPos(Nbt.getInt(te, "x"), Nbt.getInt(te, "y"), Nbt.getInt(te, "z"));
 				te.remove("x");
 				te.remove("y");
 				te.remove("z");
@@ -134,7 +135,7 @@ final class LitematicReader {
 	}
 
 	private static BlockPos readPos(CompoundTag tag) {
-		return new BlockPos(tag.getInt("x"), tag.getInt("y"), tag.getInt("z"));
+		return new BlockPos(Nbt.getInt(tag, "x"), Nbt.getInt(tag, "y"), Nbt.getInt(tag, "z"));
 	}
 
 	private LitematicReader() {

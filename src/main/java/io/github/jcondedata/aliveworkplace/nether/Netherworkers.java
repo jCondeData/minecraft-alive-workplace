@@ -110,7 +110,7 @@ public final class Netherworkers {
 
 	/** Whether {@code villager} is away in the Nether. */
 	public static boolean isAway(Villager villager) {
-		return villager.hasAttached(ModAttachments.NETHER_TRIP);
+		return ModAttachments.NETHER_TRIP.has(villager);
 	}
 
 	/** Damage an away netherworker doesn't take (anything but /kill and the void). */
@@ -187,7 +187,7 @@ public final class Netherworkers {
 	 * sight until the trip's over. False (nothing happens) without enough rations.
 	 */
 	public static boolean setOut(ServerLevel level, Villager villager, BlockPos portal) {
-		BuilderBag bag = villager.getAttachedOrCreate(ModAttachments.BUILDER_BAG);
+		BuilderBag bag = ModAttachments.BUILDER_BAG.getOrCreate(villager);
 		int rations = 0;
 		for (ItemStack stack : bag.stacks()) {
 			if (isRation(stack)) {
@@ -209,7 +209,7 @@ public final class Netherworkers {
 		}
 		long now = level.getGameTime();
 		int ticks = Math.max(20, Math.round(BuilderLevels.delay(TRIP_TICKS, villager) * expeditionFactor(villager)));
-		villager.setAttached(ModAttachments.NETHER_TRIP, new Trip(now, now + ticks, portal.immutable(), kitOf(bag)));
+		ModAttachments.NETHER_TRIP.set(villager, new Trip(now, now + ticks, portal.immutable(), kitOf(bag)));
 		puff(level, villager);
 		level.playSound(null, portal, SoundEvents.PORTAL_TRIGGER, SoundSource.NEUTRAL, 0.4f, 1.2f);
 		villager.getBrain().eraseMemory(MemoryModuleType.WALK_TARGET);
@@ -232,7 +232,7 @@ public final class Netherworkers {
 			return false;
 		}
 		villager.setPortalCooldown(); // they go through portals our way only
-		Trip trip = villager.getAttached(ModAttachments.NETHER_TRIP);
+		Trip trip = ModAttachments.NETHER_TRIP.get(villager);
 		if (trip == null || !(villager.level() instanceof ServerLevel level)) {
 			return false;
 		}
@@ -260,7 +260,7 @@ public final class Netherworkers {
 
 	/** Back from the Nether: out of the portal with what they found, their tools worn, now and then hurt. */
 	static void comeBack(ServerLevel level, Villager villager, Trip trip) {
-		villager.removeAttached(ModAttachments.NETHER_TRIP);
+		ModAttachments.NETHER_TRIP.remove(villager);
 		villager.setInvisible(false);
 		villager.setSilent(false);
 		BlockPos out = Walker.standingSpot(level, trip.portal(), trip.portal(), 3.0);
@@ -269,7 +269,7 @@ public final class Netherworkers {
 		}
 		puff(level, villager);
 		level.playSound(null, villager.blockPosition(), SoundEvents.PORTAL_TRAVEL, SoundSource.NEUTRAL, 0.15f, 1.4f);
-		BuilderBag bag = villager.getAttachedOrCreate(ModAttachments.BUILDER_BAG);
+		BuilderBag bag = ModAttachments.BUILDER_BAG.getOrCreate(villager);
 		wear(level, bag);
 		for (ItemStack found : finds(level, villager, trip.kit())) {
 			ItemStack rest = bag.add(found);
@@ -286,7 +286,7 @@ public final class Netherworkers {
 			villager.setHealth(Math.max(1f, villager.getHealth() * 0.4f));
 			level.sendParticles(ParticleTypes.SMOKE, villager.getX(), villager.getY() + 1, villager.getZ(), 8, 0.3, 0.4, 0.3, 0.01);
 		}
-		villager.setAttached(ModAttachments.NETHER_TRIPS, villager.getAttachedOrElse(ModAttachments.NETHER_TRIPS, 0) + 1);
+		ModAttachments.NETHER_TRIPS.set(villager, ModAttachments.NETHER_TRIPS.getOrElse(villager, 0) + 1);
 		BuilderLevels.addXp(level, villager, 4, null);
 	}
 
@@ -349,7 +349,7 @@ public final class Netherworkers {
 	}
 
 	static Component title(Villager villager) {
-		return Component.translatable("message.aliveworkplace.netherworker.title", villager.getAttachedOrElse(ModAttachments.NETHER_TRIPS, 0));
+		return Component.translatable("message.aliveworkplace.netherworker.title", ModAttachments.NETHER_TRIPS.getOrElse(villager, 0));
 	}
 
 	private Netherworkers() {

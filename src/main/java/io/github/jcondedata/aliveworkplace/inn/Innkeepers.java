@@ -2,6 +2,7 @@ package io.github.jcondedata.aliveworkplace.inn;
 
 import io.github.jcondedata.aliveworkplace.build.BuilderLevels;
 import io.github.jcondedata.aliveworkplace.build.Employer;
+import io.github.jcondedata.aliveworkplace.mc.Chat;
 import io.github.jcondedata.aliveworkplace.registry.ModAttachments;
 import io.github.jcondedata.aliveworkplace.registry.ModVillagers;
 import io.github.jcondedata.aliveworkplace.work.ChoiceMenu;
@@ -52,11 +53,11 @@ public final class Innkeepers {
 
 	@Nullable
 	public static Traveller traveller(Villager villager) {
-		return villager.getAttached(ModAttachments.TRAVELLER);
+		return ModAttachments.TRAVELLER.get(villager);
 	}
 
 	public static boolean isTraveller(Villager villager) {
-		return villager.hasAttached(ModAttachments.TRAVELLER);
+		return ModAttachments.TRAVELLER.has(villager);
 	}
 
 	/** The travellers staying round {@code counter}. */
@@ -99,14 +100,14 @@ public final class Innkeepers {
 			VillagerType.JUNGLE, VillagerType.SWAMP};
 		guest.setVillagerData(guest.getVillagerData().setType(types[level.random.nextInt(types.length)]).setProfession(VillagerProfession.NITWIT));
 		int lvl = newcomerLevel(level, innkeeper);
-		guest.setAttached(ModAttachments.TRAVELLER, new Traveller(level.getGameTime(), lvl));
+		ModAttachments.TRAVELLER.set(guest, new Traveller(level.getGameTime(), lvl));
 		guest.setCustomName(Component.translatable("entity.aliveworkplace.traveller", BuilderLevels.levelName(lvl)));
 		level.addFreshEntityWithPassengers(guest);
 		level.sendParticles(ParticleTypes.HAPPY_VILLAGER, guest.getX(), guest.getY() + 1.0, guest.getZ(), 8, 0.3, 0.5, 0.3, 0.0);
 		level.playSound(null, counter, SoundEvents.VILLAGER_CELEBRATE, SoundSource.NEUTRAL, 0.8f, 1f);
 		for (ServerPlayer player : level.getPlayers(p -> p.distanceToSqr(counter.getCenter()) < 64 * 64)) {
-			player.displayClientMessage(Component.translatable("message.aliveworkplace.inn.arrived", BuilderLevels.levelName(lvl))
-				.withStyle(ChatFormatting.GREEN), false);
+			Chat.chat(player, Component.translatable("message.aliveworkplace.inn.arrived", BuilderLevels.levelName(lvl))
+				.withStyle(ChatFormatting.GREEN));
 		}
 		io.github.jcondedata.aliveworkplace.hall.Chronicle.record(level, counter, io.github.jcondedata.aliveworkplace.hall.Chronicle.Kind.ARRIVED, Component.translatable("chronicle.aliveworkplace.arrived",
 			BuilderLevels.levelName(lvl), innkeeper.getDisplayName()));
@@ -195,21 +196,21 @@ public final class Innkeepers {
 			return false;
 		}
 		if (!Money.charge(player, dollars(t.level()), emeralds(t.level()))) {
-			player.displayClientMessage(Component.translatable("message.aliveworkplace.inn.cant_afford",
-				Money.describe(dollars(t.level()), emeralds(t.level())), Money.balance(player)).withStyle(ChatFormatting.YELLOW), true);
+			Chat.actionBar(player, Component.translatable("message.aliveworkplace.inn.cant_afford",
+				Money.describe(dollars(t.level()), emeralds(t.level())), Money.balance(player)).withStyle(ChatFormatting.YELLOW));
 			return false;
 		}
-		guest.removeAttached(ModAttachments.TRAVELLER);
+		ModAttachments.TRAVELLER.remove(guest);
 		guest.setCustomName(null);
-		guest.setAttached(ModAttachments.HEAD_START, t.level());
-		guest.setAttached(ModAttachments.BUILDER_EMPLOYER, new Employer(player.getUUID(), player.getGameProfile().getName()));
+		ModAttachments.HEAD_START.set(guest, t.level());
+		ModAttachments.BUILDER_EMPLOYER.set(guest, new Employer(player.getUUID(), player.getGameProfile().getName()));
 		guest.setVillagerData(guest.getVillagerData().setProfession(VillagerProfession.NONE));
 		ServerLevel level = (ServerLevel) guest.level();
 		guest.refreshBrain(level);
 		level.sendParticles(ParticleTypes.HAPPY_VILLAGER, guest.getX(), guest.getY() + 1.0, guest.getZ(), 12, 0.4, 0.5, 0.4, 0.0);
 		level.playSound(null, guest.blockPosition(), SoundEvents.VILLAGER_YES, SoundSource.NEUTRAL, 1f, 1f);
-		player.displayClientMessage(Component.translatable("message.aliveworkplace.inn.hired", BuilderLevels.levelName(t.level()))
-			.withStyle(ChatFormatting.GREEN), false);
+		Chat.chat(player, Component.translatable("message.aliveworkplace.inn.hired", BuilderLevels.levelName(t.level()))
+			.withStyle(ChatFormatting.GREEN));
 		io.github.jcondedata.aliveworkplace.hall.Chronicle.record(level, guest.blockPosition(), io.github.jcondedata.aliveworkplace.hall.Chronicle.Kind.JOINED, Component.translatable("chronicle.aliveworkplace.joined",
 			BuilderLevels.levelName(t.level()), player.getDisplayName()));
 		return true;

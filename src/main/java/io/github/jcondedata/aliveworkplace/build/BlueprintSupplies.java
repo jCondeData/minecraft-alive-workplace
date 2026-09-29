@@ -5,6 +5,8 @@ import io.github.jcondedata.aliveworkplace.blueprint.BlueprintData;
 import io.github.jcondedata.aliveworkplace.blueprint.BlueprintItem;
 import io.github.jcondedata.aliveworkplace.blueprint.BlueprintLibrary;
 import io.github.jcondedata.aliveworkplace.blueprint.SupplyReport;
+import io.github.jcondedata.aliveworkplace.mc.Ids;
+import io.github.jcondedata.aliveworkplace.mc.Rules;
 import io.github.jcondedata.aliveworkplace.registry.ModComponents;
 import io.github.jcondedata.aliveworkplace.registry.ModGameRules;
 import io.github.jcondedata.aliveworkplace.registry.ModVillagers;
@@ -49,7 +51,7 @@ public final class BlueprintSupplies {
 
 	/** The report for a blueprint placed in this dimension (empty when it isn't placed here). */
 	public static Optional<SupplyReport> check(ServerLevel level, BlueprintData data) {
-		if (data.placement().isEmpty() || !data.placement().get().dimension().equals(level.dimension().location())) {
+		if (data.placement().isEmpty() || !data.placement().get().dimension().equals(Ids.of(level.dimension()))) {
 			return Optional.empty();
 		}
 		BlueprintData.Placement placement = data.placement().get();
@@ -63,9 +65,9 @@ public final class BlueprintSupplies {
 		if (bench.isEmpty()) {
 			return Optional.of(new SupplyReport(Optional.empty(), 0, List.of()));
 		}
-		BuildPlan plan = BuildPlan.create(blueprint.get(), placement, level, level.getGameRules().getInt(ModGameRules.FOUNDATION_DEPTH));
+		BuildPlan plan = BuildPlan.create(blueprint.get(), placement, level, Rules.number(level, ModGameRules.FOUNDATION_DEPTH));
 		List<BlockPos> supplies = SupplyContainers.find(level, bench.get(), plan.bounds());
-		if (level.getGameRules().getBoolean(ModGameRules.FREE_MATERIALS)) {
+		if (Rules.on(level, ModGameRules.FREE_MATERIALS)) {
 			return Optional.of(new SupplyReport(bench, supplies.size(), List.of()));
 		}
 		Map<Item, Integer> need = new LinkedHashMap<>();

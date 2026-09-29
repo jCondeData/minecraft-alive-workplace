@@ -1,5 +1,6 @@
 package io.github.jcondedata.aliveworkplace.build;
 
+import io.github.jcondedata.aliveworkplace.mc.Rules;
 import io.github.jcondedata.aliveworkplace.mixin.VillagerAccessor;
 import io.github.jcondedata.aliveworkplace.registry.ModGameRules;
 import java.util.UUID;
@@ -35,7 +36,7 @@ public final class BuilderLevels {
 
 	/** Ticks between blocks for this builder. */
 	public static int delay(ServerLevel level, Villager villager) {
-		return delay(level.getGameRules().getInt(ModGameRules.BUILD_DELAY), villager);
+		return delay(Rules.number(level, ModGameRules.BUILD_DELAY), villager);
 	}
 
 	/** {@code baseDelay} for this villager: shorter with each level, with Pokémon partners helping and in a well-kept village. */

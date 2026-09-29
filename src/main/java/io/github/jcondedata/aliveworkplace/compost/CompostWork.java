@@ -113,8 +113,8 @@ public class CompostWork extends Behavior<Villager> {
 			return;
 		}
 		boolean atBin = walker.walkTo(level, villager, bin, 2.5);
-		WorkerStatus.set(villager, Component.translatable("message.aliveworkplace.composter.title", villager.getAttachedOrElse(ModAttachments.BONE_MEAL_MADE, 0)),
-			villager.getAttachedOrElse(ModAttachments.COMPOST_LAYERS, 0f) / layersPerBoneMeal(villager),
+		WorkerStatus.set(villager, Component.translatable("message.aliveworkplace.composter.title", ModAttachments.BONE_MEAL_MADE.getOrElse(villager, 0)),
+			ModAttachments.COMPOST_LAYERS.getOrElse(villager, 0f) / layersPerBoneMeal(villager),
 			Component.translatable("message.aliveworkplace.composter.state." + state).withStyle(state.equals("needs") ? ChatFormatting.YELLOW : ChatFormatting.GRAY));
 		if (!atBin || --timer > 0) {
 			return;
@@ -145,14 +145,14 @@ public class CompostWork extends Behavior<Villager> {
 			return false;
 		}
 		Requests.clear(villager);
-		float layers = villager.getAttachedOrElse(ModAttachments.COMPOST_LAYERS, 0f) + layers(scrap);
+		float layers = ModAttachments.COMPOST_LAYERS.getOrElse(villager, 0f) + layers(scrap);
 		int made = 0;
 		float perMeal = layersPerBoneMeal(villager);
 		while (layers >= perMeal) {
 			layers -= perMeal;
 			made++;
 		}
-		villager.setAttached(ModAttachments.COMPOST_LAYERS, layers);
+		ModAttachments.COMPOST_LAYERS.set(villager, layers);
 		villager.swing(InteractionHand.MAIN_HAND);
 		level.playSound(null, bin, SoundEvents.COMPOSTER_FILL, SoundSource.BLOCKS, 0.7f, 1f);
 		if (made > 0) {
@@ -163,8 +163,8 @@ public class CompostWork extends Behavior<Villager> {
 			}
 			level.playSound(null, bin, SoundEvents.COMPOSTER_READY, SoundSource.BLOCKS, 0.8f, 1f);
 			level.sendParticles(ParticleTypes.COMPOSTER, bin.getX() + 0.5, bin.getY() + 1.0, bin.getZ() + 0.5, 10, 0.3, 0.1, 0.3, 0);
-			int total = villager.getAttachedOrElse(ModAttachments.BONE_MEAL_MADE, 0) + made;
-			villager.setAttached(ModAttachments.BONE_MEAL_MADE, total);
+			int total = ModAttachments.BONE_MEAL_MADE.getOrElse(villager, 0) + made;
+			ModAttachments.BONE_MEAL_MADE.set(villager, total);
 			BuilderLevels.addXp(level, villager, made, null);
 		}
 		return true;

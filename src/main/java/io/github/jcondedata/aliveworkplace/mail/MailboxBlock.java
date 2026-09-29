@@ -2,6 +2,9 @@ package io.github.jcondedata.aliveworkplace.mail;
 
 import com.mojang.serialization.MapCodec;
 import io.github.jcondedata.aliveworkplace.build.Friends;
+import io.github.jcondedata.aliveworkplace.mc.Chat;
+import io.github.jcondedata.aliveworkplace.mc.Interact;
+import io.github.jcondedata.aliveworkplace.platform.Platform;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -82,7 +85,7 @@ public class MailboxBlock extends BaseEntityBlock {
 		super.setPlacedBy(level, pos, state, placer, stack);
 		if (placer instanceof ServerPlayer player && level.getBlockEntity(pos) instanceof MailboxBlockEntity mailbox) {
 			claim(player, mailbox);
-			player.displayClientMessage(Component.translatable("message.aliveworkplace.mail.placed"), false);
+			Chat.chat(player, Component.translatable("message.aliveworkplace.mail.placed"));
 		}
 	}
 
@@ -95,17 +98,17 @@ public class MailboxBlock extends BaseEntityBlock {
 	protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
 		if (!(level instanceof ServerLevel) || !(player instanceof ServerPlayer serverPlayer)
 			|| !(level.getBlockEntity(pos) instanceof MailboxBlockEntity mailbox)) {
-			return InteractionResult.sidedSuccess(level.isClientSide);
+			return Interact.success(level.isClientSide());
 		}
 		if (mailbox.owner() == null) {
 			claim(serverPlayer, mailbox); // a mailbox from a structure or a command: first to open it owns it
 		}
 		if (!mayOpen(serverPlayer, mailbox)) {
-			player.displayClientMessage(Component.translatable("message.aliveworkplace.mail.not_yours", mailbox.ownerName())
-				.withStyle(ChatFormatting.RED), true);
+			Chat.actionBar(player, Component.translatable("message.aliveworkplace.mail.not_yours", mailbox.ownerName())
+				.withStyle(ChatFormatting.RED));
 			return InteractionResult.CONSUME;
 		}
-		player.openMenu(mailbox);
+		Platform.get().openMenu(serverPlayer, mailbox, mailbox.getBlockPos()); // the screen needs to know which mailbox
 		return InteractionResult.CONSUME;
 	}
 

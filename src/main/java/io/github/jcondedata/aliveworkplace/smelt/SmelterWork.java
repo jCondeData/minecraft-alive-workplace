@@ -141,7 +141,7 @@ public class SmelterWork extends Behavior<Villager> {
 			status(villager, Phase.NO_CHEST);
 			return;
 		}
-		BuilderBag bag = villager.getAttachedOrCreate(ModAttachments.BUILDER_BAG);
+		BuilderBag bag = ModAttachments.BUILDER_BAG.getOrCreate(villager);
 		if (armor != null) {
 			armor(level, villager, own, bag);
 			return;
@@ -189,7 +189,7 @@ public class SmelterWork extends Behavior<Villager> {
 				if (collected > 0) {
 					villager.swing(InteractionHand.MAIN_HAND);
 					level.playSound(null, station, SoundEvents.BLASTFURNACE_FIRE_CRACKLE, SoundSource.BLOCKS, 0.8f, 1.0f);
-					villager.setAttached(ModAttachments.INGOTS_SMELTED, villager.getAttachedOrElse(ModAttachments.INGOTS_SMELTED, 0) + collected);
+					ModAttachments.INGOTS_SMELTED.set(villager, ModAttachments.INGOTS_SMELTED.getOrElse(villager, 0) + collected);
 					BuilderLevels.addXp(level, villager, Math.max(1, collected / 8), null);
 				}
 				phase = Phase.IDLE;
@@ -261,9 +261,9 @@ public class SmelterWork extends Behavior<Villager> {
 			return null;
 		}
 		Map<Item, Long> stock = null;
-		var boss = villager.getAttached(ModAttachments.BUILDER_EMPLOYER);
+		var boss = ModAttachments.BUILDER_EMPLOYER.get(villager);
 		for (Villager guard : level.getEntitiesOfClass(Villager.class, new AABB(station).inflate(Village.RADIUS),
-				v -> v.isAlive() && Guards.isGuard(v) && Village.sameSide(level, v.getAttached(ModAttachments.BUILDER_EMPLOYER), boss))) {
+				v -> v.isAlive() && Guards.isGuard(v) && Village.sameSide(level, ModAttachments.BUILDER_EMPLOYER.get(v), boss))) {
 			BlockPos post = Builders.benchPos(guard).orElse(null);
 			if (post == null) {
 				continue;
@@ -313,7 +313,7 @@ public class SmelterWork extends Behavior<Villager> {
 				}
 				piece = new ItemStack(job.piece());
 				level.playSound(null, villager.blockPosition(), SoundEvents.SMITHING_TABLE_USE, SoundSource.BLOCKS, 0.8f, 1.0f);
-				villager.setAttached(ModAttachments.ARMOR_MADE, villager.getAttachedOrElse(ModAttachments.ARMOR_MADE, 0) + 1);
+				ModAttachments.ARMOR_MADE.set(villager, ModAttachments.ARMOR_MADE.getOrElse(villager, 0) + 1);
 				BuilderLevels.addXp(level, villager, 3, null);
 			}
 			villager.swing(InteractionHand.MAIN_HAND);
@@ -452,7 +452,7 @@ public class SmelterWork extends Behavior<Villager> {
 	}
 
 	private void status(Villager villager, Phase phase) {
-		Component title = Component.translatable("message.aliveworkplace.smelter.title", villager.getAttachedOrElse(ModAttachments.INGOTS_SMELTED, 0));
+		Component title = Component.translatable("message.aliveworkplace.smelter.title", ModAttachments.INGOTS_SMELTED.getOrElse(villager, 0));
 		if (phase == Phase.MAKING_ARMOR || phase == Phase.DELIVERING_ARMOR) {
 			ArmorJob job = armor;
 			WorkerStatus.set(villager, title, -1f, Component.translatable("message.aliveworkplace.smelter.state." + phase.name().toLowerCase(),

@@ -3,6 +3,7 @@ package io.github.jcondedata.aliveworkplace.work;
 import io.github.jcondedata.aliveworkplace.build.BuildSite;
 import io.github.jcondedata.aliveworkplace.build.Builders;
 import io.github.jcondedata.aliveworkplace.build.Employer;
+import io.github.jcondedata.aliveworkplace.mc.Lookup;
 import io.github.jcondedata.aliveworkplace.mine.Miners;
 import io.github.jcondedata.aliveworkplace.mine.QuarrySite;
 import io.github.jcondedata.aliveworkplace.registry.ModAttachments;
@@ -122,7 +123,7 @@ public final class Requests {
 
 	/** What {@code villager}'s village (the workers who share with them) is waiting for. */
 	public static List<Request> forVillage(ServerLevel level, Villager villager, BlockPos station) {
-		return near(level, station, villager.getAttached(ModAttachments.BUILDER_EMPLOYER));
+		return near(level, station, ModAttachments.BUILDER_EMPLOYER.get(villager));
 	}
 
 	/**
@@ -167,7 +168,7 @@ public final class Requests {
 			if (path.endsWith(suffix)) {
 				String wood = path.substring(0, path.length() - suffix.length());
 				for (String kind : new String[] {"_log", "_stem"}) {
-					Item log = BuiltInRegistries.ITEM.get(ResourceLocation.fromNamespaceAndPath(id.getNamespace(), wood + kind));
+					Item log = Lookup.value(BuiltInRegistries.ITEM, ResourceLocation.fromNamespaceAndPath(id.getNamespace(), wood + kind));
 					if (log != Items.AIR && new ItemStack(log).is(ItemTags.LOGS)) {
 						return log;
 					}

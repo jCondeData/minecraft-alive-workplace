@@ -1,5 +1,6 @@
 package io.github.jcondedata.aliveworkplace.grave;
 
+import io.github.jcondedata.aliveworkplace.mc.Nbt;
 import io.github.jcondedata.aliveworkplace.registry.ModBlocks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
@@ -54,11 +55,11 @@ public class GraveBlockEntity extends BlockEntity {
 	@Override
 	protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
 		super.loadAdditional(tag, registries);
-		villager = tag.getCompound("villager");
-		name = tag.contains("name", 8) ? parseCustomNameSafe(tag.getString("name"), registries) : null;
-		profession = tag.contains("profession") ? tag.getString("profession") : "minecraft:none";
-		villagerLevel = Math.max(1, tag.getInt("level"));
-		died = tag.getLong("died");
+		villager = Nbt.getCompound(tag, "villager");
+		name = Nbt.has(tag, "name", 8) ? parseCustomNameSafe(Nbt.getString(tag, "name"), registries) : null;
+		profession = tag.contains("profession") ? Nbt.getString(tag, "profession") : "minecraft:none";
+		villagerLevel = Math.max(1, Nbt.getInt(tag, "level"));
+		died = Nbt.getLong(tag, "died");
 	}
 
 	@Override

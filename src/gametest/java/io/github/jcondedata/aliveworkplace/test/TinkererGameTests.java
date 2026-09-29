@@ -62,7 +62,7 @@ public class TinkererGameTests implements FabricGameTest {
 		golem.setHealth(30f);
 		helper.succeedWhen(() -> {
 			helper.assertTrue(golem.getHealth() >= golem.getMaxHealth(), "the golem's at " + golem.getHealth());
-			helper.assertTrue(tinkerer.getAttachedOrElse(ModAttachments.GOLEM_REPAIRS, 0) == 3, "patched " + tinkerer.getAttachedOrElse(ModAttachments.GOLEM_REPAIRS, 0));
+			helper.assertTrue(ModAttachments.GOLEM_REPAIRS.getOrElse(tinkerer, 0) == 3, "patched " + ModAttachments.GOLEM_REPAIRS.getOrElse(tinkerer, 0));
 			helper.assertTrue(chest.countItem(Items.IRON_INGOT) == 2, "two ingots should be left, not " + chest.countItem(Items.IRON_INGOT));
 			golem.discard();
 		});

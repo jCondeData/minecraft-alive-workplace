@@ -1,5 +1,6 @@
 package io.github.jcondedata.aliveworkplace.craft;
 
+import io.github.jcondedata.aliveworkplace.mc.Lookup;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -84,7 +85,7 @@ public class DyerWork extends CrafterWork {
 		if (!id.getPath().endsWith("_concrete")) {
 			return null;
 		}
-		Item powder = BuiltInRegistries.ITEM.get(id.withSuffix("_powder"));
+		Item powder = Lookup.value(BuiltInRegistries.ITEM, id.withSuffix("_powder"));
 		return powder == Items.AIR ? null : powder;
 	}
 }

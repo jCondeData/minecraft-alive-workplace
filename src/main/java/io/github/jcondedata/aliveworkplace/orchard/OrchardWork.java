@@ -104,7 +104,7 @@ public class OrchardWork extends Behavior<Villager> {
 		if (basket == null) {
 			return;
 		}
-		BuilderBag bag = villager.getAttachedOrCreate(ModAttachments.BUILDER_BAG);
+		BuilderBag bag = ModAttachments.BUILDER_BAG.getOrCreate(villager);
 
 		// 1. A full basket (or a finished round) goes to the chests.
 		if (depositDue || carried(bag) >= CARRY || bag.freeSlots() < 2) {
@@ -172,8 +172,8 @@ public class OrchardWork extends Behavior<Villager> {
 				Block.popResource(level, villager.blockPosition(), rest);
 			}
 		}
-		int picked = villager.getAttachedOrElse(ModAttachments.FRUIT_PICKED, 0) + 1;
-		villager.setAttached(ModAttachments.FRUIT_PICKED, picked);
+		int picked = ModAttachments.FRUIT_PICKED.getOrElse(villager, 0) + 1;
+		ModAttachments.FRUIT_PICKED.set(villager, picked);
 		if (picked % 4 == 0) {
 			BuilderLevels.addXp(level, villager, 1, null);
 		}
@@ -333,7 +333,7 @@ public class OrchardWork extends Behavior<Villager> {
 	}
 
 	private static void status(Villager villager, Phase phase) {
-		Component title = Component.translatable("message.aliveworkplace.orchard.title", villager.getAttachedOrElse(ModAttachments.FRUIT_PICKED, 0));
+		Component title = Component.translatable("message.aliveworkplace.orchard.title", ModAttachments.FRUIT_PICKED.getOrElse(villager, 0));
 		Component line = Component.translatable("message.aliveworkplace.orchard.state." + phase.name().toLowerCase()).withStyle(ChatFormatting.GRAY);
 		WorkerStatus.set(villager, title, -1f, line);
 	}

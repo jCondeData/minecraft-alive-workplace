@@ -76,11 +76,11 @@ abstract class VillagerGoalPackagesMixin {
 		} else if (profession == ModVillagers.TUTOR) {
 			cir.setReturnValue(io.github.jcondedata.aliveworkplace.work.DeskPackages.work(speed, io.github.jcondedata.aliveworkplace.tutor.Tutors::title,
 				v -> net.minecraft.network.chat.Component.translatable("message.aliveworkplace.tutor.state",
-					v.getAttachedOrElse(io.github.jcondedata.aliveworkplace.registry.ModAttachments.TUTOR_LESSONS, 0))));
+					io.github.jcondedata.aliveworkplace.registry.ModAttachments.TUTOR_LESSONS.getOrElse(v, 0))));
 		} else if (profession == ModVillagers.POKEMON_TRADER) {
 			cir.setReturnValue(io.github.jcondedata.aliveworkplace.work.DeskPackages.work(speed, io.github.jcondedata.aliveworkplace.trader.PokemonTraders::title,
 				v -> net.minecraft.network.chat.Component.translatable("message.aliveworkplace.pokemon_trader.state",
-					v.getAttachedOrElse(io.github.jcondedata.aliveworkplace.registry.ModAttachments.POKEMON_TRADE_COUNT, 0))));
+					io.github.jcondedata.aliveworkplace.registry.ModAttachments.POKEMON_TRADE_COUNT.getOrElse(v, 0))));
 		}
 	}
 

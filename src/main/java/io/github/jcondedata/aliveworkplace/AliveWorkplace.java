@@ -5,6 +5,7 @@ import io.github.jcondedata.aliveworkplace.blueprint.BlueprintOutline;
 import io.github.jcondedata.aliveworkplace.blueprint.PreviewNetworking;
 import io.github.jcondedata.aliveworkplace.build.BuilderStatusSync;
 import io.github.jcondedata.aliveworkplace.command.WorkplaceCommand;
+import io.github.jcondedata.aliveworkplace.platform.Platform;
 import io.github.jcondedata.aliveworkplace.registry.ModAttachments;
 import io.github.jcondedata.aliveworkplace.registry.ModBlocks;
 import io.github.jcondedata.aliveworkplace.registry.ModComponents;
@@ -13,16 +14,17 @@ import io.github.jcondedata.aliveworkplace.registry.ModItems;
 import io.github.jcondedata.aliveworkplace.registry.ModTrades;
 import io.github.jcondedata.aliveworkplace.registry.ModVillagers;
 import io.github.jcondedata.aliveworkplace.table.TableServer;
-import net.fabricmc.api.ModInitializer;
 import net.minecraft.resources.ResourceLocation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Alive Workplace — villagers that do real jobs. Entry point: registers content and hooks.
+ * Alive Workplace — villagers that do real jobs. Registers content and hooks; the loader's entrypoint
+ * ({@code platform/fabric/AliveWorkplaceFabric}) calls {@link #init}. Nothing here may touch the loader or another mod
+ * directly: that goes through {@link Platform} and {@code compat/}.
  * See ROADMAP.md for what is planned and CLAUDE.md for how the codebase is organised.
  */
-public class AliveWorkplace implements ModInitializer {
+public final class AliveWorkplace {
 	public static final String MOD_ID = "aliveworkplace";
 	public static final Logger LOG = LoggerFactory.getLogger(MOD_ID);
 
@@ -30,9 +32,9 @@ public class AliveWorkplace implements ModInitializer {
 		return ResourceLocation.fromNamespaceAndPath(MOD_ID, path);
 	}
 
-	@Override
-	public void onInitialize() {
-		WorkplaceConfig.loadAndApply(net.fabricmc.loader.api.FabricLoader.getInstance().getConfigDir());
+	/** Starts the mod; {@code integrations} turns on other mods' integrations (only those installed). */
+	public static void init(Runnable integrations) {
+		WorkplaceConfig.loadAndApply(Platform.get().configDir());
 		ModComponents.init();
 		ModBlocks.init();
 		ModItems.init();
@@ -58,11 +60,14 @@ public class AliveWorkplace implements ModInitializer {
 		io.github.jcondedata.aliveworkplace.people.Chatter.init();
 		io.github.jcondedata.aliveworkplace.ranch.PokemonChores.init();
 		io.github.jcondedata.aliveworkplace.blueprint.BlueprintStyles.init();
-		io.github.jcondedata.aliveworkplace.compat.Compat.init(); // other mods' integrations, only those installed
+		integrations.run();
 		io.github.jcondedata.aliveworkplace.build.MaterialFamilies.init();
 		BlueprintOutline.init();
 		WorkplaceCommand.init();
 		io.github.jcondedata.aliveworkplace.command.Benchmark.init();
 		LOG.info("Alive Workplace ready — go hire a builder.");
+	}
+
+	private AliveWorkplace() {
 	}
 }

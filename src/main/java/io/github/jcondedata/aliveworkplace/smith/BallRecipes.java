@@ -1,5 +1,6 @@
 package io.github.jcondedata.aliveworkplace.smith;
 
+import io.github.jcondedata.aliveworkplace.mc.Recipes;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -42,20 +43,20 @@ public final class BallRecipes {
 
 	/** Every ball recipe a smith can use, lowest tier first. */
 	public static synchronized List<BallRecipe> all(ServerLevel level) {
-		RecipeManager manager = level.getRecipeManager();
+		RecipeManager manager = Recipes.manager(level);
 		if (manager == cachedFor) {
 			return cached;
 		}
 		List<BallRecipe> found = new ArrayList<>();
-		for (RecipeHolder<CraftingRecipe> holder : manager.getAllRecipesFor(RecipeType.CRAFTING)) {
-			ItemStack result = holder.value().getResultItem(level.registryAccess());
+		for (RecipeHolder<CraftingRecipe> holder : Recipes.all(manager, RecipeType.CRAFTING)) {
+			ItemStack result = Recipes.result(holder.value(), level.registryAccess());
 			if (result.isEmpty() || !result.is(POKE_BALLS)) {
 				continue;
 			}
-			List<Ingredient> ingredients = holder.value().getIngredients().stream().filter(i -> !i.isEmpty()).toList();
+			List<Ingredient> ingredients = Recipes.ingredients(holder.value()).stream().filter(i -> !i.isEmpty()).toList();
 			int tier = tier(ingredients);
 			if (tier > 0 && !ingredients.isEmpty()) {
-				found.add(new BallRecipe(holder.id(), result.copy(), ingredients, tier));
+				found.add(new BallRecipe(Recipes.id(holder), result.copy(), ingredients, tier));
 			}
 		}
 		found.sort(Comparator.comparingInt(BallRecipe::tier).thenComparing(r -> r.id().toString()));
@@ -68,7 +69,7 @@ public final class BallRecipes {
 	static int tier(List<Ingredient> ingredients) {
 		int tier = 0;
 		for (Ingredient ingredient : ingredients) {
-			for (ItemStack option : ingredient.getItems()) {
+			for (ItemStack option : Recipes.options(ingredient)) {
 				for (int t = MAX_TIER; t > tier; t--) {
 					if (option.is(metal(t))) {
 						tier = t;
@@ -90,7 +91,7 @@ public final class BallRecipes {
 		Map<Item, Integer> take = new HashMap<>();
 		for (Ingredient ingredient : recipe.ingredients()) {
 			Item chosen = null;
-			for (ItemStack option : ingredient.getItems()) {
+			for (ItemStack option : Recipes.options(ingredient)) {
 				if (left.getOrDefault(option.getItem(), 0L) > 0) {
 					chosen = option.getItem();
 					break;

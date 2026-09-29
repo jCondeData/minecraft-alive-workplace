@@ -1,6 +1,8 @@
 package io.github.jcondedata.aliveworkplace.hall;
 
 import com.mojang.serialization.MapCodec;
+import io.github.jcondedata.aliveworkplace.mc.Chat;
+import io.github.jcondedata.aliveworkplace.mc.Interact;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -93,7 +95,7 @@ public class VillageHallBlock extends BaseEntityBlock {
 	@Override
 	public <T extends BlockEntity> net.minecraft.world.level.block.entity.BlockEntityTicker<T> getTicker(Level level, BlockState state,
 			net.minecraft.world.level.block.entity.BlockEntityType<T> type) {
-		return level.isClientSide ? null
+		return level.isClientSide() ? null
 			: createTickerHelper(type, io.github.jcondedata.aliveworkplace.registry.ModBlocks.VILLAGE_HALL_ENTITY, VillageHallBlockEntity::serverTick);
 	}
 
@@ -104,7 +106,7 @@ public class VillageHallBlock extends BaseEntityBlock {
 			if (level instanceof net.minecraft.server.level.ServerLevel server && player instanceof ServerPlayer serverPlayer) {
 				VillageLedgerItem.bind(server, serverPlayer, stack, pos);
 			}
-			return ItemInteractionResult.sidedSuccess(level.isClientSide);
+			return ItemInteractionResult.sidedSuccess(level.isClientSide());
 		}
 		if (!stack.is(Items.NAME_TAG) || !stack.has(DataComponents.CUSTOM_NAME)) {
 			return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
@@ -113,9 +115,9 @@ public class VillageHallBlock extends BaseEntityBlock {
 			Component name = stack.get(DataComponents.CUSTOM_NAME);
 			hall.setCustomName(name);
 			level.playSound(null, pos, SoundEvents.VILLAGER_CELEBRATE, SoundSource.BLOCKS, 0.8f, 1f);
-			player.displayClientMessage(Component.translatable("message.aliveworkplace.hall.named", name).withStyle(ChatFormatting.GREEN), true);
+			Chat.actionBar(player, Component.translatable("message.aliveworkplace.hall.named", name).withStyle(ChatFormatting.GREEN));
 		}
-		return ItemInteractionResult.sidedSuccess(level.isClientSide);
+		return ItemInteractionResult.sidedSuccess(level.isClientSide());
 	}
 
 	@Override
@@ -123,6 +125,6 @@ public class VillageHallBlock extends BaseEntityBlock {
 		if (player instanceof ServerPlayer serverPlayer) {
 			VillageHallScreen.open(serverPlayer, pos);
 		}
-		return InteractionResult.sidedSuccess(level.isClientSide);
+		return Interact.success(level.isClientSide());
 	}
 }

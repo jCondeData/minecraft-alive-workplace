@@ -34,7 +34,7 @@ public final class Sickness {
 	public static final float PACE = 2f;
 
 	public static boolean isIll(Villager villager) {
-		return villager.hasAttached(ModAttachments.ILL_SINCE);
+		return ModAttachments.ILL_SINCE.has(villager);
 	}
 
 	/** Work delay multiplier: the ill work at half pace. */
@@ -47,7 +47,7 @@ public final class Sickness {
 	 * time is up (and sneeze meanwhile), the well may fall ill.
 	 */
 	public static void round(ServerLevel level, Villager villager, int rounds) {
-		Long since = villager.getAttached(ModAttachments.ILL_SINCE);
+		Long since = ModAttachments.ILL_SINCE.get(villager);
 		long now = level.getGameTime();
 		if (since != null) {
 			if (now - since >= RECOVERY) {
@@ -74,14 +74,14 @@ public final class Sickness {
 	}
 
 	public static void fallIll(ServerLevel level, Villager villager) {
-		villager.setAttached(ModAttachments.ILL_SINCE, level.getGameTime());
+		ModAttachments.ILL_SINCE.set(villager, level.getGameTime());
 		villager.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 20 * 40, 0, false, false));
 		sneeze(level, villager);
 	}
 
 	/** Well again: the slowness goes, and a little happy puff. */
 	public static void recover(ServerLevel level, Villager villager) {
-		villager.removeAttached(ModAttachments.ILL_SINCE);
+		ModAttachments.ILL_SINCE.remove(villager);
 		villager.removeEffect(MobEffects.MOVEMENT_SLOWDOWN);
 		level.sendParticles(ParticleTypes.HAPPY_VILLAGER, villager.getX(), villager.getY() + 1.2, villager.getZ(), 8, 0.4, 0.5, 0.4, 0);
 	}

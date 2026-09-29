@@ -7,6 +7,8 @@ import com.cobblemon.mod.common.battles.BattleRegistry;
 import com.cobblemon.mod.common.item.PokemonItem;
 import com.cobblemon.mod.common.pokemon.Pokemon;
 import io.github.jcondedata.aliveworkplace.AliveWorkplace;
+import io.github.jcondedata.aliveworkplace.mc.Chat;
+import io.github.jcondedata.aliveworkplace.mc.Players;
 import io.github.jcondedata.aliveworkplace.ranch.Daycare;
 import io.github.jcondedata.aliveworkplace.work.ChoiceMenu;
 import io.github.jcondedata.aliveworkplace.work.Money;
@@ -44,7 +46,7 @@ public final class CobblemonDaycare {
 
 	public static void open(ServerPlayer player, Villager rancher) {
 		if (BattleRegistry.getBattleByParticipatingPlayer(player) != null) {
-			player.displayClientMessage(Component.translatable("message.aliveworkplace.pokemon_trader.in_battle").withStyle(ChatFormatting.YELLOW), true);
+			Chat.actionBar(player, Component.translatable("message.aliveworkplace.pokemon_trader.in_battle").withStyle(ChatFormatting.YELLOW));
 			return;
 		}
 		State state = new State();
@@ -74,7 +76,7 @@ public final class CobblemonDaycare {
 			if (!boarder.owner().equals(player.getUUID())) {
 				continue;
 			}
-			Pokemon pokemon = load(player.serverLevel(), boarder);
+			Pokemon pokemon = load(Players.level(player), boarder);
 			if (pokemon == null) {
 				continue;
 			}
@@ -88,7 +90,7 @@ public final class CobblemonDaycare {
 				Component.translatable("screen.aliveworkplace.daycare.collect", Money.describe((long) price * Money.DOLLARS_PER_EMERALD, price))
 					.withStyle(ChatFormatting.GREEN)));
 			menu.button(FIRST_BOARDER_SLOT + shown, icon, p -> {
-				p.displayClientMessage(collect(p, rancher, boarder), false);
+				Chat.chat(p, collect(p, rancher, boarder));
 				render(menu, player, rancher, state);
 			});
 			shown++;
@@ -160,8 +162,8 @@ public final class CobblemonDaycare {
 		CompoundTag tag = pokemon.saveToNBT(player.registryAccess(), new CompoundTag());
 		boarders.add(new Daycare.Boarder(player.getUUID(), player.getGameProfile().getName(), tag, player.level().getGameTime()));
 		Daycare.setBoarders(rancher, boarders);
-		player.displayClientMessage(Component.translatable("message.aliveworkplace.daycare.left", pokemon.getDisplayName(false), rancher.getDisplayName())
-			.withStyle(ChatFormatting.GREEN), false);
+		Chat.chat(player, Component.translatable("message.aliveworkplace.daycare.left", pokemon.getDisplayName(false), rancher.getDisplayName())
+			.withStyle(ChatFormatting.GREEN));
 		rancher.level().playSound(null, rancher, SoundEvents.VILLAGER_YES, SoundSource.NEUTRAL, 1f, 1f);
 		return true;
 	}
@@ -172,7 +174,7 @@ public final class CobblemonDaycare {
 		if (!boarders.contains(boarder) || !boarder.owner().equals(player.getUUID())) {
 			return Component.empty();
 		}
-		Pokemon pokemon = load(player.serverLevel(), boarder);
+		Pokemon pokemon = load(Players.level(player), boarder);
 		if (pokemon == null) {
 			return Component.translatable("message.aliveworkplace.daycare.lost").withStyle(ChatFormatting.RED);
 		}

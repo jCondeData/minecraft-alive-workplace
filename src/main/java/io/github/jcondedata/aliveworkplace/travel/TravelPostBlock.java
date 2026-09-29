@@ -1,6 +1,8 @@
 package io.github.jcondedata.aliveworkplace.travel;
 
 import com.mojang.serialization.MapCodec;
+import io.github.jcondedata.aliveworkplace.mc.Chat;
+import io.github.jcondedata.aliveworkplace.mc.Interact;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -60,7 +62,7 @@ public class TravelPostBlock extends HorizontalDirectionalBlock {
 			TravelNetwork.Post post = network.add(GlobalPos.of(level.dimension(), pos), name);
 			if (placer instanceof ServerPlayer player) {
 				network.visit(player.getUUID(), post);
-				player.displayClientMessage(Component.translatable("message.aliveworkplace.travel.placed", name), false);
+				Chat.chat(player, Component.translatable("message.aliveworkplace.travel.placed", name));
 			}
 		}
 	}
@@ -76,10 +78,10 @@ public class TravelPostBlock extends HorizontalDirectionalBlock {
 			}
 			boolean found = network.visit(serverPlayer.getUUID(), post);
 			int others = network.known(serverPlayer.getUUID(), post).size();
-			player.displayClientMessage(Component.translatable(found ? "message.aliveworkplace.travel.found" : "message.aliveworkplace.travel.known",
-				post.name(), others).withStyle(found ? ChatFormatting.GREEN : ChatFormatting.GRAY), false);
+			Chat.chat(player, Component.translatable(found ? "message.aliveworkplace.travel.found" : "message.aliveworkplace.travel.known",
+				post.name(), others).withStyle(found ? ChatFormatting.GREEN : ChatFormatting.GRAY));
 		}
-		return InteractionResult.sidedSuccess(level.isClientSide);
+		return Interact.success(level.isClientSide());
 	}
 
 	@Override

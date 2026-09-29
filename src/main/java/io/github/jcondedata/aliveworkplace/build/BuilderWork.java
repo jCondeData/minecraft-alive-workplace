@@ -1,5 +1,7 @@
 package io.github.jcondedata.aliveworkplace.build;
 
+import io.github.jcondedata.aliveworkplace.mc.Chat;
+import io.github.jcondedata.aliveworkplace.mc.Rules;
 import io.github.jcondedata.aliveworkplace.work.Village;
 
 import com.google.common.collect.ImmutableMap;
@@ -162,8 +164,8 @@ public class BuilderWork extends Behavior<Villager> {
 			return;
 		}
 		BlockPos bench = benchOpt.get();
-		BuilderBag bag = villager.getAttachedOrCreate(ModAttachments.BUILDER_BAG);
-		boolean free = level.getGameRules().getBoolean(ModGameRules.FREE_MATERIALS);
+		BuilderBag bag = ModAttachments.BUILDER_BAG.getOrCreate(villager);
+		boolean free = Rules.on(level, ModGameRules.FREE_MATERIALS);
 
 		// 0. Getting out of its own way.
 		if (stepAsideSpot != null) {
@@ -622,7 +624,7 @@ public class BuilderWork extends Behavior<Villager> {
 			if (id.equals(villager.getUUID()) || !(level.getEntity(id) instanceof Villager mate) || !mate.isAlive()) {
 				continue;
 			}
-			BuilderBag mateBag = mate.getAttachedOrCreate(ModAttachments.BUILDER_BAG);
+			BuilderBag mateBag = ModAttachments.BUILDER_BAG.getOrCreate(mate);
 			// Whatever the mate needs for the block it is on stays with it.
 			BuildPlan.Step mateStep = id.equals(site.builder()) ? site.current(plan) : null;
 			BlockPos mateClaim = site.claim(id);
@@ -840,7 +842,7 @@ public class BuilderWork extends Behavior<Villager> {
 		Entity first = blockers.isEmpty() ? null : blockers.get(0);
 		for (Entity e : blockers) {
 			if (e instanceof Player player) {
-				player.displayClientMessage(Component.translatable("message.aliveworkplace.in_the_way", villager.getDisplayName()), true);
+				Chat.actionBar(player, Component.translatable("message.aliveworkplace.in_the_way", villager.getDisplayName()));
 			} else {
 				shoo(level, plan, e, pos, blockedAttempts);
 			}

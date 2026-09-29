@@ -1,6 +1,7 @@
 package io.github.jcondedata.aliveworkplace.blueprint;
 
 import io.github.jcondedata.aliveworkplace.AliveWorkplace;
+import io.github.jcondedata.aliveworkplace.mc.Lookup;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collections;
@@ -45,7 +46,7 @@ public final class BlueprintLibrary {
 		} catch (RuntimeException e) {
 			return Optional.empty();
 		}
-		return template.map(t -> CACHE.computeIfAbsent(t, k -> Blueprint.fromTemplate(id, k, BuiltInRegistries.BLOCK.asLookup())));
+		return template.map(t -> CACHE.computeIfAbsent(t, k -> Blueprint.fromTemplate(id, k, Lookup.lookup(BuiltInRegistries.BLOCK))));
 	}
 
 	/**

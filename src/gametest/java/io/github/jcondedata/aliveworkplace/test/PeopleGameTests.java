@@ -122,11 +122,11 @@ public class PeopleGameTests implements FabricGameTest {
 		Villager frugal = villager(helper, Trait.FRUGAL);
 		Villager plain = villager(helper, Trait.NIMBLE);
 		for (Villager v : List.of(glutton, frugal, plain)) {
-			v.setAttached(ModAttachments.LAST_MEAL, now - 13000);
+			ModAttachments.LAST_MEAL.set(v, now - 13000);
 		}
 		helper.assertTrue(VillageNeeds.isHungry(glutton, now) && !VillageNeeds.isHungry(plain, now) && !VillageNeeds.isHungry(frugal, now), "after half a day");
 		for (Villager v : List.of(glutton, frugal, plain)) {
-			v.setAttached(ModAttachments.LAST_MEAL, now - 30000);
+			ModAttachments.LAST_MEAL.set(v, now - 30000);
 		}
 		helper.assertTrue(VillageNeeds.isHungry(plain, now) && !VillageNeeds.isHungry(frugal, now), "after a day and a quarter");
 		helper.succeed();
@@ -189,7 +189,7 @@ public class PeopleGameTests implements FabricGameTest {
 		Villager villager = helper.spawn(EntityType.VILLAGER, new BlockPos(5, 2, 5));
 		int well = BuilderLevels.delay(100, villager);
 		float chance = io.github.jcondedata.aliveworkplace.people.Sickness.dailyChance(level, villager);
-		villager.setAttached(ModAttachments.LAST_MEAL, level.getGameTime() - 2 * VillageNeeds.DAY);
+		ModAttachments.LAST_MEAL.set(villager, level.getGameTime() - 2 * VillageNeeds.DAY);
 		helper.assertTrue(io.github.jcondedata.aliveworkplace.people.Sickness.dailyChance(level, villager) > chance, "hunger doesn't matter");
 		io.github.jcondedata.aliveworkplace.people.Sickness.fallIll(level, villager);
 		helper.assertTrue(io.github.jcondedata.aliveworkplace.people.Sickness.isIll(villager), "not ill");
@@ -197,7 +197,7 @@ public class PeopleGameTests implements FabricGameTest {
 		helper.assertTrue(villager.hasEffect(net.minecraft.world.effect.MobEffects.MOVEMENT_SLOWDOWN), "not slowed");
 		io.github.jcondedata.aliveworkplace.people.Sickness.round(level, villager, 40);
 		helper.assertTrue(io.github.jcondedata.aliveworkplace.people.Sickness.isIll(villager), "got well at once");
-		villager.setAttached(ModAttachments.ILL_SINCE, level.getGameTime() - io.github.jcondedata.aliveworkplace.people.Sickness.RECOVERY);
+		ModAttachments.ILL_SINCE.set(villager, level.getGameTime() - io.github.jcondedata.aliveworkplace.people.Sickness.RECOVERY);
 		io.github.jcondedata.aliveworkplace.people.Sickness.round(level, villager, 40);
 		helper.assertFalse(io.github.jcondedata.aliveworkplace.people.Sickness.isIll(villager), "still ill after the illness ran its course");
 		helper.assertTrue(BuilderLevels.delay(100, villager) == well, "still slow");
@@ -224,7 +224,7 @@ public class PeopleGameTests implements FabricGameTest {
 			helper.assertFalse(io.github.jcondedata.aliveworkplace.people.Sickness.isIll(patient), "still ill");
 			helper.assertTrue(chest.countItem(net.minecraft.world.item.Items.GLASS_BOTTLE) == 1 && chest.countItem(net.minecraft.world.item.Items.HONEY_BOTTLE) == 0,
 				"chest: " + chest.countItem(net.minecraft.world.item.Items.HONEY_BOTTLE) + " honey, " + chest.countItem(net.minecraft.world.item.Items.GLASS_BOTTLE) + " bottles");
-			helper.assertTrue(nurse.getAttachedOrElse(ModAttachments.VILLAGERS_CURED, 0) == 1, "cured count");
+			helper.assertTrue(ModAttachments.VILLAGERS_CURED.getOrElse(nurse, 0) == 1, "cured count");
 		}));
 	}
 
@@ -290,7 +290,7 @@ public class PeopleGameTests implements FabricGameTest {
 		mother.setCustomName(net.minecraft.network.chat.Component.literal("Ada"));
 		son.setCustomName(net.minecraft.network.chat.Component.literal("Ben"));
 		neighbour.setCustomName(net.minecraft.network.chat.Component.literal("Cora"));
-		son.setAttached(ModAttachments.PARENTS, new io.github.jcondedata.aliveworkplace.people.Families.Parents(
+		ModAttachments.PARENTS.set(son, new io.github.jcondedata.aliveworkplace.people.Families.Parents(
 			net.minecraft.network.chat.Component.literal("Ada"), net.minecraft.network.chat.Component.literal("Dan"), "", "", true));
 		helper.runAfterDelay(2, () -> {
 			BlockPos hall = helper.absolutePos(HALL);
@@ -339,7 +339,7 @@ public class PeopleGameTests implements FabricGameTest {
 		Leftovers.after(helper, () -> level.getServer().getPlayerList().remove(player));
 		helper.runAfterDelay(2, () -> {
 			BlockPos hall = helper.absolutePos(new BlockPos(1, 2, 1));
-			villager.setAttached(ModAttachments.LAST_MEAL, level.getGameTime() - 2 * VillageNeeds.DAY);
+			ModAttachments.LAST_MEAL.set(villager, level.getGameTime() - 2 * VillageNeeds.DAY);
 			var topics = io.github.jcondedata.aliveworkplace.people.Chatter.topics(level, villager, hall);
 			helper.assertTrue(topics.contains("hungry") && topics.contains("hello") && !topics.contains("bandits"), "topics: " + topics);
 			var line = io.github.jcondedata.aliveworkplace.people.Chatter.line(level, villager, hall, player);
@@ -372,13 +372,13 @@ public class PeopleGameTests implements FabricGameTest {
 		Villager villager = helper.spawn(EntityType.VILLAGER, new BlockPos(4, 2, 4));
 		villager.setVillagerData(villager.getVillagerData().setProfession(net.minecraft.world.entity.npc.VillagerProfession.NONE));
 		helper.runAfterDelay(2, () -> {
-			villager.setAttached(ModAttachments.LAST_MEAL, level.getGameTime() - 2 * VillageNeeds.DAY);
+			ModAttachments.LAST_MEAL.set(villager, level.getGameTime() - 2 * VillageNeeds.DAY);
 			var sad = io.github.jcondedata.aliveworkplace.people.Moods.work(level, villager);
 			helper.assertTrue(sad.score() < io.github.jcondedata.aliveworkplace.people.Moods.UNHAPPY, "hungry, homeless, jobless: " + sad);
 			io.github.jcondedata.aliveworkplace.people.Moods.forget();
 			float slow = io.github.jcondedata.aliveworkplace.people.Moods.pace(villager);
 			helper.assertTrue(slow > 1f, "unhappy pace: " + slow);
-			villager.setAttached(ModAttachments.LAST_MEAL, level.getGameTime());
+			ModAttachments.LAST_MEAL.set(villager, level.getGameTime());
 			villager.getBrain().setMemory(net.minecraft.world.entity.ai.memory.MemoryModuleType.HOME,
 				net.minecraft.core.GlobalPos.of(level.dimension(), helper.absolutePos(new BlockPos(6, 2, 6))));
 			villager.setVillagerData(villager.getVillagerData().setProfession(net.minecraft.world.entity.npc.VillagerProfession.FARMER));

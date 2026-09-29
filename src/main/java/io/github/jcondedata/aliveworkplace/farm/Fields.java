@@ -1,5 +1,10 @@
 package io.github.jcondedata.aliveworkplace.farm;
 
+import io.github.jcondedata.aliveworkplace.mc.Chat;
+import io.github.jcondedata.aliveworkplace.mc.Ids;
+import io.github.jcondedata.aliveworkplace.mc.Players;
+import io.github.jcondedata.aliveworkplace.mc.Rules;
+import io.github.jcondedata.aliveworkplace.platform.Platform;
 import io.github.jcondedata.aliveworkplace.build.BuilderBag;
 import io.github.jcondedata.aliveworkplace.build.BuilderLevels;
 import io.github.jcondedata.aliveworkplace.build.Builders;
@@ -12,7 +17,6 @@ import io.github.jcondedata.aliveworkplace.registry.ModItems;
 import io.github.jcondedata.aliveworkplace.registry.ModVillagers;
 import java.util.List;
 import java.util.Optional;
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerEntityEvents;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.ClickEvent;
@@ -42,8 +46,8 @@ public final class Fields {
 
 	public static void init() {
 		// Saved farmers load their field after the brain is built: give them the longer shift now.
-		ServerEntityEvents.ENTITY_LOAD.register((entity, level) -> {
-			if (entity instanceof Villager villager && villager.hasAttached(ModAttachments.FARM_FIELD) && isFarmer(villager)
+		Platform.get().onEntityLoad((entity, level) -> {
+			if (entity instanceof Villager villager && ModAttachments.FARM_FIELD.has(villager) && isFarmer(villager)
 				&& villager.getBrain().getSchedule() != ModVillagers.BUILDER_SCHEDULE) {
 				villager.refreshBrain(level);
 			}
@@ -55,7 +59,7 @@ public final class Fields {
 	}
 
 	public static boolean hasField(Villager villager) {
-		return villager.hasAttached(ModAttachments.FARM_FIELD);
+		return ModAttachments.FARM_FIELD.has(villager);
 	}
 
 	/** Vanilla farmer behaviour runs when there is no field, or the field needs nothing right now. */
@@ -65,9 +69,9 @@ public final class Fields {
 
 	/** Player right-clicked a farmer while holding a Field Marker. */
 	public static InteractionResult assign(ServerPlayer player, Villager villager, ItemStack stack) {
-		ServerLevel level = player.serverLevel();
+		ServerLevel level = Players.level(player);
 		if (!Friends.mayCommand(player, villager)) {
-			Employer employer = villager.getAttached(ModAttachments.BUILDER_EMPLOYER);
+			Employer employer = ModAttachments.BUILDER_EMPLOYER.get(villager);
 			tell(player, Component.translatable("message.aliveworkplace.not_your_builder", villager.getDisplayName(),
 				employer != null ? employer.name() : "?", player.getGameProfile().getName()), ChatFormatting.RED);
 			return InteractionResult.CONSUME;
@@ -87,14 +91,14 @@ public final class Fields {
 				tell(player, Component.translatable("message.aliveworkplace.field.no_farm", FARM_SEARCH), ChatFormatting.YELLOW);
 				return InteractionResult.CONSUME;
 			}
-			data = new FieldData(Optional.of(level.dimension().location()), Optional.empty(), Optional.empty());
+			data = new FieldData(Optional.of(Ids.of(level.dimension())), Optional.empty(), Optional.empty());
 			adopted = true;
 		}
 		if (area.isEmpty()) {
 			tell(player, Component.translatable("message.aliveworkplace.field.not_marked"), ChatFormatting.YELLOW);
 			return InteractionResult.CONSUME;
 		}
-		if (!data.dimension().get().equals(level.dimension().location())) {
+		if (!data.dimension().get().equals(Ids.of(level.dimension()))) {
 			tell(player, Component.translatable("message.aliveworkplace.assign.wrong_dimension"), ChatFormatting.RED);
 			return InteractionResult.CONSUME;
 		}
@@ -109,12 +113,12 @@ public final class Fields {
 			tell(player, Component.translatable("message.aliveworkplace.assign.too_far", (int) distance, MAX_DISTANCE), ChatFormatting.RED);
 			return InteractionResult.CONSUME;
 		}
-		FieldJob old = villager.getAttached(ModAttachments.FARM_FIELD);
+		FieldJob old = ModAttachments.FARM_FIELD.get(villager);
 		if (old != null && !old.adopted() && !player.getAbilities().instabuild) {
 			give(player, markerFor(level, old)); // swapping fields: the old marker comes back
 		}
 		Friends.hire(player, villager);
-		villager.removeAttached(ModAttachments.NO_AUTO_FARM);
+		ModAttachments.NO_AUTO_FARM.remove(villager);
 		start(level, villager, box);
 		if (!player.getAbilities().instabuild) {
 			stack.shrink(1);
@@ -188,8 +192,8 @@ public final class Fields {
 	 * Returns true when they did.
 	 */
 	static boolean adoptOwnFarm(ServerLevel level, Villager villager) {
-		if (!isFarmer(villager) || hasField(villager) || villager.getAttachedOrElse(ModAttachments.NO_AUTO_FARM, false)
-			|| !level.getGameRules().getBoolean(io.github.jcondedata.aliveworkplace.registry.ModGameRules.VILLAGE_FARMS)) {
+		if (!isFarmer(villager) || hasField(villager) || ModAttachments.NO_AUTO_FARM.getOrElse(villager, false)
+			|| !Rules.on(level, io.github.jcondedata.aliveworkplace.registry.ModGameRules.VILLAGE_FARMS)) {
 			return false;
 		}
 		Optional<BlockPos> composter = Builders.benchPos(villager);
@@ -200,7 +204,7 @@ public final class Fields {
 		if (farm.isEmpty()) {
 			return false;
 		}
-		villager.setAttached(ModAttachments.FARM_FIELD, new FieldJob(farm.get(), true));
+		ModAttachments.FARM_FIELD.set(villager, new FieldJob(farm.get(), true));
 		// The longer shift of a farmer with a field (the brain itself is left alone: this runs while it ticks).
 		villager.getBrain().setSchedule(io.github.jcondedata.aliveworkplace.registry.ModVillagers.BUILDER_SCHEDULE);
 		return true;
@@ -208,19 +212,19 @@ public final class Fields {
 
 	/** Gives the farmer the field. Also used by tests. */
 	public static void start(ServerLevel level, Villager villager, BoundingBox box) {
-		villager.setAttached(ModAttachments.FARM_FIELD, new FieldJob(box));
+		ModAttachments.FARM_FIELD.set(villager, new FieldJob(box));
 		villager.refreshBrain(level);
 	}
 
 	/** Stops tending the field: the bag and hoe go to the chests, the marker to {@code player} (or the chests). */
 	public static void release(ServerLevel level, Villager villager, Player player) {
-		FieldJob job = villager.getAttached(ModAttachments.FARM_FIELD);
+		FieldJob job = ModAttachments.FARM_FIELD.get(villager);
 		if (job == null) {
 			return;
 		}
 		BlockPos composter = Builders.benchPos(villager).orElse(villager.blockPosition());
 		List<BlockPos> supplies = SupplyContainers.find(level, composter, null);
-		BuilderBag bag = villager.getAttachedOrCreate(ModAttachments.BUILDER_BAG);
+		BuilderBag bag = ModAttachments.BUILDER_BAG.getOrCreate(villager);
 		for (ItemStack stack : bag.takeAll()) {
 			store(level, supplies, composter, stack);
 		}
@@ -230,26 +234,26 @@ public final class Fields {
 			store(level, supplies, composter, tool);
 		}
 		if (job.adopted()) {
-			villager.setAttached(ModAttachments.NO_AUTO_FARM, true); // stopped for good: they don't take it on again
+			ModAttachments.NO_AUTO_FARM.set(villager, true); // stopped for good: they don't take it on again
 		} else {
 			ItemStack marker = markerFor(level, job);
 			if (player == null || !player.getInventory().add(marker)) {
 				store(level, supplies, composter, marker);
 			}
 		}
-		villager.removeAttached(ModAttachments.FARM_FIELD);
+		ModAttachments.FARM_FIELD.remove(villager);
 		villager.refreshBrain(level);
 	}
 
 	public static void onDeath(ServerLevel level, Villager villager) {
-		FieldJob job = villager.getAttached(ModAttachments.FARM_FIELD);
+		FieldJob job = ModAttachments.FARM_FIELD.get(villager);
 		if (job != null && !job.adopted()) {
 			store(level, List.of(), villager.blockPosition(), markerFor(level, job));
 		}
 	}
 
 	public static void sendStatus(Player player, Villager villager) {
-		FieldJob job = villager.getAttached(ModAttachments.FARM_FIELD);
+		FieldJob job = ModAttachments.FARM_FIELD.get(villager);
 		if (job == null) {
 			return;
 		}
@@ -261,7 +265,7 @@ public final class Fields {
 		text.append(Component.translatable("message.aliveworkplace.field.state." + (FieldWork.isResting(villager) ? "resting" : "tending"))
 			.withStyle(ChatFormatting.GRAY));
 		text.append(Component.literal(" · ").withStyle(ChatFormatting.DARK_GRAY));
-		text.append(Component.translatable("message.aliveworkplace.field.counts", villager.getAttachedOrElse(ModAttachments.FARM_HARVESTED, 0))
+		text.append(Component.translatable("message.aliveworkplace.field.counts", ModAttachments.FARM_HARVESTED.getOrElse(villager, 0))
 			.withStyle(ChatFormatting.GRAY));
 		text.append(Component.literal("\n  "));
 		text.append(BuilderLevels.describe(villager).copy().withStyle(ChatFormatting.DARK_AQUA));
@@ -271,13 +275,13 @@ public final class Fields {
 			.withColor(ChatFormatting.RED).withUnderlined(true)
 			.withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, stop))
 			.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.translatable("message.aliveworkplace.field.stop_hover")))));
-		player.sendSystemMessage(text);
+		Chat.system(player, text);
 	}
 
 	private static ItemStack markerFor(ServerLevel level, FieldJob job) {
 		ItemStack marker = new ItemStack(ModItems.FIELD_MARKER);
 		BoundingBox box = job.box();
-		marker.set(ModComponents.FIELD, new FieldData(Optional.of(level.dimension().location()),
+		marker.set(ModComponents.FIELD, new FieldData(Optional.of(Ids.of(level.dimension())),
 			Optional.of(new BlockPos(box.minX(), box.minY(), box.minZ())), Optional.of(new BlockPos(box.maxX(), box.maxY(), box.maxZ()))));
 		return marker;
 	}
@@ -298,7 +302,7 @@ public final class Fields {
 	}
 
 	private static void tell(Player player, Component message, ChatFormatting color) {
-		player.sendSystemMessage(message.copy().withStyle(color));
+		Chat.system(player, message.copy().withStyle(color));
 	}
 
 	private Fields() {

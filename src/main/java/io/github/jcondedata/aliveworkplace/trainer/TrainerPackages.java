@@ -22,7 +22,7 @@ public final class TrainerPackages {
 		return ImmutableList.<Pair<Integer, ? extends BehaviorControl<? super Villager>>>of(
 			Pair.of(0, BehaviorBuilder.<Villager>triggerIf(v -> {
 				WorkerStatus.set(v, Trainers.title(v), -1f, Component.translatable("message.aliveworkplace.trainer.state",
-					v.getAttachedOrElse(ModAttachments.TRAINER_BATTLES, 0)).withStyle(ChatFormatting.GRAY));
+					ModAttachments.TRAINER_BATTLES.getOrElse(v, 0)).withStyle(ChatFormatting.GRAY));
 				return false;
 			})),
 			Pair.of(2, SetWalkTargetFromBlockMemory.create(MemoryModuleType.JOB_SITE, speed, 3, 100, 1200)),

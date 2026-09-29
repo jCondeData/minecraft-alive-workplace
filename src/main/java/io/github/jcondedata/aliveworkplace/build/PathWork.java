@@ -36,12 +36,12 @@ public class PathWork extends Behavior<Villager> {
 	}
 
 	static boolean hasPath(Villager villager) {
-		return !villager.getAttachedOrElse(ModAttachments.PATH, List.of()).isEmpty();
+		return !ModAttachments.PATH.getOrElse(villager, List.of()).isEmpty();
 	}
 
 	@Override
 	protected boolean checkExtraStartConditions(ServerLevel level, Villager villager) {
-		return !villager.isSleeping() && Builders.isBuilder(villager) && !villager.hasAttached(ModAttachments.BUILDER_JOB) && hasPath(villager);
+		return !villager.isSleeping() && Builders.isBuilder(villager) && !ModAttachments.BUILDER_JOB.has(villager) && hasPath(villager);
 	}
 
 	@Override
@@ -57,7 +57,7 @@ public class PathWork extends Behavior<Villager> {
 
 	@Override
 	protected void tick(ServerLevel level, Villager villager, long gameTime) {
-		List<BlockPos> path = villager.getAttachedOrElse(ModAttachments.PATH, List.of());
+		List<BlockPos> path = ModAttachments.PATH.getOrElse(villager, List.of());
 		if (path.isEmpty()) {
 			return;
 		}
@@ -88,9 +88,9 @@ public class PathWork extends Behavior<Villager> {
 	private static void pop(Villager villager, List<BlockPos> path) {
 		List<BlockPos> rest = new ArrayList<>(path.subList(1, path.size()));
 		if (rest.isEmpty()) {
-			villager.removeAttached(ModAttachments.PATH);
+			ModAttachments.PATH.remove(villager);
 		} else {
-			villager.setAttached(ModAttachments.PATH, List.copyOf(rest));
+			ModAttachments.PATH.set(villager, List.copyOf(rest));
 		}
 	}
 

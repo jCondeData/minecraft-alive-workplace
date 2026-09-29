@@ -5,6 +5,7 @@ import io.github.jcondedata.aliveworkplace.build.BuilderBag;
 import io.github.jcondedata.aliveworkplace.build.BuilderLevels;
 import io.github.jcondedata.aliveworkplace.build.Builders;
 import io.github.jcondedata.aliveworkplace.build.SupplyContainers;
+import io.github.jcondedata.aliveworkplace.mc.Chat;
 import io.github.jcondedata.aliveworkplace.registry.ModAttachments;
 import io.github.jcondedata.aliveworkplace.registry.ModBlocks;
 import io.github.jcondedata.aliveworkplace.registry.ModVillagers;
@@ -86,7 +87,7 @@ public class UndertakerWork extends Behavior<Villager> {
 			return;
 		}
 		List<BlockPos> own = SupplyContainers.find(level, table, null);
-		BuilderBag bag = villager.getAttachedOrCreate(ModAttachments.BUILDER_BAG);
+		BuilderBag bag = ModAttachments.BUILDER_BAG.getOrCreate(villager);
 		if (grave != null && !level.getBlockState(grave).is(ModBlocks.GRAVE)) {
 			grave = null;
 			task = Task.NONE;
@@ -169,11 +170,11 @@ public class UndertakerWork extends Behavior<Villager> {
 			} else if (!item.isEmpty()) {
 				bag.add(item);
 			}
-			villager.setAttached(ModAttachments.VILLAGERS_REVIVED, villager.getAttachedOrElse(ModAttachments.VILLAGERS_REVIVED, 0) + 1);
+			ModAttachments.VILLAGERS_REVIVED.set(villager, ModAttachments.VILLAGERS_REVIVED.getOrElse(villager, 0) + 1);
 			BuilderLevels.addXp(level, villager, 5, null);
 			for (ServerPlayer player : level.getPlayers(p -> p.distanceToSqr(villager) < 48 * 48)) {
-				player.displayClientMessage(Component.translatable("message.aliveworkplace.grave.revived", name != null ? name : back.getDisplayName())
-					.withStyle(ChatFormatting.GREEN), false);
+				Chat.chat(player, Component.translatable("message.aliveworkplace.grave.revived", name != null ? name : back.getDisplayName())
+					.withStyle(ChatFormatting.GREEN));
 			}
 		}
 		grave = null;
@@ -183,7 +184,7 @@ public class UndertakerWork extends Behavior<Villager> {
 
 	private void status(Villager villager) {
 		WorkerStatus.set(villager, Component.translatable("message.aliveworkplace.undertaker.title",
-				villager.getAttachedOrElse(ModAttachments.VILLAGERS_REVIVED, 0)), -1f,
+				ModAttachments.VILLAGERS_REVIVED.getOrElse(villager, 0)), -1f,
 			Component.translatable("message.aliveworkplace.undertaker.state." + state)
 				.withStyle(state.equals("needs") || state.equals("no_chest") ? ChatFormatting.YELLOW : ChatFormatting.GRAY));
 	}

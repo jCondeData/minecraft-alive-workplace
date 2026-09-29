@@ -3,6 +3,7 @@ package io.github.jcondedata.aliveworkplace.ranch;
 import io.github.jcondedata.aliveworkplace.build.BuilderBag;
 import io.github.jcondedata.aliveworkplace.build.BuilderLevels;
 import io.github.jcondedata.aliveworkplace.build.SupplyContainers;
+import io.github.jcondedata.aliveworkplace.mc.Damage;
 import io.github.jcondedata.aliveworkplace.registry.ModAttachments;
 import io.github.jcondedata.aliveworkplace.work.WorkerStatus;
 import java.util.Comparator;
@@ -74,7 +75,7 @@ public class HerderWork extends RanchWork {
 		chore = null;
 		List<Animal> animals = animals(level, station);
 		// A hired herder keeps the herd from growing past the pen.
-		if (villager.getAttached(ModAttachments.BUILDER_EMPLOYER) != null) {
+		if (ModAttachments.BUILDER_EMPLOYER.get(villager) != null) {
 			Map<EntityType<?>, List<Animal>> grown = animals.stream().filter(a -> !a.isBaby())
 				.collect(Collectors.groupingBy(Animal::getType));
 			for (List<Animal> kind : grown.values()) {
@@ -97,7 +98,7 @@ public class HerderWork extends RanchWork {
 			}
 		}
 		// The pastured Pokémon's chores, with what they take in the chests.
-		chore = PokemonChores.next(level, station, RADIUS, own, villager.getAttachedOrCreate(ModAttachments.BUILDER_BAG));
+		chore = PokemonChores.next(level, station, RADIUS, own, ModAttachments.BUILDER_BAG.getOrCreate(villager));
 		return chore != null ? chore.pokemon() : null;
 	}
 
@@ -136,7 +137,7 @@ public class HerderWork extends RanchWork {
 		if (culling) {
 			if (animal instanceof Animal a && !a.isBaby() && !a.hasCustomName() && !a.isLeashed()) {
 				villager.swing(InteractionHand.MAIN_HAND);
-				a.hurt(level.damageSources().mobAttack(villager), a.getMaxHealth() * 4);
+				Damage.hurt(a, level.damageSources().mobAttack(villager), a.getMaxHealth() * 4);
 				BuilderLevels.addXp(level, villager, 1, null);
 			}
 			return false;
@@ -144,7 +145,7 @@ public class HerderWork extends RanchWork {
 		if (chore != null) {
 			if (PokemonChores.perform(level, chore, bag)) {
 				villager.swing(InteractionHand.MAIN_HAND);
-				villager.setAttached(ModAttachments.POKEMON_TENDED, villager.getAttachedOrElse(ModAttachments.POKEMON_TENDED, 0) + 1);
+				ModAttachments.POKEMON_TENDED.set(villager, ModAttachments.POKEMON_TENDED.getOrElse(villager, 0) + 1);
 				BuilderLevels.addXp(level, villager, 1, null);
 			}
 			chore = null;
@@ -154,7 +155,7 @@ public class HerderWork extends RanchWork {
 			bag.add(new ItemStack(Items.MILK_BUCKET));
 			villager.swing(InteractionHand.MAIN_HAND);
 			level.playSound(null, cow.blockPosition(), SoundEvents.COW_MILK, SoundSource.NEUTRAL, 1f, 1f);
-			villager.setAttached(ModAttachments.MILK_COLLECTED, villager.getAttachedOrElse(ModAttachments.MILK_COLLECTED, 0) + 1);
+			ModAttachments.MILK_COLLECTED.set(villager, ModAttachments.MILK_COLLECTED.getOrElse(villager, 0) + 1);
 			BuilderLevels.addXp(level, villager, 1, null);
 		}
 		return false;
@@ -162,7 +163,7 @@ public class HerderWork extends RanchWork {
 
 	@Override
 	protected void status(Villager villager, Task task, boolean noChest) {
-		Component title = Component.translatable("message.aliveworkplace.herder.title", villager.getAttachedOrElse(ModAttachments.MILK_COLLECTED, 0));
+		Component title = Component.translatable("message.aliveworkplace.herder.title", ModAttachments.MILK_COLLECTED.getOrElse(villager, 0));
 		String state = noChest ? "no_chest" : task == Task.TEND ? (culling ? "culling" : chore != null ? "pokemon" : "milking") : task.name().toLowerCase();
 		WorkerStatus.set(villager, title, -1f, Component.translatable("message.aliveworkplace.herder.state." + state)
 			.withStyle(noChest ? ChatFormatting.YELLOW : ChatFormatting.GRAY));

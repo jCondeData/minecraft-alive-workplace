@@ -114,7 +114,7 @@ public class LumberjackWork extends Behavior<Villager> {
 		if (block == null) {
 			return;
 		}
-		BuilderBag bag = villager.getAttachedOrCreate(ModAttachments.BUILDER_BAG);
+		BuilderBag bag = ModAttachments.BUILDER_BAG.getOrCreate(villager);
 		ItemStack axe = villager.getItemBySlot(EquipmentSlot.MAINHAND);
 
 		// 1. Drop off logs after each tree (and whenever the bag fills up).
@@ -328,8 +328,8 @@ public class LumberjackWork extends Behavior<Villager> {
 				}
 			}
 		}
-		int trees = villager.getAttachedOrElse(ModAttachments.TREES_FELLED, 0) + 1;
-		villager.setAttached(ModAttachments.TREES_FELLED, trees);
+		int trees = ModAttachments.TREES_FELLED.getOrElse(villager, 0) + 1;
+		ModAttachments.TREES_FELLED.set(villager, trees);
 		BuilderLevels.addXp(level, villager, 2, null);
 	}
 
@@ -716,7 +716,7 @@ public class LumberjackWork extends Behavior<Villager> {
 		} else {
 			io.github.jcondedata.aliveworkplace.work.Requests.clear(villager);
 		}
-		int trees = villager.getAttachedOrElse(ModAttachments.TREES_FELLED, 0);
+		int trees = ModAttachments.TREES_FELLED.getOrElse(villager, 0);
 		Component title = Component.translatable("message.aliveworkplace.lumberjack.title", trees);
 		Component line = Component.translatable("message.aliveworkplace.lumberjack.state." + phase.name().toLowerCase())
 			.withStyle(phase == Phase.NEEDS_AXE ? ChatFormatting.YELLOW : ChatFormatting.GRAY);

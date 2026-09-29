@@ -59,7 +59,7 @@ public class FarmerGameTests implements FabricGameTest {
 		net.minecraft.server.level.ServerPlayer player = helper.makeMockServerPlayerInLevel();
 		ItemStack blank = new ItemStack(io.github.jcondedata.aliveworkplace.registry.ModItems.FIELD_MARKER);
 		helper.assertTrue(Fields.assign(player, villager, blank).consumesAction() && Fields.hasField(villager), "the farmer didn't take the farm on");
-		BoundingBox box = villager.getAttached(io.github.jcondedata.aliveworkplace.registry.ModAttachments.FARM_FIELD).box();
+		BoundingBox box = io.github.jcondedata.aliveworkplace.registry.ModAttachments.FARM_FIELD.get(villager).box();
 		BoundingBox expected = BoundingBox.fromCorners(helper.absolutePos(new BlockPos(6, 1, 6)), helper.absolutePos(new BlockPos(14, 1, 14)));
 		helper.assertTrue(box.equals(expected), "took on " + box + " instead of " + expected);
 		helper.succeed();
@@ -87,12 +87,12 @@ public class FarmerGameTests implements FabricGameTest {
 		// Food to share already in their pockets: without it, an unlucky harvest could all go to the share (CI saw it).
 		villager.getInventory().addItem(new ItemStack(Items.BREAD, 9));
 		helper.succeedWhen(() -> {
-			var job = villager.getAttached(io.github.jcondedata.aliveworkplace.registry.ModAttachments.FARM_FIELD);
+			var job = io.github.jcondedata.aliveworkplace.registry.ModAttachments.FARM_FIELD.get(villager);
 			helper.assertTrue(job != null && job.adopted(), "the farmer didn't take the farm on");
 			Container chest = helper.getBlockEntity(CHEST);
 			helper.assertTrue(chest.countItem(Items.WHEAT) + chest.countItem(Items.CARROT) > 0, "no harvest in the chest; harvested "
-				+ villager.getAttachedOrElse(io.github.jcondedata.aliveworkplace.registry.ModAttachments.FARM_HARVESTED, 0) + ", bag "
-				+ villager.getAttachedOrCreate(io.github.jcondedata.aliveworkplace.registry.ModAttachments.BUILDER_BAG).stacks() + ", pockets "
+				+ io.github.jcondedata.aliveworkplace.registry.ModAttachments.FARM_HARVESTED.getOrElse(villager, 0) + ", bag "
+				+ io.github.jcondedata.aliveworkplace.registry.ModAttachments.BUILDER_BAG.getOrCreate(villager).stacks() + ", pockets "
 				+ villager.getInventory().getItems() + ", chest " + chest.getItem(0) + " " + chest.getItem(1));
 			var pockets = villager.getInventory();
 			helper.assertTrue(pockets.countItem(Items.BREAD) > 0 || pockets.countItem(Items.CARROT) > 0, "the farmer kept no food to share");
@@ -143,7 +143,7 @@ public class FarmerGameTests implements FabricGameTest {
 					helper.assertBlockPresent(Blocks.WHEAT, p);
 				}
 			}
-			int harvested = villager.getAttachedOrElse(ModAttachments.FARM_HARVESTED, 0);
+			int harvested = ModAttachments.FARM_HARVESTED.getOrElse(villager, 0);
 			helper.assertTrue(harvested >= 24, "only " + harvested + " harvested");
 			Container chest = helper.getBlockEntity(CHEST);
 			helper.assertTrue(chest.countItem(Items.WHEAT) >= 20, "only " + chest.countItem(Items.WHEAT) + " wheat in the chest");
@@ -186,7 +186,7 @@ public class FarmerGameTests implements FabricGameTest {
 		helper.setBlock(water, Blocks.WATER);
 		Villager villager = farmer(helper, new BlockPos(8, 1, 8), new BlockPos(12, 1, 8), new ItemStack(Items.BONE_MEAL, 40));
 		helper.succeedWhen(() -> {
-			int harvested = villager.getAttachedOrElse(ModAttachments.FARM_HARVESTED, 0);
+			int harvested = ModAttachments.FARM_HARVESTED.getOrElse(villager, 0);
 			helper.assertTrue(harvested >= 5, "only " + harvested + " harvested");
 			Container chest = helper.getBlockEntity(CHEST);
 			helper.assertTrue(chest.countItem(Items.WHEAT) >= 5, "only " + chest.countItem(Items.WHEAT) + " wheat in the chest");
@@ -278,7 +278,7 @@ public class FarmerGameTests implements FabricGameTest {
 			new ItemStack(Items.WHEAT_SEEDS, 64), new ItemStack(Items.WHEAT_SEEDS, 64));
 		helper.succeedWhen(() -> {
 			Container chest = helper.getBlockEntity(CHEST);
-			var bag = farmer.getAttachedOrCreate(io.github.jcondedata.aliveworkplace.registry.ModAttachments.BUILDER_BAG);
+			var bag = io.github.jcondedata.aliveworkplace.registry.ModAttachments.BUILDER_BAG.getOrCreate(farmer);
 			helper.assertTrue(chest.countItem(Items.BONE_MEAL) + bag.count(Items.BONE_MEAL) >= 1, "no bone meal yet");
 			helper.assertTrue(chest.countItem(Items.WHEAT_SEEDS) + bag.count(Items.WHEAT_SEEDS) >= 64, "composted the seeds it needs");
 		});

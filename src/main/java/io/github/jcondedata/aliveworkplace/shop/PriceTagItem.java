@@ -65,7 +65,7 @@ public class PriceTagItem extends Item {
 			io.github.jcondedata.aliveworkplace.work.ChoiceMenu.open(serverPlayer, Component.translatable("screen.aliveworkplace.price_tag.title"),
 				p -> p.isAlive() && p.getItemInHand(hand).is(ModItems.PRICE_TAG), menu -> render(menu, serverPlayer, hand));
 		}
-		return net.minecraft.world.InteractionResultHolder.sidedSuccess(stack, level.isClientSide);
+		return net.minecraft.world.InteractionResultHolder.sidedSuccess(stack, level.isClientSide());
 	}
 
 	/** The same screen, not shown to anyone (tests). */

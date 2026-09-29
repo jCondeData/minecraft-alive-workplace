@@ -7,6 +7,7 @@ import io.github.jcondedata.aliveworkplace.hall.Chronicle;
 import io.github.jcondedata.aliveworkplace.hall.Festivals;
 import io.github.jcondedata.aliveworkplace.hall.VillageHalls;
 import io.github.jcondedata.aliveworkplace.hall.VillageNeeds;
+import io.github.jcondedata.aliveworkplace.mc.Chat;
 import io.github.jcondedata.aliveworkplace.registry.ModAttachments;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -53,11 +54,11 @@ public final class Couples {
 
 	@Nullable
 	public static Partner partner(Villager villager) {
-		return villager.getAttached(ModAttachments.PARTNER);
+		return ModAttachments.PARTNER.get(villager);
 	}
 
 	public static boolean isMourning(ServerLevel level, Villager villager) {
-		Long day = villager.getAttached(ModAttachments.WIDOWED_DAY);
+		Long day = ModAttachments.WIDOWED_DAY.get(villager);
 		return day != null && Chronicle.day(level) - day < MOURNING_DAYS;
 	}
 
@@ -115,8 +116,8 @@ public final class Couples {
 			return List.of();
 		}
 		long today = Chronicle.day(level);
-		first.setAttached(ModAttachments.PARTNER, new Partner(second.getUUID(), second.getDisplayName(), today, false));
-		second.setAttached(ModAttachments.PARTNER, new Partner(first.getUUID(), first.getDisplayName(), today, false));
+		ModAttachments.PARTNER.set(first, new Partner(second.getUUID(), second.getDisplayName(), today, false));
+		ModAttachments.PARTNER.set(second, new Partner(first.getUUID(), first.getDisplayName(), today, false));
 		for (Villager v : List.of(first, second)) {
 			level.sendParticles(ParticleTypes.HEART, v.getX(), v.getEyeY() + 0.4, v.getZ(), 3, 0.3, 0.2, 0.3, 0.0);
 		}
@@ -128,11 +129,11 @@ public final class Couples {
 	/** {@code a} and {@code b} marry: at the bell, fireworks, everyone in the village the happier for it. */
 	public static void wed(ServerLevel level, BlockPos hall, Villager a, Villager b) {
 		long today = Chronicle.day(level);
-		a.setAttached(ModAttachments.PARTNER, new Partner(b.getUUID(), b.getDisplayName(), today, true));
-		b.setAttached(ModAttachments.PARTNER, new Partner(a.getUUID(), a.getDisplayName(), today, true));
+		ModAttachments.PARTNER.set(a, new Partner(b.getUUID(), b.getDisplayName(), today, true));
+		ModAttachments.PARTNER.set(b, new Partner(a.getUUID(), a.getDisplayName(), today, true));
 		BlockPos square = venue(level, hall);
 		for (Villager v : level.getEntitiesOfClass(Villager.class, VillageHalls.area(hall), Villager::isAlive)) {
-			v.setAttached(ModAttachments.FESTIVAL_DAY, today);
+			ModAttachments.FESTIVAL_DAY.set(v, today);
 		}
 		for (Villager v : List.of(a, b)) {
 			level.sendParticles(ParticleTypes.HEART, v.getX(), v.getEyeY() + 0.4, v.getZ(), 6, 0.4, 0.3, 0.4, 0.0);
@@ -146,8 +147,8 @@ public final class Couples {
 		Component name = VillageHalls.name(level, hall);
 		double r = VillageHalls.RADIUS + 32;
 		for (ServerPlayer player : level.getPlayers(p -> p.blockPosition().distSqr(hall) <= r * r)) {
-			player.displayClientMessage(Component.translatable("message.aliveworkplace.wedding", a.getDisplayName(), b.getDisplayName(), name)
-				.withStyle(ChatFormatting.LIGHT_PURPLE), false);
+			Chat.chat(player, Component.translatable("message.aliveworkplace.wedding", a.getDisplayName(), b.getDisplayName(), name)
+				.withStyle(ChatFormatting.LIGHT_PURPLE));
 		}
 		Chronicle.record(level, hall, Chronicle.Kind.WEDDING, Component.translatable("chronicle.aliveworkplace.wedding", a.getDisplayName(),
 			b.getDisplayName()));
@@ -171,9 +172,9 @@ public final class Couples {
 			return;
 		}
 		Entity other = level.getEntity(p.id());
-		if (other instanceof Villager partner && partner.hasAttached(ModAttachments.PARTNER)) {
-			partner.removeAttached(ModAttachments.PARTNER);
-			partner.setAttached(ModAttachments.WIDOWED_DAY, Chronicle.day(level));
+		if (other instanceof Villager partner && ModAttachments.PARTNER.has(partner)) {
+			ModAttachments.PARTNER.remove(partner);
+			ModAttachments.WIDOWED_DAY.set(partner, Chronicle.day(level));
 		}
 	}
 

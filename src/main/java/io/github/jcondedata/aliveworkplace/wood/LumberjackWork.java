@@ -164,7 +164,7 @@ public class LumberjackWork extends Behavior<Villager> {
 		}
 
 		// 4. A tree to cut (and while there's none, bone meal for the young ones).
-		if (tree == null || Trees.treeAt(level, tree).isEmpty()) {
+		if (tree == null || shape(level, gameTime, false).isEmpty()) {
 			tree = null;
 			chopAt = null;
 			chopProgress = 0;
@@ -175,9 +175,16 @@ public class LumberjackWork extends Behavior<Villager> {
 				status(villager, Phase.LOOKING);
 				return;
 			}
-			searchTimer = SEARCH_EVERY;
+			if (gameTime >= notTreesUntil) {
+				notTrees.clear();
+				notTreesUntil = gameTime + 1200;
+			}
 			tree = findTree(level, block, villager.blockPosition(), farm, unreachable,
-				io.github.jcondedata.aliveworkplace.work.Requests.wantedLogs(io.github.jcondedata.aliveworkplace.work.Requests.forVillage(level, villager, block)));
+				io.github.jcondedata.aliveworkplace.work.Requests.wantedLogs(io.github.jcondedata.aliveworkplace.work.Requests.forVillage(level, villager, block)),
+				notTrees);
+			// Nothing to fell for a while: look less often (a sapling takes minutes to grow anyway).
+			emptySearches = tree == null ? emptySearches + 1 : 0;
+			searchTimer = emptySearches >= 3 ? SEARCH_EVERY * 5 : SEARCH_EVERY;
 			if (tree == null) {
 				feeding = findSapling(level, villager.blockPosition(), farm);
 				walker.reset();
@@ -206,7 +213,8 @@ public class LumberjackWork extends Behavior<Villager> {
 			return;
 		}
 		villager.getBrain().setMemory(MemoryModuleType.LOOK_TARGET, new BlockPosTracker(chopAt));
-		Optional<Trees.Tree> found = Trees.treeAt(level, tree);
+		// The whole tree is worked out again only now and then while chopping, and once more just before it comes down.
+		Optional<Trees.Tree> found = shape(level, gameTime, chopProgress + 1 >= chopTotal && chopProgress > 0);
 		if (found.isEmpty()) {
 			tree = null;
 			return;
@@ -235,6 +243,28 @@ public class LumberjackWork extends Behavior<Villager> {
 		chopProgress = 0;
 		searchTimer = 0;
 		depositDue = true;
+	}
+
+	@Nullable
+	private Trees.Tree shape;
+	private long shapeUntil;
+	/** Logs on the ground that turned out not to be trees (a log cabin's corner), not looked at again for a minute. */
+	private final Set<BlockPos> notTrees = new java.util.HashSet<>();
+	private long notTreesUntil;
+	private int emptySearches;
+
+	/**
+	 * The tree being cut ({@link #tree}), worked out afresh at most every 40 ticks (a flood fill of every log and leaf) or
+	 * when {@code fresh}; in between, it only checks that its lowest log is still there.
+	 */
+	private Optional<Trees.Tree> shape(ServerLevel level, long gameTime, boolean fresh) {
+		if (!fresh && shape != null && shape.lowest().equals(tree) && gameTime < shapeUntil && Trees.isLog(level.getBlockState(tree))) {
+			return Optional.of(shape);
+		}
+		Optional<Trees.Tree> t = Trees.treeAt(level, tree);
+		shape = t.orElse(null);
+		shapeUntil = gameTime + 40;
+		return t;
 	}
 
 	/** Trees that couldn't be got at (lowest log), skipped until the next one comes down. */
@@ -322,6 +352,13 @@ public class LumberjackWork extends Behavior<Villager> {
 	@Nullable
 	public static BlockPos findTree(ServerLevel level, BlockPos block, BlockPos from, @Nullable BoundingBox farm, Set<BlockPos> unreachable,
 			Set<net.minecraft.world.item.Item> wanted) {
+		return findTree(level, block, from, farm, unreachable, wanted, new java.util.HashSet<>());
+	}
+
+	/** The same, skipping (and adding to) {@code notTrees}: logs already found not to be part of a tree. */
+	@Nullable
+	static BlockPos findTree(ServerLevel level, BlockPos block, BlockPos from, @Nullable BoundingBox farm, Set<BlockPos> unreachable,
+			Set<net.minecraft.world.item.Item> wanted, Set<BlockPos> notTrees) {
 		List<BoundingBox> keepOut = new java.util.ArrayList<>();
 		for (BuildSite site : BuildSiteManager.get(level).all()) {
 			io.github.jcondedata.aliveworkplace.blueprint.BlueprintLibrary.get(level, site.structure())
@@ -331,45 +368,39 @@ public class LumberjackWork extends Behavior<Villager> {
 		for (QuarrySite quarry : QuarrySiteManager.get(level).all()) {
 			keepOut.add(quarry.box());
 		}
-		BlockPos best = null;
-		double bestDistance = Double.MAX_VALUE;
-		boolean bestWanted = false;
-		Set<BlockPos> checked = new java.util.HashSet<>();
-		Iterable<BlockPos> around = BlockPos.betweenClosed(block.offset(-RADIUS, -6, -RADIUS), block.offset(RADIUS, 10, RADIUS));
+		// Every trunk standing on the ground, wanted kinds first, then nearest first; the first that's a real tree wins.
+		record Trunk(BlockPos pos, boolean wanted, double distance) {
+		}
+		List<Trunk> trunks = new java.util.ArrayList<>();
+		java.util.function.Consumer<BlockPos> consider = p -> {
+			BlockState state = level.getBlockState(p);
+			if (!notTrees.contains(p) && Trees.isGround(level.getBlockState(p.below())) && !unreachable.contains(p)
+				&& keepOut.stream().noneMatch(b -> b.isInside(p))) {
+				trunks.add(new Trunk(p, wanted.contains(state.getBlock().asItem()), p.distSqr(from)));
+			}
+		};
+		Trees.forEachLog(level, BoundingBox.fromCorners(block.offset(-RADIUS, -6, -RADIUS), block.offset(RADIUS, 10, RADIUS)), consider);
 		if (farm != null) {
 			// The tree farm too, even where it's further out than the lumberjack would look on their own.
-			around = com.google.common.collect.Iterables.concat(around,
-				BlockPos.betweenClosed(farm.minX(), farm.minY() - 2, farm.minZ(), farm.maxX(), farm.maxY() + 4, farm.maxZ()));
+			Trees.forEachLog(level, new BoundingBox(farm.minX(), farm.minY() - 2, farm.minZ(), farm.maxX(), farm.maxY() + 4, farm.maxZ()), consider);
 		}
-		for (BlockPos p : around) {
-			BlockState state = level.getBlockState(p);
-			if (!Trees.isLog(state) || !Trees.isGround(level.getBlockState(p.below()))) {
-				continue; // only trunks standing on the ground
-			}
-			BlockPos trunk = p.immutable();
-			if (checked.contains(trunk) || unreachable.contains(trunk) || keepOut.stream().anyMatch(b -> b.isInside(trunk))) {
+		trunks.sort(java.util.Comparator.comparing((Trunk t) -> !t.wanted()).thenComparingDouble(Trunk::distance));
+		Set<BlockPos> checked = new java.util.HashSet<>();
+		for (Trunk trunk : trunks) {
+			if (!checked.add(trunk.pos())) {
 				continue;
 			}
-			double d = trunk.distSqr(from);
-			boolean isWanted = wanted.contains(state.getBlock().asItem());
-			if (bestWanted && !isWanted || isWanted == bestWanted && d >= bestDistance) {
-				continue; // a wanted kind comes first, then the nearest
-			}
-			Optional<Trees.Tree> t = Trees.treeAt(level, trunk);
-			if (t.isPresent() && unreachable.contains(t.get().lowest())) {
-				checked.addAll(t.get().base());
+			Optional<Trees.Tree> t = Trees.treeAt(level, trunk.pos());
+			if (t.isEmpty()) {
+				notTrees.add(trunk.pos());
 				continue;
 			}
-			if (t.isPresent()) {
-				checked.addAll(t.get().base());
-				best = t.get().lowest();
-				bestDistance = d;
-				bestWanted = isWanted;
-			} else {
-				checked.add(trunk);
+			checked.addAll(t.get().base());
+			if (!unreachable.contains(t.get().lowest())) {
+				return t.get().lowest();
 			}
 		}
-		return best;
+		return null;
 	}
 
 	// --- bone meal -----------------------------------------------------------------------------

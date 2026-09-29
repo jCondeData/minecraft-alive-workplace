@@ -37,6 +37,32 @@ public final class Walker {
 		this.speed = speed;
 	}
 
+	/** Ticks to wait before asking for a new path when the last one couldn't get there (pathfinding is costly). */
+	static final int RETRY_TICKS = 20;
+	private int retryWait;
+
+	private void setWalkTarget(Villager villager, BlockPos pos, int closeEnough) {
+		retryWait = requestWalk(villager, pos, speed, closeEnough, retryWait);
+	}
+
+	/**
+	 * Asks vanilla's walking behaviour to take the villager to {@code pos}. It drops the target when it arrives or when it
+	 * finds no path; after a failed path the next try waits {@link #RETRY_TICKS} (instead of a fresh path search every
+	 * tick: pathfinding is most of what villagers cost), and getting unstuck is left to the hop. Returns the new wait.
+	 */
+	public static int requestWalk(Villager villager, BlockPos pos, float speed, int closeEnough, int retryWait) {
+		var brain = villager.getBrain();
+		boolean set = brain.getMemory(MemoryModuleType.WALK_TARGET).map(t -> t.getTarget().currentBlockPosition().equals(pos)).orElse(false);
+		if (set) {
+			return 0;
+		}
+		if (brain.hasMemoryValue(MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE) && retryWait + 1 < RETRY_TICKS) {
+			return retryWait + 1;
+		}
+		brain.setMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(pos, speed, closeEnough));
+		return 0;
+	}
+
 	/** Lets the worker reach targets up to {@code blocks} above where it stands (default 2). */
 	public Walker reachingUp(int blocks) {
 		this.below = blocks;
@@ -107,7 +133,7 @@ public final class Walker {
 			walkTicks = 0;
 			bestDistance = distance;
 		}
-		villager.getBrain().setMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(pos, speed, standOn ? 0 : 1));
+		setWalkTarget(villager, pos, standOn ? 0 : 1);
 		villager.getBrain().setMemory(MemoryModuleType.LOOK_TARGET, new BlockPosTracker(pos));
 		if (distance < bestDistance - 0.3) {
 			bestDistance = distance;

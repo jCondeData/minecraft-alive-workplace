@@ -41,6 +41,42 @@ public final class Trees {
 		return state.is(BlockTags.LOGS);
 	}
 
+	/**
+	 * Calls {@code action} with every log in {@code box} (loaded chunks only). Chunk sections with no log in them at all
+	 * are skipped without looking at their blocks, which makes this cheap in open country.
+	 */
+	public static void forEachLog(net.minecraft.server.level.ServerLevel level, net.minecraft.world.level.levelgen.structure.BoundingBox box,
+			java.util.function.Consumer<net.minecraft.core.BlockPos> action) {
+		int minY = Math.max(box.minY(), level.getMinBuildHeight());
+		int maxY = Math.min(box.maxY(), level.getMaxBuildHeight() - 1);
+		for (int cx = box.minX() >> 4; cx <= box.maxX() >> 4; cx++) {
+			for (int cz = box.minZ() >> 4; cz <= box.maxZ() >> 4; cz++) {
+				if (!level.hasChunk(cx, cz)) {
+					continue;
+				}
+				net.minecraft.world.level.chunk.LevelChunk chunk = level.getChunk(cx, cz);
+				for (int sy = minY >> 4; sy <= maxY >> 4; sy++) {
+					net.minecraft.world.level.chunk.LevelChunkSection section = chunk.getSection(chunk.getSectionIndexFromSectionY(sy));
+					if (section.hasOnlyAir() || !section.maybeHas(Trees::isLog)) {
+						continue;
+					}
+					int x0 = Math.max(box.minX(), cx << 4), x1 = Math.min(box.maxX(), (cx << 4) + 15);
+					int z0 = Math.max(box.minZ(), cz << 4), z1 = Math.min(box.maxZ(), (cz << 4) + 15);
+					int y0 = Math.max(minY, sy << 4), y1 = Math.min(maxY, (sy << 4) + 15);
+					for (int y = y0; y <= y1; y++) {
+						for (int z = z0; z <= z1; z++) {
+							for (int x = x0; x <= x1; x++) {
+								if (isLog(section.getBlockState(x & 15, y & 15, z & 15))) {
+									action.accept(new net.minecraft.core.BlockPos(x, y, z));
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
 	private static boolean isNaturalLeaves(BlockState state) {
 		return state.getBlock() instanceof LeavesBlock && state.hasProperty(LeavesBlock.PERSISTENT) && !state.getValue(LeavesBlock.PERSISTENT)
 			|| isFungusCap(state);

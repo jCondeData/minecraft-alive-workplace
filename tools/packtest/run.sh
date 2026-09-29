@@ -4,6 +4,8 @@
 # clashes the dev environment can't (it only loads a few mods, with Mojang names).
 #   tools/packtest/run.sh                  # uses the newest build/libs jar
 #   PACK_VERSION_URL=... tools/packtest/run.sh
+#   PERF=true PLOTS=20 tools/packtest/run.sh   # performance mode: /workplace benchmark fills an area with busy
+#                                              # workers; tick times before/after and a CPU profile of our code
 # Needs ~6 GB of RAM and ~1 GB of disk; takes ~5 minutes. Output: build/packtest/server/server.log
 set -euo pipefail
 cd "$(dirname "$0")/../.."
@@ -43,7 +45,9 @@ cd "$SERVER"
 rm -f console && mkfifo console
 sleep 100000 > console &
 KEEP=$!
-java -Xmx5G -Xms1G -jar fabric-server-launch.jar nogui < console > server.log 2>&1 &
+JAVA_OPTS=""
+if [ "${PERF:-false}" = "true" ]; then JAVA_OPTS="-Daliveworkplace.benchmark=true"; fi
+java -Xmx5G -Xms1G $JAVA_OPTS -jar fabric-server-launch.jar nogui < console > server.log 2>&1 &
 PID=$!
 for _ in $(seq 1 90); do
   sleep 10
@@ -52,8 +56,33 @@ for _ in $(seq 1 90); do
 done
 grep -q "Alive Workplace ready" server.log || { echo "Alive Workplace didn't load"; }
 
-# 3. Our content in the pack: blueprints, templates, villages with our houses.
 say() { echo "$1" > console; sleep "${2:-3}"; }
+
+# Performance mode: the same area idle, then full of workers; tick times and a profile of the server thread.
+if [ "${PERF:-false}" = "true" ]; then
+  PLOTS="${PLOTS:-20}"
+  ROWS=$(( (PLOTS + 4) / 5 ))
+  say "forceload add 1000 1000 1190 $(( 1000 + ROWS * 32 ))" 60   # at most 256 chunks: up to 40 plots
+  say "time set 1500"
+  say "gamerule doDaylightCycle false"
+  say "tick query" 30
+  say "execute positioned 1000 100 1000 run workplace benchmark $PLOTS" 50
+  # Starting the recording pauses the server for a moment: let that tick pass before measuring.
+  jcmd $PID JFR.start name=perf settings=profile duration=90s filename="$PWD/perf.jfr" > /dev/null
+  sleep 15
+  say "tick query" 40
+  say "tick query" 45
+  say "workplace sites" 5
+  say "stop" 30
+  kill $KEEP 2>/dev/null || true
+  wait $PID 2>/dev/null || true
+  echo "--- tick times: idle, then twice with the workers (full log: $SERVER/server.log)"
+  grep -E "Benchmark:|Average time per tick|Percentiles|Crash|Exception" server.log | grep -v "No data fixer" || true
+  python3 ../../../tools/packtest/perf.py perf.jfr
+  exit 0
+fi
+
+# 3. Our content in the pack: blueprints, templates, villages with our houses.
 say "workplace blueprints"
 say "forceload add 320 320 480 480" 20
 say "forceload add 720 320 880 480" 20

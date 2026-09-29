@@ -2,6 +2,15 @@
 
 ## Unreleased
 
+## 0.73.1 — 2026-09-28
+
+### Changed
+- **Workers are much lighter on the server.** A worker whose path to somewhere failed used to ask for a new one every
+  tick; now it waits a second before trying again (and hops when stuck, as before). Lumberjacks look for trees without
+  reading every block around them, and don't work out the whole tree again every tick while chopping. In the full
+  Cobbleverse pack, 80 busy workers now take about 7 ms of the 50 ms each tick has, down from 10 ms; lumberjacks cost a
+  seventh of what they did.
+
 ## 0.73.0 — 2026-09-28
 
 ### Added

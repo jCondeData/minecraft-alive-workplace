@@ -58,6 +58,7 @@ public class AliveWorkplace implements ModInitializer {
 		io.github.jcondedata.aliveworkplace.build.MaterialFamilies.init();
 		BlueprintOutline.init();
 		WorkplaceCommand.init();
+		io.github.jcondedata.aliveworkplace.command.Benchmark.init();
 		LOG.info("Alive Workplace ready — go hire a builder.");
 	}
 }

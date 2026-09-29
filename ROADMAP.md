@@ -339,7 +339,12 @@ Villagers work as a unit: what one worker makes, the others can use. No particul
 - [x] Boot test in the full Cobbleverse 1.7.42 pack (`tools/packtest/run.sh`: all 136 mods + this jar on a real
   Fabric server): starts clean, commands and templates work, a Repurposed Structures birch village generated with
   a trainer's house and a post office
-- [ ] Performance with many builders in the full pack; a play session in the pack's client
+- [x] Performance with many builders in the full pack (`PERF=true tools/packtest/run.sh`: `/workplace benchmark`, only
+  registered with `-Daliveworkplace.benchmark=true`, fills 40 plots with 80 busy workers; `tick query` before/after and
+  a JFR profile read by `tools/packtest/perf.py`). Found and fixed: pathfinding retried every tick after a failed path
+  (54% of the server thread → 23%; `Walker.requestWalk` waits 20 ticks), lumberjacks' tree search and per-tick flood
+  fill (7% → 1%). 80 workers: 2 ms → ~7 ms a tick; our own code ~12% of that
+- [ ] A play session in the pack's client (owner)
 
 ---
 

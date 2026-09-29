@@ -42,7 +42,11 @@ The owner (Jesse) does not write code: sessions are expected to work autonomousl
   Never `pkill -f`/`pgrep -f` a pattern that also appears in your own command line (it kills your shell).
 - `tools/packtest/run.sh` — boots a real Cobbleverse server (every pack mod, production Fabric) with the newest
   `build/libs` jar, generates a vanilla and a Repurposed Structures village and looks for our workstations. Needs
-  ~6 GB RAM, ~5 min; don't run it alongside a Gradle build (memory).
+  ~6 GB RAM, ~5 min; don't run it alongside a Gradle build (memory). `PERF=true PLOTS=40` is the performance mode:
+  `/workplace benchmark` (registered only with `-Daliveworkplace.benchmark=true`) fills an area with busy workers,
+  `tick query` gives tick times before/after, and `tools/packtest/perf.py` reads a JFR profile of the server thread
+  (share in our code by job, villager pathfinding). Workers set walk targets through `Walker.requestWalk`, which waits
+  after a failed path: re-asking every tick made pathfinding over half the server's time.
 - Tests that grow trees with a vanilla feature pass a fixed `RandomSource` (see `LumberjackGameTests.shapes()`): with
   the level's random, a huge fungus grows twice as tall one time in twelve and CI failed on a shape nobody had seen.
 - CI logs are readable without a token: `curl -sL https://api.github.com/repos/jCondeData/minecraft-alive-workplace/actions/jobs/<job id>/logs`

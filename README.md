@@ -489,8 +489,14 @@ and restart; out-of-range values are clamped):
 | `villageRadius` | 48 | workers whose workstations are this close together share their chests (0 turns sharing off) |
 | `dollarsPerEmerald` | 100 | CobbleDollars per emerald for lessons, shop prices and fares |
 
+## Performance
+Tested on a real server with the whole Cobbleverse pack: 80 busy workers (40 builders, and miners, lumberjacks,
+porters, carpenters and masons) took an average tick from 2 ms to about 7 ms, of the 50 ms a tick may take. Alive
+Workplace's own code is about a tenth of that; the rest is what any 80 villagers cost, mostly finding their way
+around. (`PERF=true tools/packtest/run.sh` runs the test.)
+
 ## What's next
-Next up are Pokémon work partners and Cobblemon jobs (Orchard Keeper, Ball Smith, Chef). See [ROADMAP.md](ROADMAP.md).
+Next up are the Chef and the Fossil Scientist (with Cobblemon). See [ROADMAP.md](ROADMAP.md).
 
 ## Building from source
 ```

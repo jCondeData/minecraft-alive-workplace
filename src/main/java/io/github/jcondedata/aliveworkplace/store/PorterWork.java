@@ -94,7 +94,7 @@ public class PorterWork extends Behavior<Villager> {
 			ownerTimer = 200;
 			Porters.answerToOwner(level, villager, storehouse);
 		}
-		List<BlockPos> store = SupplyContainers.find(level, storehouse, null);
+		List<BlockPos> store = store(level, storehouse, gameTime);
 		if (store.isEmpty()) {
 			target = null;
 			status(villager, Phase.NO_CHESTS, null);
@@ -134,6 +134,20 @@ public class PorterWork extends Behavior<Villager> {
 		}
 		target = null;
 		walker.reset();
+	}
+
+	private List<BlockPos> storeChests = List.of();
+	private long storeUntil;
+	private BlockPos storeAt = BlockPos.ZERO;
+
+	/** The chests by the storehouse (looked up once a second, not every tick). */
+	private List<BlockPos> store(ServerLevel level, BlockPos storehouse, long gameTime) {
+		if (gameTime >= storeUntil || !storehouse.equals(storeAt)) {
+			storeChests = SupplyContainers.find(level, storehouse, null);
+			storeAt = storehouse;
+			storeUntil = gameTime + 20;
+		}
+		return storeChests;
 	}
 
 	/** Carries the bag home and empties it into the storehouse chests. */

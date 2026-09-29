@@ -319,7 +319,7 @@ public class BuilderWork extends Behavior<Villager> {
 	}
 
 	/** Nothing to help with right now (the lead is at the end of a stage): hang around the site. */
-	private static void idleNear(Villager villager, BuildSite site, BuildPlan plan) {
+	private void idleNear(Villager villager, BuildSite site, BuildPlan plan) {
 		villager.setItemSlot(EquipmentSlot.MAINHAND, ItemStack.EMPTY);
 		if (site.bench() != null && !near(villager, site.bench(), 6)) {
 			walkTo(villager, site.bench(), 3);
@@ -440,8 +440,11 @@ public class BuilderWork extends Behavior<Villager> {
 		return false;
 	}
 
-	private static void walkTo(Villager villager, BlockPos pos, int closeEnough) {
-		villager.getBrain().setMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(pos, SPEED, closeEnough));
+	/** Ticks since a path to where we're going last failed (see {@link io.github.jcondedata.aliveworkplace.work.Walker#requestWalk}). */
+	private int retryWait;
+
+	private void walkTo(Villager villager, BlockPos pos, int closeEnough) {
+		retryWait = io.github.jcondedata.aliveworkplace.work.Walker.requestWalk(villager, pos, SPEED, closeEnough, retryWait);
 		villager.getBrain().setMemory(MemoryModuleType.LOOK_TARGET, new BlockPosTracker(pos));
 	}
 

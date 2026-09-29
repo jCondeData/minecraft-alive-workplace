@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+## 0.123.0 — 2026-09-29
+
+### Added
+- **Moods**: every grown villager in a village with a Village Hall has a mood from their own day (fed, a bed, a job,
+  health, decorations near home, company), shown with its reasons on the hall's list. Unhappy villagers work slower,
+  happy ones faster. (`villagerMoods` in the config.)
+
 ## 0.122.0 — 2026-09-29
 
 ### Added

@@ -573,8 +573,11 @@ Every villager a person you get to know, the way MineColonies' citizens are — 
   trade (`people/Families`: `PARENTS` on the baby — names and trades — from `VillageGrowth` and, by a mixin on
   `getBreedOffspring`, vanilla breeding; in the hall's round a child who has grown up goes in the chronicle, and a
   grown child without a job takes a free workstation of a parent's trade)
-- [ ] Moods: each villager's own mood from their day (fed, a bed, a job, well, their traits, decorations and friends
-  near home), with the reasons on the hall's list; the unhappy work slower
+- [x] Moods: each villager's own mood from their day (fed, a bed, a job, well, their traits, decorations and friends
+  near home), with the reasons on the hall's list; the unhappy work slower (`people/Moods`: 50 ± fed 15/hungry 20, bed
+  15, job 10/jobless 5, ill 20, cheerful 10, decorations within 16 of the bed 5 a point up to 15, company within 6 blocks
+  5; under 30 works 15% slower, 75 and up 7% faster, in `BuilderLevels.delay`; only in a village with a hall; worked out
+  every 10 seconds at most; `villagerMoods` in the config, off in gametests)
 
 ## Milestone 16 — More work
 - [ ] Netherworker: goes through the village's Nether portal on expeditions and comes back with the Nether's goods

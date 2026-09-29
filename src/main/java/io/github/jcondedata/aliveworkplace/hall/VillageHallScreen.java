@@ -384,6 +384,18 @@ public final class VillageHallScreen {
 		for (Component doing : doing(level, villager)) {
 			lore.add(plain(doing, ChatFormatting.WHITE));
 		}
+		io.github.jcondedata.aliveworkplace.people.Moods.Mood mood = io.github.jcondedata.aliveworkplace.people.Moods.of(villager);
+		if (mood != null) {
+			net.minecraft.network.chat.MutableComponent why = Component.empty();
+			List<Component> reasons = new ArrayList<>(mood.bad());
+			reasons.addAll(mood.good());
+			for (int i = 0; i < Math.min(4, reasons.size()); i++) {
+				why.append(i == 0 ? Component.empty() : Component.literal(", ")).append(reasons.get(i));
+			}
+			lore.add(line(Component.translatable("screen.aliveworkplace.hall.mood", mood.title(), why),
+				mood.score() >= io.github.jcondedata.aliveworkplace.people.Moods.HAPPY ? ChatFormatting.GREEN
+					: mood.score() < io.github.jcondedata.aliveworkplace.people.Moods.UNHAPPY ? ChatFormatting.RED : ChatFormatting.GRAY));
+		}
 		io.github.jcondedata.aliveworkplace.people.Families.Parents parents = io.github.jcondedata.aliveworkplace.people.Families.parents(villager);
 		if (parents != null) {
 			lore.add(line(Component.translatable("screen.aliveworkplace.hall.child_of", parents.mother(), parents.father()), ChatFormatting.GRAY));

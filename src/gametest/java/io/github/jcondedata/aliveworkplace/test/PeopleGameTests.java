@@ -265,4 +265,40 @@ public class PeopleGameTests implements FabricGameTest {
 			helper.succeed();
 		});
 	}
+
+	/** A villager's mood follows their day; the unhappy work slower, the happy faster. */
+	@GameTest(template = AREA, timeoutTicks = 100, batch = "moodsFollowTheirDay")
+	public void moodsFollowTheirDay(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		int radius = VillageHalls.RADIUS;
+		boolean moods = io.github.jcondedata.aliveworkplace.people.Moods.ENABLED;
+		VillageHalls.RADIUS = 16;
+		io.github.jcondedata.aliveworkplace.people.Moods.ENABLED = true;
+		Leftovers.after(helper, () -> {
+			VillageHalls.RADIUS = radius;
+			io.github.jcondedata.aliveworkplace.people.Moods.ENABLED = moods;
+			io.github.jcondedata.aliveworkplace.people.Moods.forget();
+		});
+		ServerLevel level = helper.getLevel();
+		helper.setBlock(HALL, ModBlocks.VILLAGE_HALL);
+		Villager villager = helper.spawn(EntityType.VILLAGER, new BlockPos(4, 2, 4));
+		villager.setVillagerData(villager.getVillagerData().setProfession(net.minecraft.world.entity.npc.VillagerProfession.NONE));
+		helper.runAfterDelay(2, () -> {
+			villager.setAttached(ModAttachments.LAST_MEAL, level.getGameTime() - 2 * VillageNeeds.DAY);
+			var sad = io.github.jcondedata.aliveworkplace.people.Moods.work(level, villager);
+			helper.assertTrue(sad.score() < io.github.jcondedata.aliveworkplace.people.Moods.UNHAPPY, "hungry, homeless, jobless: " + sad);
+			io.github.jcondedata.aliveworkplace.people.Moods.forget();
+			float slow = io.github.jcondedata.aliveworkplace.people.Moods.pace(villager);
+			helper.assertTrue(slow > 1f, "unhappy pace: " + slow);
+			villager.setAttached(ModAttachments.LAST_MEAL, level.getGameTime());
+			villager.getBrain().setMemory(net.minecraft.world.entity.ai.memory.MemoryModuleType.HOME,
+				net.minecraft.core.GlobalPos.of(level.dimension(), helper.absolutePos(new BlockPos(6, 2, 6))));
+			villager.setVillagerData(villager.getVillagerData().setProfession(net.minecraft.world.entity.npc.VillagerProfession.FARMER));
+			var glad = io.github.jcondedata.aliveworkplace.people.Moods.work(level, villager);
+			helper.assertTrue(glad.score() >= io.github.jcondedata.aliveworkplace.people.Moods.HAPPY, "fed, a bed and a job: " + glad);
+			io.github.jcondedata.aliveworkplace.people.Moods.forget();
+			helper.assertTrue(io.github.jcondedata.aliveworkplace.people.Moods.pace(villager) < 1f, "happy pace");
+			helper.succeed();
+		});
+	}
 }

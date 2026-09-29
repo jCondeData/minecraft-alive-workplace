@@ -198,6 +198,11 @@ The hall's list says who's ill. `villagerSickness` in the config turns it off.
 
 ![A builder on the hall's list: Dara, a Novice Builder, Clever and Nimble](docs/media/people.png)
 
+**Moods.** Every grown villager in a village with a hall has a **mood**, 0 to 100, which the hall's list shows with its
+reasons: fed or hungry, a bed of their own or not, a job or not, ill, cheerful by nature, decorations near their home,
+company. **Unhappy** villagers (under 30) work 15% slower; **happy** ones (75 and up) 7% faster. `villagerMoods` in the
+config turns it off.
+
 **Families.** A baby remembers its parents — the hall's list says whose child they are. When they grow up the chronicle
 says so, and a grown child without a job **takes up a parent's trade** if the village has a free workstation for it.
 
@@ -880,6 +885,7 @@ and restart; out-of-range values are clamped):
 | `villagerNames` | true | villagers in a village with a Village Hall get names |
 | `villagerTraits` | true | villagers have traits (diligent, lazy, nimble, clever, strong, cheerful, glutton, frugal) |
 | `villagerSickness` | true | villagers in a village with a Village Hall fall ill now and then (a Nurse cures them) |
+| `villagerMoods` | true | villagers in a village with a Village Hall have moods that change how fast they work |
 | `marketDays` | true | a village with a Village Hall and a Market Square holds a market once a week |
 | `villageRaids` | true | monsters raid villages with a Village Hall and 8 or more villagers at night now and then |
 | `villageRadius` | 48 | workers whose workstations are this close together share their chests (0 turns sharing off) |

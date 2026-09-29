@@ -115,7 +115,8 @@ The owner (Jesse) does not write code: sessions are expected to work autonomousl
 - `people/` — villagers as people: `Names` (first names for villagers in a hall's village, given in
   `VillageNeeds.check`), `Traits` (one or two per villager from the UUID; read by `BuilderLevels`, `Walker`, `Guards`,
   `VillageNeeds`; off in gametests unless a test turns them on), `Sickness` (falling ill in the hall's round, half pace;
-  cured by `nurse/NurseWork` with a remedy), `Families` (parents on babies; grown children take up the family trade)
+  cured by `nurse/NurseWork` with a remedy), `Families` (parents on babies; grown children take up the family trade),
+  `Moods` (each villager's mood from their day, in `BuilderLevels.delay`)
 - `research/` — the Scholar (Scholar's Desk): `Research` (the tree, kept in the Village Hall; bonuses read by
   `VillageNeeds`, `Guards`, `Partners`, `Schools`), `ScholarWork`, `ResearchScreen`; `research/*` blueprints are hidden
   from the Blueprint Table (`BlueprintLibrary.isWorldgenPiece`)

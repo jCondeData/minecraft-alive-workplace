@@ -300,11 +300,31 @@ def mortuary(b, style):
     b.set(1, 2, 3, "candle", candles=3, lit=False, waterlogged=False)
 
 
+def tinkers_shop(b, style):
+    """A Tinker's Bench, a chest of ore and redstone, an anvil: the tinkerer makes the builders' redstone and iron parts
+    and mends the iron golems."""
+    b.set(1, 1, 6, "aliveworkplace:tinkers_bench", facing="east")
+    b.set(1, 1, 5, "chest", facing="east", type="single", waterlogged=False)
+    b.set_nbt(1, 1, 5, Compound({"LootTable": String("aliveworkplace:chests/village_tinkers_shop"), "id": String("minecraft:chest")}))
+    b.set(1, 1, 3, "anvil", facing="north")
+    b.set(1, 1, 2, "chain", axis="y", waterlogged=False)
+
+
+def sifting_shed(b, style):
+    """A Sieve, a chest of gravel and sand, a heap of gravel and sand: the sifter shakes them through for what's hidden in them."""
+    b.set(1, 1, 6, "aliveworkplace:sieve", facing="east")
+    b.set(1, 1, 5, "chest", facing="east", type="single", waterlogged=False)
+    b.set_nbt(1, 1, 5, Compound({"LootTable": String("aliveworkplace:chests/village_sifting_shed"), "id": String("minecraft:chest")}))
+    b.set(1, 1, 3, "gravel")
+    b.set(1, 1, 2, "sand")  # (no barrel: that's a fisherman's job block)
+
+
 VILLAGE_HOUSES = {"trainers_house": trainers_house, "guard_house": guard_house, "clinic": clinic, "post_office": post_office,
                   "leaders_hall": leaders_hall, "school": school, "trade_hall": trade_hall, "orchard_house": orchard_house,
                   "ball_workshop": ball_workshop, "ferry_house": ferry_house, "storehouse": storehouse_room,
                   "carpenters_workshop": carpenters_workshop, "kitchen": kitchen,
                   "fossil_lab": fossil_lab, "flower_shop": flower_shop, "ranch_house": ranch_house,
-                  "schoolhouse": schoolhouse, "inn_room": inn_room, "mortuary": mortuary}
+                  "schoolhouse": schoolhouse, "inn_room": inn_room, "mortuary": mortuary,
+                  "tinkers_shop": tinkers_shop, "sifting_shed": sifting_shed}
 
 

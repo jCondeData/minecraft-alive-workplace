@@ -2,6 +2,16 @@
 
 ## Unreleased
 
+## 0.125.0 — 2026-09-29
+
+### Added
+- **Tinkerers** (new job, the Tinker's Bench): they make the redstone and iron parts builders are waiting for — pistons,
+  rails, hoppers, repeaters, lanterns, iron bars, doors, copper blocks — firing raw ore into ingots first when that's all
+  there is (a coal for every 8 ore). Between jobs they mend the village's hurt iron golems with iron ingots.
+- **Tinker's Workshop** blueprint (and its upgrade): a brick workshop with a forge, a smoking chimney and open trusses;
+  II adds a storage loft, a cart track and a lightning rod.
+- Villages now grow Tinker's Shops and Sifting Sheds too.
+
 ## 0.124.0 — 2026-09-29
 
 ### Added

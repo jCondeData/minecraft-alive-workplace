@@ -147,7 +147,8 @@ public class ScreenshotHarness implements ClientModInitializer {
 			return;
 		}
 		if ("gallery".equals(System.getProperty("aliveworkplace.scene")) || "decor".equals(System.getProperty("aliveworkplace.scene"))
-			|| "styles".equals(System.getProperty("aliveworkplace.scene")) || "defences".equals(System.getProperty("aliveworkplace.scene"))) {
+			|| "styles".equals(System.getProperty("aliveworkplace.scene")) || "defences".equals(System.getProperty("aliveworkplace.scene"))
+			|| "workshops".equals(System.getProperty("aliveworkplace.scene"))) {
 			galleryScene(mc, mc.getSingleplayerServer());
 			return;
 		}
@@ -1746,6 +1747,7 @@ public class ScreenshotHarness implements ClientModInitializer {
 		tick++;
 		List<StarterBlueprints.Entry> all = "decor".equals(System.getProperty("aliveworkplace.scene")) ? StarterBlueprints.DECORATIONS
 			: "defences".equals(System.getProperty("aliveworkplace.scene")) ? StarterBlueprints.DEFENCES
+			: "workshops".equals(System.getProperty("aliveworkplace.scene")) ? List.of(StarterBlueprints.TINKERS_WORKSHOP, StarterBlueprints.TINKERS_WORKSHOP_2)
 			: "styles".equals(System.getProperty("aliveworkplace.scene")) ? styledGallery() : StarterBlueprints.ALL;
 		if (tick == 1) {
 			mc.options.renderDistance().set(6);

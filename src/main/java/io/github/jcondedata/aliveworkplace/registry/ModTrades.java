@@ -25,6 +25,7 @@ public final class ModTrades {
 		undertakerTrades();
 		scholarTrades();
 		sifterTrades();
+		tinkererTrades();
 		ballSmithTrades();
 		porterTrades();
 		carpenterTrades();
@@ -227,7 +228,26 @@ public final class ModTrades {
 		});
 	}
 
-	/** Orchard Keepers buy and sell fruit; with Cobblemon, apricorns and berries too. */
+	/** Tinkerers buy raw iron and redstone and sell the parts they make. */
+	private static void tinkererTrades() {
+		TradeOfferHelper.registerVillagerOffers(ModVillagers.TINKERER, 1, offers -> {
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.RAW_IRON, 6), new ItemStack(Items.EMERALD), 16, 2, 0.05f));
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 1), new ItemStack(Items.RAIL, 12), 12, 1, 0.05f));
+		});
+		TradeOfferHelper.registerVillagerOffers(ModVillagers.TINKERER, 2, offers -> {
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.REDSTONE, 16), new ItemStack(Items.EMERALD), 16, 10, 0.05f));
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 2), new ItemStack(Items.LANTERN, 3), 12, 5, 0.05f));
+		});
+		TradeOfferHelper.registerVillagerOffers(ModVillagers.TINKERER, 3, offers -> {
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 3), new ItemStack(Items.PISTON, 2), 8, 15, 0.05f));
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 4), new ItemStack(Items.POWERED_RAIL, 6), 8, 15, 0.05f));
+		});
+		TradeOfferHelper.registerVillagerOffers(ModVillagers.TINKERER, 4, offers ->
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 5), new ItemStack(Items.HOPPER), 8, 20, 0.05f)));
+		TradeOfferHelper.registerVillagerOffers(ModVillagers.TINKERER, 5, offers ->
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 8), new ItemStack(Items.CRAFTER), 4, 30, 0.05f)));
+	}
+
 	/** Sifters buy gravel and sand and sell what they find in them. */
 	private static void sifterTrades() {
 		TradeOfferHelper.registerVillagerOffers(ModVillagers.SIFTER, 1, offers -> {
@@ -378,6 +398,7 @@ public final class ModTrades {
 			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 4), new ItemStack(Items.HONEYCOMB_BLOCK, 2), 8, 30, 0.05f)));
 	}
 
+	/** Orchard Keepers buy and sell fruit; with Cobblemon, apricorns and berries too. */
 	private static void orchardKeeperTrades() {
 		TradeOfferHelper.registerVillagerOffers(ModVillagers.ORCHARD_KEEPER, 1, offers -> {
 			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.SWEET_BERRIES, 22), new ItemStack(Items.EMERALD), 16, 2, 0.05f));

@@ -270,6 +270,7 @@ where they take tools and supplies from and where their work goes.
 | Florist | Flower Stand | bone meal (flowers to pot) | nothing (grass round the stand) |
 | Scholar | Scholar's Desk | paper, books, emeralds | sneak-right-click: pick the research |
 | Sifter | Sieve | gravel, sand, dirt or soul sand | nothing |
+| Tinkerer | Tinker's Bench | coal (iron ingots to mend golems) | nothing (uses the builders' ore) |
 | Undertaker | Undertaker's Table | golden apples, healing potions or totems | nothing (graves within 32 blocks) |
 | Innkeeper | Inn Counter | — | nothing (hire the travellers who come to stay) |
 | Teacher | Teacher's Desk | — | nothing (children within 32 blocks) |
@@ -458,6 +459,20 @@ seeds, saplings and bone meal; soul sand gives quartz, nether wart, gold and glo
 now and then turn up an **evolution stone**. What comes out goes in the chest (a Porter takes it to the storehouse);
 with nothing to sift they ask for gravel on the requests board. What each block gives is a loot table
 (`aliveworkplace:sifting/<block>`), so data packs can change it.
+
+## Tinkerers
+![The Tinker's Workshop I and II](docs/media/tinkers-workshop.png)
+
+Craft a **Tinker's Bench** (iron, redstone, iron over planks, a crafting table, planks, with planks for legs) and place it
+near a villager without a job: they become a **Tinkerer**. When a builder nearby is waiting for **redstone and iron
+parts** — pistons, rails, hoppers, repeaters and comparators, lanterns, iron bars and doors, chains, cauldrons, copper
+blocks — the tinkerer makes them from the builder's own stock and brings them over, just as the carpenter does with
+wood. If there are no ingots yet they fire **raw ore** in the bench's little forge first, for a **coal or charcoal** in
+every eight. Between jobs they look after the village's **iron golems**: one that's badly hurt is patched up with iron
+ingots from the chests by the bench (or the storehouse's). What counts as a tinkerer's part is the item tag
+`aliveworkplace:tinkering`, so data packs can add to it. The **Tinker's Workshop** (Blueprint Table) is a brick
+workshop with a forge and a smoking chimney; the **Tinker's Workshop II** runs it back with a storage loft and a cart
+track. Villages sometimes grow a Tinker's Shop, and a Sifting Shed for a sifter.
 
 ## Fishermen
 ![A fisherman villager with a bobber out on the pond](docs/media/fisherman.png)

@@ -415,6 +415,37 @@ public class BuilderGameTests implements FabricGameTest {
 		});
 	}
 
+	/** A builder short of iron bars, with only raw iron and coal: the village's tinkerer fires the ore and makes the bars. */
+	@GameTest(template = AREA, timeoutTicks = 3000, batch = "tinkerer")
+	public void tinkererFiresTheOreForTheIronBarsTheBuilderNeeds(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		Leftovers.village(helper, 48);
+		ServerLevel level = helper.getLevel();
+		BlockPos src = new BlockPos(12, 2, 12);
+		for (int x = 0; x < 3; x++) {
+			helper.setBlock(src.offset(x, 0, 0), Blocks.IRON_BARS);
+		}
+		ResourceLocation wall = ResourceLocation.fromNamespaceAndPath("aliveworkplace_test", "bars_" + Long.toHexString(level.getGameTime()));
+		level.getStructureManager().getOrCreate(wall).fillFromWorld(level, helper.absolutePos(src), new Vec3i(3, 1, 1), false, Blocks.STRUCTURE_VOID);
+		for (int x = 0; x < 3; x++) {
+			helper.setBlock(src.offset(x, 0, 0), Blocks.AIR);
+		}
+		Setup s = setup(helper, wall, HUT_ORIGIN, Rotation.NONE, new ItemStack(Items.RAW_IRON, 6), new ItemStack(Items.COAL, 1));
+		BlockPos bench = new BlockPos(14, 2, 2);
+		helper.setBlock(bench, ModBlocks.TINKERS_BENCH);
+		Villager tinkerer = helper.spawn(EntityType.VILLAGER, new BlockPos(14, 2, 3));
+		io.github.jcondedata.aliveworkplace.work.Jobs.employ(level, tinkerer, helper.absolutePos(bench),
+			io.github.jcondedata.aliveworkplace.registry.ModVillagers.TINKERS_BENCH_POI, io.github.jcondedata.aliveworkplace.registry.ModVillagers.TINKERER);
+		helper.succeedWhen(() -> {
+			assertBuilt(helper, s);
+			Container chest = helper.getBlockEntity(CHEST);
+			helper.assertTrue(chest.countItem(Items.IRON_BARS) == 13, "the 13 spare bars should be in the chest, not " + chest.countItem(Items.IRON_BARS));
+			helper.assertTrue(chest.countItem(Items.RAW_IRON) == 0 && chest.countItem(Items.COAL) == 0, "the ore and the coal should be used up");
+			helper.assertTrue(tinkerer.getAttachedOrElse(ModAttachments.ITEMS_CRAFTED, 0) == 16, "the tinkerer made " + tinkerer.getAttachedOrElse(ModAttachments.ITEMS_CRAFTED, 0));
+			io.github.jcondedata.aliveworkplace.work.Village.RADIUS = 0;
+		});
+	}
+
 	/** A builder short of sand and glass: the mason crushes cobblestone into sand and fires glass in the furnace by the stonecutter. */
 	@GameTest(template = AREA, timeoutTicks = 3000, batch = "mason_glass")
 	public void masonCrushesSandAndFiresGlassForTheBuilder(GameTestHelper helper) {
@@ -877,6 +908,17 @@ public class BuilderGameTests implements FabricGameTest {
 		buildStarter(helper, StarterBlueprints.STONE_HOUSE_3, new BlockPos(9, 2, 8));
 	}
 
+	@GameTest(template = BIG_AREA, timeoutTicks = 30000, batch = "starter_builds_4")
+	public void buildsTinkersWorkshop(GameTestHelper helper) {
+		buildStarter(helper, StarterBlueprints.TINKERS_WORKSHOP);
+	}
+
+	/** The whole Tinker's Workshop II from bare ground (deeper, so it starts further back). */
+	@GameTest(template = BIG_AREA, timeoutTicks = 40000, batch = "starter_builds_6")
+	public void buildsTinkersWorkshopII(GameTestHelper helper) {
+		buildStarter(helper, StarterBlueprints.TINKERS_WORKSHOP_2, new BlockPos(9, 2, 8));
+	}
+
 	/** A blueprint in another style is built like any other: the Stone House in dark oak and deepslate. */
 	@GameTest(template = BIG_AREA, timeoutTicks = 30000, batch = "styles")
 	public void buildsAStyledStoneHouse(GameTestHelper helper) {
@@ -1212,7 +1254,7 @@ public class BuilderGameTests implements FabricGameTest {
 			long kept = base.blocks().stream().filter(e -> !e.state().isAir() && e.state().equals(up.get(e.pos()))).count();
 			helper.assertTrue(kept >= solid * 0.6, entry.id() + " keeps only " + kept + " of " + baseId.get() + "'s " + solid + " blocks");
 		}
-		helper.assertTrue(upgrades == 25, "expected 25 starter upgrades, found " + upgrades);
+		helper.assertTrue(upgrades == 26, "expected 26 starter upgrades, found " + upgrades);
 		helper.succeed();
 	}
 

@@ -584,7 +584,11 @@ Every villager a person you get to know, the way MineColonies' citizens are — 
 - [x] Sifter: sieves gravel, sand and dirt for flint, seeds, nuggets and the odd gem (`sift/SifterWork`, the Sieve;
   loot tables `sifting/{gravel,sand,dirt,soul_sand}` and, loaded only with Cobblemon, `sifting/cobblemon/{gravel,sand}`
   for evolution stones; 60 ticks a block at Novice; requests gravel when there's nothing to sift; Ground/Rock partners)
-- [ ] Tinkerer: makes the redstone and iron parts builders need (pistons, rails, hoppers, repeaters)
+- [x] Tinkerer: makes the redstone and iron parts builders need (pistons, rails, hoppers, repeaters) (`craft/TinkererWork`,
+  the Tinker's Bench; what's in item tag `aliveworkplace:tinkering`, crafted, or with raw ore fired first — recipe kind
+  `WORKSHOP`: blasting then crafting, never melting worn gear — a coal or charcoal per 8 ore; between jobs, iron golems
+  below 75% mended with the village's iron ingots. Tinker's Workshop blueprint I/II; village Tinker's Shops and, for the
+  sifter, Sifting Sheds)
 
 ## Milestone 5 — Release
 - [ ] Publish on Modrinth and CurseForge as **Alive Workplace** (Minecraft brand rules: don't lead the name with "Minecraft")

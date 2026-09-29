@@ -19,6 +19,11 @@ public final class CarpenterPackages {
 		return work(new ChefWork());
 	}
 
+	/** The Tinkerer's: redstone and iron parts for the builders, iron golems patched up in between. */
+	public static ImmutableList<Pair<Integer, ? extends BehaviorControl<? super Villager>>> tinkerer(float speed) {
+		return work(new TinkererWork());
+	}
+
 	private static ImmutableList<Pair<Integer, ? extends BehaviorControl<? super Villager>>> work(CrafterWork crafter) {
 		return ImmutableList.<Pair<Integer, ? extends BehaviorControl<? super Villager>>>of(
 			Pair.of(0, crafter),

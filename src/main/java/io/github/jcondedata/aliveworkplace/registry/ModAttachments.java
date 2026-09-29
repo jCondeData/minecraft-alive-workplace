@@ -136,6 +136,10 @@ public final class ModAttachments {
 	public static final AttachmentType<Integer> BLOCKS_SIFTED = AttachmentRegistry.create(
 		AliveWorkplace.id("blocks_sifted"), builder -> builder.persistent(com.mojang.serialization.Codec.INT));
 
+	/** How many times a Tinkerer has patched up an iron golem (an ingot each). */
+	public static final AttachmentType<Integer> GOLEM_REPAIRS = AttachmentRegistry.create(
+		AliveWorkplace.id("golem_repairs"), builder -> builder.persistent(com.mojang.serialization.Codec.INT));
+
 	/** How many villagers a Nurse has cured. */
 	public static final AttachmentType<Integer> VILLAGERS_CURED = AttachmentRegistry.create(
 		AliveWorkplace.id("villagers_cured"), builder -> builder.persistent(com.mojang.serialization.Codec.INT));

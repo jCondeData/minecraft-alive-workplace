@@ -70,6 +70,9 @@ public final class VillageHouses {
 		out.put("schoolhouse", override != null ? override : 2);
 		out.put("inn_room", override != null ? override : 2);
 		out.put("mortuary", override != null ? override : 1);
+		// The tinkerer and the sifter.
+		out.put("tinkers_shop", override != null ? override : 2);
+		out.put("sifting_shed", override != null ? override : 1);
 		return out;
 	}
 

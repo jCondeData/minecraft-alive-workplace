@@ -41,6 +41,7 @@
 			"io.github.jcondedata.aliveworkplace.test.CampGameTests",
 			"io.github.jcondedata.aliveworkplace.test.RaidGameTests",
 			"io.github.jcondedata.aliveworkplace.test.SifterGameTests",
+			"io.github.jcondedata.aliveworkplace.test.TinkererGameTests",
 			"io.github.jcondedata.aliveworkplace.test.SchoolGameTests",
 			"io.github.jcondedata.aliveworkplace.test.InnGameTests",
 			"io.github.jcondedata.aliveworkplace.test.GraveGameTests",

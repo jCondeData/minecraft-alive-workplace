@@ -1997,6 +1997,92 @@ def sifter_overlay():
     save(img, "entity", "zombie_villager", "profession", "sifter.png")
 
 
+# --- Tinker's Bench: the tinkerer's workstation, a spruce bench with a vise, gears and a little forge ------------
+def tinkers_bench(face):
+    rnd = random.Random({"top": 481, "side": 482, "front": 483}[face])
+    img = Image.new("RGBA", (16, 16))
+    wood = rgb("#5e4128")
+    for y in range(16):
+        for x in range(16):
+            img.putpixel((x, y), jitter(wood if (y // 4) % 2 else rgb("#684830"), rnd, 5))
+    iron, dark = rgb("#b8bec4"), rgb("#5c6166")
+    if face == "top":
+        for i in range(16):  # an iron-banded rim
+            for p in ((i, 0), (i, 15), (0, i), (15, i)):
+                img.putpixel(p, jitter(dark, rnd, 5))
+        for y in range(2, 7):  # a vise in one corner
+            for x in range(2, 7):
+                img.putpixel((x, y), jitter(iron if y in (3, 5) else dark, rnd, 6))
+        cx, cy = 10, 10  # a gear
+        for y in range(6, 15):
+            for x in range(6, 15):
+                d = ((x - cx) ** 2 + (y - cy) ** 2) ** 0.5
+                if d <= 2.2:
+                    img.putpixel((x, y), jitter(wood, rnd, 5) if d < 1 else jitter(rgb("#c98a3c"), rnd, 8))
+                elif d <= 3.3 or (d <= 4.3 and (x - cx == 0 or y - cy == 0 or abs(x - cx) == abs(y - cy))):
+                    img.putpixel((x, y), jitter(rgb("#d9a04e"), rnd, 8))
+        for x, y in ((9, 3), (10, 3), (11, 3), (12, 4), (13, 4), (13, 5), (3, 11), (3, 12), (4, 13)):  # redstone wire
+            img.putpixel((x, y), jitter(rgb("#b01a10"), rnd, 10))
+        img.putpixel((13, 3), rgb("#ff3a20"))
+    else:
+        for x in range(16):
+            for y in (0, 1):
+                img.putpixel((x, y), jitter(dark, rnd, 5))
+            img.putpixel((x, 15), jitter(dark, rnd, 5))
+        for y in range(2, 15):
+            for x in (0, 15):
+                img.putpixel((x, y), jitter(dark, rnd, 5))
+        if face == "front":
+            for y in range(7, 14):  # the forge's mouth, glowing
+                for x in range(4, 12):
+                    edge = y == 7 or x in (4, 11)
+                    glow = rgb("#ffb22e") if y >= 11 else rgb("#e0521c") if y >= 9 else rgb("#3a2418")
+                    img.putpixel((x, y), jitter(rgb("#6d6f72") if edge else glow, rnd, 10))
+            for x in range(3, 13):
+                img.putpixel((x, 6), jitter(dark, rnd, 5))
+            for x in (5, 7, 9):  # tools hung above it
+                for y in range(2, 5):
+                    img.putpixel((x, y), jitter(iron, rnd, 8))
+        else:
+            for y in range(4, 12):  # a drawer with an iron pull, gears peeking out
+                for x in range(3, 13):
+                    edge = y in (4, 11) or x in (3, 12)
+                    img.putpixel((x, y), jitter(rgb("#4a3220") if edge else rgb("#76553a"), rnd, 5))
+            for x in range(7, 9):
+                img.putpixel((x, 7), jitter(iron, rnd, 5))
+                img.putpixel((x, 8), jitter(dark, rnd, 5))
+    save(img, "block", "tinkers_bench_" + face + ".png")
+
+
+def tinkerer_overlay():
+    img = Image.new("RGBA", (64, 64), T)
+    rnd = random.Random(491)
+    # brass goggles on the forehead and a sooty leather apron with a pocket of tools
+    strap = rgb("#3b2a1e")
+    for x in range(0, 32):
+        img.putpixel((x, 10), jitter(strap, rnd, 4))
+    for lens_x in (9, 13):
+        for y in range(9, 12):
+            for x in range(lens_x - 1, lens_x + 2):
+                img.putpixel((x, y), jitter(rgb("#c9953f"), rnd, 8))
+        img.putpixel((lens_x, 10), rgb("#7fd6e8"))
+    apron = rgb("#5a4030")
+    for y in range(44, 62):
+        for x in range(2, 22):
+            img.putpixel((x, y), jitter(apron, rnd, 6))
+    for y in range(50, 55):
+        for x in range(7, 15):
+            img.putpixel((x, y), jitter(rgb("#3e2c20"), rnd, 4))
+    img.putpixel((9, 49), rgb("#b8bec4"))
+    img.putpixel((9, 48), rgb("#b8bec4"))
+    img.putpixel((12, 49), rgb("#d9a04e"))
+    img.putpixel((13, 48), rgb("#b01a10"))
+    for _ in range(10):  # soot
+        img.putpixel((rnd.randint(3, 20), rnd.randint(45, 60)), rgb("#2a211b"))
+    save(img, "entity", "villager", "profession", "tinkerer.png")
+    save(img, "entity", "zombie_villager", "profession", "tinkerer.png")
+
+
 # --- Feed Trough: the rancher's workstation, a plank trough full of hay ----------------------------------------
 def feed_trough(face):
     rnd = random.Random({"top": 341, "side": 342, "front": 343}[face])
@@ -2509,6 +2595,9 @@ if __name__ == "__main__":
     for face in ("top", "side", "front"):
         sieve(face)
     sifter_overlay()
+    for face in ("top", "side", "front"):
+        tinkers_bench(face)
+    tinkerer_overlay()
     rancher_overlay()
     for part in ("burlap", "face", "straw", "post"):
         training_dummy(part)

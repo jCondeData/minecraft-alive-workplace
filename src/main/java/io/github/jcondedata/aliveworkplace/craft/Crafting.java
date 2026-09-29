@@ -32,7 +32,12 @@ public final class Crafting {
 		 * A cook's: the smoker's (cooked meat and fish, baked potatoes), the crafting table's (bread, pies, stews...) and,
 		 * with Cobblemon, its Campfire Pot's (Poké Snacks, Aprijuice, candies...), found by recipe type id.
 		 */
-		KITCHEN
+		KITCHEN,
+		/**
+		 * A tinkerer's: the blast furnace's for metal (raw ore and ore into ingots; worn tools and armour are never melted
+		 * down), then the crafting table's.
+		 */
+		WORKSHOP
 	}
 
 	/** Recipes this deep below the thing asked for may be used for its ingredients (fences: sticks from planks from logs). */
@@ -229,6 +234,14 @@ public final class Crafting {
 						all.addAll(manager.getAllRecipesFor(RecipeType.SMOKING));
 						all.addAll(manager.getAllRecipesFor(RecipeType.CRAFTING));
 					}
+					case WORKSHOP -> {
+						for (RecipeHolder<?> holder : manager.getAllRecipesFor(RecipeType.BLASTING)) {
+							if (!meltsGear(holder.value())) {
+								all.add(holder);
+							}
+						}
+						all.addAll(manager.getAllRecipesFor(RecipeType.CRAFTING));
+					}
 				}
 				for (RecipeHolder<?> holder : all) {
 					// Special recipes (fireworks, map copies) and ones that don't list their ingredients can't be planned.
@@ -244,6 +257,32 @@ public final class Crafting {
 			}
 		}
 		return byResult.getOrDefault(target, List.of());
+	}
+
+	/** Whether a recipe melts down something with durability (iron tools into nuggets): the tinkerer leaves those alone. */
+	private static boolean meltsGear(Recipe<?> recipe) {
+		for (Ingredient ingredient : recipe.getIngredients()) {
+			for (ItemStack option : ingredient.getItems()) {
+				if (option.isDamageableItem()) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	/** Whether {@code step} is fired in a blast furnace (one item in, by a blasting recipe) rather than crafted. */
+	public static boolean isFired(ServerLevel level, Step step) {
+		if (step.in().size() != 1) {
+			return false;
+		}
+		Item in = step.in().keySet().iterator().next();
+		for (RecipeHolder<?> holder : recipesFor(level, Kind.WORKSHOP, step.out().getItem())) {
+			if (holder.value().getType() == RecipeType.BLASTING && holder.value().getIngredients().get(0).test(new ItemStack(in))) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/** A Cobblemon Campfire Pot recipe type ({@code cobblemon:cooking_pot}...), by id: no Cobblemon classes needed. */

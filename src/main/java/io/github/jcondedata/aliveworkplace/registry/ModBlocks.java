@@ -149,6 +149,11 @@ public final class ModBlocks {
 		"sieve", new BuildersBenchBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_PLANKS))
 	);
 
+	/** Workstation for the Tinkerer: redstone and iron parts for the builders, with a little forge for ore. */
+	public static final BuildersBenchBlock TINKERS_BENCH = register(
+		"tinkers_bench", new BuildersBenchBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.SPRUCE_PLANKS))
+	);
+
 	/** Workstation for the Scholar: the village's research is done here (a Village Hall keeps it). */
 	public static final BuildersBenchBlock SCHOLARS_DESK = register(
 		"scholars_desk", new BuildersBenchBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.BOOKSHELF))

@@ -11,6 +11,7 @@ If you change a build's size, update StarterBlueprints.java (a gametest checks t
 from kit import *
 from starter import *
 from village import *
+from decor import *
 
 
 # --- Gametest fixtures ------------------------------------------------------------------
@@ -95,6 +96,9 @@ if __name__ == "__main__":
     graveyard().save(MAIN_STRUCTURES, "graveyard")
     graveyard_2().save(MAIN_STRUCTURES, "graveyard_2")
     town_hall().save(os.path.join(MAIN_STRUCTURES, "research"), "town_hall")
+    for name, draw in (("well", well), ("well_2", well_2), ("street_lamp", street_lamp), ("park_bench", park_bench),
+                       ("fountain", fountain), ("gazebo", gazebo), ("market_square", market_square)):
+        draw().save(MAIN_STRUCTURES, name)
     for style in VILLAGE_STYLES:
         builders_workshop(style).save(VILLAGE_STRUCTURES, f"{style}_builders_workshop")
         for name, fit_out in VILLAGE_HOUSES.items():

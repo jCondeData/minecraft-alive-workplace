@@ -32,7 +32,7 @@ import org.jetbrains.annotations.Nullable;
 /**
  * What a village with a Village Hall needs: every grown villager eats once a day from the store (the chests by the
  * Kitchen Stoves first — the chef's cooking — then the Storehouses), everyone sleeps in a bed of their own, and the
- * village is safe (guards) and lit (a light by the beds). How well the village is kept, 0–100%, sets the pace of all the
+ * village is safe (guards) and lit (a light by the beds); decorations make it prettier. How well the village is kept, 0–100%, sets the pace of all the
  * work there: from 20% slower (nobody fed, housed or safe) through the usual pace at 50% to 25% faster when everything's
  * right. Villages without a hall work at the usual pace.
  */
@@ -53,8 +53,11 @@ public final class VillageNeeds {
 	/** How long a villager's pace is remembered before the hall is asked again. */
 	private static final long PACE_TICKS = 200;
 
-	/** How the village is doing: grown-ups fed in the last day, villagers with a bed, lit beds, guards; and the overall 0–1. */
-	public record Needs(int adults, int fed, int villagers, int housed, int lit, int guards, float wellbeing) {
+	/**
+	 * How the village is doing: grown-ups fed in the last day, villagers with a bed, lit beds, guards, beauty (from
+	 * decorations, see {@link Decorations}); and the overall 0–1.
+	 */
+	public record Needs(int adults, int fed, int villagers, int housed, int lit, int guards, int beauty, float wellbeing) {
 		/** The work delay multiplier this makes. */
 		public float factor() {
 			return VillageNeeds.factor(wellbeing);
@@ -163,8 +166,9 @@ public final class VillageNeeds {
 		float litShare = villagers == 0 ? 1f : lit / (float) villagers;
 		int hearth = level.getBlockEntity(hall) instanceof VillageHallBlockEntity entity
 			? entity.research().level(io.github.jcondedata.aliveworkplace.research.Research.Topic.HEARTH) : 0;
-		float wellbeing = Math.min(1f, wellbeing(fedShare, housedShare, 0.5f * guarded + 0.5f * litShare) + 0.1f * hearth);
-		return new Needs(adults, fed, villagers, housed, lit, guards, wellbeing);
+		int beauty = Decorations.beauty(level, hall);
+		float wellbeing = Math.min(1f, wellbeing(fedShare, housedShare, 0.5f * guarded + 0.5f * litShare) + 0.1f * hearth + Decorations.bonus(beauty));
+		return new Needs(adults, fed, villagers, housed, lit, guards, beauty, wellbeing);
 	}
 
 	/** A grown villager who hasn't eaten in the last day. */

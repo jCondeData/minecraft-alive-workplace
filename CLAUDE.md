@@ -42,7 +42,7 @@ The owner (Jesse) does not write code: sessions are expected to work autonomousl
 - `tools/screenshots/run.sh` — renders the real client headless (Xvfb) and saves screenshots + a timelapse GIF
   of builders at work; use it to check anything visual and to show the owner progress.
   `SCENE=table` shows the Blueprint Table screens, `SCENE=preview` the ghost preview and the status above a builder,
-  `SCENE=gallery` every starter blueprint (front and back), `SCENE=village WORKSHOP_WEIGHT=200` one village of each type with workshops (`HOUSE_WEIGHT=60` for the other houses),
+  `SCENE=gallery` every starter blueprint (front and back), `SCENE=decor` the decorations, `SCENE=village WORKSHOP_WEIGHT=200` one village of each type with workshops (`HOUSE_WEIGHT=60` for the other houses),
   `SCENE=quarry` a miner digging out a block of stone, `SCENE=forest` a lumberjack felling and replanting four trees, `SCENE=orchard` an orchard keeper picking (adds Cobblemon for apricorns and berries), `SCENE=farm` a farmer working a field, `SCENE=fish` a fisherman with a bobber out, `SCENE=carpenter` a carpenter making a builder's woodwork, `SCENE=chef` a chef cooking, `SCENE=porter` a porter carrying a miner's goods to the storehouse (and the requests board), `SCENE=hall` the Village Hall and its screen, `SCENE=mail` the mailbox screen and a postman delivering, `SCENE=guard` a close-up of a guard in armor, then fighting three husks and sparring with a Training Dummy (`SCENE=guard_pokemon`: with a Machop and a Dratini from a pasture joining in), `SCENE=staff` every workstation with its villager (then `python3 tools/screenshots/make_gif.py`), `SCENE=missing` a placed blueprint's "still missing" tooltip, `SCENE=tutor` the Move Tutor's lesson screen, `SCENE=trader` a Pokémon Trader's offers `SCENE=shop` the CobbleDollars shop screen, `SCENE=battle` a player battling a Master trainer whose Ampharos Mega Evolves (adds Mega Showdown too: `-Pmega=true`; the scene picks the player's moves, so it is also the end-to-end check that trainer battles work — the game test server can't play a battle out) and `SCENE=smith` a Ball Smith and an Orchard Keeper at work (these and `guard_pokemon` add Cobblemon and CobbleDollars to the client: `-Pcobblemon=true`). `DEBUG=true` logs
   builder/miner decisions. Long scenes take >10 min: start run.sh in the background and poll.
   Never `pkill -f`/`pgrep -f` a pattern that also appears in your own command line (it kills your shell).
@@ -103,7 +103,8 @@ The owner (Jesse) does not write code: sessions are expected to work autonomousl
   everyone within `RADIUS`, nearest hall by POI), `VillageHallScreen` (a `ChoiceMenu`: numbers, then every villager),
   `VillageNeeds` (meals from the store, beds, safety → wellbeing → the work pace in `BuilderLevels.delay`),
   `VillageGrowth` (a baby a day at most with a free bed, food and wellbeing), `VillageQuests` (quests for players, kept
-  in the hall's block entity; the hall screen's quests page)
+  in the hall's block entity; the hall screen's quests page), `Decorations` (finished decoration blueprints near the
+  hall → beauty → wellbeing; the builds are `StarterBlueprints.DECORATIONS`, drawn in `tools/blueprints/decor.py`)
 - `research/` — the Scholar (Scholar's Desk): `Research` (the tree, kept in the Village Hall; bonuses read by
   `VillageNeeds`, `Guards`, `Partners`, `Schools`), `ScholarWork`, `ResearchScreen`; `research/*` blueprints are hidden
   from the Blueprint Table (`BlueprintLibrary.isWorldgenPiece`)

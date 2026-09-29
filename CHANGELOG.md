@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+## 0.108.0 — 2026-09-29
+
+### Added
+- **Decorations** in the Blueprint Table: the **Well** (and Well II, with a roof), the **Street Lamp**, the **Park
+  Bench**, the **Fountain**, the **Gazebo** and the **Market Square** (with the village bell, where villagers meet).
+- Decorations near a Village Hall add to the village's **beauty**: each point is 1% more wellbeing, up to 10% (shown on
+  the hall's Wellbeing icon).
+
 ## 0.107.0 — 2026-09-29
 
 ### Added

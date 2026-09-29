@@ -182,13 +182,13 @@ public class VillageHallGameTests implements net.fabricmc.fabric.api.gametest.v1
 		}
 		helper.setBlock(HALL, ModBlocks.VILLAGE_HALL);
 		BlockPos hall = helper.absolutePos(HALL);
-		VillageNeeds.Needs happy = new VillageNeeds.Needs(2, 2, 2, 2, 2, 0, 1f);
+		VillageNeeds.Needs happy = new VillageNeeds.Needs(2, 2, 2, 2, 2, 0, 0, 1f);
 		helper.runAfterDelay(5, () -> {
 			helper.assertTrue(VillageGrowth.blocker(level, hall, happy, 0) == VillageGrowth.Blocker.FOOD, "15 meals: "
 				+ VillageGrowth.blocker(level, hall, happy, 0));
 			chest.setItem(1, new ItemStack(Items.BAKED_POTATO, 5));
 			helper.assertTrue(VillageGrowth.blocker(level, hall, happy, level.getGameTime() - 100) == VillageGrowth.Blocker.TOO_SOON, "a baby just born");
-			helper.assertTrue(VillageGrowth.blocker(level, hall, new VillageNeeds.Needs(2, 0, 2, 0, 0, 0, 0.2f), 0) == VillageGrowth.Blocker.WELLBEING,
+			helper.assertTrue(VillageGrowth.blocker(level, hall, new VillageNeeds.Needs(2, 0, 2, 0, 0, 0, 0, 0.2f), 0) == VillageGrowth.Blocker.WELLBEING,
 				"an unhappy village grows");
 			Villager baby = VillageGrowth.grow(level, hall, happy, 0);
 			helper.assertTrue(baby != null && baby.isBaby() && baby.isAlive(), "no baby");
@@ -255,5 +255,57 @@ public class VillageHallGameTests implements net.fabricmc.fabric.api.gametest.v1
 			helper.assertTrue(player.getInventory().countItem(Items.EMERALD) == 6, "emeralds: " + player.getInventory().countItem(Items.EMERALD));
 			helper.succeed();
 		});
+	}
+
+	/** Decorations finished near the hall make the village prettier: a point of beauty is 1% more wellbeing, up to 10%. */
+	@GameTest(template = AREA, timeoutTicks = 100, batch = "decorationsMakeAVillagePrettier")
+	public void decorationsMakeAVillagePrettier(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		int radius = VillageHalls.RADIUS;
+		VillageHalls.RADIUS = 16;
+		ServerLevel level = helper.getLevel();
+		helper.setBlock(HALL, ModBlocks.VILLAGE_HALL);
+		BlockPos hall = helper.absolutePos(HALL);
+		var sites = io.github.jcondedata.aliveworkplace.build.BuildSiteManager.get(level);
+		java.util.List<io.github.jcondedata.aliveworkplace.blueprint.BlueprintData.Placement> placed = new java.util.ArrayList<>();
+		Leftovers.after(helper, () -> {
+			VillageHalls.RADIUS = radius;
+			placed.forEach(sites::forgetFinished);
+		});
+		java.util.function.BiConsumer<io.github.jcondedata.aliveworkplace.blueprint.StarterBlueprints.Entry, BlockPos> finish = (entry, at) -> {
+			var placement = new io.github.jcondedata.aliveworkplace.blueprint.BlueprintData.Placement(level.dimension().location(), helper.absolutePos(at),
+				net.minecraft.world.level.block.Rotation.NONE, net.minecraft.world.level.block.Mirror.NONE);
+			placed.add(placement);
+			sites.recordFinished(entry.id(), placement, java.util.UUID.randomUUID());
+		};
+		// (Builds finished by tests that ran here before count too: go by the difference.)
+		VillageNeeds.Needs before = VillageNeeds.count(level, hall);
+		int base = before.beauty();
+		float plain = before.wellbeing() - io.github.jcondedata.aliveworkplace.hall.Decorations.bonus(base);
+		finish.accept(io.github.jcondedata.aliveworkplace.blueprint.StarterBlueprints.FOUNTAIN, new BlockPos(3, 2, 3));
+		finish.accept(io.github.jcondedata.aliveworkplace.blueprint.StarterBlueprints.PARK_BENCH, new BlockPos(3, 2, 12));
+		// Not a decoration: counts for nothing.
+		finish.accept(io.github.jcondedata.aliveworkplace.blueprint.StarterBlueprints.STOREHOUSE, new BlockPos(14, 2, 3));
+		// Too far from the hall.
+		finish.accept(io.github.jcondedata.aliveworkplace.blueprint.StarterBlueprints.GAZEBO, new BlockPos(11, 2, 11 + 40));
+		VillageNeeds.Needs needs = VillageNeeds.count(level, hall);
+		helper.assertTrue(needs.beauty() == base + 4, "beauty: " + base + " -> " + needs.beauty());
+		helper.assertTrue(Math.abs(needs.wellbeing() - (plain + io.github.jcondedata.aliveworkplace.hall.Decorations.bonus(base + 4))) < 0.001f,
+			"wellbeing " + before.wellbeing() + " -> " + needs.wellbeing());
+		// An upgrade on the same spot counts instead of its base.
+		finish.accept(io.github.jcondedata.aliveworkplace.blueprint.StarterBlueprints.WELL, new BlockPos(14, 2, 14));
+		finish.accept(io.github.jcondedata.aliveworkplace.blueprint.StarterBlueprints.WELL_2, new BlockPos(14, 2, 14));
+		helper.assertTrue(VillageNeeds.count(level, hall).beauty() == base + 7, "beauty with a well: " + VillageNeeds.count(level, hall).beauty());
+		for (int i = 0; i < 3; i++) {
+			finish.accept(io.github.jcondedata.aliveworkplace.blueprint.StarterBlueprints.MARKET_SQUARE, new BlockPos(2 + i, 2, 18));
+		}
+		needs = VillageNeeds.count(level, hall);
+		helper.assertTrue(needs.beauty() == base + 22, "beauty: " + needs.beauty());
+		helper.assertTrue(Math.abs(needs.wellbeing() - (plain + 0.10f)) < 0.001f, "decorations add at most 10%: " + needs.wellbeing());
+		ServerPlayer player = helper.makeMockServerPlayerInLevel();
+		ChoiceMenu menu = VillageHallScreen.forTest(player, hall);
+		String lore = String.valueOf(menu.icon(5).get(DataComponents.LORE));
+		helper.assertTrue(lore.contains("Beauty") || lore.contains("beauty"), "the wellbeing icon doesn't show beauty: " + lore);
+		helper.succeed();
 	}
 }

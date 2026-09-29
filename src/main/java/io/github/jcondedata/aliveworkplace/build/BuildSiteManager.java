@@ -47,6 +47,17 @@ public final class BuildSiteManager extends SavedData {
 		}
 	}
 
+	/** The finished buildings in {@code level} whose origin is within {@code radius} blocks of {@code pos}. */
+	public List<Finished> finishedNear(ServerLevel level, net.minecraft.core.BlockPos pos, int radius) {
+		List<Finished> out = new java.util.ArrayList<>();
+		for (Finished f : finished) {
+			if (f.placement().dimension().equals(level.dimension().location()) && f.placement().origin().distSqr(pos) <= (double) radius * radius) {
+				out.add(f);
+			}
+		}
+		return out;
+	}
+
 	/** The finished building of {@code structure} whose outline contains {@code pos}, if any. */
 	public java.util.Optional<Finished> finishedAt(ServerLevel level, ResourceLocation structure, net.minecraft.core.BlockPos pos) {
 		for (Finished f : finished) {

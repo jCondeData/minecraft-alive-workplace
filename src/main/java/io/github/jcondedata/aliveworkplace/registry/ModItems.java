@@ -97,6 +97,9 @@ public final class ModItems {
 					output.accept(BlueprintItem.create(entry.id(), entry.size()));
 				}
 				output.accept(BlueprintItem.create(StarterBlueprints.TOWN_HALL.id(), StarterBlueprints.TOWN_HALL.size()));
+				for (StarterBlueprints.Entry entry : StarterBlueprints.DECORATIONS) {
+					output.accept(BlueprintItem.create(entry.id(), entry.size()));
+				}
 			})
 			.build()
 	);

@@ -329,6 +329,8 @@ public final class VillageHallScreen {
 			line(Component.translatable("screen.aliveworkplace.hall.housed", needs.housed(), needs.villagers()),
 				needs.housed() < needs.villagers() ? ChatFormatting.YELLOW : ChatFormatting.GRAY),
 			line(Component.translatable("screen.aliveworkplace.hall.safety", needs.guards(), needs.lit(), needs.villagers()), ChatFormatting.GRAY),
+			line(Component.translatable("screen.aliveworkplace.hall.beauty", needs.beauty(), Math.round(Decorations.bonus(needs.beauty()) * 100),
+				Math.round(Decorations.MAX_BONUS * 100)), needs.beauty() > 0 ? ChatFormatting.GRAY : ChatFormatting.DARK_GRAY),
 			paceLine,
 			line("screen.aliveworkplace.hall.wellbeing_hint", ChatFormatting.DARK_GRAY));
 	}

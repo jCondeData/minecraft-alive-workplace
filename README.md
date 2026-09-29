@@ -82,6 +82,15 @@ Table; II a lych-gate).
 the meeting bell or the Village Hall within 48 blocks (their bench if there's neither) — round water, trees and other
 buildings, turning only grass and dirt into path. Turn it off with `builderPaths` in the config.
 
+**Decorations.** The Blueprint Table also has the small builds that make a village a place: a **Well** (II puts a
+roof over it, benches and lamp posts round it), a **Street Lamp**, a **Park Bench** between bushes, a **Fountain**, a
+**Gazebo** and a **Market Square** (a paved square with a fountain, two striped kiosks, benches, lamp posts, flower
+beds and the village bell, where the villagers meet). Near a Village Hall they make the village prettier: each one
+adds to its **beauty** (a lamp post or a bench 1, a well 2 — 3 with its roof —, a fountain or a gazebo 3, a market
+square 5), and every point is 1% more wellbeing, up to 10%.
+
+![The Well II, the Street Lamp, the Park Bench, the Fountain, the Gazebo and the Market Square](docs/media/decorations.png)
+
 **Upgrades.** A blueprint named like another with `_2` on the end (`_3` after that…) is its upgrade. Every starter
 build has one: the **Starter Cottage II** adds a timber upper storey jettied out over the front and back, the **Market
 Stall II** a second stall with a Shop Counter, the **Lookout Tower II** a Guard Post, a bell and a steep pointed spire
@@ -124,7 +133,7 @@ finishes a quest gets its reward in emeralds (CobbleDollars with CobbleDollars i
 **A village with a hall has needs.** Every grown villager eats once a day from the store — the chests by the Kitchen
 Stoves first (the chef's cooking), then by the Storehouses; anything plain to eat, never golden food, food that makes
 you ill, honey or Pokémon berries. Villagers like a bed of their own, guards (one for every ten villagers) and light
-by their beds. The hall's **Wellbeing** shows how it's going, and it sets the pace of all the work in the village:
+by their beds, and decorations round the village (see *Decorations* above). The hall's **Wellbeing** shows how it's going, and it sets the pace of all the work in the village:
 **up to 25% faster** when everyone's fed, housed and safe, the usual pace at 50%, and **up to 20% slower** when
 they're hungry and sleep rough. The villagers the hall lists say when they're hungry or have no bed. Without a hall,
 work goes at the usual pace.

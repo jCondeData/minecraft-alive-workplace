@@ -866,6 +866,36 @@ public class BuilderGameTests implements FabricGameTest {
 		buildStarter(helper, StarterBlueprints.INN);
 	}
 
+	@GameTest(template = BIG_AREA, timeoutTicks = 12000, batch = "decorations")
+	public void buildsWell(GameTestHelper helper) {
+		buildStarter(helper, StarterBlueprints.WELL_2);
+	}
+
+	@GameTest(template = BIG_AREA, timeoutTicks = 6000, batch = "decorations")
+	public void buildsStreetLamp(GameTestHelper helper) {
+		buildStarter(helper, StarterBlueprints.STREET_LAMP);
+	}
+
+	@GameTest(template = BIG_AREA, timeoutTicks = 6000, batch = "decorations")
+	public void buildsParkBench(GameTestHelper helper) {
+		buildStarter(helper, StarterBlueprints.PARK_BENCH);
+	}
+
+	@GameTest(template = BIG_AREA, timeoutTicks = 12000, batch = "decorations")
+	public void buildsFountain(GameTestHelper helper) {
+		buildStarter(helper, StarterBlueprints.FOUNTAIN);
+	}
+
+	@GameTest(template = BIG_AREA, timeoutTicks = 12000, batch = "decorations")
+	public void buildsGazebo(GameTestHelper helper) {
+		buildStarter(helper, StarterBlueprints.GAZEBO);
+	}
+
+	@GameTest(template = BIG_AREA, timeoutTicks = 20000, batch = "decorations")
+	public void buildsMarketSquare(GameTestHelper helper) {
+		buildStarter(helper, StarterBlueprints.MARKET_SQUARE);
+	}
+
 	// --- deconstruction ---------------------------------------------------------------------
 
 	/** Sneak-given blueprint: the builder takes the hut down and puts exactly its blocks in the chest. */
@@ -1136,7 +1166,10 @@ public class BuilderGameTests implements FabricGameTest {
 
 	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
 	public void starterBlueprintsMatchTheirDeclaredSizesAndAreBuildable(GameTestHelper helper) {
-		for (StarterBlueprints.Entry entry : StarterBlueprints.ALL) {
+		List<StarterBlueprints.Entry> all = new ArrayList<>(StarterBlueprints.ALL);
+		all.addAll(StarterBlueprints.DECORATIONS);
+		all.add(StarterBlueprints.TOWN_HALL);
+		for (StarterBlueprints.Entry entry : all) {
 			Optional<Blueprint> blueprint = BlueprintLibrary.get(helper.getLevel(), entry.id());
 			helper.assertTrue(blueprint.isPresent(), "missing " + entry.id());
 			helper.assertTrue(blueprint.get().size().equals(entry.size()),

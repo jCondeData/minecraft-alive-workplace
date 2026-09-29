@@ -46,6 +46,9 @@ public final class VillageHallScreen {
 	static final int WELLBEING = 5;
 	static final int REQUESTS = 6;
 	static final int BUILDS = 7;
+	public static final int QUESTS = 8;
+	/** On the quests page: where the quests are. */
+	public static final int[] QUEST_SLOTS = {20, 22, 24};
 	static final int PREVIOUS = 9;
 	static final int NEXT = 17;
 	public static final int FIRST_PERSON = 18;
@@ -100,6 +103,13 @@ public final class VillageHallScreen {
 		menu.button(WELLBEING, wellbeingIcon(needs), null);
 		menu.button(REQUESTS, requestsIcon(census.requests()), null);
 		menu.button(BUILDS, buildsIcon(census.builds()), null);
+		List<VillageQuests.Quest> quests = entity == null ? List.of() : entity.quests();
+		menu.button(QUESTS, icon(Items.MAP, Component.translatable("screen.aliveworkplace.hall.quests", quests.size()), ChatFormatting.WHITE,
+			line(quests.isEmpty() ? "screen.aliveworkplace.hall.no_quests" : "screen.aliveworkplace.hall.quests_hint",
+				quests.isEmpty() ? ChatFormatting.GRAY : ChatFormatting.GREEN)), p -> {
+			renderQuests(menu, level, hall, p);
+			menu.broadcastChanges();
+		});
 		menu.divider(1);
 		if (pages > 1) {
 			if (shown > 0) {
@@ -120,6 +130,62 @@ public final class VillageHallScreen {
 				level.playSound(null, p.blockPosition(), SoundEvents.AMETHYST_BLOCK_CHIME, SoundSource.PLAYERS, 0.6f, 1.2f);
 			});
 		}
+	}
+
+	/** The quests page: each open quest with what it takes and pays; a click hands in what a quest asks for. */
+	public static void renderQuests(ChoiceMenu menu, ServerLevel level, BlockPos hall, ServerPlayer viewer) {
+		menu.clearButtons();
+		menu.button(0, icon(Items.ARROW, Component.translatable("screen.aliveworkplace.hall.back"), ChatFormatting.WHITE), p -> refresh(menu, level, hall, 0));
+		VillageHallBlockEntity entity = level.getBlockEntity(hall) instanceof VillageHallBlockEntity e ? e : null;
+		List<VillageQuests.Quest> quests = entity == null ? List.of() : entity.quests();
+		menu.button(4, icon(Items.WRITABLE_BOOK, Component.translatable("screen.aliveworkplace.hall.quests_title", VillageHalls.name(level, hall)),
+			ChatFormatting.GOLD, line(Component.translatable("screen.aliveworkplace.hall.quests_about", VillageQuests.MAX_OPEN), ChatFormatting.GRAY),
+			line(Component.translatable("screen.aliveworkplace.hall.quests_done", entity == null ? 0 : entity.questsDone()), ChatFormatting.GRAY)), null);
+		menu.divider(1);
+		for (int i = 0; i < Math.min(quests.size(), QUEST_SLOTS.length); i++) {
+			VillageQuests.Quest quest = quests.get(i);
+			menu.button(QUEST_SLOTS[i], questIcon(level, quest, viewer), quest.kind() != VillageQuests.Kind.BRING ? null : p -> {
+				int given = VillageQuests.handIn(p, hall, quest.id());
+				if (given == 0) {
+					p.displayClientMessage(Component.translatable("message.aliveworkplace.quest.nothing", quest.itemType().getDescription())
+						.withStyle(ChatFormatting.YELLOW), true);
+				} else {
+					level.playSound(null, p.blockPosition(), SoundEvents.BUNDLE_INSERT, SoundSource.PLAYERS, 0.8f, 1f);
+				}
+				renderQuests(menu, level, hall, p);
+				menu.broadcastChanges();
+			});
+		}
+	}
+
+	static ItemStack questIcon(ServerLevel level, VillageQuests.Quest quest, ServerPlayer viewer) {
+		Item item = switch (quest.kind()) {
+			case BRING -> quest.itemType();
+			case SLAY -> Items.IRON_SWORD;
+			case BATTLE -> net.minecraft.core.registries.BuiltInRegistries.ITEM.getOptional(
+				net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("cobblemon", "poke_ball")).orElse(Items.TARGET);
+		};
+		ItemStack icon = new ItemStack(item, Math.max(1, Math.min(64, quest.left())));
+		List<Component> lore = new ArrayList<>();
+		if (!quest.poster().isEmpty()) {
+			lore.add(line(Component.translatable("screen.aliveworkplace.hall.quest_by", quest.poster()), ChatFormatting.GRAY));
+		}
+		lore.add(line(Component.translatable("screen.aliveworkplace.hall.quest_progress", quest.progress(), quest.count()), ChatFormatting.GRAY));
+		lore.add(line(Component.translatable("screen.aliveworkplace.hall.quest_reward",
+			io.github.jcondedata.aliveworkplace.work.Money.describe((long) quest.reward() * io.github.jcondedata.aliveworkplace.work.Money.DOLLARS_PER_EMERALD,
+				quest.reward())), ChatFormatting.GREEN));
+		long days = Math.max(1, (VillageQuests.LASTS - (level.getGameTime() - quest.posted()) + 23999) / 24000);
+		lore.add(line(Component.translatable("screen.aliveworkplace.hall.quest_days", days), ChatFormatting.DARK_GRAY));
+		switch (quest.kind()) {
+			case BRING -> {
+				int have = viewer.getInventory().countItem(quest.itemType());
+				lore.add(line(have > 0 ? Component.translatable("screen.aliveworkplace.hall.quest_hand_in", Math.min(have, quest.left()))
+					: Component.translatable("screen.aliveworkplace.hall.quest_none_on_you"), have > 0 ? ChatFormatting.YELLOW : ChatFormatting.DARK_GRAY));
+			}
+			case SLAY -> lore.add(line(Component.translatable("screen.aliveworkplace.hall.quest_slay_hint", VillageHalls.RADIUS), ChatFormatting.YELLOW));
+			case BATTLE -> lore.add(line("screen.aliveworkplace.hall.quest_battle_hint", ChatFormatting.YELLOW));
+		}
+		return icon(item, VillageQuests.describe(quest).copy(), ChatFormatting.GOLD, lore.toArray(Component[]::new));
 	}
 
 	private static void refresh(ChoiceMenu menu, ServerLevel level, BlockPos hall, int page) {

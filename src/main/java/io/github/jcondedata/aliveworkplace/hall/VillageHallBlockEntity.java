@@ -22,6 +22,10 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 	/** When the last baby was born here (0: never), and how many have been. */
 	private long lastBirth;
 	private int births;
+	/** The village's open quests, the day the last one went up and how many have been done. */
+	private java.util.List<VillageQuests.Quest> quests = java.util.List.of();
+	private long lastQuestDay = -1;
+	private int questsDone;
 
 	public VillageHallBlockEntity(BlockPos pos, BlockState state) {
 		super(ModBlocks.VILLAGE_HALL_ENTITY, pos, state);
@@ -49,12 +53,40 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 		if (level instanceof net.minecraft.server.level.ServerLevel server
 			&& (hall.needs == null || Math.floorMod(level.getGameTime() + pos.hashCode(), VillageNeeds.CHECK_EVERY) == 0)) {
 			hall.needs = VillageNeeds.check(server, pos);
+			VillageQuests.tick(server, pos, hall);
 			if (VillageGrowth.grow(server, pos, hall.needs, hall.lastBirth) != null) {
 				hall.lastBirth = level.getGameTime();
 				hall.births++;
 				hall.setChanged();
 			}
 		}
+	}
+
+	public java.util.List<VillageQuests.Quest> quests() {
+		return quests;
+	}
+
+	public void setQuests(java.util.List<VillageQuests.Quest> quests) {
+		this.quests = java.util.List.copyOf(quests);
+		setChanged();
+	}
+
+	public long lastQuestDay() {
+		return lastQuestDay;
+	}
+
+	public void setLastQuestDay(long day) {
+		lastQuestDay = day;
+		setChanged();
+	}
+
+	public int questsDone() {
+		return questsDone;
+	}
+
+	void questDone() {
+		questsDone++;
+		setChanged();
 	}
 
 	public long lastBirth() {
@@ -82,6 +114,10 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 		name = tag.contains("CustomName", 8) ? parseCustomNameSafe(tag.getString("CustomName"), registries) : null;
 		lastBirth = tag.getLong("lastBirth");
 		births = tag.getInt("births");
+		quests = VillageQuests.Quest.CODEC.listOf().parse(net.minecraft.nbt.NbtOps.INSTANCE, tag.get("quests"))
+			.result().map(java.util.List::copyOf).orElse(java.util.List.of());
+		lastQuestDay = tag.contains("lastQuestDay") ? tag.getLong("lastQuestDay") : -1;
+		questsDone = tag.getInt("questsDone");
 	}
 
 	@Override
@@ -92,6 +128,9 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 		}
 		tag.putLong("lastBirth", lastBirth);
 		tag.putInt("births", births);
+		VillageQuests.Quest.CODEC.listOf().encodeStart(net.minecraft.nbt.NbtOps.INSTANCE, quests).result().ifPresent(t -> tag.put("quests", t));
+		tag.putLong("lastQuestDay", lastQuestDay);
+		tag.putInt("questsDone", questsDone);
 	}
 
 	@Override

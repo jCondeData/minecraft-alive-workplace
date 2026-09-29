@@ -4,6 +4,7 @@ import io.github.jcondedata.aliveworkplace.hall.VillageHallScreen;
 import io.github.jcondedata.aliveworkplace.hall.VillageHalls;
 import io.github.jcondedata.aliveworkplace.hall.VillageGrowth;
 import io.github.jcondedata.aliveworkplace.hall.VillageNeeds;
+import io.github.jcondedata.aliveworkplace.hall.VillageQuests;
 import io.github.jcondedata.aliveworkplace.registry.ModAttachments;
 import io.github.jcondedata.aliveworkplace.registry.ModBlocks;
 import io.github.jcondedata.aliveworkplace.registry.ModVillagers;
@@ -193,6 +194,65 @@ public class VillageHallGameTests implements net.fabricmc.fabric.api.gametest.v1
 			helper.assertTrue(baby != null && baby.isBaby() && baby.isAlive(), "no baby");
 			int meals = chest.countItem(Items.BREAD) + chest.countItem(Items.BAKED_POTATO);
 			helper.assertTrue(meals == 12, "meals left: " + meals);
+			helper.succeed();
+		});
+	}
+
+	/** With little food in the store the village asks for bread; handing it in at the hall fills the store and pays. */
+	@GameTest(template = AREA, timeoutTicks = 100, batch = "questsAreHandedInAtTheHall")
+	public void questsAreHandedInAtTheHall(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		int radius = VillageHalls.RADIUS;
+		VillageHalls.RADIUS = 16;
+		Leftovers.after(helper, () -> VillageHalls.RADIUS = radius);
+		ServerLevel level = helper.getLevel();
+		helper.setBlock(new BlockPos(17, 2, 17), ModBlocks.STOREHOUSE);
+		helper.setBlock(new BlockPos(17, 2, 19), Blocks.CHEST);
+		Container chest = helper.getBlockEntity(new BlockPos(17, 2, 19));
+		helper.setBlock(HALL, ModBlocks.VILLAGE_HALL);
+		BlockPos hall = helper.absolutePos(HALL);
+		ServerPlayer player = helper.makeMockServerPlayerInLevel();
+		player.setGameMode(net.minecraft.world.level.GameType.SURVIVAL);
+		player.getInventory().add(new ItemStack(Items.BREAD, 20));
+		helper.runAfterDelay(3, () -> {
+			VillageQuests.Quest quest = VillageQuests.make(level, hall);
+			helper.assertTrue(quest != null && quest.kind() == VillageQuests.Kind.BRING && quest.itemType() == Items.BREAD && quest.count() == 16,
+				"quest: " + quest);
+			var entity = (io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(hall);
+			entity.setQuests(java.util.List.of(quest));
+			ChoiceMenu menu = io.github.jcondedata.aliveworkplace.work.ChoiceMenu.detached(player, m -> VillageHallScreen.renderQuests(m, level, hall, player));
+			helper.assertTrue(menu.icon(VillageHallScreen.QUEST_SLOTS[0]).is(Items.BREAD), "the quest isn't on the page");
+			menu.press(VillageHallScreen.QUEST_SLOTS[0], player);
+			helper.assertTrue(chest.countItem(Items.BREAD) == 16, "bread in the store: " + chest.countItem(Items.BREAD));
+			helper.assertTrue(player.getInventory().countItem(Items.BREAD) == 4, "bread left on the player: " + player.getInventory().countItem(Items.BREAD));
+			helper.assertTrue(player.getInventory().countItem(Items.EMERALD) == quest.reward(), "emeralds: " + player.getInventory().countItem(Items.EMERALD));
+			helper.assertTrue(entity.quests().isEmpty() && entity.questsDone() == 1, "the quest is still up");
+			helper.succeed();
+		});
+	}
+
+	/** Monsters players defeat in the village count towards its clearing-out quest. */
+	@GameTest(template = AREA, timeoutTicks = 100, batch = "monstersCountTowardsAQuest")
+	public void monstersCountTowardsAQuest(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		int radius = VillageHalls.RADIUS;
+		VillageHalls.RADIUS = 16;
+		Leftovers.after(helper, () -> VillageHalls.RADIUS = radius);
+		ServerLevel level = helper.getLevel();
+		helper.setBlock(HALL, ModBlocks.VILLAGE_HALL);
+		BlockPos hall = helper.absolutePos(HALL);
+		ServerPlayer player = helper.makeMockServerPlayerInLevel();
+		player.setGameMode(net.minecraft.world.level.GameType.SURVIVAL);
+		helper.runAfterDelay(3, () -> {
+			var entity = (io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(hall);
+			entity.setQuests(java.util.List.of(new VillageQuests.Quest(java.util.UUID.randomUUID(), VillageQuests.Kind.SLAY, "minecraft:air", 2, 0, 6,
+				level.getGameTime(), "", java.util.Optional.empty())));
+			for (int i = 0; i < 2; i++) {
+				var zombie = helper.spawn(EntityType.ZOMBIE, new BlockPos(5 + i * 3, 2, 5));
+				zombie.hurt(level.damageSources().playerAttack(player), 1000f);
+			}
+			helper.assertTrue(entity.quests().isEmpty(), "quest: " + entity.quests());
+			helper.assertTrue(player.getInventory().countItem(Items.EMERALD) == 6, "emeralds: " + player.getInventory().countItem(Items.EMERALD));
 			helper.succeed();
 		});
 	}

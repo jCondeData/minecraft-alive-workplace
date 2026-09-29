@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+## 0.103.0 — 2026-09-29
+
+### Added
+- **Village quests**: each morning the Village Hall puts up a quest for players — bring what a worker is waiting for
+  (or food, or something the village can use), clear out monsters round the village, or beat a village trainer (with
+  Cobblemon). Hand things in from the hall's new Quests page; the reward is paid in emeralds or CobbleDollars.
+
 ## 0.102.0 — 2026-09-29
 
 ### Added

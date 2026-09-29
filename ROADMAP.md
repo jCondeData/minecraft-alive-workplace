@@ -466,7 +466,11 @@ loop: ore → ingots → the tools, weapons and armor the other workers wear out
   works at) holding their NBT; the Undertaker's Table job takes a golden apple / healing potion / totem to the nearest
   grave within 32 blocks and after 100 ticks reloads the villager from it — job sites re-taken if still free, site
   attachments (build, quarry, fields) dropped since those were handed back at death)
-- [ ] **Village quests**: villagers post jobs for players (bring items, beat a trainer, clear monsters) for rewards
+- [x] **Village quests**: villagers post jobs for players (bring items, beat a trainer, clear monsters) for rewards
+  (`hall/VillageQuests`: saved in the hall's block entity; one a morning, 3 open at most, 3 days each; BRING from the
+  workers' open requests first (delivered to that worker's chests), bread when the store is low, else a want / 8
+  monsters / a trainer battle (with Cobblemon and a trainer in the village); kills via `AFTER_DEATH`, battles via
+  `Trainers.battleOver`; paid through `Money`)
 
 ## Milestone 10 — Defence
 - [ ] Guard kinds by gear: Knight (sword and shield, blocks), Archer (exists), Medic (heals other guards with potions),
@@ -534,5 +538,6 @@ loop: ore → ingots → the tools, weapons and armor the other workers wear out
 - 2026-09-29: two scheduled sessions ran at the same time and both built the Miltank milking and plantation-crop items;
   the second one's work was dropped for the first's. If sessions overlap again, the later one should take items further
   down the list (as the Training Dummy was) or the schedule should be spread out (owner).
-- 2026-09-29: session `01Xw8jqb` is working down **Milestone 9** in order (Village Hall, Needs, Growth, School and
-  Recruiting and Graveyard done; next Village quests); a session running at the same time should take Milestone 10 and on, to keep out of each other's way.
+- 2026-09-29: session `01Xw8jqb` worked down **Milestone 9** (all done: Village Hall, Needs, Growth, School,
+  Recruiting, Graveyard, Village quests) and goes on with **Milestone 11** (Research) and then **Milestone 12** (builds);
+  a session running at the same time should keep to Milestone 10 (Defence), to keep out of each other's way.

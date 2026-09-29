@@ -101,6 +101,13 @@ of your village — by the bell is a good spot. Right-click it for the village a
 The village gets a made-up name (*Thornholm*, *Ashford*...); use a **Name Tag** with a name on the hall to call it
 whatever you like (the tag isn't used up). The hall keeps the name when you break and move it.
 
+**Quests.** Each morning the village puts up a quest at the hall (three at most, each up for three days; players
+nearby are told): bring what one of the workers is waiting for, food when the store is low, or something the village
+can use; clear out 8 monsters round the village; or, with Cobblemon, beat one of the village's trainers. Open the
+**Quests** page from the hall (the map icon) to see them; click a quest to hand in what it asks for (it goes straight
+to the worker who asked, or the store). Monsters and battles count wherever they happen in the village. Whoever
+finishes a quest gets its reward in emeralds (CobbleDollars with CobbleDollars installed).
+
 **A village with a hall has needs.** Every grown villager eats once a day from the store — the chests by the Kitchen
 Stoves first (the chef's cooking), then by the Storehouses; anything plain to eat, never golden food, food that makes
 you ill, honey or Pokémon berries. Villagers like a bed of their own, guards (one for every ten villagers) and light

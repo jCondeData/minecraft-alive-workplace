@@ -105,6 +105,7 @@ public final class Trainers {
 			}
 			long day = trainer.level().getDayTime() / 24000L;
 			Long last = trainer.getAttachedOrElse(ModAttachments.LEADER_CHALLENGES, Map.<UUID, Long>of()).get(player.getUUID());
+			io.github.jcondedata.aliveworkplace.hall.VillageQuests.onTrainerBeaten((ServerLevel) trainer.level(), trainer, player);
 			if (last != null && last == day) {
 				player.displayClientMessage(Component.translatable("message.aliveworkplace.trainer.leader_tomorrow", trainer.getDisplayName())
 					.withStyle(ChatFormatting.YELLOW), true);

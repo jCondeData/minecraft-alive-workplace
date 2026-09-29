@@ -415,6 +415,36 @@ public class BuilderGameTests implements FabricGameTest {
 		});
 	}
 
+	/** A builder short of sand and glass: the mason crushes cobblestone into sand and fires glass in the furnace by the stonecutter. */
+	@GameTest(template = AREA, timeoutTicks = 3000, batch = "mason_glass")
+	public void masonCrushesSandAndFiresGlassForTheBuilder(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		Leftovers.village(helper, 48);
+		ServerLevel level = helper.getLevel();
+		BlockPos src = new BlockPos(12, 2, 12);
+		for (int x = 0; x < 3; x++) {
+			helper.setBlock(src.offset(x, 0, 0), Blocks.GLASS);
+			helper.setBlock(src.offset(x, 0, 1), Blocks.SAND);
+		}
+		ResourceLocation wall = ResourceLocation.fromNamespaceAndPath("aliveworkplace_test", "glassy_" + Long.toHexString(level.getGameTime()));
+		level.getStructureManager().getOrCreate(wall).fillFromWorld(level, helper.absolutePos(src), new Vec3i(3, 1, 2), false, Blocks.STRUCTURE_VOID);
+		for (int x = 0; x < 3; x++) {
+			helper.setBlock(src.offset(x, 0, 0), Blocks.AIR);
+			helper.setBlock(src.offset(x, 0, 1), Blocks.AIR);
+		}
+		Setup s = setup(helper, wall, HUT_ORIGIN, Rotation.NONE, new ItemStack(Items.COBBLESTONE, 6), new ItemStack(Items.COAL, 1));
+		BlockPos cutter = new BlockPos(14, 2, 2);
+		helper.setBlock(cutter, Blocks.STONECUTTER);
+		helper.setBlock(new BlockPos(16, 2, 2), Blocks.FURNACE);
+		Villager mason = helper.spawn(EntityType.VILLAGER, new BlockPos(14, 2, 3));
+		io.github.jcondedata.aliveworkplace.work.Jobs.employ(level, mason, helper.absolutePos(cutter), net.minecraft.world.entity.ai.village.poi.PoiTypes.MASON,
+			VillagerProfession.MASON);
+		helper.succeedWhen(() -> {
+			assertBuilt(helper, s);
+			helper.assertTrue(mason.getAttachedOrElse(ModAttachments.ITEMS_CRAFTED, 0) == 6, "the mason made " + mason.getAttachedOrElse(ModAttachments.ITEMS_CRAFTED, 0));
+		});
+	}
+
 	/** A builder short of white concrete and red wool: the village's leatherworker hardens the powder and dyes the wool. */
 	@GameTest(template = AREA, timeoutTicks = 3000, batch = "dyer")
 	public void dyerMakesTheConcreteAndRedWoolTheBuilderNeeds(GameTestHelper helper) {

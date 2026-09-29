@@ -99,7 +99,7 @@ The owner (Jesse) does not write code: sessions are expected to work autonomousl
   requests board: the Storehouse's right-click screen)
 - `craft/` — carpenters, masons and chefs: `Crafting` (plans from the game's recipes, two steps down; `KITCHEN` adds the
   smoker's and Cobblemon's Campfire Pot recipes by type id), `CrafterWork` (fetch, craft, deliver for a waiting builder;
-  also run for vanilla Masons through `UpgradedJob`), `ChefWork`/`Chefs` (cook the menu into the stove's chests), `ToolsmithWork` (vanilla Toolsmiths: tools for the
+  vanilla Masons run `MasonWork`: stonecutting plus crushing and glass), `ChefWork`/`Chefs` (cook the menu into the stove's chests), `ToolsmithWork` (vanilla Toolsmiths: tools for the
   village's tool requests), `FletcherWork` (vanilla Fletchers: bows and spectral arrows for guards), `DyerWork` (vanilla
   Leatherworkers: coloured things and concrete for builders), `CarpenterPackages`
 - `fossil/` — Fossil Scientists (with Cobblemon): `Revival` (saved on the villager), `FossilScientists` (hand-over, payment,

@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+## 0.88.0 — 2026-09-29
+
+### Added
+- **Masons crush and fire for the builders**: cobblestone into gravel, gravel into sand, and sand into glass when
+  there's a furnace by their stonecutter.
+
 ## 0.87.0 — 2026-09-29
 
 ### Added

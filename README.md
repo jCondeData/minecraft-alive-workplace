@@ -281,7 +281,8 @@ game's own crafting recipes (modded ones too) and takes it to the builder's ches
 planks from the builder's logs, sticks, torches, glass panes... up to two steps down count, so fences come from logs by
 way of planks and sticks. Only what the rest of the build doesn't need is used: planks for stairs, but not the planks the walls still
 want. **Masons** (vanilla villagers at a stonecutter) do the same with the stonecutter's recipes — stone bricks, stairs,
-slabs and walls cut from stone — and go about their usual day in between. **Leatherworkers** (vanilla villagers at a
+slabs and walls cut from stone — and crush cobblestone into gravel and gravel into sand, and fire sand into glass when
+there's a furnace by the stonecutter (a coal for every 8); they go about their usual day in between. **Leatherworkers** (vanilla villagers at a
 cauldron) are the village's dyers: anything coloured a builder is waiting for — wool, carpet, stained glass,
 terracotta, candles, beds, dyes from flowers — they make the same way, and they harden concrete powder into concrete
 in the cauldron (mixing the powder from sand, gravel and dye first if need be). Villages sometimes grow a carpenter's

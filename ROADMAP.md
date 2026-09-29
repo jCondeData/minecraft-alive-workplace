@@ -406,8 +406,9 @@ loop: ore → ingots → the tools, weapons and armor the other workers wear out
   first — at strength 5 + 5 × level with the table's enchantments, 1–3 lapis from its chests or the storehouse)
 - [ ] **Cartographer → Explorer** (cartography table): day-long expeditions with food and a weapon, bringing back finds
   (MineColonies' expeditions/nether worker); explorer maps to nearby structures for players
-- [ ] Mason extras: crushing (cobblestone → gravel → sand), glass from sand in a furnace (MineColonies' crusher,
-  glassblower); concrete powder hardened in water is done by the dyer
+- [x] Mason extras: crushing (cobblestone → gravel → sand), glass from sand in a furnace (MineColonies' crusher,
+  glassblower); concrete powder hardened in water is done by the dyer (`craft/MasonWork`: crushing up to two steps,
+  glass when a furnace is by the stonecutter, a coal/charcoal per 8)
 
 ## Milestone 8 — Growing things
 - [ ] Farmer fields grow the plantation crops too: bamboo, cactus, kelp, vines, mushrooms, nether wart (MineColonies'

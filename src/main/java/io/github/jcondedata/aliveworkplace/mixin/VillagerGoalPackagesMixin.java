@@ -80,7 +80,7 @@ abstract class VillagerGoalPackagesMixin {
 		} else if (profession == VillagerProfession.MASON) {
 			// Masons cut stone for the builders nearby when they're waiting for it, and go about their day otherwise.
 			cir.setReturnValue(io.github.jcondedata.aliveworkplace.work.UpgradedJob.work(cir.getReturnValue(),
-				new io.github.jcondedata.aliveworkplace.craft.CrafterWork(io.github.jcondedata.aliveworkplace.craft.Crafting.Kind.STONECUTTING, false),
+				new io.github.jcondedata.aliveworkplace.craft.MasonWork(),
 				io.github.jcondedata.aliveworkplace.craft.CrafterWork::vanillaMayRun));
 		} else if (profession == VillagerProfession.ARMORER) {
 			// Armorers smelt the village's ore at their blast furnace, and go about their day when there's none.

@@ -644,6 +644,10 @@ ones we lack, our way.
 - [x] Chatter (`people/Chatter`): every 40 ticks, per player, a 35% chance (at most one line per 400 ticks) that a
   villager off work within 10 blocks says a line over their head (`WorkerStatus`): village news twice as likely (festival,
   bandits, raid, a child, illness), then their mood's reasons, then hello by name; `villagerChatter` in the config
+- [x] Couples (`people/Couples`, attachments `partner` and `widowed_day`): 30% a day two singles (not mercenaries or
+  travellers, not parent/child or siblings by `Families`) court; 2 days on, between 6000 and 11000, a wedding (everyone
+  in the village gets `festival_day`, fireworks at the bell); moods +5 courting / +10 married when within 32, −15
+  mourning for 5 days; `VillageGrowth` picks a married couple first; hall list line; `villagerCouples` in the config
 - [x] Seven more research topics (`Research.Topic`: LOGISTICS → `PorterWork.capacity`, CRAFTSMANSHIP → `CrafterWork` craft
   timer, MEDICINE → `Sickness.dailyChance`, FORTIFICATION → `Guards.block`, COMMERCE → `MarketDays` + `Mercenaries.price`,
   EXPEDITIONS → `Netherworkers.expeditionFactor` (and explorers' rest), GREEN_THUMB → `CompostWork.layersPerBoneMeal`);

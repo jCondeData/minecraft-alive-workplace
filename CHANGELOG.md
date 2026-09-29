@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+### Added
+- **Couples**: villagers court and marry (a wedding at the bell with fireworks lifts the whole village's mood), are
+  happier together, have the village's babies first, and mourn a partner who dies.
+
 ## 0.131.0 — 2026-09-29
 
 ### Added

@@ -430,6 +430,11 @@ public final class VillageHallScreen {
 		if (parents != null) {
 			lore.add(line(Component.translatable("screen.aliveworkplace.hall.child_of", parents.mother(), parents.father()), ChatFormatting.GRAY));
 		}
+		io.github.jcondedata.aliveworkplace.people.Couples.Partner partner = io.github.jcondedata.aliveworkplace.people.Couples.partner(villager);
+		if (partner != null) {
+			lore.add(line(Component.translatable(partner.married() ? "screen.aliveworkplace.hall.married_to" : "screen.aliveworkplace.hall.courting",
+				partner.name()), ChatFormatting.LIGHT_PURPLE));
+		}
 		if (io.github.jcondedata.aliveworkplace.school.Schools.isSchooled(villager)) {
 			lore.add(line("screen.aliveworkplace.hall.schooled", ChatFormatting.GRAY));
 		}

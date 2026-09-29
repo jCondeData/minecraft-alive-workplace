@@ -221,6 +221,12 @@ meals: three or more kinds is a **varied diet** (a better mood), the same thing 
 bread, baked potatoes, cooked fish and pies keeps them happier than one full of bread; the hall's food icon says how many
 kinds of meal the store has.
 
+**Couples.** Now and then two grown villagers who aren't family start **courting** (the chronicle notes it), and two
+days later they **marry**: a wedding at the village's bell with fireworks, everyone told, the whole village in a good
+mood as after a festival. Couples are happier near each other, a married couple is first in line for a baby when
+there's a free bed, and when one dies the other mourns for a few days. The hall's list says who's courting or married
+to whom. `villagerCouples` in the config turns it off.
+
 **Chatter.** Walk through a village with a hall and now and then someone off work turns to you and says something over
 their head — about their mood ("I haven't eaten all day", "Such a pretty place to live"), the village's news (a
 festival tonight, bandits camped to the north, a raid) or just hello, by name. At most a line every twenty seconds near

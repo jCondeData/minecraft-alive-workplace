@@ -266,6 +266,58 @@ public class PeopleGameTests implements FabricGameTest {
 		});
 	}
 
+	/**
+	 * Couples: two villagers who aren't family start courting (never a mother and her son), marry at a wedding that puts
+	 * the whole village in a good mood, and when one dies the other mourns.
+	 */
+	@GameTest(template = AREA, timeoutTicks = 100, batch = "villagersMarry")
+	public void villagersCourtMarryAndMourn(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		int radius = VillageHalls.RADIUS;
+		boolean moods = io.github.jcondedata.aliveworkplace.people.Moods.ENABLED;
+		VillageHalls.RADIUS = 16;
+		io.github.jcondedata.aliveworkplace.people.Moods.ENABLED = true;
+		Leftovers.after(helper, () -> {
+			VillageHalls.RADIUS = radius;
+			io.github.jcondedata.aliveworkplace.people.Moods.ENABLED = moods;
+			io.github.jcondedata.aliveworkplace.people.Moods.forget();
+		});
+		ServerLevel level = helper.getLevel();
+		helper.setBlock(HALL, ModBlocks.VILLAGE_HALL);
+		Villager mother = helper.spawn(EntityType.VILLAGER, new BlockPos(4, 2, 4));
+		Villager son = helper.spawn(EntityType.VILLAGER, new BlockPos(5, 2, 4));
+		Villager neighbour = helper.spawn(EntityType.VILLAGER, new BlockPos(14, 2, 14));
+		mother.setCustomName(net.minecraft.network.chat.Component.literal("Ada"));
+		son.setCustomName(net.minecraft.network.chat.Component.literal("Ben"));
+		neighbour.setCustomName(net.minecraft.network.chat.Component.literal("Cora"));
+		son.setAttached(ModAttachments.PARENTS, new io.github.jcondedata.aliveworkplace.people.Families.Parents(
+			net.minecraft.network.chat.Component.literal("Ada"), net.minecraft.network.chat.Component.literal("Dan"), "", "", true));
+		helper.runAfterDelay(2, () -> {
+			BlockPos hall = helper.absolutePos(HALL);
+			var couple = io.github.jcondedata.aliveworkplace.people.Couples.court(level, hall, java.util.List.of(mother, son, neighbour));
+			helper.assertTrue(couple.size() == 2 && !(couple.contains(mother) && couple.contains(son)), "courting: " + couple);
+			Villager a = couple.get(0);
+			Villager b = couple.get(1);
+			var partner = io.github.jcondedata.aliveworkplace.people.Couples.partner(a);
+			helper.assertTrue(partner != null && partner.id().equals(b.getUUID()) && !partner.married(), "a's partner: " + partner);
+			io.github.jcondedata.aliveworkplace.people.Couples.wed(level, hall, a, b);
+			helper.assertTrue(io.github.jcondedata.aliveworkplace.people.Couples.partner(b).married(), "not married");
+			helper.assertTrue(io.github.jcondedata.aliveworkplace.hall.Festivals.enjoyedLately(level, neighbour == a || neighbour == b ? mother : neighbour),
+				"the village didn't celebrate");
+			var entity = (io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(hall);
+			helper.assertTrue(entity.chronicle().stream().filter(e -> e.kind() == io.github.jcondedata.aliveworkplace.hall.Chronicle.Kind.WEDDING).count() == 2,
+				"the chronicle: " + entity.chronicle());
+			var glad = io.github.jcondedata.aliveworkplace.people.Moods.work(level, b);
+			helper.assertTrue(glad.good().stream().anyMatch(c -> c.getString().equals("married")), "b's mood: " + glad.good());
+			io.github.jcondedata.aliveworkplace.people.Couples.onDeath(level, a);
+			helper.assertTrue(io.github.jcondedata.aliveworkplace.people.Couples.partner(b) == null
+				&& io.github.jcondedata.aliveworkplace.people.Couples.isMourning(level, b), "b isn't mourning");
+			var sad = io.github.jcondedata.aliveworkplace.people.Moods.work(level, b);
+			helper.assertTrue(sad.bad().stream().anyMatch(c -> c.getString().equals("mourning")), "b's mood: " + sad.bad());
+			helper.succeed();
+		});
+	}
+
 	/** Villagers talk about their day: a hungry one about food, anyone about bandits camped nearby, and hello. */
 	@GameTest(template = AREA, timeoutTicks = 100, batch = "villagersChatter")
 	public void villagersChatterAboutTheirDay(GameTestHelper helper) {

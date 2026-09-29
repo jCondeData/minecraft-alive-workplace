@@ -118,6 +118,15 @@ public final class Moods {
 			score += Math.min(15, 5 * beauty);
 			good.add(reason("decorations"));
 		}
+		Couples.Partner partner = Couples.partner(villager);
+		if (partner != null && level.getEntity(partner.id()) instanceof Villager other && other.isAlive() && other.distanceToSqr(villager) < 32 * 32) {
+			score += partner.married() ? 10 : 5;
+			good.add(reason(partner.married() ? "married" : "courting"));
+		}
+		if (Couples.isMourning(level, villager)) {
+			score -= 15;
+			bad.add(reason("mourning"));
+		}
 		if (io.github.jcondedata.aliveworkplace.hall.Festivals.enjoyedLately(level, villager)) {
 			score += io.github.jcondedata.aliveworkplace.hall.Festivals.MOOD;
 			good.add(reason("festival"));

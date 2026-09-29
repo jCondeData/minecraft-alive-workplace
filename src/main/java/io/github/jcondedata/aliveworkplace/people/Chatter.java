@@ -46,7 +46,8 @@ public final class Chatter {
 		Map.entry("festival_today", 2), Map.entry("festival_after", 2), Map.entry("bandits", 2), Map.entry("raid", 2),
 		Map.entry("child", 2), Map.entry("ill", 2), Map.entry("hungry", 2), Map.entry("fed", 2), Map.entry("no_bed", 2),
 		Map.entry("bed", 1), Map.entry("job", 2), Map.entry("no_job", 2), Map.entry("varied_diet", 1), Map.entry("same_food", 2),
-		Map.entry("decorations", 2), Map.entry("company", 1), Map.entry("cheerful", 1));
+		Map.entry("decorations", 2), Map.entry("company", 1), Map.entry("cheerful", 1),
+		Map.entry("married", 2), Map.entry("courting", 2), Map.entry("mourning", 1));
 	private static final Map<UUID, Long> LAST = new HashMap<>();
 
 	public static void init() {
@@ -153,6 +154,7 @@ public final class Chatter {
 		Object arg = switch (topic) {
 			case "hello" -> player.getDisplayName();
 			case "bandits" -> BanditCamps.near(level, hall).map(camp -> VillageHallScreen.where(hall, camp.pos())).orElse(Component.empty());
+			case "married", "courting" -> Couples.partner(villager) != null ? Couples.partner(villager).name() : Component.empty();
 			default -> "";
 		};
 		return Component.translatable("chatter.aliveworkplace." + topic + "." + variant, arg).withStyle(ChatFormatting.ITALIC);

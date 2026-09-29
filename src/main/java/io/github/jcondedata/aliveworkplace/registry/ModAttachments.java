@@ -124,6 +124,14 @@ public final class ModAttachments {
 	public static final AttachmentType<Long> LAST_MEAL = AttachmentRegistry.create(
 		AliveWorkplace.id("last_meal"), builder -> builder.persistent(com.mojang.serialization.Codec.LONG));
 
+	/** Who a villager is courting or married to (see {@code people/Couples}). */
+	public static final AttachmentType<io.github.jcondedata.aliveworkplace.people.Couples.Partner> PARTNER = AttachmentRegistry.create(
+		AliveWorkplace.id("partner"), builder -> builder.persistent(io.github.jcondedata.aliveworkplace.people.Couples.Partner.CODEC));
+
+	/** The day a villager's partner died (they mourn a while). */
+	public static final AttachmentType<Long> WIDOWED_DAY = AttachmentRegistry.create(
+		AliveWorkplace.id("widowed_day"), builder -> builder.persistent(com.mojang.serialization.Codec.LONG));
+
 	/** The last day a villager came to a festival (see {@code hall/Festivals}). */
 	public static final AttachmentType<Long> FESTIVAL_DAY = AttachmentRegistry.create(
 		AliveWorkplace.id("festival_day"), builder -> builder.persistent(com.mojang.serialization.Codec.LONG));

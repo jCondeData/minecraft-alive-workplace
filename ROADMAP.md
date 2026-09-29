@@ -644,6 +644,10 @@ ones we lack, our way.
 - [x] Chatter (`people/Chatter`): every 40 ticks, per player, a 35% chance (at most one line per 400 ticks) that a
   villager off work within 10 blocks says a line over their head (`WorkerStatus`): village news twice as likely (festival,
   bandits, raid, a child, illness), then their mood's reasons, then hello by name; `villagerChatter` in the config
+- [x] Daycare (`ranch/Daycare`, `compat/cobblemon/CobblemonDaycare`, attachment `daycare` on the rancher): empty-hand
+  right-click a Rancher (sneak for trades); 2 per player, 8 per rancher; the Pokémon's NBT kept on the villager; XP =
+  seconds × (1 + 0.25 × (level − 1)) applied on collection with `addExperienceWithPlayer`; price 1 + levels gained
+  emeralds (`Money`); on the rancher's death, back to the owners' PCs (before `Graves` keeps the villager)
 - [x] Couples (`people/Couples`, attachments `partner` and `widowed_day`): 30% a day two singles (not mercenaries or
   travellers, not parent/child or siblings by `Families`) court; 2 days on, between 6000 and 11000, a wedding (everyone
   in the village gets `festival_day`, fireworks at the bell); moods +5 courting / +10 married when within 32, −15

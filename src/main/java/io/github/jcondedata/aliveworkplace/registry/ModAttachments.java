@@ -124,6 +124,10 @@ public final class ModAttachments {
 	public static final AttachmentType<Long> LAST_MEAL = AttachmentRegistry.create(
 		AliveWorkplace.id("last_meal"), builder -> builder.persistent(com.mojang.serialization.Codec.LONG));
 
+	/** The Pokémon in a rancher's daycare (see {@code ranch/Daycare}). */
+	public static final AttachmentType<java.util.List<io.github.jcondedata.aliveworkplace.ranch.Daycare.Boarder>> DAYCARE = AttachmentRegistry.create(
+		AliveWorkplace.id("daycare"), builder -> builder.persistent(io.github.jcondedata.aliveworkplace.ranch.Daycare.Boarder.CODEC.listOf()));
+
 	/** Who a villager is courting or married to (see {@code people/Couples}). */
 	public static final AttachmentType<io.github.jcondedata.aliveworkplace.people.Couples.Partner> PARTNER = AttachmentRegistry.create(
 		AliveWorkplace.id("partner"), builder -> builder.persistent(io.github.jcondedata.aliveworkplace.people.Couples.Partner.CODEC));

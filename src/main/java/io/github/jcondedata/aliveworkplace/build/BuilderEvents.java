@@ -167,6 +167,13 @@ public final class BuilderEvents {
 				}
 				return InteractionResult.PASS;
 			}
+			if (io.github.jcondedata.aliveworkplace.ranch.Daycare.keepsDaycare(villager) && player.getItemInHand(hand).isEmpty() && !player.isShiftKeyDown()) {
+				// A rancher (with Cobblemon): the daycare. Sneak for the trades.
+				if (!level.isClientSide) {
+					io.github.jcondedata.aliveworkplace.ranch.Daycare.open((ServerPlayer) player, villager);
+				}
+				return InteractionResult.SUCCESS;
+			}
 			if (io.github.jcondedata.aliveworkplace.trader.PokemonTraders.isTrader(villager)) {
 				// Right-click with an empty hand: the day's Pokémon trades. Sneak to trade items instead.
 				if (player.getItemInHand(hand).isEmpty() && !player.isShiftKeyDown()) {
@@ -313,6 +320,7 @@ public final class BuilderEvents {
 				io.github.jcondedata.aliveworkplace.wood.TreeFarms.onDeath(level, villager);
 				io.github.jcondedata.aliveworkplace.orchard.Orchards.onDeath(level, villager);
 				io.github.jcondedata.aliveworkplace.people.Couples.onDeath(level, villager);
+				io.github.jcondedata.aliveworkplace.ranch.Daycare.onDeath(level, villager); // (before the grave keeps the villager)
 				io.github.jcondedata.aliveworkplace.grave.Graves.onDeath(level, villager);
 				io.github.jcondedata.aliveworkplace.hall.Chronicle.record(level, villager.blockPosition(), io.github.jcondedata.aliveworkplace.hall.Chronicle.Kind.DEATH, source.getLocalizedDeathMessage(villager));
 			} else if (entity.level() instanceof ServerLevel level) {

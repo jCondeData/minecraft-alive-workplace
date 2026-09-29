@@ -287,6 +287,49 @@ public class CobblemonCompatTests implements FabricGameTest {
 		helper.succeed();
 	}
 
+	/**
+	 * The daycare: a Pokémon left with a rancher leaves the party, gains experience while it's there and comes back for
+	 * a fee (none paid, none collected); the last Pokémon in a party can't be left.
+	 */
+	@GameTest(template = AREA)
+	public void rancherDaycareRaisesPokemon(GameTestHelper helper) {
+		BlockPos trough = new BlockPos(2, 1, 2);
+		helper.setBlock(trough, ModBlocks.FEED_TROUGH);
+		Villager rancher = helper.spawn(EntityType.VILLAGER, new BlockPos(3, 1, 3));
+		Jobs.employ(helper.getLevel(), rancher, helper.absolutePos(trough), ModVillagers.FEED_TROUGH_POI, ModVillagers.RANCHER);
+		ServerPlayer player = helper.makeMockServerPlayerInLevel();
+		player.setGameMode(GameType.SURVIVAL);
+		PlayerPartyStore party = Cobblemon.INSTANCE.getStorage().getParty(player);
+		Pokemon keep = PokemonProperties.Companion.parse("bulbasaur level=10", " ", "=").create();
+		Pokemon kid = PokemonProperties.Companion.parse("charmander level=5", " ", "=").create();
+		party.add(keep);
+		party.add(kid);
+		helper.assertTrue(io.github.jcondedata.aliveworkplace.ranch.Daycare.keepsDaycare(rancher), "a rancher keeps a daycare");
+		helper.assertTrue(io.github.jcondedata.aliveworkplace.compat.cobblemon.CobblemonDaycare.leave(player, rancher, kid), "not left");
+		helper.assertFalse(contains(party, kid), "still in the party");
+		helper.assertFalse(io.github.jcondedata.aliveworkplace.compat.cobblemon.CobblemonDaycare.leave(player, rancher, keep), "left the last Pokémon");
+		var boarder = io.github.jcondedata.aliveworkplace.ranch.Daycare.boarders(rancher).get(0);
+		io.github.jcondedata.aliveworkplace.ranch.Daycare.setBoarders(rancher, java.util.List.of(new io.github.jcondedata.aliveworkplace.ranch.Daycare.Boarder(
+			boarder.owner(), boarder.ownerName(), boarder.pokemon(), boarder.since() - 3 * 24000)));
+		var left = io.github.jcondedata.aliveworkplace.ranch.Daycare.boarders(rancher).get(0);
+		long money = io.github.jcondedata.aliveworkplace.compat.cobbledollars.CobbleDollarsBank.balance(player);
+		io.github.jcondedata.aliveworkplace.compat.cobbledollars.CobbleDollarsBank.take(player, money);
+		io.github.jcondedata.aliveworkplace.compat.cobblemon.CobblemonDaycare.collect(player, rancher, left);
+		helper.assertTrue(io.github.jcondedata.aliveworkplace.ranch.Daycare.boarders(rancher).size() == 1, "collected without paying");
+		io.github.jcondedata.aliveworkplace.compat.cobbledollars.CobbleDollarsBank.add(player, 100_000);
+		io.github.jcondedata.aliveworkplace.compat.cobblemon.CobblemonDaycare.collect(player, rancher, left);
+		helper.assertTrue(io.github.jcondedata.aliveworkplace.ranch.Daycare.boarders(rancher).isEmpty(), "still at the daycare");
+		Pokemon back = null;
+		for (Pokemon p : party) {
+			if (p.getUuid().equals(kid.getUuid())) {
+				back = p;
+			}
+		}
+		helper.assertTrue(back != null && back.getLevel() > 5, "back at level " + (back == null ? "?" : back.getLevel()));
+		helper.assertTrue(io.github.jcondedata.aliveworkplace.compat.cobbledollars.CobbleDollarsBank.balance(player) < 100_000, "nothing paid");
+		helper.succeed();
+	}
+
 	private static boolean contains(PlayerPartyStore party, Pokemon pokemon) {
 		for (Pokemon p : party) {
 			if (p == pokemon) {

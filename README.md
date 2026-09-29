@@ -488,6 +488,13 @@ a day: their friendship goes up by 4, and by 6 more when there's a berry in the 
 that lower EVs) — a pasture by the ranch is the place for an Eevee or a Golbat that evolves by friendship. Pastured
 Normal and Ground Pokémon calm the wild horses quicker.
 
+**The daycare** (with Cobblemon). Right-click a Rancher with an empty hand (sneak for their trades): leave up to two of
+your Pokémon with them and they **gain experience** while they're there — about a point a second, a quarter faster for
+each level of the rancher's experience, twice as fast with a Master. Come back whenever you like: the screen shows the
+level each would come back at, and collecting costs an emerald (or its worth in CobbleDollars) plus one for every level
+gained, as in the games. Level-ups, new moves and evolutions happen as you collect. The last Pokémon in your party
+stays with you, and if the rancher dies, the Pokémon in their care go to their trainers' PCs.
+
 ## Sifters
 Craft a **Sieve** (two sticks over three string over two planks) and place it near a villager without a job: they
 become a **Sifter**. Put **gravel**, **sand**, **dirt** or **soul sand** in a chest by the sieve and they shake it through,

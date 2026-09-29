@@ -1,0 +1,150 @@
+{
+  "parent": "minecraft:block/block",
+  "ambientocclusion": true,
+  "textures": {
+    "particle": "minecraft:block/stone",
+    "mound": "minecraft:block/coarse_dirt",
+    "moss": "minecraft:block/moss_block",
+    "stone": "minecraft:block/stone",
+    "front": "aliveworkplace:block/grave_front"
+  },
+  "elements": [
+    {
+      "from": [
+        1,
+        0,
+        1
+      ],
+      "to": [
+        15,
+        2,
+        15
+      ],
+      "faces": {
+        "down": {
+          "uv": [
+            1,
+            1,
+            15,
+            15
+          ],
+          "texture": "#mound",
+          "cullface": "down"
+        },
+        "up": {
+          "uv": [
+            1,
+            1,
+            15,
+            15
+          ],
+          "texture": "#moss"
+        },
+        "north": {
+          "uv": [
+            1,
+            14,
+            15,
+            16
+          ],
+          "texture": "#mound"
+        },
+        "south": {
+          "uv": [
+            1,
+            14,
+            15,
+            16
+          ],
+          "texture": "#mound"
+        },
+        "west": {
+          "uv": [
+            1,
+            14,
+            15,
+            16
+          ],
+          "texture": "#mound"
+        },
+        "east": {
+          "uv": [
+            1,
+            14,
+            15,
+            16
+          ],
+          "texture": "#mound"
+        }
+      }
+    },
+    {
+      "from": [
+        3,
+        2,
+        11
+      ],
+      "to": [
+        13,
+        14,
+        14
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            3,
+            2,
+            13,
+            14
+          ],
+          "texture": "#front"
+        },
+        "south": {
+          "uv": [
+            3,
+            2,
+            13,
+            14
+          ],
+          "texture": "#stone"
+        },
+        "west": {
+          "uv": [
+            11,
+            2,
+            14,
+            14
+          ],
+          "texture": "#stone"
+        },
+        "east": {
+          "uv": [
+            2,
+            2,
+            5,
+            14
+          ],
+          "texture": "#stone"
+        },
+        "up": {
+          "uv": [
+            3,
+            11,
+            13,
+            14
+          ],
+          "texture": "#stone"
+        },
+        "down": {
+          "uv": [
+            3,
+            2,
+            13,
+            5
+          ],
+          "texture": "#stone"
+        }
+      }
+    }
+  ]
+}

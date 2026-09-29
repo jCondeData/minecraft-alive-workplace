@@ -110,6 +110,10 @@ public final class Porters {
 		if (job == VillagerProfession.SHEPHERD) {
 			return stack.is(Items.WHEAT) ? KEEP_BREEDING_FOOD : 0; // wheat to breed with; the wool goes
 		}
+		if (job == ModVillagers.UNDERTAKER) {
+			// What brings villagers back stays; empty bottles go.
+			return io.github.jcondedata.aliveworkplace.grave.Graves.isRevivalItem(stack) ? ALL : 0;
+		}
 		if (job == ModVillagers.RANCHER) {
 			// Food to breed with, saddles, horse armor, carpets and berry treats stay (nothing much comes out of a ranch).
 			return stack.is(Items.SADDLE) || stack.getItem() instanceof net.minecraft.world.item.AnimalArmorItem

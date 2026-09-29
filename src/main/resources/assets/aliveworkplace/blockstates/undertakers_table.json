@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "aliveworkplace:block/undertakers_table"
+    },
+    "facing=east": {
+      "model": "aliveworkplace:block/undertakers_table",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "aliveworkplace:block/undertakers_table",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "aliveworkplace:block/undertakers_table",
+      "y": 270
+    }
+  }
+}

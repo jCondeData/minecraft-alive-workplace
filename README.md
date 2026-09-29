@@ -133,6 +133,13 @@ an Expert (CobbleDollars at the usual rate with CobbleDollars installed). They j
 workstation and start at their level, with the trades of every level on the way. Travellers nobody hires move on after
 two days. Until they're hired they won't take a job.
 
+**Graves and Undertakers.** A grown villager with a job (or a name) who dies leaves a **grave** where they fell —
+right-click it to read who lies there. Craft an **Undertaker's Table** (two candles and a lily of the valley over dark
+oak planks) and a villager becomes an **Undertaker**: with a **golden apple**, a **healing potion** or a **totem of
+undying** in the chest by the table, they go to the nearest grave within 32 blocks and bring the villager back — job,
+level, trades and name as they were. Without one they ask for a golden apple on the Storehouse's requests board. A
+villager a zombie turns into a zombie villager leaves no grave (cure them instead). The Village Hall counts the graves.
+
 ## All the jobs at a glance
 Place the workstation near a villager without a job and they take it. Chests (or barrels) within 8 blocks of it are
 where they take tools and supplies from and where their work goes.
@@ -146,6 +153,7 @@ where they take tools and supplies from and where their work goes.
 | Farmer | Composter (vanilla) | seeds, a hoe, bone meal | a Field Marker (blank: their own farm) |
 | Beekeeper | Apiary | glass bottles or shears, flowers | nothing (beehives within 16 blocks) |
 | Florist | Flower Stand | bone meal (flowers to pot) | nothing (grass round the stand) |
+| Undertaker | Undertaker's Table | golden apples, healing potions or totems | nothing (graves within 32 blocks) |
 | Innkeeper | Inn Counter | — | nothing (hire the travellers who come to stay) |
 | Teacher | Teacher's Desk | — | nothing (children within 32 blocks) |
 | Rancher | Feed Trough | golden carrots, hay, saddles, horse armor (berries) | nothing (horses within 16 blocks) |

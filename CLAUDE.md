@@ -102,6 +102,8 @@ The owner (Jesse) does not write code: sessions are expected to work autonomousl
   everyone within `RADIUS`, nearest hall by POI), `VillageHallScreen` (a `ChoiceMenu`: numbers, then every villager),
   `VillageNeeds` (meals from the store, beds, safety → wellbeing → the work pace in `BuilderLevels.delay`),
   `VillageGrowth` (a baby a day at most with a free bed, food and wellbeing)
+- `grave/` — graves and the Undertaker: `GraveBlock`/`GraveBlockEntity` (the villager's NBT), `Graves` (left on death,
+  revival), `UndertakerWork`
 - `inn/` — the Innkeeper (Inn Counter): `InnkeeperWork` (a traveller each morning), `Innkeepers` (arrivals, the hire
   screen, departures), `Traveller` (attachment); hired travellers start at their level through `Schools.headStart`
 - `school/` — the Teacher (Teacher's Desk): `TeacherWork` (calls the children in, lessons), `Schools` (schooled

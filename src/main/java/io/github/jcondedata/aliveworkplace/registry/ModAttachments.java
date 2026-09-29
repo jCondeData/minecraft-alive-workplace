@@ -84,6 +84,10 @@ public final class ModAttachments {
 	public static final AttachmentType<Integer> ITEMS_ENCHANTED = AttachmentRegistry.create(
 		AliveWorkplace.id("items_enchanted"), builder -> builder.persistent(com.mojang.serialization.Codec.INT));
 
+	/** How many villagers an Undertaker has brought back (shown above its head). */
+	public static final AttachmentType<Integer> VILLAGERS_REVIVED = AttachmentRegistry.create(
+		AliveWorkplace.id("villagers_revived"), builder -> builder.persistent(com.mojang.serialization.Codec.INT));
+
 	/** A traveller staying at an inn (until hired or their stay is over). */
 	public static final AttachmentType<io.github.jcondedata.aliveworkplace.inn.Traveller> TRAVELLER = AttachmentRegistry.create(
 		AliveWorkplace.id("traveller"), builder -> builder.persistent(io.github.jcondedata.aliveworkplace.inn.Traveller.CODEC));

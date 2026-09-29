@@ -22,6 +22,7 @@ public final class ModTrades {
 		rancherTrades();
 		teacherTrades();
 		innkeeperTrades();
+		undertakerTrades();
 		ballSmithTrades();
 		porterTrades();
 		carpenterTrades();
@@ -225,6 +226,26 @@ public final class ModTrades {
 	}
 
 	/** Orchard Keepers buy and sell fruit; with Cobblemon, apricorns and berries too. */
+	/** Undertakers deal in flowers, candles and headstones. */
+	private static void undertakerTrades() {
+		TradeOfferHelper.registerVillagerOffers(ModVillagers.UNDERTAKER, 1, offers -> {
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.BONE, 16), new ItemStack(Items.EMERALD), 16, 2, 0.05f));
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 1), new ItemStack(Items.CANDLE, 3), 12, 1, 0.05f));
+		});
+		TradeOfferHelper.registerVillagerOffers(ModVillagers.UNDERTAKER, 2, offers -> {
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.ROTTEN_FLESH, 32), new ItemStack(Items.EMERALD), 16, 10, 0.05f));
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 1), new ItemStack(Items.LILY_OF_THE_VALLEY, 4), 12, 5, 0.05f));
+		});
+		TradeOfferHelper.registerVillagerOffers(ModVillagers.UNDERTAKER, 3, offers -> {
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 2), new ItemStack(Items.SOUL_LANTERN, 2), 12, 15, 0.05f));
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 3), new ItemStack(Items.MOSSY_STONE_BRICKS, 16), 8, 15, 0.05f));
+		});
+		TradeOfferHelper.registerVillagerOffers(ModVillagers.UNDERTAKER, 4, offers ->
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 8), new ItemStack(Items.GOLDEN_APPLE), 4, 20, 0.05f)));
+		TradeOfferHelper.registerVillagerOffers(ModVillagers.UNDERTAKER, 5, offers ->
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 24), new ItemStack(Items.TOTEM_OF_UNDYING), 2, 30, 0.05f)));
+	}
+
 	/** Innkeepers buy what the kitchen needs and sell a traveller's comforts. */
 	private static void innkeeperTrades() {
 		TradeOfferHelper.registerVillagerOffers(ModVillagers.INNKEEPER, 1, offers -> {

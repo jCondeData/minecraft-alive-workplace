@@ -271,6 +271,7 @@ public final class BuilderEvents {
 				io.github.jcondedata.aliveworkplace.farm.Fields.onDeath(level, villager);
 				io.github.jcondedata.aliveworkplace.wood.TreeFarms.onDeath(level, villager);
 				io.github.jcondedata.aliveworkplace.orchard.Orchards.onDeath(level, villager);
+				io.github.jcondedata.aliveworkplace.grave.Graves.onDeath(level, villager);
 			} else if (entity.level() instanceof ServerLevel level) {
 				io.github.jcondedata.aliveworkplace.guard.GuardCombat.onFoeKilled(level, entity, source);
 			}

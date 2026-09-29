@@ -306,6 +306,28 @@ public final class ModVillagers {
 	public static final ResourceKey<PoiType> VILLAGE_HALL_POI = ResourceKey.create(Registries.POINT_OF_INTEREST_TYPE, VILLAGE_HALL_ID);
 	public static final PoiType VILLAGE_HALL_POI_TYPE = PointOfInterestHelper.register(VILLAGE_HALL_ID, 0, 1, ModBlocks.VILLAGE_HALL);
 
+	/** Graves: points of interest nobody works at, so an undertaker finds the ones nearby quickly. */
+	public static final ResourceLocation GRAVE_ID = AliveWorkplace.id("grave");
+	public static final ResourceKey<PoiType> GRAVE_POI = ResourceKey.create(Registries.POINT_OF_INTEREST_TYPE, GRAVE_ID);
+	public static final PoiType GRAVE_POI_TYPE = PointOfInterestHelper.register(GRAVE_ID, 0, 1, ModBlocks.GRAVE);
+
+	public static final ResourceLocation UNDERTAKERS_TABLE_ID = AliveWorkplace.id("undertakers_table");
+	public static final ResourceKey<PoiType> UNDERTAKERS_TABLE_POI = ResourceKey.create(Registries.POINT_OF_INTEREST_TYPE, UNDERTAKERS_TABLE_ID);
+	public static final PoiType UNDERTAKERS_TABLE_POI_TYPE = PointOfInterestHelper.register(UNDERTAKERS_TABLE_ID, 1, 1, ModBlocks.UNDERTAKERS_TABLE);
+
+	public static final VillagerProfession UNDERTAKER = Registry.register(
+		BuiltInRegistries.VILLAGER_PROFESSION,
+		AliveWorkplace.id("undertaker"),
+		new VillagerProfession(
+			"undertaker",
+			holder -> holder.is(UNDERTAKERS_TABLE_POI),
+			holder -> holder.is(UNDERTAKERS_TABLE_POI),
+			ImmutableSet.of(),
+			ImmutableSet.of(),
+			SoundEvents.VILLAGER_WORK_CLERIC
+		)
+	);
+
 	public static final ResourceLocation INN_COUNTER_ID = AliveWorkplace.id("inn_counter");
 	public static final ResourceKey<PoiType> INN_COUNTER_POI = ResourceKey.create(Registries.POINT_OF_INTEREST_TYPE, INN_COUNTER_ID);
 	public static final PoiType INN_COUNTER_POI_TYPE = PointOfInterestHelper.register(INN_COUNTER_ID, 1, 1, ModBlocks.INN_COUNTER);
@@ -467,7 +489,7 @@ public final class ModVillagers {
 			|| profession == NURSE || profession == SHOPKEEPER || profession == FERRYMAN
 			|| profession == TRAINER || profession == TRAINER_LEADER || profession == TUTOR || profession == POKEMON_TRADER
 			|| profession == ORCHARD_KEEPER || profession == BALL_SMITH || profession == PORTER || profession == CARPENTER || profession == CHEF || profession == FOSSIL_SCIENTIST
-			|| profession == BEEKEEPER || profession == FLORIST || profession == RANCHER || profession == TEACHER || profession == INNKEEPER;
+			|| profession == BEEKEEPER || profession == FLORIST || profession == RANCHER || profession == TEACHER || profession == INNKEEPER || profession == UNDERTAKER;
 	}
 
 	/**

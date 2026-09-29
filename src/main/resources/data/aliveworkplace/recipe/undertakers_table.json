@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "CFC",
+    "DDD",
+    "D D"
+  ],
+  "key": {
+    "C": {
+      "item": "minecraft:candle"
+    },
+    "F": {
+      "item": "minecraft:lily_of_the_valley"
+    },
+    "D": {
+      "item": "minecraft:dark_oak_planks"
+    }
+  },
+  "result": {
+    "id": "aliveworkplace:undertakers_table",
+    "count": 1
+  }
+}

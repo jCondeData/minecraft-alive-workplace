@@ -1753,6 +1753,92 @@ def innkeeper_overlay():
     save(img, "entity", "zombie_villager", "profession", "innkeeper.png")
 
 
+# --- Graves and the Undertaker's Table ------------------------------------------------------------------------------
+def grave_front():
+    rnd = random.Random(411)
+    img = Image.new("RGBA", (16, 16))
+    for y in range(16):
+        for x in range(16):
+            img.putpixel((x, y), jitter(rgb("#8f8f8f"), rnd, 7))
+    # the headstone face (u 3-13, v 2-14 of the model): a rounded top, an engraved panel and a carved flower
+    for (x, y) in ((3, 2), (4, 2), (12, 2), (11, 2), (3, 3), (12, 3)):
+        img.putpixel((x, y), rgb("#6f6f6f"))
+    for y in range(5, 12):
+        img.putpixel((4, y), rgb("#6a6a6a"))
+        img.putpixel((11, y), rgb("#a9a9a9"))
+    for x in range(4, 12):
+        img.putpixel((x, 5), rgb("#6a6a6a"))
+        img.putpixel((x, 11), rgb("#a9a9a9"))
+    for y in (7, 9):
+        for x in range(6, 10):
+            img.putpixel((x, y), rgb("#5c5c5c"))
+    for (x, y) in ((7, 3), (8, 3), (7, 4), (8, 4)):
+        img.putpixel((x, y), rgb("#6a6a6a"))
+    # moss creeping up the bottom
+    for x in range(3, 13):
+        if rnd.random() < 0.6:
+            img.putpixel((x, 13), jitter(rgb("#5a7a32"), rnd, 8))
+        if rnd.random() < 0.25:
+            img.putpixel((x, 12), jitter(rgb("#6b8c3a"), rnd, 8))
+    save(img, "block", "grave_front.png")
+
+
+def undertakers_table(face):
+    rnd = random.Random({"top": 421, "side": 422, "front": 423}[face])
+    img = Image.new("RGBA", (16, 16))
+    dark = [rgb("#3b2715"), rgb("#33210f"), rgb("#2a1a0c")]
+    for y in range(16):
+        for x in range(16):
+            img.putpixel((x, y), jitter(dark[(y // 4) % 2] if (x + (y // 4) * 5) % 16 else dark[2], rnd, 4))
+    if face == "top":
+        # a white cloth runner with two candles and a lily
+        for y in range(16):
+            for x in range(5, 11):
+                img.putpixel((x, y), jitter(rgb("#e9e6dc"), rnd, 4))
+        for (cx, cy) in ((3, 3), (12, 12)):
+            img.putpixel((cx, cy), rgb("#efe7c8"))
+            img.putpixel((cx, cy - 1), rgb("#ffd257"))
+        for (lx, ly) in ((7, 6), (8, 7), (7, 8), (8, 8), (8, 9), (8, 10), (7, 11)):
+            img.putpixel((lx, ly), rgb("#3f7a3a") if ly > 8 else rgb("#fafafa"))
+    else:
+        # a dark drape with a silver hem; a lily embroidered on the front
+        drape = rgb("#2b2433")
+        for y in range(2, 16):
+            for x in range(1, 15):
+                img.putpixel((x, y), jitter(drape, rnd, 4))
+        for x in range(1, 15):
+            img.putpixel((x, 2), rgb("#b7b7c4"))
+            if x % 2:
+                img.putpixel((x, 15), rgb("#b7b7c4"))
+        if face == "front":
+            for (lx, ly) in ((7, 6), (8, 6), (6, 7), (9, 7), (7, 8), (8, 8)):
+                img.putpixel((lx, ly), rgb("#f2f2f2"))
+            for y in range(9, 13):
+                img.putpixel((8, y), rgb("#4d8a45"))
+    save(img, "block", "undertakers_table_" + face + ".png")
+
+
+def undertaker_overlay():
+    img = Image.new("RGBA", (64, 64), T)
+    rnd = random.Random(431)
+    # a tall black hat (the hat layer's top and sides) and a black coat over the robe
+    hat, band = rgb("#1e1b22"), rgb("#4a3f57")
+    for y in range(0, 8):
+        for x in range(40, 48):
+            img.putpixel((x, y), jitter(hat, rnd, 3))
+    for y in range(8, 12):
+        for x in range(32, 64):
+            img.putpixel((x, y), jitter(band if y == 11 else hat, rnd, 3))
+    coat = rgb("#24212a")
+    for y in range(44, 62):
+        for x in range(0, 24):
+            if x in (9, 10) and y < 50:
+                continue
+            img.putpixel((x, y), jitter(coat, rnd, 3))
+    save(img, "entity", "villager", "profession", "undertaker.png")
+    save(img, "entity", "zombie_villager", "profession", "undertaker.png")
+
+
 # --- Feed Trough: the rancher's workstation, a plank trough full of hay ----------------------------------------
 def feed_trough(face):
     rnd = random.Random({"top": 341, "side": 342, "front": 343}[face])
@@ -2254,6 +2340,10 @@ if __name__ == "__main__":
     for face in ("top", "side", "front"):
         inn_counter(face)
     innkeeper_overlay()
+    grave_front()
+    for face in ("top", "side", "front"):
+        undertakers_table(face)
+    undertaker_overlay()
     rancher_overlay()
     for part in ("burlap", "face", "straw", "post"):
         training_dummy(part)

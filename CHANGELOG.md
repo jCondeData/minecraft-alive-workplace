@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+## 0.102.0 — 2026-09-29
+
+### Added
+- **Graves and Undertakers**: a grown villager with a job or a name who dies leaves a grave. An Undertaker (new job,
+  Undertaker's Table) with a golden apple, a healing potion or a totem of undying brings them back as they were — job,
+  level, trades and name. The Village Hall counts the graves.
+
 ## 0.101.0 — 2026-09-29
 
 ### Added

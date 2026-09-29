@@ -144,6 +144,20 @@ public final class ModBlocks {
 		Registry.register(BuiltInRegistries.BLOCK_ENTITY_TYPE, AliveWorkplace.id("storehouse"),
 			net.minecraft.world.level.block.entity.BlockEntityType.Builder.of(io.github.jcondedata.aliveworkplace.store.StorehouseBlockEntity::new, STOREHOUSE).build(null));
 
+	/** Workstation for the Undertaker: the graves nearby are tended, and the villagers in them brought back. */
+	public static final BuildersBenchBlock UNDERTAKERS_TABLE = register(
+		"undertakers_table", new BuildersBenchBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.DARK_OAK_PLANKS))
+	);
+
+	/** Where a villager lies: left where they died (see {@code grave/Graves}). */
+	public static final io.github.jcondedata.aliveworkplace.grave.GraveBlock GRAVE = register(
+		"grave", new io.github.jcondedata.aliveworkplace.grave.GraveBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.STONE).noOcclusion().strength(1.5f, 6f))
+	);
+
+	public static final net.minecraft.world.level.block.entity.BlockEntityType<io.github.jcondedata.aliveworkplace.grave.GraveBlockEntity> GRAVE_ENTITY =
+		Registry.register(BuiltInRegistries.BLOCK_ENTITY_TYPE, AliveWorkplace.id("grave"),
+			net.minecraft.world.level.block.entity.BlockEntityType.Builder.of(io.github.jcondedata.aliveworkplace.grave.GraveBlockEntity::new, GRAVE).build(null));
+
 	/** Workstation for the Innkeeper: travellers come to stay at the inn, and can be hired. */
 	public static final BuildersBenchBlock INN_COUNTER = register(
 		"inn_counter", new BuildersBenchBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_PLANKS))

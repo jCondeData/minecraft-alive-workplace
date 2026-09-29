@@ -117,6 +117,98 @@ public final class VillageHalls {
 		return out;
 	}
 
+	/** A workstation in the village nobody works at yet, and the job it gives. */
+	public record FreeStation(BlockPos pos, VillagerProfession profession, net.minecraft.core.Holder<net.minecraft.world.entity.ai.village.poi.PoiType> poi) {
+	}
+
+	/** The village's free workstations, nearest the hall first. */
+	public static List<FreeStation> freeStations(ServerLevel level, BlockPos hall) {
+		List<FreeStation> out = new ArrayList<>();
+		level.getPoiManager().getInRange(h -> h.is(net.minecraft.tags.PoiTypeTags.ACQUIRABLE_JOB_SITE), hall, RADIUS, PoiManager.Occupancy.HAS_SPACE)
+			.forEach(record -> {
+				net.minecraft.core.registries.BuiltInRegistries.VILLAGER_PROFESSION.stream()
+					.filter(p -> p != VillagerProfession.NONE && p != VillagerProfession.NITWIT && p.acquirableJobSite().test(record.getPoiType()))
+					.findFirst()
+					.ifPresent(p -> out.add(new FreeStation(record.getPos().immutable(), p, record.getPoiType())));
+			});
+		out.sort(Comparator.comparingDouble(f -> f.pos().distSqr(hall)));
+		return out;
+	}
+
+	/** Gives {@code villager} the job at {@code station}, if it's still free and they can work (not a nitwit or a child). */
+	public static boolean assign(ServerLevel level, Villager villager, FreeStation station) {
+		if (!villager.isAlive() || villager.isBaby() || villager.getVillagerData().getProfession() == VillagerProfession.NITWIT) {
+			return false;
+		}
+		// Whatever they had before is let go of first.
+		villager.getBrain().getMemory(MemoryModuleType.JOB_SITE).ifPresent(old -> {
+			if (old.dimension().equals(level.dimension())) {
+				level.getPoiManager().release(old.pos());
+			}
+		});
+		villager.getBrain().eraseMemory(MemoryModuleType.POTENTIAL_JOB_SITE);
+		boolean taken = level.getPoiManager().take(h -> h.equals(station.poi()), (h, p) -> p.equals(station.pos()), station.pos(), 1).isPresent();
+		if (!taken) {
+			return false;
+		}
+		villager.getBrain().setMemory(MemoryModuleType.JOB_SITE, net.minecraft.core.GlobalPos.of(level.dimension(), station.pos()));
+		villager.setVillagerData(villager.getVillagerData().setProfession(station.profession()));
+		villager.refreshBrain(level);
+		level.sendParticles(net.minecraft.core.particles.ParticleTypes.HAPPY_VILLAGER, villager.getX(), villager.getY() + 1.2, villager.getZ(),
+			8, 0.4, 0.4, 0.4, 0);
+		return true;
+	}
+
+	/** How far from the hall villagers who wandered off are looked for. */
+	static final int RECALL_SEARCH = 192;
+
+	/**
+	 * Calls the village's villagers home: everyone whose bed or workstation is in the village but who is out of it (and
+	 * in a loaded part of the world) is brought back beside the hall. Returns how many came.
+	 */
+	public static int recall(ServerLevel level, BlockPos hall) {
+		AABB search = new AABB(hall).inflate(RECALL_SEARCH, HEIGHT * 2, RECALL_SEARCH);
+		double r2 = (double) RADIUS * RADIUS;
+		int came = 0;
+		for (Villager v : level.getEntitiesOfClass(Villager.class, search, Villager::isAlive)) {
+			if (v.blockPosition().distSqr(hall) <= r2 || v.isPassenger()) {
+				continue;
+			}
+			boolean ours = java.util.stream.Stream.of(MemoryModuleType.HOME, MemoryModuleType.JOB_SITE)
+				.map(m -> v.getBrain().getMemory(m).orElse(null))
+				.anyMatch(g -> g != null && g.dimension().equals(level.dimension()) && g.pos().distSqr(hall) <= r2);
+			if (!ours) {
+				continue;
+			}
+			BlockPos spot = besideHall(level, hall, came);
+			if (spot == null) {
+				break;
+			}
+			v.teleportTo(spot.getX() + 0.5, spot.getY(), spot.getZ() + 0.5);
+			v.getNavigation().stop();
+			v.getBrain().eraseMemory(MemoryModuleType.WALK_TARGET);
+			level.sendParticles(net.minecraft.core.particles.ParticleTypes.PORTAL, v.getX(), v.getY() + 1, v.getZ(), 20, 0.3, 0.6, 0.3, 0.2);
+			came++;
+		}
+		return came;
+	}
+
+	/** A spot to stand near the hall ({@code n}: the how-manyth, to spread them out). */
+	@Nullable
+	static BlockPos besideHall(ServerLevel level, BlockPos hall, int n) {
+		List<BlockPos> spots = new ArrayList<>();
+		for (BlockPos p : BlockPos.betweenClosed(hall.offset(-4, -2, -4), hall.offset(4, 2, 4))) {
+			if (io.github.jcondedata.aliveworkplace.work.Walker.canStand(level, p) && !p.equals(hall)) {
+				spots.add(p.immutable());
+			}
+		}
+		if (spots.isEmpty()) {
+			return null;
+		}
+		spots.sort(Comparator.comparingDouble(p -> p.distSqr(hall)));
+		return spots.get(n % spots.size());
+	}
+
 	/** The nearest Village Hall within {@link #RADIUS} of {@code pos}. */
 	public static Optional<BlockPos> nearest(ServerLevel level, BlockPos pos) {
 		return level.getPoiManager().findClosest(h -> h.is(ModVillagers.VILLAGE_HALL_POI), pos, RADIUS, PoiManager.Occupancy.ANY);

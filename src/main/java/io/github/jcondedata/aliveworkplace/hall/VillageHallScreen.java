@@ -49,6 +49,10 @@ public final class VillageHallScreen {
 	public static final int QUESTS = 8;
 	/** The chronicle button, in the middle of the divider. */
 	public static final int CHRONICLE = 13;
+	/** "Call everyone home", left of the chronicle. */
+	public static final int RECALL = 11;
+	/** On a jobless villager's page: find them, and where the free workstations start. */
+	public static final int FIND = 8;
 	/** On the quests page: where the quests are. */
 	public static final int[] QUEST_SLOTS = {20, 22, 24};
 	static final int PREVIOUS = 9;
@@ -119,6 +123,16 @@ public final class VillageHallScreen {
 			renderChronicle(menu, level, hall);
 			menu.broadcastChanges();
 		});
+		menu.button(RECALL, icon(Items.BELL, Component.translatable("screen.aliveworkplace.hall.recall"), ChatFormatting.WHITE,
+			line(Component.translatable("screen.aliveworkplace.hall.recall_hint"), ChatFormatting.GRAY)), p -> {
+			int came = VillageHalls.recall(level, hall);
+			p.displayClientMessage(Component.translatable(came == 0 ? "message.aliveworkplace.hall.recall_none" : "message.aliveworkplace.hall.recalled", came)
+				.withStyle(came == 0 ? ChatFormatting.GRAY : ChatFormatting.GREEN), true);
+			if (came > 0) {
+				level.playSound(null, hall, SoundEvents.BELL_BLOCK, SoundSource.BLOCKS, 1f, 1f);
+			}
+			refresh(menu, level, hall, shown);
+		});
 		if (pages > 1) {
 			if (shown > 0) {
 				menu.button(PREVIOUS, icon(Items.ARROW, Component.translatable("screen.aliveworkplace.hall.previous", shown, pages), ChatFormatting.WHITE),
@@ -131,12 +145,58 @@ public final class VillageHallScreen {
 		}
 		int slot = FIRST_PERSON;
 		for (Villager villager : people.subList(shown * PER_PAGE, Math.min(people.size(), (shown + 1) * PER_PAGE))) {
+			boolean jobless = census.jobless().contains(villager);
 			menu.button(slot++, person(level, hall, villager), p -> {
-				villager.addEffect(new MobEffectInstance(MobEffects.GLOWING, GLOW_TICKS, 0, false, false));
-				p.displayClientMessage(Component.translatable("message.aliveworkplace.hall.glowing", villager.getDisplayName())
-					.withStyle(ChatFormatting.GREEN), true);
-				level.playSound(null, p.blockPosition(), SoundEvents.AMETHYST_BLOCK_CHIME, SoundSource.PLAYERS, 0.6f, 1.2f);
+				if (jobless && villager.getVillagerData().getProfession() != net.minecraft.world.entity.npc.VillagerProfession.NITWIT) {
+					renderJobs(menu, level, hall, villager, shown);
+					menu.broadcastChanges();
+				} else {
+					glow(level, villager, p);
+				}
 			});
+		}
+	}
+
+	private static void glow(ServerLevel level, Villager villager, ServerPlayer p) {
+		villager.addEffect(new MobEffectInstance(MobEffects.GLOWING, GLOW_TICKS, 0, false, false));
+		p.displayClientMessage(Component.translatable("message.aliveworkplace.hall.glowing", villager.getDisplayName())
+			.withStyle(ChatFormatting.GREEN), true);
+		level.playSound(null, p.blockPosition(), SoundEvents.AMETHYST_BLOCK_CHIME, SoundSource.PLAYERS, 0.6f, 1.2f);
+	}
+
+	/** A jobless villager's page: the village's free workstations; a click gives them that job. */
+	public static void renderJobs(ChoiceMenu menu, ServerLevel level, BlockPos hall, Villager villager, int page) {
+		menu.clearButtons();
+		menu.button(0, icon(Items.ARROW, Component.translatable("screen.aliveworkplace.hall.back"), ChatFormatting.WHITE), p -> refresh(menu, level, hall, page));
+		menu.button(4, person(level, hall, villager), null);
+		menu.button(FIND, icon(Items.SPYGLASS, Component.translatable("screen.aliveworkplace.hall.find"), ChatFormatting.WHITE), p -> glow(level, villager, p));
+		menu.divider(1);
+		List<VillageHalls.FreeStation> stations = VillageHalls.freeStations(level, hall);
+		int slot = FIRST_PERSON;
+		for (VillageHalls.FreeStation station : stations) {
+			if (slot >= ChoiceMenu.SIZE) {
+				break;
+			}
+			Component job = Component.translatable("entity.minecraft.villager." + station.profession().name());
+			Item item = level.getBlockState(station.pos()).getBlock().asItem();
+			menu.button(slot++, icon(item == Items.AIR ? Items.PAPER : item, job.copy(), ChatFormatting.WHITE,
+				line(where(hall, station.pos()), ChatFormatting.GRAY),
+				line(Component.translatable("screen.aliveworkplace.hall.give_job", villager.getDisplayName(), job), ChatFormatting.GREEN)), p -> {
+				if (VillageHalls.assign(level, villager, station)) {
+					p.displayClientMessage(Component.translatable("message.aliveworkplace.hall.assigned", villager.getDisplayName(), job)
+						.withStyle(ChatFormatting.GREEN), true);
+					level.playSound(null, p.blockPosition(), SoundEvents.VILLAGER_YES, SoundSource.NEUTRAL, 0.8f, 1f);
+					refresh(menu, level, hall, page);
+				} else {
+					p.displayClientMessage(Component.translatable("message.aliveworkplace.hall.not_assigned").withStyle(ChatFormatting.YELLOW), true);
+					renderJobs(menu, level, hall, villager, page);
+					menu.broadcastChanges();
+				}
+			});
+		}
+		if (stations.isEmpty()) {
+			menu.button(FIRST_PERSON + 4, icon(Items.PAPER, Component.translatable("screen.aliveworkplace.hall.no_free_stations"), ChatFormatting.GRAY,
+				line(Component.translatable("screen.aliveworkplace.hall.no_free_stations_hint"), ChatFormatting.DARK_GRAY)), null);
 		}
 	}
 
@@ -269,7 +329,9 @@ public final class VillageHallScreen {
 			lore.add(line(Component.translatable("screen.aliveworkplace.hall.waiting_for", waitingList(waiting)), ChatFormatting.YELLOW));
 		}
 		lore.add(line(where(hall, villager), ChatFormatting.DARK_GRAY));
-		lore.add(line("screen.aliveworkplace.hall.click_to_find", ChatFormatting.DARK_GRAY));
+		boolean canBeGivenAJob = !working && !villager.isBaby() && villager.getVillagerData().getProfession() != net.minecraft.world.entity.npc.VillagerProfession.NITWIT;
+		lore.add(line(canBeGivenAJob ? "screen.aliveworkplace.hall.jobless_click" : "screen.aliveworkplace.hall.click_to_find",
+			canBeGivenAJob ? ChatFormatting.GREEN : ChatFormatting.DARK_GRAY));
 		icon.set(DataComponents.LORE, new ItemLore(lore));
 		return icon;
 	}
@@ -344,8 +406,16 @@ public final class VillageHallScreen {
 
 	/** "34 blocks north-east". */
 	static Component where(BlockPos hall, Villager villager) {
-		double dx = villager.getX() - (hall.getX() + 0.5);
-		double dz = villager.getZ() - (hall.getZ() + 0.5);
+		return where(hall, villager.getX(), villager.getZ());
+	}
+
+	static Component where(BlockPos hall, BlockPos pos) {
+		return where(hall, pos.getX() + 0.5, pos.getZ() + 0.5);
+	}
+
+	static Component where(BlockPos hall, double x, double z) {
+		double dx = x - (hall.getX() + 0.5);
+		double dz = z - (hall.getZ() + 0.5);
 		int distance = (int) Math.round(Math.sqrt(dx * dx + dz * dz));
 		if (distance < 4) {
 			return Component.translatable("screen.aliveworkplace.hall.here");

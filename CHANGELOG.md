@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+## 0.114.0 — 2026-09-29
+
+### Added
+- **Give a villager a job from the Village Hall**: click a jobless villager on the hall's list to see the village's free
+  workstations, and click one to give them that job.
+- **Call everyone home**: the bell on the hall's screen brings back the villagers who live or work in the village but
+  wandered off.
+
 ## 0.113.0 — 2026-09-29
 
 ### Added

@@ -354,4 +354,59 @@ public class VillageHallGameTests implements net.fabricmc.fabric.api.gametest.v1
 			helper.succeed();
 		});
 	}
+
+	/** A jobless villager on the hall's list: clicking them lists the village's free workstations; clicking one gives them that job. */
+	@GameTest(template = AREA, timeoutTicks = 100, batch = "theHallHandsOutJobs")
+	public void theHallHandsOutJobs(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		int radius = VillageHalls.RADIUS;
+		VillageHalls.RADIUS = 16;
+		Leftovers.after(helper, () -> VillageHalls.RADIUS = radius);
+		ServerLevel level = helper.getLevel();
+		helper.setBlock(HALL, ModBlocks.VILLAGE_HALL);
+		helper.setBlock(new BlockPos(4, 2, 4), ModBlocks.BUILDERS_BENCH);
+		BlockPos hall = helper.absolutePos(HALL);
+		Villager villager = helper.spawn(EntityType.VILLAGER, new BlockPos(8, 2, 14));
+		villager.setVillagerData(villager.getVillagerData().setProfession(net.minecraft.world.entity.npc.VillagerProfession.NONE));
+		ServerPlayer player = helper.makeMockServerPlayerInLevel();
+		helper.runAfterDelay(2, () -> {
+			var free = VillageHalls.freeStations(level, hall);
+			helper.assertTrue(free.size() == 1 && free.get(0).profession() == ModVillagers.BUILDER, "free stations: " + free);
+			ChoiceMenu menu = VillageHallScreen.forTest(player, hall);
+			helper.assertTrue(menu.icon(VillageHallScreen.FIRST_PERSON).is(Items.PAPER), "the jobless villager: " + menu.icon(VillageHallScreen.FIRST_PERSON));
+			menu.press(VillageHallScreen.FIRST_PERSON, player);
+			helper.assertTrue(menu.icon(VillageHallScreen.FIRST_PERSON).is(ModBlocks.BUILDERS_BENCH.asItem()), "jobs page: " + menu.icon(VillageHallScreen.FIRST_PERSON));
+			menu.press(VillageHallScreen.FIRST_PERSON, player);
+			helper.assertTrue(villager.getVillagerData().getProfession() == ModVillagers.BUILDER, "profession: " + villager.getVillagerData().getProfession());
+			helper.assertTrue(villager.getBrain().getMemory(net.minecraft.world.entity.ai.memory.MemoryModuleType.JOB_SITE).map(g -> g.pos())
+				.orElse(null) != null, "no job site");
+			helper.assertTrue(VillageHalls.freeStations(level, hall).isEmpty(), "the bench is still free");
+			helper.assertTrue(menu.icon(VillageHallScreen.FIRST_PERSON).is(ModBlocks.BUILDERS_BENCH.asItem()), "back on the list as a builder");
+			helper.succeed();
+		});
+	}
+
+	/** "Call everyone home": villagers whose bed is in the village but who wandered off come back to the hall; strangers don't. */
+	@GameTest(template = AREA, timeoutTicks = 100, batch = "callingEveryoneHome")
+	public void callingEveryoneHome(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		int radius = VillageHalls.RADIUS;
+		VillageHalls.RADIUS = 8;
+		Leftovers.after(helper, () -> VillageHalls.RADIUS = radius);
+		ServerLevel level = helper.getLevel();
+		helper.setBlock(HALL, ModBlocks.VILLAGE_HALL);
+		BlockPos hall = helper.absolutePos(HALL);
+		Villager ours = helper.spawn(EntityType.VILLAGER, new BlockPos(1, 2, 1));
+		ours.getBrain().setMemory(net.minecraft.world.entity.ai.memory.MemoryModuleType.HOME,
+			net.minecraft.core.GlobalPos.of(level.dimension(), helper.absolutePos(new BlockPos(13, 2, 13))));
+		Villager stranger = helper.spawn(EntityType.VILLAGER, new BlockPos(20, 2, 20));
+		ServerPlayer player = helper.makeMockServerPlayerInLevel();
+		helper.runAfterDelay(2, () -> {
+			ChoiceMenu menu = VillageHallScreen.forTest(player, hall);
+			menu.press(VillageHallScreen.RECALL, player);
+			helper.assertTrue(ours.blockPosition().distSqr(hall) <= 6 * 6, "not home: " + ours.blockPosition() + ", the hall at " + hall);
+			helper.assertTrue(stranger.blockPosition().distSqr(helper.absolutePos(new BlockPos(20, 2, 20))) <= 4, "the stranger was moved");
+			helper.succeed();
+		});
+	}
 }

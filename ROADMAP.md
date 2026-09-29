@@ -526,7 +526,10 @@ Every villager a person you get to know, the way MineColonies' citizens are — 
 - [x] The village chronicle: the hall founded, births, deaths (the death message), revivals, travellers arriving and
   hired, buildings finished, quests done, research, new Masters — `hall/Chronicle`, kept in the hall's block entity (100
   entries), the book in the middle of the hall screen's divider opens its page (newest first, with the day)
-- [ ] Running the village from the hall: give a jobless villager a free workstation, call everyone home
+- [x] Running the village from the hall: click a jobless villager on the hall's list for the village's free
+  workstations (`VillageHalls.freeStations`: acquirable job sites with room, and the profession each gives) and click
+  one to give them that job (`assign`); the bell in the divider calls home everyone whose bed or workstation is in the
+  village but who wandered off (`recall`, looked for within 192 blocks, set down beside the hall)
 
 ## Milestone 14 — Founding and linking villages
 - [ ] A Settler's Wagon: an item that sets up camp in the wild — a covered wagon, a Builder's Bench, a chest of

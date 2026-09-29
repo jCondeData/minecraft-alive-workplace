@@ -130,6 +130,11 @@ of your village — by the bell is a good spot. Right-click it for the village a
   waiting for and where they are ("11 blocks north-west"). **Click one to make them glow** for ten seconds, so you
   can find them.
 
+**Running the village.** Click a villager without a job on the hall's list to see the village's **free
+workstations** (with the job each gives and where it is) and click one to give them that job. The **bell** in the
+middle of the screen **calls everyone home**: villagers whose bed or workstation is in the village but who wandered off
+are brought back beside the hall.
+
 **The chronicle.** The book in the middle of the hall's screen opens the village's **chronicle**: what has happened
 there, newest first, day by day — the hall founded, babies born, villagers who died (and how) or came back from the
 grave, travellers who arrived and who hired them, buildings finished and who built them, quests done, research

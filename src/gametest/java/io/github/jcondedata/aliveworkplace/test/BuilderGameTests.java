@@ -826,6 +826,36 @@ public class BuilderGameTests implements FabricGameTest {
 		buildStarter(helper, StarterBlueprints.TERRACE);
 	}
 
+	@GameTest(template = BIG_AREA, timeoutTicks = 30000, batch = "starter_builds_3")
+	public void buildsSchoolhouse(GameTestHelper helper) {
+		buildStarter(helper, StarterBlueprints.SCHOOLHOUSE);
+	}
+
+	@GameTest(template = BIG_AREA, timeoutTicks = 30000, batch = "starter_builds_3")
+	public void buildsLibrary(GameTestHelper helper) {
+		buildStarter(helper, StarterBlueprints.LIBRARY);
+	}
+
+	@GameTest(template = BIG_AREA, timeoutTicks = 30000, batch = "starter_builds_3")
+	public void buildsRanch(GameTestHelper helper) {
+		buildStarter(helper, StarterBlueprints.RANCH);
+	}
+
+	@GameTest(template = BIG_AREA, timeoutTicks = 30000, batch = "starter_builds_3")
+	public void buildsApiaryGarden(GameTestHelper helper) {
+		buildStarter(helper, StarterBlueprints.APIARY_GARDEN);
+	}
+
+	@GameTest(template = BIG_AREA, timeoutTicks = 30000, batch = "starter_builds_3")
+	public void buildsFlowerShop(GameTestHelper helper) {
+		buildStarter(helper, StarterBlueprints.FLOWER_SHOP);
+	}
+
+	@GameTest(template = BIG_AREA, timeoutTicks = 30000, batch = "starter_builds_3")
+	public void buildsGraveyard(GameTestHelper helper) {
+		buildStarter(helper, StarterBlueprints.GRAVEYARD);
+	}
+
 	@GameTest(template = BIG_AREA, timeoutTicks = 30000, batch = "starter_builds_2")
 	public void buildsTownHall(GameTestHelper helper) {
 		buildStarter(helper, StarterBlueprints.TOWN_HALL);
@@ -1100,7 +1130,7 @@ public class BuilderGameTests implements FabricGameTest {
 			long kept = base.blocks().stream().filter(e -> !e.state().isAir() && e.state().equals(up.get(e.pos()))).count();
 			helper.assertTrue(kept >= solid * 0.6, entry.id() + " keeps only " + kept + " of " + baseId.get() + "'s " + solid + " blocks");
 		}
-		helper.assertTrue(upgrades == 16, "expected 16 starter upgrades, found " + upgrades);
+		helper.assertTrue(upgrades == 22, "expected 22 starter upgrades, found " + upgrades);
 		helper.succeed();
 	}
 

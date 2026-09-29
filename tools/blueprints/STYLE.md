@@ -29,6 +29,11 @@ that make a build look *built* instead of boxy. Check a new or changed build wit
   same helper as the base (e.g. `cottage_ground_floor`) or `grow()` the base and add to it.
 - Don't hang anything (lanterns, bells) from a block an upgrade replaces: when the builder takes that block down, what
   hangs from it falls and the builder has to wait for a new one.
+- Builders can't stand on roofs (stairs and slabs aren't solid underfoot) and reach about four blocks: anything high
+  over a roof (a belfry, a finial) needs a floor or a wall top within reach below it, or it never gets built. Give tall
+  rooms a loft floor.
+- Plants on the ground (flowers, saplings) need grass or dirt under them, which a build site may not have: use potted
+  plants, or a flower bed with its own soil (`flower_bed`).
 - Builders never break containers, and anything with a block entity except signs, banners, skulls, beds, campfires and
   bells. Don't put a chest where an upgrade needs something else.
 - Village houses keep exactly one job block (a vanilla one — a barrel, a lectern — would give the villager the wrong

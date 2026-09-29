@@ -66,13 +66,39 @@ public final class StarterBlueprints {
 	/** A stable on the side with a Feed Trough: a rancher moves in. */
 	public static final Entry INN_2 = new Entry(AliveWorkplace.id("inn_2"), new Vec3i(19, 16, 13));
 
+	/** A one-room school with a Teacher's Desk and the school bell under the porch. */
+	public static final Entry SCHOOLHOUSE = new Entry(AliveWorkplace.id("schoolhouse"), new Vec3i(11, 11, 12));
+	/** A fenced schoolyard with a sandpit. */
+	public static final Entry SCHOOLHOUSE_2 = new Entry(AliveWorkplace.id("schoolhouse_2"), new Vec3i(16, 11, 12));
+	/** A stone library with a Scholar's Desk and shelves of books. */
+	public static final Entry LIBRARY = new Entry(AliveWorkplace.id("library"), new Vec3i(13, 15, 12));
+	/** A study tower with a second Scholar's Desk. */
+	public static final Entry LIBRARY_2 = new Entry(AliveWorkplace.id("library_2"), new Vec3i(18, 15, 12));
+	/** A stable with a Feed Trough and a fenced paddock. */
+	public static final Entry RANCH = new Entry(AliveWorkplace.id("ranch"), new Vec3i(13, 10, 13));
+	/** The paddock doubled and a second stable. */
+	public static final Entry RANCH_2 = new Entry(AliveWorkplace.id("ranch_2"), new Vec3i(20, 10, 13));
+	/** Beehives on posts in a meadow, and a honey shed with the Apiary. */
+	public static final Entry APIARY_GARDEN = new Entry(AliveWorkplace.id("apiary_garden"), new Vec3i(11, 6, 11));
+	/** The meadow runs on with four more hives. */
+	public static final Entry APIARY_GARDEN_2 = new Entry(AliveWorkplace.id("apiary_garden_2"), new Vec3i(17, 6, 11));
+	/** A little shop with a Flower Stand and an awning. */
+	public static final Entry FLOWER_SHOP = new Entry(AliveWorkplace.id("flower_shop"), new Vec3i(9, 11, 9));
+	/** A glass greenhouse on the side. */
+	public static final Entry FLOWER_SHOP_2 = new Entry(AliveWorkplace.id("flower_shop_2"), new Vec3i(15, 11, 9));
+	/** A walled churchyard with a mortuary and an Undertaker's Table. */
+	public static final Entry GRAVEYARD = new Entry(AliveWorkplace.id("graveyard"), new Vec3i(13, 11, 13));
+	/** A lych-gate over the way in. */
+	public static final Entry GRAVEYARD_2 = new Entry(AliveWorkplace.id("graveyard_2"), new Vec3i(13, 11, 13));
+
 	/** Drawn up by a village's scholars (Architecture research), not in the Blueprint Table: a stone hall with a bell tower. */
 	public static final Entry TOWN_HALL = new Entry(AliveWorkplace.id("research/town_hall"), new Vec3i(13, 16, 13));
 
 	public static final List<Entry> ALL = List.of(STARTER_COTTAGE, STARTER_COTTAGE_2, STARTER_COTTAGE_3, MARKET_STALL, MARKET_STALL_2, MARKET_STALL_3,
 		LOOKOUT_TOWER, LOOKOUT_TOWER_2, LOOKOUT_TOWER_3, HEALING_CENTER, HEALING_CENTER_2, HEALING_CENTER_3, SUPPLY_SHOP, SUPPLY_SHOP_2, SUPPLY_SHOP_3,
 		STOREHOUSE, STOREHOUSE_2, STOREHOUSE_3, BERRY_FARM, BERRY_FARM_2, RESEARCH_LAB, RESEARCH_LAB_2,
-		TERRACE, TERRACE_2, INN, INN_2);
+		TERRACE, TERRACE_2, INN, INN_2,
+		SCHOOLHOUSE, SCHOOLHOUSE_2, LIBRARY, LIBRARY_2, RANCH, RANCH_2, APIARY_GARDEN, APIARY_GARDEN_2, FLOWER_SHOP, FLOWER_SHOP_2, GRAVEYARD, GRAVEYARD_2);
 
 	private StarterBlueprints() {
 	}

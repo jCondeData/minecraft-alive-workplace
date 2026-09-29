@@ -69,6 +69,15 @@ and the **Supply Shop** (with a Shop Counter) — build them and a nurse and a s
 boxes, roofs that overhang on every side, chimneys that smoke, lanterns and benches (how they are drawn:
 `tools/blueprints/STYLE.md`).
 
+**Buildings for the new jobs** (in the Blueprint Table, each with an upgrade): the **Schoolhouse** (a Teacher's Desk
+before a blackboard; II adds a fenced schoolyard), the **Library** (a Scholar's Desk among the shelves; II a study tower
+with a second desk), the **Ranch** (a stable with a Feed Trough and a paddock; II doubles it), the **Apiary Garden**
+(hives on posts in a meadow and a honey shed with the Apiary; II four more hives), the **Flower Shop** (a Flower Stand
+behind display windows; II a greenhouse) and the **Graveyard** (a walled churchyard with a mortuary and an Undertaker's
+Table; II a lych-gate).
+
+![The Schoolhouse II, Library II, Ranch II, Apiary Garden II, Flower Shop II and Graveyard II](docs/media/job-buildings.png)
+
 **Paths.** When a builder finishes a building they lay a **dirt path** from its door to the heart of the village —
 the meeting bell or the Village Hall within 48 blocks (their bench if there's neither) — round water, trees and other
 buildings, turning only grass and dirt into path. Turn it off with `builderPaths` in the config.

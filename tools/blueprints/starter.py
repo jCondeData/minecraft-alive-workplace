@@ -1306,3 +1306,541 @@ def town_hall():
     lamp_post(b, 9, 0, 1, "dark_oak_fence", height=2)
     b.fill_air()
     return b
+
+# --- Schoolhouse: a one-room school with a bell on the ridge ------------------------------------------------------
+SCHOOL_FRAME = "spruce_log"
+SCHOOL_INFILL = "white_terracotta"
+SCHOOL_ROOF = SPRUCE
+
+
+def schoolhouse_room(b):
+    """The schoolroom (walls x 1-9, z 2-10): stone plinth, spruce frame with white walls, tall windows down both sides,
+    the door under a porch at the front; inside a Teacher's Desk before a blackboard, three rows of benches, a bookshelf."""
+    plinth(b, 1, 2, 9, 10, STONE_MIX, floor="spruce_planks")
+    walls(b, 1, 2, 9, 10, 1, 4, SCHOOL_INFILL)
+    posts(b, [(1, 2), (9, 2), (1, 10), (9, 10), (1, 6), (9, 6), (3, 2), (7, 2)], 1, 4, SCHOOL_FRAME)
+    beam_ring(b, 1, 2, 9, 10, 5, SCHOOL_FRAME)
+    door(b, 5, 1, 2, "spruce_door", "south")
+    stairs(b, 5, 0, 1, COBBLE, "south")
+    log(b, 5, 3, 2, SCHOOL_FRAME, axis="x")
+    for x in (4, 5, 6):  # the porch roof over the door
+        stairs(b, x, 4, 1, SCHOOL_ROOF, "south")
+    fence(b, 4, 1, 1, "spruce_fence")
+    fence(b, 6, 1, 1, "spruce_fence")
+    b.set(4, 2, 1, "lantern", hanging=False, waterlogged=False)
+    for z in (4, 8):
+        window(b, 1, 2, z, "west", height=2, shutters="spruce_trapdoor", sill=SPRUCE)
+        window(b, 9, 2, z, "east", height=2, shutters="spruce_trapdoor", sill=SPRUCE)
+    window(b, 2, 2, 2, "north", height=2, shutters="spruce_trapdoor",
+           flowers=("spruce_trapdoor", ["potted_dandelion"]))
+    window(b, 8, 2, 2, "north", height=2, shutters="spruce_trapdoor",
+           flowers=("spruce_trapdoor", ["potted_blue_orchid"]))
+    # The blackboard on the back wall, the teacher's desk before it, the benches facing it
+    box(b, 3, 2, 10, 7, 3, 10, "black_concrete")
+    b.set(5, 1, 9, "aliveworkplace:teachers_desk", facing="north")
+    for z in (4, 5, 6):
+        for x in (3, 4, 6, 7):
+            stairs(b, x, 1, z, SPRUCE, "north")
+    b.set(2, 1, 9, "bookshelf")
+    b.set(2, 2, 9, "bookshelf")
+    b.set(8, 1, 9, "potted_fern")
+    box(b, 2, 5, 3, 8, 5, 9, "spruce_planks")  # the loft floor (the lights hang from it)
+    lantern(b, 3, 4, 6, hanging=True)
+    lantern(b, 7, 4, 6, hanging=True)
+    b.set(5, 3, 1, "bell", attachment="ceiling", facing="north", powered=False)  # the school bell, under the porch
+
+
+def school_building():
+    """11 x 11 x 12: a one-room village school — white walls in a spruce frame, a porch over the door with the school
+    bell under it, the Teacher's Desk before a blackboard and benches for the children, a loft under the roof."""
+    b = Build(11, 11, 12)
+    schoolhouse_room(b)
+    gable_roof(b, 0, 10, 1, 11, 5, SCHOOL_ROOF, axis="z", gable=SCHOOL_INFILL, gable_at=(2, 10), ridge=SPRUCE)
+    for z in (2, 10):
+        log(b, 5, 6, z, SCHOOL_FRAME)
+        pane(b, 5, 7, z)
+    b.fill_air()
+    return b
+
+
+def school_building_2():
+    """Upgrade of the Schoolhouse (same origin and front): a fenced schoolyard on the east side with a sandpit, a bench
+    and a young tree, reached by a door where a window was. 16 x 11 x 12."""
+    b = school_building().grow(16, 11, 12)
+    b.clear(10, 1, 7, 10, 3, 9)  # the east window's shutters and sill
+    for y in (2, 3):
+        b.set(9, y, 8, "air")
+    door(b, 9, 1, 8, "spruce_door", "west", hinge="right")
+    # The yard: x 10-15, z 3-11, a fence round it with a gate at the front
+    for x in range(10, 16):
+        for z in range(3, 12):
+            b.set(x, 0, z, "grass_block", snowy=False)
+    for x in range(10, 16):
+        fence(b, x, 1, 3, "spruce_fence")
+        fence(b, x, 1, 11, "spruce_fence")
+    for z in range(4, 11):
+        fence(b, 15, 1, z, "spruce_fence")
+    b.set(12, 1, 3, "spruce_fence_gate", facing="south", open=False, powered=False, in_wall=False)
+    # A sandpit edged with trapdoors, a bench, a sapling, a lamp at the corner
+    for x in range(11, 14):
+        for z in range(8, 11):
+            b.set(x, 0, z, "sand")
+    for x in range(11, 14):
+        trapdoor(b, x, 1, 7, "spruce_trapdoor", "south", half="bottom")
+    stairs(b, 14, 1, 5, SPRUCE, "west")
+    stairs(b, 14, 1, 6, SPRUCE, "west")
+    b.set(11, 1, 5, "oak_sapling", stage=0)
+    b.set(11, 0, 5, "grass_block", snowy=False)
+    lamp_post(b, 15, 1, 3, "spruce_fence", height=2)
+    b.fill_air()
+    return b
+
+
+# --- Library: a stone reading hall for the scholars ---------------------------------------------------------------
+LIBRARY_ROOF = DEEPSLATE_TILE
+
+
+def library_hall(b):
+    """The reading hall (walls x 1-11, z 2-10): stone brick walls with buttresses and tall arched windows, a Scholar's
+    Desk under the back window, bookshelves along both sides, two reading tables with lamps."""
+    plinth(b, 1, 2, 11, 10, FOUNDATION_MIX, floor="spruce_planks")
+    walls(b, 1, 2, 11, 10, 1, 5, BRICK_WALL_MIX)
+    for x, z in ((1, 2), (11, 2), (1, 10), (11, 10)):
+        box(b, x, 1, z, x, 5, z, "polished_andesite")
+    for z in (4, 8):  # buttresses between the windows
+        for x, face in ((0, "east"), (12, "west")):
+            b.set(x, 0, z, "stone_bricks")
+            b.set(x, 1, z, "stone_bricks")
+            b.set(x, 2, z, "stone_bricks")
+            stairs(b, x, 3, z, STONE_BRICK, face)
+    for z in (6,):
+        window(b, 1, 2, z, "west", height=3, sill=STONE_BRICK, lintel=STONE_BRICK)
+        window(b, 11, 2, z, "east", height=3, sill=STONE_BRICK, lintel=STONE_BRICK)
+    # The front: the door under a stone arch, a wide step, windows either side
+    door(b, 6, 1, 2, "dark_oak_door", "south")
+    stairs(b, 5, 3, 1, STONE_BRICK, "east", top=True)
+    stairs(b, 7, 3, 1, STONE_BRICK, "west", top=True)
+    b.set(6, 3, 1, "stone_brick_slab", type="top", waterlogged=False)
+    b.set(6, 3, 2, "chiseled_stone_bricks")
+    for x in (5, 7):
+        b.set(x, 1, 1, "stone_brick_wall", north="none", south="none", east="none", west="none", up=True, waterlogged=False)
+        b.set(x, 2, 1, "stone_brick_wall", north="none", south="none", east="none", west="none", up=True, waterlogged=False)
+    for x in (5, 6, 7):
+        stairs(b, x, 0, 1, STONE_BRICK, "south") if x == 6 else b.set(x, 0, 1, "stone_bricks")
+    for x in (3, 9):
+        window(b, x, 2, 2, "north", height=3, sill=STONE_BRICK, lintel=STONE_BRICK)
+    # Inside: shelves down the sides, the desk under the back window, tables with lamps
+    for z in (3, 4, 5, 7, 8, 9):
+        for y in (1, 2, 3):
+            b.set(2, y, z, "bookshelf")
+            b.set(10, y, z, "bookshelf")
+    window(b, 6, 2, 10, "south", height=3, sill=STONE_BRICK)
+    b.set(6, 1, 9, "aliveworkplace:scholars_desk", facing="north")
+    for tx in (4, 8):
+        for tz in (5, 6):
+            slab(b, tx, 1, tz, DARK_OAK, top=True)
+        b.set(tx, 2, 5, "lantern", hanging=False, waterlogged=False)
+        stairs(b, tx - 1 if tx == 4 else tx + 1, 1, 6, DARK_OAK, "east" if tx == 4 else "west")
+    beam_ring(b, 1, 2, 11, 10, 6, "dark_oak_log")
+    for x in range(2, 11):
+        log(b, x, 6, 6, "dark_oak_log", axis="x")
+    lantern(b, 6, 5, 6, hanging=True)
+
+
+def library():
+    """13 x 15 x 12: a stone library — buttressed walls with tall windows, double doors under an arch, shelves of books
+    down both sides and a Scholar's Desk under the back window — under a steep slate roof."""
+    b = Build(13, 15, 12)
+    library_hall(b)
+    gable_roof(b, 0, 12, 1, 11, 6, LIBRARY_ROOF, axis="z", gable="stone_bricks", gable_at=(2, 10), ridge=LIBRARY_ROOF)
+    for z in (2, 10):
+        pane(b, 6, 8, z)
+        pane(b, 6, 9, z)
+        b.set(6, 10, z, "chiseled_stone_bricks")
+    b.fill_air()
+    return b
+
+
+def library_2():
+    """Upgrade of the Library (same origin and front): a study tower on the east side, through a door where the east
+    window was, with a second Scholar's Desk (two scholars research twice as fast) and a lookout under its cap.
+    18 x 15 x 12."""
+    b = library().grow(18, 15, 12)
+    b.clear(12, 0, 3, 12, 6, 9)  # the east buttresses and the window's sill come off
+    for y in (2, 3, 4):
+        b.set(11, y, 6, "air")
+    door(b, 11, 1, 6, "dark_oak_door", "east")
+    b.set(11, 3, 6, BRICK_WALL_MIX.at(11, 3, 6))
+    b.set(11, 4, 6, BRICK_WALL_MIX.at(11, 4, 6))
+    # The tower: walls x 12-16, z 4-8, up to y 10
+    plinth(b, 12, 4, 16, 8, FOUNDATION_MIX, floor="spruce_planks")
+    b.set(11, 0, 6, "spruce_planks")
+    for y in range(1, 11):
+        for x in range(12, 17):
+            for z in range(4, 9):
+                if x in (12, 16) or z in (4, 8):
+                    corner = x in (12, 16) and z in (4, 8)
+                    b.set(x, y, z, "polished_andesite" if corner else BRICK_WALL_MIX.at(x, y, z))
+    for y in (1, 2):
+        b.set(12, y, 6, "air")
+    for y in (5, 8):  # floors, with a ladder up the back corner
+        box(b, 13, y, 5, 15, y, 7, "spruce_planks")
+    for y in range(1, 9):
+        b.set(15, y, 7, "ladder", facing="west", waterlogged=False)
+    # Windows on each floor, the lookout's arches at the top
+    for y in (2, 6):
+        window(b, 16, y, 6, "east", height=2 if y == 2 else 1, sill=STONE_BRICK)
+        window(b, 14, y, 4, "north", height=2 if y == 2 else 1, sill=STONE_BRICK)
+    for (x, z) in ((14, 4), (16, 6), (14, 8)):
+        b.set(x, 9, z, "air")
+    b.set(14, 9, 6, "lantern", hanging=False, waterlogged=False)
+    hip_roof(b, 11, 17, 3, 9, 11, LIBRARY_ROOF)
+    # The second desk, shelves round it
+    b.set(13, 1, 7, "aliveworkplace:scholars_desk", facing="west")
+    b.set(15, 1, 5, "bookshelf")
+    b.set(13, 1, 5, "bookshelf")
+    b.set(13, 2, 5, "bookshelf")
+    lantern(b, 14, 4, 6, hanging=True)
+    b.fill_air()
+    return b
+
+
+# --- Ranch: a stable with a fenced paddock ---------------------------------------------------------------------
+RANCH_FRAME = "dark_oak_log"
+RANCH_ROOF = SPRUCE
+
+
+def ranch_stable(b, x0, x1, trough=True):
+    """A stable across the back (walls x0-x1, z 8-11): a cobble footing, a dark oak frame with spruce boards, its front
+    open onto the paddock between the posts, a hay loft under the roof beams."""
+    plinth(b, x0, 8, x1, 11, STONE_MIX, floor="coarse_dirt")
+    for y in (1, 2, 3):
+        for x in range(x0, x1 + 1):
+            b.set(x, y, 11, "spruce_planks")
+        for z in range(9, 11):
+            b.set(x0, y, z, "spruce_planks")
+            b.set(x1, y, z, "spruce_planks")
+    posts(b, [(x, z) for x in range(x0, x1 + 1, 3) for z in (8, 11)] + [(x1, 8), (x1, 11)], 1, 3, RANCH_FRAME)
+    beam_ring(b, x0, 8, x1, 11, 4, RANCH_FRAME)
+    for x in range(x0 + 1, x1):  # the loft: beams across, hay on them
+        log(b, x, 4, 9, RANCH_FRAME, axis="x")
+        log(b, x, 4, 10, RANCH_FRAME, axis="x")
+    for x in (x0 + 1, x0 + 2, x1 - 2, x1 - 1):
+        b.set(x, 5, 10, "hay_block", axis="x")
+    b.set(x1 - 1, 5, 9, "hay_block", axis="z")
+    for x in range(x0 + 1, x1, 4):
+        lantern(b, x + 1, 3, 9, hanging=True)
+    if trough:
+        b.set(x0 + 2, 1, 10, "aliveworkplace:feed_trough", facing="north")
+        b.set(x0 + 1, 1, 10, "chest", facing="east", type="single", waterlogged=False)
+    b.set(x1 - 1, 1, 10, "hay_block", axis="y")
+    b.set(x1 - 1, 2, 10, "hay_block", axis="x")
+    b.set(x1 - 2, 1, 10, "water_cauldron", level=3)
+
+
+def paddock(b, x0, x1, z0, z1, gate_x):
+    """A fence round the paddock (x0-x1, z0 to the stable at z1), a gate at the front with lamps on its posts."""
+    for x in range(x0, x1 + 1):
+        fence(b, x, 0, z0, "spruce_fence")
+    for z in range(z0, z1 + 1):
+        fence(b, x0, 0, z, "spruce_fence")
+        fence(b, x1, 0, z, "spruce_fence")
+    b.set(gate_x, 0, z0, "spruce_fence_gate", facing="south", open=False, powered=False, in_wall=False)
+    for x in (gate_x - 1, gate_x + 1):
+        fence(b, x, 1, z0, "spruce_fence")
+        lantern(b, x, 2, z0)
+
+
+def ranch():
+    """13 x 10 x 13: a ranch — a timber stable across the back with a Feed Trough, a water trough, hay down below and up
+    in the loft, and a fenced paddock in front with a gate between two lamps."""
+    b = Build(13, 10, 13)
+    ranch_stable(b, 1, 11)
+    paddock(b, 0, 12, 0, 8, 6)
+    gable_roof(b, 0, 12, 7, 12, 4, RANCH_ROOF, axis="x", gable="spruce_planks", gable_at=(1, 11), ridge=SPRUCE)
+    # In the paddock: a hay bale to eat from, a tie post
+    b.set(3, 0, 3, "hay_block", axis="y")
+    fence(b, 9, 0, 3, "spruce_fence")
+    fence(b, 9, 1, 3, "spruce_fence")
+    b.fill_air()
+    return b
+
+
+def ranch_2():
+    """Upgrade of the Ranch (same origin and front): the paddock doubled to the east with a second stable (more stalls,
+    more hay) and a saddle rack. 20 x 10 x 13."""
+    b = ranch().grow(20, 10, 13)
+    b.clear(12, 0, 1, 12, 9, 7)  # the old east fence
+    b.clear(12, 4, 7, 12, 9, 12)  # the old roof's east overhang
+    ranch_stable(b, 12, 18, trough=False)
+    for y in (1, 2, 3):
+        for z in range(9, 11):
+            b.set(11, y, z, "air")  # one long stable now
+            b.set(12, y, z, "air")
+    paddock(b, 0, 19, 0, 8, 6)
+    for x in (13, 14, 15):
+        b.set(x, 0, 0, "spruce_fence", north=False, south=False, east=False, west=False, waterlogged=False)
+    b.set(15, 0, 0, "spruce_fence_gate", facing="south", open=False, powered=False, in_wall=False)
+    gable_roof(b, 0, 19, 7, 12, 4, RANCH_ROOF, axis="x", gable="spruce_planks", gable_at=(1, 18), ridge=SPRUCE)
+    # A saddle rack: armor stand? no — trapdoors on the wall with a barrel of tack
+    for x in (14, 15, 16):
+        trapdoor(b, x, 2, 10, "spruce_trapdoor", "north", half="top")
+    b.set(17, 1, 10, "hay_block", axis="y")
+    b.set(16, 5, 10, "hay_block", axis="x")
+    b.fill_air()
+    return b
+
+
+# --- Apiary Garden: beehives on posts in a meadow, a honey shed ---------------------------------------------------
+FLOWERS = ["poppy", "dandelion", "cornflower", "oxeye_daisy", "allium", "azure_bluet", "red_tulip", "orange_tulip", None]
+
+
+def hive_on_post(b, x, z, facing="south", smoke=False):
+    """A beehive on a fence post (a campfire at its foot when {@code smoke}: the smoke keeps the bees calm)."""
+    if smoke:
+        b.set(x, 0, z, "campfire", facing="north", lit=True, signal_fire=False, waterlogged=False)
+    else:
+        fence(b, x, 0, z, "oak_fence")
+    fence(b, x, 1, z, "oak_fence")
+    b.set(x, 2, z, "beehive", facing=facing, honey_level=0)
+
+
+def honey_shed(b, x0, z0):
+    """An open-fronted shed (x0 to x0+4, z0 to z0+3) with the Apiary, a chest, shelves of bottles and a slab roof."""
+    plinth(b, x0, z0, x0 + 4, z0 + 3, STONE_MIX, floor="oak_planks")
+    for y in (1, 2, 3):
+        for x in range(x0, x0 + 5):
+            b.set(x, y, z0 + 3, "oak_planks")
+        for z in range(z0 + 1, z0 + 3):
+            b.set(x0, y, z, "oak_planks")
+            b.set(x0 + 4, y, z, "oak_planks")
+    posts(b, [(x0, z0), (x0 + 4, z0), (x0, z0 + 3), (x0 + 4, z0 + 3)], 1, 3, "stripped_oak_log")
+    for x in range(x0 - 1, x0 + 6):
+        for z in range(z0 - 1, z0 + 5):
+            slab(b, x, 4, z, OAK)
+    b.set(x0 + 2, 1, z0 + 2, "aliveworkplace:apiary", facing="north")
+    b.set(x0 + 1, 1, z0 + 2, "chest", facing="north", type="single", waterlogged=False)
+    for x in (x0 + 1, x0 + 3):
+        trapdoor(b, x, 2, z0 + 2, "oak_trapdoor", "north", half="top")
+    b.set(x0 + 3, 1, z0 + 2, "honey_block")
+    lantern(b, x0 + 2, 3, z0 + 1, hanging=True)
+
+
+def apiary_garden():
+    """11 x 6 x 11: a beekeeper's garden — a meadow of flowers inside a low fence, four beehives on posts (one over a
+    smouldering campfire), and a honey shed at the back with the Apiary, a chest and the honey."""
+    b = Build(11, 6, 11)
+    flower_bed(b, 1, 1, 9, 4, 0, FLOWERS)
+    for x in range(0, 11):
+        fence(b, x, 0, 0, "oak_fence")
+    for z in range(0, 7):
+        fence(b, 0, 0, z, "oak_fence")
+        fence(b, 10, 0, z, "oak_fence")
+    b.set(5, 0, 0, "oak_fence_gate", facing="south", open=False, powered=False, in_wall=False)
+    b.set(5, 0, 1, "dirt_path")
+    b.set(5, 0, 2, "dirt_path")
+    b.set(5, 1, 1, "air")
+    b.set(5, 1, 2, "air")
+    for (x, z, smoke) in ((2, 2, True), (8, 2, False), (2, 4, False), (8, 4, False)):
+        b.set(x, 1, z, "air")
+        hive_on_post(b, x, z, smoke=smoke)
+    honey_shed(b, 3, 6)
+    for z in range(7, 11):
+        fence(b, 0, 0, z, "oak_fence")
+        fence(b, 10, 0, z, "oak_fence")
+    for x in range(0, 11):
+        fence(b, x, 0, 10, "oak_fence")
+    b.fill_air()
+    return b
+
+
+def apiary_garden_2():
+    """Upgrade of the Apiary Garden (same origin and front): the meadow runs on to the east with four more hives and a
+    bench among the flowers. 17 x 6 x 11."""
+    b = apiary_garden().grow(17, 6, 11)
+    for z in range(0, 11):
+        b.clear(10, 0, z, 10, 0, z)
+    flower_bed(b, 10, 1, 15, 9, 0, FLOWERS)
+    for x in range(10, 17):
+        fence(b, x, 0, 0, "oak_fence")
+        fence(b, x, 0, 10, "oak_fence")
+    for z in range(0, 11):
+        fence(b, 16, 0, z, "oak_fence")
+    for (x, z, smoke) in ((11, 3, False), (14, 3, True), (11, 7, False), (14, 7, False)):
+        b.set(x, 1, z, "air")
+        hive_on_post(b, x, z, smoke=smoke)
+    b.set(12, 0, 5, "oak_planks")
+    stairs(b, 12, 1, 5, OAK, "west")
+    stairs(b, 13, 1, 5, OAK, "west")
+    b.set(13, 0, 5, "oak_planks")
+    lamp_post(b, 16, 1, 0, "oak_fence", height=2)
+    b.fill_air()
+    return b
+
+
+# --- Flower Shop: a little shop front with an awning and window boxes ---------------------------------------------
+SHOP_FRAME = "stripped_birch_log"
+SHOP_WALL = Mix((7, "bricks"), (2, "granite"), (1, "polished_granite"), seed=21)
+
+
+def flower_shop_front(b):
+    """The shop (walls x 1-7, z 2-7): brick walls on a stone plinth, a wide display window either side of the door under
+    a striped awning, window boxes full of flowers; inside the Flower Stand, a chest, pots along a shelf."""
+    plinth(b, 1, 2, 7, 7, STONE_MIX, floor="birch_planks")
+    walls(b, 1, 2, 7, 7, 1, 4, SHOP_WALL)
+    posts(b, [(1, 2), (7, 2), (1, 7), (7, 7)], 1, 4, SHOP_FRAME)
+    beam_ring(b, 1, 2, 7, 7, 5, SHOP_FRAME)
+    door(b, 4, 1, 2, "birch_door", "south")
+    stairs(b, 4, 0, 1, STONE_BRICK, "south")
+    for x in (2, 6):
+        for y in (1, 2):
+            pane(b, x, y, 2)
+    for x in (3, 5):
+        pane(b, x, 2, 2)
+        b.set(x, 1, 1, "potted_red_tulip" if x == 3 else "potted_allium")
+    # The awning: red and white wool stripes, a slab lip
+    for x in range(1, 8):
+        b.set(x, 4, 1, "red_wool" if x % 2 else "white_wool")
+    # Window boxes on the sides
+    for z in (4,):
+        window(b, 1, 2, z, "west", width=2, height=1, shutters="birch_trapdoor", flowers=("birch_trapdoor", ["potted_poppy", "potted_dandelion"]))
+        window(b, 7, 2, z, "east", width=2, height=1, shutters="birch_trapdoor", flowers=("birch_trapdoor", ["potted_cornflower", "potted_lily_of_the_valley"]))
+    # Inside: the stand and a chest by the back wall, a shelf of pots, a hanging light
+    b.set(4, 1, 6, "aliveworkplace:flower_stand", facing="north")
+    b.set(3, 1, 6, "chest", facing="north", type="single", waterlogged=False)
+    for x in (2, 5, 6):
+        trapdoor(b, x, 2, 6, "birch_trapdoor", "north", half="top")
+        b.set(x, 3, 6, "potted_oxeye_daisy" if x != 5 else "potted_fern")
+    lantern(b, 4, 4, 4, hanging=True)
+    for x in range(2, 7):
+        log(b, x, 5, 4, SHOP_FRAME, axis="x")
+
+
+def flower_shop_building():
+    """9 x 11 x 9: a little flower shop — brick walls, display windows full of pots under a striped awning, window boxes,
+    the Flower Stand inside, under a steep birch roof with a flower box in the gable."""
+    b = Build(9, 11, 9)
+    flower_shop_front(b)
+    gable_roof(b, 0, 8, 1, 8, 5, BIRCH, axis="z", gable="birch_planks", gable_at=(2, 7), ridge=BIRCH)
+    window(b, 4, 6, 2, "north", height=1, shutters="birch_trapdoor", flowers=("birch_trapdoor", ["potted_pink_tulip"]))
+    b.fill_air()
+    return b
+
+
+def flower_shop_building_2():
+    """Upgrade of the Flower Shop (same origin and front): a glass greenhouse on the east side, through a door where the
+    window box was, with beds of flowers under the glass. 15 x 11 x 9."""
+    b = flower_shop_building().grow(15, 11, 9)
+    b.clear(8, 0, 3, 8, 3, 6)  # the east window box and shutters
+    for x in (7,):
+        for z in (4, 5):
+            b.set(x, 2, z, SHOP_WALL.at(x, 2, z))
+    door(b, 7, 1, 5, "birch_door", "east")
+    # The greenhouse: x 8-13, z 3-7, a stone kerb, glass walls and roof on birch posts
+    plinth(b, 8, 3, 13, 7, STONE_MIX, floor=None)
+    for x in range(9, 13):
+        for z in range(4, 7):
+            b.set(x, 0, z, "grass_block", snowy=False)
+    b.set(8, 0, 5, "birch_planks")
+    for y in (1, 2, 3):
+        for x in range(8, 14):
+            for z in range(3, 8):
+                if x in (8, 13) or z in (3, 7):
+                    b.set(x, y, z, "glass")
+    posts(b, [(8, 3), (13, 3), (8, 7), (13, 7), (13, 5)], 1, 3, SHOP_FRAME)
+    for y in (1, 2):
+        b.set(8, y, 5, "air")
+    for x in range(8, 14):
+        for z in range(3, 8):
+            b.set(x, 4, z, "glass")
+    for x in range(8, 14):
+        log(b, x, 4, 5, SHOP_FRAME, axis="x")
+    for x in range(9, 13):
+        for z in (4, 6):
+            b.set(x, 1, z, FLOWERS[(x + z) % (len(FLOWERS) - 1)])
+    lantern(b, 11, 3, 5, hanging=True)
+    b.fill_air()
+    return b
+
+
+# --- Graveyard: a stone mortuary in a walled churchyard -------------------------------------------------------------
+def headstone(b, x, z, kind=0):
+    """A small headstone on the ground (a stone wall block) with a potted flower before it (a pot stands on any ground)."""
+    b.set(x, 0, z, ["stone_brick_wall", "mossy_stone_brick_wall", "cobblestone_wall"][kind % 3],
+          north="none", south="none", east="none", west="none", up=True, waterlogged=False)
+    b.set(x, 0, z - 1, ["potted_poppy", "potted_oxeye_daisy", "potted_lily_of_the_valley", "potted_azure_bluet"][kind % 4])
+
+
+def graveyard():
+    """13 x 11 x 13: a quiet churchyard — a low wall of mossy cobblestone with a gate between two soul lanterns, rows of
+    old headstones with flowers, a little yew — and a small stone mortuary at the back with the Undertaker's Table
+    under a steep slate roof."""
+    b = Build(13, 11, 13)
+    for x in range(0, 13):
+        wall_block(b, x, 0, 0, "mossy_cobblestone_wall" if x % 3 == 0 else "cobblestone_wall")
+        wall_block(b, x, 0, 12, "mossy_cobblestone_wall" if x % 3 == 0 else "cobblestone_wall")
+    for z in range(1, 12):
+        wall_block(b, 0, 0, z, "mossy_cobblestone_wall" if z % 3 == 0 else "cobblestone_wall")
+        wall_block(b, 12, 0, z, "mossy_cobblestone_wall" if z % 3 == 0 else "cobblestone_wall")
+    for x in (5, 6, 7):
+        b.set(x, 0, 0, "dark_oak_fence_gate", facing="south", open=False, powered=False, in_wall=True)
+    for x in (4, 8):
+        wall_block(b, x, 1, 0, "cobblestone_wall")
+        lantern(b, x, 2, 0, soul=True)
+    # Headstones in two rows either side of the way in
+    k = 0
+    for z in (3, 5):
+        for x in (2, 3, 9, 10):
+            headstone(b, x, z, k)
+            k += 1
+    # A little yew in the corner: a spruce trunk under a crown of (lasting) leaves
+    for y in (0, 1, 2):
+        log(b, 10, y, 8, "spruce_log")
+    for x in range(9, 12):
+        for z in range(7, 10):
+            for y in (2, 3):
+                if (x, z) != (10, 8) or y == 3:
+                    b.set(x, y, z, "spruce_leaves", distance=1, persistent=True, waterlogged=False)
+    b.set(10, 4, 8, "spruce_leaves", distance=1, persistent=True, waterlogged=False)
+    # The mortuary: walls x 3-9, z 7-11
+    plinth(b, 3, 7, 9, 11, STONE_MIX, floor="polished_andesite")
+    walls(b, 3, 7, 9, 11, 1, 3, MOSSY_BRICK_MIX)
+    for x, z in ((3, 7), (9, 7), (3, 11), (9, 11)):
+        box(b, x, 1, z, x, 3, z, "polished_andesite")
+    door(b, 6, 1, 7, "dark_oak_door", "south")
+    stairs(b, 6, 0, 6, STONE_BRICK, "south")
+    b.set(6, 3, 7, "chiseled_stone_bricks")
+    for x in (4, 8):
+        window(b, x, 2, 7, "north", height=1, glass="iron_bars", sill=STONE_BRICK)
+    window(b, 3, 2, 9, "west", height=1, glass="iron_bars")
+    window(b, 9, 2, 9, "east", height=1, glass="iron_bars")
+    b.set(6, 1, 10, "aliveworkplace:undertakers_table", facing="north")
+    b.set(5, 1, 10, "chest", facing="north", type="single", waterlogged=False)
+    b.set(7, 1, 10, "candle", candles=4, lit=False, waterlogged=False)
+    b.set(4, 1, 10, "potted_lily_of_the_valley")
+    for x in range(4, 9):  # a tie beam for the lamp
+        log(b, x, 4, 9, "dark_oak_log", axis="x")
+    lantern(b, 6, 3, 9, soul=True, hanging=True)
+    gable_roof(b, 2, 10, 6, 12, 4, DEEPSLATE_TILE, axis="x", gable=MOSSY_BRICK_MIX, gable_at=(3, 9), steep=True, ridge=DEEPSLATE_TILE)
+    b.fill_air()
+    return b
+
+
+def graveyard_2():
+    """Upgrade of the Graveyard (same origin and front): a lych-gate over the way in — dark oak posts, a beam and a slab
+    canopy with a lantern under it — and soul lanterns on posts among the graves. 13 x 11 x 13."""
+    b = graveyard().grow(13, 11, 13)
+    for x in (4, 8):
+        for y in (0, 1, 2, 3):
+            b.set(x, y, 0, "dark_oak_log", axis="y")
+    for x in range(5, 8):
+        log(b, x, 3, 0, "dark_oak_log", axis="x")
+    for x in range(3, 10):
+        for z in (0, 1):
+            slab(b, x, 4, z, DARK_OAK)
+    lantern(b, 6, 2, 0, soul=True, hanging=True)
+    for z in (2, 4):
+        lamp_post(b, 5, 0, z, "dark_oak_fence", height=1)
+        lamp_post(b, 7, 0, z, "dark_oak_fence", height=1)
+    b.fill_air()
+    return b

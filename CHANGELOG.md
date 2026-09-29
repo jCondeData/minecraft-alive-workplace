@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+## 0.107.0 — 2026-09-29
+
+### Added
+- Six new buildings with upgrades, in the Blueprint Table: the **Schoolhouse**, the **Library**, the **Ranch**, the
+  **Apiary Garden**, the **Flower Shop** and the **Graveyard** — each with its job's workstation, so building one brings
+  a teacher, a scholar, a rancher, a beekeeper, a florist or an undertaker.
+
 ## 0.106.0 — 2026-09-29
 
 ### Added

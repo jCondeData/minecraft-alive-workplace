@@ -496,8 +496,9 @@ loop: ore → ingots → the tools, weapons and armor the other workers wear out
 ## Milestone 12 — More to build
 - [ ] Every starter building in 2–3 styles (timber, stone, Cobblemon-themed) up to tier III, and the new jobs' buildings
   (done so far: village houses for the Florist, Rancher, Teacher, Innkeeper and Undertaker — `flower_shop`,
-  `ranch_house`, `schoolhouse`, `inn_room`, `mortuary` in `village.py`, weight 2 (the mortuary 1); starter builds for
-  them still to come, and the styles)
+  `ranch_house`, `schoolhouse`, `inn_room`, `mortuary` in `village.py`, weight 2 (the mortuary 1); starter builds with
+  upgrades: Schoolhouse, Library, Ranch, Apiary Garden, Flower Shop, Graveyard (and the Inn, Terrace, Town Hall). Still
+  to do: the 2–3 styles per starter building)
 - [ ] Houses in tiers and decorations (wells, lamp posts, benches, market squares)
 - [x] Builders lay paths between the village's buildings (`build/Paths` + `PathWork`: at the finish, an A* route over the
   ground from the building's door to the nearest bell or Village Hall (else the bench) within 48 blocks, kept to

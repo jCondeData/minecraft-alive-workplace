@@ -169,7 +169,7 @@ public class BuilderGameTests implements FabricGameTest {
 		net.minecraft.server.level.ServerPlayer player = helper.makeMockServerPlayerInLevel();
 		ItemStack upgrade = BlueprintItem.create(StarterBlueprints.STARTER_COTTAGE_2.id(), StarterBlueprints.STARTER_COTTAGE_2.size());
 		player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, upgrade);
-		BlockPos wall = helper.absolutePos(originRel.offset(0, 1, 3));
+		BlockPos wall = helper.absolutePos(originRel.offset(1, 1, 3));
 		upgrade.useOn(new net.minecraft.world.item.context.UseOnContext(player, net.minecraft.world.InteractionHand.MAIN_HAND,
 			new net.minecraft.world.phys.BlockHitResult(net.minecraft.world.phys.Vec3.atCenterOf(wall), net.minecraft.core.Direction.WEST, wall, false)));
 		helper.assertTrue(BlueprintItem.data(player.getMainHandItem()).flatMap(BlueprintData::placement).equals(Optional.of(placement)),
@@ -193,7 +193,7 @@ public class BuilderGameTests implements FabricGameTest {
 		helper.succeedWhen(() -> {
 			assertBuilt(helper, s);
 			helper.assertBlockPresent(Blocks.RED_BED, originRel.offset(7, 1, 6));
-			helper.assertBlockPresent(Blocks.LIGHT_BLUE_BED, originRel.offset(1, 5, 6));
+			helper.assertBlockPresent(Blocks.LIGHT_BLUE_BED, originRel.offset(2, 6, 7));
 			helper.assertTrue(s.site().placed() < total * 0.8, "placed " + s.site().placed() + " of " + total + " blocks: the ground floor should have been kept");
 		});
 	}
@@ -227,7 +227,7 @@ public class BuilderGameTests implements FabricGameTest {
 		net.minecraft.server.level.ServerPlayer player = helper.makeMockServerPlayerInLevel();
 		ItemStack upgrade = BlueprintItem.create(StarterBlueprints.STARTER_COTTAGE_3.id(), StarterBlueprints.STARTER_COTTAGE_3.size());
 		player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, upgrade);
-		BlockPos wall = helper.absolutePos(originRel.offset(0, 1, 3));
+		BlockPos wall = helper.absolutePos(originRel.offset(1, 1, 3));
 		upgrade.useOn(new net.minecraft.world.item.context.UseOnContext(player, net.minecraft.world.InteractionHand.MAIN_HAND,
 			new net.minecraft.world.phys.BlockHitResult(net.minecraft.world.phys.Vec3.atCenterOf(wall), net.minecraft.core.Direction.WEST, wall, false)));
 		helper.assertTrue(BlueprintItem.data(player.getMainHandItem()).flatMap(BlueprintData::placement).equals(Optional.of(placement)),
@@ -248,13 +248,13 @@ public class BuilderGameTests implements FabricGameTest {
 		int total = s.plan().steps(BuildPlan.Stage.STRUCTURE).size() + s.plan().steps(BuildPlan.Stage.DECORATION).size();
 		helper.succeedWhen(() -> {
 			assertBuilt(helper, s);
-			helper.assertBlockPresent(Blocks.AIR, originRel.offset(10, 1, 3)); // where the mound was
-			helper.assertBlockPresent(Blocks.AIR, originRel.offset(8, 1, 4)); // the doorway through
-			helper.assertBlockPresent(Blocks.SMOKER, originRel.offset(13, 1, 2));
-			helper.assertBlockPresent(Blocks.OAK_DOOR, originRel.offset(8, 5, 4)); // out onto the terrace
-			helper.assertBlockPresent(Blocks.LANTERN, originRel.offset(14, 6, 7));
+			helper.assertBlockPresent(Blocks.AIR, originRel.offset(12, 1, 2)); // where the mound was
+			helper.assertBlockPresent(Blocks.AIR, originRel.offset(9, 1, 4)); // the doorway through
+			helper.assertBlockPresent(Blocks.SMOKER, originRel.offset(14, 1, 6));
+			helper.assertBlockPresent(Blocks.OAK_DOOR, originRel.offset(13, 1, 3)); // the wing's own door
+			helper.assertBlockPresent(Blocks.LANTERN, originRel.offset(16, 2, 2));
 			helper.assertBlockPresent(Blocks.RED_BED, originRel.offset(7, 1, 6));
-			helper.assertBlockPresent(Blocks.LIGHT_BLUE_BED, originRel.offset(1, 5, 6));
+			helper.assertBlockPresent(Blocks.LIGHT_BLUE_BED, originRel.offset(2, 6, 7));
 			helper.assertTrue(s.site().placed() < total * 0.4, "placed " + s.site().placed() + " of " + total + " blocks: the cottage should have been kept");
 		});
 	}
@@ -1047,7 +1047,8 @@ public class BuilderGameTests implements FabricGameTest {
 				left -= n;
 			}
 		}
-		BlockPos[] barrels = {new BlockPos(1, 2, 4), new BlockPos(2, 2, 4), new BlockPos(3, 2, 4), new BlockPos(4, 2, 4)};
+		// (not at CHEST: setup() puts an empty chest there)
+		BlockPos[] barrels = {new BlockPos(1, 2, 4), new BlockPos(3, 2, 4), new BlockPos(4, 2, 4), new BlockPos(5, 2, 4)};
 		for (int i = 0; i < barrels.length; i++) {
 			helper.setBlock(barrels[i], Blocks.BARREL);
 			BaseContainerBlockEntity barrel = helper.getBlockEntity(barrels[i]);

@@ -1,0 +1,12 @@
+{
+  "name": "aliveworkplace-blueprint-render",
+  "private": true,
+  "type": "module",
+  "description": "Renders blueprint .nbt files to PNGs in headless Chromium with Lodestone (see ../STYLE.md).",
+  "dependencies": {
+    "@mattzh72/lodestone": "0.6.0",
+    "gl-matrix": "3.4.4",
+    "playwright": "1.56.0",
+    "vite": "8.0.16"
+  }
+}

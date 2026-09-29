@@ -57,9 +57,9 @@ public class TableGameTests implements FabricGameTest {
 	public void materialsListMatchesTheBuild(GameTestHelper helper) {
 		var cottage = BlueprintLibrary.get(helper.getLevel(), StarterBlueprints.STARTER_COTTAGE.id()).orElseThrow();
 		List<TablePayloads.Material> materials = TableServer.materials(cottage);
-		int planks = materials.stream().filter(m -> m.item().equals(BuiltInRegistries.ITEM.getKey(Items.OAK_PLANKS))).mapToInt(TablePayloads.Material::count).sum();
+		int planks = materials.stream().filter(m -> m.item().equals(BuiltInRegistries.ITEM.getKey(Items.BIRCH_PLANKS))).mapToInt(TablePayloads.Material::count).sum();
 		int doors = materials.stream().filter(m -> m.item().equals(BuiltInRegistries.ITEM.getKey(Items.OAK_DOOR))).mapToInt(TablePayloads.Material::count).sum();
-		helper.assertTrue(planks > 50, "cottage should need lots of oak planks, got " + planks);
+		helper.assertTrue(planks > 50, "cottage should need lots of birch planks, got " + planks);
 		helper.assertTrue(doors == 1, "cottage has exactly one door (both halves = 1 item), got " + doors);
 		for (int i = 1; i < materials.size(); i++) {
 			helper.assertTrue(materials.get(i - 1).count() >= materials.get(i).count(), "materials not sorted by count");

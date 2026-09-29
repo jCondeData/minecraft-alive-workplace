@@ -485,5 +485,9 @@ loop: ore → ingots → the tools, weapons and armor the other workers wear out
   MineColonies (GPL-3.0; code only adapted with attribution); what stays ours: it runs on Fabric 1.21.1 in the pack,
   works with the villagers and villages already in the world, and Cobblemon runs through every part.
 
+- **Builds should look sleek and interesting** (2026-09-29): every build we ship follows `tools/blueprints/STYLE.md`
+  (plinth, frame, depth, overhanging roofs, varied outline, texture, small details) and is checked in a render first.
+  Open-source builds may be used only if their licence allows it and they're credited; so far everything is original.
+
 ## Notes / blocked
 - (autonomous sessions: write anything you could not finish or need the owner to decide here)

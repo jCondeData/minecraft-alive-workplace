@@ -246,10 +246,15 @@ public final class MaterialRules {
 		return true;
 	}
 
-	/** Blocks the builder must not break while clearing (they would lose someone's stuff or can't be broken). */
+	/**
+	 * Blocks the builder must not break while clearing (they would lose someone's stuff or can't be broken). A campfire
+	 * (it drops what's cooking on it) and a bell hold nothing: an upgrade can move the smoke up a taller chimney.
+	 */
 	public static boolean isProtected(BlockState state, float destroySpeed) {
-		return destroySpeed < 0 || state.hasBlockEntity() && !(state.getBlock() instanceof SignBlock) && !(state.getBlock() instanceof AbstractBannerBlock)
-			&& !(state.getBlock() instanceof AbstractSkullBlock) && !(state.getBlock() instanceof BedBlock);
+		Block block = state.getBlock();
+		return destroySpeed < 0 || state.hasBlockEntity() && !(block instanceof SignBlock) && !(block instanceof AbstractBannerBlock)
+			&& !(block instanceof AbstractSkullBlock) && !(block instanceof BedBlock) && !(block instanceof net.minecraft.world.level.block.CampfireBlock)
+			&& !(block instanceof BellBlock);
 	}
 
 	private MaterialRules() {

@@ -33,7 +33,11 @@ The owner (Jesse) does not write code: sessions are expected to work autonomousl
   Kotlin metadata in Cobblemon; without it Cobblemon crashes in dev with `ClassNotFoundException: net.minecraft.class_…`.
 - `./gradlew genSources` — decompiled Minecraft sources for reading vanilla code; they land in
   `.gradle/loom-cache/minecraftMaven/net/minecraft/minecraft-common-*/**/**-sources.jar` (unzip and grep)
-- `python3 tools/blueprints/generate.py` — regenerates starter blueprints + test fixtures (needs `pip install nbtlib`)
+- `python3 tools/blueprints/generate.py` — regenerates starter blueprints + test fixtures (needs `pip install nbtlib`).
+  The kit (`Build`, roofs, windows, frames, texture mixes, `finish()` for stair corners and fence joins) is `kit.py`, the
+  starter builds `starter.py`, the village houses `village.py`. **Read `tools/blueprints/STYLE.md` before drawing a build.**
+- `tools/blueprints/render/preview.sh front,back starter_cottage "village_house('plains', kitchen)"` — renders builds to
+  PNGs in seconds (Lodestone in headless Chromium; `npm install` in that folder first) into `build/blueprint-renders`
 - `python3 tools/textures/generate.py` — regenerates textures (Pillow)
 - `tools/screenshots/run.sh` — renders the real client headless (Xvfb) and saves screenshots + a timelapse GIF
   of builders at work; use it to check anything visual and to show the owner progress.

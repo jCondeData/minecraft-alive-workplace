@@ -1587,7 +1587,7 @@ public class ScreenshotHarness implements ClientModInitializer {
 				for (int i = 0; i < all.size(); i++) {
 					net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate t =
 						level.getStructureManager().get(all.get(i).id()).orElseThrow();
-					BlockPos origin = new BlockPos(i * 24, -60, 0);
+					BlockPos origin = new BlockPos(i * GALLERY_SPACING, -60, 0);
 					t.placeInWorld(level, origin, origin, new net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings(),
 						level.getRandom(), 2);
 				}
@@ -1604,12 +1604,17 @@ public class ScreenshotHarness implements ClientModInitializer {
 			});
 		}
 		int index = (tick - 60) / 60;
+		if (tick == 40) {
+			// Look at the first build early so its chunks are drawn by the first shot.
+			StarterBlueprints.Entry e = all.get(0);
+			server.execute(() -> hoverLookingAt(server.getPlayerList().getPlayers().get(0), galleryCenter(0, e).add(8, 6, -14), galleryCenter(0, e)));
+		}
 		if (tick >= 60 && (tick - 60) % 60 == 0 && index < all.size()) {
 			StarterBlueprints.Entry e = all.get(index);
-			double cx = index * 24 + e.size().getX() / 2.0 + 0.5;
-			double dist = Math.max(e.size().getX(), e.size().getY()) * 1.3 + 4;
-			server.execute(() -> hover(server.getPlayerList().getPlayers().get(0),
-				new Vec3(cx + dist * 0.45, -60 + e.size().getY() * 0.7 + 2, -dist), 20, 22));
+			Vec3 center = galleryCenter(index, e);
+			double dist = Math.max(Math.max(e.size().getX(), e.size().getZ()), e.size().getY()) * 0.75 + 5;
+			server.execute(() -> hoverLookingAt(server.getPlayerList().getPlayers().get(0),
+				center.add(dist * 0.55, e.size().getY() * 0.35 + 2, -dist), center));
 		}
 		if (tick >= 100 && (tick - 100) % 60 == 0 && (tick - 100) / 60 < all.size()) {
 			shot(mc, "30_" + all.get((tick - 100) / 60).id().getPath());
@@ -1618,10 +1623,10 @@ public class ScreenshotHarness implements ClientModInitializer {
 		if (tick >= 105 && (tick - 105) % 60 == 0 && (tick - 105) / 60 < all.size()) {
 			int i = (tick - 105) / 60;
 			StarterBlueprints.Entry e = all.get(i);
-			double cx = i * 24 + e.size().getX() / 2.0 + 0.5;
-			double dist = Math.max(e.size().getX(), e.size().getY()) * 1.3 + 4;
-			server.execute(() -> hover(server.getPlayerList().getPlayers().get(0),
-				new Vec3(cx + dist * 0.45, -60 + e.size().getY() * 0.7 + 4, e.size().getZ() + dist), 200, 26));
+			Vec3 center = galleryCenter(i, e);
+			double dist = Math.max(Math.max(e.size().getX(), e.size().getZ()), e.size().getY()) * 0.75 + 5;
+			server.execute(() -> hoverLookingAt(server.getPlayerList().getPlayers().get(0),
+				center.add(-dist * 0.55, e.size().getY() * 0.35 + 3, dist), center));
 		}
 		if (tick >= 118 && (tick - 118) % 60 == 0 && (tick - 118) / 60 < all.size()) {
 			shot(mc, "31_" + all.get((tick - 118) / 60).id().getPath() + "_back");
@@ -1635,6 +1640,21 @@ public class ScreenshotHarness implements ClientModInitializer {
 		if (tick == 100 + all.size() * 60) {
 			mc.stop();
 		}
+	}
+
+	private static final int GALLERY_SPACING = 48;
+
+	/** The middle of the gallery's {@code index}th build. */
+	private static Vec3 galleryCenter(int index, StarterBlueprints.Entry e) {
+		return new Vec3(index * GALLERY_SPACING + e.size().getX() / 2.0, -60 + e.size().getY() * 0.4, e.size().getZ() / 2.0);
+	}
+
+	/** Hovers at {@code pos} looking at {@code target}. */
+	private static void hoverLookingAt(ServerPlayer player, Vec3 pos, Vec3 target) {
+		Vec3 d = target.subtract(pos);
+		float yaw = (float) (Math.toDegrees(Math.atan2(d.z, d.x)) - 90);
+		float pitch = (float) -Math.toDegrees(Math.atan2(d.y, Math.sqrt(d.x * d.x + d.z * d.z)));
+		hover(player, pos, yaw, pitch);
 	}
 
 	private static void hover(ServerPlayer player, Vec3 pos, float yaw, float pitch) {

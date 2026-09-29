@@ -13,49 +13,49 @@ public final class StarterBlueprints {
 	public record Entry(ResourceLocation id, Vec3i size) {
 	}
 
-	public static final Entry STARTER_COTTAGE = new Entry(AliveWorkplace.id("starter_cottage"), new Vec3i(9, 10, 9));
+	public static final Entry STARTER_COTTAGE = new Entry(AliveWorkplace.id("starter_cottage"), new Vec3i(11, 12, 10));
 	/** The Starter Cottage with a second storey: an upgrade (same ground floor, lines up over a finished cottage). */
-	public static final Entry STARTER_COTTAGE_2 = new Entry(AliveWorkplace.id("starter_cottage_2"), new Vec3i(9, 14, 9));
+	public static final Entry STARTER_COTTAGE_2 = new Entry(AliveWorkplace.id("starter_cottage_2"), new Vec3i(11, 16, 11));
 	/** Cottage II with a kitchen wing to the east (a roof terrace on top): an upgrade that grows sideways. */
-	public static final Entry STARTER_COTTAGE_3 = new Entry(AliveWorkplace.id("starter_cottage_3"), new Vec3i(15, 14, 9));
-	public static final Entry MARKET_STALL = new Entry(AliveWorkplace.id("market_stall"), new Vec3i(7, 5, 5));
+	public static final Entry STARTER_COTTAGE_3 = new Entry(AliveWorkplace.id("starter_cottage_3"), new Vec3i(17, 16, 11));
+	public static final Entry MARKET_STALL = new Entry(AliveWorkplace.id("market_stall"), new Vec3i(8, 7, 6));
 	/** A second stall alongside, with a Shop Counter. */
-	public static final Entry MARKET_STALL_2 = new Entry(AliveWorkplace.id("market_stall_2"), new Vec3i(13, 5, 5));
+	public static final Entry MARKET_STALL_2 = new Entry(AliveWorkplace.id("market_stall_2"), new Vec3i(15, 7, 6));
 	/** A storeroom shed behind the stalls. */
-	public static final Entry MARKET_STALL_3 = new Entry(AliveWorkplace.id("market_stall_3"), new Vec3i(13, 5, 10));
-	public static final Entry LOOKOUT_TOWER = new Entry(AliveWorkplace.id("lookout_tower"), new Vec3i(7, 15, 7));
+	public static final Entry MARKET_STALL_3 = new Entry(AliveWorkplace.id("market_stall_3"), new Vec3i(15, 9, 13));
+	public static final Entry LOOKOUT_TOWER = new Entry(AliveWorkplace.id("lookout_tower"), new Vec3i(7, 14, 7));
 	/** A Guard Post at the foot of the ladder and a bell under a pointed roof. */
-	public static final Entry LOOKOUT_TOWER_2 = new Entry(AliveWorkplace.id("lookout_tower_2"), new Vec3i(7, 18, 7));
+	public static final Entry LOOKOUT_TOWER_2 = new Entry(AliveWorkplace.id("lookout_tower_2"), new Vec3i(7, 23, 7));
 	/** A guardhouse beside the tower: a second Guard Post and two bunks. */
-	public static final Entry LOOKOUT_TOWER_3 = new Entry(AliveWorkplace.id("lookout_tower_3"), new Vec3i(13, 18, 7));
+	public static final Entry LOOKOUT_TOWER_3 = new Entry(AliveWorkplace.id("lookout_tower_3"), new Vec3i(14, 23, 7));
 	/** Has a Cobblemon Healing Machine on the counter; without Cobblemon that spot stays empty. */
-	public static final Entry HEALING_CENTER = new Entry(AliveWorkplace.id("healing_center"), new Vec3i(11, 8, 9));
+	public static final Entry HEALING_CENTER = new Entry(AliveWorkplace.id("healing_center"), new Vec3i(11, 10, 9));
 	/** A ward with four beds behind the counter. */
-	public static final Entry HEALING_CENTER_2 = new Entry(AliveWorkplace.id("healing_center_2"), new Vec3i(11, 8, 13));
+	public static final Entry HEALING_CENTER_2 = new Entry(AliveWorkplace.id("healing_center_2"), new Vec3i(11, 10, 13));
 	/** A berry garden behind the ward with a Fruit Basket. */
-	public static final Entry HEALING_CENTER_3 = new Entry(AliveWorkplace.id("healing_center_3"), new Vec3i(11, 8, 18));
-	public static final Entry SUPPLY_SHOP = new Entry(AliveWorkplace.id("supply_shop"), new Vec3i(9, 7, 8));
+	public static final Entry HEALING_CENTER_3 = new Entry(AliveWorkplace.id("healing_center_3"), new Vec3i(11, 10, 19));
+	public static final Entry SUPPLY_SHOP = new Entry(AliveWorkplace.id("supply_shop"), new Vec3i(11, 10, 9));
 	/** A storeroom and the shopkeeper's bedroom upstairs. */
-	public static final Entry SUPPLY_SHOP_2 = new Entry(AliveWorkplace.id("supply_shop_2"), new Vec3i(9, 12, 8));
+	public static final Entry SUPPLY_SHOP_2 = new Entry(AliveWorkplace.id("supply_shop_2"), new Vec3i(11, 14, 9));
 
 	/** A post office annex with a Postal Desk. */
-	public static final Entry SUPPLY_SHOP_3 = new Entry(AliveWorkplace.id("supply_shop_3"), new Vec3i(15, 12, 8));
+	public static final Entry SUPPLY_SHOP_3 = new Entry(AliveWorkplace.id("supply_shop_3"), new Vec3i(17, 14, 9));
 
 	/** An open timber shed with a Storehouse and eight chests: a porter moves in. */
-	public static final Entry STOREHOUSE = new Entry(AliveWorkplace.id("storehouse"), new Vec3i(7, 6, 6));
+	public static final Entry STOREHOUSE = new Entry(AliveWorkplace.id("storehouse"), new Vec3i(9, 9, 9));
 	/** A second bay with eight more chests. */
-	public static final Entry STOREHOUSE_2 = new Entry(AliveWorkplace.id("storehouse_2"), new Vec3i(13, 6, 6));
+	public static final Entry STOREHOUSE_2 = new Entry(AliveWorkplace.id("storehouse_2"), new Vec3i(16, 9, 9));
 	/** A stone warehouse behind the bays with sixteen more chests. */
-	public static final Entry STOREHOUSE_3 = new Entry(AliveWorkplace.id("storehouse_3"), new Vec3i(13, 7, 12));
+	public static final Entry STOREHOUSE_3 = new Entry(AliveWorkplace.id("storehouse_3"), new Vec3i(16, 10, 16));
 
 	/** A fenced garden of sweet berry bushes with a Fruit Basket: an orchard keeper moves in. */
-	public static final Entry BERRY_FARM = new Entry(AliveWorkplace.id("berry_farm"), new Vec3i(11, 4, 9));
+	public static final Entry BERRY_FARM = new Entry(AliveWorkplace.id("berry_farm"), new Vec3i(11, 5, 9));
 	/** A pergola behind it, glow berries hanging from its roof. */
-	public static final Entry BERRY_FARM_2 = new Entry(AliveWorkplace.id("berry_farm_2"), new Vec3i(11, 5, 15));
+	public static final Entry BERRY_FARM_2 = new Entry(AliveWorkplace.id("berry_farm_2"), new Vec3i(11, 6, 15));
 	/** A stone lab with a Fossil Lab: a fossil scientist moves in. */
-	public static final Entry RESEARCH_LAB = new Entry(AliveWorkplace.id("research_lab"), new Vec3i(9, 6, 9));
+	public static final Entry RESEARCH_LAB = new Entry(AliveWorkplace.id("research_lab"), new Vec3i(11, 9, 11));
 	/** A museum hall beside it with a big skeleton on show. */
-	public static final Entry RESEARCH_LAB_2 = new Entry(AliveWorkplace.id("research_lab_2"), new Vec3i(15, 6, 9));
+	public static final Entry RESEARCH_LAB_2 = new Entry(AliveWorkplace.id("research_lab_2"), new Vec3i(18, 10, 11));
 
 	public static final List<Entry> ALL = List.of(STARTER_COTTAGE, STARTER_COTTAGE_2, STARTER_COTTAGE_3, MARKET_STALL, MARKET_STALL_2, MARKET_STALL_3,
 		LOOKOUT_TOWER, LOOKOUT_TOWER_2, LOOKOUT_TOWER_3, HEALING_CENTER, HEALING_CENTER_2, HEALING_CENTER_3, SUPPLY_SHOP, SUPPLY_SHOP_2, SUPPLY_SHOP_3,

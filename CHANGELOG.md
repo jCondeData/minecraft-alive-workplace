@@ -2,6 +2,19 @@
 
 ## Unreleased
 
+## 0.89.0 — 2026-09-29
+
+### Changed
+- **Every starter build has a new look**, all 22 blueprints and tiers: a timber-framed cottage with shuttered windows,
+  flower boxes and a smoking chimney (its upgrades add a jettied upper storey and a kitchen wing), a market stall under
+  a striped awning, a stone watchtower with a crenellated platform and a steep spire, a Healing Center and a Supply
+  Shop under stepped concrete roofs with signs over their doors, an open-fronted timber storehouse, a walled berry
+  garden and a stone research lab with a skylight. Buildings already standing stay as they are; their upgrades now
+  build onto the new designs.
+- **Village houses** (workshops, guard houses, clinics, post offices...) are timber-framed now too, with an
+  overhanging roof, shutters and a lantern, in each village type's own materials (flat-roofed in the desert).
+- Builders can take down a campfire or a bell when an upgrade needs the spot (a chimney growing taller).
+
 ## 0.88.0 — 2026-09-29
 
 ### Added

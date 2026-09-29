@@ -14,7 +14,8 @@ import org.jetbrains.annotations.Nullable;
 
 /**
  * The Chef's shift: cook the dishes on the menu ({@link Chefs#menu}), one after another, from what's in the chests by the
- * Kitchen Stove and in the village's storehouse (the porter's chests hold the farms' and fishermen's spare harvest), and
+ * Kitchen Stove, in the village's storehouse (the porter's chests hold the farms' and fishermen's spare harvest) and at the
+ * butcher's (milk and eggs), and
  * put them in the chests by the stove — until those hold {@link Chefs#KEEP} of each.
  */
 public class ChefWork extends CrafterWork {
@@ -30,7 +31,7 @@ public class ChefWork extends CrafterWork {
 		List<BlockPos> own = SupplyContainers.find(level, station, null);
 		List<BlockPos> sources = new ArrayList<>(own);
 		for (Village.Stash stash : Village.stashes(level, villager, station, null)) {
-			if (stash.job() == ModVillagers.PORTER) {
+			if (stash.job() == ModVillagers.PORTER || stash.job() == net.minecraft.world.entity.npc.VillagerProfession.BUTCHER) {
 				sources.addAll(stash.chests());
 			}
 		}

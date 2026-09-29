@@ -212,4 +212,25 @@ public class PastureCompatTests implements FabricGameTest {
 			helper.succeed();
 		});
 	}
+
+	/** A shepherd shears a Wooloo kept in a pasture by the loom, like a sheep. */
+	@GameTest(template = AREA, timeoutTicks = 1200, batch = "shepherd_wooloo")
+	public void shepherdShearsAPasturedWooloo(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		helper.setDayTime(2000);
+		helper.setBlock(new BlockPos(2, 2, 2), Blocks.LOOM);
+		helper.setBlock(new BlockPos(2, 2, 4), Blocks.CHEST);
+		Container chest = helper.getBlockEntity(new BlockPos(2, 2, 4));
+		chest.setItem(0, new ItemStack(net.minecraft.world.item.Items.SHEARS));
+		Villager shepherd = helper.spawn(EntityType.VILLAGER, new BlockPos(3, 2, 3));
+		Jobs.employ(level, shepherd, helper.absolutePos(new BlockPos(2, 2, 2)), net.minecraft.world.entity.ai.village.poi.PoiTypes.SHEPHERD,
+			net.minecraft.world.entity.npc.VillagerProfession.SHEPHERD);
+		BlockPos pasture = pasture(helper, new BlockPos(10, 2, 10));
+		Pokemon wooloo = pastured(helper, pasture, helper.makeMockServerPlayerInLevel(), "wooloo", Direction.NORTH);
+		helper.succeedWhen(() -> {
+			var entity = wooloo.getEntity();
+			helper.assertTrue(entity != null && !entity.readyForShearing(), "the Wooloo isn't sheared");
+			helper.assertTrue(shepherd.getAttachedOrElse(ModAttachments.ANIMALS_SHEARED, 0) >= 1, "nothing sheared");
+		});
+	}
 }

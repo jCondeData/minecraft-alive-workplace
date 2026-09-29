@@ -180,6 +180,20 @@ public final class BuilderEvents {
 				return level.isClientSide ? InteractionResult.SUCCESS
 					: io.github.jcondedata.aliveworkplace.smelt.Smelters.hire((ServerPlayer) player, villager);
 			}
+			if (player.isShiftKeyDown() && player.getItemInHand(hand).is(net.minecraft.world.item.Items.LEAD)
+					&& io.github.jcondedata.aliveworkplace.ranch.HerderWork.isHerder(villager)) {
+				return level.isClientSide ? InteractionResult.SUCCESS
+					: io.github.jcondedata.aliveworkplace.work.Hiring.hire((ServerPlayer) player, villager,
+						net.minecraft.network.chat.Component.translatable("message.aliveworkplace.herder.hired", villager.getDisplayName(),
+							io.github.jcondedata.aliveworkplace.ranch.RanchWork.RADIUS, io.github.jcondedata.aliveworkplace.ranch.RanchWork.CAP));
+			}
+			if (player.isShiftKeyDown() && player.getItemInHand(hand).is(net.minecraft.world.item.Items.SHEARS)
+					&& io.github.jcondedata.aliveworkplace.ranch.ShepherdWork.isShepherd(villager)) {
+				return level.isClientSide ? InteractionResult.SUCCESS
+					: io.github.jcondedata.aliveworkplace.work.Hiring.hire((ServerPlayer) player, villager,
+						net.minecraft.network.chat.Component.translatable("message.aliveworkplace.shepherd.hired", villager.getDisplayName(),
+							io.github.jcondedata.aliveworkplace.ranch.RanchWork.RADIUS));
+			}
 			if (player.isShiftKeyDown() && !villager.isBaby() && player.getItemInHand(hand).is(net.minecraft.world.item.Items.FLINT)
 					&& villager.getVillagerData().getProfession() == net.minecraft.world.entity.npc.VillagerProfession.FLETCHER) {
 				return level.isClientSide ? InteractionResult.SUCCESS

@@ -36,6 +36,8 @@ public final class Porters {
 	public static final int KEEP_SEEDS = 64;
 	/** Saplings (or orchard seeds) of each kind a lumberjack or orchard keeper keeps. */
 	public static final int KEEP_SAPLINGS = 32;
+	/** Food a shepherd or herder keeps to breed their animals with. */
+	public static final int KEEP_BREEDING_FOOD = 16;
 
 	public static boolean isPorter(Villager villager) {
 		return !villager.isBaby() && villager.getVillagerData().getProfession() == ModVillagers.PORTER;
@@ -98,6 +100,13 @@ public final class Porters {
 		if (job == VillagerProfession.ARMORER) {
 			// A smelter keeps its ore, and iron for armor; the other ingots go to the storehouse.
 			return Furnaces.isOre(stack.getItem()) ? ALL : stack.is(Items.IRON_INGOT) ? io.github.jcondedata.aliveworkplace.smelt.Smelters.KEEP_INGOTS : 0;
+		}
+		if (job == VillagerProfession.BUTCHER) {
+			// Food to breed with, and empty buckets to milk into; the eggs, milk and meat go.
+			return stack.is(Items.BUCKET) ? 16 : io.github.jcondedata.aliveworkplace.ranch.HerderWork.isBreedingFood(stack.getItem()) ? KEEP_BREEDING_FOOD : 0;
+		}
+		if (job == VillagerProfession.SHEPHERD) {
+			return stack.is(Items.WHEAT) ? KEEP_BREEDING_FOOD : 0; // wheat to breed with; the wool goes
 		}
 		if (job == VillagerProfession.FISHERMAN) {
 			return furnaceNear && Furnaces.isFish(stack.getItem()) ? ALL : 0;

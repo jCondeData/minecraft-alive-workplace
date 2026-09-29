@@ -64,6 +64,7 @@ public final class Village {
 		return job == ModVillagers.BUILDER || job == ModVillagers.MINER || job == ModVillagers.LUMBERJACK || job == ModVillagers.ORCHARD_KEEPER
 			|| job == ModVillagers.BALL_SMITH || job == ModVillagers.PORTER || job == ModVillagers.CHEF || job == VillagerProfession.ARMORER
 			|| job == VillagerProfession.TOOLSMITH || job == VillagerProfession.WEAPONSMITH || job == VillagerProfession.FLETCHER
+			|| job == VillagerProfession.SHEPHERD || job == VillagerProfession.BUTCHER
 			|| Fields.isFarmer(villager) && Fields.hasField(villager)
 			|| Fishers.isFisherman(villager) && Fishers.isHired(villager);
 	}

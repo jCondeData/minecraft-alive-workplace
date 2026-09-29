@@ -2,6 +2,15 @@
 
 ## Unreleased
 
+## 0.84.0 — 2026-09-28
+
+### Added
+- **Shepherds shear and breed the sheep** around their loom (shears and wheat in the chest), and with Cobblemon shear
+  pastured Wooloo and Dubwool. Sneak-right-click with shears to hire one.
+- **Butchers keep the herd**: cows, pigs, chickens and rabbits around their smoker are bred, eggs picked up and cows
+  milked into the buckets in the chest; chefs use the milk and eggs. A butcher hired with a lead (sneak-right-click)
+  also keeps each kind at 10 grown animals, taking the rest for meat — never babies, named or leashed ones.
+
 ## 0.83.0 — 2026-09-28
 
 ### Added

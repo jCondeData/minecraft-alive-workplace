@@ -87,6 +87,11 @@ public final class CobblemonPartners {
 		return pokemon.getPrimaryType().getName().toLowerCase(java.util.Locale.ROOT);
 	}
 
+	/** A Pokémon kept in a Pasture Block. */
+	public static boolean isPastured(net.minecraft.world.entity.Entity entity) {
+		return entity instanceof PokemonEntity pokemon && pokemon.getTethering() != null;
+	}
+
 	static boolean fits(Pokemon pokemon, Set<String> types) {
 		for (ElementalType type : pokemon.getTypes()) {
 			if (types.contains(type.getName().toLowerCase(java.util.Locale.ROOT))) {

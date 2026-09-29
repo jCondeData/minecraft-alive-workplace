@@ -28,6 +28,8 @@
 			"io.github.jcondedata.aliveworkplace.test.ToolsmithGameTests",
 			"io.github.jcondedata.aliveworkplace.test.WeaponsmithGameTests",
 			"io.github.jcondedata.aliveworkplace.test.FletcherGameTests",
+			"io.github.jcondedata.aliveworkplace.test.ShepherdGameTests",
+			"io.github.jcondedata.aliveworkplace.test.HerderGameTests",
 			"io.github.jcondedata.aliveworkplace.test.OptionalModsGameTests"
 		]
 	},

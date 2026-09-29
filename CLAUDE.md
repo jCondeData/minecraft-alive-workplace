@@ -88,6 +88,8 @@ The owner (Jesse) does not write code: sessions are expected to work autonomousl
 - `smelt/` — the smelter upgrade (vanilla Armorers, through `UpgradedJob`): `SmelterWork` (tend the blast furnace, fetch ore
   and fuel from the village, iron armor for the guards), `Smelters` (hiring with coal, what they keep)
 - `mend/` — `MendingWork`: vanilla Weaponsmiths mending worn gear (with `craft/WeaponsmithWork`: swords for guards)
+- `ranch/` — animals around a workstation: `RanchWork` (collect drops, breed up to a cap, the job's own tending),
+  `ShepherdWork` (vanilla Shepherds: shearing, incl. pastured Pokémon), `HerderWork` (vanilla Butchers: milk, eggs, culling when hired)
 - `fish/` — the fisher upgrade (vanilla Fishermen, hired with a fishing rod): `FisherWork`, `Fishers`
 - `wood/` — the lumberjack: `Trees` (what counts as a natural tree), `LumberjackWork`, `LumberjackPackages`
 - `store/` — the porter: `StorehouseBlock`/`StorehouseBlockEntity` (owner), `Porters` (what each job keeps, owner sync),

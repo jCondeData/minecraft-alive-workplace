@@ -3,7 +3,7 @@
 Villagers with real jobs. Hand a **Builder** a blueprint and they build it for you: they clear the
 site, fetch materials from your chests, put up the walls and roof, and finish with doors, beds and
 torches. **Miners** dig out quarries, **Lumberjacks** cut down and replant trees, **Orchard Keepers** pick berries, cocoa and apricorns, **Farmers** look after
-your fields and **Fishermen** fish for you, dropping everything off in your chests. **Porters** gather it all in the village storehouse, **Carpenters** and **Masons** make what the builders are missing, **Armorers** smelt the ore and make the guards' armor, **Toolsmiths** make the workers' tools, **Weaponsmiths** mend the village's gear, **Fletchers** make the guards' bows and arrows, **Chefs** cook for the village, **Postmen** carry mail
+your fields and **Fishermen** fish for you, dropping everything off in your chests. **Porters** gather it all in the village storehouse, **Carpenters** and **Masons** make what the builders are missing, **Armorers** smelt the ore and make the guards' armor, **Toolsmiths** make the workers' tools, **Weaponsmiths** mend the village's gear, **Fletchers** make the guards' bows and arrows, **Shepherds** and **Butchers** look after the sheep and the herd, **Chefs** cook for the village, **Postmen** carry mail
 between players' mailboxes, **Guards** keep monsters away, **Nurses** heal you (and your Pokémon),
 **Shopkeepers** run your shop, **Ferrymen** take you between villages, **Bards** play music and — with Cobblemon —
 **Trainers** battle you, **Move Tutors** teach your Pokémon new moves, **Ball Smiths** make Poké Balls, **Pokémon Traders** swap Pokémon with you and **Fossil Scientists** revive fossils. Villages grow workshops, guard houses, clinics, post offices, orchard houses, ferry houses, storehouses, carpenter's workshops and kitchens on their own — and with Cobblemon,
@@ -100,6 +100,8 @@ where they take tools and supplies from and where their work goes.
 | Toolsmith | Smithing Table (vanilla) | diamonds, if you want diamond tools | nothing — or sneak-right-click with an iron ingot to hire them |
 | Weaponsmith | Grindstone (vanilla) | worn gear to mend (and what mends it: ingots, planks...) | nothing — or sneak-right-click with an iron ingot to hire them |
 | Fletcher | Fletching Table (vanilla) | sticks, string, iron (glowstone for spectral arrows) | nothing — or sneak-right-click with flint to hire them |
+| Shepherd | Loom (vanilla) | shears, wheat | nothing — or sneak-right-click with shears to hire them |
+| Butcher (herder) | Smoker (vanilla) | empty buckets, wheat/carrots/seeds | nothing — or sneak-right-click with a lead to hire them |
 | Postman | Postal Desk | — | Mailboxes for mail; Delivery Notes for hauling |
 | Guard | Guard Post | weapons, armor, a bow or crossbow and arrows | nothing |
 | Nurse | Nurse Station | — | right-click them to be healed |
@@ -306,6 +308,16 @@ crossbow if there's iron for one, else a bow; a guard with a bow and few special
 (glowstone dust and arrows — the arrows made from flint, sticks and feathers if need be). Guards with a bow fill a
 quiver of up to 16 spectral or tipped arrows from their chests (put in your own tipped arrows too) and shoot those
 first; plain arrows never run out. Sneak-right-click a fletcher with flint to hire them.
+
+## Shepherds and butchers: the village's animals
+**Shepherds** (the vanilla villager at a loom) look after the sheep within 16 blocks of their loom: they shear them
+with shears from the chest by the loom, pick up the wool, and feed pairs wheat to breed while there are fewer than 8.
+With Cobblemon they shear the woolly Pokémon kept in a pasture there too (Wooloo, Dubwool). **Butchers** (at a smoker)
+do the same for the cows, pigs, chickens and rabbits around it — bred with the right food from the chest, eggs and
+feathers picked up, cows milked into the empty buckets in the chest (up to 4 buckets of milk) — and a chef takes the
+milk and eggs. Sneak-right-click a butcher with a lead to hire them for your own herd: a hired butcher also keeps each
+kind at 10 grown animals, taking the rest for meat and leather — never babies, named or leashed animals. Everything
+goes into the chests, and a porter carries the wool, eggs and meat on to the storehouse.
 
 ## Chefs
 ![A chef cooking at the Kitchen Stove](docs/media/chef.png)

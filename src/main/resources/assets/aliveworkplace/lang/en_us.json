@@ -629,5 +629,22 @@
   "message.aliveworkplace.fletcher.state.crafting": "making %s %s",
   "message.aliveworkplace.fletcher.state.delivering": "taking %s %s to the guard",
   "message.aliveworkplace.fletcher.state.tidying": "putting things away",
-  "message.aliveworkplace.fletcher.hired": "%s makes bows and arrows for your guards now."
+  "message.aliveworkplace.fletcher.hired": "%s makes bows and arrows for your guards now.",
+  "message.aliveworkplace.shepherd.title": "Shepherd · %s sheared",
+  "message.aliveworkplace.shepherd.state.none": "watching the flock",
+  "message.aliveworkplace.shepherd.state.tend": "shearing",
+  "message.aliveworkplace.shepherd.state.collect": "picking up the wool",
+  "message.aliveworkplace.shepherd.state.breed": "feeding a pair to breed",
+  "message.aliveworkplace.shepherd.state.deposit": "putting the wool away",
+  "message.aliveworkplace.shepherd.state.no_chest": "needs a chest by the loom",
+  "message.aliveworkplace.shepherd.hired": "%s looks after your sheep now: shears and wheat in the chests by the loom, sheep within %s blocks.",
+  "message.aliveworkplace.herder.title": "Butcher · %s buckets of milk",
+  "message.aliveworkplace.herder.state.none": "watching the herd",
+  "message.aliveworkplace.herder.state.milking": "milking",
+  "message.aliveworkplace.herder.state.culling": "taking one for meat",
+  "message.aliveworkplace.herder.state.collect": "picking up eggs",
+  "message.aliveworkplace.herder.state.breed": "feeding a pair to breed",
+  "message.aliveworkplace.herder.state.deposit": "putting it all away",
+  "message.aliveworkplace.herder.state.no_chest": "needs a chest by the smoker",
+  "message.aliveworkplace.herder.hired": "%s keeps your herd now: the animals within %s blocks of the smoker are bred up to %s of each kind, and the extra grown ones go for meat."
 }

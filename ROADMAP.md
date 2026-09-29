@@ -382,11 +382,15 @@ loop: ore → ingots → the tools, weapons and armor the other workers wear out
   guards with arrows in their chests shoot tipped/spectral ones (`craft/FletcherWork`: crossbow, else bow, for a guard
   with none; 8 spectral arrows when a guard with a bow has under 8; guards keep a quiver of 16 special arrows in their
   bag (`Guards.quiver`, filled at gear-up) and shoot them first. Gravel → flint is left to players and miners)
-- [ ] **Shepherd** (loom): keeps sheep in a pen (Field Marker): shears them, breeds them with wheat up to a cap, dyes wool
-  to order; with Cobblemon shears pastured Wooloo/Dubwool
-- [ ] **Butcher → Herder** (smoker): keeps cows, pigs, chickens and rabbits in a pen: feeds and breeds them up to a cap,
-  collects eggs and milk, takes the surplus for meat and leather (never babies or named animals); with Cobblemon milks
-  pastured Miltank
+- [x] **Shepherd** (loom): keeps sheep in a pen (Field Marker): shears them, breeds them with wheat up to a cap, dyes wool
+  to order; with Cobblemon shears pastured Wooloo/Dubwool (`ranch/RanchWork` + `ShepherdWork`: the pen is 16 blocks
+  round the loom, no marker needed; any vanilla `Shearable` that's a sheep or a pastured Pokémon; cap 8. Dyeing
+  goes with the Dyer)
+- [x] **Butcher → Herder** (smoker): keeps cows, pigs, chickens and rabbits in a pen: feeds and breeds them up to a cap,
+  collects eggs and milk, takes the surplus for meat and leather (never babies or named animals) (`ranch/HerderWork`:
+  culling only when hired — a lead — above 10 grown of a kind; milk into chest buckets up to 4; chefs take milk and eggs
+  from the butcher's chests)
+- [ ] Herder follow-up: with Cobblemon, milk pastured Miltank (Cobblemon milks only through a player's interaction)
 - [ ] **Leatherworker → Dyer** (cauldron): dyes from flowers, dyed wool/terracotta/glass/concrete for builders' requests,
   leather goods (item frames, books' leather)
 - [ ] **Cleric → Alchemist** (brewing stand): brews healing, regeneration and strength potions from the chests; guards

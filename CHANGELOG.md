@@ -12,6 +12,8 @@
 ### Changed
 - The **Ranch** is a proper barn now: a hayloft gable with open barn doors facing the paddock, stable aisles either
   side under a slate roof; the Ranch II adds a stable wing and a brick silo.
+- The **Schoolhouse** is white plaster now (not pink), with a little gabled porch over the school bell and a lantern
+  cupola on the ridge.
 - Librarians enchant stronger with bookshelves round their table: a level more for every three (a full ring of fifteen
   lifts a Novice from level 10 to 15; a Master stays at 30).
 - The Market Stall's striped awning is a finer slope (carpet steps between the stripes).

@@ -67,9 +67,9 @@ public final class StarterBlueprints {
 	public static final Entry INN_2 = new Entry(AliveWorkplace.id("inn_2"), new Vec3i(19, 16, 13));
 
 	/** A one-room school with a Teacher's Desk and the school bell under the porch. */
-	public static final Entry SCHOOLHOUSE = new Entry(AliveWorkplace.id("schoolhouse"), new Vec3i(11, 11, 12));
+	public static final Entry SCHOOLHOUSE = new Entry(AliveWorkplace.id("schoolhouse"), new Vec3i(11, 14, 12));
 	/** A fenced schoolyard with a sandpit. */
-	public static final Entry SCHOOLHOUSE_2 = new Entry(AliveWorkplace.id("schoolhouse_2"), new Vec3i(16, 11, 12));
+	public static final Entry SCHOOLHOUSE_2 = new Entry(AliveWorkplace.id("schoolhouse_2"), new Vec3i(16, 14, 12));
 	/** A stone library with a Scholar's Desk and shelves of books. */
 	public static final Entry LIBRARY = new Entry(AliveWorkplace.id("library"), new Vec3i(13, 15, 12));
 	/** A study tower with a second Scholar's Desk. */

@@ -1438,9 +1438,12 @@ def town_hall():
     b.fill_air()
     return b
 
-# --- Schoolhouse: a one-room school with a bell on the ridge ------------------------------------------------------
+# --- Schoolhouse: a one-room school with a cupola on the ridge ----------------------------------------------------
+# Design (after the Minecraft Architect review): a white plaster schoolroom in a spruce frame under a big spruce gable,
+# a little gabled porch to the street with the school bell hung under it between two lamps, a lantern cupola on the
+# ridge over the front (lit at night, seen from across the village), a stove chimney at the back.
 SCHOOL_FRAME = "spruce_log"
-SCHOOL_INFILL = "white_terracotta"
+SCHOOL_INFILL = Mix((8, "white_concrete"), (2, "polished_diorite"), seed=23)
 SCHOOL_ROOF = SPRUCE
 
 
@@ -1449,16 +1452,22 @@ def schoolhouse_room(b):
     the door under a porch at the front; inside a Teacher's Desk before a blackboard, three rows of benches, a bookshelf."""
     plinth(b, 1, 2, 9, 10, STONE_MIX, floor="spruce_planks")
     walls(b, 1, 2, 9, 10, 1, 4, SCHOOL_INFILL)
-    posts(b, [(1, 2), (9, 2), (1, 10), (9, 10), (1, 6), (9, 6), (3, 2), (7, 2)], 1, 4, SCHOOL_FRAME)
+    posts(b, [(1, 2), (9, 2), (1, 10), (9, 10), (1, 6), (9, 6), (3, 2), (7, 2), (3, 10), (7, 10)], 1, 4, SCHOOL_FRAME)
     beam_ring(b, 1, 2, 9, 10, 5, SCHOOL_FRAME)
     door(b, 5, 1, 2, "spruce_door", "south")
-    stairs(b, 5, 0, 1, COBBLE, "south")
     log(b, 5, 3, 2, SCHOOL_FRAME, axis="x")
-    for x in (4, 5, 6):  # the porch roof over the door
-        stairs(b, x, 4, 1, SCHOOL_ROOF, "south")
-    fence(b, 4, 1, 1, "spruce_fence")
-    fence(b, 6, 1, 1, "spruce_fence")
-    b.set(4, 2, 1, "lantern", hanging=False, waterlogged=False)
+    # The porch: a stone step, two posts, its own little gable over the bell and two lamps
+    for x in (4, 5, 6):
+        b.set(x, 0, 1, "stone_bricks")
+        b.set(x, 0, 0, "stone_bricks") if x != 5 else stairs(b, x, 0, 0, STONE_BRICK, "south")
+    for x in (4, 6):
+        for y in (1, 2, 3):
+            b.set(x, y, 0, "stripped_spruce_log", axis="y")
+        log(b, x, 4, 1, SCHOOL_FRAME, axis="z")
+    log(b, 5, 4, 1, SCHOOL_FRAME, axis="z")
+    b.set(5, 3, 1, "bell", attachment="ceiling", facing="north", powered=False)  # the school bell, under the porch
+    lantern(b, 4, 3, 1, hanging=True)
+    lantern(b, 6, 3, 1, hanging=True)
     for z in (4, 8):
         window(b, 1, 2, z, "west", height=2, shutters="spruce_trapdoor", sill=SPRUCE)
         window(b, 9, 2, z, "east", height=2, shutters="spruce_trapdoor", sill=SPRUCE)
@@ -1467,7 +1476,7 @@ def schoolhouse_room(b):
     window(b, 8, 2, 2, "north", height=2, shutters="spruce_trapdoor",
            flowers=("spruce_trapdoor", ["potted_blue_orchid"]))
     # The blackboard on the back wall, the teacher's desk before it, the benches facing it
-    box(b, 3, 2, 10, 7, 3, 10, "black_concrete")
+    box(b, 3, 2, 9, 7, 3, 9, "black_concrete")
     b.set(5, 1, 9, "aliveworkplace:teachers_desk", facing="north")
     for z in (4, 5, 6):
         for x in (3, 4, 6, 7):
@@ -1478,18 +1487,34 @@ def schoolhouse_room(b):
     box(b, 2, 5, 3, 8, 5, 9, "spruce_planks")  # the loft floor (the lights hang from it)
     lantern(b, 3, 4, 6, hanging=True)
     lantern(b, 7, 4, 6, hanging=True)
-    b.set(5, 3, 1, "bell", attachment="ceiling", facing="north", powered=False)  # the school bell, under the porch
 
 
-def school_building():
-    """11 x 11 x 12: a one-room village school — white walls in a spruce frame, a porch over the door with the school
-    bell under it, the Teacher's Desk before a blackboard and benches for the children, a loft under the roof."""
-    b = Build(11, 11, 12)
-    schoolhouse_room(b)
-    gable_roof(b, 0, 10, 1, 11, 5, SCHOOL_ROOF, axis="z", gable=SCHOOL_INFILL, gable_at=(2, 10), ridge=SPRUCE)
+def school_roof(b):
+    """The big gable, the porch's little one under its eaves, the cupola on the ridge and the stove chimney."""
+    gable_roof(b, 0, 10, 1, 11, 5, SCHOOL_ROOF, axis="z", gable=SCHOOL_INFILL, gable_at=(2, 10), ridge=SPRUCE, eave_trim=SPRUCE)
+    gable_roof(b, 3, 7, 0, 1, 4, SCHOOL_ROOF, axis="z", gable=SCHOOL_INFILL, gable_at=(0,), ridge=SPRUCE)
+    b.set(5, 5, 0, SCHOOL_FRAME, axis="y")  # a king post in the porch's gable
     for z in (2, 10):
         log(b, 5, 6, z, SCHOOL_FRAME)
         pane(b, 5, 7, z)
+    # The cupola: a boarded base on the ridge, four posts, a lantern inside, a little spruce cap
+    for x in range(4, 7):
+        for z in range(3, 6):
+            b.set(x, 10, z, "spruce_planks")
+    for x in (4, 6):
+        for z in (3, 5):
+            fence(b, x, 11, z, "spruce_fence")
+    b.set(5, 11, 4, "lantern", hanging=False, waterlogged=False)
+    hip_roof(b, 4, 6, 3, 5, 12, SCHOOL_ROOF)
+    chimney(b, 7, 9, 6, 11, "bricks")
+
+
+def school_building():
+    """11 x 14 x 12: a one-room village school — white walls in a spruce frame, a gabled porch with the school bell under
+    it, a lantern cupola on the ridge, the Teacher's Desk before a blackboard and benches for the children, a loft."""
+    b = Build(11, 14, 12)
+    schoolhouse_room(b)
+    school_roof(b)
     b.fill_air()
     return b
 
@@ -1497,7 +1522,7 @@ def school_building():
 def school_building_2():
     """Upgrade of the Schoolhouse (same origin and front): a fenced schoolyard on the east side with a sandpit, a bench
     and a young tree, reached by a door where a window was. 16 x 11 x 12."""
-    b = school_building().grow(16, 11, 12)
+    b = school_building().grow(16, 14, 12)
     b.clear(10, 1, 7, 10, 3, 9)  # the east window's shutters and sill
     for y in (2, 3):
         b.set(9, y, 8, "air")

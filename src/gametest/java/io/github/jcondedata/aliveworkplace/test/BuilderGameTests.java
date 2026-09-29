@@ -901,6 +901,19 @@ public class BuilderGameTests implements FabricGameTest {
 		buildStarter(helper, StarterBlueprints.LIBRARY);
 	}
 
+	/** A hollow stone brick tower drawn on the Shape Planner is built like any blueprint, its inside left clear. */
+	@GameTest(template = BIG_AREA, timeoutTicks = 12000, batch = "shape_build")
+	public void buildsAPlannedShape(GameTestHelper helper) {
+		io.github.jcondedata.aliveworkplace.blueprint.Shapes.Settings settings = new io.github.jcondedata.aliveworkplace.blueprint.Shapes.Settings(
+			"cylinder", 7, 4, 7, true, java.util.Optional.of(ResourceLocation.withDefaultNamespace("stone_bricks")));
+		ResourceLocation id = io.github.jcondedata.aliveworkplace.AliveWorkplace.id("shapes/test/cylinder_7x4x7_hollow_stone_bricks");
+		net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate template = helper.getLevel().getServer().getStructureManager().getOrCreate(id);
+		template.load(net.minecraft.core.registries.BuiltInRegistries.BLOCK.asLookup(), io.github.jcondedata.aliveworkplace.blueprint.io.BlueprintFiles.toStructureNbt(
+			io.github.jcondedata.aliveworkplace.blueprint.Shapes.blueprint(id, settings)));
+		helper.setBlock(new BlockPos(12, 2, 12), Blocks.DIRT); // in the way inside the tower: dug out
+		buildStarter(helper, new StarterBlueprints.Entry(id, new net.minecraft.core.Vec3i(7, 4, 7)));
+	}
+
 	/** The whole Library III (18 x 20) from bare ground, in the huge area. */
 	@GameTest(template = HUGE_AREA, timeoutTicks = 50000, batch = "starter_builds_library_3")
 	public void buildsLibraryIII(GameTestHelper helper) {

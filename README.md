@@ -76,7 +76,7 @@ per build), sharing the chests and passing each other materials.
 and the **Supply Shop** (with a Shop Counter) — build them and a nurse and a shopkeeper move in.
 
 ![Every starter build: the timber cottage, the market stall, the stone watchtower, the Healing Center, the Supply Shop, the storehouse, the berry garden and the research lab](docs/media/starter-builds.png)
-![Their upgrades: the cottage with a jettied upper storey and a kitchen wing, the watchtower's spire and guardhouse, the ward and garden behind the Healing Center](docs/media/starter-upgrades.png)
+![Their upgrades: the cottage with a jettied upper storey and a kitchen wing, the watchtower's spire and guardhouse, the ward and garden behind the Healing Center, the Supply Shop's house and post office, the stone warehouse behind the storehouse](docs/media/starter-upgrades.png)
 
 **The builds are built to look good**: stone plinths, timber frames with light infill, shuttered windows with flower
 boxes, roofs that overhang on every side, chimneys that smoke, lanterns and benches (how they are drawn:
@@ -220,6 +220,11 @@ company, and their **diet**. **Unhappy** villagers (under 30) work 15% slower; *
 meals: three or more kinds is a **varied diet** (a better mood), the same thing every time is a worse one. A store with
 bread, baked potatoes, cooked fish and pies keeps them happier than one full of bread; the hall's food icon says how many
 kinds of meal the store has.
+
+**Chatter.** Walk through a village with a hall and now and then someone off work turns to you and says something over
+their head — about their mood ("I haven't eaten all day", "Such a pretty place to live"), the village's news (a
+festival tonight, bandits camped to the north, a raid) or just hello, by name. At most a line every twenty seconds near
+you. `villagerChatter` in the config turns it off.
 
 **Families.** A baby remembers its parents — the hall's list says whose child they are. When they grow up the chronicle
 says so, and a grown child without a job **takes up a parent's trade** if the village has a free workstation for it.

@@ -232,18 +232,30 @@ public final class MaterialRules {
 		if (actual == wanted) {
 			return true;
 		}
-		if (actual.getBlock() != wanted.getBlock()) {
+		if (actual.getBlock() != wanted.getBlock() && unweathered(actual.getBlock()) != unweathered(wanted.getBlock())) {
 			return false;
 		}
 		for (Property<?> property : wanted.getProperties()) {
 			if (VOLATILE_PROPERTY_NAMES.contains(property.getName()) || property == BlockStateProperties.CHEST_TYPE) {
 				continue;
 			}
+			if (!actual.hasProperty(property)) {
+				return false;
+			}
 			if (!actual.getValue(property).equals(wanted.getValue(property))) {
 				return false;
 			}
 		}
 		return true;
+	}
+
+	/**
+	 * Copper as it was placed: a copper roof greens over the years (and may be waxed), and it's still the roof that was
+	 * built, so a weathered or waxed copper block matches the fresh one.
+	 */
+	static net.minecraft.world.level.block.Block unweathered(net.minecraft.world.level.block.Block block) {
+		net.minecraft.world.level.block.Block unwaxed = net.minecraft.world.item.HoneycombItem.WAX_OFF_BY_BLOCK.get().getOrDefault(block, block);
+		return net.minecraft.world.level.block.WeatheringCopper.getFirst(unwaxed);
 	}
 
 	/**

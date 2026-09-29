@@ -79,9 +79,9 @@ public final class StarterBlueprints {
 	/** The paddock doubled and a second stable. */
 	public static final Entry RANCH_2 = new Entry(AliveWorkplace.id("ranch_2"), new Vec3i(20, 10, 13));
 	/** Beehives on posts in a meadow, and a honey shed with the Apiary. */
-	public static final Entry APIARY_GARDEN = new Entry(AliveWorkplace.id("apiary_garden"), new Vec3i(11, 6, 11));
+	public static final Entry APIARY_GARDEN = new Entry(AliveWorkplace.id("apiary_garden"), new Vec3i(11, 8, 11));
 	/** The meadow runs on with four more hives. */
-	public static final Entry APIARY_GARDEN_2 = new Entry(AliveWorkplace.id("apiary_garden_2"), new Vec3i(17, 6, 11));
+	public static final Entry APIARY_GARDEN_2 = new Entry(AliveWorkplace.id("apiary_garden_2"), new Vec3i(17, 8, 11));
 	/** A little shop with a Flower Stand and an awning. */
 	public static final Entry FLOWER_SHOP = new Entry(AliveWorkplace.id("flower_shop"), new Vec3i(9, 11, 9));
 	/** A glass greenhouse on the side. */

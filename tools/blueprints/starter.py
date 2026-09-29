@@ -948,7 +948,7 @@ def berry_farm_2():
 
 # --- Research Lab: the fossil scientist's -------------------------------------------------------------
 def research_lab():
-    """11 x 9 x 11: a stone lab under a deepslate hip roof with a glass skylight, a columned porch, a Fossil Lab at the
+    """11 x 9 x 11: a stone lab under a copper hip roof (it greens with the years) with a glass skylight, a columned porch, a Fossil Lab at the
     back (a villager moves in as the fossil scientist; with Cobblemon they revive fossils), bookshelves, a glass case and
     a bone skeleton on show."""
     b = Build(11, 9, 11)
@@ -972,10 +972,10 @@ def research_lab():
             wall_block(b, x, y, 0, "stone_brick_wall")
         wall_block(b, x, 0, 0, "stone_brick_wall")
     for x in range(3, 8):
-        slab(b, x, 4, 0, DEEPSLATE_TILE, top=True)
+        slab(b, x, 4, 0, CUT_COPPER, top=True)
     # The roof: deepslate tiles, a glass skylight on top
-    hip_roof(b, 0, 10, 0, 10, 5, DEEPSLATE_TILE, rings=3)
-    walls(b, 3, 3, 7, 7, 8, 8, "polished_deepslate")
+    hip_roof(b, 0, 10, 0, 10, 5, CUT_COPPER, rings=3)
+    walls(b, 3, 3, 7, 7, 8, 8, "cut_copper")
     box(b, 4, 8, 4, 6, 8, 6, "glass")
     # Inside: the Fossil Lab between bookshelves, a skeleton and a case on show
     b.set(5, 1, 8, "aliveworkplace:fossil_lab", facing="north")
@@ -1005,8 +1005,8 @@ def research_lab_2():
     a big skeleton of bone blocks and cases either side. 18 x 10 x 11."""
     b = research_lab().grow(18, 10, 11)
     b.clear(10, 0, 0, 10, 9, 10)
-    hip_roof(b, 0, 10, 0, 10, 5, DEEPSLATE_TILE, rings=3)
-    walls(b, 3, 3, 7, 7, 8, 8, "polished_deepslate")
+    hip_roof(b, 0, 10, 0, 10, 5, CUT_COPPER, rings=3)
+    walls(b, 3, 3, 7, 7, 8, 8, "cut_copper")
     box(b, 4, 8, 4, 6, 8, 6, "glass")
     b.set(5, 8, 5, "glass")
     plinth(b, 9, 2, 16, 8, FOUNDATION_MIX, floor="polished_andesite")
@@ -1031,7 +1031,7 @@ def research_lab_2():
         window(b, x, 2, 2, "north", width=2, sill=STONE_BRICK)
     window(b, 16, 2, 4, "east", width=3, sill=STONE_BRICK)
     # The roof: deepslate tiles like the lab's, with a glass ridge to light the skeleton
-    gable_roof(b, 10, 17, 1, 9, 5, DEEPSLATE_TILE, axis="x", gable=BRICK_WALL_MIX, gable_at=(16, 16))
+    gable_roof(b, 10, 17, 1, 9, 5, CUT_COPPER, axis="x", gable=BRICK_WALL_MIX, gable_at=(16, 16))
     for x in range(10, 18):
         for z, y in ((4, 8), (6, 8), (5, 9)):
             b.set(x, y, z, "glass")
@@ -1735,7 +1735,7 @@ def hive_on_post(b, x, z, facing="south", smoke=False):
 
 
 def honey_shed(b, x0, z0):
-    """An open-fronted shed (x0 to x0+4, z0 to z0+3) with the Apiary, a chest, shelves of bottles and a slab roof."""
+    """An open-fronted shed (x0 to x0+4, z0 to z0+3) with the Apiary, a chest, shelves of bottles and a spruce gable roof."""
     plinth(b, x0, z0, x0 + 4, z0 + 3, STONE_MIX, floor="oak_planks")
     for y in (1, 2, 3):
         for x in range(x0, x0 + 5):
@@ -1744,9 +1744,11 @@ def honey_shed(b, x0, z0):
             b.set(x0, y, z, "oak_planks")
             b.set(x0 + 4, y, z, "oak_planks")
     posts(b, [(x0, z0), (x0 + 4, z0), (x0, z0 + 3), (x0 + 4, z0 + 3)], 1, 3, "stripped_oak_log")
-    for x in range(x0 - 1, x0 + 6):
-        for z in range(z0 - 1, z0 + 5):
-            slab(b, x, 4, z, OAK)
+    beam_ring(b, x0, z0, x0 + 4, z0 + 3, 4, "stripped_oak_log")
+    gable_roof(b, x0 - 1, x0 + 5, z0 - 1, z0 + 4, 4, SPRUCE, axis="x", gable="oak_planks", gable_at=(x0, x0 + 4), ridge=SPRUCE,
+               eave_trim=OAK)
+    for x in range(x0 + 1, x0 + 4):  # a tie beam for the lantern (and for the builder to reach the ridge)
+        log(b, x, 4, z0 + 1, "stripped_oak_log", axis="x")
     b.set(x0 + 2, 1, z0 + 2, "aliveworkplace:apiary", facing="north")
     b.set(x0 + 1, 1, z0 + 2, "chest", facing="north", type="single", waterlogged=False)
     for x in (x0 + 1, x0 + 3):
@@ -1758,7 +1760,7 @@ def honey_shed(b, x0, z0):
 def apiary_garden():
     """11 x 6 x 11: a beekeeper's garden — a meadow of flowers inside a low fence, four beehives on posts (one over a
     smouldering campfire), and a honey shed at the back with the Apiary, a chest and the honey."""
-    b = Build(11, 6, 11)
+    b = Build(11, 8, 11)
     flower_bed(b, 1, 1, 9, 4, 0, FLOWERS)
     for x in range(0, 11):
         fence(b, x, 0, 0, "oak_fence")
@@ -1786,7 +1788,7 @@ def apiary_garden():
 def apiary_garden_2():
     """Upgrade of the Apiary Garden (same origin and front): the meadow runs on to the east with four more hives and a
     bench among the flowers. 17 x 6 x 11."""
-    b = apiary_garden().grow(17, 6, 11)
+    b = apiary_garden().grow(17, 8, 11)
     for z in range(0, 11):
         b.clear(10, 0, z, 10, 0, z)
     flower_bed(b, 10, 1, 15, 9, 0, FLOWERS)
@@ -1848,10 +1850,10 @@ def flower_shop_front(b):
 
 def flower_shop_building():
     """9 x 11 x 9: a little flower shop — brick walls, display windows full of pots under a striped awning, window boxes,
-    the Flower Stand inside, under a steep birch roof with a flower box in the gable."""
+    the Flower Stand inside, under a dark oak roof with a flower box in the gable."""
     b = Build(9, 11, 9)
     flower_shop_front(b)
-    gable_roof(b, 0, 8, 1, 8, 5, BIRCH, axis="z", gable="birch_planks", gable_at=(2, 7), ridge=BIRCH)
+    gable_roof(b, 0, 8, 1, 8, 5, DARK_OAK, axis="z", gable="birch_planks", gable_at=(2, 7), ridge=DARK_OAK, eave_trim=BIRCH)
     window(b, 4, 6, 2, "north", height=1, shutters="birch_trapdoor", flowers=("birch_trapdoor", ["potted_pink_tulip"]))
     b.fill_air()
     return b

@@ -1367,6 +1367,20 @@ public class BuilderGameTests implements FabricGameTest {
 
 	// --- pure logic ------------------------------------------------------------------------
 
+	/** A copper roof that has greened (or been waxed) is still the roof that was built. */
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
+	public void weatheredCopperStillMatches(GameTestHelper helper) {
+		BlockState fresh = Blocks.CUT_COPPER_STAIRS.defaultBlockState();
+		BlockState green = Blocks.OXIDIZED_CUT_COPPER_STAIRS.defaultBlockState();
+		BlockState waxed = Blocks.WAXED_EXPOSED_CUT_COPPER_STAIRS.defaultBlockState();
+		helper.assertTrue(io.github.jcondedata.aliveworkplace.build.MaterialRules.matches(green, fresh), "oxidized copper stairs");
+		helper.assertTrue(io.github.jcondedata.aliveworkplace.build.MaterialRules.matches(waxed, fresh), "waxed copper stairs");
+		helper.assertFalse(io.github.jcondedata.aliveworkplace.build.MaterialRules.matches(green.setValue(net.minecraft.world.level.block.StairBlock.FACING,
+			net.minecraft.core.Direction.EAST), fresh), "a stair turned the other way");
+		helper.assertFalse(io.github.jcondedata.aliveworkplace.build.MaterialRules.matches(Blocks.STONE_STAIRS.defaultBlockState(), fresh), "stone for copper");
+		helper.succeed();
+	}
+
 	/** Every starter build has an upgrade that keeps most of it (so a builder only builds what's new). */
 	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
 	public void starterUpgradesKeepMostOfTheirBase(GameTestHelper helper) {

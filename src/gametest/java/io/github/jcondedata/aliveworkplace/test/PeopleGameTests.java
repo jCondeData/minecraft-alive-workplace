@@ -266,6 +266,42 @@ public class PeopleGameTests implements FabricGameTest {
 		});
 	}
 
+	/** Villagers talk about their day: a hungry one about food, anyone about bandits camped nearby, and hello. */
+	@GameTest(template = AREA, timeoutTicks = 100, batch = "villagersChatter")
+	public void villagersChatterAboutTheirDay(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		int radius = VillageHalls.RADIUS;
+		boolean moods = io.github.jcondedata.aliveworkplace.people.Moods.ENABLED;
+		VillageHalls.RADIUS = 16;
+		io.github.jcondedata.aliveworkplace.people.Moods.ENABLED = true;
+		ServerLevel level = helper.getLevel();
+		Leftovers.after(helper, () -> {
+			VillageHalls.RADIUS = radius;
+			io.github.jcondedata.aliveworkplace.people.Moods.ENABLED = moods;
+			io.github.jcondedata.aliveworkplace.people.Moods.forget();
+			io.github.jcondedata.aliveworkplace.guard.BanditCamps.forget(level);
+		});
+		helper.setBlock(new BlockPos(1, 2, 1), ModBlocks.VILLAGE_HALL); // in a corner: the camp goes in the far one
+		Villager villager = helper.spawn(EntityType.VILLAGER, new BlockPos(3, 2, 3));
+		net.minecraft.server.level.ServerPlayer player = helper.makeMockServerPlayerInLevel();
+		Leftovers.after(helper, () -> level.getServer().getPlayerList().remove(player));
+		helper.runAfterDelay(2, () -> {
+			BlockPos hall = helper.absolutePos(new BlockPos(1, 2, 1));
+			villager.setAttached(ModAttachments.LAST_MEAL, level.getGameTime() - 2 * VillageNeeds.DAY);
+			var topics = io.github.jcondedata.aliveworkplace.people.Chatter.topics(level, villager, hall);
+			helper.assertTrue(topics.contains("hungry") && topics.contains("hello") && !topics.contains("bandits"), "topics: " + topics);
+			var line = io.github.jcondedata.aliveworkplace.people.Chatter.line(level, villager, hall, player);
+			helper.assertTrue(line != null && line.getContents() instanceof net.minecraft.network.chat.contents.TranslatableContents t
+				&& t.getKey().startsWith("chatter.aliveworkplace."), "line: " + line);
+			io.github.jcondedata.aliveworkplace.guard.BanditCamps.found(level, hall, helper.absolutePos(new BlockPos(13, 1, 13)));
+			io.github.jcondedata.aliveworkplace.people.Moods.forget();
+			helper.assertTrue(io.github.jcondedata.aliveworkplace.people.Chatter.topics(level, villager, hall).contains("bandits"), "no talk of bandits");
+			level.getEntitiesOfClass(net.minecraft.world.entity.Mob.class, new net.minecraft.world.phys.AABB(hall).inflate(40),
+				m -> m.getTags().contains(io.github.jcondedata.aliveworkplace.guard.BanditCamps.TAG)).forEach(m -> m.discard());
+			helper.succeed();
+		});
+	}
+
 	/** A villager's mood follows their day; the unhappy work slower, the happy faster. */
 	@GameTest(template = AREA, timeoutTicks = 100, batch = "moodsFollowTheirDay")
 	public void moodsFollowTheirDay(GameTestHelper helper) {

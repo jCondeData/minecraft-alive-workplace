@@ -1,0 +1,171 @@
+package io.github.jcondedata.aliveworkplace.people;
+
+import io.github.jcondedata.aliveworkplace.guard.BanditCamps;
+import io.github.jcondedata.aliveworkplace.guard.VillageRaids;
+import io.github.jcondedata.aliveworkplace.hall.Chronicle;
+import io.github.jcondedata.aliveworkplace.hall.Festivals;
+import io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity;
+import io.github.jcondedata.aliveworkplace.hall.VillageHallScreen;
+import io.github.jcondedata.aliveworkplace.hall.VillageHalls;
+import io.github.jcondedata.aliveworkplace.work.WorkerStatus;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
+import net.minecraft.ChatFormatting;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.contents.TranslatableContents;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.entity.ai.behavior.EntityTracker;
+import net.minecraft.world.entity.ai.memory.MemoryModuleType;
+import net.minecraft.world.entity.npc.Villager;
+import net.minecraft.world.entity.schedule.Activity;
+import org.jetbrains.annotations.Nullable;
+
+/**
+ * Chatter: now and then a villager near a player says something, in a line over their head — what their mood is made of
+ * (hungry, no bed of their own, a varied diet, a job they like), what's going on in the village (a festival, bandits
+ * camped nearby, a raid, illness), or just hello. At most one line every {@link #EVERY} ticks near each player, only
+ * from villagers off work (a worker's line shows what they're doing), and only in villages with a Village Hall.
+ * {@code villagerChatter} in the config turns it off.
+ */
+public final class Chatter {
+	public static boolean ENABLED = true;
+	static final int CHECK_EVERY = 40;
+	/** Ticks between lines near one player. */
+	public static final int EVERY = 400;
+	static final double NEAR = 10;
+	/** How many ways there are to say each thing (the lines are {@code chatter.aliveworkplace.<topic>.<n>}). */
+	static final Map<String, Integer> VARIANTS = Map.ofEntries(Map.entry("hello", 3), Map.entry("festival_on", 2),
+		Map.entry("festival_today", 2), Map.entry("festival_after", 2), Map.entry("bandits", 2), Map.entry("raid", 2),
+		Map.entry("child", 2), Map.entry("ill", 2), Map.entry("hungry", 2), Map.entry("fed", 2), Map.entry("no_bed", 2),
+		Map.entry("bed", 1), Map.entry("job", 2), Map.entry("no_job", 2), Map.entry("varied_diet", 1), Map.entry("same_food", 2),
+		Map.entry("decorations", 2), Map.entry("company", 1), Map.entry("cheerful", 1));
+	private static final Map<UUID, Long> LAST = new HashMap<>();
+
+	public static void init() {
+		ServerTickEvents.END_WORLD_TICK.register(level -> {
+			if (ENABLED && level.getGameTime() % CHECK_EVERY == 0) {
+				tick(level);
+			}
+		});
+	}
+
+	static void tick(ServerLevel level) {
+		long now = level.getGameTime();
+		for (ServerPlayer player : level.players()) {
+			if (player.isSpectator()) {
+				continue;
+			}
+			Long last = LAST.get(player.getUUID());
+			if (last != null && now - last < EVERY || level.random.nextFloat() > 0.35f) {
+				continue;
+			}
+			List<Villager> near = level.getEntitiesOfClass(Villager.class, player.getBoundingBox().inflate(NEAR, 4, NEAR),
+				v -> v.isAlive() && !v.isSleeping() && offWork(v, now) && player.hasLineOfSight(v));
+			if (near.isEmpty()) {
+				continue;
+			}
+			Villager speaker = near.get(level.random.nextInt(near.size()));
+			Optional<BlockPos> hall = VillageHalls.nearest(level, speaker.blockPosition());
+			if (hall.isEmpty()) {
+				continue;
+			}
+			Component line = line(level, speaker, hall.get(), player);
+			if (line != null) {
+				say(level, speaker, player, line);
+				LAST.put(player.getUUID(), now);
+			}
+		}
+	}
+
+	/** Off work: not showing a work line, and not working, hiding or fleeing. */
+	static boolean offWork(Villager villager, long now) {
+		if (WorkerStatus.get(villager, now) != null) {
+			return false;
+		}
+		Activity activity = villager.getBrain().getActiveNonCoreActivity().orElse(null);
+		return activity != Activity.WORK && activity != Activity.PANIC && activity != Activity.HIDE && activity != Activity.PRE_RAID
+			&& activity != Activity.RAID;
+	}
+
+	/** What the villager talks about now: village news first (twice as likely), then their mood, then hello. */
+	public static List<String> topics(ServerLevel level, Villager villager, BlockPos hall) {
+		List<String> topics = new ArrayList<>();
+		List<String> news = new ArrayList<>();
+		if (Festivals.isOn(level, hall)) {
+			news.add("festival_on");
+		} else if (level.getBlockEntity(hall) instanceof VillageHallBlockEntity entity && entity.festivalDay() == Chronicle.day(level)) {
+			news.add("festival_today");
+		} else if (Festivals.enjoyedLately(level, villager)) {
+			news.add("festival_after");
+		}
+		if (BanditCamps.near(level, hall).isPresent()) {
+			news.add("bandits");
+		}
+		if (VillageRaids.active(hall).isPresent()) {
+			news.add("raid");
+		}
+		if (villager.isBaby()) {
+			news.add("child");
+		}
+		if (Sickness.isIll(villager)) {
+			news.add("ill");
+		}
+		topics.addAll(news);
+		topics.addAll(news);
+		Moods.Mood mood = Moods.of(villager);
+		if (mood != null) {
+			for (Component reason : mood.bad()) {
+				topicOf(reason).ifPresent(topics::add);
+			}
+			for (Component reason : mood.good()) {
+				topicOf(reason).ifPresent(topics::add);
+			}
+		}
+		topics.add("hello");
+		return topics;
+	}
+
+	private static Optional<String> topicOf(Component reason) {
+		if (reason.getContents() instanceof TranslatableContents t && t.getKey().startsWith("mood.aliveworkplace.reason.")) {
+			String topic = t.getKey().substring("mood.aliveworkplace.reason.".length());
+			return VARIANTS.containsKey(topic) ? Optional.of(topic) : Optional.empty();
+		}
+		return Optional.empty();
+	}
+
+	/** Something for {@code villager} to say to {@code player} now, or null. */
+	@Nullable
+	public static Component line(ServerLevel level, Villager villager, BlockPos hall, ServerPlayer player) {
+		List<String> topics = topics(level, villager, hall);
+		if (topics.isEmpty()) {
+			return null;
+		}
+		String topic = topics.get(level.random.nextInt(topics.size()));
+		int variant = level.random.nextInt(VARIANTS.getOrDefault(topic, 1));
+		Object arg = switch (topic) {
+			case "hello" -> player.getDisplayName();
+			case "bandits" -> BanditCamps.near(level, hall).map(camp -> VillageHallScreen.where(hall, camp.pos())).orElse(Component.empty());
+			default -> "";
+		};
+		return Component.translatable("chatter.aliveworkplace." + topic + "." + variant, arg).withStyle(ChatFormatting.ITALIC);
+	}
+
+	/** {@code villager} turns to {@code player} and says {@code line} (over their head, for a few seconds). */
+	static void say(ServerLevel level, Villager villager, ServerPlayer player, Component line) {
+		Component name = villager.hasCustomName() ? villager.getCustomName() : villager.getType().getDescription();
+		WorkerStatus.set(villager, name.copy().withStyle(ChatFormatting.GRAY), -1f, line);
+		villager.getBrain().setMemory(MemoryModuleType.LOOK_TARGET, new EntityTracker(player, true));
+		villager.playSound(villager.isBaby() ? SoundEvents.VILLAGER_CELEBRATE : SoundEvents.VILLAGER_AMBIENT, 0.6f, villager.isBaby() ? 1.5f : 1f);
+	}
+
+	private Chatter() {
+	}
+}

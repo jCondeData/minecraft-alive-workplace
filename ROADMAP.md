@@ -639,7 +639,11 @@ ones we lack, our way.
 - [x] Build review with the owner's Minecraft Architect skill (its lint over all 181 structures, its renderer and
   critique): `tools/blueprints/check.py` runs on every save (floating blocks, unsupported lanterns/pots/ladders);
   Healing Center I–III and Supply Shop I–III redrawn (masses, bays, contrasting roofs), Barracks porch and buttresses,
-  village house shell (contrasting roofs, chimney, door hood, flower boxes); STYLE.md has the review rules
+  village house shell (contrasting roofs, chimney, door hood, flower boxes); STYLE.md has the review rules; Flower Shop,
+  honey shed and Research Lab roofs (copper: `MaterialRules.unweathered` lets greened/waxed copper match)
+- [x] Chatter (`people/Chatter`): every 40 ticks, per player, a 35% chance (at most one line per 400 ticks) that a
+  villager off work within 10 blocks says a line over their head (`WorkerStatus`): village news twice as likely (festival,
+  bandits, raid, a child, illness), then their mood's reasons, then hello by name; `villagerChatter` in the config
 - [x] Seven more research topics (`Research.Topic`: LOGISTICS → `PorterWork.capacity`, CRAFTSMANSHIP → `CrafterWork` craft
   timer, MEDICINE → `Sickness.dailyChance`, FORTIFICATION → `Guards.block`, COMMERCE → `MarketDays` + `Mercenaries.price`,
   EXPEDITIONS → `Netherworkers.expeditionFactor` (and explorers' rest), GREEN_THUMB → `CompostWork.layersPerBoneMeal`);

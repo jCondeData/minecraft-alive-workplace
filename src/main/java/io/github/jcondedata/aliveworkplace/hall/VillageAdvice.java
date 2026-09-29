@@ -4,6 +4,7 @@ import io.github.jcondedata.aliveworkplace.blueprint.BlueprintLibrary;
 import io.github.jcondedata.aliveworkplace.blueprint.BlueprintUpgrades;
 import io.github.jcondedata.aliveworkplace.blueprint.Blueprints;
 import io.github.jcondedata.aliveworkplace.build.BuildSiteManager;
+import io.github.jcondedata.aliveworkplace.people.Homes;
 import io.github.jcondedata.aliveworkplace.registry.ModBlocks;
 import io.github.jcondedata.aliveworkplace.registry.ModItems;
 import io.github.jcondedata.aliveworkplace.registry.ModVillagers;
@@ -22,11 +23,13 @@ import net.minecraft.world.item.Items;
 /**
  * What a village should do next, as the Village Hall sees it (the hall screen's "What next?" page): a builder first, then
  * beds, food, a storehouse, guards, light by the beds, jobs for the jobless, a scholar, decorations, the next upgrade of
- * a building, and what the next rank still needs — only what's actually lacking, most pressing first.
+ * a building, better homes, and what the next rank still needs — only what's actually lacking, most pressing first.
  */
 public final class VillageAdvice {
 	/** Upgrades suggested at most. */
 	static final int MAX_UPGRADES = 2;
+	/** Grown-ups a village needs before better homes are worth suggesting. */
+	static final int MIN_FOR_HOMES = 3;
 
 	/** One piece of advice: {@code advice.aliveworkplace.<key>} (the title) and {@code <key>.how}, with {@code args}. */
 	public record Tip(String key, Item icon, Object... args) {
@@ -90,6 +93,14 @@ public final class VillageAdvice {
 			if (!up.equals(f.structure()) && BlueprintLibrary.get(level, up).isPresent()) {
 				tips.add(new Tip("upgrade", ModItems.BLUEPRINT, Blueprints.displayName(f.structure()), Blueprints.displayName(up)));
 				upgrades++;
+			}
+		}
+		// Better homes: most grown-ups sleep in first-tier buildings, or in none a builder put up
+		List<Villager> grown = level.getEntitiesOfClass(Villager.class, VillageHalls.area(hall), v -> !v.isBaby() && v.isAlive());
+		if (grown.size() >= MIN_FOR_HOMES) {
+			long plain = grown.stream().filter(v -> Homes.of(level, v).map(h -> h.tier() < 2).orElse(true)).count();
+			if (plain * 2 > grown.size()) {
+				tips.add(new Tip("homes", Items.OAK_DOOR, plain, grown.size(), Homes.TIER_2_MOOD, Homes.TIER_3_MOOD));
 			}
 		}
 		VillageRanks.Rank next = VillageRanks.of(level, hall).next();

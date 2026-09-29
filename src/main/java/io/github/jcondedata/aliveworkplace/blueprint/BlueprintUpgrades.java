@@ -28,6 +28,16 @@ public final class BlueprintUpgrades {
 		return Optional.of(ResourceLocation.fromNamespaceAndPath(id.getNamespace(), base));
 	}
 
+	/** The tier of blueprint {@code id} going by its name: 2 for {@code <name>_2}, 3 for {@code <name>_3}..., else 1. */
+	public static int tier(ResourceLocation id) {
+		Matcher m = TIER.matcher(id.getPath());
+		if (!m.matches()) {
+			return 1;
+		}
+		int tier = Integer.parseInt(m.group(2));
+		return tier >= 2 && tier <= 99 ? tier : 1;
+	}
+
 	/** The name of the blueprint that would upgrade {@code id} ({@code <name>_2}, or the next tier; it may not exist). */
 	public static ResourceLocation upgradeOf(ResourceLocation id) {
 		Matcher m = TIER.matcher(id.getPath());

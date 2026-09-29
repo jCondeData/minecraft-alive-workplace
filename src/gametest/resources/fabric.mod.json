@@ -12,6 +12,7 @@
 			"io.github.jcondedata.aliveworkplace.test.ShapeGameTests",
 			"io.github.jcondedata.aliveworkplace.test.VillageGameTests",
 			"io.github.jcondedata.aliveworkplace.test.ProtectionGameTests",
+			"io.github.jcondedata.aliveworkplace.test.HomesGameTests",
 			"io.github.jcondedata.aliveworkplace.test.MinerGameTests",
 			"io.github.jcondedata.aliveworkplace.test.LumberjackGameTests",
 			"io.github.jcondedata.aliveworkplace.test.OrchardGameTests",

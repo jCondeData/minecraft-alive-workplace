@@ -503,8 +503,13 @@ public final class VillageHallScreen {
 		if (VillageNeeds.isHungry(villager, level.getGameTime())) {
 			lore.add(line("screen.aliveworkplace.hall.hungry", ChatFormatting.RED));
 		}
-		if (VillageNeeds.bed(level, villager) == null) {
+		BlockPos bed = VillageNeeds.bed(level, villager);
+		if (bed == null) {
 			lore.add(line("screen.aliveworkplace.hall.no_bed", ChatFormatting.YELLOW));
+		} else {
+			io.github.jcondedata.aliveworkplace.people.Homes.at(level, bed).ifPresentOrElse(
+				home -> lore.add(line(Component.translatable("screen.aliveworkplace.hall.home", home.name()), ChatFormatting.GRAY)),
+				() -> lore.add(line("screen.aliveworkplace.hall.home_unbuilt", ChatFormatting.DARK_GRAY)));
 		}
 		// Builders and miners already say what they need in their status.
 		boolean saysWhatItNeeds = Builders.activeSite(level, villager) != null || Miners.activeSite(level, villager) != null;

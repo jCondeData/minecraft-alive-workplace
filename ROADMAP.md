@@ -726,9 +726,9 @@ standard, "even go back and improve upon other builds you've already pushed").
   break/place/use blocks (doors, gates, buttons, levers, bells, crafting tables and mailboxes stay open), empty buckets, or
   hurt villagers, golems, animals, armor stands and frames; platform hooks `allowBreakBlock`, `onUseBlock`,
   `allowUseItem`, `allowAttackEntity`; `villageProtection` in the config
-- [ ] Homes: a villager's home is the finished building their bed is in; a tier II house lifts their mood (+5), tier III
+- [x] Homes: a villager's home is the finished building their bed is in; a tier II house lifts their mood (+5), tier III
   more (+10); the hall's list says where each lives, and "What next?" suggests upgrading when most live in tier I houses
-  or none at all
+  or none at all (`people/Homes`, the tier by name in `BlueprintUpgrades.tier`; the "homes" tip needs 3 grown-ups)
 
 ## Milestone 5 — Release
 - [ ] Publish on Modrinth and CurseForge as **Alive Workplace** (Minecraft brand rules: don't lead the name with "Minecraft")

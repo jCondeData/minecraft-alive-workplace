@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+### Added
+- **Homes**: a villager's home is the building a builder put up that their bed is in. A tier II house (a Stone House II,
+  a Cottage II...) makes its people happier (+5), tier III more (+10); the Village Hall's list says where each villager
+  lives, and "What next?" suggests better homes when most of the village sleeps in first-tier houses or in ones no
+  builder put up.
+
 ### Changed
 - **Redrawn builds** (architect review, round 2): the Starter Cottage gets a gabled porch on fence posts (a porch hood
   on II and III); the Stone House a wall dormer over the door that lights the attic (II and III: over the middle bay,

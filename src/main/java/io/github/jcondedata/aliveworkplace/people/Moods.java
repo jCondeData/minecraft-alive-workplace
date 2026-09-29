@@ -17,7 +17,8 @@ import net.minecraft.world.entity.npc.VillagerProfession;
 
 /**
  * Moods: in a village with a Village Hall every grown villager has a mood, 0 to 100, from their own day — fed or hungry,
- * a bed of their own or not, a job, ill or well, cheerful by nature, decorations near home, company. The hall's list
+ * a bed of their own or not (and how fine a house it's in, see {@link Homes}), a job, ill or well, cheerful by nature,
+ * decorations near home, company. The hall's list
  * shows it with the reasons. Unhappy villagers (under {@link #UNHAPPY}) work 15% slower; happy ones ({@link #HAPPY} and
  * up) 7% faster. {@code villagerMoods} in the config turns it off.
  */
@@ -89,6 +90,11 @@ public final class Moods {
 		if (bed != null) {
 			score += 15;
 			good.add(reason("bed"));
+			Homes.Home home = Homes.at(level, bed).orElse(null);
+			if (home != null && home.mood() > 0) {
+				score += home.mood();
+				good.add(reason(home.tier() >= 3 ? "grand_home" : "fine_home"));
+			}
 		} else {
 			score -= 15;
 			bad.add(reason("no_bed"));

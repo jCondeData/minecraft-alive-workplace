@@ -1236,6 +1236,36 @@ public class BuilderGameTests implements FabricGameTest {
 	}
 
 	/** What floats above a builder's head: the build's name, its percentage and progress. */
+	/** With paths on, a builder who finishes the hut lays a dirt path from its door to the village bell. */
+	@GameTest(template = AREA, timeoutTicks = 2400, batch = "builderLaysAPathToTheBell")
+	public void builderLaysAPathToTheBell(GameTestHelper helper) {
+		boolean paths = io.github.jcondedata.aliveworkplace.build.Paths.ENABLED;
+		io.github.jcondedata.aliveworkplace.build.Paths.ENABLED = true;
+		Leftovers.after(helper, () -> io.github.jcondedata.aliveworkplace.build.Paths.ENABLED = paths);
+		for (int x = 0; x < 17; x++) {
+			for (int z = 0; z < 17; z++) {
+				helper.setBlock(new BlockPos(x, 1, z), Blocks.GRASS_BLOCK);
+			}
+		}
+		helper.setBlock(new BlockPos(15, 2, 1), Blocks.BELL);
+		Setup s = setup(helper, TEST_HUT, HUT_ORIGIN, Rotation.NONE, hutMaterials());
+		helper.succeedWhen(() -> {
+			helper.assertTrue(BuildSiteManager.get(s.level()).get(s.site().id()) == null, "still building");
+			helper.assertTrue(!s.villager().hasAttached(ModAttachments.PATH), "still laying the path: "
+				+ s.villager().getAttachedOrElse(ModAttachments.PATH, java.util.List.of()).size() + " to go");
+			int path = 0;
+			for (int x = 0; x < 17; x++) {
+				for (int z = 0; z < 17; z++) {
+					path += helper.getBlockState(new BlockPos(x, 1, z)).is(Blocks.DIRT_PATH) ? 1 : 0;
+				}
+			}
+			helper.assertTrue(path >= 4, path + " blocks of path");
+			helper.assertTrue(helper.getBlockState(new BlockPos(15, 1, 2)).is(Blocks.DIRT_PATH)
+				|| helper.getBlockState(new BlockPos(14, 1, 1)).is(Blocks.DIRT_PATH) || helper.getBlockState(new BlockPos(15, 1, 0)).is(Blocks.DIRT_PATH)
+				|| helper.getBlockState(new BlockPos(16, 1, 1)).is(Blocks.DIRT_PATH), "the path doesn't reach the bell");
+		});
+	}
+
 	@GameTest(template = AREA, timeoutTicks = 1200)
 	public void builderStatusShowsBuildAndProgress(GameTestHelper helper) {
 		Setup s = setup(helper, TEST_HUT, HUT_ORIGIN, Rotation.NONE, hutMaterials());

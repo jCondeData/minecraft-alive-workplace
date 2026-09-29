@@ -68,6 +68,7 @@ The owner (Jesse) does not write code: sessions are expected to work autonomousl
   (per-dimension saved data), `BuilderWork` (the villager Behavior that does the work), `Builders`
   (hand-over, status, finish, cancel), `MaterialRules` (block → item cost, stage, "is this done"),
   `SupplyContainers` (chests near the bench via Fabric transfer API), `BuilderPackages`, `BuilderEvents`
+- `build/Paths`, `build/PathWork` — the dirt path a builder lays from a finished building to the bell or Village Hall
 - `mine/` — the miner: `QuarryMarkerItem`/`QuarryData`, `QuarrySite` + `QuarrySiteManager`, `MinerWork`, `Miners`
 - `farm/` — the farmer upgrade (vanilla Farmers): `FieldMarkerItem`/`FieldData`, `FieldJob` (attachment), `FieldWork`,
   `FarmerPackages` (our work first, vanilla's routine wrapped in `work/Gated`), `Fields`

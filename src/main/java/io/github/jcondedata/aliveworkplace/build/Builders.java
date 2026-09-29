@@ -486,6 +486,9 @@ public final class Builders {
 				}
 			});
 		}
+		if (Paths.ENABLED) {
+			Paths.afterBuild(level, villager, site);
+		}
 		endJob(level, villager, site);
 		BuilderLevels.onFinished(level, villager, site);
 	}

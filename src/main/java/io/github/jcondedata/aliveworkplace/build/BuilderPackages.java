@@ -21,6 +21,7 @@ public final class BuilderPackages {
 	public static ImmutableList<Pair<Integer, ? extends BehaviorControl<? super Villager>>> work(float speed) {
 		return ImmutableList.<Pair<Integer, ? extends BehaviorControl<? super Villager>>>of(
 			Pair.of(0, new BuilderWork()),
+			Pair.of(1, new PathWork()),
 			Pair.of(2, BehaviorBuilder.<Villager>triggerIf(BuilderPackages::idle,
 				SetWalkTargetFromBlockMemory.create(MemoryModuleType.JOB_SITE, speed, 9, 100, 1200))),
 			Pair.of(5, BehaviorBuilder.<Villager>triggerIf(BuilderPackages::idle,
@@ -31,7 +32,7 @@ public final class BuilderPackages {
 	}
 
 	private static boolean idle(Villager villager) {
-		return !villager.hasAttached(ModAttachments.BUILDER_JOB);
+		return !villager.hasAttached(ModAttachments.BUILDER_JOB) && !PathWork.hasPath(villager);
 	}
 
 	private BuilderPackages() {

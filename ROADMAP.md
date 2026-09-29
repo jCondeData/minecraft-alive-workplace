@@ -496,7 +496,10 @@ loop: ore → ingots → the tools, weapons and armor the other workers wear out
 ## Milestone 12 — More to build
 - [ ] Every starter building in 2–3 styles (timber, stone, Cobblemon-themed) up to tier III, and the new jobs' buildings
 - [ ] Houses in tiers and decorations (wells, lamp posts, benches, market squares)
-- [ ] Builders lay paths between the village's buildings
+- [x] Builders lay paths between the village's buildings (`build/Paths` + `PathWork`: at the finish, an A* route over the
+  ground from the building's door to the nearest bell or Village Hall (else the bench) within 48 blocks, kept to
+  natural ground and out of the building; the builder turns grass and dirt on it into dirt path while idle, up to 96
+  blocks a building; `builderPaths` in the config, off in gametests but for the path test)
 
 ## Milestone 5 — Release
 - [ ] Publish on Modrinth and CurseForge as **Alive Workplace** (Minecraft brand rules: don't lead the name with "Minecraft")

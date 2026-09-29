@@ -42,6 +42,8 @@ public final class WorkplaceConfig {
 	public int villageRadius = 48;
 	/** How far from a Village Hall its village reaches. */
 	public int villageHallRadius = 64;
+	/** Whether builders lay a dirt path from each finished building to the village's bell or hall. */
+	public boolean builderPaths = true;
 	/** A village with a hall stops having babies at this many villagers (0: villages don't grow). */
 	public int villageGrowthCap = 40;
 	/** What an emerald price comes to in CobbleDollars (lessons, shops, fares). */
@@ -118,5 +120,6 @@ public final class WorkplaceConfig {
 		Money.DOLLARS_PER_EMERALD = dollarsPerEmerald;
 		io.github.jcondedata.aliveworkplace.hall.VillageHalls.RADIUS = villageHallRadius;
 		io.github.jcondedata.aliveworkplace.hall.VillageGrowth.CAP = villageGrowthCap;
+		io.github.jcondedata.aliveworkplace.build.Paths.ENABLED = builderPaths && System.getProperty("fabric-api.gametest") == null;
 	}
 }

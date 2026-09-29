@@ -69,6 +69,10 @@ and the **Supply Shop** (with a Shop Counter) — build them and a nurse and a s
 boxes, roofs that overhang on every side, chimneys that smoke, lanterns and benches (how they are drawn:
 `tools/blueprints/STYLE.md`).
 
+**Paths.** When a builder finishes a building they lay a **dirt path** from its door to the heart of the village —
+the meeting bell or the Village Hall within 48 blocks (their bench if there's neither) — round water, trees and other
+buildings, turning only grass and dirt into path. Turn it off with `builderPaths` in the config.
+
 **Upgrades.** A blueprint named like another with `_2` on the end (`_3` after that…) is its upgrade. Every starter
 build has one: the **Starter Cottage II** adds a timber upper storey jettied out over the front and back, the **Market
 Stall II** a second stall with a Shop Counter, the **Lookout Tower II** a Guard Post, a bell and a steep pointed spire
@@ -762,6 +766,7 @@ and restart; out-of-range values are clamped):
 | `partnerRadius` | 16 | how close to a workstation pastured Pokémon must be to help |
 | `postmanRange` | 64 | how far a postman walks to deliver (mail going farther arrives at dawn) |
 | `villageHallRadius` | 64 | how far from a Village Hall its village reaches |
+| `builderPaths` | true | builders lay a dirt path from each finished building to the village's bell or hall |
 | `villageGrowthCap` | 40 | a village with a hall stops having babies at this many villagers (0: villages don't grow) |
 | `villageRadius` | 48 | workers whose workstations are this close together share their chests (0 turns sharing off) |
 | `dollarsPerEmerald` | 100 | CobbleDollars per emerald for lessons, shop prices and fares |

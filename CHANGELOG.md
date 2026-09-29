@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+## 0.105.0 — 2026-09-29
+
+### Added
+- **Paths**: a builder who finishes a building lays a dirt path from its door to the village's bell or Village Hall,
+  round water, trees and other buildings (`builderPaths` in the config turns it off).
+
 ## 0.104.0 — 2026-09-29
 
 ### Added

@@ -84,6 +84,10 @@ public final class ModAttachments {
 	public static final AttachmentType<Integer> ITEMS_ENCHANTED = AttachmentRegistry.create(
 		AliveWorkplace.id("items_enchanted"), builder -> builder.persistent(com.mojang.serialization.Codec.INT));
 
+	/** The ground a builder is to turn into path (planned when they finished a building; see build/Paths). */
+	public static final AttachmentType<java.util.List<net.minecraft.core.BlockPos>> PATH = AttachmentRegistry.create(
+		AliveWorkplace.id("path"), builder -> builder.persistent(net.minecraft.core.BlockPos.CODEC.listOf()));
+
 	/** How many research levels a Scholar has finished (shown above its head). */
 	public static final AttachmentType<Integer> RESEARCH_DONE = AttachmentRegistry.create(
 		AliveWorkplace.id("research_done"), builder -> builder.persistent(com.mojang.serialization.Codec.INT));

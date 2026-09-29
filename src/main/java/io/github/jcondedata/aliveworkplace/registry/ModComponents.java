@@ -49,6 +49,15 @@ public final class ModComponents {
 			.networkSynchronized(io.github.jcondedata.aliveworkplace.guard.PatrolMapItem.Route.STREAM_CODEC).build()
 	);
 
+	/** A Rally Banner's guards and whether it's raised. */
+	public static final DataComponentType<io.github.jcondedata.aliveworkplace.guard.RallyBannerItem.Rally> RALLY = Registry.register(
+		BuiltInRegistries.DATA_COMPONENT_TYPE,
+		AliveWorkplace.id("rally"),
+		DataComponentType.<io.github.jcondedata.aliveworkplace.guard.RallyBannerItem.Rally>builder()
+			.persistent(io.github.jcondedata.aliveworkplace.guard.RallyBannerItem.Rally.CODEC)
+			.networkSynchronized(io.github.jcondedata.aliveworkplace.guard.RallyBannerItem.Rally.STREAM_CODEC).build()
+	);
+
 	/** Where a Travel Ticket goes. */
 	public static final DataComponentType<io.github.jcondedata.aliveworkplace.travel.TicketData> TICKET = Registry.register(
 		BuiltInRegistries.DATA_COMPONENT_TYPE,

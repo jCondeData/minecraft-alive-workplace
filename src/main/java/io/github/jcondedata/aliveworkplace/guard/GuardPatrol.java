@@ -98,6 +98,12 @@ public class GuardPatrol extends Behavior<Villager> {
 			waypoint = null;
 			return;
 		}
+		var leader = Escorts.leader(villager);
+		if (leader.isPresent()) {
+			waypoint = null;
+			GuardEscort.status(villager, leader.get());
+			return;
+		}
 		BlockPos post = Builders.benchPos(villager).orElse(null);
 		if (post == null) {
 			return;

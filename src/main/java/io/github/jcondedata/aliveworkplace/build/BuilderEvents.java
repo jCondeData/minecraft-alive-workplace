@@ -29,6 +29,10 @@ public final class BuilderEvents {
 			// A guard, sneak-right-clicked with a bow, crossbow, shield or healing potion: they hold it, and that makes their kind.
 			if (player.isShiftKeyDown() && io.github.jcondedata.aliveworkplace.guard.Guards.isGuard(villager)) {
 				ItemStack held = player.getItemInHand(hand);
+				if (held.is(ModItems.RALLY_BANNER)) {
+					return level.isClientSide ? InteractionResult.SUCCESS
+						: io.github.jcondedata.aliveworkplace.guard.RallyBannerItem.enlist((ServerPlayer) player, villager, held);
+				}
 				if (held.is(ModItems.PATROL_MAP)) {
 					return level.isClientSide ? InteractionResult.SUCCESS
 						: io.github.jcondedata.aliveworkplace.guard.PatrolMapItem.giveTo((ServerPlayer) player, villager, held);

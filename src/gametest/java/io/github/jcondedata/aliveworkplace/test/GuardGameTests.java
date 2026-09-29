@@ -265,4 +265,46 @@ public class GuardGameTests implements FabricGameTest {
 		});
 		helper.succeedWhen(() -> helper.assertTrue(reached[0] && reached[1], "reached the first point: " + reached[0] + ", the second: " + reached[1]));
 	}
+
+	/**
+	 * A Rally Banner raised in a player's inventory: the guard leaves the post, follows the player across the area, goes
+	 * for the cow the player hit; with the banner lowered, they're let go.
+	 */
+	@GameTest(template = AREA, timeoutTicks = 1600, batch = "rallyBanner")
+	public void guardsFollowARaisedRallyBanner(GameTestHelper helper) {
+		Villager guard = guard(helper);
+		guard.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.IRON_SWORD));
+		net.minecraft.server.level.ServerPlayer player = helper.makeMockServerPlayerInLevel();
+		Leftovers.after(helper, () -> helper.getLevel().getServer().getPlayerList().remove(player));
+		BlockPos far = helper.absolutePos(new BlockPos(18, 2, 18));
+		player.teleportTo(far.getX() + 0.5, far.getY(), far.getZ() + 0.5);
+		ItemStack banner = new ItemStack(io.github.jcondedata.aliveworkplace.registry.ModItems.RALLY_BANNER);
+		helper.assertTrue(io.github.jcondedata.aliveworkplace.guard.RallyBannerItem.enlist(player, guard, banner) == net.minecraft.world.InteractionResult.SUCCESS,
+			"the guard wasn't enlisted");
+		banner.set(io.github.jcondedata.aliveworkplace.registry.ModComponents.RALLY, new io.github.jcondedata.aliveworkplace.guard.RallyBannerItem.Rally(
+			io.github.jcondedata.aliveworkplace.guard.RallyBannerItem.rally(banner).guards(), true));
+		player.getInventory().add(banner);
+		int[] phase = {0};
+		Cow[] cow = {null};
+		helper.onEachTick(() -> {
+			if (phase[0] == 0 && guard.distanceTo(player) < 4) {
+				phase[0] = 1;
+				cow[0] = helper.spawn(EntityType.COW, new BlockPos(15, 2, 17));
+				cow[0].setNoAi(true);
+				player.setLastHurtMob(cow[0]);
+			} else if (phase[0] == 1 && !cow[0].isAlive()) {
+				phase[0] = 2;
+				for (ItemStack stack : player.getInventory().items) {
+					if (stack.is(io.github.jcondedata.aliveworkplace.registry.ModItems.RALLY_BANNER)) {
+						stack.set(io.github.jcondedata.aliveworkplace.registry.ModComponents.RALLY, new io.github.jcondedata.aliveworkplace.guard.RallyBannerItem.Rally(
+							io.github.jcondedata.aliveworkplace.guard.RallyBannerItem.rally(stack).guards(), false));
+					}
+				}
+			}
+		});
+		helper.succeedWhen(() -> {
+			helper.assertTrue(phase[0] == 2, "phase " + phase[0] + ": the guard is " + guard.distanceTo(player) + " from the player");
+			helper.assertFalse(io.github.jcondedata.aliveworkplace.guard.Escorts.isEscorting(guard), "still following a lowered banner");
+		});
+	}
 }

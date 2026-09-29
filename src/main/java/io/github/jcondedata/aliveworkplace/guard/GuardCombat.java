@@ -94,7 +94,8 @@ public class GuardCombat extends Behavior<Villager> {
 
 	@Override
 	protected boolean canStillUse(ServerLevel level, Villager villager, long gameTime) {
-		return target != null && Guards.isFoe(target, villager) && target.level() == level && inArea(villager, target)
+		return target != null && (Guards.isFoe(target, villager) || Escorts.leader(villager).map(p -> Escorts.fair(target, p, villager)).orElse(false))
+			&& target.level() == level && inArea(villager, target)
 			&& villager.distanceToSqr(target) < 40 * 40;
 	}
 
@@ -256,6 +257,18 @@ public class GuardCombat extends Behavior<Villager> {
 	/** Nearest monster in the guard's area that they can see (or that is right next to them). */
 	@Nullable
 	private static LivingEntity findFoe(ServerLevel level, Villager villager) {
+		var leader = Escorts.leader(villager);
+		if (leader.isPresent()) {
+			// Following a Rally Banner: what's after the player (or what they're fighting) first, then any monster near them.
+			LivingEntity foe = Escorts.leaderFoe(leader.get(), villager);
+			if (foe != null) {
+				return foe;
+			}
+			return level.getEntitiesOfClass(LivingEntity.class, leader.get().getBoundingBox().inflate(Escorts.WATCH, 8, Escorts.WATCH), e -> Guards.isFoe(e, villager)).stream()
+				.filter(e -> villager.hasLineOfSight(e) || villager.distanceToSqr(e) < 16)
+				.min(Comparator.comparingDouble(villager::distanceToSqr))
+				.orElse(null);
+		}
 		BlockPos center = center(villager);
 		// In a raid, the whole village (or the pillagers' raid area) is the guard's to defend.
 		AABB area = VillageRaids.raidArea(level, center).orElseGet(() -> new AABB(center).inflate(Guards.RADIUS, 8, Guards.RADIUS));
@@ -266,6 +279,10 @@ public class GuardCombat extends Behavior<Villager> {
 	}
 
 	private static boolean inArea(Villager villager, LivingEntity foe) {
+		var leader = Escorts.leader(villager);
+		if (leader.isPresent()) {
+			return foe.distanceToSqr(leader.get()) < (Escorts.WATCH + 16) * (Escorts.WATCH + 16);
+		}
 		BlockPos center = center(villager);
 		if (villager.level() instanceof ServerLevel level) {
 			Optional<AABB> raid = VillageRaids.raidArea(level, center);

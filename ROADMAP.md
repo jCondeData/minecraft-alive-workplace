@@ -623,6 +623,10 @@ ones we lack, our way.
   `builderRepairs` in the config, off in gametests)
 - [x] Patrol routes (`guard/PatrolMapItem`, component `patrol`, attachment `patrol_route`): by day `GuardPatrol` walks the
   points in order (within 64 of the post); red outline while held
+- [x] Rally Banner (`guard/RallyBannerItem`, component `rally`; `Escorts` works out who follows whom from the players'
+  inventories every second): enlisted guards follow the player (`GuardEscort` in CORE; caught up past 32 blocks), fight
+  what goes for them or what they hit (`Escorts.leaderFoe`) and monsters near them; lowered, sent home if 64+ from post
+- [x] Compost Yard I/II and Sifting Shed I/II blueprints (`tools/blueprints/yards.py`)
 - [x] Seven more research topics (`Research.Topic`: LOGISTICS → `PorterWork.capacity`, CRAFTSMANSHIP → `CrafterWork` craft
   timer, MEDICINE → `Sickness.dailyChance`, FORTIFICATION → `Guards.block`, COMMERCE → `MarketDays` + `Mercenaries.price`,
   EXPEDITIONS → `Netherworkers.expeditionFactor` (and explorers' rest), GREEN_THUMB → `CompostWork.layersPerBoneMeal`);

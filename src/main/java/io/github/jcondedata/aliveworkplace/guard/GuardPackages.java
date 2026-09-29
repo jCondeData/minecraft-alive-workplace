@@ -33,6 +33,7 @@ public final class GuardPackages {
 		return ImmutableList.<Pair<Integer, ? extends BehaviorControl<? super Villager>>>builder()
 			.add(Pair.of(0, GuardRally.listener()))
 			.add(Pair.of(0, new GuardRally()))
+			.add(Pair.of(0, new GuardEscort()))
 			.add(Pair.of(0, new GuardCombat()))
 			.addAll(vanilla)
 			.build();

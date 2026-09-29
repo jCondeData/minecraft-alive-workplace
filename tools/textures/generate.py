@@ -412,6 +412,28 @@ def patrol_map_item():
     save(img, "item", "patrol_map.png")
 
 
+def rally_banner_item():
+    img = Image.new("RGBA", (16, 16), T)
+    rnd = random.Random(557)
+    # A pole with a cross-bar and a red banner hanging from it, a gold emblem and a swallowtail hem
+    for y in range(1, 16):
+        img.putpixel((3, y), rgb("#8a5a2b"))
+        img.putpixel((4, y), rgb("#6e4a26"))
+    img.putpixel((3, 0), rgb("#d9b24a"))
+    img.putpixel((4, 0), rgb("#b8902e"))
+    for x in range(2, 14):
+        img.putpixel((x, 2), rgb("#5a3a1e"))
+    cloth, shade, gold = rgb("#b3262a"), rgb("#8c1c20"), rgb("#e8c04a")
+    for y in range(3, 13):
+        for x in range(5, 13):
+            if y >= 11 and x in (8, 9) or y == 12 and x in (7, 10):
+                continue  # the swallowtail
+            img.putpixel((x, y), jitter(shade if x == 12 or y == 3 else cloth, rnd, 6))
+    for x, y in ((8, 5), (9, 5), (7, 6), (10, 6), (8, 7), (9, 7), (8, 8), (9, 8), (7, 9), (10, 9)):
+        img.putpixel((x, y), gold)
+    save(img, "item", "rally_banner.png")
+
+
 def field_marker_item():
     img = Image.new("RGBA", (16, 16), T)
     # A wooden stake with a green flag and a wheat ear
@@ -2723,6 +2745,7 @@ if __name__ == "__main__":
     settlers_wagon_item()
     scan_tool_item()
     patrol_map_item()
+    rally_banner_item()
     ferryman_overlay()
     delivery_note_item()
     price_tag_item()

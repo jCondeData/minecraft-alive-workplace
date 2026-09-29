@@ -742,6 +742,13 @@ gate, the far field, the bridge — and sneak-right-click a guard with it: by da
 instead of wandering round their post (the route shows in red while you hold the map). The map keeps the route for the
 next guard; a blank map (sneak-right-click the ground to clear it) takes a guard's route away.
 
+**Rally Banner.** Craft one (any banner and an iron ingot), sneak-right-click up to twelve guards with it to enlist them
+(again to let one go), then right-click the air to raise it: while it's raised and anywhere in your inventory, those
+guards leave their posts and follow you — across the fields, into a cave, to a pillager outpost — and fight whatever goes
+for you or whatever you go for, as well as any monster near you (never players, villagers, pets or Pokémon). A guard
+left more than 32 blocks behind catches up at once. Lower the banner and they go back to their posts (from far away,
+straight there). Mercenaries can be enlisted too.
+
 **Mercenaries.** Short of guards? Open the Village Hall and click the iron sword: for 12 emeralds (or their worth in
 CobbleDollars) three **mercenaries** in iron — one with a shield — come to the hall and fight for the village like its
 own guards until the next dawn, then leave. One band at a time; their gear goes with them.

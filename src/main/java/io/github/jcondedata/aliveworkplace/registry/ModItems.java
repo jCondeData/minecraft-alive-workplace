@@ -30,6 +30,9 @@ public final class ModItems {
 	public static final io.github.jcondedata.aliveworkplace.guard.PatrolMapItem PATROL_MAP = Registry.register(
 		BuiltInRegistries.ITEM, AliveWorkplace.id("patrol_map"), new io.github.jcondedata.aliveworkplace.guard.PatrolMapItem(new Item.Properties().stacksTo(1))
 	);
+	public static final io.github.jcondedata.aliveworkplace.guard.RallyBannerItem RALLY_BANNER = Registry.register(
+		BuiltInRegistries.ITEM, AliveWorkplace.id("rally_banner"), new io.github.jcondedata.aliveworkplace.guard.RallyBannerItem(new Item.Properties().stacksTo(1))
+	);
 
 	/** Marks out a quarry for a Miner. */
 	public static final io.github.jcondedata.aliveworkplace.mine.QuarryMarkerItem QUARRY_MARKER = Registry.register(
@@ -79,6 +82,7 @@ public final class ModItems {
 				output.accept(BLANK_BLUEPRINT);
 				output.accept(SCAN_TOOL);
 				output.accept(PATROL_MAP);
+				output.accept(RALLY_BANNER);
 				output.accept(ModBlocks.MINERS_BENCH);
 				output.accept(QUARRY_MARKER);
 				output.accept(ModBlocks.CHOPPING_BLOCK);

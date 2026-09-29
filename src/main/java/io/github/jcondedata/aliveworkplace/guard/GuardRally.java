@@ -83,7 +83,7 @@ public class GuardRally extends Behavior<Villager> {
 
 	private static boolean needsToWalk(Villager villager) {
 		Optional<BlockPos> bell = rallyPoint(villager);
-		return bell.isPresent() && !GuardCombat.isFighting(villager) && !bell.get().closerToCenterThan(villager.position(), 4);
+		return bell.isPresent() && !GuardCombat.isFighting(villager) && !Escorts.isEscorting(villager) && !bell.get().closerToCenterThan(villager.position(), 4);
 	}
 
 	@Override

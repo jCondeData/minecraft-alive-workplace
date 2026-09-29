@@ -7,6 +7,8 @@
   Medicine (less illness), Fortification (guards turn aside blows), Commerce (more market traders, cheaper mercenaries),
   Expeditions (explorers and netherworkers back sooner) and Green Thumb (more bone meal from compost).
 - **Patrol Map**: mark up to eight points and hand it to a guard; by day they walk your route.
+- **Rally Banner**: enlist up to twelve guards, raise the banner, and they follow you and fight at your side.
+- New builds: the **Compost Yard** and the **Sifting Shed**, each with an upgrade.
 
 ## 0.129.0 — 2026-09-29
 

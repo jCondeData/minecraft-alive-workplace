@@ -301,6 +301,23 @@ public final class ModVillagers {
 		)
 	);
 
+	public static final ResourceLocation FEED_TROUGH_ID = AliveWorkplace.id("feed_trough");
+	public static final ResourceKey<PoiType> FEED_TROUGH_POI = ResourceKey.create(Registries.POINT_OF_INTEREST_TYPE, FEED_TROUGH_ID);
+	public static final PoiType FEED_TROUGH_POI_TYPE = PointOfInterestHelper.register(FEED_TROUGH_ID, 1, 1, ModBlocks.FEED_TROUGH);
+
+	public static final VillagerProfession RANCHER = Registry.register(
+		BuiltInRegistries.VILLAGER_PROFESSION,
+		AliveWorkplace.id("rancher"),
+		new VillagerProfession(
+			"rancher",
+			holder -> holder.is(FEED_TROUGH_POI),
+			holder -> holder.is(FEED_TROUGH_POI),
+			ImmutableSet.of(),
+			ImmutableSet.of(),
+			SoundEvents.VILLAGER_WORK_BUTCHER
+		)
+	);
+
 	public static final ResourceLocation BALL_WORKBENCH_ID = AliveWorkplace.id("ball_workbench");
 	public static final ResourceKey<PoiType> BALL_WORKBENCH_POI = ResourceKey.create(Registries.POINT_OF_INTEREST_TYPE, BALL_WORKBENCH_ID);
 	public static final PoiType BALL_WORKBENCH_POI_TYPE = PointOfInterestHelper.register(BALL_WORKBENCH_ID, 1, 1, ModBlocks.BALL_WORKBENCH);
@@ -411,7 +428,7 @@ public final class ModVillagers {
 			|| profession == NURSE || profession == SHOPKEEPER || profession == FERRYMAN
 			|| profession == TRAINER || profession == TRAINER_LEADER || profession == TUTOR || profession == POKEMON_TRADER
 			|| profession == ORCHARD_KEEPER || profession == BALL_SMITH || profession == PORTER || profession == CARPENTER || profession == CHEF || profession == FOSSIL_SCIENTIST
-			|| profession == BEEKEEPER || profession == FLORIST;
+			|| profession == BEEKEEPER || profession == FLORIST || profession == RANCHER;
 	}
 
 	/**

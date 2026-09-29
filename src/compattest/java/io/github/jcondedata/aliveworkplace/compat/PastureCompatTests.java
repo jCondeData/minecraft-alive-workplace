@@ -274,4 +274,28 @@ public class PastureCompatTests implements FabricGameTest {
 				+ butcher.getAttachedOrElse(ModAttachments.POKEMON_TENDED, 0));
 		});
 	}
+	/** A rancher grooms a pastured Eevee once a day, with an Oran Berry from the chest as a treat: friendship goes up. */
+	@GameTest(template = AREA, timeoutTicks = 1600, batch = "rancher_pokemon")
+	public void rancherGroomsAPasturedEevee(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		helper.setDayTime(2000);
+		io.github.jcondedata.aliveworkplace.ranch.RancherWork.forget();
+		helper.setBlock(new BlockPos(2, 2, 2), ModBlocks.FEED_TROUGH);
+		helper.setBlock(new BlockPos(2, 2, 4), Blocks.CHEST);
+		Container chest = helper.getBlockEntity(new BlockPos(2, 2, 4));
+		chest.setItem(0, new ItemStack(CobblemonItems.ORAN_BERRY, 3));
+		Villager rancher = helper.spawn(EntityType.VILLAGER, new BlockPos(3, 2, 3));
+		Jobs.employ(level, rancher, helper.absolutePos(new BlockPos(2, 2, 2)), ModVillagers.FEED_TROUGH_POI, ModVillagers.RANCHER);
+		BlockPos pasture = pasture(helper, new BlockPos(10, 2, 10));
+		ServerPlayer player = helper.makeMockServerPlayerInLevel();
+		Pokemon eevee = pastured(helper, pasture, player, "eevee", Direction.NORTH);
+		int before = eevee.getFriendship();
+		int groomed = io.github.jcondedata.aliveworkplace.ranch.RancherWork.GROOM + io.github.jcondedata.aliveworkplace.ranch.RancherWork.TREAT;
+		helper.succeedWhen(() -> {
+			helper.assertTrue(eevee.getFriendship() == before + groomed, "friendship " + before + " -> " + eevee.getFriendship());
+			helper.assertTrue(chest.countItem(CobblemonItems.ORAN_BERRY) == 2, "berries left: " + chest.countItem(CobblemonItems.ORAN_BERRY));
+			helper.assertTrue(rancher.getAttachedOrElse(ModAttachments.POKEMON_TENDED, 0) == 1, "groomed: "
+				+ rancher.getAttachedOrElse(ModAttachments.POKEMON_TENDED, 0));
+		});
+	}
 }

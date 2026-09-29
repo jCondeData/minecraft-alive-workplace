@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+## 0.95.0 — 2026-09-29
+
+### Added
+- **Ranchers** (new job, Feed Trough workstation): they break in the wild horses, donkeys and llamas round the trough,
+  put the saddles, horse armor and carpets from the chests on the tamed ones, and breed them (golden carrots for
+  horses, hay for llamas, cactus for camels). With Cobblemon they groom the pastured Pokémon nearby once a day, raising
+  their friendship — more with a berry from the chests as a treat.
+
 ## 0.94.0 — 2026-09-29
 
 ### Added

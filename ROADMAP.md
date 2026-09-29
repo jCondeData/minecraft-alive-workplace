@@ -428,8 +428,11 @@ loop: ore → ingots → the tools, weapons and armor the other workers wear out
 - [x] **Florist** (new job): grows flowers with bone meal for the dyer and the builders, fills flower pots around the
   village (`flower/FloristWork`, Flower Stand block: bone meal on the garden's grass and on tall flowers, picking and
   weeding within 5 blocks, empty pots within 24 blocks filled)
-- [ ] **Rancher** (new job, stable): tames and breeds horses and donkeys; with Cobblemon a Pokémon ranch — pastured
-  Pokémon groomed (friendship), fed berries, their drops collected
+- [x] **Rancher** (new job, stable): tames and breeds horses and donkeys; with Cobblemon a Pokémon ranch — pastured
+  Pokémon groomed (friendship), fed berries, their drops collected (`ranch/RancherWork`, Feed Trough block: wild horses,
+  donkeys and llamas broken in, saddles and horse armor/carpets from the chests put on, horses bred with golden carrots,
+  llamas with hay, camels with cactus; pastured Pokémon groomed once a day, +4 friendship, +6 more with a berry treat.
+  Pokémon drops stay the butcher's chores)
 
 ## Milestone 9 — Village life (the colony layer, keyed on blocks)
 - [ ] **Village Hall** block (near the bell): the village at a glance — every worker with job, level, status and what

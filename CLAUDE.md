@@ -93,7 +93,8 @@ The owner (Jesse) does not write code: sessions are expected to work autonomousl
   and fuel from the village, iron armor for the guards), `Smelters` (hiring with coal, what they keep)
 - `mend/` — `MendingWork`: vanilla Weaponsmiths mending worn gear (with `craft/WeaponsmithWork`: swords for guards)
 - `ranch/` — animals around a workstation: `RanchWork` (collect drops, breed up to a cap, the job's own tending),
-  `ShepherdWork` (vanilla Shepherds: shearing, incl. pastured Pokémon), `HerderWork` (vanilla Butchers: milk, eggs, culling when hired)
+  `ShepherdWork` (vanilla Shepherds: shearing, incl. pastured Pokémon), `HerderWork` (vanilla Butchers: milk, eggs, culling when hired),
+  `RancherWork` (the Rancher at a Feed Trough: taming, saddling, armoring and breeding horses; grooming pastured Pokémon)
 - `scribe/` — `EnchantWork`: vanilla Librarians with an Enchanting Table enchanting the workers' gear (books for builders: `craft/ScribeWork`)
 - `flower/` — the florist (Flower Stand block): `FloristWork` (bone meal on the garden, picking, filling flower pots)
 - `bee/` — the beekeeper (Apiary block): `BeekeeperWork` (harvest full hives with bottles or shears, plant flowers, breed bees)

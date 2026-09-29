@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "aliveworkplace:block/feed_trough"
+    },
+    "facing=east": {
+      "model": "aliveworkplace:block/feed_trough",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "aliveworkplace:block/feed_trough",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "aliveworkplace:block/feed_trough",
+      "y": 270
+    }
+  }
+}

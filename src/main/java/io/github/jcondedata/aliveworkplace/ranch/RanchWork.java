@@ -111,6 +111,16 @@ public abstract class RanchWork extends Behavior<Villager> {
 	/** Works on {@code animal} (in reach now); returns false when done with it. */
 	protected abstract boolean tend(ServerLevel level, Villager villager, Entity animal, List<BlockPos> own, BuilderBag bag);
 
+	/** Whether {@code food} makes {@code animal} ready to breed (horses need golden food, llamas hay...). */
+	protected boolean breedsWith(Animal animal, ItemStack food) {
+		return animal.isFood(food);
+	}
+
+	/** Whether {@code animal} may be bred at all (horses only once tamed). */
+	protected boolean mayBreed(Animal animal) {
+		return true;
+	}
+
 	/** What's shown above the head for {@code task} (the job's own lines). */
 	protected abstract void status(Villager villager, Task task, boolean noChest);
 
@@ -237,12 +247,12 @@ public abstract class RanchWork extends Behavior<Villager> {
 			if (ofKind.size() >= CAP) {
 				continue;
 			}
-			List<Animal> ready = ofKind.stream().filter(a -> a.getAge() == 0 && a.canFallInLove() && !a.isInLove()).toList();
+			List<Animal> ready = ofKind.stream().filter(a -> a.getAge() == 0 && a.canFallInLove() && !a.isInLove() && mayBreed(a)).toList();
 			if (ready.size() < 2) {
 				continue;
 			}
 			for (var e : SupplyContainers.contents(level, own).entrySet()) {
-				if (e.getValue() >= 2 && ready.get(0).isFood(new ItemStack(e.getKey()))) {
+				if (e.getValue() >= 2 && breedsWith(ready.get(0), new ItemStack(e.getKey()))) {
 					target = ready.get(0);
 					mate = ready.get(1);
 					food = e.getKey();

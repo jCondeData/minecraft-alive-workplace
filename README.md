@@ -97,6 +97,7 @@ where they take tools and supplies from and where their work goes.
 | Farmer | Composter (vanilla) | seeds, a hoe, bone meal | a Field Marker (blank: their own farm) |
 | Beekeeper | Apiary | glass bottles or shears, flowers | nothing (beehives within 16 blocks) |
 | Florist | Flower Stand | bone meal (flowers to pot) | nothing (grass round the stand) |
+| Rancher | Feed Trough | golden carrots, hay, saddles, horse armor (berries) | nothing (horses within 16 blocks) |
 | Fisherman | Barrel (vanilla) | spare rods (coal for a smoker) | hand them a fishing rod |
 | Porter | Storehouse | empty chests: the village's store | nothing |
 | Carpenter | Carpenter's Bench | — (uses the builders' wood) | nothing |
@@ -261,6 +262,16 @@ composter makes it) they bring up the biome's flowers there and pick them — we
 them — and bone meal on a tall flower (a sunflower, lilac, rose bush or peony) gives another of it. The flowers go in
 the chests (while there are fewer than 64), where the dyer and the builders of the village find them. **Empty flower
 pots** within 24 blocks of the stand get a flower each. Pastured Grass and Fairy Pokémon make them quicker.
+
+## Ranchers
+Craft a **Feed Trough** (planks round a hay bale) and a villager takes it and becomes a **Rancher**. Wild **horses,
+donkeys and llamas** within 16 blocks are broken in — a few tries each, the horse rearing until it gives in — and the
+tamed ones get the **saddles**, **horse armor** and **carpets** (for llamas) you leave in the chests by the trough. With
+**golden carrots** or golden apples in the chests they breed the horses and donkeys, with hay bales the llamas and with
+cactus the camels, up to 8 of a kind. With Cobblemon the Pokémon in **Pasture Blocks** near the trough are groomed once
+a day: their friendship goes up by 4, and by 6 more when there's a berry in the chests for a treat (never the berries
+that lower EVs) — a pasture by the ranch is the place for an Eevee or a Golbat that evolves by friendship. Pastured
+Normal and Ground Pokémon calm the wild horses quicker.
 
 ## Fishermen
 ![A fisherman villager with a bobber out on the pond](docs/media/fisherman.png)

@@ -86,6 +86,7 @@ public final class ModItems {
 				output.accept(ModBlocks.FOSSIL_LAB);
 				output.accept(ModBlocks.APIARY);
 				output.accept(ModBlocks.FLOWER_STAND);
+				output.accept(ModBlocks.FEED_TROUGH);
 				for (StarterBlueprints.Entry entry : StarterBlueprints.ALL) {
 					output.accept(BlueprintItem.create(entry.id(), entry.size()));
 				}

@@ -1483,6 +1483,67 @@ def florist_overlay():
     save(img, "entity", "zombie_villager", "profession", "florist.png")
 
 
+# --- Feed Trough: the rancher's workstation, a plank trough full of hay ----------------------------------------
+def feed_trough(face):
+    rnd = random.Random({"top": 341, "side": 342, "front": 343}[face])
+    img = Image.new("RGBA", (16, 16))
+    planks(img, rnd)
+    edge = rgb("#5a3d20")
+    hay, hay_dark, band = rgb("#d9b44a"), rgb("#b8912f"), rgb("#8c2f1c")
+    if face == "top":
+        for y in range(3, 13):
+            for x in range(2, 14):
+                img.putpixel((x, y), jitter(hay if (x * 7 + y * 3) % 5 else hay_dark, rnd, 8))
+        for (cx, cy) in ((5, 6), (9, 9), (11, 4)):  # a carrot or two in the hay
+            img.putpixel((cx, cy), rgb("#e07a1f"))
+            img.putpixel((cx + 1, cy - 1), rgb("#3f8a3a"))
+        for i in range(16):
+            for p in ((i, 0), (i, 15), (0, i), (15, i), (i, 1), (i, 14), (1, i), (14, i)):
+                img.putpixel(p, jitter(edge, rnd, 4))
+    else:
+        for x in range(16):
+            img.putpixel((x, 0), jitter(edge, rnd, 4))
+            img.putpixel((x, 15), jitter(edge, rnd, 4))
+        for x in range(1, 15):  # hay spilling over the rim
+            img.putpixel((x, 1), jitter(hay, rnd, 8))
+            if x % 3 == 0:
+                img.putpixel((x, 2), jitter(hay_dark, rnd, 8))
+        for y in range(3, 15):  # iron bands
+            img.putpixel((3, y), jitter(rgb("#5b5b5b"), rnd, 4))
+            img.putpixel((12, y), jitter(rgb("#5b5b5b"), rnd, 4))
+        if face == "front":
+            # A horseshoe nailed on
+            shoe = rgb("#8f8f8f")
+            for (hx, hy) in ((6, 6), (6, 7), (6, 8), (6, 9), (7, 10), (8, 10), (9, 9), (9, 8), (9, 7), (9, 6)):
+                img.putpixel((hx, hy), shoe)
+    save(img, "block", "feed_trough_" + face + ".png")
+
+
+def rancher_overlay():
+    img = Image.new("RGBA", (64, 64), T)
+    rnd = random.Random(351)
+    hat, hat_dark, band = rgb("#7a5230"), rgb("#5e3e22"), rgb("#2b1a0e")
+    # A wide-brimmed brown hat
+    for y in range(0, 8):
+        for x in range(40, 48):
+            img.putpixel((x, y), jitter(hat if (x + y) % 4 else hat_dark, rnd, 5))
+    for y in range(8, 11):
+        for x in range(32, 64):
+            img.putpixel((x, y), jitter(band if y == 8 else hat, rnd, 5))
+    # A leather vest over the shirt, with a red neckerchief
+    vest = rgb("#8a5a33")
+    for y in range(44, 60):
+        for x in range(4, 24):
+            if x in range(9, 11) and y < 56:
+                continue  # the vest's open front
+            img.putpixel((x, y), jitter(vest, rnd, 5))
+    for x in range(7, 13):
+        img.putpixel((x, 44), rgb("#b3262c"))
+        img.putpixel((x, 45), rgb("#b3262c"))
+    save(img, "entity", "villager", "profession", "rancher.png")
+    save(img, "entity", "zombie_villager", "profession", "rancher.png")
+
+
 # --- Ball Workbench: a smith's bench with Poké Ball halves on it ---------------------------------------
 def ball_workbench(face):
     rnd = random.Random({"top": 301, "side": 302, "front": 303}[face])
@@ -1913,3 +1974,6 @@ if __name__ == "__main__":
     for face in ("top", "side", "front"):
         flower_stand(face)
     florist_overlay()
+    for face in ("top", "side", "front"):
+        feed_trough(face)
+    rancher_overlay()

@@ -81,6 +81,18 @@ public class LumberjackGameTests implements FabricGameTest {
 		helper.succeed();
 	}
 
+	/** A furnace by the Chopping Block: the lumberjack burns logs from the chest into charcoal (a little coal starts it). */
+	@GameTest(template = AREA, timeoutTicks = 2000)
+	public void lumberjackBurnsCharcoal(GameTestHelper helper) {
+		Villager villager = setup(helper, new ItemStack(Items.IRON_AXE), new ItemStack(Items.OAK_LOG, 8), new ItemStack(Items.COAL, 2));
+		helper.setBlock(new BlockPos(3, 2, 4), Blocks.FURNACE);
+		Container chest = helper.getBlockEntity(CHEST);
+		helper.succeedWhen(() -> {
+			helper.assertTrue(chest.countItem(Items.CHARCOAL) >= 1, "no charcoal yet (" + chest.countItem(Items.OAK_LOG) + " logs left)");
+			helper.assertTrue(villager.isAlive(), "the lumberjack is gone");
+		});
+	}
+
 	/** Grows a real oak tree (the vanilla feature) on a grass block at {@code base}. */
 	private static void growOak(GameTestHelper helper, BlockPos base) {
 		ServerLevel level = helper.getLevel();

@@ -285,6 +285,13 @@ public class MinerGameTests implements FabricGameTest {
 			for (int y = 3; y <= 14; y++) {
 				helper.assertBlockPresent(Blocks.LADDER, new BlockPos(6, y, 7));
 			}
+			int torches = 0;
+			for (int y = 5; y <= 14; y++) {
+				for (net.minecraft.core.Direction d : net.minecraft.core.Direction.Plane.HORIZONTAL) {
+					torches += helper.getBlockState(new BlockPos(6, y, 7).relative(d)).is(Blocks.TORCH) ? 1 : 0;
+				}
+			}
+			helper.assertTrue(torches >= 1, "no torch in the shaft's wall");
 			helper.assertTrue(helper.getBlockState(water).getFluidState().isEmpty(), "the water beside the shaft should be sealed off");
 			for (BlockPos p : BlockPos.betweenClosed(min, max)) {
 				if (p.getX() == 6 && p.getZ() == 7) {
@@ -295,6 +302,21 @@ public class MinerGameTests implements FabricGameTest {
 			}
 			helper.assertTrue(s.miner().isAlive(), "the miner didn't make it");
 		});
+	}
+
+	/** {@code /workplace strip <height>} sets the held marker to a strip mine at any height in the world. */
+	@GameTest(template = net.fabricmc.fabric.api.gametest.v1.FabricGameTest.EMPTY_STRUCTURE)
+	public void stripMineHeightCanBeTypedIn(GameTestHelper helper) {
+		net.minecraft.server.level.ServerPlayer player = helper.makeMockServerPlayerInLevel();
+		player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, new ItemStack(io.github.jcondedata.aliveworkplace.registry.ModItems.QUARRY_MARKER));
+		var commands = helper.getLevel().getServer().getCommands();
+		commands.performPrefixedCommand(player.createCommandSourceStack(), "workplace strip -30");
+		QuarryData data = io.github.jcondedata.aliveworkplace.mine.QuarryMarkerItem.data(player.getMainHandItem());
+		helper.assertTrue(data.isStripMine() && data.stripLevel().equals(java.util.Optional.of(-30)), "the marker says " + data);
+		commands.performPrefixedCommand(player.createCommandSourceStack(), "workplace strip -100");
+		data = io.github.jcondedata.aliveworkplace.mine.QuarryMarkerItem.data(player.getMainHandItem());
+		helper.assertTrue(data.stripLevel().equals(java.util.Optional.of(-30)), "below the world's floor should be refused, the marker says " + data);
+		helper.succeed();
 	}
 
 	/** The marker's choices: pits, a strip mine here, then strip mines down a shaft; strip mines may be longer. */

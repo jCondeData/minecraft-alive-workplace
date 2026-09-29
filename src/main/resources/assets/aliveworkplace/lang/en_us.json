@@ -35,7 +35,7 @@
   "message.aliveworkplace.quarry.ores.16": "iron; ancient debris in the Nether",
   "message.aliveworkplace.quarry.ores.minus_16": "redstone, gold and lapis",
   "message.aliveworkplace.quarry.ores.minus_53": "diamonds",
-  "tooltip.aliveworkplace.quarry.strip_level": "Strip mine at Y=%s (%s), down a ladder shaft from the corner nearest the Miner's Bench. Mark the corners on the ground. (Sneak-right-click the air to change.)",
+  "tooltip.aliveworkplace.quarry.strip_level": "Strip mine at Y=%s (%s), down a ladder shaft from the corner nearest the Miner's Bench. Mark the corners on the ground. (Sneak-right-click the air to change, or type /workplace strip <height>.)",
   "tooltip.aliveworkplace.quarry.strip_shaft_area": "Strip mine %s × %s at Y=%s, down a ladder shaft from %s %s %s",
   "message.aliveworkplace.quarry.too_long": "That's %s × %s — a strip mine can be up to %s long and %s wide.",
   "message.aliveworkplace.quarry.started_shaft": "%s will dig a ladder shaft down to Y=%s and a %s × %s strip mine there. Put a pickaxe, %s ladders and some torches in a chest within %s blocks of their Miner's Bench; what they dig goes into those chests.",
@@ -576,5 +576,13 @@
   "message.aliveworkplace.fossil.queued": "%s takes the %s: it'll be revived in about %s minutes of their work (%s ahead of it).",
   "message.aliveworkplace.fossil.hint": "Hand %s a fossil to revive it, for %s.",
   "message.aliveworkplace.fossil.progress": "Your %s: %s%% revived.",
-  "message.aliveworkplace.fossil.revived": "%s revived your fossil: %s joins you!"
+  "message.aliveworkplace.fossil.revived": "%s revived your fossil: %s joins you!",
+  "message.aliveworkplace.quarry.ores.band.coal": "coal",
+  "message.aliveworkplace.quarry.ores.band.copper": "copper and coal",
+  "message.aliveworkplace.quarry.ores.band.iron": "iron and copper",
+  "message.aliveworkplace.quarry.ores.band.lapis": "lapis, iron and gold",
+  "message.aliveworkplace.quarry.ores.band.gold": "redstone, gold and lapis",
+  "message.aliveworkplace.quarry.ores.band.diamonds": "diamonds and redstone",
+  "message.aliveworkplace.quarry.strip_command.no_marker": "Hold a Quarry Marker to set the height of its strip mine.",
+  "message.aliveworkplace.quarry.strip_command.out_of_world": "Tunnels have to be between Y=%s and Y=%s here."
 }

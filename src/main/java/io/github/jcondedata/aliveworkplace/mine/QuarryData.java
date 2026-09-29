@@ -96,6 +96,11 @@ public record QuarryData(Optional<ResourceLocation> dimension, Optional<BlockPos
 		return Math.min(w, d) <= MAX_SIDE && Math.max(w, d) <= (stripMine ? MAX_TUNNEL : MAX_SIDE);
 	}
 
+	/** A strip mine at height {@code y} (typed in with {@code /workplace strip <height>}). */
+	public QuarryData withStripLevel(int y) {
+		return new QuarryData(dimension, first, second, STRIP_MINE, Optional.of(y));
+	}
+
 	public QuarryData withDepth(int newDepth) {
 		return new QuarryData(dimension, first, second, newDepth, newDepth == STRIP_MINE ? stripLevel : Optional.empty());
 	}

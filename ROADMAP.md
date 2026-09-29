@@ -102,7 +102,9 @@ Owner decisions are recorded in **Design decisions** at the bottom. Don't change
   LADDERS): the shaft comes down at the cross tunnel's corner on the bench's side, ladders on the wall across the
   tunnels; below each step made solid first (caves), water/lava beside it sealed with filler; ladders from the chests
   (waits, "needs ladders"); given up (tunnels still dug) if something undiggable is in the way
-- [ ] Miner follow-ups: a lit shaft (torches on the wall opposite the ladders), a choice of height by typing it
+- [x] Miner follow-ups: a lit shaft (a torch in a niche across from the ladders every 8 blocks, `MinerWork.lightShaft`;
+  never next to liquid), a choice of height by typing it (`/workplace strip <height>` on the held marker; `oresAt`
+  describes any height by band)
 - [x] **Lumberjack** (Chopping Block workstation): fells natural trees within 16 blocks of the block (only trees: at least 4 natural leaves, trunk on dirt; player-placed logs, builds and quarries are left alone), clears the leaves, replants a sapling of the same wood, keeps up to 16 saplings of each kind and stores the rest in the chests near the block; axes from those chests wear out (waits for a new one); levels up like builders; trades sticks/apples, sells logs, saplings and an iron axe
 - [x] Tree farms (`TreeFarms`, a Field Marker given to a lumberjack, attachment `TREE_FARM`): saplings from the bag/chests
   planted on dirt in a grid 3 apart (dark oak: 2 × 2 squares 4 apart), trees in the farm felled even beyond the 16-block
@@ -114,7 +116,9 @@ Owner decisions are recorded in **Design decisions** at the bottom. Don't change
   the ones they replanted when there's nothing to fell (16 at most per sapling); chopping from the lowest log anyone
   can stand in reach of, unreachable trees skipped until the next one falls. Workers may stand in shallow water and
   on waterlogged blocks (`Walker.canStand`)
-- [ ] Lumberjack follow-ups: stripping logs on request, charcoal from the furnaces
+- [x] Lumberjack follow-ups: stripping logs on request (a village builder's stripped logs/wood from the logs in the
+  lumberjack's chests, via `AxeItem.STRIPPABLES` so modded woods count; left there for the builder to fetch), charcoal
+  from the furnaces by the Chopping Block (`LOGS_THAT_BURN`, up to 32); both done when there's nothing to fell too
 - [x] **Farmer upgrade** (Field Marker item, any vanilla Farmer): give a farmer a marked field (up to 32×32, within 48 blocks of their composter) and they harvest ripe crops (any `CropBlock`, so modded crops too; nether wart, pumpkins/melons off a stem, sugar cane above the bottom block), plant the same crop straight back, sow empty farmland/soul sand with seeds from the chests near the composter (the crop next to it, else what there is most of), till bare dirt/grass with a hoe from the chests, and store the harvest in those chests; their vanilla routine is paused while the field needs work; longer shift like our workers; `/workplace cancel <farmer uuid>` (clickable in the status) stops it
 - [x] Farmer: bone meal from the chests (task FERTILIZE, only when nothing else needs doing; crops, stems, cocoa, berry
   bushes, never grass; up to 16 kept in the bag); sweet berries, cocoa, glow berries (and Cobblemon fruit) in a field

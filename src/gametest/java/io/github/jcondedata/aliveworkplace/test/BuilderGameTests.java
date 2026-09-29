@@ -415,6 +415,39 @@ public class BuilderGameTests implements FabricGameTest {
 		});
 	}
 
+	/** A builder waiting for stripped logs: the village's lumberjack strips them from the logs in its chest. */
+	@GameTest(template = AREA, timeoutTicks = 2400, batch = "stripped_logs")
+	public void lumberjackStripsLogsForTheBuilder(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		io.github.jcondedata.aliveworkplace.work.Village.RADIUS = 48;
+		ServerLevel level = helper.getLevel();
+		BlockPos src = new BlockPos(12, 2, 12);
+		for (int x = 0; x < 3; x++) {
+			helper.setBlock(src.offset(x, 0, 0), Blocks.STRIPPED_OAK_LOG);
+		}
+		ResourceLocation posts = ResourceLocation.fromNamespaceAndPath("aliveworkplace_test", "posts_" + Long.toHexString(level.getGameTime()));
+		level.getStructureManager().getOrCreate(posts).fillFromWorld(level, helper.absolutePos(src), new Vec3i(3, 1, 1), false, Blocks.STRUCTURE_VOID);
+		for (int x = 0; x < 3; x++) {
+			helper.setBlock(src.offset(x, 0, 0), Blocks.AIR);
+		}
+		Setup s = setup(helper, posts, HUT_ORIGIN, Rotation.NONE);
+		BlockPos block = new BlockPos(14, 2, 2);
+		BlockPos chestPos = new BlockPos(14, 2, 4);
+		helper.setBlock(block, ModBlocks.CHOPPING_BLOCK);
+		helper.setBlock(chestPos, Blocks.CHEST);
+		Container chest = helper.getBlockEntity(chestPos);
+		chest.setItem(0, new ItemStack(Items.IRON_AXE));
+		chest.setItem(1, new ItemStack(Items.OAK_LOG, 5));
+		Villager lumberjack = helper.spawn(EntityType.VILLAGER, new BlockPos(14, 2, 3));
+		io.github.jcondedata.aliveworkplace.work.Jobs.employ(level, lumberjack, helper.absolutePos(block),
+			io.github.jcondedata.aliveworkplace.registry.ModVillagers.CHOPPING_BLOCK_POI, io.github.jcondedata.aliveworkplace.registry.ModVillagers.LUMBERJACK);
+		helper.succeedWhen(() -> {
+			assertBuilt(helper, s);
+			helper.assertTrue(chest.countItem(Items.OAK_LOG) == 2, "3 of the 5 logs should have been stripped, " + chest.countItem(Items.OAK_LOG) + " left");
+			io.github.jcondedata.aliveworkplace.work.Village.RADIUS = 0;
+		});
+	}
+
 	/** A blueprint with a pool: the builder pours the water from a bucket and keeps the empty bucket. */
 	@GameTest(template = AREA, timeoutTicks = 2400)
 	public void builderPoursWaterFromABucket(GameTestHelper helper) {

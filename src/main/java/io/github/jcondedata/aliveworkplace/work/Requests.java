@@ -138,6 +138,10 @@ public final class Requests {
 			}
 			if (new ItemStack(item).is(ItemTags.LOGS)) {
 				out.add(item);
+				net.minecraft.world.item.Item unstripped = io.github.jcondedata.aliveworkplace.wood.Trees.unstripped(item);
+				if (unstripped != null) {
+					out.add(unstripped); // stripped logs come from the tree's own
+				}
 				continue;
 			}
 			Item log = logFor(item);

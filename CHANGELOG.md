@@ -2,6 +2,16 @@
 
 ## Unreleased
 
+## 0.76.0 — 2026-09-28
+
+### Added
+- **Strip mines at any height**: hold a Quarry Marker and type `/workplace strip <height>` (the marker still offers
+  Y=16, -16 and -53 by sneak-right-clicking). Heights in between say what ores to expect there.
+- **Lit shafts**: every eight blocks down a ladder shaft, the miner sets a torch in a niche across from the ladders.
+- **Lumberjacks strip logs** for a builder in the village who's waiting for stripped logs or wood, from the logs in
+  their chests, and **burn charcoal** in a furnace by the Chopping Block (up to 32 in the chests; a little coal starts
+  it). With no trees to fell, they see to both.
+
 ## 0.75.0 — 2026-09-28
 
 ### Added

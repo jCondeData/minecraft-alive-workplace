@@ -132,8 +132,13 @@ public class QuarryMarkerItem extends Item {
 	}
 
 	/** What's worth digging for at that height ("diamonds"). */
-	static Component oresAt(int level) {
-		return Component.translatable("message.aliveworkplace.quarry.ores." + (level < 0 ? "minus_" + -level : String.valueOf(level)));
+	/** What's worth mining at height {@code level} in the Overworld (the set heights have their own words). */
+	public static Component oresAt(int level) {
+		if (QuarryData.STRIP_LEVELS.contains(level)) {
+			return Component.translatable("message.aliveworkplace.quarry.ores." + (level < 0 ? "minus_" + -level : String.valueOf(level)));
+		}
+		String band = level >= 80 ? "coal" : level >= 32 ? "copper" : level >= 8 ? "iron" : level >= -8 ? "lapis" : level >= -32 ? "gold" : "diamonds";
+		return Component.translatable("message.aliveworkplace.quarry.ores.band." + band);
 	}
 
 	static net.minecraft.network.chat.MutableComponent tooBig(int w, int d, boolean stripMine) {

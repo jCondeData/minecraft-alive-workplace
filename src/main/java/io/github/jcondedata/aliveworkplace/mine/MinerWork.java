@@ -368,7 +368,39 @@ public class MinerWork extends Behavior<Villager> {
 		level.setBlockAndUpdate(pos, ladder);
 		level.playSound(null, pos, SoundEvents.LADDER_PLACE, SoundSource.BLOCKS, 1f, 1f);
 		bag.remove(Items.LADDER, 1);
+		if (site.phase() == QuarrySite.Phase.SHAFT && Math.floorMod(site.shaftTop() - pos.getY(), SHAFT_TORCH_EVERY) == SHAFT_TORCH_EVERY / 2) {
+			lightShaft(level, villager, site, bag, pos);
+		}
 		site.advance(false, false);
+	}
+
+	/** Every so many blocks down the shaft, a torch in a niche cut into the wall across from the ladders. */
+	static final int SHAFT_TORCH_EVERY = 8;
+
+	private static void lightShaft(ServerLevel level, Villager villager, QuarrySite site, BuilderBag bag, BlockPos pos) {
+		if (!bag.has(Items.TORCH, 1)) {
+			return;
+		}
+		BlockPos niche = pos.relative(site.ladderWall().getOpposite());
+		BlockState rock = level.getBlockState(niche);
+		if (!solid(level, niche) || !solid(level, niche.below()) || site.box().isInside(niche)
+			|| MaterialRules.isProtected(rock, rock.getDestroySpeed(level, niche)) || rock.hasBlockEntity()) {
+			return;
+		}
+		for (Direction d : Direction.values()) {
+			BlockPos next = niche.relative(d);
+			if (!next.equals(pos) && !level.getFluidState(next).isEmpty()) {
+				return; // cutting it would let water or lava in
+			}
+		}
+		for (ItemStack drop : Block.getDrops(rock, level, niche, null, villager, villager.getMainHandItem())) {
+			ItemStack rest = bag.add(drop);
+			if (!rest.isEmpty()) {
+				Block.popResource(level, pos, rest);
+			}
+		}
+		level.setBlockAndUpdate(niche, Blocks.TORCH.defaultBlockState());
+		bag.remove(Items.TORCH, 1);
 	}
 
 	static boolean isPickaxe(ItemStack stack) {

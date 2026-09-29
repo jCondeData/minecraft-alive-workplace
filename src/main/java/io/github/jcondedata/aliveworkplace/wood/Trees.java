@@ -41,6 +41,30 @@ public final class Trees {
 		return state.is(BlockTags.LOGS);
 	}
 
+	/** The stripped kind of a log or wood ({@code oak_log} → {@code stripped_oak_log}), or null. */
+	@org.jetbrains.annotations.Nullable
+	public static net.minecraft.world.item.Item stripped(net.minecraft.world.item.Item log) {
+		if (!(log instanceof net.minecraft.world.item.BlockItem block)) {
+			return null;
+		}
+		net.minecraft.world.level.block.Block to = io.github.jcondedata.aliveworkplace.mixin.AxeItemAccessor.aliveworkplace$strippables().get(block.getBlock());
+		return to == null || to.asItem() == net.minecraft.world.item.Items.AIR ? null : to.asItem();
+	}
+
+	/** What a stripped log or wood is stripped from ({@code stripped_oak_log} → {@code oak_log}), or null. */
+	@org.jetbrains.annotations.Nullable
+	public static net.minecraft.world.item.Item unstripped(net.minecraft.world.item.Item stripped) {
+		if (!(stripped instanceof net.minecraft.world.item.BlockItem block)) {
+			return null;
+		}
+		for (var e : io.github.jcondedata.aliveworkplace.mixin.AxeItemAccessor.aliveworkplace$strippables().entrySet()) {
+			if (e.getValue() == block.getBlock() && e.getKey().asItem() != net.minecraft.world.item.Items.AIR) {
+				return e.getKey().asItem();
+			}
+		}
+		return null;
+	}
+
 	/**
 	 * Calls {@code action} with every log in {@code box} (loaded chunks only). Chunk sections with no log in them at all
 	 * are skipped without looking at their blocks, which makes this cheap in open country.

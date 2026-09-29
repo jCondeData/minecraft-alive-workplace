@@ -146,11 +146,12 @@ them and a tunnel across the end nearest the bench. The rock stays, but any ore 
 the digging for all the ore. Strip mines can be up to 64 blocks long (and 32 wide).
 
 **Strip mines down a shaft.** After the strip mine, the marker offers strip mines at set heights: **Y=16** (iron, and
-ancient debris in the Nether), **Y=-16** (redstone, gold and lapis) and **Y=-53** (diamonds). Mark the corners on the
-ground: the miner digs a 1-wide ladder shaft straight down from the corner nearest the bench, then the tunnels at that
+ancient debris in the Nether), **Y=-16** (redstone, gold and lapis) and **Y=-53** (diamonds); for any other height,
+hold the marker and type `/workplace strip <height>`. Mark the corners on the ground: the miner digs a 1-wide ladder shaft straight down from the corner nearest the bench, then the tunnels at that
 height, and puts ladders all the way up — about one ladder per block of depth, from the chests (they wait for more if
 they run out). On the way down they seal off any water or lava beside the shaft with stone and put a block under
-themselves before digging into a cave, so they never fall.
+themselves before digging into a cave, so they never fall, and every eight blocks they set a torch in a niche in the
+wall across from the ladders (if there are torches in the chests).
 
 **Smelting.** Put a furnace or blast furnace within 8 blocks of the Miner's Bench and some coal or charcoal in the
 chests. Every time the miner drops off a haul they take the finished ingots out into the chests, load the raw ores
@@ -168,6 +169,10 @@ blueprint builds and quarries are left alone. When the last axe breaks they wait
 trees too (a fungus is planted back). **Mangroves** are felled down to their roots (the roots stay) and a propagule
 goes in close by, in the water over the mud; **azalea trees** get an azalea bush back, and **cherry trees** a cherry
 sapling.
+
+**Stripped logs and charcoal.** When a builder in the village is waiting for stripped logs (or stripped wood), the
+lumberjack strips that many of the logs in their chests, and the builder comes to get them. Put a furnace within 8
+blocks of the Chopping Block (with a little coal to start it) and they burn logs into charcoal, keeping 32 in the chests.
 
 **Bone meal.** Put bone meal in the chests and, whenever there's no grown tree to fell, the lumberjack gives it to the
 saplings on their tree farm and the ones they replanted, until they grow (an azalea bush only grows with bone meal).
@@ -483,6 +488,7 @@ Craft a **Blueprint Table** (blue dye on top, cartography table in the middle, p
 |---|---|
 | `/workplace sites` | your builds in progress, with a cancel button |
 | `/workplace mail` | parcels on their way to and from you, and where they are |
+| `/workplace strip <height>` | the Quarry Marker in your hand digs a strip mine at that height, down a ladder shaft |
 | `/workplace cancel <id>` | stop a build (placed blocks stay; you get the blueprint back) |
 | `/workplace friend add <player>` | let a friend give orders to your builders (`remove`, `list` too) |
 | `/workplace blueprints` (op) | list every blueprint the server knows |

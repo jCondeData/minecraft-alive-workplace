@@ -122,6 +122,8 @@ public class LumberjackWork extends Behavior<Villager> {
 			status(villager, Phase.DEPOSITING);
 			if (walker.walkTo(level, villager, containerNear(level, block), 3.0)) {
 				deposit(level, villager, block, bag);
+				stripForRequests(level, villager, block);
+				burnCharcoal(level, block);
 				takeSaplings(level, block, bag);
 				takeBoneMeal(level, block, bag, TreeFarms.farm(villager), false);
 				depositDue = false;
@@ -185,6 +187,10 @@ public class LumberjackWork extends Behavior<Villager> {
 			// Nothing to fell for a while: look less often (a sapling takes minutes to grow anyway).
 			emptySearches = tree == null ? emptySearches + 1 : 0;
 			searchTimer = emptySearches >= 3 ? SEARCH_EVERY * 5 : SEARCH_EVERY;
+			if (tree == null && choresAtTheChests(level, villager, block)) {
+				depositDue = true; // nothing to fell: strip logs for a builder, or tend the charcoal furnace
+				return;
+			}
 			if (tree == null) {
 				feeding = findSapling(level, villager.blockPosition(), farm);
 				walker.reset();
@@ -606,6 +612,79 @@ public class LumberjackWork extends Behavior<Villager> {
 			}
 		}
 		level.playSound(null, villager.blockPosition(), SoundEvents.CHEST_CLOSE, SoundSource.BLOCKS, 0.4f, 1.1f);
+	}
+
+	/** Charcoal a lumberjack keeps in the chests, burnt from logs in the furnaces by the Chopping Block. */
+	public static final int KEEP_CHARCOAL = 32;
+	/** Logs stripped for a builder at a time. */
+	static final int STRIP_AT_ONCE = 64;
+
+	/**
+	 * A builder of the village waiting for stripped logs (or stripped wood): strip that many from our chests' logs, and
+	 * leave them there for the builder to fetch. Every four logs wear the axe a little.
+	 */
+	private static void stripForRequests(ServerLevel level, Villager villager, BlockPos block) {
+		ItemStack axe = villager.getItemBySlot(EquipmentSlot.MAINHAND);
+		if (!isAxe(axe)) {
+			return;
+		}
+		List<BlockPos> supplies = SupplyContainers.find(level, block, null);
+		for (io.github.jcondedata.aliveworkplace.work.Requests.Request request : io.github.jcondedata.aliveworkplace.work.Requests.forVillage(level, villager, block)) {
+			Item want = request.item();
+			Item from = want == null ? null : Trees.unstripped(want);
+			if (from == null) {
+				continue;
+			}
+			int needed = request.count() - (int) SupplyContainers.count(level, supplies, want);
+			if (needed <= 0) {
+				continue;
+			}
+			int got = SupplyContainers.extract(level, supplies, from, Math.min(needed, STRIP_AT_ONCE));
+			if (got <= 0) {
+				continue;
+			}
+			ItemStack rest = SupplyContainers.insert(level, supplies, new ItemStack(want, got));
+			if (!rest.isEmpty()) {
+				Block.popResource(level, block.above(), rest);
+			}
+			villager.swing(InteractionHand.MAIN_HAND);
+			level.playSound(null, block, SoundEvents.AXE_STRIP, SoundSource.NEUTRAL, 0.8f, 1f);
+			axe.hurtAndBreak(Math.max(1, got / 4), villager, EquipmentSlot.MAINHAND);
+			if (!isAxe(villager.getItemBySlot(EquipmentSlot.MAINHAND))) {
+				return; // the axe broke
+			}
+		}
+	}
+
+	/** Something to do at the chests: logs to strip for a builder, or the charcoal furnace to tend. */
+	private static boolean choresAtTheChests(ServerLevel level, Villager villager, BlockPos block) {
+		List<BlockPos> supplies = SupplyContainers.find(level, block, null);
+		List<BlockPos> furnaces = SupplyContainers.furnaces(level, block);
+		for (BlockPos f : furnaces) {
+			if (level.getBlockEntity(f) instanceof net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity furnace && !furnace.getItem(2).isEmpty()) {
+				return true; // charcoal to take out
+			}
+		}
+		if (!furnaces.isEmpty() && SupplyContainers.count(level, supplies, Items.CHARCOAL) < KEEP_CHARCOAL
+			&& SupplyContainers.firstMatching(level, supplies, s -> s.is(ItemTags.LOGS_THAT_BURN)) != null) {
+			return true;
+		}
+		for (io.github.jcondedata.aliveworkplace.work.Requests.Request request : io.github.jcondedata.aliveworkplace.work.Requests.forVillage(level, villager, block)) {
+			Item want = request.item();
+			Item from = want == null ? null : Trees.unstripped(want);
+			if (from != null && SupplyContainers.count(level, supplies, want) < request.count() && SupplyContainers.count(level, supplies, from) > 0) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/** With a furnace by the Chopping Block (and a little coal to start it), logs are burnt to charcoal up to {@link #KEEP_CHARCOAL}. */
+	private static void burnCharcoal(ServerLevel level, BlockPos block) {
+		List<BlockPos> supplies = SupplyContainers.find(level, block, null);
+		boolean more = SupplyContainers.count(level, supplies, Items.CHARCOAL) < KEEP_CHARCOAL;
+		io.github.jcondedata.aliveworkplace.work.Furnaces.tend(level, block, supplies,
+			item -> more && new ItemStack(item).is(ItemTags.LOGS_THAT_BURN));
 	}
 
 	/** Saplings for the stumps still waiting for one, from the chests. */

@@ -37,6 +37,7 @@ import net.minecraft.world.entity.npc.Villager;
  * /workplace cancel &lt;site&gt;         — stop a build and get the blueprint back
  * /workplace import                — import .litematic/.schem/.nbt files from &lt;world&gt;/aliveworkplace/import (ops)
  * /workplace friend add|remove &lt;player&gt;, /workplace friend list — who may give orders to your builders
+ * /workplace strip &lt;height&gt;       — the Quarry Marker in hand digs a strip mine at that height, down a ladder shaft
  */
 public final class WorkplaceCommand {
 	public static void init() {
@@ -61,6 +62,9 @@ public final class WorkplaceCommand {
 				.executes(WorkplaceCommand::listSites))
 			.then(Commands.literal("mail")
 				.executes(WorkplaceCommand::trackMail))
+			.then(Commands.literal("strip")
+				.then(Commands.argument("height", com.mojang.brigadier.arguments.IntegerArgumentType.integer(-2048, 2048))
+					.executes(ctx -> stripHeight(ctx, com.mojang.brigadier.arguments.IntegerArgumentType.getInteger(ctx, "height")))))
 			.then(Commands.literal("cancel")
 				.then(Commands.argument("site", UuidArgument.uuid())
 					.executes(WorkplaceCommand::cancel)))
@@ -73,6 +77,30 @@ public final class WorkplaceCommand {
 						.executes(ctx -> friend(ctx, false))))
 				.then(Commands.literal("list")
 					.executes(WorkplaceCommand::listFriends))));
+	}
+
+	/** {@code /workplace strip <height>}: the held Quarry Marker becomes a strip mine at that height, down a ladder shaft. */
+	private static int stripHeight(CommandContext<CommandSourceStack> ctx, int height) throws CommandSyntaxException {
+		ServerPlayer player = ctx.getSource().getPlayerOrException();
+		net.minecraft.world.InteractionHand hand = player.getMainHandItem().is(io.github.jcondedata.aliveworkplace.registry.ModItems.QUARRY_MARKER)
+			? net.minecraft.world.InteractionHand.MAIN_HAND : net.minecraft.world.InteractionHand.OFF_HAND;
+		net.minecraft.world.item.ItemStack marker = player.getItemInHand(hand);
+		if (!marker.is(io.github.jcondedata.aliveworkplace.registry.ModItems.QUARRY_MARKER)) {
+			ctx.getSource().sendFailure(Component.translatable("message.aliveworkplace.quarry.strip_command.no_marker"));
+			return 0;
+		}
+		ServerLevel level = player.serverLevel();
+		int low = level.getMinBuildHeight() + 1;
+		int high = level.getMaxBuildHeight() - 3;
+		if (height < low || height > high) {
+			ctx.getSource().sendFailure(Component.translatable("message.aliveworkplace.quarry.strip_command.out_of_world", low, high));
+			return 0;
+		}
+		io.github.jcondedata.aliveworkplace.mine.QuarryData data = io.github.jcondedata.aliveworkplace.mine.QuarryMarkerItem.data(marker).withStripLevel(height);
+		marker.set(io.github.jcondedata.aliveworkplace.registry.ModComponents.QUARRY, data);
+		player.displayClientMessage(Component.translatable("message.aliveworkplace.quarry.strip_level", height,
+			io.github.jcondedata.aliveworkplace.mine.QuarryMarkerItem.oresAt(height)), false);
+		return 1;
 	}
 
 	private static int friend(CommandContext<CommandSourceStack> ctx, boolean add) throws CommandSyntaxException {

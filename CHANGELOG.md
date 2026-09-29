@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 0.135.0 — 2026-09-29
+
 ### Added
 - **Village protection** (a setting on the Village Hall, off until its owner turns it on): shift-click the hall's name
   tag and only you, your friends (`/workplace friend add`) and operators can break, place or open things in the village,

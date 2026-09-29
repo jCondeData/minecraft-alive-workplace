@@ -318,4 +318,65 @@ public class GuardGameTests implements FabricGameTest {
 			helper.assertFalse(io.github.jcondedata.aliveworkplace.guard.Escorts.isEscorting(guard), "still following a lowered banner");
 		});
 	}
+
+	/**
+	 * Cavalry: a guard with a tamed, saddled horse near the post saddles up, patrols on horseback (the horse at a
+	 * guard's pace) and fights a husk from the saddle.
+	 */
+	//$ gametest_ticks_batch AREA '2000' '"guardRidesAHorse"'
+	@GameTest(template = AREA, timeoutTicks = 2000, batch = "guardRidesAHorse")
+	public void guardRidesAHorse(GameTestHelper helper) {
+		Villager guard = guard(helper, new ItemStack(Items.IRON_SWORD));
+		net.minecraft.world.entity.animal.horse.Horse horse = helper.spawn(EntityType.HORSE, new BlockPos(9, 2, 9));
+		horse.setTamed(true);
+		horse.equipSaddle(new ItemStack(Items.SADDLE), null);
+		net.minecraft.world.phys.Vec3[] mountedAt = {null};
+		boolean[] huskOut = {false};
+		boolean[] foughtMounted = {false};
+		helper.onEachTick(() -> {
+			if (guard.getVehicle() == horse && mountedAt[0] == null) {
+				mountedAt[0] = horse.position();
+			}
+			// Once they've ridden a few blocks, a husk
+			if (!huskOut[0] && mountedAt[0] != null && horse.position().distanceTo(mountedAt[0]) > 3) {
+				huskOut[0] = true;
+				helper.spawn(EntityType.HUSK, new BlockPos(16, 2, 16));
+			}
+			if (io.github.jcondedata.aliveworkplace.guard.GuardCombat.isFighting(guard) && guard.getVehicle() == horse) {
+				foughtMounted[0] = true;
+			}
+		});
+		helper.succeedWhen(() -> {
+			helper.assertTrue(mountedAt[0] != null, "never got on the horse");
+			helper.assertTrue(huskOut[0], "didn't ride anywhere");
+			helper.assertTrue(foughtMounted[0], "didn't fight from the saddle");
+			helper.assertEntityNotPresent(EntityType.HUSK);
+			helper.assertTrue(ModAttachments.GUARD_KILLS.getOrElse(guard, 0) == 1, "kill not counted");
+			helper.assertTrue(guard.getVehicle() != horse || io.github.jcondedata.aliveworkplace.guard.Cavalry.paced(horse), "a ridden horse at its own pace");
+		});
+	}
+
+	/** Only a tamed, saddled horse off its lead carries a guard; getting down gives it back its own pace. */
+	//$ gametest_ticks_batch AREA '100' '"cavalryHorses"'
+	@GameTest(template = AREA, timeoutTicks = 100, batch = "cavalryHorses")
+	public void cavalryHorses(GameTestHelper helper) {
+		Villager guard = guard(helper);
+		net.minecraft.world.entity.animal.horse.Horse wild = helper.spawn(EntityType.HORSE, new BlockPos(4, 2, 3));
+		net.minecraft.world.entity.animal.horse.Horse tied = helper.spawn(EntityType.HORSE, new BlockPos(6, 2, 3));
+		tied.setTamed(true);
+		tied.equipSaddle(new ItemStack(Items.SADDLE), null);
+		helper.setBlock(new BlockPos(6, 2, 5), Blocks.OAK_FENCE);
+		tied.setLeashedTo(net.minecraft.world.entity.decoration.LeashFenceKnotEntity.getOrCreateKnot(helper.getLevel(), helper.absolutePos(new BlockPos(6, 2, 5))), true);
+		helper.assertFalse(io.github.jcondedata.aliveworkplace.guard.Cavalry.usable(wild), "a wild horse carries a guard");
+		helper.assertFalse(io.github.jcondedata.aliveworkplace.guard.Cavalry.usable(tied), "a horse on a lead carries a guard");
+		tied.dropLeash(true, false);
+		helper.assertTrue(io.github.jcondedata.aliveworkplace.guard.Cavalry.freeHorse(helper.getLevel(), guard, helper.absolutePos(POST)) == tied,
+			"the saddled horse wasn't found");
+		helper.assertTrue(io.github.jcondedata.aliveworkplace.guard.Cavalry.ride(guard, tied) && guard.getVehicle() == tied, "didn't get on");
+		helper.assertTrue(io.github.jcondedata.aliveworkplace.guard.Cavalry.paced(tied), "no guard's pace");
+		helper.assertTrue(guard.getNavigation() == tied.getNavigation(), "the guard doesn't steer the horse");
+		io.github.jcondedata.aliveworkplace.guard.Cavalry.dismount(guard);
+		helper.assertTrue(guard.getVehicle() == null && !io.github.jcondedata.aliveworkplace.guard.Cavalry.paced(tied), "still on, or still paced");
+		helper.succeed();
+	}
 }

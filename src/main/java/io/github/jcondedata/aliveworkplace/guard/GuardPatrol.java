@@ -62,6 +62,11 @@ public class GuardPatrol extends Behavior<Villager> {
 	private int gearTimer;
 	@Nullable
 	private BlockPos gearChest;
+	/** A free horse near the post the guard is going to mount (see {@link Cavalry}), and when to look for one again. */
+	@Nullable
+	private net.minecraft.world.entity.animal.horse.AbstractHorse horse;
+	private long nextHorseSearch;
+	private static final int HORSE_SEARCH_EVERY = 200;
 
 	public GuardPatrol() {
 		super(ImmutableMap.of(
@@ -90,6 +95,12 @@ public class GuardPatrol extends Behavior<Villager> {
 		for (EquipmentSlot slot : ARMOR) {
 			villager.setDropChance(slot, 0f);
 		}
+	}
+
+	@Override
+	protected void stop(ServerLevel level, Villager villager, long gameTime) {
+		Cavalry.dismount(villager); // the shift's over: the horse is left where it stands
+		horse = null;
 	}
 
 	@Override
@@ -130,9 +141,14 @@ public class GuardPatrol extends Behavior<Villager> {
 			if (level.isNight() || !level.getBlockState(dummy).is(io.github.jcondedata.aliveworkplace.registry.ModBlocks.TRAINING_DUMMY)) {
 				dummy = null;
 			} else {
+				Cavalry.dismount(villager); // (on foot: the horse waits)
 				train(level, villager, gameTime);
 				return;
 			}
+		}
+		// Cavalry: into the saddle of a free horse near the post.
+		if (Cavalry.mount(villager) == null && mountUp(level, villager, post, gameTime)) {
+			return;
 		}
 		// Walk the area; stay near the post at night.
 		status(villager, "patrolling");
@@ -173,6 +189,37 @@ public class GuardPatrol extends Behavior<Villager> {
 			waypoint = null;
 			wait = routed ? 20 + level.random.nextInt(40) : 60 + level.random.nextInt(100);
 		}
+	}
+
+	/** Walks up to a free horse near the post and mounts it; false when there's none (the patrol goes on on foot). */
+	private boolean mountUp(ServerLevel level, Villager villager, BlockPos post, long gameTime) {
+		if (horse != null && !Cavalry.usable(horse)) {
+			horse = null;
+		}
+		if (horse == null) {
+			if (gameTime < nextHorseSearch) {
+				return false;
+			}
+			nextHorseSearch = gameTime + HORSE_SEARCH_EVERY;
+			horse = Cavalry.freeHorse(level, villager, post);
+			if (horse == null) {
+				return false;
+			}
+			walker.reset();
+		}
+		status(villager, "mounting");
+		if (villager.distanceTo(horse) <= Cavalry.MOUNT_REACH) {
+			if (Cavalry.ride(villager, horse)) {
+				waypoint = null;
+				walker.reset();
+			}
+			horse = null;
+			return true;
+		}
+		if (!walker.walkTo(level, villager, horse.blockPosition(), 1.5) && walker.noSpot()) {
+			horse = null; // can't get to it
+		}
+		return true;
 	}
 
 	/** The next point on the guard's route (within reach of the post), or null without a route. */

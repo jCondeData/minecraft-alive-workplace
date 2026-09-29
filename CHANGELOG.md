@@ -8,6 +8,9 @@
   name tags, saddles...). They row back with every few fish and put the boat away.
 - **Ferry rides**: a Travel Ticket no longer blinks you across — you sit in a boat for a few seconds, rowed off by the
   ferryman when he's about, the view fades, and you step out by the post you were going to.
+- **Cavalry**: leave a tamed, saddled horse (or donkey or mule) near a Guard Post, off its lead, and the guard rides it
+  on patrol and into fights. They get down to spar at a Training Dummy and leave the horse where they are at the end of
+  their shift. A horse on a lead stays tied up.
 
 ## 0.136.0 — 2026-09-29
 

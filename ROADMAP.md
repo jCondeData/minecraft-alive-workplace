@@ -489,8 +489,13 @@ loop: ore → ingots → the tools, weapons and armor the other workers wear out
   off hand empty and no bow, a shield — a knight or medic keeps theirs; sneak-right-click a guard with a bow,
   crossbow, shield or healing potion to hand it over; the kind shows over their head. Barracks I–II in `defence.py`:
   two, then four Guard Posts)
-- [ ] Cavalry: guards on horseback (a tamed, saddled horse by the post) — left for later: villagers steering horses
-  needs its own movement code
+- [x] Cavalry: guards on horseback (a tamed, saddled horse by the post). No movement code of our own was needed: a
+  villager riding a mob steers it with that mob's navigation (`Mob.getNavigation` hands over the vehicle's), so the
+  patrol and the fighting carry on from the saddle. `guard/Cavalry`: a tamed, saddled horse, donkey or mule, grown and
+  off its lead, within 24 blocks of the post; `GuardPatrol` walks up and mounts at the start of the patrol, gets down to
+  spar at a Training Dummy (and back up after), and leaves the horse where it stands when the shift ends; a ridden
+  horse gets +100% speed (a transient modifier, taken off however the guard gets down), as a mob-steered horse
+  otherwise plods
 - [x] Training: guards spar on a Training Dummy between fights for XP (`guard/TrainingDummyBlock`, crafted from a hay bale,
   sticks and wool; `GuardPatrol`: by day, every 2400 ticks a guard below Expert looks for the dummy nearest its post
   within 12 blocks (again every 400 ticks while there's none), hits it 12 times a second apart, 1 XP every 4 hits.

@@ -62,6 +62,18 @@ public class VillageHallBlock extends BaseEntityBlock {
 		return RenderShape.MODEL;
 	}
 
+	/** A new hall: the first line of the village's chronicle. */
+	@Override
+	public void setPlacedBy(Level level, BlockPos pos, BlockState state, @Nullable net.minecraft.world.entity.LivingEntity placer, ItemStack stack) {
+		super.setPlacedBy(level, pos, state, placer, stack);
+		if (level instanceof net.minecraft.server.level.ServerLevel server && level.getBlockEntity(pos) instanceof VillageHallBlockEntity entity
+			&& entity.chronicle().isEmpty()) {
+			Chronicle.record(server, pos, Chronicle.Kind.FOUNDED, placer != null
+				? Component.translatable("chronicle.aliveworkplace.founded_by", VillageHalls.name(server, pos), placer.getDisplayName())
+				: Component.translatable("chronicle.aliveworkplace.founded", VillageHalls.name(server, pos)), true);
+		}
+	}
+
 	@Nullable
 	@Override
 	public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {

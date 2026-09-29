@@ -130,6 +130,11 @@ of your village — by the bell is a good spot. Right-click it for the village a
   waiting for and where they are ("11 blocks north-west"). **Click one to make them glow** for ten seconds, so you
   can find them.
 
+**The chronicle.** The book in the middle of the hall's screen opens the village's **chronicle**: what has happened
+there, newest first, day by day — the hall founded, babies born, villagers who died (and how) or came back from the
+grave, travellers who arrived and who hired them, buildings finished and who built them, quests done, research
+finished, villagers who became Masters.
+
 The village gets a made-up name (*Thornholm*, *Ashford*...); use a **Name Tag** with a name on the hall to call it
 whatever you like (the tag isn't used up). The hall keeps the name when you break and move it.
 

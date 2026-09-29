@@ -194,6 +194,9 @@ public class VillageHallGameTests implements net.fabricmc.fabric.api.gametest.v1
 			helper.assertTrue(baby != null && baby.isBaby() && baby.isAlive(), "no baby");
 			int meals = chest.countItem(Items.BREAD) + chest.countItem(Items.BAKED_POTATO);
 			helper.assertTrue(meals == 12, "meals left: " + meals);
+			var entity = (io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(hall);
+			helper.assertTrue(entity.chronicle().size() == 1 && entity.chronicle().get(0).kind() == io.github.jcondedata.aliveworkplace.hall.Chronicle.Kind.BIRTH,
+				"chronicle: " + entity.chronicle());
 			helper.succeed();
 		});
 	}
@@ -307,5 +310,48 @@ public class VillageHallGameTests implements net.fabricmc.fabric.api.gametest.v1
 		String lore = String.valueOf(menu.icon(5).get(DataComponents.LORE));
 		helper.assertTrue(lore.contains("Beauty") || lore.contains("beauty"), "the wellbeing icon doesn't show beauty: " + lore);
 		helper.succeed();
+	}
+
+	/** The chronicle keeps what happened in the village — a death, a quest done — newest first on its page, and it's saved. */
+	@GameTest(template = AREA, timeoutTicks = 100, batch = "theChronicleRemembers")
+	public void theChronicleRemembers(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		int radius = VillageHalls.RADIUS;
+		VillageHalls.RADIUS = 16;
+		Leftovers.after(helper, () -> VillageHalls.RADIUS = radius);
+		ServerLevel level = helper.getLevel();
+		helper.setBlock(HALL, ModBlocks.VILLAGE_HALL);
+		BlockPos hall = helper.absolutePos(HALL);
+		ServerPlayer player = helper.makeMockServerPlayerInLevel();
+		helper.runAfterDelay(3, () -> {
+			var entity = (io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(hall);
+			Villager doomed = helper.spawn(EntityType.VILLAGER, new BlockPos(5, 2, 5));
+			doomed.setCustomName(Component.literal("Mira"));
+			doomed.hurt(level.damageSources().fellOutOfWorld(), 1000f);
+			entity.setQuests(java.util.List.of(new VillageQuests.Quest(java.util.UUID.randomUUID(), VillageQuests.Kind.SLAY, "minecraft:air", 1, 0, 2,
+				level.getGameTime(), "", java.util.Optional.empty())));
+			player.setGameMode(net.minecraft.world.level.GameType.SURVIVAL);
+			var zombie = helper.spawn(EntityType.ZOMBIE, new BlockPos(8, 2, 5));
+			zombie.hurt(level.damageSources().playerAttack(player), 1000f);
+			var lines = entity.chronicle();
+			helper.assertTrue(lines.size() == 2, "chronicle: " + lines);
+			helper.assertTrue(lines.get(0).kind() == io.github.jcondedata.aliveworkplace.hall.Chronicle.Kind.DEATH
+				&& lines.get(0).text().getString().contains("Mira"), "death: " + lines.get(0).text().getString());
+			helper.assertTrue(lines.get(1).kind() == io.github.jcondedata.aliveworkplace.hall.Chronicle.Kind.QUEST, "quest: " + lines.get(1));
+			helper.assertTrue(lines.get(1).day() == io.github.jcondedata.aliveworkplace.hall.Chronicle.day(level), "day");
+
+			ChoiceMenu menu = VillageHallScreen.forTest(player, hall);
+			menu.press(VillageHallScreen.CHRONICLE, player);
+			helper.assertTrue(menu.icon(VillageHallScreen.FIRST_PERSON).is(Items.MAP), "newest first: " + menu.icon(VillageHallScreen.FIRST_PERSON));
+			helper.assertTrue(menu.icon(VillageHallScreen.FIRST_PERSON + 1).is(Items.BONE), "then the death: " + menu.icon(VillageHallScreen.FIRST_PERSON + 1));
+
+			// Saved with the hall.
+			var tag = entity.saveWithFullMetadata(level.registryAccess());
+			var copy = (io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) net.minecraft.world.level.block.entity.BlockEntity
+				.loadStatic(hall, level.getBlockState(hall), tag, level.registryAccess());
+			helper.assertTrue(copy != null && copy.chronicle().size() == 2
+				&& copy.chronicle().get(0).text().getString().equals(lines.get(0).text().getString()), "not saved: " + (copy == null ? null : copy.chronicle()));
+			helper.succeed();
+		});
 	}
 }

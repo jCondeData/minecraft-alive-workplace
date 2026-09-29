@@ -5,6 +5,7 @@ import java.util.Comparator;
 import java.util.List;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -113,6 +114,8 @@ public final class VillageGrowth {
 		}
 		level.broadcastEntityEvent(baby, (byte) 12); // the villager's hearts
 		level.playSound(null, baby.blockPosition(), SoundEvents.VILLAGER_CELEBRATE, SoundSource.NEUTRAL, 1f, 1.3f);
+		Chronicle.record(level, hall, Chronicle.Kind.BIRTH, Component.translatable("chronicle.aliveworkplace.birth",
+			mother.getDisplayName(), father.getDisplayName()), true);
 		return baby;
 	}
 

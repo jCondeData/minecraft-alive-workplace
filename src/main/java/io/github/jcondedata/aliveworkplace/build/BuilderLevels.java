@@ -79,6 +79,10 @@ public final class BuilderLevels {
 			return;
 		}
 		int now = villager.getVillagerData().getLevel();
+		if (now == VillagerData.MAX_VILLAGER_LEVEL) {
+			io.github.jcondedata.aliveworkplace.hall.Chronicle.record(level, villager.blockPosition(), io.github.jcondedata.aliveworkplace.hall.Chronicle.Kind.MASTER, Component.translatable("chronicle.aliveworkplace.master",
+				villager.getDisplayName(), Component.translatable("entity.minecraft.villager." + villager.getVillagerData().getProfession().name())));
+		}
 		villager.addEffect(new MobEffectInstance(MobEffects.REGENERATION, 200, 0));
 		level.sendParticles(ParticleTypes.HAPPY_VILLAGER, villager.getX(), villager.getY() + 1.2, villager.getZ(), 20, 0.5, 0.8, 0.5, 0.0);
 		level.playSound(null, villager, SoundEvents.PLAYER_LEVELUP, SoundSource.NEUTRAL, 0.6f, 1.2f);

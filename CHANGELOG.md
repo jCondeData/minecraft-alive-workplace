@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+## 0.113.0 — 2026-09-29
+
+### Added
+- **The village chronicle**: a page of the Village Hall (the book in the middle) with what happened in the village, day
+  by day — births, deaths, revivals, travellers, finished buildings, quests, research and new Masters.
+
 ## 0.112.0 — 2026-09-29
 
 ### Added

@@ -159,6 +159,8 @@ public class ScholarWork extends Behavior<Villager> {
 		for (ServerPlayer player : level.getPlayers(p -> p.distanceToSqr(hall.getCenter()) < (double) VillageHalls.RADIUS * VillageHalls.RADIUS)) {
 			player.displayClientMessage(text, false);
 		}
+		io.github.jcondedata.aliveworkplace.hall.Chronicle.record(level, hall, io.github.jcondedata.aliveworkplace.hall.Chronicle.Kind.RESEARCH, Component.translatable("chronicle.aliveworkplace.research",
+			Component.translatable("research.aliveworkplace.level", topic.title(), BuilderLevels.levelName(lvl)), villager.getDisplayName()));
 		if (topic == Research.Topic.ARCHITECTURE) {
 			List<BlockPos> own = SupplyContainers.find(level, desk, null);
 			for (ResourceLocation id : Research.ARCHITECTURE_BLUEPRINTS) {

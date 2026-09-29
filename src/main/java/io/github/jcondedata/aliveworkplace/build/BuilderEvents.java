@@ -280,6 +280,7 @@ public final class BuilderEvents {
 				io.github.jcondedata.aliveworkplace.wood.TreeFarms.onDeath(level, villager);
 				io.github.jcondedata.aliveworkplace.orchard.Orchards.onDeath(level, villager);
 				io.github.jcondedata.aliveworkplace.grave.Graves.onDeath(level, villager);
+				io.github.jcondedata.aliveworkplace.hall.Chronicle.record(level, villager.blockPosition(), io.github.jcondedata.aliveworkplace.hall.Chronicle.Kind.DEATH, source.getLocalizedDeathMessage(villager));
 			} else if (entity.level() instanceof ServerLevel level) {
 				io.github.jcondedata.aliveworkplace.guard.GuardCombat.onFoeKilled(level, entity, source);
 				io.github.jcondedata.aliveworkplace.hall.VillageQuests.onKill(level, entity, source);

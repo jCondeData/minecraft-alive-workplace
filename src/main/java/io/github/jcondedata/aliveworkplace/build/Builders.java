@@ -478,6 +478,8 @@ public final class Builders {
 			BuildSiteManager.get(level).forgetFinished(site.placement());
 		} else {
 			BuildSiteManager.get(level).recordFinished(site.structure(), site.placement(), site.owner());
+			io.github.jcondedata.aliveworkplace.hall.Chronicle.record(level, site.placement().origin(), io.github.jcondedata.aliveworkplace.hall.Chronicle.Kind.BUILT, Component.translatable("chronicle.aliveworkplace.built",
+				villager.getDisplayName(), Blueprints.displayName(site.structure())));
 			// Built something that has an upgrade: the builder sells its blueprint from now on.
 			UpgradeOffers.offer(level, villager, site.structure()).ifPresent(upgrade -> {
 				if (owner != null) {

@@ -26,6 +26,8 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 	private java.util.List<VillageQuests.Quest> quests = java.util.List.of();
 	private long lastQuestDay = -1;
 	private int questsDone;
+	/** What happened in the village, oldest first (see {@link Chronicle}). */
+	private java.util.List<Chronicle.Entry> chronicle = new java.util.ArrayList<>();
 	/** The village's research (see {@code research/Research}). */
 	private io.github.jcondedata.aliveworkplace.research.Research.State research = io.github.jcondedata.aliveworkplace.research.Research.State.EMPTY;
 
@@ -62,6 +64,19 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 				hall.setChanged();
 			}
 		}
+	}
+
+	/** The chronicle, oldest first. */
+	public java.util.List<Chronicle.Entry> chronicle() {
+		return java.util.List.copyOf(chronicle);
+	}
+
+	void addToChronicle(Chronicle.Entry entry) {
+		chronicle.add(entry);
+		while (chronicle.size() > Chronicle.MAX) {
+			chronicle.remove(0);
+		}
+		setChanged();
 	}
 
 	public io.github.jcondedata.aliveworkplace.research.Research.State research() {
@@ -131,6 +146,15 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 		questsDone = tag.getInt("questsDone");
 		research = io.github.jcondedata.aliveworkplace.research.Research.State.CODEC.parse(net.minecraft.nbt.NbtOps.INSTANCE, tag.get("research"))
 			.result().orElse(io.github.jcondedata.aliveworkplace.research.Research.State.EMPTY);
+		chronicle = new java.util.ArrayList<>();
+		net.minecraft.nbt.ListTag lines = tag.getList("chronicle", net.minecraft.nbt.Tag.TAG_COMPOUND);
+		for (int i = 0; i < lines.size(); i++) {
+			CompoundTag line = lines.getCompound(i);
+			Component text = parseCustomNameSafe(line.getString("text"), registries);
+			if (text != null) {
+				chronicle.add(new Chronicle.Entry(line.getLong("day"), Chronicle.Kind.parse(line.getString("kind")), text));
+			}
+		}
 	}
 
 	@Override
@@ -146,6 +170,15 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 		tag.putInt("questsDone", questsDone);
 		io.github.jcondedata.aliveworkplace.research.Research.State.CODEC.encodeStart(net.minecraft.nbt.NbtOps.INSTANCE, research).result()
 			.ifPresent(t -> tag.put("research", t));
+		net.minecraft.nbt.ListTag lines = new net.minecraft.nbt.ListTag();
+		for (Chronicle.Entry entry : chronicle) {
+			CompoundTag line = new CompoundTag();
+			line.putLong("day", entry.day());
+			line.putString("kind", entry.kind().name().toLowerCase(java.util.Locale.ROOT));
+			line.putString("text", Component.Serializer.toJson(entry.text(), registries));
+			lines.add(line);
+		}
+		tag.put("chronicle", lines);
 	}
 
 	@Override

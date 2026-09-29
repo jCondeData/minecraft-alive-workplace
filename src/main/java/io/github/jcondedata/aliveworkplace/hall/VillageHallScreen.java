@@ -47,6 +47,8 @@ public final class VillageHallScreen {
 	static final int REQUESTS = 6;
 	static final int BUILDS = 7;
 	public static final int QUESTS = 8;
+	/** The chronicle button, in the middle of the divider. */
+	public static final int CHRONICLE = 13;
 	/** On the quests page: where the quests are. */
 	public static final int[] QUEST_SLOTS = {20, 22, 24};
 	static final int PREVIOUS = 9;
@@ -111,6 +113,12 @@ public final class VillageHallScreen {
 			menu.broadcastChanges();
 		});
 		menu.divider(1);
+		int lines = entity == null ? 0 : entity.chronicle().size();
+		menu.button(CHRONICLE, icon(Items.WRITTEN_BOOK, Component.translatable("screen.aliveworkplace.hall.chronicle"), ChatFormatting.WHITE,
+			line(Component.translatable("screen.aliveworkplace.hall.chronicle_hint", lines), ChatFormatting.GRAY)), p -> {
+			renderChronicle(menu, level, hall);
+			menu.broadcastChanges();
+		});
 		if (pages > 1) {
 			if (shown > 0) {
 				menu.button(PREVIOUS, icon(Items.ARROW, Component.translatable("screen.aliveworkplace.hall.previous", shown, pages), ChatFormatting.WHITE),
@@ -129,6 +137,26 @@ public final class VillageHallScreen {
 					.withStyle(ChatFormatting.GREEN), true);
 				level.playSound(null, p.blockPosition(), SoundEvents.AMETHYST_BLOCK_CHIME, SoundSource.PLAYERS, 0.6f, 1.2f);
 			});
+		}
+	}
+
+	/** The chronicle page: what happened in the village, newest first. */
+	public static void renderChronicle(ChoiceMenu menu, ServerLevel level, BlockPos hall) {
+		menu.clearButtons();
+		menu.button(0, icon(Items.ARROW, Component.translatable("screen.aliveworkplace.hall.back"), ChatFormatting.WHITE), p -> refresh(menu, level, hall, 0));
+		VillageHallBlockEntity entity = level.getBlockEntity(hall) instanceof VillageHallBlockEntity e ? e : null;
+		List<Chronicle.Entry> entries = entity == null ? List.of() : entity.chronicle();
+		menu.button(4, icon(Items.WRITTEN_BOOK, Component.translatable("screen.aliveworkplace.hall.chronicle_title", VillageHalls.name(level, hall)),
+			ChatFormatting.GOLD, line(Component.translatable("screen.aliveworkplace.hall.chronicle_about", Chronicle.day(level)), ChatFormatting.GRAY)), null);
+		menu.divider(1);
+		int slot = FIRST_PERSON;
+		for (int i = entries.size() - 1; i >= 0 && slot < ChoiceMenu.SIZE; i--) {
+			Chronicle.Entry entry = entries.get(i);
+			menu.button(slot++, icon(entry.kind().icon, entry.text().copy(), ChatFormatting.WHITE,
+				line(Component.translatable("screen.aliveworkplace.hall.chronicle_day", entry.day()), ChatFormatting.GRAY)), null);
+		}
+		if (entries.isEmpty()) {
+			menu.button(FIRST_PERSON + 4, icon(Items.PAPER, Component.translatable("screen.aliveworkplace.hall.chronicle_empty"), ChatFormatting.GRAY), null);
 		}
 	}
 

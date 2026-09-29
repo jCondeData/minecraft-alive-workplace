@@ -523,8 +523,9 @@ Every villager a person you get to know, the way MineColonies' citizens are — 
   bed; `people/Sickness`, rolled in the hall's round); the ill work at half pace, walk slowly and sneeze, and get well
   after three days — or at once when a Nurse (`NurseWork`, 32 blocks) gives them a honey bottle, milk or a healing or
   regeneration potion from her chest (she asks on the requests board when there's none); `villagerSickness` in the config
-- [ ] The village chronicle: births, deaths, revivals, arrivals, finished buildings, quests and research — a page of the
-  Village Hall
+- [x] The village chronicle: the hall founded, births, deaths (the death message), revivals, travellers arriving and
+  hired, buildings finished, quests done, research, new Masters — `hall/Chronicle`, kept in the hall's block entity (100
+  entries), the book in the middle of the hall screen's divider opens its page (newest first, with the day)
 - [ ] Running the village from the hall: give a jobless villager a free workstation, call everyone home
 
 ## Milestone 14 — Founding and linking villages

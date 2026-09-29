@@ -108,6 +108,8 @@ public final class Innkeepers {
 			player.displayClientMessage(Component.translatable("message.aliveworkplace.inn.arrived", BuilderLevels.levelName(lvl))
 				.withStyle(ChatFormatting.GREEN), false);
 		}
+		io.github.jcondedata.aliveworkplace.hall.Chronicle.record(level, counter, io.github.jcondedata.aliveworkplace.hall.Chronicle.Kind.ARRIVED, Component.translatable("chronicle.aliveworkplace.arrived",
+			BuilderLevels.levelName(lvl), innkeeper.getDisplayName()));
 		return guest;
 	}
 
@@ -208,6 +210,8 @@ public final class Innkeepers {
 		level.playSound(null, guest.blockPosition(), SoundEvents.VILLAGER_YES, SoundSource.NEUTRAL, 1f, 1f);
 		player.displayClientMessage(Component.translatable("message.aliveworkplace.inn.hired", BuilderLevels.levelName(t.level()))
 			.withStyle(ChatFormatting.GREEN), false);
+		io.github.jcondedata.aliveworkplace.hall.Chronicle.record(level, guest.blockPosition(), io.github.jcondedata.aliveworkplace.hall.Chronicle.Kind.JOINED, Component.translatable("chronicle.aliveworkplace.joined",
+			BuilderLevels.levelName(t.level()), player.getDisplayName()));
 		return true;
 	}
 

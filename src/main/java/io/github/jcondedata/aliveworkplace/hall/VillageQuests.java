@@ -218,6 +218,8 @@ public final class VillageQuests {
 		quests.remove(index);
 		entity.setQuests(quests);
 		entity.questDone();
+		Chronicle.record(level, hall, Chronicle.Kind.QUEST, Component.translatable("chronicle.aliveworkplace.quest",
+			player != null ? player.getDisplayName() : Component.translatable("chronicle.aliveworkplace.someone"), describe(quest)), true);
 		if (player != null) {
 			Money.pay(player, (long) quest.reward() * Money.DOLLARS_PER_EMERALD, quest.reward());
 			player.displayClientMessage(Component.translatable("message.aliveworkplace.quest.done", describe(quest), Money.describe(

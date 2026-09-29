@@ -703,6 +703,20 @@ pack boot test pass.
   Modrinth or Cobblemon ships for 26.x). The first 26.3 build ships with worker schedules and client rendering working,
   or not at all.
 
+## Milestone 20 — Homes, and every build up to standard (2026-09-29)
+With Milestones 7–19 done the mod has MineColonies' jobs and colony layer, and more; what's left is making what's there
+look and feel finished. Builds first (the owner asked for every build to be brought up to the Minecraft Architect
+standard, "even go back and improve upon other builds you've already pushed").
+- [ ] Architect review, round 2 (the owner's Minecraft Architect skill: lint, render, critique, redraw per
+  `tools/blueprints/STYLE.md`; build tests green; before/after renders for the owner): starter cottage I–III, stone house
+  I–III, lookout tower I–III, market stall I–III and the market square
+- [ ] … inn I–II, library I–II, terrace I–II, tinker's workshop I–II, nether gate I–II, graveyard I–II, berry farm I–II
+- [ ] … the decorations (well I–II, fountain, gazebo, street lamp, park bench) and defences (palisade, gatehouse, wall
+  tower, stone wall), and one more pass over the village houses in all five styles
+- [ ] Homes: a villager's home is the finished building their bed is in; a tier II house lifts their mood (+5), tier III
+  more (+10); the hall's list says where each lives, and "What next?" suggests upgrading when most live in tier I houses
+  or none at all
+
 ## Milestone 5 — Release
 - [ ] Publish on Modrinth and CurseForge as **Alive Workplace** (Minecraft brand rules: don't lead the name with "Minecraft")
 - [x] Screenshots/GIFs through the README, and an at-a-glance table of every job (workstation, what goes in the chests,
@@ -749,6 +763,9 @@ pack boot test pass.
 
 ## Notes / blocked
 - (autonomous sessions: write anything you could not finish or need the owner to decide here)
+- 2026-09-29 (owner's call): **village protection**, MineColonies-style — should a village with a Village Hall keep
+  players who aren't its owner's friends from breaking, placing or opening things inside it? On a friends' server it may
+  only get in the way; if wanted, it would be a setting on the hall (off unless the hall's owner turns it on).
 - 2026-09-29: two scheduled sessions ran at the same time and both built the Miltank milking and plantation-crop items;
   the second one's work was dropped for the first's. If sessions overlap again, the later one should take items further
   down the list (as the Training Dummy was) or the schedule should be spread out (owner).

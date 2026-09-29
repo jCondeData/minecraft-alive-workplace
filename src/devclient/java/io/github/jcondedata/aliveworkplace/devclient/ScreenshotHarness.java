@@ -892,6 +892,7 @@ public class ScreenshotHarness implements ClientModInitializer {
 	private final List<net.minecraft.world.entity.Entity> husks = new ArrayList<>();
 
 	private Villager guardForShot;
+	private int trainedAt = -1;
 
 	private void guardScene(Minecraft mc, MinecraftServer server) {
 		tick++;
@@ -995,6 +996,30 @@ public class ScreenshotHarness implements ClientModInitializer {
 		}
 		if (doneAt > 0 && tick == doneAt + 80) {
 			shot(mc, "50_guard_done");
+			// Then a Training Dummy by the post: the guard spars with it.
+			server.execute(() -> {
+				ServerLevel level = server.overworld();
+				level.setBlockAndUpdate(new BlockPos(3, -60, 3), ModBlocks.TRAINING_DUMMY.defaultBlockState()
+					.setValue(net.minecraft.world.level.block.HorizontalDirectionalBlock.FACING, Direction.SOUTH));
+				// First a close look at the dummy itself, from the front.
+				hover(server.getPlayerList().getPlayers().get(0), new Vec3(4.3, -58.6, 5.4), 150, 20);
+			});
+		}
+		if (doneAt > 0 && tick == doneAt + 88) {
+			shot(mc, "55_training_dummy");
+			server.execute(() -> hover(server.getPlayerList().getPlayers().get(0), new Vec3(7.5, -58.2, 4.2), 100, 16));
+		}
+		if (doneAt > 0 && tick > doneAt + 80 && tick % 5 == 0 && trainedAt < 0 && guardForShot != null
+			&& guardForShot.getAttachedOrElse(io.github.jcondedata.aliveworkplace.registry.ModAttachments.DUMMY_HITS, 0) >= 2) {
+			trainedAt = tick;
+		}
+		if (trainedAt > 0 && tick > trainedAt && tick <= trainedAt + 40 && tick % 4 == 0) {
+			shot(mc, String.format("frame_%03d", frame++));
+		}
+		if (trainedAt > 0 && tick == trainedAt + 9) {
+			shot(mc, "60_guard_training");
+		}
+		if (trainedAt > 0 && tick == trainedAt + 44) {
 			mc.stop();
 		}
 		if (tick >= 3000) {

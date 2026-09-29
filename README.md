@@ -436,6 +436,10 @@ health and keep the night watch, sleeping in the late morning instead. Players, 
 Pokémon are safe from them. **Ring the village bell** and, while everyone else runs home to hide, the guards head
 for the bell and fight anything near it for a minute and a half.
 
+**Training Dummy** (a hay bale on sticks with wool on top): place one within 12 blocks of a Guard Post and, when
+there's nothing to fight, the guard spars with it every couple of minutes during the day — a point of experience every
+four hits, up to Expert; Masters are only made in real fights. Hit it yourself and it puffs straw too.
+
 ![A guard fighting husks with a Machop and a Dratini from a pasture joining in](docs/media/guard-pokemon.gif)
 
 **Fighting beside their Pokémon** (with Cobblemon): keep Fighting or Dragon types in a Pasture Block within 16 blocks

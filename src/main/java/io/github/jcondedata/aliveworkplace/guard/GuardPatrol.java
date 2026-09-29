@@ -25,14 +25,35 @@ import org.jetbrains.annotations.Nullable;
 
 /**
  * A guard's shift (WORK): take the best weapon and armor from the chests near the Guard Post, then walk
- * the area around the post, staying close to it at night. Fighting is {@link GuardCombat}'s job.
+ * the area around the post, staying close to it at night. By day, a guard below {@link #TRAIN_UP_TO} spars with a
+ * Training Dummy near the post now and then ({@link #HITS} hits, 1 XP every {@link #HITS_PER_XP}). Fighting is
+ * {@link GuardCombat}'s job.
  */
 public class GuardPatrol extends Behavior<Villager> {
 	private static final float SPEED = 0.5f;
 	private static final int GEAR_CHECK_EVERY = 400;
 	private static final EquipmentSlot[] ARMOR = {EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET};
 
+	/** Guards earn experience at a Training Dummy up to this level (Expert); Masters are made in real fights. */
+	public static final int TRAIN_UP_TO = 4;
+	/** How far from the post a dummy is used. */
+	static final int DUMMY_RADIUS = 12;
+	/** Hits in one session at the dummy, and hits per point of experience. */
+	public static final int HITS = 12;
+	public static final int HITS_PER_XP = 4;
+	private static final int HIT_EVERY = 20;
+	/** Ticks between two sessions at the dummy. */
+	private static final int TRAIN_EVERY = 2400;
+	private static final int DUMMY_SEARCH_EVERY = 400;
+
 	private final Walker walker = new Walker(SPEED);
+	@Nullable
+	private BlockPos dummy;
+	private int hits;
+	private int hitTimer;
+	private long lastTrained = -TRAIN_EVERY;
+	/** No dummy was found: when to look again. */
+	private long nextDummySearch;
 	@Nullable
 	private BlockPos waypoint;
 	private int wait;
@@ -96,6 +117,15 @@ public class GuardPatrol extends Behavior<Villager> {
 			}
 			return;
 		}
+		// Sparring at the dummy.
+		if (dummy != null) {
+			if (level.isNight() || !level.getBlockState(dummy).is(io.github.jcondedata.aliveworkplace.registry.ModBlocks.TRAINING_DUMMY)) {
+				dummy = null;
+			} else {
+				train(level, villager, gameTime);
+				return;
+			}
+		}
 		// Walk the area; stay near the post at night.
 		status(villager, "patrolling");
 		if (wait > 0) {
@@ -104,6 +134,17 @@ public class GuardPatrol extends Behavior<Villager> {
 		}
 		if (waypoint == null) {
 			boolean night = level.isNight();
+			if (!night && gameTime - lastTrained >= TRAIN_EVERY && gameTime >= nextDummySearch && canTrain(villager)) {
+				dummy = findDummy(level, post);
+				nextDummySearch = gameTime + DUMMY_SEARCH_EVERY;
+				if (dummy != null) {
+					lastTrained = gameTime;
+					hits = 0;
+					hitTimer = 0;
+					walker.reset();
+					return;
+				}
+			}
 			int r = night ? 6 : 14;
 			int x = post.getX() + level.random.nextInt(r * 2 + 1) - r;
 			int z = post.getZ() + level.random.nextInt(r * 2 + 1) - r;
@@ -116,6 +157,57 @@ public class GuardPatrol extends Behavior<Villager> {
 		if (walker.walkTo(level, villager, waypoint, 2.0) || walker.noSpot()) {
 			waypoint = null;
 			wait = 60 + level.random.nextInt(100);
+		}
+	}
+
+	/** Whether sparring still teaches this guard anything. */
+	public static boolean canTrain(Villager villager) {
+		return villager.getVillagerData().getLevel() < TRAIN_UP_TO;
+	}
+
+	/** The Training Dummy nearest the post, within {@link #DUMMY_RADIUS}. */
+	@Nullable
+	static BlockPos findDummy(ServerLevel level, BlockPos post) {
+		BlockPos best = null;
+		double bestDistance = Double.MAX_VALUE;
+		for (BlockPos p : BlockPos.betweenClosed(post.offset(-DUMMY_RADIUS, -4, -DUMMY_RADIUS), post.offset(DUMMY_RADIUS, 4, DUMMY_RADIUS))) {
+			if (level.getBlockState(p).is(io.github.jcondedata.aliveworkplace.registry.ModBlocks.TRAINING_DUMMY)) {
+				double d = p.distSqr(post);
+				if (d < bestDistance) {
+					bestDistance = d;
+					best = p.immutable();
+				}
+			}
+		}
+		return best;
+	}
+
+	/** Walks up to the dummy and hits it every second; a point of experience every few hits. */
+	private void train(ServerLevel level, Villager villager, long gameTime) {
+		status(villager, "training");
+		if (!walker.reach(level, villager, dummy, 2.5)) {
+			if (walker.noSpot()) {
+				dummy = null;
+			}
+			return;
+		}
+		villager.getBrain().setMemory(MemoryModuleType.LOOK_TARGET, new net.minecraft.world.entity.ai.behavior.BlockPosTracker(dummy.above()));
+		if (++hitTimer < HIT_EVERY) {
+			return;
+		}
+		hitTimer = 0;
+		villager.swing(net.minecraft.world.InteractionHand.MAIN_HAND);
+		TrainingDummyBlock.hit(level, dummy);
+		hits++;
+		villager.setAttached(io.github.jcondedata.aliveworkplace.registry.ModAttachments.DUMMY_HITS,
+			villager.getAttachedOrElse(io.github.jcondedata.aliveworkplace.registry.ModAttachments.DUMMY_HITS, 0) + 1);
+		if (hits % HITS_PER_XP == 0 && canTrain(villager)) {
+			io.github.jcondedata.aliveworkplace.build.BuilderLevels.addXp(level, villager, 1, null);
+		}
+		if (hits >= HITS) {
+			dummy = null;
+			lastTrained = gameTime;
+			wait = 60;
 		}
 	}
 

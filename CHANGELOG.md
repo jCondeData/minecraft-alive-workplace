@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+### Added
+- **Training Dummy** (hay bale, sticks and wool): guards spar with one near their Guard Post between fights and gain
+  experience from it, up to Expert. Players can give it a whack too.
+
 ## 0.93.0 — 2026-09-29
 
 ### Added

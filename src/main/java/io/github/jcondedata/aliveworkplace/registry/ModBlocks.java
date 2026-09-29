@@ -149,6 +149,16 @@ public final class ModBlocks {
 		"fossil_lab", new BuildersBenchBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.SMOOTH_STONE).lightLevel(state -> 4))
 	);
 
+	/** Guards spar with the ones near their Guard Post between fights, for experience. */
+	public static final io.github.jcondedata.aliveworkplace.guard.TrainingDummyBlock TRAINING_DUMMY = register(
+		"training_dummy", new io.github.jcondedata.aliveworkplace.guard.TrainingDummyBlock(BlockBehaviour.Properties.of()
+			.mapColor(net.minecraft.world.level.material.MapColor.COLOR_YELLOW)
+			.strength(1.0f)
+			.sound(net.minecraft.world.level.block.SoundType.WOOL)
+			.noOcclusion()
+			.ignitedByLava())
+	);
+
 	private static <T extends Block> T register(String name, T block) {
 		Registry.register(BuiltInRegistries.BLOCK, AliveWorkplace.id(name), block);
 		Registry.register(BuiltInRegistries.ITEM, AliveWorkplace.id(name), new BlockItem(block, new Item.Properties()));

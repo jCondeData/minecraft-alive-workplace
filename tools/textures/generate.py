@@ -1389,6 +1389,65 @@ def apiary(face):
     save(img, "block", "apiary_" + face + ".png")
 
 
+# --- Training Dummy: a straw-stuffed sack on a post, with a stitched face, for guards to spar with ----------------
+def training_dummy(part):
+    rnd = random.Random({"burlap": 401, "face": 402, "straw": 403, "post": 404}[part])
+    img = Image.new("RGBA", (16, 16))
+    if part == "post":
+        # A rough, dark-stained pole: vertical grain with a few knots
+        bark, bark_dark = rgb("#6a4a2c"), rgb("#4d331d")
+        for y in range(16):
+            for x in range(16):
+                img.putpixel((x, y), jitter(bark_dark if x % 4 == 0 else bark, rnd, 6))
+        for (kx, ky) in ((5, 3), (10, 11), (2, 13)):
+            img.putpixel((kx, ky), rgb("#3a2614"))
+            img.putpixel((kx + 1, ky), rgb("#3a2614"))
+    elif part == "straw":
+        # Loose straw poking out: pale yellow strands, criss-crossed
+        light, mid, dark = rgb("#e8cf73"), rgb("#cfae4e"), rgb("#a68534")
+        for y in range(16):
+            for x in range(16):
+                img.putpixel((x, y), jitter(mid, rnd, 8))
+        for _ in range(26):
+            x, y = rnd.randrange(16), rnd.randrange(16)
+            dx = rnd.choice((-1, 1))
+            for i in range(rnd.randint(3, 6)):
+                px, py = (x + dx * i) % 16, (y + i) % 16
+                img.putpixel((px, py), jitter(light if i % 2 else dark, rnd, 5))
+    else:
+        # Burlap: a woven grid of warm browns, tied off with rope; the face has stitched eyes and a target
+        weave, weave_dark = rgb("#b99566"), rgb("#9c7a4c")
+        for y in range(16):
+            for x in range(16):
+                img.putpixel((x, y), jitter(weave_dark if (x % 2 == 0) != (y % 2 == 0) else weave, rnd, 5))
+        rope = rgb("#d9c290")
+        if part == "burlap":
+            for x in range(16):
+                img.putpixel((x, 2), jitter(rope, rnd, 4))
+                img.putpixel((x, 3), jitter(rgb("#b8a06e"), rnd, 4))
+            # A patch sewn on
+            for y in range(8, 12):
+                for x in range(9, 13):
+                    img.putpixel((x, y), jitter(rgb("#8a6a40"), rnd, 4))
+            for (sx, sy) in ((8, 8), (8, 10), (13, 9), (13, 11), (10, 7), (12, 12)):
+                img.putpixel((sx, sy), rgb("#3b2a18"))
+        else:
+            stitch = rgb("#2e2116")
+            # X-stitched eyes
+            for cx in (4, 11):
+                for d in (-1, 0, 1):
+                    img.putpixel((cx + d, 5 + d), stitch)
+                    img.putpixel((cx + d, 5 - d), stitch)
+            # A red-and-white target painted on where a mouth would be
+            red, white = rgb("#b8322a"), rgb("#efe8da")
+            for y in range(8, 15):
+                for x in range(4, 12):
+                    d = ((x - 7.5) ** 2 + (y - 11) ** 2) ** 0.5
+                    if d <= 3.6:
+                        img.putpixel((x, y), red if d > 2.4 or d <= 1.0 else white)
+    save(img, "block", "training_dummy_" + part + ".png")
+
+
 def beekeeper_overlay():
     img = Image.new("RGBA", (64, 64), T)
     rnd = random.Random(311)
@@ -1845,3 +1904,5 @@ if __name__ == "__main__":
     for face in ("top", "side", "front"):
         apiary(face)
     beekeeper_overlay()
+    for part in ("burlap", "face", "straw", "post"):
+        training_dummy(part)

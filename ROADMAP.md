@@ -445,7 +445,11 @@ loop: ore → ingots → the tools, weapons and armor the other workers wear out
 ## Milestone 10 — Defence
 - [ ] Guard kinds by gear: Knight (sword and shield, blocks), Archer (exists), Medic (heals other guards with potions),
   Cavalry (on a horse); a Barracks blueprint with several Guard Posts
-- [ ] Training: guards spar on a Training Dummy between fights for XP
+- [x] Training: guards spar on a Training Dummy between fights for XP (`guard/TrainingDummyBlock`, crafted from a hay bale,
+  sticks and wool; `GuardPatrol`: by day, every 2400 ticks a guard below Expert looks for the dummy nearest its post
+  within 12 blocks (again every 400 ticks while there's none), hits it 12 times a second apart, 1 XP every 4 hits.
+  Not yet in the guard houses of village generation. Taken ahead of Milestone 8/9 because another session was working
+  down those items at the same time)
 - [ ] Village raids: monster raids on bigger villages at night, scaled by village size and guard strength, the bell
   rung as warning; vanilla pillager raids answered by every guard
 - [ ] Walls and gates: blueprints; guards shut the gates at night
@@ -501,3 +505,6 @@ loop: ore → ingots → the tools, weapons and armor the other workers wear out
 
 ## Notes / blocked
 - (autonomous sessions: write anything you could not finish or need the owner to decide here)
+- 2026-09-29: two scheduled sessions ran at the same time and both built the Miltank milking and plantation-crop items;
+  the second one's work was dropped for the first's. If sessions overlap again, the later one should take items further
+  down the list (as the Training Dummy was) or the schedule should be spread out (owner).

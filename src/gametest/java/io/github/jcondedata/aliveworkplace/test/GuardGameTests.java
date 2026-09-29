@@ -148,4 +148,21 @@ public class GuardGameTests implements FabricGameTest {
 			helper.assertTrue(guard.getAttachedOrElse(ModAttachments.GUARD_KILLS, 0) == 1, "the arrow kill wasn't counted");
 		});
 	}
+
+	/** With nothing to fight, a guard spars with the Training Dummy by the post and gains experience; an Expert doesn't. */
+	@GameTest(template = AREA, timeoutTicks = 1200, batch = "guardTrainsAtTheDummy")
+	public void guardTrainsAtTheDummy(GameTestHelper helper) {
+		Villager guard = guard(helper);
+		helper.setBlock(new BlockPos(8, 2, 8), ModBlocks.TRAINING_DUMMY);
+		helper.setBlock(new BlockPos(14, 2, 2), ModBlocks.GUARD_POST);
+		Villager expert = helper.spawn(EntityType.VILLAGER, new BlockPos(13, 2, 3));
+		Jobs.employ(helper.getLevel(), expert, helper.absolutePos(new BlockPos(14, 2, 2)), ModVillagers.GUARD_POST_POI, ModVillagers.GUARD);
+		expert.setVillagerData(expert.getVillagerData().setLevel(4));
+		helper.succeedWhen(() -> {
+			helper.assertTrue(guard.getAttachedOrElse(ModAttachments.DUMMY_HITS, 0) >= io.github.jcondedata.aliveworkplace.guard.GuardPatrol.HITS_PER_XP,
+				"hits: " + guard.getAttachedOrElse(ModAttachments.DUMMY_HITS, 0));
+			helper.assertTrue(guard.getVillagerXp() >= 1, "no experience from training");
+			helper.assertTrue(expert.getAttachedOrElse(ModAttachments.DUMMY_HITS, 0) == 0, "the expert trained");
+		});
+	}
 }

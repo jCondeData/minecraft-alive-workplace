@@ -6,6 +6,11 @@ finishes it, and add a line to `CHANGELOG.md`.
 
 Owner decisions are recorded in **Design decisions** at the bottom. Don't change them without asking.
 
+**Scope (owner, 2026-09-28):** the goal is a mod as big as MineColonies, if not bigger, built in parts. Milestones 7–12
+lay out the parts (MineColonies has ~45 jobs and a colony layer: needs, research, raids, schools, graves, quests,
+expeditions). Order now: the two open Pokémon items (guards beside their Pokémon, Mega Evolution), then Milestone 7
+onward. Items marked *(polish)* wait until the milestones are done.
+
 ---
 
 ## Milestone 1 — Builders
@@ -132,7 +137,7 @@ Owner decisions are recorded in **Design decisions** at the bottom. Don't change
 - [x] A bobber on the water (`fish/FishingBobber`, entity `aliveworkplace:fishing_bobber`, never saved): cast with each
   throw, dips a moment before the bite, gone on reeling in; the client draws the vanilla bobber picture and a line to
   the rod (`BobberRenderer`); `SCENE=fish` screenshots it
-- [ ] Fisher follow-ups: fishing from boats
+- [ ] *(polish)* Fisher follow-ups: fishing from boats
 - [x] **Courier / hauler** (done by Postmen): a Delivery Note marks a source and a destination container (plus an
   optional list of items to carry; by default everything but tools, weapons and armor); a postman takes up to 4
   routes and runs them whenever there's no mail, carrying a bagful per trip and taking back what doesn't fit; a blank
@@ -195,7 +200,7 @@ workstation, like the rest of the mod.
 - [x] Ferryman: with CobbleDollars, right-click shows destinations with fares in CobbleDollars (×100), two clicks buy the ticket
 - [x] Ferry houses in village generation (weight 4, every village): the post joins the network when first used
   (right-click, or its ferryman), named from a list of village names seeded by its position
-- [ ] Ferryman follow-ups: a boat ride animation
+- [ ] *(polish)* Ferryman follow-ups: a boat ride animation
 - [x] **Bard** (Music Stand workstation): a morning set (1000–3500) and an evening set (9000–12500) at the stand,
   playing the music discs from the chests nearby in turn (discs stay in the chest; "Now playing" like a jukebox) or,
   with none, a made-up pentatonic harp tune with a bass beat; sells note blocks, goat horns and a few discs
@@ -343,6 +348,74 @@ Villagers work as a unit: what one worker makes, the others can use. No particul
   workstation, crafting-table recipes; vanilla Masons upgraded with stonecutter recipes via `UpgradedJob`; a carpenter's
   workshop in village generation)
 
+## Milestone 7 — Every vanilla job works
+The vanilla professions that still only trade get real work, like Farmers, Fishermen and Masons already have
+(`work/UpgradedJob`: our work first, vanilla's routine when there's none). Together they close the village's supply
+loop: ore → ingots → the tools, weapons and armor the other workers wear out. Each posts and answers `Requests`.
+- [ ] **Armorer → Smelter** (blast furnace): smelts raw metal and ores from the village's chests in the blast furnace
+  and furnaces nearby, keeps them fuelled (charcoal from lumberjacks, coal from miners), ingots to the storehouse;
+  makes armor for guards who lack a piece
+- [ ] **Toolsmith → Blacksmith** (smithing table): makes the tools workers are waiting for (miners' pickaxes, lumberjacks'
+  axes, hoes, shears, fishing rods) with the game's recipes; iron → diamond → netherite as materials allow
+- [ ] **Weaponsmith** (grindstone): repairs worn tools, weapons and armor from workers' chests (two worn ones into one,
+  or with ingots at an anvil) and makes swords for guards
+- [ ] **Fletcher** (fletching table): bows, crossbows and arrows for guards (flint from gravel, feathers, sticks);
+  guards with arrows in their chests shoot tipped/spectral ones
+- [ ] **Shepherd** (loom): keeps sheep in a pen (Field Marker): shears them, breeds them with wheat up to a cap, dyes wool
+  to order; with Cobblemon shears pastured Wooloo/Dubwool
+- [ ] **Butcher → Herder** (smoker): keeps cows, pigs, chickens and rabbits in a pen: feeds and breeds them up to a cap,
+  collects eggs and milk, takes the surplus for meat and leather (never babies or named animals); with Cobblemon milks
+  pastured Miltank
+- [ ] **Leatherworker → Dyer** (cauldron): dyes from flowers, dyed wool/terracotta/glass/concrete for builders' requests,
+  leather goods (item frames, books' leather)
+- [ ] **Cleric → Alchemist** (brewing stand): brews healing, regeneration and strength potions from the chests; guards
+  drink them in a fight, nurses use them
+- [ ] **Librarian → Scribe** (lectern): books and bookshelves for builders; enchants workers' tools and guards' gear with
+  lapis
+- [ ] **Cartographer → Explorer** (cartography table): day-long expeditions with food and a weapon, bringing back finds
+  (MineColonies' expeditions/nether worker); explorer maps to nearby structures for players
+- [ ] Mason extras: crushing (cobblestone → gravel → sand), glass from sand in a furnace, concrete powder hardened in
+  water (MineColonies' crusher, glassblower, concrete mixer)
+
+## Milestone 8 — Growing things
+- [ ] Farmer fields grow the plantation crops too: bamboo, cactus, kelp, vines, mushrooms, nether wart (MineColonies'
+  planter), and compost the surplus into bone meal (the composter)
+- [ ] **Beekeeper** (new job, Apiary block): tends beehives in a marked area — honeycomb and honey bottles with a
+  campfire under the hive, flowers planted for the bees; with Cobblemon, Combee/Vespiquen partners
+- [ ] **Florist** (new job): grows flowers with bone meal for the dyer and the builders, fills flower pots around the
+  village
+- [ ] **Rancher** (new job, stable): tames and breeds horses and donkeys; with Cobblemon a Pokémon ranch — pastured
+  Pokémon groomed (friendship), fed berries, their drops collected
+
+## Milestone 9 — Village life (the colony layer, keyed on blocks)
+- [ ] **Village Hall** block (near the bell): the village at a glance — every worker with job, level, status and what
+  they're waiting for; beds, food in store, guards, requests; the village's name
+- [ ] **Needs**: villagers eat (the chef's food, from the store), sleep in beds and like a safe, lit village; a
+  well-kept village works up to 25% faster, a hungry one slower; shown in the Village Hall
+- [ ] **Growth**: new villagers when there are free beds and food in store; housing blueprints (cottages, terraces,
+  an inn) so building houses grows the village
+- [ ] **School**: a Teacher (new job) teaches the village children; grown-ups who went to school start a level up
+- [ ] **Recruiting**: an Innkeeper (new job) hosts travellers; hire one for emeralds or CobbleDollars
+- [ ] **Graveyard**: a villager who dies leaves a grave; an Undertaker (new job) can bring them back, job and level kept
+- [ ] **Village quests**: villagers post jobs for players (bring items, beat a trainer, clear monsters) for rewards
+
+## Milestone 10 — Defence
+- [ ] Guard kinds by gear: Knight (sword and shield, blocks), Archer (exists), Medic (heals other guards with potions),
+  Cavalry (on a horse); a Barracks blueprint with several Guard Posts
+- [ ] Training: guards spar on a Training Dummy between fights for XP
+- [ ] Village raids: monster raids on bigger villages at night, scaled by village size and guard strength, the bell
+  rung as warning; vanilla pillager raids answered by every guard
+- [ ] Walls and gates: blueprints; guards shut the gates at night
+
+## Milestone 11 — Research
+- [ ] **Scholar** (new job, University): a research tree paid in paper, books and emeralds unlocking village-wide
+  bonuses (faster builders, bigger bags, more partners, tougher guards, new blueprints)
+
+## Milestone 12 — More to build
+- [ ] Every starter building in 2–3 styles (timber, stone, Cobblemon-themed) up to tier III, and the new jobs' buildings
+- [ ] Houses in tiers and decorations (wells, lamp posts, benches, market squares)
+- [ ] Builders lay paths between the village's buildings
+
 ## Milestone 5 — Release
 - [ ] Publish on Modrinth and CurseForge as **Alive Workplace** (Minecraft brand rules: don't lead the name with "Minecraft")
 - [x] Screenshots/GIFs through the README, and an at-a-glance table of every job (workstation, what goes in the chests,
@@ -375,6 +448,9 @@ Villagers work as a unit: what one worker makes, the others can use. No particul
   structure, because packs add their own villages. Village farmers harvest into nearby chests.
 - *My NPCs* does some of what we want "in a different way" the owner doesn't love: rebuild the roles that fit the pack
   as villager jobs (Milestone 2b), not as admin-configured NPCs.
+- **As big as MineColonies, if not bigger** (2026-09-28), built in parts (Milestones 7–12). Ideas can come from
+  MineColonies (GPL-3.0; code only adapted with attribution); what stays ours: it runs on Fabric 1.21.1 in the pack,
+  works with the villagers and villages already in the world, and Cobblemon runs through every part.
 
 ## Notes / blocked
 - (autonomous sessions: write anything you could not finish or need the owner to decide here)

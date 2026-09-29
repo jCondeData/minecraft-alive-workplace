@@ -22,6 +22,7 @@ public final class ModTrades {
 		porterTrades();
 		carpenterTrades();
 		chefTrades();
+		fossilScientistTrades();
 		TradeOfferHelper.registerVillagerOffers(ModVillagers.BARD, 1, offers -> {
 			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 2), new ItemStack(Items.NOTE_BLOCK, 2), 12, 2, 0.05f));
 			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.STRING, 16), new ItemStack(Items.EMERALD), 16, 2, 0.05f));
@@ -110,6 +111,22 @@ public final class ModTrades {
 			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 2), new ItemStack(Items.CAKE), 6, 20, 0.05f)));
 		TradeOfferHelper.registerVillagerOffers(ModVillagers.CHEF, 5, offers ->
 			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 3), new ItemStack(Items.GOLDEN_CARROT, 3), 12, 30, 0.05f)));
+	}
+
+	/** Fossil Scientists deal in what digging for fossils takes. */
+	private static void fossilScientistTrades() {
+		TradeOfferHelper.registerVillagerOffers(ModVillagers.FOSSIL_SCIENTIST, 1, offers -> {
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.BONE, 12), new ItemStack(Items.EMERALD), 16, 2, 0.05f));
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 3), new ItemStack(Items.BRUSH), 6, 1, 0.05f));
+		});
+		TradeOfferHelper.registerVillagerOffers(ModVillagers.FOSSIL_SCIENTIST, 2, offers ->
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 2), new ItemStack(Items.SUSPICIOUS_SAND), 6, 10, 0.05f)));
+		TradeOfferHelper.registerVillagerOffers(ModVillagers.FOSSIL_SCIENTIST, 3, offers ->
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 2), new ItemStack(Items.SUSPICIOUS_GRAVEL), 6, 15, 0.05f)));
+		TradeOfferHelper.registerVillagerOffers(ModVillagers.FOSSIL_SCIENTIST, 4, offers ->
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.AMETHYST_SHARD, 8), new ItemStack(Items.EMERALD), 12, 20, 0.05f)));
+		TradeOfferHelper.registerVillagerOffers(ModVillagers.FOSSIL_SCIENTIST, 5, offers ->
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 10), new ItemStack(Items.SNIFFER_EGG), 2, 30, 0.05f)));
 	}
 
 	private static void minerTrades() {

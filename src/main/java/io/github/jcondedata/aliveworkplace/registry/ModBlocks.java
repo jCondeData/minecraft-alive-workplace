@@ -139,6 +139,11 @@ public final class ModBlocks {
 		"kitchen_stove", new BuildersBenchBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.SMOKER).lightLevel(state -> 7))
 	);
 
+	/** Workstation for the Fossil Scientist (with Cobblemon): fossils handed to them are revived here. */
+	public static final BuildersBenchBlock FOSSIL_LAB = register(
+		"fossil_lab", new BuildersBenchBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.SMOOTH_STONE).lightLevel(state -> 4))
+	);
+
 	private static <T extends Block> T register(String name, T block) {
 		Registry.register(BuiltInRegistries.BLOCK, AliveWorkplace.id(name), block);
 		Registry.register(BuiltInRegistries.ITEM, AliveWorkplace.id(name), new BlockItem(block, new Item.Properties()));

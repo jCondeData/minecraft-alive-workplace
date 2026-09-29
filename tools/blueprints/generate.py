@@ -1005,10 +1005,19 @@ def kitchen(b, style):
     b.set(2, 1, 3, "oak_stairs", facing="west", half="bottom", shape="straight", waterlogged=False)
 
 
+def fossil_lab(b, style):
+    """A Fossil Lab, a shelf of books and a glass case: the fossil scientist revives fossils here (with Cobblemon)."""
+    b.set(1, 1, 6, "aliveworkplace:fossil_lab", facing="east")
+    b.set(1, 1, 5, "bookshelf")
+    b.set(1, 1, 3, "glass")
+    b.set(1, 2, 3, "bone_block", axis="y")
+
+
 VILLAGE_HOUSES = {"trainers_house": trainers_house, "guard_house": guard_house, "clinic": clinic, "post_office": post_office,
                   "leaders_hall": leaders_hall, "school": school, "trade_hall": trade_hall, "orchard_house": orchard_house,
                   "ball_workshop": ball_workshop, "ferry_house": ferry_house, "storehouse": storehouse_room,
-                  "carpenters_workshop": carpenters_workshop, "kitchen": kitchen}
+                  "carpenters_workshop": carpenters_workshop, "kitchen": kitchen,
+                  "fossil_lab": fossil_lab}
 
 
 # --- Gametest fixtures ------------------------------------------------------------------

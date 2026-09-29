@@ -21,7 +21,7 @@ public class VillageCompatTests implements FabricGameTest {
 			String style = entry.getValue();
 			java.util.List<String> houses = new java.util.ArrayList<>(VillageHouses.houseNames());
 			houses.add("builders_workshop");
-			helper.assertTrue(houses.contains("leaders_hall") && houses.contains("school") && houses.contains("trade_hall") && houses.contains("ball_workshop"),
+			helper.assertTrue(houses.contains("leaders_hall") && houses.contains("school") && houses.contains("trade_hall") && houses.contains("ball_workshop") && houses.contains("fossil_lab"),
 				"Cobblemon is installed: the Pokémon houses should be in: " + houses);
 			for (String house : houses) {
 				String id = "aliveworkplace:village/" + style + "_" + house;

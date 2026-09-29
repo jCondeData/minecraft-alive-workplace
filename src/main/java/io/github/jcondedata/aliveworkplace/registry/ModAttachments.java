@@ -48,6 +48,14 @@ public final class ModAttachments {
 	public static final AttachmentType<Integer> ITEMS_CRAFTED = AttachmentRegistry.create(
 		AliveWorkplace.id("items_crafted"), builder -> builder.persistent(com.mojang.serialization.Codec.INT));
 
+	/** The fossils a Fossil Scientist is reviving (and finished ones waiting for their owners). */
+	public static final AttachmentType<java.util.List<io.github.jcondedata.aliveworkplace.fossil.Revival>> FOSSIL_REVIVALS = AttachmentRegistry.create(
+		AliveWorkplace.id("fossil_revivals"), builder -> builder.persistent(io.github.jcondedata.aliveworkplace.fossil.Revival.CODEC.listOf()));
+
+	/** How many fossils a Fossil Scientist has revived (shown above its head). */
+	public static final AttachmentType<Integer> FOSSILS_REVIVED = AttachmentRegistry.create(
+		AliveWorkplace.id("fossils_revived"), builder -> builder.persistent(com.mojang.serialization.Codec.INT));
+
 	/** How many items a Porter has carried to the storehouse (shown above its head). */
 	public static final AttachmentType<Integer> ITEMS_CARRIED = AttachmentRegistry.create(
 		AliveWorkplace.id("items_carried"), builder -> builder.persistent(com.mojang.serialization.Codec.INT));

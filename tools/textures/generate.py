@@ -1609,6 +1609,68 @@ def chef_overlay():
     save(img, "entity", "zombie_villager", "profession", "chef.png")
 
 
+# --- Fossil Lab: a lab bench with a microscope and a fossil in amber ------------------------------------
+def fossil_lab(face):
+    rnd = random.Random({"top": 381, "side": 382, "front": 383}[face])
+    img = Image.new("RGBA", (16, 16))
+    white, grey, dark = rgb("#e8e8e4"), rgb("#bfc3c2"), rgb("#5b6164")
+    for y in range(16):
+        for x in range(16):
+            img.putpixel((x, y), jitter(white if (x + 2 * y) % 7 else grey, rnd, 4))
+    for i in range(16):
+        for p in ((i, 0), (0, i), (15, i), (i, 15)):
+            img.putpixel(p, jitter(dark, rnd, 3))
+    if face == "top":
+        # A microscope (dark) and a lump of amber with a fossil shell in it
+        for y in range(2, 9):
+            img.putpixel((4, y), dark)
+            img.putpixel((5, y), dark)
+        for x in range(2, 8):
+            img.putpixel((x, 9), dark)
+        img.putpixel((6, 3), rgb("#7ec8e3"))
+        for y in range(8, 14):
+            for x in range(9, 14):
+                if (x - 11) ** 2 + (y - 11) ** 2 <= 6:
+                    img.putpixel((x, y), jitter(rgb("#e8a33a"), rnd, 8))
+        for (x, y) in ((10, 11), (11, 10), (12, 11), (11, 12)):
+            img.putpixel((x, y), rgb("#8a5a2b"))  # the spiral shell
+    else:
+        for x in range(1, 15):
+            img.putpixel((x, 3), jitter(dark, rnd, 3))
+        if face == "front":
+            # A glass tank with something growing in it
+            for y in range(6, 14):
+                for x in range(4, 12):
+                    img.putpixel((x, y), jitter(rgb("#8fd3e8"), rnd, 6))
+            for (x, y) in ((7, 9), (8, 9), (7, 10), (8, 10), (6, 11), (9, 11)):
+                img.putpixel((x, y), rgb("#4f7a3a"))
+            for x in range(4, 12):
+                img.putpixel((x, 5), dark)
+    save(img, "block", "fossil_lab_" + face + ".png")
+
+
+def fossil_scientist_overlay():
+    img = Image.new("RGBA", (64, 64), T)
+    rnd = random.Random(391)
+    coat, shade = rgb("#f2f2f2"), rgb("#d6d6d6")
+    # Goggles on the forehead (hat layer's front band)
+    for x in range(40, 48):
+        img.putpixel((x, 9), rgb("#3a3a3a"))
+    for (x, y) in ((41, 9), (42, 9), (45, 9), (46, 9)):
+        img.putpixel((x, y), rgb("#9ad7ff"))
+    # A white lab coat over the robe, with a pocket and a pen
+    for y in range(44, 64):
+        for x in range(4, 24):
+            img.putpixel((x, y), jitter(coat if (x + y) % 5 else shade, rnd, 3))
+    for y in range(47, 51):
+        for x in range(6, 10):
+            img.putpixel((x, y), jitter(shade, rnd, 2))
+    img.putpixel((7, 46), rgb("#2e6fd8"))
+    img.putpixel((7, 47), rgb("#2e6fd8"))
+    save(img, "entity", "villager", "profession", "fossil_scientist.png")
+    save(img, "entity", "zombie_villager", "profession", "fossil_scientist.png")
+
+
 def icon(blueprint):
     big = Image.new("RGBA", (128, 128), T)
     scaled = blueprint.resize((128, 128), Image.NEAREST)
@@ -1695,3 +1757,6 @@ if __name__ == "__main__":
     for face in ("top", "side", "front"):
         kitchen_stove(face)
     chef_overlay()
+    for face in ("top", "side", "front"):
+        fossil_lab(face)
+    fossil_scientist_overlay()

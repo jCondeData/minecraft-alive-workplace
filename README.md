@@ -6,8 +6,8 @@ torches. **Miners** dig out quarries, **Lumberjacks** cut down and replant trees
 your fields and **Fishermen** fish for you, dropping everything off in your chests. **Porters** gather it all in the village storehouse, **Carpenters** and **Masons** make what the builders are missing, **Chefs** cook for the village, **Postmen** carry mail
 between players' mailboxes, **Guards** keep monsters away, **Nurses** heal you (and your Pokémon),
 **Shopkeepers** run your shop, **Ferrymen** take you between villages, **Bards** play music and — with Cobblemon —
-**Trainers** battle you, **Move Tutors** teach your Pokémon new moves, **Ball Smiths** make Poké Balls and **Pokémon Traders** swap Pokémon with you. Villages grow workshops, guard houses, clinics, post offices, orchard houses, ferry houses, storehouses, carpenter's workshops and kitchens on their own — and with Cobblemon,
-trainer's houses, Trainer Leader halls, schools, trade halls and ball workshops (Repurposed Structures' villages too).
+**Trainers** battle you, **Move Tutors** teach your Pokémon new moves, **Ball Smiths** make Poké Balls, **Pokémon Traders** swap Pokémon with you and **Fossil Scientists** revive fossils. Villages grow workshops, guard houses, clinics, post offices, orchard houses, ferry houses, storehouses, carpenter's workshops and kitchens on their own — and with Cobblemon,
+trainer's houses, Trainer Leader halls, schools, trade halls, ball workshops and fossil labs (Repurposed Structures' villages too).
 
 ![Three builders putting up the starter blueprints](docs/media/timelapse.gif)
 
@@ -107,6 +107,7 @@ where they take tools and supplies from and where their work goes.
 | Move Tutor (Cobblemon) | Tutor's Desk | — | right-click them for lessons |
 | Ball Smith (Cobblemon) | Ball Workbench | apricorns and copper, iron, gold or diamonds | sneak-right-click them to choose the balls |
 | Pokémon Trader (Cobblemon) | Trade Board | — | right-click them to trade |
+| Fossil Scientist (Cobblemon) | Fossil Lab | — | hand them a fossil |
 
 Sneak-right-click a builder, miner, lumberjack, orchard keeper, farmer, fisherman or postman with an empty hand to see
 what they're doing and how to stop them. The recipes are in each job's section below (and in the recipe book).
@@ -405,6 +406,14 @@ Keeper (or Cobbleworkers' apricorn pickers) for a steady supply.
 **Orders.** Sneak-right-click the smith with an empty hand to pick which balls they make: click a ball to ask for it
 (it glows), click again to stop. With nothing picked they make whatever the chests have the makings for.
 
+## Fossil Scientists (with Cobblemon)
+Craft a **Fossil Lab** (glass, a brush and glass over three smooth stone) and a villager becomes a **Fossil Scientist**.
+Right-click them holding a fossil (for a Galar fossil, hold one half in each hand) and pay 8 emeralds (800 CobbleDollars
+with CobbleDollars): they revive it at the lab while they work, about three minutes for a novice and quicker as they
+level up. The Pokémon joins your party (or goes to your PC) the moment it's done, or the next time you're online. It's
+Cobblemon's own revival, the same Pokémon its machine gives. Right-click with an empty hand to see how it's going; sneak
+to trade. A scientist takes on three fossils at a time. Villages sometimes grow a fossil lab.
+
 ## Pokémon Traders (with Cobblemon)
 Craft a **Trade Board** (an item frame on planks) and place it near a villager without a job: they become a
 **Pokémon Trader**. Right-click them with an empty hand (sneak to buy Poké Balls and candies instead) to see today's
@@ -436,6 +445,7 @@ type suits it — each one cuts the time the work takes by 15%, up to three:
 | Porter | Fighting, Normal: each carries 3 more stacks a trip |
 | Carpenter, Mason | Fighting, Rock, Steel |
 | Chef | Fire, Normal |
+| Fossil Scientist | Rock, Psychic |
 | Postman | Flying: **air mail** — parcels for mailboxes outside the round go straight there instead of at dawn |
 | Miner, Fisherman (their furnaces) | Fire: each time the worker tends a furnace or smoker by the workstation, every Fire-type partner smelts 8 of what's in it on the spot, no coal needed |
 
@@ -509,7 +519,7 @@ Workplace's own code is about a tenth of that; the rest is what any 80 villagers
 around. (`PERF=true tools/packtest/run.sh` runs the test.)
 
 ## What's next
-Next up is the Fossil Scientist (with Cobblemon). See [ROADMAP.md](ROADMAP.md).
+See [ROADMAP.md](ROADMAP.md) for what's planned.
 
 ## Building from source
 ```

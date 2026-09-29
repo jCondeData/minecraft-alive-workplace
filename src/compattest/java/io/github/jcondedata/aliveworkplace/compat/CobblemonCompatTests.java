@@ -527,6 +527,39 @@ public class CobblemonCompatTests implements FabricGameTest {
 		helper.succeed();
 	}
 
+	/** A Fossil Scientist takes a Dome Fossil and the fee, works on it at the lab, and a Kabuto joins the player's party. */
+	@GameTest(template = AREA, timeoutTicks = 1200, batch = "fossil")
+	public void fossilScientistRevivesAFossil(GameTestHelper helper) {
+		int usual = io.github.jcondedata.aliveworkplace.fossil.FossilScientists.REVIVE_TICKS;
+		io.github.jcondedata.aliveworkplace.fossil.FossilScientists.REVIVE_TICKS = 60;
+		helper.setDayTime(2000);
+		BlockPos lab = new BlockPos(2, 2, 2);
+		helper.setBlock(lab, ModBlocks.FOSSIL_LAB);
+		Villager scientist = helper.spawn(EntityType.VILLAGER, new BlockPos(3, 2, 3));
+		Jobs.employ(helper.getLevel(), scientist, helper.absolutePos(lab), ModVillagers.FOSSIL_LAB_POI, ModVillagers.FOSSIL_SCIENTIST);
+		ServerPlayer player = helper.makeMockServerPlayerInLevel();
+		player.setGameMode(GameType.SURVIVAL); // (creative players keep what they hand over)
+		io.github.jcondedata.aliveworkplace.compat.cobbledollars.CobbleDollarsBank.add(player, 10_000);
+		var dome = net.minecraft.core.registries.BuiltInRegistries.ITEM.get(net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("cobblemon", "dome_fossil"));
+		helper.assertTrue(io.github.jcondedata.aliveworkplace.fossil.FossilScientists.isFossil(new net.minecraft.world.item.ItemStack(dome)), "a Dome Fossil isn't a fossil");
+		player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, new net.minecraft.world.item.ItemStack(dome, 2));
+		io.github.jcondedata.aliveworkplace.fossil.FossilScientists.handOver(player, scientist);
+		helper.assertTrue(io.github.jcondedata.aliveworkplace.fossil.FossilScientists.queue(scientist).size() == 1, "the scientist didn't take the fossil");
+		helper.assertTrue(player.getMainHandItem().getCount() == 1, "one fossil should be taken, not " + (2 - player.getMainHandItem().getCount()));
+		long left = io.github.jcondedata.aliveworkplace.compat.cobbledollars.CobbleDollarsBank.balance(player);
+		helper.assertTrue(left == 10_000 - 800, "a revival should cost 800 CobbleDollars, " + left + " left");
+		helper.succeedWhen(() -> {
+			boolean kabuto = false;
+			for (com.cobblemon.mod.common.pokemon.Pokemon p : com.cobblemon.mod.common.Cobblemon.INSTANCE.getStorage().getParty(player)) {
+				kabuto |= p.getSpecies().getName().equalsIgnoreCase("kabuto");
+			}
+			helper.assertTrue(kabuto, "no Kabuto in the party yet");
+			helper.assertTrue(io.github.jcondedata.aliveworkplace.fossil.FossilScientists.queue(scientist).isEmpty(), "the revival is still queued");
+			helper.assertTrue(scientist.getAttachedOrElse(io.github.jcondedata.aliveworkplace.registry.ModAttachments.FOSSILS_REVIVED, 0) == 1, "not counted");
+			io.github.jcondedata.aliveworkplace.fossil.FossilScientists.REVIVE_TICKS = usual;
+		});
+	}
+
 	/** With Cobblemon a chef also cooks in the Campfire Pot's way: Poké Bait from honey, mushrooms and wheat (the bottles come back). */
 	@GameTest(template = AREA, timeoutTicks = 2400)
 	public void chefCooksPokeBait(GameTestHelper helper) {

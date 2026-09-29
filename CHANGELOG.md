@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+## 0.75.0 — 2026-09-28
+
+### Added
+- **Fossil Scientists** (with Cobblemon): a new job at the Fossil Lab (glass, a brush and glass over three smooth
+  stone). Hand one a fossil (a Galar fossil's two halves, one in each hand) and 8 emeralds or 800 CobbleDollars, and they
+  revive it while they work; the Pokémon joins your party (or PC) when it's done, or the next time you're online. It's
+  Cobblemon's own revival. Villages with Cobblemon sometimes grow a fossil lab.
+
 ## 0.74.0 — 2026-09-28
 
 ### Added

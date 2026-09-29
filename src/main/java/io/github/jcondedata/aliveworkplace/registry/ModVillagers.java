@@ -338,6 +338,24 @@ public final class ModVillagers {
 		)
 	);
 
+	public static final ResourceLocation FOSSIL_LAB_ID = AliveWorkplace.id("fossil_lab");
+	public static final ResourceKey<PoiType> FOSSIL_LAB_POI = ResourceKey.create(Registries.POINT_OF_INTEREST_TYPE, FOSSIL_LAB_ID);
+	public static final PoiType FOSSIL_LAB_POI_TYPE = PointOfInterestHelper.register(FOSSIL_LAB_ID, 1, 1, ModBlocks.FOSSIL_LAB);
+
+	/** Revives fossils for players, for a price (only with Cobblemon installed). */
+	public static final VillagerProfession FOSSIL_SCIENTIST = Registry.register(
+		BuiltInRegistries.VILLAGER_PROFESSION,
+		AliveWorkplace.id("fossil_scientist"),
+		new VillagerProfession(
+			"fossil_scientist",
+			holder -> holder.is(FOSSIL_LAB_POI),
+			holder -> holder.is(FOSSIL_LAB_POI),
+			ImmutableSet.of(),
+			ImmutableSet.of(),
+			SoundEvents.BREWING_STAND_BREW
+		)
+	);
+
 	/**
 	 * Guards keep the night watch: on patrol from evening to mid-morning, asleep until early afternoon,
 	 * then out with the village. They fight whenever a monster shows up, whatever they are doing.
@@ -358,7 +376,7 @@ public final class ModVillagers {
 		return profession == BUILDER || profession == MINER || profession == LUMBERJACK || profession == POSTMAN
 			|| profession == NURSE || profession == SHOPKEEPER || profession == FERRYMAN
 			|| profession == TRAINER || profession == TRAINER_LEADER || profession == TUTOR || profession == POKEMON_TRADER
-			|| profession == ORCHARD_KEEPER || profession == BALL_SMITH || profession == PORTER || profession == CARPENTER || profession == CHEF;
+			|| profession == ORCHARD_KEEPER || profession == BALL_SMITH || profession == PORTER || profession == CARPENTER || profession == CHEF || profession == FOSSIL_SCIENTIST;
 	}
 
 	/**

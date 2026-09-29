@@ -63,6 +63,9 @@ public final class Partners {
 		if (profession == ModVillagers.CARPENTER || profession == VillagerProfession.MASON) {
 			return Set.of("fighting", "rock", "steel");
 		}
+		if (profession == ModVillagers.FOSSIL_SCIENTIST) {
+			return Set.of("rock", "psychic");
+		}
 		if (profession == ModVillagers.CHEF) {
 			return Set.of("fire", "normal");
 		}

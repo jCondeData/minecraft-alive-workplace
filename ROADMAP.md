@@ -274,7 +274,11 @@ workstation, like the rest of the mod.
   crafting + Cobblemon's Campfire Pot recipes found by recipe type id, no Cobblemon classes): cooks `Chefs.menu` in turn
   from its chests and the village's storehouses, up to 16 of each, a batch of up to 8 (halving to what there's makings
   for); a kitchen in village generation; Fire/Normal partners
-- [ ] Fossil Scientist
+- [x] Fossil Scientist (Fossil Lab; `fossil/`): a fossil in hand (+ the other half in the off hand for Galar ones) and 8
+  emeralds / 800 CD → a `Revival` in the villager's `FOSSIL_REVIVALS` attachment, worked off at the lab in WORK
+  (`REVIVE_TICKS` 3600, shorter by level/partners), delivered to the owner's party/PC when done and they're online;
+  Cobblemon's `Fossils` data and `PokemonProperties.create` (`compat/cobblemon/CobblemonFossils`), `FOSSIL_REVIVED`
+  posted; a fossil lab in village generation (Cobblemon only)
 - [x] Cobbleworkers compatibility (compat-tested with Cobbleworkers 2.0.5): courier routes can start or end at a
   Pasture Block (`work/Pastures`: every container within 8 blocks, where Cobbleworkers' Pokémon deposit); pastured
   Pokémon count as partners whether or not they work for Cobbleworkers. Cobbleworkers only deposits into chests,

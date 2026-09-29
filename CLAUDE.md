@@ -89,6 +89,8 @@ The owner (Jesse) does not write code: sessions are expected to work autonomousl
 - `craft/` — carpenters, masons and chefs: `Crafting` (plans from the game's recipes, two steps down; `KITCHEN` adds the
   smoker's and Cobblemon's Campfire Pot recipes by type id), `CrafterWork` (fetch, craft, deliver for a waiting builder;
   also run for vanilla Masons through `UpgradedJob`), `ChefWork`/`Chefs` (cook the menu into the stove's chests), `CarpenterPackages`
+- `fossil/` — Fossil Scientists (with Cobblemon): `Revival` (saved on the villager), `FossilScientists` (hand-over, payment,
+  delivery), `FossilWork`; Cobblemon's fossil data in `compat/cobblemon/CobblemonFossils`
 - `smith/` — the ball smith: `BallRecipes` (Cobblemon ball recipes by tag and tier), `BallSmithWork`, `BallSmithPackages`
 - `orchard/` — the orchard keeper: `Fruit` (what's ripe, picking it), `OrchardWork`, `OrchardPackages`; Cobblemon apricorns and
   berry plants in `compat/cobblemon/CobblemonOrchard`

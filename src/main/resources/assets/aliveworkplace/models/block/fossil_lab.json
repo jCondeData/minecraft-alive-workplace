@@ -1,0 +1,9 @@
+{
+  "parent": "minecraft:block/orientable_with_bottom",
+  "textures": {
+    "top": "aliveworkplace:block/fossil_lab_top",
+    "bottom": "aliveworkplace:block/fossil_lab_side",
+    "side": "aliveworkplace:block/fossil_lab_side",
+    "front": "aliveworkplace:block/fossil_lab_front"
+  }
+}

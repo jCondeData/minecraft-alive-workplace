@@ -559,5 +559,22 @@
   "message.aliveworkplace.chef.state.fetching": "fetching what %s %s take",
   "message.aliveworkplace.chef.state.crafting": "cooking %s %s",
   "message.aliveworkplace.chef.state.delivering": "putting %s %s away",
-  "message.aliveworkplace.chef.state.tidying": "putting things away"
+  "message.aliveworkplace.chef.state.tidying": "putting things away",
+  "block.aliveworkplace.fossil_lab": "Fossil Lab",
+  "entity.minecraft.villager.fossil_scientist": "Fossil Scientist",
+  "entity.minecraft.zombie_villager.fossil_scientist": "Zombie Fossil Scientist",
+  "message.aliveworkplace.fossil.title": "Fossil Scientist · %s revived",
+  "message.aliveworkplace.fossil.state.reviving": "reviving a %s for %s",
+  "message.aliveworkplace.fossil.state.waiting": "hand me a fossil to revive",
+  "message.aliveworkplace.fossil.state.done": "waiting for the owners to come by",
+  "message.aliveworkplace.fossil.no_cobblemon": "Fossil Scientists only work with Cobblemon installed.",
+  "message.aliveworkplace.fossil.unknown": "That's not a fossil I can revive.",
+  "message.aliveworkplace.fossil.other_half": "That's half a fossil: hold the other half in your other hand.",
+  "message.aliveworkplace.fossil.busy": "%s is already working on %s fossils. Come back when one is done.",
+  "message.aliveworkplace.fossil.cant_afford": "Reviving a fossil costs %s.",
+  "message.aliveworkplace.fossil.taken": "%s takes the %s: it'll be revived in about %s minutes of their work.",
+  "message.aliveworkplace.fossil.queued": "%s takes the %s: it'll be revived in about %s minutes of their work (%s ahead of it).",
+  "message.aliveworkplace.fossil.hint": "Hand %s a fossil to revive it, for %s.",
+  "message.aliveworkplace.fossil.progress": "Your %s: %s%% revived.",
+  "message.aliveworkplace.fossil.revived": "%s revived your fossil: %s joins you!"
 }

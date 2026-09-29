@@ -108,6 +108,23 @@ public final class BuilderEvents {
 				}
 				return InteractionResult.PASS;
 			}
+			if (io.github.jcondedata.aliveworkplace.fossil.FossilScientists.isScientist(villager)) {
+				// Right-click holding a fossil: hand it over. With an empty hand: collect what's ready. Sneak to trade instead.
+				ItemStack held = player.getItemInHand(hand);
+				if (io.github.jcondedata.aliveworkplace.fossil.FossilScientists.isFossil(held)) {
+					if (!level.isClientSide) {
+						io.github.jcondedata.aliveworkplace.fossil.FossilScientists.handOver((ServerPlayer) player, villager);
+					}
+					return InteractionResult.SUCCESS;
+				}
+				if (held.isEmpty() && !player.isShiftKeyDown()) {
+					if (!level.isClientSide) {
+						io.github.jcondedata.aliveworkplace.fossil.FossilScientists.check((ServerPlayer) player, villager);
+					}
+					return InteractionResult.SUCCESS;
+				}
+				return InteractionResult.PASS;
+			}
 			if (io.github.jcondedata.aliveworkplace.trader.PokemonTraders.isTrader(villager)) {
 				// Right-click with an empty hand: the day's Pokémon trades. Sneak to trade items instead.
 				if (player.getItemInHand(hand).isEmpty() && !player.isShiftKeyDown()) {

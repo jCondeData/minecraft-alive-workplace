@@ -29,6 +29,8 @@ abstract class VillagerGoalPackagesMixin {
 			cir.setReturnValue(io.github.jcondedata.aliveworkplace.smith.BallSmithPackages.work(speed));
 		} else if (profession == ModVillagers.ORCHARD_KEEPER) {
 			cir.setReturnValue(io.github.jcondedata.aliveworkplace.orchard.OrchardPackages.work(speed));
+		} else if (profession == ModVillagers.FOSSIL_SCIENTIST) {
+			cir.setReturnValue(io.github.jcondedata.aliveworkplace.fossil.FossilPackages.work(speed));
 		} else if (profession == ModVillagers.CHEF) {
 			cir.setReturnValue(io.github.jcondedata.aliveworkplace.craft.CarpenterPackages.chef(speed));
 		} else if (profession == ModVillagers.CARPENTER) {

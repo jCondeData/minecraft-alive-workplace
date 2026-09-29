@@ -40,6 +40,15 @@ public final class ModComponents {
 			.networkSynchronized(io.github.jcondedata.aliveworkplace.farm.FieldData.STREAM_CODEC).build()
 	);
 
+	/** A Patrol Map's route. */
+	public static final DataComponentType<io.github.jcondedata.aliveworkplace.guard.PatrolMapItem.Route> PATROL = Registry.register(
+		BuiltInRegistries.DATA_COMPONENT_TYPE,
+		AliveWorkplace.id("patrol"),
+		DataComponentType.<io.github.jcondedata.aliveworkplace.guard.PatrolMapItem.Route>builder()
+			.persistent(io.github.jcondedata.aliveworkplace.guard.PatrolMapItem.Route.CODEC)
+			.networkSynchronized(io.github.jcondedata.aliveworkplace.guard.PatrolMapItem.Route.STREAM_CODEC).build()
+	);
+
 	/** Where a Travel Ticket goes. */
 	public static final DataComponentType<io.github.jcondedata.aliveworkplace.travel.TicketData> TICKET = Registry.register(
 		BuiltInRegistries.DATA_COMPONENT_TYPE,

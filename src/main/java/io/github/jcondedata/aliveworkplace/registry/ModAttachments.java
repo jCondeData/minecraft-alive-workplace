@@ -128,6 +128,10 @@ public final class ModAttachments {
 	public static final AttachmentType<java.util.List<net.minecraft.resources.ResourceLocation>> RECENT_MEALS = AttachmentRegistry.create(
 		AliveWorkplace.id("recent_meals"), builder -> builder.persistent(net.minecraft.resources.ResourceLocation.CODEC.listOf()));
 
+	/** A guard's patrol route, from a Patrol Map (see {@code guard/PatrolMapItem}). */
+	public static final AttachmentType<java.util.List<net.minecraft.core.BlockPos>> PATROL_ROUTE = AttachmentRegistry.create(
+		AliveWorkplace.id("patrol_route"), builder -> builder.persistent(net.minecraft.core.BlockPos.CODEC.listOf()));
+
 	/** When a hired mercenary leaves (see {@code guard/Mercenaries}); absent for everyone else. */
 	public static final AttachmentType<Long> MERCENARY_UNTIL = AttachmentRegistry.create(
 		AliveWorkplace.id("mercenary_until"), builder -> builder.persistent(com.mojang.serialization.Codec.LONG));

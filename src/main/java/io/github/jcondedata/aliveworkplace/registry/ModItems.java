@@ -26,6 +26,11 @@ public final class ModItems {
 		BuiltInRegistries.ITEM, AliveWorkplace.id("scan_tool"), new io.github.jcondedata.aliveworkplace.blueprint.ScanToolItem(new Item.Properties().stacksTo(1))
 	);
 
+	/** A route for a guard to patrol. */
+	public static final io.github.jcondedata.aliveworkplace.guard.PatrolMapItem PATROL_MAP = Registry.register(
+		BuiltInRegistries.ITEM, AliveWorkplace.id("patrol_map"), new io.github.jcondedata.aliveworkplace.guard.PatrolMapItem(new Item.Properties().stacksTo(1))
+	);
+
 	/** Marks out a quarry for a Miner. */
 	public static final io.github.jcondedata.aliveworkplace.mine.QuarryMarkerItem QUARRY_MARKER = Registry.register(
 		BuiltInRegistries.ITEM, AliveWorkplace.id("quarry_marker"),
@@ -73,6 +78,7 @@ public final class ModItems {
 				output.accept(ModBlocks.BLUEPRINT_TABLE);
 				output.accept(BLANK_BLUEPRINT);
 				output.accept(SCAN_TOOL);
+				output.accept(PATROL_MAP);
 				output.accept(ModBlocks.MINERS_BENCH);
 				output.accept(QUARRY_MARKER);
 				output.accept(ModBlocks.CHOPPING_BLOCK);

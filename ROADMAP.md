@@ -621,6 +621,8 @@ ones we lack, our way.
 - [x] Repairs (`build/Upkeep`: an idle builder looks every 1200 ticks at the finished builds they look after within 48 of
   the bench; `BuildPlan.repair` fills only open spots, `BuildSite.repair` starts at STRUCTURE, no blueprint handed back;
   `builderRepairs` in the config, off in gametests)
+- [x] Patrol routes (`guard/PatrolMapItem`, component `patrol`, attachment `patrol_route`): by day `GuardPatrol` walks the
+  points in order (within 64 of the post); red outline while held
 - [x] Seven more research topics (`Research.Topic`: LOGISTICS → `PorterWork.capacity`, CRAFTSMANSHIP → `CrafterWork` craft
   timer, MEDICINE → `Sickness.dailyChance`, FORTIFICATION → `Guards.block`, COMMERCE → `MarketDays` + `Mercenaries.price`,
   EXPEDITIONS → `Netherworkers.expeditionFactor` (and explorers' rest), GREEN_THUMB → `CompostWork.layersPerBoneMeal`);

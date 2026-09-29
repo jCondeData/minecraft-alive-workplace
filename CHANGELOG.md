@@ -6,6 +6,7 @@
 - **Seven more research topics** for the scholars: Logistics (porters carry more), Craftsmanship (crafters faster),
   Medicine (less illness), Fortification (guards turn aside blows), Commerce (more market traders, cheaper mercenaries),
   Expeditions (explorers and netherworkers back sooner) and Green Thumb (more bone meal from compost).
+- **Patrol Map**: mark up to eight points and hand it to a guard; by day they walk your route.
 
 ## 0.129.0 — 2026-09-29
 

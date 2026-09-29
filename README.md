@@ -737,6 +737,11 @@ not just the ground round their post. The raid is over when the raiders are dead
 flee. The chronicle remembers every raid. In a **pillager raid** guards don't hide either: they patrol and fight
 anywhere in the raid's area. `villageRaids` in the config turns our raids off.
 
+**Patrol routes.** Craft a **Patrol Map** (a map and red dye), right-click the ground at up to eight places — the
+gate, the far field, the bridge — and sneak-right-click a guard with it: by day they walk your route point to point
+instead of wandering round their post (the route shows in red while you hold the map). The map keeps the route for the
+next guard; a blank map (sneak-right-click the ground to clear it) takes a guard's route away.
+
 **Mercenaries.** Short of guards? Open the Village Hall and click the iron sword: for 12 emeralds (or their worth in
 CobbleDollars) three **mercenaries** in iron — one with a shield — come to the hall and fight for the village like its
 own guards until the next dawn, then leave. One band at a time; their gear goes with them.

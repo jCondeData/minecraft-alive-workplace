@@ -391,6 +391,27 @@ def scan_tool_item():
     save(img, "item", "scan_tool.png")
 
 
+def patrol_map_item():
+    img = Image.new("RGBA", (16, 16), T)
+    rnd = random.Random(551)
+    # A folded map with a red dotted route between three flags
+    paper, edge = rgb("#e8dcb5"), rgb("#9c8a5a")
+    for y in range(2, 14):
+        for x in range(1, 15):
+            border = x in (1, 14) or y in (2, 13)
+            img.putpixel((x, y), jitter(edge if border else paper, rnd, 5))
+    for x in (5, 10):  # the folds
+        for y in range(3, 13):
+            img.putpixel((x, y), jitter(rgb("#d2c49a"), rnd, 4))
+    for x, y in ((3, 10), (4, 9), (6, 8), (7, 7), (8, 7), (9, 6), (11, 5), (12, 4)):
+        img.putpixel((x, y), rgb("#c22a2a"))
+    for fx, fy in ((3, 11), (8, 8), (12, 5)):
+        img.putpixel((fx, fy), rgb("#3a2a1a"))
+        img.putpixel((fx, fy - 1), rgb("#3a2a1a"))
+        img.putpixel((fx + 1, fy - 1), rgb("#e0b030"))
+    save(img, "item", "patrol_map.png")
+
+
 def field_marker_item():
     img = Image.new("RGBA", (16, 16), T)
     # A wooden stake with a green flag and a wheat ear
@@ -2701,6 +2722,7 @@ if __name__ == "__main__":
     ticket_item()
     settlers_wagon_item()
     scan_tool_item()
+    patrol_map_item()
     ferryman_overlay()
     delivery_note_item()
     price_tag_item()

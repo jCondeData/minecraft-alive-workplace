@@ -239,4 +239,30 @@ public class GuardGameTests implements FabricGameTest {
 		helper.assertTrue(io.github.jcondedata.aliveworkplace.guard.Guards.tendWounded(helper.getLevel(), medic) == null, "treated without potions");
 		helper.succeed();
 	}
+
+	/** A Patrol Map handed to a guard: by day they walk its points, the far corner of the area and back. */
+	@GameTest(template = AREA, timeoutTicks = 1600, batch = "guardPatrolRoute")
+	public void guardWalksThePatrolRoute(GameTestHelper helper) {
+		Villager guard = guard(helper);
+		BlockPos a = new BlockPos(18, 2, 18);
+		BlockPos b = new BlockPos(18, 2, 4);
+		net.minecraft.server.level.ServerPlayer player = helper.makeMockServerPlayerInLevel();
+		ItemStack map = new ItemStack(io.github.jcondedata.aliveworkplace.registry.ModItems.PATROL_MAP);
+		map.set(io.github.jcondedata.aliveworkplace.registry.ModComponents.PATROL, new io.github.jcondedata.aliveworkplace.guard.PatrolMapItem.Route(
+			java.util.Optional.of(helper.getLevel().dimension().location()), java.util.List.of(helper.absolutePos(a), helper.absolutePos(b))));
+		io.github.jcondedata.aliveworkplace.guard.PatrolMapItem.giveTo(player, guard, map);
+		helper.getLevel().getServer().getPlayerList().remove(player);
+		helper.assertTrue(guard.getAttachedOrElse(io.github.jcondedata.aliveworkplace.registry.ModAttachments.PATROL_ROUTE, java.util.List.of()).size() == 2,
+			"the route wasn't handed over");
+		boolean[] reached = {false, false};
+		helper.onEachTick(() -> {
+			if (guard.position().distanceTo(net.minecraft.world.phys.Vec3.atBottomCenterOf(helper.absolutePos(a))) < 3) {
+				reached[0] = true;
+			}
+			if (reached[0] && guard.position().distanceTo(net.minecraft.world.phys.Vec3.atBottomCenterOf(helper.absolutePos(b))) < 3) {
+				reached[1] = true;
+			}
+		});
+		helper.succeedWhen(() -> helper.assertTrue(reached[0] && reached[1], "reached the first point: " + reached[0] + ", the second: " + reached[1]));
+	}
 }

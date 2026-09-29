@@ -57,6 +57,8 @@ public class GuardPatrol extends Behavior<Villager> {
 	@Nullable
 	private BlockPos waypoint;
 	private int wait;
+	/** The next point of the guard's patrol route (see {@link PatrolMapItem}). */
+	private int routeIndex;
 	private int gearTimer;
 	@Nullable
 	private BlockPos gearChest;
@@ -145,6 +147,12 @@ public class GuardPatrol extends Behavior<Villager> {
 					return;
 				}
 			}
+			BlockPos routed = night ? null : nextOnRoute(villager, post);
+			if (routed != null) {
+				waypoint = routed;
+				walker.reset();
+				return;
+			}
 			int r = night ? 6 : 14;
 			int x = post.getX() + level.random.nextInt(r * 2 + 1) - r;
 			int z = post.getZ() + level.random.nextInt(r * 2 + 1) - r;
@@ -155,9 +163,32 @@ public class GuardPatrol extends Behavior<Villager> {
 			return;
 		}
 		if (walker.walkTo(level, villager, waypoint, 2.0) || walker.noSpot()) {
+			boolean routed = villager.hasAttached(io.github.jcondedata.aliveworkplace.registry.ModAttachments.PATROL_ROUTE);
 			waypoint = null;
-			wait = 60 + level.random.nextInt(100);
+			wait = routed ? 20 + level.random.nextInt(40) : 60 + level.random.nextInt(100);
 		}
+	}
+
+	/** The next point on the guard's route (within reach of the post), or null without a route. */
+	@Nullable
+	private BlockPos nextOnRoute(Villager villager, BlockPos post) {
+		java.util.List<BlockPos> route = villager.getAttached(io.github.jcondedata.aliveworkplace.registry.ModAttachments.PATROL_ROUTE);
+		if (route == null || route.isEmpty()) {
+			return null;
+		}
+		for (int tries = 0; tries < route.size(); tries++) {
+			BlockPos p = route.get(routeIndex++ % route.size());
+			if (p.closerThan(post, PatrolMapItem.MAX_DISTANCE)) {
+				return p;
+			}
+		}
+		return null;
+	}
+
+	/** Where the guard is heading now (tests). */
+	@Nullable
+	public BlockPos waypoint() {
+		return waypoint;
 	}
 
 	/** Whether sparring still teaches this guard anything. */

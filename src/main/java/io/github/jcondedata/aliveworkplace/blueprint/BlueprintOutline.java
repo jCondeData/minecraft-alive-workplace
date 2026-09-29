@@ -26,6 +26,7 @@ public final class BlueprintOutline {
 	private static final DustParticleOptions QUARRY = new DustParticleOptions(new Vector3f(0.9f, 0.3f, 0.2f), 1.0f);
 	private static final DustParticleOptions FIELD = new DustParticleOptions(new Vector3f(0.4f, 0.85f, 0.25f), 1.0f);
 	private static final DustParticleOptions SCAN = new DustParticleOptions(new Vector3f(0.75f, 0.35f, 1.0f), 1.0f);
+	private static final DustParticleOptions PATROL = new DustParticleOptions(new Vector3f(0.95f, 0.2f, 0.2f), 1.0f);
 	private static final int INTERVAL = 10;
 
 	/** A plain box outline (quarry markers). */
@@ -63,6 +64,17 @@ public final class BlueprintOutline {
 					if (field != null && field.dimension().map(level.dimension().location()::equals).orElse(false)) {
 						field.area().ifPresentOrElse(box -> box(level, player, box, FIELD),
 							() -> field.first().ifPresent(p -> box(level, player, new BoundingBox(p), FIELD)));
+					}
+					var patrol = stack.get(io.github.jcondedata.aliveworkplace.registry.ModComponents.PATROL);
+					if (patrol != null && patrol.dimension().map(level.dimension().location()::equals).orElse(false)) {
+						BlockPos last = null;
+						for (BlockPos p : patrol.points()) {
+							box(level, player, new BoundingBox(p), PATROL);
+							if (last != null) {
+								line(level, player, PATROL, last.getX() + 0.5, last.getY() + 0.1, last.getZ() + 0.5, p.getX() + 0.5, p.getY() + 0.1, p.getZ() + 0.5);
+							}
+							last = p;
+						}
 					}
 					var scan = stack.get(io.github.jcondedata.aliveworkplace.registry.ModComponents.SCAN);
 					if (scan != null && scan.dimension().map(level.dimension().location()::equals).orElse(false)) {

@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+## 0.82.0 — 2026-09-28
+
+### Added
+- **Weaponsmiths mend worn gear**: worn tools, weapons and armor in the chests by their grindstone, by the guards'
+  posts and at the other workers are mended with ingots (or planks, diamonds, leather...) from the village's chests —
+  a quarter of the durability per ingot, like an anvil — and put back where they were.
+- **Weaponsmiths make swords**: a guard with no weapon (and none in their chests) gets an iron sword, or a stone one.
+
 ## 0.81.0 — 2026-09-28
 
 ### Added

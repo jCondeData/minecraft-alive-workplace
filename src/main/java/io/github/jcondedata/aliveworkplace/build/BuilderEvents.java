@@ -180,11 +180,14 @@ public final class BuilderEvents {
 				return level.isClientSide ? InteractionResult.SUCCESS
 					: io.github.jcondedata.aliveworkplace.smelt.Smelters.hire((ServerPlayer) player, villager);
 			}
-			if (player.isShiftKeyDown() && !villager.isBaby() && villager.getVillagerData().getProfession() == net.minecraft.world.entity.npc.VillagerProfession.TOOLSMITH
-					&& player.getItemInHand(hand).is(net.minecraft.world.item.Items.IRON_INGOT)) {
+			if (player.isShiftKeyDown() && !villager.isBaby() && player.getItemInHand(hand).is(net.minecraft.world.item.Items.IRON_INGOT)
+					&& (villager.getVillagerData().getProfession() == net.minecraft.world.entity.npc.VillagerProfession.TOOLSMITH
+						|| villager.getVillagerData().getProfession() == net.minecraft.world.entity.npc.VillagerProfession.WEAPONSMITH)) {
+				String key = villager.getVillagerData().getProfession() == net.minecraft.world.entity.npc.VillagerProfession.TOOLSMITH
+					? "message.aliveworkplace.toolsmith.hired" : "message.aliveworkplace.weaponsmith.hired";
 				return level.isClientSide ? InteractionResult.SUCCESS
 					: io.github.jcondedata.aliveworkplace.work.Hiring.hire((ServerPlayer) player, villager,
-						net.minecraft.network.chat.Component.translatable("message.aliveworkplace.toolsmith.hired", villager.getDisplayName()));
+						net.minecraft.network.chat.Component.translatable(key, villager.getDisplayName()));
 			}
 			if (io.github.jcondedata.aliveworkplace.fish.Fishers.isFisherman(villager)) {
 				ItemStack held = player.getItemInHand(hand);

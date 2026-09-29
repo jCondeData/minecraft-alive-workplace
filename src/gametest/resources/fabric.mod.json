@@ -26,6 +26,7 @@
 			"io.github.jcondedata.aliveworkplace.test.ChefGameTests",
 			"io.github.jcondedata.aliveworkplace.test.SmelterGameTests",
 			"io.github.jcondedata.aliveworkplace.test.ToolsmithGameTests",
+			"io.github.jcondedata.aliveworkplace.test.WeaponsmithGameTests",
 			"io.github.jcondedata.aliveworkplace.test.OptionalModsGameTests"
 		]
 	},

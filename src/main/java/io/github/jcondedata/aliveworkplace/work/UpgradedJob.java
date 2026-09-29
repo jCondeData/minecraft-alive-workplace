@@ -29,6 +29,16 @@ public final class UpgradedJob {
 		return out.build();
 	}
 
+	/** {@link #work} with a second behaviour of ours (they take turns: each waits while the other is busy). */
+	public static ImmutableList<Pair<Integer, ? extends BehaviorControl<? super Villager>>> work(
+			ImmutableList<Pair<Integer, ? extends BehaviorControl<? super Villager>>> vanilla,
+			BehaviorControl<? super Villager> ours, BehaviorControl<? super Villager> alsoOurs, Predicate<Villager> vanillaMayRun) {
+		ImmutableList.Builder<Pair<Integer, ? extends BehaviorControl<? super Villager>>> out = ImmutableList.builder();
+		out.add(Pair.of(0, alsoOurs));
+		out.addAll(work(vanilla, ours, vanillaMayRun));
+		return out.build();
+	}
+
 	private UpgradedJob() {
 	}
 }

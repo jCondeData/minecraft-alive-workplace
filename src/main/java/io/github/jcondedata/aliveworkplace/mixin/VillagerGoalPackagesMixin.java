@@ -90,6 +90,11 @@ abstract class VillagerGoalPackagesMixin {
 			// Toolsmiths make the tools the village's workers are waiting for.
 			cir.setReturnValue(io.github.jcondedata.aliveworkplace.work.UpgradedJob.work(cir.getReturnValue(),
 				new io.github.jcondedata.aliveworkplace.craft.ToolsmithWork(), io.github.jcondedata.aliveworkplace.craft.CrafterWork::vanillaMayRun));
+		} else if (profession == VillagerProfession.WEAPONSMITH) {
+			// Weaponsmiths make swords for the guards and mend the village's worn gear.
+			cir.setReturnValue(io.github.jcondedata.aliveworkplace.work.UpgradedJob.work(cir.getReturnValue(),
+				new io.github.jcondedata.aliveworkplace.craft.WeaponsmithWork(), new io.github.jcondedata.aliveworkplace.mend.MendingWork(),
+				v -> io.github.jcondedata.aliveworkplace.craft.CrafterWork.vanillaMayRun(v) && !io.github.jcondedata.aliveworkplace.mend.MendingWork.isBusy(v)));
 		} else if (profession == VillagerProfession.FISHERMAN) {
 			cir.setReturnValue(io.github.jcondedata.aliveworkplace.work.UpgradedJob.work(cir.getReturnValue(),
 				new io.github.jcondedata.aliveworkplace.fish.FisherWork(), io.github.jcondedata.aliveworkplace.fish.Fishers::vanillaMayRun));

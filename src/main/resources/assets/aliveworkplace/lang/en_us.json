@@ -608,5 +608,19 @@
   "message.aliveworkplace.toolsmith.state.crafting": "making %s %s",
   "message.aliveworkplace.toolsmith.state.delivering": "taking %s %s to the worker who needs it",
   "message.aliveworkplace.toolsmith.state.tidying": "putting things away",
-  "message.aliveworkplace.toolsmith.hired": "%s makes tools for your workers now, from the iron and stone in your storehouse (diamonds only from their own chest)."
+  "message.aliveworkplace.toolsmith.hired": "%s makes tools for your workers now, from the iron and stone in your storehouse (diamonds only from their own chest).",
+  "message.aliveworkplace.weaponsmith.title": "Weaponsmith · %s mended",
+  "message.aliveworkplace.weaponsmith.state.idle": "nothing to mend",
+  "message.aliveworkplace.weaponsmith.state.fetching": "fetching a worn %s",
+  "message.aliveworkplace.weaponsmith.state.material": "fetching what mends the %s",
+  "message.aliveworkplace.weaponsmith.state.mending": "mending the %s",
+  "message.aliveworkplace.weaponsmith.state.returning": "bringing the %s back",
+  "message.aliveworkplace.weaponsmith.state.tidying": "putting things away",
+  "message.aliveworkplace.weaponsmith_crafting.title": "Weaponsmith · %s swords made",
+  "message.aliveworkplace.weaponsmith_crafting.state.idle": "no guard without a weapon",
+  "message.aliveworkplace.weaponsmith_crafting.state.fetching": "fetching what %s %s take",
+  "message.aliveworkplace.weaponsmith_crafting.state.crafting": "making %s %s",
+  "message.aliveworkplace.weaponsmith_crafting.state.delivering": "taking %s %s to the guard",
+  "message.aliveworkplace.weaponsmith_crafting.state.tidying": "putting things away",
+  "message.aliveworkplace.weaponsmith.hired": "%s mends your workers' gear and makes your guards' swords now."
 }

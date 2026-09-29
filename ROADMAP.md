@@ -372,8 +372,12 @@ loop: ore → ingots → the tools, weapons and armor the other workers wear out
   waiting in the worker's chests; iron/stone from its own chests, the storehouse and smelters; diamond only from its own
   chests; netherite left out — it needs a smithing recipe kind. Hiring for vanilla upgrades is now sneak-right-click
   with the trade's item (`work/Hiring`), so a plain right-click still trades)
-- [ ] **Weaponsmith** (grindstone): repairs worn tools, weapons and armor from workers' chests (two worn ones into one,
-  or with ingots at an anvil) and makes swords for guards
+- [x] **Weaponsmith** (grindstone): repairs worn tools, weapons and armor from workers' chests (two worn ones into one,
+  or with ingots at an anvil) and makes swords for guards (`mend/MendingWork`: anvil rule, a quarter of the durability
+  per unit of the item's repair material, up to 4; worn = a quarter used; looks in its own chests, guards' post chests
+  and village stashes, materials from its own chests, the storehouse and smelters; the piece goes back where it was.
+  `craft/WeaponsmithWork`: iron/stone swords for guards with no weapon and none in their chests. The two take turns
+  (`UpgradedJob.work` with two behaviours). Combining two worn pieces without material is left out)
 - [ ] **Fletcher** (fletching table): bows, crossbows and arrows for guards (flint from gravel, feathers, sticks);
   guards with arrows in their chests shoot tipped/spectral ones
 - [ ] **Shepherd** (loom): keeps sheep in a pen (Field Marker): shears them, breeds them with wheat up to a cap, dyes wool

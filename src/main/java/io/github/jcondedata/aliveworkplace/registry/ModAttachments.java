@@ -64,6 +64,10 @@ public final class ModAttachments {
 	public static final AttachmentType<Integer> ARMOR_MADE = AttachmentRegistry.create(
 		AliveWorkplace.id("armor_made"), builder -> builder.persistent(com.mojang.serialization.Codec.INT));
 
+	/** How many pieces a Weaponsmith has mended (shown above its head). */
+	public static final AttachmentType<Integer> ITEMS_MENDED = AttachmentRegistry.create(
+		AliveWorkplace.id("items_mended"), builder -> builder.persistent(com.mojang.serialization.Codec.INT));
+
 	/** How many items a Porter has carried to the storehouse (shown above its head). */
 	public static final AttachmentType<Integer> ITEMS_CARRIED = AttachmentRegistry.create(
 		AliveWorkplace.id("items_carried"), builder -> builder.persistent(com.mojang.serialization.Codec.INT));

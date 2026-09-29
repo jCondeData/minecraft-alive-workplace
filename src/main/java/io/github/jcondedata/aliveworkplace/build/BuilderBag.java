@@ -107,6 +107,17 @@ public final class BuilderBag {
 		return out;
 	}
 
+	/** Removes and returns the first stack that passes {@code test} (empty if none does). */
+	public ItemStack takeFirst(java.util.function.Predicate<ItemStack> test) {
+		for (int i = 0; i < items.getContainerSize(); i++) {
+			ItemStack s = items.getItem(i);
+			if (!s.isEmpty() && test.test(s)) {
+				return items.removeItemNoUpdate(i);
+			}
+		}
+		return ItemStack.EMPTY;
+	}
+
 	public List<ItemStack> takeAll() {
 		return takeAllExcept(Set.of());
 	}

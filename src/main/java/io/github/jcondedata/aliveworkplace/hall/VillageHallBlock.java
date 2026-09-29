@@ -62,6 +62,15 @@ public class VillageHallBlock extends BaseEntityBlock {
 		return RenderShape.MODEL;
 	}
 
+	/** A hall taken away: its village leaves the caravans' list. */
+	@Override
+	protected void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean movedByPiston) {
+		if (!state.is(newState.getBlock()) && level instanceof net.minecraft.server.level.ServerLevel server) {
+			Caravans.Data.get(server).remove(pos);
+		}
+		super.onRemove(state, level, pos, newState, movedByPiston);
+	}
+
 	/** A new hall: the first line of the village's chronicle. */
 	@Override
 	public void setPlacedBy(Level level, BlockPos pos, BlockState state, @Nullable net.minecraft.world.entity.LivingEntity placer, ItemStack stack) {

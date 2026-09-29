@@ -148,6 +148,12 @@ workstations** (with the job each gives and where it is) and click one to give t
 middle of the screen **calls everyone home**: villagers whose bed or workstation is in the village but who wandered off
 are brought back beside the hall.
 
+**Caravans.** Villages with a Village Hall can supply each other. The **minecart** on the hall's screen opens its
+**trade routes**: every other village with a hall within 2048 blocks, with what its workers are waiting for. Click one
+to send it caravans: once a day a caravan takes that village what it's waiting for from your Storehouses' chests
+(keeping 16 of everything for yourselves, four stacks at most) and it arrives in their Storehouses' chests after a trip
+as long as the road. Both chronicles note the caravans. A village can send to three others.
+
 **The chronicle.** The book in the middle of the hall's screen opens the village's **chronicle**: what has happened
 there, newest first, day by day — the hall founded, babies born, villagers who died (and how) or came back from the
 grave, travellers who arrived and who hired them, buildings finished and who built them, quests done, research

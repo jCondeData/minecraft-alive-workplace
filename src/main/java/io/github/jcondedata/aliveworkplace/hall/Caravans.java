@@ -1,0 +1,364 @@
+package io.github.jcondedata.aliveworkplace.hall;
+
+import io.github.jcondedata.aliveworkplace.build.SupplyContainers;
+import io.github.jcondedata.aliveworkplace.registry.ModVillagers;
+import io.github.jcondedata.aliveworkplace.work.Requests;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.entity.ai.village.poi.PoiManager;
+import net.minecraft.world.entity.npc.Villager;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.saveddata.SavedData;
+import org.jetbrains.annotations.Nullable;
+
+/**
+ * Caravans: villages with a Village Hall send each other what they need. Every hall in a dimension is on a list (with
+ * its name and what its workers are waiting for, kept up to date by its own round, so it's known even where the world
+ * isn't loaded). A trade route (set up on the hall's Trade Routes page) sends, once a day, whatever the other village is
+ * waiting for that this one has plenty of in its Storehouses' chests — up to {@link #CARGO_STACKS} stacks — and the
+ * caravan arrives after a trip as long as the road ({@link #travelTicks}), into the other village's Storehouse chests.
+ * Both chronicles note it.
+ */
+public final class Caravans {
+	/** How far apart villages can trade. */
+	public static int RANGE = 2048;
+	/** Most stacks one caravan carries. */
+	public static final int CARGO_STACKS = 4;
+	/** A village keeps this many of anything back for itself. */
+	public static final int KEEP = 16;
+	/** Most trade routes out of one village. */
+	public static final int MAX_ROUTES = 3;
+
+	/** What a village is waiting for: {@code count} of {@code item}. */
+	public record Want(Item item, int count) {
+	}
+
+	/** A village on the list: its hall, name and wants, and when it last sent a caravan. */
+	public record Village(BlockPos hall, Component name, List<Want> wants, long lastCaravanDay) {
+	}
+
+	/** Goods on the road. */
+	public record Shipment(BlockPos from, BlockPos to, List<ItemStack> goods, long arrives) {
+	}
+
+	/** The list of villages, routes and caravans on the road in one dimension. */
+	public static final class Data extends SavedData {
+		private static final String NAME = "aliveworkplace_caravans";
+		final Map<BlockPos, Village> villages = new LinkedHashMap<>();
+		final Map<BlockPos, Set<BlockPos>> routes = new LinkedHashMap<>();
+		final List<Shipment> onTheRoad = new ArrayList<>();
+
+		public static Data get(ServerLevel level) {
+			return level.getDataStorage().computeIfAbsent(new SavedData.Factory<>(Data::new, Data::load, null), NAME);
+		}
+
+		public List<Village> villages() {
+			return List.copyOf(villages.values());
+		}
+
+		@Nullable
+		public Village village(BlockPos hall) {
+			return villages.get(hall);
+		}
+
+		public Set<BlockPos> routesFrom(BlockPos hall) {
+			return Set.copyOf(routes.getOrDefault(hall, Set.of()));
+		}
+
+		public List<Shipment> onTheRoad() {
+			return List.copyOf(onTheRoad);
+		}
+
+		void update(BlockPos hall, Component name, List<Want> wants) {
+			Village old = villages.get(hall);
+			villages.put(hall.immutable(), new Village(hall.immutable(), name, List.copyOf(wants), old == null ? -1 : old.lastCaravanDay()));
+			setDirty();
+		}
+
+		/** Notes what a village wants (tests, and the hall's round). */
+		public void setWants(BlockPos hall, Component name, List<Want> wants) {
+			update(hall, name, wants);
+		}
+
+		void sent(BlockPos hall, long day) {
+			Village v = villages.get(hall);
+			if (v != null) {
+				villages.put(hall, new Village(v.hall(), v.name(), v.wants(), day));
+				setDirty();
+			}
+		}
+
+		public void remove(BlockPos hall) {
+			villages.remove(hall);
+			routes.remove(hall);
+			routes.values().forEach(to -> to.remove(hall));
+			setDirty();
+		}
+
+		/** Starts or stops the route from {@code from} to {@code to}; true if it's on now. */
+		public boolean toggleRoute(BlockPos from, BlockPos to) {
+			Set<BlockPos> out = routes.computeIfAbsent(from.immutable(), k -> new LinkedHashSet<>());
+			boolean on;
+			if (out.remove(to)) {
+				on = false;
+			} else if (out.size() < MAX_ROUTES) {
+				out.add(to.immutable());
+				on = true;
+			} else {
+				return false;
+			}
+			setDirty();
+			return on;
+		}
+
+		void ship(Shipment shipment) {
+			onTheRoad.add(shipment);
+			setDirty();
+		}
+
+		/** The caravans for {@code hall} that have arrived by {@code now}, taken off the road. */
+		List<Shipment> arrived(BlockPos hall, long now) {
+			List<Shipment> out = new ArrayList<>();
+			onTheRoad.removeIf(s -> {
+				if (s.to().equals(hall) && s.arrives() <= now) {
+					out.add(s);
+					return true;
+				}
+				return false;
+			});
+			if (!out.isEmpty()) {
+				setDirty();
+			}
+			return out;
+		}
+
+		@Override
+		public CompoundTag save(CompoundTag tag, HolderLookup.Provider registries) {
+			ListTag list = new ListTag();
+			for (Village v : villages.values()) {
+				CompoundTag t = new CompoundTag();
+				t.putLong("hall", v.hall().asLong());
+				t.putString("name", Component.Serializer.toJson(v.name(), registries));
+				t.putLong("lastCaravanDay", v.lastCaravanDay());
+				ListTag wants = new ListTag();
+				for (Want w : v.wants()) {
+					CompoundTag wt = new CompoundTag();
+					wt.putString("item", BuiltInRegistries.ITEM.getKey(w.item()).toString());
+					wt.putInt("count", w.count());
+					wants.add(wt);
+				}
+				t.put("wants", wants);
+				ListTag to = new ListTag();
+				for (BlockPos p : routes.getOrDefault(v.hall(), Set.of())) {
+					CompoundTag pt = new CompoundTag();
+					pt.putLong("to", p.asLong());
+					to.add(pt);
+				}
+				t.put("routes", to);
+				list.add(t);
+			}
+			tag.put("villages", list);
+			ListTag road = new ListTag();
+			for (Shipment s : onTheRoad) {
+				CompoundTag t = new CompoundTag();
+				t.putLong("from", s.from().asLong());
+				t.putLong("to", s.to().asLong());
+				t.putLong("arrives", s.arrives());
+				ListTag goods = new ListTag();
+				for (ItemStack stack : s.goods()) {
+					if (!stack.isEmpty()) {
+						goods.add(stack.save(registries));
+					}
+				}
+				t.put("goods", goods);
+				road.add(t);
+			}
+			tag.put("road", road);
+			return tag;
+		}
+
+		static Data load(CompoundTag tag, HolderLookup.Provider registries) {
+			Data data = new Data();
+			ListTag list = tag.getList("villages", Tag.TAG_COMPOUND);
+			for (int i = 0; i < list.size(); i++) {
+				CompoundTag t = list.getCompound(i);
+				BlockPos hall = BlockPos.of(t.getLong("hall"));
+				Component name = Component.Serializer.fromJson(t.getString("name"), registries);
+				List<Want> wants = new ArrayList<>();
+				ListTag wl = t.getList("wants", Tag.TAG_COMPOUND);
+				for (int j = 0; j < wl.size(); j++) {
+					ResourceLocation id = ResourceLocation.tryParse(wl.getCompound(j).getString("item"));
+					if (id != null && BuiltInRegistries.ITEM.containsKey(id)) {
+						wants.add(new Want(BuiltInRegistries.ITEM.get(id), wl.getCompound(j).getInt("count")));
+					}
+				}
+				data.villages.put(hall, new Village(hall, name == null ? Component.empty() : name, List.copyOf(wants), t.getLong("lastCaravanDay")));
+				ListTag rl = t.getList("routes", Tag.TAG_COMPOUND);
+				for (int j = 0; j < rl.size(); j++) {
+					data.routes.computeIfAbsent(hall, k -> new LinkedHashSet<>()).add(BlockPos.of(rl.getCompound(j).getLong("to")));
+				}
+			}
+			ListTag road = tag.getList("road", Tag.TAG_COMPOUND);
+			for (int i = 0; i < road.size(); i++) {
+				CompoundTag t = road.getCompound(i);
+				List<ItemStack> goods = new ArrayList<>();
+				ListTag gl = t.getList("goods", Tag.TAG_COMPOUND);
+				for (int j = 0; j < gl.size(); j++) {
+					ItemStack.parse(registries, gl.getCompound(j)).ifPresent(goods::add);
+				}
+				data.onTheRoad.add(new Shipment(BlockPos.of(t.getLong("from")), BlockPos.of(t.getLong("to")), goods, t.getLong("arrives")));
+			}
+			return data;
+		}
+	}
+
+	/** The shortest trip, in ticks. */
+	public static long MIN_TRAVEL = 1200;
+
+	/** How long a caravan takes over {@code blocks} of road: a minute at least, a tick for every two blocks beyond. */
+	public static long travelTicks(double blocks) {
+		return Math.max(MIN_TRAVEL, (long) (blocks / 2));
+	}
+
+	/** The villages {@code hall} can trade with, nearest first. */
+	public static List<Village> neighbours(ServerLevel level, BlockPos hall) {
+		return Data.get(level).villages().stream()
+			.filter(v -> !v.hall().equals(hall) && v.hall().distSqr(hall) <= (double) RANGE * RANGE)
+			.sorted(Comparator.comparingDouble(v -> v.hall().distSqr(hall)))
+			.toList();
+	}
+
+	/** What the village round {@code hall} is waiting for: its workers' requests, and food when the store runs low. */
+	static List<Want> wants(ServerLevel level, BlockPos hall, VillageHalls.Census census) {
+		Map<Item, Integer> out = new LinkedHashMap<>();
+		for (Requests.Request r : census.requests()) {
+			Item item = r.item();
+			if (item != null && item != Items.AIR) {
+				out.merge(item, r.count(), Math::max);
+			}
+		}
+		if (census.food() < VillageGrowth.FOOD_NEEDED) {
+			out.merge(Items.BREAD, VillageGrowth.FOOD_NEEDED, Math::max);
+		}
+		return out.entrySet().stream().limit(12).map(e -> new Want(e.getKey(), e.getValue())).toList();
+	}
+
+	/** The chests by the village's Storehouses (where caravans load and unload). */
+	static List<BlockPos> storehouse(ServerLevel level, BlockPos hall) {
+		Set<BlockPos> chests = new LinkedHashSet<>();
+		level.getPoiManager().findAll(h -> h.is(ModVillagers.STOREHOUSE_POI), p -> true, hall, VillageHalls.RADIUS, PoiManager.Occupancy.ANY)
+			.forEach(s -> chests.addAll(SupplyContainers.find(level, s.immutable(), null)));
+		return new ArrayList<>(chests);
+	}
+
+	/** The hall's round: its entry on the list brought up to date, caravans that have come unloaded, today's sent. */
+	public static void round(ServerLevel level, BlockPos hall, @Nullable VillageHalls.Census census) {
+		Data data = Data.get(level);
+		if (census != null) {
+			data.update(hall, VillageHalls.name(level, hall), wants(level, hall, census));
+		}
+		unload(level, hall, data);
+		long day = Chronicle.day(level);
+		Village us = data.village(hall);
+		if (us == null || us.lastCaravanDay() == day || data.routesFrom(hall).isEmpty()) {
+			return;
+		}
+		data.sent(hall, day);
+		for (BlockPos to : data.routesFrom(hall)) {
+			send(level, hall, to, data);
+		}
+	}
+
+	/** Loads a caravan for the village at {@code to} with what it wants and we have plenty of; null if there's nothing to send. */
+	@Nullable
+	static Shipment send(ServerLevel level, BlockPos hall, BlockPos to, Data data) {
+		Village them = data.village(to);
+		if (them == null) {
+			return null;
+		}
+		List<BlockPos> ours = storehouse(level, hall);
+		List<ItemStack> goods = new ArrayList<>();
+		for (Want want : them.wants()) {
+			if (goods.size() >= CARGO_STACKS) {
+				break;
+			}
+			long have = SupplyContainers.count(level, ours, want.item());
+			int spare = (int) Math.min(want.count(), Math.min(want.item().getDefaultMaxStackSize(), have - KEEP));
+			if (spare <= 0) {
+				continue;
+			}
+			int taken = SupplyContainers.extract(level, ours, want.item(), spare);
+			if (taken > 0) {
+				goods.add(new ItemStack(want.item(), taken));
+			}
+		}
+		if (goods.isEmpty()) {
+			return null;
+		}
+		Shipment shipment = new Shipment(hall.immutable(), to.immutable(), List.copyOf(goods), level.getGameTime() + travelTicks(Math.sqrt(hall.distSqr(to))));
+		data.ship(shipment);
+		level.playSound(null, hall, SoundEvents.LLAMA_CHEST, SoundSource.NEUTRAL, 1f, 1f);
+		Chronicle.record(level, hall, Chronicle.Kind.CARAVAN, Component.translatable("chronicle.aliveworkplace.caravan_left", them.name(), describe(goods)), true);
+		return shipment;
+	}
+
+	/** Unloads the caravans that have come to {@code hall} into its Storehouses' chests (what doesn't fit stays on the road). */
+	static void unload(ServerLevel level, BlockPos hall, Data data) {
+		List<Shipment> arrived = data.arrived(hall, level.getGameTime());
+		if (arrived.isEmpty()) {
+			return;
+		}
+		List<BlockPos> chests = storehouse(level, hall);
+		for (Shipment s : arrived) {
+			List<ItemStack> left = new ArrayList<>();
+			for (ItemStack stack : s.goods()) {
+				ItemStack rest = chests.isEmpty() ? stack.copy() : SupplyContainers.insert(level, chests, stack.copy());
+				if (!rest.isEmpty()) {
+					left.add(rest);
+				}
+			}
+			if (!left.isEmpty()) {
+				data.ship(new Shipment(s.from(), s.to(), left, level.getGameTime() + VillageNeeds.CHECK_EVERY));
+			}
+			if (left.size() < s.goods().size() || left.stream().mapToInt(ItemStack::getCount).sum() < s.goods().stream().mapToInt(ItemStack::getCount).sum()) {
+				Village from = data.village(s.from());
+				Chronicle.record(level, hall, Chronicle.Kind.CARAVAN, Component.translatable("chronicle.aliveworkplace.caravan_came",
+					from == null ? Component.translatable("chronicle.aliveworkplace.someone") : from.name(), describe(s.goods())), true);
+				level.playSound(null, hall, SoundEvents.LLAMA_CHEST, SoundSource.NEUTRAL, 1f, 1.2f);
+			}
+		}
+	}
+
+	/** "32 × Oak Log, 16 × Bread". */
+	static Component describe(List<ItemStack> goods) {
+		net.minecraft.network.chat.MutableComponent out = Component.empty();
+		for (int i = 0; i < goods.size(); i++) {
+			if (i > 0) {
+				out.append(", ");
+			}
+			out.append(Component.translatable("chronicle.aliveworkplace.goods", goods.get(i).getCount(), goods.get(i).getHoverName()));
+		}
+		return out;
+	}
+
+	private Caravans() {
+	}
+}

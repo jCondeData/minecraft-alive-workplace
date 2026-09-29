@@ -537,7 +537,12 @@ Every villager a person you get to know, the way MineColonies' citizens are — 
   `camp/settlers_camp` blueprint from `houses.py` placed at once facing the player if the spot is open enough; the
   chest's loot table `chests/settlers_wagon` has a Village Hall and two blueprints; the first settler is employed at
   the bench a tick later, when the bench is a workstation)
-- [ ] Caravans: villages with a Village Hall and a Travel Post send what they have plenty of to each other
+- [x] Caravans: villages with a Village Hall send each other what they need (`hall/Caravans`: every hall in a
+  dimension is on a saved list with its name and what its workers wait for, kept up to date by its round; the hall's
+  Trade Routes page (the minecart in the divider) starts or stops routes to villages within 2048 blocks, three at most;
+  once a day a caravan takes what the other village waits for from our Storehouses' chests, keeping 16 of each, four
+  stacks at most, and it arrives after a trip of a tick every two blocks (a minute at least) into their Storehouses'
+  chests; both chronicles note it. No Travel Post needed after all)
 - [x] Market days: a village with a Village Hall and a finished Market Square holds a market once a week, in the
   morning (`hall/MarketDays`, in the hall's round; the day depends on the hall so villages differ): two wandering
   traders come to the square until nightfall, each with a blueprint to sell as well (a starter building, often in a

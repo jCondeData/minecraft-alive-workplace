@@ -450,4 +450,56 @@ public class VillageHallGameTests implements net.fabricmc.fabric.api.gametest.v1
 		traders.forEach(net.minecraft.world.entity.Entity::discard);
 		helper.succeed();
 	}
+
+	/** A trade route: once a day a caravan takes the other village what it's waiting for (keeping some back), and it arrives in its storehouse. */
+	@GameTest(template = AREA, timeoutTicks = 200, batch = "caravansCarryWhatAnotherVillageNeeds")
+	public void caravansCarryWhatAnotherVillageNeeds(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		int radius = VillageHalls.RADIUS;
+		long travel = io.github.jcondedata.aliveworkplace.hall.Caravans.MIN_TRAVEL;
+		VillageHalls.RADIUS = 6;
+		io.github.jcondedata.aliveworkplace.hall.Caravans.MIN_TRAVEL = 0;
+		Leftovers.after(helper, () -> {
+			VillageHalls.RADIUS = radius;
+			io.github.jcondedata.aliveworkplace.hall.Caravans.MIN_TRAVEL = travel;
+		});
+		ServerLevel level = helper.getLevel();
+		helper.setBlock(new BlockPos(3, 2, 3), ModBlocks.VILLAGE_HALL);
+		helper.setBlock(new BlockPos(5, 2, 3), ModBlocks.STOREHOUSE);
+		helper.setBlock(new BlockPos(5, 2, 5), Blocks.CHEST);
+		Container ours = helper.getBlockEntity(new BlockPos(5, 2, 5));
+		ours.setItem(0, new ItemStack(Items.OAK_LOG, 64));
+		ours.setItem(1, new ItemStack(Items.BREAD, 10));
+		helper.setBlock(new BlockPos(18, 2, 18), ModBlocks.VILLAGE_HALL);
+		helper.setBlock(new BlockPos(16, 2, 18), ModBlocks.STOREHOUSE);
+		helper.setBlock(new BlockPos(16, 2, 20), Blocks.CHEST);
+		Container theirs = helper.getBlockEntity(new BlockPos(16, 2, 20));
+		BlockPos a = helper.absolutePos(new BlockPos(3, 2, 3));
+		BlockPos b = helper.absolutePos(new BlockPos(18, 2, 18));
+		var data = io.github.jcondedata.aliveworkplace.hall.Caravans.Data.get(level);
+		helper.runAfterDelay(2, () -> {
+			data.setWants(a, Component.literal("Ashford"), java.util.List.of());
+			data.setWants(b, Component.literal("Bramble"), java.util.List.of(new io.github.jcondedata.aliveworkplace.hall.Caravans.Want(Items.OAK_LOG, 32),
+				new io.github.jcondedata.aliveworkplace.hall.Caravans.Want(Items.BREAD, 16)));
+			helper.assertTrue(io.github.jcondedata.aliveworkplace.hall.Caravans.neighbours(level, a).stream().anyMatch(v -> v.hall().equals(b)), "B isn't a neighbour");
+			helper.assertTrue(data.toggleRoute(a, b), "no route");
+			io.github.jcondedata.aliveworkplace.hall.Caravans.round(level, a, null);
+			helper.assertTrue(ours.countItem(Items.OAK_LOG) == 32 && ours.countItem(Items.BREAD) == 10, "loaded: " + ours.countItem(Items.OAK_LOG) + " logs, "
+				+ ours.countItem(Items.BREAD) + " bread (bread is short, so it stays)");
+			io.github.jcondedata.aliveworkplace.hall.Caravans.round(level, a, null);
+			helper.assertTrue(ours.countItem(Items.OAK_LOG) == 32, "two caravans in a day");
+		});
+		helper.runAfterDelay(40, () -> {
+			io.github.jcondedata.aliveworkplace.hall.Caravans.round(level, b, null);
+			helper.assertTrue(theirs.countItem(Items.OAK_LOG) == 32, "arrived: " + theirs.countItem(Items.OAK_LOG));
+			var chronicleA = ((io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(a)).chronicle();
+			var chronicleB = ((io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(b)).chronicle();
+			helper.assertTrue(chronicleA.stream().anyMatch(e -> e.kind() == io.github.jcondedata.aliveworkplace.hall.Chronicle.Kind.CARAVAN)
+				&& chronicleB.stream().anyMatch(e -> e.kind() == io.github.jcondedata.aliveworkplace.hall.Chronicle.Kind.CARAVAN), "not in the chronicles");
+			// A hall taken away leaves the list, and its routes go.
+			helper.setBlock(new BlockPos(18, 2, 18), Blocks.AIR);
+			helper.assertTrue(data.village(b) == null && data.routesFrom(a).isEmpty(), "B is still on the list");
+			helper.succeed();
+		});
+	}
 }

@@ -51,6 +51,8 @@ public final class VillageHallScreen {
 	public static final int CHRONICLE = 13;
 	/** "Call everyone home", left of the chronicle. */
 	public static final int RECALL = 11;
+	/** Trade routes, right of the chronicle. */
+	public static final int ROUTES = 15;
 	/** On a jobless villager's page: find them, and where the free workstations start. */
 	public static final int FIND = 8;
 	/** On the quests page: where the quests are. */
@@ -121,6 +123,12 @@ public final class VillageHallScreen {
 		menu.button(CHRONICLE, icon(Items.WRITTEN_BOOK, Component.translatable("screen.aliveworkplace.hall.chronicle"), ChatFormatting.WHITE,
 			line(Component.translatable("screen.aliveworkplace.hall.chronicle_hint", lines), ChatFormatting.GRAY)), p -> {
 			renderChronicle(menu, level, hall);
+			menu.broadcastChanges();
+		});
+		int routes = Caravans.Data.get(level).routesFrom(hall).size();
+		menu.button(ROUTES, icon(Items.CHEST_MINECART, Component.translatable("screen.aliveworkplace.hall.routes", routes), ChatFormatting.WHITE,
+			line(Component.translatable("screen.aliveworkplace.hall.routes_hint"), ChatFormatting.GRAY)), p -> {
+			renderRoutes(menu, level, hall);
 			menu.broadcastChanges();
 		});
 		menu.button(RECALL, icon(Items.BELL, Component.translatable("screen.aliveworkplace.hall.recall"), ChatFormatting.WHITE,
@@ -197,6 +205,60 @@ public final class VillageHallScreen {
 		if (stations.isEmpty()) {
 			menu.button(FIRST_PERSON + 4, icon(Items.PAPER, Component.translatable("screen.aliveworkplace.hall.no_free_stations"), ChatFormatting.GRAY,
 				line(Component.translatable("screen.aliveworkplace.hall.no_free_stations_hint"), ChatFormatting.DARK_GRAY)), null);
+		}
+	}
+
+	/** The trade routes page: the villages this one can trade with; a click starts or stops sending them what they need. */
+	public static void renderRoutes(ChoiceMenu menu, ServerLevel level, BlockPos hall) {
+		menu.clearButtons();
+		menu.button(0, icon(Items.ARROW, Component.translatable("screen.aliveworkplace.hall.back"), ChatFormatting.WHITE), p -> refresh(menu, level, hall, 0));
+		Caravans.Data data = Caravans.Data.get(level);
+		long onTheRoad = data.onTheRoad().stream().filter(s -> s.from().equals(hall) || s.to().equals(hall)).count();
+		menu.button(4, icon(Items.CHEST_MINECART, Component.translatable("screen.aliveworkplace.hall.routes_title", VillageHalls.name(level, hall)),
+			ChatFormatting.GOLD, line(Component.translatable("screen.aliveworkplace.hall.routes_about", Caravans.KEEP, Caravans.CARGO_STACKS), ChatFormatting.GRAY),
+			line(Component.translatable("screen.aliveworkplace.hall.routes_road", onTheRoad), ChatFormatting.GRAY)), null);
+		menu.divider(1);
+		List<Caravans.Village> neighbours = Caravans.neighbours(level, hall);
+		int slot = FIRST_PERSON;
+		for (Caravans.Village other : neighbours) {
+			if (slot >= ChoiceMenu.SIZE) {
+				break;
+			}
+			boolean sending = data.routesFrom(hall).contains(other.hall());
+			boolean receiving = data.routesFrom(other.hall()).contains(hall);
+			List<Component> lore = new ArrayList<>();
+			lore.add(line(where(hall, other.hall()), ChatFormatting.GRAY));
+			if (!other.wants().isEmpty()) {
+				net.minecraft.network.chat.MutableComponent wants = Component.empty();
+				for (int i = 0; i < Math.min(3, other.wants().size()); i++) {
+					Caravans.Want w = other.wants().get(i);
+					wants.append(i == 0 ? Component.empty() : Component.literal(", "))
+						.append(Component.translatable("chronicle.aliveworkplace.goods", w.count(), w.item().getDescription()));
+				}
+				lore.add(line(Component.translatable("screen.aliveworkplace.hall.route_wants", wants), ChatFormatting.YELLOW));
+			} else {
+				lore.add(line(Component.translatable("screen.aliveworkplace.hall.route_wants_nothing"), ChatFormatting.DARK_GRAY));
+			}
+			if (receiving) {
+				lore.add(line(Component.translatable("screen.aliveworkplace.hall.route_receiving"), ChatFormatting.AQUA));
+			}
+			lore.add(line(Component.translatable(sending ? "screen.aliveworkplace.hall.route_on" : "screen.aliveworkplace.hall.route_off"),
+				sending ? ChatFormatting.GREEN : ChatFormatting.GRAY));
+			ItemStack icon = icon(sending ? Items.CHEST_MINECART : Items.MINECART, other.name().copy(), sending ? ChatFormatting.GREEN : ChatFormatting.WHITE,
+				lore.toArray(Component[]::new));
+			menu.button(slot++, icon, p -> {
+				boolean on = data.toggleRoute(hall, other.hall());
+				boolean wasOn = sending;
+				p.displayClientMessage(Component.translatable(on ? "message.aliveworkplace.hall.route_started"
+					: wasOn ? "message.aliveworkplace.hall.route_stopped" : "message.aliveworkplace.hall.route_full", other.name(), Caravans.MAX_ROUTES)
+					.withStyle(on ? ChatFormatting.GREEN : ChatFormatting.YELLOW), true);
+				renderRoutes(menu, level, hall);
+				menu.broadcastChanges();
+			});
+		}
+		if (neighbours.isEmpty()) {
+			menu.button(FIRST_PERSON + 4, icon(Items.PAPER, Component.translatable("screen.aliveworkplace.hall.no_neighbours"), ChatFormatting.GRAY,
+				line(Component.translatable("screen.aliveworkplace.hall.no_neighbours_hint", Caravans.RANGE), ChatFormatting.DARK_GRAY)), null);
 		}
 	}
 

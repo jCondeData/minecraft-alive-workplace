@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+## 0.117.0 — 2026-09-29
+
+### Added
+- **Caravans**: villages with a Village Hall can supply each other. On the hall's Trade Routes page, pick villages to
+  send caravans to; once a day a caravan takes them what their workers are waiting for from your Storehouses.
+
 ## 0.116.0 — 2026-09-29
 
 ### Added

@@ -61,6 +61,7 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 			hall.needs = VillageNeeds.check(server, pos);
 			VillageQuests.tick(server, pos, hall);
 			MarketDays.tick(server, pos, hall);
+			Caravans.round(server, pos, VillageHalls.census(server, pos));
 			if (VillageGrowth.grow(server, pos, hall.needs, hall.lastBirth) != null) {
 				hall.lastBirth = level.getGameTime();
 				hall.births++;

@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+### Added
+- **What next?** on the Village Hall's screen (the compass): what the village lacks, most pressing first, and how to put
+  each right — a builder, beds, food, a Storehouse, guards, bandits, the ill, dark beds, jobs, a scholar, decorations,
+  upgrades and the next rank.
+
 ## 0.133.0 — 2026-09-29
 
 ### Added

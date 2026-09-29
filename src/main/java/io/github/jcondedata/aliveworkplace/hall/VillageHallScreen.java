@@ -55,6 +55,8 @@ public final class VillageHallScreen {
 	public static final int MERCENARIES = 12;
 	/** Call a festival (with a cake), right of the chronicle. */
 	public static final int FESTIVAL = 14;
+	/** What the village should do next, at the divider's right end. */
+	public static final int ADVICE = 16;
 	/** Draw a map of the village (for an empty map), at the divider's left end. */
 	public static final int MAP = 10;
 	/** Trade routes, right of the chronicle. */
@@ -162,6 +164,13 @@ public final class VillageHallScreen {
 			renderRoutes(menu, level, hall);
 			menu.broadcastChanges();
 		});
+		List<VillageAdvice.Tip> tips = VillageAdvice.tips(level, hall);
+		menu.button(ADVICE, icon(Items.COMPASS, Component.translatable("screen.aliveworkplace.hall.advice"), ChatFormatting.WHITE,
+			line(tips.isEmpty() ? Component.translatable("screen.aliveworkplace.hall.advice_none")
+				: Component.translatable("screen.aliveworkplace.hall.advice_count", tips.size(), tips.get(0).title()), ChatFormatting.GRAY)), p -> {
+			renderAdvice(menu, level, hall);
+			menu.broadcastChanges();
+		});
 		menu.button(MAP, icon(Items.FILLED_MAP, Component.translatable("screen.aliveworkplace.hall.map"), ChatFormatting.WHITE,
 			line(Component.translatable("screen.aliveworkplace.hall.map_hint"), ChatFormatting.GRAY)), p -> {
 			p.displayClientMessage(VillageMaps.draw(level, hall, p), false);
@@ -264,6 +273,25 @@ public final class VillageHallScreen {
 	}
 
 	/** The trade routes page: the villages this one can trade with; a click starts or stops sending them what they need. */
+	/** The "What next?" page: what the village lacks, most pressing first (see {@link VillageAdvice}). */
+	public static void renderAdvice(ChoiceMenu menu, ServerLevel level, BlockPos hall) {
+		menu.clearButtons();
+		menu.button(0, icon(Items.ARROW, Component.translatable("screen.aliveworkplace.hall.back"), ChatFormatting.WHITE), p -> refresh(menu, level, hall, 0));
+		menu.button(4, icon(Items.COMPASS, Component.translatable("screen.aliveworkplace.hall.advice_title", VillageHalls.name(level, hall)), ChatFormatting.GOLD,
+			line(Component.translatable("screen.aliveworkplace.hall.advice_about"), ChatFormatting.GRAY)), null);
+		menu.divider(1);
+		int slot = FIRST_PERSON;
+		for (VillageAdvice.Tip tip : VillageAdvice.tips(level, hall)) {
+			if (slot >= ChoiceMenu.SIZE) {
+				break;
+			}
+			menu.button(slot++, icon(tip.icon(), tip.title().copy(), ChatFormatting.YELLOW, line(tip.how(), ChatFormatting.GRAY)), null);
+		}
+		if (slot == FIRST_PERSON) {
+			menu.button(slot, icon(Items.EMERALD, Component.translatable("screen.aliveworkplace.hall.advice_none"), ChatFormatting.GREEN), null);
+		}
+	}
+
 	public static void renderRoutes(ChoiceMenu menu, ServerLevel level, BlockPos hall) {
 		menu.clearButtons();
 		menu.button(0, icon(Items.ARROW, Component.translatable("screen.aliveworkplace.hall.back"), ChatFormatting.WHITE), p -> refresh(menu, level, hall, 0));

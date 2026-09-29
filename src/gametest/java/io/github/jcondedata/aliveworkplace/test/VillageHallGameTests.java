@@ -260,6 +260,39 @@ public class VillageHallGameTests implements net.fabricmc.fabric.api.gametest.v1
 		});
 	}
 
+	/** "What next?": the hall says what the village lacks — a builder, beds, food, a store, guards, jobs, the next rank. */
+	@GameTest(template = AREA, timeoutTicks = 100, batch = "villageAdviceSaysWhatsMissing")
+	public void villageAdviceSaysWhatsMissing(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		int radius = VillageHalls.RADIUS;
+		VillageHalls.RADIUS = 16;
+		ServerLevel level = helper.getLevel();
+		ServerPlayer player = helper.makeMockServerPlayerInLevel();
+		Leftovers.after(helper, () -> {
+			VillageHalls.RADIUS = radius;
+			level.getServer().getPlayerList().remove(player);
+		});
+		helper.setBlock(HALL, ModBlocks.VILLAGE_HALL);
+		BlockPos hall = helper.absolutePos(HALL);
+		Villager first = helper.spawn(EntityType.VILLAGER, new BlockPos(5, 2, 5));
+		helper.spawn(EntityType.VILLAGER, new BlockPos(6, 2, 5));
+		java.util.function.Supplier<java.util.List<String>> keys = () -> io.github.jcondedata.aliveworkplace.hall.VillageAdvice.tips(level, hall).stream()
+			.map(io.github.jcondedata.aliveworkplace.hall.VillageAdvice.Tip::key).toList();
+		java.util.List<String> before = keys.get();
+		helper.assertTrue(before.containsAll(java.util.List.of("builder", "beds", "food", "storehouse", "guards", "jobless", "rank")), "advice: " + before);
+		helper.assertTrue(!before.contains("research") && !before.contains("beauty"), "too early for: " + before);
+		helper.assertTrue(before.indexOf("builder") == 0, "a builder comes first: " + before);
+		helper.setBlock(new BlockPos(3, 2, 3), ModBlocks.BUILDERS_BENCH);
+		io.github.jcondedata.aliveworkplace.build.Builders.employ(level, first, helper.absolutePos(new BlockPos(3, 2, 3)));
+		java.util.List<String> after = keys.get();
+		helper.assertTrue(!after.contains("builder") && after.contains("jobless"), "with a builder: " + after);
+		ChoiceMenu menu = VillageHallScreen.forTest(player, hall);
+		helper.assertTrue(menu.icon(VillageHallScreen.ADVICE).is(Items.COMPASS), "no advice button");
+		menu.press(VillageHallScreen.ADVICE, player);
+		helper.assertTrue(!menu.icon(VillageHallScreen.FIRST_PERSON).isEmpty(), "the advice page is empty");
+		helper.succeed();
+	}
+
 	/**
 	 * The hall draws a map of the village for an empty map: locked, centred on the hall, the land drawn, a banner on each
 	 * finished building (the workplaces named, homes not) and one for the hall.

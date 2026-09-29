@@ -798,6 +798,11 @@ grows), centred on the hall, with a banner on every building the builders finish
 white homes, blue school and library, pink healing, yellow stores and shops, lime farms, black towers and barracks,
 orange workshops, light blue wells and fountains — and the workplaces named. The map's tooltip has the legend.
 
+**What next?** The compass at the right end of the hall's middle row lists what the village lacks, most pressing first —
+a builder, beds, food in the store, a Storehouse, guards (one per ten villagers), a bandit camp nearby and where, the ill,
+villagers sleeping in the dark, the jobless, a scholar, decorations, the next upgrade of a finished building, and what
+the next rank still needs — each with how to put it right.
+
 **Festivals.** Every eight days a village with a Village Hall and at least six villagers holds a festival (the hall's
 firework button says when; click it with a cake to hold one sooner, at most every three days). After work the
 villagers gather round the bell for a feast from the store, music and dancing, and at dusk fireworks go up over the

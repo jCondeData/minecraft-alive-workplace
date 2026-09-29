@@ -72,6 +72,9 @@ public final class Partners {
 		if (profession == ModVillagers.PORTER) {
 			return Set.of("fighting", "normal"); // strong arms: more carried each trip
 		}
+		if (profession == ModVillagers.GUARD) {
+			return Set.of("fighting", "dragon"); // they join the fight (guard/GuardPartners)
+		}
 		if (profession == ModVillagers.POSTMAN) {
 			return Set.of("flying"); // air mail: parcels for far away go at once instead of at dawn
 		}

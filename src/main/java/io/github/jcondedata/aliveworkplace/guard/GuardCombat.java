@@ -226,9 +226,9 @@ public class GuardCombat extends Behavior<Villager> {
 		bow.hurtAndBreak(1, villager, EquipmentSlot.OFFHAND);
 	}
 
-	/** Counts a kill made with an arrow (called when a foe dies). */
+	/** Counts a kill made with an arrow or by a partner Pokémon's move (called when a foe dies). */
 	public static void onFoeKilled(ServerLevel level, LivingEntity foe, DamageSource source) {
-		if (source.getDirectEntity() instanceof net.minecraft.world.entity.projectile.AbstractArrow arrow
+		if ((source.getDirectEntity() instanceof net.minecraft.world.entity.projectile.AbstractArrow || source.is(GuardPartners.POKEMON_MOVE))
 			&& source.getEntity() instanceof Villager guard && Guards.isGuard(guard)) {
 			guard.setAttached(ModAttachments.GUARD_KILLS, guard.getAttachedOrElse(ModAttachments.GUARD_KILLS, 0) + 1);
 			BuilderLevels.addXp(level, guard, XP_PER_KILL, null);

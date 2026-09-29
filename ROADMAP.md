@@ -255,8 +255,11 @@ workstation, like the rest of the mod.
 - [x] Fire-type partners at the furnaces (`Furnaces.blaze`): each time a worker tends a furnace/smoker, each Fire-type
   Pokémon pastured near the workstation (up to 3) smelts 8 of the worker's goods in it at once, fuel-free, straight
   into the chests (only while there's room)
-- [ ] Partner follow-ups: guards fighting beside their Pokémon
-  Fighting/Dragon types
+- [x] Partner follow-ups: guards fighting beside their Pokémon — Fighting/Dragon types pastured near the Guard Post
+  follow up each hit the guard lands (melee or arrow, `ServerLivingEntityEvents.AFTER_DAMAGE`) with a move within 20
+  blocks: damage type `aliveworkplace:pokemon_move` (skips the hurt cooldown and knockback; the guard is the attacker),
+  2 + 0.06 × level (max 8), once a second per Pokémon, Cobblemon's attack animation, impact particles and sound
+  (`guard/GuardPartners`, `CobblemonPartners.fighters/useMove`)
 - [x] Pokémon-themed blueprints that come with staff: the Healing Center (Nurse; a Pokémon Center) and Supply Shop (Shop
   Counter; a Poké Mart that sells for CobbleDollars) were already there; added the **Berry Farm** (+ II, glow berry
   pergola; sold by Orchard Keepers at level 4) and the **Research Lab** (+ II, museum hall; Fossil Lab, sold by Fossil

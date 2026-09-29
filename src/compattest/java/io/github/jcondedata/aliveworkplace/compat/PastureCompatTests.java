@@ -9,6 +9,7 @@ import com.cobblemon.mod.common.block.PastureBlock;
 import com.cobblemon.mod.common.block.entity.PokemonPastureBlockEntity;
 import com.cobblemon.mod.common.pokemon.Pokemon;
 import io.github.jcondedata.aliveworkplace.build.BuilderLevels;
+import io.github.jcondedata.aliveworkplace.guard.GuardPartners;
 import io.github.jcondedata.aliveworkplace.mail.RouteData;
 import io.github.jcondedata.aliveworkplace.registry.ModAttachments;
 import io.github.jcondedata.aliveworkplace.registry.ModBlocks;
@@ -28,6 +29,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.monster.Husk;
 import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Blocks;
@@ -172,6 +174,42 @@ public class PastureCompatTests implements FabricGameTest {
 		helper.succeedWhen(() -> {
 			helper.assertTrue(target.countItem(CobblemonItems.ORAN_BERRY) == 20, target.countItem(CobblemonItems.ORAN_BERRY) + " berries delivered");
 			helper.assertTrue(target.countItem(CobblemonItems.RED_APRICORN) == 6, target.countItem(CobblemonItems.RED_APRICORN) + " apricorns delivered");
+		});
+	}
+
+	/**
+	 * Guards fight beside their Pokémon: a Machop pastured near the Guard Post follows up the guard's hit on a husk with a
+	 * move of its own (the damage counts as the guard's); a Pikachu there doesn't join in.
+	 */
+	@GameTest(template = AREA, timeoutTicks = 200, batch = "guard_partners")
+	public void pasturedPokemonFightBesideTheGuard(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		GuardPartners.reset();
+		BlockPos post = new BlockPos(2, 2, 2);
+		helper.setBlock(post, ModBlocks.GUARD_POST);
+		Villager guard = helper.spawn(EntityType.VILLAGER, new BlockPos(3, 2, 3));
+		Jobs.employ(level, guard, helper.absolutePos(post), ModVillagers.GUARD_POST_POI, ModVillagers.GUARD);
+		BlockPos pasture = pasture(helper, new BlockPos(10, 2, 10));
+		ServerPlayer player = helper.makeMockServerPlayerInLevel();
+		pastured(helper, pasture, player, "machop", Direction.NORTH);
+		pastured(helper, pasture, player, "pikachu", Direction.WEST);
+
+		helper.runAfterDelay(10, () -> {
+			Partners.forget(guard);
+			helper.assertTrue(Partners.helpers(guard).size() == 1, "partners: " + Partners.helpers(guard));
+			Husk husk = helper.spawn(EntityType.HUSK, new BlockPos(7, 2, 7));
+			husk.setNoAi(true);
+			float before = husk.getHealth();
+			husk.hurt(level.damageSources().mobAttack(guard), 1f);
+			// One move on top of the guard's hit (husks' armor takes a little off each); Pikachu's would make it two.
+			float lost = before - husk.getHealth();
+			float move = GuardPartners.damage(10);
+			helper.assertTrue(lost > 1f + 0.8f * move && lost < 1f + 1.5f * move, "husk lost " + lost + " health, one move is " + move);
+			helper.assertTrue(husk.getLastDamageSource() != null && husk.getLastDamageSource().is(GuardPartners.POKEMON_MOVE),
+				"last hit: " + husk.getLastDamageSource());
+			helper.assertTrue(husk.getLastHurtByMob() == guard, "the husk should turn on the guard, not the Pokémon");
+			husk.discard();
+			helper.succeed();
 		});
 	}
 }

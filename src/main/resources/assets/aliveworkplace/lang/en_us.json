@@ -588,5 +588,8 @@
   "blueprint.aliveworkplace.berry_farm": "Berry Farm",
   "blueprint.aliveworkplace.berry_farm_2": "Berry Farm II",
   "blueprint.aliveworkplace.research_lab": "Research Lab",
-  "blueprint.aliveworkplace.research_lab_2": "Research Lab II"
+  "blueprint.aliveworkplace.research_lab_2": "Research Lab II",
+  "death.attack.aliveworkplace.pokemonMove": "%1$s was knocked out by %2$s's Pokémon",
+  "death.attack.aliveworkplace.pokemonMove.player": "%1$s was knocked out by %2$s's Pokémon",
+  "death.attack.aliveworkplace.pokemonMove.item": "%1$s was knocked out by %2$s's Pokémon"
 }

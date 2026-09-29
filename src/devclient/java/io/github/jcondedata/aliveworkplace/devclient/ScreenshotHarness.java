@@ -78,7 +78,7 @@ public class ScreenshotHarness implements ClientModInitializer {
 			staffScene(mc, mc.getSingleplayerServer());
 			return;
 		}
-		if ("guard".equals(System.getProperty("aliveworkplace.scene"))) {
+		if ("guard".equals(System.getProperty("aliveworkplace.scene")) || "guard_pokemon".equals(System.getProperty("aliveworkplace.scene"))) {
 			guardScene(mc, mc.getSingleplayerServer());
 			return;
 		}
@@ -916,6 +916,20 @@ public class ScreenshotHarness implements ClientModInitializer {
 				guard.setItemSlot(net.minecraft.world.entity.EquipmentSlot.LEGS, new ItemStack(net.minecraft.world.item.Items.CHAINMAIL_LEGGINGS));
 				io.github.jcondedata.aliveworkplace.work.Jobs.employ(level, guard, post,
 					io.github.jcondedata.aliveworkplace.registry.ModVillagers.GUARD_POST_POI, io.github.jcondedata.aliveworkplace.registry.ModVillagers.GUARD);
+				// SCENE=guard_pokemon: a Machop and a Dratini in a pasture by the post fight beside the guard.
+				if ("guard_pokemon".equals(System.getProperty("aliveworkplace.scene"))) {
+					BlockPos pasture = new BlockPos(-3, -60, 2);
+					level.setBlockAndUpdate(pasture, with(with(cobblemonBlock("pasture"), "waterlogged", false), "part", com.cobblemon.mod.common.block.PastureBlock.PasturePart.BOTTOM));
+					level.setBlockAndUpdate(pasture.above(), with(with(cobblemonBlock("pasture"), "waterlogged", false), "part", com.cobblemon.mod.common.block.PastureBlock.PasturePart.TOP));
+					ServerPlayer player = server.getPlayerList().getPlayers().get(0);
+					for (String species : List.of("machop level=30", "dratini level=30")) {
+						var pokemon = com.cobblemon.mod.common.api.pokemon.PokemonProperties.Companion.parse(species, " ", "=").create();
+						com.cobblemon.mod.common.Cobblemon.INSTANCE.getStorage().getPC(player).add(pokemon);
+						if (level.getBlockEntity(pasture) instanceof com.cobblemon.mod.common.block.entity.PokemonPastureBlockEntity pen) {
+							pen.tether(player, pokemon, species.startsWith("machop") ? Direction.NORTH : Direction.WEST);
+						}
+					}
+				}
 				hover(server.getPlayerList().getPlayers().get(0), new Vec3(7.5, -55, 9.5), 145, 28);
 			});
 		}
@@ -960,6 +974,10 @@ public class ScreenshotHarness implements ClientModInitializer {
 					husks.add(EntityType.HUSK.spawn(level, p, MobSpawnType.COMMAND));
 				}
 			});
+		}
+		if (tick >= 150 && tick % 20 == 0 && "guard_pokemon".equals(System.getProperty("aliveworkplace.scene")) && guardForShot != null) {
+			// Follow the guard from close by, to see the Pokémon's moves land.
+			server.execute(() -> hover(server.getPlayerList().getPlayers().get(0), guardForShot.position().add(4, 2.5, 5), 141, 20));
 		}
 		if (tick > 100 && tick % 5 == 0 && doneAt < 0) {
 			shot(mc, String.format("frame_%03d", frame++));

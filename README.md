@@ -324,6 +324,14 @@ health and keep the night watch, sleeping in the late morning instead. Players, 
 Pokémon are safe from them. **Ring the village bell** and, while everyone else runs home to hide, the guards head
 for the bell and fight anything near it for a minute and a half.
 
+![A guard fighting husks with a Machop and a Dratini from a pasture joining in](docs/media/guard-pokemon.gif)
+
+**Fighting beside their Pokémon** (with Cobblemon): keep Fighting or Dragon types in a Pasture Block within 16 blocks
+of the Guard Post, and whenever the guard lands a hit on a monster within 20 blocks of them, up to three of them follow
+up with a move of their own — you see them turn, attack and the hit land, with Cobblemon's own effects. A move does 2
+damage at level 1, 5 at level 50 and 8 at level 100 (once a second each). Monsters turn on the guard, never on the
+Pokémon, and the kill counts as the guard's.
+
 ![A guard in an iron helmet, chestplate and boots](docs/media/guard-armor.png)
 
 The armor a guard wears shows on them: helmet, chestplate (with shoulder pieces on the folded arms), leggings under
@@ -458,6 +466,7 @@ type suits it — each one cuts the time the work takes by 15%, up to three:
 | Carpenter, Mason | Fighting, Rock, Steel |
 | Chef | Fire, Normal |
 | Fossil Scientist | Rock, Psychic |
+| Guard | Fighting, Dragon: they **fight beside the guard** (see *Guards*) |
 | Postman | Flying: **air mail** — parcels for mailboxes outside the round go straight there instead of at dawn |
 | Miner, Fisherman (their furnaces) | Fire: each time the worker tends a furnace or smoker by the workstation, every Fire-type partner smelts 8 of what's in it on the spot, no coal needed |
 

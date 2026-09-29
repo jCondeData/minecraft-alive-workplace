@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+## 0.78.0 — 2026-09-28
+
+### Added
+- **Guards fight beside their Pokémon** (with Cobblemon): Fighting and Dragon types kept in a Pasture Block near the
+  Guard Post follow up every hit the guard lands with a move of their own, animation and all. Stronger Pokémon hit
+  harder; monsters turn on the guard, not the Pokémon.
+
 ## 0.77.0 — 2026-09-28
 
 ### Added

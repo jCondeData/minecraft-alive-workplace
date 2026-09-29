@@ -1,0 +1,25 @@
+{
+  "order": 2,
+  "icon": "minecraft:sandstone",
+  "replace": [
+    {"from": "minecraft:chiseled_stone_bricks", "to": "minecraft:chiseled_sandstone"},
+    {"from": "minecraft:(cracked_|mossy_)?stone_bricks", "to": "minecraft:cut_sandstone"},
+    {"from": "minecraft:(mossy_)?stone_brick_(stairs|slab|wall)", "to": "minecraft:sandstone_$2"},
+    {"from": "minecraft:(mossy_)?cobblestone", "to": "minecraft:sandstone"},
+    {"from": "minecraft:(mossy_)?cobblestone_(stairs|slab|wall)", "to": "minecraft:sandstone_$2"},
+    {"from": "minecraft:stone", "to": "minecraft:smooth_sandstone"},
+    {"from": "minecraft:stone_(stairs|slab)", "to": "minecraft:smooth_sandstone_$1"},
+    {"from": "minecraft:smooth_stone(_slab)?", "to": "minecraft:smooth_sandstone$1"},
+    {"from": "minecraft:andesite", "to": "minecraft:sandstone"},
+    {"from": "minecraft:andesite_(stairs|slab|wall)", "to": "minecraft:sandstone_$1"},
+    {"from": "minecraft:polished_andesite", "to": "minecraft:cut_sandstone"},
+    {"from": "minecraft:polished_andesite_stairs", "to": "minecraft:smooth_sandstone_stairs"},
+    {"from": "minecraft:polished_andesite_slab", "to": "minecraft:cut_sandstone_slab"},
+    {"from": "minecraft:deepslate_tiles", "to": "minecraft:cut_red_sandstone"},
+    {"from": "minecraft:deepslate_tile_(stairs|slab)", "to": "minecraft:smooth_red_sandstone_$1"},
+    {"from": "minecraft:deepslate_tile_wall", "to": "minecraft:red_sandstone_wall"},
+    {"from": "minecraft:birch_planks", "to": "minecraft:smooth_sandstone"},
+    {"from": "minecraft:(stripped_)?(spruce|dark_oak)_(.+)", "to": "minecraft:$1jungle_$3"},
+    {"from": "minecraft:(stripped_)?oak_(.+)", "to": "minecraft:$1birch_$2"}
+  ]
+}

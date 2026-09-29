@@ -142,7 +142,8 @@ public class ScreenshotHarness implements ClientModInitializer {
 			villageScene(mc, mc.getSingleplayerServer());
 			return;
 		}
-		if ("gallery".equals(System.getProperty("aliveworkplace.scene")) || "decor".equals(System.getProperty("aliveworkplace.scene"))) {
+		if ("gallery".equals(System.getProperty("aliveworkplace.scene")) || "decor".equals(System.getProperty("aliveworkplace.scene"))
+			|| "styles".equals(System.getProperty("aliveworkplace.scene"))) {
 			galleryScene(mc, mc.getSingleplayerServer());
 			return;
 		}
@@ -1700,7 +1701,8 @@ public class ScreenshotHarness implements ClientModInitializer {
 
 	private void galleryScene(Minecraft mc, MinecraftServer server) {
 		tick++;
-		List<StarterBlueprints.Entry> all = "decor".equals(System.getProperty("aliveworkplace.scene")) ? StarterBlueprints.DECORATIONS : StarterBlueprints.ALL;
+		List<StarterBlueprints.Entry> all = "decor".equals(System.getProperty("aliveworkplace.scene")) ? StarterBlueprints.DECORATIONS
+			: "styles".equals(System.getProperty("aliveworkplace.scene")) ? styledGallery() : StarterBlueprints.ALL;
 		if (tick == 1) {
 			mc.options.renderDistance().set(6);
 			mc.options.cloudStatus().set(CloudStatus.OFF);
@@ -1713,9 +1715,17 @@ public class ScreenshotHarness implements ClientModInitializer {
 				level.getGameRules().getRule(GameRules.RULE_DOMOBSPAWNING).set(false, server);
 				level.setDayTime(3000);
 				for (int i = 0; i < all.size(); i++) {
+					BlockPos origin = new BlockPos(i * GALLERY_SPACING, -60, 0);
+					if (io.github.jcondedata.aliveworkplace.blueprint.BlueprintStyles.parse(all.get(i).id()).isPresent()) {
+						// A styled blueprint isn't a structure file: set its blocks one by one.
+						var blueprint = io.github.jcondedata.aliveworkplace.blueprint.BlueprintLibrary.get(level, all.get(i).id()).orElseThrow();
+						for (var e : blueprint.blocks()) {
+							level.setBlock(origin.offset(e.pos()), e.state(), 2);
+						}
+						continue;
+					}
 					net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate t =
 						level.getStructureManager().get(all.get(i).id()).orElseThrow();
-					BlockPos origin = new BlockPos(i * GALLERY_SPACING, -60, 0);
 					t.placeInWorld(level, origin, origin, new net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings(),
 						level.getRandom(), 2);
 				}
@@ -1745,7 +1755,7 @@ public class ScreenshotHarness implements ClientModInitializer {
 				center.add(dist * 0.55, e.size().getY() * 0.35 + 2, -dist), center));
 		}
 		if (tick >= 100 && (tick - 100) % 60 == 0 && (tick - 100) / 60 < all.size()) {
-			shot(mc, "30_" + all.get((tick - 100) / 60).id().getPath());
+			shot(mc, "30_" + all.get((tick - 100) / 60).id().getPath().replace('/', '_'));
 		}
 		// And from behind, where upgrades often add their part.
 		if (tick >= 105 && (tick - 105) % 60 == 0 && (tick - 105) / 60 < all.size()) {
@@ -1757,7 +1767,7 @@ public class ScreenshotHarness implements ClientModInitializer {
 				center.add(-dist * 0.55, e.size().getY() * 0.35 + 3, dist), center));
 		}
 		if (tick >= 118 && (tick - 118) % 60 == 0 && (tick - 118) / 60 < all.size()) {
-			shot(mc, "31_" + all.get((tick - 118) / 60).id().getPath() + "_back");
+			shot(mc, "31_" + all.get((tick - 118) / 60).id().getPath().replace('/', '_') + "_back");
 		}
 		if (tick == 30 || tick == 90) {
 			// Materials tooltip: the first call asks the server, a later one has the answer.
@@ -1771,6 +1781,18 @@ public class ScreenshotHarness implements ClientModInitializer {
 	}
 
 	private static final int GALLERY_SPACING = 48;
+
+	/** The Starter Cottage II and the Stone House II as drawn and in every style. */
+	private static List<StarterBlueprints.Entry> styledGallery() {
+		List<StarterBlueprints.Entry> out = new java.util.ArrayList<>();
+		for (StarterBlueprints.Entry base : List.of(StarterBlueprints.STARTER_COTTAGE_2, StarterBlueprints.STONE_HOUSE_2)) {
+			out.add(base);
+			for (var style : io.github.jcondedata.aliveworkplace.blueprint.BlueprintStyles.all()) {
+				out.add(new StarterBlueprints.Entry(io.github.jcondedata.aliveworkplace.blueprint.BlueprintStyles.styled(base.id(), style.name()), base.size()));
+			}
+		}
+		return out;
+	}
 
 	/** The middle of the gallery's {@code index}th build. */
 	private static Vec3 galleryCenter(int index, StarterBlueprints.Entry e) {

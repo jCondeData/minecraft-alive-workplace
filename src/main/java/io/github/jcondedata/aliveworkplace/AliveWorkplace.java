@@ -54,6 +54,7 @@ public class AliveWorkplace implements ModInitializer {
 		io.github.jcondedata.aliveworkplace.work.KeepLoaded.init();
 		io.github.jcondedata.aliveworkplace.guard.GuardPartners.init();
 		io.github.jcondedata.aliveworkplace.ranch.PokemonChores.init();
+		io.github.jcondedata.aliveworkplace.blueprint.BlueprintStyles.init();
 		if (io.github.jcondedata.aliveworkplace.trainer.Trainers.COBBLEMON) {
 			io.github.jcondedata.aliveworkplace.compat.cobblemon.CobblemonTrainers.init();
 		}

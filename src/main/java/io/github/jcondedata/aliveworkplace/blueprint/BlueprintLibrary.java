@@ -32,6 +32,13 @@ public final class BlueprintLibrary {
 	}
 
 	public static Optional<Blueprint> get(MinecraftServer server, ResourceLocation id) {
+		Optional<BlueprintStyles.Styled> styled = BlueprintStyles.parse(id);
+		if (styled.isPresent()) {
+			// A blueprint in another style: the base with its blocks swapped (as drawn if the style is gone).
+			Optional<BlueprintStyles.Style> style = BlueprintStyles.get(styled.get().style());
+			return get(server, styled.get().base()).map(b -> style.map(s -> BlueprintStyles.apply(s, b, id))
+				.orElseGet(() -> new Blueprint(id, b.size(), b.blocks(), b.entities())));
+		}
 		Optional<StructureTemplate> template;
 		try {
 			template = server.getStructureManager().get(id);

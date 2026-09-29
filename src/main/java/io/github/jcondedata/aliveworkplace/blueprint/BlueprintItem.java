@@ -140,6 +140,13 @@ public class BlueprintItem extends Item {
 			}
 			return InteractionResultHolder.sidedSuccess(stack, level.isClientSide);
 		}
+		if (player.isShiftKeyDown() && data.isPresent()) {
+			// Sneak-right-click the air (not placed): pick the style it's built in.
+			if (player instanceof net.minecraft.server.level.ServerPlayer server) {
+				StylePicker.open(server, hand);
+			}
+			return InteractionResultHolder.sidedSuccess(stack, level.isClientSide);
+		}
 		if (!player.isShiftKeyDown() && data.isPresent()) {
 			// Right-click the air: switch levelling the ground around this build on or off.
 			if (!level.isClientSide) {
@@ -171,6 +178,9 @@ public class BlueprintItem extends Item {
 	public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
 		data(stack).ifPresent(d -> {
 			d.size().ifPresent(s -> tooltip.add(Component.translatable("tooltip.aliveworkplace.blueprint.size", s.getX(), s.getY(), s.getZ()).withStyle(ChatFormatting.GRAY)));
+			tooltip.add(Component.translatable("tooltip.aliveworkplace.blueprint.style", BlueprintStyles.styleOf(d.structure())
+				.map(st -> (Component) Component.translatableWithFallback("style.aliveworkplace." + st, BlueprintStyles.prettify(st)))
+				.orElse(Component.translatable("style.aliveworkplace.as_drawn"))).withStyle(ChatFormatting.GRAY));
 			if (!d.levelGround()) {
 				tooltip.add(Component.translatable("tooltip.aliveworkplace.blueprint.no_levelling").withStyle(ChatFormatting.YELLOW));
 			}

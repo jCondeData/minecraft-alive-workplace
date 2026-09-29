@@ -29,7 +29,7 @@ public final class Decorations {
 
 	/** The beauty points a finished build of {@code blueprint} is worth (0 for anything that isn't a decoration). */
 	public static int points(ResourceLocation blueprint) {
-		return POINTS.getOrDefault(blueprint, 0);
+		return POINTS.getOrDefault(io.github.jcondedata.aliveworkplace.blueprint.BlueprintStyles.base(blueprint), 0);
 	}
 
 	/** The beauty of the village round the hall at {@code hall}: the points of the decorations finished within its reach. */

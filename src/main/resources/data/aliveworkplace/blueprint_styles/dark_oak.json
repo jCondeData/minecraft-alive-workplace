@@ -1,0 +1,18 @@
+{
+  "order": 3,
+  "icon": "minecraft:dark_oak_log",
+  "replace": [
+    {"from": "minecraft:(stripped_)?spruce_(.+)", "to": "minecraft:$1dark_oak_$2"},
+    {"from": "minecraft:(stripped_)?oak_(.+)", "to": "minecraft:$1spruce_$2"},
+    {"from": "minecraft:chiseled_stone_bricks", "to": "minecraft:chiseled_deepslate"},
+    {"from": "minecraft:mossy_stone_bricks", "to": "minecraft:deepslate_bricks"},
+    {"from": "minecraft:(cracked_)?stone_brick(s|_stairs|_slab|_wall)", "to": "minecraft:$1deepslate_brick$2"},
+    {"from": "minecraft:mossy_stone_brick_(stairs|slab|wall)", "to": "minecraft:deepslate_brick_$1"},
+    {"from": "minecraft:(mossy_)?cobblestone", "to": "minecraft:cobbled_deepslate"},
+    {"from": "minecraft:(mossy_)?cobblestone_(stairs|slab|wall)", "to": "minecraft:cobbled_deepslate_$2"},
+    {"from": "minecraft:stone", "to": "minecraft:deepslate"},
+    {"from": "minecraft:stone_(stairs|slab)", "to": "minecraft:cobbled_deepslate_$1"},
+    {"from": "minecraft:smooth_stone(_slab)?", "to": "minecraft:polished_deepslate$1"},
+    {"from": "minecraft:(polished_)?andesite(_stairs|_slab|_wall)?", "to": "minecraft:$1tuff$2"}
+  ]
+}

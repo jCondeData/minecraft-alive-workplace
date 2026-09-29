@@ -82,6 +82,16 @@ Table; II a lych-gate).
 the meeting bell or the Village Hall within 48 blocks (their bench if there's neither) — round water, trees and other
 buildings, turning only grass and dirt into path. Turn it off with `builderPaths` in the config.
 
+**Styles.** Any blueprint can be built in another style: **sneak-right-click the air** with it and pick **Stonework**
+(stone infill, slate roofs), **Sandstone** (sandstone and jungle wood, for the desert), **Dark Oak** (dark oak,
+deepslate and tuff), **Cherry** (cherry wood and pink roofs) or, with Cobblemon, **Apricorn** (apricorn wood and brick
+roofs) — or back to the timber it was drawn in. The builder builds it in those blocks, the materials list and the
+preview change with it, and its upgrades come in the same style. It works for your own blueprints too. Styles are data:
+a data pack can add its own (`data/<namespace>/blueprint_styles/<name>.json`, a list of block swaps — see ours in
+`src/main/resources/data/aliveworkplace/blueprint_styles/`).
+
+![The Starter Cottage II as drawn, in Stonework, Sandstone, Dark Oak and Cherry](docs/media/styles.png)
+
 **Decorations.** The Blueprint Table also has the small builds that make a village a place: a **Well** (II puts a
 roof over it, benches and lamp posts round it), a **Street Lamp**, a **Park Bench** between bushes, a **Fountain**, a
 **Gazebo** and a **Market Square** (a paved square with a fountain, two striped kiosks, benches, lamp posts, flower

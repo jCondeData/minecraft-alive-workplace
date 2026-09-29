@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+## 0.110.0 — 2026-09-29
+
+### Added
+- **Styles**: sneak-right-click the air with a blueprint to build it in **Stonework**, **Sandstone**, **Dark Oak**,
+  **Cherry** or (with Cobblemon) **Apricorn** wood instead of the timber it was drawn in — any blueprint, your own too.
+  Materials, preview and upgrades follow the style. Data packs can add styles (`blueprint_styles/*.json`).
+
 ## 0.109.0 — 2026-09-29
 
 ### Added

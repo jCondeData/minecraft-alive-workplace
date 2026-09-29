@@ -36,6 +36,7 @@
 			"io.github.jcondedata.aliveworkplace.test.FloristGameTests",
 			"io.github.jcondedata.aliveworkplace.test.RancherGameTests",
 			"io.github.jcondedata.aliveworkplace.test.VillageHallGameTests",
+			"io.github.jcondedata.aliveworkplace.test.StyleGameTests",
 			"io.github.jcondedata.aliveworkplace.test.SchoolGameTests",
 			"io.github.jcondedata.aliveworkplace.test.InnGameTests",
 			"io.github.jcondedata.aliveworkplace.test.GraveGameTests",

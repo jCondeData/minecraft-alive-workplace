@@ -46,6 +46,10 @@ public record BlueprintData(ResourceLocation structure, Optional<Vec3i> size, Op
 		return new BlueprintData(structure, size, newPlacement, levelGround);
 	}
 
+	public BlueprintData withStructure(ResourceLocation newStructure) {
+		return new BlueprintData(newStructure, size, placement, levelGround);
+	}
+
 	public BlueprintData withSize(Vec3i newSize) {
 		return new BlueprintData(structure, Optional.of(newSize), placement, levelGround);
 	}

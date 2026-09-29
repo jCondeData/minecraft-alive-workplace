@@ -1,0 +1,12 @@
+{
+  "order": 1,
+  "icon": "minecraft:stone_bricks",
+  "replace": [
+    {"from": "minecraft:birch_planks", "to": "minecraft:stone_bricks"},
+    {"from": "minecraft:white_terracotta", "to": "minecraft:polished_andesite"},
+    {"from": "minecraft:(spruce|dark_oak|oak|birch)_stairs", "to": "minecraft:deepslate_tile_stairs"},
+    {"from": "minecraft:(spruce|dark_oak|oak|birch)_slab", "to": "minecraft:deepslate_tile_slab"},
+    {"from": "minecraft:cobblestone", "to": "minecraft:stone_bricks"},
+    {"from": "minecraft:cobblestone_(stairs|slab|wall)", "to": "minecraft:stone_brick_$1"}
+  ]
+}

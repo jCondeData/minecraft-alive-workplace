@@ -1,0 +1,10 @@
+{
+  "order": 5,
+  "icon": "cobblemon:apricorn_log",
+  "requires": ["cobblemon"],
+  "replace": [
+    {"from": "minecraft:(stripped_)?(spruce|oak|dark_oak)_(log|wood|planks|stairs|slab|fence|fence_gate|door|trapdoor|pressure_plate|button)", "to": "cobblemon:$1apricorn_$3"},
+    {"from": "minecraft:deepslate_tiles", "to": "minecraft:bricks"},
+    {"from": "minecraft:deepslate_tile_(stairs|slab|wall)", "to": "minecraft:brick_$1"}
+  ]
+}

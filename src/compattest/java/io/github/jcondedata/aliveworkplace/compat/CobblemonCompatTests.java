@@ -757,4 +757,27 @@ public class CobblemonCompatTests implements FabricGameTest {
 		}
 		helper.succeed();
 	}
+
+	/** With Cobblemon, blueprints can be built in apricorn wood: every spruce, oak and dark oak block becomes apricorn. */
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
+	public void blueprintsComeInApricornWood(GameTestHelper helper) {
+		var styles = io.github.jcondedata.aliveworkplace.blueprint.BlueprintStyles.all().stream().map(s -> s.name()).toList();
+		helper.assertTrue(styles.contains("apricorn"), "styles: " + styles);
+		var id = io.github.jcondedata.aliveworkplace.blueprint.BlueprintStyles.styled(
+			io.github.jcondedata.aliveworkplace.blueprint.StarterBlueprints.STARTER_COTTAGE.id(), "apricorn");
+		var blueprint = io.github.jcondedata.aliveworkplace.blueprint.BlueprintLibrary.get(helper.getLevel(), id).orElseThrow();
+		java.util.Set<String> ids = blueprint.blocks().stream()
+			.map(e -> net.minecraft.core.registries.BuiltInRegistries.BLOCK.getKey(e.state().getBlock()).toString())
+			.collect(java.util.stream.Collectors.toSet());
+		helper.assertTrue(ids.contains("cobblemon:apricorn_planks") && ids.contains("cobblemon:apricorn_log") && ids.contains("cobblemon:apricorn_stairs"),
+			"apricorn cottage: " + ids);
+		helper.assertTrue(ids.stream().noneMatch(i -> i.startsWith("minecraft:spruce_")), "spruce left: " + ids);
+		// Every block still has a cost, so builders can build it.
+		var plan = io.github.jcondedata.aliveworkplace.build.BuildPlan.create(blueprint,
+			new io.github.jcondedata.aliveworkplace.blueprint.BlueprintData.Placement(helper.getLevel().dimension().location(), helper.absolutePos(BlockPos.ZERO),
+				net.minecraft.world.level.block.Rotation.NONE, net.minecraft.world.level.block.Mirror.NONE));
+		helper.assertTrue(plan.materials().keySet().stream().anyMatch(i -> net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(i).toString()
+			.equals("cobblemon:apricorn_planks")), "materials: " + plan.materials().keySet());
+		helper.succeed();
+	}
 }

@@ -1,0 +1,13 @@
+{
+  "order": 4,
+  "icon": "minecraft:cherry_log",
+  "replace": [
+    {"from": "minecraft:(stripped_)?(spruce|oak)_(.+)", "to": "minecraft:$1cherry_$3"},
+    {"from": "minecraft:dark_oak_(stairs|slab)", "to": "minecraft:cherry_$1"},
+    {"from": "minecraft:deepslate_tiles", "to": "minecraft:cherry_planks"},
+    {"from": "minecraft:deepslate_tile_(stairs|slab)", "to": "minecraft:cherry_$1"},
+    {"from": "minecraft:(mossy_)?cobblestone", "to": "minecraft:stone_bricks"},
+    {"from": "minecraft:(mossy_)?cobblestone_(stairs|slab|wall)", "to": "minecraft:stone_brick_$2"},
+    {"from": "minecraft:(polished_)?andesite(_stairs|_slab|_wall)?", "to": "minecraft:$1diorite$2"}
+  ]
+}

@@ -494,11 +494,14 @@ loop: ore → ingots → the tools, weapons and armor the other workers wear out
   part of saved data)
 
 ## Milestone 12 — More to build
-- [ ] Every starter building in 2–3 styles (timber, stone, Cobblemon-themed) up to tier III, and the new jobs' buildings
-  (done so far: village houses for the Florist, Rancher, Teacher, Innkeeper and Undertaker — `flower_shop`,
-  `ranch_house`, `schoolhouse`, `inn_room`, `mortuary` in `village.py`, weight 2 (the mortuary 1); starter builds with
-  upgrades: Schoolhouse, Library, Ranch, Apiary Garden, Flower Shop, Graveyard (and the Inn, Terrace, Town Hall). Still
-  to do: the 2–3 styles per starter building)
+- [x] Every starter building in 2–3 styles (timber, stone, Cobblemon-themed) up to tier III, and the new jobs' buildings
+  (village houses for the Florist, Rancher, Teacher, Innkeeper and Undertaker — `flower_shop`, `ranch_house`,
+  `schoolhouse`, `inn_room`, `mortuary` in `village.py`, weight 2 (the mortuary 1); starter builds with upgrades:
+  Schoolhouse, Library, Ranch, Apiary Garden, Flower Shop, Graveyard (and the Inn, Terrace, Town Hall). Styles for
+  every blueprint, not just the starter ones: `blueprint/BlueprintStyles` swaps blocks by regex rules from
+  `data/*/blueprint_styles/*.json` (Stonework, Sandstone, Dark Oak, Cherry; Apricorn needs Cobblemon); a styled
+  blueprint is the id `aliveworkplace:styled/<style>/<ns>/<path>`, resolved by `BlueprintLibrary`, so sites, previews,
+  materials and upgrades need nothing else; the style screen is `StylePicker` (sneak-right-click the air))
 - [x] Houses in tiers and decorations (wells, lamp posts, benches, market squares) (decorations: Well I–II, Street
   Lamp, Park Bench, Fountain, Gazebo, Market Square in `tools/blueprints/decor.py`, `StarterBlueprints.DECORATIONS`;
   near a Village Hall they add beauty, 1% wellbeing a point up to 10% (`hall/Decorations`). Houses: the Starter

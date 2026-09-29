@@ -11,6 +11,12 @@ public final class Blueprints {
 	 * exists, otherwise turns {@code houses/big_barn} into "Big Barn".
 	 */
 	public static Component displayName(ResourceLocation id) {
+		java.util.Optional<BlueprintStyles.Styled> styled = BlueprintStyles.parse(id);
+		if (styled.isPresent()) {
+			String style = styled.get().style();
+			return Component.translatable("blueprint.aliveworkplace.styled", displayName(styled.get().base()),
+				Component.translatableWithFallback("style.aliveworkplace." + style, BlueprintStyles.prettify(style)));
+		}
 		String key = "blueprint." + id.getNamespace() + "." + id.getPath().replace('/', '.');
 		return Component.translatableWithFallback(key, prettify(id));
 	}

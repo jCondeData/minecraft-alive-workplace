@@ -877,6 +877,13 @@ public class BuilderGameTests implements FabricGameTest {
 		buildStarter(helper, StarterBlueprints.STONE_HOUSE_3, new BlockPos(9, 2, 8));
 	}
 
+	/** A blueprint in another style is built like any other: the Stone House in dark oak and deepslate. */
+	@GameTest(template = BIG_AREA, timeoutTicks = 30000, batch = "styles")
+	public void buildsAStyledStoneHouse(GameTestHelper helper) {
+		buildStarter(helper, new StarterBlueprints.Entry(io.github.jcondedata.aliveworkplace.blueprint.BlueprintStyles.styled(StarterBlueprints.STONE_HOUSE.id(),
+			"dark_oak"), StarterBlueprints.STONE_HOUSE.size()));
+	}
+
 	@GameTest(template = BIG_AREA, timeoutTicks = 12000, batch = "decorations")
 	public void buildsWell(GameTestHelper helper) {
 		buildStarter(helper, StarterBlueprints.WELL_2);

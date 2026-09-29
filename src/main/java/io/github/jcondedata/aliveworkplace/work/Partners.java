@@ -84,6 +84,9 @@ public final class Partners {
 		if (profession == ModVillagers.PORTER) {
 			return Set.of("fighting", "normal"); // strong arms: more carried each trip
 		}
+		if (profession == ModVillagers.COMPOSTER) {
+			return Set.of("poison", "grass"); // Trubbish, Grimer, Gloom...: the compost rots quicker
+		}
 		if (profession == ModVillagers.NETHERWORKER) {
 			return Set.of("fire", "dark"); // Houndour, Magmar, Sneasel...: expeditions go quicker
 		}

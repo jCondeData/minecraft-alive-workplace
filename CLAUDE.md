@@ -79,7 +79,7 @@ The owner (Jesse) does not write code: sessions are expected to work autonomousl
 - `guard/` — guards: `VillageRaids` (monster raids on hall villages at night; `raidArea` widens where guards fight),
   `Gates` (the fence gates of finished Gatehouses/Palisade Gates shut at night; the builds are in `defence.py`),
   `GuardCombat` (in their CORE package, any activity), `GuardRally` (answering the bell), `GuardPatrol` (WORK: gear up, patrol),
-  `Guards` (who is a foe, damage, extra health); `VillagerPanicTriggerMixin` keeps them from panicking
+  `Guards` (who is a foe, damage, extra health), `Mercenaries` (hired at the hall till dawn); `VillagerPanicTriggerMixin` keeps them from panicking
 - `shop/` — player shops: `ShopCounterBlock`/`ShopCounterBlockEntity` (price list, sales log), `Shops` (offers from stock, sales,
   the CobbleDollars shop screen), `ShopLedger` (CobbleDollars owed to offline owners);
   mixins on `Villager.mobInteract` (refresh offers) and `AbstractVillager.notifyTrade` (move the goods and payment)
@@ -117,7 +117,7 @@ The owner (Jesse) does not write code: sessions are expected to work autonomousl
   `VillageNeeds.check`), `Traits` (one or two per villager from the UUID; read by `BuilderLevels`, `Walker`, `Guards`,
   `VillageNeeds`; off in gametests unless a test turns them on), `Sickness` (falling ill in the hall's round, half pace;
   cured by `nurse/NurseWork` with a remedy), `Families` (parents on babies; grown children take up the family trade),
-  `Moods` (each villager's mood from their day, in `BuilderLevels.delay`)
+  `Moods` (each villager's mood from their day, in `BuilderLevels.delay`), `Diet` (the last meals; variety lifts moods)
 - `research/` — the Scholar (Scholar's Desk): `Research` (the tree, kept in the Village Hall; bonuses read by
   `VillageNeeds`, `Guards`, `Partners`, `Schools`), `ScholarWork`, `ResearchScreen`; `research/*` blueprints are hidden
   from the Blueprint Table (`BlueprintLibrary.isWorldgenPiece`)
@@ -143,6 +143,7 @@ The owner (Jesse) does not write code: sessions are expected to work autonomousl
   raw ore fired first with `Crafting.Kind.WORKSHOP`; iron golems mended between jobs), `ToolsmithWork` (vanilla Toolsmiths: tools for the
   village's tool requests), `FletcherWork` (vanilla Fletchers: bows and spectral arrows for guards), `DyerWork` (vanilla
   Leatherworkers: coloured things and concrete for builders), `CarpenterPackages`
+- `compost/` — Composters (the Compost Bin): `CompostWork` (scraps → bone meal)
 - `nether/` — Netherworkers (the Nether Brazier): `Netherworkers` (the trip: away in the portal — invisible, brain paused
   by `VillagerMixin.customServerAiStep`, no damage — then back with loot by kit), `NetherworkerWork` (pack, walk to
   the portal, unpack); `Builders.lightPortals` lights empty frames in a finished build

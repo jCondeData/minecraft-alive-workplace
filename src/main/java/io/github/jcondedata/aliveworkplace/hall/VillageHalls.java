@@ -86,6 +86,17 @@ public final class VillageHalls {
 			builds(level, hall));
 	}
 
+	/** How many kinds of meal the store has (see {@link io.github.jcondedata.aliveworkplace.people.Diet}). */
+	public static int mealKinds(ServerLevel level, BlockPos hall) {
+		int kinds = 0;
+		for (var e : SupplyContainers.contents(level, VillageNeeds.store(level, hall)).entrySet()) {
+			if (e.getValue() > 0 && VillageNeeds.isMeal(new ItemStack(e.getKey()))) {
+				kinds++;
+			}
+		}
+		return kinds;
+	}
+
 	/** The food in the store: whatever can be eaten in the chests by the Storehouses and Kitchen Stoves of the village. */
 	public static long food(ServerLevel level, BlockPos hall) {
 		Set<BlockPos> chests = new LinkedHashSet<>();
@@ -231,7 +242,7 @@ public final class VillageHalls {
 			Component.translatable("village_name.aliveworkplace.first." + first), Component.translatable("village_name.aliveworkplace.second." + second));
 	}
 
-	static AABB area(BlockPos hall) {
+	public static AABB area(BlockPos hall) {
 		return new AABB(hall).inflate(RADIUS, HEIGHT, RADIUS);
 	}
 

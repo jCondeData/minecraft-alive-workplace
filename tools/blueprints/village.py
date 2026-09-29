@@ -319,12 +319,22 @@ def sifting_shed(b, style):
     b.set(1, 1, 2, "sand")  # (no barrel: that's a fisherman's job block)
 
 
+def compost_yard(b, style):
+    """A Compost Bin, a chest of scraps and a hay bale: the composter turns the village's scraps into bone meal."""
+    b.set(1, 1, 6, "aliveworkplace:compost_bin", facing="east")
+    b.set(1, 1, 5, "chest", facing="east", type="single", waterlogged=False)
+    b.set_nbt(1, 1, 5, Compound({"LootTable": String("aliveworkplace:chests/village_compost_yard"), "id": String("minecraft:chest")}))
+    b.set(1, 1, 3, "hay_block", axis="y")
+    b.set(1, 1, 2, "coarse_dirt")
+
+
 VILLAGE_HOUSES = {"trainers_house": trainers_house, "guard_house": guard_house, "clinic": clinic, "post_office": post_office,
                   "leaders_hall": leaders_hall, "school": school, "trade_hall": trade_hall, "orchard_house": orchard_house,
                   "ball_workshop": ball_workshop, "ferry_house": ferry_house, "storehouse": storehouse_room,
                   "carpenters_workshop": carpenters_workshop, "kitchen": kitchen,
                   "fossil_lab": fossil_lab, "flower_shop": flower_shop, "ranch_house": ranch_house,
                   "schoolhouse": schoolhouse, "inn_room": inn_room, "mortuary": mortuary,
-                  "tinkers_shop": tinkers_shop, "sifting_shed": sifting_shed}
+                  "tinkers_shop": tinkers_shop, "sifting_shed": sifting_shed,
+                  "compost_yard": compost_yard}
 
 

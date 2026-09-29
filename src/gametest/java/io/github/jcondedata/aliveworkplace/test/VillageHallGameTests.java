@@ -543,4 +543,41 @@ public class VillageHallGameTests implements net.fabricmc.fabric.api.gametest.v1
 			"no fireworks");
 		helper.succeed();
 	}
+
+	/** Mercenaries: hired at the hall for emeralds, three guards in iron turn up; one band at a time; at their time they leave. */
+	@GameTest(template = AREA, timeoutTicks = 100, batch = "mercenaries")
+	public void mercenariesComeAndGo(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		ServerLevel level = helper.getLevel();
+		helper.setBlock(HALL, ModBlocks.VILLAGE_HALL);
+		ServerPlayer player = helper.makeMockServerPlayerInLevel();
+		player.setGameMode(net.minecraft.world.level.GameType.SURVIVAL);
+		player.getInventory().add(new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.EMERALD,
+			io.github.jcondedata.aliveworkplace.guard.Mercenaries.PRICE_EMERALDS));
+		BlockPos hall = helper.absolutePos(HALL);
+		helper.runAfterDelay(2, () -> {
+			try {
+				var said = io.github.jcondedata.aliveworkplace.guard.Mercenaries.hire(level, hall, player);
+				helper.assertTrue(said.getContents() instanceof net.minecraft.network.chat.contents.TranslatableContents t
+					&& t.getKey().equals("message.aliveworkplace.mercenaries.hired"), "not hired: " + said.getString());
+				var band = io.github.jcondedata.aliveworkplace.guard.Mercenaries.near(level, hall);
+				helper.assertTrue(band.size() == io.github.jcondedata.aliveworkplace.guard.Mercenaries.BAND, "band of " + band.size());
+				helper.assertTrue(band.stream().allMatch(v -> io.github.jcondedata.aliveworkplace.guard.Guards.isGuard(v)
+					&& v.getMainHandItem().is(net.minecraft.world.item.Items.IRON_SWORD)), "not armed guards");
+				helper.assertTrue(player.getInventory().countItem(net.minecraft.world.item.Items.EMERALD) == 0, "the emeralds weren't paid");
+				var again = io.github.jcondedata.aliveworkplace.guard.Mercenaries.hire(level, hall, player);
+				helper.assertTrue(again.getContents() instanceof net.minecraft.network.chat.contents.TranslatableContents t
+					&& t.getKey().equals("message.aliveworkplace.mercenaries.already"), "a second band: " + again.getString());
+				for (var merc : band) {
+					merc.setAttached(ModAttachments.MERCENARY_UNTIL, level.getGameTime());
+					io.github.jcondedata.aliveworkplace.guard.Mercenaries.tick(merc);
+				}
+				helper.assertTrue(band.stream().allMatch(net.minecraft.world.entity.Entity::isRemoved), "the band didn't leave");
+				helper.assertTrue(io.github.jcondedata.aliveworkplace.guard.Mercenaries.near(level, hall).isEmpty(), "mercenaries still here");
+			} finally {
+				level.getServer().getPlayerList().remove(player);
+			}
+			helper.succeed();
+		});
+	}
 }

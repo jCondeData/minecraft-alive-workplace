@@ -88,7 +88,8 @@ public final class VillageGrowth {
 			return null;
 		}
 		BlockPos bed = freeBed(level, hall);
-		List<Villager> parents = level.getEntitiesOfClass(Villager.class, VillageHalls.area(hall), v -> v.isAlive() && !v.isBaby() && !v.isSleeping())
+		List<Villager> parents = level.getEntitiesOfClass(Villager.class, VillageHalls.area(hall), v -> v.isAlive() && !v.isBaby() && !v.isSleeping()
+			&& !io.github.jcondedata.aliveworkplace.guard.Mercenaries.isMercenary(v))
 			.stream().sorted(Comparator.comparingDouble(v -> v.distanceToSqr(bed.getCenter()))).limit(2).toList();
 		if (parents.size() < 2) {
 			return null;

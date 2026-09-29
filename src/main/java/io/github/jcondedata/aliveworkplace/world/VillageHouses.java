@@ -73,6 +73,7 @@ public final class VillageHouses {
 		// The tinkerer and the sifter.
 		out.put("tinkers_shop", override != null ? override : 2);
 		out.put("sifting_shed", override != null ? override : 1);
+		out.put("compost_yard", override != null ? override : 1);
 		return out;
 	}
 

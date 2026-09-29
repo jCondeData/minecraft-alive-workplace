@@ -114,6 +114,10 @@ public final class Porters {
 			// What's to be sifted stays; what came out of the sieve goes.
 			return io.github.jcondedata.aliveworkplace.sift.SifterWork.isSiftable(stack) ? ALL : 0;
 		}
+		if (job == ModVillagers.COMPOSTER) {
+			// The scraps stay for the bin; the bone meal goes.
+			return io.github.jcondedata.aliveworkplace.compost.CompostWork.isCompostable(stack) ? ALL : 0;
+		}
 		if (job == ModVillagers.NETHERWORKER) {
 			// Rations and gear for the next expedition stay; what came back from the Nether goes.
 			return io.github.jcondedata.aliveworkplace.nether.Netherworkers.isGear(stack) ? ALL

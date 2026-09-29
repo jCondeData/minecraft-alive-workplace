@@ -2,6 +2,16 @@
 
 ## Unreleased
 
+## 0.128.0 — 2026-09-29
+
+### Added
+- **Diet**: villagers pick meals they haven't had lately; a varied diet lifts their mood, the same food every day
+  lowers it. The hall shows how many kinds of meal the store has.
+- **Mercenaries**: hire three fighters in iron at the Village Hall for 12 emeralds; they fight for the village until
+  dawn.
+- **Composters** (new job, the Compost Bin): the village's scraps and rotten flesh become bone meal. Villages sometimes
+  grow a Compost Yard.
+
 ## 0.127.0 — 2026-09-29
 
 ### Added

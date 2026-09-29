@@ -73,6 +73,18 @@ public final class Moods {
 			score += 15;
 			good.add(reason("fed"));
 		}
+		switch (Diet.of(villager)) {
+			case VARIED -> {
+				score += 10;
+				good.add(reason("varied_diet"));
+			}
+			case SAME -> {
+				score -= 10;
+				bad.add(reason("same_food"));
+			}
+			default -> {
+			}
+		}
 		BlockPos bed = VillageNeeds.bed(level, villager);
 		if (bed != null) {
 			score += 15;

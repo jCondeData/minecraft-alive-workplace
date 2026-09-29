@@ -362,6 +362,23 @@ public final class ModVillagers {
 		)
 	);
 
+	public static final ResourceLocation COMPOST_BIN_ID = AliveWorkplace.id("compost_bin");
+	public static final ResourceKey<PoiType> COMPOST_BIN_POI = ResourceKey.create(Registries.POINT_OF_INTEREST_TYPE, COMPOST_BIN_ID);
+	public static final PoiType COMPOST_BIN_POI_TYPE = PointOfInterestHelper.register(COMPOST_BIN_ID, 1, 1, ModBlocks.COMPOST_BIN);
+
+	public static final VillagerProfession COMPOSTER = Registry.register(
+		BuiltInRegistries.VILLAGER_PROFESSION,
+		AliveWorkplace.id("composter"),
+		new VillagerProfession(
+			"composter",
+			holder -> holder.is(COMPOST_BIN_POI),
+			holder -> holder.is(COMPOST_BIN_POI),
+			ImmutableSet.of(),
+			ImmutableSet.of(),
+			SoundEvents.VILLAGER_WORK_FARMER
+		)
+	);
+
 	public static final ResourceLocation SCHOLARS_DESK_ID = AliveWorkplace.id("scholars_desk");
 	public static final ResourceKey<PoiType> SCHOLARS_DESK_POI = ResourceKey.create(Registries.POINT_OF_INTEREST_TYPE, SCHOLARS_DESK_ID);
 	public static final PoiType SCHOLARS_DESK_POI_TYPE = PointOfInterestHelper.register(SCHOLARS_DESK_ID, 1, 1, ModBlocks.SCHOLARS_DESK);
@@ -563,7 +580,7 @@ public final class ModVillagers {
 			|| profession == TRAINER || profession == TRAINER_LEADER || profession == TUTOR || profession == POKEMON_TRADER
 			|| profession == ORCHARD_KEEPER || profession == BALL_SMITH || profession == PORTER || profession == CARPENTER || profession == CHEF || profession == FOSSIL_SCIENTIST
 			|| profession == BEEKEEPER || profession == FLORIST || profession == RANCHER || profession == TEACHER || profession == INNKEEPER || profession == UNDERTAKER || profession == SCHOLAR
-			|| profession == SIFTER || profession == TINKERER || profession == NETHERWORKER;
+			|| profession == SIFTER || profession == TINKERER || profession == NETHERWORKER || profession == COMPOSTER;
 	}
 
 	/**

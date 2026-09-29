@@ -109,6 +109,7 @@ public final class ModItems {
 				output.accept(ModBlocks.TINKERS_BENCH);
 				output.accept(ModBlocks.NETHER_BRAZIER);
 				output.accept(ModBlocks.DROP_BOX);
+				output.accept(ModBlocks.COMPOST_BIN);
 				output.accept(SETTLERS_WAGON);
 				for (StarterBlueprints.Entry entry : StarterBlueprints.ALL) {
 					output.accept(BlueprintItem.create(entry.id(), entry.size()));

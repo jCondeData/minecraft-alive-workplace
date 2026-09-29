@@ -168,6 +168,11 @@ public final class ModBlocks {
 		Registry.register(BuiltInRegistries.BLOCK_ENTITY_TYPE, AliveWorkplace.id("drop_box"),
 			net.minecraft.world.level.block.entity.BlockEntityType.Builder.of(io.github.jcondedata.aliveworkplace.store.DropBoxBlockEntity::new, DROP_BOX).build(null));
 
+	/** Workstation for the Composter: the village's scraps become bone meal. */
+	public static final BuildersBenchBlock COMPOST_BIN = register(
+		"compost_bin", new BuildersBenchBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.COMPOSTER))
+	);
+
 	/** Workstation for the Scholar: the village's research is done here (a Village Hall keeps it). */
 	public static final BuildersBenchBlock SCHOLARS_DESK = register(
 		"scholars_desk", new BuildersBenchBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.BOOKSHELF))

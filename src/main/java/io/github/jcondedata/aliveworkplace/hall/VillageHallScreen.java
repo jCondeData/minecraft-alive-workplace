@@ -51,6 +51,8 @@ public final class VillageHallScreen {
 	public static final int CHRONICLE = 13;
 	/** "Call everyone home", left of the chronicle. */
 	public static final int RECALL = 11;
+	/** Hire a band of mercenaries till dawn. */
+	public static final int MERCENARIES = 12;
 	/** Trade routes, right of the chronicle. */
 	public static final int ROUTES = 15;
 	/** On a jobless villager's page: find them, and where the free workstations start. */
@@ -114,8 +116,11 @@ public final class VillageHallScreen {
 		menu.button(BEDS, icon(Items.RED_BED, Component.translatable("screen.aliveworkplace.hall.beds", census.beds()), ChatFormatting.WHITE,
 			line(Component.translatable("screen.aliveworkplace.hall.free_beds", census.freeBeds()),
 				census.freeBeds() > 0 ? ChatFormatting.GREEN : ChatFormatting.YELLOW)), null);
+		int kinds = VillageHalls.mealKinds(level, hall);
 		menu.button(FOOD, icon(Items.BREAD, Component.translatable("screen.aliveworkplace.hall.food", census.food()), ChatFormatting.WHITE,
-			line("screen.aliveworkplace.hall.food_where", ChatFormatting.GRAY)), null);
+			line("screen.aliveworkplace.hall.food_where", ChatFormatting.GRAY),
+			line(Component.translatable("screen.aliveworkplace.hall.meal_kinds", kinds, io.github.jcondedata.aliveworkplace.people.Diet.VARIED_KINDS),
+				kinds >= io.github.jcondedata.aliveworkplace.people.Diet.VARIED_KINDS ? ChatFormatting.GREEN : ChatFormatting.YELLOW)), null);
 		menu.button(GUARDS, icon(Items.IRON_SWORD, Component.translatable("screen.aliveworkplace.hall.guards", census.guards()), ChatFormatting.WHITE,
 			line(census.guards() > 0 ? "screen.aliveworkplace.hall.guarded" : "screen.aliveworkplace.hall.unguarded",
 				census.guards() > 0 ? ChatFormatting.GRAY : ChatFormatting.YELLOW)), null);
@@ -150,6 +155,16 @@ public final class VillageHallScreen {
 			if (came > 0) {
 				level.playSound(null, hall, SoundEvents.BELL_BLOCK, SoundSource.BLOCKS, 1f, 1f);
 			}
+			refresh(menu, level, hall, shown);
+		});
+		int band = io.github.jcondedata.aliveworkplace.guard.Mercenaries.near(level, hall).size();
+		menu.button(MERCENARIES, icon(Items.IRON_SWORD, Component.translatable("screen.aliveworkplace.hall.mercenaries"), ChatFormatting.WHITE,
+			line(band > 0 ? Component.translatable("screen.aliveworkplace.hall.mercenaries_here", band)
+				: Component.translatable("screen.aliveworkplace.hall.mercenaries_hint", io.github.jcondedata.aliveworkplace.guard.Mercenaries.BAND,
+					io.github.jcondedata.aliveworkplace.work.Money.describe((long) io.github.jcondedata.aliveworkplace.guard.Mercenaries.PRICE_EMERALDS
+						* io.github.jcondedata.aliveworkplace.work.Money.DOLLARS_PER_EMERALD, io.github.jcondedata.aliveworkplace.guard.Mercenaries.PRICE_EMERALDS)),
+				band > 0 ? ChatFormatting.GREEN : ChatFormatting.GRAY)), p -> {
+			p.displayClientMessage(io.github.jcondedata.aliveworkplace.guard.Mercenaries.hire(level, hall, p), false);
 			refresh(menu, level, hall, shown);
 		});
 		if (pages > 1) {

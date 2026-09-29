@@ -124,6 +124,14 @@ public final class ModAttachments {
 	public static final AttachmentType<Long> LAST_MEAL = AttachmentRegistry.create(
 		AliveWorkplace.id("last_meal"), builder -> builder.persistent(com.mojang.serialization.Codec.LONG));
 
+	/** The last few kinds of meal a villager ate, newest last (see {@code people/Diet}). */
+	public static final AttachmentType<java.util.List<net.minecraft.resources.ResourceLocation>> RECENT_MEALS = AttachmentRegistry.create(
+		AliveWorkplace.id("recent_meals"), builder -> builder.persistent(net.minecraft.resources.ResourceLocation.CODEC.listOf()));
+
+	/** When a hired mercenary leaves (see {@code guard/Mercenaries}); absent for everyone else. */
+	public static final AttachmentType<Long> MERCENARY_UNTIL = AttachmentRegistry.create(
+		AliveWorkplace.id("mercenary_until"), builder -> builder.persistent(com.mojang.serialization.Codec.LONG));
+
 	/** A villager's parents (see {@code people/Families}). */
 	public static final AttachmentType<io.github.jcondedata.aliveworkplace.people.Families.Parents> PARENTS = AttachmentRegistry.create(
 		AliveWorkplace.id("parents"), builder -> builder.persistent(io.github.jcondedata.aliveworkplace.people.Families.Parents.CODEC));
@@ -147,6 +155,14 @@ public final class ModAttachments {
 	/** How many expeditions a Netherworker has made (shown above its head). */
 	public static final AttachmentType<Integer> NETHER_TRIPS = AttachmentRegistry.create(
 		AliveWorkplace.id("nether_trips"), builder -> builder.persistent(com.mojang.serialization.Codec.INT));
+
+	/** Compost in a Composter's bin towards the next bone meal (see {@code compost/CompostWork}). */
+	public static final AttachmentType<Float> COMPOST_LAYERS = AttachmentRegistry.create(
+		AliveWorkplace.id("compost_layers"), builder -> builder.persistent(com.mojang.serialization.Codec.FLOAT));
+
+	/** How much bone meal a Composter has made (shown above its head). */
+	public static final AttachmentType<Integer> BONE_MEAL_MADE = AttachmentRegistry.create(
+		AliveWorkplace.id("bone_meal_made"), builder -> builder.persistent(com.mojang.serialization.Codec.INT));
 
 	/** How many villagers a Nurse has cured. */
 	public static final AttachmentType<Integer> VILLAGERS_CURED = AttachmentRegistry.create(

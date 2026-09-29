@@ -301,4 +301,40 @@ public class PeopleGameTests implements FabricGameTest {
 			helper.succeed();
 		});
 	}
+
+	/**
+	 * Villagers pick a meal they haven't had lately: three meals from a store of bread, baked potatoes and cooked cod are
+	 * one of each, a varied diet (a better mood); bread every time is the same food every day (a worse one).
+	 */
+	@GameTest(template = AREA)
+	public void villagersLikeAVariedDiet(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		BlockPos chestPos = new BlockPos(2, 2, 2);
+		helper.setBlock(chestPos, net.minecraft.world.level.block.Blocks.CHEST);
+		net.minecraft.world.Container chest = helper.getBlockEntity(chestPos);
+		chest.setItem(0, new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.BREAD, 5));
+		chest.setItem(1, new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.BAKED_POTATO, 5));
+		chest.setItem(2, new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.COOKED_COD, 5));
+		java.util.List<BlockPos> store = java.util.List.of(helper.absolutePos(chestPos));
+		Villager villager = helper.spawn(EntityType.VILLAGER, new BlockPos(4, 2, 4));
+		for (int i = 0; i < 3; i++) {
+			helper.assertTrue(VillageNeeds.eat(level, villager, store), "nothing to eat at meal " + i);
+		}
+		helper.assertTrue(chest.countItem(net.minecraft.world.item.Items.BREAD) == 4 && chest.countItem(net.minecraft.world.item.Items.BAKED_POTATO) == 4
+			&& chest.countItem(net.minecraft.world.item.Items.COOKED_COD) == 4, "three meals should be one of each");
+		helper.assertTrue(io.github.jcondedata.aliveworkplace.people.Diet.of(villager) == io.github.jcondedata.aliveworkplace.people.Diet.Kind.VARIED, "not varied");
+		helper.assertTrue(hasReason(io.github.jcondedata.aliveworkplace.people.Moods.work(level, villager).good(), "varied_diet"), "no varied-diet reason");
+		Villager dull = helper.spawn(EntityType.VILLAGER, new BlockPos(5, 2, 4));
+		for (int i = 0; i < 3; i++) {
+			io.github.jcondedata.aliveworkplace.people.Diet.ate(dull, new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.BREAD));
+		}
+		helper.assertTrue(io.github.jcondedata.aliveworkplace.people.Diet.of(dull) == io.github.jcondedata.aliveworkplace.people.Diet.Kind.SAME, "not the same food");
+		helper.assertTrue(hasReason(io.github.jcondedata.aliveworkplace.people.Moods.work(level, dull).bad(), "same_food"), "no same-food reason");
+		helper.succeed();
+	}
+
+	private static boolean hasReason(java.util.List<net.minecraft.network.chat.Component> reasons, String key) {
+		return reasons.stream().anyMatch(c -> c.getContents() instanceof net.minecraft.network.chat.contents.TranslatableContents t
+			&& t.getKey().equals("mood.aliveworkplace.reason." + key));
+	}
 }

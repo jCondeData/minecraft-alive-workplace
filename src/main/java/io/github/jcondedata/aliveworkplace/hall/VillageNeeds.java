@@ -214,11 +214,16 @@ public final class VillageNeeds {
 	}
 
 	/** {@code villager} eats one meal from the store; false if there's nothing to eat. */
-	static boolean eat(ServerLevel level, Villager villager, List<BlockPos> store) {
-		ItemStack meal = SupplyContainers.takeOne(level, store, VillageNeeds::isMeal);
+	public static boolean eat(ServerLevel level, Villager villager, List<BlockPos> store) {
+		// Something they haven't had lately, if the store has it (see Diet).
+		ItemStack meal = SupplyContainers.takeOne(level, store, s -> isMeal(s) && !io.github.jcondedata.aliveworkplace.people.Diet.hadLately(villager, s));
+		if (meal.isEmpty()) {
+			meal = SupplyContainers.takeOne(level, store, VillageNeeds::isMeal);
+		}
 		if (meal.isEmpty()) {
 			return false;
 		}
+		io.github.jcondedata.aliveworkplace.people.Diet.ate(villager, meal);
 		villager.setAttached(ModAttachments.LAST_MEAL, level.getGameTime());
 		villager.heal(4f);
 		level.sendParticles(new ItemParticleOption(ParticleTypes.ITEM, meal), villager.getX(), villager.getEyeY() - 0.2, villager.getZ(),

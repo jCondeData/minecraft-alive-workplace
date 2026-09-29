@@ -208,8 +208,13 @@ The hall's list says who's ill. `villagerSickness` in the config turns it off.
 
 **Moods.** Every grown villager in a village with a hall has a **mood**, 0 to 100, which the hall's list shows with its
 reasons: fed or hungry, a bed of their own or not, a job or not, ill, cheerful by nature, decorations near their home,
-company. **Unhappy** villagers (under 30) work 15% slower; **happy** ones (75 and up) 7% faster. `villagerMoods` in the
-config turns it off.
+company, and their **diet**. **Unhappy** villagers (under 30) work 15% slower; **happy** ones (75 and up) 7% faster.
+`villagerMoods` in the config turns it off.
+
+**Diet.** Villagers eating from the village store pick something they haven't had lately, and remember their last five
+meals: three or more kinds is a **varied diet** (a better mood), the same thing every time is a worse one. A store with
+bread, baked potatoes, cooked fish and pies keeps them happier than one full of bread; the hall's food icon says how many
+kinds of meal the store has.
 
 **Families.** A baby remembers its parents — the hall's list says whose child they are. When they grow up the chronicle
 says so, and a grown child without a job **takes up a parent's trade** if the village has a free workstation for it.
@@ -279,6 +284,7 @@ where they take tools and supplies from and where their work goes.
 | Scholar | Scholar's Desk | paper, books, emeralds | sneak-right-click: pick the research |
 | Sifter | Sieve | gravel, sand, dirt or soul sand | nothing |
 | Tinkerer | Tinker's Bench | coal (iron ingots to mend golems) | nothing (uses the builders' ore) |
+| Composter | Compost Bin | scraps: seeds, saplings, leaves, crop waste, rotten flesh | nothing |
 | Netherworker | Nether Brazier | food (a pickaxe, an axe, a sword, a chestplate, fire resistance) | nothing (a Nether portal within 32 blocks) |
 | Undertaker | Undertaker's Table | golden apples, healing potions or totems | nothing (graves within 32 blocks) |
 | Innkeeper | Inn Counter | — | nothing (hire the travellers who come to stay) |
@@ -482,6 +488,14 @@ ingots from the chests by the bench (or the storehouse's). What counts as a tink
 `aliveworkplace:tinkering`, so data packs can add to it. The **Tinker's Workshop** (Blueprint Table) is a brick
 workshop with a forge and a smoking chimney; the **Tinker's Workshop II** runs it back with a storage loft and a cart
 track. Villages sometimes grow a Tinker's Shop, and a Sifting Shed for a sifter.
+
+## Composters
+Craft a **Compost Bin** (wooden slabs round a block of dirt, like a composter with a heart of earth) and place it near a
+villager without a job: they become a **Composter**. The village's scraps — seeds, saplings, leaves, crop waste, spoiled
+food and **rotten flesh** — from the chests by the bin (or the storehouse's, when those run dry) go into the bin, and
+every five layers of compost come out as a **bone meal** in the chests: better than a vanilla composter's seven, and
+nothing's wasted on a bad roll. The florists, lumberjacks, orchard keepers and farmers take the bone meal from there (a
+porter carries the rest to the storehouse). With nothing to compost they ask for scraps on the requests board.
 
 ## Netherworkers
 ![The Nether Gate I and II](docs/media/nether-gate.png)
@@ -702,6 +716,10 @@ everyone else hides, and players in the village are told. While the village is r
 not just the ground round their post. The raid is over when the raiders are dead — or at dawn, when the last ones
 flee. The chronicle remembers every raid. In a **pillager raid** guards don't hide either: they patrol and fight
 anywhere in the raid's area. `villageRaids` in the config turns our raids off.
+
+**Mercenaries.** Short of guards? Open the Village Hall and click the iron sword: for 12 emeralds (or their worth in
+CobbleDollars) three **mercenaries** in iron — one with a shield — come to the hall and fight for the village like its
+own guards until the next dawn, then leave. One band at a time; their gear goes with them.
 
 **Walls and gates** (in the Blueprint Table): a wooden **Palisade** of sharpened logs with a walkway, a **Palisade
 Gate**, a **Stone Wall** with battlements, a **Wall Tower** for the ends and corners, and a **Gatehouse** with two towers

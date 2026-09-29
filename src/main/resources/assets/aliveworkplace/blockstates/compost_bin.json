@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "aliveworkplace:block/compost_bin"
+    },
+    "facing=east": {
+      "model": "aliveworkplace:block/compost_bin",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "aliveworkplace:block/compost_bin",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "aliveworkplace:block/compost_bin",
+      "y": 270
+    }
+  }
+}

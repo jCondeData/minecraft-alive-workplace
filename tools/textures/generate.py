@@ -2196,6 +2196,63 @@ def drop_box(face):
     save(img, "block", "drop_box_" + face + ".png")
 
 
+# --- Compost Bin: the composter's workstation, a slatted bin of dark, steaming compost ------------------------------
+def compost_bin(face):
+    rnd = random.Random({"top": 531, "side": 532, "front": 533}[face])
+    img = Image.new("RGBA", (16, 16))
+    slat, gap = rgb("#8a6a3f"), rgb("#3b2a17")
+    if face == "top":
+        for y in range(16):
+            for x in range(16):
+                edge = x in (0, 1, 14, 15) or y in (0, 1, 14, 15)
+                if edge:
+                    img.putpixel((x, y), jitter(slat, rnd, 6))
+                else:
+                    c = rgb("#3a2716") if rnd.random() < 0.7 else rgb("#4f3a1e")
+                    img.putpixel((x, y), jitter(c, rnd, 8))
+        for _ in range(9):  # bits of greens and eggshell in the heap
+            img.putpixel((rnd.randint(3, 12), rnd.randint(3, 12)), rgb("#5c8a2e") if rnd.random() < 0.6 else rgb("#e8e0cc"))
+    else:
+        for y in range(16):
+            for x in range(16):
+                img.putpixel((x, y), jitter(slat if y % 4 != 3 else gap, rnd, 6))
+        for y in range(16):  # corner posts
+            for x in (0, 1, 14, 15):
+                img.putpixel((x, y), jitter(rgb("#6b4e2b"), rnd, 4))
+        if face == "front":
+            for y in range(9, 14):  # a little hatch at the foot for the finished compost
+                for x in range(5, 11):
+                    edge = y in (9, 13) or x in (5, 10)
+                    img.putpixel((x, y), jitter(rgb("#5a3d20") if edge else rgb("#2e2012"), rnd, 5))
+            img.putpixel((8, 11), rgb("#b8bec4"))
+    save(img, "block", "compost_bin_" + face + ".png")
+
+
+def composter_overlay():
+    img = Image.new("RGBA", (64, 64), T)
+    rnd = random.Random(541)
+    # a straw hat and green rubber-coated apron with a trowel in the pocket
+    straw = rgb("#d9c27a")
+    for y in range(0, 8):
+        for x in range(40, 48):
+            img.putpixel((x, y), jitter(straw, rnd, 8))
+    for x in range(32, 64):
+        img.putpixel((x, 8), jitter(straw, rnd, 8))
+    apron = rgb("#4f7a3a")
+    for y in range(44, 62):
+        for x in range(2, 22):
+            img.putpixel((x, y), jitter(apron, rnd, 6))
+    for y in range(50, 55):
+        for x in range(12, 18):
+            img.putpixel((x, y), jitter(rgb("#3b5e2b"), rnd, 4))
+    img.putpixel((14, 49), rgb("#b8bec4"))
+    img.putpixel((14, 48), rgb("#8a5a2b"))
+    for _ in range(10):  # earth on the apron
+        img.putpixel((rnd.randint(3, 20), rnd.randint(52, 61)), rgb("#3a2716"))
+    save(img, "entity", "villager", "profession", "composter.png")
+    save(img, "entity", "zombie_villager", "profession", "composter.png")
+
+
 # --- Feed Trough: the rancher's workstation, a plank trough full of hay ----------------------------------------
 def feed_trough(face):
     rnd = random.Random({"top": 341, "side": 342, "front": 343}[face])
@@ -2717,6 +2774,9 @@ if __name__ == "__main__":
     netherworker_overlay()
     for face in ("top", "side", "bottom"):
         drop_box(face)
+    for face in ("top", "side", "front"):
+        compost_bin(face)
+    composter_overlay()
     rancher_overlay()
     for part in ("burlap", "face", "straw", "post"):
         training_dummy(part)

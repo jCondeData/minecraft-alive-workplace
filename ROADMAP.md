@@ -606,10 +606,13 @@ ones we lack, our way.
   placements use `Mirror.FRONT_BACK` (the front stays the front), and upgrades over a mirrored build follow it
 - [x] Drop Box (`store/DropBox*`, a private 27-slot container with a POI of its own): porters empty the nearest one within
   48 blocks of their storehouse first, everything in it
-- [ ] Diet: villagers want variety — a village store with several kinds of meal lifts moods; the hall shows the diet
-- [ ] Mercenaries: at the Village Hall, hire a band of fighters for emeralds when a raid comes (they leave at dawn)
-- [ ] Composter job (Compost Bin): rotten flesh, seeds, saplings, leaves and spoiled food from the chests into bone meal
-  for the florists, lumberjacks and orchards
+- [x] Diet (`people/Diet`, attachment `recent_meals`): meals picked for variety in `VillageNeeds.eat`; 3+ kinds of the
+  last 5 is +10 mood, one kind −10; the hall's food icon counts the store's kinds of meal
+- [x] Mercenaries (`guard/Mercenaries`, hall slot 12): 3 guards in iron (one with a shield, no drops) for 12 emeralds or
+  their worth in CobbleDollars, one band per hall, until the next dawn (at least 6000 ticks); attachment `mercenary_until`,
+  left by `VillagerMixin`; never parents
+- [x] Composter (`compost/CompostWork`, the Compost Bin): compostables (vanilla chances as shares, rotten flesh ½) from the
+  bin's chests or the storehouse; 5 layers a bone meal; Poison/Grass partners; a compost yard in village generation
 
 ## Milestone 5 — Release
 - [ ] Publish on Modrinth and CurseForge as **Alive Workplace** (Minecraft brand rules: don't lead the name with "Minecraft")

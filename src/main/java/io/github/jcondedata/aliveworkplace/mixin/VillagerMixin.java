@@ -28,6 +28,11 @@ abstract class VillagerMixin {
 	/** A netherworker away in the Nether: vanilla's portals leave them be, and the brain waits till they're back. */
 	@Inject(method = "customServerAiStep", at = @At("HEAD"), cancellable = true)
 	private void aliveworkplace$nether(CallbackInfo ci) {
+		io.github.jcondedata.aliveworkplace.guard.Mercenaries.tick((Villager) (Object) this);
+		if (((Villager) (Object) this).isRemoved()) {
+			ci.cancel();
+			return;
+		}
 		if (io.github.jcondedata.aliveworkplace.nether.Netherworkers.tick((Villager) (Object) this)) {
 			ci.cancel();
 		}

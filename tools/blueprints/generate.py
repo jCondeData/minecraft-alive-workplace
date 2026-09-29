@@ -16,6 +16,7 @@ from houses import *
 from defence import *
 from workshops import *
 from nether import *
+from yards import *
 
 
 # --- Gametest fixtures ------------------------------------------------------------------
@@ -114,6 +115,10 @@ if __name__ == "__main__":
     tinkers_workshop_2().save(MAIN_STRUCTURES, "tinkers_workshop_2")
     nether_gate().save(MAIN_STRUCTURES, "nether_gate")
     nether_gate_2().save(MAIN_STRUCTURES, "nether_gate_2")
+    compost_yard().save(MAIN_STRUCTURES, "compost_yard")
+    compost_yard_2().save(MAIN_STRUCTURES, "compost_yard_2")
+    sifting_shed().save(MAIN_STRUCTURES, "sifting_shed")
+    sifting_shed_2().save(MAIN_STRUCTURES, "sifting_shed_2")
     for style in VILLAGE_STYLES:
         builders_workshop(style).save(VILLAGE_STRUCTURES, f"{style}_builders_workshop")
         for name, fit_out in VILLAGE_HOUSES.items():

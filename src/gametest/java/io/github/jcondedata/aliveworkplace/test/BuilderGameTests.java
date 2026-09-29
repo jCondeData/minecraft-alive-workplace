@@ -1028,6 +1028,26 @@ public class BuilderGameTests implements FabricGameTest {
 		helper.succeed();
 	}
 
+	@GameTest(template = BIG_AREA, timeoutTicks = 30000, batch = "starter_builds_7")
+	public void buildsCompostYard(GameTestHelper helper) {
+		buildStarter(helper, StarterBlueprints.COMPOST_YARD);
+	}
+
+	@GameTest(template = BIG_AREA, timeoutTicks = 30000, batch = "starter_builds_8")
+	public void buildsCompostYardII(GameTestHelper helper) {
+		buildStarter(helper, StarterBlueprints.COMPOST_YARD_2, new BlockPos(7, 2, 9)); // (15 wide: further left)
+	}
+
+	@GameTest(template = BIG_AREA, timeoutTicks = 30000, batch = "starter_builds_8")
+	public void buildsSiftingShed(GameTestHelper helper) {
+		buildStarter(helper, StarterBlueprints.SIFTING_SHED);
+	}
+
+	@GameTest(template = BIG_AREA, timeoutTicks = 30000, batch = "starter_builds_7")
+	public void buildsSiftingShedII(GameTestHelper helper) {
+		buildStarter(helper, StarterBlueprints.SIFTING_SHED_2, new BlockPos(9, 2, 8));
+	}
+
 	/** The whole Tinker's Workshop II from bare ground (deeper, so it starts further back). */
 	@GameTest(template = BIG_AREA, timeoutTicks = 40000, batch = "starter_builds_6")
 	public void buildsTinkersWorkshopII(GameTestHelper helper) {
@@ -1369,7 +1389,7 @@ public class BuilderGameTests implements FabricGameTest {
 			long kept = base.blocks().stream().filter(e -> !e.state().isAir() && e.state().equals(up.get(e.pos()))).count();
 			helper.assertTrue(kept >= solid * 0.6, entry.id() + " keeps only " + kept + " of " + baseId.get() + "'s " + solid + " blocks");
 		}
-		helper.assertTrue(upgrades == 27, "expected 27 starter upgrades, found " + upgrades);
+		helper.assertTrue(upgrades == 29, "expected 29 starter upgrades, found " + upgrades);
 		helper.succeed();
 	}
 

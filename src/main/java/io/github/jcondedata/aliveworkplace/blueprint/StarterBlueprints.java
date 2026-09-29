@@ -113,6 +113,15 @@ public final class StarterBlueprints {
 	/** A gatehouse roof over the portal, a storehouse and a nether wart garden. */
 	public static final Entry NETHER_GATE_2 = new Entry(AliveWorkplace.id("nether_gate_2"), new Vec3i(15, 11, 11));
 
+	/** An open timber shed with compost bays and the Compost Bin, a fenced yard in front. */
+	public static final Entry COMPOST_YARD = new Entry(AliveWorkplace.id("compost_yard"), new Vec3i(11, 8, 10));
+	/** A third bay and a potting shed at the end. */
+	public static final Entry COMPOST_YARD_2 = new Entry(AliveWorkplace.id("compost_yard_2"), new Vec3i(15, 8, 10));
+	/** A timber shed on a stone footing over the Sieve, with bins of gravel and sand. */
+	public static final Entry SIFTING_SHED = new Entry(AliveWorkplace.id("sifting_shed"), new Vec3i(9, 9, 9));
+	/** Twice the depth with a second Sieve, a side door and a lean-to over stone bins. */
+	public static final Entry SIFTING_SHED_2 = new Entry(AliveWorkplace.id("sifting_shed_2"), new Vec3i(11, 9, 13));
+
 	/** Decorations: a well with a lantern on a chain over the water. */
 	public static final Entry WELL = new Entry(AliveWorkplace.id("well"), new Vec3i(7, 5, 7));
 	/** A roof over the well, benches and lamp posts. */
@@ -146,6 +155,7 @@ public final class StarterBlueprints {
 		LOOKOUT_TOWER, LOOKOUT_TOWER_2, LOOKOUT_TOWER_3, HEALING_CENTER, HEALING_CENTER_2, HEALING_CENTER_3, SUPPLY_SHOP, SUPPLY_SHOP_2, SUPPLY_SHOP_3,
 		STOREHOUSE, STOREHOUSE_2, STOREHOUSE_3, BERRY_FARM, BERRY_FARM_2, RESEARCH_LAB, RESEARCH_LAB_2,
 		TERRACE, TERRACE_2, INN, INN_2, STONE_HOUSE, STONE_HOUSE_2, STONE_HOUSE_3, BARRACKS, BARRACKS_2, TINKERS_WORKSHOP, TINKERS_WORKSHOP_2, NETHER_GATE, NETHER_GATE_2,
+		COMPOST_YARD, COMPOST_YARD_2, SIFTING_SHED, SIFTING_SHED_2,
 		SCHOOLHOUSE, SCHOOLHOUSE_2, LIBRARY, LIBRARY_2, RANCH, RANCH_2, APIARY_GARDEN, APIARY_GARDEN_2, FLOWER_SHOP, FLOWER_SHOP_2, GRAVEYARD, GRAVEYARD_2);
 
 	/** The decorations (in the Blueprint Table with the rest; near a Village Hall they make the village prettier). */

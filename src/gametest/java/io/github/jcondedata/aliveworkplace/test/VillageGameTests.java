@@ -131,8 +131,9 @@ public class VillageGameTests implements FabricGameTest {
 	}
 
 	/** A jobless villager inside a freshly generated workshop takes the bench and becomes a builder. */
-	@GameTest(template = "aliveworkplace_test:big_area", timeoutTicks = 2400)
+	@GameTest(template = "aliveworkplace_test:big_area", timeoutTicks = 2400, batch = "aVillagerMovesIntoTheWorkshop")
 	public void aVillagerMovesIntoTheWorkshop(GameTestHelper helper) {
+		Leftovers.clear(helper); // (a jobless villager from a neighbouring test can take the bench first)
 		ServerLevel level = helper.getLevel();
 		StructureTemplate template = level.getStructureManager().get(VillageHouses.workshop("plains")).orElseThrow();
 		BlockPos origin = helper.absolutePos(new BlockPos(4, 1, 4));

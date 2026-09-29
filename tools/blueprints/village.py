@@ -310,7 +310,7 @@ def tinkers_shop(b, style):
     b.set(1, 1, 2, "chain", axis="y", waterlogged=False)
 
 
-def sifting_shed(b, style):
+def sifting_shed_house(b, style):
     """A Sieve, a chest of gravel and sand, a heap of gravel and sand: the sifter shakes them through for what's hidden in them."""
     b.set(1, 1, 6, "aliveworkplace:sieve", facing="east")
     b.set(1, 1, 5, "chest", facing="east", type="single", waterlogged=False)
@@ -319,7 +319,7 @@ def sifting_shed(b, style):
     b.set(1, 1, 2, "sand")  # (no barrel: that's a fisherman's job block)
 
 
-def compost_yard(b, style):
+def compost_yard_house(b, style):
     """A Compost Bin, a chest of scraps and a hay bale: the composter turns the village's scraps into bone meal."""
     b.set(1, 1, 6, "aliveworkplace:compost_bin", facing="east")
     b.set(1, 1, 5, "chest", facing="east", type="single", waterlogged=False)
@@ -334,7 +334,7 @@ VILLAGE_HOUSES = {"trainers_house": trainers_house, "guard_house": guard_house, 
                   "carpenters_workshop": carpenters_workshop, "kitchen": kitchen,
                   "fossil_lab": fossil_lab, "flower_shop": flower_shop, "ranch_house": ranch_house,
                   "schoolhouse": schoolhouse, "inn_room": inn_room, "mortuary": mortuary,
-                  "tinkers_shop": tinkers_shop, "sifting_shed": sifting_shed,
-                  "compost_yard": compost_yard}
+                  "tinkers_shop": tinkers_shop, "sifting_shed": sifting_shed_house,
+                  "compost_yard": compost_yard_house}
 
 

@@ -82,7 +82,9 @@ public class GuardPatrol extends Behavior<Villager> {
 		// Better gear in the chests? Go and get it.
 		if (gearChest == null && --gearTimer <= 0) {
 			gearTimer = GEAR_CHECK_EVERY;
-			gearChest = SupplyContainers.firstMatching(level, SupplyContainers.find(level, post, null), stack -> isUpgrade(villager, stack));
+			gearChest = SupplyContainers.firstMatching(level, SupplyContainers.find(level, post, null), stack -> isUpgrade(villager, stack)
+				|| Guards.isSpecialArrow(stack) && (Guards.hasBow(villager) || SupplyContainers.firstMatching(level,
+					SupplyContainers.find(level, post, null), Guards::isBow) != null) && Guards.quiver(villager) < Guards.QUIVER / 2);
 		}
 		if (gearChest != null) {
 			status(villager, "gearing_up");
@@ -148,6 +150,34 @@ public class GuardPatrol extends Behavior<Villager> {
 		for (EquipmentSlot slot : ARMOR) {
 			for (int i = 0; i < 4 && take(level, villager, chests, slot, stack -> stack.getItem() instanceof ArmorItem armor
 				&& armor.getEquipmentSlot() == slot && Guards.armorValue(stack) > Guards.armorValue(villager.getItemBySlot(slot))); i++) {
+			}
+		}
+		// Spectral and tipped arrows fill the quiver.
+		if (Guards.hasBow(villager)) {
+			var bag = villager.getAttachedOrCreate(io.github.jcondedata.aliveworkplace.registry.ModAttachments.BUILDER_BAG);
+			int room = Guards.QUIVER - Guards.quiver(villager);
+			while (room > 0) {
+				BlockPos chest = SupplyContainers.firstMatching(level, chests, Guards::isSpecialArrow);
+				if (chest == null) {
+					break;
+				}
+				List<ItemStack> taken = SupplyContainers.takeMatching(level, chest, Guards::isSpecialArrow, 1);
+				if (taken.isEmpty()) {
+					break;
+				}
+				ItemStack arrows = taken.get(0);
+				ItemStack mine = arrows.split(Math.min(room, arrows.getCount()));
+				int count = mine.getCount();
+				ItemStack rest = bag.add(mine);
+				room -= count - rest.getCount();
+				for (ItemStack back : List.of(arrows, rest)) {
+					if (!back.isEmpty()) {
+						SupplyContainers.insert(level, chests, back);
+					}
+				}
+				if (!rest.isEmpty()) {
+					break; // the bag is full
+				}
 			}
 		}
 	}

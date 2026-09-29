@@ -203,8 +203,14 @@ public class GuardCombat extends Behavior<Villager> {
 	/** Looses an arrow at the foe, like a skeleton; the arrow can't be picked up. */
 	private static void shoot(ServerLevel level, Villager villager, LivingEntity foe) {
 		ItemStack bow = villager.getItemBySlot(EquipmentSlot.OFFHAND);
+		// A spectral or tipped arrow from the quiver if there's one; plain ones never run out.
+		ItemStack special = villager.getAttachedOrCreate(ModAttachments.BUILDER_BAG).takeFirst(Guards::isSpecialArrow);
+		ItemStack ammo = special.isEmpty() ? new ItemStack(net.minecraft.world.item.Items.ARROW) : special.split(1);
+		if (!special.isEmpty()) {
+			villager.getAttachedOrCreate(ModAttachments.BUILDER_BAG).add(special);
+		}
 		net.minecraft.world.entity.projectile.AbstractArrow arrow = net.minecraft.world.entity.projectile.ProjectileUtil.getMobArrow(
-			villager, new ItemStack(net.minecraft.world.item.Items.ARROW), 1.0f, bow);
+			villager, ammo, 1.0f, bow);
 		double dx = foe.getX() - villager.getX();
 		double dy = foe.getY(0.3333) - arrow.getY();
 		double dz = foe.getZ() - villager.getZ();

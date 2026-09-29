@@ -3,7 +3,7 @@
 Villagers with real jobs. Hand a **Builder** a blueprint and they build it for you: they clear the
 site, fetch materials from your chests, put up the walls and roof, and finish with doors, beds and
 torches. **Miners** dig out quarries, **Lumberjacks** cut down and replant trees, **Orchard Keepers** pick berries, cocoa and apricorns, **Farmers** look after
-your fields and **Fishermen** fish for you, dropping everything off in your chests. **Porters** gather it all in the village storehouse, **Carpenters** and **Masons** make what the builders are missing, **Armorers** smelt the ore and make the guards' armor, **Toolsmiths** make the workers' tools, **Weaponsmiths** mend the village's gear, **Chefs** cook for the village, **Postmen** carry mail
+your fields and **Fishermen** fish for you, dropping everything off in your chests. **Porters** gather it all in the village storehouse, **Carpenters** and **Masons** make what the builders are missing, **Armorers** smelt the ore and make the guards' armor, **Toolsmiths** make the workers' tools, **Weaponsmiths** mend the village's gear, **Fletchers** make the guards' bows and arrows, **Chefs** cook for the village, **Postmen** carry mail
 between players' mailboxes, **Guards** keep monsters away, **Nurses** heal you (and your Pokémon),
 **Shopkeepers** run your shop, **Ferrymen** take you between villages, **Bards** play music and — with Cobblemon —
 **Trainers** battle you, **Move Tutors** teach your Pokémon new moves, **Ball Smiths** make Poké Balls, **Pokémon Traders** swap Pokémon with you and **Fossil Scientists** revive fossils. Villages grow workshops, guard houses, clinics, post offices, orchard houses, ferry houses, storehouses, carpenter's workshops and kitchens on their own — and with Cobblemon,
@@ -99,6 +99,7 @@ where they take tools and supplies from and where their work goes.
 | Armorer (smelter) | Blast Furnace (vanilla) | ore and coal (or nothing: they fetch it) | nothing — or sneak-right-click with coal to hire them |
 | Toolsmith | Smithing Table (vanilla) | diamonds, if you want diamond tools | nothing — or sneak-right-click with an iron ingot to hire them |
 | Weaponsmith | Grindstone (vanilla) | worn gear to mend (and what mends it: ingots, planks...) | nothing — or sneak-right-click with an iron ingot to hire them |
+| Fletcher | Fletching Table (vanilla) | sticks, string, iron (glowstone for spectral arrows) | nothing — or sneak-right-click with flint to hire them |
 | Postman | Postal Desk | — | Mailboxes for mail; Delivery Notes for hauling |
 | Guard | Guard Post | weapons, armor, a bow or crossbow and arrows | nothing |
 | Nurse | Nurse Station | — | right-click them to be healed |
@@ -278,7 +279,7 @@ want. **Masons** (vanilla villagers at a stonecutter) do the same with the stone
 slabs and walls cut from stone — and go about their usual day in between. Villages sometimes grow a carpenter's
 workshop.
 
-## Armorers, toolsmiths and weaponsmiths
+## Armorers, toolsmiths, weaponsmiths and fletchers
 Every **Armorer** (the vanilla villager at a blast furnace) with a chest within 8 blocks of their blast furnace
 smelts the village's ore: raw metal and ore blocks from that chest go into the blast furnace (and any furnaces
 nearby) with coal or charcoal, and the ingots come out into the chest. When the chest runs out, they fetch ore — and
@@ -299,6 +300,12 @@ plank, diamond or leather puts back a quarter of a tool's, weapon's or armor pie
 in the chests by their grindstone (drop your own worn gear there), by the guards' posts and at the other workers, with
 materials from their chests, the storehouse and the smelters, and put each piece back where it was. A guard with no
 weapon and none in their chests gets a sword (iron, else stone). Sneak-right-click one with an iron ingot to hire them.
+
+**Fletchers** (the vanilla villager at a fletching table) look after the guards' bows: a guard with no bow gets a
+crossbow if there's iron for one, else a bow; a guard with a bow and few special arrows gets eight spectral arrows
+(glowstone dust and arrows — the arrows made from flint, sticks and feathers if need be). Guards with a bow fill a
+quiver of up to 16 spectral or tipped arrows from their chests (put in your own tipped arrows too) and shoot those
+first; plain arrows never run out. Sneak-right-click a fletcher with flint to hire them.
 
 ## Chefs
 ![A chef cooking at the Kitchen Stove](docs/media/chef.png)
@@ -495,6 +502,7 @@ type suits it — each one cuts the time the work takes by 15%, up to three:
 | Armorer | Fire, Steel: one more stack of ore each trip each (and Fire types smelt some on the spot) |
 | Toolsmith | Steel, Fire |
 | Weaponsmith | Steel, Fighting |
+| Fletcher | Flying, Bug |
 | Nurse | Fairy, Normal, Psychic |
 | Ball Smith | Steel, Fire |
 | Porter | Fighting, Normal: each carries 3 more stacks a trip |

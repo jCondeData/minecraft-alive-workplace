@@ -180,6 +180,12 @@ public final class BuilderEvents {
 				return level.isClientSide ? InteractionResult.SUCCESS
 					: io.github.jcondedata.aliveworkplace.smelt.Smelters.hire((ServerPlayer) player, villager);
 			}
+			if (player.isShiftKeyDown() && !villager.isBaby() && player.getItemInHand(hand).is(net.minecraft.world.item.Items.FLINT)
+					&& villager.getVillagerData().getProfession() == net.minecraft.world.entity.npc.VillagerProfession.FLETCHER) {
+				return level.isClientSide ? InteractionResult.SUCCESS
+					: io.github.jcondedata.aliveworkplace.work.Hiring.hire((ServerPlayer) player, villager,
+						net.minecraft.network.chat.Component.translatable("message.aliveworkplace.fletcher.hired", villager.getDisplayName()));
+			}
 			if (player.isShiftKeyDown() && !villager.isBaby() && player.getItemInHand(hand).is(net.minecraft.world.item.Items.IRON_INGOT)
 					&& (villager.getVillagerData().getProfession() == net.minecraft.world.entity.npc.VillagerProfession.TOOLSMITH
 						|| villager.getVillagerData().getProfession() == net.minecraft.world.entity.npc.VillagerProfession.WEAPONSMITH)) {

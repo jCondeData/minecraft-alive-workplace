@@ -378,8 +378,10 @@ loop: ore → ingots → the tools, weapons and armor the other workers wear out
   and village stashes, materials from its own chests, the storehouse and smelters; the piece goes back where it was.
   `craft/WeaponsmithWork`: iron/stone swords for guards with no weapon and none in their chests. The two take turns
   (`UpgradedJob.work` with two behaviours). Combining two worn pieces without material is left out)
-- [ ] **Fletcher** (fletching table): bows, crossbows and arrows for guards (flint from gravel, feathers, sticks);
-  guards with arrows in their chests shoot tipped/spectral ones
+- [x] **Fletcher** (fletching table): bows, crossbows and arrows for guards (flint from gravel, feathers, sticks);
+  guards with arrows in their chests shoot tipped/spectral ones (`craft/FletcherWork`: crossbow, else bow, for a guard
+  with none; 8 spectral arrows when a guard with a bow has under 8; guards keep a quiver of 16 special arrows in their
+  bag (`Guards.quiver`, filled at gear-up) and shoot them first. Gravel → flint is left to players and miners)
 - [ ] **Shepherd** (loom): keeps sheep in a pen (Field Marker): shears them, breeds them with wheat up to a cap, dyes wool
   to order; with Cobblemon shears pastured Wooloo/Dubwool
 - [ ] **Butcher → Herder** (smoker): keeps cows, pigs, chickens and rabbits in a pen: feeds and breeds them up to a cap,

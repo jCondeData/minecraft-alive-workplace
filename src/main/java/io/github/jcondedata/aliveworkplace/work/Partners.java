@@ -66,6 +66,9 @@ public final class Partners {
 		if (profession == ModVillagers.FOSSIL_SCIENTIST) {
 			return Set.of("rock", "psychic");
 		}
+		if (profession == VillagerProfession.FLETCHER) {
+			return Set.of("flying", "bug"); // feathers and silk
+		}
 		if (profession == VillagerProfession.WEAPONSMITH) {
 			return Set.of("steel", "fighting");
 		}

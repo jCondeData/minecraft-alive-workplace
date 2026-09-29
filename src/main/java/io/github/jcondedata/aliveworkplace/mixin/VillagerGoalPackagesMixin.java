@@ -95,6 +95,10 @@ abstract class VillagerGoalPackagesMixin {
 			cir.setReturnValue(io.github.jcondedata.aliveworkplace.work.UpgradedJob.work(cir.getReturnValue(),
 				new io.github.jcondedata.aliveworkplace.craft.WeaponsmithWork(), new io.github.jcondedata.aliveworkplace.mend.MendingWork(),
 				v -> io.github.jcondedata.aliveworkplace.craft.CrafterWork.vanillaMayRun(v) && !io.github.jcondedata.aliveworkplace.mend.MendingWork.isBusy(v)));
+		} else if (profession == VillagerProfession.FLETCHER) {
+			// Fletchers make bows and spectral arrows for the guards.
+			cir.setReturnValue(io.github.jcondedata.aliveworkplace.work.UpgradedJob.work(cir.getReturnValue(),
+				new io.github.jcondedata.aliveworkplace.craft.FletcherWork(), io.github.jcondedata.aliveworkplace.craft.CrafterWork::vanillaMayRun));
 		} else if (profession == VillagerProfession.FISHERMAN) {
 			cir.setReturnValue(io.github.jcondedata.aliveworkplace.work.UpgradedJob.work(cir.getReturnValue(),
 				new io.github.jcondedata.aliveworkplace.fish.FisherWork(), io.github.jcondedata.aliveworkplace.fish.Fishers::vanillaMayRun));

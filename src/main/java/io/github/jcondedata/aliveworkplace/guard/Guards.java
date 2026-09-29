@@ -59,6 +59,25 @@ public final class Guards {
 		return !isBow(stack) ? 0 : isCrossbow(stack) ? 2 : 1;
 	}
 
+	/** Arrows better than plain ones — spectral or tipped — that a guard with a bow carries (up to {@link #QUIVER}). */
+	public static boolean isSpecialArrow(ItemStack stack) {
+		return !stack.isEmpty() && stack.is(net.minecraft.tags.ItemTags.ARROWS) && !stack.is(net.minecraft.world.item.Items.ARROW);
+	}
+
+	/** Special arrows a guard carries at most. */
+	public static final int QUIVER = 16;
+
+	/** How many special arrows the guard carries (in their bag). */
+	public static int quiver(Villager guard) {
+		int n = 0;
+		for (ItemStack stack : guard.getAttachedOrCreate(io.github.jcondedata.aliveworkplace.registry.ModAttachments.BUILDER_BAG).stacks()) {
+			if (isSpecialArrow(stack)) {
+				n += stack.getCount();
+			}
+		}
+		return n;
+	}
+
 	public static boolean hasBow(Villager guard) {
 		return isBow(guard.getItemBySlot(EquipmentSlot.OFFHAND));
 	}

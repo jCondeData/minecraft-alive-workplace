@@ -622,5 +622,12 @@
   "message.aliveworkplace.weaponsmith_crafting.state.crafting": "making %s %s",
   "message.aliveworkplace.weaponsmith_crafting.state.delivering": "taking %s %s to the guard",
   "message.aliveworkplace.weaponsmith_crafting.state.tidying": "putting things away",
-  "message.aliveworkplace.weaponsmith.hired": "%s mends your workers' gear and makes your guards' swords now."
+  "message.aliveworkplace.weaponsmith.hired": "%s mends your workers' gear and makes your guards' swords now.",
+  "message.aliveworkplace.fletcher.title": "Fletcher · %s made",
+  "message.aliveworkplace.fletcher.state.idle": "the guards have their bows",
+  "message.aliveworkplace.fletcher.state.fetching": "fetching what %s %s take",
+  "message.aliveworkplace.fletcher.state.crafting": "making %s %s",
+  "message.aliveworkplace.fletcher.state.delivering": "taking %s %s to the guard",
+  "message.aliveworkplace.fletcher.state.tidying": "putting things away",
+  "message.aliveworkplace.fletcher.hired": "%s makes bows and arrows for your guards now."
 }

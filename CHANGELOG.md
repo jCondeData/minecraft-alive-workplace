@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+## 0.83.0 — 2026-09-28
+
+### Added
+- **Fletchers make the guards' bows and arrows**: a guard without a bow gets a crossbow (with iron) or a bow; a guard
+  short of special arrows gets spectral ones made from glowstone.
+- **Guards shoot special arrows**: spectral and tipped arrows in a guard's chests go into their quiver (up to 16) and
+  are shot first.
+
 ## 0.82.0 — 2026-09-28
 
 ### Added

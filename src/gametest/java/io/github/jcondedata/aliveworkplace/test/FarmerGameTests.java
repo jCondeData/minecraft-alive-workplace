@@ -226,4 +226,61 @@ public class FarmerGameTests implements FabricGameTest {
 			helper.assertTrue(chest.countItem(Items.SUGAR_CANE) == 2, chest.countItem(Items.SUGAR_CANE) + " sugar cane in the chest");
 		});
 	}
+
+	/** Sugar cane from the chest goes on the sand by the water, next to the wheat seeds the farmer also takes along. */
+	@GameTest(template = AREA, timeoutTicks = 3000)
+	public void farmerPlantsSugarCaneByTheWater(GameTestHelper helper) {
+		for (int x = 8; x <= 10; x++) {
+			helper.setBlock(new BlockPos(x, 0, 8), Blocks.STONE); // (sand falls: nothing is under the floor)
+			helper.setBlock(new BlockPos(x, 1, 8), Blocks.SAND);
+			helper.setBlock(new BlockPos(x, 1, 9), Blocks.WATER);
+		}
+		farmer(helper, new BlockPos(8, 1, 8), new BlockPos(10, 1, 9), new ItemStack(Items.WHEAT_SEEDS, 8), new ItemStack(Items.SUGAR_CANE, 3));
+		helper.succeedWhen(() -> {
+			for (int x = 8; x <= 10; x++) {
+				helper.assertBlockPresent(Blocks.SUGAR_CANE, new BlockPos(x, 2, 8));
+			}
+		});
+	}
+
+	/** Cactus, bamboo and kelp (in a glass tank) are cut down to their bottom block, like sugar cane. */
+	@GameTest(template = AREA, timeoutTicks = 3000)
+	public void farmerCutsCactusBambooAndKelp(GameTestHelper helper) {
+		helper.setBlock(new BlockPos(16, 0, 8), Blocks.STONE); // (sand falls: nothing is under the floor)
+		helper.setBlock(new BlockPos(16, 1, 8), Blocks.SAND);
+		helper.setBlock(new BlockPos(14, 1, 8), Blocks.DIRT);
+		for (int y = 2; y <= 4; y++) {
+			helper.setBlock(new BlockPos(16, y, 8), Blocks.CACTUS);
+			helper.setBlock(new BlockPos(14, y, 8), Blocks.BAMBOO);
+			for (BlockPos side : new BlockPos[]{new BlockPos(11, y, 8), new BlockPos(13, y, 8), new BlockPos(12, y, 7), new BlockPos(12, y, 9)}) {
+				helper.setBlock(side, Blocks.GLASS);
+			}
+			helper.setBlock(new BlockPos(12, y, 8), y == 4 ? Blocks.KELP : Blocks.KELP_PLANT);
+		}
+		farmer(helper, new BlockPos(12, 1, 8), new BlockPos(16, 1, 8));
+		helper.succeedWhen(() -> {
+			helper.assertBlockPresent(Blocks.CACTUS, new BlockPos(16, 2, 8));
+			helper.assertBlockNotPresent(Blocks.CACTUS, new BlockPos(16, 3, 8));
+			helper.assertBlockPresent(Blocks.BAMBOO, new BlockPos(14, 2, 8));
+			helper.assertBlockNotPresent(Blocks.BAMBOO, new BlockPos(14, 3, 8));
+			var bottom = helper.getLevel().getBlockState(helper.absolutePos(new BlockPos(12, 2, 8)));
+			helper.assertTrue(bottom.is(Blocks.KELP) || bottom.is(Blocks.KELP_PLANT), "the kelp's bottom went too: " + bottom);
+			Container chest = helper.getBlockEntity(CHEST);
+			helper.assertTrue(chest.countItem(Items.CACTUS) == 2 && chest.countItem(Items.BAMBOO) == 2 && chest.countItem(Items.KELP) == 2,
+				"in the chest: cactus " + chest.countItem(Items.CACTUS) + ", bamboo " + chest.countItem(Items.BAMBOO) + ", kelp " + chest.countItem(Items.KELP));
+		});
+	}
+
+	/** Seeds piling up in the chests go in the composter; the bone meal comes out for the field. */
+	@GameTest(template = AREA, timeoutTicks = 4000)
+	public void farmerCompostsSpareSeeds(GameTestHelper helper) {
+		Villager farmer = farmer(helper, new BlockPos(8, 1, 8), new BlockPos(9, 1, 9), new ItemStack(Items.WHEAT_SEEDS, 64),
+			new ItemStack(Items.WHEAT_SEEDS, 64), new ItemStack(Items.WHEAT_SEEDS, 64));
+		helper.succeedWhen(() -> {
+			Container chest = helper.getBlockEntity(CHEST);
+			var bag = farmer.getAttachedOrCreate(io.github.jcondedata.aliveworkplace.registry.ModAttachments.BUILDER_BAG);
+			helper.assertTrue(chest.countItem(Items.BONE_MEAL) + bag.count(Items.BONE_MEAL) >= 1, "no bone meal yet");
+			helper.assertTrue(chest.countItem(Items.WHEAT_SEEDS) + bag.count(Items.WHEAT_SEEDS) >= 64, "composted the seeds it needs");
+		});
+	}
 }

@@ -37,6 +37,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.AttachedStemBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.ComposterBlock;
 import net.minecraft.world.level.block.CropBlock;
 import net.minecraft.world.level.block.FarmBlock;
 import net.minecraft.world.level.block.NetherWartBlock;
@@ -55,9 +56,10 @@ import org.jetbrains.annotations.Nullable;
 /**
  * A farmer's shift on the field they were given: harvest what's ripe (and plant the same crop right
  * back), sow empty farmland with seeds from the chests near the composter, till bare dirt with a hoe
- * from those chests, cut sugar cane down to its last block, pick pumpkins and melons, and carry the
- * harvest to the chests. When everything is tended the farmer goes back to the vanilla routine until
- * something ripens.
+ * from those chests, cut sugar cane, cactus, bamboo and kelp down to their last block (and plant them on
+ * sand, by the water, next to more of the same), pick pumpkins and melons, and carry the harvest to the
+ * chests. With nothing else to do, seeds piling up in the chests go in the composter for bone meal. When
+ * everything is tended the farmer goes back to the vanilla routine until something ripens.
  */
 public class FieldWork extends Behavior<Villager> {
 	static final double REACH = 3.0;
@@ -67,12 +69,16 @@ public class FieldWork extends Behavior<Villager> {
 	static final int KEEP_SEEDS = 32;
 	private static final int HARVESTS_PER_XP = 10;
 
-	enum Phase { TENDING, NEEDS_SEEDS, DEPOSITING, RESTING }
+	enum Phase { TENDING, NEEDS_SEEDS, DEPOSITING, RESTING, COMPOSTING }
 
 	enum Kind { HARVEST, PLANT, TILL, FERTILIZE }
 
 	/** Bone meal a farmer keeps in the bag; the rest stays in the chests. */
 	static final int KEEP_BONE_MEAL = 16;
+	/** Sugar cane, cactus... taken to plant with (the harvest of them all goes to the chests). */
+	static final int KEEP_PLANTATION = 8;
+	/** Seeds kept in the chests before the rest go in the composter for bone meal. */
+	static final int COMPOST_ABOVE = 64;
 
 	record Task(Kind kind, BlockPos pos) {
 	}
@@ -92,6 +98,13 @@ public class FieldWork extends Behavior<Villager> {
 	private boolean chestsHaveSeeds;
 	private boolean chestsHaveHoe;
 	private boolean chestsHaveBoneMeal;
+	/** Something couldn't be sown with the seeds we carry (sugar cane wanted by the water): fetch the other kinds. */
+	private boolean wantOtherSeeds;
+	private boolean fetchedOtherSeeds;
+	/** What's going in the composter now (from the chests' surplus), or null. */
+	@Nullable
+	private Item composting;
+	private int compostTimer;
 
 	public FieldWork() {
 		super(ImmutableMap.of(
@@ -161,6 +174,7 @@ public class FieldWork extends Behavior<Villager> {
 			scanTimer = SCAN_EVERY;
 			tasks = scan(level, field);
 			skipped.clear();
+			fetchedOtherSeeds = false;
 			List<BlockPos> supplies = SupplyContainers.find(level, station, null);
 			chestsHaveSeeds = SupplyContainers.firstMatching(level, supplies, FieldWork::isSeed) != null
 				|| io.github.jcondedata.aliveworkplace.work.Village.find(level, villager, station, null, FieldWork::isSeed) != null;
@@ -223,6 +237,16 @@ public class FieldWork extends Behavior<Villager> {
 					fetch(level, villager, station, bag, true);
 					return;
 				}
+				if (wantOtherSeeds && !fetchedOtherSeeds && chestsHaveSeeds) {
+					rest(villager, false);
+					status(villager, field, Phase.TENDING);
+					if (fetch(level, villager, station, bag, true)) {
+						fetchedOtherSeeds = true;
+						wantOtherSeeds = false;
+						skipped.clear();
+					}
+					return;
+				}
 				if (wantsHoe && hasSeeds && chestsHaveHoe) {
 					rest(villager, false);
 					status(villager, field, Phase.TENDING);
@@ -231,6 +255,11 @@ public class FieldWork extends Behavior<Villager> {
 				}
 				if (hasHarvest(bag)) {
 					depositDue = true;
+					return;
+				}
+				if (compost(level, villager, station, bag)) {
+					rest(villager, false);
+					status(villager, field, Phase.COMPOSTING);
 					return;
 				}
 				rest(villager, true);
@@ -267,6 +296,7 @@ public class FieldWork extends Behavior<Villager> {
 			case PLANT -> {
 				if (!plant(level, bag, task.pos())) {
 					skipped.add(task.pos());
+					wantOtherSeeds = true;
 				}
 			}
 			case TILL -> till(level, villager, bag, task.pos());
@@ -323,10 +353,51 @@ public class FieldWork extends Behavior<Villager> {
 		if ((state.getBlock() instanceof FarmBlock || state.is(Blocks.SOUL_SAND)) && above.isAir()) {
 			return Kind.PLANT;
 		}
+		// Plantation crops: sand is for cactus and sugar cane; dirt next to cane or bamboo gets more of it, not tilled;
+		// the bottom of the water next to kelp gets kelp.
+		if (above.isAir() && (state.is(BlockTags.SAND) || state.is(BlockTags.DIRT) && stackedNear(level, pos.above()))) {
+			return Kind.PLANT;
+		}
+		if (above.is(Blocks.WATER) && above.getFluidState().isSource() && state.isFaceSturdy(level, pos, Direction.UP)
+			&& stackedNear(level, pos.above())) {
+			return Kind.PLANT;
+		}
 		if ((state.is(Blocks.DIRT) || state.is(Blocks.GRASS_BLOCK)) && (above.isAir() || isWeed(above))) {
 			return Kind.TILL;
 		}
 		return null;
+	}
+
+	/** Sugar cane, cactus, bamboo and kelp: plants that grow up in a column and are cut down to their bottom block. */
+	static boolean isStacked(BlockState state) {
+		return state.is(Blocks.SUGAR_CANE) || state.is(Blocks.CACTUS) || state.is(Blocks.BAMBOO) || state.is(Blocks.BAMBOO_SAPLING)
+			|| state.is(Blocks.KELP) || state.is(Blocks.KELP_PLANT);
+	}
+
+	/** Two blocks of the same column plant (bamboo and its shoot, kelp and its stem count as one). */
+	private static boolean sameStack(BlockState a, BlockState b) {
+		return family(a) != null && family(a) == family(b);
+	}
+
+	@Nullable
+	private static Block family(BlockState state) {
+		if (state.is(Blocks.BAMBOO) || state.is(Blocks.BAMBOO_SAPLING)) {
+			return Blocks.BAMBOO;
+		}
+		if (state.is(Blocks.KELP) || state.is(Blocks.KELP_PLANT)) {
+			return Blocks.KELP;
+		}
+		return state.is(Blocks.SUGAR_CANE) || state.is(Blocks.CACTUS) ? state.getBlock() : null;
+	}
+
+	/** Whether a column plant grows within two blocks of {@code spot}, at its height. */
+	private static boolean stackedNear(ServerLevel level, BlockPos spot) {
+		for (BlockPos n : BlockPos.betweenClosed(spot.offset(-2, 0, -2), spot.offset(2, 0, 2))) {
+			if (!n.equals(spot) && isStacked(level.getBlockState(n))) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	private static boolean isRipe(ServerLevel level, BlockPos pos, BlockState state) {
@@ -347,9 +418,9 @@ public class FieldWork extends Behavior<Villager> {
 			}
 			return false;
 		}
-		if (state.is(Blocks.SUGAR_CANE)) {
-			// The second block of a cane: cut from here up, leave the bottom one to grow back.
-			return level.getBlockState(pos.below()).is(Blocks.SUGAR_CANE) && !level.getBlockState(pos.below(2)).is(Blocks.SUGAR_CANE);
+		if (isStacked(state)) {
+			// The second block of a cane, cactus, bamboo or kelp: cut from here up, leave the bottom one to grow back.
+			return sameStack(state, level.getBlockState(pos.below())) && !sameStack(state, level.getBlockState(pos.below(2)));
 		}
 		// Sweet berries, cocoa pods, glow berries (and apricorns and berries with Cobblemon): picked, not cut.
 		return Fruit.isRipe(state);
@@ -392,9 +463,9 @@ public class FieldWork extends Behavior<Villager> {
 					Block.popResource(level, pos, rest);
 				}
 			}
-		} else if (state.is(Blocks.SUGAR_CANE)) {
+		} else if (isStacked(state)) {
 			BlockPos top = pos;
-			while (level.getBlockState(top.above()).is(Blocks.SUGAR_CANE)) {
+			while (sameStack(state, level.getBlockState(top.above()))) {
 				top = top.above();
 			}
 			for (BlockPos p = top; p.getY() >= pos.getY(); p = p.below()) {
@@ -477,14 +548,15 @@ public class FieldWork extends Behavior<Villager> {
 
 	/** Sows {@code spot} with the crop growing next to it, or else the seed we carry most of. */
 	static boolean plant(ServerLevel level, BuilderBag bag, BlockPos spot) {
-		if (!level.getBlockState(spot).isAir()) {
+		BlockState there = level.getBlockState(spot);
+		if (!there.isAir() && !(there.is(Blocks.WATER) && there.getFluidState().isSource())) {
 			return false;
 		}
 		Item seed = seedFor(level, bag, spot);
 		if (seed == null) {
 			return false;
 		}
-		level.setBlockAndUpdate(spot, ((BlockItem) seed).getBlock().defaultBlockState());
+		level.setBlockAndUpdate(spot, planted(seed));
 		bag.remove(seed, 1);
 		level.playSound(null, spot, SoundEvents.CROP_PLANTED, SoundSource.BLOCKS, 0.8f, 1f);
 		return true;
@@ -495,7 +567,7 @@ public class FieldWork extends Behavior<Villager> {
 		for (int r = 1; r <= 2; r++) {
 			for (BlockPos n : BlockPos.betweenClosed(spot.offset(-r, 0, -r), spot.offset(r, 0, r))) {
 				BlockState state = level.getBlockState(n);
-				if (state.is(BlockTags.CROPS) || state.getBlock() instanceof NetherWartBlock) {
+				if (state.is(BlockTags.CROPS) || state.getBlock() instanceof NetherWartBlock || isStacked(state)) {
 					Item seed = state.getBlock().getCloneItemStack(level, n, state).getItem();
 					if (bag.has(seed, 1) && canPlant(level, seed, spot)) {
 						return seed;
@@ -518,7 +590,17 @@ public class FieldWork extends Behavior<Villager> {
 	}
 
 	private static boolean canPlant(ServerLevel level, Item seed, BlockPos spot) {
-		return seed instanceof BlockItem bi && bi.getBlock().defaultBlockState().canSurvive(level, spot);
+		if (!(seed instanceof BlockItem)) {
+			return false;
+		}
+		// Kelp only goes in water, and the rest only in air.
+		boolean water = level.getBlockState(spot).is(Blocks.WATER);
+		return water == (seed == Items.KELP) && planted(seed).canSurvive(level, spot);
+	}
+
+	/** What a seed puts in the ground: bamboo starts as a shoot. */
+	private static BlockState planted(Item seed) {
+		return seed == Items.BAMBOO ? Blocks.BAMBOO_SAPLING.defaultBlockState() : ((BlockItem) seed).getBlock().defaultBlockState();
 	}
 
 	private static void till(ServerLevel level, Villager villager, BuilderBag bag, BlockPos pos) {
@@ -542,9 +624,15 @@ public class FieldWork extends Behavior<Villager> {
 
 	// --- errands ----------------------------------------------------------------------------------
 
+	/** Sugar cane, cactus, bamboo, kelp: planted like seeds, but a crop too (they all go to the chests). */
+	static boolean isPlantation(ItemStack stack) {
+		return stack.is(Items.SUGAR_CANE) || stack.is(Items.CACTUS) || stack.is(Items.BAMBOO) || stack.is(Items.KELP);
+	}
+
 	public static boolean isSeed(ItemStack stack) {
 		return !stack.isEmpty() && stack.getItem() instanceof BlockItem bi
-			&& (bi.getBlock().defaultBlockState().is(BlockTags.CROPS) || bi.getBlock() instanceof NetherWartBlock);
+			&& (bi.getBlock().defaultBlockState().is(BlockTags.CROPS) || bi.getBlock() instanceof NetherWartBlock
+				|| stack.is(Items.SUGAR_CANE) || stack.is(Items.CACTUS) || stack.is(Items.BAMBOO) || stack.is(Items.KELP));
 	}
 
 	static boolean isHoe(ItemStack stack) {
@@ -563,11 +651,81 @@ public class FieldWork extends Behavior<Villager> {
 	/** Anything in the bag worth carrying to the chests (not just the seeds we keep). */
 	private static boolean hasHarvest(BuilderBag bag) {
 		for (ItemStack stack : bag.stacks()) {
-			if (!stack.isEmpty() && !stack.is(Items.BONE_MEAL) && (!isSeed(stack) || bag.count(stack.getItem()) > KEEP_SEEDS)) {
+			if (!stack.isEmpty() && !stack.is(Items.BONE_MEAL) && (!isSeed(stack) || isPlantation(stack) || bag.count(stack.getItem()) > KEEP_SEEDS)) {
 				return true;
 			}
 		}
 		return false;
+	}
+
+	/**
+	 * With nothing else to do: seeds piling up in the chests (more than {@link #COMPOST_ABOVE} of a kind) go in the
+	 * composter by the chests, a handful at a time, and the bone meal it makes comes out for the field. False when
+	 * there's nothing to compost.
+	 */
+	private boolean compost(ServerLevel level, Villager villager, BlockPos station, BuilderBag bag) {
+		BlockState composter = level.getBlockState(station);
+		if (!composter.is(Blocks.COMPOSTER)) {
+			return false;
+		}
+		int fill = composter.getValue(ComposterBlock.LEVEL);
+		if (composting == null && fill < ComposterBlock.READY) {
+			List<BlockPos> supplies = SupplyContainers.find(level, station, null);
+			Item surplus = null;
+			for (java.util.Map.Entry<Item, Long> e : SupplyContainers.contents(level, supplies).entrySet()) {
+				if (isCompostable(e.getKey()) && e.getValue() > COMPOST_ABOVE) {
+					surplus = e.getKey();
+					break;
+				}
+			}
+			if (surplus == null) {
+				return false;
+			}
+			BlockPos chest = SupplyContainers.firstWith(level, supplies, surplus);
+			if (chest == null || !walker.walkTo(level, villager, chest, 3.0)) {
+				return true;
+			}
+			long there = SupplyContainers.count(level, supplies, surplus);
+			bag.addAll(surplus, SupplyContainers.extract(level, supplies, surplus, (int) Math.min(16, there - COMPOST_ABOVE)));
+			composting = surplus;
+			walker.reset();
+			return true;
+		}
+		if (!walker.walkTo(level, villager, station, 2.5)) {
+			return true;
+		}
+		villager.getBrain().setMemory(MemoryModuleType.LOOK_TARGET, new BlockPosTracker(station));
+		if (++compostTimer < 8) {
+			return true;
+		}
+		compostTimer = 0;
+		if (fill == ComposterBlock.READY) {
+			// Full: the bone meal comes out.
+			level.setBlock(station, composter.setValue(ComposterBlock.LEVEL, 0), Block.UPDATE_ALL);
+			level.playSound(null, station, SoundEvents.COMPOSTER_EMPTY, SoundSource.BLOCKS, 1f, 1f);
+			ItemStack rest = bag.add(new ItemStack(Items.BONE_MEAL));
+			if (!rest.isEmpty()) {
+				Block.popResource(level, station.above(), rest);
+			}
+			BuilderLevels.addXp(level, villager, 1, null);
+			return true;
+		}
+		if (fill >= ComposterBlock.MAX_LEVEL) {
+			return true; // settling: ready in a moment
+		}
+		if (composting == null || bag.remove(composting, 1) != 1) {
+			composting = null;
+			return false;
+		}
+		villager.swing(InteractionHand.MAIN_HAND);
+		ComposterBlock.insertItem(villager, composter, level, new ItemStack(composting), station);
+		return true;
+	}
+
+	/** Seeds the field makes too many of (and poisonous potatoes): what goes in the composter. */
+	static boolean isCompostable(Item item) {
+		return item == Items.WHEAT_SEEDS || item == Items.BEETROOT_SEEDS || item == Items.MELON_SEEDS || item == Items.PUMPKIN_SEEDS
+			|| item == Items.TORCHFLOWER_SEEDS || item == Items.POISONOUS_POTATO;
 	}
 
 	/** Walks to the chests and takes some bone meal. */
@@ -584,8 +742,8 @@ public class FieldWork extends Behavior<Villager> {
 		}
 	}
 
-	/** Walks to the chests and takes seeds (the kind there is most of) or a hoe. */
-	private void fetch(ServerLevel level, Villager villager, BlockPos station, BuilderBag bag, boolean seeds) {
+	/** Walks to the chests and takes seeds (the kind there is most of, and some of each other kind) or a hoe; true once done. */
+	private boolean fetch(ServerLevel level, Villager villager, BlockPos station, BuilderBag bag, boolean seeds) {
 		List<BlockPos> supplies = SupplyContainers.find(level, station, null);
 		BlockPos chest = SupplyContainers.firstMatching(level, supplies, seeds ? FieldWork::isSeed : FieldWork::isHoe);
 		if (chest == null) {
@@ -602,18 +760,28 @@ public class FieldWork extends Behavior<Villager> {
 			} else {
 				chestsHaveHoe = false;
 			}
-			return;
+			return true;
 		}
 		if (!walker.walkTo(level, villager, chest, 3.0)) {
-			return;
+			return false;
 		}
 		ItemStack got = SupplyContainers.takeOne(level, supplies, seeds ? FieldWork::isSeed : FieldWork::isHoe);
 		if (got.isEmpty()) {
-			return;
+			return true;
 		}
 		if (seeds) {
 			int more = SupplyContainers.extract(level, supplies, got.getItem(), KEEP_SEEDS - 1);
 			bag.addAll(got.getItem(), 1 + more);
+			// And some of every other kind there, so a mixed field (wheat here, sugar cane by the water) gets sown.
+			for (java.util.Map.Entry<Item, Long> e : SupplyContainers.contents(level, supplies).entrySet()) {
+				ItemStack kind = new ItemStack(e.getKey());
+				if (e.getKey() != got.getItem() && isSeed(kind)) {
+					int want = (isPlantation(kind) ? KEEP_PLANTATION : KEEP_SEEDS) - bag.count(e.getKey());
+					if (want > 0) {
+						bag.addAll(e.getKey(), SupplyContainers.extract(level, supplies, e.getKey(), Math.min(want, bag.spaceFor(e.getKey()))));
+					}
+				}
+			}
 		} else {
 			ItemStack old = villager.getItemBySlot(EquipmentSlot.MAINHAND);
 			if (!old.isEmpty()) {
@@ -622,6 +790,7 @@ public class FieldWork extends Behavior<Villager> {
 			villager.setItemSlot(EquipmentSlot.MAINHAND, got);
 		}
 		level.playSound(null, chest, SoundEvents.CHEST_OPEN, SoundSource.BLOCKS, 0.4f, 1.1f);
+		return true;
 	}
 
 	private static void deposit(ServerLevel level, BlockPos station, BuilderBag bag) {
@@ -629,7 +798,7 @@ public class FieldWork extends Behavior<Villager> {
 		List<ItemStack> all = new ArrayList<>(bag.takeAll());
 		all.sort(Comparator.comparingInt(s -> -s.getCount())); // keep the fullest seed stacks
 		for (ItemStack stack : all) {
-			if (isSeed(stack) && bag.count(stack.getItem()) < KEEP_SEEDS) {
+			if (isSeed(stack) && !isPlantation(stack) && bag.count(stack.getItem()) < KEEP_SEEDS) {
 				int keep = Math.min(stack.getCount(), KEEP_SEEDS - bag.count(stack.getItem()));
 				bag.add(stack.split(keep));
 			} else if (stack.is(Items.BONE_MEAL) && bag.count(Items.BONE_MEAL) < KEEP_BONE_MEAL) {

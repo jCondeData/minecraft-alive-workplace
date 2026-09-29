@@ -417,8 +417,10 @@ loop: ore → ingots → the tools, weapons and armor the other workers wear out
   glass when a furnace is by the stonecutter, a coal/charcoal per 8)
 
 ## Milestone 8 — Growing things
-- [ ] Farmer fields grow the plantation crops too: bamboo, cactus, kelp, vines, mushrooms, nether wart (MineColonies'
-  planter), and compost the surplus into bone meal (the composter)
+- [x] Farmer fields grow the plantation crops too: bamboo, cactus, kelp, vines, mushrooms, nether wart (MineColonies'
+  planter), and compost the surplus into bone meal (the composter) (`farm/FieldWork`: sugar cane, cactus, bamboo and
+  kelp cut to their bottom block and planted on sand, by water or next to more of the same; nether wart already grew on
+  soul sand; seeds over 64 a kind composted into bone meal. Vines and mushrooms left out: they spread by themselves)
 - [ ] **Beekeeper** (new job, Apiary block): tends beehives in a marked area — honeycomb and honey bottles with a
   campfire under the hive, flowers planted for the bees; with Cobblemon, Combee/Vespiquen partners
 - [ ] **Florist** (new job): grows flowers with bone meal for the dyer and the builders, fills flower pots around the

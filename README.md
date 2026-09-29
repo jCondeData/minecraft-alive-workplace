@@ -229,6 +229,12 @@ picked for their leaves and planted again. Sweet berry bushes, cocoa pods and gl
 the farmer uses it on the growing crops. The harvest goes into the chests.
 Sneak-right-click the farmer with an empty hand to see how it's going or to stop.
 
+**Plantation crops.** Mark sand, dirt by the water or the bottom of a pond as a field too: the farmer cuts **sugar cane,
+cactus, bamboo and kelp** down to their bottom block (which grows back) and plants more from the chest — sugar cane or
+cactus on the sand, more of whatever grows next to a bare spot — alongside the wheat and carrots of the same field.
+**Composting**: seeds piling up in the chests (more than 64 of a kind) go in the farmer's composter when there's nothing
+else to do, and the bone meal that comes out goes back on the field.
+
 **A village's own farm.** Village farmers look after the farm by their composter **by themselves** as soon as there's a
 chest within 8 blocks of the composter: the farmland nearest to it, within 16 blocks, and everything joined to that,
 across the water channels between the rows too. The harvest goes into the chest, but they keep some food on them

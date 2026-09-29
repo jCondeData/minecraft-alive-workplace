@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+## 0.92.0 — 2026-09-29
+
+### Added
+- **Farmers grow plantation crops**: sugar cane, cactus, bamboo and kelp in their fields are cut down to the bottom
+  block and planted — sugar cane and cactus on sand, more of whatever grows next to a bare spot — and a farmer takes
+  every kind of seed in the chests along, so one field can mix wheat and sugar cane.
+- **Farmers compost** the seeds piling up in their chests (over 64 of a kind) into bone meal for the field.
+
 ## 0.91.0 — 2026-09-29
 
 ### Added

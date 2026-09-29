@@ -229,6 +229,7 @@
   "message.aliveworkplace.field.state.needs_seeds": "needs seeds",
   "message.aliveworkplace.field.state.depositing": "bringing in the harvest",
   "message.aliveworkplace.field.state.resting": "field tended",
+  "message.aliveworkplace.field.state.composting": "composting the spare seeds",
   "command.aliveworkplace.field_released": "%s stopped looking after the field.",
   "message.aliveworkplace.fisher.busy": "%s is already fishing for you. Put spare rods in their barrel or a chest next to it.",
   "message.aliveworkplace.fisher.no_barrel": "This fisherman has no barrel. Place one near them first.",

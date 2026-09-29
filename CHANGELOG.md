@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 0.134.0 — 2026-09-29
+
 ### Added
 - **What next?** on the Village Hall's screen (the compass): what the village lacks, most pressing first, and how to put
   each right — a builder, beds, food, a Storehouse, guards, bandits, the ill, dark beds, jobs, a scholar, decorations,
@@ -10,16 +12,14 @@
   for a well-kept village and a higher rank); click the hall's name on its screen to collect them.
 
 ### Changed
-- Under the hood, no gameplay changes: the build uses Gradle 9.8 on JDK 25 and Loom 1.18.2 (the game still runs on
-  Java 21); the Cobblemon and CobbleDollars integrations plug in through the mod's own extension points and switch
-  themselves off with a line in the log, instead of crashing, if a future version of those mods changes its API.
-- Under the hood, no gameplay changes: everything the mod needs from Fabric now goes through one small layer
-  (`platform/`), and the Minecraft calls that change in newer versions through another (`mc/`); the build checks that
-  the rest of the mod keeps to that, which is what will let one codebase build for newer Minecraft versions later.
 - The jar is now called `alive-workplace-<version>+1.21.1.jar` (the Minecraft version it's for). When updating a server
   or a game, take the old Alive Workplace jar out of `mods` as usual; nothing else changes (same mod id, saves, config).
-- Under the hood: the build is now a Stonecutter build (the minecraft-mod-engineer layout), so one codebase can build
-  a jar for each Minecraft version; for now there is one, 1.21.1.
+- Under the hood, no gameplay changes: the mod is now built the way that lets one codebase make a jar for each
+  Minecraft version (a Stonecutter build; for now there is one, 1.21.1). Everything it needs from Fabric goes through
+  one small layer and the Minecraft calls that change in newer versions through another, and the build checks the rest
+  of the mod keeps to that. The Cobblemon and CobbleDollars integrations switch themselves off with a line in the log,
+  instead of crashing, if a future version of those mods changes its API. The build runs on JDK 25 (the game still
+  runs on Java 21).
 
 ## 0.133.0 — 2026-09-29
 

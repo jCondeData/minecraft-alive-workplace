@@ -780,4 +780,14 @@ public class CobblemonCompatTests implements FabricGameTest {
 			.equals("cobblemon:apricorn_planks")), "materials: " + plan.materials().keySet());
 		helper.succeed();
 	}
+
+	/** With Cobblemon, sifting gravel can turn up evolution stones (their table loads only with Cobblemon). */
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
+	public void siftingFindsEvolutionStones(GameTestHelper helper) {
+		var key = net.minecraft.resources.ResourceKey.create(net.minecraft.core.registries.Registries.LOOT_TABLE,
+			io.github.jcondedata.aliveworkplace.AliveWorkplace.id("sifting/cobblemon/gravel"));
+		helper.assertTrue(helper.getLevel().getServer().reloadableRegistries().getLootTable(key) != net.minecraft.world.level.storage.loot.LootTable.EMPTY,
+			"the Cobblemon sifting table didn't load");
+		helper.succeed();
+	}
 }

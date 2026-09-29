@@ -144,6 +144,11 @@ public final class ModBlocks {
 		Registry.register(BuiltInRegistries.BLOCK_ENTITY_TYPE, AliveWorkplace.id("storehouse"),
 			net.minecraft.world.level.block.entity.BlockEntityType.Builder.of(io.github.jcondedata.aliveworkplace.store.StorehouseBlockEntity::new, STOREHOUSE).build(null));
 
+	/** Workstation for the Sifter: gravel, sand and dirt shaken through it for what's hidden in them. */
+	public static final BuildersBenchBlock SIEVE = register(
+		"sieve", new BuildersBenchBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_PLANKS))
+	);
+
 	/** Workstation for the Scholar: the village's research is done here (a Village Hall keeps it). */
 	public static final BuildersBenchBlock SCHOLARS_DESK = register(
 		"scholars_desk", new BuildersBenchBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.BOOKSHELF))

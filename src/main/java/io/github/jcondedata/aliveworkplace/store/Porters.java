@@ -110,6 +110,10 @@ public final class Porters {
 		if (job == VillagerProfession.SHEPHERD) {
 			return stack.is(Items.WHEAT) ? KEEP_BREEDING_FOOD : 0; // wheat to breed with; the wool goes
 		}
+		if (job == ModVillagers.SIFTER) {
+			// What's to be sifted stays; what came out of the sieve goes.
+			return io.github.jcondedata.aliveworkplace.sift.SifterWork.isSiftable(stack) ? ALL : 0;
+		}
 		if (job == ModVillagers.UNDERTAKER) {
 			// What brings villagers back stays; empty bottles go.
 			return io.github.jcondedata.aliveworkplace.grave.Graves.isRevivalItem(stack) ? ALL : 0;

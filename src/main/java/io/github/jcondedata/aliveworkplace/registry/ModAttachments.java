@@ -132,6 +132,10 @@ public final class ModAttachments {
 	public static final AttachmentType<Long> ILL_SINCE = AttachmentRegistry.create(
 		AliveWorkplace.id("ill_since"), builder -> builder.persistent(com.mojang.serialization.Codec.LONG));
 
+	/** How many blocks a Sifter has sifted (shown above its head). */
+	public static final AttachmentType<Integer> BLOCKS_SIFTED = AttachmentRegistry.create(
+		AliveWorkplace.id("blocks_sifted"), builder -> builder.persistent(com.mojang.serialization.Codec.INT));
+
 	/** How many villagers a Nurse has cured. */
 	public static final AttachmentType<Integer> VILLAGERS_CURED = AttachmentRegistry.create(
 		AliveWorkplace.id("villagers_cured"), builder -> builder.persistent(com.mojang.serialization.Codec.INT));

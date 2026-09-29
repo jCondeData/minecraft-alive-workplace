@@ -24,6 +24,7 @@ public final class ModTrades {
 		innkeeperTrades();
 		undertakerTrades();
 		scholarTrades();
+		sifterTrades();
 		ballSmithTrades();
 		porterTrades();
 		carpenterTrades();
@@ -227,6 +228,26 @@ public final class ModTrades {
 	}
 
 	/** Orchard Keepers buy and sell fruit; with Cobblemon, apricorns and berries too. */
+	/** Sifters buy gravel and sand and sell what they find in them. */
+	private static void sifterTrades() {
+		TradeOfferHelper.registerVillagerOffers(ModVillagers.SIFTER, 1, offers -> {
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.GRAVEL, 32), new ItemStack(Items.EMERALD), 16, 2, 0.05f));
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 1), new ItemStack(Items.FLINT, 8), 12, 1, 0.05f));
+		});
+		TradeOfferHelper.registerVillagerOffers(ModVillagers.SIFTER, 2, offers -> {
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.SAND, 32), new ItemStack(Items.EMERALD), 16, 10, 0.05f));
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 2), new ItemStack(Items.IRON_NUGGET, 12), 8, 5, 0.05f));
+		});
+		TradeOfferHelper.registerVillagerOffers(ModVillagers.SIFTER, 3, offers -> {
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 3), new ItemStack(Items.GOLD_NUGGET, 12), 8, 15, 0.05f));
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 2), new ItemStack(Items.AMETHYST_SHARD, 4), 8, 15, 0.05f));
+		});
+		TradeOfferHelper.registerVillagerOffers(ModVillagers.SIFTER, 4, offers ->
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 6), new ItemStack(Items.LAPIS_LAZULI, 8), 8, 20, 0.05f)));
+		TradeOfferHelper.registerVillagerOffers(ModVillagers.SIFTER, 5, offers ->
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 12), new ItemStack(Items.DIAMOND), 3, 30, 0.05f)));
+	}
+
 	/** Scholars buy paper and books and sell what learning's made of. */
 	private static void scholarTrades() {
 		TradeOfferHelper.registerVillagerOffers(ModVillagers.SCHOLAR, 1, offers -> {

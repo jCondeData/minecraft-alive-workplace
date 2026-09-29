@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "aliveworkplace:block/sieve"
+    },
+    "facing=east": {
+      "model": "aliveworkplace:block/sieve",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "aliveworkplace:block/sieve",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "aliveworkplace:block/sieve",
+      "y": 270
+    }
+  }
+}

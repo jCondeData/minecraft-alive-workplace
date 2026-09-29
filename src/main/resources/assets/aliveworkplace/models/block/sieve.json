@@ -1,0 +1,9 @@
+{
+  "parent": "minecraft:block/orientable_with_bottom",
+  "textures": {
+    "top": "aliveworkplace:block/sieve_top",
+    "bottom": "aliveworkplace:block/sieve_side",
+    "side": "aliveworkplace:block/sieve_side",
+    "front": "aliveworkplace:block/sieve_front"
+  }
+}

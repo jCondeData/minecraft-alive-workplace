@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+## 0.124.0 — 2026-09-29
+
+### Added
+- **Sifters** (new job, the Sieve): gravel, sand, dirt and soul sand shaken through for flint, seeds, nuggets, clay,
+  quartz and the odd gem — with Cobblemon, now and then an evolution stone.
+
 ## 0.123.0 — 2026-09-29
 
 ### Added

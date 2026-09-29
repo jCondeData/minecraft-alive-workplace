@@ -269,6 +269,7 @@ where they take tools and supplies from and where their work goes.
 | Beekeeper | Apiary | glass bottles or shears, flowers | nothing (beehives within 16 blocks) |
 | Florist | Flower Stand | bone meal (flowers to pot) | nothing (grass round the stand) |
 | Scholar | Scholar's Desk | paper, books, emeralds | sneak-right-click: pick the research |
+| Sifter | Sieve | gravel, sand, dirt or soul sand | nothing |
 | Undertaker | Undertaker's Table | golden apples, healing potions or totems | nothing (graves within 32 blocks) |
 | Innkeeper | Inn Counter | — | nothing (hire the travellers who come to stay) |
 | Teacher | Teacher's Desk | — | nothing (children within 32 blocks) |
@@ -447,6 +448,16 @@ cactus the camels, up to 8 of a kind. With Cobblemon the Pokémon in **Pasture B
 a day: their friendship goes up by 4, and by 6 more when there's a berry in the chests for a treat (never the berries
 that lower EVs) — a pasture by the ranch is the place for an Eevee or a Golbat that evolves by friendship. Pastured
 Normal and Ground Pokémon calm the wild horses quicker.
+
+## Sifters
+Craft a **Sieve** (two sticks over three string over two planks) and place it near a villager without a job: they
+become a **Sifter**. Put **gravel**, **sand**, **dirt** or **soul sand** in a chest by the sieve and they shake it through,
+a block every few seconds (quicker as they level up, and with pastured Ground or Rock Pokémon): gravel gives flint,
+nuggets, coal, lapis and now and then an emerald or a diamond; sand gives clay, cactus, gold and sea treasures; dirt gives
+seeds, saplings and bone meal; soul sand gives quartz, nether wart, gold and glowstone. With Cobblemon, gravel and sand
+now and then turn up an **evolution stone**. What comes out goes in the chest (a Porter takes it to the storehouse);
+with nothing to sift they ask for gravel on the requests board. What each block gives is a loot table
+(`aliveworkplace:sifting/<block>`), so data packs can change it.
 
 ## Fishermen
 ![A fisherman villager with a bobber out on the pond](docs/media/fisherman.png)

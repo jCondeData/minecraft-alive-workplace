@@ -1934,6 +1934,69 @@ def scholar_overlay():
     save(img, "entity", "zombie_villager", "profession", "scholar.png")
 
 
+# --- Sieve: the sifter's workstation, a wooden frame with a string mesh, gravel on it -------------------------------
+def sieve(face):
+    rnd = random.Random({"top": 461, "side": 462, "front": 463}[face])
+    img = Image.new("RGBA", (16, 16))
+    planks(img, rnd)
+    frame = rgb("#6b4a2b")
+    if face == "top":
+        for i in range(16):
+            for p in ((i, 0), (i, 1), (i, 14), (i, 15), (0, i), (1, i), (14, i), (15, i)):
+                img.putpixel(p, jitter(frame, rnd, 4))
+        for y in range(2, 14):
+            for x in range(2, 14):
+                mesh = x % 3 == 0 or y % 3 == 0
+                img.putpixel((x, y), jitter(rgb("#e8e4d8") if mesh else rgb("#3b2c1e"), rnd, 5))
+        for _ in range(14):  # a few stones of gravel left on the mesh
+            x, y = rnd.randint(3, 12), rnd.randint(3, 12)
+            img.putpixel((x, y), jitter(rgb("#8a8580"), rnd, 12))
+    else:
+        for x in range(16):
+            for y in (0, 1, 6):
+                img.putpixel((x, y), jitter(frame, rnd, 4))
+        for y in range(2, 6):  # the mesh seen from the side, with dust falling through
+            for x in range(16):
+                img.putpixel((x, y), jitter(rgb("#c9c1ad") if (x + y) % 3 else rgb("#8a8580"), rnd, 6))
+        for y in range(7, 16):  # legs, open between
+            for x in range(16):
+                if x in (0, 1, 14, 15):
+                    img.putpixel((x, y), jitter(frame, rnd, 4))
+                else:
+                    img.putpixel((x, y), jitter(rgb("#4a3220") if face == "side" else rgb("#5a3d20"), rnd, 3))
+        if face == "front":
+            for y in range(9, 15):  # a bucket of sifted finds under the mesh
+                for x in range(5, 11):
+                    img.putpixel((x, y), jitter(rgb("#9aa3a8"), rnd, 5))
+            for x in range(6, 10):
+                img.putpixel((x, 9), rgb("#e8c24a") if x % 2 else rgb("#3a3a3a"))
+    save(img, "block", "sieve_" + face + ".png")
+
+
+def sifter_overlay():
+    img = Image.new("RGBA", (64, 64), T)
+    rnd = random.Random(471)
+    # a dusty brown cap and a canvas apron with a pocket of finds
+    cap = rgb("#6e5236")
+    for y in range(0, 8):
+        for x in range(40, 48):
+            img.putpixel((x, y), jitter(cap, rnd, 4))
+    for x in range(32, 64):
+        img.putpixel((x, 8), jitter(cap, rnd, 4))
+    apron = rgb("#b7a98a")
+    for y in range(44, 62):
+        for x in range(0, 24):
+            if 2 <= x <= 21:
+                img.putpixel((x, y), jitter(apron, rnd, 5))
+    for y in range(52, 56):
+        for x in range(8, 14):
+            img.putpixel((x, y), jitter(rgb("#8c7c5c"), rnd, 4))
+    img.putpixel((10, 53), rgb("#e8c24a"))
+    img.putpixel((12, 54), rgb("#5fd3d0"))
+    save(img, "entity", "villager", "profession", "sifter.png")
+    save(img, "entity", "zombie_villager", "profession", "sifter.png")
+
+
 # --- Feed Trough: the rancher's workstation, a plank trough full of hay ----------------------------------------
 def feed_trough(face):
     rnd = random.Random({"top": 341, "side": 342, "front": 343}[face])
@@ -2443,6 +2506,9 @@ if __name__ == "__main__":
     for face in ("top", "side", "front"):
         scholars_desk(face)
     scholar_overlay()
+    for face in ("top", "side", "front"):
+        sieve(face)
+    sifter_overlay()
     rancher_overlay()
     for part in ("burlap", "face", "straw", "post"):
         training_dummy(part)

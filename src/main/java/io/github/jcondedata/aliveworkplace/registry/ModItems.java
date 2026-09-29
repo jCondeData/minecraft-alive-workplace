@@ -99,6 +99,7 @@ public final class ModItems {
 				output.accept(ModBlocks.INN_COUNTER);
 				output.accept(ModBlocks.UNDERTAKERS_TABLE);
 				output.accept(ModBlocks.SCHOLARS_DESK);
+				output.accept(ModBlocks.SIEVE);
 				output.accept(SETTLERS_WAGON);
 				for (StarterBlueprints.Entry entry : StarterBlueprints.ALL) {
 					output.accept(BlueprintItem.create(entry.id(), entry.size()));

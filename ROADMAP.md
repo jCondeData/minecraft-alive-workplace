@@ -581,7 +581,9 @@ Every villager a person you get to know, the way MineColonies' citizens are — 
 
 ## Milestone 16 — More work
 - [ ] Netherworker: goes through the village's Nether portal on expeditions and comes back with the Nether's goods
-- [ ] Sifter: sieves gravel, sand and dirt for flint, seeds, nuggets and the odd gem
+- [x] Sifter: sieves gravel, sand and dirt for flint, seeds, nuggets and the odd gem (`sift/SifterWork`, the Sieve;
+  loot tables `sifting/{gravel,sand,dirt,soul_sand}` and, loaded only with Cobblemon, `sifting/cobblemon/{gravel,sand}`
+  for evolution stones; 60 ticks a block at Novice; requests gravel when there's nothing to sift; Ground/Rock partners)
 - [ ] Tinkerer: makes the redstone and iron parts builders need (pistons, rails, hoppers, repeaters)
 
 ## Milestone 5 — Release

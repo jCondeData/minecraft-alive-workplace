@@ -30,6 +30,9 @@ public final class ModItems {
 	public static final io.github.jcondedata.aliveworkplace.guard.PatrolMapItem PATROL_MAP = Registry.register(
 		BuiltInRegistries.ITEM, AliveWorkplace.id("patrol_map"), new io.github.jcondedata.aliveworkplace.guard.PatrolMapItem(new Item.Properties().stacksTo(1))
 	);
+	public static final io.github.jcondedata.aliveworkplace.hall.VillageLedgerItem VILLAGE_LEDGER = Registry.register(
+		BuiltInRegistries.ITEM, AliveWorkplace.id("village_ledger"), new io.github.jcondedata.aliveworkplace.hall.VillageLedgerItem(new Item.Properties().stacksTo(1))
+	);
 	public static final io.github.jcondedata.aliveworkplace.guard.RallyBannerItem RALLY_BANNER = Registry.register(
 		BuiltInRegistries.ITEM, AliveWorkplace.id("rally_banner"), new io.github.jcondedata.aliveworkplace.guard.RallyBannerItem(new Item.Properties().stacksTo(1))
 	);
@@ -83,6 +86,7 @@ public final class ModItems {
 				output.accept(SCAN_TOOL);
 				output.accept(PATROL_MAP);
 				output.accept(RALLY_BANNER);
+				output.accept(VILLAGE_LEDGER);
 				output.accept(ModBlocks.MINERS_BENCH);
 				output.accept(QUARRY_MARKER);
 				output.accept(ModBlocks.CHOPPING_BLOCK);

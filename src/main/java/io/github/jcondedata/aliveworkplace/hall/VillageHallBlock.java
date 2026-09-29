@@ -100,6 +100,12 @@ public class VillageHallBlock extends BaseEntityBlock {
 	@Override
 	protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand,
 											  BlockHitResult hit) {
+		if (stack.is(io.github.jcondedata.aliveworkplace.registry.ModItems.VILLAGE_LEDGER)) {
+			if (level instanceof net.minecraft.server.level.ServerLevel server && player instanceof ServerPlayer serverPlayer) {
+				VillageLedgerItem.bind(server, serverPlayer, stack, pos);
+			}
+			return ItemInteractionResult.sidedSuccess(level.isClientSide);
+		}
 		if (!stack.is(Items.NAME_TAG) || !stack.has(DataComponents.CUSTOM_NAME)) {
 			return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
 		}

@@ -434,6 +434,28 @@ def rally_banner_item():
     save(img, "item", "rally_banner.png")
 
 
+def village_ledger_item():
+    img = Image.new("RGBA", (16, 16), T)
+    rnd = random.Random(563)
+    # A thick ledger bound in green leather, cream page edges, a gold clasp and a red ribbon
+    cover, shade, pages, gold = rgb("#2f6b3a"), rgb("#224f2b"), rgb("#efe3c2"), rgb("#e0b83c")
+    for y in range(2, 14):
+        for x in range(3, 13):
+            img.putpixel((x, y), jitter(shade if x == 3 or y == 13 else cover, rnd, 6))
+    for y in range(3, 13):
+        img.putpixel((13, y), jitter(pages, rnd, 4))
+    for x in range(4, 13):
+        img.putpixel((x, 14), jitter(pages, rnd, 4))
+    for y in (5, 6, 9, 10):
+        img.putpixel((12, y), gold)
+        img.putpixel((13, y), gold)
+    for x, y in ((6, 5), (7, 5), (8, 5), (9, 5), (6, 7), (9, 7), (6, 9), (7, 9), (8, 9), (9, 9)):
+        img.putpixel((x, y), rgb("#c9a94a"))
+    for y in range(12, 16):
+        img.putpixel((7, y), rgb("#b3262a"))
+    save(img, "item", "village_ledger.png")
+
+
 def field_marker_item():
     img = Image.new("RGBA", (16, 16), T)
     # A wooden stake with a green flag and a wheat ear
@@ -2746,6 +2768,7 @@ if __name__ == "__main__":
     scan_tool_item()
     patrol_map_item()
     rally_banner_item()
+    village_ledger_item()
     ferryman_overlay()
     delivery_note_item()
     price_tag_item()

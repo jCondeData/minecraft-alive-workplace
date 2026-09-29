@@ -49,6 +49,15 @@ public final class ModComponents {
 			.networkSynchronized(io.github.jcondedata.aliveworkplace.guard.PatrolMapItem.Route.STREAM_CODEC).build()
 	);
 
+	/** The Village Hall a Village Ledger is bound to. */
+	public static final DataComponentType<io.github.jcondedata.aliveworkplace.hall.VillageLedgerItem.Ledger> LEDGER = Registry.register(
+		BuiltInRegistries.DATA_COMPONENT_TYPE,
+		AliveWorkplace.id("ledger"),
+		DataComponentType.<io.github.jcondedata.aliveworkplace.hall.VillageLedgerItem.Ledger>builder()
+			.persistent(io.github.jcondedata.aliveworkplace.hall.VillageLedgerItem.Ledger.CODEC)
+			.networkSynchronized(io.github.jcondedata.aliveworkplace.hall.VillageLedgerItem.Ledger.STREAM_CODEC).build()
+	);
+
 	/** A Rally Banner's guards and whether it's raised. */
 	public static final DataComponentType<io.github.jcondedata.aliveworkplace.guard.RallyBannerItem.Rally> RALLY = Registry.register(
 		BuiltInRegistries.DATA_COMPONENT_TYPE,

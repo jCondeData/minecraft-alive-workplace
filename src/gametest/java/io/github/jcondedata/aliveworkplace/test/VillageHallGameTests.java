@@ -642,4 +642,28 @@ public class VillageHallGameTests implements net.fabricmc.fabric.api.gametest.v1
 				"nobody came to the bell");
 		});
 	}
+
+	/** A Village Ledger bound at the hall opens the hall's screen from afar; unbound, it doesn't. */
+	@GameTest(template = AREA, timeoutTicks = 100, batch = "villageLedger")
+	public void aVillageLedgerOpensTheHallFromAfar(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		ServerLevel level = helper.getLevel();
+		helper.setBlock(HALL, ModBlocks.VILLAGE_HALL);
+		ServerPlayer player = helper.makeMockServerPlayerInLevel();
+		Leftovers.after(helper, () -> level.getServer().getPlayerList().remove(player));
+		ItemStack ledger = new ItemStack(io.github.jcondedata.aliveworkplace.registry.ModItems.VILLAGE_LEDGER);
+		player.setItemInHand(InteractionHand.MAIN_HAND, ledger);
+		helper.runAfterDelay(2, () -> {
+			helper.assertFalse(ledger.use(level, player, InteractionHand.MAIN_HAND).getResult().consumesAction(), "an unbound ledger opened something");
+			io.github.jcondedata.aliveworkplace.hall.VillageLedgerItem.bind(level, player, ledger, helper.absolutePos(HALL));
+			var bound = ledger.get(io.github.jcondedata.aliveworkplace.registry.ModComponents.LEDGER);
+			helper.assertTrue(bound != null && bound.hall().pos().equals(helper.absolutePos(HALL)), "not bound: " + bound);
+			BlockPos far = helper.absolutePos(new BlockPos(20, 2, 20));
+			player.teleportTo(far.getX() + 0.5, far.getY(), far.getZ() + 0.5);
+			helper.assertTrue(ledger.use(level, player, InteractionHand.MAIN_HAND).getResult().consumesAction(), "the bound ledger didn't open");
+			helper.assertTrue(player.containerMenu instanceof ChoiceMenu, "no hall screen: " + player.containerMenu);
+			player.closeContainer();
+			helper.succeed();
+		});
+	}
 }

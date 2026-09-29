@@ -77,6 +77,14 @@ public final class VillageHallScreen {
 			menu -> render(menu, level, hall, 0));
 	}
 
+	/** The screen opened from afar with a Village Ledger (it stays open while the hall stands). */
+	public static void openRemote(ServerPlayer player, BlockPos hall) {
+		ServerLevel level = player.serverLevel();
+		ChoiceMenu.open(player, Component.translatable("screen.aliveworkplace.hall.title", VillageHalls.name(level, hall)),
+			p -> p.isAlive() && p.level() == level && level.isLoaded(hall) && level.getBlockState(hall).is(ModBlocks.VILLAGE_HALL),
+			menu -> render(menu, level, hall, 0));
+	}
+
 	/** The same screen, not shown to anyone (tests). */
 	public static ChoiceMenu forTest(ServerPlayer player, BlockPos hall) {
 		return ChoiceMenu.detached(player, menu -> render(menu, player.serverLevel(), hall, 0));

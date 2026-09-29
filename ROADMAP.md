@@ -137,7 +137,11 @@ onward. Items marked *(polish)* wait until the milestones are done.
 - [x] A bobber on the water (`fish/FishingBobber`, entity `aliveworkplace:fishing_bobber`, never saved): cast with each
   throw, dips a moment before the bite, gone on reeling in; the client draws the vanilla bobber picture and a line to
   the rod (`BobberRenderer`); `SCENE=fish` screenshots it
-- [ ] *(polish)* Fisher follow-ups: fishing from boats
+- [x] *(polish)* Fisher follow-ups: fishing from boats (a plain boat or raft in the chests by the barrel: the fisher
+  rows out from shore water to open water — 5 × 5 of water, as a player's bobber needs for treasure — within 24 blocks
+  of the barrel and at least 6 out, straight across the water, and fishes from the boat, where one catch in twenty is
+  treasure; rows back to bring the catch in, the boat back in the chest; a shift ending on the water brings them ashore
+  at once. `mc/Boats` holds everything about boats, which change in 1.21.2)
 - [x] **Courier / hauler** (done by Postmen): a Delivery Note marks a source and a destination container (plus an
   optional list of items to carry; by default everything but tools, weapons and armor); a postman takes up to 4
   routes and runs them whenever there's no mail, carrying a bagful per trip and taking back what doesn't fit; a blank

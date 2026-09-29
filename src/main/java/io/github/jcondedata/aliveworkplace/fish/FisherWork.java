@@ -5,6 +5,7 @@ import io.github.jcondedata.aliveworkplace.build.BuilderBag;
 import io.github.jcondedata.aliveworkplace.build.BuilderLevels;
 import io.github.jcondedata.aliveworkplace.build.Builders;
 import io.github.jcondedata.aliveworkplace.build.SupplyContainers;
+import io.github.jcondedata.aliveworkplace.mc.Boats;
 import io.github.jcondedata.aliveworkplace.registry.ModAttachments;
 import io.github.jcondedata.aliveworkplace.work.Walker;
 import io.github.jcondedata.aliveworkplace.work.WorkerStatus;
@@ -23,6 +24,7 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.ai.behavior.Behavior;
 import net.minecraft.world.entity.ai.behavior.BlockPosTracker;
@@ -42,8 +44,14 @@ import org.jetbrains.annotations.Nullable;
 
 /**
  * A hired fisherman's shift: walk to water near the barrel, cast, wait for a bite, and reel in a catch
- * from the vanilla fishing loot table (fish and junk; treasure needs a real bobber in open water, so
- * none). Rods come from the barrel and chests nearby and wear out; the catch goes back there.
+ * from the vanilla fishing loot table (fish and junk; treasure needs open water, so none from the shore).
+ * Rods come from the barrel and chests nearby and wear out; the catch goes back there.
+ *
+ * <p>With a boat in those chests (any plain boat or raft), a fisher whose water is big enough rows out: from the
+ * shore to a spot in open water (water all round, as a player's bobber needs for treasure) within {@link #BOAT_RADIUS}
+ * of the barrel, straight across the water, and fishes from the boat — where one catch in twenty is treasure, as for
+ * a player. They row back to where they set out to bring the catch in, and the boat goes back in the chest. A shift
+ * that ends out on the water (nightfall, a cancelled job) brings them ashore at once.
  */
 public class FisherWork extends Behavior<Villager> {
 	/** How far from the barrel the fisherman looks for water. */
@@ -53,8 +61,20 @@ public class FisherWork extends Behavior<Villager> {
 	private static final int SEARCH_EVERY = 100;
 	private static final int CATCHES_PER_TRIP = 5;
 	private static final int CATCHES_PER_XP = 3;
+	/** How far from the barrel a fisher rows out. */
+	public static int BOAT_RADIUS = 24;
+	/** How far out, at the least, open water must be from where the boat sets out. */
+	static final int MIN_ROW = 6;
+	/** Marks the boats fishers launch (so one they're found in after a restart is known to be theirs). */
+	static final String BOAT_TAG = "aliveworkplace_fisher_boat";
+	/** Blocks a tick while rowing. */
+	static final double ROW_SPEED = 0.15;
+	/** Ticks of rowing that get no nearer before a fisher gives up and comes ashore. */
+	static final int ROW_STUCK = 200;
+	/** One catch in this many is treasure when fishing open water (5%, a player's chance without Luck of the Sea). */
+	static final int TREASURE_ONE_IN = 20;
 
-	enum Phase { FISHING, NEEDS_ROD, NO_WATER, DEPOSITING }
+	enum Phase { FISHING, NEEDS_ROD, NO_WATER, DEPOSITING, ROWING }
 
 	/** Hired fishermen with nothing to do right now (no rod, no water): vanilla's routine may run. */
 	private static final Set<Villager> RESTING = Collections.newSetFromMap(new WeakHashMap<>());
@@ -70,6 +90,24 @@ public class FisherWork extends Behavior<Villager> {
 	/** The bobber on the water while casting (only for show). */
 	@Nullable
 	private FishingBobber bobber;
+
+	/** A boat trip: the water the boat sets out from, the open water to fish, where the boat stops (short of it). */
+	@Nullable
+	private BlockPos dock;
+	@Nullable
+	private BlockPos openWater;
+	@Nullable
+	private Vec3 mooring;
+	/** Where the fisher stood to board, and comes ashore again. */
+	@Nullable
+	private BlockPos landing;
+	/** The boat they're in, and the item it came from. */
+	@Nullable
+	private Entity boat;
+	private ItemStack boatItem = ItemStack.EMPTY;
+	private int boatSearchTimer;
+	private double bestLeft;
+	private int stuck;
 
 	public FisherWork() {
 		super(ImmutableMap.of(
@@ -102,13 +140,22 @@ public class FisherWork extends Behavior<Villager> {
 		walker.reset();
 		waited = 0;
 		searchTimer = 0;
+		boatSearchTimer = 0;
 		villager.setDropChance(EquipmentSlot.MAINHAND, 0f);
+		if (villager.getVehicle() != null && villager.getVehicle().getTags().contains(BOAT_TAG) && boat == null) {
+			// Back to work in a boat nobody remembers rowing out (the world was saved mid-trip): ashore first.
+			boat = villager.getVehicle();
+			comeAshore(level, villager);
+		}
 	}
 
 	@Override
 	protected void stop(ServerLevel level, Villager villager, long gameTime) {
 		RESTING.remove(villager);
 		reelUp();
+		if (boat != null) {
+			comeAshore(level, villager);
+		}
 	}
 
 	/** Takes the bobber out of the water. */
@@ -127,9 +174,22 @@ public class FisherWork extends Behavior<Villager> {
 		}
 		BuilderBag bag = ModAttachments.BUILDER_BAG.getOrCreate(villager);
 
-		// 1. Bring the catch in every few fish, or when the bag fills up.
+		if (boat != null && boat.isRemoved()) {
+			boat = null; // the boat was broken (and dropped as an item)
+			clearTrip();
+		} else if (boat != null && villager.getVehicle() != boat) {
+			comeAshore(level, villager); // knocked out of it: they swim ashore with it
+		}
+
+		// 1. Bring the catch in every few fish, or when the bag fills up (rowing back first).
 		if (catches >= CATCHES_PER_TRIP || bag.freeSlots() < 3) {
 			rest(villager, false);
+			if (boat != null) {
+				reelUp();
+				status(villager, Phase.ROWING);
+				rowHome(level, villager);
+				return;
+			}
 			status(villager, Phase.DEPOSITING);
 			if (walker.walkTo(level, villager, barrel, 3.0)) {
 				deposit(level, barrel, bag);
@@ -140,6 +200,12 @@ public class FisherWork extends Behavior<Villager> {
 
 		// 2. A rod in hand.
 		ItemStack rod = villager.getItemBySlot(EquipmentSlot.MAINHAND);
+		if (!isRod(rod) && boat != null) {
+			reelUp();
+			status(villager, Phase.ROWING);
+			rowHome(level, villager); // the rod broke out on the water: a new one is ashore
+			return;
+		}
 		if (!isRod(rod)) {
 			waited = 0;
 			List<BlockPos> supplies = SupplyContainers.find(level, barrel, null);
@@ -172,7 +238,60 @@ public class FisherWork extends Behavior<Villager> {
 			return;
 		}
 
-		// 3. Water to fish in.
+		// 3a. Out in the boat: row to the mooring, then fish the open water.
+		if (boat != null) {
+			rest(villager, false);
+			if (openWater == null || mooring == null || !isOpenWater(level, openWater)) {
+				status(villager, Phase.ROWING);
+				rowHome(level, villager);
+				return;
+			}
+			if (!row(level, villager, mooring)) {
+				status(villager, Phase.ROWING);
+				return;
+			}
+			Boats.rest(boat);
+			status(villager, Phase.FISHING);
+			fishAt(level, villager, bag, rod, openWater, true);
+			return;
+		}
+
+		// 3b. A boat trip, when there's a boat in the chests (or the bag) and open water to row to.
+		if (dock != null || planTrip(level, villager, barrel, bag)) {
+			rest(villager, false);
+			reelUp();
+			status(villager, Phase.ROWING);
+			if (bag.stacks().stream().noneMatch(Boats::isRowingBoat)) {
+				List<BlockPos> supplies = SupplyContainers.find(level, barrel, null);
+				BlockPos chest = SupplyContainers.firstMatching(level, supplies, Boats::isRowingBoat);
+				if (chest == null) {
+					clearTrip();
+					return;
+				}
+				if (walker.walkTo(level, villager, chest, 3.0)) {
+					ItemStack got = SupplyContainers.takeOne(level, supplies, Boats::isRowingBoat);
+					if (!got.isEmpty()) {
+						ItemStack rest = bag.add(got);
+						if (!rest.isEmpty()) {
+							SupplyContainers.insert(level, supplies, rest);
+							clearTrip();
+						}
+					}
+				}
+				return;
+			}
+			if (!walker.reach(level, villager, dock, REACH)) {
+				if (walker.noSpot()) {
+					unreachable.add(dock);
+					clearTrip();
+				}
+				return;
+			}
+			launch(level, villager, bag);
+			return;
+		}
+
+		// 3c. Water to fish in from the shore.
 		if (water == null || !isFishable(level, water)) {
 			water = null;
 			waited = 0;
@@ -203,8 +322,13 @@ public class FisherWork extends Behavior<Villager> {
 			}
 			return;
 		}
-		villager.getBrain().setMemory(MemoryModuleType.LOOK_TARGET, new BlockPosTracker(water));
-		Vec3 bobber = Vec3.atCenterOf(water).add(0, 0.45, 0);
+		fishAt(level, villager, bag, rod, water, false);
+	}
+
+	/** Casts at {@code spot}, waits for a bite and reels in; {@code open}: open water, where treasure bites too. */
+	private void fishAt(ServerLevel level, Villager villager, BuilderBag bag, ItemStack rod, BlockPos spot, boolean open) {
+		villager.getBrain().setMemory(MemoryModuleType.LOOK_TARGET, new BlockPosTracker(spot));
+		Vec3 bobber = Vec3.atCenterOf(spot).add(0, 0.45, 0);
 		if (waited++ == 0) {
 			reelUp();
 			this.bobber = FishingBobber.cast(level, villager, bobber);
@@ -225,9 +349,171 @@ public class FisherWork extends Behavior<Villager> {
 			return;
 		}
 		reelUp();
-		reelIn(level, villager, bag, rod, bobber);
+		reelIn(level, villager, bag, rod, bobber, open);
 		waited = 0;
 		catches++;
+	}
+
+	/**
+	 * Looks for a boat trip (every so often): a boat in the bag or the chests by the barrel, shore water to set out
+	 * from, and open water at least {@link #MIN_ROW} blocks out from it, straight across the water.
+	 */
+	private boolean planTrip(ServerLevel level, Villager villager, BlockPos barrel, BuilderBag bag) {
+		if (--boatSearchTimer > 0) {
+			return false;
+		}
+		boatSearchTimer = SEARCH_EVERY;
+		boolean haveBoat = bag.stacks().stream().anyMatch(Boats::isRowingBoat)
+			|| SupplyContainers.firstMatching(level, SupplyContainers.find(level, barrel, null), Boats::isRowingBoat) != null;
+		if (!haveBoat) {
+			return false;
+		}
+		BlockPos from = findWater(level, barrel, villager.blockPosition(), unreachable);
+		if (from == null) {
+			return false;
+		}
+		BlockPos best = null;
+		double bestDist = Double.MAX_VALUE;
+		for (BlockPos p : BlockPos.betweenClosed(barrel.offset(-BOAT_RADIUS, 0, -BOAT_RADIUS), barrel.offset(BOAT_RADIUS, 0, BOAT_RADIUS))) {
+			BlockPos at = new BlockPos(p.getX(), from.getY(), p.getZ());
+			double dist = at.distSqr(from);
+			if (dist < MIN_ROW * MIN_ROW || dist >= bestDist || !isOpenWater(level, at) || !waterWay(level, from, at)) {
+				continue;
+			}
+			bestDist = dist;
+			best = at.immutable();
+		}
+		if (best == null) {
+			return false;
+		}
+		dock = from;
+		openWater = best;
+		// The boat stops three blocks short of where the bobber goes
+		Vec3 start = surface(dock);
+		Vec3 end = surface(openWater);
+		Vec3 back = start.subtract(end).normalize().scale(3);
+		mooring = end.add(back.x, 0, back.z);
+		return true;
+	}
+
+	/** Puts the boat on the water at the dock and gets in. */
+	private void launch(ServerLevel level, Villager villager, BuilderBag bag) {
+		ItemStack item = bag.takeFirst(Boats::isRowingBoat);
+		if (item.isEmpty() || dock == null || openWater == null) {
+			clearTrip();
+			return;
+		}
+		landing = villager.blockPosition();
+		boatItem = item.copyWithCount(1);
+		Vec3 at = surface(dock);
+		boat = Boats.launch(level, at, Boats.yaw(at, surface(openWater)), boatItem);
+		boat.addTag(BOAT_TAG);
+		villager.getBrain().eraseMemory(MemoryModuleType.WALK_TARGET);
+		waited = 0;
+		villager.startRiding(boat, true);
+		level.playSound(null, dock, SoundEvents.PLAYER_SPLASH, SoundSource.NEUTRAL, 0.3f, 1.2f);
+		bestLeft = Double.MAX_VALUE;
+		stuck = 0;
+	}
+
+	/** Rows towards {@code to}; true once there (or given up on as out of reach, which brings the fisher home). */
+	private boolean row(ServerLevel level, Villager villager, Vec3 to) {
+		if (boat == null) {
+			return false;
+		}
+		double left = Boats.row(boat, to, ROW_SPEED);
+		if (left < 1.0) {
+			bestLeft = Double.MAX_VALUE;
+			stuck = 0;
+			return true;
+		}
+		if (left < bestLeft - 0.05) {
+			bestLeft = left;
+			stuck = 0;
+		} else if (++stuck > ROW_STUCK) {
+			comeAshore(level, villager); // aground or blocked: ashore where they set out
+		}
+		return false;
+	}
+
+	/** Rows back to the dock and comes ashore there. */
+	private void rowHome(ServerLevel level, Villager villager) {
+		if (dock == null) {
+			comeAshore(level, villager);
+			return;
+		}
+		if (row(level, villager, surface(dock))) {
+			comeAshore(level, villager);
+		}
+	}
+
+	/** Out of the boat onto the shore where they set out (straight away), the boat back in the bag. */
+	private void comeAshore(ServerLevel level, Villager villager) {
+		Entity b = boat;
+		boat = null;
+		if (b != null) {
+			if (villager.getVehicle() == b) {
+				villager.stopRiding();
+			}
+			BlockPos to = landing;
+			if (to == null) {
+				to = Walker.standingSpot(level, b.blockPosition(), villager.blockPosition(), 6.0);
+			}
+			if (to == null) {
+				to = Builders.benchPos(villager).map(BlockPos::above).orElse(null);
+			}
+			if (to != null) {
+				Walker.hop(level, villager, to);
+			}
+			ItemStack item = boatItem.isEmpty() ? Boats.item(b) : boatItem;
+			ItemStack rest = ModAttachments.BUILDER_BAG.getOrCreate(villager).add(item);
+			if (!rest.isEmpty()) {
+				Block.popResource(level, villager.blockPosition(), rest);
+			}
+			b.discard();
+		}
+		clearTrip();
+	}
+
+	private void clearTrip() {
+		boatSearchTimer = SEARCH_EVERY; // (not straight back out: the catch goes home first)
+		dock = null;
+		openWater = null;
+		mooring = null;
+		landing = null;
+		boatItem = ItemStack.EMPTY;
+		waited = 0;
+	}
+
+	/** Where a boat floats on the water at {@code water}. */
+	private static Vec3 surface(BlockPos water) {
+		return new Vec3(water.getX() + 0.5, water.getY() + 0.9, water.getZ() + 0.5);
+	}
+
+	/** Open water: still water with air above all round (5 x 5), as a player's bobber needs for treasure. */
+	public static boolean isOpenWater(ServerLevel level, BlockPos pos) {
+		for (BlockPos p : BlockPos.betweenClosed(pos.offset(-2, 0, -2), pos.offset(2, 0, 2))) {
+			if (!isFishable(level, p)) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	/** Whether a boat can go straight from {@code from} to {@code to}: water with air over it all the way. */
+	static boolean waterWay(ServerLevel level, BlockPos from, BlockPos to) {
+		Vec3 a = Vec3.atCenterOf(from);
+		Vec3 b = Vec3.atCenterOf(to);
+		int steps = (int) Math.ceil(a.distanceTo(b) * 2);
+		BlockPos.MutableBlockPos at = new BlockPos.MutableBlockPos();
+		for (int i = 0; i <= steps; i++) {
+			Vec3 p = a.lerp(b, (double) i / Math.max(1, steps));
+			at.set(p.x, from.getY(), p.z);
+			if (!level.getFluidState(at).is(FluidTags.WATER) || !level.getBlockState(at.above()).isAir()) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	private static void rest(Villager villager, boolean resting) {
@@ -238,8 +524,10 @@ public class FisherWork extends Behavior<Villager> {
 		}
 	}
 
-	private static void reelIn(ServerLevel level, Villager villager, BuilderBag bag, ItemStack rod, Vec3 bobber) {
-		LootTable table = level.getServer().reloadableRegistries().getLootTable(BuiltInLootTables.FISHING);
+	private static void reelIn(ServerLevel level, Villager villager, BuilderBag bag, ItemStack rod, Vec3 bobber, boolean open) {
+		// (the fishing table's treasure needs a player's bobber in open water, so it's rolled here for open water)
+		boolean treasure = open && level.random.nextInt(TREASURE_ONE_IN) == 0;
+		LootTable table = level.getServer().reloadableRegistries().getLootTable(treasure ? BuiltInLootTables.FISHING_TREASURE : BuiltInLootTables.FISHING);
 		LootParams params = new LootParams.Builder(level)
 			.withParameter(LootContextParams.ORIGIN, bobber)
 			.withParameter(LootContextParams.TOOL, rod)

@@ -113,4 +113,49 @@ public class FisherGameTests implements FabricGameTest {
 			helper.assertTrue(barrel.countItem(Items.FISHING_ROD) == 0, "the spare rod is still in the barrel");
 		});
 	}
+
+	/**
+	 * With a boat in the barrel and a lake to fish, the fisherman rows out to open water, fishes from the boat, rows back
+	 * with the catch and puts the boat away again.
+	 */
+	//$ gametest_ticks_batch AREA '4000' '"fishermanRowsOutInABoat"'
+	@GameTest(template = AREA, timeoutTicks = 4000, batch = "fishermanRowsOutInABoat")
+	public void fishermanRowsOutInABoat(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		ServerLevel level = helper.getLevel();
+		helper.setDayTime(2000);
+		level.getGameRules().getRule(ModGameRules.BUILD_DELAY).set(2, level.getServer());
+		helper.setBlock(BARREL, Blocks.BARREL);
+		for (BlockPos p : BlockPos.betweenClosed(new BlockPos(5, 1, 5), new BlockPos(20, 1, 20))) {
+			helper.setBlock(p, Blocks.WATER);
+		}
+		Container barrel = helper.getBlockEntity(BARREL);
+		barrel.setItem(0, new ItemStack(Items.SPRUCE_BOAT));
+		Villager villager = helper.spawn(EntityType.VILLAGER, new BlockPos(3, 2, 3));
+		Jobs.employ(level, villager, helper.absolutePos(BARREL), PoiTypes.FISHERMAN, VillagerProfession.FISHERMAN);
+		Fishers.start(level, villager, new ItemStack(Items.FISHING_ROD));
+		boolean[] rowed = {false};
+		boolean[] openWater = {false};
+		helper.onEachTick(() -> {
+			if (villager.getVehicle() != null && io.github.jcondedata.aliveworkplace.mc.Boats.isBoat(villager.getVehicle())) {
+				rowed[0] = true;
+			}
+			for (var bobber : level.getEntitiesOfClass(io.github.jcondedata.aliveworkplace.fish.FishingBobber.class, helper.getBounds())) {
+				if (rowed[0] && io.github.jcondedata.aliveworkplace.fish.FisherWork.isOpenWater(level, bobber.blockPosition())) {
+					openWater[0] = true;
+				}
+			}
+		});
+		helper.succeedWhen(() -> {
+			helper.assertTrue(rowed[0], "never got into a boat");
+			helper.assertTrue(openWater[0], "never fished open water");
+			int caught = ModAttachments.FISH_CAUGHT.getOrElse(villager, 0);
+			helper.assertTrue(caught >= 5, "only " + caught + " caught");
+			helper.assertTrue(villager.getVehicle() == null, "still in the boat");
+			helper.assertTrue(barrel.countItem(Items.SPRUCE_BOAT) == 1, "the boat isn't back in the barrel");
+			helper.assertTrue(level.getEntitiesOfClass(net.minecraft.world.entity.vehicle.Boat.class, helper.getBounds().inflate(4)).isEmpty(),
+				"a boat left on the water");
+			helper.assertTrue(stored(barrel) >= 6, "the catch isn't in the barrel: " + stored(barrel));
+		});
+	}
 }

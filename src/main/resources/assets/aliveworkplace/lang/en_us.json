@@ -244,6 +244,7 @@
   "message.aliveworkplace.fisher.state.needs_rod": "needs a fishing rod",
   "message.aliveworkplace.fisher.state.no_water": "no water nearby",
   "message.aliveworkplace.fisher.state.depositing": "bringing in the catch",
+  "message.aliveworkplace.fisher.state.rowing": "out in the boat",
   "command.aliveworkplace.fisher_released": "%s stopped fishing for you.",
   "block.aliveworkplace.postal_desk": "Postal Desk",
   "block.aliveworkplace.mailbox": "Mailbox",

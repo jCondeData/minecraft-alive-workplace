@@ -6,6 +6,8 @@
 - **What next?** on the Village Hall's screen (the compass): what the village lacks, most pressing first, and how to put
   each right — a builder, beds, food, a Storehouse, guards, bandits, the ill, dark beds, jobs, a scholar, decorations,
   upgrades and the next rank.
+- **Treasury**: every morning a village with a Village Hall puts by its takings (a fifth of an emerald a worker, more
+  for a well-kept village and a higher rank); click the hall's name on its screen to collect them.
 
 ## 0.133.0 — 2026-09-29
 

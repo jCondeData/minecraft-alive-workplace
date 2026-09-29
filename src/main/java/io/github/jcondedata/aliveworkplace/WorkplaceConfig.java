@@ -68,6 +68,10 @@ public final class WorkplaceConfig {
 	public boolean villagerChatter = true;
 	/** Villagers court, marry (a wedding at the bell) and mourn. */
 	public boolean villagerCouples = true;
+	/** Villages with a Village Hall put by takings every morning for players to collect at the hall. */
+	public boolean villageTreasury = true;
+	/** Hundredths of an emerald each worker brings the treasury a day (before wellbeing and rank). */
+	public int treasuryPerWorker = 20;
 	/** What an emerald price comes to in CobbleDollars (lessons, shops, fares). */
 	public int dollarsPerEmerald = 100;
 
@@ -119,6 +123,7 @@ public final class WorkplaceConfig {
 		villageHallRadius = clamp(villageHallRadius, 16, 160);
 		villageGrowthCap = clamp(villageGrowthCap, 0, 500);
 		dollarsPerEmerald = clamp(dollarsPerEmerald, 1, 10_000);
+		treasuryPerWorker = clamp(treasuryPerWorker, 0, 500);
 	}
 
 	private static int clamp(int value, int min, int max) {
@@ -140,6 +145,7 @@ public final class WorkplaceConfig {
 		// switch sharing on in batches of their own.
 		io.github.jcondedata.aliveworkplace.work.Village.RADIUS = System.getProperty("fabric-api.gametest") != null ? 0 : villageRadius;
 		Money.DOLLARS_PER_EMERALD = dollarsPerEmerald;
+		io.github.jcondedata.aliveworkplace.hall.Treasury.CENTS_PER_WORKER = treasuryPerWorker;
 		io.github.jcondedata.aliveworkplace.hall.VillageHalls.RADIUS = villageHallRadius;
 		io.github.jcondedata.aliveworkplace.hall.VillageGrowth.CAP = villageGrowthCap;
 		// Off in gametests (a trait picked by chance would change a test's numbers); the people tests turn them on.
@@ -154,6 +160,7 @@ public final class WorkplaceConfig {
 		io.github.jcondedata.aliveworkplace.hall.Festivals.ENABLED = festivals && System.getProperty("fabric-api.gametest") == null;
 		io.github.jcondedata.aliveworkplace.people.Chatter.ENABLED = villagerChatter && System.getProperty("fabric-api.gametest") == null;
 		io.github.jcondedata.aliveworkplace.people.Couples.ENABLED = villagerCouples && System.getProperty("fabric-api.gametest") == null;
+		io.github.jcondedata.aliveworkplace.hall.Treasury.ENABLED = villageTreasury && System.getProperty("fabric-api.gametest") == null;
 		io.github.jcondedata.aliveworkplace.build.Paths.ENABLED = builderPaths && System.getProperty("fabric-api.gametest") == null;
 	}
 }

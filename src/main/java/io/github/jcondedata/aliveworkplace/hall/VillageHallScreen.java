@@ -113,8 +113,15 @@ public final class VillageHallScreen {
 			nameLore.add(line(Component.translatable("screen.aliveworkplace.hall.rank_next", next.title(), next.villagers, score.villagers(), next.buildings,
 				score.buildings(), next.research, score.research()), ChatFormatting.YELLOW));
 		}
+		int treasury = Treasury.emeralds(level, hall);
+		nameLore.add(line(Component.translatable("screen.aliveworkplace.hall.treasury",
+			io.github.jcondedata.aliveworkplace.work.Money.describe((long) treasury * io.github.jcondedata.aliveworkplace.work.Money.DOLLARS_PER_EMERALD, treasury)),
+			treasury > 0 ? ChatFormatting.GREEN : ChatFormatting.GRAY));
 		nameLore.add(line("screen.aliveworkplace.hall.rename", ChatFormatting.DARK_GRAY));
-		menu.button(NAME, icon(Items.NAME_TAG, VillageHalls.name(level, hall).copy(), ChatFormatting.GOLD, nameLore.toArray(Component[]::new)), null);
+		menu.button(NAME, icon(Items.NAME_TAG, VillageHalls.name(level, hall).copy(), ChatFormatting.GOLD, nameLore.toArray(Component[]::new)), p -> {
+			p.displayClientMessage(Treasury.collect(level, hall, p), false);
+			refresh(menu, level, hall, shown);
+		});
 		VillageNeeds.Needs needs = VillageNeeds.count(level, hall);
 		VillageHallBlockEntity entity = level.getBlockEntity(hall) instanceof VillageHallBlockEntity e ? e : null;
 		VillageGrowth.Blocker growth = VillageGrowth.blocker(level, hall, needs, entity == null ? 0 : entity.lastBirth());

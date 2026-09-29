@@ -713,7 +713,9 @@ standard, "even go back and improve upon other builds you've already pushed").
   `roofs()` so its valleys die into the main slope; plaster mix), lookout tower I–III (moss low down, lanterns on beam
   ends at the door; III: a lantern and an archery butt at the guardhouse), market stall I–III (a scalloped awning edge;
   III: gable windows and king posts, a soffit, windows centred in the bays) and the market square (peaked kiosks, stock)
-- [ ] … inn I–II, library I–II, terrace I–II, tinker's workshop I–II, nether gate I–II, graveyard I–II, berry farm I–II
+- [x] … inn I–II, library I–II, terrace I–II, tinker's workshop I–II, nether gate I–II, graveyard I–II, berry farm I–II
+  (library I–III: timbered gables with studs and a king post, the top beam round the tower, a soffit, lamps; terrace:
+  a wall dormer per home, `terrace_roof`; graveyard II: a gabled lych-gate; the rest passed as they are)
 - [ ] … the decorations (well I–II, fountain, gazebo, street lamp, park bench) and defences (palisade, gatehouse, wall
   tower, stone wall), and one more pass over the village houses in all five styles
 - [x] Village protection (owner, 2026-09-29: "a setting would be better"): `hall/VillageProtection`, owner and

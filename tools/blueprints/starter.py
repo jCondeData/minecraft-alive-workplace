@@ -1259,6 +1259,21 @@ def party_stack(b, x):
     b.set(x, 15, 5, "stone_brick_slab", type="bottom", waterlogged=False)
 
 
+def terrace_roof(b, x1, homes):
+    """The terrace's roof from x 0 to {@code x1} with a dormer over each home's bedroom window (the dormers' x0 in
+    {@code homes}): the jettied front wall rises through the eave with a window two panes square, under a little roof
+    whose slopes die into the main one and whose ridge runs back into it."""
+    roofs(b, lambda t: gable_roof(t, 0, x1, 0, 9, 9, TERRACE_ROOF, axis="x", gable=TERRACE_INFILL, gable_at=(1, x1 - 1), ridge=DARK_OAK),
+          *[lambda t, x=x: gable_roof(t, x, x + 3, 0, 3, 11, TERRACE_ROOF, axis="z", gable=TERRACE_INFILL, gable_at=(1,), ridge=DARK_OAK)
+            for x in homes])
+    for x in homes:  # the dormer's face over the top beam: its cheeks, and a window two panes wide and two high
+        for dx in range(4):
+            b.set(x + dx, 10, 1, TERRACE_INFILL)
+        for dx in (1, 2):
+            for y in (10, 11):
+                pane(b, x + dx, y, 1)
+
+
 def terrace_colours(b, x0, x1, infill):
     """Each home of a terrace is its own colour upstairs: the timber infill from x0 to x1 in {@code infill}."""
     for (x, y, z), block in list(b.blocks.items()):
@@ -1273,7 +1288,7 @@ def terrace():
     terrace_block(b, 1, 11, [6])
     terrace_home(b, 1, 2, 4, ["red", "red"], kitchen_west=True)
     terrace_home(b, 6, 10, 7, ["blue", "blue"], kitchen_west=False, flowers=("potted_cornflower", "potted_oxeye_daisy"))
-    gable_roof(b, 0, 12, 0, 9, 9, TERRACE_ROOF, axis="x", gable=TERRACE_INFILL, gable_at=(1, 11), ridge=DARK_OAK)
+    terrace_roof(b, 12, [2, 7])
     terrace_gable_end(b, 1, 0)
     terrace_gable_end(b, 11, None)
     party_stack(b, 6)
@@ -1298,7 +1313,7 @@ def terrace_2():
     for z in (4, 5):
         b.set(11, 11, z, TERRACE_INFILL)  # the old gable window, now in the attic's party wall
     terrace_home(b, 11, 15, 12, ["yellow", "yellow"], kitchen_west=True, flowers=("potted_allium", "potted_poppy"))
-    gable_roof(b, 0, 17, 0, 9, 9, TERRACE_ROOF, axis="x", gable=TERRACE_INFILL, gable_at=(1, 16), ridge=DARK_OAK)
+    terrace_roof(b, 17, [2, 7, 12])
     terrace_gable_end(b, 16, 17)
     party_stack(b, 6)
     party_stack(b, 11)
@@ -1660,6 +1675,7 @@ def school_building_2():
 
 # --- Library: a stone reading hall for the scholars ---------------------------------------------------------------
 LIBRARY_ROOF = DEEPSLATE_TILE
+LIBRARY_PLASTER = Mix((8, "white_concrete"), (2, "polished_diorite"), seed=25)
 
 
 def library_hall(b):
@@ -1714,13 +1730,23 @@ def library():
     down both sides and a Scholar's Desk under the back window — under a steep slate roof."""
     b = Build(13, 15, 12)
     library_hall(b)
-    gable_roof(b, 0, 12, 1, 11, 6, LIBRARY_ROOF, axis="z", gable="stone_bricks", gable_at=(2, 10), ridge=LIBRARY_ROOF)
+    gable_roof(b, 0, 12, 1, 11, 6, LIBRARY_ROOF, axis="z", gable=LIBRARY_PLASTER, gable_at=(2, 10), ridge=LIBRARY_ROOF,
+               eave_trim=DARK_OAK)
     for z in range(3, 10):  # a collar beam under the ridge (the builder stands on it to lay the ridge's ends)
         log(b, 6, 9, z, "dark_oak_log", axis="z")
-    for z in (2, 10):
+    for z in (2, 10):  # timbered gables over the stone: the top beam, two studs, a king post over a tall window
+        for x in range(1, 12):
+            log(b, x, 6, z, "dark_oak_log", axis="x")
+        for x in (4, 8):
+            for y in (7, 8, 9):
+                log(b, x, y, z, "dark_oak_log")
         pane(b, 6, 8, z)
         pane(b, 6, 9, z)
-        b.set(6, 10, z, "chiseled_stone_bricks")
+        for y in (10, 11):
+            log(b, 6, y, z, "dark_oak_log")
+    # Lamps either side of the steps
+    for x in (4, 8):
+        lamp_post(b, x, 0, 0, "dark_oak_fence", height=2)
     b.fill_air()
     return b
 
@@ -1752,7 +1778,11 @@ def library_2():
     for y in range(1, 9):
         b.set(15, y, 7, "ladder", facing="west", waterlogged=False)
     # Windows on each floor, the lookout's arches at the top
-    for y in (2, 6):
+    for x in range(12, 17):  # the hall's top beam carries on round the tower
+        for z in range(4, 9):
+            if x in (12, 16) or z in (4, 8):
+                log(b, x, 6, z, "dark_oak_log", axis="x" if z in (4, 8) and x not in (12, 16) else "z" if x in (12, 16) and z not in (4, 8) else "y")
+    for y in (2, 7):
         window(b, 16, y, 6, "east", height=2 if y == 2 else 1, sill=STONE_BRICK)
         window(b, 14, y, 4, "north", height=2 if y == 2 else 1, sill=STONE_BRICK)
     for (x, z) in ((14, 4), (16, 6), (14, 8)):
@@ -2238,17 +2268,22 @@ def graveyard():
 
 
 def graveyard_2():
-    """Upgrade of the Graveyard (same origin and front): a lych-gate over the way in — dark oak posts, a beam and a slab
-    canopy with a lantern under it — and soul lanterns on posts among the graves. 13 x 11 x 13."""
+    """Upgrade of the Graveyard (same origin and front): a lych-gate over the way in — dark oak posts and a beam under a
+    little slate roof with its gables to the road and the graves, a lantern under it — and soul lanterns on posts among
+    the graves. 13 x 11 x 13."""
     b = graveyard().grow(13, 11, 13)
     for x in (4, 8):
         for y in (0, 1, 2, 3):
             b.set(x, y, 0, "dark_oak_log", axis="y")
+        for y in (0, 1, 2):
+            fence(b, x, y, 2, "dark_oak_fence")  # the roof's back posts
     for x in range(5, 8):
         log(b, x, 3, 0, "dark_oak_log", axis="x")
-    for x in range(3, 10):
-        for z in (0, 1):
-            slab(b, x, 4, z, DARK_OAK)
+        log(b, x, 3, 2, "dark_oak_log", axis="x")
+    for z in (1,):
+        log(b, 4, 3, z, "dark_oak_log", axis="z")
+        log(b, 8, 3, z, "dark_oak_log", axis="z")
+    gable_roof(b, 3, 9, 0, 2, 4, DEEPSLATE_TILE, axis="z", gable="dark_oak_planks", gable_at=(0, 2), ridge=DEEPSLATE_TILE)
     lantern(b, 6, 2, 0, soul=True, hanging=True)
     for z in (2, 4):
         lamp_post(b, 5, 0, z, "dark_oak_fence", height=1)

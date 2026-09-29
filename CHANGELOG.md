@@ -9,6 +9,10 @@
   (III: a lantern at the guardhouse door and an archery butt); the Market Stall a scalloped awning edge (III: gable
   windows, a soffit and centred windows on the storeroom); the Market Square peaked kiosk canopies and stock beside them.
   Sizes are unchanged, so blueprints already placed still fit.
+- **More redrawn builds** (round 2, second batch): the Library's gables are timber-framed over the stone, with a beam
+  that runs on round the study tower, a soffit under the eaves and lamps at the steps; each home of the Terrace gets a
+  dormer over its bedroom window; the Graveyard's lych-gate a little slate roof. The Inn, Tinker's Workshop, Nether
+  Gate and Berry Farm passed the review as they are.
 
 ## 0.135.0 — 2026-09-29
 

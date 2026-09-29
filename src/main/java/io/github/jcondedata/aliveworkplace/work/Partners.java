@@ -84,6 +84,9 @@ public final class Partners {
 		if (profession == ModVillagers.PORTER) {
 			return Set.of("fighting", "normal"); // strong arms: more carried each trip
 		}
+		if (profession == ModVillagers.NETHERWORKER) {
+			return Set.of("fire", "dark"); // Houndour, Magmar, Sneasel...: expeditions go quicker
+		}
 		if (profession == ModVillagers.TINKERER) {
 			return Set.of("steel", "electric"); // Magnemite, Klink, Rotom...: parts made quicker
 		}

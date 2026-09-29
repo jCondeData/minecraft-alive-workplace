@@ -1747,7 +1747,7 @@ public class ScreenshotHarness implements ClientModInitializer {
 		tick++;
 		List<StarterBlueprints.Entry> all = "decor".equals(System.getProperty("aliveworkplace.scene")) ? StarterBlueprints.DECORATIONS
 			: "defences".equals(System.getProperty("aliveworkplace.scene")) ? StarterBlueprints.DEFENCES
-			: "workshops".equals(System.getProperty("aliveworkplace.scene")) ? List.of(StarterBlueprints.TINKERS_WORKSHOP, StarterBlueprints.TINKERS_WORKSHOP_2)
+			: "workshops".equals(System.getProperty("aliveworkplace.scene")) ? List.of(StarterBlueprints.TINKERS_WORKSHOP, StarterBlueprints.TINKERS_WORKSHOP_2, StarterBlueprints.NETHER_GATE, StarterBlueprints.NETHER_GATE_2)
 			: "styles".equals(System.getProperty("aliveworkplace.scene")) ? styledGallery() : StarterBlueprints.ALL;
 		if (tick == 1) {
 			mc.options.renderDistance().set(6);
@@ -1774,6 +1774,11 @@ public class ScreenshotHarness implements ClientModInitializer {
 						level.getStructureManager().get(all.get(i).id()).orElseThrow();
 					t.placeInWorld(level, origin, origin, new net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings(),
 						level.getRandom(), 2);
+					if (all.get(i).id().getPath().startsWith("nether_gate")) {
+						// Lit, as the builder leaves it when there's a flint and steel in the chests.
+						net.minecraft.world.level.portal.PortalShape.findEmptyPortalShape(level, origin.offset(4, 2, 3), Direction.Axis.X)
+							.ifPresent(net.minecraft.world.level.portal.PortalShape::createPortalBlocks);
+					}
 				}
 			});
 		}

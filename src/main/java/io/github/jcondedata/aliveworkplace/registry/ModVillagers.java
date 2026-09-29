@@ -340,6 +340,23 @@ public final class ModVillagers {
 		)
 	);
 
+	public static final ResourceLocation NETHER_BRAZIER_ID = AliveWorkplace.id("nether_brazier");
+	public static final ResourceKey<PoiType> NETHER_BRAZIER_POI = ResourceKey.create(Registries.POINT_OF_INTEREST_TYPE, NETHER_BRAZIER_ID);
+	public static final PoiType NETHER_BRAZIER_POI_TYPE = PointOfInterestHelper.register(NETHER_BRAZIER_ID, 1, 1, ModBlocks.NETHER_BRAZIER);
+
+	public static final VillagerProfession NETHERWORKER = Registry.register(
+		BuiltInRegistries.VILLAGER_PROFESSION,
+		AliveWorkplace.id("netherworker"),
+		new VillagerProfession(
+			"netherworker",
+			holder -> holder.is(NETHER_BRAZIER_POI),
+			holder -> holder.is(NETHER_BRAZIER_POI),
+			ImmutableSet.of(),
+			ImmutableSet.of(),
+			SoundEvents.VILLAGER_WORK_ARMORER
+		)
+	);
+
 	public static final ResourceLocation SCHOLARS_DESK_ID = AliveWorkplace.id("scholars_desk");
 	public static final ResourceKey<PoiType> SCHOLARS_DESK_POI = ResourceKey.create(Registries.POINT_OF_INTEREST_TYPE, SCHOLARS_DESK_ID);
 	public static final PoiType SCHOLARS_DESK_POI_TYPE = PointOfInterestHelper.register(SCHOLARS_DESK_ID, 1, 1, ModBlocks.SCHOLARS_DESK);
@@ -541,7 +558,7 @@ public final class ModVillagers {
 			|| profession == TRAINER || profession == TRAINER_LEADER || profession == TUTOR || profession == POKEMON_TRADER
 			|| profession == ORCHARD_KEEPER || profession == BALL_SMITH || profession == PORTER || profession == CARPENTER || profession == CHEF || profession == FOSSIL_SCIENTIST
 			|| profession == BEEKEEPER || profession == FLORIST || profession == RANCHER || profession == TEACHER || profession == INNKEEPER || profession == UNDERTAKER || profession == SCHOLAR
-			|| profession == SIFTER || profession == TINKERER;
+			|| profession == SIFTER || profession == TINKERER || profession == NETHERWORKER;
 	}
 
 	/**

@@ -580,7 +580,13 @@ Every villager a person you get to know, the way MineColonies' citizens are — 
   every 10 seconds at most; `villagerMoods` in the config, off in gametests)
 
 ## Milestone 16 — More work
-- [ ] Netherworker: goes through the village's Nether portal on expeditions and comes back with the Nether's goods
+- [x] Netherworker: goes through the village's Nether portal on expeditions and comes back with the Nether's goods
+  (`nether/Netherworkers` + `NetherworkerWork`, the Nether Brazier; a portal within 32 blocks (POI lookup), 3 rations;
+  the trip isn't walked: they step into the portal and are away — invisible, brain paused by `VillagerMixin`, no damage,
+  no trading — for `TRIP_TICKS` (6000 at Novice), vanilla portals kept off them with the portal cooldown; loot tables
+  `nether/{wastes,mining,debris,forest,fortress}` by kit (pickaxe, diamond pickaxe, axe, sword + chestplate, fire
+  resistance) and `nether/cobblemon` with Cobblemon; tools worn, a chance to come back hurt. Nether Gate blueprint I/II;
+  builders light empty portal frames in a finished build with a flint and steel or fire charge from the chests)
 - [x] Sifter: sieves gravel, sand and dirt for flint, seeds, nuggets and the odd gem (`sift/SifterWork`, the Sieve;
   loot tables `sifting/{gravel,sand,dirt,soul_sand}` and, loaded only with Cobblemon, `sifting/cobblemon/{gravel,sand}`
   for evolution stones; 60 ticks a block at Novice; requests gravel when there's nothing to sift; Ground/Rock partners)

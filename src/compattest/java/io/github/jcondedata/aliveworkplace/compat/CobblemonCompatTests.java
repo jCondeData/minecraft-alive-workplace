@@ -790,4 +790,12 @@ public class CobblemonCompatTests implements FabricGameTest {
 			"the Cobblemon sifting table didn't load");
 		helper.succeed();
 	}
+
+	/** With Cobblemon, a netherworker's expedition can turn up Fire and Dusk Stones (the table loads only with Cobblemon). */
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
+	public void netherExpeditionsFindStones(GameTestHelper helper) {
+		helper.assertTrue(helper.getLevel().getServer().reloadableRegistries().getLootTable(io.github.jcondedata.aliveworkplace.nether.Netherworkers.COBBLEMON)
+			!= net.minecraft.world.level.storage.loot.LootTable.EMPTY, "the Cobblemon nether table didn't load");
+		helper.succeed();
+	}
 }

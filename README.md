@@ -271,6 +271,7 @@ where they take tools and supplies from and where their work goes.
 | Scholar | Scholar's Desk | paper, books, emeralds | sneak-right-click: pick the research |
 | Sifter | Sieve | gravel, sand, dirt or soul sand | nothing |
 | Tinkerer | Tinker's Bench | coal (iron ingots to mend golems) | nothing (uses the builders' ore) |
+| Netherworker | Nether Brazier | food (a pickaxe, an axe, a sword, a chestplate, fire resistance) | nothing (a Nether portal within 32 blocks) |
 | Undertaker | Undertaker's Table | golden apples, healing potions or totems | nothing (graves within 32 blocks) |
 | Innkeeper | Inn Counter | — | nothing (hire the travellers who come to stay) |
 | Teacher | Teacher's Desk | — | nothing (children within 32 blocks) |
@@ -473,6 +474,22 @@ ingots from the chests by the bench (or the storehouse's). What counts as a tink
 `aliveworkplace:tinkering`, so data packs can add to it. The **Tinker's Workshop** (Blueprint Table) is a brick
 workshop with a forge and a smoking chimney; the **Tinker's Workshop II** runs it back with a storage loft and a cart
 track. Villages sometimes grow a Tinker's Shop, and a Sifting Shed for a sifter.
+
+## Netherworkers
+![The Nether Gate I and II](docs/media/nether-gate.png)
+
+Craft a **Nether Brazier** (gold, gap, gold over polished blackstone, a fire charge, polished blackstone, with three
+polished blackstone below) and place it near a villager without a job and within 32 blocks of a **Nether portal**: they
+become a **Netherworker**. With three **rations** (bread, cooked meat and the like) in a chest by the brazier they pack
+up, walk to the portal and step through; a few minutes later (sooner as they level up, or with pastured Fire and Dark
+Pokémon) they step back out with the Nether's goods — netherrack, soul sand, basalt, glowstone, nether wart, gold — and
+put them in the chest. Leave them gear and they bring back more: a **pickaxe** for quartz, gold and magma (a diamond
+one now and then finds ancient debris), an **axe** for crimson and warped stems and shroomlights, a **sword** and a
+**chestplate** for a fortress's blaze rods and nether bricks, a **fire resistance potion** to go further. The gear wears
+a little each trip, and without armor they sometimes come back hurt. With Cobblemon they now and then find a Fire or
+Dusk Stone. While they're away they can't be seen or hurt. The **Nether Gate** (Blueprint Table) is a blackstone arch
+round an obsidian portal frame, with the brazier and a chest — put a **flint and steel** in the builder's chests and they
+light the portal when they're done; the **Nether Gate II** adds a gatehouse roof, a storehouse and a nether wart garden.
 
 ## Fishermen
 ![A fisherman villager with a bobber out on the pond](docs/media/fisherman.png)

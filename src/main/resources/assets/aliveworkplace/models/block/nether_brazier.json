@@ -1,0 +1,9 @@
+{
+  "parent": "minecraft:block/orientable_with_bottom",
+  "textures": {
+    "top": "aliveworkplace:block/nether_brazier_top",
+    "bottom": "aliveworkplace:block/nether_brazier_side",
+    "side": "aliveworkplace:block/nether_brazier_side",
+    "front": "aliveworkplace:block/nether_brazier_front"
+  }
+}

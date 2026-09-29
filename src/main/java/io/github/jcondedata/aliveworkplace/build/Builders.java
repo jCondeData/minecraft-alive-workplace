@@ -462,6 +462,9 @@ public final class Builders {
 		// Item frames, paintings and armor stands go up last, from the chests.
 		BuildPlan plan = site.isDeconstruction() ? null : site.plan(level);
 		int entitiesLeft = plan == null ? 0 : BuildEntities.placeAll(level, plan, supplies);
+		if (plan != null) {
+			lightPortals(level, plan.bounds(), supplies);
+		}
 		returnBlueprint(level, site, bench, supplies);
 
 		level.sendParticles(ParticleTypes.HAPPY_VILLAGER, villager.getX(), villager.getY() + 1.8, villager.getZ(), 12, 0.5, 0.5, 0.5, 0.0);
@@ -493,6 +496,39 @@ public final class Builders {
 		}
 		endJob(level, villager, site);
 		BuilderLevels.onFinished(level, villager, site);
+	}
+
+	/**
+	 * Lights the empty Nether portal frames inside {@code box} (a finished Nether Gate): a use of a flint and steel from
+	 * {@code supplies} each, or a fire charge. Returns how many were lit (none without either).
+	 */
+	public static int lightPortals(ServerLevel level, BoundingBox box, List<BlockPos> supplies) {
+		int lit = 0;
+		for (BlockPos pos : BlockPos.betweenClosed(box.minX(), box.minY(), box.minZ(), box.maxX(), box.maxY(), box.maxZ())) {
+			if (!level.getBlockState(pos).is(net.minecraft.world.level.block.Blocks.OBSIDIAN) || !level.getBlockState(pos.above()).isAir()) {
+				continue;
+			}
+			for (net.minecraft.core.Direction.Axis axis : List.of(net.minecraft.core.Direction.Axis.X, net.minecraft.core.Direction.Axis.Z)) {
+				Optional<net.minecraft.world.level.portal.PortalShape> shape = net.minecraft.world.level.portal.PortalShape.findEmptyPortalShape(level, pos.above(), axis);
+				if (shape.isEmpty()) {
+					continue;
+				}
+				ItemStack igniter = SupplyContainers.takeOne(level, supplies, s -> s.is(net.minecraft.world.item.Items.FLINT_AND_STEEL));
+				if (!igniter.isEmpty()) {
+					igniter.setDamageValue(igniter.getDamageValue() + 1);
+					if (igniter.getDamageValue() < igniter.getMaxDamage()) {
+						SupplyContainers.insert(level, supplies, igniter);
+					}
+				} else if (SupplyContainers.takeOne(level, supplies, s -> s.is(net.minecraft.world.item.Items.FIRE_CHARGE)).isEmpty()) {
+					return lit;
+				}
+				shape.get().createPortalBlocks();
+				level.playSound(null, pos.above(), net.minecraft.sounds.SoundEvents.FLINTANDSTEEL_USE, SoundSource.BLOCKS, 1f, 1f);
+				lit++;
+				break;
+			}
+		}
+		return lit;
 	}
 
 	/** Stops a build. Placed blocks stay; the blueprint goes back to the owner (or the bench). */

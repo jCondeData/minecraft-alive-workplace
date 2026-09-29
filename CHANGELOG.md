@@ -2,6 +2,16 @@
 
 ## Unreleased
 
+## 0.126.0 — 2026-09-29
+
+### Added
+- **Netherworkers** (new job, the Nether Brazier): with food in the chests and a Nether portal nearby they go through
+  it on expeditions and come back with the Nether's goods — netherrack, quartz, glowstone, nether wart and more; with
+  a pickaxe, an axe, a sword and armor they bring back more (a diamond pickaxe now and then turns up ancient debris),
+  and with Cobblemon the odd Fire or Dusk Stone.
+- **Nether Gate** blueprint (and its upgrade): an obsidian portal frame in a blackstone arch — the builder lights it when
+  it's done if there's a flint and steel in the chests. II adds a gatehouse roof, a storehouse and a nether wart garden.
+
 ## 0.125.0 — 2026-09-29
 
 ### Added

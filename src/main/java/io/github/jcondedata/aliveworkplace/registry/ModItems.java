@@ -101,6 +101,7 @@ public final class ModItems {
 				output.accept(ModBlocks.SCHOLARS_DESK);
 				output.accept(ModBlocks.SIEVE);
 				output.accept(ModBlocks.TINKERS_BENCH);
+				output.accept(ModBlocks.NETHER_BRAZIER);
 				output.accept(SETTLERS_WAGON);
 				for (StarterBlueprints.Entry entry : StarterBlueprints.ALL) {
 					output.accept(BlueprintItem.create(entry.id(), entry.size()));

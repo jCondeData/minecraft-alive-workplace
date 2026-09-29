@@ -15,6 +15,7 @@ from decor import *
 from houses import *
 from defence import *
 from workshops import *
+from nether import *
 
 
 # --- Gametest fixtures ------------------------------------------------------------------
@@ -111,6 +112,8 @@ if __name__ == "__main__":
         draw().save(MAIN_STRUCTURES, name)
     tinkers_workshop().save(MAIN_STRUCTURES, "tinkers_workshop")
     tinkers_workshop_2().save(MAIN_STRUCTURES, "tinkers_workshop_2")
+    nether_gate().save(MAIN_STRUCTURES, "nether_gate")
+    nether_gate_2().save(MAIN_STRUCTURES, "nether_gate_2")
     for style in VILLAGE_STYLES:
         builders_workshop(style).save(VILLAGE_STRUCTURES, f"{style}_builders_workshop")
         for name, fit_out in VILLAGE_HOUSES.items():

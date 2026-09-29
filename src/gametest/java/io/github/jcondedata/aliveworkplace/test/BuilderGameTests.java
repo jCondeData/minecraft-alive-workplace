@@ -913,6 +913,43 @@ public class BuilderGameTests implements FabricGameTest {
 		buildStarter(helper, StarterBlueprints.TINKERS_WORKSHOP);
 	}
 
+	@GameTest(template = BIG_AREA, timeoutTicks = 30000, batch = "starter_builds_6")
+	public void buildsNetherGate(GameTestHelper helper) {
+		buildStarter(helper, StarterBlueprints.NETHER_GATE);
+	}
+
+	@GameTest(template = BIG_AREA, timeoutTicks = 40000, batch = "starter_builds_7")
+	public void buildsNetherGateII(GameTestHelper helper) {
+		buildStarter(helper, StarterBlueprints.NETHER_GATE_2, new BlockPos(7, 2, 8)); // (15 wide: further left)
+	}
+
+	/** An empty portal frame in a finished build is lit with a flint and steel from the chests (a use of it). */
+	@GameTest(template = AREA)
+	public void builderLightsThePortalFrame(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		for (int dx = -1; dx <= 2; dx++) {
+			helper.setBlock(new BlockPos(8 + dx, 1, 6), Blocks.OBSIDIAN);
+			helper.setBlock(new BlockPos(8 + dx, 5, 6), Blocks.OBSIDIAN);
+		}
+		for (int y = 2; y <= 4; y++) {
+			helper.setBlock(new BlockPos(7, y, 6), Blocks.OBSIDIAN);
+			helper.setBlock(new BlockPos(10, y, 6), Blocks.OBSIDIAN);
+		}
+		helper.setBlock(CHEST, Blocks.CHEST);
+		Container chest = helper.getBlockEntity(CHEST);
+		List<BlockPos> supplies = List.of(helper.absolutePos(CHEST));
+		net.minecraft.world.level.levelgen.structure.BoundingBox box = net.minecraft.world.level.levelgen.structure.BoundingBox.fromCorners(
+			helper.absolutePos(new BlockPos(6, 1, 5)), helper.absolutePos(new BlockPos(11, 6, 7)));
+		helper.assertTrue(io.github.jcondedata.aliveworkplace.build.Builders.lightPortals(level, box, supplies) == 0, "lit without a flint and steel");
+		chest.setItem(0, new ItemStack(Items.FLINT_AND_STEEL));
+		helper.assertTrue(io.github.jcondedata.aliveworkplace.build.Builders.lightPortals(level, box, supplies) == 1, "the frame wasn't lit");
+		helper.assertBlockPresent(Blocks.NETHER_PORTAL, new BlockPos(8, 2, 6));
+		helper.assertBlockPresent(Blocks.NETHER_PORTAL, new BlockPos(9, 4, 6));
+		ItemStack flint = chest.getItem(0);
+		helper.assertTrue(flint.is(Items.FLINT_AND_STEEL) && flint.getDamageValue() == 1, "the flint and steel should be back, used once: " + flint);
+		helper.succeed();
+	}
+
 	/** The whole Tinker's Workshop II from bare ground (deeper, so it starts further back). */
 	@GameTest(template = BIG_AREA, timeoutTicks = 40000, batch = "starter_builds_6")
 	public void buildsTinkersWorkshopII(GameTestHelper helper) {
@@ -1254,7 +1291,7 @@ public class BuilderGameTests implements FabricGameTest {
 			long kept = base.blocks().stream().filter(e -> !e.state().isAir() && e.state().equals(up.get(e.pos()))).count();
 			helper.assertTrue(kept >= solid * 0.6, entry.id() + " keeps only " + kept + " of " + baseId.get() + "'s " + solid + " blocks");
 		}
-		helper.assertTrue(upgrades == 26, "expected 26 starter upgrades, found " + upgrades);
+		helper.assertTrue(upgrades == 27, "expected 27 starter upgrades, found " + upgrades);
 		helper.succeed();
 	}
 

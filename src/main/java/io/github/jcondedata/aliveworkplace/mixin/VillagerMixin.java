@@ -25,6 +25,23 @@ abstract class VillagerMixin {
 		}
 	}
 
+	/** A netherworker away in the Nether: vanilla's portals leave them be, and the brain waits till they're back. */
+	@Inject(method = "customServerAiStep", at = @At("HEAD"), cancellable = true)
+	private void aliveworkplace$nether(CallbackInfo ci) {
+		if (io.github.jcondedata.aliveworkplace.nether.Netherworkers.tick((Villager) (Object) this)) {
+			ci.cancel();
+		}
+	}
+
+	/** Nobody trades with a netherworker who's away. */
+	@Inject(method = "mobInteract", at = @At("HEAD"), cancellable = true)
+	private void aliveworkplace$away(net.minecraft.world.entity.player.Player player, net.minecraft.world.InteractionHand hand,
+			org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable<net.minecraft.world.InteractionResult> cir) {
+		if (io.github.jcondedata.aliveworkplace.nether.Netherworkers.isAway((Villager) (Object) this)) {
+			cir.setReturnValue(net.minecraft.world.InteractionResult.PASS);
+		}
+	}
+
 	/** A baby had the vanilla way remembers its parents. */
 	@Inject(method = "getBreedOffspring(Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/world/entity/AgeableMob;)Lnet/minecraft/world/entity/npc/Villager;",
 		at = @At("RETURN"))

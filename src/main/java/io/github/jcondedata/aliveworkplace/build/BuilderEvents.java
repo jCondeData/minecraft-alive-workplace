@@ -295,7 +295,8 @@ public final class BuilderEvents {
 
 		// Knights block blows from in front with their shield.
 		ServerLivingEntityEvents.ALLOW_DAMAGE.register((entity, source, amount) ->
-			!(entity instanceof Villager villager && !entity.level().isClientSide && io.github.jcondedata.aliveworkplace.guard.Guards.block(villager, source, amount)));
+			!(entity instanceof Villager villager && !entity.level().isClientSide && (io.github.jcondedata.aliveworkplace.nether.Netherworkers.shields(villager, source)
+				|| io.github.jcondedata.aliveworkplace.guard.Guards.block(villager, source, amount))));
 		ServerLivingEntityEvents.AFTER_DEATH.register((entity, source) -> {
 			if (entity instanceof Villager villager && entity.level() instanceof ServerLevel level) {
 				Builders.onBuilderDeath(level, villager);

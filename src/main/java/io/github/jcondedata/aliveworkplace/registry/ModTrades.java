@@ -26,6 +26,7 @@ public final class ModTrades {
 		scholarTrades();
 		sifterTrades();
 		tinkererTrades();
+		netherworkerTrades();
 		ballSmithTrades();
 		porterTrades();
 		carpenterTrades();
@@ -246,6 +247,26 @@ public final class ModTrades {
 			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 5), new ItemStack(Items.HOPPER), 8, 20, 0.05f)));
 		TradeOfferHelper.registerVillagerOffers(ModVillagers.TINKERER, 5, offers ->
 			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 8), new ItemStack(Items.CRAFTER), 4, 30, 0.05f)));
+	}
+
+	/** Netherworkers buy food for the road and sell what they bring back from the Nether. */
+	private static void netherworkerTrades() {
+		TradeOfferHelper.registerVillagerOffers(ModVillagers.NETHERWORKER, 1, offers -> {
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.BREAD, 8), new ItemStack(Items.EMERALD), 16, 2, 0.05f));
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 1), new ItemStack(Items.NETHERRACK, 32), 12, 1, 0.05f));
+		});
+		TradeOfferHelper.registerVillagerOffers(ModVillagers.NETHERWORKER, 2, offers -> {
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.COOKED_PORKCHOP, 6), new ItemStack(Items.EMERALD), 16, 10, 0.05f));
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 2), new ItemStack(Items.QUARTZ, 12), 12, 5, 0.05f));
+		});
+		TradeOfferHelper.registerVillagerOffers(ModVillagers.NETHERWORKER, 3, offers -> {
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 3), new ItemStack(Items.NETHER_WART, 8), 8, 15, 0.05f));
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 3), new ItemStack(Items.GLOWSTONE, 4), 8, 15, 0.05f));
+		});
+		TradeOfferHelper.registerVillagerOffers(ModVillagers.NETHERWORKER, 4, offers ->
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 8), new ItemStack(Items.BLAZE_ROD, 2), 6, 20, 0.05f)));
+		TradeOfferHelper.registerVillagerOffers(ModVillagers.NETHERWORKER, 5, offers ->
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 24), new ItemStack(Items.NETHERITE_SCRAP), 2, 30, 0.05f)));
 	}
 
 	/** Sifters buy gravel and sand and sell what they find in them. */

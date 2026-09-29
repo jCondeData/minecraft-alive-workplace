@@ -140,6 +140,14 @@ public final class ModAttachments {
 	public static final AttachmentType<Integer> GOLEM_REPAIRS = AttachmentRegistry.create(
 		AliveWorkplace.id("golem_repairs"), builder -> builder.persistent(com.mojang.serialization.Codec.INT));
 
+	/** A Netherworker's expedition under way (see {@code nether/Netherworkers}); absent while they're home. */
+	public static final AttachmentType<io.github.jcondedata.aliveworkplace.nether.Netherworkers.Trip> NETHER_TRIP = AttachmentRegistry.create(
+		AliveWorkplace.id("nether_trip"), builder -> builder.persistent(io.github.jcondedata.aliveworkplace.nether.Netherworkers.Trip.CODEC));
+
+	/** How many expeditions a Netherworker has made (shown above its head). */
+	public static final AttachmentType<Integer> NETHER_TRIPS = AttachmentRegistry.create(
+		AliveWorkplace.id("nether_trips"), builder -> builder.persistent(com.mojang.serialization.Codec.INT));
+
 	/** How many villagers a Nurse has cured. */
 	public static final AttachmentType<Integer> VILLAGERS_CURED = AttachmentRegistry.create(
 		AliveWorkplace.id("villagers_cured"), builder -> builder.persistent(com.mojang.serialization.Codec.INT));

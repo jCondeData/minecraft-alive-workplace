@@ -114,6 +114,11 @@ public final class Porters {
 			// What's to be sifted stays; what came out of the sieve goes.
 			return io.github.jcondedata.aliveworkplace.sift.SifterWork.isSiftable(stack) ? ALL : 0;
 		}
+		if (job == ModVillagers.NETHERWORKER) {
+			// Rations and gear for the next expedition stay; what came back from the Nether goes.
+			return io.github.jcondedata.aliveworkplace.nether.Netherworkers.isGear(stack) ? ALL
+				: io.github.jcondedata.aliveworkplace.nether.Netherworkers.isRation(stack) ? KEEP_BREEDING_FOOD : 0;
+		}
 		if (job == ModVillagers.UNDERTAKER) {
 			// What brings villagers back stays; empty bottles go.
 			return io.github.jcondedata.aliveworkplace.grave.Graves.isRevivalItem(stack) ? ALL : 0;

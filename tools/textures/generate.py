@@ -2083,6 +2083,71 @@ def tinkerer_overlay():
     save(img, "entity", "zombie_villager", "profession", "tinkerer.png")
 
 
+# --- Nether Brazier: the netherworker's workstation, polished blackstone with gold bands and a bowl of embers -----
+def nether_brazier(face):
+    rnd = random.Random({"top": 501, "side": 502, "front": 503}[face])
+    img = Image.new("RGBA", (16, 16))
+    stone, dark, gold = rgb("#3a3440"), rgb("#241f28"), rgb("#e0b030")
+    for y in range(16):
+        for x in range(16):
+            mortar = y % 4 == 3 or (x + (y // 4) * 4) % 8 == 0
+            img.putpixel((x, y), jitter(dark if mortar else stone, rnd, 5))
+    if face == "top":
+        for i in range(16):
+            for p in ((i, 0), (i, 15), (0, i), (15, i)):
+                img.putpixel(p, jitter(gold, rnd, 10))
+        for y in range(3, 13):  # the bowl of embers
+            for x in range(3, 13):
+                d = ((x - 7.5) ** 2 + (y - 7.5) ** 2) ** 0.5
+                if d < 5:
+                    ember = rgb("#ffd24a") if d < 1.8 else rgb("#ff7a1a") if d < 3.2 else rgb("#9e2a10")
+                    img.putpixel((x, y), jitter(ember, rnd, 18))
+                elif d < 5.8:
+                    img.putpixel((x, y), jitter(rgb("#15121a"), rnd, 4))
+        for _ in range(6):  # soul-fire sparks
+            img.putpixel((rnd.randint(5, 10), rnd.randint(5, 10)), rgb("#7fe8f0"))
+    else:
+        for x in range(16):  # gold bands top and bottom
+            for y in (1, 14):
+                img.putpixel((x, y), jitter(gold, rnd, 10))
+        if face == "front":
+            for y in range(4, 12):  # a purple portal swirl set in the stone
+                for x in range(5, 11):
+                    edge = x in (5, 10) or y in (4, 11)
+                    swirl = rgb("#8a3cf0") if (x + y + rnd.randint(0, 1)) % 3 else rgb("#c68cff")
+                    img.putpixel((x, y), jitter(rgb("#120e16") if edge else swirl, rnd, 12))
+    save(img, "block", "nether_brazier_" + face + ".png")
+
+
+def netherworker_overlay():
+    img = Image.new("RGBA", (64, 64), T)
+    rnd = random.Random(511)
+    # a scorched crimson hood and a leather jerkin with gold buckles
+    hood = rgb("#7a1f24")
+    for y in range(0, 8):
+        for x in range(40, 48):
+            img.putpixel((x, y), jitter(hood, rnd, 6))
+    for x in range(32, 64):
+        for y in (8, 9):
+            img.putpixel((x, y), jitter(hood, rnd, 6))
+    for y in range(8, 16):  # the hood's sides
+        for x in (32, 33, 38, 39, 46, 47, 48, 49, 54, 55):
+            img.putpixel((x, y), jitter(hood, rnd, 6))
+    jerkin = rgb("#4a3022")
+    for y in range(20, 32):
+        for x in range(20, 28):
+            img.putpixel((x, y), jitter(jerkin, rnd, 5))
+    for y in range(44, 62):
+        for x in range(2, 22):
+            img.putpixel((x, y), jitter(jerkin, rnd, 5))
+    for x, y in ((6, 47), (6, 52), (6, 57), (16, 47), (16, 52), (16, 57)):
+        img.putpixel((x, y), rgb("#e0b030"))
+    for _ in range(12):  # scorch marks
+        img.putpixel((rnd.randint(3, 20), rnd.randint(45, 60)), rgb("#1c1512"))
+    save(img, "entity", "villager", "profession", "netherworker.png")
+    save(img, "entity", "zombie_villager", "profession", "netherworker.png")
+
+
 # --- Feed Trough: the rancher's workstation, a plank trough full of hay ----------------------------------------
 def feed_trough(face):
     rnd = random.Random({"top": 341, "side": 342, "front": 343}[face])
@@ -2598,6 +2663,9 @@ if __name__ == "__main__":
     for face in ("top", "side", "front"):
         tinkers_bench(face)
     tinkerer_overlay()
+    for face in ("top", "side", "front"):
+        nether_brazier(face)
+    netherworker_overlay()
     rancher_overlay()
     for part in ("burlap", "face", "straw", "post"):
         training_dummy(part)

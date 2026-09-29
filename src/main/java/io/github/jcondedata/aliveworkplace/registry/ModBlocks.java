@@ -154,6 +154,11 @@ public final class ModBlocks {
 		"tinkers_bench", new BuildersBenchBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.SPRUCE_PLANKS))
 	);
 
+	/** Workstation for the Netherworker: expeditions through the Nether portal nearby start here. */
+	public static final BuildersBenchBlock NETHER_BRAZIER = register(
+		"nether_brazier", new BuildersBenchBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.POLISHED_BLACKSTONE).lightLevel(state -> 10))
+	);
+
 	/** Workstation for the Scholar: the village's research is done here (a Village Hall keeps it). */
 	public static final BuildersBenchBlock SCHOLARS_DESK = register(
 		"scholars_desk", new BuildersBenchBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.BOOKSHELF))

@@ -108,6 +108,11 @@ public final class StarterBlueprints {
 	/** The hall run back to twice the length: a storage loft, a cart track in, a lightning rod on the ridge. */
 	public static final Entry TINKERS_WORKSHOP_2 = new Entry(AliveWorkplace.id("tinkers_workshop_2"), new Vec3i(12, 11, 14));
 
+	/** An obsidian portal frame in a blackstone arch, with the Nether Brazier: the builder lights it when done. */
+	public static final Entry NETHER_GATE = new Entry(AliveWorkplace.id("nether_gate"), new Vec3i(11, 9, 7));
+	/** A gatehouse roof over the portal, a storehouse and a nether wart garden. */
+	public static final Entry NETHER_GATE_2 = new Entry(AliveWorkplace.id("nether_gate_2"), new Vec3i(15, 11, 11));
+
 	/** Decorations: a well with a lantern on a chain over the water. */
 	public static final Entry WELL = new Entry(AliveWorkplace.id("well"), new Vec3i(7, 5, 7));
 	/** A roof over the well, benches and lamp posts. */
@@ -140,7 +145,7 @@ public final class StarterBlueprints {
 	public static final List<Entry> ALL = List.of(STARTER_COTTAGE, STARTER_COTTAGE_2, STARTER_COTTAGE_3, MARKET_STALL, MARKET_STALL_2, MARKET_STALL_3,
 		LOOKOUT_TOWER, LOOKOUT_TOWER_2, LOOKOUT_TOWER_3, HEALING_CENTER, HEALING_CENTER_2, HEALING_CENTER_3, SUPPLY_SHOP, SUPPLY_SHOP_2, SUPPLY_SHOP_3,
 		STOREHOUSE, STOREHOUSE_2, STOREHOUSE_3, BERRY_FARM, BERRY_FARM_2, RESEARCH_LAB, RESEARCH_LAB_2,
-		TERRACE, TERRACE_2, INN, INN_2, STONE_HOUSE, STONE_HOUSE_2, STONE_HOUSE_3, BARRACKS, BARRACKS_2, TINKERS_WORKSHOP, TINKERS_WORKSHOP_2,
+		TERRACE, TERRACE_2, INN, INN_2, STONE_HOUSE, STONE_HOUSE_2, STONE_HOUSE_3, BARRACKS, BARRACKS_2, TINKERS_WORKSHOP, TINKERS_WORKSHOP_2, NETHER_GATE, NETHER_GATE_2,
 		SCHOOLHOUSE, SCHOOLHOUSE_2, LIBRARY, LIBRARY_2, RANCH, RANCH_2, APIARY_GARDEN, APIARY_GARDEN_2, FLOWER_SHOP, FLOWER_SHOP_2, GRAVEYARD, GRAVEYARD_2);
 
 	/** The decorations (in the Blueprint Table with the rest; near a Village Hall they make the village prettier). */

@@ -737,6 +737,14 @@ not just the ground round their post. The raid is over when the raiders are dead
 flee. The chronicle remembers every raid. In a **pillager raid** guards don't hide either: they patrol and fight
 anywhere in the raid's area. `villageRaids` in the config turns our raids off.
 
+**Bandit camps.** Once a village reaches Village rank, bandits may make camp out beyond it, 80 to 100 blocks from the
+hall — tents round a fire, a **Bandit Chief** in iron and a few of his men (pillagers and vindicators). Everyone nearby
+is told where, the hall's guards icon shows it, and the villagers feel less safe while it stands. Until the chief falls,
+the village's night raids come from the camp — bandits instead of monsters, and twice as often. Go and break it up:
+take your guards along with a **Rally Banner**, or hire mercenaries. When the chief dies the rest of the band scatters,
+the chest in his tent is yours (emeralds, iron, gold, maybe a diamond or an enchanted book) and the chronicle remembers
+who did it. After that the village has a few days' peace. `banditCamps` in the config turns them off.
+
 **Patrol routes.** Craft a **Patrol Map** (a map and red dye), right-click the ground at up to eight places — the
 gate, the far field, the bridge — and sneak-right-click a guard with it: by day they walk your route point to point
 instead of wandering round their post (the route shows in red while you hold the map). The map keeps the route for the

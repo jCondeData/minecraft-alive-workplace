@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+### Added
+- **Bandit camps**: bandits make camp near villages of Village rank or more and raid them at night until their chief
+  falls. Break the camp up for its loot.
+
 ## 0.130.0 — 2026-09-29
 
 ### Added

@@ -179,7 +179,9 @@ public final class VillageNeeds {
 			? entity.research().level(io.github.jcondedata.aliveworkplace.research.Research.Topic.HEARTH) : 0;
 		int beauty = Decorations.beauty(level, hall);
 		float cheer = Math.min(io.github.jcondedata.aliveworkplace.people.Traits.MAX_CHEER, cheerful * io.github.jcondedata.aliveworkplace.people.Traits.CHEER);
-		float wellbeing = Math.min(1f, wellbeing(fedShare, housedShare, 0.5f * guarded + 0.5f * litShare) + 0.1f * hearth + Decorations.bonus(beauty) + cheer);
+		float safe = (0.5f * guarded + 0.5f * litShare)
+			* (io.github.jcondedata.aliveworkplace.guard.BanditCamps.near(level, hall).isPresent() ? io.github.jcondedata.aliveworkplace.guard.BanditCamps.SAFETY : 1f);
+		float wellbeing = Math.min(1f, wellbeing(fedShare, housedShare, safe) + 0.1f * hearth + Decorations.bonus(beauty) + cheer);
 		return new Needs(adults, fed, villagers, housed, lit, guards, beauty, wellbeing);
 	}
 

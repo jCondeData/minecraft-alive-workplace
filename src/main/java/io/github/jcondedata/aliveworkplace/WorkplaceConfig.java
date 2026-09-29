@@ -60,6 +60,8 @@ public final class WorkplaceConfig {
 	public boolean marketDays = true;
 	/** Monsters raid bigger villages with a Village Hall at night now and then. */
 	public boolean villageRaids = true;
+	/** Bandits make camp near villages of Village rank or more now and then, and raid them until their chief falls. */
+	public boolean banditCamps = true;
 	/** What an emerald price comes to in CobbleDollars (lessons, shops, fares). */
 	public int dollarsPerEmerald = 100;
 
@@ -142,6 +144,7 @@ public final class WorkplaceConfig {
 		io.github.jcondedata.aliveworkplace.build.Upkeep.ENABLED = builderRepairs && System.getProperty("fabric-api.gametest") == null;
 		io.github.jcondedata.aliveworkplace.hall.MarketDays.ENABLED = marketDays && System.getProperty("fabric-api.gametest") == null;
 		io.github.jcondedata.aliveworkplace.guard.VillageRaids.ENABLED = villageRaids && System.getProperty("fabric-api.gametest") == null;
+		io.github.jcondedata.aliveworkplace.guard.BanditCamps.ENABLED = banditCamps && System.getProperty("fabric-api.gametest") == null;
 		io.github.jcondedata.aliveworkplace.build.Paths.ENABLED = builderPaths && System.getProperty("fabric-api.gametest") == null;
 	}
 }

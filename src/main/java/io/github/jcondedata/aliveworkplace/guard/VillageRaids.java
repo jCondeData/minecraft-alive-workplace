@@ -109,7 +109,8 @@ public final class VillageRaids {
 			return;
 		}
 		int rounds = Math.max(1, 8500 / VillageNeeds.CHECK_EVERY);
-		if (level.random.nextFloat() < nightlyChance(villagers) / rounds && start(level, hall, villagers, guards) != null) {
+		float chance = nightlyChance(villagers) * (BanditCamps.near(level, hall).isPresent() ? 2 : 1); // bandits come from their camp
+		if (level.random.nextFloat() < chance / rounds && start(level, hall, villagers, guards) != null) {
 			raided.accept(day);
 		}
 	}
@@ -123,7 +124,12 @@ public final class VillageRaids {
 	/** Starts a raid on the village round {@code hall} now; null if the raiders found nowhere to gather. */
 	@Nullable
 	public static Raid start(ServerLevel level, BlockPos hall, int villagers, int guards) {
-		BlockPos gather = gatheringPoint(level, hall);
+		Optional<BanditCamps.Camp> camp = BanditCamps.near(level, hall);
+		BlockPos gather = camp.map(c -> gatheringPoint(level, hall, Math.atan2(c.pos().getZ() - hall.getZ(), c.pos().getX() - hall.getX()), 0.5))
+			.orElse(null);
+		if (gather == null) {
+			gather = gatheringPoint(level, hall);
+		}
 		if (gather == null) {
 			return null;
 		}
@@ -135,7 +141,7 @@ public final class VillageRaids {
 		for (int i = 0; i < Math.min(MAX_RAIDERS, plain + armored); i++) {
 			float roll = level.random.nextFloat();
 			EntityType<? extends Monster> type = roll < 0.5f ? EntityType.ZOMBIE : roll < 0.8f ? EntityType.SKELETON : EntityType.SPIDER;
-			Monster mob = type.create(level);
+			Mob mob = camp.isPresent() ? BanditCamps.raider(level) : type.create(level);
 			if (mob == null) {
 				continue;
 			}
@@ -165,10 +171,11 @@ public final class VillageRaids {
 		ringTheBell(level, hall);
 		level.playSound(null, gather, SoundEvents.RAID_HORN.value(), SoundSource.HOSTILE, 8f, 1f);
 		Component name = VillageHalls.name(level, hall);
+		String kind = camp.isPresent() ? "bandits" : "begins";
 		for (ServerPlayer player : players(level, hall)) {
-			player.displayClientMessage(Component.translatable("message.aliveworkplace.raid.begins", spawned, name).withStyle(ChatFormatting.RED), false);
+			player.displayClientMessage(Component.translatable("message.aliveworkplace.raid." + kind, spawned, name).withStyle(ChatFormatting.RED), false);
 		}
-		Chronicle.record(level, hall, Chronicle.Kind.RAID, Component.translatable("chronicle.aliveworkplace.raid", spawned));
+		Chronicle.record(level, hall, Chronicle.Kind.RAID, Component.translatable(camp.isPresent() ? "chronicle.aliveworkplace.bandit_raid" : "chronicle.aliveworkplace.raid", spawned));
 		return raid;
 	}
 
@@ -202,9 +209,15 @@ public final class VillageRaids {
 	/** Where the raiders gather: out at the edge of the village, on open ground. */
 	@Nullable
 	static BlockPos gatheringPoint(ServerLevel level, BlockPos hall) {
+		return gatheringPoint(level, hall, 0, Math.PI);
+	}
+
+	/** Where the raiders gather: out at the edge of the village, about {@code angle} from the hall (give or take {@code spread}). */
+	@Nullable
+	static BlockPos gatheringPoint(ServerLevel level, BlockPos hall, double toward, double spread) {
 		double distance = VillageHalls.RADIUS * 0.6;
 		for (int tries = 0; tries < 8; tries++) {
-			double angle = level.random.nextDouble() * Math.PI * 2;
+			double angle = toward + (level.random.nextDouble() * 2 - 1) * spread;
 			BlockPos column = hall.offset((int) (Math.cos(angle) * distance), 0, (int) (Math.sin(angle) * distance));
 			if (!level.isLoaded(column)) {
 				continue;

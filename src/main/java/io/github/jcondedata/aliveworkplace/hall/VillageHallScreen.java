@@ -123,7 +123,10 @@ public final class VillageHallScreen {
 				kinds >= io.github.jcondedata.aliveworkplace.people.Diet.VARIED_KINDS ? ChatFormatting.GREEN : ChatFormatting.YELLOW)), null);
 		menu.button(GUARDS, icon(Items.IRON_SWORD, Component.translatable("screen.aliveworkplace.hall.guards", census.guards()), ChatFormatting.WHITE,
 			line(census.guards() > 0 ? "screen.aliveworkplace.hall.guarded" : "screen.aliveworkplace.hall.unguarded",
-				census.guards() > 0 ? ChatFormatting.GRAY : ChatFormatting.YELLOW)), null);
+				census.guards() > 0 ? ChatFormatting.GRAY : ChatFormatting.YELLOW),
+			io.github.jcondedata.aliveworkplace.guard.BanditCamps.near(level, hall)
+				.map(camp -> line(Component.translatable("screen.aliveworkplace.hall.bandits", where(hall, camp.pos())), ChatFormatting.RED))
+				.orElse(line("screen.aliveworkplace.hall.no_bandits", ChatFormatting.DARK_GRAY))), null);
 		menu.button(WELLBEING, wellbeingIcon(needs), null);
 		menu.button(REQUESTS, requestsIcon(census.requests()), null);
 		menu.button(BUILDS, buildsIcon(census.builds()), null);
@@ -514,7 +517,7 @@ public final class VillageHallScreen {
 		return where(hall, villager.getX(), villager.getZ());
 	}
 
-	static Component where(BlockPos hall, BlockPos pos) {
+	public static Component where(BlockPos hall, BlockPos pos) {
 		return where(hall, pos.getX() + 0.5, pos.getZ() + 0.5);
 	}
 

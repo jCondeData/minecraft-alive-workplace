@@ -316,6 +316,7 @@ public final class BuilderEvents {
 				io.github.jcondedata.aliveworkplace.hall.Chronicle.record(level, villager.blockPosition(), io.github.jcondedata.aliveworkplace.hall.Chronicle.Kind.DEATH, source.getLocalizedDeathMessage(villager));
 			} else if (entity.level() instanceof ServerLevel level) {
 				io.github.jcondedata.aliveworkplace.guard.GuardCombat.onFoeKilled(level, entity, source);
+				io.github.jcondedata.aliveworkplace.guard.BanditCamps.onDeath(level, entity, source);
 				io.github.jcondedata.aliveworkplace.hall.VillageQuests.onKill(level, entity, source);
 			}
 		});

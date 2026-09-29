@@ -1,5 +1,6 @@
 package io.github.jcondedata.aliveworkplace.test;
 
+import io.github.jcondedata.aliveworkplace.guard.BanditCamps;
 import io.github.jcondedata.aliveworkplace.guard.GuardPatrol;
 import io.github.jcondedata.aliveworkplace.guard.VillageRaids;
 import io.github.jcondedata.aliveworkplace.hall.Chronicle;
@@ -62,6 +63,59 @@ public class RaidGameTests implements FabricGameTest {
 			VillageRaids.tick(level, hall, 8, 0, Chronicle.day(level), day -> { });
 			helper.assertTrue(VillageRaids.active(hall).isEmpty(), "the raid didn't end");
 			helper.assertTrue(entity.chronicle().stream().filter(e -> e.kind() == Chronicle.Kind.RAID).count() == 2, "no victory in the chronicle");
+			helper.succeed();
+		});
+	}
+
+	/**
+	 * Bandits make camp: the chief (in iron, tougher) and his men, a chest of loot; while the camp stands the village's raids
+	 * are bandits; when the chief falls the band scatters and the camp is broken up.
+	 */
+	@GameTest(template = AREA, timeoutTicks = 100, batch = "banditCamp")
+	public void aBanditCampIsBrokenUpWhenItsChiefFalls(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		ServerLevel level = helper.getLevel();
+		int radius = VillageHalls.RADIUS;
+		VillageHalls.RADIUS = 16;
+		Leftovers.after(helper, () -> {
+			VillageHalls.RADIUS = radius;
+			VillageRaids.forget();
+			BanditCamps.forget(level);
+		});
+		BlockPos hallAt = new BlockPos(1, 2, 1);
+		helper.setBlock(hallAt, ModBlocks.VILLAGE_HALL);
+		BlockPos hall = helper.absolutePos(hallAt);
+		for (int i = 0; i < 4; i++) {
+			helper.spawn(EntityType.VILLAGER, new BlockPos(2 + i, 2, 3));
+		}
+		helper.runAfterDelay(2, () -> {
+			BanditCamps.Camp camp = BanditCamps.found(level, hall, helper.absolutePos(new BlockPos(12, 1, 12)));
+			helper.assertTrue(camp != null && BanditCamps.near(level, hall).isPresent(), "no camp: " + camp);
+			net.minecraft.world.phys.AABB around = new net.minecraft.world.phys.AABB(camp.pos()).inflate(12);
+			var band = level.getEntitiesOfClass(Mob.class, around, m -> m.getTags().contains(BanditCamps.TAG));
+			helper.assertTrue(band.size() >= 4, "the band: " + band.size());
+			Mob chief = (Mob) level.getEntity(camp.chief());
+			helper.assertTrue(chief != null && chief.getTags().contains(BanditCamps.CHIEF_TAG) && chief.getMaxHealth() > 40, "the chief: " + chief);
+			helper.assertTrue(band.stream().allMatch(Mob::isPersistenceRequired), "bandits would despawn");
+			boolean loot = false;
+			for (BlockPos p : BlockPos.betweenClosed(camp.pos().offset(-8, 0, -8), camp.pos().offset(8, 3, 8))) {
+				if (level.getBlockEntity(p) instanceof net.minecraft.world.level.block.entity.RandomizableContainerBlockEntity chest && chest.getLootTable() != null) {
+					loot = true;
+				}
+			}
+			helper.assertTrue(loot, "no chest of loot in the camp");
+			// A raid while the camp stands: bandits, not monsters.
+			VillageRaids.Raid raid = VillageRaids.start(level, hall, 8, 0);
+			helper.assertTrue(raid != null, "no raid");
+			var raiders = VillageRaids.raiders(level, hall);
+			helper.assertTrue(!raiders.isEmpty() && raiders.stream().allMatch(m -> m instanceof net.minecraft.world.entity.monster.AbstractIllager),
+				"raiders: " + raiders);
+			raiders.forEach(m -> m.discard());
+			chief.hurt(level.damageSources().fellOutOfWorld(), 1000f);
+			helper.assertTrue(BanditCamps.near(level, hall).isEmpty(), "the camp still stands");
+			helper.assertTrue(level.getEntitiesOfClass(Mob.class, around, m -> m.isAlive() && m.getTags().contains(BanditCamps.TAG)).isEmpty(), "the band didn't scatter");
+			VillageHallBlockEntity entity = (VillageHallBlockEntity) level.getBlockEntity(hall);
+			helper.assertTrue(entity.chronicle().stream().filter(e -> e.kind() == Chronicle.Kind.RAID).count() == 3, "the chronicle: " + entity.chronicle());
 			helper.succeed();
 		});
 	}

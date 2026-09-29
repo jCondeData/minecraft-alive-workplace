@@ -652,6 +652,8 @@ ones we lack, our way.
   travellers, not parent/child or siblings by `Families`) court; 2 days on, between 6000 and 11000, a wedding (everyone
   in the village gets `festival_day`, fireworks at the bell); moods +5 courting / +10 married when within 32, −15
   mourning for 5 days; `VillageGrowth` picks a married couple first; hall list line; `villagerCouples` in the config
+- [x] Chapel decoration (`decor.py` `chapel`, 11 x 16 x 16, beauty 4): weddings at a finished chapel near the hall
+  (`Couples.venue`), else the bell; drawn and reviewed with the Minecraft Architect renderer
 - [x] Seven more research topics (`Research.Topic`: LOGISTICS → `PorterWork.capacity`, CRAFTSMANSHIP → `CrafterWork` craft
   timer, MEDICINE → `Sickness.dailyChance`, FORTIFICATION → `Guards.block`, COMMERCE → `MarketDays` + `Mercenaries.price`,
   EXPEDITIONS → `Netherworkers.expeditionFactor` (and explorers' rest), GREEN_THUMB → `CompostWork.layersPerBoneMeal`);

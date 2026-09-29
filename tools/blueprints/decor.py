@@ -254,3 +254,111 @@ def market_square():
     b.set(6, 2, 11, "bell", attachment="floor", facing="north", powered=False)
     b.fill_air()
     return b
+
+
+# --- Chapel: where the village's couples marry --------------------------------------------------------------------
+CHAPEL_WALL = BRICK_WALL_MIX
+CHAPEL_ROOF = DEEPSLATE_TILE
+
+
+def chapel():
+    """11 x 16 x 16: a stone chapel — a bell tower at the front with an open belfry under a slate spire, a nave behind
+    it under a steep slate roof, buttresses between tall windows, pews, candles and flowers inside. Near a Village Hall
+    it's where couples marry (its bell is the village's), and it makes the village prettier.
+    Tower walls x 3-7, z 1-5; nave walls x 2-8, z 5-14."""
+    b = Build(11, 16, 16)
+    # The nave
+    skirt(b, 2, 5, 8, 14, STONE_BRICK)
+    plinth(b, 2, 5, 8, 14, MOSSY_BRICK_MIX, floor="polished_andesite")
+    walls(b, 2, 5, 8, 14, 1, 5, CHAPEL_WALL)
+    for z in (8, 11):  # buttresses between the windows
+        for x, face in ((1, "east"), (9, "west")):
+            b.set(x, 1, z, "stone_bricks")
+            b.set(x, 2, z, "stone_bricks")
+            stairs(b, x, 3, z, STONE_BRICK, face)
+    for z0 in (6, 9, 12):  # tall windows, a slab arch over each
+        for x, out in ((2, "west"), (8, "east")):
+            window(b, x, 2, z0, out, width=2, height=2, sill=STONE_BRICK)
+    for x in (4, 6):  # a pair of windows in the back wall, a round one over them
+        window(b, x, 2, 14, "south", height=2, sill=STONE_BRICK)
+    beam_ring(b, 2, 5, 8, 14, 5, "stripped_dark_oak_log")
+    for x in (2, 8):
+        b.set(x, 5, 5, "stone_bricks")  # (the beam's ends stay behind the tower)
+    gable_roof(b, 1, 9, 6, 15, 6, CHAPEL_ROOF, axis="z", gable=CHAPEL_WALL, gable_at=(14,), steep=True, eave_trim=STONE_BRICK)
+    pane(b, 5, 8, 14)
+    pane(b, 5, 9, 14)
+    # Inside: pews either side of an aisle, the altar at the back with candles and flowers
+    for z in (7, 9, 11):
+        for x in (3, 4, 6, 7):
+            stairs(b, x, 1, z, DARK_OAK, "south")
+    for z in range(6, 14):
+        b.set(5, 1, z, "red_carpet")
+    for x in range(3, 8):
+        b.set(x, 1, 13, "polished_andesite" if x != 5 else "chiseled_stone_bricks")
+    b.set(4, 2, 13, "candle", candles=3, lit=True, waterlogged=False)
+    b.set(6, 2, 13, "candle", candles=3, lit=True, waterlogged=False)
+    b.set(5, 2, 13, "potted_lily_of_the_valley")
+    b.set(3, 2, 13, "potted_white_tulip")
+    b.set(7, 2, 13, "potted_white_tulip")
+    for z in range(6, 14):
+        log(b, 5, 5, z, "stripped_dark_oak_log", axis="z")  # a beam down the nave (for the lights, and the builder)
+    for z in (7, 11):
+        lantern(b, 5, 4, z, hanging=True)
+    # The tower: stone to the belfry, a floor under it and one under the spire, a ladder up the inside
+    skirt(b, 3, 1, 7, 4, STONE_BRICK)
+    plinth(b, 3, 1, 7, 5, MOSSY_BRICK_MIX, floor="polished_andesite")
+    walls(b, 3, 1, 7, 5, 1, 8, CHAPEL_WALL)
+    for x, z in ((3, 1), (7, 1), (3, 5), (7, 5)):
+        for y in range(1, 12):
+            b.set(x, y, z, "stone_bricks")
+    door(b, 5, 1, 1, "dark_oak_door", "south")
+    stairs(b, 5, 0, 0, STONE_BRICK, "south")
+    stairs(b, 5, 3, 0, STONE_BRICK, "south", top=True)  # a hood over the door
+    b.set(5, 1, 5, "air")
+    b.set(5, 2, 5, "air")  # through into the nave
+    for y in (5, 6):
+        pane(b, 5, y, 1)  # a tall window over the door
+    box(b, 4, 8, 2, 6, 8, 4, "spruce_planks")  # the belfry floor
+    for y in range(1, 9):
+        b.set(6, y, 4, "ladder", facing="north", waterlogged=False)
+    b.set(6, 8, 4, "air")
+    # The belfry: open arches on every side, the bell hanging from the spire's floor
+    for y in (9, 10):
+        for x in (4, 5, 6):
+            b.set(x, y, 1, "air")
+            b.set(x, y, 5, "air")
+        for z in (2, 3, 4):
+            b.set(3, y, z, "air")
+            b.set(7, y, z, "air")
+    for x in (4, 5, 6):
+        b.set(x, 11, 1, CHAPEL_WALL.at(x, 11, 1))
+        b.set(x, 11, 5, CHAPEL_WALL.at(x, 11, 5))
+        stairs(b, x, 10, 1, STONE_BRICK, "south", top=True) if x != 5 else None
+        stairs(b, x, 10, 5, STONE_BRICK, "north", top=True) if x != 5 else None
+    for z in (2, 3, 4):
+        b.set(3, 11, z, CHAPEL_WALL.at(3, 11, z))
+        b.set(7, 11, z, CHAPEL_WALL.at(7, 11, z))
+        stairs(b, 3, 10, z, STONE_BRICK, "west", top=True) if z != 3 else None
+        stairs(b, 7, 10, z, STONE_BRICK, "east", top=True) if z != 3 else None
+    box(b, 4, 11, 2, 6, 11, 4, "spruce_planks")  # the floor under the spire
+    b.set(5, 10, 3, "bell", attachment="ceiling", facing="north", powered=False)
+    lantern(b, 4, 9, 2)
+    # A string course round the tower at the belfry floor; the spire: slate, steep, straight up from the walls
+    for x in range(3, 8):
+        stairs(b, x, 8, 0, STONE_BRICK, "south", top=True)
+    for z in range(1, 5):
+        stairs(b, 2, 8, z, STONE_BRICK, "west", top=True)
+        stairs(b, 8, 8, z, STONE_BRICK, "east", top=True)
+    hip_roof(b, 3, 7, 1, 5, 12, CHAPEL_ROOF, steep=True, rings=2)
+    b.set(5, 14, 3, "deepslate_tiles")  # the spire's tip
+    slab(b, 5, 15, 3, CHAPEL_ROOF)
+    # Outside: a path to the door, lamps, flowers by the tower
+    for z in (0,):
+        for x in (4, 6):
+            b.set(x, 0, z, "polished_andesite")
+    for x in (1, 9):
+        lamp_post(b, x, 0, 1, "dark_oak_fence", height=2)
+    flower_bed(b, 1, 3, 2, 4, 0, ["poppy", "azure_bluet", "white_tulip", None])
+    flower_bed(b, 8, 3, 9, 4, 0, ["poppy", "azure_bluet", "white_tulip", None])
+    b.fill_air()
+    return b

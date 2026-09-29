@@ -117,6 +117,7 @@ if __name__ == "__main__":
     tinkers_workshop_2().save(MAIN_STRUCTURES, "tinkers_workshop_2")
     nether_gate().save(MAIN_STRUCTURES, "nether_gate")
     nether_gate_2().save(MAIN_STRUCTURES, "nether_gate_2")
+    chapel().save(MAIN_STRUCTURES, "chapel")
     compost_yard().save(MAIN_STRUCTURES, "compost_yard")
     compost_yard_2().save(MAIN_STRUCTURES, "compost_yard_2")
     sifting_shed().save(MAIN_STRUCTURES, "sifting_shed")

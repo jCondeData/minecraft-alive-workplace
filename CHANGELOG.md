@@ -5,6 +5,7 @@
 ### Added
 - **Daycare** (with Cobblemon): leave up to two Pokémon with a Rancher; they gain experience while they're there, and
   you collect them for an emerald plus one per level gained.
+- **Chapel** (a decoration: nave, pews, a bell tower with a slate spire), where the village's weddings are held.
 - **Couples**: villagers court and marry (a wedding at the bell with fireworks lifts the whole village's mood), are
   happier together, have the village's babies first, and mourn a partner who dies.
 

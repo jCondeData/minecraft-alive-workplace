@@ -1028,6 +1028,12 @@ public class BuilderGameTests implements FabricGameTest {
 		helper.succeed();
 	}
 
+	/** The Chapel (16 deep, its spire 16 high): further back and to the east, clear of the bench and the barrels. */
+	@GameTest(template = BIG_AREA, timeoutTicks = 40000, batch = "starter_builds_9")
+	public void buildsChapel(GameTestHelper helper) {
+		buildStarter(helper, StarterBlueprints.CHAPEL, new BlockPos(8, 2, 5));
+	}
+
 	@GameTest(template = BIG_AREA, timeoutTicks = 30000, batch = "starter_builds_7")
 	public void buildsCompostYard(GameTestHelper helper) {
 		buildStarter(helper, StarterBlueprints.COMPOST_YARD);

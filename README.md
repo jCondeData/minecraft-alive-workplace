@@ -116,9 +116,10 @@ way you like when you place it.
 **Decorations.** The Blueprint Table also has the small builds that make a village a place: a **Well** (II puts a
 roof over it, benches and lamp posts round it), a **Street Lamp**, a **Park Bench** between bushes, a **Fountain**, a
 **Gazebo** and a **Market Square** (a paved square with a fountain, two striped kiosks, benches, lamp posts, flower
-beds and the village bell, where the villagers meet). Near a Village Hall they make the village prettier: each one
-adds to its **beauty** (a lamp post or a bench 1, a well 2 — 3 with its roof —, a fountain or a gazebo 3, a market
-square 5), and every point is 1% more wellbeing, up to 10%.
+beds and the village bell, where the villagers meet) and a **Chapel** (a stone nave with pews and an altar, a bell
+tower with a slate spire — the village's weddings are held there). Near a Village Hall they make the village prettier:
+each one adds to its **beauty** (a lamp post or a bench 1, a well 2 — 3 with its roof —, a fountain or a gazebo 3, a
+chapel 4, a market square 5), and every point is 1% more wellbeing, up to 10%.
 
 ![The Well II, the Street Lamp, the Park Bench, the Fountain, the Gazebo and the Market Square](docs/media/decorations.png)
 
@@ -222,7 +223,7 @@ bread, baked potatoes, cooked fish and pies keeps them happier than one full of 
 kinds of meal the store has.
 
 **Couples.** Now and then two grown villagers who aren't family start **courting** (the chronicle notes it), and two
-days later they **marry**: a wedding at the village's bell with fireworks, everyone told, the whole village in a good
+days later they **marry**: a wedding at the village's Chapel (or its bell) with fireworks, everyone told, the whole village in a good
 mood as after a festival. Couples are happier near each other, a married couple is first in line for a baby when
 there's a free bed, and when one dies the other mourns for a few days. The hall's list says who's courting or married
 to whom. `villagerCouples` in the config turns it off.

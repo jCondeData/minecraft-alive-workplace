@@ -21,7 +21,8 @@ public final class Decorations {
 		StarterBlueprints.PARK_BENCH.id(), 1,
 		StarterBlueprints.FOUNTAIN.id(), 3,
 		StarterBlueprints.GAZEBO.id(), 3,
-		StarterBlueprints.MARKET_SQUARE.id(), 5);
+		StarterBlueprints.MARKET_SQUARE.id(), 5,
+		StarterBlueprints.CHAPEL.id(), 4);
 	/** Wellbeing per point of beauty. */
 	public static final float PER_POINT = 0.01f;
 	/** Most wellbeing decorations add. */

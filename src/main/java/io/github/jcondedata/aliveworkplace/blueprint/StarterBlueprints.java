@@ -134,6 +134,8 @@ public final class StarterBlueprints {
 	public static final Entry FOUNTAIN = new Entry(AliveWorkplace.id("fountain"), new Vec3i(7, 5, 7));
 	/** An open timber gazebo with benches. */
 	public static final Entry GAZEBO = new Entry(AliveWorkplace.id("gazebo"), new Vec3i(7, 8, 7));
+	/** A stone chapel with a bell tower and a slate spire: where the village's couples marry. */
+	public static final Entry CHAPEL = new Entry(AliveWorkplace.id("chapel"), new Vec3i(11, 16, 16));
 	/** A paved square with a fountain, kiosks, benches and the village bell. */
 	public static final Entry MARKET_SQUARE = new Entry(AliveWorkplace.id("market_square"), new Vec3i(13, 5, 13));
 
@@ -159,7 +161,7 @@ public final class StarterBlueprints {
 		SCHOOLHOUSE, SCHOOLHOUSE_2, LIBRARY, LIBRARY_2, RANCH, RANCH_2, APIARY_GARDEN, APIARY_GARDEN_2, FLOWER_SHOP, FLOWER_SHOP_2, GRAVEYARD, GRAVEYARD_2);
 
 	/** The decorations (in the Blueprint Table with the rest; near a Village Hall they make the village prettier). */
-	public static final List<Entry> DECORATIONS = List.of(WELL, WELL_2, STREET_LAMP, PARK_BENCH, FOUNTAIN, GAZEBO, MARKET_SQUARE);
+	public static final List<Entry> DECORATIONS = List.of(WELL, WELL_2, STREET_LAMP, PARK_BENCH, FOUNTAIN, GAZEBO, MARKET_SQUARE, CHAPEL);
 
 	/** Walls and gates. */
 	public static final List<Entry> DEFENCES = List.of(PALISADE, PALISADE_GATE, STONE_WALL, WALL_TOWER, GATEHOUSE);

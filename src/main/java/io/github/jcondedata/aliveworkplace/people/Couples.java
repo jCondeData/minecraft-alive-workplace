@@ -130,7 +130,7 @@ public final class Couples {
 		long today = Chronicle.day(level);
 		a.setAttached(ModAttachments.PARTNER, new Partner(b.getUUID(), b.getDisplayName(), today, true));
 		b.setAttached(ModAttachments.PARTNER, new Partner(a.getUUID(), a.getDisplayName(), today, true));
-		BlockPos square = Festivals.square(level, hall);
+		BlockPos square = venue(level, hall);
 		for (Villager v : level.getEntitiesOfClass(Villager.class, VillageHalls.area(hall), Villager::isAlive)) {
 			v.setAttached(ModAttachments.FESTIVAL_DAY, today);
 		}
@@ -151,6 +151,17 @@ public final class Couples {
 		}
 		Chronicle.record(level, hall, Chronicle.Kind.WEDDING, Component.translatable("chronicle.aliveworkplace.wedding", a.getDisplayName(),
 			b.getDisplayName()));
+	}
+
+	/** Where weddings are held: the village's finished Chapel, else its bell. */
+	public static BlockPos venue(ServerLevel level, BlockPos hall) {
+		return io.github.jcondedata.aliveworkplace.build.BuildSiteManager.get(level).finishedNear(level, hall, VillageHalls.RADIUS).stream()
+			.filter(f -> io.github.jcondedata.aliveworkplace.blueprint.BlueprintStyles.base(f.structure())
+				.equals(io.github.jcondedata.aliveworkplace.blueprint.StarterBlueprints.CHAPEL.id()))
+			.map(f -> io.github.jcondedata.aliveworkplace.blueprint.BlueprintOutline.bounds(f.placement(),
+				io.github.jcondedata.aliveworkplace.blueprint.StarterBlueprints.CHAPEL.size()))
+			.map(box -> new BlockPos(box.getCenter().getX(), box.minY() + 1, box.getCenter().getZ()))
+			.findFirst().orElseGet(() -> Festivals.square(level, hall));
 	}
 
 	/** A villager died: their partner, if any, is left to mourn. */

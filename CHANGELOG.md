@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+## 0.121.0 — 2026-09-29
+
+### Added
+- **Village ranks**: Hamlet, Village, Town and City, from villagers, finished buildings and research. Each rank pays
+  (better quest rewards, more caravan routes, more market traders, room to grow), and a rank up is celebrated with
+  fireworks.
+
 ## 0.120.0 — 2026-09-29
 
 ### Added

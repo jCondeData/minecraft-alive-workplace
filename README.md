@@ -143,6 +143,12 @@ of your village — by the bell is a good spot. Right-click it for the village a
   waiting for and where they are ("11 blocks north-west"). **Click one to make them glow** for ten seconds, so you
   can find them.
 
+**Ranks.** A village grows from a **Hamlet** to a **Village** (10 villagers and 5 finished buildings), a **Town** (20
+villagers, 12 buildings and 3 levels of research) and a **City** (35, 25 and 7). Each rank pays: quests pay a quarter
+more a rank, caravans can go to one more village a rank, from a Town three traders come on market day, and the
+village can grow ten villagers bigger a rank. A rank up is celebrated with fireworks over the hall and goes in the
+chronicle; the hall's name icon shows the rank and what the next one needs.
+
 **Running the village.** Click a villager without a job on the hall's list to see the village's **free
 workstations** (with the job each gives and where it is) and click one to give them that job. The **bell** in the
 middle of the screen **calls everyone home**: villagers whose bed or workstation is in the village but who wandered off

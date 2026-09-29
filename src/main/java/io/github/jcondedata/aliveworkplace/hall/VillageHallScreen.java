@@ -86,8 +86,19 @@ public final class VillageHallScreen {
 		int pages = Math.max(1, (people.size() + PER_PAGE - 1) / PER_PAGE);
 		int shown = Math.min(page, pages - 1);
 
-		menu.button(NAME, icon(Items.NAME_TAG, VillageHalls.name(level, hall).copy(), ChatFormatting.GOLD,
-			line("screen.aliveworkplace.hall.rename", ChatFormatting.DARK_GRAY)), null);
+		VillageRanks.Score score = VillageRanks.score(level, hall, census.villagers());
+		VillageRanks.Rank rank = VillageRanks.rank(score);
+		VillageRanks.Rank next = rank.next();
+		List<Component> nameLore = new ArrayList<>();
+		nameLore.add(line(Component.translatable("screen.aliveworkplace.hall.rank", rank.title()), ChatFormatting.AQUA));
+		nameLore.add(line(Component.translatable("screen.aliveworkplace.hall.rank_perks", Math.round((VillageRanks.questRewardFactor(rank) - 1) * 100),
+			VillageRanks.caravanRoutes(rank), VillageRanks.marketTraders(rank), VillageRanks.growthCap(rank)), ChatFormatting.GRAY));
+		if (next != null) {
+			nameLore.add(line(Component.translatable("screen.aliveworkplace.hall.rank_next", next.title(), next.villagers, score.villagers(), next.buildings,
+				score.buildings(), next.research, score.research()), ChatFormatting.YELLOW));
+		}
+		nameLore.add(line("screen.aliveworkplace.hall.rename", ChatFormatting.DARK_GRAY));
+		menu.button(NAME, icon(Items.NAME_TAG, VillageHalls.name(level, hall).copy(), ChatFormatting.GOLD, nameLore.toArray(Component[]::new)), null);
 		VillageNeeds.Needs needs = VillageNeeds.count(level, hall);
 		VillageHallBlockEntity entity = level.getBlockEntity(hall) instanceof VillageHallBlockEntity e ? e : null;
 		VillageGrowth.Blocker growth = VillageGrowth.blocker(level, hall, needs, entity == null ? 0 : entity.lastBirth());
@@ -99,7 +110,7 @@ public final class VillageHallScreen {
 			line(Component.translatable("screen.aliveworkplace.hall.graves", io.github.jcondedata.aliveworkplace.grave.Graves.near(level, hall, VillageHalls.RADIUS).size()),
 				ChatFormatting.GRAY),
 			line(Component.translatable("screen.aliveworkplace.hall.growth." + growth.name().toLowerCase(), VillageGrowth.FOOD_NEEDED,
-				Math.round(VillageGrowth.WELLBEING_NEEDED * 100), VillageGrowth.CAP), growth == VillageGrowth.Blocker.NONE ? ChatFormatting.GREEN : ChatFormatting.YELLOW)), null);
+				Math.round(VillageGrowth.WELLBEING_NEEDED * 100), VillageRanks.growthCap(VillageRanks.of(level, hall))), growth == VillageGrowth.Blocker.NONE ? ChatFormatting.GREEN : ChatFormatting.YELLOW)), null);
 		menu.button(BEDS, icon(Items.RED_BED, Component.translatable("screen.aliveworkplace.hall.beds", census.beds()), ChatFormatting.WHITE,
 			line(Component.translatable("screen.aliveworkplace.hall.free_beds", census.freeBeds()),
 				census.freeBeds() > 0 ? ChatFormatting.GREEN : ChatFormatting.YELLOW)), null);
@@ -247,10 +258,11 @@ public final class VillageHallScreen {
 			ItemStack icon = icon(sending ? Items.CHEST_MINECART : Items.MINECART, other.name().copy(), sending ? ChatFormatting.GREEN : ChatFormatting.WHITE,
 				lore.toArray(Component[]::new));
 			menu.button(slot++, icon, p -> {
-				boolean on = data.toggleRoute(hall, other.hall());
+				int max = VillageRanks.caravanRoutes(VillageRanks.of(level, hall));
+				boolean on = data.toggleRoute(hall, other.hall(), max);
 				boolean wasOn = sending;
 				p.displayClientMessage(Component.translatable(on ? "message.aliveworkplace.hall.route_started"
-					: wasOn ? "message.aliveworkplace.hall.route_stopped" : "message.aliveworkplace.hall.route_full", other.name(), Caravans.MAX_ROUTES)
+					: wasOn ? "message.aliveworkplace.hall.route_stopped" : "message.aliveworkplace.hall.route_full", other.name(), max)
 					.withStyle(on ? ChatFormatting.GREEN : ChatFormatting.YELLOW), true);
 				renderRoutes(menu, level, hall);
 				menu.broadcastChanges();

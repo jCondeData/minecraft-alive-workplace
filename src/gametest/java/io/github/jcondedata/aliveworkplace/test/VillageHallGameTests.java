@@ -502,4 +502,45 @@ public class VillageHallGameTests implements net.fabricmc.fabric.api.gametest.v1
 			helper.succeed();
 		});
 	}
+
+	/** Ranks go by villagers, finished buildings and research; each pays; a rank up is celebrated and remembered. */
+	@GameTest(template = AREA, timeoutTicks = 100, batch = "aVillageRanksUp")
+	public void aVillageRanksUp(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		int radius = VillageHalls.RADIUS;
+		VillageHalls.RADIUS = 16;
+		ServerLevel level = helper.getLevel();
+		helper.setBlock(HALL, ModBlocks.VILLAGE_HALL);
+		BlockPos hall = helper.absolutePos(HALL);
+		var ranks = io.github.jcondedata.aliveworkplace.hall.VillageRanks.class;
+		helper.assertTrue(io.github.jcondedata.aliveworkplace.hall.VillageRanks.rank(new io.github.jcondedata.aliveworkplace.hall.VillageRanks.Score(9, 20, 10))
+			== io.github.jcondedata.aliveworkplace.hall.VillageRanks.Rank.HAMLET, "9 villagers");
+		helper.assertTrue(io.github.jcondedata.aliveworkplace.hall.VillageRanks.rank(new io.github.jcondedata.aliveworkplace.hall.VillageRanks.Score(22, 14, 3))
+			== io.github.jcondedata.aliveworkplace.hall.VillageRanks.Rank.TOWN, "a town");
+		helper.assertTrue(io.github.jcondedata.aliveworkplace.hall.VillageRanks.rank(new io.github.jcondedata.aliveworkplace.hall.VillageRanks.Score(40, 30, 9))
+			== io.github.jcondedata.aliveworkplace.hall.VillageRanks.Rank.CITY, "a city");
+		helper.assertTrue(io.github.jcondedata.aliveworkplace.hall.VillageRanks.questRewardFactor(io.github.jcondedata.aliveworkplace.hall.VillageRanks.Rank.TOWN) == 1.5f
+			&& io.github.jcondedata.aliveworkplace.hall.VillageRanks.caravanRoutes(io.github.jcondedata.aliveworkplace.hall.VillageRanks.Rank.CITY) == 6, "perks");
+		var sites = io.github.jcondedata.aliveworkplace.build.BuildSiteManager.get(level);
+		java.util.List<io.github.jcondedata.aliveworkplace.blueprint.BlueprintData.Placement> placed = new java.util.ArrayList<>();
+		Leftovers.after(helper, () -> {
+			VillageHalls.RADIUS = radius;
+			placed.forEach(sites::forgetFinished);
+		});
+		var entity = (io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(hall);
+		int before = io.github.jcondedata.aliveworkplace.hall.VillageRanks.score(level, hall, 0).buildings();
+		for (int i = 0; i < 5; i++) {
+			var placement = new io.github.jcondedata.aliveworkplace.blueprint.BlueprintData.Placement(level.dimension().location(),
+				helper.absolutePos(new BlockPos(2 + i * 3, 2, 18)), net.minecraft.world.level.block.Rotation.NONE, net.minecraft.world.level.block.Mirror.NONE);
+			placed.add(placement);
+			sites.recordFinished(io.github.jcondedata.aliveworkplace.blueprint.StarterBlueprints.PARK_BENCH.id(), placement, java.util.UUID.randomUUID());
+		}
+		helper.assertTrue(io.github.jcondedata.aliveworkplace.hall.VillageRanks.score(level, hall, 10).buildings() == before + 5, "buildings");
+		var now = io.github.jcondedata.aliveworkplace.hall.VillageRanks.round(level, hall, entity, 10);
+		helper.assertTrue(now.ordinal() >= io.github.jcondedata.aliveworkplace.hall.VillageRanks.Rank.VILLAGE.ordinal() && entity.rank() == now, "rank: " + now);
+		helper.assertTrue(entity.chronicle().stream().anyMatch(e -> e.kind() == io.github.jcondedata.aliveworkplace.hall.Chronicle.Kind.RANK), "not in the chronicle");
+		helper.assertTrue(!level.getEntitiesOfClass(net.minecraft.world.entity.projectile.FireworkRocketEntity.class, new net.minecraft.world.phys.AABB(hall).inflate(8)).isEmpty(),
+			"no fireworks");
+		helper.succeed();
+	}
 }

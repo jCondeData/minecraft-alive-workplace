@@ -26,6 +26,8 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 	private java.util.List<VillageQuests.Quest> quests = java.util.List.of();
 	private long lastQuestDay = -1;
 	private int questsDone;
+	/** The village's rank at the last round (see {@link VillageRanks}). */
+	private VillageRanks.Rank rank = VillageRanks.Rank.HAMLET;
 	/** The day of the last raid on the village (see {@code guard/VillageRaids}). */
 	private long lastRaidDay = -100;
 	/** The day of the last market (see {@link MarketDays}). */
@@ -64,6 +66,7 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 			VillageQuests.tick(server, pos, hall);
 			MarketDays.tick(server, pos, hall);
 			VillageHalls.Census census = VillageHalls.census(server, pos);
+			VillageRanks.round(server, pos, hall, census.villagers());
 			Caravans.round(server, pos, census);
 			io.github.jcondedata.aliveworkplace.guard.Gates.round(server, pos, census.guards());
 			io.github.jcondedata.aliveworkplace.guard.VillageRaids.tick(server, pos, census.villagers(), census.guards(), hall.lastRaidDay, day -> {
@@ -118,6 +121,15 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 		setChanged();
 	}
 
+	public VillageRanks.Rank rank() {
+		return rank;
+	}
+
+	void setRank(VillageRanks.Rank rank) {
+		this.rank = rank;
+		setChanged();
+	}
+
 	public long lastMarketDay() {
 		return lastMarketDay;
 	}
@@ -167,6 +179,8 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 		questsDone = tag.getInt("questsDone");
 		lastMarketDay = tag.contains("lastMarketDay") ? tag.getLong("lastMarketDay") : -1;
 		lastRaidDay = tag.contains("lastRaidDay") ? tag.getLong("lastRaidDay") : -100;
+		int r = tag.getInt("rank");
+		rank = VillageRanks.Rank.values()[Math.max(0, Math.min(VillageRanks.Rank.values().length - 1, r))];
 		research = io.github.jcondedata.aliveworkplace.research.Research.State.CODEC.parse(net.minecraft.nbt.NbtOps.INSTANCE, tag.get("research"))
 			.result().orElse(io.github.jcondedata.aliveworkplace.research.Research.State.EMPTY);
 		chronicle = new java.util.ArrayList<>();
@@ -193,6 +207,7 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 		tag.putInt("questsDone", questsDone);
 		tag.putLong("lastMarketDay", lastMarketDay);
 		tag.putLong("lastRaidDay", lastRaidDay);
+		tag.putInt("rank", rank.ordinal());
 		io.github.jcondedata.aliveworkplace.research.Research.State.CODEC.encodeStart(net.minecraft.nbt.NbtOps.INSTANCE, research).result()
 			.ifPresent(t -> tag.put("research", t));
 		net.minecraft.nbt.ListTag lines = new net.minecraft.nbt.ListTag();

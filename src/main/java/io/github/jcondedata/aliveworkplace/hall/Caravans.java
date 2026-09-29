@@ -113,13 +113,18 @@ public final class Caravans {
 			setDirty();
 		}
 
-		/** Starts or stops the route from {@code from} to {@code to}; true if it's on now. */
+		/** Starts or stops the route from {@code from} to {@code to} (at most {@link #MAX_ROUTES}); true if it's on now. */
 		public boolean toggleRoute(BlockPos from, BlockPos to) {
+			return toggleRoute(from, to, MAX_ROUTES);
+		}
+
+		/** Starts or stops the route from {@code from} to {@code to}, with at most {@code max} routes out; true if it's on now. */
+		public boolean toggleRoute(BlockPos from, BlockPos to, int max) {
 			Set<BlockPos> out = routes.computeIfAbsent(from.immutable(), k -> new LinkedHashSet<>());
 			boolean on;
 			if (out.remove(to)) {
 				on = false;
-			} else if (out.size() < MAX_ROUTES) {
+			} else if (out.size() < max) {
 				out.add(to.immutable());
 				on = true;
 			} else {

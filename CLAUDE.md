@@ -108,7 +108,7 @@ The owner (Jesse) does not write code: sessions are expected to work autonomousl
   everyone within `RADIUS`, nearest hall by POI), `VillageHallScreen` (a `ChoiceMenu`: numbers, then every villager),
   `VillageNeeds` (meals from the store, beds, safety → wellbeing → the work pace in `BuilderLevels.delay`),
   `VillageGrowth` (a baby a day at most with a free bed, food and wellbeing), `VillageQuests` (quests for players, kept
-  in the hall's block entity; the hall screen's quests page), `MarketDays` (weekly traders at a finished Market Square), `Caravans` (the saved list of every hall in a dimension,
+  in the hall's block entity; the hall screen's quests page), `VillageRanks` (Hamlet to City, and the perks each rank gives), `MarketDays` (weekly traders at a finished Market Square), `Caravans` (the saved list of every hall in a dimension,
   trade routes, goods on the road), `Chronicle` (what happened, kept in the hall; `Chronicle.record(level, pos, kind, text)` writes to the nearest hall),
   `Decorations` (finished decoration blueprints near the
   hall → beauty → wellbeing; the builds are `StarterBlueprints.DECORATIONS`, drawn in `tools/blueprints/decor.py`)

@@ -39,7 +39,8 @@ public final class VillageGrowth {
 
 	/** Why the village round {@code hall} can't grow right now, given how it's doing and when the last baby came. */
 	public static Blocker blocker(ServerLevel level, BlockPos hall, VillageNeeds.Needs needs, long lastBirth) {
-		if (CAP <= 0 || needs.villagers() >= CAP) {
+		int cap = VillageRanks.growthCap(VillageRanks.of(level, hall));
+		if (cap <= 0 || needs.villagers() >= cap) {
 			return Blocker.FULL;
 		}
 		if (needs.adults() < 2) {

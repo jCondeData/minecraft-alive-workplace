@@ -564,6 +564,21 @@ Every villager a person you get to know, the way MineColonies' citizens are — 
   traders come to the square until nightfall, each with a blueprint to sell as well (a starter building, often in a
   style, or a decoration, 6 emeralds); players in the village are told, the chronicle notes it; `marketDays` in the config
 
+## Milestone 15 — A village that grows up
+- [x] Ranks: Hamlet, Village (10 villagers, 5 finished buildings), Town (20, 12, 3 research levels), City (35, 25, 7),
+  counted in the hall's round (`hall/VillageRanks`, kept in the hall); each rank pays — quests 25% more a rank, one more
+  caravan route a rank, three traders on market day from a Town, room for ten more villagers a rank — and a rank up
+  is celebrated (fireworks, chat) and goes in the chronicle; the hall's name icon shows the rank and what the next needs
+- [ ] Families: a baby remembers its parents (the hall's list says whose child it is); grown children take a job near
+  their parents' home when there's one
+- [ ] Moods: each villager's own mood from their day (fed, a bed, a job, well, their traits, decorations and friends
+  near home), with the reasons on the hall's list; the unhappy work slower
+
+## Milestone 16 — More work
+- [ ] Netherworker: goes through the village's Nether portal on expeditions and comes back with the Nether's goods
+- [ ] Sifter: sieves gravel, sand and dirt for flint, seeds, nuggets and the odd gem
+- [ ] Tinkerer: makes the redstone and iron parts builders need (pistons, rails, hoppers, repeaters)
+
 ## Milestone 5 — Release
 - [ ] Publish on Modrinth and CurseForge as **Alive Workplace** (Minecraft brand rules: don't lead the name with "Minecraft")
 - [x] Screenshots/GIFs through the README, and an at-a-glance table of every job (workstation, what goes in the chests,

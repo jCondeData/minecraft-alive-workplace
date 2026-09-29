@@ -97,6 +97,9 @@ public final class VillageQuests {
 		if (quests.size() < MAX_OPEN && level.getDayTime() % 24000 < 3000 && entity.lastQuestDay() < day) {
 			Quest quest = make(level, hall);
 			if (quest != null) {
+				float factor = VillageRanks.questRewardFactor(entity.rank());
+				quest = new Quest(quest.id(), quest.kind(), quest.item(), quest.count(), quest.progress(), Math.round(quest.reward() * factor), quest.posted(),
+					quest.poster(), quest.deliverTo());
 				quests.add(quest);
 				entity.setLastQuestDay(day);
 				changed = true;

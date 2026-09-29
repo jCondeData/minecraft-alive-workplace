@@ -41,10 +41,10 @@ public final class StarterBlueprints {
 	/** A post office annex with a Postal Desk. */
 	public static final Entry SUPPLY_SHOP_3 = new Entry(AliveWorkplace.id("supply_shop_3"), new Vec3i(17, 11, 16));
 
-	/** An open timber shed with a Storehouse and eight chests: a porter moves in. */
-	public static final Entry STOREHOUSE = new Entry(AliveWorkplace.id("storehouse"), new Vec3i(9, 9, 9));
-	/** A second bay with eight more chests. */
-	public static final Entry STOREHOUSE_2 = new Entry(AliveWorkplace.id("storehouse_2"), new Vec3i(16, 9, 9));
+	/** A granary (stone below, a loft with a hoist above) with a Storehouse and eight chests: a porter moves in. */
+	public static final Entry STOREHOUSE = new Entry(AliveWorkplace.id("storehouse"), new Vec3i(9, 10, 9));
+	/** An open shed on the east with eight more chests. */
+	public static final Entry STOREHOUSE_2 = new Entry(AliveWorkplace.id("storehouse_2"), new Vec3i(16, 10, 9));
 	/** A stone warehouse behind the bays with sixteen more chests. */
 	public static final Entry STOREHOUSE_3 = new Entry(AliveWorkplace.id("storehouse_3"), new Vec3i(16, 10, 16));
 

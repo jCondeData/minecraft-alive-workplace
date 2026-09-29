@@ -14,6 +14,8 @@
   side under a slate roof; the Ranch II adds a stable wing and a brick silo.
 - The **Schoolhouse** is white plaster now (not pink), with a little gabled porch over the school bell and a lantern
   cupola on the ridge.
+- The **Storehouse** is a granary now: a stone ground floor with open loading doors, a loft above with a hoist over its
+  door and a dark oak roof; II's shed and III's warehouse range have their roofs running into it.
 - Librarians enchant stronger with bookshelves round their table: a level more for every three (a full ring of fifteen
   lifts a Novice from level 10 to 15; a Master stays at 30).
 - The Market Stall's striped awning is a finer slope (carpet steps between the stripes).

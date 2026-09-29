@@ -141,13 +141,13 @@ remembers it. `marketDays` in the config turns it off.
 build has one: the **Starter Cottage II** adds a timber upper storey jettied out over the front and back, the **Market
 Stall II** a second stall with a Shop Counter, the **Lookout Tower II** a Guard Post, a bell and a steep pointed spire
 over the platform, the **Healing Center II** a ward with four beds under a lower roof behind the hall, the **Supply
-Shop II** the shopkeeper's house behind the shop (a bed, a chest, more stock, a chimney), the **Storehouse II** a second bay, the **Berry Farm II** a pergola of glow berries and the **Research Lab
+Shop II** the shopkeeper's house behind the shop (a bed, a chest, more stock, a chimney), the **Storehouse II** an open shed beside the granary, the **Berry Farm II** a pergola of glow berries and the **Research Lab
 II** a museum hall with a skeleton under a glass ridge. Most go one step further, each third tier bringing a new
 villager or room: the **Starter Cottage III** a kitchen wing with its own door (the builder clears the ground where it
 goes first), the **Market Stall III** a storeroom behind the stalls, the **Lookout Tower III** a guardhouse with a
 second Guard Post and two bunks, the **Healing Center III** a walled berry garden with a Fruit Basket (an orchard
 keeper), the **Supply Shop III** a post office with a Postal Desk (a postman) and the **Storehouse III** a stone
-warehouse with sixteen more chests. Right-click a finished building with its upgrade
+warehouse range across the back with sixteen more chests. Right-click a finished building with its upgrade
 and it lines up exactly over it; the builder takes off what changes and builds only what's new, keeping everything
 else. Once a builder finishes a building that has an upgrade, **they sell its blueprint** (and tell you). The
 upgrades are in the Blueprint Table too. Your own blueprints work the same way (`my_house` → `my_house_2`).

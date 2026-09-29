@@ -759,46 +759,82 @@ def supply_shop_3():
 
 
 # --- Storehouse: the Porter's workstation and the village's store ------------------------------------
+# Design (after the Minecraft Architect review): a granary gable to the street — a stone ground floor with wide open
+# loading doors, a birch-and-spruce loft above with its door and a hoist beam with a barrel on a chain under the ridge,
+# a dark oak roof. II: an open-fronted timber shed on the east under a lower roof. III: a stone warehouse range across
+# the back, its roof crossing behind the granary's.
+STORE_FRAME = "spruce_log"
+STORE_INFILL = "birch_planks"
+STORE_ROOF = DARK_OAK
+
+
 def storehouse_chests(b, xs, z, facing, ys=(1, 2)):
     for x in xs:
         for y in ys:
             b.set(x, y, z, "chest", facing=facing, type="single", waterlogged=False)
 
 
-def storehouse_bay(b, x0, doorway_west=False):
-    """One open-fronted bay of the storehouse (walls x0..x0+6, z 2-7): a stone plinth, spruce posts and birch walls, open
-    to the street under a beam, a window each side, chests along the back."""
-    x1 = x0 + 6
-    plinth(b, x0, 2, x1, 7, STONE_MIX, floor="spruce_planks")
-    for y in range(1, 4):
-        for x in range(x0, x1 + 1):
-            b.set(x, y, 7, "birch_planks")
-        for z in range(3, 7):
-            b.set(x0, y, z, "birch_planks")
-            b.set(x1, y, z, "birch_planks")
-    posts(b, [(x0, 2), (x1, 2), (x0, 7), (x1, 7), (x0 + 3, 7)], 1, 3, "spruce_log")
-    beam_ring(b, x0, 2, x1, 7, 4, "spruce_log")
-    lantern(b, x0 + 2, 3, 2, hanging=True)
-    lantern(b, x0 + 4, 3, 2, hanging=True)
-    for x in range(x0 + 1, x1):
-        b.set(x, 0, 2, "stripped_spruce_log", axis="x")  # a threshold across the opening
-
-
-def storehouse():
-    """9 x 9 x 9: an open-fronted timber storehouse with a Storehouse and eight chests along the back wall (a villager
-    moves in as the porter and fills them with what the village's workers make), hay and crates by the door."""
-    b = Build(9, 9, 9)
-    storehouse_bay(b, 1)
-    window(b, 1, 2, 4, "west", width=2, shutters="spruce_trapdoor")
-    window(b, 7, 2, 4, "east", width=2, shutters="spruce_trapdoor")
+def granary(b):
+    """The granary (walls x 1-7, z 2-7): stone below with the loading doors, a loft floor, timber above, the Storehouse and
+    chests along the back, hay and sacks by the door."""
+    plinth(b, 1, 2, 7, 7, FOUNDATION_MIX, floor="spruce_planks")
+    walls(b, 1, 2, 7, 7, 1, 3, STONE_MIX)
+    for x, z in ((1, 2), (7, 2), (1, 7), (7, 7)):
+        box(b, x, 1, z, x, 3, z, "stone_bricks")  # quoins
+    b.clear(3, 1, 2, 5, 3, 2)  # the loading doors, open
+    for x in (2, 6):
+        for y in (1, 2, 3):
+            trapdoor(b, x, y, 1, "spruce_trapdoor", "north", open_=True)
+    beam_ring(b, 1, 2, 7, 7, 4, STORE_FRAME)
+    box(b, 2, 4, 3, 6, 4, 6, "spruce_planks")  # the loft floor
+    walls(b, 1, 2, 7, 7, 5, 5, STORE_INFILL)
+    posts(b, [(1, 2), (7, 2), (1, 7), (7, 7), (4, 7)], 5, 5, STORE_FRAME)
+    for x in (2, 6):
+        log(b, x, 5, 2, STORE_FRAME)
+    window(b, 1, 2, 4, "west", width=2, shutters="spruce_trapdoor", sill=STONE_BRICK)
+    window(b, 7, 2, 4, "east", width=2, shutters="spruce_trapdoor", sill=STONE_BRICK)
+    window(b, 4, 2, 7, "south", sill=STONE_BRICK)
     b.set(4, 1, 6, "aliveworkplace:storehouse", facing="north")
     b.set(4, 2, 6, "lantern", hanging=False, waterlogged=False)
     storehouse_chests(b, (2, 3, 5, 6), 6, "north")
     b.set(2, 1, 3, "hay_block", axis="y")
-    b.set(6, 1, 3, "hay_block", axis="x")
+    b.set(6, 1, 3, "barrel", facing="up", open=False)
     b.set(6, 2, 3, "hay_block", axis="z")
-    gable_roof(b, 0, 8, 1, 8, 4, SPRUCE, axis="x", gable="birch_planks", gable_at=(1, 7), ridge=SPRUCE)
-    # Crates outside, and a sack on the ground
+    lantern(b, 3, 3, 3, hanging=True)
+    lantern(b, 5, 3, 3, hanging=True)
+    for x, z in ((3, 4), (3, 5), (6, 5)):
+        b.set(x, 5, z, "hay_block", axis="x")  # in the loft
+    for x in range(3, 6):
+        b.set(x, 0, 2, "stripped_spruce_log", axis="x")  # the threshold under the doors
+
+
+def granary_roof(t):
+    gable_roof(t, 0, 8, 1, 8, 5, STORE_ROOF, axis="z", gable=STORE_INFILL, gable_at=(2, 7), ridge=STORE_ROOF, eave_trim=SPRUCE)
+
+
+def granary_gable(b):
+    """The loft door in the front gable, the hoist beam over it with a barrel on a chain; a king post at the back."""
+    for y in (5, 6):
+        b.set(4, y, 2, "air")
+    for x in (3, 5):
+        trapdoor(b, x, 5, 1, "spruce_trapdoor", "north", open_=True)
+        trapdoor(b, x, 6, 1, "spruce_trapdoor", "north", open_=True)
+    log(b, 4, 7, 2, STORE_FRAME)
+    fence(b, 4, 8, 1, "spruce_fence")  # the hoist beam, under the ridge's end
+    b.set(4, 7, 1, "chain", axis="y", waterlogged=False)
+    b.set(4, 6, 1, "barrel", facing="up", open=False)
+    log(b, 4, 6, 7, STORE_FRAME)
+    pane(b, 4, 7, 7)
+
+
+def storehouse():
+    """9 x 10 x 9: a granary — stone below with its loading doors open to the street, a birch loft above with a hoist over
+    the loft door, a dark oak roof — the Storehouse inside with eight chests along the back (a villager moves in as the
+    porter and fills them with what the village's workers make), hay and barrels by the door."""
+    b = Build(9, 10, 9)
+    granary(b)
+    roofs(b, granary_roof)
+    granary_gable(b)
     b.set(0, 0, 2, "barrel", facing="up", open=False)
     b.set(0, 1, 2, "barrel", facing="up", open=False)
     b.set(0, 0, 1, "barrel", facing="up", open=False)
@@ -807,46 +843,68 @@ def storehouse():
     return b
 
 
-def storehouse_2():
-    """Upgrade of the Storehouse: a second bay to the east under the same roof, through a doorway, eight more chests (a
-    gap in the middle of them for the door the third tier puts there). 16 x 9 x 9."""
-    b = storehouse().grow(16, 9, 9)
-    b.clear(8, 0, 0, 8, 8, 8)
-    storehouse_bay(b, 8)
-    posts(b, [(7, 2), (7, 7)], 1, 3, "spruce_log")
-    for z in (3, 4, 5, 6):
-        for y in (1, 2, 3):
-            b.set(8, y, z, "birch_planks")
-    b.clear(7, 1, 4, 8, 2, 5)  # the doorway between the bays
-    for x in (7, 8):
-        for z in (4, 5):
-            for y in (1, 2):
-                b.set(x, y, z, "air")
-        b.set(x, 3, 4, "birch_planks")
-        b.set(x, 3, 5, "birch_planks")
+def store_shed(b):
+    """The open shed on the east (walls x 8-14, z 2-7): spruce posts, birch walls, open to the street under a beam, eight
+    more chests along the back (a gap in the middle for the door the third tier puts there)."""
+    plinth(b, 8, 2, 14, 7, STONE_MIX, floor="spruce_planks")
+    for y in range(1, 4):
+        for x in range(8, 15):
+            b.set(x, y, 7, STORE_INFILL)
+        for z in range(3, 7):
+            b.set(14, y, z, STORE_INFILL)
+    posts(b, [(14, 2), (14, 7), (11, 2), (8, 7), (11, 7)], 1, 3, STORE_FRAME)
+    beam_ring(b, 8, 2, 14, 7, 4, STORE_FRAME)
+    b.clear(8, 1, 2, 8, 4, 2)  # (the granary's wall is its west side)
+    lantern(b, 10, 3, 2, hanging=True)
+    lantern(b, 12, 3, 2, hanging=True)
+    for x in range(8, 14):
+        if x != 11:
+            b.set(x, 0, 2, "stripped_spruce_log", axis="x")
     window(b, 14, 2, 4, "east", width=2, shutters="spruce_trapdoor")
     storehouse_chests(b, (9, 10, 12, 13), 6, "north")
     b.set(13, 1, 3, "hay_block", axis="y")
-    gable_roof(b, 0, 15, 1, 8, 4, SPRUCE, axis="x", gable="birch_planks", gable_at=(1, 14), ridge=SPRUCE)
+
+
+def shed_roof(t):
+    gable_roof(t, 8, 15, 1, 8, 4, STORE_ROOF, axis="x", gable=STORE_INFILL, gable_at=(14,), ridge=STORE_ROOF, eave_trim=SPRUCE)
+
+
+def storehouse_2():
+    """Upgrade of the Storehouse: an open-fronted shed on the east under a lower roof dying into the granary's, through
+    a doorway, eight more chests. 16 x 10 x 9."""
+    b = storehouse().grow(16, 10, 9)
+    b.clear(8, 0, 0, 8, 9, 8)  # the granary's east eave comes off; the shed's roof runs into its slope
+    store_shed(b)
+    for y in (1, 2):  # the doorway between them
+        b.set(7, y, 4, "air")
+        b.set(7, y, 5, "air")
+    b.clear(8, 1, 3, 8, 1, 6)
+    roofs(b, granary_roof, shed_roof)
+    granary_gable(b)
     b.set(15, 0, 2, "barrel", facing="up", open=False)
     b.set(15, 0, 1, "barrel", facing="up", open=False)
     b.fill_air()
     return b
 
 
+def store_range(t):
+    gable_roof(t, 0, 15, 7, 15, 5, STORE_ROOF, axis="x", gable=STORE_INFILL, gable_at=(1, 14), ridge=STORE_ROOF, eave_trim=SPRUCE)
+
+
 def storehouse_3():
-    """Upgrade of Storehouse II: a stone warehouse behind both bays, through a door in the east bay's back wall, with
-    sixteen more chests between spruce posts, lit from above. 16 x 10 x 16."""
+    """Upgrade of Storehouse II: a stone warehouse range across the back, through a door in the shed's back wall, with
+    sixteen more chests between spruce posts, its roof crossing behind the granary's. 16 x 10 x 16."""
     b = storehouse_2().grow(16, 10, 16)
+    b.clear(0, 5, 8, 15, 9, 8)  # the old back eaves: the range's roof takes over
     plinth(b, 1, 8, 14, 14, FOUNDATION_MIX, floor="spruce_planks")
     walls(b, 1, 8, 14, 14, 1, 3, BRICK_WALL_MIX)
-    walls(b, 1, 8, 14, 14, 4, 4, "birch_planks")
-    posts(b, [(1, 14), (14, 14), (1, 8), (14, 8), (5, 14), (10, 14)], 1, 4, "spruce_log")
-    beam_ring(b, 1, 8, 14, 14, 5, "spruce_log")
+    walls(b, 1, 8, 14, 14, 4, 4, STORE_INFILL)
+    posts(b, [(1, 14), (14, 14), (1, 8), (14, 8), (5, 14), (10, 14)], 1, 4, STORE_FRAME)
+    beam_ring(b, 1, 8, 14, 14, 5, STORE_FRAME)
     for z in (10, 12):
         window(b, 1, 3, z, "west", sill=STONE_BRICK)
         window(b, 14, 3, z, "east", sill=STONE_BRICK)
-    # The door through from the east bay (where its middle chests leave a gap), the chests between posts
+    # The door through from the shed (where its middle chests leave a gap), the chests between posts
     for y in (1, 2):
         b.set(11, y, 7, "air")
         b.set(11, y, 8, "air")
@@ -857,7 +915,8 @@ def storehouse_3():
     for x in (5, 10):
         for y in (1, 2, 3):
             log(b, x, y, 13, "stripped_spruce_log")
-    gable_roof(b, 0, 15, 7, 15, 5, DARK_OAK, axis="x", gable="birch_planks", gable_at=(1, 14))
+    roofs(b, granary_roof, shed_roof, store_range)
+    granary_gable(b)
     for x in (4, 11):
         lantern(b, x, 4, 11, hanging=True)
         for z in range(8, 15):  # tie beams across the back range, a lantern hanging from each

@@ -596,6 +596,21 @@ Every villager a person you get to know, the way MineColonies' citizens are — 
   below 75% mended with the village's iron ingots. Tinker's Workshop blueprint I/II; village Tinker's Shops and, for the
   sifter, Sifting Sheds)
 
+## Milestone 17 — The colony's tools (what MineColonies players reach for, and more)
+MineColonies has a Scan Tool, mirroring, a Stash, mercenaries, a colony diet and a composter; this milestone brings the
+ones we lack, our way.
+- [x] Scan Tool: two corners, sneak-right-click the air → a blueprint for a Blank Blueprint, saved under
+  `scans/<player>/<name>` (the tool's anvil name; `_2` makes an upgrade), in the Blueprint Table for everyone
+  (`blueprint/ScanToolItem`, component `scan` = `FieldData`, purple outline in `BlueprintOutline`, max 48 a side)
+- [x] Mirror: `BlueprintData.mirrored` (saved, default false) picked on the style screen (`StylePicker.MIRROR`);
+  placements use `Mirror.FRONT_BACK` (the front stays the front), and upgrades over a mirrored build follow it
+- [x] Drop Box (`store/DropBox*`, a private 27-slot container with a POI of its own): porters empty the nearest one within
+  48 blocks of their storehouse first, everything in it
+- [ ] Diet: villagers want variety — a village store with several kinds of meal lifts moods; the hall shows the diet
+- [ ] Mercenaries: at the Village Hall, hire a band of fighters for emeralds when a raid comes (they leave at dawn)
+- [ ] Composter job (Compost Bin): rotten flesh, seeds, saplings, leaves and spoiled food from the chests into bone meal
+  for the florists, lumberjacks and orchards
+
 ## Milestone 5 — Release
 - [ ] Publish on Modrinth and CurseForge as **Alive Workplace** (Minecraft brand rules: don't lead the name with "Minecraft")
 - [x] Screenshots/GIFs through the README, and an at-a-glance table of every job (workstation, what goes in the chests,

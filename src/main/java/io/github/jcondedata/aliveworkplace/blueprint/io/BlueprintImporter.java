@@ -102,7 +102,7 @@ public final class BlueprintImporter {
 	}
 
 	/** {@code aliveworkplace:<folder>/<clean_name>}, with _2, _3... if that name is taken. */
-	static ResourceLocation uniqueId(StructureTemplateManager manager, String folder, String fileName) {
+	public static ResourceLocation uniqueId(StructureTemplateManager manager, String folder, String fileName) {
 		String base = folder + "/" + sanitize(fileName);
 		ResourceLocation id = AliveWorkplace.id(base);
 		for (int n = 2; manager.get(id).isPresent(); n++) {

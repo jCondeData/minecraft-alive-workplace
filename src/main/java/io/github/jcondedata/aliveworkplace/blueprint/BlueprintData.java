@@ -23,35 +23,46 @@ import net.minecraft.world.level.block.Rotation;
  * @param size      template size, filled in by the server the first time it sees the blueprint
  * @param placement where the build goes; empty until the player right-clicks the ground
  * @param levelGround whether the builder levels the natural ground around it (right-click the air to switch)
+ * @param mirrored  whether it's built flipped left to right (chosen on the style screen)
  */
-public record BlueprintData(ResourceLocation structure, Optional<Vec3i> size, Optional<Placement> placement, boolean levelGround) {
+public record BlueprintData(ResourceLocation structure, Optional<Vec3i> size, Optional<Placement> placement, boolean levelGround, boolean mirrored) {
 	public static final Codec<BlueprintData> CODEC = RecordCodecBuilder.create(i -> i.group(
 		ResourceLocation.CODEC.fieldOf("structure").forGetter(BlueprintData::structure),
 		Vec3i.CODEC.optionalFieldOf("size").forGetter(BlueprintData::size),
 		Placement.CODEC.optionalFieldOf("placement").forGetter(BlueprintData::placement),
-		Codec.BOOL.optionalFieldOf("level_ground", true).forGetter(BlueprintData::levelGround)
+		Codec.BOOL.optionalFieldOf("level_ground", true).forGetter(BlueprintData::levelGround),
+		Codec.BOOL.optionalFieldOf("mirrored", false).forGetter(BlueprintData::mirrored)
 	).apply(i, BlueprintData::new));
 
 	public BlueprintData(ResourceLocation structure, Optional<Vec3i> size, Optional<Placement> placement) {
-		this(structure, size, placement, true);
+		this(structure, size, placement, true, false);
 	}
 
 	public BlueprintData withLevelGround(boolean level) {
-		return new BlueprintData(structure, size, placement, level);
+		return new BlueprintData(structure, size, placement, level, mirrored);
+	}
+
+	public BlueprintData withMirrored(boolean flip) {
+		return new BlueprintData(structure, size, placement, levelGround, flip);
+	}
+
+	/** How a new placement of it is mirrored: flipped left to right (the front stays the front), or not. */
+	public Mirror mirror() {
+		return mirrored ? Mirror.FRONT_BACK : Mirror.NONE;
 	}
 
 	public static final StreamCodec<RegistryFriendlyByteBuf, BlueprintData> STREAM_CODEC = ByteBufCodecs.fromCodecWithRegistries(CODEC);
 
 	public BlueprintData withPlacement(Optional<Placement> newPlacement) {
-		return new BlueprintData(structure, size, newPlacement, levelGround);
+		return new BlueprintData(structure, size, newPlacement, levelGround, mirrored);
 	}
 
 	public BlueprintData withStructure(ResourceLocation newStructure) {
-		return new BlueprintData(newStructure, size, placement, levelGround);
+		return new BlueprintData(newStructure, size, placement, levelGround, mirrored);
 	}
 
 	public BlueprintData withSize(Vec3i newSize) {
-		return new BlueprintData(structure, Optional.of(newSize), placement, levelGround);
+		return new BlueprintData(structure, Optional.of(newSize), placement, levelGround, mirrored);
 	}
 
 	/**

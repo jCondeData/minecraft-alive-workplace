@@ -96,7 +96,15 @@ deepslate and tuff), **Cherry** (cherry wood and pink roofs) or, with Cobblemon,
 roofs) — or back to the timber it was drawn in. The builder builds it in those blocks, the materials list and the
 preview change with it, and its upgrades come in the same style. It works for your own blueprints too. Styles are data:
 a data pack can add its own (`data/<namespace>/blueprint_styles/<name>.json`, a list of block swaps — see ours in
-`src/main/resources/data/aliveworkplace/blueprint_styles/`).
+`src/main/resources/data/aliveworkplace/blueprint_styles/`). The same screen has a **Mirror** button (top right): the
+build comes out flipped left to right, its front still facing you — a house with its chimney on the other side.
+
+**Scan Tool: your own builds as blueprints.** Craft a **Scan Tool** (a Blank Blueprint and a spyglass). Right-click one
+corner block of something you've built, then the opposite corner (the box shows in purple while you hold it; up to 48
+on a side), and sneak-right-click the air: for a Blank Blueprint from your inventory you get a blueprint of it, and it's
+in the Blueprint Table for everyone. Rename the tool in an anvil first to name the build — "Cozy Cabin", and later
+"Cozy Cabin 2" for its upgrade. The low-Z (north) side is the front and the lowest layer sits on the ground; turn it any
+way you like when you place it.
 
 ![The Starter Cottage II as drawn, in Stonework, Sandstone, Dark Oak and Cherry](docs/media/styles.png)
 
@@ -516,6 +524,10 @@ the walk.
 The storehouse is part of the village's stock, so a builder short of stone finds it there. One you place (or have a builder build) is yours: its porter works for you, and only carries for
 your workers and your friends'. A village's own storehouse carries for the village's workers. A porter carries 9 stacks
 a trip, 3 more at each level.
+
+**Drop Box.** Craft one from a barrel and a hopper and put it anywhere within 48 blocks of the storehouse: whatever you
+drop in it — a pile of loot from a trip, tools, anything — the porter takes to the storehouse first, all of it. Workers
+never help themselves from a Drop Box.
 
 **The requests board.** Right-click the Storehouse to see what the workers nearby are waiting for: each builder's
 missing materials, a miner's pickaxe or ladders, a lumberjack's axe, a farmer's seeds, a fisherman's rod. It shows how

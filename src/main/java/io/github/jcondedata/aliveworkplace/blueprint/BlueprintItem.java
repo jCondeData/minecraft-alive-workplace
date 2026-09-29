@@ -61,8 +61,13 @@ public class BlueprintItem extends Item {
 	}
 
 	public static BlueprintData.Placement placementAt(ResourceLocation dimension, Vec3i size, BlockPos anchorWorld, Rotation rotation) {
-		BlockPos rotatedAnchor = StructureTemplate.transform(anchor(size), Mirror.NONE, rotation, BlockPos.ZERO);
-		return new BlueprintData.Placement(dimension, anchorWorld.subtract(rotatedAnchor), rotation, Mirror.NONE);
+		return placementAt(dimension, size, anchorWorld, rotation, Mirror.NONE);
+	}
+
+	/** Placed so the front's middle is at {@code anchorWorld}, facing by {@code rotation}, flipped by {@code mirror}. */
+	public static BlueprintData.Placement placementAt(ResourceLocation dimension, Vec3i size, BlockPos anchorWorld, Rotation rotation, Mirror mirror) {
+		BlockPos rotatedAnchor = StructureTemplate.transform(anchor(size), mirror, rotation, BlockPos.ZERO);
+		return new BlueprintData.Placement(dimension, anchorWorld.subtract(rotatedAnchor), rotation, mirror);
 	}
 
 	public static BlockPos anchorWorld(BlueprintData.Placement placement, Vec3i size) {
@@ -112,10 +117,10 @@ public class BlueprintItem extends Item {
 		BlueprintData.Placement placement;
 		if (player.isShiftKeyDown() && current.placement().isPresent() && current.placement().get().dimension().equals(dimension)) {
 			BlueprintData.Placement old = current.placement().get();
-			placement = placementAt(dimension, size, anchorWorld(old, size), old.rotation().getRotated(Rotation.CLOCKWISE_90));
+			placement = placementAt(dimension, size, anchorWorld(old, size), old.rotation().getRotated(Rotation.CLOCKWISE_90), current.mirror());
 		} else {
 			BlockPos clicked = context.getClickedPos().relative(context.getClickedFace());
-			placement = placementAt(dimension, size, clicked, rotationFacing(player.getDirection().getOpposite()));
+			placement = placementAt(dimension, size, clicked, rotationFacing(player.getDirection().getOpposite()), current.mirror());
 		}
 
 		context.getItemInHand().set(ModComponents.BLUEPRINT, current.withSize(size).withPlacement(Optional.of(placement)));
@@ -181,6 +186,9 @@ public class BlueprintItem extends Item {
 			tooltip.add(Component.translatable("tooltip.aliveworkplace.blueprint.style", BlueprintStyles.styleOf(d.structure())
 				.map(st -> (Component) Component.translatableWithFallback("style.aliveworkplace." + st, BlueprintStyles.prettify(st)))
 				.orElse(Component.translatable("style.aliveworkplace.as_drawn"))).withStyle(ChatFormatting.GRAY));
+			if (d.mirrored()) {
+				tooltip.add(Component.translatable("tooltip.aliveworkplace.blueprint.mirrored").withStyle(ChatFormatting.LIGHT_PURPLE));
+			}
 			if (!d.levelGround()) {
 				tooltip.add(Component.translatable("tooltip.aliveworkplace.blueprint.no_levelling").withStyle(ChatFormatting.YELLOW));
 			}

@@ -101,4 +101,33 @@ public class StyleGameTests implements FabricGameTest {
 		helper.assertTrue(BlueprintItem.data(player.getMainHandItem()).orElseThrow().structure().equals(StarterBlueprints.STONE_HOUSE.id()), "back as drawn");
 		helper.succeed();
 	}
+
+	/**
+	 * The style screen's mirror button flips the blueprint in hand; placed, it's built flipped left to right: a block at
+	 * the template's left end lands at the right end, the front still the front.
+	 */
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
+	public void aMirroredBlueprintIsBuiltFlipped(GameTestHelper helper) {
+		ServerPlayer player = helper.makeMockServerPlayerInLevel();
+		player.setItemInHand(InteractionHand.MAIN_HAND, BlueprintItem.create(StarterBlueprints.STONE_HOUSE.id(), StarterBlueprints.STONE_HOUSE.size()));
+		ChoiceMenu menu = StylePicker.forTest(player, InteractionHand.MAIN_HAND);
+		menu.press(StylePicker.MIRROR, player);
+		var data = BlueprintItem.data(player.getMainHandItem()).orElseThrow();
+		helper.assertTrue(data.mirrored() && data.mirror() == net.minecraft.world.level.block.Mirror.FRONT_BACK, "not mirrored");
+		helper.assertTrue(menu.icon(StylePicker.MIRROR).hasFoil(), "the mirror button isn't marked");
+		net.minecraft.core.Vec3i size = StarterBlueprints.STONE_HOUSE.size();
+		var dim = helper.getLevel().dimension().location();
+		net.minecraft.core.BlockPos anchor = new net.minecraft.core.BlockPos(100, 64, 100);
+		var plain = BlueprintItem.placementAt(dim, size, anchor, net.minecraft.world.level.block.Rotation.NONE);
+		var flipped = BlueprintItem.placementAt(dim, size, anchor, net.minecraft.world.level.block.Rotation.NONE, data.mirror());
+		var a = io.github.jcondedata.aliveworkplace.blueprint.BlueprintOutline.bounds(plain, size);
+		var b = io.github.jcondedata.aliveworkplace.blueprint.BlueprintOutline.bounds(flipped, size);
+		helper.assertTrue(a.minZ() == b.minZ() && a.maxZ() == b.maxZ() && a.getXSpan() == b.getXSpan(), "the flipped build moved: " + a + " vs " + b);
+		net.minecraft.core.BlockPos leftEnd = net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate.transform(
+			new net.minecraft.core.BlockPos(0, 0, 0), flipped.mirror(), flipped.rotation(), net.minecraft.core.BlockPos.ZERO).offset(flipped.origin());
+		helper.assertTrue(leftEnd.getX() == a.maxX(), "the left end should land on the right: " + leftEnd + " in " + a);
+		menu.press(StylePicker.MIRROR, player);
+		helper.assertFalse(BlueprintItem.data(player.getMainHandItem()).orElseThrow().mirrored(), "flipped back");
+		helper.succeed();
+	}
 }

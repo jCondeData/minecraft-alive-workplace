@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+## 0.127.0 — 2026-09-29
+
+### Added
+- **Scan Tool**: mark two corners of something you've built and save it as a blueprint (for a Blank Blueprint) — it's
+  in the Blueprint Table for everyone. Name it by renaming the tool in an anvil.
+- **Mirror** a blueprint: a new button on the style screen builds it flipped left to right.
+- **Drop Box** (barrel + hopper): anything put in goes to the storehouse with the next porter.
+
 ## 0.126.0 — 2026-09-29
 
 ### Added

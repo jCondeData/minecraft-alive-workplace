@@ -129,6 +129,47 @@ public class TableGameTests implements FabricGameTest {
 		helper.succeed();
 	}
 
+	/**
+	 * The Scan Tool: a little build marked with two corners is saved as a blueprint for a Blank Blueprint (none, no scan);
+	 * the player gets the blueprint, it's in the library with the build's blocks, and the tool's name names it.
+	 */
+	@GameTest(template = "aliveworkplace_test:build_area")
+	public void scanToolSavesABuild(GameTestHelper helper) {
+		ServerPlayer player = playerAtTable(helper);
+		try {
+			for (int x = 3; x <= 5; x++) {
+				helper.setBlock(new BlockPos(x, 2, 3), net.minecraft.world.level.block.Blocks.OAK_PLANKS);
+			}
+			helper.setBlock(new BlockPos(4, 3, 3), net.minecraft.world.level.block.Blocks.LANTERN);
+			net.minecraft.world.level.levelgen.structure.BoundingBox box = net.minecraft.world.level.levelgen.structure.BoundingBox.fromCorners(
+				helper.absolutePos(new BlockPos(3, 2, 3)), helper.absolutePos(new BlockPos(5, 3, 3)));
+			String name = "Scan Test " + Long.toHexString(helper.getLevel().getGameTime());
+			var refused = io.github.jcondedata.aliveworkplace.blueprint.ScanToolItem.save(helper.getLevel(), player, box, name);
+			helper.assertTrue(refused.getContents() instanceof net.minecraft.network.chat.contents.TranslatableContents t
+				&& t.getKey().equals("message.aliveworkplace.scan.no_blank"), "saved without a Blank Blueprint: " + refused.getString());
+			player.getInventory().add(new ItemStack(ModItems.BLANK_BLUEPRINT, 2));
+			var saved = io.github.jcondedata.aliveworkplace.blueprint.ScanToolItem.save(helper.getLevel(), player, box, name);
+			helper.assertTrue(saved.getContents() instanceof net.minecraft.network.chat.contents.TranslatableContents t
+				&& t.getKey().equals("message.aliveworkplace.scan.saved"), "not saved: " + saved.getString());
+			helper.assertTrue(player.getInventory().countItem(ModItems.BLANK_BLUEPRINT) == 1, "one Blank Blueprint should be used");
+			ItemStack blueprint = ItemStack.EMPTY;
+			for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
+				if (player.getInventory().getItem(i).is(ModItems.BLUEPRINT)) {
+					blueprint = player.getInventory().getItem(i);
+				}
+			}
+			helper.assertTrue(!blueprint.isEmpty(), "no blueprint given");
+			ResourceLocation id = BlueprintItem.data(blueprint).orElseThrow().structure();
+			helper.assertTrue(id.getPath().startsWith("scans/") && id.getPath().contains("scan_test_"), "id " + id);
+			var bp = BlueprintLibrary.get(helper.getLevel(), id).orElseThrow();
+			helper.assertTrue(bp.size().equals(new net.minecraft.core.Vec3i(3, 2, 1)), "size " + bp.size());
+			helper.assertTrue(bp.solidBlockCount() == 4, "blocks " + bp.solidBlockCount());
+		} finally {
+			leave(helper, player);
+		}
+		helper.succeed();
+	}
+
 	private static void send(GameTestHelper helper, ServerPlayer player, String name, byte[] file, int chunkSize) {
 		for (int offset = 0; offset < file.length; offset += chunkSize) {
 			byte[] chunk = Arrays.copyOfRange(file, offset, Math.min(file.length, offset + chunkSize));

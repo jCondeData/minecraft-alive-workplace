@@ -306,6 +306,11 @@ public final class ModVillagers {
 	public static final ResourceKey<PoiType> VILLAGE_HALL_POI = ResourceKey.create(Registries.POINT_OF_INTEREST_TYPE, VILLAGE_HALL_ID);
 	public static final PoiType VILLAGE_HALL_POI_TYPE = PointOfInterestHelper.register(VILLAGE_HALL_ID, 0, 1, ModBlocks.VILLAGE_HALL);
 
+	/** Drop Boxes: a point of interest nobody works at, so the porters find them quickly. */
+	public static final ResourceLocation DROP_BOX_ID = AliveWorkplace.id("drop_box");
+	public static final ResourceKey<PoiType> DROP_BOX_POI = ResourceKey.create(Registries.POINT_OF_INTEREST_TYPE, DROP_BOX_ID);
+	public static final PoiType DROP_BOX_POI_TYPE = PointOfInterestHelper.register(DROP_BOX_ID, 0, 1, ModBlocks.DROP_BOX);
+
 	public static final ResourceLocation SIEVE_ID = AliveWorkplace.id("sieve");
 	public static final ResourceKey<PoiType> SIEVE_POI = ResourceKey.create(Registries.POINT_OF_INTEREST_TYPE, SIEVE_ID);
 	public static final PoiType SIEVE_POI_TYPE = PointOfInterestHelper.register(SIEVE_ID, 1, 1, ModBlocks.SIEVE);

@@ -107,6 +107,28 @@ public class PorterGameTests implements FabricGameTest {
 		});
 	}
 
+	/** Whatever's put in a Drop Box near the storehouse — tools and odd items too — the porter takes to the store. */
+	@GameTest(template = AREA, timeoutTicks = 1200, batch = "porter_drop_box")
+	public void porterEmptiesTheDropBox(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		BlockPos boxPos = new BlockPos(8, 2, 8);
+		helper.setBlock(boxPos, ModBlocks.DROP_BOX);
+		Container box = helper.getBlockEntity(boxPos);
+		box.setItem(0, new ItemStack(Items.IRON_SWORD));
+		box.setItem(1, new ItemStack(Items.DIRT, 3));
+		box.setItem(2, new ItemStack(Items.EMERALD, 5));
+		helper.assertTrue(SupplyContainers.find(helper.getLevel(), helper.absolutePos(boxPos), null).isEmpty(),
+			"a Drop Box is no worker's supply chest");
+		Villager porter = porter(helper);
+		helper.succeedWhen(() -> {
+			Container store = helper.getBlockEntity(STORE_CHEST);
+			helper.assertTrue(box.isEmpty(), "the drop box still holds things");
+			helper.assertTrue(store.countItem(Items.IRON_SWORD) == 1 && store.countItem(Items.DIRT) == 3 && store.countItem(Items.EMERALD) == 5,
+				"the store has " + store.countItem(Items.IRON_SWORD) + " swords, " + store.countItem(Items.DIRT) + " dirt, " + store.countItem(Items.EMERALD) + " emeralds");
+			helper.assertTrue(porter.isAlive(), "the porter is gone");
+		});
+	}
+
 	/** A porter works for the storehouse's owner, and leaves the chests of someone else's workers alone. */
 	@GameTest(template = AREA, timeoutTicks = 400, batch = "porter_strangers")
 	public void porterLeavesStrangersWorkersAlone(GameTestHelper helper) {

@@ -369,6 +369,28 @@ def quarry_marker_item():
     save(img, "item", "quarry_marker.png")
 
 
+def scan_tool_item():
+    img = Image.new("RGBA", (16, 16), T)
+    # A brass-bound spyglass lying across a rolled-up blueprint, with a violet lens glint
+    paper, line = rgb("#3f6fb8"), rgb("#bcd4f5")
+    for i in range(10):  # the rolled blueprint, diagonal
+        x, y = 2 + i, 13 - i
+        for dx, dy in ((0, 0), (1, 0), (0, -1), (1, -1)):
+            img.putpixel((x + dx, y + dy), paper)
+    for i in range(0, 10, 3):
+        img.putpixel((3 + i, 12 - i), line)
+    for x, y in ((2, 13), (3, 13), (2, 12)):
+        img.putpixel((x, y), rgb("#2c4f86"))
+    brass, dark = rgb("#d9a441"), rgb("#8a5a1f")
+    for i in range(8):  # the spyglass, the other way
+        x, y = 5 + i, 4 + i // 2
+        img.putpixel((x, y), brass if i % 3 else dark)
+        img.putpixel((x, y + 1), dark)
+    img.putpixel((13, 8), rgb("#c890ff"))
+    img.putpixel((13, 7), rgb("#e6ccff"))
+    save(img, "item", "scan_tool.png")
+
+
 def field_marker_item():
     img = Image.new("RGBA", (16, 16), T)
     # A wooden stake with a green flag and a wheat ear
@@ -2148,6 +2170,32 @@ def netherworker_overlay():
     save(img, "entity", "zombie_villager", "profession", "netherworker.png")
 
 
+# --- Drop Box: a slatted crate with a slot in the lid; porters empty it into the storehouse --------------------
+def drop_box(face):
+    rnd = random.Random({"top": 521, "side": 522, "bottom": 523}[face])
+    img = Image.new("RGBA", (16, 16))
+    planks(img, rnd)
+    frame = rgb("#5a3d20")
+    for i in range(16):
+        for p in ((i, 0), (i, 15), (0, i), (15, i)):
+            img.putpixel(p, jitter(frame, rnd, 4))
+    if face == "top":
+        for y in range(6, 10):  # the slot, dark inside, with a brass rim
+            for x in range(3, 13):
+                rim = y in (6, 9) or x in (3, 12)
+                img.putpixel((x, y), jitter(rgb("#c9953f") if rim else rgb("#1d140c"), rnd, 6))
+    elif face == "side":
+        for i in range(1, 15):  # a diagonal brace
+            img.putpixel((i, 15 - i), jitter(frame, rnd, 4))
+            img.putpixel((i, 14 - i), jitter(frame, rnd, 4))
+        for y in range(3, 8):  # a paper label with a down arrow
+            for x in range(9, 14):
+                img.putpixel((x, y), jitter(rgb("#efe6cf"), rnd, 4))
+        for x, y in ((11, 4), (11, 5), (10, 5), (12, 5), (11, 6)):
+            img.putpixel((x, y), rgb("#3f6fb8"))
+    save(img, "block", "drop_box_" + face + ".png")
+
+
 # --- Feed Trough: the rancher's workstation, a plank trough full of hay ----------------------------------------
 def feed_trough(face):
     rnd = random.Random({"top": 341, "side": 342, "front": 343}[face])
@@ -2595,6 +2643,7 @@ if __name__ == "__main__":
     travel_post_side(front=True)
     ticket_item()
     settlers_wagon_item()
+    scan_tool_item()
     ferryman_overlay()
     delivery_note_item()
     price_tag_item()
@@ -2666,6 +2715,8 @@ if __name__ == "__main__":
     for face in ("top", "side", "front"):
         nether_brazier(face)
     netherworker_overlay()
+    for face in ("top", "side", "bottom"):
+        drop_box(face)
     rancher_overlay()
     for part in ("burlap", "face", "straw", "post"):
         training_dummy(part)

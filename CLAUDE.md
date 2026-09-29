@@ -64,6 +64,7 @@ The owner (Jesse) does not write code: sessions are expected to work autonomousl
 - `blueprint/` — `Blueprint` (format-independent model), `BlueprintLibrary` (backed by the vanilla
   structure template manager), `BlueprintItem`, `BlueprintOutline` (particle preview), `StarterBlueprints`,
   `BlueprintUpgrades` (`<name>_2` upgrades `<name>`; finished builds are remembered in `BuildSiteManager`),
+  `ScanToolItem` (survival capture: two corners → `scans/<player>/<name>`), mirroring via `BlueprintData.mirrored` (style screen),
   `BlueprintStyles` (styles from `data/*/blueprint_styles/*.json`: a styled blueprint is the id
   `aliveworkplace:styled/<style>/<ns>/<path>`, which `BlueprintLibrary` resolves by swapping the base's blocks),
   `StylePicker` (sneak-right-click the air with a blueprint)
@@ -135,7 +136,7 @@ The owner (Jesse) does not write code: sessions are expected to work autonomousl
 - `wood/` — the lumberjack: `Trees` (what counts as a natural tree), `LumberjackWork`, `LumberjackPackages`
 - `store/` — the porter: `StorehouseBlock`/`StorehouseBlockEntity` (owner), `Porters` (what each job keeps, owner sync),
   `PorterWork` (haul goods from village-mates' chests to the storehouse), `PorterPackages`, `StorehouseBoard` (the
-  requests board: the Storehouse's right-click screen)
+  requests board: the Storehouse's right-click screen), `DropBoxBlock` (porters empty it into the store)
 - `craft/` — carpenters, masons and chefs: `Crafting` (plans from the game's recipes, two steps down; `KITCHEN` adds the
   smoker's and Cobblemon's Campfire Pot recipes by type id), `CrafterWork` (fetch, craft, deliver for a waiting builder;
   vanilla Masons run `MasonWork`: stonecutting plus crushing and glass), `ChefWork`/`Chefs` (cook the menu into the stove's chests), `TinkererWork` (Tinkerers at the Tinker's Bench: redstone/iron parts in tag `aliveworkplace:tinkering`,

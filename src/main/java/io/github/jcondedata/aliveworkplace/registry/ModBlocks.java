@@ -159,6 +159,15 @@ public final class ModBlocks {
 		"nether_brazier", new BuildersBenchBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.POLISHED_BLACKSTONE).lightLevel(state -> 10))
 	);
 
+	/** Anything put in goes to the storehouse with the next porter. */
+	public static final io.github.jcondedata.aliveworkplace.store.DropBoxBlock DROP_BOX = register(
+		"drop_box", new io.github.jcondedata.aliveworkplace.store.DropBoxBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.BARREL))
+	);
+
+	public static final net.minecraft.world.level.block.entity.BlockEntityType<io.github.jcondedata.aliveworkplace.store.DropBoxBlockEntity> DROP_BOX_ENTITY =
+		Registry.register(BuiltInRegistries.BLOCK_ENTITY_TYPE, AliveWorkplace.id("drop_box"),
+			net.minecraft.world.level.block.entity.BlockEntityType.Builder.of(io.github.jcondedata.aliveworkplace.store.DropBoxBlockEntity::new, DROP_BOX).build(null));
+
 	/** Workstation for the Scholar: the village's research is done here (a Village Hall keeps it). */
 	public static final BuildersBenchBlock SCHOLARS_DESK = register(
 		"scholars_desk", new BuildersBenchBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.BOOKSHELF))

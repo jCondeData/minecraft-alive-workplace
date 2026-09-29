@@ -24,6 +24,8 @@ import net.minecraft.world.item.component.ItemLore;
  */
 public final class StylePicker {
 	static final int INFO = 4;
+	/** Mirror the build (left to right). */
+	public static final int MIRROR = 8;
 	/** The first style's slot: as drawn, then the styles along the row (and the next). */
 	public static final int FIRST = 19;
 
@@ -54,6 +56,8 @@ public final class StylePicker {
 		String current = BlueprintStyles.styleOf(data.structure()).orElse("");
 		menu.button(INFO, icon(Items.PAPER, Blueprints.displayName(base), ChatFormatting.GOLD,
 			List.of(line(Component.translatable("screen.aliveworkplace.styles.how"), ChatFormatting.GRAY))), null);
+		menu.button(MIRROR, choice(Items.GLASS_PANE, Component.translatable(data.mirrored() ? "screen.aliveworkplace.styles.mirrored"
+			: "screen.aliveworkplace.styles.mirror"), data.mirrored()), p -> mirror(menu, p, hand));
 		menu.divider(1);
 		List<BlueprintStyles.Style> styles = BlueprintStyles.all();
 		menu.button(slot(0), choice(Items.SPRUCE_LOG, Component.translatable("style.aliveworkplace.as_drawn"), current.isEmpty()),
@@ -71,6 +75,18 @@ public final class StylePicker {
 			stack.set(ModComponents.BLUEPRINT, data.withStructure(now));
 			player.level().playSound(null, player.blockPosition(), SoundEvents.BOOK_PAGE_TURN, SoundSource.PLAYERS, 1f, 1.2f);
 			player.displayClientMessage(Component.translatable("message.aliveworkplace.styles.chosen", Blueprints.displayName(now))
+				.withStyle(ChatFormatting.GREEN), true);
+			render(menu, player, hand);
+		});
+	}
+
+	private static void mirror(ChoiceMenu menu, ServerPlayer player, InteractionHand hand) {
+		ItemStack stack = player.getItemInHand(hand);
+		BlueprintItem.data(stack).ifPresent(data -> {
+			boolean flip = !data.mirrored();
+			stack.set(ModComponents.BLUEPRINT, data.withMirrored(flip));
+			player.level().playSound(null, player.blockPosition(), SoundEvents.BOOK_PAGE_TURN, SoundSource.PLAYERS, 1f, 0.9f);
+			player.displayClientMessage(Component.translatable(flip ? "message.aliveworkplace.styles.mirrored" : "message.aliveworkplace.styles.unmirrored")
 				.withStyle(ChatFormatting.GREEN), true);
 			render(menu, player, hand);
 		});

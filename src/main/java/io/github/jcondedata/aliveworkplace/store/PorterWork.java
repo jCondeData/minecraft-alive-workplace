@@ -40,6 +40,8 @@ import org.jetbrains.annotations.Nullable;
 public class PorterWork extends Behavior<Villager> {
 	/** A worker's goods have to add up to this many items to be worth a trip. */
 	public static final int MIN_LOAD = 16;
+	/** How far from the storehouse a porter empties Drop Boxes. */
+	public static int DROP_BOX_RANGE = 48;
 	/** Stacks a novice carries in one trip; more with each level and each Pokémon partner. */
 	public static final int BASE_STACKS = 9;
 	public static final int STACKS_PER_LEVEL = 3;
@@ -210,6 +212,10 @@ public class PorterWork extends Behavior<Villager> {
 	/** The nearest village-mate with enough goods to be worth the walk, or null. */
 	@Nullable
 	private static Village.Stash choose(ServerLevel level, Villager villager, BlockPos storehouse) {
+		Village.Stash box = dropBox(level, storehouse);
+		if (box != null) {
+			return box; // what players left for the village first
+		}
 		for (Village.Stash stash : Village.stashes(level, villager, storehouse, null)) {
 			if (carriesNothingFrom(stash.job())) {
 				continue;
@@ -222,6 +228,15 @@ public class PorterWork extends Behavior<Villager> {
 		return null;
 	}
 
+	/** The nearest Drop Box near the storehouse with anything in it, as a stash with no job (everything in it goes). */
+	@Nullable
+	static Village.Stash dropBox(ServerLevel level, BlockPos storehouse) {
+		return level.getPoiManager().findAllClosestFirstWithType(h -> h.is(io.github.jcondedata.aliveworkplace.registry.ModVillagers.DROP_BOX_POI),
+				p -> level.getBlockEntity(p) instanceof DropBoxBlockEntity box && !box.isEmpty(), storehouse, DROP_BOX_RANGE,
+				net.minecraft.world.entity.ai.village.poi.PoiManager.Occupancy.ANY)
+			.findFirst().map(pair -> new Village.Stash(pair.getSecond(), VillagerProfession.NONE, List.of(pair.getSecond()))).orElse(null);
+	}
+
 	/** Builders, ball smiths, chefs and other porters: there's never anything to carry away from them. */
 	private static boolean carriesNothingFrom(VillagerProfession job) {
 		return job == io.github.jcondedata.aliveworkplace.registry.ModVillagers.BUILDER || job == io.github.jcondedata.aliveworkplace.registry.ModVillagers.BALL_SMITH
@@ -230,6 +245,9 @@ public class PorterWork extends Behavior<Villager> {
 
 	/** What the porter may take from this stash: each kind of goods and how many (beyond what the worker keeps). */
 	static Map<Item, Long> goods(ServerLevel level, Village.Stash stash) {
+		if (stash.job() == VillagerProfession.NONE) {
+			return new LinkedHashMap<>(SupplyContainers.contents(level, stash.chests())); // a Drop Box: all of it
+		}
 		boolean furnaceNear = !SupplyContainers.furnaces(level, stash.station()).isEmpty();
 		Map<Item, Long> out = new LinkedHashMap<>();
 		SupplyContainers.contents(level, stash.chests()).forEach((item, count) -> {

@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "aliveworkplace:blank_blueprint"
+    },
+    {
+      "item": "minecraft:spyglass"
+    }
+  ],
+  "result": {
+    "id": "aliveworkplace:scan_tool",
+    "count": 1
+  }
+}

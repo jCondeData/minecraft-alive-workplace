@@ -25,6 +25,7 @@ public final class BlueprintOutline {
 	private static final DustParticleOptions FRONT = new DustParticleOptions(new Vector3f(1.0f, 0.8f, 0.2f), 1.2f);
 	private static final DustParticleOptions QUARRY = new DustParticleOptions(new Vector3f(0.9f, 0.3f, 0.2f), 1.0f);
 	private static final DustParticleOptions FIELD = new DustParticleOptions(new Vector3f(0.4f, 0.85f, 0.25f), 1.0f);
+	private static final DustParticleOptions SCAN = new DustParticleOptions(new Vector3f(0.75f, 0.35f, 1.0f), 1.0f);
 	private static final int INTERVAL = 10;
 
 	/** A plain box outline (quarry markers). */
@@ -62,6 +63,11 @@ public final class BlueprintOutline {
 					if (field != null && field.dimension().map(level.dimension().location()::equals).orElse(false)) {
 						field.area().ifPresentOrElse(box -> box(level, player, box, FIELD),
 							() -> field.first().ifPresent(p -> box(level, player, new BoundingBox(p), FIELD)));
+					}
+					var scan = stack.get(io.github.jcondedata.aliveworkplace.registry.ModComponents.SCAN);
+					if (scan != null && scan.dimension().map(level.dimension().location()::equals).orElse(false)) {
+						scan.area().ifPresentOrElse(box -> box(level, player, box, SCAN),
+							() -> scan.first().ifPresent(p -> box(level, player, new BoundingBox(p), SCAN)));
 					}
 					BlueprintItem.data(stack).ifPresent(data -> data.placement().ifPresent(p -> {
 						if (p.dimension().equals(level.dimension().location()) && data.size().isPresent()) {

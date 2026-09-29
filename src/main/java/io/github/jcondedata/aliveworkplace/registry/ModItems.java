@@ -21,6 +21,11 @@ public final class ModItems {
 		BuiltInRegistries.ITEM, AliveWorkplace.id("blank_blueprint"), new Item(new Item.Properties())
 	);
 
+	/** Turns something built in the world into a blueprint. */
+	public static final io.github.jcondedata.aliveworkplace.blueprint.ScanToolItem SCAN_TOOL = Registry.register(
+		BuiltInRegistries.ITEM, AliveWorkplace.id("scan_tool"), new io.github.jcondedata.aliveworkplace.blueprint.ScanToolItem(new Item.Properties().stacksTo(1))
+	);
+
 	/** Marks out a quarry for a Miner. */
 	public static final io.github.jcondedata.aliveworkplace.mine.QuarryMarkerItem QUARRY_MARKER = Registry.register(
 		BuiltInRegistries.ITEM, AliveWorkplace.id("quarry_marker"),
@@ -67,6 +72,7 @@ public final class ModItems {
 				output.accept(ModBlocks.BUILDERS_BENCH);
 				output.accept(ModBlocks.BLUEPRINT_TABLE);
 				output.accept(BLANK_BLUEPRINT);
+				output.accept(SCAN_TOOL);
 				output.accept(ModBlocks.MINERS_BENCH);
 				output.accept(QUARRY_MARKER);
 				output.accept(ModBlocks.CHOPPING_BLOCK);
@@ -102,6 +108,7 @@ public final class ModItems {
 				output.accept(ModBlocks.SIEVE);
 				output.accept(ModBlocks.TINKERS_BENCH);
 				output.accept(ModBlocks.NETHER_BRAZIER);
+				output.accept(ModBlocks.DROP_BOX);
 				output.accept(SETTLERS_WAGON);
 				for (StarterBlueprints.Entry entry : StarterBlueprints.ALL) {
 					output.accept(BlueprintItem.create(entry.id(), entry.size()));

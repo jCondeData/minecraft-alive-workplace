@@ -302,6 +302,24 @@ public final class ModVillagers {
 		)
 	);
 
+	public static final ResourceLocation CARPENTERS_BENCH_ID = AliveWorkplace.id("carpenters_bench");
+	public static final ResourceKey<PoiType> CARPENTERS_BENCH_POI = ResourceKey.create(Registries.POINT_OF_INTEREST_TYPE, CARPENTERS_BENCH_ID);
+	public static final PoiType CARPENTERS_BENCH_POI_TYPE = PointOfInterestHelper.register(CARPENTERS_BENCH_ID, 1, 1, ModBlocks.CARPENTERS_BENCH);
+
+	/** Makes what the builders nearby are waiting for (stairs, doors, fences, planks...) with the crafting table's recipes. */
+	public static final VillagerProfession CARPENTER = Registry.register(
+		BuiltInRegistries.VILLAGER_PROFESSION,
+		AliveWorkplace.id("carpenter"),
+		new VillagerProfession(
+			"carpenter",
+			holder -> holder.is(CARPENTERS_BENCH_POI),
+			holder -> holder.is(CARPENTERS_BENCH_POI),
+			ImmutableSet.of(),
+			ImmutableSet.of(),
+			SoundEvents.WOOD_HIT
+		)
+	);
+
 	/**
 	 * Guards keep the night watch: on patrol from evening to mid-morning, asleep until early afternoon,
 	 * then out with the village. They fight whenever a monster shows up, whatever they are doing.
@@ -322,7 +340,7 @@ public final class ModVillagers {
 		return profession == BUILDER || profession == MINER || profession == LUMBERJACK || profession == POSTMAN
 			|| profession == NURSE || profession == SHOPKEEPER || profession == FERRYMAN
 			|| profession == TRAINER || profession == TRAINER_LEADER || profession == TUTOR || profession == POKEMON_TRADER
-			|| profession == ORCHARD_KEEPER || profession == BALL_SMITH || profession == PORTER;
+			|| profession == ORCHARD_KEEPER || profession == BALL_SMITH || profession == PORTER || profession == CARPENTER;
 	}
 
 	/**

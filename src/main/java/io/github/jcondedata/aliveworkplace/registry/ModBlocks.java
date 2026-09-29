@@ -129,6 +129,11 @@ public final class ModBlocks {
 		Registry.register(BuiltInRegistries.BLOCK_ENTITY_TYPE, AliveWorkplace.id("storehouse"),
 			net.minecraft.world.level.block.entity.BlockEntityType.Builder.of(io.github.jcondedata.aliveworkplace.store.StorehouseBlockEntity::new, STOREHOUSE).build(null));
 
+	/** Workstation for the Carpenter: they make what the builders nearby are waiting for, here. */
+	public static final BuildersBenchBlock CARPENTERS_BENCH = register(
+		"carpenters_bench", new BuildersBenchBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.CRAFTING_TABLE))
+	);
+
 	private static <T extends Block> T register(String name, T block) {
 		Registry.register(BuiltInRegistries.BLOCK, AliveWorkplace.id(name), block);
 		Registry.register(BuiltInRegistries.ITEM, AliveWorkplace.id(name), new BlockItem(block, new Item.Properties()));

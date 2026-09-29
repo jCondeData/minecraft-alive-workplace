@@ -1,0 +1,9 @@
+{
+  "parent": "minecraft:block/orientable_with_bottom",
+  "textures": {
+    "top": "aliveworkplace:block/carpenters_bench_top",
+    "bottom": "aliveworkplace:block/carpenters_bench_side",
+    "side": "aliveworkplace:block/carpenters_bench_side",
+    "front": "aliveworkplace:block/carpenters_bench_front"
+  }
+}

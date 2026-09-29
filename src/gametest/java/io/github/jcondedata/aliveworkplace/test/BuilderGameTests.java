@@ -28,6 +28,7 @@ import net.fabricmc.fabric.api.gametest.v1.FabricGameTest;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Vec3i;
+import net.minecraft.world.entity.npc.VillagerProfession;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestAssertException;
 import net.minecraft.gametest.framework.GameTestHelper;
@@ -335,6 +336,82 @@ public class BuilderGameTests implements FabricGameTest {
 			helper.assertTrue(player.getInventory().countItem(Items.COBBLESTONE) == 15, "the player kept " + player.getInventory().countItem(Items.COBBLESTONE));
 			io.github.jcondedata.aliveworkplace.work.Village.RADIUS = 0;
 			helper.succeed();
+		});
+	}
+
+	/** Crafters plan with the game's recipes, and further down: stairs from planks from logs, fences from logs too. */
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
+	public void craftersPlanWithTheGamesRecipes(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		var CRAFTING = io.github.jcondedata.aliveworkplace.craft.Crafting.Kind.CRAFTING;
+		var CUTTING = io.github.jcondedata.aliveworkplace.craft.Crafting.Kind.STONECUTTING;
+		var stairs = io.github.jcondedata.aliveworkplace.craft.Crafting.plan(level, CRAFTING, Items.OAK_STAIRS, 10, Map.of(Items.OAK_PLANKS, 30L));
+		helper.assertTrue(stairs != null && stairs.takes().equals(Map.of(Items.OAK_PLANKS, 18)) && stairs.makes().equals(Map.of(Items.OAK_STAIRS, 12)),
+			"stairs from planks: " + stairs);
+		var fromLogs = io.github.jcondedata.aliveworkplace.craft.Crafting.plan(level, CRAFTING, Items.OAK_STAIRS, 10, Map.of(Items.OAK_LOG, 10L));
+		helper.assertTrue(fromLogs != null && fromLogs.takes().equals(Map.of(Items.OAK_LOG, 5))
+			&& fromLogs.makes().equals(Map.of(Items.OAK_STAIRS, 12, Items.OAK_PLANKS, 2)), "stairs from logs: " + fromLogs);
+		helper.assertTrue(io.github.jcondedata.aliveworkplace.craft.Crafting.plan(level, CRAFTING, Items.OAK_STAIRS, 10, Map.of(Items.OAK_PLANKS, 5L)) == null,
+			"five planks can't make ten stairs");
+		var fences = io.github.jcondedata.aliveworkplace.craft.Crafting.plan(level, CRAFTING, Items.SPRUCE_FENCE, 12, Map.of(Items.SPRUCE_LOG, 20L));
+		helper.assertTrue(fences != null && fences.makes().getOrDefault(Items.SPRUCE_FENCE, 0) == 12 && fences.takes().keySet().equals(java.util.Set.of(Items.SPRUCE_LOG))
+			&& fences.takes().get(Items.SPRUCE_LOG) <= 6, "fences from logs (planks and sticks on the way): " + fences);
+		var sticks = io.github.jcondedata.aliveworkplace.craft.Crafting.plan(level, CRAFTING, Items.STICK, 4, Map.of(Items.BIRCH_PLANKS, 2L));
+		helper.assertTrue(sticks != null && sticks.takes().equals(Map.of(Items.BIRCH_PLANKS, 2)), "sticks from any planks: " + sticks);
+		var bricks = io.github.jcondedata.aliveworkplace.craft.Crafting.plan(level, CUTTING, Items.STONE_BRICK_STAIRS, 8, Map.of(Items.STONE, 10L));
+		helper.assertTrue(bricks != null && bricks.takes().equals(Map.of(Items.STONE, 8)), "stone brick stairs cut from stone: " + bricks);
+		helper.assertTrue(io.github.jcondedata.aliveworkplace.craft.Crafting.plan(level, CUTTING, Items.STONE_BRICKS, 8, Map.of(Items.COBBLESTONE, 64L)) == null,
+			"cobblestone doesn't cut into stone bricks");
+		helper.succeed();
+	}
+
+	/** A builder short of a door: the village's carpenter makes doors from the builder's spare planks and brings them. */
+	@GameTest(template = AREA, timeoutTicks = 2400, batch = "carpenter")
+	public void carpenterMakesTheDoorTheBuilderNeeds(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		io.github.jcondedata.aliveworkplace.work.Village.RADIUS = 48;
+		// 55 planks for the hut and 6 to spare, but no door.
+		Setup s = setup(helper, TEST_HUT, HUT_ORIGIN, Rotation.NONE, new ItemStack(Items.COBBLESTONE, 25), new ItemStack(Items.OAK_PLANKS, 61),
+			new ItemStack(Items.TORCH));
+		BlockPos bench = new BlockPos(14, 2, 2);
+		helper.setBlock(bench, ModBlocks.CARPENTERS_BENCH);
+		Villager carpenter = helper.spawn(EntityType.VILLAGER, new BlockPos(14, 2, 3));
+		io.github.jcondedata.aliveworkplace.work.Jobs.employ(helper.getLevel(), carpenter, helper.absolutePos(bench),
+			io.github.jcondedata.aliveworkplace.registry.ModVillagers.CARPENTERS_BENCH_POI, io.github.jcondedata.aliveworkplace.registry.ModVillagers.CARPENTER);
+		helper.succeedWhen(() -> {
+			assertBuilt(helper, s);
+			Container chest = helper.getBlockEntity(CHEST);
+			helper.assertTrue(chest.countItem(Items.OAK_DOOR) == 2, "the two spare doors should be in the chest, not " + chest.countItem(Items.OAK_DOOR));
+			helper.assertTrue(carpenter.getAttachedOrElse(ModAttachments.ITEMS_CRAFTED, 0) == 3, "the carpenter made " + carpenter.getAttachedOrElse(ModAttachments.ITEMS_CRAFTED, 0));
+			io.github.jcondedata.aliveworkplace.work.Village.RADIUS = 0;
+		});
+	}
+
+	/** A builder short of stone bricks: the village's (vanilla) mason cuts them from the builder's stone at the stonecutter. */
+	@GameTest(template = AREA, timeoutTicks = 2400, batch = "mason")
+	public void masonCutsTheStoneBricksTheBuilderNeeds(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		io.github.jcondedata.aliveworkplace.work.Village.RADIUS = 48;
+		ServerLevel level = helper.getLevel();
+		BlockPos src = new BlockPos(12, 2, 12);
+		for (int x = 0; x < 3; x++) {
+			helper.setBlock(src.offset(x, 0, 0), Blocks.STONE_BRICKS);
+		}
+		ResourceLocation wall = ResourceLocation.fromNamespaceAndPath("aliveworkplace_test", "bricks_" + Long.toHexString(level.getGameTime()));
+		level.getStructureManager().getOrCreate(wall).fillFromWorld(level, helper.absolutePos(src), new Vec3i(3, 1, 1), false, Blocks.STRUCTURE_VOID);
+		for (int x = 0; x < 3; x++) {
+			helper.setBlock(src.offset(x, 0, 0), Blocks.AIR);
+		}
+		Setup s = setup(helper, wall, HUT_ORIGIN, Rotation.NONE, new ItemStack(Items.STONE, 3));
+		BlockPos cutter = new BlockPos(14, 2, 2);
+		helper.setBlock(cutter, Blocks.STONECUTTER);
+		Villager mason = helper.spawn(EntityType.VILLAGER, new BlockPos(14, 2, 3));
+		io.github.jcondedata.aliveworkplace.work.Jobs.employ(level, mason, helper.absolutePos(cutter), net.minecraft.world.entity.ai.village.poi.PoiTypes.MASON,
+			VillagerProfession.MASON);
+		helper.succeedWhen(() -> {
+			assertBuilt(helper, s);
+			helper.assertTrue(mason.getAttachedOrElse(ModAttachments.ITEMS_CRAFTED, 0) == 3, "the mason cut " + mason.getAttachedOrElse(ModAttachments.ITEMS_CRAFTED, 0));
+			io.github.jcondedata.aliveworkplace.work.Village.RADIUS = 0;
 		});
 	}
 

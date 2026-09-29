@@ -20,6 +20,7 @@ public final class ModTrades {
 		orchardKeeperTrades();
 		ballSmithTrades();
 		porterTrades();
+		carpenterTrades();
 		TradeOfferHelper.registerVillagerOffers(ModVillagers.BARD, 1, offers -> {
 			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 2), new ItemStack(Items.NOTE_BLOCK, 2), 12, 2, 0.05f));
 			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.STRING, 16), new ItemStack(Items.EMERALD), 16, 2, 0.05f));
@@ -72,6 +73,24 @@ public final class ModTrades {
 			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 4), new ItemStack(Items.CHEST_MINECART), 4, 20, 0.05f)));
 		TradeOfferHelper.registerVillagerOffers(ModVillagers.PORTER, 5, offers ->
 			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 12), new ItemStack(Items.SHULKER_SHELL), 2, 30, 0.05f)));
+	}
+
+	/** Carpenters sell what they make and buy wood. */
+	private static void carpenterTrades() {
+		TradeOfferHelper.registerVillagerOffers(ModVillagers.CARPENTER, 1, offers -> {
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.OAK_LOG, 16), new ItemStack(Items.EMERALD), 16, 2, 0.05f));
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 1), new ItemStack(Items.OAK_STAIRS, 8), 12, 1, 0.05f));
+		});
+		TradeOfferHelper.registerVillagerOffers(ModVillagers.CARPENTER, 2, offers -> {
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.SPRUCE_LOG, 16), new ItemStack(Items.EMERALD), 16, 10, 0.05f));
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 1), new ItemStack(Items.SPRUCE_DOOR, 2), 12, 5, 0.05f));
+		});
+		TradeOfferHelper.registerVillagerOffers(ModVillagers.CARPENTER, 3, offers ->
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 2), new ItemStack(Items.BOOKSHELF, 1), 12, 15, 0.05f)));
+		TradeOfferHelper.registerVillagerOffers(ModVillagers.CARPENTER, 4, offers ->
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 3), new ItemStack(Items.SCAFFOLDING, 16), 12, 20, 0.05f)));
+		TradeOfferHelper.registerVillagerOffers(ModVillagers.CARPENTER, 5, offers ->
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 6), new ItemStack(Items.CHISELED_BOOKSHELF, 1), 6, 30, 0.05f)));
 	}
 
 	private static void minerTrades() {

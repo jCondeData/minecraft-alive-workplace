@@ -540,5 +540,15 @@
   "request.aliveworkplace.pickaxe": "A pickaxe",
   "request.aliveworkplace.axe": "An axe",
   "request.aliveworkplace.fishing_rod": "A fishing rod",
-  "request.aliveworkplace.seeds": "Seeds"
+  "request.aliveworkplace.seeds": "Seeds",
+  "block.aliveworkplace.carpenters_bench": "Carpenter's Bench",
+  "entity.minecraft.villager.carpenter": "Carpenter",
+  "entity.minecraft.zombie_villager.carpenter": "Zombie Carpenter",
+  "message.aliveworkplace.carpenter.title": "Carpenter · %s made",
+  "message.aliveworkplace.mason.title": "Mason · %s cut",
+  "message.aliveworkplace.crafter.state.idle": "nothing the builders are waiting for",
+  "message.aliveworkplace.crafter.state.fetching": "fetching what %s %s take",
+  "message.aliveworkplace.crafter.state.crafting": "making %s %s",
+  "message.aliveworkplace.crafter.state.delivering": "taking %s %s to the builder",
+  "message.aliveworkplace.crafter.state.tidying": "putting things away"
 }

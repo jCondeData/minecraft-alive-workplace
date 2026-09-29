@@ -1,0 +1,392 @@
+package io.github.jcondedata.aliveworkplace.craft;
+
+import com.google.common.collect.ImmutableMap;
+import io.github.jcondedata.aliveworkplace.build.BuildPlan;
+import io.github.jcondedata.aliveworkplace.build.BuildSite;
+import io.github.jcondedata.aliveworkplace.build.BuilderBag;
+import io.github.jcondedata.aliveworkplace.build.BuilderLevels;
+import io.github.jcondedata.aliveworkplace.build.Builders;
+import io.github.jcondedata.aliveworkplace.build.MaterialFamilies;
+import io.github.jcondedata.aliveworkplace.build.SupplyContainers;
+import io.github.jcondedata.aliveworkplace.registry.ModAttachments;
+import io.github.jcondedata.aliveworkplace.work.Village;
+import io.github.jcondedata.aliveworkplace.work.Walker;
+import io.github.jcondedata.aliveworkplace.work.WorkerStatus;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
+import java.util.WeakHashMap;
+import net.minecraft.ChatFormatting;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.ai.behavior.Behavior;
+import net.minecraft.world.entity.ai.behavior.BlockPosTracker;
+import net.minecraft.world.entity.ai.memory.MemoryModuleType;
+import net.minecraft.world.entity.ai.memory.MemoryStatus;
+import net.minecraft.world.entity.npc.Villager;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.levelgen.structure.BoundingBox;
+import net.minecraft.world.phys.AABB;
+import org.jetbrains.annotations.Nullable;
+
+/**
+ * A crafter's shift (the Carpenter at the crafting table's recipes, the Mason at the stonecutter's): find a builder
+ * nearby waiting for something that can be made from what they can get at (their chests and their village's), fetch
+ * the ingredients, make it at the workstation and take it to the builder's chests. Only what the rest of that build
+ * doesn't need is used (planks for stairs, but not the planks the walls still want). The job itself isn't saved: a
+ * crafter interrupted with things in their bag puts them in the chests by their workstation.
+ */
+public class CrafterWork extends Behavior<Villager> {
+	/** Base ticks one craft takes (faster with levels and Pokémon partners). */
+	public static final int CRAFT_TICKS = 8;
+	/** A job's ingredients have to fit in this many stacks (the rest of the bag is for what comes out). */
+	static final int MAX_STACKS_IN = 12;
+	private static final float SPEED = 0.55f;
+	private static final double REACH = 3.0;
+	private static final int LOOK_EVERY = 100;
+	/** A request another crafter took is left to them this long. */
+	private static final long CLAIM_TICKS = 2400;
+
+	private enum Phase { IDLE, FETCHING, CRAFTING, DELIVERING, TIDYING }
+
+	/** Making {@code plan} for the builder {@code builder} (their workstation, and the building's area). */
+	record Job(UUID builder, BlockPos builderStation, @Nullable BoundingBox area, Crafting.Plan plan, String claim) {
+	}
+
+	private static final Set<Villager> BUSY = Collections.newSetFromMap(new WeakHashMap<>());
+	private static final Map<String, Long> CLAIMS = new HashMap<>();
+
+	private final Crafting.Kind kind;
+	/** Whether the line above the head shows while there's nothing to do (vanilla masons go about their day instead). */
+	private final boolean alwaysShowStatus;
+	private final Walker walker = new Walker(SPEED);
+	@Nullable
+	private Job job;
+	private Map<Item, Integer> toFetch = new LinkedHashMap<>();
+	private Phase phase = Phase.IDLE;
+	private int timer;
+	private int lookTimer;
+
+	public CrafterWork(Crafting.Kind kind, boolean alwaysShowStatus) {
+		super(ImmutableMap.of(
+			MemoryModuleType.JOB_SITE, MemoryStatus.VALUE_PRESENT,
+			MemoryModuleType.WALK_TARGET, MemoryStatus.REGISTERED,
+			MemoryModuleType.LOOK_TARGET, MemoryStatus.REGISTERED
+		), 1200);
+		this.kind = kind;
+		this.alwaysShowStatus = alwaysShowStatus;
+	}
+
+	/** Whether this crafter is on a job (a vanilla mason's own routine waits till they're done). */
+	public static boolean isBusy(Villager villager) {
+		synchronized (BUSY) {
+			return BUSY.contains(villager);
+		}
+	}
+
+	/** A vanilla mason's routine runs while they aren't making anything for a builder. */
+	public static boolean vanillaMayRun(Villager villager) {
+		return !isBusy(villager);
+	}
+
+	@Override
+	protected boolean checkExtraStartConditions(ServerLevel level, Villager villager) {
+		return !villager.isSleeping() && !villager.isBaby() && Builders.benchPos(villager).isPresent();
+	}
+
+	@Override
+	protected boolean canStillUse(ServerLevel level, Villager villager, long gameTime) {
+		return checkExtraStartConditions(level, villager);
+	}
+
+	@Override
+	protected void start(ServerLevel level, Villager villager, long gameTime) {
+		walker.reset();
+		lookTimer = 0;
+	}
+
+	@Override
+	protected void stop(ServerLevel level, Villager villager, long gameTime) {
+		// The job waits for tomorrow's shift in memory; if it's gone by then, the bag goes to our own chests.
+		setBusy(villager, false);
+	}
+
+	@Override
+	protected void tick(ServerLevel level, Villager villager, long gameTime) {
+		BlockPos station = Builders.benchPos(villager).orElse(null);
+		if (station == null) {
+			return;
+		}
+		BuilderBag bag = villager.getAttachedOrCreate(ModAttachments.BUILDER_BAG);
+		if (job == null) {
+			if (!bag.isEmpty()) {
+				tidy(level, villager, station, bag);
+				return;
+			}
+			setBusy(villager, false);
+			status(villager, Phase.IDLE);
+			if (--lookTimer > 0) {
+				return;
+			}
+			lookTimer = LOOK_EVERY;
+			job = choose(level, villager, station);
+			if (job == null) {
+				return;
+			}
+			toFetch = new LinkedHashMap<>(job.plan().takes());
+			phase = Phase.FETCHING;
+			walker.reset();
+		}
+		setBusy(villager, true);
+		switch (phase) {
+			case FETCHING -> fetch(level, villager, bag);
+			case CRAFTING -> craft(level, villager, station, bag);
+			default -> deliver(level, villager, station, bag);
+		}
+	}
+
+	/** Walks round the chests the builder can take from, collecting the ingredients. */
+	private void fetch(ServerLevel level, Villager villager, BuilderBag bag) {
+		status(villager, Phase.FETCHING);
+		if (toFetch.isEmpty()) {
+			phase = Phase.CRAFTING;
+			timer = -1;
+			return;
+		}
+		Villager builder = level.getEntity(job.builder()) instanceof Villager v && v.isAlive() ? v : null;
+		List<BlockPos> sources = builder == null ? List.of() : Village.allChests(level, builder, job.builderStation(), job.area());
+		BlockPos chest = SupplyContainers.firstMatching(level, sources, s -> s.getComponentsPatch().isEmpty() && toFetch.containsKey(s.getItem()));
+		if (chest == null) {
+			phase = Phase.DELIVERING; // someone took them: bring back what we have
+			walker.reset();
+			return;
+		}
+		if (!walker.walkTo(level, villager, chest, REACH)) {
+			return;
+		}
+		for (Map.Entry<Item, Integer> e : new ArrayList<>(toFetch.entrySet())) {
+			int got = SupplyContainers.extract(level, List.of(chest), e.getKey(), e.getValue());
+			if (got > 0) {
+				int over = bag.addAll(e.getKey(), got);
+				if (over > 0) {
+					SupplyContainers.insert(level, List.of(chest), new ItemStack(e.getKey(), over));
+				}
+				int left = e.getValue() - (got - over);
+				if (left <= 0) {
+					toFetch.remove(e.getKey());
+				} else {
+					toFetch.put(e.getKey(), left);
+				}
+			}
+		}
+		villager.swing(InteractionHand.MAIN_HAND);
+		level.playSound(null, chest, SoundEvents.CHEST_OPEN, SoundSource.BLOCKS, 0.4f, 1.1f);
+		walker.reset();
+	}
+
+	/** At the workstation: turns the ingredients in the bag into what the plan makes. */
+	private void craft(ServerLevel level, Villager villager, BlockPos station, BuilderBag bag) {
+		status(villager, Phase.CRAFTING);
+		if (!walker.walkTo(level, villager, station, 2.5)) {
+			return;
+		}
+		villager.getBrain().setMemory(MemoryModuleType.LOOK_TARGET, new BlockPosTracker(station));
+		int crafts = job.plan().steps().stream().mapToInt(Crafting.Step::times).sum();
+		if (timer < 0) {
+			timer = Math.max(20, BuilderLevels.delay(CRAFT_TICKS * crafts, villager));
+		}
+		if (timer % 10 == 0) {
+			villager.swing(InteractionHand.MAIN_HAND);
+			level.playSound(null, station, kind == Crafting.Kind.STONECUTTING ? SoundEvents.UI_STONECUTTER_TAKE_RESULT : SoundEvents.WOOD_HIT,
+				SoundSource.BLOCKS, 0.5f, 0.9f + level.random.nextFloat() * 0.2f);
+		}
+		if (--timer > 0) {
+			return;
+		}
+		List<ItemStack> extra = apply(bag, job.plan());
+		if (extra != null) {
+			extra.forEach(stack -> Block.popResource(level, station.above(), stack));
+			villager.setAttached(ModAttachments.ITEMS_CRAFTED, villager.getAttachedOrElse(ModAttachments.ITEMS_CRAFTED, 0) + job.plan().count());
+			BuilderLevels.addXp(level, villager, Math.max(1, crafts / 2), null);
+		}
+		phase = Phase.DELIVERING;
+		walker.reset();
+	}
+
+	/**
+	 * Takes the plan's ingredients out of the bag and puts what it makes in; returns what didn't fit, or null (and nothing
+	 * changed) if some ingredients are missing.
+	 */
+	@Nullable
+	static List<ItemStack> apply(BuilderBag bag, Crafting.Plan plan) {
+		for (Map.Entry<Item, Integer> e : plan.takes().entrySet()) {
+			if (bag.count(e.getKey()) < e.getValue()) {
+				return null;
+			}
+		}
+		plan.takes().forEach(bag::remove);
+		List<ItemStack> extra = new ArrayList<>();
+		plan.makes().forEach((item, n) -> {
+			int over = bag.addAll(item, n);
+			if (over > 0) {
+				extra.add(new ItemStack(item, over));
+			}
+		});
+		// Buckets and bottles left over from ingredients (milk, honey...) come back too.
+		plan.takes().forEach((item, n) -> {
+			Item rest = item.getCraftingRemainingItem();
+			if (rest != null) {
+				int over = bag.addAll(rest, n);
+				if (over > 0) {
+					extra.add(new ItemStack(rest, over));
+				}
+			}
+		});
+		return extra;
+	}
+
+	/** Takes everything in the bag to the builder's chests (or our own, if the builder has none any more). */
+	private void deliver(ServerLevel level, Villager villager, BlockPos station, BuilderBag bag) {
+		status(villager, Phase.DELIVERING);
+		List<BlockPos> chests = SupplyContainers.find(level, job.builderStation(), job.area());
+		if (chests.isEmpty()) {
+			job = null;
+			return; // tidy() takes it home
+		}
+		if (!walker.walkTo(level, villager, chests.get(0), REACH)) {
+			return;
+		}
+		for (ItemStack stack : bag.takeAll()) {
+			ItemStack rest = SupplyContainers.insert(level, chests, stack);
+			if (!rest.isEmpty()) {
+				Block.popResource(level, chests.get(0).above(), rest);
+			}
+		}
+		villager.swing(InteractionHand.MAIN_HAND);
+		level.playSound(null, chests.get(0), SoundEvents.CHEST_CLOSE, SoundSource.BLOCKS, 0.4f, 1.1f);
+		synchronized (CLAIMS) {
+			CLAIMS.remove(job.claim()); // the builder checks again, and asks for more if it wasn't enough
+		}
+		job = null;
+		phase = Phase.IDLE;
+		lookTimer = 20;
+		walker.reset();
+	}
+
+	/** Puts what's left in the bag (from a job that fell through) in the chests by our workstation. */
+	private void tidy(ServerLevel level, Villager villager, BlockPos station, BuilderBag bag) {
+		status(villager, Phase.TIDYING);
+		List<BlockPos> chests = SupplyContainers.find(level, station, null);
+		BlockPos target = chests.isEmpty() ? station : chests.get(0);
+		if (!walker.walkTo(level, villager, target, REACH)) {
+			return;
+		}
+		for (ItemStack stack : bag.takeAll()) {
+			ItemStack rest = chests.isEmpty() ? stack : SupplyContainers.insert(level, chests, stack);
+			if (!rest.isEmpty()) {
+				Block.popResource(level, station.above(), rest);
+			}
+		}
+		walker.reset();
+	}
+
+	/** The first builder near our workstation waiting for something we can make from what they can get at. */
+	@Nullable
+	Job choose(ServerLevel level, Villager villager, BlockPos station) {
+		int radius = Math.max(0, Village.RADIUS);
+		if (radius == 0) {
+			return null;
+		}
+		long now = level.getGameTime();
+		synchronized (CLAIMS) {
+			CLAIMS.values().removeIf(until -> until < now);
+		}
+		List<Villager> builders = level.getEntitiesOfClass(Villager.class, new AABB(station).inflate(radius + 16),
+			v -> v.isAlive() && Builders.isBuilder(v) && Builders.benchPos(v).map(p -> p.closerThan(station, radius)).orElse(false));
+		builders.sort((a, b) -> Double.compare(a.distanceToSqr(villager), b.distanceToSqr(villager)));
+		for (Villager builder : builders) {
+			BuildSite site = Builders.activeSite(level, builder);
+			if (site == null || site.status() != BuildSite.Status.WAITING_FOR_MATERIALS || site.missing().isEmpty()) {
+				continue;
+			}
+			BuildPlan plan = site.plan(level);
+			BlockPos builderStation = Builders.benchPos(builder).orElse(null);
+			if (plan == null || builderStation == null) {
+				continue;
+			}
+			BoundingBox area = plan.bounds();
+			Map<Item, Long> stock = SupplyContainers.contents(level, Village.allChests(level, builder, builderStation, area));
+			Map<Item, Integer> need = Builders.remainingNeed(level, site, plan);
+			Map<Item, Long> usable = new HashMap<>();
+			stock.forEach((item, n) -> {
+				long spare = n - need.getOrDefault(MaterialFamilies.key(item), 0);
+				if (spare > 0) {
+					usable.put(item, spare);
+				}
+			});
+			List<Map.Entry<Item, Integer>> missing = new ArrayList<>(site.missing().entrySet());
+			missing.sort(Map.Entry.<Item, Integer>comparingByValue().reversed());
+			for (Map.Entry<Item, Integer> want : missing) {
+				String claim = builder.getUUID() + "|" + BuiltInRegistries.ITEM.getKey(want.getKey());
+				synchronized (CLAIMS) {
+					if (CLAIMS.containsKey(claim)) {
+						continue;
+					}
+				}
+				Crafting.Plan made = Crafting.plan(level, kind, want.getKey(), want.getValue(), usable);
+				if (made == null || made.count() <= 0 || stacks(made.takes()) > MAX_STACKS_IN || stacks(made.makes()) > BuilderBag.SLOTS - MAX_STACKS_IN) {
+					continue;
+				}
+				synchronized (CLAIMS) {
+					CLAIMS.put(claim, now + CLAIM_TICKS);
+				}
+				return new Job(builder.getUUID(), builderStation, area, made, claim);
+			}
+		}
+		return null;
+	}
+
+	private static int stacks(Map<Item, Integer> items) {
+		int n = 0;
+		for (Map.Entry<Item, Integer> e : items.entrySet()) {
+			int max = Math.max(1, e.getKey().getDefaultMaxStackSize());
+			n += (e.getValue() + max - 1) / max;
+		}
+		return n;
+	}
+
+	private static void setBusy(Villager villager, boolean busy) {
+		synchronized (BUSY) {
+			if (busy) {
+				BUSY.add(villager);
+			} else {
+				BUSY.remove(villager);
+			}
+		}
+	}
+
+	private void status(Villager villager, Phase phase) {
+		if (phase == Phase.IDLE && !alwaysShowStatus) {
+			return;
+		}
+		String who = kind == Crafting.Kind.STONECUTTING ? "mason" : "carpenter";
+		Component title = Component.translatable("message.aliveworkplace." + who + ".title", villager.getAttachedOrElse(ModAttachments.ITEMS_CRAFTED, 0));
+		Component line = job != null && phase != Phase.TIDYING
+			? Component.translatable("message.aliveworkplace.crafter.state." + phase.name().toLowerCase(), job.plan().count(),
+				job.plan().target().getDescription())
+			: Component.translatable("message.aliveworkplace.crafter.state." + phase.name().toLowerCase());
+		WorkerStatus.set(villager, title, -1f, line.copy().withStyle(ChatFormatting.GRAY));
+	}
+}

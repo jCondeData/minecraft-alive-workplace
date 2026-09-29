@@ -1474,6 +1474,74 @@ def porter_overlay():
     save(img, "entity", "zombie_villager", "profession", "porter.png")
 
 
+# --- Carpenter's Bench: a woodworking bench with a saw, a square and shavings -----------------------------
+def carpenters_bench(face):
+    rnd = random.Random({"top": 341, "side": 342, "front": 343}[face])
+    img = Image.new("RGBA", (16, 16))
+    planks(img, rnd)
+    steel, steel_dark, handle = rgb("#b9bfc4"), rgb("#7d8489"), rgb("#8a5a2b")
+    if face == "top":
+        # A lighter worktop with a hand saw lying across it and curls of shavings
+        for y in range(1, 15):
+            for x in range(1, 15):
+                img.putpixel((x, y), jitter(rgb("#c9a06a") if (x + y) % 6 else rgb("#b88f5b"), rnd, 5))
+        for i in range(8):
+            x, y = 3 + i, 4 + i // 2
+            img.putpixel((x, y), steel)
+            img.putpixel((x, y + 1), steel_dark if i % 2 else steel)
+        for (x, y) in ((11, 8), (12, 8), (11, 9), (12, 9), (13, 9)):
+            img.putpixel((x, y), handle)
+        for (x, y) in ((4, 11), (5, 12), (6, 11), (9, 12), (10, 13), (12, 3), (13, 4)):
+            img.putpixel((x, y), rgb("#e8cf9c"))  # shavings
+        # A carpenter's square in the corner
+        for i in range(2, 7):
+            img.putpixel((i, 2), steel_dark)
+            img.putpixel((2, i), steel_dark)
+    else:
+        leg = rgb("#6e4a26")
+        for y in range(16):
+            for x in (1, 2, 13, 14):
+                img.putpixel((x, y), jitter(leg, rnd, 4))
+        for x in range(16):
+            img.putpixel((x, 0), jitter(rgb("#553619"), rnd, 3))
+            img.putpixel((x, 1), jitter(rgb("#6e4a26"), rnd, 3))
+        if face == "front":
+            # A vise on the front and a hammer hanging under the top
+            for y in range(3, 7):
+                for x in range(5, 11):
+                    img.putpixel((x, y), jitter(steel_dark if y in (3, 6) else steel, rnd, 4))
+            img.putpixel((7, 7), steel_dark)
+            img.putpixel((8, 7), steel_dark)
+            for y in range(9, 14):
+                img.putpixel((8, y), handle)
+            for x in range(6, 11):
+                img.putpixel((x, 9), steel_dark)
+    save(img, "block", "carpenters_bench_" + face + ".png")
+
+
+def carpenter_overlay():
+    img = Image.new("RGBA", (64, 64), T)
+    rnd = random.Random(351)
+    # A pencil behind the ear (on the side of the head) and a canvas apron with a hammer loop and a folding rule
+    for (x, y) in ((33, 10), (34, 10), (35, 10)):
+        img.putpixel((x, y), rgb("#e8b923"))
+    img.putpixel((36, 10), rgb("#3a3a3a"))
+    apron, pocket, rule = rgb("#b99a6b"), rgb("#9c7f55"), rgb("#e8b923")
+    for y in range(44, 58):
+        for x in range(4, 24):
+            img.putpixel((x, y), jitter(apron, rnd, 5))
+    for y in range(49, 54):
+        for x in range(6, 12):
+            img.putpixel((x, y), jitter(pocket, rnd, 3))
+    for y in range(47, 53):
+        img.putpixel((16, y), rule)
+        img.putpixel((17, y), rule if y % 2 else rgb("#3a3a3a"))
+    for x in range(4, 24):
+        img.putpixel((x, 45), jitter(rgb("#6b4226"), rnd, 3))
+    save(img, "entity", "villager", "profession", "carpenter.png")
+    save(img, "entity", "zombie_villager", "profession", "carpenter.png")
+
+
 def icon(blueprint):
     big = Image.new("RGBA", (128, 128), T)
     scaled = blueprint.resize((128, 128), Image.NEAREST)
@@ -1554,3 +1622,6 @@ if __name__ == "__main__":
     for face in ("top", "side", "front"):
         storehouse(face)
     porter_overlay()
+    for face in ("top", "side", "front"):
+        carpenters_bench(face)
+    carpenter_overlay()

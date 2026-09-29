@@ -58,6 +58,8 @@ public final class VillageHouses {
 		out.put("ferry_house", override != null ? override : 4);
 		// The village's store and its porter.
 		out.put("storehouse", override != null ? override : 3);
+		// The carpenter who makes what the village's builders are waiting for.
+		out.put("carpenters_workshop", override != null ? override : 2);
 		return out;
 	}
 

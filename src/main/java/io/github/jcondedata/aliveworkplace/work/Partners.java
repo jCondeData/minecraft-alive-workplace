@@ -60,6 +60,9 @@ public final class Partners {
 		if (profession == ModVillagers.NURSE) {
 			return Set.of("fairy", "normal", "psychic");
 		}
+		if (profession == ModVillagers.CARPENTER || profession == VillagerProfession.MASON) {
+			return Set.of("fighting", "rock", "steel");
+		}
 		if (profession == ModVillagers.PORTER) {
 			return Set.of("fighting", "normal"); // strong arms: more carried each trip
 		}

@@ -106,6 +106,10 @@ public class ScreenshotHarness implements ClientModInitializer {
 			smithScene(mc, mc.getSingleplayerServer());
 			return;
 		}
+		if ("carpenter".equals(System.getProperty("aliveworkplace.scene"))) {
+			carpenterScene(mc, mc.getSingleplayerServer());
+			return;
+		}
 		if ("porter".equals(System.getProperty("aliveworkplace.scene"))) {
 			porterScene(mc, mc.getSingleplayerServer());
 			return;
@@ -404,6 +408,58 @@ public class ScreenshotHarness implements ClientModInitializer {
 			shot(mc, "01_smith_working");
 		}
 		if (tick == 340) {
+			mc.stop();
+		}
+	}
+
+	// --- Carpenter: making what a builder is waiting for ----------------------------------------------
+
+	private void carpenterScene(Minecraft mc, MinecraftServer server) {
+		tick++;
+		if (tick == 1) {
+			mc.options.renderDistance().set(6);
+			mc.options.cloudStatus().set(CloudStatus.OFF);
+			mc.options.hideGui = true;
+		}
+		if (tick == 30) {
+			server.execute(() -> {
+				ServerLevel level = server.overworld();
+				level.getGameRules().getRule(GameRules.RULE_DAYLIGHT).set(false, server);
+				level.getGameRules().getRule(GameRules.RULE_DOMOBSPAWNING).set(false, server);
+				level.setDayTime(2500);
+				BlockPos bench = new BlockPos(-4, -60, -2);
+				level.setBlockAndUpdate(bench, ModBlocks.BUILDERS_BENCH.defaultBlockState());
+				level.setBlockAndUpdate(bench.west(), Blocks.CHEST.defaultBlockState().setValue(net.minecraft.world.level.block.ChestBlock.FACING, Direction.SOUTH));
+				BaseContainerBlockEntity chest = (BaseContainerBlockEntity) level.getBlockEntity(bench.west());
+				// Everything for a Market Stall but the woodwork: spruce logs instead.
+				Object[][] stock = {{net.minecraft.world.item.Items.SPRUCE_LOG, 20}, {net.minecraft.world.item.Items.MELON, 1}, {net.minecraft.world.item.Items.PUMPKIN, 1},
+					{net.minecraft.world.item.Items.LANTERN, 1}, {net.minecraft.world.item.Items.HAY_BLOCK, 2}, {net.minecraft.world.item.Items.RED_WOOL, 20},
+					{net.minecraft.world.item.Items.WHITE_WOOL, 15}};
+				for (int i = 0; i < stock.length; i++) {
+					chest.setItem(i, new ItemStack((net.minecraft.world.item.Item) stock[i][0], (Integer) stock[i][1]));
+				}
+				Villager builder = EntityType.VILLAGER.spawn(level, bench.south(), MobSpawnType.COMMAND);
+				Builders.employ(level, builder, bench);
+				Builders.start(level, builder, null, io.github.jcondedata.aliveworkplace.blueprint.StarterBlueprints.MARKET_STALL.id(),
+					new io.github.jcondedata.aliveworkplace.blueprint.BlueprintData.Placement(level.dimension().location(), new BlockPos(-4, -60, -12),
+						net.minecraft.world.level.block.Rotation.NONE, net.minecraft.world.level.block.Mirror.NONE));
+				BlockPos carpenters = new BlockPos(3, -60, -2);
+				level.setBlockAndUpdate(carpenters, ModBlocks.CARPENTERS_BENCH.defaultBlockState()
+					.setValue(net.minecraft.world.level.block.HorizontalDirectionalBlock.FACING, Direction.SOUTH));
+				Villager carpenter = EntityType.VILLAGER.spawn(level, carpenters.south(), MobSpawnType.COMMAND);
+				io.github.jcondedata.aliveworkplace.work.Jobs.employ(level, carpenter, carpenters,
+					io.github.jcondedata.aliveworkplace.registry.ModVillagers.CARPENTERS_BENCH_POI, io.github.jcondedata.aliveworkplace.registry.ModVillagers.CARPENTER);
+				hover(server.getPlayerList().getPlayers().get(0), new Vec3(-0.5, -54.5, 5.5), 180, 32);
+			});
+		}
+		if (tick >= 60 && tick <= 1500 && tick % 60 == 0) {
+			shot(mc, String.format("%02d_carpenter", tick / 60));
+		}
+		if (tick == 1510) {
+			server.execute(() -> hover(server.getPlayerList().getPlayers().get(0), new Vec3(3.5, -58.3, 2.5), 180, 20));
+		}
+		if (tick == 1560) {
+			shot(mc, "30_carpenter_closeup");
 			mc.stop();
 		}
 	}

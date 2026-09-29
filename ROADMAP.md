@@ -321,7 +321,11 @@ Villagers work as a unit: what one worker makes, the others can use. No particul
   is the Storehouse's right-click screen, a click moves the player's items into that worker's chests; lumberjacks fell
   wanted kinds first, `Requests.wantedLogs` maps planks/stairs/... to their log by name). Porter deliveries aren't needed:
   workers fetch from the storehouse themselves
-- [ ] Carpenter/Mason: turns logs and cobblestone into building blocks for the builders' requests
+- [x] Carpenter/Mason: turns logs and cobblestone into building blocks for the builders' requests (`craft/`: `Crafting`
+  plans with the game's recipes, up to two steps down; `CrafterWork` serves any builder waiting nearby using only chests that
+  builder can reach and only what its build doesn't still need (`Builders.remainingNeed`); Carpenter = new job and
+  workstation, crafting-table recipes; vanilla Masons upgraded with stonecutter recipes via `UpgradedJob`; a carpenter's
+  workshop in village generation)
 
 ## Milestone 5 — Release
 - [ ] Publish on Modrinth and CurseForge as **Alive Workplace** (Minecraft brand rules: don't lead the name with "Minecraft")

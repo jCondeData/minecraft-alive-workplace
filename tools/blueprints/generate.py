@@ -986,9 +986,19 @@ def storehouse_room(b, style):
     b.set(1, 1, 3, "hay_block", axis="y")
 
 
+def carpenters_workshop(b, style):
+    """A Carpenter's Bench, a chest of wood and a sawhorse: the carpenter makes what the village's builders are waiting for."""
+    b.set(1, 1, 6, "aliveworkplace:carpenters_bench", facing="east")
+    b.set(1, 1, 5, "chest", facing="east", type="single", waterlogged=False)
+    b.set_nbt(1, 1, 5, Compound({"LootTable": String("aliveworkplace:chests/village_carpenters_workshop"), "id": String("minecraft:chest")}))
+    b.set(1, 1, 3, "oak_log", axis="z")
+    b.set(1, 1, 2, "oak_fence", north=False, south=False, east=False, west=False, waterlogged=False)
+
+
 VILLAGE_HOUSES = {"trainers_house": trainers_house, "guard_house": guard_house, "clinic": clinic, "post_office": post_office,
                   "leaders_hall": leaders_hall, "school": school, "trade_hall": trade_hall, "orchard_house": orchard_house,
-                  "ball_workshop": ball_workshop, "ferry_house": ferry_house, "storehouse": storehouse_room}
+                  "ball_workshop": ball_workshop, "ferry_house": ferry_house, "storehouse": storehouse_room,
+                  "carpenters_workshop": carpenters_workshop}
 
 
 # --- Gametest fixtures ------------------------------------------------------------------

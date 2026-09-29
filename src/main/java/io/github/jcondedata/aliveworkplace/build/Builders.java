@@ -379,9 +379,11 @@ public final class Builders {
 			.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.translatable("message.aliveworkplace.status.cancel_hover")))));
 	}
 
-	/** Materials still needed for the rest of the build, minus what the builder carries and what is in the supply chests. */
-	public static Map<Item, Integer> computeMissing(ServerLevel level, BuildSite site, BuildPlan plan, BuilderBag bag, List<BlockPos> supplies) {
-		// Grouped by material family (Chipped variants count as their plain block), named by the plain block.
+	/**
+	 * Materials the rest of the build takes (blocks not placed yet), grouped by material family (Chipped variants count as
+	 * their plain block) and keyed by the plain block's item.
+	 */
+	public static Map<Item, Integer> remainingNeed(ServerLevel level, BuildSite site, BuildPlan plan) {
 		Map<Item, Integer> need = new LinkedHashMap<>();
 		for (BuildPlan.Step step : site.upcoming(plan, Integer.MAX_VALUE)) {
 			if (!MaterialRules.matches(level.getBlockState(step.pos()), step.state())) {
@@ -390,6 +392,12 @@ public final class Builders {
 				}
 			}
 		}
+		return need;
+	}
+
+	/** Materials still needed for the rest of the build, minus what the builder carries and what is in the supply chests. */
+	public static Map<Item, Integer> computeMissing(ServerLevel level, BuildSite site, BuildPlan plan, BuilderBag bag, List<BlockPos> supplies) {
+		Map<Item, Integer> need = remainingNeed(level, site, plan);
 		// What the rest of the crew is carrying counts too: it goes into this build.
 		List<BuilderBag> bags = new java.util.ArrayList<>(List.of(bag));
 		List<UUID> crew = new java.util.ArrayList<>(site.helpers(level.getGameTime()));

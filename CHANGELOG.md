@@ -2,6 +2,17 @@
 
 ## Unreleased
 
+## 0.73.0 — 2026-09-28
+
+### Added
+- **Carpenters**: a new job at the Carpenter's Bench (a stick, an iron ingot and a stick over planks, a crafting table and
+  planks). When a builder nearby is waiting for something that can be crafted from what they can get at — stairs,
+  slabs, doors, fences, planks from logs, sticks, glass panes... — the carpenter fetches the ingredients, makes it and
+  brings it to the builder's chests. They never use what the rest of the build still needs. Villages sometimes grow a
+  carpenter's workshop.
+- **Masons cut stone for the builders**: a vanilla Mason (at a stonecutter) does the same with the stonecutter's recipes,
+  cutting stone bricks, stairs, slabs and walls from the builder's stone, and goes about their usual day in between.
+
 ## 0.72.0 — 2026-09-28
 
 ### Added

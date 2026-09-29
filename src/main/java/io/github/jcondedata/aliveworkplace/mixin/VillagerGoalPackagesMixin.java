@@ -29,6 +29,8 @@ abstract class VillagerGoalPackagesMixin {
 			cir.setReturnValue(io.github.jcondedata.aliveworkplace.smith.BallSmithPackages.work(speed));
 		} else if (profession == ModVillagers.ORCHARD_KEEPER) {
 			cir.setReturnValue(io.github.jcondedata.aliveworkplace.orchard.OrchardPackages.work(speed));
+		} else if (profession == ModVillagers.CARPENTER) {
+			cir.setReturnValue(io.github.jcondedata.aliveworkplace.craft.CarpenterPackages.work(speed));
 		} else if (profession == ModVillagers.PORTER) {
 			cir.setReturnValue(io.github.jcondedata.aliveworkplace.store.PorterPackages.work(speed));
 		} else if (profession == ModVillagers.POSTMAN) {
@@ -71,6 +73,11 @@ abstract class VillagerGoalPackagesMixin {
 			CallbackInfoReturnable<ImmutableList<Pair<Integer, ? extends BehaviorControl<? super Villager>>>> cir) {
 		if (profession == VillagerProfession.FARMER) {
 			cir.setReturnValue(io.github.jcondedata.aliveworkplace.farm.FarmerPackages.work(cir.getReturnValue()));
+		} else if (profession == VillagerProfession.MASON) {
+			// Masons cut stone for the builders nearby when they're waiting for it, and go about their day otherwise.
+			cir.setReturnValue(io.github.jcondedata.aliveworkplace.work.UpgradedJob.work(cir.getReturnValue(),
+				new io.github.jcondedata.aliveworkplace.craft.CrafterWork(io.github.jcondedata.aliveworkplace.craft.Crafting.Kind.STONECUTTING, false),
+				io.github.jcondedata.aliveworkplace.craft.CrafterWork::vanillaMayRun));
 		} else if (profession == VillagerProfession.FISHERMAN) {
 			cir.setReturnValue(io.github.jcondedata.aliveworkplace.work.UpgradedJob.work(cir.getReturnValue(),
 				new io.github.jcondedata.aliveworkplace.fish.FisherWork(), io.github.jcondedata.aliveworkplace.fish.Fishers::vanillaMayRun));

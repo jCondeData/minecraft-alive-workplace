@@ -74,9 +74,10 @@ public class VillageGameTests implements FabricGameTest {
 			java.util.Map.entry("orchard_house", ModBlocks.FRUIT_BASKET),
 			java.util.Map.entry("ball_workshop", ModBlocks.BALL_WORKBENCH),
 			java.util.Map.entry("ferry_house", ModBlocks.TRAVEL_POST),
-			java.util.Map.entry("storehouse", ModBlocks.STOREHOUSE));
+			java.util.Map.entry("storehouse", ModBlocks.STOREHOUSE),
+			java.util.Map.entry("carpenters_workshop", ModBlocks.CARPENTERS_BENCH));
 		// No Cobblemon here: the Pokémon houses stay out of the pools.
-		helper.assertTrue(VillageHouses.houseNames().equals(List.of("guard_house", "clinic", "post_office", "orchard_house", "ferry_house", "storehouse")),
+		helper.assertTrue(VillageHouses.houseNames().equals(List.of("guard_house", "clinic", "post_office", "orchard_house", "ferry_house", "storehouse", "carpenters_workshop")),
 			"houses without Cobblemon: " + VillageHouses.houseNames());
 		for (String style : VillageHouses.STYLES) {
 			StructureTemplatePool pool = pools.get(VillageHouses.housePool(style));

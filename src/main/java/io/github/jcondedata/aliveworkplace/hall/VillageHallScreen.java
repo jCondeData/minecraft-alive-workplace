@@ -55,6 +55,8 @@ public final class VillageHallScreen {
 	public static final int MERCENARIES = 12;
 	/** Call a festival (with a cake), right of the chronicle. */
 	public static final int FESTIVAL = 14;
+	/** Draw a map of the village (for an empty map), at the divider's left end. */
+	public static final int MAP = 10;
 	/** Trade routes, right of the chronicle. */
 	public static final int ROUTES = 15;
 	/** On a jobless villager's page: find them, and where the free workstations start. */
@@ -159,6 +161,10 @@ public final class VillageHallScreen {
 			line(Component.translatable("screen.aliveworkplace.hall.routes_hint"), ChatFormatting.GRAY)), p -> {
 			renderRoutes(menu, level, hall);
 			menu.broadcastChanges();
+		});
+		menu.button(MAP, icon(Items.FILLED_MAP, Component.translatable("screen.aliveworkplace.hall.map"), ChatFormatting.WHITE,
+			line(Component.translatable("screen.aliveworkplace.hall.map_hint"), ChatFormatting.GRAY)), p -> {
+			p.displayClientMessage(VillageMaps.draw(level, hall, p), false);
 		});
 		menu.button(RECALL, icon(Items.BELL, Component.translatable("screen.aliveworkplace.hall.recall"), ChatFormatting.WHITE,
 			line(Component.translatable("screen.aliveworkplace.hall.recall_hint"), ChatFormatting.GRAY)), p -> {

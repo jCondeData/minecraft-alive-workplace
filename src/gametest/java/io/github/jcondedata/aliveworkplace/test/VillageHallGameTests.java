@@ -260,6 +260,63 @@ public class VillageHallGameTests implements net.fabricmc.fabric.api.gametest.v1
 		});
 	}
 
+	/**
+	 * The hall draws a map of the village for an empty map: locked, centred on the hall, the land drawn, a banner on each
+	 * finished building (the workplaces named, homes not) and one for the hall.
+	 */
+	@GameTest(template = AREA, timeoutTicks = 100, batch = "aVillageMapIsDrawn")
+	public void aVillageMapIsDrawn(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		int radius = VillageHalls.RADIUS;
+		VillageHalls.RADIUS = 16;
+		ServerLevel level = helper.getLevel();
+		helper.setBlock(HALL, ModBlocks.VILLAGE_HALL);
+		BlockPos hall = helper.absolutePos(HALL);
+		var sites = io.github.jcondedata.aliveworkplace.build.BuildSiteManager.get(level);
+		java.util.List<io.github.jcondedata.aliveworkplace.blueprint.BlueprintData.Placement> placed = new java.util.ArrayList<>();
+		ServerPlayer player = helper.makeMockServerPlayerInLevel();
+		Leftovers.after(helper, () -> {
+			VillageHalls.RADIUS = radius;
+			placed.forEach(sites::forgetFinished);
+			level.getServer().getPlayerList().remove(player);
+		});
+		java.util.function.BiConsumer<io.github.jcondedata.aliveworkplace.blueprint.StarterBlueprints.Entry, BlockPos> finish = (entry, at) -> {
+			var placement = new io.github.jcondedata.aliveworkplace.blueprint.BlueprintData.Placement(level.dimension().location(), helper.absolutePos(at),
+				net.minecraft.world.level.block.Rotation.NONE, net.minecraft.world.level.block.Mirror.NONE);
+			placed.add(placement);
+			sites.recordFinished(entry.id(), placement, java.util.UUID.randomUUID());
+		};
+		finish.accept(io.github.jcondedata.aliveworkplace.blueprint.StarterBlueprints.LIBRARY, new BlockPos(2, 2, 2));
+		finish.accept(io.github.jcondedata.aliveworkplace.blueprint.StarterBlueprints.STARTER_COTTAGE, new BlockPos(14, 2, 14));
+		finish.accept(io.github.jcondedata.aliveworkplace.blueprint.StarterBlueprints.STREET_LAMP, new BlockPos(18, 2, 2)); // too small to show
+		player.getAbilities().instabuild = false;
+		player.getInventory().setItem(0, new ItemStack(Items.MAP));
+		ChoiceMenu menu = VillageHallScreen.forTest(player, hall);
+		menu.press(VillageHallScreen.MAP, player);
+		helper.assertTrue(player.getInventory().countItem(Items.MAP) == 0, "the empty map wasn't used");
+		int slot = -1;
+		for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
+			if (player.getInventory().getItem(i).is(Items.FILLED_MAP)) {
+				slot = i;
+			}
+		}
+		helper.assertTrue(slot >= 0, "no map");
+		var data = net.minecraft.world.item.MapItem.getSavedData(player.getInventory().getItem(slot), level);
+		helper.assertTrue(data != null && data.locked && data.centerX == hall.getX() && data.centerZ == hall.getZ(), "the map isn't the hall's");
+		helper.assertTrue(data.colors[64 + 64 * 128] != 0, "the land under the hall isn't drawn");
+		var banners = data.getBanners();
+		// (Builds finished here by earlier tests may show too: look for ours.)
+		BlockPos lamp = helper.absolutePos(new BlockPos(18, 2, 2));
+		helper.assertTrue(banners.stream().noneMatch(b -> Math.abs(b.pos().getX() - lamp.getX()) <= 1 && Math.abs(b.pos().getZ() - lamp.getZ()) <= 1),
+			"a street lamp on the map: " + banners);
+		helper.assertTrue(banners.stream().anyMatch(b -> b.color() == net.minecraft.world.item.DyeColor.BLUE
+			&& b.name().map(n -> n.getContents() instanceof net.minecraft.network.chat.contents.TranslatableContents t
+				&& t.getKey().equals("blueprint.aliveworkplace.library")).orElse(false)), "no Library banner: " + banners);
+		helper.assertTrue(banners.stream().anyMatch(b -> b.color() == net.minecraft.world.item.DyeColor.WHITE && b.name().isEmpty()), "no home: " + banners);
+		helper.assertTrue(banners.stream().anyMatch(b -> b.color() == net.minecraft.world.item.DyeColor.RED && b.pos().equals(hall)), "no hall: " + banners);
+		helper.succeed();
+	}
+
 	/** Decorations finished near the hall make the village prettier: a point of beauty is 1% more wellbeing, up to 10%. */
 	@GameTest(template = AREA, timeoutTicks = 100, batch = "decorationsMakeAVillagePrettier")
 	public void decorationsMakeAVillagePrettier(GameTestHelper helper) {

@@ -792,6 +792,12 @@ straight there). Mercenaries can be enlisted too.
 right-click the air anywhere nearby (the hall's chunk loaded, a few hundred blocks) to open the hall's screen —
 its people, requests, builds, quests, chronicle and mercenaries — without walking back.
 
+**Village Map.** The hall's map button draws the village on an empty map from your inventory: the land within 64 blocks
+of the hall as it is that day (a finished map, like one locked on a cartography table — draw a new one as the village
+grows), centred on the hall, with a banner on every building the builders finished there, coloured by what it is —
+white homes, blue school and library, pink healing, yellow stores and shops, lime farms, black towers and barracks,
+orange workshops, light blue wells and fountains — and the workplaces named. The map's tooltip has the legend.
+
 **Festivals.** Every eight days a village with a Village Hall and at least six villagers holds a festival (the hall's
 firework button says when; click it with a cake to hold one sooner, at most every three days). After work the
 villagers gather round the bell for a feast from the store, music and dancing, and at dusk fireworks go up over the

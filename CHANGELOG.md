@@ -2,10 +2,14 @@
 
 ## Unreleased
 
+## 0.133.0 — 2026-09-29
+
 ### Added
 - **Warding** (research, after Fortification): explosions no longer break blocks in the village.
 - **Shape Planner** (a Blank Blueprint and a compass): plan a box, cylinder, dome, sphere, cone, pyramid or arch — any
   size up to 32, solid or hollow, in a block you carry — and draw it up as a blueprint for a builder.
+- **Village Map**: the Village Hall's map button draws the village on an empty map — centred on the hall, the land as
+  it is that day, a coloured banner on every finished building (workplaces named) and the legend on its tooltip.
 - **Library III**: an enchanting room behind the reading hall, under its own lower slate roof — an Enchanting Table
   ringed by fifteen bookshelves with candles, a lectern (a librarian moves in) and a chest for the lapis.
 

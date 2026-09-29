@@ -632,6 +632,10 @@ ones we lack, our way.
   (vindicator in iron, +36 health) and 3–4 bandits kept to the camp; while it stands raids are bandits from its side,
   twice as likely, and safety counts ×0.6; the chief's death (or his absence while the camp is loaded) breaks it up;
   loot table `chests/bandit_camp`; `banditCamps` in the config
+- [x] Festivals (`hall/Festivals`; `festivalDay`/`feastDay`/`festivalCalled` on the hall's block entity; attachment
+  `festival_day`): every 8 days (a day per village from the hall's position) with 6+ villagers, or called with a cake
+  from hall slot 14 (3 days' rest); 9000–13000: villagers off work gather at the bell, a feast from the store, Hero of the
+  Village for players in the area, fireworks from 11500; +15 mood for 2 days; `festivals` in the config
 - [x] Seven more research topics (`Research.Topic`: LOGISTICS → `PorterWork.capacity`, CRAFTSMANSHIP → `CrafterWork` craft
   timer, MEDICINE → `Sickness.dailyChance`, FORTIFICATION → `Guards.block`, COMMERCE → `MarketDays` + `Mercenaries.price`,
   EXPEDITIONS → `Netherworkers.expeditionFactor` (and explorers' rest), GREEN_THUMB → `CompostWork.layersPerBoneMeal`);

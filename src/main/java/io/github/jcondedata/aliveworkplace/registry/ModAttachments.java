@@ -124,6 +124,10 @@ public final class ModAttachments {
 	public static final AttachmentType<Long> LAST_MEAL = AttachmentRegistry.create(
 		AliveWorkplace.id("last_meal"), builder -> builder.persistent(com.mojang.serialization.Codec.LONG));
 
+	/** The last day a villager came to a festival (see {@code hall/Festivals}). */
+	public static final AttachmentType<Long> FESTIVAL_DAY = AttachmentRegistry.create(
+		AliveWorkplace.id("festival_day"), builder -> builder.persistent(com.mojang.serialization.Codec.LONG));
+
 	/** The last few kinds of meal a villager ate, newest last (see {@code people/Diet}). */
 	public static final AttachmentType<java.util.List<net.minecraft.resources.ResourceLocation>> RECENT_MEALS = AttachmentRegistry.create(
 		AliveWorkplace.id("recent_meals"), builder -> builder.persistent(net.minecraft.resources.ResourceLocation.CODEC.listOf()));

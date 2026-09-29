@@ -118,6 +118,10 @@ public final class Moods {
 			score += Math.min(15, 5 * beauty);
 			good.add(reason("decorations"));
 		}
+		if (io.github.jcondedata.aliveworkplace.hall.Festivals.enjoyedLately(level, villager)) {
+			score += io.github.jcondedata.aliveworkplace.hall.Festivals.MOOD;
+			good.add(reason("festival"));
+		}
 		if (!level.getEntitiesOfClass(Villager.class, villager.getBoundingBox().inflate(COMPANY_RANGE), v -> v != villager && v.isAlive()).isEmpty()) {
 			score += 5;
 			good.add(reason("company"));

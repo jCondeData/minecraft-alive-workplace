@@ -5,6 +5,8 @@
 ### Added
 - **Bandit camps**: bandits make camp near villages of Village rank or more and raid them at night until their chief
   falls. Break the camp up for its loot.
+- **Festivals**: every eight days (or sooner, with a cake at the hall) the village gathers at the bell after work for a
+  feast, music and fireworks; moods lift, and players are Heroes of the Village for the evening.
 
 ## 0.130.0 — 2026-09-29
 

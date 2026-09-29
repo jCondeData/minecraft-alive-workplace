@@ -136,6 +136,7 @@ public class PorterGameTests implements FabricGameTest {
 	@GameTest(template = AREA, timeoutTicks = 1200, batch = "stock_orders")
 	public void carpenterFillsAStockOrder(GameTestHelper helper) {
 		Leftovers.clear(helper);
+		helper.setDayTime(2000); // work hours (the first batch starts at dawn, before work)
 		helper.setBlock(STOREHOUSE, ModBlocks.STOREHOUSE);
 		helper.setBlock(STORE_CHEST, Blocks.CHEST);
 		Container store = helper.getBlockEntity(STORE_CHEST);

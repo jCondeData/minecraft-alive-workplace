@@ -580,4 +580,66 @@ public class VillageHallGameTests implements net.fabricmc.fabric.api.gametest.v1
 			helper.succeed();
 		});
 	}
+
+	/**
+	 * A festival called with a cake: planned for today; after work the villagers feast from the store, a player in the
+	 * village is a Hero of the Village, moods lift, the villagers gather at the bell, and fireworks can fly.
+	 */
+	@GameTest(template = AREA, timeoutTicks = 600, batch = "aFestivalIsHeld")
+	public void aFestivalIsHeld(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		int radius = VillageHalls.RADIUS;
+		VillageHalls.RADIUS = 16;
+		Leftovers.after(helper, () -> {
+			VillageHalls.RADIUS = radius;
+			io.github.jcondedata.aliveworkplace.hall.Festivals.forget();
+		});
+		ServerLevel level = helper.getLevel();
+		helper.setDayTime(1000);
+		helper.setBlock(HALL, ModBlocks.VILLAGE_HALL);
+		BlockPos bell = new BlockPos(4, 2, 4);
+		helper.setBlock(bell, Blocks.BELL);
+		helper.setBlock(new BlockPos(17, 2, 3), ModBlocks.STOREHOUSE);
+		helper.setBlock(new BlockPos(17, 2, 5), Blocks.CHEST);
+		Container chest = helper.getBlockEntity(new BlockPos(17, 2, 5));
+		chest.setItem(0, new ItemStack(Items.BREAD, 10));
+		chest.setItem(1, new ItemStack(Items.COOKED_BEEF, 10));
+		java.util.List<Villager> villagers = new java.util.ArrayList<>();
+		for (int i = 0; i < 3; i++) {
+			villagers.add(helper.spawn(EntityType.VILLAGER, new BlockPos(15 + i, 2, 17)));
+		}
+		ServerPlayer player = helper.makeMockServerPlayerInLevel();
+		Leftovers.after(helper, () -> level.getServer().getPlayerList().remove(player));
+		BlockPos stand = helper.absolutePos(new BlockPos(10, 2, 10));
+		player.teleportTo(stand.getX() + 0.5, stand.getY(), stand.getZ() + 0.5);
+		player.getInventory().add(new ItemStack(Items.CAKE));
+		player.getAbilities().instabuild = false; // (the mock player is in creative)
+		BlockPos hall = helper.absolutePos(HALL);
+		boolean[] ready = {false};
+		helper.runAfterDelay(5, () -> {
+			var entity = (io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(hall);
+			io.github.jcondedata.aliveworkplace.hall.Festivals.call(level, hall, player);
+			long today = io.github.jcondedata.aliveworkplace.hall.Chronicle.day(level);
+			helper.assertTrue(entity.festivalDay() == today, "not planned for today: " + entity.festivalDay() + " vs " + today);
+			helper.assertFalse(player.getInventory().contains(new ItemStack(Items.CAKE)), "the cake wasn't taken");
+			helper.assertTrue(io.github.jcondedata.aliveworkplace.hall.Festivals.nextDay(level, hall, entity) == today, "next festival");
+			helper.setDayTime(9500);
+			helper.assertTrue(io.github.jcondedata.aliveworkplace.hall.Festivals.isOn(level, hall), "the festival isn't on after work");
+			io.github.jcondedata.aliveworkplace.hall.Festivals.round(level, hall, entity, villagers.size());
+			for (Villager v : villagers) {
+				helper.assertTrue(v.hasAttached(ModAttachments.FESTIVAL_DAY) && v.hasAttached(ModAttachments.LAST_MEAL), "didn't feast: " + v);
+				var mood = io.github.jcondedata.aliveworkplace.people.Moods.work(level, v);
+				helper.assertTrue(mood.good().stream().anyMatch(c -> c.getString().contains("festival")), "mood: " + mood.good());
+			}
+			helper.assertTrue(entity.chronicle().stream().anyMatch(e -> e.kind() == io.github.jcondedata.aliveworkplace.hall.Chronicle.Kind.FESTIVAL), "not in the chronicle");
+			helper.assertTrue(player.hasEffect(MobEffects.HERO_OF_THE_VILLAGE), "the player isn't a hero");
+			helper.assertTrue(io.github.jcondedata.aliveworkplace.hall.Festivals.launch(level, helper.absolutePos(bell).above()).isAlive(), "no firework");
+			ready[0] = true;
+		});
+		helper.succeedWhen(() -> {
+			helper.assertTrue(ready[0], "not yet");
+			helper.assertTrue(villagers.stream().anyMatch(v -> v.position().closerThan(net.minecraft.world.phys.Vec3.atCenterOf(helper.absolutePos(bell)), 7)),
+				"nobody came to the bell");
+		});
+	}
 }

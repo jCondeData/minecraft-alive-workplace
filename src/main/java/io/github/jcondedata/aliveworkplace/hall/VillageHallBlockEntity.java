@@ -30,6 +30,10 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 	private VillageRanks.Rank rank = VillageRanks.Rank.HAMLET;
 	/** The day of the last raid on the village (see {@code guard/VillageRaids}). */
 	private long lastRaidDay = -100;
+	/** The day of the village's next (or last) festival, when it last feasted, when a player last called one. */
+	private long festivalDay = -1;
+	private long feastDay = -1;
+	private long festivalCalled = -100;
 	/** The day of the last market (see {@link MarketDays}). */
 	private long lastMarketDay = -1;
 	/** What happened in the village, oldest first (see {@link Chronicle}). */
@@ -70,6 +74,7 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 			Caravans.round(server, pos, census);
 			io.github.jcondedata.aliveworkplace.guard.Gates.round(server, pos, census.guards());
 			io.github.jcondedata.aliveworkplace.guard.BanditCamps.round(server, pos);
+			Festivals.round(server, pos, hall, census.villagers());
 			io.github.jcondedata.aliveworkplace.guard.VillageRaids.tick(server, pos, census.villagers(), census.guards(), hall.lastRaidDay, day -> {
 				hall.lastRaidDay = day;
 				hall.setChanged();
@@ -149,6 +154,33 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 		setChanged();
 	}
 
+	public long festivalDay() {
+		return festivalDay;
+	}
+
+	public void setFestivalDay(long day) {
+		festivalDay = day;
+		setChanged();
+	}
+
+	public long feastDay() {
+		return feastDay;
+	}
+
+	public void setFeastDay(long day) {
+		feastDay = day;
+		setChanged();
+	}
+
+	public long festivalCalled() {
+		return festivalCalled;
+	}
+
+	public void setFestivalCalled(long day) {
+		festivalCalled = day;
+		setChanged();
+	}
+
 	public long lastBirth() {
 		return lastBirth;
 	}
@@ -180,6 +212,9 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 		questsDone = tag.getInt("questsDone");
 		lastMarketDay = tag.contains("lastMarketDay") ? tag.getLong("lastMarketDay") : -1;
 		lastRaidDay = tag.contains("lastRaidDay") ? tag.getLong("lastRaidDay") : -100;
+		festivalDay = tag.contains("festivalDay") ? tag.getLong("festivalDay") : -1;
+		feastDay = tag.contains("feastDay") ? tag.getLong("feastDay") : -1;
+		festivalCalled = tag.contains("festivalCalled") ? tag.getLong("festivalCalled") : -100;
 		int r = tag.getInt("rank");
 		rank = VillageRanks.Rank.values()[Math.max(0, Math.min(VillageRanks.Rank.values().length - 1, r))];
 		research = io.github.jcondedata.aliveworkplace.research.Research.State.CODEC.parse(net.minecraft.nbt.NbtOps.INSTANCE, tag.get("research"))
@@ -208,6 +243,9 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 		tag.putInt("questsDone", questsDone);
 		tag.putLong("lastMarketDay", lastMarketDay);
 		tag.putLong("lastRaidDay", lastRaidDay);
+		tag.putLong("festivalDay", festivalDay);
+		tag.putLong("feastDay", feastDay);
+		tag.putLong("festivalCalled", festivalCalled);
 		tag.putInt("rank", rank.ordinal());
 		io.github.jcondedata.aliveworkplace.research.Research.State.CODEC.encodeStart(net.minecraft.nbt.NbtOps.INSTANCE, research).result()
 			.ifPresent(t -> tag.put("research", t));

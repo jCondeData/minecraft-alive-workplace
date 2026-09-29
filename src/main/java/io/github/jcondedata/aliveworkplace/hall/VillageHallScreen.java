@@ -53,6 +53,8 @@ public final class VillageHallScreen {
 	public static final int RECALL = 11;
 	/** Hire a band of mercenaries till dawn. */
 	public static final int MERCENARIES = 12;
+	/** Call a festival (with a cake), right of the chronicle. */
+	public static final int FESTIVAL = 14;
 	/** Trade routes, right of the chronicle. */
 	public static final int ROUTES = 15;
 	/** On a jobless villager's page: find them, and where the free workstations start. */
@@ -168,6 +170,16 @@ public final class VillageHallScreen {
 						* io.github.jcondedata.aliveworkplace.work.Money.DOLLARS_PER_EMERALD, io.github.jcondedata.aliveworkplace.guard.Mercenaries.price(level, hall))),
 				band > 0 ? ChatFormatting.GREEN : ChatFormatting.GRAY)), p -> {
 			p.displayClientMessage(io.github.jcondedata.aliveworkplace.guard.Mercenaries.hire(level, hall, p), false);
+			refresh(menu, level, hall, shown);
+		});
+		long festival = entity == null ? -1 : Festivals.nextDay(level, hall, entity);
+		long inDays = festival - Chronicle.day(level);
+		menu.button(FESTIVAL, icon(Items.FIREWORK_ROCKET, Component.translatable("screen.aliveworkplace.hall.festival"), ChatFormatting.WHITE,
+			line(Festivals.isOn(level, hall) ? Component.translatable("screen.aliveworkplace.hall.festival_on")
+				: inDays <= 0 ? Component.translatable("screen.aliveworkplace.hall.festival_today")
+				: Component.translatable("screen.aliveworkplace.hall.festival_in", inDays), ChatFormatting.GOLD),
+			line("screen.aliveworkplace.hall.festival_hint", ChatFormatting.GRAY)), p -> {
+			p.displayClientMessage(Festivals.call(level, hall, p), false);
 			refresh(menu, level, hall, shown);
 		});
 		if (pages > 1) {

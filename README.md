@@ -757,6 +757,12 @@ for you or whatever you go for, as well as any monster near you (never players, 
 left more than 32 blocks behind catches up at once. Lower the banner and they go back to their posts (from far away,
 straight there). Mercenaries can be enlisted too.
 
+**Festivals.** Every eight days a village with a Village Hall and at least six villagers holds a festival (the hall's
+firework button says when; click it with a cake to hold one sooner, at most every three days). After work the
+villagers gather round the bell for a feast from the store, music and dancing, and at dusk fireworks go up over the
+square. Everyone who came is in a better mood for two days, and while it's on, players in the village are Heroes of the
+Village: cheaper trades, and the villagers throw them gifts. `festivals` in the config turns the regular ones off.
+
 **Mercenaries.** Short of guards? Open the Village Hall and click the iron sword: for 12 emeralds (or their worth in
 CobbleDollars) three **mercenaries** in iron — one with a shield — come to the hall and fight for the village like its
 own guards until the next dawn, then leave. One band at a time; their gear goes with them.

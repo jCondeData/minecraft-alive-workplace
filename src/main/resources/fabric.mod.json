@@ -25,6 +25,9 @@
 		"fabric-api": "*"
 	},
 	"suggests": {
-		"cobblemon": "*"
+		"cobblemon": "*",
+		"cobbledollars": "*",
+		"rctmod": "*",
+		"mega_showdown": "*"
 	}
 }

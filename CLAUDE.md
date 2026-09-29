@@ -5,6 +5,13 @@ real jobs; the first and most important job is the **Builder**, who builds bluep
 The owner (Jesse) does not write code: sessions are expected to work autonomously from
 `ROADMAP.md`, keep the build green, and explain results in plain language.
 
+For mod work use the **minecraft-mod-engineer** skill (not the older minecraft-mod-dev). We're moving to its
+multi-version layout in phases (ROADMAP, Milestone 19); until phase 2 lands there's one version, 1.21.1.
+
+**Gradle runs on JDK 25** (Minecraft 1.21.1 still compiles and runs on the Java 21 toolchain it fetches). Once per
+container: `source <minecraft-mod-engineer skill>/scripts/setup_env.sh`; then prefix Gradle commands with
+`export JAVA_HOME=/root/.local/jdk-25 PATH=/root/.local/jdk-25/bin:$PATH;`. With 7 GB of RAM add `--max-workers=1`.
+
 ## Session checklist
 1. `git pull`, read `ROADMAP.md` (priorities + owner decisions) and the latest `CHANGELOG.md` entries.
 2. Pick the **next unchecked roadmap item(s)** in order. Keep each change reviewable (one feature per commit/PR).
@@ -90,10 +97,15 @@ The owner (Jesse) does not write code: sessions are expected to work autonomousl
 - `trader/` — Pokémon Traders: `PokemonTraders` (one trade a day, XP); offers and the swap live in `compat/cobblemon/CobblemonTraders`
 - `bard/` — bards: `BardWork` (discs from the chests, or a made-up tune)
 - `nurse/` — nurses: `Nurses` (treating players), `NurseWork` (healing villagers nearby)
-- `compat/cobblemon/` — the only code that touches Cobblemon classes; call it only when `isModLoaded("cobblemon")`;
+- `compat/Compat` — turns on the integrations that are installed (`init`, with a tested version range each; a failure
+  leaves that integration off); the rest of the mod reaches them only through extension points (`work/Extension`:
+  `PokemonPartners`, `Bank`, `orchard/PokemonFruit`, `fossil/FossilLab`, `ranch/DaycareDesk`, `trainer/TrainerBattles`,
+  `trader/PokemonTrades`, `tutor/MoveLessons`, `nurse/PokemonHealing`), which give a fallback when nothing fills them
+  and turn themselves off on a `LinkageError`
+- `compat/cobblemon/` — the only code that touches Cobblemon classes (`CobblemonCompat` fills the extension points);
   trainers battle through `VillagerTrainerActor` (entity-backed: Pokémon sent out beside the villager), `CobblemonMegas`
   (Mega Stones and the Mega-Evolving AI, with Mega Showdown by item id)
-- `compat/cobbledollars/` — the only code touching CobbleDollars (balances); use it through `work/Money` (CobbleDollars or emeralds)
+- `compat/cobbledollars/` — the only code touching CobbleDollars (balances); `CobbleDollarsCompat` fills `work/Bank`, used by `work/Money` (CobbleDollars or emeralds)
 - `compat/rct/` — Radical Cobblemon Trainers' level cap, by reflection (no dependency at all)
 - `mail/` — mailboxes and postmen: `MailboxBlock`/`MailboxBlockEntity`/`MailboxMenu` (screen in client `MailboxScreen`),
   `PostOffice` (saved data: addresses, parcels, desks, dawn delivery), `Parcel`, `Mail` (send packet), `PostmanWork`
@@ -186,8 +198,9 @@ The owner (Jesse) does not write code: sessions are expected to work autonomousl
   Don't copy code from All-Rights-Reserved mods.
 - Support for other building mods goes by block/item/tag ids or their data files (`ModdedBlocks`, `MaterialFamilies`),
   never by their classes, and gets a compat test.
-- Cobblemon/RCT/CobbleDollars support must be **optional**: put it in a separate package loaded only when
-  `FabricLoader.isModLoaded("cobblemon")`, add them as `modCompileOnly`, never a hard `depends`.
+- Cobblemon/RCT/CobbleDollars support must be **optional**: their classes only in `compat/<mod>/`, which nothing outside
+  `compat/` calls directly — add an extension point (`work/Extension`) the integration fills in `Compat.init` after
+  `isModLoaded`; `modCompileOnly`, listed in `suggests`, never a hard `depends`.
 - Don't break existing saves: new saved fields need defaults; don't rename registry ids.
 - Commit messages: short imperative subject, then what/why.
 

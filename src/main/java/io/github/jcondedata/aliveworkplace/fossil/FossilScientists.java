@@ -1,7 +1,6 @@
 package io.github.jcondedata.aliveworkplace.fossil;
 
 import io.github.jcondedata.aliveworkplace.build.BuilderLevels;
-import io.github.jcondedata.aliveworkplace.compat.cobblemon.CobblemonFossils;
 import io.github.jcondedata.aliveworkplace.registry.ModAttachments;
 import io.github.jcondedata.aliveworkplace.registry.ModVillagers;
 import io.github.jcondedata.aliveworkplace.work.Money;
@@ -43,7 +42,7 @@ public final class FossilScientists {
 
 	/** Whether {@code stack} is a fossil (on either side; the client knows Cobblemon's fossils too). */
 	public static boolean isFossil(ItemStack stack) {
-		return COBBLEMON && CobblemonFossils.isFossil(stack);
+		return COBBLEMON && FossilLab.EXTENSION.call(lab -> lab.isFossil(stack), false);
 	}
 
 	public static List<Revival> queue(Villager villager) {
@@ -63,15 +62,15 @@ public final class FossilScientists {
 		ItemStack main = player.getItemInHand(InteractionHand.MAIN_HAND);
 		ItemStack off = player.getItemInHand(InteractionHand.OFF_HAND);
 		List<ItemStack> items = new ArrayList<>(List.of(main.copyWithCount(1)));
-		ResourceLocation fossil = CobblemonFossils.fossil(items);
+		ResourceLocation fossil = FossilLab.EXTENSION.call(lab -> lab.fossil(items), null);
 		boolean both = false;
 		if (fossil == null && isFossil(off)) {
 			items.add(off.copyWithCount(1));
-			fossil = CobblemonFossils.fossil(items);
+			fossil = FossilLab.EXTENSION.call(lab -> lab.fossil(items), null);
 			both = fossil != null;
 		}
 		if (fossil == null) {
-			tell(player, Component.translatable(CobblemonFossils.partOfOne(items.subList(0, 1)) ? "message.aliveworkplace.fossil.other_half"
+			tell(player, Component.translatable(FossilLab.EXTENSION.call(lab -> lab.partOfOne(items.subList(0, 1)), false) ? "message.aliveworkplace.fossil.other_half"
 				: "message.aliveworkplace.fossil.unknown"), ChatFormatting.YELLOW);
 			return;
 		}
@@ -129,7 +128,7 @@ public final class FossilScientists {
 			if (!r.ready() || !r.owner().equals(player.getUUID())) {
 				continue;
 			}
-			Component pokemon = CobblemonFossils.revive(player, r.fossil());
+			Component pokemon = FossilLab.EXTENSION.call(lab -> lab.revive(player, r.fossil()), null);
 			queue.remove(r);
 			if (pokemon == null) {
 				continue; // that fossil isn't in Cobblemon's data any more

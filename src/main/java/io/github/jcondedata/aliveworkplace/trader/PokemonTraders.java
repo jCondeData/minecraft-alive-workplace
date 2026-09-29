@@ -64,7 +64,7 @@ public final class PokemonTraders {
 				.withStyle(ChatFormatting.GRAY), true);
 			return;
 		}
-		io.github.jcondedata.aliveworkplace.compat.cobblemon.CobblemonTraders.open(player, trader);
+		PokemonTrades.EXTENSION.run(trades -> trades.open(player, trader));
 	}
 
 	/** A trade went through: remember it for today, and the trader gains experience. */

@@ -1,7 +1,6 @@
 package io.github.jcondedata.aliveworkplace.orchard;
 
 import io.github.jcondedata.aliveworkplace.build.BuilderBag;
-import io.github.jcondedata.aliveworkplace.compat.cobblemon.CobblemonOrchard;
 import io.github.jcondedata.aliveworkplace.farm.FieldJob;
 import io.github.jcondedata.aliveworkplace.registry.ModAttachments;
 import io.github.jcondedata.aliveworkplace.registry.ModVillagers;
@@ -80,7 +79,7 @@ public final class Orchards {
 	/** Something an orchard keeper plants: sweet berries, glow berries (under a ceiling), and with Cobblemon apricorn seeds and berries. */
 	public static boolean isSeed(ItemStack stack) {
 		return !stack.isEmpty() && stack.getItem() instanceof BlockItem
-			&& (stack.is(Items.SWEET_BERRIES) || stack.is(Items.GLOW_BERRIES) || COBBLEMON && CobblemonOrchard.isSeed(stack));
+			&& (stack.is(Items.SWEET_BERRIES) || stack.is(Items.GLOW_BERRIES) || COBBLEMON && PokemonFruit.EXTENSION.call(f -> f.isSeed(stack), false));
 	}
 
 	/** Glow berries hang from a ceiling instead of standing on the ground. */
@@ -89,7 +88,7 @@ public final class Orchards {
 	}
 
 	private static int spacing(ItemStack seed) {
-		return COBBLEMON && CobblemonOrchard.growsIntoTree(seed) ? SPACING_TREES : SPACING;
+		return COBBLEMON && PokemonFruit.EXTENSION.call(f -> f.growsIntoTree(seed), false) ? SPACING_TREES : SPACING;
 	}
 
 	/** One of each kind of seed the keeper carries, the kind they have most of first. */
@@ -174,7 +173,7 @@ public final class Orchards {
 
 	/** A berry for grass or dirt: it wants the ground tilled into farmland first. */
 	static boolean needsTilling(ServerLevel level, BlockPos spot, ItemStack seed) {
-		if (!COBBLEMON || !CobblemonOrchard.needsFarmland(seed)) {
+		if (!COBBLEMON || !PokemonFruit.EXTENSION.call(f -> f.needsFarmland(seed), false)) {
 			return false;
 		}
 		BlockState ground = level.getBlockState(spot.below());

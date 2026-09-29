@@ -227,8 +227,10 @@ tasks.withType(JavaCompile).configureEach {
 
 java {
 	withSourcesJar()
-	sourceCompatibility = JavaVersion.VERSION_21
-	targetCompatibility = JavaVersion.VERSION_21
+	// Minecraft 1.21.1 is compiled and run (game tests, clients) with Java 21, whatever JDK Gradle runs on.
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(21)
+	}
 }
 
 jar {

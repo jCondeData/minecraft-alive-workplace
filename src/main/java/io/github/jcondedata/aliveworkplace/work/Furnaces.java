@@ -52,11 +52,7 @@ public final class Furnaces {
 
 	/** Fire-type Pokémon pastured near the workstation (with Cobblemon; at most {@link Partners#MAX}). */
 	static int firePartners(ServerLevel level, BlockPos station) {
-		if (!net.fabricmc.loader.api.FabricLoader.getInstance().isModLoaded("cobblemon")) {
-			return 0;
-		}
-		return io.github.jcondedata.aliveworkplace.compat.cobblemon.CobblemonPartners.helpers(level, station, Partners.RADIUS, java.util.Set.of("fire"),
-			Partners.MAX).size();
+		return PokemonPartners.EXTENSION.call(p -> p.helpers(level, station, Partners.RADIUS, java.util.Set.of("fire"), Partners.MAX).size(), 0);
 	}
 
 	/**

@@ -39,19 +39,15 @@ public final class CobblemonPartners {
 			.toList();
 	}
 
-	/** A pastured Pokémon ready to fight: the entity, its level and the first of its types that was asked for. */
-	public record Fighter(LivingEntity entity, int level, String type) {
-	}
-
 	/** The pastured Pokémon within {@code radius} of {@code center} with one of {@code types}, nearest first, at most {@code max}. */
-	public static List<Fighter> fighters(ServerLevel level, BlockPos center, int radius, Set<String> types, int max) {
+	public static List<io.github.jcondedata.aliveworkplace.work.PokemonPartners.Fighter> fighters(ServerLevel level, BlockPos center, int radius, Set<String> types, int max) {
 		AABB box = new AABB(center).inflate(radius);
 		Vec3 middle = Vec3.atCenterOf(center);
 		return level.getEntitiesOfClass(PokemonEntity.class, box, e -> e.isAlive() && e.getTethering() != null && fits(e.getPokemon(), types))
 			.stream()
 			.sorted(Comparator.comparingDouble(e -> e.distanceToSqr(middle)))
 			.limit(max)
-			.map(e -> new Fighter(e, e.getPokemon().getLevel(), firstType(e.getPokemon(), types)))
+			.map(e -> new io.github.jcondedata.aliveworkplace.work.PokemonPartners.Fighter(e, e.getPokemon().getLevel(), firstType(e.getPokemon(), types)))
 			.toList();
 	}
 

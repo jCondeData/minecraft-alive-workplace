@@ -21,6 +21,21 @@ import net.minecraft.world.level.GameType;
 public class CobblemonCompatTests implements FabricGameTest {
 	private static final String AREA = CompatGameTests.AREA;
 
+	/** With Cobblemon and CobbleDollars installed, their integrations fill in every extension point at startup. */
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
+	public void cobblemonFillsTheExtensionPoints(GameTestHelper helper) {
+		helper.assertTrue(io.github.jcondedata.aliveworkplace.work.PokemonPartners.EXTENSION.present(), "Pokémon partners");
+		helper.assertTrue(io.github.jcondedata.aliveworkplace.work.Bank.EXTENSION.present(), "CobbleDollars");
+		helper.assertTrue(io.github.jcondedata.aliveworkplace.orchard.PokemonFruit.EXTENSION.present(), "apricorns");
+		helper.assertTrue(io.github.jcondedata.aliveworkplace.fossil.FossilLab.EXTENSION.present(), "fossils");
+		helper.assertTrue(io.github.jcondedata.aliveworkplace.ranch.DaycareDesk.EXTENSION.present(), "the daycare");
+		helper.assertTrue(io.github.jcondedata.aliveworkplace.trainer.TrainerBattles.EXTENSION.present(), "battles");
+		helper.assertTrue(io.github.jcondedata.aliveworkplace.trader.PokemonTrades.EXTENSION.present(), "trades");
+		helper.assertTrue(io.github.jcondedata.aliveworkplace.tutor.MoveLessons.EXTENSION.present(), "lessons");
+		helper.assertTrue(io.github.jcondedata.aliveworkplace.nurse.PokemonHealing.EXTENSION.present(), "healing");
+		helper.succeed();
+	}
+
 	/** A nurse heals the player's Pokémon too. */
 	@GameTest(template = AREA)
 	public void nurseHealsTheParty(GameTestHelper helper) {

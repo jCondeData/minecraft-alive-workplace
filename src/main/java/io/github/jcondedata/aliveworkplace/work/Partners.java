@@ -1,6 +1,5 @@
 package io.github.jcondedata.aliveworkplace.work;
 
-import io.github.jcondedata.aliveworkplace.compat.cobblemon.CobblemonPartners;
 import io.github.jcondedata.aliveworkplace.registry.ModVillagers;
 import java.util.List;
 import java.util.Map;
@@ -141,7 +140,7 @@ public final class Partners {
 		}
 		BlockPos site = villager.getBrain().getMemory(MemoryModuleType.JOB_SITE)
 			.filter(p -> p.dimension() == level.dimension()).map(GlobalPos::pos).orElse(null);
-		List<Component> names = site == null ? List.of() : CobblemonPartners.helpers(level, site, RADIUS, types, max(villager));
+		List<Component> names = site == null ? List.of() : PokemonPartners.EXTENSION.call(p -> p.helpers(level, site, RADIUS, types, max(villager)), List.<Component>of());
 		synchronized (CACHE) {
 			CACHE.put(villager, new Cached(now + RECHECK_TICKS, names));
 		}

@@ -1,7 +1,8 @@
 package io.github.jcondedata.aliveworkplace.guard;
 
+import java.util.List;
+import io.github.jcondedata.aliveworkplace.work.PokemonPartners;
 import io.github.jcondedata.aliveworkplace.AliveWorkplace;
-import io.github.jcondedata.aliveworkplace.compat.cobblemon.CobblemonPartners;
 import io.github.jcondedata.aliveworkplace.registry.ModVillagers;
 import io.github.jcondedata.aliveworkplace.work.Partners;
 import java.util.Map;
@@ -68,8 +69,8 @@ public final class GuardPartners {
 		}
 		long now = level.getGameTime();
 		int joined = 0;
-		for (CobblemonPartners.Fighter fighter : CobblemonPartners.fighters(level, post, Partners.RADIUS,
-				Partners.types(ModVillagers.GUARD), Partners.MAX)) {
+		for (PokemonPartners.Fighter fighter : PokemonPartners.EXTENSION.call(p -> p.fighters(level, post, Partners.RADIUS,
+				Partners.types(ModVillagers.GUARD), Partners.MAX), List.<PokemonPartners.Fighter>of())) {
 			LivingEntity pokemon = fighter.entity();
 			if (!foe.isAlive() || pokemon.distanceToSqr(foe) > REACH * REACH || !pokemon.hasLineOfSight(foe)) {
 				continue;
@@ -82,7 +83,7 @@ public final class GuardPartners {
 				LAST_MOVE.put(pokemon, now);
 			}
 			trail(level, pokemon, foe, fighter.type());
-			CobblemonPartners.useMove(level, pokemon, foe, fighter.type());
+			PokemonPartners.EXTENSION.run(p -> p.useMove(level, pokemon, foe, fighter.type()));
 			foe.hurt(new DamageSource(holder, pokemon, guard), damage(fighter.level()));
 			joined++;
 		}

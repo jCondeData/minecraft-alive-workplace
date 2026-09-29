@@ -115,7 +115,7 @@ public final class Trainers {
 			seen.put(player.getUUID(), day);
 			trainer.setAttached(ModAttachments.LEADER_CHALLENGES, Map.copyOf(seen));
 		}
-		io.github.jcondedata.aliveworkplace.compat.cobblemon.CobblemonTrainers.challenge(player, trainer);
+		TrainerBattles.EXTENSION.run(battles -> battles.challenge(player, trainer));
 	}
 
 	/** A battle with a trainer ended (won by the player or not). Levels the trainer and pays the prize. */

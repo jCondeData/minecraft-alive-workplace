@@ -1,6 +1,5 @@
 package io.github.jcondedata.aliveworkplace.orchard;
 
-import io.github.jcondedata.aliveworkplace.compat.cobblemon.CobblemonOrchard;
 import java.util.ArrayList;
 import java.util.List;
 import net.fabricmc.loader.api.FabricLoader;
@@ -38,7 +37,7 @@ public final class Fruit {
 		if (block instanceof CocoaBlock) {
 			return state.getValue(CocoaBlock.AGE) >= CocoaBlock.MAX_AGE;
 		}
-		return COBBLEMON && CobblemonOrchard.isRipe(state);
+		return COBBLEMON && PokemonFruit.EXTENSION.call(f -> f.isRipe(state), false);
 	}
 
 	/** Picks the fruit at {@code pos} (it must be ripe): returns what came off, and sets the plant back to growing. */
@@ -59,8 +58,8 @@ public final class Fruit {
 			out.addAll(Block.getDrops(state, level, pos, null, picker, ItemStack.EMPTY));
 			level.setBlock(pos, state.setValue(CocoaBlock.AGE, 0), Block.UPDATE_CLIENTS); // the pod grows back
 			level.playSound(null, pos, SoundEvents.WOOD_HIT, SoundSource.BLOCKS, 0.6f, 1.2f);
-		} else if (COBBLEMON && CobblemonOrchard.isRipe(state)) {
-			out.addAll(CobblemonOrchard.pick(level, pos, picker));
+		} else if (COBBLEMON && PokemonFruit.EXTENSION.call(f -> f.isRipe(state), false)) {
+			out.addAll(PokemonFruit.EXTENSION.call(f -> f.pick(level, pos, picker), List.<ItemStack>of()));
 			level.playSound(null, pos, SoundEvents.SWEET_BERRY_BUSH_PICK_BERRIES, SoundSource.BLOCKS, 0.8f, 1.1f);
 		}
 		return out;

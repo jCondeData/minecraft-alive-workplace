@@ -42,4 +42,35 @@ public class OptionalModsGameTests implements FabricGameTest {
 			new net.minecraft.core.BlockPos(1, 2, 1))).isEmpty(), "Pokémon partners without Cobblemon");
 		helper.succeed();
 	}
+
+	/** Without Cobblemon or CobbleDollars nothing fills in their extension points: every job plays as on plain Fabric. */
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
+	public void noExtensionsWithoutTheirMods(GameTestHelper helper) {
+		helper.assertFalse(io.github.jcondedata.aliveworkplace.work.PokemonPartners.EXTENSION.present(), "Pokémon partners");
+		helper.assertFalse(io.github.jcondedata.aliveworkplace.work.Bank.EXTENSION.present(), "a bank");
+		helper.assertFalse(io.github.jcondedata.aliveworkplace.orchard.PokemonFruit.EXTENSION.present(), "apricorns");
+		helper.assertFalse(io.github.jcondedata.aliveworkplace.fossil.FossilLab.EXTENSION.present(), "fossils");
+		helper.assertFalse(io.github.jcondedata.aliveworkplace.ranch.DaycareDesk.EXTENSION.present(), "the daycare");
+		helper.assertFalse(io.github.jcondedata.aliveworkplace.trainer.TrainerBattles.EXTENSION.present(), "battles");
+		helper.assertFalse(io.github.jcondedata.aliveworkplace.trader.PokemonTrades.EXTENSION.present(), "trades");
+		helper.assertFalse(io.github.jcondedata.aliveworkplace.tutor.MoveLessons.EXTENSION.present(), "lessons");
+		helper.assertFalse(io.github.jcondedata.aliveworkplace.nurse.PokemonHealing.EXTENSION.present(), "healing");
+		helper.succeed();
+	}
+
+	/** An integration whose mod changed its API (a LinkageError) is turned off; the caller gets the fallback, the game goes on. */
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
+	public void aBrokenIntegrationTurnsItselfOff(GameTestHelper helper) {
+		io.github.jcondedata.aliveworkplace.work.Extension<java.util.function.Supplier<String>> extension =
+			new io.github.jcondedata.aliveworkplace.work.Extension<>("a test integration");
+		helper.assertTrue("none".equals(extension.call(java.util.function.Supplier::get, "none")), "the fallback without a filling");
+		extension.register("test", () -> "filled");
+		helper.assertTrue("filled".equals(extension.call(java.util.function.Supplier::get, "none")), "the filling answers");
+		extension.register("test", () -> {
+			throw new NoSuchMethodError("the other mod's method went away");
+		});
+		helper.assertTrue("none".equals(extension.call(java.util.function.Supplier::get, "none")), "a broken filling gives the fallback");
+		helper.assertFalse(extension.present(), "a broken filling is turned off");
+		helper.succeed();
+	}
 }

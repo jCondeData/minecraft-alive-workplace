@@ -1,10 +1,10 @@
 package io.github.jcondedata.aliveworkplace.ranch;
 
+import io.github.jcondedata.aliveworkplace.work.PokemonPartners;
 import io.github.jcondedata.aliveworkplace.build.BuilderBag;
 import io.github.jcondedata.aliveworkplace.build.BuilderLevels;
 import io.github.jcondedata.aliveworkplace.build.Employer;
 import io.github.jcondedata.aliveworkplace.build.SupplyContainers;
-import io.github.jcondedata.aliveworkplace.compat.cobblemon.CobblemonPartners;
 import io.github.jcondedata.aliveworkplace.registry.ModAttachments;
 import io.github.jcondedata.aliveworkplace.registry.ModVillagers;
 import io.github.jcondedata.aliveworkplace.work.Partners;
@@ -159,8 +159,8 @@ public class RancherWork extends RanchWork {
 		if (COBBLEMON) {
 			long now = level.getGameTime();
 			Vec3 middle = Vec3.atCenterOf(station);
-			Entity pokemon = CobblemonPartners.pastured(level, station, RADIUS).stream()
-				.filter(p -> due(p, now) && CobblemonPartners.canBefriend(p))
+			Entity pokemon = PokemonPartners.EXTENSION.call(p -> p.pastured(level, station, RADIUS), List.<Entity>of()).stream()
+				.filter(p -> due(p, now) && PokemonPartners.EXTENSION.call(partners -> partners.canBefriend(p), false))
 				.min(Comparator.comparingDouble(p -> p.distanceToSqr(middle))).orElse(null);
 			if (pokemon != null) {
 				chore = Chore.GROOM;
@@ -275,7 +275,7 @@ public class RancherWork extends RanchWork {
 				level.playSound(null, animal.blockPosition(), SoundEvents.GENERIC_EAT, SoundSource.NEUTRAL, 0.6f, 1.2f);
 			}
 			level.playSound(null, animal.blockPosition(), SoundEvents.BRUSH_GENERIC, SoundSource.NEUTRAL, 0.8f, 1f);
-			if (CobblemonPartners.befriend(level, animal, amount)) {
+			if (PokemonPartners.EXTENSION.call(p -> p.befriend(level, animal, amount), false)) {
 				villager.setAttached(ModAttachments.POKEMON_TENDED, villager.getAttachedOrElse(ModAttachments.POKEMON_TENDED, 0) + 1);
 				BuilderLevels.addXp(level, villager, 1, null);
 			}

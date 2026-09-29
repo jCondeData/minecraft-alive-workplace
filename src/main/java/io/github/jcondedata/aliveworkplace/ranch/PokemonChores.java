@@ -1,12 +1,12 @@
 package io.github.jcondedata.aliveworkplace.ranch;
 
+import io.github.jcondedata.aliveworkplace.work.PokemonPartners;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import io.github.jcondedata.aliveworkplace.AliveWorkplace;
 import io.github.jcondedata.aliveworkplace.build.BuilderBag;
 import io.github.jcondedata.aliveworkplace.build.SupplyContainers;
-import io.github.jcondedata.aliveworkplace.compat.cobblemon.CobblemonPartners;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -178,12 +178,11 @@ public final class PokemonChores implements SimpleSynchronousResourceReloadListe
 		}
 		long now = level.getGameTime();
 		Vec3 middle = Vec3.atCenterOf(station);
-		List<Entity> pastured = new ArrayList<>(CobblemonPartners.pastured(level, station, radius));
+		List<Entity> pastured = new ArrayList<>(PokemonPartners.EXTENSION.call(p -> p.pastured(level, station, radius), List.<Entity>of()));
 		pastured.sort(Comparator.comparingDouble(e -> e.distanceToSqr(middle)));
 		for (Entity pokemon : pastured) {
 			for (Chore chore : chores) {
-				if (!due(pokemon, chore, now) || !CobblemonPartners.matches(pokemon, chore.target())
-					|| chore.extra() != null && !CobblemonPartners.matches(pokemon, chore.extra())) {
+				if (!due(pokemon, chore, now) || !matches(pokemon, chore.target()) || chore.extra() != null && !matches(pokemon, chore.extra())) {
 					continue;
 				}
 				if (bag.stacks().stream().anyMatch(chore::accepts) || SupplyContainers.firstMatching(level, own, chore::accepts) != null) {
@@ -192,6 +191,10 @@ public final class PokemonChores implements SimpleSynchronousResourceReloadListe
 			}
 		}
 		return null;
+	}
+
+	private static boolean matches(Entity pokemon, String properties) {
+		return PokemonPartners.EXTENSION.call(p -> p.matches(pokemon, properties), false);
 	}
 
 	private static boolean due(Entity pokemon, Chore chore, long now) {

@@ -67,7 +67,7 @@ public final class Tutors {
 			player.displayClientMessage(Component.translatable("message.aliveworkplace.tutor.asleep", tutor.getDisplayName()).withStyle(ChatFormatting.GRAY), true);
 			return;
 		}
-		io.github.jcondedata.aliveworkplace.compat.cobblemon.CobblemonTutors.open(player, tutor);
+		MoveLessons.EXTENSION.run(lessons -> lessons.open(player, tutor));
 	}
 
 	/** A lesson was given: count it, and the tutor learns from teaching. */

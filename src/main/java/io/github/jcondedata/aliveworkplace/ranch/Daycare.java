@@ -66,14 +66,14 @@ public final class Daycare {
 
 	public static void open(ServerPlayer player, Villager rancher) {
 		if (COBBLEMON) {
-			io.github.jcondedata.aliveworkplace.compat.cobblemon.CobblemonDaycare.open(player, rancher);
+			DaycareDesk.EXTENSION.run(desk -> desk.open(player, rancher));
 		}
 	}
 
 	/** The rancher died: every Pokémon in their care goes to its trainer's PC (with what it gained, free). */
 	public static void onDeath(ServerLevel level, Villager villager) {
 		if (COBBLEMON && !boarders(villager).isEmpty()) {
-			io.github.jcondedata.aliveworkplace.compat.cobblemon.CobblemonDaycare.returnAll(level, villager);
+			DaycareDesk.EXTENSION.run(desk -> desk.returnAll(level, villager));
 		}
 	}
 

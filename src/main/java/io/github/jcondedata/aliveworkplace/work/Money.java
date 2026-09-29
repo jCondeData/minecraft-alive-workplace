@@ -1,7 +1,5 @@
 package io.github.jcondedata.aliveworkplace.work;
 
-import io.github.jcondedata.aliveworkplace.AliveWorkplace;
-import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
@@ -10,34 +8,29 @@ import net.minecraft.world.item.Items;
 /**
  * Paying and charging players: in CobbleDollars when that mod is installed (the Cobbleverse pack's money),
  * otherwise in emeralds. Amounts are given in both, and only the one in use counts. If CobbleDollars ever
- * changes under us, we quietly fall back to emeralds instead of crashing.
+ * changes under us, we quietly fall back to emeralds instead of crashing (see {@link Bank}).
  */
 public final class Money {
 	/** What an emerald price comes to in CobbleDollars (lessons, shop prices, fares). */
 	public static int DOLLARS_PER_EMERALD = 100;
 
-	private static boolean cobbleDollars = FabricLoader.getInstance().isModLoaded("cobbledollars");
-
-	/** Whether prices and prizes are in CobbleDollars right now. */
+	/** Whether prices and prizes are in CobbleDollars right now (a {@link Bank} is filled in and still works). */
 	public static boolean cobbleDollars() {
-		return cobbleDollars;
+		return Bank.EXTENSION.present();
 	}
 
 	/** "600 CobbleDollars" or "6 emeralds". */
 	public static Component describe(long dollars, int emeralds) {
-		return cobbleDollars
+		return cobbleDollars()
 			? Component.translatable("message.aliveworkplace.money.dollars", dollars)
 			: Component.translatable("message.aliveworkplace.money.emeralds", emeralds);
 	}
 
 	/** What the player has: "1,250 CobbleDollars" or "12 emeralds". */
 	public static Component balance(ServerPlayer player) {
-		if (cobbleDollars) {
-			try {
-				return describe(io.github.jcondedata.aliveworkplace.compat.cobbledollars.CobbleDollarsBank.balance(player), 0);
-			} catch (LinkageError e) {
-				disable(e);
-			}
+		Long dollars = Bank.EXTENSION.call(bank -> bank.balance(player), null);
+		if (dollars != null) {
+			return describe(dollars, 0);
 		}
 		return describe(0, player.getInventory().countItem(Items.EMERALD));
 	}
@@ -46,12 +39,9 @@ public final class Money {
 		if (player.getAbilities().instabuild) {
 			return true;
 		}
-		if (cobbleDollars) {
-			try {
-				return io.github.jcondedata.aliveworkplace.compat.cobbledollars.CobbleDollarsBank.balance(player) >= dollars;
-			} catch (LinkageError e) {
-				disable(e);
-			}
+		Boolean enough = Bank.EXTENSION.call(bank -> bank.balance(player) >= dollars, null);
+		if (enough != null) {
+			return enough;
 		}
 		return player.getInventory().countItem(Items.EMERALD) >= emeralds;
 	}
@@ -61,12 +51,9 @@ public final class Money {
 		if (player.getAbilities().instabuild) {
 			return true;
 		}
-		if (cobbleDollars) {
-			try {
-				return io.github.jcondedata.aliveworkplace.compat.cobbledollars.CobbleDollarsBank.take(player, dollars);
-			} catch (LinkageError e) {
-				disable(e);
-			}
+		Boolean taken = Bank.EXTENSION.call(bank -> bank.take(player, dollars), null);
+		if (taken != null) {
+			return taken;
 		}
 		if (player.getInventory().countItem(Items.EMERALD) < emeralds) {
 			return false;
@@ -77,23 +64,17 @@ public final class Money {
 
 	/** Pays a prize. */
 	public static void pay(ServerPlayer player, long dollars, int emeralds) {
-		if (cobbleDollars) {
-			try {
-				io.github.jcondedata.aliveworkplace.compat.cobbledollars.CobbleDollarsBank.add(player, dollars);
-				return;
-			} catch (LinkageError e) {
-				disable(e);
-			}
+		boolean paid = Bank.EXTENSION.call(bank -> {
+			bank.add(player, dollars);
+			return true;
+		}, false);
+		if (paid) {
+			return;
 		}
 		ItemStack prize = new ItemStack(Items.EMERALD, emeralds);
 		if (!player.getInventory().add(prize)) {
 			player.drop(prize, false);
 		}
-	}
-
-	private static void disable(LinkageError e) {
-		AliveWorkplace.LOG.warn("CobbleDollars changed in a way Alive Workplace doesn't understand; using emeralds instead", e);
-		cobbleDollars = false;
 	}
 
 	private Money() {

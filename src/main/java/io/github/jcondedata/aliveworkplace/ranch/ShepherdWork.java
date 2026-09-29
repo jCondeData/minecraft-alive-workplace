@@ -70,7 +70,7 @@ public class ShepherdWork extends RanchWork {
 		if (!entity.isAlive() || !(entity instanceof Shearable shearable) || !shearable.readyForShearing()) {
 			return false;
 		}
-		return entity instanceof Sheep || COBBLEMON && io.github.jcondedata.aliveworkplace.compat.cobblemon.CobblemonPartners.isPastured(entity);
+		return entity instanceof Sheep || COBBLEMON && io.github.jcondedata.aliveworkplace.work.PokemonPartners.EXTENSION.call(p -> p.isPastured(entity), false);
 	}
 
 	/** Shears in hand first, from the chests. */

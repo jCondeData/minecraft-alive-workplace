@@ -39,7 +39,7 @@ public final class Nurses {
 			tell(player, Component.translatable("message.aliveworkplace.nurse.asleep", nurse.getDisplayName()), ChatFormatting.GRAY);
 			return;
 		}
-		if (COBBLEMON && io.github.jcondedata.aliveworkplace.compat.cobblemon.CobblemonNurse.inBattle(player)) {
+		if (COBBLEMON && PokemonHealing.EXTENSION.call(h -> h.inBattle(player), false)) {
 			tell(player, Component.translatable("message.aliveworkplace.nurse.in_battle"), ChatFormatting.YELLOW);
 			return;
 		}
@@ -60,7 +60,7 @@ public final class Nurses {
 				hurt = true;
 			}
 		}
-		int pokemon = COBBLEMON ? io.github.jcondedata.aliveworkplace.compat.cobblemon.CobblemonNurse.healParty(player) : 0;
+		int pokemon = COBBLEMON ? PokemonHealing.EXTENSION.call(h -> h.healParty(player), 0) : 0;
 		MutableComponent message = Component.translatable(pokemon > 0 ? "message.aliveworkplace.nurse.healed_party" : "message.aliveworkplace.nurse.healed",
 			nurse.getDisplayName(), pokemon);
 		tell(player, message, ChatFormatting.LIGHT_PURPLE);

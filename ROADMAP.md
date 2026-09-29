@@ -677,6 +677,26 @@ ones we lack, our way.
   hall, scale 0, colours rendered from loaded chunks), named `MapBanner`s by building kind, legend in the lore
 - [x] "What next?" (`hall/VillageAdvice`, hall slot 16): the village's gaps, most pressing first
 
+## Milestone 19 — One codebase, several Minecraft versions (owner, 2026-09-29)
+Following the minecraft-mod-engineer skill: a Stonecutter build with a node per Minecraft version (1.21.1 for
+Cobbleverse, 26.3 later) and the layers `platform/`, `mc/`, `compat/` around the rest. The assessment and plan:
+the "Alive Workplace: multi-version assessment" doc. Feature work pauses for phases 0–2, done as one block; each
+phase is 1.21.1 only, changes no gameplay, lands as one commit, and only when both test suites and the Cobbleverse
+pack boot test pass.
+- [x] Phase 0: Gradle 9.8 on JDK 25 with a Java 21 toolchain, Loom 1.18.2 (`fabric-loom-remap`), CI on JDK 25 + 21;
+  CobbleDollars, RCT and Mega Showdown in `suggests`; the 21 direct calls from 16 files into `compat/` moved behind
+  extension points (`work/Extension`) that `compat/Compat.init` fills after `isModLoaded`, fail-soft on `LinkageError`,
+  each integration with a tested version range
+- [ ] Phase 1: `platform/` (loader calls: `isModLoaded`, config dir, events, creative tab, payloads, POIs, game rules,
+  reload listeners), `mc/` adapters for the calls that change by 26.3, `isClientSide()`/`level().getServer()` now, and a
+  `checkLayers` task that enforces the layers on today's feature packages (no move to `core/`)
+- [ ] Phase 2: Stonecutter with only the 1.21.1 node (`vcsVersion = "1.21.1"`), our build logic carried over (gametest,
+  compattest, devclient, screenshots, packtest), compat files behind `//? if <mod>`, `//$ gametest` swaps; jar names
+  become `alive-workplace-<ver>+1.21.1.jar` with the pack install, CI tagging and a note of what changes on the server
+- [ ] Phases 3–4 (the 26.3 node and releasing both): **on hold until the owner says go** (likely when the mod goes on
+  Modrinth or Cobblemon ships for 26.x). The first 26.3 build ships with worker schedules and client rendering working,
+  or not at all.
+
 ## Milestone 5 — Release
 - [ ] Publish on Modrinth and CurseForge as **Alive Workplace** (Minecraft brand rules: don't lead the name with "Minecraft")
 - [x] Screenshots/GIFs through the README, and an at-a-glance table of every job (workstation, what goes in the chests,
@@ -716,6 +736,10 @@ ones we lack, our way.
 - **Builds should look sleek and interesting** (2026-09-29): every build we ship follows `tools/blueprints/STYLE.md`
   (plinth, frame, depth, overhanging roofs, varied outline, texture, small details) and is checked in a render first.
   Open-source builds may be used only if their licence allows it and they're credited; so far everything is original.
+
+- **Multi-version** (2026-09-29): follow the minecraft-mod-engineer skill. Keep today's feature packages (the build
+  enforces the layers on them); no partial 26.3 release; jar names `<ver>+<mc>` from the Stonecutter phase; feature
+  work pauses for phases 0–2 (Milestone 19).
 
 ## Notes / blocked
 - (autonomous sessions: write anything you could not finish or need the owner to decide here)

@@ -9,6 +9,11 @@
 - **Treasury**: every morning a village with a Village Hall puts by its takings (a fifth of an emerald a worker, more
   for a well-kept village and a higher rank); click the hall's name on its screen to collect them.
 
+### Changed
+- Under the hood, no gameplay changes: the build uses Gradle 9.8 on JDK 25 and Loom 1.18.2 (the game still runs on
+  Java 21); the Cobblemon and CobbleDollars integrations plug in through the mod's own extension points and switch
+  themselves off with a line in the log, instead of crashing, if a future version of those mods changes its API.
+
 ## 0.133.0 — 2026-09-29
 
 ### Added

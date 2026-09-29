@@ -2,6 +2,15 @@
 
 ## Unreleased
 
+## 0.77.0 — 2026-09-28
+
+### Added
+- **Berry Farm** blueprint (and **Berry Farm II**): a fenced garden of sweet berry bushes with a Fruit Basket, then a
+  pergola with glow berries. Orchard keepers sell it at Expert level; it's in the Blueprint Table too.
+- **Research Lab** blueprint (and **Research Lab II**): a stone lab with a Fossil Lab and a fossil on show, then a
+  museum hall with a big skeleton. Fossil scientists sell it at Journeyman level.
+- **Glow berries in orchards**: orchard keepers hang glow berries from any solid ceiling in their orchard.
+
 ## 0.76.0 — 2026-09-28
 
 ### Added

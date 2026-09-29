@@ -77,10 +77,15 @@ public final class Orchards {
 
 	// --- planting ------------------------------------------------------------------------------
 
-	/** Something an orchard keeper plants: sweet berries, and with Cobblemon apricorn seeds and berries. */
+	/** Something an orchard keeper plants: sweet berries, glow berries (under a ceiling), and with Cobblemon apricorn seeds and berries. */
 	public static boolean isSeed(ItemStack stack) {
 		return !stack.isEmpty() && stack.getItem() instanceof BlockItem
-			&& (stack.is(Items.SWEET_BERRIES) || COBBLEMON && CobblemonOrchard.isSeed(stack));
+			&& (stack.is(Items.SWEET_BERRIES) || stack.is(Items.GLOW_BERRIES) || COBBLEMON && CobblemonOrchard.isSeed(stack));
+	}
+
+	/** Glow berries hang from a ceiling instead of standing on the ground. */
+	static boolean hangs(ItemStack seed) {
+		return seed.is(Items.GLOW_BERRIES);
 	}
 
 	private static int spacing(ItemStack seed) {
@@ -116,9 +121,9 @@ public final class Orchards {
 		double bestDistance = Double.MAX_VALUE;
 		for (int x = orchard.minX(); x <= orchard.maxX(); x += spacing) {
 			for (int z = orchard.minZ(); z <= orchard.maxZ(); z += spacing) {
-				BlockPos spot = ground(level, orchard, x, z);
+				BlockPos spot = hangs(seed) ? ceiling(level, orchard, x, z) : ground(level, orchard, x, z);
 				if (spot == null || !(planted.canSurvive(level, spot) || canTill && needsTilling(level, spot, seed))
-					|| !level.getBlockState(spot.above()).isAir()) {
+					|| !hangs(seed) && !level.getBlockState(spot.above()).isAir()) {
 					continue;
 				}
 				double d = spot.distSqr(near);
@@ -144,6 +149,23 @@ public final class Orchards {
 				continue;
 			}
 			if (level.getBlockState(p.below()).blocksMotion()) {
+				return p;
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * The free spot under a ceiling in this column (glow berries): open space with a solid block right above it and room
+	 * below it to hang down; null if there's none (or something already hangs there).
+	 */
+	@Nullable
+	private static BlockPos ceiling(ServerLevel level, BoundingBox orchard, int x, int z) {
+		for (int y = orchard.minY(); y <= orchard.maxY() + 4; y++) {
+			BlockPos p = new BlockPos(x, y, z);
+			BlockPos above = p.above();
+			if (level.getBlockState(p).isAir() && level.getBlockState(p.below()).isAir()
+				&& level.getBlockState(above).isFaceSturdy(level, above, Direction.DOWN)) {
 				return p;
 			}
 		}
@@ -180,8 +202,11 @@ public final class Orchards {
 			level.playSound(null, ground, SoundEvents.HOE_TILL, SoundSource.BLOCKS, 1f, 1f);
 			hoe.hurtAndBreak(1, villager, net.minecraft.world.entity.EquipmentSlot.MAINHAND);
 		}
+		// Placed as a player would: on top of the ground, or against the ceiling for what hangs.
+		BlockPos against = hangs(seed) ? spot.above() : ground;
+		Direction face = hangs(seed) ? Direction.DOWN : Direction.UP;
 		BlockPlaceContext context = new BlockPlaceContext(level, null, InteractionHand.MAIN_HAND, seed.copyWithCount(1),
-			new BlockHitResult(Vec3.atCenterOf(ground).add(0, 0.5, 0), Direction.UP, ground, false));
+			new BlockHitResult(Vec3.atCenterOf(against).add(0, face == Direction.UP ? 0.5 : -0.5, 0), face, against, false));
 		if (!item.place(context).consumesAction()) {
 			return false;
 		}

@@ -76,6 +76,32 @@ public class OrchardGameTests implements FabricGameTest {
 		});
 	}
 
+	/** Glow berries in the chest: planted hanging from the ceiling over the orchard (a roof here), in the same grid. */
+	@GameTest(template = AREA, timeoutTicks = 2400, batch = "orchard_glow")
+	public void orchardKeeperHangsGlowBerries(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		for (BlockPos p : BlockPos.betweenClosed(new BlockPos(9, 5, 9), new BlockPos(13, 5, 13))) {
+			helper.setBlock(p, Blocks.STONE);
+		}
+		Villager villager = keeper(helper);
+		net.minecraft.world.Container chest = helper.getBlockEntity(CHEST);
+		chest.setItem(0, new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.GLOW_BERRIES, 10));
+		io.github.jcondedata.aliveworkplace.orchard.Orchards.start(villager,
+			net.minecraft.world.level.levelgen.structure.BoundingBox.fromCorners(helper.absolutePos(new BlockPos(10, 1, 10)), helper.absolutePos(new BlockPos(12, 1, 12))));
+		helper.succeedWhen(() -> {
+			for (int x = 10; x <= 12; x += 2) {
+				for (int z = 10; z <= 12; z += 2) {
+					helper.assertBlockPresent(Blocks.CAVE_VINES, new BlockPos(x, 4, z));
+				}
+			}
+			int planted = villager.getAttachedOrElse(io.github.jcondedata.aliveworkplace.registry.ModAttachments.SAPLINGS_PLANTED, 0);
+			helper.assertTrue(planted == 4, "planted " + planted);
+			helper.assertTrue(chest.countItem(net.minecraft.world.item.Items.GLOW_BERRIES) + villager.getAttachedOrCreate(
+				io.github.jcondedata.aliveworkplace.registry.ModAttachments.BUILDER_BAG).count(net.minecraft.world.item.Items.GLOW_BERRIES) == 6,
+				"glow berries used: " + (10 - chest.countItem(net.minecraft.world.item.Items.GLOW_BERRIES)));
+		});
+	}
+
 	/** Ripe berries, a cocoa pod and glow berries all get picked into the chest; the plants stay to grow again. */
 	@GameTest(template = AREA, timeoutTicks = 2400)
 	public void orchardKeeperPicksRipeFruit(GameTestHelper helper) {

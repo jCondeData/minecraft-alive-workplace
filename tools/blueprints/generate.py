@@ -768,6 +768,135 @@ def storehouse_3():
     return b
 
 
+# --- Berry Farm: an orchard keeper's garden --------------------------------------------------------------
+def berry_farm():
+    """11 x 4 x 9: a fenced garden of sweet berry bushes either side of a path, with a Fruit Basket and a chest by the
+    back fence (a villager moves in as the orchard keeper and picks the berries)."""
+    b = Build(11, 4, 9)
+    b.fill(0, 0, 0, 10, 0, 8, "grass_block", snowy=False)
+    for z in range(0, 8):
+        b.set(5, 0, z, "dirt_path")
+    for x in range(0, 11):
+        for z in (0, 8):
+            if (x, z) != (5, 0):
+                b.set(x, 1, z, "spruce_fence", north=False, south=False, east=x < 10, west=x > 0, waterlogged=False)
+    for z in range(1, 8):
+        for x in (0, 10):
+            b.set(x, 1, z, "spruce_fence", north=True, south=True, east=False, west=False, waterlogged=False)
+    b.set(5, 1, 0, "spruce_fence_gate", facing="south", open=False, in_wall=False, powered=False)
+    for x in (1, 3, 7, 9):
+        for z in (2, 4, 6):
+            b.set(x, 1, z, "sweet_berry_bush", age=0)
+    b.set(4, 1, 7, "aliveworkplace:fruit_basket", facing="north")
+    b.set(6, 1, 7, "chest", facing="north", type="single", waterlogged=False)
+    for x, z in ((0, 0), (10, 0), (0, 8), (10, 8)):
+        b.set(x, 2, z, "lantern", hanging=False, waterlogged=False)
+    b.fill_air()
+    return b
+
+
+def berry_farm_2():
+    """Upgrade of the Berry Farm: through a gate in the back fence, a pergola with glow berries hanging from its roof and
+    more bushes underneath."""
+    b = berry_farm().grow(11, 5, 15)
+    b.fill(0, 0, 9, 10, 0, 14, "grass_block", snowy=False)
+    b.set(5, 0, 8, "dirt_path")
+    b.set(5, 1, 8, "spruce_fence_gate", facing="south", open=False, in_wall=False, powered=False)
+    for z in range(9, 14):
+        for x in (0, 10):
+            b.set(x, 1, z, "spruce_fence", north=True, south=True, east=False, west=False, waterlogged=False)
+    for x in range(0, 11):
+        b.set(x, 1, 14, "spruce_fence", north=False, south=False, east=x < 10, west=x > 0, waterlogged=False)
+    for x, z in ((2, 10), (8, 10), (2, 13), (8, 13)):
+        for y in range(1, 4):
+            b.set(x, y, z, "spruce_log", axis="y")
+    b.fill(2, 4, 10, 8, 4, 13, "spruce_planks")
+    for x in (3, 5, 7):
+        for z in (11, 12):
+            b.set(x, 3, z, "cave_vines", age=0, berries=False)
+    for x in (4, 6):
+        for z in (11, 12):
+            b.set(x, 1, z, "sweet_berry_bush", age=0)
+    for z in range(9, 14):
+        b.set(5, 0, z, "dirt_path")
+    b.set(5, 3, 10, "lantern", hanging=True, waterlogged=False)
+    b.fill_air()
+    return b
+
+
+# --- Research Lab: the fossil scientist's -------------------------------------------------------------
+def research_lab():
+    """9 x 6 x 9: a stone lab with a Fossil Lab at the back (a villager moves in as the fossil scientist; with Cobblemon
+    they revive fossils), bookshelves, a glass case and a bone-block skeleton on show."""
+    b = Build(9, 6, 9)
+    b.fill(0, 0, 0, 8, 0, 8, "polished_andesite")
+    for y in range(1, 4):
+        b.ring(0, 0, 8, 8, y, "stone_bricks")
+    for z in (2, 3, 5, 6):
+        for x in (0, 8):
+            b.set(x, 2, z, "glass_pane", north=True, south=True, east=False, west=False, waterlogged=False)
+    for x in (2, 6):
+        b.set(x, 2, 0, "glass_pane", north=False, south=False, east=True, west=True, waterlogged=False)
+    b.door(4, 1, 0, "spruce_door", facing="south")
+    b.fill(0, 4, 0, 8, 4, 8, "polished_andesite")
+    b.fill(1, 5, 1, 7, 5, 7, "stone_brick_slab", type="bottom", waterlogged=False)
+    b.set(4, 1, 7, "aliveworkplace:fossil_lab", facing="north")
+    for x in (1, 7):
+        for y in (1, 2):
+            b.set(x, y, 7, "bookshelf")
+    b.set(3, 1, 6, "spruce_stairs", facing="south", half="bottom", shape="straight", waterlogged=False)
+    # A fossil on show: a spine and ribs of bone blocks
+    b.set(1, 1, 3, "bone_block", axis="y")
+    b.set(1, 2, 3, "bone_block", axis="y")
+    b.set(2, 2, 3, "bone_block", axis="x")
+    b.set(1, 1, 4, "polished_andesite")
+    # A glass case
+    b.set(7, 1, 3, "polished_andesite")
+    b.set(7, 2, 3, "glass")
+    b.set(4, 3, 4, "lantern", hanging=True, waterlogged=False)
+    b.fill_air()
+    return b
+
+
+def research_lab_2():
+    """Upgrade of the Research Lab: a museum hall to the east through a doorway, with a big skeleton of bone blocks under
+    a glass roof and more cases."""
+    b = research_lab().grow(15, 6, 9)
+    b.fill(9, 0, 0, 14, 0, 8, "polished_andesite")
+    for y in range(1, 4):
+        for x in range(9, 15):
+            b.set(x, y, 0, "stone_bricks")
+            b.set(x, y, 8, "stone_bricks")
+        for z in range(1, 8):
+            b.set(14, y, z, "stone_bricks")
+    for x in range(9, 15):
+        b.set(x, 4, 0, "polished_andesite")
+        b.set(x, 4, 8, "polished_andesite")
+    for z in range(1, 8):
+        b.set(14, 4, z, "polished_andesite")
+    b.fill(9, 4, 1, 13, 4, 7, "glass")
+    b.clear(8, 1, 4, 8, 2, 4)  # the doorway from the lab
+    for x in (10, 12):
+        b.set(x, 2, 0, "glass_pane", north=False, south=False, east=True, west=True, waterlogged=False)
+    # The skeleton: legs, a spine, a neck and a skull
+    for x in (10, 12):
+        for z in (3, 5):
+            b.set(x, 1, z, "bone_block", axis="y")
+    for x in range(10, 13):
+        b.set(x, 2, 4, "bone_block", axis="x")
+    b.set(10, 2, 3, "bone_block", axis="z")
+    b.set(10, 2, 5, "bone_block", axis="z")
+    b.set(12, 2, 3, "bone_block", axis="z")
+    b.set(12, 2, 5, "bone_block", axis="z")
+    b.set(13, 2, 4, "bone_block", axis="y")  # the neck, and the skull on top (the doorway side stays clear)
+    b.set(13, 3, 4, "skeleton_skull", rotation=12)
+    for z in (1, 7):
+        b.set(13, 1, z, "polished_andesite")
+        b.set(13, 2, z, "glass")
+    b.fill_air()
+    return b
+
+
 # --- Village builder's workshops: one per village type, added to the vanilla house pools ------
 VILLAGE_STYLES = {
     #          floor              walls            corners                 roof stairs         roof slab            door           bed
@@ -1081,6 +1210,10 @@ if __name__ == "__main__":
     storehouse().save(MAIN_STRUCTURES, "storehouse")
     storehouse_2().save(MAIN_STRUCTURES, "storehouse_2")
     storehouse_3().save(MAIN_STRUCTURES, "storehouse_3")
+    berry_farm().save(MAIN_STRUCTURES, "berry_farm")
+    berry_farm_2().save(MAIN_STRUCTURES, "berry_farm_2")
+    research_lab().save(MAIN_STRUCTURES, "research_lab")
+    research_lab_2().save(MAIN_STRUCTURES, "research_lab_2")
     for style in VILLAGE_STYLES:
         builders_workshop(style).save(VILLAGE_STRUCTURES, f"{style}_builders_workshop")
         for name, fit_out in VILLAGE_HOUSES.items():

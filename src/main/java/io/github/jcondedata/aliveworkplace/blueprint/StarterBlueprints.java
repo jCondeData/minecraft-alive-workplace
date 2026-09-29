@@ -48,9 +48,18 @@ public final class StarterBlueprints {
 	/** A stone warehouse behind the bays with sixteen more chests. */
 	public static final Entry STOREHOUSE_3 = new Entry(AliveWorkplace.id("storehouse_3"), new Vec3i(13, 7, 12));
 
+	/** A fenced garden of sweet berry bushes with a Fruit Basket: an orchard keeper moves in. */
+	public static final Entry BERRY_FARM = new Entry(AliveWorkplace.id("berry_farm"), new Vec3i(11, 4, 9));
+	/** A pergola behind it, glow berries hanging from its roof. */
+	public static final Entry BERRY_FARM_2 = new Entry(AliveWorkplace.id("berry_farm_2"), new Vec3i(11, 5, 15));
+	/** A stone lab with a Fossil Lab: a fossil scientist moves in. */
+	public static final Entry RESEARCH_LAB = new Entry(AliveWorkplace.id("research_lab"), new Vec3i(9, 6, 9));
+	/** A museum hall beside it with a big skeleton on show. */
+	public static final Entry RESEARCH_LAB_2 = new Entry(AliveWorkplace.id("research_lab_2"), new Vec3i(15, 6, 9));
+
 	public static final List<Entry> ALL = List.of(STARTER_COTTAGE, STARTER_COTTAGE_2, STARTER_COTTAGE_3, MARKET_STALL, MARKET_STALL_2, MARKET_STALL_3,
 		LOOKOUT_TOWER, LOOKOUT_TOWER_2, LOOKOUT_TOWER_3, HEALING_CENTER, HEALING_CENTER_2, HEALING_CENTER_3, SUPPLY_SHOP, SUPPLY_SHOP_2, SUPPLY_SHOP_3,
-		STOREHOUSE, STOREHOUSE_2, STOREHOUSE_3);
+		STOREHOUSE, STOREHOUSE_2, STOREHOUSE_3, BERRY_FARM, BERRY_FARM_2, RESEARCH_LAB, RESEARCH_LAB_2);
 
 	private StarterBlueprints() {
 	}

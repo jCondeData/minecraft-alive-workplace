@@ -121,8 +121,10 @@ public final class ModTrades {
 		});
 		TradeOfferHelper.registerVillagerOffers(ModVillagers.FOSSIL_SCIENTIST, 2, offers ->
 			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 2), new ItemStack(Items.SUSPICIOUS_SAND), 6, 10, 0.05f)));
-		TradeOfferHelper.registerVillagerOffers(ModVillagers.FOSSIL_SCIENTIST, 3, offers ->
-			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 2), new ItemStack(Items.SUSPICIOUS_GRAVEL), 6, 15, 0.05f)));
+		TradeOfferHelper.registerVillagerOffers(ModVillagers.FOSSIL_SCIENTIST, 3, offers -> {
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 2), new ItemStack(Items.SUSPICIOUS_GRAVEL), 6, 15, 0.05f));
+			offers.add((entity, random) -> blueprint(StarterBlueprints.RESEARCH_LAB, 12));
+		});
 		TradeOfferHelper.registerVillagerOffers(ModVillagers.FOSSIL_SCIENTIST, 4, offers ->
 			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.AMETHYST_SHARD, 8), new ItemStack(Items.EMERALD), 12, 20, 0.05f)));
 		TradeOfferHelper.registerVillagerOffers(ModVillagers.FOSSIL_SCIENTIST, 5, offers ->
@@ -234,7 +236,7 @@ public final class ModTrades {
 		});
 		TradeOfferHelper.registerVillagerOffers(ModVillagers.ORCHARD_KEEPER, 4, offers -> {
 			offers.add((entity, random) -> cobblemon(BERRIES[random.nextInt(BERRIES.length)] + "_berry", 3, 2, 8, 20));
-			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 5), new ItemStack(Items.GOLDEN_CARROT, 3), 8, 20, 0.05f));
+			offers.add((entity, random) -> blueprint(StarterBlueprints.BERRY_FARM, 10));
 		});
 		TradeOfferHelper.registerVillagerOffers(ModVillagers.ORCHARD_KEEPER, 5, offers -> {
 			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 8), new ItemStack(Items.GOLDEN_APPLE), 4, 30, 0.05f));

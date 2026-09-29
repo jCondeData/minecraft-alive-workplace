@@ -584,5 +584,9 @@
   "message.aliveworkplace.quarry.ores.band.gold": "redstone, gold and lapis",
   "message.aliveworkplace.quarry.ores.band.diamonds": "diamonds and redstone",
   "message.aliveworkplace.quarry.strip_command.no_marker": "Hold a Quarry Marker to set the height of its strip mine.",
-  "message.aliveworkplace.quarry.strip_command.out_of_world": "Tunnels have to be between Y=%s and Y=%s here."
+  "message.aliveworkplace.quarry.strip_command.out_of_world": "Tunnels have to be between Y=%s and Y=%s here.",
+  "blueprint.aliveworkplace.berry_farm": "Berry Farm",
+  "blueprint.aliveworkplace.berry_farm_2": "Berry Farm II",
+  "blueprint.aliveworkplace.research_lab": "Research Lab",
+  "blueprint.aliveworkplace.research_lab_2": "Research Lab II"
 }

@@ -194,8 +194,13 @@ the basket. They reach up into trees with a picking pole and never step into a b
 **Planting an orchard.** Mark an area with a **Field Marker** (within 48 blocks of the basket) and give it to the
 keeper. They plant it from the chests: sweet berries as bushes two blocks apart on grass or dirt, and with Cobblemon
 berries (on farmland — put a **hoe** in the chests and they till grass and dirt for them) and apricorn seeds (on grass
-or dirt, three apart), then pick what grows there too.
+or dirt, three apart), then pick what grows there too. **Glow berries** are hung from the underside of any solid
+ceiling in the orchard (a pergola, a cave roof), two blocks apart like the bushes.
 Sneak-right-click the keeper with an empty hand to see the orchard or stop it.
+
+**Berry Farm.** Orchard keepers at Expert level sell the **Berry Farm** blueprint (it's in the Blueprint Table too): a
+fenced garden of sweet berry bushes with a Fruit Basket and a harvest chest. The **Berry Farm II** adds a pergola
+behind it with glow berries hanging from its roof.
 
 ## Farmers
 ![A farmer harvesting, replanting and sowing a field](docs/media/farmer.gif)
@@ -417,7 +422,9 @@ Right-click them holding a fossil (for a Galar fossil, hold one half in each han
 with CobbleDollars): they revive it at the lab while they work, about three minutes for a novice and quicker as they
 level up. The Pokémon joins your party (or goes to your PC) the moment it's done, or the next time you're online. It's
 Cobblemon's own revival, the same Pokémon its machine gives. Right-click with an empty hand to see how it's going; sneak
-to trade. A scientist takes on three fossils at a time. Villages sometimes grow a fossil lab.
+to trade. A scientist takes on three fossils at a time. Villages sometimes grow a fossil lab, and scientists at
+Journeyman level sell the **Research Lab** blueprint (a stone lab with a Fossil Lab and a fossil on show; the
+**Research Lab II** adds a museum hall with a big skeleton).
 
 ## Pokémon Traders (with Cobblemon)
 Craft a **Trade Board** (an item frame on planks) and place it near a villager without a job: they become a

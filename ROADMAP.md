@@ -252,7 +252,10 @@ workstation, like the rest of the mod.
   into the chests (only while there's room)
 - [ ] Partner follow-ups: guards fighting beside their Pokémon
   Fighting/Dragon types
-- [ ] Pokémon-themed blueprints that come with staff: Pokémon Center (Nurse), Poké Mart (Clerk, sells for CobbleDollars), Berry Farm, Fossil Lab
+- [x] Pokémon-themed blueprints that come with staff: the Healing Center (Nurse; a Pokémon Center) and Supply Shop (Shop
+  Counter; a Poké Mart that sells for CobbleDollars) were already there; added the **Berry Farm** (+ II, glow berry
+  pergola; sold by Orchard Keepers at level 4) and the **Research Lab** (+ II, museum hall; Fossil Lab, sold by Fossil
+  Scientists at level 3)
 - [x] **Orchard Keeper** (Fruit Basket workstation): picks ripe sweet berries, glow berries, cocoa and, with Cobblemon,
   apricorns and berry plants within 16 blocks (plants stay and regrow; berry plants through Cobblemon's own harvest, so
   yields and mulch work as for players), stores the harvest in the chests by the basket; reaches 6 blocks up with a
@@ -266,7 +269,8 @@ workstation, like the rest of the mod.
   fruit in the orchard is picked beyond the 16-block search. Shared marker plumbing in `work/AreaJobs` (tree farms too)
 - [x] Orchard keepers till for berries: with a hoe in hand (fetched from the chests) grass/dirt/path in the orchard is
   tilled into farmland for a Cobblemon berry (`Orchards.needsTilling`; berries keep their farmland from drying out)
-- [ ] Orchard follow-ups: glow berries under ceilings
+- [x] Orchard follow-ups: glow berries under ceilings (`Orchards.hangs`: planted against the underside of a solid
+  block in the orchard, 2 apart, like a player would)
 - [x] **Ball Smith** (Ball Workbench): makes Poké Balls from the apricorns and ball metals in the chests with
   Cobblemon's own crafting recipes (`smith/BallRecipes`: results in `#cobblemon:poke_balls` using a
   `tier_N_poke_ball_materials` metal; copper 1 … diamond 4, up to the smith's level; never the Master Ball), taking

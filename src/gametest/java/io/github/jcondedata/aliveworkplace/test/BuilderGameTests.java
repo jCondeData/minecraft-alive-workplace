@@ -750,6 +750,16 @@ public class BuilderGameTests implements FabricGameTest {
 		buildStarter(helper, StarterBlueprints.STOREHOUSE);
 	}
 
+	@GameTest(template = BIG_AREA, timeoutTicks = 9000, batch = "starter_builds")
+	public void buildsBerryFarm(GameTestHelper helper) {
+		buildStarter(helper, StarterBlueprints.BERRY_FARM);
+	}
+
+	@GameTest(template = BIG_AREA, timeoutTicks = 9000, batch = "starter_builds")
+	public void buildsResearchLab(GameTestHelper helper) {
+		buildStarter(helper, StarterBlueprints.RESEARCH_LAB);
+	}
+
 	// --- deconstruction ---------------------------------------------------------------------
 
 	/** Sneak-given blueprint: the builder takes the hut down and puts exactly its blocks in the chest. */
@@ -1013,7 +1023,7 @@ public class BuilderGameTests implements FabricGameTest {
 			long kept = base.blocks().stream().filter(e -> !e.state().isAir() && e.state().equals(up.get(e.pos()))).count();
 			helper.assertTrue(kept >= solid * 0.6, entry.id() + " keeps only " + kept + " of " + baseId.get() + "'s " + solid + " blocks");
 		}
-		helper.assertTrue(upgrades == 12, "expected 12 starter upgrades, found " + upgrades);
+		helper.assertTrue(upgrades == 14, "expected 14 starter upgrades, found " + upgrades);
 		helper.succeed();
 	}
 

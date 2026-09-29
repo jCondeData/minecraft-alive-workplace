@@ -41,18 +41,42 @@ def cottage_ground_floor(b):
     box(b, 4, 1, 5, 6, 1, 6, "brown_carpet")
 
 
+def cottage_porch(b):
+    """The porch before the door (shared by every tier): two spruce fence posts on stone, a cobbled deck and a step."""
+    for x in (4, 6):
+        b.set(x, 0, 0, resolve(STONE_MIX, x, 0, 0))
+        for y in range(1, 5):
+            fence(b, x, y, 0, "spruce_fence")
+    for x in (4, 5, 6):
+        b.set(x, 0, 1, resolve(STONE_MIX, x, 0, 1))
+    stairs(b, 5, 0, 0, COBBLE, "south")
+
+
 def starter_cottage():
-    """11 x 12 x 10: a timber-framed cottage under an overhanging spruce roof, with a chimney up the west gable."""
+    """11 x 12 x 10: a timber-framed cottage under an overhanging spruce roof, with a chimney up the west gable and a
+    gabled porch over the door, its ridge running up into the roof."""
     b = Build(11, 12, 10)
     cottage_ground_floor(b)
+    cottage_porch(b)
     for x in range(2, 9):  # a tie beam across the middle to hang the lights from
         log(b, x, 5, 5, COTTAGE_FRAME, axis="x")
     lantern(b, 3, 4, 5, hanging=True)
     lantern(b, 7, 4, 5, hanging=True)
-    gable_roof(b, 0, 10, 1, 9, 5, COTTAGE_ROOF, axis="x", gable=COTTAGE_INFILL, gable_at=(1, 9))
+    gable_roof(b, 0, 10, 1, 9, 5, COTTAGE_ROOF, axis="x", gable=COTTAGE_INFILL, gable_at=(1, 9), eave_trim=COTTAGE_ROOF)
     for x in (1, 9):
         log(b, x, 6, 5, COTTAGE_FRAME)
         pane(b, x, 7, 5)
+    # The porch's gable, a step higher than the eaves so its ridge meets the roof's: beams on the posts, a little window
+    # and a king post in its gable, a lantern over the door
+    b.clear(4, 4, 1, 6, 5, 1)
+    for x in (4, 6):
+        log(b, x, 5, 0, COTTAGE_FRAME, axis="z")
+        log(b, x, 5, 1, COTTAGE_FRAME, axis="z")
+    log(b, 5, 5, 0, COTTAGE_FRAME, axis="x")
+    gable_roof(b, 3, 7, 0, 3, 6, COTTAGE_ROOF, axis="z", gable=COTTAGE_INFILL, gable_at=(0,), eave_trim=COTTAGE_ROOF)
+    pane(b, 5, 6, 0)
+    log(b, 5, 7, 0, COTTAGE_FRAME)
+    lantern(b, 5, 4, 0, hanging=True)
     chimney(b, 0, 5, 0, 10, STONE_MIX)
     b.fill_air()
     return b
@@ -94,7 +118,16 @@ def starter_cottage_2():
     roof off and adds a jettied upper storey, a new roof and a taller chimney. 11 x 16 x 11."""
     b = Build(11, 16, 11)
     cottage_ground_floor(b)
+    cottage_porch(b)
     cottage_upper_floor(b)
+    # Under the jetty the porch gets a lean-to hood instead of a gable (the upstairs windows are over it); the beam in its
+    # middle stays from the cottage, so the lantern hanging from it needn't come down
+    for x in (3, 4, 6, 7):
+        stairs(b, x, 5, 0, COTTAGE_ROOF, "south")
+    log(b, 5, 5, 0, COTTAGE_FRAME, axis="x")
+    for x in (3, 7):
+        stairs(b, x, 4, 0, COTTAGE_ROOF, "north", top=True)
+    lantern(b, 5, 4, 0, hanging=True)
     gable_roof(b, 0, 10, 0, 10, 8, COTTAGE_ROOF, axis="x", gable=COTTAGE_INFILL, gable_at=(1, 9))
     for x in (1, 9):
         log(b, x, 9, 5, COTTAGE_FRAME)
@@ -180,6 +213,8 @@ def stall(b, x0, colors, goods):
     for x in range(x0, x1 + 1):
         c = colors[(x - x0) % 2]
         b.set(x, 4, 1, c)
+        if c == colors[0]:  # a scalloped edge: the coloured stripes hang a block lower
+            b.set(x, 3, 1, c)
         slab(b, x, 4, 2, SPRUCE, top=True)
         b.set(x, 5, 2, c.replace("_wool", "_carpet"))
         b.set(x, 5, 3, c)
@@ -221,7 +256,11 @@ def tower_shaft(b):
     skirt(b, 1, 1, 5, 5, STONE_BRICK)
     plinth(b, 1, 1, 5, 5, FOUNDATION_MIX, floor="cobblestone")
     walls(b, 1, 1, 5, 5, 1, 10, BRICK_WALL_MIX)
+    walls(b, 1, 1, 5, 5, 1, 2, MOSSY_BRICK_MIX)  # moss low down, where the rain splashes
     beam_ring(b, 1, 1, 5, 5, 5, "spruce_log")
+    for x in (2, 4):  # the band's beam ends stick out by the door, a lantern under each
+        log(b, x, 5, 0, "spruce_log", axis="z")
+        lantern(b, x, 4, 0, hanging=True)
     for y in (3, 4, 7, 8):  # arrow slits (the ladder side stays solid)
         for x, z in ((3, 1), (1, 3), (5, 3)):
             b.set(x, y, z, "air")
@@ -296,9 +335,12 @@ def market_stall_3():
     for z in (8, 9):
         window(b, 1, 2, z, "west", sill=SPRUCE)
         window(b, 13, 2, z, "east", sill=SPRUCE)
-    for x in (5, 9):
-        window(b, x, 2, 11, "south", width=1, shutters="spruce_trapdoor")
-    gable_roof(b, 0, 14, 6, 12, 4, SPRUCE, axis="x", gable="birch_planks", gable_at=(1, 13))
+    for x in (5, 8):  # centred in the middle bays (posts at 4, 7, 10)
+        window(b, x, 2, 11, "south", width=2, sill=SPRUCE)
+    gable_roof(b, 0, 14, 6, 12, 4, SPRUCE, axis="x", gable="birch_planks", gable_at=(1, 13), eave_trim=SPRUCE)
+    for x in (1, 13):  # a king post and a little window in each gable
+        pane(b, x, 5, 9)
+        log(b, x, 6, 9, "spruce_log")
     lantern(b, 7, 3, 8, hanging=True)
     b.set(7, 4, 8, "spruce_planks")
     b.fill_air()
@@ -373,6 +415,11 @@ def lookout_tower_3():
     lantern(b, 9, 3, 3, hanging=True)
     for z in range(1, 6):  # a tie beam across the guardhouse, the lantern hanging from it
         log(b, 9, 4, z, "stripped_spruce_log", axis="z")
+    # Outside: a lantern under the eave by the door, and an archery butt (a target on a hay bale) for practice
+    lantern(b, 11, 3, 0, hanging=True)
+    b.set(12, 0, 0, "hay_block", axis="y")
+    b.set(12, 1, 0, "target", power=0)
+    b.set(8, 0, 0, "barrel", facing="up", open=False)
     b.fill_air()
     return b
 

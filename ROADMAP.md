@@ -707,9 +707,12 @@ pack boot test pass.
 With Milestones 7–19 done the mod has MineColonies' jobs and colony layer, and more; what's left is making what's there
 look and feel finished. Builds first (the owner asked for every build to be brought up to the Minecraft Architect
 standard, "even go back and improve upon other builds you've already pushed").
-- [ ] Architect review, round 2 (the owner's Minecraft Architect skill: lint, render, critique, redraw per
-  `tools/blueprints/STYLE.md`; build tests green; before/after renders for the owner): starter cottage I–III, stone house
-  I–III, lookout tower I–III, market stall I–III and the market square
+- [x] Architect review, round 2 (the owner's Minecraft Architect skill: lint, render, critique, redraw per
+  `tools/blueprints/STYLE.md`; build tests green; before/after renders for the owner): starter cottage I–III (a porch
+  cross gable on fence posts; a porch hood on II), stone house I–III (a wall dormer through the eave, drawn with
+  `roofs()` so its valleys die into the main slope; plaster mix), lookout tower I–III (moss low down, lanterns on beam
+  ends at the door; III: a lantern and an archery butt at the guardhouse), market stall I–III (a scalloped awning edge;
+  III: gable windows and king posts, a soffit, windows centred in the bays) and the market square (peaked kiosks, stock)
 - [ ] … inn I–II, library I–II, terrace I–II, tinker's workshop I–II, nether gate I–II, graveyard I–II, berry farm I–II
 - [ ] … the decorations (well I–II, fountain, gazebo, street lamp, park bench) and defences (palisade, gatehouse, wall
   tower, stone wall), and one more pass over the village houses in all five styles

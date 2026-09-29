@@ -200,14 +200,18 @@ def gazebo():
 
 # --- Market square ------------------------------------------------------------------------------------------------
 def kiosk(b, x0, z0, colors, goods):
-    """A 3 x 3 market kiosk with its counter facing north: posts at the corners, a striped wool canopy, goods on the
-    counter (a list of three, west to east)."""
+    """A 3 x 3 market kiosk with its counter facing north: posts at the corners, a peaked striped wool canopy (a ridge
+    down the middle, carpet slopes either side), goods on the counter (a list of three, west to east)."""
     for x in (x0, x0 + 2):
         for z in (z0, z0 + 2):
             posts(b, [(x, z)], 1, 2, "spruce_log")
     for x in range(x0, x0 + 3):
+        c = colors[(x - x0) % 2]
         for z in range(z0, z0 + 3):
-            b.set(x, 3, z, colors[(x - x0) % 2])
+            b.set(x, 3, z, c)
+        b.set(x, 4, z0 + 1, c)
+        for z in (z0, z0 + 2):
+            b.set(x, 4, z, c.replace("_wool", "_carpet"))
     b.set(x0 + 1, 1, z0, "spruce_trapdoor", facing="north", half="top", open=False, powered=False, waterlogged=False)
     for i, g in enumerate(goods):
         if g:
@@ -252,6 +256,11 @@ def market_square():
     kiosk(b, 8, 9, ("blue_wool", "white_wool"), [("hay_block", {"axis": "y"}), ("lantern", {"hanging": False, "waterlogged": False}), "potted_cornflower"])
     b.set(6, 1, 11, "chiseled_stone_bricks")
     b.set(6, 2, 11, "bell", attachment="floor", facing="north", powered=False)
+    # Stock beside the kiosks
+    b.set(1, 1, 10, "barrel", facing="up", open=False)
+    b.set(1, 1, 9, "hay_block", axis="y")
+    b.set(11, 1, 10, "barrel", facing="up", open=False)
+    b.set(11, 2, 10, "potted_red_tulip")
     b.fill_air()
     return b
 

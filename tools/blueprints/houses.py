@@ -10,7 +10,17 @@ STONE_HOUSE_WALL = STONE_MIX
 STONE_HOUSE_QUOIN = "stone_bricks"
 STONE_HOUSE_FRAME = "dark_oak_log"
 STONE_HOUSE_ROOF = DEEPSLATE_TILE
-STONE_HOUSE_INFILL = "white_concrete"
+STONE_HOUSE_INFILL = Mix((8, "white_concrete"), (2, "polished_diorite"), seed=24)
+
+
+def slate_roof(b, y, gable, face):
+    """The Stone House's roof (x 0-10, z 0-8, its lowest row at {@code y}) with a wall dormer over the door bay: the front
+    wall rises through the eave into a little gable of {@code face} with a window in it (x 5, y + 1), under its own
+    roof, whose slopes die into the main one (valleys) and whose ridge runs back to it."""
+    roofs(b,
+          lambda t: gable_roof(t, 0, 10, 0, 8, y, STONE_HOUSE_ROOF, axis="x", gable=gable, gable_at=(1, 9), ridge=STONE_HOUSE_ROOF),
+          lambda t: gable_roof(t, 3, 7, 0, 2, y + 1, STONE_HOUSE_ROOF, axis="z", gable=face, gable_at=(1,), ridge=STONE_HOUSE_ROOF))
+    pane(b, 5, y + 1, 1)
 
 
 def stone_house_ground_floor(b):
@@ -58,7 +68,7 @@ def stone_house():
     b.bed(3, 6, 4, "light_blue", facing="east")
     b.set(6, 6, 4, "chest", facing="west", type="single", waterlogged=False)
     lantern(b, 7, 6, 4)  # standing: the ridge it could hang from comes off for the upper storey
-    gable_roof(b, 0, 10, 0, 8, 5, STONE_HOUSE_ROOF, axis="x", gable=STONE_HOUSE_WALL, gable_at=(1, 9), ridge=STONE_HOUSE_ROOF)
+    slate_roof(b, 5, STONE_HOUSE_WALL, STONE_HOUSE_WALL)  # the dormer lights the attic bedroom
     for x in (1, 9):
         pane(b, x, 7, 4)
     chimney(b, 0, 4, 0, 9, STONE_MIX)
@@ -96,7 +106,7 @@ def stone_house_2():
     b = Build(11, 16, 9)
     stone_house_ground_floor(b)
     stone_house_upper_floor(b)
-    gable_roof(b, 0, 10, 0, 8, 9, STONE_HOUSE_ROOF, axis="x", gable=STONE_HOUSE_INFILL, gable_at=(1, 9), ridge=STONE_HOUSE_ROOF)
+    slate_roof(b, 9, STONE_HOUSE_INFILL, STONE_HOUSE_INFILL)  # the dormer over the middle bay, above the upstairs window
     for x in (1, 9):
         log(b, x, 10, 4, STONE_HOUSE_FRAME)
         pane(b, x, 11, 4)

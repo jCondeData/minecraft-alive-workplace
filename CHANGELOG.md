@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+### Changed
+- **Redrawn builds** (architect review, round 2): the Starter Cottage gets a gabled porch on fence posts (a porch hood
+  on II and III); the Stone House a wall dormer over the door that lights the attic (II and III: over the middle bay,
+  plaster with a little diorite in it); the Lookout Tower moss low on its walls and lanterns on beam ends by the door
+  (III: a lantern at the guardhouse door and an archery butt); the Market Stall a scalloped awning edge (III: gable
+  windows, a soffit and centred windows on the storeroom); the Market Square peaked kiosk canopies and stock beside them.
+  Sizes are unchanged, so blueprints already placed still fit.
+
 ## 0.135.0 — 2026-09-29
 
 ### Added

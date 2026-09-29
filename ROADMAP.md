@@ -664,6 +664,18 @@ ones we lack, our way.
   the research screen shows 13 topics on two rows
 - [x] Mason's kiln (`Crafting.Kind.KILN`: smelting to building blocks and brick items + stonecutting + crafting, used only
   for plans that fire something, with a furnace by the stonecutter; `CrafterWork.withFuel` shared with the tinkerer)
+- [x] Library III (`library_3`, 18 x 15 x 20): an enchanting room behind the hall (Enchanting Table in a ring of 15
+  shelves, lectern, chest); `EnchantWork.strength(villager, shelves)` adds a level per 3 shelves counted by vanilla's
+  `EnchantingTableBlock.isValidBookShelf` (max 30); built in the new 30 x 20 x 30 `huge_area` test template
+- [x] Ranch, Schoolhouse and Storehouse redrawn after the architect review (barn with a hayloft gable + silo; plaster
+  school with a porch gable and cupola; granary with a hoist); `kit.roofs()` merges intersecting roofs (higher column
+  wins); `check.py` flags lanterns hung under blocks that can't hold them (top-half stairs, top slabs, trapdoors)
+- [x] Shape Planner (`blueprint/ShapePlannerItem`, `blueprint/Shapes`, component `shape`): box, cylinder, dome, sphere,
+  cone, pyramid, arch, 1–32 a side, solid/hollow (hollow = air inside, so builders clear it), in a carried block; drawn
+  for a Blank Blueprint to `shapes/<player>/<kind>_<w>x<h>x<d>[_hollow]_<block>`; `ChoiceMenu.shiftClicked()`
+- [x] Village Map (`hall/VillageMaps`, hall slot 10): a locked map built through `MapItemSavedData.load` (centred on the
+  hall, scale 0, colours rendered from loaded chunks), named `MapBanner`s by building kind, legend in the lore
+- [x] "What next?" (`hall/VillageAdvice`, hall slot 16): the village's gaps, most pressing first
 
 ## Milestone 5 — Release
 - [ ] Publish on Modrinth and CurseForge as **Alive Workplace** (Minecraft brand rules: don't lead the name with "Minecraft")

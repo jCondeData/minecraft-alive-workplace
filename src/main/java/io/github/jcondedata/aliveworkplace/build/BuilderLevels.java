@@ -38,9 +38,10 @@ public final class BuilderLevels {
 		return delay(level.getGameRules().getInt(ModGameRules.BUILD_DELAY), villager);
 	}
 
-	/** {@code baseDelay} for this villager: shorter with each level, and with Pokémon partners helping. */
+	/** {@code baseDelay} for this villager: shorter with each level, with Pokémon partners helping and in a well-kept village. */
 	public static int delay(int baseDelay, Villager villager) {
-		return Math.round(delay(baseDelay, level(villager)) * io.github.jcondedata.aliveworkplace.work.Partners.factor(villager));
+		return Math.round(delay(baseDelay, level(villager)) * io.github.jcondedata.aliveworkplace.work.Partners.factor(villager)
+			* io.github.jcondedata.aliveworkplace.hall.VillageNeeds.factor(villager));
 	}
 
 	public static int delay(int baseDelay, int villagerLevel) {

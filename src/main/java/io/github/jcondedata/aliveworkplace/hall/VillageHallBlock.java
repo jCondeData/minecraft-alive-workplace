@@ -68,6 +68,14 @@ public class VillageHallBlock extends BaseEntityBlock {
 		return new VillageHallBlockEntity(pos, state);
 	}
 
+	@Nullable
+	@Override
+	public <T extends BlockEntity> net.minecraft.world.level.block.entity.BlockEntityTicker<T> getTicker(Level level, BlockState state,
+			net.minecraft.world.level.block.entity.BlockEntityType<T> type) {
+		return level.isClientSide ? null
+			: createTickerHelper(type, io.github.jcondedata.aliveworkplace.registry.ModBlocks.VILLAGE_HALL_ENTITY, VillageHallBlockEntity::serverTick);
+	}
+
 	@Override
 	protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand,
 											  BlockHitResult hit) {

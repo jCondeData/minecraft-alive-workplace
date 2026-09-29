@@ -101,6 +101,14 @@ of your village — by the bell is a good spot. Right-click it for the village a
 The village gets a made-up name (*Thornholm*, *Ashford*...); use a **Name Tag** with a name on the hall to call it
 whatever you like (the tag isn't used up). The hall keeps the name when you break and move it.
 
+**A village with a hall has needs.** Every grown villager eats once a day from the store — the chests by the Kitchen
+Stoves first (the chef's cooking), then by the Storehouses; anything plain to eat, never golden food, food that makes
+you ill, honey or Pokémon berries. Villagers like a bed of their own, guards (one for every ten villagers) and light
+by their beds. The hall's **Wellbeing** shows how it's going, and it sets the pace of all the work in the village:
+**up to 25% faster** when everyone's fed, housed and safe, the usual pace at 50%, and **up to 20% slower** when
+they're hungry and sleep rough. The villagers the hall lists say when they're hungry or have no bed. Without a hall,
+work goes at the usual pace.
+
 ## All the jobs at a glance
 Place the workstation near a villager without a job and they take it. Chests (or barrels) within 8 blocks of it are
 where they take tools and supplies from and where their work goes.

@@ -84,6 +84,10 @@ public final class ModAttachments {
 	public static final AttachmentType<Integer> ITEMS_ENCHANTED = AttachmentRegistry.create(
 		AliveWorkplace.id("items_enchanted"), builder -> builder.persistent(com.mojang.serialization.Codec.INT));
 
+	/** When a villager last ate (game time; a Village Hall feeds its villagers from the store once a day). */
+	public static final AttachmentType<Long> LAST_MEAL = AttachmentRegistry.create(
+		AliveWorkplace.id("last_meal"), builder -> builder.persistent(com.mojang.serialization.Codec.LONG));
+
 	/** How many horses a Rancher has tamed (shown above its head). */
 	public static final AttachmentType<Integer> HORSES_TAMED = AttachmentRegistry.create(
 		AliveWorkplace.id("horses_tamed"), builder -> builder.persistent(com.mojang.serialization.Codec.INT));

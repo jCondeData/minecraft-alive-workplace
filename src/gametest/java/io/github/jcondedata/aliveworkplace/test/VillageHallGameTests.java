@@ -2,6 +2,8 @@ package io.github.jcondedata.aliveworkplace.test;
 
 import io.github.jcondedata.aliveworkplace.hall.VillageHallScreen;
 import io.github.jcondedata.aliveworkplace.hall.VillageHalls;
+import io.github.jcondedata.aliveworkplace.hall.VillageNeeds;
+import io.github.jcondedata.aliveworkplace.registry.ModAttachments;
 import io.github.jcondedata.aliveworkplace.registry.ModBlocks;
 import io.github.jcondedata.aliveworkplace.registry.ModVillagers;
 import io.github.jcondedata.aliveworkplace.work.ChoiceMenu;
@@ -98,5 +100,63 @@ public class VillageHallGameTests implements net.fabricmc.fabric.api.gametest.v1
 		helper.assertTrue(VillageHalls.name(level, hall).getString().equals("Testville"), "name: " + VillageHalls.name(level, hall).getString());
 		helper.assertTrue(player.getItemInHand(InteractionHand.MAIN_HAND).is(Items.NAME_TAG), "the name tag was used up");
 		helper.succeed();
+	}
+
+	/** Grown villagers who haven't eaten for a day eat from the store — bread, never the golden carrots. */
+	@GameTest(template = AREA, timeoutTicks = 100, batch = "villagersEatFromTheStore")
+	public void villagersEatFromTheStore(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		int radius = VillageHalls.RADIUS;
+		VillageHalls.RADIUS = 16;
+		Leftovers.after(helper, () -> VillageHalls.RADIUS = radius);
+		ServerLevel level = helper.getLevel();
+		helper.setBlock(new BlockPos(17, 2, 17), ModBlocks.STOREHOUSE);
+		helper.setBlock(new BlockPos(17, 2, 19), Blocks.CHEST);
+		Container chest = helper.getBlockEntity(new BlockPos(17, 2, 19));
+		chest.setItem(0, new ItemStack(Items.GOLDEN_CARROT, 2));
+		chest.setItem(1, new ItemStack(Items.BREAD, 3));
+		Villager[] villagers = {helper.spawn(EntityType.VILLAGER, new BlockPos(8, 2, 8)), helper.spawn(EntityType.VILLAGER, new BlockPos(9, 2, 8))};
+		for (Villager v : villagers) {
+			v.setAttached(ModAttachments.LAST_MEAL, level.getGameTime() - VillageNeeds.DAY - 1);
+		}
+		helper.setBlock(HALL, ModBlocks.VILLAGE_HALL);
+		helper.runAfterDelay(5, () -> {
+			VillageNeeds.Needs needs = VillageNeeds.check(level, helper.absolutePos(HALL));
+			helper.assertTrue(chest.countItem(Items.BREAD) == 1, "bread left: " + chest.countItem(Items.BREAD));
+			helper.assertTrue(chest.countItem(Items.GOLDEN_CARROT) == 2, "golden carrots left: " + chest.countItem(Items.GOLDEN_CARROT));
+			helper.assertTrue(needs.adults() == 2 && needs.fed() == 2, "fed " + needs.fed() + " of " + needs.adults());
+			for (Villager v : villagers) {
+				helper.assertTrue(!VillageNeeds.isHungry(v, level.getGameTime()), "still hungry");
+			}
+			helper.succeed();
+		});
+	}
+
+	/** A hungry village with no beds, guards or light works 20% slower; a village without a hall at the usual pace. */
+	@GameTest(template = AREA, timeoutTicks = 100, batch = "aHungryVillageWorksSlower")
+	public void aHungryVillageWorksSlower(GameTestHelper helper) {
+		helper.assertTrue(VillageNeeds.factor(0f) == 1.25f && VillageNeeds.factor(0.5f) == 1f && Math.abs(VillageNeeds.factor(1f) - 0.8f) < 1e-6,
+			"pace: " + VillageNeeds.factor(0f) + " / " + VillageNeeds.factor(0.5f) + " / " + VillageNeeds.factor(1f));
+		Leftovers.clear(helper);
+		int radius = VillageHalls.RADIUS;
+		VillageHalls.RADIUS = 16;
+		Leftovers.after(helper, () -> {
+			VillageHalls.RADIUS = radius;
+			VillageNeeds.forget();
+		});
+		ServerLevel level = helper.getLevel();
+		helper.setBlock(new BlockPos(5, 2, 5), ModBlocks.BUILDERS_BENCH);
+		Villager builder = helper.spawn(EntityType.VILLAGER, new BlockPos(6, 2, 6));
+		Jobs.employ(level, builder, helper.absolutePos(new BlockPos(5, 2, 5)), ModVillagers.BUILDERS_BENCH_POI, ModVillagers.BUILDER);
+		builder.setAttached(ModAttachments.LAST_MEAL, level.getGameTime() - 2 * VillageNeeds.DAY);
+		VillageNeeds.forget();
+		helper.assertTrue(io.github.jcondedata.aliveworkplace.build.BuilderLevels.delay(100, builder) == 100, "no hall: usual pace");
+		helper.setBlock(HALL, ModBlocks.VILLAGE_HALL);
+		helper.runAfterDelay(5, () -> {
+			VillageNeeds.forget();
+			int delay = io.github.jcondedata.aliveworkplace.build.BuilderLevels.delay(100, builder);
+			helper.assertTrue(delay == 125, "delay in a hungry village: " + delay);
+			helper.succeed();
+		});
 	}
 }

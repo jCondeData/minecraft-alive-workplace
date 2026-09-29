@@ -592,11 +592,15 @@ public class ScreenshotHarness implements ClientModInitializer {
 			pointAt(mc, 5);
 		}
 		if (tick == 260) {
-			shot(mc, "04_hall_requests");
-			pointAt(mc, 19);
+			shot(mc, "04_hall_wellbeing");
+			pointAt(mc, 6);
 		}
 		if (tick == 275) {
-			shot(mc, "05_hall_worker");
+			shot(mc, "05_hall_requests");
+			pointAt(mc, 19);
+		}
+		if (tick == 290) {
+			shot(mc, "06_hall_worker");
 			mc.stop();
 		}
 	}

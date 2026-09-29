@@ -99,7 +99,8 @@ The owner (Jesse) does not write code: sessions are expected to work autonomousl
 - `flower/` — the florist (Flower Stand block): `FloristWork` (bone meal on the garden, picking, filling flower pots)
 - `bee/` — the beekeeper (Apiary block): `BeekeeperWork` (harvest full hives with bottles or shears, plant flowers, breed bees)
 - `hall/` — the Village Hall: `VillageHallBlock`/`VillageHallBlockEntity` (the village's name), `VillageHalls` (census of
-  everyone within `RADIUS`, nearest hall by POI), `VillageHallScreen` (a `ChoiceMenu`: numbers, then every villager)
+  everyone within `RADIUS`, nearest hall by POI), `VillageHallScreen` (a `ChoiceMenu`: numbers, then every villager),
+  `VillageNeeds` (meals from the store, beds, safety → wellbeing → the work pace in `BuilderLevels.delay`)
 - `explore/` — `ExplorerWork`: vanilla Cartographers on expeditions (food and a weapon from the chests, finds from the
   `explorer/*` loot tables, the Cobblemon one behind a `fabric:load_conditions`), `Explorers` (food/weapon rules, maps to
   places in the `explorer_maps` structure tag)

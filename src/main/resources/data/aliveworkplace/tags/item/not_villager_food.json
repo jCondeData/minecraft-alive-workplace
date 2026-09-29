@@ -1,0 +1,23 @@
+{
+  "values": [
+    "minecraft:golden_carrot",
+    "minecraft:golden_apple",
+    "minecraft:enchanted_golden_apple",
+    "minecraft:rotten_flesh",
+    "minecraft:spider_eye",
+    "minecraft:poisonous_potato",
+    "minecraft:pufferfish",
+    "minecraft:chorus_fruit",
+    "minecraft:suspicious_stew",
+    "minecraft:cake",
+    "minecraft:honey_bottle",
+    {
+      "id": "#cobblemon:berries",
+      "required": false
+    },
+    {
+      "id": "#c:foods/candy",
+      "required": false
+    }
+  ]
+}

@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+## 0.98.0 — 2026-09-29
+
+### Added
+- **Village needs**: in a village with a Village Hall, grown villagers eat once a day from the store (the chef's
+  cooking first), like a bed of their own, guards and light. The hall shows the village's wellbeing, and it sets the
+  pace of all the work there — up to 25% faster when everyone's fed, housed and safe, up to 20% slower when they're
+  hungry. The hall's list says who's hungry or has no bed.
+
 ## 0.97.0 — 2026-09-29
 
 ### Added

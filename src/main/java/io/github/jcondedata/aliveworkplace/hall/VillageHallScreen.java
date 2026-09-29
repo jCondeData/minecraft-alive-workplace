@@ -43,10 +43,11 @@ public final class VillageHallScreen {
 	static final int BEDS = 2;
 	static final int FOOD = 3;
 	static final int GUARDS = 4;
-	static final int REQUESTS = 5;
-	static final int BUILDS = 6;
-	static final int PREVIOUS = 7;
-	static final int NEXT = 8;
+	static final int WELLBEING = 5;
+	static final int REQUESTS = 6;
+	static final int BUILDS = 7;
+	static final int PREVIOUS = 9;
+	static final int NEXT = 17;
 	public static final int FIRST_PERSON = 18;
 	static final int PER_PAGE = ChoiceMenu.SIZE - FIRST_PERSON;
 	/** Lines of a list shown in a tooltip before "and N more". */
@@ -88,8 +89,10 @@ public final class VillageHallScreen {
 		menu.button(GUARDS, icon(Items.IRON_SWORD, Component.translatable("screen.aliveworkplace.hall.guards", census.guards()), ChatFormatting.WHITE,
 			line(census.guards() > 0 ? "screen.aliveworkplace.hall.guarded" : "screen.aliveworkplace.hall.unguarded",
 				census.guards() > 0 ? ChatFormatting.GRAY : ChatFormatting.YELLOW)), null);
+		menu.button(WELLBEING, wellbeingIcon(VillageNeeds.count(level, hall)), null);
 		menu.button(REQUESTS, requestsIcon(census.requests()), null);
 		menu.button(BUILDS, buildsIcon(census.builds()), null);
+		menu.divider(1);
 		if (pages > 1) {
 			if (shown > 0) {
 				menu.button(PREVIOUS, icon(Items.ARROW, Component.translatable("screen.aliveworkplace.hall.previous", shown, pages), ChatFormatting.WHITE),
@@ -100,7 +103,6 @@ public final class VillageHallScreen {
 					p -> refresh(menu, level, hall, shown + 1));
 			}
 		}
-		menu.divider(1);
 		int slot = FIRST_PERSON;
 		for (Villager villager : people.subList(shown * PER_PAGE, Math.min(people.size(), (shown + 1) * PER_PAGE))) {
 			menu.button(slot++, person(level, hall, villager), p -> {
@@ -136,6 +138,12 @@ public final class VillageHallScreen {
 		}
 		for (Component doing : doing(level, villager)) {
 			lore.add(plain(doing, ChatFormatting.WHITE));
+		}
+		if (VillageNeeds.isHungry(villager, level.getGameTime())) {
+			lore.add(line("screen.aliveworkplace.hall.hungry", ChatFormatting.RED));
+		}
+		if (VillageNeeds.bed(level, villager) == null) {
+			lore.add(line("screen.aliveworkplace.hall.no_bed", ChatFormatting.YELLOW));
 		}
 		// Builders and miners already say what they need in their status.
 		boolean saysWhatItNeeds = Builders.activeSite(level, villager) != null || Miners.activeSite(level, villager) != null;
@@ -230,6 +238,22 @@ public final class VillageHallScreen {
 		String[] directions = {"s", "sw", "w", "nw", "n", "ne", "e", "se"};
 		return Component.translatable("screen.aliveworkplace.hall.away", distance,
 			Component.translatable("screen.aliveworkplace.hall.dir." + directions[eighth]));
+	}
+
+	/** How well the village is kept: fed, in a bed, safe and lit, and the pace of work it makes. */
+	static ItemStack wellbeingIcon(VillageNeeds.Needs needs) {
+		int pace = needs.pacePercent();
+		Component paceLine = pace > 0 ? line(Component.translatable("screen.aliveworkplace.hall.faster", pace), ChatFormatting.GREEN)
+			: pace < 0 ? line(Component.translatable("screen.aliveworkplace.hall.slower", -pace), ChatFormatting.RED)
+			: line("screen.aliveworkplace.hall.usual_pace", ChatFormatting.GRAY);
+		return icon(Items.CAKE, Component.translatable("screen.aliveworkplace.hall.wellbeing", Math.round(needs.wellbeing() * 100)), ChatFormatting.WHITE,
+			line(Component.translatable("screen.aliveworkplace.hall.fed", needs.fed(), needs.adults()),
+				needs.fed() < needs.adults() ? ChatFormatting.YELLOW : ChatFormatting.GRAY),
+			line(Component.translatable("screen.aliveworkplace.hall.housed", needs.housed(), needs.villagers()),
+				needs.housed() < needs.villagers() ? ChatFormatting.YELLOW : ChatFormatting.GRAY),
+			line(Component.translatable("screen.aliveworkplace.hall.safety", needs.guards(), needs.lit(), needs.villagers()), ChatFormatting.GRAY),
+			paceLine,
+			line("screen.aliveworkplace.hall.wellbeing_hint", ChatFormatting.DARK_GRAY));
 	}
 
 	private static ItemStack requestsIcon(List<Requests.Request> requests) {

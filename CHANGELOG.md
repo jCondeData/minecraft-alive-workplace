@@ -2,6 +2,15 @@
 
 ## Unreleased
 
+## 0.72.0 — 2026-09-28
+
+### Added
+- **The requests board**: right-click a Storehouse to see what the workers nearby are waiting for — a builder's missing
+  materials, a miner's pickaxe or ladders, a lumberjack's axe, a farmer's seeds, a fisherman's rod — with how much of it
+  the storehouse already holds. Click one to hand over yours: it goes straight into that worker's chests.
+- **Lumberjacks fell what's wanted first**: when a builder nearby is waiting for a kind of wood (logs, planks, stairs,
+  doors...), their village's lumberjacks fell that kind of tree before any other.
+
 ## 0.71.0 — 2026-09-28
 
 ### Added

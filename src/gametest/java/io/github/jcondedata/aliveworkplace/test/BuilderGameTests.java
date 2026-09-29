@@ -305,6 +305,39 @@ public class BuilderGameTests implements FabricGameTest {
 		});
 	}
 
+	/** The Storehouse's board lists what the builder is missing, and a click hands over the player's into the builder's chest. */
+	@GameTest(template = AREA, timeoutTicks = 600, batch = "storehouse_board")
+	public void storehouseBoardShowsWhatTheBuilderIsMissing(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		io.github.jcondedata.aliveworkplace.work.Village.RADIUS = 48;
+		// Everything but the cobblestone.
+		Setup s = setup(helper, TEST_HUT, HUT_ORIGIN, Rotation.NONE, new ItemStack(Items.OAK_PLANKS, 55), new ItemStack(Items.OAK_DOOR),
+			new ItemStack(Items.TORCH));
+		BlockPos storehouse = new BlockPos(14, 2, 2);
+		helper.setBlock(storehouse, ModBlocks.STOREHOUSE);
+		helper.runAfterDelay(300, () -> {
+			helper.assertTrue(s.site().status() == BuildSite.Status.WAITING_FOR_MATERIALS, "the builder should be waiting, not " + s.site().status());
+			net.minecraft.server.level.ServerPlayer player = helper.makeMockServerPlayerInLevel();
+			player.getInventory().add(new ItemStack(Items.COBBLESTONE, 40));
+			io.github.jcondedata.aliveworkplace.work.ChoiceMenu board = io.github.jcondedata.aliveworkplace.store.StorehouseBoard.boardForTest(player,
+				helper.absolutePos(storehouse));
+			int slot = -1;
+			for (int i = 0; i < io.github.jcondedata.aliveworkplace.work.ChoiceMenu.SIZE; i++) {
+				if (board.icon(i).is(Items.COBBLESTONE)) {
+					slot = i;
+				}
+			}
+			helper.assertTrue(slot >= 0, "the board doesn't show the missing cobblestone");
+			helper.assertTrue(board.icon(slot).getCount() == 25, "the board asks for " + board.icon(slot).getCount() + " cobblestone");
+			board.press(slot, player);
+			Container chest = helper.getBlockEntity(CHEST);
+			helper.assertTrue(chest.countItem(Items.COBBLESTONE) == 25, "the builder's chest got " + chest.countItem(Items.COBBLESTONE));
+			helper.assertTrue(player.getInventory().countItem(Items.COBBLESTONE) == 15, "the player kept " + player.getInventory().countItem(Items.COBBLESTONE));
+			io.github.jcondedata.aliveworkplace.work.Village.RADIUS = 0;
+			helper.succeed();
+		});
+	}
+
 	/** A blueprint with a pool: the builder pours the water from a bucket and keeps the empty bucket. */
 	@GameTest(template = AREA, timeoutTicks = 2400)
 	public void builderPoursWaterFromABucket(GameTestHelper helper) {

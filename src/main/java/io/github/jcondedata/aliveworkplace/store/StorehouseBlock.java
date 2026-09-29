@@ -1,14 +1,9 @@
 package io.github.jcondedata.aliveworkplace.store;
 
 import com.mojang.serialization.MapCodec;
-import io.github.jcondedata.aliveworkplace.build.Employer;
 import io.github.jcondedata.aliveworkplace.build.SupplyContainers;
-import java.util.List;
-import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
@@ -31,6 +26,7 @@ import org.jetbrains.annotations.Nullable;
  * The Porter's workstation. The chests within {@link SupplyContainers#RADIUS} blocks of it are the village's
  * storehouse: the porter carries what the other workers make into them, and every worker nearby can take from them.
  * Whoever places it owns it (their porter only works for them and their friends); a village's belongs to the village.
+ * Right-clicking it opens the requests board ({@link StorehouseBoard}).
  */
 public class StorehouseBlock extends BaseEntityBlock {
 	public static final MapCodec<StorehouseBlock> CODEC = simpleCodec(StorehouseBlock::new);
@@ -77,14 +73,8 @@ public class StorehouseBlock extends BaseEntityBlock {
 
 	@Override
 	protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
-		if (level instanceof ServerLevel serverLevel) {
-			List<BlockPos> chests = SupplyContainers.find(serverLevel, pos, null);
-			long items = SupplyContainers.contents(serverLevel, chests).values().stream().mapToLong(Long::longValue).sum();
-			Employer owner = Porters.owner(serverLevel, pos);
-			Component whose = owner == null ? Component.translatable("message.aliveworkplace.storehouse.village")
-				: Component.translatable("message.aliveworkplace.storehouse.owned", owner.name());
-			player.displayClientMessage(Component.translatable("message.aliveworkplace.storehouse.info", whose, chests.size(), SupplyContainers.RADIUS,
-				items, SupplyContainers.freeSlots(serverLevel, chests)).withStyle(ChatFormatting.GOLD), false);
+		if (player instanceof ServerPlayer serverPlayer) {
+			StorehouseBoard.open(serverPlayer, pos);
 		}
 		return InteractionResult.sidedSuccess(level.isClientSide);
 	}

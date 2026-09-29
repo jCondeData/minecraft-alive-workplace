@@ -176,7 +176,8 @@ public class LumberjackWork extends Behavior<Villager> {
 				return;
 			}
 			searchTimer = SEARCH_EVERY;
-			tree = findTree(level, block, villager.blockPosition(), farm, unreachable);
+			tree = findTree(level, block, villager.blockPosition(), farm, unreachable,
+				io.github.jcondedata.aliveworkplace.work.Requests.wantedLogs(io.github.jcondedata.aliveworkplace.work.Requests.forVillage(level, villager, block)));
 			if (tree == null) {
 				feeding = findSapling(level, villager.blockPosition(), farm);
 				walker.reset();
@@ -314,9 +315,13 @@ public class LumberjackWork extends Behavior<Villager> {
 		}
 	}
 
-	/** Nearest natural tree to the villager within {@link #RADIUS} of the Chopping Block (outside builds and quarries). */
+	/**
+	 * Nearest natural tree to the villager within {@link #RADIUS} of the Chopping Block (outside builds and quarries); trees of
+	 * the kinds in {@code wanted} (logs a builder of the village is waiting for) come first.
+	 */
 	@Nullable
-	private static BlockPos findTree(ServerLevel level, BlockPos block, BlockPos from, @Nullable BoundingBox farm, Set<BlockPos> unreachable) {
+	public static BlockPos findTree(ServerLevel level, BlockPos block, BlockPos from, @Nullable BoundingBox farm, Set<BlockPos> unreachable,
+			Set<net.minecraft.world.item.Item> wanted) {
 		List<BoundingBox> keepOut = new java.util.ArrayList<>();
 		for (BuildSite site : BuildSiteManager.get(level).all()) {
 			io.github.jcondedata.aliveworkplace.blueprint.BlueprintLibrary.get(level, site.structure())
@@ -328,6 +333,7 @@ public class LumberjackWork extends Behavior<Villager> {
 		}
 		BlockPos best = null;
 		double bestDistance = Double.MAX_VALUE;
+		boolean bestWanted = false;
 		Set<BlockPos> checked = new java.util.HashSet<>();
 		Iterable<BlockPos> around = BlockPos.betweenClosed(block.offset(-RADIUS, -6, -RADIUS), block.offset(RADIUS, 10, RADIUS));
 		if (farm != null) {
@@ -345,8 +351,9 @@ public class LumberjackWork extends Behavior<Villager> {
 				continue;
 			}
 			double d = trunk.distSqr(from);
-			if (d >= bestDistance) {
-				continue;
+			boolean isWanted = wanted.contains(state.getBlock().asItem());
+			if (bestWanted && !isWanted || isWanted == bestWanted && d >= bestDistance) {
+				continue; // a wanted kind comes first, then the nearest
 			}
 			Optional<Trees.Tree> t = Trees.treeAt(level, trunk);
 			if (t.isPresent() && unreachable.contains(t.get().lowest())) {
@@ -357,6 +364,7 @@ public class LumberjackWork extends Behavior<Villager> {
 				checked.addAll(t.get().base());
 				best = t.get().lowest();
 				bestDistance = d;
+				bestWanted = isWanted;
 			} else {
 				checked.add(trunk);
 			}
@@ -593,6 +601,11 @@ public class LumberjackWork extends Behavior<Villager> {
 	}
 
 	private static void status(Villager villager, Phase phase) {
+		if (phase == Phase.NEEDS_AXE) {
+			io.github.jcondedata.aliveworkplace.work.Requests.postTool(villager, Items.IRON_AXE, "axe", LumberjackWork::isAxe);
+		} else {
+			io.github.jcondedata.aliveworkplace.work.Requests.clear(villager);
+		}
 		int trees = villager.getAttachedOrElse(ModAttachments.TREES_FELLED, 0);
 		Component title = Component.translatable("message.aliveworkplace.lumberjack.title", trees);
 		Component line = Component.translatable("message.aliveworkplace.lumberjack.state." + phase.name().toLowerCase())

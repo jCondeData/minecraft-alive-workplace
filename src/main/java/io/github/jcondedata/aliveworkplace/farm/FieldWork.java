@@ -651,6 +651,12 @@ public class FieldWork extends Behavior<Villager> {
 	}
 
 	private static void status(Villager villager, BoundingBox field, Phase phase) {
+		if (phase == Phase.NEEDS_SEEDS) {
+			io.github.jcondedata.aliveworkplace.work.Requests.post(villager, new ItemStack(Items.WHEAT_SEEDS), 16,
+				Component.translatable("request.aliveworkplace.seeds"), FieldWork::isSeed);
+		} else {
+			io.github.jcondedata.aliveworkplace.work.Requests.clear(villager);
+		}
 		int harvested = villager.getAttachedOrElse(ModAttachments.FARM_HARVESTED, 0);
 		Component title = Component.translatable("message.aliveworkplace.field.title", field.getXSpan(), field.getZSpan(), harvested);
 		Component line = Component.translatable("message.aliveworkplace.field.state." + phase.name().toLowerCase())

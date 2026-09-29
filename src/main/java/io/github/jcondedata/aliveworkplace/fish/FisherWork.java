@@ -327,6 +327,11 @@ public class FisherWork extends Behavior<Villager> {
 	}
 
 	private static void status(Villager villager, Phase phase) {
+		if (phase == Phase.NEEDS_ROD) {
+			io.github.jcondedata.aliveworkplace.work.Requests.postTool(villager, Items.FISHING_ROD, "fishing_rod", FisherWork::isRod);
+		} else {
+			io.github.jcondedata.aliveworkplace.work.Requests.clear(villager);
+		}
 		int caught = villager.getAttachedOrElse(ModAttachments.FISH_CAUGHT, 0);
 		Component title = Component.translatable("message.aliveworkplace.fisher.title", caught);
 		Component line = Component.translatable("message.aliveworkplace.fisher.state." + phase.name().toLowerCase())

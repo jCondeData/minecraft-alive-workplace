@@ -68,12 +68,35 @@ public final class Village {
 
 	/** Whether {@code taker} may help themselves to {@code giver}'s chests. */
 	public static boolean sharesWith(ServerLevel level, Villager taker, Villager giver) {
-		Employer takerBoss = taker.getAttached(ModAttachments.BUILDER_EMPLOYER);
-		Employer giverBoss = giver.getAttached(ModAttachments.BUILDER_EMPLOYER);
+		return sameSide(level, taker.getAttached(ModAttachments.BUILDER_EMPLOYER), giver.getAttached(ModAttachments.BUILDER_EMPLOYER));
+	}
+
+	/**
+	 * Whether workers answering to {@code takerBoss} may take from workers answering to {@code giverBoss} (null: a village
+	 * worker nobody hired): the same player or a friend of the giver's, or both the village's.
+	 */
+	public static boolean sameSide(ServerLevel level, @Nullable Employer takerBoss, @Nullable Employer giverBoss) {
 		if (takerBoss == null || giverBoss == null) {
 			return takerBoss == null && giverBoss == null;
 		}
 		return Friends.get(level.getServer()).mayDirect(giverBoss.id(), takerBoss.id());
+	}
+
+	/** The workers taking part whose workstation is within {@link #RADIUS} of {@code pos} and who share with {@code boss}'s. */
+	public static List<Villager> workersNear(ServerLevel level, BlockPos pos, @Nullable Employer boss) {
+		List<Villager> out = new ArrayList<>();
+		if (RADIUS <= 0) {
+			return out;
+		}
+		double radiusSqr = (double) RADIUS * RADIUS;
+		for (Villager v : level.getEntitiesOfClass(Villager.class, new AABB(pos).inflate(RADIUS + 16), v -> v.isAlive() && takesPart(v))) {
+			BlockPos theirs = Builders.benchPos(v).orElse(null);
+			if (theirs != null && theirs.distSqr(pos) <= radiusSqr && sameSide(level, boss, v.getAttached(ModAttachments.BUILDER_EMPLOYER))) {
+				out.add(v);
+			}
+		}
+		out.sort(Comparator.comparingDouble(v -> Builders.benchPos(v).orElse(pos).distSqr(pos)));
+		return out;
 	}
 
 	/** The workers {@code villager} may take from, nearest first (not counting workers at the same workstation). */

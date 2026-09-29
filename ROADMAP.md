@@ -315,8 +315,12 @@ Villagers work as a unit: what one worker makes, the others can use. No particul
     +3 a Fighting/Normal partner. Double chests now listed once by `SupplyContainers.find`
   - [x] Storehouse blueprints (starter builds `storehouse`, `_2`, `_3`; the porter sells the first) and a storehouse house in
     every village style (weight 3, `village_storehouse` loot in one chest)
-  - [ ] Deliveries: the porter brings what a worker is missing (after Requests)
-- [ ] Requests: workers post what they're missing, producers do that first, a board at the storehouse shows it
+  - [x] Deliveries: not needed, workers fetch from the storehouse themselves (see Requests)
+- [x] Requests: workers post what they're missing, producers do that first, a board at the storehouse shows it
+  (`work/Requests`: builders' and miners' come from their saved site, the others post while they wait; `StorehouseBoard`
+  is the Storehouse's right-click screen, a click moves the player's items into that worker's chests; lumberjacks fell
+  wanted kinds first, `Requests.wantedLogs` maps planks/stairs/... to their log by name). Porter deliveries aren't needed:
+  workers fetch from the storehouse themselves
 - [ ] Carpenter/Mason: turns logs and cobblestone into building blocks for the builders' requests
 
 ## Milestone 5 — Release

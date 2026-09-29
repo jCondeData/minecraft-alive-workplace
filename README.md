@@ -230,10 +230,17 @@ and ladders and some stone for the stairs, seeds and saplings, bone meal, and or
 the worker. Builders and ball smiths have nothing to carry away. A worker's goods have to add up to 16 items to be worth
 the walk.
 
-The storehouse is part of the village's stock, so a builder short of stone finds it there. Right-click the Storehouse
-to see how full it is. One you place (or have a builder build) is yours: its porter works for you, and only carries for
+The storehouse is part of the village's stock, so a builder short of stone finds it there. One you place (or have a builder build) is yours: its porter works for you, and only carries for
 your workers and your friends'. A village's own storehouse carries for the village's workers. A porter carries 9 stacks
 a trip, 3 more at each level.
+
+**The requests board.** Right-click the Storehouse to see what the workers nearby are waiting for: each builder's
+missing materials, a miner's pickaxe or ladders, a lumberjack's axe, a farmer's seeds, a fisherman's rod. It shows how
+much of each is already in the storehouse, and clicking one hands over what you have straight into that worker's
+chests. Lumberjacks see the requests too: when a builder is waiting for birch planks (or stairs, doors, logs...), they
+fell birch trees first.
+
+![The Storehouse's requests board](docs/media/request-board.png)
 
 **Storehouse builds.** Porters sell the **Storehouse Shed** blueprint (it's in the Blueprint Table too): an open timber
 shed with a Storehouse and eight chests. **Storehouse II** adds a second bay with eight more, and **Storehouse III** a

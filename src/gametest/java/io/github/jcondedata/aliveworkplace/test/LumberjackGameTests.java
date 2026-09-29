@@ -50,6 +50,37 @@ public class LumberjackGameTests implements FabricGameTest {
 		return villager;
 	}
 
+	/** Wood a builder of the village is waiting for gets felled first: the birch further off before the oak close by. */
+	@GameTest(template = AREA, timeoutTicks = 200)
+	public void lumberjacksFellTheWoodTheVillageWantsFirst(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		helper.setBlock(BLOCK, ModBlocks.CHOPPING_BLOCK);
+		growOak(helper, new BlockPos(6, 2, 6));
+		helper.setBlock(new BlockPos(14, 1, 14), Blocks.GRASS_BLOCK);
+		grow(helper, new BlockPos(14, 2, 14), TreeFeatures.BIRCH);
+		BlockPos from = helper.absolutePos(new BlockPos(3, 2, 3));
+		BlockPos plain = io.github.jcondedata.aliveworkplace.wood.LumberjackWork.findTree(level, helper.absolutePos(BLOCK), from, null,
+			java.util.Set.of(), java.util.Set.of());
+		helper.assertTrue(plain != null && level.getBlockState(plain).is(Blocks.OAK_LOG), "the nearest tree should be the oak, not " + plain);
+		BlockPos wanted = io.github.jcondedata.aliveworkplace.wood.LumberjackWork.findTree(level, helper.absolutePos(BLOCK), from, null,
+			java.util.Set.of(), java.util.Set.of(Items.BIRCH_LOG));
+		helper.assertTrue(wanted != null && level.getBlockState(wanted).is(Blocks.BIRCH_LOG), "birch is wanted: " + wanted);
+
+		// What a builder's missing planks, stairs and signs are made from.
+		Villager builder = helper.spawn(EntityType.VILLAGER, new BlockPos(3, 2, 5));
+		BlockPos at = helper.absolutePos(BLOCK);
+		java.util.Set<net.minecraft.world.item.Item> logs = io.github.jcondedata.aliveworkplace.work.Requests.wantedLogs(java.util.List.of(
+			io.github.jcondedata.aliveworkplace.work.Requests.forItem(builder, at, Items.BIRCH_PLANKS, 40),
+			io.github.jcondedata.aliveworkplace.work.Requests.forItem(builder, at, Items.SPRUCE_STAIRS, 4),
+			io.github.jcondedata.aliveworkplace.work.Requests.forItem(builder, at, Items.CRIMSON_PLANKS, 4),
+			io.github.jcondedata.aliveworkplace.work.Requests.forItem(builder, at, Items.OAK_HANGING_SIGN, 1),
+			io.github.jcondedata.aliveworkplace.work.Requests.forItem(builder, at, Items.JUNGLE_LOG, 2),
+			io.github.jcondedata.aliveworkplace.work.Requests.forItem(builder, at, Items.COBBLESTONE, 30)));
+		helper.assertTrue(logs.equals(java.util.Set.of(Items.BIRCH_LOG, Items.SPRUCE_LOG, Items.CRIMSON_STEM, Items.OAK_LOG, Items.JUNGLE_LOG)),
+			"wanted logs: " + logs);
+		helper.succeed();
+	}
+
 	/** Grows a real oak tree (the vanilla feature) on a grass block at {@code base}. */
 	private static void growOak(GameTestHelper helper, BlockPos base) {
 		ServerLevel level = helper.getLevel();

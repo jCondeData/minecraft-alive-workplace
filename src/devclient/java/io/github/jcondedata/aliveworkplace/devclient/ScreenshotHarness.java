@@ -445,6 +445,17 @@ public class ScreenshotHarness implements ClientModInitializer {
 				level.setBlockAndUpdate(storehouse.west(), Blocks.CHEST.defaultBlockState().setValue(net.minecraft.world.level.block.ChestBlock.FACING, Direction.SOUTH));
 				Villager porter = EntityType.VILLAGER.spawn(level, storehouse.south(), MobSpawnType.COMMAND);
 				io.github.jcondedata.aliveworkplace.store.Porters.employ(level, porter, storehouse);
+				// A builder behind, with nothing to build with: what they're missing goes on the storehouse's board.
+				BlockPos builderBench = new BlockPos(-2, -60, -10);
+				level.setBlockAndUpdate(builderBench, ModBlocks.BUILDERS_BENCH.defaultBlockState());
+				Villager builder = EntityType.VILLAGER.spawn(level, builderBench.south(), MobSpawnType.COMMAND);
+				Builders.employ(level, builder, builderBench);
+				Builders.start(level, builder, null, io.github.jcondedata.aliveworkplace.blueprint.StarterBlueprints.MARKET_STALL.id(),
+					new io.github.jcondedata.aliveworkplace.blueprint.BlueprintData.Placement(level.dimension().location(), new BlockPos(-12, -60, -20),
+						net.minecraft.world.level.block.Rotation.NONE, net.minecraft.world.level.block.Mirror.NONE));
+				ServerPlayer player = server.getPlayerList().getPlayers().get(0);
+				player.getInventory().add(new ItemStack(net.minecraft.world.item.Items.OAK_PLANKS, 64));
+				player.getInventory().add(new ItemStack(net.minecraft.world.item.Items.OAK_FENCE, 12));
 				hover(server.getPlayerList().getPlayers().get(0), new Vec3(0.5, -57.0, 8.5), 180, 20);
 			});
 		}
@@ -456,6 +467,11 @@ public class ScreenshotHarness implements ClientModInitializer {
 		}
 		if (tick == 420) {
 			shot(mc, "20_storehouse_closeup");
+			mc.options.hideGui = false;
+			server.execute(() -> io.github.jcondedata.aliveworkplace.store.StorehouseBoard.open(server.getPlayerList().getPlayers().get(0), new BlockPos(5, -60, 0)));
+		}
+		if (tick == 470) {
+			shot(mc, "21_request_board");
 			mc.stop();
 		}
 	}

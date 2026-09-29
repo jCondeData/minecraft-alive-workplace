@@ -34,6 +34,7 @@ public class MailGameTests implements FabricGameTest {
 	}
 
 	/** A parcel posted at one mailbox is collected by the postman and put in the other. */
+	//$ gametest_ticks AREA '2400'
 	@GameTest(template = AREA, timeoutTicks = 2400)
 	public void postmanDeliversOnTheRound(GameTestHelper helper) {
 		ServerLevel level = helper.getLevel();
@@ -66,6 +67,7 @@ public class MailGameTests implements FabricGameTest {
 	 * Parcels for a player with no mailbox wait at the post office through the dawn, and are picked up by right-clicking
 	 * a Postal Desk.
 	 */
+	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
 	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
 	public void parcelsWaitAtThePostalDesk(GameTestHelper helper) {
 		ServerLevel level = helper.getLevel();
@@ -89,6 +91,7 @@ public class MailGameTests implements FabricGameTest {
 		helper.succeed();
 	}
 
+	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
 	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
 	public void lettersAndTracking(GameTestHelper helper) {
 		ItemStack letter = io.github.jcondedata.aliveworkplace.mail.Mail.letter("Alice", "See you at the market!");
@@ -118,6 +121,7 @@ public class MailGameTests implements FabricGameTest {
 	}
 
 	/** A mailbox next to a worker's chests is not one of them: nobody takes mail out or drops a haul in. */
+	//$ gametest AREA
 	@GameTest(template = AREA)
 	public void workersLeaveMailboxesAlone(GameTestHelper helper) {
 		MailboxBlockEntity box = mailbox(helper, new BlockPos(4, 2, 2), UUID.randomUUID(), "Erin");
@@ -129,6 +133,7 @@ public class MailGameTests implements FabricGameTest {
 	}
 
 	/** With no mail about, a postman runs courier routes: cobblestone goes over, the pickaxe stays. */
+	//$ gametest_ticks AREA '1600'
 	@GameTest(template = AREA, timeoutTicks = 1600)
 	public void postmanRunsACourierRoute(GameTestHelper helper) {
 		ServerLevel level = helper.getLevel();
@@ -155,6 +160,7 @@ public class MailGameTests implements FabricGameTest {
 	}
 
 	/** Mail handed in for somewhere far away lands in the mailbox at dawn. */
+	//$ gametest AREA
 	@GameTest(template = AREA)
 	public void nightMailArrivesAtDawn(GameTestHelper helper) {
 		ServerLevel level = helper.getLevel();

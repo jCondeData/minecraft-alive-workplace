@@ -1,11 +1,12 @@
+//? if cobbledollars {
 package io.github.jcondedata.aliveworkplace.compat.cobbledollars;
 
 import io.github.jcondedata.aliveworkplace.work.Bank;
 import net.minecraft.server.level.ServerPlayer;
 
-/** The CobbleDollars integration: its balances become the mod's {@link Bank} (prices and prizes in CobbleDollars). */
+// The CobbleDollars integration: its balances become the mod's {@link Bank} (prices and prizes in CobbleDollars).
 public final class CobbleDollarsCompat {
-	/** The CobbleDollars versions this was tested with (the Cobbleverse pack's 2.0.0 Beta 5.1). */
+	// The CobbleDollars versions this was tested with (the Cobbleverse pack's 2.0.0 Beta 5.1).
 	public static final String TESTED = ">=2.0.0 <2.1";
 
 	public static void init() {
@@ -30,3 +31,4 @@ public final class CobbleDollarsCompat {
 	private CobbleDollarsCompat() {
 	}
 }
+//?}

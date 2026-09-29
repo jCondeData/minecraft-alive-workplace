@@ -27,6 +27,7 @@ import net.minecraft.world.phys.Vec3;
 public class TableGameTests implements FabricGameTest {
 	private static final BlockPos TABLE = new BlockPos(1, 1, 1);
 
+	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
 	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
 	public void listingShowsStarterBlueprintsFirst(GameTestHelper helper) {
 		List<TablePayloads.Entry> entries = TableServer.listing(helper.getLevel().getServer());
@@ -38,6 +39,7 @@ public class TableGameTests implements FabricGameTest {
 		helper.succeed();
 	}
 
+	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
 	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
 	public void libraryHasBlueprintsAndStructureBlockSavesButNotWorldgenPieces(GameTestHelper helper) {
 		var server = helper.getLevel().getServer();
@@ -53,6 +55,7 @@ public class TableGameTests implements FabricGameTest {
 		helper.succeed();
 	}
 
+	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
 	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
 	public void materialsListMatchesTheBuild(GameTestHelper helper) {
 		var cottage = BlueprintLibrary.get(helper.getLevel(), StarterBlueprints.STARTER_COTTAGE.id()).orElseThrow();
@@ -67,6 +70,7 @@ public class TableGameTests implements FabricGameTest {
 		helper.succeed();
 	}
 
+	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
 	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
 	public void takingABlueprintCostsABlankBlueprint(GameTestHelper helper) {
 		helper.setBlock(TABLE, ModBlocks.BLUEPRINT_TABLE);
@@ -91,6 +95,7 @@ public class TableGameTests implements FabricGameTest {
 		helper.succeed();
 	}
 
+	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
 	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
 	public void uploadsArriveInPiecesAndJoinTheLibrary(GameTestHelper helper) {
 		helper.setBlock(TABLE, ModBlocks.BLUEPRINT_TABLE);
@@ -112,6 +117,7 @@ public class TableGameTests implements FabricGameTest {
 		helper.succeed();
 	}
 
+	//$ gametest_batch 'FabricGameTest.EMPTY_STRUCTURE' '"uploads_off"'
 	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE, batch = "uploads_off")
 	public void uploadsCanBeTurnedOff(GameTestHelper helper) {
 		helper.setBlock(TABLE, ModBlocks.BLUEPRINT_TABLE);
@@ -133,6 +139,7 @@ public class TableGameTests implements FabricGameTest {
 	 * The Scan Tool: a little build marked with two corners is saved as a blueprint for a Blank Blueprint (none, no scan);
 	 * the player gets the blueprint, it's in the library with the build's blocks, and the tool's name names it.
 	 */
+	//$ gametest '"aliveworkplace_test:build_area"'
 	@GameTest(template = "aliveworkplace_test:build_area")
 	public void scanToolSavesABuild(GameTestHelper helper) {
 		ServerPlayer player = playerAtTable(helper);

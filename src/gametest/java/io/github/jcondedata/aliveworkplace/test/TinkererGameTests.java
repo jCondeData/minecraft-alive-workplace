@@ -27,6 +27,7 @@ public class TinkererGameTests implements FabricGameTest {
 	private static final BlockPos CHEST = new BlockPos(2, 2, 4);
 
 	/** The workshop's recipes: ore fired into ingots on the way to a hopper; worn tools are never melted down. */
+	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
 	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
 	public void workshopRecipesFireOreButNotTools(GameTestHelper helper) {
 		ServerLevel level = helper.getLevel();
@@ -47,6 +48,7 @@ public class TinkererGameTests implements FabricGameTest {
 	}
 
 	/** A badly hurt iron golem: the tinkerer fetches iron ingots and patches it up, one at a time. */
+	//$ gametest_ticks_batch AREA '1600' '"tinkerer_golem"'
 	@GameTest(template = AREA, timeoutTicks = 1600, batch = "tinkerer_golem")
 	public void tinkererMendsTheIronGolem(GameTestHelper helper) {
 		Leftovers.clear(helper);

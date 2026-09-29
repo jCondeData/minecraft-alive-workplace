@@ -38,6 +38,7 @@ public class SifterGameTests implements FabricGameTest {
 	}
 
 	/** Every sifting table loads. */
+	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
 	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
 	public void siftingTablesLoad(GameTestHelper helper) {
 		for (var key : SifterWork.SIFTABLE.values()) {
@@ -47,6 +48,7 @@ public class SifterGameTests implements FabricGameTest {
 	}
 
 	/** Gravel through the sieve: it's used up, flint and the like come out into the chest. */
+	//$ gametest AREA
 	@GameTest(template = AREA)
 	public void siftingGravelTurnsUpFlint(GameTestHelper helper) {
 		Villager sifter = sifter(helper, new ItemStack(Items.GRAVEL, 40));
@@ -64,6 +66,7 @@ public class SifterGameTests implements FabricGameTest {
 	}
 
 	/** At work, a sifter sifts on their own. */
+	//$ gametest_ticks AREA '1200'
 	@GameTest(template = AREA, timeoutTicks = 1200)
 	public void aSifterAtWork(GameTestHelper helper) {
 		Villager sifter = sifter(helper, new ItemStack(Items.SAND, 8));

@@ -28,6 +28,7 @@ public class InnGameTests implements net.fabricmc.fabric.api.gametest.v1.FabricG
 	private static final BlockPos COUNTER = new BlockPos(11, 2, 11);
 
 	/** In the morning, with a free bed, one traveller a day comes to stay; when their stay is over they move on. */
+	//$ gametest_ticks_batch AREA '900' '"innkeeperTakesInATraveller"'
 	@GameTest(template = AREA, timeoutTicks = 900, batch = "innkeeperTakesInATraveller")
 	public void innkeeperTakesInATraveller(GameTestHelper helper) {
 		Leftovers.clear(helper);
@@ -59,6 +60,7 @@ public class InnGameTests implements net.fabricmc.fabric.api.gametest.v1.FabricG
 	}
 
 	/** Hiring a Journeyman traveller takes 16 emeralds; they take a free job as a Journeyman with the trades on the way. */
+	//$ gametest_ticks AREA '100'
 	@GameTest(template = AREA, timeoutTicks = 100)
 	public void aHiredTravellerStartsAtTheirLevel(GameTestHelper helper) {
 		ServerLevel level = helper.getLevel();

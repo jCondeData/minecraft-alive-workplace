@@ -19,6 +19,7 @@ public class CampGameTests implements net.fabricmc.fabric.api.gametest.v1.Fabric
 	private static final String AREA = "aliveworkplace_test:big_area";
 
 	/** On open ground: the wagon, the bench, the chest of supplies (with a Village Hall) and two settlers, the first a builder. */
+	//$ gametest_ticks_batch AREA '100' '"settlersMakeCamp"'
 	@GameTest(template = AREA, timeoutTicks = 100, batch = "settlersMakeCamp")
 	public void settlersMakeCamp(GameTestHelper helper) {
 		Leftovers.clear(helper);
@@ -46,6 +47,7 @@ public class CampGameTests implements net.fabricmc.fabric.api.gametest.v1.Fabric
 	}
 
 	/** Not in the middle of a hill: no camp, no settlers. */
+	//$ gametest_ticks_batch AREA '100' '"noCampInsideAHill"'
 	@GameTest(template = AREA, timeoutTicks = 100, batch = "noCampInsideAHill")
 	public void noCampInsideAHill(GameTestHelper helper) {
 		Leftovers.clear(helper);

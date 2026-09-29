@@ -1,3 +1,4 @@
+//? if cobblemon {
 package io.github.jcondedata.aliveworkplace.compat.cobblemon;
 
 import io.github.jcondedata.aliveworkplace.fossil.FossilLab;
@@ -21,12 +22,10 @@ import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
 
-/**
- * The Cobblemon integration: fills in the mod's Pokémon extension points (partners, fruit, fossils, the daycare,
- * trainers, traders, tutors, the nurse) with the Cobblemon code in this package, and starts the trainers' battles.
- */
+// The Cobblemon integration: fills in the mod's Pokémon extension points (partners, fruit, fossils, the daycare,
+// trainers, traders, tutors, the nurse) with the Cobblemon code in this package, and starts the trainers' battles.
 public final class CobblemonCompat {
-	/** The Cobblemon versions this was tested with (the Cobbleverse pack pins 1.7.3). */
+	// The Cobblemon versions this was tested with (the Cobbleverse pack pins 1.7.3).
 	public static final String TESTED = ">=1.7.3 <1.8";
 
 	public static void init() {
@@ -149,3 +148,4 @@ public final class CobblemonCompat {
 	private CobblemonCompat() {
 	}
 }
+//?}

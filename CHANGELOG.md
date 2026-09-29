@@ -16,6 +16,10 @@
 - Under the hood, no gameplay changes: everything the mod needs from Fabric now goes through one small layer
   (`platform/`), and the Minecraft calls that change in newer versions through another (`mc/`); the build checks that
   the rest of the mod keeps to that, which is what will let one codebase build for newer Minecraft versions later.
+- The jar is now called `alive-workplace-<version>+1.21.1.jar` (the Minecraft version it's for). When updating a server
+  or a game, take the old Alive Workplace jar out of `mods` as usual; nothing else changes (same mod id, saves, config).
+- Under the hood: the build is now a Stonecutter build (the minecraft-mod-engineer layout), so one codebase can build
+  a jar for each Minecraft version; for now there is one, 1.21.1.
 
 ## 0.133.0 — 2026-09-29
 

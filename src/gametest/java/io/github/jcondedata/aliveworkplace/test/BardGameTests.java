@@ -21,6 +21,7 @@ public class BardGameTests implements FabricGameTest {
 	private static final String AREA = "aliveworkplace_test:big_area";
 
 	/** At the morning set, a bard plays the disc from the chest by the stand (and the disc stays there). */
+	//$ gametest_ticks AREA '400'
 	@GameTest(template = AREA, timeoutTicks = 400)
 	public void bardPlaysTheDiscFromTheChest(GameTestHelper helper) {
 		helper.setDayTime(2000);

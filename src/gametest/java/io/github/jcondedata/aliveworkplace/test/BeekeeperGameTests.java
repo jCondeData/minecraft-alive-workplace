@@ -27,6 +27,7 @@ public class BeekeeperGameTests implements FabricGameTest {
 	private static final BlockPos HIVE = new BlockPos(9, 3, 9);
 
 	/** A full hive over a campfire gives a honey bottle for a glass bottle from the chest. */
+	//$ gametest_ticks AREA '1600'
 	@GameTest(template = AREA, timeoutTicks = 1600)
 	public void beekeeperBottlesHoney(GameTestHelper helper) {
 		Villager keeper = beekeeper(helper, new ItemStack(Items.GLASS_BOTTLE, 2));
@@ -41,6 +42,7 @@ public class BeekeeperGameTests implements FabricGameTest {
 	}
 
 	/** With only shears, the hive gives three honeycomb and the shears come back worn. */
+	//$ gametest_ticks AREA '1600'
 	@GameTest(template = AREA, timeoutTicks = 1600)
 	public void beekeeperShearsHoneycomb(GameTestHelper helper) {
 		beekeeper(helper, new ItemStack(Items.SHEARS));
@@ -57,6 +59,7 @@ public class BeekeeperGameTests implements FabricGameTest {
 	}
 
 	/** Flowers from the chest go on the grass round a hive with too few near it. */
+	//$ gametest_ticks AREA '2000'
 	@GameTest(template = AREA, timeoutTicks = 2000)
 	public void beekeeperPlantsFlowers(GameTestHelper helper) {
 		for (BlockPos p : BlockPos.betweenClosed(new BlockPos(7, 1, 7), new BlockPos(11, 1, 11))) {

@@ -35,6 +35,7 @@ public class VillageHallGameTests implements net.fabricmc.fabric.api.gametest.v1
 	private static final BlockPos HALL = new BlockPos(11, 2, 11);
 
 	/** Workers, the jobless, children, beds, food in the store and guards are counted; the screen lists the workers. */
+	//$ gametest_ticks_batch AREA '200' '"villageHallCountsTheVillage"'
 	@GameTest(template = AREA, timeoutTicks = 200, batch = "villageHallCountsTheVillage")
 	public void villageHallCountsTheVillage(GameTestHelper helper) {
 		Leftovers.clear(helper);
@@ -85,6 +86,7 @@ public class VillageHallGameTests implements net.fabricmc.fabric.api.gametest.v1
 	}
 
 	/** A named Name Tag names the village; without one it has a made-up name that stays the same. */
+	//$ gametest_ticks_batch AREA '100' '"villageHallTakesANameTag"'
 	@GameTest(template = AREA, timeoutTicks = 100, batch = "villageHallTakesANameTag")
 	public void villageHallTakesANameTag(GameTestHelper helper) {
 		helper.setBlock(HALL, ModBlocks.VILLAGE_HALL);
@@ -105,6 +107,7 @@ public class VillageHallGameTests implements net.fabricmc.fabric.api.gametest.v1
 	}
 
 	/** Grown villagers who haven't eaten for a day eat from the store — bread, never the golden carrots. */
+	//$ gametest_ticks_batch AREA '100' '"villagersEatFromTheStore"'
 	@GameTest(template = AREA, timeoutTicks = 100, batch = "villagersEatFromTheStore")
 	public void villagersEatFromTheStore(GameTestHelper helper) {
 		Leftovers.clear(helper);
@@ -135,6 +138,7 @@ public class VillageHallGameTests implements net.fabricmc.fabric.api.gametest.v1
 	}
 
 	/** A hungry village with no beds, guards or light works 20% slower; a village without a hall at the usual pace. */
+	//$ gametest_ticks_batch AREA '100' '"aHungryVillageWorksSlower"'
 	@GameTest(template = AREA, timeoutTicks = 100, batch = "aHungryVillageWorksSlower")
 	public void aHungryVillageWorksSlower(GameTestHelper helper) {
 		helper.assertTrue(VillageNeeds.factor(0f) == 1.25f && VillageNeeds.factor(0.5f) == 1f && Math.abs(VillageNeeds.factor(1f) - 0.8f) < 1e-6,
@@ -163,6 +167,7 @@ public class VillageHallGameTests implements net.fabricmc.fabric.api.gametest.v1
 	}
 
 	/** With a free bed, 16 meals in the store and a happy village, two villagers have a baby; the family eats 8 meals. */
+	//$ gametest_ticks_batch AREA '100' '"aVillageWithFoodAndABedGrows"'
 	@GameTest(template = AREA, timeoutTicks = 100, batch = "aVillageWithFoodAndABedGrows")
 	public void aVillageWithFoodAndABedGrows(GameTestHelper helper) {
 		Leftovers.clear(helper);
@@ -202,6 +207,7 @@ public class VillageHallGameTests implements net.fabricmc.fabric.api.gametest.v1
 	}
 
 	/** With little food in the store the village asks for bread; handing it in at the hall fills the store and pays. */
+	//$ gametest_ticks_batch AREA '100' '"questsAreHandedInAtTheHall"'
 	@GameTest(template = AREA, timeoutTicks = 100, batch = "questsAreHandedInAtTheHall")
 	public void questsAreHandedInAtTheHall(GameTestHelper helper) {
 		Leftovers.clear(helper);
@@ -235,6 +241,7 @@ public class VillageHallGameTests implements net.fabricmc.fabric.api.gametest.v1
 	}
 
 	/** Monsters players defeat in the village count towards its clearing-out quest. */
+	//$ gametest_ticks_batch AREA '100' '"monstersCountTowardsAQuest"'
 	@GameTest(template = AREA, timeoutTicks = 100, batch = "monstersCountTowardsAQuest")
 	public void monstersCountTowardsAQuest(GameTestHelper helper) {
 		Leftovers.clear(helper);
@@ -261,6 +268,7 @@ public class VillageHallGameTests implements net.fabricmc.fabric.api.gametest.v1
 	}
 
 	/** The treasury takes a day's takings each morning (more for a well-kept village); a player collects them at the hall. */
+	//$ gametest_ticks_batch AREA '100' '"theTreasuryFillsAndIsCollected"'
 	@GameTest(template = AREA, timeoutTicks = 100, batch = "theTreasuryFillsAndIsCollected")
 	public void theTreasuryFillsAndIsCollected(GameTestHelper helper) {
 		Leftovers.clear(helper);
@@ -299,6 +307,7 @@ public class VillageHallGameTests implements net.fabricmc.fabric.api.gametest.v1
 	}
 
 	/** "What next?": the hall says what the village lacks — a builder, beds, food, a store, guards, jobs, the next rank. */
+	//$ gametest_ticks_batch AREA '100' '"villageAdviceSaysWhatsMissing"'
 	@GameTest(template = AREA, timeoutTicks = 100, batch = "villageAdviceSaysWhatsMissing")
 	public void villageAdviceSaysWhatsMissing(GameTestHelper helper) {
 		Leftovers.clear(helper);
@@ -335,6 +344,7 @@ public class VillageHallGameTests implements net.fabricmc.fabric.api.gametest.v1
 	 * The hall draws a map of the village for an empty map: locked, centred on the hall, the land drawn, a banner on each
 	 * finished building (the workplaces named, homes not) and one for the hall.
 	 */
+	//$ gametest_ticks_batch AREA '100' '"aVillageMapIsDrawn"'
 	@GameTest(template = AREA, timeoutTicks = 100, batch = "aVillageMapIsDrawn")
 	public void aVillageMapIsDrawn(GameTestHelper helper) {
 		Leftovers.clear(helper);
@@ -389,6 +399,7 @@ public class VillageHallGameTests implements net.fabricmc.fabric.api.gametest.v1
 	}
 
 	/** Decorations finished near the hall make the village prettier: a point of beauty is 1% more wellbeing, up to 10%. */
+	//$ gametest_ticks_batch AREA '100' '"decorationsMakeAVillagePrettier"'
 	@GameTest(template = AREA, timeoutTicks = 100, batch = "decorationsMakeAVillagePrettier")
 	public void decorationsMakeAVillagePrettier(GameTestHelper helper) {
 		Leftovers.clear(helper);
@@ -441,6 +452,7 @@ public class VillageHallGameTests implements net.fabricmc.fabric.api.gametest.v1
 	}
 
 	/** The chronicle keeps what happened in the village — a death, a quest done — newest first on its page, and it's saved. */
+	//$ gametest_ticks_batch AREA '100' '"theChronicleRemembers"'
 	@GameTest(template = AREA, timeoutTicks = 100, batch = "theChronicleRemembers")
 	public void theChronicleRemembers(GameTestHelper helper) {
 		Leftovers.clear(helper);
@@ -484,6 +496,7 @@ public class VillageHallGameTests implements net.fabricmc.fabric.api.gametest.v1
 	}
 
 	/** A jobless villager on the hall's list: clicking them lists the village's free workstations; clicking one gives them that job. */
+	//$ gametest_ticks_batch AREA '100' '"theHallHandsOutJobs"'
 	@GameTest(template = AREA, timeoutTicks = 100, batch = "theHallHandsOutJobs")
 	public void theHallHandsOutJobs(GameTestHelper helper) {
 		Leftovers.clear(helper);
@@ -515,6 +528,7 @@ public class VillageHallGameTests implements net.fabricmc.fabric.api.gametest.v1
 	}
 
 	/** "Call everyone home": villagers whose bed is in the village but who wandered off come back to the hall; strangers don't. */
+	//$ gametest_ticks_batch AREA '100' '"callingEveryoneHome"'
 	@GameTest(template = AREA, timeoutTicks = 100, batch = "callingEveryoneHome")
 	public void callingEveryoneHome(GameTestHelper helper) {
 		Leftovers.clear(helper);
@@ -539,6 +553,7 @@ public class VillageHallGameTests implements net.fabricmc.fabric.api.gametest.v1
 	}
 
 	/** Once a week, in the morning, a village with a Market Square holds a market: traders come, one with a blueprint to sell. */
+	//$ gametest_ticks_batch AREA '100' '"marketDayBringsTraders"'
 	@GameTest(template = AREA, timeoutTicks = 100, batch = "marketDayBringsTraders")
 	public void marketDayBringsTraders(GameTestHelper helper) {
 		Leftovers.clear(helper);
@@ -580,6 +595,7 @@ public class VillageHallGameTests implements net.fabricmc.fabric.api.gametest.v1
 	}
 
 	/** A trade route: once a day a caravan takes the other village what it's waiting for (keeping some back), and it arrives in its storehouse. */
+	//$ gametest_ticks_batch AREA '200' '"caravansCarryWhatAnotherVillageNeeds"'
 	@GameTest(template = AREA, timeoutTicks = 200, batch = "caravansCarryWhatAnotherVillageNeeds")
 	public void caravansCarryWhatAnotherVillageNeeds(GameTestHelper helper) {
 		Leftovers.clear(helper);
@@ -632,6 +648,7 @@ public class VillageHallGameTests implements net.fabricmc.fabric.api.gametest.v1
 	}
 
 	/** Ranks go by villagers, finished buildings and research; each pays; a rank up is celebrated and remembered. */
+	//$ gametest_ticks_batch AREA '100' '"aVillageRanksUp"'
 	@GameTest(template = AREA, timeoutTicks = 100, batch = "aVillageRanksUp")
 	public void aVillageRanksUp(GameTestHelper helper) {
 		Leftovers.clear(helper);
@@ -673,6 +690,7 @@ public class VillageHallGameTests implements net.fabricmc.fabric.api.gametest.v1
 	}
 
 	/** Mercenaries: hired at the hall for emeralds, three guards in iron turn up; one band at a time; at their time they leave. */
+	//$ gametest_ticks_batch AREA '100' '"mercenaries"'
 	@GameTest(template = AREA, timeoutTicks = 100, batch = "mercenaries")
 	public void mercenariesComeAndGo(GameTestHelper helper) {
 		Leftovers.clear(helper);
@@ -713,6 +731,7 @@ public class VillageHallGameTests implements net.fabricmc.fabric.api.gametest.v1
 	 * A festival called with a cake: planned for today; after work the villagers feast from the store, a player in the
 	 * village is a Hero of the Village, moods lift, the villagers gather at the bell, and fireworks can fly.
 	 */
+	//$ gametest_ticks_batch AREA '600' '"aFestivalIsHeld"'
 	@GameTest(template = AREA, timeoutTicks = 600, batch = "aFestivalIsHeld")
 	public void aFestivalIsHeld(GameTestHelper helper) {
 		Leftovers.clear(helper);
@@ -772,6 +791,7 @@ public class VillageHallGameTests implements net.fabricmc.fabric.api.gametest.v1
 	}
 
 	/** A Village Ledger bound at the hall opens the hall's screen from afar; unbound, it doesn't. */
+	//$ gametest_ticks_batch AREA '100' '"villageLedger"'
 	@GameTest(template = AREA, timeoutTicks = 100, batch = "villageLedger")
 	public void aVillageLedgerOpensTheHallFromAfar(GameTestHelper helper) {
 		Leftovers.clear(helper);

@@ -2,7 +2,7 @@
 # Boots a real Cobbleverse server (every mod in the pack) with this mod's jar, generates a vanilla and a
 # Repurposed Structures village, and looks for our houses and workstations. Catches crashes and mod
 # clashes the dev environment can't (it only loads a few mods, with Mojang names).
-#   tools/packtest/run.sh                  # uses the newest build/libs jar
+#   tools/packtest/run.sh                  # uses the newest jar the 1.21.1 node built (versions/1.21.1/build/libs)
 #   PACK_VERSION_URL=... tools/packtest/run.sh
 #   PERF=true PLOTS=20 tools/packtest/run.sh   # performance mode: /workplace benchmark fills an area with busy
 #                                              # workers; tick times before/after and a CPU profile of our code
@@ -11,7 +11,7 @@ set -euo pipefail
 cd "$(dirname "$0")/../.."
 PACK_URL="${PACK_VERSION_URL:-https://cdn.modrinth.com/data/Jkb29YJU/versions/4SKGla61/COBBLEVERSE%201.7.42.mrpack}"
 LOADER="${LOADER:-0.18.4}"
-JAR=$(ls -t build/libs/alive-workplace-*.jar | grep -v sources | head -1)
+JAR=$(ls -t versions/1.21.1/build/libs/alive-workplace-*+1.21.1.jar | grep -v sources | head -1)
 DIR=build/packtest
 SERVER=$DIR/server
 mkdir -p "$SERVER/mods"
@@ -34,6 +34,7 @@ if [ ! -f "$SERVER/fabric-server-launch.jar" ]; then
   INSTALLER=$(curl -s https://meta.fabricmc.net/v2/versions/installer | python3 -c "import json,sys; print(json.load(sys.stdin)[0]['version'])")
   curl -sfL -o "$SERVER/fabric-server-launch.jar" "https://meta.fabricmc.net/v2/versions/loader/1.21.1/$LOADER/$INSTALLER/server/jar"
 fi
+# Installing, as on a real server: take out the old jar (whatever its name), put in the new one.
 rm -f "$SERVER"/mods/alive-workplace-*.jar
 cp "$JAR" "$SERVER/mods/"
 echo "eula=true" > "$SERVER/eula.txt"

@@ -1,3 +1,4 @@
+//? if cobblemon {
 package io.github.jcondedata.aliveworkplace.compat.cobblemon;
 
 import com.cobblemon.mod.common.api.types.ElementalType;
@@ -22,12 +23,10 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
-/** Pokémon kept in Cobblemon Pasture Blocks, as partners for villagers (see {@code work/Partners}). */
+// Pokémon kept in Cobblemon Pasture Blocks, as partners for villagers (see {@code work/Partners}).
 public final class CobblemonPartners {
-	/**
-	 * Names of the pastured Pokémon within {@code radius} of {@code center} with one of {@code types}
-	 * (lower-case type names), nearest first, at most {@code max}.
-	 */
+	// Names of the pastured Pokémon within {@code radius} of {@code center} with one of {@code types}
+	// (lower-case type names), nearest first, at most {@code max}.
 	public static List<Component> helpers(ServerLevel level, BlockPos center, int radius, Set<String> types, int max) {
 		AABB box = new AABB(center).inflate(radius);
 		Vec3 middle = Vec3.atCenterOf(center);
@@ -39,7 +38,7 @@ public final class CobblemonPartners {
 			.toList();
 	}
 
-	/** The pastured Pokémon within {@code radius} of {@code center} with one of {@code types}, nearest first, at most {@code max}. */
+	// The pastured Pokémon within {@code radius} of {@code center} with one of {@code types}, nearest first, at most {@code max}.
 	public static List<io.github.jcondedata.aliveworkplace.work.PokemonPartners.Fighter> fighters(ServerLevel level, BlockPos center, int radius, Set<String> types, int max) {
 		AABB box = new AABB(center).inflate(radius);
 		Vec3 middle = Vec3.atCenterOf(center);
@@ -51,10 +50,8 @@ public final class CobblemonPartners {
 			.toList();
 	}
 
-	/**
-	 * Shows a Pokémon using a move on {@code target}: it turns to face it and plays its attack animation, and the
-	 * target gets Cobblemon's impact effect and sound for that type (what players see in battles).
-	 */
+	// Shows a Pokémon using a move on {@code target}: it turns to face it and plays its attack animation, and the
+	// target gets Cobblemon's impact effect and sound for that type (what players see in battles).
 	public static void useMove(ServerLevel level, LivingEntity pokemon, LivingEntity target, String type) {
 		double dx = target.getX() - pokemon.getX();
 		double dz = target.getZ() - pokemon.getZ();
@@ -83,7 +80,7 @@ public final class CobblemonPartners {
 		return pokemon.getPrimaryType().getName().toLowerCase(java.util.Locale.ROOT);
 	}
 
-	/** Every Pokémon in a Pasture Block within {@code radius} of {@code center}. */
+	// Every Pokémon in a Pasture Block within {@code radius} of {@code center}.
 	public static List<net.minecraft.world.entity.Entity> pastured(ServerLevel level, BlockPos center, int radius) {
 		return List.copyOf(level.getEntitiesOfClass(PokemonEntity.class, new AABB(center).inflate(radius, 6, radius),
 			e -> e.isAlive() && e.getTethering() != null));
@@ -91,7 +88,7 @@ public final class CobblemonPartners {
 
 	private static final java.util.Map<String, com.cobblemon.mod.common.api.pokemon.PokemonProperties> PROPERTIES = new java.util.concurrent.ConcurrentHashMap<>();
 
-	/** Whether {@code entity} is a Pokémon matching Cobblemon properties like {@code "miltank"} or {@code "gogoat gender=female"}. */
+	// Whether {@code entity} is a Pokémon matching Cobblemon properties like {@code "miltank"} or {@code "gogoat gender=female"}.
 	public static boolean matches(net.minecraft.world.entity.Entity entity, String properties) {
 		if (!(entity instanceof PokemonEntity pokemon)) {
 			return false;
@@ -100,12 +97,12 @@ public final class CobblemonPartners {
 		return parsed.matches(pokemon.getPokemon());
 	}
 
-	/** A Pokémon's friendship (-1 for anything that isn't a Pokémon). */
+	// A Pokémon's friendship (-1 for anything that isn't a Pokémon).
 	public static int friendship(net.minecraft.world.entity.Entity entity) {
 		return entity instanceof PokemonEntity pokemon ? pokemon.getPokemon().getFriendship() : -1;
 	}
 
-	/** Whether a Pokémon's friendship can still go up. */
+	// Whether a Pokémon's friendship can still go up.
 	public static boolean canBefriend(net.minecraft.world.entity.Entity entity) {
 		if (!(entity instanceof PokemonEntity pokemon)) {
 			return false;
@@ -114,7 +111,7 @@ public final class CobblemonPartners {
 		return p.getFriendship() < com.cobblemon.mod.common.Cobblemon.INSTANCE.getConfig().getMaxPokemonFriendship();
 	}
 
-	/** Raises a Pokémon's friendship by {@code amount} (no higher than the most there is), with hearts; true if it went up. */
+	// Raises a Pokémon's friendship by {@code amount} (no higher than the most there is), with hearts; true if it went up.
 	public static boolean befriend(ServerLevel level, net.minecraft.world.entity.Entity entity, int amount) {
 		if (!canBefriend(entity)) {
 			return false;
@@ -127,7 +124,7 @@ public final class CobblemonPartners {
 		return pokemon.getPokemon().getFriendship() > before;
 	}
 
-	/** A Pokémon kept in a Pasture Block. */
+	// A Pokémon kept in a Pasture Block.
 	public static boolean isPastured(net.minecraft.world.entity.Entity entity) {
 		return entity instanceof PokemonEntity pokemon && pokemon.getTethering() != null;
 	}
@@ -144,3 +141,4 @@ public final class CobblemonPartners {
 	private CobblemonPartners() {
 	}
 }
+//?}

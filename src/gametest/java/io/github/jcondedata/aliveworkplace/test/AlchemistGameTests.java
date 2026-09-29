@@ -32,6 +32,7 @@ public class AlchemistGameTests implements FabricGameTest {
 	private static final BlockPos POST_CHEST = new BlockPos(19, 2, 17);
 
 	/** Glass bottles filled at the cauldron, nether wart and a glistering melon slice: three potions of healing. */
+	//$ gametest_ticks_batch AREA '2400' '"cleric_brews"'
 	@GameTest(template = AREA, timeoutTicks = 2400, batch = "cleric_brews")
 	public void clericBrewsHealingPotions(GameTestHelper helper) {
 		Leftovers.clear(helper);
@@ -57,6 +58,7 @@ public class AlchemistGameTests implements FabricGameTest {
 	}
 
 	/** A cleric brings one of their potions to a guard who has none; a badly hurt guard drinks it. */
+	//$ gametest_ticks_batch AREA '1600' '"cleric_delivers"'
 	@GameTest(template = AREA, timeoutTicks = 1600, batch = "cleric_delivers")
 	public void clericBringsAPotionToTheGuard(GameTestHelper helper) {
 		Leftovers.clear(helper);
@@ -84,6 +86,7 @@ public class AlchemistGameTests implements FabricGameTest {
 	}
 
 	/** A guard below half health drinks the healing potion they carry. */
+	//$ gametest_ticks_batch AREA '400' '"guard_drinks"'
 	@GameTest(template = AREA, timeoutTicks = 400, batch = "guard_drinks")
 	public void guardDrinksAHealingPotion(GameTestHelper helper) {
 		Leftovers.clear(helper);

@@ -51,6 +51,7 @@ public class LumberjackGameTests implements FabricGameTest {
 	}
 
 	/** Wood a builder of the village is waiting for gets felled first: the birch further off before the oak close by. */
+	//$ gametest_ticks AREA '200'
 	@GameTest(template = AREA, timeoutTicks = 200)
 	public void lumberjacksFellTheWoodTheVillageWantsFirst(GameTestHelper helper) {
 		ServerLevel level = helper.getLevel();
@@ -82,6 +83,7 @@ public class LumberjackGameTests implements FabricGameTest {
 	}
 
 	/** A furnace by the Chopping Block: the lumberjack burns logs from the chest into charcoal (a little coal starts it). */
+	//$ gametest_ticks AREA '2000'
 	@GameTest(template = AREA, timeoutTicks = 2000)
 	public void lumberjackBurnsCharcoal(GameTestHelper helper) {
 		Villager villager = setup(helper, new ItemStack(Items.IRON_AXE), new ItemStack(Items.OAK_LOG, 8), new ItemStack(Items.COAL, 2));
@@ -105,6 +107,7 @@ public class LumberjackGameTests implements FabricGameTest {
 	}
 
 	/** The tree comes down, a sapling goes in where it stood, the logs end up in the chest. */
+	//$ gametest_ticks AREA '3000'
 	@GameTest(template = AREA, timeoutTicks = 3000)
 	public void lumberjackFellsATreeAndReplants(GameTestHelper helper) {
 		BlockPos base = new BlockPos(11, 2, 11);
@@ -123,6 +126,7 @@ public class LumberjackGameTests implements FabricGameTest {
 	}
 
 	/** A tree farm (a Field Marker's area): saplings from the chest go in a grid, 3 apart, on the grass. */
+	//$ gametest_ticks AREA '2400'
 	@GameTest(template = AREA, timeoutTicks = 2400)
 	public void lumberjackPlantsATreeFarm(GameTestHelper helper) {
 		for (BlockPos p : BlockPos.betweenClosed(new BlockPos(10, 1, 10), new BlockPos(16, 1, 16))) {
@@ -149,6 +153,7 @@ public class LumberjackGameTests implements FabricGameTest {
 	}
 
 	/** A tree on the tree farm is felled even when it's further from the Chopping Block than the lumberjack looks. */
+	//$ gametest_ticks AREA '3000'
 	@GameTest(template = AREA, timeoutTicks = 3000)
 	public void lumberjackFellsTreesOnAFarFarm(GameTestHelper helper) {
 		BlockPos base = new BlockPos(19, 2, 19); // 17 blocks out: beyond the 16 the lumberjack searches by itself
@@ -177,6 +182,7 @@ public class LumberjackGameTests implements FabricGameTest {
 	 * A mangrove stands on its roots, where nothing can be planted: it's still a tree, felled (the roots stay), and a
 	 * propagule goes in close by, in the water over the mud.
 	 */
+	//$ gametest_ticks_batch AREA '3000' '"mangrove"'
 	@GameTest(template = AREA, timeoutTicks = 3000, batch = "mangrove")
 	public void lumberjackFellsAMangroveAndPlantsAPropagule(GameTestHelper helper) {
 		Leftovers.clear(helper);
@@ -212,6 +218,7 @@ public class LumberjackGameTests implements FabricGameTest {
 	}
 
 	/** An azalea tree (oak logs, azalea leaves) is replanted as an azalea bush, not an oak sapling. */
+	//$ gametest_ticks AREA '3000'
 	@GameTest(template = AREA, timeoutTicks = 3000)
 	public void lumberjackReplantsAnAzalea(GameTestHelper helper) {
 		BlockPos base = new BlockPos(11, 2, 11);
@@ -226,6 +233,7 @@ public class LumberjackGameTests implements FabricGameTest {
 	}
 
 	/** A cherry tree comes down and a cherry sapling goes back. */
+	//$ gametest_ticks AREA '3000'
 	@GameTest(template = AREA, timeoutTicks = 3000)
 	public void lumberjackFellsACherryTree(GameTestHelper helper) {
 		BlockPos base = new BlockPos(11, 2, 11);
@@ -242,6 +250,7 @@ public class LumberjackGameTests implements FabricGameTest {
 	}
 
 	/** With bone meal in the chests, the sapling on the tree farm is grown on the spot, then felled. */
+	//$ gametest_ticks AREA '3000'
 	@GameTest(template = AREA, timeoutTicks = 3000)
 	public void lumberjackGrowsTheFarmWithBoneMeal(GameTestHelper helper) {
 		for (BlockPos p : BlockPos.betweenClosed(new BlockPos(10, 1, 10), new BlockPos(12, 1, 12))) {
@@ -259,6 +268,7 @@ public class LumberjackGameTests implements FabricGameTest {
 	}
 
 	/** A dark oak (a 2 × 2 trunk) is replanted as four saplings in a square: one wouldn't grow. */
+	//$ gametest_ticks AREA '3000'
 	@GameTest(template = AREA, timeoutTicks = 3000)
 	public void lumberjackReplantsADarkOakAsFour(GameTestHelper helper) {
 		ServerLevel level = helper.getLevel();
@@ -280,6 +290,7 @@ public class LumberjackGameTests implements FabricGameTest {
 	}
 
 	/** A huge crimson fungus on nylium is a tree too: felled, cap and all, and a crimson fungus planted back. */
+	//$ gametest_ticks AREA '3000'
 	@GameTest(template = AREA, timeoutTicks = 3000)
 	public void lumberjackFellsAHugeFungus(GameTestHelper helper) {
 		ServerLevel level = helper.getLevel();
@@ -303,6 +314,7 @@ public class LumberjackGameTests implements FabricGameTest {
 	}
 
 	/** A log post with leaves someone placed is part of a build, not a tree: it stays. */
+	//$ gametest_ticks AREA '1200'
 	@GameTest(template = AREA, timeoutTicks = 1200)
 	public void lumberjackLeavesBuiltLogsAlone(GameTestHelper helper) {
 		BlockPos post = new BlockPos(11, 2, 11);

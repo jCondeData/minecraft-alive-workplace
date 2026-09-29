@@ -58,6 +58,7 @@ public class MinerGameTests implements FabricGameTest {
 	}
 
 	/** A 4×3×4 block of stone with coal and iron in it: dug out, everything ends up in the chest. */
+	//$ gametest_ticks AREA '3000'
 	@GameTest(template = AREA, timeoutTicks = 3000)
 	public void minerDigsOutAQuarry(GameTestHelper helper) {
 		BlockPos min = new BlockPos(6, 2, 6);
@@ -85,6 +86,7 @@ public class MinerGameTests implements FabricGameTest {
 	 * A 5×5 pit 5 deep, cut into the ground: one block per layer is left as a step, each along the wall from the one
 	 * above, so the steps spiral down the walls. A sand step is swapped for cobblestone, a gap (a cave) filled in.
 	 */
+	//$ gametest_ticks AREA '6000'
 	@GameTest(template = AREA, timeoutTicks = 6000)
 	public void minerLeavesStairsDownThePit(GameTestHelper helper) {
 		BlockPos min = new BlockPos(6, 2, 6);
@@ -131,6 +133,7 @@ public class MinerGameTests implements FabricGameTest {
 	 * Keeping a quarry's chunks loaded (its owner online) must not change the quarry: before 0.45.0 it grew the box to
 	 * take in the ground around the Miner's Bench, and the miner dug that up too.
 	 */
+	//$ gametest AREA
 	@GameTest(template = AREA)
 	public void keepingAQuarryLoadedLeavesItsBoxAlone(GameTestHelper helper) {
 		BlockPos min = new BlockPos(8, 2, 8);
@@ -149,6 +152,7 @@ public class MinerGameTests implements FabricGameTest {
 	 * A quarry saved by an older version with its bench inside the box (stretched by the chunk-loading bug) is stopped
 	 * before the miner digs any of it, and the marker comes back blank.
 	 */
+	//$ gametest AREA
 	@GameTest(template = AREA)
 	public void stretchedOldQuarryIsStopped(GameTestHelper helper) {
 		BlockPos min = new BlockPos(8, 2, 8);
@@ -192,6 +196,7 @@ public class MinerGameTests implements FabricGameTest {
 	 * A blast furnace by the bench: the miner's raw iron goes in with coal from the chest, and once it's smelted the
 	 * ingots come back out into the chest. The cobblestone in the chest stays there.
 	 */
+	//$ gametest_ticks AREA '3000'
 	@GameTest(template = AREA, timeoutTicks = 3000)
 	public void minerSmeltsOreInAFurnaceByTheBench(GameTestHelper helper) {
 		BlockPos min = new BlockPos(8, 2, 8);
@@ -222,6 +227,7 @@ public class MinerGameTests implements FabricGameTest {
 	 * A 7 × 7 strip mine in a block of stone: 2-high tunnels on every third row, joined at the end nearest the bench,
 	 * the rock between them left standing, but the ores in that rock dug out.
 	 */
+	//$ gametest_ticks AREA '4000'
 	@GameTest(template = AREA, timeoutTicks = 4000)
 	public void minerDigsAStripMine(GameTestHelper helper) {
 		fillStone(helper, new BlockPos(5, 2, 5), new BlockPos(13, 5, 13));
@@ -257,6 +263,7 @@ public class MinerGameTests implements FabricGameTest {
 	 * the bench — sealing off the water beside it and getting past a cave in its way — digs the tunnels, and puts the
 	 * last two ladders up at the foot of the shaft.
 	 */
+	//$ gametest_ticks_batch '"aliveworkplace_test:big_area"' '9000' '"shaft"'
 	@GameTest(template = "aliveworkplace_test:big_area", timeoutTicks = 9000, batch = "shaft")
 	public void minerDigsALadderShaftDownToAStripMine(GameTestHelper helper) {
 		Leftovers.clear(helper);
@@ -304,6 +311,7 @@ public class MinerGameTests implements FabricGameTest {
 	}
 
 	/** {@code /workplace strip <height>} sets the held marker to a strip mine at any height in the world. */
+	//$ gametest 'net.fabricmc.fabric.api.gametest.v1.FabricGameTest.EMPTY_STRUCTURE'
 	@GameTest(template = net.fabricmc.fabric.api.gametest.v1.FabricGameTest.EMPTY_STRUCTURE)
 	public void stripMineHeightCanBeTypedIn(GameTestHelper helper) {
 		net.minecraft.server.level.ServerPlayer player = helper.makeMockServerPlayerInLevel();
@@ -319,6 +327,7 @@ public class MinerGameTests implements FabricGameTest {
 	}
 
 	/** The marker's choices: pits, a strip mine here, then strip mines down a shaft; strip mines may be longer. */
+	//$ gametest 'net.fabricmc.fabric.api.gametest.v1.FabricGameTest.EMPTY_STRUCTURE'
 	@GameTest(template = net.fabricmc.fabric.api.gametest.v1.FabricGameTest.EMPTY_STRUCTURE)
 	public void quarryMarkerOffersStripMinesDownAShaft(GameTestHelper helper) {
 		QuarryData data = new QuarryData(java.util.Optional.of(helper.getLevel().dimension().location()), java.util.Optional.of(new BlockPos(0, 70, 0)),
@@ -352,6 +361,7 @@ public class MinerGameTests implements FabricGameTest {
 	}
 
 	/** A block of stone taller than the miner: it has to get on top and work its way down. */
+	//$ gametest_ticks '"aliveworkplace_test:big_area"' '8000'
 	@GameTest(template = "aliveworkplace_test:big_area", timeoutTicks = 8000)
 	public void minerDigsDownThroughATallBlock(GameTestHelper helper) {
 		BlockPos min = new BlockPos(8, 2, 8);
@@ -366,6 +376,7 @@ public class MinerGameTests implements FabricGameTest {
 	}
 
 	/** Blocks touching lava stay put, so the lava never gets into the pit. */
+	//$ gametest_ticks AREA '3000'
 	@GameTest(template = AREA, timeoutTicks = 3000)
 	public void minerLeavesBlocksNextToLava(GameTestHelper helper) {
 		BlockPos min = new BlockPos(6, 2, 6);
@@ -389,6 +400,7 @@ public class MinerGameTests implements FabricGameTest {
 	}
 
 	/** No pickaxe, no digging: the miner waits (and says so) until one turns up in the chest. */
+	//$ gametest_ticks AREA '2400'
 	@GameTest(template = AREA, timeoutTicks = 2400)
 	public void minerWaitsForAPickaxe(GameTestHelper helper) {
 		BlockPos min = new BlockPos(6, 2, 6);

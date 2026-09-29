@@ -19,6 +19,7 @@ import net.minecraft.world.item.Items;
 /** The Shape Planner: shapes drawn up as blueprints for the builders. */
 public class ShapeGameTests implements FabricGameTest {
 	/** Each shape has the blocks it should: walls, hollow insides cleared, open tops and bottoms, the arch's opening. */
+	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
 	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
 	public void shapesHaveTheRightBlocks(GameTestHelper helper) {
 		helper.assertTrue(Shapes.count(new Shapes.Settings("box", 5, 3, 1, false, java.util.Optional.empty())) == 15, "a 5 x 3 wall");
@@ -45,6 +46,7 @@ public class ShapeGameTests implements FabricGameTest {
 	}
 
 	/** Pick a cylinder, stone bricks and a size on the planner's screen, draw it: a Blank Blueprint becomes its blueprint. */
+	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
 	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
 	public void plannerDrawsAShapeBlueprint(GameTestHelper helper) {
 		ServerPlayer player = helper.makeMockServerPlayerInLevel();

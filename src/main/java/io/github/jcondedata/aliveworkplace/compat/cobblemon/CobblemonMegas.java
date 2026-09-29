@@ -1,3 +1,4 @@
+//? if cobblemon {
 package io.github.jcondedata.aliveworkplace.compat.cobblemon;
 
 import com.cobblemon.mod.common.api.battles.model.PokemonBattle;
@@ -22,15 +23,13 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
-/**
- * Mega Evolution for Master trainers when Mega Showdown is installed: one Pokémon on a Master's team holds its Mega
- * Stone, and the trainer's battle AI Mega Evolves it the first turn it can. Mega Showdown is found by its item ids only
- * (no dependency); its own battle code does the rest, as it does for players.
- */
+// Mega Evolution for Master trainers when Mega Showdown is installed: one Pokémon on a Master's team holds its Mega
+// Stone, and the trainer's battle AI Mega Evolves it the first turn it can. Mega Showdown is found by its item ids only
+// (no dependency); its own battle code does the rest, as it does for players.
 public final class CobblemonMegas {
 	public static final boolean ENABLED = FabricLoader.getInstance().isModLoaded("mega_showdown");
 
-	/** Pokémon with a Mega Evolution (Cobblemon's species id) and their Mega Stones; legendary and mythical ones left out. */
+	// Pokémon with a Mega Evolution (Cobblemon's species id) and their Mega Stones; legendary and mythical ones left out.
 	static final Map<String, List<String>> STONES = Map.ofEntries(
 		Map.entry("venusaur", List.of("venusaurite")), Map.entry("charizard", List.of("charizardite_x", "charizardite_y")),
 		Map.entry("blastoise", List.of("blastoisinite")), Map.entry("beedrill", List.of("beedrillite")),
@@ -54,7 +53,7 @@ public final class CobblemonMegas {
 		Map.entry("abomasnow", List.of("abomasite")), Map.entry("gallade", List.of("galladite")),
 		Map.entry("audino", List.of("audinite")));
 
-	/** A Mega Stone for this species (a random one of Charizard's two), if it has one and Mega Showdown has the item. */
+	// A Mega Stone for this species (a random one of Charizard's two), if it has one and Mega Showdown has the item.
 	static Optional<Item> stoneFor(Species species, Random random) {
 		List<String> stones = STONES.get(species.getResourceIdentifier().getPath());
 		if (stones == null) {
@@ -63,17 +62,15 @@ public final class CobblemonMegas {
 		return BuiltInRegistries.ITEM.getOptional(ResourceLocation.fromNamespaceAndPath("mega_showdown", stones.get(random.nextInt(stones.size()))));
 	}
 
-	/** True if this Pokémon holds the Mega Stone for its species. */
+	// True if this Pokémon holds the Mega Stone for its species.
 	public static boolean holdsItsStone(Pokemon pokemon) {
 		List<String> stones = STONES.get(pokemon.getSpecies().getResourceIdentifier().getPath());
 		ResourceLocation held = BuiltInRegistries.ITEM.getKey(pokemon.heldItem().getItem());
 		return stones != null && held.getNamespace().equals("mega_showdown") && stones.contains(held.getPath());
 	}
 
-	/**
-	 * Gives a Master's team its Mega Evolution: the first Pokémon that has one holds its stone; if none has, the last is
-	 * swapped for one that does (picked with {@code random}, same level, trained the same way).
-	 */
+	// Gives a Master's team its Mega Evolution: the first Pokémon that has one holds its stone; if none has, the last is
+	// swapped for one that does (picked with {@code random}, same level, trained the same way).
 	static void megaAce(List<Pokemon> team, int t, Random random) {
 		if (!ENABLED || team.isEmpty()) {
 			return;
@@ -104,7 +101,7 @@ public final class CobblemonMegas {
 		}
 	}
 
-	/** A battle AI that Mega Evolves the first time it can, and otherwise does what {@code delegate} does. */
+	// A battle AI that Mega Evolves the first time it can, and otherwise does what {@code delegate} does.
 	public static BattleAI megaEvolving(BattleAI delegate) {
 		return ENABLED ? new MegaAI(delegate) : delegate;
 	}
@@ -131,7 +128,7 @@ public final class CobblemonMegas {
 		}
 	}
 
-	/** The same move, Mega Evolving first, when the moveset says the Pokémon can. */
+	// The same move, Mega Evolving first, when the moveset says the Pokémon can.
 	public static ShowdownActionResponse withMega(ShowdownActionResponse response, @Nullable ShowdownMoveset moveset) {
 		if (moveset != null && moveset.getCanMegaEvo() && response instanceof MoveActionResponse move && move.getGimmickID() == null) {
 			return new MoveActionResponse(move.getMoveName(), move.getTargetPnx(), ShowdownMoveset.Gimmick.MEGA_EVOLUTION.getId());
@@ -142,3 +139,4 @@ public final class CobblemonMegas {
 	private CobblemonMegas() {
 	}
 }
+//?}

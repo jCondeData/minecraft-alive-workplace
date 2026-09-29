@@ -31,6 +31,7 @@ public class ShopGameTests implements FabricGameTest {
 	 * a piece, rounded up), on the trade screen and when bought, and the emeralds go into the shop's chest.
 	 */
 	/** A Price Tag's price is set with the buttons on its screen (no anvil needed), and can be rubbed out again. */
+	//$ gametest 'net.fabricmc.fabric.api.gametest.v1.FabricGameTest.EMPTY_STRUCTURE'
 	@GameTest(template = net.fabricmc.fabric.api.gametest.v1.FabricGameTest.EMPTY_STRUCTURE)
 	public void priceTagsAreSetWithButtons(GameTestHelper helper) {
 		net.minecraft.server.level.ServerPlayer player = helper.makeMockServerPlayerInLevel();
@@ -51,6 +52,7 @@ public class ShopGameTests implements FabricGameTest {
 		helper.succeed();
 	}
 
+	//$ gametest AREA
 	@GameTest(template = AREA)
 	public void priceTagsWithoutCobbleDollarsCostEmeralds(GameTestHelper helper) {
 		ItemStack tag = new ItemStack(io.github.jcondedata.aliveworkplace.registry.ModItems.PRICE_TAG);
@@ -85,6 +87,7 @@ public class ShopGameTests implements FabricGameTest {
 		helper.succeed();
 	}
 
+	//$ gametest AREA
 	@GameTest(template = AREA)
 	public void shopkeeperSellsFromTheChests(GameTestHelper helper) {
 		helper.setBlock(COUNTER, ModBlocks.SHOP_COUNTER);

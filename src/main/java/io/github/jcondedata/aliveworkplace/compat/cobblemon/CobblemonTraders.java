@@ -1,3 +1,4 @@
+//? if cobblemon {
 package io.github.jcondedata.aliveworkplace.compat.cobblemon;
 
 import com.cobblemon.mod.common.Cobblemon;
@@ -32,26 +33,22 @@ import net.minecraft.world.item.component.ItemLore;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector4f;
 
-/**
- * The Cobblemon half of Pokémon Traders: the day's offers, the trade screen and the swap itself.
- * An offer is one of the trader's Pokémon for any of yours of a given type and level; offers are the
- * same for everyone on a given day (seeded by the trader and the day).
- */
+// The Cobblemon half of Pokémon Traders: the day's offers, the trade screen and the swap itself.
+// An offer is one of the trader's Pokémon for any of yours of a given type and level; offers are the
+// same for everyone on a given day (seeded by the trader and the day).
 public final class CobblemonTraders {
-	/** Offers per tier (Novice..Master), and the level range of the Pokémon offered. */
+	// Offers per tier (Novice..Master), and the level range of the Pokémon offered.
 	private static final int[] OFFERS = {1, 2, 2, 3, 3};
 	private static final int[] MIN_LEVEL = {5, 15, 25, 35, 50};
 	private static final int[] MAX_LEVEL = {15, 25, 35, 50, 70};
 	private static final Set<String> NOT_FOR_TRADE = Set.of("legendary", "mythical", "ultra_beast", "paradox");
-	/** Row 1: offers; row 3: your party. */
+	// Row 1: offers; row 3: your party.
 	public static final int FIRST_PARTY_SLOT = 18;
 	private static final int INFO = 8;
 	private static final Vector4f GREYED = new Vector4f(0.35f, 0.35f, 0.35f, 1f);
 
-	/**
-	 * One of the day's offers: their Pokémon (species, level, shiny) for yours of {@code wanted} type, level
-	 * {@code minLevel}+ — or, for a special request, of {@code wantedSpecies}' evolution family.
-	 */
+	// One of the day's offers: their Pokémon (species, level, shiny) for yours of {@code wanted} type, level
+	// {@code minLevel}+ — or, for a special request, of {@code wantedSpecies}' evolution family.
 	public record Offer(Species species, int level, boolean shiny, ElementalType wanted, int minLevel, @Nullable Species wantedSpecies) {
 		public Offer(Species species, int level, boolean shiny, ElementalType wanted, int minLevel) {
 			this(species, level, shiny, wanted, minLevel, null);
@@ -63,7 +60,7 @@ public final class CobblemonTraders {
 			return pokemon;
 		}
 
-		/** Why {@code pokemon} won't do for this offer, or null if it will. */
+		// Why {@code pokemon} won't do for this offer, or null if it will.
 		@Nullable
 		public Component refusal(Pokemon pokemon) {
 			if (!pokemon.getTradeable()) {
@@ -89,7 +86,7 @@ public final class CobblemonTraders {
 		}
 	}
 
-	/** Today's offers from this trader (the same all day, for everyone). */
+	// Today's offers from this trader (the same all day, for everyone).
 	public static List<Offer> offers(Villager trader) {
 		return offers(trader.getUUID(), PokemonTraders.tier(trader), PokemonTraders.day(trader));
 	}
@@ -147,7 +144,7 @@ public final class CobblemonTraders {
 		return offers;
 	}
 
-	/** The first form of a Pokémon's evolution line (Charizard → Charmander). */
+	// The first form of a Pokémon's evolution line (Charizard → Charmander).
 	static Species root(Species species) {
 		Species current = species;
 		for (int i = 0; i < 5 && current.getPreEvolution() != null; i++) {
@@ -156,7 +153,7 @@ public final class CobblemonTraders {
 		return current;
 	}
 
-	/** What's on the screen: the offer being looked at and a Pokémon waiting for the second click. */
+	// What's on the screen: the offer being looked at and a Pokémon waiting for the second click.
 	private static final class State {
 		int offer;
 		@Nullable
@@ -174,13 +171,13 @@ public final class CobblemonTraders {
 			menu -> render(menu, player, trader, state));
 	}
 
-	/** The trade screen without showing it (tests). */
+	// The trade screen without showing it (tests).
 	public static ChoiceMenu menuForTest(ServerPlayer player, Villager trader) {
 		State state = new State();
 		return ChoiceMenu.detached(player, menu -> render(menu, player, trader, state));
 	}
 
-	/** Row 1: the offers (and info). Row 2: a divider. Row 3: your party, greyed out when it won't do. */
+	// Row 1: the offers (and info). Row 2: a divider. Row 3: your party, greyed out when it won't do.
 	private static void render(ChoiceMenu menu, ServerPlayer player, Villager trader, State state) {
 		menu.clearButtons();
 		List<Offer> offers = offers(trader);
@@ -252,7 +249,7 @@ public final class CobblemonTraders {
 		}
 	}
 
-	/** Swaps {@code yours} for the offer's Pokémon (the second click). */
+	// Swaps {@code yours} for the offer's Pokémon (the second click).
 	public static boolean trade(ServerPlayer player, Villager trader, Pokemon yours, Offer offer) {
 		if (BattleRegistry.getBattleByParticipatingPlayer(player) != null || PokemonTraders.tradedToday(trader, player.getUUID())
 			|| offer.refusal(yours) != null || !offers(trader).contains(offer)) {
@@ -330,3 +327,4 @@ public final class CobblemonTraders {
 	private CobblemonTraders() {
 	}
 }
+//?}

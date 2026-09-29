@@ -56,6 +56,7 @@ public class PastureCompatTests implements FabricGameTest {
 	}
 
 	/** A Machop in a pasture near the Builder's Bench speeds the builder up; a Pikachu there doesn't. */
+	//$ gametest_ticks AREA '200'
 	@GameTest(template = AREA, timeoutTicks = 200)
 	public void pasturedPokemonHelpTheVillagerNearby(GameTestHelper helper) {
 		helper.assertTrue(FabricLoader.getInstance().isModLoaded("cobbleworkers"), "Cobbleworkers should be installed for this test");
@@ -82,6 +83,7 @@ public class PastureCompatTests implements FabricGameTest {
 	}
 
 	/** A Charmander pastured near a Miner's Bench smelts 8 of the ores in the furnace there each time it's tended. */
+	//$ gametest_ticks AREA '200'
 	@GameTest(template = AREA, timeoutTicks = 200)
 	public void fireTypesSmeltAtTheFurnaces(GameTestHelper helper) {
 		ServerLevel level = helper.getLevel();
@@ -110,6 +112,7 @@ public class PastureCompatTests implements FabricGameTest {
 	 * Air mail: with a Flying-type Pokémon pastured by the Postal Desk, a parcel for a mailbox outside the postman's
 	 * round goes straight there when it's handed in, instead of waiting for the dawn mail. (Alone: it shrinks the round.)
 	 */
+	//$ gametest_ticks_batch AREA '1600' '"air_mail"'
 	@GameTest(template = AREA, timeoutTicks = 1600, batch = "air_mail")
 	public void flyingPartnersSendAirMail(GameTestHelper helper) {
 		ServerLevel level = helper.getLevel();
@@ -150,6 +153,7 @@ public class PastureCompatTests implements FabricGameTest {
 	}
 
 	/** A courier route from a pasture empties the chests around it (where Cobbleworkers' Pokémon put their finds). */
+	//$ gametest_ticks AREA '1600'
 	@GameTest(template = AREA, timeoutTicks = 1600)
 	public void courierHaulsFromAPasture(GameTestHelper helper) {
 		ServerLevel level = helper.getLevel();
@@ -181,6 +185,7 @@ public class PastureCompatTests implements FabricGameTest {
 	 * Guards fight beside their Pokémon: a Machop pastured near the Guard Post follows up the guard's hit on a husk with a
 	 * move of its own (the damage counts as the guard's); a Pikachu there doesn't join in.
 	 */
+	//$ gametest_ticks_batch AREA '200' '"guard_partners"'
 	@GameTest(template = AREA, timeoutTicks = 200, batch = "guard_partners")
 	public void pasturedPokemonFightBesideTheGuard(GameTestHelper helper) {
 		ServerLevel level = helper.getLevel();
@@ -214,6 +219,7 @@ public class PastureCompatTests implements FabricGameTest {
 	}
 
 	/** A shepherd shears a Wooloo kept in a pasture by the loom, like a sheep. */
+	//$ gametest_ticks_batch AREA '1200' '"shepherd_wooloo"'
 	@GameTest(template = AREA, timeoutTicks = 1200, batch = "shepherd_wooloo")
 	public void shepherdShearsAPasturedWooloo(GameTestHelper helper) {
 		ServerLevel level = helper.getLevel();
@@ -235,6 +241,7 @@ public class PastureCompatTests implements FabricGameTest {
 	}
 
 	/** A butcher does the pastured Pokémon's chores from Cobblemon's data: a Miltank milked, a Pidgey brushed for feathers. */
+	//$ gametest_ticks_batch AREA '2400' '"herder_pokemon"'
 	@GameTest(template = AREA, timeoutTicks = 2400, batch = "herder_pokemon")
 	public void butcherMilksAMiltankAndBrushesAPidgey(GameTestHelper helper) {
 		ServerLevel level = helper.getLevel();
@@ -275,6 +282,7 @@ public class PastureCompatTests implements FabricGameTest {
 		});
 	}
 	/** A rancher grooms a pastured Eevee once a day, with an Oran Berry from the chest as a treat: friendship goes up. */
+	//$ gametest_ticks_batch AREA '1600' '"rancher_pokemon"'
 	@GameTest(template = AREA, timeoutTicks = 1600, batch = "rancher_pokemon")
 	public void rancherGroomsAPasturedEevee(GameTestHelper helper) {
 		ServerLevel level = helper.getLevel();

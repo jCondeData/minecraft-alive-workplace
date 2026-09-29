@@ -11,6 +11,7 @@ import net.minecraft.gametest.framework.GameTestHelper;
 /** config/aliveworkplace.json. */
 public class ConfigGameTests implements FabricGameTest {
 	/** Values are read, missing ones take their default, silly ones are clamped, and applying puts them into effect. */
+	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
 	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
 	public void configIsReadClampedAndApplied(GameTestHelper helper) {
 		WorkplaceConfig config = WorkplaceConfig.parse("{\"supplyRadius\": 12, \"guardRadius\": 500, \"dollarsPerEmerald\": 0}");

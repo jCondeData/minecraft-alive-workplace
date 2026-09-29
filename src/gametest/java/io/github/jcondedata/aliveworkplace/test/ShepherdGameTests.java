@@ -24,6 +24,7 @@ public class ShepherdGameTests implements FabricGameTest {
 	private static final BlockPos CHEST = new BlockPos(2, 2, 4);
 
 	/** With shears in the chest, the shepherd shears both sheep and puts the wool in the chest. */
+	//$ gametest_ticks_batch AREA '1600' '"shepherd_shears"'
 	@GameTest(template = AREA, timeoutTicks = 1600, batch = "shepherd_shears")
 	public void shepherdShearsTheSheep(GameTestHelper helper) {
 		Leftovers.clear(helper);
@@ -49,6 +50,7 @@ public class ShepherdGameTests implements FabricGameTest {
 	}
 
 	/** With wheat in the chest and only two sheep, the shepherd feeds them to breed. */
+	//$ gametest_ticks_batch AREA '1200' '"shepherd_breeds"'
 	@GameTest(template = AREA, timeoutTicks = 1200, batch = "shepherd_breeds")
 	public void shepherdFeedsTheSheepToBreed(GameTestHelper helper) {
 		Leftovers.clear(helper);

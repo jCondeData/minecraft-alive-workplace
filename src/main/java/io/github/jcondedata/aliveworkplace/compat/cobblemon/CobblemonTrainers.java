@@ -1,3 +1,4 @@
+//? if cobblemon {
 package io.github.jcondedata.aliveworkplace.compat.cobblemon;
 
 import com.cobblemon.mod.common.CobblemonItems;
@@ -36,12 +37,10 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.npc.Villager;
 
-/**
- * The Cobblemon half of Trainers: building a trainer's team, starting the battle, noticing how it ended.
- * Only touched when Cobblemon is installed.
- */
+// The Cobblemon half of Trainers: building a trainer's team, starting the battle, noticing how it ended.
+// Only touched when Cobblemon is installed.
 public final class CobblemonTrainers {
-	/** Team size and level range by tier (Novice..Master). */
+	// Team size and level range by tier (Novice..Master).
 	private static final int[] SIZE = {2, 3, 4, 5, 6};
 	private static final int[] MIN_LEVEL = {5, 15, 30, 50, 80};
 	private static final int[] MAX_LEVEL = {12, 25, 42, 65, 100};
@@ -53,7 +52,7 @@ public final class CobblemonTrainers {
 	private static final Map<UUID, Challenge> BATTLES = new ConcurrentHashMap<>();
 	private static MinecraftServer server;
 
-	/** Called once at startup (when Cobblemon is installed): listen for battles ending. */
+	// Called once at startup (when Cobblemon is installed): listen for battles ending.
 	public static void init() {
 		net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents.SERVER_STARTED.register(s -> server = s);
 		VillagerTrainerActor.init();
@@ -76,7 +75,7 @@ public final class CobblemonTrainers {
 		return BATTLES.values().stream().anyMatch(c -> c.trainer().equals(trainer.getUUID()));
 	}
 
-	/** Starts a battle between {@code player} and {@code trainer}. */
+	// Starts a battle between {@code player} and {@code trainer}.
 	public static void challenge(ServerPlayer player, Villager trainer) {
 		if (BattleRegistry.getBattleByParticipatingPlayer(player) != null) {
 			return;
@@ -115,10 +114,8 @@ public final class CobblemonTrainers {
 		}
 	}
 
-	/**
-	 * The trainer's team at this tier: always the same for the same trainer and tier (seeded by the
-	 * villager), never legendaries; young Pokémon for beginners, fully evolved ones at the top.
-	 */
+	// The trainer's team at this tier: always the same for the same trainer and tier (seeded by the
+	// villager), never legendaries; young Pokémon for beginners, fully evolved ones at the top.
 	public static List<Pokemon> team(UUID trainer, int tier) {
 		int t = Math.max(1, Math.min(5, tier)) - 1;
 		Random random = new Random(trainer.getMostSignificantBits() ^ trainer.getLeastSignificantBits() ^ (31L * t));
@@ -157,11 +154,9 @@ public final class CobblemonTrainers {
 		return team;
 	}
 
-	/**
-	 * Competitive touches for the stronger trainers: better IVs from Journeyman (15+), Expert (25+) and Master
-	 * (31); from Expert, EVs in their better attacking stat and Speed, a nature to match (Adamant or Modest)
-	 * and a held item suited to that.
-	 */
+	// Competitive touches for the stronger trainers: better IVs from Journeyman (15+), Expert (25+) and Master
+	// (31); from Expert, EVs in their better attacking stat and Speed, a nature to match (Adamant or Modest)
+	// and a held item suited to that.
 	static void train(Pokemon pokemon, int t, Random random) {
 		if (t < 2) {
 			return;
@@ -190,7 +185,7 @@ public final class CobblemonTrainers {
 		pokemon.heal();
 	}
 
-	/** Moves a Master's team never gets: they charge, recharge, knock the user out or only work in odd situations. */
+	// Moves a Master's team never gets: they charge, recharge, knock the user out or only work in odd situations.
 	private static final java.util.Set<String> AWKWARD_MOVES = java.util.Set.of("hyperbeam", "gigaimpact", "blastburn", "frenzyplant",
 		"hydrocannon", "rockwrecker", "roaroftime", "eternabeam", "prismaticlaser", "meteorassault", "solarbeam", "solarblade", "skyattack",
 		"razorwind", "skullbash", "freezeshock", "iceburn", "geomancy", "meteorbeam", "electroshot", "explosion", "selfdestruct",
@@ -199,10 +194,8 @@ public final class CobblemonTrainers {
 		"skydrop", "bide", "counter", "mirrorcoat", "metalburst", "endeavor", "present", "magnitude", "trumpcard", "crushgrip",
 		"wringout", "punishment", "payback", "avalanche", "revenge", "fakeout", "firstimpression", "suckerpunch", "thunderclap", "upperhand");
 
-	/**
-	 * Every attack {@code pokemon} could know — from its level-up moves so far, TMs, tutors and eggs — on {@code side}
-	 * (physical or special; null for both), leaving out {@link #AWKWARD_MOVES}.
-	 */
+	// Every attack {@code pokemon} could know — from its level-up moves so far, TMs, tutors and eggs — on {@code side}
+	// (physical or special; null for both), leaving out {@link #AWKWARD_MOVES}.
 	public static List<com.cobblemon.mod.common.api.moves.MoveTemplate> attackPool(Pokemon pokemon,
 		@org.jetbrains.annotations.Nullable com.cobblemon.mod.common.api.moves.categories.DamageCategory side) {
 		com.cobblemon.mod.common.api.pokemon.moves.Learnset learnset = pokemon.getForm().getMoves();
@@ -221,11 +214,9 @@ public final class CobblemonTrainers {
 		return out;
 	}
 
-	/**
-	 * A Master's moveset, to go with the nature and held item: four attacks on the side it was trained for (physical or
-	 * special), from everything it can learn — the strongest after accuracy, same-type attacks counting half again,
-	 * and each new move of a type it doesn't have yet preferred, so the four cover more.
-	 */
+	// A Master's moveset, to go with the nature and held item: four attacks on the side it was trained for (physical or
+	// special), from everything it can learn — the strongest after accuracy, same-type attacks counting half again,
+	// and each new move of a type it doesn't have yet preferred, so the four cover more.
 	static void pickMoves(Pokemon pokemon, boolean physical, Random random) {
 		com.cobblemon.mod.common.api.moves.categories.DamageCategory side = physical
 			? com.cobblemon.mod.common.api.moves.categories.DamageCategories.INSTANCE.getPHYSICAL()
@@ -284,11 +275,9 @@ public final class CobblemonTrainers {
 		}
 	}
 
-	/**
-	 * With Radical Cobblemon Trainers: no Pokémon above the tier's ceiling for this player's level cap (see
-	 * {@link Trainers#capCeiling}), so a village's trainers stay beatable for new players and tough for
-	 * everyone. Lower-level teams are left as they are.
-	 */
+	// With Radical Cobblemon Trainers: no Pokémon above the tier's ceiling for this player's level cap (see
+	// {@link Trainers#capCeiling}), so a village's trainers stay beatable for new players and tough for
+	// everyone. Lower-level teams are left as they are.
 	public static List<Pokemon> scaleToCap(List<Pokemon> team, int tier, int levelCap) {
 		int ceiling = Trainers.capCeiling(tier, levelCap);
 		List<Pokemon> out = new ArrayList<>();
@@ -303,7 +292,7 @@ public final class CobblemonTrainers {
 		return out;
 	}
 
-	/** Ends a battle as if it had been decided (tests). */
+	// Ends a battle as if it had been decided (tests).
 	public static void finishForTest(PokemonBattle battle, boolean playerWon) {
 		Challenge c = BATTLES.remove(battle.getBattleId());
 		battle.end();
@@ -315,3 +304,4 @@ public final class CobblemonTrainers {
 	private CobblemonTrainers() {
 	}
 }
+//?}

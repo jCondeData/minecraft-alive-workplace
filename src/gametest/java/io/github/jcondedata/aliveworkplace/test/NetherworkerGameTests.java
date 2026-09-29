@@ -66,6 +66,7 @@ public class NetherworkerGameTests implements FabricGameTest {
 	}
 
 	/** The expedition tables load; a sword and armor bring back a fortress's goods; the kit is read off the bag. */
+	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
 	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
 	public void netherTablesAndKit(GameTestHelper helper) {
 		ServerLevel level = helper.getLevel();
@@ -93,6 +94,7 @@ public class NetherworkerGameTests implements FabricGameTest {
 	 * With bread and gear by the brazier and a portal nearby: the netherworker packs, steps through (out of sight, taking
 	 * no harm while away), comes back, and puts the Nether's goods and the worn gear in the chest.
 	 */
+	//$ gametest_ticks_batch AREA '1800' '"netherworker"'
 	@GameTest(template = AREA, timeoutTicks = 1800, batch = "netherworker")
 	public void aNetherExpedition(GameTestHelper helper) {
 		Leftovers.clear(helper);
@@ -135,6 +137,7 @@ public class NetherworkerGameTests implements FabricGameTest {
 	}
 
 	/** No portal near the brazier: the netherworker says so and stays home. */
+	//$ gametest_ticks_batch AREA '400' '"netherworker_no_portal"'
 	@GameTest(template = AREA, timeoutTicks = 400, batch = "netherworker_no_portal")
 	public void noPortalNoExpedition(GameTestHelper helper) {
 		Leftovers.clear(helper);

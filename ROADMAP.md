@@ -693,9 +693,12 @@ pack boot test pass.
   feature packages (no move to `core/`). Left for phase 3, where they need per-version code in the files themselves:
   `Item.use`/`useItemOn` return types (`InteractionResultHolder`, `ItemInteractionResult`), `appendHoverText`
   overrides, block entity save/load, schedules, trades as data, the client
-- [ ] Phase 2: Stonecutter with only the 1.21.1 node (`vcsVersion = "1.21.1"`), our build logic carried over (gametest,
+- [x] Phase 2: Stonecutter with only the 1.21.1 node (`vcsVersion = "1.21.1"`), our build logic carried over (gametest,
   compattest, devclient, screenshots, packtest), compat files behind `//? if <mod>`, `//$ gametest` swaps; jar names
-  become `alive-workplace-<ver>+1.21.1.jar` with the pack install, CI tagging and a note of what changes on the server
+  become `alive-workplace-<ver>+1.21.1.jar` with the pack install, CI tagging and a note of what changes on the server.
+  Checked: the jar's contents are byte-identical to phase 1's (only the manifest differs), the Stonecutter round trip
+  leaves `src/` unchanged, and with every integration switched off (as on a node without Cobblemon) the mod still
+  compiles and passes all 290 game tests
 - [ ] Phases 3–4 (the 26.3 node and releasing both): **on hold until the owner says go** (likely when the mod goes on
   Modrinth or Cobblemon ships for 26.x). The first 26.3 build ships with worker schedules and client rendering working,
   or not at all.

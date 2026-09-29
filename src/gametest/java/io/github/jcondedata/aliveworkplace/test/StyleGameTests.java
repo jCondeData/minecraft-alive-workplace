@@ -31,6 +31,7 @@ public class StyleGameTests implements FabricGameTest {
 	}
 
 	/** The styles that ship load (Apricorn only with Cobblemon), and a styled id takes apart into its style and base. */
+	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
 	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
 	public void stylesLoadAndIdsRoundTrip(GameTestHelper helper) {
 		List<String> names = BlueprintStyles.all().stream().map(BlueprintStyles.Style::name).toList();
@@ -52,6 +53,7 @@ public class StyleGameTests implements FabricGameTest {
 	}
 
 	/** A styled blueprint is the base with its blocks swapped: same size and shape, stairs facing the same way. */
+	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
 	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
 	public void aStyleSwapsTheBlocks(GameTestHelper helper) {
 		var server = helper.getLevel().getServer();
@@ -86,6 +88,7 @@ public class StyleGameTests implements FabricGameTest {
 	}
 
 	/** Sneak-right-clicking the air with a blueprint opens the style screen; a click restyles the blueprint in hand. */
+	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
 	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
 	public void theStylePickerRestylesTheBlueprintInHand(GameTestHelper helper) {
 		ServerPlayer player = helper.makeMockServerPlayerInLevel();
@@ -106,6 +109,7 @@ public class StyleGameTests implements FabricGameTest {
 	 * The style screen's mirror button flips the blueprint in hand; placed, it's built flipped left to right: a block at
 	 * the template's left end lands at the right end, the front still the front.
 	 */
+	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
 	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
 	public void aMirroredBlueprintIsBuiltFlipped(GameTestHelper helper) {
 		ServerPlayer player = helper.makeMockServerPlayerInLevel();

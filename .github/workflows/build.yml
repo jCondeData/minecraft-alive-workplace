@@ -26,35 +26,39 @@ jobs:
       - uses: gradle/actions/setup-gradle@v4
       - name: Build and run in-game tests
         run: ./gradlew build --stacktrace
+      # One jar per Minecraft version node: versions/<mc>/build/libs/alive-workplace-<version>+<mc>.jar
       - name: Upload jar
         uses: actions/upload-artifact@v4
         with:
           name: alive-workplace-${{ github.sha }}
           path: |
-            build/libs/*.jar
-            !build/libs/*-sources.jar
+            versions/*/build/libs/*.jar
+            !versions/*/build/libs/*-sources.jar
       - name: Upload test report
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: gametest-report-${{ github.sha }}
-          path: build/**/junit*.xml
+          path: versions/*/build/**/junit*.xml
           if-no-files-found: ignore
 
-      # Releasing: bump mod_version in gradle.properties (and add a "## <version>" section to
-      # CHANGELOG.md). The first green build on main with a new version publishes a GitHub Release.
+      # Releasing: bump mod.version in stonecutter.properties.toml (and add a "## <version>" section to
+      # CHANGELOG.md). The first green build on main with a new version publishes a GitHub Release, tagged
+      # v<version>, with every node's jar (alive-workplace-<version>+<mc>.jar).
       - name: Check whether this version is already released
         id: release
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         run: |
-          VERSION=$(grep '^mod_version=' gradle.properties | cut -d= -f2)
+          VERSION=$(sed -nE 's/^mod\.version *= *"([^"]+)".*/\1/p' stonecutter.properties.toml)
+          test -n "$VERSION"
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
           if git ls-remote --exit-code --tags origin "refs/tags/v$VERSION" >/dev/null; then
             echo "new=false" >> "$GITHUB_OUTPUT"
           else
             echo "new=true" >> "$GITHUB_OUTPUT"
+            mkdir -p build
             awk -v v="$VERSION" '$0 ~ "^## "v {p=1; next} /^## / && p {exit} p' CHANGELOG.md > build/release-notes.md
-            rm -f build/libs/*-sources.jar
+            rm -f versions/*/build/libs/*-sources.jar
           fi
       - name: Publish GitHub release
         if: steps.release.outputs.new == 'true'
@@ -64,5 +68,5 @@ jobs:
           target_commitish: ${{ github.sha }}
           name: Alive Workplace ${{ steps.release.outputs.version }}
           body_path: build/release-notes.md
-          files: build/libs/*.jar
+          files: versions/*/build/libs/*.jar
           prerelease: ${{ startsWith(steps.release.outputs.version, '0.') }}

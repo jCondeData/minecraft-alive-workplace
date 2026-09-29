@@ -25,6 +25,7 @@ public class ToolsmithGameTests implements FabricGameTest {
 	private static final String AREA = "aliveworkplace_test:big_area";
 
 	/** A miner without a pickaxe gets an iron one, made from the storehouse's iron and a log. */
+	//$ gametest_ticks_batch AREA '2400' '"toolsmith_pickaxe"'
 	@GameTest(template = AREA, timeoutTicks = 2400, batch = "toolsmith_pickaxe")
 	public void toolsmithMakesAPickaxeForTheMiner(GameTestHelper helper) {
 		Leftovers.clear(helper);

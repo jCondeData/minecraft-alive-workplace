@@ -15,7 +15,9 @@ trainer's houses, Trainer Leader halls, schools, trade halls, ball workshops and
 
 Fabric · Minecraft 1.21.1 · built for the Cobbleverse (Cobblemon) modpack, but works without it.
 Builders understand **Chipped**, **Rechiseled** and **Supplementaries** blocks (tested with the real mods).
-Install on the **server and every player's game**.
+Install on the **server and every player's game**: put `alive-workplace-<version>+1.21.1.jar` (from the
+[Releases](https://github.com/jCondeData/minecraft-alive-workplace/releases); the `+1.21.1` is the Minecraft version it's
+for) in the `mods` folder, and take the old Alive Workplace jar out when you update.
 
 ## Getting started
 **No village nearby?** Craft a **Settler's Wagon** (three white wool over two hay bales and a block of emerald, over a
@@ -1073,7 +1075,7 @@ See [ROADMAP.md](ROADMAP.md) for what's planned.
 
 ## Building from source
 ```
-./gradlew build          # jar in build/libs, runs the in-game test suite
+./gradlew build          # jar in versions/1.21.1/build/libs, runs the in-game test suites
 ./gradlew runGameTest    # just the tests
 ```
 Every push is built and tested by GitHub Actions; the jar is attached to each run.

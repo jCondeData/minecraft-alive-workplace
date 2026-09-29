@@ -24,6 +24,7 @@ public class ScribeGameTests implements FabricGameTest {
 	private static final String AREA = "aliveworkplace_test:big_area";
 
 	/** A guard's plain iron sword gets enchanted with lapis from the librarian's chest. */
+	//$ gametest_ticks_batch AREA '1600' '"scribe_enchants"'
 	@GameTest(template = AREA, timeoutTicks = 1600, batch = "scribe_enchants")
 	public void librarianEnchantsTheGuardsSword(GameTestHelper helper) {
 		Leftovers.clear(helper);
@@ -51,6 +52,7 @@ public class ScribeGameTests implements FabricGameTest {
 	}
 
 	/** Bookshelves round the table (two out, the way a player's table wants them) make a librarian's enchantments stronger. */
+	//$ gametest_batch AREA '"scribe_shelves"'
 	@GameTest(template = AREA, batch = "scribe_shelves")
 	public void bookshelvesStrengthenEnchanting(GameTestHelper helper) {
 		Leftovers.clear(helper);

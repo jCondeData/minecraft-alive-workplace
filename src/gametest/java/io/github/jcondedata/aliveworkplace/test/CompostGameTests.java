@@ -37,6 +37,7 @@ public class CompostGameTests implements FabricGameTest {
 	}
 
 	/** What composts and how much: the vanilla composter's chances as shares, rotten flesh half a layer, stone nothing. */
+	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
 	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
 	public void whatComposts(GameTestHelper helper) {
 		helper.assertTrue(Math.abs(CompostWork.layers(new ItemStack(Items.WHEAT_SEEDS)) - 0.3f) < 0.001f, "seeds");
@@ -47,6 +48,7 @@ public class CompostGameTests implements FabricGameTest {
 	}
 
 	/** Ten rotten flesh make five layers: one bone meal in the chest; with nothing left, the composter asks for scraps. */
+	//$ gametest AREA
 	@GameTest(template = AREA)
 	public void rottenFleshBecomesBoneMeal(GameTestHelper helper) {
 		Villager composter = composter(helper, new ItemStack(Items.ROTTEN_FLESH, 10));
@@ -63,6 +65,7 @@ public class CompostGameTests implements FabricGameTest {
 	}
 
 	/** At work, a composter composts on their own. */
+	//$ gametest_ticks AREA '1200'
 	@GameTest(template = AREA, timeoutTicks = 1200)
 	public void aComposterAtWork(GameTestHelper helper) {
 		composter(helper, new ItemStack(Items.KELP, 20));

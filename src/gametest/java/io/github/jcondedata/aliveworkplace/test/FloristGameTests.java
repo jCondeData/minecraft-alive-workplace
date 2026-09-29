@@ -25,6 +25,7 @@ public class FloristGameTests implements net.fabricmc.fabric.api.gametest.v1.Fab
 	private static final BlockPos CHEST = new BlockPos(11, 2, 13);
 
 	/** Bone meal on the grass of the garden brings up flowers; they're picked into the chest. */
+	//$ gametest_ticks AREA '2400'
 	@GameTest(template = AREA, timeoutTicks = 2400)
 	public void floristGrowsAndPicksFlowers(GameTestHelper helper) {
 		for (BlockPos p : BlockPos.betweenClosed(new BlockPos(7, 1, 7), new BlockPos(15, 1, 10))) {
@@ -43,6 +44,7 @@ public class FloristGameTests implements net.fabricmc.fabric.api.gametest.v1.Fab
 	}
 
 	/** Bone meal on a sunflower gives another sunflower, which goes in the chest. */
+	//$ gametest_ticks AREA '2000'
 	@GameTest(template = AREA, timeoutTicks = 2000)
 	public void floristGrowsTallFlowers(GameTestHelper helper) {
 		helper.setBlock(new BlockPos(13, 1, 11), Blocks.GRASS_BLOCK);
@@ -57,6 +59,7 @@ public class FloristGameTests implements net.fabricmc.fabric.api.gametest.v1.Fab
 	}
 
 	/** An empty flower pot nearby gets a flower from the chest. */
+	//$ gametest_ticks AREA '1600'
 	@GameTest(template = AREA, timeoutTicks = 1600)
 	public void floristFillsFlowerPots(GameTestHelper helper) {
 		helper.setBlock(new BlockPos(18, 2, 18), Blocks.FLOWER_POT);

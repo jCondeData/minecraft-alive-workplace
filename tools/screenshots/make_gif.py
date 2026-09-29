@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Stitch run/screenshots/screenshots/frame_*.png into a timelapse GIF.
+"""Stitch versions/1.21.1/run/screenshots/screenshots/frame_*.png into a timelapse GIF.
 
     python3 tools/screenshots/make_gif.py [out.gif] [--crop x0,y0,x1,y1] [--width 640] [--every 1]
 """
@@ -8,7 +8,7 @@ import glob
 import os
 from PIL import Image
 
-ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+ROOT = os.path.join(os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")), "versions", "1.21.1")
 p = argparse.ArgumentParser()
 p.add_argument("out", nargs="?", default=os.path.join(ROOT, "run/screenshots/timelapse.gif"))
 p.add_argument("--crop", default="190,70,790,370")

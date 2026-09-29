@@ -25,6 +25,7 @@ public class GraveGameTests implements net.fabricmc.fabric.api.gametest.v1.Fabri
 	private static final String AREA = "aliveworkplace_test:big_area";
 
 	/** A named Journeyman builder dies: a grave with them in it; the undertaker brings them back with a golden apple. */
+	//$ gametest_ticks_batch AREA '1200' '"undertakerBringsAWorkerBack"'
 	@GameTest(template = AREA, timeoutTicks = 1200, batch = "undertakerBringsAWorkerBack")
 	public void undertakerBringsAWorkerBack(GameTestHelper helper) {
 		Leftovers.clear(helper);
@@ -63,6 +64,7 @@ public class GraveGameTests implements net.fabricmc.fabric.api.gametest.v1.Fabri
 	}
 
 	/** A villager without a job or a name leaves no grave; nor does a child. */
+	//$ gametest_ticks AREA '100'
 	@GameTest(template = AREA, timeoutTicks = 100)
 	public void onlyWorkersLeaveGraves(GameTestHelper helper) {
 		ServerLevel level = helper.getLevel();

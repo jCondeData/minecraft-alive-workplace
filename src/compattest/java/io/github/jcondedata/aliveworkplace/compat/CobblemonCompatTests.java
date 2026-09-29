@@ -22,6 +22,7 @@ public class CobblemonCompatTests implements FabricGameTest {
 	private static final String AREA = CompatGameTests.AREA;
 
 	/** With Cobblemon and CobbleDollars installed, their integrations fill in every extension point at startup. */
+	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
 	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
 	public void cobblemonFillsTheExtensionPoints(GameTestHelper helper) {
 		helper.assertTrue(io.github.jcondedata.aliveworkplace.work.PokemonPartners.EXTENSION.present(), "Pokémon partners");
@@ -37,6 +38,7 @@ public class CobblemonCompatTests implements FabricGameTest {
 	}
 
 	/** A nurse heals the player's Pokémon too. */
+	//$ gametest AREA
 	@GameTest(template = AREA)
 	public void nurseHealsTheParty(GameTestHelper helper) {
 		helper.setDayTime(2000);
@@ -61,6 +63,7 @@ public class CobblemonCompatTests implements FabricGameTest {
 
 	/** Trainer teams: the same for the same trainer and tier, bigger and stronger as the tier goes up, no legendaries. */
 	/** With Cobblemon, explorers find apricorns, berries, Poké Balls, evolution stones and fossils too. */
+	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
 	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
 	public void explorersFindCobblemonThings(GameTestHelper helper) {
 		var table = helper.getLevel().getServer().reloadableRegistries().getLootTable(io.github.jcondedata.aliveworkplace.explore.Explorers.COBBLEMON);
@@ -80,6 +83,7 @@ public class CobblemonCompatTests implements FabricGameTest {
 		helper.succeed();
 	}
 
+	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
 	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
 	public void trainerTeamsScaleWithTier(GameTestHelper helper) {
 		java.util.UUID id = java.util.UUID.randomUUID();
@@ -96,6 +100,7 @@ public class CobblemonCompatTests implements FabricGameTest {
 	}
 
 	/** With Radical Cobblemon Trainers' level caps: a Master's team comes down to just over the cap; small teams stay as they are. */
+	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
 	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
 	public void trainerTeamsMatchALevelCap(GameTestHelper helper) {
 		java.util.UUID id = java.util.UUID.randomUUID();
@@ -116,6 +121,7 @@ public class CobblemonCompatTests implements FabricGameTest {
 	}
 
 	/** A player challenges a trainer: a real battle starts; winning pays and both sides learn from it. */
+	//$ gametest_ticks AREA '400'
 	@GameTest(template = AREA, timeoutTicks = 400)
 	public void trainerBattleStartsAndPays(GameTestHelper helper) {
 		helper.setDayTime(2000);
@@ -152,6 +158,7 @@ public class CobblemonCompatTests implements FabricGameTest {
 	}
 
 	/** A Master tutor teaches a move for CobbleDollars: two clicks on the lesson, and the Pokémon can use it. */
+	//$ gametest AREA
 	@GameTest(template = AREA)
 	public void tutorTeachesAMove(GameTestHelper helper) {
 		Villager tutor = tutor(helper, 5);
@@ -186,6 +193,7 @@ public class CobblemonCompatTests implements FabricGameTest {
 	}
 
 	/** A Novice tutor only teaches easy moves, and nobody gets a lesson they can't pay for. */
+	//$ gametest AREA
 	@GameTest(template = AREA)
 	public void noviceTutorsTeachEasyMovesForPayment(GameTestHelper helper) {
 		Villager tutor = tutor(helper, 1);
@@ -226,6 +234,7 @@ public class CobblemonCompatTests implements FabricGameTest {
 	}
 
 	/** A trader's offers: the same all day, different on other days, more and stronger at higher tiers. */
+	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
 	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
 	public void traderOffersChangeDaily(GameTestHelper helper) {
 		java.util.UUID id = java.util.UUID.randomUUID();
@@ -250,6 +259,7 @@ public class CobblemonCompatTests implements FabricGameTest {
 	}
 
 	/** A fitting Pokémon is swapped for the trader's; one that doesn't fit stays; one trade a day. */
+	//$ gametest AREA
 	@GameTest(template = AREA)
 	public void traderSwapsPokemonOnceADay(GameTestHelper helper) {
 		helper.setDayTime(2000);
@@ -306,6 +316,7 @@ public class CobblemonCompatTests implements FabricGameTest {
 	 * The daycare: a Pokémon left with a rancher leaves the party, gains experience while it's there and comes back for
 	 * a fee (none paid, none collected); the last Pokémon in a party can't be left.
 	 */
+	//$ gametest AREA
 	@GameTest(template = AREA)
 	public void rancherDaycareRaisesPokemon(GameTestHelper helper) {
 		BlockPos trough = new BlockPos(2, 1, 2);
@@ -355,6 +366,7 @@ public class CobblemonCompatTests implements FabricGameTest {
 	}
 
 	/** A Trainer Leader starts at Expert strength, pays three times the prize, and takes one challenge a day per player. */
+	//$ gametest_ticks AREA '400'
 	@GameTest(template = AREA, timeoutTicks = 400)
 	public void leaderStartsStrongAndPaysMore(GameTestHelper helper) {
 		helper.setDayTime(2000);
@@ -378,6 +390,7 @@ public class CobblemonCompatTests implements FabricGameTest {
 	}
 
 	/** An orchard with Cobblemon: berries and an apricorn seed from the chest go into the ground as plants. */
+	//$ gametest_ticks_batch AREA '2400' '"cobblemon_orchard_planting"'
 	@GameTest(template = AREA, timeoutTicks = 2400, batch = "cobblemon_orchard_planting")
 	public void orchardKeeperPlantsApricornsAndBerries(GameTestHelper helper) {
 		var level = helper.getLevel();
@@ -417,6 +430,7 @@ public class CobblemonCompatTests implements FabricGameTest {
 	}
 
 	/** With a hoe in the chest, an Orchard Keeper tills grass into farmland for berries. */
+	//$ gametest_ticks AREA '1600'
 	@GameTest(template = AREA, timeoutTicks = 1600)
 	public void orchardKeeperTillsGrassForBerries(GameTestHelper helper) {
 		var level = helper.getLevel();
@@ -449,6 +463,7 @@ public class CobblemonCompatTests implements FabricGameTest {
 	}
 
 	/** An Orchard Keeper picks a ripe apricorn and a ripe berry plant; both stay to grow again. */
+	//$ gametest_ticks AREA '1600'
 	@GameTest(template = AREA, timeoutTicks = 1600)
 	public void orchardKeeperPicksApricornsAndBerries(GameTestHelper helper) {
 		var level = helper.getLevel();
@@ -501,6 +516,7 @@ public class CobblemonCompatTests implements FabricGameTest {
 	}
 
 	/** With CobbleDollars, the shop screen sells emerald-priced goods for CobbleDollars (100 each) paid to the owner. */
+	//$ gametest AREA
 	@GameTest(template = AREA)
 	public void shopSellsForCobbleDollars(GameTestHelper helper) {
 		var level = helper.getLevel();
@@ -576,6 +592,7 @@ public class CobblemonCompatTests implements FabricGameTest {
 	}
 
 	/** With CobbleDollars, a ferryman's screen sells tickets for CobbleDollars (the emerald fare × 100). */
+	//$ gametest AREA
 	@GameTest(template = AREA)
 	public void ferrymanSellsTicketsForCobbleDollars(GameTestHelper helper) {
 		helper.setDayTime(2000);
@@ -606,6 +623,7 @@ public class CobblemonCompatTests implements FabricGameTest {
 	}
 
 	/** A Fossil Scientist takes a Dome Fossil and the fee, works on it at the lab, and a Kabuto joins the player's party. */
+	//$ gametest_ticks_batch AREA '1200' '"fossil"'
 	@GameTest(template = AREA, timeoutTicks = 1200, batch = "fossil")
 	public void fossilScientistRevivesAFossil(GameTestHelper helper) {
 		int usual = io.github.jcondedata.aliveworkplace.fossil.FossilScientists.REVIVE_TICKS;
@@ -639,6 +657,7 @@ public class CobblemonCompatTests implements FabricGameTest {
 	}
 
 	/** With Cobblemon a chef also cooks in the Campfire Pot's way: Poké Bait from honey, mushrooms and wheat (the bottles come back). */
+	//$ gametest_ticks AREA '2400'
 	@GameTest(template = AREA, timeoutTicks = 2400)
 	public void chefCooksPokeBait(GameTestHelper helper) {
 		var bait = net.minecraft.core.registries.BuiltInRegistries.ITEM.get(net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("cobblemon", "poke_bait"));
@@ -663,6 +682,7 @@ public class CobblemonCompatTests implements FabricGameTest {
 	}
 
 	/** A novice Ball Smith turns red apricorns and copper into Poké Balls, and leaves Great Ball makings for later. */
+	//$ gametest_ticks AREA '1400'
 	@GameTest(template = AREA, timeoutTicks = 1400)
 	public void ballSmithMakesPokeBalls(GameTestHelper helper) {
 		var recipes = io.github.jcondedata.aliveworkplace.smith.BallRecipes.all(helper.getLevel());
@@ -698,6 +718,7 @@ public class CobblemonCompatTests implements FabricGameTest {
 	}
 
 	/** Orders: asked only for Azure Balls, the smith leaves the red apricorns alone even though it could make Poké Balls. */
+	//$ gametest_ticks AREA '2400'
 	@GameTest(template = AREA, timeoutTicks = 2400)
 	public void ballSmithTakesOrders(GameTestHelper helper) {
 		helper.setDayTime(2000);
@@ -730,6 +751,7 @@ public class CobblemonCompatTests implements FabricGameTest {
 	}
 
 	/** A Farmer's field of Cobblemon mints: ripe ones are picked (leaves to the chest) and planted again. */
+	//$ gametest_ticks AREA '2400'
 	@GameTest(template = AREA, timeoutTicks = 2400)
 	public void farmerHarvestsCobblemonMints(GameTestHelper helper) {
 		var level = helper.getLevel();
@@ -766,6 +788,7 @@ public class CobblemonCompatTests implements FabricGameTest {
 	}
 
 	/** Expert and Master traders add a special request for one particular Pokémon line; beginners don't. */
+	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
 	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
 	public void expertTradersMakeASpecialRequest(GameTestHelper helper) {
 		java.util.UUID id = java.util.UUID.randomUUID();
@@ -787,6 +810,7 @@ public class CobblemonCompatTests implements FabricGameTest {
 	}
 
 	/** Expert and Master trainers bring trained teams: top IVs, EVs, a matching nature and a held item; Novices don't. */
+	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
 	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
 	public void strongTrainersBringTrainedTeams(GameTestHelper helper) {
 		java.util.UUID id = java.util.UUID.randomUUID();
@@ -817,6 +841,7 @@ public class CobblemonCompatTests implements FabricGameTest {
 	}
 
 	/** With Cobblemon, blueprints can be built in apricorn wood: every spruce, oak and dark oak block becomes apricorn. */
+	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
 	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
 	public void blueprintsComeInApricornWood(GameTestHelper helper) {
 		var styles = io.github.jcondedata.aliveworkplace.blueprint.BlueprintStyles.all().stream().map(s -> s.name()).toList();
@@ -840,6 +865,7 @@ public class CobblemonCompatTests implements FabricGameTest {
 	}
 
 	/** With Cobblemon, sifting gravel can turn up evolution stones (their table loads only with Cobblemon). */
+	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
 	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
 	public void siftingFindsEvolutionStones(GameTestHelper helper) {
 		var key = net.minecraft.resources.ResourceKey.create(net.minecraft.core.registries.Registries.LOOT_TABLE,
@@ -850,6 +876,7 @@ public class CobblemonCompatTests implements FabricGameTest {
 	}
 
 	/** With Cobblemon, a netherworker's expedition can turn up Fire and Dusk Stones (the table loads only with Cobblemon). */
+	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
 	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
 	public void netherExpeditionsFindStones(GameTestHelper helper) {
 		helper.assertTrue(helper.getLevel().getServer().reloadableRegistries().getLootTable(io.github.jcondedata.aliveworkplace.nether.Netherworkers.COBBLEMON)

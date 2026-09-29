@@ -22,6 +22,7 @@ public class RaidGameTests implements FabricGameTest {
 	private static final BlockPos HALL = new BlockPos(11, 2, 11);
 
 	/** Small villages are left alone; bigger ones are likelier to be raided, up to a point. */
+	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
 	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
 	public void biggerVillagesAreRaidedMoreOften(GameTestHelper helper) {
 		helper.assertTrue(VillageRaids.nightlyChance(5) == 0f, "a small village raided");
@@ -32,6 +33,7 @@ public class RaidGameTests implements FabricGameTest {
 	}
 
 	/** A raid: raiders gather at the edge of the village, it's in the chronicle, and once they're dead the village has won. */
+	//$ gametest_ticks_batch AREA '100' '"aRaidIsFoughtOff"'
 	@GameTest(template = AREA, timeoutTicks = 100, batch = "aRaidIsFoughtOff")
 	public void aRaidIsFoughtOff(GameTestHelper helper) {
 		Leftovers.clear(helper);
@@ -71,6 +73,7 @@ public class RaidGameTests implements FabricGameTest {
 	 * Bandits make camp: the chief (in iron, tougher) and his men, a chest of loot; while the camp stands the village's raids
 	 * are bandits; when the chief falls the band scatters and the camp is broken up.
 	 */
+	//$ gametest_ticks_batch AREA '100' '"banditCamp"'
 	@GameTest(template = AREA, timeoutTicks = 100, batch = "banditCamp")
 	public void aBanditCampIsBrokenUpWhenItsChiefFalls(GameTestHelper helper) {
 		Leftovers.clear(helper);
@@ -121,6 +124,7 @@ public class RaidGameTests implements FabricGameTest {
 	}
 
 	/** Warding: with it researched, an explosion in the village breaks nothing; without it, it does. */
+	//$ gametest_ticks_batch AREA '100' '"warding"'
 	@GameTest(template = AREA, timeoutTicks = 100, batch = "warding")
 	public void wardingSparesTheVillage(GameTestHelper helper) {
 		Leftovers.clear(helper);
@@ -152,6 +156,7 @@ public class RaidGameTests implements FabricGameTest {
 	}
 
 	/** In a pillager raid a guard doesn't hide: their raid activity is a patrol. */
+	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
 	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
 	public void guardsDontHideFromPillagers(GameTestHelper helper) {
 		var raid = net.minecraft.world.entity.ai.behavior.VillagerGoalPackages.getRaidPackage(ModVillagers.GUARD, 0.5f);
@@ -162,6 +167,7 @@ public class RaidGameTests implements FabricGameTest {
 	}
 
 	/** In a village with a guard, a finished Gatehouse's gates are shut at night and opened in the morning. */
+	//$ gametest_ticks_batch AREA '100' '"gatesAreShutAtNight"'
 	@GameTest(template = AREA, timeoutTicks = 100, batch = "gatesAreShutAtNight")
 	public void gatesAreShutAtNight(GameTestHelper helper) {
 		Leftovers.clear(helper);

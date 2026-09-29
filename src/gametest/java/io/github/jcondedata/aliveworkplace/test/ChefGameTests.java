@@ -20,6 +20,7 @@ public class ChefGameTests implements FabricGameTest {
 	private static final String AREA = "aliveworkplace_test:big_area";
 
 	/** Wheat becomes bread, raw beef cooked beef; the other dishes wait for their makings. */
+	//$ gametest_ticks AREA '2400'
 	@GameTest(template = AREA, timeoutTicks = 2400)
 	public void chefCooksBreadAndBeef(GameTestHelper helper) {
 		helper.setDayTime(2000);

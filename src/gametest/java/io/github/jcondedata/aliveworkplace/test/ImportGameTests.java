@@ -38,6 +38,7 @@ import net.minecraft.world.level.block.state.BlockState;
 public class ImportGameTests implements FabricGameTest {
 	private static final ResourceLocation TEST_HUT = ResourceLocation.fromNamespaceAndPath("aliveworkplace_test", "test_hut");
 
+	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
 	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
 	public void readsLitematicaFiles(GameTestHelper helper) {
 		BlueprintFiles.Result result = read(helper, "hut.litematic");
@@ -46,6 +47,7 @@ public class ImportGameTests implements FabricGameTest {
 		helper.succeed();
 	}
 
+	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
 	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
 	public void readsWorldEditV2Files(GameTestHelper helper) {
 		BlueprintFiles.Result result = read(helper, "hut_v2.schem");
@@ -54,6 +56,7 @@ public class ImportGameTests implements FabricGameTest {
 		helper.succeed();
 	}
 
+	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
 	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
 	public void readsWorldEditV3FilesWithBlockEntities(GameTestHelper helper) {
 		BlueprintFiles.Result result = read(helper, "hut_v3.schem");
@@ -65,6 +68,7 @@ public class ImportGameTests implements FabricGameTest {
 		helper.succeed();
 	}
 
+	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
 	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
 	public void upgradesBlocksFromOlderVersions(GameTestHelper helper) {
 		Blueprint bp = read(helper, "old_1_20_2.schem").blueprint();
@@ -73,6 +77,7 @@ public class ImportGameTests implements FabricGameTest {
 		helper.succeed();
 	}
 
+	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
 	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
 	public void rejectsFilesThatAreNotBlueprints(GameTestHelper helper) {
 		try {
@@ -92,6 +97,7 @@ public class ImportGameTests implements FabricGameTest {
 		helper.succeed();
 	}
 
+	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
 	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
 	public void importedFilesJoinTheLibraryWithUniqueNames(GameTestHelper helper) {
 		clearGenerated(helper, "gametest_names");
@@ -108,6 +114,7 @@ public class ImportGameTests implements FabricGameTest {
 		helper.succeed();
 	}
 
+	//$ gametest_ticks '"aliveworkplace_test:build_area"' '2400'
 	@GameTest(template = "aliveworkplace_test:build_area", timeoutTicks = 2400)
 	public void buildersBuildImportedBlueprints(GameTestHelper helper) {
 		BlueprintImporter.Imported imported;

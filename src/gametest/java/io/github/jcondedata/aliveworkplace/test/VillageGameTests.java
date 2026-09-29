@@ -22,6 +22,7 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemp
 
 /** Our houses in villages. */
 public class VillageGameTests implements FabricGameTest {
+	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
 	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
 	public void everyVillageTypeCanGrowABuildersWorkshop(GameTestHelper helper) {
 		ServerLevel level = helper.getLevel();
@@ -59,6 +60,7 @@ public class VillageGameTests implements FabricGameTest {
 	}
 
 	/** Trainer's houses, guard houses, clinics and post offices: in every village type's pool, each with its job block. */
+	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
 	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
 	public void everyVillageTypeCanGrowTheOtherHouses(GameTestHelper helper) {
 		ServerLevel level = helper.getLevel();
@@ -131,6 +133,7 @@ public class VillageGameTests implements FabricGameTest {
 	}
 
 	/** A jobless villager inside a freshly generated workshop takes the bench and becomes a builder. */
+	//$ gametest_ticks_batch '"aliveworkplace_test:big_area"' '2400' '"aVillagerMovesIntoTheWorkshop"'
 	@GameTest(template = "aliveworkplace_test:big_area", timeoutTicks = 2400, batch = "aVillagerMovesIntoTheWorkshop")
 	public void aVillagerMovesIntoTheWorkshop(GameTestHelper helper) {
 		Leftovers.clear(helper); // (a jobless villager from a neighbouring test can take the bench first)

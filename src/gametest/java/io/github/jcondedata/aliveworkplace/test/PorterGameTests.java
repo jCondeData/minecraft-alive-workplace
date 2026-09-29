@@ -33,6 +33,7 @@ public class PorterGameTests implements FabricGameTest {
 	private static final BlockPos STORE_CHEST = new BlockPos(19, 2, 17);
 
 	/** What a worker's job needs stays; what it makes is the porter's to carry. */
+	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
 	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
 	public void portersLeaveWhatTheJobNeeds(GameTestHelper helper) {
 		check(helper, ModVillagers.MINER, Items.TORCH, false, Porters.ALL);
@@ -64,6 +65,7 @@ public class PorterGameTests implements FabricGameTest {
 	}
 
 	/** A double chest is one set of items: listed once, counted once. */
+	//$ gametest AREA
 	@GameTest(template = AREA)
 	public void doubleChestsCountOnce(GameTestHelper helper) {
 		helper.setBlock(new BlockPos(5, 2, 5), ModBlocks.MINERS_BENCH);
@@ -79,6 +81,7 @@ public class PorterGameTests implements FabricGameTest {
 	}
 
 	/** The porter fetches the miner's ore and extra stone, leaves the torches, pickaxe and some stone, and stores the rest. */
+	//$ gametest_ticks_batch AREA '1600' '"porter_carries"'
 	@GameTest(template = AREA, timeoutTicks = 1600, batch = "porter_carries")
 	public void porterCarriesTheMinersGoodsToTheStorehouse(GameTestHelper helper) {
 		Leftovers.clear(helper);
@@ -108,6 +111,7 @@ public class PorterGameTests implements FabricGameTest {
 	}
 
 	/** Whatever's put in a Drop Box near the storehouse — tools and odd items too — the porter takes to the store. */
+	//$ gametest_ticks_batch AREA '1200' '"porter_drop_box"'
 	@GameTest(template = AREA, timeoutTicks = 1200, batch = "porter_drop_box")
 	public void porterEmptiesTheDropBox(GameTestHelper helper) {
 		Leftovers.clear(helper);
@@ -133,6 +137,7 @@ public class PorterGameTests implements FabricGameTest {
 	 * A stock order: "keep 32 oak planks" set on the Storehouse's board; the carpenter nearby makes them from the logs in the
 	 * store and brings them to the store.
 	 */
+	//$ gametest_ticks_batch AREA '1200' '"stock_orders"'
 	@GameTest(template = AREA, timeoutTicks = 1200, batch = "stock_orders")
 	public void carpenterFillsAStockOrder(GameTestHelper helper) {
 		Leftovers.clear(helper);
@@ -162,6 +167,7 @@ public class PorterGameTests implements FabricGameTest {
 	}
 
 	/** A porter works for the storehouse's owner, and leaves the chests of someone else's workers alone. */
+	//$ gametest_ticks_batch AREA '400' '"porter_strangers"'
 	@GameTest(template = AREA, timeoutTicks = 400, batch = "porter_strangers")
 	public void porterLeavesStrangersWorkersAlone(GameTestHelper helper) {
 		Leftovers.clear(helper);

@@ -63,6 +63,7 @@ public class CompatGameTests implements FabricGameTest {
 
 	// --- Chipped ----------------------------------------------------------------------------
 
+	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
 	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
 	public void everyChippedBlockCanBeBuilt(GameTestHelper helper) {
 		List<String> unbuildable = new ArrayList<>();
@@ -85,6 +86,7 @@ public class CompatGameTests implements FabricGameTest {
 	}
 
 	/** A hut made of Chipped variants, with only plain oak planks and stone bricks in the chest. */
+	//$ gametest_ticks AREA '2400'
 	@GameTest(template = AREA, timeoutTicks = 2400)
 	public void buildsChippedVariantsFromPlainBlocks(GameTestHelper helper) {
 		List<Item> planks = variants(helper, "oak_planks", 2);
@@ -118,6 +120,7 @@ public class CompatGameTests implements FabricGameTest {
 
 	// --- Rechiseled ---------------------------------------------------------------------------
 
+	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
 	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
 	public void rechiseledVariantsAcceptThePlainBlock(GameTestHelper helper) {
 		Item beams = item("rechiseled:oak_planks_beams");
@@ -135,12 +138,14 @@ public class CompatGameTests implements FabricGameTest {
 	 * shelf with a diamond. The builder must build all of it from the chest — and must not conjure up
 	 * the cookies or the diamond.
 	 */
+	//$ gametest_ticks AREA '2400'
 	@GameTest(template = AREA, timeoutTicks = 2400)
 	public void buildsSupplementariesBlocksWithoutFreeItems(GameTestHelper helper) {
 		supplementariesCorner(helper, Rotation.NONE);
 	}
 
 	/** Same corner turned 90°: the way sign's pending rotation must not make the builder redo it forever. */
+	//$ gametest_ticks AREA '2400'
 	@GameTest(template = AREA, timeoutTicks = 2400)
 	public void buildsTurnedSupplementariesBlocks(GameTestHelper helper) {
 		supplementariesCorner(helper, Rotation.CLOCKWISE_90);

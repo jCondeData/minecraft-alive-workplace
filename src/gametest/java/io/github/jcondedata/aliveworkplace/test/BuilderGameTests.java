@@ -71,6 +71,7 @@ public class BuilderGameTests implements FabricGameTest {
 
 	// --- building --------------------------------------------------------------------------
 
+	//$ gametest_ticks AREA '2400'
 	@GameTest(template = AREA, timeoutTicks = 2400)
 	public void buildsHutFromChestMaterials(GameTestHelper helper) {
 		Setup s = setup(helper, TEST_HUT, HUT_ORIGIN, Rotation.NONE, hutMaterials());
@@ -84,6 +85,7 @@ public class BuilderGameTests implements FabricGameTest {
 	}
 
 	/** A builder who finishes the test hut sells its upgrade (test_hut_2) from then on, and says so. */
+	//$ gametest_ticks AREA '2400'
 	@GameTest(template = AREA, timeoutTicks = 2400)
 	public void builderSellsTheUpgradeOfWhatTheyBuilt(GameTestHelper helper) {
 		ResourceLocation upgrade = ResourceLocation.fromNamespaceAndPath("aliveworkplace_test", "test_hut_2");
@@ -101,6 +103,7 @@ public class BuilderGameTests implements FabricGameTest {
 	}
 
 	/** Once the hut is up, the builder levels the ground around it: a mound and a rock dug away, a hole filled. */
+	//$ gametest_ticks AREA '3000'
 	@GameTest(template = AREA, timeoutTicks = 3000)
 	public void builderLevelsTheGroundAroundABuild(GameTestHelper helper) {
 		BlockPos mound = new BlockPos(5, 2, 8);
@@ -126,6 +129,7 @@ public class BuilderGameTests implements FabricGameTest {
 	}
 
 	/** A blueprint switched to "leave the ground" (right-click the air with it): the mound and the hole stay. */
+	//$ gametest_ticks AREA '2400'
 	@GameTest(template = AREA, timeoutTicks = 2400)
 	public void blueprintCanLeaveTheGroundAsItIs(GameTestHelper helper) {
 		// The switch on the item.
@@ -155,6 +159,7 @@ public class BuilderGameTests implements FabricGameTest {
 	 */
 	// BIG_AREA: the upgraded cottage is 14 tall, and whatever sticks out of a test area stays in the world for the next
 	// batch built on that spot (an old upper storey hanging over the next test's cottage stranded its builder on it).
+	//$ gametest_ticks_batch BIG_AREA '14000' '"cottage_upgrade"'
 	@GameTest(template = BIG_AREA, timeoutTicks = 14000, batch = "cottage_upgrade")
 	public void builderUpgradesAFinishedCottage(GameTestHelper helper) {
 		Leftovers.clear(helper);
@@ -205,6 +210,7 @@ public class BuilderGameTests implements FabricGameTest {
 	 * builder clears the mound where the new wing goes, builds the wing and its roof terrace, and knocks the doorway
 	 * through — the two storeys already there stay.
 	 */
+	//$ gametest_ticks_batch BIG_AREA '14000' '"cottage_wing"'
 	@GameTest(template = BIG_AREA, timeoutTicks = 14000, batch = "cottage_wing")
 	public void builderGrowsACottageSideways(GameTestHelper helper) {
 		Leftovers.clear(helper);
@@ -265,6 +271,7 @@ public class BuilderGameTests implements FabricGameTest {
 	 * The village as one: the builder's chest is empty, but a miner in the village has the materials in theirs — the
 	 * builder walks over and takes them.
 	 */
+	//$ gametest_ticks_batch AREA '3000' '"village_share"'
 	@GameTest(template = AREA, timeoutTicks = 3000, batch = "village_share")
 	public void builderTakesMaterialsFromAnotherWorkersChest(GameTestHelper helper) {
 		Leftovers.clear(helper);
@@ -284,6 +291,7 @@ public class BuilderGameTests implements FabricGameTest {
 	}
 
 	/** Workers hired by different players who aren't friends keep to their own chests: the builder waits. */
+	//$ gametest_ticks_batch AREA '400' '"village_strangers"'
 	@GameTest(template = AREA, timeoutTicks = 400, batch = "village_strangers")
 	public void workersOfDifferentPlayersDontShare(GameTestHelper helper) {
 		Leftovers.clear(helper);
@@ -309,6 +317,7 @@ public class BuilderGameTests implements FabricGameTest {
 	}
 
 	/** The Storehouse's board lists what the builder is missing, and a click hands over the player's into the builder's chest. */
+	//$ gametest_ticks_batch AREA '600' '"storehouse_board"'
 	@GameTest(template = AREA, timeoutTicks = 600, batch = "storehouse_board")
 	public void storehouseBoardShowsWhatTheBuilderIsMissing(GameTestHelper helper) {
 		Leftovers.clear(helper);
@@ -342,6 +351,7 @@ public class BuilderGameTests implements FabricGameTest {
 	}
 
 	/** Crafters plan with the game's recipes, and further down: stairs from planks from logs, fences from logs too. */
+	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
 	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
 	public void craftersPlanWithTheGamesRecipes(GameTestHelper helper) {
 		ServerLevel level = helper.getLevel();
@@ -368,6 +378,7 @@ public class BuilderGameTests implements FabricGameTest {
 	}
 
 	/** A builder short of a door: the village's carpenter makes doors from the builder's spare planks and brings them. */
+	//$ gametest_ticks_batch AREA '2400' '"carpenter"'
 	@GameTest(template = AREA, timeoutTicks = 2400, batch = "carpenter")
 	public void carpenterMakesTheDoorTheBuilderNeeds(GameTestHelper helper) {
 		Leftovers.clear(helper);
@@ -390,6 +401,7 @@ public class BuilderGameTests implements FabricGameTest {
 	}
 
 	/** A builder short of stone bricks: the village's (vanilla) mason cuts them from the builder's stone at the stonecutter. */
+	//$ gametest_ticks_batch AREA '2400' '"mason"'
 	@GameTest(template = AREA, timeoutTicks = 2400, batch = "mason")
 	public void masonCutsTheStoneBricksTheBuilderNeeds(GameTestHelper helper) {
 		Leftovers.clear(helper);
@@ -418,6 +430,7 @@ public class BuilderGameTests implements FabricGameTest {
 	}
 
 	/** A builder short of iron bars, with only raw iron and coal: the village's tinkerer fires the ore and makes the bars. */
+	//$ gametest_ticks_batch AREA '3000' '"tinkerer"'
 	@GameTest(template = AREA, timeoutTicks = 3000, batch = "tinkerer")
 	public void tinkererFiresTheOreForTheIronBarsTheBuilderNeeds(GameTestHelper helper) {
 		Leftovers.clear(helper);
@@ -449,6 +462,7 @@ public class BuilderGameTests implements FabricGameTest {
 	}
 
 	/** A builder short of sand and glass: the mason crushes cobblestone into sand and fires glass in the furnace by the stonecutter. */
+	//$ gametest_ticks_batch AREA '3000' '"mason_glass"'
 	@GameTest(template = AREA, timeoutTicks = 3000, batch = "mason_glass")
 	public void masonCrushesSandAndFiresGlassForTheBuilder(GameTestHelper helper) {
 		Leftovers.clear(helper);
@@ -482,6 +496,7 @@ public class BuilderGameTests implements FabricGameTest {
 	 * A builder short of smooth stone and a block of bricks, with cobblestone, clay and coal: the mason fires the
 	 * cobblestone into stone and smooth stone and the clay into bricks in the furnace by the stonecutter, and lays the bricks.
 	 */
+	//$ gametest_ticks_batch AREA '3000' '"mason_kiln"'
 	@GameTest(template = AREA, timeoutTicks = 3000, batch = "mason_kiln")
 	public void masonFiresSmoothStoneAndBricksForTheBuilder(GameTestHelper helper) {
 		Leftovers.clear(helper);
@@ -511,6 +526,7 @@ public class BuilderGameTests implements FabricGameTest {
 	}
 
 	/** A builder short of white concrete and red wool: the village's leatherworker hardens the powder and dyes the wool. */
+	//$ gametest_ticks_batch AREA '3000' '"dyer"'
 	@GameTest(template = AREA, timeoutTicks = 3000, batch = "dyer")
 	public void dyerMakesTheConcreteAndRedWoolTheBuilderNeeds(GameTestHelper helper) {
 		Leftovers.clear(helper);
@@ -542,6 +558,7 @@ public class BuilderGameTests implements FabricGameTest {
 	}
 
 	/** A builder waiting for stripped logs: the village's lumberjack strips them from the logs in its chest. */
+	//$ gametest_ticks_batch AREA '2400' '"stripped_logs"'
 	@GameTest(template = AREA, timeoutTicks = 2400, batch = "stripped_logs")
 	public void lumberjackStripsLogsForTheBuilder(GameTestHelper helper) {
 		Leftovers.clear(helper);
@@ -575,6 +592,7 @@ public class BuilderGameTests implements FabricGameTest {
 	}
 
 	/** A blueprint with a pool: the builder pours the water from a bucket and keeps the empty bucket. */
+	//$ gametest_ticks AREA '2400'
 	@GameTest(template = AREA, timeoutTicks = 2400)
 	public void builderPoursWaterFromABucket(GameTestHelper helper) {
 		ServerLevel level = helper.getLevel();
@@ -618,6 +636,7 @@ public class BuilderGameTests implements FabricGameTest {
 	 * A blueprint with an item frame and an armor stand (captured with a diamond in the frame and a helmet on
 	 * the stand): built turned a quarter, both go up empty, turned with the build, paid for from the chest.
 	 */
+	//$ gametest_ticks AREA '2400'
 	@GameTest(template = AREA, timeoutTicks = 2400)
 	public void builderPutsUpFramesAndStandsEmpty(GameTestHelper helper) {
 		ServerLevel level = helper.getLevel();
@@ -675,6 +694,7 @@ public class BuilderGameTests implements FabricGameTest {
 	}
 
 	/** With levelling turned off, the ground around a build stays as it was. */
+	//$ gametest_ticks AREA '2400'
 	@GameTest(template = AREA, timeoutTicks = 2400)
 	public void levellingCanBeTurnedOff(GameTestHelper helper) {
 		BuildPlan plan = BuildPlan.create(BlueprintLibrary.get(helper.getLevel(), TEST_HUT).orElseThrow(),
@@ -691,6 +711,7 @@ public class BuilderGameTests implements FabricGameTest {
 	}
 
 	/** Regression: a builder standing where the floor goes must step aside instead of freezing. */
+	//$ gametest_ticks AREA '700'
 	@GameTest(template = AREA, timeoutTicks = 700)
 	public void builderStandingInTheFootprintStepsAside(GameTestHelper helper) {
 		Setup s = setup(helper, TEST_HUT, HUT_ORIGIN, Rotation.NONE, hutMaterials());
@@ -706,6 +727,7 @@ public class BuilderGameTests implements FabricGameTest {
 	 * Regression for the first playtest (jungle): an overgrown site with ferns, tall grass and a bush,
 	 * and a mob that will not move off a floor spot. The builder must clear, shoo and finish.
 	 */
+	//$ gametest_ticks AREA '1500'
 	@GameTest(template = AREA, timeoutTicks = 1500)
 	public void buildsOnAnOvergrownSiteWithAMobInTheWay(GameTestHelper helper) {
 		for (int x = 5; x <= 11; x++) {
@@ -738,6 +760,7 @@ public class BuilderGameTests implements FabricGameTest {
 	 * A build placed two blocks above the ground gets a foundation: every column under its floor is
 	 * filled down to the ground — except columns where the ground is already higher.
 	 */
+	//$ gametest_ticks AREA '2400'
 	@GameTest(template = AREA, timeoutTicks = 2400)
 	public void fillsAFoundationUnderAFloatingBuild(GameTestHelper helper) {
 		BlockPos origin = new BlockPos(6, 4, 6); // hut floor at y=4, ground (smooth stone) at y=1: y=2..3 to fill
@@ -764,6 +787,7 @@ public class BuilderGameTests implements FabricGameTest {
 		});
 	}
 
+	//$ gametest_ticks_batch AREA '1500' '"foundation_off"'
 	@GameTest(template = AREA, timeoutTicks = 1500, batch = "foundation_off")
 	public void foundationsCanBeTurnedOff(GameTestHelper helper) {
 		var rule = helper.getLevel().getGameRules().getRule(ModGameRules.FOUNDATION_DEPTH);
@@ -776,6 +800,7 @@ public class BuilderGameTests implements FabricGameTest {
 		});
 	}
 
+	//$ gametest_ticks AREA '3000'
 	@GameTest(template = AREA, timeoutTicks = 3000)
 	public void waitsForMaterialsThenBuilds(GameTestHelper helper) {
 		Setup s = setup(helper, TEST_HUT, HUT_ORIGIN, Rotation.NONE);
@@ -794,6 +819,7 @@ public class BuilderGameTests implements FabricGameTest {
 		});
 	}
 
+	//$ gametest_ticks AREA '2400'
 	@GameTest(template = AREA, timeoutTicks = 2400)
 	public void clearsWhateverIsInTheWay(GameTestHelper helper) {
 		// Junk inside the future hut: interior (must end up empty), a wall spot and a roof spot.
@@ -809,6 +835,7 @@ public class BuilderGameTests implements FabricGameTest {
 		});
 	}
 
+	//$ gametest_ticks_batch AREA '2400' '"rotation"'
 	@GameTest(template = AREA, timeoutTicks = 2400, batch = "rotation")
 	public void buildsRotatedBlueprints(GameTestHelper helper) {
 		// Clockwise 90: template (x, z) -> (-z, x). Origin (12,2,6) puts the hut at x 8..12, z 6..10.
@@ -822,6 +849,7 @@ public class BuilderGameTests implements FabricGameTest {
 		});
 	}
 
+	//$ gametest_ticks AREA '600'
 	@GameTest(template = AREA, timeoutTicks = 600)
 	public void cancellingReturnsTheBlueprint(GameTestHelper helper) {
 		Setup s = setup(helper, TEST_HUT, HUT_ORIGIN, Rotation.NONE, hutMaterials());
@@ -834,6 +862,7 @@ public class BuilderGameTests implements FabricGameTest {
 		});
 	}
 
+	//$ gametest_ticks_batch AREA '1200' '"free_materials"'
 	@GameTest(template = AREA, timeoutTicks = 1200, batch = "free_materials")
 	public void freeMaterialsGameruleNeedsNoChest(GameTestHelper helper) {
 		helper.getLevel().getGameRules().getRule(ModGameRules.FREE_MATERIALS).set(true, helper.getLevel().getServer());
@@ -846,62 +875,74 @@ public class BuilderGameTests implements FabricGameTest {
 
 	// --- the builds we ship must actually be buildable --------------------------------------
 
+	//$ gametest_ticks_batch BIG_AREA '9000' '"starter_builds"'
 	@GameTest(template = BIG_AREA, timeoutTicks = 9000, batch = "starter_builds")
 	public void buildsStarterCottage(GameTestHelper helper) {
 		buildStarter(helper, StarterBlueprints.STARTER_COTTAGE);
 	}
 
+	//$ gametest_ticks_batch BIG_AREA '6000' '"starter_builds"'
 	@GameTest(template = BIG_AREA, timeoutTicks = 6000, batch = "starter_builds")
 	public void buildsMarketStall(GameTestHelper helper) {
 		buildStarter(helper, StarterBlueprints.MARKET_STALL);
 	}
 
+	//$ gametest_ticks_batch BIG_AREA '9000' '"starter_builds"'
 	@GameTest(template = BIG_AREA, timeoutTicks = 9000, batch = "starter_builds")
 	public void buildsLookoutTower(GameTestHelper helper) {
 		buildStarter(helper, StarterBlueprints.LOOKOUT_TOWER);
 	}
 
+	//$ gametest_ticks_batch BIG_AREA '9000' '"starter_builds"'
 	@GameTest(template = BIG_AREA, timeoutTicks = 9000, batch = "starter_builds")
 	public void buildsHealingCenter(GameTestHelper helper) {
 		buildStarter(helper, StarterBlueprints.HEALING_CENTER);
 	}
 
+	//$ gametest_ticks_batch BIG_AREA '9000' '"starter_builds"'
 	@GameTest(template = BIG_AREA, timeoutTicks = 9000, batch = "starter_builds")
 	public void buildsSupplyShop(GameTestHelper helper) {
 		buildStarter(helper, StarterBlueprints.SUPPLY_SHOP);
 	}
 
+	//$ gametest_ticks_batch BIG_AREA '9000' '"starter_builds"'
 	@GameTest(template = BIG_AREA, timeoutTicks = 9000, batch = "starter_builds")
 	public void buildsStorehouse(GameTestHelper helper) {
 		buildStarter(helper, StarterBlueprints.STOREHOUSE);
 	}
 
+	//$ gametest_ticks_batch BIG_AREA '9000' '"starter_builds"'
 	@GameTest(template = BIG_AREA, timeoutTicks = 9000, batch = "starter_builds")
 	public void buildsBerryFarm(GameTestHelper helper) {
 		buildStarter(helper, StarterBlueprints.BERRY_FARM);
 	}
 
+	//$ gametest_ticks_batch BIG_AREA '9000' '"starter_builds"'
 	@GameTest(template = BIG_AREA, timeoutTicks = 9000, batch = "starter_builds")
 	public void buildsResearchLab(GameTestHelper helper) {
 		buildStarter(helper, StarterBlueprints.RESEARCH_LAB);
 	}
 
+	//$ gametest_ticks_batch BIG_AREA '30000' '"starter_builds_2"'
 	@GameTest(template = BIG_AREA, timeoutTicks = 30000, batch = "starter_builds_2")
 	public void buildsTerrace(GameTestHelper helper) {
 		buildStarter(helper, StarterBlueprints.TERRACE);
 	}
 
+	//$ gametest_ticks_batch BIG_AREA '30000' '"starter_builds_3"'
 	@GameTest(template = BIG_AREA, timeoutTicks = 30000, batch = "starter_builds_3")
 	public void buildsSchoolhouse(GameTestHelper helper) {
 		buildStarter(helper, StarterBlueprints.SCHOOLHOUSE);
 	}
 
+	//$ gametest_ticks_batch BIG_AREA '30000' '"starter_builds_3"'
 	@GameTest(template = BIG_AREA, timeoutTicks = 30000, batch = "starter_builds_3")
 	public void buildsLibrary(GameTestHelper helper) {
 		buildStarter(helper, StarterBlueprints.LIBRARY);
 	}
 
 	/** A hollow stone brick tower drawn on the Shape Planner is built like any blueprint, its inside left clear. */
+	//$ gametest_ticks_batch BIG_AREA '12000' '"shape_build"'
 	@GameTest(template = BIG_AREA, timeoutTicks = 12000, batch = "shape_build")
 	public void buildsAPlannedShape(GameTestHelper helper) {
 		io.github.jcondedata.aliveworkplace.blueprint.Shapes.Settings settings = new io.github.jcondedata.aliveworkplace.blueprint.Shapes.Settings(
@@ -915,62 +956,74 @@ public class BuilderGameTests implements FabricGameTest {
 	}
 
 	/** The whole Library III (18 x 20) from bare ground, in the huge area. */
+	//$ gametest_ticks_batch HUGE_AREA '50000' '"starter_builds_library_3"'
 	@GameTest(template = HUGE_AREA, timeoutTicks = 50000, batch = "starter_builds_library_3")
 	public void buildsLibraryIII(GameTestHelper helper) {
 		buildStarter(helper, StarterBlueprints.LIBRARY_3, new BlockPos(9, 2, 8));
 	}
 
+	//$ gametest_ticks_batch BIG_AREA '30000' '"starter_builds_3"'
 	@GameTest(template = BIG_AREA, timeoutTicks = 30000, batch = "starter_builds_3")
 	public void buildsRanch(GameTestHelper helper) {
 		buildStarter(helper, StarterBlueprints.RANCH);
 	}
 
+	//$ gametest_ticks_batch BIG_AREA '30000' '"starter_builds_3"'
 	@GameTest(template = BIG_AREA, timeoutTicks = 30000, batch = "starter_builds_3")
 	public void buildsApiaryGarden(GameTestHelper helper) {
 		buildStarter(helper, StarterBlueprints.APIARY_GARDEN);
 	}
 
+	//$ gametest_ticks_batch BIG_AREA '30000' '"starter_builds_3"'
 	@GameTest(template = BIG_AREA, timeoutTicks = 30000, batch = "starter_builds_3")
 	public void buildsFlowerShop(GameTestHelper helper) {
 		buildStarter(helper, StarterBlueprints.FLOWER_SHOP);
 	}
 
+	//$ gametest_ticks_batch BIG_AREA '30000' '"starter_builds_3"'
 	@GameTest(template = BIG_AREA, timeoutTicks = 30000, batch = "starter_builds_3")
 	public void buildsGraveyard(GameTestHelper helper) {
 		buildStarter(helper, StarterBlueprints.GRAVEYARD);
 	}
 
+	//$ gametest_ticks_batch BIG_AREA '30000' '"starter_builds_2"'
 	@GameTest(template = BIG_AREA, timeoutTicks = 30000, batch = "starter_builds_2")
 	public void buildsTownHall(GameTestHelper helper) {
 		buildStarter(helper, StarterBlueprints.TOWN_HALL);
 	}
 
+	//$ gametest_ticks_batch BIG_AREA '30000' '"starter_builds_2"'
 	@GameTest(template = BIG_AREA, timeoutTicks = 30000, batch = "starter_builds_2")
 	public void buildsInn(GameTestHelper helper) {
 		buildStarter(helper, StarterBlueprints.INN);
 	}
 
+	//$ gametest_ticks_batch BIG_AREA '30000' '"starter_builds_4"'
 	@GameTest(template = BIG_AREA, timeoutTicks = 30000, batch = "starter_builds_4")
 	public void buildsStoneHouse(GameTestHelper helper) {
 		buildStarter(helper, StarterBlueprints.STONE_HOUSE);
 	}
 
 	/** The whole Stone House III from bare ground (it's deeper than a starter build, so it starts further back). */
+	//$ gametest_ticks_batch BIG_AREA '40000' '"starter_builds_5"'
 	@GameTest(template = BIG_AREA, timeoutTicks = 40000, batch = "starter_builds_5")
 	public void buildsStoneHouseIII(GameTestHelper helper) {
 		buildStarter(helper, StarterBlueprints.STONE_HOUSE_3, new BlockPos(9, 2, 8));
 	}
 
+	//$ gametest_ticks_batch BIG_AREA '30000' '"starter_builds_4"'
 	@GameTest(template = BIG_AREA, timeoutTicks = 30000, batch = "starter_builds_4")
 	public void buildsTinkersWorkshop(GameTestHelper helper) {
 		buildStarter(helper, StarterBlueprints.TINKERS_WORKSHOP);
 	}
 
+	//$ gametest_ticks_batch BIG_AREA '30000' '"starter_builds_6"'
 	@GameTest(template = BIG_AREA, timeoutTicks = 30000, batch = "starter_builds_6")
 	public void buildsNetherGate(GameTestHelper helper) {
 		buildStarter(helper, StarterBlueprints.NETHER_GATE);
 	}
 
+	//$ gametest_ticks_batch BIG_AREA '40000' '"starter_builds_7"'
 	@GameTest(template = BIG_AREA, timeoutTicks = 40000, batch = "starter_builds_7")
 	public void buildsNetherGateII(GameTestHelper helper) {
 		buildStarter(helper, StarterBlueprints.NETHER_GATE_2, new BlockPos(7, 2, 8)); // (15 wide: further left)
@@ -980,6 +1033,7 @@ public class BuilderGameTests implements FabricGameTest {
 	 * Upkeep: a finished wall with a block knocked out and another spot bricked up with stone since — the idle builder
 	 * puts back the missing plank from their chest, leaves the stone, hands out no blueprint, and is done.
 	 */
+	//$ gametest_ticks_batch AREA '1200' '"upkeep"'
 	@GameTest(template = AREA, timeoutTicks = 1200, batch = "upkeep")
 	public void builderRepairsAFinishedBuilding(GameTestHelper helper) {
 		Leftovers.clear(helper);
@@ -1023,6 +1077,7 @@ public class BuilderGameTests implements FabricGameTest {
 	}
 
 	/** An empty portal frame in a finished build is lit with a flint and steel from the chests (a use of it). */
+	//$ gametest AREA
 	@GameTest(template = AREA)
 	public void builderLightsThePortalFrame(GameTestHelper helper) {
 		ServerLevel level = helper.getLevel();
@@ -1050,99 +1105,118 @@ public class BuilderGameTests implements FabricGameTest {
 	}
 
 	/** The Chapel (16 deep, its spire 16 high): further back and to the east, clear of the bench and the barrels. */
+	//$ gametest_ticks_batch BIG_AREA '40000' '"starter_builds_9"'
 	@GameTest(template = BIG_AREA, timeoutTicks = 40000, batch = "starter_builds_9")
 	public void buildsChapel(GameTestHelper helper) {
 		buildStarter(helper, StarterBlueprints.CHAPEL, new BlockPos(8, 2, 5));
 	}
 
+	//$ gametest_ticks_batch BIG_AREA '30000' '"starter_builds_7"'
 	@GameTest(template = BIG_AREA, timeoutTicks = 30000, batch = "starter_builds_7")
 	public void buildsCompostYard(GameTestHelper helper) {
 		buildStarter(helper, StarterBlueprints.COMPOST_YARD);
 	}
 
+	//$ gametest_ticks_batch BIG_AREA '30000' '"starter_builds_8"'
 	@GameTest(template = BIG_AREA, timeoutTicks = 30000, batch = "starter_builds_8")
 	public void buildsCompostYardII(GameTestHelper helper) {
 		buildStarter(helper, StarterBlueprints.COMPOST_YARD_2, new BlockPos(7, 2, 9)); // (15 wide: further left)
 	}
 
+	//$ gametest_ticks_batch BIG_AREA '30000' '"starter_builds_8"'
 	@GameTest(template = BIG_AREA, timeoutTicks = 30000, batch = "starter_builds_8")
 	public void buildsSiftingShed(GameTestHelper helper) {
 		buildStarter(helper, StarterBlueprints.SIFTING_SHED);
 	}
 
+	//$ gametest_ticks_batch BIG_AREA '30000' '"starter_builds_7"'
 	@GameTest(template = BIG_AREA, timeoutTicks = 30000, batch = "starter_builds_7")
 	public void buildsSiftingShedII(GameTestHelper helper) {
 		buildStarter(helper, StarterBlueprints.SIFTING_SHED_2, new BlockPos(9, 2, 8));
 	}
 
 	/** The whole Tinker's Workshop II from bare ground (deeper, so it starts further back). */
+	//$ gametest_ticks_batch BIG_AREA '40000' '"starter_builds_6"'
 	@GameTest(template = BIG_AREA, timeoutTicks = 40000, batch = "starter_builds_6")
 	public void buildsTinkersWorkshopII(GameTestHelper helper) {
 		buildStarter(helper, StarterBlueprints.TINKERS_WORKSHOP_2, new BlockPos(9, 2, 8));
 	}
 
 	/** A blueprint in another style is built like any other: the Stone House in dark oak and deepslate. */
+	//$ gametest_ticks_batch BIG_AREA '30000' '"styles"'
 	@GameTest(template = BIG_AREA, timeoutTicks = 30000, batch = "styles")
 	public void buildsAStyledStoneHouse(GameTestHelper helper) {
 		buildStarter(helper, new StarterBlueprints.Entry(io.github.jcondedata.aliveworkplace.blueprint.BlueprintStyles.styled(StarterBlueprints.STONE_HOUSE.id(),
 			"dark_oak"), StarterBlueprints.STONE_HOUSE.size()));
 	}
 
+	//$ gametest_ticks_batch BIG_AREA '12000' '"defences"'
 	@GameTest(template = BIG_AREA, timeoutTicks = 12000, batch = "defences")
 	public void buildsPalisade(GameTestHelper helper) {
 		buildStarter(helper, StarterBlueprints.PALISADE);
 	}
 
+	//$ gametest_ticks_batch BIG_AREA '12000' '"defences"'
 	@GameTest(template = BIG_AREA, timeoutTicks = 12000, batch = "defences")
 	public void buildsPalisadeGate(GameTestHelper helper) {
 		buildStarter(helper, StarterBlueprints.PALISADE_GATE);
 	}
 
+	//$ gametest_ticks_batch BIG_AREA '12000' '"defences"'
 	@GameTest(template = BIG_AREA, timeoutTicks = 12000, batch = "defences")
 	public void buildsStoneWall(GameTestHelper helper) {
 		buildStarter(helper, StarterBlueprints.STONE_WALL);
 	}
 
+	//$ gametest_ticks_batch BIG_AREA '20000' '"defences"'
 	@GameTest(template = BIG_AREA, timeoutTicks = 20000, batch = "defences")
 	public void buildsWallTower(GameTestHelper helper) {
 		buildStarter(helper, StarterBlueprints.WALL_TOWER);
 	}
 
+	//$ gametest_ticks_batch BIG_AREA '30000' '"starter_builds_5"'
 	@GameTest(template = BIG_AREA, timeoutTicks = 30000, batch = "starter_builds_5")
 	public void buildsBarracks(GameTestHelper helper) {
 		buildStarter(helper, StarterBlueprints.BARRACKS);
 	}
 
+	//$ gametest_ticks_batch BIG_AREA '30000' '"defences"'
 	@GameTest(template = BIG_AREA, timeoutTicks = 30000, batch = "defences")
 	public void buildsGatehouse(GameTestHelper helper) {
 		buildStarter(helper, StarterBlueprints.GATEHOUSE);
 	}
 
+	//$ gametest_ticks_batch BIG_AREA '12000' '"decorations"'
 	@GameTest(template = BIG_AREA, timeoutTicks = 12000, batch = "decorations")
 	public void buildsWell(GameTestHelper helper) {
 		buildStarter(helper, StarterBlueprints.WELL_2);
 	}
 
+	//$ gametest_ticks_batch BIG_AREA '6000' '"decorations"'
 	@GameTest(template = BIG_AREA, timeoutTicks = 6000, batch = "decorations")
 	public void buildsStreetLamp(GameTestHelper helper) {
 		buildStarter(helper, StarterBlueprints.STREET_LAMP);
 	}
 
+	//$ gametest_ticks_batch BIG_AREA '6000' '"decorations"'
 	@GameTest(template = BIG_AREA, timeoutTicks = 6000, batch = "decorations")
 	public void buildsParkBench(GameTestHelper helper) {
 		buildStarter(helper, StarterBlueprints.PARK_BENCH);
 	}
 
+	//$ gametest_ticks_batch BIG_AREA '12000' '"decorations"'
 	@GameTest(template = BIG_AREA, timeoutTicks = 12000, batch = "decorations")
 	public void buildsFountain(GameTestHelper helper) {
 		buildStarter(helper, StarterBlueprints.FOUNTAIN);
 	}
 
+	//$ gametest_ticks_batch BIG_AREA '12000' '"decorations"'
 	@GameTest(template = BIG_AREA, timeoutTicks = 12000, batch = "decorations")
 	public void buildsGazebo(GameTestHelper helper) {
 		buildStarter(helper, StarterBlueprints.GAZEBO);
 	}
 
+	//$ gametest_ticks_batch BIG_AREA '20000' '"decorations"'
 	@GameTest(template = BIG_AREA, timeoutTicks = 20000, batch = "decorations")
 	public void buildsMarketSquare(GameTestHelper helper) {
 		buildStarter(helper, StarterBlueprints.MARKET_SQUARE);
@@ -1151,6 +1225,7 @@ public class BuilderGameTests implements FabricGameTest {
 	// --- deconstruction ---------------------------------------------------------------------
 
 	/** Sneak-given blueprint: the builder takes the hut down and puts exactly its blocks in the chest. */
+	//$ gametest_ticks AREA '2400'
 	@GameTest(template = AREA, timeoutTicks = 2400)
 	public void takesABuildingDownAndReturnsTheBlocks(GameTestHelper helper) {
 		ServerLevel level = helper.getLevel();
@@ -1180,6 +1255,7 @@ public class BuilderGameTests implements FabricGameTest {
 	// --- permissions -------------------------------------------------------------------------
 
 	/** A builder takes orders from its employer and their friends only (operators aside). */
+	//$ gametest AREA
 	@GameTest(template = AREA)
 	public void buildersOnlyTakeOrdersFromTheirEmployerAndFriends(GameTestHelper helper) {
 		ServerLevel level = helper.getLevel();
@@ -1218,6 +1294,7 @@ public class BuilderGameTests implements FabricGameTest {
 	// --- build queue -----------------------------------------------------------------------
 
 	/** A second blueprint handed to a busy builder waits its turn, then gets built. */
+	//$ gametest_ticks AREA '4800'
 	@GameTest(template = AREA, timeoutTicks = 4800)
 	public void buildsQueuedBlueprintsInOrder(GameTestHelper helper) {
 		ItemStack[] twoHuts = {new ItemStack(Items.COBBLESTONE, 50), new ItemStack(Items.OAK_PLANKS, 64), new ItemStack(Items.OAK_PLANKS, 46),
@@ -1242,6 +1319,7 @@ public class BuilderGameTests implements FabricGameTest {
 		});
 	}
 
+	//$ gametest AREA
 	@GameTest(template = AREA)
 	public void cancellingAQueuedBuildKeepsTheCurrentOne(GameTestHelper helper) {
 		Setup s = setup(helper, TEST_HUT, HUT_ORIGIN, Rotation.NONE, hutMaterials());
@@ -1262,6 +1340,7 @@ public class BuilderGameTests implements FabricGameTest {
 	private static final BlockPos HELPER = new BlockPos(5, 2, 3);
 
 	/** An idle builder with a bench nearby pitches in; the build finishes correctly and both earn XP. */
+	//$ gametest_ticks_batch AREA '2400' '"crews"'
 	@GameTest(template = AREA, timeoutTicks = 2400, batch = "crews")
 	public void idleBuildersHelpNearbyBuilds(GameTestHelper helper) {
 		Setup s = setup(helper, TEST_HUT, HUT_ORIGIN, Rotation.NONE, hutMaterials());
@@ -1285,6 +1364,7 @@ public class BuilderGameTests implements FabricGameTest {
 	}
 
 	/** Handing a helper its own blueprint takes it off helping. */
+	//$ gametest_batch AREA '"crews"'
 	@GameTest(template = AREA, batch = "crews")
 	public void aHelperGivenItsOwnBuildLeavesTheCrew(GameTestHelper helper) {
 		Setup s = setup(helper, TEST_HUT, HUT_ORIGIN, Rotation.NONE, hutMaterials());
@@ -1311,6 +1391,7 @@ public class BuilderGameTests implements FabricGameTest {
 	// --- keeping work loaded ----------------------------------------------------------------
 
 	/** A build keeps its chunks loaded while the player who ordered it is online, and not otherwise. */
+	//$ gametest AREA
 	@GameTest(template = AREA)
 	public void workStaysLoadedWhileTheOwnerIsOnline(GameTestHelper helper) {
 		ServerLevel level = helper.getLevel();
@@ -1331,6 +1412,7 @@ public class BuilderGameTests implements FabricGameTest {
 	// --- builder levels --------------------------------------------------------------------
 
 	/** Building earns XP; crossing a threshold levels the builder up and unlocks the next blueprint for sale. */
+	//$ gametest_ticks AREA '2400'
 	@GameTest(template = AREA, timeoutTicks = 2400)
 	public void buildingLevelsTheBuilderUp(GameTestHelper helper) {
 		Setup s = setup(helper, TEST_HUT, HUT_ORIGIN, Rotation.NONE, hutMaterials());
@@ -1347,6 +1429,7 @@ public class BuilderGameTests implements FabricGameTest {
 		});
 	}
 
+	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
 	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
 	public void higherLevelBuildersWorkFaster(GameTestHelper helper) {
 		helper.assertTrue(BuilderLevels.delay(8, 1) == 8, "novice delay " + BuilderLevels.delay(8, 1));
@@ -1395,6 +1478,7 @@ public class BuilderGameTests implements FabricGameTest {
 	// --- pure logic ------------------------------------------------------------------------
 
 	/** A copper roof that has greened (or been waxed) is still the roof that was built. */
+	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
 	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
 	public void weatheredCopperStillMatches(GameTestHelper helper) {
 		BlockState fresh = Blocks.CUT_COPPER_STAIRS.defaultBlockState();
@@ -1409,6 +1493,7 @@ public class BuilderGameTests implements FabricGameTest {
 	}
 
 	/** Every starter build has an upgrade that keeps most of it (so a builder only builds what's new). */
+	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
 	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
 	public void starterUpgradesKeepMostOfTheirBase(GameTestHelper helper) {
 		int upgrades = 0;
@@ -1434,6 +1519,7 @@ public class BuilderGameTests implements FabricGameTest {
 		helper.succeed();
 	}
 
+	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
 	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
 	public void starterBlueprintsMatchTheirDeclaredSizesAndAreBuildable(GameTestHelper helper) {
 		List<StarterBlueprints.Entry> all = new ArrayList<>(StarterBlueprints.ALL);
@@ -1454,6 +1540,7 @@ public class BuilderGameTests implements FabricGameTest {
 		helper.succeed();
 	}
 
+	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
 	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
 	public void pottedPlantsCostAPotAndThePlant(GameTestHelper helper) {
 		List<MaterialRules.Requirement> poppy = MaterialRules.requirements(Blocks.POTTED_POPPY.defaultBlockState(), null);
@@ -1465,6 +1552,7 @@ public class BuilderGameTests implements FabricGameTest {
 	}
 
 	/** Blueprint block data can carry looks (sign text) but never free items or mobs. */
+	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
 	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
 	public void blueprintDataNeverHandsOutItems(GameTestHelper helper) {
 		ServerLevel level = helper.getLevel();
@@ -1502,6 +1590,7 @@ public class BuilderGameTests implements FabricGameTest {
 		helper.succeed();
 	}
 
+	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
 	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
 	public void blueprintPlacementRoundTrips(GameTestHelper helper) {
 		Vec3i size = new Vec3i(9, 10, 7);
@@ -1519,6 +1608,7 @@ public class BuilderGameTests implements FabricGameTest {
 		helper.succeed();
 	}
 
+	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
 	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
 	public void buildSitesSurviveSaveAndLoad(GameTestHelper helper) {
 		BuildSite site = new BuildSite(java.util.UUID.randomUUID(), java.util.UUID.randomUUID(), "Jesse", TEST_HUT,
@@ -1540,6 +1630,7 @@ public class BuilderGameTests implements FabricGameTest {
 	// --- preview and status --------------------------------------------------------------------
 
 	/** The see-through preview packet carries exactly the blocks a builder places, and survives the network codec. */
+	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
 	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
 	public void previewCarriesTheBlocksToBuild(GameTestHelper helper) {
 		Blueprint blueprint = BlueprintLibrary.get(helper.getLevel(), StarterBlueprints.STARTER_COTTAGE.id()).orElseThrow();
@@ -1571,6 +1662,7 @@ public class BuilderGameTests implements FabricGameTest {
 
 	/** What floats above a builder's head: the build's name, its percentage and progress. */
 	/** With paths on, a builder who finishes the hut lays a dirt path from its door to the village bell. */
+	//$ gametest_ticks_batch AREA '2400' '"builderLaysAPathToTheBell"'
 	@GameTest(template = AREA, timeoutTicks = 2400, batch = "builderLaysAPathToTheBell")
 	public void builderLaysAPathToTheBell(GameTestHelper helper) {
 		boolean paths = io.github.jcondedata.aliveworkplace.build.Paths.ENABLED;
@@ -1600,6 +1692,7 @@ public class BuilderGameTests implements FabricGameTest {
 		});
 	}
 
+	//$ gametest_ticks AREA '1200'
 	@GameTest(template = AREA, timeoutTicks = 1200)
 	public void builderStatusShowsBuildAndProgress(GameTestHelper helper) {
 		Setup s = setup(helper, TEST_HUT, HUT_ORIGIN, Rotation.NONE, hutMaterials());
@@ -1619,6 +1712,7 @@ public class BuilderGameTests implements FabricGameTest {
 	// --- what's still missing ----------------------------------------------------------------
 
 	/** A placed blueprint knows what the chests by the nearest bench are short of; blocks already in place don't count. */
+	//$ gametest AREA
 	@GameTest(template = AREA)
 	public void placedBlueprintKnowsWhatsMissing(GameTestHelper helper) {
 		ServerLevel level = helper.getLevel();

@@ -42,6 +42,7 @@ public class GuardGameTests implements FabricGameTest {
 	}
 
 	/** A guard gears up from the chest, takes on a husk and wins, without ever panicking. */
+	//$ gametest_ticks_batch AREA '1200' '"guardDefeatsAHusk"'
 	@GameTest(template = AREA, timeoutTicks = 1200, batch = "guardDefeatsAHusk")
 	public void guardDefeatsAHusk(GameTestHelper helper) {
 		Villager guard = guard(helper, new ItemStack(Items.WOODEN_SWORD), new ItemStack(Items.IRON_SWORD), new ItemStack(Items.IRON_CHESTPLATE));
@@ -63,6 +64,7 @@ public class GuardGameTests implements FabricGameTest {
 	}
 
 	/** When the village bell rings, a guard heads for the bell instead of hiding with everyone else. */
+	//$ gametest_ticks_batch AREA '600' '"guardAnswersTheBell"'
 	@GameTest(template = AREA, timeoutTicks = 600, batch = "guardAnswersTheBell")
 	public void guardAnswersTheBell(GameTestHelper helper) {
 		Villager guard = guard(helper, new ItemStack(Items.IRON_SWORD));
@@ -78,6 +80,7 @@ public class GuardGameTests implements FabricGameTest {
 	}
 
 	/** Animals are nobody's enemy. */
+	//$ gametest_ticks_batch AREA '400' '"guardLeavesAnimalsAlone"'
 	@GameTest(template = AREA, timeoutTicks = 400, batch = "guardLeavesAnimalsAlone")
 	public void guardLeavesAnimalsAlone(GameTestHelper helper) {
 		guard(helper, new ItemStack(Items.IRON_SWORD));
@@ -100,6 +103,7 @@ public class GuardGameTests implements FabricGameTest {
 	}
 
 	/** A crossbow beats a bow: the guard takes the crossbow, and shoots a creeper with it before it can go off. */
+	//$ gametest_ticks_batch AREA '1600' '"guardUsesACrossbow"'
 	@GameTest(template = AREA, timeoutTicks = 1600, batch = "guardUsesACrossbow")
 	public void guardUsesACrossbow(GameTestHelper helper) {
 		Villager guard = guard(helper, new ItemStack(Items.IRON_SWORD), new ItemStack(Items.BOW), new ItemStack(Items.CROSSBOW));
@@ -125,6 +129,7 @@ public class GuardGameTests implements FabricGameTest {
 	}
 
 	/** A guard with a bow from the chest shoots a creeper from a safe distance (and it never blows up). */
+	//$ gametest_ticks_batch AREA '1600' '"guardShootsACreeper"'
 	@GameTest(template = AREA, timeoutTicks = 1600, batch = "guardShootsACreeper")
 	public void guardShootsACreeper(GameTestHelper helper) {
 		Villager guard = guard(helper, new ItemStack(Items.IRON_SWORD), new ItemStack(Items.BOW));
@@ -150,6 +155,7 @@ public class GuardGameTests implements FabricGameTest {
 	}
 
 	/** With nothing to fight, a guard spars with the Training Dummy by the post and gains experience; an Expert doesn't. */
+	//$ gametest_ticks_batch AREA '1200' '"guardTrainsAtTheDummy"'
 	@GameTest(template = AREA, timeoutTicks = 1200, batch = "guardTrainsAtTheDummy")
 	public void guardTrainsAtTheDummy(GameTestHelper helper) {
 		Villager guard = guard(helper);
@@ -171,6 +177,7 @@ public class GuardGameTests implements FabricGameTest {
 	}
 
 	/** What a guard holds in their off hand makes their kind; a knight or a medic keeps what they hold when a bow turns up. */
+	//$ gametest_batch AREA '"guardKindsByGear"'
 	@GameTest(template = AREA, batch = "guardKindsByGear")
 	public void guardKindsByGear(GameTestHelper helper) {
 		Villager guard = guard(helper);
@@ -195,6 +202,7 @@ public class GuardGameTests implements FabricGameTest {
 	}
 
 	/** A knight blocks some blows from in front, none from behind, and never a fall. */
+	//$ gametest_batch AREA '"aKnightBlocks"'
 	@GameTest(template = AREA, batch = "aKnightBlocks")
 	public void aKnightBlocks(GameTestHelper helper) {
 		Villager guard = guard(helper);
@@ -225,6 +233,7 @@ public class GuardGameTests implements FabricGameTest {
 	}
 
 	/** A medic gives the most hurt villager nearby a healing potion from their bag, keeping the one in hand. */
+	//$ gametest_batch AREA '"aMedicTendsTheWounded"'
 	@GameTest(template = AREA, batch = "aMedicTendsTheWounded")
 	public void aMedicTendsTheWounded(GameTestHelper helper) {
 		Villager medic = guard(helper);
@@ -241,6 +250,7 @@ public class GuardGameTests implements FabricGameTest {
 	}
 
 	/** A Patrol Map handed to a guard: by day they walk its points, the far corner of the area and back. */
+	//$ gametest_ticks_batch AREA '1600' '"guardPatrolRoute"'
 	@GameTest(template = AREA, timeoutTicks = 1600, batch = "guardPatrolRoute")
 	public void guardWalksThePatrolRoute(GameTestHelper helper) {
 		Villager guard = guard(helper);
@@ -270,6 +280,7 @@ public class GuardGameTests implements FabricGameTest {
 	 * A Rally Banner raised in a player's inventory: the guard leaves the post, follows the player across the area, goes
 	 * for the cow the player hit; with the banner lowered, they're let go.
 	 */
+	//$ gametest_ticks_batch AREA '1600' '"rallyBanner"'
 	@GameTest(template = AREA, timeoutTicks = 1600, batch = "rallyBanner")
 	public void guardsFollowARaisedRallyBanner(GameTestHelper helper) {
 		Villager guard = guard(helper);

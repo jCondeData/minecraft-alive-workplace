@@ -46,6 +46,7 @@ public class FisherGameTests implements FabricGameTest {
 	}
 
 	/** Casts into the pond, reels in fish and junk, and brings every fifth catch home to the barrel. */
+	//$ gametest_ticks AREA '3000'
 	@GameTest(template = AREA, timeoutTicks = 3000)
 	public void fishermanFillsTheBarrel(GameTestHelper helper) {
 		Villager villager = fisherman(helper);
@@ -59,6 +60,7 @@ public class FisherGameTests implements FabricGameTest {
 	}
 
 	/** While fishing, a bobber floats on the pond on the end of the fisherman's line; it's gone once they stop. */
+	//$ gametest_ticks AREA '1200'
 	@GameTest(template = AREA, timeoutTicks = 1200)
 	public void fishermanCastsABobber(GameTestHelper helper) {
 		Villager villager = fisherman(helper);
@@ -74,6 +76,7 @@ public class FisherGameTests implements FabricGameTest {
 	}
 
 	/** A smoker next to the barrel: the raw cod and salmon go into it with charcoal from the barrel, not into the barrel. */
+	//$ gametest_ticks AREA '3000'
 	@GameTest(template = AREA, timeoutTicks = 3000)
 	public void fishermanSmokesTheCatch(GameTestHelper helper) {
 		Villager villager = fisherman(helper);
@@ -95,6 +98,7 @@ public class FisherGameTests implements FabricGameTest {
 	}
 
 	/** When the rod breaks, the next one comes out of the barrel. */
+	//$ gametest_ticks AREA '3000'
 	@GameTest(template = AREA, timeoutTicks = 3000)
 	public void fishermanTakesASpareRod(GameTestHelper helper) {
 		Villager villager = fisherman(helper);

@@ -1,3 +1,4 @@
+//? if cobblemon {
 package io.github.jcondedata.aliveworkplace.compat.cobblemon;
 
 import com.cobblemon.mod.common.api.battles.model.actor.AIBattleActor;
@@ -18,14 +19,12 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.phys.Vec3;
 
-/**
- * A trainer villager's side of a battle. Backed by the villager (Cobblemon's own trainer actor has no body), so the
- * battle sends their Pokémon out beside them the way a player's are, and Mega Showdown can show a Mega Evolution on it.
- * When the battle ends the Pokémon are called back; a trainer's Pokémon found in the world outside a battle (the server
- * stopped mid-battle) is removed as it loads, so it can never be caught.
- */
+// A trainer villager's side of a battle. Backed by the villager (Cobblemon's own trainer actor has no body), so the
+// battle sends their Pokémon out beside them the way a player's are, and Mega Showdown can show a Mega Evolution on it.
+// When the battle ends the Pokémon are called back; a trainer's Pokémon found in the world outside a battle (the server
+// stopped mid-battle) is removed as it loads, so it can never be caught.
 final class VillagerTrainerActor extends AIBattleActor implements EntityBackedBattleActor<LivingEntity> {
-	/** Marks a trainer's Pokémon (in its persistent data). */
+	// Marks a trainer's Pokémon (in its persistent data).
 	static final String TRAINER_POKEMON = "aliveworkplace_trainer";
 
 	private final Villager villager;
@@ -39,7 +38,7 @@ final class VillagerTrainerActor extends AIBattleActor implements EntityBackedBa
 		this.initialPos = villager.position();
 	}
 
-	/** Removes trainers' Pokémon left in the world without a battle (called once at startup). */
+	// Removes trainers' Pokémon left in the world without a battle (called once at startup).
 	static void init() {
 		ServerEntityEvents.ENTITY_LOAD.register((entity, level) -> {
 			if (entity instanceof PokemonEntity pokemon && pokemon.getBattleId() == null
@@ -91,3 +90,4 @@ final class VillagerTrainerActor extends AIBattleActor implements EntityBackedBa
 		}
 	}
 }
+//?}

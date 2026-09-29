@@ -1,0 +1,63 @@
+# The mod's properties: top-level keys apply to every Minecraft version node, a ["<version>"] section to one node.
+# build.gradle.kts reads them with property("key") or sc.properties. Current versions of everything:
+#   python3 <minecraft-mod-engineer skill>/scripts/versions.py 1.21.1 26.3 --toml
+
+mod.id = "aliveworkplace"
+mod.name = "Alive Workplace"
+# Bump this to release (CI tags v<version> and attaches alive-workplace-<version>+<minecraft>.jar for each node).
+mod.version = "0.133.0"
+mod.archives = "alive-workplace"
+mod.group = "io.github.jcondedata"
+
+deps.fabric_loader = "0.19.5"
+
+["1.21.1"]
+# The Cobbleverse modpack's version.
+mod.mc_compat = "~1.21.1"
+mod.mc_releases = ["1.21.1"]
+deps.fabric_api = "0.116.17+1.21.1"
+# Optional integrations on this node (compile-only; each id is also a Stonecutter constant for `//? if <id>`).
+# Modrinth version ids, not version numbers (numbers collide across loaders).
+deps.compat.cobblemon = "maven.modrinth:cobblemon:kF7CvxTo"          # Cobblemon 1.7.3
+deps.compat.cobbledollars = "maven.modrinth:cobbledollars:cqsHXSXe"  # CobbleDollars 2.0.0 Beta-5.1
+# Cobblemon is Kotlin: its API mentions kotlin.* types.
+deps.compat_compile.cobblemon = "org.jetbrains.kotlin:kotlin-stdlib:2.1.21"
+# The compat test suite (src/compattest, `runCompatGameTest`, part of `build` on this node): the Cobbleverse pack's
+# building, storage and Pokémon mods, from Modrinth maven. Their bundled jars are unpacked into build/compat-nested.
+tests.compat_mods = [
+    "maven.modrinth:chipped:6h2mVZcb",          # Chipped 4.0.2
+    "maven.modrinth:resourceful-lib:Hf91FuVF",  # Resourceful Lib 3.0.12
+    "maven.modrinth:athena-ctm:JfyYsWKP",       # Athena 4.0.6
+    "maven.modrinth:supplementaries:h8FyJ2as",  # Supplementaries 3.9.9
+    "maven.modrinth:moonlight:lje3uEuU",        # Moonlight 3.6.8
+    "maven.modrinth:rechiseled:Whwd5n82",       # Rechiseled 1.2.4
+    "maven.modrinth:supermartijn642s-core-lib:blDCgrqh",   # 1.1.21
+    "maven.modrinth:supermartijn642s-config-lib:euSlaAtA", # 1.1.8
+    "maven.modrinth:fusion-connected-textures:6fQXv7Yl",   # Fusion 1.2.12
+    "maven.modrinth:cobblemon:kF7CvxTo",        # Cobblemon 1.7.3 (bundles Fabric Language Kotlin)
+    "maven.modrinth:repurposed-structures-fabric:4uDzF4B9", # Repurposed Structures 7.5.21 (villages)
+    "maven.modrinth:midnightlib:vqqujBpd",      # MidnightLib 1.7.5 (for Repurposed Structures)
+    "maven.modrinth:cobbledollars:cqsHXSXe",    # CobbleDollars 2.0.0 Beta-5.1 (the pack's money)
+    # The Cobbleverse pack's (1.7.42) building and storage mods
+    "maven.modrinth:pJmCFF0p:f0pKpUWd",         # Handcrafted 4.0.3
+    "maven.modrinth:DhSSvaxs:ZyaUkJxq",         # Beautify 2.0.0
+    "maven.modrinth:9s6osm5g:HpMb5wGb",         # Cloth Config 15.0.140 (for Beautify)
+    # (Lucky's Cozyhome Refurnished can't load here: its getItems() clashes with the Mojang-mapped name in dev.)
+    "maven.modrinth:AXY1OO9m:54k31lEX",         # CobbleFurnies 1.2
+    "maven.modrinth:lhGA9TYQ:Wto0RchG",         # Architectury 13.0.8 (for CobbleFurnies)
+    "maven.modrinth:WuwijfrW:h1wI9HyK",         # Carved Wood 1.9.7-B
+    "maven.modrinth:lXDzrLAm:hG50ZysI",         # Moar Concrete 1.3.1
+    "maven.modrinth:iHtpVwJL:kjNlOByJ",         # Sophisticated Storage 1.3.7.9
+    "maven.modrinth:9jxwkYQL:ZLVrtF0Q",         # Sophisticated Core 1.2.9.21
+    "maven.modrinth:ohNO6lps:N5qzq0XV",         # Forge Config API Port 21.1.6 (for Sophisticated Core)
+    "maven.modrinth:XZNI4Cpy:GwLz79tK",         # Tom's Simple Storage 2.3.0
+    "maven.modrinth:cobbleworkers:qW3KB1li",    # Cobbleworkers 2.0.5 for Cobblemon 1.7 (pasture Pokémon jobs; not in the pack)
+    "maven.modrinth:SszvX85I:Y6di9Ram",         # Mega Showdown 1.8.4 (Mega Evolution for Master trainers)
+    "maven.modrinth:jtmvUHXj:Xlt4eWBe",         # Accessories 1.1.0-beta.53 (for Mega Showdown)
+    "maven.modrinth:ccKDOlHs:JB1fLQnc",         # owo-lib 0.12.15.4 (for Accessories)
+]
+# The screenshot harness (src/devclient, `runScreenshots`, tools/screenshots/run.sh) is written for this version.
+tests.screenshots = true
+# Extra mods the harness can load: -Pcobblemon=true (Pokémon scenes), -Pmega=true (SCENE=battle).
+tests.screenshot_cobblemon = ["maven.modrinth:cobblemon:kF7CvxTo", "maven.modrinth:cobbledollars:cqsHXSXe"]
+tests.screenshot_mega = ["maven.modrinth:SszvX85I:Y6di9Ram", "maven.modrinth:jtmvUHXj:Xlt4eWBe", "maven.modrinth:ccKDOlHs:JB1fLQnc", "maven.modrinth:lhGA9TYQ:Wto0RchG"]

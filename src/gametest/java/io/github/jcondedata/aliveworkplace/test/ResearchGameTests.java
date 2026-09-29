@@ -33,6 +33,7 @@ public class ResearchGameTests implements net.fabricmc.fabric.api.gametest.v1.Fa
 	private static final BlockPos CHEST = new BlockPos(8, 2, 10);
 
 	/** Swift Hands I chosen on the screen: the scholar takes 16 paper and 4 emeralds, works on it, and it's done. */
+	//$ gametest_ticks_batch AREA '600' '"scholarResearchesSwiftHands"'
 	@GameTest(template = AREA, timeoutTicks = 600, batch = "scholarResearchesSwiftHands")
 	public void scholarResearchesSwiftHands(GameTestHelper helper) {
 		Setup s = setup(helper);
@@ -52,6 +53,7 @@ public class ResearchGameTests implements net.fabricmc.fabric.api.gametest.v1.Fa
 	}
 
 	/** Locked topics can't be chosen; Architecture, once researched, puts the Town Hall blueprint in the chest. */
+	//$ gametest_ticks_batch AREA '600' '"architectureDrawsUpTheTownHall"'
 	@GameTest(template = AREA, timeoutTicks = 600, batch = "architectureDrawsUpTheTownHall")
 	public void architectureDrawsUpTheTownHall(GameTestHelper helper) {
 		Setup s = setup(helper);
@@ -107,6 +109,7 @@ public class ResearchGameTests implements net.fabricmc.fabric.api.gametest.v1.Fa
 	 * The new topics unlock after what they need, and their bonuses show up: Commerce II makes mercenaries 6 emeralds
 	 * cheaper, Green Thumb II a bone meal three layers of compost, Medicine II illness a third as likely.
 	 */
+	//$ gametest_ticks_batch AREA '100' '"researchBonuses"'
 	@GameTest(template = AREA, timeoutTicks = 100, batch = "researchBonuses")
 	public void researchBonuses(GameTestHelper helper) {
 		Leftovers.clear(helper);

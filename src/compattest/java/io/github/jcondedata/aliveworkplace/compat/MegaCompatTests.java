@@ -19,6 +19,7 @@ import net.minecraft.gametest.framework.GameTestHelper;
  */
 public class MegaCompatTests implements FabricGameTest {
 	/** Every Master's team has exactly one Pokémon holding its own Mega Stone; an Expert's has none. */
+	//$ gametest EMPTY_STRUCTURE
 	@GameTest(template = EMPTY_STRUCTURE)
 	public void mastersCarryAMegaStone(GameTestHelper helper) {
 		for (int i = 0; i < 8; i++) {
@@ -35,6 +36,7 @@ public class MegaCompatTests implements FabricGameTest {
 	}
 
 	/** The trainer AI adds the Mega Evolution to its move when the moveset allows it, and not otherwise. */
+	//$ gametest EMPTY_STRUCTURE
 	@GameTest(template = EMPTY_STRUCTURE)
 	public void aiMegaEvolvesWhenItCan(GameTestHelper helper) {
 		ShowdownMoveset moveset = new ShowdownMoveset();

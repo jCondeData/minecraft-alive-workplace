@@ -28,6 +28,7 @@ public class WeaponsmithGameTests implements FabricGameTest {
 	private static final BlockPos POST_CHEST = new BlockPos(19, 2, 17);
 
 	/** A worn pickaxe left in the chest by the grindstone comes back mended, three iron ingots' worth. */
+	//$ gametest_ticks_batch AREA '1200' '"weaponsmith_mends"'
 	@GameTest(template = AREA, timeoutTicks = 1200, batch = "weaponsmith_mends")
 	public void weaponsmithMendsAWornPickaxe(GameTestHelper helper) {
 		Leftovers.clear(helper);
@@ -52,6 +53,7 @@ public class WeaponsmithGameTests implements FabricGameTest {
 	}
 
 	/** A guard with no weapon gets an iron sword, made from the iron in the weaponsmith's chest. */
+	//$ gametest_ticks_batch AREA '1600' '"weaponsmith_sword"'
 	@GameTest(template = AREA, timeoutTicks = 1600, batch = "weaponsmith_sword")
 	public void weaponsmithMakesASwordForTheGuard(GameTestHelper helper) {
 		Leftovers.clear(helper);
@@ -71,6 +73,7 @@ public class WeaponsmithGameTests implements FabricGameTest {
 	}
 
 	/** A worn helmet in a guard's chest is fetched, mended with the weaponsmith's iron and brought back. */
+	//$ gametest_ticks_batch AREA '2000' '"weaponsmith_guard_gear"'
 	@GameTest(template = AREA, timeoutTicks = 2000, batch = "weaponsmith_guard_gear")
 	public void weaponsmithMendsTheGuardsWornHelmet(GameTestHelper helper) {
 		Leftovers.clear(helper);

@@ -29,6 +29,7 @@ public class FletcherGameTests implements FabricGameTest {
 	private static final BlockPos POST_CHEST = new BlockPos(19, 2, 17);
 
 	/** A guard without a bow gets one, made from the sticks and string in the fletcher's chest. */
+	//$ gametest_ticks_batch AREA '1600' '"fletcher_bow"'
 	@GameTest(template = AREA, timeoutTicks = 1600, batch = "fletcher_bow")
 	public void fletcherMakesABowForTheGuard(GameTestHelper helper) {
 		Leftovers.clear(helper);
@@ -55,6 +56,7 @@ public class FletcherGameTests implements FabricGameTest {
 	}
 
 	/** A guard with a bow but no special arrows gets spectral ones: glowstone and arrows from the fletcher's chest. */
+	//$ gametest_ticks_batch AREA '1600' '"fletcher_arrows"'
 	@GameTest(template = AREA, timeoutTicks = 1600, batch = "fletcher_arrows")
 	public void fletcherMakesSpectralArrowsForTheGuard(GameTestHelper helper) {
 		Leftovers.clear(helper);
@@ -82,6 +84,7 @@ public class FletcherGameTests implements FabricGameTest {
 	}
 
 	/** A guard with a bow takes the spectral arrows from their chest and shoots them: the husk glows. */
+	//$ gametest_ticks_batch AREA '1200' '"guard_spectral"'
 	@GameTest(template = AREA, timeoutTicks = 1200, batch = "guard_spectral")
 	public void guardShootsSpectralArrows(GameTestHelper helper) {
 		Leftovers.clear(helper);

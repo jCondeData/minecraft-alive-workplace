@@ -18,6 +18,7 @@ public class SchoolGameTests implements net.fabricmc.fabric.api.gametest.v1.Fabr
 	private static final BlockPos DESK = new BlockPos(11, 2, 11);
 
 	/** Two children across the area are called over and taught until they've been to school. */
+	//$ gametest_ticks_batch AREA '1600' '"teacherTeachesTheChildren"'
 	@GameTest(template = AREA, timeoutTicks = 1600, batch = "teacherTeachesTheChildren")
 	public void teacherTeachesTheChildren(GameTestHelper helper) {
 		Leftovers.clear(helper);
@@ -43,6 +44,7 @@ public class SchoolGameTests implements net.fabricmc.fabric.api.gametest.v1.Fabr
 	}
 
 	/** A grown-up who went to school takes their first job as an Apprentice with trades for both levels; others as Novices. */
+	//$ gametest_ticks AREA '100'
 	@GameTest(template = AREA, timeoutTicks = 100)
 	public void aSchooledVillagerStartsAsApprentice(GameTestHelper helper) {
 		ServerLevel level = helper.getLevel();

@@ -24,6 +24,7 @@ public class TravelGameTests implements FabricGameTest {
 	private static final String AREA = "aliveworkplace_test:big_area";
 
 	/** A ferryman sells tickets to the posts you know (not the one you're at); a ticket takes you there. */
+	//$ gametest AREA
 	@GameTest(template = AREA)
 	public void ferrymanSellsTicketsThatWork(GameTestHelper helper) {
 		helper.setDayTime(2000);
@@ -58,6 +59,7 @@ public class TravelGameTests implements FabricGameTest {
 	}
 
 	/** A travel post that came with a village (nobody placed it) joins the network under a made-up village name. */
+	//$ gametest AREA
 	@GameTest(template = AREA)
 	public void villagePostsJoinTheNetwork(GameTestHelper helper) {
 		helper.setDayTime(2000);

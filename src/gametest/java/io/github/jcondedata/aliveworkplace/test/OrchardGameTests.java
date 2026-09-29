@@ -48,6 +48,7 @@ public class OrchardGameTests implements FabricGameTest {
 	 * An orchard (a Field Marker's area): sweet berries from the chest planted as bushes in a grid, 2 apart. Alone in its
 	 * batch: the keeper picks ripe fruit within 16 blocks first, and the next test's bushes are that close.
 	 */
+	//$ gametest_ticks_batch AREA '2400' '"orchard_planting"'
 	@GameTest(template = AREA, timeoutTicks = 2400, batch = "orchard_planting")
 	public void orchardKeeperPlantsTheOrchard(GameTestHelper helper) {
 		Leftovers.clear(helper);
@@ -77,6 +78,7 @@ public class OrchardGameTests implements FabricGameTest {
 	}
 
 	/** Glow berries in the chest: planted hanging from the ceiling over the orchard (a roof here), in the same grid. */
+	//$ gametest_ticks_batch AREA '2400' '"orchard_glow"'
 	@GameTest(template = AREA, timeoutTicks = 2400, batch = "orchard_glow")
 	public void orchardKeeperHangsGlowBerries(GameTestHelper helper) {
 		Leftovers.clear(helper);
@@ -102,6 +104,7 @@ public class OrchardGameTests implements FabricGameTest {
 	}
 
 	/** Ripe berries, a cocoa pod and glow berries all get picked into the chest; the plants stay to grow again. */
+	//$ gametest_ticks AREA '2400'
 	@GameTest(template = AREA, timeoutTicks = 2400)
 	public void orchardKeeperPicksRipeFruit(GameTestHelper helper) {
 		BlockPos[] ripe = {new BlockPos(9, 2, 8), new BlockPos(10, 2, 8), new BlockPos(11, 2, 8)};
@@ -139,6 +142,7 @@ public class OrchardGameTests implements FabricGameTest {
 	}
 
 	/** What counts as ripe, and picking puts the plant back to growing. */
+	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
 	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
 	public void fruitRipensAndRegrows(GameTestHelper helper) {
 		var bush = Blocks.SWEET_BERRY_BUSH.defaultBlockState();

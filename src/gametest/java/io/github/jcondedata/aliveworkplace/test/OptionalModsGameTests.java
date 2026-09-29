@@ -13,6 +13,7 @@ import net.minecraft.world.level.GameType;
 /** Without the pack's optional mods (CobbleDollars, Radical Cobblemon Trainers), everything falls back quietly. */
 public class OptionalModsGameTests implements FabricGameTest {
 	/** No CobbleDollars: prices and prizes are in emeralds. */
+	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
 	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
 	public void moneyIsEmeraldsWithoutCobbleDollars(GameTestHelper helper) {
 		ServerPlayer player = helper.makeMockServerPlayerInLevel();
@@ -28,6 +29,7 @@ public class OptionalModsGameTests implements FabricGameTest {
 	}
 
 	/** No Radical Cobblemon Trainers: no level cap to match. */
+	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
 	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
 	public void noLevelCapWithoutRct(GameTestHelper helper) {
 		helper.assertTrue(RctLevelCaps.levelCap(helper.makeMockServerPlayerInLevel()).isEmpty(), "a level cap without RCT");
@@ -35,6 +37,7 @@ public class OptionalModsGameTests implements FabricGameTest {
 	}
 
 	/** Without Cobblemon there are no Poké Ball recipes, so a Ball Smith has nothing to make (and nothing breaks). */
+	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
 	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
 	public void noBallRecipesWithoutCobblemon(GameTestHelper helper) {
 		helper.assertTrue(io.github.jcondedata.aliveworkplace.smith.BallRecipes.all(helper.getLevel()).isEmpty(), "ball recipes without Cobblemon");
@@ -44,6 +47,7 @@ public class OptionalModsGameTests implements FabricGameTest {
 	}
 
 	/** Without Cobblemon or CobbleDollars nothing fills in their extension points: every job plays as on plain Fabric. */
+	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
 	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
 	public void noExtensionsWithoutTheirMods(GameTestHelper helper) {
 		helper.assertFalse(io.github.jcondedata.aliveworkplace.work.PokemonPartners.EXTENSION.present(), "Pokémon partners");
@@ -59,6 +63,7 @@ public class OptionalModsGameTests implements FabricGameTest {
 	}
 
 	/** An integration whose mod changed its API (a LinkageError) is turned off; the caller gets the fallback, the game goes on. */
+	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
 	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
 	public void aBrokenIntegrationTurnsItselfOff(GameTestHelper helper) {
 		io.github.jcondedata.aliveworkplace.work.Extension<java.util.function.Supplier<String>> extension =

@@ -24,6 +24,7 @@ public class RancherGameTests implements net.fabricmc.fabric.api.gametest.v1.Fab
 	private static final BlockPos CHEST = new BlockPos(11, 2, 13);
 
 	/** A wild horse is broken in (a few tries) and then gets the saddle from the chest. */
+	//$ gametest_ticks_batch AREA '2400' '"rancherTamesAndSaddlesAHorse"'
 	@GameTest(template = AREA, timeoutTicks = 2400, batch = "rancherTamesAndSaddlesAHorse")
 	public void rancherTamesAndSaddlesAHorse(GameTestHelper helper) {
 		Leftovers.clear(helper);
@@ -39,6 +40,7 @@ public class RancherGameTests implements net.fabricmc.fabric.api.gametest.v1.Fab
 	}
 
 	/** Two tamed horses fed golden carrots from the chest have a foal. */
+	//$ gametest_ticks_batch AREA '2000' '"rancherBreedsTamedHorses"'
 	@GameTest(template = AREA, timeoutTicks = 2000, batch = "rancherBreedsTamedHorses")
 	public void rancherBreedsTamedHorses(GameTestHelper helper) {
 		Leftovers.clear(helper);
@@ -56,6 +58,7 @@ public class RancherGameTests implements net.fabricmc.fabric.api.gametest.v1.Fab
 	}
 
 	/** A tamed llama gets a carpet from the chest. */
+	//$ gametest_ticks_batch AREA '1600' '"rancherPutsACarpetOnALlama"'
 	@GameTest(template = AREA, timeoutTicks = 1600, batch = "rancherPutsACarpetOnALlama")
 	public void rancherPutsACarpetOnALlama(GameTestHelper helper) {
 		Leftovers.clear(helper);

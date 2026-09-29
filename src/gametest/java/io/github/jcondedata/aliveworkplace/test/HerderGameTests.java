@@ -30,6 +30,7 @@ public class HerderGameTests implements FabricGameTest {
 	private static final BlockPos CHEST = new BlockPos(2, 2, 4);
 
 	/** Empty buckets in the chest come back full of milk, and an egg lying about ends up in the chest too. */
+	//$ gametest_ticks_batch AREA '1600' '"herder_milk"'
 	@GameTest(template = AREA, timeoutTicks = 1600, batch = "herder_milk")
 	public void butcherMilksTheCowAndPicksUpEggs(GameTestHelper helper) {
 		Leftovers.clear(helper);
@@ -48,6 +49,7 @@ public class HerderGameTests implements FabricGameTest {
 	}
 
 	/** A hired butcher keeps the flock at ten grown chickens: the rest go for meat (never the named one). */
+	//$ gametest_ticks_batch AREA '2000' '"herder_cull"'
 	@GameTest(template = AREA, timeoutTicks = 2000, batch = "herder_cull")
 	public void hiredButcherKeepsTheHerdInCheck(GameTestHelper helper) {
 		Leftovers.clear(helper);

@@ -30,6 +30,7 @@ public class SmelterGameTests implements FabricGameTest {
 	private static final BlockPos STORE_CHEST = new BlockPos(19, 2, 17);
 
 	/** A smelter keeps its ore (and iron for armor) from the porter; the other ingots go to the storehouse. */
+	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
 	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
 	public void smeltersKeepTheirOre(GameTestHelper helper) {
 		helper.assertTrue(Porters.keeps(VillagerProfession.ARMORER, new ItemStack(Items.RAW_IRON), true) == Porters.ALL, "raw iron");
@@ -40,6 +41,7 @@ public class SmelterGameTests implements FabricGameTest {
 	}
 
 	/** An armorer with ore and coal in the chest by their blast furnace smelts it and puts the ingots in the chest. */
+	//$ gametest_ticks_batch AREA '1400' '"smelter_own"'
 	@GameTest(template = AREA, timeoutTicks = 1400, batch = "smelter_own")
 	public void armorerSmeltsTheOreInTheirChest(GameTestHelper helper) {
 		Leftovers.clear(helper);
@@ -56,6 +58,7 @@ public class SmelterGameTests implements FabricGameTest {
 	}
 
 	/** With nothing to smelt, the armorer fetches the ore from the village's storehouse (and the coal to smelt it with). */
+	//$ gametest_ticks_batch AREA '2400' '"smelter_fetches"'
 	@GameTest(template = AREA, timeoutTicks = 2400, batch = "smelter_fetches")
 	public void armorerFetchesOreFromTheStorehouse(GameTestHelper helper) {
 		Leftovers.clear(helper);
@@ -79,6 +82,7 @@ public class SmelterGameTests implements FabricGameTest {
 	}
 
 	/** A guard of the village with no chestplate gets one: the armorer makes it from iron in their chest and brings it over. */
+	//$ gametest_ticks_batch AREA '1600' '"smelter_armor"'
 	@GameTest(template = AREA, timeoutTicks = 1600, batch = "smelter_armor")
 	public void armorerMakesAChestplateForTheGuard(GameTestHelper helper) {
 		Leftovers.clear(helper);

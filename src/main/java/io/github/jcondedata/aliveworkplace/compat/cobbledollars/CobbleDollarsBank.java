@@ -1,13 +1,12 @@
+//? if cobbledollars {
 package io.github.jcondedata.aliveworkplace.compat.cobbledollars;
 
 import fr.harmex.cobbledollars.common.utils.extensions.PlayerExtensionKt;
 import java.math.BigInteger;
 import net.minecraft.server.level.ServerPlayer;
 
-/**
- * The only code that touches CobbleDollars classes (a player's balance). Call it only when CobbleDollars
- * is installed; go through {@code work.Money}, which falls back to emeralds.
- */
+// The only code that touches CobbleDollars classes (a player's balance). Call it only when CobbleDollars
+// is installed; go through {@code work.Money}, which falls back to emeralds.
 public final class CobbleDollarsBank {
 	public static long balance(ServerPlayer player) {
 		BigInteger balance = PlayerExtensionKt.getCobbleDollars(player);
@@ -19,7 +18,7 @@ public final class CobbleDollarsBank {
 		PlayerExtensionKt.setCobbleDollars(player, (balance == null ? BigInteger.ZERO : balance).add(BigInteger.valueOf(amount)));
 	}
 
-	/** Takes {@code amount} if the player has it; false (and nothing taken) otherwise. */
+	// Takes {@code amount} if the player has it; false (and nothing taken) otherwise.
 	public static boolean take(ServerPlayer player, long amount) {
 		BigInteger balance = PlayerExtensionKt.getCobbleDollars(player);
 		BigInteger price = BigInteger.valueOf(amount);
@@ -33,3 +32,4 @@ public final class CobbleDollarsBank {
 	private CobbleDollarsBank() {
 	}
 }
+//?}

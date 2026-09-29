@@ -41,5 +41,11 @@ replay_*.log
 
 # runs
 /run/
+
+# Stonecutter: each Minecraft version node builds and runs under versions/<mc>/
+/versions/*/build/
+/versions/*/run/
+/versions/*/.gradle/
+.kotlin/
 node_modules/
 __pycache__/

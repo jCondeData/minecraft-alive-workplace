@@ -18,6 +18,7 @@ public class PackModsCompatTests implements FabricGameTest {
 	static final Set<String> BUILDING_MODS = Set.of("handcrafted", "beautify", "cobblefurnies", "carved_wood", "moarconcrete");
 
 	/** Every block these mods have an item for can be built, and costs something. */
+	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
 	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
 	public void everyPackBlockHasACost(GameTestHelper helper) {
 		List<String> problems = new ArrayList<>();
@@ -46,6 +47,7 @@ public class PackModsCompatTests implements FabricGameTest {
 	 * Sophisticated Storage barrels are supply chests; a Tom's Storage connector next to a chest doesn't
 	 * make its contents count twice.
 	 */
+	//$ gametest 'CompatGameTests.AREA'
 	@GameTest(template = CompatGameTests.AREA)
 	public void packStorageWorksAsSupplyChests(GameTestHelper helper) {
 		net.minecraft.server.level.ServerLevel level = helper.getLevel();
@@ -83,6 +85,7 @@ public class PackModsCompatTests implements FabricGameTest {
 	 * A sample of five blocks from each of the pack's building mods (furniture, lamps, carved planks,
 	 * concrete...), spread over the floor: a builder builds all of it from the chest, nothing skipped.
 	 */
+	//$ gametest_ticks 'CompatGameTests.AREA' '4000'
 	@GameTest(template = CompatGameTests.AREA, timeoutTicks = 4000)
 	public void buildsASampleOfEachPackMod(GameTestHelper helper) {
 		net.minecraft.server.level.ServerLevel level = helper.getLevel();

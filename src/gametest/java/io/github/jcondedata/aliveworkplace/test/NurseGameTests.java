@@ -29,6 +29,7 @@ public class NurseGameTests implements FabricGameTest {
 	}
 
 	/** A hurt, poisoned player is healed and cured; asking again right away gets them nothing. */
+	//$ gametest AREA
 	@GameTest(template = AREA)
 	public void nurseTreatsAPlayer(GameTestHelper helper) {
 		Villager nurse = nurse(helper);
@@ -47,6 +48,7 @@ public class NurseGameTests implements FabricGameTest {
 	}
 
 	/** Hurt villagers near a nurse at work get better. */
+	//$ gametest_ticks AREA '400'
 	@GameTest(template = AREA, timeoutTicks = 400)
 	public void nurseTendsHurtVillagers(GameTestHelper helper) {
 		nurse(helper);

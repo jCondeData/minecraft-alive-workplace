@@ -59,6 +59,7 @@ public class PeopleGameTests implements FabricGameTest {
 	}
 
 	/** Everyone has one trait or two; two never clash (diligent and lazy, glutton and frugal); the same villager always has the same. */
+	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
 	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
 	public void everyoneHasTraitsThatNeverClash(GameTestHelper helper) {
 		RandomSource random = RandomSource.create(7);
@@ -81,6 +82,7 @@ public class PeopleGameTests implements FabricGameTest {
 	}
 
 	/** Diligent villagers work faster and lazy ones slower; nimble ones walk faster, clever ones learn faster, strong ones hit harder. */
+	//$ gametest AREA
 	@GameTest(template = AREA)
 	public void traitsChangeHowVillagersWork(GameTestHelper helper) {
 		traitsOn(helper);
@@ -114,6 +116,7 @@ public class PeopleGameTests implements FabricGameTest {
 	}
 
 	/** Gluttons are hungry again after half a day, the frugal only after two. */
+	//$ gametest AREA
 	@GameTest(template = AREA)
 	public void gluttonsEatMoreOften(GameTestHelper helper) {
 		traitsOn(helper);
@@ -133,6 +136,7 @@ public class PeopleGameTests implements FabricGameTest {
 	}
 
 	/** In a village with a hall everyone gets a name of their own (a Name Tag's name stays); a cheerful villager brightens it. */
+	//$ gametest_ticks_batch AREA '100' '"villagersInAHallVillageGetNames"'
 	@GameTest(template = AREA, timeoutTicks = 100, batch = "villagersInAHallVillageGetNames")
 	public void villagersInAHallVillageGetNames(GameTestHelper helper) {
 		Leftovers.clear(helper);
@@ -183,6 +187,7 @@ public class PeopleGameTests implements FabricGameTest {
 	}
 
 	/** The ill work at half pace and walk slowly; they get well by themselves after a few days. Hunger and no bed make it likelier. */
+	//$ gametest AREA
 	@GameTest(template = AREA)
 	public void illVillagersWorkSlowlyAndGetWell(GameTestHelper helper) {
 		ServerLevel level = helper.getLevel();
@@ -205,6 +210,7 @@ public class PeopleGameTests implements FabricGameTest {
 	}
 
 	/** A nurse cures the ill with a remedy from her chest (the empty bottle goes back), or asks for one. */
+	//$ gametest_ticks AREA '400'
 	@GameTest(template = AREA, timeoutTicks = 400)
 	public void aNurseCuresTheIll(GameTestHelper helper) {
 		ServerLevel level = helper.getLevel();
@@ -229,6 +235,7 @@ public class PeopleGameTests implements FabricGameTest {
 	}
 
 	/** A child remembers its parents; grown up and without a job, they take up a parent's trade at a free workstation. */
+	//$ gametest_ticks_batch AREA '100' '"familiesKeepTheTrade"'
 	@GameTest(template = AREA, timeoutTicks = 100, batch = "familiesKeepTheTrade")
 	public void familiesKeepTheTrade(GameTestHelper helper) {
 		Leftovers.clear(helper);
@@ -270,6 +277,7 @@ public class PeopleGameTests implements FabricGameTest {
 	 * Couples: two villagers who aren't family start courting (never a mother and her son), marry at a wedding that puts
 	 * the whole village in a good mood, and when one dies the other mourns.
 	 */
+	//$ gametest_ticks_batch AREA '100' '"villagersMarry"'
 	@GameTest(template = AREA, timeoutTicks = 100, batch = "villagersMarry")
 	public void villagersCourtMarryAndMourn(GameTestHelper helper) {
 		Leftovers.clear(helper);
@@ -319,6 +327,7 @@ public class PeopleGameTests implements FabricGameTest {
 	}
 
 	/** Villagers talk about their day: a hungry one about food, anyone about bandits camped nearby, and hello. */
+	//$ gametest_ticks_batch AREA '100' '"villagersChatter"'
 	@GameTest(template = AREA, timeoutTicks = 100, batch = "villagersChatter")
 	public void villagersChatterAboutTheirDay(GameTestHelper helper) {
 		Leftovers.clear(helper);
@@ -355,6 +364,7 @@ public class PeopleGameTests implements FabricGameTest {
 	}
 
 	/** A villager's mood follows their day; the unhappy work slower, the happy faster. */
+	//$ gametest_ticks_batch AREA '100' '"moodsFollowTheirDay"'
 	@GameTest(template = AREA, timeoutTicks = 100, batch = "moodsFollowTheirDay")
 	public void moodsFollowTheirDay(GameTestHelper helper) {
 		Leftovers.clear(helper);
@@ -394,6 +404,7 @@ public class PeopleGameTests implements FabricGameTest {
 	 * Villagers pick a meal they haven't had lately: three meals from a store of bread, baked potatoes and cooked cod are
 	 * one of each, a varied diet (a better mood); bread every time is the same food every day (a worse one).
 	 */
+	//$ gametest AREA
 	@GameTest(template = AREA)
 	public void villagersLikeAVariedDiet(GameTestHelper helper) {
 		ServerLevel level = helper.getLevel();

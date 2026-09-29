@@ -1,3 +1,4 @@
+//? if cobblemon {
 package io.github.jcondedata.aliveworkplace.compat.cobblemon;
 
 import com.cobblemon.mod.common.Cobblemon;
@@ -29,10 +30,8 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.ItemLore;
 import org.jetbrains.annotations.Nullable;
 
-/**
- * The daycare's screen and Pokémon (see {@link Daycare}): row 1 your Pokémon in the rancher's care, with the level they'd
- * come back at and the price (click to collect); row 3 your party (click twice to leave one).
- */
+// The daycare's screen and Pokémon (see {@link Daycare}): row 1 your Pokémon in the rancher's care, with the level they'd
+// come back at and the price (click to collect); row 3 your party (click twice to leave one).
 public final class CobblemonDaycare {
 	public static final int INFO = 0;
 	public static final int FIRST_BOARDER_SLOT = 2;
@@ -55,7 +54,7 @@ public final class CobblemonDaycare {
 			menu -> render(menu, player, rancher, state));
 	}
 
-	/** The screen without showing it (tests). */
+	// The screen without showing it (tests).
 	public static ChoiceMenu menuForTest(ServerPlayer player, Villager rancher) {
 		State state = new State();
 		return ChoiceMenu.detached(player, menu -> render(menu, player, rancher, state));
@@ -129,14 +128,14 @@ public final class CobblemonDaycare {
 		}
 	}
 
-	/** The level {@code pokemon} would be at with {@code gained} more experience. */
+	// The level {@code pokemon} would be at with {@code gained} more experience.
 	static int levelAfter(Pokemon pokemon, int gained) {
 		var group = pokemon.getExperienceGroup();
 		int max = group.getExperience(Cobblemon.INSTANCE.getConfig().getMaxPokemonLevel());
 		return Math.max(pokemon.getLevel(), group.getLevel((int) Math.min(max, (long) pokemon.getExperience() + gained)));
 	}
 
-	/** {@code player} leaves {@code pokemon} with the rancher. */
+	// {@code player} leaves {@code pokemon} with the rancher.
 	public static boolean leave(ServerPlayer player, Villager rancher, Pokemon pokemon) {
 		List<Daycare.Boarder> boarders = new ArrayList<>(Daycare.boarders(rancher));
 		long mine = boarders.stream().filter(b -> b.owner().equals(player.getUUID())).count();
@@ -168,7 +167,7 @@ public final class CobblemonDaycare {
 		return true;
 	}
 
-	/** {@code player} collects {@code boarder} (paying for what it gained); returns what to tell them. */
+	// {@code player} collects {@code boarder} (paying for what it gained); returns what to tell them.
 	public static Component collect(ServerPlayer player, Villager rancher, Daycare.Boarder boarder) {
 		List<Daycare.Boarder> boarders = new ArrayList<>(Daycare.boarders(rancher));
 		if (!boarders.contains(boarder) || !boarder.owner().equals(player.getUUID())) {
@@ -199,7 +198,7 @@ public final class CobblemonDaycare {
 			.withStyle(ChatFormatting.GREEN);
 	}
 
-	/** The rancher is gone: every Pokémon in their care, with what it gained, goes to its trainer's PC. */
+	// The rancher is gone: every Pokémon in their care, with what it gained, goes to its trainer's PC.
 	public static void returnAll(ServerLevel level, Villager rancher) {
 		for (Daycare.Boarder boarder : Daycare.boarders(rancher)) {
 			Pokemon pokemon = load(level, boarder);
@@ -252,3 +251,4 @@ public final class CobblemonDaycare {
 	private CobblemonDaycare() {
 	}
 }
+//?}

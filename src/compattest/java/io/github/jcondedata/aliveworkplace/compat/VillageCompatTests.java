@@ -12,6 +12,7 @@ import net.minecraft.world.level.levelgen.structure.pools.StructureTemplatePool;
 /** Our houses in other mods' villages (Repurposed Structures). */
 public class VillageCompatTests implements FabricGameTest {
 	/** Every Repurposed Structures village we support has our workshop and staffed houses in its house pool, in the right style. */
+	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
 	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
 	public void repurposedStructuresVillagesGetOurHouses(GameTestHelper helper) {
 		var pools = helper.getLevel().registryAccess().registryOrThrow(Registries.TEMPLATE_POOL);

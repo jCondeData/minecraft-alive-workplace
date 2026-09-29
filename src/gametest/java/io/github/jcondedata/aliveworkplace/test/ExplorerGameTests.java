@@ -34,6 +34,7 @@ public class ExplorerGameTests implements FabricGameTest {
 		Items.GUNPOWDER, Items.SPIDER_EYE, Items.ENDER_PEARL, Items.PHANTOM_MEMBRANE);
 
 	/** With bread in the chest, an explorer goes out, searches a few stops and brings the finds home. */
+	//$ gametest_ticks_batch AREA '4000' '"explorer_finds"'
 	@GameTest(template = AREA, timeoutTicks = 4000, batch = "explorer_finds")
 	public void explorerBringsBackFinds(GameTestHelper helper) {
 		Leftovers.clear(helper);
@@ -57,6 +58,7 @@ public class ExplorerGameTests implements FabricGameTest {
 	}
 
 	/** With a sword, the explorer hunts too: meat or monster drops come back, and the sword comes back worn. */
+	//$ gametest_ticks_batch AREA '4000' '"explorer_hunts"'
 	@GameTest(template = AREA, timeoutTicks = 4000, batch = "explorer_hunts")
 	public void armedExplorerHuntsToo(GameTestHelper helper) {
 		Leftovers.clear(helper);
@@ -81,6 +83,7 @@ public class ExplorerGameTests implements FabricGameTest {
 	}
 
 	/** Without food nobody sets out: the chest is left alone. */
+	//$ gametest_ticks_batch AREA '400' '"explorer_hungry"'
 	@GameTest(template = AREA, timeoutTicks = 400, batch = "explorer_hungry")
 	public void hungryExplorerStaysHome(GameTestHelper helper) {
 		Leftovers.clear(helper);
@@ -99,6 +102,7 @@ public class ExplorerGameTests implements FabricGameTest {
 	}
 
 	/** The finds tables load (the Cobblemon one only with Cobblemon); a map to a place is named and marked like vanilla's. */
+	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
 	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
 	public void findsAndMaps(GameTestHelper helper) {
 		var tables = helper.getLevel().getServer().reloadableRegistries();

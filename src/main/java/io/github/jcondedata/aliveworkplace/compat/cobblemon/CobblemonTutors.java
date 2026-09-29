@@ -1,3 +1,4 @@
+//? if cobblemon {
 package io.github.jcondedata.aliveworkplace.compat.cobblemon;
 
 import com.cobblemon.mod.common.Cobblemon;
@@ -35,20 +36,18 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.ItemLore;
 import org.jetbrains.annotations.Nullable;
 
-/**
- * The Cobblemon half of Move Tutors: which moves a Pokémon could be taught, the lesson screen, and
- * teaching. A taught move goes straight into the Pokémon's moves when it knows fewer than four, otherwise
- * into the moves it can swap in from its summary (like any move it has learned before).
- */
+// The Cobblemon half of Move Tutors: which moves a Pokémon could be taught, the lesson screen, and
+// teaching. A taught move goes straight into the Pokémon's moves when it knows fewer than four, otherwise
+// into the moves it can swap in from its summary (like any move it has learned before).
 public final class CobblemonTutors {
-	/** Moves shown per page. */
+	// Moves shown per page.
 	private static final int PAGE = 27;
 	public static final int FIRST_MOVE_SLOT = 18;
 	private static final int PREVIOUS = 45;
 	private static final int INFO = 49;
 	private static final int NEXT = 53;
 
-	/** A move a tutor could teach: how hard it is (1..5) and whether it's an egg move. */
+	// A move a tutor could teach: how hard it is (1..5) and whether it's an egg move.
 	public record Lesson(MoveTemplate move, boolean egg, int grade) {
 		public int price() {
 			return Tutors.price(grade);
@@ -59,10 +58,8 @@ public final class CobblemonTutors {
 		}
 	}
 
-	/**
-	 * The moves this Pokémon could be taught that it can't use already (tutor and TM moves, then egg
-	 * moves), easiest first.
-	 */
+	// The moves this Pokémon could be taught that it can't use already (tutor and TM moves, then egg
+	// moves), easiest first.
 	public static List<Lesson> lessons(Pokemon pokemon) {
 		Learnset learnset = pokemon.getForm().getMoves();
 		Set<String> known = new HashSet<>();
@@ -90,7 +87,7 @@ public final class CobblemonTutors {
 		return sorted;
 	}
 
-	/** Teaches {@code move}: into an empty move slot if there is one, else among the moves to swap in. */
+	// Teaches {@code move}: into an empty move slot if there is one, else among the moves to swap in.
 	public static boolean teach(Pokemon pokemon, MoveTemplate move) {
 		if (pokemon.getMoveSet().hasSpace()) {
 			pokemon.getMoveSet().add(move.create());
@@ -100,7 +97,7 @@ public final class CobblemonTutors {
 		return false;
 	}
 
-	/** What's on the screen: whose moves, which page, and a lesson waiting for the second click. */
+	// What's on the screen: whose moves, which page, and a lesson waiting for the second click.
 	private static final class State {
 		@Nullable
 		UUID pokemon;
@@ -125,13 +122,13 @@ public final class CobblemonTutors {
 			menu -> render(menu, player, tutor, state));
 	}
 
-	/** The lesson screen without showing it (tests). */
+	// The lesson screen without showing it (tests).
 	public static ChoiceMenu menuForTest(ServerPlayer player, Villager tutor) {
 		State state = new State();
 		return ChoiceMenu.detached(player, menu -> render(menu, player, tutor, state));
 	}
 
-	/** Row 1: the party. Row 2: a divider. Rows 3–5: the chosen Pokémon's lessons. Row 6: pages and info. */
+	// Row 1: the party. Row 2: a divider. Rows 3–5: the chosen Pokémon's lessons. Row 6: pages and info.
 	private static void render(ChoiceMenu menu, ServerPlayer player, Villager tutor, State state) {
 		menu.clearButtons();
 		PlayerPartyStore party = Cobblemon.INSTANCE.getStorage().getParty(player);
@@ -257,7 +254,7 @@ public final class CobblemonTutors {
 		return icon;
 	}
 
-	/** Pays for and gives a lesson (the second click). */
+	// Pays for and gives a lesson (the second click).
 	static void give(ServerPlayer player, Villager tutor, @Nullable Pokemon pokemon, Lesson lesson) {
 		if (pokemon == null || BattleRegistry.getBattleByParticipatingPlayer(player) != null) {
 			return;
@@ -287,7 +284,7 @@ public final class CobblemonTutors {
 		return stack;
 	}
 
-	/** Item names and lore are italic unless told otherwise. */
+	// Item names and lore are italic unless told otherwise.
 	private static Component plain(Component c) {
 		return c.copy().withStyle(s -> s.withItalic(false));
 	}
@@ -305,3 +302,4 @@ public final class CobblemonTutors {
 	private CobblemonTutors() {
 	}
 }
+//?}

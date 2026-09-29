@@ -44,6 +44,7 @@ public class FarmerGameTests implements FabricGameTest {
 	 * A blank Field Marker given to a farmer: they take on the farm by their composter — both halves of it, across the
 	 * water channel — and not the farmland further off.
 	 */
+	//$ gametest_ticks AREA '200'
 	@GameTest(template = AREA, timeoutTicks = 200)
 	public void farmerTakesOnTheFarmByTheComposter(GameTestHelper helper) {
 		ServerLevel level = helper.getLevel();
@@ -69,6 +70,7 @@ public class FarmerGameTests implements FabricGameTest {
 	 * A village farmer takes on the farm by their composter by themselves once there's a chest by it: the harvest goes
 	 * into the chest, but they keep some food (bread from the wheat) to share with the village.
 	 */
+	//$ gametest_ticks_batch AREA '3000' '"village_farm"'
 	@GameTest(template = AREA, timeoutTicks = 3000, batch = "village_farm")
 	public void villageFarmerTakesOnTheirFarm(GameTestHelper helper) {
 		Leftovers.clear(helper); // a farmer from a neighbouring test would pick these crops too
@@ -100,6 +102,7 @@ public class FarmerGameTests implements FabricGameTest {
 	}
 
 	/** Stop a farmer's self-adopted farm and they leave it alone; no chest by the composter, no farm taken on either. */
+	//$ gametest_ticks AREA '1200'
 	@GameTest(template = AREA, timeoutTicks = 1200)
 	public void villageFarmersStayStoppedAndNeedAChest(GameTestHelper helper) {
 		ServerLevel level = helper.getLevel();
@@ -125,6 +128,7 @@ public class FarmerGameTests implements FabricGameTest {
 	}
 
 	/** Ripe wheat is cut, wheat goes back in the ground at once, the harvest ends up in the chest. */
+	//$ gametest_ticks AREA '3000'
 	@GameTest(template = AREA, timeoutTicks = 3000)
 	public void farmerHarvestsAndReplants(GameTestHelper helper) {
 		BlockPos water = new BlockPos(10, 1, 10);
@@ -151,6 +155,7 @@ public class FarmerGameTests implements FabricGameTest {
 	}
 
 	/** Sweet berries and cocoa in the field are picked (the bush and the pod stay to grow again), into the chest. */
+	//$ gametest_ticks AREA '2400'
 	@GameTest(template = AREA, timeoutTicks = 2400)
 	public void farmerPicksBerriesAndCocoa(GameTestHelper helper) {
 		BlockPos bush = new BlockPos(9, 2, 9);
@@ -176,6 +181,7 @@ public class FarmerGameTests implements FabricGameTest {
 	}
 
 	/** Once everything's sown, bone meal from the chest brings the crops on: they're harvested long before they'd ripen. */
+	//$ gametest_ticks AREA '2000'
 	@GameTest(template = AREA, timeoutTicks = 2000)
 	public void farmerUsesBoneMeal(GameTestHelper helper) {
 		BlockPos water = new BlockPos(10, 1, 9);
@@ -194,6 +200,7 @@ public class FarmerGameTests implements FabricGameTest {
 	}
 
 	/** Bare grass is tilled with the hoe from the chest and sown with the carrots from the chest. */
+	//$ gametest_ticks AREA '3000'
 	@GameTest(template = AREA, timeoutTicks = 3000)
 	public void farmerTillsAndSowsFromTheChest(GameTestHelper helper) {
 		for (BlockPos p : BlockPos.betweenClosed(new BlockPos(8, 1, 8), new BlockPos(10, 1, 10))) {
@@ -211,6 +218,7 @@ public class FarmerGameTests implements FabricGameTest {
 	}
 
 	/** Sugar cane is cut down to its bottom block, which is left to grow back. */
+	//$ gametest_ticks AREA '2000'
 	@GameTest(template = AREA, timeoutTicks = 2000)
 	public void farmerCutsSugarCane(GameTestHelper helper) {
 		helper.setBlock(new BlockPos(8, 1, 8), Blocks.GRASS_BLOCK);
@@ -228,6 +236,7 @@ public class FarmerGameTests implements FabricGameTest {
 	}
 
 	/** Sugar cane from the chest goes on the sand by the water, next to the wheat seeds the farmer also takes along. */
+	//$ gametest_ticks AREA '3000'
 	@GameTest(template = AREA, timeoutTicks = 3000)
 	public void farmerPlantsSugarCaneByTheWater(GameTestHelper helper) {
 		for (int x = 8; x <= 10; x++) {
@@ -244,6 +253,7 @@ public class FarmerGameTests implements FabricGameTest {
 	}
 
 	/** Cactus, bamboo and kelp (in a glass tank) are cut down to their bottom block, like sugar cane. */
+	//$ gametest_ticks AREA '3000'
 	@GameTest(template = AREA, timeoutTicks = 3000)
 	public void farmerCutsCactusBambooAndKelp(GameTestHelper helper) {
 		helper.setBlock(new BlockPos(16, 0, 8), Blocks.STONE); // (sand falls: nothing is under the floor)
@@ -272,6 +282,7 @@ public class FarmerGameTests implements FabricGameTest {
 	}
 
 	/** Seeds piling up in the chests go in the composter; the bone meal comes out for the field. */
+	//$ gametest_ticks AREA '4000'
 	@GameTest(template = AREA, timeoutTicks = 4000)
 	public void farmerCompostsSpareSeeds(GameTestHelper helper) {
 		Villager farmer = farmer(helper, new BlockPos(8, 1, 8), new BlockPos(9, 1, 9), new ItemStack(Items.WHEAT_SEEDS, 64),

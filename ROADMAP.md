@@ -366,8 +366,12 @@ loop: ore → ingots → the tools, weapons and armor the other workers wear out
   blast furnace; tends with `Furnaces.tend`; fetches ore/fuel a stash can spare by `Porters.keeps` — all of it at the
   storehouse, none from other smelters; keeps 24 iron; iron pieces by the game's recipe for guards with an empty slot
   and nothing for it in their chests; coal in hand hires one; Fire/Steel partners)
-- [ ] **Toolsmith → Blacksmith** (smithing table): makes the tools workers are waiting for (miners' pickaxes, lumberjacks'
+- [x] **Toolsmith → Blacksmith** (smithing table): makes the tools workers are waiting for (miners' pickaxes, lumberjacks'
   axes, hoes, shears, fishing rods) with the game's recipes; iron → diamond → netherite as materials allow
+  (`craft/ToolsmithWork`, a `CrafterWork` through `UpgradedJob`: answers the village's tool `Requests` not already
+  waiting in the worker's chests; iron/stone from its own chests, the storehouse and smelters; diamond only from its own
+  chests; netherite left out — it needs a smithing recipe kind. Hiring for vanilla upgrades is now sneak-right-click
+  with the trade's item (`work/Hiring`), so a plain right-click still trades)
 - [ ] **Weaponsmith** (grindstone): repairs worn tools, weapons and armor from workers' chests (two worn ones into one,
   or with ingots at an anvil) and makes swords for guards
 - [ ] **Fletcher** (fletching table): bows, crossbows and arrows for guards (flint from gravel, feathers, sticks);

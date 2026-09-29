@@ -382,6 +382,21 @@ public class CrafterWork extends Behavior<Villager> {
 		return null;
 	}
 
+	/** Whether another crafter is on {@code claim} (a request they took); forgets claims that ran out. */
+	static boolean claimed(String claim, long now) {
+		synchronized (CLAIMS) {
+			CLAIMS.values().removeIf(until -> until < now);
+			return CLAIMS.containsKey(claim);
+		}
+	}
+
+	/** Takes {@code claim}, so other crafters leave that request alone for a while. */
+	static void claim(String claim, long now) {
+		synchronized (CLAIMS) {
+			CLAIMS.put(claim, now + CLAIM_TICKS);
+		}
+	}
+
 	/** Whether a plan is worth doing and fits in the bag. */
 	protected static boolean fits(@Nullable Crafting.Plan plan) {
 		return plan != null && plan.count() > 0 && stacks(plan.takes()) <= MAX_STACKS_IN && stacks(plan.makes()) <= BuilderBag.SLOTS - MAX_STACKS_IN;

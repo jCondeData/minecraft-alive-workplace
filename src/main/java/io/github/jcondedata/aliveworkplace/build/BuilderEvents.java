@@ -175,10 +175,16 @@ public final class BuilderEvents {
 				}
 				return InteractionResult.PASS;
 			}
-			if (io.github.jcondedata.aliveworkplace.smelt.Smelters.isSmelter(villager)
+			if (player.isShiftKeyDown() && io.github.jcondedata.aliveworkplace.smelt.Smelters.isSmelter(villager)
 					&& io.github.jcondedata.aliveworkplace.smelt.Smelters.isFuel(player.getItemInHand(hand).getItem())) {
 				return level.isClientSide ? InteractionResult.SUCCESS
 					: io.github.jcondedata.aliveworkplace.smelt.Smelters.hire((ServerPlayer) player, villager);
+			}
+			if (player.isShiftKeyDown() && !villager.isBaby() && villager.getVillagerData().getProfession() == net.minecraft.world.entity.npc.VillagerProfession.TOOLSMITH
+					&& player.getItemInHand(hand).is(net.minecraft.world.item.Items.IRON_INGOT)) {
+				return level.isClientSide ? InteractionResult.SUCCESS
+					: io.github.jcondedata.aliveworkplace.work.Hiring.hire((ServerPlayer) player, villager,
+						net.minecraft.network.chat.Component.translatable("message.aliveworkplace.toolsmith.hired", villager.getDisplayName()));
 			}
 			if (io.github.jcondedata.aliveworkplace.fish.Fishers.isFisherman(villager)) {
 				ItemStack held = player.getItemInHand(hand);

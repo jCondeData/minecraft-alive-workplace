@@ -94,7 +94,8 @@ The owner (Jesse) does not write code: sessions are expected to work autonomousl
   requests board: the Storehouse's right-click screen)
 - `craft/` — carpenters, masons and chefs: `Crafting` (plans from the game's recipes, two steps down; `KITCHEN` adds the
   smoker's and Cobblemon's Campfire Pot recipes by type id), `CrafterWork` (fetch, craft, deliver for a waiting builder;
-  also run for vanilla Masons through `UpgradedJob`), `ChefWork`/`Chefs` (cook the menu into the stove's chests), `CarpenterPackages`
+  also run for vanilla Masons through `UpgradedJob`), `ChefWork`/`Chefs` (cook the menu into the stove's chests), `ToolsmithWork` (vanilla Toolsmiths: tools for the
+  village's tool requests), `CarpenterPackages`
 - `fossil/` — Fossil Scientists (with Cobblemon): `Revival` (saved on the villager), `FossilScientists` (hand-over, payment,
   delivery), `FossilWork`; Cobblemon's fossil data in `compat/cobblemon/CobblemonFossils`
 - `smith/` — the ball smith: `BallRecipes` (Cobblemon ball recipes by tag and tier), `BallSmithWork`, `BallSmithPackages`
@@ -104,7 +105,7 @@ The owner (Jesse) does not write code: sessions are expected to work autonomousl
   it on), `Requests` (what workers are waiting for: the board, lumberjacks' wanted wood), `Walker` (movement + reach), `WorkerStatus` (overhead status for jobs without a saved site), `Jobs.employ`,
   `ChoiceMenu` (a server-side chest screen of buttons: menus without client code), `DeskPackages` (WORK for jobs players visit),
   `Partners` (pastured Pokémon speeding up a job; the lookup is `compat/cobblemon/CobblemonPartners`), `Pastures` (a Pasture Block as a courier stop),
-  `Gated`/`UpgradedJob` (vanilla jobs with extra work), `PrivateContainer` (never a supply chest), `KeepLoaded` (chunk tickets)
+  `Gated`/`UpgradedJob` (vanilla jobs with extra work), `Hiring` (sneak-right-click a vanilla upgrade with its item), `PrivateContainer` (never a supply chest), `KeepLoaded` (chunk tickets)
 - `world/` — our houses in village generation (`VillageHouses`: builder's workshops, guard houses, clinics, post offices;
   with Cobblemon trainer's houses, leader's halls, schools, trade halls; the NBT comes from `tools/blueprints/generate.py`,
   which must keep exactly one job block per house — a vanilla one would give the villager the wrong job)

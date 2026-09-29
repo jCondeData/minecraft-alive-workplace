@@ -601,5 +601,12 @@
   "message.aliveworkplace.smelter.state.no_chest": "needs a chest by the blast furnace",
   "message.aliveworkplace.smelter.state.making_armor": "making %s for %s",
   "message.aliveworkplace.smelter.state.delivering_armor": "bringing the %s to %s",
-  "message.aliveworkplace.smelter.hired": "%s smelts for you now: ore in the chests within %s blocks of the blast furnace, or from your miners and storehouse."
+  "message.aliveworkplace.smelter.hired": "%s smelts for you now: ore in the chests within %s blocks of the blast furnace, or from your miners and storehouse.",
+  "message.aliveworkplace.toolsmith.title": "Toolsmith · %s made",
+  "message.aliveworkplace.toolsmith.state.idle": "nobody's waiting for a tool",
+  "message.aliveworkplace.toolsmith.state.fetching": "fetching what %s %s take",
+  "message.aliveworkplace.toolsmith.state.crafting": "making %s %s",
+  "message.aliveworkplace.toolsmith.state.delivering": "taking %s %s to the worker who needs it",
+  "message.aliveworkplace.toolsmith.state.tidying": "putting things away",
+  "message.aliveworkplace.toolsmith.hired": "%s makes tools for your workers now, from the iron and stone in your storehouse (diamonds only from their own chest)."
 }

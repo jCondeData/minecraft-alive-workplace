@@ -2,6 +2,16 @@
 
 ## Unreleased
 
+## 0.81.0 — 2026-09-28
+
+### Added
+- **Toolsmiths make the workers' tools**: when a miner needs a pickaxe, a lumberjack an axe or a fisherman a rod, the
+  village's toolsmith makes one (iron from the storehouse, else stone; diamond only from their own chest) and takes it
+  to that worker's chests. Sneak-right-click a toolsmith with an iron ingot to hire them.
+
+### Changed
+- Hiring an armorer is now a **sneak**-right-click with coal, so right-clicking with coal still opens their trades.
+
 ## 0.80.0 — 2026-09-28
 
 ### Added

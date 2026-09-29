@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+### Added
+- **Warding** (research, after Fortification): explosions no longer break blocks in the village.
+
+### Changed
+- The Market Stall's striped awning is a finer slope (carpet steps between the stripes).
+
 ## 0.132.0 — 2026-09-29
 
 ### Added

@@ -121,7 +121,7 @@ tower with a slate spire — the village's weddings are held there). Near a Vill
 each one adds to its **beauty** (a lamp post or a bench 1, a well 2 — 3 with its roof —, a fountain or a gazebo 3, a
 chapel 4, a market square 5), and every point is 1% more wellbeing, up to 10%.
 
-![The Well II, the Street Lamp, the Park Bench, the Fountain, the Gazebo and the Market Square](docs/media/decorations.png)
+![The Well and the Well II, the Street Lamp, the Park Bench, the Fountain, the Gazebo, the Market Square and the Chapel](docs/media/decorations.png)
 
 **Market days.** A village with a Village Hall and a Market Square holds a **market** once a week, in the morning:
 two travelling traders come to the square with their wares until nightfall, each also selling a blueprint (a starter
@@ -284,6 +284,7 @@ bonus for the whole village:
 | Commerce | 2 | one more market trader, mercenaries 3 emeralds cheaper | Hearth I |
 | Expeditions | 2 | explorers and netherworkers back 20% sooner | Logistics I |
 | Green Thumb | 2 | composters need a layer less compost a bone meal | Hearth I |
+| Warding | 1 | explosions (creepers, TNT, fireballs) no longer break blocks in the village | Fortification I |
 
 **Graves and Undertakers.** A grown villager with a job (or a name) who dies leaves a **grave** where they fell —
 right-click it to read who lies there. Craft an **Undertaker's Table** (two candles and a lily of the valley over dark

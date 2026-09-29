@@ -176,13 +176,15 @@ def stall(b, x0, colors, goods):
     for i, g in enumerate(goods):
         if g:
             b.set(x0 + 1 + i, 2, 2, g) if isinstance(g, str) else b.set(x0 + 1 + i, 2, 2, g[0], **g[1])
-    # The awning: sloping up from the front, striped
+    # The awning: a striped canopy sloping up from the front (a wool valance, then carpet on a slab slope)
     for x in range(x0, x1 + 1):
         c = colors[(x - x0) % 2]
         b.set(x, 4, 1, c)
-        b.set(x, 5, 2, c)
+        slab(b, x, 4, 2, SPRUCE, top=True)
+        b.set(x, 5, 2, c.replace("_wool", "_carpet"))
         b.set(x, 5, 3, c)
-        b.set(x, 6, 4, c)
+        slab(b, x, 5, 4, SPRUCE, top=True)
+        b.set(x, 6, 4, c.replace("_wool", "_carpet"))
         b.set(x, 6, 5, c)
     # The back shelf: a beam with stock under it
     for x in range(x0 + 1, x1):

@@ -50,7 +50,8 @@ public final class Research {
 		FORTIFICATION(2, Items.SHIELD),
 		COMMERCE(2, Items.EMERALD),
 		EXPEDITIONS(2, Items.COMPASS),
-		GREEN_THUMB(2, Items.BONE_MEAL);
+		GREEN_THUMB(2, Items.BONE_MEAL),
+		WARDING(1, Items.OBSIDIAN);
 
 		public final int maxLevel;
 		public final Item icon;
@@ -91,6 +92,7 @@ public final class Research {
 				case LOGISTICS, CRAFTSMANSHIP -> Map.of(SWIFT_HANDS, 1);
 				case MEDICINE, COMMERCE, GREEN_THUMB -> Map.of(HEARTH, 1);
 				case FORTIFICATION -> Map.of(DRILL, 1);
+				case WARDING -> Map.of(FORTIFICATION, 1);
 				case EXPEDITIONS -> Map.of(LOGISTICS, 1);
 				default -> Map.of();
 			};

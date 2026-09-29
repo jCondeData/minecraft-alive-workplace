@@ -1360,6 +1360,8 @@
   "research.aliveworkplace.expeditions.effect": "Explorers and netherworkers back 20% sooner a level",
   "research.aliveworkplace.green_thumb": "Green Thumb",
   "research.aliveworkplace.green_thumb.effect": "Composters need a layer less compost for a bone meal a level",
+  "research.aliveworkplace.warding": "Warding",
+  "research.aliveworkplace.warding.effect": "Explosions (creepers, TNT, fireballs) no longer break blocks in the village",
   "screen.aliveworkplace.research.title": "Research of %s",
   "screen.aliveworkplace.research.info": "The village's research",
   "screen.aliveworkplace.research.nothing": "Nothing being researched: click a topic below",

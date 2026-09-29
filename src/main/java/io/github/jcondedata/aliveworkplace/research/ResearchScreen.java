@@ -23,7 +23,7 @@ import net.minecraft.world.item.component.ItemLore;
 public final class ResearchScreen {
 	static final int INFO = 4;
 	/** Where the topics go, in {@link Research.Topic} order. */
-	public static final int[] TOPIC_SLOTS = {19, 20, 21, 22, 23, 24, 25, 28, 29, 30, 31, 32, 33};
+	public static final int[] TOPIC_SLOTS = {19, 20, 21, 22, 23, 24, 25, 28, 29, 30, 31, 32, 33, 34};
 
 	public static void open(ServerPlayer player, Villager scholar) {
 		ServerLevel level = player.serverLevel();

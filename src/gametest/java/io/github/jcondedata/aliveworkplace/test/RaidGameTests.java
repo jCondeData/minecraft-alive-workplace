@@ -120,6 +120,37 @@ public class RaidGameTests implements FabricGameTest {
 		});
 	}
 
+	/** Warding: with it researched, an explosion in the village breaks nothing; without it, it does. */
+	@GameTest(template = AREA, timeoutTicks = 100, batch = "warding")
+	public void wardingSparesTheVillage(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		ServerLevel level = helper.getLevel();
+		int radius = VillageHalls.RADIUS;
+		VillageHalls.RADIUS = 8;
+		Leftovers.after(helper, () -> VillageHalls.RADIUS = radius);
+		helper.setBlock(new BlockPos(3, 2, 3), ModBlocks.VILLAGE_HALL);
+		for (int x = 2; x <= 6; x++) {
+			helper.setBlock(new BlockPos(x, 2, 6), net.minecraft.world.level.block.Blocks.STONE_BRICKS);
+		}
+		helper.runAfterDelay(2, () -> {
+			VillageHallBlockEntity hall = (VillageHallBlockEntity) level.getBlockEntity(helper.absolutePos(new BlockPos(3, 2, 3)));
+			hall.setResearch(new io.github.jcondedata.aliveworkplace.research.Research.State(java.util.Map.of("warding", 1), java.util.Optional.empty(), 0, false));
+			var at = helper.absoluteVec(new net.minecraft.world.phys.Vec3(4.5, 3, 7.5));
+			level.explode(null, at.x, at.y, at.z, 3f, net.minecraft.world.level.Level.ExplosionInteraction.TNT);
+			for (int x = 2; x <= 6; x++) {
+				helper.assertBlockPresent(net.minecraft.world.level.block.Blocks.STONE_BRICKS, new BlockPos(x, 2, 6));
+			}
+			hall.setResearch(io.github.jcondedata.aliveworkplace.research.Research.State.EMPTY);
+			level.explode(null, at.x, at.y, at.z, 3f, net.minecraft.world.level.Level.ExplosionInteraction.TNT);
+			boolean broke = false;
+			for (int x = 2; x <= 6; x++) {
+				broke |= !level.getBlockState(helper.absolutePos(new BlockPos(x, 2, 6))).is(net.minecraft.world.level.block.Blocks.STONE_BRICKS);
+			}
+			helper.assertTrue(broke, "without Warding the blast broke nothing");
+			helper.succeed();
+		});
+	}
+
 	/** In a pillager raid a guard doesn't hide: their raid activity is a patrol. */
 	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
 	public void guardsDontHideFromPillagers(GameTestHelper helper) {

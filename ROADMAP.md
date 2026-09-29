@@ -487,7 +487,10 @@ loop: ore → ingots → the tools, weapons and armor the other workers wear out
   bell is rung, players told, the chronicle notes the raid and how it ended; while raided every guard in the village
   defends all of it (`raidArea`), as in a vanilla raid's area; guards' RAID/PRE_RAID packages are a patrol, not hiding;
   `villageRaids` in the config, off in gametests)
-- [ ] Walls and gates: blueprints; guards shut the gates at night
+- [x] Walls and gates: blueprints; guards shut the gates at night (`tools/blueprints/defence.py`: Palisade, Palisade
+  Gate, Stone Wall, Wall Tower, Gatehouse — `StarterBlueprints.DEFENCES`, front = the inside, with walkways and
+  ladders; `guard/Gates`: in the hall's round, if the village has a guard, the fence gates of its finished Gatehouses and
+  Palisade Gates shut from 12500 to 23500 and open otherwise)
 
 ## Milestone 11 — Research
 - [x] **Scholar** (new job, University): a research tree paid in paper, books and emeralds unlocking village-wide

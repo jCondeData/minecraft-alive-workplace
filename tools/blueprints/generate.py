@@ -13,6 +13,7 @@ from starter import *
 from village import *
 from decor import *
 from houses import *
+from defence import *
 
 
 # --- Gametest fixtures ------------------------------------------------------------------
@@ -104,6 +105,9 @@ if __name__ == "__main__":
     stone_house_2().save(MAIN_STRUCTURES, "stone_house_2")
     stone_house_3().save(MAIN_STRUCTURES, "stone_house_3")
     settlers_camp().save(os.path.join(MAIN_STRUCTURES, "camp"), "settlers_camp")
+    for name, draw in (("palisade", palisade), ("palisade_gate", palisade_gate), ("stone_wall", stone_wall), ("wall_tower", wall_tower),
+                       ("gatehouse", gatehouse)):
+        draw().save(MAIN_STRUCTURES, name)
     for style in VILLAGE_STYLES:
         builders_workshop(style).save(VILLAGE_STRUCTURES, f"{style}_builders_workshop")
         for name, fit_out in VILLAGE_HOUSES.items():

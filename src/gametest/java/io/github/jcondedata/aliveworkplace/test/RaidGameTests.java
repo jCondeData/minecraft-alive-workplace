@@ -75,4 +75,37 @@ public class RaidGameTests implements FabricGameTest {
 		helper.assertTrue(farmer.stream().noneMatch(p -> p.getSecond() instanceof GuardPatrol), "a farmer patrols");
 		helper.succeed();
 	}
+
+	/** In a village with a guard, a finished Gatehouse's gates are shut at night and opened in the morning. */
+	@GameTest(template = AREA, timeoutTicks = 100, batch = "gatesAreShutAtNight")
+	public void gatesAreShutAtNight(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		int radius = VillageHalls.RADIUS;
+		VillageHalls.RADIUS = 20;
+		ServerLevel level = helper.getLevel();
+		var template = level.getStructureManager().get(io.github.jcondedata.aliveworkplace.blueprint.StarterBlueprints.GATEHOUSE.id()).orElseThrow();
+		BlockPos origin = helper.absolutePos(new BlockPos(5, 2, 12));
+		template.placeInWorld(level, origin, origin, new net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings(), level.getRandom(), 2);
+		var placement = new io.github.jcondedata.aliveworkplace.blueprint.BlueprintData.Placement(level.dimension().location(), origin,
+			net.minecraft.world.level.block.Rotation.NONE, net.minecraft.world.level.block.Mirror.NONE);
+		var sites = io.github.jcondedata.aliveworkplace.build.BuildSiteManager.get(level);
+		sites.recordFinished(io.github.jcondedata.aliveworkplace.blueprint.StarterBlueprints.GATEHOUSE.id(), placement, java.util.UUID.randomUUID());
+		Leftovers.after(helper, () -> {
+			VillageHalls.RADIUS = radius;
+			sites.forgetFinished(placement);
+		});
+		helper.setBlock(HALL, ModBlocks.VILLAGE_HALL);
+		BlockPos hall = helper.absolutePos(HALL);
+		BlockPos gate = origin.offset(5, 1, 2);
+		helper.assertTrue(level.getBlockState(gate).getBlock() instanceof net.minecraft.world.level.block.FenceGateBlock, "no gate at " + gate);
+		helper.assertTrue(io.github.jcondedata.aliveworkplace.guard.Gates.round(level, hall, 0) == 0, "gates moved without a guard");
+		helper.setDayTime(2000);
+		helper.assertTrue(io.github.jcondedata.aliveworkplace.guard.Gates.round(level, hall, 1) == 3, "morning: the gates didn't open");
+		helper.assertTrue(level.getBlockState(gate).getValue(net.minecraft.world.level.block.FenceGateBlock.OPEN), "still shut");
+		helper.setDayTime(14000);
+		helper.assertTrue(io.github.jcondedata.aliveworkplace.guard.Gates.round(level, hall, 1) == 3, "night: the gates weren't shut");
+		helper.assertFalse(level.getBlockState(gate).getValue(net.minecraft.world.level.block.FenceGateBlock.OPEN), "still open");
+		helper.assertTrue(io.github.jcondedata.aliveworkplace.guard.Gates.round(level, hall, 1) == 0, "shut twice");
+		helper.succeed();
+	}
 }

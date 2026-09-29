@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+## 0.119.0 — 2026-09-29
+
+### Added
+- **Walls and gates** in the Blueprint Table: the Palisade, the Palisade Gate, the Stone Wall, the Wall Tower and the
+  Gatehouse. In a village with a Village Hall and a guard, the gates are shut at nightfall and opened in the morning.
+
 ## 0.118.0 — 2026-09-29
 
 ### Added

@@ -113,6 +113,17 @@ public final class StarterBlueprints {
 	/** A paved square with a fountain, kiosks, benches and the village bell. */
 	public static final Entry MARKET_SQUARE = new Entry(AliveWorkplace.id("market_square"), new Vec3i(13, 5, 13));
 
+	/** Walls and gates: a wooden palisade with a walkway. */
+	public static final Entry PALISADE = new Entry(AliveWorkplace.id("palisade"), new Vec3i(7, 6, 2));
+	/** A gate in the palisade (shut at night). */
+	public static final Entry PALISADE_GATE = new Entry(AliveWorkplace.id("palisade_gate"), new Vec3i(7, 6, 2));
+	/** A stone wall with battlements. */
+	public static final Entry STONE_WALL = new Entry(AliveWorkplace.id("stone_wall"), new Vec3i(7, 6, 3));
+	/** A stone tower for a wall's end or corner. */
+	public static final Entry WALL_TOWER = new Entry(AliveWorkplace.id("wall_tower"), new Vec3i(5, 10, 5));
+	/** A stone gatehouse (its gates shut at night). */
+	public static final Entry GATEHOUSE = new Entry(AliveWorkplace.id("gatehouse"), new Vec3i(11, 9, 5));
+
 	/** Drawn up by a village's scholars (Architecture research), not in the Blueprint Table: a stone hall with a bell tower. */
 	public static final Entry TOWN_HALL = new Entry(AliveWorkplace.id("research/town_hall"), new Vec3i(13, 16, 13));
 
@@ -124,6 +135,9 @@ public final class StarterBlueprints {
 
 	/** The decorations (in the Blueprint Table with the rest; near a Village Hall they make the village prettier). */
 	public static final List<Entry> DECORATIONS = List.of(WELL, WELL_2, STREET_LAMP, PARK_BENCH, FOUNTAIN, GAZEBO, MARKET_SQUARE);
+
+	/** Walls and gates. */
+	public static final List<Entry> DEFENCES = List.of(PALISADE, PALISADE_GATE, STONE_WALL, WALL_TOWER, GATEHOUSE);
 
 	private StarterBlueprints() {
 	}

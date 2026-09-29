@@ -626,6 +626,14 @@ not just the ground round their post. The raid is over when the raiders are dead
 flee. The chronicle remembers every raid. In a **pillager raid** guards don't hide either: they patrol and fight
 anywhere in the raid's area. `villageRaids` in the config turns our raids off.
 
+**Walls and gates** (in the Blueprint Table): a wooden **Palisade** of sharpened logs with a walkway, a **Palisade
+Gate**, a **Stone Wall** with battlements, a **Wall Tower** for the ends and corners, and a **Gatehouse** with two towers
+over a gateway. Stand inside the village and place them facing out: the walkways and ladders are on your side. In a
+village with a Village Hall and a guard, the gates of its Gatehouses and Palisade Gates are **shut at nightfall** and
+opened in the morning (you can still open them yourself).
+
+![The Palisade, the Palisade Gate, the Stone Wall, the Wall Tower and the Gatehouse](docs/media/defences.png)
+
 **Training Dummy** (a hay bale on sticks with wool on top): place one within 12 blocks of a Guard Post and, when
 there's nothing to fight, the guard spars with it every couple of minutes during the day — a point of experience every
 four hits, up to Expert; Masters are only made in real fights. Hit it yourself and it puffs straw too.

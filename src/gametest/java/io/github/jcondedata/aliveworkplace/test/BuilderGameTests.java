@@ -884,6 +884,31 @@ public class BuilderGameTests implements FabricGameTest {
 			"dark_oak"), StarterBlueprints.STONE_HOUSE.size()));
 	}
 
+	@GameTest(template = BIG_AREA, timeoutTicks = 12000, batch = "defences")
+	public void buildsPalisade(GameTestHelper helper) {
+		buildStarter(helper, StarterBlueprints.PALISADE);
+	}
+
+	@GameTest(template = BIG_AREA, timeoutTicks = 12000, batch = "defences")
+	public void buildsPalisadeGate(GameTestHelper helper) {
+		buildStarter(helper, StarterBlueprints.PALISADE_GATE);
+	}
+
+	@GameTest(template = BIG_AREA, timeoutTicks = 12000, batch = "defences")
+	public void buildsStoneWall(GameTestHelper helper) {
+		buildStarter(helper, StarterBlueprints.STONE_WALL);
+	}
+
+	@GameTest(template = BIG_AREA, timeoutTicks = 20000, batch = "defences")
+	public void buildsWallTower(GameTestHelper helper) {
+		buildStarter(helper, StarterBlueprints.WALL_TOWER);
+	}
+
+	@GameTest(template = BIG_AREA, timeoutTicks = 30000, batch = "defences")
+	public void buildsGatehouse(GameTestHelper helper) {
+		buildStarter(helper, StarterBlueprints.GATEHOUSE);
+	}
+
 	@GameTest(template = BIG_AREA, timeoutTicks = 12000, batch = "decorations")
 	public void buildsWell(GameTestHelper helper) {
 		buildStarter(helper, StarterBlueprints.WELL_2);
@@ -1190,6 +1215,7 @@ public class BuilderGameTests implements FabricGameTest {
 	public void starterBlueprintsMatchTheirDeclaredSizesAndAreBuildable(GameTestHelper helper) {
 		List<StarterBlueprints.Entry> all = new ArrayList<>(StarterBlueprints.ALL);
 		all.addAll(StarterBlueprints.DECORATIONS);
+		all.addAll(StarterBlueprints.DEFENCES);
 		all.add(StarterBlueprints.TOWN_HALL);
 		for (StarterBlueprints.Entry entry : all) {
 			Optional<Blueprint> blueprint = BlueprintLibrary.get(helper.getLevel(), entry.id());

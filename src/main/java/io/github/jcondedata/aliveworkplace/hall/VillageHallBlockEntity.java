@@ -65,6 +65,7 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 			MarketDays.tick(server, pos, hall);
 			VillageHalls.Census census = VillageHalls.census(server, pos);
 			Caravans.round(server, pos, census);
+			io.github.jcondedata.aliveworkplace.guard.Gates.round(server, pos, census.guards());
 			io.github.jcondedata.aliveworkplace.guard.VillageRaids.tick(server, pos, census.villagers(), census.guards(), hall.lastRaidDay, day -> {
 				hall.lastRaidDay = day;
 				hall.setChanged();

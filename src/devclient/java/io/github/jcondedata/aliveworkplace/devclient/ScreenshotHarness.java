@@ -147,7 +147,7 @@ public class ScreenshotHarness implements ClientModInitializer {
 			return;
 		}
 		if ("gallery".equals(System.getProperty("aliveworkplace.scene")) || "decor".equals(System.getProperty("aliveworkplace.scene"))
-			|| "styles".equals(System.getProperty("aliveworkplace.scene"))) {
+			|| "styles".equals(System.getProperty("aliveworkplace.scene")) || "defences".equals(System.getProperty("aliveworkplace.scene"))) {
 			galleryScene(mc, mc.getSingleplayerServer());
 			return;
 		}
@@ -1745,6 +1745,7 @@ public class ScreenshotHarness implements ClientModInitializer {
 	private void galleryScene(Minecraft mc, MinecraftServer server) {
 		tick++;
 		List<StarterBlueprints.Entry> all = "decor".equals(System.getProperty("aliveworkplace.scene")) ? StarterBlueprints.DECORATIONS
+			: "defences".equals(System.getProperty("aliveworkplace.scene")) ? StarterBlueprints.DEFENCES
 			: "styles".equals(System.getProperty("aliveworkplace.scene")) ? styledGallery() : StarterBlueprints.ALL;
 		if (tick == 1) {
 			mc.options.renderDistance().set(6);

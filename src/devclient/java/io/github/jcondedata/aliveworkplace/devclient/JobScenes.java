@@ -513,7 +513,29 @@ final class JobScenes {
 		return new Step(shot, slot, rows, null, 25);
 	}
 
+	/** A step of the stations scene: the player sneak-right-clicks the villager with {@code item}. */
+	private static Step hand(String shot, Item item) {
+		return new Step(shot, -1, 0, (level, player) -> {
+			player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(item));
+			io.github.jcondedata.aliveworkplace.work.Stations.choose(player, subject, player.getMainHandItem());
+		}, 40);
+	}
+
 	static {
+		// Fewer job blocks (ROADMAP 21.1a): one composter, and the item in hand picks the job; wheat brings the farmer back.
+		SCREENS.put("stations", new Screen("the villager took each job its item picks at the composter", new Vec3(2.2, -58.6, 3.6), TARGET,
+			(level, player) -> {
+				place(level, STATION, Blocks.COMPOSTER);
+				subject = EntityType.VILLAGER.spawn(level, STATION.south(), MobSpawnType.COMMAND);
+				subject.setNoAi(true); // stands still for the camera (their job still shows on their clothes)
+				subject.setYRot(160);
+				subject.setYHeadRot(160);
+			},
+			List.of(new Step("01_jobless", -1, 0, null, 25), hand("02_orchard_keeper", Items.SWEET_BERRIES), hand("03_florist", Items.POPPY),
+				hand("04_composter", Items.BONE_MEAL), hand("05_farmer", Items.WHEAT)),
+			(level, player) -> subject.getVillagerData().getProfession() == VillagerProfession.FARMER
+				&& subject.getBrain().getMemory(net.minecraft.world.entity.ai.memory.MemoryModuleType.JOB_SITE)
+					.map(g -> g.pos().equals(STATION)).orElse(false)));
 		SCREENS.put("daycare", new Screen("the daycare screen opened with a Charmander boarding", new Vec3(2.5, -58.4, 4.5), TARGET,
 			(level, player) -> {
 				subject = picked(level, player, STATION, Blocks.SMOKER, Items.SADDLE);

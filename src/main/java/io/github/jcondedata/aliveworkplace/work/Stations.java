@@ -251,9 +251,10 @@ public final class Stations {
 		if (!Friends.mayCommand(player, villager)) {
 			return Hiring.hire(player, villager, Component.empty()); // refuses, and says whose they are
 		}
+		Component who = villager.getDisplayName(); // before: an unnamed villager is called by their job
 		assign((ServerLevel) villager.level(), villager, station, profession);
 		villager.level().playSound(null, villager, net.minecraft.sounds.SoundEvents.VILLAGER_YES, net.minecraft.sounds.SoundSource.NEUTRAL, 1f, 1f);
-		Chat.chat(player, Component.translatable("message.aliveworkplace.job.chosen", villager.getDisplayName(), name(profession),
+		Chat.chat(player, Component.translatable("message.aliveworkplace.job.chosen", who, name(profession),
 			villager.level().getBlockState(station).getBlock().getName()).withStyle(ChatFormatting.GREEN));
 		return InteractionResult.SUCCESS;
 	}

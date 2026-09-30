@@ -23,7 +23,7 @@ import sys
 
 # Page sections, in the README's order ("All the jobs at a glance"), then the village-wide pieces.
 GROUPS = [
-    "Builder", "Miner", "Lumberjack", "Orchard Keeper", "Farmer", "Beekeeper", "Florist", "Scholar", "Sifter",
+    "Picking a job", "Builder", "Miner", "Lumberjack", "Orchard Keeper", "Farmer", "Beekeeper", "Florist", "Scholar", "Sifter",
     "Tinkerer", "Composter", "Netherworker", "Undertaker", "Innkeeper", "Teacher", "Rancher", "Fisherman", "Porter",
     "Carpenter", "Mason", "Leatherworker (dyer)", "Chef", "Armorer (smelter)", "Toolsmith", "Weaponsmith", "Fletcher",
     "Shepherd", "Butcher (herder)", "Cleric (alchemist)", "Librarian (scribe)", "Cartographer (explorer)", "Postman",
@@ -46,6 +46,10 @@ def job(name, group, title, what, est=150, extra=(), **kw):
 
 
 SCENES = [
+    # Picking a job (ROADMAP 21.1a): one block, several jobs, each picked with its item
+    S("stations", "Picking a job", "One composter, four jobs", "the villager took each job its item picks at the composter", 45,
+      [("02_orchard_keeper", "Sweet berries: Orchard Keeper"), ("03_florist", "A flower: Florist"),
+       ("04_composter", "Bone meal: Composter"), ("05_farmer", "Wheat: back to Farmer")]),
     # Builder
     S("builders", "Builder", "Three builders, three starter builds", "the builders finished all three builds", 420,
       [("02_builder_closeup", "A builder at work"), ("03_finished_wide", "All three finished"),

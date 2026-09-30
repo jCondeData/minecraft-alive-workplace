@@ -144,7 +144,7 @@ public class VillageGameTests implements FabricGameTest {
 	 * bottom layer (around the walls, like vanilla's houses) never cut into the ground. Placing the template with its air
 	 * cut a ring through the test floor around the house, two blocks deep with the air under the floor; about one
 	 * villager in 175 wandered out of the door, dropped into it and walked round it for the rest of the test (a villager
-	 * put in the ring stayed there 30 times out of 30). With the house placed like a village's, 200 of 200 passed.
+	 * put in the ring stayed there 30 times out of 30). Placed like a village's it still failed 1 in 100: the structure_void row in front of the door is placed too (B5).
 	 */
 	static void workshopTest(GameTestHelper helper, BlockPos spawn, boolean likeAVillage) {
 		Leftovers.clear(helper); // (a jobless villager from a neighbouring test can take the bench first)

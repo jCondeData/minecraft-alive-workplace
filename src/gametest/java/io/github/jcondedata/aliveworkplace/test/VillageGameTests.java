@@ -176,4 +176,62 @@ public class VillageGameTests implements FabricGameTest {
 		helper.assertTrue(voids.isEmpty(), voids.size() + " structure_void blocks placed in the world at template " + voids);
 		helper.succeed();
 	}
+	/**
+	 * B5, for every village template (all styles, the workshop and every house, the Cobblemon ones too): placed through the
+	 * real pool element our villages use (legacy, empty processor list, jigsaws turned into their final state), a house
+	 * puts no structure_void in the world, and the ground strip in front of its door stays the ground it landed on.
+	 */
+	//$ gametest_ticks_batch '"aliveworkplace_test:big_area"' '200' '"everyVillageTemplatePlacedLikeAVillageKeepsTheGroundInFrontOfItsDoor"'
+	@GameTest(template = "aliveworkplace_test:big_area", timeoutTicks = 200, batch = "everyVillageTemplatePlacedLikeAVillageKeepsTheGroundInFrontOfItsDoor")
+	public void everyVillageTemplatePlacedLikeAVillageKeepsTheGroundInFrontOfItsDoor(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		var processors = level.registryAccess().registryOrThrow(Registries.PROCESSOR_LIST);
+		var empty = processors.getHolderOrThrow(net.minecraft.resources.ResourceKey.create(Registries.PROCESSOR_LIST,
+			net.minecraft.resources.ResourceLocation.withDefaultNamespace("empty")));
+		List<net.minecraft.resources.ResourceLocation> ids = level.getServer().getResourceManager()
+			.listResources("structure/village", r -> r.getPath().endsWith(".nbt")).keySet().stream()
+			.filter(r -> r.getNamespace().equals(io.github.jcondedata.aliveworkplace.AliveWorkplace.MOD_ID))
+			.map(r -> r.withPath(r.getPath().substring("structure/".length(), r.getPath().length() - ".nbt".length())))
+			.sorted().toList();
+		helper.assertTrue(ids.size() >= 115, "only " + ids.size() + " village templates found");
+		BlockPos origin = helper.absolutePos(new BlockPos(2, 2, 2));
+		net.minecraft.world.level.levelgen.structure.BoundingBox box = net.minecraft.world.level.levelgen.structure.BoundingBox.fromCorners(
+			origin.offset(-1, 0, -1), origin.offset(10, 11, 11));
+		List<String> problems = new java.util.ArrayList<>();
+		for (var id : ids) {
+			for (BlockPos p : BlockPos.betweenClosed(box.minX(), box.minY(), box.minZ(), box.maxX(), box.maxY(), box.maxZ())) {
+				level.setBlock(p, Blocks.AIR.defaultBlockState(), 2);
+			}
+			for (int x = 0; x < 9; x++) {
+				level.setBlock(origin.offset(x, 0, 0), Blocks.DIRT.defaultBlockState(), 2);
+			}
+			var element = net.minecraft.world.level.levelgen.structure.pools.StructurePoolElement.legacy(id.toString(), empty)
+				.apply(StructureTemplatePool.Projection.RIGID);
+			boolean placed = element.place(level.getStructureManager(), level, level.structureManager(), level.getChunkSource().getGenerator(),
+				origin, origin, net.minecraft.world.level.block.Rotation.NONE, box, net.minecraft.util.RandomSource.create(1),
+				net.minecraft.world.level.levelgen.structure.templatesystem.LiquidSettings.APPLY_WATERLOGGING, false);
+			if (!placed) {
+				problems.add(id + " did not place");
+				continue;
+			}
+			int voids = 0;
+			for (BlockPos p : BlockPos.betweenClosed(box.minX(), box.minY(), box.minZ(), box.maxX(), box.maxY(), box.maxZ())) {
+				if (level.getBlockState(p).is(Blocks.STRUCTURE_VOID)) {
+					voids++;
+				}
+			}
+			int ground = 0;
+			for (int x = 0; x < 9; x++) {
+				if (level.getBlockState(origin.offset(x, 0, 0)).is(Blocks.DIRT)) {
+					ground++;
+				}
+			}
+			boolean houseThere = !level.getBlockState(origin.offset(4, 1, 2)).isAir(); // the door
+			if (voids > 0 || ground != 9 || !houseThere) {
+				problems.add(id + ": " + voids + " structure_void, " + ground + "/9 ground kept, door " + level.getBlockState(origin.offset(4, 1, 2)));
+			}
+		}
+		helper.assertTrue(problems.isEmpty(), problems.size() + " village templates: " + problems);
+		helper.succeed();
+	}
 }

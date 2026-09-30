@@ -122,7 +122,7 @@ its first findings fixed. Nothing is released until these are done.
     while holding its item; a villager already working there switches the same way. A block no vanilla job uses
     (crafting table, beehive, jukebox) never takes a jobless villager by itself. Shared blocks, default job first:
     - Composter: Farmer; Orchard Keeper (sweet berries), Florist (a flower), Composter (bone meal).
-    - Crafting table: Builder (a placed blueprint), Carpenter (planks).
+    - Crafting table: Carpenter (planks).
     - Blast furnace: Armorer (smelter); Miner (a pickaxe).
     - Fletching table: Fletcher; Lumberjack (an axe).
     - Smithing table: Toolsmith; Tinkerer (redstone), Ball Smith (an apricorn, with Cobblemon).
@@ -133,7 +133,8 @@ its first findings fixed. Nothing is released until these are done.
     - Smoker: Butcher (herder); Chef (raw food), Rancher (a saddle).
     - Grindstone: Weaponsmith; Guard (a sword).
     - Beehive or bee nest: Beekeeper (a glass bottle or shears). Jukebox: Bard (a music disc).
-    - Kept, because they are machines with a job of their own: Blueprint Table, Village Hall, Storehouse (Porter),
+    - Kept, because they are machines with a job of their own: Blueprint Table (the Builder's workstation too: he
+      said it stays for searching and uploading builds, so builders work there), Village Hall, Storehouse (Porter),
       Shop Counter (Shopkeeper; Innkeeper with a bed, Pokémon Trader with a Poké Ball), Travel Post (Ferryman), Mailbox
       (Postman, with paper), Training Post (Trainer; Trainer Leader with a gold block, Move Tutor with a book, Fossil
       Scientist with a fossil).
@@ -145,9 +146,9 @@ its first findings fixed. Nothing is released until these are done.
     Existing worlds (his live server): the gone blocks stay registered and keep working where they're placed, but can't
     be crafted any more and leave the creative tab. Our village houses, workshops and starter builds are redrawn with
     the vanilla blocks (Architect skill, renders).
-    Open questions for the owner (build everything else first): the Builder at the crafting table, or keep the
-    Builder's Bench as the mod's one signature block? And his "blast furnace for the miner": Miner at the blast
-    furnace, sharing it with the Armorer?
+    The owner's answers (2026-09-30): builders work at the Blueprint Table; the Miner shares the blast furnace with
+    the Armorer (a pickaxe picks the Miner). The kept blocks' own job still takes a jobless villager by itself, as the
+    Builder's Bench did; the other jobs on them start with their item.
     Done when: every job in the plan starts from its block and item (a GameTest each, and its showcase scene staged
     that way); the README's job table, the recipe book and the tooltips say so; a world saved by 0.137.0 with the old
     blocks loads and its workers keep working (a GameTest); no village house or starter build uses a gone block; the

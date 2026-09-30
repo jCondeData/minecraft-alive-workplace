@@ -145,6 +145,33 @@ public class VillageGameTests implements FabricGameTest {
 		villager.setVillagerData(villager.getVillagerData().setProfession(VillagerProfession.NONE));
 		helper.setDayTime(2000);
 		helper.succeedWhen(() -> helper.assertTrue(villager.getVillagerData().getProfession() == ModVillagers.BUILDER,
-			"villager is still " + villager.getVillagerData().getProfession()));
+			"villager is still " + villager.getVillagerData().getProfession() + workshopClues(helper, villager, origin.offset(2, 1, 7))));
+	}
+
+	/**
+	 * What a jobless villager near the workshop's bench saw (B2: this test failed a few times in full-suite runs and never
+	 * alone), so the next failure explains itself: where they are, what they aimed for, whether the bench is still there
+	 * and free, and which other villagers and free workstations are within a villager's job search.
+	 */
+	private static String workshopClues(GameTestHelper helper, Villager villager, BlockPos bench) {
+		ServerLevel level = helper.getLevel();
+		var poi = level.getPoiManager();
+		StringBuilder s = new StringBuilder();
+		s.append(" | at ").append(helper.relativePos(villager.blockPosition())).append(villager.isAlive() ? "" : " (dead)");
+		s.append(", job site ").append(villager.getBrain().getMemory(net.minecraft.world.entity.ai.memory.MemoryModuleType.JOB_SITE)
+			.map(g -> helper.relativePos(g.pos()).toString()).orElse("-"));
+		s.append(", potential ").append(villager.getBrain().getMemory(net.minecraft.world.entity.ai.memory.MemoryModuleType.POTENTIAL_JOB_SITE)
+			.map(g -> helper.relativePos(g.pos()).toString()).orElse("-"));
+		s.append(" | bench ").append(level.getBlockState(bench).getBlock().getDescriptionId())
+			.append(poi.getType(bench).map(h -> h.is(ModVillagers.BUILDERS_BENCH_POI)).orElse(false) ? " poi" : " NO-POI")
+			.append(poi.getCountInRange(h -> true, bench, 0, net.minecraft.world.entity.ai.village.poi.PoiManager.Occupancy.HAS_SPACE) > 0 ? " free" : " TAKEN");
+		s.append(" | villagers near: ");
+		level.getEntitiesOfClass(Villager.class, helper.getBounds().inflate(48), v -> v != villager)
+			.forEach(v -> s.append(v.getVillagerData().getProfession()).append('@').append(helper.relativePos(v.blockPosition())).append(' '));
+		s.append("| free job sites near: ");
+		poi.getInRange(h -> h.is(net.minecraft.tags.PoiTypeTags.ACQUIRABLE_JOB_SITE), bench, 48,
+				net.minecraft.world.entity.ai.village.poi.PoiManager.Occupancy.HAS_SPACE)
+			.forEach(r -> s.append(helper.relativePos(r.getPos())).append(' '));
+		return s.toString();
 	}
 }

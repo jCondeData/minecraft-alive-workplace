@@ -380,7 +380,7 @@ public class ScreenshotHarness implements ClientModInitializer {
 						.defaultBlockState(), 2);
 				}
 				BlockPos bench = new BlockPos(0, -60, 2);
-				level.setBlockAndUpdate(bench, ModBlocks.MINERS_BENCH.defaultBlockState());
+				level.setBlockAndUpdate(bench, Blocks.BLAST_FURNACE.defaultBlockState());
 				level.setBlockAndUpdate(bench.east(), Blocks.CHEST.defaultBlockState());
 				level.setBlockAndUpdate(bench.east(2), Blocks.CHEST.defaultBlockState());
 				BaseContainerBlockEntity chest = (BaseContainerBlockEntity) level.getBlockEntity(bench.east());
@@ -438,8 +438,7 @@ public class ScreenshotHarness implements ClientModInitializer {
 				server.getCommands().performPrefixedCommand(server.createCommandSourceStack().withSuppressedOutput(), "gamerule doPokemonSpawning false");
 				level.setDayTime(2500);
 				BlockPos bench = new BlockPos(0, -60, 0);
-				level.setBlockAndUpdate(bench, ModBlocks.BALL_WORKBENCH.defaultBlockState()
-					.setValue(net.minecraft.world.level.block.HorizontalDirectionalBlock.FACING, Direction.SOUTH));
+				level.setBlockAndUpdate(bench, Blocks.SMITHING_TABLE.defaultBlockState());
 				level.setBlockAndUpdate(bench.east(), Blocks.CHEST.defaultBlockState());
 				BaseContainerBlockEntity chest = (BaseContainerBlockEntity) level.getBlockEntity(bench.east());
 				chest.setItem(0, new ItemStack(com.cobblemon.mod.common.CobblemonItems.RED_APRICORN, 32));
@@ -449,13 +448,12 @@ public class ScreenshotHarness implements ClientModInitializer {
 				Villager smith = EntityType.VILLAGER.spawn(level, bench.south(), MobSpawnType.COMMAND);
 				worker = smith;
 				io.github.jcondedata.aliveworkplace.work.Jobs.employ(level, smith, bench,
-					io.github.jcondedata.aliveworkplace.registry.ModVillagers.BALL_WORKBENCH_POI, io.github.jcondedata.aliveworkplace.registry.ModVillagers.BALL_SMITH);
+					net.minecraft.world.entity.ai.village.poi.PoiTypes.TOOLSMITH, io.github.jcondedata.aliveworkplace.registry.ModVillagers.BALL_SMITH);
 				BlockPos basket = new BlockPos(-3, -60, 0);
-				level.setBlockAndUpdate(basket, ModBlocks.FRUIT_BASKET.defaultBlockState()
-					.setValue(net.minecraft.world.level.block.HorizontalDirectionalBlock.FACING, Direction.SOUTH));
+				level.setBlockAndUpdate(basket, Blocks.COMPOSTER.defaultBlockState());
 				Villager keeper = EntityType.VILLAGER.spawn(level, basket.south(), MobSpawnType.COMMAND);
 				io.github.jcondedata.aliveworkplace.work.Jobs.employ(level, keeper, basket,
-					io.github.jcondedata.aliveworkplace.registry.ModVillagers.FRUIT_BASKET_POI, io.github.jcondedata.aliveworkplace.registry.ModVillagers.ORCHARD_KEEPER);
+					net.minecraft.world.entity.ai.village.poi.PoiTypes.FARMER, io.github.jcondedata.aliveworkplace.registry.ModVillagers.ORCHARD_KEEPER);
 				hover(server.getPlayerList().getPlayers().get(0), new Vec3(-0.5, -58.3, 5.5), 180, 12);
 			});
 		}
@@ -497,7 +495,7 @@ public class ScreenshotHarness implements ClientModInitializer {
 				level.getGameRules().getRule(GameRules.RULE_DOMOBSPAWNING).set(false, server);
 				level.setDayTime(2500);
 				BlockPos stove = new BlockPos(0, -60, 0);
-				level.setBlockAndUpdate(stove, ModBlocks.KITCHEN_STOVE.defaultBlockState()
+				level.setBlockAndUpdate(stove, Blocks.SMOKER.defaultBlockState()
 					.setValue(net.minecraft.world.level.block.HorizontalDirectionalBlock.FACING, Direction.SOUTH));
 				level.setBlockAndUpdate(stove.east(), Blocks.CHEST.defaultBlockState().setValue(net.minecraft.world.level.block.ChestBlock.FACING, Direction.SOUTH));
 				level.setBlockAndUpdate(stove.west(), Blocks.CHEST.defaultBlockState().setValue(net.minecraft.world.level.block.ChestBlock.FACING, Direction.SOUTH));
@@ -509,7 +507,7 @@ public class ScreenshotHarness implements ClientModInitializer {
 				Villager chef = EntityType.VILLAGER.spawn(level, stove.south(), MobSpawnType.COMMAND);
 				worker = chef;
 				io.github.jcondedata.aliveworkplace.work.Jobs.employ(level, chef, stove,
-					io.github.jcondedata.aliveworkplace.registry.ModVillagers.KITCHEN_STOVE_POI, io.github.jcondedata.aliveworkplace.registry.ModVillagers.CHEF);
+					net.minecraft.world.entity.ai.village.poi.PoiTypes.BUTCHER, io.github.jcondedata.aliveworkplace.registry.ModVillagers.CHEF);
 				hover(server.getPlayerList().getPlayers().get(0), new Vec3(0.5, -58.3, 5.0), 180, 14);
 			});
 		}
@@ -545,7 +543,7 @@ public class ScreenshotHarness implements ClientModInitializer {
 				level.getGameRules().getRule(GameRules.RULE_DOMOBSPAWNING).set(false, server);
 				level.setDayTime(2500);
 				BlockPos bench = new BlockPos(-4, -60, -2);
-				level.setBlockAndUpdate(bench, ModBlocks.BUILDERS_BENCH.defaultBlockState());
+				level.setBlockAndUpdate(bench, ModBlocks.BLUEPRINT_TABLE.defaultBlockState());
 				level.setBlockAndUpdate(bench.west(), Blocks.CHEST.defaultBlockState().setValue(net.minecraft.world.level.block.ChestBlock.FACING, Direction.SOUTH));
 				BaseContainerBlockEntity chest = (BaseContainerBlockEntity) level.getBlockEntity(bench.west());
 				// Everything for a Market Stall but the woodwork: spruce logs instead.
@@ -561,12 +559,11 @@ public class ScreenshotHarness implements ClientModInitializer {
 					new io.github.jcondedata.aliveworkplace.blueprint.BlueprintData.Placement(level.dimension().location(), new BlockPos(-4, -60, -12),
 						net.minecraft.world.level.block.Rotation.NONE, net.minecraft.world.level.block.Mirror.NONE));
 				BlockPos carpenters = new BlockPos(3, -60, -2);
-				level.setBlockAndUpdate(carpenters, ModBlocks.CARPENTERS_BENCH.defaultBlockState()
-					.setValue(net.minecraft.world.level.block.HorizontalDirectionalBlock.FACING, Direction.SOUTH));
+				level.setBlockAndUpdate(carpenters, Blocks.CRAFTING_TABLE.defaultBlockState());
 				Villager carpenter = EntityType.VILLAGER.spawn(level, carpenters.south(), MobSpawnType.COMMAND);
 				worker = carpenter;
 				io.github.jcondedata.aliveworkplace.work.Jobs.employ(level, carpenter, carpenters,
-					io.github.jcondedata.aliveworkplace.registry.ModVillagers.CARPENTERS_BENCH_POI, io.github.jcondedata.aliveworkplace.registry.ModVillagers.CARPENTER);
+					io.github.jcondedata.aliveworkplace.registry.ModVillagers.CRAFTING_TABLE_POI, io.github.jcondedata.aliveworkplace.registry.ModVillagers.CARPENTER);
 				hover(server.getPlayerList().getPlayers().get(0), new Vec3(-0.5, -54.5, 5.5), 180, 32);
 			});
 		}
@@ -644,18 +641,18 @@ public class ScreenshotHarness implements ClientModInitializer {
 				// A builder waiting for materials, a lumberjack without an axe, a porter with food in the store, a guard, a
 				// rancher, a florist, one villager without a job and a child; three beds.
 				BlockPos builderBench = new BlockPos(-8, -60, -6);
-				level.setBlockAndUpdate(builderBench, ModBlocks.BUILDERS_BENCH.defaultBlockState());
+				level.setBlockAndUpdate(builderBench, ModBlocks.BLUEPRINT_TABLE.defaultBlockState());
 				Villager builder = EntityType.VILLAGER.spawn(level, builderBench.south(), MobSpawnType.COMMAND);
 				Builders.employ(level, builder, builderBench);
 				Builders.start(level, builder, null, StarterBlueprints.MARKET_STALL.id(),
 					new BlueprintData.Placement(level.dimension().location(), new BlockPos(-18, -60, -16),
 						net.minecraft.world.level.block.Rotation.NONE, net.minecraft.world.level.block.Mirror.NONE));
 				BlockPos chopping = new BlockPos(8, -60, -6);
-				level.setBlockAndUpdate(chopping, ModBlocks.CHOPPING_BLOCK.defaultBlockState());
+				level.setBlockAndUpdate(chopping, Blocks.FLETCHING_TABLE.defaultBlockState());
 				level.setBlockAndUpdate(chopping.east(), Blocks.CHEST.defaultBlockState());
 				Villager lumberjack = EntityType.VILLAGER.spawn(level, chopping.south(), MobSpawnType.COMMAND);
 				io.github.jcondedata.aliveworkplace.work.Jobs.employ(level, lumberjack, chopping,
-					io.github.jcondedata.aliveworkplace.registry.ModVillagers.CHOPPING_BLOCK_POI, io.github.jcondedata.aliveworkplace.registry.ModVillagers.LUMBERJACK);
+					net.minecraft.world.entity.ai.village.poi.PoiTypes.FLETCHER, io.github.jcondedata.aliveworkplace.registry.ModVillagers.LUMBERJACK);
 				BlockPos storehouse = new BlockPos(10, -60, 8);
 				level.setBlockAndUpdate(storehouse, ModBlocks.STOREHOUSE.defaultBlockState());
 				level.setBlockAndUpdate(storehouse.east(), Blocks.CHEST.defaultBlockState());
@@ -665,11 +662,11 @@ public class ScreenshotHarness implements ClientModInitializer {
 				store.setItem(2, new ItemStack(net.minecraft.world.item.Items.APPLE, 9));
 				Villager porter = EntityType.VILLAGER.spawn(level, storehouse.south(), MobSpawnType.COMMAND);
 				io.github.jcondedata.aliveworkplace.store.Porters.employ(level, porter, storehouse);
-				employ(level, new BlockPos(-10, -60, 8), ModBlocks.GUARD_POST, io.github.jcondedata.aliveworkplace.registry.ModVillagers.GUARD_POST_POI,
+				employ(level, new BlockPos(-10, -60, 8), Blocks.GRINDSTONE, net.minecraft.world.entity.ai.village.poi.PoiTypes.WEAPONSMITH,
 					io.github.jcondedata.aliveworkplace.registry.ModVillagers.GUARD);
-				employ(level, new BlockPos(-4, -60, 14), ModBlocks.FEED_TROUGH, io.github.jcondedata.aliveworkplace.registry.ModVillagers.FEED_TROUGH_POI,
+				employ(level, new BlockPos(-4, -60, 14), Blocks.SMOKER, net.minecraft.world.entity.ai.village.poi.PoiTypes.BUTCHER,
 					io.github.jcondedata.aliveworkplace.registry.ModVillagers.RANCHER);
-				employ(level, new BlockPos(5, -60, 14), ModBlocks.FLOWER_STAND, io.github.jcondedata.aliveworkplace.registry.ModVillagers.FLOWER_STAND_POI,
+				employ(level, new BlockPos(5, -60, 14), Blocks.COMPOSTER, net.minecraft.world.entity.ai.village.poi.PoiTypes.FARMER,
 					io.github.jcondedata.aliveworkplace.registry.ModVillagers.FLORIST);
 				EntityType.VILLAGER.spawn(level, new BlockPos(2, -60, 6), MobSpawnType.COMMAND);
 				Villager child = EntityType.VILLAGER.spawn(level, new BlockPos(-2, -60, 6), MobSpawnType.COMMAND);
@@ -719,10 +716,22 @@ public class ScreenshotHarness implements ClientModInitializer {
 		}
 	}
 
+	/** A workstation as placed on the ground, facing the camera (south): a grindstone on the floor, not on a wall. */
+	static BlockState standing(BlockState state) {
+		if (state.hasProperty(net.minecraft.world.level.block.state.properties.BlockStateProperties.ATTACH_FACE)) {
+			state = state.setValue(net.minecraft.world.level.block.state.properties.BlockStateProperties.ATTACH_FACE,
+				net.minecraft.world.level.block.state.properties.AttachFace.FLOOR);
+		}
+		if (state.hasProperty(net.minecraft.world.level.block.state.properties.BlockStateProperties.HORIZONTAL_FACING)) {
+			state = state.setValue(net.minecraft.world.level.block.state.properties.BlockStateProperties.HORIZONTAL_FACING, Direction.SOUTH);
+		}
+		return state;
+	}
+
 	private static void employ(ServerLevel level, BlockPos pos, net.minecraft.world.level.block.Block station,
 							   net.minecraft.resources.ResourceKey<net.minecraft.world.entity.ai.village.poi.PoiType> poi,
 							   net.minecraft.world.entity.npc.VillagerProfession job) {
-		level.setBlockAndUpdate(pos, station.defaultBlockState());
+		level.setBlockAndUpdate(pos, standing(station.defaultBlockState()));
 		level.setBlockAndUpdate(pos.east(), Blocks.CHEST.defaultBlockState());
 		Villager villager = EntityType.VILLAGER.spawn(level, pos.south(), MobSpawnType.COMMAND);
 		io.github.jcondedata.aliveworkplace.work.Jobs.employ(level, villager, pos, poi, job);
@@ -744,7 +753,7 @@ public class ScreenshotHarness implements ClientModInitializer {
 				level.getGameRules().getRule(GameRules.RULE_DOMOBSPAWNING).set(false, server);
 				level.setDayTime(2500);
 				BlockPos bench = new BlockPos(-5, -60, 0);
-				level.setBlockAndUpdate(bench, ModBlocks.MINERS_BENCH.defaultBlockState()
+				level.setBlockAndUpdate(bench, Blocks.BLAST_FURNACE.defaultBlockState()
 					.setValue(net.minecraft.world.level.block.HorizontalDirectionalBlock.FACING, Direction.SOUTH));
 				level.setBlockAndUpdate(bench.west(), Blocks.CHEST.defaultBlockState().setValue(net.minecraft.world.level.block.ChestBlock.FACING, Direction.SOUTH));
 				BaseContainerBlockEntity chest = (BaseContainerBlockEntity) level.getBlockEntity(bench.west());
@@ -767,7 +776,7 @@ public class ScreenshotHarness implements ClientModInitializer {
 				io.github.jcondedata.aliveworkplace.store.Porters.employ(level, porter, storehouse);
 				// A builder behind, with nothing to build with: what they're missing goes on the storehouse's board.
 				BlockPos builderBench = new BlockPos(-2, -60, -10);
-				level.setBlockAndUpdate(builderBench, ModBlocks.BUILDERS_BENCH.defaultBlockState());
+				level.setBlockAndUpdate(builderBench, ModBlocks.BLUEPRINT_TABLE.defaultBlockState());
 				Villager builder = EntityType.VILLAGER.spawn(level, builderBench.south(), MobSpawnType.COMMAND);
 				Builders.employ(level, builder, builderBench);
 				Builders.start(level, builder, null, io.github.jcondedata.aliveworkplace.blueprint.StarterBlueprints.MARKET_STALL.id(),
@@ -954,12 +963,11 @@ public class ScreenshotHarness implements ClientModInitializer {
 				}
 				orchardFruit = fruit;
 				BlockPos basket = new BlockPos(0, -60, 0);
-				level.setBlockAndUpdate(basket, ModBlocks.FRUIT_BASKET.defaultBlockState()
-					.setValue(net.minecraft.world.level.block.HorizontalDirectionalBlock.FACING, Direction.SOUTH));
+				level.setBlockAndUpdate(basket, Blocks.COMPOSTER.defaultBlockState());
 				level.setBlockAndUpdate(basket.east(), Blocks.CHEST.defaultBlockState());
 				keeper = EntityType.VILLAGER.spawn(level, basket.south(), MobSpawnType.COMMAND);
 				io.github.jcondedata.aliveworkplace.work.Jobs.employ(level, keeper, basket,
-					io.github.jcondedata.aliveworkplace.registry.ModVillagers.FRUIT_BASKET_POI, io.github.jcondedata.aliveworkplace.registry.ModVillagers.ORCHARD_KEEPER);
+					net.minecraft.world.entity.ai.village.poi.PoiTypes.FARMER, io.github.jcondedata.aliveworkplace.registry.ModVillagers.ORCHARD_KEEPER);
 				// A Bulbasaur in a pasture nearby helps (a Pokémon partner).
 				if (leaves != null) {
 					BlockPos pasture = new BlockPos(-3, -60, -2);
@@ -1036,13 +1044,13 @@ public class ScreenshotHarness implements ClientModInitializer {
 					features.getHolderOrThrow(kinds.get(i)).value().place(level, level.getChunkSource().getGenerator(), random, spots[i]);
 				}
 				BlockPos block = new BlockPos(1, -60, 1);
-				level.setBlockAndUpdate(block, ModBlocks.CHOPPING_BLOCK.defaultBlockState());
+				level.setBlockAndUpdate(block, Blocks.FLETCHING_TABLE.defaultBlockState());
 				level.setBlockAndUpdate(block.east(), Blocks.CHEST.defaultBlockState());
 				BaseContainerBlockEntity chest = (BaseContainerBlockEntity) level.getBlockEntity(block.east());
 				chest.setItem(0, new ItemStack(net.minecraft.world.item.Items.IRON_AXE));
 				lumberjack = EntityType.VILLAGER.spawn(level, block.south(), MobSpawnType.COMMAND);
 				io.github.jcondedata.aliveworkplace.work.Jobs.employ(level, lumberjack, block,
-					io.github.jcondedata.aliveworkplace.registry.ModVillagers.CHOPPING_BLOCK_POI, io.github.jcondedata.aliveworkplace.registry.ModVillagers.LUMBERJACK);
+					net.minecraft.world.entity.ai.village.poi.PoiTypes.FLETCHER, io.github.jcondedata.aliveworkplace.registry.ModVillagers.LUMBERJACK);
 				hover(server.getPlayerList().getPlayers().get(0), new Vec3(11.5, -53, 12.5), 140, 28);
 			});
 		}
@@ -1093,22 +1101,19 @@ public class ScreenshotHarness implements ClientModInitializer {
 				level.setDayTime(6000);
 				var V = io.github.jcondedata.aliveworkplace.registry.ModVillagers.class;
 				Object[][] staff = {
-					{ModBlocks.BUILDERS_BENCH, io.github.jcondedata.aliveworkplace.registry.ModVillagers.BUILDERS_BENCH_POI, io.github.jcondedata.aliveworkplace.registry.ModVillagers.BUILDER},
-					{ModBlocks.MINERS_BENCH, io.github.jcondedata.aliveworkplace.registry.ModVillagers.MINERS_BENCH_POI, io.github.jcondedata.aliveworkplace.registry.ModVillagers.MINER},
-					{ModBlocks.CHOPPING_BLOCK, io.github.jcondedata.aliveworkplace.registry.ModVillagers.CHOPPING_BLOCK_POI, io.github.jcondedata.aliveworkplace.registry.ModVillagers.LUMBERJACK},
-					{ModBlocks.POSTAL_DESK, io.github.jcondedata.aliveworkplace.registry.ModVillagers.POSTAL_DESK_POI, io.github.jcondedata.aliveworkplace.registry.ModVillagers.POSTMAN},
-					{ModBlocks.GUARD_POST, io.github.jcondedata.aliveworkplace.registry.ModVillagers.GUARD_POST_POI, io.github.jcondedata.aliveworkplace.registry.ModVillagers.GUARD},
-					{ModBlocks.NURSE_STATION, io.github.jcondedata.aliveworkplace.registry.ModVillagers.NURSE_STATION_POI, io.github.jcondedata.aliveworkplace.registry.ModVillagers.NURSE},
+					{ModBlocks.BLUEPRINT_TABLE, io.github.jcondedata.aliveworkplace.registry.ModVillagers.BLUEPRINT_TABLE_POI, io.github.jcondedata.aliveworkplace.registry.ModVillagers.BUILDER},
+					{Blocks.BLAST_FURNACE, net.minecraft.world.entity.ai.village.poi.PoiTypes.ARMORER, io.github.jcondedata.aliveworkplace.registry.ModVillagers.MINER},
+					{Blocks.FLETCHING_TABLE, net.minecraft.world.entity.ai.village.poi.PoiTypes.FLETCHER, io.github.jcondedata.aliveworkplace.registry.ModVillagers.LUMBERJACK},
+					{ModBlocks.MAILBOX, io.github.jcondedata.aliveworkplace.registry.ModVillagers.MAILBOX_POI, io.github.jcondedata.aliveworkplace.registry.ModVillagers.POSTMAN},
+					{Blocks.GRINDSTONE, net.minecraft.world.entity.ai.village.poi.PoiTypes.WEAPONSMITH, io.github.jcondedata.aliveworkplace.registry.ModVillagers.GUARD},
+					{Blocks.BREWING_STAND, net.minecraft.world.entity.ai.village.poi.PoiTypes.CLERIC, io.github.jcondedata.aliveworkplace.registry.ModVillagers.NURSE},
 					{ModBlocks.SHOP_COUNTER, io.github.jcondedata.aliveworkplace.registry.ModVillagers.SHOP_COUNTER_POI, io.github.jcondedata.aliveworkplace.registry.ModVillagers.SHOPKEEPER},
 					{ModBlocks.TRAVEL_POST, io.github.jcondedata.aliveworkplace.registry.ModVillagers.TRAVEL_POST_POI, io.github.jcondedata.aliveworkplace.registry.ModVillagers.FERRYMAN},
 				};
 				for (int i = 0; i < staff.length; i++) {
 					BlockPos block = new BlockPos(i * 3 - 10, -60, 0);
 					net.minecraft.world.level.block.Block b = (net.minecraft.world.level.block.Block) staff[i][0];
-					BlockState state = b.defaultBlockState();
-					if (state.hasProperty(net.minecraft.world.level.block.HorizontalDirectionalBlock.FACING)) {
-						state = state.setValue(net.minecraft.world.level.block.HorizontalDirectionalBlock.FACING, Direction.SOUTH);
-					}
+					BlockState state = standing(b.defaultBlockState());
 					level.setBlockAndUpdate(block, state);
 					Villager v = EntityType.VILLAGER.spawn(level, block.south(2), MobSpawnType.COMMAND);
 					v.setNoAi(true);
@@ -1162,7 +1167,7 @@ public class ScreenshotHarness implements ClientModInitializer {
 				level.getGameRules().getRule(GameRules.RULE_DOMOBSPAWNING).set(false, server);
 				level.setDayTime(2500);
 				BlockPos post = new BlockPos(0, -60, 0);
-				level.setBlockAndUpdate(post, ModBlocks.GUARD_POST.defaultBlockState().setValue(net.minecraft.world.level.block.HorizontalDirectionalBlock.FACING, Direction.SOUTH));
+				level.setBlockAndUpdate(post, Blocks.GRINDSTONE.defaultBlockState().setValue(net.minecraft.world.level.block.state.properties.BlockStateProperties.ATTACH_FACE, net.minecraft.world.level.block.state.properties.AttachFace.FLOOR).setValue(net.minecraft.world.level.block.HorizontalDirectionalBlock.FACING, Direction.SOUTH));
 				level.setBlockAndUpdate(post.east(), Blocks.CHEST.defaultBlockState());
 				BaseContainerBlockEntity chest = (BaseContainerBlockEntity) level.getBlockEntity(post.east());
 				chest.setItem(0, new ItemStack(net.minecraft.world.item.Items.IRON_SWORD));
@@ -1174,7 +1179,7 @@ public class ScreenshotHarness implements ClientModInitializer {
 				guard.setItemSlot(net.minecraft.world.entity.EquipmentSlot.CHEST, new ItemStack(net.minecraft.world.item.Items.IRON_CHESTPLATE));
 				guard.setItemSlot(net.minecraft.world.entity.EquipmentSlot.LEGS, new ItemStack(net.minecraft.world.item.Items.CHAINMAIL_LEGGINGS));
 				io.github.jcondedata.aliveworkplace.work.Jobs.employ(level, guard, post,
-					io.github.jcondedata.aliveworkplace.registry.ModVillagers.GUARD_POST_POI, io.github.jcondedata.aliveworkplace.registry.ModVillagers.GUARD);
+					net.minecraft.world.entity.ai.village.poi.PoiTypes.WEAPONSMITH, io.github.jcondedata.aliveworkplace.registry.ModVillagers.GUARD);
 				// SCENE=guard_pokemon: a Machop and a Dratini in a pasture by the post fight beside the guard.
 				if ("guard_pokemon".equals(System.getProperty("aliveworkplace.scene"))) {
 					BlockPos pasture = new BlockPos(-3, -60, 2);
@@ -1315,10 +1320,11 @@ public class ScreenshotHarness implements ClientModInitializer {
 				((io.github.jcondedata.aliveworkplace.mail.MailboxBlockEntity) level.getBlockEntity(theirs)).setOwner(friend, "Friend");
 				office.register(friend, net.minecraft.core.GlobalPos.of(level.dimension(), theirs));
 				BlockPos desk = new BlockPos(0, -60, 3);
-				level.setBlockAndUpdate(desk, ModBlocks.POSTAL_DESK.defaultBlockState());
+				level.setBlockAndUpdate(desk, ModBlocks.MAILBOX.defaultBlockState()
+					.setValue(io.github.jcondedata.aliveworkplace.mail.MailboxBlock.FACING, Direction.SOUTH));
 				Villager postman = EntityType.VILLAGER.spawn(level, desk.south(), MobSpawnType.COMMAND);
 				io.github.jcondedata.aliveworkplace.work.Jobs.employ(level, postman, desk,
-					io.github.jcondedata.aliveworkplace.registry.ModVillagers.POSTAL_DESK_POI, io.github.jcondedata.aliveworkplace.registry.ModVillagers.POSTMAN);
+					io.github.jcondedata.aliveworkplace.registry.ModVillagers.MAILBOX_POI, io.github.jcondedata.aliveworkplace.registry.ModVillagers.POSTMAN);
 				hover(player, new Vec3(4.5, -58, 3.5), 170, 30); // within reach, or the menu closes at once
 				io.github.jcondedata.aliveworkplace.platform.Platform.get().openMenu(player, box, box.getBlockPos());
 			});
@@ -1382,10 +1388,10 @@ public class ScreenshotHarness implements ClientModInitializer {
 				level.getGameRules().getRule(GameRules.RULE_DOMOBSPAWNING).set(false, server);
 				level.setDayTime(2500);
 				BlockPos desk = new BlockPos(0, -60, 3);
-				level.setBlockAndUpdate(desk, ModBlocks.TUTORS_DESK.defaultBlockState());
+				level.setBlockAndUpdate(desk, ModBlocks.TRAINING_POST.defaultBlockState());
 				Villager tutor = EntityType.VILLAGER.spawn(level, desk.south(), MobSpawnType.COMMAND);
 				io.github.jcondedata.aliveworkplace.work.Jobs.employ(level, tutor, desk,
-					io.github.jcondedata.aliveworkplace.registry.ModVillagers.TUTORS_DESK_POI, io.github.jcondedata.aliveworkplace.registry.ModVillagers.TUTOR);
+					io.github.jcondedata.aliveworkplace.registry.ModVillagers.TRAINING_POST_POI, io.github.jcondedata.aliveworkplace.registry.ModVillagers.TUTOR);
 				tutor.setVillagerData(tutor.getVillagerData().setLevel(3));
 				var party = com.cobblemon.mod.common.Cobblemon.INSTANCE.getStorage().getParty(player);
 				for (String spec : List.of("pikachu level=30", "bulbasaur level=24", "eevee level=18")) {
@@ -1430,7 +1436,7 @@ public class ScreenshotHarness implements ClientModInitializer {
 				level.getGameRules().getRule(GameRules.RULE_DAYLIGHT).set(false, server);
 				level.setDayTime(2500);
 				BlockPos bench = new BlockPos(0, -60, 3);
-				level.setBlockAndUpdate(bench, ModBlocks.BUILDERS_BENCH.defaultBlockState());
+				level.setBlockAndUpdate(bench, ModBlocks.BLUEPRINT_TABLE.defaultBlockState());
 				level.setBlockAndUpdate(bench.east(), net.minecraft.world.level.block.Blocks.CHEST.defaultBlockState());
 				if (level.getBlockEntity(bench.east()) instanceof net.minecraft.world.Container chest) {
 					chest.setItem(0, new ItemStack(net.minecraft.world.item.Items.OAK_PLANKS, 64));
@@ -1609,10 +1615,10 @@ public class ScreenshotHarness implements ClientModInitializer {
 				level.getGameRules().getRule(GameRules.RULE_DOMOBSPAWNING).set(false, server);
 				level.setDayTime(2500);
 				BlockPos board = new BlockPos(0, -60, 3);
-				level.setBlockAndUpdate(board, ModBlocks.TRADE_BOARD.defaultBlockState());
+				level.setBlockAndUpdate(board, ModBlocks.SHOP_COUNTER.defaultBlockState());
 				Villager trader = EntityType.VILLAGER.spawn(level, board.south(), MobSpawnType.COMMAND);
 				io.github.jcondedata.aliveworkplace.work.Jobs.employ(level, trader, board,
-					io.github.jcondedata.aliveworkplace.registry.ModVillagers.TRADE_BOARD_POI,
+					io.github.jcondedata.aliveworkplace.registry.ModVillagers.SHOP_COUNTER_POI,
 					io.github.jcondedata.aliveworkplace.registry.ModVillagers.POKEMON_TRADER);
 				trader.setVillagerData(trader.getVillagerData().setLevel(5));
 				var offer = io.github.jcondedata.aliveworkplace.compat.cobblemon.CobblemonTraders.offers(trader).get(0);
@@ -1934,7 +1940,7 @@ public class ScreenshotHarness implements ClientModInitializer {
 				io.github.jcondedata.aliveworkplace.fish.Fishers.start(level, fisher, new ItemStack(net.minecraft.world.item.Items.FISHING_ROD));
 				// B: a guard with a saddled horse by the post
 				BlockPos post = new BlockPos(48, -60, 0);
-				level.setBlockAndUpdate(post, ModBlocks.GUARD_POST.defaultBlockState());
+				level.setBlockAndUpdate(post, Blocks.GRINDSTONE.defaultBlockState().setValue(net.minecraft.world.level.block.state.properties.BlockStateProperties.ATTACH_FACE, net.minecraft.world.level.block.state.properties.AttachFace.FLOOR).setValue(net.minecraft.world.level.block.HorizontalDirectionalBlock.FACING, Direction.SOUTH));
 				BlockPos chest = post.south(2);
 				level.setBlockAndUpdate(chest, Blocks.CHEST.defaultBlockState());
 				if (level.getBlockEntity(chest) instanceof BaseContainerBlockEntity c) {
@@ -1944,7 +1950,7 @@ public class ScreenshotHarness implements ClientModInitializer {
 					c.setItem(3, new ItemStack(net.minecraft.world.item.Items.SHIELD));
 				}
 				Villager guard = EntityType.VILLAGER.spawn(level, post.offset(1, 0, 1), MobSpawnType.COMMAND);
-				io.github.jcondedata.aliveworkplace.work.Jobs.employ(level, guard, post, io.github.jcondedata.aliveworkplace.registry.ModVillagers.GUARD_POST_POI,
+				io.github.jcondedata.aliveworkplace.work.Jobs.employ(level, guard, post, net.minecraft.world.entity.ai.village.poi.PoiTypes.WEAPONSMITH,
 					io.github.jcondedata.aliveworkplace.registry.ModVillagers.GUARD);
 				net.minecraft.world.entity.animal.horse.Horse horse = EntityType.HORSE.spawn(level, post.offset(4, 0, 4), MobSpawnType.COMMAND);
 				horse.setTamed(true);
@@ -2266,7 +2272,7 @@ public class ScreenshotHarness implements ClientModInitializer {
 		BuildPlan plan = BuildPlan.create(blueprint, placement);
 
 		BlockPos bench = anchor.offset(3, 0, 4);
-		level.setBlockAndUpdate(bench, ModBlocks.BUILDERS_BENCH.defaultBlockState());
+		level.setBlockAndUpdate(bench, ModBlocks.BLUEPRINT_TABLE.defaultBlockState());
 		List<ItemStack> stock = new ArrayList<>();
 		for (Map.Entry<Item, Integer> e : plan.materials().entrySet()) {
 			for (int left = e.getValue(); left > 0; left -= e.getKey().getDefaultMaxStackSize()) {

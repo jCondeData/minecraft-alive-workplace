@@ -52,9 +52,10 @@ public final class ModItems {
 		AliveWorkplace.id("main"),
 		Platform.get().creativeTab()
 			.title(Component.translatable("itemGroup.aliveworkplace"))
-			.icon(() -> new ItemStack(ModBlocks.BUILDERS_BENCH))
+			.icon(() -> new ItemStack(ModBlocks.BLUEPRINT_TABLE))
+			// The job blocks that 21.1a replaced with vanilla ones (the Builder's Bench...) stay registered, so worlds
+			// keep them, but they're gone from here and can't be crafted.
 			.displayItems((params, output) -> {
-				output.accept(ModBlocks.BUILDERS_BENCH);
 				output.accept(ModBlocks.BLUEPRINT_TABLE);
 				output.accept(BLANK_BLUEPRINT);
 				output.accept(SCAN_TOOL);
@@ -62,43 +63,18 @@ public final class ModItems {
 				output.accept(PATROL_MAP);
 				output.accept(RALLY_BANNER);
 				output.accept(VILLAGE_LEDGER);
-				output.accept(ModBlocks.MINERS_BENCH);
 				output.accept(QUARRY_MARKER);
-				output.accept(ModBlocks.CHOPPING_BLOCK);
 				output.accept(FIELD_MARKER);
-				output.accept(ModBlocks.POSTAL_DESK);
 				output.accept(ModBlocks.MAILBOX);
 				output.accept(DELIVERY_NOTE);
-				output.accept(ModBlocks.GUARD_POST);
-				output.accept(ModBlocks.NURSE_STATION);
 				output.accept(ModBlocks.SHOP_COUNTER);
 				output.accept(PRICE_TAG);
 				output.accept(ModBlocks.TRAVEL_POST);
-				output.accept(ModBlocks.MUSIC_STAND);
 				output.accept(ModBlocks.TRAINING_POST);
-				output.accept(ModBlocks.LEADERS_PODIUM);
-				output.accept(ModBlocks.TUTORS_DESK);
-				output.accept(ModBlocks.TRADE_BOARD);
-				output.accept(ModBlocks.FRUIT_BASKET);
-				output.accept(ModBlocks.BALL_WORKBENCH);
 				output.accept(ModBlocks.STOREHOUSE);
-				output.accept(ModBlocks.CARPENTERS_BENCH);
-				output.accept(ModBlocks.KITCHEN_STOVE);
-				output.accept(ModBlocks.FOSSIL_LAB);
-				output.accept(ModBlocks.APIARY);
-				output.accept(ModBlocks.FLOWER_STAND);
-				output.accept(ModBlocks.FEED_TROUGH);
 				output.accept(ModBlocks.TRAINING_DUMMY);
 				output.accept(ModBlocks.VILLAGE_HALL);
-				output.accept(ModBlocks.TEACHERS_DESK);
-				output.accept(ModBlocks.INN_COUNTER);
-				output.accept(ModBlocks.UNDERTAKERS_TABLE);
-				output.accept(ModBlocks.SCHOLARS_DESK);
-				output.accept(ModBlocks.SIEVE);
-				output.accept(ModBlocks.TINKERS_BENCH);
-				output.accept(ModBlocks.NETHER_BRAZIER);
 				output.accept(ModBlocks.DROP_BOX);
-				output.accept(ModBlocks.COMPOST_BIN);
 				output.accept(SETTLERS_WAGON);
 				for (StarterBlueprints.Entry entry : StarterBlueprints.ALL) {
 					output.accept(BlueprintItem.create(entry.id(), entry.size()));

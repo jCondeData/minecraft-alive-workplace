@@ -115,10 +115,7 @@ final class JobScenes {
 
 	/** Puts {@code block} at {@code pos}, facing the camera (south) if it has a facing. */
 	static BlockState place(ServerLevel level, BlockPos pos, Block block) {
-		BlockState state = block.defaultBlockState();
-		if (state.hasProperty(BlockStateProperties.HORIZONTAL_FACING)) {
-			state = state.setValue(BlockStateProperties.HORIZONTAL_FACING, Direction.SOUTH);
-		}
+		BlockState state = ScreenshotHarness.standing(block.defaultBlockState());
 		level.setBlockAndUpdate(pos, state);
 		return state;
 	}
@@ -170,7 +167,7 @@ final class JobScenes {
 			}
 		});
 		BlockPos bench = anchor.offset(3, 0, 4);
-		level.setBlockAndUpdate(bench, ModBlocks.BUILDERS_BENCH.defaultBlockState());
+		level.setBlockAndUpdate(bench, ModBlocks.BLUEPRINT_TABLE.defaultBlockState());
 		for (int b = 0; b * 27 < stacks.size(); b++) {
 			BlockPos barrelPos = bench.offset(1 + b, 0, 0);
 			level.setBlockAndUpdate(barrelPos, Blocks.BARREL.defaultBlockState());
@@ -191,9 +188,26 @@ final class JobScenes {
 		return s == null || s.isDone() || s.progress(s.plan(level)) >= fraction;
 	}
 
+	/**
+	 * A villager given a job the way a player does since 21.1a: {@code block} goes at {@code station}, the villager
+	 * stands in front of it and is sneak-right-clicked with {@code item} (work/Stations).
+	 */
+	static Villager picked(ServerLevel level, ServerPlayer player, BlockPos station, Block block, Item item) {
+		return picked(level, player, station, place(level, station, block), item);
+	}
+
+	static Villager picked(ServerLevel level, ServerPlayer player, BlockPos station, BlockState state, Item item) {
+		level.setBlockAndUpdate(station, state);
+		Villager v = EntityType.VILLAGER.spawn(level, station.south(), MobSpawnType.COMMAND);
+		io.github.jcondedata.aliveworkplace.work.Stations.choose(player, v, new ItemStack(item));
+		return v;
+	}
+
 	/** A guard at a post with a chest of its own; holding {@code weapon} if there is one. */
 	static Villager guard(ServerLevel level, BlockPos post, ItemStack weapon) {
-		Villager g = worker(level, post, ModBlocks.GUARD_POST, ModVillagers.GUARD_POST_POI, ModVillagers.GUARD);
+		Villager g = picked(level, level.getServer().getPlayerList().getPlayers().get(0), post, Blocks.GRINDSTONE.defaultBlockState()
+			.setValue(BlockStateProperties.ATTACH_FACE, net.minecraft.world.level.block.state.properties.AttachFace.FLOOR)
+			.setValue(BlockStateProperties.HORIZONTAL_FACING, Direction.SOUTH), Items.IRON_SWORD);
 		chest(level, post.east(2));
 		if (!weapon.isEmpty()) {
 			g.setItemSlot(EquipmentSlot.MAINHAND, weapon);
@@ -224,17 +238,18 @@ final class JobScenes {
 
 	static {
 		SCENES.put("beekeeper", job("the beekeeper harvested the full hive into the chest", 2400, (level, player) -> {
-			Villager v = worker(level, STATION, ModBlocks.APIARY, ModVillagers.APIARY_POI, ModVillagers.BEEKEEPER);
+			// The beehive is the workstation (on a lit campfire, so the bees stay calm).
+			BlockPos hive = STATION.above();
+			level.setBlockAndUpdate(STATION, Blocks.CAMPFIRE.defaultBlockState().setValue(BlockStateProperties.LIT, true));
 			Container c = chest(level, chestPos(), new ItemStack(Items.GLASS_BOTTLE, 2), new ItemStack(Items.DANDELION, 4));
-			BlockPos hive = new BlockPos(3, -59, -3);
-			level.setBlockAndUpdate(hive.below(), Blocks.CAMPFIRE.defaultBlockState().setValue(BlockStateProperties.LIT, true));
-			level.setBlockAndUpdate(hive, Blocks.BEEHIVE.defaultBlockState().setValue(BlockStateProperties.LEVEL_HONEY, 5)
-				.setValue(BlockStateProperties.HORIZONTAL_FACING, Direction.SOUTH));
+			Villager v = picked(level, player, hive, Blocks.BEEHIVE.defaultBlockState().setValue(BlockStateProperties.LEVEL_HONEY, 5)
+				.setValue(BlockStateProperties.HORIZONTAL_FACING, Direction.SOUTH), Items.GLASS_BOTTLE);
+			v.moveTo(0.5, -60, 1.5);
 			return l -> n(ModAttachments.HIVES_HARVESTED, v) >= 1 && l.getBlockState(hive).getValue(BlockStateProperties.LEVEL_HONEY) == 0
 				&& c.countItem(Items.HONEY_BOTTLE) >= 1;
 		}));
 		SCENES.put("florist", job("the florist grew and picked flowers", 2400, (level, player) -> {
-			Villager v = worker(level, STATION, ModBlocks.FLOWER_STAND, ModVillagers.FLOWER_STAND_POI, ModVillagers.FLORIST);
+			Villager v = picked(level, player, STATION, Blocks.COMPOSTER, Items.POPPY);
 			chest(level, chestPos(), new ItemStack(Items.BONE_MEAL, 16));
 			return l -> n(ModAttachments.FLOWERS_GROWN, v) >= 3;
 		}));
@@ -242,7 +257,7 @@ final class JobScenes {
 			BlockPos hall = new BlockPos(4, -60, -5);
 			level.setBlockAndUpdate(hall, ModBlocks.VILLAGE_HALL.defaultBlockState()
 				.setValue(io.github.jcondedata.aliveworkplace.hall.VillageHallBlock.FACING, Direction.SOUTH));
-			Villager v = worker(level, STATION, ModBlocks.SCHOLARS_DESK, ModVillagers.SCHOLARS_DESK_POI, ModVillagers.SCHOLAR);
+			Villager v = picked(level, player, STATION, Blocks.LECTERN, Items.PAPER);
 			chest(level, chestPos(), new ItemStack(Items.PAPER, 20), new ItemStack(Items.EMERALD, 5));
 			var hallBe = (io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(hall);
 			io.github.jcondedata.aliveworkplace.research.Research.POINTS = 200;
@@ -255,12 +270,12 @@ final class JobScenes {
 			io.github.jcondedata.aliveworkplace.research.ResearchScreen.open(player, scholar);
 		}, 19, 6)));
 		SCENES.put("sifter", job("the sifter sifted gravel into loot", 1800, (level, player) -> {
-			Villager v = worker(level, STATION, ModBlocks.SIEVE, ModVillagers.SIEVE_POI, ModVillagers.SIFTER);
+			Villager v = picked(level, player, STATION, Blocks.WATER_CAULDRON.defaultBlockState().setValue(BlockStateProperties.LEVEL_CAULDRON, 3), Items.GRAVEL);
 			chest(level, chestPos(), new ItemStack(Items.GRAVEL, 40));
 			return l -> n(ModAttachments.BLOCKS_SIFTED, v) >= 3;
 		}));
 		SCENES.put("tinkerer", job("the tinkerer mended the iron golem", 2000, (level, player) -> {
-			Villager v = worker(level, STATION, ModBlocks.TINKERS_BENCH, ModVillagers.TINKERS_BENCH_POI, ModVillagers.TINKERER);
+			Villager v = picked(level, player, STATION, Blocks.SMITHING_TABLE, Items.REDSTONE);
 			chest(level, chestPos(), new ItemStack(Items.IRON_INGOT, 5));
 			var golem = EntityType.IRON_GOLEM.spawn(level, new BlockPos(3, -60, -4), MobSpawnType.COMMAND);
 			golem.setNoAi(true);
@@ -268,13 +283,13 @@ final class JobScenes {
 			return l -> golem.getHealth() >= golem.getMaxHealth() - 0.5f && n(ModAttachments.GOLEM_REPAIRS, v) >= 1;
 		}));
 		SCENES.put("composter", job("the composter made bone meal", 1800, (level, player) -> {
-			Villager v = worker(level, STATION, ModBlocks.COMPOST_BIN, ModVillagers.COMPOST_BIN_POI, ModVillagers.COMPOSTER);
+			Villager v = picked(level, player, STATION, Blocks.COMPOSTER, Items.BONE_MEAL);
 			Container c = chest(level, chestPos(), new ItemStack(Items.PUMPKIN_PIE, 10), new ItemStack(Items.WHEAT_SEEDS, 16));
 			return l -> n(ModAttachments.BONE_MEAL_MADE, v) >= 1 && c.countItem(Items.BONE_MEAL) >= 1;
 		}));
 		SCENES.put("netherworker", new Job("the netherworker came back from the Nether with loot", 3000,
 			new Vec3(4.5, -56.3, 6.5), new Vec3(2.5, -58.3, -2), (level, player) -> {
-			Villager v = worker(level, STATION, ModBlocks.NETHER_BRAZIER, ModVillagers.NETHER_BRAZIER_POI, ModVillagers.NETHERWORKER);
+			Villager v = picked(level, player, STATION, Blocks.CARTOGRAPHY_TABLE, Items.NETHERRACK);
 			chest(level, chestPos(), new ItemStack(Items.BREAD, 3), new ItemStack(Items.IRON_PICKAXE), new ItemStack(Items.IRON_SWORD),
 				new ItemStack(Items.IRON_CHESTPLATE));
 			// A portal behind the brazier, so the camera sees the worker walk into it and come back.
@@ -294,15 +309,15 @@ final class JobScenes {
 		SCENES.put("undertaker", new Job("the undertaker brought Mira back from her grave", 2000,
 			new Vec3(4.5, -56, 8), new Vec3(-2, -59.5, 1.5), (level, player) -> {
 			BlockPos bench = new BlockPos(-8, -60, -3);
-			level.setBlockAndUpdate(bench, ModBlocks.BUILDERS_BENCH.defaultBlockState());
+			level.setBlockAndUpdate(bench, ModBlocks.BLUEPRINT_TABLE.defaultBlockState());
 			Villager mira = EntityType.VILLAGER.spawn(level, new BlockPos(-4, -60, 4), MobSpawnType.COMMAND);
-			Jobs.employ(level, mira, bench, ModVillagers.BUILDERS_BENCH_POI, ModVillagers.BUILDER);
+			Jobs.employ(level, mira, bench, ModVillagers.BLUEPRINT_TABLE_POI, ModVillagers.BUILDER);
 			mira.setVillagerData(mira.getVillagerData().setLevel(3));
 			mira.setVillagerXp(80);
 			mira.setCustomName(Component.literal("Mira"));
 			java.util.UUID id = mira.getUUID();
 			mira.kill();
-			Villager u = worker(level, STATION, ModBlocks.UNDERTAKERS_TABLE, ModVillagers.UNDERTAKERS_TABLE_POI, ModVillagers.UNDERTAKER);
+			Villager u = picked(level, player, STATION, Blocks.BREWING_STAND, Items.GOLDEN_APPLE);
 			chest(level, STATION.east(2), new ItemStack(Items.GOLDEN_APPLE, 2));
 			return l -> n(ModAttachments.VILLAGERS_REVIVED, u) >= 1 && l.getEntity(id) instanceof Villager back && back.isAlive();
 		}, null));
@@ -315,7 +330,7 @@ final class JobScenes {
 					.setValue(BlockStateProperties.HORIZONTAL_FACING, Direction.SOUTH)
 					.setValue(BlockStateProperties.BED_PART, net.minecraft.world.level.block.state.properties.BedPart.HEAD));
 			}
-			worker(level, STATION, ModBlocks.INN_COUNTER, ModVillagers.INN_COUNTER_POI, ModVillagers.INNKEEPER);
+			picked(level, player, STATION, ModBlocks.SHOP_COUNTER, Items.RED_BED);
 			chest(level, chestPos());
 			return l -> !io.github.jcondedata.aliveworkplace.inn.Innkeepers.guests(l, STATION).isEmpty();
 		}, new After("04_hire_screen", (level, player) -> {
@@ -325,7 +340,7 @@ final class JobScenes {
 			io.github.jcondedata.aliveworkplace.inn.Innkeepers.openHire(player, guest);
 		}, 15, 6)));
 		SCENES.put("teacher", job("the teacher schooled both children", 2400, (level, player) -> {
-			Villager t = worker(level, STATION, ModBlocks.TEACHERS_DESK, ModVillagers.TEACHERS_DESK_POI, ModVillagers.TEACHER);
+			Villager t = picked(level, player, STATION, Blocks.LECTERN, Items.BOOK);
 			chest(level, chestPos());
 			io.github.jcondedata.aliveworkplace.school.Schools.LESSONS_NEEDED = 200;
 			for (BlockPos p : List.of(new BlockPos(3, -60, -3), new BlockPos(-3, -60, -2))) {
@@ -335,7 +350,7 @@ final class JobScenes {
 			return l -> n(ModAttachments.PUPILS_TAUGHT, t) >= 2;
 		}));
 		SCENES.put("rancher", job("the rancher tamed and saddled the horse", 2400, (level, player) -> {
-			worker(level, STATION, ModBlocks.FEED_TROUGH, ModVillagers.FEED_TROUGH_POI, ModVillagers.RANCHER);
+			picked(level, player, STATION, Blocks.SMOKER, Items.SADDLE);
 			chest(level, chestPos(), new ItemStack(Items.SADDLE));
 			var horse = EntityType.HORSE.spawn(level, new BlockPos(3, -60, -3), MobSpawnType.COMMAND);
 			return l -> horse.isTamed() && horse.isSaddled();
@@ -357,7 +372,7 @@ final class JobScenes {
 			return l -> n(ModAttachments.ITEMS_CRAFTED, d) >= 1 && built(l, site, 0.6f);
 		}, null));
 		SCENES.put("nurse", job("the nurse healed the hurt villager and cured the ill one", 2000, (level, player) -> {
-			Villager nurse = worker(level, STATION, ModBlocks.NURSE_STATION, ModVillagers.NURSE_STATION_POI, ModVillagers.NURSE);
+			Villager nurse = picked(level, player, STATION, Blocks.BREWING_STAND, Items.HONEY_BOTTLE);
 			chest(level, chestPos(), new ItemStack(Items.HONEY_BOTTLE));
 			Villager hurt = EntityType.VILLAGER.spawn(level, new BlockPos(2, -60, -3), MobSpawnType.COMMAND);
 			hurt.setNoAi(true);
@@ -378,7 +393,7 @@ final class JobScenes {
 			Villager t = worker(level, STATION, Blocks.SMITHING_TABLE, PoiTypes.TOOLSMITH, VillagerProfession.TOOLSMITH);
 			chest(level, chestPos(), new ItemStack(Items.IRON_INGOT, 3), new ItemStack(Items.OAK_LOG, 1));
 			BlockPos block = new BlockPos(14, -60, 0);
-			Villager lumberjack = worker(level, block, ModBlocks.CHOPPING_BLOCK, ModVillagers.CHOPPING_BLOCK_POI, ModVillagers.LUMBERJACK);
+			Villager lumberjack = picked(level, player, block, Blocks.FLETCHING_TABLE, Items.IRON_AXE);
 			Container theirs = chest(level, block.east(2));
 			return l -> n(ModAttachments.ITEMS_CRAFTED, t) >= 1
 				&& (theirs.countItem(Items.IRON_AXE) >= 1 || lumberjack.getMainHandItem().is(Items.IRON_AXE));
@@ -449,12 +464,12 @@ final class JobScenes {
 			return l -> n(ModAttachments.EXPEDITIONS, v) >= 1;
 		}, null));
 		SCENES.put("bard", job("the bard played a record at the Music Stand", 1200, (level, player) -> {
-			Villager b = worker(level, STATION, ModBlocks.MUSIC_STAND, ModVillagers.MUSIC_STAND_POI, ModVillagers.BARD);
+			Villager b = picked(level, player, STATION, Blocks.JUKEBOX, Items.MUSIC_DISC_CAT);
 			chest(level, chestPos(), new ItemStack(Items.MUSIC_DISC_CAT));
 			return l -> io.github.jcondedata.aliveworkplace.bard.BardWork.playing(b).isPresent();
 		}));
 		SCENES.put("fossil", job("the fossil scientist revived a Kabuto from the Dome Fossil", 2400, (level, player) -> {
-			Villager sci = worker(level, STATION, ModBlocks.FOSSIL_LAB, ModVillagers.FOSSIL_LAB_POI, ModVillagers.FOSSIL_SCIENTIST);
+			Villager sci = picked(level, player, STATION, ModBlocks.TRAINING_POST, cobblemonItem("dome_fossil"));
 			chest(level, chestPos());
 			io.github.jcondedata.aliveworkplace.fossil.FossilScientists.REVIVE_TICKS = 300;
 			player.setGameMode(net.minecraft.world.level.GameType.SURVIVAL);
@@ -495,7 +510,7 @@ final class JobScenes {
 	static {
 		SCREENS.put("daycare", new Screen("the daycare screen opened with a Charmander boarding", new Vec3(2.5, -58.4, 4.5), TARGET,
 			(level, player) -> {
-				subject = worker(level, STATION, ModBlocks.FEED_TROUGH, ModVillagers.FEED_TROUGH_POI, ModVillagers.RANCHER);
+				subject = picked(level, player, STATION, Blocks.SMOKER, Items.SADDLE);
 				subject.setNoAi(true);
 				chest(level, chestPos());
 				party(player, "bulbasaur level=10", "charmander level=5");
@@ -512,7 +527,7 @@ final class JobScenes {
 			(level, player) -> player.containerMenu instanceof ChoiceMenu && io.github.jcondedata.aliveworkplace.ranch.Daycare.boarders(subject).size() == 1));
 		SCREENS.put("smith_orders", new Screen("the orders screen opened and a Poké Ball was picked", new Vec3(2.5, -58.4, 4.5), TARGET,
 			(level, player) -> {
-				subject = worker(level, STATION, ModBlocks.BALL_WORKBENCH, ModVillagers.BALL_WORKBENCH_POI, ModVillagers.BALL_SMITH);
+				subject = picked(level, player, STATION, Blocks.SMITHING_TABLE, cobblemonItem("red_apricorn"));
 				subject.setNoAi(true);
 				chest(level, chestPos(), new ItemStack(cobblemonItem("red_apricorn"), 16), new ItemStack(Items.COPPER_INGOT, 8));
 				io.github.jcondedata.aliveworkplace.smith.BallSmiths.openOrders(player, subject);
@@ -600,8 +615,8 @@ final class JobScenes {
 			(level, player) -> {
 				level.setBlockAndUpdate(STATION, ModBlocks.VILLAGE_HALL.defaultBlockState()
 					.setValue(io.github.jcondedata.aliveworkplace.hall.VillageHallBlock.FACING, Direction.SOUTH));
-				worker(level, new BlockPos(-4, -60, -3), ModBlocks.BUILDERS_BENCH, ModVillagers.BUILDERS_BENCH_POI, ModVillagers.BUILDER);
-				worker(level, new BlockPos(4, -60, -3), ModBlocks.GUARD_POST, ModVillagers.GUARD_POST_POI, ModVillagers.GUARD);
+				worker(level, new BlockPos(-4, -60, -3), ModBlocks.BLUEPRINT_TABLE, ModVillagers.BLUEPRINT_TABLE_POI, ModVillagers.BUILDER);
+				guard(level, new BlockPos(4, -60, -3), new ItemStack(Items.IRON_SWORD));
 				io.github.jcondedata.aliveworkplace.hall.VillageNeeds.check(level, STATION);
 			},
 			List.of(new Step("01_hall_chronicle", -1, 6, (level, player) -> {
@@ -624,7 +639,7 @@ final class JobScenes {
 				level.getServer().getCommands().performPrefixedCommand(level.getServer().createCommandSourceStack().withSuppressedOutput(),
 					"gamerule doPokemonSpawning false");
 				BlockPos podium = new BlockPos(0, -60, 6);
-				subject = worker(level, podium, ModBlocks.LEADERS_PODIUM, ModVillagers.LEADERS_PODIUM_POI, ModVillagers.TRAINER_LEADER);
+				subject = picked(level, player, podium, ModBlocks.TRAINING_POST, Items.GOLD_BLOCK);
 				party(player, "snorlax level=100", "blissey level=100", "skarmory level=100", "tyranitar level=100", "dragonite level=100",
 					"garchomp level=100");
 			},

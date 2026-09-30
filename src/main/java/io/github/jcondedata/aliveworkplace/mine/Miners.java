@@ -325,7 +325,7 @@ public final class Miners {
 
 	/** Makes {@code villager} a miner at {@code bench} right away (tests and admin tools). */
 	public static void employ(ServerLevel level, Villager villager, BlockPos bench) {
-		level.getPoiManager().take(h -> h.is(ModVillagers.MINERS_BENCH_POI), (h, p) -> p.equals(bench), bench, 1);
+		level.getPoiManager().take(h -> true, (h, p) -> p.equals(bench), bench, 1); // a blast furnace, or an old Miner's Bench
 		villager.getBrain().setMemory(net.minecraft.world.entity.ai.memory.MemoryModuleType.JOB_SITE, net.minecraft.core.GlobalPos.of(level.dimension(), bench));
 		villager.setVillagerData(villager.getVillagerData().setProfession(ModVillagers.MINER));
 		if (villager.getVillagerXp() == 0) {

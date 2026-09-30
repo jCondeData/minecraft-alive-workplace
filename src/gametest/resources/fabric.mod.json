@@ -49,6 +49,7 @@
 			"io.github.jcondedata.aliveworkplace.test.CampGameTests",
 			"io.github.jcondedata.aliveworkplace.test.RaidGameTests",
 			"io.github.jcondedata.aliveworkplace.test.SifterGameTests",
+			"io.github.jcondedata.aliveworkplace.test.StationsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.TinkererGameTests",
 			"io.github.jcondedata.aliveworkplace.test.NetherworkerGameTests",
 			"io.github.jcondedata.aliveworkplace.test.CompostGameTests",

@@ -651,7 +651,7 @@ public final class Builders {
 	 * there). Normal play does this through vanilla job-site claiming; tests and admin commands use this.
 	 */
 	public static void employ(ServerLevel level, Villager villager, BlockPos bench) {
-		level.getPoiManager().take(h -> h.is(ModVillagers.BUILDERS_BENCH_POI), (h, p) -> p.equals(bench), bench, 1);
+		level.getPoiManager().take(h -> true, (h, p) -> p.equals(bench), bench, 1); // a Blueprint Table, or an old Builder's Bench
 		villager.getBrain().setMemory(MemoryModuleType.JOB_SITE, GlobalPos.of(level.dimension(), bench));
 		villager.setVillagerData(villager.getVillagerData().setProfession(ModVillagers.BUILDER));
 		if (villager.getVillagerXp() == 0) {

@@ -109,6 +109,8 @@
   "message.aliveworkplace.status.helping": "Helping %s",
   "message.aliveworkplace.status.works_for": "works for %s",
   "message.aliveworkplace.not_your_builder": "%s works for %s. Ask them to run /workplace friend add %s to let you give orders.",
+  "message.aliveworkplace.job.chosen": "%1$s is now a %2$s, working at the %3$s.",
+  "message.aliveworkplace.job.needs_station": "A %1$s works at a %2$s: stand them next to one, then hand them this again.",
   "command.aliveworkplace.friend.added": "%s can now give orders to your builders and cancel your builds.",
   "command.aliveworkplace.friend.already": "%s is already on your builder crew list.",
   "command.aliveworkplace.friend.removed": "%s can no longer give orders to your builders.",

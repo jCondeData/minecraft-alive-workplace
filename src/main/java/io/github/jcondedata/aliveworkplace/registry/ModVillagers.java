@@ -10,6 +10,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.ai.village.poi.PoiType;
+import net.minecraft.world.entity.ai.village.poi.PoiTypes;
 import net.minecraft.world.entity.npc.VillagerProfession;
 import net.minecraft.world.entity.schedule.Activity;
 import net.minecraft.world.entity.schedule.Schedule;
@@ -20,13 +21,33 @@ public final class ModVillagers {
 	public static final ResourceKey<PoiType> BUILDERS_BENCH_POI = ResourceKey.create(Registries.POINT_OF_INTEREST_TYPE, BENCH_ID);
 	public static final PoiType BUILDERS_BENCH_POI_TYPE = Platform.get().registerPoi(BENCH_ID, 1, 1, ModBlocks.BUILDERS_BENCH);
 
+	/*
+	 * Workstations since the owner's "fewer job blocks" (ROADMAP 21.1a): most of our jobs share a vanilla block with a
+	 * vanilla job, picked with an item (work/Stations). These are the blocks that had no point of interest before. Only
+	 * the Blueprint Table takes a jobless villager by itself (it's in the acquirable_job_site tag); the crafting table,
+	 * the jukebox and the mailbox wait for the player's item. The old blocks (Builder's Bench...) keep working.
+	 */
+	public static final ResourceLocation BLUEPRINT_TABLE_ID = AliveWorkplace.id("blueprint_table");
+	public static final ResourceKey<PoiType> BLUEPRINT_TABLE_POI = ResourceKey.create(Registries.POINT_OF_INTEREST_TYPE, BLUEPRINT_TABLE_ID);
+	public static final PoiType BLUEPRINT_TABLE_POI_TYPE = Platform.get().registerPoi(BLUEPRINT_TABLE_ID, 1, 1, ModBlocks.BLUEPRINT_TABLE);
+	public static final ResourceLocation CRAFTING_TABLE_ID = AliveWorkplace.id("crafting_table");
+	public static final ResourceKey<PoiType> CRAFTING_TABLE_POI = ResourceKey.create(Registries.POINT_OF_INTEREST_TYPE, CRAFTING_TABLE_ID);
+	public static final PoiType CRAFTING_TABLE_POI_TYPE = Platform.get().registerPoi(CRAFTING_TABLE_ID, 1, 1,
+		net.minecraft.world.level.block.Blocks.CRAFTING_TABLE);
+	public static final ResourceLocation JUKEBOX_ID = AliveWorkplace.id("jukebox");
+	public static final ResourceKey<PoiType> JUKEBOX_POI = ResourceKey.create(Registries.POINT_OF_INTEREST_TYPE, JUKEBOX_ID);
+	public static final PoiType JUKEBOX_POI_TYPE = Platform.get().registerPoi(JUKEBOX_ID, 1, 1, net.minecraft.world.level.block.Blocks.JUKEBOX);
+	public static final ResourceLocation MAILBOX_ID = AliveWorkplace.id("mailbox");
+	public static final ResourceKey<PoiType> MAILBOX_POI = ResourceKey.create(Registries.POINT_OF_INTEREST_TYPE, MAILBOX_ID);
+	public static final PoiType MAILBOX_POI_TYPE = Platform.get().registerPoi(MAILBOX_ID, 1, 1, ModBlocks.MAILBOX);
+
 	public static final VillagerProfession BUILDER = Registry.register(
 		BuiltInRegistries.VILLAGER_PROFESSION,
 		AliveWorkplace.id("builder"),
 		new VillagerProfession(
 			"builder",
-			holder -> holder.is(BUILDERS_BENCH_POI),
-			holder -> holder.is(BUILDERS_BENCH_POI),
+			holder -> holder.is(BUILDERS_BENCH_POI) || holder.is(BLUEPRINT_TABLE_POI),
+			holder -> holder.is(BUILDERS_BENCH_POI) || holder.is(BLUEPRINT_TABLE_POI),
 			ImmutableSet.of(),
 			ImmutableSet.of(),
 			SoundEvents.VILLAGER_WORK_MASON
@@ -42,7 +63,7 @@ public final class ModVillagers {
 		AliveWorkplace.id("miner"),
 		new VillagerProfession(
 			"miner",
-			holder -> holder.is(MINERS_BENCH_POI),
+			holder -> holder.is(MINERS_BENCH_POI) || holder.is(PoiTypes.ARMORER),
 			holder -> holder.is(MINERS_BENCH_POI),
 			ImmutableSet.of(),
 			ImmutableSet.of(),
@@ -59,7 +80,7 @@ public final class ModVillagers {
 		AliveWorkplace.id("lumberjack"),
 		new VillagerProfession(
 			"lumberjack",
-			holder -> holder.is(CHOPPING_BLOCK_POI),
+			holder -> holder.is(CHOPPING_BLOCK_POI) || holder.is(PoiTypes.FLETCHER),
 			holder -> holder.is(CHOPPING_BLOCK_POI),
 			ImmutableSet.of(),
 			ImmutableSet.of(),
@@ -76,7 +97,7 @@ public final class ModVillagers {
 		AliveWorkplace.id("postman"),
 		new VillagerProfession(
 			"postman",
-			holder -> holder.is(POSTAL_DESK_POI),
+			holder -> holder.is(POSTAL_DESK_POI) || holder.is(MAILBOX_POI),
 			holder -> holder.is(POSTAL_DESK_POI),
 			ImmutableSet.of(),
 			ImmutableSet.of(),
@@ -93,7 +114,7 @@ public final class ModVillagers {
 		AliveWorkplace.id("guard"),
 		new VillagerProfession(
 			"guard",
-			holder -> holder.is(GUARD_POST_POI),
+			holder -> holder.is(GUARD_POST_POI) || holder.is(PoiTypes.WEAPONSMITH),
 			holder -> holder.is(GUARD_POST_POI),
 			ImmutableSet.of(),
 			ImmutableSet.of(),
@@ -110,7 +131,7 @@ public final class ModVillagers {
 		AliveWorkplace.id("nurse"),
 		new VillagerProfession(
 			"nurse",
-			holder -> holder.is(NURSE_STATION_POI),
+			holder -> holder.is(NURSE_STATION_POI) || holder.is(PoiTypes.CLERIC),
 			holder -> holder.is(NURSE_STATION_POI),
 			ImmutableSet.of(),
 			ImmutableSet.of(),
@@ -161,7 +182,7 @@ public final class ModVillagers {
 		AliveWorkplace.id("bard"),
 		new VillagerProfession(
 			"bard",
-			holder -> holder.is(MUSIC_STAND_POI),
+			holder -> holder.is(MUSIC_STAND_POI) || holder.is(JUKEBOX_POI),
 			holder -> holder.is(MUSIC_STAND_POI),
 			ImmutableSet.of(),
 			ImmutableSet.of(),
@@ -208,7 +229,7 @@ public final class ModVillagers {
 		AliveWorkplace.id("trainer_leader"),
 		new VillagerProfession(
 			"trainer_leader",
-			holder -> holder.is(LEADERS_PODIUM_POI),
+			holder -> holder.is(LEADERS_PODIUM_POI) || holder.is(TRAINING_POST_POI),
 			holder -> holder.is(LEADERS_PODIUM_POI),
 			ImmutableSet.of(),
 			ImmutableSet.of(),
@@ -225,7 +246,7 @@ public final class ModVillagers {
 		AliveWorkplace.id("tutor"),
 		new VillagerProfession(
 			"tutor",
-			holder -> holder.is(TUTORS_DESK_POI),
+			holder -> holder.is(TUTORS_DESK_POI) || holder.is(TRAINING_POST_POI),
 			holder -> holder.is(TUTORS_DESK_POI),
 			ImmutableSet.of(),
 			ImmutableSet.of(),
@@ -242,7 +263,7 @@ public final class ModVillagers {
 		AliveWorkplace.id("pokemon_trader"),
 		new VillagerProfession(
 			"pokemon_trader",
-			holder -> holder.is(TRADE_BOARD_POI),
+			holder -> holder.is(TRADE_BOARD_POI) || holder.is(SHOP_COUNTER_POI),
 			holder -> holder.is(TRADE_BOARD_POI),
 			ImmutableSet.of(),
 			ImmutableSet.of(),
@@ -259,7 +280,7 @@ public final class ModVillagers {
 		AliveWorkplace.id("orchard_keeper"),
 		new VillagerProfession(
 			"orchard_keeper",
-			holder -> holder.is(FRUIT_BASKET_POI),
+			holder -> holder.is(FRUIT_BASKET_POI) || holder.is(PoiTypes.FARMER),
 			holder -> holder.is(FRUIT_BASKET_POI),
 			ImmutableSet.of(),
 			ImmutableSet.of(),
@@ -276,7 +297,7 @@ public final class ModVillagers {
 		AliveWorkplace.id("beekeeper"),
 		new VillagerProfession(
 			"beekeeper",
-			holder -> holder.is(APIARY_POI),
+			holder -> holder.is(APIARY_POI) || holder.is(PoiTypes.BEEHIVE) || holder.is(PoiTypes.BEE_NEST),
 			holder -> holder.is(APIARY_POI),
 			ImmutableSet.of(),
 			ImmutableSet.of(),
@@ -293,7 +314,7 @@ public final class ModVillagers {
 		AliveWorkplace.id("florist"),
 		new VillagerProfession(
 			"florist",
-			holder -> holder.is(FLOWER_STAND_POI),
+			holder -> holder.is(FLOWER_STAND_POI) || holder.is(PoiTypes.FARMER),
 			holder -> holder.is(FLOWER_STAND_POI),
 			ImmutableSet.of(),
 			ImmutableSet.of(),
@@ -320,7 +341,7 @@ public final class ModVillagers {
 		AliveWorkplace.id("sifter"),
 		new VillagerProfession(
 			"sifter",
-			holder -> holder.is(SIEVE_POI),
+			holder -> holder.is(SIEVE_POI) || holder.is(PoiTypes.LEATHERWORKER),
 			holder -> holder.is(SIEVE_POI),
 			ImmutableSet.of(),
 			ImmutableSet.of(),
@@ -337,7 +358,7 @@ public final class ModVillagers {
 		AliveWorkplace.id("tinkerer"),
 		new VillagerProfession(
 			"tinkerer",
-			holder -> holder.is(TINKERS_BENCH_POI),
+			holder -> holder.is(TINKERS_BENCH_POI) || holder.is(PoiTypes.TOOLSMITH),
 			holder -> holder.is(TINKERS_BENCH_POI),
 			ImmutableSet.of(),
 			ImmutableSet.of(),
@@ -354,7 +375,7 @@ public final class ModVillagers {
 		AliveWorkplace.id("netherworker"),
 		new VillagerProfession(
 			"netherworker",
-			holder -> holder.is(NETHER_BRAZIER_POI),
+			holder -> holder.is(NETHER_BRAZIER_POI) || holder.is(PoiTypes.CARTOGRAPHER),
 			holder -> holder.is(NETHER_BRAZIER_POI),
 			ImmutableSet.of(),
 			ImmutableSet.of(),
@@ -371,7 +392,7 @@ public final class ModVillagers {
 		AliveWorkplace.id("composter"),
 		new VillagerProfession(
 			"composter",
-			holder -> holder.is(COMPOST_BIN_POI),
+			holder -> holder.is(COMPOST_BIN_POI) || holder.is(PoiTypes.FARMER),
 			holder -> holder.is(COMPOST_BIN_POI),
 			ImmutableSet.of(),
 			ImmutableSet.of(),
@@ -388,7 +409,7 @@ public final class ModVillagers {
 		AliveWorkplace.id("scholar"),
 		new VillagerProfession(
 			"scholar",
-			holder -> holder.is(SCHOLARS_DESK_POI),
+			holder -> holder.is(SCHOLARS_DESK_POI) || holder.is(PoiTypes.LIBRARIAN),
 			holder -> holder.is(SCHOLARS_DESK_POI),
 			ImmutableSet.of(),
 			ImmutableSet.of(),
@@ -410,7 +431,7 @@ public final class ModVillagers {
 		AliveWorkplace.id("undertaker"),
 		new VillagerProfession(
 			"undertaker",
-			holder -> holder.is(UNDERTAKERS_TABLE_POI),
+			holder -> holder.is(UNDERTAKERS_TABLE_POI) || holder.is(PoiTypes.CLERIC),
 			holder -> holder.is(UNDERTAKERS_TABLE_POI),
 			ImmutableSet.of(),
 			ImmutableSet.of(),
@@ -427,7 +448,7 @@ public final class ModVillagers {
 		AliveWorkplace.id("innkeeper"),
 		new VillagerProfession(
 			"innkeeper",
-			holder -> holder.is(INN_COUNTER_POI),
+			holder -> holder.is(INN_COUNTER_POI) || holder.is(SHOP_COUNTER_POI),
 			holder -> holder.is(INN_COUNTER_POI),
 			ImmutableSet.of(),
 			ImmutableSet.of(),
@@ -444,7 +465,7 @@ public final class ModVillagers {
 		AliveWorkplace.id("teacher"),
 		new VillagerProfession(
 			"teacher",
-			holder -> holder.is(TEACHERS_DESK_POI),
+			holder -> holder.is(TEACHERS_DESK_POI) || holder.is(PoiTypes.LIBRARIAN),
 			holder -> holder.is(TEACHERS_DESK_POI),
 			ImmutableSet.of(),
 			ImmutableSet.of(),
@@ -461,7 +482,7 @@ public final class ModVillagers {
 		AliveWorkplace.id("rancher"),
 		new VillagerProfession(
 			"rancher",
-			holder -> holder.is(FEED_TROUGH_POI),
+			holder -> holder.is(FEED_TROUGH_POI) || holder.is(PoiTypes.BUTCHER),
 			holder -> holder.is(FEED_TROUGH_POI),
 			ImmutableSet.of(),
 			ImmutableSet.of(),
@@ -478,7 +499,7 @@ public final class ModVillagers {
 		AliveWorkplace.id("ball_smith"),
 		new VillagerProfession(
 			"ball_smith",
-			holder -> holder.is(BALL_WORKBENCH_POI),
+			holder -> holder.is(BALL_WORKBENCH_POI) || holder.is(PoiTypes.TOOLSMITH),
 			holder -> holder.is(BALL_WORKBENCH_POI),
 			ImmutableSet.of(),
 			ImmutableSet.of(),
@@ -514,7 +535,7 @@ public final class ModVillagers {
 		AliveWorkplace.id("carpenter"),
 		new VillagerProfession(
 			"carpenter",
-			holder -> holder.is(CARPENTERS_BENCH_POI),
+			holder -> holder.is(CARPENTERS_BENCH_POI) || holder.is(CRAFTING_TABLE_POI),
 			holder -> holder.is(CARPENTERS_BENCH_POI),
 			ImmutableSet.of(),
 			ImmutableSet.of(),
@@ -532,7 +553,7 @@ public final class ModVillagers {
 		AliveWorkplace.id("chef"),
 		new VillagerProfession(
 			"chef",
-			holder -> holder.is(KITCHEN_STOVE_POI),
+			holder -> holder.is(KITCHEN_STOVE_POI) || holder.is(PoiTypes.BUTCHER),
 			holder -> holder.is(KITCHEN_STOVE_POI),
 			ImmutableSet.of(),
 			ImmutableSet.of(),
@@ -550,7 +571,7 @@ public final class ModVillagers {
 		AliveWorkplace.id("fossil_scientist"),
 		new VillagerProfession(
 			"fossil_scientist",
-			holder -> holder.is(FOSSIL_LAB_POI),
+			holder -> holder.is(FOSSIL_LAB_POI) || holder.is(TRAINING_POST_POI),
 			holder -> holder.is(FOSSIL_LAB_POI),
 			ImmutableSet.of(),
 			ImmutableSet.of(),

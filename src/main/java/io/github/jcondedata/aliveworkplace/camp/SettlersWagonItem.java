@@ -112,7 +112,7 @@ public class SettlersWagonItem extends Item {
 		template.placeInWorld(level, placement.origin(), placement.origin(), settings, level.getRandom(), 2);
 		BlockPos bench = null;
 		for (BlockPos p : BlockPos.betweenClosed(box.minX(), box.minY(), box.minZ(), box.maxX(), box.maxY(), box.maxZ())) {
-			if (level.getBlockState(p).is(ModBlocks.BUILDERS_BENCH)) {
+			if ((level.getBlockState(p).is(ModBlocks.BUILDERS_BENCH) || level.getBlockState(p).is(ModBlocks.BLUEPRINT_TABLE))) {
 				bench = p.immutable();
 			}
 		}
@@ -134,7 +134,7 @@ public class SettlersWagonItem extends Item {
 		BlockPos benchPos = bench;
 		if (benchPos != null) {
 			level.getServer().tell(new net.minecraft.server.TickTask(level.getServer().getTickCount() + 1, () -> {
-				if (builder.isAlive() && level.getBlockState(benchPos).is(ModBlocks.BUILDERS_BENCH)) {
+				if (builder.isAlive() && (level.getBlockState(benchPos).is(ModBlocks.BUILDERS_BENCH) || level.getBlockState(benchPos).is(ModBlocks.BLUEPRINT_TABLE))) {
 					Builders.employ(level, builder, benchPos);
 					Friends.hire(player, builder);
 				}

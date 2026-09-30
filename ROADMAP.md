@@ -92,7 +92,7 @@ stay in the list, ticked, so their numbers stay unique.
 - [x] **B1** (approved auto 2026-09-29) Four bugs from the first tester run: the homes and rank tips showed the wrong
   numbers, a blueprint name ending in a huge number crashed, and a bed at the far corner of a large building didn't
   count as home. Fixed with the owner's `HomesSpecGameTests` (d36b3d1).
-- [ ] **B2** (claimed: night-0930-0646, 2026-09-30 06:46Z) Flaky test: `VillageGameTests.aVillagerMovesIntoTheWorkshop` (failed once on CI, commit 49ae713). Done
+- [ ] **B2** (paused: item/B2, 2026-09-30 07:23Z) Flaky test: `VillageGameTests.aVillagerMovesIntoTheWorkshop` (failed once on CI, commit 49ae713). Done
   when: 100 repeats pass (the repeat generator in the tester skill), or the cause is fixed. Hint from the last
   session: look for leftover blocks from earlier batches blocking the way to the bench; 17 local runs in a row passed.
   It failed once more in the tester's full-suite run (in a mutant run whose mutant couldn't touch it); 10 of 10 alone

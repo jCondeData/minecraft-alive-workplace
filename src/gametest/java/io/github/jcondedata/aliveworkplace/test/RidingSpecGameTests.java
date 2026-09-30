@@ -194,6 +194,36 @@ public class RidingSpecGameTests implements FabricGameTest {
 		});
 	}
 
+	/**
+	 * The fisher rows out before fishing from the boat (0.137.0: "they row out to open water and fish from the boat"):
+	 * whenever their line is out from the boat, the boat is some blocks off from where they launched it.
+	 */
+	//$ gametest_ticks_batch AREA '2400' '"aFisherRowsOutBeforeFishing"'
+	@GameTest(template = AREA, timeoutTicks = 2400, batch = "aFisherRowsOutBeforeFishing")
+	public void aFisherRowsOutBeforeFishing(GameTestHelper helper) {
+		Villager villager = boatFisher(helper);
+		Vec3[] launched = {null};
+		boolean[] fishedAfloat = {false};
+		helper.onEachTick(() -> {
+			Entity boat = villager.getVehicle();
+			if (boat == null || !Boats.isBoat(boat)) {
+				launched[0] = null;
+				return;
+			}
+			if (launched[0] == null) {
+				launched[0] = boat.position();
+			}
+			boolean lineOut = !helper.getLevel().getEntitiesOfClass(io.github.jcondedata.aliveworkplace.fish.FishingBobber.class, helper.getBounds().inflate(8),
+				b -> b.owner() == villager).isEmpty();
+			if (lineOut) {
+				double out = boat.position().distanceTo(launched[0]);
+				helper.assertTrue(out >= 2, "fishing from the boat " + out + " blocks from where it was launched");
+				fishedAfloat[0] = true;
+			}
+		});
+		helper.succeedWhen(() -> helper.assertTrue(fishedAfloat[0], "never fished from the boat"));
+	}
+
 	/** A pond too small for open water: the fisher fishes from the shore and leaves the boat in the barrel. */
 	//$ gametest_ticks_batch AREA '1600' '"noLakeNoBoatTrip"'
 	@GameTest(template = AREA, timeoutTicks = 1600, batch = "noLakeNoBoatTrip")
@@ -262,6 +292,95 @@ public class RidingSpecGameTests implements FabricGameTest {
 			helper.assertTrue(ferryman.getVehicle() == null && ferryman.position().distanceTo(ferrymanHome) < 2,
 				"the ferryman is at " + helper.relativePos(ferryman.blockPosition()));
 			helper.assertTrue(afloat(helper).isEmpty(), "the ferry boat was left behind");
+			helper.succeed();
+		});
+	}
+
+	/** A jetty post at (2, 2, 2) with a ferryman, a far post at (18, 2, 18), and a player holding a ticket there. */
+	private static ItemStack ferrySetup(GameTestHelper helper, ServerPlayer player) {
+		Leftovers.clear(helper);
+		helper.setDayTime(2000);
+		TravelNetwork network = TravelNetwork.get(helper.getLevel().getServer());
+		helper.setBlock(new BlockPos(2, 2, 2), ModBlocks.TRAVEL_POST);
+		helper.setBlock(new BlockPos(18, 1, 18), Blocks.STONE);
+		helper.setBlock(new BlockPos(18, 2, 18), ModBlocks.TRAVEL_POST);
+		network.add(GlobalPos.of(helper.getLevel().dimension(), helper.absolutePos(new BlockPos(2, 2, 2))), "Jetty");
+		TravelNetwork.Post far = network.add(GlobalPos.of(helper.getLevel().dimension(), helper.absolutePos(new BlockPos(18, 2, 18))), "Far Shore");
+		player.setGameMode(GameType.SURVIVAL);
+		Leftovers.after(helper, () -> helper.getLevel().getServer().getPlayerList().remove(player));
+		Villager ferryman = helper.spawn(EntityType.VILLAGER, new BlockPos(3, 2, 2));
+		Jobs.employ(helper.getLevel(), ferryman, helper.absolutePos(new BlockPos(2, 2, 2)), ModVillagers.TRAVEL_POST_POI, ModVillagers.FERRYMAN);
+		return Ferrymen.ticket(far);
+	}
+
+	/**
+	 * On the water the ferryman rows the passenger off towards where they're going, whichever way the player happens to
+	 * face, and the view fades before they arrive (0.137.0: "rowed off by the ferryman ... the view fades").
+	 */
+	//$ gametest_ticks_batch AREA '200' '"theFerrymanRowsTowardsTheFarShore"'
+	@GameTest(template = AREA, timeoutTicks = 200, batch = "theFerrymanRowsTowardsTheFarShore")
+	public void theFerrymanRowsTowardsTheFarShore(GameTestHelper helper) {
+		ServerPlayer player = helper.makeMockServerPlayerInLevel();
+		ItemStack ticket = ferrySetup(helper, player);
+		for (BlockPos p : BlockPos.betweenClosed(new BlockPos(3, 1, 3), new BlockPos(17, 1, 17))) {
+			helper.setBlock(p, Blocks.WATER);
+		}
+		Vec3 far = Vec3.atCenterOf(helper.absolutePos(new BlockPos(18, 2, 18)));
+		double[] from = {0};
+		helper.runAfterDelay(2, () -> {
+			BlockPos in = helper.absolutePos(new BlockPos(6, 1, 6));
+			player.moveTo(in.getX() + 0.5, in.getY(), in.getZ() + 0.5, 180f, 0f); // in the water, looking away (north)
+			helper.assertTrue(Ferrymen.travel(player, ticket), "the ticket didn't work at the post");
+			helper.assertTrue(player.getVehicle() != null && player.getVehicle().getFirstPassenger() instanceof Villager, "no ferryman at the oars");
+			from[0] = player.getVehicle().position().distanceTo(far);
+		});
+		helper.runAfterDelay(30, () -> {
+			Entity boat = player.getVehicle();
+			helper.assertTrue(boat != null, "out of the boat already");
+			double now = boat.position().distanceTo(far);
+			helper.assertTrue(now < from[0] - 1, "not rowed towards the far shore: " + from[0] + " -> " + now + " blocks from it");
+		});
+		helper.runAfterDelay(2 + 45, () -> {
+			helper.assertTrue(FerryRides.riding(player), "the ride is over already");
+			var fade = player.getEffect(net.minecraft.world.effect.MobEffects.BLINDNESS);
+			helper.assertTrue(fade != null, "the view didn't fade before arriving");
+			// (it lasts past the landing, fifteen ticks off; mock players aren't ticked, so this is the duration it was given)
+			helper.assertTrue(fade.getDuration() > FerryRides.RIDE_TICKS - 45, "the fade ends before the landing: " + fade.getDuration() + " ticks");
+			helper.succeed();
+		});
+	}
+
+	/**
+	 * A ferry boat saved mid-ride and loaded again after a restart (no ride to go with it) is taken away when it loads,
+	 * the ferryman in it let out; the ride that's going on keeps its own boat (the Travel Tickets commit: "ride boats
+	 * left behind by a server stop are removed when they load").
+	 */
+	//$ gametest_ticks_batch AREA '200' '"aFerryBoatLeftByARestartIsTakenAway"'
+	@GameTest(template = AREA, timeoutTicks = 200, batch = "aFerryBoatLeftByARestartIsTakenAway")
+	public void aFerryBoatLeftByARestartIsTakenAway(GameTestHelper helper) {
+		ServerPlayer player = helper.makeMockServerPlayerInLevel();
+		ItemStack ticket = ferrySetup(helper, player);
+		ServerLevel level = helper.getLevel();
+		helper.runAfterDelay(2, () -> {
+			player.moveTo(helper.absolutePos(new BlockPos(4, 2, 4)).getCenter());
+			helper.assertTrue(Ferrymen.travel(player, ticket), "the ticket didn't work at the post");
+			Entity boat = player.getVehicle();
+			CompoundTag tag = new CompoundTag();
+			helper.assertTrue(boat != null && boat.saveAsPassenger(tag), "the ride's boat didn't save");
+			// Loaded again as new entities (as after a restart, when the ride is long forgotten)
+			tag.remove("UUID");
+			net.minecraft.nbt.ListTag passengers = tag.getList("Passengers", net.minecraft.nbt.Tag.TAG_COMPOUND);
+			for (int i = 0; i < passengers.size(); i++) {
+				passengers.getCompound(i).remove("UUID");
+			}
+			Entity copy = EntityType.loadEntityRecursive(tag, level, e -> e);
+			helper.assertTrue(copy != null, "the saved boat didn't load");
+			java.util.List<Entity> riders = copy.getPassengers();
+			level.tryAddFreshEntityWithPassengers(copy);
+			helper.assertTrue(copy.isRemoved(), "a ferry boat from before the restart stayed");
+			helper.assertTrue(riders.stream().noneMatch(Entity::isPassenger), "someone is still sitting in the boat that was taken away");
+			helper.assertFalse(boat.isRemoved(), "the ride's own boat was taken away");
+			riders.forEach(Entity::discard);
 			helper.succeed();
 		});
 	}

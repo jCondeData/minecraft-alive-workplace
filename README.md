@@ -319,7 +319,8 @@ back with its item (wheat for a Farmer, coal for an Armorer, flint for a Fletche
 Where one item fits two blocks (paper, a book, a glass bottle, an iron ingot, a Poké Ball), the block they work at, or
 else the nearest, decides. Picking a job doesn't hire the villager: hiring is as before, the vanilla job's item on a
 villager who already has that job. A crafting table, a beehive, a jukebox or a Mailbox never takes a jobless villager by
-itself; every block listed without an item does.
+itself; every block listed without an item does. Hold **Shift** over a workstation in your inventory to see its jobs and
+their items.
 
 Chests (or barrels) within 8 blocks of the workstation are where they take tools and supplies from and where their work
 goes. The old job blocks (the Builder's Bench, the Fruit Basket...) can't be crafted any more, but the ones already

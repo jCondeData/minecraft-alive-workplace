@@ -49,7 +49,7 @@ public final class VillageAdvice {
 		int adults = villagers - census.children();
 		PoiManager poi = level.getPoiManager();
 		if (!has(census, ModVillagers.BUILDER)) {
-			tips.add(new Tip("builder", ModBlocks.BUILDERS_BENCH.asItem()));
+			tips.add(new Tip("builder", ModBlocks.BLUEPRINT_TABLE.asItem()));
 		}
 		if (villagers > census.beds()) {
 			tips.add(new Tip("beds", Items.RED_BED, villagers - census.beds()));
@@ -62,7 +62,7 @@ public final class VillageAdvice {
 		}
 		int guardsNeeded = (villagers + VillageNeeds.VILLAGERS_PER_GUARD - 1) / VillageNeeds.VILLAGERS_PER_GUARD;
 		if (villagers > 0 && census.guards() < guardsNeeded) {
-			tips.add(new Tip("guards", ModBlocks.GUARD_POST.asItem(), guardsNeeded - census.guards()));
+			tips.add(new Tip("guards", Items.GRINDSTONE, guardsNeeded - census.guards()));
 		}
 		io.github.jcondedata.aliveworkplace.guard.BanditCamps.near(level, hall)
 			.ifPresent(camp -> tips.add(new Tip("bandits", Items.CROSSBOW, VillageHallScreen.where(hall, camp.pos()))));
@@ -79,7 +79,7 @@ public final class VillageAdvice {
 			tips.add(new Tip("jobless", Items.CRAFTING_TABLE, jobless));
 		}
 		if (villagers >= 6 && !has(census, ModVillagers.SCHOLAR)) {
-			tips.add(new Tip("research", ModBlocks.SCHOLARS_DESK.asItem()));
+			tips.add(new Tip("research", Items.LECTERN));
 		}
 		if (villagers >= 5 && Decorations.beauty(level, hall) < 3) {
 			tips.add(new Tip("beauty", Items.FLOWER_POT));

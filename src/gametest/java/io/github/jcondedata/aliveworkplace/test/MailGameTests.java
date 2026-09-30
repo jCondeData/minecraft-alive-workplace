@@ -65,7 +65,7 @@ public class MailGameTests implements FabricGameTest {
 	/** A letter is a written book from the sender; /workplace mail tells both ends where a parcel is. */
 	/**
 	 * Parcels for a player with no mailbox wait at the post office through the dawn, and are picked up by right-clicking
-	 * a Postal Desk.
+	 * an old Postal Desk (worlds from before ROADMAP 21.1a).
 	 */
 	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
 	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
@@ -78,7 +78,7 @@ public class MailGameTests implements FabricGameTest {
 		parcel.setStatus(Parcel.Status.IN_TRANSIT);
 		office.dawn(level.getServer());
 		helper.assertTrue(office.parcel(parcel.id()) != null, "a parcel for someone with no mailbox should wait, not vanish");
-		helper.assertTrue(io.github.jcondedata.aliveworkplace.mail.Mail.tracking(level.getServer(), player.getUUID()).get(0).getString().contains("Postal Desk"),
+		helper.assertTrue(io.github.jcondedata.aliveworkplace.mail.Mail.tracking(level.getServer(), player.getUUID()).get(0).getString().contains("mailbox a postman works at"),
 			"tracking should say where to pick it up");
 
 		BlockPos desk = new BlockPos(0, 1, 0);
@@ -89,6 +89,66 @@ public class MailGameTests implements FabricGameTest {
 		helper.assertTrue(player.getInventory().countItem(Items.DIAMOND) == 3, "the parcel's diamonds should be in the player's inventory");
 		helper.assertTrue(office.parcel(parcel.id()) == null, "the parcel should be gone once picked up");
 		helper.succeed();
+	}
+
+	/**
+	 * Since 21.1a a postman works at a mailbox, and that mailbox is the post office's counter: someone with no mailbox of
+	 * their own picks up their waiting parcels there, even though the mailbox is someone else's. A mailbox with no postman
+	 * hands out nothing.
+	 */
+	//$ gametest AREA
+	@GameTest(template = AREA)
+	public void parcelsWaitAtAPostmansMailbox(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		net.minecraft.server.level.ServerPlayer player = helper.makeMockServerPlayerInLevel();
+		PostOffice office = PostOffice.get(level.getServer());
+		Parcel parcel = office.post(UUID.randomUUID(), "Alex", player.getUUID(), player.getGameProfile().getName(),
+			GlobalPos.of(level.dimension(), helper.absolutePos(BlockPos.ZERO)), level.getGameTime(), List.of(new ItemStack(Items.DIAMOND, 3)));
+		parcel.setStatus(Parcel.Status.IN_TRANSIT);
+		BlockPos box = new BlockPos(3, 2, 3);
+		mailbox(helper, box, UUID.randomUUID(), "Pat");
+		net.minecraft.world.phys.BlockHitResult hit = new net.minecraft.world.phys.BlockHitResult(
+			net.minecraft.world.phys.Vec3.atCenterOf(helper.absolutePos(box)), net.minecraft.core.Direction.UP, helper.absolutePos(box), false);
+		try {
+			helper.getBlockState(box).useWithoutItem(level, player, hit);
+			helper.assertTrue(player.getInventory().countItem(Items.DIAMOND) == 0, "a mailbox with no postman handed out the parcel");
+			Villager postman = helper.spawn(EntityType.VILLAGER, new BlockPos(4, 2, 4));
+			Jobs.employ(level, postman, helper.absolutePos(box), ModVillagers.MAILBOX_POI, ModVillagers.POSTMAN);
+			helper.getBlockState(box).useWithoutItem(level, player, hit);
+			helper.assertTrue(player.getInventory().countItem(Items.DIAMOND) == 3, "the parcel's diamonds should be in the player's inventory");
+			helper.assertTrue(office.parcel(parcel.id()) == null, "the parcel should be gone once picked up");
+		} finally {
+			if (office.parcel(parcel.id()) != null) {
+				office.remove(parcel);
+			}
+		}
+		helper.succeed();
+	}
+
+	/** A postman working at a mailbox (21.1a) does the round like one at an old Postal Desk. */
+	//$ gametest_ticks AREA '2400'
+	@GameTest(template = AREA, timeoutTicks = 2400)
+	public void aPostmanAtAMailboxDeliversOnTheRound(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		helper.setDayTime(2000);
+		UUID alice = UUID.randomUUID();
+		UUID bob = UUID.randomUUID();
+		BlockPos from = new BlockPos(6, 2, 2);
+		BlockPos to = new BlockPos(14, 2, 14);
+		mailbox(helper, from, alice, "Alice");
+		MailboxBlockEntity bobs = mailbox(helper, to, bob, "Bob");
+		PostOffice office = PostOffice.get(level.getServer());
+		Parcel parcel = office.post(alice, "Alice", bob, "Bob", GlobalPos.of(level.dimension(), helper.absolutePos(from)), level.getGameTime(),
+			List.of(new ItemStack(Items.COBBLESTONE, 5), new ItemStack(Items.APPLE, 2)));
+		BlockPos work = new BlockPos(2, 2, 2);
+		mailbox(helper, work, UUID.randomUUID(), "Pat");
+		Villager postman = helper.spawn(EntityType.VILLAGER, new BlockPos(3, 2, 3));
+		Jobs.employ(level, postman, helper.absolutePos(work), ModVillagers.MAILBOX_POI, ModVillagers.POSTMAN);
+		helper.succeedWhen(() -> {
+			helper.assertTrue(bobs.countItem(Items.COBBLESTONE) == 5 && bobs.countItem(Items.APPLE) == 2, "Bob's mailbox is still empty");
+			helper.assertTrue(office.parcel(parcel.id()) == null, "the parcel is still on its way");
+			helper.assertTrue(ModAttachments.MAIL_DELIVERED.getOrElse(postman, 0) == 1, "delivery not counted");
+		});
 	}
 
 	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'

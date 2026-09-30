@@ -199,7 +199,13 @@ final class JobScenes {
 	static Villager picked(ServerLevel level, ServerPlayer player, BlockPos station, BlockState state, Item item) {
 		level.setBlockAndUpdate(station, state);
 		Villager v = EntityType.VILLAGER.spawn(level, station.south(), MobSpawnType.COMMAND);
-		io.github.jcondedata.aliveworkplace.work.Stations.choose(player, v, new ItemStack(item));
+		// Staging runs as a server task, and the game files a new block's workstation in a task of its own after this
+		// one: hand the item over once it's there, as a player's click always comes after the block is placed.
+		level.getServer().execute(() -> {
+			if (io.github.jcondedata.aliveworkplace.work.Stations.choose(player, v, new ItemStack(item)) != net.minecraft.world.InteractionResult.SUCCESS) {
+				Showcase.check(false, "the villager took the job " + item + " picks at the " + level.getBlockState(station).getBlock().getName().getString());
+			}
+		});
 		return v;
 	}
 

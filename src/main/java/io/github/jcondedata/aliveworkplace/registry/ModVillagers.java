@@ -64,7 +64,7 @@ public final class ModVillagers {
 		new VillagerProfession(
 			"miner",
 			holder -> holder.is(MINERS_BENCH_POI) || holder.is(PoiTypes.ARMORER),
-			holder -> holder.is(MINERS_BENCH_POI),
+			holder -> holder.is(MINERS_BENCH_POI) || holder.is(PoiTypes.ARMORER),
 			ImmutableSet.of(),
 			ImmutableSet.of(),
 			SoundEvents.VILLAGER_WORK_TOOLSMITH
@@ -81,7 +81,7 @@ public final class ModVillagers {
 		new VillagerProfession(
 			"lumberjack",
 			holder -> holder.is(CHOPPING_BLOCK_POI) || holder.is(PoiTypes.FLETCHER),
-			holder -> holder.is(CHOPPING_BLOCK_POI),
+			holder -> holder.is(CHOPPING_BLOCK_POI) || holder.is(PoiTypes.FLETCHER),
 			ImmutableSet.of(),
 			ImmutableSet.of(),
 			SoundEvents.AXE_STRIP
@@ -98,7 +98,7 @@ public final class ModVillagers {
 		new VillagerProfession(
 			"postman",
 			holder -> holder.is(POSTAL_DESK_POI) || holder.is(MAILBOX_POI),
-			holder -> holder.is(POSTAL_DESK_POI),
+			holder -> holder.is(POSTAL_DESK_POI) || holder.is(MAILBOX_POI),
 			ImmutableSet.of(),
 			ImmutableSet.of(),
 			SoundEvents.VILLAGER_WORK_CARTOGRAPHER
@@ -115,7 +115,7 @@ public final class ModVillagers {
 		new VillagerProfession(
 			"guard",
 			holder -> holder.is(GUARD_POST_POI) || holder.is(PoiTypes.WEAPONSMITH),
-			holder -> holder.is(GUARD_POST_POI),
+			holder -> holder.is(GUARD_POST_POI) || holder.is(PoiTypes.WEAPONSMITH),
 			ImmutableSet.of(),
 			ImmutableSet.of(),
 			SoundEvents.VILLAGER_WORK_WEAPONSMITH
@@ -132,7 +132,7 @@ public final class ModVillagers {
 		new VillagerProfession(
 			"nurse",
 			holder -> holder.is(NURSE_STATION_POI) || holder.is(PoiTypes.CLERIC),
-			holder -> holder.is(NURSE_STATION_POI),
+			holder -> holder.is(NURSE_STATION_POI) || holder.is(PoiTypes.CLERIC),
 			ImmutableSet.of(),
 			ImmutableSet.of(),
 			SoundEvents.VILLAGER_WORK_CLERIC
@@ -183,7 +183,7 @@ public final class ModVillagers {
 		new VillagerProfession(
 			"bard",
 			holder -> holder.is(MUSIC_STAND_POI) || holder.is(JUKEBOX_POI),
-			holder -> holder.is(MUSIC_STAND_POI),
+			holder -> holder.is(MUSIC_STAND_POI) || holder.is(JUKEBOX_POI),
 			ImmutableSet.of(),
 			ImmutableSet.of(),
 			SoundEvents.NOTE_BLOCK_HARP.value()
@@ -230,7 +230,7 @@ public final class ModVillagers {
 		new VillagerProfession(
 			"trainer_leader",
 			holder -> holder.is(LEADERS_PODIUM_POI) || holder.is(TRAINING_POST_POI),
-			holder -> holder.is(LEADERS_PODIUM_POI),
+			holder -> holder.is(LEADERS_PODIUM_POI) || holder.is(TRAINING_POST_POI),
 			ImmutableSet.of(),
 			ImmutableSet.of(),
 			SoundEvents.VILLAGER_WORK_ARMORER
@@ -247,7 +247,7 @@ public final class ModVillagers {
 		new VillagerProfession(
 			"tutor",
 			holder -> holder.is(TUTORS_DESK_POI) || holder.is(TRAINING_POST_POI),
-			holder -> holder.is(TUTORS_DESK_POI),
+			holder -> holder.is(TUTORS_DESK_POI) || holder.is(TRAINING_POST_POI),
 			ImmutableSet.of(),
 			ImmutableSet.of(),
 			SoundEvents.VILLAGER_WORK_LIBRARIAN
@@ -264,7 +264,7 @@ public final class ModVillagers {
 		new VillagerProfession(
 			"pokemon_trader",
 			holder -> holder.is(TRADE_BOARD_POI) || holder.is(SHOP_COUNTER_POI),
-			holder -> holder.is(TRADE_BOARD_POI),
+			holder -> holder.is(TRADE_BOARD_POI) || holder.is(SHOP_COUNTER_POI),
 			ImmutableSet.of(),
 			ImmutableSet.of(),
 			SoundEvents.VILLAGER_WORK_CARTOGRAPHER
@@ -281,7 +281,7 @@ public final class ModVillagers {
 		new VillagerProfession(
 			"orchard_keeper",
 			holder -> holder.is(FRUIT_BASKET_POI) || holder.is(PoiTypes.FARMER),
-			holder -> holder.is(FRUIT_BASKET_POI),
+			holder -> holder.is(FRUIT_BASKET_POI) || holder.is(PoiTypes.FARMER),
 			ImmutableSet.of(),
 			ImmutableSet.of(),
 			SoundEvents.VILLAGER_WORK_FARMER
@@ -298,7 +298,7 @@ public final class ModVillagers {
 		new VillagerProfession(
 			"beekeeper",
 			holder -> holder.is(APIARY_POI) || holder.is(PoiTypes.BEEHIVE) || holder.is(PoiTypes.BEE_NEST),
-			holder -> holder.is(APIARY_POI),
+			holder -> holder.is(APIARY_POI) || holder.is(PoiTypes.BEEHIVE) || holder.is(PoiTypes.BEE_NEST),
 			ImmutableSet.of(),
 			ImmutableSet.of(),
 			SoundEvents.BEEHIVE_WORK
@@ -315,7 +315,7 @@ public final class ModVillagers {
 		new VillagerProfession(
 			"florist",
 			holder -> holder.is(FLOWER_STAND_POI) || holder.is(PoiTypes.FARMER),
-			holder -> holder.is(FLOWER_STAND_POI),
+			holder -> holder.is(FLOWER_STAND_POI) || holder.is(PoiTypes.FARMER),
 			ImmutableSet.of(),
 			ImmutableSet.of(),
 			SoundEvents.VILLAGER_WORK_FARMER
@@ -342,7 +342,7 @@ public final class ModVillagers {
 		new VillagerProfession(
 			"sifter",
 			holder -> holder.is(SIEVE_POI) || holder.is(PoiTypes.LEATHERWORKER),
-			holder -> holder.is(SIEVE_POI),
+			holder -> holder.is(SIEVE_POI) || holder.is(PoiTypes.LEATHERWORKER),
 			ImmutableSet.of(),
 			ImmutableSet.of(),
 			SoundEvents.VILLAGER_WORK_MASON
@@ -359,7 +359,7 @@ public final class ModVillagers {
 		new VillagerProfession(
 			"tinkerer",
 			holder -> holder.is(TINKERS_BENCH_POI) || holder.is(PoiTypes.TOOLSMITH),
-			holder -> holder.is(TINKERS_BENCH_POI),
+			holder -> holder.is(TINKERS_BENCH_POI) || holder.is(PoiTypes.TOOLSMITH),
 			ImmutableSet.of(),
 			ImmutableSet.of(),
 			SoundEvents.VILLAGER_WORK_TOOLSMITH
@@ -376,7 +376,7 @@ public final class ModVillagers {
 		new VillagerProfession(
 			"netherworker",
 			holder -> holder.is(NETHER_BRAZIER_POI) || holder.is(PoiTypes.CARTOGRAPHER),
-			holder -> holder.is(NETHER_BRAZIER_POI),
+			holder -> holder.is(NETHER_BRAZIER_POI) || holder.is(PoiTypes.CARTOGRAPHER),
 			ImmutableSet.of(),
 			ImmutableSet.of(),
 			SoundEvents.VILLAGER_WORK_ARMORER
@@ -393,7 +393,7 @@ public final class ModVillagers {
 		new VillagerProfession(
 			"composter",
 			holder -> holder.is(COMPOST_BIN_POI) || holder.is(PoiTypes.FARMER),
-			holder -> holder.is(COMPOST_BIN_POI),
+			holder -> holder.is(COMPOST_BIN_POI) || holder.is(PoiTypes.FARMER),
 			ImmutableSet.of(),
 			ImmutableSet.of(),
 			SoundEvents.VILLAGER_WORK_FARMER
@@ -410,7 +410,7 @@ public final class ModVillagers {
 		new VillagerProfession(
 			"scholar",
 			holder -> holder.is(SCHOLARS_DESK_POI) || holder.is(PoiTypes.LIBRARIAN),
-			holder -> holder.is(SCHOLARS_DESK_POI),
+			holder -> holder.is(SCHOLARS_DESK_POI) || holder.is(PoiTypes.LIBRARIAN),
 			ImmutableSet.of(),
 			ImmutableSet.of(),
 			SoundEvents.VILLAGER_WORK_LIBRARIAN
@@ -432,7 +432,7 @@ public final class ModVillagers {
 		new VillagerProfession(
 			"undertaker",
 			holder -> holder.is(UNDERTAKERS_TABLE_POI) || holder.is(PoiTypes.CLERIC),
-			holder -> holder.is(UNDERTAKERS_TABLE_POI),
+			holder -> holder.is(UNDERTAKERS_TABLE_POI) || holder.is(PoiTypes.CLERIC),
 			ImmutableSet.of(),
 			ImmutableSet.of(),
 			SoundEvents.VILLAGER_WORK_CLERIC
@@ -449,7 +449,7 @@ public final class ModVillagers {
 		new VillagerProfession(
 			"innkeeper",
 			holder -> holder.is(INN_COUNTER_POI) || holder.is(SHOP_COUNTER_POI),
-			holder -> holder.is(INN_COUNTER_POI),
+			holder -> holder.is(INN_COUNTER_POI) || holder.is(SHOP_COUNTER_POI),
 			ImmutableSet.of(),
 			ImmutableSet.of(),
 			SoundEvents.VILLAGER_WORK_BUTCHER
@@ -466,7 +466,7 @@ public final class ModVillagers {
 		new VillagerProfession(
 			"teacher",
 			holder -> holder.is(TEACHERS_DESK_POI) || holder.is(PoiTypes.LIBRARIAN),
-			holder -> holder.is(TEACHERS_DESK_POI),
+			holder -> holder.is(TEACHERS_DESK_POI) || holder.is(PoiTypes.LIBRARIAN),
 			ImmutableSet.of(),
 			ImmutableSet.of(),
 			SoundEvents.VILLAGER_WORK_LIBRARIAN
@@ -483,7 +483,7 @@ public final class ModVillagers {
 		new VillagerProfession(
 			"rancher",
 			holder -> holder.is(FEED_TROUGH_POI) || holder.is(PoiTypes.BUTCHER),
-			holder -> holder.is(FEED_TROUGH_POI),
+			holder -> holder.is(FEED_TROUGH_POI) || holder.is(PoiTypes.BUTCHER),
 			ImmutableSet.of(),
 			ImmutableSet.of(),
 			SoundEvents.VILLAGER_WORK_BUTCHER
@@ -500,7 +500,7 @@ public final class ModVillagers {
 		new VillagerProfession(
 			"ball_smith",
 			holder -> holder.is(BALL_WORKBENCH_POI) || holder.is(PoiTypes.TOOLSMITH),
-			holder -> holder.is(BALL_WORKBENCH_POI),
+			holder -> holder.is(BALL_WORKBENCH_POI) || holder.is(PoiTypes.TOOLSMITH),
 			ImmutableSet.of(),
 			ImmutableSet.of(),
 			SoundEvents.VILLAGER_WORK_TOOLSMITH
@@ -536,7 +536,7 @@ public final class ModVillagers {
 		new VillagerProfession(
 			"carpenter",
 			holder -> holder.is(CARPENTERS_BENCH_POI) || holder.is(CRAFTING_TABLE_POI),
-			holder -> holder.is(CARPENTERS_BENCH_POI),
+			holder -> holder.is(CARPENTERS_BENCH_POI) || holder.is(CRAFTING_TABLE_POI),
 			ImmutableSet.of(),
 			ImmutableSet.of(),
 			SoundEvents.WOOD_HIT
@@ -554,7 +554,7 @@ public final class ModVillagers {
 		new VillagerProfession(
 			"chef",
 			holder -> holder.is(KITCHEN_STOVE_POI) || holder.is(PoiTypes.BUTCHER),
-			holder -> holder.is(KITCHEN_STOVE_POI),
+			holder -> holder.is(KITCHEN_STOVE_POI) || holder.is(PoiTypes.BUTCHER),
 			ImmutableSet.of(),
 			ImmutableSet.of(),
 			SoundEvents.SMOKER_SMOKE
@@ -572,7 +572,7 @@ public final class ModVillagers {
 		new VillagerProfession(
 			"fossil_scientist",
 			holder -> holder.is(FOSSIL_LAB_POI) || holder.is(TRAINING_POST_POI),
-			holder -> holder.is(FOSSIL_LAB_POI),
+			holder -> holder.is(FOSSIL_LAB_POI) || holder.is(TRAINING_POST_POI),
 			ImmutableSet.of(),
 			ImmutableSet.of(),
 			SoundEvents.BREWING_STAND_BREW

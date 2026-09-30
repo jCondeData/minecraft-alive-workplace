@@ -118,10 +118,16 @@ public final class Mail {
 	}
 
 	/**
-	 * The post office's lockers: at any Postal Desk a player collects every parcel handed in for them (the ones that go
-	 * out with the night mail — and wait there for good when they have no mailbox). Returns how many they collected.
+	 * The post office's lockers: at any Postal Desk, or any mailbox a postman works at, a player collects every parcel
+	 * handed in for them (the ones that go out with the night mail — and wait there for good when they have no mailbox).
+	 * Returns how many they collected.
 	 */
 	public static int collectAtDesk(ServerPlayer player) {
+		return collectAtDesk(player, false);
+	}
+
+	/** The same; {@code quiet}: say nothing when there's nothing to collect (a postman's mailbox opens instead). */
+	public static int collectAtDesk(ServerPlayer player, boolean quiet) {
 		PostOffice office = PostOffice.get(player.level().getServer());
 		List<Parcel> mine = new java.util.ArrayList<>();
 		for (Parcel parcel : office.parcels()) {
@@ -130,7 +136,9 @@ public final class Mail {
 			}
 		}
 		if (mine.isEmpty()) {
-			Chat.actionBar(player, Component.translatable("message.aliveworkplace.mail.none_at_desk").withStyle(ChatFormatting.GRAY));
+			if (!quiet) {
+				Chat.actionBar(player, Component.translatable("message.aliveworkplace.mail.none_at_desk").withStyle(ChatFormatting.GRAY));
+			}
 			return 0;
 		}
 		java.util.Set<String> senders = new java.util.LinkedHashSet<>();

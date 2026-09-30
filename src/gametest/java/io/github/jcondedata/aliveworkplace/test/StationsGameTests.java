@@ -211,6 +211,26 @@ public class StationsGameTests implements FabricGameTest {
 		});
 	}
 
+	/**
+	 * A worker who lost track of their block (it was broken and put back, or not yet filed when they were given it) takes
+	 * a free one of its kind again by themselves, as vanilla workers do: here a lumberjack, at a fletching table.
+	 */
+	//$ gametest_ticks_batch AREA '1200' '"stationsRetake"'
+	@GameTest(template = AREA, timeoutTicks = 1200, batch = "stationsRetake")
+	public void aWorkerTakesTheirBlockAgain(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		helper.setDayTime(2000);
+		helper.setBlock(STATION, Blocks.FLETCHING_TABLE);
+		Villager villager = helper.spawn(EntityType.VILLAGER, STANDING);
+		villager.setVillagerData(villager.getVillagerData().setProfession(ModVillagers.LUMBERJACK));
+		villager.setVillagerXp(1);
+		villager.refreshBrain(helper.getLevel());
+		helper.succeedWhen(() -> {
+			helper.assertTrue(villager.getVillagerData().getProfession() == ModVillagers.LUMBERJACK, "now a " + name(villager.getVillagerData().getProfession()));
+			helper.assertTrue(site(villager).equals(Optional.of(helper.absolutePos(STATION))), "works at " + site(villager));
+		});
+	}
+
 	/** Worlds from before 21.1a: an old job block still gives its job by itself, and a worker at one keeps it. */
 	//$ gametest_ticks_batch AREA '1200' '"stationsOldBlocks"'
 	@GameTest(template = AREA, timeoutTicks = 1200, batch = "stationsOldBlocks")

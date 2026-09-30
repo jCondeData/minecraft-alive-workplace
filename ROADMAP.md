@@ -153,6 +153,16 @@ its first findings fixed. Nothing is released until these are done.
     that way); the README's job table, the recipe book and the tooltips say so; a world saved by 0.137.0 with the old
     blocks loads and its workers keep working (a GameTest); no village house or starter build uses a gone block; the
     showcase is green. Do it in pieces that fit a night run, landing each with `land --keep-open`: the mechanism first.
+    **Decisions while building** (chat, 2026-09-30): (1) our jobs can also re-take their shared vanilla block by
+    themselves (acquirable = held), as vanilla workers do; a jobless villager still gets the vanilla job, because the
+    first registered job wins. Without it a worker whose block record was missing for a moment never found it again.
+    (2) Choosing a job doesn't hire. (3) The Postal Desk's post-office pickup moved to any mailbox a postman works at.
+    (4) Village houses whose block is shared come with a villager who already has the house's job (an entity in the
+    house template, VillageGameTests); the workshop, trainer's house, ferry house and storehouse still get a jobless
+    one. (5) Hold Shift over a workstation: its tooltip lists the jobs and items (StationTooltip).
+    **Left for later:** the Hall's free-workstations list still offers only the vanilla job at a shared block (the
+    player switches with the item afterwards); the sifter has no "panning" look at a water cauldron; /workplace
+    benchmark still places old blocks (they work). A real 0.137.0 world opened with this version is 21.2's check.
 - [ ] **21.2** **The full check before release** (the tester's Full tier; the chat started it and ran out of time). Do
   it in pieces that fit a one-hour night run, landing each piece with `land --keep-open`:
   - the real Cobbleverse pack boot and the soak: the nightly GitHub workflow runs these, so read its result;

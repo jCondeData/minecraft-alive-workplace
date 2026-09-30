@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 0.137.0 — 2026-09-29
+
 ### Added
 - **Fishing from boats**: put a boat in a fisher's barrel and, when there's a lake or the sea nearby, they row out to
   open water and fish from the boat — where, as for a player, one catch in twenty is treasure (enchanted books, bows,

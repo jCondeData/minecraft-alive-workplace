@@ -1010,6 +1010,8 @@ public class ScreenshotHarness implements ClientModInitializer {
 
 	private Villager lumberjack;
 	private static final int FOREST_TREES = 4;
+	private int replantedAt = -1;
+	private volatile long saplingsPlanted;
 
 	private void forestScene(Minecraft mc, MinecraftServer server) {
 		tick++;
@@ -1055,15 +1057,17 @@ public class ScreenshotHarness implements ClientModInitializer {
 		if (doneAt > 0 && tick < doneAt + 100 && tick % 10 == 0) {
 			shot(mc, String.format("frame_%03d", frame++)); // the last sapling goes in
 		}
-		if (doneAt > 0 && tick == doneAt + 190) {
-			server.execute(() -> {
+		// The saplings go in after the last tree falls: wait up to 30 seconds for all four.
+		if (doneAt > 0 && replantedAt < 0 && tick >= doneAt + 100 && tick % 20 == 0) {
+			server.execute(() -> saplingsPlanted = BlockPos.betweenClosedStream(new BlockPos(-12, -60, -15), new BlockPos(15, -59, 11))
+				.filter(p -> server.overworld().getBlockState(p).is(net.minecraft.tags.BlockTags.SAPLINGS)).count());
+			if (saplingsPlanted >= FOREST_TREES || tick >= doneAt + 600) {
+				replantedAt = tick;
 				Showcase.check(true, "the lumberjack felled all four trees");
-				long saplings = BlockPos.betweenClosedStream(new BlockPos(-12, -60, -15), new BlockPos(15, -59, 11))
-					.filter(p -> server.overworld().getBlockState(p).is(net.minecraft.tags.BlockTags.SAPLINGS)).count();
-				Showcase.check(saplings >= FOREST_TREES, "the lumberjack replanted (" + saplings + " saplings in the ground)");
-			});
+				Showcase.check(saplingsPlanted >= FOREST_TREES, "the lumberjack replanted (" + saplingsPlanted + " saplings in the ground)");
+			}
 		}
-		if (doneAt > 0 && tick == doneAt + 200) {
+		if (replantedAt > 0 && tick == replantedAt + 10) {
 			shot(mc, "50_forest_done");
 			mc.stop();
 		}

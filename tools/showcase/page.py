@@ -86,7 +86,8 @@ main{max-width:820px;margin:0 auto;padding:0 16px 40px}
 .box.bad{border-color:var(--fail);background:var(--fail-bg)}
 .box h2{font-size:16px;margin:0 0 6px}.box ul{margin:0;padding-left:18px}.box li{margin:3px 0}
 .box a{color:var(--ink)}
-nav.groups{display:flex;gap:6px;flex-wrap:wrap;margin:14px 0}
+details.jump{margin:12px 0}details.jump summary{cursor:pointer;color:var(--accent);font-size:15px}
+nav.groups{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0}
 nav.groups a{font-size:13px;padding:3px 9px;border-radius:999px;background:var(--card);border:1px solid var(--line);
 color:var(--ink);text-decoration:none}
 nav.groups a.has-fail{border-color:var(--fail);color:var(--fail)}
@@ -98,7 +99,7 @@ section>h2 small{color:var(--muted);font-weight:400;font-size:13px}
 .head h3{font-size:16px;margin:0}.head code{font-size:12px;color:var(--muted)}
 .badge{flex:none;font-size:12px;font-weight:700;border-radius:6px;padding:3px 8px;letter-spacing:.03em}
 .badge.pass{background:var(--pass-bg);color:var(--pass)}.badge.fail{background:var(--fail-bg);color:var(--fail)}
-.why{padding:0 14px 8px;font-size:14px;color:var(--muted)}.why ul{margin:0;padding-left:18px}
+.why{padding:0 14px 8px;font-size:14px;color:var(--muted)}.why ul{margin:0;padding:0;list-style:none}
 .why li.bad{color:var(--fail)}.why li.ok{color:var(--muted)}
 .gif{display:block;width:100%;background:#000;aspect-ratio:16/9;object-fit:contain}
 .stills{display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:8px}
@@ -118,7 +119,7 @@ def card(r):
     if ok:
         lines += [f'<li class="ok">✓ {E(c["what"])}</li>' for c in r.get("checks", [])]
     else:
-        lines += [f'<li class="bad">{E(x)}</li>' for x in r.get("reasons", [])]
+        lines += [f'<li class="bad">✗ {E(x)}</li>' for x in r.get("reasons", [])]
         lines += [f'<li class="ok">✓ {E(c["what"])}</li>' for c in r.get("checks", []) if c.get("pass")]
     lines += [f'<li class="ok">note: {E(w)}</li>' for w in r.get("warnings", [])[:3]]
     name = r["scene"]
@@ -131,6 +132,8 @@ def card(r):
         stills += "".join(f'<figure><a href="{name}/{b["file"]}"><img src="{name}/{b["file"]}" alt="{E(b["label"])}" loading="lazy"></a>'
                           f'<figcaption>⚠ {E(b["label"])}</figcaption></figure>' for b in r["broken"])
     secs = f'{round(r["seconds"] / 60, 1)} min' if r.get("seconds") else ""
+    if r.get("log"):
+        more = f'<a href="{name}/{r["log"]}">the game\'s log</a> ' + more
     return (f'<article class="card {"pass" if ok else "fail"}" id="{name}"><div class="head"><div><h3>{E(r["title"])}</h3>'
             f'<code>SCENE={name}</code></div><span class="badge {"pass" if ok else "fail"}">{"PASS" if ok else "FAIL"}</span></div>'
             f'<div class="why"><ul>{"".join(lines)}</ul></div>{gif}'
@@ -193,7 +196,7 @@ def build(results_dir, site, run_url):
                      ' Show only what failed</label>')
     nav = "".join(f'<a href="#g{i}" class="{"has-fail" if any(not r["pass"] for r in by_group[g]) else ""}">{E(g)}</a>'
                   for i, g in enumerate(groups))
-    parts.append(f'<nav class="groups">{nav}</nav>')
+    parts.append(f'<details class="jump"><summary>Jump to a job</summary><nav class="groups">{nav}</nav></details>')
     for i, g in enumerate(groups):
         rs = by_group[g]
         bad = sum(1 for r in rs if not r["pass"])

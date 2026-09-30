@@ -167,7 +167,7 @@ SCENES = [
     S("defences", "Build families", "Walls and gates", "every wall and gate was placed", 90, [("30_*@spread", "")]),
     S("styles", "Build families", "Cottage II and Stone House II in every style", "every style was placed", 120,
       [("30_*@spread", "")]),
-    S("village", "Build families", "One village of each type", "every village type generated with a workshop", 360,
+    S("village", "Build families", "One village of each type", "every village type generated, none leaving structure_void", 360,
       [("40_workshop_*@spread", "")], env={"WORKSHOP_WEIGHT": "200"}),
     S("camp", "Build families", "A Settler's Wagon camp", "the camp was set up", 45,
       [("01_camp", "The camp"), ("02_camp_back", "From behind")]),

@@ -67,8 +67,8 @@ final class JobScenes {
 	/** Where a job scene's workstation goes; its chest is two blocks west. The superflat ground is y = -61. */
 	static final BlockPos STATION = new BlockPos(0, -60, 0);
 	/** The camera of most job scenes: close in front of the station, what it works on behind it (negative z). */
-	private static final Vec3 CAMERA = new Vec3(4.5, -57, 6.5);
-	private static final Vec3 TARGET = new Vec3(0, -59.6, -0.5);
+	private static final Vec3 CAMERA = new Vec3(3.4, -57.6, 5);
+	private static final Vec3 TARGET = new Vec3(0, -59.5, -0.8);
 
 	/** What a job scene watches for, on the server: the job visibly did its work. */
 	interface Done {
@@ -100,6 +100,8 @@ final class JobScenes {
 	private static volatile Villager subject;
 	/** smith_orders: the slot where the Poké Ball turned up (found on the server). */
 	private static volatile int pickedSlot = -1;
+	/** A screen a job scene films while its job gets going (the Drop Box's). */
+	private static volatile BiConsumer<ServerLevel, ServerPlayer> openDuring;
 
 	static final Map<String, Job> SCENES = new LinkedHashMap<>();
 	static final Map<String, Screen> SCREENS = new LinkedHashMap<>();
@@ -270,7 +272,7 @@ final class JobScenes {
 			return l -> n(ModAttachments.BONE_MEAL_MADE, v) >= 1 && c.countItem(Items.BONE_MEAL) >= 1;
 		}));
 		SCENES.put("netherworker", new Job("the netherworker came back from the Nether with loot", 3000,
-			new Vec3(13.5, -54, 14.5), new Vec3(4, -58, 4), (level, player) -> {
+			new Vec3(10, -55.5, 11), new Vec3(3.5, -58.5, 3.5), (level, player) -> {
 			Villager v = worker(level, STATION, ModBlocks.NETHER_BRAZIER, ModVillagers.NETHER_BRAZIER_POI, ModVillagers.NETHERWORKER);
 			chest(level, chestPos(), new ItemStack(Items.BREAD, 3), new ItemStack(Items.IRON_PICKAXE), new ItemStack(Items.IRON_SWORD),
 				new ItemStack(Items.IRON_CHESTPLATE));
@@ -288,7 +290,7 @@ final class JobScenes {
 			return l -> n(ModAttachments.NETHER_TRIPS, v) >= 1 && !io.github.jcondedata.aliveworkplace.nether.Netherworkers.isAway(v);
 		}, null));
 		SCENES.put("undertaker", new Job("the undertaker brought Mira back from her grave", 2000,
-			new Vec3(6.5, -55, 10.5), new Vec3(-2, -59.5, 2), (level, player) -> {
+			new Vec3(4.5, -56, 8), new Vec3(-2, -59.5, 1.5), (level, player) -> {
 			BlockPos bench = new BlockPos(-8, -60, -3);
 			level.setBlockAndUpdate(bench, ModBlocks.BUILDERS_BENCH.defaultBlockState());
 			Villager mira = EntityType.VILLAGER.spawn(level, new BlockPos(-4, -60, 4), MobSpawnType.COMMAND);
@@ -337,17 +339,17 @@ final class JobScenes {
 			return l -> horse.isTamed() && horse.isSaddled();
 		}));
 		SCENES.put("mason", new Job("the mason cut the stone brick stairs and walls the builder needed", 6000,
-			new Vec3(8.5, -50, 14.5), new Vec3(-8, -57, -4), (level, player) -> {
+			new Vec3(5.5, -52, 10.5), new Vec3(-6, -55, -5), (level, player) -> {
 			level.getGameRules().getRule(ModGameRules.BUILD_DELAY).set(2, level.getServer());
-			java.util.UUID site = builderSite(level, StarterBlueprints.LOOKOUT_TOWER, new BlockPos(-10, -60, -10),
+			java.util.UUID site = builderSite(level, StarterBlueprints.LOOKOUT_TOWER, new BlockPos(-8, -60, -3),
 				List.of(Items.STONE_BRICK_STAIRS, Items.STONE_BRICK_WALL), Map.of(Items.STONE, 96));
 			Villager m = worker(level, STATION, Blocks.STONECUTTER, PoiTypes.MASON, VillagerProfession.MASON);
 			return l -> n(ModAttachments.ITEMS_CRAFTED, m) >= 1 && built(l, site, 0.6f);
 		}, null));
 		SCENES.put("dyer", new Job("the dyer made the red wool and carpets the builder needed", 6000,
-			new Vec3(8.5, -52, 12.5), new Vec3(-8, -58, -5), (level, player) -> {
+			new Vec3(4.5, -54.5, 8.5), new Vec3(-5, -58, -4), (level, player) -> {
 			level.getGameRules().getRule(ModGameRules.BUILD_DELAY).set(2, level.getServer());
-			java.util.UUID site = builderSite(level, StarterBlueprints.MARKET_STALL, new BlockPos(-10, -60, -10),
+			java.util.UUID site = builderSite(level, StarterBlueprints.MARKET_STALL, new BlockPos(-8, -60, -3),
 				List.of(Items.RED_WOOL, Items.RED_CARPET, Items.WHITE_CARPET), Map.of(Items.WHITE_WOOL, 48, Items.POPPY, 32));
 			Villager d = worker(level, STATION, Blocks.CAULDRON, PoiTypes.LEATHERWORKER, VillagerProfession.LEATHERWORKER);
 			return l -> n(ModAttachments.ITEMS_CRAFTED, d) >= 1 && built(l, site, 0.6f);
@@ -425,11 +427,11 @@ final class JobScenes {
 			return l -> n(ModAttachments.POTIONS_BREWED, cl) >= 3;
 		}));
 		SCENES.put("scribe", new Job("the librarian enchanted the guard's sword", 2400,
-			new Vec3(6.5, -54, 12.5), new Vec3(4.5, -59.5, 0.5), (level, player) -> {
+			new Vec3(5, -55.5, 8), new Vec3(3.5, -59.3, -1.5), (level, player) -> {
 			Villager lib = worker(level, STATION, Blocks.LECTERN, PoiTypes.LIBRARIAN, VillagerProfession.LIBRARIAN);
 			level.setBlockAndUpdate(new BlockPos(2, -60, -2), Blocks.ENCHANTING_TABLE.defaultBlockState());
 			chest(level, chestPos(), new ItemStack(Items.LAPIS_LAZULI, 3));
-			Villager g = guard(level, new BlockPos(10, -60, 0), new ItemStack(Items.IRON_SWORD));
+			Villager g = guard(level, new BlockPos(7, -60, -3), new ItemStack(Items.IRON_SWORD));
 			g.setNoAi(true);
 			return l -> g.getItemBySlot(EquipmentSlot.MAINHAND).isEnchanted() && n(ModAttachments.ITEMS_ENCHANTED, lib) >= 1;
 		}, null));
@@ -465,16 +467,20 @@ final class JobScenes {
 			place(level, STATION, ModBlocks.STOREHOUSE);
 			Container store = chest(level, STATION.west(2));
 			Villager porter = EntityType.VILLAGER.spawn(level, STATION.south(), MobSpawnType.COMMAND);
-			io.github.jcondedata.aliveworkplace.store.Porters.employ(level, porter, STATION);
+			// The porter starts once the Drop Box's screen has been filmed (below), while it's still full.
+			level.getServer().tell(new net.minecraft.server.TickTask(level.getServer().getTickCount() + 110,
+				() -> io.github.jcondedata.aliveworkplace.store.Porters.employ(level, porter, STATION)));
 			BlockPos box = new BlockPos(3, -60, -3);
 			place(level, box, ModBlocks.DROP_BOX);
 			Container drop = (Container) level.getBlockEntity(box);
 			drop.setItem(0, new ItemStack(Items.IRON_SWORD));
 			drop.setItem(1, new ItemStack(Items.BREAD, 16));
 			drop.setItem(2, new ItemStack(Items.COBBLESTONE, 64));
-			// The Drop Box's screen, before the porter comes for it (from close by: a chest screen closes past 8 blocks).
-			ScreenshotHarness.hoverLookingAt(player, new Vec3(3.5, -58.3, 0.5), new Vec3(3.5, -60, -3));
-			player.openMenu((net.minecraft.world.MenuProvider) drop);
+			// Its screen, before the porter comes for it (from close by: a chest screen closes past 8 blocks).
+			openDuring = (l, p) -> {
+				ScreenshotHarness.hoverLookingAt(p, new Vec3(3.5, -58.3, 0.5), new Vec3(3.5, -60, -3));
+				p.openMenu((net.minecraft.world.MenuProvider) drop);
+			};
 			return l -> drop.isEmpty() && n(ModAttachments.ITEMS_CARRIED, porter) >= 1 && store.countItem(Items.BREAD) >= 1;
 		}, null));
 	}
@@ -660,18 +666,26 @@ final class JobScenes {
 				done = job.stage().stage(server.overworld(), player);
 			});
 		}
-		if (tick == 38 && mc.screen != null) {
-			// A screen opened while staging (only the Drop Box scene does): film it first, as "04_dropbox_screen".
-			mc.options.hideGui = false;
-			ScreenshotHarness.pointAt(mc, 0, 3);
+		if (openDuring != null) {
+			// A screen to film while the job starts (only the Drop Box scene has one), as "04_dropbox_screen".
+			if (tick == 100) {
+				server.execute(() -> openDuring.accept(server.overworld(), player));
+			}
+			if (tick == 110) {
+				mc.options.hideGui = false;
+				ScreenshotHarness.pointAt(mc, 0, 3);
+			}
+			if (tick == 116) {
+				ScreenshotHarness.shot(mc, "04_dropbox_screen");
+				Showcase.check(mc.screen instanceof net.minecraft.client.gui.screens.inventory.ContainerScreen, "the Drop Box's screen opened");
+			}
+			if (tick == 120) {
+				mc.setScreen(null);
+				mc.options.hideGui = true;
+				server.execute(() -> ScreenshotHarness.hoverLookingAt(player, job.camera(), job.target()));
+			}
 		}
-		if (tick == 45 && mc.screen != null) {
-			ScreenshotHarness.shot(mc, "04_dropbox_screen");
-			mc.setScreen(null);
-			mc.options.hideGui = true;
-			server.execute(() -> ScreenshotHarness.hoverLookingAt(player, job.camera(), job.target()));
-		}
-		if (tick == 60) {
+		if (tick == 90) {
 			ScreenshotHarness.shot(mc, "01_start");
 		}
 		if (tick > 60 && tick % 10 == 0 && doneAt < 0) {
@@ -680,7 +694,7 @@ final class JobScenes {
 				ScreenshotHarness.shot(mc, String.format("work_%05d", tick)); // the moment it's done: at least one "at work" shot
 			} else {
 				server.execute(() -> isDone.set(done != null && done.test(server.overworld())));
-				if (tick >= 70 && tick % 40 == 30) {
+				if (tick >= 130 && tick % 40 == 10) {
 					ScreenshotHarness.shot(mc, String.format("work_%05d", tick));
 				}
 			}
@@ -725,7 +739,7 @@ final class JobScenes {
 				screen.stage().accept(server.overworld(), player);
 			});
 		}
-		int at = 80;
+		int at = 100; // well after the terrain has loaded
 		for (Step step : screen.steps()) {
 			if (tick == at && step.before() != null) {
 				server.execute(() -> step.before().accept(server.overworld(), player));

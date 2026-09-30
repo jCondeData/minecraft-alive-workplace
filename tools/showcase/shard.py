@@ -57,7 +57,19 @@ def run_scene(name, out, limit):
     for f in ("showcase.json", "client.log"):
         if os.path.exists(os.path.join(RUN, f)):
             shutil.copy(os.path.join(RUN, f), raw)
+    latest = os.path.join(RUN, "logs", "latest.log")
+    if not os.path.exists(os.path.join(raw, "client.log")) and os.path.exists(latest) and os.path.getmtime(latest) >= start:
+        shutil.copy(latest, os.path.join(raw, "client.log"))  # run.sh was stopped before it could copy its log
     result = process.process(name, raw, os.path.join(out, name), seconds=seconds, exit_code=code)
+    if not result["pass"] and os.path.exists(os.path.join(raw, "client.log")):
+        # What a night run needs to find out why: the end of the game's log, next to the scene's pictures.
+        with open(os.path.join(raw, "client.log"), errors="replace") as f:
+            tail = f.readlines()[-4000:]
+        with open(os.path.join(out, name, "client-log.txt"), "w") as f:
+            f.writelines(tail)
+        result["log"] = "client-log.txt"
+        with open(os.path.join(out, name, "result.json"), "w") as f:
+            json.dump(result, f, indent=1)
     shutil.rmtree(raw, ignore_errors=True)  # the frames are in the GIF now; keep the artifact small
     mark = "PASS" if result["pass"] else "FAIL"
     print(f"{mark} {name} ({seconds}s): " + "; ".join(result["reasons"] or [c["what"] for c in result["checks"]]), flush=True)

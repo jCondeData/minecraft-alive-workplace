@@ -53,6 +53,7 @@ final class Showcase {
 	private static File out;
 	private static int ticks;
 	private static int frames;
+	private static int outOfWorld;
 	private static boolean stopped;
 
 	/** Hooks in; only called when the harness is on (-Daliveworkplace.shots=true). */
@@ -92,8 +93,15 @@ final class Showcase {
 		}
 		watchLanguage();
 		if (mc.level == null || mc.player == null) {
+			// Out of the world after being in it: the integrated server stopped (a crash, most likely). Say so and quit,
+			// rather than wait on a title screen until the scene's time runs out.
+			if (ticks > 0 && ++outOfWorld == 60) {
+				problem("the game left the world mid-scene (the server stopped or crashed: see the game's log)");
+				mc.stop();
+			}
 			return;
 		}
+		outOfWorld = 0;
 		ticks++;
 		if (ticks >= 20 && ticks % FRAME_EVERY == 0) {
 			frame(mc);

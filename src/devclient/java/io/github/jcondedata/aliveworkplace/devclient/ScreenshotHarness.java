@@ -1749,6 +1749,7 @@ public class ScreenshotHarness implements ClientModInitializer {
 	private final List<BlockPos> workshops = new ArrayList<>();
 	private final List<BlockPos> otherHouses = new ArrayList<>();
 	private int villagesWithWorkshop;
+	private int villagesBuilt;
 	private int villageVoids;
 
 	private void villageScene(Minecraft mc, MinecraftServer server) {
@@ -1825,10 +1826,12 @@ public class ScreenshotHarness implements ClientModInitializer {
 						villagesWithWorkshop++;
 					}
 					villageVoids += voids;
+					villagesBuilt += built > 0 ? 1 : 0;
 				}
 				workshops.addAll(otherHouses);
-				Showcase.check(villagesWithWorkshop == styles.size() && villageVoids == 0, "every village type generated with a workshop ("
-					+ villagesWithWorkshop + " of " + styles.size() + " villages, " + villageVoids + " structure_void blocks)");
+				// Workshops are random (WORKSHOP_WEIGHT makes them likely, not certain): counted, not required.
+				Showcase.check(villagesBuilt == styles.size() && villageVoids == 0, "every village type generated (" + villagesBuilt + " of "
+					+ styles.size() + ", " + villagesWithWorkshop + " with a builder's workshop, " + villageVoids + " structure_void blocks)");
 			});
 		}
 		int shots = workshops.size();

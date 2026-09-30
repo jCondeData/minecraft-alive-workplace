@@ -1,0 +1,1632 @@
+{
+ "iron": {
+  "ramp": [
+   "#585858",
+   "#727272",
+   "#828282",
+   "#a8a8a8",
+   "#d8d8d8",
+   "#ffffff"
+  ],
+  "outline": [
+   "#5e5e5e",
+   "#353535"
+  ],
+  "source": "item/iron_ingot.png"
+ },
+ "gold": {
+  "ramp": [
+   "#dc9613",
+   "#e9b115",
+   "#fad64a",
+   "#fdf55f",
+   "#fffde0",
+   "#ffffff"
+  ],
+  "outline": [
+   "#b26411",
+   "#752802"
+  ],
+  "source": "item/gold_ingot.png"
+ },
+ "copper": {
+  "ramp": [
+   "#8a4129",
+   "#9c4e31",
+   "#c15a36",
+   "#e77c56",
+   "#fc9982",
+   "#fbc3b6"
+  ],
+  "outline": [
+   "#9c4529",
+   "#6d3421"
+  ],
+  "source": "item/copper_ingot.png"
+ },
+ "netherite": {
+  "ramp": [
+   "#31292a",
+   "#3c3232",
+   "#3b393b",
+   "#484548",
+   "#4d494d",
+   "#5a575a",
+   "#737173"
+  ],
+  "outline": [
+   "#271c1d",
+   "#111111"
+  ],
+  "source": "item/netherite_ingot.png"
+ },
+ "diamond": {
+  "ramp": [
+   "#1c919a",
+   "#1aaaa7",
+   "#20c5b5",
+   "#2ce0d8",
+   "#4aedd9",
+   "#a1fbe8",
+   "#d5fff6",
+   "#ffffff"
+  ],
+  "outline": [
+   "#11727a",
+   "#145e53"
+  ],
+  "source": "item/diamond.png"
+ },
+ "emerald": {
+  "ramp": [
+   "#007b18",
+   "#009529",
+   "#00aa2c",
+   "#17dd62",
+   "#41f384",
+   "#82f6ad",
+   "#affdcd",
+   "#dbffeb"
+  ],
+  "outline": [
+   "#005300",
+   "#002d00"
+  ],
+  "source": "item/emerald.png"
+ },
+ "amethyst": {
+  "ramp": [
+   "#6f4fab",
+   "#8d6acc",
+   "#b38ef3",
+   "#cfa0f3",
+   "#fecbe6",
+   "#fffdd5"
+  ],
+  "outline": [
+   "#6f4fab",
+   "#54398a"
+  ],
+  "source": "item/amethyst_shard.png"
+ },
+ "redstone": {
+  "ramp": [
+   "#410500",
+   "#720000",
+   "#aa0f01",
+   "#ff0000"
+  ],
+  "outline": [
+   "#5c0700",
+   "#2d0000"
+  ],
+  "source": "item/redstone.png"
+ },
+ "lapis": {
+  "ramp": [
+   "#12408b",
+   "#1c53a8",
+   "#345ec3",
+   "#5a82e2",
+   "#7497ea"
+  ],
+  "outline": [
+   "#1a3d8f",
+   "#052463"
+  ],
+  "source": "item/lapis_lazuli.png"
+ },
+ "quartz": {
+  "ramp": [
+   "#897b73",
+   "#b6a48e",
+   "#d4caba",
+   "#ddd4c6",
+   "#e5dfd6",
+   "#eae5de",
+   "#f7f5f2"
+  ],
+  "outline": [
+   "#b3a091",
+   "#6f5d5a"
+  ],
+  "source": "item/quartz.png"
+ },
+ "coal": {
+  "ramp": [
+   "#1f1721",
+   "#261e24",
+   "#252525",
+   "#2e2e2e",
+   "#323232",
+   "#363636",
+   "#393e46"
+  ],
+  "outline": [
+   "#1c1c1e",
+   "#101015"
+  ],
+  "source": "item/coal.png"
+ },
+ "stick": {
+  "ramp": [
+   "#684e1e",
+   "#896727"
+  ],
+  "outline": [
+   "#493615",
+   "#281e0b"
+  ],
+  "source": "item/stick.png"
+ },
+ "leather": {
+  "ramp": [
+   "#893b25",
+   "#9e492a",
+   "#c65c35",
+   "#d76b43"
+  ],
+  "outline": [
+   "#542716",
+   "#3d1c10"
+  ],
+  "source": "item/leather.png"
+ },
+ "paper": {
+  "ramp": [
+   "#c1c1c1",
+   "#d6d6d6",
+   "#e9eaeb",
+   "#fcfcf2"
+  ],
+  "outline": [
+   "#aeaeae",
+   "#878787"
+  ],
+  "source": "item/paper.png"
+ },
+ "string": {
+  "ramp": [],
+  "outline": [
+   "#f7f7f7",
+   "#2f4547"
+  ],
+  "source": "item/string.png"
+ },
+ "bone": {
+  "ramp": [
+   "#e8e5d2",
+   "#fcfbed",
+   "#fffffd"
+  ],
+  "outline": [
+   "#cbc6a5",
+   "#7b7e6b"
+  ],
+  "source": "item/bone.png"
+ },
+ "flint": {
+  "ramp": [
+   "#222020",
+   "#2e2d2d",
+   "#3d3c3c",
+   "#565656",
+   "#7f7f7f",
+   "#a8a8a8"
+  ],
+  "outline": [
+   "#222020",
+   "#0e0e0e"
+  ],
+  "source": "item/flint.png"
+ },
+ "brick_item": {
+  "ramp": [
+   "#612f22",
+   "#7f3e2c",
+   "#8e4631",
+   "#b75a40",
+   "#c76245"
+  ],
+  "outline": [
+   "#492319",
+   "#2d1610"
+  ],
+  "source": "item/brick.png"
+ },
+ "clay_ball": {
+  "ramp": [
+   "#5e6c8d",
+   "#757d90",
+   "#9499a4",
+   "#a1a7b1",
+   "#acaebd",
+   "#afb9d6"
+  ],
+  "outline": [
+   "#40445a",
+   "#373944"
+  ],
+  "source": "item/clay_ball.png"
+ },
+ "slime": {
+  "ramp": [
+   "#508049",
+   "#57914f",
+   "#71ac63",
+   "#76be6d",
+   "#8cd782",
+   "#c9fece",
+   "#ffffff"
+  ],
+  "outline": [
+   "#477a42",
+   "#34532f"
+  ],
+  "source": "item/slime_ball.png"
+ },
+ "honeycomb": {
+  "ramp": [
+   "#d56b2b",
+   "#ea8e16",
+   "#fabf29",
+   "#fade29"
+  ],
+  "outline": [
+   "#e57b24",
+   "#d56b2b"
+  ],
+  "source": "item/honeycomb.png"
+ },
+ "feather": {
+  "ramp": [
+   "#969696",
+   "#bebebe",
+   "#ffffff"
+  ],
+  "outline": [
+   "#d3d3d3",
+   "#d3d3d3"
+  ],
+  "source": "item/feather.png"
+ },
+ "gunpowder": {
+  "ramp": [
+   "#3e3e3e",
+   "#494949",
+   "#545454",
+   "#727272",
+   "#8a8a8a"
+  ],
+  "outline": [
+   "#505050",
+   "#2d2d2d"
+  ],
+  "source": "item/gunpowder.png"
+ },
+ "bread": {
+  "ramp": [
+   "#4c3811",
+   "#654b17",
+   "#8c661e",
+   "#a27924",
+   "#bc8927"
+  ],
+  "outline": [
+   "#654b17",
+   "#3f2e0e"
+  ],
+  "source": "item/bread.png"
+ },
+ "apple": {
+  "ramp": [
+   "#542409",
+   "#9c1017",
+   "#b4131e",
+   "#dd1725",
+   "#ff1c2b",
+   "#ff5e69",
+   "#ff969d"
+  ],
+  "outline": [
+   "#752802",
+   "#54090e"
+  ],
+  "source": "item/apple.png"
+ },
+ "carrot": {
+  "ramp": [
+   "#005000",
+   "#036703",
+   "#1f9a1c",
+   "#d36a0d",
+   "#33be30",
+   "#ff8e09",
+   "#ffa73f",
+   "#ffc177"
+  ],
+  "outline": [
+   "#ac3900",
+   "#752802"
+  ],
+  "source": "item/carrot.png"
+ },
+ "wheat": {
+  "ramp": [
+   "#7f6a33",
+   "#8d773d",
+   "#a69553",
+   "#cdb159",
+   "#dcbb65"
+  ],
+  "outline": [
+   "#7f6a33",
+   "#565138"
+  ],
+  "source": "item/wheat.png"
+ },
+ "blaze": {
+  "ramp": [
+   "#b9931c",
+   "#d8ae26",
+   "#ffc100",
+   "#fff32d",
+   "#fff87e"
+  ],
+  "outline": [
+   "#b36b19",
+   "#ae3c00"
+  ],
+  "source": "item/blaze_rod.png"
+ },
+ "ender_pearl": {
+  "ramp": [
+   "#063931",
+   "#0b4d42",
+   "#105e51",
+   "#1b7b6b",
+   "#258474",
+   "#349988",
+   "#2ccdb1",
+   "#8cf4e2"
+  ],
+  "outline": [
+   "#0c3730",
+   "#032620"
+  ],
+  "source": "item/ender_pearl.png"
+ },
+ "prismarine": {
+  "ramp": [
+   "#539882",
+   "#7cb3a4",
+   "#91c2ac",
+   "#a4d1c2"
+  ],
+  "outline": [
+   "#2e6053",
+   "#306456"
+  ],
+  "source": "item/prismarine_shard.png"
+ },
+ "glowstone": {
+  "ramp": [
+   "#8e562e",
+   "#b47140",
+   "#ebaa4e",
+   "#ffbc5e",
+   "#f9d49c"
+  ],
+  "outline": [
+   "#7e4821",
+   "#5a391c"
+  ],
+  "source": "item/glowstone_dust.png"
+ },
+ "book": {
+  "ramp": [
+   "#44250a",
+   "#522e10",
+   "#543e13",
+   "#654b17",
+   "#999999",
+   "#b7b7b7",
+   "#d6d6d6"
+  ],
+  "outline": [
+   "#312104",
+   "#161005"
+  ],
+  "source": "item/book.png"
+ },
+ "map": {
+  "ramp": [
+   "#bbc177",
+   "#daddaa",
+   "#eaeac7",
+   "#fcfcf2"
+  ],
+  "outline": [
+   "#a7a848",
+   "#878839"
+  ],
+  "source": "item/map.png"
+ },
+ "bowl": {
+  "ramp": [
+   "#3a2706",
+   "#43300b",
+   "#533909",
+   "#714f0f"
+  ],
+  "outline": [
+   "#3f2b0b",
+   "#1f1502"
+  ],
+  "source": "item/bowl.png"
+ },
+ "wool_item": {
+  "ramp": [
+   "#444565",
+   "#59557f",
+   "#b9b9cb",
+   "#eaeaea",
+   "#ffffff"
+  ],
+  "outline": [
+   "#59557f",
+   "#59557f"
+  ],
+  "source": "item/white_dye.png"
+ },
+ "rabbit_hide": {
+  "ramp": [
+   "#a88054",
+   "#b48b5b",
+   "#c79e67"
+  ],
+  "outline": [
+   "#826041",
+   "#4e3a27"
+  ],
+  "source": "item/rabbit_hide.png"
+ },
+ "ink": {
+  "ramp": [
+   "#3a3a44",
+   "#4a404a",
+   "#565664",
+   "#636373",
+   "#796571",
+   "#91685f",
+   "#bd8c81"
+  ],
+  "outline": [
+   "#353451",
+   "#181b32"
+  ],
+  "source": "item/ink_sac.png"
+ },
+ "echo": {
+  "ramp": [
+   "#111b21",
+   "#052a32",
+   "#034150",
+   "#0a5060",
+   "#009295",
+   "#29dfeb"
+  ],
+  "outline": [
+   "#0d1217",
+   "#0d1217"
+  ],
+  "source": "item/echo_shard.png"
+ },
+ "wood_tool": {
+  "ramp": [
+   "#473614",
+   "#594319",
+   "#6b511f",
+   "#755821",
+   "#866526"
+  ],
+  "outline": [
+   "#372910",
+   "#20180a"
+  ],
+  "source": [
+   "item/wooden_pickaxe.png",
+   "item/wooden_axe.png",
+   "item/wooden_shovel.png",
+   "item/wooden_hoe.png",
+   "item/wooden_sword.png"
+  ]
+ },
+ "stone_tool": {
+  "ramp": [
+   "#5a5a5a",
+   "#6c6c6c",
+   "#787777",
+   "#7f7f7f",
+   "#898989",
+   "#95918d",
+   "#9a9a9a",
+   "#b3b1af"
+  ],
+  "outline": [
+   "#494949",
+   "#181818"
+  ],
+  "source": [
+   "item/stone_pickaxe.png",
+   "item/stone_axe.png",
+   "item/stone_shovel.png",
+   "item/stone_hoe.png",
+   "item/stone_sword.png"
+  ]
+ },
+ "iron_tool": {
+  "ramp": [
+   "#6b6b6b",
+   "#969696",
+   "#c1c1c1",
+   "#d8d8d8",
+   "#ffffff"
+  ],
+  "outline": [
+   "#444444",
+   "#181818"
+  ],
+  "source": [
+   "item/iron_pickaxe.png",
+   "item/iron_axe.png",
+   "item/iron_shovel.png",
+   "item/iron_hoe.png",
+   "item/iron_sword.png"
+  ]
+ },
+ "gold_tool": {
+  "ramp": [
+   "#dc9613",
+   "#e9b115",
+   "#eaee57",
+   "#fdff76",
+   "#ffffff"
+  ],
+  "outline": [
+   "#825d16",
+   "#3f2e0e"
+  ],
+  "source": [
+   "item/golden_pickaxe.png",
+   "item/golden_axe.png",
+   "item/golden_shovel.png",
+   "item/golden_hoe.png",
+   "item/golden_sword.png"
+  ]
+ },
+ "diamond_tool": {
+  "ramp": [
+   "#156355",
+   "#1e8a77",
+   "#27b29a",
+   "#2bc7ac",
+   "#33ebcb",
+   "#a4fdf0"
+  ],
+  "outline": [
+   "#0e3f36",
+   "#082520"
+  ],
+  "source": [
+   "item/diamond_pickaxe.png",
+   "item/diamond_axe.png",
+   "item/diamond_shovel.png",
+   "item/diamond_hoe.png",
+   "item/diamond_sword.png"
+  ]
+ },
+ "netherite_tool": {
+  "ramp": [
+   "#322727",
+   "#4f3c3e",
+   "#51444e",
+   "#5d565d",
+   "#706770",
+   "#867b86"
+  ],
+  "outline": [
+   "#4a2940",
+   "#231012"
+  ],
+  "source": [
+   "item/netherite_pickaxe.png",
+   "item/netherite_axe.png",
+   "item/netherite_shovel.png",
+   "item/netherite_hoe.png",
+   "item/netherite_sword.png"
+  ]
+ },
+ "copper_tool": {
+  "ramp": [
+   "#803921",
+   "#9c4e31",
+   "#d66d48",
+   "#e3826c",
+   "#fc9982",
+   "#fdd4cb"
+  ],
+  "outline": [
+   "#5f2c1c",
+   "#421c11"
+  ],
+  "source": [
+   "item/copper_pickaxe.png",
+   "item/copper_axe.png",
+   "item/copper_shovel.png",
+   "item/copper_hoe.png",
+   "item/copper_sword.png"
+  ],
+  "mc": "26.3"
+ },
+ "stone": {
+  "ramp": [
+   "#686868",
+   "#747474",
+   "#7f7f7f",
+   "#8f8f8f"
+  ],
+  "source": "block/stone.png"
+ },
+ "cobblestone": {
+  "ramp": [
+   "#525252",
+   "#616161",
+   "#6e6d6d",
+   "#888788",
+   "#a6a6a6",
+   "#b5b5b5"
+  ],
+  "source": "block/cobblestone.png"
+ },
+ "deepslate": {
+  "ramp": [
+   "#2f2f37",
+   "#3d3d43",
+   "#515151",
+   "#646464",
+   "#797979"
+  ],
+  "source": "block/deepslate.png"
+ },
+ "andesite": {
+  "ramp": [
+   "#686868",
+   "#747474",
+   "#7f7f7f",
+   "#8a8a8e",
+   "#9c9c9c",
+   "#a8aa9a"
+  ],
+  "source": "block/andesite.png"
+ },
+ "granite": {
+  "ramp": [
+   "#4d352c",
+   "#5f4034",
+   "#7f5646",
+   "#926251",
+   "#9f6b58",
+   "#a97764",
+   "#b48877",
+   "#b49b91"
+  ],
+  "source": "block/granite.png"
+ },
+ "diorite": {
+  "ramp": [
+   "#7b7b7b",
+   "#8b8b8b",
+   "#a4a2a2",
+   "#bebfc1",
+   "#cececf",
+   "#e9e9e9"
+  ],
+  "source": "block/diorite.png"
+ },
+ "tuff": {
+  "ramp": [
+   "#4d5046",
+   "#5d5d52",
+   "#6a6e6f",
+   "#85837b",
+   "#a0a297"
+  ],
+  "source": "block/tuff.png"
+ },
+ "calcite": {
+  "ramp": [
+   "#b3b3b3",
+   "#c9c9c4",
+   "#d9dbd7",
+   "#edece6",
+   "#f0f5f4",
+   "#ffffff"
+  ],
+  "source": "block/calcite.png"
+ },
+ "sandstone": {
+  "ramp": [
+   "#d5c496",
+   "#dacfa3",
+   "#dfd4a7",
+   "#e3dbb0",
+   "#e7e4bb"
+  ],
+  "source": "block/sandstone_top.png"
+ },
+ "red_sandstone": {
+  "ramp": [
+   "#a45311",
+   "#ac5b1c",
+   "#b2601f",
+   "#bb6622",
+   "#cb6e24"
+  ],
+  "source": "block/red_sandstone_top.png"
+ },
+ "sand": {
+  "ramp": [
+   "#d1ba8a",
+   "#d5c496",
+   "#dacfa3",
+   "#e3dbb0",
+   "#e7e4bb",
+   "#edebcb"
+  ],
+  "source": "block/sand.png"
+ },
+ "red_sand": {
+  "ramp": [
+   "#ac5712",
+   "#b2601f",
+   "#bf6721",
+   "#cb6e24",
+   "#d2752b",
+   "#d97b30"
+  ],
+  "source": "block/red_sand.png"
+ },
+ "gravel": {
+  "ramp": [
+   "#645b5b",
+   "#726b69",
+   "#817f7f",
+   "#968e8e",
+   "#979797",
+   "#b1a2a2",
+   "#b0aeae"
+  ],
+  "source": "block/gravel.png"
+ },
+ "dirt": {
+  "ramp": [
+   "#593d29",
+   "#79553a",
+   "#6c6c6c",
+   "#966c4a",
+   "#878787",
+   "#b9855c"
+  ],
+  "source": "block/dirt.png"
+ },
+ "clay": {
+  "ramp": [
+   "#9499a4",
+   "#9aa3b3",
+   "#a1a7b1",
+   "#acaebd",
+   "#afb9d6"
+  ],
+  "source": "block/clay.png"
+ },
+ "mud_bricks": {
+  "ramp": [
+   "#5e4841",
+   "#695146",
+   "#7e5d48",
+   "#8c674f",
+   "#957150",
+   "#9d785c",
+   "#ab8661"
+  ],
+  "source": "block/mud_bricks.png"
+ },
+ "bricks": {
+  "ramp": [
+   "#733f31",
+   "#7c4536",
+   "#8f503f",
+   "#9b5643",
+   "#b1624d",
+   "#8b6e67",
+   "#a2867d",
+   "#a9948d"
+  ],
+  "source": "block/bricks.png"
+ },
+ "stone_bricks": {
+  "ramp": [
+   "#5a595a",
+   "#636363",
+   "#6a6d6a",
+   "#787678",
+   "#7f7f7f",
+   "#8b898b",
+   "#9c999c"
+  ],
+  "source": "block/stone_bricks.png"
+ },
+ "smooth_stone": {
+  "ramp": [
+   "#747474",
+   "#7f7f7f",
+   "#8f8f8f",
+   "#9d9d9d",
+   "#a3a3a3",
+   "#a8a8a8",
+   "#b0b0b0"
+  ],
+  "source": "block/smooth_stone.png"
+ },
+ "terracotta": {
+  "ramp": [
+   "#965d43"
+  ],
+  "source": "block/terracotta.png"
+ },
+ "netherrack": {
+  "ramp": [
+   "#411616",
+   "#511515",
+   "#501b1b",
+   "#572121",
+   "#652828",
+   "#723232",
+   "#854242"
+  ],
+  "source": "block/netherrack.png"
+ },
+ "blackstone": {
+  "ramp": [
+   "#160f10",
+   "#20131c",
+   "#27221c",
+   "#312c36",
+   "#3c3947",
+   "#4e4b54"
+  ],
+  "source": "block/blackstone.png"
+ },
+ "obsidian": {
+  "ramp": [
+   "#000001",
+   "#06030b",
+   "#100c1c",
+   "#271e3d",
+   "#3b2754"
+  ],
+  "source": "block/obsidian.png"
+ },
+ "snow": {
+  "ramp": [
+   "#f0fdfd",
+   "#ffffff"
+  ],
+  "source": "block/snow.png"
+ },
+ "ice": {
+  "ramp": [
+   "#86aefd",
+   "#8cb3fe",
+   "#92b9fe",
+   "#a1c3ff",
+   "#bcd4ff",
+   "#c8dcff"
+  ],
+  "source": "block/ice.png"
+ },
+ "glass": {
+  "ramp": [
+   "#7baeb7",
+   "#8bc1cd",
+   "#a8d0d9",
+   "#d0eae9"
+  ],
+  "source": "block/glass.png"
+ },
+ "moss": {
+  "ramp": [
+   "#42552d",
+   "#495e27",
+   "#50692c",
+   "#647233",
+   "#6c8031",
+   "#70922d"
+  ],
+  "source": "block/moss_block.png"
+ },
+ "hay": {
+  "ramp": [
+   "#924123",
+   "#a5492c",
+   "#a4512b",
+   "#8a7320",
+   "#94801e",
+   "#ab9225",
+   "#bfab31",
+   "#cbb630"
+  ],
+  "source": "block/hay_block_side.png"
+ },
+ "iron_block": {
+  "ramp": [
+   "#b9b9b9",
+   "#c1c1c1",
+   "#d1cfcf",
+   "#d6d6d6",
+   "#dcdcdc",
+   "#e6e6e6",
+   "#ececec",
+   "#f2f2f2"
+  ],
+  "source": "block/iron_block.png"
+ },
+ "gold_block": {
+  "ramp": [
+   "#cc8e27",
+   "#d39632",
+   "#f9bd23",
+   "#f5cc27",
+   "#ffd83e",
+   "#fee048",
+   "#ffec4f",
+   "#fffd90"
+  ],
+  "source": "block/gold_block.png"
+ },
+ "copper_block": {
+  "ramp": [
+   "#904931",
+   "#9a5038",
+   "#a75a40",
+   "#b26247",
+   "#c26b4c",
+   "#c87456",
+   "#d67b5b",
+   "#e3826c"
+  ],
+  "source": "block/copper_block.png"
+ },
+ "prismarine_block": {
+  "ramp": [
+   "#2c8755",
+   "#687396",
+   "#468974",
+   "#5e85a4",
+   "#5e9ea4",
+   "#5ea496",
+   "#79b7ab",
+   "#9bcbbf"
+  ],
+  "source": "block/prismarine.png"
+ },
+ "oak_planks": {
+  "ramp": [
+   "#67502c",
+   "#7e6237",
+   "#967441",
+   "#9f844d",
+   "#af8f55",
+   "#b8945f",
+   "#c29d62"
+  ],
+  "source": "block/oak_planks.png"
+ },
+ "spruce_planks": {
+  "ramp": [
+   "#553a1f",
+   "#5a4424",
+   "#614b2e",
+   "#70522e",
+   "#7a5a34",
+   "#82613a",
+   "#886539"
+  ],
+  "source": "block/spruce_planks.png"
+ },
+ "birch_planks": {
+  "ramp": [
+   "#9e8b61",
+   "#a59467",
+   "#ae9f76",
+   "#b8a875",
+   "#c8b77a",
+   "#d7c185",
+   "#d7cb8d"
+  ],
+  "source": "block/birch_planks.png"
+ },
+ "jungle_planks": {
+  "ramp": [
+   "#68462f",
+   "#785437",
+   "#976a44",
+   "#9f714a",
+   "#aa7954",
+   "#b88764",
+   "#bf8e6b"
+  ],
+  "source": "block/jungle_planks.png"
+ },
+ "acacia_planks": {
+  "ramp": [
+   "#884728",
+   "#8f4c2a",
+   "#99502b",
+   "#a05630",
+   "#ad5d32",
+   "#ba6337",
+   "#c26d3f"
+  ],
+  "source": "block/acacia_planks.png"
+ },
+ "dark_oak_planks": {
+  "ramp": [
+   "#291a0c",
+   "#301e0e",
+   "#3a2411",
+   "#3e2912",
+   "#4f3218",
+   "#53381a"
+  ],
+  "source": "block/dark_oak_planks.png"
+ },
+ "mangrove_planks": {
+  "ramp": [
+   "#5d1c1e",
+   "#642423",
+   "#6f2a2d",
+   "#753136",
+   "#773934",
+   "#7f4234",
+   "#8b4d3a"
+  ],
+  "source": "block/mangrove_planks.png"
+ },
+ "cherry_planks": {
+  "ramp": [
+   "#cd8580",
+   "#dd9d97",
+   "#e1a8a1",
+   "#e6b3ad",
+   "#e7bab4",
+   "#e7c2bb",
+   "#e7cac5"
+  ],
+  "source": "block/cherry_planks.png"
+ },
+ "bamboo_planks": {
+  "ramp": [
+   "#907e3a",
+   "#998741",
+   "#bba84c",
+   "#c8b14d",
+   "#d3bb50",
+   "#d9c25e",
+   "#e3cc6a",
+   "#efd97e"
+  ],
+  "source": "block/bamboo_planks.png"
+ },
+ "crimson_planks": {
+  "ramp": [
+   "#3f1e2d",
+   "#4b2737",
+   "#5c3042",
+   "#6a344b",
+   "#7e3a56",
+   "#863e5a"
+  ],
+  "source": "block/crimson_planks.png"
+ },
+ "warped_planks": {
+  "ramp": [
+   "#113835",
+   "#1e4340",
+   "#1f5752",
+   "#2e5f51",
+   "#287067",
+   "#398382",
+   "#3a8e8c"
+  ],
+  "source": "block/warped_planks.png"
+ },
+ "oak_log": {
+  "ramp": [
+   "#382b18",
+   "#4c3d26",
+   "#5f4a2b",
+   "#745a36",
+   "#917142",
+   "#987849"
+  ],
+  "source": "block/oak_log.png"
+ },
+ "spruce_log": {
+  "ramp": [
+   "#2e1608",
+   "#2e1c0a",
+   "#3b2713",
+   "#4d3317",
+   "#553a1f"
+  ],
+  "source": "block/spruce_log.png"
+ },
+ "birch_log": {
+  "ramp": [
+   "#36342a",
+   "#605e54",
+   "#bebeae",
+   "#d8d8ce",
+   "#f0eeeb",
+   "#ffffff"
+  ],
+  "source": "block/birch_log.png"
+ },
+ "dark_oak_log": {
+  "ramp": [
+   "#292011",
+   "#332715",
+   "#3f311d",
+   "#4a381e",
+   "#584428"
+  ],
+  "source": "block/dark_oak_log.png"
+ },
+ "bookshelf_books": {
+  "ramp": [
+   "#362a15",
+   "#911111",
+   "#41311a",
+   "#773007",
+   "#9b7742",
+   "#9f844d",
+   "#b38c51",
+   "#bc9862"
+  ],
+  "source": "block/bookshelf.png"
+ },
+ "villager_skin": {
+  "ramp": [
+   "#b37b62",
+   "#b78272",
+   "#be886c"
+  ],
+  "source": "entity/villager/villager.png"
+ },
+ "robe_plains": {
+  "ramp": [
+   "#322a28",
+   "#4c3833",
+   "#5a423d",
+   "#684c46",
+   "#71544d",
+   "#82625b"
+  ],
+  "source": "entity/villager/type/plains.png"
+ },
+ "robe_desert": {
+  "ramp": [
+   "#c04206",
+   "#d75601",
+   "#f67105",
+   "#f98613",
+   "#c8995a",
+   "#daad70",
+   "#e4bd87",
+   "#f2cd99"
+  ],
+  "source": "entity/villager/type/desert.png"
+ },
+ "robe_jungle": {
+  "ramp": [
+   "#531a09",
+   "#394b07",
+   "#38580b",
+   "#705b26",
+   "#497624",
+   "#846b2c",
+   "#aa7931",
+   "#cd9936"
+  ],
+  "source": "entity/villager/type/jungle.png"
+ },
+ "robe_savanna": {
+  "ramp": [
+   "#440f1f",
+   "#36230d",
+   "#591b2d",
+   "#801f2a",
+   "#4d3518",
+   "#aa2a2a",
+   "#544828",
+   "#6a6534"
+  ],
+  "source": "entity/villager/type/savanna.png"
+ },
+ "robe_snow": {
+  "ramp": [
+   "#7b3f20",
+   "#345a5c",
+   "#4f7676",
+   "#96826b",
+   "#a49579",
+   "#c1b89a",
+   "#d3c9a8",
+   "#e3d7b6"
+  ],
+  "source": "entity/villager/type/snow.png"
+ },
+ "robe_swamp": {
+  "ramp": [
+   "#35251f",
+   "#47312a",
+   "#354010",
+   "#5e4236",
+   "#444e23",
+   "#49622d",
+   "#627f3d"
+  ],
+  "source": "entity/villager/type/swamp.png"
+ },
+ "robe_taiga": {
+  "ramp": [
+   "#292929",
+   "#343434",
+   "#553729",
+   "#65544e",
+   "#765543",
+   "#c2b089",
+   "#cbc3a0",
+   "#e3e0c2"
+  ],
+  "source": "entity/villager/type/taiga.png"
+ },
+ "straw": {
+  "ramp": [
+   "#947a24",
+   "#ac8c2f",
+   "#c1a137",
+   "#bfa427",
+   "#c8b02a",
+   "#d1bc45",
+   "#dbc549",
+   "#dfcc6f"
+  ],
+  "source": "entity/villager/profession/farmer.png"
+ },
+ "wool_white": {
+  "ramp": [
+   "#d1d7d8",
+   "#d9dedf",
+   "#dee2e3",
+   "#e3e6e7",
+   "#ebeeee",
+   "#f3f4f5",
+   "#fafafa",
+   "#fefefe"
+  ],
+  "source": "block/white_wool.png"
+ },
+ "concrete_white": {
+  "ramp": [
+   "#cfd5d6"
+  ],
+  "source": "block/white_concrete.png"
+ },
+ "wool_orange": {
+  "ramp": [
+   "#e36302",
+   "#e76807",
+   "#ec6d0b",
+   "#f37513",
+   "#f77b19",
+   "#f98420",
+   "#f98a25",
+   "#f9932b"
+  ],
+  "source": "block/orange_wool.png"
+ },
+ "concrete_orange": {
+  "ramp": [
+   "#e16100"
+  ],
+  "source": "block/orange_concrete.png"
+ },
+ "wool_magenta": {
+  "ramp": [
+   "#ab32a1",
+   "#b239a8",
+   "#b73ead",
+   "#be44b3",
+   "#c34ab9",
+   "#ca52c1",
+   "#d15aca",
+   "#d660d1"
+  ],
+  "source": "block/magenta_wool.png"
+ },
+ "concrete_magenta": {
+  "ramp": [
+   "#a9309f"
+  ],
+  "source": "block/magenta_concrete.png"
+ },
+ "wool_light_blue": {
+  "ramp": [
+   "#268ec9",
+   "#2e9ed0",
+   "#31a5d3",
+   "#35abd6",
+   "#3ab3da",
+   "#42bcdf",
+   "#48c1e4",
+   "#4ec5e7"
+  ],
+  "source": "block/light_blue_wool.png"
+ },
+ "concrete_light_blue": {
+  "ramp": [
+   "#2389c7"
+  ],
+  "source": "block/light_blue_concrete.png"
+ },
+ "wool_yellow": {
+  "ramp": [
+   "#f2b116",
+   "#f5b81b",
+   "#f6bd1f",
+   "#f8c222",
+   "#f9c726",
+   "#fbce2d",
+   "#fdd435",
+   "#fed93f"
+  ],
+  "source": "block/yellow_wool.png"
+ },
+ "concrete_yellow": {
+  "ramp": [
+   "#f1af15"
+  ],
+  "source": "block/yellow_concrete.png"
+ },
+ "wool_lime": {
+  "ramp": [
+   "#5faa18",
+   "#67b118",
+   "#70b918",
+   "#76be19",
+   "#7cc31b",
+   "#86cc26"
+  ],
+  "source": "block/lime_wool.png"
+ },
+ "concrete_lime": {
+  "ramp": [
+   "#5ea918"
+  ],
+  "source": "block/lime_concrete.png"
+ },
+ "wool_pink": {
+  "ramp": [
+   "#da6a92",
+   "#e6789c",
+   "#ec7ea1",
+   "#ef83a4",
+   "#f48eac",
+   "#f49ab5",
+   "#f4a7c0",
+   "#f4b2c9"
+  ],
+  "source": "block/pink_wool.png"
+ },
+ "concrete_pink": {
+  "ramp": [
+   "#d6658f"
+  ],
+  "source": "block/pink_concrete.png"
+ },
+ "wool_gray": {
+  "ramp": [
+   "#373a3e",
+   "#3b3f43",
+   "#404649",
+   "#474f52"
+  ],
+  "source": "block/gray_wool.png"
+ },
+ "concrete_gray": {
+  "ramp": [
+   "#373a3e"
+  ],
+  "source": "block/gray_concrete.png"
+ },
+ "wool_light_gray": {
+  "ramp": [
+   "#7f7f75",
+   "#83837a",
+   "#87877f",
+   "#8f8f87",
+   "#94948e",
+   "#999993"
+  ],
+  "source": "block/light_gray_wool.png"
+ },
+ "concrete_light_gray": {
+  "ramp": [
+   "#7d7d73"
+  ],
+  "source": "block/light_gray_concrete.png"
+ },
+ "wool_cyan": {
+  "ramp": [
+   "#157989",
+   "#157f8c",
+   "#158a91",
+   "#159094",
+   "#169698"
+  ],
+  "source": "block/cyan_wool.png"
+ },
+ "concrete_cyan": {
+  "ramp": [
+   "#157788"
+  ],
+  "source": "block/cyan_concrete.png"
+ },
+ "wool_purple": {
+  "ramp": [
+   "#65209d",
+   "#7124a5",
+   "#7828aa",
+   "#802cb0",
+   "#8630b5",
+   "#8d36bc",
+   "#9743cd"
+  ],
+  "source": "block/purple_wool.png"
+ },
+ "concrete_purple": {
+  "ramp": [
+   "#65209d"
+  ],
+  "source": "block/purple_concrete.png"
+ },
+ "wool_blue": {
+  "ramp": [
+   "#2d2f90",
+   "#313396",
+   "#373a9f",
+   "#3b40a6",
+   "#3e4db2"
+  ],
+  "source": "block/blue_wool.png"
+ },
+ "concrete_blue": {
+  "ramp": [
+   "#2c2e8f"
+  ],
+  "source": "block/blue_concrete.png"
+ },
+ "wool_brown": {
+  "ramp": [
+   "#613c20",
+   "#684023",
+   "#6d4426",
+   "#734829",
+   "#784c2c",
+   "#7e502f",
+   "#835432"
+  ],
+  "source": "block/brown_wool.png"
+ },
+ "concrete_brown": {
+  "ramp": [
+   "#613c20"
+  ],
+  "source": "block/brown_concrete.png"
+ },
+ "wool_green": {
+  "ramp": [
+   "#4a5d23",
+   "#50661e",
+   "#556d1a",
+   "#587318",
+   "#5c7816",
+   "#658619"
+  ],
+  "source": "block/green_wool.png"
+ },
+ "concrete_green": {
+  "ramp": [
+   "#495b24"
+  ],
+  "source": "block/green_concrete.png"
+ },
+ "wool_red": {
+  "ramp": [
+   "#902120",
+   "#992421",
+   "#a42822",
+   "#ac2c24",
+   "#b8342c"
+  ],
+  "source": "block/red_wool.png"
+ },
+ "concrete_red": {
+  "ramp": [
+   "#8e2020"
+  ],
+  "source": "block/red_concrete.png"
+ },
+ "wool_black": {
+  "ramp": [
+   "#080a0f",
+   "#0f1015",
+   "#17171b",
+   "#1c1c20",
+   "#212025",
+   "#252529"
+  ],
+  "source": "block/black_wool.png"
+ },
+ "concrete_black": {
+  "ramp": [
+   "#090b10"
+  ],
+  "source": "block/black_concrete.png"
+ },
+ "netherite_handle": {
+  "ramp": [
+   "#3b393b",
+   "#434043",
+   "#734543"
+  ],
+  "outline": [
+   "#2f2122",
+   "#231012"
+  ],
+  "source": "item/netherite_axe handle pixels (netherite tools don't use the stick)"
+ }
+}

@@ -49,3 +49,6 @@ replay_*.log
 .kotlin/
 node_modules/
 __pycache__/
+
+# Agent worktrees (Claude Code)
+.claude/worktrees/

@@ -3,6 +3,11 @@
 ## Unreleased
 
 ### Changed
+- **A new look**: every workstation, villager outfit and item is redrawn in Minecraft's own style. Workstations are
+  built from their wood or stone like the crafting table, with no more grainy speckle. The outfits are cleaner, and a
+  job's hat no longer has the biome's hat showing through it. Items take the shape of their vanilla kind: the Village
+  Ledger lies like a book, blueprints and the Patrol Map like maps, and the markers and the Rally Banner are held like
+  tools.
 - **Villagers sit when they ride**: a guard on horseback sits in the saddle with their legs forward, and a ferryman or
   a fisher sits in the boat at the oars, instead of standing on the horse's back or looking sunk in the boat.
 

@@ -211,6 +211,32 @@ public class VillageGameTests implements FabricGameTest {
 		return s.toString();
 	}
 
+	/**
+	 * Bug (tester, B2): every village house template stores structure_void blocks (the workshop's whole front row at its
+	 * bottom layer). Villages place houses as legacy pool elements, whose processors ignore only air and structure
+	 * blocks, so the structure_void is placed as a real block: a row of holes with no collision in front of the door,
+	 * where the ground was. A villager walking out of the workshop fell into it (b2rep_58: under the bench's front row).
+	 */
+	//$ gametest_ticks_batch '"aliveworkplace_test:big_area"' '100' '"aVillagePlacedWorkshopLeavesNoStructureVoidInTheWorld"'
+	@GameTest(template = "aliveworkplace_test:big_area", timeoutTicks = 100, batch = "aVillagePlacedWorkshopLeavesNoStructureVoidInTheWorld")
+	public void aVillagePlacedWorkshopLeavesNoStructureVoidInTheWorld(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		StructureTemplate template = level.getStructureManager().get(VillageHouses.workshop("plains")).orElseThrow();
+		BlockPos origin = helper.absolutePos(new BlockPos(4, 1, 4));
+		StructurePlaceSettings settings = new StructurePlaceSettings()
+			.addProcessor(net.minecraft.world.level.levelgen.structure.templatesystem.BlockIgnoreProcessor.STRUCTURE_AND_AIR);
+		template.placeInWorld(level, origin, origin, settings, net.minecraft.util.RandomSource.create(1), 2);
+		List<String> voids = new java.util.ArrayList<>();
+		net.minecraft.core.Vec3i size = template.getSize();
+		for (BlockPos p : BlockPos.betweenClosed(origin, origin.offset(size.getX() - 1, size.getY() - 1, size.getZ() - 1))) {
+			if (level.getBlockState(p).is(net.minecraft.world.level.block.Blocks.STRUCTURE_VOID)) {
+				voids.add(offset(p.subtract(origin)));
+			}
+		}
+		helper.assertTrue(voids.isEmpty(), voids.size() + " structure_void blocks placed in the world at template " + voids);
+		helper.succeed();
+	}
+
 	private static String offset(BlockPos d) {
 		return String.format("%+d,%+d,%+d", d.getX(), d.getY(), d.getZ());
 	}

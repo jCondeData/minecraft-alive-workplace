@@ -12,7 +12,8 @@
 		"VillagerAccessor",
 		"VillagerGoalPackagesMixin",
 		"VillagerMixin",
-		"VillagerPanicTriggerMixin"
+		"VillagerPanicTriggerMixin",
+		"VillagerSeatMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

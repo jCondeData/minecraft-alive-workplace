@@ -17,7 +17,7 @@
 		"main": ["io.github.jcondedata.aliveworkplace.platform.fabric.AliveWorkplaceFabric"],
 		"client": ["io.github.jcondedata.aliveworkplace.client.AliveWorkplaceClient"]
 	},
-	"mixins": ["aliveworkplace.mixins.json"],
+	"mixins": ["aliveworkplace.mixins.json", {"config": "aliveworkplace.client.mixins.json", "environment": "client"}],
 	"depends": {
 		"fabricloader": ">=0.16.0",
 		"minecraft": "${minecraft}",

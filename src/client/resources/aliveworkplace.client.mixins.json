@@ -1,0 +1,11 @@
+{
+	"required": true,
+	"package": "io.github.jcondedata.aliveworkplace.client.mixin",
+	"compatibilityLevel": "JAVA_21",
+	"client": [
+		"VillagerModelMixin"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	}
+}

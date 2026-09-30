@@ -379,4 +379,26 @@ public class GuardGameTests implements FabricGameTest {
 		helper.assertTrue(guard.getVehicle() == null && !io.github.jcondedata.aliveworkplace.guard.Cavalry.paced(tied), "still on, or still paced");
 		helper.succeed();
 	}
+
+	/**
+	 * A villager in the saddle (or in a boat) sits in it like a player, 0.6 below where the seat is (a baby half that),
+	 * instead of standing on the horse's back with their feet where a player's hips go.
+	 */
+	//$ gametest AREA
+	@GameTest(template = AREA)
+	public void villagersSitInTheSaddle(GameTestHelper helper) {
+		net.minecraft.world.entity.animal.horse.Horse horse = helper.spawn(EntityType.HORSE, new BlockPos(4, 2, 4));
+		Villager rider = helper.spawn(EntityType.VILLAGER, new BlockPos(6, 2, 4));
+		Villager baby = helper.spawn(EntityType.VILLAGER, new BlockPos(8, 2, 4));
+		baby.setAge(-24000);
+		net.minecraft.world.entity.vehicle.Boat boat = helper.spawn(EntityType.BOAT, new BlockPos(8, 2, 7));
+		helper.assertTrue(rider.startRiding(horse, true) && baby.startRiding(boat, true), "didn't get on");
+		horse.positionRider(rider); // (what every tick does)
+		boat.positionRider(baby);
+		double seated = horse.getPassengerRidingPosition(rider).y - 0.6;
+		helper.assertTrue(Math.abs(rider.getY() - seated) < 1.0E-6, "the rider isn't in the saddle: at " + rider.getY() + ", the seat " + seated);
+		double babySeat = boat.getPassengerRidingPosition(baby).y - 0.3;
+		helper.assertTrue(Math.abs(baby.getY() - babySeat) < 1.0E-6, "the baby isn't sitting in the boat: at " + baby.getY() + ", the seat " + babySeat);
+		helper.succeed();
+	}
 }

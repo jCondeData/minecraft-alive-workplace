@@ -1815,7 +1815,18 @@ public class ScreenshotHarness implements ClientModInitializer {
 				shot(mc, "70_boat_" + i);
 			}
 		}
+		if (tick >= 400 && tick < 600) {
+			// Close up on the fisher once he's out in the boat (the wide view from above before that)
+			Villager fisher = mc.level.getEntitiesOfClass(Villager.class, new net.minecraft.world.phys.AABB(new BlockPos(12, -61, 12)).inflate(16),
+				v -> v.getVehicle() != null).stream().findFirst().orElse(null);
+			if (fisher != null) {
+				follow(mc, fisher.getVehicle(), 4.5, 0, 1.6);
+			} else {
+				stopFollowing(mc, net.minecraft.client.CameraType.FIRST_PERSON);
+			}
+		}
 		if (tick == 600) {
+			stopFollowing(mc, net.minecraft.client.CameraType.FIRST_PERSON);
 			server.execute(() -> {
 				ServerPlayer player = server.getPlayerList().getPlayers().get(0);
 				Villager guard = server.overworld().getEntitiesOfClass(Villager.class, new net.minecraft.world.phys.AABB(new BlockPos(48, -60, 0)).inflate(30),
@@ -1824,19 +1835,26 @@ public class ScreenshotHarness implements ClientModInitializer {
 				hoverLookingAt(player, at.add(6, 4, -6), at.add(0, 1, 0));
 			});
 		}
+		if (tick >= 620 && tick < 740) {
+			// The mounted guard from the side, from the front and from further off, the camera following the horse
+			Villager rider = mc.level.getEntitiesOfClass(Villager.class, new net.minecraft.world.phys.AABB(new BlockPos(48, -60, 0)).inflate(40),
+				v -> v.getVehicle() != null).stream().findFirst().orElse(null);
+			if (rider != null) {
+				int view = tick < 650 ? 0 : tick < 690 ? 1 : 2;
+				switch (view) {
+					case 0 -> follow(mc, rider.getVehicle(), 4.5, 0, 1.8);
+					case 1 -> follow(mc, rider.getVehicle(), 2.5, 3.5, 2.0);
+					default -> follow(mc, rider.getVehicle(), -6, -3, 3.5);
+				}
+			}
+		}
 		for (int i = 0; i < 3; i++) {
 			if (tick == 640 + i * 40) {
 				shot(mc, "71_cavalry_" + i);
-				int k = i;
-				server.execute(() -> {
-					ServerPlayer player = server.getPlayerList().getPlayers().get(0);
-					Villager guard = server.overworld().getEntitiesOfClass(Villager.class, new net.minecraft.world.phys.AABB(new BlockPos(48, -60, 0)).inflate(30),
-						v -> v.getVillagerData().getProfession() == io.github.jcondedata.aliveworkplace.registry.ModVillagers.GUARD).stream().findFirst().orElse(null);
-					if (guard != null) {
-						hoverLookingAt(player, guard.position().add(k % 2 == 0 ? -6 : 6, 3.5, 5), guard.position().add(0, 1.2, 0));
-					}
-				});
 			}
+		}
+		if (tick == 740) {
+			stopFollowing(mc, net.minecraft.client.CameraType.FIRST_PERSON);
 		}
 		if (tick == 780) {
 			server.execute(() -> {
@@ -1856,10 +1874,27 @@ public class ScreenshotHarness implements ClientModInitializer {
 				io.github.jcondedata.aliveworkplace.travel.Ferrymen.travel(player, io.github.jcondedata.aliveworkplace.travel.Ferrymen.ticket(far));
 			});
 		}
+		if (tick >= 824 && tick < 856 && mc.player.getVehicle() != null) {
+			// The boat from the side, the front quarter and the front (the ferryman at the oars, the player behind).
+			// The player's own third-person camera turned round: another camera entity would hide the player.
+			int view = tick < 834 ? 0 : tick < 844 ? 1 : 2;
+			float yaw = mc.player.getVehicle().getYRot() + (view == 0 ? 90 : view == 1 ? 40 : 10);
+			mc.setCameraEntity(mc.player);
+			mc.options.setCameraType(net.minecraft.client.CameraType.THIRD_PERSON_FRONT);
+			mc.player.setYRot(yaw);
+			mc.player.yRotO = yaw;
+			mc.player.setYHeadRot(yaw);
+			mc.player.yHeadRotO = yaw;
+			mc.player.setXRot(-25);
+			mc.player.xRotO = -25;
+		}
 		for (int i = 0; i < 3; i++) {
 			if (tick == 832 + i * 10) {
 				shot(mc, "72_ferry_" + i);
 			}
+		}
+		if (tick == 856) {
+			stopFollowing(mc, net.minecraft.client.CameraType.THIRD_PERSON_BACK);
 		}
 		if (tick == 920) {
 			shot(mc, "72_ferry_arrived");
@@ -1991,6 +2026,36 @@ public class ScreenshotHarness implements ClientModInitializer {
 		player.getAbilities().flying = true;
 		player.onUpdateAbilities();
 		player.teleportTo(player.serverLevel(), pos.x, pos.y, pos.z, yaw, pitch);
+	}
+
+	/** A still camera that isn't the player (an armor stand only the client knows about). */
+	private net.minecraft.world.entity.decoration.ArmorStand camera;
+
+	/**
+	 * Films {@code subject} from {@code side} blocks to its right, {@code ahead} blocks in front of it and {@code up} blocks
+	 * above, going by the way it faces (a moving horse or boat stays in the frame).
+	 */
+	private void follow(Minecraft mc, net.minecraft.world.entity.Entity subject, double side, double ahead, double up) {
+		Vec3 forward = Vec3.directionFromRotation(0, subject.getYRot());
+		Vec3 right = new Vec3(-forward.z, 0, forward.x);
+		Vec3 at = subject.position().add(0, 0.8, 0);
+		Vec3 eye = at.add(right.scale(side)).add(forward.scale(ahead)).add(0, up - 0.8, 0);
+		if (camera == null || camera.level() != mc.level) {
+			camera = new net.minecraft.world.entity.decoration.ArmorStand(mc.level, eye.x, eye.y, eye.z);
+			camera.setInvisible(true);
+		}
+		Vec3 d = at.subtract(eye);
+		float yaw = (float) (Math.toDegrees(Math.atan2(d.z, d.x)) - 90);
+		float pitch = (float) -Math.toDegrees(Math.atan2(d.y, Math.sqrt(d.x * d.x + d.z * d.z)));
+		camera.moveTo(eye.x, eye.y - camera.getEyeHeight(), eye.z, yaw, pitch);
+		camera.setYHeadRot(yaw);
+		mc.options.setCameraType(net.minecraft.client.CameraType.FIRST_PERSON);
+		mc.setCameraEntity(camera);
+	}
+
+	private void stopFollowing(Minecraft mc, net.minecraft.client.CameraType type) {
+		mc.setCameraEntity(mc.player);
+		mc.options.setCameraType(type);
 	}
 
 	private static void shot(Minecraft mc, String name) {

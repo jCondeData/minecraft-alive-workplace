@@ -2,6 +2,16 @@
 
 ## Unreleased
 
+### Changed
+- **Villagers sit when they ride**: a guard on horseback sits in the saddle with their legs forward, and a ferryman or
+  a fisher sits in the boat at the oars, instead of standing on the horse's back or looking sunk in the boat.
+
+### Fixed
+- A blueprint with a long number at the end of its name (`house_20260929`, from an imported file) no longer breaks the
+  moods of the villagers who live in it; only up to three digits count as a tier.
+- A bed at the far end of a big building (a large scan, say) now counts as a home in it.
+- The Village Hall's "What next?" tips about homes and the next rank showed the wrong numbers.
+
 ## 0.137.0 — 2026-09-29
 
 ### Added

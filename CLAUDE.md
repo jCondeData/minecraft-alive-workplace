@@ -251,7 +251,9 @@ issue when anything fails: read the latest run at the start of a session.
 - Player-visible text goes through `assets/aliveworkplace/lang/en_us.json`.
 - Art is original; starter builds are original. Textures, item icons and villager outfits follow the owner's
   **minecraft-pixel-art** skill (its palettes, lint and previews; owner, 2026-09-29) and are drawn in
-  `tools/textures/generate.py`.
+  `tools/textures/generate.py`. **Draw each thing the way vanilla draws its kind** (owner, 2026-09-29): a book lies
+  on the diagonal like vanilla's books, a tool follows vanilla's tools, a map vanilla's maps, a workstation is built
+  from its material's tile like the crafting table.
 - Code from GPL-3.0(-or-later) projects such as MineColonies may be adapted **with attribution in the file header**.
   Don't copy code from All-Rights-Reserved mods.
 - Support for other building mods goes by block/item/tag ids or their data files (`ModdedBlocks`, `MaterialFamilies`),

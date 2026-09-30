@@ -90,6 +90,10 @@ class Build:
     def to_nbt(self):
         palette, index, blocks = [], {}, []
         for (x, y, z), key in sorted(self.blocks.items()):
+            if key[0] == "minecraft:structure_void":
+                # "Leave the world as it is here": left out of the file, as the game's own structure block saves it.
+                # Written in, it would be placed as a real block by processors that only skip air (village houses).
+                continue
             if key not in index:
                 index[key] = len(palette)
                 name, props = key

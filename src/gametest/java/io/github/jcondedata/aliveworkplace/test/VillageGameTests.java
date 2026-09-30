@@ -142,8 +142,9 @@ public class VillageGameTests implements FabricGameTest {
 	/**
 	 * B2: villages place the workshop as a legacy pool element, which skips the template's air, so the air cells in its
 	 * bottom layer (around the walls, like vanilla's houses) never cut into the ground. Placing the template with its air
-	 * dug a one-block trench into the test floor all around the house; about one villager in 175 wandered out, dropped
-	 * into it and was stuck there under the shutters, unable to reach the bench.
+	 * cut a ring through the test floor around the house, two blocks deep with the air under the floor; about one
+	 * villager in 175 wandered out of the door, dropped into it and walked round it for the rest of the test (a villager
+	 * put in the ring stayed there 30 times out of 30). With the house placed like a village's, 200 of 200 passed.
 	 */
 	static void workshopTest(GameTestHelper helper, BlockPos spawn, boolean likeAVillage) {
 		Leftovers.clear(helper); // (a jobless villager from a neighbouring test can take the bench first)

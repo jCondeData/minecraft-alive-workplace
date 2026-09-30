@@ -23,6 +23,10 @@
   a minute).
 - Bandits raiding a village at night can no longer be drawn into a vanilla raid.
 
+### Internal
+- The workshop test (B2) no longer fails now and then: it placed the house with its air, which dug a two-deep trench
+  around it in the test floor that a wandering villager could fall into. It now places it the way villages do.
+
 ## 0.137.0 — 2026-09-29
 
 ### Added

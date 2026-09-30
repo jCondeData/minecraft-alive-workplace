@@ -38,6 +38,8 @@ MAGENTA_STILL = 60  # solid pixels of missing-texture magenta in a 960x540 still
 MAGENTA_FRAME = 16  # ... in a 480x270 GIF frame
 ASSET_LINES = re.compile(r"(Missing model|Unable to load model|Missing textures? in model|Unable to resolve texture|"
                          r"Using missing texture|Couldn't load texture|Failed to load texture|Missing sprite)")
+KEY = re.compile(r"^[a-z0-9_\-]+(\.[a-z0-9_\-/]+)+$")
+FOREIGN = re.compile(r"cobblemon|cobbledollars|mega_?showdown|showdown|accessories|owo|fabric|architectury")
 CRASH = re.compile(r"---- Minecraft Crash Report ----|#@!@# Game crashed|Exception in server tick loop")
 
 
@@ -121,7 +123,11 @@ def process(name, raw, out, seconds=None, exit_code=0):
         for key in report.get("missingKeys", []):
             problems.append(f"raw text key on screen: {key}")
         for key in report.get("otherMissingKeys", []):
-            warnings.append(f"another mod's text key has no translation: {key}")
+            if not KEY.match(key) or FOREIGN.search(key):
+                # Another mod's, or plain text passed through the translator (Cobblemon's "12%" and "3/40" bar labels).
+                warnings.append(f"another mod's text key has no translation: {key}")
+            else:
+                problems.append(f"raw text key on screen: {key}")  # ours even without our id in it (entity.minecraft.villager.<job>)
     else:
         problems.append("the scene left no showcase.json (it crashed or never started)")
     if report and not checks:

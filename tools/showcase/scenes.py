@@ -130,8 +130,8 @@ SCENES = [
     # Shopkeeper
     S("shop", "Shopkeeper", "The shop", "the shop screen opened with prices", 60,
       [("01_shop_menu", "Shop screen"), ("02_shop_counter", "The counter")], cobblemon=True),
-    S("counter", "Shopkeeper", "Setting prices at the Shop Counter", "the price list opened with goods and prices", 45,
-      [("01_counter_screen", "Price list"), ("02_counter_price", "A price")]),
+    S("counter", "Shopkeeper", "Setting prices at the Shop Counter", "the price list and a Price Tag's screen opened", 45,
+      [("01_counter_screen", "Price list"), ("02_counter_price", "A price"), ("03_price_tag", "Price Tag")]),
     # Ferryman
     S("ferry_menu", "Ferryman", "Buying a travel ticket", "the ferryman's ticket screen opened", 45,
       [("01_ferry_screen", "Destinations"), ("02_ferry_confirm", "Confirm the fare")]),
@@ -156,6 +156,8 @@ SCENES = [
     S("hall", "Village Hall", "The Village Hall and its screen", "the Village Hall screen opened", 60,
       [("01_hall_block", "The hall"), ("02_hall_people", "People"), ("03_hall_builder", "A builder"),
        ("05_hall_requests", "Requests")]),
+    S("hall_pages", "Village Hall", "The chronicle and trade routes", "the chronicle and trade-route pages opened", 45,
+      [("01_hall_chronicle", "Chronicle"), ("02_hall_routes", "Trade routes")]),
     S("staff", "Everyone at work", "Every workstation with its villager", "every villager took their job", 45,
       [("01_staff", "Every workstation"), ("02_staff_above", "From above")]),
     # Build families

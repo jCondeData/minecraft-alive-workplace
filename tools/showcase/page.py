@@ -121,7 +121,8 @@ def card(r):
     else:
         lines += [f'<li class="bad">✗ {E(x)}</li>' for x in r.get("reasons", [])]
         lines += [f'<li class="ok">✓ {E(c["what"])}</li>' for c in r.get("checks", []) if c.get("pass")]
-    lines += [f'<li class="ok">note: {E(w)}</li>' for w in r.get("warnings", [])[:3]]
+    notes = [w for w in r.get("warnings", []) if not w.startswith("another mod's text key")]  # Cobblemon's HUD: noise here
+    lines += [f'<li class="ok">note: {E(w)}</li>' for w in notes[:3]]
     name = r["scene"]
     gif = f'<img class="gif" src="{name}/{r["gif"]}" alt="{E(r["title"])}, start to end" loading="lazy">' if r.get("gif") else ""
     stills = "".join(

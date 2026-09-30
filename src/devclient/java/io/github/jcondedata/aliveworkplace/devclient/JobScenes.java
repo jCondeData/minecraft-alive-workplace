@@ -102,6 +102,7 @@ final class JobScenes {
 	private static volatile int pickedSlot = -1;
 	/** A screen a job scene films while its job gets going (the Drop Box's). */
 	private static volatile BiConsumer<ServerLevel, ServerPlayer> openDuring;
+	private static volatile BiConsumer<ServerLevel, ServerPlayer> afterDuring;
 
 	static final Map<String, Job> SCENES = new LinkedHashMap<>();
 	static final Map<String, Screen> SCREENS = new LinkedHashMap<>();
@@ -272,19 +273,20 @@ final class JobScenes {
 			return l -> n(ModAttachments.BONE_MEAL_MADE, v) >= 1 && c.countItem(Items.BONE_MEAL) >= 1;
 		}));
 		SCENES.put("netherworker", new Job("the netherworker came back from the Nether with loot", 3000,
-			new Vec3(10, -55.5, 11), new Vec3(3.5, -58.5, 3.5), (level, player) -> {
+			new Vec3(4.5, -56.3, 6.5), new Vec3(2.5, -58.3, -2), (level, player) -> {
 			Villager v = worker(level, STATION, ModBlocks.NETHER_BRAZIER, ModVillagers.NETHER_BRAZIER_POI, ModVillagers.NETHERWORKER);
 			chest(level, chestPos(), new ItemStack(Items.BREAD, 3), new ItemStack(Items.IRON_PICKAXE), new ItemStack(Items.IRON_SWORD),
 				new ItemStack(Items.IRON_CHESTPLATE));
-			for (int dx = -1; dx <= 2; dx++) {
-				level.setBlockAndUpdate(new BlockPos(7 + dx, -60, 7), Blocks.OBSIDIAN.defaultBlockState());
-				level.setBlockAndUpdate(new BlockPos(7 + dx, -56, 7), Blocks.OBSIDIAN.defaultBlockState());
+			// A portal behind the brazier, so the camera sees the worker walk into it and come back.
+			for (int x = 3; x <= 6; x++) {
+				level.setBlockAndUpdate(new BlockPos(x, -60, -5), Blocks.OBSIDIAN.defaultBlockState());
+				level.setBlockAndUpdate(new BlockPos(x, -56, -5), Blocks.OBSIDIAN.defaultBlockState());
 			}
 			for (int y = -59; y <= -57; y++) {
-				level.setBlockAndUpdate(new BlockPos(6, y, 7), Blocks.OBSIDIAN.defaultBlockState());
-				level.setBlockAndUpdate(new BlockPos(9, y, 7), Blocks.OBSIDIAN.defaultBlockState());
+				level.setBlockAndUpdate(new BlockPos(3, y, -5), Blocks.OBSIDIAN.defaultBlockState());
+				level.setBlockAndUpdate(new BlockPos(6, y, -5), Blocks.OBSIDIAN.defaultBlockState());
 			}
-			net.minecraft.world.level.portal.PortalShape.findEmptyPortalShape(level, new BlockPos(7, -59, 7), Direction.Axis.X)
+			net.minecraft.world.level.portal.PortalShape.findEmptyPortalShape(level, new BlockPos(4, -59, -5), Direction.Axis.X)
 				.ifPresent(net.minecraft.world.level.portal.PortalShape::createPortalBlocks);
 			io.github.jcondedata.aliveworkplace.nether.Netherworkers.TRIP_TICKS = 200;
 			return l -> n(ModAttachments.NETHER_TRIPS, v) >= 1 && !io.github.jcondedata.aliveworkplace.nether.Netherworkers.isAway(v);
@@ -436,7 +438,7 @@ final class JobScenes {
 			return l -> g.getItemBySlot(EquipmentSlot.MAINHAND).isEnchanted() && n(ModAttachments.ITEMS_ENCHANTED, lib) >= 1;
 		}, null));
 		SCENES.put("explorer", new Job("the explorer came back from an expedition with finds", 4000,
-			new Vec3(10.5, -51, 14.5), new Vec3(0.5, -60, 0.5), (level, player) -> {
+			new Vec3(6.5, -54, 9), new Vec3(0, -59.5, -0.5), (level, player) -> {
 			Villager v = worker(level, STATION, Blocks.CARTOGRAPHY_TABLE, PoiTypes.CARTOGRAPHER, VillagerProfession.CARTOGRAPHER);
 			chest(level, chestPos(), new ItemStack(Items.BREAD, 4));
 			io.github.jcondedata.aliveworkplace.explore.ExplorerWork.RANGE = 8;
@@ -467,9 +469,8 @@ final class JobScenes {
 			place(level, STATION, ModBlocks.STOREHOUSE);
 			Container store = chest(level, STATION.west(2));
 			Villager porter = EntityType.VILLAGER.spawn(level, STATION.south(), MobSpawnType.COMMAND);
-			// The porter starts once the Drop Box's screen has been filmed (below), while it's still full.
-			level.getServer().tell(new net.minecraft.server.TickTask(level.getServer().getTickCount() + 110,
-				() -> io.github.jcondedata.aliveworkplace.store.Porters.employ(level, porter, STATION)));
+			// The porter starts once the Drop Box's screen has been filmed (the runner calls this), while it's still full.
+			afterDuring = (l, p) -> io.github.jcondedata.aliveworkplace.store.Porters.employ(l, porter, STATION);
 			BlockPos box = new BlockPos(3, -60, -3);
 			place(level, box, ModBlocks.DROP_BOX);
 			Container drop = (Container) level.getBlockEntity(box);
@@ -571,7 +572,7 @@ final class JobScenes {
 				}, 25)),
 			(level, player) -> BlueprintItem.data(player.getMainHandItem()).map(d -> d.structure().equals(
 				io.github.jcondedata.aliveworkplace.blueprint.BlueprintStyles.styled(StarterBlueprints.STONE_HOUSE.id(), "dark_oak"))).orElse(false)));
-		SCREENS.put("counter", new Screen("the Shop Counter's price list opened with goods and prices", new Vec3(2.5, -58.4, 4.5), TARGET,
+		SCREENS.put("counter", new Screen("the Price Tag's screen opened", new Vec3(2.5, -58.4, 4.5), TARGET,
 			(level, player) -> {
 				place(level, STATION, ModBlocks.SHOP_COUNTER);
 				chest(level, STATION.east(2), new ItemStack(Items.OAK_LOG, 64), new ItemStack(Items.BREAD, 24));
@@ -587,8 +588,35 @@ final class JobScenes {
 				player.openMenu(counter);
 			},
 			List.of(step("01_counter_screen", 0, 2),
-				step("02_counter_price", io.github.jcondedata.aliveworkplace.shop.ShopCounterBlockEntity.COLUMNS + 1, 2)),
-			(level, player) -> player.containerMenu instanceof ChestMenu m && m.getRowCount() == 2));
+				step("02_counter_price", io.github.jcondedata.aliveworkplace.shop.ShopCounterBlockEntity.COLUMNS + 1, 2),
+				new Step("03_price_tag", 22, 6, (level, player) -> {
+					Showcase.check(player.containerMenu instanceof ChestMenu m && m.getRowCount() == 2, "the Shop Counter's price list opened");
+					player.closeContainer();
+					player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(ModItems.PRICE_TAG));
+					ModItems.PRICE_TAG.use(level, player, InteractionHand.MAIN_HAND);
+				}, 30)),
+			(level, player) -> player.containerMenu instanceof ChoiceMenu));
+		SCREENS.put("hall_pages", new Screen("the Village Hall's chronicle and trade-route pages opened", new Vec3(2.5, -58.4, 4.5), TARGET,
+			(level, player) -> {
+				level.setBlockAndUpdate(STATION, ModBlocks.VILLAGE_HALL.defaultBlockState()
+					.setValue(io.github.jcondedata.aliveworkplace.hall.VillageHallBlock.FACING, Direction.SOUTH));
+				worker(level, new BlockPos(-4, -60, -3), ModBlocks.BUILDERS_BENCH, ModVillagers.BUILDERS_BENCH_POI, ModVillagers.BUILDER);
+				worker(level, new BlockPos(4, -60, -3), ModBlocks.GUARD_POST, ModVillagers.GUARD_POST_POI, ModVillagers.GUARD);
+				io.github.jcondedata.aliveworkplace.hall.VillageNeeds.check(level, STATION);
+			},
+			List.of(new Step("01_hall_chronicle", -1, 6, (level, player) -> {
+					io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.open(player, STATION);
+					if (player.containerMenu instanceof ChoiceMenu m) {
+						m.press(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.CHRONICLE, player);
+					}
+				}, 30),
+				new Step("02_hall_routes", -1, 6, (level, player) -> {
+					io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.open(player, STATION);
+					if (player.containerMenu instanceof ChoiceMenu m) {
+						m.press(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.ROUTES, player);
+					}
+				}, 30)),
+			(level, player) -> player.containerMenu instanceof ChoiceMenu));
 		SCREENS.put("leader", new Screen("the Trainer Leader took the challenge and the battle started", new Vec3(-4.5, -57.5, 11.5),
 			new Vec3(0.5, -59, 5.5),
 			(level, player) -> {
@@ -619,6 +647,10 @@ final class JobScenes {
 	private Done done;
 	private final AtomicBoolean isDone = new AtomicBoolean(false);
 	private final AtomicBoolean ok = new AtomicBoolean(false);
+
+	private static void command(MinecraftServer server, String command) {
+		server.getCommands().performPrefixedCommand(server.createCommandSourceStack().withSuppressedOutput(), command);
+	}
 
 	/** Called every client tick while the scene runs. */
 	void tick(Minecraft mc, MinecraftServer server, String scene) {
@@ -662,6 +694,8 @@ final class JobScenes {
 		}
 		if (tick == 30) {
 			server.execute(() -> {
+				// Everything holds still until the "Start" still is taken, so it shows the set before any work.
+				command(server, "tick freeze");
 				ScreenshotHarness.hoverLookingAt(player, job.camera(), job.target());
 				done = job.stage().stage(server.overworld(), player);
 			});
@@ -682,11 +716,17 @@ final class JobScenes {
 			if (tick == 120) {
 				mc.setScreen(null);
 				mc.options.hideGui = true;
-				server.execute(() -> ScreenshotHarness.hoverLookingAt(player, job.camera(), job.target()));
+				server.execute(() -> {
+					ScreenshotHarness.hoverLookingAt(player, job.camera(), job.target());
+					if (afterDuring != null) {
+						afterDuring.accept(server.overworld(), player);
+					}
+				});
 			}
 		}
 		if (tick == 90) {
 			ScreenshotHarness.shot(mc, "01_start");
+			server.execute(() -> command(server, "tick unfreeze"));
 		}
 		if (tick > 60 && tick % 10 == 0 && doneAt < 0) {
 			if (isDone.get()) {

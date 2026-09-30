@@ -38,10 +38,13 @@ jobs:
       matrix: ${{ steps.plan.outputs.matrix }}
     steps:
       - uses: actions/checkout@v5
+      - name: Pillow and numpy for the tools' own tests
+        run: sudo apt-get update -q && sudo apt-get install -yq python3-pil python3-numpy > /dev/null
       - id: plan
         run: |
           curl -fsSL -o last.json https://jcondedata.github.io/minecraft-alive-workplace/showcase.json || rm -f last.json
           python3 tools/showcase/scenes.py check
+          python3 tools/showcase/test_showcase.py > /dev/null && python3 tools/showcase/test_showcase_keys.py > /dev/null
           matrix=$(python3 tools/showcase/scenes.py matrix --last last.json)
           echo "matrix=$matrix" >> "$GITHUB_OUTPUT"
           echo "$matrix" | python3 -m json.tool

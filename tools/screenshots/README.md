@@ -11,5 +11,7 @@ What it does:
    `04_cottage`, `05_market_stall`, `06_lookout_tower`, and quits.
 3. Stitches the frames into `versions/1.21.1/run/screenshots/timelapse.gif`.
 
-Edit `ScreenshotHarness#stage` to stage a different scene (e.g. a new job). The devclient source set
-is never packaged into the mod jar.
+Edit `ScreenshotHarness#stage` to stage a different scene (e.g. a new job), or add a job or screen scene to
+`JobScenes`. Every scene records whether its job visibly did its work (`Showcase.check`) and is listed in
+`tools/showcase/scenes.py`: the nightly showcase (`docs/agent/tools.md`) films them all on GitHub. The devclient source
+set is never packaged into the mod jar.

@@ -56,6 +56,34 @@ multi-version layout (ROADMAP, Milestone 19): **Stonecutter**, one Gradle node p
   `SCENE=quarry` a miner digging out a block of stone, `SCENE=forest` a lumberjack felling and replanting four trees, `SCENE=orchard` an orchard keeper picking (adds Cobblemon for apricorns and berries), `SCENE=farm` a farmer working a field, `SCENE=fish` a fisherman with a bobber out, `SCENE=extras` a fisher out in a boat, a guard on horseback and a ferry ride (third person), `SCENE=carpenter` a carpenter making a builder's woodwork, `SCENE=chef` a chef cooking, `SCENE=porter` a porter carrying a miner's goods to the storehouse (and the requests board), `SCENE=hall` the Village Hall and its screen, `SCENE=mail` the mailbox screen and a postman delivering, `SCENE=guard` a close-up of a guard in armor, then fighting three husks and sparring with a Training Dummy (`SCENE=guard_pokemon`: with a Machop and a Dratini from a pasture joining in), `SCENE=staff` every workstation with its villager (then `python3 tools/screenshots/make_gif.py`), `SCENE=missing` a placed blueprint's "still missing" tooltip, `SCENE=tutor` the Move Tutor's lesson screen, `SCENE=trader` a Pokémon Trader's offers `SCENE=shop` the CobbleDollars shop screen, `SCENE=battle` a player battling a Master trainer whose Ampharos Mega Evolves (adds Mega Showdown too: `-Pmega=true`; the scene picks the player's moves, so it is also the end-to-end check that trainer battles work — the game test server can't play a battle out) and `SCENE=smith` a Ball Smith and an Orchard Keeper at work (these and `guard_pokemon` add Cobblemon and CobbleDollars to the client: `-Pcobblemon=true`). `DEBUG=true` logs
   builder/miner decisions. Long scenes take >10 min: start run.sh in the background and poll.
   Never `pkill -f`/`pgrep -f` a pattern that also appears in your own command line (it kills your shell).
+  More scenes, one per job or screen that had none (`src/devclient/.../JobScenes.java`): `beekeeper`, `florist`,
+  `scholar` (and the research screen), `sifter`, `tinkerer`, `composter`, `netherworker`, `undertaker`, `innkeeper`
+  (and the hire screen), `teacher`, `rancher`, `mason`, `dyer`, `nurse`, `smelter`, `toolsmith`, `weaponsmith`,
+  `fletcher`, `shepherd`, `herder`, `alchemist`, `scribe`, `explorer`, `bard`, `dropbox` (the Drop Box and its screen),
+  `fossil` (Cobblemon); screens: `shapes`, `style_menu`, `counter` (the Shop Counter's prices), `ferry_menu`, and with
+  Cobblemon `daycare`, `smith_orders`, `leader` (a Trainer Leader's challenge). `python3 tools/showcase/scenes.py list`
+  lists them all.
+- **The nightly showcase** (`.github/workflows/showcase.yml`, ROADMAP 22.4). Every night at about 10:40 PM Central,
+  GitHub runs every scene in `tools/showcase/scenes.py` (the catalog: each scene's job, and the 2-4 stills the page
+  shows with their labels) in parallel jobs of about half an hour, judges each, and publishes
+  https://jcondedata.github.io/minecraft-alive-workplace/: a GIF from start to end and the stills per scene, grouped by
+  job, with a PASS or FAIL. No Claude session is involved.
+  - A scene passes only if it recorded at least one check and all of them passed (`Showcase.check` in the harness: the
+    job visibly did its work), and no picture looks broken: villagers stuck in walls and text shown as a raw
+    translation key (the harness's `Showcase` class watches for both), missing-texture magenta, blank or missing stills,
+    a crash or running over time (`tools/showcase/process.py`). Missing textures or models in the client log count for
+    the whole run.
+  - Failures open or update the `nightly-tests` issue, with the command that reproduces each scene.
+  - The harness writes `run/screenshots/showcase.json` and small GIF frames (`screenshots/gif/`) for every scene.
+  - **A new scene:** stage it in `ScreenshotHarness` or, simpler, in `JobScenes` (a job scene: stage the set and say
+    when the job is done; a screen scene: open a menu, then the slots to point at). Call `Showcase.check`, and add it to
+    the catalog: `python3 tools/showcase/scenes.py check` (run by the workflow) fails if the two disagree.
+  - **Try it locally:** `python3 tools/showcase/shard.py --scenes "sifter hall" --out build/showcase`, then
+    `python3 tools/showcase/page.py --results build/showcase --site build/showcase-site` and open its `index.html`.
+  - Pushing a change to the harness, `tools/screenshots` or `tools/showcase` runs the whole showcase on GitHub, on any
+    branch. An item branch gets the page as the run's `showcase-site` artifact and its job summary; only `main`
+    publishes and files issues.
+  - The shards are balanced with the times in the published page's `showcase.json` (`scenes.py matrix`).
 - `tools/packtest/run.sh` — boots a real Cobbleverse server (every pack mod, production Fabric) with the newest
   `versions/1.21.1/build/libs` jar (run it on the system's Java 21, not the JDK 25 Gradle uses), generates a vanilla and a Repurposed Structures village and looks for our workstations. Needs
   ~6 GB RAM, ~5 min; don't run it alongside a Gradle build (memory). `PERF=true PLOTS=40` is the performance mode:

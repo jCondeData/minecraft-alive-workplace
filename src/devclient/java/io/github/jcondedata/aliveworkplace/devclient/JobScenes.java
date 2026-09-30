@@ -66,8 +66,9 @@ import net.minecraft.world.phys.Vec3;
 final class JobScenes {
 	/** Where a job scene's workstation goes; its chest is two blocks west. The superflat ground is y = -61. */
 	static final BlockPos STATION = new BlockPos(0, -60, 0);
-	private static final Vec3 CAMERA = new Vec3(7.5, -55.5, 9.5);
-	private static final Vec3 TARGET = new Vec3(0.5, -59.5, 1.5);
+	/** The camera of most job scenes: close in front of the station, what it works on behind it (negative z). */
+	private static final Vec3 CAMERA = new Vec3(4.5, -57, 6.5);
+	private static final Vec3 TARGET = new Vec3(0, -59.6, -0.5);
 
 	/** What a job scene watches for, on the server: the job visibly did its work. */
 	interface Done {
@@ -222,7 +223,7 @@ final class JobScenes {
 		SCENES.put("beekeeper", job("the beekeeper harvested the full hive into the chest", 2400, (level, player) -> {
 			Villager v = worker(level, STATION, ModBlocks.APIARY, ModVillagers.APIARY_POI, ModVillagers.BEEKEEPER);
 			Container c = chest(level, chestPos(), new ItemStack(Items.GLASS_BOTTLE, 2), new ItemStack(Items.DANDELION, 4));
-			BlockPos hive = new BlockPos(4, -59, 3);
+			BlockPos hive = new BlockPos(3, -59, -3);
 			level.setBlockAndUpdate(hive.below(), Blocks.CAMPFIRE.defaultBlockState().setValue(BlockStateProperties.LIT, true));
 			level.setBlockAndUpdate(hive, Blocks.BEEHIVE.defaultBlockState().setValue(BlockStateProperties.LEVEL_HONEY, 5)
 				.setValue(BlockStateProperties.HORIZONTAL_FACING, Direction.SOUTH));
@@ -235,7 +236,7 @@ final class JobScenes {
 			return l -> n(ModAttachments.FLOWERS_GROWN, v) >= 3;
 		}));
 		SCENES.put("scholar", new Job("the scholar finished a level of research", 2400, CAMERA, TARGET, (level, player) -> {
-			BlockPos hall = new BlockPos(5, -60, -3);
+			BlockPos hall = new BlockPos(4, -60, -5);
 			level.setBlockAndUpdate(hall, ModBlocks.VILLAGE_HALL.defaultBlockState()
 				.setValue(io.github.jcondedata.aliveworkplace.hall.VillageHallBlock.FACING, Direction.SOUTH));
 			Villager v = worker(level, STATION, ModBlocks.SCHOLARS_DESK, ModVillagers.SCHOLARS_DESK_POI, ModVillagers.SCHOLAR);
@@ -258,7 +259,7 @@ final class JobScenes {
 		SCENES.put("tinkerer", job("the tinkerer mended the iron golem", 2000, (level, player) -> {
 			Villager v = worker(level, STATION, ModBlocks.TINKERS_BENCH, ModVillagers.TINKERS_BENCH_POI, ModVillagers.TINKERER);
 			chest(level, chestPos(), new ItemStack(Items.IRON_INGOT, 5));
-			var golem = EntityType.IRON_GOLEM.spawn(level, new BlockPos(5, -60, 4), MobSpawnType.COMMAND);
+			var golem = EntityType.IRON_GOLEM.spawn(level, new BlockPos(3, -60, -4), MobSpawnType.COMMAND);
 			golem.setNoAi(true);
 			golem.setHealth(30f);
 			return l -> golem.getHealth() >= golem.getMaxHealth() - 0.5f && n(ModAttachments.GOLEM_REPAIRS, v) >= 1;
@@ -302,7 +303,7 @@ final class JobScenes {
 			return l -> n(ModAttachments.VILLAGERS_REVIVED, u) >= 1 && l.getEntity(id) instanceof Villager back && back.isAlive();
 		}, null));
 		SCENES.put("innkeeper", new Job("a traveller came to stay at the inn", 1200, CAMERA, TARGET, (level, player) -> {
-			for (int x = 4; x <= 6; x += 2) {
+			for (int x = 3; x <= 5; x += 2) {
 				level.setBlockAndUpdate(new BlockPos(x, -60, -3), Blocks.RED_BED.defaultBlockState()
 					.setValue(BlockStateProperties.HORIZONTAL_FACING, Direction.SOUTH)
 					.setValue(BlockStateProperties.BED_PART, net.minecraft.world.level.block.state.properties.BedPart.FOOT));
@@ -323,7 +324,7 @@ final class JobScenes {
 			Villager t = worker(level, STATION, ModBlocks.TEACHERS_DESK, ModVillagers.TEACHERS_DESK_POI, ModVillagers.TEACHER);
 			chest(level, chestPos());
 			io.github.jcondedata.aliveworkplace.school.Schools.LESSONS_NEEDED = 200;
-			for (BlockPos p : List.of(new BlockPos(4, -60, 3), new BlockPos(-3, -60, 4))) {
+			for (BlockPos p : List.of(new BlockPos(3, -60, -3), new BlockPos(-3, -60, -2))) {
 				Villager kid = EntityType.VILLAGER.spawn(level, p, MobSpawnType.COMMAND);
 				kid.setAge(-24000);
 			}
@@ -332,7 +333,7 @@ final class JobScenes {
 		SCENES.put("rancher", job("the rancher tamed and saddled the horse", 2400, (level, player) -> {
 			worker(level, STATION, ModBlocks.FEED_TROUGH, ModVillagers.FEED_TROUGH_POI, ModVillagers.RANCHER);
 			chest(level, chestPos(), new ItemStack(Items.SADDLE));
-			var horse = EntityType.HORSE.spawn(level, new BlockPos(4, -60, 1), MobSpawnType.COMMAND);
+			var horse = EntityType.HORSE.spawn(level, new BlockPos(3, -60, -3), MobSpawnType.COMMAND);
 			return l -> horse.isTamed() && horse.isSaddled();
 		}));
 		SCENES.put("mason", new Job("the mason cut the stone brick stairs and walls the builder needed", 6000,
@@ -354,10 +355,10 @@ final class JobScenes {
 		SCENES.put("nurse", job("the nurse healed the hurt villager and cured the ill one", 2000, (level, player) -> {
 			Villager nurse = worker(level, STATION, ModBlocks.NURSE_STATION, ModVillagers.NURSE_STATION_POI, ModVillagers.NURSE);
 			chest(level, chestPos(), new ItemStack(Items.HONEY_BOTTLE));
-			Villager hurt = EntityType.VILLAGER.spawn(level, new BlockPos(3, -60, 3), MobSpawnType.COMMAND);
+			Villager hurt = EntityType.VILLAGER.spawn(level, new BlockPos(2, -60, -3), MobSpawnType.COMMAND);
 			hurt.setNoAi(true);
 			hurt.setHealth(4f);
-			Villager ill = EntityType.VILLAGER.spawn(level, new BlockPos(-3, -60, 3), MobSpawnType.COMMAND);
+			Villager ill = EntityType.VILLAGER.spawn(level, new BlockPos(-2, -60, -3), MobSpawnType.COMMAND);
 			ill.setNoAi(true);
 			io.github.jcondedata.aliveworkplace.people.Sickness.fallIll(level, ill);
 			return l -> hurt.getHealth() >= hurt.getMaxHealth() - 0.5f && !io.github.jcondedata.aliveworkplace.people.Sickness.isIll(ill)
@@ -401,7 +402,7 @@ final class JobScenes {
 			Villager s = worker(level, STATION, Blocks.LOOM, PoiTypes.SHEPHERD, VillagerProfession.SHEPHERD);
 			chest(level, chestPos(), new ItemStack(Items.SHEARS));
 			List<net.minecraft.world.entity.animal.Sheep> sheep = new ArrayList<>();
-			for (BlockPos p : List.of(new BlockPos(5, -60, 3), new BlockPos(-4, -60, 5))) {
+			for (BlockPos p : List.of(new BlockPos(3, -60, -3), new BlockPos(-3, -60, -4))) {
 				var one = EntityType.SHEEP.spawn(level, p, MobSpawnType.COMMAND);
 				one.setNoAi(true);
 				one.setColor(sheep.isEmpty() ? net.minecraft.world.item.DyeColor.WHITE : net.minecraft.world.item.DyeColor.BROWN);
@@ -412,7 +413,7 @@ final class JobScenes {
 		SCENES.put("herder", job("the herder milked the cow", 2000, (level, player) -> {
 			Villager h = worker(level, STATION, Blocks.SMOKER, PoiTypes.BUTCHER, VillagerProfession.BUTCHER);
 			Container c = chest(level, chestPos(), new ItemStack(Items.BUCKET, 2));
-			var cow = EntityType.COW.spawn(level, new BlockPos(5, -60, 3), MobSpawnType.COMMAND);
+			var cow = EntityType.COW.spawn(level, new BlockPos(3, -60, -3), MobSpawnType.COMMAND);
 			cow.setNoAi(true);
 			return l -> n(ModAttachments.MILK_COLLECTED, h) >= 1 && c.countItem(Items.MILK_BUCKET) >= 1;
 		}));
@@ -464,7 +465,7 @@ final class JobScenes {
 			Container store = chest(level, STATION.west(2));
 			Villager porter = EntityType.VILLAGER.spawn(level, STATION.south(), MobSpawnType.COMMAND);
 			io.github.jcondedata.aliveworkplace.store.Porters.employ(level, porter, STATION);
-			BlockPos box = new BlockPos(5, -60, 3);
+			BlockPos box = new BlockPos(3, -60, -3);
 			place(level, box, ModBlocks.DROP_BOX);
 			Container drop = (Container) level.getBlockEntity(box);
 			drop.setItem(0, new ItemStack(Items.IRON_SWORD));
@@ -659,18 +660,18 @@ final class JobScenes {
 				}
 			});
 		}
-		if (tick == 70 && mc.screen != null) {
+		if (tick == 38 && mc.screen != null) {
 			// A screen opened while staging (only the Drop Box scene does): film it first, as "04_dropbox_screen".
 			mc.options.hideGui = false;
 			ScreenshotHarness.pointAt(mc, 0, 3);
 		}
-		if (tick == 80 && mc.screen != null) {
+		if (tick == 45 && mc.screen != null) {
 			ScreenshotHarness.shot(mc, "04_dropbox_screen");
 			mc.setScreen(null);
 			mc.options.hideGui = true;
 			server.execute(() -> ScreenshotHarness.hoverLookingAt(player, job.camera(), job.target()));
 		}
-		if (tick == 110) {
+		if (tick == 60) {
 			ScreenshotHarness.shot(mc, "01_start");
 		}
 		if (tick > 60 && tick % 10 == 0 && doneAt < 0) {
@@ -679,7 +680,7 @@ final class JobScenes {
 				ScreenshotHarness.shot(mc, String.format("work_%05d", tick)); // the moment it's done: at least one "at work" shot
 			} else {
 				server.execute(() -> isDone.set(done != null && done.test(server.overworld())));
-				if (tick >= 130 && tick % 40 == 10) {
+				if (tick >= 70 && tick % 40 == 30) {
 					ScreenshotHarness.shot(mc, String.format("work_%05d", tick));
 				}
 			}

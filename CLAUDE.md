@@ -135,8 +135,12 @@ Commands:
   `logaudit.py`), with `allow.txt` (log messages that are expected, each with its reason) and `baseline.json` (the
   suite's tests by name; only a Full run updates it).
 - `.github/workflows/nightly.yml` runs the heavy checks on GitHub every night at about 10 PM Central (5 suite runs for
-  flakes, the log audit, the pack boot and soak, screenshot scenes) and opens a `nightly-tests` issue when anything
-  fails.
+  flakes, the log audit, the pack boot and soak) and opens a `nightly-tests` issue when anything fails.
+- `.github/workflows/showcase.yml` films every screenshot scene on GitHub every night (parallel jobs, under an hour)
+  and publishes the owner's showcase page, https://jcondedata.github.io/minecraft-alive-workplace/: a GIF and stills
+  per scene, each with a pass or fail. Failures go into the same `nightly-tests` issue. Every scene is listed in
+  `tools/showcase/scenes.py`; a new feature gets its scene there and in the harness in the same commit
+  (`docs/agent/tools.md`, "The nightly showcase").
 - If Maven Central answers **429**, wait 20 s and retry.
 
 ## GameTest conventions

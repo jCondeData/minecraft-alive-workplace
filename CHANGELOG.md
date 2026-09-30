@@ -25,6 +25,11 @@
 - Our village houses no longer leave invisible holes in the ground in front of their doors (villagers and players
   could fall into them, and a new villager sometimes never reached the workshop's bench).
 
+### Dev
+- A nightly showcase: GitHub films every job, screen and build family in the real game each night and publishes one
+  page with a GIF, stills and a pass or fail per scene (https://jcondedata.github.io/minecraft-alive-workplace/). 33
+  new screenshot scenes cover every job and screen that had none.
+
 ## 0.137.0 — 2026-09-29
 
 ### Added

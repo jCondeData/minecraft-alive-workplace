@@ -156,6 +156,10 @@ public class ScreenshotHarness implements ClientModInitializer {
 			fishScene(mc, mc.getSingleplayerServer());
 			return;
 		}
+		if ("extras".equals(System.getProperty("aliveworkplace.scene"))) {
+			extrasScene(mc, mc.getSingleplayerServer());
+			return;
+		}
 		if ("preview".equals(System.getProperty("aliveworkplace.scene"))) {
 			previewScene(mc, mc.getSingleplayerServer());
 			return;
@@ -1737,6 +1741,130 @@ public class ScreenshotHarness implements ClientModInitializer {
 			}
 		}
 		if (tick == 320) {
+			mc.stop();
+		}
+	}
+
+	// --- Extras: a fisher out in a boat, a guard on horseback, a ferry ride -------------------------
+
+	private void extrasScene(Minecraft mc, MinecraftServer server) {
+		tick++;
+		if (tick == 1) {
+			mc.options.renderDistance().set(8);
+			mc.options.cloudStatus().set(CloudStatus.OFF);
+			mc.options.hideGui = true;
+		}
+		if (tick == 20) {
+			server.execute(() -> {
+				ServerLevel level = server.overworld();
+				level.getGameRules().getRule(GameRules.RULE_DAYLIGHT).set(false, server);
+				level.getGameRules().getRule(GameRules.RULE_DOMOBSPAWNING).set(false, server);
+				level.getGameRules().getRule(ModGameRules.BUILD_DELAY).set(2, server);
+				level.setDayTime(2500);
+				// A: a fisher with a boat by a lake
+				BlockPos barrel = new BlockPos(0, -60, 0);
+				level.setBlockAndUpdate(barrel, Blocks.BARREL.defaultBlockState());
+				if (level.getBlockEntity(barrel) instanceof BaseContainerBlockEntity c) {
+					c.setItem(0, new ItemStack(net.minecraft.world.item.Items.SPRUCE_BOAT));
+				}
+				for (BlockPos p : BlockPos.betweenClosed(new BlockPos(3, -61, 3), new BlockPos(22, -61, 22))) {
+					level.setBlockAndUpdate(p, Blocks.WATER.defaultBlockState());
+				}
+				Villager fisher = EntityType.VILLAGER.spawn(level, new BlockPos(1, -60, 1), MobSpawnType.COMMAND);
+				io.github.jcondedata.aliveworkplace.work.Jobs.employ(level, fisher, barrel, net.minecraft.world.entity.ai.village.poi.PoiTypes.FISHERMAN,
+					net.minecraft.world.entity.npc.VillagerProfession.FISHERMAN);
+				io.github.jcondedata.aliveworkplace.fish.Fishers.start(level, fisher, new ItemStack(net.minecraft.world.item.Items.FISHING_ROD));
+				// B: a guard with a saddled horse by the post
+				BlockPos post = new BlockPos(48, -60, 0);
+				level.setBlockAndUpdate(post, ModBlocks.GUARD_POST.defaultBlockState());
+				BlockPos chest = post.south(2);
+				level.setBlockAndUpdate(chest, Blocks.CHEST.defaultBlockState());
+				if (level.getBlockEntity(chest) instanceof BaseContainerBlockEntity c) {
+					c.setItem(0, new ItemStack(net.minecraft.world.item.Items.IRON_SWORD));
+					c.setItem(1, new ItemStack(net.minecraft.world.item.Items.IRON_HELMET));
+					c.setItem(2, new ItemStack(net.minecraft.world.item.Items.IRON_CHESTPLATE));
+					c.setItem(3, new ItemStack(net.minecraft.world.item.Items.SHIELD));
+				}
+				Villager guard = EntityType.VILLAGER.spawn(level, post.offset(1, 0, 1), MobSpawnType.COMMAND);
+				io.github.jcondedata.aliveworkplace.work.Jobs.employ(level, guard, post, io.github.jcondedata.aliveworkplace.registry.ModVillagers.GUARD_POST_POI,
+					io.github.jcondedata.aliveworkplace.registry.ModVillagers.GUARD);
+				net.minecraft.world.entity.animal.horse.Horse horse = EntityType.HORSE.spawn(level, post.offset(4, 0, 4), MobSpawnType.COMMAND);
+				horse.setTamed(true);
+				horse.equipSaddle(new ItemStack(net.minecraft.world.item.Items.SADDLE), null);
+				// C: two travel posts, a ferryman at the first, and a pond to row across
+				BlockPos harbor = new BlockPos(96, -60, 0);
+				BlockPos far = new BlockPos(96, -60, 48);
+				level.setBlockAndUpdate(harbor, ModBlocks.TRAVEL_POST.defaultBlockState());
+				level.setBlockAndUpdate(far, ModBlocks.TRAVEL_POST.defaultBlockState());
+				var network = io.github.jcondedata.aliveworkplace.travel.TravelNetwork.get(server);
+				network.add(net.minecraft.core.GlobalPos.of(level.dimension(), harbor), "Harbor");
+				var farPost = network.add(net.minecraft.core.GlobalPos.of(level.dimension(), far), "Far Shore");
+				for (BlockPos p : BlockPos.betweenClosed(new BlockPos(92, -61, 3), new BlockPos(104, -61, 20))) {
+					level.setBlockAndUpdate(p, Blocks.WATER.defaultBlockState());
+				}
+				Villager ferryman = EntityType.VILLAGER.spawn(level, harbor.offset(1, 0, 1), MobSpawnType.COMMAND);
+				io.github.jcondedata.aliveworkplace.work.Jobs.employ(level, ferryman, harbor, io.github.jcondedata.aliveworkplace.registry.ModVillagers.TRAVEL_POST_POI,
+					io.github.jcondedata.aliveworkplace.registry.ModVillagers.FERRYMAN);
+				ServerPlayer player = server.getPlayerList().getPlayers().get(0);
+				network.visit(player.getUUID(), farPost);
+				hoverLookingAt(player, new Vec3(-5, -54, -5), new Vec3(11, -61, 11));
+			});
+		}
+		for (int i = 0; i < 6; i++) {
+			if (tick == 240 + i * 60) {
+				shot(mc, "70_boat_" + i);
+			}
+		}
+		if (tick == 600) {
+			server.execute(() -> {
+				ServerPlayer player = server.getPlayerList().getPlayers().get(0);
+				Villager guard = server.overworld().getEntitiesOfClass(Villager.class, new net.minecraft.world.phys.AABB(new BlockPos(48, -60, 0)).inflate(30),
+					v -> v.getVillagerData().getProfession() == io.github.jcondedata.aliveworkplace.registry.ModVillagers.GUARD).stream().findFirst().orElse(null);
+				Vec3 at = guard != null ? guard.position() : new Vec3(48, -60, 0);
+				hoverLookingAt(player, at.add(6, 4, -6), at.add(0, 1, 0));
+			});
+		}
+		for (int i = 0; i < 3; i++) {
+			if (tick == 640 + i * 40) {
+				shot(mc, "71_cavalry_" + i);
+				int k = i;
+				server.execute(() -> {
+					ServerPlayer player = server.getPlayerList().getPlayers().get(0);
+					Villager guard = server.overworld().getEntitiesOfClass(Villager.class, new net.minecraft.world.phys.AABB(new BlockPos(48, -60, 0)).inflate(30),
+						v -> v.getVillagerData().getProfession() == io.github.jcondedata.aliveworkplace.registry.ModVillagers.GUARD).stream().findFirst().orElse(null);
+					if (guard != null) {
+						hoverLookingAt(player, guard.position().add(k % 2 == 0 ? -6 : 6, 3.5, 5), guard.position().add(0, 1.2, 0));
+					}
+				});
+			}
+		}
+		if (tick == 780) {
+			server.execute(() -> {
+				ServerPlayer player = server.getPlayerList().getPlayers().get(0);
+				player.getAbilities().flying = false;
+				player.onUpdateAbilities();
+				player.setGameMode(GameType.SURVIVAL);
+				player.teleportTo(server.overworld(), 97.5, -61, 5.5, 180f, 15f);
+			});
+			mc.options.setCameraType(net.minecraft.client.CameraType.THIRD_PERSON_BACK);
+		}
+		if (tick == 820) {
+			server.execute(() -> {
+				ServerPlayer player = server.getPlayerList().getPlayers().get(0);
+				var network = io.github.jcondedata.aliveworkplace.travel.TravelNetwork.get(server);
+				var far = network.known(player.getUUID(), null).stream().filter(p -> p.name().equals("Far Shore")).findFirst().orElseThrow();
+				io.github.jcondedata.aliveworkplace.travel.Ferrymen.travel(player, io.github.jcondedata.aliveworkplace.travel.Ferrymen.ticket(far));
+			});
+		}
+		for (int i = 0; i < 3; i++) {
+			if (tick == 832 + i * 10) {
+				shot(mc, "72_ferry_" + i);
+			}
+		}
+		if (tick == 920) {
+			shot(mc, "72_ferry_arrived");
+		}
+		if (tick == 940) {
 			mc.stop();
 		}
 	}

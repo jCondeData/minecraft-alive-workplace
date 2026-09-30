@@ -15,6 +15,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.tags.FluidTags;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
@@ -101,6 +102,14 @@ public final class FerryRides {
 			return;
 		}
 		Vec3 at = player.position();
+		BlockPos top = player.blockPosition();
+		if (here.getFluidState(top).is(FluidTags.WATER)) {
+			// Standing or swimming in water: the boat goes on top of it, not under
+			while (here.getFluidState(top.above()).is(FluidTags.WATER)) {
+				top = top.above();
+			}
+			at = new Vec3(at.x, top.getY() + 0.9, at.z);
+		}
 		Vec3 heading = here == to ? Vec3.atCenterOf(landing).subtract(at) : player.getLookAngle();
 		heading = new Vec3(heading.x, 0, heading.z);
 		heading = heading.lengthSqr() < 1.0E-4 ? new Vec3(0, 0, 1) : heading.normalize();
@@ -143,6 +152,9 @@ public final class FerryRides {
 			}
 			ServerLevel level = (ServerLevel) ride.boat.level();
 			if (ride.ferryman != null && ride.ferryman.getVehicle() == ride.boat) {
+				// Eyes on where he's going (not twisted round to the passenger)
+				ride.ferryman.getBrain().setMemory(net.minecraft.world.entity.ai.memory.MemoryModuleType.LOOK_TARGET,
+					new net.minecraft.world.entity.ai.behavior.BlockPosTracker(BlockPos.containing(ride.boat.position().add(ride.heading.scale(8))).above()));
 				if (ride.boat.isInWater()) {
 					Boats.row(ride.boat, ride.boat.position().add(ride.heading.scale(4)), ROW_SPEED);
 				} else {

@@ -14,13 +14,18 @@ import net.minecraft.resources.ResourceLocation;
 public final class BlueprintUpgrades {
 	private static final Pattern TIER = Pattern.compile("^(.+)_(\\d+)$");
 
+	/** The number after the last underscore as a tier, or -1 if it's too long to be one (a timestamp, say). */
+	private static int number(String digits) {
+		return digits.length() > 3 ? -1 : Integer.parseInt(digits);
+	}
+
 	/** The blueprint {@code id} upgrades, going by its name (it may not exist). */
 	public static Optional<ResourceLocation> baseOf(ResourceLocation id) {
 		Matcher m = TIER.matcher(id.getPath());
 		if (!m.matches()) {
 			return Optional.empty();
 		}
-		int tier = Integer.parseInt(m.group(2));
+		int tier = number(m.group(2));
 		if (tier < 2 || tier > 99) {
 			return Optional.empty();
 		}
@@ -34,7 +39,7 @@ public final class BlueprintUpgrades {
 		if (!m.matches()) {
 			return 1;
 		}
-		int tier = Integer.parseInt(m.group(2));
+		int tier = number(m.group(2));
 		return tier >= 2 && tier <= 99 ? tier : 1;
 	}
 
@@ -42,7 +47,7 @@ public final class BlueprintUpgrades {
 	public static ResourceLocation upgradeOf(ResourceLocation id) {
 		Matcher m = TIER.matcher(id.getPath());
 		if (m.matches()) {
-			int tier = Integer.parseInt(m.group(2));
+			int tier = number(m.group(2));
 			if (tier >= 2 && tier < 99) {
 				return ResourceLocation.fromNamespaceAndPath(id.getNamespace(), m.group(1) + "_" + (tier + 1));
 			}

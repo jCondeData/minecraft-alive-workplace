@@ -1,6 +1,6 @@
 package io.github.jcondedata.aliveworkplace.people;
 
-import io.github.jcondedata.aliveworkplace.blueprint.BlueprintLibrary;
+import io.github.jcondedata.aliveworkplace.blueprint.BlueprintStyles;
 import io.github.jcondedata.aliveworkplace.blueprint.BlueprintOutline;
 import io.github.jcondedata.aliveworkplace.blueprint.BlueprintUpgrades;
 import io.github.jcondedata.aliveworkplace.blueprint.Blueprints;
@@ -8,10 +8,13 @@ import io.github.jcondedata.aliveworkplace.build.BuildSiteManager;
 import io.github.jcondedata.aliveworkplace.hall.VillageNeeds;
 import java.util.Optional;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Vec3i;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.npc.Villager;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Homes: a villager's home is the finished building (one a builder put up) that their bed is in. Its tier goes by the
@@ -23,9 +26,6 @@ import net.minecraft.world.entity.npc.Villager;
 public final class Homes {
 	public static final int TIER_2_MOOD = 5;
 	public static final int TIER_3_MOOD = 10;
-	/** How far a finished building's origin may be from a bed inside it (the largest blueprints are 48 across). */
-	static final int SEARCH = 64;
-
 	/** A home: the building's blueprint and its tier. */
 	public record Home(ResourceLocation structure, int tier) {
 		public Component name() {
@@ -38,14 +38,19 @@ public final class Homes {
 		}
 	}
 
-	/** The finished building {@code bed} is in (the highest tier, should two overlap), if any. */
+	/**
+	 * The finished building {@code bed} is in (the highest tier, should two overlap), if any. Every finished building in
+	 * the dimension is looked at (their sizes are cheap to get): imports can be any size, so no search radius is safe.
+	 */
 	public static Optional<Home> at(ServerLevel level, BlockPos bed) {
 		Home best = null;
-		for (BuildSiteManager.Finished f : BuildSiteManager.get(level).finishedNear(level, bed, SEARCH)) {
-			boolean inside = BlueprintLibrary.get(level, f.structure())
-				.map(b -> BlueprintOutline.bounds(f.placement(), b.size()).isInside(bed))
-				.orElse(false);
-			if (inside) {
+		for (BuildSiteManager.Finished f : BuildSiteManager.get(level).finishedIn(level)) {
+			Vec3i size = size(level, f.structure());
+			if (size == null || Math.abs(f.placement().origin().getX() - bed.getX()) >= size.getX() + size.getZ()
+				|| Math.abs(f.placement().origin().getZ() - bed.getZ()) >= size.getX() + size.getZ()) {
+				continue; // (too far away to be in it whichever way it's turned)
+			}
+			if (BlueprintOutline.bounds(f.placement(), size).isInside(bed)) {
 				Home home = new Home(f.structure(), BlueprintUpgrades.tier(f.structure()));
 				if (best == null || home.tier() > best.tier()) {
 					best = home;
@@ -53,6 +58,16 @@ public final class Homes {
 			}
 		}
 		return Optional.ofNullable(best);
+	}
+
+	/** A blueprint's size, from its structure file (a styled one is its base's size), or null if it's gone. */
+	@Nullable
+	private static Vec3i size(ServerLevel level, ResourceLocation id) {
+		try {
+			return level.getServer().getStructureManager().get(BlueprintStyles.base(id)).map(StructureTemplate::getSize).orElse(null);
+		} catch (RuntimeException e) {
+			return null;
+		}
 	}
 
 	/** {@code villager}'s home: the finished building their bed is in, if they have a bed and it's in one. */

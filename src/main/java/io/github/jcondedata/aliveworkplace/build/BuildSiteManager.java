@@ -60,6 +60,17 @@ public final class BuildSiteManager extends SavedData {
 		return out;
 	}
 
+	/** Every finished building in {@code level}. */
+	public List<Finished> finishedIn(ServerLevel level) {
+		List<Finished> out = new java.util.ArrayList<>();
+		for (Finished f : finished) {
+			if (f.placement().dimension().equals(Ids.of(level.dimension()))) {
+				out.add(f);
+			}
+		}
+		return out;
+	}
+
 	/** The finished building of {@code structure} whose outline contains {@code pos}, if any. */
 	public java.util.Optional<Finished> finishedAt(ServerLevel level, ResourceLocation structure, net.minecraft.core.BlockPos pos) {
 		for (Finished f : finished) {

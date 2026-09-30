@@ -68,6 +68,9 @@ public class VillageLedgerItem extends Item {
 			Chat.actionBar(player, Component.translatable("message.aliveworkplace.ledger.too_far", ledger.name()).withStyle(ChatFormatting.YELLOW));
 			return InteractionResultHolder.fail(stack);
 		}
+		if (!VillageProtection.mayChange(server, player, ledger.hall().pos())) {
+			return InteractionResultHolder.fail(stack); // a protected village's screen is only for its owner and their friends
+		}
 		VillageHallScreen.openRemote(serverPlayer, ledger.hall().pos());
 		level.playSound(null, player.blockPosition(), SoundEvents.BOOK_PAGE_TURN, SoundSource.PLAYERS, 0.8f, 1.1f);
 		return InteractionResultHolder.success(stack);

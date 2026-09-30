@@ -128,7 +128,9 @@ public class FisherWork extends Behavior<Villager> {
 
 	@Override
 	protected boolean canStillUse(ServerLevel level, Villager villager, long gameTime) {
-		return canWork(villager);
+		// The game doesn't stop a running behaviour when the activity changes: without this a fisher stayed out on the
+		// water past the end of the shift until the run timed out (stop() brings them ashore).
+		return canWork(villager) && villager.getBrain().isActive(net.minecraft.world.entity.schedule.Activity.WORK);
 	}
 
 	private static boolean canWork(Villager villager) {

@@ -16,6 +16,12 @@
   moods of the villagers who live in it; only up to three digits count as a tier.
 - A bed at the far end of a big building (a large scan, say) now counts as a home in it.
 - The Village Hall's "What next?" tips about homes and the next rank showed the wrong numbers.
+- **Village protection**: a stranger's arrows, tridents and thrown potions no longer hurt a protected village's
+  villagers and animals; and a Village Ledger bound before the village was protected no longer opens its hall for a
+  stranger (who could collect the treasury with it).
+- Guards get off their horse, and fishers come ashore, as soon as their shift ends (they rode or floated on for up to
+  a minute).
+- Bandits raiding a village at night can no longer be drawn into a vanilla raid.
 
 ## 0.137.0 — 2026-09-29
 

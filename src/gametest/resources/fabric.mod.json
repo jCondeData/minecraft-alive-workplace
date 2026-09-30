@@ -17,6 +17,7 @@
 			"io.github.jcondedata.aliveworkplace.test.RidingSpecGameTests",
 			"io.github.jcondedata.aliveworkplace.test.ProtectionSpecGameTests",
 			"io.github.jcondedata.aliveworkplace.test.HallSpecGameTests",
+			"io.github.jcondedata.aliveworkplace.test.CheckBugGameTests",
 			"io.github.jcondedata.aliveworkplace.test.MinerGameTests",
 			"io.github.jcondedata.aliveworkplace.test.LumberjackGameTests",
 			"io.github.jcondedata.aliveworkplace.test.OrchardGameTests",

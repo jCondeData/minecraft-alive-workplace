@@ -149,6 +149,9 @@ public final class VillageRaids {
 			BlockPos at = surface(level, gather.offset(level.random.nextInt(7) - 3, 0, level.random.nextInt(7) - 3));
 			mob.moveTo(at.getX() + 0.5, at.getY(), at.getZ() + 0.5, level.random.nextFloat() * 360f, 0f);
 			mob.finalizeSpawn(level, level.getCurrentDifficultyAt(at), MobSpawnType.EVENT, null);
+			if (camp.isPresent() && mob instanceof net.minecraft.world.entity.raid.Raider raider) {
+				raider.setCanJoinRaid(false); // (finalizeSpawn lets a raider join vanilla's raids again: bandits stay out of them)
+			}
 			mob.setPersistenceRequired();
 			mob.addTag(TAG);
 			if (i >= plain && !(mob instanceof net.minecraft.world.entity.monster.Spider)) {

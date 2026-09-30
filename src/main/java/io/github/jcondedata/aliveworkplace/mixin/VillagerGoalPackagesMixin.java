@@ -85,11 +85,20 @@ abstract class VillagerGoalPackagesMixin {
 	}
 
 	/** In a pillager raid guards don't hide: they keep patrolling (and fight, from CORE). */
-	@Inject(method = {"getRaidPackage", "getPreRaidPackage"}, at = @At("RETURN"), cancellable = true)
+	@Inject(method = "getRaidPackage", at = @At("RETURN"), cancellable = true)
 	private static void aliveworkplace$guardRaidPackage(VillagerProfession profession, float speed,
 			CallbackInfoReturnable<ImmutableList<Pair<Integer, ? extends BehaviorControl<? super Villager>>>> cir) {
 		if (profession == ModVillagers.GUARD) {
-			cir.setReturnValue(io.github.jcondedata.aliveworkplace.guard.GuardPackages.raid(speed));
+			cir.setReturnValue(io.github.jcondedata.aliveworkplace.guard.GuardPackages.raid(speed, net.minecraft.world.entity.schedule.Activity.RAID));
+		}
+	}
+
+	/** And before the raid, the same. */
+	@Inject(method = "getPreRaidPackage", at = @At("RETURN"), cancellable = true)
+	private static void aliveworkplace$guardPreRaidPackage(VillagerProfession profession, float speed,
+			CallbackInfoReturnable<ImmutableList<Pair<Integer, ? extends BehaviorControl<? super Villager>>>> cir) {
+		if (profession == ModVillagers.GUARD) {
+			cir.setReturnValue(io.github.jcondedata.aliveworkplace.guard.GuardPackages.raid(speed, net.minecraft.world.entity.schedule.Activity.PRE_RAID));
 		}
 	}
 

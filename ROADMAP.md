@@ -742,6 +742,14 @@ standard, "even go back and improve upon other builds you've already pushed").
 - [x] Homes: a villager's home is the finished building their bed is in; a tier II house lifts their mood (+5), tier III
   more (+10); the hall's list says where each lives, and "What next?" suggests upgrading when most live in tier I houses
   or none at all (`people/Homes`, the tier by name in `BlueprintUpgrades.tier`; the "homes" tip needs 3 grown-ups)
+- [x] Independent testing (the owner's minecraft-mod-tester skill): `tools/modtest/`, the "Definition of done" in
+  CLAUDE.md, the nightly workflow; the owner's `HomesSpecGameTests`; a Check round over 0.131–0.137 (18 spec tests, 5
+  bugs fixed: strangers' arrows in a protected village, a stranger's ledger on a protected hall, guards and fishers
+  staying mounted/afloat after their shift, bandits joining vanilla raids)
+- [x] Villagers sit when they ride (`VillagerSeatMixin`, the client's `VillagerModelMixin`): guards on horseback,
+  ferrymen and fishers in boats
+- [x] Every texture redrawn with the owner's minecraft-pixel-art skill (`tools/textures/art`, `pxlib`): workstations
+  from their material's tile, outfits with the villager helpers and hat .mcmeta, items like their vanilla kind
 
 ## Milestone 5 — Release
 - [ ] Publish on Modrinth and CurseForge as **Alive Workplace** (Minecraft brand rules: don't lead the name with "Minecraft")
@@ -784,8 +792,9 @@ standard, "even go back and improve upon other builds you've already pushed").
   Open-source builds may be used only if their licence allows it and they're credited; so far everything is original.
 
 - **Village protection** (2026-09-29): a setting on the Village Hall, off unless its owner turns it on.
-- **No new pixel art for now** (2026-09-29): the owner is making a pixel-art skill for textures, skins and models; until
-  it's handed over, don't draw new textures or item/block art (reuse existing textures and vanilla ones). Builds are fine.
+- **Pixel art** (2026-09-29): textures, item icons and outfits follow the owner's minecraft-pixel-art skill, and each
+  thing is drawn the way vanilla draws its kind (a book lies like vanilla's books, tools like tools); recipes in
+  `tools/textures/art`.
 
 - **Multi-version** (2026-09-29): follow the minecraft-mod-engineer skill. Keep today's feature packages (the build
   enforces the layers on them); no partial 26.3 release; jar names `<ver>+<mc>` from the Stonecutter phase; feature
@@ -805,3 +814,8 @@ standard, "even go back and improve upon other builds you've already pushed").
 - 2026-09-29: `VillageGameTests.aVillagerMovesIntoTheWorkshop` failed once on CI (commit 49ae713: the villager never
   took the bench in 2400 ticks) and passed on the next push; 17 runs in a row passed locally. If it fails again, look for
   leftover blocks from earlier batches blocking the way to the bench.
+  2026-09-29 (later): it failed once more in the tester's full-suite run (a mutant run whose mutant couldn't touch it);
+  10/10 alone and 3 more full runs passed. Still unexplained.
+- 2026-09-29, **for the owner**: a guard also rides a saddled **camel** (it counts as a horse to the game), though the
+  changelog promises horses, donkeys and mules. Keep camels as cavalry, or horses/donkeys/mules only? The tester's test
+  `aCamelIsNotCavalry` (branch `tests/check-0.137-riding-protection`) is waiting on the answer.

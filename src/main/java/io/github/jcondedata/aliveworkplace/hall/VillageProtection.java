@@ -37,8 +37,9 @@ import net.minecraft.world.level.block.state.BlockState;
  * A protected village (the Village Hall's setting, off unless its owner turns it on): inside the hall's area —
  * {@link VillageHalls#RADIUS} blocks across the map from the hall, at any height — only the hall's owner, their friends
  * ({@code /workplace friend add}) and operators may break or place blocks, open chests and other blocks, empty buckets,
- * or hurt the villagers, golems, animals, armor stands and item frames. Anyone may still come in, open doors and gates,
- * press buttons, ring the bell, use a crafting table, trade with the villagers and open their own mailbox. The owner is
+ * or hurt the villagers, golems, animals, armor stands and item frames (by hand, or with arrows, tridents and potions),
+ * and only they may open the hall's screen with a Village Ledger. Anyone may still come in, open doors and gates, press
+ * buttons, ring the bell, use a crafting table, trade with the villagers and open their own mailbox. The owner is
  * whoever placed the hall (a hall from before this, or placed by a machine, is claimed by the first player to turn its
  * protection on). {@code villageProtection: false} in the config turns the setting off on the whole server.
  */
@@ -61,6 +62,9 @@ public final class VillageProtection {
 		Platform.get().allowUseItem((player, level, hand) ->
 			!(player.getItemInHand(hand).getItem() instanceof BucketItem) || mayChange(level, player, player.blockPosition()));
 		Platform.get().allowAttackEntity((player, level, entity) -> !kept(entity) || mayChange(level, player, entity.blockPosition()));
+		// Arrows, tridents, thrown potions and the like: the player who threw or shot them (their hits in melee are above)
+		Platform.get().allowDamage((entity, source, amount) -> !(source.getEntity() instanceof Player player) || source.getDirectEntity() == player
+			|| !kept(entity) || mayChange(entity.level(), player, entity.blockPosition()));
 		Platform.get().onUseEntity((player, level, hand, entity, hit) ->
 			(entity instanceof HangingEntity || entity instanceof ArmorStand) && !mayChange(level, player, entity.blockPosition())
 				? InteractionResult.FAIL : InteractionResult.PASS);

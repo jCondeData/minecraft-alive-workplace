@@ -68,12 +68,16 @@ public class GuardPatrol extends Behavior<Villager> {
 	private long nextHorseSearch;
 	private static final int HORSE_SEARCH_EVERY = 200;
 
-	public GuardPatrol() {
+	/** The activities this patrol belongs to: it ends when the guard's day moves on (off watch, the raid over). */
+	private final java.util.Set<net.minecraft.world.entity.schedule.Activity> activities;
+
+	public GuardPatrol(net.minecraft.world.entity.schedule.Activity... activities) {
 		super(ImmutableMap.of(
 			MemoryModuleType.JOB_SITE, MemoryStatus.VALUE_PRESENT,
 			MemoryModuleType.WALK_TARGET, MemoryStatus.REGISTERED,
 			MemoryModuleType.LOOK_TARGET, MemoryStatus.REGISTERED
 		), 1200);
+		this.activities = java.util.Set.of(activities);
 	}
 
 	@Override
@@ -83,7 +87,10 @@ public class GuardPatrol extends Behavior<Villager> {
 
 	@Override
 	protected boolean canStillUse(ServerLevel level, Villager villager, long gameTime) {
-		return !villager.isSleeping() && Builders.benchPos(villager).isPresent();
+		// The game doesn't stop a running behaviour when the activity changes: without this the guard rode on (or
+		// patrolled on) past the end of the watch until the run timed out.
+		return !villager.isSleeping() && Builders.benchPos(villager).isPresent()
+			&& activities.stream().anyMatch(villager.getBrain()::isActive);
 	}
 
 	@Override

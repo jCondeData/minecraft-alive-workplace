@@ -1,272 +1,193 @@
 # Working on Alive Workplace
 
-Fabric mod for **Minecraft 1.21.1** (Mojang mappings, Java 21, Fabric API 0.116.17). Villagers do
-real jobs; the first and most important job is the **Builder**, who builds blueprints.
-The owner (Jesse) does not write code: sessions are expected to work autonomously from
-`ROADMAP.md`, keep the build green, and explain results in plain language.
+Fabric mod for **Minecraft 1.21.1** (Mojang mappings, Java 21, Fabric API 0.116.17). Villagers do real jobs; the
+flagship is the **Builder**, who builds blueprints. The owner (Jesse) doesn't write code. Sessions work
+autonomously from `ROADMAP.md`, keep `main` green, and explain results in plain language, with pictures.
 
-For mod work use the **minecraft-mod-engineer** skill (not the older minecraft-mod-dev). The build follows its
-multi-version layout (ROADMAP, Milestone 19): **Stonecutter**, one Gradle node per Minecraft version under
-`versions/<mc>/`, built from the one `src/`. Today there is one node, **1.21.1** (the Cobbleverse pack's, and the
-`vcsVersion`: the checked-in sources are written for it); a 26.x node is on hold until the owner says go.
-- Files: `settings.gradle.kts` (nodes), `stonecutter.gradle.kts` (constants, swaps), `stonecutter.properties.toml` (the
-  mod's version, each node's Fabric API, optional mods, compat-test mods), `build.gradle.kts` (shared by every node),
-  `gradle.properties` (Gradle options, `loomx.loom_version`).
-- Outputs per node: jar `versions/1.21.1/build/libs/alive-workplace-<version>+1.21.1.jar`, test logs
-  `versions/1.21.1/build/run/gameTest/logs/latest.log` and `.../run/compatGameTest/...`, dev runs in `versions/1.21.1/run`.
-  Node tasks: `./gradlew :1.21.1:runClient` etc.; a bare `./gradlew build` builds every node.
-- Optional mods: the whole of `compat/cobblemon/` and `compat/cobbledollars/` (and their lines in `compat/Compat`) sit
-  inside `//? if cobblemon {` … `//?}` (constants from `deps.compat.<mod>` in the toml), so a node without the mod
-  doesn't compile them. **Only `//` comments inside guarded code** (no `/* */` or `/** */`: commenting a block out
-  would break). RCT is reflection and needs no guard.
-- **Every `@GameTest` has a swap line above it**: `//$ gametest AREA`, `//$ gametest_ticks AREA '400'`,
-  `//$ gametest_batch AREA '"name"'` or `//$ gametest_ticks_batch AREA '400' '"name"'` (arguments that aren't plain
-  names in single quotes). On 1.21.1 the swap writes exactly the annotation below it; newer nodes get Fabric's.
-- **Round trip before committing:** `./gradlew "Refresh active project"` must leave `git diff` unchanged (if not, a guard
-  or swap line doesn't match), and the active project must be the vcsVersion (`./gradlew "Reset active project"`).
+The goal now is a polished public **1.0** (see ROADMAP.md): builders first, then visuals, then performance.
+
+## Skills (use them; they hold the details this file leaves out)
+
+- **minecraft-mod-engineer:** all mod code, builds, versions, compat, publishing (not the older minecraft-mod-dev).
+- **minecraft-mod-tester:** independent testing. Every finished item goes through a tester subagent (below).
+- **minecraft-pixel-art:** every texture, item, outfit and GUI sprite, drawn the way vanilla draws its kind (a book
+  like vanilla's books, a tool like its tools). No art outside it. Recipes: `tools/textures/art`.
+- **minecraft-architect:** every build and blueprint, checked against `tools/blueprints/STYLE.md` in a render.
+
+## The session loop
+
+Several sessions may work at once: the owner's chat and scheduled night runs. `tools/agent/sessions.py` keeps them
+apart, and `docs/agent/sessions.md` explains how (read it once per session). Call yourself `chat`, or
+`night-<MMDD>-<HHMM>` (UTC start time) in a scheduled run.
+
+**Start:**
+1. `git fetch`, then `python3 tools/agent/sessions.py status --as <you>`. Check the latest nightly test run and any
+   open `nightly-tests` issue (how: `docs/agent/sessions.md`, "Health first"); anything red is a bug.
+2. Read the top of ROADMAP.md ("How to work this file"), its Bugs, and its Notes with the latest handoffs.
+3. Read `git log --oneline -15 origin/main` and the *Unreleased* part of CHANGELOG.md.
+4. Set up Java once per container (below).
+5. Run `./gradlew --max-workers=1 :1.21.1:runGameTest` on the newest `main`. If something already fails, add it with
+   `sessions.py bug` and fix it first.
+
+**Work:**
+1. `sessions.py claim <id> --as <you>` for the item `status` named. You're now on the branch `item/<id>`. Push it at
+   least every 30 minutes, with commit messages that say what's done and what's next: a session can be cut off at
+   any time, and the next one continues from your branch.
+2. Read the code you will change before changing it. Never guess at an API, a method name or a file you haven't
+   opened. For Minecraft and Fabric APIs, use the engineer skill's `api.py` or `genSources`.
+3. Build to the item's **Done when**. If it's unclear or impossible as written, run
+   `sessions.py pause <id> --as <you> --blocked "owner: <question>" --note "<what's done>"`, ask in your next
+   message, and take the next item. Don't invent the spec.
+4. Write GameTests for the behaviour (conventions below). Tests serve the feature:
+   - if a test seems wrong, say so in the Notes;
+   - never special-case code just to pass a test;
+   - never weaken or delete a test to get green.
+
+**Finish each item:**
+1. Run `./gradlew --max-workers=1 build`. It must be green.
+2. Hand the change to a fresh tester subagent (Agent tool), using the handoff prompt from the minecraft-mod-tester
+   skill's `references/automation.md`: tier Check, range = `origin/main..HEAD`, spec = the item's text and its Done
+   when.
+   - Fix what it finds and hand back, 3 rounds at most.
+   - A failing bug test lands only together with its fix.
+   - Still failing after 3 rounds: `sessions.py pause <id> --as <you> --blocked "tester: <why>" --note "<what's
+     left>"`. The work stays on its branch; `main` never sees it.
+3. If a player can see or feel the change, playtest it with the bot and make the review package
+   (`docs/agent/review.md`), with a GIF of anything that moves. If not, there's no package: land with `--no-review`.
+4. Add a CHANGELOG line under *Unreleased* and commit. Stage files by name, not with `git add -A`: stray files such
+   as uncommitted bug tests must not ride along.
+5. `sessions.py land <id> --as <you>`: it merges the newest `main` in, builds again, ticks the item
+   `(review: pending)` and pushes to `main`. Run it in the background and poll it, since the build takes minutes
+   (`docs/agent/sessions.md`). Then send the review package straight away.
+6. Take the next item. Don't wait for the review.
+
+**End of session**, or when the context gets long:
+- Land what's green; `sessions.py pause` what isn't. Leave nothing unpushed.
+- `sessions.py handoff "<in progress, next, traps>" --as <you>`.
+
+The next session starts fresh from these files, so write down anything it needs to know. When compacting, keep the
+list of modified files, the current item and its Done when, and the test commands.
+
+## Reporting to the owner
+
+- Show, don't tell: screenshots, GIFs and numbers from this session's tool results.
+- Before sending a status, check each claim against a tool result from this session. Anything not run is "not
+  tested", never "works".
+- Keep it short: what changed from a player's point of view, what you want him to judge, and the tester's verdict
+  and risks.
+- He wants to be hands-off. He judges looks from screenshots and behaviour from GIFs; work with nothing to see is
+  accepted without him (`land --no-review`) and only listed.
+- Ask only for what is his to decide: design choices, anything destructive or public, and the release channel.
+  Everything else: decide, write the decision in the Notes, and carry on.
+- Before ending a turn, read your last paragraph. If it promises work ("next I'll…"), do that work now or put it in
+  the Notes.
 
 ## Layers (enforced by `./gradlew checkLayers`, part of `build`)
-The feature packages keep their names (owner's decision), but everything outside `platform/fabric/`, `compat/` and
-`mixin/` is **core** and follows the skill's rules:
-- **The loader only through `platform/`.** `Platform.get()` (found through `META-INF/services`) has mod checks, the config
-  folder, events (`onServerTick`, `onLevelTick`, `onEntityLoad`, `onUseEntity`, `allowDamage`...), packets
-  (`clientbound`/`serverbound`/`send`), data reload listeners, POI/trade/game-rule/creative-tab registration, menus with
-  data, `Attachment` (data saved on villagers: declare with `Attachment.saved(name, codec)` in `registry/ModAttachments`,
-  then `ModAttachments.X.get(villager)`/`set`/`getOrElse`...) and `ItemStores` (chests and modded storage). Fabric's side is
-  `platform/fabric/`; its entrypoint `AliveWorkplaceFabric` calls `AliveWorkplace.init(Compat::init)`.
-- **Other mods only through `compat/`** and extension points (below).
-- **Minecraft APIs that change between versions through `mc/`**: `Chat` (chat/action bar), `Nbt` (reading saved data,
-  UUIDs), `Players.level`, `Damage.hurt`, `Ids.of(key)`, `Lookup` (registries), `Recipes`, `Interact.success`, `Rules`
-  (game rules), `Reg` (registering blocks, items, block entities, entities). Use them instead of the raw calls; use
-  `level.isClientSide()` (the method) and `entity.level().getServer()`. Version switches (`//?`) only go in `mc/` and
-  `platform/`.
-- Allowed imports in core: Minecraft, the JDK, `com.mojang`, Gson/Guava, JetBrains annotations, slf4j, JOML, fastutil
-  and our own packages (not `compat.*` or `platform.fabric.*`). The check also refuses Fabric's attachment methods.
 
-**Gradle runs on JDK 25** (Minecraft 1.21.1 still compiles and runs on the Java 21 toolchain it fetches). Once per
-container: `source <minecraft-mod-engineer skill>/scripts/setup_env.sh`; then prefix Gradle commands with
-`export JAVA_HOME=/root/.local/jdk-25 PATH=/root/.local/jdk-25/bin:$PATH;`. With 7 GB of RAM add `--max-workers=1`.
+- **Core** is everything outside `platform/fabric/`, `compat/` and `mixin/`, and follows the engineer skill's rules.
+  Core may import only Minecraft, the JDK, `com.mojang`, Gson/Guava, JetBrains annotations, slf4j, JOML, fastutil and
+  our own packages. Not `compat.*` or `platform.fabric.*`: that keeps the mod portable. The check also refuses
+  Fabric's attachment methods.
+- **The loader only through `platform/`.** `Platform.get()` covers:
+  - events (`onServerTick`, `onUseEntity`, …);
+  - packets;
+  - reload listeners;
+  - registration (POIs, trades, game rules, creative tabs);
+  - menus;
+  - `Attachment`: data saved on villagers, declared in `registry/ModAttachments`;
+  - `ItemStores`: chests and modded storage.
+- **Other mods only through `compat/`** and extension points (`work/Extension`), which fall back when nothing fills
+  them. `Compat.init` fills them after `isModLoaded`.
+- Cobblemon, RCT and CobbleDollars are optional: their classes live only in `compat/<mod>/`, they are
+  `modCompileOnly` and listed in `suggests`, and they are never a hard `depends`. The mod must run without them.
+- **Minecraft APIs that change between versions go through `mc/`** (`Chat`, `Nbt`, `Damage`, `Ids`, `Lookup`,
+  `Recipes`, `Reg`, …). Version switches (`//?`) only go in `mc/` and `platform/`.
+- Stonecutter: one node today (1.21.1, the `vcsVersion`). Every `@GameTest` has a `//$ gametest…` swap line above it.
+  `./gradlew "Refresh active project"` must leave `git diff` unchanged before committing.
+- Guarded code (`//? if cobblemon {`) uses only `//` comments: a `/* */` inside it breaks when Stonecutter comments the
+  block out.
 
-## Session checklist
-1. `git pull`, read `ROADMAP.md` (priorities + owner decisions) and the latest `CHANGELOG.md` entries.
-2. Pick the **next unchecked roadmap item(s)** in order. Keep each change reviewable (one feature per commit/PR).
-3. Implement with **gametests** for any behaviour (see `src/gametest`), with the `//$ gametest…` line above each
-   `@GameTest` (above). Pure-logic checks can use `FabricGameTest.EMPTY_STRUCTURE`.
-   In both test areas (`big_area`, `build_area`) helper **y = 1 is the floor**: put blocks and villagers at y = 2 (a villager spawned
-   at y = 1 is inside the floor and suffocates within ~200 ticks; older compat tests that finish quickly still use y = 1).
-   Tests in one batch run side by side 5 blocks apart, and entities that wander outside a test area survive into later
-   batches at the same spot. A test that can be disturbed by neighbours (guards, long builds) gets `batch = "<its name>"`
-   and calls `Leftovers.clear(helper)` first. Blocks built higher than the test area (`build_area` is 8 tall,
-   `big_area` 18) are never cleared either: tall builds belong in `big_area`. To hunt a flaky test, a temporary `@GameTestGenerator` returning a dozen
-   copies of it (each in its own batch) shows the failure rate in one run.
-4. Run `./gradlew build` — this compiles, packages and runs every gametest on a headless server. **Never push a red build.**
-5. Tick the roadmap box, add a `CHANGELOG.md` line under *Unreleased*, commit, push to `main`.
-6. If blocked or a decision belongs to the owner, write it under *Notes / blocked* in `ROADMAP.md` and move on to the next item.
+## Commands (details and every screenshot scene: `docs/agent/tools.md`)
 
-## Definition of done: independent testing
-A change isn't done when the build is green; it's done when an independent tester has tried to break it.
-1. When the change is complete and `./gradlew build` passes, launch a fresh tester subagent (Agent tool)
-   with the handoff prompt from the minecraft-mod-tester skill (references/automation.md): tier Check,
-   range = this session's commits, spec = the roadmap item / owner's request.
-2. Fix what it reports (bugs come back as failing tests), then hand back to a fresh tester; at most 3 rounds,
-   then report what is still open.
-3. Before bumping the version for a release: tier Full.
-4. In the summary for the owner, include the tester's verdict and its "Not tested / risks" list.
-Never delete, skip or weaken a test to get a green build.
-The tester's scripts are in `tools/modtest/` (copied from the skill: `scope.py`, `langcheck.py`, `inventory.py`, `mutate.py`,
-`results.py`, `logaudit.py`), with `allow.txt` (log messages that are expected, each with its reason) and `baseline.json`
-(the suite's tests by name, updated by a Full run). `.github/workflows/nightly.yml` runs the heavy checks every night on
-GitHub (5 suite runs for flakes, the log audit, the pack boot and soak, screenshot scenes) and opens a `nightly-tests`
-issue when anything fails: read the latest run at the start of a session.
+Set up Java once per container:
+`source <minecraft-mod-engineer skill>/scripts/setup_env.sh`. Then prefix Gradle commands with
+`export JAVA_HOME=/root/.local/jdk-25 PATH=/root/.local/jdk-25/bin:$PATH;` (use the path setup_env prints).
 
-## Commands
-- `./gradlew build` — every node: compile + `checkLayers` + jar + gametests (+ compat gametests on 1.21.1). CI runs exactly this
-- `./gradlew runGameTest` — only the gametests (~10 s of game time, ~1 min total)
-- `./gradlew runCompatGameTest` — gametests in `src/compattest` with Chipped, Rechiseled, Supplementaries, Cobblemon, Repurposed Structures, CobbleDollars, Mega Showdown (+ Accessories, owo-lib), and the pack's
-  Handcrafted, Beautify, CobbleFurnies, Carved Wood, Moar Concrete, Sophisticated Storage, Tom's Storage, and Cobbleworkers (not in the pack) (+ libraries)
-  installed from Modrinth maven (`tests.compat_mods` in the toml's 1.21.1 section; bundled jars are unpacked into
-  `versions/1.21.1/build/compat-nested`).
-  Part of `build`. Add a mod from the pack here when adding support for it. Nested jars are unpacked recursively
-  (Cobblemon → Fabric Language Kotlin → Kotlin libraries); owo-sentinel is skipped (it refuses to load next to owo-lib).
-  `CompatTestSetup` fires Architectury's server-starting event for the game test server (Architectury only fires it
-  for dedicated/integrated servers, and Mega Showdown sets up on it). The Kotlin Gradle plugin is applied only so Loom remaps
-  Kotlin metadata in Cobblemon; without it Cobblemon crashes in dev with `ClassNotFoundException: net.minecraft.class_…`.
-- `./gradlew :1.21.1:genSources` — decompiled Minecraft sources for reading vanilla code; they land in
-  `.gradle/loom-cache/minecraftMaven/net/minecraft/minecraft-common-*/**/**-sources.jar` (unzip and grep)
-- `python3 tools/blueprints/generate.py` — regenerates starter blueprints + test fixtures (needs `pip install nbtlib`).
-  The kit (`Build`, roofs, windows, frames, texture mixes, `finish()` for stair corners and fence joins) is `kit.py`, the
-  starter builds `starter.py`, the village houses `village.py`. **Read `tools/blueprints/STYLE.md` before drawing a build.**
-- `tools/blueprints/render/preview.sh front,back starter_cottage "village_house('plains', kitchen)"` — renders builds to
-  PNGs in seconds (Lodestone in headless Chromium; `npm install` in that folder first) into `build/blueprint-renders`
-- `python3 tools/textures/generate.py` — regenerates textures (Pillow)
-- `tools/screenshots/run.sh` — renders the real client headless (Xvfb) and saves screenshots + a timelapse GIF
-  of builders at work into `versions/1.21.1/run/screenshots`; use it to check anything visual and to show the owner progress.
-  `SCENE=table` shows the Blueprint Table screens, `SCENE=preview` the ghost preview and the status above a builder,
-  `SCENE=gallery` every starter blueprint (front and back; `SCENE=workshops` the Tinker's Workshops and Nether Gates), `SCENE=decor` the decorations, `SCENE=defences` the walls and gates, `SCENE=camp` a Settler's Wagon's camp, `SCENE=styles` the Cottage II and Stone House II in every style, `SCENE=village WORKSHOP_WEIGHT=200` one village of each type with workshops (`HOUSE_WEIGHT=60` for the other houses),
-  `SCENE=quarry` a miner digging out a block of stone, `SCENE=forest` a lumberjack felling and replanting four trees, `SCENE=orchard` an orchard keeper picking (adds Cobblemon for apricorns and berries), `SCENE=farm` a farmer working a field, `SCENE=fish` a fisherman with a bobber out, `SCENE=extras` a fisher out in a boat, a guard on horseback and a ferry ride (third person), `SCENE=carpenter` a carpenter making a builder's woodwork, `SCENE=chef` a chef cooking, `SCENE=porter` a porter carrying a miner's goods to the storehouse (and the requests board), `SCENE=hall` the Village Hall and its screen, `SCENE=mail` the mailbox screen and a postman delivering, `SCENE=guard` a close-up of a guard in armor, then fighting three husks and sparring with a Training Dummy (`SCENE=guard_pokemon`: with a Machop and a Dratini from a pasture joining in), `SCENE=staff` every workstation with its villager (then `python3 tools/screenshots/make_gif.py`), `SCENE=missing` a placed blueprint's "still missing" tooltip, `SCENE=tutor` the Move Tutor's lesson screen, `SCENE=trader` a Pokémon Trader's offers `SCENE=shop` the CobbleDollars shop screen, `SCENE=battle` a player battling a Master trainer whose Ampharos Mega Evolves (adds Mega Showdown too: `-Pmega=true`; the scene picks the player's moves, so it is also the end-to-end check that trainer battles work — the game test server can't play a battle out) and `SCENE=smith` a Ball Smith and an Orchard Keeper at work (these and `guard_pokemon` add Cobblemon and CobbleDollars to the client: `-Pcobblemon=true`). `DEBUG=true` logs
-  builder/miner decisions. Long scenes take >10 min: start run.sh in the background and poll.
-  Never `pkill -f`/`pgrep -f` a pattern that also appears in your own command line (it kills your shell).
-- `tools/packtest/run.sh` — boots a real Cobbleverse server (every pack mod, production Fabric) with the newest
-  `versions/1.21.1/build/libs` jar (run it on the system's Java 21, not the JDK 25 Gradle uses), generates a vanilla and a Repurposed Structures village and looks for our workstations. Needs
-  ~6 GB RAM, ~5 min; don't run it alongside a Gradle build (memory). `PERF=true PLOTS=40` is the performance mode:
-  `/workplace benchmark` (registered only with `-Daliveworkplace.benchmark=true`) fills an area with busy workers,
-  `tick query` gives tick times before/after, and `tools/packtest/perf.py` reads a JFR profile of the server thread
-  (share in our code by job, villager pathfinding). Workers set walk targets through `Walker.requestWalk`, which waits
-  after a failed path: re-asking every tick made pathfinding over half the server's time.
-- Tests that grow trees with a vanilla feature pass a fixed `RandomSource` (see `LumberjackGameTests.shapes()`): with
-  the level's random, a huge fungus grows twice as tall one time in twelve and CI failed on a shape nobody had seen.
-- CI logs are readable without a token: `curl -sL https://api.github.com/repos/jCondeData/minecraft-alive-workplace/actions/jobs/<job id>/logs`
-  (job ids from `.../actions/runs/<run id>/jobs`).
-- If Maven Central answers **429**, wait ~20 s and retry; it is rate limiting, not a real failure.
+This container has 7 GB of RAM:
+- Always pass `--max-workers=1`.
+- Only one Minecraft process at a time (a build, the pack test or the screenshot client).
+- Never `pkill -f` a pattern that also appears in your own command line: it kills your shell.
 
-## Layout (`src/main/java/io/github/jcondedata/aliveworkplace/`)
-- `registry/` — blocks, items, data components, attachments, profession/POI/schedule, gamerules, trades
-- `blueprint/` — `Blueprint` (format-independent model), `BlueprintLibrary` (backed by the vanilla
-  structure template manager), `BlueprintItem`, `BlueprintOutline` (particle preview), `StarterBlueprints`,
-  `BlueprintUpgrades` (`<name>_2` upgrades `<name>`; finished builds are remembered in `BuildSiteManager`;
-  `build/Upkeep` repairs them when blocks go missing),
-  `ScanToolItem` (survival capture: two corners → `scans/<player>/<name>`), mirroring via `BlueprintData.mirrored` (style screen),
-  `BlueprintStyles` (styles from `data/*/blueprint_styles/*.json`: a styled blueprint is the id
-  `aliveworkplace:styled/<style>/<ns>/<path>`, which `BlueprintLibrary` resolves by swapping the base's blocks),
-  `StylePicker` (sneak-right-click the air with a blueprint)
-- `build/` — the builder: `BuildPlan` (ordered steps per stage), `BuildSite` + `BuildSiteManager`
-  (per-dimension saved data), `BuilderWork` (the villager Behavior that does the work), `Builders`
-  (hand-over, status, finish, cancel), `MaterialRules` (block → item cost, stage, "is this done"),
-  `SupplyContainers` (chests near the bench, through `platform/ItemStores`: Fabric's transfer API), `BuilderPackages`, `BuilderEvents`
-- `build/Paths`, `build/PathWork` — the dirt path a builder lays from a finished building to the bell or Village Hall
-- `mine/` — the miner: `QuarryMarkerItem`/`QuarryData`, `QuarrySite` + `QuarrySiteManager`, `MinerWork`, `Miners`
-- `farm/` — the farmer upgrade (vanilla Farmers): `FieldMarkerItem`/`FieldData`, `FieldJob` (attachment), `FieldWork`,
-  `FarmerPackages` (our work first, vanilla's routine wrapped in `work/Gated`), `Fields`
-- `guard/` — guards: `VillageRaids` (monster raids on hall villages at night; `raidArea` widens where guards fight),
-  `Gates` (the fence gates of finished Gatehouses/Palisade Gates shut at night; the builds are in `defence.py`),
-  `GuardCombat` (in their CORE package, any activity), `GuardRally` (answering the bell), `GuardPatrol` (WORK: gear up, patrol),
-  `Guards` (who is a foe, damage, extra health), `Mercenaries` (hired at the hall till dawn); `VillagerPanicTriggerMixin` keeps them from panicking
-- `shop/` — player shops: `ShopCounterBlock`/`ShopCounterBlockEntity` (price list, sales log), `Shops` (offers from stock, sales,
-  the CobbleDollars shop screen), `ShopLedger` (CobbleDollars owed to offline owners);
-  mixins on `Villager.mobInteract` (refresh offers) and `AbstractVillager.notifyTrade` (move the goods and payment)
-- `travel/` — travel posts and ferrymen: `TravelNetwork` (saved data), `TravelPostBlock`, `TravelTicketItem`, `Ferrymen`
-- `trainer/` — Pokémon trainers: `Trainers` (tiers, prizes, XP); the battles live in `compat/cobblemon/CobblemonTrainers`
-- `tutor/` — Move Tutors: `Tutors` (grades, prices, XP); lessons and the screen live in `compat/cobblemon/CobblemonTutors`
-- `trader/` — Pokémon Traders: `PokemonTraders` (one trade a day, XP); offers and the swap live in `compat/cobblemon/CobblemonTraders`
-- `bard/` — bards: `BardWork` (discs from the chests, or a made-up tune)
-- `nurse/` — nurses: `Nurses` (treating players), `NurseWork` (healing villagers nearby)
-- `platform/` — what the mod needs from its loader (`Platform`, `Attachment`, `ItemStores`); `platform/fabric/` is the
-  Fabric side and the only place (with `compat/` and `mixin/`) that may use Fabric API
-- `mc/` — version adapters, one small static method per Minecraft behaviour that changes between versions (see Layers)
-- `compat/Compat` — turns on the integrations that are installed (`init`, with a tested version range each; a failure
-  leaves that integration off); the rest of the mod reaches them only through extension points (`work/Extension`:
-  `PokemonPartners`, `Bank`, `orchard/PokemonFruit`, `fossil/FossilLab`, `ranch/DaycareDesk`, `trainer/TrainerBattles`,
-  `trader/PokemonTrades`, `tutor/MoveLessons`, `nurse/PokemonHealing`), which give a fallback when nothing fills them
-  and turn themselves off on a `LinkageError`
-- `compat/cobblemon/` — the only code that touches Cobblemon classes (`CobblemonCompat` fills the extension points);
-  trainers battle through `VillagerTrainerActor` (entity-backed: Pokémon sent out beside the villager), `CobblemonMegas`
-  (Mega Stones and the Mega-Evolving AI, with Mega Showdown by item id)
-- `compat/cobbledollars/` — the only code touching CobbleDollars (balances); `CobbleDollarsCompat` fills `work/Bank`, used by `work/Money` (CobbleDollars or emeralds)
-- `compat/rct/` — Radical Cobblemon Trainers' level cap, by reflection (no dependency at all)
-- `mail/` — mailboxes and postmen: `MailboxBlock`/`MailboxBlockEntity`/`MailboxMenu` (screen in client `MailboxScreen`),
-  `PostOffice` (saved data: addresses, parcels, desks, dawn delivery), `Parcel`, `Mail` (send packet), `PostmanWork`
-- `smelt/` — the smelter upgrade (vanilla Armorers, through `UpgradedJob`): `SmelterWork` (tend the blast furnace, fetch ore
-  and fuel from the village, iron armor for the guards), `Smelters` (hiring with coal, what they keep)
-- `mend/` — `MendingWork`: vanilla Weaponsmiths mending worn gear (with `craft/WeaponsmithWork`: swords for guards)
-- `ranch/` — animals around a workstation: `RanchWork` (collect drops, breed up to a cap, the job's own tending),
-  `ShepherdWork` (vanilla Shepherds: shearing, incl. pastured Pokémon), `HerderWork` (vanilla Butchers: milk, eggs, culling when hired),
-  `RancherWork` (the Rancher at a Feed Trough: taming, saddling, armoring and breeding horses; grooming pastured Pokémon)
-- `scribe/` — `EnchantWork`: vanilla Librarians with an Enchanting Table enchanting the workers' gear (books for builders: `craft/ScribeWork`)
-- `flower/` — the florist (Flower Stand block): `FloristWork` (bone meal on the garden, picking, filling flower pots)
-- `bee/` — the beekeeper (Apiary block): `BeekeeperWork` (harvest full hives with bottles or shears, plant flowers, breed bees)
-- `hall/` — the Village Hall: `VillageHallBlock`/`VillageHallBlockEntity` (the village's name), `VillageHalls` (census of
-  everyone within `RADIUS`, nearest hall by POI), `VillageHallScreen` (a `ChoiceMenu`: numbers, then every villager),
-  `VillageNeeds` (meals from the store, beds, safety → wellbeing → the work pace in `BuilderLevels.delay`),
-  `VillageGrowth` (a baby a day at most with a free bed, food and wellbeing), `VillageQuests` (quests for players, kept
-  in the hall's block entity; the hall screen's quests page), `VillageRanks` (Hamlet to City, and the perks each rank gives), `MarketDays` (weekly traders at a finished Market Square), `Caravans` (the saved list of every hall in a dimension,
-  trade routes, goods on the road), `Chronicle` (what happened, kept in the hall; `Chronicle.record(level, pos, kind, text)` writes to the nearest hall),
-  `Decorations` (finished decoration blueprints near the
-  hall → beauty → wellbeing; the builds are `StarterBlueprints.DECORATIONS`, drawn in `tools/blueprints/decor.py`)
-- `people/` — villagers as people: `Names` (first names for villagers in a hall's village, given in
-  `VillageNeeds.check`), `Traits` (one or two per villager from the UUID; read by `BuilderLevels`, `Walker`, `Guards`,
-  `VillageNeeds`; off in gametests unless a test turns them on), `Sickness` (falling ill in the hall's round, half pace;
-  cured by `nurse/NurseWork` with a remedy), `Families` (parents on babies; grown children take up the family trade),
-  `Moods` (each villager's mood from their day, in `BuilderLevels.delay`), `Diet` (the last meals; variety lifts moods)
-- `research/` — the Scholar (Scholar's Desk): `Research` (the tree, kept in the Village Hall; bonuses read by
-  `VillageNeeds`, `Guards`, `Partners`, `Schools`), `ScholarWork`, `ResearchScreen`; `research/*` blueprints are hidden
-  from the Blueprint Table (`BlueprintLibrary.isWorldgenPiece`)
-- `grave/` — graves and the Undertaker: `GraveBlock`/`GraveBlockEntity` (the villager's NBT), `Graves` (left on death,
-  revival), `UndertakerWork`
-- `inn/` — the Innkeeper (Inn Counter): `InnkeeperWork` (a traveller each morning), `Innkeepers` (arrivals, the hire
-  screen, departures), `Traveller` (attachment); hired travellers start at their level through `Schools.headStart`
-- `school/` — the Teacher (Teacher's Desk): `TeacherWork` (calls the children in, lessons), `Schools` (schooled
-  children start their first job as Apprentices, through `VillagerMixin` on `setVillagerData`)
-- `explore/` — `ExplorerWork`: vanilla Cartographers on expeditions (food and a weapon from the chests, finds from the
-  `explorer/*` loot tables, the Cobblemon one behind a `fabric:load_conditions`), `Explorers` (food/weapon rules, maps to
-  places in the `explorer_maps` structure tag)
-- `brew/` — `AlchemistWork`: vanilla Clerics brewing healing/regeneration/strength for the guards (`Guards.drink`)
-- `sift/` — the Sifter (the Sieve): `SifterWork` (what comes out is the `sifting/<block>` loot tables)
-- `fish/` — the fisher upgrade (vanilla Fishermen, hired with a fishing rod): `FisherWork`, `Fishers`
-- `wood/` — the lumberjack: `Trees` (what counts as a natural tree), `LumberjackWork`, `LumberjackPackages`
-- `store/` — the porter: `StorehouseBlock`/`StorehouseBlockEntity` (owner), `Porters` (what each job keeps, owner sync),
-  `PorterWork` (haul goods from village-mates' chests to the storehouse), `PorterPackages`, `StorehouseBoard` (the
-  requests board: the Storehouse's right-click screen), `DropBoxBlock` (porters empty it into the store), `StockOrders`
-  (keep N of X in the store: crafters fill them in `CrafterWork.chooseOrder`)
-- `craft/` — carpenters, masons and chefs: `Crafting` (plans from the game's recipes, two steps down; `KITCHEN` adds the
-  smoker's and Cobblemon's Campfire Pot recipes by type id), `CrafterWork` (fetch, craft, deliver for a waiting builder;
-  vanilla Masons run `MasonWork`: stonecutting plus crushing and glass), `ChefWork`/`Chefs` (cook the menu into the stove's chests), `TinkererWork` (Tinkerers at the Tinker's Bench: redstone/iron parts in tag `aliveworkplace:tinkering`,
-  raw ore fired first with `Crafting.Kind.WORKSHOP`; iron golems mended between jobs), `ToolsmithWork` (vanilla Toolsmiths: tools for the
-  village's tool requests), `FletcherWork` (vanilla Fletchers: bows and spectral arrows for guards), `DyerWork` (vanilla
-  Leatherworkers: coloured things and concrete for builders), `CarpenterPackages`
-- `compost/` — Composters (the Compost Bin): `CompostWork` (scraps → bone meal)
-- `nether/` — Netherworkers (the Nether Brazier): `Netherworkers` (the trip: away in the portal — invisible, brain paused
-  by `VillagerMixin.customServerAiStep`, no damage — then back with loot by kit), `NetherworkerWork` (pack, walk to
-  the portal, unpack); `Builders.lightPortals` lights empty frames in a finished build
-- `fossil/` — Fossil Scientists (with Cobblemon): `Revival` (saved on the villager), `FossilScientists` (hand-over, payment,
-  delivery), `FossilWork`; Cobblemon's fossil data in `compat/cobblemon/CobblemonFossils`
-- `smith/` — the ball smith: `BallRecipes` (Cobblemon ball recipes by tag and tier), `BallSmithWork`, `BallSmithPackages`
-- `orchard/` — the orchard keeper: `Fruit` (what's ripe, picking it), `OrchardWork`, `OrchardPackages`; Cobblemon apricorns and
-  berry plants in `compat/cobblemon/CobblemonOrchard`
-- `work/` — shared by all jobs: `Village` (workers near each other share chests; off in gametests unless a test turns
-  it on with `Leftovers.village(helper, 48)`, which turns it off again when the test ends), `Requests` (what workers are waiting for: the board, lumberjacks' wanted wood), `Walker` (movement + reach), `WorkerStatus` (overhead status for jobs without a saved site), `Jobs.employ`,
-  `ChoiceMenu` (a server-side chest screen of buttons: menus without client code), `DeskPackages` (WORK for jobs players visit),
-  `Partners` (pastured Pokémon speeding up a job; the lookup is `compat/cobblemon/CobblemonPartners`), `Pastures` (a Pasture Block as a courier stop),
-  `Gated`/`UpgradedJob` (vanilla jobs with extra work), `Hiring` (sneak-right-click a vanilla upgrade with its item), `PrivateContainer` (never a supply chest), `KeepLoaded` (chunk tickets)
-- `camp/` — the Settler's Wagon (`SettlersWagonItem.makeCamp`: places `camp/settlers_camp` at once, two settlers, the
-  first employed at the bench)
-- `world/` — our houses in village generation (`VillageHouses`: builder's workshops, guard houses, clinics, post offices;
-  with Cobblemon trainer's houses, leader's halls, schools, trade halls; the NBT comes from `tools/blueprints/generate.py`,
-  which must keep exactly one job block per house — a vanilla one would give the villager the wrong job)
-- `mixin/` — swaps in the builder/miner WORK packages and schedule for our professions; accessors
-- `command/` — `/workplace`
-- `WorkplaceConfig` — `config/aliveworkplace.json` (radii, postman range, CobbleDollars per emerald); the tunable
-  distances are non-final statics (`SupplyContainers.RADIUS`, `Guards.RADIUS`, …) that it sets at startup
+Commands:
+- `./gradlew build`: every node: compile, `checkLayers`, jar, GameTests, compat GameTests. CI runs exactly this.
+- `./gradlew runGameTest`: only the GameTests, about 1.5 min.
+- `./gradlew runCompatGameTest`: with the pack's optional mods.
+- `tools/screenshots/run.sh` with `SCENE=<name>`: the real client under Xvfb, with screenshots and GIFs. This is
+  the bot for review packages. Runs longer than 10 min go in the background; poll them.
+- `tools/packtest/run.sh`: a real Cobbleverse server with the built jar, about 5 min, on Java 21.
+  `PERF=true PLOTS=40` is the benchmark.
+- Build tools:
+  - `python3 tools/blueprints/generate.py`: blueprints (read `STYLE.md` first);
+  - `tools/blueprints/render/preview.sh`: build renders;
+  - `python3 tools/textures/generate.py [recipe…]`: draws every texture from its recipe in `tools/textures/art`
+    (the pixel-art skill's library is copied in `tools/textures/pxlib`, with `lint.py` and `preview.py`).
+- Tester scripts: `tools/modtest/` (`scope.py`, `inventory.py`, `langcheck.py`, `mutate.py`, `results.py`,
+  `logaudit.py`), with `allow.txt` (log messages that are expected, each with its reason) and `baseline.json` (the
+  suite's tests by name; only a Full run updates it).
+- `.github/workflows/nightly.yml` runs the heavy checks on GitHub every night at about 10 PM Central (5 suite runs for
+  flakes, the log audit, the pack boot and soak, screenshot scenes) and opens a `nightly-tests` issue when anything
+  fails.
+- If Maven Central answers **429**, wait 20 s and retry.
+
+## GameTest conventions
+
+- Test areas: `build_area` (8 tall), `big_area` (18 tall) and `huge_area` (30×30×30). Helper **y = 1 is the floor**:
+  put blocks and villagers at y = 2, because a villager at y = 1 is inside the floor and suffocates within about 200
+  ticks.
+- Tests in one batch run side by side, 5 blocks apart.
+  - Entities that wander outside a test area survive into later batches at the same spot.
+  - A long or disturbable test gets `batch = "<its name>"` and calls `Leftovers.clear(helper)` first.
+  - Blocks built above an area's height are never cleared, so tall builds go in `big_area` or `huge_area`.
+- Pure-logic checks can use `FabricGameTest.EMPTY_STRUCTURE`.
+- Randomness gets a fixed `RandomSource`. With the level's random, CI once failed on a tree shape nobody had seen.
+- Register new test classes in `src/gametest/resources/fabric.mod.json`.
+- To check a test isn't flaky, use the tester skill's repeat generator. On 1.21.1, `attempts` doesn't repeat tests
+  in our headless runs.
 
 ## How the builder works (keep these invariants)
+
 - All progress lives in `BuildSite` (saved). `BuilderWork` must stay restartable at any tick.
-- Stages: CLEAR (top-down) → FOUNDATION → STRUCTURE (bottom-up) → DECORATION (things that need support) → LANDSCAPE
-  (natural ground around the build dug away / holes filled; never waits for materials) → DONE. FOUNDATION and
-  LANDSCAPE lists depend on the terrain, so a site loaded mid-stage restarts that list (done steps are skipped).
-  Steps that can't be done yet are deferred once, then skipped (counted in `skipped`).
-- "Done" checks use `MaterialRules.matches`, which ignores neighbour-dependent properties.
-- Blueprint conventions: front is the template's z=0 side; y=0 sits on the clicked block's top.
+- Stages: CLEAR (top-down) → FOUNDATION → STRUCTURE (bottom-up) → DECORATION → LANDSCAPE (never waits for
+  materials) → DONE.
+  - FOUNDATION and LANDSCAPE depend on the terrain, so a site loaded mid-stage restarts that list; steps already done
+    are skipped.
+  - Steps that can't be done yet are deferred once, then skipped (counted in `skipped`).
+- "Done" checks use `MaterialRules.matches`, which ignores properties that depend on neighbours.
+- Blueprint conventions: the front is the template's z=0 side; y=0 sits on the top of the clicked block.
 - Builders never break containers or the bench while clearing, and never copy container contents.
 
 ## Rules
-- Player-visible text goes through `assets/aliveworkplace/lang/en_us.json`.
-- Art is original; starter builds are original. Textures, item icons and villager outfits follow the owner's
-  **minecraft-pixel-art** skill (its palettes, lint and previews; owner, 2026-09-29) and are drawn in
-  `tools/textures/generate.py`. **Draw each thing the way vanilla draws its kind** (owner, 2026-09-29): a book lies
-  on the diagonal like vanilla's books, a tool follows vanilla's tools, a map vanilla's maps, a workstation is built
-  from its material's tile like the crafting table.
+
+- Player-visible text goes through `assets/aliveworkplace/lang/en_us.json`. Run `langcheck.py` when you add some.
+- **Don't break existing saves.** The mod runs on the owner's live server: new saved fields need defaults, and
+  registry ids are never renamed.
 - Code from GPL-3.0(-or-later) projects such as MineColonies may be adapted **with attribution in the file header**.
-  Don't copy code from All-Rights-Reserved mods.
-- Support for other building mods goes by block/item/tag ids or their data files (`ModdedBlocks`, `MaterialFamilies`),
-  never by their classes, and gets a compat test.
-- Cobblemon/RCT/CobbleDollars support must be **optional**: their classes only in `compat/<mod>/`, which nothing outside
-  `compat/` calls directly — add an extension point (`work/Extension`) the integration fills in `Compat.init` after
-  `isModLoaded`; `modCompileOnly`, listed in `suggests`, never a hard `depends`.
-- Don't break existing saves: new saved fields need defaults; don't rename registry ids.
-- Commit messages: short imperative subject, then what/why.
+  Never copy from All-Rights-Reserved mods.
+- Support for other building mods goes by block/item/tag ids or their data files, never by their classes, and gets a
+  compat test.
+- Builds are original, or openly licensed and credited.
+- Stay in scope. A bug you notice outside the item goes into ROADMAP "Bugs", not into this change.
+- Commit messages: a short imperative subject, then what and why.
 
 ## Releasing
-Pushing tags is not allowed from the dev environment, so CI does it: bump `mod.version` in
-`stonecutter.properties.toml` and move the *Unreleased* notes in `CHANGELOG.md` under a `## X.Y.Z — date` heading
-in the same commit. The first green build on `main` with a new version creates tag `vX.Y.Z` and a
-GitHub Release with every node's jar, `alive-workplace-X.Y.Z+<mc>.jar` (pre-release while 0.x). Release after each session that adds something
-players can try (bump the minor version: 0.2.0, 0.3.0, …; patch for fixes only).
+
+CI publishes, because pushing tags isn't allowed from the dev environment. Only the owner's chat releases, so two
+sessions never bump the version. On a fresh `main` (`git switch main && git pull`), bump `mod.version` in
+`stonecutter.properties.toml` and move the *Unreleased* notes in CHANGELOG.md under `## X.Y.Z — date` in the same
+commit, build, and push (if the push is refused: pull, build, push). The first green build on `main` with a new
+version tags `vX.Y.Z` and creates the GitHub Release (a pre-release while 0.x).
+- **When:** when no item on `main` is pending review or vetoed, and something new has been accepted since the last
+  release (ROADMAP). Or when the owner says `release`.
+- **Before the bump:** the tester's Full tier.
+- Bump the minor version for features, the patch version for fixes only.
+- Store-page publishing (Modrinth, CurseForge) waits for the owner's release-channel decision (ROADMAP 26.1).

@@ -1,0 +1,2 @@
+# When two sessions add changelog lines at the same time, keep both sides' lines instead of a conflict.
+CHANGELOG.md merge=union

@@ -6,7 +6,7 @@ name: nightly-tests
 
 on:
   schedule:
-    - cron: "17 8 * * *"        # ~3 AM US Central
+    - cron: "17 3 * * *"        # ~10 PM US Central, before the night runs
   workflow_dispatch:
 
 permissions:

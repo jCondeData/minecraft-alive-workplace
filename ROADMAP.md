@@ -110,13 +110,48 @@ stay in the list, ticked, so their numbers stay unique.
 The evening of 2026-09-29 left 0.138.0 nearly ready: riding (approved), every texture redrawn, the tester set up and
 its first findings fixed. Nothing is released until these are done.
 
-- [ ] **21.1** **The texture rebuild, shown in game.** Every texture was redrawn with the pixel-art skill (2eeb6be);
+- [ ] **21.1** (blocked: waits for 21.1a, fewer job blocks: no textures to review for blocks that go) **The texture rebuild, shown in game.** Every texture was redrawn with the pixel-art skill (2eeb6be);
   178 of 182 pass its lint. Done when:
   - the other 4 pass, or each has its reason in the Notes;
   - one review package with the `preview.py audit` contact sheet, in-game shots of the workstations in a village and
     of every profession's outfit (`SCENE=staff`) and a zombie villager, and a GIF of villagers working in the new
     outfits.
   - [ ] **21.1a** Change from the owner (2026-09-30): not every villager needs a new custom table for a job, there are already items in the game that should give a villager his job, for example a bee hive/bee nest for the blast furnace for the miner. i think by creating too many job blocks will be a little ugly and unnapealing to new players and myself personally. I think also when two people are close in job they can share a block, but the player must right click them and give them certain items in order for them to start working, for example you have an orchard keeper and a garder and they composter they can all be associated with the compost bin, but you have to right click the villager and then decide from there - giving it flowers makes it an orchard keeper, giving it a wheat makes it a farmer, and giving it bonemeal makes it a composter, etc. this way we can cut down on the amount of custom job blocks. for things that we absolutely need custom job blocks for that is totally ok, such as a blueprint table, but for things like a bard minecraft already has a record player so we are good. ill let you iron out the kinks. after this we can move to textures
+    **Fewer job blocks: the plan** (drafted by the chat 2026-09-30 from his words; he vetoes any line he dislikes).
+    Vanilla jobs work as in vanilla. A job of ours starts when you sneak-right-click a villager standing by its block
+    while holding its item; a villager already working there switches the same way. A block no vanilla job uses
+    (crafting table, beehive, jukebox) never takes a jobless villager by itself. Shared blocks, default job first:
+    - Composter: Farmer; Orchard Keeper (sweet berries), Florist (a flower), Composter (bone meal).
+    - Crafting table: Builder (a placed blueprint), Carpenter (planks).
+    - Blast furnace: Armorer (smelter); Miner (a pickaxe).
+    - Fletching table: Fletcher; Lumberjack (an axe).
+    - Smithing table: Toolsmith; Tinkerer (redstone), Ball Smith (an apricorn, with Cobblemon).
+    - Cauldron: Leatherworker (dyer); Sifter (gravel: panning in the water).
+    - Lectern: Librarian (scribe); Scholar (paper), Teacher (a book).
+    - Cartography table: Cartographer (explorer); Netherworker (netherrack).
+    - Brewing stand: Cleric (alchemist); Nurse (a honey bottle), Undertaker (a golden apple).
+    - Smoker: Butcher (herder); Chef (raw food), Rancher (a saddle).
+    - Grindstone: Weaponsmith; Guard (a sword).
+    - Beehive or bee nest: Beekeeper (a glass bottle or shears). Jukebox: Bard (a music disc).
+    - Kept, because they are machines with a job of their own: Blueprint Table, Village Hall, Storehouse (Porter),
+      Shop Counter (Shopkeeper; Innkeeper with a bed, Pokémon Trader with a Poké Ball), Travel Post (Ferryman), Mailbox
+      (Postman, with paper), Training Post (Trainer; Trainer Leader with a gold block, Move Tutor with a book, Fossil
+      Scientist with a fossil).
+    - Gone (26): Builder's Bench, Miner's Bench, Chopping Block, Fruit Basket, Apiary, Flower Stand, Scholar's Desk,
+      Sieve, Tinker's Bench, Compost Bin, Nether Brazier, Undertaker's Table, Inn Counter, Teacher's Desk, Feed Trough,
+      Carpenter's Bench, Kitchen Stove, Postal Desk, Guard Post, Nurse Station, Music Stand, Leader's Podium, Tutor's
+      Desk, Ball Workbench, Trade Board, Fossil Lab.
+
+    Existing worlds (his live server): the gone blocks stay registered and keep working where they're placed, but can't
+    be crafted any more and leave the creative tab. Our village houses, workshops and starter builds are redrawn with
+    the vanilla blocks (Architect skill, renders).
+    Open questions for the owner (build everything else first): the Builder at the crafting table, or keep the
+    Builder's Bench as the mod's one signature block? And his "blast furnace for the miner": Miner at the blast
+    furnace, sharing it with the Armorer?
+    Done when: every job in the plan starts from its block and item (a GameTest each, and its showcase scene staged
+    that way); the README's job table, the recipe book and the tooltips say so; a world saved by 0.137.0 with the old
+    blocks loads and its workers keep working (a GameTest); no village house or starter build uses a gone block; the
+    showcase is green. Do it in pieces that fit a night run, landing each with `land --keep-open`: the mechanism first.
 - [ ] **21.2** **The full check before release** (the tester's Full tier; the chat started it and ran out of time). Do
   it in pieces that fit a one-hour night run, landing each piece with `land --keep-open`:
   - the real Cobbleverse pack boot and the soak: the nightly GitHub workflow runs these, so read its result;
@@ -356,6 +391,10 @@ about 12% of that. For villager mods, the cost is pathfinding to distant points 
   blueprints, then visuals and textures, then performance at scale.
 - **Review after every job** (2026-09-29): after each finished item, playtest with the bot and send a review package.
   The owner approves or vetoes. Work continues while he reviews, but only approved work is released.
+- **Fewer job blocks** (2026-09-30): too many job blocks look ugly and put new players off. Jobs use vanilla blocks
+  wherever one fits (a jukebox for the bard, a beehive for the beekeeper); jobs that are close share a block, and the
+  player picks the job by right-clicking the villager with an item. Custom job blocks only where nothing vanilla will
+  do, such as the Blueprint Table. The plan is under 21.1a.
 - **Hands-off** (2026-09-29): the owner reviews only what he can see or feel in game, from screenshots and GIFs.
   Work with nothing to see (tests, tooling, internal fixes) is accepted automatically once the tester passes, and is
   only listed in the next message. He wants to be asked only for real decisions.

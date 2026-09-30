@@ -225,7 +225,8 @@ public class StationsFixesGameTests implements net.fabricmc.fabric.api.gametest.
 		helper.assertTrue(a.isPresent() && b.isPresent() && !a.equals(b), "the two beekeepers should have one hive each: " + a + ", " + b);
 		helper.assertTrue(StationsSpecGameTests.job(third) == VillagerProfession.NONE,
 			"a third beekeeper by two taken hives: " + StationsSpecGameTests.name(StationsSpecGameTests.job(third)) + " at " + StationsSpecGameTests.site(third));
-		helper.assertTrue(seen.stream().anyMatch(s -> s.startsWith("The Beekeeper job needs a Beehive")),
+		// Both hives in reach are taken: the message says a free one is needed (round 2's wording finding).
+		helper.assertTrue(seen.stream().anyMatch(s -> s.startsWith("The Beekeeper job needs a free Beehive")),
 			"the player wasn't told a hive is needed; saw: " + seen);
 		helper.runAfterDelay(300, () -> {
 			helper.assertTrue(StationsSpecGameTests.site(first).equals(a) && StationsSpecGameTests.site(second).equals(b),

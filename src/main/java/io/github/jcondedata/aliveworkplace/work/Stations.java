@@ -216,10 +216,14 @@ public final class Stations {
 		}
 		Optional<Found> nearest = found.stream().min(Comparator.comparingDouble(f -> f.pos().distToCenterSqr(villager.position())));
 		if (nearest.isEmpty()) {
-			// No block of the right kind close by: say which one the job needs.
-			Station first = kinds.get(0);
-			Chat.actionBar(player, Component.translatable("message.aliveworkplace.job.needs_station",
-				name(first.jobFor(stack).get().profession().get()), first.block().getName()).withStyle(ChatFormatting.YELLOW));
+			// A block of the right kind close by, but someone works at each: say so. None at all: say which one the job needs.
+			Optional<Station> taken = kinds.stream().filter(k -> level.getPoiManager()
+				.findClosest(k.poi(), villager.blockPosition(), (int) Math.ceil(REACH), PoiManager.Occupancy.ANY)
+				.filter(pos -> pos.distToCenterSqr(villager.position()) <= REACH * REACH).isPresent()).findFirst();
+			Station first = taken.orElse(kinds.get(0));
+			Chat.actionBar(player, Component.translatable(taken.isPresent() ? "message.aliveworkplace.job.station_taken"
+				: "message.aliveworkplace.job.needs_station", name(first.jobFor(stack).get().profession().get()), first.block().getName())
+				.withStyle(ChatFormatting.YELLOW));
 			return InteractionResult.CONSUME;
 		}
 		return take(player, villager, nearest.get().pos(), nearest.get().profession());
@@ -254,6 +258,25 @@ public final class Stations {
 		GlobalPos at = GlobalPos.of(level.dimension(), pos);
 		return !level.getEntitiesOfClass(Villager.class, new net.minecraft.world.phys.AABB(pos).inflate(48),
 			v -> v.getBrain().getMemory(MemoryModuleType.JOB_SITE).filter(at::equals).isPresent()).isEmpty();
+	}
+
+	/** How far a beekeeper with no hive looks for one. */
+	static final int HIVE_SEARCH = 16;
+
+	/**
+	 * Every few seconds, a beekeeper with no hive takes the nearest one nobody works at. Other workers of ours take a
+	 * free block of their kind again through vanilla's own search, which only looks at blocks with a free place; a
+	 * beehive has no places (bees don't take them), so beekeepers look here instead (called from mixin/VillagerMixin).
+	 */
+	public static void retakeHive(Villager villager) {
+		if (villager.tickCount % 100 != 37 || villager.isBaby() || villager.getVillagerData().getProfession() != ModVillagers.BEEKEEPER
+			|| !(villager.level() instanceof ServerLevel level) || villager.getBrain().getMemory(MemoryModuleType.JOB_SITE).isPresent()) {
+			return;
+		}
+		of(ModVillagers.BEEKEEPER).flatMap(hives -> level.getPoiManager().findAll(hives.poi(), pos -> !worked(level, pos),
+				villager.blockPosition(), HIVE_SEARCH, PoiManager.Occupancy.ANY)
+			.min(Comparator.comparingDouble(pos -> pos.distToCenterSqr(villager.position()))))
+			.ifPresent(pos -> villager.getBrain().setMemory(MemoryModuleType.JOB_SITE, GlobalPos.of(level.dimension(), pos)));
 	}
 
 	/**

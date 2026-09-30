@@ -29,6 +29,7 @@ abstract class VillagerMixin {
 	@Inject(method = "customServerAiStep", at = @At("HEAD"), cancellable = true)
 	private void aliveworkplace$nether(CallbackInfo ci) {
 		io.github.jcondedata.aliveworkplace.guard.Mercenaries.tick((Villager) (Object) this);
+		io.github.jcondedata.aliveworkplace.work.Stations.retakeHive((Villager) (Object) this);
 		if (((Villager) (Object) this).isRemoved()) {
 			ci.cancel();
 			return;

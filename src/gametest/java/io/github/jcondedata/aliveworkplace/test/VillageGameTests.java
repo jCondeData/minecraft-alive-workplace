@@ -136,12 +136,26 @@ public class VillageGameTests implements FabricGameTest {
 	//$ gametest_ticks_batch '"aliveworkplace_test:big_area"' '2400' '"aVillagerMovesIntoTheWorkshop"'
 	@GameTest(template = "aliveworkplace_test:big_area", timeoutTicks = 2400, batch = "aVillagerMovesIntoTheWorkshop")
 	public void aVillagerMovesIntoTheWorkshop(GameTestHelper helper) {
+		workshopTest(helper, new BlockPos(7, 2, 9), true);
+	}
+
+	/**
+	 * B2: villages place the workshop as a legacy pool element, which skips the template's air, so the air cells in its
+	 * bottom layer (around the walls, like vanilla's houses) never cut into the ground. Placing the template with its air
+	 * dug a one-block trench into the test floor all around the house; about one villager in 175 wandered out, dropped
+	 * into it and was stuck there under the shutters, unable to reach the bench.
+	 */
+	static void workshopTest(GameTestHelper helper, BlockPos spawn, boolean likeAVillage) {
 		Leftovers.clear(helper); // (a jobless villager from a neighbouring test can take the bench first)
 		ServerLevel level = helper.getLevel();
 		StructureTemplate template = level.getStructureManager().get(VillageHouses.workshop("plains")).orElseThrow();
 		BlockPos origin = helper.absolutePos(new BlockPos(4, 1, 4));
-		template.placeInWorld(level, origin, origin, new StructurePlaceSettings(), level.getRandom(), 2);
-		Villager villager = helper.spawn(EntityType.VILLAGER, new BlockPos(7, 2, 9));
+		StructurePlaceSettings settings = new StructurePlaceSettings();
+		if (likeAVillage) {
+			settings.addProcessor(net.minecraft.world.level.levelgen.structure.templatesystem.BlockIgnoreProcessor.STRUCTURE_AND_AIR);
+		}
+		template.placeInWorld(level, origin, origin, settings, level.getRandom(), 2);
+		Villager villager = helper.spawn(EntityType.VILLAGER, spawn);
 		villager.setVillagerData(villager.getVillagerData().setProfession(VillagerProfession.NONE));
 		helper.setDayTime(2000);
 		BlockPos bench = origin.offset(2, 1, 7);

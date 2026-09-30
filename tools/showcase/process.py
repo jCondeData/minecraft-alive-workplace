@@ -34,19 +34,57 @@ except ImportError:  # pixel checks need numpy; without it they're skipped (and 
 
 GIF_FRAMES = 120
 GIF_WIDTH = 480
-MAGENTA_STILL = 300  # pixels of missing-texture magenta in a 960x540 still that count as broken
-MAGENTA_FRAME = 90  # ... in a 480x270 GIF frame
+MAGENTA_STILL = 60  # solid pixels of missing-texture magenta in a 960x540 still that count as broken (an 8x8 patch)
+MAGENTA_FRAME = 16  # ... in a 480x270 GIF frame
 ASSET_LINES = re.compile(r"(Missing model|Unable to load model|Missing textures? in model|Unable to resolve texture|"
                          r"Using missing texture|Couldn't load texture|Failed to load texture|Missing sprite)")
 CRASH = re.compile(r"---- Minecraft Crash Report ----|#@!@# Game crashed|Exception in server tick loop")
 
 
 def magenta_pixels(im):
-    """Pixels of the missing texture's magenta (#F800F8), however lit: red and blue alike, almost no green."""
+    """Pixels of the missing texture: solid patches of its magenta (#F800F8, however lit) with black squares beside them.
+
+    Solid means the pixel's whole 3x3 neighbourhood is magenta, so purple text (a toast, a tooltip) doesn't count; the
+    black squares of the checkerboard must make up at least 15% of the ring just around the patches.
+    """
     a = np.asarray(im.convert("RGB"), dtype=np.int16)
     r, g, b = a[..., 0], a[..., 1], a[..., 2]
     lo, hi = np.minimum(r, b), np.maximum(r, b)
-    return int(np.count_nonzero((lo >= 70) & (g * 4 <= lo) & ((hi - lo) * 4 <= hi)))
+    raw = (lo >= 70) & (g * 4 <= lo) & ((hi - lo) * 4 <= hi)
+    solid = raw.copy()
+    solid[1:-1, 1:-1] = raw[1:-1, 1:-1]
+    for dy in (-1, 0, 1):
+        for dx in (-1, 0, 1):
+            solid[1:-1, 1:-1] &= raw[1 + dy:raw.shape[0] - 1 + dy, 1 + dx:raw.shape[1] - 1 + dx]
+    solid[0, :] = solid[-1, :] = False
+    solid[:, 0] = solid[:, -1] = False
+    count = int(np.count_nonzero(solid))
+    if count == 0:
+        return 0, None
+    near = solid.copy()
+    for _ in range(6):  # grow the patches by 6 pixels
+        grown = near.copy()
+        grown[1:, :] |= near[:-1, :]
+        grown[:-1, :] |= near[1:, :]
+        grown[:, 1:] |= near[:, :-1]
+        grown[:, :-1] |= near[:, 1:]
+        near = grown
+    ring = near & ~raw
+    black = (np.maximum(np.maximum(r, g), b) < 30) & ring
+    if not ring.any() or np.count_nonzero(black) * 100 < np.count_nonzero(ring) * 15:
+        return 0, None
+    ys, xs = np.nonzero(solid)
+    return count, (int(xs.min()), int(ys.min()), int(xs.max()) + 1, int(ys.max()) + 1)
+
+
+def evidence(im, box, path):
+    """A close-up of what looked broken, with some of its surroundings."""
+    x0, y0, x1, y1 = box
+    pad = 40
+    crop = im.crop((max(0, x0 - pad), max(0, y0 - pad), min(im.width, x1 + pad), min(im.height, y1 + pad)))
+    if crop.width < 240:
+        crop = crop.resize((240, round(crop.height * 240 / crop.width)), Image.NEAREST)
+    crop.save(path, "JPEG", quality=85)
 
 
 def blank(im):
@@ -118,12 +156,21 @@ def process(name, raw, out, seconds=None, exit_code=0):
     seen = set()
     stills = [s for s in stills if not (s[0] in seen or seen.add(s[0]))][:4]
 
+    broken = []
+
+    def flag(im, name, m, box):
+        problems.append(f"missing-texture magenta in '{name}' ({m} pixels)")
+        if len(broken) < 3:
+            file = f"broken-{len(broken) + 1}.jpg"
+            evidence(im, box, os.path.join(out, file))
+            broken.append({"file": file, "label": f"Magenta in {name}"})
+
     def save(stem, file):
         im = Image.open(os.path.join(shots_dir, stem + ".png")).convert("RGB")
         if np is not None:
-            m = magenta_pixels(im)
+            m, box = magenta_pixels(im)
             if m >= MAGENTA_STILL:
-                problems.append(f"missing-texture magenta in '{stem}' ({m} pixels)")
+                flag(im, stem, m, box)
             if blank(im):
                 problems.append(f"blank picture: '{stem}'")
         im.save(os.path.join(out, file), "JPEG", quality=82, optimize=True, progressive=True)
@@ -153,10 +200,10 @@ def process(name, raw, out, seconds=None, exit_code=0):
             im = Image.open(f).convert("RGB")
             if im.width != GIF_WIDTH:
                 im = im.resize((GIF_WIDTH, round(im.height * GIF_WIDTH / im.width)), Image.LANCZOS)
-            if np is not None and i % 5 == 0:
-                m = magenta_pixels(im)
+            if np is not None and i % 3 == 0:
+                m, box = magenta_pixels(im)
                 if m >= MAGENTA_FRAME:
-                    problems.append(f"missing-texture magenta in a GIF frame ({os.path.basename(f)}, {m} pixels)")
+                    flag(im, "GIF frame " + os.path.basename(f), m, box)
             images.append(im.quantize(colors=96, method=Image.Quantize.MEDIANCUT, dither=Image.Dither.NONE))
         per = max(60, min(200, 12000 // len(images)))
         durations = [per] * (len(images) - 1) + [1500]
@@ -176,7 +223,7 @@ def process(name, raw, out, seconds=None, exit_code=0):
         "pass": bool(report) and bool(checks) and not failed_checks and not problems,
         "reasons": [f"not done: {w}" for w in failed_checks] + problems,
         "checks": checks, "problems": problems, "warnings": warnings, "assets": sorted(set(assets)),
-        "stills": still_out, "more": more_out, "gif": gif, "frames": len(frames),
+        "stills": still_out, "more": more_out, "broken": broken, "gif": gif, "frames": len(frames),
         "seconds": seconds, "ticks": report.get("ticks") if report else None,
     }
     with open(os.path.join(out, "result.json"), "w") as f:

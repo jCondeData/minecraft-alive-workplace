@@ -174,7 +174,7 @@ SCENES = [
 ]
 
 BY_NAME = {s["name"]: s for s in SCENES}
-STARTUP = 110  # seconds: Gradle, the client's start-up and loading the world, per scene
+STARTUP = 30  # seconds: Gradle, the client's start-up and loading the world, per scene (GitHub runner)
 SHARD_TARGET = 30 * 60  # seconds of scenes per shard, to finish well within the hour
 MAX_SHARDS = 18  # GitHub allows 20 jobs at once on a free plan; leave room for the plan and page jobs
 

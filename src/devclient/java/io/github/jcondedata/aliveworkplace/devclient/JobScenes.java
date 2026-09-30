@@ -458,6 +458,7 @@ final class JobScenes {
 			io.github.jcondedata.aliveworkplace.compat.cobbledollars.CobbleDollarsBank.add(player, 10_000);
 			player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(cobblemonItem("dome_fossil")));
 			io.github.jcondedata.aliveworkplace.fossil.FossilScientists.handOver(player, sci);
+			ScreenshotHarness.hoverLookingAt(player, CAMERA, TARGET);
 			return l -> n(ModAttachments.FOSSILS_REVIVED, sci) >= 1;
 		}));
 		SCENES.put("dropbox", new Job("the porter emptied the Drop Box into the store", 2000, CAMERA, TARGET, (level, player) -> {
@@ -471,7 +472,8 @@ final class JobScenes {
 			drop.setItem(0, new ItemStack(Items.IRON_SWORD));
 			drop.setItem(1, new ItemStack(Items.BREAD, 16));
 			drop.setItem(2, new ItemStack(Items.COBBLESTONE, 64));
-			// The Drop Box's screen, before the porter comes for it.
+			// The Drop Box's screen, before the porter comes for it (from close by: a chest screen closes past 8 blocks).
+			ScreenshotHarness.hoverLookingAt(player, new Vec3(3.5, -58.3, 0.5), new Vec3(3.5, -60, -3));
 			player.openMenu((net.minecraft.world.MenuProvider) drop);
 			return l -> drop.isEmpty() && n(ModAttachments.ITEMS_CARRIED, porter) >= 1 && store.countItem(Items.BREAD) >= 1;
 		}, null));
@@ -654,10 +656,8 @@ final class JobScenes {
 		}
 		if (tick == 30) {
 			server.execute(() -> {
+				ScreenshotHarness.hoverLookingAt(player, job.camera(), job.target());
 				done = job.stage().stage(server.overworld(), player);
-				if (!(player.containerMenu instanceof ChestMenu)) {
-					ScreenshotHarness.hoverLookingAt(player, job.camera(), job.target());
-				}
 			});
 		}
 		if (tick == 38 && mc.screen != null) {

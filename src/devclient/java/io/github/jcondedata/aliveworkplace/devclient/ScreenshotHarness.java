@@ -1058,8 +1058,9 @@ public class ScreenshotHarness implements ClientModInitializer {
 		if (doneAt > 0 && tick == doneAt + 190) {
 			server.execute(() -> {
 				Showcase.check(true, "the lumberjack felled all four trees");
-				int planted = io.github.jcondedata.aliveworkplace.registry.ModAttachments.SAPLINGS_PLANTED.getOrElse(lumberjack, 0);
-				Showcase.check(planted >= 1, "the lumberjack replanted (" + planted + " saplings)");
+				long saplings = BlockPos.betweenClosedStream(new BlockPos(-12, -60, -15), new BlockPos(15, -59, 11))
+					.filter(p -> server.overworld().getBlockState(p).is(net.minecraft.tags.BlockTags.SAPLINGS)).count();
+				Showcase.check(saplings >= FOREST_TREES, "the lumberjack replanted (" + saplings + " saplings in the ground)");
 			});
 		}
 		if (doneAt > 0 && tick == doneAt + 200) {

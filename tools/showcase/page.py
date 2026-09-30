@@ -127,6 +127,9 @@ def card(r):
         f'<figure><a href="{name}/{s["file"]}"><img src="{name}/{s["file"]}" alt="{E(s["label"])}" loading="lazy"></a>'
         f'<figcaption>{E(s["label"])}</figcaption></figure>' for s in r.get("stills", []))
     more = f'<a href="{name}/index.html">all {len(r["more"]) + len(r["stills"])} pictures</a>' if r.get("more") else ""
+    if r.get("broken"):
+        stills += "".join(f'<figure><a href="{name}/{b["file"]}"><img src="{name}/{b["file"]}" alt="{E(b["label"])}" loading="lazy"></a>'
+                          f'<figcaption>⚠ {E(b["label"])}</figcaption></figure>' for b in r["broken"])
     secs = f'{round(r["seconds"] / 60, 1)} min' if r.get("seconds") else ""
     return (f'<article class="card {"pass" if ok else "fail"}" id="{name}"><div class="head"><div><h3>{E(r["title"])}</h3>'
             f'<code>SCENE={name}</code></div><span class="badge {"pass" if ok else "fail"}">{"PASS" if ok else "FAIL"}</span></div>'

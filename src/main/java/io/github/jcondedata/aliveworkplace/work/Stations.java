@@ -186,6 +186,9 @@ public final class Stations {
 		if (picks(stack, now)) {
 			return InteractionResult.PASS; // they already do the job this item picks (at a new block or an old one)
 		}
+		if (now == VillagerProfession.SHEPHERD && stack.is(Items.SHEARS)) {
+			return InteractionResult.PASS; // shears hire a shepherd (BuilderEvents), as before: they don't make them a beekeeper
+		}
 		Optional<GlobalPos> site = villager.getBrain().getMemory(MemoryModuleType.JOB_SITE)
 			.filter(g -> g.dimension().equals(level.dimension()));
 		Optional<Holder<PoiType>> here = site.flatMap(g -> level.getPoiManager().getType(g.pos()));
@@ -236,10 +239,21 @@ public final class Stations {
 	static Optional<BlockPos> free(ServerLevel level, Station station, BlockPos near) {
 		PoiManager poi = level.getPoiManager();
 		int radius = (int) Math.ceil(REACH);
-		// Beehives and nests have no tickets for anyone (bees don't take them): any of them will do.
-		PoiManager.Occupancy occupancy = station.block() == Blocks.BEEHIVE ? PoiManager.Occupancy.ANY : PoiManager.Occupancy.HAS_SPACE;
-		return poi.findClosest(station.poi(), near, radius, occupancy)
+		if (station.block() == Blocks.BEEHIVE) {
+			// Beehives and nests keep no count of their workers (bees don't take them): one is free if no villager works there.
+			return poi.findAll(station.poi(), pos -> pos.distToCenterSqr(near.getCenter()) <= REACH * REACH && !worked(level, pos),
+					near, radius, PoiManager.Occupancy.ANY)
+				.min(Comparator.comparingDouble(pos -> pos.distToCenterSqr(near.getCenter())));
+		}
+		return poi.findClosest(station.poi(), near, radius, PoiManager.Occupancy.HAS_SPACE)
 			.filter(pos -> pos.distToCenterSqr(near.getCenter()) <= REACH * REACH);
+	}
+
+	/** Whether a villager nearby works at {@code pos}. */
+	private static boolean worked(ServerLevel level, BlockPos pos) {
+		GlobalPos at = GlobalPos.of(level.dimension(), pos);
+		return !level.getEntitiesOfClass(Villager.class, new net.minecraft.world.phys.AABB(pos).inflate(48),
+			v -> v.getBrain().getMemory(MemoryModuleType.JOB_SITE).filter(at::equals).isPresent()).isEmpty();
 	}
 
 	/**

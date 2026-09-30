@@ -8,6 +8,7 @@
 		"BrewingStandAccessor",
 		"EntityAccessor",
 		"ExplosionMixin",
+		"PoiManagerMixin",
 		"StructureTemplatePoolAccessor",
 		"VillagerAccessor",
 		"VillagerGoalPackagesMixin",

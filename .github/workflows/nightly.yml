@@ -1,0 +1,109 @@
+# Nightly exhaustive tests (minecraft-mod-tester skill).
+# Runs on GitHub's machines (free for public repos: ~16 GB RAM, full network), every night and on demand.
+# Needs the skill's scripts in tools/modtest/ (see references/automation.md, "Setting up the project").
+# Steps whose tool is missing are skipped.
+name: nightly-tests
+
+on:
+  schedule:
+    - cron: "17 8 * * *"        # ~3 AM US Central
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+env:
+  NODE: "1.21.1"                 # the Stonecutter node to hammer (versions/<NODE>)
+  MODID: "aliveworkplace"        # mod id / package fragment for the log audit
+  REPEATS: "5"                   # full GameTest suite runs for the flake sweep
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 300
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: |
+            21
+            25
+      - uses: gradle/actions/setup-gradle@v4
+      - run: mkdir -p build/modtest
+
+      - name: Full build (every node, all GameTests, compat tests)
+        run: ./gradlew build --continue --stacktrace 2>&1 | tee build/modtest/build.log; exit ${PIPESTATUS[0]}
+
+      - name: Flake sweep (whole GameTest suite, several runs)
+        if: always()
+        run: |
+          for i in $(seq 1 "$REPEATS"); do
+            ./gradlew ":$NODE:runGameTest" > "build/modtest/run$i.log" 2>&1 || true
+          done
+          python3 tools/modtest/results.py build/modtest/run*.log \
+            $( [ -f tools/modtest/baseline.json ] && echo --baseline tools/modtest/baseline.json ) \
+            | tee build/modtest/results.md
+
+      - name: Translation check
+        if: always()
+        run: python3 tools/modtest/langcheck.py | tee build/modtest/langcheck.md
+
+      - name: Log audit (test servers)
+        if: always()
+        run: |
+          python3 tools/modtest/logaudit.py versions/*/build/run --mod "$MODID" \
+            $( [ -f tools/modtest/allow.txt ] && echo --allow tools/modtest/allow.txt ) | tee build/modtest/logaudit.md
+
+      - name: Real modpack boot
+        if: always() && hashFiles('tools/packtest/run.sh') != ''
+        run: |
+          export JAVA_HOME="$JAVA_HOME_21_X64" PATH="$JAVA_HOME_21_X64/bin:$PATH"
+          tools/packtest/run.sh 2>&1 | tee build/modtest/packtest.log
+          python3 tools/modtest/logaudit.py build/packtest/server --mod "$MODID" \
+            $( [ -f tools/modtest/allow.txt ] && echo --allow tools/modtest/allow.txt ) | tee build/modtest/packtest-audit.md
+
+      - name: Performance soak
+        if: always() && hashFiles('tools/packtest/run.sh') != ''
+        run: |
+          export JAVA_HOME="$JAVA_HOME_21_X64" PATH="$JAVA_HOME_21_X64/bin:$PATH"
+          PERF=true PLOTS=40 tools/packtest/run.sh 2>&1 | tee build/modtest/perf.log
+
+      - name: Client screenshots (Xvfb)
+        if: always() && hashFiles('tools/screenshots/run.sh') != ''
+        run: |
+          sudo apt-get update -q && sudo apt-get install -yq xvfb mesa-utils libgl1-mesa-dri > /dev/null
+          for scene in staff hall table extras; do
+            SCENE=$scene timeout 1800 tools/screenshots/run.sh > "build/modtest/screens-$scene.log" 2>&1 || echo "scene $scene failed"
+          done
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: nightly-tests-${{ github.run_id }}
+          path: |
+            build/modtest/
+            versions/*/build/run/*/logs/latest.log
+            versions/*/run/screenshots/
+            build/packtest/server/server.log
+          if-no-files-found: ignore
+
+      - name: Open or update the nightly-tests issue on failure
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          {
+            echo "Nightly tests failed: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+            echo
+            for f in build/modtest/results.md build/modtest/logaudit.md build/modtest/packtest-audit.md build/modtest/langcheck.md; do
+              [ -f "$f" ] && { echo "---"; head -c 20000 "$f"; echo; }
+            done
+          } > build/modtest/issue.md
+          n=$(gh issue list --label nightly-tests --state open --json number -q '.[0].number')
+          gh label create nightly-tests --color B60205 2>/dev/null || true
+          if [ -n "$n" ]; then gh issue comment "$n" --body-file build/modtest/issue.md
+          else gh issue create --title "Nightly tests failing" --label nightly-tests --body-file build/modtest/issue.md; fi

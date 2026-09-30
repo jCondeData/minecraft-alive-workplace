@@ -63,6 +63,22 @@ container: `source <minecraft-mod-engineer skill>/scripts/setup_env.sh`; then pr
 5. Tick the roadmap box, add a `CHANGELOG.md` line under *Unreleased*, commit, push to `main`.
 6. If blocked or a decision belongs to the owner, write it under *Notes / blocked* in `ROADMAP.md` and move on to the next item.
 
+## Definition of done: independent testing
+A change isn't done when the build is green; it's done when an independent tester has tried to break it.
+1. When the change is complete and `./gradlew build` passes, launch a fresh tester subagent (Agent tool)
+   with the handoff prompt from the minecraft-mod-tester skill (references/automation.md): tier Check,
+   range = this session's commits, spec = the roadmap item / owner's request.
+2. Fix what it reports (bugs come back as failing tests), then hand back to a fresh tester; at most 3 rounds,
+   then report what is still open.
+3. Before bumping the version for a release: tier Full.
+4. In the summary for the owner, include the tester's verdict and its "Not tested / risks" list.
+Never delete, skip or weaken a test to get a green build.
+The tester's scripts are in `tools/modtest/` (copied from the skill: `scope.py`, `langcheck.py`, `inventory.py`, `mutate.py`,
+`results.py`, `logaudit.py`), with `allow.txt` (log messages that are expected, each with its reason) and `baseline.json`
+(the suite's tests by name, updated by a Full run). `.github/workflows/nightly.yml` runs the heavy checks every night on
+GitHub (5 suite runs for flakes, the log audit, the pack boot and soak, screenshot scenes) and opens a `nightly-tests`
+issue when anything fails: read the latest run at the start of a session.
+
 ## Commands
 - `./gradlew build` — every node: compile + `checkLayers` + jar + gametests (+ compat gametests on 1.21.1). CI runs exactly this
 - `./gradlew runGameTest` — only the gametests (~10 s of game time, ~1 min total)
@@ -233,8 +249,9 @@ container: `source <minecraft-mod-engineer skill>/scripts/setup_env.sh`; then pr
 
 ## Rules
 - Player-visible text goes through `assets/aliveworkplace/lang/en_us.json`.
-- Art is original (draw it in `tools/textures/generate.py`); starter builds are original. **For now, draw no new
-  textures or item/block art** (owner, 2026-09-29: his pixel-art skill will do skins and models); reuse what exists.
+- Art is original; starter builds are original. Textures, item icons and villager outfits follow the owner's
+  **minecraft-pixel-art** skill (its palettes, lint and previews; owner, 2026-09-29) and are drawn in
+  `tools/textures/generate.py`.
 - Code from GPL-3.0(-or-later) projects such as MineColonies may be adapted **with attribution in the file header**.
   Don't copy code from All-Rights-Reserved mods.
 - Support for other building mods goes by block/item/tag ids or their data files (`ModdedBlocks`, `MaterialFamilies`),

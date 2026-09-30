@@ -1,0 +1,36 @@
+# Log messages that are expected, one regex per line (logaudit.py --allow). The line above each says WHY.
+# Keep this short: every line hides a class of messages forever. Our own mixin or data failures are never allowed.
+
+# --- ours, triggered on purpose by tests ---
+# OptionalModsGameTests feeds an integration a missing method to prove it switches itself off.
+a test integration from test turned off
+# MinerGameTests loads a quarry saved by a pre-0.45.0 bug to prove the repair stops it.
+Stopped quarry .* stretched over its Miner's Bench .* by a bug before 0\.45\.0
+
+# --- other mods in the compat test server (dev environment, not our code) ---
+# Modded entities have no DataFixerUpper schema; every mod's entity logs this once.
+No data fixer registered for
+# Carved Wood ships pale oak (1.21.4) recipes and advancements that 1.21.1 can't parse.
+Parsing error loading (recipe|custom advancement) .*pale_oak
+# Mock test players have no Cobblemon save files yet.
+\(Cobblemon\) \.old File .* is corrupt or missing
+# Cobblemon's resource pack contains README.md files under data paths.
+Invalid path in mod resource-pack cobblemon: .*README\.md
+# Supplementaries' loot modifiers need a registry that porting_lib only fills with NeoForge-only mods.
+Registry 'porting_lib:global_loot_modifier_serializers' was empty
+Could not decode GlobalLootModifier with json id supplementaries:
+# Moonlight probes Quark colour sets that aren't there.
+Failed to load custom color set definition .*quark
+# Supplementaries' own start-up warning.
+Dye color white produced diffuse color -1
+# Cobbleworkers reads tags before the first datapack load, then again after it.
+\(cobbleworkers\) Tag '.*' not available yet
+# A pack mod's tag names c:storage_blocks/lead, which nothing defines on 1.21.1.
+Not all defined tags for registry .* c:storage_blocks/lead
+# Dev-environment loader noise: refmaps, mixin plugins probing optional classes, client-only mixin targets on a
+# server (other mods' only: ours are never allowed), Fabric's convention-tag and resolution notes.
+Reference map '.*' for .* could not be read
+FabricLoader/Mixin\) Error loading class:
+@Mixin target .* was not found .* from mod (?!aliveworkplace)
+FabricLoader/Resolution\) Warnings were found!
+ConventionLogWarnings

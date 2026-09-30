@@ -132,6 +132,11 @@ fabricApi {
     }
 }
 
+// A JUnit report of the game tests, by test name, for tools/modtest/results.py (the baseline, flaky tests).
+loom.runs.matching { it.name == "gameTest" }.configureEach {
+    vmArg("-Dfabric-api.gametest.report-file=${layout.buildDirectory.get().asFile}/junit.xml")
+}
+
 /** Unpacks the jars nested in mods (META-INF/jars, recursively) into build/compat-nested: Loom drops them in dev. */
 fun nestedJars(mods: List<String>): List<File> {
     val out = layout.buildDirectory.dir("compat-nested").get().asFile

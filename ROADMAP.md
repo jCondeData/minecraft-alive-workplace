@@ -101,6 +101,7 @@ stay in the list, ticked, so their numbers stay unique.
   strangers' arrows hurt a protected village's villagers and animals; a stranger with a Village Ledger could empty a
   protected treasury; guards stayed on their horses, and fishers on the water, after their shift; night-raid bandits
   could join vanilla raids.
+- [ ] **B4** A jobless villager standing just outside the plains workshop (by its side wall, 2 blocks from the bench) never took the bench in 2400 ticks: 30 of 30 in repeat runs (night-0930-0845, variant of the workshop test placed like a village, spawn helper (4,2,10)); it wandered off to a corner of the test area instead. Inside the house it takes it every time. Check whether this is the test area (edges, no village around) or real: can villagers find the workshop's bench through its door in a real village? Done when: a GameTest with the villager outside the door passes 100 repeats, or it's shown to be a test artefact and noted. The repeat file used is in the B2 commits' notes (RepeatTests with a 'trench_fixed' entry). (found by night-0930-0845, 2026-09-30)
 
 ## Milestone 21: Finish 0.138.0
 

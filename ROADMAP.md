@@ -144,7 +144,7 @@ Before polishing, make sure nothing regresses unnoticed.
 - [ ] **22.3** A bot scene for every player-visible feature, so any feature can be shown again on demand
   (`tools/screenshots/run.sh SCENE=…`). Done when: every job and every screen in the README has a scene. A new feature
   gets its scene in the same commit.
-- [ ] **22.4** **A daily showcase page** (owner, 2026-09-30): screenshots and GIFs of everything the mod does, so the
+- [ ] **22.4** (claimed: chat, 2026-09-30 13:45Z) **A daily showcase page** (owner, 2026-09-30): screenshots and GIFs of everything the mod does, so the
   owner can check it all from his phone each morning. Includes 22.3's missing scenes. Done when:
   - every night, GitHub's machines run every screenshot scene: every job, screen and build family. Not a Claude
     session: it must cost no Claude usage. The scenes are split across parallel jobs so it finishes within an hour,

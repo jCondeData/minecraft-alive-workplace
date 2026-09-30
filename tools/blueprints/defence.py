@@ -167,8 +167,9 @@ BARRACKS_FRAME = "dark_oak_log"
 
 
 def barracks_hall(b):
-    """The barracks every tier shares (walls x 1-11, z 2-8): two Guard Posts at the back with the armory chest and an
-    anvil between them, two bunks, barred windows, a slate hip roof, training dummies out front."""
+    """The barracks every tier shares (walls x 1-11, z 2-8): two grindstones at the back (the guards': hand the
+    villager at each a sword) with the armory chest and an anvil between them, two bunks, barred windows, a slate hip
+    roof, training dummies out front."""
     plinth(b, 1, 2, 11, 8, STONE_MIX, floor="spruce_planks")
     walls(b, 1, 2, 11, 8, 1, 3, BRICK_WALL_MIX)
     posts(b, [(1, 2), (11, 2), (1, 8), (11, 8)], 1, 3, "stone_bricks")
@@ -181,9 +182,9 @@ def barracks_hall(b):
         window(b, x, 2, 8, "south", height=1, glass="iron_bars")
     for x, side in ((1, "west"), (11, "east")):
         window(b, x, 2, 5, side, height=1, glass="iron_bars", sill=STONE_BRICK)
-    # The Guard Posts, the armory chest, an anvil
-    b.set(3, 1, 7, "aliveworkplace:guard_post", facing="north")
-    b.set(9, 1, 7, "aliveworkplace:guard_post", facing="north")
+    # The guards' grindstones (their wheels turned to the room), the armory chest, an anvil
+    b.set(3, 1, 7, "grindstone", face="floor", facing="north")
+    b.set(9, 1, 7, "grindstone", face="floor", facing="north")
     b.set(6, 1, 7, "chest", facing="north", type="single", waterlogged=False)
     b.set(7, 1, 7, "anvil", facing="east")
     b.set(5, 1, 7, "chest", facing="north", type="single", waterlogged=False)
@@ -227,8 +228,8 @@ def barracks_hall(b):
 
 
 def barracks():
-    """13 x 10 x 11: a stone barracks with two Guard Posts (two guards move in), an armory chest, bunks and training
-    dummies out front."""
+    """13 x 10 x 11: a stone barracks with two grindstones for two guards (hand a villager by each a sword), an armory
+    chest, bunks and training dummies out front."""
     b = Build(13, 10, 11)
     barracks_hall(b)
     b.fill_air()
@@ -236,8 +237,8 @@ def barracks():
 
 
 def barracks_2():
-    """Upgrade of the Barracks (same origin and front): a wing to the east, through a doorway, with two more Guard
-    Posts and bunks under its own roof. 19 x 10 x 11."""
+    """Upgrade of the Barracks (same origin and front): a wing to the east, through a doorway, with two more
+    grindstones (two more guards) and bunks under its own roof. 19 x 10 x 11."""
     b = barracks().grow(19, 10, 11)
     # The east window's shutters/sill come off; the window becomes the doorway into the wing
     b.clear(12, 1, 4, 12, 3, 6)
@@ -261,8 +262,8 @@ def barracks_2():
         log(b, 17, 4, z, BARRACKS_FRAME, axis="z")
     window(b, 17, 2, 5, "east", height=1, glass="iron_bars", sill=STONE_BRICK)
     window(b, 14, 2, 3, "north", height=1, glass="iron_bars", sill=STONE_BRICK)
-    b.set(13, 1, 7, "aliveworkplace:guard_post", facing="north")
-    b.set(16, 1, 7, "aliveworkplace:guard_post", facing="north")
+    b.set(13, 1, 7, "grindstone", face="floor", facing="north")
+    b.set(16, 1, 7, "grindstone", face="floor", facing="north")
     b.set(15, 1, 7, "chest", facing="north", type="single", waterlogged=False)
     b.bed(13, 1, 5, "red", facing="north")
     b.bed(16, 1, 5, "red", facing="north")

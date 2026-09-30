@@ -251,6 +251,26 @@ public class StationsGameTests implements FabricGameTest {
 		});
 	}
 
+	/**
+	 * Every workstation's tooltip can say which item picks each of its jobs, and finds its station from the block: a bee
+	 * nest is a beehive's, a Fruit Basket (gone) is nobody's.
+	 */
+	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
+	public void everyJobsItemIsNamed(GameTestHelper helper) {
+		for (Stations.Station station : Stations.ALL) {
+			helper.assertTrue(Stations.at(station.block()).orElse(null) == station, "no station found for " + station.block());
+			for (Stations.Job job : station.jobs()) {
+				helper.assertTrue(net.minecraft.locale.Language.getInstance().has(Stations.itemKey(job)), "untranslated: " + Stations.itemKey(job));
+			}
+		}
+		helper.assertTrue(Stations.at(Blocks.BEE_NEST).map(s -> s.block() == Blocks.BEEHIVE).orElse(false), "a bee nest isn't a beehive's station");
+		helper.assertTrue(Stations.at(ModBlocks.FRUIT_BASKET).isEmpty(), "the Fruit Basket still shows jobs");
+		helper.assertTrue(!Stations.at(Blocks.CRAFTING_TABLE).orElseThrow().byItself() && Stations.at(Blocks.COMPOSTER).orElseThrow().byItself(),
+			"which blocks take a villager by themselves");
+		helper.succeed();
+	}
+
 	/** The job blocks 21.1a replaced can't be crafted any more (they stay registered, so worlds keep them). */
 	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
 	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)

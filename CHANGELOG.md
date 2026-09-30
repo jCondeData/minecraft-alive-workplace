@@ -3,6 +3,15 @@
 ## Unreleased
 
 ### Changed
+- **Fewer job blocks**: our jobs now work at vanilla blocks, shared with the vanilla job there. Stand a villager by the
+  block and sneak-right-click them with the job's item: a composter makes an Orchard Keeper with sweet berries, a
+  Florist with a flower and a Composter with bone meal; a blast furnace makes a Miner with a pickaxe; a grindstone a
+  Guard with a sword; a jukebox a Bard with a music disc, and so on (hold Shift over a workstation to see its jobs).
+  A jobless villager still takes a vanilla block for the vanilla job by themselves. Builders work at the Blueprint
+  Table. 26 job blocks can't be crafted any more (the Builder's Bench, the Guard Post, the Fruit Basket...), but the
+  ones in your world keep working. Village houses, the camp and the blueprints use the new blocks, and a village house
+  whose block is shared comes with its worker.
+- A postman's mailbox is the post office's counter: with no mailbox of your own, pick up your parcels there.
 - **A new look**: every workstation, villager outfit and item is redrawn in Minecraft's own style. Workstations are
   built from their wood or stone like the crafting table, with no more grainy speckle. The outfits are cleaner, and a
   job's hat no longer has the biome's hat showing through it. Items take the shape of their vanilla kind: the Village

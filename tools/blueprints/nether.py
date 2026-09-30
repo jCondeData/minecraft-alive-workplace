@@ -2,8 +2,9 @@
 The Nether Gate: where a village's netherworkers set out from.
 
 Nether Gate I: an obsidian portal frame set in a polished blackstone arch with a gilded keystone and soul lanterns on
-the pillars, on a paved blackstone court with soul-fire braziers at the front; the Nether Brazier and its chests at the
-side. The builder lights the frame when it's done (with a flint and steel or a fire charge from the chests).
+the pillars, on a paved blackstone court with soul-fire braziers at the front; a cartography table (the netherworker's:
+hand the villager there netherrack) and its chests at the side. The builder lights the frame when it's done (with a
+flint and steel or a fire charge from the chests).
 II: a vaulted gatehouse roof over the portal, a blackstone storehouse on the east side and a nether wart garden behind.
 """
 from kit import *
@@ -60,15 +61,16 @@ def gate_braziers(b):
 
 
 def gate_brazier_corner(b):
-    """The Nether Brazier with a chest and a barrel beside it, on the east side of the court."""
-    b.set(9, 1, 4, "aliveworkplace:nether_brazier", facing="west")
+    """The netherworker's cartography table with a chest and a barrel beside it, on the east side of the court."""
+    b.set(9, 1, 4, "cartography_table")
     b.set(9, 1, 5, "chest", facing="west", type="single", waterlogged=False)
     b.set(9, 1, 6, "barrel", facing="up", open=False)
 
 
 def nether_gate():
     """11 x 9 x 7: an obsidian portal frame in a polished blackstone arch (a gilded keystone, soul lanterns on the
-    pillars) on a paved court with soul-fire braziers at the front, and the Nether Brazier with its chest to one side."""
+    pillars) on a paved court with soul-fire braziers at the front, and the netherworker's cartography table with its
+    chest to one side."""
     b = Build(11, 9, 7)
     gate_court(b, 10, 6)
     gate_arch(b)

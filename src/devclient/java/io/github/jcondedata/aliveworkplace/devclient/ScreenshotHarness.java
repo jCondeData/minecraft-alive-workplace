@@ -1818,10 +1818,10 @@ public class ScreenshotHarness implements ClientModInitializer {
 						if (st.is(Blocks.STRUCTURE_VOID)) {
 							voids++;
 						}
-						if (st.is(ModBlocks.BUILDERS_BENCH) && found == null) {
+						if (st.is(ModBlocks.BLUEPRINT_TABLE) && found == null) {
 							found = p.immutable();
 						}
-						for (net.minecraft.world.level.block.Block job : List.of(ModBlocks.TRAINING_POST, ModBlocks.GUARD_POST, ModBlocks.NURSE_STATION, ModBlocks.POSTAL_DESK)) {
+						for (net.minecraft.world.level.block.Block job : List.of(ModBlocks.TRAINING_POST, ModBlocks.MAILBOX, ModBlocks.SHOP_COUNTER, ModBlocks.STOREHOUSE, ModBlocks.TRAVEL_POST)) {
 							if (st.is(job) && otherHouses.stream().noneMatch(h -> level.getBlockState(h).is(job))) {
 								otherHouses.add(p.immutable());
 							}

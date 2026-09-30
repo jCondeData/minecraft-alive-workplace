@@ -49,6 +49,23 @@ class Build:
         """(id, properties) of the block at (x, y, z), or None if nothing is there yet."""
         return self.blocks.get((x, y, z))
 
+    def villager(self, x, y, z, profession, villager_type):
+        """A villager standing on (x, y, z) when the structure is placed (as vanilla's village villagers are), with
+        `profession` (an id such as "aliveworkplace:florist") and a little experience, so the job stays theirs
+        until they take a workstation of it."""
+        from nbtlib import Double
+        self.entities = getattr(self, "entities", [])
+        self.entities.append(Compound({
+            "pos": List[Double]([Double(x + 0.5), Double(y), Double(z + 0.5)]),
+            "blockPos": List[Int]([Int(x), Int(y), Int(z)]),
+            "nbt": Compound({
+                "id": String("minecraft:villager"),
+                "VillagerData": Compound({"profession": String(profession), "level": Int(1), "type": String(villager_type)}),
+                "Xp": Int(1),
+                "PersistenceRequired": nbtlib.Byte(1),
+            }),
+        }))
+
     def set_nbt(self, x, y, z, nbt):
         """Block-entity data for the block at (x, y, z) (set the block first)."""
         self.nbt = getattr(self, "nbt", {})
@@ -111,7 +128,7 @@ class Build:
             "size": List[Int]([Int(self.w), Int(self.h), Int(self.d)]),
             "palette": List[Compound](palette),
             "blocks": List[Compound](blocks),
-            "entities": List[Compound]([]),
+            "entities": List[Compound](getattr(self, "entities", [])),
         })
 
     def save(self, folder, name):

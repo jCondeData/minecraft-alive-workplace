@@ -39,8 +39,9 @@ import net.minecraft.world.level.block.Blocks;
 /**
  * Which block each job works at, and the item that picks it: the owner's "fewer job blocks" (ROADMAP 21.1a).
  * <p>
- * Related jobs share a block. A jobless villager by a vanilla one takes the vanilla job by itself, as in vanilla (our
- * professions hold the block's point of interest but can't acquire it, and vanilla's are registered first). The player
+ * Related jobs share a block. A jobless villager by a vanilla one takes the vanilla job by itself, as in vanilla (jobless
+ * villagers take a block for the first job registered at it, and vanilla's are registered first; a worker of ours who
+ * lost their block takes a free one of its kind again, as vanilla workers do). The player
  * picks another job by sneak-right-clicking the villager with that job's item; the same switches a villager already
  * working there, and brings back the vanilla job with its own item. A villager with no job, or whose job is at another
  * kind of block, takes the nearest free block of the right kind within {@link #REACH} blocks. Choosing a job doesn't
@@ -67,7 +68,18 @@ public final class Stations {
 		public boolean has(VillagerProfession profession) {
 			return jobs.stream().anyMatch(j -> j.profession().get() == profession);
 		}
+
+		/** Whether a jobless villager takes this block by themselves (for its first job); if not, only an item gives a job. */
+		public boolean byItself() {
+			return !ONLY_BY_ITEM.contains(block);
+		}
 	}
+
+	/** Blocks no job takes by itself: a crafting table, a beehive (or nest), a jukebox, a mailbox. */
+	private static final Set<Block> ONLY_BY_ITEM = Set.of(Blocks.CRAFTING_TABLE, Blocks.BEEHIVE, Blocks.JUKEBOX, ModBlocks.MAILBOX);
+	/** The jobs that need Cobblemon (their items are Cobblemon's, or they work with Pokémon). */
+	private static final Set<String> COBBLEMON_JOBS = Set.of("ball_smith", "pokemon_trader", "trainer", "trainer_leader", "tutor",
+		"fossil_scientist");
 
 	private static Predicate<ItemStack> any(Item... items) {
 		Set<Item> set = Set.of(items);
@@ -266,6 +278,23 @@ public final class Stations {
 	/** The job's name, as the game shows it over a villager ("Orchard Keeper"). */
 	public static Component name(VillagerProfession profession) {
 		return Component.translatable("entity.minecraft.villager." + profession.name());
+	}
+
+	/** The station {@code block} is (a bee nest counts as a beehive, any cauldron as a cauldron), if it's one. */
+	public static Optional<Station> at(Block block) {
+		return PoiTypes.forState(block.defaultBlockState()).flatMap(h -> ALL.stream().filter(s -> s.poi().test(h)).findFirst());
+	}
+
+	/** Whether {@code job} can be had in this game (the Pokémon jobs need Cobblemon). */
+	public static boolean available(Job job) {
+		ResourceLocation id = BuiltInRegistries.VILLAGER_PROFESSION.getKey(job.profession().get());
+		return !COBBLEMON_JOBS.contains(id.getPath()) || io.github.jcondedata.aliveworkplace.platform.Platform.get().isModLoaded("cobblemon");
+	}
+
+	/** The translation key saying which items pick {@code job} ("Sweet berries, glow berries or an apple"). */
+	public static String itemKey(Job job) {
+		ResourceLocation id = BuiltInRegistries.VILLAGER_PROFESSION.getKey(job.profession().get());
+		return "station.aliveworkplace.item." + id.getNamespace() + "." + id.getPath();
 	}
 
 	/** The station {@code profession} works at since 21.1a (its old block aside), if it shares one. */

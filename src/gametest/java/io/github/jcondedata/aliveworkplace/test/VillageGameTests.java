@@ -37,8 +37,8 @@ public class VillageGameTests implements FabricGameTest {
 
 			StructureTemplate template = level.getStructureManager().get(VillageHouses.workshop(style))
 				.orElseThrow(() -> new net.minecraft.gametest.framework.GameTestAssertException("missing " + workshop));
-			List<StructureTemplate.StructureBlockInfo> benches = template.filterBlocks(BlockPos.ZERO, new StructurePlaceSettings(), ModBlocks.BUILDERS_BENCH);
-			helper.assertTrue(benches.size() == 1, workshop + " should have one Builder's Bench");
+			List<StructureTemplate.StructureBlockInfo> benches = template.filterBlocks(BlockPos.ZERO, new StructurePlaceSettings(), ModBlocks.BLUEPRINT_TABLE);
+			helper.assertTrue(benches.size() == 1, workshop + " should have one Blueprint Table");
 			List<StructureTemplate.StructureBlockInfo> jigsaws = template.filterBlocks(BlockPos.ZERO, new StructurePlaceSettings(), Blocks.JIGSAW);
 			boolean entrance = jigsaws.stream().anyMatch(j -> j.nbt() != null && j.nbt().getString("name").equals("minecraft:building_entrance"));
 			boolean villager = jigsaws.stream().anyMatch(j -> j.nbt() != null && j.nbt().getString("pool").equals("aliveworkplace:village/" + style + "/workers"));
@@ -59,35 +59,43 @@ public class VillageGameTests implements FabricGameTest {
 		helper.succeed();
 	}
 
-	/** Trainer's houses, guard houses, clinics and post offices: in every village type's pool, each with its job block. */
+	/** A house, its job block, and the job its villager comes with (null: a jobless one, who takes the block's own job). */
+	private record House(net.minecraft.world.level.block.Block block, VillagerProfession job) {
+	}
+
+	/**
+	 * Trainer's houses, guard houses, clinics and post offices...: in every village type's pool, each with its one job
+	 * block (the one its job works at since ROADMAP 21.1a) and its villager: a jobless one from the worker pool where the
+	 * block's own job is the house's, else one who already has the house's job (a composter would make a farmer).
+	 */
 	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
 	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
 	public void everyVillageTypeCanGrowTheOtherHouses(GameTestHelper helper) {
 		ServerLevel level = helper.getLevel();
 		var pools = level.registryAccess().registryOrThrow(Registries.TEMPLATE_POOL);
-		java.util.Map<String, net.minecraft.world.level.block.Block> houses = java.util.Map.ofEntries(
-			java.util.Map.entry("trainers_house", ModBlocks.TRAINING_POST),
-			java.util.Map.entry("guard_house", ModBlocks.GUARD_POST),
-			java.util.Map.entry("clinic", ModBlocks.NURSE_STATION),
-			java.util.Map.entry("post_office", ModBlocks.POSTAL_DESK),
-			java.util.Map.entry("leaders_hall", ModBlocks.LEADERS_PODIUM),
-			java.util.Map.entry("school", ModBlocks.TUTORS_DESK),
-			java.util.Map.entry("trade_hall", ModBlocks.TRADE_BOARD),
-			java.util.Map.entry("orchard_house", ModBlocks.FRUIT_BASKET),
-			java.util.Map.entry("ball_workshop", ModBlocks.BALL_WORKBENCH),
-			java.util.Map.entry("ferry_house", ModBlocks.TRAVEL_POST),
-			java.util.Map.entry("storehouse", ModBlocks.STOREHOUSE),
-			java.util.Map.entry("carpenters_workshop", ModBlocks.CARPENTERS_BENCH),
-			java.util.Map.entry("kitchen", ModBlocks.KITCHEN_STOVE),
-			java.util.Map.entry("fossil_lab", ModBlocks.FOSSIL_LAB),
-			java.util.Map.entry("flower_shop", ModBlocks.FLOWER_STAND),
-			java.util.Map.entry("ranch_house", ModBlocks.FEED_TROUGH),
-			java.util.Map.entry("schoolhouse", ModBlocks.TEACHERS_DESK),
-			java.util.Map.entry("inn_room", ModBlocks.INN_COUNTER),
-			java.util.Map.entry("mortuary", ModBlocks.UNDERTAKERS_TABLE),
-			java.util.Map.entry("tinkers_shop", ModBlocks.TINKERS_BENCH),
-			java.util.Map.entry("sifting_shed", ModBlocks.SIEVE),
-			java.util.Map.entry("compost_yard", ModBlocks.COMPOST_BIN));
+		java.util.Map<String, House> houses = java.util.Map.ofEntries(
+			java.util.Map.entry("trainers_house", new House(ModBlocks.TRAINING_POST, null)),
+			java.util.Map.entry("guard_house", new House(Blocks.GRINDSTONE, ModVillagers.GUARD)),
+			java.util.Map.entry("clinic", new House(Blocks.BREWING_STAND, ModVillagers.NURSE)),
+			java.util.Map.entry("post_office", new House(ModBlocks.MAILBOX, ModVillagers.POSTMAN)),
+			java.util.Map.entry("leaders_hall", new House(ModBlocks.TRAINING_POST, ModVillagers.TRAINER_LEADER)),
+			java.util.Map.entry("school", new House(ModBlocks.TRAINING_POST, ModVillagers.TUTOR)),
+			java.util.Map.entry("trade_hall", new House(ModBlocks.SHOP_COUNTER, ModVillagers.POKEMON_TRADER)),
+			java.util.Map.entry("orchard_house", new House(Blocks.COMPOSTER, ModVillagers.ORCHARD_KEEPER)),
+			java.util.Map.entry("ball_workshop", new House(Blocks.SMITHING_TABLE, ModVillagers.BALL_SMITH)),
+			java.util.Map.entry("ferry_house", new House(ModBlocks.TRAVEL_POST, null)),
+			java.util.Map.entry("storehouse", new House(ModBlocks.STOREHOUSE, null)),
+			java.util.Map.entry("carpenters_workshop", new House(Blocks.CRAFTING_TABLE, ModVillagers.CARPENTER)),
+			java.util.Map.entry("kitchen", new House(Blocks.SMOKER, ModVillagers.CHEF)),
+			java.util.Map.entry("fossil_lab", new House(ModBlocks.TRAINING_POST, ModVillagers.FOSSIL_SCIENTIST)),
+			java.util.Map.entry("flower_shop", new House(Blocks.COMPOSTER, ModVillagers.FLORIST)),
+			java.util.Map.entry("ranch_house", new House(Blocks.SMOKER, ModVillagers.RANCHER)),
+			java.util.Map.entry("schoolhouse", new House(Blocks.LECTERN, ModVillagers.TEACHER)),
+			java.util.Map.entry("inn_room", new House(ModBlocks.SHOP_COUNTER, ModVillagers.INNKEEPER)),
+			java.util.Map.entry("mortuary", new House(Blocks.BREWING_STAND, ModVillagers.UNDERTAKER)),
+			java.util.Map.entry("tinkers_shop", new House(Blocks.SMITHING_TABLE, ModVillagers.TINKERER)),
+			java.util.Map.entry("sifting_shed", new House(Blocks.CAULDRON, ModVillagers.SIFTER)),
+			java.util.Map.entry("compost_yard", new House(Blocks.COMPOSTER, ModVillagers.COMPOSTER)));
 		// No Cobblemon here: the Pokémon houses stay out of the pools.
 		helper.assertTrue(VillageHouses.houseNames().equals(List.of("guard_house", "clinic", "post_office", "orchard_house", "ferry_house", "storehouse", "carpenters_workshop", "kitchen",
 				"flower_shop", "ranch_house", "schoolhouse", "inn_room", "mortuary", "tinkers_shop", "sifting_shed", "compost_yard")),
@@ -102,17 +110,28 @@ public class VillageGameTests implements FabricGameTest {
 					style + " villages " + (listed ? "grow" : "can't grow") + " a " + house.getKey());
 				StructureTemplate template = level.getStructureManager().get(id)
 					.orElseThrow(() -> new net.minecraft.gametest.framework.GameTestAssertException("missing " + id));
-				helper.assertTrue(template.filterBlocks(BlockPos.ZERO, new StructurePlaceSettings(), house.getValue()).size() == 1,
-					id + " should have one " + house.getValue().getName().getString());
-				// Exactly one job block, so the villager who moves in takes ours (a lectern would make a librarian).
+				helper.assertTrue(template.filterBlocks(BlockPos.ZERO, new StructurePlaceSettings(), house.getValue().block()).size() == 1,
+					id + " should have one " + house.getValue().block().getName().getString());
+				// Exactly one job block, so its villager isn't joined by another for a second block's vanilla job.
 				long jobSites = jobSites(template);
 				helper.assertTrue(jobSites == 1, id + " has " + jobSites + " job blocks");
+				net.minecraft.nbt.CompoundTag saved = template.save(new net.minecraft.nbt.CompoundTag());
+				net.minecraft.nbt.ListTag entities = saved.getList("entities", net.minecraft.nbt.Tag.TAG_COMPOUND);
+				boolean spawn = template.filterBlocks(BlockPos.ZERO, new StructurePlaceSettings(), Blocks.JIGSAW).stream()
+					.anyMatch(j -> j.nbt() != null && j.nbt().getString("pool").equals("aliveworkplace:village/" + style + "/workers"));
+				if (house.getValue().job() == null) {
+					helper.assertTrue(spawn && entities.isEmpty(), id + " should spawn a jobless villager from the worker pool");
+				} else {
+					String job = net.minecraft.core.registries.BuiltInRegistries.VILLAGER_PROFESSION.getKey(house.getValue().job()).toString();
+					helper.assertTrue(!spawn && entities.size() == 1 && entities.getCompound(0).getCompound("nbt").getCompound("VillagerData")
+						.getString("profession").equals(job), id + " should come with a " + job + ": " + entities);
+				}
 			}
 		}
 		helper.succeed();
 	}
 
-	/** Job-site blocks (ours and vanilla's) in a template. */
+	/** Job-site blocks (ours and vanilla's: any job's workstation) in a template. */
 	private static long jobSites(StructureTemplate template) {
 		net.minecraft.nbt.CompoundTag tag = template.save(new net.minecraft.nbt.CompoundTag());
 		net.minecraft.nbt.ListTag palette = tag.getList("palette", net.minecraft.nbt.Tag.TAG_COMPOUND);
@@ -124,8 +143,8 @@ public class VillageGameTests implements FabricGameTest {
 		net.minecraft.nbt.ListTag blocks = tag.getList("blocks", net.minecraft.nbt.Tag.TAG_COMPOUND);
 		for (int i = 0; i < blocks.size(); i++) {
 			var state = states.get(blocks.getCompound(i).getInt("state"));
-			if (net.minecraft.world.entity.ai.village.poi.PoiTypes.forState(state)
-				.filter(h -> h.is(net.minecraft.tags.PoiTypeTags.ACQUIRABLE_JOB_SITE)).isPresent()) {
+			if (net.minecraft.world.entity.ai.village.poi.PoiTypes.forState(state).filter(h -> net.minecraft.core.registries.BuiltInRegistries
+				.VILLAGER_PROFESSION.stream().anyMatch(p -> p != VillagerProfession.NONE && p.heldJobSite().test(h))).isPresent()) {
 				count++;
 			}
 		}
@@ -202,6 +221,8 @@ public class VillageGameTests implements FabricGameTest {
 			for (BlockPos p : BlockPos.betweenClosed(box.minX(), box.minY(), box.minZ(), box.maxX(), box.maxY(), box.maxZ())) {
 				level.setBlock(p, Blocks.AIR.defaultBlockState(), 2);
 			}
+			// The houses whose villager comes with its job bring them along: they don't stay for the next house.
+			level.getEntitiesOfClass(Villager.class, net.minecraft.world.phys.AABB.of(box).inflate(2)).forEach(Villager::discard);
 			for (int x = 0; x < 9; x++) {
 				level.setBlock(origin.offset(x, 0, 0), Blocks.DIRT.defaultBlockState(), 2);
 			}
@@ -231,7 +252,34 @@ public class VillageGameTests implements FabricGameTest {
 				problems.add(id + ": " + voids + " structure_void, " + ground + "/9 ground kept, door " + level.getBlockState(origin.offset(4, 1, 2)));
 			}
 		}
+		level.getEntitiesOfClass(Villager.class, net.minecraft.world.phys.AABB.of(box).inflate(2)).forEach(Villager::discard);
 		helper.assertTrue(problems.isEmpty(), problems.size() + " village templates: " + problems);
 		helper.succeed();
+	}
+
+	/**
+	 * Since 21.1a the orchard house has a composter, which a jobless villager would take as a farmer: its villager comes
+	 * as an orchard keeper instead and takes the house's composter by themselves.
+	 */
+	//$ gametest_ticks_batch '"aliveworkplace_test:big_area"' '1200' '"theOrchardHousesVillagerTakesItsComposter"'
+	@GameTest(template = "aliveworkplace_test:big_area", timeoutTicks = 1200, batch = "theOrchardHousesVillagerTakesItsComposter")
+	public void theOrchardHousesVillagerTakesItsComposter(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		ServerLevel level = helper.getLevel();
+		helper.setDayTime(2000);
+		StructureTemplate template = level.getStructureManager().get(io.github.jcondedata.aliveworkplace.AliveWorkplace.id("village/plains_orchard_house"))
+			.orElseThrow();
+		BlockPos origin = helper.absolutePos(new BlockPos(4, 1, 4));
+		template.placeInWorld(level, origin, origin, new StructurePlaceSettings().setFinalizeEntities(true), net.minecraft.util.RandomSource.create(1), 2);
+		BlockPos composter = template.filterBlocks(origin, new StructurePlaceSettings(), Blocks.COMPOSTER).get(0).pos();
+		net.minecraft.world.phys.AABB area = net.minecraft.world.phys.AABB.of(template.getBoundingBox(new StructurePlaceSettings(), origin)).inflate(2);
+		helper.succeedWhen(() -> {
+			List<Villager> villagers = level.getEntitiesOfClass(Villager.class, area);
+			helper.assertTrue(villagers.size() == 1, villagers.size() + " villagers in the house");
+			Villager keeper = villagers.get(0);
+			helper.assertTrue(keeper.getVillagerData().getProfession() == ModVillagers.ORCHARD_KEEPER, "a " + keeper.getVillagerData().getProfession());
+			helper.assertTrue(keeper.getBrain().getMemory(net.minecraft.world.entity.ai.memory.MemoryModuleType.JOB_SITE)
+				.map(g -> g.pos().equals(composter)).orElse(false), "works at " + keeper.getBrain().getMemory(net.minecraft.world.entity.ai.memory.MemoryModuleType.JOB_SITE));
+		});
 	}
 }

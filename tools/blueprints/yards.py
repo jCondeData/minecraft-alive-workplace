@@ -1,11 +1,12 @@
 """
 Yards for the outdoor trades.
 
-Compost Yard: I an open timber shed on a mossy cobble plinth with two slatted compost bays, the Compost Bin under the
-eaves, a fenced yard with a gate, lamp posts and a flower bed; II a third bay and a potting shed at the east end.
+Compost Yard: I an open timber shed on a mossy cobble plinth with two slatted compost bays, a composter under the eaves
+(the composter's: hand the villager there bone meal), a fenced yard with a gate, lamp posts and a flower bed; II a third
+bay and a potting shed at the east end.
 
-Sifting Shed: I a stone-footed lean-to over the Sieve, heaps of gravel and sand in stone bins, a chest of finds;
-II a second Sieve under a longer roof, and a covered sand bin.
+Sifting Shed: I a stone-footed lean-to over a cauldron (the sifter's: hand the villager there gravel), heaps of gravel
+and sand in stone bins, a chest of finds; II a second cauldron under a longer roof, and a covered sand bin.
 """
 from kit import *
 
@@ -72,13 +73,13 @@ def compost_front(b, x1, gate_x):
 
 
 def compost_yard():
-    """11 x 8 x 10: an open timber shed on a mossy cobble plinth, two slatted compost bays under a dark oak roof, the
-    Compost Bin and a chest under the eaves, a fenced yard with a gate, lamp posts and a flower bed."""
+    """11 x 8 x 10: an open timber shed on a mossy cobble plinth, two slatted compost bays under a dark oak roof, a
+    composter and a chest under the eaves, a fenced yard with a gate, lamp posts and a flower bed."""
     b = Build(11, 8, 10)
     compost_shed(b, 1, 9)
     compost_roof(b, 1, 9)
     compost_front(b, 10, 5)
-    b.set(4, 1, 3, "aliveworkplace:compost_bin", facing="south")
+    b.set(4, 1, 3, "composter", level=0)
     b.set(3, 1, 3, "chest", facing="south", type="single", waterlogged=False)
     b.set(7, 1, 3, "hay_block", axis="x")
     lantern(b, 3, 3, 4, hanging=True)
@@ -151,11 +152,11 @@ def sifting_hall(b, depth):
 
 
 def sifting_shed():
-    """9 x 9 x 9: a timber shed on a stone footing, gable to the street and open in front: the Sieve inside, bins of gravel
-    and sand, a chest for the finds, a lantern on a chain from the tie beam."""
+    """9 x 9 x 9: a timber shed on a stone footing, gable to the street and open in front: the sifter's cauldron inside,
+    bins of gravel and sand, a chest for the finds, a lantern on a chain from the tie beam."""
     b = Build(9, 9, 9)
     sifting_hall(b, 7)
-    b.set(4, 1, 4, "aliveworkplace:sieve", facing="north")
+    b.set(4, 1, 4, "cauldron")  # an empty one: a builder can't be handed water in a cauldron
     b.set(6, 1, 6, "chest", facing="west", type="single", waterlogged=False)
     for x, z, block in ((2, 6, "gravel"), (2, 5, "gravel"), (3, 6, "sand"), (2, 4, "sand")):
         b.set(x, 1, z, block)
@@ -171,12 +172,12 @@ def sifting_shed():
 
 
 def sifting_shed_2():
-    """11 x 9 x 13: the shed run back to twice the depth with a second Sieve for a second sifter, a side door, and a
+    """11 x 9 x 13: the shed run back to twice the depth with a second cauldron for a second sifter, a side door, and a
     catslide lean-to down the east side over stone-walled bins of sand and gravel."""
     b = sifting_shed().grow(11, 9, 13)
     b.clear(1, 1, 7, 7, 8, 7)  # the old back wall and gable come down
     sifting_hall(b, 11)
-    b.set(4, 1, 9, "aliveworkplace:sieve", facing="north")
+    b.set(4, 1, 9, "cauldron")
     b.set(6, 1, 10, "chest", facing="west", type="single", waterlogged=False)
     b.set(6, 1, 6, "chest", facing="west", type="single", waterlogged=False)
     for x, z, block in ((2, 10, "sand"), (2, 9, "sand"), (3, 10, "gravel"), (2, 6, "gravel"), (2, 5, "gravel"), (3, 6, "sand"), (2, 4, "sand")):

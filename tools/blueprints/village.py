@@ -23,6 +23,9 @@ VILLAGE_STYLES = {
                           DARK_OAK, "spruce_door", "spruce_trapdoor", "spruce_fence", "brown", "spruce_planks"),
 }
 VILLAGE_STRUCTURES = os.path.join(MAIN_STRUCTURES, "village")
+# The villager type of each village style's villagers.
+VILLAGER_TYPES = {"plains": "minecraft:plains", "desert": "minecraft:desert", "savanna": "minecraft:savanna",
+                  "snowy": "minecraft:snow", "taiga": "minecraft:taiga"}
 
 
 class Shifted:
@@ -44,12 +47,15 @@ class Shifted:
         return self.b.get(x + self.dx, y, z + self.dz)
 
 
-def village_house(style, fit_out):
+def village_house(style, fit_out, job=None):
     """9 x 10 x 10. The street connects at the front (z = 0, left as the ground it lands on); a timber-framed house on a
     stone plinth (walls x 1-7, z 2-8) with its gable to the street, shuttered windows, a lantern over the door; inside a bed,
-    a villager spawn and {@code fit_out(b, style)}: the job block and what goes with it (drawn for the interior x 1-5,
+    a villager and {@code fit_out(b, style)}: the job block and what goes with it (drawn for the interior x 1-5,
     z 2-6 of the first houses, moved in by one). Desert houses have a flat roof with a parapet instead, the roof beams'
-    ends showing under it."""
+    ends showing under it.
+    The villager: with no {@code job}, a jobless one from the village's worker pool, who takes the job block by
+    themselves (the block's own job). With a {@code job} (a job that shares a vanilla block since ROADMAP 21.1a, such as
+    the orchard keeper's composter), one who already has that job and takes the house's block for it."""
     s = VILLAGE_STYLES[style]
     b = Build(9, 10, 10)
     for x in range(9):
@@ -114,20 +120,24 @@ def village_house(style, fit_out):
     lantern(b, 4, 3, 5, hanging=True)
     for x in range(2, 7):  # a tie beam across the room, wall to wall, the lantern hanging from it
         b.set(x, 4, 5, s.frame, **({"axis": "x"} if "log" in s.frame else {}))
-    b.set(4, 0, 5, "jigsaw", orientation="up_north")
     floor_name = s.floor
-    b.set_nbt(4, 0, 5, Compound({
-        "name": String("minecraft:bottom"), "target": String("minecraft:bottom"),
-        "pool": String(f"aliveworkplace:village/{style}/workers"), "final_state": String("minecraft:" + floor_name),
-        "joint": String("rollable"), "id": String("minecraft:jigsaw"),
-        "selection_priority": Int(0), "placement_priority": Int(0)}))
+    if job is None:
+        b.set(4, 0, 5, "jigsaw", orientation="up_north")
+        b.set_nbt(4, 0, 5, Compound({
+            "name": String("minecraft:bottom"), "target": String("minecraft:bottom"),
+            "pool": String(f"aliveworkplace:village/{style}/workers"), "final_state": String("minecraft:" + floor_name),
+            "joint": String("rollable"), "id": String("minecraft:jigsaw"),
+            "selection_priority": Int(0), "placement_priority": Int(0)}))
+    else:
+        b.set(4, 0, 5, floor_name)
+        b.villager(5, 1, 5, job, VILLAGER_TYPES[style])  # in the open middle of the room: no fit-out uses x = 5
     b.fill_air()
     return b
 
 
 def workshop_fit_out(b, style):
-    """A Builder's Bench, a chest of building supplies, a crafting table and a stack of scaffolding."""
-    b.set(1, 1, 6, "aliveworkplace:builders_bench", facing="east")
+    """A Blueprint Table, a chest of building supplies, a crafting table and a stack of scaffolding."""
+    b.set(1, 1, 6, "aliveworkplace:blueprint_table", facing="east")
     b.set(1, 1, 5, "chest", facing="east", type="single", waterlogged=False)
     b.set_nbt(1, 1, 5, Compound({"LootTable": String("aliveworkplace:chests/village_builders_workshop"), "id": String("minecraft:chest")}))
     # (no barrel: it is a fisherman's job block and would steal the villager)
@@ -136,14 +146,14 @@ def workshop_fit_out(b, style):
 
 
 def builders_workshop(style):
-    """The builder's workshop: a Builder's Bench, a chest of building supplies, a bed and a villager spawn, so a builder
-    moves in on its own."""
+    """The builder's workshop: a Blueprint Table, a chest of building supplies, a bed and a villager spawn, so a builder
+    moves in on its own (the table's own job)."""
     return village_house(style, workshop_fit_out)
 
 
-def staffed_house(style, fit_out):
-    """The same house fitted out by {@code fit_out(b, style)} for another job."""
-    return village_house(style, fit_out)
+def staffed_house(style, fit_out, job=None):
+    """The same house fitted out by {@code fit_out(b, style)} for another job ({@code job}: see village_house)."""
+    return village_house(style, fit_out, job)
 
 
 def trainers_house(b, style):
@@ -156,32 +166,32 @@ def trainers_house(b, style):
 
 
 def guard_house(b, style):
-    """A Guard Post and a chest of starting gear."""
-    b.set(1, 1, 6, "aliveworkplace:guard_post", facing="east")
+    """A grindstone (the guard's) and a chest of starting gear."""
+    b.set(1, 1, 6, "grindstone", face="floor", facing="east")
     b.set(1, 1, 5, "chest", facing="east", type="single", waterlogged=False)
     b.set_nbt(1, 1, 5, Compound({"LootTable": String("aliveworkplace:chests/village_guard_house"), "id": String("minecraft:chest")}))
     b.set(1, 1, 3, "anvil", facing="north")
 
 
-# No vanilla job blocks in these houses (a cauldron, lectern, barrel...): the villager who moves in could
-# take that job instead of ours.
+# One job block per house: a second vanilla one (a cauldron, lectern, barrel...) would take another villager for
+# its vanilla job.
 def clinic(b, style):
-    """A Nurse Station, a cot and flowers."""
-    b.set(1, 1, 6, "aliveworkplace:nurse_station", facing="east")
+    """A brewing stand (the nurse's), a cot and flowers."""
+    b.set(1, 1, 6, "brewing_stand", has_bottle_0=False, has_bottle_1=False, has_bottle_2=False)
     b.set(1, 1, 3, "white_carpet")
     b.set(1, 1, 4, "potted_poppy")
 
 
 def post_office(b, style):
-    """A Postal Desk with a sorting shelf."""
-    b.set(1, 1, 6, "aliveworkplace:postal_desk", facing="east")
+    """A Mailbox (the postman's) with a sorting shelf."""
+    b.set(1, 1, 6, "aliveworkplace:mailbox", facing="east", has_mail=False)
     b.set(1, 1, 5, "chiseled_bookshelf", facing="east")
     b.set(1, 1, 3, "bookshelf")
 
 
 def leaders_hall(b, style):
-    """The Trainer Leader's Podium between two polished andesite pillars, and a target to spar with."""
-    b.set(1, 1, 6, "aliveworkplace:leaders_podium", facing="east")
+    """The Trainer Leader's Training Post between two polished andesite pillars, and a target to spar with."""
+    b.set(1, 1, 6, "aliveworkplace:training_post", facing="east")
     b.set(1, 1, 5, "polished_andesite")
     b.set(1, 2, 5, "polished_andesite")
     b.set(1, 1, 3, "target")
@@ -189,8 +199,8 @@ def leaders_hall(b, style):
 
 
 def school(b, style):
-    """A Tutor's Desk and bookshelves."""
-    b.set(1, 1, 6, "aliveworkplace:tutors_desk", facing="east")
+    """The Move Tutor's Training Post and bookshelves."""
+    b.set(1, 1, 6, "aliveworkplace:training_post", facing="east")
     b.set(1, 1, 5, "bookshelf")
     b.set(1, 2, 5, "bookshelf")
     b.set(1, 1, 3, "bookshelf")
@@ -198,15 +208,15 @@ def school(b, style):
 
 
 def trade_hall(b, style):
-    """A Trade Board and somewhere to sit down and haggle."""
-    b.set(1, 1, 6, "aliveworkplace:trade_board", facing="east")
+    """The Pokémon Trader's Shop Counter and somewhere to sit down and haggle."""
+    b.set(1, 1, 6, "aliveworkplace:shop_counter", facing="east")
     b.set(1, 1, 4, "oak_stairs", facing="east", half="bottom", shape="straight", waterlogged=False)
     b.set(1, 1, 3, "potted_fern")
 
 
 def orchard_house(b, style):
-    """A Fruit Basket, a chest for the harvest and an indoor bed of sweet berry bushes to pick."""
-    b.set(1, 1, 6, "aliveworkplace:fruit_basket", facing="east")
+    """A composter (the orchard keeper's), a chest for the harvest and an indoor bed of sweet berry bushes to pick."""
+    b.set(1, 1, 6, "composter", level=0)
     b.set(1, 1, 5, "chest", facing="east", type="single", waterlogged=False)
     b.set_nbt(1, 1, 5, Compound({"LootTable": String("aliveworkplace:chests/village_orchard"), "id": String("minecraft:chest")}))
     for x in (2, 3):
@@ -216,8 +226,8 @@ def orchard_house(b, style):
 
 
 def ball_workshop(b, style):
-    """A Ball Workbench, a chest of copper and dye, and an anvil."""
-    b.set(1, 1, 6, "aliveworkplace:ball_workbench", facing="east")
+    """A smithing table (the ball smith's), a chest of copper and dye, and an anvil."""
+    b.set(1, 1, 6, "smithing_table")
     b.set(1, 1, 5, "chest", facing="east", type="single", waterlogged=False)
     b.set_nbt(1, 1, 5, Compound({"LootTable": String("aliveworkplace:chests/village_ball_workshop"), "id": String("minecraft:chest")}))
     b.set(1, 1, 3, "anvil", facing="north")
@@ -243,8 +253,9 @@ def storehouse_room(b, style):
 
 
 def carpenters_workshop(b, style):
-    """A Carpenter's Bench, a chest of wood and a sawhorse: the carpenter makes what the village's builders are waiting for."""
-    b.set(1, 1, 6, "aliveworkplace:carpenters_bench", facing="east")
+    """A crafting table (the carpenter's), a chest of wood and a sawhorse: the carpenter makes what the village's builders
+    are waiting for."""
+    b.set(1, 1, 6, "crafting_table")
     b.set(1, 1, 5, "chest", facing="east", type="single", waterlogged=False)
     b.set_nbt(1, 1, 5, Compound({"LootTable": String("aliveworkplace:chests/village_carpenters_workshop"), "id": String("minecraft:chest")}))
     b.set(1, 1, 3, "oak_log", axis="z")
@@ -252,8 +263,8 @@ def carpenters_workshop(b, style):
 
 
 def kitchen(b, style):
-    """A Kitchen Stove, a chest of the village's produce and a little table: the chef cooks for the village."""
-    b.set(1, 1, 6, "aliveworkplace:kitchen_stove", facing="east")
+    """A smoker (the chef's), a chest of the village's produce and a little table: the chef cooks for the village."""
+    b.set(1, 1, 6, "smoker", facing="east", lit=False)
     b.set(1, 1, 5, "chest", facing="east", type="single", waterlogged=False)
     b.set_nbt(1, 1, 5, Compound({"LootTable": String("aliveworkplace:chests/village_kitchen"), "id": String("minecraft:chest")}))
     b.set(1, 1, 3, "oak_fence", north=False, south=False, east=False, west=False, waterlogged=False)
@@ -262,16 +273,17 @@ def kitchen(b, style):
 
 
 def fossil_lab(b, style):
-    """A Fossil Lab, a shelf of books and a glass case: the fossil scientist revives fossils here (with Cobblemon)."""
-    b.set(1, 1, 6, "aliveworkplace:fossil_lab", facing="east")
+    """The fossil scientist's Training Post, a shelf of books and a glass case: they revive fossils here (with Cobblemon)."""
+    b.set(1, 1, 6, "aliveworkplace:training_post", facing="east")
     b.set(1, 1, 5, "bookshelf")
     b.set(1, 1, 3, "glass")
     b.set(1, 2, 3, "bone_block", axis="y")
 
 
 def flower_shop(b, style):
-    """A Flower Stand, a chest of bone meal and flowers, and pots on the sill: the florist grows the village's flowers."""
-    b.set(1, 1, 6, "aliveworkplace:flower_stand", facing="east")
+    """A composter (the florist's), a chest of bone meal and flowers, and pots on the sill: the florist grows the village's
+    flowers."""
+    b.set(1, 1, 6, "composter", level=0)
     b.set(1, 1, 5, "chest", facing="east", type="single", waterlogged=False)
     b.set_nbt(1, 1, 5, Compound({"LootTable": String("aliveworkplace:chests/village_flower_shop"), "id": String("minecraft:chest")}))
     b.set(1, 1, 3, "potted_red_tulip")
@@ -279,8 +291,8 @@ def flower_shop(b, style):
 
 
 def ranch_house(b, style):
-    """A Feed Trough, a chest of feed and a hay bale: the rancher tames and breeds the horses round the village."""
-    b.set(1, 1, 6, "aliveworkplace:feed_trough", facing="east")
+    """A smoker (the rancher's), a chest of feed and a hay bale: the rancher tames and breeds the horses round the village."""
+    b.set(1, 1, 6, "smoker", facing="east", lit=False)
     b.set(1, 1, 5, "chest", facing="east", type="single", waterlogged=False)
     b.set_nbt(1, 1, 5, Compound({"LootTable": String("aliveworkplace:chests/village_ranch"), "id": String("minecraft:chest")}))
     b.set(1, 1, 3, "hay_block", axis="y")
@@ -288,8 +300,8 @@ def ranch_house(b, style):
 
 
 def schoolhouse(b, style):
-    """A Teacher's Desk facing two benches, and a shelf of books: the teacher gives the village's children lessons."""
-    b.set(1, 1, 6, "aliveworkplace:teachers_desk", facing="east")
+    """A lectern (the teacher's) facing two benches, and a shelf of books: the teacher gives the village's children lessons."""
+    b.set(1, 1, 6, "lectern", facing="east", has_book=False, powered=False)
     for z in (4, 5):
         b.set(3, 1, z, "oak_stairs", facing="west", half="bottom", shape="straight", waterlogged=False)
     b.set(1, 1, 3, "bookshelf")
@@ -297,8 +309,9 @@ def schoolhouse(b, style):
 
 
 def inn_room(b, style):
-    """An Inn Counter, a chest of bread and a stool: the innkeeper takes in travellers (the house's bed is for guests)."""
-    b.set(1, 1, 6, "aliveworkplace:inn_counter", facing="east")
+    """The innkeeper's Shop Counter, a chest of bread and a stool: the innkeeper takes in travellers (the house's bed is
+    for guests)."""
+    b.set(1, 1, 6, "aliveworkplace:shop_counter", facing="east")
     b.set(1, 1, 5, "chest", facing="east", type="single", waterlogged=False)
     b.set_nbt(1, 1, 5, Compound({"LootTable": String("aliveworkplace:chests/village_inn"), "id": String("minecraft:chest")}))
     b.set(2, 1, 4, "oak_stairs", facing="west", half="bottom", shape="straight", waterlogged=False)
@@ -306,9 +319,9 @@ def inn_room(b, style):
 
 
 def mortuary(b, style):
-    """An Undertaker's Table, a chest (now and then with a golden apple) and candles: the undertaker brings the village's
-    dead back."""
-    b.set(1, 1, 6, "aliveworkplace:undertakers_table", facing="east")
+    """A brewing stand (the undertaker's), a chest (now and then with a golden apple) and candles: the undertaker brings
+    the village's dead back."""
+    b.set(1, 1, 6, "brewing_stand", has_bottle_0=False, has_bottle_1=False, has_bottle_2=False)
     b.set(1, 1, 5, "chest", facing="east", type="single", waterlogged=False)
     b.set_nbt(1, 1, 5, Compound({"LootTable": String("aliveworkplace:chests/village_mortuary"), "id": String("minecraft:chest")}))
     b.set(1, 1, 3, "polished_andesite")
@@ -316,9 +329,9 @@ def mortuary(b, style):
 
 
 def tinkers_shop(b, style):
-    """A Tinker's Bench, a chest of ore and redstone, an anvil: the tinkerer makes the builders' redstone and iron parts
-    and mends the iron golems."""
-    b.set(1, 1, 6, "aliveworkplace:tinkers_bench", facing="east")
+    """A smithing table (the tinkerer's), a chest of ore and redstone, an anvil: the tinkerer makes the builders' redstone
+    and iron parts and mends the iron golems."""
+    b.set(1, 1, 6, "smithing_table")
     b.set(1, 1, 5, "chest", facing="east", type="single", waterlogged=False)
     b.set_nbt(1, 1, 5, Compound({"LootTable": String("aliveworkplace:chests/village_tinkers_shop"), "id": String("minecraft:chest")}))
     b.set(1, 1, 3, "anvil", facing="north")
@@ -326,8 +339,9 @@ def tinkers_shop(b, style):
 
 
 def sifting_shed_house(b, style):
-    """A Sieve, a chest of gravel and sand, a heap of gravel and sand: the sifter shakes them through for what's hidden in them."""
-    b.set(1, 1, 6, "aliveworkplace:sieve", facing="east")
+    """A cauldron (the sifter's), a chest of gravel and sand, a heap of gravel and sand: the sifter shakes them through for
+    what's hidden in them."""
+    b.set(1, 1, 6, "cauldron")
     b.set(1, 1, 5, "chest", facing="east", type="single", waterlogged=False)
     b.set_nbt(1, 1, 5, Compound({"LootTable": String("aliveworkplace:chests/village_sifting_shed"), "id": String("minecraft:chest")}))
     b.set(1, 1, 3, "gravel")
@@ -335,8 +349,8 @@ def sifting_shed_house(b, style):
 
 
 def compost_yard_house(b, style):
-    """A Compost Bin, a chest of scraps and a hay bale: the composter turns the village's scraps into bone meal."""
-    b.set(1, 1, 6, "aliveworkplace:compost_bin", facing="east")
+    """A composter, a chest of scraps and a hay bale: the composter (the job) turns the village's scraps into bone meal."""
+    b.set(1, 1, 6, "composter", level=0)
     b.set(1, 1, 5, "chest", facing="east", type="single", waterlogged=False)
     b.set_nbt(1, 1, 5, Compound({"LootTable": String("aliveworkplace:chests/village_compost_yard"), "id": String("minecraft:chest")}))
     b.set(1, 1, 3, "hay_block", axis="y")
@@ -351,5 +365,14 @@ VILLAGE_HOUSES = {"trainers_house": trainers_house, "guard_house": guard_house, 
                   "schoolhouse": schoolhouse, "inn_room": inn_room, "mortuary": mortuary,
                   "tinkers_shop": tinkers_shop, "sifting_shed": sifting_shed_house,
                   "compost_yard": compost_yard_house}
+
+# The job of each house's villager where it isn't the job block's own (see village_house): these share their block
+# with a vanilla job, or with another of ours, since ROADMAP 21.1a.
+HOUSE_JOBS = {"guard_house": "guard", "clinic": "nurse", "post_office": "postman", "leaders_hall": "trainer_leader",
+              "school": "tutor", "trade_hall": "pokemon_trader", "orchard_house": "orchard_keeper",
+              "ball_workshop": "ball_smith", "carpenters_workshop": "carpenter", "kitchen": "chef",
+              "fossil_lab": "fossil_scientist", "flower_shop": "florist", "ranch_house": "rancher",
+              "schoolhouse": "teacher", "inn_room": "innkeeper", "mortuary": "undertaker", "tinkers_shop": "tinkerer",
+              "sifting_shed": "sifter", "compost_yard": "composter"}
 
 

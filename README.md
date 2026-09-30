@@ -23,7 +23,7 @@ for) in the `mods` folder, and take the old Alive Workplace jar out when you upd
 **No village nearby?** Craft a **Settler's Wagon** (three white wool over two hay bales and a block of emerald, over a
 chest between planks) and right-click open ground: two settlers make camp there — a covered wagon with a chest of
 supplies (logs, planks, cobblestone, bread, torches, the Starter Cottage and Storehouse blueprints and a **Village
-Hall**), a Builder's Bench, a campfire and two bedrolls. The first settler is your builder from the start; the other
+Hall**), a Blueprint Table, a campfire and two bedrolls. The first settler is your builder from the start; the other
 takes whatever job you give them. Put the Village Hall down and you have a village.
 
 ![A settlers' camp at dusk: the covered wagon, the campfire, the builder](docs/media/camp.png)
@@ -74,8 +74,9 @@ helpers per build), sharing the chests and passing each other materials.
 
 **Builders level up as they work**, like villagers you trade with: every level makes them faster (a Master builds
 2.5× as fast as a Novice) and unlocks new blueprints to buy — Market Stall, Lookout Tower, then the
-**Healing Center** (with a Nurse Station, and a Cobblemon Healing Machine on the counter when Cobblemon is installed)
-and the **Supply Shop** (with a Shop Counter) — build them and a nurse and a shopkeeper move in.
+**Healing Center** (with a brewing stand behind the counter, and a Cobblemon Healing Machine on the counter when
+Cobblemon is installed) and the **Supply Shop** (with a Shop Counter) — build them and a shopkeeper moves in by
+themselves; hand the villager at the brewing stand a honey bottle and they become the nurse.
 
 ![Every starter build: the timber cottage, the market stall, the stone watchtower, the Healing Center, the Supply Shop, the storehouse, the berry garden and the research lab](docs/media/starter-builds.png)
 ![Their upgrades: the cottage with a jettied upper storey and a kitchen wing, the watchtower's spire and guardhouse, the ward and garden behind the Healing Center, the Supply Shop's house and post office, the stone warehouse behind the storehouse](docs/media/starter-upgrades.png)
@@ -84,14 +85,17 @@ and the **Supply Shop** (with a Shop Counter) — build them and a nurse and a s
 boxes, roofs that overhang on every side, chimneys that smoke, lanterns and benches (how they are drawn:
 `tools/blueprints/STYLE.md`).
 
-**Buildings for the new jobs** (in the Blueprint Table, each with an upgrade): the **Schoolhouse** (a Teacher's Desk
-before a blackboard; II adds a fenced schoolyard), the **Library** (a Scholar's Desk among the shelves; II a study tower
-with a second desk; III an enchanting room behind the hall: an Enchanting Table ringed by fifteen bookshelves and a
-lectern, so a librarian moves in), the **Ranch** (a barn — a hayloft gable over two stable aisles — with a Feed Trough, and a paddock; II doubles
-the paddock and adds a stable wing and a brick silo), the **Apiary Garden**
-(hives on posts in a meadow and a honey shed with the Apiary; II four more hives), the **Flower Shop** (a Flower Stand
-behind display windows; II a greenhouse) and the **Graveyard** (a walled churchyard with a mortuary and an Undertaker's
-Table; II a lych-gate).
+**Buildings for the new jobs** (in the Blueprint Table, each with an upgrade): the **Schoolhouse** (a lectern before a
+blackboard; II adds a fenced schoolyard), the **Library** (a lectern among the shelves; II a study tower with a second
+lectern; III an enchanting room behind the hall: an Enchanting Table ringed by fifteen bookshelves and a third
+lectern, so a librarian moves in), the **Ranch** (a barn — a hayloft gable over two stable aisles — with a smoker, and a
+paddock; II doubles the paddock and adds a stable wing and a brick silo), the **Apiary Garden** (hives on posts in a
+meadow and a honey shed with one more; II four more hives), the **Flower Shop** (a composter behind display windows;
+II a greenhouse) and the **Graveyard** (a walled churchyard with a mortuary and a brewing stand; II a lych-gate). Each
+job's block is a vanilla one, so a villager there takes its vanilla job by themselves (a beehive takes nobody): hand
+them the job's item to give them ours — a book at the school's lectern (a teacher), paper at the library's (a
+scholar), a saddle at the ranch's smoker (a rancher), a glass bottle or shears by a hive (a beekeeper), a flower at the
+shop's composter (a florist), a golden apple at the mortuary's brewing stand (an undertaker).
 
 ![The Schoolhouse II, Library III, Ranch II, Apiary Garden II, Flower Shop II and Graveyard II](docs/media/job-buildings.png)
 
@@ -141,15 +145,17 @@ remembers it. `marketDays` in the config turns it off.
 
 **Upgrades.** A blueprint named like another with `_2` on the end (`_3` after that…) is its upgrade. Every starter
 build has one: the **Starter Cottage II** adds a timber upper storey jettied out over the front and back, the **Market
-Stall II** a second stall with a Shop Counter, the **Lookout Tower II** a Guard Post, a bell and a steep pointed spire
+Stall II** a second stall with a Shop Counter, the **Lookout Tower II** a grindstone, a bell and a steep pointed spire
 over the platform, the **Healing Center II** a ward with four beds under a lower roof behind the hall, the **Supply
 Shop II** the shopkeeper's house behind the shop (a bed, a chest, more stock, a chimney), the **Storehouse II** an open shed beside the granary, the **Berry Farm II** a pergola of glow berries and the **Research Lab
 II** a museum hall with a skeleton under a glass ridge. Most go one step further, each third tier bringing a new
 villager or room: the **Starter Cottage III** a kitchen wing with its own door (the builder clears the ground where it
 goes first), the **Market Stall III** a storeroom behind the stalls, the **Lookout Tower III** a guardhouse with a
-second Guard Post and two bunks, the **Healing Center III** a walled berry garden with a Fruit Basket (an orchard
-keeper), the **Supply Shop III** a post office with a Postal Desk (a postman) and the **Storehouse III** a stone
-warehouse range across the back with sixteen more chests. Right-click a finished building with its upgrade
+second grindstone and two bunks, the **Healing Center III** a walled berry garden with a composter, the **Supply Shop
+III** a post office with a Mailbox (a postman moves in) and the **Storehouse III** a stone warehouse range across the
+back with sixteen more chests. The grindstones and the composter take a villager with their vanilla job (a
+weaponsmith, a farmer): hand them a sword and they become a guard, sweet berries and they become the orchard keeper.
+Right-click a finished building with its upgrade
 and it lines up exactly over it; the builder takes off what changes and builds only what's new, keeping everything
 else. Once a builder finishes a building that has an upgrade, **they sell its blueprint** (and tell you). The
 upgrades are in the Blueprint Table too. Your own blueprints work the same way (`my_house` → `my_house_2`).
@@ -251,7 +257,8 @@ says so, and a grown child without a job **takes up a parent's trade** if the vi
 at least 50%, the two villagers nearest the free bed have a baby (the family eats 8 meals for it), up to 40 villagers
 (`villageGrowthCap`). The hall's villager count says what the village still needs to grow. So build houses: the
 **Terrace** (two narrow homes, four beds; the **Terrace II** adds a third home) and the **Inn** (a tavern below, three
-guest rooms with six beds above; the **Inn II** adds a stable with a Feed Trough, and a rancher moves in) are in the
+guest rooms with six beds above; the **Inn II** adds a stable with a smoker: hand the villager there a saddle and they
+become its rancher) are in the
 Blueprint Table. The **Stone House** grows in three tiers: a stone cottage with a bed downstairs and one in the attic,
 then (**II**) a timber-framed upper storey with two more beds, then (**III**) a stone wing at the back with two more.
 
@@ -264,9 +271,8 @@ minutes of lessons has been to school, and when they grow up and take a job they
 Novice and Apprentice trades) instead of a Novice. The hall's list says who went to school. Pastured Psychic and Normal
 Pokémon make the lessons go quicker.
 
-**Innkeepers and travellers.** Stand a villager by a **Shop Counter** and sneak-right-click them with a **bed** — or
-build the **Inn**, whose Inn Counter at the end of the bar a villager takes by itself — and they become an
-**Innkeeper**. Each morning, while there's a free bed within 32 blocks and fewer than two guests, a **traveller** comes
+**Innkeepers and travellers.** Stand a villager by a **Shop Counter** (the **Inn** has one at the end of its bar) and
+sneak-right-click them with a **bed**: they become an **Innkeeper**. Each morning, while there's a free bed within 32 blocks and fewer than two guests, a **traveller** comes
 to stay (you're told in chat). Travellers already know a trade: most are Apprentices or Journeymen, now and then an
 Expert (more often at a better innkeeper's inn). Right-click one to **hire them**: 8 emeralds for an Apprentice, 16 for
 a Journeyman, 32 for an Expert (CobbleDollars at the usual rate with CobbleDollars installed). They join your village,
@@ -459,7 +465,8 @@ ceiling in the orchard (a pergola, a cave roof), two blocks apart like the bushe
 Sneak-right-click the keeper with an empty hand to see the orchard or stop it.
 
 **Berry Farm.** Orchard keepers at Expert level sell the **Berry Farm** blueprint (it's in the Blueprint Table too): a
-fenced garden of sweet berry bushes with a Fruit Basket and a harvest chest. The **Berry Farm II** adds a pergola
+fenced garden of sweet berry bushes with a composter and a harvest chest (hand the villager there sweet berries and
+they become its orchard keeper). The **Berry Farm II** adds a pergola
 behind it with glow berries hanging from its roof.
 
 ## Farmers
@@ -567,7 +574,8 @@ quartz, gold and magma (a diamond one now and then finds ancient debris), an **a
 shroomlights, a **sword** and a **chestplate** for a fortress's blaze rods and nether bricks, a **fire resistance
 potion** to go further. The gear wears a little each trip, and without armor they sometimes come back hurt. With
 Cobblemon they now and then find a Fire or Dusk Stone. While they're away they can't be seen or hurt. The **Nether
-Gate** (Blueprint Table) is a blackstone arch round an obsidian portal frame, with a Nether Brazier and a chest — put a
+Gate** (Blueprint Table) is a blackstone arch round an obsidian portal frame, with a cartography table and a chest (hand
+the villager there netherrack and they become its netherworker) — put a
 **flint and steel** in the builder's chests and they light the portal when they're done; the **Nether Gate II** adds a
 gatehouse roof, a storehouse and a nether wart garden.
 
@@ -773,8 +781,9 @@ for the bell and fight anything near it for a minute and a half.
 **Medic** (a healing or regeneration potion: they carry six potions and give them to the most hurt villager or golem
 nearby). Guards gear up with a bow if there's one in their chest, or else a shield; to choose yourself,
 **sneak-right-click a guard with a bow, crossbow, shield or healing potion** and they take it (you get back what they
-held). Their kind shows over their head. The **Barracks** (Blueprint Table) houses two guards — two Guard Posts, an
-armory chest, bunks and training dummies out front — and the **Barracks II** adds a wing for two more.
+held). Their kind shows over their head. The **Barracks** (Blueprint Table) houses two guards — two grindstones (hand
+the villager at each a sword), an armory chest, bunks and training dummies out front — and the **Barracks II** adds a
+wing for two more.
 
 **Raids.** A village with a Village Hall and at least 8 villagers may be **raided by monsters** at night (at most every
 three nights; the bigger the village, the likelier — from 15% a night up to 35% — and the bigger the raid, 3 monsters
@@ -970,8 +979,9 @@ CobbleDollars with CobbleDollars): they revive it at the Training Post while the
 and quicker as they level up. The Pokémon joins your party (or goes to your PC) the moment it's done, or the next time
 you're online. It's Cobblemon's own revival, the same Pokémon its machine gives. Right-click with an empty hand to see
 how it's going; sneak to trade. A scientist takes on three fossils at a time. Villages sometimes grow a fossil lab, and
-scientists at Journeyman level sell the **Research Lab** blueprint (a stone lab with a Fossil Lab and a fossil on show;
-the **Research Lab II** adds a museum hall with a big skeleton).
+scientists at Journeyman level sell the **Research Lab** blueprint (a stone lab with a Training Post and a fossil on
+show: hand the villager there a fossil and they become its scientist; the **Research Lab II** adds a museum hall with
+a big skeleton).
 
 ## Pokémon Traders (with Cobblemon)
 Stand a villager by a **Shop Counter** and sneak-right-click them with a **Poké Ball**: they become a **Pokémon

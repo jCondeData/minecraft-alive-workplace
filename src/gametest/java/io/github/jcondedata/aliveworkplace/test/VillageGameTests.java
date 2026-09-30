@@ -144,8 +144,25 @@ public class VillageGameTests implements FabricGameTest {
 		Villager villager = helper.spawn(EntityType.VILLAGER, new BlockPos(7, 2, 9));
 		villager.setVillagerData(villager.getVillagerData().setProfession(VillagerProfession.NONE));
 		helper.setDayTime(2000);
+		BlockPos bench = origin.offset(2, 1, 7);
+		// Where they went, every second, and when they first stood lower than the bench (the three failures seen were all
+		// under the test floor).
+		List<String> trail = new java.util.ArrayList<>();
+		String[] firstLow = {"never"};
+		int[] ticks = {0};
+		helper.onEachTick(() -> {
+			ticks[0]++;
+			BlockPos d = villager.blockPosition().subtract(bench);
+			if (d.getY() < 0 && firstLow[0].equals("never")) {
+				firstLow[0] = "tick " + ticks[0] + " at bench" + offset(d);
+			}
+			if (ticks[0] % 20 == 0 && trail.size() < 40) {
+				trail.add(offset(d));
+			}
+		});
 		helper.succeedWhen(() -> helper.assertTrue(villager.getVillagerData().getProfession() == ModVillagers.BUILDER,
-			"villager is still " + villager.getVillagerData().getProfession() + workshopClues(helper, villager, origin.offset(2, 1, 7))));
+			"villager is still " + villager.getVillagerData().getProfession() + workshopClues(helper, villager, bench)
+				+ " | first below the bench: " + firstLow[0] + " | trail: " + String.join(" ", trail)));
 	}
 
 	/**
@@ -157,21 +174,29 @@ public class VillageGameTests implements FabricGameTest {
 		ServerLevel level = helper.getLevel();
 		var poi = level.getPoiManager();
 		StringBuilder s = new StringBuilder();
-		s.append(" | at ").append(helper.relativePos(villager.blockPosition())).append(villager.isAlive() ? "" : " (dead)");
+		BlockPos at = villager.blockPosition();
+		s.append(" | at bench").append(offset(at.subtract(bench))).append(villager.isAlive() ? "" : " (dead)")
+			.append(helper.getBounds().contains(villager.position()) ? " in the area" : " OUTSIDE the area")
+			.append(", on ").append(level.getBlockState(at.below()).getBlock().getDescriptionId())
+			.append(", in ").append(level.getBlockState(at).getBlock().getDescriptionId());
 		s.append(", job site ").append(villager.getBrain().getMemory(net.minecraft.world.entity.ai.memory.MemoryModuleType.JOB_SITE)
-			.map(g -> helper.relativePos(g.pos()).toString()).orElse("-"));
+			.map(g -> "bench" + offset(g.pos().subtract(bench))).orElse("-"));
 		s.append(", potential ").append(villager.getBrain().getMemory(net.minecraft.world.entity.ai.memory.MemoryModuleType.POTENTIAL_JOB_SITE)
-			.map(g -> helper.relativePos(g.pos()).toString()).orElse("-"));
+			.map(g -> "bench" + offset(g.pos().subtract(bench))).orElse("-"));
 		s.append(" | bench ").append(level.getBlockState(bench).getBlock().getDescriptionId())
 			.append(poi.getType(bench).map(h -> h.is(ModVillagers.BUILDERS_BENCH_POI)).orElse(false) ? " poi" : " NO-POI")
 			.append(poi.getCountInRange(h -> true, bench, 0, net.minecraft.world.entity.ai.village.poi.PoiManager.Occupancy.HAS_SPACE) > 0 ? " free" : " TAKEN");
 		s.append(" | villagers near: ");
 		level.getEntitiesOfClass(Villager.class, helper.getBounds().inflate(48), v -> v != villager)
-			.forEach(v -> s.append(v.getVillagerData().getProfession()).append('@').append(helper.relativePos(v.blockPosition())).append(' '));
+			.forEach(v -> s.append(v.getVillagerData().getProfession()).append('@').append("bench").append(offset(v.blockPosition().subtract(bench))).append(' '));
 		s.append("| free job sites near: ");
 		poi.getInRange(h -> h.is(net.minecraft.tags.PoiTypeTags.ACQUIRABLE_JOB_SITE), bench, 48,
 				net.minecraft.world.entity.ai.village.poi.PoiManager.Occupancy.HAS_SPACE)
-			.forEach(r -> s.append(helper.relativePos(r.getPos())).append(' '));
+			.forEach(r -> s.append("bench").append(offset(r.getPos().subtract(bench))).append(' '));
 		return s.toString();
+	}
+
+	private static String offset(BlockPos d) {
+		return String.format("%+d,%+d,%+d", d.getX(), d.getY(), d.getZ());
 	}
 }

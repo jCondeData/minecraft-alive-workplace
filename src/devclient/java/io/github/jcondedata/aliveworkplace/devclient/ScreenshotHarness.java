@@ -1673,8 +1673,12 @@ public class ScreenshotHarness implements ClientModInitializer {
 						"place structure minecraft:village_" + styles.get(i) + " " + x + " -60 0");
 					BlockPos found = null;
 					int built = 0;
+					int voids = 0; // structure_void placed as a real block leaves a hole with no collision (B5)
 					for (BlockPos p : BlockPos.betweenClosed(x - 96, -62, -96, x + 96, -52, 96)) {
 						BlockState st = level.getBlockState(p);
+						if (st.is(Blocks.STRUCTURE_VOID)) {
+							voids++;
+						}
 						if (st.is(ModBlocks.BUILDERS_BENCH) && found == null) {
 							found = p.immutable();
 						}
@@ -1687,7 +1691,7 @@ public class ScreenshotHarness implements ClientModInitializer {
 							built++;
 						}
 					}
-					io.github.jcondedata.aliveworkplace.AliveWorkplace.LOG.info("[village] {} village: {} bells/beds, workshop bench at {}", styles.get(i), built, found);
+					io.github.jcondedata.aliveworkplace.AliveWorkplace.LOG.info("[village] {} village: {} bells/beds, {} structure_void, workshop bench at {}", styles.get(i), built, voids, found);
 					if (found != null) {
 						workshops.add(found);
 					}

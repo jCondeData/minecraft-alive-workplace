@@ -22,6 +22,8 @@
 - Guards get off their horse, and fishers come ashore, as soon as their shift ends (they rode or floated on for up to
   a minute).
 - Bandits raiding a village at night can no longer be drawn into a vanilla raid.
+- Our village houses no longer leave invisible holes in the ground in front of their doors (villagers and players
+  could fall into them, and a new villager sometimes never reached the workshop's bench).
 
 ## 0.137.0 — 2026-09-29
 

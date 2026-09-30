@@ -144,6 +144,17 @@ Before polishing, make sure nothing regresses unnoticed.
 - [ ] **22.3** A bot scene for every player-visible feature, so any feature can be shown again on demand
   (`tools/screenshots/run.sh SCENE=…`). Done when: every job and every screen in the README has a scene. A new feature
   gets its scene in the same commit.
+- [ ] **22.4** **A daily showcase page** (owner, 2026-09-30): screenshots and GIFs of everything the mod does, so the
+  owner can check it all from his phone each morning. Includes 22.3's missing scenes. Done when:
+  - every night, GitHub's machines run every screenshot scene: every job, screen and build family. Not a Claude
+    session: it must cost no Claude usage. The scenes are split across parallel jobs so it finishes within an hour,
+    and any scenes that are still missing are added (22.3);
+  - the results land on one page he can open on his phone at a fixed link: for each scene, a GIF of it working from
+    start to end and 2-4 labelled stills, grouped by job, with the date and version at the top;
+  - each scene gets a pass or fail. It passes only if the job visibly did its work (the builder finished, the miner
+    dug, the screen opened). A failed scene or a broken picture (missing textures, raw text keys, villagers stuck in
+    walls) opens the nightly-tests issue, so the night runs fix it;
+  - if publishing the page needs a GitHub setting only he can change, he gets the exact clicks.
 
 ## Milestone 23: Builders never need babysitting (priority 1)
 

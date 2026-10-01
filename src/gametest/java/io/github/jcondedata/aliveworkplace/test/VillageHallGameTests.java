@@ -574,6 +574,77 @@ public class VillageHallGameTests implements net.fabricmc.fabric.api.gametest.v1
 		});
 	}
 
+	/**
+	 * B7 through the screen: a jobless villager who still remembers a job site whose block (and record) is gone is given a
+	 * job by clicking through the hall, without an exception, and gets the clicked bench.
+	 */
+	//$ gametest_ticks_batch AREA '100' '"theHallScreenGivesAJobWhenTheOldSiteIsGone"'
+	@GameTest(template = AREA, timeoutTicks = 100, batch = "theHallScreenGivesAJobWhenTheOldSiteIsGone")
+	public void theHallScreenGivesAJobWhenTheOldSiteIsGone(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		int radius = VillageHalls.RADIUS;
+		VillageHalls.RADIUS = 16;
+		Leftovers.after(helper, () -> VillageHalls.RADIUS = radius);
+		ServerLevel level = helper.getLevel();
+		helper.setBlock(HALL, ModBlocks.VILLAGE_HALL);
+		helper.setBlock(new BlockPos(4, 2, 4), ModBlocks.BUILDERS_BENCH);
+		BlockPos hall = helper.absolutePos(HALL);
+		BlockPos gone = helper.absolutePos(new BlockPos(14, 2, 4));
+		Villager villager = helper.spawn(EntityType.VILLAGER, new BlockPos(8, 2, 14));
+		villager.setVillagerData(villager.getVillagerData().setProfession(net.minecraft.world.entity.npc.VillagerProfession.NONE));
+		ServerPlayer player = helper.makeMockServerPlayerInLevel();
+		helper.runAfterDelay(2, () -> {
+			helper.assertTrue(level.getPoiManager().getType(gone).isEmpty(), "setup: there is a record at the stale site");
+			ChoiceMenu menu = VillageHallScreen.forTest(player, hall);
+			menu.press(VillageHallScreen.FIRST_PERSON, player);
+			helper.assertTrue(menu.icon(VillageHallScreen.FIRST_PERSON).is(ModBlocks.BUILDERS_BENCH.asItem()), "jobs page: " + menu.icon(VillageHallScreen.FIRST_PERSON));
+			// Set just before the click, so the villager's own brain can't forget it first.
+			villager.getBrain().setMemory(net.minecraft.world.entity.ai.memory.MemoryModuleType.JOB_SITE, net.minecraft.core.GlobalPos.of(level.dimension(), gone));
+			try {
+				menu.press(VillageHallScreen.FIRST_PERSON, player);
+			} catch (RuntimeException e) {
+				throw new net.minecraft.gametest.framework.GameTestAssertException("clicking the bench threw " + e);
+			}
+			helper.assertTrue(villager.getVillagerData().getProfession() == ModVillagers.BUILDER, "profession: " + villager.getVillagerData().getProfession());
+			helper.assertTrue(helper.absolutePos(new BlockPos(4, 2, 4)).equals(villager.getBrain().getMemory(net.minecraft.world.entity.ai.memory.MemoryModuleType.JOB_SITE)
+				.map(g -> g.pos()).orElse(null)), "job site: " + villager.getBrain().getMemory(net.minecraft.world.entity.ai.memory.MemoryModuleType.JOB_SITE));
+			helper.assertTrue(VillageHalls.freeStations(level, hall).isEmpty(), "the bench is still free");
+			helper.succeed();
+		});
+	}
+
+	/** Reassigning a worker whose old bench still stands frees the old bench for others and takes the new one. */
+	//$ gametest_ticks_batch AREA '100' '"theHallFreesTheOldBenchOnReassignment"'
+	@GameTest(template = AREA, timeoutTicks = 100, batch = "theHallFreesTheOldBenchOnReassignment")
+	public void theHallFreesTheOldBenchOnReassignment(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		int radius = VillageHalls.RADIUS;
+		VillageHalls.RADIUS = 16;
+		Leftovers.after(helper, () -> VillageHalls.RADIUS = radius);
+		ServerLevel level = helper.getLevel();
+		helper.setBlock(HALL, ModBlocks.VILLAGE_HALL);
+		BlockPos hall = helper.absolutePos(HALL);
+		BlockPos first = helper.absolutePos(new BlockPos(4, 2, 4));
+		BlockPos second = helper.absolutePos(new BlockPos(14, 2, 4));
+		helper.setBlock(new BlockPos(4, 2, 4), ModBlocks.BUILDERS_BENCH);
+		helper.setBlock(new BlockPos(14, 2, 4), ModBlocks.BUILDERS_BENCH);
+		Villager villager = helper.spawn(EntityType.VILLAGER, new BlockPos(8, 2, 8));
+		villager.setVillagerData(villager.getVillagerData().setProfession(net.minecraft.world.entity.npc.VillagerProfession.NONE));
+		helper.runAfterDelay(2, () -> {
+			var a = VillageHalls.freeStations(level, hall).stream().filter(f -> f.pos().equals(first)).findFirst();
+			helper.assertTrue(a.isPresent() && VillageHalls.assign(level, villager, a.get()), "setup: the first bench can't be assigned: " + a);
+			var afterFirst = VillageHalls.freeStations(level, hall);
+			helper.assertTrue(afterFirst.size() == 1 && afterFirst.get(0).pos().equals(second), "after the first job, free: " + afterFirst);
+			boolean given = VillageHalls.assign(level, villager, afterFirst.get(0));
+			helper.assertTrue(given, "the second bench wasn't given");
+			helper.assertTrue(second.equals(villager.getBrain().getMemory(net.minecraft.world.entity.ai.memory.MemoryModuleType.JOB_SITE).map(g -> g.pos()).orElse(null)),
+				"job site: " + villager.getBrain().getMemory(net.minecraft.world.entity.ai.memory.MemoryModuleType.JOB_SITE));
+			var afterSecond = VillageHalls.freeStations(level, hall);
+			helper.assertTrue(afterSecond.size() == 1 && afterSecond.get(0).pos().equals(first), "the old bench wasn't freed (or the new one is still free): " + afterSecond);
+			helper.succeed();
+		});
+	}
+
 	/** "Call everyone home": villagers whose bed is in the village but who wandered off come back to the hall; strangers don't. */
 	//$ gametest_ticks_batch AREA '100' '"callingEveryoneHome"'
 	@GameTest(template = AREA, timeoutTicks = 100, batch = "callingEveryoneHome")

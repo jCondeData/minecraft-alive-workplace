@@ -282,4 +282,47 @@ public class VillageGameTests implements FabricGameTest {
 				.map(g -> g.pos().equals(composter)).orElse(false), "works at " + keeper.getBrain().getMemory(net.minecraft.world.entity.ai.memory.MemoryModuleType.JOB_SITE));
 		});
 	}
+
+	/**
+	 * Bug B6: vanilla's villager templates put their villager at x+0.72, z+0.63 of its block, a block above the floor.
+	 * In desert_small_house_7 the villager's spot is a 1-wide corridor with a step beside it and top slabs above, so the
+	 * villager landed on the step with its head in the ceiling and suffocated (3 desert villagers in every showcase
+	 * village run). The house and its villager piece are placed as the village jigsaw places them (the villager piece's
+	 * jigsaw on top of the house's, at (5,1,3)); the villager must end up standing on the corridor floor, not in a wall.
+	 */
+	//$ gametest_ticks_batch '"aliveworkplace_test:big_area"' '200' '"aVillagerFromAVanillaDesertHouseCorridorStandsOnTheFloor"'
+	@GameTest(template = "aliveworkplace_test:big_area", timeoutTicks = 200, batch = "aVillagerFromAVanillaDesertHouseCorridorStandsOnTheFloor")
+	public void aVillagerFromAVanillaDesertHouseCorridorStandsOnTheFloor(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		ServerLevel level = helper.getLevel();
+		var processors = level.registryAccess().registryOrThrow(Registries.PROCESSOR_LIST);
+		var empty = processors.getHolderOrThrow(net.minecraft.resources.ResourceKey.create(Registries.PROCESSOR_LIST,
+			net.minecraft.resources.ResourceLocation.withDefaultNamespace("empty")));
+		BlockPos origin = helper.absolutePos(new BlockPos(3, 1, 3));
+		net.minecraft.world.level.levelgen.structure.BoundingBox box = net.minecraft.world.level.levelgen.structure.BoundingBox.fromCorners(
+			origin.offset(-1, 0, -1), origin.offset(9, 6, 8));
+		var house = net.minecraft.world.level.levelgen.structure.pools.StructurePoolElement
+			.legacy("minecraft:village/desert/houses/desert_small_house_7", empty).apply(StructureTemplatePool.Projection.RIGID);
+		helper.assertTrue(house.place(level.getStructureManager(), level, level.structureManager(), level.getChunkSource().getGenerator(),
+			origin, origin, net.minecraft.world.level.block.Rotation.NONE, box, net.minecraft.util.RandomSource.create(1),
+			net.minecraft.world.level.levelgen.structure.templatesystem.LiquidSettings.APPLY_WATERLOGGING, false), "the house did not place");
+		var villagerPiece = net.minecraft.world.level.levelgen.structure.pools.StructurePoolElement
+			.legacy("minecraft:village/desert/villagers/unemployed", empty).apply(StructureTemplatePool.Projection.RIGID);
+		BlockPos spot = origin.offset(5, 1, 3);
+		helper.assertTrue(villagerPiece.place(level.getStructureManager(), level, level.structureManager(), level.getChunkSource().getGenerator(),
+			spot, spot, net.minecraft.world.level.block.Rotation.NONE, box, net.minecraft.util.RandomSource.create(1),
+			net.minecraft.world.level.levelgen.structure.templatesystem.LiquidSettings.APPLY_WATERLOGGING, false), "the villager piece did not place");
+		List<Villager> villagers = level.getEntitiesOfClass(Villager.class, net.minecraft.world.phys.AABB.of(box));
+		helper.assertTrue(villagers.size() == 1, villagers.size() + " villagers placed, expected the house's one");
+		Villager villager = villagers.get(0);
+		helper.runAfterDelay(80, () -> {
+			helper.assertTrue(villager.isAlive(), "the villager died");
+			helper.assertFalse(villager.isInWall(), String.format("the villager is stuck in a wall at %.2f %.2f %.2f",
+				villager.getX() - origin.getX(), villager.getY() - origin.getY(), villager.getZ() - origin.getZ()));
+			helper.assertTrue(villager.getHealth() == villager.getMaxHealth(), "the villager was hurt: " + villager.getHealth());
+			helper.assertTrue(villager.getBlockY() == origin.getY() + 1, String.format("the villager is at house y %.2f, not on the corridor floor (1)",
+				villager.getY() - origin.getY()));
+			helper.succeed();
+		});
+	}
 }

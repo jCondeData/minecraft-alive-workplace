@@ -39,6 +39,14 @@ abstract class VillagerMixin {
 		}
 	}
 
+	/** A villager placed by a structure template gets room to stand (B6). */
+	@Inject(method = "finalizeSpawn", at = @At("HEAD"))
+	private void aliveworkplace$structureSpot(net.minecraft.world.level.ServerLevelAccessor level, net.minecraft.world.DifficultyInstance difficulty,
+			net.minecraft.world.entity.MobSpawnType type, net.minecraft.world.entity.SpawnGroupData data,
+			org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable<net.minecraft.world.entity.SpawnGroupData> cir) {
+		io.github.jcondedata.aliveworkplace.world.StructureVillagers.settle((Villager) (Object) this, level, type);
+	}
+
 	/** Nobody trades with a netherworker who's away. */
 	@Inject(method = "mobInteract", at = @At("HEAD"), cancellable = true)
 	private void aliveworkplace$away(net.minecraft.world.entity.player.Player player, net.minecraft.world.InteractionHand hand,

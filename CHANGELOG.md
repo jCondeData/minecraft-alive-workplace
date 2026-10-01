@@ -21,6 +21,8 @@
   a fisher sits in the boat at the oars, instead of standing on the horse's back or looking sunk in the boat.
 
 ### Fixed
+- Villagers that come with a generated village house no longer suffocate in its walls: some vanilla desert houses put
+  their villager in a narrow corridor, where it landed on the step beside it with its head in the ceiling.
 - A blueprint with a long number at the end of its name (`house_20260929`, from an imported file) no longer breaks the
   moods of the villagers who live in it; only up to three digits count as a tier.
 - A bed at the far end of a big building (a large scan, say) now counts as a home in it.

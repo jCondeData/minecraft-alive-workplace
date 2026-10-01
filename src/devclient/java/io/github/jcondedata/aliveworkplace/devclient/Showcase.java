@@ -151,10 +151,31 @@ final class Showcase {
 					String job = v.getVillagerData().getProfession().name();
 					problem(String.format("a villager (%s%s) is stuck in a wall at %d %d %d, in %s", job.isEmpty() ? "no job" : job,
 						v.hasCustomName() ? " " + v.getCustomName().getString() : "", v.getBlockX(), v.getBlockY(), v.getBlockZ(),
-						level.getBlockState(v.blockPosition().above()).getBlock().getName().getString()));
+						level.getBlockState(v.blockPosition().above()).getBlock().getName().getString()) + String.format(" y=%.2f, ticked %d, onGround %s, noAi %s, entity-ticking %s", v.getY(), v.tickCount, v.onGround(), v.isNoAi(),
+							level.isPositionEntityTicking(v.blockPosition())) + pieceAt(level, v.blockPosition()));
 				}
 			}
 		}
+	}
+
+	/** The generated structure pieces (e.g. a village house's template) at a spot, so a stuck villager names what it's in. */
+	private static String pieceAt(ServerLevel level, net.minecraft.core.BlockPos pos) {
+		List<String> names = new ArrayList<>();
+		for (var structure : level.structureManager().getAllStructuresAt(pos).keySet()) {
+			var start = level.structureManager().getStructureAt(pos, structure);
+			for (var piece : start.getPieces()) {
+				if (piece.getBoundingBox().isInside(pos)) {
+					names.add(piece instanceof net.minecraft.world.level.levelgen.structure.PoolElementStructurePiece pool
+						? pool.getElement().toString() + " at " + piece.getBoundingBox() : piece.getClass().getSimpleName());
+				}
+			}
+		}
+		StringBuilder column = new StringBuilder(" (column y-1..y+2:");
+		for (int dy = -1; dy <= 2; dy++) {
+			column.append(' ').append(level.getBlockState(pos.above(dy)));
+		}
+		column.append(')');
+		return column + (names.isEmpty() ? "" : " (piece: " + String.join("; ", names) + ")");
 	}
 
 	/** Puts a watcher in front of the game's language, to catch text shown as its raw key (a missing translation). */

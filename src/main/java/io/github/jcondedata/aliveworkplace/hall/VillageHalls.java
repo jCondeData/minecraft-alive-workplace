@@ -153,9 +153,10 @@ public final class VillageHalls {
 		if (!villager.isAlive() || villager.isBaby() || villager.getVillagerData().getProfession() == VillagerProfession.NITWIT) {
 			return false;
 		}
-		// Whatever they had before is let go of first.
+		// Whatever they had before is let go of first. A block broken while its worker was far away has no record left to
+		// release (releasing it would throw "POI never registered").
 		villager.getBrain().getMemory(MemoryModuleType.JOB_SITE).ifPresent(old -> {
-			if (old.dimension().equals(level.dimension())) {
+			if (old.dimension().equals(level.dimension()) && level.getPoiManager().getType(old.pos()).isPresent()) {
 				level.getPoiManager().release(old.pos());
 			}
 		});

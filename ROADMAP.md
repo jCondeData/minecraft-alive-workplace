@@ -167,6 +167,7 @@ its first findings fixed. Nothing is released until these are done.
     **Left for later:** the Hall's free-workstations list still offers only the vanilla job at a shared block (the
     player switches with the item afterwards); the sifter has no "panning" look at a water cauldron; /workplace
     benchmark still places old blocks (they work). A real 0.137.0 world opened with this version is 21.2's check.
+  - [ ] **21.1b** Change from the owner (2026-10-01): lets move to textures, what i want to do is for every item in the game (except for villager skins, and blocks) send me a couple versions, such as blueprints, i will go through the versions and pick my favorites, and give guidance when i can.
 - [ ] **21.2** **The full check before release** (the tester's Full tier; the chat started it and ran out of time). Do
   it in pieces that fit a one-hour night run, landing each piece with `land --keep-open`:
   - the real Cobbleverse pack boot and the soak: the nightly GitHub workflow runs these, so read its result;

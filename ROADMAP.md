@@ -168,6 +168,13 @@ its first findings fixed. Nothing is released until these are done.
     player switches with the item afterwards); the sifter has no "panning" look at a water cauldron; /workplace
     benchmark still places old blocks (they work). A real 0.137.0 world opened with this version is 21.2's check.
   - [ ] **21.1b** (claimed: chat, 2026-10-01 17:37Z) Change from the owner (2026-10-01): lets move to textures, what i want to do is for every item in the game (except for villager skins, and blocks) send me a couple versions, such as blueprints, i will go through the versions and pick my favorites, and give guidance when i can.
+    **Plan** (chat, 2026-10-01): the 13 items of ours that aren't blocks (Blueprint, Blank Blueprint, Scan Tool, Shape
+    Planner, Patrol Map, Village Ledger, Rally Banner, Quarry Marker, Field Marker, Travel Ticket, Delivery Note, Price
+    Tag, Settler's Wagon). Each gets its current icon plus three new versions, each a different idea, drawn with the
+    pixel-art skill in vanilla's style; recipes in tools/textures/picks/. They go on one picker page he can use on his
+    phone: one pick per item and a note; another round for any item his notes ask for.
+    Done when: every item has the versions on the page; his picks are the items' textures (recipes moved into
+    tools/textures/art/items.py, lint clean); a review package shows the picked icons in game (slots and in hand).
 - [ ] **21.2** **The full check before release** (the tester's Full tier; the chat started it and ran out of time). Do
   it in pieces that fit a one-hour night run, landing each piece with `land --keep-open`:
   - the real Cobbleverse pack boot and the soak: the nightly GitHub workflow runs these, so read its result;

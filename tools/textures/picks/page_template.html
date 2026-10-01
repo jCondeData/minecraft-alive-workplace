@@ -1,0 +1,223 @@
+<title>Item Icon Picks</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Pixelify+Sans:wght@500;600&display=swap">
+<style>
+/* Layout: one column of item cards, like rows of a Minecraft inventory; a sticky hotbar shows the picks so far. */
+:root {
+  --bg: #dedfd8;
+  --panel: #c6c6c6;
+  --panel-hi: #f4f4f1;
+  --panel-lo: #5b5b5b;
+  --slot: #8b8b8b;
+  --slot-hi: #ffffff;
+  --slot-lo: #373737;
+  --ink: #1d211e;
+  --muted: #4b524c;
+  --accent: #1f8a47;
+  --accent-ink: #ffffff;
+  --field: #f4f4f1;
+  --danger: #a3261c;
+  --display: "Pixelify Sans", "Courier New", monospace;
+  --body: "Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #181b19; --panel: #2a2e2b; --panel-hi: #3d433f; --panel-lo: #0d0f0e;
+    --slot: #4a504b; --slot-hi: #6a716b; --slot-lo: #1a1d1b;
+    --ink: #eceee9; --muted: #a9b0a9; --accent: #45c06f; --accent-ink: #0d1a12; --field: #1f2320; --danger: #ff8a7a;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #181b19; --panel: #2a2e2b; --panel-hi: #3d433f; --panel-lo: #0d0f0e;
+  --slot: #4a504b; --slot-hi: #6a716b; --slot-lo: #1a1d1b;
+  --ink: #eceee9; --muted: #a9b0a9; --accent: #45c06f; --accent-ink: #0d1a12; --field: #1f2320; --danger: #ff8a7a;
+  color-scheme: dark;
+}
+body { background: var(--bg); color: var(--ink); font-family: var(--body); font-size: 16px; line-height: 1.45; }
+.wrap { max-width: 1000px; margin: 0 auto; padding-inline: 16px; padding-block: 0 48px; }
+h1, h2, h3 { font-family: var(--display); font-weight: 600; text-wrap: balance; margin: 0; }
+h1 { font-size: 30px; letter-spacing: .01em; }
+h2 { font-size: 15px; text-transform: uppercase; letter-spacing: .12em; color: var(--muted); }
+h3 { font-size: 22px; }
+p { margin: 0; }
+img { image-rendering: pixelated; image-rendering: crisp-edges; }
+
+.intro { display: grid; gap: 10px; padding-block: 28px 18px; }
+.intro p { max-width: 62ch; color: var(--muted); }
+.banner { border: 2px solid var(--danger); color: var(--danger); padding: 10px 12px; font-weight: 700; }
+
+/* The hotbar of picks: sticky under the phone's status bar */
+.bar { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--bg); padding-block: 10px; border-bottom: 2px solid var(--panel-lo); }
+.bar-inner { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; }
+.count { font-family: var(--display); font-size: 17px; font-variant-numeric: tabular-nums; min-width: 9ch; }
+.hotbar { display: grid; grid-template-columns: repeat(13, minmax(22px, 34px)); gap: 2px; padding: 3px; background: var(--slot-lo); flex: 1 1 280px; max-width: 470px; }
+.hotbar a { aspect-ratio: 1; background: var(--slot); display: grid; place-items: center; box-shadow: inset 2px 2px 0 var(--slot-lo), inset -2px -2px 0 var(--slot-hi); }
+.hotbar a:focus-visible { outline: 3px solid var(--accent); outline-offset: 1px; }
+.hotbar img { width: 70%; height: 70%; }
+
+.group { display: grid; gap: 16px; padding-top: 26px; }
+.item { background: var(--panel); padding: 16px; display: grid; gap: 12px; box-shadow: inset 3px 3px 0 var(--panel-hi), inset -3px -3px 0 var(--panel-lo); scroll-margin-top: 90px; }
+.item-head { display: grid; gap: 2px; }
+.item-head p { color: var(--muted); }
+.tiles { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+@media (max-width: 640px) { .tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
+.tile { font: inherit; color: inherit; text-align: left; cursor: pointer; border: 3px solid transparent; background: var(--bg); padding: 8px; display: grid; gap: 8px; position: relative; min-width: 0; }
+.tile:hover { border-color: var(--muted); }
+.tile:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.tile[aria-pressed="true"] { border-color: var(--accent); }
+.big { display: grid; place-items: center; aspect-ratio: 1; background: var(--slot); box-shadow: inset 3px 3px 0 var(--slot-lo), inset -3px -3px 0 var(--slot-hi); }
+.big img { width: 72%; height: 72%; }
+.row { display: flex; gap: 8px; align-items: flex-start; min-width: 0; }
+.slot { flex: none; width: 36px; height: 36px; display: grid; place-items: center; background: var(--slot); box-shadow: inset 2px 2px 0 var(--slot-lo), inset -2px -2px 0 var(--slot-hi); }
+.slot img { width: 32px; height: 32px; }
+.label { display: grid; min-width: 0; }
+.vname { font-family: var(--display); font-size: 15px; }
+.cap { font-size: 14px; color: var(--muted); overflow-wrap: anywhere; }
+.check { position: absolute; top: 12px; right: 12px; background: var(--accent); color: var(--accent-ink); font-family: var(--display); font-size: 13px; padding: 1px 7px; letter-spacing: .04em; visibility: hidden; }
+.tile[aria-pressed="true"] .check { visibility: visible; }
+
+.note-label { font-weight: 700; font-size: 15px; }
+.note-label span { font-weight: 400; color: var(--muted); }
+.note, .general { width: 100%; box-sizing: border-box; font: inherit; color: var(--ink); background: var(--field); border: 2px solid var(--slot-lo); padding: 8px 10px; resize: vertical; }
+.note:focus-visible, .general:focus-visible { outline: 3px solid var(--accent); outline-offset: 1px; }
+.saved { font-size: 13px; color: var(--muted); min-height: 1.2em; margin-top: -6px; }
+.saved.err { color: var(--danger); font-weight: 700; }
+.closing { display: grid; gap: 10px; padding-top: 30px; }
+.closing p { color: var(--muted); max-width: 62ch; }
+@media (prefers-reduced-motion: no-preference) { .tile { transition: border-color .12s; } }
+</style>
+
+<div class="wrap">
+  <div class="intro">
+    <h1>Item Icon Picks</h1>
+    <p>Round %%ROUND%%: every item of the mod that isn't a block or a villager outfit. Each card shows the icon the game uses today and three new versions, large and in a slot at the size the game shows it. Tap your favourite for each item and add guidance wherever you have some. Your picks save as you go; tell me in the chat when you're done.</p>
+    <p class="banner" id="offline" hidden>Picks can't be saved in this view. Open the page in Claude to save them, or send your picks in the chat.</p>
+  </div>
+
+  <nav class="bar" aria-label="Your picks so far">
+    <div class="bar-inner">
+      <span class="count" id="count">0 of %%COUNT%% picked</span>
+      <div class="hotbar" id="hotbar"></div>
+    </div>
+  </nav>
+
+  %%GROUPS%%
+
+  <section class="closing">
+    <h2>Anything else</h2>
+    <label class="note-label" for="general-note">Guidance for all the icons <span>(optional)</span></label>
+    <textarea class="general" id="general-note" rows="3" placeholder="A style you want across all of them, things you'd like to see in the next round"></textarea>
+    <p class="saved" id="saved-general" aria-live="polite"></p>
+  </section>
+</div>
+
+<script>
+const NAMES = %%NAMES%%;
+const ROUND = %%ROUND%%;
+const ITEMS = Object.keys(NAMES);
+const state = {};            // item -> { pick, note }
+ITEMS.forEach(i => state[i] = { pick: null, note: "" });
+let general = "";
+let db = null;
+const writing = {};          // doc id -> promise chain, one write at a time per document
+const lastSaved = {};        // doc id -> JSON of the last body written
+
+function iconFor(item, version) {
+  const img = document.querySelector(`#${item}-${version} .big img`);
+  return img ? img.src : null;
+}
+
+function render() {
+  let picked = 0;
+  const bar = document.getElementById("hotbar");
+  bar.textContent = "";
+  for (const item of ITEMS) {
+    const pick = state[item].pick;
+    if (pick) picked++;
+    document.querySelectorAll(`.tile[data-item="${item}"]`).forEach(t => t.setAttribute("aria-pressed", String(t.dataset.version === pick)));
+    const a = document.createElement("a");
+    a.href = "#item-" + item;
+    a.title = NAMES[item] + (pick ? "" : ": not picked yet");
+    a.setAttribute("aria-label", a.title);
+    if (pick) {
+      const img = document.createElement("img");
+      img.src = iconFor(item, pick); img.alt = ""; img.width = 16; img.height = 16;
+      a.appendChild(img);
+    }
+    bar.appendChild(a);
+  }
+  document.getElementById("count").textContent = `${picked} of ${ITEMS.length} picked`;
+}
+
+function setSaved(id, text, err) {
+  const el = document.getElementById("saved-" + id);
+  if (!el) return;
+  el.textContent = text;
+  el.classList.toggle("err", !!err);
+}
+
+function save(id, body) {
+  if (!db) return;
+  const json = JSON.stringify(body);
+  if (lastSaved[id] === json) return;
+  lastSaved[id] = json;
+  writing[id] = (writing[id] || Promise.resolve()).then(async () => {
+    try {
+      await db.doc("picks/" + id).set({ ...body, round: ROUND, updatedAt: new Date().toISOString() });
+      setSaved(id, "Saved");
+    } catch (e) {
+      lastSaved[id] = null;
+      setSaved(id, e && e.code === "invalid_argument" ? "You can look but not save picks on this page." : "Couldn't save. Try again in a moment.", true);
+    }
+  });
+}
+
+document.addEventListener("click", e => {
+  const tile = e.target.closest(".tile");
+  if (!tile) return;
+  const item = tile.dataset.item;
+  state[item].pick = tile.dataset.version;
+  render();
+  save(item, { pick: state[item].pick, note: state[item].note });
+});
+
+const timers = {};
+function noteChanged(id, value, now) {
+  clearTimeout(timers[id]);
+  const go = () => id === "general" ? save("general", { note: value }) : save(id, { pick: state[id].pick, note: value });
+  if (now) go(); else timers[id] = setTimeout(go, 900);
+}
+document.querySelectorAll(".note").forEach(t => {
+  t.addEventListener("input", () => { state[t.dataset.item].note = t.value; noteChanged(t.dataset.item, t.value, false); });
+  t.addEventListener("blur", () => noteChanged(t.dataset.item, t.value, true));
+});
+const gen = document.getElementById("general-note");
+gen.addEventListener("input", () => { general = gen.value; noteChanged("general", gen.value, false); });
+gen.addEventListener("blur", () => noteChanged("general", gen.value, true));
+
+render();
+
+(async () => {
+  try { db = window.claude && window.claude.use ? await window.claude.use("db") : null; } catch (e) { db = null; }
+  if (!db) { document.getElementById("offline").hidden = false; return; }
+  db.collection("picks").onSnapshot(snap => {
+    for (const d of snap.docs) {
+      const data = d.data() || {};
+      if (d.id === "general") {
+        if (document.activeElement !== gen) { general = data.note || ""; gen.value = general; }
+        lastSaved.general = JSON.stringify({ note: data.note || "" });
+        continue;
+      }
+      if (!state[d.id]) continue;
+      state[d.id].pick = data.pick || null;
+      const t = document.getElementById("note-" + d.id);
+      if (document.activeElement !== t) { state[d.id].note = data.note || ""; t.value = state[d.id].note; }
+      lastSaved[d.id] = JSON.stringify({ pick: state[d.id].pick, note: state[d.id].note });
+    }
+    render();
+  }, () => { document.getElementById("offline").hidden = false; });
+})();
+</script>

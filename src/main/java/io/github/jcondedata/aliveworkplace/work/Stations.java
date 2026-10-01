@@ -217,13 +217,20 @@ public final class Stations {
 		Optional<Found> nearest = found.stream().min(Comparator.comparingDouble(f -> f.pos().distToCenterSqr(villager.position())));
 		if (nearest.isEmpty()) {
 			// A block of the right kind close by, but someone works at each: say so. None at all: say which one the job needs.
-			Optional<Station> taken = kinds.stream().filter(k -> level.getPoiManager()
-				.findClosest(k.poi(), villager.blockPosition(), (int) Math.ceil(REACH), PoiManager.Occupancy.ANY)
-				.filter(pos -> pos.distToCenterSqr(villager.position()) <= REACH * REACH).isPresent()).findFirst();
-			Station first = taken.orElse(kinds.get(0));
-			Chat.actionBar(player, Component.translatable(taken.isPresent() ? "message.aliveworkplace.job.station_taken"
-				: "message.aliveworkplace.job.needs_station", name(first.jobFor(stack).get().profession().get()), first.block().getName())
-				.withStyle(ChatFormatting.YELLOW));
+			for (Station kind : kinds) {
+				Optional<BlockPos> taken = level.getPoiManager()
+					.findClosest(kind.poi(), villager.blockPosition(), (int) Math.ceil(REACH), PoiManager.Occupancy.ANY)
+					.filter(pos -> pos.distToCenterSqr(villager.position()) <= REACH * REACH);
+				if (taken.isPresent()) {
+					Chat.actionBar(player, Component.translatable("message.aliveworkplace.job.station_taken",
+						name(kind.jobFor(stack).get().profession().get()), level.getBlockState(taken.get()).getBlock().getName())
+						.withStyle(ChatFormatting.YELLOW));
+					return InteractionResult.CONSUME;
+				}
+			}
+			Station first = kinds.get(0);
+			Chat.actionBar(player, Component.translatable("message.aliveworkplace.job.needs_station",
+				name(first.jobFor(stack).get().profession().get()), first.block().getName()).withStyle(ChatFormatting.YELLOW));
 			return InteractionResult.CONSUME;
 		}
 		return take(player, villager, nearest.get().pos(), nearest.get().profession());
@@ -253,10 +260,13 @@ public final class Stations {
 			.filter(pos -> pos.distToCenterSqr(near.getCenter()) <= REACH * REACH);
 	}
 
-	/** Whether a villager nearby works at {@code pos}. */
+	/**
+	 * Whether a villager works at {@code pos}: any loaded one, however far off (a beekeeper asleep across the village
+	 * still has their hive). Only for blocks that keep no count of their workers (beehives).
+	 */
 	private static boolean worked(ServerLevel level, BlockPos pos) {
 		GlobalPos at = GlobalPos.of(level.dimension(), pos);
-		return !level.getEntitiesOfClass(Villager.class, new net.minecraft.world.phys.AABB(pos).inflate(48),
+		return !level.getEntities(net.minecraft.world.entity.EntityType.VILLAGER,
 			v -> v.getBrain().getMemory(MemoryModuleType.JOB_SITE).filter(at::equals).isPresent()).isEmpty();
 	}
 
@@ -301,7 +311,9 @@ public final class Stations {
 		GlobalPos target = GlobalPos.of(level.dimension(), station);
 		Optional<GlobalPos> old = villager.getBrain().getMemory(MemoryModuleType.JOB_SITE);
 		if (old.isEmpty() || !old.get().equals(target)) {
-			old.filter(g -> g.dimension().equals(level.dimension())).ifPresent(g -> level.getPoiManager().release(g.pos()));
+			// (only if the block is still there: one broken far from its worker leaves their memory of it behind)
+			old.filter(g -> g.dimension().equals(level.dimension()) && level.getPoiManager().getType(g.pos()).isPresent())
+				.ifPresent(g -> level.getPoiManager().release(g.pos()));
 			level.getPoiManager().take(h -> true, (h, p) -> p.equals(station), station, 1);
 		}
 		villager.getBrain().eraseMemory(MemoryModuleType.POTENTIAL_JOB_SITE);

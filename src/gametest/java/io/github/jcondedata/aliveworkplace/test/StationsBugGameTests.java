@@ -28,6 +28,7 @@ import net.minecraft.world.level.chunk.LevelChunk;
 /** Bugs the tester found in ROADMAP 21.1a (fewer job blocks). Each fails until it's fixed. */
 public class StationsBugGameTests implements net.fabricmc.fabric.api.gametest.v1.FabricGameTest {
 	private static final String AREA = "aliveworkplace_test:big_area";
+	private static final String HUGE = "aliveworkplace_test:huge_area";
 	private static final BlockPos STATION = new BlockPos(3, 2, 3);
 	private static final BlockPos STANDING = new BlockPos(4, 2, 4);
 
@@ -174,6 +175,80 @@ public class StationsBugGameTests implements net.fabricmc.fabric.api.gametest.v1
 			Optional<BlockPos> y = StationsSpecGameTests.site(second);
 			helper.assertTrue(x.isPresent() && y.isPresent() && !x.equals(y),
 				"the beekeepers don't each have a hive: first " + x + ", second " + y + " (the second was given " + given + " at the click)");
+			helper.succeed();
+		});
+	}
+
+	/**
+	 * Round 3. "A beekeeper who has no hive takes the nearest beehive or bee nest nobody works at": a hive whose beekeeper
+	 * is more than 48 blocks off (asleep in a bed across the village, or in a chunk that isn't loaded) counts as nobody's,
+	 * so a beekeeper whose own hive broke takes it. When the owner comes back, vanilla's competitor scan takes the hive
+	 * from one of them; with equal experience that is whoever is checked first, here the owner, who is left without one.
+	 */
+	//$ gametest_ticks_batch AREA '800' '"stationsBugRetakeAway"'
+	@GameTest(template = AREA, timeoutTicks = 800, batch = "stationsBugRetakeAway")
+	public void aBeekeeperWithoutAHiveDoesntTakeTheHiveOfOneAway(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		helper.setDayTime(2000);
+		helper.setBlock(STATION, Blocks.BEEHIVE);
+		BlockPos theirs = new BlockPos(8, 2, 3);
+		helper.setBlock(theirs, Blocks.BEEHIVE);
+		ServerPlayer player = StationsSpecGameTests.player(helper);
+		Villager owner = helper.spawn(EntityType.VILLAGER, STANDING);
+		StationsSpecGameTests.rightClick(player, owner, new ItemStack(Items.GLASS_BOTTLE), true);
+		Villager other = helper.spawn(EntityType.VILLAGER, new BlockPos(9, 2, 4));
+		StationsSpecGameTests.rightClick(player, other, new ItemStack(Items.GLASS_BOTTLE), true);
+		BlockPos hive = helper.absolutePos(STATION);
+		helper.assertTrue(StationsSpecGameTests.site(owner).equals(Optional.of(hive)) && StationsSpecGameTests.site(other).equals(Optional.of(helper.absolutePos(theirs))),
+			"setup: owner at " + StationsSpecGameTests.site(owner) + ", other at " + StationsSpecGameTests.site(other));
+		// The owner is away: 55 blocks straight up, held still (the same chunk, so it stays loaded).
+		owner.setNoAi(true);
+		owner.setNoGravity(true);
+		owner.teleportTo(owner.getX(), owner.getY() + 55, owner.getZ());
+		helper.setBlock(theirs, Blocks.AIR);
+		helper.runAfterDelay(250, () -> {
+			helper.assertTrue(!StationsSpecGameTests.site(other).equals(Optional.of(hive)),
+				"the beekeeper whose hive broke took the hive " + hive + " that the other beekeeper (away, in bed) works at");
+			BlockPos home = helper.absolutePos(STANDING);
+			owner.teleportTo(home.getX() + 0.5, home.getY(), home.getZ() + 0.5);
+			owner.setNoGravity(false);
+			owner.setNoAi(false);
+			helper.runAfterDelay(300, () -> {
+				helper.assertTrue(StationsSpecGameTests.site(owner).equals(Optional.of(hive)),
+					"back home, the owner lost their hive: owner at " + StationsSpecGameTests.site(owner) + ", other at " + StationsSpecGameTests.site(other));
+				helper.succeed();
+			});
+		});
+	}
+
+	/**
+	 * A worker whose block is gone while they are more than 16 blocks from it still remembers it (vanilla only checks a
+	 * workstation from up close): a farmer's composter blown up while they sleep across the village. The player puts a
+	 * composter by them and sneak-right-clicks them with bone meal: Stations.assign lets go of the old block with
+	 * PoiManager.release, which throws "POI never registered" where no block is left (vanilla's Villager.releasePoi
+	 * checks first). In the game that exception is thrown while the server handles the click packet.
+	 */
+	//$ gametest_ticks_batch HUGE '200' '"stationsBugGoneOldBlock"'
+	@GameTest(template = HUGE, timeoutTicks = 200, batch = "stationsBugGoneOldBlock")
+	public void aWorkerWhoseOldBlockIsGoneFarAwayCanBeGivenAJob(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		helper.setDayTime(2000);
+		BlockPos old = new BlockPos(3, 2, 3);
+		helper.setBlock(old, Blocks.COMPOSTER);
+		ServerPlayer player = StationsSpecGameTests.player(helper);
+		Villager keeper = helper.spawn(EntityType.VILLAGER, new BlockPos(4, 2, 4));
+		StationsSpecGameTests.rightClick(player, keeper, new ItemStack(Items.SWEET_BERRIES), true);
+		helper.assertTrue(StationsSpecGameTests.job(keeper) == ModVillagers.ORCHARD_KEEPER, "setup: not an orchard keeper");
+		BlockPos away = helper.absolutePos(new BlockPos(25, 2, 25));
+		keeper.teleportTo(away.getX() + 0.5, away.getY(), away.getZ() + 0.5);
+		helper.setBlock(old, Blocks.AIR);
+		BlockPos fresh = new BlockPos(26, 2, 25);
+		helper.setBlock(fresh, Blocks.COMPOSTER);
+		helper.runAfterDelay(5, () -> {
+			StationsSpecGameTests.rightClick(player, keeper, new ItemStack(Items.BONE_MEAL), true);
+			helper.assertTrue(StationsSpecGameTests.job(keeper) == ModVillagers.COMPOSTER
+					&& StationsSpecGameTests.site(keeper).equals(Optional.of(helper.absolutePos(fresh))),
+				"the villager is a " + StationsSpecGameTests.name(StationsSpecGameTests.job(keeper)) + " at " + StationsSpecGameTests.site(keeper));
 			helper.succeed();
 		});
 	}

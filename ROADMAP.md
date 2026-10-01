@@ -164,7 +164,7 @@ its first findings fixed. Nothing is released until these are done.
 
   Done when: each part is a passing test or a green nightly result, every finding is a Bug, and the report is linked
   in the Notes. Players see nothing new, so the last piece lands with `--no-review`.
-- [ ] **21.3** (blocked: owner, keep camels as cavalry?) **Camels.** The game counts a saddled camel as a horse, so a
+- [ ] **21.3** **Camels.** The game counts a saddled camel as a horse, so a
   guard rides one too, but the changelog promises horses, donkeys and mules. The tester's test `aCamelIsNotCavalry`
   (branch `tests/check-0.137-riding-protection`) waits on his answer. Camels out: land that test with the fix. Camels
   in: turn the test around and add camels to the changelog.

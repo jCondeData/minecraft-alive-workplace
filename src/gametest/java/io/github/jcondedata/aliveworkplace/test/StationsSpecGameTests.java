@@ -251,6 +251,62 @@ public class StationsSpecGameTests implements FabricGameTest {
 	}
 
 	/**
+	 * With a block of the job's kind near but someone working at it, the player is told a free one is needed, naming the
+	 * block that is there (a composter shared by jobs: the second villager handed bone meal stays jobless).
+	 */
+	//$ gametest AREA
+	@GameTest(template = AREA)
+	public void thePlayerIsToldTheBlockIsTaken(GameTestHelper helper) {
+		helper.setBlock(STATION, Blocks.COMPOSTER);
+		List<String> seen = new ArrayList<>();
+		ServerPlayer player = listeningPlayer(helper, seen);
+		Villager first = helper.spawn(EntityType.VILLAGER, STANDING);
+		rightClick(player, first, new ItemStack(Items.SWEET_BERRIES), true);
+		helper.assertTrue(job(first) == ModVillagers.ORCHARD_KEEPER, "setup: the first villager is a " + name(job(first)));
+		seen.clear();
+		Villager second = helper.spawn(EntityType.VILLAGER, new BlockPos(2, 2, 4));
+		rightClick(player, second, new ItemStack(Items.BONE_MEAL), true);
+		helper.assertTrue(job(second) == VillagerProfession.NONE, "the second villager became a " + name(job(second)) + " at " + site(second));
+		helper.assertTrue(seen.contains("The Composter job needs a free Composter: someone already works at each one here."),
+			"with the composter taken, the player saw: " + seen);
+		helper.succeed();
+	}
+
+	/**
+	 * A bee nest a beekeeper works at is theirs even while they're far off (55 blocks up, loaded): a second villager handed
+	 * a glass bottle by it stays jobless, and the player is told the Bee Nest (the block that is there, not "Beehive") is
+	 * taken.
+	 */
+	//$ gametest_ticks_batch AREA '200' '"stationsNestTakenAway"'
+	@GameTest(template = AREA, timeoutTicks = 200, batch = "stationsNestTakenAway")
+	public void aBeeNestWhoseBeekeeperIsAwayIsNotOffered(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		helper.setDayTime(2000);
+		helper.setBlock(STATION, Blocks.BEE_NEST);
+		BlockPos nest = helper.absolutePos(STATION);
+		List<String> seen = new ArrayList<>();
+		ServerPlayer player = listeningPlayer(helper, seen);
+		Villager owner = helper.spawn(EntityType.VILLAGER, STANDING);
+		rightClick(player, owner, new ItemStack(Items.GLASS_BOTTLE), true);
+		helper.assertTrue(job(owner) == ModVillagers.BEEKEEPER && site(owner).equals(Optional.of(nest)),
+			"setup: the owner is a " + name(job(owner)) + " at " + site(owner));
+		owner.setNoAi(true);
+		owner.setNoGravity(true);
+		owner.teleportTo(owner.getX(), owner.getY() + 55, owner.getZ());
+		seen.clear();
+		Villager second = helper.spawn(EntityType.VILLAGER, new BlockPos(2, 2, 4));
+		helper.runAfterDelay(5, () -> {
+			rightClick(player, second, new ItemStack(Items.GLASS_BOTTLE), true);
+			helper.assertTrue(job(second) == VillagerProfession.NONE && site(second).isEmpty(),
+				"the second villager became a " + name(job(second)) + " at " + site(second) + " while the owner was away");
+			helper.assertTrue(seen.contains("The Beekeeper job needs a free Bee Nest: someone already works at each one here."),
+				"with the nest taken, the player saw: " + seen);
+			helper.assertTrue(site(owner).equals(Optional.of(nest)), "the owner lost their nest: " + site(owner));
+			helper.succeed();
+		});
+	}
+
+	/**
 	 * A block a job was picked at is that worker's: the next villager handed a job item for the same kind of block is told
 	 * one is needed, and doesn't share it (every click goes through the player's real sneak-right-click).
 	 */

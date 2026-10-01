@@ -30,6 +30,8 @@
   stranger (who could collect the treasury with it).
 - Guards get off their horse, and fishers come ashore, as soon as their shift ends (they rode or floated on for up to
   a minute).
+- Giving a job from the Village Hall no longer fails with an error when the villager's old workstation was broken
+  while they were far away.
 - Bandits raiding a village at night can no longer be drawn into a vanilla raid.
 - Our village houses no longer leave invisible holes in the ground in front of their doors (villagers and players
   could fall into them, and a new villager sometimes never reached the workshop's bench).

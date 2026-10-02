@@ -1084,7 +1084,7 @@ public class ScreenshotHarness implements ClientModInitializer {
 		}
 	}
 
-	// --- Staff: every workstation with its villager, for a look at the textures ------------------------
+	// --- Staff: every workstation of ours with its worker beside it, along a village street ------------------
 
 	private void staffScene(Minecraft mc, MinecraftServer server) {
 		tick++;
@@ -1099,49 +1099,64 @@ public class ScreenshotHarness implements ClientModInitializer {
 				level.getGameRules().getRule(GameRules.RULE_DAYLIGHT).set(false, server);
 				level.getGameRules().getRule(GameRules.RULE_DOMOBSPAWNING).set(false, server);
 				level.setDayTime(6000);
-				var V = io.github.jcondedata.aliveworkplace.registry.ModVillagers.class;
+				// The workstations ROADMAP 21.1a kept (the other jobs share vanilla's blocks), each with its worker on
+				// its right, both facing the street; the Village Hall has no worker of its own.
 				Object[][] staff = {
 					{ModBlocks.BLUEPRINT_TABLE, io.github.jcondedata.aliveworkplace.registry.ModVillagers.BLUEPRINT_TABLE_POI, io.github.jcondedata.aliveworkplace.registry.ModVillagers.BUILDER},
-					{Blocks.BLAST_FURNACE, net.minecraft.world.entity.ai.village.poi.PoiTypes.ARMORER, io.github.jcondedata.aliveworkplace.registry.ModVillagers.MINER},
-					{Blocks.FLETCHING_TABLE, net.minecraft.world.entity.ai.village.poi.PoiTypes.FLETCHER, io.github.jcondedata.aliveworkplace.registry.ModVillagers.LUMBERJACK},
-					{ModBlocks.MAILBOX, io.github.jcondedata.aliveworkplace.registry.ModVillagers.MAILBOX_POI, io.github.jcondedata.aliveworkplace.registry.ModVillagers.POSTMAN},
-					{Blocks.GRINDSTONE, net.minecraft.world.entity.ai.village.poi.PoiTypes.WEAPONSMITH, io.github.jcondedata.aliveworkplace.registry.ModVillagers.GUARD},
-					{Blocks.BREWING_STAND, net.minecraft.world.entity.ai.village.poi.PoiTypes.CLERIC, io.github.jcondedata.aliveworkplace.registry.ModVillagers.NURSE},
+					{ModBlocks.STOREHOUSE, io.github.jcondedata.aliveworkplace.registry.ModVillagers.STOREHOUSE_POI, io.github.jcondedata.aliveworkplace.registry.ModVillagers.PORTER},
 					{ModBlocks.SHOP_COUNTER, io.github.jcondedata.aliveworkplace.registry.ModVillagers.SHOP_COUNTER_POI, io.github.jcondedata.aliveworkplace.registry.ModVillagers.SHOPKEEPER},
+					{ModBlocks.VILLAGE_HALL, null, null},
+					{ModBlocks.MAILBOX, io.github.jcondedata.aliveworkplace.registry.ModVillagers.MAILBOX_POI, io.github.jcondedata.aliveworkplace.registry.ModVillagers.POSTMAN},
 					{ModBlocks.TRAVEL_POST, io.github.jcondedata.aliveworkplace.registry.ModVillagers.TRAVEL_POST_POI, io.github.jcondedata.aliveworkplace.registry.ModVillagers.FERRYMAN},
+					{ModBlocks.TRAINING_POST, io.github.jcondedata.aliveworkplace.registry.ModVillagers.TRAINING_POST_POI, io.github.jcondedata.aliveworkplace.registry.ModVillagers.TRAINER},
 				};
+				for (BlockPos p : BlockPos.betweenClosed(new BlockPos(-16, -61, 2), new BlockPos(16, -61, 4))) {
+					level.setBlockAndUpdate(p, Blocks.DIRT_PATH.defaultBlockState());
+				}
 				for (int i = 0; i < staff.length; i++) {
-					BlockPos block = new BlockPos(i * 3 - 10, -60, 0);
+					BlockPos block = new BlockPos(i * 4 - 13, -60, 0);
 					net.minecraft.world.level.block.Block b = (net.minecraft.world.level.block.Block) staff[i][0];
 					BlockState state = standing(b.defaultBlockState());
+					if (b == ModBlocks.MAILBOX) {
+						state = state.setValue(io.github.jcondedata.aliveworkplace.mail.MailboxBlock.HAS_MAIL, true);
+					}
 					level.setBlockAndUpdate(block, state);
-					Villager v = EntityType.VILLAGER.spawn(level, block.south(2), MobSpawnType.COMMAND);
+					if (staff[i][1] == null) {
+						continue;
+					}
+					Villager v = EntityType.VILLAGER.spawn(level, block.east(), MobSpawnType.COMMAND);
 					v.setNoAi(true);
 					v.setYRot(0);
+					v.setYBodyRot(0);
 					v.setYHeadRot(0);
 					io.github.jcondedata.aliveworkplace.work.Jobs.employ(level, v, block,
 						(net.minecraft.resources.ResourceKey<net.minecraft.world.entity.ai.village.poi.PoiType>) staff[i][1],
 						(net.minecraft.world.entity.npc.VillagerProfession) staff[i][2]);
 				}
-				BlockPos mailbox = new BlockPos(14, -60, 0);
-				level.setBlockAndUpdate(mailbox, ModBlocks.MAILBOX.defaultBlockState().setValue(io.github.jcondedata.aliveworkplace.mail.MailboxBlock.FACING, Direction.SOUTH)
-					.setValue(io.github.jcondedata.aliveworkplace.mail.MailboxBlock.HAS_MAIL, true));
-				hover(server.getPlayerList().getPlayers().get(0), new Vec3(1.5, -58.2, 9.5), 180, 8);
+				hover(server.getPlayerList().getPlayers().get(0), new Vec3(0.5, -57.6, 14.5), 180, 10);
 			});
 		}
 		if (tick == 130) {
 			server.execute(() -> {
-				long working = server.overworld().getEntitiesOfClass(Villager.class, new net.minecraft.world.phys.AABB(-14, -62, -4, 18, -55, 6),
+				long working = server.overworld().getEntitiesOfClass(Villager.class, new net.minecraft.world.phys.AABB(-16, -62, -4, 16, -55, 6),
 					v -> v.getVillagerData().getProfession() != net.minecraft.world.entity.npc.VillagerProfession.NONE).size();
-				Showcase.check(working >= 8, "every villager took their job (" + working + " of 8)");
+				Showcase.check(working >= 6, "every villager took their job (" + working + " of 6)");
 			});
 		}
 		if (tick == 140) {
 			shot(mc, "01_staff");
-			server.execute(() -> hover(server.getPlayerList().getPlayers().get(0), new Vec3(1.5, -55.5, 7.5), 180, 30));
+			server.execute(() -> hover(server.getPlayerList().getPlayers().get(0), new Vec3(-7.5, -58.2, 6.5), 180, 8));
 		}
-		if (tick == 200) {
-			shot(mc, "02_staff_above");
+		if (tick == 180) {
+			shot(mc, "02_staff_close_1");
+			server.execute(() -> hover(server.getPlayerList().getPlayers().get(0), new Vec3(6.5, -58.2, 6.5), 180, 8));
+		}
+		if (tick == 220) {
+			shot(mc, "03_staff_close_2");
+			server.execute(() -> hover(server.getPlayerList().getPlayers().get(0), new Vec3(0.5, -53.5, 10.5), 180, 35));
+		}
+		if (tick == 260) {
+			shot(mc, "04_staff_above");
 			mc.stop();
 		}
 	}

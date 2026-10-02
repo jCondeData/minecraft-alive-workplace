@@ -175,6 +175,16 @@ its first findings fixed. Nothing is released until these are done.
     phone: one pick per item and a note; another round for any item his notes ask for.
     Done when: every item has the versions on the page; his picks are the items' textures (recipes moved into
     tools/textures/art/items.py, lint clean); a review package shows the picked icons in game (slots and in hand).
+    **Round 1 picks** (owner, 2026-10-01, on the page): blueprint v4 (clipped to a drawing board), blank blueprint v2
+    (two sheets), shape planner v2 (the brass compass), village ledger v3 (open ledger), delivery note v4 (clipboard),
+    travel ticket v2 (sailing-boat ticket), price tag v2 (tag with a $), rally banner v4 (upright standard, crossed
+    swords; its model is now item/generated), settler's wagon v2 (side view): all nine are in items.py and the game.
+    His notes: patrol map v2 "make the outline of the paper exact to the paper outlines of maps currently in minecraft";
+    quarry marker v1's flag "use the stick pattern from the paper card with a red x, but this flag"; scan tool v4
+    "straighten out line, make it more obviously a pencil with the tip coming to a point"; field marker "redo all of
+    these, none make sense to me"; for every icon "try to follow the exact outlines minecraft has in place for certain
+    items, for example if minecraft already has a map design then follow that exact outline, just drawing different
+    content atop of it". Round 2 (tools/textures/picks/round2.py) is on the same page, collection 'round2'.
 - [ ] **21.2** **The full check before release** (the tester's Full tier; the chat started it and ran out of time). Do
   it in pieces that fit a one-hour night run, landing each piece with `land --keep-open`:
   - the real Cobbleverse pack boot and the soak: the nightly GitHub workflow runs these, so read its result;

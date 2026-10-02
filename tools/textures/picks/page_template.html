@@ -52,7 +52,7 @@ img { image-rendering: pixelated; image-rendering: crisp-edges; }
 .bar { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--bg); padding-block: 10px; border-bottom: 2px solid var(--panel-lo); }
 .bar-inner { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; }
 .count { font-family: var(--display); font-size: 17px; font-variant-numeric: tabular-nums; min-width: 9ch; }
-.hotbar { display: grid; grid-template-columns: repeat(13, minmax(22px, 34px)); gap: 2px; padding: 3px; background: var(--slot-lo); flex: 1 1 280px; max-width: 470px; }
+.hotbar { display: grid; grid-template-columns: repeat(%%COUNT%%, minmax(22px, 34px)); gap: 2px; padding: 3px; background: var(--slot-lo); flex: 1 1 280px; max-width: 470px; }
 .hotbar a { aspect-ratio: 1; background: var(--slot); display: grid; place-items: center; box-shadow: inset 2px 2px 0 var(--slot-lo), inset -2px -2px 0 var(--slot-hi); }
 .hotbar a:focus-visible { outline: 3px solid var(--accent); outline-offset: 1px; }
 .hotbar img { width: 70%; height: 70%; }
@@ -63,6 +63,8 @@ img { image-rendering: pixelated; image-rendering: crisp-edges; }
 .item-head p { color: var(--muted); }
 .tiles { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
 @media (max-width: 640px) { .tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.tiles.n3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+@media (max-width: 640px) { .tiles.n3 .cap { font-size: 13px; } }
 
 .tile { font: inherit; color: inherit; text-align: left; cursor: pointer; border: 3px solid transparent; background: var(--bg); padding: 8px; display: grid; gap: 8px; position: relative; min-width: 0; }
 .tile:hover { border-color: var(--muted); }
@@ -85,6 +87,9 @@ img { image-rendering: pixelated; image-rendering: crisp-edges; }
 .note:focus-visible, .general:focus-visible { outline: 3px solid var(--accent); outline-offset: 1px; }
 .saved { font-size: 13px; color: var(--muted); min-height: 1.2em; margin-top: -6px; }
 .saved.err { color: var(--danger); font-weight: 700; }
+.done { display: grid; gap: 12px; padding-top: 26px; }
+.done-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 10px; }
+.done-item { margin: 0; display: grid; justify-items: center; gap: 6px; text-align: center; font-size: 14px; color: var(--muted); }
 .closing { display: grid; gap: 10px; padding-top: 30px; }
 .closing p { color: var(--muted); max-width: 62ch; }
 @media (prefers-reduced-motion: no-preference) { .tile { transition: border-color .12s; } }
@@ -93,7 +98,7 @@ img { image-rendering: pixelated; image-rendering: crisp-edges; }
 <div class="wrap">
   <div class="intro">
     <h1>Item Icon Picks</h1>
-    <p>Round %%ROUND%%: every item of the mod that isn't a block or a villager outfit. Each card shows the icon the game uses today and three new versions, large and in a slot at the size the game shows it. Tap your favourite for each item and add guidance wherever you have some. Your picks save as you go; tell me in the chat when you're done.</p>
+    <p>%%INTRO%%</p>
     <p class="banner" id="offline" hidden>Picks can't be saved in this view. Open the page in Claude to save them, or send your picks in the chat.</p>
   </div>
 
@@ -117,6 +122,7 @@ img { image-rendering: pixelated; image-rendering: crisp-edges; }
 <script>
 const NAMES = %%NAMES%%;
 const ROUND = %%ROUND%%;
+const COLLECTION = "%%COLLECTION%%";
 const ITEMS = Object.keys(NAMES);
 const state = {};            // item -> { pick, note }
 ITEMS.forEach(i => state[i] = { pick: null, note: "" });
@@ -166,7 +172,7 @@ function save(id, body) {
   lastSaved[id] = json;
   writing[id] = (writing[id] || Promise.resolve()).then(async () => {
     try {
-      await db.doc("picks/" + id).set({ ...body, round: ROUND, updatedAt: new Date().toISOString() });
+      await db.doc(COLLECTION + "/" + id).set({ ...body, round: ROUND, updatedAt: new Date().toISOString() });
       setSaved(id, "Saved");
     } catch (e) {
       lastSaved[id] = null;
@@ -203,7 +209,7 @@ render();
 (async () => {
   try { db = window.claude && window.claude.use ? await window.claude.use("db") : null; } catch (e) { db = null; }
   if (!db) { document.getElementById("offline").hidden = false; return; }
-  db.collection("picks").onSnapshot(snap => {
+  db.collection(COLLECTION).onSnapshot(snap => {
     for (const d of snap.docs) {
       const data = d.data() || {};
       if (d.id === "general") {

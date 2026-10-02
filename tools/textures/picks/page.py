@@ -18,7 +18,9 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[3]
 PICKS = ROOT / "build" / "texture-picks"
 CURRENT = ROOT / "src/main/resources/assets/aliveworkplace/textures/item"
-ROUND = 1
+ROUND = 2
+# Each round's page keeps its picks in its own collection, so earlier rounds' choices stay on record.
+COLLECTION = {1: "picks", 2: "round2"}[ROUND]
 
 # (group, [(item, name, what it does, the current icon in a few words)])
 ITEMS = [
@@ -46,6 +48,23 @@ ITEMS = [
 ]
 
 
+# Round 2 (2026-10-02): the four items his round-1 notes asked to redo (picks/round2.py), each with his round-1 pick
+# first where he made one; the nine he picked are in the game and shown at the top.
+ROUND2 = [
+    ("Redrawn from your notes", [
+        ("patrol_map", "Patrol Map", "Your note: the paper's outline exactly like Minecraft's maps.", "v2"),
+        ("quarry_marker", "Quarry Marker", "Your note: the card's stick, with today's chequered flag.", "v1"),
+        ("scan_tool", "Scan Tool", "Your note: a straight line, clearly a pencil sharpened to a point.", "v4"),
+    ]),
+    ("New ideas", [
+        ("field_marker", "Field Marker", "Your note: none of round 1 made sense. Four new ideas for marking out a field.", None),
+    ]),
+]
+ACCEPTED = [("blueprint", "Blueprint"), ("blank_blueprint", "Blank Blueprint"), ("shape_planner", "Shape Planner"),
+            ("village_ledger", "Village Ledger"), ("rally_banner", "Rally Banner"), ("delivery_note", "Delivery Note"),
+            ("price_tag", "Price Tag"), ("travel_ticket", "Travel Ticket"), ("settlers_wagon", "Settler's Wagon")]
+
+
 def data_uri(path):
     return "data:image/png;base64," + base64.b64encode(path.read_bytes()).decode()
 
@@ -58,10 +77,22 @@ def versions(item, current):
     return out
 
 
+def round2_versions(item, earlier):
+    out = []
+    if earlier:
+        caption = json.loads((PICKS / item / "captions.json").read_text()).get(earlier, "Today's icon")
+        out.append({"id": earlier, "caption": caption, "label": "Your round 1 pick", "src": data_uri(PICKS / item / f"{earlier}.png")})
+    captions = json.loads((PICKS / "round2" / item / "captions.json").read_text())
+    for n, v in enumerate(sorted(captions), 1):
+        out.append({"id": v, "caption": captions[v], "label": f"New {n}", "src": data_uri(PICKS / "round2" / item / f"{v}.png")})
+    return out
+
+
 def card(item, name, what, current):
     tiles = []
-    for v in versions(item, current):
-        label = "Today" if v["current"] else f"Version {v['id'][1:]}"
+    vs = round2_versions(item, current) if ROUND == 2 else versions(item, current)
+    for v in vs:
+        label = v.get("label") or ("Today" if v["current"] else f"Version {v['id'][1:]}")
         tiles.append(f"""
         <button type="button" class="tile" id="{item}-{v['id']}" data-item="{item}" data-version="{v['id']}" aria-pressed="false">
           <span class="big"><img src="{v['src']}" alt="{html.escape(name)}, {html.escape(v['caption'])}" width="16" height="16"></span>
@@ -77,7 +108,7 @@ def card(item, name, what, current):
         <h3>{html.escape(name)}</h3>
         <p>{html.escape(what)}</p>
       </header>
-      <div class="tiles" role="group" aria-label="{html.escape(name)} versions">{''.join(tiles)}
+      <div class="tiles n{len(tiles)}" role="group" aria-label="{html.escape(name)} versions">{''.join(tiles)}
       </div>
       <label class="note-label" for="note-{item}">Guidance for this item <span>(optional)</span></label>
       <textarea class="note" id="note-{item}" data-item="{item}" rows="2" placeholder="What you like, what to change, ideas for another round"></textarea>
@@ -85,14 +116,34 @@ def card(item, name, what, current):
     </article>"""
 
 
+def accepted():
+    if ROUND < 2:
+        return ""
+    slots = "".join(f'''<figure class="done-item"><span class="slot"><img src="{data_uri(CURRENT / f"{i}.png")}" alt="" width="16" height="16"></span>
+      <figcaption>{html.escape(n)}</figcaption></figure>''' for i, n in ACCEPTED)
+    return f'''<section class="done"><h2>Your picks, now in the game</h2><div class="done-grid">{slots}</div></section>'''
+
+
+INTRO = {
+    1: "Round 1: every item of the mod that isn't a block or a villager outfit. Each card shows the icon the game uses "
+       "today and three new versions, large and in a slot at the size the game shows it. Tap your favourite for each item "
+       "and add guidance wherever you have some. Your picks save as you go; tell me in the chat when you're done.",
+    2: "Round 2: the four items your notes asked me to redo, drawn on Minecraft's own outlines wherever it has one (its map, "
+       "its stick, its hoe). Your round 1 pick is first where you made one, so you can keep it. Tap your favourite and "
+       "add guidance if you have some; tell me in the chat when you're done.",
+}
+
+
 def page():
     groups = []
-    for group, items in ITEMS:
+    for group, items in (ROUND2 if ROUND == 2 else ITEMS):
         cards = "".join(card(*i) for i in items)
         groups.append(f'<section class="group"><h2>{html.escape(group)}</h2>{cards}</section>')
-    names = {i[0]: i[1] for _, items in ITEMS for i in items}
+    names = {i[0]: i[1] for _, items in (ROUND2 if ROUND == 2 else ITEMS) for i in items}
     template = (Path(__file__).parent / "page_template.html").read_text()
-    return (template.replace("%%GROUPS%%", "".join(groups))
+    return (template.replace("%%GROUPS%%", accepted() + "".join(groups))
+            .replace("%%INTRO%%", INTRO[ROUND])
+            .replace("%%COLLECTION%%", COLLECTION)
             .replace("%%NAMES%%", json.dumps(names))
             .replace("%%ROUND%%", str(ROUND))
             .replace("%%COUNT%%", str(len(names))))

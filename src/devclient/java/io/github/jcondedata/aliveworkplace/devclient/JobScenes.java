@@ -221,6 +221,21 @@ final class JobScenes {
 		return g;
 	}
 
+	/** Every item of ours that isn't a block, in the order of the owner's picker page. */
+	static List<Item> itemIcons() {
+		return List.of(ModItems.BLUEPRINT, ModItems.BLANK_BLUEPRINT, ModItems.SCAN_TOOL, ModItems.SHAPE_PLANNER, ModItems.VILLAGE_LEDGER,
+			ModItems.PATROL_MAP, ModItems.RALLY_BANNER, ModItems.QUARRY_MARKER, ModItems.FIELD_MARKER, ModItems.DELIVERY_NOTE,
+			ModItems.PRICE_TAG, ModItems.TRAVEL_TICKET, ModItems.SETTLERS_WAGON);
+	}
+
+	/** A step of the items scene: the chest closed, {@code item} held in the main hand (first person, with the hotbar). */
+	private static Step held(String shot, Item item) {
+		return new Step(shot, -1, 0, (level, player) -> {
+			player.closeContainer();
+			player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(item));
+		}, 30);
+	}
+
 	static Item cobblemonItem(String id) {
 		return net.minecraft.core.registries.BuiltInRegistries.ITEM.get(net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("cobblemon", id));
 	}
@@ -523,6 +538,22 @@ final class JobScenes {
 
 	static {
 		// Fewer job blocks (ROADMAP 21.1a): one composter, and the item in hand picks the job; wheat brings the farmer back.
+		// The item icons (ROADMAP 21.1b, the owner's picks): all 13 in a chest at GUI scale 2, then four held in hand.
+		SCREENS.put("items", new Screen("every item's icon shows in a chest, in the hotbar and in hand", new Vec3(2.5, -58.4, 4.5), TARGET,
+			(level, player) -> {
+				List<Item> items = itemIcons();
+				for (int i = 0; i < 9; i++) {
+					player.getInventory().setItem(i, new ItemStack(items.get(i)));
+				}
+				chest(level, STATION, items.stream().map(ItemStack::new).toArray(ItemStack[]::new));
+				player.openMenu((net.minecraft.world.MenuProvider) level.getBlockEntity(STATION));
+			},
+			List.of(new Step("01_items_chest", -1, 3, null, 25), new Step("02_items_tooltip", 4, 3, null, 25),
+				held("03_hand_blueprint", ModItems.BLUEPRINT), held("04_hand_rally_banner", ModItems.RALLY_BANNER),
+				held("05_hand_scan_tool", ModItems.SCAN_TOOL), held("06_hand_quarry_marker", ModItems.QUARRY_MARKER),
+				held("07_hand_field_marker", ModItems.FIELD_MARKER)),
+			(level, player) -> player.getMainHandItem().is(ModItems.FIELD_MARKER)
+				&& level.getBlockEntity(STATION) instanceof Container c && itemIcons().stream().allMatch(i -> c.countItem(i) == 1)));
 		SCREENS.put("stations", new Screen("the villager took each job its item picks at the composter", new Vec3(2.2, -58.6, 3.6), TARGET,
 			(level, player) -> {
 				place(level, STATION, Blocks.COMPOSTER);

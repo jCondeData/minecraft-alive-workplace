@@ -23,7 +23,7 @@ import sys
 
 # Page sections, in the README's order ("All the jobs at a glance"), then the village-wide pieces.
 GROUPS = [
-    "Picking a job", "Builder", "Miner", "Lumberjack", "Orchard Keeper", "Farmer", "Beekeeper", "Florist", "Scholar", "Sifter",
+    "Picking a job", "Items", "Builder", "Miner", "Lumberjack", "Orchard Keeper", "Farmer", "Beekeeper", "Florist", "Scholar", "Sifter",
     "Tinkerer", "Composter", "Netherworker", "Undertaker", "Innkeeper", "Teacher", "Rancher", "Fisherman", "Porter",
     "Carpenter", "Mason", "Leatherworker (dyer)", "Chef", "Armorer (smelter)", "Toolsmith", "Weaponsmith", "Fletcher",
     "Shepherd", "Butcher (herder)", "Cleric (alchemist)", "Librarian (scribe)", "Cartographer (explorer)", "Postman",
@@ -50,6 +50,10 @@ SCENES = [
     S("stations", "Picking a job", "One composter, four jobs", "the villager took each job its item picks at the composter", 45,
       [("02_orchard_keeper", "Sweet berries: Orchard Keeper"), ("03_florist", "A flower: Florist"),
        ("04_composter", "Bone meal: Composter"), ("05_farmer", "Wheat: back to Farmer")]),
+    # Items (ROADMAP 21.1b): the owner's picked icons in a chest and in hand
+    S("items", "Items", "Every item's icon", "every item's icon shows in a chest, in the hotbar and in hand", 50,
+      [("01_items_chest", "All 13 in a chest"), ("03_hand_blueprint", "Blueprint in hand"),
+       ("04_hand_rally_banner", "Rally Banner in hand"), ("07_hand_field_marker", "Field Marker in hand")]),
     # Builder
     S("builders", "Builder", "Three builders, three starter builds", "the builders finished all three builds", 420,
       [("02_builder_closeup", "A builder at work"), ("03_finished_wide", "All three finished"),

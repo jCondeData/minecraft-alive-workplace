@@ -3,6 +3,11 @@
 ## Unreleased
 
 ### Changed
+- **New item icons, picked by the owner**: the Blueprint is clipped to a drawing board, the Blank Blueprint is two
+  sheets, the Shape Planner is a brass compass, the Village Ledger lies open, the Delivery Note is a clipboard, the
+  Travel Ticket has a sailing boat, the Price Tag a $ sign, the Rally Banner is an upright standard with crossed swords,
+  the Settler's Wagon is seen from the side, the Patrol Map and Field Marker are maps on vanilla's map outline, the
+  Quarry Marker has a chequered swallowtail flag on a stake, and the Scan Tool is a drafting pencil.
 - **Fewer job blocks**: our jobs now work at vanilla blocks, shared with the vanilla job there. Stand a villager by the
   block and sneak-right-click them with the job's item: a composter makes an Orchard Keeper with sweet berries, a
   Florist with a flower and a Composter with bone meal; a blast furnace makes a Miner with a pickaxe; a grindstone a

@@ -167,7 +167,7 @@ its first findings fixed. Nothing is released until these are done.
     **Left for later:** the Hall's free-workstations list still offers only the vanilla job at a shared block (the
     player switches with the item afterwards); the sifter has no "panning" look at a water cauldron; /workplace
     benchmark still places old blocks (they work). A real 0.137.0 world opened with this version is 21.2's check.
-  - [ ] **21.1b** (claimed: chat, 2026-10-01 17:37Z) Change from the owner (2026-10-01): lets move to textures, what i want to do is for every item in the game (except for villager skins, and blocks) send me a couple versions, such as blueprints, i will go through the versions and pick my favorites, and give guidance when i can.
+  - [ ] **21.1b** (claimed: chat, 2026-10-02 23:06Z) Change from the owner (2026-10-01): lets move to textures, what i want to do is for every item in the game (except for villager skins, and blocks) send me a couple versions, such as blueprints, i will go through the versions and pick my favorites, and give guidance when i can.
     **Plan** (chat, 2026-10-01): the 13 items of ours that aren't blocks (Blueprint, Blank Blueprint, Scan Tool, Shape
     Planner, Patrol Map, Village Ledger, Rally Banner, Quarry Marker, Field Marker, Travel Ticket, Delivery Note, Price
     Tag, Settler's Wagon). Each gets its current icon plus three new versions, each a different idea, drawn with the
@@ -185,6 +185,9 @@ its first findings fixed. Nothing is released until these are done.
     these, none make sense to me"; for every icon "try to follow the exact outlines minecraft has in place for certain
     items, for example if minecraft already has a map design then follow that exact outline, just drawing different
     content atop of it". Round 2 (tools/textures/picks/round2.py) is on the same page, collection 'round2'.
+    **Round 2 picks** (owner, 2026-10-02): patrol map, quarry marker, scan tool and field marker all r2b (vanilla map
+    paper; swallowtail flag; pencil with a white blueprint line; a field plan on the map outline, now item/generated),
+    no notes. All 13 icons are his picks in items.py and the game; the 'items' showcase scene films them.
 - [ ] **21.2** **The full check before release** (the tester's Full tier; the chat started it and ran out of time). Do
   it in pieces that fit a one-hour night run, landing each piece with `land --keep-open`:
   - the real Cobbleverse pack boot and the soak: the nightly GitHub workflow runs these, so read its result;

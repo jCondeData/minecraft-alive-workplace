@@ -611,10 +611,6 @@ public class BuilderWork extends Behavior<Villager> {
 		}
 	}
 
-	/**
-	 * The chests are out of something but another builder on this site is carrying spares: walk over
-	 * and get some ("pass me those planks"). Returns false if nobody has any to spare.
-	 */
 	/** The step a helper has claimed, among those helpers pick from; null if none (or it has moved on). */
 	@Nullable
 	private static BuildPlan.Step claimedStep(BuildSite site, BuildPlan plan, @Nullable BlockPos claim) {
@@ -629,6 +625,10 @@ public class BuilderWork extends Behavior<Villager> {
 		return null;
 	}
 
+	/**
+	 * The chests are out of something but another builder on this site is carrying spares: walk over
+	 * and get some ("pass me those planks"). Returns false if nobody has any to spare.
+	 */
 	private boolean takeFromCrewmate(ServerLevel level, Villager villager, BuildSite site, BuildPlan plan, BuilderBag bag, Item item, int needed) {
 		List<java.util.UUID> crew = new java.util.ArrayList<>(site.helpers(level.getGameTime()));
 		if (site.builder() != null) {

@@ -9,6 +9,8 @@
   with Cobblemon the Pokémon jobs. Lost it? Craft another from a book and wheat.
 
 ### Fixed
+- Builders on a hillside, with their site far up the slope from their bench, keep placing through clearing,
+  foundation and levelling without half-minute pauses (now covered by tests).
 - With Cobblemon, a herder no longer stands waiting under a pastured Pokémon that's flying about: they get on with
   other work and brush or milk it once it has come down.
 - Every flower now makes a Florist at a composter, pink petals and spore blossoms too, and the composter's tooltip

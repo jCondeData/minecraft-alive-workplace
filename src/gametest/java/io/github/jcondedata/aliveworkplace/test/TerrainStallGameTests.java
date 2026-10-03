@@ -82,7 +82,25 @@ public class TerrainStallGameTests implements FabricGameTest {
 		buildOnHillside(helper, StarterBlueprints.TINKERS_WORKSHOP, new BlockPos(9, 10, 8));
 	}
 
+	/**
+	 * The soak's graveyard stall (0 placed for 30 s at the start of FOUNDATION) was thought to be the first supply walk:
+	 * its site was 40 to 50 blocks from the bench, so the builder would walk out to clear it and all the way back for
+	 * its first foundation block. Here the graveyard is up the hill in the far corner, and that doesn't happen: what
+	 * clearing digs up (dirt) is what its foundation is filled with, so the builder already carries it when clearing
+	 * ends, and it never stalls 30 s (worst gap 400 ticks). The soak's stall has another cause, still to find.
+	 */
+	//$ gametest_ticks_batch HUGE_AREA '40000' '"b23_graveyard_far"'
+	@GameTest(template = HUGE_AREA, timeoutTicks = 40000, batch = "b23_graveyard_far")
+	public void b23AFarGraveyardsBuilderTakesItsFoundationAlong(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		buildOnHillside(helper, StarterBlueprints.GRAVEYARD, new BlockPos(13, 14, 13), true);
+	}
+
 	private void buildOnHillside(GameTestHelper helper, StarterBlueprints.Entry entry, BlockPos origin) {
+		buildOnHillside(helper, entry, origin, false);
+	}
+
+	private void buildOnHillside(GameTestHelper helper, StarterBlueprints.Entry entry, BlockPos origin, boolean carriesFoundation) {
 		ServerLevel level = helper.getLevel();
 		hillside(helper);
 		helper.setDayTime(2000);
@@ -132,9 +150,25 @@ public class TerrainStallGameTests implements FabricGameTest {
 		int[] refills = {0};
 		int[] lastDirt = {0};
 		String[] worstAt = {""};
+		String[] notCarried = {null};
+		boolean[] clearing = {true};
 		helper.onEachTick(() -> {
 			if (site.isDone()) {
 				return;
+			}
+			if (clearing[0] && site.stage() != BuildPlan.Stage.CLEAR) {
+				clearing[0] = false;
+				// Clearing is done: the bag already holds what the first block still to build needs.
+				for (BuildPlan.Step s : site.upcoming(plan, 192)) {
+					if (!s.requirements().isEmpty() && !io.github.jcondedata.aliveworkplace.build.MaterialRules.matches(level.getBlockState(s.pos()), s.state())) {
+						var r = s.requirements().get(0);
+						if (!ModAttachments.BUILDER_BAG.getOrCreate(villager).has(r.item(), r.count())) {
+							notCarried[0] = "after clearing, the builder at " + helper.relativePos(villager.blockPosition()) + " carries no "
+								+ r.item() + " for its first " + site.stage() + " block at " + helper.relativePos(s.pos());
+						}
+						break;
+					}
+				}
 			}
 			long mark = mark(site);
 			if (site.stage() == BuildPlan.Stage.LANDSCAPE) {
@@ -165,6 +199,7 @@ public class TerrainStallGameTests implements FabricGameTest {
 				io.github.jcondedata.aliveworkplace.AliveWorkplace.LOG.info("[b23] {} worst gap on shift {} ticks ({}); {} ticks on shift; landscaping {} ticks, {} dirt refills", entry.id(), worst[0], worstAt[0], shiftTicks[0], landscapeTicks[0], refills[0]);
 			}
 			helper.assertTrue(shiftTicks[0] > 0, "the builder was never on its WORK shift");
+			helper.assertTrue(!carriesFoundation || notCarried[0] == null, String.valueOf(notCarried[0]));
 			helper.assertTrue(worst[0] < STALL_TICKS, "stalled " + worst[0] + " ticks on shift: " + worstAt[0]);
 			helper.assertTrue(BuildSiteManager.get(level).get(site.id()) == null,
 				"still building: stage " + site.stage() + ", status " + site.status() + ", " + site.placed() + " placed (worst gap so far "

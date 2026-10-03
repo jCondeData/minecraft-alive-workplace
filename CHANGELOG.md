@@ -9,6 +9,32 @@
   with Cobblemon the Pokémon jobs. Lost it? Craft another from a book and wheat.
 
 ### Fixed
+- With Cobblemon, a herder no longer stands waiting under a pastured Pokémon that's flying about: they get on with
+  other work and brush or milk it once it has come down.
+- Every flower now makes a Florist at a composter, pink petals and spore blossoms too, and the composter's tooltip
+  says "Any flower" instead of "A small flower".
+- Miners, postmen, tutors, Pokémon traders and trainers keep their workstation too: after a minute stuck, or over 100
+  blocks from it, they gave it up and could take another worker's.
+- A builder keeps their own bench. A builder who got stuck for a minute, or wandered over 100 blocks from their bench,
+  gave it up and took the nearest free one, often another builder's, so two builders could swap benches over and over.
+- A builder always takes its materials from the chests by the bench its build was started from. Two builders with
+  benches close together could swap benches mid-build and use each other's materials, so one build ended a few
+  blocks short and its builder waited for materials its own chests had held.
+- A builder no longer stands waiting for materials with nothing on its missing list when the last of a block is
+  in a helper's pockets: helpers keep only what the block they are working on needs and pass the rest over.
+- Two villagers no longer end up on one workstation when a job is changed by hand or at the Village Hall: a worker far
+  from a block that was broken and put back no longer takes it back from its new (unloaded) owner, a job chosen at a
+  replaced block holds it, and a Village Hall assignment that fails leaves the worker's own block alone.
+- A tall flower (sunflower, lilac, rose bush, peony) given to a farmer at their composter now makes a Florist, as the
+  Guide Book says; before, only small flowers did and a tall one silently did nothing.
+- Builders levelling the ground carry enough dirt from their chests for the whole hollow, instead of walking back for
+  every block (and keep the dirt they dug up for it), so tidying up around a build far from its chests no longer crawls.
+- Warding now protects the whole village, corners included: a creeper or TNT going off in a corner of a warded
+  village, or just past its edge, no longer breaks the village's blocks.
+- The Village Hall's Guards and Mercenaries buttons, and Research's Drill topic, no longer show an iron sword's
+  "When in Main Hand: 6 Attack Damage, 1.6 Attack Speed" lines under their own text.
+- Giving a villager a new job no longer frees a workstation someone else now works at when that other villager is
+  far away in an unloaded chunk (their block had been broken and put back while the first villager was away).
 - Leaving the game in the middle of a ferry ride lands you by the far post before you are saved, so you come back
   there, and the ferryman stays at his jetty. The ride now ends on the server thread as you leave, not on the network
   thread.

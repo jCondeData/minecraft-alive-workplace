@@ -159,7 +159,7 @@ public class BuilderWork extends Behavior<Villager> {
 			return;
 		}
 		helping = Builders.isHelping(villager);
-		Optional<BlockPos> benchOpt = helping ? Optional.ofNullable(site.bench()) : Builders.benchPos(villager);
+		Optional<BlockPos> benchOpt = helping ? Optional.ofNullable(site.bench()) : Builders.siteBench(level, villager, site);
 		if (benchOpt.isEmpty()) {
 			return;
 		}
@@ -578,11 +578,16 @@ public class BuilderWork extends Behavior<Villager> {
 	 * At the chest: take what the next stretch of work needs from {@code supplies} (the chests there), current block
 	 * first. Helpers only take a handful for the blocks they are on, so they never sit on the lead's materials.
 	 */
+	/** The next stretch of work, for what to take and what to keep: later stages, or the rest of the levelling. */
+	private static List<BuildPlan.Step> ahead(BuildSite site, BuildPlan plan) {
+		return site.stage() == BuildPlan.Stage.LANDSCAPE ? site.landscapeLeft(plan, LOOKAHEAD) : site.upcoming(plan, LOOKAHEAD);
+	}
+
 	private void takeWanted(ServerLevel level, BuildSite site, BuildPlan plan, BuilderBag bag, MaterialRules.Requirement requirement,
 							List<BlockPos> supplies, BlockPos source) {
 		Map<Item, Integer> wanted = new LinkedHashMap<>();
 		wanted.put(requirement.item(), requirement.count() + (helping ? 3 : 0));
-		for (BuildPlan.Step s : helping ? List.<BuildPlan.Step>of() : site.upcoming(plan, LOOKAHEAD)) {
+		for (BuildPlan.Step s : helping ? List.<BuildPlan.Step>of() : ahead(site, plan)) {
 			if (!MaterialRules.matches(level.getBlockState(s.pos()), s.state())) {
 				for (MaterialRules.Requirement r : s.requirements()) {
 					wanted.merge(r.item(), r.count(), Integer::sum);
@@ -611,6 +616,20 @@ public class BuilderWork extends Behavior<Villager> {
 		}
 	}
 
+	/** The step a helper has claimed, among those helpers pick from; null if none (or it has moved on). */
+	@Nullable
+	private static BuildPlan.Step claimedStep(BuildSite site, BuildPlan plan, @Nullable BlockPos claim) {
+		if (claim == null) {
+			return null;
+		}
+		for (BuildPlan.Step s : site.ahead(plan, HELP_WINDOW)) {
+			if (s.pos().equals(claim)) {
+				return s;
+			}
+		}
+		return null;
+	}
+
 	/**
 	 * The chests are out of something but another builder on this site is carrying spares: walk over
 	 * and get some ("pass me those planks"). Returns false if nobody has any to spare.
@@ -625,17 +644,15 @@ public class BuilderWork extends Behavior<Villager> {
 				continue;
 			}
 			BuilderBag mateBag = ModAttachments.BUILDER_BAG.getOrCreate(mate);
-			// Whatever the mate needs for the block it is on stays with it.
-			BuildPlan.Step mateStep = id.equals(site.builder()) ? site.current(plan) : null;
-			BlockPos mateClaim = site.claim(id);
+			// Whatever the mate needs for the block it is on stays with it: the lead's current block, or the block a
+			// helper has claimed. Only what that block needs of this item: keeping one of anything left the lead
+			// waiting, with nothing on its missing list, for a block a helper on other work would never use (B21).
+			BuildPlan.Step mateStep = id.equals(site.builder()) ? site.current(plan) : claimedStep(site, plan, site.claim(id));
 			int keep = 0;
 			for (BuildPlan.Step s : mateStep != null ? List.of(mateStep) : List.<BuildPlan.Step>of()) {
 				for (MaterialRules.Requirement r : s.requirements()) {
 					keep += r.item() == item ? r.count() : 0;
 				}
-			}
-			if (mateClaim != null) {
-				keep += 1;
 			}
 			int spare = mateBag.count(item) - keep;
 			if (spare < needed) {
@@ -689,7 +706,7 @@ public class BuilderWork extends Behavior<Villager> {
 		}
 		Set<Item> keep = new HashSet<>();
 		boolean keepNothing = helping || site.stage() == BuildPlan.Stage.DECONSTRUCT;
-		for (BuildPlan.Step s : keepNothing ? List.<BuildPlan.Step>of() : site.upcoming(plan, LOOKAHEAD)) {
+		for (BuildPlan.Step s : keepNothing ? List.<BuildPlan.Step>of() : ahead(site, plan)) {
 			for (MaterialRules.Requirement r : s.requirements()) {
 				keep.add(r.item());
 			}

@@ -281,6 +281,60 @@ public class PastureCompatTests implements FabricGameTest {
 				+ ModAttachments.POKEMON_TENDED.getOrElse(butcher, 0));
 		});
 	}
+	/**
+	 * B24: a pastured Pidgey up in the air is out of the butcher's reach, so he doesn't stand under it waiting: he leaves it
+	 * and brushes it once it has landed.
+	 */
+	//$ gametest_ticks_batch AREA '3600' '"herder_pokemon_air"'
+	@GameTest(template = AREA, timeoutTicks = 3600, batch = "herder_pokemon_air")
+	public void b24AFlyingPidgeyIsBrushedOnceItLands(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		helper.setDayTime(2000);
+		io.github.jcondedata.aliveworkplace.ranch.PokemonChores.forget();
+		helper.setBlock(new BlockPos(2, 2, 2), Blocks.SMOKER);
+		helper.setBlock(new BlockPos(2, 2, 4), Blocks.CHEST);
+		Container chest = helper.getBlockEntity(new BlockPos(2, 2, 4));
+		chest.setItem(0, new ItemStack(net.minecraft.world.item.Items.BRUSH));
+		Villager butcher = helper.spawn(EntityType.VILLAGER, new BlockPos(3, 2, 3));
+		Jobs.employ(level, butcher, helper.absolutePos(new BlockPos(2, 2, 2)), net.minecraft.world.entity.ai.village.poi.PoiTypes.BUTCHER,
+			net.minecraft.world.entity.npc.VillagerProfession.BUTCHER);
+		BlockPos pasture = pasture(helper, new BlockPos(10, 2, 10));
+		ServerPlayer player = helper.makeMockServerPlayerInLevel();
+		Pokemon pidgey = pastured(helper, pasture, player, "pidgey", Direction.WEST);
+		net.minecraft.world.phys.Vec3 up = net.minecraft.world.phys.Vec3.atBottomCenterOf(helper.absolutePos(new BlockPos(9, 8, 6)));
+		long[] t = {0};
+		boolean[] airborneSeen = {false};
+		helper.onEachTick(() -> {
+			var entity = pidgey.getEntity();
+			if (entity == null || t[0]++ > 600) {
+				if (entity != null && entity.isNoGravity()) {
+					entity.setNoGravity(false); // it comes down, onto the grass by the pasture
+					net.minecraft.world.phys.Vec3 ground = net.minecraft.world.phys.Vec3.atBottomCenterOf(helper.absolutePos(new BlockPos(9, 2, 8)));
+					entity.teleportTo(ground.x, ground.y, ground.z);
+				}
+				return;
+			}
+			entity.setNoGravity(true);
+			entity.setDeltaMovement(net.minecraft.world.phys.Vec3.ZERO);
+			entity.teleportTo(up.x, up.y, up.z);
+			airborneSeen[0] |= io.github.jcondedata.aliveworkplace.ranch.PokemonChores.airborne(entity);
+			if (t[0] == 600) {
+				helper.assertTrue(airborneSeen[0], "the held Pidgey never counted as up in the air");
+				helper.assertTrue(ModAttachments.POKEMON_TENDED.getOrElse(butcher, 0) == 0, "brushed while 6 blocks up");
+				helper.assertTrue(io.github.jcondedata.aliveworkplace.ranch.RanchWork.isBusy(butcher) == false
+					|| butcher.distanceToSqr(entity) > 9, "the butcher waits under the flying Pidgey");
+			}
+		});
+		helper.succeedWhen(() -> {
+			helper.assertTrue(t[0] > 600, "still held up");
+			boolean feathers = false;
+			for (int i = 0; i < chest.getContainerSize(); i++) {
+				feathers |= chest.getItem(i).is(net.minecraft.world.item.Items.FEATHER);
+			}
+			helper.assertTrue(feathers, "no feathers from the Pidgey once it landed");
+		});
+	}
+
 	/** A rancher grooms a pastured Eevee once a day, with an Oran Berry from the chest as a treat: friendship goes up. */
 	//$ gametest_ticks_batch AREA '1600' '"rancher_pokemon"'
 	@GameTest(template = AREA, timeoutTicks = 1600, batch = "rancher_pokemon")

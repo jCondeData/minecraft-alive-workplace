@@ -175,6 +175,9 @@ public final class PokemonChores implements ResourceManagerReloadListener {
 		List<Entity> pastured = new ArrayList<>(PokemonPartners.EXTENSION.call(p -> p.pastured(level, station, radius), List.<Entity>of()));
 		pastured.sort(Comparator.comparingDouble(e -> e.distanceToSqr(middle)));
 		for (Entity pokemon : pastured) {
+			if (airborne(pokemon)) {
+				continue; // a Pidgey flying about can't be brushed: it's done once it lands (B24)
+			}
 			for (Chore chore : chores) {
 				if (!due(pokemon, chore, now) || !matches(pokemon, chore.target()) || chore.extra() != null && !matches(pokemon, chore.extra())) {
 					continue;
@@ -185,6 +188,13 @@ public final class PokemonChores implements ResourceManagerReloadListener {
 			}
 		}
 		return null;
+	}
+
+	/** Whether a Pokémon is up in the air (flying, not just hopping): out of a villager's reach until it comes down. */
+	public static boolean airborne(Entity pokemon) {
+		return !pokemon.onGround() && !pokemon.isInWater() && !pokemon.isPassenger()
+			&& pokemon.level().getBlockState(pokemon.blockPosition().below()).isAir()
+			&& pokemon.level().getBlockState(pokemon.blockPosition().below(2)).isAir();
 	}
 
 	private static boolean matches(Entity pokemon, String properties) {

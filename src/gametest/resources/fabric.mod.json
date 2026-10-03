@@ -7,6 +7,9 @@
 	"entrypoints": {
 		"fabric-gametest": [
 			"io.github.jcondedata.aliveworkplace.test.BuilderGameTests",
+			"io.github.jcondedata.aliveworkplace.test.BuilderBenchGameTests",
+			"io.github.jcondedata.aliveworkplace.test.BuilderKeepsBenchGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaB28BenchGameTests",
 			"io.github.jcondedata.aliveworkplace.test.ImportGameTests",
 			"io.github.jcondedata.aliveworkplace.test.TableGameTests",
 			"io.github.jcondedata.aliveworkplace.test.ShapeGameTests",
@@ -47,6 +50,7 @@
 			"io.github.jcondedata.aliveworkplace.test.FloristGameTests",
 			"io.github.jcondedata.aliveworkplace.test.RancherGameTests",
 			"io.github.jcondedata.aliveworkplace.test.VillageHallGameTests",
+			"io.github.jcondedata.aliveworkplace.test.MenuIconTooltipGameTests",
 			"io.github.jcondedata.aliveworkplace.test.StyleGameTests",
 			"io.github.jcondedata.aliveworkplace.test.PeopleGameTests",
 			"io.github.jcondedata.aliveworkplace.test.CampGameTests",
@@ -57,8 +61,10 @@
 			"io.github.jcondedata.aliveworkplace.test.SavedDataGameTests",
 			"io.github.jcondedata.aliveworkplace.test.BuildSiteSaveGameTests",
 			"io.github.jcondedata.aliveworkplace.test.BuildSiteStepsGameTests",
+			"io.github.jcondedata.aliveworkplace.test.TerrainStallGameTests",
 			"io.github.jcondedata.aliveworkplace.test.VillagerMixinGameTests",
 			"io.github.jcondedata.aliveworkplace.test.GoalPackagesMixinGameTests",
+			"io.github.jcondedata.aliveworkplace.test.WardingEdgeGameTests",
 			"io.github.jcondedata.aliveworkplace.test.StationsBugGameTests",
 			"io.github.jcondedata.aliveworkplace.test.StationsRetakeGameTests",
 			"io.github.jcondedata.aliveworkplace.test.StationsFixesGameTests",
@@ -73,7 +79,18 @@
 			"io.github.jcondedata.aliveworkplace.test.OptionalModsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.OutfitGameTests",
 			"io.github.jcondedata.aliveworkplace.test.GuideGameTests",
-			"io.github.jcondedata.aliveworkplace.test.FerryLeaveQaGameTests"
+			"io.github.jcondedata.aliveworkplace.test.QaHallIconGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaWardingGameTests",
+			"io.github.jcondedata.aliveworkplace.test.FerryLeaveQaGameTests",
+			"io.github.jcondedata.aliveworkplace.test.StationsB8UnloadedGameTests",
+			"io.github.jcondedata.aliveworkplace.test.JobSiteTicketsGameTests",
+			"io.github.jcondedata.aliveworkplace.test.StationsQaGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaGuideClaimsGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaGuideFloristGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaB17BugGameTests",
+			"io.github.jcondedata.aliveworkplace.test.WorkersKeepTheirBlockGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaB21B27GameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaB18FlowersGameTests"
 		]
 	},
 	"depends": {

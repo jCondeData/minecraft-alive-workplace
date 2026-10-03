@@ -153,15 +153,19 @@ public final class VillageHalls {
 		if (!villager.isAlive() || villager.isBaby() || villager.getVillagerData().getProfession() == VillagerProfession.NITWIT) {
 			return false;
 		}
-		// Whatever they had before is let go of first, if it's still theirs (bugs B7, B8).
-		villager.getBrain().getMemory(MemoryModuleType.JOB_SITE)
-			.ifPresent(old -> io.github.jcondedata.aliveworkplace.work.Stations.releaseOld(level, villager, old));
-		villager.getBrain().eraseMemory(MemoryModuleType.POTENTIAL_JOB_SITE);
+		// The offered block first: if someone took it meanwhile, nothing changes and they keep their own block (bug B27).
 		boolean taken = level.getPoiManager().take(h -> h.equals(station.poi()), (h, p) -> p.equals(station.pos()), station.pos(), 1).isPresent();
 		if (!taken) {
 			return false;
 		}
+		// Then whatever they had before is let go of, if it's still theirs (bugs B7, B8).
+		net.minecraft.core.GlobalPos target = net.minecraft.core.GlobalPos.of(level.dimension(), station.pos());
+		villager.getBrain().getMemory(MemoryModuleType.JOB_SITE)
+			.filter(old -> !old.equals(target))
+			.ifPresent(old -> io.github.jcondedata.aliveworkplace.work.Stations.releaseOld(level, villager, old));
+		villager.getBrain().eraseMemory(MemoryModuleType.POTENTIAL_JOB_SITE);
 		villager.getBrain().setMemory(MemoryModuleType.JOB_SITE, net.minecraft.core.GlobalPos.of(level.dimension(), station.pos()));
+		io.github.jcondedata.aliveworkplace.work.JobSiteTickets.hold(level, villager);
 		villager.setVillagerData(villager.getVillagerData().setProfession(station.profession()));
 		villager.refreshBrain(level);
 		level.sendParticles(net.minecraft.core.particles.ParticleTypes.HAPPY_VILLAGER, villager.getX(), villager.getY() + 1.2, villager.getZ(),

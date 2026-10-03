@@ -131,7 +131,7 @@ public final class Stations {
 		new Station(is(PoiTypes.FARMER), Blocks.COMPOSTER, List.of(
 			job(() -> VillagerProfession.FARMER, any(Items.WHEAT, Items.WHEAT_SEEDS)),
 			job(() -> ModVillagers.ORCHARD_KEEPER, any(Items.SWEET_BERRIES, Items.GLOW_BERRIES, Items.APPLE)),
-			job(() -> ModVillagers.FLORIST, tag(ItemTags.SMALL_FLOWERS)),
+			job(() -> ModVillagers.FLORIST, tag(ItemTags.FLOWERS)), // any flower, #minecraft:flowers (Guide, Beekeepers page; B29)
 			job(() -> ModVillagers.COMPOSTER, any(Items.BONE_MEAL)))),
 		new Station(is(PoiTypes.ARMORER), Blocks.BLAST_FURNACE, List.of(
 			job(() -> VillagerProfession.ARMORER, any(Items.COAL, Items.CHARCOAL)),
@@ -205,10 +205,12 @@ public final class Stations {
 			return InteractionResult.PASS; // shears hire a shepherd (BuilderEvents), as before: they don't make them a beekeeper
 		}
 		// (not a far-off one another villager works at: their block broken while they were away and put back, and taken since
-		// (B8); the villager standing by the block is its owner, even if a far-off one still remembers it)
+		// (B8), by a loaded villager or one in an unloaded chunk, whom only the break count knows of (B25); the villager
+		// standing by the block is its owner, even if a far-off one still remembers it)
 		Optional<GlobalPos> site = villager.getBrain().getMemory(MemoryModuleType.JOB_SITE)
 			.filter(g -> g.dimension().equals(level.dimension()))
-			.filter(g -> g.pos().distToCenterSqr(villager.position()) <= REACH * REACH || !someoneElseWorksAt(level, villager, g));
+			.filter(g -> g.pos().distToCenterSqr(villager.position()) <= REACH * REACH
+				|| (JobSiteTickets.theirs(level, villager, g).orElse(true) && !someoneElseWorksAt(level, villager, g)));
 		Optional<Holder<PoiType>> here = site.flatMap(g -> level.getPoiManager().getType(g.pos()));
 		// First the block they already work at, then the nearest free block where the item picks a job.
 		for (Station station : ALL) {
@@ -331,9 +333,13 @@ public final class Stations {
 		if (old.isEmpty() || !old.get().equals(target)) {
 			old.ifPresent(g -> releaseOld(level, villager, g));
 			level.getPoiManager().take(h -> true, (h, p) -> p.equals(station), station, 1);
+		} else if (level.getPoiManager().getFreeTickets(station) > 0) {
+			// The block they remember, but its place is free: it was broken while they were away and put back (bug B26).
+			level.getPoiManager().take(h -> true, (h, p) -> p.equals(station), station, 1);
 		}
 		villager.getBrain().eraseMemory(MemoryModuleType.POTENTIAL_JOB_SITE);
 		villager.getBrain().setMemory(MemoryModuleType.JOB_SITE, target);
+		JobSiteTickets.hold(level, villager);
 		villager.setVillagerData(villager.getVillagerData().setProfession(profession));
 		if (villager.getVillagerXp() == 0) {
 			villager.setVillagerXp(1); // keeps the profession even if the block is briefly missing
@@ -345,13 +351,14 @@ public final class Stations {
 	 * Lets go of {@code villager}'s old job site {@code old}, if it's still theirs. A block broken while its worker was far
 	 * away leaves their memory of it behind: with no block there's no record to release (releasing would throw "POI never
 	 * registered"), and a block of the same kind put back since may have been taken by another villager, whose place
-	 * releasing it would free (bug B8).
+	 * releasing it would free (bug B8), even when that villager's chunk is unloaded (bug B15).
 	 */
 	public static void releaseOld(ServerLevel level, Villager villager, GlobalPos old) {
 		if (!old.dimension().equals(level.dimension()) || level.getPoiManager().getType(old.pos()).isEmpty()) {
 			return;
 		}
-		if (!someoneElseWorksAt(level, villager, old)) {
+		// (a villager in an unloaded chunk may hold it, where nothing can see them: the break count says (bug B15))
+		if (JobSiteTickets.theirs(level, villager, old).orElse(true) && !someoneElseWorksAt(level, villager, old)) {
 			level.getPoiManager().release(old.pos());
 		}
 	}

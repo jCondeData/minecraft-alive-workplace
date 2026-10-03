@@ -402,6 +402,16 @@ def build_env():
     return env
 
 
+def same_build(built, head):
+    """True when head differs from the commit last built green only in ROADMAP.md, which no build step reads, so that
+    build stands for head too. Main moves every few minutes with claims, handoffs and verify marks; rebuilding for
+    those made land build 5 times in 45 minutes and give up with green work (B16). CI still builds every push."""
+    if not built:
+        return False
+    changed = git("diff", "--name-only", built, head).stdout.split()
+    return all(f == ROADMAP for f in changed)
+
+
 def cmd_land(a):
     own_claim_or_die(a)
     if git("rev-parse", "--abbrev-ref", "HEAD").stdout.strip() != f"item/{a.id}":
@@ -419,7 +429,10 @@ def cmd_land(a):
             die("Merging the newest main in gives conflicts. Resolve them by hand: git merge origin/main, fix the "
                 "files (ROADMAP.md: keep both sides' lines), git add them by name, git commit; then land again.", 3)
         head = git("rev-parse", "HEAD").stdout.strip()
-        if head != built:
+        if same_build(built, head):
+            print(f"[land {attempt}] main only moved in ROADMAP.md since the green build: not building again.",
+                  flush=True)
+        elif head != built:
             print(f"[land {attempt}] building {head[:9]}: {a.build}", flush=True)
             if subprocess.run(a.build, shell=True, env=build_env()).returncode:
                 die("The build failed on top of the newest main (output above). If it's the setup (Java not found, "
@@ -470,7 +483,10 @@ def cmd_ship(a):
             git("merge", "--abort", check=False)
             die("Merging the newest main in gives conflicts: git merge origin/main, fix, commit, ship again.", 3)
         head = git("rev-parse", "HEAD").stdout.strip()
-        if head != built:
+        if same_build(built, head):
+            print(f"[ship {attempt}] main only moved in ROADMAP.md since the green build: not building again.",
+                  flush=True)
+        elif head != built:
             print(f"[ship {attempt}] building {head[:9]}: {a.build}", flush=True)
             if subprocess.run(a.build, shell=True, env=build_env()).returncode:
                 die("The build failed. A failing test is a bug: move it to tests/<topic>, add the bug, ship the "
@@ -647,9 +663,29 @@ def cmd_brief(a):
     first = next((k for k, l in enumerate(lines) if l.startswith("## Milestone")), len(lines))
     rest = next((k for k, l in enumerate(lines) if k > first and l.startswith("## ") and not l.startswith("## Milestone")),
                 len(lines))
-    print("\n".join(lines[:first]))
+    print("\n".join(short_fixed_bugs(lines[:first])))
     print("[Milestones left out: `sessions.py show <id>` prints an item; `status` names yours.]\n")
     print("\n".join(lines[rest:]))
+
+
+def short_fixed_bugs(lines):
+    """Fixed bugs as one short line each (`show` prints one in full). Every run reads the brief and keeps it in its
+    context for every later turn, and the fixed bugs' history was half of it."""
+    out, skipping = [], False
+    for line in lines:
+        m = ITEM.match(line)
+        if m:
+            skipping = m.group(2) == "x" and m.group(4).startswith("B")
+            if skipping:
+                title = re.sub(r"\s+", " ", split_marks(m.group(6))[1]).strip()
+                out.append(f"- [x] **{m.group(4)}** {title[:90] + '…' if len(title) > 90 else title}")
+                continue
+        elif skipping and line.startswith((" ", "\t")) and line.strip():
+            continue
+        else:
+            skipping = False
+        out.append(line)
+    return out
 
 
 def cmd_verify(a):

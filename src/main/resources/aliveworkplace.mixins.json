@@ -10,6 +10,7 @@
 		"ExplosionMixin",
 		"PlayerListMixin",
 		"PoiManagerMixin",
+		"ServerLevelMixin",
 		"StructureTemplatePoolAccessor",
 		"VillagerAccessor",
 		"VillagerGoalPackagesMixin",

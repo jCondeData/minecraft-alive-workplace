@@ -128,6 +128,12 @@ def summarize(main_path):
     msgs, rc, first, last, comp = read_transcript(main_path)
     out["result_chars"].update(rc)
     peak = 0
+    ctx = [m["usage"].get("input_tokens", 0) + m["usage"].get("cache_read_input_tokens", 0)
+           + m["usage"].get("cache_creation_input_tokens", 0) for m in msgs]
+    # The context every turn starts from (system prompt, tools, instructions) and how it grows: the fixed part is
+    # re-read on every turn, so it is usually the biggest single cost of a run.
+    out["first_context"] = ctx[0] if ctx else 0
+    out["median_context"] = sorted(ctx)[len(ctx) // 2] if ctx else 0
 
     def add(ms, label=None):
         nonlocal peak
@@ -194,7 +200,8 @@ def minutes(a, b):
 
 
 def print_summary(s):
-    print(f"Session: {s['turns']} turns, {minutes(s['start'], s['end'])} min, peak context {s['peak_context']:,} tokens, "
+    print(f"Session: {s['turns']} turns, {minutes(s['start'], s['end'])} min, context at the first turn "
+          f"{s.get('first_context', 0):,} tokens, median {s.get('median_context', 0):,}, peak {s['peak_context']:,}, "
           f"{s['compactions']} compactions. API-equivalent cost ${s['total_cost']:.2f}"
           f" (this session ${s['main_cost']:.2f}, subagents ${s['total_cost'] - s['main_cost']:.2f}).")
     print("\nBy model:")
@@ -226,6 +233,7 @@ def log_run(s, who, note):
            "start": s["start"], "end": s["end"], "minutes": minutes(s["start"], s["end"]),
            "cost": round(s["total_cost"], 3), "main_cost": round(s["main_cost"], 3), "turns": s["turns"],
            "peak_context": s["peak_context"], "compactions": s["compactions"],
+           "first_context": s.get("first_context", 0), "median_context": s.get("median_context", 0),
            "by_model": {k: {kk: (round(vv, 3) if isinstance(vv, float) else vv) for kk, vv in b.items()}
                         for k, b in s["by_model"].items()},
            "by_kind": {k: round(v, 3) for k, v in s["by_kind"].items()},

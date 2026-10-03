@@ -797,7 +797,58 @@ final class JobScenes {
 					}
 				}, 30)),
 			(level, player) -> player.containerMenu instanceof ChoiceMenu));
-		SCREENS.put("leader", new Screen("the Trainer Leader took the challenge and the battle started", new Vec3(-4.5, -57.5, 11.5),
+		SCREENS.put("hall_quests", new Screen("the Village Hall's quests, advice, village map, mercenaries and festival opened", new Vec3(2.5, -58.4, 4.5), TARGET,
+			(level, player) -> {
+				level.setBlockAndUpdate(STATION, ModBlocks.VILLAGE_HALL.defaultBlockState()
+					.setValue(io.github.jcondedata.aliveworkplace.hall.VillageHallBlock.FACING, Direction.SOUTH));
+				worker(level, new BlockPos(-4, -60, -3), ModBlocks.BLUEPRINT_TABLE, ModVillagers.BLUEPRINT_TABLE_POI, ModVillagers.BUILDER);
+				guard(level, new BlockPos(4, -60, -3), new ItemStack(Items.IRON_SWORD));
+				io.github.jcondedata.aliveworkplace.hall.VillageNeeds.check(level, STATION);
+				var hall = (io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(STATION);
+				hall.setQuests(List.of(
+					new io.github.jcondedata.aliveworkplace.hall.VillageQuests.Quest(java.util.UUID.randomUUID(),
+						io.github.jcondedata.aliveworkplace.hall.VillageQuests.Kind.BRING, "minecraft:bread", 16, 4, 5, level.getGameTime(), "Ana",
+						java.util.Optional.empty()),
+					new io.github.jcondedata.aliveworkplace.hall.VillageQuests.Quest(java.util.UUID.randomUUID(),
+						io.github.jcondedata.aliveworkplace.hall.VillageQuests.Kind.SLAY, "minecraft:air", 6, 1, 8, level.getGameTime(), "",
+						java.util.Optional.empty())));
+				player.getInventory().add(new ItemStack(Items.BREAD, 12));
+			},
+			List.of(new Step("01_hall_quests", io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.QUEST_SLOTS[0], 6, (level, player) -> {
+					io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.open(player, STATION);
+					if (player.containerMenu instanceof ChoiceMenu m) {
+						m.press(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.QUESTS, player);
+						Showcase.check(!m.icon(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.QUEST_SLOTS[1]).isEmpty(), "the quests page shows both quests");
+					}
+				}, 30),
+				new Step("02_hall_advice", io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_PERSON, 6, (level, player) -> {
+					io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.open(player, STATION);
+					if (player.containerMenu instanceof ChoiceMenu m) {
+						m.press(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.ADVICE, player);
+					}
+				}, 30),
+				new Step("03_hall_map", -1, 0, (level, player) -> {
+					io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.open(player, STATION);
+					if (player.containerMenu instanceof ChoiceMenu m) {
+						m.press(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.MAP, player);
+					}
+					player.closeContainer();
+					// Hold the map the hall handed over, so the picture shows the village drawn on it.
+					var inventory = player.getInventory();
+					for (int s = 0; s < inventory.getContainerSize(); s++) {
+						if (inventory.getItem(s).is(Items.FILLED_MAP)) {
+							ItemStack map = inventory.removeItemNoUpdate(s);
+							player.setItemInHand(InteractionHand.MAIN_HAND, map);
+							break;
+						}
+					}
+					Showcase.check(player.getMainHandItem().is(Items.FILLED_MAP), "the hall's MAP button handed over a village map");
+				}, 30),
+				new Step("04_hall_mercenaries", io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.MERCENARIES, 6, (level, player) ->
+					io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.open(player, STATION), 30),
+				step("05_hall_festival", io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FESTIVAL, 6)),
+			(level, player) -> player.containerMenu instanceof ChoiceMenu));
+		SCREENS.put("leader",new Screen("the Trainer Leader took the challenge and the battle started", new Vec3(-4.5, -57.5, 11.5),
 			new Vec3(0.5, -59, 5.5),
 			(level, player) -> {
 				level.getGameRules().getRule(GameRules.RULE_DOMOBSPAWNING).set(false, level.getServer());

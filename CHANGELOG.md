@@ -11,6 +11,8 @@
 ### Fixed
 - Builders on a hillside, with their site far up the slope from their bench, keep placing through clearing,
   foundation and levelling without half-minute pauses (now covered by tests).
+- Miners, postmen, tutors, Pokémon traders and trainers keep their workstation too: after a minute stuck, or over 100
+  blocks from it, they gave it up and could take another worker's.
 - A builder keeps their own bench. A builder who got stuck for a minute, or wandered over 100 blocks from their bench,
   gave it up and took the nearest free one, often another builder's, so two builders could swap benches over and over.
 - A builder always takes its materials from the chests by the bench its build was started from. Two builders with

@@ -8,7 +8,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ai.behavior.BehaviorControl;
 import net.minecraft.world.entity.ai.behavior.SetLookAndInteract;
-import net.minecraft.world.entity.ai.behavior.SetWalkTargetFromBlockMemory;
 import net.minecraft.world.entity.ai.behavior.StrollAroundPoi;
 import net.minecraft.world.entity.ai.behavior.UpdateActivityFromSchedule;
 import net.minecraft.world.entity.ai.behavior.declarative.BehaviorBuilder;
@@ -27,7 +26,7 @@ public final class DeskPackages {
 				WorkerStatus.set(v, title.apply(v), -1f, status.apply(v).copy().withStyle(ChatFormatting.GRAY));
 				return false;
 			})),
-			Pair.of(2, SetWalkTargetFromBlockMemory.create(MemoryModuleType.JOB_SITE, speed, 2, 100, 1200)),
+			Pair.of(2, WalkToJobSite.create(speed, 2)),
 			Pair.of(5, StrollAroundPoi.create(MemoryModuleType.JOB_SITE, 0.4f, 3)),
 			Pair.of(10, SetLookAndInteract.create(EntityType.PLAYER, 6)),
 			Pair.of(99, UpdateActivityFromSchedule.create())

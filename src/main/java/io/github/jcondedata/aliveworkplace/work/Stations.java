@@ -204,9 +204,11 @@ public final class Stations {
 		if (now == VillagerProfession.SHEPHERD && stack.is(Items.SHEARS)) {
 			return InteractionResult.PASS; // shears hire a shepherd (BuilderEvents), as before: they don't make them a beekeeper
 		}
-		// (not one another villager has taken since: a block broken while they were away and put back, B8)
+		// (not a far-off one another villager works at: their block broken while they were away and put back, and taken since
+		// (B8); the villager standing by the block is its owner, even if a far-off one still remembers it)
 		Optional<GlobalPos> site = villager.getBrain().getMemory(MemoryModuleType.JOB_SITE)
-			.filter(g -> g.dimension().equals(level.dimension()) && !someoneElseWorksAt(level, villager, g));
+			.filter(g -> g.dimension().equals(level.dimension()))
+			.filter(g -> g.pos().distToCenterSqr(villager.position()) <= REACH * REACH || !someoneElseWorksAt(level, villager, g));
 		Optional<Holder<PoiType>> here = site.flatMap(g -> level.getPoiManager().getType(g.pos()));
 		// First the block they already work at, then the nearest free block where the item picks a job.
 		for (Station station : ALL) {

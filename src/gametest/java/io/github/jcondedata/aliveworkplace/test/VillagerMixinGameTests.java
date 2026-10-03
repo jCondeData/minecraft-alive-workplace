@@ -50,6 +50,7 @@ public class VillagerMixinGameTests implements FabricGameTest {
 			{ModVillagers.BARD, false, ModVillagers.BARD_SCHEDULE},
 			{ModVillagers.BUILDER, true, Schedule.VILLAGER_BABY},
 			{ModVillagers.GUARD, true, Schedule.VILLAGER_BABY},
+			{ModVillagers.BARD, true, Schedule.VILLAGER_BABY},
 			{VillagerProfession.LIBRARIAN, false, Schedule.VILLAGER_DEFAULT},
 			{VillagerProfession.FARMER, false, Schedule.VILLAGER_DEFAULT}, // a farmer with no field of ours
 		};

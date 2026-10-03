@@ -246,4 +246,35 @@ public class GuideGameTests implements FabricGameTest {
 		helper.assertTrue(used == 1, "the book's use was counted " + used + " times");
 		helper.succeed();
 	}
+
+	/**
+	 * Bug (found by the 26.2a tester): README says "the recipes for our own blocks are in the recipe book", and the store
+	 * page says so too. The mod ships no recipe-unlock advancements and never awards recipes, so a player's recipe book
+	 * shows none of ours until they've crafted each one, which they can't find out how to do: a player holding a book
+	 * and wheat (or paper and blue dye) has vanilla's writable book and bread in their recipe book, but not the Guide
+	 * Book (or the Blank Blueprint).
+	 */
+	//$ gametest_ticks_batch 'FabricGameTest.EMPTY_STRUCTURE' '100' '"recipeBook"'
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE, timeoutTicks = 100, batch = "recipeBook")
+	public void ourRecipesAreInTheRecipeBookOnceThePlayerHasTheIngredients(GameTestHelper helper) {
+		ServerPlayer player = freshPlayer(helper);
+		player.getInventory().add(new ItemStack(Items.BOOK));
+		player.getInventory().add(new ItemStack(Items.WHEAT));
+		player.getInventory().add(new ItemStack(Items.PAPER, 8));
+		player.getInventory().add(new ItemStack(Items.BLUE_DYE, 8));
+		helper.runAfterDelay(20, () -> {
+			var book = player.getRecipeBook();
+			boolean vanilla = book.contains(net.minecraft.resources.ResourceLocation.withDefaultNamespace("writable_book"));
+			List<String> missing = new ArrayList<>();
+			for (String id : List.of("guide_book", "blank_blueprint")) {
+				if (!book.contains(AliveWorkplace.id(id))) {
+					missing.add(id);
+				}
+			}
+			helper.getLevel().getServer().getPlayerList().remove(player);
+			helper.assertTrue(vanilla, "setup: vanilla's writable book isn't in the recipe book either");
+			helper.assertTrue(missing.isEmpty(), "not in the recipe book of a player holding their ingredients: " + missing);
+			helper.succeed();
+		});
+	}
 }

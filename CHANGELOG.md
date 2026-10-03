@@ -9,7 +9,8 @@
   with Cobblemon the Pokémon jobs. Lost it? Craft another from a book and wheat.
 - The server log now says "Builder stalled" when a builder's site makes no progress for 30 seconds (once per stall,
   with the build, its stage and what's missing), so a stuck builder shows up without anyone watching. For testers,
-  `/workplace soak` (benchmark servers only) sets 10 builders on the whole starter set in hilly woods for 2 days.
+  `/workplace soak` (benchmark servers only) sets 10 builders on the whole starter set in hilly woods for 2 days (or more) and
+  checks that no item was duplicated or lost.
 
 ### Fixed
 - Leaving the game in the middle of a ferry ride lands you by the far post before you are saved, so you come back

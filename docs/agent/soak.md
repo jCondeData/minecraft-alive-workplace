@@ -113,3 +113,39 @@ storehouse, schoolhouse, library, ranch, inn, apiary_garden
 ```
 
 To triage next: graveyard stuck in FOUNDATION with 0 placed (on a slope); stone_house waits for 1 kind although the chests held exactly plan.materials() (miscount?); inn 179 skipped and 3 kinds missing; whether 2 days is enough: builders work about 7,000 of every 24,000 ticks (the villager WORK shift).
+
+## Run 3 — lane-c-1003-1532, 6 days, item check by ledger
+
+`SOAK=true SOAK_DAYS=6 tools/packtest/run.sh`. The item check now uses `MaterialLedger` (stocked + gained − built in −
+dropped = left in every container and bag in the soak's ground), and a site counts as finished when it leaves the list.
+Sprint 206 ticks/s this time (4.84 ms/tick), so 6 days took about 12 minutes.
+
+**21 of 22 builds in 6 days, no item duplicated or lost.** 10 stall lines, now with the missing items:
+
+```
+15:59:07 Builder stalled 30 s: aliveworkplace:graveyard at 1119, 81, 1000 (stage FOUNDATION, status WORKING, 0 placed, 0 skipped, 0 kinds missing) [stall #1]
+15:59:24 Builder stalled 30 s: aliveworkplace:library at 1101, 79, 1078 (stage STRUCTURE, status WAITING_FOR_MATERIALS, 220 placed, 0 skipped, 0 kinds missing) [stall #2]
+15:59:27 Builder stalled 30 s: aliveworkplace:stone_house at 1031, 83, 1000 (stage STRUCTURE, status WAITING_FOR_MATERIALS, 365 placed, 48 skipped, 1 kinds missing: 1 minecraft:deepslate_tile_stairs) [stall #3]
+16:00:23 Builder stalled 30 s: aliveworkplace:stone_house at 1031, 83, 1000 (stage STRUCTURE, status WAITING_FOR_MATERIALS, 365 placed, 48 skipped, 1 kinds missing: 1 minecraft:deepslate_tile_stairs) [stall #4]
+16:00:27 Builder stalled 30 s: aliveworkplace:tinkers_workshop at 1031, 80, 1026 (stage LANDSCAPE, status WORKING, 656 placed, 0 skipped, 0 kinds missing) [stall #5]
+16:00:59 Builder stalled 30 s: aliveworkplace:tinkers_workshop at 1031, 80, 1026 (stage LANDSCAPE, status WORKING, 669 placed, 0 skipped, 0 kinds missing) [stall #6]
+16:01:55 Builder stalled 30 s: aliveworkplace:stone_house at 1031, 83, 1000 (stage STRUCTURE, status WAITING_FOR_MATERIALS, 365 placed, 48 skipped, 1 kinds missing: 1 minecraft:deepslate_tile_stairs) [stall #7]
+16:03:44 Builder stalled 30 s: aliveworkplace:stone_house at 1031, 83, 1000 (stage STRUCTURE, status WAITING_FOR_MATERIALS, 365 placed, 48 skipped, 1 kinds missing: 1 minecraft:deepslate_tile_stairs) [stall #8]
+16:05:36 Builder stalled 30 s: aliveworkplace:flower_shop at 1049, 82, 1000 (stage STRUCTURE, status WAITING_FOR_MATERIALS, 159 placed, 6 skipped, 0 kinds missing) [stall #9]
+16:05:47 Builder stalled 30 s: aliveworkplace:flower_shop at 1049, 82, 1000 (stage STRUCTURE, status WAITING_FOR_MATERIALS, 171 placed, 6 skipped, 0 kinds missing) [stall #10]
+16:07:09 Sprint completed with 206 ticks per second, or 4.84 ms per tick
+```
+
+```
+Soak result: 21/22 builds finished in 144199 ticks (6.0 days); 10 stalls; items off: none; unfinished: flower_shop
+```
+
+Triage (each became a Bug, see ROADMAP):
+- library (stall #2) and flower_shop (#9, #10): WAITING_FOR_MATERIALS with 0 kinds missing; flower_shop is still
+  unfinished after 6 days.
+- stone_house (#3, #4, #7, #8): waits for 1 deepslate_tile_stairs although its chests held exactly its start plan's
+  materials and the ledger shows nothing lost: its plan at build time needs one more than the start-time list.
+- graveyard (#1): 30 s with 0 placed at the start of FOUNDATION on a slope (every run so far); tinkers_workshop (#5,
+  #6): LANDSCAPE crawls (13 blocks in 30 s).
+- Days: about 6 in-game days for 21 of the 22 builds (builders work ~7,000 of every 24,000 ticks). The item asks for
+  2 days; whether the bar stays at 2 is the owner's call.

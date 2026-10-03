@@ -13,6 +13,8 @@ public class AliveWorkplaceClient implements ClientModInitializer {
 		BuilderStatusRenderer.init();
 		BlueprintTooltip.init();
 		StationTooltip.init();
+		io.github.jcondedata.aliveworkplace.guide.GuideBookItem.open = () -> Minecraft.getInstance()
+			.setScreen(new io.github.jcondedata.aliveworkplace.client.guide.GuideScreen());
 		net.minecraft.client.gui.screens.MenuScreens.register(io.github.jcondedata.aliveworkplace.registry.ModBlocks.MAILBOX_MENU, MailboxScreen::new);
 		net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(io.github.jcondedata.aliveworkplace.registry.ModEntities.FISHING_BOBBER,
 			BobberRenderer::new);

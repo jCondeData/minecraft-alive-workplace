@@ -1,0 +1,12 @@
+{
+  "criteria": {
+    "joined": {
+      "trigger": "minecraft:tick"
+    }
+  },
+  "rewards": {
+    "loot": [
+      "aliveworkplace:gameplay/guide_book"
+    ]
+  }
+}

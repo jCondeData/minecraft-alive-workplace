@@ -333,4 +333,36 @@ public class LumberjackGameTests implements FabricGameTest {
 			helper.succeed();
 		});
 	}
+
+	/**
+	 * Bug (found by the B9 tester): README says the lumberjack "plants a sapling of the same wood where each tree stood".
+	 * When the leaves drop no sapling (1 time in 20 per leaf; never with a Silk Touch axe, as here) and the chests have
+	 * none at the next drop-off, LumberjackWork forgets the stump for good: a sapling put in the chest afterwards is never
+	 * planted there. Expected: the stump gets its sapling once one is in the chests.
+	 */
+	//$ gametest_ticks AREA '4000'
+	@GameTest(template = AREA, timeoutTicks = 4000)
+	public void aStumpLeftWithoutASaplingIsReplantedWhenOneComes(GameTestHelper helper) {
+		BlockPos base = new BlockPos(11, 2, 11);
+		growOak(helper, base);
+		ItemStack axe = new ItemStack(Items.IRON_AXE);
+		axe.enchant(helper.getLevel().registryAccess().registryOrThrow(Registries.ENCHANTMENT)
+			.getHolderOrThrow(net.minecraft.world.item.enchantment.Enchantments.SILK_TOUCH), 1);
+		Villager villager = setup(helper, axe);
+		Container chest = helper.getBlockEntity(CHEST);
+		int[] given = {-1};
+		int[] tick = {0};
+		helper.onEachTick(() -> {
+			tick[0]++;
+			// Once the tree is down and its logs are in the chest (the drop-off is done), a sapling arrives in the chest.
+			if (given[0] < 0 && ModAttachments.TREES_FELLED.getOrElse(villager, 0) == 1 && chest.countItem(Items.OAK_LOG) >= 4) {
+				given[0] = tick[0];
+				chest.setItem(5, new ItemStack(Items.OAK_SAPLING, 4));
+			}
+		});
+		helper.succeedWhen(() -> {
+			helper.assertTrue(given[0] >= 0, "the tree isn't down yet");
+			helper.assertBlockPresent(Blocks.OAK_SAPLING, base);
+		});
+	}
 }

@@ -18,6 +18,15 @@ Done in pieces by night runs; each piece lands with `land --keep-open`. Newest f
   for one blueprint; an unknown id costs nothing. Passes.
 - **3 mutants**, all killed: Send's handler given its arguments swapped, Take's handler unwired, the letter not
   trimmed. 31 mutants in all; no bug in the code.
+- **The 14 mixins `inventory.py` lists as untested** are a name-matching gap only (it counts a mixin as tested when a
+  test names its class). Each has a behaviour test through the game's own path: `PoiManagerMixin` in
+  `StationsBugGameTests.oldWorldsBlocksBecomeWorkstationsWhenTheChunkLoads`, `ServerLevelMixin` in
+  `JobSiteTicketsGameTests`, `ExplosionMixin` in `WardingEdgeGameTests`/`QaWardingGameTests` (real `explode`),
+  `PlayerListMixin` in `FerryEdgeGameTests`/`FerryLeaveQaGameTests`, `AbstractVillagerMixin` in `ShopGameTests`
+  (`notifyTrade`), `VillagerPanicTriggerMixin` in `GuardGameTests` (the guard never panics), `VillagerSeatMixin` in
+  `RidingSpecGameTests` (a villager's seat is a player's), `ZombieVillagerMixin` in `StructureVillagerGameTests`; the
+  four accessors are used by the features they serve, and `VillagerModelMixin` is client-only (the showcase's riding
+  scenes show it). No new test needed.
 
 ### The job switchboard: VillagerGoalPackagesMixin (lane-a-1003-2132, 2026-10-03)
 - **Every job's work package** (`GoalPackagesMixinGameTests.eachOfOurJobsGetsItsOwnWorkPackage`): each of our 30
@@ -121,4 +130,3 @@ Done in pieces by night runs; each piece lands with `land --keep-open`. Newest f
 ## Still to do
 - An old world saved by 0.138.0 opened with the next version (at the release check).
 - Performance on GitHub's machines once B14 is fixed (the dev-container numbers above stand meanwhile).
-- The next `inventory.py` gaps: 14 mixins (VillagerMixin and VillagerGoalPackagesMixin now have their own tests) (the network payloads are covered now; a test per mixin is the next piece).

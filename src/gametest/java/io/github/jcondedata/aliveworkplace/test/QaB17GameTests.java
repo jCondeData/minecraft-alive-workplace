@@ -25,7 +25,8 @@ import net.minecraft.world.level.block.LecternBlock;
 
 /**
  * QA lane (qa-1003-1633), bugs B8 and B17: a workstation changing state (a book on a lectern, a composter filling) is not
- * a break, so the ordinary change of job, by item or by the Village Hall, still frees the old block.
+ * a break, so the ordinary change of job, by item or by the Village Hall, still frees the old block, and so does a worker
+ * from a save made before B15.
  */
 public class QaB17GameTests implements net.fabricmc.fabric.api.gametest.v1.FabricGameTest {
 	private static final String AREA = "aliveworkplace_test:big_area";
@@ -78,4 +79,28 @@ public class QaB17GameTests implements net.fabricmc.fabric.api.gametest.v1.Fabri
 		helper.succeed();
 	}
 
+	/**
+	 * A worker from a world saved before B15 (no noted job site) and away from their lectern, the only one who ever worked
+	 * there, is given a new job: the lectern must still be freed, or no one can work at it again.
+	 */
+	//$ gametest_ticks_batch HUGE '100' '"qaB17OldSave"'
+	@GameTest(template = HUGE, timeoutTicks = 100, batch = "qaB17OldSave")
+	public void qaAWorkerFromAnOldSaveStillFreesTheirBlockOnANewJob(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		ServerLevel level = helper.getLevel();
+		BlockPos lectern = helper.absolutePos(new BlockPos(3, 2, 3));
+		BlockPos composter = helper.absolutePos(new BlockPos(20, 2, 20));
+		helper.setBlock(new BlockPos(3, 2, 3), Blocks.LECTERN);
+		helper.setBlock(new BlockPos(20, 2, 20), Blocks.COMPOSTER);
+		Villager worker = helper.spawn(EntityType.VILLAGER, new BlockPos(19, 2, 19));
+		worker.setNoAi(true);
+		Jobs.employ(level, worker, lectern, PoiTypes.LIBRARIAN, VillagerProfession.LIBRARIAN);
+		io.github.jcondedata.aliveworkplace.registry.ModAttachments.JOB_SITE_HELD.remove(worker); // as loaded from an old save
+		helper.assertTrue(level.getPoiManager().getFreeTickets(lectern) == 0, "setup: the librarian doesn't hold the lectern");
+		Stations.assign(level, worker, composter, VillagerProfession.FARMER);
+		int free = level.getPoiManager().getFreeTickets(lectern);
+		helper.assertTrue(free == 1, "a librarian from an old save became a farmer but their lectern wasn't freed (" + free
+			+ " free tickets): no one can work there again");
+		helper.succeed();
+	}
 }

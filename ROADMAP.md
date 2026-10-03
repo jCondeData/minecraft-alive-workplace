@@ -193,6 +193,7 @@ its first findings fixed. Nothing is released until these are done.
     **Round 2 picks** (owner, 2026-10-02): patrol map, quarry marker, scan tool and field marker all r2b (vanilla map
     paper; swallowtail flag; pencil with a white blueprint line; a field plan on the map outline, now item/generated),
     no notes. All 13 icons are his picks in items.py and the game; the 'items' showcase scene films them.
+  - [ ] **21.1c** Change from the owner (2026-10-03): the Fossil Scientist works at Cobblemon's Fossil Analyzer instead of a block of ours (owner 2026-10-02: 'the fossil researcher - this is already a working block within cobblemon so adding it as an extra block within our modpack seems unnecessary. can we rework this villager to work off of that?')
 - [ ] **21.2** **The full check before release** (the tester's Full tier; the chat started it and ran out of time). Do
   it in pieces that fit a one-hour night run, landing each piece with `land --keep-open`:
   - the real Cobbleverse pack boot and the soak: the nightly GitHub workflow runs these, so read its result;

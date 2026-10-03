@@ -468,4 +468,22 @@ public class RidingSpecGameTests implements FabricGameTest {
 		helper.succeed();
 	}
 
+	/**
+	 * A guard rides a saddled camel too (the owner, 2026-10-01, ROADMAP 21.3: camels stay cavalry). A camel needs no
+	 * taming, only a saddle; one without a saddle doesn't carry a guard. Turned around from the tester's
+	 * aCamelIsNotCavalry, written while that was his open question.
+	 */
+	//$ gametest_ticks_batch AREA '1200' '"aGuardRidesASaddledCamel"'
+	@GameTest(template = AREA, timeoutTicks = 1200, batch = "aGuardRidesASaddledCamel")
+	public void aGuardRidesASaddledCamel(GameTestHelper helper) {
+		Villager guard = guard(helper);
+		net.minecraft.world.entity.animal.camel.Camel bare = helper.spawn(EntityType.CAMEL, new BlockPos(12, 2, 12));
+		helper.assertFalse(Cavalry.usable(bare), "a camel without a saddle carries a guard");
+		bare.discard();
+		net.minecraft.world.entity.animal.camel.Camel camel = helper.spawn(EntityType.CAMEL, new BlockPos(6, 2, 6));
+		camel.equipSaddle(new ItemStack(Items.SADDLE), null);
+		helper.assertTrue(Cavalry.usable(camel), "a saddled camel doesn't carry a guard");
+		helper.succeedWhen(() -> helper.assertTrue(guard.getVehicle() == camel, "the guard didn't get on the camel"));
+	}
+
 }

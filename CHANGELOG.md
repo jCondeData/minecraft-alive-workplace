@@ -22,6 +22,8 @@
   job's hat no longer has the biome's hat showing through it. Items take the shape of their vanilla kind: the Village
   Ledger lies like a book, blueprints and the Patrol Map like maps, and the markers and the Rally Banner are held like
   tools.
+- **Cavalry on camels**: a guard rides a saddled camel too, as well as a horse, donkey or mule. A camel needs no taming,
+  only a saddle.
 - **Villagers sit when they ride**: a guard on horseback sits in the saddle with their legs forward, and a ferryman or
   a fisher sits in the boat at the oars, instead of standing on the horse's back or looking sunk in the boat.
 

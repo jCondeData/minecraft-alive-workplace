@@ -207,6 +207,9 @@ its first findings fixed. Nothing is released until these are done.
   guard rides one too, but the changelog promises horses, donkeys and mules. The tester's test `aCamelIsNotCavalry`
   (branch `tests/check-0.137-riding-protection`) waits on his answer. Camels out: land that test with the fix. Camels
   in: turn the test around and add camels to the changelog.
+  **Answered** (owner, 2026-10-01): camels in. The test is turned around as `aGuardRidesASaddledCamel`
+  (RidingSpecGameTests: a saddled camel carries a guard and he gets on it; an unsaddled one doesn't), and the
+  changelog says so. The rest of that old branch already reached `main` in other items.
 - [ ] **21.4** (blocked: waits for 21.1 approved and 21.2 done) **Release 0.138.0.** Only the owner's chat releases
   (CLAUDE.md, "Releasing"). Done when: the GitHub release has the jar.
 

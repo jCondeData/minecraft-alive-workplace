@@ -10,15 +10,21 @@ Nothing here rebases or force-pushes.
   status [--as NAME]                         who is working on what, and what to take next
   claim ID --as NAME [--force]               claim an item and switch to its branch
   land ID --as NAME [--keep-open | --no-review]   merge main in, build, tick "review: pending", push to main
+  brief                                      print what every session reads first: the rules, Bugs, decisions, Notes
+  show ID [ID...]                            print an item (and its milestone's heading) from origin/main
+  verify ID [ID...] --as NAME [--note TEXT]  the QA lane: mark landed items independently tested
+  ship --as NAME                             the QA lane: land the passing tests on a qa/ branch (no roadmap item)
+  review ID --as NAME --message TEXT FILE... hand in a review package: commits it to the `reviews` branch
   pause ID --as NAME --note "done..; next.." [--blocked WHY]   push unfinished work, free the item
   unblock ID --as NAME --note WHY            the thing it waited for has happened
   reply "approve 22.3, B1" | "veto 22.3: why" | "change 22.3: what" --as NAME
   bug "what, when, expected; Test: name" --as NAME
   handoff "in progress / next / traps" --as NAME
 
-NAME: "chat" for the owner's chat, "night-MMDD-HHMM" (UTC start) for a scheduled run. A claim is live while
-its claim time or its branch's last commit is recent: 6 hours for the chat, 75 minutes for a night run
-(night runs last about an hour, so an older night claim belongs to a run that was cut off).
+NAME: "chat" for the owner's chat; for a scheduled run, the lane and its UTC start: "lane-a-MMDD-HHMM",
+"qa-MMDD-HHMM" (older runs used "night-MMDD-HHMM"). A claim is live while its claim time or its branch's last
+commit is recent: 6 hours for the chat, 75 minutes for a scheduled run (runs last about an hour, so an older claim
+belongs to a run that was cut off). A session holds at most MAX_CLAIMS live claims at once.
 """
 import argparse
 import datetime as dt
@@ -30,8 +36,9 @@ import tempfile
 
 ROADMAP = "ROADMAP.md"
 STALE_CHAT = dt.timedelta(hours=6)
-STALE_NIGHT = dt.timedelta(minutes=75)
-REVIEW_CAP = 4
+STALE_RUN = dt.timedelta(minutes=75)
+REVIEW_CAP = 10
+MAX_CLAIMS = 3
 BUILD = "./gradlew --max-workers=1 build"
 ITEM = re.compile(r"^(\s*- \[)([ x])(\] \*\*)(B\d+[a-z]?|\d+\.\d+[a-z]?)(\*\*)(.*)$")
 SECTION = re.compile(r"^## (?:Milestone (\d+)|(Bugs))\b")
@@ -208,6 +215,16 @@ def ago(t):
     return f"{mins}m ago" if mins < 90 else f"{mins / 60:.1f}h ago"
 
 
+def is_chat(who):
+    return who == "chat" or who.startswith("chat-")
+
+
+def unverified(items):
+    """Landed items the QA lane hasn't tested yet."""
+    return [it for it in items if it["done"] and not mark(it, "verified")
+            and (mark(it, "review") or mark(it, "approved"))]
+
+
 def claims(items):
     out = []
     for it in items:
@@ -216,7 +233,7 @@ def claims(items):
             continue
         rb = remote_branch(it["id"])
         last = max([t for t in (c["at"], rb and rb[1]) if t], default=None)
-        limit = STALE_NIGHT if c["who"].startswith("night") else STALE_CHAT
+        limit = STALE_CHAT if is_chat(c["who"]) else STALE_RUN
         live = last is None or now() - last < limit
         out.append({**it, **c, "branch": rb, "live": live})
     return out
@@ -263,8 +280,8 @@ def cmd_status(a):
     fetch()
     items = parse(main_roadmap())
     cl = claims(items)
-    print(f"Sessions (from origin/main {ROADMAP}; stale after {STALE_CHAT} for the chat, {STALE_NIGHT} for a night "
-          f"run, without a claim or push):")
+    print(f"Sessions (from origin/main {ROADMAP}; stale after {STALE_CHAT} for the chat, {STALE_RUN} for a "
+          f"scheduled run, without a claim or push):")
     for c in cl:
         branch = f"branch pushed {ago(c['branch'][1])}: {c['branch'][2]}" if c["branch"] else "no branch pushed yet"
         state = "LIVE" if c["live"] else "STALE, may be taken over"
@@ -285,6 +302,12 @@ def cmd_status(a):
     if at_cap:
         print("  At the cap: nothing in", ", ".join(sorted(waiting)) or "-",
               "until he reviews; bugs, tests, measurements and other milestones are fine.")
+    todo = unverified(items)
+    print(f"Landed, not yet verified by QA: {len(todo)}" + (f": {', '.join(it['id'] for it in todo)}" if todo else ""))
+    if a.as_.startswith("qa"):
+        print("Next for you (QA):", ", ".join(it["id"] for it in todo[:6]) if todo else
+              "the queue is empty: the QA milestone's own items, or the tester's Full tier")
+        return
     held_by_others = {c["id"] for c in cl if c["live"] and c["who"] != a.as_}
 
     def free(it):
@@ -310,6 +333,10 @@ def cmd_claim(a):
         if mark(it, "blocked") and not a.force:
             die(f"{a.id} is blocked ({mark(it, 'blocked')}). If what it waited for has happened, run unblock first; "
                 f"use --force only if the owner asked for it.")
+        mine = [c["id"] for c in claims(items) if c["who"] == a.as_ and c["live"] and c["id"] != a.id]
+        if len(mine) >= MAX_CLAIMS and not a.force:
+            die(f"You already hold {len(mine)} live claims ({', '.join(mine)}; at most {MAX_CLAIMS}). Land or pause "
+                f"one first.")
         for c in claims(items):
             if c["who"] == a.as_ or not c["live"] or a.force:
                 continue
@@ -430,6 +457,70 @@ def cmd_land(a):
     die("main kept moving; try land again in a few minutes.")
 
 
+def cmd_ship(a):
+    branch = git("rev-parse", "--abbrev-ref", "HEAD").stdout.strip()
+    if not branch.startswith("qa/"):
+        die("ship lands a QA branch (qa/<name>-<date>); builders use land.")
+    need_clean()
+    built = None
+    for attempt in range(1, 6):
+        fetch()
+        if git("merge", "--quiet", "--no-edit", "-m", f"Merge main into {branch}", "origin/main",
+               check=False).returncode:
+            git("merge", "--abort", check=False)
+            die("Merging the newest main in gives conflicts: git merge origin/main, fix, commit, ship again.", 3)
+        head = git("rev-parse", "HEAD").stdout.strip()
+        if head != built:
+            print(f"[ship {attempt}] building {head[:9]}: {a.build}", flush=True)
+            if subprocess.run(a.build, shell=True, env=build_env()).returncode:
+                die("The build failed. A failing test is a bug: move it to tests/<topic>, add the bug, ship the "
+                    "rest.", 4)
+            built = head
+        if git("push", "--quiet", "origin", "HEAD:main", check=False).returncode == 0:
+            print(f"Shipped {branch} to main at {head[:9]}.")
+            return
+        print("main moved while building; merging it in and building again.", flush=True)
+    die("main kept moving; try again in a few minutes.")
+
+
+def cmd_review(a):
+    """Commit a review package to the `reviews` branch (never fetched by lanes), for the owner's digest."""
+    paths = [os.path.abspath(f) for f in a.files]
+    for f in paths:
+        if not os.path.isfile(f):
+            die(f"No file {f}.")
+        if os.path.getsize(f) > 8 * 1024 * 1024:
+            die(f"{os.path.basename(f)} is over 8 MB: shrink it (a 640-wide MP4 instead of a GIF, a JPEG sheet).")
+    for attempt in range(5):
+        exists = git("fetch", "--quiet", "origin", "+refs/heads/reviews:refs/remotes/origin/reviews",
+                     check=False).returncode == 0
+        with tempfile.TemporaryDirectory() as tmp:
+            wt = os.path.join(tmp, "wt")
+            if exists:
+                git("worktree", "add", "--quiet", "--detach", wt, "origin/reviews")
+            else:
+                git("worktree", "add", "--quiet", "--detach", wt, "origin/main")
+                git("checkout", "--quiet", "--orphan", "reviews-new", cwd=wt)
+                git("rm", "-rf", "--quiet", ".", cwd=wt)
+            try:
+                folder = os.path.join(wt, "reviews", a.id)
+                os.makedirs(folder, exist_ok=True)
+                import shutil
+                for f in paths:
+                    shutil.copy(f, folder)
+                with open(os.path.join(folder, "message.md"), "w", encoding="utf-8") as fh:
+                    fh.write(f"{a.message.strip()}\n\n(from {a.as_}, {stamp()}; not yet sent)\n")
+                git("add", "reviews", cwd=wt)
+                git("commit", "--quiet", "-m", msg(f"Review package for {a.id}", a.as_), cwd=wt)
+                if git("push", "--quiet", "origin", "HEAD:refs/heads/reviews", check=False, cwd=wt).returncode == 0:
+                    print(f"Review package for {a.id} is on the reviews branch; the next digest sends it.")
+                    return
+            finally:
+                git("worktree", "remove", "--force", wt, check=False)
+                git("branch", "-D", "reviews-new", check=False)
+    die("Couldn't push to the reviews branch; try again in a minute.")
+
+
 def cmd_pause(a):
     own_claim_or_die(a)
     need_clean()
@@ -489,7 +580,7 @@ def cmd_reply(a):
         die(f'Expected "{verb} <id>: <his words>".')
     if verb == "veto":
         def fn(checked, marks):
-            keep = [x for x in marks if not x.startswith(("review", "approved", "vetoed", "claimed"))]
+            keep = [x for x in marks if not x.startswith(("review", "approved", "vetoed", "claimed", "verified"))]
             return False, keep + [f"vetoed {today()}: {clean(words)}"]
         push_item_change(i, fn, f"Record the owner's veto of {i}", a.as_)
         print(f"Recorded: {i} vetoed. It's redone next; revert it first if later work would build on it "
@@ -537,6 +628,45 @@ def cmd_bug(a):
     print(f"Added {state['id']}. Bugs jump the queue: it's the next item.")
 
 
+def cmd_show(a):
+    fetch()
+    lines = main_roadmap().split("\n")
+    items = parse("\n".join(lines))
+    for i in a.ids:
+        it = find(items, i) or die(f"No item {i}.")
+        head = next((lines[k] for k in range(it["line"], -1, -1) if lines[k].startswith("## ")), "")
+        print(head)
+        print("\n".join(lines[it["line"]:block_end(lines, it["line"])]))
+        print()
+
+
+def cmd_brief(a):
+    """The roadmap without its milestones: the long part a session only needs one item of (use show)."""
+    fetch()
+    lines = main_roadmap().split("\n")
+    first = next((k for k, l in enumerate(lines) if l.startswith("## Milestone")), len(lines))
+    rest = next((k for k, l in enumerate(lines) if k > first and l.startswith("## ") and not l.startswith("## Milestone")),
+                len(lines))
+    print("\n".join(lines[:first]))
+    print("[Milestones left out: `sessions.py show <id>` prints an item; `status` names yours.]\n")
+    print("\n".join(lines[rest:]))
+
+
+def cmd_verify(a):
+    note = f": {clean(a.note)}" if a.note else ""
+
+    def transform(text):
+        for i in a.ids:
+            def fn(checked, marks, i=i):
+                if not checked:
+                    die(f"{i} isn't landed, so there's nothing to verify yet.")
+                return True, [x for x in marks if not x.startswith("verified")] + [f"verified {today()}{note}"]
+            text = rewrite(text, i, fn)
+        return text
+    push_main_change(transform, f"Verify {', '.join(a.ids)}", a.as_)
+    print(f"Verified {', '.join(a.ids)}.")
+
+
 def cmd_handoff(a):
     kind = re.sub(r"-[\d-]+$", "", a.as_)
 
@@ -580,6 +710,21 @@ def main():
             p.add_argument("--note", required=True, help="pause: what's done and what's next; unblock: why")
         if name == "pause":
             p.add_argument("--blocked", help="why it can't go on (owner: <question> / tester: <why>)")
+    sub.add_parser("brief")
+    p = sub.add_parser("ship")
+    p.add_argument("--as", dest="as_", required=True)
+    p.add_argument("--build", default=BUILD)
+    p = sub.add_parser("review")
+    p.add_argument("id")
+    p.add_argument("files", nargs="+")
+    p.add_argument("--as", dest="as_", required=True)
+    p.add_argument("--message", required=True, help="the package's message (docs/agent/review.md)")
+    p = sub.add_parser("show")
+    p.add_argument("ids", nargs="+")
+    p = sub.add_parser("verify")
+    p.add_argument("ids", nargs="+")
+    p.add_argument("--as", dest="as_", required=True)
+    p.add_argument("--note", help="what was tested, or the report's link")
     for name in ("reply", "bug", "handoff"):
         p = sub.add_parser(name)
         p.add_argument("text")
@@ -587,7 +732,8 @@ def main():
     a = ap.parse_args()
     os.chdir(git("rev-parse", "--show-toplevel").stdout.strip())
     {"status": cmd_status, "claim": cmd_claim, "land": cmd_land, "pause": cmd_pause, "unblock": cmd_unblock,
-     "reply": cmd_reply, "bug": cmd_bug, "handoff": cmd_handoff}[a.cmd](a)
+     "reply": cmd_reply, "bug": cmd_bug, "handoff": cmd_handoff, "show": cmd_show, "verify": cmd_verify, "brief": cmd_brief,
+     "ship": cmd_ship, "review": cmd_review}[a.cmd](a)
 
 
 if __name__ == "__main__":

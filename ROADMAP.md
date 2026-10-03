@@ -1,11 +1,15 @@
-# Roadmap: Alive Workplace 1.0
+# Roadmap: Alive Workplace 1.0 to 2.0
 
-**Goal (owner, 2026-09-29):** a public 1.0 that is polished rather than bigger. The mod already has MineColonies'
-jobs and colony layer; 1.0 is about making them look and feel finished. In priority order:
+**Goal (owner, 2026-10-03): everything here, released, by 2026-10-17.** Speed matters most: another team could ship
+first. Content quality is never cut: every feature is complete, looks vanilla-quality and feels finished. Lanes work
+around the clock, several at once (`docs/agent/sessions.md`).
 
-1. **Builders and blueprints**: the flagship job never needs babysitting.
-2. **Visuals and textures**: every block, item, screen and villager looks vanilla-quality.
-3. **Performance at scale**: big villages stay smooth.
+1. **1.0** (Milestones 22–26): builders that never need babysitting, finished visuals, performance at scale, and the
+   public release. Ship it as soon as it's ready.
+2. **The expansions** (Milestones 27–35), released in this order: 1.1 villages that build themselves, 1.2 Pokémon and
+   villagers together, 1.3 Legends, 1.4 edicts and civic items, 1.5 quests become stories, 1.6 threats, 1.7 the
+   realm, 1.8 classes and luxuries, 2.0 Wonders. Lanes build several at once; each release ships when its milestone
+   is complete.
 
 Everything done before this plan (Milestones 1–20, and the 0.137 work: fishing from boats, ferry rides, cavalry,
 homes; about 215 items) is in `docs/roadmap-history.md`. Read it when you
@@ -34,18 +38,20 @@ details are in `docs/agent/sessions.md`.
   ask if it's the owner's call, and take the next item. Check blocked items again at the start of each session: when
   what one waited for has happened, `sessions.py unblock <id> --as <you> --note "<what happened>"`. An item is never
   a reason to stop working.
-- **"Done when" is the spec.** Build to it; the tester checks against it. If an item has no "Done when", or it
+- **"Done when" is the spec.** Build to it; the QA lane checks against it. If an item has no "Done when", or it
   can't be met as written, block it with `owner: <your question>`, ask in your next message, and take the next item.
   Don't invent the spec.
-- **Two words for finished:**
-  - **Built**: `./gradlew build` is green, the "Done when" is met, an independent tester's Check passed (see
-    CLAUDE.md), and the bot playtest is done. Then `sessions.py land <id> --as <you>` merges the newest `main` in,
-    builds again, ticks the item `[x] (review: pending <date>)` and pushes. Send the review package right after
+- **Three words for finished:**
+  - **Built**: the "Done when" is met, with the item's own GameTests (CLAUDE.md), and for anything visible its scene
+    has been run and looked at. Then `sessions.py land <id> --as <you>` merges the newest `main` in, runs the full
+    build, ticks the item `[x] (review: pending <date>)` and pushes. Send the review package right after
     (`docs/agent/review.md`).
   - **Accepted without review**: when nothing a player can see or feel changed (tests, tooling, internal fixes), land
     with `--no-review` instead. It's marked `(approved auto <date>)` and listed in your next message; no package.
+  - **Verified**: the QA lane has tested it independently after it landed (`sessions.py verify`), marked
+    `(verified <date>)`. What it finds becomes a bug, fixed before new items.
   - **Accepted**: the owner approved it. Mark it `(approved <date>)`.
-- **Reviews don't block work, up to a point.** Carry on while the owner reviews. With 4 items pending review, only
+- **Reviews don't block work, up to a point.** Carry on while the owner reviews. With 10 items pending review, only
   take work that doesn't build on them: bugs, tests, measurements, or items in other areas.
 - **His replies** can reach any session. Record each one on `main` straight away, in his words:
   `sessions.py reply "<his reply>" --as <you>`.
@@ -56,18 +62,20 @@ details are in `docs/agent/sessions.md`.
   - `change 23.3: <what>`: a sub-item `23.3a` (then `23.3b`, …) with his words, done next.
   - Items are numbered `<milestone>.<n>`, bugs `B<n>`. New items and bugs get the next free number. Numbers are never
     reused or renumbered.
-- **If the tester still fails it after 3 rounds**, don't land it. Run
-  `sessions.py pause <id> --as <you> --blocked "tester: <why>" --note "<what's left>"`. The work stays on its branch,
-  and `main` never sees it.
-- **Releases ship accepted work only**, and only the owner's chat cuts them, so two sessions never bump the version.
-  Release when no item on `main` is pending review or vetoed, and something new has been accepted since the last
-  release. Before the bump, run the tester's Full tier. If items are pending for days, ask the owner whether to
-  release with them. He can say `release` (listing what's pending), or wait.
+- **If you can't get it green**, don't land it. Run
+  `sessions.py pause <id> --as <you> --blocked "<why>" --note "<what's left>"`. The work stays on its branch, and
+  `main` never sees it.
+- **Unfinished expansions stay switched off.** Each expansion milestone has its config switch, off by default until
+  the milestone is complete and verified, so `main` can be released at any time without half a feature in it. The
+  release that ships the milestone turns its switch on.
+- **Releases ship verified, accepted work only**, and only the owner's chat (or the digest session when he says
+  `release`) cuts them, so two sessions never bump the version. Release when everything landed since the last
+  release is verified, no visible item is pending review or vetoed, and the QA lane's release check has passed. If
+  items are pending for more than a day, ask the owner whether to release with them.
 - **Bugs jump the queue.**
-  - A bug the owner reports, or one the tester finds outside the item it's testing, goes into "Bugs" below
+  - A bug the owner reports, the QA lane finds, or the nightly runs or showcase show goes into "Bugs" below
     (`sessions.py bug "<what, when, expected>" --as <you>`). It gets a failing test and is fixed before the next item.
-  - Problems the tester finds in the item itself are part of building that item.
-  - Every bug fix gets a review package, small when nothing visible changed.
+  - A bug fix gets a review package only when it changes something a player sees; otherwise `land --no-review`.
 - **Stay in scope.** Build what the item says. A problem you notice elsewhere goes into "Bugs" or the Notes, not into
   this change.
 
@@ -80,6 +88,7 @@ everything else goes to `main` through `sessions.py`, so sessions never collide 
 - `(blocked: <what it waits for>)` waiting on someone or something
 - `[x] (review: pending <date>)` built and waiting for the owner
 - `[x] (approved <date>)` accepted; `[x] (approved auto <date>)` accepted without review (nothing to see)
+- `(verified <date>: <note>)` tested by the QA lane after landing
 - `[ ] (vetoed <date>: <why>)` to redo
 
 ---
@@ -89,7 +98,7 @@ everything else goes to `main` through `sessions.py`, so sessions never collide 
 Each fix lands together with the failing test that proves it, never a failing test on `main` on its own. Fixed bugs
 stay in the list, ticked, so their numbers stay unique.
 
-- [x] **B1** (approved auto 2026-09-29) Four bugs from the first tester run: the homes and rank tips showed the wrong
+- [x] **B1** (approved auto 2026-09-29) (verified 2026-10-02: its tester Check, shipped in 0.138.0) Four bugs from the first tester run: the homes and rank tips showed the wrong
   numbers, a blueprint name ending in a huge number crashed, and a bed at the far corner of a large building didn't
   count as home. Fixed with the owner's `HomesSpecGameTests` (d36b3d1).
 - [x] **B2** (approved auto 2026-10-03) Flaky test: `VillageGameTests.aVillagerMovesIntoTheWorkshop` (failed once on CI, commit 49ae713). Done
@@ -97,7 +106,7 @@ stay in the list, ticked, so their numbers stay unique.
   session: look for leftover blocks from earlier batches blocking the way to the bench; 17 local runs in a row passed.
   It failed once more in the tester's full-suite run (in a mutant run whose mutant couldn't touch it); 10 of 10 alone
   and 3 more full runs passed. Still unexplained.
-- [x] **B3** (approved auto 2026-09-29) Five bugs from the tester's pass over 0.131–0.137, fixed with tests (acbac37):
+- [x] **B3** (approved auto 2026-09-29) (verified 2026-10-02: its tester Check, shipped in 0.138.0) Five bugs from the tester's pass over 0.131–0.137, fixed with tests (acbac37):
   strangers' arrows hurt a protected village's villagers and animals; a stranger with a Village Ledger could empty a
   protected treasury; guards stayed on their horses, and fishers on the water, after their shift; night-raid bandits
   could join vanilla raids.
@@ -106,9 +115,9 @@ stay in the list, ticked, so their numbers stay unique.
   house's structure_void row, placed as a hole the villager fell into. With B5 fixed, the new test
   `aVillagerOutsideTheWorkshopFindsItsTable` (landed with B2) passed 100 of 100 in-suite repeats, and the tester's 50 of
   50; with the 9 structure_void cells put back it fails 20 of 20.
-- [x] **B5** (review: pending 2026-09-30) Village houses leave structure_void blocks in the world: all 115 templates in data/aliveworkplace/structure/village/ contain structure_void, and the legacy pool element skips only air and structure blocks, so e.g. the plains workshop gets a 9-wide strip with no collision in the ground in front of its door (villagers and players fall in; also the rest of B2's flake). Found by the tester, not yet seen in a real village. Failing test on branch tests/b5-structure-void (aVillagePlacedWorkshopLeavesNoStructureVoidInTheWorld; add its //$ swap line). Likely fix in tools/blueprints/generate.py: don't write structure_void into templates (vanilla's save leaves them out), regenerate, render. Done when: that test passes, a real village shows no holes (screenshot), and B2's 100 in-suite repeats pass. (found by night-0930-0845, 2026-09-30)
-- [x] **B6** (approved 2026-10-01) Villagers suffocate in walls in generated villages: the showcase's village scene (SCENE=village WORKSHOP_WEIGHT=200 tools/screenshots/run.sh) failed in 3 of 3 GitHub runs today, with villagers stuck inside Smooth Sandstone Slabs in the desert village (3 each run) and a nitwit in a Snow Block in the snowy one. Expected: villagers spawned with our village houses stand in open space. Done when: the village scene passes 3 nightly runs in a row, with a GameTest for the house that caused it. (found by chat's showcase, 22.4, 2026-09-30) (found by chat, 2026-09-30)
-- [x] **B7** (approved auto 2026-10-01) VillageHalls.assign (the Hall's free-workstation list) calls PoiManager.release on a villager's old job site without checking the block is still there: if the old workstation was broken while its worker was more than 16 blocks away, assigning them from the Hall throws IllegalStateException 'POI never registered' in the click handler (the same crash the 21.1a tester found in Stations.assign, fixed there on item/21.1a by checking getType first). Done when: a GameTest assigns such a villager from the Hall without an exception. (found by chat while fixing 21.1a, 2026-09-30) (found by chat, 2026-10-01)
+- [x] **B5** (review: pending 2026-09-30) (verified 2026-10-02: its tester Check, shipped in 0.138.0) Village houses leave structure_void blocks in the world: all 115 templates in data/aliveworkplace/structure/village/ contain structure_void, and the legacy pool element skips only air and structure blocks, so e.g. the plains workshop gets a 9-wide strip with no collision in the ground in front of its door (villagers and players fall in; also the rest of B2's flake). Found by the tester, not yet seen in a real village. Failing test on branch tests/b5-structure-void (aVillagePlacedWorkshopLeavesNoStructureVoidInTheWorld; add its //$ swap line). Likely fix in tools/blueprints/generate.py: don't write structure_void into templates (vanilla's save leaves them out), regenerate, render. Done when: that test passes, a real village shows no holes (screenshot), and B2's 100 in-suite repeats pass. (found by night-0930-0845, 2026-09-30)
+- [x] **B6** (approved 2026-10-01) (verified 2026-10-02: its tester Check, shipped in 0.138.0) Villagers suffocate in walls in generated villages: the showcase's village scene (SCENE=village WORKSHOP_WEIGHT=200 tools/screenshots/run.sh) failed in 3 of 3 GitHub runs today, with villagers stuck inside Smooth Sandstone Slabs in the desert village (3 each run) and a nitwit in a Snow Block in the snowy one. Expected: villagers spawned with our village houses stand in open space. Done when: the village scene passes 3 nightly runs in a row, with a GameTest for the house that caused it. (found by chat's showcase, 22.4, 2026-09-30) (found by chat, 2026-09-30)
+- [x] **B7** (approved auto 2026-10-01) (verified 2026-10-02: its tester Check, shipped in 0.138.0) VillageHalls.assign (the Hall's free-workstation list) calls PoiManager.release on a villager's old job site without checking the block is still there: if the old workstation was broken while its worker was more than 16 blocks away, assigning them from the Hall throws IllegalStateException 'POI never registered' in the click handler (the same crash the 21.1a tester found in Stations.assign, fixed there on item/21.1a by checking getType first). Done when: a GameTest assigns such a villager from the Hall without an exception. (found by chat while fixing 21.1a, 2026-09-30) (found by chat, 2026-10-01)
 - [x] **B8** (approved auto 2026-10-03) Reassigning a worker can free someone else's workstation: Stations.assign and VillageHalls.assign release the old job site whenever a POI record exists there, without checking it is still the worker's own block. If the old block is broken far from its worker, the same kind of block is placed on that spot and another villager takes it, then the first worker is given a new job, the second worker's ticket is freed and two villagers can hold one block (vanilla's releasePoi shares the gap). Found by the 21.1a round-4 and B7 testers, untested. Done when: a GameTest of that sequence leaves the second worker's block taken. (found by night-1001-0646, 2026-10-01)
 - [ ] **B9** (claimed: chat, 2026-10-03 03:56Z) Showcase scene 'forest' (Lumberjack: felling and replanting four trees) failed once on GitHub (run 36758016372, commit e94704b, 2026-09-30: 'not done: the lumberjack replanted (3 saplings in the ground)'; issue #1) and passed on the later item/21.1a showcase runs. Expected: four saplings replanted every run. Done when: the cause is found and fixed with a GameTest, or the scene passes 5 runs in a row (SCENE=forest tools/screenshots/run.sh) and the flake is explained in the Notes. (found by night-1001-0646, 2026-10-01)
 - [x] **B10** (approved auto 2026-10-03) Zombie villagers in abandoned (zombie) desert villages use the same vanilla desert_small_house_7 villager spot as B6 (x+0.72/z+0.63 in a 1-wide corridor under top slabs), but B6's fix only centres Villager, not ZombieVillager, so they may still get stuck in the wall there. Expected: zombie villagers from village templates stand in open space too. Done when: a GameTest places the zombie desert house with its zombie villager piece and the zombie ends up on the corridor floor, not in a wall. (found by the B6 tester) (found by night-1001-1046, 2026-10-01)
@@ -118,7 +127,7 @@ stay in the list, ticked, so their numbers stay unique.
 The evening of 2026-09-29 left 0.138.0 nearly ready: riding (approved), every texture redrawn, the tester set up and
 its first findings fixed. Nothing is released until these are done.
 
-- [x] **21.1** (approved 2026-10-03) **The texture rebuild, shown in game.** Every texture was redrawn with the pixel-art skill (2eeb6be);
+- [x] **21.1** (approved 2026-10-03) (verified 2026-10-02: its tester Check, shipped in 0.138.0) **The texture rebuild, shown in game.** Every texture was redrawn with the pixel-art skill (2eeb6be);
   178 of 182 pass its lint. Done when:
   - the other 4 pass, or each has its reason in the Notes;
   - one review package with the `preview.py audit` contact sheet, in-game shots of the workstations in a village and
@@ -129,7 +138,7 @@ its first findings fixed. Nothing is released until these are done.
   each with its worker, along a street (its check: block there, job site taken, worker in its job); the tester's
   OutfitGameTests checks every job ships both outfits. The working GIF is the nightly `composter` scene. No changelog
   line: players see nothing new beyond the existing "A new look" entry.
-  - [x] **21.1a** (approved 2026-10-01) Change from the owner (2026-09-30): not every villager needs a new custom table for a job, there are already items in the game that should give a villager his job, for example a bee hive/bee nest for the blast furnace for the miner. i think by creating too many job blocks will be a little ugly and unnapealing to new players and myself personally. I think also when two people are close in job they can share a block, but the player must right click them and give them certain items in order for them to start working, for example you have an orchard keeper and a garder and they composter they can all be associated with the compost bin, but you have to right click the villager and then decide from there - giving it flowers makes it an orchard keeper, giving it a wheat makes it a farmer, and giving it bonemeal makes it a composter, etc. this way we can cut down on the amount of custom job blocks. for things that we absolutely need custom job blocks for that is totally ok, such as a blueprint table, but for things like a bard minecraft already has a record player so we are good. ill let you iron out the kinks. after this we can move to textures
+  - [x] **21.1a** (approved 2026-10-01) (verified 2026-10-02: its tester Check, shipped in 0.138.0) Change from the owner (2026-09-30): not every villager needs a new custom table for a job, there are already items in the game that should give a villager his job, for example a bee hive/bee nest for the blast furnace for the miner. i think by creating too many job blocks will be a little ugly and unnapealing to new players and myself personally. I think also when two people are close in job they can share a block, but the player must right click them and give them certain items in order for them to start working, for example you have an orchard keeper and a garder and they composter they can all be associated with the compost bin, but you have to right click the villager and then decide from there - giving it flowers makes it an orchard keeper, giving it a wheat makes it a farmer, and giving it bonemeal makes it a composter, etc. this way we can cut down on the amount of custom job blocks. for things that we absolutely need custom job blocks for that is totally ok, such as a blueprint table, but for things like a bard minecraft already has a record player so we are good. ill let you iron out the kinks. after this we can move to textures
     **Fewer job blocks: the plan** (drafted by the chat 2026-09-30 from his words; he vetoes any line he dislikes).
     Vanilla jobs work as in vanilla. A job of ours starts when you sneak-right-click a villager standing by its block
     while holding its item; a villager already working there switches the same way. A block no vanilla job uses
@@ -176,7 +185,7 @@ its first findings fixed. Nothing is released until these are done.
     **Left for later:** the Hall's free-workstations list still offers only the vanilla job at a shared block (the
     player switches with the item afterwards); the sifter has no "panning" look at a water cauldron; /workplace
     benchmark still places old blocks (they work). A real 0.137.0 world opened with this version is 21.2's check.
-  - [x] **21.1b** (review: pending 2026-10-02) Change from the owner (2026-10-01): lets move to textures, what i want to do is for every item in the game (except for villager skins, and blocks) send me a couple versions, such as blueprints, i will go through the versions and pick my favorites, and give guidance when i can.
+  - [x] **21.1b** (review: pending 2026-10-02) (verified 2026-10-02: its tester Check, shipped in 0.138.0) Change from the owner (2026-10-01): lets move to textures, what i want to do is for every item in the game (except for villager skins, and blocks) send me a couple versions, such as blueprints, i will go through the versions and pick my favorites, and give guidance when i can.
     **Plan** (chat, 2026-10-01): the 13 items of ours that aren't blocks (Blueprint, Blank Blueprint, Scan Tool, Shape
     Planner, Patrol Map, Village Ledger, Rally Banner, Quarry Marker, Field Marker, Travel Ticket, Delivery Note, Price
     Tag, Settler's Wagon). Each gets its current icon plus three new versions, each a different idea, drawn with the
@@ -197,7 +206,7 @@ its first findings fixed. Nothing is released until these are done.
     **Round 2 picks** (owner, 2026-10-02): patrol map, quarry marker, scan tool and field marker all r2b (vanilla map
     paper; swallowtail flag; pencil with a white blueprint line; a field plan on the map outline, now item/generated),
     no notes. All 13 icons are his picks in items.py and the game; the 'items' showcase scene films them.
-  - [x] **21.1c** (review: pending 2026-10-03) Change from the owner (2026-10-03): the Fossil Scientist works at Cobblemon's Fossil Analyzer instead of a block of ours (owner 2026-10-02: 'the fossil researcher - this is already a working block within cobblemon so adding it as an extra block within our modpack seems unnecessary. can we rework this villager to work off of that?')
+  - [x] **21.1c** (review: pending 2026-10-03) (verified 2026-10-02: its tester Check, shipped in 0.138.0) Change from the owner (2026-10-03): the Fossil Scientist works at Cobblemon's Fossil Analyzer instead of a block of ours (owner 2026-10-02: 'the fossil researcher - this is already a working block within cobblemon so adding it as an extra block within our modpack seems unnecessary. can we rework this villager to work off of that?')
 - [ ] **21.2** **The full check before release** (the tester's Full tier; the chat started it and ran out of time). Do
   it in pieces that fit a one-hour night run, landing each piece with `land --keep-open`:
   - the real Cobbleverse pack boot and the soak: the nightly GitHub workflow runs these, so read its result;
@@ -208,7 +217,7 @@ its first findings fixed. Nothing is released until these are done.
 
   Done when: each part is a passing test or a green nightly result, every finding is a Bug, and the report is linked
   in the Notes. Players see nothing new, so the last piece lands with `--no-review`.
-- [x] **21.3** (approved auto 2026-10-03) **Camels.** The game counts a saddled camel as a horse, so a
+- [x] **21.3** (approved auto 2026-10-03) (verified 2026-10-02: its tester Check, shipped in 0.138.0) **Camels.** The game counts a saddled camel as a horse, so a
   guard rides one too, but the changelog promises horses, donkeys and mules. The tester's test `aCamelIsNotCavalry`
   (branch `tests/check-0.137-riding-protection`) waits on his answer. Camels out: land that test with the fix. Camels
   in: turn the test around and add camels to the changelog.
@@ -229,7 +238,7 @@ its first findings fixed. Nothing is released until these are done.
 
 Before polishing, make sure nothing regresses unnoticed.
 
-- [x] **22.1** (approved auto 2026-09-29) **Tester set up** (f83f7b4): `tools/modtest/` with `allow.txt` and
+- [x] **22.1** (approved auto 2026-09-29) (verified 2026-10-02: its tester Check, shipped in 0.138.0) **Tester set up** (f83f7b4): `tools/modtest/` with `allow.txt` and
   `baseline.json`, the nightly workflow, and the definition of done in CLAUDE.md. The nightly workflow runs at about
   10 PM Central (`17 3 * * *`), before the night runs, which read its result first.
 - [ ] **22.2** Save/reload tests for every value `inventory.py` lists as "never saved and reloaded" (69 at 0.136.0), done in
@@ -237,7 +246,7 @@ Before polishing, make sure nothing regresses unnoticed.
 - [ ] **22.3** A bot scene for every player-visible feature, so any feature can be shown again on demand
   (`tools/screenshots/run.sh SCENE=…`). Done when: every job and every screen in the README has a scene. A new feature
   gets its scene in the same commit.
-- [x] **22.4** (approved auto 2026-09-30) **A daily showcase page** (owner, 2026-09-30): screenshots and GIFs of everything the mod does, so the
+- [x] **22.4** (approved auto 2026-09-30) (verified 2026-10-02: its tester Check, shipped in 0.138.0) **A daily showcase page** (owner, 2026-09-30): screenshots and GIFs of everything the mod does, so the
   owner can check it all from his phone each morning. Includes 22.3's missing scenes. Done when:
   - every night, GitHub's machines run every screenshot scene: every job, screen and build family. Not a Claude
     session: it must cost no Claude usage. The scenes are split across parallel jobs so it finishes within an hour,
@@ -248,6 +257,26 @@ Before polishing, make sure nothing regresses unnoticed.
     dug, the screen opened). A failed scene or a broken picture (missing textures, raw text keys, villagers stuck in
     walls) opens the nightly-tests issue, so the night runs fix it;
   - if publishing the page needs a GitHub setting only he can change, he gets the exact clicks.
+- [ ] **22.5** **Room on the Village Hall's screen.** Milestones 27, 29, 30, 31 and 33 each add a page to the hall, and
+  its screen has no free slot. Give it page tabs (or a second row of page buttons) with room for at least six more
+  pages, keeping every existing page and button where players know it. Done when:
+  - a GameTest opens every existing page through the new layout;
+  - a new page is one registration call (documented in `docs/agent/layout.md`), and the expansions use it;
+  - the hall scene shows the new layout at GUI scales 2 and 4.
+- [ ] **22.6** **One season calendar.** Milestones 28 (the Festival Cup), 30 (harvest season), 31 and 34 need seasons,
+  and none exist. A village calendar: four seasons of `seasonDays` days (default 8, one festival each), the same for
+  the whole world, shown on the hall with the day of the season; an event API the expansions listen to. Done when:
+  GameTests cover the rollover, save and reload, and the config length; nothing else changes until an expansion uses
+  it.
+- [ ] **22.7** **Mutation and repeats on GitHub, every night.** The nightly workflow also plants about 20 mutants in
+  the code changed in the last 24 hours (`tools/modtest/mutate.py`, sharded across parallel jobs) and repeats every
+  GameTest added in that time 10 times. Survivors and flakes go to the `nightly-tests` issue. This moves the slowest
+  checks off the lanes, onto GitHub's free machines. Done when: one night's run has posted its results and the QA lane
+  reads them (`docs/agent/sessions.md`).
+- [ ] **22.8** **Film one scene on demand.** `showcase.yml` takes a `scenes` input, and a push to an item branch films
+  only the scenes that branch added or changed, so a lane sees its scene on GitHub in about 15 minutes without running
+  the client itself. Done when: a push that changes one scene films only that scene, and `docs/agent/tools.md` says how
+  to read the result.
 
 ## Milestone 23: Builders never need babysitting (priority 1)
 
@@ -408,10 +437,3729 @@ about 12% of that. For villager mods, the cost is pathfinding to distant points 
   Milestone 5). Done when: all of these have passed, and the owner has played.
 - [ ] **26.5** (blocked: owner, says go) **Publish.** Done when: the pages are live and linked from the README.
 
-## After 1.0 (not now)
+## Milestone 27: Villages that build themselves (1.1)
+
+Items in Milestones 27–35 sometimes point at another milestone's item by name ("M29's Seer item"): find it there.
+
+You paint your village's plan once on a **City Plan** (homes here, workshops there, a market, gardens, roads, a wall),
+and a new villager, the **Steward**, grows the village into it: every morning he compares the plan with what the
+village lacks (the numbers behind the hall's "What next?" tips) and lines up the right building, in the right zone and
+the zone's style, for the village's builders. You approve each plan with one click at the hall, or let the village run
+itself; roads with lamps and bridges link the buildings and the villages you trade with, walls go up once raids start,
+and an old vanilla village slowly rebuilds itself one house at a time. It answers the top complaint about colony mods
+(babysitting) and builds on the builder (`BuildSite`, styles, upgrades, `Paths`), the Village Hall (census,
+`VillageAdvice`, ranks, research) and `Caravans`.
+
+- [ ] **27.1** **Design note.** `docs/design/M27.md`: what the player sees (the City Plan and its screen, the
+  Steward's day, his desk on the hall's screen, roads, walls, renewed houses), the data formats with one example file
+  each (zone kinds, Steward rules, road styles, wall kits, renewal lists), the config switches, every new saved field
+  with its default (the plan and the Steward's state on the hall, the player-built ledger), the per-tick budgets, the
+  safety rules (27.19) and how the Cobblemon parts stay data with `"requires": ["cobblemon"]`, as the Apricorn style
+  does (no Cobblemon classes in this milestone). Owner questions, each with the default the lanes build meanwhile:
+  a Steward is appointed with the City Plan rather than taking the hall by himself (default: with the plan); a new
+  Steward starts in "Ask me first" (default: yes); the City Plan's recipe (default: a Map and a Blank Blueprint).
+  Sent as a review package with a mock-up of the plan screen painted over a real village's map (`VillageMaps`); lanes
+  don't wait for his reply. Done when:
+  - the note is on `main` with every section above;
+  - the package is sent, and his answers, when they come, are recorded with `sessions.py reply`.
+- [ ] **27.2** **The plan and the City Plan item.** A village's plan, saved on the Village Hall
+  (`VillageHallBlockEntity`, new tag `plan`, empty by default) and kept on the hall item when the hall is broken (as
+  its name is; put down again, the plan is centred on the new spot):
+  - a grid of 32×32 cells centred on the hall, a cell 4×4 blocks at the default `villageHallRadius` of 64 (8×8 at
+    128), so a cell is a square of the village map; a cell nearer another hall than this one can't be painted;
+  - up to 16 zones, each with a kind, a name, a style (one of `BlueprintStyles.all()`, or as drawn), a "renew old
+    houses" switch (27.20, off) and its cells; up to 24 roads and one wall line (27.4); the Steward's mode (27.8).
+
+  Zone kinds are data: `data/aliveworkplace/city_zones/<kind>.json` holds one kind's colour, map tint, icon item,
+  order and whether anything may be built there; packs add their own. The 8 shipped kinds, coloured as the village
+  map's banners (`VillageMaps.Kind`): **Homes** (white), **Workshops** (orange), **Farms** (lime), **Market**
+  (yellow), **Civic** (blue: school, library, clinic, chapel, graveyard), **Gardens** (light blue: decorations,
+  parks), **Defences** (black: barracks, towers) and **Keep Clear** (red: nothing is ever built there; roads may
+  cross). The **City Plan** item (recipe: a Map and a Blank Blueprint; its icon drawn with the pixel-art skill on
+  vanilla's map outline, as the owner asked for the Patrol Map): right-click a Village Hall to bind it, as the Village
+  Ledger binds; its tooltip names the village. Who may change a plan: the hall's owner, their friends and operators
+  (`VillageProtection`'s rules; a hall nobody owns is claimed by the first player who paints). Server side:
+  `CityPlan.zoneAt(pos)`, `paint`, `erase`, and packets the server checks. Done when:
+  - GameTests: a plan with every field survives save and reload, and breaking and placing the hall; a hall saved
+    before 1.1 loads with an empty plan; `zoneAt` is right in all four quarters round the hall, at negative
+    coordinates and with a radius of 128; a cell nearer another hall is refused; a stranger's paint packet in someone
+    else's protected village is refused;
+  - the item binds, names its village, is in the `items` showcase scene, and its icon passes `lint.py`;
+  - a datapack's zone kind loads, and a broken file is skipped with a warning naming it.
+- [ ] **27.3** **Painting the plan.** Right-click the air with a bound City Plan to open the plan screen (a client
+  screen, like the Blueprint Table's): the village map as it is today (`VillageMaps.colors`, a block a pixel, north up,
+  the hall and every finished building's banner on it), the grid over it, each zone tinted in its colour with its name,
+  Keep Clear hatched, build sites going up and the Steward's proposals as outlines. A side panel: the zones (new,
+  rename, delete, kind, style with the style's icon, the renew switch), a brush (one cell, or drag a rectangle), an
+  eraser, undo (10 steps) and a legend. Scaled to fit at GUI scales 2 to 4. Done when:
+  - a GameTest paints, erases and undoes through the packets, and the plan on the hall matches each time;
+  - screenshots at GUI scales 2 and 4 show no clipped or overlapping text (as 24.4 checks the other screens);
+  - showcase scene `city_plan`: Homes, Workshops and Gardens zones painted in three styles over a real village, with
+    stills of the screen and the finished plan.
+- [ ] **27.4** **Roads and the wall line on the plan, and the plan on the ground.** Two more tools on the plan
+  screen: **Road** (click points, double-click to end; a lane 1 wide, a street 3 wide or an avenue 5 wide, with a
+  style, by default that of the zone it starts in) and **Wall line** (one line round the village, open or closed).
+  Roads a player draws count as approved: the Steward builds them without asking (27.15). While a player holds the
+  City Plan, the zones' edges, the roads and the wall line show on the ground round them in their colours (particles
+  along the borders within 24 blocks, drawn by the client as the Scan Tool's box is; nothing is placed in the world).
+  The hall's map button (`VillageMaps.map`) draws the zones (each kind's map tint) and the roads on the map once the
+  village has a plan, so the plan can hang in an item frame by the hall. Done when:
+  - GameTests: roads and the wall line survive save and reload; a road of more than 64 points, or a 25th road, is
+    refused; the map drawn for a planned village has its zone tints on the right pixels;
+  - showcase scene `city_plan_ground`: a player walks the village holding the plan (a still of the borders on the
+    ground) and the framed plan by the hall.
+- [ ] **27.5** **The Steward.** A new job, `aliveworkplace:steward`, at the Village Hall, one per hall:
+  - **Appointing:** sneak-right-click a grown villager standing by the hall with its City Plan (a Village Hall entry in
+    `work/Stations`), or the desk's "Appoint a Steward" button (27.8), which lists the jobless. The hall isn't an
+    acquirable job site, so nobody takes it by himself. Its point of interest has 0 tickets today: it gets 1, and a
+    hall whose saved record still has 0 free tickets is registered again when it loads (else no old hall could ever
+    have a Steward).
+  - **His day** (a WORK package): each morning he walks his rounds holding the plan (it shows in his crossed arms, as
+    vanilla shows a villager's held item): up to 6 stops (his open sites, empty zones, the storehouse), 3 seconds at
+    each, then back to the hall, where he plans (27.6–27.9) and stays until evening. Status over his head
+    (`WorkerStatus`): "Planning a Stone House: 3 villagers have no bed".
+  - **Levels:** XP for each of his builds finished and each job he gives, and from trades (City Plans, Blank
+    Blueprints and Village Ledgers for emeralds; he buys paper and books). His level sets how many of his builds may be
+    open at once: 1, 2, 2, 3, 4 from Novice to Master, never more than the rank allows (Hamlet 1, Village 2, Town 3,
+    City 4) or `stewardMaxOpenBuilds` (4).
+  - An outfit and a zombie outfit with the pixel-art skill (a clerk's long coat, a rolled plan at the belt). Breaking
+    the hall ends the job. Config `steward` (true).
+
+  Done when:
+  - GameTests: the City Plan appoints a villager at its own hall and not at another; a second villager can't take a
+    hall that has a Steward; a hall saved with 0 free tickets gets a Steward after reload; a jobless villager standing
+    by the hall stays jobless; breaking the hall ends the job; `steward: false` stops appointments;
+  - both outfits pass `lint.py` and are in a `preview.py villager` sheet;
+  - showcase scene `steward`: a GIF of his morning rounds and his walk back to the hall.
+- [ ] **27.6** **The Steward's rules.** The engine for what he wants, as data:
+  `data/aliveworkplace/steward_rules/<name>.json` holds one rule: `when` (conditions, all must hold), `do` (one
+  effect), `priority` (0–100), `why` (a lang key filled from the conditions' numbers: "3 villagers have no bed"),
+  `cooldown_days`, `max` per village, `min_rank` and `requires` (mod ids). Conditions are small classes reading the
+  census the hall already takes (`VillageHalls.census`, `VillageNeeds.Needs`, the numbers `VillageAdvice` uses), so
+  the desk and the "What next?" tips always agree. This item adds `beds_short {at_least}`, `food_short
+  {meals_per_adult}`, `missing_poi {poi}`, `worker_without_workstation {professions}` (a villager with a job but no
+  job site), `jobless {at_least}`, `no_builder`, `rank_at_least {rank}`, `villagers_at_least {n}`, `built_count_below
+  {blueprint, n}` (any style or tier), `upgrade_available {blueprint}`, `homes_tier_low {share}`, `store_full
+  {share}`, `research_idle`, `research_at_least {topic, level}` and `mod_loaded {mod}`; 27.12 adds the rest.
+  Effects: `build {blueprint, zone}` and `upgrade {blueprint}` (carried out by 27.7 and 27.8), `assign_jobs` and
+  `research` (27.9), and `ask {key}` (a tip only a player can act on, such as "place a Blueprint Table"). Once a
+  morning the Steward ranks the rules that hold into the day's wishes. `/workplace steward explain` lists every rule
+  for the nearest hall with each condition's value and whether it held. Done when:
+  - a GameTest for each condition, holding and not holding, and one showing their numbers match `VillageAdvice`'s
+    tips in the same village;
+  - a rule file with an unknown condition or a bad field is skipped with a warning that names it (in
+    `tools/modtest/allow.txt`, with the reason);
+  - `explain` shows one rule that held and one that didn't in a test village.
+- [ ] **27.7** **Finding a plot.** `steward/Plots`: where a blueprint (in its zone's style) fits in a zone, checked
+  for each of the four turns:
+  - its front (z = 0) faces the nearest road on the plan, else the hall;
+  - the footprint plus 2 blocks lies in cells of that zone, and the ground under it is within 4 blocks of level (the
+    builder levels the rest, `BlueprintData.levelGround`); at most a tenth of it over water, none over lava;
+  - nothing in its box but natural ground, plants and natural trees (`BuildPlan.isTerrain`, `Trees`, and the tag
+    `aliveworkplace:steward_clearable` for packs), 2 blocks clear of every build site and finished building of
+    anyone's, its centre within `maxSiteDistance` (48) of a builder's Blueprint Table;
+  - nearest the hall first, so villages grow compact; never the same blueprint with the same mirroring within 24
+    blocks, so a street isn't one house repeated (it mirrors, or takes the rule's next blueprint).
+
+  Budget: at most 64 columns looked at per tick per hall; the morning's results are kept until a zone or a build in it
+  changes. Done when GameTests show:
+  - a plot found on flat ground inside a zone, facing the road;
+  - no plot across a zone's edge, over a player's cobblestone wall or a chest, overlapping another village's build
+    site, or on a slope of 6;
+  - the counter never passes 64 columns in a tick, and a search over a fully painted plan ends within 200 ticks.
+- [ ] **27.8** **The Steward's desk: ask first, or run itself.** When a village has a Steward, the hall's "What
+  next?" page (the compass) becomes his desk: his icon and level, the mode (**Ask me first**, **Run the village**,
+  **Rest**), his open builds with **Cancel** (`Builders.cancel`), the "What next?" tips as now, and up to 9
+  proposals. Each proposal shows its blueprint, name and style; why ("3 villagers have no bed"); where ("22 blocks
+  north-east, in Homes 2"); the five materials it needs most, with how many are in store; and which builder will build
+  it, after what. Its page: **Approve**, **Decline** (not proposed again for 3 days), **Show me** (its outline glows in
+  the world for 30 seconds, `BlueprintOutline`), **Another spot**, **Another style**; **Approve all** on the desk.
+  - Approving starts the build: a `BuildSite` for that builder (`Builders.start` or `enqueue`, owned by the hall's
+    owner), noted in the chronicle (a new kind, Plans). Upgrades go on the finished building's own spot.
+  - **Run the village** does the same without the click; the owner gets one chat line a morning listing what was
+    started. `stewardSelfRun: false` in the config keeps every village asking. **Rest**: he plans nothing.
+  - Unanswered proposals lapse after 3 days. Each morning with new proposals, the hall's owner (online) gets one line
+    saying so. The desk works from the Village Ledger too. The same rights as the plan (27.2).
+
+  Done when:
+  - GameTests: approving creates the site with the proposal's blueprint, style, spot and owner; a declined proposal
+    stays away for 3 days; a proposal lapses; a stranger can't approve in a protected village; Run the village starts
+    a build with no click and Rest does nothing; proposals survive save and reload;
+  - showcase scene `steward_desk`: the desk with three proposals, Show me, the approval and the builder setting off.
+- [ ] **27.9** **Jobs and research.** Two more effects:
+  - `assign_jobs`: each morning every grown jobless villager (not a nitwit) gets a free workstation
+    (`VillageHalls.freeStations`), the village's biggest gap first: a builder while there's none, a farmer while food
+    is short, guards while guards are short, a porter at a free Storehouse, a scholar while research is idle, then the
+    nearest. At a shared block (`work/Stations`) he can pick its other jobs (an Orchard Keeper at the composter by a
+    Berry Farm that has none), which the hall's list can't do yet (21.1a's "left for later"). A job with no free
+    block left proposes its building (27.11). In Ask me first, the morning's jobs are one proposal ("Give 3 villagers
+    jobs: Dara, Farmer at the composter 12 blocks east; ...").
+  - `research`: when a scholar works and nothing is being researched, he picks the next topic: Fortification after a
+    raid in the last 7 days, Medicine with 2 or more ill, Green Thumb while food is short, Logistics with a store
+    80% full, else Swift Hands, Hearth and Kinship in that order, each only when `Research.State.available`. In Ask me
+    first, a proposal.
+
+  Done when:
+  - GameTests: three jobless villagers get the three jobs the order asks for; an orchard keeper is picked at a shared
+    composter; a nitwit and a child get nothing; the topic after a raid is Fortification, after a sickness Medicine,
+    and a topic that isn't available is never picked;
+  - showcase scene `steward_jobs`: jobless villagers walking to their new workstations.
+- [ ] **27.10** **Rules: homes and storage.** Shipped rule files, each its own JSON:
+  - `homes_upgrade`: beds short → upgrade a finished home whose next tier adds beds (Starter Cottage to II to III,
+    Stone House to II to III, Terrace to II), before any new house; the beds a tier adds are counted from the
+    blueprints, never written down;
+  - `homes_starter_cottage` (1 bed short, a Hamlet), `homes_stone_house` (2 short), `homes_terrace` (3 short, a
+    Village or more), all in Homes; `homes_inn` (4 short, a Town, no Inn yet: the Inn, in Market);
+  - `homes_better`: more than half the grown-ups in tier I homes and no beds short → upgrade those homes (the "homes"
+    tip);
+  - `storehouse` (no Storehouse) and `storehouse_grow` (its chests 80% full: Storehouse II, then III), in Market;
+  - `market_stall` (a Village with none), in Market;
+  - `food_berry_farm` (food short, no Berry Farm) and `food_ranch` (food short, a Village, no Ranch), in Farms.
+
+  Done when:
+  - a GameTest per rule, in a village staged to need it: the Steward proposes that build in the right zone; with beds
+    short and an upgradable Stone House, the upgrade comes before a new house;
+  - showcase scene `steward_homes`: a GIF of a Homes zone filling up over three days in Run the village.
+- [ ] **27.11** **A workplace for every worker.** `tools/blueprints/generate.py` writes buildable copies of 12 of our
+  village houses (`village.py`: the plains look, with the jigsaw, structure voids and villager taken out and calcite
+  swapped for white concrete, as STYLE.md asks of builds for builders), in the Blueprint Table too: Builder's
+  Workshop, Carpenter's Workshop, Kitchen, Post Office, Guard House, Clinic, Ferry House and, with Cobblemon, Trainer's
+  House, Leader's Hall, Ball Workshop, Trade Hall and School. Then a rule per job (`worker_without_workstation`, or a
+  job the village wants with no free block) naming the building with its block:
+  - Builder: Builder's Workshop; Carpenter: Carpenter's Workshop; Chef, Butcher: Kitchen; Postman: Post Office;
+    Guard, Weaponsmith: Guard House (Barracks from a Town); Nurse, Cleric: Clinic (Healing Center from a Village);
+    Undertaker: Graveyard; Teacher: Schoolhouse; Librarian, Scholar: Library; Porter: Storehouse; Orchard Keeper:
+    Berry Farm; Florist: Flower Shop; Composter: Compost Yard; Beekeeper: Apiary Garden; Sifter, Leatherworker:
+    Sifting Shed; Tinkerer, Toolsmith: Tinker's Workshop; Netherworker: Nether Gate; Shopkeeper: Supply Shop;
+    Innkeeper: Inn; Rancher: Ranch; Ferryman: Ferry House (a plot on the shore: water within 4 blocks of its front);
+  - with Cobblemon: Fossil Scientist: Research Lab; Trainer: Trainer's House; Trainer Leader: Leader's Hall; Ball
+    Smith: Ball Workshop; Pokémon Trader: Trade Hall; Move Tutor: School;
+  - `no_builder` asks the player: "place a Blueprint Table and give a villager the job" (nobody could build it);
+  - Armorer, Miner, Mason, Fletcher, Lumberjack, Cartographer, Farmer, Fisherman, Shepherd and Bard get their rules
+    with their new buildings (27.13, 27.14).
+
+  Done when:
+  - a GameTest per rule, and each of the 12 copies built by a builder in a test, its job block taken by its worker;
+  - a gallery package of the 12 copies (front and back, as drawn and in Stonework) and showcase scene `workplaces`.
+- [ ] **27.12** **Rules: care, learning, safety, beauty and the market.** The other conditions: `guards_short`,
+  `raided_within {days}` (from the hall's last raid day), `bandit_camp_near`, `ill {at_least}`, `dark_beds
+  {at_least}`, `beauty_below {points}`, `children_at_least {n}`, `courting_couples {at_least}` (`Couples`) and
+  `died_within {days}` (the chronicle). Shipped rules:
+  - `clinic_for_the_ill`: 2 or more ill and no nurse → Clinic, or Healing Center from a Village, in Civic;
+  - `graveyard`: a villager died in the last 30 days, 8 or more villagers, none yet → Graveyard, in Civic;
+  - `schoolhouse`: 3 or more children, no Schoolhouse → Schoolhouse, in Civic;
+  - `library`: 6 or more villagers, no scholar (the "research" tip) → Library, in Civic;
+  - `chapel`: a couple courting and no Chapel → Chapel (where weddings are held), in Civic;
+  - `lookout_tower` (guards short) and `barracks` (guards short in a Town), in Defences;
+  - `street_lamps`: 2 or more beds in the dark → a Street Lamp by the darkest homes' doors, in their zone;
+  - `well`, `park_bench`, `fountain`, `gazebo`: beauty under 3 with 5 or more villagers (the "beauty" tip), in that
+    order, each once, in Gardens;
+  - `market_square`: a Town with none → Market Square (for market days, `MarketDays`), in Market.
+
+  Done when:
+  - a GameTest for each new condition, holding and not holding, and one per rule in a village staged to need it;
+  - showcase scene `steward_civic`: a GIF of a lamp, a well and a schoolhouse going up as the village asks for them.
+- [ ] **27.13** **New workplaces I: Smithy, Mason's Yard, Fletcher's Lodge, Map Room.** Drawn with the architect
+  skill in `tools/blueprints/workshops.py` to STYLE.md, each checked in a render, each with its rule (27.11's form):
+  - **Smithy**: a stone forge under a timber roof, an open front with an anvil and a quench trough, a chimney with a
+    campfire for smoke; a blast furnace (Armorer; Miner with a pickaxe), a smithing table (Toolsmith) and a grindstone
+    (Weaponsmith). **Smithy II**: a coal and ore store and a second blast furnace;
+  - **Mason's Yard**: a fenced yard of cut stone with a lean-to over a stonecutter (Mason). **Mason's Yard II**: a
+    second stonecutter and a hoist;
+  - **Fletcher's Lodge**: a log cabin with a log pile and a straw target, a fletching table (Fletcher; Lumberjack with
+    an axe). **Fletcher's Lodge II**: a drying-rack wing with a second fletching table;
+  - **Map Room**: a narrow tower house with a cartography table (Cartographer) and a lookout at the top.
+
+  Done when:
+  - each is in `StarterBlueprints` with its size, in the Blueprint Table, clean in `check.py`, and built by a builder
+    in a GameTest with its workers taking their blocks; the rules' GameTests pass;
+  - a gallery package (front and back, as drawn and in two styles) and their builds in showcase scene `gallery`.
+- [ ] **27.14** **New workplaces II: Farmstead, Fisher's Hut, Weaver's Cottage, Bandstand.** Drawn the same way, each
+  with its rule:
+  - **Farmstead**: a farmhouse with one bed beside a 9×5 field of farmland round a water channel, a scarecrow, a
+    composter (Farmer). **Farmstead II**: a barn and a second field;
+  - **Fisher's Hut**: a shore hut with a jetty 5 blocks into the water on log posts and a barrel (Fisherman); its plot
+    must be on a shore (water within 4 blocks of its front, at most 3 deep under the jetty). **Fisher's Hut II**: a
+    smokehouse with a smoker and a boat shed;
+  - **Weaver's Cottage**: a cottage with a loom (Shepherd) and a fenced sheep pen. **Weaver's Cottage II**: a dye
+    garden;
+  - **Bandstand**: an open eight-sided bandstand with a jukebox (Bard), in Gardens; it counts 3 for beauty
+    (`Decorations`).
+
+  Done when:
+  - as 27.13: in `StarterBlueprints` and the table, clean in `check.py`, built by a builder in a GameTest with its
+    worker taking the block, the farmer working the field and the fisherman fishing from the jetty; the rules' tests;
+  - a gallery package and their builds in showcase scene `gallery`.
+- [ ] **27.15** **Roads.** The roads on the plan get built, and every new building joins them. Road styles are data:
+  `data/aliveworkplace/road_styles/<name>.json` holds one style: the surface blocks for the middle and the edges
+  (weighted mixes, as STYLE.md's), the slab and stairs for steps, the bridge's deck, rail and pillar blocks, its lamp
+  and lantern post (27.16). One shipped style per blueprint style: **As drawn** (dirt path, coarse dirt and gravel
+  edges), **Stonework** (stone bricks with cracked ones, cobblestone edges), **Sandstone** (smooth and cut sandstone),
+  **Dark Oak** (cobbled and polished deepslate), **Cherry** (polished diorite with stone brick edges) and, with
+  Cobblemon, **Apricorn** (bricks with mud brick edges).
+  - Routing widens `Paths.route`: the road's width kept clear, round water (bridges: 27.16), buildings and anything
+    not natural, steps of at most one block. A road is cut into segments of up to 24 blocks; each becomes a generated
+    blueprint (`aliveworkplace:roads/<hall>/<n>`, saved as `Shapes` saves its blueprints) of the surface and of the air
+    over it where natural cover stands, and a `BuildSite` for the nearest builder, who takes a road segment only when
+    no building of the village waits.
+  - Segments are kept on the plan, not in `BuildSiteManager`'s finished list (it holds at most 2000 per dimension, and
+    ranks, homes, upkeep and the map read it); ranks, the map and `Homes` skip `roads/`.
+  - A finished building's door joins the nearest road with a lane, instead of `Paths`' dirt path to the bell (which
+    stays for villages without roads).
+  - Budget: 600 path nodes per tick per hall; at most 2 road segments open at once. Config `stewardRoads` (true).
+
+  Done when:
+  - GameTests: a 40-block street over uneven ground is built 3 wide in Stonework, with stair steps; a player's fence on
+    its line is gone round and left standing; a half-built segment survives save and reload; roads leave the village's
+    rank and building count unchanged; a new building's lane joins the street;
+  - showcase scene `roads`: a GIF of a street being laid between two houses.
+- [ ] **27.16** **Lamps, bridges and steps.**
+  - **Lamps:** the road style's lamp (the Street Lamp blueprint in the road's style, a styled id) every 16 blocks on
+    alternate sides of streets and avenues and at every crossing, never in front of a door; lanes get a lantern post
+    (the style's fence, two high, a lantern on top) every 12 blocks. Lamps count as Street Lamps for beauty
+    (`Decorations`, capped at 10% as now) and light the beds near them (the "dark" tip).
+  - **Bridges:** where a road meets water, or a drop deeper than 2, for up to 16 blocks: a generated bridge blueprint
+    with the deck at the banks' height in the style's blocks, rails, a pillar every 4 blocks down to the bed (at most
+    12 deep) and a ramp of stairs at each end. A wider gap: the road stops at the bank and the desk says why.
+  - **Steps:** one-block rises on a road become stairs across its width; crossings are paved square.
+
+  Done when:
+  - GameTests: lamps every 16 blocks on alternate sides of a 60-block street, none in front of a door; a river 9 wide
+    is bridged with 2 pillars and villagers walk over it; a 20-wide gap is refused with the desk's note; stairs on a
+    slope of one in one;
+  - showcase scene `bridges`: a GIF of a bridge going up over a river, and the street lit at night.
+- [ ] **27.17** **Roads between villages.** For each caravan route (`Caravans`), the village builds its half of a road
+  to the other village: a street from the end of its nearest road toward the other hall, in the style of the zone it
+  starts from, planned only in loaded chunks (no chunk tickets for roads), up to `caravanRoadReach` (256) blocks or
+  halfway, whichever is less. The other village builds the other half, and the two are joined when they come within
+  32 blocks. A road that stops short of halfway ends at a milestone: a stone post with a lantern and a sign naming the
+  other village and how far it is. Caravans on a finished road arrive in three quarters of the time
+  (`Caravans.travelTicks`); both chronicles note the road ("The road to Ashford is finished"). Config `caravanRoads`
+  (true). Done when:
+  - GameTests: two villages 120 blocks apart build both halves and they meet; a route to a village 900 blocks away
+    builds 256 blocks and a milestone naming it; an unloaded chunk pauses the planning without an error, and it goes
+    on when loaded; a finished road shortens the caravan's trip;
+  - showcase scene `caravan_road`: a GIF along the road from one village to the other.
+- [ ] **27.18** **Walls along the wall line.** Once the village has been raided in the last 7 days, or a bandit camp
+  is near, the Steward proposes its wall: along the plan's wall line, or, when none is drawn, a line of his own (round
+  the zones, 4 blocks out), shown on the plan for approval. Walls are kits, as data:
+  `data/aliveworkplace/wall_kits/<name>.json` holds one kit: a segment, a corner tower, a gate and the rank it needs.
+  Two shipped kits:
+  - **Palisade**, up to a Village: Palisade, Palisade Gate, and a new **Palisade Tower** (a log watch platform with a
+    ladder, drawn with the architect skill);
+  - **Stone**, from a Town: Stone Wall, Wall Tower, Gatehouse; a Town replaces its palisade with stone, a segment at a
+    time.
+
+  Each segment sits at its own ground height (the foundation fills under it); a tower at every corner and at least
+  every 28 blocks, moved along so the segments between fit whole; a gate wherever a road crosses (shut at night by
+  `Gates`, as now). At most 3 wall sites open at once. A wall counts as one building for the rank, not one per
+  segment. Config `stewardWalls` (true). Done when:
+  - GameTests: a square wall line gets its segments, four corner towers and a gate on the road; a village never raided
+    gets no wall proposal; the rank's building count goes up by one for the whole wall; the Palisade Tower is clean in
+    `check.py` and a builder builds it;
+  - showcase scene `walls`: a GIF of a palisade going up round a small village, and its gate shut at night.
+- [ ] **27.19** **Safe by design.** Everything the Steward builds passes one check (`steward/StewardSafety`), and his
+  sites are careful on their own:
+  - only inside his own village's zones of the right kind: never in Keep Clear, never nearer another hall, never in a
+    protected village whose owner isn't his hall's owner;
+  - a ledger of what players built: a block a player places or breaks within a hall's area, from 1.1 on, marks its
+    16×16×16 section (`aliveworkplace_player_built`, saved per dimension); no plan, road or wall goes through a
+    marked section unless the owner approved that one by hand;
+  - his sites clear only natural blocks: a block a player puts in the way after the build started stays, and its step
+    is skipped (counted in `skipped`); the desk says "a player's block is in the way";
+  - materials: when his builds wait for materials, the Storehouse's requests board and the desk show one shopping list
+    for all of them (the 8 most needed), the owner is told once a day, and caravans see it (`Caravans` wants); no new
+    build is proposed while 2 of his builds have waited a whole day.
+
+  Done when GameTests show: no plan through a player's house built inside a Homes zone; a block a player places in a
+  running site is still there at the end; no proposal reaching into the next village; the shopping list adds up the
+  missing materials of two waiting sites; proposals stop while two sites wait and start again once supplied; the
+  ledger survives save and reload; a chaos run (the tester skill's `ChaosTests`, 3 seeds) of a self-run village breaks
+  no block a player placed.
+- [ ] **27.20** **Old houses, found and measured.** In zones with "renew old houses" on, the Steward looks for houses
+  no builder built: a bed or a workstation (by its point of interest) that isn't in a finished build (`Homes.at`,
+  `BuildSiteManager.finishedAt`), and the house round it, measured by a flood fill over built blocks (not terrain,
+  plants or natural trees: at most 2000 blocks and 20×16×20, 256 blocks a tick). Keyed on blocks, never on the
+  structure: it counts as an old village house, plain or ruined, only when
+  - 85% or more of its blocks are in the tag `aliveworkplace:village_house_blocks` (the blocks of vanilla's five kinds
+    of village, with the cobwebs, mossy and cracked blocks of abandoned ones; packs add theirs);
+  - it holds no container and no block entity but beds, bells, signs, banners, campfires and job blocks;
+  - no part of it is in the player ledger (27.19), and it's wholly inside the renew zone.
+
+  The desk lists them ("Old houses: 4, 3 can be renewed"), and Show me outlines each. Done when GameTests show: a
+  vanilla plains house (placed from its template as a fixture) is found and its box measured exactly; the same shape
+  in deepslate and quartz isn't; one with a chest isn't; one a player changed since 1.1 isn't; the fill never passes
+  256 blocks in a tick.
+- [ ] **27.21** **Old villages renewed.** One old house at a time (at most one every 2 days in a village), the Steward
+  rebuilds it in its zone's style: "Renew the old house 14 blocks west as a Stone House (Cherry)". Renewal lists are
+  data: `data/aliveworkplace/steward_renewal/<name>.json` holds one: the kind of old house (a home, or a job's point
+  of interest) and the buildings to try, in order. Shipped lists: homes (Starter Cottage, Stone House, Terrace: the
+  first with at least as many beds) and one per job, the building 27.11, 27.13 and 27.14 give that job (an old
+  armorer's house becomes a Smithy). The replacement must fit the old footprint plus up to 3 blocks, inside the zone,
+  its front where the old door was.
+  - The swap: the old house is scanned into a blueprint (`renewal/<hall>/<n>`, saved as the Scan Tool saves) and taken
+    down by the builders as a deconstruction (its blocks go to the store), then the new one is built on the cleared
+    plot. Both are one proposal, and the second starts only when the first is done.
+  - The villagers who slept there sleep in the new beds; its worker keeps their job and takes the new workstation.
+  - Ask me first asks for each house; Run the village renews by itself, but only in zones whose renew switch the
+    owner turned on. Config `stewardRenewal` (true). The chronicle notes each house renewed.
+
+  Done when:
+  - GameTests: a vanilla plains armorer's house is renewed as a Smithy in Stonework, and its level-2 armorer keeps the
+    job and works the new blast furnace; a two-bed home becomes a home with at least two beds and both villagers sleep
+    there; a save and reload between the take-down and the rebuild; a renewal cancelled after the take-down leaves the
+    plot to be proposed again;
+  - showcase scene `renewal`: a time-lapse GIF of a vanilla village house becoming a Stone House in Cherry.
+- [ ] **27.22** **A village from a plan (the 1.1 yardstick).** The whole milestone at once, as 23.1 is for builders: a
+  plains village with a hall, a Steward, 3 builders, a stocked storehouse and 12 villagers; a plan with Homes,
+  Workshops, Farms, Market, Gardens and Keep Clear zones, two streets and a wall line; Run the village for 6 in-game
+  days. Run it as a pack-server scenario (`tools/packtest`) for the numbers and as a screenshot scene for the
+  time-lapse. Done when:
+  - every build the Steward started is finished, none outside its zone or in Keep Clear, no item duplicated or lost
+    (counted before and after), and the stuck count is 0 (or each case is a Bug);
+  - the Steward's work (rules, plot search, roads, renewal) costs under 0.5 ms a tick per village at p95 (`PERF=true`),
+    written in `docs/performance.md`;
+  - the README has a "Villages that build themselves" section (the City Plan, the Steward, the desk, roads, walls,
+    renewal, the data folders for packs, every new config key in the table), and the In-Game Guidebook has its page
+    if 26.2a has landed (else a note on 26.2a);
+  - showcase scene `city_timelapse`: the village growing into its plan, the GIF that leads the 1.1 release notes.
+
+Depends on: nothing.
+
+## Milestone 28: Pokémon and villagers, together (1.2)
+
+Pokémon stop being a side mod and become part of village life. Pokémon pastured by a workstation are seen at work (a
+Machamp shouldering beams to the builder, a Wartortle watering the fields, a Pidgeotto off with the air mail), five new
+jobs work Cobblemon's own blocks, villages get a Pokémon Center, and every third festival of a village with an Arena
+becomes the Festival Cup: a themed tournament its trade partners send their Trainer Leaders to, with the stands full, a
+fair on, and the winner's banner flying over the winning village. It builds on `work/Partners`, `compat/cobblemon/`,
+`trainer/`, `hall/Festivals`, `MarketDays`, `Caravans` and the `Chronicle`; the owner's pack is still on Cobblemon 1.7.3,
+so the parts that need Cobblemon 1.8 (Habitat Blocks, Type Gems, Alphas) wait quietly until the pack moves up. Nothing
+here adds a new kind of speed bonus (the new jobs get the partners' existing one).
+
+- [ ] **28.1** **Design note.** `docs/design/M28.md`, sent to the owner as a review package (lanes don't wait for his
+  reply): what the player sees (the partner shows, the five jobs and their builds, the Pokémon Center, a Cup day hour
+  by hour with a sketch of the Arena); the data formats (`partner_shows`, `camp_menu`, `gem_beds`, `village_habitats`,
+  `cups`, `type_chart`, all under `data/aliveworkplace/`); every config switch; the save data (new attachments, hall
+  fields and the `aliveworkplace_cups` saved data, all with defaults); which parts need Cobblemon 1.8 (checked
+  2026-10-03 on the Cobblemon wiki and changelog: Alphas, TMs and the TM Machine, Type Gems grown on Deepslate Crystal
+  Cores and the Habitat Block came in 1.8.0, 2026-09-06; the Cobbleverse pack 1.7.42 still ships 1.7.3) and which work
+  on 1.7.3 (the Campfire Pot, Hearty Grains, Saccharine trees, Poké Snacks, berry mutations, tumblestone); and how the
+  Cup keeps the owner's rules: villages enter, with their Leaders and the players who represent them; no badges, no gyms
+  and no trophies for players (the pack's own Badges & Trophies mod does that); Leaders and the purse pay money only;
+  the banner belongs to the village. Done when: the note is on `main` and its package is sent.
+- [ ] **28.2** **Cobblemon 1.8 as well as 1.7.3.** The mod compiles and tests against Cobblemon 1.7.3 and
+  `CobblemonCompat.TESTED` stops below 1.8, while 1.8.0 and 1.8.1 (Minecraft 1.21.1) are out; a `LinkageError` there
+  switches every Pokémon feature off at once. Keep compiling against 1.7.3 and:
+  - add a switch (`-Pcobblemon18=true`) that runs `runCompatGameTest`, the screenshot harness and the showcase with
+    Cobblemon 1.8.1 (`maven.modrinth:cobblemon:gBW3vLC7`, with the Kotlin and Fabric API it needs); mods with no
+    build for it are left out of that run, each listed with its reason in `stonecutter.properties.toml`. The nightly
+    workflow runs the compat suite both ways;
+  - fix whatever 1.8.1 breaks in `compat/cobblemon/` (a call whose signature changed goes through one small shim that
+    picks the method present), and widen `TESTED` to `>=1.7.3 <1.9`;
+  - add `work/PokemonFeatures` (core, by registry id only): `HABITATS` (`cobblemon:habitat_block`), `TYPE_GEMS`
+    (`cobblemon:deepslate_crystal_core`), `TM_MACHINE` (`cobblemon:tm_machine`), `ALPHAS` (Cobblemon 1.8 or later).
+    Every 1.8-only part of this milestone asks it first.
+
+  Done when:
+  - the compat suite is green with 1.7.3 and with 1.8.1 (trainers, tutors, traders, daycare, fossils, partners,
+    orchard, nurse; Mega Evolution too if Mega Showdown has a build for 1.8);
+  - a GameTest shows the four features off under 1.7.3 and on under 1.8.1;
+  - the README says which Cobblemon versions work. Nothing visible changed: land with `--no-review`.
+- [ ] **28.3** **Partners at work: the engine.** Partners speed jobs up today but are never seen doing it. Add
+  `work/PartnerShows`: a job calls `PartnerShows.cue(villager, "<cue>", pos)` at a moment of its work, and one of the
+  worker's pastured helpers (the entities `PokemonPartners.fighters` already finds) of a type the show names walks to
+  `pos`, does the show and walks back. New `PokemonPartners` methods, filled in `CobblemonPartners`: `walkTo`,
+  `goHome`, `animate` (Cobblemon's physical, special or cry animation) and `effect` (a vanilla particle or a Cobblemon
+  snowstorm effect such as `cobblemon:impact_water`).
+  - A show is data: `data/aliveworkplace/partner_shows/<name>.json` holds the jobs (profession ids), the helper types,
+    the cue, what it carries (an item, or `from_work`: what the worker is handling), the animation, particles, sound,
+    how long it lasts, and an optional effect from a toolbox (`none`, `hydrate_farmland`, `smoke`, `sparks`). The
+    engine ships with the toolbox and one show (a Fighting partner carrying planks for the builder).
+  - Carrying is a vanilla Item Display entity that follows the Pokémon by teleport with interpolation (it never rides
+    it), tagged, removed when the show ends and removed on chunk load if a show was cut off.
+  - A pastured Pokémon is never untethered: it only goes where its pasture lets it wander (Cobblemon's setting, 32
+    blocks by default in 1.8); if `pos` is farther it plays at the nearest point it may reach. If Cobblemon's brain
+    ignores the walk, the show plays where the Pokémon stands, facing the worker. Never a Pokémon in battle, ridden or
+    on a shoulder; a show never changes a Pokémon's held item, friendship, moves or stats.
+  - Budget: one show per worker every 10 seconds at most, 6 running per level, none when no player is within 48 blocks.
+    Config `partnerShows` (true).
+
+  Done when:
+  - a compat GameTest: a pastured Machop within 16 blocks of a builder's table is cued, walks toward the site within its
+    pasture's range carrying a plank display, comes back, and the display is gone;
+  - a display left by a cut-off show is removed when its chunk loads (GameTest); no show runs with no player near, or
+    with `partnerShows` off;
+  - showcase scene `partners_engine`.
+- [ ] **28.4** **Partners at work: building and the land.** Shows (one data file each, cued from the job's own code):
+  - Builder + Fighting: shoulders the logs or planks the builder fetches from the supply chest (cue `fetch`) and punches
+    each block home with a physical move as it's placed (cue `place`); + Rock: carries the stone; + Steel: carries the
+    iron parts (bars, doors, chains, lanterns).
+  - Porter + Fighting or Normal: follows the porter's round with a barrel on its back (cue `haul`) and sets it down at
+    the storehouse.
+  - Carpenter or Mason + Fighting, Rock or Steel: holds the board or stone at the crafting table or stonecutter (cue
+    `craft`), with the block's crack particles.
+  - Farmer + Water: waters a 3×3 patch of the field with Cobblemon's water effect (cue `tend`); that farmland becomes
+    fully moist (`hydrate_farmland`); + Grass: green sparkles over the crops it passes, nothing more; + Ground: walks the
+    furrow ahead of the farmer as they till (cue `till`), with dust.
+  - Lumberjack + Fighting: a physical move at the trunk with each chop (cue `chop`); + Grass or Bug: carries the
+    sapling to the stump and plants it with the lumberjack (cue `replant`).
+  - Orchard Keeper + Flying or Bug: flutters through the tree being picked (cue `pick`), with pollen.
+
+  Done when: a GameTest per cue (the show starts when the worker reaches that moment in real work; the watered
+  farmland is at moisture 7), and showcase scene `partners_land` (the builder with a Machamp carrying beams, the farmer
+  with a Wartortle watering) with its GIF in the review package.
+- [ ] **28.5** **Partners at work: post, forge and kitchen.** Shows:
+  - Postman + Flying: when a parcel goes by air mail it takes off from the Mailbox with a bundle, climbs out of sight
+    and lands back empty-handed (cue `air_mail`); on the round it flies ahead to the next mailbox (cue `deliver`).
+  - Armorer, Miner or Fisherman + Fire: breathes fire into the furnace or smoker each time it smelts the 8 on the spot
+    that Fire partners already smelt (cue `fire_smelt`), with Cobblemon's fire effect.
+  - Chef + Fire: fans the smoker's flames (cue `cook`); + Normal: carries the finished dish to the chest.
+  - Toolsmith or Ball Smith + Steel or Fire: sparks at the smithing table (cue `forge`); carries the new tool or the
+    batch of balls to the chest.
+  - Weaponsmith + Steel or Fighting: holds the worn piece at the grindstone (cue `mend`).
+  - Fletcher + Flying or Bug: brings a feather or string to the table (cue `fletch`).
+  - Tinkerer + Electric or Steel: electric sparks over the part being made (cue `tinker`) and over the iron golem being
+    mended.
+
+  Done when: a GameTest per cue, and showcase scene `partners_forge` with its GIF (the air mail take-off, a Charmander
+  breathing into the blast furnace).
+- [ ] **28.6** **Partners at work: everyone else.** Shows:
+  - Miner + Ground, Rock or Steel: digs at the next block along with the miner (cue `dig`), with that block's crack
+    particles.
+  - Fisherman + Water or Ice: swims out round the bobber, with bubbles (cue `cast`).
+  - Scholar + Psychic: floats a book beside the lectern, with enchanting glyphs (cue `study`); Teacher + Psychic or
+    Normal: the same during lessons (cue `lesson`).
+  - Nurse + Fairy, Normal or Psychic: a pink pulse over the villager being cured or the player being healed (cue
+    `cure`).
+  - Composter + Poison or Grass: stirs the composter (cue `compost`), green bubbles.
+  - Florist + Grass or Fairy: sprinkles over the garden (cue `grow`).
+  - Beekeeper + Bug or Grass: circles the hive being harvested (cue `harvest`).
+  - Sifter + Ground or Rock: shakes dust from the cauldron (cue `sift`).
+  - Netherworker + Fire or Dark: walks them to the portal with flames at its feet (cue `depart`).
+  - Cartographer + Flying or Ground: scouts ahead as they set out (cue `set_out`).
+  - Rancher + Normal or Ground: walks beside the wild horse being broken in (cue `tame`).
+
+  Done when: a GameTest per cue, and showcase scene `partners_all`: one still per job with its partner at work.
+- [ ] **28.7** **The Pokémon Center.** Two blueprints (architect skill, an original design, checked against STYLE.md in
+  a render), in the Blueprint Table with Cobblemon only and sold by Journeyman Nurses:
+  - **Pokémon Center**: a bright hall under a red roof, a glass front, a counter with Cobblemon's Healing Machine (the
+    nurse's place), a PC by the counter, shelves of potions behind it, benches along the walls;
+  - **Pokémon Center II**: a lodge upstairs with four beds (homes), a trade corner with a Shop Counter (hand the
+    villager there a Poké Ball: a Pokémon Trader), and a garden behind with a Pasture Block.
+
+  The Healing Machine becomes a Nurse workstation too: its POI is registered when Cobblemon registers the block (as
+  the Fossil Analyzer's is), a honey bottle picks the Nurse there, and a jobless villager never takes a player's machine
+  by themselves. A nurse at a machine heals your team in it: right-click her and she puts your Poké Balls in the
+  machine (its own animation and heal time), free; while she's on shift the machine stays charged. A nurse at a brewing
+  stand heals as before. The hall's "What next?" suggests a Pokémon Center to a Cobblemon village of Village rank
+  without one. Config `nurseHealingMachine` (true).
+
+  Done when:
+  - a compat GameTest: a nurse at a machine heals a hurt party through it (the machine is in use, then every Pokémon is
+    full); a jobless villager left by a machine for 2400 ticks doesn't take it;
+  - a builder builds both tiers (GameTest), and the renders are in the package;
+  - showcase scene `pokemon_center` (stills of both tiers, a GIF of the healing).
+- [ ] **28.8** **The Camp Cook.** Stand a villager by a Campfire Pot (Cobblemon's campfire with a pot on it; POI when
+  Cobblemon registers `cobblemon:campfire`) and sneak-right-click them with Hearty Grains. Never taken by a jobless
+  villager. Config `campCooks` (true).
+  - She cooks in the pot itself: the makings into its slots and seasonings into its top row through its container (as
+    hoppers do), the lid shut (the state redstone drives), the pot's own cooking time, then the dish to the chests by
+    the pot.
+  - Her menu is data: `data/aliveworkplace/camp_menu/<dish>.json` (the dish, how many to keep, when: `always`, `asked`
+    or `order`). Shipped: always, up to 16: Poké Snack, Poké Bait, Aprijuice in all seven colours (seasoned to Tasty or
+    Delicious when the chests have the seasonings), Exp. Candy XS, S and M, Ponigiri, Leek and Potato Stew, Smoked-Tail
+    Curry, Open-Faced Sandwich, Vivichoke Dip, Sinister Tea; when a worker asks: Poké Snacks seasoned with the berries
+    the Habitat Keeper wants (28.10), Poké Bait for the fishermen; on stock orders only: Big Malasada, Casteliacone,
+    Jubilife Muffin, Lava Cookie, Lumiose Galette, Old Gateau, Pewter Crunchies, Rage Candy Bar, the seven sweets
+    (Berry, Clover, Flower, Love, Ribbon, Star, Strawberry), Whipped Dream, the mochi, the EV candies, potions and the
+    status heals.
+  - Her meals (Ponigiri, the stew, the curry, the sandwich, the dip, the tea) count as meals in the village store and
+    for Diet variety.
+  - Village farmers sow and harvest Hearty Grains and Vivichoke from the chests' seeds like their other crops.
+  - Trades: Poké Bait and Poké Snacks (Novice), Aprijuice (Apprentice), Exp. Candy S and M (Journeyman), Lumiose
+    Galette and Big Malasada (Expert), Exp. Candy L (Master). Partner types: Fire and Normal. Her partner show (a 28.3
+    data file): a Fire partner lights the campfire.
+
+  Done when:
+  - compat GameTests: she cooks a Poké Snack in a real pot (the lid shuts, the dish comes out, the makings are gone); a
+    stock order for Lava Cookies is filled; a villager eats a Ponigiri from the store and Diet records it; a farmer
+    harvests and replants Hearty Grains;
+  - the README section and job table say how to start her;
+  - showcase scene `camp_cook` with its GIF.
+- [ ] **28.9** **The Berry Breeder.** Stand a villager by a composter and sneak-right-click them with any Cobblemon
+  berry. Config `berryBreeders` (true).
+  - The berry book: every berry and its `mutations` read from Cobblemon's own berry data (70 in 1.7.3), so a data pack's
+    berries come too. Sneak-right-click the breeder: one page lists every berry, found ones lit, the rest with the pair
+    that makes it (greyed while a parent is still missing). Click one to make it her goal; she works out the chain from
+    the berries the village has (chests and plots), one step at a time. The village's found berries are kept in the hall
+    (a new field, empty by default).
+  - Work: in her plot (farmland within 8 blocks of the composter, or a Field Marker she's given), she plants the next
+    step's two parents in alternating rows so each plant touches the other kind (Cobblemon makes the mutation), puts
+    Growth and Surprise Mulch from the chests on them, picks the fruit (the berry plant stays), notes any new berry,
+    then plants it as a parent for the next step. Spare berries go to the chests, 16 of each kept for the Camp Cook and
+    the Habitat Keeper.
+  - Trades: common berries (Novice), mulch (Apprentice), the berries she has found (from Journeyman). Partner types:
+    Grass and Bug; show: a Bug partner flits between the paired plants.
+
+  Done when:
+  - compat GameTests: with Oran and Cheri in the chests and Lum as the goal, she plants them side by side, a forced
+    harvest with a mutation gives Lum and the book marks it found; the chain to Sitrus (Lum + Figy) is planned from Oran,
+    Cheri and Figy;
+  - showcase scene `berry_breeder` (the book page, the paired plot).
+- [ ] **28.10** **The Habitat Keeper.** Stand a villager by a Pasture Block (POI when Cobblemon registers
+  `cobblemon:pasture`; never taken by a jobless villager) and sneak-right-click them with a honey bottle. Config
+  `habitatKeepers` (true), `habitatSightings` (true).
+  - Lure spots: up to 3 Poké Snacks kept set out within 32 blocks of the pasture, on spots marked with a Field Marker
+    (unmarked: on grass 16 to 32 blocks out), from the chests (the Camp Cook's), and set out again when one is eaten up.
+    Sneak-right-click the keeper to pick a lure: a type or an egg group; she asks the Camp Cook for snacks seasoned with
+    the berries Cobblemon's `spawn_bait_effects` data gives that effect (by id; with Cobblemon 1.8, Hopo for Alphas).
+  - Honey: Saccharine logs within 32 blocks are slathered with honey bottles from the chests (Cobblemon's own: a
+    slathered log raises the hidden-ability chance nearby) and slathered again when it wears off; Saccharine saplings
+    from the chests are planted round the lure spots. Logs are found by an incremental scan (4,096 blocks a tick at
+    most) and remembered.
+  - Sightings: every minute she notes the wild Pokémon within 48 blocks of the pasture (an entity query, not a block
+    scan): shiny ones, species Cobblemon only spawns as rare or ultra-rare (its spawn data, by id) and, with 1.8,
+    Alphas. Each new one is told to players in the village and goes in the chronicle (new kind `SIGHTING`, a spyglass
+    icon): "Bramble spotted a shiny Eevee by the east field". The hall's list shows her last five sightings.
+  - Trades: Saccharine saplings and honey (Novice), Poké Snacks (Journeyman). Partner types: Flying and Grass; show:
+    a Flying partner circles a new sighting.
+
+  Done when:
+  - compat GameTests: a snack set on a marked spot and set out again after it's used up; a Saccharine log slathered; a
+    shiny wild Pokémon placed nearby is announced and written in the chronicle once, not every minute;
+  - showcase scene `habitat_keeper` (a snack spot, the slathered log, the sighting in chat).
+- [ ] **28.11** **The Gem Grower.** Stand a villager by a stonecutter and sneak-right-click them with an amethyst shard
+  (masons keep the stonecutter's own job). Works without Cobblemon too. Config `gemGrowers` (true).
+  - Gem beds are data: `data/aliveworkplace/gem_beds/<name>.json` holds what's planted (an item, or nothing), what it
+    must touch (a block or tag), which blocks grow and which state is ripe, and the harvest (the block's own loot). Beds
+    within 16 blocks of the stonecutter are found by an incremental scan (4,096 blocks a tick at most) and remembered.
+  - Shipped beds, each its own file: `amethyst` (budding amethyst; only full clusters are picked, the budding block is
+    never broken); with Cobblemon `tumblestone`, `sky_tumblestone`, `black_tumblestone` (planted from the chests
+    against lava or magma, as Cobblemon grows them; full clusters picked); with Cobblemon 1.8 the 18 type gems
+    (`normal_gem`, `fire_gem`, `water_gem`, `grass_gem`, `electric_gem`, `ice_gem`, `fighting_gem`, `poison_gem`,
+    `ground_gem`, `flying_gem`, `psychic_gem`, `bug_gem`, `rock_gem`, `ghost_gem`, `dragon_gem`, `dark_gem`,
+    `steel_gem`, `fairy_gem`: that type's Gem Block set against a Deepslate Crystal Core, stage-3 clusters picked, the
+    Gem Block kept).
+  - Orders: sneak-right-click to pick which beds she keeps (like the Ball Smith's orders); with nothing picked, every
+    bed she has the makings for. With glass in the chests and Cobblemon 1.8 she also makes Blank TMs from shards
+    (Cobblemon's recipe), up to 8.
+  - Trades: amethyst shards (Novice), tumblestones (Apprentice), type gems (Expert, 1.8). Partner types: Rock and
+    Steel; show: a Rock partner taps the ripe cluster loose.
+
+  Done when:
+  - GameTests: a full amethyst cluster picked and the budding block still there; a tumblestone planted against magma
+    and a forced full cluster picked (compat, 1.7.3); a Fire Gem Block set on a core and a forced stage-3 Fire Gem
+    cluster picked (compat, 1.8.1); a malformed bed file is logged and skipped;
+  - showcase scene `gem_grower`.
+- [ ] **28.12** **The Daycare Keeper.** Cobblemon has no breeding; the Cobbleverse pack adds it with Cobbreeding
+  (eggs in the Pasture Block). Stand a villager by a Pasture Block and sneak-right-click them with an egg. Config
+  `daycareKeepers` (true).
+  - Right-click her (sneak for trades): the daycare screen (as the Rancher's, `compat/cobblemon/CobblemonDaycare`):
+    leave one pair per player, three pairs per keeper at most. It says how well they get along, from Cobblemon's
+    species data (egg groups, gender): very well (same species, different original trainers), well (same species, or
+    one egg group in common), so-so (Ditto with anything that breeds), not at all (no group in common, or the
+    Undiscovered group).
+  - Each dawn she finds an egg with the pair: 70%, 50% or 20% by how well they get along (+10% at Expert and Master),
+    kept for the owner, three a pair at most. Collecting costs 4 emeralds (their worth in CobbleDollars) an egg.
+    - With Cobbreeding installed: a real Cobbreeding egg, made with its own `/givepokemonegg` command, so its hatching,
+      inheritance and shiny rules apply.
+    - Without it: the hatchling itself at level 1, in the base form of the mother (or the parent that isn't Ditto),
+      with 3 IVs from the parents (5 when one holds a Destiny Knot), the nature of a parent holding an Everstone, the
+      mother's ball, a 1 in 5 chance of a hidden ability the mother has, and the egg moves both parents know; to the
+      party or the PC.
+  - If she dies, the pairs go to their trainers' PCs (as the Rancher's boarders do). Cobbreeding joins the compat test
+    mods. Trades: Exp. Candy XS (Novice), Everstone (Journeyman), Destiny Knot (Master). Partner types: Normal and
+    Fairy; show: a Normal partner keeps the pair company in the pasture.
+
+  Done when:
+  - compat GameTests: a compatible pair and a forced dawn give the right species with inherited IVs and the Everstone
+    nature; an incompatible pair never does; with Cobbreeding a Cobbreeding egg item is given; the keeper's death sends
+    both to their PCs;
+  - showcase scene `daycare_keeper` (the screen, collecting).
+- [ ] **28.13** **Builds for the new jobs.** Five builds with an upgrade each (architect skill, STYLE.md, renders), in
+  the Blueprint Table (the Cobblemon ones only with Cobblemon) and sold by their job's Journeyman, each with its job
+  block taking a villager with the item:
+  - **Camp Kitchen**: an open timber shelter round a Campfire Pot, a grain store and benches; **II**: a Hearty Grain
+    plot and a smokehouse with a smoker.
+  - **Berry Nursery**: fenced farmland beds laid out in pairs, a composter and a potting bench; **II**: a greenhouse
+    with four more beds.
+  - **Habitat Garden**: a wild garden with a pond, tall grass, flowers, a Saccharine tree, stepping stones and a
+    Pasture Block in a hedge, round a mossy centre stone; **II**: a keeper's hide on stilts and a second pond. (28.14
+    puts the village's habitat under the centre stone.)
+  - **Gem Grotto**: a stone shed over a lava pool behind glass, with a stonecutter, tumblestone ledges round the lava
+    and a budding amethyst niche; **II**: a deeper chamber with four Deepslate Crystal Cores (plain deepslate without
+    Cobblemon 1.8).
+  - **Daycare**: a barn with a Pasture Block in a fenced paddock and a straw-floored nursery; **II**: a second paddock
+    and a hatchery corner with lanterns.
+
+  Done when: the ten blueprints are in the table, lint-clean, with renders front and back in the package; a builder
+  finishes each in a GameTest with its job block in place; showcase scene `pokemon_builds`.
+- [ ] **28.14** **A habitat of the village's own (Cobblemon 1.8).** The Habitat Block has no recipe and drops nothing:
+  in survival it only comes in Cobblemon's 49 habitat structures. With `PokemonFeatures.HABITATS`:
+  - Tending: natural Habitat Blocks within 64 blocks of the keeper's pasture (found through the loaded chunks' block
+    entities, never a block scan) are visited each morning, and the hall's list posts today's phase ("Lush Cenote,
+    today: Lotad, Wooper, Goomy") from the block's saved settings and `data/cobblemon/habitat_pools`.
+  - Founding: an Expert Habitat Keeper in a village with a finished Habitat Garden places one Habitat Block in natural
+    mode under its centre stone (mimicking the moss block it replaces, Cobblemon's mimic setting), with the pool from
+    `data/aliveworkplace/village_habitats/<name>.json` (a biome tag and one of Cobblemon's pools per file). Shipped:
+    plains → flowerbed_clearing, sunflower plains → sunflowerbed_clearing, meadow, flower and birch forest →
+    fae_mounds, forest → berry_patch, cherry grove → pinkflowerbed_clearing, dark forest → deep_roots, taiga →
+    spruce_wildfire_scar, snowy plains and ice spikes → snowy_burrow, snowy taiga, grove and snowy slopes →
+    snowy_grotto, desert → desert_oasis, savanna → sunscorched_clearing, badlands → badlands_shaded_rock, swamp →
+    lush_peat_bog, mangrove swamp → root_nursery, jungle → lush_canopy, beach → sandy_tide_pool, stony shore →
+    rocky_tide_pool, windswept hills and peaks → rocky_outcrop, mushroom fields → fungal_dwelling, anywhere else →
+    zen_garden. One per village; it belongs to the village (protection covers it); taking the garden down removes it
+    without a drop.
+  - Config `villageHabitats` (true). (Owner's call: whether survival villages may get a Habitat Block at all, since
+    Cobblemon gives none; default meanwhile on, one per village.)
+
+  Done when:
+  - compat GameTests on 1.8.1: an Expert keeper with a finished Habitat Garden places one natural-mode block with the
+    biome's pool, and a forced spawn round brings a Pokémon from that pool within its range; breaking the garden
+    removes the block with no drop; on 1.7.3 nothing is placed and the keeper's page says it needs Cobblemon 1.8;
+  - showcase scene `village_habitat`, filmed with `-Pcobblemon18=true`.
+- [ ] **28.15** **Villages grow them.** With Cobblemon, villages (the pools that grow trainer's houses) sometimes grow
+  five new houses, each in the five village styles through `tools/blueprints/village.py`'s `village_house` fit-outs,
+  each with exactly one job block and its villager already in the job (an entity in the template): a **Pokémon Center**
+  (a counter with a Healing Machine and a PC; a nurse), a **Camp Kitchen** (a cook), a **Berry Nursery** (a breeder), a
+  **Daycare** (a keeper) and a **Gem Grotto** (a grower at a stonecutter, an amethyst niche, tumblestone ledges on magma
+  behind glass; no open lava in a village). Config `pokemonVillageHouses` (true).
+
+  Done when: `generate.py` writes the 25 templates (no `structure_void`, B5), renders checked; a `VillageGameTests`
+  test per house places it with its villager, who has the job and stands in open space (B6); `SCENE=village` shows one
+  in a Cobblemon village.
+- [ ] **28.16** **The Arena.** Three tiers (architect skill, an original design, renders), in the Blueprint Table with
+  Cobblemon only and sold by an Expert Trainer Leader:
+  - **Arena**: a 15×9 battle ring (a packed-mud floor, white lines and a centre circle), a trainer's box on a dais at
+    each end with a lamp post, benches along one long side for 12 villagers, two banner poles, a notice board; at most
+    25×19;
+  - **Arena II**: stands on both long sides (30 seats), a gate arch, lanterns round the ring, a fair lane with two
+    striped kiosks;
+  - **Arena III**: a covered grandstand on stone terraces, a trainers' room at each end (a Healing Machine in each),
+    and a champion's pole before the gate; at most 29×29 (fits `huge_area`).
+
+  `Arenas.find(level, hall)` returns a finished Arena within the hall's reach with its ring centre, the two boxes, the
+  seats, the fair lane and the champion's pole, for every tier, rotation and mirror (known offsets in our own
+  templates, like `MarketDays.square`). The hall's "What next?" suggests an Arena to a Cobblemon village of Village rank
+  with a Trainer Leader and no Arena.
+
+  Done when: a builder finishes each tier (GameTest); `Arenas.find` is right in 4 rotations and mirrored (GameTest);
+  showcase scene `arena` (each tier, front and from above).
+- [ ] **28.17** **The Festival Cup: calendar, themes and entrants.** No battles yet; config `festivalCup` (true),
+  `cupEveryFestivals` (3).
+  - Hosts: a village with a hall, a finished Arena, Cobblemon and at least Village rank holds every third festival as
+    a Cup. Its circuit: the host and every village with a hall it has a trade route with,
+    either way (`Caravans`), seven at most, nearest first.
+  - Themes are data: `data/aliveworkplace/cups/<name>.json` holds the name (a lang key), its place in the order, the
+    format (singles or doubles), the level every Pokémon battles at (Cobblemon's level adjust), how many each trainer
+    brings, the allowed types, the stage (first, final or any), banned labels (legendary, mythical, ultra beast,
+    paradox, as for trainers), the Showdown rules, when the bouts start and must end (noon to midnight unless it says
+    otherwise), the fair's wares (item and price), the feast dish, the firework colours and the bard's disc. Loaded by a
+    reload listener; this item ships one theme (the Grand Cup, 28.22) to test
+    with. The next theme comes in order; the host's owner may pick another on the Cup page until sign-up closes.
+  - Entrants: each circuit village's Trainer Leader (else its best Trainer; else none), the host's Leader and up to two
+    of its Trainers to fill the bracket, and the players who sign up: each for a village they own, or whose owner made
+    them a friend, or that nobody owns; two players a village at most. The bracket holds 4, 8 (Town host) or 16 (City
+    host); byes go to the highest seeds (Leaders by tier, then players, then the host's Trainers). Fewer than 4: no
+    Cup, a plain festival, and the page says why.
+  - Far villages: every hall's round now writes its Trainer Leader (UUID, name, tier, XP) on its `Caravans` entry (new
+    fields, none by default), so an unloaded village can still send them.
+  - The hall's Cup page (a `ChoiceMenu` page, a new button on the hall screen): the next Cup (theme, day, its rules in
+    plain words), the circuit's villages and their entrant, the signed-up players, Sign up / Withdraw, and the roll of
+    champions. Players in circuit villages are told when sign-up opens (when the festival before ends) and the evening
+    before.
+  - Saved in `aliveworkplace_cups` (per dimension, by host: theme, day, entrants, bracket, results, champions).
+
+  Done when: GameTests for the circuit from routes, the calendar (the third festival), the entrants (Leader, best
+  Trainer, the players' rights and caps), seeding and byes for 3, 5, 8 and 11 entrants, the Leader record written and
+  read while the village is unloaded, the Cup state saved and reloaded, a malformed theme file logged and skipped; and
+  showcase scene `cup_page`.
+- [ ] **28.18** **Cup bouts between villagers.** A round starts when the last round's bouts are done; a bout between
+  two villager entrants is an exhibition at the ring:
+  - Teams: `CobblemonTrainers.team` gets a themed variant: the same seeded pool, filtered by the theme's types, stage
+    and labels, as many as the theme brings, trained by the trainer's tier as now. A delegate (28.19) uses its Leader's
+    UUID, so it fields the same team as at home.
+  - The bout: each trainer stands in their box; their Pokémon come out one at a time beside the ring (real Pokémon
+    entities marked like trainers' Pokémon: never catchable, removed on load), face each other and take turns: the
+    faster uses one of its moves (Cobblemon's physical or special animation and the impact effect of the move's type,
+    as the guards' partners show), damage from a small formula (the theme's level, the move's power, attack against
+    defence, the same-type bonus, type effectiveness from `data/aliveworkplace/type_chart.json`, the 18 types),
+    seeded by the bout so it can be replayed. A fainted Pokémon is called back and the next comes out; one-on-one even
+    in a doubles Cup; 90 seconds at most, then the side with more health left wins.
+  - Afterwards: the winner goes on; both trainers get trainer XP (`Trainers.XP_PER_BATTLE`, the win bonus to the
+    winner); a delegate's XP is banked on its village's `Caravans` entry and given to the real Leader when that village
+    next loads. Everyone at the Arena reads the result ("Mira of Thornholm beat Dara of Ashford: Lucario stands").
+
+  Done when: GameTests: the bout is the same for the same seed; the chart is sane (Water on Fire 2×, Normal on Ghost
+  0×); a bout between two trainers ends with a winner and every Pokémon entity gone; a themed team follows the theme; a
+  delegate's banked XP reaches the real Leader on load; showcase scene `cup_bout` with its GIF.
+- [ ] **28.19** **Cup day.** The Cup is the host's festival, from morning to the final:
+  - Delegates: from 1000 the far villages' entrants arrive, each a visiting villager with its Leader's name, a Trainer
+    Leader's outfit and "of <village>", walking in from the village edge on the side its home lies, to the Arena
+    (attachment `CUP_DELEGATE`: home hall, the Leader's UUID, tier; never takes a job or a bed; leaves at dawn out of
+    sight, like the market's traders). The host's own entrants walk there. A real Leader whose village is loaded is
+    "away at the Cup" that day and takes no challenges.
+  - The fair: the market's travelling traders come to the Arena's fair lane (`MarketDays.hold` there, two more than a
+    market day), each also selling the theme's wares.
+  - The afternoon off: from noon (6000) villagers off work, and for the final every villager, gather in the stands
+    (seated on the benches through a seat entity, as they sit in saddles and boats), cheer when their village's entrant
+    wins a bout (the celebrate sound, happy particles), and eat the feast (`Festivals.feast`, the theme's dish first if
+    the store has it); the bard plays the theme's disc at the ring. `Festivals.square` points at the ring all day.
+  - The bouts start at the theme's start (noon by default); after the final, fireworks in the theme's colours
+    (`Festivals.launch`), Hero of the Village for players there and the festival's mood lift for everyone who came. At
+    the theme's end time any bout left is settled as an exhibition (players not at the ring lose by walkover).
+  - The chronicle of every circuit village gets the Cup (new kind `CUP`, a gold ingot icon): host, theme, champion and
+    the final's line.
+  - A host not loaded on its Cup morning puts the Cup off a day at a time (eight days at most, then it's called off);
+    a host whose Arena is gone holds a plain festival.
+
+  Done when: a GameTest runs a Cup day with 4 entrants (2 delegates) from morning to a champion: the delegates come in
+  from their homes' side and are gone by dawn, villagers are in the stands for the final, the fair sells the theme's
+  wares, every circuit hall's chronicle has the entry; with `festivalCup` off it's a plain festival; showcase scene
+  `cup_day` (the whole day, sped up) with its GIF.
+- [ ] **28.20** **Players in the Cup.** A signed-up player's bout is called in chat with a clickable [I'm ready] and a
+  bell; they have two minutes inside the Arena to click it, or lose by walkover (so does a player who's offline).
+  - Against a villager: a real Cobblemon battle with the delegate or host trainer as `VillagerTrainerActor`, in the
+    theme's format (singles or doubles), its level adjust and Showdown rules (the theme's level replaces RCT's level
+    caps here). The player's team is their party's first eligible Pokémon, up to the theme's count; before the battle
+    they're told which were left out and why. Both sides fight with healed copies, so nobody gains experience or keeps
+    damage. No daily limits from ordinary challenges apply.
+  - Against a player: Cobblemon's own PvP battle (`BattleBuilder.pvp1v1`) with both eligible teams as healed copies.
+  - Fleeing loses the bout. [Watch] on the Cup page and the Arena's notice board puts a player in Cobblemon's spectator
+    view of a running player bout.
+  - The purse, money only (CobbleDollars, emeralds without): 500 for each bout won, 2,000 more for winning the final,
+    half as much again at a City host.
+
+  Done when: compat GameTests: a signed-up player's battle starts with only eligible Pokémon, as a double battle for a
+  doubles theme, at the theme's level; a win moves them on and pays; an absent player loses by walkover after two
+  minutes; fleeing counts as a loss; a bout between two players starts with both teams; showcase scene `cup_match`
+  (the battle at the ring, the stands behind).
+- [ ] **28.21** **Champions.** When the final ends:
+  - The champion's village holds the Cup until the host's next Cup: its name goes on the roll of champions (Cup page),
+    in every circuit village's chronicle, on its hall's name tooltip, in other halls' trade-route lists and on the
+    Village Map's legend ("holders of the Thornholm Cup").
+  - The Cup banner: a banner pattern of ours (`aliveworkplace:cup`, data-driven, drawn with the pixel-art skill) in the
+    theme's colours flies over the holder: on its Arena III's champion's pole if it has one, else on top of its Village
+    Hall where the space is free. It comes down when the title passes. A far village that wins gets it the next time it
+    loads. The banner belongs to the village; the player who won gets the purse only.
+  - Pride: while they hold the Cup every villager there has a mood reason "Our village holds the Cup" (+5).
+  - The winning Leader (or the host trainer) gets two win bonuses of trainer XP. Defending champions are seeded first
+    at the next Cup.
+
+  Done when: GameTests: after a final the banner stands on the champion's pole or hall and comes down when a new
+  champion is crowned; the mood reason is there for holders and gone after; the chronicle line is in every circuit
+  hall; a far champion gets its banner when it loads; the pattern passes `lint.py`; showcase scene `cup_champions`
+  (the banner over the hall, the roll of champions).
+- [ ] **28.22** **The eight Cup themes.** Each a data file in `data/aliveworkplace/cups/` with its rules, wares,
+  dish, fireworks and disc; delegates' and host trainers' teams follow it (28.18), and so does players' eligibility
+  (28.20). Discs are vanilla's. In order:
+  1. **Blossom Cup**: Grass, Bug and Fairy; singles; level 50; bring 3. Wares: Miracle Seed, Silver Powder, Fairy
+     Feather, Leaf Stone, Shiny Stone. Dish: Flower Sweet. Fireworks pink and green. Disc: Chirp.
+  2. **Little Cup**: first-stage Pokémon that can still evolve; singles; level 5; bring 3. Wares: Eviolite, Everstone,
+     Oval Stone, Link Cable, Exp. Candy XS. Dish: Casteliacone. Fireworks yellow and white. Disc: Cat.
+  3. **Sun Cup**: Fire, Water and Electric; doubles; level 50; bring 4. Wares: Charcoal Stick, Mystic Water, Magnet,
+     Fire Stone, Water Stone, Thunder Stone. Dish: Lava Cookie. Fireworks orange and blue. Disc: Blocks.
+  4. **Workers' Cup**: only Pokémon that have helped a villager at work on 3 days or more (from this item on, each day
+     a pastured Pokémon is counted as a worker's partner, `work/Partners` adds one to a counter in its persistent data,
+     which Cobblemon keeps); any type; singles; level 50; bring 3; villager trainers field types `Partners.types` lists.
+     Wares: Black Belt, Hard Stone, Metal Coat, Soft Sand, Power Weight. Dish: Pewter Crunchies. Fireworks gold and
+     brown. Disc: Mall.
+  5. **Harvest Cup**: Ground, Rock and Normal; singles; level 50; bring 3. Wares: Soft Sand, Hard Stone, Silk Scarf,
+     Sun Stone, Big Root. Dish: Leek and Potato Stew. Fireworks orange and gold. Disc: Far.
+  6. **Lantern Cup**: Ghost, Dark and Psychic; singles; level 50; bring 3; starts at dusk (12000) and may run until
+     dawn, fireworks at the end. Wares: Spell Tag, Black Glasses, Twisted Spoon, Dusk Stone, Reaper Cloth. Dish:
+     Sinister Tea. Fireworks purple and white. Disc: 13.
+  7. **Frost Cup**: Ice, Steel and Dragon; singles; level 50; bring 3. Wares: Never-Melt Ice, Metal Coat, Dragon Fang,
+     Ice Stone, Razor Claw. Dish: Smoked-Tail Curry. Fireworks light blue and white. Disc: Strad.
+  8. **Grand Cup**: any Pokémon a village trainer may use; singles; level 100; bring 6; Species and Item Clause. Wares:
+     Ability Capsule, Life Orb, Leftovers, Choice Scarf, Rare Candy. Dish: Big Malasada. Fireworks gold and red. Disc:
+     Creator.
+
+  Wares cost 4 to 16 emeralds each (in the files). Done when: a GameTest per theme (a delegate's team follows it, the
+  player filter takes and refuses the right Pokémon, the fair sells its wares); the Workers' counter grows by one for a
+  day of helping and never twice a day; `langcheck.py` is clean; showcase scene `cup_themes` (each theme's Cup page and
+  fair).
+
+Depends on: nothing. (Later milestones build on this one: M29's Pokémon Professor and Ranger on 28.3 and 28.10, M31's
+bounty board on 28.10's sightings, M35's Stadium on 28.16 to 28.21.)
+
+## Milestone 29: Legends: rare villagers (1.3)
+
+One-of-a-kind villagers, earned and never bought, each changing what a village can do: about one villager in thirty is
+Gifted with a rare trait, and above them stand twelve Legends, Rare (one per village), Legendary (one per world) or
+Mythic (several per server, capped per village by its rank, announced to everyone). Legends come only when a village
+has earned them, in four ways: as guests (Terraria-style), found out in the world, born to two schooled Masters, or
+inspired by a strange mood to make a Masterwork. Each wants a tier III home of their own, a luxury they like and a
+happy village, and an unhappy Legend never leaves but goes on strike. It builds on people/ (Traits, Moods, Families,
+Homes, Couples), inn/ (Innkeepers), school/ (Schools), hall/ (VillageRanks, Chronicle, Festivals, Treasury, Caravans,
+MarketDays) and research/.
+
+- [ ] **29.1** **Design note.** `docs/design/M29.md`: what the player sees (the Gifted, each Legend, how each arrives,
+  the hall's Legends page, needs and strikes); the data formats (`legends/`, `gifted/` and `research_trees/` under
+  `data/aliveworkplace/`, and the four `aliveworkplace:luxury/*` item tags); the config switches (`legends`,
+  `giftedChance`, `legendSites`, `strangeMoods`, `legendNeeds`, `mythicLegendCap`); the save data (the villager
+  attachments `LEGEND`, `GIFTED` and `STRANGE_MOOD`, new optional fields in `Families.Parents`, the hall's new fields,
+  the server-wide `aliveworkplace_legends` record) and what an existing world sees after the update (some villagers
+  turn out Gifted; nobody is a Legend until a village earns one). Sent to the owner as a review package; lanes don't
+  wait for his reply. Done when: the note is on `main` and the package is sent.
+- [ ] **29.2** **The Legend engine.** A new `legend/` package. `Legends` loads one file per Legend from
+  `data/aliveworkplace/legends/<id>.json` through `Platform.get().onDataReload` (as `ranch/PokemonChores` does), so
+  server owners can add their own. A file holds: `rarity` (`rare`, `legendary`, `mythic`); `job` (the trade they work,
+  always as a Master, with every level's trades through `Schools.headStart`; `aliveworkplace:legend` for Legends
+  without one); `title`, `lore` and six `names` (lang keys, for guests; a villager who becomes a Legend keeps their
+  own name); `conditions` (what the village must have); `arrive` (the ways they come, each with its settings:
+  29.7-29.10); `needs` (29.5); `powers`; `masterwork` (29.10); `outfit` (a texture, 29.4). The shared toolbox, one
+  small class per type, each with a test and a progress line for the hall's hints:
+  - conditions, in a new package `rules/` that later milestones extend (M35's Wonders use it): `rank_at_least`,
+    `villagers`, `finished` (a count of finished buildings, optionally of one blueprint in any style, or in N
+    different styles), `job_level` (N workers of a trade at a level or above), `treasury_total` (every emerald the
+    treasury has ever taken in: a new hall field, 0 in old halls, because the treasury holds at most 256 at once),
+    `caravan_routes`, `meal_kinds`, `festival_crowd`, `animals_at_job` (animals within 16 blocks of a trade's
+    workstations), `research_levels`, `iron_golems`, `full_moon`, `first_city` and `legend` (a given Legend settled
+    in the village); `pastured_pokemon` and `alpha_near` come with 29.21 and 29.22 through `compat/`;
+  - powers built here: `pace` (trades, a radius or the whole village, how much faster: read in `BuilderLevels.delay`
+    through the shared 2x cap, which this item adds if no other milestone has yet) and `mood` (points, a radius: a
+    reason in `Moods.work`); each Legend item adds its own named powers. Auras look Legends up in a per-dimension list
+    of settled Legends refreshed every 200 ticks, never with an entity scan.
+
+  It also registers the profession `aliveworkplace:legend` (no workstation, never reset to a jobless Novice, a plain
+  outfit drawn with the pixel-art skill), the villager attachment `LEGEND` (id, name, guest or settled, hall, since,
+  the strike fields; every field with a default), `/workplace legend list|make <id>|clear` (op) and the config switch
+  `legends`. Done when:
+  - GameTests with a test Legend in the gametest data: it loads; every condition is true and false on staged villages,
+    with the right progress numbers; `make` turns a villager into it (a Master of its trade) and it survives a save
+    and reload;
+  - a `pace` power makes a builder within its radius faster and one outside it not, never past the shared cap; a
+    `mood` power shows as a reason in the villager's mood;
+  - with `legends` off no Legend loads, nothing ticks and the command says so.
+- [ ] **29.3** **Rarities, caps and the server's record of Legends.** `legend/LegendRecord`, saved data on the
+  overworld (`aliveworkplace_legends`), lists every Legend that has settled anywhere on the server: id, villager UUID,
+  dimension, hall, rarity, the day they settled and the day they fell. `Legends.canCome(level, hall, legend)` is asked
+  before any arrival:
+  - Rare: one of each per village;
+  - Legendary: one of each per world, in any dimension;
+  - Mythic: as many as the server earns, but each village holds at most `mythicLegendCap` for its rank (a config list,
+    default Hamlet 0, Village 0, Town 1, City 2); a village that falls back a rank keeps the ones it has.
+
+  Guests and settlings are announced: Rare and Legendary ones to the players in the village and to the hall's owner
+  wherever they are, Mythic ones to every player on the server (in gold, with the challenge sound, the village's name
+  and its direction from spawn). All go in the chronicle as a new `Chronicle.Kind.LEGEND` (a nether star). Death: a
+  Legend's grave holds their slot, and the Undertaker brings them back as they were (the attachment is in the grave's
+  NBT); a Legend turned into a zombie villager keeps their slot and is themselves again when cured; dead with no
+  grave, or with their grave broken, their slot frees after 7 days ("fallen" in the record and the chronicle). If
+  their hall is broken and placed again, Legends join the nearest hall at its next round. Done when:
+  - GameTests: a second Rare of one kind is refused in one village and allowed in another; a second Legendary is
+    refused in any village and dimension; a first Mythic is refused in a Village, and in a City a second is allowed
+    and a third refused; the caps follow the config;
+  - a Legend killed with a grave keeps the slot and comes back revived as the same Legend; a cured zombie Legend is
+    the Legend again; a slot frees 7 days after a death with no grave; the record survives a reload;
+  - a Mythic announcement reaches a player 5,000 blocks away and a Rare one doesn't; showcase scene `legend_announce`
+    (the message in chat, the chronicle line).
+- [ ] **29.4** **Legends on the hall, and how they look.**
+  - The hall's list (`VillageHallScreen`) puts Legends first: name and title in gold ("Ada Stonewright, Master
+    Architect"), rarity, each power on a line, each need with a tick or a cross, a strike in red. A Gifted villager's
+    trait shows in gold under their traits.
+  - A **Legends** page (a nether star on the hall's screen): the village's Legends, then every other Legend in the
+    roster as a card: rarity, how it comes ("visits the inn", "found at a ruined portal"), each condition with its
+    progress ("kinds of meal in the store: 5 of 8"), "lives in Thornholm" for a Legendary already taken, and the
+    Mythic line ("Mythic Legends: 0 of 1, as a Town"). Terraria-style: what a village must do is never a secret.
+  - `VillageAdvice` ("What next?") gets a tip when a Legend lacks only one condition; `Chatter` gets six lines about
+    the village's Legends and guests.
+  - The look: a Legend outfit layer in `client/` (beside `GuardArmorLayer`) draws
+    `textures/entity/villager/legend/<id>.png` over the job's outfit, told to the client in a small `LegendLook`
+    packet when a player starts tracking the villager; a soft end-rod sparkle every 10 seconds; the name in gold over
+    their head.
+  - README: a new *Legends* section that each Legend item adds its paragraph to; `tools/showcase/scenes.py` gets a
+    "Legends" group.
+
+  Done when: GameTests check the page's cards (each condition's progress, the taken and Mythic lines) against staged
+  villages; screenshots show a test Legend in a placeholder outfit (pixel-art skill) and the page at GUI scales 2 and
+  4; showcase scene `legends_hall`.
+- [ ] **29.5** **Needs and strikes.** Each settled Legend's needs are checked once a day in the hall's round:
+  - **a home of their own**: their bed is in a finished building of tier III or higher (`Homes.at`), and nobody else's
+    bed is in it but their spouse's (`Couples`);
+  - **a liked luxury**: once every 7 days they take one item of their kind from a chest in their home, else the
+    village store: the item tags `aliveworkplace:luxury/wine`, `/jewels`, `/books` and `/clothes`, filled for now with
+    stand-ins (honey bottles; amethyst shards and emeralds; books and enchanted books; leather armour of any colour)
+    that M34's luxury goods join later; taking it lifts their mood 10;
+  - **a happy village**: the grown-ups' average mood is 60 or more (wellbeing 60% with `villagerMoods` off).
+
+  A need unmet two days running (after a 3-day grace once a Legend settles) starts a **strike**: their powers stop,
+  their trade's work stops (their WORK activity becomes a picket: they stand by the Village Hall by day), a red line
+  over their head says what they want ("On strike: a home of my own"), the hall's list and Legends page show it in
+  red, and the chronicle records it. The day every need is met again they go back to work, and the chronicle says so.
+  Legends never leave: inn departures, despawning and the hall's call-home all pass them by, and a strike lasts until
+  their needs are met. `legendNeeds` in the config turns needs and strikes off. Done when:
+  - GameTests: a tier III home shared with a stranger fails, shared with a spouse passes, a tier II one fails; the
+    luxury is taken once a week from the home chest, else the store; the mood test with moods on and off;
+  - unmet two days: a strike, during which the Legend's `pace` power is gone and their trade's work stops; met again:
+    back at work that day; a Legend on strike for 20 days is still in the village;
+  - a screenshot and a GIF of a Legend picketing at the hall under the red line; showcase scene `legend_strike`.
+- [ ] **29.6** **Gifted villagers (1): the engine, Prodigy, Iron Will, Silver Tongue and Night Owl.** Gifted traits
+  are data: `data/aliveworkplace/gifted/<id>.json` holds a weight and effects from the shared toolbox, with lang keys
+  for the name and description. About one villager in 30 is Gifted (config `giftedChance`, 30; 0 turns them off),
+  rolled from the UUID as `Traits.of` does, so every existing villager has theirs with nothing to migrate; the
+  attachment `GIFTED` overrides the roll for the born and the inn's travellers (29.7). A Gifted villager's trait shows
+  in gold on the hall's list, they sparkle when they level up, and the chronicle notes it when they join or grow up.
+  The first four, each a toolbox effect:
+  - **Prodigy**: learns three times as fast (`xp`, in `Traits.xp`; with Clever too, still three times);
+  - **Iron Will**: never panics (`no_panic`, through `VillagerPanicTriggerMixin`) and keeps working through raids and
+    the bell;
+  - **Silver Tongue**: every trade with a player is 20% cheaper (`trade_discount`, on their offers' special price);
+  - **Night Owl**: works from dusk to dawn and sleeps from mid-morning to mid-afternoon (`night_shift`: a `NIGHT_OWL`
+    schedule set in `VillagerMixin` as `GUARD_SCHEDULE` is), builders and miners included.
+
+  Done when: GameTests for each trait (three times the XP; no panic in a staged raid; offers 20% cheaper; a Night Owl
+  builder places blocks at midnight and sleeps at noon); the roll over 3,000 fixed UUIDs gives about 1 in 30 and the
+  same answer twice; with `giftedChance` 0 nobody is Gifted; showcase scene `gifted` (the hall's list, a Night Owl
+  building by moonlight).
+- [ ] **29.7** **Gifted villagers (2), and Legends born.** Four more traits:
+  - **Lucky**: luck +3 on every loot roll their work makes, on top of the level luck `Explorers` and `Netherworkers`
+    already give (explorer finds, Netherworker trips, sifting, fishing) (`loot_luck`; our sifting tables get `quality`
+    weights for it);
+  - **Hardy**: never falls ill (`Sickness`) and has twice a villager's health (`no_illness`, `health`);
+  - **Beloved**: everyone whose bed is within 16 blocks of theirs is +5 mood, "a beloved neighbour" (`mood`);
+  - **Born Leader**: workers of their own trade within 16 blocks work 10% faster (`pace`, through the shared cap).
+
+  **Born**, the third way Legends come: `Families.born` also keeps whether each parent was a schooled Master (new
+  optional fields in `Families.Parents`, false in old saves). When a child of two schooled Masters grows up
+  (`Families.round`), 1 time in 20 they are a Legend: a Rare Legend whose `born` way names a parent's trade, if the
+  village meets its conditions and its slot is free (29.3), taking the Legend's own trade as a Master; otherwise 1
+  time in 4 they are Gifted. Inn travellers are Gifted 1 time in 10, shown on the hire screen, at twice the price. The
+  chronicle says so ("Wren, Dara and Tom's daughter, has grown up a Prodigy"; "... has grown up to be the village's
+  Bard Laureate"). Done when: GameTests for the four traits; the born rolls with a fixed `RandomSource` (a Legend,
+  Gifted, neither, and a taken slot falling back to Gifted); an old `parents` record loads with the new fields false;
+  a Gifted traveller's price; showcase scene `gifted_born` (a child of two Masters grows up Gifted, with the chronicle
+  line).
+- [ ] **29.8** **Legends who visit (Terraria-style guests).** The first way Legends come. Once a day, at the way's own
+  time, a village with no Legend guest may get one: a Legend whose `visit` way's conditions the village meets, whose
+  slot is free (29.3) and who hasn't visited it in 7 days comes with the way's chance (default 1 in 4; a hook
+  `Legends.visitFactor(hall)` for M30's Open Gates edict) to the way's place:
+  - `inn`: in the morning, instead of that day's traveller (`InnkeeperWork.tend`: an Innkeeper and a free bed);
+  - `market`: with the traders on market day (`MarketDays.hold`);
+  - `festival`: at the fireworks of a festival whose crowd reaches the file's number (`Festivals` counts the crowd
+    then and keeps it on the hall as `festivalCrowd`);
+  - `chapel`: at midnight under a full moon, at a finished Chapel (the `chapel` blueprint);
+  - `hall`: in the morning, beside the Village Hall.
+
+  A guest is announced (29.3), stays up to 3 days and takes no job. Right-click them for their terms (a `ChoiceMenu`
+  like the inn's hire screen): who they are, what they would bring, what they want with ticks and crosses, and the
+  days left. They settle by themselves the round every need is met: they claim the bed in the tier III home, take
+  their trade as a Master (a free workstation of it if there is one; their powers work either way) and go in the
+  chronicle. If not, they leave on the third evening out of sight, and the chronicle says what they missed. Done when:
+  - GameTests: no guest before the conditions are met or while the slot is taken; never two guests at once; one at
+    each place (inn, market, festival, chapel, hall) on a staged village; they settle the round their needs are met
+    and not before; they leave after 3 days and don't come back for 7;
+  - the terms screen's lines match the needs; a guest survives a save and reload mid-stay;
+  - showcase scene `legend_guest` (GIF: a test Legend arrives at the inn, the terms screen, they settle once a home is
+    ready).
+- [ ] **29.9** **Legends found in the world.** The second way. Every 5 seconds per player,
+  `StructureManager.getStructureWithPieceAt` asks whether they stand in a structure of a site tag (three cheap lookups
+  and no area scans; tags, so packs can add their own variants, such as Repurposed Structures'):
+  - `#aliveworkplace:legend_sites/ruined_portal` (vanilla's ruined portals): a traveller's camp beside the portal (a
+    bedroll, a campfire, a map on a barrel);
+  - `#aliveworkplace:legend_sites/outpost` (pillager outposts): a prisoner in an iron-bar cage at the foot of the
+    tower;
+  - `#aliveworkplace:legend_sites/shipwreck` (shipwrecks): a castaway's camp on the nearest beach (a raft, a lean-to,
+    a signal fire).
+
+  A site holds a Legend only when the player owns, or is a friend of the owner of, a Village Hall within 1,500 blocks
+  that meets the conditions of a Legend whose `found` way names the site, with its slot free. Then the camp is placed
+  (as `BanditCamps.found` places its camp; the three small builds through the architect skill as
+  `legend/traveller_camp`, `legend/prisoner_cage` and `legend/castaway_camp`) and the structure start is marked in the
+  Legends record, so each is used once. Freeing them: the traveller, talk to them; the prisoner, break the cage's
+  bars; the castaway, hand them a cooked meal. Freed Legends thank the player, walk off and arrive at that village's
+  hall the next morning as a guest (29.8: 3 days to settle). `legendSites` in the config turns this off. Done when:
+  - GameTests on test structures: each camp is placed only for a qualifying player and only once; each freeing works
+    and the wrong one doesn't (a meal doesn't open the cage); the Legend is a guest at the hall the next morning; no
+    lookups run with nobody online;
+  - renders of the three camps in the review package; showcase scene `legend_sites` (the three camps, and a GIF of the
+    cage opened).
+- [ ] **29.10** **Strange moods and Masterworks.** The fourth way (Dwarf Fortress). Once a day, in a happy village
+  (29.5's test) with no mood already on, a Master whose trade a Legend's `inspired` way names may be seized by a
+  strange mood, 1 time in 8, if the village meets that Legend's conditions and its slot is free (never during a raid
+  or a festival; config `strangeMoods`). The villager (attachment `STRANGE_MOOD`):
+  - claims their workstation: their other work stops, they stand at it, and a purple line over their head says "Taken
+    by a strange mood";
+  - asks for three rare materials, picked from the Legend's `masterwork.materials` pool, to be put in a chest by the
+    workstation within 3 days; the hall, the requests board (`work/Requests`) and the village's players are told;
+  - **success**: they make a named **Masterwork**: the file's item with a made-up name ("The Ember Ladle"), lore lines
+    naming the maker, the village, the day and the materials, and an enchantment glint. It goes to the player who
+    brought the most of the materials (else into the chest), and the villager becomes the Legend (chronicle,
+    announcement). A Masterwork in an item frame in the village is worth 3 beauty (`Decorations`);
+  - **failure**: a week of sulking (mood -30, half pace, "Sulking" over their head), and no strange mood in that
+    village for 10 days.
+
+  The Founder's mood (29.23) is the one exception: it always comes, at the village's first rise to City. Done when:
+  GameTests with a fixed `RandomSource`: a mood starts only in a happy village with a Master of a named trade; the
+  three materials are on the board; success makes the Masterwork (name, lore) and the Legend; failure sulks a week and
+  blocks moods for 10 days; a mood survives a save and reload halfway; showcase scene `strange_mood` (GIF: the claim,
+  the chest filled, the Masterwork).
+- [ ] **29.11** **More research trees, as data.** For the Old Sage (29.14) and the Pokémon Professor (29.21).
+  `research/ResearchTrees` loads `data/aliveworkplace/research_trees/<tree>.json`: the Legend who researches it, an
+  icon, and its topics, each with levels, a cost per level (items), research points, the topics it needs, an optional
+  `unlock` (a named village counter at a number, such as species in the village Pokédex), an optional `exclusive`
+  group (the village may take one topic of the group, for good) and effects from the shared toolbox. This item adds
+  the effects the trees need: `wellbeing`, `illness` (chance and days), `raid_chance`, village-wide `xp` and
+  `loot_luck`, and `flag` (a named switch that other code reads). Levels are kept in the hall's `Research.State` map
+  under `<tree>/<topic>` keys, so there is no new save field and the first tree is untouched. `ResearchScreen` gets a
+  tab for each tree whose Legend lives in the village; the Legend works it at a lectern within 8 blocks of their home
+  as `ScholarWork` does (scholars help at half speed), and not while on strike. Done when: GameTests with a test tree:
+  it loads; costs are taken; levels are saved in the hall and come back after a reload; an exclusive group refuses a
+  second pick; an unlock waits for its counter; each effect works; an old hall's research loads unchanged; a
+  screenshot of the test tree's tab.
+- [ ] **29.12** **The Master Architect (Legendary).** `legends/master_architect.json`. Comes: a guest at the inn once
+  the village is a Town with finished buildings in at least 3 styles (a blueprint's own drawing counts as one;
+  `BlueprintStyles` ids tell the rest). Trade: Builder. Likes: jewels. Powers:
+  - builders working on a site within 32 blocks of the Architect build twice as fast (`pace`; with the shared cap,
+    that is the most any builder gets);
+  - **grander buildings** (`grand_rebuild`): every 3 days the Architect picks a building the village's builders
+    finished (homes first; never a decoration, never anything a player built) and hands the least busy builder its
+    next upgrade (`BlueprintUpgrades`). A building with none is redrawn in the new **Grand** style
+    (`blueprint_styles/grand.json`: stone-brick plinths, polished andesite and deepslate trim, dark-oak frames, copper
+    lanterns; drawn and checked in a render with the architect skill), built like an upgrade (only the changed
+    blocks), with materials from the chests as usual. One at a time; sneak-right-click the Architect to pause it; each
+    goes in the chronicle;
+  - the Architect is who M35's Wonders ask for (`Legends.in(level, hall, id)`).
+
+  Outfit (pixel-art skill): a long blue coat, a brass compass and a rolled drawing at the belt. Done when: GameTests:
+  the Architect visits only a qualifying Town; a builder within 32 blocks is twice as fast and at the cap, one outside
+  isn't; a rebuild picks an upgrade, the Grand style when there's none, places only the changed blocks, never touches
+  a player's build and stops on strike; the Grand style's renders (three builds, front and back) and the outfit in the
+  review package; showcase scene `legend_architect` (GIF: the Stone House redrawn in the Grand style).
+- [ ] **29.13** **The Pathfinder (Rare).** Comes: found at a ruined portal (29.9) once one of the village's explorers
+  (Cartographers) is an Expert; born to a Cartographer (29.7). Trade: Cartographer. Likes: clothes. Powers:
+  - their own expeditions (`ExplorerWork`) range twice as far and roll the new `explorer/pathfinder` loot table (more
+    maps, now and then a trial key or an echo shard);
+  - **expeditions the player joins** (`expedition`): sneak-right-click them, with 8 food in their chest, and pick a
+    **Stronghold**, an **Ancient City** or **Trial Chambers** (tags `aliveworkplace:expedition/stronghold`,
+    `/ancient_city`, `/trial_chambers`). They find the nearest within 3,000 blocks once (`findNearestMapStructure`),
+    hand the player an explorer map to it and lead the way: walking ahead, waiting when the player is more than 24
+    blocks behind, catching up at once beyond 64 (as Rally Banner guards do), and fighting whatever attacks either of
+    them. At the place they say so and mark the entrance with a banner; right-click them there for **Home**, and after
+    5 seconds standing still both are back beside the Village Hall. One a day; a logout or a death cancels it (the
+    Pathfinder is home the next morning). The chronicle records each one, with its distance and direction.
+
+  Outfit: a hooded travel cloak, a pack and a lantern. Done when: GameTests: they are found only for a village with an
+  Expert explorer; an expedition to a staged target leads, waits and catches up; Home brings both back; a logout
+  cancels it; the loot table rolls; showcase scene `legend_pathfinder` (GIF: leading the player through a forest).
+- [ ] **29.14** **The Old Sage (Rare).** Comes: found in a hermit's hut once the village has finished 5 research
+  levels; born to a Scholar (29.7). The hut (`legend/hermit_hut` through the architect skill: mossy cobblestone and
+  spruce, a lectern, bookshelves, a cauldron and an herb garden) is placed 150-250 blocks from the hall on dry, flat,
+  loaded ground (as `BanditCamps.site` picks), and the village's players hear a rumour of it with its direction.
+  Right-click the Sage for the **riddle quest**: three riddles, one at a time, each answered by handing over an item,
+  from a pool of eight (lang):
+  - "I have cities but no houses, forests but no trees, rivers but no water": a map;
+  - "I point the way but never walk": a compass;
+  - "I follow the sun all day but never see the sky": a clock;
+  - "I have a spine but no bones, and leaves but no branches": a book;
+  - "I'm full of holes, yet I hold water": a sponge;
+  - "Feed me and I live; give me a drink and I die": a torch;
+  - "I run but never walk, and have a bed but never sleep": a water bucket;
+  - "I sleep under the mountains until a pick wakes me, and then every villager wants me": an emerald.
+
+  A wrong item gets a shake of the head, and after two misses a hint; three right answers and the Sage comes to the
+  village the next morning as a guest (29.8). Trade: `aliveworkplace:legend`. Likes: books. Power: the **Ancient
+  Lore** tree (29.11), worked at a lectern in their home, each level costing paper, books, emeralds and amethyst
+  shards (echo shards for the last pick):
+  - **Old Tongues** (1 level): inn travellers are Journeymen at least, and Gifted twice as often;
+  - **Star Charts** (2): explorers range 25% farther a level, and draw a map every second expedition at II;
+  - **Herb Lore** (2): illness lasts a day less a level; nurses also cure with any small flower;
+  - **Deep Memory** (2): every villager learns 15% faster a level;
+  - **Runes of Warding** (2): night raids are 20% less likely a level;
+  - **Old Harvests** (2): farmers, orchard keepers and beekeepers work 10% faster a level;
+  - the **last pick**, one of three for good once every other topic is done: **The Undying Flame** (undertakers bring
+    the dead back with nothing from the chest), **The Golden Age** (wellbeing never below 60%, and festivals lift
+    moods for twice as long) or **The Iron Pact** (an iron golem joins the village every 5 days, up to one per 8
+    villagers, and golems and guards take 25% less damage).
+
+  Outfit: a grey robe, a long beard and a gnarled staff. Done when: GameTests: the hut is placed only for a qualifying
+  village; each riddle takes its answer and refuses others, with the hint after two misses; the guest arrives; every
+  topic's effect and the exclusive last pick; the hut's render in the review package; showcase scene `legend_sage`
+  (the hut, a riddle, the Ancient Lore tab).
+- [ ] **29.15** **The Golem Smith (Legendary).** Comes: inspired (29.10): a Master Tinkerer in a happy village with 4
+  iron golems; the materials come from a pool of a diamond, a block of copper, a block of redstone, a blaze rod, a
+  breeze rod, an amethyst shard and an echo shard, and the Masterwork is a heavy core named "The Heart of <name>".
+  Trade: Tinkerer. Likes: wine. Powers (`golem_forge`): from the chests by their smithing table they build one golem
+  every 2 days, up to one per 5 villagers; sneak-right-click them to choose which comes next:
+  - **Hauler Golem** (4 iron blocks, a carved pumpkin, a chest): carries what the village's workers make to the
+    Storehouse, 9 stacks a trip, by `store/PorterWork`'s rules;
+  - **Farmhand Golem** (4 iron blocks, a carved pumpkin, an iron hoe): harvests and replants ripe crops on the
+    village's fields (Field Marker fields and the farmers' own farms), into the field's chest;
+  - **Wall Sentry** (4 iron blocks, a carved pumpkin, a shield): goes to the first point of a Patrol Map you give it
+    and never leaves it, with twice a golem's health, knocking attackers back off the wall.
+
+  Each is an iron golem with a role (an attachment on the golem), its own texture (pixel-art skill: the hauler's pack,
+  the farmhand's straw hat, the sentry's helm), its name over its head and a line on the hall. They never break blocks
+  and respect village protection. The Golem Smith also mends golems twice as fast as a Tinkerer. Outfit: a leather
+  apron, goggles and iron-banded gloves. It may land in two pieces (`land --keep-open`): the smith and the haulers,
+  then farmhands and sentries. Done when: GameTests: a hauler takes 9 stacks to the Storehouse; a farmhand harvests
+  and replants a 9x9 wheat field into its chest; a sentry holds its point through a staged fight; the costs are taken
+  and the cap and the 2-day wait kept; the golem textures pass `lint.py`; showcase scene `legend_golem_smith` (GIF:
+  the three at work).
+- [ ] **29.16** **The Seer (Rare).** Comes: a guest at the village's finished Chapel at midnight under a full moon, 1
+  time in 2 (29.8); born to a Cleric (29.7). Trade: `aliveworkplace:legend`; by day they keep to the Chapel. Likes:
+  jewels. Powers:
+  - **foretelling** (`foretell`), each dawn, to the village's players in chat and on the hall's "What next?": whether
+    raiders come that night and from which side (with a Seer in the village, `VillageRaids` rolls the night's raid at
+    dawn, so the Seer is never wrong), the next festival and market day, and the next day's guest (Legend guests are
+    rolled a day ahead); and through `Legends.foretold(hall, kind)` the Seer is M32's two-day warning of its attacks;
+  - **blessed weddings** (`bless_weddings`): a wedding at the Chapel with the Seer there is blessed: the couple is +10
+    mood for 7 days, and their first baby comes within 2 days when a bed is free (once, past `VillageGrowth`'s daily
+    wait).
+
+  Outfit: a deep purple hooded robe with silver stars; end-rod motes round them at night. Done when: GameTests: the
+  Seer comes only at midnight, at a full moon, to a Chapel; a raid foretold at dawn comes that night and none comes
+  when none is foretold (fixed `RandomSource`); the festival and market days told are right; a blessed wedding's mood
+  and baby; showcase scene `legend_seer` (GIF: the arrival under the full moon, the dawn foretelling in chat).
+- [ ] **29.17** **The Merchant Prince (Legendary).** Comes: found as a castaway by a shipwreck (29.9) once the
+  village's treasury has taken in 500 emeralds all told (`treasury_total`) and it sends caravans on 3 routes. Trade:
+  `aliveworkplace:legend`; they keep to the Village Hall and the Market Square. Likes: wine. Powers:
+  - **the bank** (`bank`): the treasury earns 2% a day on what it holds and holds twice as much; players deposit
+    emeralds on a new bank page of the hall (up to 10 stacks each, kept per player in the hall), earn 5% a week and
+    take them out any time (CobbleDollars at the usual rate);
+  - **trade fairs** (`trade_fair`): every 10 days a fair at the Market Square (round the hall without one): 6 traders,
+    plus a stall for each village this one trades with (a trader named after it, selling what its Storehouse has
+    spare), bunting and fireworks, and every trade 10% cheaper for the day; the chronicle notes it;
+  - **prices between villages** (`caravan_pay`): the trade routes page shows what each village is waiting for as what
+    it pays, and every stack a caravan brings to a village that was waiting for it earns the treasury an emerald
+    (M33's price board takes over when it lands).
+
+  Outfit: a crimson coat with gold buttons and a feathered hat. Done when: GameTests: a day's interest and the doubled
+  cap; deposits and withdrawals with interest, kept through a reload, never more than 10 stacks; a fair with 6 traders
+  plus one per linked village; the caravan pay; showcase scene `legend_merchant_prince` (the bank page, a GIF of the
+  fair).
+- [ ] **29.18** **The Grand Chef (Rare).** Comes: inspired (29.10): a Master Chef in a happy village whose store has 8
+  kinds of meal (`VillageHalls.mealKinds`); the materials come from a pool of a golden apple, a glistering melon
+  slice, a golden carrot, a honeycomb, glow berries, chorus fruit and a pufferfish, and the Masterwork is a cake named
+  for the village ("The Thornholm Midsummer Cake"). Also a guest at the inn on the same condition, and born to a Chef
+  (29.7). Trade: Chef. Likes: wine. Powers:
+  - **banquets** (`banquet`): every 5 days at supper the village gathers at the Market Square or the hall (as for a
+    festival, with `Festivals`' gathering) and each grown-up eats two meals from the store, as many kinds as there
+    are. Everyone who came is +20 mood for 3 days, and for those 3 days the village may have two babies a day
+    (`VillageGrowth`'s wait halved; beds and food as usual); the chronicle notes it;
+  - chefs in the village cook 25% faster (`pace`).
+
+  Outfit: a tall white toque and a gold ladle at the apron. Done when: GameTests: a banquet takes two meals each; the
+  mood; two births a day for 3 days with free beds, and one a day after; chefs faster; showcase scene
+  `legend_grand_chef` (GIF: the banquet).
+- [ ] **29.19** **The Bard Laureate (Rare).** Comes: a guest at a festival once 30 villagers come to it (29.8); born
+  to a Bard (29.7). Trade: Bard. Likes: books. Powers:
+  - **the anthem** (`anthem`): when they settle they compose the village's anthem, 16 notes on one instrument (harp,
+    flute, bell, chime, guitar or xylophone) made from the village's name, so it never changes, kept in the hall. It
+    is played with note-block sounds at every festival, rank-up, wedding and Legend arrival, and from a new button on
+    the hall's screen, and the hall's owner gets a copy as a written book ("The Anthem of Thornholm", the notes
+    written out);
+  - **work songs** (`work_songs`): twice a day (mid-morning and mid-afternoon) they walk to the busiest spot (the most
+    workers within 16 blocks) and sing for 2 minutes with notes rising round them: workers within 16 blocks work 25%
+    faster while they sing (`pace`, through the shared cap), and everyone who hears is +5 mood for the day.
+
+  Outfit: a green doublet, a lute on the back and a laurel wreath. Done when: GameTests: the same name always gives
+  the same anthem and another name a different one; it is saved and played at each event (the sounds counted); the
+  work-song pace only while they sing; showcase scene `legend_bard` (GIF with the notes).
+- [ ] **29.20** **The Beastmaster (Rare).** Comes: found as a prisoner in a pillager outpost (29.9) once the village
+  has a ranch: 10 animals within 16 blocks of a Rancher's, Butcher's or Shepherd's workstation; born to a Rancher
+  (29.7). Trade: Rancher. Likes: clothes. Powers:
+  - **war dogs** (`war_dogs`): with bones in their chest they tame a wolf for each guard without one (the village's
+    wolves, or a pair they breed), fit it with wolf armour when there are armadillo scutes in the chest, and send it
+    to the guard: it follows them on patrol and in a raid and attacks what they attack; one per guard, and a lost dog
+    is replaced after 2 days;
+  - **fast horses** (`horse_breeding`): foals they breed take the best speed, jump and health of their parents and a
+    little more (never past vanilla's best), and `guard/Cavalry` guards take their horses first.
+
+  Outfit: furs and a wolf-pelt hood. Done when: GameTests: a war dog is tamed, joins its guard, follows and fights,
+  and is replaced 2 days after it dies; a foal's stats are at least its best parent's and never over vanilla's
+  highest; cavalry picks the bred horses; showcase scene `legend_beastmaster` (GIF: a guard and a war dog against
+  zombies).
+- [ ] **29.21** **The Pokémon Professor (Legendary, with Cobblemon).** Comes: a guest at the inn once the village's
+  Pasture Blocks hold 25 Pokémon of 10 types (the condition `pastured_pokemon`, through a new extension point
+  `legend/PokemonCensus` filled in `compat/cobblemon/`; without Cobblemon the file doesn't load). Trade:
+  `aliveworkplace:legend`, at a lectern. Likes: books. Powers:
+  - **hints** (`pokemon_hints`): right-click them and pick one of your party: each stat's IV in words (No good,
+    Decent, Pretty good, Very good, Fantastic, Best), the stats its nature raises and lowers, whether it has its
+    hidden ability, and its EVs;
+  - **the village Pokédex** (`pokedex`): every species ever kept in the village's pastures is logged in the hall (a
+    count shown on the hall), and the **Pokédex** research tree (29.11) opens topics as it grows: **Field Notes** (2
+    levels, at 15 species: partners help 5% more a level), **Kinship Studies** (1, at 25: one more partner per
+    worker), **Breeding Records** (2, at 35: daycare eggs 20% sooner a level), **Berry Science** (1, at 45: orchard
+    keepers pick one more berry from each berry plant), **Evolution Studies** (1, at 60: the Professor sells one
+    evolution stone a day for 8 emeralds) and **Regional Survey** (1, at 80: the hints show exact IVs and EVs).
+
+  Outfit: a white lab coat. Done when: compat GameTests (`runCompatGameTest`): the census; hints that match the
+  Pokémon's real IVs, nature, ability and EVs; each species logged once; every topic's unlock and effect; without
+  Cobblemon nothing loads or errors; showcase scene `legend_professor` (Cobblemon: the hints, the Pokédex tab).
+- [ ] **29.22** **The Pokémon Ranger (Rare, with Cobblemon).** Comes: a guest at the Village Hall, 1 time in 3 a
+  morning, while an Alpha Pokémon is within 96 blocks of the hall (Cobblemon's own Alpha mark if the installed version
+  has one, checked with the engineer skill's `api.py`; otherwise a wild Pokémon of level 50 or more): the condition
+  `alpha_near`, through a new extension point `legend/WildPokemon` filled in `compat/cobblemon/`. Trade:
+  `aliveworkplace:legend`. Likes: clothes. Powers:
+  - **calming Alphas** (`calm_alphas`): each morning they walk to any Alpha within 96 blocks of the hall; once beside
+    it (sparkles, a calm chime) it no longer attacks villagers or players in the village, for good;
+  - **befriending** (`befriend`): once a day they befriend a wild Pokémon within 64 blocks (never a legendary,
+    mythical, Ultra Beast or paradox Pokémon, as with trainers) and lead it to a village Pasture Block with room,
+    where it joins as the hall owner's Pokémon (into their PC first, as Cobblemon does); the chronicle notes each one;
+    none when the pastures are full or the hall has no owner.
+
+  Outfit: a ranger's vest and a capture styler on the wrist. Done when: compat GameTests: the Ranger comes only with
+  an Alpha (or the level-50 stand-in) near; a calmed Alpha doesn't attack a villager; a befriended Pokémon belongs to
+  the owner and is in the pasture, and a banned species never is; nothing loads without Cobblemon; showcase scene
+  `legend_ranger`.
+- [ ] **29.23** **The Founder (Mythic).** Comes: inspired (29.10), always, at the village's first rise to City: its
+  most experienced Master (the most XP) is seized by the Founder's mood and asks for a block of gold, a block of
+  emeralds and a diamond. The Masterwork is **The Charter of <village>**, a written book of the village's story drawn
+  from its chronicle (its founding, each rank, its Legends, its first wedding, the raids it beat), signed by the
+  Founder. A failed mood passes to the next most experienced Master after the week of sulking. Mythic: announced to
+  the whole server and capped by 29.3. Trade: their own. Likes: books. Powers:
+  - **the statue** (`statue`): the village's builders raise the Founder's statue by themselves
+    (`legend/founder_statue` through the architect skill: a stepped 5x5 plinth, a stone figure with a raised hand and
+    a copper plaque) near the hall, with materials from the chests; while it stands it is worth 5 beauty and every
+    villager is +5 mood;
+  - **new villages** (`found_villages`): with M33's colonies the Founder leads the settlers; until then, once every 7
+    days they give the hall's owner a **Founder's Wagon** (icon by the pixel-art skill: the Settler's Wagon with a
+    gold pennant): a Settler's Wagon whose camp also brings a Village Hall named "New <village>", with the mother
+    village's styles on its blueprints.
+
+  Outfit: a burgundy mantle with a gold chain of office. Done when: GameTests: the mood comes only at the first rise
+  to City (not at a later rise after falling back); the Charter's pages come from the chronicle; the statue is queued
+  and built, with its beauty and mood; a wagon once a week; the announcement reaches every player; the statue's render
+  in the review package; showcase scene `legend_founder` (GIF: the statue going up).
+
+Depends on: nothing. Optional, each with a fallback here: M33's Colonies item for the Founder's new villages (until
+then the Founder's Wagon, 29.23); M34's luxury chains join the `aliveworkplace:luxury/*` tags (until then vanilla
+stand-ins, 29.5); M33's price board replaces the Merchant Prince's caravan pay (29.17). Hooks other milestones use:
+`Legends.visitFactor` (M30's Open Gates), the `rules/` conditions (M31's reputation; M35's Wonders, with the `legend`
+condition), `Legends.foretold` (M32's warnings), `Legends.in` (M35's Wonders).
+
+## Milestone 30: Edicts and civic items (1.4)
+
+The village gets laws and landmarks. A Book of Edicts in the Village Ledger lets the hall's owner proclaim one edict
+per rank (Frostpunk-style): each gives the village a real boost at a real cost, and each has a reform the village earns
+through the hall's quests, which keeps the boost and drops the cost for that village for good. Civic items, each an
+item of its own (the Cradle, the Work Horn, the Village Banner, the Harvest Idol, Guild Charters with their
+Guildhalls, and six tonics from the alchemist and the chef), give players more ways to shape a village. It builds on
+the Village Hall (`VillageNeeds`, `VillageQuests`, `VillageRanks`, `Festivals`, `Treasury`), `people/Moods` and
+`BuilderLevels.delay`, and adds the one shared cap that stops all speed bonuses together at twice normal pace.
+
+- [ ] **30.1** **Design note.** `docs/design/M30.md`, sent to the owner as a review package (lanes don't wait for his
+  reply). It covers:
+  - what the player sees: a sketch of the Book of Edicts page, each edict's boost, cost and reform, each civic item,
+    and the changes to the hall's screen and the Village Ledger;
+  - the data formats: `data/aliveworkplace/edicts/<id>.json` (icon, name and texts, boost and cost as lists of
+    effects, the edicts it excludes, the reform's name, line and steps, `enabled`), `tonics/<id>.json` and
+    `guilds/<id>.json`, and the effect toolbox all three share (each effect type, its fields, which system reads it);
+  - the config switches (`villageEdicts`, `edictMinDays` 3, `maxWorkPace` 200, `workHorns`, `cradles`,
+    `villageBanners`, `harvestIdols`, `seasonDays` 8, `tonics`, `guilds`, `guildsPerRank` 1) and every new saved
+    field with its default (the hall's edicts, reforms, colours, horn day and guilds; the attachments `tonic`,
+    `guild_master`, `worn_out`; the quest's `reform` field);
+  - the pace rule: bonuses (factors under 1) multiply and stop at `100 / maxWorkPace` of the usual time; penalties
+    (sickness, an unhappy mood, Lazy, a badly kept village) multiply after the cap, so a sick worker still works at
+    half the capped pace. A worker's level (a Master builds 2.5x as fast as a Novice) is their normal pace, not a
+    bonus, and walking speed, the daycare's experience rate and the `workplaceBuildDelay` gamerule aren't work pace.
+    Owner's call: this reading of "twice normal pace" is the default until he says otherwise;
+  - who may proclaim and lift edicts, blow the horn, set the colours and grant charters: the hall's owner, their
+    friends and operators (anyone, while the hall has no owner).
+
+  Done when: the note is on `main` and its review package is sent.
+- [ ] **30.2** **One pace, one cap.** A core `work/Pace` that every job's work speed goes through (if another
+  milestone built it first, check it covers this list and add what's missing):
+  - bonuses: Pokémon partners, a well-kept village, Swift Hands, Diligent, a happy mood, Craftsmanship (crafters),
+    Expeditions (explorers, netherworkers), and later this milestone's edicts, Work Horn, tonics and guilds, each
+    registered as a named source;
+  - penalties: sickness, an unhappy mood, Lazy, a badly kept village;
+  - `BuilderLevels.delay(base, villager)` becomes the level's delay times `Pace.factor`; the jobs that apply partners
+    or research on their own (`TeacherWork`, `ScholarWork`, `RancherWork`, `CrafterWork`'s Craftsmanship, the
+    explorer's and netherworker's rests and trips) go through `Pace` too, and the five that count their partners
+    twice today (`SifterWork`, `BeekeeperWork`, `FloristWork`, `ExplorerWork`'s search, `CompostWork`) count them once;
+  - `maxWorkPace` in the config (percent, default 200, 100 to 400);
+  - the worker's status (sneak-right-click) and the hall's list show the total ("62% faster", "100% faster: at the
+    cap"), with the sources behind it.
+
+  The changelog says the cap, and the fix for the five jobs, slow down the very fastest workers. Done when:
+  - a GameTest stacks every bonus there is (five partners with Kinship II, wellbeing 100%, Swift Hands III, Diligent,
+    happy) and gets exactly twice the pace, and three times with `maxWorkPace` 300;
+  - the same villager, ill, works at exactly half of that;
+  - a sifter with two partners takes 70% of the usual time, not 49%, and each job that calls `BuilderLevels.delay`
+    or `Partners.factor` today gets its pace from `Pace` (a test per job family: builder, miner, crafter, explorer,
+    teacher, scholar, rancher);
+  - showcase scene `pace`: a capped builder's status line (its check: the line says "at the cap").
+- [ ] **30.3** **Edicts, and Long Shifts.** The engine and the first edict:
+  - `hall/Edicts` loads `data/aliveworkplace/edicts/*.json` (a reload listener through `Platform`); a data pack can
+    add edicts or switch ours off (`"enabled": false`); ours take their texts from the lang file, a data pack's may
+    give plain text;
+  - the effect toolbox (`hall/CivicEffects`): typed effects with codecs, each read by the system it changes, starting
+    with `work_pace` (percent, optional list of jobs; a `Pace` source) and `mood` (points and a reason the hall's list
+    shows, read by `Moods.work`); later items add their own types;
+  - the hall keeps the edicts in force (id and day proclaimed); a village has one slot per rank (Hamlet 1, Village 2,
+    Town 3, City 4); an edict stays at least `edictMinDays` (3) before it can be lifted; edicts that exclude each other
+    can't be in force together; a village that drops a rank loses its newest edict;
+  - proclaiming and lifting are told to the players in the village and go in the chronicle (new kind EDICT); for now
+    an operator's `/workplace edict proclaim|lift <id>` does it (the page is 30.4), and stays for admins;
+  - the effects in force are kept per hall and read from there, so a villager's lookup costs no more than
+    `VillageNeeds.factor` does today;
+  - **Long Shifts** (`edicts/long_shifts.json`): everyone works 20% faster; every grown villager's mood is 10 lower
+    ("long shifts").
+
+  Done when:
+  - GameTests: slots by rank; lifting refused before 3 days; the newest lifted on a rank drop; edicts kept over a save
+    and reload; a stranger can't proclaim in an owned village; with Long Shifts a builder's delay is 1/1.2 of before
+    and their mood 10 lower, with the reason listed;
+  - an edict from a test data pack loads and works, and `"enabled": false` hides Long Shifts;
+  - showcase scene `long_shifts`: the hall's list with the "long shifts" mood, and the chronicle line.
+- [ ] **30.4** **The Book of Edicts page.** The page players use, in the hall's screen and the Village Ledger:
+  - the hall's screen: the people list's page arrows move to the list's bottom corners (slots 45 and 53, 34 people a
+    page), which frees slot 9 for the Book of Edicts (a lectern icon) and leaves slot 17 for another milestone's page;
+  - the Village Ledger: sneak-right-click the air opens the Book straight away (its tooltip says so);
+  - the page: the village's name and banner (once 30.13 lands) at the top; the slots in the second row (an edict in
+    force with its days, a free slot, or a locked one saying which rank opens it); below, every edict with its boost
+    in green, its cost in red, its reform and how far it has got; click an edict twice to proclaim it, click one in
+    force to lift it (it says how many days are left when it can't yet); the last row is kept for the civic items and
+    guilds (30.11 onwards);
+  - only the hall's owner, friends and operators can click; everyone else reads it and is told why;
+  - the hall's name icon lists the edicts in force.
+
+  Done when: GameTests through `ChoiceMenu.forTest`: proclaiming and lifting by clicks, the locked slots, a stranger's
+  click refused, the Ledger's sneak-use opening the page, the people list paging at 34; showcase scene `edicts`: the
+  Book with Long Shifts in force, at GUI scales 2 and 4.
+- [ ] **30.5** **Reforms, and The Shift Bell.** While an edict is in force and not reformed, the hall keeps its
+  reform's next step on the quest page (extra to the three daily quests, in the row below them, with a book-and-quill
+  icon; it never expires). The next step goes up the morning after the last was done, so a reform takes three days at
+  least. Steps use the quest kinds there are (bring, clear out monsters, beat a trainer), with a `fallback` step for a
+  battle when Cobblemon or a trainer is missing, and pay their emeralds as quests do (a quarter more a rank). `Quest`
+  gets an optional `reform` field (edict and step; empty by default, so old saves load). Progress is kept per edict,
+  also while it's lifted. The last step reforms the edict for that village for good: the boost stays, the cost goes;
+  fireworks over the hall, everyone in the village told, the chronicle (kind REFORM), and the Book shows it reformed.
+  The format leaves room for an `arc` field, so M31's story arcs can take over a reform's steps later.
+  **The Shift Bell** (Long Shifts; "a bell in the yard calls the shifts, so nobody works past their hour"): bring 4
+  clocks (5 emeralds), bring 8 gold ingots (5), bring 32 bread (4). Reformed: still 20% faster, moods no longer drop.
+  Done when:
+  - GameTests: the step is up with Long Shifts in force and not without; one step a morning; handing in pays and moves
+    on; progress survives lifting and a reload; the last step reforms it (no mood loss, pace kept), and it stays
+    reformed when lifted and proclaimed again; a battle step falls back to its `fallback` without Cobblemon;
+  - showcase scene `reform`: the quest page with a reform step, then the fireworks and the chronicle line.
+- [ ] **30.6** **Free Bread and Large Families.** Effects `food_use`, `births` and `sickness`, read by `VillageNeeds`,
+  `VillageGrowth` and `people/Sickness`; each edict with its reform:
+  - **Free Bread**: everyone fed in the last day is 10 happier ("free bread"); the village eats 30% more (for every
+    meal eaten from the store the hall counts 0.3 of another, saved, and takes one more meal each time it reaches 1).
+    Reform **The Common Granary** ("a granary keeps the bread line"): bring 64 wheat (4), 16 hay bales (5), 8 barrels
+    (3). Reformed: no extra food.
+  - **Large Families**: up to two babies a day (`VillageGrowth.EVERY` halved for the village); a baby needs 24 meals in
+    the store instead of 16, and the family eats 12 instead of 8; villagers fall ill 50% more often. Reform **The
+    Midwives** ("midwives see every mother and child through"): bring 8 honey bottles (4), 16 white wool (3), 4 golden
+    carrots (5). Reformed: two babies a day, with the usual food and sickness.
+
+  Done when: GameTests for each number, with and without the reform (meals taken for 10 eaten, the gap between births,
+  the food needed and taken, the daily chance of falling ill); showcase scenes `free_bread` (the hall's list with the
+  "free bread" mood) and `large_families` (two births in one day, with the chronicle lines).
+- [ ] **30.7** **Open Gates.** Effects `inn`, `market_traders`, `legend_visits` and `bandit_camps`:
+  - boost: inns in the village take 4 guests instead of 2, and up to two travellers arrive a morning; market days
+    bring one more trader; Legends visit the inn twice as often once M29's inn visitors exist (until then nothing reads
+    that effect, and the Book only promises travellers);
+  - cost: bandits make camp near the village twice as often (`BanditCamps.DAILY_CHANCE` doubled for it);
+  - it excludes Curfew;
+  - reform **The Watchful Gate** ("a gate watch that knows every face"): bring 16 iron ingots (5), bring 32 arrows (4),
+    clear out 12 monsters (6). Reformed: the travellers keep coming, and bandits are no likelier than usual.
+
+  Done when: GameTests for the guests, the arrivals, the market traders and the bandits' chance, with and without the
+  reform, and Open Gates refused while Curfew is in force; showcase scene `open_gates`: an inn with four guests.
+- [ ] **30.8** **Festival Season and Tithe**, the two treasury edicts. Effects `festival_every`, `festival_cost`,
+  `tithe` and `trade_prices`:
+  - **Festival Season**: a festival every 4 days instead of 8 (`Festivals` counts the days per hall); each one costs
+    the treasury 3 emeralds and 1 more for every 4 villagers, taken on the festival's morning; when the treasury can't
+    pay there's no festival (chronicle: no money for the festival) and the village is 5 less happy that day
+    ("disappointed"). A festival called with a cake stays free. Reform **The Festival Fund** ("the villagers put by
+    for their own festivals"): bring 4 cakes (5), 32 firework rockets (5), 8 note blocks (4). Reformed: every 4 days,
+    free.
+  - **Tithe**: a tenth of the emeralds players pay the village's villagers in trades goes into the treasury (in
+    hundredths, up to its cap); their emerald prices are 10% higher (rounded, so trades under 5 emeralds don't change).
+    Reform **The Fair Ledger** ("the tithe comes out of the takings, not the price"): bring 4 books and quills (4), 16
+    gold ingots (6), beat one of the village's trainers (8; without Cobblemon or a trainer, clear out 8 monsters).
+    Reformed: the treasury keeps its tenth, prices are back to normal.
+
+  Done when: GameTests: festivals 4 days apart; the cost taken; the day with no money; called festivals free;
+  reformed free; a 20-emerald trade costs 22 and puts 2.20 in the treasury, a 4-emerald trade is unchanged, and
+  reformed it costs 20 and still puts in 2.00; showcase scenes `festival_season` (the hall's festival icon and the
+  treasury before and after) and `tithe` (a librarian's trades with and without it).
+- [ ] **30.9** **Curfew.** Effect `curfew`:
+  - boost: from dusk (12000) to dawn every grown villager but the guards and mercenaries goes to bed, and a monster
+    can't hurt a villager asleep in their bed; monster and bandit raids on the village are half as likely; at night the
+    village's safety counts as full in its wellbeing;
+  - cost: from dusk to dawn none of the village's villagers trade with players ("Curfew: come back in the morning."),
+    a festival ends at dusk without fireworks, market traders leave at dusk, and night work stops: netherworkers and
+    explorers don't set out after midday, so they're home by dusk (M29's Night Owls stay in too once they exist, and
+    any night market a later milestone adds checks the same effect);
+  - it excludes Open Gates;
+  - reform **The Lamplighters** ("lamplit streets, so the curfew can end at the door"): bring 24 lanterns (5), 8
+    glowstone (4), clear out 8 monsters (6). Reformed: raids are still half as likely and the nights count as safe, but
+    nobody has to stay in: trading, festivals, markets and night work go on.
+
+  Done when: GameTests: the villagers in bed by dusk; a zombie's blow on a sleeping villager does nothing with Curfew
+  and hurts without it; the raid chance halved; a trade refused at night, allowed by day and after the reform; the
+  festival's fireworks skipped; showcase scene `curfew`: a GIF of the village going indoors at dusk, the streets
+  empty, the guards on watch.
+- [ ] **30.10** **Conscription.** Effects `militia` and `work_stops_in_raids`:
+  - boost: while the village is raided (our monster and bandit raids, or a vanilla pillager raid there) every grown
+    villager who isn't ill fights: they wake, never panic (as `VillagerPanicTriggerMixin` keeps guards from panicking),
+    hold a stone sword (shown in their hands, not taken from any chest, gone when the raid ends) and go for the nearest
+    raider within 24 blocks: 3 damage a blow, 15% more if Strong, with the guards' rules for who's a foe; children and
+    the ill hide as before;
+  - cost: all work in the village stops during the raid and until noon the next day (one shared check every job's
+    work passes), and the conscripts can be hurt or killed like anyone else (graves, mourning);
+  - reform **The Militia Drill** ("drilled at the dummies, the militia fights without stopping the village"): bring 8
+    iron swords (6), 8 shields (5), clear out 16 monsters (8). Reformed: everyone still fights, but work stops only for
+    villagers with a raider within 24 blocks, and the morning after is a normal day.
+
+  Done when: GameTests: a farmer and a builder attack a zombie during a raid and not without one; a child and an ill
+  villager hide; no work during the raid or before noon after it; reformed, a builder with no raider near keeps
+  building and work goes on at dawn; showcase scene `conscription`: a GIF of villagers and guards beating back a
+  night raid.
+- [ ] **30.11** **The Work Horn.** An item of its own (pixel-art: a brass-banded horn), crafted from a goat horn, a
+  gold ingot and an emerald. Blown in a village (held like a goat horn until it sounds), it calls a rush: every grown
+  villager of the village works 50% faster for 5 minutes (6000 ticks; a `Pace` source, so the cap holds), with sparks
+  over the rushing workers now and then. Once a village a day (the hall keeps the day; a second blow is refused with
+  "The village has already answered the horn today."). When the rush ends the villagers are worn out: 10 less happy
+  until dawn ("worn out"; attachment `worn_out`). The Book of Edicts' last row shows the horn as ready or used. Only the
+  hall's owner and friends can call a rush in an owned village. `workHorns` in the config.
+  Done when: GameTests: the pace is 1/1.5 during the rush and back after; once a day; "worn out" until dawn; with Long
+  Shifts and partners the total stops at the cap; a stranger's horn does nothing in an owned village; the icon passes
+  `lint.py`; showcase scene `work_horn`: a GIF of builders before and during a rush (its check: more blocks placed a
+  minute during the rush).
+- [ ] **30.12** **The Cradle.** A block of its own (pixel-art textures and a model: a wooden cradle on rockers with a
+  wool blanket), crafted from planks, sticks and white wool; a point of interest, so the hall finds it without
+  scanning. A Cradle within 4 blocks of a bed in a village with a hall makes it a nursery village: every child there
+  grows up in half the time (each hall round ages the children by the round's length again), and one more baby a day
+  may be born (with Large Families as well, up to three a day). At night a child of the house sleeps in the cradle
+  (seated in it, as villagers sit in saddles and boats). More cradles don't add more. The hall's beds icon and the
+  Book's last row say whether the village has one. `cradles` in the config.
+  Done when: GameTests: a child grows up in 12000 ticks with a cradle and 24000 without; a second birth the same day
+  with a cradle and not without; with Large Families too, births a third of a day apart; a cradle with no bed near
+  doesn't count; a child seated in it at night; the art passes `lint.py`; showcase scene `cradle`: a child asleep in a
+  cradle at night, and a time-lapse of a child growing up.
+- [ ] **30.13** **The Village Banner.** An item of its own (pixel-art icon: a banner on a gilded crossbar), crafted
+  from any banner (it keeps that banner's design, which its tooltip lists) and a gold ingot. Right-click the Village
+  Hall with it to make that design the village's colours (saved on the hall; the banner isn't used up, as a Name Tag
+  isn't; the chronicle notes it); place it like a banner to hang the design anywhere. The colours show:
+  - on buildings: a builder who finishes a building in the village hangs a wall banner in the colours over its front
+    door, when there's a banner of the colours' base colour in their chests (they never ask for one);
+  - on shields: a guard's or mercenary's plain shield is painted in the colours when they gear up (a shield a player
+    painted is left alone);
+  - on caravans: the hall's trade routes page shows each village by its banner, and the Book of Edicts by the
+    village's own;
+  - at festivals: a banner in the colours within 16 blocks of the festival square lifts the festival's mood to 20
+    (from 15) for 3 days (from 2).
+
+  `villageBanners` in the config. Done when: GameTests for each of the four (the banner over the door, the painted
+  shield and a player's left alone, the routes icon, the festival's mood and days); the colours survive a reload; the
+  icon passes `lint.py`; showcase scene `village_banner`: a street of finished houses under the village's banners, a
+  knight with the painted shield, the routes page.
+- [ ] **30.14** **Seasons and the Harvest Idol.**
+  - A village year (`hall/Seasons`, core; if M28 already added a season clock for its Festival Cup, use that one):
+    spring, summer, autumn and winter of `seasonDays` (8) days each, counted from the world's day; autumn is harvest
+    season. The hall's festival icon names the season and its day ("Autumn: harvest season, day 3 of 8").
+  - The **Harvest Idol**, a block of its own (pixel-art and a model: a straw figure crowned with wheat on a wooden
+    post), crafted from a hay bale, three wheat, a stick and a gold ingot. In harvest season a crop within 32 blocks of
+    an idol grows 25% faster: when it takes a random tick, one time in four it takes another (a mixin on the crops'
+    random tick; the idols' places are kept in a small set per dimension, rebuilt as their chunks load, so nothing is
+    scanned). Crops are the block tag `aliveworkplace:idol_crops`: wheat, carrots, potatoes, beetroots, melon and
+    pumpkin stems, sweet berries, cocoa, nether wart, torchflower and pitcher crops, and with Cobblemon its berries,
+    apricorns, mints and Hearty Grains (by id, `required: false`). Idols don't stack. In harvest season golden sparkles
+    rise from an idol now and then. `harvestIdols` in the config.
+
+  Done when: GameTests with a fixed `RandomSource`: wheat by an idol in autumn grows 25% (±5%) more over 2000 random
+  ticks than without; nothing extra in summer, at 33 blocks, or from a second idol; the idols are found again after a
+  reload; the season is right on days 1, 17 and 32; the art passes `lint.py`; showcase scene `harvest_idol`: two fields
+  side by side through a harvest season, one with an idol.
+- [ ] **30.15** **Tonics: Miner's Brew and Builder's Tea.** Tonics are data (`data/aliveworkplace/tonics/<id>.json`:
+  the item, its maker, `alchemist` or `chef`, its ingredients, the jobs it suits, how much faster, 25%, and for how
+  long, 24000 ticks), so a server owner can make any item a tonic. Right-click a villager with a tonic that suits
+  their job and they drink it: 25% faster for a day (a `Pace` source; attachment `tonic`, saved; another tonic starts
+  the day again, it never stacks). One that doesn't suit them is refused and kept ("Dara has no use for Miner's
+  Brew."). Vanilla Clerics (`AlchemistWork`) brew the alchemist's tonics after the guards' potions, and Chefs
+  (`ChefWork`) cook the chef's after their menu, from the chests by their station and the store, keeping 4 of each.
+  Players can't craft them. The tooltip says what it does, for which jobs, and who makes it from what. `tonics` in
+  the config.
+  - **Miner's Brew** (alchemist: a glass bottle, glowstone dust, coal and sugar): Miners, Sifters, Netherworkers.
+  - **Builder's Tea** (chef: a glass bottle, two sweet berries and sugar): Builders, Carpenters, Masons, Dyers.
+
+  Each is its own item, drawn with the pixel-art skill (a stoppered dark-amber bottle; a bottle of rosy tea). Done
+  when: GameTests: a miner drinks Miner's Brew and is 25% faster for 24000 ticks, also after a reload; a builder
+  refuses it; an alchemist with the makings brews it into the chests and stops at 4; a chef cooks Builder's Tea; a
+  tonic from a test data pack works; with every bonus the cap holds; both icons pass `lint.py`; showcase scene
+  `tonics`: a miner drinking, then their status line ("25% faster: Miner's Brew, 19 min left").
+- [ ] **30.16** **Four more tonics**, each its own item, data file and pixel-art icon:
+  - **Smith's Draught** (alchemist: a glass bottle, blaze powder, two iron nuggets): Armorers, Toolsmiths,
+    Weaponsmiths, Tinkerers, Ball Smiths;
+  - **Scholar's Infusion** (alchemist: a glass bottle, an amethyst shard, glow berries): Scholars, Teachers,
+    Librarians, Cartographers, Fossil Scientists;
+  - **Harvest Cordial** (chef: a glass bottle, an apple, wheat, sugar): Farmers, Orchard Keepers, Florists,
+    Beekeepers, Composters, Shepherds, Butchers, Ranchers, Chefs;
+  - **Woodsman's Broth** (chef: a bowl, a cooked salmon, a carrot, a brown mushroom): Lumberjacks, Fletchers,
+    Fishermen, Porters, Postmen.
+
+  No tonic for guards (they have the alchemist's potions), nurses, clerics, undertakers, innkeepers, shopkeepers,
+  ferrymen, bards, trainers, tutors or traders. Done when: a GameTest per tonic (its maker makes it, one of its jobs is
+  25% faster with it, a job outside its list refuses it); the four icons pass `lint.py` and are shown in slots and in
+  hand in the review package; the `tonics` scene films all six.
+- [ ] **30.17** **Guild Charters, the Guildhall and the Builders' Guild.**
+  - The **Guild Charter**, an item of its own (pixel-art: a rolled charter with a red seal), crafted from three paper,
+    an emerald, a gold ingot and red dye. Sneak-right-click a Master of a trade with it in a village of Village rank or
+    more: they become the **Guild Master** of that trade's guild (attachment `guild_master`; the hall's list and their
+    status say so; the chronicle, everyone in the village told). One guild per trade in a village, and one guild per
+    rank above Hamlet (`guildsPerRank`: Village 1, Town 2, City 3). Otherwise it's refused, with the reason.
+  - Guilds are data (`data/aliveworkplace/guilds/<id>.json`: the name, icon, trades and perks, as effects from the
+    toolbox with a list of jobs), so a server owner can add their own.
+  - The **Guildhall**, drawn with the architect skill and the blueprint generator (I: a two-storey hall with a long
+    table, benches, the charter framed over the hearth and banners by the door; II: a tower wing with a meeting room
+    and a bell), in the Blueprint Table and sold by every Guild Master. A guild is founded once a finished Guildhall (in
+    any style) stands in the village: the oldest chartered guild without one claims the next Guildhall finished, and
+    each guild needs its own. Until then its perks wait.
+  - When the Guild Master dies, the guild's most experienced member takes over (chronicle); a guild whose Guildhall is
+    no longer finished waits until it's repaired.
+  - The Book of Edicts' last row shows the village's guilds: master, members, perk, founded or not.
+  - **Builders' Guild** (Builders, Carpenters, Masons, Dyers): members work 15% faster; up to 5 idle builders help at
+    a build instead of 3 (`Builders.MAX_HELPERS`).
+
+  `guilds` in the config. Done when: GameTests: the charter's refusals (not a Master, a Hamlet, over the cap, a guild
+  already); a Guild Master kept over a reload; the perks off before the Guildhall and on after (a carpenter 15%
+  faster, 5 helpers at one build); succession when the master dies; a builder builds the Guildhall I and II in a test;
+  the renders checked against `STYLE.md` in the review package; showcase scene `guildhall`: the Guildhall II with its
+  Guild Master inside, and the Builders' Guild on the Book's last row.
+- [ ] **30.18** **The Miners', Smiths' and Woodsmen's Guilds.** A data file each; members work 15% faster:
+  - **Miners' Guild** (Miners, Sifters, Netherworkers): pickaxes, and the netherworker's gear, wear half as fast;
+  - **Smiths' Guild** (Armorers, Toolsmiths, Weaponsmiths, Tinkerers, Ball Smiths): every material a weaponsmith
+    mends with puts back a third of the durability instead of a quarter (`MendingWork.PER_UNIT`);
+  - **Woodsmen's Guild** (Lumberjacks, Fletchers, Fishermen): axes and fishing rods wear half as fast.
+
+  New effects: `tool_wear` and `mend_per_unit`. Done when: a GameTest per guild with its numbers, founded and not
+  (durability lost over 20 blocks dug, 20 logs cut and 10 fish caught; what one ingot puts back); showcase scene
+  `guilds`: each Guild Master's status and the guilds' row of the Book.
+- [ ] **30.19** **The Harvest, Herders' and Scholars' Guilds.** A data file each; members work 15% faster:
+  - **Harvest Guild** (Farmers, Orchard Keepers, Florists, Beekeepers, Composters, Chefs): the village's own farms and
+    the orchard keepers' rounds reach 24 blocks instead of 16;
+  - **Herders' Guild** (Shepherds, Butchers, Ranchers): every herd may be 4 bigger (shepherds and ranchers breed up to
+    12 of a kind instead of 8, hired butchers keep 14 instead of 10);
+  - **Scholars' Guild** (Scholars, Teachers, Librarians, Cartographers): research levels cost a quarter less paper,
+    books and emeralds (rounded up).
+
+  New effects: `work_reach`, `herd_size`, `research_cost`. Done when: GameTests for each number, founded and not; the
+  `guilds` scene gains their rows.
+- [ ] **30.20** **The Healers', Merchants', Wardens' and Trainers' Guilds.** A data file each:
+  - **Healers' Guild** (Nurses, Clerics, Undertakers): members work 15% faster; the village's ill get well in two days
+    instead of three, and nurses and undertakers look 48 blocks out instead of 32;
+  - **Merchants' Guild** (Shopkeepers, Innkeepers, Ferrymen, Postmen, Porters): members work 15% faster; travellers
+    cost a quarter less to hire; porters carry 3 more stacks;
+  - **Wardens' Guild** (Guards): guards train on the dummies up to Master instead of Expert, and hit 10% harder;
+  - **Trainers' Guild** (with Cobblemon, through a `fabric:load_conditions` on its file: Trainers, Trainer Leaders,
+    Move Tutors, Pokémon Traders, Fossil Scientists): lessons and revivals cost a fifth less, and trainers rank up a
+    quarter faster.
+
+  With these every trade but the Bard has a guild (the Bard Laureate is M29's). New effects: `recovery_days`,
+  `work_radius`, `hire_price`, `carry`, `train_up_to`, `strength`, `lesson_price`, `trainer_xp`. Done when: GameTests
+  for each number, founded and not; the Trainers' Guild absent without Cobblemon and working in the compat suite; the
+  `guilds` scene gains their rows.
+- [ ] **30.21** **Edicts and civic items in the village's life.**
+  - Chatter (`people/Chatter`): two lines for each edict in force and two for each reformed one ("Long shifts again...
+    my back.", "The shift bell's rung. Home we go."), and lines for a rush, a tonic, a guild and the village's colours;
+  - "What next?" (`VillageAdvice`): a free edict slot; a reform step waiting on the quest page; Festival Season with a
+    treasury too small for the next festival; a chartered guild without its Guildhall; Large Families without a
+    Cradle; harvest season without an idol near the fields;
+  - the README gets an *Edicts* section (each edict, its boost, cost and reform, in a table) and a *Civic items*
+    section (each item, its recipe and what it does; the tonics and guilds in tables), with pictures from the
+    showcase; the In-Game Guidebook (26.2a) gets the same pages if it has landed, otherwise a line in the Notes for it.
+
+  Done when: `langcheck.py` is clean; a GameTest per advice tip; the README's tables list every edict, tonic and guild
+  data file we ship (the tester checks); showcase scene `village_talk`: villagers' lines under Long Shifts and after
+  The Shift Bell.
+- [ ] **30.22** **A season under the edicts.** A pack-server scenario (`tools/packtest`, with `/tick sprint`, in
+  pieces that fit a night run): a City of 35 villagers with farms, a kitchen and a store, 4 in-game days under four
+  edicts at once (Long Shifts, Free Bread, Large Families, Festival Season), then 4 days with all four reformed, with a
+  Cradle, an idol in harvest season, a founded guild and a rush a day. Each day records: meals eaten and left, births,
+  the ill, the average mood, the treasury, the pace of five workers, and our share of the tick. Done when:
+  - the costs show (the store falls faster under Free Bread and Large Families than reformed; the treasury pays for the
+    festivals) and nothing runs away: the store never stays empty for a whole day while the farms work, no pace beyond
+    the cap, the village never shrinks;
+  - the tick stays within the targets (25.2);
+  - the numbers are in `docs/design/M30.md`, and every number that had to change is noted with why.
+
+Depends on: nothing. Soft links, each with a fallback: Open Gates' Legend visits and Curfew's Night Owls use M29's inn
+visitors and Gifted traits once they land (nothing reads those effects until then); 30.14 uses M28's season clock if
+it already exists; M31 can turn reforms into story arcs through the `arc` field; M33's realm-wide edicts build on 30.3.
+
+## Milestone 31: Quests become stories (1.5)
+
+The village's people become people you know. Each named villager keeps a friendship with each player (gifts, favours,
+heart events that tell their life story) and asks friends for help with their own goals; each village gives each
+player a standing and a title; a bounty board hangs up wanted posters; and story arcs run in chapters over days: The
+Bandit King, The Sickness, The Lost Caravan and The Professor's Thesis. It builds on the hall's daily quests
+(`hall/VillageQuests`), the chronicle, `people/` (names, chatter, couples, families, moods), `guard/BanditCamps`,
+`hall/Caravans` and `people/Sickness`. Everything a player can be asked to do is a data file, so server owners can
+write their own stories; nothing waits forever on a player.
+
+- [ ] **31.1** **Design note.** `docs/design/M31.md`: what the player sees (hearts on a villager, wrapping and giving
+  a gift, a heart event, a personal request asked and done, the journal and its tracker bar, a title in chat, the
+  bounty board, one arc chapter by chapter); every data format below with one example file each (`quests/`, `arcs/`,
+  `villager_tastes/`, `heart_events/`, `bounties/`); every config key with its default; every new saved field with its
+  default and where it lives (the villager attachments `friendship` and `late_partner`, the illness kind (shared with
+  32.11), the flag `revived`, and the saved data `aliveworkplace_stories` with its quests, arcs, standings and count
+  of camps broken); how the hall's old daily quests move into the engine; the gift gesture (a wrapped Gift, so it
+  never clashes with trading or picking a job). Sent to the owner as a review package; lanes don't wait for his reply.
+  Done when: the note is on `main` with every config key and saved field of this milestone and its default, and the
+  package is sent.
+- [ ] **31.2** **The quest engine.** A new `story/` package. Quests are data,
+  `data/<namespace>/quests/<group>/<id>.json`, loaded with `Platform.onDataReload` the way `ranch/PokemonChores` loads
+  its files. One file is one quest: who gives it (`hall`, `villager`, `bounty` or `arc`), `weight`, `conditions`,
+  `objectives`, `rewards`, the `days` it stays up and whether it's `repeatable`. The first toolbox, each piece a small
+  class with its own codec:
+  - conditions, in the shared `rules/` package that 29.2 also brings (whichever of the two items lands first creates
+    it, with these names; the other adds to it): `rank_at_least`, `villagers`, `job_level` (N workers of a trade at a
+    level or above), `finished` (finished buildings, optionally of one blueprint), `research_levels`, and new here
+    `food_below`, `cobblemon`, `chance`, `quest_done`, `not`;
+  - objectives: `bring` (an item or tag and a count, into the giver's chests or the store), `bring_request` (what a
+    worker is waiting for today, from `work/Requests`), `kill` (an entity type or tag, a count, in the village or
+    anywhere), `battle` (beat one of the village's trainers), `wait` (days);
+  - rewards: `money` (emeralds, or CobbleDollars through `work/Money`, times the rank factor), `item`, `loot_table`,
+    `chronicle`, `village_mood` (points for some days, like a festival), `treasury`.
+
+  Open quests live in a new saved data, `aliveworkplace_stories` per dimension, keyed by hall and dropped with the
+  hall like `Caravans.Data.remove`: the quest's file, progress per objective, who helped and how much, the day posted
+  and the day due. Objectives move on events (kills, hand-ins, battles) or in the hall's round (every 600 ticks),
+  never by a scan each tick. The three daily kinds become the first files, with today's numbers (one a morning, three
+  open, three days each, a quarter more a rank): `daily/worker_request`, `daily/food`, `daily/slay`, `daily/battle`
+  and the ten wants of `VillageQuests.WANTS` (`daily/want_white_wool` … `daily/want_gold_ingot`). `VillageQuests`
+  keeps its public calls (`handIn`, `onKill`, `onTrainerBeaten`) and passes them on. A hall saved with old-style
+  quests has them moved into the engine when it loads, progress kept; the old field stays readable. If M30's reform
+  steps (30.5: hall quests with a `reform` field) are on `main`, they move in the same way, with their field and their
+  place on the quest page. Config `villageQuests` (true).
+
+  Done when:
+  - the existing quest GameTests pass unchanged (posting, the hand-in into the worker's chests, slay and battle
+    counting, the rank factor);
+  - a hall saved with three old quests loads them into the engine with their progress (a GameTest on saved NBT);
+  - a quest file in the gametest datapack is posted and completes; a broken file is skipped with one log line naming
+    it (added to `allow.txt`); `/reload` picks up a changed file;
+  - `villageQuests` off: no new quests, and nothing else changes.
+- [ ] **31.3** **The quest journal, tracking and quest maps.** The hall's Quests page becomes a journal with four tabs
+  along the top: **Village** (the daily quests), **Personal** (requests from villagers who are your friends, 31.9),
+  **Story** (the village's arc, 31.4) and **Bounties** (31.13); a tab whose item hasn't landed yet says so in grey.
+  Each quest shows who asked, one line per objective with its progress, the reward and the days left, and has two
+  clicks: hand in (for `bring`) and **Track**. A tracked quest (one per player) is a vanilla boss bar for that player
+  only: the quest's name and its current objective ("Follow the tracks (2/5)"), filling as it goes, gone when the
+  quest ends or is untracked. `/workplace quests` lists your quests in chat, each with a clickable [Track] or
+  [Untrack]; the Village Ledger opens the journal from afar (it opens the hall screen already). Two toolbox additions:
+  the objective `reach` (be within a radius of a place) and the reward `map` (a map to the place, drawn like
+  `explore/Explorers.mapTo`, with a red X for a biome or a point). A place is a structure tag, a biome tag or a point
+  an arc set. It's looked up once, when the quest opens (`ServerLevel.findClosestBiome3d` or `findNearestMapStructure`
+  on the server thread, 3000 blocks at most), and the answer is saved with the quest; if nothing is found, the quest
+  takes its next option or is withdrawn with a chronicle line. A README section explains the journal.
+
+  Done when:
+  - GameTests: tracking puts the bar on that player only, it follows the progress and goes when the quest ends;
+    `reach` counts inside its radius and not outside; the map's marker sits on the found place; the lookup runs once
+    per quest (a counter);
+  - showcase scene `quest_journal`: the four tabs, a tracked bar on screen, a quest map in hand.
+- [ ] **31.4** **The story arc engine.** Arcs are data, `data/<namespace>/arcs/<id>.json`, one arc per file: a
+  `trigger` (conditions, a chance a day), the `chapters` in order and an `ending`. A chapter has a name, intro lines
+  for chat and the chronicle, `on_start` effects, its quests (ids or written inline), when it's done (all of them, any
+  one, or the ones named), `delay_days` before the next, a `time_limit_days` with what happens on failure, and chatter
+  lines the villagers say while it runs (as village news in `people/Chatter`). Effects toolbox:
+  - `announce` (to players in and near the village) and `chronicle` (a new STORY kind);
+  - `place`: a template from the blueprint generator at a spot found by a rule (a ring round the village, along a
+    caravan road, or in a biome far away); it's placed only once a player comes within 96 blocks, so the chunk is
+    loaded and nothing has to generate, never over anything but natural ground and plants, and remembered;
+  - `spawn`: named mobs with gear, extra health and a boss bar from the data, tagged to the arc and kept home with
+    `restrictTo` as `BanditCamps` does;
+  - `give_map`, `village_mood`, `festival` (one the next evening, through `Festivals`), `flag`, `start_quest`,
+    `end_arc`, and any reward of the quest toolbox.
+
+  A new objective, `talk` (right-click a villager the arc names). An arc marked `threat` doesn't start in a village
+  set At peace or at threat level 0 once 32.21 has landed. One arc runs in a village at a time; arcs marked `side`
+  (31.22's reforms) run beside it. Config: `storyArcs` (true), `arcCooldownDays` (8, between two arcs in one village),
+  `arcsAtOnce` (3, on the whole server), `disabledArcs` (a list of ids). The arc's state is in
+  `aliveworkplace_stories` (the arc, its chapter, the day it began, flags, spawned mobs, placed spots), so it carries
+  on after a restart at any tick: a spawned mob that's gone is put back at its spot when the chunk loads, and an arc
+  whose file was removed ends quietly with a log line. Placements and spawned mobs are checked every 40 ticks against
+  the players' positions (a distance check each). The hall's Story tab shows the chapters so far (done ones ticked,
+  the current one with its quests). Operators get `/workplace story start <arc>`, `next` and `stop`.
+
+  Done when:
+  - a test arc in the gametest datapack (three chapters: wait a day, bring an item, kill a spawned named zombie) runs
+    from start to end under GameTests with time skips, and a missed time limit runs its failure;
+  - saving and reloading mid-chapter (a round trip of the saved data) carries on in the same chapter with its mob;
+  - a far `place` waits until a player comes near, then places once;
+  - no more than `arcsAtOnce` arcs run; with `storyArcs` off no arc starts and a running one ends at its next round;
+  - showcase scene `story_arc`: the announcement, the Story tab, the chronicle.
+- [ ] **31.5** **Friendship.** Every named villager in a hall's village keeps a friendship with each player: 0 to 1000
+  points, ten hearts of 100. It's saved on the villager, in a new attachment `friendship` (empty by default): player →
+  points, the last gift's day, gifts this week, heart events told. Favours, each once a day per villager unless said:
+  - trading with them: +5;
+  - a hall quest they posted, finished by you: +40;
+  - handing in something they're waiting for (the requests board or a quest): +10;
+  - killing a monster that hurt them in the last 10 seconds: +15, any number of times;
+  - being at their wedding: +30; at a festival they came to: +10;
+  - a personal request of theirs done (31.9): +150.
+
+  Hitting them costs 50 (at most once a minute). Hearts never fade, so nobody has to visit to keep them up. Look at a
+  named villager within 6 blocks and the action bar shows "Dara ♥♥♥♡♡♡♡♡♡♡" (checked every 10 ticks per player, one
+  ray along their look); a rise puffs hearts over them; the hall's tooltip for a villager adds your hearts and their
+  two best friends among the players. A new quest reward, `friendship` (to the giver, or to named villagers). Config
+  `friendship` (true).
+
+  Done when:
+  - GameTests: each favour and the loss (points, and once a day where said), two players kept apart, a save/reload
+    round trip of the attachment;
+  - screenshots of the action bar and the hall tooltip; showcase scene `friendship` (a trade, a quest done, the hearts
+    going up);
+  - `friendship` off: no points, no hearts shown, nothing else changes.
+- [ ] **31.6** **Gifts.** Two new items, drawn with the pixel-art skill the way vanilla draws its kind: **Gift Wrap**
+  (paper, string and any dye make 4) and the wrapped **Gift** (Gift Wrap and any one item in the crafting grid: a
+  special recipe like vanilla's map cloning; the item is kept inside as a data component, and the tooltip says "From
+  Jesse" and not what's inside). Right-click a named villager with a Gift: they unwrap it (the item's particles, a
+  paper rustle), say how they like it over their head and in your chat ("A cake! You remembered."), and their
+  friendship changes: loved +80, liked +45, neutral +20, disliked −20, hated −40. The item goes into their chests (a
+  worker's supply chests, else the village's store). Each player can give each villager one gift a day and two a week;
+  on a villager's **name day** (every 28 days, from their UUID; the hall's tooltip says when) a gift counts three
+  times. Villagers who aren't named shake their head. A Bottle o' Enchanting as a gift is liked and gives a worker 15
+  XP. With `friendship` off, a Gift is handed back unopened. Tastes are data,
+  `data/<namespace>/villager_tastes/<id>.json`: who the file is for (everyone, a job family, a job or a trait) and its
+  `loved`, `liked`, `disliked` and `hated` items or tags; the most specific file that names an item wins (job, then
+  family, then trait, then everyone). The first set:
+  - everyone: loves cake, pumpkin pie, golden apples, diamonds; likes bread, cookies, honey bottles, emeralds,
+    `#minecraft:small_flowers`; dislikes dirt, gravel, cobblestone, bones; hates rotten flesh, spider eyes, poisonous
+    potatoes, pufferfish;
+  - building and crafting (Builder, Carpenter, Mason, Tinkerer, Leatherworker): love blueprints and spyglasses; like
+    bricks, glass, lanterns, `#minecraft:planks`;
+  - mining and smithing (Miner, Armorer, Toolsmith, Weaponsmith, Sifter, Netherworker): love amethyst shards, gold
+    ingots, netherite scrap; like iron ingots, coal, raw copper;
+  - the land (Lumberjack, Orchard Keeper, Farmer, Florist, Beekeeper, Composter): love golden carrots, honeycomb,
+    sunflowers; like apples, bone meal, wheat seeds, `#minecraft:saplings`;
+  - animals and water (Shepherd, Butcher, Rancher, Fisherman): love saddles and name tags; like wheat, hay bales, cod,
+    salmon, leads;
+  - the kitchen (Chef): loves glow berries and golden carrots; likes eggs, milk buckets, sugar, cocoa beans,
+    `#c:foods/raw_meat`;
+  - learning (Scholar, Teacher, Librarian, Cartographer): love enchanted books, written books, filled maps; like
+    books, paper, feathers, ink sacs, compasses;
+  - healing (Nurse, Cleric, Undertaker): love glistering melon slices, ghast tears, totems of undying; like potions,
+    honey bottles, golden carrots;
+  - arms (Guard, Fletcher): love shields, crossbows, diamond swords; like arrows, flint, iron ingots;
+  - trade and travel (Shopkeeper, Innkeeper, Ferryman, Postman, Porter): love emerald blocks, filled maps, saddles;
+    like paper, boats, lanterns;
+  - music (Bard): loves music discs (`#c:music_discs`) and goat horns; likes note blocks and amethyst shards;
+  - Pokémon (Trainer, Trainer Leader, Move Tutor, Ball Smith, Pokémon Trader, Fossil Scientist; Cobblemon items by
+    id): love `cobblemon:rare_candy` and `cobblemon:ultra_ball`; like `cobblemon:poke_ball`, `cobblemon:exp_candy_s`,
+    `#cobblemon:berries`;
+  - no trade yet (jobless, nitwits): love emeralds; like bread and beds;
+  - traits: Glutton loves `#c:foods`; Frugal loves emeralds and gold ingots, dislikes cake; Cheerful loves flowers and
+    music discs; Lazy loves beds, dislikes tools; Diligent loves tools; Clever loves books and clocks; Strong loves
+    cooked beef and iron blocks; Nimble loves sugar and rabbit's feet.
+
+  Done when:
+  - GameTests: the recipe keeps the item; each taste band's points; the day and week limits (refused with a line); the
+    name day counting three times; the item in their chests; the most-specific rule; a datapack taste file winning
+    over ours;
+  - both textures pass `lint.py`; the recipes are in the recipe book; a README section;
+  - showcase scene `gifts` (GIF: wrapping, giving, the hearts).
+- [ ] **31.7** **Heart events and life stories.** At 2, 4, 6, 8 and 10 hearts a villager has something to tell you.
+  The next time you're within 8 blocks while they're off work (`Chatter.offWork`), they walk up, face you and tell it
+  in three to five lines over their head (`WorkerStatus`, one every 3 seconds), each also in your chat in grey so it
+  can be read again; walk away halfway and they start again next time. Each event is told once per player, adds +20
+  friendship, writes a line in the chronicle (a new FRIEND kind: "Dara told Jesse how she came to Thornholm") and
+  becomes part of the villager's **life story**: shift-click someone on the hall's list for their page (your hearts,
+  their name day, family and partner, the life story so far with one line per event anyone was told, and their
+  personal request). Events are data, `data/<namespace>/heart_events/<id>.json`: the `hearts`, conditions on the
+  villager's facts (born in the village (`Families`), hired from an inn (`HEAD_START`), brought back from a grave (a
+  new flag `revived` set by `Graves.revive`; absent on villagers revived before), job family, married, courting,
+  widowed (a new attachment `late_partner`, the partner's id and name, kept by `Couples.onDeath` from now on), a
+  parent, a trait, mood reasons, the village's rank), the lines as lang keys (with their parents, partner, children
+  and village as arguments) and the chronicle line. This item builds the engine and the 2-heart set, **Where I come
+  from**, in four variants: born here (names both parents), came as a traveller (the inn, and the day they were
+  hired), here before the hall (the village before it had a name), and back from the grave (what they remember of it).
+  Config `heartEvents` (true).
+
+  Done when:
+  - GameTests: at 2 hearts each variant is told for its facts, and nothing under 2 hearts; once per player; walking
+    off and coming back starts it again; the chronicle line and the life-story page; a broken event file is skipped
+    with a log line;
+  - showcase scene `heart_event` (GIF: Dara walks up and tells her story).
+- [ ] **31.8** **Heart events: the full set.** The other four events, every variant written out in `en_us.json` (three
+  to five lines each, read in context):
+  - **4 hearts, My work**, one per job family: building and crafting (the first wall they raised, and the one that
+    fell); mining and smithing (the day their lamp went out underground); the land (the year the harvest failed);
+    animals and water (the foal they raised, or the fish that got away); the kitchen (the dish that made them a cook);
+    learning (the book that changed their mind); healing (the patient they couldn't save); arms (their first raid);
+    trade and travel (the worst bargain of their life); music (a song nobody sings any more); Pokémon (their first
+    partner Pokémon); no trade yet (they haven't found their place and ask what you think: the village's nearest free
+    workstation is suggested, from `VillageHalls.freeStations`);
+  - **6 hearts, What keeps me up at night**, from their life now: hunger (hungry, or under 16 meals in the store), no
+    bed of their own, raids and bandits (a raid in the last 5 days, or a camp nearby), illness (they or their family
+    ill), loneliness (single, with no company), and when none of these fits, worry about you and your travels;
+  - **8 hearts, The people I love**: married (their partner, and the wedding day from the chronicle), courting, a
+    parent (their children by name), mourning (their late partner), alone (their parents, or "the village is my
+    family");
+  - **10 hearts, What I dream of**: to be a Master (below Master), a finer house (home below tier III), the village a
+    City (below City), a festival in their honour, to see the Nether or the sea (by job), and "I have everything I
+    wanted" (a happy, married Master).
+
+  At 10 hearts they also give you a **keepsake**, once: a named item with their lore. Building and crafting: "<Name>'s
+  Trowel" (iron shovel, Efficiency II); mining and smithing: "<Name>'s Lucky Pick" (iron pickaxe, Fortune I); the
+  land: "<Name>'s Grandmother's Seeds" (4 torchflower seeds); animals and water: "<Name>'s Old Rod" (fishing rod, Luck
+  of the Sea II); the kitchen: "<Name>'s Secret Recipe" (a written book of their recipe, with 2 pumpkin pies);
+  learning: "<Name>'s Annotated Atlas" (enchanted book, Mending); healing: "<Name>'s Remedy" (a golden apple); arms:
+  "<Name>'s Old Shield" (shield, Unbreaking II); trade and travel: "<Name>'s Spyglass"; music: "<Name>'s Favourite
+  Record" (music disc Otherside); Pokémon: "<Name>'s First Poké Ball" (`cobblemon:premier_ball`); no trade yet:
+  "<Name>'s Pressed Flower" (a cornflower).
+
+  Done when:
+  - one GameTest per variant (a loop over set-up facts) picks it, and each keepsake comes once per player;
+  - `langcheck.py` clean; a review package with a still of each family's 4-heart event; the `heart_event` scene gains
+    a still of a 10-heart keepsake.
+- [ ] **31.9** **Personal requests: the asking, and six requests.** A villager with 3 hearts or more with a player
+  nearby, and no request open, may ask that player for help: each morning one such villager in the village is picked,
+  a 25% chance. They walk up and ask over their head, and your chat gets the request with [I'll help] and [Not now]
+  (clickable, through `/workplace quest accept|decline <id>`). It shows in the journal's Personal tab, on their
+  life-story page and on the hall's tooltip for them ("Dara wants to make Journeyman before the next festival"). Other
+  players with 3 hearts can help too, and everyone who helped gets the friendship. Deadlines are "before the next
+  festival" (`Festivals.nextDay`) or a number of days; a missed one costs 30 friendship, they're glum for a day (a
+  mood reason) and they don't ask again for 3 days. Requests are quest files with the giver `villager` under
+  `quests/personal/`, with new conditions (`hearts_at_least`, `job`, `job_family`, `level_below`, `villager_type`,
+  `home_tier_below`, `no_bed`). The six requests:
+  1. **Next level before the festival** (`level_up`): a worker below Master; done when they reach the next level
+     (trading gives XP as in vanilla, and so does a Bottle o' Enchanting gift). 6 emeralds.
+  2. **A home of my own** (`home`): no bed of their own, or a tier I home; done when they sleep in a bed of their own
+     in a finished home of tier II or better (`people/Homes`). 8 emeralds.
+  3. **A taste of home** (`bring`, by their villager type): plains a pumpkin pie, desert a rabbit stew, savanna 4
+     cooked mutton, taiga 16 sweet berries, snowy 4 baked potatoes, swamp a mushroom stew, jungle 8 cookies. 4
+     emeralds.
+  4. **The tools of my trade** (`bring`, by job, into their chests where they use it): Miner a diamond pickaxe,
+     Lumberjack a diamond axe, Farmer a diamond hoe, Fisherman a fishing rod with Luck of the Sea, Guard a diamond
+     sword, Cartographer a spyglass, Netherworker a potion of Fire Resistance, Sifter a diamond shovel. 5 emeralds.
+  5. **Help me train** (Cobblemon, a Trainer): beat them in battle on three different days.
+  6. **A Pokémon friend** (Cobblemon): a Pokémon of a type that helps their job (the `work/Partners` table) pastured
+     within 16 blocks of their workstation at dawn.
+
+  Each done: +150 friendship to every helper and a chronicle line. Config `personalRequests` (true).
+
+  Done when:
+  - GameTests: a 3-heart villager asks and a 2-heart one doesn't; accept and decline; each of the six completes by its
+    objective and pays every helper; a missed deadline costs 30 and stops asking for 3 days; one open request per
+    villager;
+  - showcase scene `personal_request` (GIF: the ask, the accept, the hand-in, the thanks).
+- [ ] **31.10** **Personal requests: six more.** Each with its new objective:
+  1. **A letter to family** (`deliver`): offered when another village with a hall is within caravan range; the giver
+     names a relative there (a villager of that village, picked and remembered). You get a sealed letter (paper with a
+     name, lore and a quest mark, so no new art; lost, the giver writes you another). Right-click the relative with it
+     and carry their reply back. Friendship with both, and a line in both chronicles.
+  2. **Bring back my love** (`revive`): a mourning villager whose late partner's grave is in the village; done when
+     that grave is revived (`Graves.revive`, by an Undertaker with a golden apple, a healing potion or a totem). They
+     marry again (`Couples.wed`): a second wedding.
+  3. **A cat by the door** (`pet_near_home`): a cat or a tamed wolf within 10 blocks of their bed at dawn.
+  4. **Off to school** (`schooled`): a parent of a child who hasn't been to school; done when the child is schooled
+     (`Schools.isSchooled`; it needs a Teacher).
+  5. **A chapel wedding** (`build`, a blueprint finished in the village): a courting couple in a village without a
+     Chapel; their wedding waits (up to 5 days instead of 2) for a Chapel to be finished, then is held there with a
+     feast: everyone in the village gets a festival's mood.
+  6. **The lost heirloom** (`fetch`): the giver's family heirloom, one of Grandmother's Compass (a compass),
+     Grandfather's Pocket Watch (a clock), Mother's Spyglass (a spyglass), Father's Horn (a goat horn), the Lucky
+     Crystal (an amethyst shard) or Great-aunt's Diary (a written book of three pages of her story), was lost at a
+     structure within 1500 blocks (a new tag `aliveworkplace:heirloom_places`: ruined portals, shipwrecks, trail
+     ruins, abandoned mineshafts). The arc engine's `place` puts it, when a player comes near, in one of the
+     structure's chests (in trail ruins, a suspicious gravel block to brush; a new barrel if the chests are gone), and
+     you get a map. Its story goes in the chronicle when it's back.
+
+  Done when:
+  - a GameTest per request: the letter there and back between two halls; the revive with a grave; the cat at dawn; the
+    schooled child; the chapel wedding and its feast; the heirloom placed once when a player comes near, with the map;
+  - showcase scene `letter` (the letter carried between two villages, and the reply).
+- [ ] **31.11** **Reputation and titles.** Each player has a standing in each village: points kept by hall in
+  `aliveworkplace_stories` (player → points). Earned: a daily quest +10; a personal request +25; a story chapter +50
+  to everyone who helped; an arc's ending what its file says (150 in ours); a bounty +40; breaking up a bandit camp
+  or, once 32.3 lands, a lair (the killer of its chief) +40; fighting in a raid (3 raiders killed) +20; coming to a
+  festival +5; a gift +2 (at most +10 a day per village). Lost: hitting a villager −10, killing one −150, killing an
+  iron golem −100, killing a guard −200. Titles: **Stranger** (under 50), **Friend** (50), **Hero** (300), **Lord**
+  (1000, and the village at least a Town). New quest rewards: `reputation`, and `honour`, which lets arcs give named
+  honours (Kingslayer, Healer of <village>, Wayfinder, Co-author), listed with your standing. A new title is told to
+  the whole server ("Jesse is now a Hero of Thornholm!") with a sound and a TITLE line in the chronicle; losing one is
+  told only to that player. **In chat**, a player's title in the village they stand in (else their best anywhere) goes
+  before their name: "[Hero of Thornholm] Jesse: …", through a new `Platform.onChatDecorate` (Fabric's message
+  decorator; config `titlesInChat`, true). The hall's name tag tooltip shows your standing and the top three players;
+  `/workplace standing` lists yours in every village. Config `reputation` (true). **Owner's call:** may players other
+  than the hall's owner become Lord of his village on a shared server? Until he says, yes, by deeds alone.
+
+  Done when:
+  - GameTests: each source and loss; the thresholds and Lord's Town rule; the announcement once per title; the
+    decorated chat text; honours listed; two players kept apart; a save/reload round trip;
+  - screenshots of a titled chat line and the hall tooltip; a README section; showcase scene `titles`.
+- [ ] **31.12** **What friendship and titles are worth.**
+  - **Cheaper trades**: 5% off at 4 hearts and 5% more a heart, 30% at most; a title adds 5% (Friend), 10% (Hero) or
+    15% (Lord); 40% at most together. A mixin at the end of `Villager.updateSpecialPrices`, on top of vanilla's gossip
+    and Hero of the Village; no price under 1. Players' shops aren't touched.
+  - **Festival gifts**: at a festival, each villager with 6 hearts or more with a player there brings them one gift:
+    building and crafting 16 stone bricks, mining and smithing 4 iron ingots, the land 6 apples, animals and water 4
+    cooked salmon, the kitchen 2 pumpkin pies, learning 2 books, healing a potion of regeneration, arms 16 arrows,
+    trade and travel 3 emeralds, music a note block, Pokémon 3 Poké Balls, no trade yet 3 flowers. Heroes and Lords
+    get Hero of the Village II at festivals (everyone else I, as now).
+  - **Named after you**: the first baby born to a couple where a parent has 8 hearts with you is named after you, once
+    per player per village, with a chronicle line.
+  - **Letters from friends**: at 10 hearts, once a week the villager sends you a parcel through the village's post
+    (`mail/PostOffice`, to your mailbox or the post office): a letter ("Thought you'd like these. Dara") and their
+    family's festival gift.
+  - **Legends**: the conditions `title_at_least` and `hearts_at_least` go into the shared `rules/` package. Once
+    29.8's guests are on `main`, a Legend guest comes only to a village where some player is a Friend or better (Rare
+    Legends) or a Hero or better (Legendary and Mythic), a condition added to the `visit` way of each Legend file;
+    before that, the conditions and their tests only.
+  - **A say in edicts**: a Lord may enact and repeal edicts in that village's Book of Edicts as the hall's owner can;
+    a Hero may propose one, which the owner gets in chat with [Approve] and [Refuse]. Needs 30.4's Book of Edicts
+    (today only the owner, friends and operators can click it); before it lands,
+    `Reputation.maySetEdicts(player, hall)` and its test, for M30's book to call.
+
+  Done when:
+  - GameTests: the price at every heart and title step and the 40% cap; one festival gift per villager per festival;
+    the named baby once; the weekly parcel arriving; `title_at_least`;
+  - a screenshot of a discounted trade screen; showcase scene `festival_gifts`.
+- [ ] **31.13** **The bounty board and bandit captains.** A new block, the **Bounty Board** (planks, sticks and paper;
+  a notice board on two posts, drawn with the pixel-art skill like vanilla's wooden blocks, its face showing 0 to 4
+  posters as block states): right-click it for the Bounties tab of the nearest hall's journal (the tab works without a
+  board too). From Village rank a village posts a bounty while it has fewer than 2 open, at most one every 3 days;
+  each lasts 7 days. Config `bountyBoard` (true). This item's kind is the **bandit captain**: a named raider and a
+  band of 2 or 3 at a hideout 120 to 200 blocks out (the existing `camp/bandit_camp`, with his own banner on a pole by
+  the fire), placed by the arc engine's `place` when a player comes within 96 blocks. Names come from
+  `data/<namespace>/bounties/captains.json`: 24 first names (Grimwald, Varka, Osric, Hobb, Maud, Teague, Rook, Sable,
+  Corvin, Ysolde, Brannoc, Edda, Fulk, Ilse, Jory, Kestrel, Lorcan, Morwen, Nyle, Petra, Quill, Ronan, Silas, Wenna)
+  and 16 epithets (the Red, Blackhand, the Fox, Ironjaw, the Grey, Halfmoon, the Cleaver, Longshot, the Silent,
+  Ashcloak, the Tall, One-Eye, the Cruel, Quickblade, Stormcrow, the Mad). Each captain has one quirk, one file each
+  in `bounties/quirks/` (the mob, its gear, effects, mount and band size):
+  - **Ironhide**: full iron armor, +20 health;
+  - **Fleetfoot**: Speed II;
+  - **Crossbow Ace**: a pillager with a Multishot, Quick Charge II crossbow;
+  - **Beast Rider**: rides a ravager;
+  - **Night Stalker**: invisible at night until he's hit;
+  - **Warlord**: a band of 5;
+  - **Hexer**: an evoker.
+
+  Taking a bounty gives a **Wanted Poster** (a new item: vanilla's map paper with a sketched face; its tooltip has the
+  name, the quirk, where he was last seen ("160 blocks north-east") and the reward) and a map to the hideout. The
+  captain drops a **Captain's Insignia** (a new item) when he dies; hand it in at the board or the hall for 12
+  emeralds times the rank factor, once, to whoever hands it in; the chronicle (a new BOUNTY kind) says who. An
+  unclaimed bounty comes down after 7 days and the band leaves in a puff. Villagers gossip about where he was seen
+  (chatter). Once 32.3's lairs are on `main`, a standing lair's captain is posted as a bounty too (his name and his
+  lair's place; paid to his killer when he falls). No captains' bounties in a village set At peace or at threat level
+  0 (32.21, once it lands).
+
+  Done when:
+  - GameTests: posted at Village rank and not at Hamlet, at most 2 open, 3 days apart; the captain spawns with his
+    quirk at the hideout once a player is near (one test per quirk); the insignia drops and pays once (a second player
+    can't claim it again); the bounty comes down after 7 days with its band; the board shows as many posters as open
+    bounties;
+  - the three textures pass `lint.py`; a README section; showcase scene `bounty` (GIF: the board, the poster, the
+    hideout, the claim).
+- [ ] **31.14** **Rogue Pokémon bounties** (Cobblemon). The board's second kind of poster, through a new extension
+  point `story/RoguePokemon` filled by `compat/cobblemon/CobblemonRogues`; without Cobblemon this kind is never
+  posted. Config `rogueBounties` (true). A rogue is a wild Pokémon grown huge and mean that roams within 24 blocks of
+  a spot 150 to 250 blocks from the hall, spawned with Cobblemon's own spawning from
+  `data/<namespace>/bounties/rogues/<id>.json` (one file per biome group: its biome tag and species) by the biome
+  round the spot (a species Cobblemon doesn't have is skipped):
+  - forests: Ursaring, Scyther, Pinsir;
+  - plains and meadows: Tauros, Kangaskhan, Rapidash;
+  - mountains and peaks: Onix, Golem, Aggron;
+  - deserts and badlands: Sandslash, Krookodile, Flygon;
+  - swamps and jungles: Tangrowth, Toxicroak, Swampert;
+  - beaches and stony shores: Kingler, Crawdaunt, Barbaracle;
+  - snowy biomes: Mamoswine, Abomasnow, Beartic;
+  - savannas and taigas: Donphan, Rhydon, Lycanroc.
+
+  Its level is 35 at Village rank, 50 at Town and 65 at City (with Radical Cobblemon Trainers, the player's level cap
+  plus 5); it's half again as big where Cobblemon has a size setting (check with `api.py`; normal size if not), named
+  "Rogue <species>", and glows for players who took its bounty when they're within 32 blocks. With Cobblemon 1.8
+  (28.2's `work/PokemonFeatures.ALPHAS`), the rogue is spawned as one of Cobblemon's Alphas instead. Beat it in battle
+  or catch it: the bounty (16 emeralds times the rank factor) goes to that player once, and a catcher keeps it. Its
+  poster names the species and where it was last seen.
+
+  Done when:
+  - compat GameTests (`runCompatGameTest`): the species, level and name for its biome and rank; a win and a capture
+    each pay once; plain GameTest: never posted without Cobblemon;
+  - showcase scene `bounty_rogue` (Cobblemon: the poster, the rogue, the claim).
+- [ ] **31.15** **The Bandit King, I: the fort and the King.** Three builds with the minecraft-architect skill
+  (`STYLE.md`, rendered), each standing on the one before like a blueprint upgrade: `story/bandit_fort` (a palisade of
+  sharpened logs round a yard, a gate, a fire and tents), `story/bandit_fort_2` (two corner watchtowers with ladders,
+  and a stable) and `story/bandit_fort_3` (the King's keep: a timber-and-cobblestone hall with a throne, his banner
+  over the door, a postern gate at the back that can be placed open or shut, and the treasure chest). The arc places
+  one stage each dawn on fit ground 110 to 150 blocks from the hall (`BanditCamps.fits` widened to the fort's size;
+  ground filled underneath as `BanditCamps.found` does). **The King**: a vindicator named "<a name from 31.13's list>,
+  the Bandit King", in a golden helmet (his crown), iron chestplate, leggings and boots, with a diamond axe, 150
+  health and a boss bar for players within 32 blocks; at half health he blows a goat horn and 4 bandits come out of
+  the keep, once. His men keep to the fort (`restrictTo`). The treasure chest's loot table, `chests/bandit_king`: 16
+  to 32 emeralds, 4 to 8 gold ingots, 1 to 3 diamonds, an enchanted iron sword or crossbow, and **the King's Crown**
+  (the golden helmet, Protection III and Unbreaking III, named).
+
+  Done when:
+  - GameTests: the three stages place in order on uneven ground with nothing floating and nothing a player built
+    touched; the King's gear, health and boss bar; the horn calls 4 bandits once; the chest always has the crown;
+  - renders of the three stages, front and back, in the review package; showcase scene `bandit_fort` (the three stages
+    placed one after another).
+- [ ] **31.16** **The Bandit King, II: the story.** `arcs/bandit_king.json`, an arc marked `threat`. It starts in a
+  Town or bigger that has broken up at least 2 bandit camps (a count kept in `aliveworkplace_stories` from this item
+  on; `BanditCamps.breakUp`, or 32.3's lair breaking once that has landed, adds to it), 8% a day, with `banditCamps`
+  on. Its camps are the arc's own (`place` and `spawn`), not `BanditCamps`' camp or 32.3's one lair a village, so they
+  never clash. Chapters:
+  1. **Smoke on three hills**: three bandit camps go up at once round the village (the `camp/bandit_camp` blueprint at
+     three sites 80 to 104 blocks out, each with a chief in iron and 3 or 4 bandits, as `BanditCamps.found` makes
+     them), their chiefs now "Captain of the Bandit King", each camp flying his war banner (a black banner with a red
+     skull). Take the three war banners: breaking one drops a named banner that counts. Chatter: "All the camps fly
+     the same banner now."
+  2. **The King's fort**: the next dawn the fort's first stage goes up (31.15), one more each dawn. Win allies, at
+     least one of three (each done adds its help to the storm):
+     - **The neighbours' pledge**: finish any quest at another village with a hall within caravan range; 3 of its
+       guards come for the storm (like mercenaries) and go home after;
+     - **Swords for hire**: pay 24 emeralds at the hall; 6 mercenaries come for the storm;
+     - **The deserter**: Pell, a bandit who has had enough, waits by the ashes of the first camp; bring him 16 bread
+       and he tells you of the postern, which stage 3 leaves open, and afterwards he joins the village (a jobless
+       villager).
+  3. **The storm**, once the keep stands: raise a Rally Banner within 48 blocks of the fort and your guards and allies
+     follow; kill the King. Until he falls, his raiders come every second night (the village's bandit raids through
+     `VillageRaids`, or 32.2's raids once they've taken over, half again as big). If he still stands after 10 days,
+     **the King's tribute**: he takes a third of the treasury and rides off with his band, the fort is left as a ruin,
+     and moods drop 10 for 3 days.
+
+  Ending: the treasure chest is yours, a festival the next evening, +150 reputation to everyone who fought in chapter
+  3, the honour **Kingslayer**, and no bandit camps for 10 days. Chronicle lines for every chapter.
+
+  Done when:
+  - a GameTest walks the arc: each chapter starts; each ally's help is there at the storm (3 guards, 6 mercenaries,
+    the open postern, and Pell joining after); the tribute takes a third of the treasury; the ending pays;
+  - showcase scene `bandit_king` (GIF: the three banners, the fort rising a stage a day, the storm with allies, the
+    King falling).
+- [ ] **31.17** **The Sickness, I: eight far herbs.** Eight new plant blocks with their items, drawn with the
+  pixel-art skill like vanilla's flowers. They never generate in the world: only an arc plants them, so no world
+  changes. Each grows in its biomes (a biome tag of ours, `aliveworkplace:herb_biomes/<herb>`, so datapacks and biome
+  mods can add to it):
+  - **Frostbloom**, a pale blue bell (snowy plains, snowy slopes, groves, ice spikes, snowy taigas; on snow or grass);
+  - **Sunthistle**, a spiky yellow thistle (deserts and badlands; on sand, red sand or terracotta);
+  - **Mirewort**, a reedy herb with purple buds (swamps and mangrove swamps; on mud or grass);
+  - **Peakmoss**, a silver-green tuft (windswept hills, stony and jagged peaks, meadows; on stone or grass);
+  - **Jungle Orchid**, a magenta orchid (jungles, sparse and bamboo jungles; on grass);
+  - **Sea Lavender**, small lilac sprays (beaches, snowy beaches, stony shores; on sand or gravel);
+  - **Glowcap**, a pale mushroom giving light 5 (dark forests; on grass or podzol, in shade);
+  - **Petal Balm**, a pink-leaved herb (cherry groves; on grass).
+
+  A new arc effect `herb_patch` plants 5 to 9 of a herb on its ground within 6 blocks of a spot. Also the **Three-Herb
+  Tonic**, a bottle of green tonic (a new item, drawn like vanilla's potions; not 32.18's Remedy), made by a healer in
+  31.18.
+
+  Done when:
+  - GameTests per herb: placed on its ground, broken it drops its item, it stays through random ticks and never
+    spreads; `herb_patch` plants only on fit ground;
+  - all textures pass `lint.py`; a preview sheet in the review package; showcase scene `herbs` (all eight patches, and
+    the tonic in hand).
+- [ ] **31.18** **The Sickness, II: the Grey Cough.** `arcs/the_sickness.json`, an arc marked `threat`. It starts in a
+  village of Village rank or more with 12 villagers or more, `villagerSickness` on, 6% a day. A new illness, the
+  **Grey Cough**, a kind in the illness-kind attachment beside `ILL_SINCE` (32.11 adds the same attachment for hexes;
+  whichever item lands first adds it, ordinary when absent, so old saves are unchanged): it doesn't pass by itself, a
+  nurse's remedy (and 32.18's Remedy once it exists) only takes the slowness away for a day, and each night every
+  coughing villager passes it to one villager who worked or slept within 8 blocks of them (40%), never past half the
+  village. Chapters:
+  1. **The Grey Cough**: three villagers fall ill; the hall, the chatter and the chronicle say so. Talk to the
+     village's healer (right-click them): its Nurse, or 32.18's Physician once that job exists. With neither, **Doctor
+     Wren**, a travelling physician (a villager in a cleric's robe), arrives at the hall the next morning and stays
+     until the arc is over.
+  2. **Three far cures**: the healer names the three herbs (31.17) whose biomes are nearest the village (looked up
+     once, 3000 blocks at most; a herb whose biome isn't found is passed over for the next) and gives you a map to
+     each patch. Bring 3 of each.
+  3. **The remedy**: hand them to the healer, who brews the Three-Herb Tonic over half a day ("Brewing the cure · 40%"
+     over their head; at their brewing stand, or Doctor Wren by the hall), then walks round and gives it to every
+     coughing villager.
+
+  Ending: everyone well, a thanksgiving festival the next evening, +100 friendship with each villager who was ill for
+  each player who gathered herbs, +150 reputation to the gatherers, the honour **Healer of <village>**. After 15 days
+  without the cure, the cough runs its course: everyone is well within 3 days, moods drop 15 for 5 days, and the
+  chronicle says so. Nobody dies of it.
+
+  Done when:
+  - GameTests: the night pass-on and the half-village cap; the remedy only easing it; the healer (a Nurse or
+    Physician, else Doctor Wren); the herb choice with a stubbed locator (forced biome answers); the brew and the cure
+    round; the failure path;
+  - showcase scene `sickness` (GIF: the coughing village, a herb patch, the cure going round).
+- [ ] **31.19** **The Lost Caravan, I: the wreck and the trail.** Builds with the minecraft-architect skill
+  (`STYLE.md`, rendered): `story/caravan_wreck` (the settlers' covered wagon on its side, a broken wheel, spilled
+  crates and barrels, a lantern in the grass); `story/raiders_stockade` (a small pillager stockade: a palisade, a
+  tent, a campfire, a loot chest and a cage of iron bars with a gate for a captive); and five trail marks,
+  `story/trail_1` to `trail_5`, each about 3×3 (trampled coarse dirt and a dropped lantern; a smashed barrel; a torn
+  white banner on a fence post; cart ruts of path blocks; an arrow-studded crate). A new objective, `follow_trail`:
+  reach the marks in order; at each, the action bar says where the tracks go next ("The tracks go on to the
+  north-east"). The placing rule for the arc: the wreck a third of the way along the caravan's road (or 150 blocks out
+  if that isn't fit ground), the stockade 120 to 180 blocks on from the wreck, away from both villages, and the marks
+  evenly between them, each placed when a player comes within 96 blocks.
+
+  Done when:
+  - GameTests: each piece places on uneven ground cleanly and never over a player's blocks; `follow_trail` counts the
+    marks in order only (reaching mark 3 first counts nothing);
+  - renders of the wreck, the stockade and the five marks in the review package; showcase scene `caravan_trail` (the
+    wreck, a mark, the stockade).
+- [ ] **31.20** **The Lost Caravan, II: the story.** `arcs/lost_caravan.json`. When a caravan sets off on a road
+  longer than 300 blocks (`hall/Caravans`), 1 in 20 goes missing (config `lostCaravanChance`, 20), if neither village
+  has an arc running; its goods are held by the arc. Chapters:
+  1. **Overdue**: the caravan doesn't arrive; both halls are told ("The caravan from Thornholm to Ashford is a day
+     overdue") and the sending hall gives you a map to the last-known road. Find the wreck.
+  2. **The tracks**: follow the trail to the stockade (31.19).
+  3. **The captive**: the carter (a new villager of the sending village with a name from `Names`; **Tobin** here) is
+     locked in the cage, with 4 bandits and a captain on guard. Open the cage and he follows whoever freed him (as a
+     rallied guard does, `guard/Escorts`: he keeps up, and catches up from 32 blocks; further than 64 away, he waits).
+     This chapter is done when Tobin reaches either village. A second quest, not needed to go on: the stockade's chest
+     holds the lost goods; deliver them to the receiving hall for 8 emeralds and +50 reputation there.
+
+  Ending: Tobin joins the village he reached at Journeyman (as a hired traveller does, `Schools.headStart`) and takes
+  a free workstation; +150 reputation in both villages to whoever helped, +100 friendship with Tobin, the honour
+  **Wayfinder**, lines in both chronicles. After 7 days without a rescue, Tobin finds his own way home with nothing,
+  and the goods are lost.
+
+  Done when:
+  - GameTests: a shipment goes missing when forced; each chapter moves on by its objective; Tobin follows, waits and
+    joins; the chest holds the shipment's own goods; the delivery quest pays; the failure path;
+  - showcase scene `lost_caravan` (GIF: the wreck, the trail, freeing Tobin, walking him home).
+- [ ] **31.21** **The Professor's Thesis** (Cobblemon). `arcs/professors_thesis.json`, loaded only with Cobblemon. Its
+  patron is the village's Pokémon Professor (29.21); until that lands, the village's best Scholar at Expert or above,
+  called "Professor <name>" for the arc. It starts in a Town with a Scholar or the Professor, 6% a day. New objectives
+  through `compat/cobblemon` (Cobblemon's capture and battle events; find their exact names with `api.py`): `catch` (a
+  type or species; in a biome tag; by day or night; above or below a height), `show` (a Pokémon in your party that has
+  evolved, or is at friendship 200 or more) and `battle_leader` (beat the Trainer Leader of another village). The
+  thesis topic is picked from six at the start:
+  - **Life in the cold**: an Ice type in a snowy biome, a Water type in a frozen ocean or river, any Pokémon above
+    `y=150`;
+  - **Fire and stone**: a Fire type in a desert or badlands, a Rock type in stony or jagged peaks, a Ground type below
+    `y=0`;
+  - **Creatures of the night**: a Dark type at night, a Ghost type at night, a Psychic type on a full-moon night;
+  - **The forest's web**: a Bug type in a jungle, a Grass type in a forest, a Flying type in a meadow or cherry grove;
+  - **Sea and shore**: a Water type in a warm ocean, one in a deep ocean, one on a beach;
+  - **Living fossils**: a fossil revived by a Fossil Scientist, a Dragon type, a Rock type in badlands.
+
+  Chapters: 1. **Field notes**: the three catches. 2. **A closer look**: show the professor one of them evolved, or
+  any Pokémon at friendship 200 or more. 3. **Peer review**: beat the Trainer Leader of a village with a hall within
+  caravan range; with none, a rival scholar, **Thessaly**, comes to the hall and battles at Master strength through
+  the trainer engine, then leaves.
+
+  Ending: the thesis is published as a written book, "<Professor>: <topic>", listing your catches (species, place and
+  day) with you as co-author; 3 Rare Candies and an Ability Capsule (by item id; emeralds if an id is missing); +150
+  reputation; the honour **Co-author**; and a free level of the research the village's scholars are working on (or the
+  next open topic; with 29.21's Professor as the patron, the next topic of the Pokédex tree).
+
+  Done when:
+  - compat GameTests: catches count by type, biome, time and height; `show`; `battle_leader`; Thessaly comes when
+    there's no leader nearby; the book lists the catches; plain GameTest: without Cobblemon the arc never starts;
+  - showcase scene `professors_thesis` (Cobblemon: the professor's request, a catch counting, the published thesis).
+- [ ] **31.22** **The eight reforms as stories.** Needs M30's reforms (30.5 to 30.10) on `main`; until then the item
+  waits (`sessions.py pause --blocked "needs M30's reforms"`). Through the reform's `arc` field (30.5), each reform
+  becomes a short arc of the same name: an opening chapter where a villager of the fitting trade asks you for it
+  (`talk`), then M30's three steps as its quests with M30's numbers, then an ending scene that leaves something
+  lasting, with chronicle lines and chatter all the way. The reform itself stays M30's: a new reward, `reform_edict`,
+  calls it, so the boost stays and the cost goes, for that village for good. With `storyArcs` off, M30's own steps on
+  the quest page work as before. Reform arcs are marked `side`: they don't count against `arcsAtOnce` or the cooldown
+  and run beside another arc. The eight:
+  1. **The Shift Bell** (Long Shifts): asked by the Toolsmith (else any smith); ending: a bell on a post beside the
+     hall (a small template from the generator, set on natural ground) that rings at the start and end of the work
+     day.
+  2. **The Common Granary** (Free Bread): asked by a Farmer; ending: a harvest supper at the hall the next evening (a
+     festival's feast, without the fireworks).
+  3. **The Midwives** (Large Families): asked by the Nurse (else a mother); ending: a midwife, a new villager, comes
+     and becomes a Nurse at Journeyman.
+  4. **The Watchful Gate** (Open Gates): asked by a Guard; ending: an old soldier, a new villager, comes and becomes a
+     Guard at Expert, in iron.
+  5. **The Festival Fund** (Festival Season): asked by the Bard (else a Cheerful villager); ending: the next festival
+     is a grand one, with twice the fireworks and a good mood that lasts a day longer.
+  6. **The Fair Ledger** (Tithe): asked by a Librarian or Scholar; ending: a written book, "The Fair Ledger of
+     <village>", with the treasury's takings day by day for the last 7 days, for the hall's owner.
+  7. **The Lamplighters** (Curfew): asked by a Porter (else anyone); ending: two Street Lamp blueprints for whoever
+     finished it, and a chronicle line for the first lamplit night.
+  8. **The Militia Drill** (Conscription): asked by a Guard; ending: drill day: at noon the next day every grown
+     villager spars for a while at the village's Training Dummies (the guards alone if there are none), then a
+     chronicle line.
+
+  Done when:
+  - a GameTest per reform: the ask, the three steps, the ending, and the edict reformed (boost kept, cost gone) in
+    that village only; with `storyArcs` off, M30's own steps still work;
+  - showcase scene `reform_story` (The Shift Bell, from the Toolsmith's ask to the bell ringing).
+
+Depends on: 30.5 to 30.10 (M30's reforms) for 31.22, which waits for them. Soft links, each with a fallback: 28.2's
+`PokemonFeatures.ALPHAS` (31.14), 29.2's shared `rules/` package (whichever of 29.2 and 31.2 lands first creates it),
+29.8's Legend guests and 29.21's Professor (31.12, 31.21), 30.4's Book of Edicts (31.12), and M32's lairs (32.3),
+illness kinds (32.11), Physician and Remedy (32.18) and peaceful settings (32.21) (31.4, 31.13, 31.16, 31.18).
+
+## Milestone 32: Threats worth building walls for (1.6)
+
+Raids today are monsters or bandits walking in at night, and walls do little more than shut their gates. In 1.6 every
+land has its own enemy camped nearby under a named captain (pillager warbands with rams and ladders, drowned pirates
+from the sea, desert raiders under a pharaoh, piglins through a portal, a witch coven's hexes) who lay sieges that
+walls, gates, towers and archers decide, while a watchtower gives a day's warning and scouts, guards and hired swords
+let the player strike back at their camps. Fire, drought and plague each get a job that answers them, and every threat
+has a switch and a peaceful setting. It builds on guard/VillageRaids, BanditCamps, Gates, GuardRally, Mercenaries, the
+Rally Banner and the defence blueprints (tools/blueprints/defence.py).
+
+- [ ] **32.1** **Design note.** `docs/design/M32.md`: what the player sees (the threat ladder: monsters from 8
+  villagers, bandits at Village rank, the enemy of the village's own land from Town, sieges led by the captain himself
+  at City; a siege night minute by minute; the warning timeline; a march on a lair; each disaster and its job), the
+  two data formats (a raider culture and a disaster, one full example file each), the new config keys and the hall's
+  At peace setting, and the save data (the threats' saved data, which reads the bandit camps' old one; the hall's new
+  fields; every default). Every number in this milestone is a starting value. One question is the owner's: whether
+  threats may damage builder-made buildings on his live server (rams break the gates of finished walls, fire burns
+  wooden builds; never a player's own blocks, and the builders always put them back); meanwhile the default is yes.
+  Sent as a review package with a mock-up of the hall's Defence page; lanes don't wait for his reply. Done when: the
+  note is on `main` and the package is sent.
+- [ ] **32.2** **The threat engine: raider cultures as data.** A new package `threat/` (add it to
+  `docs/agent/layout.md`); `guard/VillageRaids` and `BanditCamps` keep their public methods and call into it, so their
+  callers and tests don't change. `threat/Threats` loads `data/aliveworkplace/raider_cultures/<id>.json` (through
+  `Platform.onDataReload`); one file is one culture:
+  - `where`: conditions from a shared toolbox (`threat/Conditions`: biome tags at the hall; `coast`, an ocean or beach
+    biome within 48 blocks; `nether_link`, a lit Nether portal or a finished Nether Gate in the hall's area; lowest
+    rank; fewest villagers) and a `weight`;
+  - `arrival` (`edge`: gather at the village's edge, as now; `lair`; `shore`; `portal`) and `hours` (`night`, or
+    `until_noon`);
+  - `roster`: entity id, share, role (`melee`, `ranged`, `ram`, `climber`, `healer`) and gear per slot; the `captain`:
+    entity, gear, extra health and the lang key of his list of names;
+  - `tactics` (`ram_gates`, `ladders`, `sand_ramps`, `plunder`, `hex`; the engine skips any it doesn't know yet),
+    `lair` (structure id, strength), the loot table, message and chronicle keys.
+
+  `VillageRaids.start` picks a culture by weight among those whose `where` fits. Today's two raids become the first
+  two files, with today's numbers: `monsters.json` (zombie 50, skeleton 30, spider 20; `edge`; 8 villagers) and
+  `bandits.json` (pillager 50, vindicator 50; the bandit camp; Village rank). Also:
+  - raids under way are saved (`aliveworkplace_threats`), so a restart mid-raid carries on (today `ACTIVE` is lost);
+  - the threat clock: at dusk, in the hall's round, each hall rolls the attack for the *next* night, with today's
+    nightly chances and rest days, so a warning (32.14) has a day to give;
+  - anything carrying the raider tag is a foe to guards (`Guards.isFoe`), so hoglins and witches count;
+  - `Threats.chanceFactor(level, hall)`: a hook other systems add to (M30's Open Gates edict, M35's Great Wall);
+  - config `raiderCultures` (every culture id → on, written out complete); `villageRaids` and `banditCamps` still
+    switch `monsters` and `bandits`.
+
+  Done when:
+  - RaidGameTests, HallSpecGameTests and CheckBugGameTests pass unchanged;
+  - a GameTest loads a culture from a test datapack and a raid spawns its roster in its shares (fixed `RandomSource`,
+    1000 picks within 3% of each share) with each role's gear;
+  - a raid saved and loaded half-way (a saved-data round trip) is still on and ends at dawn as before;
+  - the clock's attack starts at the next dusk, a day after the roll (a GameTest setting the day time);
+  - a culture switched off in the config is never picked. Nothing new to see: lands with `--no-review`.
+- [ ] **32.3** **Lairs for every culture.** `threat/Lairs` takes over `BanditCamps`: any culture with a `lair` makes
+  camp 80–104 blocks from the hall (today's site rules; cultures that need water or a portal add theirs in their own
+  item), at most one per village, with 5 days' rest after one is broken. The saved data keeps its old name and reads
+  old camps as `bandits` lairs (each new field with a default from the culture's file). New for every lair, bandit
+  camps included:
+  - the captain has a name from his culture's list (20 a culture, in `en_us.json`: "Chief Harl Ashgrave"), shown over
+    his head and in every message and chronicle line;
+  - a strength (bandits: 6 at first, +1 a day, at most 10): a raid takes its raiders from it (never more than today's
+    raid size), those alive at dawn walk back and rejoin, the dead are gone, so after a costly night the lair is weak;
+    the band at home is the strength, at most 8;
+  - the culture's own loot table, messages and chronicle lines when the captain falls (as the bandit chief's now).
+
+  The hall's guards icon opens a new **Defence** page (a `ChoiceMenu`): the lair (culture, captain, strength, roughly
+  where, the days it has stood) and the last three attacks and how they ended. Done when:
+  - the bandit camp tests pass; a bandit camp saved by 0.138.0 (a fixture of its saved data) loads with its camp,
+    chief and rest days;
+  - GameTests: a raid of 5 from a lair of strength 8 leaves 3, two raiders alive at dawn bring it back to 5, and each
+    day adds one;
+  - the captain's name is on him, on the Defence page and in the chronicle;
+  - scene `defence_page`: the Defence page with a bandit camp standing (screenshot).
+- [ ] **32.4** **Sieges I: rams and gates.** A raid by a culture with `ram_gates` on a village with at least one
+  finished wall or gate build (`StarterBlueprints.DEFENCES` and their upgrades) is a siege, run by `threat/Sieges`:
+  one director a siege, every 20 ticks, at most 4 path requests a tick. It picks the breach (the gate nearest the
+  raiders' side: the fence gates, doors and iron bars of finished defence builds) and sends the rams (role `ram`;
+  without one, the raiders with axes) at it.
+  - Each gate block has hit points: fence gate 60, door 80, iron bars 150. A ravager's blow does 12 every 40 ticks, an
+    axe 4 every 20. Cracks show (the block's destroy progress) and every blow is heard; at 0 the block goes (nothing
+    drops) and is recorded for repair. About 10 s through a Palisade Gate, about a minute through a Gatehouse.
+  - When a siege begins the gates shut and the Gatehouse's portcullis drops (iron bars across the gateway under the
+    drawn-up ones), whatever the hour and with or without guards (`Gates`); both open again at the first dawn after.
+  - Only gate blocks of finished builds ever break. With `mobGriefing` off, or `siegeDamage` false in the config, they
+    hold; `sieges` false makes every raid a plain one.
+
+  Done when:
+  - GameTests in `huge_area`: a ravager siege ram outside a Palisade Gate with a villager inside breaks a gate block
+    within 400 ticks and a pillager behind it is through within 600; through a Gatehouse with its portcullis down it
+    takes at least 3 times as long; with `mobGriefing` off the gate still stands after 2400 ticks; a fence gate the
+    test places beside the build as a player's is never hit;
+  - the portcullis is down while the siege lasts and up after it;
+  - scene `siege_gate`: a GIF of a ravager breaking a Palisade Gate, the cracks showing.
+- [ ] **32.5** **Sieges II: ladders over the walls.** Raiders with role `climber`, in a culture with `ladders`, whose
+  path ends at a wall set ladders up its outer face at the spot nearest them (a rung every 10 ticks, up to 10 high),
+  climb over and drop inside; the rest follow up the same ladder. A guard on a walkway within 2 blocks of a ladder's
+  top throws it down (the column goes, the climbers on it fall). Ladders go on any wall, a player's too, but only into
+  air; every one is recorded with the siege (saved) and taken away when it ends, also after a restart. The siege's
+  gathering point moves out along its line until it's beyond the outermost finished wall on that side, so no raider
+  appears inside. Done when:
+  - a GameTest: a pillager climber outside a Stone Wall with a villager inside is over it within 600 ticks;
+  - a guard on the walkway throws the ladder down (no raider ladder within 3 blocks of it after);
+  - after the siege ends, and after a save and load half-way through, no raider ladder is left and no other block
+    changed (the area's blocks compared before and after);
+  - in a village ringed by Stone Walls the gathering point is outside the ring;
+  - scene `siege_ladders`: a GIF of pillagers laddering a Stone Wall and a guard throwing a ladder down.
+- [ ] **32.6** **Sieges III: battle stations and the morning after.** When a siege begins (or a warned one is near,
+  32.14), guards take stations instead of rallying at the bell: archers climb to the free station highest over the
+  breach's side (the tops of finished Wall Towers and Lookout Towers, the Gatehouse's walkway, the Stone Wall's and
+  Palisade's walkways; stations are walkway spots with two air above, read once per blueprint), knights hold the
+  inside of the breach gate, medics stand behind them, the rest rally as now. From a station an archer shoots up to 24
+  blocks (16 on the ground) and does 25% more damage to foes 3 or more blocks below. The morning after:
+  - a siege report in the chronicle (new kind SIEGE): who came, how many fell and to whom, whether the gate held, and
+    the hero (the guard with the most kills);
+  - players who fought in a won siege get Hero of the Village for a day; villagers +10 mood for a day ("we held");
+  - for 2 days builders mend defence builds before any other repair (`Upkeep`).
+
+  New research **Ramparts** (1 level, needs Fortification I): gates have twice the hit points and archers on stations
+  reach 28 blocks. Done when:
+  - GameTests: an archer whose post is within 24 blocks of a finished Wall Tower is on its top within 400 ticks of a
+    siege starting; from a station they shoot at a foe 22 blocks off, on the ground they don't;
+  - the siege report names the hero; Ramparts doubles a gate's hit points;
+  - after a siege with a broken gate, a builder with materials puts the gate back before mending a house nearby;
+  - scene `battle_stations`: a GIF of archers on a Gatehouse and a Wall Tower shooting down at a siege.
+- [ ] **32.7** **Pillager warbands.** `pillager_warband.json`: plains, meadows, forests (birch, dark, flower, cherry),
+  taiga and the snowy lands, savanna; Town and up; tactics `ram_gates` and `ladders`. Its lair is the **War Camp**
+  (`camp/war_camp`, about 23 x 9 x 19, drawn with the minecraft-architect skill in `tools/blueprints/bandits.py`: a
+  ring of sharpened logs with a gate, three canvas tents, the Warlord's tent with the loot chest, a ravager pen, a
+  siege yard of logs and ladders, a pole flying the ominous banner). The roster: pillagers with crossbows (the
+  climbers) 55% and vindicators 45%, plus ravager rams (1 at Town, 2 at City) and an evoker at City. The **Warlord**:
+  a vindicator in iron with the ominous banner on his head, +40 health; at City he leads the siege himself, and
+  killing him at the walls breaks the camp. Strength 10, +2 a day, at most 18. Loot `chests/war_camp`: emeralds, iron,
+  crossbows, an ominous bottle, now and then a totem of undying. In these lands bandit camps still come at Village
+  rank; from Town a warband is three times as likely as bandits. Done when:
+  - GameTests: a Town hall in plains gets a war camp with a named Warlord and his band; a siege from it brings 1
+    ravager at Town, 2 and an evoker at City; at City the Warlord is among the raiders and his death there breaks the
+    camp;
+  - the camp passes `check.py` and its render is in the package;
+  - scene `warband`: the war camp, then a GIF of the warband's siege on a walled village.
+- [ ] **32.8** **Drowned pirates.** `drowned_pirates.json`: coastal villages (`coast`, checked once a day); Town and
+  up; arrival `shore`. Their lair is the **Pirate Ship** (`camp/pirate_ship`, about 27 x 20 x 9, minecraft-architect
+  skill: a two-masted dark oak sloop with black sails, a crow's nest, the captain's cabin with the loot chest, the
+  Jolly Roger (a black banner with the skull) at the stern), anchored on water at least 5 deep, 40–70 blocks out, its
+  bow to the village. On a raid night the crew wade ashore at the beach nearest the ship, not from the land side, so a
+  sea wall or a harbour gate is what holds them. The roster: drowned with tridents 40%, drowned 30%, skeleton gunners
+  in black leather caps with Flame bows 30% (their burning arrows light wooden roofs once 32.16 lands). The captain: a
+  drowned in a dyed leather coat with a trident, +40 health ("Captain Silas Brine"). Night only; at dawn they go back
+  into the sea. When the captain falls the ship burns and sinks: its own blocks go, top down, over 10 s with smoke and
+  bubbles (a block that isn't the ship's any more, such as one a player placed, stays), and the loot chest is left on
+  a log raft at the waterline (`chests/pirate_ship`: gold, emeralds, a trident, nautilus shells, now and then a heart
+  of the sea). Done when:
+  - GameTests (water in `huge_area`): the ship sits on the water; the raiders appear on the shore spot nearest it; the
+    captain's death removes every ship block but a block the test placed on deck, and leaves the chest;
+  - the ship passes `check.py` and its render is in the package;
+  - scene `pirates`: the ship at anchor at dusk, the crew wading ashore, the ship sinking (GIF).
+- [ ] **32.9** **Desert raiders.** `desert_raiders.json`: desert and badlands; Town and up; tactics `sand_ramps`;
+  hours `until_noon` (husks don't burn, so a siege goes on until noon). Their lair is the **Tomb Camp**
+  (`camp/tomb_camp`, minecraft-architect skill: a half-buried sandstone tomb with an obelisk, sun-bleached awnings,
+  bone blocks and dead bushes, the Pharaoh's sarcophagus as the loot chest). The roster: husks 55%, husks in gold
+  armour with iron swords 25%, skeleton archers in gold helmets 20%. The **Pharaoh**: a husk in a golden helmet and
+  chestplate with a golden sword, +50 health; while he lives, a husk that falls within 24 blocks of him rises once
+  more after 3 s at half health, in a burst of sand. Sand ramps: where pillagers set ladders, desert raiders pile sand
+  against the wall (a block every 10 ticks, one up for one out) until it reaches the top, recorded and taken away
+  after the siege like ladders. Loot `chests/pharaohs_tomb`: gold, emeralds, a golden apple, now and then the dune
+  armour trim. Done when:
+  - GameTests: a husk killed near the living Pharaoh rises once and only once, and not at all after his death; a sand
+    ramp against a Stone Wall reaches its top and is gone after the siege, nothing else changed; the siege is still on
+    at mid-morning and over at noon;
+  - the camp passes `check.py` and its render is in the package;
+  - scene `desert_raiders`: the tomb camp, a sand ramp rising against a wall and a husk getting up again (GIF).
+- [ ] **32.10** **Piglin incursions.** `piglin_incursion.json`: any land, for villages with a `nether_link` (the
+  netherworkers' trips draw them); Town and up; arrival `portal`; tactics `ram_gates` and `plunder`. Their lair is the
+  **Blackstone Outpost** (`camp/blackstone_outpost`, minecraft-architect skill: a lit portal of obsidian and crying
+  obsidian on a blackstone and netherrack platform, gold blocks, a basalt pillar with a piglin banner, a hoglin pen),
+  and their raiders step out of its portal. The roster: piglins with golden swords 35%, piglins with crossbows 25%,
+  piglin brutes with golden axes 25%, hoglin rams 15%. While raiding they never turn into zombified piglins, and they
+  go for villagers and guards (their anger set on them). **Plunder**: a piglin who passes within 4 blocks of a village
+  chest takes the gold in it (ingots, nuggets, blocks, raw gold, golden gear; a stack at most), carries it home at
+  dawn and drops it if killed; the siege report counts what was lost. The **Warlord**: a brute in gold armour, +50
+  health. His death puts the outpost's portal out, and the band left in the Overworld turns zombified. Loot
+  `chests/piglin_hoard`: gold, blackstone, crying obsidian, now and then netherite scrap, the snout banner pattern.
+  Done when:
+  - GameTests: a raiding piglin is still a piglin after 600 ticks in the Overworld and attacks a villager; a guard
+    fights a raiding hoglin; a piglin passing a chest takes its gold and drops it when killed; the Warlord's death
+    removes the portal blocks and turns the rest of the band zombified;
+  - the outpost passes `check.py` and its render is in the package;
+  - scene `piglins`: the outpost, piglins coming through and one carrying off gold (GIF).
+- [ ] **32.11** **Witch covens.** `witch_coven.json`: swamps and mangrove swamps; Village and up; tactics `hex`; no
+  rams or ladders: witches stand 12–20 blocks outside the walls and throw splash potions over them (slowness, weakness
+  and poison at villagers, harming at guards) and heal each other, so archers on stations matter most. Their lair is
+  the **Coven Hut** (`camp/coven_hut`, minecraft-architect skill: a hut on mangrove stilts over water, the coven's
+  cauldron, brewing stands, hanging lanterns, mushrooms, a herb garden, a black cat). Every night it stands, the coven
+  **hexes** one to three of the village's villagers (a swirl of witch particles over them): a cursed illness
+  (`Sickness`, with a new attachment for its kind, ordinary by default) that the nurse's remedies don't touch and that
+  doesn't pass by itself; it ends when the coven is broken (or, once 32.18 lands, with the Remedy). The roster:
+  witches 70%, zombie villagers (the hexed of other villages) 30%. The **Coven Mother**: a witch, +40 health, who
+  blinks 8–12 blocks away (ender particles) after three hits in a row. Breaking the coven: kill her, or break her
+  cauldron. Loot `chests/coven_hut`: potions, glowstone, redstone, amethyst, now and then an enchanted book. Done
+  when:
+  - GameTests: a hexed villager is ill and a nurse's honey bottle doesn't cure them; breaking the coven (once with the
+    Coven Mother killed, once with the cauldron broken) cures every hexed villager at once; raiding witches keep at
+    least 10 blocks from a finished wall; the Coven Mother blinks after three hits;
+  - the hut passes `check.py` and its render is in the package;
+  - scene `coven`: the hut in the swamp at night, then witches throwing potions over a palisade (GIF).
+- [ ] **32.12** **Scouts.** A new guard kind: sneak-right-click a guard with a **spyglass** and they become a
+  **Scout** (held in the off hand like the other kinds' items; you get back what they held; "Scout" over their head).
+  From the Defence page, "Scout the lair" sends one out by day: they walk (or ride, `Cavalry`) to within 24 blocks of
+  the lair, raise the spyglass (its sound) and come home; the band ignores a scout more than 8 blocks off. Back home,
+  the Defence page shows the lair's exact place, strength and captain, and the scout leaves a **Scouting Report** in
+  the chest by their grindstone: a filled map (like an explorer map) between the village and the lair with a red X on
+  it, named for the lair, its tooltip listing the culture, captain and strength. A scout not back within a day is lost
+  (chronicle). Scouts also trail raiders who retreat at dawn, so the lair's place becomes known without sending one.
+  Done when:
+  - GameTests: a guard given a spyglass is a Scout and the player gets their old off-hand item back; sent to a lair 60
+    blocks away, the scout gets within 24 blocks of it and is home within 2400 ticks; the report map has its
+    decoration at the lair; a bandit doesn't go for a scout 10 blocks away;
+  - scene `scouts`: the scout on a rise with the spyglass, then the report map in hand (GIF).
+- [ ] **32.13** **Marching on the lair.** "Muster a war party" on the Defence page: three in four of the village's
+  guards (up to 12; the rest keep the walls) are enlisted on the Rally Banner in the player's inventory, it's raised,
+  and they gather by the hall (without a banner the page says to craft one). A new mercenary contract on the same
+  page, **Siege-breakers**: five (two with crossbows, two knights, a medic) for 30 emeralds (3 less a level of
+  Commerce), who stay until the lair falls or two dawns pass. At the lair the band turns out to meet them: all its
+  strength, six at a time from the tents; at City the captain fights at the front. When a lair breaks with a war party
+  there:
+  - its loot chest, and a chronicle line naming the player and every guard who killed there;
+  - guards earn double experience for kills at a lair (Masters are made here);
+  - 10 days' peace instead of 5, and the village +10 mood for two days ("the warband is broken").
+
+  Done when:
+  - GameTests: the muster enlists three in four guards on the player's banner and raises it; siege-breakers stay past
+    a dawn while the lair stands and leave at the dawn after it falls; a lair broken with enlisted guards near gives
+    10 days' rest, double XP and a chronicle line with their names;
+  - scene `war_party`: the player leading guards and siege-breakers into a war camp, the Warlord falling, the loot
+    (GIF).
+- [ ] **32.14** **A day's warning.** Sources: a guard on the night watch whose post is within 24 blocks of a finished
+  Lookout Tower or Wall Tower (a day's warning); a Scout there (the same, with the raiders' number and side); the Seer
+  (needs M29's Seer item: two days' warning; until it lands this source is skipped); and a list other systems add to
+  (M35's Lighthouse). When the clock (32.2) sets an attack and the village has a source:
+  - players in the village, and the hall's owner wherever they are online, are told at once ("Smoke on the north road:
+    Warlord Harl's warband will strike tomorrow night"); it goes in the chronicle; the guards icon and the Defence
+    page show the next attack and its side;
+  - on the day, from noon, the gates shut and the portcullis drops; at dusk the guards take battle stations (32.6) and
+    the villagers go in before the horn.
+
+  Without a source the horn is the only warning, as now, and What next? says to build a Lookout Tower and post a guard
+  by it to see raids coming. Disasters are foretold through the same sources (32.15). Done when:
+  - GameTests: a village with a finished Lookout Tower and a guard posted by it is warned at least 20000 ticks before
+    the attack; one without isn't told until it starts; in the warned village the gates are shut and the portcullis is
+    down at dusk, and the archers are on their stations before the raiders appear;
+  - scene `warning`: the guard on the tower at dusk, the chat line, the gates shutting (GIF).
+- [ ] **32.15** **The disaster engine.** `threat/Disasters` loads `data/aliveworkplace/disasters/<id>.json`; one file
+  is one disaster:
+  - `when`: conditions from the same toolbox as the raider cultures, plus the weather (thunder; no rain for N days)
+    and the share of wooden blocks in the village's finished builds (sampled once a day); `chance` a day; `duration`
+    (days, or until rain);
+  - `effects` from a toolbox: crop growth in the hall's area, farmland dries, water cauldrons lose a level a day, the
+    chance of falling ill, contagion, a mood with its reason, fires started a day, a job's pace;
+  - `answered_by` (the job that answers it), `foretold_by` (jobs, or the Seer: 32.14's sources), message and chronicle
+    keys.
+
+  One disaster at a time per village, 7 days' rest after one; saved on the hall (new fields `disaster`,
+  `disasterSince`, `lastDisasterDay`; none by default). It shows on the wellbeing icon, in What next? and as a mood
+  reason, with new chronicle kinds FIRE, DROUGHT and PLAGUE. Effects stay cheap: crop growth is one check in the
+  crop's random tick against the short list of afflicted halls; nothing scans the area. Config `disasters` lists every
+  disaster id, each on by default. Done when: a test datapack disaster applies each effect (a GameTest each), ends
+  after its time or with rain, and survives a save and load of the hall; switched off, it never starts. No disaster
+  ships yet: lands with `--no-review`.
+- [ ] **32.16** **Fire and the Firewarden.** `village_fire.json`: villages with wooden builds, likelier the more wood:
+  a lightning strike in the hall's area in a thunderstorm sets a finished wooden build's roof alight (1 in 3), a
+  chimney spark 2% a day in a drought, and the pirate gunners' burning arrows (32.8) light the wooden block they hit
+  (1 in 4, with `mobGriefing`). A village fire spreads by the game's own fire (`doFireTick`), but never to a block the
+  builders didn't place, so players' own builds are safe (a mixin on the fire's spread). Fires in the village are
+  noticed when they start (a hook where fire is placed), never by scanning. A new job, the **Firewarden**: the
+  grindstone with a **water bucket** (the village watch shares the guards' block, 21.1a), its outfit and zombie outfit
+  drawn with the pixel-art skill. They keep two buckets of water (filled at water or a water cauldron within 16 blocks
+  of their grindstone), run to the nearest fire and douse it (fire within 2 blocks of the splash goes out, with
+  steam), and refill as needed; from Journeyman they ring the bell and two villagers off work within 24 blocks join a
+  bucket brigade (a fire block each every 2 s). Builders put back what burned (`Upkeep`). With Cobblemon, pastured
+  Water types within 16 blocks of the grindstone douse a fire at range every 2 s with their move's effect, as guards'
+  partners strike (through `work/PokemonPartners`; nothing without Cobblemon). Chronicle: "Fire in the Terrace: 18
+  blocks burned; Rowan the Firewarden put it out." Done when:
+  - GameTests: a fire set on a wooden build with a firewarden 15 blocks away is out within 400 ticks and they gained
+    XP; without one it still burns at 400; the fire never spreads into a wooden block the test placed as a player's;
+    the job starts from the grindstone and a water bucket, and the station tooltip lists it;
+  - a builder puts the burned blocks back;
+  - scene `fire`: a roof catching and the firewarden putting it out (GIF).
+- [ ] **32.17** **Drought and the Well Keeper.** `drought.json`: desert, savanna and badlands villages 15% a day,
+  others 5% a day after 5 days without rain, twice as likely while a desert raiders' lair stands; it lasts 3–5 days
+  and rain ends it. In the hall's area: crops, stems and berry bushes grow at a quarter pace, farmland dries, water
+  cauldrons lose a level a day, and villagers are 10 less happy ("the wells are low") unless the village has a
+  finished Well or Fountain. A new job, the **Well Keeper**: the cauldron with a **shovel** (the leatherworker's
+  block, shared with the Sifter), its outfit and zombie outfit drawn with the pixel-art skill. In a drought they carry
+  water from the nearest well, river or pond to the village's fields: a bucket wets 9 farmland (moisture 7), whose
+  crops grow at full pace that day. Between droughts they keep the cauldrons full and dry farmland wet, and they
+  foretell the next drought a day ahead (32.14's lines). Water partners speed them (`work/Partners`). Done when:
+  - GameTests: in a drought, wheat grows on at most a quarter of its random ticks (fixed `RandomSource`, 400 ticks
+    called), watered wheat at the usual rate; the Well Keeper wets dry farmland within 600 ticks; rain ends the
+    drought; a finished Well takes the mood reason away;
+  - scene `drought`: dry fields and the keeper carrying water to them (GIF).
+- [ ] **32.18** **Plague and the Physician.** `plague.json`: Town and up, 3% a day, twice as likely with more
+  villagers than beds; a coven's hexed (32.11) or a traveller from far away (`inn/`) can start one too. While it lasts
+  illness passes on: each hall round, a well villager who spent it within 3 blocks of an ill one catches it 1 in 5
+  (less with Medicine research); the ill don't get well by themselves, the nurse's remedies don't cure them, and after
+  two days ill they stay in bed. It ends when no one has been ill for a day. A new job, the **Physician**: the brewing
+  stand with a **glistering melon slice** (the clerics' block, shared with the Nurse and the Undertaker), its outfit
+  and zombie outfit drawn with the pixel-art skill. They foretell an outbreak at its first case (32.14's lines), send
+  the ill home (the ill they have seen pass it on only to those sharing their house), and treat them with a new item,
+  the **Remedy** (crafted from a glass bottle, a glistering melon slice, a honey bottle and a fermented spider eye;
+  drawn with the pixel-art skill): it cures any illness, hexes included, and keeps a villager well for 10 days; a
+  player who drinks one loses poison, wither, hunger and nausea. Done when:
+  - GameTests: over hall rounds (fixed random) illness passes on in a plague and not outside one; an ill villager the
+    physician has seen passes it on less; the Remedy cures a hexed and a plague-ill villager, where a honey bottle
+    cures neither; the plague ends a day after the last cure; the recipe crafts;
+  - scene `plague`: the physician going house to house with the Remedy (GIF), and the hall's list of the ill.
+- [ ] **32.19** **Houses for the answering jobs.** Three builds with the minecraft-architect skill (STYLE.md,
+  renders), in the Blueprint Table, each with its job's block and no other job block: the **Fire Station** (a stone
+  ground floor with the Firewarden's grindstone, a water basin and buckets on racks, under a timber watch loft), the
+  **Well House** (a roofed well shaft down to water with the Well Keeper's cauldron, a trough and a bench) and the
+  **Physician's House** (the brewing stand, a herb garden, four ward beds behind screens: the quarantine ward). What
+  next? suggests each when the village lacks its job and its disaster can come there. Done when: the three pass
+  `check.py`; a render package shows each front and back; a builder builds each in a test and a jobless villager there
+  takes the job with its item; the `defences` scene films them too.
+- [ ] **32.20** **Defence upgrades.** Four upgrades (`<name>_2`, lined up over the finished build,
+  `BlueprintUpgrades`), with the minecraft-architect skill: **Palisade II** (a fighting step, and a ditch of pointed
+  dripstone stakes in front), **Stone Wall II** (timber hoardings over the battlements: a roofed walkway with murder
+  holes), **Wall Tower II** (a roofed top with an archers' gallery, two stations a side) and **Gatehouse II** (a
+  barbican in front: a second gate and portcullis, murder holes over the gateway). `Gates`, sieges (both portcullises
+  drop; the barbican's gate is the first breach) and battle stations know them. Done when: the four are in the
+  Blueprint Table and pass `check.py`; a render package shows each front and back; a builder upgrades a finished
+  Gatehouse to II in a test; 32.4's gate test takes longer on Gatehouse II than on I; the `defences` scene shows them.
+- [ ] **32.21** **Peaceful settings and the threat level.** Config `threatLevel`, 0–3, beside each system's own switch
+  (`raiderCultures`, `sieges`, `siegeDamage`, `disasters`, `villageRaids`, `banditCamps`):
+  - 0: no raids, lairs, sieges or disasters at all;
+  - 1, gentle: half as often, no sieges (raiders walk in only), no hexes, no plague;
+  - 2, normal (the default);
+  - 3, hard: half again as often, a quarter more raiders.
+
+  On Peaceful difficulty nothing comes. On the Defence page the hall's owner can set the village **At peace** (like
+  protection): no raids, lairs or disasters there, and a lair already standing leaves at the next dawn; the guards
+  icon says so. Operators get `/workplace threat start <culture> | lair <culture> | disaster <id> | end | clear` at
+  the nearest hall, for events and testing. The README gets a Threats section (the cultures by land and rank, sieges,
+  warnings, fighting back, the disasters and their jobs, every switch). Done when:
+  - the tester's config matrix: a GameTest for each switch off and each threat level (nothing starts at 0; at 1 no
+    ram, ladder, sand ramp or hex is used);
+  - an At peace village's lair leaves at the next dawn and no new one comes;
+  - the command starts and ends each culture's raid and each disaster;
+  - scene `at_peace`: the Defence page with the setting on (screenshot).
+
+Depends on: M29's Seer item (only for 32.14's Seer warning; until it lands that source is skipped). Nothing else.
+
+## Milestone 33: From village to realm (1.7)
+
+Villages stop being islands. Each one becomes known for what its land and workers make and short of what they don't,
+caravans carry those goods at prices that move with supply and demand, a City sends settlers to found a sister village
+wherever you point on the map, and linked villages become a realm with a capital, a treasury, shared research and
+guards who ride to each other's aid. Between players come trade pacts, alliances, a weekly leaderboard in chat, and
+feuds that only turn to war on a PvP server. It all builds on what exists: hall/Caravans, the Village Ledger and
+treasury, travel posts, mail, village protection and the Settler's Wagon (camp/).
+
+- [ ] **33.1** **Design note.** `docs/design/M33.md`, sent to the owner as a review package (lanes don't wait for his
+  reply): what the player sees in each part, with a mock-up of the hall's new Trade page and its tabs (Routes, Prices,
+  Pacts, Realm, Colonies); the data formats (`data/aliveworkplace/trade_goods/<good>.json`,
+  `data/aliveworkplace/realm_research/<topic>.json`, realm edicts in M30's edict format); the config switches
+  (`villageEconomy`, `visibleCaravans`, `colonies`, `colonyRank`, `colonyCooldownDays`, `coloniesPerVillage`,
+  `realms`, `realmMaxMembers`, `realmRelief`, `tradePacts`, `alliances`, `feuds`, `feudWars`, `weeklyLeaderboard`,
+  `leaderboardDay`, `leaderboardHour`); the save data (one new server-wide saved file, `aliveworkplace_realms`, for
+  realms, offers, pacts, alliances, feuds, colony orders and the week's numbers; new keys on `Caravans.Data`'s village
+  entries for known-for, short-of and prices; all of it empty by default, so a 1.6 world loads unchanged); who may do
+  what (realm, pact, feud and colony actions: the hall's owner, their friends and operators, in every village,
+  protected or not; looking at the price board and trading there: anyone); the performance budget (everything in the
+  hall's 600-tick round or once a day, no area scans, visible caravans only near players); the hooks other milestones
+  use (`Relief.call` for M32's sieges, `RealmTreasury.spend` and `Realms.members` for M35's Wonders, the price engine
+  for M29's Merchant Prince, colonies for M29's Founder); a "Realm" group on the showcase page and a "From village to
+  realm" README section that each item adds to; and the owner's open calls with the defaults used meanwhile (the
+  leaderboard on a real week, Sunday 19:00 server time; no tribute in wars; collecting the treasury owner-only, see
+  33.5). Done when: the note is on `main` and its review package is sent.
+- [ ] **33.2** **Trade goods: what a village is known for and short of.** The engine (new package `trade/`). Trade
+  goods are data: `data/aliveworkplace/trade_goods/<good>.json`, loaded through `Platform.onDataReload` so datapacks
+  and `/reload` work. One file is one good: its name key and icon, its items (an item or an item tag), a bundle size,
+  a base price in hundredths of an emerald a bundle, `made_by` (professions and biome tags), `wanted_in` (biome tags,
+  and professions that use it), and optional events that raise demand for a few days (after a raid, while villagers
+  are ill). Once a day, in the hall's round, each village works out up to 3 goods it's **known for** (2 points for
+  each worker of a making job, up to 6; 3 if the hall stands in a making biome; 1 if its Storehouses hold two bundles
+  or more; 4 points to count) and up to 3 it's **short of** (3 if its biome wants it; 1 for each worker of a job that
+  uses it, up to 3; 2 if a worker is waiting for it on the requests board; 1 if the Storehouses hold less than a
+  bundle; 4 points to count); a good is never both. Every good also gets a **price** there: its base times 1 + 0.2 ×
+  (demand − supply), kept between half and twice the base (supply: bundles in the Storehouses, up to 5, plus 3 if
+  known for it; demand: 3 if short of it, plus bundles workers are waiting for, up to 3, plus 2 for food while the
+  store is under 16 meals, plus any event's). Each dawn a price moves a third of the way toward that. All of it is
+  kept on the village's `Caravans.Data` entry (new keys, empty until the next round), so a village that isn't loaded
+  keeps its last prices. Six test goods ship in the gametest datapack, not in the game. Config `villageEconomy`. Done
+  when:
+  - GameTests: three lumberjacks by a hall in a forest make it known for the test timber; a desert hall whose builder
+    waits for logs is short of it; no good is both; a price moves a third of the way each dawn and stays between half
+    and twice its base; a raid event raises demand for its days only;
+  - the new keys survive save and reload, and a village entry saved before this item loads with empty lists;
+  - with `villageEconomy` off nothing is worked out and `caravansCarryWhatAnotherVillageNeeds` passes unchanged.
+- [ ] **33.3** **The trade goods.** 28 data files (prices follow vanilla's villager trades where there is one; biomes
+  as vanilla and `c:` biome tags; a tag of ours where a good is several items): food and farm goods first, then
+  building materials (Timber to Gold), crafts (Wool to Nether Goods) and three goods that load only with Cobblemon,
+  each behind a `fabric:load_conditions` like the explorer's Cobblemon loot:
+  - **Grain**: wheat, 20 for an emerald. Made by Farmers in plains and savannas; short in snowy lands, deserts and
+    badlands; used by Chefs and Ranchers.
+  - **Bread**: 6 for an emerald. Made by Farmers and Chefs in plains; short in snowy lands, badlands and mountains;
+    used by Innkeepers.
+  - **Roots**: potatoes, carrots and beetroots, 22 for an emerald. Made by Farmers in taiga and plains; short in
+    deserts and on beaches; used by Chefs.
+  - **Fish**: cooked cod and salmon, 6 for an emerald. Made by Fishermen by oceans, rivers and beaches; short in
+    deserts, badlands and mountains; used by Chefs and Innkeepers.
+  - **Meat**: cooked beef, porkchops, mutton and chicken, 5 for an emerald. Made by Butchers and Ranchers in plains,
+    savannas and meadows; short in snowy lands and taiga; used by Chefs.
+  - **Fine Meals**: pumpkin pie, cake, and rabbit, mushroom and beetroot stew, 4 for an emerald. Made by Chefs
+    anywhere; used by Innkeepers, Nurses and Bards.
+  - **Fruit**: apples, sweet berries and glow berries, 12 for an emerald. Made by Orchard Keepers in forests and
+    taiga; short in deserts and snowy lands; used by Chefs and Composters.
+  - **Honey**: honey bottles and honeycomb, 4 for an emerald. Made by Beekeepers in flower forests, meadows, cherry
+    groves and plains; used by Nurses, Chefs and Clerics.
+  - **Bone Meal**: 16 for an emerald. Made by Composters anywhere; short in deserts and badlands; used by Farmers,
+    Florists and Orchard Keepers.
+  - **Timber**: any logs, 16 for an emerald. Made by Lumberjacks in forests, taiga, jungles and dark forests; short in
+    deserts, badlands, snowy plains and on beaches; used by Builders and Carpenters.
+  - **Stone**: cobblestone, stone and stone bricks, 64 for an emerald. Made by Miners and Masons in mountains,
+    windswept hills and on stony shores; short in swamps, plains and on beaches; used by Builders and Masons.
+  - **Glass**: glass and glass panes, 8 for an emerald. Made by Masons in deserts and on beaches; short in forests,
+    taiga and snowy lands; used by Builders.
+  - **Bricks and Clay**: bricks, clay and terracotta, 10 for an emerald. Made by Masons and Sifters in swamps, by
+    rivers and in badlands; short in snowy lands and mountains; used by Builders and Masons.
+  - **Coal**: coal and charcoal, 15 for an emerald. Made by Miners in mountains; short in snowy lands; used by
+    Armorers, Chefs, Masons and Fishermen (their furnaces).
+  - **Iron**: iron ingots and raw iron, 4 for an emerald. Made by Miners and Armorers in mountains, windswept hills
+    and stony peaks; used by Armorers, Toolsmiths, Weaponsmiths and Tinkerers.
+  - **Gold**: gold ingots and raw gold, 3 for an emerald. Made by Miners in badlands; used by Tinkerers, Undertakers
+    and Ball Smiths.
+  - **Wool**: any wool, 18 for an emerald. Made by Shepherds in plains, meadows and windswept hills; short in snowy
+    lands and taiga; used by Leatherworkers and Innkeepers.
+  - **Leather**: leather and rabbit hide, 6 for an emerald. Made by Butchers and Ranchers in savannas and plains;
+    short in snowy lands; used by Leatherworkers and Librarians.
+  - **Dyes and Flowers**: any dye or flower, 12 for an emerald. Made by Florists and Leatherworkers in flower forests,
+    meadows, cherry groves and sunflower plains; short in deserts and snowy lands; used by Leatherworkers.
+  - **Paper**: 24 for an emerald. Made by Librarians and Cartographers in swamps, jungles and by rivers; used by
+    Scholars, Teachers, Librarians and Postmen.
+  - **Tools**: iron pickaxes, axes, shovels and hoes, 1 for 2 emeralds. Made by Toolsmiths anywhere; used by Miners,
+    Lumberjacks, Farmers and Builders.
+  - **Arms and Armour**: iron swords and iron armour, 1 for 3 emeralds. Made by Armorers and Weaponsmiths anywhere;
+    used by Guards; wanted more for 3 days after a raid.
+  - **Arrows**: arrows and spectral arrows, 16 for an emerald. Made by Fletchers in forests and plains; used by
+    Guards; wanted more for 3 days after a raid.
+  - **Remedies**: potions of healing and regeneration, 1 for 2 emeralds. Made by Clerics anywhere; used by Nurses and
+    Guards; wanted more after a raid and while villagers are ill.
+  - **Nether Goods**: quartz, nether wart, blaze rods and glowstone dust, 8 for an emerald. Made by Netherworkers
+    anywhere; used by Clerics, Tinkerers and Masons.
+  - **Apricorns** (Cobblemon): any apricorn, 8 for an emerald. Made by Orchard Keepers in forests and plains; used by
+    Ball Smiths.
+  - **Berries** (Cobblemon): Cobblemon's berries, 12 for an emerald. Made by Orchard Keepers anywhere; used by Nurses
+    and Ranchers (the daycare).
+  - **Poké Balls** (Cobblemon): Poké, Great and Ultra Balls, 8 for an emerald. Made by Ball Smiths anywhere; used by
+    Trainers and Pokémon Traders.
+
+  Players see these only on 33.4's board, so this item lands with `--no-review`. Done when:
+  - GameTests for five kinds of village: a plains farm village known for grain and bread, a taiga lumber village known
+    for timber, a mountain mining village known for stone, coal and iron, a coastal fishing village known for fish,
+    and a desert village short of timber and fish;
+  - the three Cobblemon goods load only with Cobblemon (a compat GameTest) and the other 25 without it;
+  - every good has its name in `en_us.json` and an icon (`langcheck.py` clean).
+- [ ] **33.4** **The price board.** The minecart in the hall's divider now opens a **Trade** page with a row of tabs:
+  **Routes** (today's trade-routes page, unchanged), **Prices** (this item), and **Pacts**, **Realm** and
+  **Colonies**, which later items fill and which stay hidden until then; the Village Ledger reaches it from afar as it
+  does the rest of the hall. **Prices** lists every good with its icon, this village's price for a bundle (to sell to
+  the village and to buy from it; in CobbleDollars with the pack), an arrow for how it moved since yesterday (up,
+  down, steady), a gold star on what the village is known for and a red mark on what it's short of, and in the tooltip
+  the dearest and the cheapest village among those it has routes with ("dearer in Ashford: 1.4 emeralds"). The hall's
+  name icon gains a line: "Known for: Timber, Wool. Short of: Bread". Villagers talk about it (`people/Chatter`, three
+  new topics with three lines each in the lang file): our goods fetching a fine price elsewhere ("Our timber sells
+  well in Ashford"), a glut at home ("We've more wool than we can use"), and something dear ("Bread's dear this
+  week"). Done when:
+  - a GameTest renders the page (`VillageHallScreen.forTest`) and finds a known-for good starred, a short-of good
+    marked and a rising price with its arrow;
+  - the existing `hall_pages` scene still reaches the routes page, now as a tab, and the Ledger opens the Trade page
+    from afar;
+  - showcase scene `price_board` (the page, a tooltip, the name icon), and the README section starts with "Specialties
+    and prices".
+- [ ] **33.5** **Trading at the board.** On the Prices tab a player can **sell** the village what it's short of (click
+  with the goods in your inventory: one bundle; shift-click: as many as it will take) and **buy** what it's known for
+  (click with an empty hand), at the board's prices: the village pays from its treasury and keeps what it earns there
+  (`Money`, so CobbleDollars with the pack), and the goods go into and come out of its Storehouses' chests, which keep
+  16 of everything back, like caravans. The village sells at 10% over what it pays, each bundle moves that day's price
+  2% (sold to it: down; bought from it: up), and it never pays more than its treasury holds or takes more than its
+  chests have room for; it says which. Without a Storehouse the tab says the market needs one. In a protected village
+  a stranger right-clicking the hall gets the Prices tab and nothing else, so they can trade there. Because strangers'
+  trades now draw on the treasury, collecting it becomes the owner's, their friends' and operators' only, in every
+  village (a change: until now anyone could collect in an open village; a hall nobody owns stays open to all). Done
+  when:
+  - GameTests: a sale pays the right amount from the treasury and fills the chest; a purchase takes from the chest and
+    pays in; the 16-back and treasury limits hold; a bundle moves the price 2%; the compat suite pays in
+    CobbleDollars;
+  - a `ProtectionSpecGameTests` case: a stranger in a protected village trades at the board but can't collect the
+    treasury, change a route or open any other page; in an open village a stranger can no longer collect;
+  - showcase scene `board_trade` (buying a bundle, with the treasury before and after).
+- [ ] **33.6** **Caravans that trade.** A caravan first loads what the other village is waiting for, free, as now;
+  then it fills up to 2 more stacks with goods its village is known for that the other is short of, or pays at least
+  10% more for. On arrival the receiving village's treasury pays the sender's at the receiver's board price for those
+  goods (what it can't afford goes back home in a caravan of its own), and both boards move as if the goods had been
+  sold there (2% a bundle). The Routes tab shows for each partner what would go today and what it would earn ("Timber
+  x2 for 2.6 emeralds"), and the chronicles say "Sold 32 Timber to Ashford for 2.6 emeralds". Done when:
+  - a GameTest with two halls, A known for timber and B short of it, with a route on: the caravan carries the timber,
+    B's treasury pays A's at B's price, and both prices move;
+  - a GameTest where B can't pay: the unpaid goods come back to A's Storehouse;
+  - `caravansCarryWhatAnotherVillageNeeds` still passes, and showcase scene `caravan_trade` shows the Routes tab with
+    its earnings and the chronicle line.
+- [ ] **33.7** **Caravans you can see.** When a caravan leaves or arrives in a village a player is within 96 blocks
+  of, you see it: a carter (a villager in the porter's outfit, named "Thornholm's caravan") leading two llamas with
+  chests and carpets in the village's colour (M30's Village Banner colour when it has one, otherwise one picked from
+  the hall's position) walks from the Storehouse to the edge of the village toward the other village and goes out of
+  sight, or comes in from that edge to the Storehouse, where the llamas stop while the goods are unloaded (the chest
+  sound). They are only a sight: the goods still travel the saved way, so nothing can be lost or stolen; they never
+  trade, take a job or breed; one party per village at a time, gone after 2 minutes wherever they are; any left by a
+  restart are taken away (tagged, like the ferry's ride boats). Config `visibleCaravans`. Done when:
+  - GameTests: a departure spawns the carter and two llamas, which walk off and are removed; nothing spawns with no
+    player near; a saved and reloaded carter is removed; the goods that arrive are the same with the switch on or off;
+  - showcase scene `caravan` with a GIF of one leaving and one arriving.
+- [ ] **33.8** **The Colony Charter.** A City (`colonyRank`) can found a sister village. The Colonies tab gives the
+  hall's owner a **Colony Charter** (a new item, drawn with the pixel-art skill on vanilla's map outline, bound to the
+  hall like the Ledger) for 32 emeralds from the treasury (the player pays what the treasury lacks). Right-click the
+  air with it for a map screen: the land round the village, 2,048 blocks across, drawn like a vanilla map where the
+  server has loaded it and as plain parchment elsewhere, a banner for every village with a hall, and a ring for where
+  a colony may go (256 to 1,024 blocks from the hall, in the same dimension, not within 128 blocks of another hall);
+  click a spot to choose it. Or right-click the ground with the charter where you stand. The spot shows as a red cross
+  on the charter's map and in its tooltip ("612 blocks north-east"); renaming the charter in an anvil names the
+  colony. Limits: one colony on the road at a time, 7 days between colonies (`colonyCooldownDays`), at most 3 colonies
+  a village (`coloniesPerVillage`). The "What next?" compass suggests a colony once a village is a City. Config
+  `colonies`. Done when:
+  - GameTests: the charter is refused below City, without the money, and for a spot too near another hall or out of
+    the ring; a good spot is kept on the charter;
+  - a test of the screen's map-to-world sum: a click lands within 16 blocks of the right place;
+  - showcase scene `colony_charter` (the map screen with its ring and cross, the tooltip).
+- [ ] **33.9** **The settlers set out.** Right-click the hall with the charter, its spot chosen, and the village gets
+  ready:
+  - two settlers volunteer: the lowest-levelled builder if there are two or more, otherwise a jobless grown-up who
+    becomes the colony's builder; and a jobless villager, otherwise the lowest-levelled worker of a job the village
+    has three or more of. Never a guard, the only worker of a job, a Legend or a child; a married volunteer brings
+    their partner;
+  - supplies come out of the Storehouses: 64 logs, 64 planks, 64 cobblestone, 32 bread, 16 torches, 12 glass panes and
+    3 beds. What's missing goes on the village's wants (so partners' caravans bring it) and the requests board, and
+    after 3 days they leave with what there is;
+  - the next morning the settlers gather at the hall, the bell rings, and they walk out toward the spot; once out of
+    sight (or after 30 seconds) they are on the road, kept in the order as saved villagers, the way graves keep them,
+    with the supplies.
+
+  The journey takes 3 minutes plus a tick a block. The order (settlers, supplies, spot, arrival time) is kept in
+  `aliveworkplace_realms`; the Colonies tab shows it ("On the road to Newbrook, there in 2 minutes") and can call it
+  off until they leave, which puts everything back. Done when:
+  - GameTests: the right villagers volunteer (never the guard or the only farmer; a married volunteer's partner comes
+    too), supplies are taken and the missing ones become wants, the settlers leave and are saved, and calling it off
+    puts everyone and everything back;
+  - the order survives save and reload mid-journey;
+  - showcase scene `colony_departure` (the settlers gathered at the hall, a GIF of them walking out).
+- [ ] **33.10** **A colony is born.** When the journey ends, the spot's chunks are loaded for a minute (a ticket like
+  `KeepLoaded`'s) and the settlers make camp on the nearest open ground within 48 blocks (the Settler's Wagon's
+  `makeCamp` checks; until 33.14's Colony Camp lands, the settlers' camp with a Village Hall and a Travel Post set
+  beside it). Then:
+  - the hall is named from the charter (or made up), owned by the mother village's owner, and its chronicle opens with
+    "Founded on day 41 by settlers from Thornholm: Dara and Tomas"; the mother's chronicle notes it too;
+  - the post joins the travel network under the colony's name, already known to the owner and their friends;
+  - the settlers step out as they were (names, jobs, levels, trades, partners): the builder employed at the camp's
+    Blueprint Table, the others keeping their trade until the colony has a workstation for it; the chest holds the
+    supplies and the Starter Cottage and Storehouse blueprints in the mother's style (the style most of her finished
+    buildings use, through `BlueprintStyles`);
+  - the builder starts at once on that Starter Cottage and Storehouse, placed on either side of the camp where the
+    ground allows (`Builders.start` and `enqueue`; otherwise the blueprints wait in the chest);
+  - mother and colony are linked: a sister route both ways that doesn't count against the route cap, the mother
+    sending what the colony waits for, free;
+  - the owner gets a letter (`Mail.letter`: "We've arrived at Newbrook, 612 blocks north-east of Thornholm...") and a
+    chat line if online.
+
+  With no room within 48 blocks (all water, a cliff), the settlers come home and the cost is refunded. Done when:
+  - a GameTest (travel time 0, `huge_area`): settlers from a Sandstone-built village arrive; the camp, the hall (owned
+    and named) and the post are there; the settlers keep their names and jobs; the builder works on two Sandstone
+    sites; the sister route exists outside the cap; both chronicles have their lines;
+  - a GameTest where there's no room: everyone and everything is back home;
+  - showcase scene `colony` with a GIF of the arrival and the first walls going up.
+- [ ] **33.11** **Founding a realm.** The Realm tab: at a Town or better, the hall's owner (or a friend) can **found a
+  realm** with this village as its capital, named after it ("the Barony of Thornholm"; a named Name Tag clicked on the
+  realm's icon renames it). The capital's owner adds, with one click, any village within 2,048 blocks that they or a
+  friend own; colonies join their mother's realm by themselves; a member's owner can leave at any time and the capital
+  can let a member go. A realm's rank comes from its members: **Barony** (2 villages), **County** (3, the capital a
+  Town), **Duchy** (5, the capital a City), **Kingdom** (8, the capital and one more a City); at most 12 villages
+  (`realmMaxMembers`), all in one dimension. A rank up brings fireworks over the capital, a chat line to every
+  member's owner and a new title ("the Duchy of Thornholm"). The tab lists the members (rank, villagers, wellbeing,
+  distance, owner; the capital with a crown) and the realm's arms: click it with a banner to set them (they fly on
+  relief riders' shields and colour the realm's map banners and caravans). The hall's name icon says which realm the
+  village is in, and "What next?" suggests founding one at Town. A broken member hall leaves the realm; a broken
+  capital passes the crown to the biggest member that's a Town, or the realm ends. Kept in `aliveworkplace_realms`.
+  Config `realms`. Done when:
+  - GameTests: found a realm, add one's own village, can't add a stranger's, leave, let go, ranks counted with the
+    rank up, the capital's hall broken (the crown passes, or the realm ends);
+  - the realm survives save and reload;
+  - showcase scene `realm` (the tab, the rank-up fireworks).
+- [ ] **33.12** **Other players' villages, and choosing the capital.** The capital's owner can invite a village
+  another player owns: a letter goes to that owner's mailbox (or waits at the post office), with a line on their Realm
+  tab to accept or decline within 3 days. Any member that's a Town or better can be put forward as capital by its
+  owner: if one player owns every member it moves at once; otherwise each member's owner gets a vote on the Realm tab
+  for a day (a village that doesn't vote counts for the current capital; a tie keeps it). The new capital takes the
+  realm's treasury, research and edicts, with fireworks and a chronicle line in every member. Realm decisions (the
+  levy, research, edicts) stay with the capital's owner, and anyone can leave. Done when:
+  - GameTests with two owners: an accepted invitation joins; a declined or lapsed one doesn't; a vote with a majority
+    moves the capital and its treasury; a tie keeps it;
+  - showcase scene `realm_invite` (the letter, the tab with the vote).
+- [ ] **33.13** **The realm treasury.** Each member pays a share of its daily takings (`Treasury.round`) into the
+  realm treasury before the rest goes into its own: the **levy**, 0, 5, 10 (the default) or 20%, set by the capital's
+  owner on the Realm tab. It's kept in the realm's saved data, so it never needs the capital loaded, and holds up to
+  256 emeralds for a Barony, 512 for a County, 1,024 for a Duchy and 2,048 for a Kingdom. It pays for realm research,
+  relief riders, a member's colony when its own treasury is short (from a Duchy), realm edicts, and later M35's
+  Wonders (`RealmTreasury.spend(realm, cents, reason)`). Anyone may give to it (click its icon with emeralds: one;
+  shift: the stack; or CobbleDollars with the pack); only the capital's owner, their friends and operators may take
+  from it. Its tooltip lists the last 20 movements with the day and the reason. Done when:
+  - GameTests: ten workers in a well-kept hamlet pay 0.3 of their 3 emeralds a day at 10%; the cap holds; a stranger
+    can give but not take; the movements are listed right;
+  - it survives save and reload;
+  - showcase scene `realm_treasury` (the icon and its tooltip).
+- [ ] **33.14** **Two builds: the Colony Camp and the Royal Hall.** Drawn with the architect skill and the blueprint
+  generator, checked against `STYLE.md` in renders, in all five styles:
+  - **Colony Camp** (`camp/colony_camp`, about 15 x 6 x 13, placed at once like the settlers' camp): two covered
+    wagons, a Village Hall under a canvas awning on a timber platform, a Blueprint Table with a lamp, a stack of
+    supply crates round the chest, a campfire with log seats and a cooking pot, three bedrolls, a Travel Post with a
+    lantern, and a flagpole for the village's banner. 33.10 places it instead of the settlers' camp with a hall and
+    post beside it.
+  - **Royal Hall** (`realm/royal_hall`, about 19 x 16 x 25; the **Royal Hall II** adds a tower and a treasury wing): a
+    stone great hall with a raised dais and a seat of state, banners down the walls, a gallery, tall windows and the
+    realm's vault (chests). Hidden from the Blueprint Table; the capital's Realm tab draws it for a Blank Blueprint.
+    Finished within 32 blocks of the capital's hall it doubles the realm treasury's cap (the II: three times), and it
+    shows on the village map as a hall.
+
+  Done when: renders of both (front and back, five styles) are in a review package; GameTests place each with free
+  materials and check that a colony uses the camp and that the Royal Hall raises the cap; showcase scene
+  `realm_builds` shows both.
+- [ ] **33.15** **Shared research.** Realm villages share what their scholars know: for each topic of the research
+  tree a member uses the higher of its own level and the capital's (through `Research.at`), and its research screen
+  says "from the capital"; shared levels don't count toward a village's rank. A member's scholars with nothing chosen
+  at home work on the capital's current topic instead, at half pace. The capital's research screen gets a **Realm**
+  row: realm topics loaded from `data/aliveworkplace/realm_research/<topic>.json` (one file: icon, levels, research
+  points and paper and books a level, emeralds a level from the realm treasury, the topics it needs first, and its
+  effect: one of a toolbox of effect types, each with an amount a level), researched by the capital's scholars and
+  paid from the realm treasury. Done when:
+  - GameTests: a member's guards hit harder with the capital's Drill, and its rank doesn't change; an idle member
+    scholar adds points to the capital's topic; a realm topic from a test datapack can be chosen, is paid from the
+    realm treasury and finishes; `/reload` keeps it;
+  - showcase scene `realm_research` (the capital's research screen with the Realm row).
+- [ ] **33.16** **The realm's research topics.** Eight data files, each with its effect wired in (costs to start with:
+  16 paper, 2 books a level after the first, and 8 emeralds a level from the realm treasury):
+  - **Royal Roads** (2 levels): caravans between realm villages arrive 25% sooner a level.
+  - **Common Coin** (2; after Royal Roads I): the board's spread 3 points narrower a level in realm villages.
+  - **Royal Post** (1; after Royal Roads I): parcels between mailboxes in realm villages go out at noon as well as at
+    dawn.
+  - **Ferry Charter** (1; after Royal Post): Travel Tickets between posts in realm villages cost half (at least an
+    emerald) for members' owners and their friends.
+  - **Levies** (2): relief bands one rider bigger per village a level.
+  - **Charters** (2; after Royal Roads II): colonies cost a quarter less a level, and their settlers bring 16 more of
+    each supply.
+  - **Concord** (2; after Levies I): wellbeing 5% higher a level in every realm village (wellbeing's effect on pace
+    keeps its 25% top).
+  - **Granaries** (1; after Concord I and Royal Roads II): a member whose store falls under 16 meals is sent up to 32
+    meals at the next dawn from the member with the fullest store, outside the route cap.
+
+  Done when: a GameTest for each topic shows its effect at level 1 (and at level 2 where it has one); the Realm row
+  shows all eight with what each needs; `langcheck.py` is clean.
+- [ ] **33.17** **Relief in a raid.** When a realm village is raided (our night raids, bandit raids, or a vanilla
+  pillager raid at the village; M32's sieges call `Relief.call` too), the other members send help: the capital,
+  wherever it is, and every other member within 1,024 blocks that has 2 guards or more. Each sends one rider for every
+  3 guards it has (at least 1, at most 3; more with Levies), 6 riders at most in all, after a ride of a tick per 4
+  blocks (at least 30 seconds). They arrive on horseback at the village's edge from their home's direction, named
+  "Ashford's guard", their shields bearing the realm's arms if it has some; when the capital is raided they muster
+  before its finished Royal Hall. They fight as guards until the raid is over and a minute more (until dawn at most),
+  then ride off and are gone. Each rider costs the realm treasury an emerald (when it's empty, only the capital's band
+  comes). The sender's hall says "2 guards away helping Ashford", and both chronicles note it. Config `realmRelief`.
+  Done when:
+  - GameTests: a raid on a member brings the capital's band and a near member's after the right number of ticks; they
+    fight (a zombie dies to them) and leave after the raid; the treasury pays; a village outside any realm gets no
+    one; a vanilla raid calls them too;
+  - showcase scene `relief` with a GIF of the riders arriving and fighting.
+- [ ] **33.18** **Trade pacts and alliances.** Villages of different owners deal through offers. On the Pacts tab an
+  owner picks another player's village within caravan range and offers a **trade pact** or an **alliance**; the offer
+  reaches that owner as a letter in their mailbox (or at the post office) and as a line on their hall's Pacts tab with
+  Accept and Decline, and lapses after 3 days. From now on a caravan route to another owner's village needs a pact;
+  routes set up before 1.7 become pacts when the world loads, so nothing stops. Pact caravans trade at board prices
+  both ways, and even what the other is waiting for is paid for, unless the sending owner turns on **gifts**. An
+  alliance is a pact whose villages (and their realms) also send relief riders (33.17) to each other's raids within
+  1,024 blocks and tell each other's owners. Either side can end a pact at once, or an alliance with a day's notice,
+  by letter. The chronicles note each. Config `tradePacts`, `alliances`. Done when:
+  - GameTests with two owners: no route to the other's village without a pact; an accepted offer allows routes and the
+    cargo is paid for; a declined or lapsed offer changes nothing; a route saved before this item loads as a pact; an
+    ally's raid brings relief; ending an alliance takes a day;
+  - showcase scene `pacts` (the letter, the tab with an offer).
+- [ ] **33.19** **The weekly leaderboard.** Once a week (owner's call: a real week, or every 7 in-game days; meanwhile
+  Sunday 19:00 server time, `leaderboardDay`, `leaderboardHour`) everyone online is told in chat how the villages did:
+  **Biggest** (villagers), **Richest** (emeralds earned that week: takings, board trades and caravan sales),
+  **Happiest** (average wellbeing over the week, from the hall's rounds), **Most Legends** (M29's Legends; Masters
+  until they exist) and the **Greatest realm** (members, then villagers), the top three of each with the village, its
+  owner and the number. Each winner's chronicle notes it and its hall's name icon wears a ribbon for a week.
+  `/workplace leaderboard` shows the standings so far at any time. Only villages with an owner are listed, and an
+  owner can leave theirs off (a toggle on the Trade page). The week's numbers are kept in `aliveworkplace_realms`, so
+  unloaded villages count at their last-known values; a week missed while the server was down is announced at the next
+  start. Config `weeklyLeaderboard`. Done when:
+  - GameTests (with a clock the test sets): three halls with known numbers come out in the right order with the right
+    lines; a village left off isn't listed; a tie goes to the bigger village; a missed week is announced once;
+  - showcase scene `leaderboard` (the chat).
+- [ ] **33.20** **Feuds, and war where PvP is on.** On the Pacts tab an owner can declare a **feud** on another
+  owner's village or realm: a letter tells them, pacts and routes between the two end, each side's board pays 25% less
+  for the rival's goods and charges the rival's players 25% more, villagers grumble about the rivals (a chatter topic
+  with three lines), and the chronicles note it. Either side can offer peace by letter, which the other accepts; a
+  feud without a war fades after 7 days. **War** happens only when the server allows PvP and `feudWars` is on: the
+  side that declared the feud can raise it to war after it has stood a day, with a letter; the war starts at the next
+  dawn and lasts until peace is accepted or 3 days pass. In a war each side's guards treat the other side's owner and
+  their friends as foes inside their own village (`Guards.isFoe`), and those players may fight the enemy's guards, but
+  nothing else changes: blocks, chests, other villagers, animals and the treasury stay protected as before. Relief
+  riders and allies answer raids only, never wars. When it ends, both chronicles record the guards each side lost; no
+  treasury changes hands (owner's call; default: none). With PvP off, the war button says why it can't be pressed.
+  Config `feuds`, `feudWars`. Done when:
+  - GameTests: a feud stops routes and moves both boards; peace ends it; war is refused with PvP off; in a war a guard
+    goes for the enemy owner but not a neutral player; the enemy owner can hurt a guard but not a villager, a block or
+    a chest of a protected village; the war ends after 3 days;
+  - showcase scene `feud` (the tab and the letter; with PvP on, a guard fighting the rival owner).
+- [ ] **33.21** **The Realm Map.** At any member's hall the Realm tab draws the realm on an empty map (the drawing of
+  33.8's charter map, on a vanilla map item): scaled so every member fits (vanilla scales 2 to 4), the land the server
+  has loaded drawn as on a vanilla map and the rest as plain parchment, a banner for every member in the realm's
+  colour (the capital's named "Thornholm (capital)"), colonies, allies and rivals in their own colours, caravan routes
+  as dotted lines between the halls, and a colony on the road as a cross. Its tooltip has the legend, as the Village
+  Map's does. Done when:
+  - GameTests check where the banners are and their colours, and that a route's dots lie between its two halls;
+  - showcase scene `realm_map` (the map in hand and in an item frame).
+- [ ] **33.22** **Realm edicts** (needs M30's edict engine, the Book of Edicts). The capital's Book of Edicts gets
+  realm slots: 1 for a Barony or County, 2 for a Duchy, 3 for a Kingdom, one more with the Royal Hall II. A realm
+  edict is in force in every member, lasts at least 3 days like any edict, and is paid from the realm treasury where
+  it costs money. Six realm edicts, as data in M30's format (`scope: realm`), each with its reform (the capital's
+  quest and a count across the realm; once reformed, the boost stays and the cost goes, for this realm, for good):
+  - **Royal Highway**: caravans between members carry 2 more stacks and arrive 25% sooner / the realm treasury pays an
+    emerald a day for each route. Reform: the quest "Pave the highway" (128 stone bricks) and 12 caravans between
+    members.
+  - **Common Market**: one board for the whole realm (the members' average prices) and no spread on trades between
+    members / the levy rises 5 points. Reform: "Weights and measures" (8 gold ingots, 16 paper) and 20 board trades in
+    members.
+  - **Levy of Arms**: relief from every member wherever it is, in bands twice as big / each member pays 2 emeralds a
+    day into the realm treasury. Reform: "Arm the levy" (12 iron swords) and 3 raids beaten with relief.
+  - **Realm Festival**: every member holds its festival on the same day and the good mood lasts 3 days / 10 emeralds a
+    member for each festival, from the realm treasury. Reform: "Lanterns for the square" (32 lanterns) and 3 realm
+    festivals held.
+  - **Crown's Peace**: no feud can be declared on a member, and bandits never camp within 128 blocks of one / every
+    member's takings 10% lower. Reform: "Clear the roads" (16 monsters cleared round any member) and 7 days without a
+    raid on any member.
+  - **Royal Charter**: members found colonies from Town rank and wait half as long between them / each colony costs
+    the realm 32 emeralds more. Reform: "Draft the charter" (16 paper, 4 books) and 2 colonies grown to Village rank.
+
+  Done when: a GameTest for each edict (boost on, cost on; the reform turns the cost off and keeps the boost); the
+  capital's book shows the realm slots; showcase scene `realm_edicts`.
+- [ ] **33.23** **Legends of the realm** (needs M29's The Founder and Merchant Prince):
+  - **The Founder**: a village he lives in can found colonies from Town rank, sends four settlers instead of two and
+    waits half as long between colonies; its colonies are "founded with the Founder's blessing" in both chronicles,
+    and his statue (M29's build) goes up beside the colony's camp.
+  - **The Merchant Prince**: his village's board shows the prices of every village within caravan range, not only its
+    partners'; its caravans take their trade goods to whichever partner pays most; its spread is halved. If M29 gave
+    him a simpler "prices between villages", it now reads 33.2's prices.
+
+  Done when: GameTests show each power with the Legend present and nothing changed without; showcase scenes
+  `founder_colony` and `merchant_prince_board`.
+
+Depends on: M30's edict engine, the Book of Edicts (33.22 only); M29's The Founder and Merchant Prince (33.23 only);
+33.19's "Most Legends" line counts Masters until M29's Legends exist. Nothing else.
+
+## Milestone 34: Classes and luxuries (1.8)
+
+Villages get a social ladder, as in Anno 1800 and Manor Lords: a household rises from **Peasant** to **Artisan**,
+**Burgher** and **Noble** when its needs are met (a better house, a varied diet, services nearby and, higher up,
+luxuries from four new trades: the Vintner, Tailor, Printer and Jeweller), and falls back when they aren't. Higher
+classes pay more into the treasury, open higher jobs, dress the part and want grander houses; grown villagers age
+into elders who retire and teach, and every family has a tree. It builds on `people/` (`Homes`, `Diet`, `Moods`,
+`Families`, `Couples`), `hall/VillageNeeds` and the `Treasury`, `craft/CrafterWork` and the outfit pipeline, and it
+switches on for every village of the owner's live server at once, so it ends with a careful migration and a rehearsal
+on a real world.
+
+- [ ] **34.1** **Design note.** `docs/design/M34.md`: what the player sees (the class ladder, a household rising at
+  dawn, the four luxury trades and their goods, villagers dressed by class, grander homes, elders, family trees, and
+  the first week after the update); the data formats with one example file each (`classes/`, `services/`,
+  `luxuries/`, `luxury_recipes/`, `homes/` under `data/aliveworkplace/`); every config switch; every new saved field
+  with its default; the job block and item of each new job (vetoable like the 21.1a plan); the migration (34.22) step
+  by step; and the owner's calls with their defaults meanwhile: elders never die of old age (`elderPassing` off),
+  vanilla jobs are never class-gated, family names show on the hall but never rename a villager. Sent to the owner as
+  a review package; lanes don't wait for his reply. Done when: the note is on `main`, its tables match this
+  milestone's numbers, and the package is sent.
+- [ ] **34.2** **The class engine.** The four classes are data: `data/aliveworkplace/classes/<id>.json` (`peasant`,
+  `artisan`, `burgher`, `noble`), one file holding the class's tier (0-3), tax factor, outfit, `needs` (all must hold
+  to be that class), `wants` (optional extras) and what it gives (`jobs`, `effects`; read by 34.7 and 34.8), e.g.
+  `{"tier": 1, "tax": 1.5, "needs": [{"type": "home", "grade": 1}, {"type": "fed_days", "days": 3}, {"type": "diet",
+  "kind": "varied"}, {"type": "services", "count": 1, "any": ["chapel", "school", "clinic"]}, {"type": "luxury",
+  "id": "aliveworkplace:work_clothes"}], "wants": [...]}`. The toolbox of need types (`people/ClassNeeds`): `home`
+  (the grade of the building their bed is in, `Homes`), `fed_days`, `diet` (`Diet`), `beauty` (decorations within 16
+  blocks of home), `building` (a finished blueprint in the village), `village_rank`, `services` (34.3) and `luxury`
+  (reads the `luxuries_had` record that 34.4 fills; never met before then). A **household** is one grown villager or
+  a married couple (`Couples`: a need holds when it holds for both); children take the class of the grown-ups who
+  sleep in their building. Classes exist only in villages with a hall, like moods. Saved on the villager:
+  `social_class` (absent until seeded) and `class_progress` (dawns met, dawns missed). Each dawn the hall checks its
+  households in slices (8 a hall round, no area scans): the next class's needs met `classRiseDays` (2) dawns running
+  lifts them one class; a need of their own class unmet `classFallDays` (3) dawns running drops them one, never below
+  Peasant; one step a day at most. Config `villageClasses` (on), off in GameTests unless a test turns it on. The
+  starting ladder:
+  - **Peasant** (tax ×1): no needs; everyone's floor;
+  - **Artisan** (×1.5): a bed in a house a builder built (grade I+), fed 3 days running, a varied diet, a chapel,
+    school or clinic within 48 blocks of home, Work Clothes every 8 days; wants Cider every 4 days and a tavern
+    within 48;
+  - **Burgher** (×2.5): a grade II+ home, the Artisan's food and diet, a school and one more service, a Market Square
+    in the village, Fine Clothes every 8 days, Berry Wine every 2 days, the Gazette every 7 days; wants an Amethyst
+    Ring every 16 days, a library within 48 and beauty 2+ near home;
+  - **Noble** (×4): a grade III+ home, a chapel, a school, a clinic and a library, the village a Town or City, beauty
+    3+ near home, Noble Robes every 8 days, Vintage Wine every 2 days, an Emerald Brooch every 16 days; wants an
+    Illuminated Book every 16 days and a Gold Circlet every 32 days.
+
+  Done when: `ClassGameTests` (each need type on its own, a couple rising together after 2 dawns, a fall after 3, one
+  step a day, children following their household, a datapack class file changing a need) pass; a save and reload
+  keeps class and progress; 60 households take under 2 ms a hall round (timed in a GameTest). Nothing to see yet:
+  `--no-review`.
+- [ ] **34.3** **Services nearby.** `data/aliveworkplace/services/<id>.json`: which workers or finished builds give a
+  service and how far it reaches, e.g. `{"jobs": ["aliveworkplace:teacher"], "blueprints":
+  ["aliveworkplace:schoolhouse"], "range": 48, "icon": "minecraft:lectern"}`. Six to start: **chapel** (a finished
+  Chapel), **school** (a Teacher, or a Schoolhouse), **clinic** (a Nurse, or a Healing Center), **library** (a
+  Scholar or a Librarian, or a Library), **market** (a Market Square, village-wide) and **tavern** (an Innkeeper, or
+  an Inn). Styled builds and upgrades count as their base (`BlueprintStyles.base`, `BlueprintUpgrades`). The hall
+  works out where its services are once a day (workers by their job site, builds from
+  `BuildSiteManager.finishedNear`) and keeps the list; the `services` need checks each home against it. Done when:
+  `ServiceGameTests`: each of the six found by its worker and by its build, a Chapel in Stonework counts, one 60
+  blocks from home doesn't, a teacher who quits stops counting at the next dawn, a datapack file adds a seventh
+  service; the list is worked out at most once a day (a counter in the test). Nothing to see yet: `--no-review`.
+- [ ] **34.4** **Luxuries from the village store.** `data/aliveworkplace/luxuries/<id>.json`: the item (or tag) and
+  how often a household wants one, e.g. `{"item": "aliveworkplace:berry_wine", "every_days": 2}`. At dawn, in 34.2's
+  slices, each household takes from the village store (`VillageNeeds.store`: the kitchens' chests, then the
+  Storehouses') every luxury of its own class, and of the class above, that is due, and remembers the day it had it
+  (`luxuries_had` on the villager, luxury to day; a couple shares one). An empty store leaves the need unmet that
+  day. Porters carry the luxury makers' goods to the storehouse (`Porters`: the makers keep their makings, not their
+  goods). The eleven luxury files land with their jobs (34.9-34.12); this item ships the engine and a test luxury in
+  the GameTest datapack. Done when: `LuxuryGameTests`: a due household takes exactly one, a couple one between them,
+  nothing is taken before it's due, an Artisan household also takes the Burgher luxuries the store has, an empty
+  store counts as missed, a porter carries a maker's goods to the storehouse, a reload keeps `luxuries_had`. Nothing
+  to see yet: `--no-review`.
+- [ ] **34.5** **The luxury workshop engine** that the four new jobs share.
+  `data/aliveworkplace/luxury_recipes/<id>.json`: the job, the job level that may make it, the makings, what comes
+  out and how long it takes, e.g. `{"job": "aliveworkplace:vintner", "level": 3, "inputs": [{"item":
+  "aliveworkplace:berry_wine", "count": 1, "min_age_days": 3}], "output": {"id": "aliveworkplace:vintage_wine"},
+  "ticks": 200}`. A new `Crafting.Kind.LUXURY` plans from these files (makings by item or tag; vanilla makings up to
+  the usual two steps down), and `craft/LuxuryWork` (a `CrafterWork`, like `ChefWork`) makes, in turn, whatever the
+  village store holds fewer than 8 of, from its own chests, the store and the village's stashes, stock orders first
+  (`StockOrders`). Goods that age carry the day they were made (a `made_day` data component; the tooltip says
+  "Pressed on day 42 · vintage in 2 days"). Missing makings go on the requests board; Craftsmanship research speeds
+  the makers like the other crafters. Done when: `LuxuryWorkGameTests` with test recipes: a maker makes what's short
+  and stops at 8, keeps to its level, waits for an aged input (the day moved on in the test), asks for missing
+  makings on the board, fills a stock order first, and a datapack recipe adds a new good with no code. Nothing to see
+  yet: `--no-review`.
+- [ ] **34.6** **Classes at the Village Hall.** What the player sees:
+  - a **Classes** button on the hall's screen (its tooltip: how many households of each class); its page has a button
+    per class listing each need and want with how many households have it ("Fine Clothes: 2 of 5"), what the class
+    gives, and the households closest to rising with what they lack;
+  - the people list says each villager's class and household ("Burgher · married to Tomas"); a villager's page lists
+    the needs of their class and of the next one, ticked or not; the food icon's tooltip adds the luxuries in store;
+  - **What next?** gets up to three class tips, most households first ("4 artisan households want Berry Wine to
+    become Burghers: a Vintner at a cauldron, Apprentice or better");
+  - a household that rises: golden sparkles at their door, a chime, a chat line to players within 32 blocks, a
+    chronicle entry (a new `Chronicle.Kind.CLASS`) and "rose in the world" (+10 mood for 2 days); one that falls: an
+    entry and "came down in the world" (-10 for 2 days); `Moods` adds "has what their class needs" (+5) and each
+    missing need (-5, at most -15);
+  - chatter (`Chatter`), three lines each: wants wine, wants new clothes, proud of their rise, came down in the
+    world, the Gazette's news, glad of the tavern;
+  - a Classes page in the In-Game Guidebook once 26.2a has landed.
+
+  Done when: `ClassHallGameTests` check the page's counts and the tips against a staged village; `langcheck.py` is
+  clean; scene `classes` (a household rising at dawn, then the hall's Classes page) passes; the README gets a Classes
+  section.
+- [ ] **34.7** **What each class gives.** From the `effects` in the class files:
+  - **taxes** (`Treasury.takings`): each worker pays `treasuryPerWorker` × their class's factor (Peasant 1, Artisan
+    1.5, Burgher 2.5, Noble 4), 10% more for each want they have; a Noble without a job pays like a worker. A Peasant
+    pays exactly today's rate, so no village takes in less than before; the name tag's tooltip shows the split by
+    class;
+  - **Artisans**: crafters who are Artisans or better (carpenter, mason, tinkerer, chef, dyer, toolsmith, vintner,
+    tailor, printer, jeweller) work 10% faster, through the shared 2× speed cap (add the cap if no earlier item has);
+  - **Burghers**: Burgher scholars research 15% faster; with 3 Burgher households the village can send one more
+    caravan route, and market day brings a fourth trader selling a grand-house blueprint (34.15, 34.16) for 12
+    emeralds;
+  - **Nobles**: each Noble household lifts the village's wellbeing 3% (9% at most), and a village with a Noble holds
+    a **Noble's Ball** in place of every other festival (`Festivals`): the guests gather at the Manor's ballroom
+    (34.16) or else the hall, wine and the store's best food are served, gold fireworks go up at dusk, everyone who
+    came gets +15 mood for 3 days, and players there are Heroes of the Village for the night;
+  - **Legends** (M29) live among the Nobles: a Legend's household is held to the Noble's needs and counted with them
+    (the Noble's home need is M29's "tier III house"). Before M29's Legend engine lands this finds no Legends and
+    does nothing.
+
+  Done when: `ClassPerkGameTests` (the takings for a staged mix of classes and wants, never below the old formula for
+  Peasants; the crafter pace staying within the cap; wellbeing capped at 9%; the ball replacing one festival in two)
+  pass; scene `noble_ball` passes; README updated.
+- [ ] **34.8** **Higher jobs need higher classes.** The `jobs` list in each class file names the jobs a villager must
+  be that class or higher to take. To start: **Artisan**: Tinkerer, Chef, Netherworker, Nurse, Teacher, Shopkeeper,
+  Innkeeper, Printer and, with Cobblemon, Ball Smith, Move Tutor, Pokémon Trader, Fossil Scientist; **Burgher**:
+  Scholar, Undertaker, Jeweller, Trainer Leader; **Noble**: none yet (kept for M29's Legends and M33's offices).
+  Everyone else, the Tailor and the Vintner too, is open to Peasants (whoever makes a luxury a class needs is open to
+  the class below it), and vanilla jobs are never gated: they stay keyed on their blocks, as in vanilla. The gate
+  applies only when a job is taken: picking it with its item (`Stations.choose`: "Dara is a Peasant; a Scholar must
+  be a Burgher"), the hall's free-workstation list (greyed, with the class it needs), a grown child taking up a
+  parent's trade (`Families.round`), and a hired traveller, who arrives with the class of their level (Apprentice:
+  Peasant, Journeyman: Artisan, Expert: Burgher). Nobody is ever fired: a worker below their job's class keeps it at
+  the usual pace, and the hall marks them. Outside a village with a hall nothing is gated. Done when:
+  `ClassJobGameTests` cover each way of taking a job, a grandfathered worker keeping their job across a reload, a
+  hired Expert arriving as a Burgher, and no gate with `villageClasses` off; scene `class_jobs` (a Peasant refused
+  the Scholar's paper, a Burgher taking it) passes; the README's job table gets a Class column.
+- [ ] **34.9** **Vintner.** A new job: stand a villager by a **cauldron** and sneak-right-click them with **sweet
+  berries, glow berries or an apple** (a new line in `Stations`; the cauldron's Leatherworker and Sifter stay). The
+  cauldron is their vat (purple splashes and a squelch while pressing), and through 34.5 they make:
+  - **Cider**: 3 apples and a glass bottle (Novice);
+  - **Berry Wine**: 6 sweet berries or 4 glow berries (with Cobblemon, 4 of any berry, by item tag) and a glass
+    bottle (Apprentice);
+  - **Vintage Wine**: a Berry Wine at least 3 days old, re-corked (Journeyman).
+
+  The three items are drawn with the pixel-art skill like vanilla's bottles; a player can drink them (Cider 2 hunger,
+  Berry Wine 3, Vintage Wine 4 and 5 s of Regeneration; the bottle comes back). Trades at every level (buys apples,
+  berries and bottles; sells the wines). Pastured Grass, Bug and Fairy Pokémon help (`Partners`). The Vintner's
+  outfit and zombie outfit through the pixel-art skill: a wine-stained apron, rolled sleeves, a straw hat with a vine
+  band. Luxury files `cider`, `berry_wine`, `vintage_wine`. Done when: `VintnerGameTests` (picked by each item at a
+  cauldron, each wine made from stocked chests, vintage waiting its 3 days) pass; both outfits pass `lint.py` and the
+  `OutfitGameTests`; scene `vintner` passes; a README section and job-table row.
+- [ ] **34.10** **Tailor.** A new job: stand a villager by a **loom** and sneak-right-click them with **string** (the
+  loom's Shepherd stays, back with shears). They take the shepherds' wool and the dyers' coloured wool from the
+  village and make:
+  - **Work Clothes**: 3 wool of any colour, 2 leather and a string (Novice);
+  - **Fine Clothes**: 4 dyed wool (not white), a string and 2 gold nuggets (Apprentice);
+  - **Noble Robes**: 5 wool of one rich colour (purple, blue, red or black), a rabbit hide and a gold ingot
+    (Journeyman).
+
+  The three items are drawn on the outline of vanilla's leather tunic icon, in cloth, with the pixel-art skill.
+  Trades at every level (buys wool, leather and string; sells the clothes). Pastured Bug and Normal Pokémon help.
+  Outfit and zombie outfit: a tape measure round the neck, a pincushion at the wrist, a neat waistcoat. Luxury files
+  `work_clothes`, `fine_clothes`, `noble_robes`. Done when: `TailorGameTests` (picked with string at a loom, each
+  garment made, the dyed-wool rules kept) pass; both outfits pass `lint.py`; scene `tailor` passes; a README section
+  and job-table row.
+- [ ] **34.11** **Printer.** A new job: stand a villager by a **cartography table** and sneak-right-click them with
+  an **ink sac** (the table's Cartographer and Netherworker stay). Through 34.5 they make:
+  - **Books**: 3 paper and a leather make 2 books (Novice). Scholars' research and builders take the store's books
+    first, and with a scholar in the village the printer keeps 8 in the store;
+  - **The Village Gazette**: 3 paper and an ink sac make 2 copies (Novice), each a written book printed from the hall
+    that day: the front page from the newest chronicle entries, the open quests with their rewards, the next festival
+    and market day, the week's births, weddings and households that rose;
+  - **Illuminated Book**: a book, 2 gold nuggets, a lapis lazuli and a glow ink sac (Journeyman): the village's whole
+    chronicle bound in gold, a written book.
+
+  Books for quests: a new hall quest, **Spread the news**: carry this week's Gazette to a village this one has a
+  caravan route to, paid like a delivery (`VillageQuests`). Players buy today's Gazette for 1 emerald and an
+  Illuminated Book for 8 (trades). Pastured Psychic and Normal Pokémon help. Items drawn like vanilla's paper and
+  written book; outfit and zombie outfit: an ink-stained apron, a green visor, sleeve garters. Luxury files
+  `gazette`, `illuminated_book`. Done when: `PrinterGameTests` (picked with an ink sac, each good made, the Gazette's
+  pages built from a staged hall's chronicle and quests, a scholar using printed books, the quest paid on delivery)
+  pass; both outfits pass `lint.py`; scene `printer` (the Gazette opened and read) passes; a README section and
+  job-table row.
+- [ ] **34.12** **Jeweller.** A new job: stand a villager by a **stonecutter** and sneak-right-click them with an
+  **amethyst shard** (the stonecutter's Mason stays, back with cobblestone). Through 34.5 they make:
+  - **Amethyst Ring**: 2 amethyst shards and 2 copper ingots (Novice);
+  - **Emerald Brooch**: an emerald and 3 gold nuggets (Apprentice);
+  - **Gold Circlet**: 2 gold ingots, an emerald and an amethyst shard (Journeyman).
+
+  The three items drawn small and centred like vanilla's nuggets and shards, with the pixel-art skill. Trades at
+  every level (buys amethyst, copper and gold; sells the jewellery). Pastured Rock, Steel and Fairy Pokémon help.
+  Outfit and zombie outfit: a loupe over one eye (the `glasses` helper), a dark velvet waistcoat with gold buttons.
+  Luxury files `amethyst_ring`, `emerald_brooch`, `gold_circlet`. Done when: `JewellerGameTests` (picked with an
+  amethyst shard at a stonecutter, each piece made, a Burgher-only job per 34.8) pass; both outfits pass `lint.py`;
+  scene `jeweller` passes; a README section and job-table row.
+- [ ] **34.13** **The Winery and the Tailor's Shop.** Blueprints in the Blueprint Table, drawn with the architect
+  skill in `tools/blueprints/workshops.py` (STYLE.md, renders): the **Winery** (a stone press house over a half-sunk
+  cellar, the cauldron vat by the door, racks of casks made of spruce log ends and a cellar of chests; no barrels,
+  since a barrel is the fisherman's job block; **II** a terraced berry garden with a pergola of glow berries and a
+  tasting porch) and the **Tailor's Shop** (a timber shop with a bay window, the loom, bolts of coloured wool, a
+  fitting room; **II** a cutting-room storey above, with bolts of cloth on racks and a drying loft for dyed wool).
+  Each also grows in villages in all five styles (`world/VillageHouses`, `village.py`: one job block per house and a
+  villager already in the job; weight 2). Vintners and tailors at Journeyman sell their building's blueprint. Once
+  M27's workplace rules (27.11) have landed, each gets its Steward rule in 27.11's form (Vintner: Winery; Tailor:
+  Tailor's Shop); before that, nothing. Done when: renders of each, front and back and its II, are in the review
+  package; a builder builds each in a GameTest; both village pieces generate with their worker (`VillageGameTests`);
+  scene `luxury_workshops` passes.
+- [ ] **34.14** **The Print Shop and the Jeweller's Workshop.** The **Print Shop** (brick and timber, the cartography
+  table as the press under a skylight, paper and ink on shelves, a counter for buyers; no lectern, which would take a
+  librarian; **II** a bindery and reading room lined with bookshelves) and the **Jeweller's Workshop** (a small stone
+  shop, the stonecutter at a bench under a lantern, an amethyst cluster in a glass case, an iron door; **II** a
+  strong room with a vault of chests behind iron bars). Same rules as 34.13: village pieces in five styles, sold by
+  their Journeymen, and Steward rules once 27.11 has landed (Printer: Print Shop; Jeweller: Jeweller's Workshop).
+  Done when: the same checks as 34.13 pass for both, and scene `luxury_workshops` films all four workshops.
+- [ ] **34.15** **Grander homes: the Artisan's House and the Burgher's Townhouse.** A home's grade is its blueprint's
+  tier (`Homes`), unless `data/aliveworkplace/homes/<name>.json` gives it more (`{"blueprint":
+  "aliveworkplace:townhouse", "grade": 2}`; each upgrade one more, up to III). New blueprints (architect skill,
+  `houses.py`): the **Artisan's House** (grade I: a narrow timber house with a workroom below and two beds above;
+  **II** a back workshop wing and a third bed) and the **Burgher's Townhouse** (grade II: three storeys of brick and
+  timber with a shop window and two bedrooms; **II** a walled courtyard garden and a third bedroom; **III** a corner
+  tower with a study). Builders sell the Artisan's House from Apprentice, and the Townhouse once the village has an
+  Artisan household. A household that rises past its home's grade asks for a grander one: a What next? tip ("Dara and
+  Tomas are Burghers and want a grade II home"). Once M27's Steward rules (27.6, 27.10) have landed, a rule file
+  `homes_class` (a new condition, `households_want_grade {grade, at_least}`) has the Steward upgrade those homes or
+  build a Townhouse or Manor like any other build; before that, the tip alone. Done when: `HomeGradeGameTests` (a bed
+  in Townhouse I counts II and in its upgrade III; a data file overrides a tier) pass; renders of every tier in all
+  five styles are in the review package; a builder builds each in a GameTest; scene `grand_houses` passes.
+- [ ] **34.16** **Grander homes: the Noble's Manor.** The **Manor** (grade III: a stone house of two storeys round a
+  hall with a grand stair, a dining room and two bedrooms, under a slate roof with dormers; **II** a walled formal
+  garden with clipped hedges, a fountain and gravel walks; **III** a gatehouse and a ballroom wing, where 34.7's
+  Noble's Ball is held). Builders sell it once the village has a Burgher household; its garden counts 3 beauty for
+  the people who live there. Done when: renders of I-III from the front, the back and above, in all five styles, are
+  in the review package; a builder builds each in a GameTest (`huge_area`); the ball gathers in the ballroom when
+  there is one; scene `grand_houses` adds the Manor.
+- [ ] **34.17** **Dressed by class: the pick round.** A class layer worn over the job's outfit
+  (`textures/entity/villager/class/<class>.png`, recipes in `tools/textures/art/classes.py`, pixel-art skill): never
+  on the head (the job's hat stays), nothing under the level badge, the back painted, the job still readable under
+  it. Peasants keep their job's outfit as it is today (the owner-approved look). Three versions of each, every one a
+  different idea, on the picker page (`tools/textures/picks/`, as in 21.1b):
+  - **Artisan**: a neckerchief and a belt pouch; a leather tool belt; rolled cuffs and a waistcoat;
+  - **Burgher**: a white collar, dark cuffs and a watch chain; a buttoned coat edge with a pocket square; a short
+    cape;
+  - **Noble**: a fur-trimmed mantle and a gold chain of office; a velvet half-cape with gold embroidery; a sash with
+    a jewelled clasp;
+  - **Elder** (34.19's look, a face layer): grey brows and a short beard; white hair at the temples; spectacles and a
+    grey beard.
+
+  Each previewed on the villager model in every biome, over six different jobs. Until the owner picks, v1 of each is
+  the default. Done when: all twelve pass `lint.py`; the page is up with a pick and a note per row; v1 of each is
+  wired in as the textures.
+- [ ] **34.18** **Dressed by class, in game.** A client render layer draws the wearer's class over their job outfit,
+  and one draws the elder look, on grown villagers and children alike, never on zombie villagers. The client learns a
+  villager's class and life stage from a small packet, sent when a player starts tracking the villager (a new
+  `Platform` event) and whenever either changes; `classOutfits` in the config turns the layers off. The owner's picks
+  from 34.17 replace v1 as they come. Done when: a GameTest checks the packet goes out on tracking and on a change;
+  scene `class_outfits` (the four classes side by side in three jobs each, plus an elder, in daylight) passes with
+  every job still readable; the shots are in the review package.
+- [ ] **34.19** **Life stages: elders.** Grown villagers count their days: `adult_since` (saved: the day they grew
+  up; set in `Families.round` when a child grows up, seeded for everyone else by 34.22). After `villagerElderDays`
+  (120) grown days a villager is an **elder**: the hall says so ("Elder · grown 131 days"), they wear the elder look
+  (34.18), walk 15% slower (`Walker`), and their mood gets "a quiet old age" (+5) when they're fed and housed. The
+  chronicle notes it ("Bram is an elder now"), and elders have four chatter lines of their own ("In my day this was
+  all fields."). Config `villagerAges`. Elders never die of old age: the owner's call, default no (`elderPassing`
+  off; if he says yes, an elder passes in their sleep after 40 elder days and leaves a grave). Done when:
+  `LifeStageGameTests` (an elder after the configured days with the clock moved on, the slower walk, the mood reason,
+  a reload keeping the day, a child growing up getting today) pass; scene `elders` passes.
+- [ ] **34.20** **Retirement and apprentices.** An elder with a job retires once someone can take over, at most one
+  villager a village every 3 days:
+  - the successor is their own grown child without a job, else any jobless grown villager of a class the job allows
+    (34.8); with nobody, the elder keeps working and the hall says "Bram would like to retire: the village needs a
+    jobless villager to take over";
+  - never while they hold something for a player or a build: a site or queue (builder), a quarry (miner), Pokémon in
+    their daycare, fossils being revived, parcels on their round;
+  - the successor shadows the elder for 2 days ("learning from Bram" over their head), then takes the workstation and
+    the job one level below the elder's (at least Apprentice), with the job's assignments: field, tree farm, orchard,
+    courier routes, patrol route, ball orders, and who hired them;
+  - a retired elder never takes a job again (players can still trade with them); by day they mentor: standing by a
+    Novice or Apprentice of their old trade in the village, who then learns 50% faster ("taught by Bram"), or else
+    sitting by the hall or on a bench;
+  - chronicle entries for the retirement and the hand-over; `elderRetirement` in the config.
+
+  Done when: `RetirementGameTests` (a full hand-over in order, each "never while" case, the level and assignments
+  carried over, a retired elder never re-employed, the mentor's 50%) pass; scene `retirement` passes.
+- [ ] **34.21** **Family trees.** Babies remember their parents by id too (`mother_id` and `father_id`, new optional
+  fields in `Families.Parents`; old records keep their names only). The hall keeps the village's **Book of
+  Families**: everyone who has lived there (id, name, family name, the day they were born or grew up, the day they
+  died, parents, partner, trade), up to 400, the longest dead forgotten first. **Family names**: a villager whose
+  parents aren't known founds a family, named from a list of 60 (`family_name.aliveworkplace.<n>`, by UUID); children
+  take a parent's. The hall shows "Dara (Ashby)" and never renames a villager (a Name Tag's name stays). A villager's
+  hall page gets a **Family** button: parents, grandparents, partner, brothers and sisters, children and
+  grandchildren, the dead marked. Births in the chronicle name the grandparents ("Mira, granddaughter of Bram
+  Ashby"), and a family's third generation is noted. The Printer (34.11) prints any family's tree as a written book
+  for 2 emeralds. `familyNames` in the config. Done when: `FamilyTreeGameTests` (three generations, a death, the 400
+  cap, a reload, an old Parents record without ids) pass; scene `family_tree` passes.
+- [ ] **34.22** **Switching it on for every village at once.** The owner's live server gets classes the moment it
+  runs 1.8, in every village with a hall, so the first rounds after the update must be safe. When a hall's round
+  finds it has never been seeded (`classesVersion` 0, a new saved field on the hall):
+  - it seeds 16 villagers a round, so a big City takes a few minutes: each household gets the highest class whose
+    needs other than luxuries hold right now, at most Burgher (Nobles are earned); children their household's; ages
+    (`adult_since`) spread by UUID over the last 100 days, so the first elders come weeks later and one at a time;
+    family names; mercenaries and inn guests are skipped;
+  - a grace of `classGraceDays` (7) days follows: nobody falls a class, luxuries are asked for but not yet needed,
+    nobody retires; the hall shows "Settling in: 5 days left" and what each class will need;
+  - nothing a player built or earned changes: nobody loses a job (gates only apply to new hires), ranks keep their
+    thresholds, the treasury never takes less than before (Peasants pay today's rate), and build sites, quarries,
+    daycare Pokémon, fossils and parcels are untouched;
+  - one chronicle entry ("The people of Thornholm found their places: 14 peasants, 6 artisans, 2 burghers") and one
+    chat line to the players in the village;
+  - a hall first loaded weeks later gets the same, with its own grace; a crash part-way re-seeds only those still
+    unseeded; `villageClasses` off brings back today's behaviour with nothing lost; `/workplace classes
+    <status|reseed>` (operators) per hall.
+
+  Done when: `ClassMigrationGameTests`, on a village staged as a save from before 1.8 (none of the new fields; a
+  Scholar in a plain house, a married couple, a child, a builder mid-build, a rancher with daycare boarders, a hall
+  of City rank), prove each bullet, including a save and reload part-way through seeding and a second round that
+  changes nothing; scene `class_switch_on` (the hall's pages before and after) passes.
+- [ ] **34.23** **A rehearsal on a real world.** With `tools/packtest` on the Cobbleverse pack: a world made with the
+  last release before 1.8, with three villages with halls (a Hamlet of 6; a Town of 22 with research and couples; a
+  City of 36 with every class-gated job, children, a build in progress, daycare boarders, fossils reviving, mail on
+  the way), saved, then opened with the 1.8 jar and run for 2 in-game days. Done when: the log audit is clean; the
+  report lists, per village, the classes seeded, the jobs kept (all of them), the treasury takings and the rank
+  before and after (never lower), the items in every container before and after (equal), and the tick p95 during
+  seeding (within the performance targets); `docs/owner/updating-to-1.8.md` tells the owner in plain steps to back up
+  his server's world first and what his villagers will do in their first week; the report is linked in the Notes.
+  Players see nothing new: `--no-review`.
+
+Depends on: nothing required. Optional links, each with a fallback that works before it lands: 27.6 and 27.10 (the
+Steward's rules: 34.15 adds a rule that upgrades homes for rising households; a What next? tip until then), 27.11
+(workplace rules: 34.13 and 34.14 add one per new job; nothing until then) and M29's Legend engine (34.7: Legends
+held to the Noble's needs; does nothing until Legends exist).
+
+## Milestone 35: Wonders (2.0)
+
+A Wonder is a village's life's work: a huge build raised in four stages by every builder in the village at once, fed
+by goods from every job, drawn up by the Master Architect and needing another Legend. Each of the eight Wonders (the
+Great Cathedral, the Lighthouse, the Great Library, the Great Wall, the Observatory, the Hanging Gardens, the Colossus
+and the Stadium) changes what its village or its whole realm can do, and their time-lapses are the 2.0 trailers. It
+builds on the builder (`BuildSite`, `BuildSiteManager`, `BuilderWork`'s helpers, `Upkeep`), the blueprint generator
+(`tools/blueprints/`, STYLE.md), the Village Hall (ranks, research, festivals, caravans, the chronicle) and M29's
+Legends.
+
+- [ ] **35.1** **Design note.** `docs/design/M35.md`, sent to the owner as a review package (lanes don't wait for his
+  reply): what the player sees, from the hall's Wonders page through the plan, the Foundation Stone, the crew, the
+  goods and the dedications to the finished Wonder's celebration and its powers; one Wonder's data file in full
+  (`data/aliveworkplace/wonders/<id>.json`); the condition types and the power types; the config switches (`wonders`,
+  `wonderCaps`, `wonderLegends`, `wonderServerLimit`, `disabledWonders`, `wonderCrew`, `builderScaffolding`,
+  `wonderStanding`); the save data (a new `WonderManager`, new optional fields on `BuildSite`, nothing renamed); a
+  table of the eight Wonders with their Legend, its stand-in, their other requirements and powers; and how every link
+  to another milestone falls back until that milestone lands. Done when: the note is on `main` with all of these, and
+  its review package is sent.
+- [ ] **35.2** **Wonder data, requirements and caps.** A Wonder is one data file,
+  `data/<namespace>/wonders/<id>.json`, loaded by a reload listener (through `Platform`) into a new `wonder/Wonders`:
+  its name and description (lang keys), an icon item, its requirements, its stages (each a name, its blueprint parts
+  with their offsets, and its goods as `{"item" or "tag", "count", "job"}`), its powers (`[{"type": ..., numbers}]`),
+  its crew size and `enabled`. A file with a mistake is logged with its path and the reason and skipped; a server
+  owner's own Wonder works like ours. Requirements use the shared condition toolbox (package `rules/`; add each type
+  below that M29 hasn't added yet): `rank_at_least`, `research_levels`, `finished` (a blueprint in any style, how many
+  within the village), `villagers`, `job_level` (N villagers of a job at a level), `legend` (M29's Legend living in
+  the village, with a `stand_in` list of conditions used while Legends aren't built or `wonderLegends` is false),
+  `coastal` (an ocean or beach biome within 48 blocks of the hall, 16 samples), `mod_loaded`, `caravan_routes`,
+  `iron_golems`, `meal_kinds` and `pastured_pokemon` (how many, of how many types, through a `compat/` extension
+  point; false without Cobblemon). Every Wonder also needs the Master Architect (stand-in: a Master builder) to draw
+  up its plans. Caps: `wonderCaps` by rank (default Hamlet 0, Village 0, Town 1, City 2), one of each kind per
+  village, one Wonder going up per village at a time, `wonderServerLimit` per kind (default 0: no limit),
+  `disabledWonders`; `wonders` turns the lot off. `/workplace wonders` lists every Wonder on the server with its
+  village, owner and stage. Done when:
+  - GameTests load a test Wonder's file (the test folly, gametest resources only; its stage parts come with 35.3),
+    skip a broken one with a logged reason, and load one from a test data pack;
+  - every condition type has a true and a false GameTest, and a `legend` falls back to its stand-in;
+  - the caps hold: a Town with one Wonder can't start a second and a City can, the same kind twice in one village is
+    refused, and `wonderServerLimit 1` refuses a second village.
+- [ ] **35.3** **The Wonders page and the Wonder Plan.** A new button on the Village Hall's screen opens the
+  **Wonders** page (a `ChoiceMenu`): every enabled Wonder as its icon, name and power in a line, each requirement
+  ticked or crossed with what's missing ("2 of 3 Chapels", "the Seer: not in the village"), and the cap ("Wonders: 1
+  of 1 for a Town"); a Wonder going up shows its stage and how far along it is. With everything ticked, **Draw up the
+  plans** (32 emeralds from the treasury, or the realm's once M33's realm treasury exists, else from the player; owner
+  and friends only) gives a **Wonder Plan**: a blueprint of the whole Wonder (`aliveworkplace:wonder/<id>`, which
+  `BlueprintLibrary` builds by merging its stage parts, cached, and hides from the Blueprint Table like `research/`)
+  with its own icon (pixel-art skill: a rolled blueprint with a gold seal). Held, it shows the whole Wonder as
+  see-through blocks, turns with sneak-right-click and mirrors on the style screen (no styles: each Wonder keeps its
+  palette). It can only be placed with its centre within the hall's reach and all of it within 96 blocks of the hall,
+  never over a finished building or another Wonder; otherwise it says why. The kit gets `wonder_stages()`
+  (`tools/blueprints/kit.py`): a Wonder is drawn one stage at a time and each stage is saved as only what it adds to
+  the stages before it, cut into parts of at most 48 a side (`structure/wonder/<id>/stage_<n>_<part>.nbt`). Its first
+  use is the test folly: a three-stage stone tower with a dome, in the gametest resources. The hall's "What next?"
+  names the Wonder closest to ready once the village is a Town, and the showcase gets a **Wonders** group. Done when:
+  - a GameTest merges the folly's parts into the whole tower as drawn, and no part sets air where an earlier stage put
+    a block;
+  - GameTests: the page's lines match the conditions (one unmet requirement shows crossed); Draw up the plans takes
+    the emeralds and gives the plan, and refuses over the cap; placing is refused outside the village and over a
+    finished building, and works elsewhere in all four turns;
+  - scene `wonders_page`: the page with the folly's card, then the plan in hand and its see-through preview.
+- [ ] **35.4** **The Foundation Stone and stages that survive restarts.** Hand the placed Wonder Plan to any builder
+  of the village: a **Foundation Stone** (a new block, art through the pixel-art skill: a carved stone with a brass
+  plaque) goes down just outside the Wonder's front corner, and the Wonder becomes a `WonderSite` in a new saved
+  `WonderManager` (one per dimension): which Wonder, its hall, its placement, the current stage, the goods delivered,
+  the build sites of its parts, and the days it was begun and finished. Each stage's parts become ordinary
+  `BuildSite`s with a new optional `wonder` field pointing back and the Foundation Stone as their bench, so the chests
+  within 8 blocks of the stone are the Wonder's stockpile; all are placed with the Wonder's turn and mirror; only
+  stage I fills a foundation and only the last stage levels the ground round it. A stage starts when every part of the
+  one before is DONE (and, from 35.7, when its goods are in), so the order holds through a restart at any tick.
+  Right-click the stone: the stage, how far along it is, and the stage's material list with what the chests are short
+  of (as a blueprint's tooltip shows it). The start is announced to every player on the server and goes in the
+  chronicle. Sneak-breaking the stone (owner or op) or `/workplace cancel` ends the Wonder: what's built stays and the
+  plan comes back. The README gets a **Wonders** section (how to start one), which later items add to. Done when:
+  - a GameTest raises the folly with one builder: stage II never starts before stage I is done, and the result matches
+    the drawing in all four turns and mirrored;
+  - a GameTest saves and reloads mid-stage II (the manager, the sites, the builder) and the folly is finished;
+  - cancelling returns the plan, and a world saved before this item loads and saves unchanged;
+  - scene `wonder_site`: the plan handed over, the stone going down, stage I starting.
+- [ ] **35.5** **Crews: every builder on one Wonder.** Each builder whose Blueprint Table is within the Wonder's
+  village joins its crew when they have no build of their own (up to `wonderCrew`, default 12; **Call every builder**
+  on the stone's screen brings the rest in as they finish what they're on). The lead is the Master Architect (M29)
+  when there is one, else the crew's highest-level builder, named on the stone and the hall. Helpers today work a
+  64-step window ahead of one lead (`BuilderWork.helperStep`, `Builders.MAX_HELPERS` 3); a crew instead splits each
+  part into 8 × 8 columns, bucketed once when the plan is made and kept with the `BuildPlan`. Each member takes the
+  free column with work nearest to them and works it in the stage's order (CLEAR from the top, the rest from the
+  bottom), never more than two layers above the part's lowest unfinished layer, so nothing goes up with nothing under
+  it. No two members share a column; a step a member can't do goes on the lead's deferred list. The crew fetches from
+  the stockpile (and the village's store, as now) and passes materials to each other (`takeFromCrewmate`). Crews add
+  hands, not speed: each builder keeps their own pace. Done when:
+  - a GameTest: 8 builders raise the folly with no two in one column on any tick, no STRUCTURE block placed with air
+    under it unless the drawing has it so, and the folly done in at most a quarter of one builder's time;
+  - a save and reload mid-stage keeps the crew together and they finish;
+  - the benchmark (`PERF=true`) with a 12-builder crew stays within 25.2's targets;
+  - scene `wonder_crew`: ten builders on the folly, a GIF.
+- [ ] **35.6** **Scaffolding.** Builders can't stand on roofs and reach about four blocks, so a raised arm, a spire's
+  tip or a dome's crown is skipped today (STYLE.md says to avoid them). When a step has nowhere to stand within reach
+  (`BuilderWork.findStandingSpot` finds nothing), the builder puts up a column of vanilla **scaffolding** from the
+  supply chests beside it, from the ground or the nearest floor, only where the drawing leaves air or nothing, climbs
+  it and works from the top. Every scaffold is recorded in its `BuildSite` (a new saved list, empty by default) and
+  taken down when the stage is done or the build is cancelled, the scaffolding going back into the chests. With none
+  in the chests it's asked for on the requests board (a carpenter makes it from bamboo and string; builders already
+  sell it). It works on every build (`builderScaffolding`, default on), and STYLE.md is updated to say so. Done when:
+  - a GameTest builds a 14-high pillar with a 5 × 5 cap overhanging by two in `big_area` with no skipped steps, and
+    afterwards no scaffolding stands and the chests hold as much as before;
+  - a GameTest cancels half-way and the scaffolds come down; a save and reload with scaffolds up finishes the build;
+  - the folly's dome is finished with no skipped steps;
+  - scene `scaffolding`: a builder scaffolding up the pillar and taking it down, a GIF.
+- [ ] **35.7** **Goods from every job.** Besides its building blocks, each stage of a Wonder asks for goods: the feast
+  for the crew, their tools, what the rites need (candles, books, potions) and its treasures. A stage starts only when
+  all its goods are in the stockpile; then (by day; at night it waits for the morning) it is **dedicated**: the
+  villagers off work gather at the stone, the village's Bard plays and its guards stand in line (if it has them), the
+  bell rings, the goods are taken from the chests and the chronicle says so. Each goods line names the job that makes
+  it, and the village sees to it: the lines go on the requests board (a new kind of request, posted for a block
+  instead of a villager, in `work/Requests`); porters carry matching goods from the storehouse and the workers' chests
+  to the stockpile before anything else (`store/PorterWork`); chefs, carpenters, masons, tinkerers and dyers make
+  what's short as stock orders for the stockpile (`store/StockOrders`); and the hall's daily quest asks for the line
+  that's shortest (`hall/VillageQuests`). Anyone can hand goods in. The stone's screen shows every line: delivered of
+  needed, the job, and "no Chef in the village" when nobody can make it. Cancelling hands back the goods of a stage
+  not yet dedicated. Done when:
+  - GameTests: the folly's stage II (three lines) doesn't start until all three are in; a porter carries bread from
+    the storehouse to the stockpile; a chef cooks a short line as a stock order; a click on the requests board hands a
+    line over; the dedication takes exactly the goods; a cancel gives them back;
+  - scene `wonder_goods`: the stone's screen half filled, a porter delivering, then the dedication.
+- [ ] **35.8** **A finished Wonder: celebration, upkeep and powers.** When the last stage is done, every player on the
+  server is told; the village holds a festival that evening (`hall/Festivals`) with a bigger firework show; the
+  chronicles of the village and of every village linked to it (its realm, M33; until that lands, its caravan partners)
+  record it; and the Village Map marks it with a gold banner. Powers: each power type is code in `wonder/powers/`,
+  registered by id and read from the data file's `powers`; the rest of the mod asks `Wonders.power(level, hall,
+  type)`, a lookup in a cache rebuilt when a Wonder is finished or damaged. Two generic types for server owners' own
+  Wonders: `mood` (village or realm, how much) and `beauty` (points, through `hall/Decorations`). Upkeep: once a day
+  each finished Wonder counts how much of it still stands (at most 4,096 blocks a tick, only while loaded; copper's
+  weathering stages count as the same block, so a dome turned green still stands); under `wonderStanding` (90%) its
+  powers stop, the hall and the stone say "damaged", and the village's builders repair it before anything else
+  (`build/Upkeep`, `BuildPlan.repair` per part); back at 90%, the powers return. The screenshot harness gets the
+  Wonder time-lapse every Wonder's scene uses: a crew of 10 with a lead, free materials, the goods put in for each
+  stage, the server sped up (`/tick rate`), a slow orbit filmed every 100 ticks, a still per stage, under 15 minutes
+  on GitHub's runner. Done when:
+  - GameTests: the finished folly's test `mood` power is on; breaking 15% of it turns it off at the next count, the
+    builders repair it and it comes back; finished Wonders survive a save and reload;
+  - a GameTest checks the server-wide message and the chronicle lines;
+  - scene `wonder_finished`: the folly's time-lapse, ending in its festival fireworks.
+- [ ] **35.9** **The Great Cathedral: its design.** Through the architect skill (design on paper, renders, its
+  critique questions, STYLE.md), drawn in a new `tools/blueprints/wonders.py` with the kit and saved by
+  `wonder_stages()`: a Gothic cathedral on a cross plan, about 27 wide (39 across the transepts) and 55 long, its two
+  west towers 44 high under stone spires reaching 52. A nave of five bays under a steep deepslate-tile roof; aisles
+  either side, with flying buttresses between tall lancet windows; transepts with gable windows; a choir ending in a
+  rounded apse; open belfries with three bells; and a rose window of stained glass (white, light blue, yellow and red)
+  over a deep west door. Inside: pews down the nave, an altar of gold and candles, banners on the piers, three side
+  chapels with lecterns, and a sacristy with a brewing stand (an Undertaker's place). Palette: stone bricks with
+  cracked and mossy ones low down, polished andesite piers, deepslate tiles, dark oak, gold at the altar. About 14,000
+  blocks in four stages, each ending tidy, since the village lives beside it for days: I *The Foundations and the West
+  Front*, II *The Nave*, III *The Transepts and the Choir*, IV *The Towers and the Rose Window*. Data
+  `wonders/great_cathedral.json`: Town; the Seer (stand-in: a Master Cleric); 3 finished Chapels. Goods: I 128 bread
+  (Chef), 8 iron pickaxes (Toolsmith), 16 gold ingots (Armorer); II 64 white candles (Dyer), 32 honeycomb (Beekeeper),
+  64 white wool (Shepherd); III 16 books (Librarian), 12 potions of healing (Cleric), 64 small flowers (Florist); IV
+  32 chiseled stone bricks (Mason), 16 cakes (Chef), 64 bone meal (Composter). Done when (the design checks every
+  Wonder's design meets):
+  - `generate.py` saves it with no CHECK lines, the architect's lint reports no ERROR, and every part is at most 48 a
+    side;
+  - `WonderBlueprintGameTests` for it: every part loads, no part sets air over an earlier stage's block, the block
+    count is within 10% of the figure here, and it uses no retired job block, no calcite and nothing a player can't
+    get;
+  - its review package has the renders after two critique rounds: each stage as the village would see it, and the
+    whole from the front, the back and at eye level;
+  - scene `wonder_gallery` (made here; each Wonder's design adds to it) shows it whole from the front and the back.
+- [ ] **35.10** **The Great Cathedral: its powers and time-lapse.** While it stands, the village's Undertakers need no
+  golden apple, potion or totem, look for graves across the whole village instead of 32 blocks, and bring each
+  villager back by the next morning (`grave/UndertakerWork`). Weddings are held at the Cathedral, before a Chapel or
+  the bell (`people/Couples`), and are **blessed**: the whole village gets +15 mood for 3 days, the couple's first
+  baby comes the next day there's a free bed without waiting for the 16 meals, and (needs M29's born-Legends item;
+  ignored before it lands) a blessed couple's children are twice as likely to grow up Gifted. Its bells ring for
+  weddings, festivals and raids, and it counts 8 beauty. Power types: `undertakers`, `weddings`, `beauty`. Done when:
+  - GameTests: an Undertaker with empty chests brings back a grave 40 blocks away in a Cathedral village, and doesn't
+    without one; a wedding goes to the Cathedral with its mood and baby; a damaged Cathedral turns both off;
+  - scene `wonder_great_cathedral`: the time-lapse, ending at dusk with a wedding at the altar; its GIF and powers are
+    in the README's Wonders section.
+- [ ] **35.11** **The Lighthouse: its design.** A coastal landmark about 25 × 33 and 46 high, drawn like 35.9: a
+  stepped stone mole at the water's edge carrying a round tower that tapers from 13 across to 9, banded in white and
+  red, with a gallery on stone corbels at 38; a lantern room of glass round sea lanterns and a ring of redstone lamps
+  that an inverted daylight detector lights at night; a copper cupola with a lightning-rod vane. At its foot, the
+  keeper's cottage (stone and spruce under slate, a bed, a barrel for a fisherman), a boathouse, a quay with mooring
+  posts, and a timber jetty with a Travel Post at its end (a ferry stop). Palette: stone bricks and andesite at the
+  base, white and red terracotta bands, spruce, copper. About 7,500 blocks: I *The Mole and the Quay*, II *The Tower*,
+  III *The Gallery*, IV *The Lantern and the Keeper's House*. Data: Town; `coastal`; the Merchant Prince (stand-in: 3
+  caravan routes running). Goods: I 64 cooked cod (Fisherman), 8 oak boats (Carpenter), 64 coal (Miner); II 16 chains
+  (Tinkerer), 32 iron ingots (Armorer), 32 white wool (Shepherd); III 4 explorer's maps (Cartographer), 32 spectral
+  arrows (Fletcher), 32 leather (Butcher); IV 64 glowstone dust (Netherworker), 32 redstone (Miner), 16 pumpkin pies
+  (Chef). Done when: 35.9's four design checks pass for it, with the jetty over water in its renders.
+- [ ] **35.12** **The Lighthouse: its powers and time-lapse.** While it stands, caravans from its village reach
+  villages up to 4,096 blocks away (twice `Caravans.RANGE`) and arrive in half the time (`Caravans.travelTicks`);
+  ferry fares to and from the village's Travel Posts are halved (`TravelNetwork.fare`: an emerald per 512 blocks), and
+  the jetty's post joins the network under the village's name ("Thornholm Lighthouse"). And it watches the sea: the
+  day before a pirate raid (needs M32's drowned pirates item) everyone in the village is told, the chronicle notes it
+  and the guards gather on the shore at dusk. Until M32 lands, it warns at dusk of the night's raid instead
+  (`guard/VillageRaids` rolls a Lighthouse village's night at dusk), so the guards are ready. Power types:
+  `caravan_range`, `caravan_speed`, `ferry_fares`, `early_warning`. Done when:
+  - GameTests: a hall 3,000 blocks away is on the trade routes list only with the Lighthouse; a caravan's trip takes
+    half as long; a fare is halved; the dusk warning comes before a rolled raid and not otherwise (and the pirate
+    warning gets its own test once M32's pirates exist); a damaged Lighthouse turns them all off;
+  - scene `wonder_lighthouse`: the time-lapse beside a sea dug and filled by the harness, ending at night with the
+    lamps lit; its GIF and powers are in the README.
+- [ ] **35.13** **The Great Library: its design.** A domed library on a cross plan, about 41 × 41 and 34 high, drawn
+  like 35.9: a rotunda 19 across under a copper dome with a glass lantern at its top; four wings of reading halls,
+  each with two floors of bookshelf galleries; a portico of six columns under a pediment, over a grand stair. At the
+  centre, an Enchanting Table ringed by fifteen bookshelves, with a lectern (a librarian); four lecterns in the wings
+  (scholars) and a map room with a cartography table. Palette: polished diorite and smooth stone, quartz on the
+  portico, dark oak floors and shelves, a copper dome that weathers green. About 16,000 blocks: I *The Stacks*, II
+  *The Galleries*, III *The Rotunda*, IV *The Dome and the Portico*. Data: Town; 20 research levels; the Old Sage
+  (stand-in: a Master Scholar). Goods: I 128 sugar cane (Farmer), 64 leather (Butcher), 64 spruce logs (Lumberjack);
+  II 64 books (Librarian), 64 black dye (Dyer), 16 lanterns (Tinkerer); III 8 explorer's maps (Cartographer), 32 lapis
+  lazuli (Sifter), 32 copper ingots (Armorer); IV 64 nether quartz (Netherworker), 32 cookies (Chef), 16 bookshelves
+  (Librarian). Done when: 35.9's four design checks pass for it, with the rotunda's inside in its renders.
+- [ ] **35.14** **The Great Library: its powers and time-lapse.** While it stands, the research tree
+  (`research/Research`) opens a second tier, shown on the scholar's screen in a row of its own ("needs the Great
+  Library" until then). Each level costs 24 paper, 6 books and 8 emeralds times its level, and twice the points of the
+  first tier:
+  - **Swift Hands IV–V**: every job 5% faster a level;
+  - **Scholarship** (2 levels): scholars work 25% faster a level, and the second level makes research cost a quarter
+    less;
+  - **Engineering** (2): builders' bags hold 9 more stacks a level (27 today), and a Wonder's crew takes 2 more
+    builders a level;
+  - **Cartography** (1): explorers range twice as far (`ExplorerWork.RANGE`), and their maps can lead to trial
+    chambers and ancient cities;
+  - **Trade Law** (2): caravans carry 2 more stacks a level (`Caravans.CARGO_STACKS`), and the treasury takes 10% more
+    a level;
+  - **Pharmacy** (1): the ill get well in a day instead of three, and each Nurse cures one villager a day without a
+    remedy.
+
+  Every speed bonus here goes through the shared 2× speed cap (M30's, or added here if it isn't built yet). A village
+  keeps its levels if the Library is damaged later, but their bonuses pause with its powers. Power type:
+  `research_tier`. Done when:
+  - a GameTest for each topic shows its bonus; the row stays locked without the Library; an existing village's
+    research loads unchanged; Swift Hands V on top of every other bonus stays at or under twice the pace;
+  - scene `wonder_great_library`: the time-lapse, ending in the rotunda on the scholar's screen with the second tier;
+    its GIF and powers are in the README.
+- [ ] **35.15** **The Great Wall: its design.** A defence placed like the other walls (stand inside the village and
+  place it facing out: its stairs are on your side), drawn like 35.9: 97 long, 7 thick and 12 high on a battered
+  plinth, a walk along the top behind crenellations, and five towers (9 × 9, 18 high, hipped roofs; one at each end
+  and two at the quarters), each with stairs inside, a grindstone for a guard and an alcove where a sentry golem
+  stands. At the centre the **Great Gate**: a 17-wide gatehouse between two towers, a portcullis of iron bars over a
+  gateway of fence gates. Braziers (campfires) along the walk, banners on the towers. Palette: cobblestone and stone
+  bricks with mossy and cracked ones low down, a deepslate-brick plinth, spruce roofs. About 18,000 blocks in parts of
+  at most 48: I *The Great Gate*, II *The West Run*, III *The East Run*, IV *The Walk and the Towers' Crowns*. Data:
+  Town; the Golem Smith (stand-in: 4 iron golems and a Master Tinkerer); a finished Gatehouse. Goods: I 8 iron swords
+  (Weaponsmith), 128 arrows (Fletcher), 128 bread (Chef); II 8 iron shovels (Toolsmith), 12 potions of strength
+  (Cleric), 64 baked potatoes (Chef); III 8 crossbows (Fletcher), 8 iron chestplates (Armorer), 8 shields (Carpenter);
+  IV 16 iron blocks (Armorer), 4 pumpkins (Farmer), 16 campfires (Carpenter): the iron and the pumpkins become its
+  sentries. Done when: 35.9's four design checks pass for it, with the walk at a player's eye in its renders.
+- [ ] **35.16** **The Great Wall: its powers and time-lapse.** While it stands, no raid gathers behind it: our night
+  raids and the bandits' (`guard/VillageRaids.gatheringPoint`, `guard/BanditCamps`) gather outside the arc the wall
+  covers as seen from the hall, plus 10° either side, and (needs M32's sieges item) siege raiders can't put ladders to
+  it or break the Great Gate. Its **sentries**: four iron golems watch from the walk (the Golem Smith's wall sentries,
+  needs M29's Golem Smith item; plain iron golems until then), stay on it, fight anything within 16 blocks of the wall
+  and go back to their alcoves; a lost sentry is replaced the next morning from 4 iron blocks and a pumpkin in the
+  stockpile (by the Golem Smith, or a Tinkerer as stand-in). `guard/Gates` shuts the Great Gate at night. Power types:
+  `raid_barrier`, `sentries`. Done when:
+  - GameTests: 50 raids started with a fixed random never gather inside the arc, and do without the wall; a sentry
+    pushed off the walk climbs back; a dead one is replaced from the chests the next morning, and not without the
+    iron; a damaged Wall turns both off;
+  - scene `wonder_great_wall`: the time-lapse, then a night raid gathering on the open side while the sentries watch;
+    its GIF and powers are in the README.
+- [ ] **35.17** **The Observatory: its design.** On a raised terrace about 31 × 31, drawn like 35.9: a round tower 15
+  across and 30 high under a copper dome with a slit of tinted glass, a great telescope of cut copper 12 long leaning
+  out of the slit, a star-chart room in a low wing with a cartography table and a lectern, a courtyard with a sundial
+  (a stone face and its gnomon) and an orrery (a gold sun with planets hung on chains), and a spiral stair up to a
+  viewing platform. Palette: deepslate bricks and tiles, polished blackstone trim, cut copper, amethyst set in the
+  courtyard paving. About 9,000 blocks: I *The Terrace and the Courtyard*, II *The Tower*, III *The Dome*, IV *The
+  Great Telescope and the Orrery*. Data: Town; the Seer (stand-in: a Master Cleric). Goods: I 32 lapis lazuli
+  (Sifter), 64 cooked chicken (Chef), 8 explorer's maps (Cartographer); II 64 copper ingots (Armorer), 4 spyglasses
+  (Toolsmith), 32 amethyst shards (Miner); III 16 books (Librarian), 8 tinted glass (Carpenter), 32 feathers
+  (Butcher); IV 32 chains (Tinkerer), 9 gold ingots (Armorer), 32 pumpkin pies (Chef). Done when: 35.9's four design
+  checks pass for it.
+- [ ] **35.18** **The Observatory: its powers and time-lapse.** While it stands:
+  - **The Sky Chart**: the hall's map button also draws, on an empty map, a chart 1,024 blocks across (map scale 3)
+    centred on the hall, marking every structure found: villages, pillager outposts, desert and jungle temples, witch
+    huts, igloos, ocean monuments, woodland mansions, shipwrecks, ruined portals, trail ruins, ancient cities, trial
+    chambers and strongholds (vanilla's own markers for villages, mansions, monuments, jungle temples, witch huts and
+    trial chambers; a red X for the rest), each named in the map's tooltip. The Observatory searches one kind an
+    in-game hour with the explorers' lookup (`explore/Explorers`), only while the server's tick has room, keeps what
+    it found in the hall and searches again each week.
+  - **Coming days**: a page on the hall with what's ahead and when: the next festival and market day, weddings due,
+    caravans on the road and when they arrive, a traveller expected at the inn, the full moon, bandit camps and where,
+    the night's raid risk, and (with M29's Seer and M32's warnings) what they foretell. The Sky Chart marks the ones
+    that have a place.
+
+  Power types: `sky_chart`, `forecast`. Done when:
+  - GameTests with a stub structure finder: the chart has a named marker per structure found; searches stay at one an
+    in-game hour; the Coming days page lists a staged festival, wedding and caravan with their days;
+  - scene `wonder_observatory`: the time-lapse, then the Sky Chart in hand and the Coming days page; its GIF and
+    powers are in the README.
+- [ ] **35.19** **The Hanging Gardens: its design.** A stepped garden mountain, drawn like 35.9: four terraces (39,
+  31, 23 and 15 across, 6 high each) faced with arcades of sandstone arches on columns. Each terrace is topped with
+  soil: fields of wheat, carrots and beetroots between water channels with a composter and a chest on each level (four
+  village farms), sweet and glow berry beds, flowering azaleas and oaks, vines and glow berries hanging over the
+  arches, and beehives. A cistern at the top pours a waterfall down one side into a pool, and a ramp spirals up.
+  Palette: smooth and cut sandstone, terracotta trim, oak, moss and grass. About 15,000 blocks: I *The First Terrace
+  and the Cistern Vaults*, II *The Second Terrace*, III *The Third Terrace*, IV *The Crown Garden and the Falls*.
+  Data: Town; the Grand Chef (stand-in: a Master Chef and 8 kinds of meal in the store). Goods: I 128 bone meal
+  (Composter), 128 wheat seeds (Farmer), 64 clay balls (Sifter); II 64 sweet berries and 32 glow berries (Orchard
+  Keeper), 64 small flowers (Florist), 16 saplings (Lumberjack); III 32 honey bottles (Beekeeper), 64 carrots and 64
+  potatoes (Farmer), 32 cocoa beans (Orchard Keeper); IV 16 cakes (Chef), 32 eggs (Butcher), 32 raw cod (Fisherman).
+  Done when: 35.9's four design checks pass for it, with the falls running in its renders.
+- [ ] **35.20** **The Hanging Gardens: its powers and time-lapse.** While it stands, across its realm (the villages
+  linked to its village, M33; until that lands, its caravan partners; always its own): every farmer and orchard keeper
+  harvests a quarter more (one more item for every four picked, counted per worker; no extra crop growth ticks), and
+  villages grow faster (`hall/VillageGrowth`): a baby needs 12 meals in the store instead of 16, and up to two are
+  born a day when there are free beds. Its terraces are four village farms, so farmers move in by themselves. Power
+  types: `harvest`, `births`. Done when:
+  - GameTests: a farmer in a caravan-linked village brings back 25% more over 40 harvests (fixed random); two babies
+    in a day with the meals and two free beds; a village farmer takes up a terrace's farm; a damaged Garden turns both
+    off;
+  - scene `wonder_hanging_gardens`: the time-lapse, ending with the falls running and farmers on the terraces; its GIF
+    and powers are in the README.
+- [ ] **35.21** **The Colossus: its design.** The Founder's statue, 47 high, drawn like 35.9: a robed villager, nose
+  and all, one hand on the chest and the other raising a lantern, on a 13-high stepped plinth with an arch through it
+  (5 wide, 6 high) for the main road and its caravans, so the village passes beneath. The figure is stone (polished
+  diorite and smooth stone) under a cloak of cut copper that weathers green over the weeks (about 250 copper blocks);
+  the lantern is a glass cage round glowstone, lit day and night; braziers ring the plinth, and the Founder's plaque
+  is a row of signs. It needs scaffolding (35.6) for the arm and the head. About 9,000 blocks: I *The Plinth and the
+  Road Arch*, II *The Robes*, III *The Arms and the Cloak*, IV *The Head and the Lantern*. Data: City; the Founder
+  (stand-in: City rank). Goods: I 128 baked potatoes (Chef), 64 coal (Miner), 8 iron pickaxes (Toolsmith); II 64
+  copper ingots (Armorer), 64 white wool (Shepherd), 32 leather (Butcher); III 32 chains (Tinkerer), 32 stripped dark
+  oak logs (Lumberjack), 16 potions of strength (Cleric); IV 32 glowstone dust (Netherworker), 64 small flowers
+  (Florist), 16 cakes (Chef). Done when: 35.9's four design checks pass for it, with the face seen from the road in
+  its renders.
+- [ ] **35.22** **The Colossus: its powers and time-lapse.** While it stands, every villager in its realm is happier
+  (+8 mood, +12 in its own village; "the Colossus" shows among the reasons for their mood, `people/Moods`), travellers
+  come to its village's inns twice as often and are twice as likely to be Experts (`inn/Innkeepers`), and it counts 8
+  beauty. When it's finished, the plaque's signs are filled in: the Founder's name (M29's Founder; the hall's owner
+  until that lands), the village's name and the day it was founded, from the chronicle. Power types: `mood` (realm),
+  `travellers`, `beauty`. Done when:
+  - GameTests: a villager in a caravan-linked village gains 8 mood and one at home 12; two travellers in a morning
+    with beds free; the plaque reads the village's name and founding day; a damaged Colossus turns them off;
+  - scene `wonder_colossus`: the time-lapse with the scaffolding going up and coming down, ending at night with the
+    lantern lit over the road; its GIF and powers are in the README.
+- [ ] **35.23** **The Stadium: its design (Cobblemon).** An oval arena about 47 × 37 and 16 high, drawn like 35.9: a
+  battle field 31 × 21 of grass with white lines and a centre circle (no logos), two trainer boxes with a Training
+  Post each, a professor's box at the side, stands of five tiers along the sides and three at the ends with seats in
+  red and white (the village's own colours once M30's Village Banner exists), a covered stand on the west under a
+  canopy on columns, a gateway arch with banners, four floodlight towers of redstone lamps lit at night by daylight
+  detectors, a scoreboard wall, and outside a nurse's booth (a brewing stand and a Healing Machine) and pitches for
+  market stalls. Palette: stone bricks and smooth stone, spruce, red and white terracotta, iron for the floodlights.
+  About 18,000 blocks: I *The Field*, II *The Lower Stands*, III *The Upper Stands and the Covered Stand*, IV *The
+  Gate and the Floodlights*. If M28 shipped a smaller Stadium for its Festival Cup, this one is the **Grand Stadium**
+  in game, to tell them apart. Data (loaded only with Cobblemon, through `fabric:load_conditions` like the explorers'
+  Cobblemon loot; without it the Stadium isn't on the Wonders page): Town; the Pokémon Professor (stand-in: 25
+  pastured Pokémon of 10 types). Goods: I 128 bone meal (Composter), 64 small flowers (Florist), 32 Poké Balls (Ball
+  Smith); II 128 red and white wool (Shepherd, Dyer), 16 Poké Snacks (Chef), 16 Great Balls (Ball Smith); III 16
+  banners (Carpenter), 64 cooked beef (Chef), 32 berries (Orchard Keeper); IV 8 daylight detectors (Tinkerer), 16
+  Ultra Balls (Ball Smith), 32 pumpkin pies (Chef). Done when: 35.9's four design checks pass for it (the compat
+  GameTests for the parts with Cobblemon's blocks).
+- [ ] **35.24** **The Stadium: its powers and time-lapse (Cobblemon).** While it stands:
+  - **Stadium Days**, every second day in the afternoon: two to four visiting trainers (from the villages of its realm
+    or its caravan partners; travelling trainers from Journeyman to Master when those have none) stand in the trainer
+    boxes until dusk. Players challenge them as they do the village's own (`trainer/Trainers`: CobbleDollars, once a
+    day each, money only). The village's own trainers take on the visitors in bouts settled by rank and team strength
+    (the server can't play a battle out with nobody in it), both gaining battle XP, with the results in chat and the
+    chronicle. Villagers off work fill the stands, and those who watched get +5 mood.
+  - **The tournament** (needs M28's tournament item): the season's Festival Cup is held at the nearest Stadium among
+    the villages taking part, and its village gets the market and the crowds; nothing more until M28 lands.
+  - No badges and no gym leaders: Trainer Leaders pay money only, as the owner decided.
+
+  Power types: `stadium_days`, `tournament_host`. Done when:
+  - GameTests (compat): a Stadium Day brings the visitors into the boxes and sends them off at dusk; a bout's result
+    and XP follow the ranks (fixed random); a player's win pays once a day; a damaged Stadium holds no Stadium Days;
+  - scene `wonder_stadium` (`-Pcobblemon=true`): the time-lapse, then a Stadium Day with full stands and a player's
+    battle against a visitor; its GIF and powers are in the README.
+
+Depends on: M29 (the Legend engine's `legend` condition; the Master Architect, Seer, Merchant Prince, Old Sage, Golem
+Smith, Grand Chef, Pokémon Professor and Founder items; born Legends, for blessed weddings), M28 (the tournament
+item), M30 (the shared 2× speed cap, which 35.14 adds if it isn't built yet; the Village Banner's colours), M32
+(drowned pirates; a day's warning; sieges), M33 (the realm and its treasury). Every link has a fallback here, so no
+item waits.
+
+## Later (not in this plan)
 
 - The 26.x node (Milestone 19, phases 3–4): on hold until the owner says go.
-- New jobs and systems: add them here and discuss them with the owner before starting.
 
 ---
 
@@ -430,7 +4178,7 @@ about 12% of that. For villager mods, the cost is pathfinding to distant points 
   structure, because packs add their own villages. Village farmers harvest into nearby chests.
 - *My NPCs* does some of what we want "in a different way" the owner doesn't love. Rebuild the roles that fit the pack
   as villager jobs, not as admin-configured NPCs.
-- **As big as MineColonies, if not bigger** (2026-09-28; the long-term goal: for now, 1.0 polish comes first), built in
+- **As big as MineColonies, if not bigger** (2026-09-28; since 2026-10-03 the plan itself, Milestones 27–35), built in
   parts. Ideas can come from MineColonies (GPL-3.0;
   code only adapted with attribution). What stays ours: it runs on Fabric 1.21.1 in the pack, works with the villagers
   and villages already in the world, and Cobblemon runs through every part.
@@ -455,6 +4203,23 @@ about 12% of that. For villager mods, the cost is pathfinding to distant points 
 - **Hands-off** (2026-09-29): the owner reviews only what he can see or feel in game, from screenshots and GIFs.
   Work with nothing to see (tests, tooling, internal fixes) is accepted automatically once the tester passes, and is
   only listed in the next message. He wants to be asked only for real decisions.
+- **Two weeks** (2026-10-03): everything through 2.0 released by 2026-10-17, because another team could ship first.
+  Lanes work around the clock, several at once. Speed comes from parallel lanes and trimmed checks, never from
+  thinner content: every feature complete, vanilla-quality, finished.
+- **Order of the expansions** (2026-10-03): 1.1 villages that build themselves, 1.2 Pokémon and villagers together,
+  1.3 Legends, 1.4 edicts and civic items, 1.5 quests become stories, 1.6 threats, 1.7 the realm, 1.8 classes and
+  luxuries, 2.0 Wonders.
+- **Edicts** (2026-10-03) have real costs, but each has a reform the village earns through quests: once reformed, it
+  keeps its boost and loses its cost.
+- **Mythic Legends and Wonders** (2026-10-03): several may exist on a server, but each village has a cap, growing with
+  its rank (config).
+- **Unhappy Legends** (2026-10-03) never move out: they go on strike until their needs are met.
+- **The Pokémon tournament** (2026-10-03) must fit the mod's themes (villages, festivals, market days, trainers who
+  level up by battling, the chronicle). Still no badges and no gym leaders.
+- **Classes** (2026-10-03) switch on for every village on the live server at once.
+- **Testing while building** (2026-10-03): builders write their own GameTests as they build; a dedicated QA lane
+  tests everything after it lands; slow checks (mutation, repeats, filming) run on GitHub's machines. Releases ship
+  verified work only.
 
 ## Notes / blocked
 

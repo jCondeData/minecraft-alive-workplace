@@ -65,6 +65,7 @@
 			"io.github.jcondedata.aliveworkplace.test.TerrainStallGameTests",
 			"io.github.jcondedata.aliveworkplace.test.VillagerMixinGameTests",
 			"io.github.jcondedata.aliveworkplace.test.GoalPackagesMixinGameTests",
+			"io.github.jcondedata.aliveworkplace.test.NetworkPayloadsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.WardingEdgeGameTests",
 			"io.github.jcondedata.aliveworkplace.test.StationsBugGameTests",
 			"io.github.jcondedata.aliveworkplace.test.StationsRetakeGameTests",

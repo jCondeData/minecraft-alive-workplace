@@ -4,6 +4,21 @@ Done in pieces by night runs; each piece lands with `land --keep-open`. Newest f
 
 ## Pieces
 
+### Network packets (lane-a-1003-2232, 2026-10-03)
+- **Every payload over the wire** (`NetworkPayloadsGameTests.everyPayloadSurvivesTheWire`): all nine (the table's
+  Open, RequestDetails, Details, Take, UploadChunk and UploadResult, mail's Send, the preview's Request and Data) come
+  back unchanged, at their limits too (a full 30,000-byte upload piece, a 254-character file name, a 256-character
+  letter in two-byte letters, a block at the world's corner). Passes.
+- **Oversized client packets** (`oversizedClientPacketsAreRefused`): an upload piece over 30,000 bytes, a file name
+  over 256 characters, a recipient name over 32 and a letter over the codec's limit are refused. Passes.
+- **The mailbox's Send button through the real packet path** (`theMailboxSendPacketPostsAParcel`, the first test of
+  `Mail.send` at all): a blank or unknown name posts nothing and keeps the top row; a real name posts the items with the
+  trimmed letter first; a Send with no mailbox open does nothing. Passes.
+- **The table's Take button through the packet path** (`theTableTakePacketGivesTheBlueprint`): one Blank Blueprint
+  for one blueprint; an unknown id costs nothing. Passes.
+- **3 mutants**, all killed: Send's handler given its arguments swapped, Take's handler unwired, the letter not
+  trimmed. 31 mutants in all; no bug in the code.
+
 ### The job switchboard: VillagerGoalPackagesMixin (lane-a-1003-2132, 2026-10-03)
 - **Every job's work package** (`GoalPackagesMixinGameTests.eachOfOurJobsGetsItsOwnWorkPackage`): each of our 30
   professions gets exactly the package its job class builds, none gets vanilla's, and every profession
@@ -106,5 +121,4 @@ Done in pieces by night runs; each piece lands with `land --keep-open`. Newest f
 ## Still to do
 - An old world saved by 0.138.0 opened with the next version (at the release check).
 - Performance on GitHub's machines once B14 is fixed (the dev-container numbers above stand meanwhile).
-- The next `inventory.py` gaps: 14 mixins (VillagerMixin and VillagerGoalPackagesMixin now have their own tests) and 7 network payloads no test names (most are exercised through the
-  features they serve; a test per mixin is the next piece).
+- The next `inventory.py` gaps: 14 mixins (VillagerMixin and VillagerGoalPackagesMixin now have their own tests) (the network payloads are covered now; a test per mixin is the next piece).

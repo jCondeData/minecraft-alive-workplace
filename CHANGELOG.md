@@ -11,6 +11,8 @@
 ### Fixed
 - A builder no longer stands waiting for materials with nothing on its missing list when the last of a block is
   in a helper's pockets: helpers keep only what the block they are working on needs and pass the rest over.
+- Warding now protects the whole village, corners included: a creeper or TNT going off in a corner of a warded
+  village, or just past its edge, no longer breaks the village's blocks.
 - The Village Hall's Guards and Mercenaries buttons, and Research's Drill topic, no longer show an iron sword's
   "When in Main Hand: 6 Attack Damage, 1.6 Attack Speed" lines under their own text.
 - Giving a villager a new job no longer frees a workstation someone else now works at when that other villager is

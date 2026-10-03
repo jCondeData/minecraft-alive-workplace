@@ -402,6 +402,16 @@ def build_env():
     return env
 
 
+def same_build(built, head):
+    """True when head differs from the commit last built green only in ROADMAP.md, which no build step reads, so that
+    build stands for head too. Main moves every few minutes with claims, handoffs and verify marks; rebuilding for
+    those made land build 5 times in 45 minutes and give up with green work (B16). CI still builds every push."""
+    if not built:
+        return False
+    changed = git("diff", "--name-only", built, head).stdout.split()
+    return all(f == ROADMAP for f in changed)
+
+
 def cmd_land(a):
     own_claim_or_die(a)
     if git("rev-parse", "--abbrev-ref", "HEAD").stdout.strip() != f"item/{a.id}":
@@ -419,7 +429,10 @@ def cmd_land(a):
             die("Merging the newest main in gives conflicts. Resolve them by hand: git merge origin/main, fix the "
                 "files (ROADMAP.md: keep both sides' lines), git add them by name, git commit; then land again.", 3)
         head = git("rev-parse", "HEAD").stdout.strip()
-        if head != built:
+        if same_build(built, head):
+            print(f"[land {attempt}] main only moved in ROADMAP.md since the green build: not building again.",
+                  flush=True)
+        elif head != built:
             print(f"[land {attempt}] building {head[:9]}: {a.build}", flush=True)
             if subprocess.run(a.build, shell=True, env=build_env()).returncode:
                 die("The build failed on top of the newest main (output above). If it's the setup (Java not found, "
@@ -470,7 +483,10 @@ def cmd_ship(a):
             git("merge", "--abort", check=False)
             die("Merging the newest main in gives conflicts: git merge origin/main, fix, commit, ship again.", 3)
         head = git("rev-parse", "HEAD").stdout.strip()
-        if head != built:
+        if same_build(built, head):
+            print(f"[ship {attempt}] main only moved in ROADMAP.md since the green build: not building again.",
+                  flush=True)
+        elif head != built:
             print(f"[ship {attempt}] building {head[:9]}: {a.build}", flush=True)
             if subprocess.run(a.build, shell=True, env=build_env()).returncode:
                 die("The build failed. A failing test is a bug: move it to tests/<topic>, add the bug, ship the "

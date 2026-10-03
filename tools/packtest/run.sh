@@ -90,7 +90,8 @@ say "forceload add 720 320 880 480" 20
 say "place structure repurposed_structures:village_birch 400 70 400" 40
 say "place structure minecraft:village_plains 800 70 400" 40
 for x in 400 800; do
-  for poi in builders_bench training_post guard_post nurse_station postal_desk leaders_podium tutors_desk trade_board fruit_basket ball_workbench storehouse travel_post; do
+  # Our houses' own blocks (the others share vanilla blocks since ROADMAP 21.1a, so a hit wouldn't tell ours apart).
+  for poi in blueprint_table training_post mailbox shop_counter storehouse travel_post; do
     say "execute positioned $x 70 400 run locate poi aliveworkplace:$poi" 2
   done
 done

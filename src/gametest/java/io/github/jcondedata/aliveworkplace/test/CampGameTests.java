@@ -18,7 +18,7 @@ import net.minecraft.world.level.block.entity.ChestBlockEntity;
 public class CampGameTests implements net.fabricmc.fabric.api.gametest.v1.FabricGameTest {
 	private static final String AREA = "aliveworkplace_test:big_area";
 
-	/** On open ground: the wagon, the bench, the chest of supplies (with a Village Hall) and two settlers, the first a builder. */
+	/** On open ground: the wagon, the Blueprint Table, the chest of supplies (with a Village Hall) and two settlers, the first a builder. */
 	//$ gametest_ticks_batch AREA '100' '"settlersMakeCamp"'
 	@GameTest(template = AREA, timeoutTicks = 100, batch = "settlersMakeCamp")
 	public void settlersMakeCamp(GameTestHelper helper) {
@@ -30,7 +30,7 @@ public class CampGameTests implements net.fabricmc.fabric.api.gametest.v1.Fabric
 		BlockPos[] bench = new BlockPos[1];
 		BlockPos[] chest = new BlockPos[1];
 		for (BlockPos p : BlockPos.betweenClosed(helper.absolutePos(new BlockPos(0, 1, 0)), helper.absolutePos(new BlockPos(21, 8, 21)))) {
-			if (level.getBlockState(p).is(ModBlocks.BUILDERS_BENCH)) {
+			if (level.getBlockState(p).is(ModBlocks.BLUEPRINT_TABLE)) {
 				bench[0] = p.immutable();
 			}
 			if (level.getBlockState(p).is(Blocks.CHEST)) {

@@ -103,13 +103,23 @@ public class MailboxBlock extends BaseEntityBlock {
 		if (mailbox.owner() == null) {
 			claim(serverPlayer, mailbox); // a mailbox from a structure or a command: first to open it owns it
 		}
+		// A postman's mailbox is the post office's counter: parcels waiting for a player with no mailbox are picked up here.
+		boolean collected = hasPostman((ServerLevel) level, pos) && Mail.collectAtDesk(serverPlayer, true) > 0;
 		if (!mayOpen(serverPlayer, mailbox)) {
-			Chat.actionBar(player, Component.translatable("message.aliveworkplace.mail.not_yours", mailbox.ownerName())
-				.withStyle(ChatFormatting.RED));
+			if (!collected) {
+				Chat.actionBar(player, Component.translatable("message.aliveworkplace.mail.not_yours", mailbox.ownerName())
+					.withStyle(ChatFormatting.RED));
+			}
 			return InteractionResult.CONSUME;
 		}
 		Platform.get().openMenu(serverPlayer, mailbox, mailbox.getBlockPos()); // the screen needs to know which mailbox
 		return InteractionResult.CONSUME;
+	}
+
+	/** Whether a postman works at the mailbox at {@code pos} (it's their workstation since ROADMAP 21.1a). */
+	public static boolean hasPostman(ServerLevel level, BlockPos pos) {
+		return level.getPoiManager().getInRange(h -> h.is(io.github.jcondedata.aliveworkplace.registry.ModVillagers.MAILBOX_POI), pos, 0,
+			net.minecraft.world.entity.ai.village.poi.PoiManager.Occupancy.IS_OCCUPIED).anyMatch(r -> r.getPos().equals(pos));
 	}
 
 	public static boolean mayOpen(ServerPlayer player, MailboxBlockEntity mailbox) {

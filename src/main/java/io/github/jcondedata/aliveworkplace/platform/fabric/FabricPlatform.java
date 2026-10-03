@@ -244,6 +244,17 @@ public final class FabricPlatform implements Platform {
 	}
 
 	@Override
+	public void whenBlockRegistered(ResourceLocation id, Consumer<Block> action) {
+		boolean[] done = {false};
+		net.fabricmc.fabric.api.event.registry.RegistryEntryAddedCallback.allEntries(net.minecraft.core.registries.BuiltInRegistries.BLOCK, entry -> {
+			if (!done[0] && entry.key().location().equals(id)) {
+				done[0] = true;
+				action.accept(entry.value());
+			}
+		});
+	}
+
+	@Override
 	public void addTrades(VillagerProfession profession, int level, Consumer<List<VillagerTrades.ItemListing>> trades) {
 		TradeOfferHelper.registerVillagerOffers(profession, level, trades::accept);
 	}

@@ -5,7 +5,7 @@
 mod.id = "aliveworkplace"
 mod.name = "Alive Workplace"
 # Bump this to release (CI tags v<version> and attaches alive-workplace-<version>+<minecraft>.jar for each node).
-mod.version = "0.137.0"
+mod.version = "0.138.0"
 mod.archives = "alive-workplace"
 mod.group = "io.github.jcondedata"
 

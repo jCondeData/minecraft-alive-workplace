@@ -1,0 +1,152 @@
+# Nightly showcase: every screenshot scene, filmed on GitHub's machines, on one page for the owner's phone.
+#   https://jcondedata.github.io/minecraft-alive-workplace/
+# Plain GitHub Actions (free for this public repo): no Claude session, no Claude usage.
+#
+# plan    splits the scenes (tools/showcase/scenes.py) into shards of about half an hour, balanced with last night's times
+# scenes  one job per shard, in parallel: tools/showcase/shard.py runs each scene in the real client under Xvfb and
+#         judges it (tools/showcase/process.py): pass only if its job visibly did its work and no picture looks broken
+# page    puts every shard's results on one page (tools/showcase/page.py)
+# deploy  publishes it to GitHub Pages (main only; needs Settings > Pages > Source: GitHub Actions)
+# report  files the nightly-tests issue when a scene failed or a texture is missing (main only)
+#
+# Also runs on pushes that change the harness or these tools, on any branch: an item branch gets the page as an
+# artifact (showcase-site) and in its job summary, without publishing or filing anything.
+name: showcase
+
+on:
+  schedule:
+    - cron: "37 3 * * *"        # ~10:40 PM US Central, beside the nightly tests and before the night runs
+  workflow_dispatch:
+  push:
+    paths:
+      - ".github/workflows/showcase.yml"
+      - "tools/showcase/**"
+      - "tools/screenshots/**"
+      - "src/devclient/**"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: showcase-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.plan.outputs.matrix }}
+    steps:
+      - uses: actions/checkout@v5
+      - name: Pillow and numpy for the tools' own tests
+        run: sudo apt-get update -q && sudo apt-get install -yq python3-pil python3-numpy > /dev/null
+      - id: plan
+        run: |
+          curl -fsSL -o last.json https://jcondedata.github.io/minecraft-alive-workplace/showcase.json || rm -f last.json
+          python3 tools/showcase/scenes.py check
+          python3 tools/showcase/test_showcase.py > /dev/null && python3 tools/showcase/test_showcase_keys.py > /dev/null
+          matrix=$(python3 tools/showcase/scenes.py matrix --last last.json)
+          echo "matrix=$matrix" >> "$GITHUB_OUTPUT"
+          echo "$matrix" | python3 -m json.tool
+
+  scenes:
+    needs: plan
+    name: scenes ${{ matrix.shard }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 58
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJSON(needs.plan.outputs.matrix) }}
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: |
+            21
+            25
+      - uses: gradle/actions/setup-gradle@v4
+      - name: Virtual display, software OpenGL, Pillow
+        run: |
+          sudo apt-get update -q
+          sudo apt-get install -yq xvfb mesa-utils libgl1-mesa-dri python3-pil python3-numpy > /dev/null
+      - name: Build the mod and the screenshot client
+        run: ./gradlew :1.21.1:classes :1.21.1:devclientClasses --stacktrace
+      - name: Scenes (${{ matrix.scenes }})
+        run: python3 tools/showcase/shard.py --scenes "${{ matrix.scenes }}" --out build/showcase
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: showcase-${{ matrix.shard }}
+          path: build/showcase/
+          if-no-files-found: ignore
+          retention-days: 7
+
+  page:
+    needs: [plan, scenes]
+    if: always() && needs.plan.result == 'success'
+    runs-on: ubuntu-latest
+    outputs:
+      report: ${{ steps.report.outputs.report }}
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: showcase-*
+          path: build/showcase
+          merge-multiple: true
+      - name: Page
+        env:
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: python3 tools/showcase/page.py --results build/showcase --site build/showcase-site
+      - id: report
+        name: Verdict
+        run: |
+          if python3 tools/showcase/report.py build/showcase-site/showcase.json --issue build/issue.md --summary build/summary.md
+          then echo "report=no" >> "$GITHUB_OUTPUT"; else echo "report=yes" >> "$GITHUB_OUTPUT"; fi
+          cat build/summary.md >> "$GITHUB_STEP_SUMMARY"
+          cp build/issue.md build/showcase-site/issue.md
+      - uses: actions/upload-artifact@v4
+        with:
+          name: showcase-site
+          path: build/showcase-site/
+          retention-days: 7
+      - uses: actions/upload-pages-artifact@v3
+        if: github.ref == 'refs/heads/main'
+        with:
+          path: build/showcase-site/
+
+  deploy:
+    needs: page
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - id: deploy
+        uses: actions/deploy-pages@v4
+
+  report:
+    needs: page
+    if: always() && github.ref == 'refs/heads/main' && needs.page.outputs.report == 'yes'
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: showcase-site
+          path: site
+      - name: Open or update the nightly-tests issue
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          gh label create nightly-tests --color B60205 2>/dev/null || true
+          n=$(gh issue list --label nightly-tests --state open --json number -q '.[0].number')
+          if [ -n "$n" ]; then gh issue comment "$n" --body-file site/issue.md
+          else gh issue create --title "Nightly tests failing" --label nightly-tests --body-file site/issue.md; fi

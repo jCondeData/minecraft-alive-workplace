@@ -243,7 +243,7 @@ public class MinerWork extends Behavior<Villager> {
 			return new ShaftJob(Verdict.EMPTY, pos); // something the tunnel pass left standing: no ladder there
 		}
 		float hardness = state.getDestroySpeed(level, pos);
-		if (hardness < 0 || MaterialRules.isProtected(state, hardness) || state.is(ModBlocks.BUILDERS_BENCH) || state.is(ModBlocks.MINERS_BENCH)
+		if (hardness < 0 || MaterialRules.isProtected(state, hardness) || state.is(ModBlocks.BUILDERS_BENCH) || state.is(ModBlocks.MINERS_BENCH) || state.is(ModBlocks.BLUEPRINT_TABLE)
 			|| pos.equals(site.bench()) || isPickaxe(pick) && state.requiresCorrectToolForDrops() && !pick.isCorrectToolForDrops(state)) {
 			return new ShaftJob(Verdict.LEAVE, pos);
 		}
@@ -286,7 +286,7 @@ public class MinerWork extends Behavior<Villager> {
 			return Verdict.DIG; // our own light: taken back as we go down
 		}
 		float hardness = state.getDestroySpeed(level, pos);
-		if (hardness < 0 || MaterialRules.isProtected(state, hardness) || state.is(ModBlocks.BUILDERS_BENCH) || state.is(ModBlocks.MINERS_BENCH)
+		if (hardness < 0 || MaterialRules.isProtected(state, hardness) || state.is(ModBlocks.BUILDERS_BENCH) || state.is(ModBlocks.MINERS_BENCH) || state.is(ModBlocks.BLUEPRINT_TABLE)
 			|| pos.equals(site.bench())) {
 			return Verdict.LEAVE;
 		}

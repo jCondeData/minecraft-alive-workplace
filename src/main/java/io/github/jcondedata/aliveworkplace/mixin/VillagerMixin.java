@@ -29,6 +29,7 @@ abstract class VillagerMixin {
 	@Inject(method = "customServerAiStep", at = @At("HEAD"), cancellable = true)
 	private void aliveworkplace$nether(CallbackInfo ci) {
 		io.github.jcondedata.aliveworkplace.guard.Mercenaries.tick((Villager) (Object) this);
+		io.github.jcondedata.aliveworkplace.work.Stations.retakeHive((Villager) (Object) this);
 		if (((Villager) (Object) this).isRemoved()) {
 			ci.cancel();
 			return;
@@ -36,6 +37,14 @@ abstract class VillagerMixin {
 		if (io.github.jcondedata.aliveworkplace.nether.Netherworkers.tick((Villager) (Object) this)) {
 			ci.cancel();
 		}
+	}
+
+	/** A villager placed by a structure template gets room to stand (B6). */
+	@Inject(method = "finalizeSpawn", at = @At("HEAD"))
+	private void aliveworkplace$structureSpot(net.minecraft.world.level.ServerLevelAccessor level, net.minecraft.world.DifficultyInstance difficulty,
+			net.minecraft.world.entity.MobSpawnType type, net.minecraft.world.entity.SpawnGroupData data,
+			org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable<net.minecraft.world.entity.SpawnGroupData> cir) {
+		io.github.jcondedata.aliveworkplace.world.StructureVillagers.settle((Villager) (Object) this, level, type);
 	}
 
 	/** Nobody trades with a netherworker who's away. */

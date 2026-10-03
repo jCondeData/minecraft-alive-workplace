@@ -159,9 +159,10 @@ def stone_house_3():
 
 # --- The settlers' camp: what a Settler's Wagon sets up ------------------------------------------------------------
 def settlers_camp():
-    """11 x 5 x 9: a settlers' camp in the wild — a covered wagon on four wheels with the supply chest in it, a Builder's
-    Bench beside it with a lamp, a campfire with log seats in front and two bedrolls. Placed at once by the Settler's
-    Wagon (not built): {@code camp/} blueprints aren't in the Blueprint Table."""
+    """11 x 5 x 9: a settlers' camp in the wild — a covered wagon on four wheels with the supply chest in it, a
+    Blueprint Table beside it with a lamp (the first settler becomes its builder), a campfire with log seats in front
+    and two bedrolls. Placed at once by the Settler's Wagon (not built): {@code camp/} blueprints aren't in the
+    Blueprint Table."""
     b = Build(11, 5, 9)
     # The wagon: x 2-8, z 3-5, its bed a block up on two axles and four wheels
     for x in range(2, 9):
@@ -191,8 +192,8 @@ def settlers_camp():
     b.set(5, 2, 4, "chest", facing="west", type="single", waterlogged=False)
     b.set(4, 2, 4, "hay_block", axis="x")
     b.set(6, 2, 4, "pumpkin")
-    # The Builder's Bench beside the wagon, a lamp on a post
-    b.set(9, 0, 3, "aliveworkplace:builders_bench", facing="west")
+    # The Blueprint Table beside the wagon (the builder's workstation), a lamp on a post
+    b.set(9, 0, 3, "aliveworkplace:blueprint_table", facing="west")
     lamp_post(b, 10, 0, 2, "spruce_fence", height=2)
     # The campfire in front, with logs to sit on
     b.set(5, 0, 0, "campfire", facing="north", lit=True, signal_fire=False, waterlogged=False)

@@ -2,8 +2,9 @@
 Workshops for the crafting jobs.
 
 Tinker's Workshop: I a brick workshop with its gable to the street (a hoist over the door), a forge lean-to under a
-catslide roof with a big brick chimney, the Tinker's Bench inside; II the hall run back to twice the length, with a
-storage loft, a cart track in through the back and a lightning rod on the ridge.
+catslide roof with a big brick chimney, a smithing table inside (the tinkerer's: hand the villager there redstone); II
+the hall run back to twice the length, with a storage loft, a cart track in through the back and a lightning rod on the
+ridge.
 """
 from kit import *
 
@@ -92,9 +93,10 @@ def tinkers_hoist(b):
     b.set(4, 5, 0, "barrel", facing="up", open=False)
 
 
-def tinkers_bench_corner(b):
-    """The Tinker's Bench with its chests, the anvil, and a redstone lamp kept lit on a block of redstone for show."""
-    b.set(2, 1, 4, "aliveworkplace:tinkers_bench", facing="east")
+def tinkers_corner(b):
+    """The tinkerer's smithing table with its chests, the anvil, and a redstone lamp kept lit on a block of redstone for
+    show."""
+    b.set(2, 1, 4, "smithing_table")
     b.set(2, 1, 5, "chest", facing="east", type="left", waterlogged=False)
     b.set(2, 1, 6, "chest", facing="east", type="right", waterlogged=False)
     b.set(2, 1, 3, "barrel", facing="east", open=False)
@@ -106,14 +108,14 @@ def tinkers_bench_corner(b):
 
 def tinkers_workshop():
     """12 x 11 x 10: a brick workshop gable-on to the street, a hoist with a barrel on its chain over the door, a forge
-    lean-to under a catslide roof with a big smoking brick chimney; inside the Tinker's Bench and its chests, an anvil and
-    a redstone lamp kept lit for show."""
+    lean-to under a catslide roof with a big smoking brick chimney; inside the tinkerer's smithing table and its chests,
+    an anvil and a redstone lamp kept lit for show."""
     b = Build(12, 11, 10)
     tinkers_hall(b, 8)
     tinkers_roof(b, 8)
     tinkers_forge(b)
     tinkers_hoist(b)
-    tinkers_bench_corner(b)
+    tinkers_corner(b)
     b.set(4, 1, 7, "anvil", facing="east")
     b.set(5, 1, 7, "barrel", facing="up", open=False)
     b.set(6, 1, 7, "barrel", facing="up", open=False)
@@ -140,7 +142,7 @@ def tinkers_workshop_2():
     tinkers_roof(b, depth)
     tinkers_forge(b)
     tinkers_hoist(b)
-    tinkers_bench_corner(b)
+    tinkers_corner(b)
     b.set(4, 1, 6, "anvil", facing="east")
     for x in range(2, 7):
         log(b, x, 4, 8, TINKER_FRAME, axis="x")

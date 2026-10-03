@@ -204,11 +204,13 @@ public final class VillageNeeds {
 		return food != null && food.effects().isEmpty() && !stack.is(NOT_A_MEAL);
 	}
 
-	/** The store: the chests by the village's Kitchen Stoves, then by its Storehouses. */
+	/** The store: the chests by the village's kitchens (smokers, old Kitchen Stoves), then by its Storehouses. */
 	static List<BlockPos> store(ServerLevel level, BlockPos hall) {
 		Set<BlockPos> chests = new LinkedHashSet<>();
 		PoiManager poi = level.getPoiManager();
-		poi.findAll(h -> h.is(ModVillagers.KITCHEN_STOVE_POI), p -> true, hall, VillageHalls.RADIUS, PoiManager.Occupancy.ANY)
+		// Kitchens: smokers, where chefs cook since 21.1a (and butchers smoke), and old Kitchen Stoves.
+		poi.findAll(h -> h.is(ModVillagers.KITCHEN_STOVE_POI) || h.is(net.minecraft.world.entity.ai.village.poi.PoiTypes.BUTCHER), p -> true, hall,
+			VillageHalls.RADIUS, PoiManager.Occupancy.ANY)
 			.forEach(stove -> chests.addAll(SupplyContainers.find(level, stove.immutable(), null)));
 		poi.findAll(h -> h.is(ModVillagers.STOREHOUSE_POI), p -> true, hall, VillageHalls.RADIUS, PoiManager.Occupancy.ANY)
 			.forEach(storehouse -> chests.addAll(SupplyContainers.find(level, storehouse.immutable(), null)));

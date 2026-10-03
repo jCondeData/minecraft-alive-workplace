@@ -23,18 +23,18 @@ for) in the `mods` folder, and take the old Alive Workplace jar out when you upd
 **No village nearby?** Craft a **Settler's Wagon** (three white wool over two hay bales and a block of emerald, over a
 chest between planks) and right-click open ground: two settlers make camp there — a covered wagon with a chest of
 supplies (logs, planks, cobblestone, bread, torches, the Starter Cottage and Storehouse blueprints and a **Village
-Hall**), a Builder's Bench, a campfire and two bedrolls. The first settler is your builder from the start; the other
+Hall**), a Blueprint Table, a campfire and two bedrolls. The first settler is your builder from the start; the other
 takes whatever job you give them. Put the Village Hall down and you have a village.
 
 ![A settlers' camp at dusk: the covered wagon, the campfire, the builder](docs/media/camp.png)
 
 1. **Hire a builder.** Look for a builder's workshop in a village (newly explored villages often have one), or craft
-   a **Builder's Bench** and place it near a villager without a job; they take it like any job block.
+   a **Blueprint Table** and place it near a villager without a job; they take it like any job block.
 
    ```
-   Brick   Brick          Brick
-   Planks  Crafting Table Planks
-   Planks  Planks         Planks
+           Blue Dye
+   Planks  Cartography Table  Planks
+   Planks                     Planks
    ```
 2. **Get a blueprint.** Builders sell the starter blueprints (Starter Cottage first; more as they level up).
    Operators can also use `/workplace blueprint <id>`, including anything saved with a Structure Block.
@@ -47,10 +47,10 @@ takes whatever job you give them. Put the Village Hall down and you have a villa
    hillside, right-click the air with its blueprint to switch that off for this build (the tooltip says so).
    Water and lava in a blueprint are poured from buckets in the chests (the empty buckets go back).
    Item frames, paintings and armor stands go up last, empty, each paid for with its item from the chests.
-4. **Stock the chests.** Put the materials in any chests or barrels within 8 blocks of the builder's bench
-   (hold Shift over the blueprint to see the list). Once the blueprint is placed, its tooltip counts what the chests
-   by the nearest bench are still short of — blocks already standing in place don't count — so you know when you're
-   ready.
+4. **Stock the chests.** Put the materials in any chests or barrels within 8 blocks of the builder's Blueprint Table
+   (hold Shift over the blueprint to see the list). Once the blueprint is placed, its tooltip counts what the chests by
+   the nearest Blueprint Table are still short of — blocks already standing in place don't count — so you know when
+   you're ready.
 5. **Hand it over.** Right-click the builder with the blueprint. The first player to do that hires the builder;
    after that it takes orders from them and the friends they add (`/workplace friend add <player>`).
    Busy builders take up to 5 more blueprints and build them in order. They start work in the morning, sleep at night,
@@ -65,17 +65,18 @@ When they finish, the blueprint goes back into the supply chest so you can build
 down and put the blocks back in the chests.
 
 **Repairs.** Builders look after what they've built: now and then an idle builder walks round the buildings they (or
-whoever they work for) finished near their bench, and when blocks are missing — a creeper's hole, a raid, a broken
-window — they put them back from their chests. Only holes are filled: anything you've put in or changed since stays as
-it is. `builderRepairs` in the config turns it off.
+whoever they work for) finished near their Blueprint Table, and when blocks are missing — a creeper's hole, a raid, a
+broken window — they put them back from their chests. Only holes are filled: anything you've put in or changed since
+stays as it is. `builderRepairs` in the config turns it off.
 
-**More builders, faster builds.** A builder with nothing to do helps with builds near their bench (up to three helpers
-per build), sharing the chests and passing each other materials.
+**More builders, faster builds.** A builder with nothing to do helps with builds near their Blueprint Table (up to three
+helpers per build), sharing the chests and passing each other materials.
 
 **Builders level up as they work**, like villagers you trade with: every level makes them faster (a Master builds
 2.5× as fast as a Novice) and unlocks new blueprints to buy — Market Stall, Lookout Tower, then the
-**Healing Center** (with a Nurse Station, and a Cobblemon Healing Machine on the counter when Cobblemon is installed)
-and the **Supply Shop** (with a Shop Counter) — build them and a nurse and a shopkeeper move in.
+**Healing Center** (with a brewing stand behind the counter, and a Cobblemon Healing Machine on the counter when
+Cobblemon is installed) and the **Supply Shop** (with a Shop Counter) — build them and a shopkeeper moves in by
+themselves; hand the villager at the brewing stand a honey bottle and they become the nurse.
 
 ![Every starter build: the timber cottage, the market stall, the stone watchtower, the Healing Center, the Supply Shop, the storehouse, the berry garden and the research lab](docs/media/starter-builds.png)
 ![Their upgrades: the cottage with a jettied upper storey and a kitchen wing, the watchtower's spire and guardhouse, the ward and garden behind the Healing Center, the Supply Shop's house and post office, the stone warehouse behind the storehouse](docs/media/starter-upgrades.png)
@@ -84,20 +85,23 @@ and the **Supply Shop** (with a Shop Counter) — build them and a nurse and a s
 boxes, roofs that overhang on every side, chimneys that smoke, lanterns and benches (how they are drawn:
 `tools/blueprints/STYLE.md`).
 
-**Buildings for the new jobs** (in the Blueprint Table, each with an upgrade): the **Schoolhouse** (a Teacher's Desk
-before a blackboard; II adds a fenced schoolyard), the **Library** (a Scholar's Desk among the shelves; II a study tower
-with a second desk; III an enchanting room behind the hall: an Enchanting Table ringed by fifteen bookshelves and a
-lectern, so a librarian moves in), the **Ranch** (a barn — a hayloft gable over two stable aisles — with a Feed Trough, and a paddock; II doubles
-the paddock and adds a stable wing and a brick silo), the **Apiary Garden**
-(hives on posts in a meadow and a honey shed with the Apiary; II four more hives), the **Flower Shop** (a Flower Stand
-behind display windows; II a greenhouse) and the **Graveyard** (a walled churchyard with a mortuary and an Undertaker's
-Table; II a lych-gate).
+**Buildings for the new jobs** (in the Blueprint Table, each with an upgrade): the **Schoolhouse** (a lectern before a
+blackboard; II adds a fenced schoolyard), the **Library** (a lectern among the shelves; II a study tower with a second
+lectern; III an enchanting room behind the hall: an Enchanting Table ringed by fifteen bookshelves and a third
+lectern, so a librarian moves in), the **Ranch** (a barn — a hayloft gable over two stable aisles — with a smoker, and a
+paddock; II doubles the paddock and adds a stable wing and a brick silo), the **Apiary Garden** (hives on posts in a
+meadow and a honey shed with one more; II four more hives), the **Flower Shop** (a composter behind display windows;
+II a greenhouse) and the **Graveyard** (a walled churchyard with a mortuary and a brewing stand; II a lych-gate). Each
+job's block is a vanilla one, so a villager there takes its vanilla job by themselves (a beehive takes nobody): hand
+them the job's item to give them ours — a book at the school's lectern (a teacher), paper at the library's (a
+scholar), a saddle at the ranch's smoker (a rancher), a glass bottle or shears by a hive (a beekeeper), a flower at the
+shop's composter (a florist), a golden apple at the mortuary's brewing stand (an undertaker).
 
 ![The Schoolhouse II, Library III, Ranch II, Apiary Garden II, Flower Shop II and Graveyard II](docs/media/job-buildings.png)
 
-**Paths.** When a builder finishes a building they lay a **dirt path** from its door to the heart of the village —
-the meeting bell or the Village Hall within 48 blocks (their bench if there's neither) — round water, trees and other
-buildings, turning only grass and dirt into path. Turn it off with `builderPaths` in the config.
+**Paths.** When a builder finishes a building they lay a **dirt path** from its door to the heart of the village — the
+meeting bell or the Village Hall within 48 blocks (their Blueprint Table if there's neither) — round water, trees and
+other buildings, turning only grass and dirt into path. Turn it off with `builderPaths` in the config.
 
 **Styles.** Any blueprint can be built in another style: **sneak-right-click the air** with it and pick **Stonework**
 (stone infill, slate roofs), **Sandstone** (sandstone and jungle wood, for the desert), **Dark Oak** (dark oak,
@@ -141,15 +145,17 @@ remembers it. `marketDays` in the config turns it off.
 
 **Upgrades.** A blueprint named like another with `_2` on the end (`_3` after that…) is its upgrade. Every starter
 build has one: the **Starter Cottage II** adds a timber upper storey jettied out over the front and back, the **Market
-Stall II** a second stall with a Shop Counter, the **Lookout Tower II** a Guard Post, a bell and a steep pointed spire
+Stall II** a second stall with a Shop Counter, the **Lookout Tower II** a grindstone, a bell and a steep pointed spire
 over the platform, the **Healing Center II** a ward with four beds under a lower roof behind the hall, the **Supply
 Shop II** the shopkeeper's house behind the shop (a bed, a chest, more stock, a chimney), the **Storehouse II** an open shed beside the granary, the **Berry Farm II** a pergola of glow berries and the **Research Lab
 II** a museum hall with a skeleton under a glass ridge. Most go one step further, each third tier bringing a new
 villager or room: the **Starter Cottage III** a kitchen wing with its own door (the builder clears the ground where it
 goes first), the **Market Stall III** a storeroom behind the stalls, the **Lookout Tower III** a guardhouse with a
-second Guard Post and two bunks, the **Healing Center III** a walled berry garden with a Fruit Basket (an orchard
-keeper), the **Supply Shop III** a post office with a Postal Desk (a postman) and the **Storehouse III** a stone
-warehouse range across the back with sixteen more chests. Right-click a finished building with its upgrade
+second grindstone and two bunks, the **Healing Center III** a walled berry garden with a composter, the **Supply Shop
+III** a post office with a Mailbox (a postman moves in) and the **Storehouse III** a stone warehouse range across the
+back with sixteen more chests. The grindstones and the composter take a villager with their vanilla job (a
+weaponsmith, a farmer): hand them a sword and they become a guard, sweet berries and they become the orchard keeper.
+Right-click a finished building with its upgrade
 and it lines up exactly over it; the builder takes off what changes and builds only what's new, keeping everything
 else. Once a builder finishes a building that has an upgrade, **they sell its blueprint** (and tell you). The
 upgrades are in the Blueprint Table too. Your own blueprints work the same way (`my_house` → `my_house_2`).
@@ -161,8 +167,8 @@ Craft a **Village Hall** (gold, a book and gold over planks with an emerald in t
 of your village — by the bell is a good spot. Right-click it for the village at a glance, everyone within 64 blocks:
 
 - **the numbers**: how many villagers (with a job, without one, children), beds and how many are free, the food in the
-  store (in the chests by the Storehouses and Kitchen Stoves), guards, everything the workers are waiting for and the
-  buildings going up, with how far along they are;
+  store (in the chests by the Storehouses and the kitchens: smokers, and old Kitchen Stoves), guards, everything the
+  workers are waiting for and the buildings going up, with how far along they are;
 - **everyone who lives there**, each worker shown as their workstation (stacked as high as their level): their job,
   level and XP, what they're doing right now ("Market Stall · 45%", "needs bone meal to grow flowers"), what they're
   waiting for and where they are ("11 blocks north-west"). **Click one to make them glow** for ten seconds, so you
@@ -200,13 +206,13 @@ can use; clear out 8 monsters round the village; or, with Cobblemon, beat one of
 to the worker who asked, or the store). Monsters and battles count wherever they happen in the village. Whoever
 finishes a quest gets its reward in emeralds (CobbleDollars with CobbleDollars installed).
 
-**A village with a hall has needs.** Every grown villager eats once a day from the store — the chests by the Kitchen
-Stoves first (the chef's cooking), then by the Storehouses; anything plain to eat, never golden food, food that makes
-you ill, honey or Pokémon berries. Villagers like a bed of their own, guards (one for every ten villagers) and light
-by their beds, and decorations round the village (see *Decorations* above). The hall's **Wellbeing** shows how it's going, and it sets the pace of all the work in the village:
-**up to 25% faster** when everyone's fed, housed and safe, the usual pace at 50%, and **up to 20% slower** when
-they're hungry and sleep rough. The villagers the hall lists say when they're hungry or have no bed. Without a hall,
-work goes at the usual pace.
+**A village with a hall has needs.** Every grown villager eats once a day from the store — the chests by the smokers
+first (the chef's cooking), then by the Storehouses; anything plain to eat, never golden food, food that makes you ill,
+honey or Pokémon berries. Villagers like a bed of their own, guards (one for every ten villagers) and light by their
+beds, and decorations round the village (see *Decorations* above). The hall's **Wellbeing** shows how it's going, and it
+sets the pace of all the work in the village: **up to 25% faster** when everyone's fed, housed and safe, the usual pace
+at 50%, and **up to 20% slower** when they're hungry and sleep rough. The villagers the hall lists say when they're
+hungry or have no bed. Without a hall, work goes at the usual pace.
 
 **People.** In a village with a hall every villager gets a **name** of their own (look at them, or see the hall's
 list; a Name Tag's name stays) and every villager has a **trait** or two, which the hall lists: **Diligent** (works 10%
@@ -218,8 +224,8 @@ or **Frugal** (eats every other day). Traits are part of who a villager is and n
 **Sickness.** Now and then a villager in a village with a hall falls ill — more often when they're hungry or have no
 bed. The ill sneeze, walk slowly and work at half pace; they get well by themselves after three days, or at once when a
 **Nurse** gives them a **honey bottle**, a **bucket of milk** or a **potion of healing or regeneration** from the chest
-by her station (she looks for the ill within 32 blocks, and asks on the requests board when she has nothing to give).
-The hall's list says who's ill. `villagerSickness` in the config turns it off.
+by her brewing stand (she looks for the ill within 32 blocks, and asks on the requests board when she has nothing to
+give). The hall's list says who's ill. `villagerSickness` in the config turns it off.
 
 ![A builder on the hall's list: Dara, a Novice Builder, Clever and Nimble](docs/media/people.png)
 
@@ -251,34 +257,33 @@ says so, and a grown child without a job **takes up a parent's trade** if the vi
 at least 50%, the two villagers nearest the free bed have a baby (the family eats 8 meals for it), up to 40 villagers
 (`villageGrowthCap`). The hall's villager count says what the village still needs to grow. So build houses: the
 **Terrace** (two narrow homes, four beds; the **Terrace II** adds a third home) and the **Inn** (a tavern below, three
-guest rooms with six beds above; the **Inn II** adds a stable with a Feed Trough, and a rancher moves in) are in the
+guest rooms with six beds above; the **Inn II** adds a stable with a smoker: hand the villager there a saddle and they
+become its rancher) are in the
 Blueprint Table. The **Stone House** grows in three tiers: a stone cottage with a bed downstairs and one in the attic,
 then (**II**) a timber-framed upper storey with two more beds, then (**III**) a stone wing at the back with two more.
 
 ![The Terrace II and the Inn II](docs/media/houses.png)
 ![The Stone House I, II and III](docs/media/stone-house.png)
 
-**School.** Craft a **Teacher's Desk** (a book over three planks, on two legs) and a villager takes it and becomes a
-**Teacher**. In the day they call the children within 32 blocks over to the desk and give them lessons; a child who's
-had a couple of minutes of lessons has been to school, and when they grow up and take a job they **start as an
-Apprentice** (with the Novice and Apprentice trades) instead of a Novice. The hall's list says who went to school.
-Pastured Psychic and Normal Pokémon make the lessons go quicker.
+**School.** Stand a villager by a **lectern** and sneak-right-click them with a **book**: they become a **Teacher**. In
+the day they call the children within 32 blocks over to the lectern and give them lessons; a child who's had a couple of
+minutes of lessons has been to school, and when they grow up and take a job they **start as an Apprentice** (with the
+Novice and Apprentice trades) instead of a Novice. The hall's list says who went to school. Pastured Psychic and Normal
+Pokémon make the lessons go quicker.
 
-**Innkeepers and travellers.** Craft an **Inn Counter** (bread, a lantern and bread over planks) — or build the
-**Inn**, which has one at the end of its bar — and a villager takes it and becomes an **Innkeeper**. Each morning,
-while there's a free bed within 32 blocks and fewer than two guests, a **traveller** comes to stay (you're told in
-chat). Travellers already know a trade: most are Apprentices or Journeymen, now and then an Expert (more often at a
-better innkeeper's inn). Right-click one to **hire them**: 8 emeralds for an Apprentice, 16 for a Journeyman, 32 for
-an Expert (CobbleDollars at the usual rate with CobbleDollars installed). They join your village, take the first free
-workstation and start at their level, with the trades of every level on the way. Travellers nobody hires move on after
-two days. Until they're hired they won't take a job.
+**Innkeepers and travellers.** Stand a villager by a **Shop Counter** (the **Inn** has one at the end of its bar) and
+sneak-right-click them with a **bed**: they become an **Innkeeper**. Each morning, while there's a free bed within 32 blocks and fewer than two guests, a **traveller** comes
+to stay (you're told in chat). Travellers already know a trade: most are Apprentices or Journeymen, now and then an
+Expert (more often at a better innkeeper's inn). Right-click one to **hire them**: 8 emeralds for an Apprentice, 16 for
+a Journeyman, 32 for an Expert (CobbleDollars at the usual rate with CobbleDollars installed). They join your village,
+take the first free workstation and start at their level, with the trades of every level on the way. Travellers nobody
+hires move on after two days. Until they're hired they won't take a job.
 
-**Research.** Craft a **Scholar's Desk** (a feather between two books, over a bookshelf between planks, on two legs)
-in a village with a Village Hall and a villager becomes a **Scholar**. Sneak-right-click them with an empty hand for
-the village's **research tree** and click a topic to research it next; the scholar takes the cost from the chests by
-the desk (paper, books and emeralds — on the requests board if they're missing) and works it out at the desk, a couple
-of minutes a level (quicker with pastured Psychic Pokémon, and several scholars share the work). Every level is a
-bonus for the whole village:
+**Research.** In a village with a Village Hall, stand a villager by a **lectern** and sneak-right-click them with
+**paper**: they become a **Scholar**. Sneak-right-click them with an empty hand for the village's **research tree** and
+click a topic to research it next; the scholar takes the cost from the chests by the lectern (paper, books and emeralds
+— on the requests board if they're missing) and works it out at the lectern, a couple of minutes a level (quicker with
+pastured Psychic Pokémon, and several scholars share the work). Every level is a bonus for the whole village:
 
 | Topic | Levels | Bonus a level | First needs |
 | --- | --- | --- | --- |
@@ -298,40 +303,53 @@ bonus for the whole village:
 | Warding | 1 | explosions (creepers, TNT, fireballs) no longer break blocks in the village | Fortification I |
 
 **Graves and Undertakers.** A grown villager with a job (or a name) who dies leaves a **grave** where they fell —
-right-click it to read who lies there. Craft an **Undertaker's Table** (two candles and a lily of the valley over dark
-oak planks) and a villager becomes an **Undertaker**: with a **golden apple**, a **healing potion** or a **totem of
-undying** in the chest by the table, they go to the nearest grave within 32 blocks and bring the villager back — job,
-level, trades and name as they were. Without one they ask for a golden apple on the Storehouse's requests board. A
-villager a zombie turns into a zombie villager leaves no grave (cure them instead). The Village Hall counts the graves.
+right-click it to read who lies there. Stand a villager by a **brewing stand** and sneak-right-click them with a
+**golden apple** (or an enchanted golden apple or a totem): they become an **Undertaker**. With a **golden apple**, a
+**healing potion** or a **totem of undying** in the chest by the brewing stand, they go to the nearest grave within 32
+blocks and bring the villager back — job, level, trades and name as they were. Without one they ask for a golden apple
+on the Storehouse's requests board. A villager a zombie turns into a zombie villager leaves no grave (cure them
+instead). The Village Hall counts the graves.
 
 ## All the jobs at a glance
-Place the workstation near a villager without a job and they take it. Chests (or barrels) within 8 blocks of it are
-where they take tools and supplies from and where their work goes.
+**Vanilla jobs work as in vanilla**: place their block near a villager without a job and they take it. Most of our jobs
+**share a vanilla block** with a vanilla job, and a jobless villager by it still takes the vanilla job. For one of ours,
+stand the villager by the block (within about 4 blocks) and **sneak-right-click them holding the job's item** (shown
+after the plus sign in the table). A villager already working there switches the same way, and the block's own job comes
+back with its item (wheat for a Farmer, coal for an Armorer, flint for a Fletcher, an emerald for a Shopkeeper...).
+Where one item fits two blocks (paper, a book, a glass bottle, an iron ingot, a Poké Ball), the block they work at, or
+else the nearest, decides. Picking a job doesn't hire the villager: hiring is as before, the vanilla job's item on a
+villager who already has that job. A crafting table, a beehive, a jukebox or a Mailbox never takes a jobless villager by
+itself; every block listed without an item does. Hold **Shift** over a workstation in your inventory to see its jobs and
+their items.
+
+Chests (or barrels) within 8 blocks of the workstation are where they take tools and supplies from and where their work
+goes. The old job blocks (the Builder's Bench, the Fruit Basket...) can't be crafted any more, but the ones already
+placed keep working, so old worlds are fine.
 
 | Job | Workstation | In the chests nearby | Then |
 | --- | --- | --- | --- |
-| Builder | Builder's Bench | the building materials | hand them a placed blueprint |
-| Miner | Miner's Bench | pickaxes, torches (ladders for a shaft) | hand them a marked Quarry Marker |
-| Lumberjack | Chopping Block | axes (saplings, bone meal) | nothing — or a Field Marker for a tree farm |
-| Orchard Keeper | Fruit Basket | berries and seeds to plant, a hoe | nothing — or a Field Marker for an orchard |
+| Builder | Blueprint Table | the building materials | hand them a placed blueprint |
+| Miner | Blast Furnace + a pickaxe | pickaxes, torches (ladders for a shaft) | hand them a marked Quarry Marker |
+| Lumberjack | Fletching Table + an axe | axes (saplings, bone meal) | nothing — or a Field Marker for a tree farm |
+| Orchard Keeper | Composter + sweet berries, glow berries or an apple | berries and seeds to plant, a hoe | nothing — or a Field Marker for an orchard |
 | Farmer | Composter (vanilla) | seeds, a hoe, bone meal | a Field Marker (blank: their own farm) |
-| Beekeeper | Apiary | glass bottles or shears, flowers | nothing (beehives within 16 blocks) |
-| Florist | Flower Stand | bone meal (flowers to pot) | nothing (grass round the stand) |
-| Scholar | Scholar's Desk | paper, books, emeralds | sneak-right-click: pick the research |
-| Sifter | Sieve | gravel, sand, dirt or soul sand | nothing |
-| Tinkerer | Tinker's Bench | coal (iron ingots to mend golems) | nothing (uses the builders' ore) |
-| Composter | Compost Bin | scraps: seeds, saplings, leaves, crop waste, rotten flesh | nothing |
-| Netherworker | Nether Brazier | food (a pickaxe, an axe, a sword, a chestplate, fire resistance) | nothing (a Nether portal within 32 blocks) |
-| Undertaker | Undertaker's Table | golden apples, healing potions or totems | nothing (graves within 32 blocks) |
-| Innkeeper | Inn Counter | — | nothing (hire the travellers who come to stay) |
-| Teacher | Teacher's Desk | — | nothing (children within 32 blocks) |
-| Rancher | Feed Trough | golden carrots, hay, saddles, horse armor (berries) | nothing (horses within 16 blocks) |
+| Beekeeper | Beehive or Bee Nest + a glass bottle or shears | glass bottles or shears, flowers | nothing (beehives within 16 blocks) |
+| Florist | Composter + a small flower | bone meal (flowers to pot) | nothing (grass round the composter) |
+| Scholar | Lectern + paper | paper, books, emeralds | sneak-right-click: pick the research |
+| Sifter | Cauldron + gravel, sand, red sand or soul sand | gravel, sand, dirt or soul sand | nothing |
+| Tinkerer | Smithing Table + redstone | coal (iron ingots to mend golems) | nothing (uses the builders' ore) |
+| Composter | Composter + bone meal | scraps: seeds, saplings, leaves, crop waste, rotten flesh | nothing |
+| Netherworker | Cartography Table + netherrack | food (a pickaxe, an axe, a sword, a chestplate, fire resistance) | nothing (a Nether portal within 32 blocks) |
+| Undertaker | Brewing Stand + a golden apple, an enchanted golden apple or a totem | golden apples, healing potions or totems | nothing (graves within 32 blocks) |
+| Innkeeper | Shop Counter + a bed | — | nothing (hire the travellers who come to stay) |
+| Teacher | Lectern + a book | — | nothing (children within 32 blocks) |
+| Rancher | Smoker + a saddle or a golden carrot | golden carrots, hay, saddles, horse armor (berries) | nothing (horses within 16 blocks) |
 | Fisherman | Barrel (vanilla) | spare rods (coal for a smoker) | hand them a fishing rod |
 | Porter | Storehouse | empty chests: the village's store | nothing |
-| Carpenter | Carpenter's Bench | — (uses the builders' wood) | nothing |
+| Carpenter | Crafting Table + planks | — (uses the builders' wood) | nothing |
 | Mason | Stonecutter (vanilla) | — (uses the builders' stone) | nothing |
 | Leatherworker (dyer) | Cauldron (vanilla) | — (uses the builders' wool, flowers, powder...) | nothing |
-| Chef | Kitchen Stove | the makings: wheat, raw meat and fish, potatoes... | nothing |
+| Chef | Smoker + raw beef, pork, chicken, mutton, rabbit, cod, salmon or a potato | the makings: wheat, raw meat and fish, potatoes... | nothing |
 | Armorer (smelter) | Blast Furnace (vanilla) | ore and coal (or nothing: they fetch it) | nothing — or sneak-right-click with coal to hire them |
 | Toolsmith | Smithing Table (vanilla) | diamonds, if you want diamond tools | nothing — or sneak-right-click with an iron ingot to hire them |
 | Weaponsmith | Grindstone (vanilla) | worn gear to mend (and what mends it: ingots, planks...) | nothing — or sneak-right-click with an iron ingot to hire them |
@@ -339,23 +357,24 @@ where they take tools and supplies from and where their work goes.
 | Shepherd | Loom (vanilla) | shears, wheat | nothing — or sneak-right-click with shears to hire them |
 | Butcher (herder) | Smoker (vanilla) | empty buckets, wheat/carrots/seeds (with Cobblemon: bottles, a brush, bone meal) | nothing — or sneak-right-click with a lead to hire them |
 | Cleric (alchemist) | Brewing Stand (vanilla) | nether wart, glistering melon, ghast tears, blaze powder, bottles | nothing — or sneak-right-click with a glass bottle to hire them |
-| Librarian (scribe) | Lectern (vanilla) + an Enchanting Table | lapis | nothing — or sneak-right-click with lapis to hire them |
+| Librarian (scribe) | Lectern (vanilla), and an Enchanting Table | lapis | nothing — or sneak-right-click with lapis to hire them |
 | Cartographer (explorer) | Cartography Table (vanilla) | food (bread, cooked meat...), a sword or axe, empty maps | nothing — or sneak-right-click with a compass to hire them |
-| Postman | Postal Desk | — | Mailboxes for mail; Delivery Notes for hauling |
-| Guard | Guard Post | weapons, armor, a bow or crossbow and arrows | nothing |
-| Nurse | Nurse Station | — | right-click them to be healed |
+| Postman | Mailbox + paper | — | Mailboxes for mail; Delivery Notes for hauling |
+| Guard | Grindstone + a sword | weapons, armor, a bow or crossbow and arrows | nothing |
+| Nurse | Brewing Stand + a honey bottle | — | right-click them to be healed |
 | Shopkeeper | Shop Counter | the goods to sell | set the prices in the counter |
 | Ferryman | Travel Post | — | buy a Travel Ticket from them |
-| Bard | Music Stand | music discs | nothing |
+| Bard | Jukebox + a music disc | music discs | nothing |
 | Trainer (Cobblemon) | Training Post | — | right-click them to battle |
-| Trainer Leader (Cobblemon) | Leader's Podium | — | right-click them to battle, once a day |
-| Move Tutor (Cobblemon) | Tutor's Desk | — | right-click them for lessons |
-| Ball Smith (Cobblemon) | Ball Workbench | apricorns and copper, iron, gold or diamonds | sneak-right-click them to choose the balls |
-| Pokémon Trader (Cobblemon) | Trade Board | — | right-click them to trade |
-| Fossil Scientist (Cobblemon) | Fossil Lab | — | hand them a fossil |
+| Trainer Leader (Cobblemon) | Training Post + a block of gold | — | right-click them to battle, once a day |
+| Move Tutor (Cobblemon) | Training Post + a book | — | right-click them for lessons |
+| Ball Smith (Cobblemon) | Smithing Table + an apricorn | apricorns and copper, iron, gold or diamonds | sneak-right-click them to choose the balls |
+| Pokémon Trader (Cobblemon) | Shop Counter + a Poké Ball | — | right-click them to trade |
+| Fossil Scientist (Cobblemon) | Cobblemon's Fossil Analyzer + a fossil | — | hand them a fossil |
 
 Sneak-right-click a builder, miner, lumberjack, orchard keeper, farmer, fisherman or postman with an empty hand to see
-what they're doing and how to stop them. The recipes are in each job's section below (and in the recipe book).
+what they're doing and how to stop them. Each job's section below says how to start it; the recipes for our own blocks
+are in the recipe book.
 
 **Villages work together.** Workers whose workstations are within 48 blocks of each other share their chests: a builder
 short of stone takes it from the miner's chests, a lumberjack with a broken axe takes a spare from the builder's. What a
@@ -368,13 +387,13 @@ storehouse*) gathers what everyone makes in one place.
 ## Miners
 ![A miner digging out a quarry](docs/media/miner.gif)
 
-Craft a **Miner's Bench** (cobblestone on top, a stone pickaxe in the middle, planks around) and place it near a
-villager without a job. Then:
+Place a **blast furnace**, stand a villager by it and sneak-right-click them with a **pickaxe**: they become a
+**Miner**. Then:
 1. Craft a **Quarry Marker** (stick + red dye + paper). Right-click one corner block, then the opposite corner
    (up to 32 × 32). Sneak-right-click the air to choose the depth (4, 8, 16, 32 or 64) or a **strip mine** (here or
    down a shaft); a red
    outline shows the area.
-2. Put **pickaxes** (and some torches) in a chest within 8 blocks of the Miner's Bench.
+2. Put **pickaxes** (and some torches) in a chest within 8 blocks of the blast furnace.
 3. Give the marker to the miner. They dig the area out from the top down, bring everything back to the chests, and
    leave anything touching lava or water standing so the pit stays dry. When the last pickaxe wears out they wait
    for another.
@@ -382,61 +401,64 @@ villager without a job. Then:
 ![Steps left in the wall of a finished quarry](docs/media/quarry-stairs.png)
 
 **Stairs out of the pit.** In a pit at least 3 × 3 and 3 deep, the miner leaves one block per layer standing as a step,
-each a block along the wall from the one above, so steps spiral down the walls from the corner nearest the bench.
-Sand and gravel steps are swapped for cobblestone, and gaps (caves) are filled in with stone from the chests.
+each a block along the wall from the one above, so steps spiral down the walls from the corner nearest the blast
+furnace. Sand and gravel steps are swapped for cobblestone, and gaps (caves) are filled in with stone from the chests.
 
 **Strip mines.** The last choice on the marker digs tunnels instead of a pit: 2 high (the marked blocks and the ones
-below them, so mark the corners at head height), along the longer side of the area, with 2 blocks of rock between
-them and a tunnel across the end nearest the bench. The rock stays, but any ore in it is dug out: about a third of
+below them, so mark the corners at head height), along the longer side of the area, with 2 blocks of rock between them
+and a tunnel across the end nearest the blast furnace. The rock stays, but any ore in it is dug out: about a third of
 the digging for all the ore. Strip mines can be up to 64 blocks long (and 32 wide).
 
 **Strip mines down a shaft.** After the strip mine, the marker offers strip mines at set heights: **Y=16** (iron, and
-ancient debris in the Nether), **Y=-16** (redstone, gold and lapis) and **Y=-53** (diamonds); for any other height,
-hold the marker and type `/workplace strip <height>`. Mark the corners on the ground: the miner digs a 1-wide ladder shaft straight down from the corner nearest the bench, then the tunnels at that
-height, and puts ladders all the way up — about one ladder per block of depth, from the chests (they wait for more if
-they run out). On the way down they seal off any water or lava beside the shaft with stone and put a block under
-themselves before digging into a cave, so they never fall, and every eight blocks they set a torch in a niche in the
-wall across from the ladders (if there are torches in the chests).
+ancient debris in the Nether), **Y=-16** (redstone, gold and lapis) and **Y=-53** (diamonds); for any other height, hold
+the marker and type `/workplace strip <height>`. Mark the corners on the ground: the miner digs a 1-wide ladder shaft
+straight down from the corner nearest the blast furnace, then the tunnels at that height, and puts ladders all the way
+up — about one ladder per block of depth, from the chests (they wait for more if they run out). On the way down they
+seal off any water or lava beside the shaft with stone and put a block under themselves before digging into a cave, so
+they never fall, and every eight blocks they set a torch in a niche in the wall across from the ladders (if there are
+torches in the chests).
 
-**Smelting.** Put a furnace or blast furnace within 8 blocks of the Miner's Bench and some coal or charcoal in the
-chests. Every time the miner drops off a haul they take the finished ingots out into the chests, load the raw ores
-(and any ore blocks) in, and top up the coal. Anything you put in a furnace yourself is left alone.
+**Smelting.** Put some coal or charcoal in the chests: the miner's own blast furnace smelts their ore, and so does any
+other furnace or blast furnace within 8 blocks of it. Every time the miner drops off a haul they take the finished
+ingots out into the chests, load the raw ores (and any ore blocks) in, and top up the coal. Anything you put in a
+furnace yourself is left alone.
 
 ## Lumberjacks
 ![A lumberjack cutting and replanting trees](docs/media/lumberjack.gif)
 
-Craft a **Chopping Block** (a stone axe on top of any log) and place it near a villager without a job, near some
-trees. Put **axes** in a chest within 8 blocks of the Chopping Block. The lumberjack cuts the trees within 16 blocks
-one at a time (leaves first, then the trunk), plants a sapling of the same wood where each tree stood, and stores
-the logs, sticks and apples in the chests. They only cut real trees: logs with placed leaves (houses, posts),
-blueprint builds and quarries are left alone. When the last axe breaks they wait for a new one. Dark oaks (and other
-2 × 2 trunks) get four saplings back in a square, and huge crimson and warped fungi standing on nylium count as
-trees too (a fungus is planted back). **Mangroves** are felled down to their roots (the roots stay) and a propagule
-goes in close by, in the water over the mud; **azalea trees** get an azalea bush back, and **cherry trees** a cherry
-sapling.
+Place a **fletching table** near some trees, stand a villager by it and sneak-right-click them with an **axe**: they
+become a **Lumberjack**. Put **axes** in a chest within 8 blocks of the fletching table. The lumberjack cuts the trees
+within 16 blocks one at a time (leaves first, then the trunk), plants a sapling of the same wood where each tree stood,
+and stores the logs, sticks and apples in the chests. They only cut real trees: logs with placed leaves (houses, posts),
+blueprint builds and quarries are left alone. When the last axe breaks they wait for a new one. Dark oaks (and other 2 ×
+2 trunks) get four saplings back in a square, and huge crimson and warped fungi standing on nylium count as trees too (a
+fungus is planted back). **Mangroves** are felled down to their roots (the roots stay) and a propagule goes in close by,
+in the water over the mud; **azalea trees** get an azalea bush back, and **cherry trees** a cherry sapling.
 
 **Stripped logs and charcoal.** When a builder in the village is waiting for stripped logs (or stripped wood), the
 lumberjack strips that many of the logs in their chests, and the builder comes to get them. Put a furnace within 8
-blocks of the Chopping Block (with a little coal to start it) and they burn logs into charcoal, keeping 32 in the chests.
+blocks of the fletching table (with a little coal to start it) and they burn logs into charcoal, keeping 32 in the
+chests.
 
 **Bone meal.** Put bone meal in the chests and, whenever there's no grown tree to fell, the lumberjack gives it to the
 saplings on their tree farm and the ones they replanted, until they grow (an azalea bush only grows with bone meal).
 
 **Tree farms.** Mark an area with a **Field Marker** (the farmer's marker, up to 32 × 32 and within 48 blocks of the
-Chopping Block) and give it to the lumberjack. They keep it planted with saplings from the chests, in a grid three
+fletching table) and give it to the lumberjack. They keep it planted with saplings from the chests, in a grid three
 blocks apart (dark oak in 2 × 2 squares four apart), and fell what grows there, even if it's further out than the
 16 blocks they'd look on their own. Sneak-right-click them with an empty hand to see the farm or stop it.
 
 ## Orchard Keepers
 ![An orchard keeper picking berries, cocoa and apricorns](docs/media/orchard.gif)
 
-Craft a **Fruit Basket** (two sticks in the top corners, then sweet berries, a plank, sweet berries) and place it near a villager
-without a job, in your orchard. The keeper walks round everything within 16 blocks of the basket and picks whatever
+Place a **composter** in your orchard, stand a villager by it and sneak-right-click them with **sweet berries**, **glow
+berries** or an **apple**: they become an **Orchard Keeper**. The keeper walks round everything within 16 blocks of the
+composter and picks whatever
 is ripe: **sweet berries**, **glow berries**, **cocoa pods** and — with Cobblemon — **apricorns** and **berry
 plants**. The plants are picked, not broken, so they grow again. The harvest goes into the chests within 8 blocks of
-the basket. They reach up into trees with a picking pole and never step into a berry bush.
+the composter. They reach up into trees with a picking pole and never step into a berry bush.
 
-**Planting an orchard.** Mark an area with a **Field Marker** (within 48 blocks of the basket) and give it to the
+**Planting an orchard.** Mark an area with a **Field Marker** (within 48 blocks of the composter) and give it to the
 keeper. They plant it from the chests: sweet berries as bushes two blocks apart on grass or dirt, and with Cobblemon
 berries (on farmland — put a **hoe** in the chests and they till grass and dirt for them) and apricorn seeds (on grass
 or dirt, three apart), then pick what grows there too. **Glow berries** are hung from the underside of any solid
@@ -444,7 +466,8 @@ ceiling in the orchard (a pergola, a cave roof), two blocks apart like the bushe
 Sneak-right-click the keeper with an empty hand to see the orchard or stop it.
 
 **Berry Farm.** Orchard keepers at Expert level sell the **Berry Farm** blueprint (it's in the Blueprint Table too): a
-fenced garden of sweet berry bushes with a Fruit Basket and a harvest chest. The **Berry Farm II** adds a pergola
+fenced garden of sweet berry bushes with a composter and a harvest chest (hand the villager there sweet berries and
+they become its orchard keeper). The **Berry Farm II** adds a pergola
 behind it with glow berries hanging from its roof.
 
 ## Farmers
@@ -474,29 +497,30 @@ their status and they leave it alone; `/gamerule workplaceVillageFarms false` tu
 Marker does the same for any farmer straight away.
 
 ## Beekeepers
-Craft an **Apiary** (three sticks over planks with a flower in the middle) and a villager takes it and becomes a
-**Beekeeper**. They look after the beehives and bee nests within 16 blocks: a full hive is harvested with a **glass
-bottle** from the chests by the Apiary (a honey bottle) or with **shears** (three honeycomb; they switch to honeycomb
-once the chests have 16 honey bottles). Put a lit campfire under a hive and the bees stay calm; otherwise they fly out
-when it's harvested (they don't go for villagers). With **flowers** in the chests they plant them round any hive with
-fewer than four near it, and feed pairs of bees flowers to breed until there are three bees a hive. The honey goes in
-the chests (a porter carries it on). Pastured Bug and Grass Pokémon (Combee!) make them quicker. They trade honey,
+Stand a villager by a **beehive** or **bee nest** and sneak-right-click them with a **glass bottle** or **shears**: they
+become a **Beekeeper**. They look after the beehives and bee nests within 16 blocks: a full hive is harvested with a
+**glass bottle** from the chests by their hive (a honey bottle) or with **shears** (three honeycomb; they switch to
+honeycomb once the chests have 16 honey bottles). Put a lit campfire under a hive and the bees stay calm; otherwise they
+fly out when it's harvested (they don't go for villagers). With **flowers** in the chests they plant them round any hive
+with fewer than four near it, and feed pairs of bees flowers to breed until there are three bees a hive. The honey goes
+in the chests (a porter carries it on). Pastured Bug and Grass Pokémon (Combee!) make them quicker. They trade honey,
 honeycomb, candles, beehives and honey blocks.
 
 ## Florists
-Craft a **Flower Stand** (three flowers over planks with a flower pot in the middle) and a villager takes it and becomes
-a **Florist**. The grass within 5 blocks of the stand is their garden: with **bone meal** in the chests (a farmer's
+Stand a villager by a **composter** and sneak-right-click them with a **small flower**: they become a **Florist**. The
+grass within 5 blocks of the composter is their garden: with **bone meal** in the chests (a farmer's
 composter makes it) they bring up the biome's flowers there and pick them — weeding out the grass that comes up with
 them — and bone meal on a tall flower (a sunflower, lilac, rose bush or peony) gives another of it. The flowers go in
 the chests (while there are fewer than 64), where the dyer and the builders of the village find them. **Empty flower
-pots** within 24 blocks of the stand get a flower each. Pastured Grass and Fairy Pokémon make them quicker.
+pots** within 24 blocks of the composter get a flower each. Pastured Grass and Fairy Pokémon make them quicker.
 
 ## Ranchers
-Craft a **Feed Trough** (planks round a hay bale) and a villager takes it and becomes a **Rancher**. Wild **horses,
+Stand a villager by a **smoker** and sneak-right-click them with a **saddle** or a **golden carrot**: they become a
+**Rancher**. Wild **horses,
 donkeys and llamas** within 16 blocks are broken in — a few tries each, the horse rearing until it gives in — and the
-tamed ones get the **saddles**, **horse armor** and **carpets** (for llamas) you leave in the chests by the trough. With
+tamed ones get the **saddles**, **horse armor** and **carpets** (for llamas) you leave in the chests by the smoker. With
 **golden carrots** or golden apples in the chests they breed the horses and donkeys, with hay bales the llamas and with
-cactus the camels, up to 8 of a kind. With Cobblemon the Pokémon in **Pasture Blocks** near the trough are groomed once
+cactus the camels, up to 8 of a kind. With Cobblemon the Pokémon in **Pasture Blocks** near the smoker are groomed once
 a day: their friendship goes up by 4, and by 6 more when there's a berry in the chests for a treat (never the berries
 that lower EVs) — a pasture by the ranch is the place for an Eevee or a Golbat that evolves by friendship. Pastured
 Normal and Ground Pokémon calm the wild horses quicker.
@@ -509,52 +533,52 @@ gained, as in the games. Level-ups, new moves and evolutions happen as you colle
 stays with you, and if the rancher dies, the Pokémon in their care go to their trainers' PCs.
 
 ## Sifters
-Craft a **Sieve** (two sticks over three string over two planks) and place it near a villager without a job: they
-become a **Sifter**. Put **gravel**, **sand**, **dirt** or **soul sand** in a chest by the sieve and they shake it through,
-a block every few seconds (quicker as they level up, and with pastured Ground or Rock Pokémon): gravel gives flint,
-nuggets, coal, lapis and now and then an emerald or a diamond; sand gives clay, cactus, gold and sea treasures; dirt gives
-seeds, saplings and bone meal; soul sand gives quartz, nether wart, gold and glowstone. With Cobblemon, gravel and sand
-now and then turn up an **evolution stone**. What comes out goes in the chest (a Porter takes it to the storehouse);
-with nothing to sift they ask for gravel on the requests board. What each block gives is a loot table
-(`aliveworkplace:sifting/<block>`), so data packs can change it.
+Stand a villager by a **cauldron** and sneak-right-click them with **gravel**, **sand**, **red sand** or **soul sand**:
+they become a **Sifter**. Put **gravel**, **sand**, **dirt** or **soul
+sand** in a chest by the cauldron and they shake it through, a block every few seconds (quicker as they level up, and
+with pastured Ground or Rock Pokémon): gravel gives flint, nuggets, coal, lapis and now and then an emerald or a
+diamond; sand gives clay, cactus, gold and sea treasures; dirt gives seeds, saplings and bone meal; soul sand gives
+quartz, nether wart, gold and glowstone. With Cobblemon, gravel and sand now and then turn up an **evolution stone**.
+What comes out goes in the chest (a Porter takes it to the storehouse); with nothing to sift they ask for gravel on the
+requests board. What each block gives is a loot table (`aliveworkplace:sifting/<block>`), so data packs can change it.
 
 ## Tinkerers
 ![The Tinker's Workshop I and II](docs/media/tinkers-workshop.png)
 
-Craft a **Tinker's Bench** (iron, redstone, iron over planks, a crafting table, planks, with planks for legs) and place it
-near a villager without a job: they become a **Tinkerer**. When a builder nearby is waiting for **redstone and iron
-parts** — pistons, rails, hoppers, repeaters and comparators, lanterns, iron bars and doors, chains, cauldrons, copper
-blocks — the tinkerer makes them from the builder's own stock and brings them over, just as the carpenter does with
-wood. If there are no ingots yet they fire **raw ore** in the bench's little forge first, for a **coal or charcoal** in
-every eight. Between jobs they look after the village's **iron golems**: one that's badly hurt is patched up with iron
-ingots from the chests by the bench (or the storehouse's). What counts as a tinkerer's part is the item tag
-`aliveworkplace:tinkering`, so data packs can add to it. The **Tinker's Workshop** (Blueprint Table) is a brick
-workshop with a forge and a smoking chimney; the **Tinker's Workshop II** runs it back with a storage loft and a cart
-track. Villages sometimes grow a Tinker's Shop, and a Sifting Shed for a sifter.
+Stand a villager by a **smithing table** and sneak-right-click them with **redstone**: they become a **Tinkerer**. When
+a builder nearby is waiting for **redstone and iron parts** — pistons, rails, hoppers, repeaters and comparators,
+lanterns, iron bars and doors, chains, cauldrons, copper blocks — the tinkerer makes them from the builder's own stock
+and brings them over, just as the carpenter does with wood. If there are no ingots yet they fire **raw ore** into ingots
+first, for a **coal or charcoal** in every eight. Between jobs they look after the village's **iron golems**: one that's
+badly hurt is patched up with iron ingots from the chests by the smithing table (or the storehouse's). What counts as a
+tinkerer's part is the item tag `aliveworkplace:tinkering`, so data packs can add to it. The **Tinker's Workshop**
+(Blueprint Table) is a brick workshop with a forge and a smoking chimney; the **Tinker's Workshop II** runs it back with
+a storage loft and a cart track. Villages sometimes grow a Tinker's Shop, and a Sifting Shed for a sifter.
 
 ## Composters
-Craft a **Compost Bin** (wooden slabs round a block of dirt, like a composter with a heart of earth) and place it near a
-villager without a job: they become a **Composter**. The village's scraps — seeds, saplings, leaves, crop waste, spoiled
-food and **rotten flesh** — from the chests by the bin (or the storehouse's, when those run dry) go into the bin, and
-every five layers of compost come out as a **bone meal** in the chests: better than a vanilla composter's seven, and
+Stand a villager by a **composter** and sneak-right-click them with **bone meal**: they become a **Composter**. The
+village's scraps — seeds, saplings, leaves, crop waste, spoiled food and **rotten flesh** — from the chests by the
+composter (or the storehouse's, when those run dry) go into it, and every five layers of compost come out as a **bone
+meal** in the chests: better than a vanilla composter's seven, and
 nothing's wasted on a bad roll. The florists, lumberjacks, orchard keepers and farmers take the bone meal from there (a
 porter carries the rest to the storehouse). With nothing to compost they ask for scraps on the requests board.
 
 ## Netherworkers
 ![The Nether Gate I and II](docs/media/nether-gate.png)
 
-Craft a **Nether Brazier** (gold, gap, gold over polished blackstone, a fire charge, polished blackstone, with three
-polished blackstone below) and place it near a villager without a job and within 32 blocks of a **Nether portal**: they
-become a **Netherworker**. With three **rations** (bread, cooked meat and the like) in a chest by the brazier they pack
-up, walk to the portal and step through; a few minutes later (sooner as they level up, or with pastured Fire and Dark
-Pokémon) they step back out with the Nether's goods — netherrack, soul sand, basalt, glowstone, nether wart, gold — and
-put them in the chest. Leave them gear and they bring back more: a **pickaxe** for quartz, gold and magma (a diamond
-one now and then finds ancient debris), an **axe** for crimson and warped stems and shroomlights, a **sword** and a
-**chestplate** for a fortress's blaze rods and nether bricks, a **fire resistance potion** to go further. The gear wears
-a little each trip, and without armor they sometimes come back hurt. With Cobblemon they now and then find a Fire or
-Dusk Stone. While they're away they can't be seen or hurt. The **Nether Gate** (Blueprint Table) is a blackstone arch
-round an obsidian portal frame, with the brazier and a chest — put a **flint and steel** in the builder's chests and they
-light the portal when they're done; the **Nether Gate II** adds a gatehouse roof, a storehouse and a nether wart garden.
+Place a **cartography table** within 32 blocks of a **Nether portal**, stand a villager by it and sneak-right-click them
+with **netherrack**: they become a **Netherworker**. With three **rations** (bread, cooked meat and the like) in a chest
+by the cartography table they pack up, walk to the portal and step through; a few minutes later (sooner as they level
+up, or with pastured Fire and Dark Pokémon) they step back out with the Nether's goods — netherrack, soul sand, basalt,
+glowstone, nether wart, gold — and put them in the chest. Leave them gear and they bring back more: a **pickaxe** for
+quartz, gold and magma (a diamond one now and then finds ancient debris), an **axe** for crimson and warped stems and
+shroomlights, a **sword** and a **chestplate** for a fortress's blaze rods and nether bricks, a **fire resistance
+potion** to go further. The gear wears a little each trip, and without armor they sometimes come back hurt. With
+Cobblemon they now and then find a Fire or Dusk Stone. While they're away they can't be seen or hurt. The **Nether
+Gate** (Blueprint Table) is a blackstone arch round an obsidian portal frame, with a cartography table and a chest (hand
+the villager there netherrack and they become its netherworker) — put a
+**flint and steel** in the builder's chests and they light the portal when they're done; the **Nether Gate II** adds a
+gatehouse roof, a storehouse and a nether wart garden.
 
 ## Fishermen
 ![A fisherman villager with a bobber out on the pond](docs/media/fisherman.png)
@@ -609,31 +633,30 @@ villages sometimes grow a storehouse of their own.
 ![A carpenter taking the spruce fences they made to a builder](docs/media/carpenter.png)
 ![The Market Stall finished from nothing but spruce logs: the carpenter made the planks, fences, barrels and composter](docs/media/carpenter-stall.png)
 
-Craft a **Carpenter's Bench** (a stick, an iron ingot and a stick over planks, a crafting table and planks) and a
-villager becomes a **Carpenter**. When a builder nearby is waiting for something that can be made from what they can
-get at (their chests, and their village's), the carpenter fetches the ingredients, makes it at the bench with the
-game's own crafting recipes (modded ones too) and takes it to the builder's chests: stairs, slabs, doors, fences and
-planks from the builder's logs, sticks, torches, glass panes... up to two steps down count, so fences come from logs by
-way of planks and sticks. Only what the rest of the build doesn't need is used: planks for stairs, but not the planks the walls still
-want. **Masons** (vanilla villagers at a stonecutter) do the same with the stonecutter's recipes — stone bricks, stairs,
-slabs and walls cut from stone — and crush cobblestone into gravel and gravel into sand, and with a furnace by the
-stonecutter they are the village's **kiln**: sand fired into glass, cobblestone into stone and smooth stone, clay into
-terracotta and bricks (laid into brick blocks), netherrack into nether bricks — a coal for every 8 things fired; they
-go about their usual day in between. **Leatherworkers** (vanilla villagers at a
-cauldron) are the village's dyers: anything coloured a builder is waiting for — wool, carpet, stained glass,
-terracotta, candles, beds, dyes from flowers — they make the same way, and they harden concrete powder into concrete
-in the cauldron (mixing the powder from sand, gravel and dye first if need be). Villages sometimes grow a carpenter's
-workshop.
+Stand a villager by a **crafting table** and sneak-right-click them with **planks**: they become a **Carpenter**. When a
+builder nearby is waiting for something that can be made from what they can get at (their chests, and their village's),
+the carpenter fetches the ingredients, makes it at the crafting table with the game's own crafting recipes (modded ones
+too) and takes it to the builder's chests: stairs, slabs, doors, fences and planks from the builder's logs, sticks,
+torches, glass panes... up to two steps down count, so fences come from logs by way of planks and sticks. Only what the
+rest of the build doesn't need is used: planks for stairs, but not the planks the walls still want. **Masons** (vanilla
+villagers at a stonecutter) do the same with the stonecutter's recipes — stone bricks, stairs, slabs and walls cut from
+stone — and crush cobblestone into gravel and gravel into sand, and with a furnace by the stonecutter they are the
+village's **kiln**: sand fired into glass, cobblestone into stone and smooth stone, clay into terracotta and bricks
+(laid into brick blocks), netherrack into nether bricks — a coal for every 8 things fired; they go about their usual day
+in between. **Leatherworkers** (vanilla villagers at a cauldron) are the village's dyers: anything coloured a builder is
+waiting for — wool, carpet, stained glass, terracotta, candles, beds, dyes from flowers — they make the same way, and
+they harden concrete powder into concrete in the cauldron (mixing the powder from sand, gravel and dye first if need
+be). Villages sometimes grow a carpenter's workshop.
 
 ## Armorers, toolsmiths, weaponsmiths and fletchers
-Every **Armorer** (the vanilla villager at a blast furnace) with a chest within 8 blocks of their blast furnace
-smelts the village's ore: raw metal and ore blocks from that chest go into the blast furnace (and any furnaces
-nearby) with coal or charcoal, and the ingots come out into the chest. When the chest runs out, they fetch ore — and
-the fuel to smelt it — from the storehouse and from miners who don't smelt their own, and a porter carries the ingots
-on to the storehouse (the armorer keeps 24 iron ingots). They also look after the guards: a guard of the village with
-nothing on their head, chest, legs or feet, and nothing for it in their chests, gets a piece — made from the iron in
-the armorer's chest and brought to the chests by the Guard Post. Sneak-right-click an armorer with coal or charcoal to
-hire them, so they work with your own miners and guards too. Between jobs they go about their usual day.
+Every **Armorer** (the vanilla villager at a blast furnace) with a chest within 8 blocks of their blast furnace smelts
+the village's ore: raw metal and ore blocks from that chest go into the blast furnace (and any furnaces nearby) with
+coal or charcoal, and the ingots come out into the chest. When the chest runs out, they fetch ore — and the fuel to
+smelt it — from the storehouse and from miners who don't smelt their own, and a porter carries the ingots on to the
+storehouse (the armorer keeps 24 iron ingots). They also look after the guards: a guard of the village with nothing on
+their head, chest, legs or feet, and nothing for it in their chests, gets a piece — made from the iron in the armorer's
+chest and brought to the chests by the guard's grindstone. Sneak-right-click an armorer with coal or charcoal to hire
+them, so they work with your own miners and guards too. Between jobs they go about their usual day.
 
 **Toolsmiths** (the vanilla villager at a smithing table) make the tools the village's workers are waiting for — a
 miner's pickaxe, a lumberjack's axe, a fisherman's rod — with the game's recipes, and take them to that worker's
@@ -643,8 +666,8 @@ hire them for your own workers.
 
 **Weaponsmiths** (the vanilla villager at a grindstone) mend the village's worn gear the way an anvil does — each ingot,
 plank, diamond or leather puts back a quarter of a tool's, weapon's or armor piece's durability. They mend what's worn
-in the chests by their grindstone (drop your own worn gear there), by the guards' posts and at the other workers, with
-materials from their chests, the storehouse and the smelters, and put each piece back where it was. A guard with no
+in the chests by their grindstone (drop your own worn gear there), by the guards' grindstones and at the other workers,
+with materials from their chests, the storehouse and the smelters, and put each piece back where it was. A guard with no
 weapon and none in their chests gets a sword (iron, else stone). Sneak-right-click one with an iron ingot to hire them.
 
 **Fletchers** (the vanilla villager at a fletching table) look after the guards' bows: a guard with no bow gets a
@@ -675,7 +698,7 @@ Cobblemon's own data, so a data pack that adds interactions adds chores too.
 **Clerics** (the vanilla villager at a brewing stand) brew what the guards need — potions of healing, regeneration and
 strength, three of each — from the chest by the stand: nether wart, a glistering melon slice, a ghast tear or blaze
 powder, with blaze powder as fuel, and water bottles (or glass bottles they fill at water or a cauldron nearby). A
-guard of the village with fewer than two potions gets one brought to the chest by their Guard Post; guards carry up to
+guard of the village with fewer than two potions gets one brought to the chest by their grindstone; guards carry up to
 three, drink a healing or regeneration potion when they fall below half health, and a strength potion as a fight
 starts. Sneak-right-click a cleric with a glass bottle to hire them for your own guards.
 
@@ -705,9 +728,10 @@ rarely, evolution stones and fossils (for the Fossil Scientist). Pastured Flying
 and rests. They only go where the world is running (near a player). Sneak-right-click one with a compass to hire them.
 
 ## Chefs
-![A chef cooking at the Kitchen Stove](docs/media/chef.png)
+![A chef cooking at the smoker](docs/media/chef.png)
 
-Craft a **Kitchen Stove** (five iron ingots round a smoker, over three cobblestone) and a villager becomes a **Chef**.
+Stand a villager by a **smoker** and sneak-right-click them with raw food (**raw beef, pork, chicken, mutton, rabbit,
+cod or salmon**, or a **potato**): they become a **Chef**.
 Put the makings in a chest within 8 blocks and the chef cooks, a batch at a time, whatever there's enough for: bread,
 cookies, pumpkin pie, cake, the stews, and everything a smoker cooks (steak, chicken, fish, baked potatoes). With
 Cobblemon they also cook what its Campfire Pot does — **Poké Bait**, **Poké Snacks**, **Poké Cakes**, candied apples and
@@ -719,18 +743,18 @@ and fishermen's spare harvest turns into food without anyone lifting a finger. V
 ![The mailbox screen](docs/media/mailbox.png)
 
 Craft a **Mailbox** (iron nuggets around a chest, on a fence) and place it: it's yours, and mail sent to you arrives
-there (the red flag goes up). To send something, open your mailbox, put items in the top row, write a player's name
-and press **Send**. Write something in the **Letter** line and it goes along as a letter (a book they can read), or on
-its own if the top row is empty. `/workplace mail` (or **[Track]** after sending) shows where your parcels are. A **Postman** picks it up: craft a **Postal Desk** (paper over planks and a chest) and place it
-near a villager without a job. Postmen walk their round (64 blocks around the desk), collecting parcels and putting
-them in the right mailbox. Parcels for a mailbox outside the round (another village, another dimension) go with the
-night mail and arrive at the next dawn (or at once, by air mail, with a Flying-type Pokémon pastured by the desk).
-Only you, your friends (`/workplace friend add`) and operators can open your
-mailbox.
+there (the red flag goes up). To send something, open your mailbox, put items in the top row, write a player's name and
+press **Send**. Write something in the **Letter** line and it goes along as a letter (a book they can read), or on its
+own if the top row is empty. `/workplace mail` (or **[Track]** after sending) shows where your parcels are. A
+**Postman** picks it up: stand a villager by a **Mailbox** and sneak-right-click them with **paper**. Postmen walk their
+round (64 blocks around the Mailbox they work at), collecting parcels and putting them in the right mailbox. Parcels for
+a mailbox outside the round (another village, another dimension) go with the night mail and arrive at the next dawn (or
+at once, by air mail, with a Flying-type Pokémon pastured by their Mailbox). Only you, your friends (`/workplace friend
+add`) and operators can open your mailbox.
 
-**The post office.** No mailbox? Mail for you waits at the post office: right-click any **Postal Desk** and you get
-every parcel handed in for you (you're told at dawn when some are waiting). That works for night mail on its way to
-your mailbox too, if you'd rather not wait for dawn.
+**The post office.** No mailbox? Mail for you waits at the post office: right-click any **Mailbox a postman works at**
+(or an old Postal Desk) and you get every parcel handed in for you (you're told at dawn when some are waiting). That
+works for night mail on its way to your mailbox too, if you'd rather not wait for dawn.
 
 **Courier routes.** When there's no mail, postmen haul between your chests. Craft a **Delivery Note** (paper, a
 feather and an ink sac), right-click the container to take from and then the one to bring to (say, the quarry chest
@@ -743,9 +767,9 @@ Cobbleworkers' Pokémon put what they gather.
 ## Guards
 ![A guard fighting off three husks](docs/media/guard.gif)
 
-Craft a **Guard Post** (an iron sword over planks and a shield) and place it near a villager without a job. Put
-weapons and armor in a chest within 8 blocks of the post: the guard takes the best of it. Guards fight monsters that
-come within 24 blocks of the post at any hour and never run away. Give them a **bow** or a **crossbow** (in the same
+Stand a villager by a **grindstone** and sneak-right-click them with a **sword**: they become a **Guard**. Put weapons
+and armor in a chest within 8 blocks of the grindstone: the guard takes the best of it. Guards fight monsters that
+come within 24 blocks of it at any hour and never run away. Give them a **bow** or a **crossbow** (in the same
 chest; a crossbow hits harder) and they
 also shoot creepers from a safe distance — without one they leave creepers alone — and pick off other monsters
 before they get close; they never shoot when a player, villager or pet is in the way. They have twice a villager's
@@ -758,8 +782,9 @@ for the bell and fight anything near it for a minute and a half.
 **Medic** (a healing or regeneration potion: they carry six potions and give them to the most hurt villager or golem
 nearby). Guards gear up with a bow if there's one in their chest, or else a shield; to choose yourself,
 **sneak-right-click a guard with a bow, crossbow, shield or healing potion** and they take it (you get back what they
-held). Their kind shows over their head. The **Barracks** (Blueprint Table) houses two guards — two Guard Posts, an
-armory chest, bunks and training dummies out front — and the **Barracks II** adds a wing for two more.
+held). Their kind shows over their head. The **Barracks** (Blueprint Table) houses two guards — two grindstones (hand
+the villager at each a sword), an armory chest, bunks and training dummies out front — and the **Barracks II** adds a
+wing for two more.
 
 **Raids.** A village with a Village Hall and at least 8 villagers may be **raided by monsters** at night (at most every
 three nights; the bigger the village, the likelier — from 15% a night up to 35% — and the bigger the raid, 3 monsters
@@ -837,17 +862,17 @@ opened in the morning (you can still open them yourself).
 
 ![The Palisade, the Palisade Gate, the Stone Wall, the Wall Tower and the Gatehouse](docs/media/defences.png)
 
-**Training Dummy** (a hay bale on sticks with wool on top): place one within 12 blocks of a Guard Post and, when
+**Training Dummy** (a hay bale on sticks with wool on top): place one within 12 blocks of a guard's grindstone and, when
 there's nothing to fight, the guard spars with it every couple of minutes during the day — a point of experience every
 four hits, up to Expert; Masters are only made in real fights. Hit it yourself and it puffs straw too.
 
 ![A guard fighting husks with a Machop and a Dratini from a pasture joining in](docs/media/guard-pokemon.gif)
 
-**Fighting beside their Pokémon** (with Cobblemon): keep Fighting or Dragon types in a Pasture Block within 16 blocks
-of the Guard Post, and whenever the guard lands a hit on a monster within 20 blocks of them, up to three of them follow
-up with a move of their own — you see them turn, attack and the hit land, with Cobblemon's own effects. A move does 2
-damage at level 1, 5 at level 50 and 8 at level 100 (once a second each). Monsters turn on the guard, never on the
-Pokémon, and the kill counts as the guard's.
+**Fighting beside their Pokémon** (with Cobblemon): keep Fighting or Dragon types in a Pasture Block within 16 blocks of
+the guard's grindstone, and whenever the guard lands a hit on a monster within 20 blocks of them, up to three of them
+follow up with a move of their own — you see them turn, attack and the hit land, with Cobblemon's own effects. A move
+does 2 damage at level 1, 5 at level 50 and 8 at level 100 (once a second each). Monsters turn on the guard, never on
+the Pokémon, and the kill counts as the guard's.
 
 ![A guard in an iron helmet, chestplate and boots](docs/media/guard-armor.png)
 
@@ -855,11 +880,11 @@ The armor a guard wears shows on them: helmet, chestplate (with shoulder pieces 
 the robe and boots — any armor, including dyed leather and enchanted pieces.
 
 ## Nurses
-Craft a **Nurse Station** (glass bottles around a glistering melon slice, on white wool) and place it near a villager
-without a job. Right-click the nurse with an empty hand to get your health back and bad effects cleared; with
-**Cobblemon** installed they heal your whole team too. Once a minute per player (less as they level up). They also
-look after hurt villagers and iron golems nearby, and cure the village's ill with a honey bottle, a bucket of milk or
-a healing potion from the chest by the station (see *Sickness*). Sneak-right-click to trade.
+Stand a villager by a **brewing stand** and sneak-right-click them with a **honey bottle**: they become a **Nurse**.
+Right-click the nurse with an empty hand to get your health back and bad effects cleared; with **Cobblemon** installed
+they heal your whole team too. Once a minute per player (less as they level up). They also look after hurt villagers and
+iron golems nearby, and cure the village's ill with a honey bottle, a bucket of milk or a healing potion from the chest
+by the brewing stand (see *Sickness*). Sneak-right-click to trade.
 
 ## Shops
 Craft a **Shop Counter** (an emerald over planks and a chest) and place it near a villager without a job: the shop is
@@ -892,9 +917,9 @@ and a ferryman already: the post joins the network under a village name ("Willow
 it's on your list.
 
 ## Bards
-Craft a **Music Stand** (paper on a note block) and place it near a villager without a job. Put music discs in a
-chest within 8 blocks: in the morning and in the evening the bard plays them one after another (the discs stay in the
-chest). No discs? They make up a tune on the harp.
+Stand a villager by a **jukebox** and sneak-right-click them with a **music disc**: they become a **Bard**. Put music
+discs in a chest within 8 blocks of the jukebox: in the morning and in the evening the bard plays them one after another
+(the discs stay in the chest). No discs? They make up a tune on the harp.
 
 ## Pokémon Trainers (with Cobblemon)
 Craft a **Training Post** (a target block on planks) and place it near a villager without a job: they become a
@@ -916,12 +941,12 @@ Trainers send their Pokémon out beside them, the way you do, and call them back
 their ace, and if none of their team can Mega Evolve, the last one is swapped for one that can — and the trainer Mega
 Evolves it as soon as it comes out.
 
-Each village can also have one **Trainer Leader**: craft a **Leader's Podium** (gold ingots either side of a Training
-Post, on polished andesite). The leader battles at Expert strength from the start, pays three times the prize, and
+Each village can also have one **Trainer Leader**: stand a villager by a **Training Post** and sneak-right-click them
+with a **block of gold**. The leader battles at Expert strength from the start, pays three times the prize, and
 takes one challenge a day from each player.
 
 ## Move Tutors (with Cobblemon)
-Craft a **Tutor's Desk** (a book on planks) and place it near a villager without a job: they become a **Move Tutor**.
+Stand a villager by a **Training Post** and sneak-right-click them with a **book**: they become a **Move Tutor**.
 Right-click them with an empty hand (sneak to trade instead) to open their lessons: pick one of your Pokémon at the
 top, then a move it could learn but won't get from levelling — tutor moves, TM moves and egg moves. Click a lesson
 once to choose it and again to pay and teach it. The move goes straight into the Pokémon's moves if it knows fewer
@@ -937,31 +962,32 @@ paper and books, if you need emeralds.
 ## Ball Smiths (with Cobblemon)
 ![A Ball Smith making Azure Balls next to an Orchard Keeper](docs/media/ball-smith.png)
 
-Craft a **Ball Workbench** (red dye, a copper ingot and white dye over planks either side of a smithing table) and
-place it near a villager without a job: they become a **Ball Smith**. Put apricorns and ball metals in chests within
-8 blocks — copper ingots for Poké Balls and the other basic balls, iron for Great Balls and friends, gold for Ultra
-Balls, diamonds for the rarest — and the smith turns them into balls with Cobblemon's own recipes, a batch of four at
-a time, and puts the balls back in the chests. A new smith only works copper; they learn the harder balls as they
-level up (iron at Apprentice, gold at Journeyman, diamonds at Expert). They take turns between the kinds they can
-make and stop making a kind once the chests hold 64 of it. They never make Master Balls. Pair them with an Orchard
-Keeper (or Cobbleworkers' apricorn pickers) for a steady supply.
+Stand a villager by a **smithing table** and sneak-right-click them with an **apricorn**: they become a **Ball Smith**.
+Put apricorns and ball metals in chests within 8 blocks of it — copper ingots for Poké Balls and the other basic balls,
+iron for Great Balls and friends, gold for Ultra Balls, diamonds for the rarest — and the smith turns them into balls
+with Cobblemon's own recipes, a batch of four at a time, and puts the balls back in the chests. A new smith only works
+copper; they learn the harder balls as they level up (iron at Apprentice, gold at Journeyman, diamonds at Expert). They
+take turns between the kinds they can make and stop making a kind once the chests hold 64 of it. They never make Master
+Balls. Pair them with an Orchard Keeper (or Cobbleworkers' apricorn pickers) for a steady supply.
 
 **Orders.** Sneak-right-click the smith with an empty hand to pick which balls they make: click a ball to ask for it
 (it glows), click again to stop. With nothing picked they make whatever the chests have the makings for.
 
 ## Fossil Scientists (with Cobblemon)
-Craft a **Fossil Lab** (glass, a brush and glass over three smooth stone) and a villager becomes a **Fossil Scientist**.
-Right-click them holding a fossil (for a Galar fossil, hold one half in each hand) and pay 8 emeralds (800 CobbleDollars
-with CobbleDollars): they revive it at the lab while they work, about three minutes for a novice and quicker as they
-level up. The Pokémon joins your party (or goes to your PC) the moment it's done, or the next time you're online. It's
-Cobblemon's own revival, the same Pokémon its machine gives. Right-click with an empty hand to see how it's going; sneak
-to trade. A scientist takes on three fossils at a time. Villages sometimes grow a fossil lab, and scientists at
-Journeyman level sell the **Research Lab** blueprint (a stone lab with a Fossil Lab and a fossil on show; the
-**Research Lab II** adds a museum hall with a big skeleton).
+Stand a villager by Cobblemon's **Fossil Analyzer** and sneak-right-click them with a **fossil**: they become a **Fossil
+Scientist** (a jobless villager never takes your analyzer by themselves; scientists from before 0.138.0 keep working at
+their Training Post or Fossil Lab). Right-click them holding a fossil (for a Galar fossil, hold one half in each hand)
+and pay 8 emeralds (800 CobbleDollars with CobbleDollars): they revive it at the analyzer while they work, without the
+rest of the machine, about three minutes for a novice and quicker as they level up. The Pokémon joins your party (or goes to your PC) the moment it's done, or the next time
+you're online. It's Cobblemon's own revival, the same Pokémon its machine gives. Right-click with an empty hand to see
+how it's going; sneak to trade. A scientist takes on three fossils at a time. Villages sometimes grow a fossil lab, and
+scientists at Journeyman level sell the **Research Lab** blueprint (a stone lab with a Fossil Analyzer and a fossil on
+show: hand the villager there a fossil and they become its scientist; the **Research Lab II** adds a museum hall with
+a big skeleton).
 
 ## Pokémon Traders (with Cobblemon)
-Craft a **Trade Board** (an item frame on planks) and place it near a villager without a job: they become a
-**Pokémon Trader**. Right-click them with an empty hand (sneak to buy Poké Balls and candies instead) to see today's
+Stand a villager by a **Shop Counter** and sneak-right-click them with a **Poké Ball**: they become a **Pokémon
+Trader**. Right-click them with an empty hand (sneak to buy Poké Balls and candies instead) to see today's
 offers — "my Tinkaton, level 62, for any Fighting type, level 55 or higher". Pick an offer, then one of your
 Pokémon that fits (the rest are greyed out, with the reason), and click it twice to swap. A held item comes back to
 you. Offers change every in-game day and are the same for everyone; each player gets one trade per trader per day.
@@ -1005,7 +1031,8 @@ Pokémon can work the pasture for Cobbleworkers and help the villager at the sam
 from the pasture (see *Courier routes*) takes what they gather to wherever it is needed.
 
 ## Blueprint Table: any build from the internet
-Craft a **Blueprint Table** (blue dye on top, cartography table in the middle, planks around) and right-click it.
+Craft a **Blueprint Table** (blue dye on top, cartography table in the middle, planks around) and right-click it. It's
+the Builder's workstation too: a villager without a job near it takes it and becomes a **Builder**.
 
 ![The Blueprint Table](docs/media/blueprint-table.png)
 
@@ -1023,9 +1050,9 @@ Craft a **Blueprint Table** (blue dye on top, cartography table in the middle, p
   the plant. Jars, shelves, safes and other containers are built empty — blueprints never hand out items.
 - **Handcrafted, Beautify, CobbleFurnies, Carved Wood, Moar Concrete** (the Cobbleverse pack's building mods): every
   block costs its own item and builds like any other (tested with the real mods).
-- **Storage mods**: Sophisticated Storage chests and barrels and Tom's Storage filing cabinets near the bench work as
-  supply chests. Storage-network blocks (Tom's connectors and terminals, the Sophisticated controller) are skipped,
-  so nothing is counted twice — the builder uses the chests themselves.
+- **Storage mods**: Sophisticated Storage chests and barrels and Tom's Storage filing cabinets near the Blueprint Table
+  work as supply chests. Storage-network blocks (Tom's connectors and terminals, the Sophisticated controller) are
+  skipped, so nothing is counted twice — the builder uses the chests themselves.
 - Blocks from mods that aren't installed turn into air and are left out.
 
 ## Commands and gamerules
@@ -1055,8 +1082,8 @@ and restart; out-of-range values are clamped):
 | Option | Default | What it does |
 | --- | --- | --- |
 | `supplyRadius` | 8 | chests and barrels this close to a workstation are its supply chests |
-| `maxSiteDistance` | 48 | how far from their bench a builder takes a build |
-| `guardRadius` | 24 | how far from the Guard Post guards patrol and fight |
+| `maxSiteDistance` | 48 | how far from their Blueprint Table a builder takes a build |
+| `guardRadius` | 24 | how far from their grindstone guards patrol and fight |
 | `lumberjackRadius`, `orchardRadius`, `fisherRadius` | 16 | how far lumberjacks cut, orchard keepers pick and fishers look for water |
 | `partnerRadius` | 16 | how close to a workstation pastured Pokémon must be to help |
 | `postmanRange` | 64 | how far a postman walks to deliver (mail going farther arrives at dawn) |

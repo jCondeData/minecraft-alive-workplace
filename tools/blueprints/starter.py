@@ -347,13 +347,13 @@ def market_stall_3():
     return b
 
 
-# --- Lookout Tower, upgraded: a guard post with a bell under a pointed roof --------------------------------
+# --- Lookout Tower, upgraded: a guard's grindstone, a bell under a pointed roof ----------------------------
 def lookout_tower_2():
-    """Upgrade of the Lookout Tower: a Guard Post and a chest for gear at the foot of the ladder (a villager moves in as a
-    guard), and a steep pointed roof on corner posts over the platform, with a bell to call the guards and a lightning
-    rod on the spire. 7 x 23 x 7."""
+    """Upgrade of the Lookout Tower: a grindstone and a chest for gear at the foot of the ladder (a villager moves in as
+    a weaponsmith; hand them a sword and they become the guard), and a steep pointed roof on corner posts over the
+    platform, with a bell to call the guards and a lightning rod on the spire. 7 x 23 x 7."""
     b = lookout_tower().grow(7, 23, 7)
-    b.set(2, 1, 3, "aliveworkplace:guard_post", facing="east")
+    b.set(2, 1, 3, "grindstone", face="floor", facing="east")  # its wheel turned to the middle of the room
     b.set(4, 1, 3, "chest", facing="west", type="single", waterlogged=False)
     for x, z in ((0, 0), (6, 0), (0, 6), (6, 6)):
         for y in (13, 14):
@@ -371,7 +371,8 @@ def lookout_tower_2():
 # --- Lookout Tower III: a guardhouse beside the tower --------------------------------------------------
 def lookout_tower_3():
     """Upgrade of Lookout Tower II: a stone-and-timber guardhouse against the tower's east side, through a doorway from the
-    tower, with a second Guard Post, a chest for gear and two bunks (a second villager moves in as a guard). 14 x 23 x 7."""
+    tower, with a second grindstone (for a second guard: hand the villager there a sword), a chest for gear and two
+    bunks. 14 x 23 x 7."""
     b = lookout_tower_2().grow(14, 23, 7)
     b.clear(6, 0, 0, 6, 0, 6)  # the base's flare on that side
     plinth(b, 6, 1, 12, 5, FOUNDATION_MIX, floor="spruce_planks")
@@ -406,8 +407,8 @@ def lookout_tower_3():
     window(b, 12, 2, 3, "east", shutters="spruce_trapdoor", sill=STONE_BRICK)
     window(b, 10, 2, 5, "south", width=2, sill=STONE_BRICK)
     gable_roof(b, 7, 13, 0, 6, 4, DARK_OAK, axis="x", gable="birch_planks", gable_at=(12, 12))
-    # The second guard's post, gear and two bunks
-    b.set(7, 1, 3, "aliveworkplace:guard_post", facing="east")
+    # The second guard's grindstone, gear and two bunks
+    b.set(7, 1, 3, "grindstone", face="floor", facing="east")
     b.set(7, 1, 4, "chest", facing="east", type="single", waterlogged=False)
     b.bed(10, 1, 3, "white", facing="south")
     b.bed(11, 1, 3, "white", facing="south")
@@ -465,8 +466,9 @@ CLINIC_TRIM = DARK_OAK
 
 def clinic_hall(b):
     """The hall (walls x 1-9, z 2-8): white plaster between dark posts on a stone plinth, the long side to the street
-    with the door in the middle bay under a gabled porch; inside the counter with the Healing Machine, the Nurse Station
-    behind it, benches and plants, tie beams across for the lanterns (and for the builder to reach the ridge from)."""
+    with the door in the middle bay under a gabled porch; inside the counter with the Healing Machine, a brewing stand
+    behind it (the nurse's: hand the villager there a honey bottle), benches and plants, tie beams across for the
+    lanterns (and for the builder to reach the ridge from)."""
     skirt(b, 1, 2, 9, 8, STONE_BRICK)
     plinth(b, 1, 2, 9, 8, MOSSY_BRICK_MIX, floor="smooth_quartz")
     walls(b, 1, 2, 9, 8, 1, 3, CLINIC_WALL)
@@ -490,7 +492,7 @@ def clinic_hall(b):
             b.set(x, 1, 6, "white_concrete")
             slab(b, x, 2, 6, "smooth_quartz_slab")
     b.set(5, 1, 6, "cobblemon:healing_machine", facing="north")
-    b.set(3, 1, 7, "aliveworkplace:nurse_station", facing="south")
+    b.set(3, 1, 7, "brewing_stand", has_bottle_0=False, has_bottle_1=False, has_bottle_2=False)
     b.set(7, 1, 7, "chest", facing="north", type="single", waterlogged=False)
     b.set(8, 1, 7, "potted_azalea_bush")
     for z in (3, 4):
@@ -599,9 +601,9 @@ def healing_center_2():
 
 # --- Healing Center III: a berry garden behind the ward -------------------------------------------------
 def healing_center_3():
-    """Upgrade of Healing Center II: a fenced garden behind the ward, sweet berry bushes either side of a path, a Fruit
-    Basket and a chest (a villager moves in as the orchard keeper and picks the berries), lamps and benches, and a back
-    door out of the ward. 11 x 10 x 22."""
+    """Upgrade of Healing Center II: a fenced garden behind the ward, sweet berry bushes either side of a path, a
+    composter and a chest (hand the villager there sweet berries and they become the orchard keeper and pick the
+    berries), lamps and benches, and a back door out of the ward. 11 x 10 x 22."""
     b = healing_center_2().grow(11, 10, 22)
     walls(b, 0, 16, 10, 21, 0, 0, "stone_bricks")
     box(b, 1, 0, 17, 9, 0, 20, "grass_block", snowy=False)
@@ -620,7 +622,7 @@ def healing_center_3():
             else:
                 b.set(x, 1, z, "rose_bush", half="lower")
                 b.set(x, 2, z, "rose_bush", half="upper")
-    b.set(4, 1, 20, "aliveworkplace:fruit_basket", facing="north")
+    b.set(4, 1, 20, "composter", level=0)
     b.set(6, 1, 20, "chest", facing="north", type="single", waterlogged=False)
     for x, z in ((0, 21), (10, 21)):
         lantern(b, x, 2, z)
@@ -765,7 +767,7 @@ def supply_shop_2():
 # --- Supply Shop III: a post office annex --------------------------------------------------------------
 def supply_shop_3():
     """Upgrade of Supply Shop II: a one-storey post office on the east side, set back a little, through a doorway from the
-    shop, with a Postal Desk and a chest (a villager moves in as the postman: the shop's goods can go out by mail), its
+    shop, with a Mailbox and a chest (a villager moves in as the postman: the shop's goods can go out by mail), its
     own blue awning and a bench out front. 17 x 11 x 16."""
     b = supply_shop_2().grow(17, 11, 16)
     skirt(b, 10, 3, 15, 8, STONE_BRICK)
@@ -792,7 +794,7 @@ def supply_shop_3():
     for x in range(10, 17):
         b.set(x, 4, 2, "blue_wool" if x % 2 else "white_wool")
     gable_roof(b, 9, 16, 2, 9, 5, SHOP_ROOF, axis="x", gable=SHOP_PLASTER, gable_at=(15,), eave_trim=SPRUCE)
-    b.set(14, 1, 6, "aliveworkplace:postal_desk", facing="west")
+    b.set(14, 1, 6, "aliveworkplace:mailbox", facing="west", has_mail=False)
     b.set(14, 1, 4, "chest", facing="west", type="single", waterlogged=False)
     b.set(10, 1, 4, "chiseled_bookshelf", facing="east")
     b.set(12, 1, 5, "light_blue_carpet")
@@ -975,8 +977,8 @@ def storehouse_3():
 # --- Berry Farm: an orchard keeper's garden --------------------------------------------------------------
 def berry_farm():
     """11 x 5 x 9: raised beds of sweet berry bushes edged in stone either side of a gravel path, a fence all round with a
-    gate, and a little lean-to with a Fruit Basket and a chest by the back fence (a villager moves in as the orchard
-    keeper and picks the berries)."""
+    gate, and a little lean-to with a composter and a chest by the back fence (hand the villager there sweet berries
+    and they become the orchard keeper and pick the berries)."""
     b = Build(11, 5, 9)
     walls(b, 0, 0, 10, 8, 0, 0, STONE_MIX)
     box(b, 1, 0, 1, 9, 0, 7, "grass_block", snowy=False)
@@ -995,7 +997,7 @@ def berry_farm():
         fence(b, 0, 1, z, "spruce_fence")
         fence(b, 10, 1, z, "spruce_fence")
     b.set(5, 1, 0, "spruce_fence_gate", facing="south", open=False, in_wall=False, powered=False)
-    # The lean-to at the back: two posts, a slab roof, the basket and chest under it, flowers either side
+    # The lean-to at the back: two posts, a slab roof, the composter and chest under it, flowers either side
     for x in (3, 7):
         fence(b, x, 1, 6, "spruce_fence")
         fence(b, x, 2, 6, "spruce_fence")
@@ -1004,7 +1006,7 @@ def berry_farm():
         slab(b, x, 3, 7, SPRUCE)
     for x in range(3, 8):
         b.set(x, 2, 7, "spruce_planks") if False else None
-    b.set(4, 1, 7, "aliveworkplace:fruit_basket", facing="north")
+    b.set(4, 1, 7, "composter", level=0)
     b.set(6, 1, 7, "chest", facing="north", type="single", waterlogged=False)
     b.set(5, 0, 7, "gravel")
     for x in (1, 2, 8, 9):
@@ -1056,9 +1058,9 @@ def berry_farm_2():
 
 # --- Research Lab: the fossil scientist's -------------------------------------------------------------
 def research_lab():
-    """11 x 9 x 11: a stone lab under a copper hip roof (it greens with the years) with a glass skylight, a columned porch, a Fossil Lab at the
-    back (a villager moves in as the fossil scientist; with Cobblemon they revive fossils), bookshelves, a glass case and
-    a bone skeleton on show."""
+    """11 x 9 x 11: a stone lab under a copper hip roof (it greens with the years) with a glass skylight, a columned
+    porch, Cobblemon's Fossil Analyzer at the back (hand the villager there a fossil and they become the fossil scientist,
+    ROADMAP 21.1c; without Cobblemon the spot stays empty), bookshelves, a glass case and a bone skeleton on show."""
     b = Build(11, 9, 11)
     plinth(b, 1, 1, 9, 9, FOUNDATION_MIX, floor="polished_andesite")
     walls(b, 1, 1, 9, 9, 1, 4, BRICK_WALL_MIX)
@@ -1085,8 +1087,8 @@ def research_lab():
     hip_roof(b, 0, 10, 0, 10, 5, CUT_COPPER, rings=3)
     walls(b, 3, 3, 7, 7, 8, 8, "cut_copper")
     box(b, 4, 8, 4, 6, 8, 6, "glass")
-    # Inside: the Fossil Lab between bookshelves, a skeleton and a case on show
-    b.set(5, 1, 8, "aliveworkplace:fossil_lab", facing="north")
+    # Inside: the Fossil Analyzer between bookshelves, a skeleton and a case on show
+    b.set(5, 1, 8, "cobblemon:fossil_analyzer", facing="north", on=False)
     for x in (2, 3, 7, 8):
         for y in (1, 2):
             b.set(x, y, 8, "bookshelf")
@@ -1334,9 +1336,9 @@ INN_ROOF = SPRUCE
 
 
 def inn():
-    """13 x 16 x 13: a two-storey inn with its gable to the street — a stone tavern downstairs (a bar of barrels with an
-    Inn Counter at its end: an innkeeper moves in, a hearth, tables and benches), three guest rooms with six beds under
-    the steep spruce roof, a lamp over the door."""
+    """13 x 16 x 13: a two-storey inn with its gable to the street — a stone tavern downstairs (a bar of barrels with a
+    Shop Counter at its end: hand the villager there a bed and they become the innkeeper; a hearth, tables and
+    benches), three guest rooms with six beds under the steep spruce roof, a lamp over the door."""
     b = Build(13, 16, 13)
     # Stone storey: walls x 1-11, z 2-11
     plinth(b, 1, 2, 11, 11, FOUNDATION_MIX, floor="spruce_planks")
@@ -1367,7 +1369,7 @@ def inn():
     # The tavern: a bar along the back, a hearth on the east wall, two tables with benches
     for x in range(2, 8):
         slab(b, x, 1, 9, SPRUCE, double=True) if x == 2 else stairs(b, x, 1, 9, SPRUCE, "north", top=True)
-    b.set(8, 1, 9, "aliveworkplace:inn_counter", facing="north")  # the innkeeper's end of the bar
+    b.set(8, 1, 9, "aliveworkplace:shop_counter", facing="north")  # the innkeeper's end of the bar
     for x in (2, 4, 6):
         b.set(x, 1, 10, "barrel", facing="north", open=False)
     b.set(3, 1, 10, "barrel", facing="up", open=False)
@@ -1447,7 +1449,8 @@ def inn():
 
 def inn_2():
     """Upgrade of the Inn (same origin and front): a stable on the east side for travellers' horses, its roof running back
-    past the inn's chimney — a Feed Trough, hay and water inside, so a rancher moves in. 19 x 16 x 13."""
+    past the inn's chimney — a smoker, hay and water inside (hand the villager there a saddle and they become the
+    rancher). 19 x 16 x 13."""
     b = inn().grow(19, 16, 13)
     plinth(b, 13, 3, 17, 10, STONE_MIX, floor="coarse_dirt")
     for y in range(1, 4):
@@ -1467,8 +1470,8 @@ def inn_2():
     for z in (5, 8):  # little windows high in the side wall
         trapdoor(b, 17, 3, z, "spruce_trapdoor", "east", open_=True)
         b.set(17, 3, z, "air")
-    # Inside: the Feed Trough with a chest beside it, hay, water
-    b.set(14, 1, 9, "aliveworkplace:feed_trough", facing="south")
+    # Inside: the smoker (the rancher's) with a chest beside it, hay, water
+    b.set(14, 1, 9, "smoker", facing="north", lit=False)
     b.set(15, 1, 9, "chest", facing="north", type="single", waterlogged=False)
     b.set(16, 1, 9, "hay_block", axis="y")
     b.set(16, 2, 9, "hay_block", axis="x")
@@ -1570,7 +1573,8 @@ SCHOOL_ROOF = SPRUCE
 
 def schoolhouse_room(b):
     """The schoolroom (walls x 1-9, z 2-10): stone plinth, spruce frame with white walls, tall windows down both sides,
-    the door under a porch at the front; inside a Teacher's Desk before a blackboard, three rows of benches, a bookshelf."""
+    the door under a porch at the front; inside a lectern before a blackboard (the teacher's: hand the villager there a
+    book), three rows of benches, a bookshelf."""
     plinth(b, 1, 2, 9, 10, STONE_MIX, floor="spruce_planks")
     walls(b, 1, 2, 9, 10, 1, 4, SCHOOL_INFILL)
     posts(b, [(1, 2), (9, 2), (1, 10), (9, 10), (1, 6), (9, 6), (3, 2), (7, 2), (3, 10), (7, 10)], 1, 4, SCHOOL_FRAME)
@@ -1596,9 +1600,9 @@ def schoolhouse_room(b):
            flowers=("spruce_trapdoor", ["potted_dandelion"]))
     window(b, 8, 2, 2, "north", height=2, shutters="spruce_trapdoor",
            flowers=("spruce_trapdoor", ["potted_blue_orchid"]))
-    # The blackboard on the back wall, the teacher's desk before it, the benches facing it
+    # The blackboard on the back wall, the teacher's lectern before it, the benches facing it
     box(b, 3, 2, 9, 7, 3, 9, "black_concrete")
-    b.set(5, 1, 9, "aliveworkplace:teachers_desk", facing="north")
+    b.set(5, 1, 9, "lectern", facing="north", has_book=False, powered=False)
     for z in (4, 5, 6):
         for x in (3, 4, 6, 7):
             stairs(b, x, 1, z, SPRUCE, "north")
@@ -1632,7 +1636,8 @@ def school_roof(b):
 
 def school_building():
     """11 x 14 x 12: a one-room village school — white walls in a spruce frame, a gabled porch with the school bell under
-    it, a lantern cupola on the ridge, the Teacher's Desk before a blackboard and benches for the children, a loft."""
+    it, a lantern cupola on the ridge, the teacher's lectern before a blackboard and benches for the children, a
+    loft."""
     b = Build(11, 14, 12)
     schoolhouse_room(b)
     school_roof(b)
@@ -1679,8 +1684,9 @@ LIBRARY_PLASTER = Mix((8, "white_concrete"), (2, "polished_diorite"), seed=25)
 
 
 def library_hall(b):
-    """The reading hall (walls x 1-11, z 2-10): stone brick walls with buttresses and tall arched windows, a Scholar's
-    Desk under the back window, bookshelves along both sides, two reading tables with lamps."""
+    """The reading hall (walls x 1-11, z 2-10): stone brick walls with buttresses and tall arched windows, a lectern
+    under the back window (the scholar's: hand the villager there paper), bookshelves along both sides, two reading
+    tables with lamps."""
     plinth(b, 1, 2, 11, 10, FOUNDATION_MIX, floor="spruce_planks")
     walls(b, 1, 2, 11, 10, 1, 5, BRICK_WALL_MIX)
     for x, z in ((1, 2), (11, 2), (1, 10), (11, 10)):
@@ -1707,13 +1713,13 @@ def library_hall(b):
         stairs(b, x, 0, 1, STONE_BRICK, "south") if x == 6 else b.set(x, 0, 1, "stone_bricks")
     for x in (3, 9):
         window(b, x, 2, 2, "north", height=3, sill=STONE_BRICK, lintel=STONE_BRICK)
-    # Inside: shelves down the sides, the desk under the back window, tables with lamps
+    # Inside: shelves down the sides, the lectern under the back window, tables with lamps
     for z in (3, 4, 5, 7, 8, 9):
         for y in (1, 2, 3):
             b.set(2, y, z, "bookshelf")
             b.set(10, y, z, "bookshelf")
     window(b, 6, 2, 10, "south", height=3, sill=STONE_BRICK)
-    b.set(6, 1, 9, "aliveworkplace:scholars_desk", facing="north")
+    b.set(6, 1, 9, "lectern", facing="north", has_book=False, powered=False)
     for tx in (4, 8):
         for tz in (5, 6):
             slab(b, tx, 1, tz, DARK_OAK, top=True)
@@ -1727,7 +1733,7 @@ def library_hall(b):
 
 def library():
     """13 x 15 x 12: a stone library — buttressed walls with tall windows, double doors under an arch, shelves of books
-    down both sides and a Scholar's Desk under the back window — under a steep slate roof."""
+    down both sides and the scholar's lectern under the back window — under a steep slate roof."""
     b = Build(13, 15, 12)
     library_hall(b)
     gable_roof(b, 0, 12, 1, 11, 6, LIBRARY_ROOF, axis="z", gable=LIBRARY_PLASTER, gable_at=(2, 10), ridge=LIBRARY_ROOF,
@@ -1753,8 +1759,8 @@ def library():
 
 def library_2():
     """Upgrade of the Library (same origin and front): a study tower on the east side, through a door where the east
-    window was, with a second Scholar's Desk (two scholars research twice as fast) and a lookout under its cap.
-    18 x 15 x 12."""
+    window was, with a second lectern for a second scholar (two scholars research twice as fast) and a lookout under
+    its cap. 18 x 15 x 12."""
     b = library().grow(18, 15, 12)
     b.clear(12, 0, 3, 12, 6, 9)  # the east buttresses and the window's sill come off
     for y in (2, 3, 4):
@@ -1789,8 +1795,8 @@ def library_2():
         b.set(x, 9, z, "air")
     b.set(14, 9, 6, "lantern", hanging=False, waterlogged=False)
     hip_roof(b, 11, 17, 3, 9, 11, LIBRARY_ROOF)
-    # The second desk, shelves round it
-    b.set(13, 1, 7, "aliveworkplace:scholars_desk", facing="west")
+    # The second lectern, shelves round it
+    b.set(13, 1, 7, "lectern", facing="east", has_book=False, powered=False)
     b.set(15, 1, 5, "bookshelf")
     b.set(13, 1, 5, "bookshelf")
     b.set(13, 2, 5, "bookshelf")
@@ -1872,7 +1878,8 @@ def barn_walls(b, x0, z0, x1, z1, y1, posts_at):
 
 def ranch_barn(b):
     """The barn: stable aisles (walls x 1-11, z 7-11) and the hayloft gable (x 4-8) stepping out to z 5, its doors open
-    onto the paddock; the Feed Trough inside facing them, hay in the loft and the stalls."""
+    onto the paddock; a smoker inside facing them (the rancher's: hand the villager there a saddle), hay in the loft
+    and the stalls."""
     plinth(b, 1, 7, 11, 11, STONE_MIX, floor="coarse_dirt")
     plinth(b, 4, 5, 8, 7, STONE_MIX, floor="coarse_dirt")
     for x in range(5, 8):
@@ -1907,8 +1914,8 @@ def ranch_barn(b):
         window(b, x, 2, 11, "south", sill=SPRUCE)
     window(b, 1, 2, 9, "west", shutters="spruce_trapdoor", sill=SPRUCE)
     window(b, 11, 2, 9, "east", shutters="spruce_trapdoor", sill=SPRUCE)
-    # Inside: the Feed Trough facing the doors, water, a chest; stalls with hay; tie beams with lanterns
-    b.set(6, 1, 10, "aliveworkplace:feed_trough", facing="north")
+    # Inside: the smoker facing the doors, water, a chest; stalls with hay; tie beams with lanterns
+    b.set(6, 1, 10, "smoker", facing="north", lit=False)
     b.set(5, 1, 10, "chest", facing="north", type="single", waterlogged=False)
     b.set(7, 1, 10, "water_cauldron", level=3)
     for x in (3, 9):
@@ -1958,8 +1965,8 @@ def paddock(b, x0, x1, z0, z1, gate_x):
 
 def ranch():
     """13 x 10 x 13: a ranch — a barn of spruce boards on a dark oak frame, its hayloft gable facing the paddock with
-    the barn doors open under the loft door, stable aisles either side under one long roof, the Feed Trough inside with
-    water and hay; and a fenced paddock in front with a gate between two lamps, a hay bale and a water trough."""
+    the barn doors open under the loft door, stable aisles either side under one long roof, the rancher's smoker inside
+    with water and hay; and a fenced paddock in front with a gate between two lamps, a hay bale and a water trough."""
     b = Build(13, 10, 13)
     ranch_barn(b)
     paddock(b, 0, 12, 0, 7, 6)
@@ -2044,7 +2051,8 @@ def hive_on_post(b, x, z, facing="south", smoke=False):
 
 
 def honey_shed(b, x0, z0):
-    """An open-fronted shed (x0 to x0+4, z0 to z0+3) with the Apiary, a chest, shelves of bottles and a spruce gable roof."""
+    """An open-fronted shed (x0 to x0+4, z0 to z0+3) with a beehive (the beekeeper's: hand the villager there a glass
+    bottle or shears), a chest, shelves of bottles and a spruce gable roof."""
     plinth(b, x0, z0, x0 + 4, z0 + 3, STONE_MIX, floor="oak_planks")
     for y in (1, 2, 3):
         for x in range(x0, x0 + 5):
@@ -2058,7 +2066,7 @@ def honey_shed(b, x0, z0):
                eave_trim=OAK)
     for x in range(x0 + 1, x0 + 4):  # a tie beam for the lantern (and for the builder to reach the ridge)
         log(b, x, 4, z0 + 1, "stripped_oak_log", axis="x")
-    b.set(x0 + 2, 1, z0 + 2, "aliveworkplace:apiary", facing="north")
+    b.set(x0 + 2, 1, z0 + 2, "beehive", facing="north", honey_level=0)
     b.set(x0 + 1, 1, z0 + 2, "chest", facing="north", type="single", waterlogged=False)
     for x in (x0 + 1, x0 + 3):
         trapdoor(b, x, 2, z0 + 2, "oak_trapdoor", "north", half="top")
@@ -2068,7 +2076,7 @@ def honey_shed(b, x0, z0):
 
 def apiary_garden():
     """11 x 6 x 11: a beekeeper's garden — a meadow of flowers inside a low fence, four beehives on posts (one over a
-    smouldering campfire), and a honey shed at the back with the Apiary, a chest and the honey."""
+    smouldering campfire), and a honey shed at the back with the beekeeper's hive, a chest and the honey."""
     b = Build(11, 8, 11)
     flower_bed(b, 1, 1, 9, 4, 0, FLOWERS)
     for x in range(0, 11):
@@ -2125,7 +2133,8 @@ SHOP_WALL = Mix((7, "bricks"), (2, "granite"), (1, "polished_granite"), seed=21)
 
 def flower_shop_front(b):
     """The shop (walls x 1-7, z 2-7): brick walls on a stone plinth, a wide display window either side of the door under
-    a striped awning, window boxes full of flowers; inside the Flower Stand, a chest, pots along a shelf."""
+    a striped awning, window boxes full of flowers; inside a composter (the florist's: hand the villager there a
+    flower), a chest, pots along a shelf."""
     plinth(b, 1, 2, 7, 7, STONE_MIX, floor="birch_planks")
     walls(b, 1, 2, 7, 7, 1, 4, SHOP_WALL)
     posts(b, [(1, 2), (7, 2), (1, 7), (7, 7)], 1, 4, SHOP_FRAME)
@@ -2146,8 +2155,8 @@ def flower_shop_front(b):
     for z in (4,):
         window(b, 1, 2, z, "west", width=2, height=1, shutters="birch_trapdoor", flowers=("birch_trapdoor", ["potted_poppy", "potted_dandelion"]))
         window(b, 7, 2, z, "east", width=2, height=1, shutters="birch_trapdoor", flowers=("birch_trapdoor", ["potted_cornflower", "potted_lily_of_the_valley"]))
-    # Inside: the stand and a chest by the back wall, a shelf of pots, a hanging light
-    b.set(4, 1, 6, "aliveworkplace:flower_stand", facing="north")
+    # Inside: the composter and a chest by the back wall, a shelf of pots, a hanging light
+    b.set(4, 1, 6, "composter", level=0)
     b.set(3, 1, 6, "chest", facing="north", type="single", waterlogged=False)
     for x in (2, 5, 6):
         trapdoor(b, x, 2, 6, "birch_trapdoor", "north", half="top")
@@ -2159,7 +2168,7 @@ def flower_shop_front(b):
 
 def flower_shop_building():
     """9 x 11 x 9: a little flower shop — brick walls, display windows full of pots under a striped awning, window boxes,
-    the Flower Stand inside, under a dark oak roof with a flower box in the gable."""
+    the florist's composter inside, under a dark oak roof with a flower box in the gable."""
     b = Build(9, 11, 9)
     flower_shop_front(b)
     gable_roof(b, 0, 8, 1, 8, 5, DARK_OAK, axis="z", gable="birch_planks", gable_at=(2, 7), ridge=DARK_OAK, eave_trim=BIRCH)
@@ -2214,8 +2223,8 @@ def headstone(b, x, z, kind=0):
 
 def graveyard():
     """13 x 11 x 13: a quiet churchyard — a low wall of mossy cobblestone with a gate between two soul lanterns, rows of
-    old headstones with flowers, a little yew — and a small stone mortuary at the back with the Undertaker's Table
-    under a steep slate roof."""
+    old headstones with flowers, a little yew — and a small stone mortuary at the back with a brewing stand (the
+    undertaker's: hand the villager there a golden apple) under a steep slate roof."""
     b = Build(13, 11, 13)
     for x in range(0, 13):
         wall_block(b, x, 0, 0, "mossy_cobblestone_wall" if x % 3 == 0 else "cobblestone_wall")
@@ -2255,7 +2264,7 @@ def graveyard():
         window(b, x, 2, 7, "north", height=1, glass="iron_bars", sill=STONE_BRICK)
     window(b, 3, 2, 9, "west", height=1, glass="iron_bars")
     window(b, 9, 2, 9, "east", height=1, glass="iron_bars")
-    b.set(6, 1, 10, "aliveworkplace:undertakers_table", facing="north")
+    b.set(6, 1, 10, "brewing_stand", has_bottle_0=False, has_bottle_1=False, has_bottle_2=False)
     b.set(5, 1, 10, "chest", facing="north", type="single", waterlogged=False)
     b.set(7, 1, 10, "candle", candles=4, lit=False, waterlogged=False)
     b.set(4, 1, 10, "potted_lily_of_the_valley")

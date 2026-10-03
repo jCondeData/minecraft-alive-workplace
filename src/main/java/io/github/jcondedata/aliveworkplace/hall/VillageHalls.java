@@ -98,10 +98,11 @@ public final class VillageHalls {
 		return kinds;
 	}
 
-	/** The food in the store: whatever can be eaten in the chests by the Storehouses and Kitchen Stoves of the village. */
+	/** The food in the store: whatever can be eaten in the chests by the Storehouses and kitchens (smokers) of the village. */
 	public static long food(ServerLevel level, BlockPos hall) {
 		Set<BlockPos> chests = new LinkedHashSet<>();
-		level.getPoiManager().findAll(h -> h.is(ModVillagers.STOREHOUSE_POI) || h.is(ModVillagers.KITCHEN_STOVE_POI), p -> true, hall, RADIUS,
+		level.getPoiManager().findAll(h -> h.is(ModVillagers.STOREHOUSE_POI) || h.is(ModVillagers.KITCHEN_STOVE_POI)
+			|| h.is(net.minecraft.world.entity.ai.village.poi.PoiTypes.BUTCHER), p -> true, hall, RADIUS,
 			PoiManager.Occupancy.ANY).forEach(station -> chests.addAll(SupplyContainers.find(level, station.immutable(), null)));
 		long food = 0;
 		for (var e : SupplyContainers.contents(level, List.copyOf(chests)).entrySet()) {
@@ -152,9 +153,10 @@ public final class VillageHalls {
 		if (!villager.isAlive() || villager.isBaby() || villager.getVillagerData().getProfession() == VillagerProfession.NITWIT) {
 			return false;
 		}
-		// Whatever they had before is let go of first.
+		// Whatever they had before is let go of first. A block broken while its worker was far away has no record left to
+		// release (releasing it would throw "POI never registered").
 		villager.getBrain().getMemory(MemoryModuleType.JOB_SITE).ifPresent(old -> {
-			if (old.dimension().equals(level.dimension())) {
+			if (old.dimension().equals(level.dimension()) && level.getPoiManager().getType(old.pos()).isPresent()) {
 				level.getPoiManager().release(old.pos());
 			}
 		});

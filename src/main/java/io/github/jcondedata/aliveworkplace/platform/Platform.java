@@ -178,6 +178,12 @@ public interface Platform {
 	/** A workstation (point of interest) type for {@code blocks}. */
 	PoiType registerPoi(ResourceLocation id, int tickets, int range, Block... blocks);
 
+	/**
+	 * Runs {@code action} with the block {@code id} once it is registered: right away if it already is, or when another
+	 * mod registers it (mods start in no fixed order). Never, if no mod does.
+	 */
+	void whenBlockRegistered(ResourceLocation id, Consumer<Block> action);
+
 	/** Adds trades to a profession's level (1 to 5). */
 	void addTrades(VillagerProfession profession, int level, Consumer<List<VillagerTrades.ItemListing>> trades);
 

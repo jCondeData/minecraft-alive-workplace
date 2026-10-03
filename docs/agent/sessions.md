@@ -89,7 +89,8 @@ A scheduled prompt starts each run (see `docs/owner/prompts.md`, section 10). Th
 A run can be cut off without warning (one stopped at exactly 60 minutes), so:
 
 1. **Start:** note the time and name yourself from it. Push at least every 20–30 minutes.
-2. **Health first.** Check the latest CI run on `main` and the nightly test run, and any open `nightly-tests` issue
+2. **Health first.** Check the latest CI run on `main`, the nightly test run and the showcase run (its failed scenes
+   are at the top of https://jcondedata.github.io/minecraft-alive-workplace/), and any open `nightly-tests` issue
    (the GitHub API works without a login for this public repo:
    `https://api.github.com/repos/jCondeData/minecraft-alive-workplace/actions/runs?per_page=5`). Anything red is a
    bug: add it with `sessions.py bug` and fix it first.

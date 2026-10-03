@@ -126,7 +126,8 @@ if __name__ == "__main__":
     for style in VILLAGE_STYLES:
         builders_workshop(style).save(VILLAGE_STRUCTURES, f"{style}_builders_workshop")
         for name, fit_out in VILLAGE_HOUSES.items():
-            staffed_house(style, fit_out).save(VILLAGE_STRUCTURES, f"{style}_{name}")
+            job = HOUSE_JOBS.get(name)
+            staffed_house(style, fit_out, "aliveworkplace:" + job if job else None).save(VILLAGE_STRUCTURES, f"{style}_{name}")
     test_hut().save(TEST_STRUCTURES, "test_hut")
     test_hut_2().save(TEST_STRUCTURES, "test_hut_2")
     test_area("build_area", 17, 8, 17)

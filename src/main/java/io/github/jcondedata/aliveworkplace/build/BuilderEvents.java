@@ -18,6 +18,18 @@ public final class BuilderEvents {
 			if (hand != InteractionHand.MAIN_HAND || player.isSpectator() || !(entity instanceof Villager villager)) {
 				return InteractionResult.PASS;
 			}
+			// Sneak-right-click with a job's item: the villager takes that job at the block they stand by (ROADMAP 21.1a,
+			// work/Stations). Passes when they already have it, so the item's other uses (hiring) still happen.
+			if (player.isShiftKeyDown() && io.github.jcondedata.aliveworkplace.work.Stations.picksAny(player.getItemInHand(hand))) {
+				if (level.isClientSide()) {
+					return InteractionResult.SUCCESS;
+				}
+				InteractionResult chosen = io.github.jcondedata.aliveworkplace.work.Stations.choose((ServerPlayer) player, villager,
+					player.getItemInHand(hand));
+				if (chosen != InteractionResult.PASS) {
+					return chosen;
+				}
+			}
 			// A scholar, sneak-right-clicked with an empty hand: the village's research.
 			if (player.isShiftKeyDown() && player.getItemInHand(hand).isEmpty()
 				&& villager.getVillagerData().getProfession() == io.github.jcondedata.aliveworkplace.registry.ModVillagers.SCHOLAR) {

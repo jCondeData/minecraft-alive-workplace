@@ -11,6 +11,7 @@
 			"io.github.jcondedata.aliveworkplace.test.TableGameTests",
 			"io.github.jcondedata.aliveworkplace.test.ShapeGameTests",
 			"io.github.jcondedata.aliveworkplace.test.VillageGameTests",
+			"io.github.jcondedata.aliveworkplace.test.StructureVillagerGameTests",
 			"io.github.jcondedata.aliveworkplace.test.ProtectionGameTests",
 			"io.github.jcondedata.aliveworkplace.test.HomesGameTests",
 			"io.github.jcondedata.aliveworkplace.test.HomesSpecGameTests",
@@ -49,6 +50,11 @@
 			"io.github.jcondedata.aliveworkplace.test.CampGameTests",
 			"io.github.jcondedata.aliveworkplace.test.RaidGameTests",
 			"io.github.jcondedata.aliveworkplace.test.SifterGameTests",
+			"io.github.jcondedata.aliveworkplace.test.StationsGameTests",
+			"io.github.jcondedata.aliveworkplace.test.StationsSpecGameTests",
+			"io.github.jcondedata.aliveworkplace.test.StationsBugGameTests",
+			"io.github.jcondedata.aliveworkplace.test.StationsRetakeGameTests",
+			"io.github.jcondedata.aliveworkplace.test.StationsFixesGameTests",
 			"io.github.jcondedata.aliveworkplace.test.TinkererGameTests",
 			"io.github.jcondedata.aliveworkplace.test.NetherworkerGameTests",
 			"io.github.jcondedata.aliveworkplace.test.CompostGameTests",
@@ -57,7 +63,8 @@
 			"io.github.jcondedata.aliveworkplace.test.GraveGameTests",
 			"io.github.jcondedata.aliveworkplace.test.ResearchGameTests",
 			"io.github.jcondedata.aliveworkplace.test.ScribeGameTests",
-			"io.github.jcondedata.aliveworkplace.test.OptionalModsGameTests"
+			"io.github.jcondedata.aliveworkplace.test.OptionalModsGameTests",
+			"io.github.jcondedata.aliveworkplace.test.OutfitGameTests"
 		]
 	},
 	"depends": {

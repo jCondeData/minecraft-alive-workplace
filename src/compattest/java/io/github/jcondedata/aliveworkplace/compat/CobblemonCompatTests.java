@@ -622,7 +622,10 @@ public class CobblemonCompatTests implements FabricGameTest {
 		helper.succeed();
 	}
 
-	/** A Fossil Scientist takes a Dome Fossil and the fee, works on it at the lab, and a Kabuto joins the player's party. */
+	/**
+	 * A Fossil Scientist takes a Dome Fossil and the fee, works on it at Cobblemon's Fossil Analyzer (their workstation since
+	 * 21.1c), and a Kabuto joins the player's party.
+	 */
 	//$ gametest_ticks_batch AREA '1200' '"fossil"'
 	@GameTest(template = AREA, timeoutTicks = 1200, batch = "fossil")
 	public void fossilScientistRevivesAFossil(GameTestHelper helper) {
@@ -630,9 +633,11 @@ public class CobblemonCompatTests implements FabricGameTest {
 		io.github.jcondedata.aliveworkplace.fossil.FossilScientists.REVIVE_TICKS = 60;
 		helper.setDayTime(2000);
 		BlockPos lab = new BlockPos(2, 2, 2);
-		helper.setBlock(lab, ModBlocks.FOSSIL_LAB);
+		helper.setBlock(lab, StationsCompatTests.fossilAnalyzer());
 		Villager scientist = helper.spawn(EntityType.VILLAGER, new BlockPos(3, 2, 3));
-		Jobs.employ(helper.getLevel(), scientist, helper.absolutePos(lab), ModVillagers.FOSSIL_LAB_POI, ModVillagers.FOSSIL_SCIENTIST);
+		Jobs.employ(helper.getLevel(), scientist, helper.absolutePos(lab), ModVillagers.FOSSIL_ANALYZER_POI, ModVillagers.FOSSIL_SCIENTIST);
+		helper.assertTrue(helper.getLevel().getPoiManager().existsAtPosition(ModVillagers.FOSSIL_ANALYZER_POI, helper.absolutePos(lab)),
+			"the Fossil Analyzer is no workstation");
 		ServerPlayer player = helper.makeMockServerPlayerInLevel();
 		player.setGameMode(GameType.SURVIVAL); // (creative players keep what they hand over)
 		io.github.jcondedata.aliveworkplace.compat.cobbledollars.CobbleDollarsBank.add(player, 10_000);

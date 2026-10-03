@@ -2,16 +2,40 @@
 
 ## Unreleased
 
+## 0.138.0 — 2026-10-02
+
 ### Changed
+- **New item icons, picked by the owner**: the Blueprint is clipped to a drawing board, the Blank Blueprint is two
+  sheets, the Shape Planner is a brass compass, the Village Ledger lies open, the Delivery Note is a clipboard, the
+  Travel Ticket has a sailing boat, the Price Tag a $ sign, the Rally Banner is an upright standard with crossed swords,
+  the Settler's Wagon is seen from the side, the Patrol Map and Field Marker are maps on vanilla's map outline, the
+  Quarry Marker has a chequered swallowtail flag on a stake, and the Scan Tool is a drafting pencil.
+- **Fewer job blocks**: our jobs now work at vanilla blocks, shared with the vanilla job there. Stand a villager by the
+  block and sneak-right-click them with the job's item: a composter makes an Orchard Keeper with sweet berries, a
+  Florist with a flower and a Composter with bone meal; a blast furnace makes a Miner with a pickaxe; a grindstone a
+  Guard with a sword; a jukebox a Bard with a music disc, and so on (hold Shift over a workstation to see its jobs).
+  A jobless villager still takes a vanilla block for the vanilla job by themselves. Builders work at the Blueprint
+  Table. 26 job blocks can't be crafted any more (the Builder's Bench, the Guard Post, the Fruit Basket...), but the
+  ones in your world keep working. Village houses, the camp and the blueprints use the new blocks, and a village house
+  whose block is shared comes with its worker.
+- **Fossil Scientists work at Cobblemon's Fossil Analyzer** instead of a block of ours: stand a villager by one and
+  sneak-right-click them with a fossil. They still revive the fossil themselves, without the rest of the machine. The
+  village fossil labs and the Research Lab blueprint have an analyzer now; scientists already working at a Training Post
+  or a Fossil Lab keep working there.
+- A postman's mailbox is the post office's counter: with no mailbox of your own, pick up your parcels there.
 - **A new look**: every workstation, villager outfit and item is redrawn in Minecraft's own style. Workstations are
   built from their wood or stone like the crafting table, with no more grainy speckle. The outfits are cleaner, and a
   job's hat no longer has the biome's hat showing through it. Items take the shape of their vanilla kind: the Village
   Ledger lies like a book, blueprints and the Patrol Map like maps, and the markers and the Rally Banner are held like
   tools.
+- **Cavalry on camels**: a guard rides a saddled camel too, as well as a horse, donkey or mule. A camel needs no taming,
+  only a saddle.
 - **Villagers sit when they ride**: a guard on horseback sits in the saddle with their legs forward, and a ferryman or
   a fisher sits in the boat at the oars, instead of standing on the horse's back or looking sunk in the boat.
 
 ### Fixed
+- Villagers that come with a generated village house no longer suffocate in its walls: some vanilla desert houses put
+  their villager in a narrow corridor, where it landed on the step beside it with its head in the ceiling.
 - A blueprint with a long number at the end of its name (`house_20260929`, from an imported file) no longer breaks the
   moods of the villagers who live in it; only up to three digits count as a tier.
 - A bed at the far end of a big building (a large scan, say) now counts as a home in it.
@@ -21,7 +45,16 @@
   stranger (who could collect the treasury with it).
 - Guards get off their horse, and fishers come ashore, as soon as their shift ends (they rode or floated on for up to
   a minute).
+- Giving a job from the Village Hall no longer fails with an error when the villager's old workstation was broken
+  while they were far away.
 - Bandits raiding a village at night can no longer be drawn into a vanilla raid.
+- Our village houses no longer leave invisible holes in the ground in front of their doors (villagers and players
+  could fall into them, and a new villager sometimes never reached the workshop's bench).
+
+### Dev
+- A nightly showcase: GitHub films every job, screen and build family in the real game each night and publishes one
+  page with a GIF, stills and a pass or fail per scene (https://jcondedata.github.io/minecraft-alive-workplace/). 33
+  new screenshot scenes cover every job and screen that had none.
 
 ## 0.137.0 — 2026-09-29
 

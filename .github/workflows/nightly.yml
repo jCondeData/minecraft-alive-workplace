@@ -72,13 +72,7 @@ jobs:
           export JAVA_HOME="$JAVA_HOME_21_X64" PATH="$JAVA_HOME_21_X64/bin:$PATH"
           PERF=true PLOTS=40 tools/packtest/run.sh 2>&1 | tee build/modtest/perf.log
 
-      - name: Client screenshots (Xvfb)
-        if: always() && hashFiles('tools/screenshots/run.sh') != ''
-        run: |
-          sudo apt-get update -q && sudo apt-get install -yq xvfb mesa-utils libgl1-mesa-dri > /dev/null
-          for scene in staff hall table extras; do
-            SCENE=$scene timeout 1800 tools/screenshots/run.sh > "build/modtest/screens-$scene.log" 2>&1 || echo "scene $scene failed"
-          done
+      # The screenshot scenes run in their own workflow, every one of them: showcase.yml.
 
       - uses: actions/upload-artifact@v4
         if: always()
@@ -87,7 +81,6 @@ jobs:
           path: |
             build/modtest/
             versions/*/build/run/*/logs/latest.log
-            versions/*/run/screenshots/
             build/packtest/server/server.log
           if-no-files-found: ignore
 

@@ -60,7 +60,7 @@ public final class BlueprintSupplies {
 			return Optional.empty();
 		}
 		BlockPos anchor = BlueprintItem.anchorWorld(placement, blueprint.get().size());
-		Optional<BlockPos> bench = level.getPoiManager().findClosest(h -> h.is(ModVillagers.BUILDERS_BENCH_POI), anchor,
+		Optional<BlockPos> bench = level.getPoiManager().findClosest(h -> h.is(ModVillagers.BLUEPRINT_TABLE_POI) || h.is(ModVillagers.BUILDERS_BENCH_POI), anchor,
 			Builders.MAX_SITE_DISTANCE, PoiManager.Occupancy.ANY);
 		if (bench.isEmpty()) {
 			return Optional.of(new SupplyReport(Optional.empty(), 0, List.of()));

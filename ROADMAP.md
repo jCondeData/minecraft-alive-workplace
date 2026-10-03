@@ -92,7 +92,7 @@ stay in the list, ticked, so their numbers stay unique.
 - [x] **B1** (approved auto 2026-09-29) Four bugs from the first tester run: the homes and rank tips showed the wrong
   numbers, a blueprint name ending in a huge number crashed, and a bed at the far corner of a large building didn't
   count as home. Fixed with the owner's `HomesSpecGameTests` (d36b3d1).
-- [ ] **B2** (claimed: night-0930-0646, 2026-09-30 06:46Z) Flaky test: `VillageGameTests.aVillagerMovesIntoTheWorkshop` (failed once on CI, commit 49ae713). Done
+- [ ] **B2** (claimed: chat, 2026-10-03 03:49Z) Flaky test: `VillageGameTests.aVillagerMovesIntoTheWorkshop` (failed once on CI, commit 49ae713). Done
   when: 100 repeats pass (the repeat generator in the tester skill), or the cause is fixed. Hint from the last
   session: look for leftover blocks from earlier batches blocking the way to the bench; 17 local runs in a row passed.
   It failed once more in the tester's full-suite run (in a mutant run whose mutant couldn't touch it); 10 of 10 alone
@@ -101,18 +101,99 @@ stay in the list, ticked, so their numbers stay unique.
   strangers' arrows hurt a protected village's villagers and animals; a stranger with a Village Ledger could empty a
   protected treasury; guards stayed on their horses, and fishers on the water, after their shift; night-raid bandits
   could join vanilla raids.
+- [ ] **B4** A jobless villager standing just outside the plains workshop (by its side wall, 2 blocks from the bench) never took the bench in 2400 ticks: 30 of 30 in repeat runs (night-0930-0845, variant of the workshop test placed like a village, spawn helper (4,2,10)); it wandered off to a corner of the test area instead. Inside the house it takes it every time. Check whether this is the test area (edges, no village around) or real: can villagers find the workshop's bench through its door in a real village? Done when: a GameTest with the villager outside the door passes 100 repeats, or it's shown to be a test artefact and noted. The repeat file used is in the B2 commits' notes (RepeatTests with a 'trench_fixed' entry). (found by night-0930-0845, 2026-09-30)
+- [x] **B5** (review: pending 2026-09-30) Village houses leave structure_void blocks in the world: all 115 templates in data/aliveworkplace/structure/village/ contain structure_void, and the legacy pool element skips only air and structure blocks, so e.g. the plains workshop gets a 9-wide strip with no collision in the ground in front of its door (villagers and players fall in; also the rest of B2's flake). Found by the tester, not yet seen in a real village. Failing test on branch tests/b5-structure-void (aVillagePlacedWorkshopLeavesNoStructureVoidInTheWorld; add its //$ swap line). Likely fix in tools/blueprints/generate.py: don't write structure_void into templates (vanilla's save leaves them out), regenerate, render. Done when: that test passes, a real village shows no holes (screenshot), and B2's 100 in-suite repeats pass. (found by night-0930-0845, 2026-09-30)
+- [x] **B6** (approved 2026-10-01) Villagers suffocate in walls in generated villages: the showcase's village scene (SCENE=village WORKSHOP_WEIGHT=200 tools/screenshots/run.sh) failed in 3 of 3 GitHub runs today, with villagers stuck inside Smooth Sandstone Slabs in the desert village (3 each run) and a nitwit in a Snow Block in the snowy one. Expected: villagers spawned with our village houses stand in open space. Done when: the village scene passes 3 nightly runs in a row, with a GameTest for the house that caused it. (found by chat's showcase, 22.4, 2026-09-30) (found by chat, 2026-09-30)
+- [x] **B7** (approved auto 2026-10-01) VillageHalls.assign (the Hall's free-workstation list) calls PoiManager.release on a villager's old job site without checking the block is still there: if the old workstation was broken while its worker was more than 16 blocks away, assigning them from the Hall throws IllegalStateException 'POI never registered' in the click handler (the same crash the 21.1a tester found in Stations.assign, fixed there on item/21.1a by checking getType first). Done when: a GameTest assigns such a villager from the Hall without an exception. (found by chat while fixing 21.1a, 2026-09-30) (found by chat, 2026-10-01)
+- [ ] **B8** (claimed: chat, 2026-10-03 03:43Z) Reassigning a worker can free someone else's workstation: Stations.assign and VillageHalls.assign release the old job site whenever a POI record exists there, without checking it is still the worker's own block. If the old block is broken far from its worker, the same kind of block is placed on that spot and another villager takes it, then the first worker is given a new job, the second worker's ticket is freed and two villagers can hold one block (vanilla's releasePoi shares the gap). Found by the 21.1a round-4 and B7 testers, untested. Done when: a GameTest of that sequence leaves the second worker's block taken. (found by night-1001-0646, 2026-10-01)
+- [ ] **B9** Showcase scene 'forest' (Lumberjack: felling and replanting four trees) failed once on GitHub (run 36758016372, commit e94704b, 2026-09-30: 'not done: the lumberjack replanted (3 saplings in the ground)'; issue #1) and passed on the later item/21.1a showcase runs. Expected: four saplings replanted every run. Done when: the cause is found and fixed with a GameTest, or the scene passes 5 runs in a row (SCENE=forest tools/screenshots/run.sh) and the flake is explained in the Notes. (found by night-1001-0646, 2026-10-01)
+- [ ] **B10** (claimed: chat, 2026-10-03 03:36Z) Zombie villagers in abandoned (zombie) desert villages use the same vanilla desert_small_house_7 villager spot as B6 (x+0.72/z+0.63 in a 1-wide corridor under top slabs), but B6's fix only centres Villager, not ZombieVillager, so they may still get stuck in the wall there. Expected: zombie villagers from village templates stand in open space too. Done when: a GameTest places the zombie desert house with its zombie villager piece and the zombie ends up on the corridor floor, not in a wall. (found by the B6 tester) (found by night-1001-1046, 2026-10-01)
 
 ## Milestone 21: Finish 0.138.0
 
 The evening of 2026-09-29 left 0.138.0 nearly ready: riding (approved), every texture redrawn, the tester set up and
 its first findings fixed. Nothing is released until these are done.
 
-- [ ] **21.1** **The texture rebuild, shown in game.** Every texture was redrawn with the pixel-art skill (2eeb6be);
+- [x] **21.1** (approved 2026-10-03) **The texture rebuild, shown in game.** Every texture was redrawn with the pixel-art skill (2eeb6be);
   178 of 182 pass its lint. Done when:
   - the other 4 pass, or each has its reason in the Notes;
   - one review package with the `preview.py audit` contact sheet, in-game shots of the workstations in a village and
     of every profession's outfit (`SCENE=staff`) and a zombie villager, and a GIF of villagers working in the new
     outfits.
+  **Shown** (chat, 2026-10-02): lint is 181 of 182 (mailbox_flag's reason in the Notes); new scene `outfits` (all 30
+  jobs as villagers and as zombie villagers, five to a shot, named); `staff` now shows the 7 workstations 21.1a kept,
+  each with its worker, along a street (its check: block there, job site taken, worker in its job); the tester's
+  OutfitGameTests checks every job ships both outfits. The working GIF is the nightly `composter` scene. No changelog
+  line: players see nothing new beyond the existing "A new look" entry.
+  - [x] **21.1a** (approved 2026-10-01) Change from the owner (2026-09-30): not every villager needs a new custom table for a job, there are already items in the game that should give a villager his job, for example a bee hive/bee nest for the blast furnace for the miner. i think by creating too many job blocks will be a little ugly and unnapealing to new players and myself personally. I think also when two people are close in job they can share a block, but the player must right click them and give them certain items in order for them to start working, for example you have an orchard keeper and a garder and they composter they can all be associated with the compost bin, but you have to right click the villager and then decide from there - giving it flowers makes it an orchard keeper, giving it a wheat makes it a farmer, and giving it bonemeal makes it a composter, etc. this way we can cut down on the amount of custom job blocks. for things that we absolutely need custom job blocks for that is totally ok, such as a blueprint table, but for things like a bard minecraft already has a record player so we are good. ill let you iron out the kinks. after this we can move to textures
+    **Fewer job blocks: the plan** (drafted by the chat 2026-09-30 from his words; he vetoes any line he dislikes).
+    Vanilla jobs work as in vanilla. A job of ours starts when you sneak-right-click a villager standing by its block
+    while holding its item; a villager already working there switches the same way. A block no vanilla job uses
+    (crafting table, beehive, jukebox) never takes a jobless villager by itself. Shared blocks, default job first:
+    - Composter: Farmer; Orchard Keeper (sweet berries), Florist (a flower), Composter (bone meal).
+    - Crafting table: Carpenter (planks).
+    - Blast furnace: Armorer (smelter); Miner (a pickaxe).
+    - Fletching table: Fletcher; Lumberjack (an axe).
+    - Smithing table: Toolsmith; Tinkerer (redstone), Ball Smith (an apricorn, with Cobblemon).
+    - Cauldron: Leatherworker (dyer); Sifter (gravel: panning in the water).
+    - Lectern: Librarian (scribe); Scholar (paper), Teacher (a book).
+    - Cartography table: Cartographer (explorer); Netherworker (netherrack).
+    - Brewing stand: Cleric (alchemist); Nurse (a honey bottle), Undertaker (a golden apple).
+    - Smoker: Butcher (herder); Chef (raw food), Rancher (a saddle).
+    - Grindstone: Weaponsmith; Guard (a sword).
+    - Beehive or bee nest: Beekeeper (a glass bottle or shears). Jukebox: Bard (a music disc).
+    - Kept, because they are machines with a job of their own: Blueprint Table (the Builder's workstation too: he
+      said it stays for searching and uploading builds, so builders work there), Village Hall, Storehouse (Porter),
+      Shop Counter (Shopkeeper; Innkeeper with a bed, Pokémon Trader with a Poké Ball), Travel Post (Ferryman), Mailbox
+      (Postman, with paper), Training Post (Trainer; Trainer Leader with a gold block, Move Tutor with a book, Fossil
+      Scientist with a fossil).
+    - Gone (26): Builder's Bench, Miner's Bench, Chopping Block, Fruit Basket, Apiary, Flower Stand, Scholar's Desk,
+      Sieve, Tinker's Bench, Compost Bin, Nether Brazier, Undertaker's Table, Inn Counter, Teacher's Desk, Feed Trough,
+      Carpenter's Bench, Kitchen Stove, Postal Desk, Guard Post, Nurse Station, Music Stand, Leader's Podium, Tutor's
+      Desk, Ball Workbench, Trade Board, Fossil Lab.
+
+    Existing worlds (his live server): the gone blocks stay registered and keep working where they're placed, but can't
+    be crafted any more and leave the creative tab. Our village houses, workshops and starter builds are redrawn with
+    the vanilla blocks (Architect skill, renders).
+    The owner's answers (2026-09-30): builders work at the Blueprint Table; the Miner shares the blast furnace with
+    the Armorer (a pickaxe picks the Miner). The kept blocks' own job still takes a jobless villager by itself, as the
+    Builder's Bench did; the other jobs on them start with their item.
+    Done when: every job in the plan starts from its block and item (a GameTest each, and its showcase scene staged
+    that way); the README's job table, the recipe book and the tooltips say so; a world saved by 0.137.0 with the old
+    blocks loads and its workers keep working (a GameTest); no village house or starter build uses a gone block; the
+    showcase is green. Do it in pieces that fit a night run, landing each with `land --keep-open`: the mechanism first.
+    **Decisions while building** (chat, 2026-09-30): (1) our jobs can also re-take their shared vanilla block by
+    themselves (acquirable = held), as vanilla workers do; a jobless villager still gets the vanilla job, because the
+    first registered job wins. Without it a worker whose block record was missing for a moment never found it again.
+    (2) Choosing a job doesn't hire. (3) The Postal Desk's post-office pickup moved to any mailbox a postman works at.
+    (4) Village houses whose block is shared come with a villager who already has the house's job (an entity in the
+    house template, VillageGameTests); the workshop, trainer's house, ferry house and storehouse still get a jobless
+    one. (5) Hold Shift over a workstation: its tooltip lists the jobs and items (StationTooltip).
+    **Left for later:** the Hall's free-workstations list still offers only the vanilla job at a shared block (the
+    player switches with the item afterwards); the sifter has no "panning" look at a water cauldron; /workplace
+    benchmark still places old blocks (they work). A real 0.137.0 world opened with this version is 21.2's check.
+  - [x] **21.1b** (review: pending 2026-10-02) Change from the owner (2026-10-01): lets move to textures, what i want to do is for every item in the game (except for villager skins, and blocks) send me a couple versions, such as blueprints, i will go through the versions and pick my favorites, and give guidance when i can.
+    **Plan** (chat, 2026-10-01): the 13 items of ours that aren't blocks (Blueprint, Blank Blueprint, Scan Tool, Shape
+    Planner, Patrol Map, Village Ledger, Rally Banner, Quarry Marker, Field Marker, Travel Ticket, Delivery Note, Price
+    Tag, Settler's Wagon). Each gets its current icon plus three new versions, each a different idea, drawn with the
+    pixel-art skill in vanilla's style; recipes in tools/textures/picks/. They go on one picker page he can use on his
+    phone: one pick per item and a note; another round for any item his notes ask for.
+    Done when: every item has the versions on the page; his picks are the items' textures (recipes moved into
+    tools/textures/art/items.py, lint clean); a review package shows the picked icons in game (slots and in hand).
+    **Round 1 picks** (owner, 2026-10-01, on the page): blueprint v4 (clipped to a drawing board), blank blueprint v2
+    (two sheets), shape planner v2 (the brass compass), village ledger v3 (open ledger), delivery note v4 (clipboard),
+    travel ticket v2 (sailing-boat ticket), price tag v2 (tag with a $), rally banner v4 (upright standard, crossed
+    swords; its model is now item/generated), settler's wagon v2 (side view): all nine are in items.py and the game.
+    His notes: patrol map v2 "make the outline of the paper exact to the paper outlines of maps currently in minecraft";
+    quarry marker v1's flag "use the stick pattern from the paper card with a red x, but this flag"; scan tool v4
+    "straighten out line, make it more obviously a pencil with the tip coming to a point"; field marker "redo all of
+    these, none make sense to me"; for every icon "try to follow the exact outlines minecraft has in place for certain
+    items, for example if minecraft already has a map design then follow that exact outline, just drawing different
+    content atop of it". Round 2 (tools/textures/picks/round2.py) is on the same page, collection 'round2'.
+    **Round 2 picks** (owner, 2026-10-02): patrol map, quarry marker, scan tool and field marker all r2b (vanilla map
+    paper; swallowtail flag; pencil with a white blueprint line; a field plan on the map outline, now item/generated),
+    no notes. All 13 icons are his picks in items.py and the game; the 'items' showcase scene films them.
+  - [x] **21.1c** (review: pending 2026-10-03) Change from the owner (2026-10-03): the Fossil Scientist works at Cobblemon's Fossil Analyzer instead of a block of ours (owner 2026-10-02: 'the fossil researcher - this is already a working block within cobblemon so adding it as an extra block within our modpack seems unnecessary. can we rework this villager to work off of that?')
 - [ ] **21.2** **The full check before release** (the tester's Full tier; the chat started it and ran out of time). Do
   it in pieces that fit a one-hour night run, landing each piece with `land --keep-open`:
   - the real Cobbleverse pack boot and the soak: the nightly GitHub workflow runs these, so read its result;
@@ -123,12 +204,22 @@ its first findings fixed. Nothing is released until these are done.
 
   Done when: each part is a passing test or a green nightly result, every finding is a Bug, and the report is linked
   in the Notes. Players see nothing new, so the last piece lands with `--no-review`.
-- [ ] **21.3** (blocked: owner, keep camels as cavalry?) **Camels.** The game counts a saddled camel as a horse, so a
+- [x] **21.3** (approved auto 2026-10-03) **Camels.** The game counts a saddled camel as a horse, so a
   guard rides one too, but the changelog promises horses, donkeys and mules. The tester's test `aCamelIsNotCavalry`
   (branch `tests/check-0.137-riding-protection`) waits on his answer. Camels out: land that test with the fix. Camels
   in: turn the test around and add camels to the changelog.
-- [ ] **21.4** (blocked: waits for 21.1 approved and 21.2 done) **Release 0.138.0.** Only the owner's chat releases
+  **Answered** (owner, 2026-10-01): camels in. The test is turned around as `aGuardRidesASaddledCamel`
+  (RidingSpecGameTests: a saddled camel carries a guard and he gets on it; an unsaddled one doesn't), and the
+  changelog says so. The rest of that old branch already reached `main` in other items.
+- [x] **21.4** (released 2026-10-02: v0.138.0, https://github.com/jCondeData/minecraft-alive-workplace/releases/tag/v0.138.0) **Release 0.138.0.** Only the owner's chat releases
   (CLAUDE.md, "Releasing"). Done when: the GitHub release has the jar.
+  **Released early** (chat, 2026-10-02): the owner said ship ("unless there is massive bugs i want to be able to play
+  asap"), with 21.1 approved, 21.3 and 21.1c landed, and B5, 21.1b and 21.1c still pending his review (they ship).
+  Instead of the full 21.2 check, the tester ran a scoped release check: a world saved by the real 0.137.0 jar on the
+  Cobbleverse pack, with all 26 retired job blocks and their workers, opened with the new jar (26/26 blocks, jobs and
+  job sites kept, no errors from our mod); the full suite and the compat suite green, nothing missing against the
+  baseline; no new flakes (B2 failed once more in a land build and passed on the retry). 21.2's other parts (the ferry
+  mid-ride, performance, mutants, the standard pack test) stay for the night runs.
 
 ## Milestone 22: Safety net
 
@@ -142,6 +233,17 @@ Before polishing, make sure nothing regresses unnoticed.
 - [ ] **22.3** A bot scene for every player-visible feature, so any feature can be shown again on demand
   (`tools/screenshots/run.sh SCENE=…`). Done when: every job and every screen in the README has a scene. A new feature
   gets its scene in the same commit.
+- [x] **22.4** (approved auto 2026-09-30) **A daily showcase page** (owner, 2026-09-30): screenshots and GIFs of everything the mod does, so the
+  owner can check it all from his phone each morning. Includes 22.3's missing scenes. Done when:
+  - every night, GitHub's machines run every screenshot scene: every job, screen and build family. Not a Claude
+    session: it must cost no Claude usage. The scenes are split across parallel jobs so it finishes within an hour,
+    and any scenes that are still missing are added (22.3);
+  - the results land on one page he can open on his phone at a fixed link: for each scene, a GIF of it working from
+    start to end and 2-4 labelled stills, grouped by job, with the date and version at the top;
+  - each scene gets a pass or fail. It passes only if the job visibly did its work (the builder finished, the miner
+    dug, the screen opened). A failed scene or a broken picture (missing textures, raw text keys, villagers stuck in
+    walls) opens the nightly-tests issue, so the night runs fix it;
+  - if publishing the page needs a GitHub setting only he can change, he gets the exact clicks.
 
 ## Milestone 23: Builders never need babysitting (priority 1)
 
@@ -276,7 +378,7 @@ about 12% of that. For villager mods, the cost is pathfinding to distant points 
 
   Record the choice under Design decisions. Done when: he has chosen. Until then 26.2–26.4 are prepared for both
   sites.
-- [ ] **26.2** **Store page kit**, for the chosen sites:
+- [ ] **26.2** (claimed: chat, 2026-10-03 03:23Z) **Store page kit**, for the chosen sites:
   - a one-line summary (no formatting, doesn't repeat the name);
   - a description that says what it adds, why to get it, and what to know first (server and client both need it,
     Fabric API, optional Cobblemon);
@@ -341,6 +443,10 @@ about 12% of that. For villager mods, the cost is pathfinding to distant points 
   blueprints, then visuals and textures, then performance at scale.
 - **Review after every job** (2026-09-29): after each finished item, playtest with the bot and send a review package.
   The owner approves or vetoes. Work continues while he reviews, but only approved work is released.
+- **Fewer job blocks** (2026-09-30): too many job blocks look ugly and put new players off. Jobs use vanilla blocks
+  wherever one fits (a jukebox for the bard, a beehive for the beekeeper); jobs that are close share a block, and the
+  player picks the job by right-clicking the villager with an item. Custom job blocks only where nothing vanilla will
+  do, such as the Blueprint Table. The plan is under 21.1a.
 - **Hands-off** (2026-09-29): the owner reviews only what he can see or feel in game, from screenshots and GIFs.
   Work with nothing to see (tests, tooling, internal fixes) is accepted automatically once the tester passes, and is
   only listed in the next message. He wants to be asked only for real decisions.
@@ -354,3 +460,9 @@ about 12% of that. For villager mods, the cost is pathfinding to distant points 
   before reusing any of it) and `tests/check-0.137-riding-protection` (the camel test, 21.3).
 - 2026-09-29: the plan was installed by the planning chat. The chat that built 0.137 had started two test files for the
   full check (21.2) that were never pushed; write them again as part of 21.2.
+- 2026-10-02 (21.1, lint): 181 of 182 textures pass `lint.py`. The one warning, `block/mailbox_flag.png` ("tile edges
+  show as lines when repeated"), is expected: the texture paints only the mailbox's small red flag, one 1-pixel-wide
+  model element (`models/block/mailbox.json` 1x2x7 when lowered, `mailbox_mail.json` 1x7x2 when raised), so it is never
+  tiled and no seam can show.
+- **night handoff** (night-1001-1046, 2026-10-01 11:36Z): night-1001-1046: health: CI on main green, nightly-tests green, baseline runGameTest green (383); issue #1 still open (village = B6, forest = B9). Note: the first gradle run of a fresh container failed with 'Plugin dev.kikugie.loom-back-compat was not found' (a network hiccup); a retry loop got through. LANDED B6 (53da82e, review: pending, package sent): Villager.finalizeSpawn hook (world/StructureVillagers) centres STRUCTURE-spawned villagers in their block; GameTest aVillagerFromAVanillaDesertHouseCorridorStandsOnTheFloor + tester's StructureVillagerGameTests (4 rotations, other spawn types untouched); local SCENE=village WORKSHOP_WEIGHT=200 had 0 problems. B6's Done when also needs the village scene green in 3 nightly showcase runs: watch issue #1, and reopen B6 if the snowy nitwit (Snow Block) still shows up, since no test covers that snowy house. Added B10 (zombie villagers in zombie desert villages aren't centred; the fix covers only Villager). Next: B10 (small: same hook for ZombieVillager, probably a Mob/ZombieVillager finalizeSpawn mixin), B2, B4, B8, B9, 21.1 textures, 21.3 camels.
+- **chat handoff** (chat, 2026-10-03 02:49Z): chat 2026-10-02 (evening): RELEASED 0.138.0 (v0.138.0, jar on the GitHub release) at the owner's 'ship'. Landed: 21.1 (approved: outfits + staff scenes), 21.3 (camels: aGuardRidesASaddledCamel, no review), 21.1c (owner change: Fossil Scientist works at Cobblemon's Fossil Analyzer; POI registered via Platform.whenBlockRegistered when Cobblemon adds the block; acquirable = analyzer only, held keeps old Fossil Lab/Training Post; village fossil labs and Research Lab blueprints use the analyzer; review pending, package sent). Pending review: B5, 21.1b, 21.1c. Release check was scoped (0.137.0 world on the real pack with all 26 retired blocks -> 26/26 kept; suites green); 21.2's remaining parts (ferry mid-ride, perf, mutants, standard packtest) are for night runs. Next: bugs B2 (flaked again once in a land build), B4, B8, B9, B10; then 21.2 leftovers. Traps: gradle run+refresh in one invocation fails (run 'Refresh active project' alone); kill daemons (./gradlew --stop) before compat/pack runs or the compat JVM is OOM-killed; generate.py rewrites every .nbt with new gzip headers, keep only files whose decompressed content changed; Java 25 prefix needed for run.sh. Stale remote branch tests/21.1c-scientist-training-post (tester's, merged into 21.1c) can be deleted by its owner.

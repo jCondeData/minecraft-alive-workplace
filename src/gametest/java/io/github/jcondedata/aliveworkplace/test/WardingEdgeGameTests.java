@@ -54,4 +54,38 @@ public class WardingEdgeGameTests implements FabricGameTest {
 			helper.succeed();
 		});
 	}
+	/**
+	 * A creeper just past the village's edge: the blast's centre is outside every village, but the village's blocks it
+	 * reaches stay, and the ones outside go.
+	 */
+	//$ gametest_ticks_batch AREA '100' '"warding_edge_outside"'
+	@GameTest(template = AREA, timeoutTicks = 100, batch = "warding_edge_outside")
+	public void aBlastJustOutsideTheVillageSparesTheVillage(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		ServerLevel level = helper.getLevel();
+		int radius = VillageHalls.RADIUS;
+		VillageHalls.RADIUS = 8;
+		Leftovers.after(helper, () -> VillageHalls.RADIUS = radius);
+		BlockPos hall = new BlockPos(2, 2, 2);
+		helper.setBlock(hall, ModBlocks.VILLAGE_HALL);
+		// Offsets 7 and 8 are the village's last two columns; the blast goes off at 10, two past its edge.
+		for (int dx = 7; dx <= 11; dx++) {
+			helper.setBlock(hall.offset(dx, 0, 4), Blocks.STONE_BRICKS);
+		}
+		helper.runAfterDelay(2, () -> {
+			VillageHallBlockEntity entity = (VillageHallBlockEntity) level.getBlockEntity(helper.absolutePos(hall));
+			entity.setResearch(new Research.State(Map.of("warding", 1), Optional.empty(), 0, false));
+			Vec3 at = helper.absoluteVec(Vec3.atCenterOf(hall.offset(10, 1, 4)));
+			level.explode(null, at.x, at.y, at.z, 3f, Level.ExplosionInteraction.TNT);
+			for (int dx = 7; dx <= 8; dx++) {
+				helper.assertBlockPresent(Blocks.STONE_BRICKS, hall.offset(dx, 0, 4));
+			}
+			boolean brokeOutside = false;
+			for (int dx = 9; dx <= 11; dx++) {
+				brokeOutside |= !level.getBlockState(helper.absolutePos(hall.offset(dx, 0, 4))).is(Blocks.STONE_BRICKS);
+			}
+			helper.assertTrue(brokeOutside, "the blast broke nothing past the village's edge");
+			helper.succeed();
+		});
+	}
 }

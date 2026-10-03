@@ -5,4 +5,4 @@ Tester: PASS: 2 new tests check every button's real tooltip on the hall and rese
 Scene: SCENE=hall_quests (still 04_hall_mercenaries).
 Reply: approve B19 · veto B19: why · change B19: what
 
-(from lane-c-1003-1632, 2026-10-03 17:18Z; not yet sent)
+(from lane-c-1003-1632, 2026-10-03 17:18Z; sent)

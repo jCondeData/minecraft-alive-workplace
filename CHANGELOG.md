@@ -28,6 +28,10 @@
 - Zombie villagers in abandoned desert villages no longer get stuck in a house's wall (the same narrow corridor that
   trapped living villagers before 0.138.0).
 
+### Tests
+- Every value the mod saves on a villager (all 72: a builder's site and bag, a lumberjack's tree farm, a couple's
+  marriage, every worker's count...) is now tested to survive the villager being saved and loaded again.
+
 ## 0.138.0 — 2026-10-02
 
 ### Changed

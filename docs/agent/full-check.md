@@ -4,6 +4,26 @@ Done in pieces by night runs; each piece lands with `land --keep-open`. Newest f
 
 ## Pieces
 
+### Saved data, mutants and the flake sweep (lane-a-1003-1333, 2026-10-03)
+- **Saved data** (`inventory.py`'s biggest gap: 69 of 72 villager fields had no save-and-reload test):
+  `SavedDataGameTests` sets a value on every field in `ModAttachments` (found by reflection, so a new field without a
+  sample fails the test), saves and loads the villager twice and compares; a plain villager loads with none of them,
+  and a removed field stays removed. Both pass: nothing is lost.
+- **17 mutants** (of the 20; `mutate.py`, each file against its own test classes):
+  - `work/Stations.java` 6 of 7 killed. The survivor (`<= REACH*REACH` to `<`, beehives) is equivalent: squared
+    distances between block centres are whole numbers and 4.5² isn't, so it can't change anything.
+  - `travel/FerryRides.java` 4 of 7 killed. Two real gaps, now tested in `FerryEdgeGameTests` (each fails on its
+    mutant, checked): a player already riding something goes straight to the post with no boat
+    (`aPlayerAlreadyRidingGoesStraightThere`), and only the ferryman rows when a plain villager stands closer
+    (`onlyTheFerrymanRows`). The third (landing half a block off, `+ 0.5` to `- 0.5`) is harmless.
+  - `build/BuildSite.java` 0 of 3 killed (`BuilderGameTests` only). Line 448, a damaged save's checks loosened: now
+    tested by `BuildSiteSaveGameTests` (a site missing its placement, id or owner is skipped, no crash). Still
+    untested: line 244 (`i < deferred.size()` to `<=`, the material list while retrying deferred steps) and line 271
+    (`progress` when the plan or stage is at its edge).
+  - No bugs found in the code itself: every survivor was a missing test.
+- **Flake sweep over the whole suite**: the nightly's 5 full-suite runs were green in run 37112224528 (2026-10-03,
+  commit b830663). https://github.com/jCondeData/minecraft-alive-workplace/actions/runs/37112224528
+
 ### Performance with many homes (night-1003-1046, 2026-10-03)
 - `PERF=true PLOTS=40 tools/packtest/run.sh` on a dev container (7 GB, slow CPU; the real Cobbleverse 1.7.42 server,
   jar 0.138.0 from `main` 7e06692): 80 workers on 40 plots (a builder on each, plus miners, lumberjacks, porters,
@@ -50,4 +70,5 @@ Done in pieces by night runs; each piece lands with `land --keep-open`. Newest f
 ## Still to do
 - An old world saved by 0.138.0 opened with the next version (at the release check).
 - Performance on GitHub's machines once B14 is fixed (the dev-container numbers above stand meanwhile).
-- 20 mutants and a flake sweep over the whole suite, and the biggest gaps from `inventory.py`.
+- 3 more mutants, and tests for `BuildSite.java` lines 244 and 271 (above).
+- The next `inventory.py` gaps: 14 mixins, 7 network payloads and 9 config keys no test mentions.

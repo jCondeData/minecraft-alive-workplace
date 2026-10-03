@@ -134,4 +134,65 @@ public class FerryEdgeGameTests implements FabricGameTest {
 			helper.succeed();
 		});
 	}
+
+	/**
+	 * A player who can't sit in a boat just now (already riding something, here a minecart) is taken straight to the
+	 * ticket's post, with no boat ride: FerryRides' contract for players already riding, spectators and sleepers. Found by
+	 * the full check's mutants (21.2): deleting that straight-there trip went unnoticed.
+	 */
+	//$ gametest_ticks_batch AREA '100' '"aPlayerAlreadyRidingGoesStraightThere"'
+	@GameTest(template = AREA, timeoutTicks = 100, batch = "aPlayerAlreadyRidingGoesStraightThere")
+	public void aPlayerAlreadyRidingGoesStraightThere(GameTestHelper helper) {
+		ServerPlayer player = helper.makeMockServerPlayerInLevel();
+		Villager ferryman = jetty(helper, player);
+		Vec3 ferrymanHome = ferryman.position();
+		BlockPos away = new BlockPos(18, 2, 18);
+		helper.setBlock(away.below(), Blocks.STONE);
+		helper.setBlock(away, ModBlocks.TRAVEL_POST);
+		TravelNetwork.Post far = TravelNetwork.get(helper.getLevel().getServer())
+			.add(GlobalPos.of(helper.getLevel().dimension(), helper.absolutePos(away)), "Far Shore");
+		ItemStack ticket = Ferrymen.ticket(far);
+		helper.runAfterDelay(2, () -> {
+			Entity cart = helper.spawn(EntityType.MINECART, new BlockPos(4, 2, 4));
+			helper.assertTrue(player.startRiding(cart, true), "the player couldn't get into the minecart");
+			helper.assertTrue(Ferrymen.travel(player, ticket), "the ticket didn't work for a player in a minecart");
+			helper.assertFalse(FerryRides.riding(player), "a ferry ride started for a player already riding");
+		});
+		helper.runAfterDelay(4, () -> {
+			helper.assertTrue(player.blockPosition().closerThan(helper.absolutePos(away), 4),
+				"the player is at " + helper.relativePos(player.blockPosition()) + ", not by the far post");
+			helper.assertFalse(boatsLeft(helper), "a ferry boat was put out for a player already riding");
+			helper.assertTrue(TravelNetwork.get(helper.getLevel().getServer()).known(player.getUUID(), null).contains(far),
+				"the far post isn't among the places they know");
+			helper.assertTrue(ferryman.getVehicle() == null && ferryman.position().distanceTo(ferrymanHome) < 2, "the ferryman left his jetty");
+			helper.succeed();
+		});
+	}
+
+	/**
+	 * Only the ferryman rows: a plain villager standing closer to the player than the ferryman stays where he is. Found by
+	 * the full check's mutants (21.2): letting any villager near the post row went unnoticed.
+	 */
+	//$ gametest_ticks_batch AREA '100' '"onlyTheFerrymanRows"'
+	@GameTest(template = AREA, timeoutTicks = 100, batch = "onlyTheFerrymanRows")
+	public void onlyTheFerrymanRows(GameTestHelper helper) {
+		ServerPlayer player = helper.makeMockServerPlayerInLevel();
+		Villager ferryman = jetty(helper, player);
+		Villager bystander = helper.spawn(EntityType.VILLAGER, new BlockPos(5, 2, 4));
+		bystander.setNoAi(true);
+		BlockPos away = new BlockPos(18, 2, 18);
+		helper.setBlock(away.below(), Blocks.STONE);
+		helper.setBlock(away, ModBlocks.TRAVEL_POST);
+		TravelNetwork.Post far = TravelNetwork.get(helper.getLevel().getServer())
+			.add(GlobalPos.of(helper.getLevel().dimension(), helper.absolutePos(away)), "Far Shore");
+		ItemStack ticket = Ferrymen.ticket(far);
+		helper.runAfterDelay(2, () -> {
+			helper.assertTrue(bystander.distanceToSqr(player) < ferryman.distanceToSqr(player), "the bystander isn't the closer villager");
+			helper.assertTrue(Ferrymen.travel(player, ticket), "the ticket didn't work at the post");
+			Entity boat = player.getVehicle();
+			helper.assertTrue(boat != null && ferryman.getVehicle() == boat, "the ferryman isn't rowing the player's boat");
+			helper.assertTrue(bystander.getVehicle() == null, "the bystander got into the boat");
+			helper.succeed();
+		});
+	}
 }

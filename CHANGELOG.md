@@ -9,6 +9,8 @@
   with Cobblemon the Pokémon jobs. Lost it? Craft another from a book and wheat.
 
 ### Fixed
+- A builder keeps their own bench. A builder who got stuck for a minute, or wandered over 100 blocks from their bench,
+  gave it up and took the nearest free one, often another builder's, so two builders could swap benches over and over.
 - A builder always takes its materials from the chests by the bench its build was started from. Two builders with
   benches close together could swap benches mid-build and use each other's materials, so one build ended a few
   blocks short and its builder waited for materials its own chests had held.

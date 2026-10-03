@@ -9,6 +9,8 @@
   with Cobblemon the Pokémon jobs. Lost it? Craft another from a book and wheat.
 
 ### Fixed
+- A tall flower (sunflower, lilac, rose bush, peony) given to a farmer at their composter now makes a Florist, as the
+  Guide Book says; before, only small flowers did and a tall one silently did nothing.
 - Giving a villager a new job no longer frees a workstation someone else now works at when that other villager is
   far away in an unloaded chunk (their block had been broken and put back while the first villager was away).
 - Leaving the game in the middle of a ferry ride lands you by the far post before you are saved, so you come back

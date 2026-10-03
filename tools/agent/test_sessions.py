@@ -274,6 +274,8 @@ def run(tmp):
     r = S(C, "brief")
     check("brief leaves the milestones out", "## Bugs" in r.stdout and "## Notes" in r.stdout and "**22.1**" not in
           r.stdout, r.stdout)
+    b1 = next((l for l in r.stdout.splitlines() if "**B1**" in l), "")
+    check("brief shortens fixed bugs to one line", b1.startswith("- [x] **B1**") and "verified" not in b1, r.stdout)
 
     # A lane's claim goes stale like a night run's; a session holds at most three claims.
     S(C, "bug 'sixth' --as chat2")

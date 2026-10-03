@@ -647,9 +647,29 @@ def cmd_brief(a):
     first = next((k for k, l in enumerate(lines) if l.startswith("## Milestone")), len(lines))
     rest = next((k for k, l in enumerate(lines) if k > first and l.startswith("## ") and not l.startswith("## Milestone")),
                 len(lines))
-    print("\n".join(lines[:first]))
+    print("\n".join(short_fixed_bugs(lines[:first])))
     print("[Milestones left out: `sessions.py show <id>` prints an item; `status` names yours.]\n")
     print("\n".join(lines[rest:]))
+
+
+def short_fixed_bugs(lines):
+    """Fixed bugs as one short line each (`show` prints one in full). Every run reads the brief and keeps it in its
+    context for every later turn, and the fixed bugs' history was half of it."""
+    out, skipping = [], False
+    for line in lines:
+        m = ITEM.match(line)
+        if m:
+            skipping = m.group(2) == "x" and m.group(4).startswith("B")
+            if skipping:
+                title = re.sub(r"\s+", " ", split_marks(m.group(6))[1]).strip()
+                out.append(f"- [x] **{m.group(4)}** {title[:90] + '…' if len(title) > 90 else title}")
+                continue
+        elif skipping and line.startswith((" ", "\t")) and line.strip():
+            continue
+        else:
+            skipping = False
+        out.append(line)
+    return out
 
 
 def cmd_verify(a):

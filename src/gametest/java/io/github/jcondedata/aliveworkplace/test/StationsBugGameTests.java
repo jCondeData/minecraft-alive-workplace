@@ -368,4 +368,44 @@ public class StationsBugGameTests implements net.fabricmc.fabric.api.gametest.v1
 			});
 		});
 	}
+
+	/**
+	 * Tester (B8 round 2): the same hand-over, then the NEW owner (the second worker, standing by their composter) is
+	 * sneak-right-clicked with bone meal. README: "A villager already working there switches the same way", so they
+	 * become a Composter at their own composter, even though the first worker, away, still remembers that spot.
+	 */
+	//$ gametest_ticks_batch HUGE '200' '"stationsBugB8OwnerSwitches"'
+	@GameTest(template = HUGE, timeoutTicks = 200, batch = "stationsBugB8OwnerSwitches")
+	public void theNewOwnerOfAChangedHandsBlockCanStillSwitchJobThere(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		helper.setDayTime(2000);
+		ServerLevel level = helper.getLevel();
+		BlockPos old = new BlockPos(3, 2, 3);
+		helper.setBlock(old, Blocks.COMPOSTER);
+		ServerPlayer player = StationsSpecGameTests.player(helper);
+		Villager first = helper.spawn(EntityType.VILLAGER, new BlockPos(4, 2, 4));
+		StationsSpecGameTests.rightClick(player, first, new ItemStack(Items.SWEET_BERRIES), true);
+		helper.assertTrue(StationsSpecGameTests.job(first) == ModVillagers.ORCHARD_KEEPER, "setup: the first isn't an orchard keeper");
+		BlockPos away = helper.absolutePos(new BlockPos(25, 2, 25));
+		first.teleportTo(away.getX() + 0.5, away.getY(), away.getZ() + 0.5);
+		helper.setBlock(old, Blocks.AIR);
+		helper.runAfterDelay(5, () -> {
+			helper.setBlock(old, Blocks.COMPOSTER);
+			helper.runAfterDelay(2, () -> {
+				Villager second = helper.spawn(EntityType.VILLAGER, new BlockPos(4, 2, 4));
+				StationsSpecGameTests.rightClick(player, second, new ItemStack(Items.SWEET_BERRIES), true);
+				helper.assertTrue(StationsSpecGameTests.site(second).equals(Optional.of(helper.absolutePos(old))),
+					"setup: the second works at " + StationsSpecGameTests.site(second));
+				helper.assertTrue(StationsSpecGameTests.site(first).equals(Optional.of(helper.absolutePos(old))),
+					"setup: the first already forgot the old composter");
+				StationsSpecGameTests.rightClick(player, second, new ItemStack(Items.BONE_MEAL), true);
+				helper.assertTrue(StationsSpecGameTests.job(second) == ModVillagers.COMPOSTER
+						&& StationsSpecGameTests.site(second).equals(Optional.of(helper.absolutePos(old))),
+					"the owner, sneak-right-clicked with bone meal by their own composter, is a "
+						+ StationsSpecGameTests.name(StationsSpecGameTests.job(second)) + " at " + StationsSpecGameTests.site(second));
+				helper.assertTrue(level.getPoiManager().getFreeTickets(helper.absolutePos(old)) == 0, "the composter was freed");
+				helper.succeed();
+			});
+		});
+	}
 }

@@ -212,7 +212,7 @@ its first findings fixed. Nothing is released until these are done.
     paper; swallowtail flag; pencil with a white blueprint line; a field plan on the map outline, now item/generated),
     no notes. All 13 icons are his picks in items.py and the game; the 'items' showcase scene films them.
   - [x] **21.1c** (review: pending 2026-10-03) (verified 2026-10-02: its tester Check, shipped in 0.138.0) Change from the owner (2026-10-03): the Fossil Scientist works at Cobblemon's Fossil Analyzer instead of a block of ours (owner 2026-10-02: 'the fossil researcher - this is already a working block within cobblemon so adding it as an extra block within our modpack seems unnecessary. can we rework this villager to work off of that?')
-- [ ] **21.2** **The full check before release** (the tester's Full tier; the chat started it and ran out of time). Do
+- [ ] **21.2** (claimed: lane-a-1003-1432, 2026-10-03 14:33Z) **The full check before release** (the tester's Full tier; the chat started it and ran out of time). Do
   it in pieces that fit a one-hour night run, landing each piece with `land --keep-open`:
   - the real Cobbleverse pack boot and the soak: the nightly GitHub workflow runs these, so read its result;
   - an old world saved by 0.136.0 or 0.137.0 opened with the new version: nothing lost, nothing crashes;

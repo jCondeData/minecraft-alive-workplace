@@ -159,7 +159,7 @@ public class BuilderWork extends Behavior<Villager> {
 			return;
 		}
 		helping = Builders.isHelping(villager);
-		Optional<BlockPos> benchOpt = helping ? Optional.ofNullable(site.bench()) : Builders.benchPos(villager);
+		Optional<BlockPos> benchOpt = helping ? Optional.ofNullable(site.bench()) : Builders.siteBench(level, villager, site);
 		if (benchOpt.isEmpty()) {
 			return;
 		}

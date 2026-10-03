@@ -16,6 +16,10 @@
   Table. 26 job blocks can't be crafted any more (the Builder's Bench, the Guard Post, the Fruit Basket...), but the
   ones in your world keep working. Village houses, the camp and the blueprints use the new blocks, and a village house
   whose block is shared comes with its worker.
+- **Fossil Scientists work at Cobblemon's Fossil Analyzer** instead of a block of ours: stand a villager by one and
+  sneak-right-click them with a fossil. They still revive the fossil themselves, without the rest of the machine. The
+  village fossil labs and the Research Lab blueprint have an analyzer now; scientists already working at a Training Post
+  or a Fossil Lab keep working there.
 - A postman's mailbox is the post office's counter: with no mailbox of your own, pick up your parcels there.
 - **A new look**: every workstation, villager outfit and item is redrawn in Minecraft's own style. Workstations are
   built from their wood or stone like the crafting table, with no more grainy speckle. The outfits are cleaner, and a

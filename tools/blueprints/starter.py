@@ -1059,8 +1059,8 @@ def berry_farm_2():
 # --- Research Lab: the fossil scientist's -------------------------------------------------------------
 def research_lab():
     """11 x 9 x 11: a stone lab under a copper hip roof (it greens with the years) with a glass skylight, a columned
-    porch, a Training Post at the back (hand the villager there a fossil and they become the fossil scientist; with
-    Cobblemon they revive fossils), bookshelves, a glass case and a bone skeleton on show."""
+    porch, Cobblemon's Fossil Analyzer at the back (hand the villager there a fossil and they become the fossil scientist,
+    ROADMAP 21.1c; without Cobblemon the spot stays empty), bookshelves, a glass case and a bone skeleton on show."""
     b = Build(11, 9, 11)
     plinth(b, 1, 1, 9, 9, FOUNDATION_MIX, floor="polished_andesite")
     walls(b, 1, 1, 9, 9, 1, 4, BRICK_WALL_MIX)
@@ -1087,8 +1087,8 @@ def research_lab():
     hip_roof(b, 0, 10, 0, 10, 5, CUT_COPPER, rings=3)
     walls(b, 3, 3, 7, 7, 8, 8, "cut_copper")
     box(b, 4, 8, 4, 6, 8, 6, "glass")
-    # Inside: the Training Post between bookshelves, a skeleton and a case on show
-    b.set(5, 1, 8, "aliveworkplace:training_post", facing="north")
+    # Inside: the Fossil Analyzer between bookshelves, a skeleton and a case on show
+    b.set(5, 1, 8, "cobblemon:fossil_analyzer", facing="north", on=False)
     for x in (2, 3, 7, 8):
         for y in (1, 2):
             b.set(x, y, 8, "bookshelf")

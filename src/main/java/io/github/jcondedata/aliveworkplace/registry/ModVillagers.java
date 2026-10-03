@@ -564,6 +564,18 @@ public final class ModVillagers {
 	public static final ResourceLocation FOSSIL_LAB_ID = AliveWorkplace.id("fossil_lab");
 	public static final ResourceKey<PoiType> FOSSIL_LAB_POI = ResourceKey.create(Registries.POINT_OF_INTEREST_TYPE, FOSSIL_LAB_ID);
 	public static final PoiType FOSSIL_LAB_POI_TYPE = Platform.get().registerPoi(FOSSIL_LAB_ID, 1, 1, ModBlocks.FOSSIL_LAB);
+	/**
+	 * Cobblemon's Fossil Analyzer, the Fossil Scientist's workstation (the owner, ROADMAP 21.1c): a job site of ours as soon
+	 * as Cobblemon registers the block; never without Cobblemon. Not in the acquirable_job_site tag, so only a fossil gives
+	 * a villager the job there (work/Stations).
+	 */
+	public static final ResourceLocation FOSSIL_ANALYZER_BLOCK = ResourceLocation.fromNamespaceAndPath("cobblemon", "fossil_analyzer");
+	public static final ResourceLocation FOSSIL_ANALYZER_ID = AliveWorkplace.id("fossil_analyzer");
+	public static final ResourceKey<PoiType> FOSSIL_ANALYZER_POI = ResourceKey.create(Registries.POINT_OF_INTEREST_TYPE, FOSSIL_ANALYZER_ID);
+
+	static {
+		Platform.get().whenBlockRegistered(FOSSIL_ANALYZER_BLOCK, block -> Platform.get().registerPoi(FOSSIL_ANALYZER_ID, 1, 1, block));
+	}
 
 	/** Revives fossils for players, for a price (only with Cobblemon installed). */
 	public static final VillagerProfession FOSSIL_SCIENTIST = Registry.register(
@@ -571,8 +583,9 @@ public final class ModVillagers {
 		AliveWorkplace.id("fossil_scientist"),
 		new VillagerProfession(
 			"fossil_scientist",
-			holder -> holder.is(FOSSIL_LAB_POI) || holder.is(TRAINING_POST_POI),
-			holder -> holder.is(FOSSIL_LAB_POI) || holder.is(TRAINING_POST_POI),
+			// They keep a Fossil Lab or Training Post they worked at before 21.1c, but only ever take a new Fossil Analyzer.
+			holder -> holder.is(FOSSIL_ANALYZER_POI) || holder.is(FOSSIL_LAB_POI) || holder.is(TRAINING_POST_POI),
+			holder -> holder.is(FOSSIL_ANALYZER_POI),
 			ImmutableSet.of(),
 			ImmutableSet.of(),
 			SoundEvents.BREWING_STAND_BREW

@@ -259,7 +259,9 @@ public class StationsGameTests implements FabricGameTest {
 	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
 	public void everyJobsItemIsNamed(GameTestHelper helper) {
 		for (Stations.Station station : Stations.ALL) {
-			helper.assertTrue(Stations.at(station.block()).orElse(null) == station, "no station found for " + station.block());
+			// (another mod's block, such as Cobblemon's Fossil Analyzer, is air while that mod isn't installed, as here)
+			helper.assertTrue(station.block() == Blocks.AIR || Stations.at(station.block()).orElse(null) == station,
+				"no station found for " + station.block());
 			for (Stations.Job job : station.jobs()) {
 				helper.assertTrue(net.minecraft.locale.Language.getInstance().has(Stations.itemKey(job)), "untranslated: " + Stations.itemKey(job));
 			}

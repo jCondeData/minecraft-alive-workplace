@@ -370,7 +370,7 @@ placed keep working, so old worlds are fine.
 | Move Tutor (Cobblemon) | Training Post + a book | — | right-click them for lessons |
 | Ball Smith (Cobblemon) | Smithing Table + an apricorn | apricorns and copper, iron, gold or diamonds | sneak-right-click them to choose the balls |
 | Pokémon Trader (Cobblemon) | Shop Counter + a Poké Ball | — | right-click them to trade |
-| Fossil Scientist (Cobblemon) | Training Post + a fossil | — | hand them a fossil |
+| Fossil Scientist (Cobblemon) | Cobblemon's Fossil Analyzer + a fossil | — | hand them a fossil |
 
 Sneak-right-click a builder, miner, lumberjack, orchard keeper, farmer, fisherman or postman with an empty hand to see
 what they're doing and how to stop them. Each job's section below says how to start it; the recipes for our own blocks
@@ -974,13 +974,14 @@ Balls. Pair them with an Orchard Keeper (or Cobbleworkers' apricorn pickers) for
 (it glows), click again to stop. With nothing picked they make whatever the chests have the makings for.
 
 ## Fossil Scientists (with Cobblemon)
-Stand a villager by a **Training Post** and sneak-right-click them with a **fossil**: they become a **Fossil
-Scientist**. Right-click them holding a fossil (for a Galar fossil, hold one half in each hand) and pay 8 emeralds (800
-CobbleDollars with CobbleDollars): they revive it at the Training Post while they work, about three minutes for a novice
-and quicker as they level up. The Pokémon joins your party (or goes to your PC) the moment it's done, or the next time
+Stand a villager by Cobblemon's **Fossil Analyzer** and sneak-right-click them with a **fossil**: they become a **Fossil
+Scientist** (a jobless villager never takes your analyzer by themselves; scientists from before 0.138.0 keep working at
+their Training Post or Fossil Lab). Right-click them holding a fossil (for a Galar fossil, hold one half in each hand)
+and pay 8 emeralds (800 CobbleDollars with CobbleDollars): they revive it at the analyzer while they work, without the
+rest of the machine, about three minutes for a novice and quicker as they level up. The Pokémon joins your party (or goes to your PC) the moment it's done, or the next time
 you're online. It's Cobblemon's own revival, the same Pokémon its machine gives. Right-click with an empty hand to see
 how it's going; sneak to trade. A scientist takes on three fossils at a time. Villages sometimes grow a fossil lab, and
-scientists at Journeyman level sell the **Research Lab** blueprint (a stone lab with a Training Post and a fossil on
+scientists at Journeyman level sell the **Research Lab** blueprint (a stone lab with a Fossil Analyzer and a fossil on
 show: hand the villager there a fossil and they become its scientist; the **Research Lab II** adds a museum hall with
 a big skeleton).
 

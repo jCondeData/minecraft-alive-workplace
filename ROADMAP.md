@@ -114,7 +114,7 @@ stay in the list, ticked, so their numbers stay unique.
 The evening of 2026-09-29 left 0.138.0 nearly ready: riding (approved), every texture redrawn, the tester set up and
 its first findings fixed. Nothing is released until these are done.
 
-- [x] **21.1** (review: pending 2026-10-03) **The texture rebuild, shown in game.** Every texture was redrawn with the pixel-art skill (2eeb6be);
+- [x] **21.1** (approved 2026-10-03) **The texture rebuild, shown in game.** Every texture was redrawn with the pixel-art skill (2eeb6be);
   178 of 182 pass its lint. Done when:
   - the other 4 pass, or each has its reason in the Notes;
   - one review package with the `preview.py audit` contact sheet, in-game shots of the workstations in a village and
@@ -193,6 +193,7 @@ its first findings fixed. Nothing is released until these are done.
     **Round 2 picks** (owner, 2026-10-02): patrol map, quarry marker, scan tool and field marker all r2b (vanilla map
     paper; swallowtail flag; pencil with a white blueprint line; a field plan on the map outline, now item/generated),
     no notes. All 13 icons are his picks in items.py and the game; the 'items' showcase scene films them.
+  - [x] **21.1c** (review: pending 2026-10-03) Change from the owner (2026-10-03): the Fossil Scientist works at Cobblemon's Fossil Analyzer instead of a block of ours (owner 2026-10-02: 'the fossil researcher - this is already a working block within cobblemon so adding it as an extra block within our modpack seems unnecessary. can we rework this villager to work off of that?')
 - [ ] **21.2** **The full check before release** (the tester's Full tier; the chat started it and ran out of time). Do
   it in pieces that fit a one-hour night run, landing each piece with `land --keep-open`:
   - the real Cobbleverse pack boot and the soak: the nightly GitHub workflow runs these, so read its result;
@@ -203,7 +204,7 @@ its first findings fixed. Nothing is released until these are done.
 
   Done when: each part is a passing test or a green nightly result, every finding is a Bug, and the report is linked
   in the Notes. Players see nothing new, so the last piece lands with `--no-review`.
-- [ ] **21.3** (claimed: chat, 2026-10-03 01:11Z) **Camels.** The game counts a saddled camel as a horse, so a
+- [ ] **21.3** (claimed: chat, 2026-10-03 02:29Z) **Camels.** The game counts a saddled camel as a horse, so a
   guard rides one too, but the changelog promises horses, donkeys and mules. The tester's test `aCamelIsNotCavalry`
   (branch `tests/check-0.137-riding-protection`) waits on his answer. Camels out: land that test with the fix. Camels
   in: turn the test around and add camels to the changelog.

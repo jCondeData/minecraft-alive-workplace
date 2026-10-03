@@ -87,7 +87,8 @@
 			"io.github.jcondedata.aliveworkplace.test.QaGuideFloristGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaB17BugGameTests",
 			"io.github.jcondedata.aliveworkplace.test.WorkersKeepTheirBlockGameTests",
-			"io.github.jcondedata.aliveworkplace.test.QaB21B27GameTests"
+			"io.github.jcondedata.aliveworkplace.test.QaB21B27GameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaB18FlowersGameTests"
 		]
 	},
 	"depends": {

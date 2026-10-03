@@ -11,6 +11,8 @@
 ### Fixed
 - With Cobblemon, a herder no longer stands waiting under a pastured Pokémon that's flying about: they get on with
   other work and brush or milk it once it has come down.
+- Every flower now makes a Florist at a composter, pink petals and spore blossoms too, and the composter's tooltip
+  says "Any flower" instead of "A small flower".
 - Miners, postmen, tutors, Pokémon traders and trainers keep their workstation too: after a minute stuck, or over 100
   blocks from it, they gave it up and could take another worker's.
 - A builder keeps their own bench. A builder who got stuck for a minute, or wandered over 100 blocks from their bench,

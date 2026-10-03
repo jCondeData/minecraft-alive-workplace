@@ -320,4 +320,50 @@ public class StationsCompatTests implements FabricGameTest {
 			helper.succeed();
 		});
 	}
+
+	/**
+	 * Tester, 21.1c round 2: the owner's live server has Fossil Scientists from before the update at a Training Post and
+	 * at a Fossil Lab. They keep working there: through a restart (the villager saved and loaded again) and for a while
+	 * after, with no experience to fall back on (one who took the block by themselves in 0.137.0 has none), each keeps
+	 * the job and the block.
+	 */
+	//$ gametest_ticks_batch AREA '600' '"fossilScientistOldSites"'
+	@GameTest(template = AREA, timeoutTicks = 600, batch = "fossilScientistOldSites")
+	public void scientistsAtAnOldTrainingPostOrFossilLabKeepIt(GameTestHelper helper) {
+		helper.setDayTime(2000);
+		for (var e : helper.getLevel().getEntitiesOfClass(Villager.class, helper.getBounds().inflate(48))) {
+			e.discard();
+		}
+		net.minecraft.server.level.ServerLevel level = helper.getLevel();
+		BlockPos lab = new BlockPos(9, 2, 9);
+		helper.setBlock(STATION, ModBlocks.TRAINING_POST);
+		helper.setBlock(lab, ModBlocks.FOSSIL_LAB);
+		List<BlockPos> sites = List.of(helper.absolutePos(STATION), helper.absolutePos(lab));
+		List<net.minecraft.resources.ResourceKey<net.minecraft.world.entity.ai.village.poi.PoiType>> kinds =
+			List.of(ModVillagers.TRAINING_POST_POI, ModVillagers.FOSSIL_LAB_POI);
+		List<Villager> scientists = new java.util.ArrayList<>();
+		for (int i = 0; i < sites.size(); i++) {
+			Villager old = helper.spawn(EntityType.VILLAGER, i == 0 ? STANDING : new BlockPos(10, 2, 10));
+			io.github.jcondedata.aliveworkplace.work.Jobs.employ(level, old, sites.get(i), kinds.get(i), ModVillagers.FOSSIL_SCIENTIST);
+			old.setVillagerXp(0); // took the block by themselves before the update
+			// The server restarts: the villager is saved and loaded again.
+			net.minecraft.nbt.CompoundTag tag = new net.minecraft.nbt.CompoundTag();
+			old.saveWithoutId(tag);
+			old.discard();
+			Villager copy = EntityType.VILLAGER.create(level);
+			copy.load(tag);
+			level.addFreshEntity(copy);
+			scientists.add(copy);
+		}
+		helper.runAfterDelay(400, () -> {
+			for (int i = 0; i < sites.size(); i++) {
+				Villager scientist = scientists.get(i);
+				helper.assertTrue(scientist.isAlive() && scientist.getVillagerData().getProfession() == ModVillagers.FOSSIL_SCIENTIST,
+					"the scientist at the old " + kinds.get(i).location() + " is now " + name(scientist.getVillagerData().getProfession()));
+				helper.assertTrue(site(scientist).equals(Optional.of(sites.get(i))),
+					"the scientist at the old " + kinds.get(i).location() + " works at " + site(scientist));
+			}
+			helper.succeed();
+		});
+	}
 }

@@ -211,7 +211,7 @@ its first findings fixed. Nothing is released until these are done.
   **Answered** (owner, 2026-10-01): camels in. The test is turned around as `aGuardRidesASaddledCamel`
   (RidingSpecGameTests: a saddled camel carries a guard and he gets on it; an unsaddled one doesn't), and the
   changelog says so. The rest of that old branch already reached `main` in other items.
-- [ ] **21.4** **Release 0.138.0.** Only the owner's chat releases
+- [x] **21.4** (released 2026-10-02: v0.138.0, https://github.com/jCondeData/minecraft-alive-workplace/releases/tag/v0.138.0) **Release 0.138.0.** Only the owner's chat releases
   (CLAUDE.md, "Releasing"). Done when: the GitHub release has the jar.
   **Released early** (chat, 2026-10-02): the owner said ship ("unless there is massive bugs i want to be able to play
   asap"), with 21.1 approved, 21.3 and 21.1c landed, and B5, 21.1b and 21.1c still pending his review (they ship).

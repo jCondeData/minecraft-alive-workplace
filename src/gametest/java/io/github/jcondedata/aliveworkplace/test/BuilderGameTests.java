@@ -1388,6 +1388,56 @@ public class BuilderGameTests implements FabricGameTest {
 		helper.succeed();
 	}
 
+	/**
+	 * B21: the last cobblestone is in a helper's bag while the helper works on a planks block. The helper keeps only
+	 * what its own block needs, so the lead takes the cobblestone and finishes, instead of waiting with nothing on its
+	 * missing list (the soak's library and flower shop).
+	 */
+	//$ gametest_ticks_batch AREA '2400' '"crews"'
+	@GameTest(template = AREA, timeoutTicks = 2400, batch = "crews")
+	public void leadTakesTheLastBlockFromAHelperWorkingOnSomethingElse(GameTestHelper helper) {
+		Setup s = setup(helper, TEST_HUT, HUT_ORIGIN, Rotation.NONE, hutMaterials());
+		int cobble = s.plan().materials().getOrDefault(Items.COBBLESTONE, 0);
+		helper.assertTrue(cobble > 1 && cobble <= 25, "the test hut should need some cobblestone, needs " + cobble);
+		Container chest = (Container) helper.getBlockEntity(CHEST);
+		for (int i = 0; i < chest.getContainerSize(); i++) {
+			if (chest.getItem(i).is(Items.COBBLESTONE)) {
+				chest.setItem(i, new ItemStack(Items.COBBLESTONE, cobble - 1));
+			}
+		}
+		// A crewmate holding the one cobblestone the chest is short of, claiming a planks block of the plan.
+		BlockPos planksBlock = null;
+		for (BuildPlan.Stage stage : BuildPlan.Stage.values()) {
+			for (BuildPlan.Step step : s.plan().steps(stage)) {
+				if (planksBlock == null && step.requirements().stream().anyMatch(r -> r.item() == Items.OAK_PLANKS)
+					&& step.requirements().stream().noneMatch(r -> r.item() == Items.COBBLESTONE)) {
+					planksBlock = step.pos();
+				}
+			}
+		}
+		helper.assertTrue(planksBlock != null, "the test hut should have a planks block");
+		BlockPos claimed = planksBlock;
+		Villager mate = helper.spawn(EntityType.VILLAGER, HELPER);
+		mate.setNoAi(true);
+		ModAttachments.BUILDER_BAG.getOrCreate(mate).addAll(Items.COBBLESTONE, 1);
+		AtomicBoolean waitedWithNothingMissing = new AtomicBoolean(false);
+		helper.onEachTick(() -> {
+			long now = s.level().getGameTime();
+			if (BuildSiteManager.get(s.level()).get(s.site().id()) != null) {
+				s.site().claim(mate.getUUID(), claimed, now);
+			}
+			if (s.site().status() == BuildSite.Status.WAITING_FOR_MATERIALS && s.site().missing().isEmpty()) {
+				waitedWithNothingMissing.set(true);
+			}
+		});
+		helper.succeedWhen(() -> {
+			helper.assertFalse(waitedWithNothingMissing.get(), "the lead waited for materials with nothing missing");
+			assertBuilt(helper, s);
+			helper.assertTrue(ModAttachments.BUILDER_BAG.getOrCreate(mate).count(Items.COBBLESTONE) == 0,
+				"the helper still holds the cobblestone");
+		});
+	}
+
 	// --- keeping work loaded ----------------------------------------------------------------
 
 	/** A build keeps its chunks loaded while the player who ordered it is online, and not otherwise. */

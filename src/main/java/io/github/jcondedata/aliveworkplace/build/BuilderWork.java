@@ -615,6 +615,20 @@ public class BuilderWork extends Behavior<Villager> {
 	 * The chests are out of something but another builder on this site is carrying spares: walk over
 	 * and get some ("pass me those planks"). Returns false if nobody has any to spare.
 	 */
+	/** The step a helper has claimed, among those helpers pick from; null if none (or it has moved on). */
+	@Nullable
+	private static BuildPlan.Step claimedStep(BuildSite site, BuildPlan plan, @Nullable BlockPos claim) {
+		if (claim == null) {
+			return null;
+		}
+		for (BuildPlan.Step s : site.ahead(plan, HELP_WINDOW)) {
+			if (s.pos().equals(claim)) {
+				return s;
+			}
+		}
+		return null;
+	}
+
 	private boolean takeFromCrewmate(ServerLevel level, Villager villager, BuildSite site, BuildPlan plan, BuilderBag bag, Item item, int needed) {
 		List<java.util.UUID> crew = new java.util.ArrayList<>(site.helpers(level.getGameTime()));
 		if (site.builder() != null) {
@@ -625,17 +639,15 @@ public class BuilderWork extends Behavior<Villager> {
 				continue;
 			}
 			BuilderBag mateBag = ModAttachments.BUILDER_BAG.getOrCreate(mate);
-			// Whatever the mate needs for the block it is on stays with it.
-			BuildPlan.Step mateStep = id.equals(site.builder()) ? site.current(plan) : null;
-			BlockPos mateClaim = site.claim(id);
+			// Whatever the mate needs for the block it is on stays with it: the lead's current block, or the block a
+			// helper has claimed. Only what that block needs of this item: keeping one of anything left the lead
+			// waiting, with nothing on its missing list, for a block a helper on other work would never use (B21).
+			BuildPlan.Step mateStep = id.equals(site.builder()) ? site.current(plan) : claimedStep(site, plan, site.claim(id));
 			int keep = 0;
 			for (BuildPlan.Step s : mateStep != null ? List.of(mateStep) : List.<BuildPlan.Step>of()) {
 				for (MaterialRules.Requirement r : s.requirements()) {
 					keep += r.item() == item ? r.count() : 0;
 				}
-			}
-			if (mateClaim != null) {
-				keep += 1;
 			}
 			int spare = mateBag.count(item) - keep;
 			if (spare < needed) {

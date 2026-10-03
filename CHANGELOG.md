@@ -9,6 +9,8 @@
   with Cobblemon the Pokémon jobs. Lost it? Craft another from a book and wheat.
 
 ### Fixed
+- A builder no longer stands waiting for materials with nothing on its missing list when the last of a block is
+  in a helper's pockets: helpers keep only what the block they are working on needs and pass the rest over.
 - Giving a villager a new job no longer frees a workstation someone else now works at when that other villager is
   far away in an unloaded chunk (their block had been broken and put back while the first villager was away).
 - Leaving the game in the middle of a ferry ride lands you by the far post before you are saved, so you come back

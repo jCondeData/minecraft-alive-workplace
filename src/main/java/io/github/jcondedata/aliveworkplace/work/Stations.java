@@ -326,9 +326,7 @@ public final class Stations {
 		GlobalPos target = GlobalPos.of(level.dimension(), station);
 		Optional<GlobalPos> old = villager.getBrain().getMemory(MemoryModuleType.JOB_SITE);
 		if (old.isEmpty() || !old.get().equals(target)) {
-			// (only if the block is still there: one broken far from its worker leaves their memory of it behind)
-			old.filter(g -> g.dimension().equals(level.dimension()) && level.getPoiManager().getType(g.pos()).isPresent())
-				.ifPresent(g -> level.getPoiManager().release(g.pos()));
+			old.ifPresent(g -> releaseOld(level, villager, g));
 			level.getPoiManager().take(h -> true, (h, p) -> p.equals(station), station, 1);
 		}
 		villager.getBrain().eraseMemory(MemoryModuleType.POTENTIAL_JOB_SITE);
@@ -338,6 +336,23 @@ public final class Stations {
 			villager.setVillagerXp(1); // keeps the profession even if the block is briefly missing
 		}
 		villager.refreshBrain(level);
+	}
+
+	/**
+	 * Lets go of {@code villager}'s old job site {@code old}, if it's still theirs. A block broken while its worker was far
+	 * away leaves their memory of it behind: with no block there's no record to release (releasing would throw "POI never
+	 * registered"), and a block of the same kind put back since may have been taken by another villager, whose place
+	 * releasing it would free (bug B8).
+	 */
+	public static void releaseOld(ServerLevel level, Villager villager, GlobalPos old) {
+		if (!old.dimension().equals(level.dimension()) || level.getPoiManager().getType(old.pos()).isEmpty()) {
+			return;
+		}
+		boolean someoneElses = !level.getEntities(net.minecraft.world.entity.EntityType.VILLAGER,
+			v -> v != villager && v.getBrain().getMemory(MemoryModuleType.JOB_SITE).filter(old::equals).isPresent()).isEmpty();
+		if (!someoneElses) {
+			level.getPoiManager().release(old.pos());
+		}
 	}
 
 	/** The job's name, as the game shows it over a villager ("Orchard Keeper"). */

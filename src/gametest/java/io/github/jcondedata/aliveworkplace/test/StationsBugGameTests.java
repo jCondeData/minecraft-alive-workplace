@@ -252,4 +252,50 @@ public class StationsBugGameTests implements net.fabricmc.fabric.api.gametest.v1
 			helper.succeed();
 		});
 	}
+
+	/**
+	 * Bug B8: a worker's block is broken while they're away and put back; someone else takes the new one; then the first
+	 * worker is given another job (with an item, or from the Village Hall). Letting go of their old site must not free the
+	 * second worker's place, or a third villager could share it.
+	 */
+	//$ gametest AREA
+	@GameTest(template = AREA)
+	public void reassigningAWorkerKeepsSomeoneElsesBlockTaken(GameTestHelper helper) {
+		reassignAfterTheBlockChangedHands(helper, false);
+	}
+
+	//$ gametest AREA
+	@GameTest(template = AREA)
+	public void assigningFromTheHallKeepsSomeoneElsesBlockTaken(GameTestHelper helper) {
+		reassignAfterTheBlockChangedHands(helper, true);
+	}
+
+	private static void reassignAfterTheBlockChangedHands(GameTestHelper helper, boolean fromTheHall) {
+		ServerLevel level = helper.getLevel();
+		BlockPos lectern = helper.absolutePos(STATION);
+		BlockPos composter = helper.absolutePos(new BlockPos(9, 2, 9));
+		helper.setBlock(STATION, Blocks.LECTERN);
+		helper.setBlock(new BlockPos(9, 2, 9), Blocks.COMPOSTER);
+		Villager first = helper.spawn(EntityType.VILLAGER, STANDING);
+		first.setNoAi(true); // (away: their brain doesn't see the block go)
+		Jobs.employ(level, first, lectern, PoiTypes.LIBRARIAN, VillagerProfession.LIBRARIAN);
+		helper.setBlock(STATION, Blocks.AIR);
+		helper.setBlock(STATION, Blocks.LECTERN);
+		Villager second = helper.spawn(EntityType.VILLAGER, new BlockPos(5, 2, 3));
+		Jobs.employ(level, second, lectern, PoiTypes.LIBRARIAN, VillagerProfession.LIBRARIAN);
+		helper.assertTrue(level.getPoiManager().getFreeTickets(lectern) == 0, "the second librarian didn't take the new lectern");
+		if (fromTheHall) {
+			var poi = level.registryAccess().registryOrThrow(net.minecraft.core.registries.Registries.POINT_OF_INTEREST_TYPE)
+				.getHolderOrThrow(PoiTypes.FARMER);
+			helper.assertTrue(io.github.jcondedata.aliveworkplace.hall.VillageHalls.assign(level, first,
+				new io.github.jcondedata.aliveworkplace.hall.VillageHalls.FreeStation(composter, VillagerProfession.FARMER, poi)),
+				"the Hall didn't give the first worker the composter");
+		} else {
+			io.github.jcondedata.aliveworkplace.work.Stations.assign(level, first, composter, VillagerProfession.FARMER);
+		}
+		helper.assertTrue(StationsSpecGameTests.job(first) == VillagerProfession.FARMER, "the first worker isn't a farmer");
+		helper.assertTrue(level.getPoiManager().getFreeTickets(lectern) == 0,
+			"giving the first worker a new job freed the second worker's lectern (" + (fromTheHall ? "Village Hall" : "item") + ")");
+		helper.succeed();
+	}
 }

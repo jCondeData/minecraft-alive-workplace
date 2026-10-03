@@ -151,8 +151,8 @@ public class NetworkPayloadsGameTests implements FabricGameTest {
 	 * and keeps the items in the top row, a known player with a mailbox gets the items and the letter, and a Send with
 	 * no mailbox open does nothing.
 	 */
-	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
-	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
+	//$ gametest_batch 'FabricGameTest.EMPTY_STRUCTURE' '"networkPayloadsMail"'
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE, batch = "networkPayloadsMail")
 	public void theMailboxSendPacketPostsAParcel(GameTestHelper helper) {
 		helper.setBlock(MAILBOX, ModBlocks.MAILBOX);
 		MailboxBlockEntity mailbox = (MailboxBlockEntity) helper.getBlockEntity(MAILBOX);
@@ -162,8 +162,10 @@ public class NetworkPayloadsGameTests implements FabricGameTest {
 		player.moveTo(new Vec3(at.getX() + 1.5, at.getY(), at.getZ() + 0.5));
 		PostOffice office = PostOffice.get(helper.getLevel().getServer());
 		GlobalPos home = GlobalPos.of(helper.getLevel().dimension(), at);
-		office.register(player.getUUID(), home);
+		// Every mock player has the same name: the parcel goes to whichever of them the server finds by that name.
 		String me = player.getGameProfile().getName();
+		ServerPlayer addressee = helper.getLevel().getServer().getPlayerList().getPlayerByName(me);
+		office.register(addressee.getUUID(), home);
 		try {
 			MailboxMenu menu = new MailboxMenu(7, player.getInventory(), mailbox);
 			player.containerMenu = menu;
@@ -179,7 +181,7 @@ public class NetworkPayloadsGameTests implements FabricGameTest {
 			List<Parcel> posted = parcelsFrom(office, player);
 			helper.assertTrue(posted.size() == 1, "the Send packet posted " + posted.size() + " parcels, not 1");
 			Parcel parcel = posted.get(0);
-			helper.assertTrue(parcel.to().equals(player.getUUID()) && parcel.origin().equals(home), "parcel addressed wrong: to " + parcel.toName() + " from " + parcel.origin());
+			helper.assertTrue(parcel.to().equals(addressee.getUUID()) && parcel.origin().equals(home), "parcel addressed wrong: to " + parcel.toName() + " from " + parcel.origin());
 			helper.assertTrue(parcel.count() == 6, "parcel holds " + parcel.count() + " items, not 3 apples + 2 emeralds + the letter");
 			ItemStack letter = parcel.items().get(0);
 			var content = letter.get(net.minecraft.core.component.DataComponents.WRITTEN_BOOK_CONTENT);
@@ -194,7 +196,7 @@ public class NetworkPayloadsGameTests implements FabricGameTest {
 			for (Parcel p : parcelsFrom(office, player)) {
 				office.remove(p);
 			}
-			office.unregister(player.getUUID(), home);
+			office.unregister(addressee.getUUID(), home);
 			helper.getLevel().getServer().getPlayerList().remove(player);
 		}
 		helper.succeed();

@@ -9,6 +9,8 @@
   with Cobblemon the Pokémon jobs. Lost it? Craft another from a book and wheat.
 
 ### Fixed
+- The orchard house test that failed about 1 run in 50: it placed the house with its air, which dug a pit round it in
+  the test floor that the orchard keeper could fall into. Villages never place that air, so players weren't affected.
 - Giving a worker a new job (with an item or from the Village Hall) no longer frees another villager's workstation,
   when the worker's old one was broken while they were away and put back for someone else; and a far-off worker who
   still remembers that block isn't sent back to it.

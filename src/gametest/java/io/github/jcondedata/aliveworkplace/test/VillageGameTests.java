@@ -386,7 +386,12 @@ public class VillageGameTests implements FabricGameTest {
 		StructureTemplate template = level.getStructureManager().get(io.github.jcondedata.aliveworkplace.AliveWorkplace.id("village/plains_orchard_house"))
 			.orElseThrow();
 		BlockPos origin = helper.absolutePos(new BlockPos(4, 1, 4));
-		template.placeInWorld(level, origin, origin, new StructurePlaceSettings().setFinalizeEntities(true), net.minecraft.util.RandomSource.create(1), 2);
+		// Placed as a village places it (B11): the village's pool element skips the template's air. Placed with its air, the
+		// air ring around the house at y=0 dug a pit into the test floor, and a keeper who wandered into it before taking
+		// the composter could never path back to it (2 in 100 in-suite runs).
+		template.placeInWorld(level, origin, origin, new StructurePlaceSettings().setFinalizeEntities(true)
+			.addProcessor(net.minecraft.world.level.levelgen.structure.templatesystem.BlockIgnoreProcessor.STRUCTURE_AND_AIR),
+			net.minecraft.util.RandomSource.create(1), 2);
 		BlockPos composter = template.filterBlocks(origin, new StructurePlaceSettings(), Blocks.COMPOSTER).get(0).pos();
 		net.minecraft.world.phys.AABB area = net.minecraft.world.phys.AABB.of(template.getBoundingBox(new StructurePlaceSettings(), origin)).inflate(2);
 		helper.succeedWhen(() -> {

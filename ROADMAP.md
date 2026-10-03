@@ -389,7 +389,7 @@ about 12% of that. For villager mods, the cost is pathfinding to distant points 
   - client = required, server = required.
 
   Done when: the kit is in a review package, as it would look on each site.
-  - [ ] **26.2a** Change from the owner (2026-10-03): an In-Game Guidebook (owner 2026-10-02: 'impliment an In-Game Guidebook: Illustrated, easy-to-follow instructions. use in game screenshots so you dont illustrate. this book should make it easy for players do understand whats happening')
+  - [ ] **26.2a** (claimed: chat, 2026-10-03 04:04Z) Change from the owner (2026-10-03): an In-Game Guidebook (owner 2026-10-02: 'impliment an In-Game Guidebook: Illustrated, easy-to-follow instructions. use in game screenshots so you dont illustrate. this book should make it easy for players do understand whats happening')
 - [ ] **26.3** **Hygiene:**
   - a Mod Menu config screen and links (issues, source);
   - GitHub issue forms (steps, `latest.log`, crash report);

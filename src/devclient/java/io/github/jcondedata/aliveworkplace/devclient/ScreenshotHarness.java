@@ -1086,6 +1086,25 @@ public class ScreenshotHarness implements ClientModInitializer {
 
 	// --- Staff: every workstation of ours with its worker beside it, along a village street ------------------
 
+	/** The workstations ROADMAP 21.1a kept (the other jobs share vanilla's blocks), with their POI and job; the Village
+	 * Hall has no worker of its own. */
+	private static Object[][] staffRows() {
+		return new Object[][] {
+			{ModBlocks.BLUEPRINT_TABLE, io.github.jcondedata.aliveworkplace.registry.ModVillagers.BLUEPRINT_TABLE_POI, io.github.jcondedata.aliveworkplace.registry.ModVillagers.BUILDER},
+			{ModBlocks.STOREHOUSE, io.github.jcondedata.aliveworkplace.registry.ModVillagers.STOREHOUSE_POI, io.github.jcondedata.aliveworkplace.registry.ModVillagers.PORTER},
+			{ModBlocks.SHOP_COUNTER, io.github.jcondedata.aliveworkplace.registry.ModVillagers.SHOP_COUNTER_POI, io.github.jcondedata.aliveworkplace.registry.ModVillagers.SHOPKEEPER},
+			{ModBlocks.VILLAGE_HALL, null, null},
+			{ModBlocks.MAILBOX, io.github.jcondedata.aliveworkplace.registry.ModVillagers.MAILBOX_POI, io.github.jcondedata.aliveworkplace.registry.ModVillagers.POSTMAN},
+			{ModBlocks.TRAVEL_POST, io.github.jcondedata.aliveworkplace.registry.ModVillagers.TRAVEL_POST_POI, io.github.jcondedata.aliveworkplace.registry.ModVillagers.FERRYMAN},
+			{ModBlocks.TRAINING_POST, io.github.jcondedata.aliveworkplace.registry.ModVillagers.TRAINING_POST_POI, io.github.jcondedata.aliveworkplace.registry.ModVillagers.TRAINER},
+		};
+	}
+
+	/** Where the staff scene's {@code i}th workstation stands; its worker stands one block east, both facing the street. */
+	private static BlockPos staffSpot(int i) {
+		return new BlockPos(i * 4 - 13, -60, 0);
+	}
+
 	private void staffScene(Minecraft mc, MinecraftServer server) {
 		tick++;
 		if (tick == 1) {
@@ -1099,22 +1118,12 @@ public class ScreenshotHarness implements ClientModInitializer {
 				level.getGameRules().getRule(GameRules.RULE_DAYLIGHT).set(false, server);
 				level.getGameRules().getRule(GameRules.RULE_DOMOBSPAWNING).set(false, server);
 				level.setDayTime(6000);
-				// The workstations ROADMAP 21.1a kept (the other jobs share vanilla's blocks), each with its worker on
-				// its right, both facing the street; the Village Hall has no worker of its own.
-				Object[][] staff = {
-					{ModBlocks.BLUEPRINT_TABLE, io.github.jcondedata.aliveworkplace.registry.ModVillagers.BLUEPRINT_TABLE_POI, io.github.jcondedata.aliveworkplace.registry.ModVillagers.BUILDER},
-					{ModBlocks.STOREHOUSE, io.github.jcondedata.aliveworkplace.registry.ModVillagers.STOREHOUSE_POI, io.github.jcondedata.aliveworkplace.registry.ModVillagers.PORTER},
-					{ModBlocks.SHOP_COUNTER, io.github.jcondedata.aliveworkplace.registry.ModVillagers.SHOP_COUNTER_POI, io.github.jcondedata.aliveworkplace.registry.ModVillagers.SHOPKEEPER},
-					{ModBlocks.VILLAGE_HALL, null, null},
-					{ModBlocks.MAILBOX, io.github.jcondedata.aliveworkplace.registry.ModVillagers.MAILBOX_POI, io.github.jcondedata.aliveworkplace.registry.ModVillagers.POSTMAN},
-					{ModBlocks.TRAVEL_POST, io.github.jcondedata.aliveworkplace.registry.ModVillagers.TRAVEL_POST_POI, io.github.jcondedata.aliveworkplace.registry.ModVillagers.FERRYMAN},
-					{ModBlocks.TRAINING_POST, io.github.jcondedata.aliveworkplace.registry.ModVillagers.TRAINING_POST_POI, io.github.jcondedata.aliveworkplace.registry.ModVillagers.TRAINER},
-				};
+				Object[][] staff = staffRows();
 				for (BlockPos p : BlockPos.betweenClosed(new BlockPos(-16, -61, 2), new BlockPos(16, -61, 4))) {
 					level.setBlockAndUpdate(p, Blocks.DIRT_PATH.defaultBlockState());
 				}
 				for (int i = 0; i < staff.length; i++) {
-					BlockPos block = new BlockPos(i * 4 - 13, -60, 0);
+					BlockPos block = staffSpot(i);
 					net.minecraft.world.level.block.Block b = (net.minecraft.world.level.block.Block) staff[i][0];
 					BlockState state = standing(b.defaultBlockState());
 					if (b == ModBlocks.MAILBOX) {
@@ -1124,23 +1133,55 @@ public class ScreenshotHarness implements ClientModInitializer {
 					if (staff[i][1] == null) {
 						continue;
 					}
-					Villager v = EntityType.VILLAGER.spawn(level, block.east(), MobSpawnType.COMMAND);
-					v.setNoAi(true);
-					v.setYRot(0);
-					v.setYBodyRot(0);
-					v.setYHeadRot(0);
-					io.github.jcondedata.aliveworkplace.work.Jobs.employ(level, v, block,
-						(net.minecraft.resources.ResourceKey<net.minecraft.world.entity.ai.village.poi.PoiType>) staff[i][1],
-						(net.minecraft.world.entity.npc.VillagerProfession) staff[i][2]);
+					Object[] row = staff[i];
+					// The block's job-site record is added in a later server task, so the worker takes it after that.
+					server.execute(() -> {
+						Villager v = EntityType.VILLAGER.spawn(level, block.east(), MobSpawnType.COMMAND);
+						v.setNoAi(true);
+						v.setYRot(0);
+						v.setYBodyRot(0);
+						v.setYHeadRot(0);
+						io.github.jcondedata.aliveworkplace.work.Jobs.employ(level, v, block,
+							(net.minecraft.resources.ResourceKey<net.minecraft.world.entity.ai.village.poi.PoiType>) row[1],
+							(net.minecraft.world.entity.npc.VillagerProfession) row[2]);
+					});
 				}
 				hover(server.getPlayerList().getPlayers().get(0), new Vec3(0.5, -57.6, 14.5), 180, 10);
 			});
 		}
 		if (tick == 130) {
 			server.execute(() -> {
-				long working = server.overworld().getEntitiesOfClass(Villager.class, new net.minecraft.world.phys.AABB(-16, -62, -4, 16, -55, 6),
-					v -> v.getVillagerData().getProfession() != net.minecraft.world.entity.npc.VillagerProfession.NONE).size();
-				Showcase.check(working >= 6, "every villager took their job (" + working + " of 6)");
+				// Each workstation stands at its spot, and the villager beside it works there, in its job.
+				ServerLevel level = server.overworld();
+				Object[][] staff = staffRows();
+				List<String> wrong = new ArrayList<>();
+				for (int i = 0; i < staff.length; i++) {
+					BlockPos block = staffSpot(i);
+					net.minecraft.world.level.block.Block b = (net.minecraft.world.level.block.Block) staff[i][0];
+					String name = b.getName().getString();
+					if (!level.getBlockState(block).is(b)) {
+						wrong.add(name + " missing");
+						continue;
+					}
+					if (staff[i][2] == null) {
+						continue;
+					}
+					var profession = (net.minecraft.world.entity.npc.VillagerProfession) staff[i][2];
+					var poi = (net.minecraft.resources.ResourceKey<net.minecraft.world.entity.ai.village.poi.PoiType>) staff[i][1];
+					if (!level.getPoiManager().existsAtPosition(poi, block) || level.getPoiManager().getFreeTickets(block) != 0) {
+						wrong.add(name + " not taken as a job site");
+						continue;
+					}
+					var site = net.minecraft.core.GlobalPos.of(level.dimension(), block);
+					boolean works = level.getEntitiesOfClass(Villager.class, new net.minecraft.world.phys.AABB(block.east()).inflate(0.5),
+						v -> v.getVillagerData().getProfession().equals(profession)
+							&& v.getBrain().getMemory(net.minecraft.world.entity.ai.memory.MemoryModuleType.JOB_SITE).filter(site::equals).isPresent())
+						.size() == 1;
+					if (!works) {
+						wrong.add("no " + io.github.jcondedata.aliveworkplace.work.Stations.name(profession).getString() + " at the " + name);
+					}
+				}
+				Showcase.check(wrong.isEmpty(), "every workstation stands with its worker" + (wrong.isEmpty() ? "" : " (" + String.join(", ", wrong) + ")"));
 			});
 		}
 		if (tick == 140) {

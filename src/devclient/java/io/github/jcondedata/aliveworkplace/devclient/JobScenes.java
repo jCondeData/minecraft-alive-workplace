@@ -233,14 +233,14 @@ final class JobScenes {
 	/** How many of the outfits scene's mobs were checked so far: there, still of their job, not burning. */
 	private static final java.util.concurrent.atomic.AtomicInteger OUTFITS_SEEN = new java.util.concurrent.atomic.AtomicInteger();
 
-	/** Where the {@code n}th of a shot's outfits stands: in a row 2 blocks apart, facing the camera (south). Villagers
-	 * stand five to a shot, zombies ten, 60 blocks east under a roof (zombies burn in daylight). */
-	static BlockPos outfitSpot(int n, boolean zombie) {
-		return new BlockPos((zombie ? 60 : 0) + n * 2 - (zombie ? 9 : 4), -60, 0);
+	/** Where the {@code n}th of a shot's five outfits stands: in a row 2.5 blocks apart (so long names don't overlap),
+	 * facing the camera (south). The zombies stand 60 blocks east, under a roof: zombies burn in daylight. */
+	static Vec3 outfitSpot(int n, boolean zombie) {
+		return new Vec3((zombie ? 60 : 0) + (n - 2) * 2.5 + 0.5, -60, 0.5);
 	}
 
 	static Vec3 outfitCamera(boolean zombie) {
-		return new Vec3((zombie ? 60 : 0) + 0.5, zombie ? -58.4 : -58.7, zombie ? 9 : 5.5);
+		return new Vec3((zombie ? 60 : 0) + 0.5, -58.7, 6.5);
 	}
 
 	static Vec3 outfitTarget(boolean zombie) {
@@ -248,8 +248,8 @@ final class JobScenes {
 	}
 
 	/** Puts {@code mob} at {@code at}, still, facing south, named by {@code job} over its head. */
-	static void outfit(ServerLevel level, net.minecraft.world.entity.Mob mob, BlockPos at, VillagerProfession job) {
-		mob.moveTo(at.getX() + 0.5, at.getY(), at.getZ() + 0.5, 0, 0);
+	static void outfit(ServerLevel level, net.minecraft.world.entity.Mob mob, Vec3 at, VillagerProfession job) {
+		mob.moveTo(at.x, at.y, at.z, 0, 0);
 		mob.setYHeadRot(0);
 		mob.setYBodyRot(0);
 		mob.setNoAi(true);
@@ -270,6 +270,18 @@ final class JobScenes {
 			}
 			mob.discard();
 		}
+	}
+
+	/** The outfits scene's shots: every job five to a shot as villagers ({@code 01_villagers_1}...), then as zombies. */
+	private static List<Step> outfitSteps() {
+		List<Step> steps = new java.util.ArrayList<>();
+		int shots = (ourProfessions().size() + 4) / 5;
+		for (boolean zombie : new boolean[] {false, true}) {
+			for (int g = 0; g < shots; g++) {
+				steps.add(outfitStep(String.format("%02d_%s_%d", steps.size() + 1, zombie ? "zombies" : "villagers", g + 1), g * 5, 5, zombie));
+			}
+		}
+		return steps;
 	}
 
 	/** A shot of the outfits scene: the jobs {@code from} to {@code from + count}, as villagers or as zombie villagers. */
@@ -611,26 +623,24 @@ final class JobScenes {
 
 	static {
 		// Fewer job blocks (ROADMAP 21.1a): one composter, and the item in hand picks the job; wheat brings the farmer back.
-		// Every profession's outfit (ROADMAP 21.1): the mod's 30 jobs as villagers, five to a shot, then as zombie villagers ten
-		// to a shot (under a roof: zombies burn in daylight), each named over its head.
+		// Every profession's outfit (ROADMAP 21.1): the mod's jobs as villagers, then as zombie villagers, five to a shot,
+		// each named over its head.
 		SCREENS.put("outfits", new Screen("every profession of ours shows its outfit, as a villager and as a zombie villager",
 			outfitCamera(false), outfitTarget(false), (level, player) -> {
 				level.getGameRules().getRule(GameRules.RULE_DAYLIGHT).set(false, level.getServer());
 				level.getGameRules().getRule(GameRules.RULE_DOMOBSPAWNING).set(false, level.getServer());
 				level.setDayTime(6000);
 				OUTFITS_SEEN.set(0);
-				for (BlockPos p : BlockPos.betweenClosed(outfitSpot(0, true).offset(-3, 4, -3), outfitSpot(9, true).offset(3, 4, 3))) {
+				for (BlockPos p : BlockPos.betweenClosed(BlockPos.containing(outfitSpot(0, true)).offset(-3, 4, -3),
+						BlockPos.containing(outfitSpot(4, true)).offset(3, 4, 3))) {
 					level.setBlockAndUpdate(p, Blocks.DARK_OAK_PLANKS.defaultBlockState());
 				}
+				player.setGameMode(net.minecraft.world.level.GameType.SPECTATOR); // no hand, no hotbar, from the start
 			},
-			List.of(outfitStep("01_outfits_1", 0, 5, false), outfitStep("02_outfits_2", 5, 5, false),
-				outfitStep("03_outfits_3", 10, 5, false), outfitStep("04_outfits_4", 15, 5, false),
-				outfitStep("05_outfits_5", 20, 5, false), outfitStep("06_outfits_6", 25, 5, false),
-				outfitStep("07_zombies_1", 0, 10, true), outfitStep("08_zombies_2", 10, 10, true),
-				outfitStep("09_zombies_3", 20, 10, true)),
+			outfitSteps(),
 			(level, player) -> {
 				outfitsDone(level);
-				return OUTFITS_SEEN.get() == 2 * ourProfessions().size(); // more jobs than the shots show fails too
+				return !ourProfessions().isEmpty() && OUTFITS_SEEN.get() == 2 * ourProfessions().size();
 			}));
 		// The item icons (ROADMAP 21.1b, the owner's picks): all 13 in a chest at GUI scale 2, then four held in hand.
 		SCREENS.put("items", new Screen("every item's icon shows in a chest, in the hotbar and in hand", new Vec3(2.5, -58.4, 4.5), TARGET,

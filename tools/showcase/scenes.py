@@ -167,9 +167,8 @@ SCENES = [
     S("hall_pages", "Village Hall", "The chronicle and trade routes", "the chronicle and trade-route pages opened", 45,
       [("01_hall_chronicle", "Chronicle"), ("02_hall_routes", "Trade routes")]),
     S("outfits", "Everyone at work", "Every outfit, and as a zombie", "every profession shows its outfit, as a villager and a zombie", 60,
-      [("01_outfits_1", "Outfits 1-5"), ("03_outfits_3", "Outfits 11-15"), ("06_outfits_6", "Outfits 26-30"),
-       ("07_zombies_1", "Zombie villagers")]),
-    S("staff", "Everyone at work", "Every workstation with its villager", "every villager took their job", 45,
+      [("[0-9][0-9]_*@spread", "")]),
+    S("staff", "Everyone at work", "Every workstation with its villager", "every workstation stands with its worker", 45,
       [("01_staff", "Every workstation"), ("02_staff_close_1", "Builder to Village Hall"),
        ("03_staff_close_2", "Village Hall to Trainer"), ("04_staff_above", "From above")]),
     # Build families

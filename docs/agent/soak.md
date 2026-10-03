@@ -140,7 +140,7 @@ Sprint 206 ticks/s this time (4.84 ms/tick), so 6 days took about 12 minutes.
 Soak result: 21/22 builds finished in 144199 ticks (6.0 days); 10 stalls; items off: none; unfinished: flower_shop
 ```
 
-Triage (each became a Bug, see ROADMAP):
+Triage (each became a Bug: B21 waiting with nothing missing, B22 stone house stairs, B23 terrain stages on slopes):
 - library (stall #2) and flower_shop (#9, #10): WAITING_FOR_MATERIALS with 0 kinds missing; flower_shop is still
   unfinished after 6 days.
 - stone_house (#3, #4, #7, #8): waits for 1 deepslate_tile_stairs although its chests held exactly its start plan's

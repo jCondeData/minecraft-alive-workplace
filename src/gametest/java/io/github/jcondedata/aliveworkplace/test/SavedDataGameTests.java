@@ -68,6 +68,8 @@ public class SavedDataGameTests implements FabricGameTest {
 		samples.put("BUILDER_EMPLOYER", new Employer(B, "Steve"));
 		samples.put("COURIER_ROUTES", List.of(new RouteData(Optional.of(new BlockPos(1, 64, 1)), Optional.of(new BlockPos(40, 70, -3)),
 			List.of(Items.WHEAT, Items.COBBLESTONE)), new RouteData(Optional.empty(), Optional.of(new BlockPos(-8, 65, 9)), List.of())));
+		samples.put("JOB_SITE_HELD", new io.github.jcondedata.aliveworkplace.work.JobSiteTickets.Held(
+			net.minecraft.core.GlobalPos.of(net.minecraft.world.level.Level.OVERWORLD, new BlockPos(12, 64, -7)), 3));
 		return samples;
 	}
 

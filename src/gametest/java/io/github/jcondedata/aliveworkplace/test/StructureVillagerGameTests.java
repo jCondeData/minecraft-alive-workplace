@@ -126,7 +126,7 @@ public class StructureVillagerGameTests implements FabricGameTest {
 
 	/**
 	 * Bug B10: an abandoned (zombie) desert village's house 7 puts its zombie villager on the same off-centre spot in the
-	 * same 1-wide corridor; it must land on the corridor floor too, not in the wall (the house's roof keeps the sun off).
+	 * same 1-wide corridor; it must land on the corridor floor too, not in the wall (run at night, so the sun can't hurt it).
 	 */
 	//$ gametest_ticks_batch AREA '200' '"b10ZombieDesertHouseRotatedNone"'
 	@GameTest(template = AREA, timeoutTicks = 200, batch = "b10ZombieDesertHouseRotatedNone")
@@ -153,6 +153,11 @@ public class StructureVillagerGameTests implements FabricGameTest {
 	}
 
 	private static void zombieHouse(GameTestHelper helper, Rotation rotation) {
+		// At night: a zombie villager that wanders out of the roofed corridor would burn in the sun, and this test is about
+		// walls, not the sun (B12: it failed now and then, "hurt: 16.0", at whatever time the server had reached).
+		long time = helper.getLevel().getDayTime();
+		helper.setDayTime(18000);
+		Leftovers.after(helper, () -> helper.getLevel().setDayTime(time)); // (the next batches' villagers mustn't sleep)
 		rotatedHouse(helper, "desert/zombie", "desert_small_house_7", rotation, "minecraft:village/desert/zombie/villagers/unemployed",
 			net.minecraft.world.entity.monster.ZombieVillager.class);
 	}

@@ -317,6 +317,11 @@ public final class BuildSite {
 		return skipped;
 	}
 
+	/** Changes whenever the site moves on (a step done, deferred or skipped, a new list or stage); for stall checks. */
+	public long progressMark() {
+		return ((((long) stage.ordinal() * 2 + (retrying ? 1 : 0)) * 1_000_003L + cursor) * 1_000_003L + placed) * 1_000_003L + skipped;
+	}
+
 	public int placed() {
 		return placed;
 	}

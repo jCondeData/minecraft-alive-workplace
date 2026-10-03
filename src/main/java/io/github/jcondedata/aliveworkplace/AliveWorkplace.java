@@ -65,9 +65,11 @@ public final class AliveWorkplace {
 		io.github.jcondedata.aliveworkplace.blueprint.BlueprintStyles.init();
 		integrations.run();
 		io.github.jcondedata.aliveworkplace.build.MaterialFamilies.init();
+		io.github.jcondedata.aliveworkplace.build.StallWatch.init();
 		BlueprintOutline.init();
 		WorkplaceCommand.init();
 		io.github.jcondedata.aliveworkplace.command.Benchmark.init();
+		io.github.jcondedata.aliveworkplace.command.Soak.init();
 		LOG.info("Alive Workplace ready — go hire a builder.");
 	}
 

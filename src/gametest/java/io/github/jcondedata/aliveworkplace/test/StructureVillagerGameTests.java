@@ -61,6 +61,11 @@ public class StructureVillagerGameTests implements FabricGameTest {
 	 * fall and must stand on the floor level, unhurt and not in a wall.
 	 */
 	private static void rotatedHouse(GameTestHelper helper, String style, String houseName, Rotation rotation) {
+		rotatedHouse(helper, style, houseName, rotation, "minecraft:village/" + style + "/villagers/unemployed", Villager.class);
+	}
+
+	private static <T extends net.minecraft.world.entity.Mob> void rotatedHouse(GameTestHelper helper, String style, String houseName,
+			Rotation rotation, String villagerPiece, Class<T> kind) {
 		Leftovers.clear(helper);
 		ServerLevel level = helper.getLevel();
 		var manager = level.getStructureManager();
@@ -79,10 +84,10 @@ public class StructureVillagerGameTests implements FabricGameTest {
 			.findFirst().orElseThrow(() -> new net.minecraft.gametest.framework.GameTestAssertException(houseName + " has no villager jigsaw"));
 		BlockPos target = socket.pos().relative(JigsawBlock.getFrontFacing(socket.state()));
 
-		var piece = StructurePoolElement.legacy("minecraft:village/" + style + "/villagers/unemployed", empty)
+		var piece = StructurePoolElement.legacy(villagerPiece, empty)
 			.apply(StructureTemplatePool.Projection.RIGID);
 		List<String> checked = new ArrayList<>();
-		Villager last = null;
+		T last = null;
 		for (Rotation pieceRotation : Rotation.values()) {
 			StructureTemplate.StructureBlockInfo plug = piece.getShuffledJigsawBlocks(manager, BlockPos.ZERO, pieceRotation, RandomSource.create(1)).stream()
 				.filter(j -> JigsawBlock.canAttach(socket, j)).findFirst().orElse(null);
@@ -90,14 +95,14 @@ public class StructureVillagerGameTests implements FabricGameTest {
 				continue;
 			}
 			BlockPos pieceOrigin = target.subtract(plug.pos());
-			for (Villager old : level.getEntitiesOfClass(Villager.class, AABB.of(box))) {
+			for (var old : level.getEntitiesOfClass(kind, AABB.of(box))) {
 				old.discard();
 			}
 			helper.assertTrue(piece.place(manager, level, level.structureManager(), level.getChunkSource().getGenerator(), pieceOrigin, pieceOrigin,
 				pieceRotation, box, RandomSource.create(1), LiquidSettings.APPLY_WATERLOGGING, false), "the villager piece did not place");
-			List<Villager> villagers = level.getEntitiesOfClass(Villager.class, AABB.of(box));
+			List<T> villagers = level.getEntitiesOfClass(kind, AABB.of(box));
 			helper.assertTrue(villagers.size() == 1, villagers.size() + " villagers placed with piece rotation " + pieceRotation);
-			Villager v = villagers.get(0);
+			T v = villagers.get(0);
 			AABB b = v.getBoundingBox();
 			String where = String.format("house %s, piece %s: villager box x %.2f..%.2f z %.2f..%.2f",
 				rotation, pieceRotation, b.minX - target.getX(), b.maxX - target.getX(), b.minZ - target.getZ(), b.maxZ - target.getZ());
@@ -107,7 +112,7 @@ public class StructureVillagerGameTests implements FabricGameTest {
 			last = v;
 		}
 		helper.assertTrue(!checked.isEmpty(), "no piece rotation attaches to " + houseName + "'s villager jigsaw");
-		Villager villager = last;
+		T villager = last;
 		helper.runAfterDelay(80, () -> {
 			String at = String.format("%.2f %.2f %.2f from the spot", villager.getX() - target.getX(), villager.getY() - target.getY(), villager.getZ() - target.getZ());
 			helper.assertTrue(villager.isAlive(), "the villager died (" + rotation + ")");
@@ -117,6 +122,39 @@ public class StructureVillagerGameTests implements FabricGameTest {
 			helper.assertTrue(villager.getBlockY() == target.getY() && villager.onGround(), "the villager is not on the house floor (" + rotation + "): " + at);
 			helper.succeed();
 		});
+	}
+
+	/**
+	 * Bug B10: an abandoned (zombie) desert village's house 7 puts its zombie villager on the same off-centre spot in the
+	 * same 1-wide corridor; it must land on the corridor floor too, not in the wall (the house's roof keeps the sun off).
+	 */
+	//$ gametest_ticks_batch AREA '200' '"b10ZombieDesertHouseRotatedNone"'
+	@GameTest(template = AREA, timeoutTicks = 200, batch = "b10ZombieDesertHouseRotatedNone")
+	public void b10ZombieDesertHouseRotatedNone(GameTestHelper helper) {
+		zombieHouse(helper, Rotation.NONE);
+	}
+
+	//$ gametest_ticks_batch AREA '200' '"b10ZombieDesertHouseRotated90"'
+	@GameTest(template = AREA, timeoutTicks = 200, batch = "b10ZombieDesertHouseRotated90")
+	public void b10ZombieDesertHouseRotated90(GameTestHelper helper) {
+		zombieHouse(helper, Rotation.CLOCKWISE_90);
+	}
+
+	//$ gametest_ticks_batch AREA '200' '"b10ZombieDesertHouseRotated180"'
+	@GameTest(template = AREA, timeoutTicks = 200, batch = "b10ZombieDesertHouseRotated180")
+	public void b10ZombieDesertHouseRotated180(GameTestHelper helper) {
+		zombieHouse(helper, Rotation.CLOCKWISE_180);
+	}
+
+	//$ gametest_ticks_batch AREA '200' '"b10ZombieDesertHouseRotated270"'
+	@GameTest(template = AREA, timeoutTicks = 200, batch = "b10ZombieDesertHouseRotated270")
+	public void b10ZombieDesertHouseRotated270(GameTestHelper helper) {
+		zombieHouse(helper, Rotation.COUNTERCLOCKWISE_90);
+	}
+
+	private static void zombieHouse(GameTestHelper helper, Rotation rotation) {
+		rotatedHouse(helper, "desert/zombie", "desert_small_house_7", rotation, "minecraft:village/desert/zombie/villagers/unemployed",
+			net.minecraft.world.entity.monster.ZombieVillager.class);
 	}
 
 	/**

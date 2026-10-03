@@ -65,8 +65,13 @@ public class LumberjackWork extends Behavior<Villager> {
 	private int chopProgress;
 	private int chopTotal;
 	private boolean depositDue;
-	/** Stumps still waiting for a sapling (the leaves dropped none): filled from the chests after the next drop-off. */
+	/**
+	 * Stumps still waiting for a sapling (the leaves dropped none): filled from the chests after the next drop-off, or as
+	 * soon as one is put there (looked for every {@link #STUMP_CHECK} ticks). Not saved: after a restart they're forgotten.
+	 */
 	private final java.util.Map<BlockPos, Block> unplanted = new java.util.LinkedHashMap<>();
+	private static final int STUMP_CHECK = 100;
+	private int stumpTimer;
 	/** Saplings this lumberjack planted where a tree came down (the farm's are found by looking): bone meal goes to these. */
 	private final Set<BlockPos> replanted = new java.util.HashSet<>();
 	/** Bone meal given to each sapling so far. */
@@ -131,26 +136,33 @@ public class LumberjackWork extends Behavior<Villager> {
 			return;
 		}
 
-		// 2. Plant the stumps the leaves gave no sapling for.
+		// 2. Plant the stumps the leaves gave no sapling for. A stump whose sapling isn't in the bag waits for one (B9): now
+		// and then the lumberjack looks in the chests, and fetches it once one is there.
 		if (!unplanted.isEmpty()) {
-			var next = unplanted.entrySet().iterator().next();
-			BlockPos spot = next.getKey();
-			Block sapling = next.getValue();
-			if (!bag.has(sapling.asItem(), 1) || !Trees.canPlant(level, spot, sapling)) {
-				unplanted.remove(spot);
+			unplanted.entrySet().removeIf(e -> !Trees.canPlant(level, e.getKey(), e.getValue())); // built over, or planted
+			var next = unplanted.entrySet().stream().filter(e -> bag.has(e.getValue().asItem(), 1)).findFirst().orElse(null);
+			if (next != null) {
+				BlockPos spot = next.getKey();
+				Block sapling = next.getValue();
+				status(villager, Phase.CHOPPING);
+				if (walker.reach(level, villager, spot, REACH)) {
+					level.setBlockAndUpdate(spot, Trees.plantState(level, spot, sapling));
+					bag.remove(sapling.asItem(), 1);
+					level.playSound(null, spot, SoundEvents.GRASS_PLACE, SoundSource.BLOCKS, 0.8f, 1f);
+					unplanted.remove(spot);
+					replanted.add(spot);
+				} else if (walker.noSpot()) {
+					unplanted.remove(spot);
+				}
 				return;
 			}
-			status(villager, Phase.CHOPPING);
-			if (walker.reach(level, villager, spot, REACH)) {
-				level.setBlockAndUpdate(spot, Trees.plantState(level, spot, sapling));
-				bag.remove(sapling.asItem(), 1);
-				level.playSound(null, spot, SoundEvents.GRASS_PLACE, SoundSource.BLOCKS, 0.8f, 1f);
-				unplanted.remove(spot);
-				replanted.add(spot);
-			} else if (walker.noSpot()) {
-				unplanted.remove(spot);
+			if (--stumpTimer <= 0) {
+				stumpTimer = STUMP_CHECK;
+				if (chestsHaveSaplingsFor(level, block)) {
+					depositDue = true; // the drop-off takes them (takeSaplings)
+					return;
+				}
 			}
-			return;
 		}
 
 		// 2b. Keep the tree farm planted (saplings from the bag, topped up from the chests).
@@ -685,6 +697,12 @@ public class LumberjackWork extends Behavior<Villager> {
 		boolean more = SupplyContainers.count(level, supplies, Items.CHARCOAL) < KEEP_CHARCOAL;
 		io.github.jcondedata.aliveworkplace.work.Furnaces.tend(level, block, supplies,
 			item -> more && new ItemStack(item).is(ItemTags.LOGS_THAT_BURN));
+	}
+
+	/** Whether the chests hold a sapling for a stump still waiting for one. */
+	private boolean chestsHaveSaplingsFor(ServerLevel level, BlockPos block) {
+		List<BlockPos> supplies = SupplyContainers.find(level, block, null);
+		return unplanted.values().stream().distinct().anyMatch(sapling -> SupplyContainers.count(level, supplies, sapling.asItem()) > 0);
 	}
 
 	/** Saplings for the stumps still waiting for one, from the chests. */

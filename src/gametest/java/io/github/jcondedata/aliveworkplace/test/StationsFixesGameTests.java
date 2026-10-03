@@ -48,6 +48,28 @@ public class StationsFixesGameTests implements net.fabricmc.fabric.api.gametest.
 	private static final BlockPos STATION = new BlockPos(3, 2, 3);
 	private static final BlockPos STANDING = new BlockPos(4, 2, 4);
 
+	/** {@code at}, or the nearest spot along x (in the area) with no other block within 2 of it (their composters go beside them). */
+	private static BlockPos clearOf(Map<BlockPos, Block> taken, BlockPos at) {
+		BlockPos spot = at;
+		for (int step = 0; step < 20 && clash(taken, spot); step++) {
+			spot = new BlockPos(2 + (spot.getX() + 3 - 2) % 17, spot.getY(), spot.getZ());
+		}
+		return spot;
+	}
+
+	private static boolean clash(Map<BlockPos, Block> taken, BlockPos spot) {
+		for (BlockPos t : taken.keySet()) {
+			if (t.distManhattan(spot) <= 2 || near(t, spot)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private static boolean near(BlockPos a, BlockPos b) {
+		return Math.abs(a.getX() - b.getX()) <= 2 && Math.abs(a.getY() - b.getY()) <= 1 && Math.abs(a.getZ() - b.getZ()) <= 1;
+	}
+
 	/** A spot in the big area (x 1-20, y 2-17, z 1-20) whose position inside its chunk section is {@code rel} on every axis. */
 	private static BlockPos sectionCorner(GameTestHelper helper, int rel) {
 		return inSection(helper, rel, rel, rel);
@@ -85,9 +107,11 @@ public class StationsFixesGameTests implements net.fabricmc.fabric.api.gametest.
 		Map<BlockPos, Block> blocks = new LinkedHashMap<>();
 		blocks.put(sectionCorner(helper, 15), Blocks.CRAFTING_TABLE);
 		blocks.put(sectionCorner(helper, 0), Blocks.JUKEBOX);
-		blocks.put(new BlockPos(8, 5, 12), ModBlocks.MAILBOX);
-		blocks.put(new BlockPos(12, 7, 8), ModBlocks.BLUEPRINT_TABLE);
 		blocks.put(inSection(helper, 6, 9, 0), Blocks.CRAFTING_TABLE); // on a section's first row, at an odd height
+		// The two anywhere-spots step aside from the section spots (which move with where the test area lands: once the
+		// third landed on the mailbox's spot).
+		blocks.put(clearOf(blocks, new BlockPos(8, 5, 12)), ModBlocks.MAILBOX);
+		blocks.put(clearOf(blocks, new BlockPos(12, 7, 8)), ModBlocks.BLUEPRINT_TABLE);
 		Map<Block, ResourceKey<PoiType>> kinds = Map.of(Blocks.CRAFTING_TABLE, ModVillagers.CRAFTING_TABLE_POI, Blocks.JUKEBOX,
 			ModVillagers.JUKEBOX_POI, ModBlocks.MAILBOX, ModVillagers.MAILBOX_POI, ModBlocks.BLUEPRINT_TABLE, ModVillagers.BLUEPRINT_TABLE_POI);
 		helper.assertTrue(blocks.size() == 5, "setup: two blocks at one spot " + blocks.keySet());

@@ -191,16 +191,96 @@ public class VillageGameTests implements FabricGameTest {
 	//$ gametest_ticks_batch '"aliveworkplace_test:big_area"' '2400' '"aVillagerMovesIntoTheWorkshop"'
 	@GameTest(template = "aliveworkplace_test:big_area", timeoutTicks = 2400, batch = "aVillagerMovesIntoTheWorkshop")
 	public void aVillagerMovesIntoTheWorkshop(GameTestHelper helper) {
+		workshopTest(helper, new BlockPos(7, 2, 9), true);
+	}
+
+	/**
+	 * B4: a jobless villager standing outside the workshop, by its side wall two blocks from the Blueprint Table, walks
+	 * round to the door and takes it. It once never did, 30 times out of 30: the house's structure_void row in front of
+	 * the door was placed as a hole in the ground (B5), and the path round to the door went through it.
+	 */
+	//$ gametest_ticks_batch '"aliveworkplace_test:big_area"' '2400' '"aVillagerOutsideTheWorkshopFindsItsTable"'
+	@GameTest(template = "aliveworkplace_test:big_area", timeoutTicks = 2400, batch = "aVillagerOutsideTheWorkshopFindsItsTable")
+	public void aVillagerOutsideTheWorkshopFindsItsTable(GameTestHelper helper) {
+		workshopTest(helper, new BlockPos(4, 2, 10), true);
+	}
+
+	/**
+	 * B2: villages place the workshop as a legacy pool element, which skips the template's air, so the air cells in its
+	 * bottom layer (around the walls, like vanilla's houses) never cut into the ground. Placing the template with its air
+	 * cut a ring through the test floor around the house, two blocks deep with the air under the floor; about one
+	 * villager in 175 wandered out of the door, dropped into it and walked round it for the rest of the test (a villager
+	 * put in the ring stayed there 30 times out of 30). Placed like a village's it still failed 1 in 100: the structure_void
+	 * row in front of the door was placed too (B5). With B5 fixed, 100 of 100 in-suite repeats passed (2026-10-02), and
+	 * 100 of 100 of the villager outside the side wall (B4).
+	 */
+	static void workshopTest(GameTestHelper helper, BlockPos spawn, boolean likeAVillage) {
 		Leftovers.clear(helper); // (a jobless villager from a neighbouring test can take the bench first)
 		ServerLevel level = helper.getLevel();
 		StructureTemplate template = level.getStructureManager().get(VillageHouses.workshop("plains")).orElseThrow();
 		BlockPos origin = helper.absolutePos(new BlockPos(4, 1, 4));
-		template.placeInWorld(level, origin, origin, new StructurePlaceSettings(), level.getRandom(), 2);
-		Villager villager = helper.spawn(EntityType.VILLAGER, new BlockPos(7, 2, 9));
+		StructurePlaceSettings settings = new StructurePlaceSettings();
+		if (likeAVillage) {
+			settings.addProcessor(net.minecraft.world.level.levelgen.structure.templatesystem.BlockIgnoreProcessor.STRUCTURE_AND_AIR);
+		}
+		template.placeInWorld(level, origin, origin, settings, level.getRandom(), 2);
+		Villager villager = helper.spawn(EntityType.VILLAGER, spawn);
 		villager.setVillagerData(villager.getVillagerData().setProfession(VillagerProfession.NONE));
 		helper.setDayTime(2000);
+		BlockPos bench = origin.offset(2, 1, 7);
+		// Where they went, every second, and when they first stood lower than the bench (the three failures seen were all
+		// under the test floor).
+		List<String> trail = new java.util.ArrayList<>();
+		String[] firstLow = {"never"};
+		int[] ticks = {0};
+		helper.onEachTick(() -> {
+			ticks[0]++;
+			BlockPos d = villager.blockPosition().subtract(bench);
+			if (d.getY() < 0 && firstLow[0].equals("never")) {
+				firstLow[0] = "tick " + ticks[0] + " at bench" + offset(d);
+			}
+			if (ticks[0] % 20 == 0 && trail.size() < 40) {
+				trail.add(offset(d));
+			}
+		});
 		helper.succeedWhen(() -> helper.assertTrue(villager.getVillagerData().getProfession() == ModVillagers.BUILDER,
-			"villager is still " + villager.getVillagerData().getProfession()));
+			"villager is still " + villager.getVillagerData().getProfession() + workshopClues(helper, villager, bench)
+				+ " | first below the bench: " + firstLow[0] + " | trail: " + String.join(" ", trail)));
+	}
+
+	/**
+	 * What a jobless villager near the workshop's bench saw (B2: this test failed a few times in full-suite runs and never
+	 * alone), so the next failure explains itself: where they are, what they aimed for, whether the bench is still there
+	 * and free, and which other villagers and free workstations are within a villager's job search.
+	 */
+	private static String workshopClues(GameTestHelper helper, Villager villager, BlockPos bench) {
+		ServerLevel level = helper.getLevel();
+		var poi = level.getPoiManager();
+		StringBuilder s = new StringBuilder();
+		BlockPos at = villager.blockPosition();
+		s.append(" | at bench").append(offset(at.subtract(bench))).append(villager.isAlive() ? "" : " (dead)")
+			.append(helper.getBounds().contains(villager.position()) ? " in the area" : " OUTSIDE the area")
+			.append(", on ").append(level.getBlockState(at.below()).getBlock().getDescriptionId())
+			.append(", in ").append(level.getBlockState(at).getBlock().getDescriptionId());
+		s.append(", job site ").append(villager.getBrain().getMemory(net.minecraft.world.entity.ai.memory.MemoryModuleType.JOB_SITE)
+			.map(g -> "bench" + offset(g.pos().subtract(bench))).orElse("-"));
+		s.append(", potential ").append(villager.getBrain().getMemory(net.minecraft.world.entity.ai.memory.MemoryModuleType.POTENTIAL_JOB_SITE)
+			.map(g -> "bench" + offset(g.pos().subtract(bench))).orElse("-"));
+		s.append(" | bench ").append(level.getBlockState(bench).getBlock().getDescriptionId())
+			.append(poi.getType(bench).map(h -> h.is(ModVillagers.BLUEPRINT_TABLE_POI)).orElse(false) ? " poi" : " NO-POI")
+			.append(poi.getCountInRange(h -> true, bench, 0, net.minecraft.world.entity.ai.village.poi.PoiManager.Occupancy.HAS_SPACE) > 0 ? " free" : " TAKEN");
+		s.append(" | villagers near: ");
+		level.getEntitiesOfClass(Villager.class, helper.getBounds().inflate(48), v -> v != villager)
+			.forEach(v -> s.append(v.getVillagerData().getProfession()).append('@').append("bench").append(offset(v.blockPosition().subtract(bench))).append(' '));
+		s.append("| free job sites near: ");
+		poi.getInRange(h -> h.is(net.minecraft.tags.PoiTypeTags.ACQUIRABLE_JOB_SITE), bench, 48,
+				net.minecraft.world.entity.ai.village.poi.PoiManager.Occupancy.HAS_SPACE)
+			.forEach(r -> s.append("bench").append(offset(r.getPos().subtract(bench))).append(' '));
+		return s.toString();
+	}
+
+	private static String offset(BlockPos d) {
+		return String.format("%+d,%+d,%+d", d.getX(), d.getY(), d.getZ());
 	}
 
 	/**

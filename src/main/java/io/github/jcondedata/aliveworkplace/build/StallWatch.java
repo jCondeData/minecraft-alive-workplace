@@ -74,6 +74,16 @@ public final class StallWatch {
 		WATCHES.keySet().retainAll(seen);
 	}
 
+	/** ": 40 minecraft:glass, 12 minecraft:oak_planks", largest first, or nothing when no material is missing. */
+	public static String missing(BuildSite site) {
+		StringBuilder out = new StringBuilder();
+		for (var e : site.missingSorted()) {
+			out.append(out.isEmpty() ? ": " : ", ").append(e.getValue()).append(' ')
+				.append(net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(e.getKey()));
+		}
+		return out.toString();
+	}
+
 	static void watch(BuildSite site, long now) {
 		long mark = site.progressMark();
 		Watch w = WATCHES.get(site.id());
@@ -84,9 +94,9 @@ public final class StallWatch {
 		if (!w.logged() && now - w.since() >= STALL_TICKS) {
 			stalls++;
 			WATCHES.put(site.id(), new Watch(mark, w.since(), true));
-			AliveWorkplace.LOG.info("{} {} s: {} at {} (stage {}, status {}, {} placed, {} skipped, {} kinds missing) [stall #{}]",
+			AliveWorkplace.LOG.info("{} {} s: {} at {} (stage {}, status {}, {} placed, {} skipped, {} kinds missing{}) [stall #{}]",
 					PREFIX, (now - w.since()) / 20, site.structure(), site.placement().origin().toShortString(),
-					site.stage(), site.status(), site.placed(), site.skipped(), site.missing().size(), stalls);
+					site.stage(), site.status(), site.placed(), site.skipped(), site.missing().size(), missing(site), stalls);
 		}
 	}
 }

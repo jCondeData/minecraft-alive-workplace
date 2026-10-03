@@ -626,7 +626,9 @@ public final class Builders {
 	}
 
 	private static void returnBlueprint(ServerLevel level, BuildSite site, BlockPos bench, List<BlockPos> supplies) {
-		ItemStack rest = SupplyContainers.insert(level, supplies, blueprintFor(level, site));
+		ItemStack blueprint = blueprintFor(level, site);
+		MaterialLedger.gained(blueprint);
+		ItemStack rest = SupplyContainers.insert(level, supplies, blueprint);
 		if (!rest.isEmpty()) {
 			dropNear(level, bench, rest);
 		}
@@ -637,6 +639,7 @@ public final class Builders {
 	}
 
 	static void dropNear(ServerLevel level, BlockPos pos, ItemStack stack) {
+		MaterialLedger.dropped(stack);
 		ItemEntity item = new ItemEntity(level, pos.getX() + 0.5, pos.getY() + 1.1, pos.getZ() + 0.5, stack);
 		item.setDefaultPickUpDelay();
 		level.addFreshEntity(item);

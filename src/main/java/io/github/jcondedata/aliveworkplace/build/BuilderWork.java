@@ -714,6 +714,7 @@ public class BuilderWork extends Behavior<Villager> {
 		List<ItemStack> drops = Block.getDrops(state, level, pos, blockEntity, villager, ItemStack.EMPTY);
 		level.destroyBlock(pos, false, villager);
 		for (ItemStack drop : drops) {
+			MaterialLedger.gained(drop);
 			ItemStack rest = bag.add(drop);
 			if (!rest.isEmpty()) {
 				Builders.dropNear(level, bench, rest);
@@ -736,6 +737,7 @@ public class BuilderWork extends Behavior<Villager> {
 		level.levelEvent(2001, pos, Block.getId(state)); // break particles and sound
 		level.gameEvent(villager, GameEvent.BLOCK_DESTROY, pos);
 		for (MaterialRules.Requirement r : step.requirements()) {
+			MaterialLedger.gained(r.item(), r.count());
 			int rest = bag.addAll(r.item(), r.count());
 			if (rest > 0) {
 				Builders.dropNear(level, bench, new ItemStack(r.item(), rest));
@@ -776,10 +778,11 @@ public class BuilderWork extends Behavior<Villager> {
 
 		if (!free) {
 			for (MaterialRules.Requirement r : requirements) {
-				bag.remove(r.item(), r.count());
+				MaterialLedger.used(r.item(), bag.remove(r.item(), r.count()));
 				// What's left over goes back in the bag (the empty bucket after pouring water).
 				ItemStack leftover = r.item().getCraftingRemainingItem() == null ? ItemStack.EMPTY : new ItemStack(r.item().getCraftingRemainingItem(), r.count());
 				if (!leftover.isEmpty()) {
+					MaterialLedger.gained(leftover);
 					ItemStack rest = bag.add(leftover);
 					if (!rest.isEmpty()) {
 						Builders.dropNear(level, pos, rest);

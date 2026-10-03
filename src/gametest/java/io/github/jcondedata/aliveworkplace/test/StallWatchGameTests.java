@@ -65,6 +65,10 @@ public class StallWatchGameTests implements FabricGameTest {
 			helper.assertTrue(StallWatch.isStalled(site.id()), "no stall logged yet: status " + site.status() + ", stage " + site.stage());
 			helper.assertTrue(helper.getTick() - started >= StallWatch.STALL_TICKS,
 				"stall logged after only " + (helper.getTick() - started) + " ticks");
+			// The line names what the builder waits for, so a soak stall can be triaged from the log alone.
+			String missing = StallWatch.missing(site);
+			helper.assertTrue(missing.contains("minecraft:cobblestone") && missing.contains("minecraft:oak_planks"),
+				"the stall line doesn't name the missing materials: '" + missing + "'");
 		});
 	}
 
@@ -114,5 +118,64 @@ public class StallWatchGameTests implements FabricGameTest {
 		// Keep watching for another 100 ticks after the builder's own site stalls.
 		helper.succeedWhen(() -> helper.assertTrue(firstStalledAt.get() >= 0 && helper.getTick() - firstStalledAt.get() >= 100,
 			"the builder's own site hasn't stalled yet (status " + first.status() + ")"));
+	}
+
+	/**
+	 * The soak's item check (23.1): with the ledger on, a build from a chest adds up exactly (stocked + gained − built
+	 * in − dropped = left in the chest and the bag), and the ledger saw every block built in.
+	 */
+	//$ gametest_ticks_batch AREA '2400' '"material_ledger"'
+	@GameTest(template = AREA, timeoutTicks = 2400, batch = "material_ledger")
+	public void theMaterialLedgerBalancesABuildFromAChest(GameTestHelper helper) {
+		// Its own batch: the ledger counts every builder on the server, so no other build may run beside this one.
+		Leftovers.clear(helper);
+		java.util.Map<net.minecraft.world.item.Item, Integer> stocked = java.util.Map.of(Items.COBBLESTONE, 25,
+			Items.OAK_PLANKS, 55, Items.OAK_DOOR, 1, Items.TORCH, 1);
+		Villager villager = builder(helper, new ItemStack(Items.COBBLESTONE, 25), new ItemStack(Items.OAK_PLANKS, 55),
+			new ItemStack(Items.OAK_DOOR), new ItemStack(Items.TORCH));
+		io.github.jcondedata.aliveworkplace.build.MaterialLedger.start();
+		BuildSite site = Builders.start(helper.getLevel(), villager, null, TEST_HUT, at(helper, HUT_ORIGIN));
+		helper.succeedWhen(() -> {
+			helper.assertTrue(BuildSiteManager.get(helper.getLevel()).get(site.id()) == null,
+				"still building: stage " + site.stage() + ", status " + site.status());
+			io.github.jcondedata.aliveworkplace.build.MaterialLedger.stop();
+			java.util.Map<net.minecraft.world.item.Item, Integer> left = new java.util.HashMap<>();
+			Container chest = helper.getBlockEntity(CHEST);
+			for (int i = 0; i < chest.getContainerSize(); i++) {
+				ItemStack stack = chest.getItem(i);
+				if (!stack.isEmpty()) {
+					left.merge(stack.getItem(), stack.getCount(), Integer::sum);
+				}
+			}
+			for (ItemStack stack : io.github.jcondedata.aliveworkplace.registry.ModAttachments.BUILDER_BAG.getOrCreate(villager).stacks()) {
+				if (!stack.isEmpty()) {
+					left.merge(stack.getItem(), stack.getCount(), Integer::sum);
+				}
+			}
+			var used = io.github.jcondedata.aliveworkplace.build.MaterialLedger.used();
+			helper.assertTrue(used.getOrDefault(Items.COBBLESTONE, 0) > 0 && used.getOrDefault(Items.OAK_DOOR, 0) == 1,
+				"the ledger missed blocks built in: " + used);
+			String off = io.github.jcondedata.aliveworkplace.command.Soak.itemsOff(stocked,
+				io.github.jcondedata.aliveworkplace.build.MaterialLedger.gained(), used,
+				io.github.jcondedata.aliveworkplace.build.MaterialLedger.dropped(), left);
+			helper.assertTrue(off.equals("none"), "items off after a clean build: " + off);
+		});
+	}
+
+	/** The item check itself: an extra item is "+", a missing one "−", gains and drops are accounted for. */
+	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
+	public void theSoakItemCheckNamesDuplicatedAndLostItems(GameTestHelper helper) {
+		var stocked = java.util.Map.of(Items.COBBLESTONE, 10, Items.GLASS, 4);
+		var gained = java.util.Map.of(Items.DIRT, 6);
+		var used = java.util.Map.of(Items.COBBLESTONE, 7, Items.GLASS, 4);
+		var dropped = java.util.Map.of(Items.DIRT, 2);
+		String fine = io.github.jcondedata.aliveworkplace.command.Soak.itemsOff(stocked, gained, used, dropped,
+			java.util.Map.of(Items.COBBLESTONE, 3, Items.DIRT, 4));
+		helper.assertTrue(fine.equals("none"), "a balanced ledger reported: " + fine);
+		String bad = io.github.jcondedata.aliveworkplace.command.Soak.itemsOff(stocked, gained, used, dropped,
+			java.util.Map.of(Items.COBBLESTONE, 5, Items.DIRT, 3, Items.GLASS, 0, Items.STICK, 1));
+		helper.assertTrue(bad.equals("cobblestone +2, dirt -1, stick +1"), "wrong report: " + bad);
+		helper.succeed();
 	}
 }

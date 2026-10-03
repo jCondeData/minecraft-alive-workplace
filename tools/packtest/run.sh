@@ -6,7 +6,7 @@
 #   PACK_VERSION_URL=... tools/packtest/run.sh
 #   PERF=true PLOTS=20 tools/packtest/run.sh   # performance mode: /workplace benchmark fills an area with busy
 #                                              # workers; tick times before/after and a CPU profile of our code
-#   SOAK=true tools/packtest/run.sh            # the builder soak (23.1): /workplace soak, then 2 in-game days at
+#   SOAK=true tools/packtest/run.sh            # the builder soak (23.1; SOAK_DAYS=n for longer): /workplace soak, then 2 in-game days at
 #                                              # full speed (/tick sprint); prints the "Soak result:" line and the stalls
 # Needs ~6 GB of RAM and ~1 GB of disk; takes ~5 minutes. Output: build/packtest/server/server.log
 set -euo pipefail
@@ -108,8 +108,8 @@ fi
 # Passes only when every build finished, no item count is off and no builder stalled for 30 s.
 if [ "${SOAK:-false}" = "true" ]; then
   say "forceload add 990 990 1160 1150" 60
-  say "execute positioned 1000 80 1000 run workplace soak" 60
-  say "tick sprint 48000" 5
+  say "execute positioned 1000 80 1000 run workplace soak ${SOAK_DAYS:-2}" 60
+  say "tick sprint $(( ${SOAK_DAYS:-2} * 24000 ))" 5
   for _ in $(seq 1 ${SOAK_MINUTES:-40}); do
     sleep 60
     grep -q "Soak result:" server.log && break

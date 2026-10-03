@@ -8,6 +8,7 @@ import io.github.jcondedata.aliveworkplace.build.BuildPlan;
 import io.github.jcondedata.aliveworkplace.build.BuildSite;
 import io.github.jcondedata.aliveworkplace.build.BuildSiteManager;
 import io.github.jcondedata.aliveworkplace.build.BuilderBag;
+import io.github.jcondedata.aliveworkplace.build.MaterialLedger;
 import io.github.jcondedata.aliveworkplace.build.Builders;
 import io.github.jcondedata.aliveworkplace.build.StallWatch;
 import io.github.jcondedata.aliveworkplace.mc.Ids;
@@ -45,15 +46,16 @@ import org.jetbrains.annotations.Nullable;
 /**
  * {@code /workplace soak}: the builder soak test (roadmap 23.1). Raises hilly, forested ground east and south of where
  * it's run, then puts 10 builders to work on the whole starter set (every tier-1 build), with the materials only in
- * chests by their benches and no player help, and watches for 2 in-game days. When every build is done, or the 2 days
+ * chests by their benches and no player help, and watches for 2 in-game days (or the days given). When every build is done, or the 2 days
  * are up, it logs one {@code Soak result:} line: builds finished, stalls ({@link StallWatch}), and every item whose
- * count doesn't add up (stocked − needed ≠ left in chests and bags). Only registered with
+ * count doesn't add up ({@link MaterialLedger}: stocked + gained − built in − dropped ≠ left in containers and bags). Only registered with
  * {@code -Daliveworkplace.benchmark=true} (the pack test's measuring modes), never on a normal server.
  */
 public final class Soak {
 	public static final int BUILDERS = 10;
-	/** 2 in-game days. */
-	public static final long DAYS_2 = 48000;
+	/** One in-game day; the soak runs 2 by default ({@code /workplace soak <days>} for more). */
+	public static final long DAY = 24000;
+	public static final int DAYS = 2;
 	/** Each builder has a row: a chest pad and bench at its west end, then its builds 18 blocks apart. */
 	static final int ROW = 26;
 	static final int BUILD_STEP = 18;
@@ -63,8 +65,8 @@ public final class Soak {
 	public static final String RESULT = "Soak result:";
 
 	/** One soak in progress. */
-	private record Run(ServerLevel level, long start, List<Planned> builds, List<BlockPos> chests, List<Villager> builders,
-					   Map<Item, Integer> stocked, Map<Item, Integer> needed, int stallsBefore) {
+	private record Run(ServerLevel level, long start, long limit, BlockPos from, BlockPos to, List<Planned> builds,
+					   List<BlockPos> chests, List<Villager> builders, Map<Item, Integer> stocked, int stallsBefore) {
 	}
 
 	private record Planned(BuildSite site, BuildPlan plan) {
@@ -80,28 +82,30 @@ public final class Soak {
 		Platform.get().onRegisterCommands(dispatcher -> dispatcher.register(
 			Commands.literal("workplace").then(Commands.literal("soak")
 				.requires(s -> s.hasPermission(4))
-				.executes(ctx -> run(ctx.getSource())))));
+				.executes(ctx -> run(ctx.getSource(), DAYS))
+				.then(Commands.argument("days", com.mojang.brigadier.arguments.IntegerArgumentType.integer(1, 30))
+					.executes(ctx -> run(ctx.getSource(), com.mojang.brigadier.arguments.IntegerArgumentType.getInteger(ctx, "days")))))));
 		Platform.get().onServerTick(Soak::tick);
 	}
 
-	static int run(CommandSourceStack source) {
+	static int run(CommandSourceStack source, int days) {
 		ServerLevel level = source.getLevel();
 		Rules.set(level, ModGameRules.FREE_MATERIALS, false, source.getServer());
 		Rules.set(level, GameRules.RULE_DAYLIGHT, true, source.getServer());
 		level.setDayTime(1000);
 		BlockPos origin = BlockPos.containing(source.getPosition());
-		Run run = start(level, origin, RandomSource.create(23_1L));
+		Run run = start(level, origin, RandomSource.create(23_1L), days * DAY);
 		running = run;
 		int total = run.stocked().values().stream().mapToInt(Integer::intValue).sum();
 		String text = "Soak: " + run.builders().size() + " builders, " + run.builds().size() + " builds, " + total + " items in "
-			+ run.chests().size() + " chests";
+			+ run.chests().size() + " chests, " + days + " days";
 		AliveWorkplace.LOG.info(text);
 		source.sendSuccess(() -> Component.literal(text), true);
 		return run.builds().size();
 	}
 
 	/** Lays out the ground, the builders, their chests and builds; public for the soak GameTest and scene. */
-	static Run start(ServerLevel level, BlockPos origin, RandomSource random) {
+	static Run start(ServerLevel level, BlockPos origin, RandomSource random, long limit) {
 		List<StarterBlueprints.Entry> builds = StarterBlueprints.ALL.stream()
 			.filter(e -> BlueprintUpgrades.baseOf(e.id()).isEmpty()).toList();
 		int rows = (BUILDERS + COLUMNS - 1) / COLUMNS;
@@ -111,7 +115,6 @@ public final class Soak {
 		List<BlockPos> chests = new ArrayList<>();
 		List<Villager> builders = new ArrayList<>();
 		Map<Item, Integer> stocked = new TreeMap<>(Soak::byId);
-		Map<Item, Integer> needed = new TreeMap<>(Soak::byId);
 		for (int b = 0; b < BUILDERS; b++) {
 			int x = origin.getX() + (b % COLUMNS) * COLUMN + 8;
 			int z = origin.getZ() + (b / COLUMNS) * ROW;
@@ -142,13 +145,14 @@ public final class Soak {
 				planned.add(new Planned(site, plan));
 				plan.materials().forEach((item, n) -> mine.merge(item, n, Integer::sum));
 			}
-			mine.forEach((item, n) -> {
-				stocked.merge(item, n, Integer::sum);
-				needed.merge(item, n, Integer::sum);
-			});
+			mine.forEach((item, n) -> stocked.merge(item, n, Integer::sum));
 			chests.addAll(stock(level, bench, mine));
 		}
-		return new Run(level, level.getGameTime(), planned, chests, builders, stocked, needed, StallWatch.stalls());
+		// Count from here: everything builders gain, build in or drop is in the ledger.
+		MaterialLedger.start();
+		BlockPos from = origin.offset(-4, -8, -4);
+		BlockPos to = origin.offset(COLUMNS * COLUMN + 4, 40, rows * ROW + 4);
+		return new Run(level, level.getGameTime(), limit, from, to, planned, chests, builders, stocked, StallWatch.stalls());
 	}
 
 	/** Rolling hills of grass over dirt and stone, with oak and birch woods on them. */
@@ -263,23 +267,31 @@ public final class Soak {
 		int finished = 0;
 		List<String> unfinished = new ArrayList<>();
 		for (Planned p : run.builds()) {
-			if (manager.get(p.site().id()) == null && p.plan().unfinished(level).isEmpty()) {
+			// A finished site leaves the list (nobody cancels in the soak). Its start-time plan isn't the yardstick: the
+			// builder plans again as the ground changes (trees felled, slopes levelled).
+			if (manager.get(p.site().id()) == null) {
 				finished++;
 			} else {
 				unfinished.add(p.site().structure().getPath());
 			}
 		}
 		long ticks = level.getGameTime() - run.start();
-		if (!force && finished < run.builds().size() && ticks < DAYS_2) {
+		if (!force && finished < run.builds().size() && ticks < run.limit()) {
 			return null;
 		}
+		MaterialLedger.stop();
+		// Left: every container in the soak's ground (builders may put things in a storehouse or chest they built) and bag.
 		Map<Item, Integer> left = new TreeMap<>(Soak::byId);
-		for (BlockPos pos : run.chests()) {
-			if (level.getBlockEntity(pos) instanceof Container chest) {
-				for (int i = 0; i < chest.getContainerSize(); i++) {
-					ItemStack stack = chest.getItem(i);
-					if (!stack.isEmpty()) {
-						left.merge(stack.getItem(), stack.getCount(), Integer::sum);
+		for (int cx = run.from().getX() >> 4; cx <= run.to().getX() >> 4; cx++) {
+			for (int cz = run.from().getZ() >> 4; cz <= run.to().getZ() >> 4; cz++) {
+				for (var be : level.getChunk(cx, cz).getBlockEntities().values()) {
+					if (be instanceof Container box && inside(be.getBlockPos(), run)) {
+						for (int i = 0; i < box.getContainerSize(); i++) {
+							ItemStack stack = box.getItem(i);
+							if (!stack.isEmpty()) {
+								left.merge(stack.getItem(), stack.getCount(), Integer::sum);
+							}
+						}
 					}
 				}
 			}
@@ -292,18 +304,38 @@ public final class Soak {
 				}
 			}
 		}
-		// Every stocked item is either built in or still in a chest or bag; more means duplicated, less means lost.
-		List<String> off = new ArrayList<>();
-		for (Map.Entry<Item, Integer> e : run.stocked().entrySet()) {
-			int expected = e.getValue() - run.needed().getOrDefault(e.getKey(), 0);
-			int now = left.getOrDefault(e.getKey(), 0);
-			if (now != expected) {
-				off.add(BuiltInRegistries.ITEM.getKey(e.getKey()).getPath() + " " + (now > expected ? "+" : "") + (now - expected));
-			}
-		}
-		return RESULT + " " + finished + "/" + run.builds().size() + " builds finished in " + ticks + " ticks; "
-			+ (StallWatch.stalls() - run.stallsBefore()) + " stalls; items off: " + (off.isEmpty() ? "none" : String.join(", ", off))
+		return RESULT + " " + finished + "/" + run.builds().size() + " builds finished in " + ticks + " ticks ("
+			+ String.format(java.util.Locale.ROOT, "%.1f", ticks / (double) DAY) + " days); "
+			+ (StallWatch.stalls() - run.stallsBefore()) + " stalls; items off: " + itemsOff(run.stocked(), MaterialLedger.gained(),
+				MaterialLedger.used(), MaterialLedger.dropped(), left)
 			+ (unfinished.isEmpty() ? "" : "; unfinished: " + String.join(", ", unfinished));
+	}
+
+	private static boolean inside(BlockPos pos, Run run) {
+		return pos.getX() >= run.from().getX() && pos.getX() <= run.to().getX() && pos.getY() >= run.from().getY()
+			&& pos.getY() <= run.to().getY() && pos.getZ() >= run.from().getZ() && pos.getZ() <= run.to().getZ();
+	}
+
+	/**
+	 * Every item whose count doesn't add up: stocked + gained − used − dropped should be what is left in containers and
+	 * bags. More means duplicated (+), less means lost (−). "none" when everything adds up.
+	 */
+	public static String itemsOff(Map<Item, Integer> stocked, Map<Item, Integer> gained, Map<Item, Integer> used,
+						   Map<Item, Integer> dropped, Map<Item, Integer> left) {
+		Map<Item, Integer> expected = new TreeMap<>(Soak::byId);
+		stocked.forEach((item, n) -> expected.merge(item, n, Integer::sum));
+		gained.forEach((item, n) -> expected.merge(item, n, Integer::sum));
+		used.forEach((item, n) -> expected.merge(item, -n, Integer::sum));
+		dropped.forEach((item, n) -> expected.merge(item, -n, Integer::sum));
+		left.keySet().forEach(item -> expected.putIfAbsent(item, 0));
+		List<String> off = new ArrayList<>();
+		expected.forEach((item, want) -> {
+			int now = left.getOrDefault(item, 0);
+			if (now != want) {
+				off.add(BuiltInRegistries.ITEM.getKey(item).getPath() + " " + (now > want ? "+" : "") + (now - want));
+			}
+		});
+		return off.isEmpty() ? "none" : String.join(", ", off);
 	}
 
 	private static int byId(Item a, Item b) {

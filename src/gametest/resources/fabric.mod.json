@@ -72,6 +72,7 @@
 			"io.github.jcondedata.aliveworkplace.test.OutfitGameTests",
 			"io.github.jcondedata.aliveworkplace.test.GuideGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaGuideClaimsGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaGuideFloristGameTests",
 			"io.github.jcondedata.aliveworkplace.test.FerryLeaveQaGameTests"
 		]
 	},

@@ -9,6 +9,7 @@ import io.github.jcondedata.aliveworkplace.build.Builders;
 import io.github.jcondedata.aliveworkplace.build.MaterialFamilies;
 import io.github.jcondedata.aliveworkplace.build.SupplyContainers;
 import io.github.jcondedata.aliveworkplace.registry.ModAttachments;
+import io.github.jcondedata.aliveworkplace.registry.ModVillagers;
 import io.github.jcondedata.aliveworkplace.work.Village;
 import io.github.jcondedata.aliveworkplace.work.Walker;
 import io.github.jcondedata.aliveworkplace.work.WorkerStatus;
@@ -62,9 +63,21 @@ public class CrafterWork extends Behavior<Villager> {
 
 	/**
 	 * Making {@code plan} with ingredients from {@code sources}, for the chests by {@code deliverTo} (outside {@code area}:
-	 * a builder's building). {@code claim} keeps other crafters off the same request ("" for none).
+	 * a builder's building). {@code claim} keeps other crafters off the same request ("" for none). {@code guarded} maps
+	 * the chests of another builder to what keeps that builder's builds supplied: from those only the spare is taken.
 	 */
-	protected record Job(BlockPos deliverTo, @Nullable BoundingBox area, Crafting.Plan plan, String claim, List<BlockPos> sources) {
+	protected record Job(BlockPos deliverTo, @Nullable BoundingBox area, Crafting.Plan plan, String claim, List<BlockPos> sources,
+		Map<BlockPos, Guard> guarded) {
+		protected Job(BlockPos deliverTo, @Nullable BoundingBox area, Crafting.Plan plan, String claim, List<BlockPos> sources) {
+			this(deliverTo, area, plan, claim, sources, Map.of());
+		}
+	}
+
+	/**
+	 * Another builder's stash, whose builds (at {@code station}, other than {@code except}) keep what they still need
+	 * (B33: a mason cutting for one builder took the andesite another builder's build was waiting to use).
+	 */
+	protected record Guard(BlockPos station, List<BlockPos> chests, @Nullable BuildSite except) {
 	}
 
 	private static final Set<Villager> BUSY = Collections.newSetFromMap(new WeakHashMap<>());
@@ -183,7 +196,16 @@ public class CrafterWork extends Behavior<Villager> {
 			timer = -1;
 			return;
 		}
-		BlockPos chest = SupplyContainers.firstMatching(level, job.sources(), s -> s.getComponentsPatch().isEmpty() && toFetch.containsKey(s.getItem()));
+		Map<Guard, Map<Item, Integer>> reserved = new HashMap<>();
+		BlockPos chest = null;
+		for (BlockPos source : job.sources()) {
+			Guard guard = job.guarded().get(source);
+			if (SupplyContainers.firstMatching(level, List.of(source), s -> s.getComponentsPatch().isEmpty() && toFetch.containsKey(s.getItem())
+				&& allowance(level, guard, reserved, s.getItem()) > 0) != null) {
+				chest = source;
+				break;
+			}
+		}
 		if (chest == null) {
 			phase = Phase.DELIVERING; // someone took them: bring back what we have
 			walker.reset();
@@ -193,7 +215,8 @@ public class CrafterWork extends Behavior<Villager> {
 			return;
 		}
 		for (Map.Entry<Item, Integer> e : new ArrayList<>(toFetch.entrySet())) {
-			int got = SupplyContainers.extract(level, List.of(chest), e.getKey(), e.getValue());
+			int allowed = (int) Math.min(e.getValue(), allowance(level, job.guarded().get(chest), reserved, e.getKey()));
+			int got = allowed <= 0 ? 0 : SupplyContainers.extract(level, List.of(chest), e.getKey(), allowed);
 			if (got > 0) {
 				int over = bag.addAll(e.getKey(), got);
 				if (over > 0) {
@@ -210,6 +233,15 @@ public class CrafterWork extends Behavior<Villager> {
 		villager.swing(InteractionHand.MAIN_HAND);
 		level.playSound(null, chest, SoundEvents.CHEST_OPEN, SoundSource.BLOCKS, 0.4f, 1.1f);
 		walker.reset();
+	}
+
+	/** How many of {@code item} may be taken from a chest: all of it, or from another builder's only what they can spare. */
+	private static long allowance(ServerLevel level, @Nullable Guard guard, Map<Guard, Map<Item, Integer>> reserved, Item item) {
+		if (guard == null) {
+			return Long.MAX_VALUE;
+		}
+		Map<Item, Integer> keep = reserved.computeIfAbsent(guard, g -> Builders.reservedAt(level, g.station(), g.except()));
+		return Builders.spare(level, guard.chests(), item, keep);
 	}
 
 	/** At the workstation: turns the ingredients in the bag into what the plan makes. */
@@ -355,8 +387,35 @@ public class CrafterWork extends Behavior<Villager> {
 				continue;
 			}
 			BoundingBox area = plan.bounds();
-			List<BlockPos> sources = Village.allChests(level, builder, builderStation, area);
-			Map<Item, Long> stock = SupplyContainers.contents(level, sources);
+			// The builder's chests and village-mates' first; another builder's last, and only what its builds can spare (B33).
+			List<BlockPos> sources = new ArrayList<>(SupplyContainers.find(level, builderStation, area));
+			List<BlockPos> theirs = new ArrayList<>();
+			Map<BlockPos, Guard> guarded = new HashMap<>();
+			Map<Item, Long> stock = new HashMap<>();
+			for (Village.Stash stash : Village.stashes(level, builder, builderStation, area)) {
+				if (stash.job() != ModVillagers.BUILDER) {
+					sources.addAll(stash.chests());
+					continue;
+				}
+				Guard guard = new Guard(stash.station(), stash.chests(), site);
+				Map<Item, Integer> keep = Builders.reservedAt(level, stash.station(), site);
+				Map<Item, Long> held = SupplyContainers.contents(level, stash.chests());
+				Map<Item, Long> heldByFamily = new HashMap<>();
+				held.forEach((item, n) -> heldByFamily.merge(MaterialFamilies.key(item), n, Long::sum));
+				held.forEach((item, n) -> {
+					Item key = MaterialFamilies.key(item);
+					long spare = Math.min(n, heldByFamily.get(key) - keep.getOrDefault(key, 0));
+					if (spare > 0) {
+						stock.merge(item, spare, Long::sum);
+					}
+				});
+				for (BlockPos chest : stash.chests()) {
+					guarded.put(chest, guard);
+				}
+				theirs.addAll(stash.chests());
+			}
+			SupplyContainers.contents(level, sources).forEach((item, n) -> stock.merge(item, n, Long::sum));
+			sources.addAll(theirs);
 			Map<Item, Integer> need = Builders.remainingNeed(level, site, plan);
 			Map<Item, Long> usable = new HashMap<>();
 			stock.forEach((item, n) -> {
@@ -384,7 +443,7 @@ public class CrafterWork extends Behavior<Villager> {
 				synchronized (CLAIMS) {
 					CLAIMS.put(claim, now + CLAIM_TICKS);
 				}
-				return new Job(builderStation, area, made, claim, sources);
+				return new Job(builderStation, area, made, claim, sources, guarded);
 			}
 		}
 		return chooseOrder(level, villager, station);

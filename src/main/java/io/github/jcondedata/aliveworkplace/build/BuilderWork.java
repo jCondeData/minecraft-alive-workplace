@@ -2,12 +2,14 @@ package io.github.jcondedata.aliveworkplace.build;
 
 import io.github.jcondedata.aliveworkplace.mc.Chat;
 import io.github.jcondedata.aliveworkplace.mc.Rules;
+import io.github.jcondedata.aliveworkplace.registry.ModVillagers;
 import io.github.jcondedata.aliveworkplace.work.Village;
 
 import com.google.common.collect.ImmutableMap;
 import io.github.jcondedata.aliveworkplace.registry.ModAttachments;
 import io.github.jcondedata.aliveworkplace.registry.ModGameRules;
 import java.util.HashSet;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -159,7 +161,7 @@ public class BuilderWork extends Behavior<Villager> {
 			return;
 		}
 		helping = Builders.isHelping(villager);
-		Optional<BlockPos> benchOpt = helping ? Optional.ofNullable(site.bench()) : Builders.benchPos(villager);
+		Optional<BlockPos> benchOpt = helping ? Optional.ofNullable(site.bench()) : Builders.siteBench(level, villager, site);
 		if (benchOpt.isEmpty()) {
 			return;
 		}
@@ -544,12 +546,20 @@ public class BuilderWork extends Behavior<Villager> {
 				return;
 			}
 			// Nothing in our chests: another worker in the village may have it (the miner's stone, the lumberjack's logs).
-			Village.Find elsewhere = Village.find(level, villager, bench, plan.bounds(), stack -> accepted.contains(stack.getItem()));
-			if (elsewhere != null) {
+			// Another builder's chests hold what their own builds need: only what they can spare (B31).
+			for (Village.Stash stash : Village.stashes(level, villager, bench, plan.bounds())) {
+				Map<Item, Integer> reserved = stash.job() == ModVillagers.BUILDER ? Builders.reservedAt(level, stash.station(), site) : Map.of();
+				if (Builders.spare(level, stash.chests(), requirement.item(), reserved) <= 0) {
+					continue;
+				}
+				BlockPos chest = SupplyContainers.firstMatching(level, stash.chests(), stack -> accepted.contains(stack.getItem()));
+				if (chest == null) {
+					continue;
+				}
 				waitTimer = 0;
 				setStatus(site, BuildSite.Status.FETCHING);
-				if (moveInReach(level, villager, site, plan, elsewhere.chest(), CONTAINER_REACH, false)) {
-					takeWanted(level, site, plan, bag, requirement, elsewhere.stash().chests(), elsewhere.chest());
+				if (moveInReach(level, villager, site, plan, chest, CONTAINER_REACH, false)) {
+					takeWanted(level, site, plan, bag, requirement, stash.chests(), chest, reserved);
 				}
 				return;
 			}
@@ -578,11 +588,22 @@ public class BuilderWork extends Behavior<Villager> {
 	 * At the chest: take what the next stretch of work needs from {@code supplies} (the chests there), current block
 	 * first. Helpers only take a handful for the blocks they are on, so they never sit on the lead's materials.
 	 */
+	/** The next stretch of work, for what to take and what to keep: later stages, or the rest of the levelling. */
+	private static List<BuildPlan.Step> ahead(BuildSite site, BuildPlan plan) {
+		return site.stage() == BuildPlan.Stage.LANDSCAPE ? site.landscapeLeft(plan, LOOKAHEAD) : site.upcoming(plan, LOOKAHEAD);
+	}
+
 	private void takeWanted(ServerLevel level, BuildSite site, BuildPlan plan, BuilderBag bag, MaterialRules.Requirement requirement,
 							List<BlockPos> supplies, BlockPos source) {
+		takeWanted(level, site, plan, bag, requirement, supplies, source, Map.of());
+	}
+
+	/** The same, leaving {@code reserved} (by family key) in the chests: another builder's builds need it. */
+	private void takeWanted(ServerLevel level, BuildSite site, BuildPlan plan, BuilderBag bag, MaterialRules.Requirement requirement,
+							List<BlockPos> supplies, BlockPos source, Map<Item, Integer> reserved) {
 		Map<Item, Integer> wanted = new LinkedHashMap<>();
 		wanted.put(requirement.item(), requirement.count() + (helping ? 3 : 0));
-		for (BuildPlan.Step s : helping ? List.<BuildPlan.Step>of() : site.upcoming(plan, LOOKAHEAD)) {
+		for (BuildPlan.Step s : helping ? List.<BuildPlan.Step>of() : ahead(site, plan)) {
 			if (!MaterialRules.matches(level.getBlockState(s.pos()), s.state())) {
 				for (MaterialRules.Requirement r : s.requirements()) {
 					wanted.merge(r.item(), r.count(), Integer::sum);
@@ -593,6 +614,9 @@ public class BuilderWork extends Behavior<Villager> {
 		for (Map.Entry<Item, Integer> e : wanted.entrySet()) {
 			int want = e.getValue() - bag.count(e.getKey());
 			int take = Math.min(want, bag.spaceFor(e.getKey()));
+			if (!reserved.isEmpty()) {
+				take = (int) Math.min(take, Builders.spare(level, supplies, e.getKey(), reserved));
+			}
 			// The exact block first; otherwise a free variant of it (Chipped), turned into the one we need.
 			for (Item source2 : MaterialFamilies.accepted(e.getKey())) {
 				if (take <= 0) {
@@ -611,6 +635,20 @@ public class BuilderWork extends Behavior<Villager> {
 		}
 	}
 
+	/** The step a helper has claimed, among those helpers pick from; null if none (or it has moved on). */
+	@Nullable
+	private static BuildPlan.Step claimedStep(BuildSite site, BuildPlan plan, @Nullable BlockPos claim) {
+		if (claim == null) {
+			return null;
+		}
+		for (BuildPlan.Step s : site.ahead(plan, HELP_WINDOW)) {
+			if (s.pos().equals(claim)) {
+				return s;
+			}
+		}
+		return null;
+	}
+
 	/**
 	 * The chests are out of something but another builder on this site is carrying spares: walk over
 	 * and get some ("pass me those planks"). Returns false if nobody has any to spare.
@@ -625,17 +663,15 @@ public class BuilderWork extends Behavior<Villager> {
 				continue;
 			}
 			BuilderBag mateBag = ModAttachments.BUILDER_BAG.getOrCreate(mate);
-			// Whatever the mate needs for the block it is on stays with it.
-			BuildPlan.Step mateStep = id.equals(site.builder()) ? site.current(plan) : null;
-			BlockPos mateClaim = site.claim(id);
+			// Whatever the mate needs for the block it is on stays with it: the lead's current block, or the block a
+			// helper has claimed. Only what that block needs of this item: keeping one of anything left the lead
+			// waiting, with nothing on its missing list, for a block a helper on other work would never use (B21).
+			BuildPlan.Step mateStep = id.equals(site.builder()) ? site.current(plan) : claimedStep(site, plan, site.claim(id));
 			int keep = 0;
 			for (BuildPlan.Step s : mateStep != null ? List.of(mateStep) : List.<BuildPlan.Step>of()) {
 				for (MaterialRules.Requirement r : s.requirements()) {
 					keep += r.item() == item ? r.count() : 0;
 				}
-			}
-			if (mateClaim != null) {
-				keep += 1;
 			}
 			int spare = mateBag.count(item) - keep;
 			if (spare < needed) {
@@ -673,12 +709,31 @@ public class BuilderWork extends Behavior<Villager> {
 		if (firstTick || --waitTimer <= 0) {
 			waitTimer = WAIT_RECHECK;
 			// What the whole village has counts: it isn't missing if another worker's chests hold it.
-			site.setMissing(Builders.computeMissing(level, site, plan, bag,
-				io.github.jcondedata.aliveworkplace.work.Village.allChests(level, villager, bench, plan.bounds())));
+			site.setMissing(Builders.computeMissing(level, site, plan, bag, supplies, spareElsewhere(level, villager, site, plan, bench)));
 			if (firstTick && !helping) {
 				Builders.notifyWaiting(level, villager, site);
 			}
 		}
+	}
+
+	/**
+	 * What village-mates' chests hold that this build may take, by family key: everything in theirs, but in another
+	 * builder's only what their own builds don't need (B31: counting it all left a builder waiting with nothing missing).
+	 */
+	private static Map<Item, Long> spareElsewhere(ServerLevel level, Villager villager, BuildSite site, BuildPlan plan, BlockPos bench) {
+		Map<Item, Long> out = new HashMap<>();
+		for (Village.Stash stash : Village.stashes(level, villager, bench, plan.bounds())) {
+			Map<Item, Long> held = new HashMap<>();
+			SupplyContainers.contents(level, stash.chests()).forEach((item, n) -> held.merge(MaterialFamilies.key(item), n, Long::sum));
+			Map<Item, Integer> reserved = stash.job() == ModVillagers.BUILDER ? Builders.reservedAt(level, stash.station(), site) : Map.of();
+			held.forEach((key, n) -> {
+				long spare = n - reserved.getOrDefault(key, 0);
+				if (spare > 0) {
+					out.merge(key, spare, Long::sum);
+				}
+			});
+		}
+		return out;
 	}
 
 	private void deposit(ServerLevel level, Villager villager, BuildSite site, BuildPlan plan, BuilderBag bag, BlockPos bench) {
@@ -689,7 +744,7 @@ public class BuilderWork extends Behavior<Villager> {
 		}
 		Set<Item> keep = new HashSet<>();
 		boolean keepNothing = helping || site.stage() == BuildPlan.Stage.DECONSTRUCT;
-		for (BuildPlan.Step s : keepNothing ? List.<BuildPlan.Step>of() : site.upcoming(plan, LOOKAHEAD)) {
+		for (BuildPlan.Step s : keepNothing ? List.<BuildPlan.Step>of() : ahead(site, plan)) {
 			for (MaterialRules.Requirement r : s.requirements()) {
 				keep.add(r.item());
 			}

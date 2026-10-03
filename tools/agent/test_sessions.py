@@ -274,6 +274,8 @@ def run(tmp):
     r = S(C, "brief")
     check("brief leaves the milestones out", "## Bugs" in r.stdout and "## Notes" in r.stdout and "**22.1**" not in
           r.stdout, r.stdout)
+    b1 = next((l for l in r.stdout.splitlines() if "**B1**" in l), "")
+    check("brief shortens fixed bugs to one line", b1.startswith("- [x] **B1**") and "verified" not in b1, r.stdout)
 
     # A lane's claim goes stale like a night run's; a session holds at most three claims.
     S(C, "bug 'sixth' --as chat2")
@@ -292,6 +294,60 @@ def run(tmp):
     S(C, "bug 'eighth' --as chat2")
     r = S(B, "claim B8 --as lane-c-1003-0100", ok=None)
     check("a fourth live claim is refused", r.returncode == 1 and "at most 3" in r.stdout, r.stdout)
+
+    # Bookkeeping on main during a build (a claim, a bug) doesn't make land build again (B16).
+    S(C, "bug 'ninth' --as chat2")
+    sh("git switch -q main 2>/dev/null; git pull -q", A)
+    S(A, "claim B9 --as chat3")
+    sh("printf 'x\\n' > Other.java && git add Other.java && git commit -qm 'Other' && git push -q -u origin item/B9", A)
+    count = os.path.join(tmp, "builds")
+    bump = os.path.join(tmp, "bump.sh")
+    with open(bump, "w") as f:
+        f.write(f"#!/bin/sh\necho b >> {count}\nif [ ! -f {tmp}/bump.done ]; then touch {tmp}/bump.done; cd {B} && "
+                f"git switch -q main 2>/dev/null; git pull -q; python3 tools/agent/sessions.py bug 'mid-build' "
+                f"--as night-5 >/dev/null; fi\n")
+    os.chmod(bump, 0o755)
+    r = S(A, f"land B9 --as chat3 --build {bump}")
+    with open(count) as f:
+        builds = len(f.read().split())
+    check("a roadmap-only change on main mid-build doesn't build again", builds == 1 and "not building again" in
+          r.stdout and "[x] **B9**" in line("B9") and "mid-build" in roadmap(), r.stdout)
+
+    # QA (qa-1003-1833, B16): the other side of the boundary. A code change on main mid-build, even one that comes
+    # with a ROADMAP.md change, still means a second build: the green build didn't test it.
+    S(C, "bug 'eleventh' --as chat2")
+    sh("git switch -q main 2>/dev/null; git pull -q", A)
+    S(A, "claim B11 --as qa-9")
+    sh("printf 'y\\n' > Mine.java && git add Mine.java && git commit -qm 'Mine' && git push -q -u origin item/B11", A)
+    count2 = os.path.join(tmp, "builds2")
+    bump2 = os.path.join(tmp, "bump2.sh")
+    with open(bump2, "w") as f:
+        f.write(f"#!/bin/sh\necho b >> {count2}\nif [ ! -f {tmp}/bump2.done ]; then touch {tmp}/bump2.done; cd {B} && "
+                f"git switch -q main 2>/dev/null; git pull -q; python3 tools/agent/sessions.py bug 'code-mid-build' "
+                f"--as night-6 >/dev/null; printf 'z\\n' > Theirs.java; git add Theirs.java; git commit -qm Theirs; git pull -q --rebase; "
+                f"git push -q; fi\ntrue\n")
+    os.chmod(bump2, 0o755)
+    r = S(A, f"land B11 --as qa-9 --build {bump2}")
+    with open(count2) as f:
+        builds = len(f.read().split())
+    check("a code change on main mid-build is built again", builds == 2 and "not building again" not in r.stdout
+          and "[x] **B11**" in line("B11"), r.stdout + f" builds={builds}")
+
+    # QA (qa-1003-1833, B16): ship gets the same rule as land: a roadmap-only change mid-build, one build.
+    sh("git switch -q main 2>/dev/null; git pull -q; git switch -q -c qa/b16-1003 origin/main && printf 't\\n' > "
+       "QaB16.java && git add QaB16.java && git commit -qm 'QA B16'", A)
+    count3 = os.path.join(tmp, "builds3")
+    bump3 = os.path.join(tmp, "bump3.sh")
+    with open(bump3, "w") as f:
+        f.write(f"#!/bin/sh\necho b >> {count3}\nif [ ! -f {tmp}/bump3.done ]; then touch {tmp}/bump3.done; cd {B} && "
+                f"git switch -q main 2>/dev/null; git pull -q; python3 tools/agent/sessions.py bug 'ship-mid-build' "
+                f"--as night-7 >/dev/null; fi\ntrue\n")
+    os.chmod(bump3, 0o755)
+    r = S(A, f"ship --as qa-1003-0200 --build {bump3}")
+    with open(count3) as f:
+        builds = len(f.read().split())
+    check("ship: a roadmap-only change on main mid-build doesn't build again", builds == 1 and "Shipped" in r.stdout
+          and "not building again" in r.stdout and "ship-mid-build" in roadmap(), r.stdout + f" builds={builds}")
 
     # Nothing left behind: no stray worktrees.
     check("no stray worktrees", len(sh("git worktree list", C).stdout.strip().splitlines()) == 1)

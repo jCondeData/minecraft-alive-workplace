@@ -44,7 +44,7 @@ public final class VillageHallScreen {
 	static final int PEOPLE = 1;
 	static final int BEDS = 2;
 	static final int FOOD = 3;
-	static final int GUARDS = 4;
+	public static final int GUARDS = 4;
 	static final int WELLBEING = 5;
 	static final int REQUESTS = 6;
 	static final int BUILDS = 7;
@@ -680,8 +680,7 @@ public final class VillageHallScreen {
 		if (lore.length > 0) {
 			icon.set(DataComponents.LORE, new ItemLore(List.of(lore)));
 		}
-		icon.set(DataComponents.HIDE_ADDITIONAL_TOOLTIP, net.minecraft.util.Unit.INSTANCE);
-		return icon;
+		return io.github.jcondedata.aliveworkplace.mc.Tooltips.nameAndLoreOnly(icon);
 	}
 
 	private static Component line(String key, ChatFormatting color) {

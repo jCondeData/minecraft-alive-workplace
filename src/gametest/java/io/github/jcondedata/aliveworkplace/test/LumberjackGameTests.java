@@ -365,4 +365,43 @@ public class LumberjackGameTests implements FabricGameTest {
 			helper.assertBlockPresent(Blocks.OAK_SAPLING, base);
 		});
 	}
+
+	/**
+	 * Tester (B9 round 2): stumps waiting for a sapling don't hold the lumberjack up. With a Silk Touch axe (no sapling
+	 * from the leaves) and no saplings anywhere, they still fell both trees and bring the logs back, the first stump
+	 * waiting while they fell the second; once saplings are put in the chest, both stumps get one.
+	 */
+	//$ gametest_ticks AREA '6000'
+	@GameTest(template = AREA, timeoutTicks = 6000)
+	public void stumpsWaitingForSaplingsDontStopTheFelling(GameTestHelper helper) {
+		BlockPos a = new BlockPos(11, 2, 4);
+		BlockPos b = new BlockPos(11, 2, 11);
+		growOak(helper, a);
+		growOak(helper, b);
+		ItemStack axe = new ItemStack(Items.IRON_AXE);
+		axe.enchant(helper.getLevel().registryAccess().registryOrThrow(Registries.ENCHANTMENT)
+			.getHolderOrThrow(net.minecraft.world.item.enchantment.Enchantments.SILK_TOUCH), 1);
+		Villager villager = setup(helper, axe);
+		Container chest = helper.getBlockEntity(CHEST);
+		int[] given = {-1};
+		int[] tick = {0};
+		String[] before = {""};
+		helper.onEachTick(() -> {
+			tick[0]++;
+			if (given[0] < 0 && ModAttachments.TREES_FELLED.getOrElse(villager, 0) == 2 && chest.countItem(Items.OAK_LOG) >= 8) {
+				given[0] = tick[0];
+				before[0] = helper.getBlockState(a).getBlock() + " / " + helper.getBlockState(b).getBlock();
+				chest.setItem(6, new ItemStack(Items.OAK_SAPLING, 4));
+			}
+		});
+		helper.succeedWhen(() -> {
+			helper.assertTrue(given[0] >= 0, "after " + tick[0] + " ticks the lumberjack has felled "
+				+ ModAttachments.TREES_FELLED.getOrElse(villager, 0) + " of 2 trees (" + chest.countItem(Items.OAK_LOG) + " logs in the chest)");
+			helper.assertTrue(before[0].equals("Block{minecraft:air} / Block{minecraft:air}"),
+				"before any sapling was given the stumps held " + before[0]);
+			helper.assertBlockPresent(Blocks.OAK_SAPLING, a);
+			helper.assertBlockPresent(Blocks.OAK_SAPLING, b);
+			helper.assertTrue(villager.isAlive(), "the lumberjack is gone");
+		});
+	}
 }

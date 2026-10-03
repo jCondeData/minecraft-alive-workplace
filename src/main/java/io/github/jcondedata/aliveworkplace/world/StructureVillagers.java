@@ -1,12 +1,12 @@
 package io.github.jcondedata.aliveworkplace.world;
 
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.MobSpawnType;
-import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.phys.AABB;
 
 /**
- * Villagers that come with a structure template stand in their own block (bug B6).
+ * Villagers (and zombie villagers) that come with a structure template stand in their own block (bugs B6 and B10).
  *
  * <p>Vanilla's village "villagers" templates store their villager at x+0.72, z+0.63 of its block, off its centre, and a
  * block above the house floor. A villager is 0.6 wide, so its box reaches 0.02 into the next block over. Where a house
@@ -15,14 +15,14 @@ import net.minecraft.world.phys.AABB;
  * over the template's own air column, so it drops onto the floor like everywhere else.
  *
  * <p>The only villager left where the template put it is one whose spot is free while the centre is not (a fence post
- * in the middle of its block, say).
+ * in the middle of its block, say). Abandoned (zombie) villages store their zombie villagers the same way (B10).
  */
 public final class StructureVillagers {
 	private StructureVillagers() {
 	}
 
-	/** Called as a villager is finalised; acts only on villagers placed by a structure template. */
-	public static void settle(Villager villager, ServerLevelAccessor level, MobSpawnType type) {
+	/** Called as a villager or zombie villager is finalised; acts only on those placed by a structure template. */
+	public static void settle(Mob villager, ServerLevelAccessor level, MobSpawnType type) {
 		if (type != MobSpawnType.STRUCTURE) {
 			return;
 		}

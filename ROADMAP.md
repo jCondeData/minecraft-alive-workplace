@@ -245,7 +245,7 @@ Before polishing, make sure nothing regresses unnoticed.
 - [x] **22.1** (approved auto 2026-09-29) (verified 2026-10-02: its tester Check, shipped in 0.138.0) **Tester set up** (f83f7b4): `tools/modtest/` with `allow.txt` and
   `baseline.json`, the nightly workflow, and the definition of done in CLAUDE.md. The nightly workflow runs at about
   10 PM Central (`17 3 * * *`), before the night runs, which read its result first.
-- [ ] **22.2** Save/reload tests for every value `inventory.py` lists as "never saved and reloaded" (69 at 0.136.0), done in
+- [ ] **22.2** (claimed: lane-b-1003-1333, 2026-10-03 13:34Z) Save/reload tests for every value `inventory.py` lists as "never saved and reloaded" (69 at 0.136.0), done in
   batches: builder, miner and lumberjack data first. Done when: that list is empty, or each remaining entry has a reason.
 - [ ] **22.3** A bot scene for every player-visible feature, so any feature can be shown again on demand
   (`tools/screenshots/run.sh SCENE=…`). Done when: every job and every screen in the README has a scene. A new feature

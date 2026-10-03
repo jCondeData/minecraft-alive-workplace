@@ -195,11 +195,24 @@ public class VillageGameTests implements FabricGameTest {
 	}
 
 	/**
+	 * B4: a jobless villager standing outside the workshop, by its side wall two blocks from the Blueprint Table, walks
+	 * round to the door and takes it. It once never did, 30 times out of 30: the house's structure_void row in front of
+	 * the door was placed as a hole in the ground (B5), and the path round to the door went through it.
+	 */
+	//$ gametest_ticks_batch '"aliveworkplace_test:big_area"' '2400' '"aVillagerOutsideTheWorkshopFindsItsTable"'
+	@GameTest(template = "aliveworkplace_test:big_area", timeoutTicks = 2400, batch = "aVillagerOutsideTheWorkshopFindsItsTable")
+	public void aVillagerOutsideTheWorkshopFindsItsTable(GameTestHelper helper) {
+		workshopTest(helper, new BlockPos(4, 2, 10), true);
+	}
+
+	/**
 	 * B2: villages place the workshop as a legacy pool element, which skips the template's air, so the air cells in its
 	 * bottom layer (around the walls, like vanilla's houses) never cut into the ground. Placing the template with its air
 	 * cut a ring through the test floor around the house, two blocks deep with the air under the floor; about one
 	 * villager in 175 wandered out of the door, dropped into it and walked round it for the rest of the test (a villager
-	 * put in the ring stayed there 30 times out of 30). Placed like a village's it still failed 1 in 100: the structure_void row in front of the door is placed too (B5).
+	 * put in the ring stayed there 30 times out of 30). Placed like a village's it still failed 1 in 100: the structure_void
+	 * row in front of the door was placed too (B5). With B5 fixed, 100 of 100 in-suite repeats passed (2026-10-02), and
+	 * 100 of 100 of the villager outside the side wall (B4).
 	 */
 	static void workshopTest(GameTestHelper helper, BlockPos spawn, boolean likeAVillage) {
 		Leftovers.clear(helper); // (a jobless villager from a neighbouring test can take the bench first)
@@ -254,7 +267,7 @@ public class VillageGameTests implements FabricGameTest {
 		s.append(", potential ").append(villager.getBrain().getMemory(net.minecraft.world.entity.ai.memory.MemoryModuleType.POTENTIAL_JOB_SITE)
 			.map(g -> "bench" + offset(g.pos().subtract(bench))).orElse("-"));
 		s.append(" | bench ").append(level.getBlockState(bench).getBlock().getDescriptionId())
-			.append(poi.getType(bench).map(h -> h.is(ModVillagers.BUILDERS_BENCH_POI)).orElse(false) ? " poi" : " NO-POI")
+			.append(poi.getType(bench).map(h -> h.is(ModVillagers.BLUEPRINT_TABLE_POI)).orElse(false) ? " poi" : " NO-POI")
 			.append(poi.getCountInRange(h -> true, bench, 0, net.minecraft.world.entity.ai.village.poi.PoiManager.Occupancy.HAS_SPACE) > 0 ? " free" : " TAKEN");
 		s.append(" | villagers near: ");
 		level.getEntitiesOfClass(Villager.class, helper.getBounds().inflate(48), v -> v != villager)

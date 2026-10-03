@@ -18,6 +18,7 @@ public final class Jobs {
 	public static void employ(ServerLevel level, Villager villager, BlockPos station, ResourceKey<PoiType> poi, VillagerProfession profession) {
 		level.getPoiManager().take(h -> h.is(poi), (h, p) -> p.equals(station), station, 1);
 		villager.getBrain().setMemory(MemoryModuleType.JOB_SITE, GlobalPos.of(level.dimension(), station));
+		JobSiteTickets.hold(level, villager);
 		villager.setVillagerData(villager.getVillagerData().setProfession(profession));
 		if (villager.getVillagerXp() == 0) {
 			villager.setVillagerXp(1); // keeps the profession even if the workstation is briefly missing

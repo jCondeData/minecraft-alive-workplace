@@ -214,6 +214,9 @@ public final class ModAttachments {
 	/** Trades a Pokémon Trader has made. */
 	public static final Attachment<Integer> POKEMON_TRADE_COUNT = Attachment.saved("pokemon_trade_count", com.mojang.serialization.Codec.INT);
 
+	/** The villager's job site and how often a workstation there had been broken when they got it (bug B15; see JobSiteTickets). */
+	public static final Attachment<io.github.jcondedata.aliveworkplace.work.JobSiteTickets.Held> JOB_SITE_HELD = Attachment.saved("job_site_held", io.github.jcondedata.aliveworkplace.work.JobSiteTickets.Held.CODEC);
+
 	public static void init() {
 	}
 

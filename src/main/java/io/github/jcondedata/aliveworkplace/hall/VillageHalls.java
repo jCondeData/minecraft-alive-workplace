@@ -162,6 +162,7 @@ public final class VillageHalls {
 			return false;
 		}
 		villager.getBrain().setMemory(MemoryModuleType.JOB_SITE, net.minecraft.core.GlobalPos.of(level.dimension(), station.pos()));
+		io.github.jcondedata.aliveworkplace.work.JobSiteTickets.hold(level, villager);
 		villager.setVillagerData(villager.getVillagerData().setProfession(station.profession()));
 		villager.refreshBrain(level);
 		level.sendParticles(net.minecraft.core.particles.ParticleTypes.HAPPY_VILLAGER, villager.getX(), villager.getY() + 1.2, villager.getZ(),

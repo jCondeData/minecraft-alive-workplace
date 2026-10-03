@@ -153,13 +153,9 @@ public final class VillageHalls {
 		if (!villager.isAlive() || villager.isBaby() || villager.getVillagerData().getProfession() == VillagerProfession.NITWIT) {
 			return false;
 		}
-		// Whatever they had before is let go of first. A block broken while its worker was far away has no record left to
-		// release (releasing it would throw "POI never registered").
-		villager.getBrain().getMemory(MemoryModuleType.JOB_SITE).ifPresent(old -> {
-			if (old.dimension().equals(level.dimension()) && level.getPoiManager().getType(old.pos()).isPresent()) {
-				level.getPoiManager().release(old.pos());
-			}
-		});
+		// Whatever they had before is let go of first, if it's still theirs (bugs B7, B8).
+		villager.getBrain().getMemory(MemoryModuleType.JOB_SITE)
+			.ifPresent(old -> io.github.jcondedata.aliveworkplace.work.Stations.releaseOld(level, villager, old));
 		villager.getBrain().eraseMemory(MemoryModuleType.POTENTIAL_JOB_SITE);
 		boolean taken = level.getPoiManager().take(h -> h.equals(station.poi()), (h, p) -> p.equals(station.pos()), station.pos(), 1).isPresent();
 		if (!taken) {

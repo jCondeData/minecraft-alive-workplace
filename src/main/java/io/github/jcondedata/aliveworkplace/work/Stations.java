@@ -204,8 +204,11 @@ public final class Stations {
 		if (now == VillagerProfession.SHEPHERD && stack.is(Items.SHEARS)) {
 			return InteractionResult.PASS; // shears hire a shepherd (BuilderEvents), as before: they don't make them a beekeeper
 		}
+		// (not a far-off one another villager works at: their block broken while they were away and put back, and taken since
+		// (B8); the villager standing by the block is its owner, even if a far-off one still remembers it)
 		Optional<GlobalPos> site = villager.getBrain().getMemory(MemoryModuleType.JOB_SITE)
-			.filter(g -> g.dimension().equals(level.dimension()));
+			.filter(g -> g.dimension().equals(level.dimension()))
+			.filter(g -> g.pos().distToCenterSqr(villager.position()) <= REACH * REACH || !someoneElseWorksAt(level, villager, g));
 		Optional<Holder<PoiType>> here = site.flatMap(g -> level.getPoiManager().getType(g.pos()));
 		// First the block they already work at, then the nearest free block where the item picks a job.
 		for (Station station : ALL) {
@@ -326,9 +329,7 @@ public final class Stations {
 		GlobalPos target = GlobalPos.of(level.dimension(), station);
 		Optional<GlobalPos> old = villager.getBrain().getMemory(MemoryModuleType.JOB_SITE);
 		if (old.isEmpty() || !old.get().equals(target)) {
-			// (only if the block is still there: one broken far from its worker leaves their memory of it behind)
-			old.filter(g -> g.dimension().equals(level.dimension()) && level.getPoiManager().getType(g.pos()).isPresent())
-				.ifPresent(g -> level.getPoiManager().release(g.pos()));
+			old.ifPresent(g -> releaseOld(level, villager, g));
 			level.getPoiManager().take(h -> true, (h, p) -> p.equals(station), station, 1);
 		}
 		villager.getBrain().eraseMemory(MemoryModuleType.POTENTIAL_JOB_SITE);
@@ -338,6 +339,27 @@ public final class Stations {
 			villager.setVillagerXp(1); // keeps the profession even if the block is briefly missing
 		}
 		villager.refreshBrain(level);
+	}
+
+	/**
+	 * Lets go of {@code villager}'s old job site {@code old}, if it's still theirs. A block broken while its worker was far
+	 * away leaves their memory of it behind: with no block there's no record to release (releasing would throw "POI never
+	 * registered"), and a block of the same kind put back since may have been taken by another villager, whose place
+	 * releasing it would free (bug B8).
+	 */
+	public static void releaseOld(ServerLevel level, Villager villager, GlobalPos old) {
+		if (!old.dimension().equals(level.dimension()) || level.getPoiManager().getType(old.pos()).isEmpty()) {
+			return;
+		}
+		if (!someoneElseWorksAt(level, villager, old)) {
+			level.getPoiManager().release(old.pos());
+		}
+	}
+
+	/** Whether a villager other than {@code villager} (any loaded one) works at {@code site}. */
+	static boolean someoneElseWorksAt(ServerLevel level, Villager villager, GlobalPos site) {
+		return !level.getEntities(net.minecraft.world.entity.EntityType.VILLAGER,
+			v -> v != villager && v.getBrain().getMemory(MemoryModuleType.JOB_SITE).filter(site::equals).isPresent()).isEmpty();
 	}
 
 	/** The job's name, as the game shows it over a villager ("Orchard Keeper"). */

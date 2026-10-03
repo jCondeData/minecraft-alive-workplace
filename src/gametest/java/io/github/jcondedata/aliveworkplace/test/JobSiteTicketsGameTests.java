@@ -71,9 +71,11 @@ public class JobSiteTicketsGameTests implements net.fabricmc.fabric.api.gametest
 		first.getBrain().setMemory(MemoryModuleType.JOB_SITE, GlobalPos.of(level.dimension(), lectern));
 		first.setVillagerData(first.getVillagerData().setProfession(VillagerProfession.LIBRARIAN));
 		first.setVillagerXp(1);
+		first.refreshBrain(level);
 		helper.runAfterDelay(3, () -> {
 			helper.assertTrue(ModAttachments.JOB_SITE_HELD.get(first) != null
-				&& ModAttachments.JOB_SITE_HELD.get(first).site().pos().equals(lectern), "the job site vanilla gave wasn't noted");
+				&& ModAttachments.JOB_SITE_HELD.get(first).site().pos().equals(lectern), "the job site vanilla gave wasn't noted (memory: "
+				+ first.getBrain().getMemory(MemoryModuleType.JOB_SITE) + ", noted: " + ModAttachments.JOB_SITE_HELD.get(first) + ", ticks: " + first.tickCount + ")");
 			first.setNoAi(true); // (then away)
 			first.teleportTo(first.getX() + 5, first.getY(), first.getZ() + 5);
 			helper.setBlock(new BlockPos(3, 2, 3), Blocks.AIR);

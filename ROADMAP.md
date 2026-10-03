@@ -378,7 +378,7 @@ about 12% of that. For villager mods, the cost is pathfinding to distant points 
 
   Record the choice under Design decisions. Done when: he has chosen. Until then 26.2–26.4 are prepared for both
   sites.
-- [ ] **26.2** **Store page kit**, for the chosen sites:
+- [ ] **26.2** (claimed: chat, 2026-10-03 03:23Z) **Store page kit**, for the chosen sites:
   - a one-line summary (no formatting, doesn't repeat the name);
   - a description that says what it adds, why to get it, and what to know first (server and client both need it,
     Fabric API, optional Cobblemon);

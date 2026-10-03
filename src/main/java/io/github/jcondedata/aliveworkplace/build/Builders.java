@@ -62,6 +62,24 @@ public final class Builders {
 	}
 
 	/**
+	 * The bench whose chests feed {@code site}: the one the build was started from, while it stands. A builder's own job
+	 * site can change mid-build (two builders' benches close together get swapped), and fetching by it would take the
+	 * other builder's materials (B22). Only when the site's bench is gone does the builder's current bench take over.
+	 */
+	public static Optional<BlockPos> siteBench(ServerLevel level, Villager villager, BuildSite site) {
+		BlockPos bench = site.bench();
+		if (bench != null && !level.isLoaded(bench)) {
+			return benchPos(villager); // can't tell whether it still stands: leave the site's record alone
+		}
+		if (bench != null && level.getBlockState(bench).is(io.github.jcondedata.aliveworkplace.registry.ModBlocks.BUILDERS_BENCH)) {
+			return Optional.of(bench);
+		}
+		Optional<BlockPos> own = benchPos(villager);
+		own.ifPresent(site::setBench); // the bench was moved: its new place is where the chests are now
+		return own;
+	}
+
+	/**
 	 * The site this builder is working on. When they have none (just finished, or it was cancelled)
 	 * the next blueprint in their queue becomes the active one.
 	 */

@@ -4,6 +4,19 @@ Done in pieces by night runs; each piece lands with `land --keep-open`. Newest f
 
 ## Pieces
 
+### The job switchboard: VillagerGoalPackagesMixin (lane-a-1003-2132, 2026-10-03)
+- **Every job's work package** (`GoalPackagesMixinGameTests.eachOfOurJobsGetsItsOwnWorkPackage`): each of our 30
+  professions gets exactly the package its job class builds, none gets vanilla's, and every profession
+  `ModVillagers.isWorker` names has a case (a new job without a branch would stand idle). Passes.
+- **Upgraded vanilla jobs** (`upgradedVanillaJobsPutTheirWorkFirstAndGateVanillas`): mason, armorer, toolsmith,
+  weaponsmith, fletcher, shepherd, butcher, leatherworker, cleric, librarian, cartographer and fisherman run our work
+  first (two behaviours for the weaponsmith and librarian, in order) and vanilla's routine behind a gate, except the
+  always-run schedule update. Passes.
+- **Guards** (`guardsGetTheirRaidAndCombatPackages`): their raid, pre-raid and core packages are `GuardPackages`',
+  and a farmer's or builder's are not. Passes.
+- **3 mutants**, all killed: the chef given the carpenter's package, the guard's pre-raid branch switched off, and
+  `UpgradedJob` leaving vanilla's routine ungated. 28 mutants in all; no bug in the code.
+
 ### VillagerMixin behaviours (lane-a-1003-1532, 2026-10-03)
 - **Day plans** (`VillagerMixinGameTests.eachKindOfVillagerGetsItsDayPlan`): after `refreshBrain`, a builder and a
   netherworker keep the builders' working day, a guard the guard shifts, a bard the bard's evening; a baby builder,
@@ -93,5 +106,5 @@ Done in pieces by night runs; each piece lands with `land --keep-open`. Newest f
 ## Still to do
 - An old world saved by 0.138.0 opened with the next version (at the release check).
 - Performance on GitHub's machines once B14 is fixed (the dev-container numbers above stand meanwhile).
-- The next `inventory.py` gaps: 14 mixins and 7 network payloads no test names (most are exercised through the
+- The next `inventory.py` gaps: 14 mixins (VillagerMixin and VillagerGoalPackagesMixin now have their own tests) and 7 network payloads no test names (most are exercised through the
   features they serve; a test per mixin is the next piece).

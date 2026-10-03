@@ -9,6 +9,8 @@
   with Cobblemon the Pokémon jobs. Lost it? Craft another from a book and wheat.
 
 ### Fixed
+- Nurses, shopkeepers and ferrymen keep their block when they get stuck on the way back to it, instead of giving it up
+  after a minute and taking another worker's.
 - With several builders in a village, a builder who runs short no longer empties another builder's chests of what
   that builder's own build needs (which left it waiting for glass panes it had been given): it takes only what's spare.
 - Builders on a hillside, with their site far up the slope from their bench, keep placing through clearing,

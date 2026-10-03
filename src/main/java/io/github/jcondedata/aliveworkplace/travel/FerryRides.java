@@ -73,17 +73,24 @@ public final class FerryRides {
 
 	public static void init() {
 		Platform.get().onServerTick(server -> tick());
-		Platform.get().onPlayerLeave(player -> {
-			Ride ride = RIDES.remove(player.getUUID());
-			if (ride != null) {
-				end(ride, true);
-			}
-		});
 		Platform.get().onEntityLoad((entity, level) -> {
 			if (entity.getTags().contains(BOAT_TAG) && RIDES.values().stream().noneMatch(r -> r.boat == entity)) {
 				entity.discard(); // (left behind when the server stopped mid-ride)
 			}
 		});
+	}
+
+	/**
+	 * A player leaving the game: a ride they're on ends here, landing them by the far post before they're saved. Called
+	 * on the server thread from the start of vanilla's {@code PlayerList.remove} (PlayerListMixin), not from the loader's
+	 * disconnect event: that one can fire on the network thread, and when it came after the save the boat, with the
+	 * ferryman in it, went into the player's file.
+	 */
+	public static void leaving(ServerPlayer player) {
+		Ride ride = RIDES.remove(player.getUUID());
+		if (ride != null) {
+			end(ride, true);
+		}
 	}
 
 	/** Whether {@code player} is on a ferry ride now. */

@@ -169,4 +169,127 @@ public class StationsCompatTests implements FabricGameTest {
 			helper.assertTrue(site(villager).equals(Optional.of(helper.absolutePos(STATION))), "the trainer works at " + site(villager));
 		});
 	}
+
+	/** A test player like GameTestHelper's mock one, who also keeps every chat and action-bar line they're shown. */
+	private static ServerPlayer listeningPlayer(GameTestHelper helper, List<String> seen) {
+		net.minecraft.server.level.ServerLevel level = helper.getLevel();
+		var cookie = net.minecraft.server.network.CommonListenerCookie.createInitial(
+			new com.mojang.authlib.GameProfile(java.util.UUID.randomUUID(), "test-listener"), false);
+		ServerPlayer player = new ServerPlayer(level.getServer(), level, cookie.gameProfile(), cookie.clientInformation()) {
+			@Override
+			public void displayClientMessage(net.minecraft.network.chat.Component message, boolean overlay) {
+				seen.add(message.getString());
+				super.displayClientMessage(message, overlay);
+			}
+		};
+		net.minecraft.network.Connection connection = new net.minecraft.network.Connection(net.minecraft.network.protocol.PacketFlow.SERVERBOUND);
+		new io.netty.channel.embedded.EmbeddedChannel(connection);
+		level.getServer().getPlayerList().placeNewPlayer(connection, player, cookie);
+		player.setGameMode(GameType.SURVIVAL);
+		return player;
+	}
+
+	/**
+	 * Tester, 21.1c: the player is told in plain words which block the Fossil Scientist needs. A fossil by a Training
+	 * Post: "needs a Fossil Analyzer"; by an analyzer: "took the Fossil Scientist job at the Fossil Analyzer"; a second
+	 * villager by the same (now worked) analyzer: "needs a free Fossil Analyzer". Never the Training Post or a raw id.
+	 */
+	//$ gametest AREA
+	@GameTest(template = AREA)
+	public void theFossilHandOverMessagesNameTheFossilAnalyzer(GameTestHelper helper) {
+		List<String> seen = new java.util.ArrayList<>();
+		ServerPlayer player = listeningPlayer(helper, seen);
+		helper.setBlock(STATION, ModBlocks.TRAINING_POST);
+		Villager first = helper.spawn(EntityType.VILLAGER, STANDING);
+		sneakClick(player, first, new ItemStack(cobblemon("dome_fossil")));
+		helper.assertTrue(seen.stream().anyMatch(s -> s.startsWith("The Fossil Scientist job needs a Fossil Analyzer")),
+			"a fossil by a Training Post told the player: " + seen);
+		seen.clear();
+		helper.setBlock(STATION, fossilAnalyzer());
+		sneakClick(player, first, new ItemStack(cobblemon("dome_fossil")));
+		helper.assertTrue(seen.contains("Villager took the Fossil Scientist job at the Fossil Analyzer."),
+			"a fossil by a Fossil Analyzer told the player: " + seen);
+		seen.clear();
+		Villager second = helper.spawn(EntityType.VILLAGER, new BlockPos(2, 2, 4));
+		sneakClick(player, second, new ItemStack(cobblemon("helix_fossil")));
+		helper.assertTrue(second.getVillagerData().getProfession() == VillagerProfession.NONE,
+			"a second villager took the worked analyzer: " + name(second.getVillagerData().getProfession()));
+		helper.assertTrue(seen.stream().anyMatch(s -> s.startsWith("The Fossil Scientist job needs a free Fossil Analyzer")),
+			"a fossil by a worked Fossil Analyzer told the player: " + seen);
+		helper.succeed();
+	}
+
+	/**
+	 * Tester, 21.1c, the owner's live server: a Fossil Analyzer placed while 0.137.0 ran had no workstation record (it
+	 * wasn't one then). Where its chunk section already had a record (a bed, a composter: most houses), the game never
+	 * looks at the section's blocks again, so the analyzer must get its record when the chunk loads, and a fossil then
+	 * makes the villager by it a scientist there. Here: the analyzer without its record, then exactly what loading does.
+	 */
+	//$ gametest AREA
+	@GameTest(template = AREA)
+	public void anAnalyzerPlacedBeforeTheUpdateBecomesAWorkstation(GameTestHelper helper) {
+		net.minecraft.server.level.ServerLevel level = helper.getLevel();
+		var poi = level.getPoiManager();
+		BlockPos spot = new BlockPos(3, 2, 3);
+		BlockPos at = helper.absolutePos(spot);
+		BlockPos composter = net.minecraft.core.SectionPos.of(at).equals(net.minecraft.core.SectionPos.of(helper.absolutePos(spot.east())))
+			? spot.east() : spot.west();
+		helper.setBlock(composter, Blocks.COMPOSTER);
+		helper.setBlock(spot, fossilAnalyzer());
+		helper.assertTrue(net.minecraft.core.SectionPos.of(at).equals(net.minecraft.core.SectionPos.of(helper.absolutePos(composter))),
+			"setup: not one chunk section");
+		poi.remove(at); // 0.137.0 kept no record for Cobblemon's analyzer
+		helper.assertTrue(poi.getType(at).isEmpty(), "setup: the record is still there");
+		var chunk = level.getChunkAt(at);
+		poi.checkConsistencyWithBlocks(net.minecraft.core.SectionPos.of(at), chunk.getSection(chunk.getSectionIndex(at.getY()))); // the chunk loads
+		helper.assertTrue(poi.getType(at).map(h -> h.is(ModVillagers.FOSSIL_ANALYZER_POI)).orElse(false),
+			"an analyzer from before the update is no workstation after its chunk loads: " + poi.getType(at));
+		Villager villager = helper.spawn(EntityType.VILLAGER, new BlockPos(4, 2, 5));
+		ServerPlayer player = helper.makeMockServerPlayerInLevel();
+		player.setGameMode(GameType.SURVIVAL);
+		sneakClick(player, villager, new ItemStack(cobblemon("dome_fossil")));
+		helper.assertTrue(villager.getVillagerData().getProfession() == ModVillagers.FOSSIL_SCIENTIST && site(villager).equals(Optional.of(at)),
+			"a fossil by the old analyzer gave " + name(villager.getVillagerData().getProfession()) + " at " + site(villager));
+		helper.succeed();
+	}
+
+	/**
+	 * Tester, 21.1c: the analyzer lights up while Cobblemon's machine scans (its "on" state): the scientist keeps it.
+	 * Broken, the scientist keeps the job (no crash, nothing else breaks) and takes the next free analyzer by
+	 * themselves, as our other workers take a free block of their kind again (21.1a, decision 1).
+	 */
+	//$ gametest_ticks_batch AREA '900' '"fossilAnalyzerBroken"'
+	@GameTest(template = AREA, timeoutTicks = 900, batch = "fossilAnalyzerBroken")
+	public void aScientistWhoseAnalyzerBreaksTakesTheNextOne(GameTestHelper helper) {
+		helper.setDayTime(2000);
+		for (var e : helper.getLevel().getEntitiesOfClass(Villager.class, helper.getBounds().inflate(48))) {
+			e.discard();
+		}
+		helper.setBlock(STATION, fossilAnalyzer());
+		BlockPos first = helper.absolutePos(STATION);
+		Villager scientist = helper.spawn(EntityType.VILLAGER, STANDING);
+		ServerPlayer player = helper.makeMockServerPlayerInLevel();
+		player.setGameMode(GameType.SURVIVAL);
+		sneakClick(player, scientist, new ItemStack(cobblemon("dome_fossil")));
+		helper.assertTrue(scientist.getVillagerData().getProfession() == ModVillagers.FOSSIL_SCIENTIST, "setup: not a scientist");
+		var state = helper.getLevel().getBlockState(first);
+		var on = state.getBlock().getStateDefinition().getProperty("on");
+		helper.assertTrue(on instanceof net.minecraft.world.level.block.state.properties.BooleanProperty, "setup: the analyzer has no 'on' state");
+		var lit = (net.minecraft.world.level.block.state.properties.BooleanProperty) on;
+		helper.getLevel().setBlockAndUpdate(first, state.setValue(lit, true)); // what the machine does while it scans
+		helper.runAfterDelay(60, () -> {
+			helper.assertTrue(site(scientist).equals(Optional.of(first)), "a scanning analyzer lost its scientist: " + site(scientist));
+			helper.getLevel().destroyBlock(first, true);
+			BlockPos next = new BlockPos(9, 2, 9);
+			helper.runAfterDelay(100, () -> {
+				helper.assertTrue(scientist.getVillagerData().getProfession() == ModVillagers.FOSSIL_SCIENTIST,
+					"breaking the analyzer took the job: " + name(scientist.getVillagerData().getProfession()));
+				helper.assertTrue(site(scientist).isEmpty(), "the scientist still works at the broken analyzer: " + site(scientist));
+				helper.setBlock(next, fossilAnalyzer());
+				helper.succeedWhen(() -> helper.assertTrue(site(scientist).equals(Optional.of(helper.absolutePos(next)))
+					&& scientist.getVillagerData().getProfession() == ModVillagers.FOSSIL_SCIENTIST,
+					"the scientist works at " + site(scientist) + " as " + name(scientist.getVillagerData().getProfession())));
+			});
+		});
+	}
 }

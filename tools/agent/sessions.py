@@ -7,6 +7,12 @@ so two sessions can never both claim one item or one milestone. Work itself live
 reaches main only through `land`, which merges the newest main in and builds first, so main stays green.
 Nothing here rebases or force-pushes.
 
+  Sprint mode (owner, 2026-10-03; build lanes and the chat): no claims, work straight on main.
+  next --as NAME [--count N]                 the open items for you (lane a: odd numbers, lane b: even), best first
+  done ID [ID...] [--review]                 tick items in the working tree's ROADMAP.md, for the work's own commit;
+                                             --review needs the item's package on the reviews branch first
+  pending                                    the digest: items waiting on the owner, and whether each has a package
+
   status [--as NAME]                         who is working on what, and what to take next
   claim ID --as NAME [--force]               claim an item and switch to its branch
   land ID --as NAME [--keep-open | --no-review]   merge main in, build, tick "review: pending", push to main
@@ -459,6 +465,9 @@ def cmd_land(a):
                   (" The item stays open and unclaimed." if a.keep_open else
                    " Accepted without a review: list it in your next message." if a.no_review else
                    " Send its review package now."))
+            if not a.keep_open and not a.no_review and a.id not in reviews_listing():
+                print(f"No review package for {a.id} yet: hand it in now (`sessions.py review`), or the digest "
+                      f"lists it as pending with nothing to show.")
             fetch()
             rb = remote_branch(a.id)
             if rb and is_ancestor(rb[0]):
@@ -535,6 +544,99 @@ def cmd_review(a):
                 git("worktree", "remove", "--force", wt, check=False)
                 git("branch", "-D", "reviews-new", check=False)
     die("Couldn't push to the reviews branch; try again in a minute.")
+
+
+def lane_parity(who):
+    """Sprint lanes split the roadmap by number: lane a takes odd milestones and bugs, lane b even ones (owner,
+    2026-10-03). Anyone else (the chat) takes either."""
+    m = re.match(r"lane-([a-z])-", who or "")
+    return None if not m else (1 if (ord(m.group(1)) - ord("a")) % 2 == 0 else 0)
+
+
+def item_number(it):
+    return int(re.match(r"B?(\d+)", it["id"]).group(1))
+
+
+def next_items(items, who, held_by_others=()):
+    """The open items for this session, best first: bugs, then owner changes and vetoes, then milestones in order."""
+    par = lane_parity(who)
+
+    def mine(it):
+        return par is None or item_number(it) % 2 == par
+
+    open_items = [it for it in items if not it["done"] and not mark(it, "blocked") and it["id"] not in held_by_others
+                  and mine(it)]
+    def rank(it):
+        if it["area"] == "Bugs":
+            return (0, item_number(it), it["line"])
+        if mark(it, "vetoed") or re.search(r"[a-z]$", it["id"]):
+            return (1, int(it["area"][1:]), it["line"])
+        return (2, int(it["area"][1:]), it["line"])
+    return sorted(open_items, key=rank)
+
+
+def reviews_listing():
+    """{id: 'sent' | 'not sent'} for the packages on origin/reviews."""
+    if git("fetch", "--quiet", "origin", "+refs/heads/reviews:refs/remotes/origin/reviews", check=False).returncode:
+        return {}
+    out = {}
+    for path in git("ls-tree", "-r", "--name-only", "origin/reviews", check=False).stdout.split():
+        m = re.match(r"reviews/([^/]+)/message\.md$", path)
+        if m:
+            text = git("show", f"origin/reviews:{path}", check=False).stdout
+            out[m.group(1)] = "not sent" if "not yet sent)" in text else "sent"
+    return out
+
+
+def cmd_next(a):
+    """Sprint mode: what to build next, no claim needed (lanes own disjoint numbers)."""
+    fetch()
+    items = parse(main_roadmap())
+    held = {c["id"] for c in claims(items) if c["live"] and c["who"] != a.as_}
+    todo = next_items(items, a.as_, held)
+    if not todo:
+        print("Nothing open for you: help the QA list (Milestone 22) or the other lane's oldest milestone.")
+        return
+    for it in todo[:a.count]:
+        print(f"{it['id']:7} {it['area']}")
+
+
+def cmd_done(a):
+    """Sprint mode: tick items in the working tree's ROADMAP.md, to go in the same commit as the work."""
+    if a.review:
+        have = reviews_listing()
+        missing = [i for i in a.ids if i not in have]
+        if missing:
+            die(f"No review package for {', '.join(missing)} on the reviews branch. Hand it in first "
+                f"(`sessions.py review <id> FILE… --message …`), or use done without --review if nothing a player "
+                f"sees changed.")
+    with open(ROADMAP, encoding="utf-8") as f:
+        text = f.read()
+    for i in a.ids:
+        def fn(checked, marks):
+            keep = [x for x in marks if not x.startswith(("claimed", "paused", "vetoed", "blocked", "review",
+                                                          "approved"))]
+            return True, keep + [f"review: pending {today()}" if a.review else f"approved auto {today()}"]
+        text = rewrite(text, i, fn)
+    with open(ROADMAP, "w", encoding="utf-8") as f:
+        f.write(text)
+    print(f"Ticked {', '.join(a.ids)} in {ROADMAP}: commit it with the work.")
+
+
+def cmd_pending(a):
+    """For the digest: every item waiting on the owner's review, and whether its package exists."""
+    fetch()
+    items = parse(main_roadmap())
+    have = reviews_listing()
+    pending = [it for it in items if mark(it, "review")]
+    if not pending:
+        print("Nothing pending review.")
+    for it in pending:
+        state = have.get(it["id"], "NO PACKAGE")
+        print(f"{it['id']:7} {it['area']:5} {mark(it, 'review')}  package: {state}")
+    extra = sorted(set(k for k, v in have.items() if v == "not sent") - {it["id"] for it in pending})
+    if extra:
+        print("Packages not yet sent for items no longer pending:", ", ".join(extra))
 
 
 def cmd_pause(a):
@@ -747,6 +849,13 @@ def main():
         if name == "pause":
             p.add_argument("--blocked", help="why it can't go on (owner: <question> / tester: <why>)")
     sub.add_parser("brief")
+    p = sub.add_parser("next")
+    p.add_argument("--as", dest="as_", required=True)
+    p.add_argument("--count", type=int, default=8)
+    p = sub.add_parser("done")
+    p.add_argument("ids", nargs="+")
+    p.add_argument("--review", action="store_true", help="a player can see it: its package is on the reviews branch")
+    sub.add_parser("pending")
     p = sub.add_parser("ship")
     p.add_argument("--as", dest="as_", required=True)
     p.add_argument("--build", default=BUILD)
@@ -769,7 +878,7 @@ def main():
     os.chdir(git("rev-parse", "--show-toplevel").stdout.strip())
     {"status": cmd_status, "claim": cmd_claim, "land": cmd_land, "pause": cmd_pause, "unblock": cmd_unblock,
      "reply": cmd_reply, "bug": cmd_bug, "handoff": cmd_handoff, "show": cmd_show, "verify": cmd_verify, "brief": cmd_brief,
-     "ship": cmd_ship, "review": cmd_review}[a.cmd](a)
+     "ship": cmd_ship, "review": cmd_review, "next": cmd_next, "done": cmd_done, "pending": cmd_pending}[a.cmd](a)
 
 
 if __name__ == "__main__":

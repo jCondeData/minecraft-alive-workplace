@@ -12,6 +12,8 @@
 - A builder always takes its materials from the chests by the bench its build was started from. Two builders with
   benches close together could swap benches mid-build and use each other's materials, so one build ended a few
   blocks short and its builder waited for materials its own chests had held.
+- A tall flower (sunflower, lilac, rose bush, peony) given to a farmer at their composter now makes a Florist, as the
+  Guide Book says; before, only small flowers did and a tall one silently did nothing.
 - Builders levelling the ground carry enough dirt from their chests for the whole hollow, instead of walking back for
   every block (and keep the dirt they dug up for it), so tidying up around a build far from its chests no longer crawls.
 - Warding now protects the whole village, corners included: a creeper or TNT going off in a corner of a warded

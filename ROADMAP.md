@@ -18,78 +18,33 @@ without asking.
 
 ## How to work this file
 
-Several sessions work from this file, sometimes at the same time: the owner's chat, and scheduled runs at night.
-`tools/agent/sessions.py` does the bookkeeping, so these rules hold even when two sessions start at once. The
-details are in `docs/agent/sessions.md`.
+**Sprint mode** (owner, 2026-10-03). The mod's first 48,000 lines came from one chat in four days that built
+features straight on `main` and released every hour; the claim/land/QA-every-hour setup that followed built one
+feature in four days. So we work the way that chat did. Details: `docs/agent/sessions.md`, "Sprint mode".
 
-- **Pick with `sessions.py status --as <you>`.** It shows who is working on what, and names your next item: open
-  bugs first, then vetoed items and change requests, then the first open item of the lowest-numbered milestone
-  that no other session is working in. Two sessions never work in the same milestone at once, because its items
-  touch the same code. Bugs are the exception.
-- **Claim, then work on the item's branch.** `sessions.py claim <id> --as <you>` pushes the claim to `main` and
-  switches you to the branch `item/<id>`, continuing earlier work if there is some. Git refuses the second of two
-  simultaneous claims, so no item is ever done twice.
-  - Commit on that branch, and push it at least every 30 minutes. A scheduled run can be cut off at any moment,
-    and the push is also your sign of life.
-  - A claim with no claim or push for 6 hours (75 minutes for a night run, which lasts about an hour) is stale and
-    may be taken over (`claim` says so; mention it in your handoff).
-- **Skip what can't move.** If an item waits for the owner, for time (nightly runs) or for work still under review,
-  run `sessions.py pause <id> --as <you> --blocked "<what it waits for>" --note "<what's done, what's next>"`,
-  ask if it's the owner's call, and take the next item. Check blocked items again at the start of each session: when
-  what one waited for has happened, `sessions.py unblock <id> --as <you> --note "<what happened>"`. An item is never
-  a reason to stop working.
-- **"Done when" is the spec.** Build to it; the QA lane checks against it. If an item has no "Done when", or it
-  can't be met as written, block it with `owner: <your question>`, ask in your next message, and take the next item.
-  Don't invent the spec.
-- **Three words for finished:**
-  - **Built**: the "Done when" is met, with the item's own GameTests (CLAUDE.md), and for anything visible its scene
-    has been run and looked at. Then `sessions.py land <id> --as <you>` merges the newest `main` in, runs the full
-    build, ticks the item `[x] (review: pending <date>)` and pushes. Send the review package right after
-    (`docs/agent/review.md`).
-  - **Accepted without review**: when nothing a player can see or feel changed (tests, tooling, internal fixes), land
-    with `--no-review` instead. It's marked `(approved auto <date>)` and listed in your next message; no package.
-  - **Verified**: the QA lane has tested it independently after it landed (`sessions.py verify`), marked
-    `(verified <date>)`. What it finds becomes a bug, fixed before new items.
-  - **Accepted**: the owner approved it. Mark it `(approved <date>)`.
-- **Reviews don't block work, up to a point.** Carry on while the owner reviews. With 10 items pending review, only
-  take work that doesn't build on them: bugs, tests, measurements, or items in other areas.
-- **His replies** can reach any session. Record each one on `main` straight away, in his words:
-  `sessions.py reply "<his reply>" --as <you>`.
-  - `approve 23.3` (or several: `approve 23.3, B1`): marked `(approved <date>)`.
-  - `veto 23.3: <why>`: unticked and marked `(vetoed <date>: <why>)`; it's redone next. Revert it from `main` first if
-    it can't be reworked quickly, or if later work would be built on it: claim it, `git revert` its commits on the
-    branch, and `land <id> --as <you> --keep-open`, which lands without ticking.
-  - `change 23.3: <what>`: a sub-item `23.3a` (then `23.3b`, …) with his words, done next.
-  - Items are numbered `<milestone>.<n>`, bugs `B<n>`. New items and bugs get the next free number. Numbers are never
-    reused or renumbered.
-- **If you can't get it green**, don't land it. Run
-  `sessions.py pause <id> --as <you> --blocked "<why>" --note "<what's left>"`. The work stays on its branch, and
-  `main` never sees it.
-- **Unfinished expansions stay switched off.** Each expansion milestone has its config switch, off by default until
-  the milestone is complete and verified, so `main` can be released at any time without half a feature in it. The
-  release that ships the milestone turns its switch on.
-- **Releases ship verified, accepted work only**, and only the owner's chat (or the digest session when he says
-  `release`) cuts them, so two sessions never bump the version. Release when everything landed since the last
-  release is verified, no visible item is pending review or vetoed, and the QA lane's release check has passed. If
-  items are pending for more than a day, ask the owner whether to release with them.
-- **Bugs jump the queue.**
-  - A bug the owner reports, the QA lane finds, or the nightly runs or showcase show goes into "Bugs" below
-    (`sessions.py bug "<what, when, expected>" --as <you>`). It gets a failing test and is fixed before the next item.
-  - A bug fix gets a review package only when it changes something a player sees; otherwise `land --no-review`.
-- **Stay in scope.** Build what the item says. A problem you notice elsewhere goes into "Bugs" or the Notes, not into
-  this change.
+- **Two build lanes split the roadmap by number:** lane a takes odd milestones and odd bugs, lane b even ones, so they
+  never touch the same item. `sessions.py next --as <you>` lists yours, best first. The owner's chat takes anything.
+- **Work straight on `main`.** No claims, branches, landings or handoff commits. Build a feature with its tests, tick
+  it with `sessions.py done <id>` (add `--review` for something a player sees, after handing in its package), add the
+  CHANGELOG line, run `./gradlew build`, and push the work and the tick in one commit. If the push is refused,
+  `git pull --no-rebase` and push again (build again first only if the pull brought in code).
+- **"Done when" is the spec.** Build all of it, art and builds included. If it can't be met as written, write the
+  question in the Notes, ask through the digest, and take the next item. Don't invent the spec.
+- **Bugs first, but only real ones.** Red CI and bugs a player would hit go into "Bugs" (`sessions.py bug`) and come
+  first. The QA lane runs overnight only.
+- **Reviews never block work or releases.** A visible item's review package goes to the `reviews` branch
+  (`sessions.py review`) and is marked `(review: pending)`; the digest sends it. A veto becomes a fix item.
+- **His replies** are recorded with `sessions.py reply "<his words>" --as <you>`: `approve <ids>`,
+  `veto <id>: <why>` (unticked, redone next), `change <id>: <what>` (a sub-item `<id>a`, done next).
+- **Releases:** the evening digest releases every day when `main` is green and something new landed (minor bump for
+  features, patch for fixes only). GitHub only; store pages wait for the owner.
+- **Unfinished expansions stay switched off** behind their config switch until the milestone is complete; the release
+  that ships the milestone turns it on.
+- Items are numbered `<milestone>.<n>`, bugs `B<n>`; numbers are never reused.
 
-Status marks go right after the item's number, like `- [ ] **23.3** (claimed: chat, 2026-09-30 14:05Z) **Title…**`.
-`sessions.py` writes them all. Item branches don't edit this file, except to add text to an item they're building;
-everything else goes to `main` through `sessions.py`, so sessions never collide here.
-- `[ ]` open
-- `(claimed: <who>, <UTC time>)` being worked on
-- `(paused: item/<id>, <time>)` unfinished work on its branch, free to continue
-- `(blocked: <what it waits for>)` waiting on someone or something
-- `[x] (review: pending <date>)` built and waiting for the owner
-- `[x] (approved <date>)` accepted; `[x] (approved auto <date>)` accepted without review (nothing to see)
-- `(verified <date>: <note>)` tested by the QA lane after landing
-- `[ ] (vetoed <date>: <why>)` to redo
+Status marks: `[ ]` open · `(blocked: <why>)` · `[x] (review: pending <date>)` built, waiting for the owner ·
+`[x] (approved <date>)` / `(approved auto <date>)` accepted · `(verified <date>)` tested by QA · `[ ] (vetoed <date>:
+<why>)` to redo. Older marks (`claimed`, `paused`) come from the claim-and-land setup.
 
 ---
 
@@ -4269,6 +4224,10 @@ item waits.
   mod-publish-plugin's Modrinth target.
 - **Villages with no player nearby keep working** (2026-10-03), through chunk tickets; a config option lets a server
   owner pause them instead.
+
+- **Sprint mode** (2026-10-03): the owner asked to go back to how the first chat worked, after four lanes and an
+  hourly QA lane built one feature in four days. Two build lanes (odd/even numbers) commit straight to `main` in
+  2-hour runs; lane C is off; the QA lane runs overnight only; reviews never block; the evening digest releases daily.
 
 ## Notes / blocked
 

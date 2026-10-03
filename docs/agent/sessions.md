@@ -1,32 +1,49 @@
-# Sessions: lanes around the clock
+# Sessions: sprint mode
 
-Several sessions work on this repo at the same time, around the clock (owner, 2026-10-03: 2.0 by 2026-10-17):
-- **Build lanes** (`--as lane-<letter>-<MMDD>-<HHMM>`, the UTC start from `date -u +%m%d-%H%M`): scheduled tasks
-  that start a fresh run every hour. Each builds roadmap items back to back.
-- **The QA lane** (`--as qa-<MMDD>-<HHMM>`): a scheduled task that tests what the others landed and turns what it
-  finds into bugs.
-- **The owner's chat** (`--as chat`) talks with Jesse live: his replies, bugs and ideas first, then roadmap items.
-- **The digests** (`--as digest-<MMDD>-<HHMM>`): twice a day, one session sends Jesse the review packages and a short
-  report, and records his replies. Lanes never message him themselves.
+Owner, 2026-10-03: "name of the game is productivity." The first chat built most of the mod (48,000 lines, about 80
+features, a release every hour) in four days by building feature after feature straight on `main`. The setup that
+followed (claims, item branches, `land`, an hourly QA lane, a review package per item) spent its runs on bookkeeping:
+on 2026-10-03, 40 runs made 311 commits, 211 of them bookkeeping and 125 merges, and built one feature. So:
 
-Every run starts fresh from the repo, so everything it needs is written down here and in CLAUDE.md. They don't get in
-each other's way, because:
-- a claim stops two sessions doing the same item (git refuses the second of two simultaneous claims). It goes stale
-  after 75 minutes without a push for a scheduled run, 6 hours for the chat, so work a cut-off run leaves behind is
-  soon free again;
-- two sessions never work in the same milestone at once, because its items touch the same code (bugs excepted);
-- a session holds at most 3 live claims;
-- work lives on its item's branch until `land` has merged the newest `main` in and built it green, so `main` is always
-  green, and a run that is cut off loses nothing it pushed.
+- **Build lanes a and b** (`--as lane-<letter>-<MMDD>-<HHMM>`, the UTC start): a fresh run every 2 hours, working
+  about 110 minutes. Lane a owns odd milestones and odd bugs, lane b even ones (`sessions.py next`).
+- **The QA lane** (`--as qa-<MMDD>-<HHMM>`): overnight only (11 PM to 6 AM Central). Its bugs are waiting in the
+  morning.
+- **The owner's chat** (`--as chat`) talks with Jesse live and takes any item.
+- **The digests** (`--as digest-<MMDD>-<HHMM>`), 8 AM and 6 PM Central: they send the review packages and a short
+  report, record his replies, and the evening one releases.
 
 ## Contents
+- Sprint mode: a build lane's run
 - The helper
-- A build lane's run
 - The QA lane
 - Review packages and the digests
 - Merging cleanly
 - Rules
 - The owner's chat
+
+## Sprint mode: a build lane's run
+
+1. **Start, in one step** (aim for 5 minutes): name yourself, `git pull`, `sessions.py next --as <you>`, the latest CI
+   run on `main` (red is the first thing you fix), and Java setup (CLAUDE.md). Don't read the brief or ROADMAP whole;
+   `sessions.py show <id>` for your items. If an `item/<id>` or `wip/<lane>` branch from an earlier run has work for
+   one of your items, merge it into `main` and finish it.
+2. **Build features back to back**, like the first chat did:
+   - read the code you'll change, build the item's whole Done when (art, builds, text, scene), and write its
+     GameTests: the happy path and the likeliest ways it breaks. Iterate with `runGameTest` and only your test classes;
+   - visible to a player: run its scene once, look at the pictures, hand in the package (`sessions.py review`), then
+     `sessions.py done <id> --review`. Not visible: `sessions.py done <id>`;
+   - CHANGELOG line, `./gradlew --max-workers=1 build` (in the background; plan the next item meanwhile), commit the
+     work with its tick, push to `main`. If the push is refused: `git pull --no-rebase`, build again only if the pull
+     brought in code under `src/`, push. Two or three small items may share one build;
+   - commit messages say what's done and what's next: they are the handoff. No claim, pause, land or handoff
+     commits.
+3. **Wrap up at about 110 minutes:** push what's green. Unfinished work goes to `wip/<lane>` (e.g. `wip/lane-a`) with
+   a commit message saying what's left; the next run of your lane continues it. Log the cost
+   (`python3 tools/agent/usage.py --log --as <you> --note "<items>"`) if that script exists.
+4. **No messages to the owner**; the digest reports. End with a 2-line summary (what landed, what's next).
+
+Never wait: an owner question goes in the Notes and you take the next item. Never thin an item to go faster.
 
 ## The helper
 
@@ -72,28 +89,11 @@ every minute, because every check re-reads the whole conversation and costs as m
 for a long `runGameTest` or screenshot run). It finds Java in `~/.local/jdk-25` by itself; if yours is elsewhere, put
 the `export JAVA_HOME=…` line from CLAUDE.md in front.
 
-## A build lane's run
-
-A scheduled task starts each run on the hour. A run can be cut off at any time, so:
-
-1. **Start** (about five minutes): name yourself from the time, then follow CLAUDE.md's "Start".
-   **Health first**: the latest CI run on `main`, the nightly test run, the showcase run (failed scenes are at the top
-   of https://jcondedata.github.io/minecraft-alive-workplace/) and any open `nightly-tests` issue. The GitHub API works
-   without a login for this public repo: `https://api.github.com/repos/jCondeData/minecraft-alive-workplace/actions/runs?per_page=5`.
-   Anything red is a bug: if nobody has added it, add it with `sessions.py bug`; bugs go first.
-2. **Items back to back**, as `status` names them, following CLAUDE.md's "Work" and "Finish each item". Push your
-   branch at least every 30 minutes.
-3. **Wrap up at about 50 minutes** after your start: land what's green, pause what isn't, write the handoff, and log
-   what the run cost: `python3 tools/agent/usage.py --log --as <you> --note "<items landed>"` (it reads the session's
-   own transcript; the owner tracks spending with it). The next run of your lane starts on the hour and continues
-   from your branch and handoff.
-4. **No message to the owner.** Review packages go through `sessions.py review`; the digest sends them. End the run
-   with a 2-line summary in the session (what landed, what's next) for the record.
-
 ## The QA lane
 
-The QA lane is the independent tester. It never builds features; it tests what landed and turns problems into bugs.
-Each run, after "Health first":
+The QA lane is the independent tester, overnight only. It never builds features; it tests what landed and turns
+problems into bugs. Only file a bug for something a player would hit or a red check: an untested corner that works is a
+test to ship, not a bug. Each run, after checking CI and the nightly issue:
 
 1. `sessions.py status --as qa-…` lists the landed items not yet verified. Take up to six, oldest first, from one
    milestone (all bugs together count as one).
@@ -127,14 +127,16 @@ the new jar and nothing is lost. Report it in the Notes.
 - A lane makes the package as `docs/agent/review.md` says and hands it in with `sessions.py review`, never with a
   message of its own. Keep each file under 8 MB: a JPEG sheet and a short 640-wide MP4.
 - **The digests** (8 AM and 6 PM Central) are scheduled sessions for Jesse:
-  1. fetch the `reviews` branch and send every package not yet sent (SendUserFile), one message per package, then
-     mark them sent (`(sent)` in their `message.md`, committed to `reviews`);
-  2. send one short report: what landed since the last digest (one line each, the invisible ones too), what the QA
-     lane verified and found, the lanes' health (any lane with no landing in 4 hours, any red run), what the runs
-     cost (`python3 tools/agent/usage.py --report --days 0.5`: one line, the total and cost per item), releases, and
-     only the decisions that are his;
-  3. stay for his replies and record each one with `sessions.py reply`; when he says `release`, run the release
-     (CLAUDE.md "Releasing") after the QA lane's release check.
+  1. `sessions.py pending` lists every item waiting on him and whether its package exists. Send every package not yet
+     sent (SendUserFile, one message per package), then mark it sent (`(sent)` in its `message.md`, committed to
+     `reviews`). For a pending item with **NO PACKAGE**, make one from what exists (its scene's stills on the
+     showcase page, or the item's text for a document) and send it; never just list it.
+  2. Send one short report: what landed since the last digest (one line each), what the QA lane found overnight, the
+     lanes' health (a lane with no push in 3 hours, a red run on `main`), releases, and only the decisions that are
+     his.
+  3. **The evening digest releases** (CLAUDE.md "Releasing") when `main` is green and something new landed since the
+     last release; pending reviews don't hold it back.
+  4. Stay for his replies and record each one with `sessions.py reply`.
 
 ## Merging cleanly
 
@@ -147,11 +149,10 @@ Several branches change the same shared files every hour. To keep merges automat
 ## Rules
 
 - **Never rebase or force-push**, on any branch. `land` merges instead, so every push is a fast-forward.
-- **Code reaches `main` only through `land`** (and QA tests through `ship`). Roadmap bookkeeping reaches it only
-  through the helper. The one exception is a doc change the owner asks for: switch to `main`, pull, change, commit,
-  push; if the push is refused, pull and push again.
+- **Build lanes and the chat push straight to `main`** after a green `./gradlew build` (sprint mode). The QA lane
+  still lands tests through `ship`. `claim`/`land` still work for anyone finishing an old item branch.
 - **Don't take over a live claim** unless the owner asked for that item (`claim <id> --force`).
-- **One version bump at a time:** only the owner's chat or a digest he told to `release`.
+- **One version bump at a time:** only the evening digest (daily), the owner's chat, or a digest he told to `release`.
 - **Owner questions never block a lane:** each item says what to do meanwhile; build that, and ask through the
   digest.
 - Each run has its own machine, so the memory rules in CLAUDE.md are about your own processes.

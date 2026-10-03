@@ -349,6 +349,30 @@ def run(tmp):
     check("ship: a roadmap-only change on main mid-build doesn't build again", builds == 1 and "Shipped" in r.stdout
           and "not building again" in r.stdout and "ship-mid-build" in roadmap(), r.stdout + f" builds={builds}")
 
+    # Sprint mode: next splits the roadmap by number between lanes; done ticks in the working tree; pending
+    # lists what waits on the owner and whether its package exists (the digest missed packageless items before).
+    r = S(C, "next --as lane-a-1003-2300")
+    ids = r.stdout.split()[::2]
+    check("next: lane a gets only odd numbers, bugs first", ids and ids[0].startswith("B")
+          and all(int(re.match(r"B?(\d+)", i).group(1)) % 2 == 1 for i in ids), r.stdout)
+    r = S(C, "next --as lane-b-1003-2300")
+    ids = r.stdout.split()[::2]
+    check("next: lane b gets only even numbers", ids and all(int(re.match(r"B?(\d+)", i).group(1)) % 2 == 0
+                                                             for i in ids), r.stdout)
+    sh("git switch -q main 2>/dev/null; git pull -q", C)
+    r = S(C, "done 23.1 --review", ok=None)
+    check("done --review refuses an item with no package", r.returncode == 1 and "No review package" in r.stdout,
+          r.stdout)
+    r = S(C, "done 23.2 --review")
+    local = open(os.path.join(C, "ROADMAP.md")).read()
+    check("done --review ticks an item whose package exists, in the working tree only",
+          "[x] **23.2** (review: pending" in local and "[x] **23.2**" not in line("23.2"), r.stdout)
+    sh("git checkout -q ROADMAP.md", C)
+    r = S(C, "pending")
+    check("pending shows items with no package, and packages left unsent",
+          re.search(r"B2 .*package: NO PACKAGE", r.stdout) is not None
+          and re.search(r"not yet sent .*22\.1", r.stdout) is not None, r.stdout)
+
     # Nothing left behind: no stray worktrees.
     check("no stray worktrees", len(sh("git worktree list", C).stdout.strip().splitlines()) == 1)
 

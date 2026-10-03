@@ -15,59 +15,40 @@ The goal (owner, 2026-10-03): the public **1.0**, then nine expansions up to **2
   like vanilla's books, a tool like its tools). No art outside it. Recipes: `tools/textures/art`.
 - **minecraft-architect:** every build and blueprint, checked against `tools/blueprints/STYLE.md` in a render.
 
-## The session loop
+## The session loop (sprint mode, owner 2026-10-03)
 
-Several sessions work at once, around the clock: the owner's chat (`chat`), build lanes (`lane-<letter>-<MMDD>-<HHMM>`,
-the UTC start) and the QA lane (`qa-<MMDD>-<HHMM>`). `tools/agent/sessions.py` keeps them apart, and
-`docs/agent/sessions.md` says how lanes run (read it once per session). The goal is 2.0 by 2026-10-17, so never wait
-and never do work twice, but never thin the content either.
+Productivity first. The first chat built most of this mod in four days by building feature after feature straight on
+`main`; work the same way (`docs/agent/sessions.md`, "Sprint mode"). Sessions: the owner's chat (`chat`), build lanes
+a and b (`lane-<letter>-<MMDD>-<HHMM>`, the UTC start; lane a owns odd milestones and bugs, lane b even ones), the
+overnight QA lane (`qa-<MMDD>-<HHMM>`) and two digests a day.
 
-**Start** (about five minutes):
-1. `git fetch`, `python3 tools/agent/sessions.py status --as <you>`, then `sessions.py brief`: the rules, Bugs,
-   decisions and Notes. Don't read ROADMAP.md whole (it's over 4,000 lines); `sessions.py show <id>` prints an item.
-2. Check the latest CI run on `main` and the `nightly-tests` issue (`docs/agent/sessions.md`, "Health first").
-   Anything red is a bug: add it with `sessions.py bug` and fix it first. CI already ran every test on `main`, so
-   don't run the suite before you start.
-3. Set up Java once per container (below).
+**Start** (one step, about five minutes): `git pull`, `python3 tools/agent/sessions.py next --as <you>`, the latest CI
+run on `main` (red comes first: `sessions.py bug`, then fix it), Java setup (below). `sessions.py show <id>` prints an
+item; don't read ROADMAP.md whole (it's over 4,000 lines).
 
-**Work** (build lanes and the chat):
-1. `sessions.py claim <id> --as <you>` for the item `status` named, and `sessions.py show <id>` for its spec. You're on
-   the branch `item/<id>`. Push it at least every 30 minutes, with commit messages that say what's done and what's
-   next: a session can be cut off at any time, and the next one continues from your branch.
-2. Read the code you will change before changing it. Never guess at an API, a method name or a file you haven't
-   opened. For Minecraft and Fabric APIs, use the engineer skill's `api.py` or `genSources`.
-3. Build all of the item's **Done when**: every piece of content it lists, with its art (pixel-art skill), builds
-   (architect skill), text and showcase scene. Never a placeholder, never "and the rest later". If the spec is unclear
-   or impossible, run `sessions.py pause <id> --as <you> --blocked "owner: <question>" --note "<what's done>"`, ask,
-   and take the next item. Don't invent the spec.
-4. **Test as you build**: you are the first tester. Write GameTests (conventions below) for the happy path through
-   the player's own entry points, the likeliest ways it breaks (missing materials, a full inventory, the block
-   broken mid-job, the villager dead or unloaded, save and reload mid-task, its config switch off), and every new
-   sentence a player reads, with its real arguments. The tester skill's `references/catalogue.md` has a checklist
-   per kind of feature. Never special-case code to pass a test; never weaken or delete a test.
-5. Iterate with `runGameTest`, registering only your test classes while you work; the full build runs once, in
-   `land`.
+**Build, back to back:**
+1. Read the code you will change. Never guess at an API, a method name or a file you haven't opened; for Minecraft
+   and Fabric APIs use the engineer skill's `api.py` or `genSources`.
+2. Build the item's whole **Done when**: every piece of content, with its art (pixel-art skill), builds (architect
+   skill), text and showcase scene. Never a placeholder. If the spec can't be met as written, put the question in the
+   ROADMAP Notes and take the next item.
+3. GameTests (conventions below) for the happy path through the player's own entry points and the likeliest ways it
+   breaks (missing materials, the block broken mid-job, save and reload, its config switch off), and every new
+   sentence a player reads. Iterate with `runGameTest` and only your test classes. Never special-case code to pass a
+   test; never weaken or delete a test.
+4. Visible to a player: run its scene once (`SCENE=<name> tools/screenshots/run.sh`), look at the pictures, hand in
+   the package (`sessions.py review`, `docs/agent/review.md`), then `sessions.py done <id> --review`. Not visible:
+   `sessions.py done <id>`.
+5. CHANGELOG line under *Unreleased*, `./gradlew --max-workers=1 build` green, then one commit with the work and its
+   tick, pushed straight to `main` (stage files by name). Push refused: `git pull --no-rebase`, build again only if
+   the pull brought in code, push. The commit message says what's done and what's next.
+6. Next item straight away. No claims, landings, handoff or bookkeeping commits.
 
-**Finish each item** (aim for a quarter of an hour from "it works" to landed):
-1. `./gradlew --max-workers=1 :1.21.1:runGameTest` with every test class registered: green.
-2. If a player can see or feel it, run its scene (`SCENE=<name> tools/screenshots/run.sh`, only that scene) and look at
-   every picture; fix what looks wrong; make the review package from those shots (`docs/agent/review.md`). If not,
-   there's no package.
-3. A CHANGELOG line under *Unreleased*, and commit. Stage files by name, not with `git add -A`.
-4. `sessions.py land <id> --as <you>` (add `--no-review` when nothing is visible), in the background, polling it
-   (`docs/agent/sessions.md`). It merges the newest `main` in, runs the full build and pushes. Then hand in the
-   review package.
-5. Take the next item straight away. There is no tester round per item: the QA lane tests what landed, and what it
-   finds comes back as bugs, which go first.
+**End of a run** (about 110 minutes): push what's green; unfinished work goes to `wip/<lane>` with a message saying
+what's left. When compacting, keep the modified files, the current item and its Done when, and the test commands.
 
-**End of a run**, or when the context gets long: land what's green, `sessions.py pause` what isn't, leave nothing
-unpushed, and write `sessions.py handoff "<in progress, next, traps>" --as <you>`. When compacting, keep the modified
-files, the current item and its Done when, and the test commands.
-
-**Usage**: every step re-reads the whole conversation (well over 100k tokens), so the number of steps is what a run
-costs. Put independent commands and file reads in one step, wait for a build in one command rather than checking every
-minute (`docs/agent/sessions.md`), and don't print whole big files or logs; grep them. Subagents for searching or
-reading code get `model: "sonnet"`; the session's own model does the building.
+**Usage**: subagents for searching or reading code get `model: "sonnet"`; the session's own model does the building.
+Don't print whole big files or logs; grep them.
 
 ## Reporting to the owner
 
@@ -77,7 +58,7 @@ reading code get `model: "sonnet"`; the session's own model does the building.
 - Keep it short: what changed from a player's point of view, what you want him to judge, and the tester's verdict
   and risks.
 - He wants to be hands-off. He judges looks from screenshots and behaviour from GIFs; work with nothing to see is
-  accepted without him (`land --no-review`) and only listed.
+  accepted without him (`sessions.py done <id>` without `--review`) and only listed.
 - Ask only for what is his to decide: design choices, anything destructive or public, and the release channel.
   Everything else: decide, write the decision in the Notes, and carry on.
 - Before ending a turn, read your last paragraph. If it promises work ("next I'll…"), do that work now or put it in
@@ -186,13 +167,11 @@ Commands:
 
 ## Releasing
 
-CI publishes, because pushing tags isn't allowed from the dev environment. Only the owner's chat releases, so two
-sessions never bump the version. On a fresh `main` (`git switch main && git pull`), bump `mod.version` in
+CI publishes, because pushing tags isn't allowed from the dev environment. The evening digest releases once a day when
+`main` is green and something new landed since the last release (the owner's chat may also release when he says
+`release`); pending reviews don't hold it back. On a fresh `main` (`git switch main && git pull`), bump `mod.version` in
 `stonecutter.properties.toml` and move the *Unreleased* notes in CHANGELOG.md under `## X.Y.Z — date` in the same
-commit, build, and push (if the push is refused: pull, build, push). The first green build on `main` with a new
-version tags `vX.Y.Z` and creates the GitHub Release (a pre-release while 0.x).
-- **When:** when no item on `main` is pending review or vetoed, and something new has been accepted since the last
-  release (ROADMAP). Or when the owner says `release`.
-- **Before the bump:** the QA lane's release check (`docs/agent/sessions.md`).
+commit, and push (if refused: pull, push). The first green build on `main` with a new version tags `vX.Y.Z` and
+creates the GitHub Release (a pre-release while 0.x); a red build tags nothing.
 - Bump the minor version for features, the patch version for fixes only.
 - Store-page publishing (Modrinth, CurseForge) waits for the owner's release-channel decision (ROADMAP 26.1).

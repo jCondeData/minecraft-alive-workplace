@@ -84,6 +84,19 @@ public class StallWatchGameTests implements FabricGameTest {
 		});
 	}
 
+	/** After the work shift (evening, night) a builder with nothing to build with is resting, not stalled. */
+	//$ gametest_ticks_batch AREA '1200' '"stall_off_shift"'
+	@GameTest(template = AREA, timeoutTicks = 1200, batch = "stall_off_shift")
+	public void aBuilderOffShiftIsNeverLoggedAsStalled(GameTestHelper helper) {
+		// Its own batch: the time of day is the whole level's, and the other tests here need daytime.
+		Leftovers.clear(helper);
+		Villager villager = builder(helper);
+		helper.setDayTime(13000);
+		BuildSite site = Builders.start(helper.getLevel(), villager, null, TEST_HUT, at(helper, HUT_ORIGIN));
+		helper.onEachTick(() -> helper.assertFalse(StallWatch.isStalled(site.id()), "a builder off shift was logged as stalled"));
+		helper.runAtTickTime(StallWatch.STALL_TICKS + 300, helper::succeed);
+	}
+
 	/** A site waiting in a busy builder's queue is not a stall, even while the builder's own site is stuck. */
 	//$ gametest_ticks AREA '1600'
 	@GameTest(template = AREA, timeoutTicks = 1600)

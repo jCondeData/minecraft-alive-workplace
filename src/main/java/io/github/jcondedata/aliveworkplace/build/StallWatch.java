@@ -9,11 +9,14 @@ import java.util.Set;
 import java.util.UUID;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.npc.Villager;
+import net.minecraft.world.entity.schedule.Activity;
 
 /**
  * Logs a line whenever a build site with a builder makes no progress for 30 seconds (the builder soak test, 23.1,
  * counts these lines). One line per stall: it is written again only after the site has moved on and stalled anew.
- * Sites waiting in a builder's queue, without a builder, or in unloaded chunks are not watched.
+ * Only time on shift counts: a builder asleep or outside its WORK activity is not stalled. Sites waiting in a
+ * builder's queue, without a builder, or in unloaded chunks are not watched.
  */
 public final class StallWatch {
 	/** 30 seconds. */
@@ -59,6 +62,12 @@ public final class StallWatch {
 					continue;
 				}
 				seen.add(site.id());
+				if (level.getEntity(site.builder()) instanceof Villager builder
+						&& (builder.isSleeping() || !builder.getBrain().isActive(Activity.WORK))) {
+					// Off shift (evening, night, a panic): not working is no stall. The 30 s count starts again on shift.
+					WATCHES.put(site.id(), new Watch(site.progressMark(), now, false));
+					continue;
+				}
 				watch(site, now);
 			}
 		}

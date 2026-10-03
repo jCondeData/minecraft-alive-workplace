@@ -20,6 +20,9 @@ mkdir -p "$SERVER/mods"
 if [ ! -f "$DIR/modrinth.index.json" ]; then
   curl -sfL -o "$DIR/pack.mrpack" "$PACK_URL"
   (cd "$DIR" && unzip -o -q pack.mrpack modrinth.index.json 'overrides/*' && rm pack.mrpack)
+  # The pack stores every override with Unix mode 000. Root reads them anyway, a normal user (GitHub's runner)
+  # can't, and the server then ran with no pack configs, datapacks or bundled mods (B14).
+  chmod -R u+rwX "$DIR/overrides"
   python3 - "$DIR" <<'EOF'
 import json, sys
 d = json.load(open(sys.argv[1] + "/modrinth.index.json"))
@@ -27,8 +30,14 @@ urls = [f["downloads"][0] for f in d["files"] if f["path"].startswith("mods/") a
 open(sys.argv[1] + "/urls.txt", "w").write("\n".join(urls) + "\n")
 EOF
   (cd "$SERVER/mods" && xargs -P 8 -n 1 curl -sfLO < ../../urls.txt)
-  cp "$DIR"/overrides/mods/*.jar "$SERVER/mods/" 2>/dev/null || true
+  if ls "$DIR"/overrides/mods/*.jar > /dev/null 2>&1; then cp "$DIR"/overrides/mods/*.jar "$SERVER/mods/"; fi
   cp -r "$DIR/overrides/config" "$DIR/overrides/datapacks" "$SERVER/"
+fi
+# Without the pack's own configs the server isn't the pack (B14): stop rather than measure something else.
+PACK_CONFIGS=$(find "$DIR/overrides/config" -type f | wc -l)
+SERVER_CONFIGS=$(find "$SERVER/config" -type f -readable 2>/dev/null | wc -l)
+if [ "$SERVER_CONFIGS" -lt "$PACK_CONFIGS" ]; then
+  echo "Only $SERVER_CONFIGS of the pack's $PACK_CONFIGS config files are readable in $SERVER/config"; exit 1
 fi
 if [ ! -f "$SERVER/fabric-server-launch.jar" ]; then
   INSTALLER=$(curl -s https://meta.fabricmc.net/v2/versions/installer | python3 -c "import json,sys; print(json.load(sys.stdin)[0]['version'])")

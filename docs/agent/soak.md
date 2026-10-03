@@ -80,3 +80,36 @@ stripped_birch_log +29, stripped_oak_log +21, stripped_spruce_log +6, white_conc
 stone_house, flower_shop, graveyard, tinkers_workshop, healing_center, nether_gate, compost_yard, storehouse, 
 schoolhouse, library, ranch, inn, apiary_garden
 ```
+
+## Run 2 — lane-c-1003-1433, after stalls count only on-shift time
+
+Same layout (the soak is deterministic): 9 of 22 builds again, 2 stalls inside the 2 days, 2 more as the sprint ended. Sprint 448 ticks/s.
+
+```
+15:08:00 Builder stalled 30 s: aliveworkplace:graveyard at 1119, 81, 1000 (stage FOUNDATION, status WORKING, 0 placed, 0 skipped, 0 kinds missing) [stall #1]
+15:08:07 Builder stalled 30 s: aliveworkplace:stone_house at 1031, 83, 1000 (stage STRUCTURE, status WAITING_FOR_MATERIALS, 365 placed, 48 skipped, 1 kinds missing) [stall #2]
+15:08:33 Builder stalled 30 s: aliveworkplace:stone_house at 1031, 83, 1000 (stage STRUCTURE, status WAITING_FOR_MATERIALS, 365 placed, 48 skipped, 1 kinds missing) [stall #3]
+15:08:33 Builder stalled 30 s: aliveworkplace:inn at 1083, 85, 1104 (stage STRUCTURE, status WAITING_FOR_MATERIALS, 1 placed, 179 skipped, 3 kinds missing) [stall #4]
+15:08:34 Sprint completed with 448 ticks per second, or 2.23 ms per tick
+Soak result: 9/22 builds finished in 48070 ticks; 2 stalls; items off: allium +8, andesite +65, azure_bluet +3, 
+barrel +8, beehive +5, bell +1, birch_door +1, birch_planks +215, birch_stairs +16, birch_trapdoor +14, 
+black_concrete +10, blue_bed +2, blue_orchid +1, bookshelf +2, brewing_stand +1, bricks +48, brown_carpet +4, 
+campfire +5, candle +4, cartography_table +1, cauldron +4, chest +5, chiseled_polished_blackstone +6, coarse_dirt 
++58, cobblestone +399, composter +1, cornflower +4, cracked_polished_blackstone_bricks +33, cracked_stone_bricks +3, 
+dandelion +2, dark_oak_door +3, dark_oak_log +249, dark_oak_pressure_plate +1, dark_oak_slab +8, dark_oak_stairs +64, 
+dark_oak_trapdoor +16, deepslate_tile_slab +47, deepslate_tile_stairs +247, deepslate_tiles +28, dirt +1539, fern +2, 
+flower_pot +26, gilded_blackstone +2, glass_pane +66, granite +10, green_bed +2, hay_block +10, honey_block +1, 
+ladder +10, lantern +27, lectern +1, light_blue_bed +1, lightning_rod +1, lily_of_the_valley +4, mossy_stone_bricks 
++7, oak_fence +46, oak_fence_gate +1, oak_planks +55, oak_stairs +14, oak_trapdoor +2, obsidian +10, orange_tulip +5, 
+oxeye_daisy +6, pink_tulip +1, polished_andesite +3, polished_blackstone +48, polished_blackstone_brick_slab +2, 
+polished_blackstone_brick_stairs +17, polished_blackstone_brick_wall +10, polished_blackstone_bricks +197, 
+polished_blackstone_wall +2, polished_diorite +37, polished_granite +8, poppy +7, red_bed +3, red_carpet +7, 
+red_tulip +9, red_wool +4, shop_counter +1, smoker +1, soul_campfire +2, soul_lantern +7, spruce_door +2, 
+spruce_fence +44, spruce_fence_gate +1, spruce_log +61, spruce_planks +393, spruce_pressure_plate +2, spruce_slab 
++39, spruce_stairs +406, spruce_trapdoor +76, stone +89, stone_brick_slab +2, stone_brick_stairs +4, stone_bricks 
++48, stripped_birch_log +29, stripped_oak_log +21, stripped_spruce_log +6, white_concrete +115, white_wool +3; 
+unfinished: stone_house, flower_shop, graveyard, tinkers_workshop, healing_center, nether_gate, compost_yard, 
+storehouse, schoolhouse, library, ranch, inn, apiary_garden
+```
+
+To triage next: graveyard stuck in FOUNDATION with 0 placed (on a slope); stone_house waits for 1 kind although the chests held exactly plan.materials() (miscount?); inn 179 skipped and 3 kinds missing; whether 2 days is enough: builders work about 7,000 of every 24,000 ticks (the villager WORK shift).

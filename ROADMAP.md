@@ -319,9 +319,9 @@ first; many items below are "verify and harden", not "build".
 - [ ] **23.5** **Self-healing supply.** Builders use the storehouse and porters without being told. A full builder inventory
   never stops work. Wanted items go on the requests board automatically. Done when: the soak test passes with the
   materials split across 3 chests and the storehouse.
-- [ ] **23.6** **Working when no one is near.** Decide with the owner what a village does when no player is in range: keep
-  working through `KeepLoaded` tickets, or pause. The game rule `workplaceKeepWorkLoaded` already exists: start from
-  it. Add a config option (default: the owner's choice), and document it
+- [ ] **23.6** **Working when no one is near.** The owner decided (2026-10-03): villages **keep working** when no
+  player is in range, through `KeepLoaded` tickets. The game rule `workplaceKeepWorkLoaded` already exists: start from
+  it. Add a config option (default: keep working, so a server owner can still choose to pause), and document it
   in the README. Done when: both settings are tested, and there are no chunk-loading surprises (count the tickets
   before and after the soak).
 - [ ] **23.7** **Imports that just work.** `.litematic`, `.schem` and `.nbt` files in common sizes and versions, including big
@@ -402,7 +402,10 @@ about 12% of that. For villager mods, the cost is pathfinding to distant points 
 
 ## Milestone 26: Release 1.0
 
-- [ ] **26.1** (blocked: owner, which release channel) **Release channel.** Modrinth's content rules have been enforced
+- [ ] **26.1** **Release channel.** **Decided by the owner (2026-10-03): 1.0 goes to Modrinth, CurseForge and GitHub**,
+  each page saying the mod was made with AI assistance, without saying where (see Design decisions). Done when that
+  is recorded, which it now is: tick this with `land --no-review` from any session that touches 26.x. The background,
+  kept for reference: Modrinth's content rules have been enforced
   since 2026-09-27:
   - A project made "entirely or almost entirely" with generative AI, with "little-to-no human input beyond prompting or
     testing", can only be unlisted; it can't appear in public search.
@@ -4239,6 +4242,13 @@ item waits.
 - **Testing while building** (2026-10-03): builders write their own GameTests as they build; a dedicated QA lane
   tests everything after it lands; slow checks (mutation, repeats, filming) run on GitHub's machines. Releases ship
   verified work only.
+- **Release channel** (2026-10-03): 1.0 goes to Modrinth, CurseForge and GitHub. The pages say the mod was made with AI
+  assistance, without saying where; on Modrinth that's its required "Contains AI-generated content" flag plus that
+  line. Keep the line general and true (code and textures both had AI help, so never "only the code"). Known risk, raised
+  with the owner: Modrinth's rules also bar page images "created or derived from" AI output and may unlist projects
+  made mostly by AI.
+- **Villages with no player nearby keep working** (2026-10-03), through chunk tickets; a config option lets a server
+  owner pause them instead.
 
 ## Notes / blocked
 

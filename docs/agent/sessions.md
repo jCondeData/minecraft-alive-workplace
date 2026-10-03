@@ -80,8 +80,10 @@ A scheduled task starts each run on the hour. A run can be cut off at any time, 
    Anything red is a bug: if nobody has added it, add it with `sessions.py bug`; bugs go first.
 2. **Items back to back**, as `status` names them, following CLAUDE.md's "Work" and "Finish each item". Push your
    branch at least every 30 minutes.
-3. **Wrap up at about 50 minutes** after your start: land what's green, pause what isn't, write the handoff. The next
-   run of your lane starts on the hour and continues from your branch and handoff.
+3. **Wrap up at about 50 minutes** after your start: land what's green, pause what isn't, write the handoff, and log
+   what the run cost: `python3 tools/agent/usage.py --log --as <you> --note "<items landed>"` (it reads the session's
+   own transcript; the owner tracks spending with it). The next run of your lane starts on the hour and continues
+   from your branch and handoff.
 4. **No message to the owner.** Review packages go through `sessions.py review`; the digest sends them. End the run
    with a 2-line summary in the session (what landed, what's next) for the record.
 
@@ -110,6 +112,7 @@ Each run, after "Health first":
    open bug. An item with a bug stays unverified until the fix lands; then verify it with the fix.
 5. When nothing is waiting: the release check if one is due, then the QA milestone's own items (Milestone 21's full
    check, 22.x), then hunting flakes from the nightly results.
+6. Before you stop: `python3 tools/agent/usage.py --log --as <you> --note "<what you verified>"`.
 
 **The release check** (before a version bump, when the chat or a digest asks): every item since the last release is
 verified; the last nightly run (suite 5x, log audit, pack boot, soak), the nightly mutation and repeats, and the
@@ -124,7 +127,8 @@ the new jar and nothing is lost. Report it in the Notes.
   1. fetch the `reviews` branch and send every package not yet sent (SendUserFile), one message per package, then
      mark them sent (`(sent)` in their `message.md`, committed to `reviews`);
   2. send one short report: what landed since the last digest (one line each, the invisible ones too), what the QA
-     lane verified and found, the lanes' health (any lane with no landing in 4 hours, any red run), releases, and
+     lane verified and found, the lanes' health (any lane with no landing in 4 hours, any red run), what the runs
+     cost (`python3 tools/agent/usage.py --report --days 0.5`: one line, the total and cost per item), releases, and
      only the decisions that are his;
   3. stay for his replies and record each one with `sessions.py reply`; when he says `release`, run the release
      (CLAUDE.md "Releasing") after the QA lane's release check.

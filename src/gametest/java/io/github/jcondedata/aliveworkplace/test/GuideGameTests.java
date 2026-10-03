@@ -106,7 +106,7 @@ public class GuideGameTests implements FabricGameTest {
 		}
 		helper.assertTrue(pages.size() >= 30, "only " + pages.size() + " guide pages");
 		helper.assertTrue(problems.isEmpty(), String.join("; ", problems));
-		AliveLog.info("[test] guide: " + pages.size() + " pages, each with its picture and words");
+		org.slf4j.LoggerFactory.getLogger("aliveworkplace").info("[test] guide: " + pages.size() + " pages, each with its picture and words");
 		helper.succeed();
 	}
 }

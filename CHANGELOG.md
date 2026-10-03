@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+### Added
+- **The Guide Book**: every player is given one the first time they join (on an existing world too, after updating);
+  right-click it to read how the mod works, page by page, each page an in-game screenshot with a few short steps:
+  getting started, giving villagers jobs, builders and blueprints, the Village Hall, every kind of job, guards, and
+  with Cobblemon the Pokémon jobs. Lost it? Craft another from a book and wheat.
+
 ## 0.138.0 — 2026-10-02
 
 ### Changed

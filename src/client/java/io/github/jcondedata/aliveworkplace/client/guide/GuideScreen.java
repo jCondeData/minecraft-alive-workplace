@@ -22,7 +22,7 @@ public class GuideScreen extends Screen {
 	static final int IMAGE_W = 240;
 	static final int IMAGE_H = 135;
 	private static final int MARGIN = 10;
-	static final int TEXT_LINES = 6;
+	public static final int TEXT_LINES = 6;
 
 	private static final int LEATHER_DARK = 0xFF3B2414;
 	private static final int LEATHER = 0xFF6B4423;
@@ -175,6 +175,12 @@ public class GuideScreen extends Screen {
 		g.fill(x0 + 1, y0 + 1, x1 - 1, y1 - 1, LEATHER);
 		g.fill(x0 + 4, y0 + 4, x1 - 4, y1 - 4, PAPER_EDGE);
 		g.fill(x0 + 5, y0 + 5, x1 - 5, y1 - 5, PAPER);
+		// Leather tabs under the page arrows, so the light arrows stand out on the paper.
+		for (PageButton arrow : new PageButton[] {back, forward}) {
+			if (arrow != null && arrow.visible) {
+				g.fill(arrow.getX() - 2, arrow.getY() - 2, arrow.getX() + arrow.getWidth() + 2, arrow.getY() + arrow.getHeight() + 2, LEATHER);
+			}
+		}
 	}
 
 	@Override

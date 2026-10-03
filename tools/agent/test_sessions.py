@@ -21,6 +21,7 @@ ROADMAP = """# Roadmap
 - [ ] **B1** First bug. Test: `aTest`.
 - [ ] **B2** Second bug.
 - [ ] **B3** Third bug.
+- [ ] **B4** Fourth bug.
 
 ## Milestone 21: Safety net
 
@@ -234,13 +235,63 @@ def run(tmp):
     check("changes become sub-items with the next letter", "**22.1a** Change from the owner" in rm and
           "**22.1b** Change from the owner" in rm and "22.1aa" not in rm, rm)
     S(C, "bug '(client) crash on join' --as chat2")
-    check("bugs get the next number", "- [ ] **B4** [client] crash on join" in roadmap(), roadmap())
+    check("bugs get the next number", "- [ ] **B5** [client] crash on join" in roadmap(), roadmap())
     S(C, "handoff 'first' --as night-0930-0100")
     S(C, "handoff 'second' --as night-0930-0300")
     rm = roadmap()
     check("one handoff per kind", "second" in rm and ": first" not in rm, rm)
     S(C, "unblock 22.3 --as chat2 --note 'owner chose'")
     check("unblock", "(blocked" not in line("22.3"), line("22.3"))
+
+    # QA lane: landed items wait for verification; verify marks them; a veto clears it.
+    sh("git switch -q main 2>/dev/null; git pull -q", C)
+    r = S(C, "status --as qa-1003-0100")
+    check("QA status lists landed, unverified items", "Next for you (QA):" in r.stdout and "B1" in r.stdout, r.stdout)
+    S(C, "verify B1 21.1 --as qa-1003-0100 --note 'spec tests (3), mutants 2/2'")
+    check("verify marks items", "(verified " in line("B1") and "[3]" in line("B1") and "(verified " in
+          line("21.1"), line("B1"))
+    r = S(C, "verify 23.2 --as qa-1003-0100", ok=None)
+    check("an open item can't be verified", r.returncode == 1, r.stdout)
+    r = S(C, "show 22.1 B1")
+    check("show prints the items and their milestones", "## Milestone 22" in r.stdout and "More text about it" in
+          r.stdout and "**B1**" in r.stdout, r.stdout)
+
+    # The QA lane ships tests; review packages go to the reviews branch.
+    sh("git switch -q -c qa/tests-1003 origin/main && printf 'test\\n' > QaTest.java && git add QaTest.java && "
+       "git commit -qm 'QA tests'", C)
+    r = S(C, "ship --as qa-1003-0100 --build true")
+    check("ship lands a QA branch on main", "Shipped" in r.stdout and "QaTest.java" in sh("git ls-tree --name-only "
+          "origin/main", C).stdout, r.stdout)
+    sh("printf 'png' > sheet.png", tmp)
+    r = S(C, f"review 22.1 {tmp}/sheet.png --as lane-a-1003-0100 --message 'Review 22.1: soak test'")
+    S(C, f"review 23.2 {tmp}/sheet.png --as lane-b-1003-0100 --message 'Review 23.2'")
+    sh("git fetch -q origin reviews", C)
+    files = sh("git ls-tree -r --name-only FETCH_HEAD", C).stdout
+    check("review packages land on the reviews branch", "reviews/22.1/sheet.png" in files and
+          "reviews/23.2/message.md" in files and "ROADMAP.md" not in files, r.stdout + files)
+    sh("git switch -q main 2>/dev/null; git pull -q", C)
+
+    r = S(C, "brief")
+    check("brief leaves the milestones out", "## Bugs" in r.stdout and "## Notes" in r.stdout and "**22.1**" not in
+          r.stdout, r.stdout)
+
+    # A lane's claim goes stale like a night run's; a session holds at most three claims.
+    S(C, "bug 'sixth' --as chat2")
+    S(C, "bug 'seventh' --as chat2")
+    sh("git switch -q main 2>/dev/null; git pull -q", A)
+    S(A, "claim B7 --as lane-b-1003-0100")
+    sh("git switch -q main && git pull -q && sed -i 's/(claimed: lane-b-1003-0100, [^)]*)/(claimed: lane-b-1003-0100, "
+       "2020-01-01 00:00Z)/' ROADMAP.md && git commit -qam age && git push -q origin main", C)
+    r = S(B, "status --as chat")
+    check("an old lane claim is stale", "STALE" in next((l for l in r.stdout.splitlines() if "B7" in l), ""),
+          r.stdout)
+    sh("git switch -q main 2>/dev/null; git pull -q", B)
+    for item in ("B4", "B5", "B6"):
+        S(B, f"claim {item} --as lane-c-1003-0100")
+        sh("git switch -q main 2>/dev/null", B)
+    S(C, "bug 'eighth' --as chat2")
+    r = S(B, "claim B8 --as lane-c-1003-0100", ok=None)
+    check("a fourth live claim is refused", r.returncode == 1 and "at most 3" in r.stdout, r.stdout)
 
     # Nothing left behind: no stray worktrees.
     check("no stray worktrees", len(sh("git worktree list", C).stdout.strip().splitlines()) == 1)

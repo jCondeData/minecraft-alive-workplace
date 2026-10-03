@@ -72,7 +72,10 @@
 			"io.github.jcondedata.aliveworkplace.test.OptionalModsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.OutfitGameTests",
 			"io.github.jcondedata.aliveworkplace.test.GuideGameTests",
-			"io.github.jcondedata.aliveworkplace.test.FerryLeaveQaGameTests"
+			"io.github.jcondedata.aliveworkplace.test.FerryLeaveQaGameTests",
+			"io.github.jcondedata.aliveworkplace.test.StationsB8UnloadedGameTests",
+			"io.github.jcondedata.aliveworkplace.test.JobSiteTicketsGameTests",
+			"io.github.jcondedata.aliveworkplace.test.StationsQaGameTests"
 		]
 	},
 	"depends": {

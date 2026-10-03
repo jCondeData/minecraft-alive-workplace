@@ -11,6 +11,8 @@
 ### Fixed
 - With Cobblemon, a herder no longer stands waiting under a pastured Pokémon that's flying about: they get on with
   other work and brush or milk it once it has come down.
+- A builder keeps their own bench. A builder who got stuck for a minute, or wandered over 100 blocks from their bench,
+  gave it up and took the nearest free one, often another builder's, so two builders could swap benches over and over.
 - A builder always takes its materials from the chests by the bench its build was started from. Two builders with
   benches close together could swap benches mid-build and use each other's materials, so one build ended a few
   blocks short and its builder waited for materials its own chests had held.

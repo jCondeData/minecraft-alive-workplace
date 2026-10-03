@@ -402,8 +402,8 @@ about 12% of that. For villager mods, the cost is pathfinding to distant points 
 
 ## Milestone 26: Release 1.0
 
-- [ ] **26.1** **Release channel.** **Decided by the owner (2026-10-03): 1.0 goes to Modrinth, CurseForge and GitHub**,
-  each page saying the mod was made with AI assistance, without saying where (see Design decisions). Done when that
+- [ ] **26.1** **Release channel.** **Decided by the owner (2026-10-03): 1.0 goes to CurseForge and GitHub, not
+  Modrinth**, each page saying the mod was made with AI assistance, without saying where (see Design decisions). Done when that
   is recorded, which it now is: tick this with `land --no-review` from any session that touches 26.x. The background,
   kept for reference: Modrinth's content rules have been enforced
   since 2026-09-27:
@@ -4242,11 +4242,11 @@ item waits.
 - **Testing while building** (2026-10-03): builders write their own GameTests as they build; a dedicated QA lane
   tests everything after it lands; slow checks (mutation, repeats, filming) run on GitHub's machines. Releases ship
   verified work only.
-- **Release channel** (2026-10-03): 1.0 goes to Modrinth, CurseForge and GitHub. The pages say the mod was made with AI
-  assistance, without saying where; on Modrinth that's its required "Contains AI-generated content" flag plus that
-  line. Keep the line general and true (code and textures both had AI help, so never "only the code"). Known risk, raised
-  with the owner: Modrinth's rules also bar page images "created or derived from" AI output and may unlist projects
-  made mostly by AI.
+- **Release channel** (2026-10-03): 1.0 goes to **CurseForge and GitHub only. Don't publish to Modrinth** (its rules
+  bar page images made with AI and may unlist projects made mostly by AI). The pages say the mod was made with AI
+  assistance, without saying where. Keep that line general and true: code and textures both had AI help, so never
+  "only the code". Store-page work (26.2–26.5) is for CurseForge and GitHub; drop Modrinth parts, including
+  mod-publish-plugin's Modrinth target.
 - **Villages with no player nearby keep working** (2026-10-03), through chunk tickets; a config option lets a server
   owner pause them instead.
 

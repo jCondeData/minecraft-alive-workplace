@@ -12,7 +12,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.GlobalPos;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
-import net.minecraft.network.DisconnectionDetails;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -80,7 +79,7 @@ public class FerryEdgeGameTests implements FabricGameTest {
 		});
 		helper.runAfterDelay(20, () -> {
 			helper.assertTrue(FerryRides.riding(player), "the ride ended by itself");
-			player.connection.onDisconnect(new DisconnectionDetails(Component.literal("left the game")));
+			player.connection.disconnect(Component.literal("left the game")); // (closes the connection, as quitting does)
 		});
 		helper.runAfterDelay(22, () -> {
 			helper.assertTrue(player.hasDisconnected(), "the player is still connected");

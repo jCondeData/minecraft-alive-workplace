@@ -9,6 +9,9 @@
   with Cobblemon the Pokémon jobs. Lost it? Craft another from a book and wheat.
 
 ### Fixed
+- Leaving the game in the middle of a ferry ride lands you by the far post before you are saved, so you come back
+  there, and the ferryman stays at his jetty. The ride now ends on the server thread as you leave, not on the network
+  thread.
 - The orchard house test that failed about 1 run in 50: it placed the house with its air, which dug a pit round it in
   the test floor that the orchard keeper could fall into. Villages never place that air, so players weren't affected.
 - Giving a worker a new job (with an item or from the Village Hall) no longer frees another villager's workstation,

@@ -18,9 +18,12 @@ import org.lwjgl.glfw.GLFW;
  */
 public class GuideScreen extends Screen {
 	static final int PANEL_W = 260;
-	static final int PANEL_H = 250;
-	static final int IMAGE_W = 240;
-	static final int IMAGE_H = 135;
+	/** At most 236 tall: the smallest screen the Auto GUI scale gives is 240 (854 x 480, 1280 x 720, 2560 x 1440...). */
+	static final int PANEL_H = 236;
+	static final int IMAGE_W = 224;
+	static final int IMAGE_H = 126;
+	/** The text is a little wider than the picture. */
+	static final int TEXT_W = 240;
 	private static final int MARGIN = 10;
 	public static final int TEXT_LINES = 6;
 
@@ -221,16 +224,17 @@ public class GuideScreen extends Screen {
 
 	private void renderPage(GuiGraphics g, GuidePages.Page p) {
 		int x = left + MARGIN;
+		int ix = left + (PANEL_W - IMAGE_W) / 2;
 		g.drawString(font, p.chapterName(), x, top + 8, FAINT, false);
 		String number = page + " / " + pages.size();
 		g.drawString(font, number, left + PANEL_W - MARGIN - font.width(number), top + 8, FAINT, false);
 		Component title = p.title().copy().withStyle(ChatFormatting.BOLD);
 		g.drawString(font, title, left + (PANEL_W - font.width(title)) / 2, top + 19, INK, false);
 		int iy = top + 31;
-		g.fill(x - 1, iy - 1, x + IMAGE_W + 1, iy + IMAGE_H + 1, LEATHER_DARK);
-		g.blit(p.image(), x, iy, IMAGE_W, IMAGE_H, 0, 0, GuidePages.TEXTURE_W, GuidePages.TEXTURE_H, GuidePages.TEXTURE_W, GuidePages.TEXTURE_H);
+		g.fill(ix - 1, iy - 1, ix + IMAGE_W + 1, iy + IMAGE_H + 1, LEATHER_DARK);
+		g.blit(p.image(), ix, iy, IMAGE_W, IMAGE_H, 0, 0, GuidePages.TEXTURE_W, GuidePages.TEXTURE_H, GuidePages.TEXTURE_W, GuidePages.TEXTURE_H);
 		int y = iy + IMAGE_H + 5;
-		List<FormattedCharSequence> lines = font.split(p.text(), IMAGE_W);
+		List<FormattedCharSequence> lines = font.split(p.text(), TEXT_W);
 		for (int i = 0; i < Math.min(lines.size(), TEXT_LINES); i++) {
 			g.drawString(font, lines.get(i), x, y, INK, false);
 			y += 9;
@@ -249,7 +253,7 @@ public class GuideScreen extends Screen {
 
 	/** How many lines a page's text takes here (more than {@link #TEXT_LINES} would be cut off). For checks. */
 	public int textLines(int bookPage) {
-		return bookPage <= 0 ? 0 : font.split(pages.get(bookPage - 1).text(), IMAGE_W).size();
+		return bookPage <= 0 ? 0 : font.split(pages.get(bookPage - 1).text(), TEXT_W).size();
 	}
 
 	@Override

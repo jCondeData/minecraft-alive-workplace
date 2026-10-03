@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+### Fixed
+- Zombie villagers in abandoned desert villages no longer get stuck in a house's wall (the same narrow corridor that
+  trapped living villagers before 0.138.0).
+
 ## 0.138.0 — 2026-10-02
 
 ### Changed

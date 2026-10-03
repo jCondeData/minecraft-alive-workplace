@@ -297,7 +297,7 @@ MineColonies players' most common complaints are builders that get stuck, don't 
 inventories are full, or only work while a player stands nearby. Ours must do none of that. Check what already exists
 first; many items below are "verify and harden", not "build".
 
-- [ ] **23.1** (claimed: lane-c-1003-1532, 2026-10-03 15:34Z) **The builder soak test.**
+- [ ] **23.1** (paused: item/23.1, 2026-10-03 16:09Z) **The builder soak test.**
   - The setup: 10 builders build the full starter set on hilly, forested ground, with materials only in chests and the
     storehouse and no player help, over 2 in-game days.
   - Run it twice. As a long GameTest or pack-server scenario (`tools/packtest`) for the numbers. As a scene in the

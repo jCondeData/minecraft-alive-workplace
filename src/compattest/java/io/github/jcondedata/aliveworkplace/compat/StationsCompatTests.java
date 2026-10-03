@@ -292,4 +292,32 @@ public class StationsCompatTests implements FabricGameTest {
 			});
 		});
 	}
+
+	/**
+	 * Tester, 21.1c, probe: "the Training Post no longer gives the job" (the owner's plan). A scientist whose analyzer is
+	 * broken shouldn't wander off to a free Training Post nearby and work there (it's the Trainer's block now; only
+	 * scientists from before the update keep theirs).
+	 */
+	//$ gametest_ticks_batch AREA '600' '"fossilScientistNoPost"'
+	@GameTest(template = AREA, timeoutTicks = 600, batch = "fossilScientistNoPost")
+	public void aScientistWithoutAnAnalyzerDoesNotTakeATrainingPost(GameTestHelper helper) {
+		helper.setDayTime(2000);
+		for (var e : helper.getLevel().getEntitiesOfClass(Villager.class, helper.getBounds().inflate(48))) {
+			e.discard();
+		}
+		helper.setBlock(STATION, fossilAnalyzer());
+		Villager scientist = helper.spawn(EntityType.VILLAGER, STANDING);
+		ServerPlayer player = helper.makeMockServerPlayerInLevel();
+		player.setGameMode(GameType.SURVIVAL);
+		sneakClick(player, scientist, new ItemStack(cobblemon("dome_fossil")));
+		helper.assertTrue(scientist.getVillagerData().getProfession() == ModVillagers.FOSSIL_SCIENTIST, "setup: not a scientist");
+		helper.getLevel().destroyBlock(helper.absolutePos(STATION), true);
+		BlockPos post = new BlockPos(8, 2, 8);
+		helper.setBlock(post, ModBlocks.TRAINING_POST);
+		helper.runAfterDelay(500, () -> {
+			helper.assertFalse(site(scientist).equals(Optional.of(helper.absolutePos(post))),
+				"a Fossil Scientist with no analyzer took a free Training Post as their workstation");
+			helper.succeed();
+		});
+	}
 }

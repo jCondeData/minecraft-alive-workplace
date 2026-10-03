@@ -583,9 +583,9 @@ public final class ModVillagers {
 		AliveWorkplace.id("fossil_scientist"),
 		new VillagerProfession(
 			"fossil_scientist",
-			// (the Fossil Lab and the Training Post are where they worked before 21.1c: the ones already there stay)
+			// They keep a Fossil Lab or Training Post they worked at before 21.1c, but only ever take a new Fossil Analyzer.
 			holder -> holder.is(FOSSIL_ANALYZER_POI) || holder.is(FOSSIL_LAB_POI) || holder.is(TRAINING_POST_POI),
-			holder -> holder.is(FOSSIL_ANALYZER_POI) || holder.is(FOSSIL_LAB_POI) || holder.is(TRAINING_POST_POI),
+			holder -> holder.is(FOSSIL_ANALYZER_POI),
 			ImmutableSet.of(),
 			ImmutableSet.of(),
 			SoundEvents.BREWING_STAND_BREW

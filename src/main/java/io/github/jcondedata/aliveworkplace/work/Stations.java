@@ -334,6 +334,7 @@ public final class Stations {
 		}
 		villager.getBrain().eraseMemory(MemoryModuleType.POTENTIAL_JOB_SITE);
 		villager.getBrain().setMemory(MemoryModuleType.JOB_SITE, target);
+		JobSiteTickets.hold(level, villager);
 		villager.setVillagerData(villager.getVillagerData().setProfession(profession));
 		if (villager.getVillagerXp() == 0) {
 			villager.setVillagerXp(1); // keeps the profession even if the block is briefly missing
@@ -345,13 +346,14 @@ public final class Stations {
 	 * Lets go of {@code villager}'s old job site {@code old}, if it's still theirs. A block broken while its worker was far
 	 * away leaves their memory of it behind: with no block there's no record to release (releasing would throw "POI never
 	 * registered"), and a block of the same kind put back since may have been taken by another villager, whose place
-	 * releasing it would free (bug B8).
+	 * releasing it would free (bug B8), even when that villager's chunk is unloaded (bug B15).
 	 */
 	public static void releaseOld(ServerLevel level, Villager villager, GlobalPos old) {
 		if (!old.dimension().equals(level.dimension()) || level.getPoiManager().getType(old.pos()).isEmpty()) {
 			return;
 		}
-		if (!someoneElseWorksAt(level, villager, old)) {
+		// (a villager in an unloaded chunk may hold it, where nothing can see them: the break count says (bug B15))
+		if (JobSiteTickets.theirs(level, villager, old).orElse(true) && !someoneElseWorksAt(level, villager, old)) {
 			level.getPoiManager().release(old.pos());
 		}
 	}

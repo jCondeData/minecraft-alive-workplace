@@ -65,9 +65,12 @@ mkdir -p build; nohup sh -c 'python3 tools/agent/sessions.py land <id> --as <you
   > build/land.log 2>&1 &
 ```
 
-Then `tail -5 build/land.log` every minute or so until it prints `land exit`, and start on the next item meanwhile
-(reading code, planning; not a second Gradle run). It finds Java in `~/.local/jdk-25` by itself; if yours is
-elsewhere, put the `export JAVA_HOME=…` line from CLAUDE.md in front.
+Start on the next item meanwhile (reading code, planning; not a second Gradle run), and look at `tail -5
+build/land.log` between those steps. When there's nothing left to do but wait, wait in one command instead of checking
+every minute, because every check re-reads the whole conversation and costs as much as a real step:
+`timeout 540 sh -c 'until grep -q "land exit" build/land.log; do sleep 20; done'; tail -5 build/land.log` (the same
+for a long `runGameTest` or screenshot run). It finds Java in `~/.local/jdk-25` by itself; if yours is elsewhere, put
+the `export JAVA_HOME=…` line from CLAUDE.md in front.
 
 ## A build lane's run
 

@@ -6,6 +6,8 @@
 - Giving a worker a new job (with an item or from the Village Hall) no longer frees another villager's workstation,
   when the worker's old one was broken while they were away and put back for someone else; and a far-off worker who
   still remembers that block isn't sent back to it.
+- A lumberjack whose felled tree dropped no sapling (always with a Silk Touch axe) now replants that stump as soon as a
+  sapling of its kind is in the chests, instead of forgetting it.
 - Zombie villagers in abandoned desert villages no longer get stuck in a house's wall (the same narrow corridor that
   trapped living villagers before 0.138.0).
 

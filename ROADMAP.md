@@ -424,7 +424,7 @@ about 12% of that. For villager mods, the cost is pathfinding to distant points 
   - client = required, server = required.
 
   Done when: the kit is in a review package, as it would look on each site.
-  - [ ] **26.2a** (claimed: chat, 2026-10-03 04:04Z) Change from the owner (2026-10-03): an In-Game Guidebook (owner 2026-10-02: 'impliment an In-Game Guidebook: Illustrated, easy-to-follow instructions. use in game screenshots so you dont illustrate. this book should make it easy for players do understand whats happening')
+  - [x] **26.2a** (review: pending 2026-10-03) Change from the owner (2026-10-03): an In-Game Guidebook (owner 2026-10-02: 'impliment an In-Game Guidebook: Illustrated, easy-to-follow instructions. use in game screenshots so you dont illustrate. this book should make it easy for players do understand whats happening')
     **Built** (chat, 2026-10-02): a Guide Book item (`guide/GuideBookItem`, screen `client/guide/GuideScreen`), 35
     pages in 7 chapters (the Pokémon chapter only with Cobblemon), each a screenshot from the screenshot scenes
     (`tools/guide/pages.py` picks the still and crop; `tools/guide/build.py` makes the 384 x 216 pictures) with a title

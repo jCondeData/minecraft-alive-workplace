@@ -64,8 +64,10 @@ and never do work twice, but never thin the content either.
 unpushed, and write `sessions.py handoff "<in progress, next, traps>" --as <you>`. When compacting, keep the modified
 files, the current item and its Done when, and the test commands.
 
-**Usage**: subagents for searching or reading code get `model: "sonnet"`; the session's own model does the building.
-Don't print whole big files or logs; grep them.
+**Usage**: every step re-reads the whole conversation (well over 100k tokens), so the number of steps is what a run
+costs. Put independent commands and file reads in one step, wait for a build in one command rather than checking every
+minute (`docs/agent/sessions.md`), and don't print whole big files or logs; grep them. Subagents for searching or
+reading code get `model: "sonnet"`; the session's own model does the building.
 
 ## Reporting to the owner
 

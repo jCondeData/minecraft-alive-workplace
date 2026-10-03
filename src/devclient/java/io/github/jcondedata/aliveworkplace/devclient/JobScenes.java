@@ -575,7 +575,9 @@ final class JobScenes {
 			return l -> io.github.jcondedata.aliveworkplace.bard.BardWork.playing(b).isPresent();
 		}));
 		SCENES.put("fossil", job("the fossil scientist revived a Kabuto from the Dome Fossil", 2400, (level, player) -> {
-			Villager sci = picked(level, player, STATION, ModBlocks.TRAINING_POST, cobblemonItem("dome_fossil"));
+			// at Cobblemon's Fossil Analyzer, the job's workstation since ROADMAP 21.1c
+			Villager sci = picked(level, player, STATION, net.minecraft.core.registries.BuiltInRegistries.BLOCK.get(
+				io.github.jcondedata.aliveworkplace.registry.ModVillagers.FOSSIL_ANALYZER_BLOCK), cobblemonItem("dome_fossil"));
 			chest(level, chestPos());
 			io.github.jcondedata.aliveworkplace.fossil.FossilScientists.REVIVE_TICKS = 300;
 			player.setGameMode(net.minecraft.world.level.GameType.SURVIVAL);

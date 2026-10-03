@@ -52,7 +52,7 @@ public final class StarterBlueprints {
 	public static final Entry BERRY_FARM = new Entry(AliveWorkplace.id("berry_farm"), new Vec3i(11, 5, 9));
 	/** A pergola behind it, glow berries hanging from its roof. */
 	public static final Entry BERRY_FARM_2 = new Entry(AliveWorkplace.id("berry_farm_2"), new Vec3i(11, 6, 15));
-	/** A stone lab with a Fossil Lab: a fossil scientist moves in. */
+	/** A stone lab with Cobblemon's Fossil Analyzer: a fossil scientist works there. */
 	public static final Entry RESEARCH_LAB = new Entry(AliveWorkplace.id("research_lab"), new Vec3i(11, 9, 11));
 	/** A museum hall beside it with a big skeleton on show. */
 	public static final Entry RESEARCH_LAB_2 = new Entry(AliveWorkplace.id("research_lab_2"), new Vec3i(18, 10, 11));

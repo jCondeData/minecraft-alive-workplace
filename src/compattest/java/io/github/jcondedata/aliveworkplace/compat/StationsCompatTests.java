@@ -1,6 +1,7 @@
 package io.github.jcondedata.aliveworkplace.compat;
 
 import io.github.jcondedata.aliveworkplace.registry.ModBlocks;
+import io.github.jcondedata.aliveworkplace.work.Stations;
 import io.github.jcondedata.aliveworkplace.registry.ModVillagers;
 import java.util.List;
 import java.util.Optional;
@@ -27,8 +28,9 @@ import net.minecraft.world.phys.Vec3;
 
 /**
  * ROADMAP 21.1a with Cobblemon installed: the plan's Pokémon jobs start at their shared block with their item (a Ball Smith
- * at a smithing table with an apricorn, a Pokémon Trader at a Shop Counter with a Poké Ball, a Fossil Scientist at a
- * Training Post with a fossil), and the Training Post's own job, the Trainer, takes a jobless villager by itself.
+ * at a smithing table with an apricorn, a Pokémon Trader at a Shop Counter with a Poké Ball, and since 21.1c a Fossil
+ * Scientist at Cobblemon's Fossil Analyzer with a fossil), and the Training Post's own job, the Trainer, takes a jobless
+ * villager by itself.
  */
 public class StationsCompatTests implements FabricGameTest {
 	private static final String AREA = CompatGameTests.AREA;
@@ -64,6 +66,48 @@ public class StationsCompatTests implements FabricGameTest {
 	private record Row(Block block, Item item, VillagerProfession job) {
 	}
 
+	static Block fossilAnalyzer() {
+		Block block = BuiltInRegistries.BLOCK.get(ModVillagers.FOSSIL_ANALYZER_BLOCK);
+		if (block == Blocks.AIR) {
+			throw new net.minecraft.gametest.framework.GameTestAssertException("no " + ModVillagers.FOSSIL_ANALYZER_BLOCK);
+		}
+		return block;
+	}
+
+	/**
+	 * The owner's 21.1c: the Fossil Scientist works at Cobblemon's Fossil Analyzer, the block of its revival machine, not
+	 * a block of ours. A fossil by a Training Post no longer makes one (it says the job needs a Fossil Analyzer), and a
+	 * jobless villager by an analyzer doesn't take it by themselves: only a fossil gives the job.
+	 */
+	//$ gametest_ticks_batch AREA '400' '"theFossilScientistWorksAtTheFossilAnalyzer"'
+	@GameTest(template = AREA, timeoutTicks = 400, batch = "theFossilScientistWorksAtTheFossilAnalyzer")
+	public void theFossilScientistWorksAtTheFossilAnalyzer(GameTestHelper helper) {
+		ServerPlayer player = helper.makeMockServerPlayerInLevel();
+		player.setGameMode(GameType.SURVIVAL);
+		helper.setBlock(STATION, ModBlocks.TRAINING_POST);
+		Villager atPost = helper.spawn(EntityType.VILLAGER, STANDING);
+		sneakClick(player, atPost, new ItemStack(cobblemon("dome_fossil")));
+		helper.assertTrue(atPost.getVillagerData().getProfession() == VillagerProfession.NONE,
+			"a fossil at a Training Post gave " + name(atPost.getVillagerData().getProfession()));
+		atPost.discard();
+		helper.setBlock(STATION, Blocks.AIR);
+		BlockPos analyzer = new BlockPos(12, 2, 12);
+		helper.setBlock(analyzer, fossilAnalyzer());
+		helper.assertTrue(Stations.at(fossilAnalyzer()).map(s -> !s.byItself() && s.has(ModVillagers.FOSSIL_SCIENTIST)).orElse(false),
+			"the Fossil Analyzer isn't the Fossil Scientist's station (only by item)");
+		// Scientists who worked at a Fossil Lab or a Training Post before 21.1c (the owner's server) keep working there.
+		var pois = helper.getLevel().registryAccess().registryOrThrow(net.minecraft.core.registries.Registries.POINT_OF_INTEREST_TYPE);
+		for (var old : List.of(ModVillagers.FOSSIL_LAB_POI, ModVillagers.TRAINING_POST_POI)) {
+			helper.assertTrue(ModVillagers.FOSSIL_SCIENTIST.heldJobSite().test(pois.getHolderOrThrow(old)), "a scientist loses their " + old.location());
+		}
+		Villager jobless = helper.spawn(EntityType.VILLAGER, new BlockPos(13, 2, 13));
+		helper.runAfterDelay(300, () -> {
+			helper.assertTrue(jobless.getVillagerData().getProfession() == VillagerProfession.NONE && site(jobless).isEmpty(),
+				"a jobless villager took the Fossil Analyzer by themselves: " + name(jobless.getVillagerData().getProfession()));
+			helper.succeed();
+		});
+	}
+
 	/** Each Pokémon job of the plan: a jobless villager by the block, sneak-right-clicked with the item, takes it there. */
 	//$ gametest AREA
 	@GameTest(template = AREA)
@@ -73,7 +117,7 @@ public class StationsCompatTests implements FabricGameTest {
 		List<Row> rows = List.of(
 			new Row(Blocks.SMITHING_TABLE, cobblemon("red_apricorn"), ModVillagers.BALL_SMITH),
 			new Row(ModBlocks.SHOP_COUNTER, cobblemon("poke_ball"), ModVillagers.POKEMON_TRADER),
-			new Row(ModBlocks.TRAINING_POST, cobblemon("dome_fossil"), ModVillagers.FOSSIL_SCIENTIST),
+			new Row(fossilAnalyzer(), cobblemon("dome_fossil"), ModVillagers.FOSSIL_SCIENTIST),
 			new Row(ModBlocks.TRAINING_POST, net.minecraft.world.item.Items.GOLD_BLOCK, ModVillagers.TRAINER_LEADER),
 			new Row(ModBlocks.TRAINING_POST, net.minecraft.world.item.Items.BOOK, ModVillagers.TUTOR));
 		for (Row row : rows) {

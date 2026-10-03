@@ -58,8 +58,19 @@ public final class Stations {
 	public record Job(Supplier<VillagerProfession> profession, Predicate<ItemStack> item) {
 	}
 
-	/** A kind of workstation: its points of interest, a block to name it by, and the jobs that share it. */
-	public record Station(Predicate<Holder<PoiType>> poi, Block block, List<Job> jobs) {
+	/**
+	 * A kind of workstation: its points of interest, a block to name it by (another mod's is looked up when asked: air
+	 * when that mod isn't installed), and the jobs that share it.
+	 */
+	public record Station(Predicate<Holder<PoiType>> poi, Supplier<Block> blockRef, List<Job> jobs) {
+		Station(Predicate<Holder<PoiType>> poi, Block block, List<Job> jobs) {
+			this(poi, () -> block, jobs);
+		}
+
+		public Block block() {
+			return blockRef.get();
+		}
+
 		/** The job at this station that {@code stack} picks. */
 		public Optional<Job> jobFor(ItemStack stack) {
 			return jobs.stream().filter(j -> j.item().test(stack)).findFirst();
@@ -71,11 +82,12 @@ public final class Stations {
 
 		/** Whether a jobless villager takes this block by themselves (for its first job); if not, only an item gives a job. */
 		public boolean byItself() {
-			return !ONLY_BY_ITEM.contains(block);
+			return !ONLY_BY_ITEM.contains(block()) && !block().builtInRegistryHolder().is(ModVillagers.FOSSIL_ANALYZER_BLOCK);
 		}
 	}
 
-	/** Blocks no job takes by itself: a crafting table, a beehive (or nest), a jukebox, a mailbox. */
+	/** Blocks no job takes by itself: a crafting table, a beehive (or nest), a jukebox, a mailbox (and Cobblemon's Fossil
+	 * Analyzer). */
 	private static final Set<Block> ONLY_BY_ITEM = Set.of(Blocks.CRAFTING_TABLE, Blocks.BEEHIVE, Blocks.JUKEBOX, ModBlocks.MAILBOX);
 	/** The jobs that need Cobblemon (their items are Cobblemon's, or they work with Pokémon). */
 	private static final Set<String> COBBLEMON_JOBS = Set.of("ball_smith", "pokemon_trader", "trainer", "trainer_leader", "tutor",
@@ -168,7 +180,10 @@ public final class Stations {
 		new Station(is(ModVillagers.TRAINING_POST_POI), ModBlocks.TRAINING_POST, List.of(
 			job(() -> ModVillagers.TRAINER, cobblemon(p -> p.equals("poke_ball"))),
 			job(() -> ModVillagers.TRAINER_LEADER, any(Items.GOLD_BLOCK)),
-			job(() -> ModVillagers.TUTOR, any(Items.BOOK)),
+			job(() -> ModVillagers.TUTOR, any(Items.BOOK)))),
+		// Cobblemon's Fossil Analyzer (the owner, ROADMAP 21.1c: the block of its own revival machine, not one of ours)
+		new Station(is(ModVillagers.FOSSIL_ANALYZER_POI),
+			() -> BuiltInRegistries.BLOCK.getOptional(ModVillagers.FOSSIL_ANALYZER_BLOCK).orElse(Blocks.AIR), List.of(
 			job(() -> ModVillagers.FOSSIL_SCIENTIST, FossilScientists::isFossil)))
 	);
 

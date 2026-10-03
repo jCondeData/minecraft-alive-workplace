@@ -60,7 +60,11 @@ public class VillageGameTests implements FabricGameTest {
 	}
 
 	/** A house, its job block, and the job its villager comes with (null: a jobless one, who takes the block's own job). */
-	private record House(net.minecraft.world.level.block.Block block, VillagerProfession job) {
+	/** A house's job block (or, for another mod's block, its id: {@code block} is null) and its villager's job. */
+	private record House(net.minecraft.world.level.block.Block block, VillagerProfession job, net.minecraft.resources.ResourceLocation modBlock) {
+		House(net.minecraft.world.level.block.Block block, VillagerProfession job) {
+			this(block, job, null);
+		}
 	}
 
 	/**
@@ -87,7 +91,8 @@ public class VillageGameTests implements FabricGameTest {
 			java.util.Map.entry("storehouse", new House(ModBlocks.STOREHOUSE, null)),
 			java.util.Map.entry("carpenters_workshop", new House(Blocks.CRAFTING_TABLE, ModVillagers.CARPENTER)),
 			java.util.Map.entry("kitchen", new House(Blocks.SMOKER, ModVillagers.CHEF)),
-			java.util.Map.entry("fossil_lab", new House(ModBlocks.TRAINING_POST, ModVillagers.FOSSIL_SCIENTIST)),
+			// Cobblemon's Fossil Analyzer (ROADMAP 21.1c); the house only grows with Cobblemon, so here it's checked by name
+			java.util.Map.entry("fossil_lab", new House(null, ModVillagers.FOSSIL_SCIENTIST, ModVillagers.FOSSIL_ANALYZER_BLOCK)),
 			java.util.Map.entry("flower_shop", new House(Blocks.COMPOSTER, ModVillagers.FLORIST)),
 			java.util.Map.entry("ranch_house", new House(Blocks.SMOKER, ModVillagers.RANCHER)),
 			java.util.Map.entry("schoolhouse", new House(Blocks.LECTERN, ModVillagers.TEACHER)),
@@ -110,11 +115,19 @@ public class VillageGameTests implements FabricGameTest {
 					style + " villages " + (listed ? "grow" : "can't grow") + " a " + house.getKey());
 				StructureTemplate template = level.getStructureManager().get(id)
 					.orElseThrow(() -> new net.minecraft.gametest.framework.GameTestAssertException("missing " + id));
-				helper.assertTrue(template.filterBlocks(BlockPos.ZERO, new StructurePlaceSettings(), house.getValue().block()).size() == 1,
-					id + " should have one " + house.getValue().block().getName().getString());
-				// Exactly one job block, so its villager isn't joined by another for a second block's vanilla job.
+				var modBlock = house.getValue().modBlock();
+				if (modBlock == null) {
+					helper.assertTrue(template.filterBlocks(BlockPos.ZERO, new StructurePlaceSettings(), house.getValue().block()).size() == 1,
+						id + " should have one " + house.getValue().block().getName().getString());
+				} else {
+					long found = named(level, id, modBlock);
+					helper.assertTrue(found == 1, id + " should have one " + modBlock + ", not " + found);
+				}
+				// Exactly one job block, so its villager isn't joined by another for a second block's vanilla job (another
+				// mod's block is no job block while that mod is missing, as here).
 				long jobSites = jobSites(template);
-				helper.assertTrue(jobSites == 1, id + " has " + jobSites + " job blocks");
+				long expected = modBlock == null || net.minecraft.core.registries.BuiltInRegistries.BLOCK.containsKey(modBlock) ? 1 : 0;
+				helper.assertTrue(jobSites == expected, id + " has " + jobSites + " job blocks");
 				net.minecraft.nbt.CompoundTag saved = template.save(new net.minecraft.nbt.CompoundTag());
 				net.minecraft.nbt.ListTag entities = saved.getList("entities", net.minecraft.nbt.Tag.TAG_COMPOUND);
 				boolean spawn = template.filterBlocks(BlockPos.ZERO, new StructurePlaceSettings(), Blocks.JIGSAW).stream()
@@ -129,6 +142,29 @@ public class VillageGameTests implements FabricGameTest {
 			}
 		}
 		helper.succeed();
+	}
+
+	/**
+	 * How many blocks named {@code block} the template {@code id} has, read from its file: a block of a mod that isn't
+	 * installed loads as air, so the loaded template no longer knows its name.
+	 */
+	private static long named(ServerLevel level, net.minecraft.resources.ResourceLocation id, net.minecraft.resources.ResourceLocation block) {
+		var file = net.minecraft.resources.ResourceLocation.fromNamespaceAndPath(id.getNamespace(), "structure/" + id.getPath() + ".nbt");
+		net.minecraft.nbt.CompoundTag tag;
+		try (var in = level.getServer().getResourceManager().getResourceOrThrow(file).open()) {
+			tag = net.minecraft.nbt.NbtIo.readCompressed(in, net.minecraft.nbt.NbtAccounter.unlimitedHeap());
+		} catch (java.io.IOException e) {
+			throw new net.minecraft.gametest.framework.GameTestAssertException("can't read " + file + ": " + e);
+		}
+		net.minecraft.nbt.ListTag palette = tag.getList("palette", net.minecraft.nbt.Tag.TAG_COMPOUND);
+		net.minecraft.nbt.ListTag blocks = tag.getList("blocks", net.minecraft.nbt.Tag.TAG_COMPOUND);
+		long count = 0;
+		for (int i = 0; i < blocks.size(); i++) {
+			if (palette.getCompound(blocks.getCompound(i).getInt("state")).getString("Name").equals(block.toString())) {
+				count++;
+			}
+		}
+		return count;
 	}
 
 	/** Job-site blocks (ours and vanilla's: any job's workstation) in a template. */

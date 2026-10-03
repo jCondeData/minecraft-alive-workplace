@@ -273,8 +273,9 @@ def kitchen(b, style):
 
 
 def fossil_lab(b, style):
-    """The fossil scientist's Training Post, a shelf of books and a glass case: they revive fossils here (with Cobblemon)."""
-    b.set(1, 1, 6, "aliveworkplace:training_post", facing="east")
+    """The fossil scientist's Fossil Analyzer (Cobblemon's: these houses only grow with Cobblemon, ROADMAP 21.1c), a shelf
+    of books and a glass case: they revive fossils here."""
+    b.set(1, 1, 6, "cobblemon:fossil_analyzer", facing="east", on=False)
     b.set(1, 1, 5, "bookshelf")
     b.set(1, 1, 3, "glass")
     b.set(1, 2, 3, "bone_block", axis="y")

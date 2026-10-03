@@ -502,8 +502,36 @@ def settlers_wagon():
     return [s.save(item("settlers_wagon"))]
 
 
+def guide_book():
+    """The Guide Book (ROADMAP 26.2a): vanilla's book, on its exact outline, pages and shading, bound in blueprint blue
+    with a gold house stamped on the cover (in place of vanilla's tooled lines), so it reads as a book and as this
+    mod's."""
+    s = grid("""
+        ................
+        ........aaa.....
+        ......aabcda....
+        ....aabccccca...
+        ..aabccccYccca..
+        aabdccccYYYccda.
+        abdcccccYyYcccea
+        aabccccccccceef.
+        aagbcccccceehgh.
+        ibjgbdcceehgghae
+        .ibjgbeehgghaeii
+        ..ibjghgghaeii..
+        ...ibjgheeii....
+        ....ibeeii......
+        .....iii........
+        ................
+    """, {"a": "#13254a", "i": "#0a1428",                          # outline: navy, darkest underneath
+          "b": BLUE[0], "d": BLUE[1], "c": BLUE[2], "e": BLUE.outline_light,   # the cover, shaded as vanilla's
+          "Y": GOLD[3], "y": GOLD[1],                              # the gold house and its door
+          "f": "#5b5b5b", "g": "#b7b7b7", "h": "#999999", "j": "#d6d6d6"})     # the pages (vanilla's greys)
+    return [s.save(item("guide_book"))]
+
+
 DRAW = [blank_blueprint, blueprint, shape_planner, patrol_map, delivery_note, travel_ticket, price_tag,
-        village_ledger, field_marker, quarry_marker, rally_banner, scan_tool, settlers_wagon]
+        village_ledger, field_marker, quarry_marker, rally_banner, scan_tool, settlers_wagon, guide_book]
 
 if __name__ == "__main__":
     run(DRAW)

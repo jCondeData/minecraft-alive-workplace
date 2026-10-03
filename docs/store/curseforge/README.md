@@ -53,8 +53,9 @@ python3 -c "from PIL import Image; Image.open('src/main/resources/assets/alivewo
    text. Which do you prefer?
 3. **The icon.** Use the clipboard icon as it is (scaled up as above), or would you like a new one drawn for the store?
 4. **The Guide Book line.** Step 1 of "Getting started" in `description.md` describes the Guide Book every player
-   gets on first join, which comes in the next version. If the page goes live before that version, delete that one
-   line.
+   gets on first join, which comes in the next version (landed on main 2026-10-03, not in 0.138.0), as does "The
+   recipes are in the recipe book" (0.138.0's recipes never showed there). If the page goes live with 0.138.0, delete
+   those two lines; from the next version on they're true.
 5. **Release type.** Beta (as on GitHub) or Release?
 
 ## Good to know

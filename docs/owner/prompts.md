@@ -16,7 +16,7 @@ because instructions that only live in a chat are lost when it starts fresh or c
 7. Cut a release
 8. Health check
 9. When the chat gets slow or confused
-10. The night shift (scheduled runs)
+10. Lanes around the clock (scheduled tasks)
 11. Decisions waiting for you
 12. What makes Claude work best
 13. Appendix: question for Modrinth
@@ -126,47 +126,83 @@ You're continuing work on Alive Workplace (github.com/jCondeData/minecraft-alive
 then follow its session loop as "chat". The latest handoffs are under "Notes / blocked" in ROADMAP.md.
 ```
 
-## 10. The night shift (scheduled runs)
+## 10. Lanes around the clock (scheduled tasks)
 
-**Yes, the night runs and your chat can work at the same time.** Each item is claimed first, and git refuses the
-second of two simultaneous claims, so nothing is done twice. Two sessions never work in the same milestone at once,
-so they don't edit the same code. Each works on its own branch and only lands on `main` after merging the newest
-`main` in and building green, so `main` never breaks. A run that gets cut off loses nothing it pushed: the next one
-continues from its branch. `docs/agent/sessions.md` has the details.
+Since 2026-10-03 the work runs around the clock in parallel lanes, each a scheduled task that starts a fresh run
+every hour (`docs/agent/sessions.md` has how they share the work):
 
-**The schedule.** The scheduled task "Alive Workplace nightly build" runs three times a night, at 1:45, 3:45 and
-5:45 AM Central (`CRON_TZ=America/Chicago 45 1,3,5 * * *`), with the prompt below. A run has stopped at exactly 60
-minutes before, so each is planned as about an hour. Each run uses your plan's usage like a chat would: if you run
-short during the day, drop to one or two runs; if you have room, add 11:45 PM. The GitHub test workflow runs at
-about 10 PM on GitHub's machines, free, so the night runs start from fresh results.
+| Scheduled task | When | Does |
+| --- | --- | --- |
+| Alive Workplace lane A, B, C | every hour | build roadmap items back to back |
+| Alive Workplace QA lane | every hour | tests what the lanes landed; turns problems into bugs |
+| Alive Workplace digest | 7:52 AM and 5:52 PM | sends you the review packages and a short report; records your replies |
 
-To change it, tell any chat with the scheduled-task tools (the planning chat has them): "Update the scheduled task
-Alive Workplace nightly build: <new times or prompt>."
+Reply to packages in the digest session (or any chat with the repo). Every run uses your plan's usage like a chat
+would. If you hit your limits, ask any chat with the scheduled-task tools to "pause lane C" (or B), or to add a
+lane D if you have room. The old "Alive Workplace nightly build" task is switched off.
+
+The build lane prompt (LETTER = a, b, c):
 
 ```
-Night run for Alive Workplace, Jesse's Minecraft mod (Fabric 1.21.1, for his Cobbleverse friends server). Jesse is
-asleep and has given you full control: work on your own, don't wait for him, and leave the project better and green.
+Build lane LETTER for Alive Workplace, Jesse's Minecraft mod (Fabric 1.21.1, for his Cobbleverse friends server). The
+goal is every expansion released by 2026-10-17, built around the clock by several lanes like you, without ever
+thinning the content. Jesse has given you full control: work on your own and don't wait for him.
 
 1. Call add_repo with owner "jCondeData", repo "minecraft-alive-workplace", access "push", and clone it as that tool
-   says. Run `date -u +%m%d-%H%M` and call yourself night-<that>.
-2. Read CLAUDE.md, then "The night shift" in docs/agent/sessions.md, and follow them. Jesse's chat or another night
-   run may be working at the same time: use tools/agent/sessions.py for every claim, landing and roadmap change,
+   says. Run `date -u +%m%d-%H%M` and call yourself lane-LETTER-<that>.
+2. Read CLAUDE.md, then "A build lane's run" in docs/agent/sessions.md, and follow them. Other lanes and Jesse's chat
+   work at the same time: use tools/agent/sessions.py for every claim, landing, review package and roadmap change,
    and never push code straight to main.
-3. You can be cut off at any time: push your branch at least every 30 minutes, and wrap up after about 45 minutes.
+3. Build items back to back as `sessions.py status` names them. Push your branch at least every 30 minutes. Wrap up
+   about 50 minutes after you started (land what's green, pause what isn't, write the handoff): the next run of your
+   lane starts on the hour and continues from there.
 4. Never publish to Modrinth or CurseForge, change the license, bump the version, force-push, or delete anything on
    GitHub other than your own item branch.
-5. Jesse judges looks from screenshots and behaviour from GIFs. Send each review package (SendUserFile) as soon as
-   its item lands, not at the end. Work with nothing to see lands with --no-review and gets one line in your last
-   message.
-6. End with the short morning message docs/agent/sessions.md describes.
+5. Don't message Jesse: review packages go through `sessions.py review`, and a digest sends them. End the run with a
+   two-line summary (what landed, what's next).
+```
+
+The QA lane prompt:
+
+```
+QA lane for Alive Workplace, Jesse's Minecraft mod (Fabric 1.21.1, for his Cobbleverse friends server). Several build
+lanes land features around the clock to release every expansion by 2026-10-17; you are the independent tester who
+makes sure what they land works. Jesse has given you full control: work on your own and don't wait for him.
+
+1. Call add_repo with owner "jCondeData", repo "minecraft-alive-workplace", access "push", and clone it as that tool
+   says. Run `date -u +%m%d-%H%M` and call yourself qa-<that>.
+2. Read CLAUDE.md, then "The QA lane" in docs/agent/sessions.md, and follow it with the minecraft-mod-tester skill.
+   Test from each item's spec (`sessions.py show <id>`), not from its code. Never change mod code: problems become
+   bugs with failing tests on a tests/ branch; passing tests reach main only through `sessions.py ship`.
+3. Push your branch at least every 30 minutes. Wrap up about 50 minutes after you started (ship what passes, verify
+   what you finished, write the handoff): the next QA run starts on the hour.
+4. Never publish, change the license, bump the version, force-push, or delete anything on GitHub other than your own
+   branches.
+5. Don't message Jesse; the digest reports your findings. End the run with a two-line summary (verified, bugs found).
+```
+
+The digest prompt:
+
+```
+Digest for Jesse, the owner of Alive Workplace (his Minecraft mod; Fabric 1.21.1, for his Cobbleverse friends
+server). Build lanes and a QA lane work on it around the clock; this session is where he sees their work and answers.
+He doesn't write code, reads this on his phone, and wants to be hands-off: lead with what he can see in game.
+
+1. Call add_repo with owner "jCondeData", repo "minecraft-alive-workplace", access "push", and clone it as that tool
+   says. Run `date -u +%m%d-%H%M` and call yourself digest-<that>.
+2. Read "Review packages and the digests" in docs/agent/sessions.md and follow it: send every review package not yet
+   sent from the `reviews` branch (SendUserFile, one message per package with its message), then one short report
+   in plain language: what landed since the last digest (one line each), what the QA lane verified and found, the
+   lanes' health, releases, and only the decisions that are his. Mark the packages sent.
+3. Stay for his replies and record each one with `python3 tools/agent/sessions.py reply "<his words>" --as <you>`.
+   Release only when he says `release`, after the QA lane's release check (CLAUDE.md "Releasing").
+4. Never publish to Modrinth or CurseForge, change the license, force-push, or delete anything on GitHub.
 ```
 
 ## 11. Decisions waiting for you
 
 The chat will ask for these when it reaches them. You can answer early:
 
-- **Camels** (21.3): the game counts a saddled camel as a horse, so guards ride camels too, but the changelog only
-  promises horses, donkeys and mules. Keep camels, or leave them out?
 - **Release channel** (26.1): see the appendix. Worth deciding early, because it changes whether 23.9 (your own
   signature builds) matters.
 - **Far from players** (23.6): does a village keep working when no player is nearby (it keeps its chunks loaded), or

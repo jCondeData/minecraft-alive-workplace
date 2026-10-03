@@ -29,8 +29,8 @@ next message, with the numbers if there are any.
    fixed behaviour. This is how he checks that it works, so it must show the whole thing happening, start to end.
    - The screenshot harness saves `frame_*.png` every 30 ticks; `tools/screenshots/make_gif.py out.gif --crop … --width
      640` stitches them (only the default builders scene does this by itself).
-   - Keep it under about 15 MB and 30 seconds so it plays on his phone. For anything longer, also make an MP4:
-     `ffmpeg -framerate 14 -pattern_type glob -i 'frame_*.png' -vf scale=960:-2 -pix_fmt yuv420p clip.mp4`.
+   - Hand it in as an MP4, which stays small and plays on his phone (under 30 seconds):
+     `ffmpeg -framerate 14 -pattern_type glob -i 'frame_*.png' -vf scale=640:-2 -pix_fmt yuv420p clip.mp4`.
    - Stills alone are enough only for things that don't move (a texture, a screen's layout).
 3. **The message**, short and in this shape:
 
@@ -65,13 +65,12 @@ numbers (tick times, memory), with a chart if it helps, in the same message shap
 
 ## Sending it
 
-- Send the sheet (and the GIF) to the owner in the chat, with the file-sending tool the chat has (SendUserFile), and
-  put the message in the same turn.
-- If the chat can't send files, push the package to the `review` branch under `review/<item>/` and put the
-  GitHub link in the message.
-- One package per item, right after `sessions.py land` (which ticks it `(review: pending)`). Don't batch them at the
-  end of a session: a night run can be cut off before its last message, and he may review from his phone hours
-  later.
+- **Lanes** hand the package in with `sessions.py review <id> sheet.jpg clip.mp4 --as <you> --message "<the
+  message>"` right after `land`. The next digest (8 AM and 6 PM Central) sends it to him (`docs/agent/sessions.md`).
+  Each file under 8 MB: a JPEG sheet (`--out …/sheet.jpg`) and a 640-wide MP4 of the motion.
+- **The owner's chat** sends its packages to him directly (SendUserFile), with the message in the same turn.
+- One package per item, right after `sessions.py land` (which ticks it `(review: pending)`), never batched at the end
+  of a run: a run can be cut off before it ends.
 - If an item is pending review and no package for it reached him (a run was cut off; the `Mark <id> built` commit
   names the session), make the package again from its scene and send it.
 

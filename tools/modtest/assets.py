@@ -108,6 +108,8 @@ def drift():
             elif ours.read_bytes() != (Path(tmp) / rel).read_bytes():
                 fail(f"{rel} differs from what its recipe draws (edited by hand, or the recipe changed without regenerating)")
         for rel in sorted(shipped - made):
+            if rel.parts[:3] == ("textures", "gui", "guide"):
+                continue  # the Guide Book's screenshots: made by tools/guide/build.py from the screenshot scenes
             fail(f"{rel} is shipped but no recipe in tools/textures/art draws it")
     print(f"drift: generate.py drew {len(made)} files, the mod ships {len(shipped)}")
 

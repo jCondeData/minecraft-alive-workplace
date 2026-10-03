@@ -11,6 +11,8 @@
 ### Fixed
 - With Cobblemon, a herder no longer stands waiting under a pastured Pokémon that's flying about: they get on with
   other work and brush or milk it once it has come down.
+- Miners, postmen, tutors, Pokémon traders and trainers keep their workstation too: after a minute stuck, or over 100
+  blocks from it, they gave it up and could take another worker's.
 - A builder keeps their own bench. A builder who got stuck for a minute, or wandered over 100 blocks from their bench,
   gave it up and took the nearest free one, often another builder's, so two builders could swap benches over and over.
 - A builder always takes its materials from the chests by the bench its build was started from. Two builders with

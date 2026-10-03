@@ -843,6 +843,7 @@ final class JobScenes {
 						}
 					}
 					Showcase.check(player.getMainHandItem().is(Items.FILLED_MAP), "the hall's MAP button handed over a village map");
+					player.teleportTo(level, player.getX(), player.getY(), player.getZ(), player.getYRot(), 70f); // (look down at it)
 				}, 30),
 				new Step("04_hall_mercenaries", io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.MERCENARIES, 6, (level, player) ->
 					io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.open(player, STATION), 30),

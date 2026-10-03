@@ -57,6 +57,7 @@
 			"io.github.jcondedata.aliveworkplace.test.SavedDataGameTests",
 			"io.github.jcondedata.aliveworkplace.test.BuildSiteSaveGameTests",
 			"io.github.jcondedata.aliveworkplace.test.BuildSiteStepsGameTests",
+			"io.github.jcondedata.aliveworkplace.test.VillagerMixinGameTests",
 			"io.github.jcondedata.aliveworkplace.test.StationsBugGameTests",
 			"io.github.jcondedata.aliveworkplace.test.StationsRetakeGameTests",
 			"io.github.jcondedata.aliveworkplace.test.StationsFixesGameTests",
@@ -72,7 +73,10 @@
 			"io.github.jcondedata.aliveworkplace.test.OutfitGameTests",
 			"io.github.jcondedata.aliveworkplace.test.GuideGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaGuideClaimsGameTests",
-			"io.github.jcondedata.aliveworkplace.test.FerryLeaveQaGameTests"
+			"io.github.jcondedata.aliveworkplace.test.FerryLeaveQaGameTests",
+			"io.github.jcondedata.aliveworkplace.test.StationsB8UnloadedGameTests",
+			"io.github.jcondedata.aliveworkplace.test.JobSiteTicketsGameTests",
+			"io.github.jcondedata.aliveworkplace.test.StationsQaGameTests"
 		]
 	},
 	"depends": {

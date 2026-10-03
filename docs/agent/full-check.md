@@ -4,6 +4,16 @@ Done in pieces by night runs; each piece lands with `land --keep-open`. Newest f
 
 ## Pieces
 
+### VillagerMixin behaviours (lane-a-1003-1532, 2026-10-03)
+- **Day plans** (`VillagerMixinGameTests.eachKindOfVillagerGetsItsDayPlan`): after `refreshBrain`, a builder and a
+  netherworker keep the builders' working day, a guard the guard shifts, a bard the bard's evening; a baby builder,
+  guard or bard, a librarian and a farmer with no field of ours keep vanilla's plans. Passes.
+- **The away netherworker** (`nobodyTradesWithAnAwayNetherworker`): clicking him while his Nether trip is saved does
+  nothing and opens no trade; once the trip is over he trades again. Passes.
+- **2 mutants** planted by hand in `VillagerMixin`: the away check's `PASS` removed (killed: "should do nothing, not
+  CONSUME") and the bard plan given to babies (survived at first: no baby bard was tested; the case was added, then
+  killed). 25 mutants in all; no bug in the code.
+
 ### Build-site edges, config keys, the last mutants (lane-a-1003-1432, 2026-10-03)
 - **`BuildSite.java` lines 244 and 271** (last run's survivors): `BuildSiteStepsGameTests` steps a test-hut site
   through its stages the way the builder does. While the builder retries the steps it put off, the material look-ahead

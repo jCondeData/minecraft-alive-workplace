@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+### Fixed
+- Giving a worker a new job (with an item or from the Village Hall) no longer frees another villager's workstation,
+  when the worker's old one was broken while they were away and put back for someone else; and a far-off worker who
+  still remembers that block isn't sent back to it.
+- Zombie villagers in abandoned desert villages no longer get stuck in a house's wall (the same narrow corridor that
+  trapped living villagers before 0.138.0).
+
 ## 0.138.0 — 2026-10-02
 
 ### Changed

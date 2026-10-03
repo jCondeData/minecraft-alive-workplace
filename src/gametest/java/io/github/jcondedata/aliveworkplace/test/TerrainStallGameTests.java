@@ -97,6 +97,11 @@ public class TerrainStallGameTests implements FabricGameTest {
 	}
 
 	private void buildOnHillside(GameTestHelper helper, StarterBlueprints.Entry entry, BlockPos origin) {
+		buildOnHillside(helper, entry, origin, Rotation.NONE);
+	}
+
+	/** As above, with the blueprint turned by {@code rotation} (QA tests turn it so the slope runs across the build). */
+	static void buildOnHillside(GameTestHelper helper, StarterBlueprints.Entry entry, BlockPos origin, Rotation rotation) {
 		ServerLevel level = helper.getLevel();
 		hillside(helper);
 		helper.setDayTime(2000);
@@ -104,7 +109,7 @@ public class TerrainStallGameTests implements FabricGameTest {
 		level.getGameRules().getRule(ModGameRules.BUILDERS_HELP).set(false, level.getServer());
 		Blueprint blueprint = BlueprintLibrary.get(level, entry.id())
 			.orElseThrow(() -> new GameTestAssertException("missing starter blueprint " + entry.id()));
-		BlueprintData.Placement placement = new BlueprintData.Placement(level.dimension().location(), helper.absolutePos(origin), Rotation.NONE, Mirror.NONE);
+		BlueprintData.Placement placement = new BlueprintData.Placement(level.dimension().location(), helper.absolutePos(origin), rotation, Mirror.NONE);
 		// What it needs on this ground (foundation included), plus dirt to fill hollows with.
 		BuildPlan onGround = BuildPlan.create(blueprint, placement, level,
 			level.getGameRules().getInt(ModGameRules.FOUNDATION_DEPTH), 0);

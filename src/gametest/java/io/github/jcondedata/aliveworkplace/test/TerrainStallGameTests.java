@@ -85,15 +85,15 @@ public class TerrainStallGameTests implements FabricGameTest {
 	/**
 	 * The soak's graveyard stall (0 placed for 30 s at the start of FOUNDATION) was thought to be the first supply walk:
 	 * its site was 40 to 50 blocks from the bench, so the builder walks out to clear it and back to its chests for its
-	 * first foundation block. Here the graveyard is up the hill, as far from the bench as the area allows (its levelled
-	 * ground has to stay inside the area's walls): even with that walk the
+	 * first foundation block. Here the graveyard stands on the same slope as above but as far along it from the bench as
+	 * the area allows (higher up the hill its clearance would reach the area's barrier roof): even with that walk the
 	 * builder never goes 30 s on shift without placing (worst gap about 400 ticks), and the build finishes.
 	 */
 	//$ gametest_ticks_batch HUGE_AREA '40000' '"b23_graveyard_far"'
 	@GameTest(template = HUGE_AREA, timeoutTicks = 40000, batch = "b23_graveyard_far")
 	public void b23AFarGraveyardNeverStalls(GameTestHelper helper) {
 		Leftovers.clear(helper);
-		buildOnHillside(helper, StarterBlueprints.GRAVEYARD, new BlockPos(11, 12, 11));
+		buildOnHillside(helper, StarterBlueprints.GRAVEYARD, new BlockPos(9, 10, 14));
 	}
 
 	private void buildOnHillside(GameTestHelper helper, StarterBlueprints.Entry entry, BlockPos origin) {

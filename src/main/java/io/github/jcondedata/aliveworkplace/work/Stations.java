@@ -131,7 +131,7 @@ public final class Stations {
 		new Station(is(PoiTypes.FARMER), Blocks.COMPOSTER, List.of(
 			job(() -> VillagerProfession.FARMER, any(Items.WHEAT, Items.WHEAT_SEEDS)),
 			job(() -> ModVillagers.ORCHARD_KEEPER, any(Items.SWEET_BERRIES, Items.GLOW_BERRIES, Items.APPLE)),
-			job(() -> ModVillagers.FLORIST, tag(ItemTags.SMALL_FLOWERS).or(tag(ItemTags.TALL_FLOWERS))), // any flower (Guide, Beekeepers page)
+			job(() -> ModVillagers.FLORIST, tag(ItemTags.FLOWERS)), // any flower, #minecraft:flowers (Guide, Beekeepers page; B29)
 			job(() -> ModVillagers.COMPOSTER, any(Items.BONE_MEAL)))),
 		new Station(is(PoiTypes.ARMORER), Blocks.BLAST_FURNACE, List.of(
 			job(() -> VillagerProfession.ARMORER, any(Items.COAL, Items.CHARCOAL)),

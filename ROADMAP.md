@@ -120,6 +120,11 @@ its first findings fixed. Nothing is released until these are done.
   - one review package with the `preview.py audit` contact sheet, in-game shots of the workstations in a village and
     of every profession's outfit (`SCENE=staff`) and a zombie villager, and a GIF of villagers working in the new
     outfits.
+  **Shown** (chat, 2026-10-02): lint is 181 of 182 (mailbox_flag's reason in the Notes); new scene `outfits` (all 30
+  jobs as villagers and as zombie villagers, five to a shot, named); `staff` now shows the 7 workstations 21.1a kept,
+  each with its worker, along a street (its check: block there, job site taken, worker in its job); the tester's
+  OutfitGameTests checks every job ships both outfits. The working GIF is the nightly `composter` scene. No changelog
+  line: players see nothing new beyond the existing "A new look" entry.
   - [x] **21.1a** (approved 2026-10-01) Change from the owner (2026-09-30): not every villager needs a new custom table for a job, there are already items in the game that should give a villager his job, for example a bee hive/bee nest for the blast furnace for the miner. i think by creating too many job blocks will be a little ugly and unnapealing to new players and myself personally. I think also when two people are close in job they can share a block, but the player must right click them and give them certain items in order for them to start working, for example you have an orchard keeper and a garder and they composter they can all be associated with the compost bin, but you have to right click the villager and then decide from there - giving it flowers makes it an orchard keeper, giving it a wheat makes it a farmer, and giving it bonemeal makes it a composter, etc. this way we can cut down on the amount of custom job blocks. for things that we absolutely need custom job blocks for that is totally ok, such as a blueprint table, but for things like a bard minecraft already has a record player so we are good. ill let you iron out the kinks. after this we can move to textures
     **Fewer job blocks: the plan** (drafted by the chat 2026-09-30 from his words; he vetoes any line he dislikes).
     Vanilla jobs work as in vanilla. A job of ours starts when you sneak-right-click a villager standing by its block

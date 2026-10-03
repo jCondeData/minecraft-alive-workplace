@@ -38,6 +38,11 @@ Done in pieces by night runs; each piece lands with `land --keep-open`. Newest f
   was still "Clearing the site · starting" at 0% with no villager found, villager AI 0% of the server thread. So the
   nightly "green" soak proved nothing about performance. `run.sh` now fails the soak when no site is working, so the
   next nightly goes red (and opens the issue) until B14 is fixed.
+  **Cause** (lane-c-1003-1333): the Cobbleverse .mrpack stores all 1,646 overrides with Unix mode 000. Root (our
+  dev containers) reads them anyway; GitHub's runner user can't, so every `cp` of the pack's configs, datapacks and
+  bundled mods failed (hidden by `|| true`) and both nightly pack runs booted with every mod on its defaults. As a
+  normal user, the old steps leave 0 of the pack's 223 configs readable. `run.sh` now `chmod`s the overrides after
+  unzipping and stops if fewer configs arrive than the pack has.
 
 ### Ferry edges (night-1003-0845, 2026-10-03)
 - **Leaving the game mid-ride**: `FerryEdgeGameTests.aPlayerWhoLeavesMidRideIsLanded` closes the player's connection

@@ -298,4 +298,62 @@ public class StationsBugGameTests implements net.fabricmc.fabric.api.gametest.v1
 			"giving the first worker a new job freed the second worker's lectern (" + (fromTheHall ? "Village Hall" : "item") + ")");
 		helper.succeed();
 	}
+
+	/**
+	 * Tester (B8, Check), through the player's own clicks: an orchard keeper's composter is broken while they are across
+	 * the village and a new one is put on the same spot; a second villager is given it; then the first is made a beekeeper
+	 * by a hive where they are. The second keeps the composter, and a third villager sneak-right-clicked with sweet
+	 * berries beside it can't take it too (the player-visible half of B8: two workers on one block).
+	 */
+	//$ gametest_ticks_batch HUGE '200' '"stationsBugB8ByHand"'
+	@GameTest(template = HUGE, timeoutTicks = 200, batch = "stationsBugB8ByHand")
+	public void aWorkerGivenANewJobByHandLeavesTheNewOwnersBlockTaken(GameTestHelper helper) {
+		changedHands(helper, Blocks.BEEHIVE, new ItemStack(Items.GLASS_BOTTLE), ModVillagers.BEEKEEPER, "stationsBugB8ByHand");
+	}
+
+	private static void changedHands(GameTestHelper helper, Block newBlock, ItemStack newItem, VillagerProfession newJob, String name) {
+		Leftovers.clear(helper);
+		helper.setDayTime(2000);
+		ServerLevel level = helper.getLevel();
+		BlockPos old = new BlockPos(3, 2, 3);
+		helper.setBlock(old, Blocks.COMPOSTER);
+		ServerPlayer player = StationsSpecGameTests.player(helper);
+		Villager first = helper.spawn(EntityType.VILLAGER, new BlockPos(4, 2, 4));
+		StationsSpecGameTests.rightClick(player, first, new ItemStack(Items.SWEET_BERRIES), true);
+		helper.assertTrue(StationsSpecGameTests.job(first) == ModVillagers.ORCHARD_KEEPER, "setup: the first isn't an orchard keeper");
+		BlockPos away = helper.absolutePos(new BlockPos(25, 2, 25));
+		first.teleportTo(away.getX() + 0.5, away.getY(), away.getZ() + 0.5);
+		helper.setBlock(old, Blocks.AIR);
+		BlockPos fresh = new BlockPos(26, 2, 25);
+		helper.setBlock(fresh, newBlock);
+		helper.runAfterDelay(5, () -> {
+			helper.setBlock(old, Blocks.COMPOSTER);
+			helper.runAfterDelay(2, () -> {
+				Villager second = helper.spawn(EntityType.VILLAGER, new BlockPos(4, 2, 4));
+				StationsSpecGameTests.rightClick(player, second, new ItemStack(Items.SWEET_BERRIES), true);
+				helper.assertTrue(StationsSpecGameTests.job(second) == ModVillagers.ORCHARD_KEEPER
+						&& StationsSpecGameTests.site(second).equals(Optional.of(helper.absolutePos(old))),
+					"setup: the second is a " + StationsSpecGameTests.name(StationsSpecGameTests.job(second)) + " at " + StationsSpecGameTests.site(second));
+				helper.assertTrue(StationsSpecGameTests.site(first).equals(Optional.of(helper.absolutePos(old))),
+					"setup: the first already forgot the old composter: " + StationsSpecGameTests.site(first));
+				StationsSpecGameTests.rightClick(player, first, newItem, true);
+				helper.assertTrue(StationsSpecGameTests.job(first) == newJob
+						&& StationsSpecGameTests.site(first).equals(Optional.of(helper.absolutePos(fresh))),
+					"the first, 1 block from a free " + newBlock.getName().getString() + ", became a "
+						+ StationsSpecGameTests.name(StationsSpecGameTests.job(first)) + " at " + StationsSpecGameTests.site(first)
+						+ " (the second's composter is at " + helper.absolutePos(old) + ")");
+				helper.assertTrue(level.getPoiManager().getFreeTickets(helper.absolutePos(old)) == 0,
+					"giving the first worker a new job by hand freed the second worker's composter");
+				Villager third = helper.spawn(EntityType.VILLAGER, new BlockPos(4, 2, 2));
+				StationsSpecGameTests.rightClick(player, third, new ItemStack(Items.SWEET_BERRIES), true);
+				helper.assertFalse(StationsSpecGameTests.site(third).equals(Optional.of(helper.absolutePos(old))),
+					"a third villager took the second worker's composter too");
+				helper.assertTrue(StationsSpecGameTests.site(second).equals(Optional.of(helper.absolutePos(old)))
+						&& StationsSpecGameTests.job(second) == ModVillagers.ORCHARD_KEEPER,
+					"the second lost their composter: " + StationsSpecGameTests.site(second));
+				org.slf4j.LoggerFactory.getLogger("aliveworkplace").info("[test] " + name + ": the second keeps the composter, a third can't share it");
+				helper.succeed();
+			});
+		});
+	}
 }

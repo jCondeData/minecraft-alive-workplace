@@ -9,6 +9,8 @@
   with Cobblemon the Pokémon jobs. Lost it? Craft another from a book and wheat.
 
 ### Fixed
+- Warding now protects the whole village, corners included: a creeper or TNT going off in a corner of a warded
+  village, or just past its edge, no longer breaks the village's blocks.
 - Giving a villager a new job no longer frees a workstation someone else now works at when that other villager is
   far away in an unloaded chunk (their block had been broken and put back while the first villager was away).
 - Leaving the game in the middle of a ferry ride lands you by the far post before you are saved, so you come back

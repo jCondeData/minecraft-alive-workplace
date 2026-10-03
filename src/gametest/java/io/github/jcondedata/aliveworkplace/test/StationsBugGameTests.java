@@ -311,6 +311,18 @@ public class StationsBugGameTests implements net.fabricmc.fabric.api.gametest.v1
 		changedHands(helper, Blocks.BEEHIVE, new ItemStack(Items.GLASS_BOTTLE), ModVillagers.BEEKEEPER, "stationsBugB8ByHand");
 	}
 
+	/**
+	 * Bug (found by the B8 tester): the same, but the first worker's new job is at a block of the same kind as their old
+	 * one (bone meal by a composter). Stations.choose prefers "the block they already work at", their stale memory of the
+	 * old spot, so they become a Composter at the second worker's composter 30 blocks away instead of the free one beside
+	 * them: two workers on one block again.
+	 */
+	//$ gametest_ticks_batch HUGE '200' '"stationsBugStaleSiteSameKind"'
+	@GameTest(template = HUGE, timeoutTicks = 200, batch = "stationsBugStaleSiteSameKind")
+	public void aWorkerWhoseOldBlockChangedHandsTakesTheBlockBesideThem(GameTestHelper helper) {
+		changedHands(helper, Blocks.COMPOSTER, new ItemStack(Items.BONE_MEAL), ModVillagers.COMPOSTER, "stationsBugStaleSiteSameKind");
+	}
+
 	private static void changedHands(GameTestHelper helper, Block newBlock, ItemStack newItem, VillagerProfession newJob, String name) {
 		Leftovers.clear(helper);
 		helper.setDayTime(2000);

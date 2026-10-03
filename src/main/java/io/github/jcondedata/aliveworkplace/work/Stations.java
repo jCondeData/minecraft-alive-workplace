@@ -204,8 +204,9 @@ public final class Stations {
 		if (now == VillagerProfession.SHEPHERD && stack.is(Items.SHEARS)) {
 			return InteractionResult.PASS; // shears hire a shepherd (BuilderEvents), as before: they don't make them a beekeeper
 		}
+		// (not one another villager has taken since: a block broken while they were away and put back, B8)
 		Optional<GlobalPos> site = villager.getBrain().getMemory(MemoryModuleType.JOB_SITE)
-			.filter(g -> g.dimension().equals(level.dimension()));
+			.filter(g -> g.dimension().equals(level.dimension()) && !someoneElseWorksAt(level, villager, g));
 		Optional<Holder<PoiType>> here = site.flatMap(g -> level.getPoiManager().getType(g.pos()));
 		// First the block they already work at, then the nearest free block where the item picks a job.
 		for (Station station : ALL) {
@@ -348,11 +349,15 @@ public final class Stations {
 		if (!old.dimension().equals(level.dimension()) || level.getPoiManager().getType(old.pos()).isEmpty()) {
 			return;
 		}
-		boolean someoneElses = !level.getEntities(net.minecraft.world.entity.EntityType.VILLAGER,
-			v -> v != villager && v.getBrain().getMemory(MemoryModuleType.JOB_SITE).filter(old::equals).isPresent()).isEmpty();
-		if (!someoneElses) {
+		if (!someoneElseWorksAt(level, villager, old)) {
 			level.getPoiManager().release(old.pos());
 		}
+	}
+
+	/** Whether a villager other than {@code villager} (any loaded one) works at {@code site}. */
+	static boolean someoneElseWorksAt(ServerLevel level, Villager villager, GlobalPos site) {
+		return !level.getEntities(net.minecraft.world.entity.EntityType.VILLAGER,
+			v -> v != villager && v.getBrain().getMemory(MemoryModuleType.JOB_SITE).filter(site::equals).isPresent()).isEmpty();
 	}
 
 	/** The job's name, as the game shows it over a villager ("Orchard Keeper"). */

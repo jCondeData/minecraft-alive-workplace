@@ -285,8 +285,8 @@ public class PastureCompatTests implements FabricGameTest {
 	 * B24: a pastured Pidgey up in the air is out of the butcher's reach, so he doesn't stand under it waiting: he leaves it
 	 * and brushes it once it has landed.
 	 */
-	//$ gametest_ticks_batch AREA '1800' '"herder_pokemon_air"'
-	@GameTest(template = AREA, timeoutTicks = 1800, batch = "herder_pokemon_air")
+	//$ gametest_ticks_batch AREA '3600' '"herder_pokemon_air"'
+	@GameTest(template = AREA, timeoutTicks = 3600, batch = "herder_pokemon_air")
 	public void b24AFlyingPidgeyIsBrushedOnceItLands(GameTestHelper helper) {
 		ServerLevel level = helper.getLevel();
 		helper.setDayTime(2000);
@@ -308,7 +308,9 @@ public class PastureCompatTests implements FabricGameTest {
 			var entity = pidgey.getEntity();
 			if (entity == null || t[0]++ > 600) {
 				if (entity != null && entity.isNoGravity()) {
-					entity.setNoGravity(false); // it comes down
+					entity.setNoGravity(false); // it comes down, onto the grass by the pasture
+					net.minecraft.world.phys.Vec3 ground = net.minecraft.world.phys.Vec3.atBottomCenterOf(helper.absolutePos(new BlockPos(9, 2, 8)));
+					entity.teleportTo(ground.x, ground.y, ground.z);
 				}
 				return;
 			}

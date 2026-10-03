@@ -1048,6 +1048,11 @@ public class ScreenshotHarness implements ClientModInitializer {
 				level.setBlockAndUpdate(block.east(), Blocks.CHEST.defaultBlockState());
 				BaseContainerBlockEntity chest = (BaseContainerBlockEntity) level.getBlockEntity(block.east());
 				chest.setItem(0, new ItemStack(net.minecraft.world.item.Items.IRON_AXE));
+				// A sapling of each kind too, as a player keeps them (B9): leaves drop one only 1 time in 20, so now and then a
+				// birch or spruce gives none, and the lumberjack replants that stump from the chests after the drop-off.
+				chest.setItem(1, new ItemStack(net.minecraft.world.item.Items.OAK_SAPLING));
+				chest.setItem(2, new ItemStack(net.minecraft.world.item.Items.BIRCH_SAPLING));
+				chest.setItem(3, new ItemStack(net.minecraft.world.item.Items.SPRUCE_SAPLING));
 				lumberjack = EntityType.VILLAGER.spawn(level, block.south(), MobSpawnType.COMMAND);
 				io.github.jcondedata.aliveworkplace.work.Jobs.employ(level, lumberjack, block,
 					net.minecraft.world.entity.ai.village.poi.PoiTypes.FLETCHER, io.github.jcondedata.aliveworkplace.registry.ModVillagers.LUMBERJACK);

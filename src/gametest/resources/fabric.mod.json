@@ -59,6 +59,7 @@
 			"io.github.jcondedata.aliveworkplace.test.SavedDataGameTests",
 			"io.github.jcondedata.aliveworkplace.test.BuildSiteSaveGameTests",
 			"io.github.jcondedata.aliveworkplace.test.BuildSiteStepsGameTests",
+			"io.github.jcondedata.aliveworkplace.test.TerrainStallGameTests",
 			"io.github.jcondedata.aliveworkplace.test.VillagerMixinGameTests",
 			"io.github.jcondedata.aliveworkplace.test.WardingEdgeGameTests",
 			"io.github.jcondedata.aliveworkplace.test.StationsBugGameTests",

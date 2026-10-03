@@ -211,8 +211,15 @@ its first findings fixed. Nothing is released until these are done.
   **Answered** (owner, 2026-10-01): camels in. The test is turned around as `aGuardRidesASaddledCamel`
   (RidingSpecGameTests: a saddled camel carries a guard and he gets on it; an unsaddled one doesn't), and the
   changelog says so. The rest of that old branch already reached `main` in other items.
-- [ ] **21.4** (blocked: waits for 21.1 approved and 21.2 done) **Release 0.138.0.** Only the owner's chat releases
+- [ ] **21.4** **Release 0.138.0.** Only the owner's chat releases
   (CLAUDE.md, "Releasing"). Done when: the GitHub release has the jar.
+  **Released early** (chat, 2026-10-02): the owner said ship ("unless there is massive bugs i want to be able to play
+  asap"), with 21.1 approved, 21.3 and 21.1c landed, and B5, 21.1b and 21.1c still pending his review (they ship).
+  Instead of the full 21.2 check, the tester ran a scoped release check: a world saved by the real 0.137.0 jar on the
+  Cobbleverse pack, with all 26 retired job blocks and their workers, opened with the new jar (26/26 blocks, jobs and
+  job sites kept, no errors from our mod); the full suite and the compat suite green, nothing missing against the
+  baseline; no new flakes (B2 failed once more in a land build and passed on the retry). 21.2's other parts (the ferry
+  mid-ride, performance, mutants, the standard pack test) stay for the night runs.
 
 ## Milestone 22: Safety net
 

@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 0.138.0 — 2026-10-02
+
 ### Changed
 - **New item icons, picked by the owner**: the Blueprint is clipped to a drawing board, the Blank Blueprint is two
   sheets, the Shape Planner is a brass compass, the Village Ledger lies open, the Delivery Note is a clipboard, the

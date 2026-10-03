@@ -42,6 +42,8 @@ multi-version layout (ROADMAP, Milestone 19): **Stonecutter**, one Gradle node p
 - `python3 tools/agent/sessions.py` — claims, landing, review packages, QA verification and roadmap bookkeeping when
   several sessions work at once (`docs/agent/sessions.md`); `python3 tools/agent/test_sessions.py` tests it on
   throwaway local repos.
+- `python3 tools/agent/usage.py` — what a session's AI usage cost and where it went; `--log` records a run on the
+  `usage` branch, `--report` sums the lanes' runs (cost per run, per lane, per item).
 - `python3 tools/review/sheet.py` — puts screenshots on one labelled sheet for a review package (`docs/agent/review.md`).
 - `python3 tools/blueprints/generate.py` — regenerates starter blueprints + test fixtures (needs `pip install nbtlib`).
   The kit (`Build`, roofs, windows, frames, texture mixes, `finish()` for stair corners and fence joins) is `kit.py`, the

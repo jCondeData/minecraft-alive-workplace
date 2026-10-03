@@ -205,10 +205,12 @@ public final class Stations {
 			return InteractionResult.PASS; // shears hire a shepherd (BuilderEvents), as before: they don't make them a beekeeper
 		}
 		// (not a far-off one another villager works at: their block broken while they were away and put back, and taken since
-		// (B8); the villager standing by the block is its owner, even if a far-off one still remembers it)
+		// (B8), by a loaded villager or one in an unloaded chunk, whom only the break count knows of (B25); the villager
+		// standing by the block is its owner, even if a far-off one still remembers it)
 		Optional<GlobalPos> site = villager.getBrain().getMemory(MemoryModuleType.JOB_SITE)
 			.filter(g -> g.dimension().equals(level.dimension()))
-			.filter(g -> g.pos().distToCenterSqr(villager.position()) <= REACH * REACH || !someoneElseWorksAt(level, villager, g));
+			.filter(g -> g.pos().distToCenterSqr(villager.position()) <= REACH * REACH
+				|| (JobSiteTickets.theirs(level, villager, g).orElse(true) && !someoneElseWorksAt(level, villager, g)));
 		Optional<Holder<PoiType>> here = site.flatMap(g -> level.getPoiManager().getType(g.pos()));
 		// First the block they already work at, then the nearest free block where the item picks a job.
 		for (Station station : ALL) {
@@ -330,6 +332,9 @@ public final class Stations {
 		Optional<GlobalPos> old = villager.getBrain().getMemory(MemoryModuleType.JOB_SITE);
 		if (old.isEmpty() || !old.get().equals(target)) {
 			old.ifPresent(g -> releaseOld(level, villager, g));
+			level.getPoiManager().take(h -> true, (h, p) -> p.equals(station), station, 1);
+		} else if (level.getPoiManager().getFreeTickets(station) > 0) {
+			// The block they remember, but its place is free: it was broken while they were away and put back (bug B26).
 			level.getPoiManager().take(h -> true, (h, p) -> p.equals(station), station, 1);
 		}
 		villager.getBrain().eraseMemory(MemoryModuleType.POTENTIAL_JOB_SITE);

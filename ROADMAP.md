@@ -256,7 +256,7 @@ Before polishing, make sure nothing regresses unnoticed.
   10 PM Central (`17 3 * * *`), before the night runs, which read its result first.
 - [x] **22.2** (approved auto 2026-10-03) Save/reload tests for every value `inventory.py` lists as "never saved and reloaded" (69 at 0.136.0), done in
   batches: builder, miner and lumberjack data first. Done when: that list is empty, or each remaining entry has a reason.
-- [ ] **22.3** (claimed: lane-b-1003-1532, 2026-10-03 15:50Z) A bot scene for every player-visible feature, so any feature can be shown again on demand
+- [ ] **22.3** A bot scene for every player-visible feature, so any feature can be shown again on demand
   (`tools/screenshots/run.sh SCENE=…`). Done when: every job and every screen in the README has a scene. A new feature
   gets its scene in the same commit.
 - [x] **22.4** (approved auto 2026-09-30) (verified 2026-10-02: its tester Check, shipped in 0.138.0) **A daily showcase page** (owner, 2026-09-30): screenshots and GIFs of everything the mod does, so the

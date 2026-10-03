@@ -53,6 +53,7 @@
 			"io.github.jcondedata.aliveworkplace.test.SifterGameTests",
 			"io.github.jcondedata.aliveworkplace.test.StationsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.StationsSpecGameTests",
+			"io.github.jcondedata.aliveworkplace.test.SavedDataGameTests",
 			"io.github.jcondedata.aliveworkplace.test.StationsBugGameTests",
 			"io.github.jcondedata.aliveworkplace.test.StationsRetakeGameTests",
 			"io.github.jcondedata.aliveworkplace.test.StationsFixesGameTests",

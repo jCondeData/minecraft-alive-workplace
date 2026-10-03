@@ -9,6 +9,8 @@
   with Cobblemon the Pokémon jobs. Lost it? Craft another from a book and wheat.
 
 ### Fixed
+- Builders levelling the ground carry enough dirt from their chests for the whole hollow, instead of walking back for
+  every block (and keep the dirt they dug up for it), so tidying up around a build far from its chests no longer crawls.
 - Warding now protects the whole village, corners included: a creeper or TNT going off in a corner of a warded
   village, or just past its edge, no longer breaks the village's blocks.
 - The Village Hall's Guards and Mercenaries buttons, and Research's Drill topic, no longer show an iron sword's

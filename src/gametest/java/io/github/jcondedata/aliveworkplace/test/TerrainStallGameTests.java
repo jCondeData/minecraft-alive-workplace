@@ -8,6 +8,7 @@ import io.github.jcondedata.aliveworkplace.build.BuildPlan;
 import io.github.jcondedata.aliveworkplace.build.BuildSite;
 import io.github.jcondedata.aliveworkplace.build.BuildSiteManager;
 import io.github.jcondedata.aliveworkplace.build.Builders;
+import io.github.jcondedata.aliveworkplace.registry.ModAttachments;
 import io.github.jcondedata.aliveworkplace.registry.ModBlocks;
 import io.github.jcondedata.aliveworkplace.registry.ModGameRules;
 import java.lang.reflect.Field;
@@ -19,6 +20,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestAssertException;
 import net.minecraft.gametest.framework.GameTestHelper;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.npc.Villager;
@@ -44,9 +46,9 @@ public class TerrainStallGameTests implements FabricGameTest {
 	/** The soak's stall line: 30 s on shift without progress. */
 	private static final int STALL_TICKS = 600;
 
-	/** Ground height of the hillside at {@code x}: flat by the bench, then one block up every two blocks east. */
+	/** Ground height of the hillside at {@code x}: flat by the bench, then one block up for every block east. */
 	private static int top(int x) {
-		return 1 + Math.max(0, (x - 6) / 2);
+		return Math.min(26, 1 + Math.max(0, x - 6));
 	}
 
 	private static void hillside(GameTestHelper helper) {
@@ -61,15 +63,15 @@ public class TerrainStallGameTests implements FabricGameTest {
 	}
 
 	/**
-	 * The graveyard on a hillside: its floor (y=6) is under the ground on the uphill (east) side, which is cleared,
-	 * and up to four blocks above it downhill, where it gets a foundation; levelling the ground cuts the hill
+	 * The graveyard on a hillside: its floor (y=10) is under the ground on the uphill (east) side, which is cleared,
+	 * and up to six blocks above it downhill, where it gets a foundation; levelling the ground cuts the hill
 	 * around it and fills the hollow below. The builder finishes, and never stalls 30 s on shift.
 	 */
 	//$ gametest_ticks_batch HUGE_AREA '40000' '"b23_graveyard_hillside"'
 	@GameTest(template = HUGE_AREA, timeoutTicks = 40000, batch = "b23_graveyard_hillside")
 	public void b23GraveyardOnAHillsideNeverStalls(GameTestHelper helper) {
 		Leftovers.clear(helper);
-		buildOnHillside(helper, StarterBlueprints.GRAVEYARD, new BlockPos(9, 6, 8));
+		buildOnHillside(helper, StarterBlueprints.GRAVEYARD, new BlockPos(9, 10, 8));
 	}
 
 	/** The same for the tinker's workshop, whose LANDSCAPE crawled in the soak. */
@@ -77,7 +79,7 @@ public class TerrainStallGameTests implements FabricGameTest {
 	@GameTest(template = HUGE_AREA, timeoutTicks = 40000, batch = "b23_tinkers_hillside")
 	public void b23TinkersWorkshopOnAHillsideNeverStalls(GameTestHelper helper) {
 		Leftovers.clear(helper);
-		buildOnHillside(helper, StarterBlueprints.TINKERS_WORKSHOP, new BlockPos(9, 6, 8));
+		buildOnHillside(helper, StarterBlueprints.TINKERS_WORKSHOP, new BlockPos(9, 10, 8));
 	}
 
 	private void buildOnHillside(GameTestHelper helper, StarterBlueprints.Entry entry, BlockPos origin) {
@@ -125,13 +127,28 @@ public class TerrainStallGameTests implements FabricGameTest {
 		long[] last = {Long.MIN_VALUE};
 		int[] since = {0};
 		int[] worst = {0};
+		int[] shiftTicks = {0};
+		int[] landscapeTicks = {0};
+		int[] refills = {0};
+		int[] lastDirt = {0};
 		String[] worstAt = {""};
 		helper.onEachTick(() -> {
 			if (site.isDone()) {
 				return;
 			}
 			long mark = mark(site);
+			if (site.stage() == BuildPlan.Stage.LANDSCAPE) {
+				landscapeTicks[0]++;
+				int dirt = ModAttachments.BUILDER_BAG.getOrCreate(villager).count(Items.DIRT);
+				if (dirt > lastDirt[0] && lastDirt[0] == 0) {
+					refills[0]++;
+				}
+				lastDirt[0] = dirt;
+			}
 			boolean onShift = !villager.isSleeping() && villager.getBrain().isActive(Activity.WORK);
+			if (onShift) {
+				shiftTicks[0]++;
+			}
 			if (mark != last[0] || !onShift) {
 				last[0] = mark;
 				since[0] = 0;
@@ -144,6 +161,10 @@ public class TerrainStallGameTests implements FabricGameTest {
 			}
 		});
 		helper.succeedWhen(() -> {
+			if (site.isDone() || BuildSiteManager.get(level).get(site.id()) == null) {
+				io.github.jcondedata.aliveworkplace.AliveWorkplace.LOG.info("[b23] {} worst gap on shift {} ticks ({}); {} ticks on shift; landscaping {} ticks, {} dirt refills", entry.id(), worst[0], worstAt[0], shiftTicks[0], landscapeTicks[0], refills[0]);
+			}
+			helper.assertTrue(shiftTicks[0] > 0, "the builder was never on its WORK shift");
 			helper.assertTrue(worst[0] < STALL_TICKS, "stalled " + worst[0] + " ticks on shift: " + worstAt[0]);
 			helper.assertTrue(BuildSiteManager.get(level).get(site.id()) == null,
 				"still building: stage " + site.stage() + ", status " + site.status() + ", " + site.placed() + " placed (worst gap so far "
@@ -151,6 +172,70 @@ public class TerrainStallGameTests implements FabricGameTest {
 			List<BlockPos> unfinished = plan.unfinished(level);
 			helper.assertTrue(unfinished.isEmpty(), unfinished.size() + " block(s) wrong after the build, e.g. "
 				+ unfinished.stream().limit(3).map(p -> helper.relativePos(p) + "=" + level.getBlockState(p)).toList());
+		});
+	}
+
+	/**
+	 * Levelling fills a hollow beside the build with dirt from the chests (nothing dug up to use): the builder takes
+	 * enough for the whole hollow in one trip. Before B23 it took one dirt per trip, since the look-ahead for what to
+	 * take left landscaping out; with the chests far off (in the soak, 25 to 45 blocks) levelling crawled: a few blocks,
+	 * then 30 s of walking with nothing placed.
+	 */
+	//$ gametest_ticks_batch HUGE_AREA '12000' '"b23_landscape_dirt"'
+	@GameTest(template = HUGE_AREA, timeoutTicks = 12000, batch = "b23_landscape_dirt")
+	public void b23LevellingTakesDirtForTheWholeHollowInOneTrip(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		ServerLevel level = helper.getLevel();
+		// Ground two blocks of dirt deep (y=2..3), the hut on top at y=4, a hollow 2 deep west of it: 10 columns.
+		for (int x = 0; x < 30; x++) {
+			for (int z = 0; z < 30; z++) {
+				boolean hollow = (x == 18 || x == 19) && z >= 20 && z <= 24;
+				helper.setBlock(new BlockPos(x, 2, z), hollow ? Blocks.AIR : Blocks.DIRT);
+				helper.setBlock(new BlockPos(x, 3, z), hollow ? Blocks.AIR : Blocks.GRASS_BLOCK);
+			}
+		}
+		helper.setDayTime(2000);
+		level.getGameRules().getRule(ModGameRules.BUILD_DELAY).set(2, level.getServer());
+		level.getGameRules().getRule(ModGameRules.BUILDERS_HELP).set(false, level.getServer());
+		BlockPos bench = new BlockPos(2, 4, 2);
+		BlockPos barrelPos = new BlockPos(2, 4, 4);
+		helper.setBlock(bench, ModBlocks.BUILDERS_BENCH);
+		helper.setBlock(barrelPos, Blocks.BARREL);
+		BaseContainerBlockEntity barrel = helper.getBlockEntity(barrelPos);
+		ItemStack[] stock = {new ItemStack(Items.COBBLESTONE, 25), new ItemStack(Items.OAK_PLANKS, 55), new ItemStack(Items.OAK_DOOR),
+			new ItemStack(Items.TORCH), new ItemStack(Items.DIRT, 64)};
+		for (int i = 0; i < stock.length; i++) {
+			barrel.setItem(i, stock[i]);
+		}
+		Villager villager = helper.spawn(EntityType.VILLAGER, new BlockPos(3, 4, 3));
+		Builders.employ(level, villager, helper.absolutePos(bench));
+		ResourceLocation hut = ResourceLocation.fromNamespaceAndPath("aliveworkplace_test", "test_hut");
+		BuildSite site = Builders.start(level, villager, null, hut,
+			new BlueprintData.Placement(level.dimension().location(), helper.absolutePos(new BlockPos(20, 4, 20)), Rotation.NONE, Mirror.NONE));
+		helper.assertTrue(site.plan(level) != null, "no test hut blueprint");
+		int[] refills = {0};
+		int[] lastDirt = {0};
+		helper.onEachTick(() -> {
+			if (site.stage() != BuildPlan.Stage.LANDSCAPE) {
+				return;
+			}
+			int dirt = ModAttachments.BUILDER_BAG.getOrCreate(villager).count(Items.DIRT);
+			if (dirt > lastDirt[0] && lastDirt[0] == 0) {
+				refills[0]++;
+			}
+			lastDirt[0] = dirt;
+		});
+		helper.succeedWhen(() -> {
+			helper.assertTrue(BuildSiteManager.get(level).get(site.id()) == null, "still building: stage " + site.stage() + ", status " + site.status());
+			for (int x = 18; x <= 19; x++) {
+				for (int z = 20; z <= 24; z++) {
+					for (int y = 2; y <= 3; y++) {
+						BlockPos p = new BlockPos(x, y, z);
+						helper.assertTrue(helper.getBlockState(p).is(Blocks.DIRT), "hollow not filled at " + p + ": " + helper.getBlockState(p));
+					}
+				}
+			}
+			helper.assertTrue(refills[0] == 1, "took dirt from the chests " + refills[0] + " times for a 20-block hollow (expected one trip)");
 		});
 	}
 

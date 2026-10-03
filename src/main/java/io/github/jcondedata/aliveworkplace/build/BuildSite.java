@@ -265,6 +265,34 @@ public final class BuildSite {
 		return out;
 	}
 
+	/**
+	 * While levelling the ground: the landscaping steps still to come (left out of {@link #upcoming}, since they never
+	 * hold a build up), so a builder carries dirt for the whole stretch of filling instead of one block per trip.
+	 */
+	public List<BuildPlan.Step> landscapeLeft(BuildPlan plan, int max) {
+		if (stage != BuildPlan.Stage.LANDSCAPE) {
+			return List.of();
+		}
+		List<BuildPlan.Step> list = plan.steps(BuildPlan.Stage.LANDSCAPE);
+		List<BuildPlan.Step> out = new ArrayList<>();
+		if (retrying) {
+			for (int i = cursor; i < deferred.size() && out.size() < max; i++) {
+				out.add(list.get(deferred.get(i)));
+			}
+			return out;
+		}
+		for (int i = cursor; i < list.size() && out.size() < max; i++) {
+			out.add(list.get(i));
+		}
+		for (int idx : deferred) {
+			if (out.size() >= max) {
+				break;
+			}
+			out.add(list.get(idx));
+		}
+		return out;
+	}
+
 	/** 0..1, counting placement work (clearing counts as 0%). */
 	public float progress(BuildPlan plan) {
 		int total = plan.placeableCount();

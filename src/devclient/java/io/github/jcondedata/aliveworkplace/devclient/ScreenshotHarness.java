@@ -85,6 +85,10 @@ public class ScreenshotHarness implements ClientModInitializer {
 			staffScene(mc, mc.getSingleplayerServer());
 			return;
 		}
+		if ("guide".equals(System.getProperty("aliveworkplace.scene"))) {
+			guideScene(mc, mc.getSingleplayerServer());
+			return;
+		}
 		if ("guard".equals(System.getProperty("aliveworkplace.scene")) || "guard_pokemon".equals(System.getProperty("aliveworkplace.scene"))) {
 			guardScene(mc, mc.getSingleplayerServer());
 			return;
@@ -1081,6 +1085,65 @@ public class ScreenshotHarness implements ClientModInitializer {
 		}
 		if (tick >= GIVE_UP_AT) {
 			giveUp(mc, "the lumberjack felled all four trees");
+		}
+	}
+
+	// --- Guide: the Guide Book a new player is given, every page in turn ------------------------------------
+
+	private io.github.jcondedata.aliveworkplace.client.guide.GuideScreen guide;
+	private final List<String> guideProblems = new ArrayList<>();
+	private volatile boolean guideGiven;
+
+	private void guideScene(Minecraft mc, MinecraftServer server) {
+		tick++;
+		if (tick == 1) {
+			mc.options.renderDistance().set(4);
+			mc.options.cloudStatus().set(CloudStatus.OFF);
+		}
+		if (tick == 40) {
+			// The first-join advancement hands every player the book (aliveworkplace:guide_book).
+			server.execute(() -> guideGiven = server.getPlayerList().getPlayers().get(0).getInventory()
+				.countItem(io.github.jcondedata.aliveworkplace.registry.ModItems.GUIDE_BOOK) > 0);
+		}
+		if (tick == 60) {
+			guide = new io.github.jcondedata.aliveworkplace.client.guide.GuideScreen(0);
+			mc.setScreen(guide);
+		}
+		if (guide == null || tick < 70) {
+			return;
+		}
+		int t = tick - 70;
+		int page = t / 12;
+		if (page < guide.pageCount()) {
+			if (t % 12 == 0) {
+				guide.show(page);
+			}
+			if (t % 12 == 8) {
+				String name = page == 0 ? "contents" : guide.pageAt(page).id();
+				if (mc.screen != guide || guide.page() != page) {
+					guideProblems.add("page " + page + " didn't open");
+				} else if (page > 0) {
+					var p = guide.pageAt(page);
+					if (guide.textLines(page) > io.github.jcondedata.aliveworkplace.client.guide.GuideScreen.TEXT_LINES) {
+						guideProblems.add(name + "'s text takes " + guide.textLines(page) + " lines");
+					}
+					if (mc.getResourceManager().getResource(p.image()).isEmpty()) {
+						guideProblems.add(name + " has no picture");
+					}
+					if (net.minecraft.client.resources.language.I18n.get("guide.aliveworkplace.page." + name + ".text")
+						.startsWith("guide.aliveworkplace")) {
+						guideProblems.add(name + " has no words");
+					}
+				}
+				shot(mc, String.format("%02d_guide_%s", page, name));
+			}
+			return;
+		}
+		if (t == guide.pageCount() * 12) {
+			Showcase.check(guideGiven, "a new player is given the Guide Book");
+			Showcase.check(guideProblems.isEmpty(), "every page of the Guide Book opens with its picture and its words fit ("
+				+ (guide.pageCount() - 1) + " pages" + (guideProblems.isEmpty() ? "" : ": " + String.join(", ", guideProblems)) + ")");
+			mc.stop();
 		}
 	}
 

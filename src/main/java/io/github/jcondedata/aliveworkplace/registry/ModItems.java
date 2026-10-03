@@ -47,6 +47,9 @@ public final class ModItems {
 	/** Two settlers make camp where it's used: a covered wagon, supplies, a Builder's Bench. */
 	public static final io.github.jcondedata.aliveworkplace.camp.SettlersWagonItem SETTLERS_WAGON = Reg.item("settlers_wagon", io.github.jcondedata.aliveworkplace.camp.SettlersWagonItem::new, new Item.Properties().stacksTo(1));
 
+	/** The Guide Book: how the mod works, page by page, with in-game screenshots (ROADMAP 26.2a). */
+	public static final io.github.jcondedata.aliveworkplace.guide.GuideBookItem GUIDE_BOOK = Reg.item("guide_book", io.github.jcondedata.aliveworkplace.guide.GuideBookItem::new, new Item.Properties().stacksTo(1));
+
 	public static final CreativeModeTab TAB = Registry.register(
 		BuiltInRegistries.CREATIVE_MODE_TAB,
 		AliveWorkplace.id("main"),
@@ -56,6 +59,7 @@ public final class ModItems {
 			// The job blocks that 21.1a replaced with vanilla ones (the Builder's Bench...) stay registered, so worlds
 			// keep them, but they're gone from here and can't be crafted.
 			.displayItems((params, output) -> {
+				output.accept(GUIDE_BOOK);
 				output.accept(ModBlocks.BLUEPRINT_TABLE);
 				output.accept(BLANK_BLUEPRINT);
 				output.accept(SCAN_TOOL);

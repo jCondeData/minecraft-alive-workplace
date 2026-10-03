@@ -4,6 +4,19 @@ Done in pieces by night runs; each piece lands with `land --keep-open`. Newest f
 
 ## Pieces
 
+### Build-site edges, config keys, the last mutants (lane-a-1003-1432, 2026-10-03)
+- **`BuildSite.java` lines 244 and 271** (last run's survivors): `BuildSiteStepsGameTests` steps a test-hut site
+  through its stages the way the builder does. While the builder retries the steps it put off, the material look-ahead
+  lists exactly those (from the one it's on), then the decoration; progress is 0% while clearing, counts each block,
+  counts the whole stage while retrying, and is 100% once landscaping starts and when done. Both pass.
+- **5 more mutants** on those lines (`mutate.py --file BuildSite.java --lines 244-279`): 5 of 5 killed (275 constant,
+  271 `==`, 244 `<`, 249 `&&`, 245 the deleted `add`). With the 17 above, 22 mutants in all; no bug in the code.
+- **The 9 config keys no test read** (`inventory.py`): `ConfigGameTests.everyRadiusAndVillageNumberIsReadClampedAndApplied`
+  reads `lumberjackRadius`, `fisherRadius`, `partnerRadius`, `explorerRange`, `postmanRange`, `villageRadius`,
+  `villageHallRadius`, `villageGrowthCap` and `treasuryPerWorker` from the file, clamps each at both ends of its
+  range, defaults it when missing, and checks `apply()` puts it into effect.Passes;
+  its one mutant (line 148, village sharing in gametests) is killed. 23 mutants in all.
+
 ### Saved data, mutants and the flake sweep (lane-a-1003-1333, 2026-10-03)
 - **Saved data** (`inventory.py`'s biggest gap: 69 of 72 villager fields had no save-and-reload test):
   `SavedDataGameTests` sets a value on every field in `ModAttachments` (found by reflection, so a new field without a
@@ -70,5 +83,5 @@ Done in pieces by night runs; each piece lands with `land --keep-open`. Newest f
 ## Still to do
 - An old world saved by 0.138.0 opened with the next version (at the release check).
 - Performance on GitHub's machines once B14 is fixed (the dev-container numbers above stand meanwhile).
-- 3 more mutants, and tests for `BuildSite.java` lines 244 and 271 (above).
-- The next `inventory.py` gaps: 14 mixins, 7 network payloads and 9 config keys no test mentions.
+- The next `inventory.py` gaps: 14 mixins and 7 network payloads no test names (most are exercised through the
+  features they serve; a test per mixin is the next piece).

@@ -7,6 +7,15 @@ import io.github.jcondedata.aliveworkplace.work.Money;
 import net.fabricmc.fabric.api.gametest.v1.FabricGameTest;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
+import io.github.jcondedata.aliveworkplace.explore.ExplorerWork;
+import io.github.jcondedata.aliveworkplace.fish.FisherWork;
+import io.github.jcondedata.aliveworkplace.hall.Treasury;
+import io.github.jcondedata.aliveworkplace.hall.VillageGrowth;
+import io.github.jcondedata.aliveworkplace.hall.VillageHalls;
+import io.github.jcondedata.aliveworkplace.mail.PostOffice;
+import io.github.jcondedata.aliveworkplace.wood.LumberjackWork;
+import io.github.jcondedata.aliveworkplace.work.Partners;
+import io.github.jcondedata.aliveworkplace.work.Village;
 
 /** config/aliveworkplace.json. */
 public class ConfigGameTests implements FabricGameTest {
@@ -27,6 +36,57 @@ public class ConfigGameTests implements FabricGameTest {
 		new WorkplaceConfig().apply();
 		helper.assertTrue(applied, "apply() didn't change the values in use");
 		helper.assertTrue(SupplyContainers.RADIUS == 8 && Guards.RADIUS == 24 && Money.DOLLARS_PER_EMERALD == 100, "defaults not restored");
+		helper.succeed();
+	}
+
+	/**
+	 * The distances and village numbers no other test read from the file (found by the full check's inventory,
+	 * ROADMAP 21.2): each is read, clamped at both ends of its range, defaults when missing, and put into effect.
+	 */
+	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
+	public void everyRadiusAndVillageNumberIsReadClampedAndApplied(GameTestHelper helper) {
+		WorkplaceConfig defaults = WorkplaceConfig.parse("{}");
+		helper.assertTrue(defaults.lumberjackRadius == 16 && defaults.fisherRadius == 16 && defaults.partnerRadius == 16 && defaults.explorerRange == 48
+			&& defaults.postmanRange == 64 && defaults.villageRadius == 48 && defaults.villageHallRadius == 64 && defaults.villageGrowthCap == 40
+			&& defaults.treasuryPerWorker == 20, "missing values should take their defaults");
+
+		WorkplaceConfig mid = WorkplaceConfig.parse("{\"lumberjackRadius\": 20, \"fisherRadius\": 21, \"partnerRadius\": 22, \"explorerRange\": 100,"
+			+ " \"postmanRange\": 200, \"villageRadius\": 90, \"villageHallRadius\": 120, \"villageGrowthCap\": 300, \"treasuryPerWorker\": 45}");
+		helper.assertTrue(mid.lumberjackRadius == 20 && mid.fisherRadius == 21 && mid.partnerRadius == 22 && mid.explorerRange == 100 && mid.postmanRange == 200
+			&& mid.villageRadius == 90 && mid.villageHallRadius == 120 && mid.villageGrowthCap == 300 && mid.treasuryPerWorker == 45,
+			"values inside their range should be read as written");
+
+		WorkplaceConfig low = WorkplaceConfig.parse("{\"lumberjackRadius\": -5, \"fisherRadius\": 0, \"partnerRadius\": 3, \"explorerRange\": 15,"
+			+ " \"postmanRange\": 1, \"villageRadius\": -1, \"villageHallRadius\": 15, \"villageGrowthCap\": -10, \"treasuryPerWorker\": -1}");
+		helper.assertTrue(low.lumberjackRadius == 4 && low.fisherRadius == 4 && low.partnerRadius == 4 && low.explorerRange == 16 && low.postmanRange == 16
+			&& low.villageRadius == 0 && low.villageHallRadius == 16 && low.villageGrowthCap == 0 && low.treasuryPerWorker == 0,
+			"values below their range should be raised to the minimum: lumberjack " + low.lumberjackRadius + ", fisher " + low.fisherRadius + ", partner "
+				+ low.partnerRadius + ", explorer " + low.explorerRange + ", postman " + low.postmanRange + ", village " + low.villageRadius + ", hall "
+				+ low.villageHallRadius + ", growth " + low.villageGrowthCap + ", treasury " + low.treasuryPerWorker);
+
+		WorkplaceConfig high = WorkplaceConfig.parse("{\"lumberjackRadius\": 49, \"fisherRadius\": 1000, \"partnerRadius\": 49, \"explorerRange\": 129,"
+			+ " \"postmanRange\": 257, \"villageRadius\": 129, \"villageHallRadius\": 161, \"villageGrowthCap\": 501, \"treasuryPerWorker\": 501}");
+		helper.assertTrue(high.lumberjackRadius == 48 && high.fisherRadius == 48 && high.partnerRadius == 48 && high.explorerRange == 128
+			&& high.postmanRange == 256 && high.villageRadius == 128 && high.villageHallRadius == 160 && high.villageGrowthCap == 500
+			&& high.treasuryPerWorker == 500,
+			"values above their range should be lowered to the maximum: lumberjack " + high.lumberjackRadius + ", fisher " + high.fisherRadius + ", partner "
+				+ high.partnerRadius + ", explorer " + high.explorerRange + ", postman " + high.postmanRange + ", village " + high.villageRadius + ", hall "
+				+ high.villageHallRadius + ", growth " + high.villageGrowthCap + ", treasury " + high.treasuryPerWorker);
+
+		// Applying (and putting the defaults back straight away: other tests run on the same server).
+		mid.apply();
+		String inUse = "lumberjack " + LumberjackWork.RADIUS + ", fisher " + FisherWork.RADIUS + ", partner " + Partners.RADIUS + ", explorer " + ExplorerWork.RANGE
+			+ ", postman " + PostOffice.ROUND + ", village " + Village.RADIUS + ", hall " + VillageHalls.RADIUS + ", growth " + VillageGrowth.CAP + ", treasury "
+			+ Treasury.CENTS_PER_WORKER;
+		boolean applied = LumberjackWork.RADIUS == 20 && FisherWork.RADIUS == 21 && Partners.RADIUS == 22 && ExplorerWork.RANGE == 100 && PostOffice.ROUND == 200
+			&& VillageHalls.RADIUS == 120 && VillageGrowth.CAP == 300 && Treasury.CENTS_PER_WORKER == 45
+			// Village sharing stays off in gametests (tests side by side would share chests); the village tests switch it on themselves.
+			&& Village.RADIUS == 0;
+		new WorkplaceConfig().apply();
+		helper.assertTrue(applied, "apply() didn't put the values into effect: " + inUse);
+		helper.assertTrue(LumberjackWork.RADIUS == 16 && FisherWork.RADIUS == 16 && Partners.RADIUS == 16 && ExplorerWork.RANGE == 48 && PostOffice.ROUND == 64
+			&& VillageHalls.RADIUS == 64 && VillageGrowth.CAP == 40 && Treasury.CENTS_PER_WORKER == 20, "defaults not restored");
 		helper.succeed();
 	}
 }

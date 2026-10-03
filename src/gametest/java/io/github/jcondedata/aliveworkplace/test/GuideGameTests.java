@@ -301,4 +301,50 @@ public class GuideGameTests implements FabricGameTest {
 		helper.assertTrue(missing.isEmpty(), "recipes with no recipe-book unlock: " + missing);
 		helper.succeed();
 	}
+
+	/**
+	 * Tester (26.2a round 2): every recipe of ours shows in the recipe book of a player who picks up any one of its
+	 * ingredients (one player per ingredient, holding only that), as the unlocks promise, through the game's own
+	 * inventory trigger.
+	 */
+	//$ gametest_ticks_batch 'FabricGameTest.EMPTY_STRUCTURE' '100' '"recipeBookEachIngredient"'
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE, timeoutTicks = 100, batch = "recipeBookEachIngredient")
+	public void eachOfOurRecipesShowsOnceThePlayerHoldsAnyOneIngredient(GameTestHelper helper) {
+		var server = helper.getLevel().getServer();
+		record Probe(net.minecraft.resources.ResourceLocation recipe, ItemStack holding, ServerPlayer player) {
+		}
+		List<Probe> probes = new ArrayList<>();
+		for (var recipe : server.getRecipeManager().getRecipes()) {
+			if (!recipe.id().getNamespace().equals(AliveWorkplace.MOD_ID)) {
+				continue;
+			}
+			List<net.minecraft.world.item.Item> seen = new ArrayList<>();
+			for (var ingredient : recipe.value().getIngredients()) {
+				ItemStack[] items = ingredient.getItems();
+				if (items.length == 0 || seen.contains(items[0].getItem())) {
+					continue;
+				}
+				seen.add(items[0].getItem());
+				ServerPlayer player = freshPlayer(helper);
+				player.getInventory().add(items[0].copyWithCount(1));
+				probes.add(new Probe(recipe.id(), items[0], player));
+			}
+		}
+		helper.runAfterDelay(20, () -> {
+			List<String> missing = new ArrayList<>();
+			java.util.Set<net.minecraft.resources.ResourceLocation> recipes = new java.util.HashSet<>();
+			for (Probe p : probes) {
+				recipes.add(p.recipe());
+				if (!p.player().getRecipeBook().contains(p.recipe())) {
+					missing.add(p.recipe().getPath() + " (holding " + p.holding().getItem() + ")");
+				}
+				server.getPlayerList().remove(p.player());
+			}
+			helper.assertTrue(recipes.size() >= 20, "only " + recipes.size() + " recipes of ours probed");
+			helper.assertTrue(missing.isEmpty(), "not in the recipe book: " + missing);
+			org.slf4j.LoggerFactory.getLogger("aliveworkplace").info("[test] recipe book: " + recipes.size() + " recipes, "
+				+ probes.size() + " ingredients, each one alone shows its recipe");
+			helper.succeed();
+		});
+	}
 }

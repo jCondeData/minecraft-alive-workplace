@@ -9,6 +9,8 @@
   with Cobblemon the Pokémon jobs. Lost it? Craft another from a book and wheat.
 
 ### Fixed
+- Nurses, shopkeepers and ferrymen keep their block when they get stuck on the way back to it, instead of giving it up
+  after a minute and taking another worker's.
 - Builders on a hillside, with their site far up the slope from their bench, keep placing through clearing,
   foundation and levelling without half-minute pauses (now covered by tests).
 - With Cobblemon, a herder no longer stands waiting under a pastured Pokémon that's flying about: they get on with

@@ -7,6 +7,9 @@
   right-click it to read how the mod works, page by page, each page an in-game screenshot with a few short steps:
   getting started, giving villagers jobs, builders and blueprints, the Village Hall, every kind of job, guards, and
   with Cobblemon the Pokémon jobs. Lost it? Craft another from a book and wheat.
+- The server log now says "Builder stalled" when a builder's site makes no progress for 30 seconds (once per stall,
+  with the build, its stage and what's missing), so a stuck builder shows up without anyone watching. For testers,
+  `/workplace soak` (benchmark servers only) sets 10 builders on the whole starter set in hilly woods for 2 days.
 
 ### Fixed
 - Leaving the game in the middle of a ferry ride lands you by the far post before you are saved, so you come back

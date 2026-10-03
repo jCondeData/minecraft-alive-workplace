@@ -4,6 +4,21 @@ Done in pieces by night runs; each piece lands with `land --keep-open`. Newest f
 
 ## Pieces
 
+### Performance with many homes (night-1003-1046, 2026-10-03)
+- `PERF=true PLOTS=40 tools/packtest/run.sh` on a dev container (7 GB, slow CPU; the real Cobbleverse 1.7.42 server,
+  jar 0.138.0 from `main` 7e06692): 80 workers on 40 plots (a builder on each, plus miners, lumberjacks, porters,
+  carpenters, masons). 40 of 47 sites working when measured, builds 0–100% after 2.5 minutes, quarries 24% dug.
+  - Ticks with the workers: P50 58.8 ms / P95 114.5 ms right after they start, then P50 21.0 ms / P95 49.7 ms
+    (the container's idle number is useless: it was still generating the 221 forced chunks).
+  - Server thread profile (2962 samples): Alive Workplace code 11.8%, all villager AI 40.7% (ours included),
+    villager pathfinding 17.7%. Ours by entry point: BuilderWork 6.9%, MinerWork 1.8%, LumberjackWork 1.3%, the rest
+    under 1% each; the hottest of our own frames are `BuilderWork.breakBlock` 1.5% and `place` 1.1%. Nothing of ours
+    stands out: the cost is vanilla villager AI and pathfinding, which 80 villagers cost anyway.
+- **Found B14**: the nightly soak on GitHub has been measuring an idle server. In nightly run 37112224528 every build
+  was still "Clearing the site · starting" at 0% with no villager found, villager AI 0% of the server thread. So the
+  nightly "green" soak proved nothing about performance. `run.sh` now fails the soak when no site is working, so the
+  next nightly goes red (and opens the issue) until B14 is fixed.
+
 ### Ferry edges (night-1003-0845, 2026-10-03)
 - **Leaving the game mid-ride**: `FerryEdgeGameTests.aPlayerWhoLeavesMidRideIsLanded` closes the player's connection
   20 ticks into a ride (the way quitting does) and checks they are landed by the far post, out of the boat, the boat
@@ -29,5 +44,5 @@ Done in pieces by night runs; each piece lands with `land --keep-open`. Newest f
 
 ## Still to do
 - An old world saved by 0.138.0 opened with the next version (at the release check).
-- Performance with many homes (`PERF=true PLOTS=40 tools/packtest/run.sh`, or read the nightly soak's numbers).
+- Performance on GitHub's machines once B14 is fixed (the dev-container numbers above stand meanwhile).
 - 20 mutants and a flake sweep over the whole suite, and the biggest gaps from `inventory.py`.

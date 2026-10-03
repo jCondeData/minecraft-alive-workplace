@@ -80,6 +80,16 @@ if [ "${PERF:-false}" = "true" ]; then
   echo "--- tick times: idle, then twice with the workers (full log: $SERVER/server.log)"
   grep -E "Benchmark:|Average time per tick|Percentiles|Crash|Exception" server.log | grep -v "No data fixer" || true
   python3 ../../../tools/packtest/perf.py perf.jfr
+  # The numbers only mean something if the workers were working: each site's status says "working" with its
+  # villager's level under it. None working means the soak measured an idle server (B14), so it fails.
+  WORKING=$(grep -c " · working" server.log || true)
+  SITES=$(grep -cE "\] \[Server thread/INFO\]: (Builder|Miner) — " server.log || true)
+  echo "--- sites working when measured: $WORKING of $SITES"
+  if [ "$WORKING" -eq 0 ]; then
+    echo "No worker was working: these tick times are an idle server's, not a busy one's."
+    grep -E -A1 "\] \[Server thread/INFO\]: Builder — " server.log | head -6
+    exit 1
+  fi
   exit 0
 fi
 

@@ -5,8 +5,8 @@ features, a release every hour) in four days by building feature after feature s
 followed (claims, item branches, `land`, an hourly QA lane, a review package per item) spent its runs on bookkeeping:
 on 2026-10-03, 40 runs made 311 commits, 211 of them bookkeeping and 125 merges, and built one feature. So:
 
-- **Build lanes a and b** (`--as lane-<letter>-<MMDD>-<HHMM>`, the UTC start): a fresh run every 2 hours, working
-  about 110 minutes. Lane a owns odd milestones and odd bugs, lane b even ones (`sessions.py next`).
+- **Build lanes a and b** (`--as lane-<letter>-<MMDD>-<HHMM>`, the UTC start): a fresh run every 3 hours, working
+  about 170 minutes. Lane a owns odd milestones and odd bugs, lane b even ones (`sessions.py next`).
 - **The QA lane** (`--as qa-<MMDD>-<HHMM>`): overnight only (11 PM to 6 AM Central). Its bugs are waiting in the
   morning.
 - **The owner's chat** (`--as chat`) talks with Jesse live and takes any item.
@@ -38,7 +38,7 @@ on 2026-10-03, 40 runs made 311 commits, 211 of them bookkeeping and 125 merges,
      brought in code under `src/`, push. Two or three small items may share one build;
    - commit messages say what's done and what's next: they are the handoff. No claim, pause, land or handoff
      commits.
-3. **Wrap up at about 110 minutes:** push what's green. Unfinished work goes to `wip/<lane>` (e.g. `wip/lane-a`) with
+3. **Wrap up at about 170 minutes:** push what's green. Unfinished work goes to `wip/<lane>` (e.g. `wip/lane-a`) with
    a commit message saying what's left; the next run of your lane continues it. Log the cost
    (`python3 tools/agent/usage.py --log --as <you> --note "<items>"`) if that script exists.
 4. **No messages to the owner**; the digest reports. End with a 2-line summary (what landed, what's next).

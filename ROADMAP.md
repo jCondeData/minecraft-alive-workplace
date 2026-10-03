@@ -4228,7 +4228,7 @@ item waits.
 
 - **Sprint mode** (2026-10-03): the owner asked to go back to how the first chat worked, after four lanes and an
   hourly QA lane built one feature in four days. Two build lanes (odd/even numbers) commit straight to `main` in
-  2-hour runs; lane C is off; the QA lane runs overnight only; reviews never block; the evening digest releases daily.
+  3-hour runs (owner: longer if need be); lane C is off; the QA lane runs overnight only; reviews never block; the evening digest releases daily.
 
 ## Notes / blocked
 

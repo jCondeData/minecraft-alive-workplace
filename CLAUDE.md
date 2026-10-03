@@ -44,7 +44,7 @@ item; don't read ROADMAP.md whole (it's over 4,000 lines).
    the pull brought in code, push. The commit message says what's done and what's next.
 6. Next item straight away. No claims, landings, handoff or bookkeeping commits.
 
-**End of a run** (about 110 minutes): push what's green; unfinished work goes to `wip/<lane>` with a message saying
+**End of a run** (about 170 minutes): push what's green; unfinished work goes to `wip/<lane>` with a message saying
 what's left. When compacting, keep the modified files, the current item and its Done when, and the test commands.
 
 **Usage**: subagents for searching or reading code get `model: "sonnet"`; the session's own model does the building.

@@ -50,6 +50,16 @@ public final class MaterialLedger {
 		add(GAINED, item, count);
 	}
 
+	/**
+	 * A free conversion within a family ({@link MaterialFamilies}: Rechiseled turns andesite into polished andesite at no
+	 * cost): {@code from} taken out of the stock, {@code to} gained. Without it the soak counted andesite -1 and polished
+	 * andesite +1 (B31).
+	 */
+	static void converted(Item from, Item to, int count) {
+		add(USED, from, count);
+		add(GAINED, to, count);
+	}
+
 	/** Items a builder dropped on the ground (nowhere to put them). */
 	static void dropped(ItemStack stack) {
 		add(DROPPED, stack.getItem(), stack.getCount());

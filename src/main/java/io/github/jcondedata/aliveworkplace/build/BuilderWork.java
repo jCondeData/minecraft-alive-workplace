@@ -602,6 +602,9 @@ public class BuilderWork extends Behavior<Villager> {
 				if (got > 0) {
 					tookAny = true;
 					bag.addAll(e.getKey(), got);
+					if (source2 != e.getKey()) {
+						MaterialLedger.converted(source2, e.getKey(), got);
+					}
 					take -= got;
 				}
 			}

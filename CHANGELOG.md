@@ -9,6 +9,8 @@
   with Cobblemon the Pokémon jobs. Lost it? Craft another from a book and wheat.
 
 ### Fixed
+- With Cobblemon, a herder no longer stands waiting under a pastured Pokémon that's flying about: they get on with
+  other work and brush or milk it once it has come down.
 - A tall flower (sunflower, lilac, rose bush, peony) given to a farmer at their composter now makes a Florist, as the
   Guide Book says; before, only small flowers did and a tall one silently did nothing.
 - Builders levelling the ground carry enough dirt from their chests for the whole hollow, instead of walking back for

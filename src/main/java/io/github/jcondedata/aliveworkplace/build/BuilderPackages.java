@@ -3,10 +3,10 @@ package io.github.jcondedata.aliveworkplace.build;
 import com.google.common.collect.ImmutableList;
 import com.mojang.datafixers.util.Pair;
 import io.github.jcondedata.aliveworkplace.registry.ModAttachments;
+import io.github.jcondedata.aliveworkplace.work.WalkToJobSite;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ai.behavior.BehaviorControl;
 import net.minecraft.world.entity.ai.behavior.SetLookAndInteract;
-import net.minecraft.world.entity.ai.behavior.SetWalkTargetFromBlockMemory;
 import net.minecraft.world.entity.ai.behavior.StrollAroundPoi;
 import net.minecraft.world.entity.ai.behavior.UpdateActivityFromSchedule;
 import net.minecraft.world.entity.ai.behavior.declarative.BehaviorBuilder;
@@ -23,8 +23,9 @@ public final class BuilderPackages {
 			Pair.of(0, new BuilderWork()),
 			Pair.of(1, new PathWork()),
 			Pair.of(1, new Upkeep.Look()),
-			Pair.of(2, BehaviorBuilder.<Villager>triggerIf(BuilderPackages::idle,
-				SetWalkTargetFromBlockMemory.create(MemoryModuleType.JOB_SITE, speed, 9, 100, 1200))),
+			// Not vanilla's SetWalkTargetFromBlockMemory: it gives the bench up after a minute stuck, and the builder then
+			// takes the nearest free one, often another builder's (B28).
+			Pair.of(2, BehaviorBuilder.<Villager>triggerIf(BuilderPackages::idle, WalkToJobSite.create(speed, 9))),
 			Pair.of(5, BehaviorBuilder.<Villager>triggerIf(BuilderPackages::idle,
 				StrollAroundPoi.create(MemoryModuleType.JOB_SITE, 0.4f, 4))),
 			Pair.of(10, SetLookAndInteract.create(EntityType.PLAYER, 4)),

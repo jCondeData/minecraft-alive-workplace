@@ -47,6 +47,8 @@ public abstract class RanchWork extends Behavior<Villager> {
 	private static final int LOOK_EVERY = 40;
 	/** Picked-up items are taken to the chests once there's this many stacks (or nothing else to do). */
 	private static final int DEPOSIT_STACKS = 4;
+	/** How long a villager waits under an animal that's out of reach above (a flying Pokémon) before doing something else. */
+	static final int OVERHEAD_PATIENCE = 100;
 
 	protected enum Task { NONE, DEPOSIT, COLLECT, BREED, TEND }
 
@@ -61,6 +63,7 @@ public abstract class RanchWork extends Behavior<Villager> {
 	@Nullable
 	private Item food;
 	private int lookTimer;
+	private int overhead;
 
 	protected RanchWork() {
 		super(ImmutableMap.of(
@@ -139,6 +142,7 @@ public abstract class RanchWork extends Behavior<Villager> {
 		walker.reset();
 		task = Task.NONE;
 		lookTimer = 0;
+		overhead = 0;
 	}
 
 	@Override
@@ -189,14 +193,30 @@ public abstract class RanchWork extends Behavior<Villager> {
 				Boolean ready = prepare(level, villager, own, bag);
 				if (ready == null) {
 					done();
-				} else if (ready && reach(level, villager, target) && !tend(level, villager, target, own, bag)) {
-					done();
+				} else if (ready && reach(level, villager, target)) {
+					overhead = 0;
+					if (!tend(level, villager, target, own, bag)) {
+						done();
+					}
+				} else if (ready) {
+					overhead = overhead(villager, target) ? overhead + 1 : 0;
+					if (overhead > OVERHEAD_PATIENCE) {
+						done(); // it's up in the air above: look for other work and come back once it's down (B24)
+					}
 				}
 			}
 		}
 	}
 
+	/** Whether {@code entity} is close by but out of reach above the villager's head. */
+	private static boolean overhead(Villager villager, Entity entity) {
+		double dx = entity.getX() - villager.getX();
+		double dz = entity.getZ() - villager.getZ();
+		return entity.getY() - villager.getY() > REACH && dx * dx + dz * dz <= (REACH + 1) * (REACH + 1);
+	}
+
 	protected void done() {
+		overhead = 0;
 		task = Task.NONE;
 		target = null;
 		mate = null;

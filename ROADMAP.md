@@ -114,7 +114,7 @@ stay in the list, ticked, so their numbers stay unique.
 The evening of 2026-09-29 left 0.138.0 nearly ready: riding (approved), every texture redrawn, the tester set up and
 its first findings fixed. Nothing is released until these are done.
 
-- [x] **21.1** (review: pending 2026-10-03) **The texture rebuild, shown in game.** Every texture was redrawn with the pixel-art skill (2eeb6be);
+- [x] **21.1** (approved 2026-10-03) **The texture rebuild, shown in game.** Every texture was redrawn with the pixel-art skill (2eeb6be);
   178 of 182 pass its lint. Done when:
   - the other 4 pass, or each has its reason in the Notes;
   - one review package with the `preview.py audit` contact sheet, in-game shots of the workstations in a village and

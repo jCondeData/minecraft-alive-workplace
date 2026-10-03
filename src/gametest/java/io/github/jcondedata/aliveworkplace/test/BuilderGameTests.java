@@ -1393,9 +1393,10 @@ public class BuilderGameTests implements FabricGameTest {
 	 * what its own block needs, so the lead takes the cobblestone and finishes, instead of waiting with nothing on its
 	 * missing list (the soak's library and flower shop).
 	 */
-	//$ gametest_ticks_batch AREA '2400' '"crews"'
-	@GameTest(template = AREA, timeoutTicks = 2400, batch = "crews")
+	//$ gametest_ticks_batch AREA '2400' '"crew_spares"'
+	@GameTest(template = AREA, timeoutTicks = 2400, batch = "crew_spares")
 	public void leadTakesTheLastBlockFromAHelperWorkingOnSomethingElse(GameTestHelper helper) {
+		Leftovers.clear(helper);
 		Setup s = setup(helper, TEST_HUT, HUT_ORIGIN, Rotation.NONE, hutMaterials());
 		int cobble = s.plan().materials().getOrDefault(Items.COBBLESTONE, 0);
 		helper.assertTrue(cobble > 1 && cobble <= 25, "the test hut should need some cobblestone, needs " + cobble);

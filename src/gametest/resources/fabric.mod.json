@@ -75,7 +75,8 @@
 			"io.github.jcondedata.aliveworkplace.test.FerryLeaveQaGameTests",
 			"io.github.jcondedata.aliveworkplace.test.StationsB8UnloadedGameTests",
 			"io.github.jcondedata.aliveworkplace.test.JobSiteTicketsGameTests",
-			"io.github.jcondedata.aliveworkplace.test.StationsQaGameTests"
+			"io.github.jcondedata.aliveworkplace.test.StationsQaGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaB17GameTests"
 		]
 	},
 	"depends": {

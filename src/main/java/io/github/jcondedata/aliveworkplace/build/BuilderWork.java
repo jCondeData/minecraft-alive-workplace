@@ -578,11 +578,16 @@ public class BuilderWork extends Behavior<Villager> {
 	 * At the chest: take what the next stretch of work needs from {@code supplies} (the chests there), current block
 	 * first. Helpers only take a handful for the blocks they are on, so they never sit on the lead's materials.
 	 */
+	/** The next stretch of work, for what to take and what to keep: later stages, or the rest of the levelling. */
+	private static List<BuildPlan.Step> ahead(BuildSite site, BuildPlan plan) {
+		return site.stage() == BuildPlan.Stage.LANDSCAPE ? site.landscapeLeft(plan, LOOKAHEAD) : site.upcoming(plan, LOOKAHEAD);
+	}
+
 	private void takeWanted(ServerLevel level, BuildSite site, BuildPlan plan, BuilderBag bag, MaterialRules.Requirement requirement,
 							List<BlockPos> supplies, BlockPos source) {
 		Map<Item, Integer> wanted = new LinkedHashMap<>();
 		wanted.put(requirement.item(), requirement.count() + (helping ? 3 : 0));
-		for (BuildPlan.Step s : helping ? List.<BuildPlan.Step>of() : site.upcoming(plan, LOOKAHEAD)) {
+		for (BuildPlan.Step s : helping ? List.<BuildPlan.Step>of() : ahead(site, plan)) {
 			if (!MaterialRules.matches(level.getBlockState(s.pos()), s.state())) {
 				for (MaterialRules.Requirement r : s.requirements()) {
 					wanted.merge(r.item(), r.count(), Integer::sum);
@@ -701,7 +706,7 @@ public class BuilderWork extends Behavior<Villager> {
 		}
 		Set<Item> keep = new HashSet<>();
 		boolean keepNothing = helping || site.stage() == BuildPlan.Stage.DECONSTRUCT;
-		for (BuildPlan.Step s : keepNothing ? List.<BuildPlan.Step>of() : site.upcoming(plan, LOOKAHEAD)) {
+		for (BuildPlan.Step s : keepNothing ? List.<BuildPlan.Step>of() : ahead(site, plan)) {
 			for (MaterialRules.Requirement r : s.requirements()) {
 				keep.add(r.item());
 			}

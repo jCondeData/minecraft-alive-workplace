@@ -11,6 +11,10 @@
 ### Fixed
 - A builder no longer stands waiting for materials with nothing on its missing list when the last of a block is
   in a helper's pockets: helpers keep only what the block they are working on needs and pass the rest over.
+- A tall flower (sunflower, lilac, rose bush, peony) given to a farmer at their composter now makes a Florist, as the
+  Guide Book says; before, only small flowers did and a tall one silently did nothing.
+- Builders levelling the ground carry enough dirt from their chests for the whole hollow, instead of walking back for
+  every block (and keep the dirt they dug up for it), so tidying up around a build far from its chests no longer crawls.
 - Warding now protects the whole village, corners included: a creeper or TNT going off in a corner of a warded
   village, or just past its edge, no longer breaks the village's blocks.
 - The Village Hall's Guards and Mercenaries buttons, and Research's Drill topic, no longer show an iron sword's

@@ -120,8 +120,7 @@ public final class ResearchScreen {
 		ItemStack icon = new ItemStack(item);
 		icon.set(DataComponents.CUSTOM_NAME, line(name, color));
 		icon.set(DataComponents.LORE, new ItemLore(lore));
-		icon.set(DataComponents.HIDE_ADDITIONAL_TOOLTIP, net.minecraft.util.Unit.INSTANCE);
-		return icon;
+		return io.github.jcondedata.aliveworkplace.mc.Tooltips.nameAndLoreOnly(icon);
 	}
 
 	private static Component line(Component text, ChatFormatting color) {

@@ -9,6 +9,8 @@
   with Cobblemon the Pokémon jobs. Lost it? Craft another from a book and wheat.
 
 ### Fixed
+- With several builders in a village, a builder who runs short no longer empties another builder's chests of what
+  that builder's own build needs (which left it waiting for glass panes it had been given): it takes only what's spare.
 - With Cobblemon, a herder no longer stands waiting under a pastured Pokémon that's flying about: they get on with
   other work and brush or milk it once it has come down.
 - Every flower now makes a Florist at a composter, pink petals and spore blossoms too, and the composter's tooltip

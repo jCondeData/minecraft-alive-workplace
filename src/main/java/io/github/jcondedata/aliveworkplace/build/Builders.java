@@ -417,8 +417,42 @@ public final class Builders {
 		return need;
 	}
 
+	/**
+	 * What the builds at {@code bench} (the one under way and those queued after it), other than {@code except}, still
+	 * need, by family key: their builder's chests keep that much for them, so another builder only takes what is spare
+	 * (B31: in a village of builders, one short of a glass pane emptied the inn's chests and left the inn waiting).
+	 */
+	public static Map<Item, Integer> reservedAt(ServerLevel level, BlockPos bench, @Nullable BuildSite except) {
+		Map<Item, Integer> out = new java.util.HashMap<>();
+		for (BuildSite other : BuildSiteManager.get(level).all()) {
+			if (other == except || other.isDone() || other.isDeconstruction() || !bench.equals(other.bench())) {
+				continue;
+			}
+			BuildPlan otherPlan = other.plan(level);
+			if (otherPlan != null) {
+				remainingNeed(level, other, otherPlan).forEach((item, n) -> out.merge(item, n, Integer::sum));
+			}
+		}
+		return out;
+	}
+
+	/** How many of {@code item}'s family the {@code chests} hold beyond what is {@link #reservedAt reserved} in them. */
+	public static long spare(ServerLevel level, List<BlockPos> chests, Item item, Map<Item, Integer> reserved) {
+		long have = 0;
+		for (Item member : MaterialFamilies.accepted(item)) {
+			have += SupplyContainers.count(level, chests, member);
+		}
+		return Math.max(0, have - reserved.getOrDefault(MaterialFamilies.key(item), 0));
+	}
+
 	/** Materials still needed for the rest of the build, minus what the builder carries and what is in the supply chests. */
 	public static Map<Item, Integer> computeMissing(ServerLevel level, BuildSite site, BuildPlan plan, BuilderBag bag, List<BlockPos> supplies) {
+		return computeMissing(level, site, plan, bag, supplies, Map.of());
+	}
+
+	/** The same, counting {@code elsewhere} (by family key) as well: what other workers' chests can spare. */
+	public static Map<Item, Integer> computeMissing(ServerLevel level, BuildSite site, BuildPlan plan, BuilderBag bag, List<BlockPos> supplies,
+													Map<Item, Long> elsewhere) {
 		Map<Item, Integer> need = remainingNeed(level, site, plan);
 		// What the rest of the crew is carrying counts too: it goes into this build.
 		List<BuilderBag> bags = new java.util.ArrayList<>(List.of(bag));
@@ -436,7 +470,7 @@ public final class Builders {
 		}
 		Map<Item, Integer> missing = new LinkedHashMap<>();
 		for (Map.Entry<Item, Integer> e : need.entrySet()) {
-			long have = 0;
+			long have = elsewhere.getOrDefault(e.getKey(), 0L);
 			for (Item member : MaterialFamilies.accepted(e.getKey())) {
 				have += SupplyContainers.count(level, supplies, member);
 				for (BuilderBag b : bags) {

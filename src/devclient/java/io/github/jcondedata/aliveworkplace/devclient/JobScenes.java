@@ -849,6 +849,42 @@ final class JobScenes {
 					io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.open(player, STATION), 30),
 				step("05_hall_festival", io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FESTIVAL, 6)),
 			(level, player) -> player.containerMenu instanceof ChoiceMenu));
+		SCREENS.put("hall_treasury", new Screen("the hall's treasury was collected, the village protected and its screen opened from a Village Ledger",
+			new Vec3(2.5, -58.4, 4.5), TARGET,
+			(level, player) -> {
+				level.setBlockAndUpdate(STATION, ModBlocks.VILLAGE_HALL.defaultBlockState()
+					.setValue(io.github.jcondedata.aliveworkplace.hall.VillageHallBlock.FACING, Direction.SOUTH));
+				worker(level, new BlockPos(-4, -60, -3), ModBlocks.BLUEPRINT_TABLE, ModVillagers.BLUEPRINT_TABLE_POI, ModVillagers.BUILDER);
+				guard(level, new BlockPos(4, -60, -3), new ItemStack(Items.IRON_SWORD));
+				io.github.jcondedata.aliveworkplace.hall.VillageNeeds.check(level, STATION);
+				var hall = (io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(STATION);
+				hall.setOwner(player.getUUID(), player.getGameProfile().getName());
+				hall.setTreasury(700); // 7 emeralds put by
+				hall.setProtected(true);
+			},
+			// The name tag (slot 0) hovered: the treasury's 7 emeralds and the village protected by its owner.
+			List.of(new Step("01_hall_treasury", 0, 6, (level, player) ->
+					io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.open(player, STATION), 30),
+				new Step("02_hall_collected", 0, 6, (level, player) -> {
+					io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.open(player, STATION);
+					if (player.containerMenu instanceof ChoiceMenu m) {
+						m.press(0, player); // a click on the name tag collects the treasury
+					}
+					Showcase.check(player.getInventory().countItem(Items.EMERALD) == 7, "the name tag paid out the treasury's 7 emeralds, got "
+						+ player.getInventory().countItem(Items.EMERALD));
+				}, 30),
+				new Step("03_ledger_held", -1, 0, (level, player) -> {
+					player.closeContainer();
+					ItemStack ledger = new ItemStack(ModItems.VILLAGE_LEDGER);
+					io.github.jcondedata.aliveworkplace.hall.VillageLedgerItem.bind(level, player, ledger, STATION);
+					player.setItemInHand(InteractionHand.MAIN_HAND, ledger);
+					// Walk off from the hall and turn away: the ledger opens its screen from anywhere nearby.
+					player.teleportTo(level, 2.5, -59, 24.5, 0f, 10f);
+					Showcase.check(ledger.get(io.github.jcondedata.aliveworkplace.registry.ModComponents.LEDGER) != null, "the ledger was bound to the hall");
+				}, 30),
+				new Step("04_ledger_opens", -1, 6, (level, player) ->
+					ModItems.VILLAGE_LEDGER.use(level, player, InteractionHand.MAIN_HAND), 30)),
+			(level, player) -> player.containerMenu instanceof ChoiceMenu));
 		SCREENS.put("leader",new Screen("the Trainer Leader took the challenge and the battle started", new Vec3(-4.5, -57.5, 11.5),
 			new Vec3(0.5, -59, 5.5),
 			(level, player) -> {

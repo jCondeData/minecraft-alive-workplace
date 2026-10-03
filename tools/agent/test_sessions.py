@@ -295,6 +295,24 @@ def run(tmp):
     r = S(B, "claim B8 --as lane-c-1003-0100", ok=None)
     check("a fourth live claim is refused", r.returncode == 1 and "at most 3" in r.stdout, r.stdout)
 
+    # Bookkeeping on main during a build (a claim, a bug) doesn't make land build again (B16).
+    S(C, "bug 'ninth' --as chat2")
+    sh("git switch -q main 2>/dev/null; git pull -q", A)
+    S(A, "claim B9 --as chat3")
+    sh("printf 'x\\n' > Other.java && git add Other.java && git commit -qm 'Other' && git push -q -u origin item/B9", A)
+    count = os.path.join(tmp, "builds")
+    bump = os.path.join(tmp, "bump.sh")
+    with open(bump, "w") as f:
+        f.write(f"#!/bin/sh\necho b >> {count}\nif [ ! -f {tmp}/bump.done ]; then touch {tmp}/bump.done; cd {B} && "
+                f"git switch -q main 2>/dev/null; git pull -q; python3 tools/agent/sessions.py bug 'mid-build' "
+                f"--as night-5 >/dev/null; fi\n")
+    os.chmod(bump, 0o755)
+    r = S(A, f"land B9 --as chat3 --build {bump}")
+    with open(count) as f:
+        builds = len(f.read().split())
+    check("a roadmap-only change on main mid-build doesn't build again", builds == 1 and "not building again" in
+          r.stdout and "[x] **B9**" in line("B9") and "mid-build" in roadmap(), r.stdout)
+
     # Nothing left behind: no stray worktrees.
     check("no stray worktrees", len(sh("git worktree list", C).stdout.strip().splitlines()) == 1)
 

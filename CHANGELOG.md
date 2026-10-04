@@ -3,6 +3,14 @@
 ## Unreleased
 
 ### Added
+- Builders are now tested against getting stuck: five long runs trap a builder in water, beside lava, in holes, behind
+  fences, in a room with a door, on its own roof and through chunk reloads; it gets out every time, finishes the build
+  and never breaks a block it placed.
+- Importing builds tells you more: blocks from mods that aren't installed are named in the message ("…became air:
+  create:shaft, create:andesite_casing"), a build made only of such blocks is refused naming them, a file cut short in
+  a download says so, and a damaged Litematica file names the region. Builds from Minecraft 1.12 (before the
+  flattening) and WorldEdit's first `.schem` version import, and big builds (48 × 8 × 48) read the same from
+  `.litematic`, `.schem` and `.nbt`.
 - **A settings screen**: with Mod Menu installed, the mod's Configure button opens every setting of
   `config/aliveworkplace.json` as sliders and on/off buttons, each with a tooltip saying what it does. Closing the
   screen saves the file and puts the settings into effect in your own worlds; a server keeps its own file.

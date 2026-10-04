@@ -75,15 +75,20 @@ final class LitematicReader {
 			}
 			ListTag paletteTag = Nbt.getList(r, "BlockStatePalette", Tag.TAG_COMPOUND);
 			BlockState[] palette = new BlockState[paletteTag.size()];
+			String[] unknown = new String[palette.length];
 			for (int i = 0; i < palette.length; i++) {
 				palette[i] = states.fromCompound(Nbt.compoundAt(paletteTag, i));
+				unknown[i] = states.lastUnknown();
+			}
+			if (palette.length == 0) {
+				throw new BlueprintFormatException("litematic.corrupt", region.name());
 			}
 			long[] data = Nbt.getLongArray(r, "BlockStates");
 			int sx = region.size().getX(), sy = region.size().getY(), sz = region.size().getZ();
 			int bits = Math.max(2, 32 - Integer.numberOfLeadingZeros(Math.max(1, palette.length - 1)));
 			long volume = (long) sx * sy * sz;
 			if (data.length * 64L < volume * bits) {
-				throw new BlueprintFormatException("litematic.corrupt");
+				throw new BlueprintFormatException("litematic.corrupt", region.name());
 			}
 			BlockPos offset = region.min().offset(-minX, -minY, -minZ);
 
@@ -104,6 +109,9 @@ final class LitematicReader {
 						long index = (long) y * sx * sz + (long) z * sx + x;
 						int paletteIndex = (int) get(data, index, bits);
 						BlockState state = paletteIndex < palette.length ? palette[paletteIndex] : palette[0];
+						if (paletteIndex < palette.length && unknown[paletteIndex] != null) {
+							states.unknownBlock(unknown[paletteIndex]);
+						}
 						BlockPos local = new BlockPos(x, y, z);
 						CompoundTag nbt = blockEntities.get(local);
 						if (nbt != null && state.hasBlockEntity()) {

@@ -1817,6 +1817,31 @@ public class ScreenshotHarness implements ClientModInitializer {
 	private final AtomicBoolean battleOver = new AtomicBoolean(false);
 	private final AtomicBoolean battleStarted = new AtomicBoolean(false);
 	private int battleShots;
+	private int lastTurn = -1;
+	private int lastTurnTick;
+
+	// B43: what a battle that stopped moving is waiting on (every field of the battle, sizes for collections).
+	private static void dumpStuckBattle(Object battle) {
+		for (Class<?> c = battle.getClass(); c != null && c != Object.class; c = c.getSuperclass()) {
+			for (java.lang.reflect.Field f : c.getDeclaredFields()) {
+				try {
+					f.setAccessible(true);
+					Object v = f.get(battle);
+					String s;
+					if (v instanceof java.util.Collection<?> col) {
+						s = "size " + col.size() + " " + col.stream().limit(6).map(String::valueOf).toList();
+					} else if (v instanceof java.util.Map<?, ?> map) {
+						s = "size " + map.size();
+					} else {
+						s = String.valueOf(v);
+					}
+					System.out.println("[battle scene] stuck " + f.getName() + " = " + (s.length() > 300 ? s.substring(0, 300) : s));
+				} catch (Throwable t) {
+					System.out.println("[battle scene] stuck " + f.getName() + " unreadable: " + t);
+				}
+			}
+		}
+	}
 
 	/**
 	 * SCENE=battle (Cobblemon + Mega Showdown): the player challenges a Master trainer whose lead holds its Mega Stone.
@@ -1886,6 +1911,13 @@ public class ScreenshotHarness implements ClientModInitializer {
 					battle.getActors().forEach(a -> state.append(" | ").append(a.getName().getString()).append(" request=").append(a.getRequest() != null)
 						.append(" mustChoose=").append(a.getMustChoose()).append(" responses=").append(a.getResponses().size()));
 					System.out.println(state);
+					if (battle.getTurn() == lastTurn && tick - lastTurnTick >= 300 && tick % 500 == 0) {
+						dumpStuckBattle(battle);
+					}
+				}
+				if (battle.getTurn() != lastTurn) {
+					lastTurn = battle.getTurn();
+					lastTurnTick = tick;
 				}
 				if (us == null || us.getRequest() == null || !us.getMustChoose() || !us.getResponses().isEmpty()) {
 					return;

@@ -8,6 +8,7 @@ import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import net.minecraft.SharedConstants;
 import net.minecraft.core.BlockPos;
@@ -40,7 +41,8 @@ public final class BlueprintFiles {
 	public static final int MAX_FILE_BYTES = 8 * 1024 * 1024;
 	private static final long MAX_NBT_BYTES = 256L * 1024 * 1024;
 
-	public record Result(Blueprint blueprint, String format, int unknownBlocks) {
+	/** {@code unknownNames}: ids of blocks from mods that aren't installed (they became air), the commonest first. */
+	public record Result(Blueprint blueprint, String format, int unknownBlocks, List<String> unknownNames) {
 	}
 
 	public static Result read(ResourceLocation id, byte[] bytes, DataFixer fixer, long maxVolume) throws BlueprintFormatException {
@@ -51,22 +53,40 @@ public final class BlueprintFiles {
 		try {
 			root = readNbt(bytes);
 		} catch (IOException | RuntimeException e) {
-			throw new BlueprintFormatException("not_nbt");
+			// Packed (gzip) but it won't unpack: a download or copy that was cut short, not some other kind of file.
+			boolean gzip = bytes.length >= 2 && (bytes[0] & 0xFF) == 0x1F && (bytes[1] & 0xFF) == 0x8B;
+			throw new BlueprintFormatException(gzip ? "cut_short" : "not_nbt");
 		}
 
 		if (LitematicReader.looksLike(root)) {
 			BlockStateReader states = new BlockStateReader(fixer, Nbt.getInt(root, "MinecraftDataVersion"));
-			return new Result(LitematicReader.read(id, root, states, maxVolume), "litematic", states.unknownBlocks());
+			return new Result(LitematicReader.read(id, root, states, maxVolume), "litematic", states.unknownBlocks(), states.unknownNames());
 		}
 		if (SpongeSchematicReader.looksLike(root)) {
 			BlockStateReader states = new BlockStateReader(fixer, SpongeSchematicReader.dataVersion(root));
-			return new Result(SpongeSchematicReader.read(id, root, states, maxVolume), "schem", states.unknownBlocks());
+			return new Result(SpongeSchematicReader.read(id, root, states, maxVolume), "schem", states.unknownBlocks(), states.unknownNames());
 		}
 		if (Nbt.has(root, "size", Tag.TAG_LIST) && Nbt.has(root, "blocks", Tag.TAG_LIST)) {
 			CompoundTag fixed = DataFixTypes.STRUCTURE.updateToCurrentVersion(fixer, root, NbtUtils.getDataVersion(root, 500));
 			ListTag s = Nbt.getList(fixed, "size", Tag.TAG_INT);
 			checkVolume(new Vec3i(Nbt.intAt(s, 0), Nbt.intAt(s, 1), Nbt.intAt(s, 2)), maxVolume);
-			return new Result(Blueprint.fromStructureNbt(id, fixed, Lookup.lookup(BuiltInRegistries.BLOCK)), "nbt", 0);
+			// Count the blocks from mods that aren't installed (the structure reader makes them air).
+			BlockStateReader states = new BlockStateReader(fixer, 0);
+			ListTag palette = Nbt.getList(fixed, "palette", Tag.TAG_COMPOUND);
+			String[] unknown = new String[palette.size()];
+			for (int i = 0; i < unknown.length; i++) {
+				states.fromCompound(Nbt.compoundAt(palette, i));
+				unknown[i] = states.lastUnknown();
+			}
+			ListTag blocks = Nbt.getList(fixed, "blocks", Tag.TAG_COMPOUND);
+			for (int i = 0; i < blocks.size(); i++) {
+				int state = Nbt.getInt(Nbt.compoundAt(blocks, i), "state");
+				if (state >= 0 && state < unknown.length && unknown[state] != null) {
+					states.unknownBlock(unknown[state]);
+				}
+			}
+			return new Result(Blueprint.fromStructureNbt(id, fixed, Lookup.lookup(BuiltInRegistries.BLOCK)), "nbt", states.unknownBlocks(),
+				states.unknownNames());
 		}
 		if (Nbt.has(root, "Blocks", Tag.TAG_BYTE_ARRAY) && root.contains("Materials")) {
 			throw new BlueprintFormatException("mcedit");

@@ -108,7 +108,7 @@ stay in the list, ticked, so their numbers stay unique.
 - [ ] **B40** Builders stall 30 s with nothing missing in the split soak (SOAK=true SOAK_SPLIT=true SOAK_DAYS=6, lane-a-1004-0332, 2026-10-04, run 6d in docs/agent/soak.md): the sifting shed in CLEAR with 0 placed, the schoolhouse at the start of FOUNDATION (1 placed, 55 skipped) and the apiary garden in STRUCTURE (55 placed), all status WORKING; the schoolhouse's FOUNDATION stall shows in every split run. Expected: no stall. Test: the split soak with DEBUG=true to see what those builders do, then a GameTest for the case found (found by lane-a-1004-0332, 2026-10-04)
 - [x] **B41** (approved auto 2026-10-04) Showcase scene 'missing' fails on every run since 24.4's title check (showcase runs 45 at 93dba30 and 46 at e39f973, nightly issue #1): '01_blueprint_missing: the title Crafting is wider than its screen (41 > -18 pixels)'. The shot is the player's own InventoryScreen, whose 'Crafting' label sits at titleLabelX 97 of 176, so ScreenshotHarness.titleFits' room (imageWidth - 2 x titleLabelX) goes negative; a false failure in the harness, not in the game (the label fits in the 79 pixels right of it). Expected: the missing scene passes; titleFits measures room from titleLabelX to the panel's right edge, or skips screens that aren't ours. Test: SCENE=missing tools/screenshots/run.sh passes (found by qa-1004-0733, 2026-10-04)
 - [ ] **B42** The showcase's soak scene (23.1's time-lapse) fails 'every build finishes' in each of the last three showcase runs that filmed it, all after 23.1 landed: 21 of 22 at game tick 176907 (commit 9102667, 03:18Z), 20 of 22 at 175923 (1da91eb, 03:53Z), 21 of 22 at 175464 (e39f973, 06:48Z), gave up at the time limit with no 02_soak_done picture (nightly issue #1). Expected: 22/22 inside the scene's time, as 23.1's Done when says. Test: SCENE=soak tools/screenshots/run.sh passes; the unfinished build's name and stage from its log (possibly B40's stall) (found by qa-1004-0733, 2026-10-04)
-- [ ] **B43** The showcase's battle scene (a Master trainer, with Cobblemon) failed 'the battle ran to the end' in showcase run 46 (e39f973, 2026-10-04 06:48Z): no battle end within its 8000 ticks, while runs 44 and 45 passed it. Expected: the scripted battle always finishes inside the scene (or the scene waits on something that always ends it). Test: SCENE=battle tools/screenshots/run.sh, a few runs; its '[battle scene] tick N turn T' lines show where it hangs (found by qa-1004-0733, 2026-10-04)
+- [ ] **B43** The showcase's battle scene (a Master trainer, with Cobblemon) failed 'the battle ran to the end' in showcase run 46 (e39f973, 2026-10-04 06:48Z): no battle end within its 8000 ticks, while runs 44 and 45 passed it. Expected: the scripted battle always finishes inside the scene (or the scene waits on something that always ends it). Test: SCENE=battle tools/screenshots/run.sh, a few runs; its '[battle scene] tick N turn T' lines show where it hangs (found by qa-1004-0733, 2026-10-04) Status (lane-a-1004-0932): a local stuck run sat at turn 10 from tick 1100 to 4000+ with request=false and mustChoose=false on both sides and nothing in the log, so the battle is stuck, not slow; 5 more local runs all finished (420-1220 ticks). The scene now dumps every field of a battle that hasn't changed turn for 300 ticks (its dispatch queue, dispatchResult, showdownMessages) as '[battle scene] stuck' lines, so the next showcase run that hangs shows what it waits on (likeliest: a dispatchFuture that never completes, e.g. a send-out or recall of the trainer's Pokémon).
 
 ## Milestone 21: Finish 0.138.0
 
@@ -286,7 +286,7 @@ first; many items below are "verify and harden", not "build".
   - the GIF is in the review package.
 
   This test is the yardstick for the rest of the milestone.
-- [ ] **23.2** **Stuck recovery, proven.** Builders stuck on water, lava, holes, fences, doors, their own scaffolding, or in
+- [x] **23.2** (approved auto 2026-10-04) **Stuck recovery, proven.** Builders stuck on water, lava, holes, fences, doors, their own scaffolding, or in
   unloaded chunks. Done when: a chaos test (the tester skill's `ChaosTests`, 5 seeds) finishes every time, and the
   recovery (hop, re-path, step back) never breaks a placed block.
 - [x] **23.3** (review: pending 2026-10-04) **"What do you need?" at a glance.** The player can always see what a build is missing and where the builder
@@ -307,7 +307,7 @@ first; many items below are "verify and harden", not "build".
   it. Add a config option (default: keep working, so a server owner can still choose to pause), and document it
   in the README. Done when: both settings are tested, and there are no chunk-loading surprises (count the tickets
   before and after the soak).
-- [ ] **23.7** **Imports that just work.** `.litematic`, `.schem` and `.nbt` files in common sizes and versions, including big
+- [x] **23.7** (approved auto 2026-10-04) **Imports that just work.** `.litematic`, `.schem` and `.nbt` files in common sizes and versions, including big
   builds (48×8×48), unknown modded blocks and old formats. Done when: a test corpus of permissively licensed or
   self-made sample files imports, or fails with a clear message that says which block or format was the problem.
 - [ ] **23.8** **Placing a build feels good.**

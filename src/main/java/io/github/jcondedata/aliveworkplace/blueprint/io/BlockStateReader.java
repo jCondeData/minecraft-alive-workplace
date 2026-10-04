@@ -32,7 +32,10 @@ final class BlockStateReader {
 	private final DataFixer fixer;
 	private final int fromVersion;
 	private final int currentVersion = SharedConstants.getCurrentVersion().getDataVersion().getVersion();
-	private int unknown;
+	/** Blocks from mods that aren't installed, by id, with how many of them the build had (counted by the readers). */
+	private final java.util.Map<String, Integer> unknownBlocks = new java.util.HashMap<>();
+	/** The id of the block the last {@code from...} call didn't know, or null. */
+	private String lastUnknown;
 
 	BlockStateReader(DataFixer fixer, int fromVersion) {
 		this.blocks = Lookup.lookup(BuiltInRegistries.BLOCK);
@@ -46,9 +49,11 @@ final class BlockStateReader {
 		if (fromVersion > 0 && fromVersion < currentVersion) {
 			fixed = (CompoundTag) fixer.update(References.BLOCK_STATE, new Dynamic<Tag>(NbtOps.INSTANCE, tag), fromVersion, currentVersion).getValue();
 		}
-		ResourceLocation id = ResourceLocation.tryParse(Nbt.getString(fixed, "Name"));
+		String name = Nbt.getString(fixed, "Name");
+		ResourceLocation id = ResourceLocation.tryParse(name);
+		lastUnknown = null;
 		if (id == null || !BuiltInRegistries.BLOCK.containsKey(id)) {
-			unknown++;
+			lastUnknown = name;
 			return Blocks.AIR.defaultBlockState();
 		}
 		return NbtUtils.readBlockState(Lookup.lookup(BuiltInRegistries.BLOCK), fixed);
@@ -62,9 +67,11 @@ final class BlockStateReader {
 				.asString(state);
 		}
 		int bracket = fixed.indexOf('[');
-		ResourceLocation id = ResourceLocation.tryParse(bracket < 0 ? fixed : fixed.substring(0, bracket));
+		String name = bracket < 0 ? fixed : fixed.substring(0, bracket);
+		ResourceLocation id = ResourceLocation.tryParse(name);
+		lastUnknown = null;
 		if (id == null || !BuiltInRegistries.BLOCK.containsKey(id)) {
-			unknown++;
+			lastUnknown = name;
 			return Blocks.AIR.defaultBlockState();
 		}
 		try {
@@ -91,7 +98,25 @@ final class BlockStateReader {
 		return tag;
 	}
 
+	/** The id the last {@code fromCompound}/{@code fromString} call didn't know (it became air), or null. */
+	@org.jetbrains.annotations.Nullable
+	String lastUnknown() {
+		return lastUnknown;
+	}
+
+	/** Counts one block of the build that was {@code id}, a block this game doesn't have. */
+	void unknownBlock(String id) {
+		unknownBlocks.merge(id, 1, Integer::sum);
+	}
+
 	int unknownBlocks() {
-		return unknown;
+		return unknownBlocks.values().stream().mapToInt(Integer::intValue).sum();
+	}
+
+	/** The unknown block ids, the commonest first. */
+	java.util.List<String> unknownNames() {
+		return unknownBlocks.entrySet().stream()
+			.sorted(java.util.Map.Entry.<String, Integer>comparingByValue().reversed().thenComparing(java.util.Map.Entry.comparingByKey()))
+			.map(java.util.Map.Entry::getKey).toList();
 	}
 }

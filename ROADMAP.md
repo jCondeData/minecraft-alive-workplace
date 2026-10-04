@@ -1325,7 +1325,7 @@ happy village, and an unhappy Legend never leaves but goes on strike. It builds 
 Homes, Couples), inn/ (Innkeepers), school/ (Schools), hall/ (VillageRanks, Chronicle, Festivals, Treasury, Caravans,
 MarketDays) and research/.
 
-- [ ] **29.1** **Design note.** `docs/design/M29.md`: what the player sees (the Gifted, each Legend, how each arrives,
+- [x] **29.1** (approved auto 2026-10-04) **Design note.** `docs/design/M29.md`: what the player sees (the Gifted, each Legend, how each arrives,
   the hall's Legends page, needs and strikes); the data formats (`legends/`, `gifted/` and `research_trees/` under
   `data/aliveworkplace/`, and the four `aliveworkplace:luxury/*` item tags); the config switches (`legends`,
   `giftedChance`, `legendSites`, `strangeMoods`, `legendNeeds`, `mythicLegendCap`); the save data (the villager
@@ -4282,6 +4282,11 @@ item waits.
   porch or yard), and the village's builder rebuilds that house's outside in place (inside and its worker kept); or
   (b) it only changes the look of pieces built from then on (by a builder, 27.x), not the generated ones. Default if
   you don't answer: 1a + 2a with the five existing outsides (no new art), after the current lane work. Waiting.
+- 2026-10-04 (29.1, decisions; lane a): `docs/design/M29.md` section 7 records eight choices lanes build on unless
+  the owner changes them. The one that changes a spec: `mythicLegendCap` is one number (the City cap, default 2; a Town
+  half, Hamlet and Village 0), not 29.3's list, because the config file and Mod Menu screen take only switches and
+  whole numbers; same defaults. Also: an existing City gets the Founder's mood once after the update; zombie
+  conversion must copy `LEGEND`/`GIFTED`/`STRANGE_MOOD` (new UUID), for 29.3.
 - 2026-10-04 (28.7, owner question; lane b): Cobblemon 1.7.3 has its own villager job, `cobblemon:nurse`, whose
   workstation is the Healing Machine, so a jobless villager next to any Healing Machine already becomes Cobblemon's nurse
   (compat test on `wip/lane-b`). 28.7 says "a jobless villager never takes a player's machine by themselves". Which:

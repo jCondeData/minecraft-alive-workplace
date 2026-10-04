@@ -3,4 +3,4 @@ What changed: pastured Pokémon now show up for ten more jobs. In the clip: a Pi
 Judge: does the air mail flight read well (how high, how long)? The Charmander is partly behind the furnace in the stills; the clip shows it.
 Tester: 10 compat GameTests pass (one per cue, plus no fire show with nothing to smelt); scene partners_forge passes its 7 checks.
 
-(from lane-b-1004-1233, 2026-10-04 13:22Z; not yet sent)
+(from lane-b-1004-1233, 2026-10-04 13:22Z; sent)

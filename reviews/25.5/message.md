@@ -5,4 +5,4 @@ Tester: 9 new GameTests (cap holds, room lets a villager in, orders bypass, path
 Scene: SCENE=config.
 Reply: approve 25.5 · veto 25.5: why · change 25.5: what
 
-(from lane-a-1004-1233, 2026-10-04 13:34Z; not yet sent)
+(from lane-a-1004-1233, 2026-10-04 13:34Z; sent)

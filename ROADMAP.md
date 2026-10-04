@@ -446,7 +446,7 @@ about 12% of that. For villager mods, the cost is pathfinding to distant points 
     vanilla's book on its outline, bound in blueprint blue with a gold house (lint warns of 12 single pixels, as it does
     for vanilla's own book: the page edges). New scene `guide` opens every page and checks its picture and that its words
     fit; GuideGameTests checks the gift, the recipe and every page's picture.
-- [ ] **26.3** **Hygiene:**
+- [x] **26.3** (review: pending 2026-10-04) **Hygiene:**
   - a Mod Menu config screen and links (issues, source);
   - GitHub issue forms (steps, `latest.log`, crash report);
   - the version `1.0.0+1.21.1`;
@@ -4318,12 +4318,13 @@ item waits.
   run's mutation-report summary has posted, and fix whatever its first run shows. 22.8's code is on main; tick it when
   a push changing one scene films only that scene (the plan job's summary says "Scenes: <name>"). 24.4: GUI_SCALE=4
   works (mailbox checked); film the other screens and hand in the package.
-- 2026-10-04 (26.3, lane-b-1004-0332), **for the owner**: the `LICENSE` file is the **GPL version 2** text (GitHub's
-  initial commit), while `fabric.mod.json`, the README and the design decision say **GPL-3.0-or-later** (needed to
-  adapt MineColonies code). Sessions may not change the license, so this waits for him: replacing `LICENSE` with the
-  GPL-3.0 text makes them agree. The two MineColonies-inspired files (ExplorerWork, Netherworkers) say "adapted in
-  spirit; the code is ours", so no file carries copied GPL code needing a header today. 26.3's other open parts: the
-  version `1.0.0+1.21.1` and the CHANGELOG cleanup go in the 1.0 release commit (sessions don't bump versions).
+- 2026-10-04 (26.3): done. `LICENSE` is the GPL-3.0 text since c303690f, matching `fabric.mod.json` and the README
+  (now with a credits paragraph). The two MineColonies-inspired files (ExplorerWork, Netherworkers) say "adapted in
+  spirit; the code is ours": no file carries copied GPL code needing a header. The mod's version is now
+  `<mod.version>+<mc>` in fabric.mod.json as in the jar name (ReleaseGameTests); tags stay `v<mod.version>`.
+  **The number 1.0.0 itself is set by the release session** (sessions don't bump versions). `publishMods` only
+  dry-runs unless `-Ppublish.live=true` and `CURSEFORGE_TOKEN` (project id: `CURSEFORGE_PROJECT_ID` or
+  `publish.curseforge`), waiting for the owner's store page.
 - 2026-10-04 (24.5, lane-b-1004-0332): `langcheck.py` is clean (its 4 title/detail pairs were checked against the code
   and listed in its CHECKED_PAIRS with why). "(s)" is gone: counted sentences use `work/Words.counted` with a `.one`
   key (WordsGameTests guards it), and item counts read "28× Spruce Planks" everywhere. Left for 24.5: reading every

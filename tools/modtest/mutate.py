@@ -171,6 +171,8 @@ def main():
     ap.add_argument("--lines", help="a-b (with --file)")
     ap.add_argument("--max", type=int, default=6)
     ap.add_argument("--seed", type=int, default=1)
+    ap.add_argument("--shard", help="K/N: run only every Nth of the picked mutants, starting at the Kth (1-based), so N "
+                                    "parallel jobs with the same --max and --seed share one set of mutants")
     ap.add_argument("--cmd", help="test command (default: runGameTest on the first node)")
     ap.add_argument("--timeout", type=int, default=900)
     ap.add_argument("--list", action="store_true", help="only list the mutants that would run")
@@ -201,6 +203,14 @@ def main():
         print("no mutable lines in the changed code")
         return
     chosen = pick(cands, a.max, a.seed)
+    if a.shard:
+        k, n = map(int, a.shard.split("/"))
+        if not 1 <= k <= n:
+            sys.exit(f"--shard {a.shard}: want K/N with 1 <= K <= N")
+        chosen = chosen[k - 1::n]
+        if not chosen:
+            print(f"shard {a.shard}: no mutants left for this shard")
+            return
     a.cmd = a.cmd or os.environ.get("MODTEST_CMD")
     if not a.cmd:
         nodes = sorted(p.name for p in (root / "versions").glob("*") if p.is_dir()) if (root / "versions").exists() else []

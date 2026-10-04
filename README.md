@@ -341,6 +341,7 @@ placed keep working, so old worlds are fine.
 | Sifter | Cauldron + gravel, sand, red sand or soul sand | gravel, sand, dirt or soul sand | nothing |
 | Tinkerer | Smithing Table + redstone | coal (iron ingots to mend golems) | nothing (uses the builders' ore) |
 | Composter | Composter + bone meal | scraps: seeds, saplings, leaves, crop waste, rotten flesh | nothing |
+| Berry Breeder (with Cobblemon) | Composter + any Cobblemon berry | berries, Growth and Surprise Mulch | sneak-right-click: pick a goal in the berry book (a Field Marker for a plot of her own) |
 | Netherworker | Cartography Table + netherrack | food (a pickaxe, an axe, a sword, a chestplate, fire resistance) | nothing (a Nether portal within 32 blocks) |
 | Undertaker | Brewing Stand + a golden apple, an enchanted golden apple or a totem | golden apples, healing potions or totems | nothing (graves within 32 blocks) |
 | Innkeeper | Shop Counter + a bed | — | nothing (hire the travellers who come to stay) |
@@ -1113,6 +1114,7 @@ saves the file and puts the settings into effect in your own worlds (a dedicated
 | `villageTreasury` | true | villages with a Village Hall put by takings every morning for players to collect at the hall |
 | `partnerShows` | true | Pokémon pastured near a workstation are seen helping: they walk over to the work, carry things and lend a hand (with Cobblemon) |
 | `nurseHealingMachine` | true | a nurse at Cobblemon's Healing Machine puts your team in it to heal them (free) and keeps it charged while on shift; off, she heals by hand |
+| `berryBreeders` | true | with Cobblemon, a berry makes a villager at a composter a Berry Breeder, who breeds new berries from the village's own; off, no Berry Breeder job |
 | `seasonDays` | 16 | days in each of the village calendar's four seasons (each season's festival is on its middle day) |
 | `treasuryPerWorker` | 20 | what each worker brings the treasury a day, in hundredths of an emerald, before wellbeing and rank |
 | `villageProtection` | true | a Village Hall's owner may protect the village from other players (shift-click the hall's name tag; off until they do) |

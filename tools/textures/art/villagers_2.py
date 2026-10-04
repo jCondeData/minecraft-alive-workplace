@@ -1,4 +1,4 @@
-"""Villager outfits, second set: orchard keeper, Pokemon trader, porter, postman, rancher, scholar, shopkeeper, sifter,
+"""Villager outfits, second set: orchard keeper, berry breeder, Pokemon trader, porter, postman, rancher, scholar, shopkeeper, sifter,
 teacher, tinkerer, trainer, trainer leader, tutor and undertaker. Drawn in the style of the Builder's outfit
 (builders.py): the villager helpers for the garments, then the details by hand. Each keeps the headwear, colours and
 accessory of the outfit it replaces.
@@ -124,6 +124,49 @@ def orchard_keeper():
     f.put(2, 10, "#3f7a2a")
     f.put(3, 12, "#5e1a3a")
     return t.save_profession(ASSETS, "orchard_keeper", hat="full")
+
+
+def berry_breeder():
+    """A plum headscarf with a sprig of two berries (a blue Oran and a red Cheri, the first pair she breeds), a sage
+    gardening apron whose hem is stitched in alternating blue and red like her paired rows, and a pocket of berries
+    with a seed dibber; mulch on the hem."""
+    t = vg.VillagerTexture()
+    plum = vg.cloth("#7a3d6e")
+    sage = vg.cloth("#7f9a63")
+    oran = ["#2f4fa8", "#4f78d0"]                       # dark, lit
+    cheri = ["#a3202a", "#d8414a"]
+    leaf = ["#3f7a2a", "#5f9a3a"]
+    mulch = ["#4a3320", "#5e4229"]
+
+    vg.hat(t, plum, style="beanie", crown=3, noise=0.05)
+    crown_top(t, plum)
+    back = t.face("hat", "back")                        # the knot and its tails at the back
+    back.fill(plum[1], rows=[3])
+    paint(back, [(3, 4), (4, 4), (3, 5)], plum[2])
+    back.put(4, 5, plum[0])
+    front = t.face("hat", "front")                      # the sprig, tucked in on the villager's left
+    front.put(5, 1, leaf[1])
+    front.put(6, 1, leaf[0])
+    front.put(5, 2, oran[1])
+    front.put(6, 2, cheri[1])
+    front.put(6, 3, cheri[0])
+
+    vg.apron(t, sage, top=2, bottom=17, left=1, right=6, ties=True)
+    apron_back(t, sage)
+    jf = t.face("jacket", "front")
+    for x in range(1, 7):                               # the hem: paired rows, blue and red
+        jf.put(x, 17, oran[0] if x % 2 else cheri[0])
+    f = pocket(t, sage)
+    f.put(1, 11, oran[1])                               # berries peeking out of the pocket
+    f.put(1, 12, oran[0])
+    f.put(2, 11, cheri[1])
+    f.put(2, 12, cheri[0])
+    f.put(2, 10, leaf[1])
+    f.put(3, 10, "#9a7446")                             # the dibber's handle
+    f.put(3, 11, "#7a5a34")
+    paint(jf, [(1, 16), (5, 16)], mulch[1])             # mulch on the apron
+    jf.put(6, 16, mulch[0])
+    return t.save_profession(ASSETS, "berry_breeder", hat="full")
 
 
 def pokemon_trader():
@@ -452,7 +495,7 @@ def undertaker():
     return t.save_profession(ASSETS, "undertaker", hat="full")
 
 
-DRAW = [orchard_keeper, pokemon_trader, porter, postman, rancher, scholar, shopkeeper, sifter, teacher, tinkerer,
+DRAW = [orchard_keeper, berry_breeder, pokemon_trader, porter, postman, rancher, scholar, shopkeeper, sifter, teacher, tinkerer,
         trainer, trainer_leader, tutor, undertaker]
 
 if __name__ == "__main__":

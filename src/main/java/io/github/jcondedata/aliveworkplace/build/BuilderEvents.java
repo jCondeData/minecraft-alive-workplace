@@ -96,6 +96,21 @@ public final class BuilderEvents {
 				}
 				return InteractionResult.PASS;
 			}
+			if (io.github.jcondedata.aliveworkplace.berry.BerryBreeders.isBreeder(villager)) {
+				// A Field Marker: her plot. Sneak-right-click with an empty hand: the berry book. Otherwise the usual trades.
+				ItemStack held = player.getItemInHand(hand);
+				if (held.is(ModItems.FIELD_MARKER)) {
+					return level.isClientSide() ? InteractionResult.SUCCESS
+						: io.github.jcondedata.aliveworkplace.berry.BerryBreeders.assign((ServerPlayer) player, villager, held);
+				}
+				if (held.isEmpty() && player.isShiftKeyDown()) {
+					if (!level.isClientSide()) {
+						io.github.jcondedata.aliveworkplace.berry.BerryBreeders.open((ServerPlayer) player, villager);
+					}
+					return InteractionResult.SUCCESS;
+				}
+				return InteractionResult.PASS;
+			}
 			if (io.github.jcondedata.aliveworkplace.orchard.Orchards.isKeeper(villager)) {
 				ItemStack held = player.getItemInHand(hand);
 				if (held.is(ModItems.FIELD_MARKER)) {
@@ -331,6 +346,7 @@ public final class BuilderEvents {
 				io.github.jcondedata.aliveworkplace.farm.Fields.onDeath(level, villager);
 				io.github.jcondedata.aliveworkplace.wood.TreeFarms.onDeath(level, villager);
 				io.github.jcondedata.aliveworkplace.orchard.Orchards.onDeath(level, villager);
+				io.github.jcondedata.aliveworkplace.berry.BerryBreeders.onDeath(level, villager);
 				io.github.jcondedata.aliveworkplace.people.Couples.onDeath(level, villager);
 				io.github.jcondedata.aliveworkplace.ranch.Daycare.onDeath(level, villager); // (before the grave keeps the villager)
 				io.github.jcondedata.aliveworkplace.grave.Graves.onDeath(level, villager);

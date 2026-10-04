@@ -36,6 +36,35 @@ public final class BerryChains {
 
 		/** Every mutation, each pair once. */
 		List<Mutation> mutations();
+
+		/** The berry {@code stack} is (its id), or null when it's no berry. */
+		@org.jetbrains.annotations.Nullable
+		ResourceLocation berryOf(net.minecraft.world.item.ItemStack stack);
+
+		/** One of {@code berry}, or empty when no such berry is loaded. */
+		net.minecraft.world.item.ItemStack item(ResourceLocation berry);
+
+		/** The berry growing at {@code state} (a berry plant), or null. */
+		@org.jetbrains.annotations.Nullable
+		ResourceLocation plantOf(net.minecraft.world.level.block.state.BlockState state);
+
+		/** Whether the berry plant at {@code state} has fruit to pick. */
+		boolean ripe(net.minecraft.world.level.block.state.BlockState state);
+
+		/** Picks the fruit of the plant at {@code pos} (the plant stays and flowers again); what came off. */
+		List<net.minecraft.world.item.ItemStack> pick(net.minecraft.server.level.ServerLevel level, net.minecraft.core.BlockPos pos);
+
+		/** Whether {@code stack} is one of the mulches she uses (Growth or Surprise Mulch). */
+		boolean isMulch(net.minecraft.world.item.ItemStack stack);
+
+		/** Puts {@code mulch} on the plant at {@code pos} (one is used up); false when the plant takes no mulch now. */
+		boolean mulch(net.minecraft.server.level.ServerLevel level, net.minecraft.core.BlockPos pos, net.minecraft.world.item.ItemStack mulch);
+
+		/** Whether the plant at {@code pos} has mulch on it already. */
+		boolean mulched(net.minecraft.server.level.ServerLevel level, net.minecraft.core.BlockPos pos);
+
+		/** Grows the plant at {@code pos} to fruit with {@code random} (Cobblemon's own growth, mutations and all). Tests. */
+		void ripen(net.minecraft.server.level.ServerLevel level, net.minecraft.core.BlockPos pos, net.minecraft.util.RandomSource random);
 	}
 
 	/**

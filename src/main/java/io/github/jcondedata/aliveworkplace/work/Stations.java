@@ -113,7 +113,7 @@ public final class Stations {
 	private static final Set<Block> ONLY_BY_ITEM = Set.of(Blocks.CRAFTING_TABLE, Blocks.BEEHIVE, Blocks.JUKEBOX, ModBlocks.MAILBOX);
 	/** The jobs that need Cobblemon (their items are Cobblemon's, or they work with Pokémon). */
 	private static final Set<String> COBBLEMON_JOBS = Set.of("ball_smith", "pokemon_trader", "trainer", "trainer_leader", "tutor",
-		"fossil_scientist");
+		"fossil_scientist", "berry_breeder");
 
 	private static Predicate<ItemStack> any(Item... items) {
 		Set<Item> set = Set.of(items);
@@ -154,7 +154,9 @@ public final class Stations {
 			job(() -> VillagerProfession.FARMER, any(Items.WHEAT, Items.WHEAT_SEEDS)),
 			job(() -> ModVillagers.ORCHARD_KEEPER, any(Items.SWEET_BERRIES, Items.GLOW_BERRIES, Items.APPLE)),
 			job(() -> ModVillagers.FLORIST, tag(ItemTags.FLOWERS)), // any flower, #minecraft:flowers (Guide, Beekeepers page; B29)
-			job(() -> ModVillagers.COMPOSTER, any(Items.BONE_MEAL)))),
+			job(() -> ModVillagers.COMPOSTER, any(Items.BONE_MEAL)),
+			// any Cobblemon berry (28.9), with Cobblemon and config berryBreeders on
+			job(() -> ModVillagers.BERRY_BREEDER, io.github.jcondedata.aliveworkplace.berry.BerryBreeders::isBerry))),
 		new Station(is(PoiTypes.ARMORER), Blocks.BLAST_FURNACE, List.of(
 			job(() -> VillagerProfession.ARMORER, any(Items.COAL, Items.CHARCOAL)),
 			job(() -> ModVillagers.MINER, tag(ItemTags.PICKAXES)))),

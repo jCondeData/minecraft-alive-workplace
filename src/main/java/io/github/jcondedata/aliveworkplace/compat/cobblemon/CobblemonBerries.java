@@ -40,5 +40,84 @@ public final class CobblemonBerries implements BerryChains.BerryData {
 		}
 		return out;
 	}
+
+	@Override
+	public ResourceLocation berryOf(net.minecraft.world.item.ItemStack stack) {
+		return stack.getItem() instanceof com.cobblemon.mod.common.item.berry.BerryItem item ? item.berry().getIdentifier() : null;
+	}
+
+	@Override
+	public net.minecraft.world.item.ItemStack item(ResourceLocation id) {
+		Berry berry = Berries.getByIdentifier(id);
+		return berry == null ? net.minecraft.world.item.ItemStack.EMPTY : new net.minecraft.world.item.ItemStack(berry.item());
+	}
+
+	@Override
+	public ResourceLocation plantOf(net.minecraft.world.level.block.state.BlockState state) {
+		return state.getBlock() instanceof com.cobblemon.mod.common.block.BerryBlock block && block.berry() != null
+			? block.berry().getIdentifier() : null;
+	}
+
+	@Override
+	public boolean ripe(net.minecraft.world.level.block.state.BlockState state) {
+		return state.getBlock() instanceof com.cobblemon.mod.common.block.BerryBlock
+			&& state.getValue(com.cobblemon.mod.common.block.BerryBlock.Companion.getAGE()) >= com.cobblemon.mod.common.block.BerryBlock.FRUIT_AGE;
+	}
+
+	@Override
+	public List<net.minecraft.world.item.ItemStack> pick(net.minecraft.server.level.ServerLevel level, net.minecraft.core.BlockPos pos) {
+		net.minecraft.world.level.block.state.BlockState state = level.getBlockState(pos);
+		if (ripe(state) && level.getBlockEntity(pos) instanceof com.cobblemon.mod.common.block.entity.BerryBlockEntity plant) {
+			return new ArrayList<>(plant.harvest(level, state, pos));
+		}
+		return List.of();
+	}
+
+	// Growth Mulch (quicker growth) and Surprise Mulch (mutations four times as likely): the two the breeder uses.
+	private static com.cobblemon.mod.common.api.mulch.MulchVariant variant(net.minecraft.world.item.ItemStack stack) {
+		if (stack.getItem() instanceof com.cobblemon.mod.common.item.MulchItem mulch) {
+			com.cobblemon.mod.common.api.mulch.MulchVariant v = mulch.getVariant();
+			if (v == com.cobblemon.mod.common.api.mulch.MulchVariant.GROWTH || v == com.cobblemon.mod.common.api.mulch.MulchVariant.SURPRISE) {
+				return v;
+			}
+		}
+		return null;
+	}
+
+	@Override
+	public boolean isMulch(net.minecraft.world.item.ItemStack stack) {
+		return variant(stack) != null;
+	}
+
+	@Override
+	public boolean mulch(net.minecraft.server.level.ServerLevel level, net.minecraft.core.BlockPos pos, net.minecraft.world.item.ItemStack stack) {
+		com.cobblemon.mod.common.api.mulch.MulchVariant v = variant(stack);
+		net.minecraft.world.level.block.state.BlockState state = level.getBlockState(pos);
+		if (v == null || !(state.getBlock() instanceof com.cobblemon.mod.common.block.BerryBlock block) || !block.canHaveMulchApplied(level, pos, state, v)) {
+			return false;
+		}
+		block.applyMulch(level, level.random, pos, state, v);
+		stack.shrink(1);
+		return true;
+	}
+
+	@Override
+	public boolean mulched(net.minecraft.server.level.ServerLevel level, net.minecraft.core.BlockPos pos) {
+		if (level.getBlockEntity(pos) instanceof com.cobblemon.mod.common.block.entity.BerryBlockEntity plant) {
+			return plant.getMulchVariant() != com.cobblemon.mod.common.api.mulch.MulchVariant.NONE;
+		}
+		return false;
+	}
+
+	@Override
+	public void ripen(net.minecraft.server.level.ServerLevel level, net.minecraft.core.BlockPos pos, net.minecraft.util.RandomSource random) {
+		for (int i = 0; i < 8; i++) {
+			net.minecraft.world.level.block.state.BlockState state = level.getBlockState(pos);
+			if (!(state.getBlock() instanceof com.cobblemon.mod.common.block.BerryBlock block) || ripe(state)) {
+				return;
+			}
+			block.growHelper(level, random, pos, state, false);
+		}
+	}
 }
 //?}

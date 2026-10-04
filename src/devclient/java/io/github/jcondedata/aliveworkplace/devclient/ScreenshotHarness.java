@@ -1902,7 +1902,17 @@ public class ScreenshotHarness implements ClientModInitializer {
 					}
 				} else if (request.getActive() != null && !request.getActive().isEmpty()) {
 					var moves = request.getActive().get(0).getMoves();
-					var usable = moves.stream().filter(m -> m.canBeUsed()).findFirst().orElse(moves.get(0));
+					// The strongest usable move (B43): the first one was sometimes a status move, and the battle ran past the
+					// scene's time on turns that did no damage.
+					var usable = moves.stream().filter(m -> m.canBeUsed())
+						.max(java.util.Comparator.comparingDouble(m -> {
+							var template = com.cobblemon.mod.common.api.moves.Moves.getByName(m.getId());
+							return template == null ? 0 : template.getPower();
+						}))
+						.orElse(moves.get(0));
+					if (tick % 100 == 0) {
+						System.out.println("[battle scene] tick " + tick + " our move " + usable.getId());
+					}
 					var targets = usable.getTargets(us.getActivePokemon().get(0));
 					String target = targets == null || targets.isEmpty() ? null : targets.stream().map(t -> t.getPNX())
 						.filter(pnx -> pnx.startsWith("p2")).findFirst().orElse(targets.get(0).getPNX());

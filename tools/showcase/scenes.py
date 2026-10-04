@@ -271,13 +271,43 @@ def diff_lines(base, head, paths, root="."):
 
 
 def method_at(text, line):
-    """The name of the top-level method (one tab in) that line {line} is in, and the line it starts on."""
+    """The name of the top-level method (one tab in) that line {line} is in, and the line it starts on. A line between
+    methods (a field, a comment, a blank line) goes with the method below it: a scene's constants sit above it."""
     rows = text.splitlines()
     for i in range(min(line, len(rows)) - 1, -1, -1):
         m = METHOD.match(rows[i])
         if m:
+            end = next((j for j in range(i + 1, len(rows)) if rows[j] == "\t}"), len(rows) - 1)
+            if line - 1 <= end:
+                return m.group(1), i + 1
+            break
+    for i in range(min(line, len(rows)), len(rows)):
+        m = METHOD.match(rows[i])
+        if m:
             return m.group(1), i + 1
     return None, 0
+
+
+def dispatch_lines(text):
+    """ScreenshotHarness: {line number: {scenes}} for the lines of each dispatch block (the if, the call, the return and
+    the closing brace), so adding a scene's dispatch films just that scene."""
+    rows = text.splitlines()
+    out = {}
+    for i, row in enumerate(rows):
+        names = DISPATCH.findall(row)
+        if not names or not row.lstrip().startswith("if"):
+            continue
+        indent = len(row) - len(row.lstrip())
+        j = i
+        while j < len(rows) and not rows[j].rstrip().endswith("{"):
+            j += 1
+            names += DISPATCH.findall(rows[j]) if j < len(rows) else []
+        k = j + 1
+        while k < len(rows) and not (rows[k].strip() == "}" and len(rows[k]) - len(rows[k].lstrip()) == indent):
+            k += 1
+        for n in range(i + 1, k + 2):
+            out[n] = set(names)
+    return out
 
 
 def harness_methods(text):
@@ -301,6 +331,10 @@ def harness_methods(text):
 def scenes_for(path, text, lines, catalog_text=None):
     """The scenes the changed {lines} of {path} belong to, or None when they could touch any scene."""
     names = set()
+    if path.endswith(".java"):
+        rows = text.splitlines()
+        # Blank lines and comments change no scene (a removed line's position may be past the end).
+        lines = [n for n in lines if n > len(rows) or not (rows[n - 1].strip() == "" or rows[n - 1].strip().startswith(("//", "/*", "*")))]
     if path.endswith("JobScenes.java"):
         rows = text.splitlines()
         for line in lines:
@@ -318,7 +352,11 @@ def scenes_for(path, text, lines, catalog_text=None):
         return names
     if path.endswith("ScreenshotHarness.java"):
         methods = harness_methods(text)
+        blocks = dispatch_lines(text)
         for line in lines:
+            if line in blocks:
+                names |= blocks[line]
+                continue
             name, _ = method_at(text, line)
             if name not in methods:
                 return None

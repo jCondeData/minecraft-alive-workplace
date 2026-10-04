@@ -32,6 +32,7 @@ abstract class VillagerMixin {
 		io.github.jcondedata.aliveworkplace.work.Stations.retakeHive((Villager) (Object) this);
 		io.github.jcondedata.aliveworkplace.work.JobSiteTickets.tick((Villager) (Object) this);
 		io.github.jcondedata.aliveworkplace.work.WorkerLimits.tick((Villager) (Object) this);
+		io.github.jcondedata.aliveworkplace.legend.Legends.tick((Villager) (Object) this);
 		if (((Villager) (Object) this).isRemoved()) {
 			ci.cancel();
 			return;

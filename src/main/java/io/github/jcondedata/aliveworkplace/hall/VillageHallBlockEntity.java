@@ -29,6 +29,9 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 	private int questsDone;
 	/** The village's rank at the last round (see {@link VillageRanks}). */
 	private VillageRanks.Rank rank = VillageRanks.Rank.HAMLET;
+	private long treasuryTotal;
+	private int festivalCrowd;
+	private long founderMoodDay;
 	/** The day of the last raid on the village (see {@code guard/VillageRaids}). */
 	private long lastRaidDay = -100;
 	/** The day of the village's next (or last) festival, when it last feasted, when a player last called one. */
@@ -147,7 +150,7 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 		return rank;
 	}
 
-	void setRank(VillageRanks.Rank rank) {
+	public void setRank(VillageRanks.Rank rank) {
 		this.rank = rank;
 		setChanged();
 	}
@@ -249,6 +252,36 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 		}
 	}
 
+	/** Every emerald (in cents) the treasury has ever taken in (0 in halls from before 29.2). */
+	public long treasuryTotal() {
+		return treasuryTotal;
+	}
+
+	public void addTreasuryTotal(long cents) {
+		treasuryTotal = Math.max(0, treasuryTotal + Math.max(0, cents));
+		setChanged();
+	}
+
+	/** How many villagers came to the last festival's fireworks. */
+	public int festivalCrowd() {
+		return festivalCrowd;
+	}
+
+	public void setFestivalCrowd(int crowd) {
+		festivalCrowd = Math.max(0, crowd);
+		setChanged();
+	}
+
+	/** The day the Founder's mood came (0: not yet). */
+	public long founderMoodDay() {
+		return founderMoodDay;
+	}
+
+	public void setFounderMoodDay(long day) {
+		founderMoodDay = day;
+		setChanged();
+	}
+
 	public int treasury() {
 		return treasury;
 	}
@@ -302,6 +335,9 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 		feastDay = tag.contains("feastDay") ? Nbt.getLong(tag, "feastDay") : -1;
 		festivalCalled = tag.contains("festivalCalled") ? Nbt.getLong(tag, "festivalCalled") : -100;
 		treasury = Nbt.getInt(tag, "treasury");
+		treasuryTotal = Nbt.getLong(tag, "treasuryTotal");
+		festivalCrowd = Nbt.getInt(tag, "festivalCrowd");
+		founderMoodDay = Nbt.getLong(tag, "founderMoodDay");
 		owner = Nbt.hasUuid(tag, "owner") ? Nbt.getUuid(tag, "owner") : null;
 		ownerName = Nbt.getString(tag, "ownerName");
 		protectedVillage = Nbt.getBoolean(tag, "protected");
@@ -348,6 +384,9 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 		tag.putLong("feastDay", feastDay);
 		tag.putLong("festivalCalled", festivalCalled);
 		tag.putInt("treasury", treasury);
+		tag.putLong("treasuryTotal", treasuryTotal);
+		tag.putInt("festivalCrowd", festivalCrowd);
+		tag.putLong("founderMoodDay", founderMoodDay);
 		if (owner != null) {
 			Nbt.putUuid(tag, "owner", owner);
 			tag.putString("ownerName", ownerName);

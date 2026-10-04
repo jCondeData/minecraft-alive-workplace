@@ -600,6 +600,30 @@ final class JobScenes {
 			io.github.jcondedata.aliveworkplace.explore.ExplorerWork.REST_TICKS = 100;
 			return l -> n(ModAttachments.EXPEDITIONS, v) >= 1;
 		}, null));
+		SCENES.put("legend", job("a villager became a Legend, a Master who speeds up the builder beside them", 1200, (level, player) -> {
+			// ROADMAP 29.2: no Legend ships yet, so the scene loads one of its own (the plain Legend outfit, a pace power)
+			// and makes the villager beside the builder that Legend five seconds in.
+			net.minecraft.resources.ResourceLocation id = io.github.jcondedata.aliveworkplace.AliveWorkplace.id("showcase_legend");
+			io.github.jcondedata.aliveworkplace.legend.Legend legend = io.github.jcondedata.aliveworkplace.legend.Legends.read(id,
+				com.google.gson.JsonParser.parseString("{\"rarity\": \"rare\", \"job\": \"aliveworkplace:legend\", \"title\": \"entity.minecraft.villager.legend\","
+					+ " \"lore\": \"entity.minecraft.villager.legend\", \"powers\": [{\"type\": \"pace\", \"trades\": [\"aliveworkplace:builder\"],"
+					+ " \"radius\": 16, \"factor\": 2.0}, {\"type\": \"mood\", \"points\": 5, \"radius\": 16}]}").getAsJsonObject());
+			io.github.jcondedata.aliveworkplace.legend.Legends.setForTest(Map.of(id, legend));
+			Villager builder = worker(level, STATION, io.github.jcondedata.aliveworkplace.registry.ModBlocks.BUILDERS_BENCH,
+				io.github.jcondedata.aliveworkplace.registry.ModVillagers.BUILDERS_BENCH_POI, io.github.jcondedata.aliveworkplace.registry.ModVillagers.BUILDER);
+			Villager hero = EntityType.VILLAGER.spawn(level, STATION.south().east(2), MobSpawnType.COMMAND);
+			hero.setNoAi(true);
+			hero.setYRot(180);
+			hero.setYHeadRot(180);
+			long start = level.getGameTime();
+			return l -> {
+				if (!ModAttachments.LEGEND.has(hero) && l.getGameTime() >= start + 100) {
+					io.github.jcondedata.aliveworkplace.legend.Legends.make(l, hero, legend, "showcase");
+				}
+				return ModAttachments.LEGEND.has(hero) && hero.getVillagerData().getLevel() == 5
+					&& io.github.jcondedata.aliveworkplace.legend.LegendPowers.pace(builder) == 2f;
+			};
+		}));
 		SCENES.put("bard", job("the bard played a record at the Music Stand", 1200, (level, player) -> {
 			Villager b = picked(level, player, STATION, Blocks.JUKEBOX, Items.MUSIC_DISC_CAT);
 			chest(level, chestPos(), new ItemStack(Items.MUSIC_DISC_CAT));

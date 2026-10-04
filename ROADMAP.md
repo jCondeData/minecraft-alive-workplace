@@ -342,7 +342,7 @@ texture has no clear direction yet.
   of all professions is in a review package.
 - [x] **24.2** (approved auto 2026-10-04) (verified 2026-10-04: 24.1: lint.py on all 110 outfit textures [55 professions, villager + zombie, same set]: 0 errors; 24.2: lint.py on every item texture [the one tool, scan_tool: OK, 15 colours]; 24.5: langcheck.py clean [all sections 0], and a scan of all 1742 en_us strings for stray spaces, unbalanced brackets, repeated words and TODOs found only intended ones [list-joiner fragments, file extensions]; showcase run 55 [265d1a2]: 73 of 75 scenes pass, failures are B44 [soak] and B45 [partners_engine], none in these items) **Tools and weapons.** Every tool or weapon item uses the owner-picked templates (hammer, wrench, war hammer)
   or has been through a pick round. Done when: every tool or weapon item passes `lint.py`, and its package is sent.
-- [x] **24.3** (review: pending 2026-10-04) **Known visual bugs.** Riding looks right now (villagers sit in saddles and boats and the ferry
+- [x] **24.3** (approved 2026-10-04) **Known visual bugs.** Riding looks right now (villagers sit in saddles and boats and the ferry
   floats; approved 2026-09-29). Left: any clipping, floating or z-fighting in the scenes (`SCENE=extras`, `staff`,
   `village`, …). Done when: each one found has a before/after in a review package, or a package shows the scenes
   clean.

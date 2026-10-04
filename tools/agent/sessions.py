@@ -546,11 +546,15 @@ def cmd_review(a):
     die("Couldn't push to the reviews branch; try again in a minute.")
 
 
-def lane_parity(who):
-    """Sprint lanes split the roadmap by number: lane a takes odd milestones and bugs, lane b even ones (owner,
-    2026-10-03). Anyone else (the chat) takes either."""
+# Four build lanes split the roadmap by number, milestones and bugs alike (owner, 2026-10-04): the residue mod 4
+# each lane owns. Lane b keeps 28 and lane a 25, which they were building when the split went from 2 to 4.
+LANE_SLOTS = {"a": 1, "b": 0, "c": 3, "d": 2}
+
+
+def lane_slot(who):
+    """The residue (number mod 4) a build lane owns; None for anyone else (the chat takes any item)."""
     m = re.match(r"lane-([a-z])-", who or "")
-    return None if not m else (1 if (ord(m.group(1)) - ord("a")) % 2 == 0 else 0)
+    return None if not m else LANE_SLOTS.get(m.group(1))
 
 
 def item_number(it):
@@ -559,10 +563,10 @@ def item_number(it):
 
 def next_items(items, who, held_by_others=()):
     """The open items for this session, best first: bugs, then owner changes and vetoes, then milestones in order."""
-    par = lane_parity(who)
+    slot = lane_slot(who)
 
     def mine(it):
-        return par is None or item_number(it) % 2 == par
+        return slot is None or item_number(it) % 4 == slot
 
     open_items = [it for it in items if not it["done"] and not mark(it, "blocked") and it["id"] not in held_by_others
                   and mine(it)]
@@ -603,13 +607,8 @@ def cmd_next(a):
 
 def cmd_done(a):
     """Sprint mode: tick items in the working tree's ROADMAP.md, to go in the same commit as the work."""
-    if a.review:
-        have = reviews_listing()
-        missing = [i for i in a.ids if i not in have]
-        if missing:
-            die(f"No review package for {', '.join(missing)} on the reviews branch. Hand it in first "
-                f"(`sessions.py review <id> FILE… --message …`), or use done without --review if nothing a player "
-                f"sees changed.")
+    # --review needs no package (owner, 2026-10-04): the digest makes one per expansion stage from the nightly
+    # showcase's pictures, so lanes don't film their own.
     with open(ROADMAP, encoding="utf-8") as f:
         text = f.read()
     for i in a.ids:

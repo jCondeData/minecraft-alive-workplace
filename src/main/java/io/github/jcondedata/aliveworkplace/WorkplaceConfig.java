@@ -81,6 +81,8 @@ public final class WorkplaceConfig {
 	public boolean villageTreasury = true;
 	/** A Village Hall's owner may protect the village from other players (a setting on the hall, off until they turn it on). */
 	public boolean villageProtection = true;
+	/** Pokémon pastured by a workstation are seen helping at work (with Cobblemon): they carry, water, spark... */
+	public boolean partnerShows = true;
 	/** Days in each of the village calendar's four seasons (each has a festival on its middle day). */
 	public int seasonDays = 8;
 	/** Hundredths of an emerald each worker brings the treasury a day (before wellbeing and rank). */
@@ -262,6 +264,8 @@ public final class WorkplaceConfig {
 		io.github.jcondedata.aliveworkplace.hall.VillageProtection.ENABLED = villageProtection;
 		// Off in gametests (tickets around every test's workers would keep the test areas loaded); KeepLoaded's tests turn it on.
 		io.github.jcondedata.aliveworkplace.work.KeepLoaded.VILLAGES = keepVillagesWorking && System.getProperty("fabric-api.gametest") == null;
+		// Off in gametests (a partner walking off mid-test would move the numbers); the show tests turn them on.
+		io.github.jcondedata.aliveworkplace.work.PartnerShows.ENABLED = partnerShows && System.getProperty("fabric-api.gametest") == null;
 		io.github.jcondedata.aliveworkplace.build.Paths.ENABLED = builderPaths && System.getProperty("fabric-api.gametest") == null;
 	}
 }

@@ -43,4 +43,34 @@ public interface PokemonPartners {
 
 	/** Whether {@code entity} is a Pokémon in a pasture. */
 	boolean isPastured(Entity entity);
+
+	// Partner shows (ROADMAP 28.3, PartnerShows): a pastured partner seen helping at work.
+
+	/** Whether a pastured Pokémon may do a show now: never in battle, ridden, carrying someone or otherwise busy. */
+	default boolean canPerform(Entity entity) {
+		return false;
+	}
+
+	/** The nearest spot to {@code target} that {@code entity}'s pasture lets it wander to (it is never untethered). */
+	default BlockPos reachable(Entity entity, BlockPos target) {
+		return entity.blockPosition();
+	}
+
+	/** Starts {@code entity} walking to {@code pos}; false if it can't be told to. */
+	default boolean walkTo(Entity entity, BlockPos pos, double speed) {
+		return false;
+	}
+
+	/** Sends {@code entity} back to its pasture. */
+	default void goHome(Entity entity) {
+	}
+
+	/** Plays one of the Pokémon's animations: {@code physical}, {@code special} or {@code cry}. */
+	default void animate(ServerLevel level, Entity entity, String animation) {
+	}
+
+	/** Shows one of Cobblemon's effects ({@code cobblemon:impact_water}) at {@code at}; false if there's no such effect. */
+	default boolean effect(ServerLevel level, net.minecraft.resources.ResourceLocation id, net.minecraft.world.phys.Vec3 at) {
+		return false;
+	}
 }

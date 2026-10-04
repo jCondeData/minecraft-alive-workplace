@@ -6,6 +6,9 @@
 - **A settings screen**: with Mod Menu installed, the mod's Configure button opens every setting of
   `config/aliveworkplace.json` as sliders and on/off buttons, each with a tooltip saying what it does. Closing the
   screen saves the file and puts the settings into effect in your own worlds; a server keeps its own file.
+- **Partners at work**: a Fighting-type Pokémon pastured by a Builder's Bench is now seen helping: when the builder
+  fetches materials it walks over to the work (never leaving its pasture's range) carrying them, lends a punch and walks
+  back. Shows are data packs (`data/<namespace>/partner_shows/`); setting "Partners at Work" turns them off.
 - **Cobblemon 1.8**: tested with Cobblemon 1.8.1 as well as the pack's 1.7.3 (every Pokémon job passes its tests on
   both); 1.8 no longer logs an "outside the tested versions" warning.
 - Names read the same everywhere: the Fisherman is never "Fisher", and the mod's blocks and items keep their capitals

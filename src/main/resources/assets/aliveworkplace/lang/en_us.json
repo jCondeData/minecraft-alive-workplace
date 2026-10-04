@@ -1725,6 +1725,8 @@
   "aliveworkplace.config.banditCamps.tooltip": "Bandits make camp near villages of Village rank or more now and then, and raid them until their chief falls.",
   "aliveworkplace.config.festivals": "Festivals",
   "aliveworkplace.config.festivals.tooltip": "Villages with a Village Hall hold a festival every season. Players can still call one with a cake.",
+  "aliveworkplace.config.partnerShows": "Partners at Work",
+  "aliveworkplace.config.partnerShows.tooltip": "Pokémon pastured near a workstation are seen helping: they walk over to the work, carry things and lend a hand (with Cobblemon).",
   "aliveworkplace.config.villagerChatter": "Villager Chatter",
   "aliveworkplace.config.villagerChatter.tooltip": "Villagers near a player now and then say something about their day, over their heads.",
   "aliveworkplace.config.villagerCouples": "Weddings",

@@ -129,6 +129,71 @@ public final class CobblemonPartners {
 		return entity instanceof PokemonEntity pokemon && pokemon.getTethering() != null;
 	}
 
+	// Partner shows (ROADMAP 28.3): a pastured Pokémon that isn't battling, ridden, carrying anyone or busy.
+	public static boolean canPerform(net.minecraft.world.entity.Entity entity) {
+		return entity instanceof PokemonEntity pokemon && pokemon.isAlive() && pokemon.getTethering() != null && !pokemon.isBattling()
+			&& !pokemon.isBusy() && !pokemon.isPassenger() && !pokemon.isVehicle();
+	}
+
+	// The nearest block to {@code target} inside the pasture's roaming box: a show never takes a Pokémon out of it.
+	public static BlockPos reachable(net.minecraft.world.entity.Entity entity, BlockPos target) {
+		if (!(entity instanceof PokemonEntity pokemon) || pokemon.getTethering() == null) {
+			return entity.blockPosition();
+		}
+		var tether = pokemon.getTethering();
+		if (tether.canRoamTo(target)) {
+			return target;
+		}
+		BlockPos min = tether.getMinRoamPos();
+		BlockPos max = tether.getMaxRoamPos();
+		BlockPos clamped = new BlockPos(Mth.clamp(target.getX(), min.getX(), max.getX()), Mth.clamp(target.getY(), min.getY(), max.getY()),
+			Mth.clamp(target.getZ(), min.getZ(), max.getZ()));
+		return tether.canRoamTo(clamped) ? clamped : entity.blockPosition();
+	}
+
+	// Starts the Pokémon walking (its own navigation; Cobblemon's brain may still overrule it, and the show copes).
+	public static boolean walkTo(net.minecraft.world.entity.Entity entity, BlockPos pos, double speed) {
+		if (!(entity instanceof PokemonEntity pokemon)) {
+			return false;
+		}
+		return pokemon.getNavigation().moveTo(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, speed);
+	}
+
+	// Back to its Pasture Block.
+	public static void goHome(net.minecraft.world.entity.Entity entity) {
+		if (entity instanceof PokemonEntity pokemon && pokemon.getTethering() != null) {
+			BlockPos home = pokemon.getTethering().getPasturePos();
+			pokemon.getNavigation().moveTo(home.getX() + 0.5, home.getY(), home.getZ() + 0.5, 1.0);
+		}
+	}
+
+	// One of the Pokémon's animations for the players nearby: physical, special or its cry.
+	public static void animate(ServerLevel level, net.minecraft.world.entity.Entity entity, String animation) {
+		if (!(entity instanceof PokemonEntity pokemon)) {
+			return;
+		}
+		if (animation.equals("cry")) {
+			pokemon.cry();
+			return;
+		}
+		List<ServerPlayer> near = level.players().stream().filter(p -> p.distanceToSqr(pokemon) < 64 * 64).toList();
+		if (!near.isEmpty()) {
+			new PlayPosableAnimationPacket(pokemon.getId(), Set.of(animation), List.of()).sendToPlayers(near);
+		}
+	}
+
+	// One of Cobblemon's particle effects (snowstorm), sent to the players nearby.
+	public static boolean effect(ServerLevel level, ResourceLocation id, Vec3 at) {
+		if (!id.getNamespace().equals("cobblemon")) {
+			return false;
+		}
+		List<ServerPlayer> near = level.players().stream().filter(p -> p.distanceToSqr(at) < 64 * 64).toList();
+		if (!near.isEmpty()) {
+			new SpawnSnowstormParticlePacket(id, at).sendToPlayers(near);
+		}
+		return true;
+	}
+
 	static boolean fits(Pokemon pokemon, Set<String> types) {
 		for (ElementalType type : pokemon.getTypes()) {
 			if (types.contains(type.getName().toLowerCase(java.util.Locale.ROOT))) {

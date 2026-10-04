@@ -72,7 +72,7 @@ multi-version layout (ROADMAP, Milestone 19): **Stonecutter**, one Gradle node p
   and the owner's sales log), `ferry_menu`, `scan` (the Scan Tool marks a hut and saves it), `config` (the settings
   screen Mod Menu opens; it puts the run's config file back afterwards), `words` (every new or reworded message in
   chat, a page at a time, with example values), and with
-  Cobblemon `daycare`, `smith_orders`, `leader` (a Trainer Leader's challenge). `python3 tools/showcase/scenes.py list`
+  Cobblemon `partners_engine` (a pastured Machop carries the builder's planks to the work and back), `daycare`, `smith_orders`, `leader` (a Trainer Leader's challenge). `python3 tools/showcase/scenes.py list`
   lists them all.
 - **The nightly showcase** (`.github/workflows/showcase.yml`, ROADMAP 22.4). Every night at about 10:40 PM Central,
   GitHub runs every scene in `tools/showcase/scenes.py` (the catalog: each scene's job, and the 2-4 stills the page

@@ -71,6 +71,14 @@ public class BuilderWork extends Behavior<Villager> {
 	private static final int STUCK_TICKS = 100;
 	/** How long a builder with no path to where it's going waits before hopping there. */
 	private static final int NO_PATH_TICKS = 30;
+	/**
+	 * How long a builder that is walking somewhere may stand on the spot before it hops there. Its path said it could get
+	 * through, but it can't (under a trapdoor flower box, into a loft): with the {@link #STUCK_TICKS} wait it stood
+	 * still five seconds a block, and a crew's last blocks took a third longer when one of them hit it.
+	 */
+	private static final int STILL_TICKS = 40;
+	/** Moving less than this far (blocks) in a tick counts as standing still. */
+	private static final double STILL_DISTANCE = 0.02;
 	private static final int WAIT_RECHECK = 100;
 
 	private enum Action { NONE, BREAK, PLACE, SKIP }
@@ -89,6 +97,10 @@ public class BuilderWork extends Behavior<Villager> {
 	private int blockedAttempts;
 	private int stuckTimer;
 	private int reachTicks;
+	/** Ticks in a row the builder has stood still while walking to {@link #trackedTarget}. */
+	private int stillTicks;
+	@Nullable
+	private Vec3 lastWalkPos;
 	private double bestDistance = Double.MAX_VALUE;
 	@Nullable
 	private BlockPos trackedTarget;
@@ -532,8 +544,13 @@ public class BuilderWork extends Behavior<Villager> {
 			bestDistance = distance;
 			stuckTimer = 0;
 			reachTicks = 0;
+			stillTicks = 0;
+			lastWalkPos = null;
 			approachSpot = findStandingSpot(level, plan, target, villager.blockPosition(), null, reach - 0.5);
 		}
+		Vec3 at = villager.position();
+		stillTicks = lastWalkPos != null && at.distanceToSqr(lastWalkPos) < STILL_DISTANCE * STILL_DISTANCE ? stillTicks + 1 : 0;
+		lastWalkPos = at;
 		BlockPos goal = approachSpot != null ? approachSpot : target;
 		walkTo(villager, goal, approachSpot != null ? 0 : 1);
 		villager.getBrain().setMemory(MemoryModuleType.LOOK_TARGET, new BlockPosTracker(target));
@@ -543,9 +560,10 @@ public class BuilderWork extends Behavior<Villager> {
 		}
 		// No path there at all (walled in upstairs, the other side of a party wall): hop after a short beat, not the full wait.
 		boolean noPath = villager.getBrain().hasMemoryValue(MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE);
-		if (++stuckTimer > (noPath ? NO_PATH_TICKS : STUCK_TICKS) || ++reachTicks > MAX_REACH_TICKS) {
+		if (++stuckTimer > (noPath ? NO_PATH_TICKS : STUCK_TICKS) || ++reachTicks > MAX_REACH_TICKS || stillTicks > STILL_TICKS) {
 			stuckTimer = 0;
 			reachTicks = 0;
+			stillTicks = 0;
 			BlockPos spot = approachSpot != null ? approachSpot : findStandingSpot(level, null, target, villager.blockPosition(), null, reach - 0.3);
 			if (spot != null) {
 				hop(level, villager, spot);

@@ -388,6 +388,28 @@ final class JobScenes {
 			golem.setHealth(30f);
 			return l -> golem.getHealth() >= golem.getMaxHealth() - 0.5f && n(ModAttachments.GOLEM_REPAIRS, v) >= 1;
 		}));
+		SCENES.put("steward", new Job("the steward walked his morning rounds and came back to the hall", 2400,
+			new Vec3(6.5, -54, 9), new Vec3(0, -60, -4), (level, player) -> {
+			// The hall, three zones on its plan a few cells off, and a villager appointed with the City Plan (27.5).
+			level.setBlockAndUpdate(STATION, ModBlocks.VILLAGE_HALL.defaultBlockState());
+			var hall = (io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(STATION);
+			var plan = io.github.jcondedata.aliveworkplace.city.CityPlan.EMPTY;
+			BlockPos[] spots = {STATION.offset(9, 0, -6), STATION.offset(-9, 0, -6), STATION.offset(0, 0, -13)};
+			String[] names = {"Market", "Homes", "Gardens"};
+			for (int i = 0; i < spots.length; i++) {
+				java.util.BitSet cells = new java.util.BitSet();
+				cells.set(io.github.jcondedata.aliveworkplace.city.CityPlan.cellAt(STATION, spots[i]));
+				plan = plan.addZone("homes", names[i], "").paint(i, cells);
+				level.setBlockAndUpdate(spots[i], Blocks.OAK_FENCE.defaultBlockState()); // a marker post where he stops
+			}
+			hall.setPlan(plan);
+			ItemStack cityPlan = new ItemStack(ModItems.CITY_PLAN);
+			io.github.jcondedata.aliveworkplace.city.CityPlanItem.bind(level, player, cityPlan, STATION);
+			Villager v = EntityType.VILLAGER.spawn(level, STATION.south(2), MobSpawnType.COMMAND);
+			io.github.jcondedata.aliveworkplace.city.Stewards.appoint(player, v, cityPlan);
+			return l -> io.github.jcondedata.aliveworkplace.city.StewardWork.roundDone(l, v)
+				&& v.distanceToSqr(STATION.getCenter()) < 16 && !io.github.jcondedata.aliveworkplace.city.StewardWork.holdsPlan(v);
+		}, null));
 		SCENES.put("composter", job("the composter made bone meal", 1800, (level, player) -> {
 			Villager v = picked(level, player, STATION, Blocks.COMPOSTER, Items.BONE_MEAL);
 			Container c = chest(level, chestPos(), new ItemStack(Items.PUMPKIN_PIE, 10), new ItemStack(Items.WHEAT_SEEDS, 16));

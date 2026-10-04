@@ -3,6 +3,11 @@
 ## Unreleased
 
 ### Added
+- The **Steward** (27.5): sneak-right-click a grown villager beside a Village Hall with that hall's City Plan and he
+  becomes its Steward, one per hall. Each morning he walks his rounds holding the plan (each zone, the storehouse),
+  three seconds at each stop, then goes back to the hall for the day. He trades City Plans, Blank Blueprints and
+  Village Ledgers and buys paper and books; his level will set how many of his builds may be open at once (1 to 4,
+  capped by the village's rank and `stewardMaxOpenBuilds`). New outfit; breaking the hall ends the job; config `steward`.
 - With Cobblemon, the **Berry Breeder**: sneak-right-click a villager by a composter with any Cobblemon berry. Her
   berry book (sneak-right-click her) lists every berry Cobblemon knows (data packs' too): the ones the village has found
   lit, the rest with the pairs that make them. Click one and she works out the chain from the village's berries, plants

@@ -82,7 +82,8 @@ public final class Stations {
 
 		/** Whether a jobless villager takes this block by themselves (for its first job); if not, only an item gives a job. */
 		public boolean byItself() {
-			return !ONLY_BY_ITEM.contains(block()) && !block().builtInRegistryHolder().is(ModVillagers.FOSSIL_ANALYZER_BLOCK);
+			return !ONLY_BY_ITEM.contains(block()) && !block().builtInRegistryHolder().is(ModVillagers.FOSSIL_ANALYZER_BLOCK)
+				&& !block().builtInRegistryHolder().is(ModVillagers.HEALING_MACHINE_BLOCK);
 		}
 	}
 
@@ -184,7 +185,10 @@ public final class Stations {
 		// Cobblemon's Fossil Analyzer (the owner, ROADMAP 21.1c: the block of its own revival machine, not one of ours)
 		new Station(is(ModVillagers.FOSSIL_ANALYZER_POI),
 			() -> BuiltInRegistries.BLOCK.getOptional(ModVillagers.FOSSIL_ANALYZER_BLOCK).orElse(Blocks.AIR), List.of(
-			job(() -> ModVillagers.FOSSIL_SCIENTIST, FossilScientists::isFossil)))
+			job(() -> ModVillagers.FOSSIL_SCIENTIST, FossilScientists::isFossil))),
+		new Station(is(ModVillagers.HEALING_MACHINE_POI),
+			() -> BuiltInRegistries.BLOCK.getOptional(ModVillagers.HEALING_MACHINE_BLOCK).orElse(Blocks.AIR), List.of(
+			job(() -> ModVillagers.NURSE, any(Items.HONEY_BOTTLE))))
 	);
 
 	/**

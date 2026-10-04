@@ -84,6 +84,12 @@ public final class VillageAdvice {
 		if (villagers >= 5 && Decorations.beauty(level, hall) < 3) {
 			tips.add(new Tip("beauty", Items.FLOWER_POT));
 		}
+		List<ResourceLocation> built = BuildSiteManager.get(level).finishedNear(level, hall, VillageHalls.RADIUS).stream()
+			.map(BuildSiteManager.Finished::structure).toList();
+		if (wantsPokemonCenter(io.github.jcondedata.aliveworkplace.platform.Platform.get().isModLoaded("cobblemon"),
+				VillageRanks.of(level, hall), built)) {
+			tips.add(new Tip("pokemon_center", ModItems.BLUEPRINT));
+		}
 		int upgrades = 0;
 		for (BuildSiteManager.Finished f : BuildSiteManager.get(level).finishedNear(level, hall, VillageHalls.RADIUS)) {
 			if (upgrades >= MAX_UPGRADES) {
@@ -110,6 +116,16 @@ public final class VillageAdvice {
 				Math.max(0, next.buildings - score.buildings()), Math.max(0, next.research - score.research())));
 		}
 		return tips;
+	}
+
+	/**
+	 * ROADMAP 28.7: a Cobblemon village of at least Village rank without a Pokémon Center (either tier, finished near the
+	 * hall) is told to build one.
+	 */
+	public static boolean wantsPokemonCenter(boolean cobblemon, VillageRanks.Rank rank, List<ResourceLocation> built) {
+		return cobblemon && rank.ordinal() >= VillageRanks.Rank.VILLAGE.ordinal()
+			&& built.stream().noneMatch(id -> io.github.jcondedata.aliveworkplace.blueprint.StarterBlueprints.COBBLEMON_ONLY.stream()
+				.anyMatch(e -> e.id().equals(id)));
 	}
 
 	private static boolean has(VillageHalls.Census census, VillagerProfession job) {

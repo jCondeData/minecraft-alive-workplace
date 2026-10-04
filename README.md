@@ -1112,6 +1112,7 @@ saves the file and puts the settings into effect in your own worlds (a dedicated
 | `villagerCouples` | true | villagers court, marry (a wedding at the bell) and mourn |
 | `villageTreasury` | true | villages with a Village Hall put by takings every morning for players to collect at the hall |
 | `partnerShows` | true | Pokémon pastured near a workstation are seen helping: they walk over to the work, carry things and lend a hand (with Cobblemon) |
+| `nurseHealingMachine` | true | a nurse at Cobblemon's Healing Machine puts your team in it to heal them (free) and keeps it charged while on shift; off, she heals by hand |
 | `seasonDays` | 16 | days in each of the village calendar's four seasons (each season's festival is on its middle day) |
 | `treasuryPerWorker` | 20 | what each worker brings the treasury a day, in hundredths of an emerald, before wellbeing and rank |
 | `villageProtection` | true | a Village Hall's owner may protect the village from other players (shift-click the hall's name tag; off until they do) |

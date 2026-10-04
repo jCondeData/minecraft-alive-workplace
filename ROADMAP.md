@@ -963,7 +963,7 @@ here adds a new kind of speed bonus (the new jobs get the partners' existing one
   - Rancher + Normal or Ground: walks beside the wild horse being broken in (cue `tame`).
 
   Done when: a GameTest per cue, and showcase scene `partners_all`: one still per job with its partner at work.
-- [ ] **28.7** **The Pokémon Center.** Two blueprints (architect skill, an original design, checked against STYLE.md in
+- [x] **28.7** (review: pending 2026-10-04) **The Pokémon Center.** Two blueprints (architect skill, an original design, checked against STYLE.md in
   a render), in the Blueprint Table with Cobblemon only and sold by Journeyman Nurses:
   - **Pokémon Center**: a bright hall under a red roof, a glass front, a counter with Cobblemon's Healing Machine (the
     nurse's place), a PC by the counter, shelves of potions behind it, benches along the walls;
@@ -4266,6 +4266,8 @@ item waits.
   (a) keep Cobblemon's nurse as is, and our Nurse comes to a machine only with a honey bottle; or (b) stop jobless
   villagers taking machines at all (Cobblemon's nurse then only via our honey bottle, as ours)? Default the lanes build
   meanwhile: (a), the least surprise for players who know Cobblemon's nurse. The rest of 28.7 doesn't depend on it.
+  28.7 was built with (a) (lane-b-1004-1532): its test checks a jobless villager by a machine never becomes *our* Nurse
+  by itself; (b) would be a filter on Cobblemon's profession in `AssignProfessionFromJobSite`, if he picks it.
 - Old branches: `wip/treasury` (unfinished treasury work from before 0.136.0; the treasury has shipped since, so check
   before reusing any of it) and `tests/check-0.137-riding-protection` (the camel test, 21.3).
 - 2026-09-29: the plan was installed by the planning chat. The chat that built 0.137 had started two test files for the

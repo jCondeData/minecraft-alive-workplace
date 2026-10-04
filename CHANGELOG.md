@@ -3,6 +3,13 @@
 ## Unreleased
 
 ### Added
+- With Cobblemon, the **Pokémon Center**: a bright hall with a glass front under a red roof, Cobblemon's Healing
+  Machine on the counter, a PC beside it, potions and benches; **Pokémon Center II** adds a lodge with four beds and a
+  trade corner with a Shop Counter, and a garden with a Pasture Block. In the Blueprint Table (with Cobblemon only)
+  and sold by Journeyman Nurses; the Village Hall's "What next?" suggests one to a village of Village rank.
+- A Healing Machine is a Nurse workstation too (hand the villager there a honey bottle). Right-click a nurse working at
+  one and she puts your team in the machine, free; while she's on shift it stays charged. Config
+  `nurseHealingMachine` (on). Builders now build Cobblemon's two-block PC and Pasture Block.
 - Server owners get two new settings for big villages: `maxWorkersPerVillage` (jobless villagers stop taking free
   workstations once a village has that many workers; nobody loses a job) and `workerPathRange` (how far workers look
   for a path in one go). Every config option, including each village system's on/off switch, is now in the README.

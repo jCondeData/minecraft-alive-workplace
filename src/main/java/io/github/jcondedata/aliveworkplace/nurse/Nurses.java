@@ -6,6 +6,7 @@ import io.github.jcondedata.aliveworkplace.platform.Platform;
 import io.github.jcondedata.aliveworkplace.build.BuilderLevels;
 import io.github.jcondedata.aliveworkplace.registry.ModVillagers;
 import java.util.HashMap;
+import net.minecraft.core.BlockPos;
 import java.util.Map;
 import java.util.UUID;
 import net.minecraft.ChatFormatting;
@@ -30,6 +31,8 @@ public final class Nurses {
 	public static final int COOLDOWN = 1200;
 	private static final boolean COBBLEMON = Platform.get().isModLoaded("cobblemon");
 	private static final Map<UUID, Long> LAST_TREATED = new HashMap<>();
+	/** Config {@code nurseHealingMachine}: a nurse at a Healing Machine heals your team in it (ROADMAP 28.7). */
+	public static volatile boolean HEALING_MACHINE = true;
 
 	public static boolean isNurse(Villager villager) {
 		return !villager.isBaby() && villager.getVillagerData().getProfession() == ModVillagers.NURSE;
@@ -62,9 +65,18 @@ public final class Nurses {
 				hurt = true;
 			}
 		}
-		int pokemon = COBBLEMON ? PokemonHealing.EXTENSION.call(h -> h.healParty(player), 0) : 0;
-		MutableComponent message = Component.translatable(pokemon > 0 ? "message.aliveworkplace.nurse.healed_party" : "message.aliveworkplace.nurse.healed",
-			nurse.getDisplayName(), pokemon);
+		BlockPos machine = machine(level, nurse);
+		int inMachine = machine == null ? PokemonHealing.NO_MACHINE
+			: PokemonHealing.EXTENSION.call(h -> h.healAtMachine(player, level, machine), PokemonHealing.NO_MACHINE);
+		if (inMachine == PokemonHealing.MACHINE_BUSY) {
+			LAST_TREATED.remove(player.getUUID());
+			tell(player, Component.translatable("message.aliveworkplace.nurse.machine_busy", nurse.getDisplayName()), ChatFormatting.YELLOW);
+			return;
+		}
+		int pokemon = inMachine >= 0 ? inMachine : COBBLEMON ? PokemonHealing.EXTENSION.call(h -> h.healParty(player), 0) : 0;
+		String key = inMachine > 0 ? "message.aliveworkplace.nurse.healed_machine"
+			: pokemon > 0 ? "message.aliveworkplace.nurse.healed_party" : "message.aliveworkplace.nurse.healed";
+		MutableComponent message = Component.translatable(key, nurse.getDisplayName(), pokemon);
 		tell(player, message, ChatFormatting.LIGHT_PURPLE);
 		nurse.swing(net.minecraft.world.InteractionHand.MAIN_HAND);
 		level.sendParticles(ParticleTypes.HEART, player.getX(), player.getY() + 1.2, player.getZ(), 6, 0.4, 0.4, 0.4, 0);
@@ -72,6 +84,22 @@ public final class Nurses {
 		if (hurt || pokemon > 0) {
 			BuilderLevels.addXp(level, nurse, 1, player.getUUID());
 		}
+	}
+
+	/**
+	 * The Healing Machine the nurse works at (ROADMAP 28.7), or null: none (a brewing stand, her own station), no
+	 * Cobblemon, or config {@code nurseHealingMachine} off (then she heals as at any station).
+	 */
+	@org.jetbrains.annotations.Nullable
+	public static BlockPos machine(ServerLevel level, Villager nurse) {
+		if (!COBBLEMON || !HEALING_MACHINE) {
+			return null;
+		}
+		return nurse.getBrain().getMemory(net.minecraft.world.entity.ai.memory.MemoryModuleType.JOB_SITE)
+			.filter(site -> site.dimension() == level.dimension())
+			.map(net.minecraft.core.GlobalPos::pos)
+			.filter(pos -> level.getBlockState(pos).getBlockHolder().is(ModVillagers.HEALING_MACHINE_BLOCK))
+			.orElse(null);
 	}
 
 	/** Forget cooldowns (tests). */

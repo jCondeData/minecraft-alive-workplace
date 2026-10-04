@@ -83,6 +83,11 @@ public final class ModItems {
 				for (StarterBlueprints.Entry entry : StarterBlueprints.ALL) {
 					output.accept(BlueprintItem.create(entry.id(), entry.size()));
 				}
+				if (io.github.jcondedata.aliveworkplace.platform.Platform.get().isModLoaded("cobblemon")) {
+					for (StarterBlueprints.Entry entry : StarterBlueprints.COBBLEMON_ONLY) {
+						output.accept(BlueprintItem.create(entry.id(), entry.size()));
+					}
+				}
 				output.accept(BlueprintItem.create(StarterBlueprints.TOWN_HALL.id(), StarterBlueprints.TOWN_HALL.size()));
 				for (StarterBlueprints.Entry entry : StarterBlueprints.DEFENCES) {
 					output.accept(BlueprintItem.create(entry.id(), entry.size()));

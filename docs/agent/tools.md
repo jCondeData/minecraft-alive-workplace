@@ -78,7 +78,8 @@ multi-version layout (ROADMAP, Milestone 19): **Stonecutter**, one Gradle node p
   Cobblemon `partners_engine` (a pastured Machop carries the builder's planks to the work and back), `partners_land` (a
   Machamp carries the builder's beams, a Wartortle waters the farmer's patch), `partners_forge` (a Pidgeotto takes
   the air mail up out of sight, a Charmander breathes fire into the blast furnace), `partners_all` (twelve more
-  workers' partners at their work, one still each), `daycare`, `smith_orders`, `leader` (a Trainer Leader's challenge). `python3 tools/showcase/scenes.py list`
+  workers' partners at their work, one still each), `daycare`, `smith_orders`, `leader` (a Trainer Leader's challenge),
+  `pokemon_center` (both tiers, then the nurse heals the team in her Healing Machine). `python3 tools/showcase/scenes.py list`
   lists them all.
 - **The nightly showcase** (`.github/workflows/showcase.yml`, ROADMAP 22.4). Every night at about 10:40 PM Central,
   GitHub runs every scene in `tools/showcase/scenes.py` (the catalog: each scene's job, and the 2-4 stills the page

@@ -171,6 +171,16 @@ public final class CobblemonCompat {
 			public int healParty(ServerPlayer player) {
 				return CobblemonNurse.healParty(player);
 			}
+
+			@Override
+			public int healAtMachine(ServerPlayer player, ServerLevel level, BlockPos machine) {
+				return CobblemonNurse.healAtMachine(player, level, machine);
+			}
+
+			@Override
+			public void charge(ServerLevel level, BlockPos machine) {
+				CobblemonNurse.charge(level, machine);
+			}
 		});
 		CobblemonTrainers.init();
 	}

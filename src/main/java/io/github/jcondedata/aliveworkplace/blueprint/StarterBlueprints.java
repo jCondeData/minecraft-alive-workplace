@@ -57,6 +57,17 @@ public final class StarterBlueprints {
 	/** A museum hall beside it with a big skeleton on show. */
 	public static final Entry RESEARCH_LAB_2 = new Entry(AliveWorkplace.id("research_lab_2"), new Vec3i(18, 10, 11));
 
+	/**
+	 * With Cobblemon only (ROADMAP 28.7; see {@link #COBBLEMON_ONLY}): a bright hall with a glass front under a red
+	 * roof, Cobblemon's Healing Machine on the counter (the nurse's place), a PC beside it, potions and benches.
+	 */
+	public static final Entry POKEMON_CENTER = new Entry(AliveWorkplace.id("pokemon_center"), new Vec3i(13, 10, 12));
+	/** A lodge behind it (a Shop Counter's trade corner, four beds upstairs) and a garden with a Pasture Block. */
+	public static final Entry POKEMON_CENTER_2 = new Entry(AliveWorkplace.id("pokemon_center_2"), new Vec3i(13, 17, 26));
+
+	/** In the Blueprint Table (and the creative tab) only when Cobblemon is installed: most of what makes them is its. */
+	public static final List<Entry> COBBLEMON_ONLY = List.of(POKEMON_CENTER, POKEMON_CENTER_2);
+
 	/** Two row houses of two storeys, four beds: building houses grows a village with a Village Hall. */
 	public static final Entry TERRACE = new Entry(AliveWorkplace.id("terrace"), new Vec3i(13, 16, 10));
 	/** A third home on the east end: six beds. */

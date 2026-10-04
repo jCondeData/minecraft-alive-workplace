@@ -700,7 +700,7 @@ public class ScreenshotHarness implements ClientModInitializer {
 		if (tick == 230) {
 			Showcase.check(mc.screen instanceof net.minecraft.client.gui.screens.inventory.AbstractContainerScreen<?>, "the Village Hall screen opened");
 			shot(mc, "02_hall_people");
-			pointAt(mc, 18);
+			pointAt(mc, io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_PERSON);
 		}
 		if (tick == 245) {
 			shot(mc, "03_hall_builder");
@@ -712,10 +712,51 @@ public class ScreenshotHarness implements ClientModInitializer {
 		}
 		if (tick == 275) {
 			shot(mc, "05_hall_requests");
-			pointAt(mc, 19);
+			pointAt(mc, io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_PERSON + 1);
 		}
 		if (tick == 290) {
 			shot(mc, "06_hall_worker");
+			// ROADMAP 22.5: the page row, with the calendar (22.6) as its first tab.
+			pointAt(mc, io.github.jcondedata.aliveworkplace.hall.HallPages.slot(io.github.jcondedata.aliveworkplace.hall.Seasons.PAGE));
+		}
+		if (tick == 305) {
+			shot(mc, "07_hall_calendar_tab");
+			server.execute(() -> {
+				ServerPlayer player = server.getPlayerList().getPlayers().get(0);
+				if (player.containerMenu instanceof io.github.jcondedata.aliveworkplace.work.ChoiceMenu m) {
+					int tab = io.github.jcondedata.aliveworkplace.hall.HallPages.slot(io.github.jcondedata.aliveworkplace.hall.Seasons.PAGE);
+					Showcase.check(m.icon(tab).is(net.minecraft.world.item.Items.CLOCK), "the calendar is the first tab of the page row");
+					m.press(tab, player);
+					Showcase.check(m.icon(4).is(net.minecraft.world.item.Items.CLOCK), "the calendar page opened");
+				}
+			});
+		}
+		if (tick == 315) {
+			pointAt(mc, io.github.jcondedata.aliveworkplace.hall.Seasons.SEASON_SLOTS[
+				io.github.jcondedata.aliveworkplace.hall.Seasons.today(server.overworld()).season().ordinal()]);
+		}
+		if (tick == 330) {
+			shot(mc, "08_hall_calendar");
+			server.execute(() -> {
+				ServerPlayer player = server.getPlayerList().getPlayers().get(0);
+				if (player.containerMenu instanceof io.github.jcondedata.aliveworkplace.work.ChoiceMenu m) {
+					m.press(0, player); // back to the main page
+				}
+			});
+			// GUI scale 4 needs a window at least 1280x960: 1920x1080 keeps the frames 16:9. The option only takes 4
+			// once the window is big enough, so it is set after the resize.
+			org.lwjgl.glfw.GLFW.glfwSetWindowSize(mc.getWindow().getWindow(), 1920, 1080);
+		}
+		if (tick == 340) {
+			mc.options.guiScale().set(4);
+			mc.resizeDisplay();
+		}
+		if (tick == 345) {
+			pointAt(mc, 53); // an empty slot: no tooltip over the rows
+		}
+		if (tick == 360) {
+			Showcase.check(mc.getWindow().getGuiScale() == 4, "the hall screen at GUI scale 4 (now " + mc.getWindow().getGuiScale() + ")");
+			shot(mc, "09_hall_scale4");
 			mc.stop();
 		}
 	}

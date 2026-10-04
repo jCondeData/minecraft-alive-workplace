@@ -48,7 +48,8 @@ def central_now():
         return dt.datetime.now(dt.timezone.utc)
 
 
-def load(results_dir):
+def load(results_dir, only=None):
+    """Every scene's result; a scene that should have run but has none fails. only: the scenes this run filmed."""
     out = {}
     for name in os.listdir(results_dir) if os.path.isdir(results_dir) else []:
         path = os.path.join(results_dir, name, "result.json")
@@ -56,7 +57,7 @@ def load(results_dir):
             with open(path) as f:
                 out[name] = json.load(f)
     for s in scenes.SCENES:
-        if s["name"] not in out:
+        if s["name"] not in out and (only is None or s["name"] in only):
             out[s["name"]] = {"scene": s["name"], "title": s["title"], "group": s["group"], "what": s["what"],
                               "pass": False, "reasons": ["no result: its job stopped before this scene ran"],
                               "checks": [], "problems": [], "warnings": [], "assets": [], "stills": [], "more": [],
@@ -151,8 +152,8 @@ def more_page(r):
             f'<main><div class="card"><div class="stills">{figs}</div></div></main></body></html>')
 
 
-def build(results_dir, site, run_url):
-    results = load(results_dir)
+def build(results_dir, site, run_url, only=None):
+    results = load(results_dir, only)
     if os.path.isdir(site):
         shutil.rmtree(site)
     os.makedirs(site)
@@ -224,8 +225,10 @@ def main():
     p.add_argument("--results", required=True)
     p.add_argument("--site", required=True)
     p.add_argument("--run-url", default=os.environ.get("RUN_URL", ""))
+    p.add_argument("--only", default="", help="the scenes this run filmed (a push's own scenes); empty: every scene")
     a = p.parse_args()
-    s = build(a.results, a.site, a.run_url)
+    only = set(a.only.replace(",", " ").split()) if a.only.strip() and a.only.strip() != "all" else None
+    s = build(a.results, a.site, a.run_url, only)
     print(f"{s['passed']} passed, {s['failed']} failed, {len(s['assets'])} asset problems -> {a.site}/index.html")
 
 

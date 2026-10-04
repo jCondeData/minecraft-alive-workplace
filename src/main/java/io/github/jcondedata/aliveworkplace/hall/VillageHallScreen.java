@@ -69,7 +69,12 @@ public final class VillageHallScreen {
 	public static final int[] QUEST_SLOTS = {20, 22, 24};
 	static final int PREVIOUS = 9;
 	static final int NEXT = 17;
-	public static final int FIRST_PERSON = 18;
+	/** The page row (ROADMAP 22.5): a tab for each page in {@link HallPages}, then light glass for the room left. */
+	public static final int PAGE_ROW = 18;
+	/** Where a page's own rows start (under its header and divider). */
+	public static final int FIRST_ROW = 18;
+	/** Where the list of villagers starts, under the page row. */
+	public static final int FIRST_PERSON = PAGE_ROW + 9;
 	static final int PER_PAGE = ChoiceMenu.SIZE - FIRST_PERSON;
 	/** Lines of a list shown in a tooltip before "and N more". */
 	private static final int LIST_LINES = 8;
@@ -232,6 +237,7 @@ public final class VillageHallScreen {
 					p -> refresh(menu, level, hall, shown + 1));
 			}
 		}
+		pageRow(menu, level, hall);
 		int slot = FIRST_PERSON;
 		for (Villager villager : people.subList(shown * PER_PAGE, Math.min(people.size(), (shown + 1) * PER_PAGE))) {
 			boolean jobless = census.jobless().contains(villager);
@@ -244,6 +250,33 @@ public final class VillageHallScreen {
 				}
 			});
 		}
+	}
+
+	/** The page row: a tab for each registered page, light glass after them. */
+	private static void pageRow(ChoiceMenu menu, ServerLevel level, BlockPos hall) {
+		List<HallPages.Page> pages = HallPages.all();
+		for (int i = 0; i < 9; i++) {
+			if (i < pages.size()) {
+				HallPages.Page page = pages.get(i);
+				menu.button(PAGE_ROW + i, page.tab().icon(level, hall), p -> {
+					renderPage(menu, level, hall, page, p);
+					menu.broadcastChanges();
+				});
+			} else {
+				ItemStack pane = new ItemStack(Items.LIGHT_GRAY_STAINED_GLASS_PANE);
+				pane.set(DataComponents.HIDE_TOOLTIP, net.minecraft.util.Unit.INSTANCE);
+				menu.button(PAGE_ROW + i, pane, null);
+			}
+		}
+	}
+
+	/** A page from {@link HallPages}: back, its header, a divider, then whatever the page shows. */
+	public static void renderPage(ChoiceMenu menu, ServerLevel level, BlockPos hall, HallPages.Page page, ServerPlayer viewer) {
+		menu.clearButtons();
+		menu.button(0, icon(Items.ARROW, Component.translatable("screen.aliveworkplace.hall.back"), ChatFormatting.WHITE), p -> refresh(menu, level, hall, 0));
+		menu.button(4, page.header().icon(level, hall), null);
+		menu.divider(1);
+		page.content().fill(menu, level, hall, viewer);
 	}
 
 	private static void glow(ServerLevel level, Villager villager, ServerPlayer p) {
@@ -261,7 +294,7 @@ public final class VillageHallScreen {
 		menu.button(FIND, icon(Items.SPYGLASS, Component.translatable("screen.aliveworkplace.hall.find"), ChatFormatting.WHITE), p -> glow(level, villager, p));
 		menu.divider(1);
 		List<VillageHalls.FreeStation> stations = VillageHalls.freeStations(level, hall);
-		int slot = FIRST_PERSON;
+		int slot = FIRST_ROW;
 		for (VillageHalls.FreeStation station : stations) {
 			if (slot >= ChoiceMenu.SIZE) {
 				break;
@@ -284,7 +317,7 @@ public final class VillageHallScreen {
 			});
 		}
 		if (stations.isEmpty()) {
-			menu.button(FIRST_PERSON + 4, icon(Items.PAPER, Component.translatable("screen.aliveworkplace.hall.no_free_stations"), ChatFormatting.GRAY,
+			menu.button(FIRST_ROW + 4, icon(Items.PAPER, Component.translatable("screen.aliveworkplace.hall.no_free_stations"), ChatFormatting.GRAY,
 				line(Component.translatable("screen.aliveworkplace.hall.no_free_stations_hint"), ChatFormatting.DARK_GRAY)), null);
 		}
 	}
@@ -297,14 +330,14 @@ public final class VillageHallScreen {
 		menu.button(4, icon(Items.COMPASS, Component.translatable("screen.aliveworkplace.hall.advice_title", VillageHalls.name(level, hall)), ChatFormatting.GOLD,
 			line(Component.translatable("screen.aliveworkplace.hall.advice_about"), ChatFormatting.GRAY)), null);
 		menu.divider(1);
-		int slot = FIRST_PERSON;
+		int slot = FIRST_ROW;
 		for (VillageAdvice.Tip tip : VillageAdvice.tips(level, hall)) {
 			if (slot >= ChoiceMenu.SIZE) {
 				break;
 			}
 			menu.button(slot++, icon(tip.icon(), tip.title().copy(), ChatFormatting.YELLOW, line(tip.how(), ChatFormatting.GRAY)), null);
 		}
-		if (slot == FIRST_PERSON) {
+		if (slot == FIRST_ROW) {
 			menu.button(slot, icon(Items.EMERALD, Component.translatable("screen.aliveworkplace.hall.advice_none"), ChatFormatting.GREEN), null);
 		}
 	}
@@ -319,7 +352,7 @@ public final class VillageHallScreen {
 			line(Component.translatable("screen.aliveworkplace.hall.routes_road", onTheRoad), ChatFormatting.GRAY)), null);
 		menu.divider(1);
 		List<Caravans.Village> neighbours = Caravans.neighbours(level, hall);
-		int slot = FIRST_PERSON;
+		int slot = FIRST_ROW;
 		for (Caravans.Village other : neighbours) {
 			if (slot >= ChoiceMenu.SIZE) {
 				break;
@@ -358,7 +391,7 @@ public final class VillageHallScreen {
 			});
 		}
 		if (neighbours.isEmpty()) {
-			menu.button(FIRST_PERSON + 4, icon(Items.PAPER, Component.translatable("screen.aliveworkplace.hall.no_neighbours"), ChatFormatting.GRAY,
+			menu.button(FIRST_ROW + 4, icon(Items.PAPER, Component.translatable("screen.aliveworkplace.hall.no_neighbours"), ChatFormatting.GRAY,
 				line(Component.translatable("screen.aliveworkplace.hall.no_neighbours_hint", Caravans.RANGE), ChatFormatting.DARK_GRAY)), null);
 		}
 	}
@@ -372,14 +405,14 @@ public final class VillageHallScreen {
 		menu.button(4, icon(Items.WRITTEN_BOOK, Component.translatable("screen.aliveworkplace.hall.chronicle_title", VillageHalls.name(level, hall)),
 			ChatFormatting.GOLD, line(Component.translatable("screen.aliveworkplace.hall.chronicle_about", Chronicle.day(level)), ChatFormatting.GRAY)), null);
 		menu.divider(1);
-		int slot = FIRST_PERSON;
+		int slot = FIRST_ROW;
 		for (int i = entries.size() - 1; i >= 0 && slot < ChoiceMenu.SIZE; i--) {
 			Chronicle.Entry entry = entries.get(i);
 			menu.button(slot++, icon(entry.kind().icon, entry.text().copy(), ChatFormatting.WHITE,
 				line(Component.translatable("screen.aliveworkplace.hall.chronicle_day", entry.day()), ChatFormatting.GRAY)), null);
 		}
 		if (entries.isEmpty()) {
-			menu.button(FIRST_PERSON + 4, icon(Items.PAPER, Component.translatable("screen.aliveworkplace.hall.chronicle_empty"), ChatFormatting.GRAY), null);
+			menu.button(FIRST_ROW + 4, icon(Items.PAPER, Component.translatable("screen.aliveworkplace.hall.chronicle_empty"), ChatFormatting.GRAY), null);
 		}
 	}
 
@@ -674,7 +707,7 @@ public final class VillageHallScreen {
 			lore.toArray(Component[]::new));
 	}
 
-	private static ItemStack icon(Item item, Component name, ChatFormatting color, Component... lore) {
+	static ItemStack icon(Item item, Component name, ChatFormatting color, Component... lore) {
 		ItemStack icon = new ItemStack(item);
 		icon.set(DataComponents.CUSTOM_NAME, plain(name, color));
 		if (lore.length > 0) {
@@ -683,11 +716,11 @@ public final class VillageHallScreen {
 		return io.github.jcondedata.aliveworkplace.mc.Tooltips.nameAndLoreOnly(icon);
 	}
 
-	private static Component line(String key, ChatFormatting color) {
+	static Component line(String key, ChatFormatting color) {
 		return line(Component.translatable(key), color);
 	}
 
-	private static Component line(Component text, ChatFormatting color) {
+	static Component line(Component text, ChatFormatting color) {
 		return plain(text, color);
 	}
 

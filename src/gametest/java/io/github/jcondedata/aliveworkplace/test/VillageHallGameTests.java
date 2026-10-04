@@ -337,7 +337,7 @@ public class VillageHallGameTests implements net.fabricmc.fabric.api.gametest.v1
 		ChoiceMenu menu = VillageHallScreen.forTest(player, hall);
 		helper.assertTrue(menu.icon(VillageHallScreen.ADVICE).is(Items.COMPASS), "no advice button");
 		menu.press(VillageHallScreen.ADVICE, player);
-		helper.assertTrue(!menu.icon(VillageHallScreen.FIRST_PERSON).isEmpty(), "the advice page is empty");
+		helper.assertTrue(!menu.icon(VillageHallScreen.FIRST_ROW).isEmpty(), "the advice page is empty");
 		helper.succeed();
 	}
 
@@ -483,8 +483,8 @@ public class VillageHallGameTests implements net.fabricmc.fabric.api.gametest.v1
 
 			ChoiceMenu menu = VillageHallScreen.forTest(player, hall);
 			menu.press(VillageHallScreen.CHRONICLE, player);
-			helper.assertTrue(menu.icon(VillageHallScreen.FIRST_PERSON).is(Items.MAP), "newest first: " + menu.icon(VillageHallScreen.FIRST_PERSON));
-			helper.assertTrue(menu.icon(VillageHallScreen.FIRST_PERSON + 1).is(Items.BONE), "then the death: " + menu.icon(VillageHallScreen.FIRST_PERSON + 1));
+			helper.assertTrue(menu.icon(VillageHallScreen.FIRST_ROW).is(Items.MAP), "newest first: " + menu.icon(VillageHallScreen.FIRST_ROW));
+			helper.assertTrue(menu.icon(VillageHallScreen.FIRST_ROW + 1).is(Items.BONE), "then the death: " + menu.icon(VillageHallScreen.FIRST_ROW + 1));
 
 			// Saved with the hall.
 			var tag = entity.saveWithFullMetadata(level.registryAccess());
@@ -517,8 +517,8 @@ public class VillageHallGameTests implements net.fabricmc.fabric.api.gametest.v1
 			ChoiceMenu menu = VillageHallScreen.forTest(player, hall);
 			helper.assertTrue(menu.icon(VillageHallScreen.FIRST_PERSON).is(Items.PAPER), "the jobless villager: " + menu.icon(VillageHallScreen.FIRST_PERSON));
 			menu.press(VillageHallScreen.FIRST_PERSON, player);
-			helper.assertTrue(menu.icon(VillageHallScreen.FIRST_PERSON).is(ModBlocks.BUILDERS_BENCH.asItem()), "jobs page: " + menu.icon(VillageHallScreen.FIRST_PERSON));
-			menu.press(VillageHallScreen.FIRST_PERSON, player);
+			helper.assertTrue(menu.icon(VillageHallScreen.FIRST_ROW).is(ModBlocks.BUILDERS_BENCH.asItem()), "jobs page: " + menu.icon(VillageHallScreen.FIRST_ROW));
+			menu.press(VillageHallScreen.FIRST_ROW, player);
 			helper.assertTrue(villager.getVillagerData().getProfession() == ModVillagers.BUILDER, "profession: " + villager.getVillagerData().getProfession());
 			helper.assertTrue(villager.getBrain().getMemory(net.minecraft.world.entity.ai.memory.MemoryModuleType.JOB_SITE).map(g -> g.pos())
 				.orElse(null) != null, "no job site");
@@ -597,11 +597,11 @@ public class VillageHallGameTests implements net.fabricmc.fabric.api.gametest.v1
 			helper.assertTrue(level.getPoiManager().getType(gone).isEmpty(), "setup: there is a record at the stale site");
 			ChoiceMenu menu = VillageHallScreen.forTest(player, hall);
 			menu.press(VillageHallScreen.FIRST_PERSON, player);
-			helper.assertTrue(menu.icon(VillageHallScreen.FIRST_PERSON).is(ModBlocks.BUILDERS_BENCH.asItem()), "jobs page: " + menu.icon(VillageHallScreen.FIRST_PERSON));
+			helper.assertTrue(menu.icon(VillageHallScreen.FIRST_ROW).is(ModBlocks.BUILDERS_BENCH.asItem()), "jobs page: " + menu.icon(VillageHallScreen.FIRST_ROW));
 			// Set just before the click, so the villager's own brain can't forget it first.
 			villager.getBrain().setMemory(net.minecraft.world.entity.ai.memory.MemoryModuleType.JOB_SITE, net.minecraft.core.GlobalPos.of(level.dimension(), gone));
 			try {
-				menu.press(VillageHallScreen.FIRST_PERSON, player);
+				menu.press(VillageHallScreen.FIRST_ROW, player);
 			} catch (RuntimeException e) {
 				throw new net.minecraft.gametest.framework.GameTestAssertException("clicking the bench threw " + e);
 			}

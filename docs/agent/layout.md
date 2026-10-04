@@ -64,7 +64,20 @@ Moved out of CLAUDE.md (2026-09-29) to keep that file short. Update this map whe
   in the hall's block entity; the hall screen's quests page), `VillageRanks` (Hamlet to City, and the perks each rank gives), `MarketDays` (weekly traders at a finished Market Square), `Caravans` (the saved list of every hall in a dimension,
   trade routes, goods on the road), `Chronicle` (what happened, kept in the hall; `Chronicle.record(level, pos, kind, text)` writes to the nearest hall),
   `Decorations` (finished decoration blueprints near the
-  hall → beauty → wellbeing; the builds are `StarterBlueprints.DECORATIONS`, drawn in `tools/blueprints/decor.py`)
+  hall → beauty → wellbeing; the builds are `StarterBlueprints.DECORATIONS`, drawn in `tools/blueprints/decor.py`),
+  `HallPages` (the hall screen's page row, below), `Seasons` (the village calendar, below)
+- **Adding a page to the Village Hall** (ROADMAP 22.5; every expansion that gives the hall a page does this): one call at
+  start-up, `HallPages.register(id, tab, header, content)`. `tab` and `header` return the icon for the page row and for
+  the top of the page (`(level, hall) -> ItemStack`, a named icon with lore); `content` fills the page's rows from
+  `VillageHallScreen.FIRST_ROW` (slot 18) to slot 53 (`(menu, level, hall, viewer) -> menu.button(slot, icon, action)`).
+  The hall draws the tab in the third row (`VillageHallScreen.PAGE_ROW`, slots 18-26, in registration order, up to
+  `HallPages.MAX` = 9), and the page with a back button (slot 0), the header (slot 4) and a divider. The calendar is the
+  first page (`Seasons.init`). Test a page with `VillageHallScreen.forTest` and `menu.press(HallPages.slot(id), player)`
+  (see `HallPagesGameTests`); the hall's screenshot scene shows the row.
+- **The village calendar** (ROADMAP 22.6): `Seasons` — four seasons of `Seasons.DAYS` days (config `seasonDays`,
+  default 8), the same for the whole world (the overworld's day), each with a festival on its middle day.
+  `Seasons.today(level)` is the date; expansions listen with `Seasons.onNewDay`, `onNewSeason` and `onFestival` (each
+  fires once per day, saved, so a reload doesn't repeat it). Nothing in the mod changes with the seasons on its own.
 - `people/` — villagers as people: `Names` (first names for villagers in a hall's village, given in
   `VillageNeeds.check`), `Traits` (one or two per villager from the UUID; read by `BuilderLevels`, `Walker`, `Guards`,
   `VillageNeeds`; off in gametests unless a test turns them on), `Sickness` (falling ill in the hall's round, half pace;

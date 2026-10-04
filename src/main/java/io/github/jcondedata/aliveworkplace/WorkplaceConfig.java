@@ -72,6 +72,8 @@ public final class WorkplaceConfig {
 	public boolean villageTreasury = true;
 	/** A Village Hall's owner may protect the village from other players (a setting on the hall, off until they turn it on). */
 	public boolean villageProtection = true;
+	/** Days in each of the village calendar's four seasons (each has a festival on its middle day). */
+	public int seasonDays = 8;
 	/** Hundredths of an emerald each worker brings the treasury a day (before wellbeing and rank). */
 	public int treasuryPerWorker = 20;
 	/** What an emerald price comes to in CobbleDollars (lessons, shops, fares). */
@@ -126,6 +128,7 @@ public final class WorkplaceConfig {
 		villageGrowthCap = clamp(villageGrowthCap, 0, 500);
 		dollarsPerEmerald = clamp(dollarsPerEmerald, 1, 10_000);
 		treasuryPerWorker = clamp(treasuryPerWorker, 0, 500);
+		seasonDays = clamp(seasonDays, 1, 120);
 	}
 
 	private static int clamp(int value, int min, int max) {
@@ -150,6 +153,7 @@ public final class WorkplaceConfig {
 		io.github.jcondedata.aliveworkplace.hall.Treasury.CENTS_PER_WORKER = treasuryPerWorker;
 		io.github.jcondedata.aliveworkplace.hall.VillageHalls.RADIUS = villageHallRadius;
 		io.github.jcondedata.aliveworkplace.hall.VillageGrowth.CAP = villageGrowthCap;
+		io.github.jcondedata.aliveworkplace.hall.Seasons.DAYS = seasonDays;
 		// Off in gametests (a trait picked by chance would change a test's numbers); the people tests turn them on.
 		io.github.jcondedata.aliveworkplace.people.Names.ENABLED = villagerNames && System.getProperty("fabric-api.gametest") == null;
 		io.github.jcondedata.aliveworkplace.people.Traits.ENABLED = villagerTraits && System.getProperty("fabric-api.gametest") == null;

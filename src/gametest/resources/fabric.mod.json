@@ -62,6 +62,7 @@
 			"io.github.jcondedata.aliveworkplace.test.RancherGameTests",
 			"io.github.jcondedata.aliveworkplace.test.VillageHallGameTests",
 			"io.github.jcondedata.aliveworkplace.test.HallPagesGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaHallPagesSeasonsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.B38GameTests",
 			"io.github.jcondedata.aliveworkplace.test.SelfHealingSupplyGameTests",
 			"io.github.jcondedata.aliveworkplace.test.MaterialListGameTests",

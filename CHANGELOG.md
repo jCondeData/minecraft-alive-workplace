@@ -108,6 +108,8 @@
   trapped living villagers before 0.138.0).
 
 ### Tests
+- The showcase's title check measures from the title to the panel's right edge, so the player inventory's
+  "Crafting" no longer fails the `missing` scene (B41).
 - Every value the mod saves on a villager (all 72: a builder's site and bag, a lumberjack's tree farm, a couple's
   marriage, every worker's count...) is now tested to survive the villager being saved and loaded again.
 

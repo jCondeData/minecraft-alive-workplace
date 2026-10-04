@@ -202,21 +202,27 @@ public class SelfHealingSupplyGameTests implements net.fabricmc.fabric.api.gamet
 	//$ gametest_ticks_batch HUGE '100' '"supplyPorterAway"'
 	@GameTest(template = HUGE, timeoutTicks = 100, batch = "supplyPorterAway")
 	public void theStorehouseCountsWhileItsPorterIsOut(GameTestHelper helper) {
-		Setup s = setup(helper, false);
-		BlockPos away = helper.absolutePos(STOREHOUSE).offset(50, 0, 50);
-		// Forced so the porter isn't unloaded with the chunk (a far chunk nothing else keeps loaded).
-		s.level().setChunkForced(away.getX() >> 4, away.getZ() >> 4, true);
-		s.porter().setNoAi(true);
-		s.porter().teleportTo(away.getX() + 0.5, away.getY(), away.getZ() + 0.5);
-		Leftovers.after(helper, () -> {
-			s.porter().discard();
-			s.level().setChunkForced(away.getX() >> 4, away.getZ() >> 4, false);
-		});
-		helper.runAfterDelay(5, () -> {
-			helper.assertTrue(s.porter().blockPosition().distSqr(helper.absolutePos(BENCH)) > 80 * 80, "the porter isn't far away: "
-				+ s.porter().blockPosition().toShortString());
-			List<Village.Stash> stashes = Village.stashes(s.level(), s.builder(), helper.absolutePos(BENCH), s.plan().bounds());
-			helper.assertTrue(stashes.stream().anyMatch(st -> st.job() == ModVillagers.PORTER && st.chests().contains(helper.absolutePos(STORE_CHEST))),
+		// A small village (8 blocks) so "far out" fits in the test area: the storehouse 6 blocks from the bench, its
+		// porter 31 blocks off (beyond the 8 + 16 the search used to look), all inside the area.
+		Leftovers.clear(helper);
+		Leftovers.village(helper, 8);
+		ServerLevel level = helper.getLevel();
+		BlockPos storehouse = new BlockPos(8, 2, 2);
+		BlockPos chest = new BlockPos(12, 2, 2);
+		helper.setBlock(storehouse, ModBlocks.STOREHOUSE);
+		helper.setBlock(chest, Blocks.CHEST);
+		Villager porter = helper.spawn(EntityType.VILLAGER, new BlockPos(28, 2, 20));
+		porter.setNoAi(true);
+		Porters.employ(level, porter, helper.absolutePos(storehouse));
+		helper.setBlock(BENCH, ModBlocks.BUILDERS_BENCH);
+		Villager builder = helper.spawn(EntityType.VILLAGER, VILLAGER);
+		builder.setNoAi(true);
+		Builders.employ(level, builder, helper.absolutePos(BENCH));
+		helper.runAfterDelay(2, () -> {
+			helper.assertTrue(porter.blockPosition().distSqr(helper.absolutePos(BENCH)) > 24 * 24, "the porter isn't far out: "
+				+ helper.relativePos(porter.blockPosition()));
+			List<Village.Stash> stashes = Village.stashes(level, builder, helper.absolutePos(BENCH), null);
+			helper.assertTrue(stashes.stream().anyMatch(st -> st.job() == ModVillagers.PORTER && st.chests().contains(helper.absolutePos(chest))),
 				"the storehouse isn't among the builder's village stashes while its porter is out: " + stashes);
 			helper.succeed();
 		});

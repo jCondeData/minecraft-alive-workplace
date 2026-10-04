@@ -89,6 +89,10 @@ public class ScreenshotHarness implements ClientModInitializer {
 			guideScene(mc, mc.getSingleplayerServer());
 			return;
 		}
+		if ("config".equals(System.getProperty("aliveworkplace.scene"))) {
+			configScene(mc);
+			return;
+		}
 		if ("guard".equals(System.getProperty("aliveworkplace.scene")) || "guard_pokemon".equals(System.getProperty("aliveworkplace.scene"))) {
 			guardScene(mc, mc.getSingleplayerServer());
 			return;
@@ -1158,6 +1162,101 @@ public class ScreenshotHarness implements ClientModInitializer {
 
 	// --- Guide: the Guide Book a new player is given, every page in turn ------------------------------------
 
+	/**
+	 * ROADMAP 24.4: a chest-style screen's title must fit inside its panel at every GUI scale (the Shop Counter's ran
+	 * past the right edge). Only a failure is recorded, so scenes keep their own checks.
+	 */
+	private static void titleFits(Minecraft mc, String shot) {
+		if (!(mc.screen instanceof net.minecraft.client.gui.screens.inventory.AbstractContainerScreen<?> screen)) {
+			return;
+		}
+		try {
+			java.lang.reflect.Field width = net.minecraft.client.gui.screens.inventory.AbstractContainerScreen.class.getDeclaredField("imageWidth");
+			java.lang.reflect.Field labelX = net.minecraft.client.gui.screens.inventory.AbstractContainerScreen.class.getDeclaredField("titleLabelX");
+			width.setAccessible(true);
+			labelX.setAccessible(true);
+			int room = width.getInt(screen) - 2 * labelX.getInt(screen);
+			if (mc.font.width(screen.getTitle()) > room) {
+				Showcase.check(false, shot + ": the title '" + screen.getTitle().getString() + "' is wider than its screen ("
+					+ mc.font.width(screen.getTitle()) + " > " + room + " pixels)");
+			}
+		} catch (ReflectiveOperationException e) {
+			// Not a vanilla container screen layout: nothing to measure.
+		}
+	}
+
+	private io.github.jcondedata.aliveworkplace.client.ConfigScreen configScreen;
+	private String configBefore;
+
+	/**
+	 * The settings screen Mod Menu opens (ROADMAP 26.3): every option's label fits its button, a switch turned off is
+	 * saved to config/aliveworkplace.json and put into effect when the screen closes. The file is put back afterwards
+	 * (the run directory's config is shared by every scene).
+	 */
+	private void configScene(Minecraft mc) {
+		tick++;
+		java.nio.file.Path file = io.github.jcondedata.aliveworkplace.platform.Platform.get().configDir()
+			.resolve(io.github.jcondedata.aliveworkplace.WorkplaceConfig.FILE);
+		if (tick == 40) {
+			try {
+				configBefore = java.nio.file.Files.readString(file);
+			} catch (java.io.IOException e) {
+				configBefore = null;
+			}
+			configScreen = new io.github.jcondedata.aliveworkplace.client.ConfigScreen(null);
+			mc.setScreen(configScreen);
+		}
+		if (tick == 55) {
+			List<String> problems = new ArrayList<>();
+			for (var widget : configScreen.optionWidgets()) {
+				if (widget == null) {
+					problems.add("an option has no button");
+					continue;
+				}
+				String text = widget.getMessage().getString();
+				if (text.contains("aliveworkplace.config")) {
+					problems.add("untranslated " + text);
+				} else if (mc.font.width(widget.getMessage()) > widget.getWidth() - 8) {
+					problems.add("'" + text + "' is wider than its button");
+				}
+			}
+			Showcase.check(problems.isEmpty() && configScreen.optionWidgets().size() == io.github.jcondedata.aliveworkplace.WorkplaceConfig.optionNames().size(),
+				"every setting has a button whose label fits (" + configScreen.optionWidgets().size() + " settings"
+					+ (problems.isEmpty() ? "" : ": " + String.join(", ", problems)) + ")");
+			shot(mc, "01_config_numbers");
+		}
+		if (tick == 60) {
+			configScreen.scrollToEnd();
+		}
+		if (tick == 70) {
+			shot(mc, "02_config_switches");
+			// Turn the festivals off with the button itself, as a player would.
+			for (var widget : configScreen.optionWidgets()) {
+				if (widget.getMessage().getString().startsWith(net.minecraft.client.resources.language.I18n.get("aliveworkplace.config.festivals"))) {
+					widget.onClick(widget.getX() + 2, widget.getY() + 2);
+				}
+			}
+		}
+		if (tick == 80) {
+			shot(mc, "03_config_festivals_off");
+			mc.setScreen(null);
+		}
+		if (tick == 90) {
+			var saved = io.github.jcondedata.aliveworkplace.WorkplaceConfig.load(file.getParent());
+			Showcase.check(!saved.festivals && !io.github.jcondedata.aliveworkplace.hall.Festivals.ENABLED,
+				"turning Festivals off and closing the screen saves it and puts it into effect");
+			try {
+				if (configBefore != null) {
+					java.nio.file.Files.writeString(file, configBefore);
+				}
+			} catch (java.io.IOException e) {
+				Showcase.check(false, "the config file was put back: " + e);
+			}
+			io.github.jcondedata.aliveworkplace.WorkplaceConfig.loadAndApply(file.getParent());
+			mc.stop();
+		}
+	}
+
 	private io.github.jcondedata.aliveworkplace.client.guide.GuideScreen guide;
 	private final List<String> guideProblems = new ArrayList<>();
 	private volatile boolean guideGiven;
@@ -2155,7 +2254,11 @@ public class ScreenshotHarness implements ClientModInitializer {
 		int shots = workshops.size();
 		if (tick >= 500 && (tick - 500) % 80 == 0 && (tick - 500) / 80 < shots) {
 			BlockPos bench = workshops.get((tick - 500) / 80);
-			server.execute(() -> hover(server.getPlayerList().getPlayers().get(0), new Vec3(bench.getX() + 9.5, bench.getY() + 6, bench.getZ() + 9.5), 135, 25));
+			server.execute(() -> {
+				ServerPlayer player = server.getPlayerList().getPlayers().get(0);
+				Vec3 target = Vec3.atCenterOf(bench);
+				hoverLookingAt(player, clearView(server.overworld(), player, target), target);
+			});
 		}
 		if (tick >= 560 && (tick - 560) % 80 == 0 && (tick - 560) / 80 < shots) {
 			shot(mc, "40_workshop_" + ((tick - 560) / 80));
@@ -2499,6 +2602,31 @@ public class ScreenshotHarness implements ClientModInitializer {
 	}
 
 	/** Hovers at {@code pos} looking at {@code target}. */
+	/**
+	 * ROADMAP 24.3: a camera spot that sees {@code target} (or the building around it) with nothing in between (the village scene's fixed spot was
+	 * sometimes inside the next house, filling the still with a log). Tries the four diagonals at a few distances and
+	 * heights, the south-east first (the old spot).
+	 */
+	static Vec3 clearView(ServerLevel level, ServerPlayer player, Vec3 target) {
+		int[][] dirs = {{1, 1}, {-1, 1}, {1, -1}, {-1, -1}};
+		for (double height : new double[] {6, 9, 13}) {
+			for (double dist : new double[] {9, 12, 7}) {
+				for (int[] dir : dirs) {
+					Vec3 cam = target.add(dir[0] * dist, height, dir[1] * dist);
+					if (!level.getBlockState(BlockPos.containing(cam)).isAir()) {
+						continue;
+					}
+					var hit = level.clip(new net.minecraft.world.level.ClipContext(cam, target, net.minecraft.world.level.ClipContext.Block.COLLIDER,
+						net.minecraft.world.level.ClipContext.Fluid.NONE, player));
+					if (hit.getType() == net.minecraft.world.phys.HitResult.Type.MISS || hit.getLocation().distanceTo(target) < 6) {
+						return cam;
+					}
+				}
+			}
+		}
+		return target.add(9, 13, 9);
+	}
+
 	static void hoverLookingAt(ServerPlayer player, Vec3 pos, Vec3 target) {
 		Vec3 d = target.subtract(pos);
 		float yaw = (float) (Math.toDegrees(Math.atan2(d.z, d.x)) - 90);
@@ -2551,6 +2679,7 @@ public class ScreenshotHarness implements ClientModInitializer {
 	}
 
 	static void shot(Minecraft mc, String name) {
+		titleFits(mc, name);
 		Screenshot.grab(mc.gameDirectory, name + ".png", mc.getMainRenderTarget(), msg -> {
 		});
 	}

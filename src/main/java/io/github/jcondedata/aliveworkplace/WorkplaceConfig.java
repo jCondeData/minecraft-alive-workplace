@@ -13,8 +13,15 @@ import io.github.jcondedata.aliveworkplace.wood.LumberjackWork;
 import io.github.jcondedata.aliveworkplace.work.Money;
 import io.github.jcondedata.aliveworkplace.work.Partners;
 import java.io.IOException;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * {@code config/aliveworkplace.json}: server-wide distances and the CobbleDollar rate. Written with the defaults
@@ -86,23 +93,35 @@ public final class WorkplaceConfig {
 
 	/** Reads the config (or the defaults), clamps it, writes it back complete and applies it. */
 	public static WorkplaceConfig loadAndApply(Path configDir) {
+		WorkplaceConfig config = load(configDir);
+		config.save(configDir);
+		config.apply();
+		return config;
+	}
+
+	/** The config in {@code configDir} (the defaults if there is none or it can't be read), clamped. */
+	public static WorkplaceConfig load(Path configDir) {
 		Path file = configDir.resolve(FILE);
-		WorkplaceConfig config = new WorkplaceConfig();
 		if (Files.exists(file)) {
 			try {
-				config = parse(Files.readString(file));
+				return parse(Files.readString(file));
 			} catch (IOException | JsonParseException e) {
 				AliveWorkplace.LOG.warn("Couldn't read {}, using the defaults: {}", file, e.getMessage());
 			}
 		}
+		return new WorkplaceConfig();
+	}
+
+	/** Writes every option to {@code configDir} (clamped first). */
+	public void save(Path configDir) {
+		clamp();
+		Path file = configDir.resolve(FILE);
 		try {
 			Files.createDirectories(configDir);
-			Files.writeString(file, GSON.toJson(config));
+			Files.writeString(file, GSON.toJson(this));
 		} catch (IOException e) {
 			AliveWorkplace.LOG.warn("Couldn't write {}: {}", file, e.getMessage());
 		}
-		config.apply();
-		return config;
 	}
 
 	/** The config in {@code json} (missing values take their default), clamped to sensible ranges. */
@@ -115,22 +134,93 @@ public final class WorkplaceConfig {
 		return config;
 	}
 
+	/** The whole-number options' ranges: the file is clamped to them, and the config screen's sliders span them. */
+	public record Range(int min, int max) {
+	}
+
+	public static final Map<String, Range> RANGES = ranges(
+		"supplyRadius", 2, 32,
+		"maxSiteDistance", 16, 256,
+		"guardRadius", 8, 64,
+		"lumberjackRadius", 4, 48,
+		"orchardRadius", 4, 48,
+		"fisherRadius", 4, 48,
+		"explorerRange", 16, 128,
+		"partnerRadius", 4, 48,
+		"postmanRange", 16, 256,
+		"villageRadius", 0, 128,
+		"villageHallRadius", 16, 160,
+		"villageGrowthCap", 0, 500,
+		"seasonDays", 1, 120,
+		"treasuryPerWorker", 0, 500,
+		"dollarsPerEmerald", 1, 10_000);
+
+	private static Map<String, Range> ranges(Object... nameMinMax) {
+		Map<String, Range> map = new LinkedHashMap<>();
+		for (int i = 0; i < nameMinMax.length; i += 3) {
+			map.put((String) nameMinMax[i], new Range((Integer) nameMinMax[i + 1], (Integer) nameMinMax[i + 2]));
+		}
+		return Collections.unmodifiableMap(map);
+	}
+
 	void clamp() {
-		supplyRadius = clamp(supplyRadius, 2, 32);
-		maxSiteDistance = clamp(maxSiteDistance, 16, 256);
-		guardRadius = clamp(guardRadius, 8, 64);
-		lumberjackRadius = clamp(lumberjackRadius, 4, 48);
-		orchardRadius = clamp(orchardRadius, 4, 48);
-		fisherRadius = clamp(fisherRadius, 4, 48);
-		partnerRadius = clamp(partnerRadius, 4, 48);
-		explorerRange = clamp(explorerRange, 16, 128);
-		postmanRange = clamp(postmanRange, 16, 256);
-		villageRadius = clamp(villageRadius, 0, 128);
-		villageHallRadius = clamp(villageHallRadius, 16, 160);
-		villageGrowthCap = clamp(villageGrowthCap, 0, 500);
-		dollarsPerEmerald = clamp(dollarsPerEmerald, 1, 10_000);
-		treasuryPerWorker = clamp(treasuryPerWorker, 0, 500);
-		seasonDays = clamp(seasonDays, 1, 120);
+		RANGES.forEach((name, range) -> setInt(name, clamp(getInt(name), range.min(), range.max())));
+	}
+
+	/** Every option's name, in the file's order: a boolean (a switch) or an int (with its {@link #RANGES range}). */
+	public static List<String> optionNames() {
+		List<String> names = new ArrayList<>();
+		for (Field field : WorkplaceConfig.class.getDeclaredFields()) {
+			int mods = field.getModifiers();
+			if (Modifier.isPublic(mods) && !Modifier.isStatic(mods)) {
+				names.add(field.getName());
+			}
+		}
+		return names;
+	}
+
+	public static boolean isSwitch(String name) {
+		return field(name).getType() == boolean.class;
+	}
+
+	public boolean getBoolean(String name) {
+		try {
+			return field(name).getBoolean(this);
+		} catch (IllegalAccessException e) {
+			throw new IllegalStateException(e);
+		}
+	}
+
+	public void setBoolean(String name, boolean value) {
+		try {
+			field(name).setBoolean(this, value);
+		} catch (IllegalAccessException e) {
+			throw new IllegalStateException(e);
+		}
+	}
+
+	public int getInt(String name) {
+		try {
+			return field(name).getInt(this);
+		} catch (IllegalAccessException e) {
+			throw new IllegalStateException(e);
+		}
+	}
+
+	public void setInt(String name, int value) {
+		try {
+			field(name).setInt(this, value);
+		} catch (IllegalAccessException e) {
+			throw new IllegalStateException(e);
+		}
+	}
+
+	private static Field field(String name) {
+		try {
+			return WorkplaceConfig.class.getField(name);
+		} catch (NoSuchFieldException e) {
+			throw new IllegalArgumentException("no config option " + name, e);
+		}
 	}
 
 	private static int clamp(int value, int min, int max) {

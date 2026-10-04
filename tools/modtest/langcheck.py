@@ -24,6 +24,15 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from modsrc import repo_root, source_sets, java_files, read, strip_comments  # noqa: E402
 
+# Title/detail pairs whose different placeholder counts were checked against the code (ROADMAP 24.5), with why
+# they're right. A pair listed here is no longer reported; change the reason if the code that fills them changes.
+CHECKED_PAIRS = {
+    "item.aliveworkplace.village_map.legend": "VillageMaps fills the legend line with its own three values, the title with the village name",
+    "advice.aliveworkplace.homes.how": "VillageAdvice passes one list of four values to both; the title uses the first two",
+    "advice.aliveworkplace.rank.how": "VillageAdvice passes one list of four values to both; .how picks %2$s-%4$s by position",
+    "screen.aliveworkplace.daycare.levels": "CobblemonDaycare fills the levels line with its own two values",
+}
+
 PH = re.compile(r"%(?:(\d+)\$)?[sd]")
 CALL = re.compile(r"translatable(?:WithFallback)?\(\s*\"([a-z0-9_.\-]+)\"\s*(\)|,)")
 
@@ -91,6 +100,8 @@ def main():
         if mix:
             mixed.append(k)
         head, _, tail = k.rpartition(".")
+        if k in CHECKED_PAIRS:
+            continue
         if head in lang and n and placeholders(lang[head])[0] and n != placeholders(lang[head])[0]:
             fams.append((head, placeholders(lang[head])[0], k, n))
     print(f"# Lang check: {len(lang)} keys in {', '.join(str(p.relative_to(root)) for p in langs)}\n")

@@ -155,7 +155,7 @@ public final class PostOffice extends SavedData {
 		waiting.forEach((player, count) -> {
 			ServerPlayer online = server.getPlayerList().getPlayer(player);
 			if (online != null) {
-				online.sendSystemMessage(Component.translatable("message.aliveworkplace.mail.waiting_at_desk", count).withStyle(ChatFormatting.GOLD));
+				online.sendSystemMessage(io.github.jcondedata.aliveworkplace.work.Words.counted("message.aliveworkplace.mail.waiting_at_desk", count, count).withStyle(ChatFormatting.GOLD));
 			}
 		});
 	}

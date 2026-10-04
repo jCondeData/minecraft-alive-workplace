@@ -15,7 +15,8 @@
 	"environment": "*",
 	"entrypoints": {
 		"main": ["io.github.jcondedata.aliveworkplace.platform.fabric.AliveWorkplaceFabric"],
-		"client": ["io.github.jcondedata.aliveworkplace.client.AliveWorkplaceClient"]
+		"client": ["io.github.jcondedata.aliveworkplace.client.AliveWorkplaceClient"],
+		"modmenu": ["io.github.jcondedata.aliveworkplace.client.compat.ModMenuEntry"]
 	},
 	"mixins": ["aliveworkplace.mixins.json", {"config": "aliveworkplace.client.mixins.json", "environment": "client"}],
 	"depends": {
@@ -28,6 +29,7 @@
 		"cobblemon": "*",
 		"cobbledollars": "*",
 		"rctmod": "*",
-		"mega_showdown": "*"
+		"mega_showdown": "*",
+		"modmenu": "*"
 	}
 }

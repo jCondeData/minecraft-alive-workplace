@@ -204,11 +204,15 @@ public class SelfHealingSupplyGameTests implements net.fabricmc.fabric.api.gamet
 	public void theStorehouseCountsWhileItsPorterIsOut(GameTestHelper helper) {
 		Setup s = setup(helper, false);
 		BlockPos away = helper.absolutePos(STOREHOUSE).offset(50, 0, 50);
-		s.level().getChunk(away.getX() >> 4, away.getZ() >> 4);
+		// Forced so the porter isn't unloaded with the chunk (a far chunk nothing else keeps loaded).
+		s.level().setChunkForced(away.getX() >> 4, away.getZ() >> 4, true);
 		s.porter().setNoAi(true);
 		s.porter().teleportTo(away.getX() + 0.5, away.getY(), away.getZ() + 0.5);
-		Leftovers.after(helper, () -> s.porter().discard());
-		helper.runAfterDelay(1, () -> {
+		Leftovers.after(helper, () -> {
+			s.porter().discard();
+			s.level().setChunkForced(away.getX() >> 4, away.getZ() >> 4, false);
+		});
+		helper.runAfterDelay(5, () -> {
 			helper.assertTrue(s.porter().blockPosition().distSqr(helper.absolutePos(BENCH)) > 80 * 80, "the porter isn't far away: "
 				+ s.porter().blockPosition().toShortString());
 			List<Village.Stash> stashes = Village.stashes(s.level(), s.builder(), helper.absolutePos(BENCH), s.plan().bounds());

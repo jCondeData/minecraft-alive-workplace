@@ -147,7 +147,8 @@ public final class Festivals {
 			return Component.translatable("message.aliveworkplace.festival.planned").withStyle(ChatFormatting.YELLOW);
 		}
 		if (entity.festivalCalled() >= 0 && today - entity.festivalCalled() < CALL_REST) {
-			return Component.translatable("message.aliveworkplace.festival.too_soon", CALL_REST - (today - entity.festivalCalled()))
+			return io.github.jcondedata.aliveworkplace.work.Words.counted("message.aliveworkplace.festival.too_soon", CALL_REST - (today - entity.festivalCalled()),
+				CALL_REST - (today - entity.festivalCalled()))
 				.withStyle(ChatFormatting.YELLOW);
 		}
 		if (!player.getAbilities().instabuild) {

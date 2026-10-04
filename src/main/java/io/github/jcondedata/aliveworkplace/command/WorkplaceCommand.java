@@ -137,7 +137,7 @@ public final class WorkplaceCommand {
 
 	private static int listBlueprints(CommandContext<CommandSourceStack> ctx) {
 		List<ResourceLocation> ids = BlueprintLibrary.list(ctx.getSource().getServer(), false);
-		ctx.getSource().sendSuccess(() -> Component.translatable("command.aliveworkplace.blueprints", ids.size()).withStyle(ChatFormatting.GOLD), false);
+		ctx.getSource().sendSuccess(() -> io.github.jcondedata.aliveworkplace.work.Words.counted("command.aliveworkplace.blueprints", ids.size(), ids.size()).withStyle(ChatFormatting.GOLD), false);
 		for (ResourceLocation id : ids) {
 			ctx.getSource().sendSuccess(() -> Component.literal("  " + id).withStyle(ChatFormatting.GRAY), false);
 		}

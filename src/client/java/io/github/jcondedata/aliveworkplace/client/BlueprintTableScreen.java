@@ -286,7 +286,13 @@ public class BlueprintTableScreen extends Screen {
 			g.drawString(font, Component.translatable("screen.aliveworkplace.table.loading"), x, y, 0xFF777777, false);
 			return;
 		}
-		int cell = 34;
+		// Each cell is an icon and its count beside it, as wide as the widest count needs (3-digit counts used to touch
+		// the next icon).
+		int countWidth = font.width("99");
+		for (TablePayloads.Material m : materials) {
+			countWidth = Math.max(countWidth, font.width(countText(m.count())));
+		}
+		int cell = 16 + 2 + countWidth + 5;
 		int cols = Math.max(1, w / cell);
 		int bottom = top + panelH - 46;
 		int maxRows = Math.max(1, (bottom - y) / 20);
@@ -301,8 +307,7 @@ public class BlueprintTableScreen extends Screen {
 			int cy = y + (i / cols) * 20;
 			ItemStack stack = new ItemStack(BuiltInRegistries.ITEM.get(m.item()));
 			g.renderItem(stack, cx, cy);
-			String count = m.count() >= 1000 ? (m.count() / 1000) + "k" : String.valueOf(m.count());
-			g.drawString(font, count, cx + 17, cy + 5, 0xFFE8E8E8, true);
+			g.drawString(font, countText(m.count()), cx + 18, cy + 5, 0xFFE8E8E8, true);
 			if (mouseX >= cx && mouseX < cx + 16 && mouseY >= cy && mouseY < cy + 16) {
 				hovered = stack;
 			}
@@ -315,6 +320,10 @@ public class BlueprintTableScreen extends Screen {
 		if (hovered != null) {
 			g.renderTooltip(font, hovered, mouseX, mouseY);
 		}
+	}
+
+	private static String countText(int count) {
+		return count >= 1000 ? (count / 1000) + "k" : String.valueOf(count);
 	}
 
 	private void renderFileHelp(GuiGraphics g, int x, int y, int w) {
@@ -390,10 +399,10 @@ public class BlueprintTableScreen extends Screen {
 
 			@Override
 			public void render(GuiGraphics g, int index, int y, int x, int width, int height, int mouseX, int mouseY, boolean hovered, float partialTick) {
-				g.drawString(font, font.plainSubstrByWidth(Blueprints.displayName(entry.id()).getString(), width - 4), x + 2, y + 2, 0xFFFFFFFF, false);
+				g.drawString(font, font.plainSubstrByWidth(Blueprints.displayName(entry.id()).getString(), width - 4), x + 2, y + 1, 0xFFFFFFFF, false);
 				String size = entry.sizeX() + "×" + entry.sizeY() + "×" + entry.sizeZ();
 				String source = entry.id().getPath().startsWith("uploads/") ? " · " + Component.translatable("screen.aliveworkplace.table.uploaded").getString() : "";
-				g.drawString(font, size + source, x + 2, y + 12, 0xFF7F8C9E, false);
+				g.drawString(font, size + source, x + 2, y + 10, 0xFF7F8C9E, false);
 			}
 
 			@Override
@@ -464,8 +473,8 @@ public class BlueprintTableScreen extends Screen {
 
 			@Override
 			public void render(GuiGraphics g, int index, int y, int x, int width, int height, int mouseX, int mouseY, boolean hovered, float partialTick) {
-				g.drawString(font, font.plainSubstrByWidth(path.getFileName().toString(), width - 4), x + 2, y + 2, 0xFFFFFFFF, false);
-				g.drawString(font, Math.max(1, size / 1024) + " KB", x + 2, y + 12, 0xFF7F8C9E, false);
+				g.drawString(font, font.plainSubstrByWidth(path.getFileName().toString(), width - 4), x + 2, y + 1, 0xFFFFFFFF, false);
+				g.drawString(font, Math.max(1, size / 1024) + " KB", x + 2, y + 10, 0xFF7F8C9E, false);
 			}
 
 			@Override

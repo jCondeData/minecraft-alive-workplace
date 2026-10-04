@@ -1077,7 +1077,9 @@ the Builder's workstation too: a villager without a job near it takes it and bec
 | `/gamerule workplaceKeepWorkLoaded false` | nothing is kept loaded: builds, quarries and villages stop when nobody is nearby (by default builds and quarries keep going while the player who ordered them is online, and villages while anyone is online; see `keepVillagesWorking`) |
 
 **Server config** — `config/aliveworkplace.json` is written with the defaults the first time the game starts (edit it
-and restart; out-of-range values are clamped):
+and restart; out-of-range values are clamped). With [Mod Menu](https://modrinth.com/mod/modmenu) installed, the mod's
+**Configure** button opens the same settings as sliders and on/off buttons, each with a tooltip; closing the screen
+saves the file and puts the settings into effect in your own worlds (a dedicated server keeps its own file):
 
 | Option | Default | What it does |
 | --- | --- | --- |

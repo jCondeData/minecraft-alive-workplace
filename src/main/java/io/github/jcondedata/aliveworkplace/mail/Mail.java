@@ -158,7 +158,7 @@ public final class Mail {
 		}
 		player.level().playSound(null, player.blockPosition(), net.minecraft.sounds.SoundEvents.BUNDLE_DROP_CONTENTS,
 			net.minecraft.sounds.SoundSource.PLAYERS, 0.8f, 1f);
-		tell(player, Component.translatable("message.aliveworkplace.mail.collected", mine.size(), String.join(", ", senders)), ChatFormatting.GOLD);
+		tell(player, io.github.jcondedata.aliveworkplace.work.Words.counted("message.aliveworkplace.mail.collected", mine.size(), mine.size(), String.join(", ", senders)), ChatFormatting.GOLD);
 		return mine.size();
 	}
 

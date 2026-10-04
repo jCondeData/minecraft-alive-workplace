@@ -74,7 +74,7 @@ public class RallyBannerItem extends Item {
 		stack.set(ModComponents.RALLY, new Rally(rally.guards(), raised));
 		if (raised) {
 			level.playSound(null, player.blockPosition(), SoundEvents.RAID_HORN.value(), SoundSource.PLAYERS, 0.5f, 1.3f);
-			Chat.actionBar(player, Component.translatable("message.aliveworkplace.rally.raised", rally.guards().size()).withStyle(ChatFormatting.GOLD));
+			Chat.actionBar(player, io.github.jcondedata.aliveworkplace.work.Words.counted("message.aliveworkplace.rally.raised", rally.guards().size(), rally.guards().size()).withStyle(ChatFormatting.GOLD));
 		} else {
 			level.playSound(null, player.blockPosition(), SoundEvents.ARMOR_EQUIP_LEATHER.value(), SoundSource.PLAYERS, 1f, 0.8f);
 			Chat.actionBar(player, Component.translatable("message.aliveworkplace.rally.lowered").withStyle(ChatFormatting.GRAY));

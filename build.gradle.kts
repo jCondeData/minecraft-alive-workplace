@@ -4,6 +4,8 @@
 plugins {
     // fabric-loom-remap (obfuscated Minecraft, up to 1.21.11) or fabric-loom (26.1+), with loomx.loom_version.
     id("dev.kikugie.loom-back-compat")
+    // Uploads the jar to CurseForge (ROADMAP 26.3). Without a token it only dry-runs: `./gradlew publishMods`.
+    id("me.modmuss50.mod-publish-plugin")
 }
 
 val modId = property("mod.id").toString()
@@ -360,5 +362,38 @@ tasks {
         inputs.files(cp)
         outputs.file(out)
         doLast { out.get().asFile.writeText(cp.files.joinToString("\n") { it.absolutePath }) }
+    }
+}
+
+/**
+ * CurseForge uploads (`./gradlew publishMods`; owner's decision 2026-10-03: CurseForge and GitHub, no Modrinth). Without
+ * CURSEFORGE_TOKEN it is a dry run: what it would upload lands in versions/<mc>/build/publishMods/. The GitHub
+ * Release itself is made by CI (build.yml) when a new version lands on main. The project id goes in
+ * gradle.properties as publish.curseforge once the owner has made the project.
+ */
+publishMods {
+    file = loomx.modJar.flatMap { it.archiveFile }
+    displayName = "${property("mod.name")} $modVersion for Minecraft ${sc.current.version}"
+    version = project.version.toString()
+    // This version's section of CHANGELOG.md (or Unreleased, before the release commit moves it).
+    changelog = providers.fileContents(rootProject.layout.projectDirectory.file("CHANGELOG.md")).asText.map { text ->
+        val sections = text.split(Regex("(?m)^## ")).drop(1)
+        val mine = sections.firstOrNull { it.startsWith("$modVersion ") || it.startsWith("$modVersion\n") }
+            ?: sections.firstOrNull { it.startsWith("Unreleased") } ?: ""
+        mine.substringAfter("\n").trim()
+    }
+    type = if (modVersion.startsWith("0.")) BETA else STABLE
+    modLoaders.add("fabric")
+    dryRun = providers.environmentVariable("CURSEFORGE_TOKEN").orNull == null
+
+    curseforge {
+        projectId = findProperty("publish.curseforge")?.toString() ?: "000000"
+        accessToken = providers.environmentVariable("CURSEFORGE_TOKEN")
+        minecraftVersions.addAll(tomlList("mod", "mc_releases").ifEmpty { listOf(sc.current.version) })
+        javaVersions.add(requiredJava)
+        client = true
+        server = true
+        requires("fabric-api")
+        optional("cobblemon", "modmenu")
     }
 }

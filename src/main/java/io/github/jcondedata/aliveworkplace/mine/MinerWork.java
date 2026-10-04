@@ -435,6 +435,8 @@ public class MinerWork extends Behavior<Villager> {
 		takeTorchesAround(level, bag, target);
 		BlockEntity blockEntity = level.getBlockEntity(target);
 		List<ItemStack> drops = Block.getDrops(state, level, target, blockEntity, villager, pick);
+		// A Ground, Rock or Steel partner digs at the block alongside, in a shower of its crumbs (ROADMAP 28.6).
+		io.github.jcondedata.aliveworkplace.work.PartnerShows.cue(villager, "dig", target, new ItemStack(state.getBlock()));
 		level.destroyBlock(target, false, villager);
 		for (ItemStack drop : drops) {
 			ItemStack rest = bag.add(drop);

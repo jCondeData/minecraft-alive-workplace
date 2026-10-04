@@ -1,0 +1,15 @@
+{
+  "jobs": [
+    "minecraft:cartographer"
+  ],
+  "types": [
+    "flying",
+    "ground"
+  ],
+  "cue": "set_out",
+  "animation": "cry",
+  "particles": "cobblemon:impact_flying",
+  "sound": "minecraft:entity.parrot.fly",
+  "ticks": 40,
+  "effect": "dust"
+}

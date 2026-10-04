@@ -266,7 +266,7 @@ Before polishing, make sure nothing regresses unnoticed.
   GameTest added in that time 10 times. Survivors and flakes go to the `nightly-tests` issue. This moves the slowest
   checks off the lanes, onto GitHub's free machines. Done when: one night's run has posted its results and the QA lane
   reads them (`docs/agent/sessions.md`).
-- [ ] **22.8** **Film one scene on demand.** `showcase.yml` takes a `scenes` input, and a push to an item branch films
+- [x] **22.8** (approved auto 2026-10-04) **Film one scene on demand.** `showcase.yml` takes a `scenes` input, and a push to an item branch films
   only the scenes that branch added or changed, so a lane sees its scene on GitHub in about 15 minutes without running
   the client itself. Done when: a push that changes one scene films only that scene, and `docs/agent/tools.md` says how
   to read the result.
@@ -935,7 +935,7 @@ here adds a new kind of speed bonus (the new jobs get the partners' existing one
 
   Done when: a GameTest per cue, and showcase scene `partners_forge` with its GIF (the air mail take-off, a Charmander
   breathing into the blast furnace).
-- [ ] **28.6** **Partners at work: everyone else.** Shows:
+- [x] **28.6** (review: pending 2026-10-04) **Partners at work: everyone else.** Shows:
   - Miner + Ground, Rock or Steel: digs at the next block along with the miner (cue `dig`), with that block's crack
     particles.
   - Fisherman + Water or Ice: swims out round the bobber, with bubbles (cue `cast`).

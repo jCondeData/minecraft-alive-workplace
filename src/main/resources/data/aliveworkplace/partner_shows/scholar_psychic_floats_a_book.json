@@ -1,0 +1,15 @@
+{
+  "jobs": [
+    "aliveworkplace:scholar"
+  ],
+  "types": [
+    "psychic"
+  ],
+  "cue": "study",
+  "carry": "minecraft:book",
+  "animation": "special",
+  "particles": "minecraft:enchant",
+  "sound": "minecraft:block.enchantment_table.use",
+  "ticks": 60,
+  "effect": "glyphs"
+}

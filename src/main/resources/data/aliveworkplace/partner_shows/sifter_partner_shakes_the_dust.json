@@ -1,0 +1,15 @@
+{
+  "jobs": [
+    "aliveworkplace:sifter"
+  ],
+  "types": [
+    "ground",
+    "rock"
+  ],
+  "cue": "sift",
+  "animation": "physical",
+  "particles": "cobblemon:impact_ground",
+  "sound": "minecraft:block.gravel.hit",
+  "ticks": 40,
+  "effect": "crack"
+}

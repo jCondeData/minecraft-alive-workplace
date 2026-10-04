@@ -101,6 +101,8 @@ public class TeacherWork extends Behavior<Villager> {
 			villager.swing(InteractionHand.MAIN_HAND);
 			villager.getBrain().setMemory(MemoryModuleType.LOOK_TARGET, new EntityTracker(children.get(level.random.nextInt(children.size())), true));
 			level.sendParticles(ParticleTypes.ENCHANT, desk.getX() + 0.5, desk.getY() + 1.4, desk.getZ() + 0.5, 6, 0.3, 0.2, 0.3, 0.3);
+			// A Psychic or Normal partner floats a book by the desk during the lesson (ROADMAP 28.6).
+			io.github.jcondedata.aliveworkplace.work.PartnerShows.cue(villager, "lesson", desk);
 		}
 		status(villager);
 	}

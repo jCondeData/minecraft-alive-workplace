@@ -234,6 +234,8 @@ public class RancherWork extends RanchWork {
 	protected boolean tend(ServerLevel level, Villager villager, Entity animal, List<BlockPos> own, BuilderBag bag) {
 		villager.swing(InteractionHand.MAIN_HAND);
 		if (chore == Chore.TAME && animal instanceof AbstractHorse horse && !horse.isTamed()) {
+			// A Normal or Ground partner walks beside the wild horse being broken in (ROADMAP 28.6).
+			io.github.jcondedata.aliveworkplace.work.PartnerShows.cue(villager, "tame", horse.blockPosition());
 			if (level.random.nextInt(horse.getMaxTemper()) < horse.getTemper()) {
 				horse.setTamed(true);
 				Employer boss = ModAttachments.BUILDER_EMPLOYER.get(villager);

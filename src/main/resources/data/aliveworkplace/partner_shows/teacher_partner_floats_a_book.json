@@ -1,0 +1,16 @@
+{
+  "jobs": [
+    "aliveworkplace:teacher"
+  ],
+  "types": [
+    "psychic",
+    "normal"
+  ],
+  "cue": "lesson",
+  "carry": "minecraft:book",
+  "animation": "special",
+  "particles": "minecraft:enchant",
+  "sound": "minecraft:item.book.page_turn",
+  "ticks": 60,
+  "effect": "glyphs"
+}

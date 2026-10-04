@@ -211,6 +211,8 @@ public final class Netherworkers {
 		int ticks = Math.max(20, Math.round(BuilderLevels.delay(TRIP_TICKS, villager) * expeditionFactor(villager)));
 		ModAttachments.NETHER_TRIP.set(villager, new Trip(now, now + ticks, portal.immutable(), kitOf(bag)));
 		puff(level, villager);
+		// A Fire or Dark partner walks them to the portal, flames at its feet (ROADMAP 28.6).
+		io.github.jcondedata.aliveworkplace.work.PartnerShows.cue(villager, "depart", portal);
 		level.playSound(null, portal, SoundEvents.PORTAL_TRIGGER, SoundSource.NEUTRAL, 0.4f, 1.2f);
 		villager.getBrain().eraseMemory(MemoryModuleType.WALK_TARGET);
 		villager.getNavigation().stop();

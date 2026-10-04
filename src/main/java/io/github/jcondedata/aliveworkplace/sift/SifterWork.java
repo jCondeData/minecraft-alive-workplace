@@ -142,6 +142,8 @@ public class SifterWork extends Behavior<Villager> {
 			}
 		}
 		villager.swing(InteractionHand.MAIN_HAND);
+		// A Ground or Rock partner shakes the dust from the sieve (ROADMAP 28.6).
+		io.github.jcondedata.aliveworkplace.work.PartnerShows.cue(villager, "sift", sieve, block);
 		Block shown = block.getItem() instanceof net.minecraft.world.item.BlockItem bi ? bi.getBlock() : net.minecraft.world.level.block.Blocks.GRAVEL;
 		level.sendParticles(new BlockParticleOption(ParticleTypes.FALLING_DUST, shown.defaultBlockState()), sieve.getX() + 0.5, sieve.getY() + 1.1,
 			sieve.getZ() + 0.5, 12, 0.3, 0.05, 0.3, 0);

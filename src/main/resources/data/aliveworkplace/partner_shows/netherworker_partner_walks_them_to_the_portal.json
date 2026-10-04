@@ -1,0 +1,15 @@
+{
+  "jobs": [
+    "aliveworkplace:netherworker"
+  ],
+  "types": [
+    "fire",
+    "dark"
+  ],
+  "cue": "depart",
+  "animation": "cry",
+  "particles": "cobblemon:impact_fire",
+  "sound": "minecraft:block.fire.ambient",
+  "ticks": 40,
+  "effect": "flames"
+}

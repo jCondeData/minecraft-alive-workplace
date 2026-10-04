@@ -140,6 +140,8 @@ public class ScholarWork extends Behavior<Villager> {
 		int progress = research.progress() + Math.round(EVERY / Partners.factor(villager));
 		villager.swing(InteractionHand.MAIN_HAND);
 		level.sendParticles(ParticleTypes.ENCHANT, desk.getX() + 0.5, desk.getY() + 1.3, desk.getZ() + 0.5, 5, 0.3, 0.2, 0.3, 0.5);
+		// A Psychic partner floats a book beside the desk, among enchanting glyphs (ROADMAP 28.6).
+		io.github.jcondedata.aliveworkplace.work.PartnerShows.cue(villager, "study", desk);
 		if (progress < topic.points(next)) {
 			entity.setResearch(research.withProgress(progress));
 			return;

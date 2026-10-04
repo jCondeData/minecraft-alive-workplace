@@ -1,0 +1,15 @@
+{
+  "jobs": [
+    "minecraft:fisherman"
+  ],
+  "types": [
+    "water",
+    "ice"
+  ],
+  "cue": "cast",
+  "animation": "cry",
+  "particles": "cobblemon:impact_water",
+  "sound": "minecraft:entity.generic.splash",
+  "ticks": 60,
+  "effect": "bubbles"
+}

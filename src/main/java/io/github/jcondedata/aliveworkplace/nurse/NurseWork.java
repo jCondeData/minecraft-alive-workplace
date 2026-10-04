@@ -66,6 +66,8 @@ public class NurseWork extends Behavior<Villager> {
 		for (LivingEntity patient : level.getEntitiesOfClass(LivingEntity.class, area,
 				e -> (e instanceof Villager || e instanceof IronGolem) && e != villager && e.isAlive() && e.getHealth() < e.getMaxHealth())) {
 			patient.heal(HEAL);
+			// A Fairy, Normal or Psychic partner sends a pink pulse over the one being healed (ROADMAP 28.6).
+			io.github.jcondedata.aliveworkplace.work.PartnerShows.cue(villager, "cure", patient.blockPosition());
 			level.sendParticles(ParticleTypes.HEART, patient.getX(), patient.getY() + patient.getBbHeight() + 0.3, patient.getZ(), 2, 0.2, 0.1, 0.2, 0);
 		}
 		state = cure(level, villager);
@@ -97,6 +99,7 @@ public class NurseWork extends Behavior<Villager> {
 			}
 		}
 		Sickness.recover(level, patient);
+		io.github.jcondedata.aliveworkplace.work.PartnerShows.cue(nurse, "cure", patient.blockPosition()); // and over the villager cured (ROADMAP 28.6)
 		level.sendParticles(ParticleTypes.HEART, patient.getX(), patient.getY() + patient.getBbHeight() + 0.3, patient.getZ(), 4, 0.3, 0.2, 0.3, 0);
 		level.playSound(null, patient.blockPosition(), SoundEvents.GENERIC_DRINK, SoundSource.NEUTRAL, 0.6f, 1.1f);
 		ModAttachments.VILLAGERS_CURED.set(nurse, ModAttachments.VILLAGERS_CURED.getOrElse(nurse, 0) + 1);

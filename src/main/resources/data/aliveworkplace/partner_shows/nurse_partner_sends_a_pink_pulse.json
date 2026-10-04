@@ -1,0 +1,16 @@
+{
+  "jobs": [
+    "aliveworkplace:nurse"
+  ],
+  "types": [
+    "fairy",
+    "normal",
+    "psychic"
+  ],
+  "cue": "cure",
+  "animation": "special",
+  "particles": "cobblemon:impact_fairy",
+  "sound": "minecraft:block.amethyst_block.chime",
+  "ticks": 40,
+  "effect": "pulse"
+}

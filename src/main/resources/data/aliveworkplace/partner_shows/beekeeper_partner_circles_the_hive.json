@@ -1,0 +1,15 @@
+{
+  "jobs": [
+    "aliveworkplace:beekeeper"
+  ],
+  "types": [
+    "bug",
+    "grass"
+  ],
+  "cue": "harvest",
+  "animation": "cry",
+  "particles": "cobblemon:impact_bug",
+  "sound": "minecraft:block.beehive.work",
+  "ticks": 60,
+  "effect": "none"
+}

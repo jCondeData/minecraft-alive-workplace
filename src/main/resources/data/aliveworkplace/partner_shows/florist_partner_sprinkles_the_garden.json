@@ -1,0 +1,15 @@
+{
+  "jobs": [
+    "aliveworkplace:florist"
+  ],
+  "types": [
+    "grass",
+    "fairy"
+  ],
+  "cue": "grow",
+  "animation": "special",
+  "particles": "minecraft:happy_villager",
+  "sound": "minecraft:item.bone_meal.use",
+  "ticks": 40,
+  "effect": "none"
+}

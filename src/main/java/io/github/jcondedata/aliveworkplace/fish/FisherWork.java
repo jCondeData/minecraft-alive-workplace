@@ -334,6 +334,8 @@ public class FisherWork extends Behavior<Villager> {
 		if (waited++ == 0) {
 			reelUp();
 			this.bobber = FishingBobber.cast(level, villager, bobber);
+			// A Water or Ice partner swims out round the bobber (ROADMAP 28.6).
+			io.github.jcondedata.aliveworkplace.work.PartnerShows.cue(villager, "cast", spot);
 			villager.swing(InteractionHand.MAIN_HAND);
 			level.playSound(null, villager.blockPosition(), SoundEvents.FISHING_BOBBER_THROW, SoundSource.NEUTRAL, 0.5f, 0.4f + level.random.nextFloat() * 0.4f);
 			biteAt = BuilderLevels.delay(level, villager) * (15 + level.random.nextInt(46));

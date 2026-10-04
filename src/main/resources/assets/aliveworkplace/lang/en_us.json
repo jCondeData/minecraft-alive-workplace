@@ -1248,7 +1248,7 @@
   "command.aliveworkplace.steward.explain.rank": "Not before the village is a %s",
   "command.aliveworkplace.steward.explain.mod": "Needs the mod %s",
   "command.aliveworkplace.steward.explain.used_up": "Done %s of the %s times it may be",
-  "command.aliveworkplace.steward.explain.cooling": "Resting for %s more day(s) after it was last done",
+  "command.aliveworkplace.steward.explain.cooling": "Resting after it was last done (days left: %s)",
   "command.aliveworkplace.steward.explain.why": "Why: %s",
   "command.aliveworkplace.steward.explain.wishes": "Today's wishes (%s):",
   "command.aliveworkplace.steward.explain.wish": "%s. %s: %s",

@@ -354,9 +354,11 @@ public final class BuilderEvents {
 				io.github.jcondedata.aliveworkplace.berry.BerryBreeders.onDeath(level, villager);
 				io.github.jcondedata.aliveworkplace.people.Couples.onDeath(level, villager);
 				io.github.jcondedata.aliveworkplace.ranch.Daycare.onDeath(level, villager); // (before the grave keeps the villager)
-				io.github.jcondedata.aliveworkplace.grave.Graves.onDeath(level, villager);
+				net.minecraft.core.BlockPos grave = io.github.jcondedata.aliveworkplace.grave.Graves.onDeath(level, villager);
+				io.github.jcondedata.aliveworkplace.legend.LegendSlots.onDeath(level, villager, grave);
 				io.github.jcondedata.aliveworkplace.hall.Chronicle.record(level, villager.blockPosition(), io.github.jcondedata.aliveworkplace.hall.Chronicle.Kind.DEATH, source.getLocalizedDeathMessage(villager));
 			} else if (entity.level() instanceof ServerLevel level) {
+				io.github.jcondedata.aliveworkplace.legend.LegendSlots.onDeath(level, entity, null); // a Legend as a zombie villager
 				io.github.jcondedata.aliveworkplace.guard.GuardCombat.onFoeKilled(level, entity, source);
 				io.github.jcondedata.aliveworkplace.guard.BanditCamps.onDeath(level, entity, source);
 				io.github.jcondedata.aliveworkplace.hall.VillageQuests.onKill(level, entity, source);

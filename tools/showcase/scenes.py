@@ -214,6 +214,9 @@ SCENES = [
        ("03_city_plan_framed", "The plan on the hall's map, framed")]),
     S("hall_pages", "Village Hall", "The chronicle and trade routes", "the chronicle and trade-route pages opened", 45,
       [("01_hall_chronicle", "Chronicle"), ("02_hall_routes", "Trade routes")]),
+    # Legends (ROADMAP 29.3): a Mythic Legend announced to the whole server in gold, and the chronicle's nether-star line
+    S("legend_announce", "Legends", "A Mythic Legend is announced", "a Mythic Legend's coming was announced in chat and written in the chronicle", 45,
+      [("01_legend_chat", "The announcement"), ("02_legend_chronicle", "The chronicle line")]),
     S("hall_quests", "Village Hall", "Quests, advice, the village map and the festival",
       "the quests, advice, village map, mercenaries and festival opened", 60,
       [("01_hall_quests", "Quests"), ("02_hall_advice", "What next?"), ("03_hall_map", "Village map"),

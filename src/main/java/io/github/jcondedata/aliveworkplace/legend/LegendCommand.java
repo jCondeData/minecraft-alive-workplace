@@ -19,7 +19,7 @@ import org.jetbrains.annotations.Nullable;
 
 /**
  * {@code /workplace legend list|make <id>|clear} (ops): lists the Legends loaded, makes the nearest villager (within
- * {@link #REACH} blocks) a Legend, or makes the nearest Legend an ordinary villager again.
+ * {@link #REACH} blocks) a Legend (if their rarity lets them come: {@link LegendSlots#whyNot}), or makes the nearest Legend an ordinary villager again.
  */
 public final class LegendCommand {
 	public static final int REACH = 8;
@@ -69,6 +69,12 @@ public final class LegendCommand {
 		Villager villager = nearest(source, false);
 		if (villager == null) {
 			source.sendFailure(Component.translatable("message.aliveworkplace.legend.no_villager", REACH));
+			return 0;
+		}
+		Optional<Component> refused = LegendSlots.whyNot(source.getLevel(),
+			io.github.jcondedata.aliveworkplace.hall.VillageHalls.nearest(source.getLevel(), villager.blockPosition()).orElse(null), legend.get(), villager.getUUID());
+		if (refused.isPresent()) {
+			source.sendFailure(refused.get());
 			return 0;
 		}
 		Legends.make(source.getLevel(), villager, legend.get(), "command");

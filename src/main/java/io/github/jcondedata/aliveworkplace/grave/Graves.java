@@ -126,6 +126,7 @@ public final class Graves {
 		if (!(entity instanceof Villager villager)) {
 			return null;
 		}
+		UUID was = villager.getUUID();
 		if (level.getEntity(villager.getUUID()) != null) {
 			villager.setUUID(UUID.randomUUID());
 		}
@@ -155,6 +156,7 @@ public final class Graves {
 		level.sendParticles(ParticleTypes.TOTEM_OF_UNDYING, villager.getX(), villager.getY() + 1.0, villager.getZ(), 40, 0.4, 0.8, 0.4, 0.3);
 		level.playSound(null, pos, SoundEvents.TOTEM_USE, SoundSource.NEUTRAL, 0.6f, 1.1f);
 		io.github.jcondedata.aliveworkplace.hall.Chronicle.record(level, pos, io.github.jcondedata.aliveworkplace.hall.Chronicle.Kind.REVIVED, Component.translatable("chronicle.aliveworkplace.revived", villager.getDisplayName()));
+		io.github.jcondedata.aliveworkplace.legend.LegendSlots.onRevived(level, was, villager); // a Legend back as they were
 		return villager;
 	}
 

@@ -988,6 +988,39 @@ final class JobScenes {
 					}
 				}, 30)),
 			(level, player) -> player.containerMenu instanceof ChoiceMenu));
+		SCREENS.put("legend_announce", new Screen("a Mythic Legend's coming was announced in chat and written in the chronicle", new Vec3(2.5, -58.4, 4.5), TARGET,
+			(level, player) -> {
+				// ROADMAP 29.3: a Mythic Legend of the scene's own settles by the hall; everyone on the server hears it, in gold.
+				level.setBlockAndUpdate(STATION, ModBlocks.VILLAGE_HALL.defaultBlockState()
+					.setValue(io.github.jcondedata.aliveworkplace.hall.VillageHallBlock.FACING, Direction.SOUTH));
+				io.github.jcondedata.aliveworkplace.hall.VillageNeeds.check(level, STATION);
+			},
+			List.of(new Step("01_legend_chat", -1, 6, (level, player) -> {
+					net.minecraft.resources.ResourceLocation id = io.github.jcondedata.aliveworkplace.AliveWorkplace.id("showcase_mythic");
+					io.github.jcondedata.aliveworkplace.legend.Legend legend = io.github.jcondedata.aliveworkplace.legend.Legends.read(id,
+						com.google.gson.JsonParser.parseString("{\"rarity\": \"mythic\", \"job\": \"aliveworkplace:legend\", \"title\": \"entity.minecraft.villager.legend\","
+							+ " \"lore\": \"entity.minecraft.villager.legend\"}").getAsJsonObject());
+					io.github.jcondedata.aliveworkplace.legend.Legends.setForTest(Map.of(id, legend));
+					Villager hero = EntityType.VILLAGER.spawn(level, STATION.south(2).east(2), MobSpawnType.COMMAND);
+					hero.setNoAi(true);
+					hero.setYRot(180);
+					hero.setYHeadRot(180);
+					hero.setCustomName(net.minecraft.network.chat.Component.literal("Aurelia"));
+					// make announces it (in gold, to every player) and writes the chronicle line, as a real settling does
+					io.github.jcondedata.aliveworkplace.legend.Legends.make(level, hero, legend, "showcase");
+					Showcase.check(io.github.jcondedata.aliveworkplace.legend.LegendSlots.audience(level, STATION, hero.blockPosition(),
+						legend.rarity()).contains(player), "the player heard the Mythic Legend's announcement");
+				}, 60),
+				new Step("02_legend_chronicle", -1, 6, (level, player) -> {
+					var hall = (io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(STATION);
+					Showcase.check(hall.chronicle().stream().anyMatch(e -> e.kind() == io.github.jcondedata.aliveworkplace.hall.Chronicle.Kind.LEGEND),
+						"the chronicle has the Legend's line");
+					io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.open(player, STATION);
+					if (player.containerMenu instanceof ChoiceMenu m) {
+						m.press(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.CHRONICLE, player);
+					}
+				}, 30)),
+			(level, player) -> player.containerMenu instanceof ChoiceMenu));
 		SCREENS.put("hall_quests", new Screen("the Village Hall's quests, advice, village map, mercenaries and festival opened", new Vec3(2.5, -58.4, 4.5), TARGET,
 			(level, player) -> {
 				level.setBlockAndUpdate(STATION, ModBlocks.VILLAGE_HALL.defaultBlockState()

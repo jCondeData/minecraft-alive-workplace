@@ -17,6 +17,12 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Added
+- **Legends: rarities, caps and the server's record** (29.3): the server keeps a saved record of every Legend. A Rare
+  Legend comes once to each village, a Legendary one once to each world, and a village holds Mythic ones by its rank
+  (`mythicLegendCap` in the config file, default Hamlet 0, Village 0, Town 1, City 2). Rare and Legendary arrivals are
+  told to the village and the hall's owner, Mythic ones to every player in gold with the village's direction from spawn;
+  all go in the chronicle under a nether star. A Legend in a grave or turned zombie keeps their slot and comes back as
+  themselves; with no grave their slot frees after 7 days; Legends join a hall placed again.
 - The **Steward** (27.5): sneak-right-click a grown villager beside a Village Hall with that hall's City Plan and he
   becomes its Steward, one per hall. Each morning he walks his rounds holding the plan (each zone, the storehouse),
   three seconds at each stop, then goes back to the hall for the day. He trades City Plans, Blank Blueprints and

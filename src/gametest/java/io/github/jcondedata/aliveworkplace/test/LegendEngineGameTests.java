@@ -80,6 +80,7 @@ public class LegendEngineGameTests implements net.fabricmc.fabric.api.gametest.v
 	private static void sendLegendsAway(GameTestHelper helper) {
 		Leftovers.after(helper, () -> {
 			for (Villager v : helper.getLevel().getEntitiesOfClass(Villager.class, helper.getBounds().inflate(16), ModAttachments.LEGEND::has)) {
+				io.github.jcondedata.aliveworkplace.legend.LegendRecord.get(helper.getLevel()).forget(v.getUUID()); // their slot too (29.3)
 				v.discard();
 			}
 			LegendPowers.forget();

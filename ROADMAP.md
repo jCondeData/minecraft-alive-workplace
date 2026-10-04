@@ -1365,7 +1365,7 @@ MarketDays) and research/.
   - a `pace` power makes a builder within its radius faster and one outside it not, never past the shared cap; a
     `mood` power shows as a reason in the villager's mood;
   - with `legends` off no Legend loads, nothing ticks and the command says so.
-- [ ] **29.3** **Rarities, caps and the server's record of Legends.** `legend/LegendRecord`, saved data on the
+- [x] **29.3** (review: pending 2026-10-04) **Rarities, caps and the server's record of Legends.** `legend/LegendRecord`, saved data on the
   overworld (`aliveworkplace_legends`), lists every Legend that has settled anywhere on the server: id, villager UUID,
   dimension, hall, rarity, the day they settled and the day they fell. `Legends.canCome(level, hall, legend)` is asked
   before any arrival:

@@ -112,6 +112,9 @@ public interface Platform {
 	/** After a living entity died on the server. */
 	void afterDeath(BiConsumer<LivingEntity, DamageSource> action);
 
+	/** After a mob was turned into another on the server (a villager into a zombie villager, or cured back): old, new. */
+	void onMobConversion(BiConsumer<net.minecraft.world.entity.Mob, net.minecraft.world.entity.Mob> action);
+
 	/** When the server's commands are registered. */
 	void onRegisterCommands(Consumer<CommandDispatcher<CommandSourceStack>> action);
 

@@ -133,7 +133,9 @@ public class ConfigGameTests implements FabricGameTest {
 				problems.add("range for " + name + ", which isn't a number setting");
 			}
 		}
-		helper.assertTrue(names.size() == 39, "expected 39 settings (28.8 added campCooks, 27.5 steward and stewardMaxOpenBuilds, 29.2 legends), found " + names.size() + ": " + names);
+		helper.assertTrue(names.size() == 39, "expected 39 settings on the screen (28.8 added campCooks, 27.5 steward and stewardMaxOpenBuilds, 29.2 legends;"
+			+ " 29.3's mythicLegendCap list is in the file only), found " + names.size() + ": " + names);
+		helper.assertTrue(!names.contains("mythicLegendCap"), "a list on the settings screen");
 		helper.assertTrue(problems.isEmpty(), String.join("; ", problems));
 		helper.succeed();
 	}
@@ -170,6 +172,7 @@ public class ConfigGameTests implements FabricGameTest {
 			helper.assertTrue(broken.festivals && broken.seasonDays == 16, "a broken file should give the defaults");
 			helper.assertTrue(Files.readString(dir.resolve(WorkplaceConfig.FILE)).contains("\"villageProtection\""),
 				"a broken file should be rewritten with every setting");
+			helper.assertTrue(Files.readString(dir.resolve(WorkplaceConfig.FILE)).contains("\"mythicLegendCap\""), "the Mythic Legend caps aren't in the file");
 		} catch (IOException e) {
 			throw new GameTestAssertException("file trouble: " + e);
 		}

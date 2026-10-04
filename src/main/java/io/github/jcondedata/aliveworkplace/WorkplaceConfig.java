@@ -69,6 +69,11 @@ public final class WorkplaceConfig {
 	public boolean villagerMoods = true;
 	/** Legends (rare named villagers with powers) can come to villages that earn them. */
 	public boolean legends = true;
+	/**
+	 * Mythic Legends a village may hold, by its rank: Hamlet, Village, Town, City. Edited in the file only (a list isn't
+	 * on the settings screen); each is clamped to 0-10, a short list is filled from the defaults.
+	 */
+	public List<Integer> mythicLegendCap = new ArrayList<>(DEFAULT_MYTHIC_CAP);
 	/** Idle builders repair the buildings they finished when blocks go missing. */
 	public boolean builderRepairs = true;
 	/** A village with a Village Hall and a Market Square holds a market once a week. */
@@ -199,14 +204,27 @@ public final class WorkplaceConfig {
 
 	void clamp() {
 		RANGES.forEach((name, range) -> setInt(name, clamp(getInt(name), range.min(), range.max())));
+		List<Integer> caps = new ArrayList<>();
+		for (int i = 0; i < DEFAULT_MYTHIC_CAP.size(); i++) {
+			Integer v = mythicLegendCap != null && i < mythicLegendCap.size() ? mythicLegendCap.get(i) : null;
+			caps.add(v == null ? DEFAULT_MYTHIC_CAP.get(i) : clamp(v, 0, 10));
+		}
+		mythicLegendCap = caps;
 	}
 
-	/** Every option's name, in the file's order: a boolean (a switch) or an int (with its {@link #RANGES range}). */
+	/** The Mythic Legend caps by rank (Hamlet, Village, Town, City) when the file doesn't say. */
+	public static final List<Integer> DEFAULT_MYTHIC_CAP = List.of(0, 0, 1, 2);
+
+	/**
+	 * Every option on the settings screen, in the file's order: a boolean (a switch) or an int (with its
+	 * {@link #RANGES range}). Lists ({@code mythicLegendCap}) are in the file only.
+	 */
 	public static List<String> optionNames() {
 		List<String> names = new ArrayList<>();
 		for (Field field : WorkplaceConfig.class.getDeclaredFields()) {
 			int mods = field.getModifiers();
-			if (Modifier.isPublic(mods) && !Modifier.isStatic(mods)) {
+			boolean onScreen = field.getType() == boolean.class || field.getType() == int.class;
+			if (Modifier.isPublic(mods) && !Modifier.isStatic(mods) && onScreen) {
 				names.add(field.getName());
 			}
 		}
@@ -303,6 +321,7 @@ public final class WorkplaceConfig {
 		io.github.jcondedata.aliveworkplace.hall.Treasury.ENABLED = villageTreasury && System.getProperty("fabric-api.gametest") == null;
 		io.github.jcondedata.aliveworkplace.hall.VillageProtection.ENABLED = villageProtection;
 		io.github.jcondedata.aliveworkplace.legend.Legends.ENABLED = legends;
+		io.github.jcondedata.aliveworkplace.legend.Legends.MYTHIC_CAP = mythicLegendCap.stream().mapToInt(Integer::intValue).toArray();
 		// Off in gametests (tickets around every test's workers would keep the test areas loaded); KeepLoaded's tests turn it on.
 		io.github.jcondedata.aliveworkplace.work.KeepLoaded.VILLAGES = keepVillagesWorking && System.getProperty("fabric-api.gametest") == null;
 		// Off in gametests (a partner walking off mid-test would move the numbers); the show tests turn them on.

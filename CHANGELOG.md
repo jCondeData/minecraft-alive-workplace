@@ -129,6 +129,8 @@
   trapped living villagers before 0.138.0).
 
 ### Tests
+- The showcase's soak scene passes again: its check reads "items off: none" before the village chunk count, and a
+  villager brushing an open door's panel is no longer reported as stuck in a wall (B42, B44).
 - The builder soak no longer counts a supply run to far chests (30 s there and back without a block placed) as a
   stall: the split soak now ends with 0 stalls (B40).
 - The showcase's title check measures from the title to the panel's right edge, so the player inventory's

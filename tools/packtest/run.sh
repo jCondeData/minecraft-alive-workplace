@@ -7,6 +7,8 @@
 #   PERF=true PLOTS=20 tools/packtest/run.sh   # performance mode: /workplace benchmark fills an area with busy
 #                                              # workers; tick times before/after, heap after GC, a CPU profile of our code
 #   PERF=true VILLAGES=3 PLOTS=25 ...          # 25.1's benchmark: 150 workers over three villages (docs/performance.md)
+#   JAR=old.jar PERF=true PLOTS=10 ...; KEEP_WORLD=true SITES_ONLY=true ...   # 21.2: a world saved by an older jar,
+#                                              # opened with this one: its sites listed after a minute of work
 #   SOAK=true tools/packtest/run.sh            # the builder soak (23.1; SOAK_DAYS=n for longer): /workplace soak, then 2 in-game days at
 #                                              # full speed (/tick sprint); prints the "Soak result:" line and the stalls
 #   SOAK=true DEBUG=true ...                   # the same, with the builders' [builder N] lines in the log
@@ -17,7 +19,7 @@ set -euo pipefail
 cd "$(dirname "$0")/../.."
 PACK_URL="${PACK_VERSION_URL:-https://cdn.modrinth.com/data/Jkb29YJU/versions/4SKGla61/COBBLEVERSE%201.7.42.mrpack}"
 LOADER="${LOADER:-0.18.4}"
-JAR=$(ls -t versions/1.21.1/build/libs/alive-workplace-*+1.21.1.jar | grep -v sources | head -1)
+JAR="${JAR:-$(ls -t versions/1.21.1/build/libs/alive-workplace-*+1.21.1.jar | grep -v sources | head -1)}"
 DIR=build/packtest
 SERVER=$DIR/server
 mkdir -p "$SERVER/mods"
@@ -54,7 +56,7 @@ rm -f "$SERVER"/mods/alive-workplace-*.jar
 cp "$JAR" "$SERVER/mods/"
 echo "eula=true" > "$SERVER/eula.txt"
 printf 'online-mode=false\nview-distance=6\nsimulation-distance=5\nmax-tick-time=-1\nlevel-seed=alive\n' > "$SERVER/server.properties"
-rm -rf "$SERVER/world"
+if [ "${KEEP_WORLD:-false}" != "true" ]; then rm -rf "$SERVER/world"; fi
 
 # 2. Boot it with a console we can type into.
 cd "$SERVER"
@@ -75,6 +77,19 @@ done
 grep -q "Alive Workplace ready" server.log || { echo "Alive Workplace didn't load"; }
 
 say() { echo "$1" > console; sleep "${2:-3}"; }
+
+# Sites mode (21.2's old-world check): open the world as it was left (KEEP_WORLD=true), let the workers carry on for a
+# minute, list the sites and stop. Run PERF=true with JAR=<an older release's jar> first to make that world.
+if [ "${SITES_ONLY:-false}" = "true" ]; then
+  say "forceload add 1000 1000 1190 1190" 60
+  say "workplace sites" 5
+  say "stop" 30
+  kill $KEEP 2>/dev/null || true
+  wait $PID 2>/dev/null || true
+  echo "--- sites working: $(grep -c " · working" server.log || true) of $(grep -cE "\] \[Server thread/INFO\]: (Builder|Miner) — " server.log || true)"
+  grep -E "Crash|Exception|ERROR" server.log | grep -i "aliveworkplace\|alive workplace" | head -20 || true
+  exit 0
+fi
 
 # Performance mode: the same area idle, then full of workers; tick times and a profile of the server thread.
 if [ "${PERF:-false}" = "true" ]; then
@@ -99,7 +114,8 @@ if [ "${PERF:-false}" = "true" ]; then
   # Heap after a full GC, with everything still loaded and working (25.1).
   jcmd $PID GC.run > /dev/null 2>&1 || true
   sleep 5
-  HEAP=$(jcmd $PID GC.heap_info 2>/dev/null | grep -oE "used [0-9]+K" | head -1 | grep -oE "[0-9]+" || echo 0)
+  jcmd $PID GC.heap_info > heap.txt 2>/dev/null || true
+  HEAP=$(grep -iE "heap +total" heap.txt | grep -oE "used [0-9]+K" | head -1 | grep -oE "[0-9]+" || echo 0)
   say "workplace sites" 5
   say "stop" 30
   kill $KEEP 2>/dev/null || true

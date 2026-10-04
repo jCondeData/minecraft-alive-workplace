@@ -22,6 +22,9 @@
 ### Fixed
 - A builder whose next build is far from its chests takes the first materials along before clearing the site, instead
   of walking all the way back for them once the site is clear (it stood idle for over half a minute).
+- With Chipped or Rechiseled installed, a builder carrying a variant of the block it needed (taken in place of
+  another block of the same kind) no longer stands waiting for materials with nothing on its missing list: it turns
+  the variant into the block it needs and carries on.
 - The Village Hall's name tag now says what a shift-click will do: protect an open village, or open a protected one
   to everyone again (it always said "protect").
 - Masons and carpenters helping one builder no longer use up the stone or wood another builder's build is waiting

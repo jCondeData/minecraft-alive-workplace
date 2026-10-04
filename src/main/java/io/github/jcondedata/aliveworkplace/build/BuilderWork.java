@@ -570,6 +570,12 @@ public class BuilderWork extends Behavior<Villager> {
 
 	private void fetch(ServerLevel level, Villager villager, BuildSite site, BuildPlan plan, BuilderBag bag, BlockPos bench,
 					   MaterialRules.Requirement requirement) {
+		// B38: the bag may already hold a free variant of what this block needs (taken in place of something else
+		// in its family): turn it into this one on the spot, as when taking from a chest. Counting the bag's whole
+		// family while fetching only the exact item left the builder waiting with nothing missing.
+		if (convertInBag(bag, requirement)) {
+			return;
+		}
 		if (bag.spaceFor(requirement.item()) < requirement.count()) {
 			deposit(level, villager, site, plan, bag, bench);
 			return;
@@ -638,6 +644,30 @@ public class BuilderWork extends Behavior<Villager> {
 	/** The next stretch of work, for what to take and what to keep: later stages, or the rest of the levelling. */
 	private static List<BuildPlan.Step> ahead(BuildSite site, BuildPlan plan) {
 		return site.stage() == BuildPlan.Stage.LANDSCAPE ? site.landscapeLeft(plan, LOOKAHEAD) : site.upcoming(plan, LOOKAHEAD);
+	}
+
+	/**
+	 * Turns free variants (MaterialFamilies) the bag holds into {@code requirement}'s item, as many as it is short of.
+	 * True if the bag now has enough.
+	 */
+	static boolean convertInBag(BuilderBag bag, MaterialRules.Requirement requirement) {
+		Item item = requirement.item();
+		int shortBy = requirement.count() - bag.count(item);
+		if (shortBy <= 0) {
+			return true;
+		}
+		for (Item member : MaterialFamilies.accepted(item)) {
+			if (member == item || shortBy <= 0) {
+				continue;
+			}
+			int got = bag.remove(member, shortBy);
+			if (got > 0) {
+				bag.addAll(item, got);
+				MaterialLedger.converted(member, item, got);
+				shortBy -= got;
+			}
+		}
+		return shortBy <= 0;
 	}
 
 	private void takeWanted(ServerLevel level, BuildSite site, BuildPlan plan, BuilderBag bag, MaterialRules.Requirement requirement,

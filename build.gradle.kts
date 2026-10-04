@@ -95,7 +95,9 @@ loom {
                 name = "Screenshot Client"
                 source(devclient)
                 runDir = "run/screenshots"
-                programArgs("--quickPlaySingleplayer", "shots", "--width", "960", "--height", "540")
+                // GUI_SCALE=3 or 4 (tools/screenshots/run.sh): a 1920x1080 window, big enough for those scales
+                val big = (findProperty("guiScale")?.toString()?.toIntOrNull() ?: 2) >= 3
+                programArgs("--quickPlaySingleplayer", "shots", "--width", if (big) "1920" else "960", "--height", if (big) "1080" else "540")
                 vmArg("-Daliveworkplace.shots=true")
                 // ./gradlew runScreenshots -Pscene=table   (the scenes are listed in CLAUDE.md)
                 vmArg("-Daliveworkplace.scene=${findProperty("scene") ?: "builders"}")

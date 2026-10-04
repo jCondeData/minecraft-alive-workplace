@@ -5,6 +5,7 @@
 # Output: versions/1.21.1/run/screenshots/screenshots/*.png and versions/1.21.1/run/screenshots/timelapse.gif, plus
 # screenshots/gif/*.png (small frames every half second) and showcase.json (the scene's checks: tools/showcase).
 # COBBLEMON=true / MEGA=true add Cobblemon (and Mega Showdown) for scenes not in the list below.
+# GUI_SCALE=4 films any scene at GUI scale 4 (a 1920x1080 window; scale 3 also gets it; default 2 at 960x540).
 # (the harness is written for the Minecraft 1.21.1 node; each node runs in versions/<mc>/run).
 set -euo pipefail
 cd "$(dirname "$0")/../.."
@@ -30,14 +31,14 @@ rm -rf $RUN/screenshots/saves/shots $RUN/screenshots/screenshots $RUN/screenshot
 cp -r $RUN/shots $RUN/screenshots/saves/shots
 printf '%s\n' 'version:3955' 'onboardAccessibility:false' 'tutorialStep:none' 'joinedFirstServer:true' \
   'skipMultiplayerWarning:true' 'narrator:0' 'renderDistance:6' 'simulationDistance:6' 'graphicsMode:0' \
-  'renderClouds:"false"' 'maxFps:15' 'enableVsync:false' 'guiScale:2' 'soundCategory_master:0.0' \
+  'renderClouds:"false"' 'maxFps:15' 'enableVsync:false' "guiScale:${GUI_SCALE:-2}" 'soundCategory_master:0.0' \
   'pauseOnLostFocus:false' > $RUN/screenshots/options.txt
 
 mkdir -p $RUN/screenshots/blueprints && cp src/gametest/resources/fixtures/hut.litematic "$RUN/screenshots/blueprints/Cozy Hut.litematic"
 
 # 3. Run the client (the dev-only harness stages the scene, takes shots and quits).
 LIBGL_ALWAYS_SOFTWARE=1 GALLIUM_DRIVER=llvmpipe xvfb-run -a -s "-screen 0 1920x1080x24" \
-  ./gradlew :$MC:runScreenshots --no-daemon -Pscene="${SCENE:-builders}" -PworkshopWeight="${WORKSHOP_WEIGHT:-3}" ${HOUSE_WEIGHT:+-PhouseWeight=$HOUSE_WEIGHT} \
+  ./gradlew :$MC:runScreenshots --no-daemon -Pscene="${SCENE:-builders}" -PguiScale="${GUI_SCALE:-2}" -PworkshopWeight="${WORKSHOP_WEIGHT:-3}" ${HOUSE_WEIGHT:+-PhouseWeight=$HOUSE_WEIGHT} \
     -Pcobblemon="${COBBLEMON:-$(case "${SCENE:-}" in tutor|trader|orchard|shop|smith|smith_orders|guard_pokemon|battle|leader|fossil|daycare) echo true;; *) echo false;; esac)}" \
     -Pmega="${MEGA:-$(case "${SCENE:-}" in battle) echo true;; *) echo false;; esac)}" -PbuilderDebug="${DEBUG:-false}" > "$SCRATCH/client.log" 2>&1 || true
 cp "$SCRATCH/client.log" $RUN/screenshots/client.log 2>/dev/null || true

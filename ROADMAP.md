@@ -844,7 +844,7 @@ fair on, and the winner's banner flying over the winning village. It builds on `
 so the parts that need Cobblemon 1.8 (Habitat Blocks, Type Gems, Alphas) wait quietly until the pack moves up. Nothing
 here adds a new kind of speed bonus (the new jobs get the partners' existing one).
 
-- [x] **28.1** (review: pending 2026-10-04) **Design note.** `docs/design/M28.md`, sent to the owner as a review package (lanes don't wait for his
+- [x] **28.1** (review: pending 2026-10-04) (verified 2026-10-04: 28.1: docs/design/M28.md [185 lines] covers every point of the spec [partner shows, the Pokémon Center, the Cup and Arena, all six data formats, config, save defaults, the 1.8-only vs 1.7.3 split, no badges]; 28.2: CobblemonCompat.TESTED is >=1.7.3 <1.9, and nightly run 37193458879's compat-cobblemon18 job [the compat GameTests on Cobblemon 1.8.1] is green beside the 1.7.3 compat suite in the full build) **Design note.** `docs/design/M28.md`, sent to the owner as a review package (lanes don't wait for his
   reply): what the player sees (the partner shows, the five jobs and their builds, the Pokémon Center, a Cup day hour
   by hour with a sketch of the Arena); the data formats (`partner_shows`, `camp_menu`, `gem_beds`, `village_habitats`,
   `cups`, `type_chart`, all under `data/aliveworkplace/`); every config switch; the save data (new attachments, hall
@@ -855,7 +855,7 @@ here adds a new kind of speed bonus (the new jobs get the partners' existing one
   Cup keeps the owner's rules: villages enter, with their Leaders and the players who represent them; no badges, no gyms
   and no trophies for players (the pack's own Badges & Trophies mod does that); Leaders and the purse pay money only;
   the banner belongs to the village. Done when: the note is on `main` and its package is sent.
-- [x] **28.2** (approved auto 2026-10-04) **Cobblemon 1.8 as well as 1.7.3.** The mod compiles and tests against Cobblemon 1.7.3 and
+- [x] **28.2** (approved auto 2026-10-04) (verified 2026-10-04: 28.1: docs/design/M28.md [185 lines] covers every point of the spec [partner shows, the Pokémon Center, the Cup and Arena, all six data formats, config, save defaults, the 1.8-only vs 1.7.3 split, no badges]; 28.2: CobblemonCompat.TESTED is >=1.7.3 <1.9, and nightly run 37193458879's compat-cobblemon18 job [the compat GameTests on Cobblemon 1.8.1] is green beside the 1.7.3 compat suite in the full build) **Cobblemon 1.8 as well as 1.7.3.** The mod compiles and tests against Cobblemon 1.7.3 and
   `CobblemonCompat.TESTED` stops below 1.8, while 1.8.0 and 1.8.1 (Minecraft 1.21.1) are out; a `LinkageError` there
   switches every Pokémon feature off at once. Keep compiling against 1.7.3 and:
   - add a switch (`-Pcobblemon18=true`) that runs `runCompatGameTest`, the screenshot harness and the showcase with

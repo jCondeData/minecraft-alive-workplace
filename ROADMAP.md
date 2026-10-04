@@ -4288,8 +4288,8 @@ item waits.
 - **qa handoff** (qa-1003-2233, 2026-10-03 23:16Z): qa-1003-2233: health: main CI run 455 red = B30 test flake (tutor), already B34 (lane-b). VERIFIED B18, B29, B23 (shipped qa/b23-b29-1003: QaB29FlowersGameTests, QaB23TurnedHillsideGameTests; TerrainStallGameTests.buildOnHillside now takes a Rotation). BUG B35: same flake hits aStuckTrainerKeepsTheirPost (shared keeps() helper), fold into B34. NOT VERIFIED: B30 (waits for B34/B35 fix), B31, B32 (same stuck-worker family, check after B34), B24 (needs 20 compat repeats of butcherMilksAMiltankAndBrushesAPidgey + b24AFlyingPidgey; -Pcompat with -Xmx1536m), B14 (needs tonight's nightly soak with working sites). TRAPS: ship needs JAVA_HOME=jdk-25 exported; run ./gradlew --stop before ship or the compat run OOMs.
 - 2026-10-04 (26.2, digest-1004-1253, owner: "you decide"): store page decisions are in
   docs/store/curseforge/README.md: the honest AI line on, GPL-3.0, the clipboard icon, keep the Guide Book line (the
-  page goes live with 1.0), Beta while 0.x. Blocked on the owner: `LICENSE` holds the GPL-2 text while the mod declares
-  GPL-3.0-or-later; replacing it is his call.
+  page goes live with 1.0), Beta while 0.x. `LICENSE` held the GPL-2 text while the mod declares GPL-3.0-or-later;
+  replaced with the GPL-3.0 text on the owner's yes (2026-10-04).
 - 2026-10-04 (24.2, lane-b): the mod has one tool-like item and no weapons: the Scan Tool (`item/scan_tool.png`), which went
   through the owner's pick round for every item (21.1b) and passes `lint.py`. 24.2 is ticked on that; the hammer, wrench
   and war hammer templates are for the expansions' tools (each one's own item is drawn from them, linted and sent in

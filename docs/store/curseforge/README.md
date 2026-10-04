@@ -47,9 +47,8 @@ python3 -c "from PIL import Image; Image.open('src/main/resources/assets/alivewo
    No image needs a disclaimer (every picture is a real in-game capture), but saying it up front costs nothing and
    keeps the page safe if either site tightens its rules (Modrinth's are stricter).
 2. **License: GPL-3.0** in CurseForge's list (the mod declares GPL-3.0-or-later in `fabric.mod.json`, and the
-   MineColonies-inspired parts need GPL-3 compatibility). **Blocked on the owner:** the repository's `LICENSE` file
-   holds the GPL *version 2* text, which doesn't match. Replacing it with the GPL-3.0 text is a license change, so it
-   waits for his yes (asked in the 2026-10-04 morning digest).
+   MineColonies-inspired parts need GPL-3 compatibility). The repository's `LICENSE` file now holds the GPL-3.0 text
+   (it held the GPL-2 text by mistake; replaced with the owner's yes, 2026-10-04).
 3. **Icon:** the clipboard icon, scaled to 512 with the command above.
 4. **Guide Book line:** keep it. The page goes live with 1.0, which has the Guide Book and the recipe-book recipes.
 5. **Release type:** Beta while the version is 0.x; Release from 1.0.

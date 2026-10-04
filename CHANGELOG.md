@@ -77,6 +77,10 @@
 - `/workplace soak <days> split` (testers, benchmark servers only): the soak with each builder's materials split
   between at most 3 chests by its bench and the village storehouses.
 
+### Changed
+- Seasons last 16 days now (a 64-day year), so festivals come every 16 days. A config file that still holds the old
+  default of 8 moves to 16 by itself; any other length you chose stays.
+
 ### Fixed
 - A build's progress no longer drops after a server restart while its foundation is being filled (it showed 12%,
   then 1%).

@@ -75,7 +75,7 @@ Moved out of CLAUDE.md (2026-09-29) to keep that file short. Update this map whe
   first page (`Seasons.init`). Test a page with `VillageHallScreen.forTest` and `menu.press(HallPages.slot(id), player)`
   (see `HallPagesGameTests`); the hall's screenshot scene shows the row.
 - **The village calendar** (ROADMAP 22.6): `Seasons` — four seasons of `Seasons.DAYS` days (config `seasonDays`,
-  default 8), the same for the whole world (the overworld's day), each with a festival on its middle day.
+  default 16), the same for the whole world (the overworld's day), each with a festival on its middle day.
   `Seasons.today(level)` is the date; expansions listen with `Seasons.onNewDay`, `onNewSeason` and `onFestival` (each
   fires once per day, saved, so a reload doesn't repeat it). Nothing in the mod changes with the seasons on its own.
 - `people/` — villagers as people: `Names` (first names for villagers in a hall's village, given in

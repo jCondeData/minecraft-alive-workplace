@@ -104,6 +104,17 @@ public class BuilderWork extends Behavior<Villager> {
 	private int stepAsideTicks;
 	/** True while helping another builder's site (this tick). */
 	private boolean helping;
+	/** Ticks the lead has waited this stage for helpers to finish the last blocks they claimed (23.1a). */
+	private int helperWait;
+	@Nullable
+	private BuildPlan.Stage helperWaitStage;
+	/** After this long the lead does the blocks helpers claimed itself (a helper that claims and never places). */
+	private static final int HELPER_WAIT = 200;
+	/** True while the lead works on a block away from its cursor, this tick (23.1a). */
+	private boolean offCursor;
+	/** The villager this behaviour belongs to (each villager's brain has its own). */
+	@Nullable
+	private java.util.UUID self;
 	/** The step being worked on this tick. */
 	@Nullable
 	private BlockPos currentStep;
@@ -111,8 +122,15 @@ public class BuilderWork extends Behavior<Villager> {
 	private final Set<BlockPos> avoid = new HashSet<>();
 	@Nullable
 	private BuildPlan.Stage avoidStage;
-	/** How far ahead of the lead helpers look for work. */
-	private static final int HELP_WINDOW = 64;
+	/** How close a crewmate must be to pass materials over without walking to them (23.1a). */
+	private static final double PASS_DISTANCE = 8;
+	/** How far ahead of the lead helpers look for work, for each of the crew; also what a helper fetches for at once. */
+	private static final int HELP_WINDOW = 32;
+
+	/** How far ahead of the lead helpers look for work: a stretch for each of the crew (23.1a). */
+	private static int helpWindow(ServerLevel level, BuildSite site) {
+		return HELP_WINDOW * (1 + site.helpers(level.getGameTime()).size());
+	}
 	/** A site this far (bench to the site's middle) is far from its chests: stock up before clearing it (B39). */
 	static final int FAR_FROM_CHESTS = 16;
 	/** The site this builder has stocked up for (or found nothing to stock up with) before clearing. */
@@ -156,6 +174,9 @@ public class BuilderWork extends Behavior<Villager> {
 		BuildSite site = Builders.activeSite(level, villager);
 		if (site != null) {
 			site.release(villager.getUUID());
+			if (!Builders.isHelping(villager)) {
+				site.setLeadClaim(null);
+			}
 		}
 	}
 
@@ -170,6 +191,7 @@ public class BuilderWork extends Behavior<Villager> {
 			return;
 		}
 		helping = Builders.isHelping(villager);
+		self = villager.getUUID();
 		Optional<BlockPos> benchOpt = helping ? Optional.ofNullable(site.bench()) : Builders.siteBench(level, villager, site);
 		if (benchOpt.isEmpty()) {
 			return;
@@ -213,6 +235,14 @@ public class BuilderWork extends Behavior<Villager> {
 			}
 			action = actionFor(level, site, step, bench);
 		}
+		int postponed = 0;
+		if (site.stage() != helperWaitStage) {
+			helperWait = 0;
+			helperWaitStage = site.stage();
+		}
+		if (!helping) {
+			site.helpers(gameTime); // lets go of the claims of helpers that have left, so the lead never waits on them
+		}
 		for (int budget = SKIP_BUDGET; !helping && budget > 0 && !site.isDone(); budget--) {
 			BuildPlan.Step candidate = site.current(plan);
 			if (candidate == null) {
@@ -224,6 +254,19 @@ public class BuilderWork extends Behavior<Villager> {
 				site.advance();
 			} else if (action == Action.SKIP) {
 				site.defer(); // (lead only: helpers pick their own steps)
+			} else if (helperWait < HELPER_WAIT && site.claimedByOther(villager.getUUID(), candidate.pos())) {
+				// A helper is on this block (23.1a): leave it to them rather than both walking over to it. If they don't
+				// get to it, it comes round again at the end of the stage (or, while retrying, at the end of the list;
+				// if every step left is a helper's, the lead waits for them, but not for long).
+				if (!site.isRetrying()) {
+					site.defer();
+				} else if (postponed++ < site.retryLeft()) {
+					site.postpone();
+				} else {
+					helperWait++;
+					action = Action.NONE;
+					break;
+				}
 			} else {
 				step = candidate;
 				break;
@@ -235,6 +278,20 @@ public class BuilderWork extends Behavior<Villager> {
 		}
 		if (step == null) {
 			return;
+		}
+		// 23.1a: with a crew, the lead doesn't walk off to its next block while there's work for the crew within reach
+		// (the helpers had taken everything near it, so it walked as much as a builder on its own).
+		offCursor = false;
+		if (!helping && !site.helpers(gameTime).isEmpty() && villager.getEyePosition().distanceTo(Vec3.atCenterOf(step.pos())) > REACH) {
+			BuildPlan.Step near = workInReach(level, villager, site, plan, bench);
+			if (near != null) {
+				step = near;
+				action = actionFor(level, site, near, bench);
+				offCursor = true;
+			}
+		}
+		if (!helping) {
+			site.setLeadClaim(offCursor ? step.pos() : null);
 		}
 		currentStep = step.pos();
 
@@ -316,7 +373,8 @@ public class BuilderWork extends Behavior<Villager> {
 		BuildPlan.Step leads = site.current(plan);
 		BlockPos claimed = site.claim(villager.getUUID());
 		BuildPlan.Step pick = null;
-		for (BuildPlan.Step candidate : site.ahead(plan, HELP_WINDOW)) {
+		double pickDistance = Double.MAX_VALUE;
+		for (BuildPlan.Step candidate : site.ahead(plan, helpWindow(level, site))) {
 			BlockPos pos = candidate.pos();
 			if (avoid.contains(pos) || leads != null && leads.pos().equals(pos) || site.claimedByOther(villager.getUUID(), pos)) {
 				continue;
@@ -329,11 +387,12 @@ public class BuilderWork extends Behavior<Villager> {
 				pick = candidate;
 				break;
 			}
-			if (pick == null) {
+			// 23.1a: the free block nearest the helper, not the first one: helpers that all went for the block right
+			// after the lead's walked about the site more than they built.
+			double d = villager.distanceToSqr(Vec3.atCenterOf(pos));
+			if (pick == null || d < pickDistance) {
 				pick = candidate;
-				if (claimed == null) {
-					break;
-				}
+				pickDistance = d;
 			}
 		}
 		if (pick == null) {
@@ -341,6 +400,29 @@ public class BuilderWork extends Behavior<Villager> {
 			site.seen(villager.getUUID(), level.getGameTime());
 		} else {
 			site.claim(villager.getUUID(), pick.pos(), level.getGameTime());
+		}
+		return pick;
+	}
+
+	/** For the lead: the nearest block within reach that a helper could take (none claimed, not given up on). */
+	@Nullable
+	private BuildPlan.Step workInReach(ServerLevel level, Villager villager, BuildSite site, BuildPlan plan, BlockPos bench) {
+		if (avoidStage != site.stage()) {
+			avoid.clear();
+			avoidStage = site.stage();
+		}
+		BuildPlan.Step pick = null;
+		double best = REACH;
+		for (BuildPlan.Step candidate : site.ahead(plan, helpWindow(level, site))) {
+			double d = villager.getEyePosition().distanceTo(Vec3.atCenterOf(candidate.pos()));
+			if (d > best || avoid.contains(candidate.pos()) || site.claimedByOther(villager.getUUID(), candidate.pos())) {
+				continue;
+			}
+			Action a = actionFor(level, site, candidate, bench);
+			if (a == Action.BREAK || a == Action.PLACE) {
+				pick = candidate;
+				best = d;
+			}
 		}
 		return pick;
 	}
@@ -358,6 +440,9 @@ public class BuilderWork extends Behavior<Villager> {
 		if (helping) {
 			avoid.add(pos);
 			site.release(villager.getUUID());
+		} else if (offCursor) {
+			avoid.add(pos); // a block off the lead's cursor: it comes round in its turn
+			site.setLeadClaim(null);
 		} else {
 			site.defer();
 		}
@@ -708,11 +793,11 @@ public class BuilderWork extends Behavior<Villager> {
 	private void takeWanted(ServerLevel level, BuildSite site, BuildPlan plan, BuilderBag bag, MaterialRules.Requirement requirement,
 							List<BlockPos> supplies, BlockPos source, Map<Item, Integer> reserved, List<BlockPos> mine) {
 		Map<Item, Integer> wanted = new LinkedHashMap<>();
-		wanted.put(requirement.item(), requirement.count() + (helping ? 3 : 0));
+		wanted.put(requirement.item(), requirement.count());
 		// 23.5: chests far from the site (a village storehouse, a bench far away): take for a longer stretch, so the
 		// builder walks there less often (each trip was 30 s and more without placing a block).
 		boolean far = farFromChests(plan, source);
-		for (BuildPlan.Step s : helping ? List.<BuildPlan.Step>of() : far ? ahead(site, plan, FAR_LOOKAHEAD) : ahead(site, plan)) {
+		for (BuildPlan.Step s : helping ? helperShare(level, site, plan) : far ? ahead(site, plan, FAR_LOOKAHEAD) : ahead(site, plan)) {
 			if (!MaterialRules.matches(level.getBlockState(s.pos()), s.state())) {
 				for (MaterialRules.Requirement r : s.requirements()) {
 					wanted.merge(r.item(), r.count(), Integer::sum);
@@ -751,13 +836,31 @@ public class BuilderWork extends Behavior<Villager> {
 		}
 	}
 
+	/**
+	 * What a helper takes for in one trip (23.1a): a stretch of the steps helpers pick from, those nobody else is on.
+	 * It used to take a handful for the block it was on and walk back every few blocks.
+	 */
+	private List<BuildPlan.Step> helperShare(ServerLevel level, BuildSite site, BuildPlan plan) {
+		BuildPlan.Step leads = site.current(plan);
+		List<BuildPlan.Step> out = new java.util.ArrayList<>();
+		for (BuildPlan.Step s : site.ahead(plan, helpWindow(level, site))) {
+			if (out.size() >= HELP_WINDOW) {
+				break;
+			}
+			if ((leads == null || !leads.pos().equals(s.pos())) && !site.claimedByOther(self, s.pos()) && !avoid.contains(s.pos())) {
+				out.add(s);
+			}
+		}
+		return out;
+	}
+
 	/** The step a helper has claimed, among those helpers pick from; null if none (or it has moved on). */
 	@Nullable
 	private static BuildPlan.Step claimedStep(BuildSite site, BuildPlan plan, @Nullable BlockPos claim) {
 		if (claim == null) {
 			return null;
 		}
-		for (BuildPlan.Step s : site.ahead(plan, HELP_WINDOW)) {
+		for (BuildPlan.Step s : site.ahead(plan, HELP_WINDOW * (1 + Builders.MAX_HELPERS))) {
 			if (s.pos().equals(claim)) {
 				return s;
 			}
@@ -794,7 +897,9 @@ public class BuilderWork extends Behavior<Villager> {
 				continue;
 			}
 			setStatus(site, BuildSite.Status.FETCHING);
-			if (!moveInReach(level, villager, site, plan, mate.blockPosition(), CONTAINER_REACH, false)) {
+			// 23.1a: a crewmate working close by passes it over; only one further away is walked to.
+			boolean close = villager.distanceToSqr(mate) <= PASS_DISTANCE * PASS_DISTANCE;
+			if (!close && !moveInReach(level, villager, site, plan, mate.blockPosition(), CONTAINER_REACH, false)) {
 				return true;
 			}
 			int take = Math.min(Math.min(spare, needed + (helping ? 3 : 32)), bag.spaceFor(item));
@@ -803,6 +908,9 @@ public class BuilderWork extends Behavior<Villager> {
 				bag.addAll(item, take);
 				site.supplied();
 				villager.getBrain().setMemory(MemoryModuleType.LOOK_TARGET, new net.minecraft.world.entity.ai.behavior.EntityTracker(mate, true));
+				if (close) {
+					level.playSound(null, villager.blockPosition(), SoundEvents.ITEM_PICKUP, SoundSource.NEUTRAL, 0.3f, 1.4f);
+				}
 			}
 			return true;
 		}
@@ -948,7 +1056,10 @@ public class BuilderWork extends Behavior<Villager> {
 				Builders.dropNear(level, bench, new ItemStack(r.item(), rest));
 			}
 		}
-		if (!helping) {
+		if (offCursor) {
+			site.countPlaced();
+			site.setLeadClaim(null);
+		} else if (!helping) {
 			site.markPlaced();
 		} else {
 			site.countPlaced();
@@ -1019,6 +1130,9 @@ public class BuilderWork extends Behavior<Villager> {
 		if (helping) {
 			site.countPlaced();
 			site.release(villager.getUUID());
+		} else if (offCursor) {
+			site.countPlaced(); // the lead's cursor stays where it is
+			site.setLeadClaim(null);
 		} else {
 			site.markPlaced();
 		}

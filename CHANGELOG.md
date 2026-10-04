@@ -89,6 +89,11 @@
   default of 8 moves to 16 by itself; any other length you chose stays.
 
 ### Fixed
+- **Helpers really speed a build up now**: two builders on one build take about half the time of one, four about a
+  third (the stone house: 4200 ticks alone, about 2110 with two, 1220-1470 with four; before, 63-71% and 46%). Helpers
+  fetch for a stretch of work instead of a handful per block, pass each other materials when close instead of walking
+  over, go for the free block nearest them, help with the end of each stage, and the lead takes work within reach
+  instead of walking off while a helper is on its next block.
 - A build's progress no longer drops after a server restart while its foundation is being filled (it showed 12%,
   then 1%).
 - Builders use the village storehouse on their own: one whose bag is full while its chests are full (or it has none)

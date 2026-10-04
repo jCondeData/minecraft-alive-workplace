@@ -114,6 +114,7 @@ stay in the list, ticked, so their numbers stay unique.
 - [x] **B46** (approved auto 2026-10-04) A build's progress goes down after a restart: a world saved by 0.138.0 (pack test, 10 benchmark plots) opened with main 739d02e showed the Lookout Tower (laying its foundation) at 1% after 12% before the restart and the Healing Center at 7% after 19%, while the other 9 sites went up as expected. The placed blocks are still there (FOUNDATION restarts its list on load and skips what's done), but the percentage over the builder and in /workplace sites drops. Not yet checked whether a reload with the same jar does it too. Expected: a site's progress never goes down across a restart. Test: JAR=<0.138.0 jar> PERF=true PLOTS=10 tools/packtest/run.sh, then KEEP_WORLD=true SITES_ONLY=true tools/packtest/run.sh, compare the 'Builder — ' lines (found by lane-a-1004-0932, 2026-10-04)
 - [ ] **B47** BuilderChaosGameTests builder_chaos_23205 failed once in a local full build (lane-b-1004-0932, main 87ee45a + 28.4, 2026-10-04 11:43Z): '1 block(s) wrong after the build, e.g. [-19, 3, -16]=air; seed 23205', then passed alone and in the next full build. Expected: every seed finishes with every block right on every run. Test: the five chaos seeds repeated 10x (tester skill's repeat generator); the trap that removed a placed block (found by lane-b-1004-0932, 2026-10-04) Lane a (lane-a-1004-0932) saw it too: 1 block of the build missing at the end; with the B46 fix the traps also keep off a door's top half (likely the cause, not proven): if it fails again, the failure message names the cell.
 - [ ] **B48** PartnersForgeCompatTests aPidgeyBringsAFeatherToTheFletcher (28.5) failed once in a local full build (lane-a-1004-1233, main 5e66474 + 25.4 tooling, 2026-10-04 15:00Z): 'no bow for the guard' at the time-out, though it passed in the build 40 minutes earlier on the same code. Expected: the fletcher always makes the guard's bow within the test's time. Test: runCompatGameTest a few times, or the repeat generator on that test (found by lane-a-1004-1233) (found by lane-a-1004-1233, 2026-10-04)
+- [ ] **B49** StructureVillagerGameTests b10ZombieDesertHouseRotated90 failed in a local full build of main edc1750 (lane-a-1004-1533, 2026-10-04 17:36Z): 'the villager is not on the house floor (CLOCKWISE_90): 2.45 1.00 1.85 from the spot'; main's CI was already red at 0f5e530 (28.7). Also seen once in the build before (same session, main 0f5e530 + 23.1a): BuilderGameTests idleBuildersHelpNearbyBuilds 'the helper should stop once the build is done' (passed 8/8 alone with the repeat generator and in two other full builds; may come from 23.1a's crew changes, which let helpers work during the lead's retry). Expected: both pass on every run. Test: the two tests repeated 10x with RepeatNewTests (found by lane-a-1004-1533, 2026-10-04)
 
 ## Milestone 21: Finish 0.138.0
 
@@ -293,7 +294,7 @@ first; many items below are "verify and harden", not "build".
   - the GIF is in the review package.
 
   This test is the yardstick for the rest of the milestone.
-  - [ ] **23.1a** Change from the owner (2026-10-04): builder speed is fine (accept ~3.5 in-game days for the 22 starter builds). Time should grow with bigger builds, but be cut in half with every builder working on it (2 builders ~ half the time, and so on): check helpers really scale like that and fix it if not
+  - [x] **23.1a** (review: pending 2026-10-04) Change from the owner (2026-10-04): builder speed is fine (accept ~3.5 in-game days for the 22 starter builds). Time should grow with bigger builds, but be cut in half with every builder working on it (2 builders ~ half the time, and so on): check helpers really scale like that and fix it if not
 - [x] **23.2** (approved auto 2026-10-04) **Stuck recovery, proven.** Builders stuck on water, lava, holes, fences, doors, their own scaffolding, or in
   unloaded chunks. Done when: a chaos test (the tester skill's `ChaosTests`, 5 seeds) finishes every time, and the
   recovery (hop, re-path, step back) never breaks a placed block.
@@ -471,7 +472,7 @@ and an old vanilla village slowly rebuilds itself one house at a time. It answer
 (babysitting) and builds on the builder (`BuildSite`, styles, upgrades, `Paths`), the Village Hall (census,
 `VillageAdvice`, ranks, research) and `Caravans`.
 
-- [ ] **27.1** **Design note.** `docs/design/M27.md`: what the player sees (the City Plan and its screen, the
+- [x] **27.1** (review: pending 2026-10-04) **Design note.** `docs/design/M27.md`: what the player sees (the City Plan and its screen, the
   Steward's day, his desk on the hall's screen, roads, walls, renewed houses), the data formats with one example file
   each (zone kinds, Steward rules, road styles, wall kits, renewal lists), the config switches, every new saved field
   with its default (the plan and the Steward's state on the hall, the player-built ledger), the per-tick budgets, the
@@ -4260,6 +4261,15 @@ item waits.
 - (Sessions: anything that needs the owner, and the link to the latest Full test report. Handoffs go here through
   `sessions.py handoff "<in progress, next, traps>" --as <you>`, which keeps one per kind of session (chat, night):
   carry over anything still true from the previous one.)
+- 2026-10-04 (23.10a, owner question; lane a): the village pieces aren't built by our builders: Minecraft's village
+  generator places them (one shared outside per style, baked into each piece's file), and the mod has no "village
+  leader" yet (the nearest is the Village Hall's owner: whoever first switches its protection on, with their friends).
+  So "let the village leader override a piece's look" needs two choices: (1) who the leader is: (a) the Hall's owner
+  and their friends, or (b) something new; (2) what overriding does: (a) on the Hall screen the owner picks, per piece,
+  one of the five styles' outsides (or the piece's own new outside, if you want each piece drawn its own: a sign,
+  porch or yard), and the village's builder rebuilds that house's outside in place (inside and its worker kept); or
+  (b) it only changes the look of pieces built from then on (by a builder, 27.x), not the generated ones. Default if
+  you don't answer: 1a + 2a with the five existing outsides (no new art), after the current lane work. Waiting.
 - 2026-10-04 (28.7, owner question; lane b): Cobblemon 1.7.3 has its own villager job, `cobblemon:nurse`, whose
   workstation is the Healing Machine, so a jobless villager next to any Healing Machine already becomes Cobblemon's nurse
   (compat test on `wip/lane-b`). 28.7 says "a jobless villager never takes a player's machine by themselves". Which:

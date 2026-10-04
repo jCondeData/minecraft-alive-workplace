@@ -38,25 +38,21 @@ CurseForge wants it bigger, scale it up without smoothing so the pixels stay sha
 python3 -c "from PIL import Image; Image.open('src/main/resources/assets/aliveworkplace/icon.png').resize((512, 512), Image.NEAREST).save('icon-512.png')"
 ```
 
-## Open questions for Jesse
+## Decisions (digest-1004-1253, 2026-10-04; the owner asked the digest to decide)
 
-1. **AI disclosure.** CurseForge only asks for a disclaimer on AI-altered showcase images that could mislead. Every
-   image and GIF in this kit is a real in-game capture from the nightly showcase, nothing generated or retouched, so no
-   disclaimer is needed. If you'd like to say how the mod was made anyway, here is one honest line you could add at the
-   end of the description, before the links (your call, word it as you like):
+1. **AI disclosure: yes, one honest line.** Add at the end of the description, before the links:
 
    > Alive Workplace is designed and directed by Jesse, and written with the help of Claude, Anthropic's AI.
 
-   Modrinth's rules are stricter and still undecided (ROADMAP 26.1).
-2. **License.** The mod is GPL-3.0-or-later. If CurseForge's license list only has the GPL version 3, pick that; the
-   description's source link already says "GPL-3.0-or-later". Or pick a custom license and paste the GPL-3.0-or-later
-   text. Which do you prefer?
-3. **The icon.** Use the clipboard icon as it is (scaled up as above), or would you like a new one drawn for the store?
-4. **The Guide Book line.** Step 1 of "Getting started" in `description.md` describes the Guide Book every player
-   gets on first join, which comes in the next version (landed on main 2026-10-03, not in 0.138.0), as does "The
-   recipes are in the recipe book" (0.138.0's recipes never showed there). If the page goes live with 0.138.0, delete
-   those two lines; from the next version on they're true.
-5. **Release type.** Beta (as on GitHub) or Release?
+   No image needs a disclaimer (every picture is a real in-game capture), but saying it up front costs nothing and
+   keeps the page safe if either site tightens its rules (Modrinth's are stricter).
+2. **License: GPL-3.0** in CurseForge's list (the mod declares GPL-3.0-or-later in `fabric.mod.json`, and the
+   MineColonies-inspired parts need GPL-3 compatibility). **Blocked on the owner:** the repository's `LICENSE` file
+   holds the GPL *version 2* text, which doesn't match. Replacing it with the GPL-3.0 text is a license change, so it
+   waits for his yes (asked in the 2026-10-04 morning digest).
+3. **Icon:** the clipboard icon, scaled to 512 with the command above.
+4. **Guide Book line:** keep it. The page goes live with 1.0, which has the Guide Book and the recipe-book recipes.
+5. **Release type:** Beta while the version is 0.x; Release from 1.0.
 
 ## Good to know
 

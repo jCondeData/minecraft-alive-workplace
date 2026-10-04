@@ -725,7 +725,13 @@ public final class Builders {
 
 	/** The blueprint goes to the owner if online, else into the supply chests, else on the ground. */
 	private static void giveBack(ServerLevel level, BuildSite site, BlockPos bench, List<BlockPos> supplies) {
+		// Still placed where it was (23.8): hand it back to carry on there, or click the ground to move it first.
 		ItemStack blueprint = blueprintFor(level, site);
+		if (!site.isDeconstruction() && !site.isRepair()) {
+			io.github.jcondedata.aliveworkplace.blueprint.BlueprintItem.data(blueprint).ifPresent(data -> blueprint.set(
+				io.github.jcondedata.aliveworkplace.registry.ModComponents.BLUEPRINT, data.withPlacement(Optional.of(site.placement()))
+					.withLevelGround(site.levelGround()).withMirrored(site.placement().mirror() != net.minecraft.world.level.block.Mirror.NONE)));
+		}
 		ServerPlayer owner = level.getServer().getPlayerList().getPlayer(site.owner());
 		if (owner != null && owner.getInventory().add(blueprint)) {
 			return;

@@ -85,7 +85,11 @@ public final class StylePicker {
 		ItemStack stack = player.getItemInHand(hand);
 		BlueprintItem.data(stack).ifPresent(data -> {
 			boolean flip = !data.mirrored();
-			stack.set(ModComponents.BLUEPRINT, data.withMirrored(flip));
+			BlueprintData flipped = BlueprintItem.mirrored(data, flip);
+			if (flipped.placement().isPresent() && flipped.size().isPresent() && player.level() instanceof net.minecraft.server.level.ServerLevel level) {
+				BlueprintOutline.show(level, player, flipped.placement().get(), flipped.size().get());
+			}
+			stack.set(ModComponents.BLUEPRINT, flipped);
 			player.level().playSound(null, player.blockPosition(), SoundEvents.BOOK_PAGE_TURN, SoundSource.PLAYERS, 1f, 0.9f);
 			Chat.actionBar(player, Component.translatable(flip ? "message.aliveworkplace.styles.mirrored" : "message.aliveworkplace.styles.unmirrored")
 				.withStyle(ChatFormatting.GREEN));

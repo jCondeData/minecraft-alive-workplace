@@ -5,7 +5,8 @@
 #   tools/packtest/run.sh                  # uses the newest jar the 1.21.1 node built (versions/1.21.1/build/libs)
 #   PACK_VERSION_URL=... tools/packtest/run.sh
 #   PERF=true PLOTS=20 tools/packtest/run.sh   # performance mode: /workplace benchmark fills an area with busy
-#                                              # workers; tick times before/after and a CPU profile of our code
+#                                              # workers; tick times before/after, heap after GC, a CPU profile of our code
+#   PERF=true VILLAGES=3 PLOTS=25 ...          # 25.1's benchmark: 150 workers over three villages (docs/performance.md)
 #   SOAK=true tools/packtest/run.sh            # the builder soak (23.1; SOAK_DAYS=n for longer): /workplace soak, then 2 in-game days at
 #                                              # full speed (/tick sprint); prints the "Soak result:" line and the stalls
 #   SOAK=true DEBUG=true ...                   # the same, with the builders' [builder N] lines in the log
@@ -77,24 +78,35 @@ say() { echo "$1" > console; sleep "${2:-3}"; }
 
 # Performance mode: the same area idle, then full of workers; tick times and a profile of the server thread.
 if [ "${PERF:-false}" = "true" ]; then
-  PLOTS="${PLOTS:-20}"
+  PLOTS="${PLOTS:-20}"            # per village; two workers a plot
+  VILLAGES="${VILLAGES:-1}"       # 25.1's benchmark: VILLAGES=3 PLOTS=25 is 150 workers in three villages 400 blocks apart
   ROWS=$(( (PLOTS + 4) / 5 ))
-  say "forceload add 1000 1000 1190 $(( 1000 + ROWS * 32 ))" 60   # at most 256 chunks: up to 40 plots
+  for v in $(seq 0 $(( VILLAGES - 1 ))); do
+    X=$(( 1000 + v * 400 ))
+    say "forceload add $X 1000 $(( X + 190 )) $(( 1000 + ROWS * 32 ))" 60   # at most 256 chunks: up to 40 plots
+  done
   say "time set 1500"
   say "gamerule doDaylightCycle false"
   say "tick query" 30
-  say "execute positioned 1000 100 1000 run workplace benchmark $PLOTS" 50
+  for v in $(seq 0 $(( VILLAGES - 1 ))); do
+    say "execute positioned $(( 1000 + v * 400 )) 100 1000 run workplace benchmark $PLOTS" 50
+  done
   # Starting the recording pauses the server for a moment: let that tick pass before measuring.
   jcmd $PID JFR.start name=perf settings=profile duration=90s filename="$PWD/perf.jfr" > /dev/null
   sleep 15
   say "tick query" 40
   say "tick query" 45
+  # Heap after a full GC, with everything still loaded and working (25.1).
+  jcmd $PID GC.run > /dev/null 2>&1 || true
+  sleep 5
+  HEAP=$(jcmd $PID GC.heap_info 2>/dev/null | grep -oE "used [0-9]+K" | head -1 | grep -oE "[0-9]+" || echo 0)
   say "workplace sites" 5
   say "stop" 30
   kill $KEEP 2>/dev/null || true
   wait $PID 2>/dev/null || true
   echo "--- tick times: idle, then twice with the workers (full log: $SERVER/server.log)"
   grep -E "Benchmark:|Average time per tick|Percentiles|Crash|Exception" server.log | grep -v "No data fixer" || true
+  echo "Heap after GC: $(( HEAP / 1024 )) MB"
   python3 ../../../tools/packtest/perf.py perf.jfr
   # The numbers only mean something if the workers were working: each site's status says "working" with its
   # villager's level under it. None working means the soak measured an idle server (B14), so it fails.

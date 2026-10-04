@@ -33,7 +33,10 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.GameType;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.Mirror;
+import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.entity.BaseContainerBlockEntity;
 import net.minecraft.world.phys.Vec3;
@@ -191,6 +194,10 @@ public class ScreenshotHarness implements ClientModInitializer {
 		}
 		if ("preview".equals(System.getProperty("aliveworkplace.scene"))) {
 			previewScene(mc, mc.getSingleplayerServer());
+			return;
+		}
+		if ("placing".equals(System.getProperty("aliveworkplace.scene"))) {
+			placingScene(mc, mc.getSingleplayerServer());
 			return;
 		}
 		MinecraftServer server = mc.getSingleplayerServer();
@@ -384,6 +391,191 @@ public class ScreenshotHarness implements ClientModInitializer {
 			});
 		}
 		if (tick == 1070) {
+			mc.stop();
+		}
+	}
+
+	// --- Placing a build (23.8): place, turn, mirror, hand over, cancel, move onto a slope -------------
+
+	private BlueprintData.Placement placingAt;
+	private Villager placingBuilder;
+	private io.github.jcondedata.aliveworkplace.build.BuildSite placingSite;
+	private int placingDone;
+
+	/** The blueprint in the player's hand, placed at {@code placement} (the ghost shows it there). */
+	private static void holdPlaced(ServerPlayer player, Blueprint blueprint, BlueprintData.Placement placement, boolean mirrored) {
+		ItemStack held = BlueprintItem.create(blueprint.id(), blueprint.size());
+		held.set(io.github.jcondedata.aliveworkplace.registry.ModComponents.BLUEPRINT,
+			BlueprintItem.data(held).orElseThrow().withMirrored(mirrored).withPlacement(java.util.Optional.of(placement)));
+		player.getInventory().setItem(player.getInventory().selected, held);
+	}
+
+	private void placingScene(Minecraft mc, MinecraftServer server) {
+		tick++;
+		if (tick == 1) {
+			mc.options.renderDistance().set(6);
+			mc.options.cloudStatus().set(CloudStatus.OFF);
+			mc.options.graphicsMode().set(GraphicsStatus.FAST);
+			mc.options.framerateLimit().set(15);
+			mc.options.hideGui = true;
+		}
+		StarterBlueprints.Entry entry = StarterBlueprints.STARTER_COTTAGE;
+		BlockPos spotA = new BlockPos(0, -60, 0);
+		BlockPos spotB = new BlockPos(0, -60, 22);
+		if (tick == 20) {
+			server.execute(() -> {
+				ServerLevel level = server.overworld();
+				GameRules rules = level.getGameRules();
+				rules.getRule(GameRules.RULE_DAYLIGHT).set(false, server);
+				rules.getRule(GameRules.RULE_WEATHER_CYCLE).set(false, server);
+				rules.getRule(GameRules.RULE_DOMOBSPAWNING).set(false, server);
+				rules.getRule(ModGameRules.BUILD_DELAY).set(3, server);
+				level.setDayTime(2500);
+				// The second spot is a slope: up a block every two blocks east, so the build there needs a foundation.
+				for (int x = -8; x <= 10; x++) {
+					int rise = Math.max(0, Math.min(5, (x + 8) / 3));
+					for (int z = spotB.getZ() - 4; z <= spotB.getZ() + 12; z++) {
+						for (int y = 0; y < rise; y++) {
+							level.setBlock(new BlockPos(x, -60 + y, z), (y == rise - 1 ? Blocks.GRASS_BLOCK : Blocks.DIRT).defaultBlockState(), 2);
+						}
+					}
+				}
+				Blueprint blueprint = BlueprintLibrary.get(level, entry.id()).orElseThrow();
+				placingAt = BlueprintItem.placementAt(level.dimension().location(), blueprint.size(), spotA, BlueprintItem.rotationFacing(Direction.SOUTH));
+				holdPlaced(server.getPlayerList().getPlayers().get(0), blueprint, placingAt, false);
+				hover(server.getPlayerList().getPlayers().get(0), new Vec3(19.5, -46, -15.5), 50, 28);
+			});
+		}
+		if (tick == 120) {
+			shot(mc, "10_placed");
+		}
+		if (tick == 130) {
+			server.execute(() -> {
+				ServerLevel level = server.overworld();
+				Blueprint blueprint = BlueprintLibrary.get(level, entry.id()).orElseThrow();
+				// Sneak-right-clicking the ground again turns it a quarter, around the middle of its front.
+				placingAt = BlueprintItem.placementAt(placingAt.dimension(), blueprint.size(), BlueprintItem.anchorWorld(placingAt, blueprint.size()),
+					placingAt.rotation().getRotated(Rotation.CLOCKWISE_90));
+				holdPlaced(server.getPlayerList().getPlayers().get(0), blueprint, placingAt, false);
+			});
+		}
+		if (tick == 220) {
+			shot(mc, "11_turned");
+		}
+		if (tick == 230) {
+			server.execute(() -> {
+				ServerPlayer player = server.getPlayerList().getPlayers().get(0);
+				ItemStack held = player.getMainHandItem();
+				BlueprintData flipped = BlueprintItem.mirrored(BlueprintItem.data(held).orElseThrow(), true);
+				held.set(io.github.jcondedata.aliveworkplace.registry.ModComponents.BLUEPRINT, flipped);
+				placingAt = flipped.placement().orElseThrow();
+				Showcase.check(placingAt.mirror() == Mirror.FRONT_BACK, "the placed blueprint flipped where it stands");
+			});
+		}
+		if (tick == 320) {
+			shot(mc, "12_mirrored");
+		}
+		if (tick == 330) {
+			server.execute(() -> {
+				ServerLevel level = server.overworld();
+				Blueprint blueprint = BlueprintLibrary.get(level, entry.id()).orElseThrow();
+				// Twice the materials, in barrels by a bench: enough to start here and build it all again on the slope.
+				BlockPos bench = new BlockPos(9, -60, 12);
+				level.setBlockAndUpdate(bench, ModBlocks.BUILDERS_BENCH.defaultBlockState());
+				List<ItemStack> stock = new ArrayList<>();
+				for (int copy = 0; copy < 3; copy++) {
+					for (Map.Entry<Item, Integer> e : BuildPlan.create(blueprint, placingAt).materials().entrySet()) {
+						for (int left = e.getValue(); left > 0; left -= e.getKey().getDefaultMaxStackSize()) {
+							stock.add(new ItemStack(e.getKey(), Math.min(left, e.getKey().getDefaultMaxStackSize())));
+						}
+					}
+				}
+				stock.add(new ItemStack(Items.DIRT, 64));
+				stock.add(new ItemStack(Items.DIRT, 64));
+				stock.add(new ItemStack(Items.STONE, 64));
+				stock.add(new ItemStack(Items.COBBLESTONE, 64));
+				for (int b = 0; b * 27 < stock.size(); b++) {
+					BlockPos barrelPos = bench.offset(1 + b, 0, 0);
+					level.setBlockAndUpdate(barrelPos, Blocks.BARREL.defaultBlockState());
+					BaseContainerBlockEntity barrel = (BaseContainerBlockEntity) level.getBlockEntity(barrelPos);
+					for (int slot = 0; slot < 27 && b * 27 + slot < stock.size(); slot++) {
+						barrel.setItem(slot, stock.get(b * 27 + slot));
+					}
+				}
+				placingBuilder = EntityType.VILLAGER.spawn(level, bench.offset(0, 0, -2), MobSpawnType.COMMAND);
+				Builders.employ(level, placingBuilder, bench);
+				ServerPlayer player = server.getPlayerList().getPlayers().get(0);
+				placingSite = Builders.start(level, placingBuilder, player, entry.id(), placingAt);
+				builders.add(placingBuilder);
+			});
+		}
+		if (tick == 1100) {
+			shot(mc, "13_building");
+		}
+		if (tick == 1110) {
+			server.execute(() -> {
+				ServerLevel level = server.overworld();
+				ServerPlayer player = server.getPlayerList().getPlayers().get(0);
+				player.getInventory().setItem(player.getInventory().selected, ItemStack.EMPTY);
+				int placed = placingSite.placed();
+				Builders.cancel(level, placingSite);
+				// The blueprint comes back still placed: hold it, and the ghost shows what is left to build here.
+				ItemStack back = ItemStack.EMPTY;
+				for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
+					if (player.getInventory().getItem(i).is(io.github.jcondedata.aliveworkplace.registry.ModItems.BLUEPRINT)) {
+						back = player.getInventory().getItem(i);
+						player.getInventory().setItem(i, ItemStack.EMPTY);
+					}
+				}
+				boolean placedThere = BlueprintItem.data(back).flatMap(BlueprintData::placement).filter(placingAt::equals).isPresent();
+				player.getInventory().setItem(player.getInventory().selected, back);
+				Showcase.check(placed > 10 && placedThere
+						&& io.github.jcondedata.aliveworkplace.registry.ModAttachments.BUILDER_BAG.getOrCreate(placingBuilder).isEmpty(),
+					"cancelled after " + placed + " blocks: the blueprint came back still placed and the builder carries nothing");
+			});
+		}
+		if (tick == 1200) {
+			shot(mc, "14_cancelled");
+		}
+		if (tick == 1210) {
+			server.execute(() -> {
+				ServerLevel level = server.overworld();
+				Blueprint blueprint = BlueprintLibrary.get(level, entry.id()).orElseThrow();
+				// Clicking the ground somewhere else moves it: onto the slope, facing south.
+				BlockPos ground = spotB;
+				while (!level.getBlockState(ground).isAir()) {
+					ground = ground.above();
+				}
+				placingAt = BlueprintItem.placementAt(level.dimension().location(), blueprint.size(), ground, BlueprintItem.rotationFacing(Direction.SOUTH));
+				ServerPlayer player = server.getPlayerList().getPlayers().get(0);
+				holdPlaced(player, blueprint, placingAt, false);
+				hover(player, new Vec3(22.5, -46, 8.5), 62, 26);
+			});
+		}
+		if (tick == 1300) {
+			shot(mc, "15_moved_to_slope");
+		}
+		if (tick == 1310) {
+			server.execute(() -> {
+				ServerLevel level = server.overworld();
+				placingSite = Builders.start(level, placingBuilder, server.getPlayerList().getPlayers().get(0), entry.id(), placingAt);
+			});
+		}
+		if (tick > 1400 && tick % 100 == 0 && placingDone == 0 && placingSite != null
+				&& (placingSite.stage().ordinal() > BuildPlan.Stage.FOUNDATION.ordinal() || tick >= 6000)) {
+			placingDone = tick + 400; // a little of the walls on top of the foundation
+		}
+		if (placingDone > 0 && tick == placingDone) {
+			shot(mc, "16_slope_building");
+			server.execute(() -> {
+				ServerLevel level = server.overworld();
+				BuildPlan plan = placingSite.plan(level);
+				int foundation = plan == null ? 0 : plan.steps(BuildPlan.Stage.FOUNDATION).size();
+				Showcase.check(foundation > 0 && placingSite.stage().ordinal() > BuildPlan.Stage.FOUNDATION.ordinal(),
+					"on the slope the builder filled a foundation (" + foundation + " blocks) and went on to the walls (stage " + placingSite.stage() + ")");
+			});
+		}
+		if (placingDone > 0 && tick == placingDone + 20) {
 			mc.stop();
 		}
 	}

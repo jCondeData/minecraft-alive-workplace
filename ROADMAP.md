@@ -292,13 +292,13 @@ first; many items below are "verify and harden", not "build".
   - what fraction is built;
   - which 3 items are missing most, with counts;
   - which chest or storehouse the builder takes from.
-- [ ] **23.4** **A material list you can take away.** A checklist of everything a blueprint needs, minus what's in the supply
+- [x] **23.4** (review: pending 2026-10-04) **A material list you can take away.** A checklist of everything a blueprint needs, minus what's in the supply
   chests, as a written book or the blueprint's tooltip pages (like Create's Schematicannon). Done when: a GameTest
   checks the numbers against a known blueprint and a screenshot shows it.
-- [ ] **23.5** **Self-healing supply.** Builders use the storehouse and porters without being told. A full builder inventory
+- [x] **23.5** (approved auto 2026-10-04) **Self-healing supply.** Builders use the storehouse and porters without being told. A full builder inventory
   never stops work. Wanted items go on the requests board automatically. Done when: the soak test passes with the
   materials split across 3 chests and the storehouse.
-- [ ] **23.6** **Working when no one is near.** The owner decided (2026-10-03): villages **keep working** when no
+- [x] **23.6** (approved auto 2026-10-04) **Working when no one is near.** The owner decided (2026-10-03): villages **keep working** when no
   player is in range, through `KeepLoaded` tickets. The game rule `workplaceKeepWorkLoaded` already exists: start from
   it. Add a config option (default: keep working, so a server owner can still choose to pause), and document it
   in the README. Done when: both settings are tested, and there are no chunk-loading surprises (count the tickets
@@ -4246,6 +4246,12 @@ item waits.
   show as lines when repeated"), is expected: the texture paints only the mailbox's small red flag, one 1-pixel-wide
   model element (`models/block/mailbox.json` 1x2x7 when lowered, `mailbox_mail.json` 1x7x2 when raised), so it is never
   tiled and no seam can show.
+- 2026-10-04 (23.6, lane-a-1004-0332's decisions): villages are kept loaded **while anyone is online** (an empty
+  server keeps nothing extra loaded, as before); each worker's workstation chunk and the chunk it's in, remembered in
+  saved data (`WorkSites`) so it works after a restart, forgotten 2 minutes after a worker is last seen; at most 400
+  chunks per dimension. A world from before this release keeps nothing for villages until each has been visited once.
+  The game rule `workplaceKeepWorkLoaded false` still turns all keeping-loaded off. (23.4: the material list is written
+  with a Book and Quill in the other hand, right-clicking with the blueprint.)
 - 2026-10-04 (23.1, owner's call, in the review package): the soak's bar is "every build in 2 in-game days"; the full
   starter set takes 3.4 days (builders work about 7,000 of every 24,000 ticks). Decision meanwhile: the yardstick run is
   `SOAK=true SOAK_DAYS=6`, judged on every build finishing, nothing lost and the stalls; if he wants 2 days to hold,

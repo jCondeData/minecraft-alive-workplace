@@ -13,10 +13,12 @@ import io.github.jcondedata.aliveworkplace.mc.Rules;
 import io.github.jcondedata.aliveworkplace.registry.ModAttachments;
 import io.github.jcondedata.aliveworkplace.registry.ModGameRules;
 import io.github.jcondedata.aliveworkplace.registry.ModVillagers;
+import io.github.jcondedata.aliveworkplace.work.Village;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
@@ -424,6 +426,7 @@ public final class Builders {
 	 */
 	public static Map<Item, Integer> reservedAt(ServerLevel level, BlockPos bench, @Nullable BuildSite except) {
 		Map<Item, Integer> out = new java.util.HashMap<>();
+		Set<UUID> builders = new java.util.HashSet<>();
 		for (BuildSite other : BuildSiteManager.get(level).all()) {
 			if (other == except || other.isDone() || other.isDeconstruction() || !bench.equals(other.bench())) {
 				continue;
@@ -431,8 +434,106 @@ public final class Builders {
 			BuildPlan otherPlan = other.plan(level);
 			if (otherPlan != null) {
 				remainingNeed(level, other, otherPlan).forEach((item, n) -> out.merge(item, n, Integer::sum));
+				if (other.builder() != null) {
+					builders.add(other.builder());
+				}
 			}
 		}
+		// 23.5: what those builders already carry goes into those builds, so it needn't stay in the chests too (counting
+		// it twice kept a builder's surplus from the storehouse locked up in its chests while another builder waited).
+		for (UUID id : builders) {
+			if (except != null && id.equals(except.builder())) {
+				continue;
+			}
+			BuilderBag carried = level.getEntity(id) instanceof Villager v ? ModAttachments.BUILDER_BAG.get(v) : null;
+			if (carried != null) {
+				for (ItemStack stack : carried.stacks()) {
+					if (!stack.isEmpty()) {
+						out.computeIfPresent(MaterialFamilies.key(stack.getItem()), (k, n) -> n > stack.getCount() ? n - stack.getCount() : null);
+					}
+				}
+			}
+		}
+		return out;
+	}
+
+	/**
+	 * What a village storehouse at {@code storehouse} keeps back for the other builders near it (23.5), by family key:
+	 * what each other bench within the village's reach of it still needs for its builds, beyond what its own chests and
+	 * its builders' bags hold. Without it a builder that could also reach another storehouse emptied this one of what
+	 * the builders who can reach only this one were waiting for.
+	 */
+	public static Map<Item, Integer> reservedForOthers(ServerLevel level, BlockPos storehouse, @Nullable BuildSite except) {
+		// Asked every tick while a builder walks to the storehouse: worked out once a second.
+		ReservedKey key = new ReservedKey(level.dimension(), storehouse.immutable(), except == null ? null : except.id());
+		long now = level.getGameTime();
+		synchronized (RESERVED) {
+			Reserved cached = RESERVED.get(key);
+			if (cached != null && cached.until() > now) {
+				return cached.items();
+			}
+			if (RESERVED.size() > 512) {
+				RESERVED.clear();
+			}
+		}
+		Map<Item, Integer> items = Map.copyOf(reservedForOthersNow(level, storehouse, except));
+		synchronized (RESERVED) {
+			RESERVED.put(key, new Reserved(now + 20, items));
+		}
+		return items;
+	}
+
+	private record ReservedKey(net.minecraft.resources.ResourceKey<net.minecraft.world.level.Level> dimension, BlockPos storehouse, @Nullable UUID site) {
+	}
+
+	private record Reserved(long until, Map<Item, Integer> items) {
+	}
+
+	private static final Map<ReservedKey, Reserved> RESERVED = new java.util.HashMap<>();
+
+	private static Map<Item, Integer> reservedForOthersNow(ServerLevel level, BlockPos storehouse, @Nullable BuildSite except) {
+		double reach = (double) Village.RADIUS * Village.RADIUS;
+		BlockPos mine = except != null ? except.bench() : null;
+		Map<BlockPos, Map<Item, Integer>> byBench = new java.util.HashMap<>();
+		Map<BlockPos, Set<UUID>> buildersAt = new java.util.HashMap<>();
+		for (BuildSite other : BuildSiteManager.get(level).all()) {
+			BlockPos bench = other.bench();
+			if (other == except || bench == null || bench.equals(mine) || other.isDone() || other.isDeconstruction()
+				|| bench.distSqr(storehouse) > reach) {
+				continue;
+			}
+			BuildPlan plan = other.plan(level);
+			if (plan == null) {
+				continue;
+			}
+			Map<Item, Integer> need = byBench.computeIfAbsent(bench, b -> new java.util.HashMap<>());
+			remainingNeed(level, other, plan).forEach((item, n) -> need.merge(item, n, Integer::sum));
+			if (other.builder() != null) {
+				buildersAt.computeIfAbsent(bench, b -> new java.util.HashSet<>()).add(other.builder());
+			}
+		}
+		Map<Item, Integer> out = new java.util.HashMap<>();
+		byBench.forEach((bench, need) -> {
+			Map<Item, Long> have = new java.util.HashMap<>();
+			SupplyContainers.contents(level, SupplyContainers.find(level, bench, null))
+				.forEach((item, n) -> have.merge(MaterialFamilies.key(item), n, Long::sum));
+			for (UUID id : buildersAt.getOrDefault(bench, Set.of())) {
+				BuilderBag carried = level.getEntity(id) instanceof Villager v ? ModAttachments.BUILDER_BAG.get(v) : null;
+				if (carried != null) {
+					for (ItemStack stack : carried.stacks()) {
+						if (!stack.isEmpty()) {
+							have.merge(MaterialFamilies.key(stack.getItem()), (long) stack.getCount(), Long::sum);
+						}
+					}
+				}
+			}
+			need.forEach((item, n) -> {
+				long short_ = n - have.getOrDefault(item, 0L);
+				if (short_ > 0) {
+					out.merge(item, (int) short_, Integer::sum);
+				}
+			});
+		});
 		return out;
 	}
 
@@ -669,12 +770,33 @@ public final class Builders {
 
 	private static void emptyBag(ServerLevel level, Villager villager, BlockPos bench, List<BlockPos> supplies) {
 		BuilderBag bag = ModAttachments.BUILDER_BAG.getOrCreate(villager);
+		List<BlockPos> store = null;
 		for (ItemStack stack : bag.takeAll()) {
 			ItemStack rest = SupplyContainers.insert(level, supplies, stack);
+			if (!rest.isEmpty()) {
+				// 23.5: our chests are full (or there are none): the village storehouse's, before the ground.
+				if (store == null) {
+					store = storehouseChests(level, villager, bench, null);
+				}
+				rest = SupplyContainers.insert(level, store, rest);
+			}
 			if (!rest.isEmpty()) {
 				dropNear(level, bench, rest);
 			}
 		}
+	}
+
+	/**
+	 * The chests of the nearest village storehouse (a porter's workstation) {@code villager} shares with, not counting
+	 * any inside {@code exclude}; empty when there is none in reach or the village is off.
+	 */
+	public static List<BlockPos> storehouseChests(ServerLevel level, Villager villager, BlockPos bench, @Nullable BoundingBox exclude) {
+		for (Village.Stash stash : Village.stashes(level, villager, bench, exclude)) {
+			if (stash.job() == ModVillagers.PORTER && !stash.chests().isEmpty()) {
+				return stash.chests();
+			}
+		}
+		return List.of();
 	}
 
 	private static void returnBlueprint(ServerLevel level, BuildSite site, BlockPos bench, List<BlockPos> supplies) {

@@ -1654,5 +1654,17 @@
   "screen.aliveworkplace.calendar.now": "Now: day %s of %s",
   "screen.aliveworkplace.calendar.starts_in": "Begins in %s days",
   "screen.aliveworkplace.calendar.festival_tomorrow": "Tomorrow: %s",
-  "screen.aliveworkplace.calendar.starts_tomorrow": "Begins tomorrow"
+  "screen.aliveworkplace.calendar.starts_tomorrow": "Begins tomorrow",
+  "tooltip.aliveworkplace.blueprint.list_hint": "With a Book and Quill in your other hand, right-click to write its material list",
+  "message.aliveworkplace.blueprint.list_written": "Wrote the material list for the %s",
+  "book.aliveworkplace.material_list.title": "%s: materials",
+  "book.aliveworkplace.material_list.heading": "Materials for the %s",
+  "book.aliveworkplace.material_list.from_chests": "What the chests by the Blueprint Table or bench at %s %s %s hold is taken off.",
+  "book.aliveworkplace.material_list.to_bring": "Still to bring: %s items of %s kinds.",
+  "book.aliveworkplace.material_list.all_there": "Everything it needs is in the chests.",
+  "book.aliveworkplace.material_list.everything": "It needs %s items of %s kinds.",
+  "book.aliveworkplace.material_list.place_hint": "Place the blueprint near a Blueprint Table and write a new list to take off what its chests hold.",
+  "book.aliveworkplace.material_list.todo": "☐ %s × %s",
+  "book.aliveworkplace.material_list.partly": "☐ %s × %s (of %s)",
+  "book.aliveworkplace.material_list.done": "☑ %s"
 }

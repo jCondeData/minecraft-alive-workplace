@@ -116,7 +116,9 @@ public final class Village {
 		if (takesPart(villager)) {
 			double radiusSqr = (double) RADIUS * RADIUS;
 			Set<BlockPos> seen = new HashSet<>();
-			for (Villager other : level.getEntitiesOfClass(Villager.class, new AABB(station).inflate(RADIUS + 16),
+			// Their workstation is within RADIUS, but they may be out working up to RADIUS beyond it (a porter fetching
+			// from the far side of the village): look that far, or the storehouse drops out of the list while it's away.
+			for (Villager other : level.getEntitiesOfClass(Villager.class, new AABB(station).inflate(2 * RADIUS + 16),
 				v -> v != villager && v.isAlive() && takesPart(v))) {
 				BlockPos theirs = Builders.benchPos(other).orElse(null);
 				if (theirs != null && !theirs.equals(station) && theirs.distSqr(station) <= radiusSqr && sharesWith(level, villager, other)

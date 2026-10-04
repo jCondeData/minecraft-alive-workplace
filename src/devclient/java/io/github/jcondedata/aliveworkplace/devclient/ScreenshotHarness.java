@@ -1662,7 +1662,37 @@ public class ScreenshotHarness implements ClientModInitializer {
 			Showcase.check(mc.screen instanceof net.minecraft.client.gui.screens.inventory.InventoryScreen && says,
 				"the blueprint's tooltip says what the builder's chests are short of");
 		}
+		// 23.4: a Book and Quill in the other hand, right-click with the blueprint: the material list to take away.
 		if (tick == 160) {
+			mc.setScreen(null);
+			server.execute(() -> {
+				ServerPlayer player = server.getPlayerList().getPlayers().get(0);
+				player.getInventory().selected = 0;
+				player.setItemInHand(net.minecraft.world.InteractionHand.OFF_HAND, new ItemStack(net.minecraft.world.item.Items.WRITABLE_BOOK));
+				player.getMainHandItem().use(server.overworld(), player, net.minecraft.world.InteractionHand.MAIN_HAND);
+			});
+		}
+		if (tick == 180) {
+			ItemStack book = mc.player.getOffhandItem();
+			if (book.is(net.minecraft.world.item.Items.WRITTEN_BOOK)) {
+				mc.setScreen(new net.minecraft.client.gui.screens.inventory.BookViewScreen(
+					net.minecraft.client.gui.screens.inventory.BookViewScreen.BookAccess.fromItem(book)));
+			}
+		}
+		if (tick == 195) {
+			shot(mc, "02_material_list");
+			if (mc.screen instanceof net.minecraft.client.gui.screens.inventory.BookViewScreen view) {
+				view.setPage(1);
+			}
+		}
+		if (tick == 210) {
+			shot(mc, "03_material_list_page");
+			var content = mc.player.getOffhandItem().get(net.minecraft.core.component.DataComponents.WRITTEN_BOOK_CONTENT);
+			boolean listed = content != null && content.pages().size() > 1 && content.pages().get(1).raw().getString().contains("×");
+			Showcase.check(mc.screen instanceof net.minecraft.client.gui.screens.inventory.BookViewScreen && listed,
+				"a Book and Quill became the blueprint's material list, with what's still to bring");
+		}
+		if (tick == 220) {
 			mc.stop();
 		}
 	}

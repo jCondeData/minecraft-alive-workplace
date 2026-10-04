@@ -70,6 +70,20 @@ public final class BlueprintSupplies {
 		if (Rules.on(level, ModGameRules.FREE_MATERIALS)) {
 			return Optional.of(new SupplyReport(bench, supplies.size(), List.of()));
 		}
+		Map<Item, Integer> need = need(level, plan);
+		List<SupplyReport.Missing> missing = new ArrayList<>();
+		for (Map.Entry<Item, Integer> e : need.entrySet()) {
+			long have = have(level, supplies, e.getKey());
+			if (have < e.getValue()) {
+				missing.add(new SupplyReport.Missing(e.getKey(), (int) (e.getValue() - have)));
+			}
+		}
+		missing.sort((a, b) -> Integer.compare(b.count(), a.count()));
+		return Optional.of(new SupplyReport(bench, supplies.size(), List.copyOf(missing)));
+	}
+
+	/** What the plan's steps not yet standing need, by family key (an unloaded block counts as not built yet). */
+	private static Map<Item, Integer> need(ServerLevel level, BuildPlan plan) {
 		Map<Item, Integer> need = new LinkedHashMap<>();
 		for (BuildPlan.Stage stage : List.of(BuildPlan.Stage.FOUNDATION, BuildPlan.Stage.STRUCTURE, BuildPlan.Stage.DECORATION)) {
 			for (BuildPlan.Step step : plan.steps(stage)) {
@@ -87,18 +101,66 @@ public final class BlueprintSupplies {
 				need.merge(entity.cost(), 1, Integer::sum);
 			}
 		}
-		List<SupplyReport.Missing> missing = new ArrayList<>();
-		for (Map.Entry<Item, Integer> e : need.entrySet()) {
-			long have = 0;
-			for (Item member : MaterialFamilies.accepted(e.getKey())) {
-				have += SupplyContainers.count(level, supplies, member);
-			}
-			if (have < e.getValue()) {
-				missing.add(new SupplyReport.Missing(e.getKey(), (int) (e.getValue() - have)));
-			}
+		return need;
+	}
+
+	/** How many of {@code key}'s family the chests hold. */
+	private static long have(ServerLevel level, List<BlockPos> supplies, Item key) {
+		long have = 0;
+		for (Item member : MaterialFamilies.accepted(key)) {
+			have += SupplyContainers.count(level, supplies, member);
 		}
-		missing.sort((a, b) -> Integer.compare(b.count(), a.count()));
-		return Optional.of(new SupplyReport(bench, supplies.size(), List.copyOf(missing)));
+		return have;
+	}
+
+	/** One line of a material list: what the build needs and how much of it isn't in the chests yet. */
+	public record Line(Item item, int need, int toBring) {
+	}
+
+	/**
+	 * The material list to take away (23.4): every material the blueprint needs, biggest first, with what the chests by
+	 * the nearest Blueprint Table or Builder's Bench hold already taken off ({@code bench} is where). Not placed here, or
+	 * no table near: the whole list, nothing taken off. Empty only for an unknown or too big blueprint.
+	 */
+	public record Checklist(Optional<BlockPos> bench, List<Line> lines) {
+		public int toBring() {
+			return lines.stream().mapToInt(Line::toBring).sum();
+		}
+	}
+
+	public static Optional<Checklist> checklist(ServerLevel level, BlueprintData data) {
+		Optional<Blueprint> blueprint = BlueprintLibrary.get(level, data.structure());
+		if (blueprint.isEmpty() || blueprint.get().blocks().size() > MAX_STEPS) {
+			return Optional.empty();
+		}
+		List<Line> lines = new ArrayList<>();
+		Optional<BlockPos> bench = Optional.empty();
+		boolean here = data.placement().isPresent() && data.placement().get().dimension().equals(Ids.of(level.dimension()));
+		if (here) {
+			BlueprintData.Placement placement = data.placement().get();
+			bench = level.getPoiManager().findClosest(h -> h.is(ModVillagers.BLUEPRINT_TABLE_POI) || h.is(ModVillagers.BUILDERS_BENCH_POI),
+				BlueprintItem.anchorWorld(placement, blueprint.get().size()), Builders.MAX_SITE_DISTANCE, PoiManager.Occupancy.ANY);
+		}
+		if (bench.isPresent()) {
+			BuildPlan plan = BuildPlan.create(blueprint.get(), data.placement().get(), level, Rules.number(level, ModGameRules.FOUNDATION_DEPTH));
+			List<BlockPos> supplies = SupplyContainers.find(level, bench.get(), plan.bounds());
+			boolean free = Rules.on(level, ModGameRules.FREE_MATERIALS);
+			need(level, plan).forEach((item, n) -> lines.add(new Line(item, n, free ? 0 : (int) Math.max(0, n - have(level, supplies, item)))));
+		} else {
+			Map<Item, Integer> need = new LinkedHashMap<>();
+			for (Blueprint.Entry entry : blueprint.get().blocks()) {
+				if (MaterialRules.classify(entry.state(), entry.nbt()) != MaterialRules.Kind.SKIP) {
+					for (MaterialRules.Requirement r : MaterialRules.requirements(entry.state(), entry.nbt())) {
+						need.merge(MaterialFamilies.key(r.item()), r.count(), Integer::sum);
+					}
+				}
+			}
+			need.forEach((item, n) -> lines.add(new Line(item, n, n)));
+		}
+		// Still to bring first, biggest first; then what's all there, biggest first.
+		lines.sort(java.util.Comparator.comparing((Line l) -> l.toBring() == 0).thenComparing(Line::need, java.util.Comparator.reverseOrder())
+			.thenComparing(l -> net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(l.item())));
+		return Optional.of(new Checklist(bench, List.copyOf(lines)));
 	}
 
 	private BlueprintSupplies() {

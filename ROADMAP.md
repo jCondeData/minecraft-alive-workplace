@@ -485,7 +485,7 @@ and an old vanilla village slowly rebuilds itself one house at a time. It answer
   don't wait for his reply. Done when:
   - the note is on `main` with every section above;
   - the package is sent, and his answers, when they come, are recorded with `sessions.py reply`.
-- [ ] **27.2** **The plan and the City Plan item.** A village's plan, saved on the Village Hall
+- [x] **27.2** (review: pending 2026-10-04) **The plan and the City Plan item.** A village's plan, saved on the Village Hall
   (`VillageHallBlockEntity`, new tag `plan`, empty by default) and kept on the hall item when the hall is broken (as
   its name is; put down again, the plan is centred on the new spot):
   - a grid of 32×32 cells centred on the hall, a cell 4×4 blocks at the default `villageHallRadius` of 64 (8×8 at

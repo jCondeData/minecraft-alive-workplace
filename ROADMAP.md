@@ -296,13 +296,13 @@ first; many items below are "verify and harden", not "build".
   - what fraction is built;
   - which 3 items are missing most, with counts;
   - which chest or storehouse the builder takes from.
-- [x] **23.4** (review: pending 2026-10-04) **A material list you can take away.** A checklist of everything a blueprint needs, minus what's in the supply
+- [x] **23.4** (review: pending 2026-10-04) (verified 2026-10-04: qa/material-list-1004 shipped at 620a9232: 5 tests. 23.4 [QaMaterialListGameTests]: every library blueprint's unplaced book equals the builder's plan, each kind once, <=7 lines a page, title <=32, book saves; two chests add up, never below zero, unused items not listed; blueprint in off hand writes too. 23.6 [QaKeepVillagesWorkingGameTests]: keepVillagesWorking default true [new/older config], false pauses; workplaceKeepWorkLoaded off keeps a far listed village unloaded. Build 578+58 green. Scene 'missing' green in showcase 37187332687. Mutation: not yet in a nightly [the 2026-10-04 nightly hadn't run by 09:20Z].) **A material list you can take away.** A checklist of everything a blueprint needs, minus what's in the supply
   chests, as a written book or the blueprint's tooltip pages (like Create's Schematicannon). Done when: a GameTest
   checks the numbers against a known blueprint and a screenshot shows it.
 - [x] **23.5** (approved auto 2026-10-04) **Self-healing supply.** Builders use the storehouse and porters without being told. A full builder inventory
   never stops work. Wanted items go on the requests board automatically. Done when: the soak test passes with the
   materials split across 3 chests and the storehouse.
-- [x] **23.6** (approved auto 2026-10-04) **Working when no one is near.** The owner decided (2026-10-03): villages **keep working** when no
+- [x] **23.6** (approved auto 2026-10-04) (verified 2026-10-04: qa/material-list-1004 shipped at 620a9232: 5 tests. 23.4 [QaMaterialListGameTests]: every library blueprint's unplaced book equals the builder's plan, each kind once, <=7 lines a page, title <=32, book saves; two chests add up, never below zero, unused items not listed; blueprint in off hand writes too. 23.6 [QaKeepVillagesWorkingGameTests]: keepVillagesWorking default true [new/older config], false pauses; workplaceKeepWorkLoaded off keeps a far listed village unloaded. Build 578+58 green. Scene 'missing' green in showcase 37187332687. Mutation: not yet in a nightly [the 2026-10-04 nightly hadn't run by 09:20Z].) **Working when no one is near.** The owner decided (2026-10-03): villages **keep working** when no
   player is in range, through `KeepLoaded` tickets. The game rule `workplaceKeepWorkLoaded` already exists: start from
   it. Add a config option (default: keep working, so a server owner can still choose to pause), and document it
   in the README. Done when: both settings are tested, and there are no chunk-loading surprises (count the tickets

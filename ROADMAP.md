@@ -1772,7 +1772,7 @@ Guildhalls, and six tonics from the alchemist and the chef), give players more w
 the Village Hall (`VillageNeeds`, `VillageQuests`, `VillageRanks`, `Festivals`, `Treasury`), `people/Moods` and
 `BuilderLevels.delay`, and adds the one shared cap that stops all speed bonuses together at twice normal pace.
 
-- [ ] **30.1** **Design note.** `docs/design/M30.md`, sent to the owner as a review package (lanes don't wait for his
+- [x] **30.1** (review: pending 2026-10-04) **Design note.** `docs/design/M30.md`, sent to the owner as a review package (lanes don't wait for his
   reply). It covers:
   - what the player sees: a sketch of the Book of Edicts page, each edict's boost, cost and reform, each civic item,
     and the changes to the hall's screen and the Village Ledger;

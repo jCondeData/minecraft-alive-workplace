@@ -1016,7 +1016,7 @@ here adds a new kind of speed bonus (the new jobs get the partners' existing one
     harvests and replants Hearty Grains;
   - the README section and job table say how to start her;
   - showcase scene `camp_cook` with its GIF.
-- [ ] **28.9** **The Berry Breeder.** Stand a villager by a composter and sneak-right-click them with any Cobblemon
+- [x] **28.9** (review: pending 2026-10-04) **The Berry Breeder.** Stand a villager by a composter and sneak-right-click them with any Cobblemon
   berry. Config `berryBreeders` (true).
   - The berry book: every berry and its `mutations` read from Cobblemon's own berry data (70 in 1.7.3), so a data pack's
     berries come too. Sneak-right-click the breeder: one page lists every berry, found ones lit, the rest with the pair
@@ -4271,6 +4271,12 @@ item waits.
   build sites going up as dashed white outlines; `CityPlans.Outline` has a `proposal` flag (drawn dashed yellow) for
   27.8 to fill in `CityPlans.screen`. Undo keeps the last 10 changes per hall on the server (not saved), shared by
   everyone editing that plan, so an undo always matches what the hall holds.
+- 2026-10-04 (28.9, decisions; lane b): the breeder's `berry_goal` saves the goal only; the step is worked out afresh
+  from what the village has (chests, her bag, her plot), so it never goes stale. "Found" is the hall's
+  `berriesFound` plus what the village has now (a village without a hall still lights what it has). Plants of other
+  kinds in her plot are dug up (the berry comes back) only when the step has no free pair of beds. Rows alternate by
+  x (east-west neighbours), so a plot needs farmland beds side by side east-west. The showcase grows the plot on the
+  spot with a forced mutation (Cobblemon's growth takes in-game days).
 - 2026-10-04 (23.10a, owner question; lane a): the village pieces aren't built by our builders: Minecraft's village
   generator places them (one shared outside per style, baked into each piece's file), and the mod has no "village
   leader" yet (the nearest is the Village Hall's owner: whoever first switches its protection on, with their friends).

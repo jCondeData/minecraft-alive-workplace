@@ -114,6 +114,11 @@ public final class Porters {
 			// What's to be sifted stays; what came out of the sieve goes.
 			return io.github.jcondedata.aliveworkplace.sift.SifterWork.isSiftable(stack) ? ALL : 0;
 		}
+		if (job == ModVillagers.BERRY_BREEDER) {
+			// Mulch stays, and 16 of each berry for the Camp Cook and the Habitat Keeper; the other berries go.
+			return io.github.jcondedata.aliveworkplace.berry.BerryBreeders.isMulch(stack) ? ALL
+				: io.github.jcondedata.aliveworkplace.berry.BerryBreeders.isBerry(stack) ? io.github.jcondedata.aliveworkplace.berry.BerryBreeders.KEEP_EACH : 0;
+		}
 		if (job == ModVillagers.COMPOSTER) {
 			// The scraps stay for the bin; the bone meal goes.
 			return io.github.jcondedata.aliveworkplace.compost.CompostWork.isCompostable(stack) ? ALL : 0;

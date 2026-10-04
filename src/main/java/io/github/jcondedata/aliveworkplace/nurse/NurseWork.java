@@ -62,6 +62,10 @@ public class NurseWork extends Behavior<Villager> {
 		if (++timer % EVERY != 0) {
 			return;
 		}
+		BlockPos machine = Nurses.machine(level, villager);
+		if (machine != null) { // on shift at a Healing Machine she keeps it charged (ROADMAP 28.7)
+			PokemonHealing.EXTENSION.run(h -> h.charge(level, machine));
+		}
 		AABB area = villager.getBoundingBox().inflate(RANGE, 4, RANGE);
 		for (LivingEntity patient : level.getEntitiesOfClass(LivingEntity.class, area,
 				e -> (e instanceof Villager || e instanceof IronGolem) && e != villager && e.isAlive() && e.getHealth() < e.getMaxHealth())) {

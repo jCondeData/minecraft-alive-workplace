@@ -70,6 +70,7 @@ public class ScreenshotHarness implements ClientModInitializer {
 	private final WordsScene words = new WordsScene();
 	private final PartnersScene partners = new PartnersScene();
 	private final PartnersLandScene partnersLand = new PartnersLandScene();
+	private final PokemonCenterScene pokemonCenter = new PokemonCenterScene();
 	private final PartnersForgeScene partnersForge = new PartnersForgeScene();
 	private final PartnersAllScene partnersAll = new PartnersAllScene();
 
@@ -103,6 +104,10 @@ public class ScreenshotHarness implements ClientModInitializer {
 		}
 		if ("partners_forge".equals(System.getProperty("aliveworkplace.scene"))) {
 			partnersForge.tick(mc, mc.getSingleplayerServer());
+			return;
+		}
+		if ("pokemon_center".equals(System.getProperty("aliveworkplace.scene"))) {
+			pokemonCenter.tick(mc, mc.getSingleplayerServer());
 			return;
 		}
 		if ("partners_land".equals(System.getProperty("aliveworkplace.scene"))) {

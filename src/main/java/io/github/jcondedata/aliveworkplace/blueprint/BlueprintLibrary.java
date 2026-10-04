@@ -58,10 +58,17 @@ public final class BlueprintLibrary {
 	public static List<ResourceLocation> list(MinecraftServer server, boolean everything) {
 		Path generated = server.getWorldPath(LevelResource.GENERATED_DIR);
 		return server.getStructureManager().listTemplates()
+			.filter(id -> everything || cobblemonOk(id))
 			.filter(id -> everything || id.getNamespace().equals(AliveWorkplace.MOD_ID) && !isWorldgenPiece(id)
 				|| Files.isRegularFile(generated.resolve(id.getNamespace()).resolve("structures").resolve(id.getPath() + ".nbt")))
 			.sorted()
 			.toList();
+	}
+
+	/** Blueprints made of Cobblemon's blocks ({@link StarterBlueprints#COBBLEMON_ONLY}) are listed only with Cobblemon. */
+	private static boolean cobblemonOk(ResourceLocation id) {
+		return io.github.jcondedata.aliveworkplace.platform.Platform.get().isModLoaded("cobblemon")
+			|| StarterBlueprints.COBBLEMON_ONLY.stream().noneMatch(e -> e.id().equals(id));
 	}
 
 	/** Our village pieces ({@code aliveworkplace:village/...}) are for world generation, not the library; research blueprints come from scholars. */

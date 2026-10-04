@@ -956,6 +956,19 @@ public class BuilderGameTests implements FabricGameTest {
 	}
 
 	/** The whole Library III (18 x 20) from bare ground, in the huge area. */
+	/** ROADMAP 28.7: the Pokémon Center (here without Cobblemon, so its machine, PC and pasture load as air). */
+	//$ gametest_ticks_batch BIG_AREA '12000' '"starter_builds"'
+	@GameTest(template = BIG_AREA, timeoutTicks = 12000, batch = "starter_builds")
+	public void buildsPokemonCenter(GameTestHelper helper) {
+		buildStarter(helper, StarterBlueprints.POKEMON_CENTER);
+	}
+
+	//$ gametest_ticks_batch HUGE_AREA '50000' '"starter_builds_pokemon_center_2"'
+	@GameTest(template = HUGE_AREA, timeoutTicks = 50000, batch = "starter_builds_pokemon_center_2")
+	public void buildsPokemonCenterII(GameTestHelper helper) {
+		buildStarter(helper, StarterBlueprints.POKEMON_CENTER_2, new BlockPos(9, 2, 3));
+	}
+
 	//$ gametest_ticks_batch HUGE_AREA '50000' '"starter_builds_library_3"'
 	@GameTest(template = HUGE_AREA, timeoutTicks = 50000, batch = "starter_builds_library_3")
 	public void buildsLibraryIII(GameTestHelper helper) {
@@ -1612,6 +1625,7 @@ public class BuilderGameTests implements FabricGameTest {
 		all.addAll(StarterBlueprints.DECORATIONS);
 		all.addAll(StarterBlueprints.DEFENCES);
 		all.add(StarterBlueprints.TOWN_HALL);
+		all.addAll(StarterBlueprints.COBBLEMON_ONLY);
 		for (StarterBlueprints.Entry entry : all) {
 			Optional<Blueprint> blueprint = BlueprintLibrary.get(helper.getLevel(), entry.id());
 			helper.assertTrue(blueprint.isPresent(), "missing " + entry.id());

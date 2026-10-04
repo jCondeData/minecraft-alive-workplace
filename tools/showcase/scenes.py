@@ -163,6 +163,10 @@ SCENES = [
       [("10_guard_armor", "In armor"), ("frame_*@middle", "Pokémon join in"), ("50_guard_done", "Husks down")],
       cobblemon=True),
     job("nurse", "Nurse", "Healing and curing villagers", "the nurse healed and cured the villagers"),
+    S("pokemon_center", "Nurse", "The Pokémon Center",
+      "both tiers stand, and the nurse put the team in her Healing Machine and every Pokémon came out full", 60,
+      [("01_pokemon_center", "Pokémon Center"), ("02_pokemon_center_2", "Pokémon Center II"),
+       ("03_healing", "In the Healing Machine"), ("04_healed", "All healed")], cobblemon=True),
     # Shopkeeper
     S("shop", "Shopkeeper", "The shop", "the shop screen opened with prices", 60,
       [("01_shop_menu", "Shop screen"), ("02_shop_counter", "The counter")], cobblemon=True),

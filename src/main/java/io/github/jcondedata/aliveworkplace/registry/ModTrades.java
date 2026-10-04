@@ -504,8 +504,12 @@ public final class ModTrades {
 		Platform.get().addTrades(ModVillagers.NURSE, 2, offers ->
 			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 4),
 				net.minecraft.world.item.alchemy.PotionContents.createItemStack(Items.POTION, net.minecraft.world.item.alchemy.Potions.REGENERATION), 6, 10, 0.05f)));
-		Platform.get().addTrades(ModVillagers.NURSE, 3, offers ->
-			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 2), new ItemStack(Items.HONEY_BOTTLE, 3), 12, 15, 0.05f)));
+		Platform.get().addTrades(ModVillagers.NURSE, 3, offers -> {
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 2), new ItemStack(Items.HONEY_BOTTLE, 3), 12, 15, 0.05f));
+			if (Platform.get().isModLoaded("cobblemon")) { // ROADMAP 28.7: Journeyman Nurses sell the Pokémon Center
+				offers.add((entity, random) -> blueprint(StarterBlueprints.POKEMON_CENTER, 14));
+			}
+		});
 		Platform.get().addTrades(ModVillagers.NURSE, 4, offers ->
 			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 8), new ItemStack(Items.GOLDEN_APPLE), 4, 20, 0.05f)));
 		Platform.get().addTrades(ModVillagers.NURSE, 5, offers ->

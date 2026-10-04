@@ -91,7 +91,9 @@ public final class MaterialRules {
 		"distance", "persistent", "snowy", "occupied", "triggered", "attached", "disarmed", "in_wall", "has_book",
 		"has_record", "bottom", "berries", "age", "stage", "moisture", "power", "note", "instrument",
 		// Supplementaries: a pending rotation its block entity applies (and clears) when it loads
-		"rotate_tile"
+		"rotate_tile",
+		// Cobblemon (ROADMAP 28.7): a Healing Machine charges by itself, a PC or Pasture Block lights up while in use
+		"charge", "on"
 	);
 
 	public static Kind classify(BlockState state) {
@@ -155,7 +157,36 @@ public final class MaterialRules {
 		if (state.hasProperty(BlockStateProperties.DOUBLE_BLOCK_HALF) && state.getValue(BlockStateProperties.DOUBLE_BLOCK_HALF) == DoubleBlockHalf.UPPER) {
 			return true;
 		}
+		if ("top".equals(modPart(state))) {
+			return true;
+		}
 		return state.hasProperty(BlockStateProperties.BED_PART) && state.getValue(BlockStateProperties.BED_PART) == BedPart.HEAD;
+	}
+
+	/**
+	 * A modded two-block-tall block's {@code part} ({@code "top"} or {@code "bottom"}), as Cobblemon's PC and Pasture
+	 * Block have (ROADMAP 28.7); null for every other block. Found by the property's name and values, so no mod class is
+	 * needed.
+	 */
+	@Nullable
+	static String modPart(BlockState state) {
+		net.minecraft.world.level.block.state.properties.Property<?> part = state.getBlock().getStateDefinition().getProperty("part");
+		if (part == null || part.getPossibleValues().size() != 2) {
+			return null;
+		}
+		String value = valueName(state, part);
+		return value.equals("top") || value.equals("bottom") ? value : null;
+	}
+
+	private static <T extends Comparable<T>> String valueName(BlockState state, net.minecraft.world.level.block.state.properties.Property<T> property) {
+		return property.getName(state.getValue(property));
+	}
+
+	@SuppressWarnings({"unchecked", "rawtypes"})
+	private static BlockState withPart(BlockState state, String value) {
+		net.minecraft.world.level.block.state.properties.Property part = state.getBlock().getStateDefinition().getProperty("part");
+		java.util.Optional<Comparable> v = part.getValue(value);
+		return v.isPresent() ? (BlockState) state.setValue(part, v.get()) : state;
 	}
 
 	/** Where the other half of a two-block block goes, or null for normal blocks. */
@@ -168,6 +199,9 @@ public final class MaterialRules {
 			Direction toHead = state.getValue(BlockStateProperties.HORIZONTAL_FACING);
 			return pos.relative(toHead);
 		}
+		if ("bottom".equals(modPart(state))) {
+			return pos.above();
+		}
 		return null;
 	}
 
@@ -179,6 +213,9 @@ public final class MaterialRules {
 		}
 		if (primary.hasProperty(BlockStateProperties.BED_PART)) {
 			return primary.setValue(BlockStateProperties.BED_PART, BedPart.HEAD);
+		}
+		if (modPart(primary) != null) {
+			return withPart(primary, "top");
 		}
 		return null;
 	}

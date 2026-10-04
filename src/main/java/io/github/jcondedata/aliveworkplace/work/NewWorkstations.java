@@ -24,7 +24,8 @@ public final class NewWorkstations {
 	private static final Set<Block> ADDED = Set.of(Blocks.CRAFTING_TABLE, Blocks.JUKEBOX, ModBlocks.MAILBOX, ModBlocks.BLUEPRINT_TABLE);
 
 	private static boolean added(BlockState state) {
-		return ADDED.contains(state.getBlock()) || state.getBlock().builtInRegistryHolder().is(ModVillagers.FOSSIL_ANALYZER_BLOCK);
+		return ADDED.contains(state.getBlock()) || state.getBlock().builtInRegistryHolder().is(ModVillagers.FOSSIL_ANALYZER_BLOCK)
+			|| state.getBlock().builtInRegistryHolder().is(ModVillagers.HEALING_MACHINE_BLOCK); // 28.7
 	}
 
 	public static void fillMissing(PoiManager poi, SectionPos section, LevelChunkSection blocks) {

@@ -4,6 +4,43 @@ Done in pieces by night runs; each piece lands with `land --keep-open`. Newest f
 
 ## Pieces
 
+### Network packets (lane-a-1003-2232, 2026-10-03)
+- **Every payload over the wire** (`NetworkPayloadsGameTests.everyPayloadSurvivesTheWire`): all nine (the table's
+  Open, RequestDetails, Details, Take, UploadChunk and UploadResult, mail's Send, the preview's Request and Data) come
+  back unchanged, at their limits too (a full 30,000-byte upload piece, a 254-character file name, a 256-character
+  letter in two-byte letters, a block at the world's corner). Passes.
+- **Oversized client packets** (`oversizedClientPacketsAreRefused`): an upload piece over 30,000 bytes, a file name
+  over 256 characters, a recipient name over 32 and a letter over the codec's limit are refused. Passes.
+- **The mailbox's Send button through the real packet path** (`theMailboxSendPacketPostsAParcel`, the first test of
+  `Mail.send` at all): a blank or unknown name posts nothing and keeps the top row; a real name posts the items with the
+  trimmed letter first; a Send with no mailbox open does nothing. Passes.
+- **The table's Take button through the packet path** (`theTableTakePacketGivesTheBlueprint`): one Blank Blueprint
+  for one blueprint; an unknown id costs nothing. Passes.
+- **3 mutants**, all killed: Send's handler given its arguments swapped, Take's handler unwired, the letter not
+  trimmed. 31 mutants in all; no bug in the code.
+- **The 14 mixins `inventory.py` lists as untested** are a name-matching gap only (it counts a mixin as tested when a
+  test names its class). Each has a behaviour test through the game's own path: `PoiManagerMixin` in
+  `StationsBugGameTests.oldWorldsBlocksBecomeWorkstationsWhenTheChunkLoads`, `ServerLevelMixin` in
+  `JobSiteTicketsGameTests`, `ExplosionMixin` in `WardingEdgeGameTests`/`QaWardingGameTests` (real `explode`),
+  `PlayerListMixin` in `FerryEdgeGameTests`/`FerryLeaveQaGameTests`, `AbstractVillagerMixin` in `ShopGameTests`
+  (`notifyTrade`), `VillagerPanicTriggerMixin` in `GuardGameTests` (the guard never panics), `VillagerSeatMixin` in
+  `RidingSpecGameTests` (a villager's seat is a player's), `ZombieVillagerMixin` in `StructureVillagerGameTests`; the
+  four accessors are used by the features they serve, and `VillagerModelMixin` is client-only (the showcase's riding
+  scenes show it). No new test needed.
+
+### The job switchboard: VillagerGoalPackagesMixin (lane-a-1003-2132, 2026-10-03)
+- **Every job's work package** (`GoalPackagesMixinGameTests.eachOfOurJobsGetsItsOwnWorkPackage`): each of our 30
+  professions gets exactly the package its job class builds, none gets vanilla's, and every profession
+  `ModVillagers.isWorker` names has a case (a new job without a branch would stand idle). Passes.
+- **Upgraded vanilla jobs** (`upgradedVanillaJobsPutTheirWorkFirstAndGateVanillas`): mason, armorer, toolsmith,
+  weaponsmith, fletcher, shepherd, butcher, leatherworker, cleric, librarian, cartographer and fisherman run our work
+  first (two behaviours for the weaponsmith and librarian, in order) and vanilla's routine behind a gate, except the
+  always-run schedule update. Passes.
+- **Guards** (`guardsGetTheirRaidAndCombatPackages`): their raid, pre-raid and core packages are `GuardPackages`',
+  and a farmer's or builder's are not. Passes.
+- **3 mutants**, all killed: the chef given the carpenter's package, the guard's pre-raid branch switched off, and
+  `UpgradedJob` leaving vanilla's routine ungated. 28 mutants in all; no bug in the code.
+
 ### VillagerMixin behaviours (lane-a-1003-1532, 2026-10-03)
 - **Day plans** (`VillagerMixinGameTests.eachKindOfVillagerGetsItsDayPlan`): after `refreshBrain`, a builder and a
   netherworker keep the builders' working day, a guard the guard shifts, a bard the bard's evening; a baby builder,
@@ -93,5 +130,3 @@ Done in pieces by night runs; each piece lands with `land --keep-open`. Newest f
 ## Still to do
 - An old world saved by 0.138.0 opened with the next version (at the release check).
 - Performance on GitHub's machines once B14 is fixed (the dev-container numbers above stand meanwhile).
-- The next `inventory.py` gaps: 14 mixins and 7 network payloads no test names (most are exercised through the
-  features they serve; a test per mixin is the next piece).

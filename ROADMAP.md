@@ -471,7 +471,7 @@ and an old vanilla village slowly rebuilds itself one house at a time. It answer
 (babysitting) and builds on the builder (`BuildSite`, styles, upgrades, `Paths`), the Village Hall (census,
 `VillageAdvice`, ranks, research) and `Caravans`.
 
-- [ ] **27.1** **Design note.** `docs/design/M27.md`: what the player sees (the City Plan and its screen, the
+- [x] **27.1** (review: pending 2026-10-04) **Design note.** `docs/design/M27.md`: what the player sees (the City Plan and its screen, the
   Steward's day, his desk on the hall's screen, roads, walls, renewed houses), the data formats with one example file
   each (zone kinds, Steward rules, road styles, wall kits, renewal lists), the config switches, every new saved field
   with its default (the plan and the Steward's state on the hall, the player-built ledger), the per-tick budgets, the

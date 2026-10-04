@@ -51,6 +51,11 @@ import org.jetbrains.annotations.Nullable;
 public class CrafterWork extends Behavior<Villager> {
 	/** Base ticks one craft takes (faster with levels and Pokémon partners). */
 	public static final int CRAFT_TICKS = 8;
+
+	/** Ticks {@code crafts} crafts take this villager: the level's share at their pace, Craftsmanship included (ROADMAP 30.2). */
+	public static int craftTicks(Villager villager, int crafts) {
+		return Math.max(20, BuilderLevels.delay(CRAFT_TICKS * crafts, villager));
+	}
 	/** A job's ingredients have to fit in this many stacks (the rest of the bag is for what comes out). */
 	static final int MAX_STACKS_IN = 12;
 	private static final float SPEED = 0.55f;
@@ -253,8 +258,7 @@ public class CrafterWork extends Behavior<Villager> {
 		villager.getBrain().setMemory(MemoryModuleType.LOOK_TARGET, new BlockPosTracker(station));
 		int crafts = job.plan().steps().stream().mapToInt(Crafting.Step::times).sum();
 		if (timer < 0) {
-			timer = Math.max(20, Math.round(BuilderLevels.delay(CRAFT_TICKS * crafts, villager) * (1f - 0.15f
-				* io.github.jcondedata.aliveworkplace.research.Research.level(villager, io.github.jcondedata.aliveworkplace.research.Research.Topic.CRAFTSMANSHIP))));
+			timer = craftTicks(villager, crafts);
 			// A Fighting, Rock or Steel partner holds the board or stone at the table while it's worked (28.4); a toolsmith's,
 			// fletcher's, tinkerer's or chef's partner does their trade's show, and may carry what's made to the chest (28.5).
 			Item worked = job.plan().takes().keySet().stream().findFirst().orElse(job.plan().target()); // the board, the stone

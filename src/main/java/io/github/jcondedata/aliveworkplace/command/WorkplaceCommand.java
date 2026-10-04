@@ -40,6 +40,7 @@ import net.minecraft.world.entity.npc.Villager;
  * /workplace import                — import .litematic/.schem/.nbt files from &lt;world&gt;/aliveworkplace/import (ops)
  * /workplace friend add|remove &lt;player&gt;, /workplace friend list — who may give orders to your builders
  * /workplace strip &lt;height&gt;       — the Quarry Marker in hand digs a strip mine at that height, down a ladder shaft
+ * /workplace edict proclaim|lift &lt;id&gt; — proclaims or lifts an edict in the village you stand in (ops)
  */
 public final class WorkplaceCommand {
 	public static void init() {
@@ -70,6 +71,18 @@ public final class WorkplaceCommand {
 			.then(Commands.literal("cancel")
 				.then(Commands.argument("site", UuidArgument.uuid())
 					.executes(WorkplaceCommand::cancel)))
+			.then(Commands.literal("edict")
+				.requires(s -> s.hasPermission(2))
+				.then(Commands.literal("proclaim")
+					.then(Commands.argument("id", com.mojang.brigadier.arguments.StringArgumentType.greedyString())
+						.suggests((ctx, builder) -> SharedSuggestionProvider.suggest(
+							io.github.jcondedata.aliveworkplace.hall.Edicts.all().stream().map(e -> io.github.jcondedata.aliveworkplace.hall.Edicts.shortId(e.id())), builder))
+						.executes(ctx -> edict(ctx, true))))
+				.then(Commands.literal("lift")
+					.then(Commands.argument("id", com.mojang.brigadier.arguments.StringArgumentType.greedyString())
+						.suggests((ctx, builder) -> SharedSuggestionProvider.suggest(
+							io.github.jcondedata.aliveworkplace.hall.Edicts.all().stream().map(e -> io.github.jcondedata.aliveworkplace.hall.Edicts.shortId(e.id())), builder))
+						.executes(ctx -> edict(ctx, false)))))
 			.then(Commands.literal("friend")
 				.then(Commands.literal("add")
 					.then(Commands.argument("player", GameProfileArgument.gameProfile())
@@ -102,6 +115,39 @@ public final class WorkplaceCommand {
 		marker.set(io.github.jcondedata.aliveworkplace.registry.ModComponents.QUARRY, data);
 		Chat.chat(player, Component.translatable("message.aliveworkplace.quarry.strip_level", height,
 			io.github.jcondedata.aliveworkplace.mine.QuarryMarkerItem.oresAt(height)));
+		return 1;
+	}
+
+	/** {@code /workplace edict proclaim|lift <id>}: in the village the command runs in (an admin's tool; the Book is 30.4). */
+	private static int edict(CommandContext<CommandSourceStack> ctx, boolean proclaim) {
+		CommandSourceStack source = ctx.getSource();
+		String text = com.mojang.brigadier.arguments.StringArgumentType.getString(ctx, "id").trim();
+		ServerLevel level = source.getLevel();
+		net.minecraft.core.BlockPos hall = io.github.jcondedata.aliveworkplace.hall.VillageHalls.nearest(level,
+			net.minecraft.core.BlockPos.containing(source.getPosition())).orElse(null);
+		if (hall == null) {
+			source.sendFailure(Component.translatable("message.aliveworkplace.edict.no_hall"));
+			return 0;
+		}
+		io.github.jcondedata.aliveworkplace.hall.Edicts.Result result;
+		if (proclaim) {
+			var edict = io.github.jcondedata.aliveworkplace.hall.Edicts.find(text);
+			if (edict.isEmpty()) {
+				source.sendFailure(Component.translatable("message.aliveworkplace.edict.unknown", text));
+				return 0;
+			}
+			result = io.github.jcondedata.aliveworkplace.hall.Edicts.proclaim(level, hall, source.getPlayer(), edict.get());
+		} else {
+			String id = io.github.jcondedata.aliveworkplace.hall.Edicts.id(text).toString();
+			result = io.github.jcondedata.aliveworkplace.hall.Edicts.lift(level, hall, source.getPlayer(), id);
+		}
+		if (!result.done()) {
+			source.sendFailure(result.message());
+			return 0;
+		}
+		if (source.getPlayer() == null || !result.told().contains(source.getPlayer())) {
+			source.sendSuccess(result::message, true);
+		}
 		return 1;
 	}
 

@@ -6,7 +6,7 @@ import io.github.jcondedata.aliveworkplace.build.BuilderLevels;
 import io.github.jcondedata.aliveworkplace.build.Builders;
 import io.github.jcondedata.aliveworkplace.build.SupplyContainers;
 import io.github.jcondedata.aliveworkplace.registry.ModAttachments;
-import io.github.jcondedata.aliveworkplace.work.Partners;
+import io.github.jcondedata.aliveworkplace.work.Pace;
 import io.github.jcondedata.aliveworkplace.work.Village;
 import io.github.jcondedata.aliveworkplace.work.Walker;
 import io.github.jcondedata.aliveworkplace.work.WorkerStatus;
@@ -56,6 +56,16 @@ public class ExplorerWork extends Behavior<Villager> {
 	public static int SEARCH_TICKS = 100;
 	/** The rest between expeditions. */
 	public static int REST_TICKS = 1200;
+
+	/** Ticks a search at a stop takes this explorer: the level's share at their pace (partners counted once: ROADMAP 30.2). */
+	public static int searchTicks(Villager villager) {
+		return Math.max(20, BuilderLevels.delay(SEARCH_TICKS, villager));
+	}
+
+	/** Ticks this explorer rests after a trip: {@link #REST_TICKS} at their pace (partners, Expeditions...). */
+	public static int restTicks(Villager villager) {
+		return Pace.ticks(REST_TICKS, villager);
+	}
 	/** Rations needed to set out. */
 	static final int MIN_FOOD = 2;
 	/** Every so many expeditions, a map to somewhere (with an empty map in the chests). */
@@ -323,7 +333,7 @@ public class ExplorerWork extends Behavior<Villager> {
 		status(villager, "searching", stopsDone + 1, stops);
 		if (timer < 0) {
 			eat(level, villager, bag);
-			timer = Math.max(20, (int) (BuilderLevels.delay(SEARCH_TICKS, villager) * Partners.factor(villager)));
+			timer = searchTicks(villager);
 		}
 		if (timer % 20 == 0) {
 			// Looking about, crouching over something, poking the ground
@@ -413,7 +423,7 @@ public class ExplorerWork extends Behavior<Villager> {
 		}
 		stopsDone = 0;
 		phase = Phase.IDLE;
-		restUntil = now + (long) (REST_TICKS * Partners.factor(villager) * io.github.jcondedata.aliveworkplace.nether.Netherworkers.expeditionFactor(villager));
+		restUntil = now + restTicks(villager);
 		busy(villager, false);
 		walker.reset();
 	}

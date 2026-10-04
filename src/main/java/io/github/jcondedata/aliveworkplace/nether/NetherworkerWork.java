@@ -7,7 +7,7 @@ import io.github.jcondedata.aliveworkplace.build.BuilderBag;
 import io.github.jcondedata.aliveworkplace.build.Builders;
 import io.github.jcondedata.aliveworkplace.build.SupplyContainers;
 import io.github.jcondedata.aliveworkplace.registry.ModAttachments;
-import io.github.jcondedata.aliveworkplace.work.Partners;
+import io.github.jcondedata.aliveworkplace.work.Pace;
 import io.github.jcondedata.aliveworkplace.work.Requests;
 import io.github.jcondedata.aliveworkplace.work.Walker;
 import io.github.jcondedata.aliveworkplace.work.WorkerStatus;
@@ -41,6 +41,11 @@ import net.minecraft.world.level.block.Block;
 public class NetherworkerWork extends Behavior<Villager> {
 	/** The rest between expeditions. */
 	public static int REST_TICKS = 1200;
+
+	/** Ticks this netherworker rests after a trip: {@link #REST_TICKS} at their pace (partners, Expeditions...). */
+	public static int restTicks(Villager villager) {
+		return Pace.ticks(REST_TICKS, villager);
+	}
 	private static final int LOOK_EVERY = 100;
 	private static final float SPEED = 0.55f;
 	private static final double REACH = 3.0;
@@ -216,7 +221,7 @@ public class NetherworkerWork extends Behavior<Villager> {
 		villager.swing(InteractionHand.MAIN_HAND);
 		level.playSound(null, target, SoundEvents.CHEST_CLOSE, SoundSource.BLOCKS, 0.4f, 1.0f);
 		if (back) {
-			restUntil = now + (long) (REST_TICKS * Partners.factor(villager));
+			restUntil = now + restTicks(villager);
 		}
 		lookTimer = 0;
 		walker.reset();

@@ -1,0 +1,3 @@
+23.1, the builder soak: 10 builders, all 22 starter builds, hilly woods, materials only in chests, no help. Real Cobbleverse server: 22/22 finished in 3.4 in-game days, no item duplicated or lost, 2 stalls, each now a bug (B38 tinker's workshop waiting with nothing missing, B39 graveyard's slow foundation start). The time-lapse (SCENE=soak, new on the nightly page) ran 3 times: 22/22 every time, items off none, 0-1 stalls. Your call: the item asked for every build in 2 in-game days; the full set takes 3.4 because builders only work about 7 hours of each day. Keep 2 days as the bar (a builder-speed item), or accept ~3.5?
+
+(from lane-a-1004-0033, 2026-10-04 01:39Z; not yet sent)

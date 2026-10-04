@@ -1180,7 +1180,11 @@ public class ScreenshotHarness implements ClientModInitializer {
 			java.lang.reflect.Field labelX = net.minecraft.client.gui.screens.inventory.AbstractContainerScreen.class.getDeclaredField("titleLabelX");
 			width.setAccessible(true);
 			labelX.setAccessible(true);
-			int room = width.getInt(screen) - 2 * labelX.getInt(screen);
+			// From the title's start to the panel's right edge, keeping the same inset there as on the left; a title that
+			// starts in the right half (the player inventory's "Crafting", at 97 of 176) keeps vanilla's 8 (B41).
+			int w = width.getInt(screen);
+			int x = labelX.getInt(screen);
+			int room = w - x - (x < w / 2 ? x : 8);
 			if (mc.font.width(screen.getTitle()) > room) {
 				Showcase.check(false, shot + ": the title '" + screen.getTitle().getString() + "' is wider than its screen ("
 					+ mc.font.width(screen.getTitle()) + " > " + room + " pixels)");

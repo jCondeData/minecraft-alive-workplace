@@ -64,7 +64,8 @@ import org.jetbrains.annotations.Nullable;
  *   "particles": "minecraft:crit",   // a vanilla particle, or a Cobblemon effect such as cobblemon:impact_water
  *   "sound": "minecraft:entity.player.attack.strong",
  *   "ticks": 40,                     // how long the show itself lasts, 10 to 400
- *   "effect": "none",                // none, hydrate_farmland, smoke, sparks, crack, dust or flames
+ *   "effect": "none",                // none, hydrate_farmland, smoke, sparks, crack, dust, flames, bubbles, glyphs,
+ *                                    // pulse or green_bubbles
  *   "flies_off": false,              // true: rises out of sight and lands back (what it carried left up there)
  *   "deliver": false }               // true: then carries what the work made to the chest the job names
  * </pre>
@@ -104,7 +105,15 @@ public final class PartnerShows implements ResourceManagerReloadListener {
 		/** Dust of the ground at the spot: a furrow being walked. */
 		DUST,
 		/** Flames licking up from the spot: a furnace breathed into, a smoker's fire fanned. */
-		FLAMES
+		FLAMES,
+		/** Bubbles and splashes round the spot: a bobber swum round (ROADMAP 28.6). */
+		BUBBLES,
+		/** Enchanting glyphs drifting to the spot: a book read beside the desk. */
+		GLYPHS,
+		/** A pink pulse over the spot: someone healed or cured. */
+		PULSE,
+		/** Green bubbles from the spot: compost stirred. */
+		GREEN_BUBBLES
 	}
 
 	/** What a job's work made ({@code what}) and the chest it goes to ({@code to}): for a {@code deliver} show. */
@@ -255,7 +264,7 @@ public final class PartnerShows implements ResourceManagerReloadListener {
 		try {
 			effect = json.has("effect") ? Effect.valueOf(json.get("effect").getAsString().toUpperCase(Locale.ROOT)) : Effect.NONE;
 		} catch (IllegalArgumentException ex) {
-			throw new IllegalArgumentException("effect: " + json.get("effect").getAsString() + " (none, hydrate_farmland, smoke, sparks, crack, dust or flames)");
+			throw new IllegalArgumentException("effect: " + json.get("effect").getAsString() + " (none, hydrate_farmland, smoke, sparks, crack, dust, flames, bubbles, glyphs, pulse or green_bubbles)");
 		}
 		boolean fliesOff = json.has("flies_off") && json.get("flies_off").getAsBoolean();
 		boolean deliver = json.has("deliver") && json.get("deliver").getAsBoolean();
@@ -384,6 +393,11 @@ public final class PartnerShows implements ResourceManagerReloadListener {
 		return RUNNING.stream().anyMatch(r -> r.pokemon == pokemon);
 	}
 
+	/** Whether {@code pokemon} is doing its show now (arrived at the work, not walking there or back). */
+	public static boolean playing(Entity pokemon) {
+		return RUNNING.stream().anyMatch(r -> r.pokemon == pokemon && r.phase == Phase.PLAY);
+	}
+
 	/** How many shows are on in {@code level}. */
 	public static int running(ServerLevel level) {
 		return (int) RUNNING.stream().filter(r -> r.level == level).count();
@@ -464,7 +478,7 @@ public final class PartnerShows implements ResourceManagerReloadListener {
 		}
 		switch (run.phase) {
 			case GO -> {
-				boolean there = pokemon.position().distanceToSqr(Vec3.atBottomCenterOf(run.spot)) <= ARRIVED * ARRIVED;
+				boolean there = near(pokemon, Vec3.atBottomCenterOf(run.spot), ARRIVED);
 				if (there || run.phaseTicks >= WALK_LIMIT) {
 					// There, or Cobblemon's brain ignored the walk: the show plays where it stands, facing the worker.
 					run.phase = Phase.PLAY;
@@ -474,7 +488,7 @@ public final class PartnerShows implements ResourceManagerReloadListener {
 						PokemonPartners.EXTENSION.run(p -> p.animate(run.level, pokemon, run.show.animation()));
 					}
 					// At the work itself when the partner got close to it (its standing spot may be a block off), else where it stands.
-					boolean atWork = run.work != null && pokemon.position().distanceToSqr(Vec3.atBottomCenterOf(run.work)) <= (ARRIVED + 1.5) * (ARRIVED + 1.5);
+					boolean atWork = run.work != null && near(pokemon, Vec3.atBottomCenterOf(run.work), ARRIVED + 1.5);
 					apply(run.level, run.show.effect(), atWork ? run.work : there ? run.spot : pokemon.blockPosition(), run.handling);
 					if (run.show.fliesOff()) {
 						run.takeOff = pokemon.position();
@@ -511,7 +525,7 @@ public final class PartnerShows implements ResourceManagerReloadListener {
 				}
 			}
 			case DELIVER -> {
-				boolean there = pokemon.position().distanceToSqr(Vec3.atBottomCenterOf(run.spot2)) <= ARRIVED * ARRIVED;
+				boolean there = near(pokemon, Vec3.atBottomCenterOf(run.spot2), ARRIVED);
 				if (there || run.phaseTicks >= WALK_LIMIT) {
 					run.delivered = true;
 					DELIVERIES++;
@@ -525,7 +539,7 @@ public final class PartnerShows implements ResourceManagerReloadListener {
 				}
 			}
 			case BACK -> {
-				if (pokemon.position().distanceToSqr(run.start) <= HOME * HOME) {
+				if (near(pokemon, run.start, HOME)) {
 					return false; // back where it was
 				}
 				if (run.phaseTicks % 20 == 0) {
@@ -541,7 +555,7 @@ public final class PartnerShows implements ResourceManagerReloadListener {
 		if (run.takeOff != null && run.pokemon.isAlive()) {
 			land(run, run.pokemon); // cut off mid-flight: back on the ground, never left hanging in the air
 		}
-		if (run.phase == Phase.BACK && run.pokemon.isAlive() && run.pokemon.position().distanceToSqr(run.start) > HOME * HOME) {
+		if (run.phase == Phase.BACK && run.pokemon.isAlive() && !near(run.pokemon, run.start, HOME)) {
 			PokemonPartners.EXTENSION.run(p -> p.goHome(run.pokemon)); // didn't make it back in time: off to its pasture
 		}
 		if (run.display != null) {
@@ -549,6 +563,16 @@ public final class PartnerShows implements ResourceManagerReloadListener {
 			run.display.discard();
 			run.display = null;
 		}
+	}
+
+	/**
+	 * Whether {@code pokemon} is within {@code range} of {@code target} across the ground, and not far above or below it:
+	 * a flying partner (a Combee, a Pidgey) hovers over the spot rather than standing on it (ROADMAP 28.6).
+	 */
+	static boolean near(Entity pokemon, Vec3 target, double range) {
+		double dx = pokemon.getX() - target.x;
+		double dz = pokemon.getZ() - target.z;
+		return dx * dx + dz * dz <= range * range && Math.abs(pokemon.getY() - target.y) <= 4;
 	}
 
 	private static void dropDisplay(Running run) {
@@ -664,6 +688,24 @@ public final class PartnerShows implements ResourceManagerReloadListener {
 			case FLAMES -> {
 				level.sendParticles(ParticleTypes.FLAME, at.getX() + 0.5, at.getY() + 0.9, at.getZ() + 0.5, 14, 0.25, 0.15, 0.25, 0.02);
 				level.sendParticles(ParticleTypes.LAVA, at.getX() + 0.5, at.getY() + 1.0, at.getZ() + 0.5, 3, 0.2, 0.1, 0.2, 0.0);
+			}
+			case BUBBLES -> {
+				level.sendParticles(ParticleTypes.BUBBLE_POP, at.getX() + 0.5, at.getY() + 0.6, at.getZ() + 0.5, 16, 0.8, 0.1, 0.8, 0.02);
+				level.sendParticles(ParticleTypes.SPLASH, at.getX() + 0.5, at.getY() + 0.6, at.getZ() + 0.5, 12, 0.8, 0.1, 0.8, 0.1);
+			}
+			case GLYPHS -> level.sendParticles(ParticleTypes.ENCHANT, at.getX() + 0.5, at.getY() + 1.6, at.getZ() + 0.5, 30, 0.6, 0.4, 0.6, 0.6);
+			case PULSE -> {
+				net.minecraft.core.particles.DustParticleOptions pink = new net.minecraft.core.particles.DustParticleOptions(new org.joml.Vector3f(1.0f, 0.45f, 0.75f), 1.4f);
+				for (int i = 0; i < 16; i++) {
+					double a = i * Math.PI / 8;
+					level.sendParticles(pink, at.getX() + 0.5 + Math.cos(a) * 0.9, at.getY() + 1.2, at.getZ() + 0.5 + Math.sin(a) * 0.9, 1, 0, 0.05, 0, 0);
+				}
+				level.sendParticles(ParticleTypes.HEART, at.getX() + 0.5, at.getY() + 1.8, at.getZ() + 0.5, 2, 0.2, 0.1, 0.2, 0);
+			}
+			case GREEN_BUBBLES -> {
+				net.minecraft.core.particles.DustParticleOptions green = new net.minecraft.core.particles.DustParticleOptions(new org.joml.Vector3f(0.45f, 0.8f, 0.2f), 1.2f);
+				level.sendParticles(green, at.getX() + 0.5, at.getY() + 1.0, at.getZ() + 0.5, 14, 0.3, 0.2, 0.3, 0);
+				level.sendParticles(ParticleTypes.BUBBLE_POP, at.getX() + 0.5, at.getY() + 1.0, at.getZ() + 0.5, 8, 0.3, 0.2, 0.3, 0.02);
 			}
 			case DUST -> {
 				BlockState ground = level.getBlockState(at.below());

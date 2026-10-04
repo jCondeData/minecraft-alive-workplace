@@ -231,6 +231,10 @@ public class ExplorerWork extends Behavior<Villager> {
 		visited.clear();
 		target = null;
 		phase = rations >= MIN_FOOD ? Phase.OUT : Phase.HOME;
+		if (phase == Phase.OUT) {
+			// A Flying or Ground partner scouts ahead as they set out (ROADMAP 28.6).
+			io.github.jcondedata.aliveworkplace.work.PartnerShows.cue(villager, "set_out", villager.blockPosition().relative(villager.getDirection(), 6));
+		}
 		walker.reset();
 	}
 

@@ -23,6 +23,14 @@
 - **Partners at work**: a Fighting-type Pokémon pastured by a Builder's Bench is now seen helping: when the builder
   fetches materials it walks over to the work (never leaving its pasture's range) carrying them, lends a punch and walks
   back. Shows are data packs (`data/<namespace>/partner_shows/`); setting "Partners at Work" turns them off.
+- **Partners at work for everyone else**: a Ground, Rock or Steel partner digs alongside the Miner in a shower of
+  crumbs; a Water or Ice one swims round the Fisherman's bobber; a Psychic one floats a book among enchanting glyphs
+  beside the Scholar (and, Psychic or Normal, beside the Teacher in class); a Fairy, Normal or Psychic one sends a pink
+  pulse over whoever the Nurse heals or cures; a Poison or Grass one stirs the Composter's bin (green bubbles); a Grass
+  or Fairy one sprinkles the Florist's garden; a Bug or Grass one circles the hive being harvested; a Ground or Rock one
+  shakes the dust from the Sifter's sieve; a Fire or Dark one walks the Netherworker to the portal, flames at its feet;
+  a Flying or Ground one scouts ahead as the Cartographer sets out; a Normal or Ground one walks beside the wild horse
+  the Rancher is breaking in.
 - **Partners at work in the post, the forge and the kitchen**: a Flying partner by the Postal Desk takes the air mail
   up with a bundle, climbs out of sight and lands back empty-handed, and on the round flies ahead to the next mailbox.
   A Fire partner breathes fire into the furnace, blast furnace or smoker each time it smelts on the spot for an Armorer,

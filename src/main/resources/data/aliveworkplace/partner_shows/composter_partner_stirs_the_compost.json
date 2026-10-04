@@ -1,0 +1,15 @@
+{
+  "jobs": [
+    "aliveworkplace:composter"
+  ],
+  "types": [
+    "poison",
+    "grass"
+  ],
+  "cue": "compost",
+  "animation": "physical",
+  "particles": "cobblemon:impact_poison",
+  "sound": "minecraft:block.composter.fill",
+  "ticks": 40,
+  "effect": "green_bubbles"
+}

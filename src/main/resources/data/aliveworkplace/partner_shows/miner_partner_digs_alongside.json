@@ -1,0 +1,16 @@
+{
+  "jobs": [
+    "aliveworkplace:miner"
+  ],
+  "types": [
+    "ground",
+    "rock",
+    "steel"
+  ],
+  "cue": "dig",
+  "animation": "physical",
+  "particles": "cobblemon:impact_ground",
+  "sound": "minecraft:block.stone.break",
+  "ticks": 40,
+  "effect": "crack"
+}

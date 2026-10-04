@@ -155,6 +155,8 @@ public class CompostWork extends Behavior<Villager> {
 		ModAttachments.COMPOST_LAYERS.set(villager, layers);
 		villager.swing(InteractionHand.MAIN_HAND);
 		level.playSound(null, bin, SoundEvents.COMPOSTER_FILL, SoundSource.BLOCKS, 0.7f, 1f);
+		// A Poison or Grass partner stirs the compost: green bubbles (ROADMAP 28.6).
+		io.github.jcondedata.aliveworkplace.work.PartnerShows.cue(villager, "compost", bin);
 		if (made > 0) {
 			ItemStack meal = new ItemStack(Items.BONE_MEAL, made);
 			ItemStack rest = own.isEmpty() ? meal : SupplyContainers.insert(level, own, meal);

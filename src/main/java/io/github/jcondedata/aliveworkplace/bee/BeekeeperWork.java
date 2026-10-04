@@ -291,6 +291,8 @@ public class BeekeeperWork extends Behavior<Villager> {
 			level.playSound(null, target, SoundEvents.BEEHIVE_SHEAR, SoundSource.BLOCKS, 1f, 1f);
 		}
 		level.setBlock(target, state.setValue(BeehiveBlock.HONEY_LEVEL, 0), Block.UPDATE_ALL);
+		// A Bug or Grass partner circles the hive being harvested (ROADMAP 28.6).
+		io.github.jcondedata.aliveworkplace.work.PartnerShows.cue(villager, "harvest", target);
 		// Smoked, the bees stay put; otherwise they come out (they don't go for villagers).
 		if (level.getBlockEntity(target) instanceof BeehiveBlockEntity hive && !hive.isFireNearby()) {
 			hive.emptyAllLivingFromHive(null, state, BeehiveBlockEntity.BeeReleaseStatus.EMERGENCY);

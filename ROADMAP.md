@@ -113,6 +113,7 @@ stay in the list, ticked, so their numbers stay unique.
 - [x] **B45** (approved auto 2026-10-04) Showcase scene 'partners_engine' (28.3) failed in showcase run 55 (265d1a2, 2026-10-04 10:33Z, nightly issue #1): 'not done: the Machop walked toward the work (from 1.5 to 0.1 blocks)'. The Machop had already wandered to 1.5 blocks from the work spot before the cue, so PartnersScene's check (nearest < start - 1.5) can't pass however well the show runs; earlier showcase runs passed it. Expected: the scene passes every run, the Machop starts at its pasture (or the check measures the walk from the pasture/tether, not from wherever it wandered). Test: SCENE=partners_engine tools/screenshots/run.sh passes; PartnerShowsCompatTests has the same nearest < before - 1.5 check, look at it too (found by qa-1004-1033, 2026-10-04)
 - [x] **B46** (approved auto 2026-10-04) A build's progress goes down after a restart: a world saved by 0.138.0 (pack test, 10 benchmark plots) opened with main 739d02e showed the Lookout Tower (laying its foundation) at 1% after 12% before the restart and the Healing Center at 7% after 19%, while the other 9 sites went up as expected. The placed blocks are still there (FOUNDATION restarts its list on load and skips what's done), but the percentage over the builder and in /workplace sites drops. Not yet checked whether a reload with the same jar does it too. Expected: a site's progress never goes down across a restart. Test: JAR=<0.138.0 jar> PERF=true PLOTS=10 tools/packtest/run.sh, then KEEP_WORLD=true SITES_ONLY=true tools/packtest/run.sh, compare the 'Builder — ' lines (found by lane-a-1004-0932, 2026-10-04)
 - [ ] **B47** BuilderChaosGameTests builder_chaos_23205 failed once in a local full build (lane-b-1004-0932, main 87ee45a + 28.4, 2026-10-04 11:43Z): '1 block(s) wrong after the build, e.g. [-19, 3, -16]=air; seed 23205', then passed alone and in the next full build. Expected: every seed finishes with every block right on every run. Test: the five chaos seeds repeated 10x (tester skill's repeat generator); the trap that removed a placed block (found by lane-b-1004-0932, 2026-10-04) Lane a (lane-a-1004-0932) saw it too: 1 block of the build missing at the end; with the B46 fix the traps also keep off a door's top half (likely the cause, not proven): if it fails again, the failure message names the cell.
+- [ ] **B48** PartnersForgeCompatTests aPidgeyBringsAFeatherToTheFletcher (28.5) failed once in a local full build (lane-a-1004-1233, main 5e66474 + 25.4 tooling, 2026-10-04 15:00Z): 'no bow for the guard' at the time-out, though it passed in the build 40 minutes earlier on the same code. Expected: the fletcher always makes the guard's bow within the test's time. Test: runCompatGameTest a few times, or the repeat generator on that test (found by lane-a-1004-1233) (found by lane-a-1004-1233, 2026-10-04)
 
 ## Milestone 21: Finish 0.138.0
 
@@ -261,12 +262,13 @@ Before polishing, make sure nothing regresses unnoticed.
   the whole world, shown on the hall with the day of the season; an event API the expansions listen to. Done when:
   GameTests cover the rollover, save and reload, and the config length; nothing else changes until an expansion uses
   it.
+  - [ ] **22.6a** Change from the owner (2026-10-04): the festivals are good; make each season 16 days (a 64-day year)
 - [x] **22.7** (approved auto 2026-10-04) **Mutation and repeats on GitHub, every night.** The nightly workflow also plants about 20 mutants in
   the code changed in the last 24 hours (`tools/modtest/mutate.py`, sharded across parallel jobs) and repeats every
   GameTest added in that time 10 times. Survivors and flakes go to the `nightly-tests` issue. This moves the slowest
   checks off the lanes, onto GitHub's free machines. Done when: one night's run has posted its results and the QA lane
   reads them (`docs/agent/sessions.md`).
-- [ ] **22.8** **Film one scene on demand.** `showcase.yml` takes a `scenes` input, and a push to an item branch films
+- [x] **22.8** (approved auto 2026-10-04) **Film one scene on demand.** `showcase.yml` takes a `scenes` input, and a push to an item branch films
   only the scenes that branch added or changed, so a lane sees its scene on GitHub in about 15 minutes without running
   the client itself. Done when: a push that changes one scene films only that scene, and `docs/agent/tools.md` says how
   to read the result.
@@ -277,7 +279,7 @@ MineColonies players' most common complaints are builders that get stuck, don't 
 inventories are full, or only work while a player stands nearby. Ours must do none of that. Check what already exists
 first; many items below are "verify and harden", not "build".
 
-- [x] **23.1** (review: pending 2026-10-04) **The builder soak test.**
+- [x] **23.1** (approved 2026-10-04) **The builder soak test.**
   - The setup: 10 builders build the full starter set on hilly, forested ground, with materials only in chests and the
     storehouse and no player help, over 2 in-game days.
   - Run it twice. As a long GameTest or pack-server scenario (`tools/packtest`) for the numbers. As a scene in the
@@ -291,6 +293,7 @@ first; many items below are "verify and harden", not "build".
   - the GIF is in the review package.
 
   This test is the yardstick for the rest of the milestone.
+  - [ ] **23.1a** Change from the owner (2026-10-04): builder speed is fine (accept ~3.5 in-game days for the 22 starter builds). Time should grow with bigger builds, but be cut in half with every builder working on it (2 builders ~ half the time, and so on): check helpers really scale like that and fix it if not
 - [x] **23.2** (approved auto 2026-10-04) **Stuck recovery, proven.** Builders stuck on water, lava, holes, fences, doors, their own scaffolding, or in
   unloaded chunks. Done when: a chaos test (the tester skill's `ChaosTests`, 5 seeds) finishes every time, and the
   recovery (hop, re-path, step back) never breaks a placed block.
@@ -329,6 +332,7 @@ first; many items below are "verify and harden", not "build".
 - [x] **23.10** (approved 2026-10-04) **Every shipped build reviewed.** One gallery package per build family (houses, workshops, defences,
   decorations, village pieces in five styles), each build shown front and back. Vetoed builds get redrawn with the
   Architect skill. Done when: every family's package has been sent.
+  - [ ] **23.10a** Change from the owner (2026-10-04): keep one shared outside per village style, but let the village leader override it (choose a different look for a piece)
 
 ## Milestone 24: Everything looks finished (priority 2)
 
@@ -865,6 +869,7 @@ here adds a new kind of speed bonus (the new jobs get the partners' existing one
   Cup keeps the owner's rules: villages enter, with their Leaders and the players who represent them; no badges, no gyms
   and no trophies for players (the pack's own Badges & Trophies mod does that); Leaders and the purse pay money only;
   the banner belongs to the village. Done when: the note is on `main` and its package is sent.
+  - [ ] **28.1a** Change from the owner (2026-10-04): Cup purse much bigger: 100,000 PokéDollars per bout won and 500,000 for the final (keep the City host bonus unless it breaks the economy); a Cup at every festival, not every third
 - [x] **28.2** (approved auto 2026-10-04) (verified 2026-10-04: 28.1: docs/design/M28.md [185 lines] covers every point of the spec [partner shows, the Pokémon Center, the Cup and Arena, all six data formats, config, save defaults, the 1.8-only vs 1.7.3 split, no badges]; 28.2: CobblemonCompat.TESTED is >=1.7.3 <1.9, and nightly run 37193458879's compat-cobblemon18 job [the compat GameTests on Cobblemon 1.8.1] is green beside the 1.7.3 compat suite in the full build) **Cobblemon 1.8 as well as 1.7.3.** The mod compiles and tests against Cobblemon 1.7.3 and
   `CobblemonCompat.TESTED` stops below 1.8, while 1.8.0 and 1.8.1 (Minecraft 1.21.1) are out; a `LinkageError` there
   switches every Pokémon feature off at once. Keep compiling against 1.7.3 and:
@@ -941,7 +946,7 @@ here adds a new kind of speed bonus (the new jobs get the partners' existing one
 
   Done when: a GameTest per cue, and showcase scene `partners_forge` with its GIF (the air mail take-off, a Charmander
   breathing into the blast furnace).
-- [ ] **28.6** **Partners at work: everyone else.** Shows:
+- [x] **28.6** (review: pending 2026-10-04) **Partners at work: everyone else.** Shows:
   - Miner + Ground, Rock or Steel: digs at the next block along with the miner (cue `dig`), with that block's crack
     particles.
   - Fisherman + Water or Ice: swims out round the bobber, with bubbles (cue `cast`).
@@ -4254,6 +4259,12 @@ item waits.
 - (Sessions: anything that needs the owner, and the link to the latest Full test report. Handoffs go here through
   `sessions.py handoff "<in progress, next, traps>" --as <you>`, which keeps one per kind of session (chat, night):
   carry over anything still true from the previous one.)
+- 2026-10-04 (28.7, owner question; lane b): Cobblemon 1.7.3 has its own villager job, `cobblemon:nurse`, whose
+  workstation is the Healing Machine, so a jobless villager next to any Healing Machine already becomes Cobblemon's nurse
+  (compat test on `wip/lane-b`). 28.7 says "a jobless villager never takes a player's machine by themselves". Which:
+  (a) keep Cobblemon's nurse as is, and our Nurse comes to a machine only with a honey bottle; or (b) stop jobless
+  villagers taking machines at all (Cobblemon's nurse then only via our honey bottle, as ours)? Default the lanes build
+  meanwhile: (a), the least surprise for players who know Cobblemon's nurse. The rest of 28.7 doesn't depend on it.
 - Old branches: `wip/treasury` (unfinished treasury work from before 0.136.0; the treasury has shipped since, so check
   before reusing any of it) and `tests/check-0.137-riding-protection` (the camel test, 21.3).
 - 2026-09-29: the plan was installed by the planning chat. The chat that built 0.137 had started two test files for the
@@ -4275,6 +4286,10 @@ item waits.
 - **chat handoff** (chat, 2026-10-03 06:35Z): chat 2026-10-02/03 night: LANDED B10 (zombie villagers centred, ZombieVillagerMixin), B8 (Stations.releaseOld + choose ignores a far-off remembered site someone else works at; the villager standing by a block is its owner), B2 (workshop test placed like a village; 100/100 repeats), B4 (explained: B5's hole; test aVillagerOutsideTheWorkshopFindsItsTable), B9 (forest scene stocks saplings; LumberjackWork keeps stumps waiting for a sapling), B12 (zombie house tests at night), all --no-review; 26.2a Guide Book (review pending, package sent; tools/guide/pages.py + build.py make the pictures from showcase stills; recipe unlocks via tools/recipes/unlocks.py) and 26.2 CurseForge kit (docs/store/curseforge, review pending, files sent). Open: B11 (orchard-house test flake, once in a suite). Fixed on the way: StationsFixesGameTests' old-block spots collided with each other when the test area moved (now step aside). Traps: land builds twice when main moves; the Guide Book needs its pictures rebuilt (tools/guide/build.py) if a scene's stills change a lot; jar is 3.9 MB with the pictures. Owner decisions pending: approve 26.2a / 26.2 / 21.1c / 21.1b / B5; CurseForge AI line and license (kit README).
 - **night handoff** (night-1003-1046, 2026-10-03 11:26Z): night-1003-1046: health: CI on main green, nightly 2026-10-03 green, issue #1 old. LANDED 21.2 piece (--keep-open): performance with many homes in docs/agent/full-check.md (80 workers/40 plots on a dev container: our code 11.8% of the server thread, villager AI 40.7%, nothing of ours stands out). FOUND B14: the nightly soak on GitHub measured an idle server (every benchmark site 0%, no villager found); run.sh now fails the soak when no site is working, so the next nightly goes red on purpose until B14 is fixed. B14 paused with leads (not leftover configs). Next for 21.2: 20 mutants + whole-suite flake sweep, inventory.py gaps. Traps: Maven Central 429s on a cold Gradle cache (retry every 20 s; took 6 tries); the nightly artifact (server.log) can be fetched via the GitHub MCP download_workflow_run_artifact URL; run the packtest with Java 21 (/usr/lib/jvm/java-21-openjdk-amd64); land needs JAVA_HOME=/root/.local/jdk-25 exported; land's --keep-open and --no-review can't be combined; a mock player's connection.onDisconnect() skips Fabric's DISCONNECT event, use connection.disconnect(Component); PreviewNetworking and TableServer still touch plain HashMaps from that event (in B13's text, unfixed, small).
 - **qa handoff** (qa-1003-2233, 2026-10-03 23:16Z): qa-1003-2233: health: main CI run 455 red = B30 test flake (tutor), already B34 (lane-b). VERIFIED B18, B29, B23 (shipped qa/b23-b29-1003: QaB29FlowersGameTests, QaB23TurnedHillsideGameTests; TerrainStallGameTests.buildOnHillside now takes a Rotation). BUG B35: same flake hits aStuckTrainerKeepsTheirPost (shared keeps() helper), fold into B34. NOT VERIFIED: B30 (waits for B34/B35 fix), B31, B32 (same stuck-worker family, check after B34), B24 (needs 20 compat repeats of butcherMilksAMiltankAndBrushesAPidgey + b24AFlyingPidgey; -Pcompat with -Xmx1536m), B14 (needs tonight's nightly soak with working sites). TRAPS: ship needs JAVA_HOME=jdk-25 exported; run ./gradlew --stop before ship or the compat run OOMs.
+- 2026-10-04 (26.2, digest-1004-1253, owner: "you decide"): store page decisions are in
+  docs/store/curseforge/README.md: the honest AI line on, GPL-3.0, the clipboard icon, keep the Guide Book line (the
+  page goes live with 1.0), Beta while 0.x. Blocked on the owner: `LICENSE` holds the GPL-2 text while the mod declares
+  GPL-3.0-or-later; replacing it is his call.
 - 2026-10-04 (24.2, lane-b): the mod has one tool-like item and no weapons: the Scan Tool (`item/scan_tool.png`), which went
   through the owner's pick round for every item (21.1b) and passes `lint.py`. 24.2 is ticked on that; the hammer, wrench
   and war hammer templates are for the expansions' tools (each one's own item is drawn from them, linted and sent in

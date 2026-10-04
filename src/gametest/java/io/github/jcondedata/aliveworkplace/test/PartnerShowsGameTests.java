@@ -100,6 +100,32 @@ public class PartnerShowsGameTests implements FabricGameTest {
 		helper.succeed();
 	}
 
+	/** 28.6's shows (everyone else) all load with the cue and the types the roadmap gives each job. */
+	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
+	public void everyShowOfEveryoneElseLoads(GameTestHelper helper) {
+		Object[][] want = {
+			{"miner_partner_digs_alongside", "dig", java.util.Set.of("ground", "rock", "steel"), PartnerShows.Effect.CRACK},
+			{"fisher_partner_swims_round_the_bobber", "cast", java.util.Set.of("water", "ice"), PartnerShows.Effect.BUBBLES},
+			{"scholar_psychic_floats_a_book", "study", java.util.Set.of("psychic"), PartnerShows.Effect.GLYPHS},
+			{"teacher_partner_floats_a_book", "lesson", java.util.Set.of("psychic", "normal"), PartnerShows.Effect.GLYPHS},
+			{"nurse_partner_sends_a_pink_pulse", "cure", java.util.Set.of("fairy", "normal", "psychic"), PartnerShows.Effect.PULSE},
+			{"composter_partner_stirs_the_compost", "compost", java.util.Set.of("poison", "grass"), PartnerShows.Effect.GREEN_BUBBLES},
+			{"florist_partner_sprinkles_the_garden", "grow", java.util.Set.of("grass", "fairy"), PartnerShows.Effect.NONE},
+			{"beekeeper_partner_circles_the_hive", "harvest", java.util.Set.of("bug", "grass"), PartnerShows.Effect.NONE},
+			{"sifter_partner_shakes_the_dust", "sift", java.util.Set.of("ground", "rock"), PartnerShows.Effect.CRACK},
+			{"netherworker_partner_walks_them_to_the_portal", "depart", java.util.Set.of("fire", "dark"), PartnerShows.Effect.FLAMES},
+			{"cartographer_partner_scouts_ahead", "set_out", java.util.Set.of("flying", "ground"), PartnerShows.Effect.DUST},
+			{"rancher_partner_walks_beside_the_horse", "tame", java.util.Set.of("normal", "ground"), PartnerShows.Effect.DUST},
+		};
+		for (Object[] w : want) {
+			PartnerShows.Show show = show(helper, (String) w[0]);
+			helper.assertTrue(show.cue().equals(w[1]) && show.types().equals(w[2]) && show.effect() == w[3], w[0] + " reads " + show);
+		}
+		helper.assertTrue("minecraft:book".equals(show(helper, "scholar_psychic_floats_a_book").carry()), "the scholar's partner floats a book");
+		helper.succeed();
+	}
+
 	/** What a partner carries for the builder goes by its type: wood for Fighting, stone for Rock, iron parts for Steel. */
 	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
 	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)

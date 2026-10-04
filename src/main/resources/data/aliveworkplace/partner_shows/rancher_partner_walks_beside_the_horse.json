@@ -1,0 +1,15 @@
+{
+  "jobs": [
+    "aliveworkplace:rancher"
+  ],
+  "types": [
+    "normal",
+    "ground"
+  ],
+  "cue": "tame",
+  "animation": "cry",
+  "particles": "cobblemon:impact_normal",
+  "sound": "minecraft:entity.horse.step",
+  "ticks": 40,
+  "effect": "dust"
+}

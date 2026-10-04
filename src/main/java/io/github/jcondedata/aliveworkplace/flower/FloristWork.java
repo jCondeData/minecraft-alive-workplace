@@ -359,6 +359,8 @@ public class FloristWork extends Behavior<Villager> {
 		if (BoneMealItem.growCrop(new ItemStack(Items.BONE_MEAL), level, target)) {
 			bag.remove(Items.BONE_MEAL, 1);
 			level.levelEvent(LevelEvent.PARTICLES_AND_SOUND_PLANT_GROWTH, target, 15);
+			// A Grass or Fairy partner sprinkles over the garden (ROADMAP 28.6).
+			io.github.jcondedata.aliveworkplace.work.PartnerShows.cue(villager, "grow", target);
 			villager.swing(InteractionHand.MAIN_HAND);
 		}
 		done();

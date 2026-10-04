@@ -261,6 +261,7 @@ Before polishing, make sure nothing regresses unnoticed.
   the whole world, shown on the hall with the day of the season; an event API the expansions listen to. Done when:
   GameTests cover the rollover, save and reload, and the config length; nothing else changes until an expansion uses
   it.
+  - [ ] **22.6a** Change from the owner (2026-10-04): the festivals are good; make each season 16 days (a 64-day year)
 - [x] **22.7** (approved auto 2026-10-04) **Mutation and repeats on GitHub, every night.** The nightly workflow also plants about 20 mutants in
   the code changed in the last 24 hours (`tools/modtest/mutate.py`, sharded across parallel jobs) and repeats every
   GameTest added in that time 10 times. Survivors and flakes go to the `nightly-tests` issue. This moves the slowest

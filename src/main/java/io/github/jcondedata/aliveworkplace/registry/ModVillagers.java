@@ -131,7 +131,8 @@ public final class ModVillagers {
 		AliveWorkplace.id("nurse"),
 		new VillagerProfession(
 			"nurse",
-			holder -> holder.is(NURSE_STATION_POI) || holder.is(PoiTypes.CLERIC),
+			// A Healing Machine (with Cobblemon, ROADMAP 28.7) is kept, but only ever taken with a honey bottle (work/Stations).
+			holder -> holder.is(NURSE_STATION_POI) || holder.is(PoiTypes.CLERIC) || holder.is(ModVillagers.HEALING_MACHINE_POI),
 			holder -> holder.is(NURSE_STATION_POI) || holder.is(PoiTypes.CLERIC),
 			ImmutableSet.of(),
 			ImmutableSet.of(),
@@ -576,6 +577,14 @@ public final class ModVillagers {
 	static {
 		Platform.get().whenBlockRegistered(FOSSIL_ANALYZER_BLOCK, block -> Platform.get().registerPoi(FOSSIL_ANALYZER_ID, 1, 1, block));
 	}
+
+	/**
+	 * Cobblemon's Healing Machine (ROADMAP 28.7) is a Nurse workstation too, by Cobblemon's own POI for it. A honey bottle picks the Nurse there; a jobless villager never takes a player's machine.
+	 */
+	public static final ResourceLocation HEALING_MACHINE_BLOCK = ResourceLocation.fromNamespaceAndPath("cobblemon", "healing_machine");
+	/** Cobblemon registers the machine's POI itself, as {@code cobblemon:nurse} (a block may be in one POI type only). */
+	public static final ResourceKey<PoiType> HEALING_MACHINE_POI = ResourceKey.create(Registries.POINT_OF_INTEREST_TYPE,
+		ResourceLocation.fromNamespaceAndPath("cobblemon", "nurse"));
 
 	/** Revives fossils for players, for a price (only with Cobblemon installed). */
 	public static final VillagerProfession FOSSIL_SCIENTIST = Registry.register(

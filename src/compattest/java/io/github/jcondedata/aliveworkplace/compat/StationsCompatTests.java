@@ -21,6 +21,7 @@ import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.entity.npc.VillagerProfession;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -104,6 +105,35 @@ public class StationsCompatTests implements FabricGameTest {
 		helper.runAfterDelay(300, () -> {
 			helper.assertTrue(jobless.getVillagerData().getProfession() == VillagerProfession.NONE && site(jobless).isEmpty(),
 				"a jobless villager took the Fossil Analyzer by themselves: " + name(jobless.getVillagerData().getProfession()));
+			helper.succeed();
+		});
+	}
+
+	/**
+	 * ROADMAP 28.7: Cobblemon's Healing Machine is a Nurse workstation too. A honey bottle picks the Nurse there; a
+	 * jobless villager left by a machine for 2400 ticks never takes it (it's a player's machine).
+	 */
+	//$ gametest_ticks_batch AREA '2600' '"aNurseWorksAtAHealingMachine"'
+	@GameTest(template = AREA, timeoutTicks = 2600, batch = "aNurseWorksAtAHealingMachine")
+	public void aNurseWorksAtAHealingMachine(GameTestHelper helper) {
+		Block machine = BuiltInRegistries.BLOCK.get(ModVillagers.HEALING_MACHINE_BLOCK);
+		helper.assertTrue(machine != Blocks.AIR, "no " + ModVillagers.HEALING_MACHINE_BLOCK);
+		helper.assertTrue(Stations.at(machine).map(s -> !s.byItself() && s.has(ModVillagers.NURSE)).orElse(false),
+			"the Healing Machine isn't the Nurse's station (only by item)");
+		ServerPlayer player = helper.makeMockServerPlayerInLevel();
+		player.setGameMode(GameType.SURVIVAL);
+		helper.setBlock(STATION, machine);
+		Villager nurse = helper.spawn(EntityType.VILLAGER, STANDING);
+		sneakClick(player, nurse, new ItemStack(Items.HONEY_BOTTLE));
+		helper.assertTrue(nurse.getVillagerData().getProfession() == ModVillagers.NURSE,
+			"a honey bottle at a Healing Machine gave " + name(nurse.getVillagerData().getProfession()));
+		BlockPos lone = new BlockPos(14, 2, 14);
+		helper.setBlock(lone, machine);
+		Villager jobless = helper.spawn(EntityType.VILLAGER, new BlockPos(15, 2, 15));
+		helper.runAfterDelay(2400, () -> {
+			helper.assertTrue(nurse.getVillagerData().getProfession() == ModVillagers.NURSE && site(nurse).isPresent(), "the nurse lost her machine");
+			helper.assertTrue(jobless.getVillagerData().getProfession() == VillagerProfession.NONE && site(jobless).isEmpty(),
+				"a jobless villager took the Healing Machine by themselves: " + name(jobless.getVillagerData().getProfession()));
 			helper.succeed();
 		});
 	}

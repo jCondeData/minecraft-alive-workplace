@@ -308,7 +308,7 @@ final class JobScenes {
 
 	/** Every item of ours that isn't a block, in the order of the owner's picker page. */
 	static List<Item> itemIcons() {
-		return List.of(ModItems.BLUEPRINT, ModItems.BLANK_BLUEPRINT, ModItems.SCAN_TOOL, ModItems.SHAPE_PLANNER, ModItems.VILLAGE_LEDGER,
+		return List.of(ModItems.BLUEPRINT, ModItems.BLANK_BLUEPRINT, ModItems.SCAN_TOOL, ModItems.SHAPE_PLANNER, ModItems.VILLAGE_LEDGER, ModItems.CITY_PLAN,
 			ModItems.PATROL_MAP, ModItems.RALLY_BANNER, ModItems.QUARRY_MARKER, ModItems.FIELD_MARKER, ModItems.DELIVERY_NOTE,
 			ModItems.PRICE_TAG, ModItems.TRAVEL_TICKET, ModItems.SETTLERS_WAGON);
 	}

@@ -1,0 +1,7 @@
+{
+  "color": "blue",
+  "map_tint": "#3C44AA",
+  "icon": "minecraft:lectern",
+  "order": 4,
+  "buildable": true
+}

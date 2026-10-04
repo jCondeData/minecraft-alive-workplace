@@ -3,6 +3,11 @@
 ## Unreleased
 
 ### Added
+- **The City Plan** (the first piece of 1.1, villages that build themselves): a new item, crafted from a Map and a
+  Blank Blueprint. Right-click a Village Hall to bind it; right-clicked in the village it tells you which zone of the
+  plan you stand in. Each hall now keeps its village's plan (zones of eight kinds: Homes, Workshops, Farms, Market,
+  Civic, Gardens, Defences, Keep Clear, which packs can add to), and a broken hall carries its plan to wherever it's
+  put down. Only the hall's owner, their friends and operators may change a plan. The screen to paint it comes next.
 - With Cobblemon, the **Pokémon Center**: a bright hall with a glass front under a red roof, Cobblemon's Healing
   Machine on the counter, a PC beside it, potions and benches; **Pokémon Center II** adds a lodge with four beds and a
   trade corner with a Shop Counter, and a garden with a Pasture Block. In the Blueprint Table (with Cobblemon only)

@@ -1,0 +1,7 @@
+{
+  "color": "red",
+  "map_tint": "#B02E26",
+  "icon": "minecraft:barrier",
+  "order": 7,
+  "buildable": false
+}

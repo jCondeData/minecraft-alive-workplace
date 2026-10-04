@@ -67,6 +67,24 @@ public final class ModComponents {
 			.networkSynchronized(io.github.jcondedata.aliveworkplace.hall.VillageLedgerItem.Ledger.STREAM_CODEC).build()
 	);
 
+	/** The Village Hall a City Plan is bound to (27.2). */
+	public static final DataComponentType<io.github.jcondedata.aliveworkplace.hall.VillageLedgerItem.Ledger> CITY_PLAN_HALL = Registry.register(
+		BuiltInRegistries.DATA_COMPONENT_TYPE,
+		AliveWorkplace.id("city_plan_hall"),
+		DataComponentType.<io.github.jcondedata.aliveworkplace.hall.VillageLedgerItem.Ledger>builder()
+			.persistent(io.github.jcondedata.aliveworkplace.hall.VillageLedgerItem.Ledger.CODEC)
+			.networkSynchronized(io.github.jcondedata.aliveworkplace.hall.VillageLedgerItem.Ledger.STREAM_CODEC).build()
+	);
+
+	/** A village's plan, on the Village Hall item when the hall is broken (27.2). */
+	public static final DataComponentType<io.github.jcondedata.aliveworkplace.city.CityPlan> CITY_PLAN = Registry.register(
+		BuiltInRegistries.DATA_COMPONENT_TYPE,
+		AliveWorkplace.id("city_plan"),
+		DataComponentType.<io.github.jcondedata.aliveworkplace.city.CityPlan>builder()
+			.persistent(io.github.jcondedata.aliveworkplace.city.CityPlan.CODEC)
+			.networkSynchronized(io.github.jcondedata.aliveworkplace.city.CityPlan.STREAM_CODEC).build()
+	);
+
 	/** A Rally Banner's guards and whether it's raised. */
 	public static final DataComponentType<io.github.jcondedata.aliveworkplace.guard.RallyBannerItem.Rally> RALLY = Registry.register(
 		BuiltInRegistries.DATA_COMPONENT_TYPE,

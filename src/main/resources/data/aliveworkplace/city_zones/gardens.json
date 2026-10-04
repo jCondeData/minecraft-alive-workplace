@@ -1,0 +1,7 @@
+{
+  "color": "light_blue",
+  "map_tint": "#3AB3DA",
+  "icon": "minecraft:poppy",
+  "order": 5,
+  "buildable": true
+}

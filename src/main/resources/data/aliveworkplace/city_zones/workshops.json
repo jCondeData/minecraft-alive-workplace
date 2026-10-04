@@ -1,0 +1,7 @@
+{
+  "color": "orange",
+  "map_tint": "#F9801D",
+  "icon": "minecraft:crafting_table",
+  "order": 1,
+  "buildable": true
+}

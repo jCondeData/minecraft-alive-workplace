@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "minecraft:map"
+    },
+    {
+      "item": "aliveworkplace:blank_blueprint"
+    }
+  ],
+  "result": {
+    "id": "aliveworkplace:city_plan",
+    "count": 1
+  }
+}

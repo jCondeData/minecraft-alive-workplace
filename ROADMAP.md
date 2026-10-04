@@ -1838,7 +1838,7 @@ the Village Hall (`VillageNeeds`, `VillageQuests`, `VillageRanks`, `Festivals`, 
     and their mood 10 lower, with the reason listed;
   - an edict from a test data pack loads and works, and `"enabled": false` hides Long Shifts;
   - showcase scene `long_shifts`: the hall's list with the "long shifts" mood, and the chronicle line.
-- [ ] **30.4** **The Book of Edicts page.** The page players use, in the hall's screen and the Village Ledger:
+- [x] **30.4** (review: pending 2026-10-04) **The Book of Edicts page.** The page players use, in the hall's screen and the Village Ledger:
   - the hall's screen: the people list's page arrows move to the list's bottom corners (slots 45 and 53, 34 people a
     page), which frees slot 9 for the Book of Edicts (a lectern icon) and leaves slot 17 for another milestone's page;
   - the Village Ledger: sneak-right-click the air opens the Book straight away (its tooltip says so);

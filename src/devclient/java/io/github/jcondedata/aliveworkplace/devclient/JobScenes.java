@@ -1073,6 +1073,47 @@ final class JobScenes {
 						"the chronicle keeps the proclamation");
 				}, 30)),
 			(level, player) -> player.containerMenu instanceof ChoiceMenu));
+		// The Book of Edicts (ROADMAP 30.4): a Town with Long Shifts in force, two free slots and one locked for a City,
+		// every edict below; at GUI scale 2, then at 4.
+		SCREENS.put("edicts", new Screen("the Book of Edicts opened from the hall's lectern button, with Long Shifts in force, at GUI scales 2 and 4",
+			new Vec3(2.5, -58.4, 4.5), TARGET,
+			(level, player) -> {
+				level.setBlockAndUpdate(STATION, ModBlocks.VILLAGE_HALL.defaultBlockState()
+					.setValue(io.github.jcondedata.aliveworkplace.hall.VillageHallBlock.FACING, Direction.SOUTH));
+				var hall = (io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(STATION);
+				hall.setRank(io.github.jcondedata.aliveworkplace.hall.VillageRanks.Rank.TOWN);
+				hall.setEdicts(List.of());
+				var shifts = io.github.jcondedata.aliveworkplace.hall.Edicts.find("long_shifts").orElseThrow();
+				var told = io.github.jcondedata.aliveworkplace.hall.Edicts.proclaim(level, STATION, player, shifts);
+				Showcase.check(told.done(), "Long Shifts was proclaimed: " + told.message().getString());
+			},
+			List.of(new Step("01_edicts_book", io.github.jcondedata.aliveworkplace.hall.EdictBook.SLOTS[0], 6, (level, player) -> {
+					Minecraft.getInstance().execute(() -> Minecraft.getInstance().options.guiScale().set(2));
+					io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.open(player, STATION);
+					if (player.containerMenu instanceof ChoiceMenu m) {
+						Showcase.check(m.icon(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.BOOK).is(Items.LECTERN), "slot 9 is the Book of Edicts");
+						m.press(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.BOOK, player);
+						Showcase.check(m.icon(io.github.jcondedata.aliveworkplace.hall.EdictBook.SLOTS[0]).is(Items.CLOCK), "Long Shifts sits in the first slot");
+						Showcase.check(m.icon(io.github.jcondedata.aliveworkplace.hall.EdictBook.SLOTS[3]).is(Items.GRAY_DYE), "a Town's fourth slot is locked");
+					}
+				}, 30),
+				new Step("02_edicts_scale4", io.github.jcondedata.aliveworkplace.hall.EdictBook.FIRST_EDICT, 6, (level, player) -> {
+					// GUI scale 4 needs a window of at least 1280x960; the option only takes 4 once the window is that big.
+					Minecraft mc = Minecraft.getInstance();
+					mc.execute(() -> org.lwjgl.glfw.GLFW.glfwSetWindowSize(mc.getWindow().getWindow(), 1920, 1080));
+					new Thread(() -> {
+						try {
+							Thread.sleep(400);
+						} catch (InterruptedException ignored) {
+						}
+						mc.execute(() -> {
+							mc.options.guiScale().set(4);
+							mc.resizeDisplay();
+						});
+					}, "edicts-scale").start();
+					io.github.jcondedata.aliveworkplace.hall.EdictBook.open(player, STATION);
+				}, 40)),
+			(level, player) -> player.containerMenu instanceof ChoiceMenu));
 		SCREENS.put("hall_treasury", new Screen("the hall's treasury was collected, the village protected and its screen opened from a Village Ledger",
 			new Vec3(2.5, -58.4, 4.5), TARGET,
 			(level, player) -> {

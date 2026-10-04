@@ -153,6 +153,10 @@ public class ScreenshotHarness implements ClientModInitializer {
 			forestScene(mc, mc.getSingleplayerServer());
 			return;
 		}
+		if ("soak".equals(System.getProperty("aliveworkplace.scene"))) {
+			soakScene(mc, mc.getSingleplayerServer());
+			return;
+		}
 		if ("village".equals(System.getProperty("aliveworkplace.scene"))) {
 			villageScene(mc, mc.getSingleplayerServer());
 			return;
@@ -1916,6 +1920,97 @@ public class ScreenshotHarness implements ClientModInitializer {
 		}
 		if (tick >= GIVE_UP_AT) {
 			giveUp(mc, "the farmer harvested and replanted the field");
+		}
+	}
+
+	// --- Soak (ROADMAP 23.1): 10 builders, the whole starter set, hilly woods, no help: a time-lapse from above ---
+
+	/** The soak's corner: away from the other scenes, high enough that its deepest stone stays above the world's floor. */
+	private static final BlockPos SOAK_AT = new BlockPos(200, -56, 200);
+	private static final int SOAK_DAYS = 6;
+	/** Client ticks: 30 minutes, for 6 in-game days at 150+ server ticks a second plus the start. */
+	private static final int SOAK_GIVE_UP = 36000;
+	private static final int SOAK_STILL_EVERY = 600;
+	private volatile String soakResult;
+	private volatile int soakFinished = -1;
+	private volatile int soakTotal;
+	private volatile long soakTicks;
+	private int soakDoneAt = -1;
+
+	private void soakScene(Minecraft mc, MinecraftServer server) {
+		tick++;
+		if (tick == 1) {
+			mc.options.renderDistance().set(8);
+			mc.options.cloudStatus().set(CloudStatus.OFF);
+			mc.options.graphicsMode().set(GraphicsStatus.FAST);
+			mc.options.framerateLimit().set(15);
+			mc.options.hideGui = true;
+		}
+		if (tick == 20) {
+			server.execute(() -> {
+				ServerLevel level = server.overworld();
+				level.getGameRules().getRule(GameRules.RULE_DOMOBSPAWNING).set(false, server);
+				server.getCommands().performPrefixedCommand(server.createCommandSourceStack().withSuppressedOutput(),
+					"forceload add " + (SOAK_AT.getX() - 8) + " " + (SOAK_AT.getZ() - 8) + " " + (SOAK_AT.getX() + 152) + " " + (SOAK_AT.getZ() + 142));
+				ServerPlayer player = server.getPlayerList().getPlayers().get(0);
+				// Night vision: the days go by in seconds, and the nights stay readable in the time-lapse.
+				player.addEffect(new net.minecraft.world.effect.MobEffectInstance(net.minecraft.world.effect.MobEffects.NIGHT_VISION, -1, 0, false, false));
+				hover(player, new Vec3(SOAK_AT.getX() + 70, SOAK_AT.getY() + 82, SOAK_AT.getZ() + 98), 180, 62);
+			});
+		}
+		if (tick == 160) {
+			server.execute(() -> {
+				io.github.jcondedata.aliveworkplace.command.Soak.begin(server.overworld(), SOAK_AT, SOAK_DAYS);
+				soakTotal = io.github.jcondedata.aliveworkplace.command.Soak.progress()[1];
+				// Frozen while software rendering draws the new hills, so the first still shows the start.
+				server.getCommands().performPrefixedCommand(server.createCommandSourceStack().withSuppressedOutput(), "tick freeze");
+			});
+		}
+		// Software rendering takes about a minute to draw the new hills: the first still waits for them.
+		if (tick == 1400) {
+			shot(mc, "01_soak_start");
+			server.execute(() -> {
+				server.getCommands().performPrefixedCommand(server.createCommandSourceStack().withSuppressedOutput(), "tick unfreeze");
+				server.getCommands().performPrefixedCommand(server.createCommandSourceStack().withSuppressedOutput(),
+					"tick sprint " + (SOAK_DAYS * io.github.jcondedata.aliveworkplace.command.Soak.DAY));
+			});
+		}
+		if (tick > 1400 && soakDoneAt < 0) {
+			if (tick % SOAK_STILL_EVERY == 0) {
+				shot(mc, String.format("frame_%03d", frame++));
+			}
+			if (tick % 20 == 0) {
+				server.execute(() -> {
+					int[] progress = io.github.jcondedata.aliveworkplace.command.Soak.progress();
+					soakFinished = progress[0];
+					soakTicks = server.overworld().getGameTime();
+				});
+			}
+			if (soakTotal > 0 && soakFinished == soakTotal) {
+				soakDoneAt = tick;
+				server.execute(() -> {
+					server.getCommands().performPrefixedCommand(server.createCommandSourceStack().withSuppressedOutput(), "tick sprint stop");
+					soakResult = io.github.jcondedata.aliveworkplace.command.Soak.finish();
+				});
+			}
+		}
+		if (soakDoneAt > 0 && tick == soakDoneAt + 60) {
+			String result = soakResult;
+			// The result ends "items off: none" when every build finished (an unfinished list would follow it) and every item adds up.
+			Showcase.check(result != null && result.contains(" " + soakTotal + "/" + soakTotal + " builds finished") && result.endsWith("items off: none"),
+				"10 builders finished every starter build with nothing duplicated or lost: " + result);
+			shot(mc, "02_soak_done");
+			server.execute(() -> hover(server.getPlayerList().getPlayers().get(0),
+				new Vec3(SOAK_AT.getX() + 40, SOAK_AT.getY() + 30, SOAK_AT.getZ() + 80), 200, 30));
+		}
+		if (soakDoneAt > 0 && tick == soakDoneAt + 160) {
+			shot(mc, "03_soak_close");
+			mc.stop();
+		}
+		if (tick >= SOAK_GIVE_UP && soakDoneAt < 0) {
+			server.execute(() -> io.github.jcondedata.aliveworkplace.AliveWorkplace.LOG.info("Soak scene gave up: {}",
+				io.github.jcondedata.aliveworkplace.command.Soak.finish()));
+			giveUp(mc, "10 builders finished every starter build (" + soakFinished + " of " + soakTotal + " at game tick " + soakTicks + ")");
 		}
 	}
 

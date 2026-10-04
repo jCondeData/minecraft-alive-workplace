@@ -4252,6 +4252,12 @@ item waits.
 - (Sessions: anything that needs the owner, and the link to the latest Full test report. Handoffs go here through
   `sessions.py handoff "<in progress, next, traps>" --as <you>`, which keeps one per kind of session (chat, night):
   carry over anything still true from the previous one.)
+- 2026-10-04 (28.7, owner question; lane b): Cobblemon 1.7.3 has its own villager job, `cobblemon:nurse`, whose
+  workstation is the Healing Machine, so a jobless villager next to any Healing Machine already becomes Cobblemon's nurse
+  (compat test on `wip/lane-b`). 28.7 says "a jobless villager never takes a player's machine by themselves". Which:
+  (a) keep Cobblemon's nurse as is, and our Nurse comes to a machine only with a honey bottle; or (b) stop jobless
+  villagers taking machines at all (Cobblemon's nurse then only via our honey bottle, as ours)? Default the lanes build
+  meanwhile: (a), the least surprise for players who know Cobblemon's nurse. The rest of 28.7 doesn't depend on it.
 - Old branches: `wip/treasury` (unfinished treasury work from before 0.136.0; the treasury has shipped since, so check
   before reusing any of it) and `tests/check-0.137-riding-protection` (the camel test, 21.3).
 - 2026-09-29: the plan was installed by the planning chat. The chat that built 0.137 had started two test files for the

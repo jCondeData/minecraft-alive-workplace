@@ -334,7 +334,7 @@ texture has no clear direction yet.
   of all professions is in a review package.
 - [x] **24.2** (approved auto 2026-10-04) **Tools and weapons.** Every tool or weapon item uses the owner-picked templates (hammer, wrench, war hammer)
   or has been through a pick round. Done when: every tool or weapon item passes `lint.py`, and its package is sent.
-- [ ] **24.3** **Known visual bugs.** Riding looks right now (villagers sit in saddles and boats and the ferry
+- [x] **24.3** (review: pending 2026-10-04) **Known visual bugs.** Riding looks right now (villagers sit in saddles and boats and the ferry
   floats; approved 2026-09-29). Left: any clipping, floating or z-fighting in the scenes (`SCENE=extras`, `staff`,
   `village`, …). Done when: each one found has a before/after in a review package, or a package shows the scenes
   clean.

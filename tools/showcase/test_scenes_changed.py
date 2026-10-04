@@ -95,6 +95,11 @@ def write(root, path, text):
 
 def edit(root, path, old, new):
     full = os.path.join(root, path)
+    if old is None:  # a new file
+        write(root, path, new)
+        git(root, "add", path)
+        git(root, "commit", "-qm", "add")
+        return
     text = open(full).read()
     assert old in text, (path, old)
     write(root, path, text.replace(old, new, 1))
@@ -131,6 +136,18 @@ results = [
 
 	static void pointAt("""),
           (C, '    job("beekeeper"', '    # new\n    job("beekeeper"')], ["beekeeper"]),
+    case("a new scene in a class of its own (the class, the harness's field and dispatch, the catalog) films just it",
+         [(scenes.DEVCLIENT + "BeeScene.java", None, "package x;\n\nfinal class BeeScene {\n\tvoid tick(Minecraft mc) {\n\t}\n}\n"),
+          (H, "public class ScreenshotHarness {\n", "public class ScreenshotHarness {\n\tprivate final BeeScene bees = new BeeScene();\n\n"),
+          (H, """		if ("hall".equals(System.getProperty("aliveworkplace.scene"))) {""",
+           """		if ("beekeeper".equals(System.getProperty("aliveworkplace.scene"))) {
+			bees.tick(mc, server);
+			return;
+		}
+		if ("hall".equals(System.getProperty("aliveworkplace.scene"))) {"""),
+          (C, '    job("beekeeper"', '    # new\n    job("beekeeper"')], ["beekeeper"]),
+    case("a scene class nobody dispatches to films every scene",
+         [(scenes.DEVCLIENT + "LostScene.java", None, "package x;\n\nfinal class LostScene {\n}\n")], None),
     case("a shared helper films every scene", [(H, "move(slot);", "move(slot + 1);")], None),
     case("a job scene's own lines film it", [(J, "level.setBlock(STAND);", "level.setBlock(STAND);\n\t\t\tlevel.setBlock(POT);")], ["florist"]),
     case("JobScenes' helpers film every scene", [(J, "return new Job(what, ticks, setup);", "return new Job(what, ticks * 2, setup);")], None),

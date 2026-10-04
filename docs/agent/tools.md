@@ -95,12 +95,17 @@ multi-version layout (ROADMAP, Milestone 19): **Stonecutter**, one Gradle node p
   - **Filming one scene on demand** (ROADMAP 22.8). A push that changes the harness, `tools/screenshots` or
     `tools/showcase`, on any branch including `main`, films only the scenes it added or changed
     (`python3 tools/showcase/scenes.py changed <before> HEAD` says which: lines inside a scene's own method in
-    `ScreenshotHarness`, inside its `SCENES.put(…)` in `JobScenes`, or its entry in the catalog). Shared code (a
+    `ScreenshotHarness`, inside its `SCENES.put(…)` in `JobScenes`, a scene class of its own such as
+    `PartnersLandScene.java` with the harness's field and dispatch for it, or its entry in the catalog). Shared code (a
     helper such as `pointAt`, `Showcase`, the tools, the workflow) films every scene. One scene takes about 15 minutes.
+    So a new scene keeps to its own lines: its class (or method), its dispatch, its catalog entry with `cobblemon=True`
+    if it needs Cobblemon (`run.sh` reads that from the catalog: no edit there). Anything it needs in `Showcase` or a
+    shared helper goes in an earlier push of its own.
     To film scenes by hand: Actions › showcase › Run workflow, with `scenes` = `hall tutor` (empty: all).
   - **Reading the result:** open the run (Actions › showcase, the newest run for your commit; or the GitHub MCP tool
     `actions_list` with `list_workflow_runs` and `resource_id: showcase.yml`). The plan job's summary says which scenes it
-    filmed; the page job's summary has each scene's PASS or FAIL with the reasons; the `showcase-site` artifact is the
+    filmed (`Scenes: partners_forge`; `all` when shared code changed); the page job's summary has each scene's PASS or
+    FAIL with the reasons (`get_job_logs` on the page job, or the run page in a browser); the `showcase-site` artifact is the
     page itself (the GIF and stills per scene). Only a full run on `main` (the nightly one, or a hand-started run with no
     `scenes`) publishes the page and files the `nightly-tests` issue.
   - The shards are balanced with the times in the published page's `showcase.json` (`scenes.py matrix`).

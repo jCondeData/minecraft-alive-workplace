@@ -36,7 +36,7 @@ printf '%s\n' 'version:3955' 'onboardAccessibility:false' 'tutorialStep:none' 'j
 mkdir -p $RUN/screenshots/blueprints && cp src/gametest/resources/fixtures/hut.litematic "$RUN/screenshots/blueprints/Cozy Hut.litematic"
 
 # 3. Run the client (the dev-only harness stages the scene, takes shots and quits).
-LIBGL_ALWAYS_SOFTWARE=1 GALLIUM_DRIVER=llvmpipe xvfb-run -a -s "-screen 0 1280x720x24" \
+LIBGL_ALWAYS_SOFTWARE=1 GALLIUM_DRIVER=llvmpipe xvfb-run -a -s "-screen 0 1920x1080x24" \
   ./gradlew :$MC:runScreenshots --no-daemon -Pscene="${SCENE:-builders}" -PworkshopWeight="${WORKSHOP_WEIGHT:-3}" ${HOUSE_WEIGHT:+-PhouseWeight=$HOUSE_WEIGHT} \
     -Pcobblemon="${COBBLEMON:-$(case "${SCENE:-}" in tutor|trader|orchard|shop|smith|smith_orders|guard_pokemon|battle|leader|fossil|daycare) echo true;; *) echo false;; esac)}" \
     -Pmega="${MEGA:-$(case "${SCENE:-}" in battle) echo true;; *) echo false;; esac)}" -PbuilderDebug="${DEBUG:-false}" > "$SCRATCH/client.log" 2>&1 || true

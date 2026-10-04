@@ -821,7 +821,7 @@ final class JobScenes {
 						Showcase.check(!m.icon(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.QUEST_SLOTS[1]).isEmpty(), "the quests page shows both quests");
 					}
 				}, 30),
-				new Step("02_hall_advice", io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_PERSON, 6, (level, player) -> {
+				new Step("02_hall_advice", io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW, 6, (level, player) -> {
 					io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.open(player, STATION);
 					if (player.containerMenu instanceof ChoiceMenu m) {
 						m.press(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.ADVICE, player);

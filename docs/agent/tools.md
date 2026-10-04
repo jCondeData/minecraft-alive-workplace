@@ -83,9 +83,17 @@ multi-version layout (ROADMAP, Milestone 19): **Stonecutter**, one Gradle node p
     the catalog: `python3 tools/showcase/scenes.py check` (run by the workflow) fails if the two disagree.
   - **Try it locally:** `python3 tools/showcase/shard.py --scenes "sifter hall" --out build/showcase`, then
     `python3 tools/showcase/page.py --results build/showcase --site build/showcase-site` and open its `index.html`.
-  - Pushing a change to the harness, `tools/screenshots` or `tools/showcase` runs the whole showcase on GitHub, on any
-    branch. An item branch gets the page as the run's `showcase-site` artifact and its job summary; only `main`
-    publishes and files issues.
+  - **Filming one scene on demand** (ROADMAP 22.8). A push that changes the harness, `tools/screenshots` or
+    `tools/showcase`, on any branch including `main`, films only the scenes it added or changed
+    (`python3 tools/showcase/scenes.py changed <before> HEAD` says which: lines inside a scene's own method in
+    `ScreenshotHarness`, inside its `SCENES.put(…)` in `JobScenes`, or its entry in the catalog). Shared code (a
+    helper such as `pointAt`, `Showcase`, the tools, the workflow) films every scene. One scene takes about 15 minutes.
+    To film scenes by hand: Actions › showcase › Run workflow, with `scenes` = `hall tutor` (empty: all).
+  - **Reading the result:** open the run (Actions › showcase, the newest run for your commit; or the GitHub MCP tool
+    `actions_list` with `list_workflow_runs` and `resource_id: showcase.yml`). The plan job's summary says which scenes it
+    filmed; the page job's summary has each scene's PASS or FAIL with the reasons; the `showcase-site` artifact is the
+    page itself (the GIF and stills per scene). Only a full run on `main` (the nightly one, or a hand-started run with no
+    `scenes`) publishes the page and files the `nightly-tests` issue.
   - The shards are balanced with the times in the published page's `showcase.json` (`scenes.py matrix`).
 - `tools/packtest/run.sh` — boots a real Cobbleverse server (every pack mod, production Fabric) with the newest
   `versions/1.21.1/build/libs` jar (run it on the system's Java 21, not the JDK 25 Gradle uses), generates a vanilla and a Repurposed Structures village and looks for our workstations. Needs

@@ -3,6 +3,11 @@
 ## Unreleased
 
 ### Added
+- **The village calendar**: the world now has four seasons of 8 days (`seasonDays` in the config), each with a festival
+  on its middle day: the Blossom Fair, the Midsummer Games, the Harvest Feast and the Lantern Night. The Village Hall
+  shows the season, the day and the next festival; nothing else changes with the seasons yet (coming expansions use it).
+- **Room on the Village Hall's screen**: a row of page tabs under the hall's buttons, with the calendar as the first
+  tab and room for eight more pages. Every button stays where it was; the villager list starts one row lower.
 - **The Guide Book**: every player is given one the first time they join (on an existing world too, after updating);
   right-click it to read how the mod works, page by page, each page an in-game screenshot with a few short steps:
   getting started, giving villagers jobs, builders and blueprints, the Village Hall, every kind of job, guards, and

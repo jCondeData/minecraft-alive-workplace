@@ -241,13 +241,13 @@ Before polishing, make sure nothing regresses unnoticed.
     dug, the screen opened). A failed scene or a broken picture (missing textures, raw text keys, villagers stuck in
     walls) opens the nightly-tests issue, so the night runs fix it;
   - if publishing the page needs a GitHub setting only he can change, he gets the exact clicks.
-- [ ] **22.5** **Room on the Village Hall's screen.** Milestones 27, 29, 30, 31 and 33 each add a page to the hall, and
+- [x] **22.5** (review: pending 2026-10-04) **Room on the Village Hall's screen.** Milestones 27, 29, 30, 31 and 33 each add a page to the hall, and
   its screen has no free slot. Give it page tabs (or a second row of page buttons) with room for at least six more
   pages, keeping every existing page and button where players know it. Done when:
   - a GameTest opens every existing page through the new layout;
   - a new page is one registration call (documented in `docs/agent/layout.md`), and the expansions use it;
   - the hall scene shows the new layout at GUI scales 2 and 4.
-- [ ] **22.6** **One season calendar.** Milestones 28 (the Festival Cup), 30 (harvest season), 31 and 34 need seasons,
+- [x] **22.6** (review: pending 2026-10-04) **One season calendar.** Milestones 28 (the Festival Cup), 30 (harvest season), 31 and 34 need seasons,
   and none exist. A village calendar: four seasons of `seasonDays` days (default 8, one festival each), the same for
   the whole world, shown on the hall with the day of the season; an event API the expansions listen to. Done when:
   GameTests cover the rollover, save and reload, and the config length; nothing else changes until an expansion uses

@@ -5,6 +5,8 @@
     python3 tools/showcase/scenes.py matrix [--last F]     # GitHub Actions matrix: scenes split into shards
     python3 tools/showcase/scenes.py env SCENE             # KEY=VALUE lines for tools/screenshots/run.sh
     python3 tools/showcase/scenes.py check                 # every harness scene is in the catalog, and back
+    python3 tools/showcase/scenes.py changed BASE [HEAD]   # the scenes a commit range added or changed ("all" if unsure)
+    python3 tools/showcase/scenes.py matrix --only "a b"   # the matrix for just those scenes (ROADMAP 22.8)
 
 A scene is one run of the screenshot client (tools/screenshots/run.sh, SCENE=<name>). The harness
 (src/devclient/.../ScreenshotHarness.java) stages it, films it and records a pass/fail check in showcase.json.
@@ -165,9 +167,9 @@ SCENES = [
       cobblemon=True),
     job("fossil", "Fossil Scientist", "Reviving a fossil", "the fossil scientist revived the fossil", 150, cobblemon=True),
     # Village-wide
-    S("hall", "Village Hall", "The Village Hall and its screen", "the Village Hall screen opened", 60,
-      [("01_hall_block", "The hall"), ("02_hall_people", "People"), ("03_hall_builder", "A builder"),
-       ("05_hall_requests", "Requests")]),
+    S("hall", "Village Hall", "The Village Hall, its screen and calendar", "the Village Hall screen and its calendar page opened", 75,
+      [("02_hall_people", "People, under the page row"), ("03_hall_builder", "A builder"), ("08_hall_calendar", "The calendar"),
+       ("09_hall_scale4", "At GUI scale 4")]),
     S("hall_pages", "Village Hall", "The chronicle and trade routes", "the chronicle and trade-route pages opened", 45,
       [("01_hall_chronicle", "Chronicle"), ("02_hall_routes", "Trade routes")]),
     S("hall_quests", "Village Hall", "Quests, advice, the village map and the festival",
@@ -224,18 +226,137 @@ def load_last(path):
         return {}
 
 
-def matrix(last):
-    """Longest scenes first, each onto the shard with the least work so far."""
-    total = sum(seconds(s, last) for s in SCENES)
-    count = max(4, min(MAX_SHARDS, math.ceil(total / SHARD_TARGET)))
+def matrix(last, only=None):
+    """Longest scenes first, each onto the shard with the least work so far. only: just these scene names."""
+    scenes = SCENES if only is None else [s for s in SCENES if s["name"] in only]
+    if not scenes:
+        return {"include": []}
+    total = sum(seconds(s, last) for s in scenes)
+    count = max(1 if only is not None else 4, min(MAX_SHARDS, math.ceil(total / SHARD_TARGET)))
+    count = min(count, len(scenes))
     shards = [[0, []] for _ in range(count)]
-    for s in sorted(SCENES, key=lambda s: -seconds(s, last)):
+    for s in sorted(scenes, key=lambda s: -seconds(s, last)):
         shard = min(shards, key=lambda x: x[0])
         shard[0] += seconds(s, last)
         shard[1].append(s["name"])
     shards = [s for s in shards if s[1]]
     return {"include": [{"shard": f"{i + 1:02d}", "scenes": " ".join(names), "minutes": round(t / 60)}
                         for i, (t, names) in enumerate(sorted(shards, key=lambda x: -x[0]))]}
+
+
+DEVCLIENT = "src/devclient/java/io/github/jcondedata/aliveworkplace/devclient/"
+METHOD = re.compile(r"^\t(?:(?:public|private|protected|static|final|synchronized)\s+)*[\w<>\[\], .?]+\s+(\w+)\([^;]*$")
+DISPATCH = re.compile(r'"(\w+)"\.equals\(System\.getProperty\("aliveworkplace\.scene"\)\)')
+PUT = re.compile(r'^\t\t(?:SCENES|SCREENS)\.put\("(\w+)"')
+
+
+def diff_lines(base, head, paths, root="."):
+    """{path: [line numbers in the new file that were added or changed, or where lines were removed]}."""
+    import subprocess
+    out = subprocess.run(["git", "diff", "-U0", "--no-color", base, head, "--", *paths], capture_output=True, text=True,
+                         check=True, cwd=root).stdout
+    lines, path = {}, None
+    for row in out.splitlines():
+        if row.startswith("+++ "):
+            path = None if row[4:] == "/dev/null" else row[6:]
+            if path is not None:
+                lines.setdefault(path, [])
+        elif row.startswith("--- a/") and path is None:
+            lines.setdefault(row[6:], [])
+        elif row.startswith("@@") and path is not None:
+            m = re.match(r"@@ -\d+(?:,\d+)? \+(\d+)(?:,(\d+))? @@", row)
+            start, count = int(m.group(1)), int(m.group(2) or "1")
+            lines[path].extend(range(start, start + count) if count else [max(1, start)])
+    return lines
+
+
+def method_at(text, line):
+    """The name of the top-level method (one tab in) that line {line} is in, and the line it starts on."""
+    rows = text.splitlines()
+    for i in range(min(line, len(rows)) - 1, -1, -1):
+        m = METHOD.match(rows[i])
+        if m:
+            return m.group(1), i + 1
+    return None, 0
+
+
+def harness_methods(text):
+    """ScreenshotHarness: {method: {scenes}} from its dispatch (`if ("x".equals(...)) { xScene(...); }`)."""
+    rows = text.splitlines()
+    out = {}
+    for i, row in enumerate(rows):
+        names = DISPATCH.findall(row)
+        if not names or not row.lstrip().startswith(("if", "||")):
+            continue
+        j = i
+        while j < len(rows) and not rows[j].rstrip().endswith("{"):
+            j += 1
+            names += DISPATCH.findall(rows[j]) if j < len(rows) else []
+        call = re.match(r"\s*(\w+)\(", rows[j + 1]) if j + 1 < len(rows) else None
+        if call:
+            out.setdefault(call.group(1), set()).update(names)
+    return out
+
+
+def scenes_for(path, text, lines, catalog_text=None):
+    """The scenes the changed {lines} of {path} belong to, or None when they could touch any scene."""
+    names = set()
+    if path.endswith("JobScenes.java"):
+        rows = text.splitlines()
+        for line in lines:
+            scene = None
+            for i in range(min(line, len(rows)) - 1, -1, -1):
+                m = PUT.match(rows[i])
+                if m:
+                    scene = m.group(1)
+                    break
+                if METHOD.match(rows[i]) or rows[i] == "\t}":
+                    break
+            if scene is None:
+                return None
+            names.add(scene)
+        return names
+    if path.endswith("ScreenshotHarness.java"):
+        methods = harness_methods(text)
+        for line in lines:
+            name, _ = method_at(text, line)
+            if name not in methods:
+                return None
+            names |= methods[name]
+        return names
+    if path == "tools/showcase/scenes.py":
+        rows = text.splitlines()
+        first = next(i for i, r in enumerate(rows) if r.startswith("SCENES = [")) + 1
+        last = next(i for i in range(first, len(rows)) if rows[i] == "]") + 1
+        for line in lines:
+            if not first < line < last:
+                return None
+            for i in range(line - 1, first - 1, -1):
+                m = re.match(r'\s*(?:S|job)\("(\w+)"', rows[i])
+                if m:
+                    names.add(m.group(1))
+                    break
+                if rows[i].strip().startswith("#"):
+                    break
+        return names
+    return None
+
+
+def changed(base, head="HEAD", root="."):
+    """The scenes a commit range added or changed, or None for every scene (shared code, the tools, the workflow)."""
+    paths = [DEVCLIENT, "tools/showcase", "tools/screenshots", ".github/workflows/showcase.yml"]
+    names = set()
+    for path, lines in diff_lines(base, head, paths, root).items():
+        import subprocess
+        shown = subprocess.run(["git", "show", f"{head}:{path}"], capture_output=True, text=True, cwd=root)
+        if shown.returncode != 0:
+            return None  # a removed file
+        text = shown.stdout
+        found = scenes_for(path, text, lines)
+        if found is None:
+            return None
+        names |= found
+    return sorted(n for n in names if n in BY_NAME)
 
 
 def env(scene):
@@ -289,6 +410,10 @@ def main():
     sub.add_parser("list")
     m = sub.add_parser("matrix")
     m.add_argument("--last", help="the previous run's showcase.json (durations)")
+    m.add_argument("--only", help="space- or comma-separated scene names (default: every scene)")
+    c = sub.add_parser("changed")
+    c.add_argument("base")
+    c.add_argument("head", nargs="?", default="HEAD")
     e = sub.add_parser("env")
     e.add_argument("scene")
     sub.add_parser("check")
@@ -296,7 +421,16 @@ def main():
     if a.cmd == "list":
         print("\n".join(s["name"] for s in SCENES))
     elif a.cmd == "matrix":
-        print(json.dumps(matrix(load_last(a.last)), separators=(",", ":")))
+        only = None
+        if a.only and a.only.strip() and a.only.strip() != "all":
+            only = set(re.split(r"[\s,]+", a.only.strip()))
+            unknown = sorted(only - set(BY_NAME))
+            if unknown:
+                sys.exit(f"unknown scene(s): {', '.join(unknown)}")
+        print(json.dumps(matrix(load_last(a.last), only), separators=(",", ":")))
+    elif a.cmd == "changed":
+        found = changed(a.base, a.head)
+        print("all" if found is None else " ".join(found))
     elif a.cmd == "env":
         for k, v in env(a.scene).items():
             print(f"{k}={v}")

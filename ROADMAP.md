@@ -334,10 +334,10 @@ recent picks: lean shapes, heads that are thick where they work and thin where t
 haft and leather grip for weapons, no decoration the shape doesn't need). Use pick sheets (`preview.py pick`) when a
 texture has no clear direction yet.
 
-- [x] **24.1** (review: pending 2026-10-04) **Villager outfits.** Each of our professions has a vanilla-style outfit and a zombie version
+- [x] **24.1** (review: pending 2026-10-04) (verified 2026-10-04: 24.1: lint.py on all 110 outfit textures [55 professions, villager + zombie, same set]: 0 errors; 24.2: lint.py on every item texture [the one tool, scan_tool: OK, 15 colours]; 24.5: langcheck.py clean [all sections 0], and a scan of all 1742 en_us strings for stray spaces, unbalanced brackets, repeated words and TODOs found only intended ones [list-joiner fragments, file extensions]; showcase run 55 [265d1a2]: 73 of 75 scenes pass, failures are B44 [soak] and B45 [partners_engine], none in these items) **Villager outfits.** Each of our professions has a vanilla-style outfit and a zombie version
   (`preview.py villager`: every biome, zombie, back view). Done when: every profession passes `lint.py`, and one sheet
   of all professions is in a review package.
-- [x] **24.2** (approved auto 2026-10-04) **Tools and weapons.** Every tool or weapon item uses the owner-picked templates (hammer, wrench, war hammer)
+- [x] **24.2** (approved auto 2026-10-04) (verified 2026-10-04: 24.1: lint.py on all 110 outfit textures [55 professions, villager + zombie, same set]: 0 errors; 24.2: lint.py on every item texture [the one tool, scan_tool: OK, 15 colours]; 24.5: langcheck.py clean [all sections 0], and a scan of all 1742 en_us strings for stray spaces, unbalanced brackets, repeated words and TODOs found only intended ones [list-joiner fragments, file extensions]; showcase run 55 [265d1a2]: 73 of 75 scenes pass, failures are B44 [soak] and B45 [partners_engine], none in these items) **Tools and weapons.** Every tool or weapon item uses the owner-picked templates (hammer, wrench, war hammer)
   or has been through a pick round. Done when: every tool or weapon item passes `lint.py`, and its package is sent.
 - [x] **24.3** (review: pending 2026-10-04) **Known visual bugs.** Riding looks right now (villagers sit in saddles and boats and the ferry
   floats; approved 2026-09-29). Left: any clipping, floating or z-fighting in the scenes (`SCENE=extras`, `staff`,
@@ -346,7 +346,7 @@ texture has no clear direction yet.
 - [x] **24.4** (review: pending 2026-10-04) **Screens.** Village Hall, Blueprint Table, requests board, mailbox, shop and research screens are readable at
   GUI scales 2–4, have no clipped or overlapping text, and use vanilla-style panels. Done when: screenshots of each
   screen at scales 2 and 4 are in a review package, with no clipping visible.
-- [x] **24.5** (review: pending 2026-10-04) **Words.** `langcheck.py` is clean. Every tooltip and message has been read in context (screenshots), with
+- [x] **24.5** (review: pending 2026-10-04) (verified 2026-10-04: 24.1: lint.py on all 110 outfit textures [55 professions, villager + zombie, same set]: 0 errors; 24.2: lint.py on every item texture [the one tool, scan_tool: OK, 15 colours]; 24.5: langcheck.py clean [all sections 0], and a scan of all 1742 en_us strings for stray spaces, unbalanced brackets, repeated words and TODOs found only intended ones [list-joiner fragments, file extensions]; showcase run 55 [265d1a2]: 73 of 75 scenes pass, failures are B44 [soak] and B45 [partners_engine], none in these items) **Words.** `langcheck.py` is clean. Every tooltip and message has been read in context (screenshots), with
   consistent names for jobs, blocks and items (the README job table is the reference). Done when: `langcheck.py` is
   clean, and a package shows every new or changed message in context.
 

@@ -101,6 +101,11 @@ SCENES = [
     job("tinkerer", "Tinkerer", "Mending an iron golem", "the tinkerer mended the iron golem"),
     job("composter", "Composter", "Turning scraps into bone meal", "the composter made bone meal"),
     job("steward", "Steward", "The Steward's morning rounds", "the steward walked his morning rounds and came back to the hall", 200),
+    # The Steward's rules (ROADMAP 27.6): the day's wishes over his head, and /workplace steward explain in chat
+    S("steward_rules", "Steward", "The Steward's rules and wishes",
+      "the Steward ranked today's wishes from his rules, and explain listed rules that held and that didn't", 45,
+      [("01_steward_wish", "His first wish, over his head"), ("02_steward_explain_end", "Explain: the last rules and today's wishes"),
+       ("03_steward_explain_top", "Explain: the first rules")]),
     job("netherworker", "Netherworker", "A trip to the Nether", "the netherworker came back from the Nether with loot", 240),
     job("undertaker", "Undertaker", "Bringing a worker back from the grave", "the undertaker revived the villager"),
     job("innkeeper", "Innkeeper", "A traveller checks in", "a traveller came to stay at the inn", 120,

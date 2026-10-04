@@ -17,6 +17,13 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Added
+- The **Steward's rules** (27.6): what the Steward wants is data, `data/<namespace>/steward_rules/<name>.json` (conditions
+  such as `beds_short`, `food_short`, `jobless`, `store_full`, `research_idle`; one effect: build, upgrade, give jobs,
+  research or ask a player; priority, reason, cooldown, max, rank and mods). Each morning, back at the hall, he ranks
+  the rules that hold into the day's wishes and says the first over his head ("build a Stone House in a Homes zone: 3
+  villagers have no bed"); they're saved with the hall. `/workplace steward explain` lists every rule for the nearest
+  hall with each condition's number and whether it held. 13 starter rules; they read the same numbers as the hall's
+  "What next?" tips, so the two always agree. A broken rule file is skipped with a warning naming the file and field.
 - The **Steward** (27.5): sneak-right-click a grown villager beside a Village Hall with that hall's City Plan and he
   becomes its Steward, one per hall. Each morning he walks his rounds holding the plan (each zone, the storehouse),
   three seconds at each stop, then goes back to the hall for the day. He trades City Plans, Blank Blueprints and

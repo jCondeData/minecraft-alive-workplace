@@ -1,0 +1,9 @@
+{
+  "when": [
+    {"missing_poi": {"poi": "aliveworkplace:scholars_desk"}},
+    {"villagers_at_least": {"n": 6}}
+  ],
+  "do": {"ask": {"key": "steward.aliveworkplace.ask.scholars_desk"}},
+  "priority": 50,
+  "why": "steward.aliveworkplace.why.scholar"
+}

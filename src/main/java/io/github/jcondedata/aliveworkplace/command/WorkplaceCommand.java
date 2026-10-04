@@ -40,6 +40,7 @@ import net.minecraft.world.entity.npc.Villager;
  * /workplace import                — import .litematic/.schem/.nbt files from &lt;world&gt;/aliveworkplace/import (ops)
  * /workplace friend add|remove &lt;player&gt;, /workplace friend list — who may give orders to your builders
  * /workplace strip &lt;height&gt;       — the Quarry Marker in hand digs a strip mine at that height, down a ladder shaft
+ * /workplace steward explain       — the Steward's rules for the nearest Village Hall, each condition's number and whether it held
  */
 public final class WorkplaceCommand {
 	public static void init() {
@@ -64,6 +65,9 @@ public final class WorkplaceCommand {
 				.executes(WorkplaceCommand::listSites))
 			.then(Commands.literal("mail")
 				.executes(WorkplaceCommand::trackMail))
+			.then(Commands.literal("steward")
+				.then(Commands.literal("explain")
+					.executes(WorkplaceCommand::explainSteward)))
 			.then(Commands.literal("strip")
 				.then(Commands.argument("height", com.mojang.brigadier.arguments.IntegerArgumentType.integer(-2048, 2048))
 					.executes(ctx -> stripHeight(ctx, com.mojang.brigadier.arguments.IntegerArgumentType.getInteger(ctx, "height")))))
@@ -79,6 +83,22 @@ public final class WorkplaceCommand {
 						.executes(ctx -> friend(ctx, false))))
 				.then(Commands.literal("list")
 					.executes(WorkplaceCommand::listFriends))));
+	}
+
+	/** {@code /workplace steward explain}: every Steward's rule for the nearest Village Hall (ROADMAP 27.6). */
+	private static int explainSteward(CommandContext<CommandSourceStack> ctx) {
+		ServerLevel level = ctx.getSource().getLevel();
+		Optional<net.minecraft.core.BlockPos> hall = io.github.jcondedata.aliveworkplace.hall.VillageHalls.nearest(level,
+			net.minecraft.core.BlockPos.containing(ctx.getSource().getPosition()));
+		if (hall.isEmpty()) {
+			ctx.getSource().sendFailure(Component.translatable("command.aliveworkplace.steward.explain.no_hall"));
+			return 0;
+		}
+		List<io.github.jcondedata.aliveworkplace.city.StewardRules.Rule> rules = io.github.jcondedata.aliveworkplace.city.StewardRules.all();
+		for (Component line : io.github.jcondedata.aliveworkplace.city.StewardWishes.explain(level, hall.get(), rules)) {
+			ctx.getSource().sendSuccess(() -> line, false);
+		}
+		return rules.size();
 	}
 
 	/** {@code /workplace strip <height>}: the held Quarry Marker becomes a strip mine at that height, down a ladder shaft. */

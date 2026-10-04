@@ -1,0 +1,8 @@
+{
+  "when": [
+    {"no_builder": {}}
+  ],
+  "do": {"ask": {"key": "steward.aliveworkplace.ask.blueprint_table"}},
+  "priority": 100,
+  "why": "steward.aliveworkplace.why.no_builder"
+}

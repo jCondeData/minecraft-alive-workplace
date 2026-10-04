@@ -58,6 +58,8 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 	 * before it had one get it on their first tick. Saved, so a hall whose Steward holds the place isn't checked again.
 	 */
 	private boolean stewardPlaceChecked;
+	/** The Steward's wishes for the day and what each of his rules has done (27.6); empty in halls saved before. */
+	private io.github.jcondedata.aliveworkplace.city.StewardWishes.State stewardWishes = io.github.jcondedata.aliveworkplace.city.StewardWishes.State.EMPTY;
 
 	public VillageHallBlockEntity(BlockPos pos, BlockState state) {
 		super(ModBlocks.VILLAGE_HALL_ENTITY, pos, state);
@@ -124,6 +126,15 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 		while (chronicle.size() > Chronicle.MAX) {
 			chronicle.remove(0);
 		}
+		setChanged();
+	}
+
+	public io.github.jcondedata.aliveworkplace.city.StewardWishes.State stewardWishes() {
+		return stewardWishes;
+	}
+
+	public void setStewardWishes(io.github.jcondedata.aliveworkplace.city.StewardWishes.State state) {
+		stewardWishes = state;
 		setChanged();
 	}
 
@@ -349,6 +360,9 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 		rank = VillageRanks.Rank.values()[Math.max(0, Math.min(VillageRanks.Rank.values().length - 1, r))];
 		research = io.github.jcondedata.aliveworkplace.research.Research.State.CODEC.parse(net.minecraft.nbt.NbtOps.INSTANCE, tag.get("research"))
 			.result().orElse(io.github.jcondedata.aliveworkplace.research.Research.State.EMPTY);
+		stewardWishes = !tag.contains("steward") ? io.github.jcondedata.aliveworkplace.city.StewardWishes.State.EMPTY
+			: io.github.jcondedata.aliveworkplace.city.StewardWishes.State.CODEC.parse(net.minecraft.nbt.NbtOps.INSTANCE, tag.get("steward"))
+				.result().orElse(io.github.jcondedata.aliveworkplace.city.StewardWishes.State.EMPTY);
 		berriesFound.clear();
 		net.minecraft.nbt.ListTag berries = Nbt.getList(tag, "berriesFound", net.minecraft.nbt.Tag.TAG_STRING);
 		for (int i = 0; i < berries.size(); i++) {
@@ -398,6 +412,10 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 		tag.putInt("rank", rank.ordinal());
 		io.github.jcondedata.aliveworkplace.research.Research.State.CODEC.encodeStart(net.minecraft.nbt.NbtOps.INSTANCE, research).result()
 			.ifPresent(t -> tag.put("research", t));
+		if (!stewardWishes.equals(io.github.jcondedata.aliveworkplace.city.StewardWishes.State.EMPTY)) {
+			io.github.jcondedata.aliveworkplace.city.StewardWishes.State.CODEC.encodeStart(net.minecraft.nbt.NbtOps.INSTANCE, stewardWishes).result()
+				.ifPresent(t -> tag.put("steward", t));
+		}
 		net.minecraft.nbt.ListTag lines = new net.minecraft.nbt.ListTag();
 		for (Chronicle.Entry entry : chronicle) {
 			CompoundTag line = new CompoundTag();

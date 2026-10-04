@@ -1,0 +1,8 @@
+{
+  "when": [
+    {"research_idle": {}}
+  ],
+  "do": {"research": {}},
+  "priority": 40,
+  "why": "steward.aliveworkplace.why.research"
+}

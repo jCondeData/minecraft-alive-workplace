@@ -75,6 +75,7 @@ public class ScreenshotHarness implements ClientModInitializer {
 	private final PokemonCenterScene pokemonCenter = new PokemonCenterScene();
 	private final PartnersForgeScene partnersForge = new PartnersForgeScene();
 	private final PartnersAllScene partnersAll = new PartnersAllScene();
+	private final StewardRulesScene stewardRules = new StewardRulesScene();
 
 	private void onTick(Minecraft mc) {
 		if (mc.level == null || mc.player == null || mc.getSingleplayerServer() == null) {
@@ -98,6 +99,10 @@ public class ScreenshotHarness implements ClientModInitializer {
 		}
 		if ("guide".equals(System.getProperty("aliveworkplace.scene"))) {
 			guideScene(mc, mc.getSingleplayerServer());
+			return;
+		}
+		if ("steward_rules".equals(System.getProperty("aliveworkplace.scene"))) {
+			stewardRules.tick(mc, mc.getSingleplayerServer());
 			return;
 		}
 		if ("partners_all".equals(System.getProperty("aliveworkplace.scene"))) {

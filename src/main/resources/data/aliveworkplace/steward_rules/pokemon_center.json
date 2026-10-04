@@ -1,0 +1,12 @@
+{
+  "when": [
+    {"mod_loaded": {"mod": "cobblemon"}},
+    {"rank_at_least": {"rank": "village"}},
+    {"built_count_below": {"blueprint": "aliveworkplace:pokemon_center", "n": 1}}
+  ],
+  "do": {"build": {"blueprint": "aliveworkplace:pokemon_center", "zone": "civic"}},
+  "priority": 50,
+  "why": "steward.aliveworkplace.why.pokemon_center",
+  "max": 1,
+  "requires": ["cobblemon"]
+}

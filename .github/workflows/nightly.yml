@@ -77,7 +77,8 @@ jobs:
         if: always() && hashFiles('tools/packtest/run.sh') != ''
         run: |
           export JAVA_HOME="$JAVA_HOME_21_X64" PATH="$JAVA_HOME_21_X64/bin:$PATH"
-          PERF=true PLOTS=40 tools/packtest/run.sh 2>&1 | tee build/modtest/perf.log
+          # 25.1's benchmark load (150 workers, 3 villages) every night too; the Sunday job below repeats it on its own.
+          PERF=true VILLAGES=3 PLOTS=25 tools/packtest/run.sh 2>&1 | tee build/modtest/perf.log
 
       # The screenshot scenes run in their own workflow, every one of them: showcase.yml.
 

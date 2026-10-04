@@ -37,6 +37,11 @@ multi-version layout (ROADMAP, Milestone 19): **Stonecutter**, one Gradle node p
   `CompatTestSetup` fires Architectury's server-starting event for the game test server (Architectury only fires it
   for dedicated/integrated servers, and Mega Showdown sets up on it). The Kotlin Gradle plugin is applied only so Loom remaps
   Kotlin metadata in Cobblemon; without it Cobblemon crashes in dev with `ClassNotFoundException: net.minecraft.class_…`.
+- `./gradlew runCompatGameTest -Pcobblemon18=true` — the same suite with Cobblemon 1.8.1 instead of 1.7.3 (ROADMAP 28.2;
+  the mod still compiles against 1.7.3). The swaps and any mod left out are `tests.cobblemon18` in
+  `stonecutter.properties.toml`. `COBBLEMON18=true tools/screenshots/run.sh` films a Pokémon scene with 1.8.1, and a
+  hand-started showcase run with the `cobblemon18` box ticked films every Pokémon scene with it (never published).
+  The nightly runs the suite both ways (job `compat-cobblemon18`). 1.8-only features ask `work/PokemonFeatures`.
 - `./gradlew :1.21.1:genSources` — decompiled Minecraft sources for reading vanilla code; they land in
   `.gradle/loom-cache/minecraftMaven/net/minecraft/minecraft-common-*/**/**-sources.jar` (unzip and grep)
 - `python3 tools/agent/sessions.py` — claims, landing, review packages, QA verification and roadmap bookkeeping when
@@ -65,7 +70,8 @@ multi-version layout (ROADMAP, Milestone 19): **Stonecutter**, one Gradle node p
   `fletcher`, `shepherd`, `herder`, `alchemist`, `scribe`, `explorer`, `bard`, `dropbox` (the Drop Box and its screen),
   `fossil` (Cobblemon); screens: `shapes`, `style_menu` (with the Mirror button), `counter` (the Shop Counter's prices
   and the owner's sales log), `ferry_menu`, `scan` (the Scan Tool marks a hut and saves it), `config` (the settings
-  screen Mod Menu opens; it puts the run's config file back afterwards), and with
+  screen Mod Menu opens; it puts the run's config file back afterwards), `words` (every new or reworded message in
+  chat, a page at a time, with example values), and with
   Cobblemon `daycare`, `smith_orders`, `leader` (a Trainer Leader's challenge). `python3 tools/showcase/scenes.py list`
   lists them all.
 - **The nightly showcase** (`.github/workflows/showcase.yml`, ROADMAP 22.4). Every night at about 10:40 PM Central,

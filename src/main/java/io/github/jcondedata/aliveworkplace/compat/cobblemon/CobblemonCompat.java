@@ -25,8 +25,8 @@ import net.minecraft.world.level.block.state.BlockState;
 // The Cobblemon integration: fills in the mod's Pokémon extension points (partners, fruit, fossils, the daycare,
 // trainers, traders, tutors, the nurse) with the Cobblemon code in this package, and starts the trainers' battles.
 public final class CobblemonCompat {
-	// The Cobblemon versions this was tested with (the Cobbleverse pack pins 1.7.3).
-	public static final String TESTED = ">=1.7.3 <1.8";
+	// The Cobblemon versions this was tested with: 1.7.3 (the Cobbleverse pack pins it) and 1.8.x (-Pcobblemon18=true).
+	public static final String TESTED = ">=1.7.3 <1.9";
 
 	public static void init() {
 		PokemonPartners.EXTENSION.register("cobblemon", new PokemonPartners() {

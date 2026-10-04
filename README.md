@@ -15,6 +15,8 @@ trainer's houses, Trainer Leader halls, schools, trade halls, ball workshops and
 
 Fabric · Minecraft 1.21.1 · built for the Cobbleverse (Cobblemon) modpack, but works without it.
 Builders understand **Chipped**, **Rechiseled** and **Supplementaries** blocks (tested with the real mods).
+**Cobblemon:** tested with **1.7.3** (the Cobbleverse pack's) and **1.8.1**; any 1.7.3 to 1.8.x works. Optional: without
+Cobblemon the Pokémon jobs simply aren't there.
 Install on the **server and every player's game**: put `alive-workplace-<version>+1.21.1.jar` (from the
 [Releases](https://github.com/jCondeData/minecraft-alive-workplace/releases); the `+1.21.1` is the Minecraft version it's
 for) in the `mods` folder, and take the old Alive Workplace jar out when you update.

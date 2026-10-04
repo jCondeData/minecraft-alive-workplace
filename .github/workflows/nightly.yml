@@ -107,6 +107,45 @@ jobs:
           if [ -n "$n" ]; then gh issue comment "$n" --body-file build/modtest/issue.md
           else gh issue create --title "Nightly tests failing" --label nightly-tests --body-file build/modtest/issue.md; fi
 
+  # ROADMAP 28.2: the compat suite again with Cobblemon 1.8.1 (the full build above runs it with the pack's 1.7.3).
+  compat-cobblemon18:
+    if: github.event_name != 'workflow_dispatch' || github.event.inputs.part != 'mutation'
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: |
+            21
+            25
+      - uses: gradle/actions/setup-gradle@v4
+      - name: Compat GameTests with Cobblemon 1.8.1
+        run: |
+          mkdir -p build/modtest
+          ./gradlew ":$NODE:runCompatGameTest" -Pcobblemon18=true --stacktrace 2>&1 | tee build/modtest/compat18.log; exit ${PIPESTATUS[0]}
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: nightly-compat18-${{ github.run_id }}
+          path: |
+            build/modtest/compat18.log
+            versions/*/build/junit-compat.xml
+          if-no-files-found: ignore
+      - name: Open or update the nightly-tests issue on failure
+        if: failure() && github.ref == 'refs/heads/main'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          { echo "Compat GameTests with Cobblemon 1.8.1 failed: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"; echo
+            grep -a -E "failed|FAILED|Exception" build/modtest/compat18.log | head -c 15000; } > build/modtest/issue18.md
+          gh label create nightly-tests --color B60205 2>/dev/null || true
+          n=$(gh issue list --label nightly-tests --state open --json number -q '.[0].number')
+          if [ -n "$n" ]; then gh issue comment "$n" --body-file build/modtest/issue18.md
+          else gh issue create --title "Nightly tests failing" --label nightly-tests --body-file build/modtest/issue18.md; fi
+
   # ROADMAP 22.7: about 20 mutants in the code changed in the last 24 hours (tools/modtest/mutate.py, the same set split
   # over 5 parallel jobs), and every GameTest added in that time run 10 times (RepeatNewTests). Survivors, flaky tests
   # and unfinished jobs go to the nightly-tests issue; the report is always in the run's summary and the

@@ -10,6 +10,8 @@ Reads assets/*/lang/en_us.json and the Java sources and reports:
   - key families (x and x.<suffix>, e.g. a title and its detail line) whose placeholder counts
     differ: if one argument list fills both, one of them shows the wrong values
   - strings that mix %s with positional %1$s (easy to get wrong)
+  - names written two ways (ROADMAP 24.5): a block or item of ours spelled in another case in running text
+    ("travel post" for the Travel Post), and job names that aren't the README job table's (JOB_NAMES)
   - with --since: keys added or changed since REV. Render each in a GameTest with its REAL
     arguments (Component.translatable(key, args).getString() works on the server) and compare
     the sentence with the spec. A static check can't see which arguments a dynamic call passes.
@@ -31,6 +33,18 @@ CHECKED_PAIRS = {
     "advice.aliveworkplace.homes.how": "VillageAdvice passes one list of four values to both; the title uses the first two",
     "advice.aliveworkplace.rank.how": "VillageAdvice passes one list of four values to both; .how picks %2$s-%4$s by position",
     "screen.aliveworkplace.daycare.levels": "CobblemonDaycare fills the levels line with its own two values",
+}
+
+# Job names other than the README job table's, and the name to use instead (ROADMAP 24.5). Prose may write a job in
+# lowercase ("the builder"); these are other words for the same job.
+JOB_NAMES = {
+    r"\bFishers?\b": "Fisherman",
+    r"\bfishers\b": "fishermen",
+    r"\b[Oo]rchardists?\b": "Orchard Keeper",
+    r"\b[Gg]ravediggers?\b": "Undertaker",
+    r"\b[Bb]allsmiths?\b": "Ball Smith",
+    r"\bPokemon\b": "Pokémon",
+    r"\bPoke Balls?\b": "Poké Ball",
 }
 
 PH = re.compile(r"%(?:(\d+)\$)?[sd]")
@@ -104,6 +118,19 @@ def main():
             continue
         if head in lang and n and placeholders(lang[head])[0] and n != placeholders(lang[head])[0]:
             fams.append((head, placeholders(lang[head])[0], k, n))
+    names = [v for k, v in lang.items()
+             if re.fullmatch(r"(block|item)\.[a-z0-9_]+\.[a-z0-9_]+", k) and "%" not in v and len(v.split()) >= 2]
+    misnamed = []
+    for k, v in lang.items():
+        if re.fullmatch(r"(block|item)\.[a-z0-9_]+\.[a-z0-9_]+", k):
+            continue
+        for n in names:
+            for m in re.finditer(r"\b" + re.escape(n) + r"(?=s?\b)", v, re.I):
+                if m.group(0) != n:
+                    misnamed.append((k, m.group(0), n))
+        for pat, use in JOB_NAMES.items():
+            for m in re.finditer(pat, v):
+                misnamed.append((k, m.group(0), use))
     print(f"# Lang check: {len(lang)} keys in {', '.join(str(p.relative_to(root)) for p in langs)}\n")
     print(f"## Keys used in code but missing from en_us.json ({len(missing)})\n")
     for k, f in missing[:60]:
@@ -115,6 +142,9 @@ def main():
     print("If one argument list fills both, one of them shows the wrong values. Check the code that builds them.\n")
     for head, hn, k, n in fams[:60]:
         print(f"- `{head}` ({hn}): `{lang[head][:70]}`\n  `{k}` ({n}): `{lang[k][:90]}`")
+    print(f"\n## Names written another way ({len(misnamed)})\n")
+    for k, got, use in misnamed[:60]:
+        print(f"- `{k}`: \"{got}\", write \"{use}\": `{lang[k][:90]}`")
     if mixed:
         print(f"\n## Strings mixing %s and positional %1$s ({len(mixed)})\n")
         for k in mixed:
@@ -133,7 +163,7 @@ def main():
         print(f"\n## Added or changed since {a.since} ({len(changed)}): render each with its real arguments in a test\n")
         for k in changed:
             print(f"- `{k}` = `{lang.get(k, '')[:110]}`")
-    sys.exit(1 if missing or argmismatch else 0)
+    sys.exit(1 if missing or argmismatch or misnamed else 0)
 
 
 if __name__ == "__main__":

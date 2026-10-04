@@ -341,7 +341,7 @@ texture has no clear direction yet.
 - [x] **24.4** (review: pending 2026-10-04) **Screens.** Village Hall, Blueprint Table, requests board, mailbox, shop and research screens are readable at
   GUI scales 2–4, have no clipped or overlapping text, and use vanilla-style panels. Done when: screenshots of each
   screen at scales 2 and 4 are in a review package, with no clipping visible.
-- [ ] **24.5** **Words.** `langcheck.py` is clean. Every tooltip and message has been read in context (screenshots), with
+- [x] **24.5** (review: pending 2026-10-04) **Words.** `langcheck.py` is clean. Every tooltip and message has been read in context (screenshots), with
   consistent names for jobs, blocks and items (the README job table is the reference). Done when: `langcheck.py` is
   clean, and a package shows every new or changed message in context.
 
@@ -850,7 +850,7 @@ here adds a new kind of speed bonus (the new jobs get the partners' existing one
   Cup keeps the owner's rules: villages enter, with their Leaders and the players who represent them; no badges, no gyms
   and no trophies for players (the pack's own Badges & Trophies mod does that); Leaders and the purse pay money only;
   the banner belongs to the village. Done when: the note is on `main` and its package is sent.
-- [ ] **28.2** **Cobblemon 1.8 as well as 1.7.3.** The mod compiles and tests against Cobblemon 1.7.3 and
+- [x] **28.2** (approved auto 2026-10-04) **Cobblemon 1.8 as well as 1.7.3.** The mod compiles and tests against Cobblemon 1.7.3 and
   `CobblemonCompat.TESTED` stops below 1.8, while 1.8.0 and 1.8.1 (Minecraft 1.21.1) are out; a `LinkageError` there
   switches every Pokémon feature off at once. Keep compiling against 1.7.3 and:
   - add a switch (`-Pcobblemon18=true`) that runs `runCompatGameTest`, the screenshot harness and the showcase with

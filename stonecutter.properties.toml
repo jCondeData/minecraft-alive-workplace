@@ -57,6 +57,13 @@ tests.compat_mods = [
     "maven.modrinth:jtmvUHXj:Xlt4eWBe",         # Accessories 1.1.0-beta.53 (for Mega Showdown)
     "maven.modrinth:ccKDOlHs:JB1fLQnc",         # owo-lib 0.12.15.4 (for Accessories)
 ]
+# -Pcobblemon18=true: the compat suite, the screenshot harness and the showcase run with Cobblemon 1.8.1 instead of
+# 1.7.3 (the mod still compiles against 1.7.3). "old -> new" swaps a runtime mod; "old -> " leaves it out of that run.
+tests.cobblemon18 = [
+    "maven.modrinth:cobblemon:kF7CvxTo -> maven.modrinth:cobblemon:gBW3vLC7",          # Cobblemon 1.8.1
+    "maven.modrinth:SszvX85I:Y6di9Ram -> maven.modrinth:SszvX85I:TKdAixuR",            # Mega Showdown 1.2.0 for 1.8.1
+    "maven.modrinth:cobbleworkers:qW3KB1li -> maven.modrinth:cobbleworkers:llwrszjl",  # Cobbleworkers 2.0.5 for 1.8.0
+]
 # The screenshot harness (src/devclient, `runScreenshots`, tools/screenshots/run.sh) is written for this version.
 tests.screenshots = true
 # Extra mods the harness can load: -Pcobblemon=true (Pokémon scenes), -Pmega=true (SCENE=battle).

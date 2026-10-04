@@ -18,6 +18,9 @@
   checks that no item was duplicated or lost.
 
 ### Fixed
+- With Chipped or Rechiseled installed, a builder carrying a variant of the block it needed (taken in place of
+  another block of the same kind) no longer stands waiting for materials with nothing on its missing list: it turns
+  the variant into the block it needs and carries on.
 - The Village Hall's name tag now says what a shift-click will do: protect an open village, or open a protected one
   to everyone again (it always said "protect").
 - Masons and carpenters helping one builder no longer use up the stone or wood another builder's build is waiting

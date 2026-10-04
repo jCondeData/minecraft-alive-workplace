@@ -31,7 +31,13 @@ public final class MaterialFamilies {
 		ChiselingFamilies.init();
 	}
 
-	static void setDataFamilies(List<List<Item>> loaded) {
+	/** The families read from data files (Rechiseled). */
+	public static List<List<Item>> dataFamilies() {
+		return dataFamilies;
+	}
+
+	/** The families read from data files (Rechiseled), replacing the last ones; tests set their own. */
+	public static void setDataFamilies(List<List<Item>> loaded) {
 		dataFamilies = List.copyOf(loaded);
 		families = null;
 	}

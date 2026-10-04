@@ -116,6 +116,8 @@
   trapped living villagers before 0.138.0).
 
 ### Tests
+- The builder soak no longer counts a supply run to far chests (30 s there and back without a block placed) as a
+  stall: the split soak now ends with 0 stalls (B40).
 - The showcase's title check measures from the title to the panel's right edge, so the player inventory's
   "Crafting" no longer fails the `missing` scene (B41).
 - Every value the mod saves on a villager (all 72: a builder's site and bag, a lumberjack's tree farm, a couple's

@@ -746,6 +746,7 @@ public class BuilderWork extends Behavior<Villager> {
 			}
 		}
 		if (tookAny) {
+			site.supplied();
 			level.playSound(null, source, SoundEvents.CHEST_OPEN, SoundSource.BLOCKS, 0.4f, 1.1f);
 		}
 	}
@@ -800,6 +801,7 @@ public class BuilderWork extends Behavior<Villager> {
 			if (take > 0) {
 				mateBag.remove(item, take);
 				bag.addAll(item, take);
+				site.supplied();
 				villager.getBrain().setMemory(MemoryModuleType.LOOK_TARGET, new net.minecraft.world.entity.ai.behavior.EntityTracker(mate, true));
 			}
 			return true;
@@ -888,6 +890,9 @@ public class BuilderWork extends Behavior<Villager> {
 		List<ItemStack> junk = bag.takeAllExcept(keep);
 		if (junk.isEmpty()) {
 			junk = bag.takeAll(); // bag is full of materials for later: drop them back off
+		}
+		if (!junk.isEmpty()) {
+			site.supplied();
 		}
 		List<BlockPos> store = null;
 		for (ItemStack stack : junk) {

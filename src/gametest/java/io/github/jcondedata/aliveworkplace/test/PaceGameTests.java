@@ -268,10 +268,15 @@ public class PaceGameTests implements FabricGameTest {
 
 	// --- Helpers --------------------------------------------------------------------------------------------------
 
-	/** A villager with {@code job} (not in the world, so nothing nearby changes its pace). */
+	/**
+	 * A villager with {@code job} and no village (not in the world). It stands 200 blocks above the test, out of reach of
+	 * every Village Hall other tests place (the largest radius is 64): a hall in reach would bring in its upkeep, mood and
+	 * edicts, which are real pace sources, and the tests running beside this one decide whether there is one.
+	 */
 	private static Villager worker(GameTestHelper helper, VillagerProfession job) {
 		Villager v = EntityType.VILLAGER.create(helper.getLevel());
-		v.moveTo(helper.absoluteVec(new net.minecraft.world.phys.Vec3(5, 2, 5)));
+		v.moveTo(helper.absoluteVec(new net.minecraft.world.phys.Vec3(5, 200, 5)));
+		helper.assertTrue(VillageHalls.nearest(helper.getLevel(), v.blockPosition()).isEmpty(), "a Village Hall in reach of " + v.blockPosition());
 		v.setVillagerData(v.getVillagerData().setProfession(job));
 		return v;
 	}

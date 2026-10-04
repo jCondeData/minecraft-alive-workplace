@@ -51,6 +51,8 @@
   between at most 3 chests by its bench and the village storehouses.
 
 ### Fixed
+- A build's progress no longer drops after a server restart while its foundation is being filled (it showed 12%,
+  then 1%).
 - Builders use the village storehouse on their own: one whose bag is full while its chests are full (or it has none)
   empties it into the storehouse's chests instead of dropping it on the ground, and so does a builder finishing a
   build; a storehouse no longer drops out of the village while its porter is out on a far errand; and a builder whose

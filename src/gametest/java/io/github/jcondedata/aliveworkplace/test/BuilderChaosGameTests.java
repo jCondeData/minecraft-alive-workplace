@@ -124,6 +124,9 @@ public class BuilderChaosGameTests {
 		for (BuildPlan.Stage stage : List.of(BuildPlan.Stage.FOUNDATION, BuildPlan.Stage.STRUCTURE, BuildPlan.Stage.DECORATION)) {
 			for (BuildPlan.Step step : plan.steps(stage)) {
 				wanted.put(step.pos(), step.state());
+				if (step.secondaryPos() != null) {
+					wanted.put(step.secondaryPos(), step.secondaryState()); // a door's top half is the build's too
+				}
 			}
 		}
 

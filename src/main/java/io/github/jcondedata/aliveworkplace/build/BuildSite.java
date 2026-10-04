@@ -41,6 +41,11 @@ public final class BuildSite {
 	private final List<Integer> deferred = new ArrayList<>();
 	private int skipped;
 	private int placed;
+	/**
+	 * The most progress shown so far (B46). The foundation and landscaping lists are worked out again from the terrain
+	 * after a restart, and the foundation already filled then counts as ground, so the raw figure would drop.
+	 */
+	private float shownProgress;
 	@Nullable
 	private UUID builder;
 	/** Waiting in the builder's queue (the builder is busy with an earlier site). */
@@ -310,7 +315,11 @@ public final class BuildSite {
 			case DECONSTRUCT -> retrying ? plan.steps(BuildPlan.Stage.DECONSTRUCT).size() : cursor;
 			case LANDSCAPE, DONE -> total; // the building itself is finished
 		};
-		return Math.min(1f, done / (float) total);
+		float now = Math.min(1f, done / (float) total);
+		if (now > shownProgress) {
+			shownProgress = now;
+		}
+		return shownProgress;
 	}
 
 	// --- accessors -------------------------------------------------------------------------
@@ -467,6 +476,9 @@ public final class BuildSite {
 		tag.putIntArray("deferred", deferred);
 		tag.putInt("skipped", skipped);
 		tag.putInt("placed", placed);
+		if (shownProgress > 0) {
+			tag.putFloat("shown_progress", shownProgress);
+		}
 		if (builder != null) {
 			Nbt.putUuid(tag, "builder", builder);
 		}
@@ -510,6 +522,7 @@ public final class BuildSite {
 		}
 		site.skipped = Nbt.getInt(tag, "skipped");
 		site.placed = Nbt.getInt(tag, "placed");
+		site.shownProgress = Nbt.getFloat(tag, "shown_progress");
 		site.builder = Nbt.hasUuid(tag, "builder") ? Nbt.getUuid(tag, "builder") : null;
 		site.queued = Nbt.getBoolean(tag, "queued");
 		site.deconstruct = Nbt.getBoolean(tag, "deconstruct");

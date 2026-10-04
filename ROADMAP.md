@@ -384,6 +384,12 @@ about 12% of that. For villager mods, the cost is pathfinding to distant points 
 - [ ] **25.4** **The pack's performance stack.** Boot and soak with Sodium, Lithium, C2ME, FerriteCore, ModernFix,
   EntityCulling, ImmediatelyFast, Krypton and ScalableLux (Cobbleverse's set). Done when: no errors, and numbers within
   target.
+  - Status (lane-a-1004-1233): booted clean on both sides (docs/performance.md, "The pack's performance stack"): the
+    pack test's server loads Lithium, C2ME, FerriteCore, ModernFix, Krypton and ScalableLux with no error of ours or
+    theirs; `PERF_STACK=true tools/screenshots/run.sh` adds all nine to the client (the pack's versions), which boots and
+    passes its scene. The benchmark and the soak already run with them (they run the whole pack). Left: tonight's
+    nightly soak and the first benchmark (25.1) give the numbers; compare them with the 25.2 targets, add the row and
+    tick.
 - [x] **25.5** (review: pending 2026-10-04) **Server owner controls.** Config caps like MineColonies' (max workers per village, how far workers path, the
   far-from-players behaviour from Milestone 23). Needs systems (moods, sickness, raids, festivals) are easy to switch
   off, because "babysitting" is the top complaint about big colony mods. Done when: each key is documented in the README

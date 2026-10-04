@@ -163,6 +163,10 @@ fun nestedJars(mods: List<String>): List<File> {
         zipTree(mod).matching { include("META-INF/jars/*.jar") }.forEach { nested ->
             // owo-sentinel only warns that owo-lib is missing, and refuses to load next to it.
             if (nested.name.startsWith("owo-sentinel")) return@forEach
+            // C2ME's native maths needs Java 25, and its density function compiler needs that: on Java 21 the loader
+            // leaves both nested modules out of a real install (the pack test's mod list); flattened here, they would
+            // stop the game (25.4).
+            if (nested.name.startsWith("c2me-fabric-opts-natives-math") || nested.name.startsWith("c2me-fabric-opts-dfc")) return@forEach
             val target = File(out, nested.name)
             if (!target.exists()) {
                 out.mkdirs()
@@ -199,7 +203,8 @@ dependencies {
     if (devclient != null) {
         // Screenshots of Cobblemon features (SCENE=tutor): ./gradlew runScreenshots -Pcobblemon=true
         // SCENE=battle: Mega Showdown too (-Pmega=true), for a Master trainer's Mega Evolution.
-        listOf("cobblemon" to "screenshot_cobblemon", "mega" to "screenshot_mega").forEach { (flag, key) ->
+        // PERF_STACK=true (-PperfStack=true): the pack's performance mods too (ROADMAP 25.4).
+        listOf("cobblemon" to "screenshot_cobblemon", "mega" to "screenshot_mega", "perfStack" to "screenshot_perf").forEach { (flag, key) ->
             if (findProperty(flag) == "true") {
                 val mods = forCobblemon(tomlList("tests", key))
                 mods.forEach { "modDevclientRuntimeOnly"(it) }

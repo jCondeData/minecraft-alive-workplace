@@ -68,4 +68,7 @@ tests.cobblemon18 = [
 tests.screenshots = true
 # Extra mods the harness can load: -Pcobblemon=true (Pokémon scenes), -Pmega=true (SCENE=battle).
 tests.screenshot_cobblemon = ["maven.modrinth:cobblemon:kF7CvxTo", "maven.modrinth:cobbledollars:cqsHXSXe"]
+# Cobbleverse's performance stack, the pack's own versions (25.4): Sodium, Lithium, C2ME, FerriteCore, ModernFix,
+# EntityCulling, ImmediatelyFast, Krypton, ScalableLux.
+tests.screenshot_perf = ["maven.modrinth:AANobbMI:KIRFiWG4", "maven.modrinth:gvQqBUqZ:N08Z8wog", "maven.modrinth:VSNURh3q:h8ey5B7D", "maven.modrinth:uXXizFIs:sOzRw3CG", "maven.modrinth:nmDcB62a:NnNX8LBn", "maven.modrinth:NNAgCjsB:hsWvcyFJ", "maven.modrinth:5ZwdcRci:ATB4eNEP", "maven.modrinth:fQEb0iXm:Acz3ttTp", "maven.modrinth:Ps1zyz6x:Yx1tgJMI"]
 tests.screenshot_mega = ["maven.modrinth:SszvX85I:Y6di9Ram", "maven.modrinth:jtmvUHXj:Xlt4eWBe", "maven.modrinth:ccKDOlHs:JB1fLQnc", "maven.modrinth:lhGA9TYQ:Wto0RchG"]

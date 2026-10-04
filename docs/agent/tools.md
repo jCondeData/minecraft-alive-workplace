@@ -42,6 +42,9 @@ multi-version layout (ROADMAP, Milestone 19): **Stonecutter**, one Gradle node p
   `stonecutter.properties.toml`. `COBBLEMON18=true tools/screenshots/run.sh` films a Pokémon scene with 1.8.1, and a
   hand-started showcase run with the `cobblemon18` box ticked films every Pokémon scene with it (never published).
   The nightly runs the suite both ways (job `compat-cobblemon18`). 1.8-only features ask `work/PokemonFeatures`.
+- `PERF_STACK=true SCENE=<name> tools/screenshots/run.sh` — the screenshot client with Cobbleverse's performance mods
+  (Sodium, Lithium, C2ME, FerriteCore, ModernFix, EntityCulling, ImmediatelyFast, Krypton, ScalableLux; the pack's
+  versions, `tests.screenshot_perf`), for ROADMAP 25.4. The server side already has them in `tools/packtest/run.sh`.
 - `./gradlew :1.21.1:genSources` — decompiled Minecraft sources for reading vanilla code; they land in
   `.gradle/loom-cache/minecraftMaven/net/minecraft/minecraft-common-*/**/**-sources.jar` (unzip and grep)
 - `python3 tools/agent/sessions.py` — claims, landing, review packages, QA verification and roadmap bookkeeping when

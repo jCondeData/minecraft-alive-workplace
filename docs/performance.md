@@ -29,6 +29,23 @@ One row per run, newest first. Ticks are milliseconds.
 |---|---|---|---|---|---|---|---|
 | (first run pending) | | 150 | | | | | |
 
+## The pack's performance stack (25.4)
+
+Cobbleverse ships its own performance mods, and the benchmark, the soak and the nightly pack boot all run with them,
+because they run the whole pack: Lithium 0.15.4, C2ME 0.4.0-alpha.0.23, FerriteCore 7.0.3, ModernFix 5.25.1, Krypton
+0.2.8 and ScalableLux 0.1.0.1 on the server (Sodium, EntityCulling and ImmediatelyFast are client mods: the server
+leaves them out). On Java 21 the loader leaves out two of C2ME's nested modules, its native maths and its density
+function compiler, which need Java 25.
+
+The client side: `PERF_STACK=true tools/screenshots/run.sh` (with any `SCENE`) adds the same nine mods, the pack's
+versions, to the screenshot client (`tests.screenshot_perf` in `stonecutter.properties.toml`), with those two C2ME
+modules left out as on a real Java 21 install.
+
+| Date | Check | Result |
+|---|---|---|
+| 2026-10-04 | Client (`SCENE=config PERF_STACK=true`) | 96 mods, all nine performance mods loaded; the scene's 2 checks pass and the world renders behind the screen; only warnings are other mods' optional mixins and the container's missing sound device |
+| 2026-10-04 | Pack boot (`tools/packtest/run.sh`, 0.138.0 + 25.5) | 252 mods loaded, the six server mods among them; no error from Alive Workplace or the performance mods (the 37 error lines are the pack's own: empty registries, data fixers, Cobblemon dex files) |
+
 ## Targets (25.2)
 
 To be proposed from the first measurement and confirmed by the owner. Meanwhile 25.3 works to these:

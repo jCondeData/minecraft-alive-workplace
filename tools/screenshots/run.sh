@@ -6,6 +6,8 @@
 # screenshots/gif/*.png (small frames every half second) and showcase.json (the scene's checks: tools/showcase).
 # COBBLEMON=true / MEGA=true add Cobblemon (and Mega Showdown) for scenes not in the list below.
 # COBBLEMON18=true: those Pokémon scenes with Cobblemon 1.8.1 instead of the pack's 1.7.3 (ROADMAP 28.2).
+# PERF_STACK=true adds the pack's performance mods (Sodium, Lithium, C2ME, FerriteCore, ModernFix, EntityCulling,
+# ImmediatelyFast, Krypton, ScalableLux) to the client, for ROADMAP 25.4.
 # GUI_SCALE=4 films any scene at GUI scale 4 (a 1920x1080 window; scale 3 also gets it; default 2 at 960x540).
 # (the harness is written for the Minecraft 1.21.1 node; each node runs in versions/<mc>/run).
 set -euo pipefail
@@ -44,7 +46,7 @@ catalog() { python3 tools/showcase/scenes.py env "${SCENE:-builders}" 2>/dev/nul
 # 3. Run the client (the dev-only harness stages the scene, takes shots and quits).
 LIBGL_ALWAYS_SOFTWARE=1 GALLIUM_DRIVER=llvmpipe xvfb-run -a -s "-screen 0 1920x1080x24" \
   ./gradlew :$MC:runScreenshots --no-daemon -Pscene="${SCENE:-builders}" -PguiScale="${GUI_SCALE:-2}" -PworkshopWeight="${WORKSHOP_WEIGHT:-3}" ${HOUSE_WEIGHT:+-PhouseWeight=$HOUSE_WEIGHT} \
-    -Pcobblemon="${COBBLEMON:-$(catalog COBBLEMON)}" -Pmega="${MEGA:-$(catalog MEGA)}" -PbuilderDebug="${DEBUG:-false}" -Pcobblemon18="${COBBLEMON18:-false}" > "$SCRATCH/client.log" 2>&1 || true
+    -Pcobblemon="${COBBLEMON:-$(catalog COBBLEMON)}" -Pmega="${MEGA:-$(catalog MEGA)}" -PperfStack="${PERF_STACK:-false}" -PbuilderDebug="${DEBUG:-false}" -Pcobblemon18="${COBBLEMON18:-false}" > "$SCRATCH/client.log" 2>&1 || true
 cp "$SCRATCH/client.log" $RUN/screenshots/client.log 2>/dev/null || true
 grep -E "finished building|Stopping!" "$SCRATCH/client.log" || true
 

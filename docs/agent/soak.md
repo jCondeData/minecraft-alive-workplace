@@ -149,3 +149,27 @@ Triage (each became a Bug: B21 waiting with nothing missing, B22 stone house sta
   #6): LANDSCAPE crawls (13 blocks in 30 s).
 - Days: about 6 in-game days for 21 of the 22 builds (builders work ~7,000 of every 24,000 ticks). The item asks for
   2 days; whether the bar stays at 2 is the owner's call.
+
+## Run 4 — lane-a-1004-0033, 2026-10-04, after B21-B23 and B31
+
+`SOAK=true SOAK_DAYS=6 tools/packtest/run.sh` on main 1fba053 (item/23.1 merged). **22 of 22 builds in 3.4 in-game
+days, no item duplicated or lost**, 2 stalls (down from 21/22 in 6 days and 10 stalls in run 3):
+
+```
+01:03:34 Soak: 10 builders, 22 builds, 11466 items in 25 chests, 6 days
+01:05:21 Builder stalled 30 s: aliveworkplace:tinkers_workshop at 1031, 80, 1026 (stage STRUCTURE, status WAITING_FOR_MATERIALS, 273 placed, 0 skipped, 0 kinds missing) [stall #1]
+01:05:29 Builder stalled 30 s: aliveworkplace:graveyard at 1119, 81, 1000 (stage FOUNDATION, status WORKING, 0 placed, 0 skipped, 0 kinds missing) [stall #2]
+01:07:05 Soak result: 22/22 builds finished in 81621 ticks (3.4 days); 2 stalls; items off: none
+```
+
+Each stall is a Bug: B38 (tinker's workshop waiting with nothing missing, B21's symptom on another build) and B39
+(the graveyard's slow start of FOUNDATION on its slope, in every run). Days: the item asks for 2; the full set takes
+3.4 (builders work about 7,000 of every 24,000 ticks), so the soak's default stays 2 days for quick runs and the
+yardstick run is `SOAK_DAYS=6`. Whether the bar should be 2 days of work is in the review package for the owner.
+
+The time-lapse: `SCENE=soak tools/screenshots/run.sh` runs the same soak (`Soak.begin`, same seed and layout) in the
+screenshot client at (200, -56, 200), sprinted, filmed from above with night vision so the nights stay readable.
+
+Scene runs (same soak in the screenshot client, 316 ticks/s): 22/22 in 3.4 days with 0 stalls, then 22/22 in 4.0 days
+with 1 stall (`tinkers_workshop ... stage STRUCTURE, status WORKING, 576 placed, 0 skipped, 0 kinds missing`: the
+tinker's workshop again, see B38). Items off: none in both.

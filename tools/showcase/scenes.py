@@ -58,6 +58,10 @@ SCENES = [
     S("builders", "Builder", "Three builders, three starter builds", "the builders finished all three builds", 420,
       [("02_builder_closeup", "A builder at work"), ("03_finished_wide", "All three finished"),
        ("04_cottage", "Starter Cottage"), ("06_lookout_tower", "Lookout Tower")]),
+    # Builder soak (ROADMAP 23.1): 10 builders, the whole starter set on hilly woods, chests only, no help (6 days, sprinted)
+    S("soak", "Builder", "The builder soak: 10 builders, every starter build", "10 builders finished every starter build with nothing duplicated or lost", 1200,
+      [("01_soak_start", "Hilly woods, 10 benches and their chests"), ("frame_*@middle", "Halfway"), ("02_soak_done", "Every build finished"),
+       ("03_soak_close", "Close up")]),
     S("preview", "Builder", "Ghost preview and the status over a builder", "the builder made progress on the previewed site", 120,
       [("20_preview_start", "Ghost preview"), ("21_preview_half_built", "Half built"), ("22_status_closeup", "Status over the builder")]),
     S("missing", "Builder", "What a build is still missing", "the blueprint's tooltip lists what the chests are short of", 60,

@@ -89,19 +89,50 @@ public final class Soak {
 	}
 
 	static int run(CommandSourceStack source, int days) {
-		ServerLevel level = source.getLevel();
-		Rules.set(level, ModGameRules.FREE_MATERIALS, false, source.getServer());
-		Rules.set(level, GameRules.RULE_DAYLIGHT, true, source.getServer());
+		String text = begin(source.getLevel(), BlockPos.containing(source.getPosition()), days);
+		source.sendSuccess(() -> Component.literal(text), true);
+		return running == null ? 0 : running.builds().size();
+	}
+
+	/**
+	 * Starts a soak at {@code origin} for {@code days} in-game days and returns (and logs) its summary line. The command
+	 * and the time-lapse scene (SCENE=soak) both start here; the scene ends it with {@link #finish()}.
+	 */
+	public static String begin(ServerLevel level, BlockPos origin, int days) {
+		Rules.set(level, ModGameRules.FREE_MATERIALS, false, level.getServer());
+		Rules.set(level, GameRules.RULE_DAYLIGHT, true, level.getServer());
 		level.setDayTime(1000);
-		BlockPos origin = BlockPos.containing(source.getPosition());
 		Run run = start(level, origin, RandomSource.create(23_1L), days * DAY);
 		running = run;
 		int total = run.stocked().values().stream().mapToInt(Integer::intValue).sum();
 		String text = "Soak: " + run.builders().size() + " builders, " + run.builds().size() + " builds, " + total + " items in "
 			+ run.chests().size() + " chests, " + days + " days";
 		AliveWorkplace.LOG.info(text);
-		source.sendSuccess(() -> Component.literal(text), true);
-		return run.builds().size();
+		return text;
+	}
+
+	/** Builds finished so far and builds in the soak, or {0, 0} when none is running. */
+	public static int[] progress() {
+		Run run = running;
+		if (run == null) {
+			return new int[] {0, 0};
+		}
+		BuildSiteManager manager = BuildSiteManager.get(run.level());
+		int finished = (int) run.builds().stream().filter(p -> manager.get(p.site().id()) == null).count();
+		return new int[] {finished, run.builds().size()};
+	}
+
+	/** Ends the running soak now: logs and returns its result line, or null when none is running. */
+	@Nullable
+	public static String finish() {
+		Run run = running;
+		if (run == null) {
+			return null;
+		}
+		String result = result(run, true);
+		AliveWorkplace.LOG.info(result);
+		running = null;
+		return result;
 	}
 
 	/** Lays out the ground, the builders, their chests and builds; public for the soak GameTest and scene. */

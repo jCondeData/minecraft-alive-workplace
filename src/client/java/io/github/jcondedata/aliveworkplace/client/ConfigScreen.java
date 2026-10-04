@@ -62,7 +62,7 @@ public class ConfigScreen extends OptionsSubScreen {
 			} else {
 				WorkplaceConfig.Range range = WorkplaceConfig.RANGES.get(name);
 				numbers.add(new OptionInstance<>(labelKey(name), OptionInstance.cachedConstantTooltip(Component.translatable(tooltipKey(name))),
-					(caption, value) -> Options.genericValueLabel(caption, value), new OptionInstance.IntRange(range.min(), range.max()),
+					(caption, value) -> zeroLabel(name, value).map(zero -> Options.genericValueLabel(caption, zero)).orElseGet(() -> Options.genericValueLabel(caption, value)), new OptionInstance.IntRange(range.min(), range.max()),
 					config.getInt(name), value -> config.setInt(name, value)));
 			}
 		}
@@ -92,5 +92,11 @@ public class ConfigScreen extends OptionsSubScreen {
 		super.removed();
 		config.save(dir);
 		config.apply();
+	}
+
+	/** What a number reads at 0 when 0 means something of its own ("No Limit"): {@code aliveworkplace.config.<name>.zero}. */
+	private static java.util.Optional<Component> zeroLabel(String name, int value) {
+		String key = labelKey(name) + ".zero";
+		return value == 0 && net.minecraft.locale.Language.getInstance().has(key) ? java.util.Optional.of(Component.translatable(key)) : java.util.Optional.empty();
 	}
 }

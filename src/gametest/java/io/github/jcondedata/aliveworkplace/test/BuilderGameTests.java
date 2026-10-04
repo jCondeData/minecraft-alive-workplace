@@ -1076,6 +1076,41 @@ public class BuilderGameTests implements FabricGameTest {
 		});
 	}
 
+	/** With repairs switched off (25.5), a builder leaves a damaged finished building alone and keeps its planks. */
+	//$ gametest_ticks_batch AREA '500' '"upkeepOff"'
+	@GameTest(template = AREA, timeoutTicks = 500, batch = "upkeepOff")
+	public void builderLeavesBuildingsAloneWithRepairsOff(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		boolean was = io.github.jcondedata.aliveworkplace.build.Upkeep.ENABLED;
+		io.github.jcondedata.aliveworkplace.build.Upkeep.ENABLED = false;
+		Leftovers.after(helper, () -> io.github.jcondedata.aliveworkplace.build.Upkeep.ENABLED = was);
+		ServerLevel level = helper.getLevel();
+		BlockPos src = new BlockPos(6, 2, 6);
+		for (int x = 0; x < 4; x++) {
+			helper.setBlock(src.offset(x, 0, 0), Blocks.OAK_PLANKS);
+		}
+		ResourceLocation wall = ResourceLocation.fromNamespaceAndPath("aliveworkplace_test", "upkeep_off_" + Long.toHexString(level.getGameTime()));
+		level.getStructureManager().getOrCreate(wall).fillFromWorld(level, helper.absolutePos(src), new Vec3i(4, 1, 1), false, Blocks.STRUCTURE_VOID);
+		helper.setBlock(src.offset(1, 0, 0), Blocks.AIR); // knocked out
+		helper.setBlock(CHEST, Blocks.CHEST);
+		Container chest = helper.getBlockEntity(CHEST);
+		chest.setItem(0, new ItemStack(Items.OAK_PLANKS, 4));
+		BlockPos bench = new BlockPos(2, 2, 2);
+		helper.setBlock(bench, ModBlocks.BUILDERS_BENCH);
+		Villager builder = helper.spawn(EntityType.VILLAGER, new BlockPos(3, 2, 3));
+		io.github.jcondedata.aliveworkplace.build.Builders.employ(level, builder, helper.absolutePos(bench));
+		var placement = new io.github.jcondedata.aliveworkplace.blueprint.BlueprintData.Placement(level.dimension().location(), helper.absolutePos(src),
+			Rotation.NONE, net.minecraft.world.level.block.Mirror.NONE);
+		BuildSiteManager.get(level).recordFinished(wall, placement, builder.getUUID());
+		Leftovers.after(helper, () -> BuildSiteManager.get(level).forgetFinished(placement));
+		helper.onEachTick(() -> helper.assertFalse(ModAttachments.BUILDER_JOB.has(builder), "a repair started with repairs off"));
+		helper.runAtTickTime(400, () -> {
+			helper.assertBlockPresent(Blocks.AIR, src.offset(1, 0, 0));
+			helper.assertTrue(chest.countItem(Items.OAK_PLANKS) == 4, "planks left: " + chest.countItem(Items.OAK_PLANKS));
+			helper.succeed();
+		});
+	}
+
 	/** An empty portal frame in a finished build is lit with a flint and steel from the chests (a use of it). */
 	//$ gametest AREA
 	@GameTest(template = AREA)
@@ -1740,6 +1775,33 @@ public class BuilderGameTests implements FabricGameTest {
 			helper.assertTrue(helper.getBlockState(new BlockPos(15, 1, 2)).is(Blocks.DIRT_PATH)
 				|| helper.getBlockState(new BlockPos(14, 1, 1)).is(Blocks.DIRT_PATH) || helper.getBlockState(new BlockPos(15, 1, 0)).is(Blocks.DIRT_PATH)
 				|| helper.getBlockState(new BlockPos(16, 1, 1)).is(Blocks.DIRT_PATH), "the path doesn't reach the bell");
+		});
+	}
+
+	/** With paths switched off (25.5), the builder finishes the hut and lays no path to the bell. */
+	//$ gametest_ticks_batch AREA '2400' '"pathsOff"'
+	@GameTest(template = AREA, timeoutTicks = 2400, batch = "pathsOff")
+	public void builderLaysNoPathWithPathsOff(GameTestHelper helper) {
+		boolean paths = io.github.jcondedata.aliveworkplace.build.Paths.ENABLED;
+		io.github.jcondedata.aliveworkplace.build.Paths.ENABLED = false;
+		Leftovers.after(helper, () -> io.github.jcondedata.aliveworkplace.build.Paths.ENABLED = paths);
+		for (int x = 0; x < 17; x++) {
+			for (int z = 0; z < 17; z++) {
+				helper.setBlock(new BlockPos(x, 1, z), Blocks.GRASS_BLOCK);
+			}
+		}
+		helper.setBlock(new BlockPos(15, 2, 1), Blocks.BELL);
+		Setup s = setup(helper, TEST_HUT, HUT_ORIGIN, Rotation.NONE, hutMaterials());
+		helper.succeedWhen(() -> {
+			helper.assertTrue(BuildSiteManager.get(s.level()).get(s.site().id()) == null, "still building");
+			helper.assertTrue(!ModAttachments.PATH.has(s.villager()), "laying a path with paths off");
+			int path = 0;
+			for (int x = 0; x < 17; x++) {
+				for (int z = 0; z < 17; z++) {
+					path += helper.getBlockState(new BlockPos(x, 1, z)).is(Blocks.DIRT_PATH) ? 1 : 0;
+				}
+			}
+			helper.assertTrue(path == 0, path + " blocks of path with paths off");
 		});
 	}
 

@@ -1091,6 +1091,7 @@ saves the file and puts the settings into effect in your own worlds (a dedicated
 | `lumberjackRadius`, `orchardRadius`, `fisherRadius` | 16 | how far lumberjacks cut, orchard keepers pick and fishers look for water |
 | `partnerRadius` | 16 | how close to a workstation pastured Pokémon must be to help |
 | `postmanRange` | 64 | how far a postman walks to deliver (mail going farther arrives at dawn) |
+| `explorerRange` | 48 | how far from their Cartography Table explorers go on an expedition |
 | `villageHallRadius` | 64 | how far from a Village Hall its village reaches |
 | `keepVillagesWorking` | true | villages keep working when no player is near: while anyone is online, each worker's workstation chunk (and the chunk it is in) stays loaded; `false` pauses villages nobody is near (builds and quarries still follow `workplaceKeepWorkLoaded`) |
 | `builderPaths` | true | builders lay a dirt path from each finished building to the village's bell or hall |
@@ -1102,8 +1103,24 @@ saves the file and puts the settings into effect in your own worlds (a dedicated
 | `marketDays` | true | a village with a Village Hall and a Market Square holds a market once a week |
 | `villageRaids` | true | monsters raid villages with a Village Hall and 8 or more villagers at night now and then |
 | `villageRadius` | 48 | workers whose workstations are this close together share their chests (0 turns sharing off) |
+| `maxWorkersPerVillage` | 0 | jobless villagers stop taking free workstations once this many workstations within `villageRadius` of each other are taken; nobody loses a job they have (0: no limit) |
+| `workerPathRange` | 48 | how far villagers with a job look for a path in one go, in blocks; lower is lighter on the server, and farther walks are made in legs (vanilla: 48) |
+| `builderRepairs` | true | idle builders repair the buildings they finished when blocks go missing |
+| `banditCamps` | true | bandits make camp near villages of Village rank or more now and then, and raid them until their chief falls |
+| `festivals` | true | villages with a Village Hall hold a festival every season (players can still call one with a cake) |
+| `villagerChatter` | true | villagers near a player now and then say something about their day, over their heads |
+| `villagerCouples` | true | villagers court, marry (a wedding at the bell) and mourn |
+| `villageTreasury` | true | villages with a Village Hall put by takings every morning for players to collect at the hall |
+| `partnerShows` | true | Pokémon pastured near a workstation are seen helping: they walk over to the work, carry things and lend a hand (with Cobblemon) |
+| `seasonDays` | 8 | days in each of the village calendar's four seasons (each season's festival is on its middle day) |
+| `treasuryPerWorker` | 20 | what each worker brings the treasury a day, in hundredths of an emerald, before wellbeing and rank |
 | `villageProtection` | true | a Village Hall's owner may protect the village from other players (shift-click the hall's name tag; off until they do) |
 | `dollarsPerEmerald` | 100 | CobbleDollars per emerald for lessons, shop prices and fares |
+
+Every "needs" system (names, traits, moods, sickness, couples, chatter, markets, festivals, raids, bandit camps, the
+treasury, repairs, paths) has its own switch above: set it to `false` and the village simply goes without it; nothing
+else needs looking after. For a big server, `maxWorkersPerVillage`, `workerPathRange` and `keepVillagesWorking` are the
+ones that keep villages light.
 
 ## Performance
 Tested on a real server with the whole Cobbleverse pack: 80 busy workers (40 builders, and miners, lumberjacks,

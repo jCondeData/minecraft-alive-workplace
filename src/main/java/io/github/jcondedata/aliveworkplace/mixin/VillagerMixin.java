@@ -31,6 +31,7 @@ abstract class VillagerMixin {
 		io.github.jcondedata.aliveworkplace.guard.Mercenaries.tick((Villager) (Object) this);
 		io.github.jcondedata.aliveworkplace.work.Stations.retakeHive((Villager) (Object) this);
 		io.github.jcondedata.aliveworkplace.work.JobSiteTickets.tick((Villager) (Object) this);
+		io.github.jcondedata.aliveworkplace.work.WorkerLimits.tick((Villager) (Object) this);
 		if (((Villager) (Object) this).isRemoved()) {
 			ci.cancel();
 			return;
@@ -38,6 +39,17 @@ abstract class VillagerMixin {
 		if (io.github.jcondedata.aliveworkplace.nether.Netherworkers.tick((Villager) (Object) this)) {
 			ci.cancel();
 		}
+	}
+
+	/** While a villager's brain runs, its search for a free workstation skips full villages (25.5, see {@code WorkerLimits}). */
+	@Inject(method = "customServerAiStep", at = @At("HEAD"))
+	private void aliveworkplace$thinking(CallbackInfo ci) {
+		io.github.jcondedata.aliveworkplace.work.WorkerLimits.thinking((Villager) (Object) this);
+	}
+
+	@Inject(method = "customServerAiStep", at = @At("RETURN"))
+	private void aliveworkplace$thought(CallbackInfo ci) {
+		io.github.jcondedata.aliveworkplace.work.WorkerLimits.thinking(null);
 	}
 
 	/** A villager placed by a structure template gets room to stand (B6). */
@@ -70,6 +82,14 @@ abstract class VillagerMixin {
 	/** Set when a villager who went to school is taking their first job: they start a level up once it's set. */
 	@org.spongepowered.asm.mixin.Unique
 	private boolean aliveworkplace$headStart;
+
+	/** A jobless villager doesn't take a free workstation in a village that has its workers (25.5, {@code maxWorkersPerVillage}). */
+	@Inject(method = "setVillagerData", at = @At("HEAD"), cancellable = true)
+	private void aliveworkplace$workerCap(net.minecraft.world.entity.npc.VillagerData data, CallbackInfo ci) {
+		if (io.github.jcondedata.aliveworkplace.work.WorkerLimits.refuse((Villager) (Object) this, data)) {
+			ci.cancel();
+		}
+	}
 
 	@Inject(method = "setVillagerData", at = @At("HEAD"))
 	private void aliveworkplace$schoolBefore(net.minecraft.world.entity.npc.VillagerData data, CallbackInfo ci) {

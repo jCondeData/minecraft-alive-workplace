@@ -340,7 +340,7 @@ public final class Stations {
 		villager.getBrain().eraseMemory(MemoryModuleType.POTENTIAL_JOB_SITE);
 		villager.getBrain().setMemory(MemoryModuleType.JOB_SITE, target);
 		JobSiteTickets.hold(level, villager);
-		villager.setVillagerData(villager.getVillagerData().setProfession(profession));
+		WorkerLimits.order(villager, profession);
 		if (villager.getVillagerXp() == 0) {
 			villager.setVillagerXp(1); // keeps the profession even if the block is briefly missing
 		}

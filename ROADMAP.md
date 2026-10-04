@@ -384,7 +384,7 @@ about 12% of that. For villager mods, the cost is pathfinding to distant points 
 - [ ] **25.4** **The pack's performance stack.** Boot and soak with Sodium, Lithium, C2ME, FerriteCore, ModernFix,
   EntityCulling, ImmediatelyFast, Krypton and ScalableLux (Cobbleverse's set). Done when: no errors, and numbers within
   target.
-- [ ] **25.5** **Server owner controls.** Config caps like MineColonies' (max workers per village, how far workers path, the
+- [x] **25.5** (review: pending 2026-10-04) **Server owner controls.** Config caps like MineColonies' (max workers per village, how far workers path, the
   far-from-players behaviour from Milestone 23). Needs systems (moods, sickness, raids, festivals) are easy to switch
   off, because "babysitting" is the top complaint about big colony mods. Done when: each key is documented in the README
   and tested switched off (the tester's config matrix).

@@ -64,6 +64,7 @@ public class ScreenshotHarness implements ClientModInitializer {
 	}
 
 	private final JobScenes jobScenes = new JobScenes();
+	private final WordsScene words = new WordsScene();
 
 	private void onTick(Minecraft mc) {
 		if (mc.level == null || mc.player == null || mc.getSingleplayerServer() == null) {
@@ -87,6 +88,10 @@ public class ScreenshotHarness implements ClientModInitializer {
 		}
 		if ("guide".equals(System.getProperty("aliveworkplace.scene"))) {
 			guideScene(mc, mc.getSingleplayerServer());
+			return;
+		}
+		if ("words".equals(System.getProperty("aliveworkplace.scene"))) {
+			words.tick(mc);
 			return;
 		}
 		if ("config".equals(System.getProperty("aliveworkplace.scene"))) {

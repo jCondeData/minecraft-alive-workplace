@@ -15,7 +15,8 @@
 			"io.github.jcondedata.aliveworkplace.compat.PackModsCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.PastureCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.MegaCompatTests",
-			"io.github.jcondedata.aliveworkplace.compat.StationsCompatTests"
+			"io.github.jcondedata.aliveworkplace.compat.StationsCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.PokemonFeaturesCompatTests"
 		]
 	},
 	"depends": {

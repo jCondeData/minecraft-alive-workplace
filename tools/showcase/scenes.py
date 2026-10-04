@@ -189,6 +189,8 @@ SCENES = [
       [("[0-9][0-9]_guide_*@spread", "")]),
     S("config", "Everyone at work", "The settings screen (Mod Menu)", "every setting fits its button; a switch turned off is saved", 30,
       [("01_config_numbers", "Distances and numbers"), ("02_config_switches", "Switches"), ("03_config_festivals_off", "Festivals off")]),
+    S("words", "Everyone at work", "Every new or reworded message, in chat", "every message reads without a raw key or placeholder", 30,
+      [("[0-9][0-9]_words@spread", "")]),
     S("staff", "Everyone at work", "Every workstation with its villager", "every workstation stands with its worker", 45,
       [("01_staff", "Every workstation"), ("02_staff_close_1", "Builder to Village Hall"),
        ("03_staff_close_2", "Village Hall to Trainer"), ("04_staff_above", "From above")]),
@@ -450,7 +452,8 @@ def label_from(stem):
 def main():
     p = argparse.ArgumentParser()
     sub = p.add_subparsers(dest="cmd", required=True)
-    sub.add_parser("list")
+    ls = sub.add_parser("list")
+    ls.add_argument("--cobblemon", action="store_true", help="only the scenes that load Cobblemon")
     m = sub.add_parser("matrix")
     m.add_argument("--last", help="the previous run's showcase.json (durations)")
     m.add_argument("--only", help="space- or comma-separated scene names (default: every scene)")
@@ -462,7 +465,7 @@ def main():
     sub.add_parser("check")
     a = p.parse_args()
     if a.cmd == "list":
-        print("\n".join(s["name"] for s in SCENES))
+        print("\n".join(s["name"] for s in SCENES if s["cobblemon"] or not a.cobblemon))
     elif a.cmd == "matrix":
         only = None
         if a.only and a.only.strip() and a.only.strip() != "all":

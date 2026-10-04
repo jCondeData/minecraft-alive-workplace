@@ -6,6 +6,10 @@
 - **A settings screen**: with Mod Menu installed, the mod's Configure button opens every setting of
   `config/aliveworkplace.json` as sliders and on/off buttons, each with a tooltip saying what it does. Closing the
   screen saves the file and puts the settings into effect in your own worlds; a server keeps its own file.
+- **Cobblemon 1.8**: tested with Cobblemon 1.8.1 as well as the pack's 1.7.3 (every Pokémon job passes its tests on
+  both); 1.8 no longer logs an "outside the tested versions" warning.
+- Names read the same everywhere: the Fisherman is never "Fisher", and the mod's blocks and items keep their capitals
+  in messages ("Travel Post", "Shop Counter", "Field Marker", "Delivery Note", "Training Dummy").
 - Bug reports on GitHub now use a form that asks for the version, the steps, `latest.log` and any crash report.
 - Over a builder's head, under its progress: the three materials the build is shortest of, with counts (or that it
   has everything), and where the builder takes materials from (its chests, or the storehouse, by its bench at x y z).

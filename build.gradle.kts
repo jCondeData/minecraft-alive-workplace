@@ -33,8 +33,20 @@ val compatMods: Map<String, String> = extra.properties
 val compatCompile: List<String> = extra.properties
     .filterKeys { it.startsWith("deps.compat_compile.") }
     .values.flatMap { it.toString().split(",") }.map { it.trim() }.filter { it.isNotEmpty() }
+/**
+ * -Pcobblemon18=true runs the compat suite, the screenshot harness and the showcase with Cobblemon 1.8 instead of the
+ * pack's 1.7.3 (the mod still compiles against 1.7.3). tests.cobblemon18 lists "old -> new" swaps of runtime mods;
+ * "old -> " leaves a mod out of that run (each with its reason in stonecutter.properties.toml).
+ */
+val cobblemon18 = findProperty("cobblemon18")?.toString() == "true"
+val cobblemon18Swaps: Map<String, String> = tomlList("tests", "cobblemon18").associate { line ->
+    val (from, to) = line.split("->", limit = 2).map { it.trim() } + listOf("")
+    from to to
+}
+fun forCobblemon(mods: List<String>): List<String> =
+    if (!cobblemon18) mods else mods.mapNotNull { mod -> cobblemon18Swaps[mod]?.ifEmpty { null } ?: mod.takeUnless { it in cobblemon18Swaps } }
 /** The mods the compat test suite runs with (only nodes that declare tests.compat_mods have that suite). */
-val compatTestMods: List<String> = tomlList("tests", "compat_mods")
+val compatTestMods: List<String> = forCobblemon(tomlList("tests", "compat_mods"))
 /** Whether this node has the screenshot harness (src/devclient). */
 val screenshots = findProperty("tests.screenshots")?.toString() == "true"
 
@@ -189,7 +201,7 @@ dependencies {
         // SCENE=battle: Mega Showdown too (-Pmega=true), for a Master trainer's Mega Evolution.
         listOf("cobblemon" to "screenshot_cobblemon", "mega" to "screenshot_mega").forEach { (flag, key) ->
             if (findProperty(flag) == "true") {
-                val mods = tomlList("tests", key)
+                val mods = forCobblemon(tomlList("tests", key))
                 mods.forEach { "modDevclientRuntimeOnly"(it) }
                 "modDevclientRuntimeOnly"(files(nestedJars(mods)))
             }

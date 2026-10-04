@@ -47,7 +47,7 @@ public class PartnersAtWorkCompatTests implements FabricGameTest {
 	private static final String AREA = CompatGameTests.AREA;
 
 	/** A pastured partner of {@code species} at {@code pastureAt}, and a player near so shows may run. */
-	private static void partner(GameTestHelper helper, BlockPos pastureAt, String species) {
+	static void partner(GameTestHelper helper, BlockPos pastureAt, String species) {
 		ServerPlayer player = helper.makeMockServerPlayerInLevel();
 		BlockPos by = helper.absolutePos(new BlockPos(1, 2, 8)); // a mock player starts at the world spawn: bring it to the test
 		player.teleportTo(by.getX() + 0.5, by.getY(), by.getZ() + 0.5);
@@ -57,15 +57,16 @@ public class PartnersAtWorkCompatTests implements FabricGameTest {
 		PartnerShowsCompatTests.after(helper, () -> helper.getLevel().getServer().getPlayerList().remove(player));
 	}
 
-	private static PokemonEntity pokemon(GameTestHelper helper, String species) {
-		List<PokemonEntity> found = helper.getLevel().getEntitiesOfClass(PokemonEntity.class, helper.getBounds().inflate(4),
+	static PokemonEntity pokemon(GameTestHelper helper, String species) {
+		// (Up to 30 above the area: an air mail partner climbs out of sight, ROADMAP 28.5.)
+		List<PokemonEntity> found = helper.getLevel().getEntitiesOfClass(PokemonEntity.class, helper.getBounds().inflate(4).expandTowards(0, 30, 0),
 			e -> e.getPokemon().getSpecies().getName().equalsIgnoreCase(species));
 		helper.assertTrue(found.size() == 1, "pastured " + species + ": " + found.size());
 		return found.get(0);
 	}
 
 	/** Every show the worker's cues start, as they start; carried items seen on the partner, by show. */
-	private static Set<ResourceLocation> watch(GameTestHelper helper, Villager worker, String species, Set<Item> carried) {
+	static Set<ResourceLocation> watch(GameTestHelper helper, Villager worker, String species, Set<Item> carried) {
 		Set<ResourceLocation> started = new HashSet<>();
 		helper.onEachTick(() -> {
 			ResourceLocation last = PartnerShows.lastShow(worker);

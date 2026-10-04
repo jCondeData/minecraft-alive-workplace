@@ -1,0 +1,16 @@
+{
+  "jobs": [
+    "minecraft:armorer",
+    "aliveworkplace:miner",
+    "minecraft:fisherman"
+  ],
+  "types": [
+    "fire"
+  ],
+  "cue": "fire_smelt",
+  "animation": "special",
+  "particles": "cobblemon:ember_fire",
+  "sound": "minecraft:item.firecharge.use",
+  "ticks": 40,
+  "effect": "flames"
+}

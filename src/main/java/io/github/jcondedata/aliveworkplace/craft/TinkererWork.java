@@ -197,6 +197,8 @@ public class TinkererWork extends CrafterWork {
 		mendTimer = 0;
 		bag.remove(Items.IRON_INGOT, 1);
 		golem.heal(HEAL_PER_INGOT);
+		// An Electric or Steel partner sparks over the golem being mended (ROADMAP 28.5).
+		io.github.jcondedata.aliveworkplace.work.PartnerShows.cue(villager, "tinker", golem.blockPosition());
 		villager.swing(InteractionHand.MAIN_HAND);
 		level.playSound(null, golem.blockPosition(), SoundEvents.IRON_GOLEM_REPAIR, SoundSource.NEUTRAL, 1f, 1f + (level.random.nextFloat() - level.random.nextFloat()) * 0.2f);
 		ModAttachments.GOLEM_REPAIRS.set(villager, ModAttachments.GOLEM_REPAIRS.getOrElse(villager, 0) + 1);
@@ -218,5 +220,11 @@ public class TinkererWork extends CrafterWork {
 	private static void status(Villager villager, String state, IronGolem golem) {
 		WorkerStatus.set(villager, Component.translatable("message.aliveworkplace.tinkerer.title", ModAttachments.ITEMS_CRAFTED.getOrElse(villager, 0)),
 			golem.getHealth() / golem.getMaxHealth(), Component.translatable("message.aliveworkplace.tinkerer.state." + state).withStyle(ChatFormatting.GRAY));
+	}
+
+	/** Partners at work (ROADMAP 28.5): electric sparks over the part. */
+	@Override
+	protected String partnerCue() {
+		return "tinker";
 	}
 }

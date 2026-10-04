@@ -920,7 +920,7 @@ here adds a new kind of speed bonus (the new jobs get the partners' existing one
   Done when: a GameTest per cue (the show starts when the worker reaches that moment in real work; the watered
   farmland is at moisture 7), and showcase scene `partners_land` (the builder with a Machamp carrying beams, the farmer
   with a Wartortle watering) with its GIF in the review package.
-- [ ] **28.5** **Partners at work: post, forge and kitchen.** Shows:
+- [x] **28.5** (review: pending 2026-10-04) **Partners at work: post, forge and kitchen.** Shows:
   - Postman + Flying: when a parcel goes by air mail it takes off from the Mailbox with a bundle, climbs out of sight
     and lands back empty-handed (cue `air_mail`); on the round it flies ahead to the next mailbox (cue `deliver`).
   - Armorer, Miner or Fisherman + Fire: breathes fire into the furnace or smoker each time it smelts the 8 on the spot

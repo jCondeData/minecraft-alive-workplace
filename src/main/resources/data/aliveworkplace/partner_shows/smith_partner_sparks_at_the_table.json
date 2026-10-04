@@ -1,0 +1,17 @@
+{
+  "jobs": [
+    "minecraft:toolsmith",
+    "aliveworkplace:ball_smith"
+  ],
+  "types": [
+    "steel",
+    "fire"
+  ],
+  "cue": "forge",
+  "animation": "physical",
+  "particles": "cobblemon:metal_sparks",
+  "sound": "minecraft:block.anvil.use",
+  "ticks": 40,
+  "effect": "sparks",
+  "deliver": true
+}

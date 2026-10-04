@@ -88,4 +88,10 @@ public class ToolsmithWork extends CrafterWork {
 		}
 		return null;
 	}
+
+	/** Partners at work (ROADMAP 28.5): sparks at the smithing table. */
+	@Override
+	protected String partnerCue() {
+		return "forge";
+	}
 }

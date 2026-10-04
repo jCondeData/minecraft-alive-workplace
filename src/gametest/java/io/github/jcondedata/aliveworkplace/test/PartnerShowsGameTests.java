@@ -62,6 +62,44 @@ public class PartnerShowsGameTests implements FabricGameTest {
 		helper.succeed();
 	}
 
+	/** 28.5's shows (post, forge and kitchen) all load with their cues, types, flight and delivery as the roadmap says. */
+	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
+	public void everyShowOfThePostForgeAndKitchenLoads(GameTestHelper helper) {
+		Object[][] want = {
+			// name, cue, types, flies off, delivers, effect
+			{"postman_flying_takes_the_air_mail", "air_mail", java.util.Set.of("flying"), true, false, PartnerShows.Effect.NONE},
+			{"postman_flying_flies_ahead", "deliver", java.util.Set.of("flying"), false, false, PartnerShows.Effect.NONE},
+			{"furnace_fire_breathes_into_the_furnace", "fire_smelt", java.util.Set.of("fire"), false, false, PartnerShows.Effect.FLAMES},
+			{"chef_fire_fans_the_flames", "cook", java.util.Set.of("fire"), false, false, PartnerShows.Effect.FLAMES},
+			{"chef_normal_carries_the_dish", "cook", java.util.Set.of("normal"), false, true, PartnerShows.Effect.NONE},
+			{"smith_partner_sparks_at_the_table", "forge", java.util.Set.of("steel", "fire"), false, true, PartnerShows.Effect.SPARKS},
+			{"weaponsmith_partner_holds_the_worn_piece", "mend", java.util.Set.of("steel", "fighting"), false, false, PartnerShows.Effect.NONE},
+			{"fletcher_flying_brings_a_feather", "fletch", java.util.Set.of("flying"), false, false, PartnerShows.Effect.NONE},
+			{"fletcher_bug_brings_string", "fletch", java.util.Set.of("bug"), false, false, PartnerShows.Effect.NONE},
+			{"tinkerer_partner_sparks_over_the_work", "tinker", java.util.Set.of("electric", "steel"), false, false, PartnerShows.Effect.SPARKS},
+		};
+		for (Object[] w : want) {
+			PartnerShows.Show show = show(helper, (String) w[0]);
+			helper.assertTrue(show.cue().equals(w[1]) && show.types().equals(w[2]) && show.fliesOff() == (boolean) w[3]
+				&& show.deliver() == (boolean) w[4] && show.effect() == w[5], w[0] + " reads " + show);
+		}
+		helper.assertTrue(show(helper, "furnace_fire_breathes_into_the_furnace").jobs().equals(java.util.Set.of(ResourceLocation.withDefaultNamespace("armorer"),
+			AliveWorkplace.id("miner"), ResourceLocation.withDefaultNamespace("fisherman"))), "the fire show's jobs");
+		helper.assertTrue(show(helper, "smith_partner_sparks_at_the_table").jobs().equals(java.util.Set.of(ResourceLocation.withDefaultNamespace("toolsmith"),
+			AliveWorkplace.id("ball_smith"))), "the forge show's jobs");
+		helper.assertTrue(Items.BUNDLE == net.minecraft.core.registries.BuiltInRegistries.ITEM.get(ResourceLocation.parse(show(helper, "postman_flying_takes_the_air_mail").carry())),
+			"the air mail goes up in a bundle");
+		// The new fields read, and default to off.
+		PartnerShows.Show parsed = PartnerShows.parse(AliveWorkplace.id("t"), JsonParser.parseString(
+			"{\"jobs\":[\"minecraft:fletcher\"],\"types\":[\"bug\"],\"cue\":\"x\",\"flies_off\":true,\"deliver\":true,\"effect\":\"flames\"}").getAsJsonObject());
+		helper.assertTrue(parsed.fliesOff() && parsed.deliver() && parsed.effect() == PartnerShows.Effect.FLAMES, "parsed " + parsed);
+		PartnerShows.Show plain = PartnerShows.parse(AliveWorkplace.id("t"), JsonParser.parseString(
+			"{\"jobs\":[\"minecraft:fletcher\"],\"types\":[\"bug\"],\"cue\":\"x\"}").getAsJsonObject());
+		helper.assertTrue(!plain.fliesOff() && !plain.deliver(), "parsed " + plain);
+		helper.succeed();
+	}
+
 	/** What a partner carries for the builder goes by its type: wood for Fighting, stone for Rock, iron parts for Steel. */
 	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
 	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)

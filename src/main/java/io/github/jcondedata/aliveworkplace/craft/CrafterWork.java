@@ -255,9 +255,12 @@ public class CrafterWork extends Behavior<Villager> {
 		if (timer < 0) {
 			timer = Math.max(20, Math.round(BuilderLevels.delay(CRAFT_TICKS * crafts, villager) * (1f - 0.15f
 				* io.github.jcondedata.aliveworkplace.research.Research.level(villager, io.github.jcondedata.aliveworkplace.research.Research.Topic.CRAFTSMANSHIP))));
-			// A Fighting, Rock or Steel partner holds the board or stone at the table while it's worked (28.4).
+			// A Fighting, Rock or Steel partner holds the board or stone at the table while it's worked (28.4); a toolsmith's,
+			// fletcher's, tinkerer's or chef's partner does their trade's show, and may carry what's made to the chest (28.5).
 			Item worked = job.plan().takes().keySet().stream().findFirst().orElse(job.plan().target()); // the board, the stone
-			io.github.jcondedata.aliveworkplace.work.PartnerShows.cue(villager, "craft", station, new ItemStack(worked));
+			List<BlockPos> to = SupplyContainers.find(level, job.deliverTo(), job.area());
+			io.github.jcondedata.aliveworkplace.work.PartnerShows.cue(villager, partnerCue(), station, new ItemStack(worked),
+				to.isEmpty() ? null : new io.github.jcondedata.aliveworkplace.work.PartnerShows.Delivery(new ItemStack(job.plan().target()), to.get(0)));
 		}
 		if (timer % 10 == 0) {
 			villager.swing(InteractionHand.MAIN_HAND);
@@ -316,6 +319,11 @@ public class CrafterWork extends Behavior<Villager> {
 			}
 		});
 		return extra;
+	}
+
+	/** The partner-show cue for this trade's crafting (ROADMAP 28.3): {@code craft} unless a trade has its own. */
+	protected String partnerCue() {
+		return "craft";
 	}
 
 	/** Takes everything in the bag to the job's chests (or our own, if there are none any more). */

@@ -184,7 +184,7 @@ public class SmelterWork extends Behavior<Villager> {
 			status(villager, Phase.SMELTING);
 			if (walker.walkTo(level, villager, station, REACH)) {
 				int ingots = waiting(level, station);
-				Furnaces.tend(level, station, own, Furnaces::isOre);
+				Furnaces.tend(level, station, own, Furnaces::isOre, villager);
 				int collected = ingots - waiting(level, station);
 				if (collected > 0) {
 					villager.swing(InteractionHand.MAIN_HAND);

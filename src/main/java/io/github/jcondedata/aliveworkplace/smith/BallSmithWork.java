@@ -92,6 +92,10 @@ public class BallSmithWork extends Behavior<Villager> {
 				return;
 			}
 			timer = Math.max(20, BuilderLevels.delay(CRAFT_TICKS, villager));
+			// A Steel or Fire partner sparks at the bench, then carries the batch of balls to the chest (ROADMAP 28.5).
+			List<BlockPos> chests = SupplyContainers.find(level, bench, null);
+			io.github.jcondedata.aliveworkplace.work.PartnerShows.cue(villager, "forge", bench, making.result(),
+				new io.github.jcondedata.aliveworkplace.work.PartnerShows.Delivery(making.result(), chests.isEmpty() ? bench : chests.get(0)));
 		}
 		status(villager, Phase.CRAFTING, making);
 		if (!walker.walkTo(level, villager, bench, 2.5)) {

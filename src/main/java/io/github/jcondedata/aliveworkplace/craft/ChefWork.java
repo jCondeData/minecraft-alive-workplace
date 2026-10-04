@@ -61,4 +61,10 @@ public class ChefWork extends CrafterWork {
 		}
 		return null;
 	}
+
+	/** Partners at work (ROADMAP 28.5): the smoker's flames fanned. */
+	@Override
+	protected String partnerCue() {
+		return "cook";
+	}
 }

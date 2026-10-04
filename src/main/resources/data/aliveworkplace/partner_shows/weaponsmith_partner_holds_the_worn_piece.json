@@ -1,0 +1,16 @@
+{
+  "jobs": [
+    "minecraft:weaponsmith"
+  ],
+  "types": [
+    "steel",
+    "fighting"
+  ],
+  "cue": "mend",
+  "carry": "from_work",
+  "animation": "physical",
+  "particles": "cobblemon:metal_sparks",
+  "sound": "minecraft:block.grindstone.use",
+  "ticks": 40,
+  "effect": "none"
+}

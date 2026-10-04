@@ -17,6 +17,13 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Added
+- **Finding a plot** (27.7): for each building he wishes for, the Steward finds where it fits in a zone of its kind, in
+  the zone's style: nearest the hall first, its front facing the nearest road on the plan (else the hall), the
+  footprint and 2 blocks round it inside the zone and off its roads, the ground under it within 4 blocks of level, at
+  most a tenth over water and none over lava, nothing in the way but natural ground, plants and trees (packs add more
+  with the block tag `aliveworkplace:steward_clearable`), 2 blocks clear of every build site and building, within a
+  builder's reach of a Blueprint Table, and never the same building mirrored the same way within 24 blocks. The search
+  reads at most 64 columns of ground a tick per village and keeps its answer until the plan or a build changes.
 - The **Steward's rules** (27.6): what the Steward wants is data, `data/<namespace>/steward_rules/<name>.json` (conditions
   such as `beds_short`, `food_short`, `jobless`, `store_full`, `research_idle`; one effect: build, upgrade, give jobs,
   research or ask a player; priority, reason, cooldown, max, rank and mods). Each morning, back at the hall, he ranks

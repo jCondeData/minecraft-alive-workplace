@@ -86,6 +86,7 @@ public final class StewardWishes {
 
 	public static void init() {
 		StewardWork.PLANNER = StewardWishes::plan;
+		Plots.init();
 	}
 
 	/** The Steward's day: the world's day count (as his rounds go by). */
@@ -171,10 +172,22 @@ public final class StewardWishes {
 	static Component plan(ServerLevel level, Villager steward, BlockPos hall) {
 		rankIfDue(level, hall);
 		List<Wish> wishes = of(level, hall).wishes();
+		for (Wish wish : wishes) {
+			plotFor(wish).ifPresent(request -> Plots.request(level, hall, request)); // the morning's plots (27.7), kept till the plan changes
+		}
 		if (wishes.isEmpty()) {
 			return Component.translatable("message.aliveworkplace.steward.state.reading");
 		}
 		return Component.translatable("message.aliveworkplace.steward.state.wish", wishes.get(0).effect().describe(), wishes.get(0).reason());
+	}
+
+	/** What a build wish needs a plot for (27.7): its blueprint in a zone of its kind. */
+	public static java.util.Optional<Plots.Request> plotFor(Wish wish) {
+		StewardRules.Effect effect = wish.effect();
+		if (effect.kind() != StewardRules.Kind.BUILD || effect.blueprint().isEmpty() || effect.zone().isEmpty()) {
+			return java.util.Optional.empty();
+		}
+		return java.util.Optional.of(new Plots.Request(List.of(effect.blueprint().get()), effect.zone().get()));
 	}
 
 	/** {@code /workplace steward explain}: every rule for the hall, each condition's number and whether it held, and today's wishes. */

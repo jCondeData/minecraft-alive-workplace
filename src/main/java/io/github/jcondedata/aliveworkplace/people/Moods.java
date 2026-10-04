@@ -147,6 +147,11 @@ public final class Moods {
 				good.add(effect.reason());
 			}
 		}
+		// Legends near the villager (29.2), each its own reason, after the edicts.
+		for (io.github.jcondedata.aliveworkplace.legend.LegendPowers.MoodReason legend : io.github.jcondedata.aliveworkplace.legend.LegendPowers.moods(level, villager)) {
+			score += legend.points();
+			(legend.points() >= 0 ? good : bad).add(legend.reason());
+		}
 		if (!level.getEntitiesOfClass(Villager.class, villager.getBoundingBox().inflate(COMPANY_RANGE), v -> v != villager && v.isAlive()).isEmpty()) {
 			score += 5;
 			good.add(reason("company"));

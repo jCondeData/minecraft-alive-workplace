@@ -27,6 +27,13 @@ asks for the steps, `latest.log` and any crash report).
   and Bait, Aprijuice, Exp. Candy, Ponigiri, stews, curry and more, 16 of each, and the sweets and candies for a
   Storehouse's stock orders. Her menu is data (`camp_menu/*.json`); her meals feed the village and count for Diet;
   farmers sow Hearty Grains and Vivichoke. Fire and Normal partners. Config `campCooks` (on).
+- **Legends, the engine** (1.3's first piece): Legends are read from data packs (`data/<ns>/legends/<id>.json`, so
+  server owners can add their own), each with the conditions a village must meet (rank, villagers, finished buildings
+  and styles, Masters of a trade, emeralds the treasury has ever taken in, caravan routes, meals, festival crowd,
+  animals at work, research, iron golems, full moon, first City, another Legend), the luxury they like and their
+  powers: workers near them work faster (never more than twice as fast) and villagers near them are happier. A new
+  `legend` profession with its own outfit, `/workplace legend list|make <id>|clear` for ops, and a `legends` switch in
+  the config. No Legend ships yet: the twelve come in the next updates.
 - With Cobblemon, the **Berry Breeder**: sneak-right-click a villager by a composter with any Cobblemon berry. Her
   berry book (sneak-right-click her) lists every berry Cobblemon knows (data packs' too): the ones the village has found
   lit, the rest with the pairs that make them. Click one and she works out the chain from the village's berries, plants

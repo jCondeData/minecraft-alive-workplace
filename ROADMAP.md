@@ -1335,7 +1335,7 @@ MarketDays) and research/.
   the server-wide `aliveworkplace_legends` record) and what an existing world sees after the update (some villagers
   turn out Gifted; nobody is a Legend until a village earns one). Sent to the owner as a review package; lanes don't
   wait for his reply. Done when: the note is on `main` and the package is sent.
-- [ ] **29.2** **The Legend engine.** A new `legend/` package. `Legends` loads one file per Legend from
+- [x] **29.2** (review: pending 2026-10-04) **The Legend engine.** A new `legend/` package. `Legends` loads one file per Legend from
   `data/aliveworkplace/legends/<id>.json` through `Platform.get().onDataReload` (as `ranch/PokemonChores` does), so
   server owners can add their own. A file holds: `rarity` (`rare`, `legendary`, `mythic`); `job` (the trade they work,
   always as a Master, with every level's trades through `Schools.headStart`; `aliveworkplace:legend` for Legends

@@ -6,6 +6,9 @@ import io.github.jcondedata.aliveworkplace.platform.Attachment;
 
 /** Extra data we store on vanilla villagers (saved with the entity; see {@link Attachment}). */
 public final class ModAttachments {
+	/** What makes a villager a Legend (M29): which one, guest or settled, their hall and needs. Absent: not a Legend. */
+	public static final Attachment<io.github.jcondedata.aliveworkplace.legend.LegendData> LEGEND = Attachment.saved("legend", io.github.jcondedata.aliveworkplace.legend.LegendData.CODEC);
+
 	/** Which build site this villager is working on. */
 	public static final Attachment<BuilderJob> BUILDER_JOB = Attachment.saved("builder_job", BuilderJob.CODEC);
 

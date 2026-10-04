@@ -41,7 +41,8 @@ public final class BuilderLevels {
 
 	/**
 	 * {@code baseDelay} for this villager: the level's share (shorter with each level, outside the cap) times their
-	 * {@link io.github.jcondedata.aliveworkplace.work.Pace pace} (partners, the village, research, traits, mood, sickness).
+	 * {@link io.github.jcondedata.aliveworkplace.work.Pace pace} (partners, the village, research, traits, mood,
+	 * sickness, edicts, Legends near them).
 	 */
 	public static int delay(int baseDelay, Villager villager) {
 		return Math.round(delay(baseDelay, level(villager)) * io.github.jcondedata.aliveworkplace.work.Pace.factor(villager));

@@ -38,6 +38,7 @@ import net.minecraft.world.entity.npc.Villager;
  * /workplace sites                 — your build sites and their status (ops see all)
  * /workplace cancel &lt;site&gt;         — stop a build and get the blueprint back
  * /workplace import                — import .litematic/.schem/.nbt files from &lt;world&gt;/aliveworkplace/import (ops)
+ * /workplace legend list|make &lt;id&gt;|clear — the Legends loaded; make the nearest villager a Legend, or clear one (ops)
  * /workplace friend add|remove &lt;player&gt;, /workplace friend list — who may give orders to your builders
  * /workplace strip &lt;height&gt;       — the Quarry Marker in hand digs a strip mine at that height, down a ladder shaft
  * /workplace edict proclaim|lift &lt;id&gt; — proclaims or lifts an edict in the village you stand in (ops)
@@ -91,7 +92,8 @@ public final class WorkplaceCommand {
 					.then(Commands.argument("player", GameProfileArgument.gameProfile())
 						.executes(ctx -> friend(ctx, false))))
 				.then(Commands.literal("list")
-					.executes(WorkplaceCommand::listFriends))));
+					.executes(WorkplaceCommand::listFriends)))
+			.then(io.github.jcondedata.aliveworkplace.legend.LegendCommand.node()));
 	}
 
 	/** {@code /workplace strip <height>}: the held Quarry Marker becomes a strip mine at that height, down a ladder shaft. */

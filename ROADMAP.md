@@ -411,7 +411,7 @@ about 12% of that. For villager mods, the cost is pathfinding to distant points 
 
   **Owner, 2026-10-02:** he asked for patch notes and documentation 'that can be pushed to curseforge': CurseForge
   first; Modrinth still open.
-- [x] **26.2** (review: pending 2026-10-03) (verified 2026-10-03: store kit [docs only] checked against its spec: summary 136 chars, plain, doesn't repeat the name; name leads with Alive Workplace; description states client+server required, Fabric API, Cobblemon optional; icon, gallery and one GIF per headline job [builders, miner, lumberjack, orchard, guard, trainer]; AI disclosure and license left as open questions for the owner; all 20 image/GIF URLs in description.md and gallery.md answer 200 today. No code, no tests needed.) **Store page kit**, for the chosen sites:
+- [x] **26.2** (verified 2026-10-03: store kit [docs only] checked against its spec: summary 136 chars, plain, doesn't repeat the name; name leads with Alive Workplace; description states client+server required, Fabric API, Cobblemon optional; icon, gallery and one GIF per headline job [builders, miner, lumberjack, orchard, guard, trainer]; AI disclosure and license left as open questions for the owner; all 20 image/GIF URLs in description.md and gallery.md answer 200 today. No code, no tests needed.) (approved 2026-10-04) **Store page kit**, for the chosen sites:
   - a one-line summary (no formatting, doesn't repeat the name);
   - a description that says what it adds, why to get it, and what to know first (server and client both need it,
     Fabric API, optional Cobblemon);

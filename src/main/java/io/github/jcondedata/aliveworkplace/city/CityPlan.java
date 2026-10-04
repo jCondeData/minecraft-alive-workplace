@@ -71,13 +71,33 @@ public record CityPlan(List<Zone> zones, List<Road> roads, Optional<Wall> wall, 
 		}
 	}
 
-	/** A road (27.4): points as offsets from the hall (y unused), 1, 3 or 5 wide, in a road style ("" its zone's). */
-	public record Road(List<BlockPos> points, int width, String style) {
+	/**
+	 * A road (27.4): points as offsets from the hall (y unused), 1, 3 or 5 wide ({@link #LANE}, {@link #STREET},
+	 * {@link #AVENUE}), in a style ("" as drawn); {@code approved} when a player drew it, so the Steward builds it without
+	 * asking (27.15). Saves from before 27.4 load with roads unapproved.
+	 */
+	public record Road(List<BlockPos> points, int width, String style, boolean approved) {
+		public static final int LANE = 1;
+		public static final int STREET = 3;
+		public static final int AVENUE = 5;
 		public static final Codec<Road> CODEC = RecordCodecBuilder.create(i -> i.group(
 			BlockPos.CODEC.listOf().fieldOf("points").forGetter(Road::points),
-			Codec.INT.optionalFieldOf("width", 3).forGetter(Road::width),
-			Codec.STRING.optionalFieldOf("style", "").forGetter(Road::style)
+			Codec.INT.optionalFieldOf("width", STREET).forGetter(Road::width),
+			Codec.STRING.optionalFieldOf("style", "").forGetter(Road::style),
+			Codec.BOOL.optionalFieldOf("approved", false).forGetter(Road::approved)
 		).apply(i, Road::new));
+
+		public Road {
+			points = List.copyOf(points);
+		}
+
+		public Road(List<BlockPos> points, int width, String style) {
+			this(points, width, style, false);
+		}
+
+		public static boolean validWidth(int width) {
+			return width == LANE || width == STREET || width == AVENUE;
+		}
 	}
 
 	/** The wall line (27.4): points as offsets from the hall, open or closed. */
@@ -86,6 +106,10 @@ public record CityPlan(List<Zone> zones, List<Road> roads, Optional<Wall> wall, 
 			BlockPos.CODEC.listOf().fieldOf("points").forGetter(Wall::points),
 			Codec.BOOL.optionalFieldOf("closed", true).forGetter(Wall::closed)
 		).apply(i, Wall::new));
+
+		public Wall {
+			points = List.copyOf(points);
+		}
 	}
 
 	public static final Codec<CityPlan> CODEC = RecordCodecBuilder.create(i -> i.group(
@@ -114,6 +138,17 @@ public record CityPlan(List<Zone> zones, List<Road> roads, Optional<Wall> wall, 
 
 	public static int cellSize() {
 		return cellSize(VillageHalls.RADIUS);
+	}
+
+	/** Blocks from the hall to the grid's edge, east-west and north-south. */
+	public static int half() {
+		return cellSize() * GRID / 2;
+	}
+
+	/** True if the offset {@code point} (from the hall) is on the grid: road and wall points must be. */
+	public static boolean onGrid(BlockPos point) {
+		int half = half();
+		return point.getX() >= -half && point.getX() < half && point.getZ() >= -half && point.getZ() < half;
 	}
 
 	/** The cell {@code pos} is in, for the hall at {@code hall} (column x + row z × GRID), or -1 outside the grid. */
@@ -227,8 +262,7 @@ public record CityPlan(List<Zone> zones, List<Road> roads, Optional<Wall> wall, 
 
 	@Nullable
 	public CityPlan addRoad(Road road) {
-		if (roads.size() >= MAX_ROADS || road.points().size() < 2 || road.points().size() > MAX_ROAD_POINTS
-			|| (road.width() != 1 && road.width() != 3 && road.width() != 5)) {
+		if (roads.size() >= MAX_ROADS || road.points().size() < 2 || road.points().size() > MAX_ROAD_POINTS || !Road.validWidth(road.width())) {
 			return null;
 		}
 		List<Road> out = new ArrayList<>(roads);

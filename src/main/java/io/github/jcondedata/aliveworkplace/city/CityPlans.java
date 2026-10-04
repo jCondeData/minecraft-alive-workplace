@@ -40,7 +40,7 @@ import org.jetbrains.annotations.Nullable;
 public final class CityPlans {
 	/** What an edit does. */
 	public enum Op implements StringRepresentable {
-		ADD_ZONE, EDIT_ZONE, REMOVE_ZONE, PAINT, ERASE, MODE, UNDO;
+		ADD_ZONE, EDIT_ZONE, REMOVE_ZONE, PAINT, ERASE, MODE, UNDO, ADD_ROAD, REMOVE_ROAD, WALL;
 
 		public static final Codec<Op> CODEC = StringRepresentable.fromEnum(Op::values);
 
@@ -50,9 +50,13 @@ public final class CityPlans {
 		}
 	}
 
-	/** One change to the plan of the hall at {@code hall}. Unused fields are left at their defaults. */
+	/**
+	 * One change to the plan of the hall at {@code hall}. Unused fields are left at their defaults. Roads and the wall
+	 * line (27.4) use {@code points} (offsets from the hall), {@code width} and {@code closed}; {@code zone} is the road's
+	 * index for {@link Op#REMOVE_ROAD}.
+	 */
 	public record Edit(BlockPos hall, Op op, int zone, String kind, String name, String style, boolean renew, BitSet cells,
-					   CityPlan.Mode mode) implements CustomPacketPayload {
+					   CityPlan.Mode mode, List<BlockPos> points, int width, boolean closed) implements CustomPacketPayload {
 		public static final Type<Edit> TYPE = new Type<>(AliveWorkplace.id("city_plan_edit"));
 		private static final Codec<Edit> RECORD = RecordCodecBuilder.create(i -> i.group(
 			BlockPos.CODEC.fieldOf("hall").forGetter(Edit::hall),
@@ -64,8 +68,33 @@ public final class CityPlans {
 			Codec.BOOL.optionalFieldOf("renew", false).forGetter(Edit::renew),
 			Codec.LONG_STREAM.xmap(s -> BitSet.valueOf(s.toArray()), b -> java.util.Arrays.stream(b.toLongArray()))
 				.optionalFieldOf("cells", new BitSet()).forGetter(Edit::cells),
-			CityPlan.Mode.CODEC.optionalFieldOf("mode", CityPlan.Mode.ASK).forGetter(Edit::mode)
+			CityPlan.Mode.CODEC.optionalFieldOf("mode", CityPlan.Mode.ASK).forGetter(Edit::mode),
+			BlockPos.CODEC.listOf().optionalFieldOf("points", List.of()).forGetter(Edit::points),
+			Codec.INT.optionalFieldOf("width", CityPlan.Road.STREET).forGetter(Edit::width),
+			Codec.BOOL.optionalFieldOf("closed", true).forGetter(Edit::closed)
 		).apply(i, Edit::new));
+
+		public Edit(BlockPos hall, Op op, int zone, String kind, String name, String style, boolean renew, BitSet cells, CityPlan.Mode mode) {
+			this(hall, op, zone, kind, name, style, renew, cells, mode, List.of(), CityPlan.Road.STREET, true);
+		}
+
+		public Edit {
+			points = List.copyOf(points);
+		}
+
+		/** A road through {@code points} (offsets from the hall), {@code width} wide, in {@code style} ("" for its first zone's). */
+		public static Edit addRoad(BlockPos hall, List<BlockPos> points, int width, String style) {
+			return new Edit(hall, Op.ADD_ROAD, -1, "", "", style, false, new BitSet(), CityPlan.Mode.ASK, points, width, true);
+		}
+
+		public static Edit removeRoad(BlockPos hall, int road) {
+			return new Edit(hall, Op.REMOVE_ROAD, road, "", "", "", false, new BitSet(), CityPlan.Mode.ASK);
+		}
+
+		/** The wall line through {@code points}, open or closed; no points takes the wall line off the plan. */
+		public static Edit wall(BlockPos hall, List<BlockPos> points, boolean closed) {
+			return new Edit(hall, Op.WALL, -1, "", "", "", false, new BitSet(), CityPlan.Mode.ASK, points, CityPlan.Road.STREET, closed);
+		}
 		public static final StreamCodec<RegistryFriendlyByteBuf, Edit> CODEC = ByteBufCodecs.fromCodecWithRegistries(RECORD);
 
 		public static Edit addZone(BlockPos hall, String kind, String name, String style) {
@@ -206,6 +235,7 @@ public final class CityPlans {
 
 	public static void init() {
 		CityZones.init();
+		CityPlanGround.init();
 		Platform.get().clientbound(Open.TYPE, Open.CODEC);
 		Platform.get().clientbound(Sync.TYPE, Sync.CODEC);
 		Platform.get().serverbound(Edit.TYPE, Edit.CODEC, (edit, player) -> apply(player, edit));
@@ -272,6 +302,9 @@ public final class CityPlans {
 			case PAINT -> plan.paint(edit.zone(), ownCells(level, edit.hall(), edit.cells(), player));
 			case ERASE -> plan.erase(edit.cells());
 			case MODE -> plan.withMode(edit.mode());
+			case ADD_ROAD -> road(player, edit, plan);
+			case REMOVE_ROAD -> plan.removeRoad(edit.zone());
+			case WALL -> edit.points().isEmpty() ? plan.withWall(null) : wall(player, edit, plan);
 			case UNDO -> plan;
 		};
 		if (next == null || next.equals(plan)) {
@@ -284,6 +317,59 @@ public final class CityPlans {
 		entity.changePlan(next, UNDO_STEPS);
 		sync(player, entity);
 		return true;
+	}
+
+	/**
+	 * The plan with the road {@code edit} draws, or null (and the player told why) for a 25th road, more than
+	 * {@link CityPlan#MAX_ROAD_POINTS} points, a point off the grid or a width that isn't a lane, street or avenue. A
+	 * player's road is approved (27.15); with no style it takes the style of the zone its first point is in.
+	 */
+	@Nullable
+	static CityPlan road(@Nullable ServerPlayer player, Edit edit, CityPlan plan) {
+		Component problem = null;
+		if (plan.roads().size() >= CityPlan.MAX_ROADS) {
+			problem = Component.translatable("message.aliveworkplace.city_plan.too_many_roads", CityPlan.MAX_ROADS);
+		} else if (edit.points().size() > CityPlan.MAX_ROAD_POINTS) {
+			problem = Component.translatable("message.aliveworkplace.city_plan.too_many_points", CityPlan.MAX_ROAD_POINTS);
+		} else if (edit.points().size() < 2 || !CityPlan.Road.validWidth(edit.width())
+			|| edit.points().stream().anyMatch(p -> !CityPlan.onGrid(p)) || edit.style().length() > MAX_NAME) {
+			problem = Component.translatable("message.aliveworkplace.city_plan.bad_line");
+		}
+		if (problem != null) {
+			if (player != null) {
+				Chat.actionBar(player, problem.copy().withStyle(ChatFormatting.RED));
+			}
+			return null;
+		}
+		List<BlockPos> points = flat(edit.points());
+		String style = edit.style();
+		if (style.isEmpty()) {
+			style = plan.zoneAt(BlockPos.ZERO, points.get(0)).map(CityPlan.Zone::style).orElse("");
+		}
+		return plan.addRoad(new CityPlan.Road(points, edit.width(), style, true));
+	}
+
+	/** The plan with the wall line {@code edit} draws, or null (and the player told) for too many points or one off the grid. */
+	@Nullable
+	static CityPlan wall(@Nullable ServerPlayer player, Edit edit, CityPlan plan) {
+		Component problem = null;
+		if (edit.points().size() > CityPlan.MAX_ROAD_POINTS) {
+			problem = Component.translatable("message.aliveworkplace.city_plan.too_many_points", CityPlan.MAX_ROAD_POINTS);
+		} else if (edit.points().size() < 2 || edit.points().stream().anyMatch(p -> !CityPlan.onGrid(p))) {
+			problem = Component.translatable("message.aliveworkplace.city_plan.bad_line");
+		}
+		if (problem != null) {
+			if (player != null) {
+				Chat.actionBar(player, problem.copy().withStyle(ChatFormatting.RED));
+			}
+			return null;
+		}
+		return plan.withWall(new CityPlan.Wall(flat(edit.points()), edit.closed()));
+	}
+
+	/** {@code points} with y set to 0: the plan keeps only where a line runs, not how high. */
+	private static List<BlockPos> flat(List<BlockPos> points) {
+		return points.stream().map(p -> new BlockPos(p.getX(), 0, p.getZ())).toList();
 	}
 
 	/** Sends the hall's plan to {@code player}, if their game can take it. */

@@ -42,7 +42,10 @@ public class CityPlanScreen extends Screen {
 	/** Vanilla's empty map colour, for land nobody has seen. */
 	private static final int PARCHMENT = 0xFFD6BE96;
 
-	public enum Tool { BRUSH, AREA, ERASER }
+	public enum Tool { BRUSH, AREA, ERASER, ROAD, WALL }
+
+	/** Two clicks this close in time (ms) and place (pixels) are a double-click: it ends a road or the wall line. */
+	private static final long DOUBLE_CLICK_MS = 300;
 
 	private final BlockPos hall;
 	private final Component village;
@@ -66,10 +69,20 @@ public class CityPlanScreen extends Screen {
 	private int areaStart = -1;
 	private int areaEnd = -1;
 
+	// a road or the wall line being drawn (27.4): its points as offsets from the hall
+	private final List<BlockPos> line = new ArrayList<>();
+	private int roadWidth = CityPlan.Road.STREET;
+	/** The new road's style: "" for that of the zone it starts in. */
+	private String roadStyle = "";
+	private boolean wallClosed = true;
+	private long lastClick;
+	private double lastClickX, lastClickY;
+
 	private DynamicTexture texture;
 	private int mapX, mapY, mapSize, panelX, panelY, panelW, panelH, listTop, listRows;
 	private EditBox nameBox;
-	private Button newButton, kindButton, styleButton, renewButton, deleteButton, brushButton, areaButton, eraserButton, undoButton;
+	private Button newButton, kindButton, styleButton, renewButton, deleteButton, brushButton, areaButton, eraserButton, undoButton,
+		roadButton, wallButton, optionButton, roadStyleButton;
 	/** Every text drawn last frame (its box, and whether it had to fit whole), for the GUI-scale check (24.4). */
 	private final List<Drawn> drawn = new ArrayList<>();
 
@@ -139,7 +152,7 @@ public class CityPlanScreen extends Screen {
 		listTop = panelY + 14 + BUTTON_H + 2;
 
 		int legendH = 10 + 4 * 9;
-		int y = panelY + panelH - 4 - legendH - (BUTTON_H + 2) * 4 - 18;
+		int y = panelY + panelH - 4 - legendH - (BUTTON_H + 2) * 5 - 18;
 		listRows = Math.max(1, (y - 2 - listTop) / ROW);
 
 		nameBox = addRenderableWidget(new EditBox(font, x + 1, y, w - 2, BUTTON_H, Component.translatable("screen.aliveworkplace.city_plan.name")));
@@ -163,6 +176,15 @@ public class CityPlanScreen extends Screen {
 		eraserButton = addRenderableWidget(Button.builder(Component.translatable("screen.aliveworkplace.city_plan.eraser"), b -> setTool(Tool.ERASER))
 			.bounds(x + 2 * (q + 2), y, q, BUTTON_H).tooltip(Tooltip.create(Component.translatable("screen.aliveworkplace.city_plan.eraser.tip"))).build());
 		undoButton = addRenderableWidget(Button.builder(Component.translatable("screen.aliveworkplace.city_plan.undo"), b -> undo())
+			.bounds(x + 3 * (q + 2), y, w - 3 * (q + 2), BUTTON_H).build());
+		y += BUTTON_H + 2;
+		roadButton = addRenderableWidget(Button.builder(Component.translatable("screen.aliveworkplace.city_plan.road"), b -> setTool(Tool.ROAD))
+			.bounds(x, y, q, BUTTON_H).tooltip(Tooltip.create(Component.translatable("screen.aliveworkplace.city_plan.road.tip"))).build());
+		wallButton = addRenderableWidget(Button.builder(Component.translatable("screen.aliveworkplace.city_plan.wall"), b -> setTool(Tool.WALL))
+			.bounds(x + q + 2, y, q, BUTTON_H).tooltip(Tooltip.create(Component.translatable("screen.aliveworkplace.city_plan.wall.tip"))).build());
+		optionButton = addRenderableWidget(Button.builder(Component.empty(), b -> cycleOption())
+			.bounds(x + 2 * (q + 2), y, q, BUTTON_H).build());
+		roadStyleButton = addRenderableWidget(Button.builder(Component.empty(), b -> cycleRoadStyle())
 			.bounds(x + 3 * (q + 2), y, w - 3 * (q + 2), BUTTON_H).build());
 
 		buildTexture();
@@ -225,6 +247,20 @@ public class CityPlanScreen extends Screen {
 		brushButton.active = mayEdit && tool != Tool.BRUSH;
 		areaButton.active = mayEdit && tool != Tool.AREA;
 		eraserButton.active = mayEdit && tool != Tool.ERASER;
+		roadButton.active = mayEdit && tool != Tool.ROAD;
+		wallButton.active = mayEdit && tool != Tool.WALL;
+		optionButton.active = mayEdit && (tool == Tool.ROAD || tool == Tool.WALL);
+		roadStyleButton.active = mayEdit && tool == Tool.ROAD;
+		if (tool == Tool.WALL) {
+			optionButton.setMessage(Component.translatable(wallClosed ? "screen.aliveworkplace.city_plan.wall.closed" : "screen.aliveworkplace.city_plan.wall.open"));
+			optionButton.setTooltip(Tooltip.create(Component.translatable("screen.aliveworkplace.city_plan.wall.closed.tip")));
+		} else {
+			optionButton.setMessage(Component.translatable("screen.aliveworkplace.city_plan.width." + roadWidth));
+			optionButton.setTooltip(Tooltip.create(Component.translatable("screen.aliveworkplace.city_plan.width.tip")));
+		}
+		roadStyleButton.setMessage(Component.empty());
+		roadStyleButton.setTooltip(Tooltip.create(Component.translatable("screen.aliveworkplace.city_plan.road_style",
+			roadStyle.isEmpty() ? Component.translatable("screen.aliveworkplace.city_plan.road_style.zone") : styleTitle(roadStyle))));
 		kindButton.setMessage(Component.translatable("screen.aliveworkplace.city_plan.kind",
 			zone == null ? Component.literal("-") : kindTitle(zone.kind())));
 		styleButton.setMessage(Component.translatable("screen.aliveworkplace.city_plan.style",
@@ -307,8 +343,94 @@ public class CityPlanScreen extends Screen {
 	}
 
 	public void setTool(Tool next) {
+		if (next != tool) {
+			line.clear();
+		}
 		tool = next;
 		refreshWidgets();
+	}
+
+	public Tool tool() {
+		return tool;
+	}
+
+	/** The road or wall line being drawn: its points so far, as offsets from the hall. */
+	public List<BlockPos> line() {
+		return List.copyOf(line);
+	}
+
+	private void cycleOption() {
+		if (tool == Tool.WALL) {
+			wallClosed = !wallClosed;
+		} else {
+			roadWidth = roadWidth == CityPlan.Road.LANE ? CityPlan.Road.STREET : roadWidth == CityPlan.Road.STREET ? CityPlan.Road.AVENUE : CityPlan.Road.LANE;
+		}
+		refreshWidgets();
+	}
+
+	private void cycleRoadStyle() {
+		List<String> names = new ArrayList<>();
+		names.add("");
+		styles.forEach(st -> names.add(st.name()));
+		int i = Math.max(0, names.indexOf(roadStyle));
+		roadStyle = names.get((i + (hasShiftDown() ? names.size() - 1 : 1)) % names.size());
+		refreshWidgets();
+	}
+
+	/** Adds a point to the road or wall line being drawn; at {@link CityPlan#MAX_ROAD_POINTS} the line ends by itself. */
+	public void addPoint(BlockPos offset) {
+		if (!line.isEmpty() && line.get(line.size() - 1).equals(offset)) {
+			return;
+		}
+		line.add(offset);
+		if (line.size() >= CityPlan.MAX_ROAD_POINTS) {
+			finishLine();
+		}
+	}
+
+	/** Sends the road or wall line drawn so far (two points at least) and starts afresh. */
+	public void finishLine() {
+		if (line.size() >= 2) {
+			commitName();
+			if (tool == Tool.WALL) {
+				send(CityPlans.Edit.wall(hall, List.copyOf(line), wallClosed));
+			} else {
+				send(CityPlans.Edit.addRoad(hall, List.copyOf(line), roadWidth, roadStyle));
+			}
+		}
+		line.clear();
+	}
+
+	/** The road nearest the pointer, within a few pixels on the map, or -1. */
+	private int roadUnder(double mx, double my) {
+		int best = -1;
+		double bestD = 5;
+		for (int i = 0; i < plan.roads().size(); i++) {
+			List<BlockPos> pts = plan.roads().get(i).points();
+			for (int j = 0; j + 1 < pts.size(); j++) {
+				double d = segmentDistance(mx, my, toMapX(pts.get(j).getX()), toMapY(pts.get(j).getZ()), toMapX(pts.get(j + 1).getX()), toMapY(pts.get(j + 1).getZ()));
+				if (d < bestD) {
+					bestD = d;
+					best = i;
+				}
+			}
+		}
+		return best;
+	}
+
+	private static double segmentDistance(double px, double py, double ax, double ay, double bx, double by) {
+		double dx = bx - ax, dy = by - ay;
+		double len = dx * dx + dy * dy;
+		double t = len == 0 ? 0 : Math.max(0, Math.min(1, ((px - ax) * dx + (py - ay) * dy) / len));
+		return Math.hypot(px - (ax + t * dx), py - (ay + t * dy));
+	}
+
+	/** The block (as an offset from the hall) under map pixel {@code mx}, {@code my}. */
+	private BlockPos offsetAt(double mx, double my) {
+		int half = cellSize * CityPlan.GRID / 2;
+		int dx = (int) Math.floor((mx - mapX) * (2.0 * half) / mapSize) - half;
+		int dz = (int) Math.floor((my - mapY) * (2.0 * half) / mapSize) - half;
+		return new BlockPos(Math.max(-half, Math.min(half - 1, dx)), 0, Math.max(-half, Math.min(half - 1, dz)));
 	}
 
 	public void select(int index) {
@@ -338,6 +460,34 @@ public class CityPlanScreen extends Screen {
 	@Override
 	public boolean mouseClicked(double mx, double my, int button) {
 		int cell = cellUnder(mx, my);
+		if (cell >= 0 && mayEdit && (tool == Tool.ROAD || tool == Tool.WALL)) {
+			if (button == 1) {
+				if (!line.isEmpty()) {
+					line.clear(); // right-click drops the line being drawn
+				} else if (tool == Tool.ROAD && roadUnder(mx, my) >= 0) {
+					commitName();
+					send(CityPlans.Edit.removeRoad(hall, roadUnder(mx, my)));
+				} else if (tool == Tool.WALL && plan.wall().isPresent()) {
+					commitName();
+					send(CityPlans.Edit.wall(hall, List.of(), true));
+				}
+				return true;
+			}
+			if (button == 0) {
+				long now = net.minecraft.Util.getMillis();
+				boolean doubled = now - lastClick < DOUBLE_CLICK_MS && Math.abs(mx - lastClickX) < 4 && Math.abs(my - lastClickY) < 4;
+				lastClick = now;
+				lastClickX = mx;
+				lastClickY = my;
+				if (doubled && !line.isEmpty()) {
+					finishLine();
+					lastClick = 0;
+				} else {
+					addPoint(offsetAt(mx, my));
+				}
+				return true;
+			}
+		}
 		if (cell >= 0 && mayEdit && (button == 0 || button == 1)) {
 			erasing = button == 1 || tool == Tool.ERASER;
 			if (!erasing && zone() == null) {
@@ -428,6 +578,14 @@ public class CityPlanScreen extends Screen {
 		if (nameBox != null && nameBox.isFocused() && (key == GLFW.GLFW_KEY_ENTER || key == GLFW.GLFW_KEY_KP_ENTER)) {
 			commitName();
 			nameBox.setFocused(false);
+			return true;
+		}
+		if ((key == GLFW.GLFW_KEY_ENTER || key == GLFW.GLFW_KEY_KP_ENTER) && !line.isEmpty()) {
+			finishLine();
+			return true;
+		}
+		if (key == GLFW.GLFW_KEY_ESCAPE && !line.isEmpty()) {
+			line.clear();
 			return true;
 		}
 		if (key == GLFW.GLFW_KEY_Z && hasControlDown() && (nameBox == null || !nameBox.isFocused())) {
@@ -524,6 +682,24 @@ public class CityPlanScreen extends Screen {
 		for (CityPlans.Outline o : outlines) {
 			dashed(g, toMapX(o.minDx()), toMapY(o.minDz()), toMapX(o.maxDx() + 1), toMapY(o.maxDz() + 1), o.proposal() ? 0xFFFFE060 : 0xFFFFFFFF);
 		}
+		// the roads (27.4): a dirt-brown band as wide as the road, then the wall line in stone grey
+		double scale = mapSize / (double) (cellSize * CityPlan.GRID);
+		for (CityPlan.Road road : plan.roads()) {
+			polyline(g, road.points(), false, Math.max(1, (int) Math.round(road.width() * scale)), 0xFF000000 | ROAD_COLOR);
+		}
+		plan.wall().ifPresent(w -> polyline(g, w.points(), w.closed(), Math.max(2, (int) Math.round(scale * 1.5)), 0xFF000000 | WALL_COLOR));
+		if (!line.isEmpty()) {
+			List<BlockPos> drawing = new ArrayList<>(line);
+			if (cellUnder(mouseX, mouseY) >= 0) {
+				drawing.add(offsetAt(mouseX, mouseY));
+			}
+			int color = tool == Tool.WALL ? 0xC0000000 | WALL_COLOR : 0xC0000000 | ROAD_COLOR;
+			int thick = tool == Tool.WALL ? Math.max(2, (int) Math.round(scale * 1.5)) : Math.max(1, (int) Math.round(roadWidth * scale));
+			polyline(g, drawing, false, thick, color);
+			for (BlockPos p : line) {
+				g.fill(toMapX(p.getX()) - 1, toMapY(p.getZ()) - 1, toMapX(p.getX()) + 2, toMapY(p.getZ()) + 2, 0xFFFFFFFF);
+			}
+		}
 		// the hall and the finished buildings' banners
 		for (CityPlans.Mark m : marks) {
 			int x = toMapX(m.dx());
@@ -568,6 +744,9 @@ public class CityPlanScreen extends Screen {
 		int cell = cellUnder(mouseX, mouseY);
 		if (!mayEdit) {
 			status = Component.translatable("screen.aliveworkplace.city_plan.view_only");
+		} else if (tool == Tool.ROAD || tool == Tool.WALL) {
+			status = Component.translatable(tool == Tool.WALL ? "screen.aliveworkplace.city_plan.wall.hint" : "screen.aliveworkplace.city_plan.road.hint",
+				plan.roads().size(), CityPlan.MAX_ROADS);
 		} else if (cell >= 0 && of[cell] >= 0) {
 			CityPlan.Zone z = plan.zones().get(of[cell]);
 			status = Component.translatable("screen.aliveworkplace.city_plan.cell", z.name(), kindTitle(z.kind()), styleTitle(z.style()));
@@ -587,6 +766,29 @@ public class CityPlanScreen extends Screen {
 	private int toMapY(int dz) {
 		int half = cellSize * CityPlan.GRID / 2;
 		return mapY + (int) Math.floor((dz + half) * (double) mapSize / (2 * half));
+	}
+
+	private static final int ROAD_COLOR = 0xC9A26B;
+	private static final int WALL_COLOR = 0x6E6E6E;
+
+	/** {@code points} (offsets from the hall) as a line {@code thick} pixels wide, kept to the map. */
+	private void polyline(GuiGraphics g, List<BlockPos> points, boolean closed, int thick, int color) {
+		int n = points.size();
+		int r0 = -(thick - 1) / 2, r1 = thick / 2 + 1;
+		for (int i = 0; i + 1 < n || (closed && n > 2 && i < n); i++) {
+			BlockPos a = points.get(i);
+			BlockPos b = points.get((i + 1) % n);
+			int ax = toMapX(a.getX()), ay = toMapY(a.getZ()), bx = toMapX(b.getX()), by = toMapY(b.getZ());
+			int steps = Math.max(1, Math.max(Math.abs(bx - ax), Math.abs(by - ay)));
+			for (int s = 0; s <= steps; s++) {
+				int x = ax + Math.round((bx - ax) * s / (float) steps);
+				int y = ay + Math.round((by - ay) * s / (float) steps);
+				int x0 = Math.max(mapX, x + r0), y0 = Math.max(mapY, y + r0), x1 = Math.min(mapX + mapSize, x + r1), y1 = Math.min(mapY + mapSize, y + r1);
+				if (x0 < x1 && y0 < y1) {
+					g.fill(x0, y0, x1, y1, color);
+				}
+			}
+		}
 	}
 
 	private void dashed(GuiGraphics g, int x0, int y0, int x1, int y1, int color) {
@@ -639,6 +841,13 @@ public class CityPlanScreen extends Screen {
 		CityPlan.Zone zone = zone();
 		ItemStack icon = new ItemStack(zone == null ? ModItems.BLUEPRINT : styleIcon(zone.style()));
 		g.renderItem(icon, x, styleButton.getY() - 1);
+		// the new road's style, as an icon on its button (the zone's own: a path block)
+		ItemStack roadIcon = new ItemStack(roadStyle.isEmpty() ? net.minecraft.world.item.Items.DIRT_PATH : styleIcon(roadStyle));
+		g.pose().pushPose();
+		g.pose().translate(roadStyleButton.getX() + roadStyleButton.getWidth() / 2f - 6, roadStyleButton.getY() + 1, 0);
+		g.pose().scale(0.75f, 0.75f, 1f);
+		g.renderItem(roadIcon, 0, 0);
+		g.pose().popPose();
 		// the legend: every kind's colour
 		int ly = panelY + panelH - 4 - 4 * 9 - 10;
 		text(g, Component.translatable("screen.aliveworkplace.city_plan.legend"), x, ly, w, 0xFFC8C8C8, true);

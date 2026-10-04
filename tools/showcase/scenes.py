@@ -202,6 +202,10 @@ SCENES = [
     S("city_plan", "Village Hall", "Painting the City Plan", "the City Plan screen opened with Homes, Workshops and Gardens zones in three styles", 60,
       [("01_city_plan_start", "The first zone"), ("02_city_plan_scale2", "Three zones in three styles, GUI scale 2"),
        ("03_city_plan_scale4", "The finished plan, GUI scale 4")]),
+    # The plan on the ground and on the hall's map (ROADMAP 27.4)
+    S("city_plan_ground", "Village Hall", "The plan on the ground", "zone edges, a street and the wall line show on the ground while the player holds the City Plan, and the hall's map of the plan hangs framed by the hall", 60,
+      [("01_city_plan_ground", "Zone edges and the street on the ground"), ("02_city_plan_wall", "The wall line at the village's corner"),
+       ("03_city_plan_framed", "The plan on the hall's map, framed")]),
     S("hall_pages", "Village Hall", "The chronicle and trade routes", "the chronicle and trade-route pages opened", 45,
       [("01_hall_chronicle", "Chronicle"), ("02_hall_routes", "Trade routes")]),
     S("hall_quests", "Village Hall", "Quests, advice, the village map and the festival",

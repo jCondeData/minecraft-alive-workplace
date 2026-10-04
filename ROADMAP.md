@@ -524,7 +524,7 @@ and an old vanilla village slowly rebuilds itself one house at a time. It answer
   - screenshots at GUI scales 2 and 4 show no clipped or overlapping text (as 24.4 checks the other screens);
   - showcase scene `city_plan`: Homes, Workshops and Gardens zones painted in three styles over a real village, with
     stills of the screen and the finished plan.
-- [ ] **27.4** **Roads and the wall line on the plan, and the plan on the ground.** Two more tools on the plan
+- [x] **27.4** (review: pending 2026-10-04) **Roads and the wall line on the plan, and the plan on the ground.** Two more tools on the plan
   screen: **Road** (click points, double-click to end; a lane 1 wide, a street 3 wide or an avenue 5 wide, with a
   style, by default that of the zone it starts in) and **Wall line** (one line round the village, open or closed).
   Roads a player draws count as approved: the Steward builds them without asking (27.15). While a player holds the
@@ -4267,6 +4267,11 @@ item waits.
 - (Sessions: anything that needs the owner, and the link to the latest Full test report. Handoffs go here through
   `sessions.py handoff "<in progress, next, traps>" --as <you>`, which keeps one per kind of session (chat, night):
   carry over anything still true from the previous one.)
+- 2026-10-04 (27.4, decision; lane c): the plan on the ground is drawn as the Scan Tool's box really is: dust the
+  server sends to the holder alone (`city/CityPlanGround`, every 10 ticks, at most 900 dots, within 24 blocks), not a
+  client renderer, so nothing new has to be synced to the client. Road styles don't exist until 27.15, so a road's style
+  is a building style (`BlueprintStyles`), "" for that of the zone its first point is in, resolved by the server when
+  the road is drawn; 27.15 can map those names onto its road styles. Roads saved without `approved` load unapproved.
 - 2026-10-04 (27.3, decision; lane c): the Steward's proposals (27.8) don't exist yet, so the plan screen draws only
   build sites going up as dashed white outlines; `CityPlans.Outline` has a `proposal` flag (drawn dashed yellow) for
   27.8 to fill in `CityPlans.screen`. Undo keeps the last 10 changes per hall on the server (not saved), shared by

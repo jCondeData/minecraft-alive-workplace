@@ -126,7 +126,11 @@ public final class VillageMaps {
 		tag.putBoolean("trackingPosition", true);
 		tag.putBoolean("unlimitedTracking", false);
 		tag.putBoolean("locked", true);
-		tag.putByteArray("colors", colors(level, hall));
+		byte[] colors = colors(level, hall);
+		if (level.getBlockEntity(hall) instanceof VillageHallBlockEntity entity && !entity.plan().isEmpty()) {
+			drawPlan(colors, entity.plan()); // the plan on the map (27.4), so it can hang by the hall
+		}
+		tag.putByteArray("colors", colors);
 		MapBanner.LIST_CODEC.encodeStart(level.registryAccess().createSerializationContext(NbtOps.INSTANCE), banners).result()
 			.ifPresent(t -> tag.put("banners", t));
 		tag.put("frames", new ListTag());
@@ -143,6 +147,105 @@ public final class VillageMaps {
 			.withStyle(ChatFormatting.DARK_GRAY)));
 		stack.set(DataComponents.LORE, new ItemLore(lore));
 		return stack;
+	}
+
+	/** A road on the village map: the colour of a dirt path. */
+	public static final byte ROAD = MapColor.DIRT.getPackedId(MapColor.Brightness.HIGH);
+	/** The wall line on the village map: dark stone. */
+	public static final byte WALL = MapColor.STONE.getPackedId(MapColor.Brightness.LOWEST);
+
+	/**
+	 * Draws {@code plan} on a village map's {@code colors} (128×128, a pixel a block, centred on the hall; ROADMAP 27.4):
+	 * every zone cell's land blended half and half with its kind's map tint, the pixels along a zone's edge in the tint
+	 * itself, then the roads (as wide as they are) and the wall line over them.
+	 */
+	public static void drawPlan(byte[] colors, io.github.jcondedata.aliveworkplace.city.CityPlan plan) {
+		int size = 128;
+		int[] of = new int[size * size];
+		java.util.Arrays.fill(of, -1);
+		BlockPos origin = BlockPos.ZERO;
+		for (int pz = 0; pz < size; pz++) {
+			for (int px = 0; px < size; px++) {
+				int cell = io.github.jcondedata.aliveworkplace.city.CityPlan.cellAt(origin, new BlockPos(px - HALF, 0, pz - HALF));
+				for (int i = 0; i < plan.zones().size() && cell >= 0; i++) {
+					if (plan.zones().get(i).has(cell)) {
+						of[px + pz * size] = i;
+						break;
+					}
+				}
+			}
+		}
+		for (int pz = 0; pz < size; pz++) {
+			for (int px = 0; px < size; px++) {
+				int zone = of[px + pz * size];
+				if (zone < 0) {
+					continue;
+				}
+				int tint = io.github.jcondedata.aliveworkplace.city.CityZones.get(plan.zones().get(zone).kind())
+					.map(io.github.jcondedata.aliveworkplace.city.CityZones.Kind::mapTint).orElse(0x808080);
+				boolean edge = px == 0 || pz == 0 || px == size - 1 || pz == size - 1 || of[px - 1 + pz * size] != zone
+					|| of[px + 1 + pz * size] != zone || of[px + (pz - 1) * size] != zone || of[px + (pz + 1) * size] != zone;
+				colors[px + pz * size] = edge ? nearest(tint) : tinted(colors[px + pz * size], tint);
+			}
+		}
+		for (io.github.jcondedata.aliveworkplace.city.CityPlan.Road road : plan.roads()) {
+			line(colors, road.points(), false, road.width(), ROAD);
+		}
+		plan.wall().ifPresent(w -> line(colors, w.points(), w.closed(), 2, WALL));
+	}
+
+	/** A zone's land pixel: the land's colour and {@code tint} half and half (the tint alone on land nobody has seen). */
+	public static byte tinted(byte land, int tint) {
+		if (land == 0) {
+			return nearest(tint);
+		}
+		int abgr = MapColor.getColorFromPackedId(land & 0xFF);
+		int r = abgr & 0xFF, g = (abgr >> 8) & 0xFF, b = (abgr >> 16) & 0xFF;
+		return nearest((((r + ((tint >> 16) & 0xFF)) / 2) << 16) | (((g + ((tint >> 8) & 0xFF)) / 2) << 8) | ((b + (tint & 0xFF)) / 2));
+	}
+
+	/** The map colour nearest {@code rgb} (0xRRGGBB). */
+	public static byte nearest(int rgb) {
+		int r = (rgb >> 16) & 0xFF, g = (rgb >> 8) & 0xFF, b = rgb & 0xFF;
+		int best = 0;
+		long bestD = Long.MAX_VALUE;
+		for (int packed = 4; packed < 256; packed++) {
+			MapColor base = MapColor.byId(packed >> 2);
+			if (base == null || base == MapColor.NONE) {
+				continue;
+			}
+			int abgr = MapColor.getColorFromPackedId(packed);
+			int dr = (abgr & 0xFF) - r, dg = ((abgr >> 8) & 0xFF) - g, db = ((abgr >> 16) & 0xFF) - b;
+			long d = 3L * dr * dr + 4L * dg * dg + 2L * db * db;
+			if (d < bestD) {
+				bestD = d;
+				best = packed;
+			}
+		}
+		return (byte) best;
+	}
+
+	/** {@code points} (offsets from the hall) drawn {@code width} pixels wide in {@code color}. */
+	private static void line(byte[] colors, List<BlockPos> points, boolean closed, int width, byte color) {
+		int n = points.size();
+		int r0 = -(width - 1) / 2, r1 = width / 2;
+		for (int i = 0; i + 1 < n || (closed && n > 2 && i < n); i++) {
+			BlockPos a = points.get(i);
+			BlockPos b = points.get((i + 1) % n);
+			int steps = Math.max(Math.abs(b.getX() - a.getX()), Math.abs(b.getZ() - a.getZ()));
+			for (int s = 0; s <= steps; s++) {
+				int x = a.getX() + (steps == 0 ? 0 : Math.round((b.getX() - a.getX()) * s / (float) steps)) + HALF;
+				int z = a.getZ() + (steps == 0 ? 0 : Math.round((b.getZ() - a.getZ()) * s / (float) steps)) + HALF;
+				for (int dz = r0; dz <= r1; dz++) {
+					for (int dx = r0; dx <= r1; dx++) {
+						int px = x + dx, pz = z + dz;
+						if (px >= 0 && pz >= 0 && px < 128 && pz < 128) {
+							colors[px + pz * 128] = color;
+						}
+					}
+				}
+			}
+		}
 	}
 
 	/** A banner on the village map: where (at the hall's height), what the building is and its name. */

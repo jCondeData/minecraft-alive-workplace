@@ -19,6 +19,12 @@
   grid over it, each zone tinted in its colour and named, Keep Clear hatched and build sites going up outlined. Add,
   rename and delete zones, set each one's kind, style and "renew old houses" switch, paint cells with the brush or
   drag an area, erase (right-click erases too), undo the last 10 changes, and read the legend.
+- **Roads and the wall line on the plan**: the plan screen's Road tool draws a road point by point (double-click or
+  Enter to end) as a lane (1 wide), a street (3) or an avenue (5), in the style of the zone it starts in unless you pick
+  one; right-click a road to take it off. The Wall tool draws one wall line round the village, open or closed. A plan
+  holds up to 24 roads of up to 64 points, and roads you draw are approved for the builders. While you hold the City
+  Plan, the zones' edges, the roads and the wall line show on the ground round you in their colours, and the hall's
+  map button now draws the zones and roads on the map, ready to hang in an item frame by the hall.
 - With Cobblemon, the **Pokémon Center**: a bright hall with a glass front under a red roof, Cobblemon's Healing
   Machine on the counter, a PC beside it, potions and benches; **Pokémon Center II** adds a lodge with four beds and a
   trade corner with a Shop Counter, and a garden with a Pasture Block. In the Blueprint Table (with Cobblemon only)

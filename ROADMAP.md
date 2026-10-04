@@ -514,7 +514,7 @@ and an old vanilla village slowly rebuilds itself one house at a time. It answer
     `CityPlans` (the checked edit packet), the City Plan item (binds, names its village, says which zone you stand in;
     recipe, recipe-book unlock, icon via the pixel-art recipes, in the items scene). CityPlanGameTests (7) pass. Left:
     film `SCENE=items` with the new icon, hand in the package and tick (`done 27.2 --review`).
-- [ ] **27.3** **Painting the plan.** Right-click the air with a bound City Plan to open the plan screen (a client
+- [x] **27.3** (review: pending 2026-10-04) **Painting the plan.** Right-click the air with a bound City Plan to open the plan screen (a client
   screen, like the Blueprint Table's): the village map as it is today (`VillageMaps.colors`, a block a pixel, north up,
   the hall and every finished building's banner on it), the grid over it, each zone tinted in its colour with its name,
   Keep Clear hatched, build sites going up and the Steward's proposals as outlines. A side panel: the zones (new,
@@ -4267,6 +4267,10 @@ item waits.
 - (Sessions: anything that needs the owner, and the link to the latest Full test report. Handoffs go here through
   `sessions.py handoff "<in progress, next, traps>" --as <you>`, which keeps one per kind of session (chat, night):
   carry over anything still true from the previous one.)
+- 2026-10-04 (27.3, decision; lane c): the Steward's proposals (27.8) don't exist yet, so the plan screen draws only
+  build sites going up as dashed white outlines; `CityPlans.Outline` has a `proposal` flag (drawn dashed yellow) for
+  27.8 to fill in `CityPlans.screen`. Undo keeps the last 10 changes per hall on the server (not saved), shared by
+  everyone editing that plan, so an undo always matches what the hall holds.
 - 2026-10-04 (23.10a, owner question; lane a): the village pieces aren't built by our builders: Minecraft's village
   generator places them (one shared outside per style, baked into each piece's file), and the mod has no "village
   leader" yet (the nearest is the Village Hall's owner: whoever first switches its protection on, with their friends).

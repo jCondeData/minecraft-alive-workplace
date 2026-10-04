@@ -196,6 +196,10 @@ SCENES = [
     S("hall", "Village Hall", "The Village Hall, its screen and calendar", "the Village Hall screen and its calendar page opened", 75,
       [("02_hall_people", "People, under the page row"), ("03_hall_builder", "A builder"), ("08_hall_calendar", "The calendar"),
        ("09_hall_scale4", "At GUI scale 4")]),
+    # Painting the plan (ROADMAP 27.3): the City Plan screen over a real village, at GUI scales 2 and 4
+    S("city_plan", "Village Hall", "Painting the City Plan", "the City Plan screen opened with Homes, Workshops and Gardens zones in three styles", 60,
+      [("01_city_plan_start", "The first zone"), ("02_city_plan_scale2", "Three zones in three styles, GUI scale 2"),
+       ("03_city_plan_scale4", "The finished plan, GUI scale 4")]),
     S("hall_pages", "Village Hall", "The chronicle and trade routes", "the chronicle and trade-route pages opened", 45,
       [("01_hall_chronicle", "Chronicle"), ("02_hall_routes", "Trade routes")]),
     S("hall_quests", "Village Hall", "Quests, advice, the village map and the festival",

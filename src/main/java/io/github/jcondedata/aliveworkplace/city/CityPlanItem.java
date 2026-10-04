@@ -26,7 +26,7 @@ import net.minecraft.world.level.Level;
 
 /**
  * The City Plan (ROADMAP 27.2): right-click a Village Hall to bind it to that village, as a Village Ledger binds; its
- * tooltip names the village. Right-clicked in the air in the village it says which zone of the plan you stand in.
+ * tooltip names the village. Right-clicked in the air it opens the plan screen (27.3) and says which zone you stand in.
  */
 public class CityPlanItem extends Item {
 	public CityPlanItem(Properties properties) {
@@ -64,6 +64,7 @@ public class CityPlanItem extends Item {
 				CityZones.get(z.kind()).map(CityZones.Kind::title).orElse(Component.literal(z.kind())), village))
 			.orElseGet(() -> Component.translatable("message.aliveworkplace.city_plan.no_zone", village, entity.plan().zones().size()));
 		Chat.actionBar(serverPlayer, message.copy().withStyle(ChatFormatting.AQUA));
+		CityPlans.open(serverPlayer, entity); // the plan screen (27.3)
 		return InteractionResultHolder.success(stack);
 	}
 

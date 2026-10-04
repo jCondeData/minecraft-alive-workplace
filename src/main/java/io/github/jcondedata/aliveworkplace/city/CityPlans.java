@@ -8,12 +8,23 @@ import io.github.jcondedata.aliveworkplace.hall.VillageHalls;
 import io.github.jcondedata.aliveworkplace.hall.VillageProtection;
 import io.github.jcondedata.aliveworkplace.mc.Chat;
 import io.github.jcondedata.aliveworkplace.platform.Platform;
+import io.github.jcondedata.aliveworkplace.blueprint.BlueprintLibrary;
+import io.github.jcondedata.aliveworkplace.blueprint.BlueprintOutline;
+import io.github.jcondedata.aliveworkplace.blueprint.BlueprintStyles;
+import io.github.jcondedata.aliveworkplace.build.BuildSite;
+import io.github.jcondedata.aliveworkplace.build.BuildSiteManager;
+import io.github.jcondedata.aliveworkplace.hall.VillageMaps;
+import java.util.ArrayList;
 import java.util.BitSet;
+import java.util.List;
 import java.util.Locale;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.ComponentSerialization;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
@@ -29,7 +40,7 @@ import org.jetbrains.annotations.Nullable;
 public final class CityPlans {
 	/** What an edit does. */
 	public enum Op implements StringRepresentable {
-		ADD_ZONE, EDIT_ZONE, REMOVE_ZONE, PAINT, ERASE, MODE;
+		ADD_ZONE, EDIT_ZONE, REMOVE_ZONE, PAINT, ERASE, MODE, UNDO;
 
 		public static final Codec<Op> CODEC = StringRepresentable.fromEnum(Op::values);
 
@@ -77,6 +88,11 @@ public final class CityPlans {
 			return new Edit(hall, Op.ERASE, -1, "", "", "", false, cells, CityPlan.Mode.ASK);
 		}
 
+		/** Puts back the plan as it was before the last change (27.3: up to {@link #UNDO_STEPS}). */
+		public static Edit undo(BlockPos hall) {
+			return new Edit(hall, Op.UNDO, -1, "", "", "", false, new BitSet(), CityPlan.Mode.ASK);
+		}
+
 		public static Edit mode(BlockPos hall, CityPlan.Mode mode) {
 			return new Edit(hall, Op.MODE, -1, "", "", "", false, new BitSet(), mode);
 		}
@@ -87,9 +103,149 @@ public final class CityPlans {
 		}
 	}
 
+	/** How many changes the plan screen can undo (27.3). */
+	public static final int UNDO_STEPS = 10;
+	/** Pixels along a side of the plan screen's map. */
+	public static final int MAP = 128;
+	/** The most a zone, village or style name may be on the plan screen. */
+	public static final int MAX_NAME = 32;
+
+	/** A zone kind as the plan screen draws it. */
+	public record KindInfo(String id, int color, int tint, ResourceLocation icon, boolean buildable) {
+	}
+
+	/** A style as the plan screen lists it. */
+	public record StyleInfo(String name, Component title, ResourceLocation icon) {
+	}
+
+	/** A banner on the screen's map: offset from the hall in blocks, its dye colour and whether it is the hall. */
+	public record Mark(int dx, int dz, int color, boolean hall) {
+	}
+
+	/** A rectangle on the screen's map, offsets from the hall in blocks: a build site going up or a Steward's proposal. */
+	public record Outline(int minDx, int minDz, int maxDx, int maxDz, boolean proposal) {
+	}
+
+	/** Opens the plan screen (27.3): everything it draws. */
+	public record Open(BlockPos hall, Component village, int cellSize, CityPlan plan, int undo, boolean mayEdit, byte[] colors,
+					   List<Mark> marks, List<Outline> outlines, List<KindInfo> kinds, List<StyleInfo> styles) implements CustomPacketPayload {
+		public static final Type<Open> TYPE = new Type<>(AliveWorkplace.id("city_plan_open"));
+		public static final StreamCodec<RegistryFriendlyByteBuf, Open> CODEC = StreamCodec.of((buf, o) -> {
+			buf.writeBlockPos(o.hall());
+			ComponentSerialization.STREAM_CODEC.encode(buf, o.village());
+			buf.writeVarInt(o.cellSize());
+			CityPlan.STREAM_CODEC.encode(buf, o.plan());
+			buf.writeVarInt(o.undo());
+			buf.writeBoolean(o.mayEdit());
+			buf.writeByteArray(o.colors());
+			buf.writeCollection(o.marks(), (b, m) -> {
+				b.writeVarInt(m.dx());
+				b.writeVarInt(m.dz());
+				b.writeVarInt(m.color());
+				b.writeBoolean(m.hall());
+			});
+			buf.writeCollection(o.outlines(), (b, l) -> {
+				b.writeVarInt(l.minDx());
+				b.writeVarInt(l.minDz());
+				b.writeVarInt(l.maxDx());
+				b.writeVarInt(l.maxDz());
+				b.writeBoolean(l.proposal());
+			});
+			buf.writeCollection(o.kinds(), (b, k) -> {
+				b.writeUtf(k.id());
+				b.writeInt(k.color());
+				b.writeInt(k.tint());
+				b.writeResourceLocation(k.icon());
+				b.writeBoolean(k.buildable());
+			});
+			buf.writeVarInt(o.styles().size());
+			for (StyleInfo st : o.styles()) {
+				buf.writeUtf(st.name());
+				ComponentSerialization.STREAM_CODEC.encode(buf, st.title());
+				buf.writeResourceLocation(st.icon());
+			}
+		}, buf -> {
+			BlockPos hall = buf.readBlockPos();
+			Component village = ComponentSerialization.STREAM_CODEC.decode(buf);
+			int cellSize = buf.readVarInt();
+			CityPlan plan = CityPlan.STREAM_CODEC.decode(buf);
+			int undo = buf.readVarInt();
+			boolean mayEdit = buf.readBoolean();
+			byte[] colors = buf.readByteArray(MAP * MAP);
+			List<Mark> marks = buf.readList(b -> new Mark(b.readVarInt(), b.readVarInt(), b.readVarInt(), b.readBoolean()));
+			List<Outline> outlines = buf.readList(b -> new Outline(b.readVarInt(), b.readVarInt(), b.readVarInt(), b.readVarInt(), b.readBoolean()));
+			List<KindInfo> kinds = buf.readList(b -> new KindInfo(b.readUtf(), b.readInt(), b.readInt(), b.readResourceLocation(), b.readBoolean()));
+			int n = buf.readVarInt();
+			List<StyleInfo> styles = new ArrayList<>();
+			for (int i = 0; i < n; i++) {
+				styles.add(new StyleInfo(buf.readUtf(), ComponentSerialization.STREAM_CODEC.decode(buf), buf.readResourceLocation()));
+			}
+			return new Open(hall, village, cellSize, plan, undo, mayEdit, colors, marks, outlines, kinds, styles);
+		});
+
+		@Override
+		public Type<? extends CustomPacketPayload> type() {
+			return TYPE;
+		}
+	}
+
+	/** The plan after a change, sent to whoever made it (and anyone else with the screen open on that hall). */
+	public record Sync(BlockPos hall, CityPlan plan, int undo) implements CustomPacketPayload {
+		public static final Type<Sync> TYPE = new Type<>(AliveWorkplace.id("city_plan_sync"));
+		public static final StreamCodec<RegistryFriendlyByteBuf, Sync> CODEC = StreamCodec.of((buf, o) -> {
+			buf.writeBlockPos(o.hall());
+			CityPlan.STREAM_CODEC.encode(buf, o.plan());
+			buf.writeVarInt(o.undo());
+		}, buf -> new Sync(buf.readBlockPos(), CityPlan.STREAM_CODEC.decode(buf), buf.readVarInt()));
+
+		@Override
+		public Type<? extends CustomPacketPayload> type() {
+			return TYPE;
+		}
+	}
+
 	public static void init() {
 		CityZones.init();
+		Platform.get().clientbound(Open.TYPE, Open.CODEC);
+		Platform.get().clientbound(Sync.TYPE, Sync.CODEC);
 		Platform.get().serverbound(Edit.TYPE, Edit.CODEC, (edit, player) -> apply(player, edit));
+	}
+
+	/** Everything the plan screen of the hall at {@code hall} shows {@code player}. */
+	public static Open screen(ServerLevel level, VillageHallBlockEntity entity, ServerPlayer player) {
+		BlockPos hall = entity.getBlockPos();
+		int cell = CityPlan.cellSize();
+		int half = cell * CityPlan.GRID / 2;
+		byte[] colors = VillageMaps.colors(level, hall, half, Math.max(1, half * 2 / MAP));
+		List<Mark> marks = new ArrayList<>();
+		for (VillageMaps.Mark m : VillageMaps.marks(level, hall, half)) {
+			marks.add(new Mark(m.pos().getX() - hall.getX(), m.pos().getZ() - hall.getZ(), m.kind().color.getId(), m.kind() == VillageMaps.Kind.HALL));
+		}
+		List<Outline> outlines = new ArrayList<>();
+		// Build sites going up. The Steward's proposals (27.8) join these as Outline(..., true) once they exist.
+		for (BuildSite site : BuildSiteManager.get(level).all()) {
+			if (!site.placement().dimension().equals(level.dimension().location())) {
+				continue;
+			}
+			BlueprintLibrary.get(level, site.structure()).ifPresent(b -> {
+				BoundingBox box = BlueprintOutline.bounds(site.placement(), b.size());
+				if (box.maxX() >= hall.getX() - half && box.minX() < hall.getX() + half && box.maxZ() >= hall.getZ() - half && box.minZ() < hall.getZ() + half) {
+					outlines.add(new Outline(box.minX() - hall.getX(), box.minZ() - hall.getZ(), box.maxX() - hall.getX(), box.maxZ() - hall.getZ(), false));
+				}
+			});
+		}
+		List<KindInfo> kinds = CityZones.all().stream()
+			.map(k -> new KindInfo(k.id(), k.color().getTextureDiffuseColor() & 0xFFFFFF, k.mapTint(), k.icon(), k.buildable())).toList();
+		List<StyleInfo> styles = BlueprintStyles.all().stream().map(st -> new StyleInfo(st.name(), st.title(), st.icon())).toList();
+		return new Open(hall, VillageHalls.name(level, hall), cell, entity.plan(), entity.planUndoSteps(), mayChange(level, entity, player),
+			colors, marks, outlines, kinds, styles);
+	}
+
+	/** Opens the plan screen of the hall at {@code entity} for {@code player}. */
+	public static void open(ServerPlayer player, VillageHallBlockEntity entity) {
+		if (Platform.get().canSend(player, Open.TYPE)) {
+			Platform.get().send(player, screen(player.serverLevel(), entity, player));
+		}
 	}
 
 	/** Carries out {@code edit} for {@code player} if they may; true if the plan changed. */
@@ -104,6 +260,11 @@ public final class CityPlans {
 			return false;
 		}
 		CityPlan plan = entity.plan();
+		if (edit.op() == Op.UNDO) {
+			boolean undone = entity.undoPlan();
+			sync(player, entity);
+			return undone;
+		}
 		CityPlan next = switch (edit.op()) {
 			case ADD_ZONE -> plan.addZone(edit.kind(), edit.name(), edit.style());
 			case EDIT_ZONE -> plan.editZone(edit.zone(), edit.kind(), edit.name(), edit.style(), edit.renew());
@@ -111,15 +272,25 @@ public final class CityPlans {
 			case PAINT -> plan.paint(edit.zone(), ownCells(level, edit.hall(), edit.cells(), player));
 			case ERASE -> plan.erase(edit.cells());
 			case MODE -> plan.withMode(edit.mode());
+			case UNDO -> plan;
 		};
 		if (next == null || next.equals(plan)) {
+			sync(player, entity); // the screen drew a change that didn't happen: put it right
 			return false;
 		}
 		if (entity.owner() == null) {
 			entity.setOwner(player.getUUID(), player.getGameProfile().getName()); // a hall nobody owns: the first painter's
 		}
-		entity.setPlan(next);
+		entity.changePlan(next, UNDO_STEPS);
+		sync(player, entity);
 		return true;
+	}
+
+	/** Sends the hall's plan to {@code player}, if their game can take it. */
+	static void sync(ServerPlayer player, VillageHallBlockEntity entity) {
+		if (Platform.get().canSend(player, Sync.TYPE)) {
+			Platform.get().send(player, new Sync(entity.getBlockPos(), entity.plan(), entity.planUndoSteps()));
+		}
 	}
 
 	/** The hall's owner, their friends and operators; anyone while nobody owns it. */

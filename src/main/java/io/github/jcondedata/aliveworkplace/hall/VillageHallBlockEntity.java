@@ -225,6 +225,31 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 		setChanged();
 	}
 
+	/** The plan before each of the last changes made on the plan screen (27.3), newest first; not saved. */
+	private final java.util.Deque<io.github.jcondedata.aliveworkplace.city.CityPlan> planUndo = new java.util.ArrayDeque<>();
+
+	/** Changes the plan, remembering the one before for undo (at most {@code depth} steps). */
+	public void changePlan(io.github.jcondedata.aliveworkplace.city.CityPlan next, int depth) {
+		planUndo.push(plan);
+		while (planUndo.size() > depth) {
+			planUndo.removeLast();
+		}
+		setPlan(next);
+	}
+
+	/** Puts back the plan before the last change; false if there is nothing to undo. */
+	public boolean undoPlan() {
+		if (planUndo.isEmpty()) {
+			return false;
+		}
+		setPlan(planUndo.pop());
+		return true;
+	}
+
+	public int planUndoSteps() {
+		return planUndo.size();
+	}
+
 	public void setProtected(boolean on) {
 		protectedVillage = on;
 		setChanged();

@@ -7,7 +7,11 @@
   Blank Blueprint. Right-click a Village Hall to bind it; right-clicked in the village it tells you which zone of the
   plan you stand in. Each hall now keeps its village's plan (zones of eight kinds: Homes, Workshops, Farms, Market,
   Civic, Gardens, Defences, Keep Clear, which packs can add to), and a broken hall carries its plan to wherever it's
-  put down. Only the hall's owner, their friends and operators may change a plan. The screen to paint it comes next.
+  put down. Only the hall's owner, their friends and operators may change a plan.
+- **Painting the plan**: right-click the air with a bound City Plan to open the plan screen: the village map with a
+  grid over it, each zone tinted in its colour and named, Keep Clear hatched and build sites going up outlined. Add,
+  rename and delete zones, set each one's kind, style and "renew old houses" switch, paint cells with the brush or
+  drag an area, erase (right-click erases too), undo the last 10 changes, and read the legend.
 - With Cobblemon, the **Pokémon Center**: a bright hall with a glass front under a red roof, Cobblemon's Healing
   Machine on the counter, a PC beside it, potions and benches; **Pokémon Center II** adds a lodge with four beds and a
   trade corner with a Shop Counter, and a garden with a Pasture Block. In the Blueprint Table (with Cobblemon only)

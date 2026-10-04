@@ -113,23 +113,10 @@ public final class VillageMaps {
 		List<MapBanner> banners = new ArrayList<>();
 		Map<Kind, Integer> counts = new EnumMap<>(Kind.class);
 		Component village = VillageHalls.name(level, hall);
-		banners.add(new MapBanner(hall.immutable(), Kind.HALL.color, Optional.of(village)));
-		counts.merge(Kind.HALL, 1, Integer::sum);
-		for (BuildSiteManager.Finished f : BuildSiteManager.get(level).finishedNear(level, hall, VillageHalls.RADIUS + 16)) {
-			Optional<Kind> kind = kindOf(f.structure());
-			if (kind.isEmpty()) {
-				continue;
-			}
-			BlockPos centre = BlueprintLibrary.get(level, f.structure())
-				.map(b -> BlueprintOutline.bounds(f.placement(), b.size()).getCenter())
-				.orElse(f.placement().origin());
-			if (Math.abs(centre.getX() - hall.getX()) > HALF - 1 || Math.abs(centre.getZ() - hall.getZ()) > HALF - 1) {
-				continue;
-			}
-			boolean named = kind.get() != Kind.HOMES && kind.get() != Kind.DECORATIONS;
-			banners.add(new MapBanner(new BlockPos(centre.getX(), hall.getY(), centre.getZ()), kind.get().color,
-				named ? Optional.of(Blueprints.displayName(f.structure())) : Optional.empty()));
-			counts.merge(kind.get(), 1, Integer::sum);
+		for (Mark mark : marks(level, hall, HALF)) {
+			boolean named = mark.kind() == Kind.HALL || (mark.kind() != Kind.HOMES && mark.kind() != Kind.DECORATIONS);
+			banners.add(new MapBanner(mark.pos(), mark.kind().color, named ? Optional.of(mark.name()) : Optional.empty()));
+			counts.merge(mark.kind(), 1, Integer::sum);
 		}
 		CompoundTag tag = new CompoundTag();
 		tag.putString("dimension", Ids.of(level.dimension()).toString());
@@ -158,18 +145,50 @@ public final class VillageMaps {
 		return stack;
 	}
 
+	/** A banner on the village map: where (at the hall's height), what the building is and its name. */
+	public record Mark(BlockPos pos, Kind kind, Component name) {
+	}
+
+	/** The hall and every finished building whose middle is within {@code half} blocks of {@code hall} (east-west and north-south). */
+	public static List<Mark> marks(ServerLevel level, BlockPos hall, int half) {
+		List<Mark> out = new ArrayList<>();
+		out.add(new Mark(hall.immutable(), Kind.HALL, VillageHalls.name(level, hall)));
+		for (BuildSiteManager.Finished f : BuildSiteManager.get(level).finishedNear(level, hall, Math.max(VillageHalls.RADIUS, half) + 16)) {
+			Optional<Kind> kind = kindOf(f.structure());
+			if (kind.isEmpty()) {
+				continue;
+			}
+			BlockPos centre = BlueprintLibrary.get(level, f.structure())
+				.map(b -> BlueprintOutline.bounds(f.placement(), b.size()).getCenter())
+				.orElse(f.placement().origin());
+			if (Math.abs(centre.getX() - hall.getX()) > half - 1 || Math.abs(centre.getZ() - hall.getZ()) > half - 1) {
+				continue;
+			}
+			out.add(new Mark(new BlockPos(centre.getX(), hall.getY(), centre.getZ()), kind.get(), Blueprints.displayName(f.structure())));
+		}
+		return out;
+	}
+
 	/**
 	 * The land round {@code hall} as map colours, a pixel a block, north-lit like a vanilla map: the top block of each
 	 * column (water shaded by its depth). Columns in chunks that aren't loaded stay blank.
 	 */
 	static byte[] colors(ServerLevel level, BlockPos hall) {
+		return colors(level, hall, HALF, 1);
+	}
+
+	/**
+	 * The same for the square of {@code half} blocks round {@code hall}, 128 pixels a side, a pixel every {@code step}
+	 * blocks (1 for a 128-block square): the City Plan screen's map (27.3).
+	 */
+	public static byte[] colors(ServerLevel level, BlockPos hall, int half, int step) {
 		byte[] colors = new byte[128 * 128];
 		BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
 		for (int px = 0; px < 128; px++) {
-			int x = hall.getX() - HALF + px;
+			int x = hall.getX() - half + px * step;
 			double north = Double.NaN;
 			for (int pz = -1; pz < 128; pz++) {
-				int z = hall.getZ() - HALF + pz;
+				int z = hall.getZ() - half + pz * step;
 				if (!level.hasChunk(x >> 4, z >> 4)) {
 					north = Double.NaN;
 					continue;

@@ -293,7 +293,7 @@ first; many items below are "verify and harden", not "build".
   - the GIF is in the review package.
 
   This test is the yardstick for the rest of the milestone.
-  - [ ] **23.1a** Change from the owner (2026-10-04): builder speed is fine (accept ~3.5 in-game days for the 22 starter builds). Time should grow with bigger builds, but be cut in half with every builder working on it (2 builders ~ half the time, and so on): check helpers really scale like that and fix it if not
+  - [x] **23.1a** (review: pending 2026-10-04) Change from the owner (2026-10-04): builder speed is fine (accept ~3.5 in-game days for the 22 starter builds). Time should grow with bigger builds, but be cut in half with every builder working on it (2 builders ~ half the time, and so on): check helpers really scale like that and fix it if not
 - [x] **23.2** (approved auto 2026-10-04) **Stuck recovery, proven.** Builders stuck on water, lava, holes, fences, doors, their own scaffolding, or in
   unloaded chunks. Done when: a chaos test (the tester skill's `ChaosTests`, 5 seeds) finishes every time, and the
   recovery (hop, re-path, step back) never breaks a placed block.
@@ -4259,6 +4259,15 @@ item waits.
 - (Sessions: anything that needs the owner, and the link to the latest Full test report. Handoffs go here through
   `sessions.py handoff "<in progress, next, traps>" --as <you>`, which keeps one per kind of session (chat, night):
   carry over anything still true from the previous one.)
+- 2026-10-04 (23.10a, owner question; lane a): the village pieces aren't built by our builders: Minecraft's village
+  generator places them (one shared outside per style, baked into each piece's file), and the mod has no "village
+  leader" yet (the nearest is the Village Hall's owner: whoever first switches its protection on, with their friends).
+  So "let the village leader override a piece's look" needs two choices: (1) who the leader is: (a) the Hall's owner
+  and their friends, or (b) something new; (2) what overriding does: (a) on the Hall screen the owner picks, per piece,
+  one of the five styles' outsides (or the piece's own new outside, if you want each piece drawn its own: a sign,
+  porch or yard), and the village's builder rebuilds that house's outside in place (inside and its worker kept); or
+  (b) it only changes the look of pieces built from then on (by a builder, 27.x), not the generated ones. Default if
+  you don't answer: 1a + 2a with the five existing outsides (no new art), after the current lane work. Waiting.
 - 2026-10-04 (28.7, owner question; lane b): Cobblemon 1.7.3 has its own villager job, `cobblemon:nurse`, whose
   workstation is the Healing Machine, so a jobless villager next to any Healing Machine already becomes Cobblemon's nurse
   (compat test on `wip/lane-b`). 28.7 says "a jobless villager never takes a player's machine by themselves". Which:

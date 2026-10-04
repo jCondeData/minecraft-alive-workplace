@@ -477,6 +477,37 @@ final class JobScenes {
 			Villager d = worker(level, STATION, Blocks.CAULDRON, PoiTypes.LEATHERWORKER, VillagerProfession.LEATHERWORKER);
 			return l -> n(ModAttachments.ITEMS_CRAFTED, d) >= 1 && built(l, site, 0.6f);
 		}, null));
+		SCENES.put("crew", new Job("four builders built the stone house together, each placing a share of it", 6000,
+			new Vec3(6.5, -51, 12.5), new Vec3(-5, -56, -6), (level, player) -> {
+			// 23.1a: the builder and three helpers from benches nearby, at the normal build speed, from exactly the house's
+			// material list: about a third of the time it takes alone, everyone placing a fair share.
+			java.util.UUID site = builderSite(level, StarterBlueprints.STONE_HOUSE, new BlockPos(-8, -60, -3), List.of(), Map.of());
+			List<java.util.UUID> crew = new ArrayList<>();
+			BuildSite s = BuildSiteManager.get(level).get(site);
+			if (s != null && s.builder() != null) {
+				crew.add(s.builder());
+			}
+			for (int i = 0; i < 3; i++) {
+				BlockPos bench = new BlockPos(-1 + 2 * i, -60, 3);
+				level.setBlockAndUpdate(bench, ModBlocks.BUILDERS_BENCH.defaultBlockState());
+				Villager mate = EntityType.VILLAGER.spawn(level, bench.south(), MobSpawnType.COMMAND);
+				Builders.employ(level, mate, bench);
+				crew.add(mate.getUUID());
+			}
+			int[] placed = new int[crew.size()];
+			return l -> {
+				BuildSite now = BuildSiteManager.get(l).get(site);
+				if (now != null && !now.isDone()) {
+					for (int i = 0; i < crew.size(); i++) {
+						placed[i] = Math.max(placed[i], now.placedBy(crew.get(i), false));
+					}
+					return false;
+				}
+				int total = java.util.Arrays.stream(placed).sum();
+				// Each placed at least half an even share (the last few blocks after the final look don't count).
+				return java.util.Arrays.stream(placed).allMatch(n -> n * crew.size() * 2 >= total * 0.9);
+			};
+		}, null));
 		SCENES.put("nurse", job("the nurse healed the hurt villager and cured the ill one", 2000, (level, player) -> {
 			Villager nurse = picked(level, player, STATION, Blocks.BREWING_STAND, Items.HONEY_BOTTLE);
 			chest(level, chestPos(), new ItemStack(Items.HONEY_BOTTLE));

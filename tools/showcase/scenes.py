@@ -125,6 +125,8 @@ SCENES = [
       [("*_carpenter@first", "Start"), ("*_carpenter@middle", "Working"), ("30_carpenter_closeup", "At the crafting table")]),
     job("mason", "Mason", "Cutting stone for a builder", "the mason cut stone bricks the builder needed", 240),
     job("dyer", "Leatherworker (dyer)", "Dyeing wool for a builder", "the dyer made coloured wool the builder needed", 240),
+    # Builder crews (ROADMAP 23.1a): a builder and three helpers on one build, about a third of the time alone
+    job("crew", "Builder", "A crew of four on one build", "four builders built the stone house together, each placing a share of it", 150),
     S("chef", "Chef", "Cooking at the smoker", "the chef cooked food into the chest", 120,
       [("*_chef@first", "Start"), ("*_chef@middle", "Cooking"), ("*_chef@last", "Done")]),
     job("smelter", "Armorer (smelter)", "Smelting ore in the blast furnace", "the armorer smelted the ore into ingots"),

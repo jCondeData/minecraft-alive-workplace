@@ -166,22 +166,63 @@ public final class BuildSite {
 	}
 
 	/**
-	 * Steps after the lead's current one in this stage, for helpers to work on. Empty while the lead
-	 * retries deferred steps (the end of a stage is left to the lead).
+	 * Steps after the lead's current one in this stage, for helpers to work on: while the lead retries deferred steps,
+	 * the deferred steps after its current one.
 	 */
 	public List<BuildPlan.Step> ahead(BuildPlan plan, int max) {
-		if (retrying || stage == BuildPlan.Stage.DONE) {
+		if (stage == BuildPlan.Stage.DONE) {
 			return List.of();
 		}
 		List<BuildPlan.Step> list = plan.steps(stage);
 		List<BuildPlan.Step> out = new ArrayList<>();
+		if (retrying) {
+			// 23.1a: helpers help with the deferred steps too (the lead alone took a crew of four's last fifth).
+			for (int i = cursor + 1; i < deferred.size() && out.size() < max; i++) {
+				out.add(list.get(deferred.get(i)));
+			}
+			return out;
+		}
 		for (int i = cursor + 1; i < list.size() && out.size() < max; i++) {
 			out.add(list.get(i));
 		}
 		return out;
 	}
 
+	/** While retrying: moves the current deferred step to the back of the list (a helper is on it). */
+	public void postpone() {
+		if (retrying && cursor < deferred.size()) {
+			deferred.add(deferred.remove(cursor));
+			onChange.run();
+		}
+	}
+
+	/** Deferred steps still to retry, from the cursor on (0 when not retrying). */
+	public int retryLeft() {
+		return retrying ? Math.max(0, deferred.size() - cursor) : 0;
+	}
+
+	/** True while the lead goes back over the stage's deferred steps. */
+	public boolean isRetrying() {
+		return retrying;
+	}
+
+	/** A block the lead is on away from its cursor, among the helpers' (23.1a); helpers leave it alone. Not saved. */
+	@Nullable
+	private BlockPos leadClaim;
+
+	public void setLeadClaim(@Nullable BlockPos pos) {
+		leadClaim = pos;
+	}
+
+	@Nullable
+	public BlockPos leadClaim() {
+		return leadClaim;
+	}
+
 	public boolean claimedByOther(UUID who, BlockPos pos) {
+		if (pos.equals(leadClaim) && !who.equals(builder)) {
+			return true;
+		}
 		for (Map.Entry<UUID, BlockPos> e : claims.entrySet()) {
 			if (!e.getKey().equals(who) && e.getValue().equals(pos)) {
 				return true;

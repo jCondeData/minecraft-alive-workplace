@@ -5,4 +5,4 @@ Tester: PASS: scene words, 44/44 messages render with no raw key or placeholder;
 Scene: SCENE=words.
 Reply: approve 24.5 · veto 24.5: why · change 24.5: what
 
-(from lane-b-1004-0632, 2026-10-04 07:32Z; not yet sent)
+(from lane-b-1004-0632, 2026-10-04 07:32Z; sent)

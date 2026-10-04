@@ -1,3 +1,3 @@
 23.3: one look at a builder now shows, under its name, percent and progress bar: 'Short of: 109× Spruce Stairs, 42× Birch Planks, 35× Spruce Log and 15 more' (the 3 biggest shortages, or 'Has everything it needs' in green), and 'Takes from: 2 chests by its bench at x y z' (plus ', and the storehouse at x y z' when the village has a porter's storehouse it can draw on; red when there are no chests). Updated every 5 seconds. Judge: the wording, and that a long line can hide behind blocks from some angles like vanilla name tags (here a log pillar covers part of it).
 
-(from lane-a-1004-0033, 2026-10-04 02:12Z; not yet sent)
+(from lane-a-1004-0033, 2026-10-04 02:12Z; sent)

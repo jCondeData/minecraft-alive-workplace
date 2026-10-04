@@ -4,4 +4,4 @@ Please judge: 1) Survival villages may found one Habitat Block each (Cobblemon g
 Tester: no code; the note is checked against the roadmap items 28.2 to 28.22.
 Reply: approve 28.1 · veto 28.1: why · change 28.1: what
 
-(from lane-b-1004-0632, 2026-10-04 07:01Z; not yet sent)
+(from lane-b-1004-0632, 2026-10-04 07:01Z; sent)

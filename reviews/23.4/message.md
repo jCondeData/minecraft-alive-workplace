@@ -5,4 +5,4 @@ Tester: PASS: 5 new GameTests (the test hut 25/55/1/1 numbers, chests taken off,
 Scene: SCENE=missing (a placed Starter Cottage by a Blueprint Table with planks and cobblestone in its chest).
 Reply: approve 23.4 · veto 23.4: why · change 23.4: what
 
-(from lane-a-1004-0332, 2026-10-04 05:37Z; not yet sent)
+(from lane-a-1004-0332, 2026-10-04 05:37Z; sent)

@@ -5,4 +5,4 @@ Tester: staff, extras and village scenes pass their checks at GUI scale 2; the v
 Scene: SCENE=staff / extras / village (WORKSHOP_WEIGHT=200) tools/screenshots/run.sh
 Reply: approve 24.3 · veto 24.3: why · change 24.3: what
 
-(from lane-b-1004-0332, 2026-10-04 05:33Z; not yet sent)
+(from lane-b-1004-0332, 2026-10-04 05:33Z; sent)

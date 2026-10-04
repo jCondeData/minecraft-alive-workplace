@@ -5,4 +5,4 @@ Tester: PASS: 2 new tests (mirror a placed blueprint at every facing; cancel hal
 Scene: SCENE=placing. Flat world, a starter cottage placed, turned, mirrored, built for a while, cancelled, moved onto a slope.
 Reply: approve 23.8 · veto 23.8: why · change 23.8: what
 
-(from lane-a-1004-0932, 2026-10-04 11:22Z; not yet sent)
+(from lane-a-1004-0932, 2026-10-04 11:22Z; sent)

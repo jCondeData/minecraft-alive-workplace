@@ -5,4 +5,4 @@ Tester: PASS: compat tests (the cued Machop walks 9+ blocks toward the work carr
 Scene: SCENE=partners_engine (COBBLEMON on).
 Reply: approve 28.3 · veto 28.3: why · change 28.3: what
 
-(from lane-b-1004-0632, 2026-10-04 08:31Z; not yet sent)
+(from lane-b-1004-0632, 2026-10-04 08:31Z; sent)

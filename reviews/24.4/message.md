@@ -5,4 +5,4 @@ Tester: every scene check passed at both scales (11 scenes); a new harness check
 Scene: SCENE=<table|hall|hall_pages|hall_quests|porter|mail|shop|counter|scholar|config> GUI_SCALE=4 tools/screenshots/run.sh
 Reply: approve 24.4 · veto 24.4: why · change 24.4: what
 
-(from lane-b-1004-0332, 2026-10-04 04:50Z; not yet sent)
+(from lane-b-1004-0332, 2026-10-04 04:50Z; sent)

@@ -5,4 +5,4 @@ Tester: renders only (tools/review/gallery.py, the same renderer the architect s
 Scene: python3 tools/review/gallery.py
 Reply: approve 23.10 · veto 23.10: which builds · change 23.10: what
 
-(from lane-a-1004-0932, 2026-10-04 11:00Z; not yet sent)
+(from lane-a-1004-0932, 2026-10-04 11:00Z; sent)

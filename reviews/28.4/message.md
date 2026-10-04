@@ -5,4 +5,4 @@ Tester: 12 new compat GameTests (each show started by the worker's real work), 3
 Scene: SCENE=partners_land (checks pass: beams carried, 9 of 9 farmland at moisture 7, no display left).
 Reply: approve 28.4 · veto 28.4: why · change 28.4: what
 
-(from lane-b-1004-0932, 2026-10-04 11:11Z; not yet sent)
+(from lane-b-1004-0932, 2026-10-04 11:11Z; sent)

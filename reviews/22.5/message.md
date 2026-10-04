@@ -5,4 +5,4 @@ Tester: 6 new GameTests (every page opens and comes back, adding a page, the row
 Scene: SCENE=hall (also films GUI scale 4).
 Reply: approve 22.5 · veto 22.5: why · change 22.5: what
 
-(from lane-b-1004-0033, 2026-10-04 01:20Z; not yet sent)
+(from lane-b-1004-0033, 2026-10-04 01:20Z; sent)

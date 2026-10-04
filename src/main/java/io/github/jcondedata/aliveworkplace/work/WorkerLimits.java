@@ -116,6 +116,11 @@ public final class WorkerLimits {
 		return found.filter(p -> !JobSiteTickets.workstation(p.getFirst()) || !full(level, GlobalPos.of(level.dimension(), p.getSecond()), false));
 	}
 
+	/** Whether {@code villager} is being given a job by order right now (not taking one by themselves). */
+	public static boolean ordering(Villager villager) {
+		return villager == employing;
+	}
+
 	/** The villager being given a job by order right now (see {@link #order}). */
 	@Nullable
 	private static Villager employing;

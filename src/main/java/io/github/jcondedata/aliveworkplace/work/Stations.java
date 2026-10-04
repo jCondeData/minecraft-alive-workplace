@@ -87,6 +87,27 @@ public final class Stations {
 		}
 	}
 
+	/**
+	 * ROADMAP 28.7: a jobless villager who takes a Healing Machine by themselves gets Cobblemon's own nurse job there,
+	 * never ours (ours only by a honey bottle). Vanilla gives the first job in the registry whose workstation the block
+	 * is, and our Nurse keeps a machine she was given, so without this it could be ours depending on load order. The job
+	 * to give instead, or null to leave it be.
+	 */
+	@org.jetbrains.annotations.Nullable
+	public static VillagerProfession insteadByItself(net.minecraft.world.entity.npc.Villager villager, net.minecraft.world.entity.npc.VillagerData data) {
+		if (data.getProfession() != ModVillagers.NURSE || villager.getVillagerData().getProfession() != VillagerProfession.NONE
+			|| WorkerLimits.ordering(villager) || !(villager.level() instanceof net.minecraft.server.level.ServerLevel level)) {
+			return null;
+		}
+		net.minecraft.core.GlobalPos site = villager.getBrain().getMemory(net.minecraft.world.entity.ai.memory.MemoryModuleType.JOB_SITE).orElse(null);
+		if (site == null || site.dimension() != level.dimension()
+			|| !level.getBlockState(site.pos()).getBlockHolder().is(ModVillagers.HEALING_MACHINE_BLOCK)) {
+			return null;
+		}
+		return level.getPoiManager().getType(site.pos()).flatMap(holder -> BuiltInRegistries.VILLAGER_PROFESSION.stream()
+			.filter(p -> p != ModVillagers.NURSE && p != VillagerProfession.NONE && p.heldJobSite().test(holder)).findFirst()).orElse(null);
+	}
+
 	/** Blocks no job takes by itself: a crafting table, a beehive (or nest), a jukebox, a mailbox (and Cobblemon's Fossil
 	 * Analyzer). */
 	private static final Set<Block> ONLY_BY_ITEM = Set.of(Blocks.CRAFTING_TABLE, Blocks.BEEHIVE, Blocks.JUKEBOX, ModBlocks.MAILBOX);

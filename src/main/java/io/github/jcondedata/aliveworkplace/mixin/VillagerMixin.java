@@ -91,6 +91,17 @@ abstract class VillagerMixin {
 		}
 	}
 
+	/** A jobless villager at a Healing Machine takes Cobblemon's nurse job, not ours (28.7: ours only by a honey bottle). */
+	@Inject(method = "setVillagerData", at = @At("HEAD"), cancellable = true)
+	private void aliveworkplace$onlyByItem(net.minecraft.world.entity.npc.VillagerData data, CallbackInfo ci) {
+		Villager self = (Villager) (Object) this;
+		net.minecraft.world.entity.npc.VillagerProfession instead = io.github.jcondedata.aliveworkplace.work.Stations.insteadByItself(self, data);
+		if (instead != null) {
+			ci.cancel();
+			self.setVillagerData(data.setProfession(instead));
+		}
+	}
+
 	@Inject(method = "setVillagerData", at = @At("HEAD"))
 	private void aliveworkplace$schoolBefore(net.minecraft.world.entity.npc.VillagerData data, CallbackInfo ci) {
 		Villager self = (Villager) (Object) this;

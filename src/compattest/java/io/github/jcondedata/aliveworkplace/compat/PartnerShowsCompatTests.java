@@ -35,8 +35,16 @@ public class PartnerShowsCompatTests implements FabricGameTest {
 	private static final BlockPos WORK = new BlockPos(5, 2, 5);
 
 	/** Turns the shows on for this test and off again when it ends, passed or failed. */
-	private static void showsOn(GameTestHelper helper) {
+	static void showsOn(GameTestHelper helper) {
 		PartnerShows.ENABLED = true;
+		after(helper, () -> {
+			PartnerShows.stopAll();
+			PartnerShows.ENABLED = false;
+		});
+	}
+
+	/** Runs {@code reset} when the test ends, passed or failed. */
+	static void after(GameTestHelper helper, Runnable reset) {
 		try {
 			java.lang.reflect.Field field = GameTestHelper.class.getDeclaredField("testInfo");
 			field.setAccessible(true);
@@ -47,14 +55,12 @@ public class PartnerShowsCompatTests implements FabricGameTest {
 
 				@Override
 				public void testPassed(GameTestInfo test, GameTestRunner runner) {
-					PartnerShows.stopAll();
-					PartnerShows.ENABLED = false;
+					reset.run();
 				}
 
 				@Override
 				public void testFailed(GameTestInfo test, GameTestRunner runner) {
-					PartnerShows.stopAll();
-					PartnerShows.ENABLED = false;
+					reset.run();
 				}
 
 				@Override

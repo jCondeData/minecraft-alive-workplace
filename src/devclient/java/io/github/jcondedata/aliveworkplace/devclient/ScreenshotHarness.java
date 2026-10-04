@@ -69,6 +69,7 @@ public class ScreenshotHarness implements ClientModInitializer {
 	private final JobScenes jobScenes = new JobScenes();
 	private final WordsScene words = new WordsScene();
 	private final PartnersScene partners = new PartnersScene();
+	private final PartnersLandScene partnersLand = new PartnersLandScene();
 
 	private void onTick(Minecraft mc) {
 		if (mc.level == null || mc.player == null || mc.getSingleplayerServer() == null) {
@@ -92,6 +93,10 @@ public class ScreenshotHarness implements ClientModInitializer {
 		}
 		if ("guide".equals(System.getProperty("aliveworkplace.scene"))) {
 			guideScene(mc, mc.getSingleplayerServer());
+			return;
+		}
+		if ("partners_land".equals(System.getProperty("aliveworkplace.scene"))) {
+			partnersLand.tick(mc, mc.getSingleplayerServer());
 			return;
 		}
 		if ("partners_engine".equals(System.getProperty("aliveworkplace.scene"))) {
@@ -2391,8 +2396,9 @@ public class ScreenshotHarness implements ClientModInitializer {
 		}
 		if (soakDoneAt > 0 && tick == soakDoneAt + 60) {
 			String result = soakResult;
-			// The result ends "items off: none" when every build finished (an unfinished list would follow it) and every item adds up.
-			Showcase.check(result != null && result.contains(" " + soakTotal + "/" + soakTotal + " builds finished") && result.endsWith("items off: none"),
+			// "items off: none" when every item adds up, then the end or the next part ("; village chunks: …", 23.6; B44).
+			Showcase.check(result != null && result.contains(" " + soakTotal + "/" + soakTotal + " builds finished")
+					&& java.util.regex.Pattern.compile("items off: none(;|$)").matcher(result).find(),
 				"10 builders finished every starter build with nothing duplicated or lost: " + result);
 			shot(mc, "02_soak_done");
 			server.execute(() -> hover(server.getPlayerList().getPlayers().get(0),

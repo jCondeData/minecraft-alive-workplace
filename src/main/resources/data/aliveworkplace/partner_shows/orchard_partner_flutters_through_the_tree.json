@@ -1,0 +1,15 @@
+{
+  "jobs": [
+    "aliveworkplace:orchard_keeper"
+  ],
+  "types": [
+    "flying",
+    "bug"
+  ],
+  "cue": "pick",
+  "animation": "special",
+  "particles": "minecraft:falling_spore_blossom",
+  "sound": "minecraft:block.azalea_leaves.hit",
+  "ticks": 40,
+  "effect": "none"
+}

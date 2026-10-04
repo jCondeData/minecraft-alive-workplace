@@ -1,0 +1,15 @@
+{
+  "jobs": [
+    "aliveworkplace:porter"
+  ],
+  "types": [
+    "fighting",
+    "normal"
+  ],
+  "cue": "haul",
+  "carry": "minecraft:barrel",
+  "animation": "physical",
+  "sound": "minecraft:block.barrel.close",
+  "ticks": 30,
+  "effect": "none"
+}

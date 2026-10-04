@@ -1,0 +1,13 @@
+{
+  "jobs": [
+    "minecraft:farmer"
+  ],
+  "types": [
+    "grass"
+  ],
+  "cue": "tend",
+  "animation": "cry",
+  "particles": "minecraft:happy_villager",
+  "ticks": 40,
+  "effect": "none"
+}

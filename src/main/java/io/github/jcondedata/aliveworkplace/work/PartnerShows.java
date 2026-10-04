@@ -20,10 +20,13 @@ import java.util.UUID;
 import java.util.WeakHashMap;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.GlobalPos;
+import net.minecraft.core.particles.BlockParticleOption;
+import net.minecraft.core.particles.ItemParticleOption;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.FloatTag;
 import net.minecraft.nbt.ListTag;
@@ -40,6 +43,8 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.npc.Villager;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.FarmBlock;
@@ -54,11 +59,12 @@ import org.jetbrains.annotations.Nullable;
  * <pre>
  * { "jobs": ["aliveworkplace:builder"], "types": ["fighting"], "cue": "fetch",
  *   "carry": "from_work",            // or an item id; left out: carries nothing
+ *   "carry_tag": "aliveworkplace:partner_carry/wood", // optional: only when what the worker handles is in this item tag
  *   "animation": "physical",         // physical, special or cry
  *   "particles": "minecraft:crit",   // a vanilla particle, or a Cobblemon effect such as cobblemon:impact_water
  *   "sound": "minecraft:entity.player.attack.strong",
  *   "ticks": 40,                     // how long the show itself lasts, 10 to 400
- *   "effect": "none" }               // none, hydrate_farmland, smoke or sparks
+ *   "effect": "none" }               // none, hydrate_farmland, smoke, sparks, crack or dust
  * </pre>
  * What it carries is a vanilla Item Display that follows the Pokémon by teleport (never riding it), tagged
  * {@link #DISPLAY_TAG}; it goes when the show ends, and a display whose show was cut off (a restart, an unloaded chunk)
@@ -84,7 +90,16 @@ public final class PartnerShows implements ResourceManagerReloadListener {
 
 	/** What a show does to the world at its spot, from a small toolbox. */
 	public enum Effect {
-		NONE, HYDRATE_FARMLAND, SMOKE, SPARKS
+		/** Nothing. */
+		NONE,
+		/** The farmland round the spot fully moist, with a splash. */
+		HYDRATE_FARMLAND,
+		SMOKE,
+		SPARKS,
+		/** The crack particles of the block carried (or of the block at the spot): a board or a stone being worked. */
+		CRACK,
+		/** Dust of the ground at the spot: a furrow being walked. */
+		DUST
 	}
 
 	/** The marker for "carry what the worker is handling". */
@@ -92,7 +107,12 @@ public final class PartnerShows implements ResourceManagerReloadListener {
 
 	/** One show, as its data file says. */
 	public record Show(ResourceLocation name, Set<ResourceLocation> jobs, Set<String> types, String cue, @Nullable String carry,
-					   @Nullable String animation, @Nullable ResourceLocation particles, @Nullable ResourceLocation sound, int ticks, Effect effect) {
+					   @Nullable TagKey<Item> carryTag, @Nullable String animation, @Nullable ResourceLocation particles,
+					   @Nullable ResourceLocation sound, int ticks, Effect effect) {
+		/** Whether this show plays for a worker handling {@code handling}: a show with a carry tag only for what's in it. */
+		public boolean plays(ItemStack handling) {
+			return carryTag == null || !handling.isEmpty() && handling.is(carryTag);
+		}
 	}
 
 	private enum Phase {
@@ -108,6 +128,10 @@ public final class PartnerShows implements ResourceManagerReloadListener {
 		final Vec3 workerAt;
 		final Vec3 start;
 		final BlockPos spot;
+		/** Where the work is (the cue's spot; {@link #spot} is the nearest the partner may go). */
+		BlockPos work;
+		/** What the show is about (what the worker handles): the crack particles' block. */
+		ItemStack handling = ItemStack.EMPTY;
 		@Nullable Display.ItemDisplay display;
 		Phase phase = Phase.GO;
 		int phaseTicks;
@@ -127,6 +151,8 @@ public final class PartnerShows implements ResourceManagerReloadListener {
 	private static final List<Running> RUNNING = new ArrayList<>();
 	private static final Map<Villager, Long> LAST_CUE = new WeakHashMap<>();
 	private static final Set<UUID> DISPLAYS = new HashSet<>();
+	/** The last show each worker's cue started, and its partner: for tests and the debug log. */
+	private static final Map<UUID, ResourceLocation> LAST_SHOW = new java.util.HashMap<>();
 
 	public static void init() {
 		Platform.get().onDataReload(ID, new PartnerShows());
@@ -182,6 +208,8 @@ public final class PartnerShows implements ResourceManagerReloadListener {
 		if (carry != null && !carry.equals(FROM_WORK) && BuiltInRegistries.ITEM.getOptional(id(carry, "carry")).isEmpty()) {
 			throw new IllegalArgumentException("carry: no item " + carry);
 		}
+		TagKey<Item> carryTag = json.has("carry_tag")
+			? TagKey.create(Registries.ITEM, id(json.get("carry_tag").getAsString().replaceFirst("^#", ""), "carry_tag")) : null;
 		String animation = json.has("animation") ? json.get("animation").getAsString() : null;
 		if (animation != null && !Set.of("physical", "special", "cry").contains(animation)) {
 			throw new IllegalArgumentException("animation: " + animation + " (physical, special or cry)");
@@ -200,9 +228,9 @@ public final class PartnerShows implements ResourceManagerReloadListener {
 		try {
 			effect = json.has("effect") ? Effect.valueOf(json.get("effect").getAsString().toUpperCase(Locale.ROOT)) : Effect.NONE;
 		} catch (IllegalArgumentException ex) {
-			throw new IllegalArgumentException("effect: " + json.get("effect").getAsString() + " (none, hydrate_farmland, smoke or sparks)");
+			throw new IllegalArgumentException("effect: " + json.get("effect").getAsString() + " (none, hydrate_farmland, smoke, sparks, crack or dust)");
 		}
-		return new Show(name, Set.copyOf(jobs), Set.copyOf(types), cue, carry, animation, particles, sound, ticks, effect);
+		return new Show(name, Set.copyOf(jobs), Set.copyOf(types), cue, carry, carryTag, animation, particles, sound, ticks, effect);
 	}
 
 	private static JsonArray array(JsonObject json, String key) {
@@ -235,9 +263,9 @@ public final class PartnerShows implements ResourceManagerReloadListener {
 			return refuse("off, no shows or no Cobblemon");
 		}
 		ResourceLocation job = BuiltInRegistries.VILLAGER_PROFESSION.getKey(worker.getVillagerData().getProfession());
-		List<Show> matching = shows.stream().filter(s -> s.cue().equals(cue) && s.jobs().contains(job)).toList();
+		List<Show> matching = shows.stream().filter(s -> s.cue().equals(cue) && s.jobs().contains(job) && s.plays(handling)).toList();
 		if (matching.isEmpty()) {
-			return refuse("no show for " + job + " at " + cue);
+			return refuse("no show for " + job + " at " + cue + (handling.isEmpty() ? "" : " handling " + BuiltInRegistries.ITEM.getKey(handling.getItem())));
 		}
 		long now = level.getGameTime();
 		Long last = LAST_CUE.get(worker);
@@ -265,12 +293,15 @@ public final class PartnerShows implements ResourceManagerReloadListener {
 				}
 				BlockPos spot = PokemonPartners.EXTENSION.call(p -> p.reachable(pokemon, pos), pokemon.blockPosition());
 				Running run = new Running(show, level, pokemon, worker, spot);
+				run.handling = handling.copyWithCount(1);
+				run.work = pos.immutable();
 				if (carry != null) {
 					run.display = display(level, pokemon, new ItemStack(carry));
 				}
 				PokemonPartners.EXTENSION.run(p -> p.walkTo(pokemon, spot, 1.0));
 				RUNNING.add(run);
 				LAST_CUE.put(worker, now);
+				LAST_SHOW.put(worker.getUUID(), show.name());
 				lastRefusal = "";
 				return true;
 			}
@@ -299,6 +330,12 @@ public final class PartnerShows implements ResourceManagerReloadListener {
 	/** Why the last cue started no show ("" if it started one): for tests and the debug log. */
 	public static String lastRefusal() {
 		return lastRefusal;
+	}
+
+	/** The last show a cue of {@code worker}'s started (null if none since the server started). */
+	@Nullable
+	public static ResourceLocation lastShow(Villager worker) {
+		return LAST_SHOW.get(worker.getUUID());
 	}
 
 	/** Whether {@code pokemon} is in a show now. */
@@ -395,7 +432,9 @@ public final class PartnerShows implements ResourceManagerReloadListener {
 					if (run.show.animation() != null) {
 						PokemonPartners.EXTENSION.run(p -> p.animate(run.level, pokemon, run.show.animation()));
 					}
-					apply(run.level, run.show.effect(), there ? run.spot : pokemon.blockPosition());
+					// At the work itself when the partner got close to it (its standing spot may be a block off), else where it stands.
+					boolean atWork = run.work != null && pokemon.position().distanceToSqr(Vec3.atBottomCenterOf(run.work)) <= (ARRIVED + 1.5) * (ARRIVED + 1.5);
+					apply(run.level, run.show.effect(), atWork ? run.work : there ? run.spot : pokemon.blockPosition(), run.handling);
 				} else if (run.phaseTicks % 20 == 0) {
 					PokemonPartners.EXTENSION.run(p -> p.walkTo(pokemon, run.spot, 1.0)); // the brain may have sent it elsewhere
 				}
@@ -473,6 +512,11 @@ public final class PartnerShows implements ResourceManagerReloadListener {
 
 	/** The toolbox: what a show does to the world at {@code at}. */
 	public static void apply(ServerLevel level, Effect effect, BlockPos at) {
+		apply(level, effect, at, ItemStack.EMPTY);
+	}
+
+	/** The toolbox: what a show about {@code handling} (what the worker handles; may be empty) does at {@code at}. */
+	public static void apply(ServerLevel level, Effect effect, BlockPos at, ItemStack handling) {
 		switch (effect) {
 			case NONE -> {
 			}
@@ -487,6 +531,19 @@ public final class PartnerShows implements ResourceManagerReloadListener {
 			}
 			case SMOKE -> spread(level, ParticleTypes.CAMPFIRE_COSY_SMOKE, at, 4);
 			case SPARKS -> spread(level, ParticleTypes.ELECTRIC_SPARK, at, 12);
+			case CRACK -> {
+				BlockState worked = handling.getItem() instanceof BlockItem block ? block.getBlock().defaultBlockState() : level.getBlockState(at);
+				ParticleOptions crumbs = !worked.isAir() ? new BlockParticleOption(ParticleTypes.BLOCK, worked)
+					: !handling.isEmpty() ? new ItemParticleOption(ParticleTypes.ITEM, handling) : ParticleTypes.CRIT;
+				spread(level, crumbs, at, 16);
+			}
+			case DUST -> {
+				BlockState ground = level.getBlockState(at.below());
+				if (!ground.isAir()) {
+					level.sendParticles(new BlockParticleOption(ParticleTypes.BLOCK, ground), at.getX() + 0.5, at.getY() + 0.1, at.getZ() + 0.5,
+						20, 0.6, 0.05, 0.6, 0.05);
+				}
+			}
 		}
 	}
 
@@ -506,4 +563,5 @@ public final class PartnerShows implements ResourceManagerReloadListener {
 
 	private PartnerShows() {
 	}
+
 }

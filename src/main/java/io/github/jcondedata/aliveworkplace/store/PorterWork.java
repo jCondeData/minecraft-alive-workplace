@@ -133,6 +133,8 @@ public class PorterWork extends Behavior<Villager> {
 		if (taken > 0) {
 			villager.swing(InteractionHand.MAIN_HAND);
 			level.playSound(null, target.chests().get(0), SoundEvents.BARREL_OPEN, SoundSource.BLOCKS, 0.4f, 1.1f);
+			// A Fighting or Normal partner hauls a barrel to the storehouse alongside (28.4).
+			io.github.jcondedata.aliveworkplace.work.PartnerShows.cue(villager, "haul", store.get(0));
 		}
 		target = null;
 		walker.reset();

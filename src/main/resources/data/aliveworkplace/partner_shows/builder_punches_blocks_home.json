@@ -5,12 +5,10 @@
   "types": [
     "fighting"
   ],
-  "cue": "fetch",
-  "carry": "from_work",
-  "carry_tag": "aliveworkplace:partner_carry/wood",
+  "cue": "place",
   "animation": "physical",
   "particles": "minecraft:crit",
   "sound": "minecraft:entity.player.attack.strong",
-  "ticks": 30,
-  "effect": "none"
+  "ticks": 20,
+  "effect": "crack"
 }

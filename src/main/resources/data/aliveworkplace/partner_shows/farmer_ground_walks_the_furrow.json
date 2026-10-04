@@ -1,0 +1,13 @@
+{
+  "jobs": [
+    "minecraft:farmer"
+  ],
+  "types": [
+    "ground"
+  ],
+  "cue": "till",
+  "animation": "physical",
+  "sound": "minecraft:item.hoe.till",
+  "ticks": 30,
+  "effect": "dust"
+}

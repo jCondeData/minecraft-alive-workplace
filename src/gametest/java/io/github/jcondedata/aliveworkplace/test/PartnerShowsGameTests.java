@@ -34,6 +34,85 @@ public class PartnerShowsGameTests implements FabricGameTest {
 		helper.succeed();
 	}
 
+	/** 28.4's shows all load, and every sound and vanilla particle they name exists (a typo would play nothing). */
+	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
+	public void everyShowOfBuildingAndTheLandLoads(GameTestHelper helper) {
+		java.util.Map<String, String> cues = java.util.Map.ofEntries(java.util.Map.entry("builder_carries_planks", "fetch"),
+			java.util.Map.entry("builder_punches_blocks_home", "place"), java.util.Map.entry("builder_carries_stone", "fetch"),
+			java.util.Map.entry("builder_carries_iron_parts", "fetch"), java.util.Map.entry("porter_carries_a_barrel", "haul"),
+			java.util.Map.entry("crafter_holds_the_work", "craft"), java.util.Map.entry("farmer_water_waters_the_field", "tend"),
+			java.util.Map.entry("farmer_grass_sparkles", "tend"), java.util.Map.entry("farmer_ground_walks_the_furrow", "till"),
+			java.util.Map.entry("lumberjack_fighting_chops", "chop"), java.util.Map.entry("lumberjack_partner_plants_the_sapling", "replant"),
+			java.util.Map.entry("orchard_partner_flutters_through_the_tree", "pick"));
+		for (var e : cues.entrySet()) {
+			PartnerShows.Show show = PartnerShows.shows().stream().filter(s -> s.name().equals(AliveWorkplace.id(e.getKey()))).findFirst().orElse(null);
+			helper.assertTrue(show != null, "show " + e.getKey() + " didn't load");
+			helper.assertTrue(show.cue().equals(e.getValue()), e.getKey() + " is cued at " + show.cue());
+		}
+		for (PartnerShows.Show show : PartnerShows.shows()) {
+			helper.assertTrue(show.sound() == null || net.minecraft.core.registries.BuiltInRegistries.SOUND_EVENT.containsKey(show.sound()),
+				show.name() + " names no sound: " + show.sound());
+			helper.assertTrue(show.particles() == null || show.particles().getNamespace().equals("cobblemon")
+				|| net.minecraft.core.registries.BuiltInRegistries.PARTICLE_TYPE.containsKey(show.particles()), show.name() + " names no particle: " + show.particles());
+		}
+		PartnerShows.Show farmer = PartnerShows.shows().stream().filter(s -> s.name().equals(AliveWorkplace.id("farmer_water_waters_the_field"))).findFirst().get();
+		helper.assertTrue(farmer.jobs().contains(ResourceLocation.withDefaultNamespace("farmer")) && farmer.types().equals(java.util.Set.of("water"))
+			&& farmer.effect() == PartnerShows.Effect.HYDRATE_FARMLAND, "the farmer's watering show reads " + farmer);
+		helper.succeed();
+	}
+
+	/** What a partner carries for the builder goes by its type: wood for Fighting, stone for Rock, iron parts for Steel. */
+	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
+	public void eachTypeCarriesOnlyItsOwnMaterials(GameTestHelper helper) {
+		PartnerShows.Show wood = show(helper, "builder_carries_planks");
+		PartnerShows.Show stone = show(helper, "builder_carries_stone");
+		PartnerShows.Show iron = show(helper, "builder_carries_iron_parts");
+		Object[][] cases = {
+			{wood, Items.OAK_PLANKS, true}, {wood, Items.SPRUCE_LOG, true}, {wood, Items.COBBLESTONE, false}, {wood, Items.IRON_BARS, false},
+			{stone, Items.COBBLESTONE, true}, {stone, Items.STONE_BRICKS, true}, {stone, Items.OAK_PLANKS, false},
+			{iron, Items.IRON_BARS, true}, {iron, Items.LANTERN, true}, {iron, Items.CHAIN, true}, {iron, Items.IRON_DOOR, true},
+			{iron, Items.COBBLESTONE, false}, {wood, net.minecraft.world.item.Items.AIR, false},
+		};
+		for (Object[] c : cases) {
+			PartnerShows.Show show = (PartnerShows.Show) c[0];
+			ItemStack stack = new ItemStack((net.minecraft.world.item.Item) c[1]);
+			helper.assertTrue(show.plays(stack) == (boolean) c[2], show.name() + (show.plays(stack) ? " plays" : " doesn't play") + " for " + c[1]);
+		}
+		// A show with no carry tag plays whatever is handled; a bad tag id is refused with what's wrong.
+		helper.assertTrue(show(helper, "builder_punches_blocks_home").plays(new ItemStack(Items.GLASS)), "the punching show is limited to some blocks");
+		try {
+			PartnerShows.parse(AliveWorkplace.id("broken"), JsonParser.parseString(
+				"{\"jobs\":[\"aliveworkplace:builder\"],\"types\":[\"rock\"],\"cue\":\"fetch\",\"carry_tag\":\"Not An Id\"}").getAsJsonObject());
+			helper.fail("accepted a show with a bad carry_tag");
+		} catch (IllegalArgumentException e) {
+			helper.assertTrue(e.getMessage().contains("carry_tag"), "the reason reads '" + e.getMessage() + "'");
+		}
+		helper.succeed();
+	}
+
+	private static PartnerShows.Show show(GameTestHelper helper, String name) {
+		PartnerShows.Show show = PartnerShows.shows().stream().filter(s -> s.name().equals(AliveWorkplace.id(name))).findFirst().orElse(null);
+		helper.assertTrue(show != null, "no show " + name);
+		return show;
+	}
+
+	/** The toolbox's crack and dust: the crack particles of the board being worked, the dust of the ground, no change to blocks. */
+	//$ gametest_ticks AREA '40'
+	@GameTest(template = AREA, timeoutTicks = 40)
+	public void theCrackAndDustEffectsLeaveTheWorldAlone(GameTestHelper helper) {
+		BlockPos spot = new BlockPos(3, 2, 3);
+		helper.setBlock(spot.below(), Blocks.FARMLAND);
+		PartnerShows.apply(helper.getLevel(), PartnerShows.Effect.CRACK, helper.absolutePos(spot), new ItemStack(Items.OAK_PLANKS));
+		PartnerShows.apply(helper.getLevel(), PartnerShows.Effect.CRACK, helper.absolutePos(spot), new ItemStack(Items.IRON_INGOT));
+		PartnerShows.apply(helper.getLevel(), PartnerShows.Effect.CRACK, helper.absolutePos(spot), ItemStack.EMPTY);
+		PartnerShows.apply(helper.getLevel(), PartnerShows.Effect.DUST, helper.absolutePos(spot), ItemStack.EMPTY);
+		helper.assertBlockPresent(Blocks.FARMLAND, spot.below());
+		helper.assertBlockPresent(Blocks.AIR, spot);
+		helper.succeed();
+	}
+
 	/** A malformed show file is refused with what's wrong (the loader logs it and skips it; the rest still load). */
 	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
 	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)

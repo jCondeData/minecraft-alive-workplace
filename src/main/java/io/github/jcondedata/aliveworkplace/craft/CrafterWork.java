@@ -255,6 +255,9 @@ public class CrafterWork extends Behavior<Villager> {
 		if (timer < 0) {
 			timer = Math.max(20, Math.round(BuilderLevels.delay(CRAFT_TICKS * crafts, villager) * (1f - 0.15f
 				* io.github.jcondedata.aliveworkplace.research.Research.level(villager, io.github.jcondedata.aliveworkplace.research.Research.Topic.CRAFTSMANSHIP))));
+			// A Fighting, Rock or Steel partner holds the board or stone at the table while it's worked (28.4).
+			Item worked = job.plan().takes().keySet().stream().findFirst().orElse(job.plan().target()); // the board, the stone
+			io.github.jcondedata.aliveworkplace.work.PartnerShows.cue(villager, "craft", station, new ItemStack(worked));
 		}
 		if (timer % 10 == 0) {
 			villager.swing(InteractionHand.MAIN_HAND);

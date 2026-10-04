@@ -1,0 +1,14 @@
+{
+  "jobs": [
+    "minecraft:farmer"
+  ],
+  "types": [
+    "water"
+  ],
+  "cue": "tend",
+  "animation": "special",
+  "particles": "cobblemon:impact_water",
+  "sound": "minecraft:item.bucket.empty",
+  "ticks": 40,
+  "effect": "hydrate_farmland"
+}

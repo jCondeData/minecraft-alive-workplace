@@ -1,5 +1,19 @@
 # Changelog
 
+Everything that changed in Alive Workplace, newest first. Each version has up to four parts:
+
+- **Added**: new jobs, blocks, builds, screens and settings.
+- **Changed**: things that now work differently. Read this part before updating a world you care about.
+- **Fixed**: bugs that are gone.
+- **Dev** (or **Tests**): checks and tools behind the scenes. Nothing changes in game; players can skip it.
+
+Versions are written `X.Y.Z`; the jar (and Mod Menu) adds the Minecraft version, as in `1.0.0+1.21.1`. The mod is made
+never to break a saved world: updating keeps your builds, your villagers' jobs and your settings. Versions before
+1.0.0 were pre-releases; their notes are kept below as the mod's history.
+
+Found a bug or have an idea? Open an issue: https://github.com/jCondeData/minecraft-alive-workplace/issues (the form
+asks for the steps, `latest.log` and any crash report).
+
 ## Unreleased
 
 ### Added
@@ -76,6 +90,10 @@
 - Names read the same everywhere: the Fisherman is never "Fisher", and the mod's blocks and items keep their capitals
   in messages ("Travel Post", "Shop Counter", "Field Marker", "Delivery Note", "Training Dummy").
 - Bug reports on GitHub now use a form that asks for the version, the steps, `latest.log` and any crash report.
+- Ready for 1.0: the mod's version now names its Minecraft version, as the jar's name does (`0.138.0+1.21.1` today,
+  `1.0.0+1.21.1` at 1.0), so Mod Menu, crash reports and bug forms say which game it is for. Mod Menu links to the
+  source and the issue tracker; the README's license section says what GPL-3.0 allows and credits MineColonies, whose
+  ideas two jobs take; this changelog starts with how to read it.
 - Over a builder's head, under its progress: the three materials the build is shortest of, with counts (or that it
   has everything), and where the builder takes materials from (its chests, or the storehouse, by its bench at x y z).
 - **The village calendar**: the world now has four seasons of 8 days (`seasonDays` in the config), each with a festival
@@ -91,7 +109,6 @@
   with the build, its stage and what's missing), so a stuck builder shows up without anyone watching. For testers,
   `/workplace soak` (benchmark servers only) sets 10 builders on the whole starter set in hilly woods for 2 days (or more) and
   checks that no item was duplicated or lost.
-
 - **A material list you can take away**: hold a Book and Quill in your other hand and right-click with a blueprint.
   The book lists everything the build needs, biggest first, as a checklist; placed near a Blueprint Table, what its
   chests already hold is taken off, so it says exactly what is still to bring.

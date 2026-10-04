@@ -1161,4 +1161,15 @@ See [ROADMAP.md](ROADMAP.md) for what's planned.
 Every push is built and tested by GitHub Actions; the jar is attached to each run.
 
 ## License
-GPL-3.0-or-later. See [LICENSE](LICENSE).
+Alive Workplace is free software under the **GNU General Public License, version 3 or (at your option) any later
+version** (GPL-3.0-or-later). The full text is in [LICENSE](LICENSE), and every jar carries a copy
+(`LICENSE_alive-workplace`). You may use it in modpacks, change it and share it; a changed version you share must stay
+under the same license, with its source.
+
+Credits:
+- Some jobs take ideas from [MineColonies](https://github.com/ldtteam/minecolonies) (GPL-3.0): the Cartographer's
+  expeditions and the Netherworker. Their code is our own; a file that adapts code from a GPL project says so, with
+  the project's name, in its header.
+- Every build the Builders build is original to this mod.
+- Textures are drawn for this mod. Minecraft is a trademark of Mojang; this mod is not affiliated with Mojang or
+  Microsoft.

@@ -231,7 +231,7 @@ Before polishing, make sure nothing regresses unnoticed.
   10 PM Central (`17 3 * * *`), before the night runs, which read its result first.
 - [x] **22.2** (approved auto 2026-10-03) (verified 2026-10-03: inventory.py: 73/73 saved values have a save/reload test [list empty]; both suites reflect over every ModAttachments field and fail on one without a sample; mutants 3/3 killed [FieldJob.adopted dropped, trees_felled and ball_orders lost on load]) Save/reload tests for every value `inventory.py` lists as "never saved and reloaded" (69 at 0.136.0), done in
   batches: builder, miner and lumberjack data first. Done when: that list is empty, or each remaining entry has a reason.
-- [x] **22.3** (review: pending 2026-10-04) A bot scene for every player-visible feature, so any feature can be shown again on demand
+- [x] **22.3** (review: pending 2026-10-04) (verified 2026-10-04: README's 43 jobs and its screens each map to a scene in tools/showcase/scenes.py [73 scenes]; the live showcase [e39f973] passes 70: missing, battle and soak fail and are filed as B41 [harness title check false positive], B43 [battle once], B42 [soak 21/22, 23.1]) A bot scene for every player-visible feature, so any feature can be shown again on demand
   (`tools/screenshots/run.sh SCENE=…`). Done when: every job and every screen in the README has a scene. A new feature
   gets its scene in the same commit.
 - [x] **22.4** (approved auto 2026-09-30) (verified 2026-10-02: its tester Check, shipped in 0.138.0) **A daily showcase page** (owner, 2026-09-30): screenshots and GIFs of everything the mod does, so the

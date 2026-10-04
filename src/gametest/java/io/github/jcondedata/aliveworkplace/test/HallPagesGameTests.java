@@ -215,11 +215,20 @@ public class HallPagesGameTests {
 			"day " + date.day() + " of " + date.length() + "-day seasons: " + date + ", expected " + season + " day " + day + " year " + year);
 	}
 
-	/** {@code seasonDays} in the config: 8 when missing, kept within 1 to 120, and the calendar follows it. */
+	/** {@code seasonDays} in the config: 16 when missing, kept within 1 to 120, and the calendar follows it; a
+	 * file from before the change (no {@code configVersion}) holding the old default 8 moves to 16, and any other choice
+	 * is kept (owner, 22.6a). */
 	//$ gametest_batch 'net.fabricmc.fabric.api.gametest.v1.FabricGameTest.EMPTY_STRUCTURE' '"seasonDaysConfig"'
 	@GameTest(template = net.fabricmc.fabric.api.gametest.v1.FabricGameTest.EMPTY_STRUCTURE, batch = "seasonDaysConfig")
 	public void theSeasonLengthIsConfigured(GameTestHelper helper) {
-		helper.assertTrue(WorkplaceConfig.parse("{}").seasonDays == 8, "default " + WorkplaceConfig.parse("{}").seasonDays);
+		helper.assertTrue(WorkplaceConfig.parse("{}").seasonDays == 16, "default " + WorkplaceConfig.parse("{}").seasonDays);
+		helper.assertTrue(new WorkplaceConfig().seasonDays == 16, "a new config: " + new WorkplaceConfig().seasonDays);
+		helper.assertTrue(WorkplaceConfig.parse("{\"seasonDays\": 8}").seasonDays == 16, "an old file's default 8 should become 16");
+		helper.assertTrue(WorkplaceConfig.parse("{\"seasonDays\": 8, \"configVersion\": 2}").seasonDays == 8,
+			"8 chosen in a new file should stay 8");
+		helper.assertTrue(WorkplaceConfig.parse("{\"seasonDays\": 5}").seasonDays == 5, "an old file's own choice stays");
+		helper.assertTrue(WorkplaceConfig.parse(new com.google.gson.Gson().toJson(WorkplaceConfig.parse("{\"seasonDays\": 8, \"configVersion\": 2}")))
+			.seasonDays == 8, "a saved 8 should read back as 8");
 		helper.assertTrue(WorkplaceConfig.parse("{\"seasonDays\": 12}").seasonDays == 12, "12");
 		helper.assertTrue(WorkplaceConfig.parse("{\"seasonDays\": 0}").seasonDays == 1, "too short");
 		helper.assertTrue(WorkplaceConfig.parse("{\"seasonDays\": 9999}").seasonDays == 120, "too long");

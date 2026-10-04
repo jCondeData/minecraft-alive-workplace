@@ -262,7 +262,7 @@ Before polishing, make sure nothing regresses unnoticed.
   the whole world, shown on the hall with the day of the season; an event API the expansions listen to. Done when:
   GameTests cover the rollover, save and reload, and the config length; nothing else changes until an expansion uses
   it.
-  - [ ] **22.6a** Change from the owner (2026-10-04): the festivals are good; make each season 16 days (a 64-day year)
+  - [x] **22.6a** (approved auto 2026-10-04) Change from the owner (2026-10-04): the festivals are good; make each season 16 days (a 64-day year)
 - [x] **22.7** (approved auto 2026-10-04) **Mutation and repeats on GitHub, every night.** The nightly workflow also plants about 20 mutants in
   the code changed in the last 24 hours (`tools/modtest/mutate.py`, sharded across parallel jobs) and repeats every
   GameTest added in that time 10 times. Survivors and flakes go to the `nightly-tests` issue. This moves the slowest
@@ -851,7 +851,7 @@ Depends on: nothing.
 
 Pokémon stop being a side mod and become part of village life. Pokémon pastured by a workstation are seen at work (a
 Machamp shouldering beams to the builder, a Wartortle watering the fields, a Pidgeotto off with the air mail), five new
-jobs work Cobblemon's own blocks, villages get a Pokémon Center, and every third festival of a village with an Arena
+jobs work Cobblemon's own blocks, villages get a Pokémon Center, and every festival of a village with an Arena
 becomes the Festival Cup: a themed tournament its trade partners send their Trainer Leaders to, with the stands full, a
 fair on, and the winner's banner flying over the winning village. It builds on `work/Partners`, `compat/cobblemon/`,
 `trainer/`, `hall/Festivals`, `MarketDays`, `Caravans` and the `Chronicle`; the owner's pack is still on Cobblemon 1.7.3,
@@ -869,7 +869,7 @@ here adds a new kind of speed bonus (the new jobs get the partners' existing one
   Cup keeps the owner's rules: villages enter, with their Leaders and the players who represent them; no badges, no gyms
   and no trophies for players (the pack's own Badges & Trophies mod does that); Leaders and the purse pay money only;
   the banner belongs to the village. Done when: the note is on `main` and its package is sent.
-  - [ ] **28.1a** Change from the owner (2026-10-04): Cup purse much bigger: 100,000 PokéDollars per bout won and 500,000 for the final (keep the City host bonus unless it breaks the economy); a Cup at every festival, not every third
+  - [x] **28.1a** (approved auto 2026-10-04) Change from the owner (2026-10-04): Cup purse much bigger: 100,000 PokéDollars per bout won and 500,000 for the final (keep the City host bonus unless it breaks the economy); a Cup at every festival, not every third
 - [x] **28.2** (approved auto 2026-10-04) (verified 2026-10-04: 28.1: docs/design/M28.md [185 lines] covers every point of the spec [partner shows, the Pokémon Center, the Cup and Arena, all six data formats, config, save defaults, the 1.8-only vs 1.7.3 split, no badges]; 28.2: CobblemonCompat.TESTED is >=1.7.3 <1.9, and nightly run 37193458879's compat-cobblemon18 job [the compat GameTests on Cobblemon 1.8.1] is green beside the 1.7.3 compat suite in the full build) **Cobblemon 1.8 as well as 1.7.3.** The mod compiles and tests against Cobblemon 1.7.3 and
   `CobblemonCompat.TESTED` stops below 1.8, while 1.8.0 and 1.8.1 (Minecraft 1.21.1) are out; a `LinkageError` there
   switches every Pokémon feature off at once. Keep compiling against 1.7.3 and:
@@ -1169,9 +1169,9 @@ here adds a new kind of speed bonus (the new jobs get the partners' existing one
   Done when: a builder finishes each tier (GameTest); `Arenas.find` is right in 4 rotations and mirrored (GameTest);
   showcase scene `arena` (each tier, front and from above).
 - [ ] **28.17** **The Festival Cup: calendar, themes and entrants.** No battles yet; config `festivalCup` (true),
-  `cupEveryFestivals` (3).
-  - Hosts: a village with a hall, a finished Arena, Cobblemon and at least Village rank holds every third festival as
-    a Cup. Its circuit: the host and every village with a hall it has a trade route with,
+  `cupEveryFestivals` (1; owner, 28.1a).
+  - Hosts: a village with a hall, a finished Arena, Cobblemon and at least Village rank holds every festival as
+    a Cup (every `cupEveryFestivals`th). Its circuit: the host and every village with a hall it has a trade route with,
     either way (`Caravans`), seven at most, nearest first.
   - Themes are data: `data/aliveworkplace/cups/<name>.json` holds the name (a lang key), its place in the order, the
     format (singles or doubles), the level every Pokémon battles at (Cobblemon's level adjust), how many each trainer
@@ -1193,7 +1193,7 @@ here adds a new kind of speed bonus (the new jobs get the partners' existing one
     before.
   - Saved in `aliveworkplace_cups` (per dimension, by host: theme, day, entrants, bracket, results, champions).
 
-  Done when: GameTests for the circuit from routes, the calendar (the third festival), the entrants (Leader, best
+  Done when: GameTests for the circuit from routes, the calendar (every festival, and every second with `cupEveryFestivals` 2), the entrants (Leader, best
   Trainer, the players' rights and caps), seeding and byes for 3, 5, 8 and 11 entrants, the Leader record written and
   read while the village is unloaded, the Cup state saved and reloaded, a malformed theme file logged and skipped; and
   showcase scene `cup_page`.
@@ -1250,8 +1250,9 @@ here adds a new kind of speed bonus (the new jobs get the partners' existing one
   - Against a player: Cobblemon's own PvP battle (`BattleBuilder.pvp1v1`) with both eligible teams as healed copies.
   - Fleeing loses the bout. [Watch] on the Cup page and the Arena's notice board puts a player in Cobblemon's spectator
     view of a running player bout.
-  - The purse, money only (CobbleDollars, emeralds without): 500 for each bout won, 2,000 more for winning the final,
-    half as much again at a City host.
+  - The purse, money only (CobbleDollars, emeralds without): 100,000 PokéDollars for each bout won, 500,000 more for
+    winning the final, half as much again at a City host (owner, 28.1a; emeralds at `dollarsPerEmerald` without
+    CobbleDollars).
 
   Done when: compat GameTests: a signed-up player's battle starts with only eligible Pokémon, as a double battle for a
   doubles theme, at the theme's level; a win moves them on and pays; an absent player loses by walkover after two

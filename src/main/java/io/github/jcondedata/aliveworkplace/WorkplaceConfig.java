@@ -88,11 +88,18 @@ public final class WorkplaceConfig {
 	/** Pokémon pastured by a workstation are seen helping at work (with Cobblemon): they carry, water, spark... */
 	public boolean partnerShows = true;
 	/** Days in each of the village calendar's four seasons (each has a festival on its middle day). */
-	public int seasonDays = 8;
+	public int seasonDays = 16;
 	/** Hundredths of an emerald each worker brings the treasury a day (before wellbeing and rank). */
 	public int treasuryPerWorker = 20;
 	/** What an emerald price comes to in CobbleDollars (lessons, shops, fares). */
 	public int dollarsPerEmerald = 100;
+	/**
+	 * The file's format (not an option: private, so it's no switch or slider). A file without it was written before
+	 * the seasons grew to 16 days (owner, 2026-10-04): its {@code seasonDays} of 8 was the old default, not a choice.
+	 */
+	@SuppressWarnings("unused")
+	private int configVersion = VERSION;
+	static final int VERSION = 2;
 
 	private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 	public static final String FILE = "aliveworkplace.json";
@@ -132,10 +139,16 @@ public final class WorkplaceConfig {
 
 	/** The config in {@code json} (missing values take their default), clamped to sensible ranges. */
 	public static WorkplaceConfig parse(String json) {
-		WorkplaceConfig config = GSON.fromJson(json, WorkplaceConfig.class);
+		com.google.gson.JsonElement tree = com.google.gson.JsonParser.parseString(json);
+		WorkplaceConfig config = tree.isJsonObject() ? GSON.fromJson(tree, WorkplaceConfig.class) : null;
 		if (config == null) {
 			config = new WorkplaceConfig();
 		}
+		boolean old = tree.isJsonObject() && !tree.getAsJsonObject().has("configVersion");
+		if (old && config.seasonDays == 8) {
+			config.seasonDays = 16;
+		}
+		config.configVersion = VERSION;
 		config.clamp();
 		return config;
 	}

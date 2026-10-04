@@ -167,7 +167,7 @@ public class ConfigGameTests implements FabricGameTest {
 			Files.writeString(dir.resolve(WorkplaceConfig.FILE), "{ not json");
 			WorkplaceConfig broken = WorkplaceConfig.loadAndApply(dir);
 			new WorkplaceConfig().apply();
-			helper.assertTrue(broken.festivals && broken.seasonDays == 8, "a broken file should give the defaults");
+			helper.assertTrue(broken.festivals && broken.seasonDays == 16, "a broken file should give the defaults");
 			helper.assertTrue(Files.readString(dir.resolve(WorkplaceConfig.FILE)).contains("\"villageProtection\""),
 				"a broken file should be rewritten with every setting");
 		} catch (IOException e) {

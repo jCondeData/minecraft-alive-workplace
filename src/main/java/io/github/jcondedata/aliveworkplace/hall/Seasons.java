@@ -19,7 +19,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.saveddata.SavedData;
 
 /**
- * The village calendar (ROADMAP 22.6): four seasons of {@link #DAYS} days each (config {@code seasonDays}, default 8),
+ * The village calendar (ROADMAP 22.6): four seasons of {@link #DAYS} days each (config {@code seasonDays}, default 16),
  * the same for the whole world, counted from the overworld's day ({@link Chronicle#day}). Each season has one festival,
  * on its middle day. Nothing in the mod changes with the seasons yet: expansions listen with {@link #onNewDay},
  * {@link #onNewSeason} and {@link #onFestival}, and the hall shows the date on its calendar page.
@@ -29,7 +29,7 @@ import net.minecraft.world.level.saveddata.SavedData;
  */
 public final class Seasons {
 	/** Days in a season (config {@code seasonDays}). */
-	public static volatile int DAYS = 8;
+	public static volatile int DAYS = 16;
 	/** How often the clock is looked at, in ticks. */
 	static final int CHECK_EVERY = 20;
 

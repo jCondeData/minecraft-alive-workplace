@@ -77,6 +77,10 @@
 - `/workplace soak <days> split` (testers, benchmark servers only): the soak with each builder's materials split
   between at most 3 chests by its bench and the village storehouses.
 
+### Changed
+- Seasons last 16 days now (a 64-day year), so festivals come every 16 days. A config file that still holds the old
+  default of 8 moves to 16 by itself; any other length you chose stays.
+
 ### Fixed
 - **Helpers really speed a build up now**: two builders on one build take about half the time of one, four about a
   third (the stone house: 4200 ticks alone, about 2110 with two, 1220-1470 with four; before, 63-71% and 46%). Helpers

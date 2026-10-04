@@ -4,7 +4,7 @@
 plugins {
     // fabric-loom-remap (obfuscated Minecraft, up to 1.21.11) or fabric-loom (26.1+), with loomx.loom_version.
     id("dev.kikugie.loom-back-compat")
-    // Uploads the jar to CurseForge (ROADMAP 26.3). Without a token it only dry-runs: `./gradlew publishMods`.
+    // Uploads the jar to CurseForge (ROADMAP 26.3). Only dry-runs unless -Ppublish.live=true and a token: `./gradlew publishMods`.
     id("me.modmuss50.mod-publish-plugin")
 }
 
@@ -224,9 +224,12 @@ java {
     }
 }
 
-/** Values substituted into fabric.mod.json. */
+/**
+ * Values substituted into fabric.mod.json. The mod's version there (what Mod Menu and crash reports show) is the jar's:
+ * `<mod.version>+<minecraft>`, e.g. 1.0.0+1.21.1. Release tags stay v<mod.version> (build.yml).
+ */
 val resourceProps: Map<String, String> = mapOf(
-    "version" to modVersion,
+    "version" to "$modVersion+${sc.current.version}",
     "minecraft" to property("mod.mc_compat").toString(),
     "java" to requiredJava.majorVersion,
 )
@@ -383,11 +386,15 @@ tasks {
 }
 
 /**
- * CurseForge uploads (`./gradlew publishMods`; owner's decision 2026-10-03: CurseForge and GitHub, no Modrinth). Without
- * CURSEFORGE_TOKEN it is a dry run: what it would upload lands in versions/<mc>/build/publishMods/. The GitHub
- * Release itself is made by CI (build.yml) when a new version lands on main. The project id goes in
- * gradle.properties as publish.curseforge once the owner has made the project.
+ * CurseForge uploads (`./gradlew publishMods`; owner's decision 2026-10-03: CurseForge and GitHub, no Modrinth). It is
+ * always a dry run (what it would upload lands in versions/<mc>/build/publishMods/) unless `-Ppublish.live=true` is
+ * passed AND CURSEFORGE_TOKEN is set: store-page publishing waits for the owner (ROADMAP 26.1). The GitHub Release
+ * itself is made by CI (build.yml) when a new version lands on main. The project id comes from CURSEFORGE_PROJECT_ID
+ * or gradle.properties' publish.curseforge once the owner has made the project.
  */
+val publishLive = findProperty("publish.live")?.toString() == "true" &&
+    providers.environmentVariable("CURSEFORGE_TOKEN").orNull != null
+
 publishMods {
     file = loomx.modJar.flatMap { it.archiveFile }
     displayName = "${property("mod.name")} $modVersion for Minecraft ${sc.current.version}"
@@ -401,10 +408,11 @@ publishMods {
     }
     type = if (modVersion.startsWith("0.")) BETA else STABLE
     modLoaders.add("fabric")
-    dryRun = providers.environmentVariable("CURSEFORGE_TOKEN").orNull == null
+    dryRun = !publishLive
 
     curseforge {
-        projectId = findProperty("publish.curseforge")?.toString() ?: "000000"
+        projectId = providers.environmentVariable("CURSEFORGE_PROJECT_ID").orNull
+            ?: findProperty("publish.curseforge")?.toString() ?: "000000"
         accessToken = providers.environmentVariable("CURSEFORGE_TOKEN")
         minecraftVersions.addAll(tomlList("mod", "mc_releases").ifEmpty { listOf(sc.current.version) })
         javaVersions.add(requiredJava)

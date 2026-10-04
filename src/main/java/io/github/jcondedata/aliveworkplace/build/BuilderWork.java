@@ -109,6 +109,11 @@ public class BuilderWork extends Behavior<Villager> {
 	private BuildPlan.Stage avoidStage;
 	/** How far ahead of the lead helpers look for work. */
 	private static final int HELP_WINDOW = 64;
+	/** A site this far (bench to the site's middle) is far from its chests: stock up before clearing it (B39). */
+	static final int FAR_FROM_CHESTS = 16;
+	/** The site this builder has stocked up for (or found nothing to stock up with) before clearing. */
+	@Nullable
+	private java.util.UUID stockedFor;
 
 	public BuilderWork() {
 		super(ImmutableMap.of(
@@ -233,6 +238,18 @@ public class BuilderWork extends Behavior<Villager> {
 			io.github.jcondedata.aliveworkplace.AliveWorkplace.LOG.info("[builder {}] t={} at {} stage={} action={} target={} approach={} aside={} blocked={} stuck={} reach={} detail={}",
 				villager.getId(), level.getDayTime() % 24000, villager.blockPosition().toShortString(), site.stage(), action, step.pos().toShortString(),
 				approachSpot, stepAsideSpot, blockedAttempts, stuckTimer, reachTicks, site.detail() == null ? "" : site.detail().getString());
+		}
+
+		// 1b. A new site far from the chests (B39): take what the build starts with before clearing it, so the builder
+		// doesn't walk all the way back to its chests the moment the site is clear. Only from stock: never waits here.
+		if (!helping && !free && site.stage() == BuildPlan.Stage.CLEAR && action == Action.BREAK && !site.id().equals(stockedFor)) {
+			MaterialRules.Requirement first = firstNeed(level, site, plan, bag);
+			if (first == null || !farFromChests(plan, bench) || !inStock(level, bench, plan, first)) {
+				stockedFor = site.id();
+			} else {
+				fetch(level, villager, site, plan, bag, bench, first);
+				return;
+			}
 		}
 
 		// 2. Materials.
@@ -520,6 +537,36 @@ public class BuilderWork extends Behavior<Villager> {
 	}
 
 	// --- materials ---------------------------------------------------------------------------
+
+	/** What the first step after clearing needs that the bag doesn't hold yet, or null. */
+	@Nullable
+	private static MaterialRules.Requirement firstNeed(ServerLevel level, BuildSite site, BuildPlan plan, BuilderBag bag) {
+		for (BuildPlan.Step s : site.upcoming(plan, LOOKAHEAD)) {
+			if (MaterialRules.matches(level.getBlockState(s.pos()), s.state()) || s.requirements().isEmpty()) {
+				continue;
+			}
+			for (MaterialRules.Requirement r : s.requirements()) {
+				if (!bag.has(r.item(), r.count())) {
+					return r;
+				}
+			}
+			return null;
+		}
+		return null;
+	}
+
+	static boolean farFromChests(BuildPlan plan, BlockPos bench) {
+		return bench.distSqr(plan.bounds().getCenter()) > (double) FAR_FROM_CHESTS * FAR_FROM_CHESTS;
+	}
+
+	private static boolean inStock(ServerLevel level, BlockPos bench, BuildPlan plan, MaterialRules.Requirement r) {
+		List<BlockPos> supplies = SupplyContainers.find(level, bench, plan.bounds());
+		long have = 0;
+		for (Item item : MaterialFamilies.accepted(r.item())) {
+			have += SupplyContainers.count(level, supplies, item);
+		}
+		return have >= r.count();
+	}
 
 	private void fetch(ServerLevel level, Villager villager, BuildSite site, BuildPlan plan, BuilderBag bag, BlockPos bench,
 					   MaterialRules.Requirement requirement) {

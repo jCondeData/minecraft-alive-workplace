@@ -8,6 +8,7 @@
 #                                              # workers; tick times before/after and a CPU profile of our code
 #   SOAK=true tools/packtest/run.sh            # the builder soak (23.1; SOAK_DAYS=n for longer): /workplace soak, then 2 in-game days at
 #                                              # full speed (/tick sprint); prints the "Soak result:" line and the stalls
+#   SOAK=true DEBUG=true ...                   # the same, with the builders' [builder N] lines in the log
 # Needs ~6 GB of RAM and ~1 GB of disk; takes ~5 minutes. Output: build/packtest/server/server.log
 set -euo pipefail
 cd "$(dirname "$0")/../.."
@@ -59,6 +60,8 @@ sleep 100000 > console &
 KEEP=$!
 JAVA_OPTS=""
 if [ "${PERF:-false}" = "true" ] || [ "${SOAK:-false}" = "true" ]; then JAVA_OPTS="-Daliveworkplace.benchmark=true"; fi
+# DEBUG=true: the builders log what they are doing every 2 seconds ([builder N] lines), to look into a stall.
+if [ "${DEBUG:-false}" = "true" ]; then JAVA_OPTS="$JAVA_OPTS -Daliveworkplace.debug=true"; fi
 java -Xmx5G -Xms1G $JAVA_OPTS -jar fabric-server-launch.jar nogui < console > server.log 2>&1 &
 PID=$!
 for _ in $(seq 1 90); do

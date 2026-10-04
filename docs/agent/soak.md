@@ -173,3 +173,18 @@ screenshot client at (200, -56, 200), sprinted, filmed from above with night vis
 Scene runs (same soak in the screenshot client, 316 ticks/s): 22/22 in 3.4 days with 0 stalls, then 22/22 in 4.0 days
 with 1 stall (`tinkers_workshop ... stage STRUCTURE, status WORKING, 576 placed, 0 skipped, 0 kinds missing`: the
 tinker's workshop again, see B38). Items off: none in both.
+
+## Run 5 — lane-a-1004-0033, 2026-10-04, with B39's fix (stock up before clearing a far site)
+
+Debug run first (`DEBUG=true`, the new pack-test switch): the graveyard's builder finished CLEAR at day tick ~5700, then
+walked 41 blocks back to its chests (1078, 87, 1000) for the first foundation block and back, placing again at ~6450:
+37 s on the road, which StallWatch saw as a stall. With the fix (`SOAK=true SOAK_DAYS=6`):
+
+```
+02:17:12 Builder stalled 30 s: aliveworkplace:tinkers_workshop at 1031, 80, 1026 (stage STRUCTURE, status WAITING_FOR_MATERIALS, 273 placed, 0 skipped, 0 kinds missing) [stall #1]
+02:17:55 Builder stalled 30 s: aliveworkplace:tinkers_workshop at 1031, 80, 1026 (stage STRUCTURE, status WAITING_FOR_MATERIALS, 273 placed, 0 skipped, 0 kinds missing) [stall #2]
+02:18:04 Builder stalled 30 s: aliveworkplace:library at 1101, 79, 1078 (stage STRUCTURE, status WAITING_FOR_MATERIALS, 488 placed, 0 skipped, 0 kinds missing) [stall #3]
+02:18:57 Soak result: 22/22 builds finished in 80777 ticks (3.4 days); 3 stalls; items off: none
+```
+
+No graveyard stall. All three left are B38's pattern (waiting for materials with none missing), the library too.

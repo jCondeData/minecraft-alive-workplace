@@ -3,6 +3,8 @@
 ## Unreleased
 
 ### Added
+- Over a builder's head, under its progress: the three materials the build is shortest of, with counts (or that it
+  has everything), and where the builder takes materials from (its chests, or the storehouse, by its bench at x y z).
 - **The village calendar**: the world now has four seasons of 8 days (`seasonDays` in the config), each with a festival
   on its middle day: the Blossom Fair, the Midsummer Games, the Harvest Feast and the Lantern Night. The Village Hall
   shows the season, the day and the next festival; nothing else changes with the seasons yet (coming expansions use it).
@@ -18,6 +20,8 @@
   checks that no item was duplicated or lost.
 
 ### Fixed
+- A builder whose next build is far from its chests takes the first materials along before clearing the site, instead
+  of walking all the way back for them once the site is clear (it stood idle for over half a minute).
 - The Village Hall's name tag now says what a shift-click will do: protect an open village, or open a protected one
   to everyone again (it always said "protect").
 - Masons and carpenters helping one builder no longer use up the stone or wood another builder's build is waiting

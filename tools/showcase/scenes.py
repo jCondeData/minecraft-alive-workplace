@@ -65,7 +65,7 @@ SCENES = [
       [("01_soak_start", "Hilly woods, 10 benches and their chests"), ("frame_*@middle", "Halfway"), ("02_soak_done", "Every build finished"),
        ("03_soak_close", "Close up")]),
     S("preview", "Builder", "Ghost preview and the status over a builder", "the builder made progress on the previewed site", 120,
-      [("20_preview_start", "Ghost preview"), ("21_preview_half_built", "Half built"), ("22_status_closeup", "Status over the builder")]),
+      [("20_preview_start", "Ghost preview"), ("21_preview_half_built", "Half built"), ("22_status_closeup", "Over the builder: progress, what it is short of, where it takes from")]),
     S("missing", "Builder", "What a build is still missing", "the blueprint's tooltip lists what the chests are short of", 60,
       [("00_missing_site", "The placed blueprint and the Blueprint Table"), ("01_blueprint_missing", "Still-missing tooltip")]),
     S("table", "Builder", "Blueprint Table", "the table screen opened and a file was uploaded", 60,

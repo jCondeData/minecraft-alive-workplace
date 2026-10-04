@@ -40,6 +40,19 @@ public class QaB30JobSitesGameTests {
 		keeps(helper, ModBlocks.POSTAL_DESK, ModVillagers.POSTAL_DESK_POI, ModVillagers.POSTMAN, true);
 	}
 
+	/** B30's other two packages (qa-1004-0434): a trainer (TrainerPackages) and a tutor (DeskPackages). */
+	//$ gametest_ticks AREA '300'
+	@GameTest(template = AREA, timeoutTicks = 300)
+	public void qaB30AStuckTrainerKeepsTheirPostWithAFreeOneCloser(GameTestHelper helper) {
+		keeps(helper, ModBlocks.TRAINING_POST, ModVillagers.TRAINING_POST_POI, ModVillagers.TRAINER, true);
+	}
+
+	//$ gametest_ticks AREA '300'
+	@GameTest(template = AREA, timeoutTicks = 300)
+	public void qaB30AStuckTutorKeepsTheirDeskWithAFreeOneCloser(GameTestHelper helper) {
+		keeps(helper, ModBlocks.TUTORS_DESK, ModVillagers.TUTORS_DESK_POI, ModVillagers.TUTOR, true);
+	}
+
 	//$ gametest_ticks AREA '400'
 	@GameTest(template = AREA, timeoutTicks = 400)
 	public void qaB30AMinerWhoseBenchIsBrokenLetsItGo(GameTestHelper helper) {

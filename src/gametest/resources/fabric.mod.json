@@ -71,6 +71,7 @@
 			"io.github.jcondedata.aliveworkplace.test.VillageHallGameTests",
 			"io.github.jcondedata.aliveworkplace.test.HallPagesGameTests",
 			"io.github.jcondedata.aliveworkplace.test.PokemonCenterGameTests",
+			"io.github.jcondedata.aliveworkplace.test.BerryChainsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaHallPagesSeasonsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.B38GameTests",
 			"io.github.jcondedata.aliveworkplace.test.SelfHealingSupplyGameTests",

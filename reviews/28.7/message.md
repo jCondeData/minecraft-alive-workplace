@@ -5,4 +5,4 @@ Tester: not run separately; 623 GameTests + 100 compat GameTests green, includin
 Scene: SCENE=pokemon_center. Set up by command: both tiers placed from the blueprints (not built), the nurse employed at the machine, three hurt Pokémon given to the player.
 Reply: approve 28.7 · veto 28.7: why · change 28.7: what
 
-(from lane-b-1004-1532, 2026-10-04 17:14Z; not yet sent)
+(from lane-b-1004-1532, 2026-10-04 17:14Z; sent)

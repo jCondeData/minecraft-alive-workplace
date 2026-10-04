@@ -4,4 +4,4 @@ Judge: do the shows read as help at each job? The camera is far in the later sti
 Also: flying partners now count as arrived when over the spot (they used to wait out the walk limit).
 Tester: 12 compat GameTests pass (one per cue, from real work); scene partners_all passes its 13 checks.
 
-(from lane-b-1004-1233, 2026-10-04 14:17Z; not yet sent)
+(from lane-b-1004-1233, 2026-10-04 14:17Z; sent)

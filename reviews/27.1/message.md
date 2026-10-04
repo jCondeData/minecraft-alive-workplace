@@ -5,4 +5,4 @@ Tester: none needed, a design note. Every section the roadmap asks for is in it 
 Scene: none yet (27.3 adds city_plan).
 Reply: approve 27.1 · veto 27.1: why · change 27.1: what
 
-(from lane-a-1004-1533, 2026-10-04 17:42Z; not yet sent)
+(from lane-a-1004-1533, 2026-10-04 17:42Z; sent)

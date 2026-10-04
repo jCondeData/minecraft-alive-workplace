@@ -5,4 +5,4 @@ Tester: a GameTest builds the house alone, then with 2, then with 4 and fails ab
 Scene: SCENE=crew tools/screenshots/run.sh (new; also in the nightly showcase).
 Reply: approve 23.1a · veto 23.1a: why · change 23.1a: what
 
-(from lane-a-1004-1533, 2026-10-04 16:46Z; not yet sent)
+(from lane-a-1004-1533, 2026-10-04 16:46Z; sent)

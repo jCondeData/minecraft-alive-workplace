@@ -861,6 +861,7 @@ here adds a new kind of speed bonus (the new jobs get the partners' existing one
   Cup keeps the owner's rules: villages enter, with their Leaders and the players who represent them; no badges, no gyms
   and no trophies for players (the pack's own Badges & Trophies mod does that); Leaders and the purse pay money only;
   the banner belongs to the village. Done when: the note is on `main` and its package is sent.
+  - [ ] **28.1a** Change from the owner (2026-10-04): Cup purse much bigger: 100,000 PokéDollars per bout won and 500,000 for the final (keep the City host bonus unless it breaks the economy); a Cup at every festival, not every third
 - [x] **28.2** (approved auto 2026-10-04) (verified 2026-10-04: 28.1: docs/design/M28.md [185 lines] covers every point of the spec [partner shows, the Pokémon Center, the Cup and Arena, all six data formats, config, save defaults, the 1.8-only vs 1.7.3 split, no badges]; 28.2: CobblemonCompat.TESTED is >=1.7.3 <1.9, and nightly run 37193458879's compat-cobblemon18 job [the compat GameTests on Cobblemon 1.8.1] is green beside the 1.7.3 compat suite in the full build) **Cobblemon 1.8 as well as 1.7.3.** The mod compiles and tests against Cobblemon 1.7.3 and
   `CobblemonCompat.TESTED` stops below 1.8, while 1.8.0 and 1.8.1 (Minecraft 1.21.1) are out; a `LinkageError` there
   switches every Pokémon feature off at once. Keep compiling against 1.7.3 and:

@@ -877,7 +877,7 @@ here adds a new kind of speed bonus (the new jobs get the partners' existing one
     orchard, nurse; Mega Evolution too if Mega Showdown has a build for 1.8);
   - a GameTest shows the four features off under 1.7.3 and on under 1.8.1;
   - the README says which Cobblemon versions work. Nothing visible changed: land with `--no-review`.
-- [x] **28.3** (review: pending 2026-10-04) **Partners at work: the engine.** Partners speed jobs up today but are never seen doing it. Add
+- [x] **28.3** (approved 2026-10-04) **Partners at work: the engine.** Partners speed jobs up today but are never seen doing it. Add
   `work/PartnerShows`: a job calls `PartnerShows.cue(villager, "<cue>", pos)` at a moment of its work, and one of the
   worker's pastured helpers (the entities `PokemonPartners.fighters` already finds) of a type the show names walks to
   `pos`, does the show and walks back. New `PokemonPartners` methods, filled in `CobblemonPartners`: `walkTo`,

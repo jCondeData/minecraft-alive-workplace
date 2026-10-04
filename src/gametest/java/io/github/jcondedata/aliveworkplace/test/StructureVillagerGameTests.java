@@ -30,6 +30,8 @@ import net.minecraft.world.phys.AABB;
  */
 public class StructureVillagerGameTests implements FabricGameTest {
 	private static final String AREA = "aliveworkplace_test:big_area";
+	/** Seeds the level's random while a villager piece is placed (a grown, unmounted mob; see {@link #rotatedHouse}). */
+	private static final long SPAWN_SEED = 1;
 
 	//$ gametest_ticks_batch AREA '200' '"b6DesertHouseRotatedNone"'
 	@GameTest(template = AREA, timeoutTicks = 200, batch = "b6DesertHouseRotatedNone")
@@ -98,11 +100,19 @@ public class StructureVillagerGameTests implements FabricGameTest {
 			for (var old : level.getEntitiesOfClass(kind, AABB.of(box))) {
 				old.discard();
 			}
-			helper.assertTrue(piece.place(manager, level, level.structureManager(), level.getChunkSource().getGenerator(), pieceOrigin, pieceOrigin,
-				pieceRotation, box, RandomSource.create(1), LiquidSettings.APPLY_WATERLOGGING, false), "the villager piece did not place");
+			// The template's mob is finalised with the level's random: a zombie villager is a baby 5% of the time, and then
+			// may ride a chicken (left from an earlier rotation, up to 5 blocks off). Fixed, so every run checks the same
+			// grown, unmounted mob (B49); the level's random is reseeded from itself afterwards.
+			long levelSeed = level.getRandom().nextLong();
+			level.getRandom().setSeed(SPAWN_SEED);
+			boolean placed = piece.place(manager, level, level.structureManager(), level.getChunkSource().getGenerator(), pieceOrigin, pieceOrigin,
+				pieceRotation, box, RandomSource.create(1), LiquidSettings.APPLY_WATERLOGGING, false);
+			level.getRandom().setSeed(levelSeed);
+			helper.assertTrue(placed, "the villager piece did not place");
 			List<T> villagers = level.getEntitiesOfClass(kind, AABB.of(box));
 			helper.assertTrue(villagers.size() == 1, villagers.size() + " villagers placed with piece rotation " + pieceRotation);
 			T v = villagers.get(0);
+			helper.assertTrue(!v.isBaby() && !v.isPassenger(), "the fixed spawn seed gave a baby or a jockey (piece " + pieceRotation + ")");
 			AABB b = v.getBoundingBox();
 			String where = String.format("house %s, piece %s: villager box x %.2f..%.2f z %.2f..%.2f",
 				rotation, pieceRotation, b.minX - target.getX(), b.maxX - target.getX(), b.minZ - target.getZ(), b.maxZ - target.getZ());
@@ -113,13 +123,26 @@ public class StructureVillagerGameTests implements FabricGameTest {
 		}
 		helper.assertTrue(!checked.isEmpty(), "no piece rotation attaches to " + houseName + "'s villager jigsaw");
 		T villager = last;
+		// Where it lands is checked on the tick it lands: afterwards it may wander (B49: a zombie villager walked out of the
+		// corridor and up a block within the 80 ticks, "2.45 1.00 1.85 from the spot").
+		boolean[] landed = {false};
+		helper.onEachTick(() -> {
+			// (Its first tick moves it: the template saves it "on ground" a block above the floor.)
+			if (landed[0] || villager.tickCount < 1 || !villager.onGround()) {
+				return;
+			}
+			landed[0] = true;
+			String at = String.format("%.2f %.2f %.2f from the spot", villager.getX() - target.getX(), villager.getY() - target.getY(), villager.getZ() - target.getZ());
+			helper.assertFalse(villager.isInWall(), "the villager landed in a wall (" + rotation + "): " + at);
+			// It lands on the house floor, never up on a step or with its head in the ceiling.
+			helper.assertTrue(villager.getBlockY() == target.getY(), "the villager is not on the house floor (" + rotation + "): " + at);
+		});
 		helper.runAfterDelay(80, () -> {
 			String at = String.format("%.2f %.2f %.2f from the spot", villager.getX() - target.getX(), villager.getY() - target.getY(), villager.getZ() - target.getZ());
+			helper.assertTrue(landed[0], "the villager never landed (" + rotation + "): " + at);
 			helper.assertTrue(villager.isAlive(), "the villager died (" + rotation + ")");
 			helper.assertFalse(villager.isInWall(), "the villager is in a wall (" + rotation + "): " + at);
 			helper.assertTrue(villager.getHealth() == villager.getMaxHealth(), "the villager was hurt (" + rotation + "): " + villager.getHealth());
-			// It may wander off its spot once it has landed (villagers walk), but never up onto a step or into the ceiling.
-			helper.assertTrue(villager.getBlockY() == target.getY() && villager.onGround(), "the villager is not on the house floor (" + rotation + "): " + at);
 			helper.succeed();
 		});
 	}

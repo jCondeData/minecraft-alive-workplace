@@ -381,7 +381,7 @@ about 12% of that. For villager mods, the cost is pathfinding to distant points 
 
 ## Milestone 26: Release 1.0
 
-- [ ] **26.1** **Release channel.** **Decided by the owner (2026-10-03): 1.0 goes to CurseForge and GitHub, not
+- [x] **26.1** (approved auto 2026-10-04) **Release channel.** **Decided by the owner (2026-10-03): 1.0 goes to CurseForge and GitHub, not
   Modrinth**, each page saying the mod was made with AI assistance, without saying where (see Design decisions). Done when that
   is recorded, which it now is: tick this with `land --no-review` from any session that touches 26.x. The background,
   kept for reference: Modrinth's content rules have been enforced

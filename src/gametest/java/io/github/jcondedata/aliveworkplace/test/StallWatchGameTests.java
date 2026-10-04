@@ -27,6 +27,7 @@ import net.minecraft.world.level.block.Rotation;
 /** The "builder stalled" log line (23.1): written after 30 s without progress, never for a builder at work or a queued site. */
 public class StallWatchGameTests implements FabricGameTest {
 	private static final String AREA = "aliveworkplace_test:build_area";
+	private static final String HUGE_AREA = "aliveworkplace_test:huge_area";
 	private static final ResourceLocation TEST_HUT = ResourceLocation.fromNamespaceAndPath("aliveworkplace_test", "test_hut");
 	private static final BlockPos BENCH = new BlockPos(2, 2, 2);
 	private static final BlockPos CHEST = new BlockPos(2, 2, 4);
@@ -85,6 +86,49 @@ public class StallWatchGameTests implements FabricGameTest {
 			helper.assertFalse(stalled.get(), "a builder at work was logged as stalled");
 			helper.assertTrue(BuildSiteManager.get(helper.getLevel()).get(site.id()) == null,
 				"still building: stage " + site.stage() + ", status " + site.status());
+		});
+	}
+
+	/**
+	 * B40: a builder whose chests are far from the site walks 30 s for its materials without placing a block (each leg
+	 * of the trip ends at most 15 s in, with a hop). That supply run is work, not a stall: taking the materials counts
+	 * as progress, so the longest stretch without progress is one leg, not the round trip. Here the builder starts at
+	 * the site, slowed so both legs run the full 15 s.
+	 */
+	//$ gametest_ticks_batch HUGE_AREA '2400' '"stall_supply_run"'
+	@GameTest(template = HUGE_AREA, timeoutTicks = 2400, batch = "stall_supply_run")
+	public void aLongSupplyRunIsNeverLoggedAsStalled(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		Villager villager = builder(helper, new ItemStack(Items.COBBLESTONE, 25), new ItemStack(Items.OAK_PLANKS, 55),
+			new ItemStack(Items.OAK_DOOR), new ItemStack(Items.TORCH));
+		BlockPos far = helper.absolutePos(new BlockPos(23, 2, 23));
+		villager.teleportTo(far.getX() + 0.5, far.getY(), far.getZ() + 0.5);
+		villager.getAttribute(net.minecraft.world.entity.ai.attributes.Attributes.MOVEMENT_SPEED).setBaseValue(0.2);
+		BuildSite site = Builders.start(helper.getLevel(), villager, null, TEST_HUT, at(helper, new BlockPos(22, 2, 22)));
+		long started = helper.getTick();
+		AtomicLong firstPlaced = new AtomicLong(-1);
+		long[] mark = {site.progressMark(), started, 0}; // the mark, since when, the longest stretch without progress
+		helper.onEachTick(() -> {
+			helper.assertFalse(StallWatch.isStalled(site.id()), "a builder on a supply run was logged as stalled ("
+				+ site.status() + ", stage " + site.stage() + ", " + site.placed() + " placed)");
+			if (site.progressMark() != mark[0]) {
+				mark[0] = site.progressMark();
+				mark[1] = helper.getTick();
+			}
+			if (firstPlaced.get() < 0) {
+				mark[2] = Math.max(mark[2], helper.getTick() - mark[1]);
+				if (site.placed() > 0) {
+					firstPlaced.set(helper.getTick());
+				}
+			}
+		});
+		helper.succeedWhen(() -> {
+			helper.assertTrue(firstPlaced.get() >= 0 && site.placed() >= 5, "only " + site.placed() + " placed (status " + site.status() + ")");
+			// The case itself: the first block came only after a long supply run ...
+			helper.assertTrue(firstPlaced.get() - started > 450,
+				"the supply run took only " + (firstPlaced.get() - started) + " ticks: the test no longer covers B40");
+			// ... and taking the materials halfway through it was progress.
+			helper.assertTrue(mark[2] < 400, "the supply run went " + mark[2] + " ticks without progress");
 		});
 	}
 

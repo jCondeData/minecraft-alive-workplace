@@ -58,6 +58,8 @@ public final class BuildSite {
 	private BuildPlan plan;
 	private Status status = Status.STARTING;
 	private Map<Item, Integer> missing = Map.of();
+	/** Supply runs finished (materials taken, or the bag emptied at the chests): progress for the stall watch (B40). */
+	private int trips;
 	@Nullable
 	private net.minecraft.network.chat.Component detail;
 	private Runnable onChange = () -> {
@@ -345,9 +347,21 @@ public final class BuildSite {
 		return skipped;
 	}
 
-	/** Changes whenever the site moves on (a step done, deferred or skipped, a new list or stage); for stall checks. */
+	/**
+	 * Changes whenever the site moves on (a step done, deferred or skipped, a new list or stage, a supply run finished);
+	 * for stall checks.
+	 */
 	public long progressMark() {
-		return ((((long) stage.ordinal() * 2 + (retrying ? 1 : 0)) * 1_000_003L + cursor) * 1_000_003L + placed) * 1_000_003L + skipped;
+		return (((((long) stage.ordinal() * 2 + (retrying ? 1 : 0)) * 1_000_003L + cursor) * 1_000_003L + placed) * 1_000_003L + skipped)
+			* 1_000_003L + trips;
+	}
+
+	/**
+	 * A builder of this site finished a supply run: took materials from chests or a crewmate, or emptied its bag at the
+	 * chests. A run to chests 60 blocks away takes 30 s and more without a block placed, and is work, not a stall (B40).
+	 */
+	public void supplied() {
+		trips++;
 	}
 
 	public int placed() {

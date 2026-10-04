@@ -217,3 +217,16 @@ are B40.
 05:22:48 Builder stalled 30 s: aliveworkplace:apiary_garden at 1121, 79, 1104 (stage STRUCTURE, status WORKING, 55 placed, 0 skipped, 0 kinds missing) [stall #3]
 05:24:44 Soak result: 22/22 builds finished in 77599 ticks (3.2 days); 3 stalls; items off: none; village chunks: 23 for 14 workers
 ```
+
+## Run 7 — lane-b-1004-0932, 2026-10-04: B40, the split soak's stalls
+
+`SOAK=true SOAK_SPLIT=true SOAK_DAYS=6 DEBUG=true` on main showed what the "WORKING, nothing missing" stalls were: a
+supply run. The apiary garden's builder (45 blocks from its chests) walked 320 ticks there and 320 back
+(`approach=1085, 82, 1079`, `reach=278`), the graveyard's (65 blocks) 380 + 380; each leg ends at most 15 s in (a hop),
+so a round trip is 30 s and a little more without a block placed. That is work, not a stall: a finished supply run
+(materials taken from chests or a crewmate, or the bag emptied at the chests) now counts as progress for the stall
+watch (`BuildSite.supplied`). The same split soak after the fix:
+
+```
+10:14:43 Soak result: 22/22 builds finished in 77246 ticks (3.2 days); 0 stalls; items off: none; village chunks: 21 for 14 workers
+```

@@ -14,7 +14,8 @@ import net.minecraft.world.entity.schedule.Activity;
 
 /**
  * Logs a line whenever a build site with a builder makes no progress for 30 seconds (the builder soak test, 23.1,
- * counts these lines). One line per stall: it is written again only after the site has moved on and stalled anew.
+ * counts these lines). Progress is a step done, deferred or skipped, or a supply run finished (B40: a trip to chests far
+ * from the site takes 30 s without a block placed, and is work). One line per stall: it is written again only after the site has moved on and stalled anew.
  * Only time on shift counts: a builder asleep or outside its WORK activity is not stalled. Sites waiting in a
  * builder's queue, without a builder, or in unloaded chunks are not watched.
  */

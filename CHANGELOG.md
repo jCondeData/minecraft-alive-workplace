@@ -27,7 +27,20 @@
   `/workplace soak` (benchmark servers only) sets 10 builders on the whole starter set in hilly woods for 2 days (or more) and
   checks that no item was duplicated or lost.
 
+- **A material list you can take away**: hold a Book and Quill in your other hand and right-click with a blueprint.
+  The book lists everything the build needs, biggest first, as a checklist; placed near a Blueprint Table, what its
+  chests already hold is taken off, so it says exactly what is still to bring.
+- **Villages keep working when nobody is near**: while anyone is online, every worker's workstation (and the chunk the
+  worker is in) stays loaded, so a village far from all players carries on, also right after a restart. Server owners
+  who'd rather pause them set `keepVillagesWorking` to `false` in `config/aliveworkplace.json`.
+- `/workplace soak <days> split` (testers, benchmark servers only): the soak with each builder's materials split
+  between at most 3 chests by its bench and the village storehouses.
+
 ### Fixed
+- Builders use the village storehouse on their own: one whose bag is full while its chests are full (or it has none)
+  empties it into the storehouse's chests instead of dropping it on the ground, and so does a builder finishing a
+  build; a storehouse no longer drops out of the village while its porter is out on a far errand; and a builder whose
+  next site is far away takes its first materials from the storehouse too.
 - Screens checked at GUI scales 2 and 4: the Shop Counter's title no longer runs off its panel ("Goods on top, prices
   below"), and the Blueprint Table's list no longer draws a blueprint's size over its selection box, nor 3-digit
   material counts over the next icon.

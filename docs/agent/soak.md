@@ -188,3 +188,32 @@ walked 41 blocks back to its chests (1078, 87, 1000) for the first foundation bl
 ```
 
 No graveyard stall. All three left are B38's pattern (waiting for materials with none missing), the library too.
+
+## Run 6 — lane-a-1004-0332, 2026-10-04: the split soak (23.5)
+
+`SOAK=true SOAK_SPLIT=true SOAK_DAYS=6 tools/packtest/run.sh` (`/workplace soak 6 split`): each builder's chests by its
+bench hold at most 3 chests and half its stacks; the rest is in 4 village storehouses (2 per column, 13 blocks west of
+the benches, level with rows 1 and 3, each with a porter), which the builders must find themselves. Columns are 90
+blocks apart in this mode (70 without), so each bench reaches only its own column's storehouses.
+
+| Run | Code | Builds | Days | Stalls | Items off |
+| --- | --- | --- | --- | --- | --- |
+| 6a | main + storehouse deposits | 13/22 | 6.0 (limit) | 29 | none |
+| 6b | + a builder at the storehouse takes only what its own chests lack; bags count toward reservations | (stopped after 14 stalls) | | | |
+| 6c | + a storehouse keeps back what the builders who can reach only it still need | 22/22 | 4.0 | 5 | none |
+| 6d | + at far chests a builder takes for 4 times the stretch (fewer walks) | **22/22** | **3.2** | 3 | **none** |
+
+6a's stalls were all builders waiting for materials that sat in the other storehouse of their column: a builder in
+row 2 (which reaches both) had emptied the one the rows 3-4 builders depend on. Run 6d is faster than the unsplit
+soak (3.4 days). Village chunks (23.6): 23 for 14 workers (10 builders, 4 porters).
+
+The 3 stalls left are not supply stalls (status WORKING, nothing missing): the sifting shed in CLEAR with 0 placed,
+the schoolhouse at the start of FOUNDATION (1 placed, 55 skipped) and the apiary garden in STRUCTURE (55 placed). They
+are B40.
+
+```
+05:19:44 Builder stalled 30 s: aliveworkplace:sifting_shed at 1121, 79, 1052 (stage CLEAR, status WORKING, 0 placed, 0 skipped, 0 kinds missing) [stall #1]
+05:20:53 Builder stalled 30 s: aliveworkplace:schoolhouse at 1031, 79, 1078 (stage FOUNDATION, status WORKING, 1 placed, 55 skipped, 0 kinds missing) [stall #2]
+05:22:48 Builder stalled 30 s: aliveworkplace:apiary_garden at 1121, 79, 1104 (stage STRUCTURE, status WORKING, 55 placed, 0 skipped, 0 kinds missing) [stall #3]
+05:24:44 Soak result: 22/22 builds finished in 77599 ticks (3.2 days); 3 stalls; items off: none; village chunks: 23 for 14 workers
+```

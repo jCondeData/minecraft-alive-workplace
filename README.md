@@ -1076,7 +1076,7 @@ the Builder's workstation too: a villager without a job near it takes it and bec
 | `/gamerule workplaceFoundationDepth 12` | how far down builders fill under a build on uneven ground (0 = never) |
 | `/gamerule workplaceLevelGround 0` | builders leave the ground around their builds alone (default 2 blocks, up to 8) |
 | `/gamerule workplaceVillageFarms false` | village farmers don't take on the farm by their composter by themselves |
-| `/gamerule workplaceKeepWorkLoaded false` | builds and quarries stop when nobody is nearby (by default they keep going while the player who ordered them is online) |
+| `/gamerule workplaceKeepWorkLoaded false` | nothing is kept loaded: builds, quarries and villages stop when nobody is nearby (by default builds and quarries keep going while the player who ordered them is online, and villages while anyone is online; see `keepVillagesWorking`) |
 
 **Server config** — `config/aliveworkplace.json` is written with the defaults the first time the game starts (edit it
 and restart; out-of-range values are clamped). With [Mod Menu](https://modrinth.com/mod/modmenu) installed, the mod's
@@ -1092,6 +1092,7 @@ saves the file and puts the settings into effect in your own worlds (a dedicated
 | `partnerRadius` | 16 | how close to a workstation pastured Pokémon must be to help |
 | `postmanRange` | 64 | how far a postman walks to deliver (mail going farther arrives at dawn) |
 | `villageHallRadius` | 64 | how far from a Village Hall its village reaches |
+| `keepVillagesWorking` | true | villages keep working when no player is near: while anyone is online, each worker's workstation chunk (and the chunk it is in) stays loaded; `false` pauses villages nobody is near (builds and quarries still follow `workplaceKeepWorkLoaded`) |
 | `builderPaths` | true | builders lay a dirt path from each finished building to the village's bell or hall |
 | `villageGrowthCap` | 40 | a village with a hall stops having babies at this many villagers (0: villages don't grow) |
 | `villagerNames` | true | villagers in a village with a Village Hall get names |

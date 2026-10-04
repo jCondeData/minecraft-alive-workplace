@@ -9,6 +9,8 @@
 #   SOAK=true tools/packtest/run.sh            # the builder soak (23.1; SOAK_DAYS=n for longer): /workplace soak, then 2 in-game days at
 #                                              # full speed (/tick sprint); prints the "Soak result:" line and the stalls
 #   SOAK=true DEBUG=true ...                   # the same, with the builders' [builder N] lines in the log
+#   SOAK=true SOAK_SPLIT=true ...              # 23.5: each builder's materials split between at most 3 chests by its
+#                                              # bench and the village storehouses (with porters) it must find itself
 # Needs ~6 GB of RAM and ~1 GB of disk; takes ~5 minutes. Output: build/packtest/server/server.log
 set -euo pipefail
 cd "$(dirname "$0")/../.."
@@ -110,8 +112,13 @@ fi
 # Soak mode (23.1): 10 builders on the whole starter set, materials only in chests, 2 in-game days at full speed.
 # Passes only when every build finished, no item count is off and no builder stalled for 30 s.
 if [ "${SOAK:-false}" = "true" ]; then
-  say "forceload add 990 990 1160 1150" 60
-  say "execute positioned 1000 80 1000 run workplace soak ${SOAK_DAYS:-2}" 60
+  if [ "${SOAK_SPLIT:-false}" = "true" ]; then
+    say "forceload add 960 990 1200 1150" 60
+    say "execute positioned 1000 80 1000 run workplace soak ${SOAK_DAYS:-2} split" 60
+  else
+    say "forceload add 990 990 1160 1150" 60
+    say "execute positioned 1000 80 1000 run workplace soak ${SOAK_DAYS:-2}" 60
+  fi
   say "tick sprint $(( ${SOAK_DAYS:-2} * 24000 ))" 5
   for _ in $(seq 1 ${SOAK_MINUTES:-40}); do
     sleep 60

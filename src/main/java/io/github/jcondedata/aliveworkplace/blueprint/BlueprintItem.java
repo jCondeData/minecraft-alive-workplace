@@ -140,6 +140,14 @@ public class BlueprintItem extends Item {
 	public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
 		ItemStack stack = player.getItemInHand(hand);
 		Optional<BlueprintData> data = data(stack);
+		InteractionHand other = hand == InteractionHand.MAIN_HAND ? InteractionHand.OFF_HAND : InteractionHand.MAIN_HAND;
+		if (!player.isShiftKeyDown() && data.isPresent() && player.getItemInHand(other).is(net.minecraft.world.item.Items.WRITABLE_BOOK)) {
+			// A Book and Quill in the other hand: write the material list into it (23.4).
+			if (level instanceof ServerLevel server) {
+				writeMaterialList(server, player, data.get(), other);
+			}
+			return InteractionResultHolder.sidedSuccess(stack, level.isClientSide());
+		}
 		if (player.isShiftKeyDown() && data.isPresent() && data.get().placement().isPresent()) {
 			if (!level.isClientSide()) {
 				stack.set(ModComponents.BLUEPRINT, data.get().withPlacement(Optional.empty()));
@@ -165,6 +173,28 @@ public class BlueprintItem extends Item {
 			return InteractionResultHolder.sidedSuccess(stack, level.isClientSide());
 		}
 		return InteractionResultHolder.pass(stack);
+	}
+
+	/** Turns one Book and Quill in {@code bookHand} into {@code data}'s material list, a written book. */
+	public static boolean writeMaterialList(ServerLevel level, Player player, BlueprintData data, InteractionHand bookHand) {
+		Optional<ItemStack> book = io.github.jcondedata.aliveworkplace.build.MaterialList.write(level, data, player.getName().getString());
+		if (book.isEmpty()) {
+			Chat.actionBar(player, Component.translatable("message.aliveworkplace.blueprint.unknown", data.structure().toString()).withStyle(ChatFormatting.RED));
+			return false;
+		}
+		ItemStack quill = player.getItemInHand(bookHand);
+		if (quill.getCount() == 1) {
+			player.setItemInHand(bookHand, book.get());
+		} else {
+			quill.shrink(1);
+			if (!player.getInventory().add(book.get())) {
+				player.drop(book.get(), false);
+			}
+		}
+		level.playSound(null, player.blockPosition(), net.minecraft.sounds.SoundEvents.BOOK_PAGE_TURN, net.minecraft.sounds.SoundSource.PLAYERS, 1f, 1f);
+		Chat.actionBar(player, Component.translatable("message.aliveworkplace.blueprint.list_written", Blueprints.displayName(data.structure()))
+			.withStyle(ChatFormatting.GREEN));
+		return true;
 	}
 
 	/** Keeps the "still missing" list of a placed blueprint up to date (see {@code BlueprintSupplies}). */
@@ -204,6 +234,7 @@ public class BlueprintItem extends Item {
 			} else {
 				tooltip.add(Component.translatable("tooltip.aliveworkplace.blueprint.place_hint").withStyle(ChatFormatting.GRAY));
 			}
+			tooltip.add(Component.translatable("tooltip.aliveworkplace.blueprint.list_hint").withStyle(ChatFormatting.DARK_GRAY));
 			if (flag.isAdvanced()) {
 				tooltip.add(Component.literal(d.structure().toString()).withStyle(ChatFormatting.DARK_GRAY));
 			}

@@ -49,6 +49,8 @@ public final class WorkplaceConfig {
 	public int villageRadius = 48;
 	/** How far from a Village Hall its village reaches. */
 	public int villageHallRadius = 64;
+	/** Villages keep working while no player is near them (their chunks stay loaded while anyone is online). */
+	public boolean keepVillagesWorking = true;
 	/** Whether builders lay a dirt path from each finished building to the village's bell or hall. */
 	public boolean builderPaths = true;
 	/** A village with a hall stops having babies at this many villagers (0: villages don't grow). */
@@ -258,6 +260,8 @@ public final class WorkplaceConfig {
 		io.github.jcondedata.aliveworkplace.people.Couples.ENABLED = villagerCouples && System.getProperty("fabric-api.gametest") == null;
 		io.github.jcondedata.aliveworkplace.hall.Treasury.ENABLED = villageTreasury && System.getProperty("fabric-api.gametest") == null;
 		io.github.jcondedata.aliveworkplace.hall.VillageProtection.ENABLED = villageProtection;
+		// Off in gametests (tickets around every test's workers would keep the test areas loaded); KeepLoaded's tests turn it on.
+		io.github.jcondedata.aliveworkplace.work.KeepLoaded.VILLAGES = keepVillagesWorking && System.getProperty("fabric-api.gametest") == null;
 		io.github.jcondedata.aliveworkplace.build.Paths.ENABLED = builderPaths && System.getProperty("fabric-api.gametest") == null;
 	}
 }

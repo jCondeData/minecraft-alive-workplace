@@ -26,9 +26,18 @@ import org.jetbrains.annotations.Nullable;
  * Keeps builds and quarries running while the player who ordered them is online but far away: the
  * chunks with the site, the workstation, the supply chests and the worker stay loaded (gamerule
  * {@code workplaceKeepWorkLoaded}). Nothing is kept loaded for players who are offline.
+ *
+ * <p>Villages keep working too when no player is near (23.6, the owner's call): while anyone is online, every
+ * worker's workstation chunk and the chunk it is in stay loaded ({@link WorkSites}), unless the server's config
+ * says {@code keepVillagesWorking: false}.
  */
 public final class KeepLoaded {
 	private static final int EVERY = 100;
+	/** {@code keepVillagesWorking} in the config: workers' chunks stay loaded while anyone is online. */
+	public static boolean VILLAGES = true;
+	/** Never keep more than this many chunks for villages in one dimension (a guard against surprises). */
+	public static final int MAX_VILLAGE_CHUNKS = 400;
+	private static boolean warned;
 	/** Tickets expire unless renewed, so a finished or cancelled job lets its chunks go by itself. */
 	private static final TicketType<ChunkPos> WORK = TicketType.create("aliveworkplace_work", Comparator.comparingLong(ChunkPos::toLong), EVERY * 3);
 	/** Ticket distance 2 makes the chunk entity-ticking, so the worker keeps moving in it. */
@@ -38,6 +47,7 @@ public final class KeepLoaded {
 
 	public static void init() {
 		Platform.get().onLevelTick(level -> {
+			WorkSites.tick(level);
 			if (level.getGameTime() % EVERY == 0 && Rules.on(level, ModGameRules.KEEP_WORK_LOADED)) {
 				for (ChunkPos chunk : chunksToKeep(level)) {
 					level.getChunkSource().addRegionTicket(WORK, chunk, DISTANCE, chunk);
@@ -62,6 +72,33 @@ public final class KeepLoaded {
 				continue;
 			}
 			add(out, level, quarry.box(), quarry.bench(), quarry.miner());
+		}
+		out.addAll(villageChunks(level));
+		return out;
+	}
+
+	/** Every worker's workstation chunk and the chunk it's in, while anyone is online and villages keep working. */
+	public static Set<ChunkPos> villageChunks(ServerLevel level) {
+		if (!VILLAGES || level.getServer().getPlayerList().getPlayerCount() == 0) {
+			return new HashSet<>();
+		}
+		return villageChunks(level, WorkSites.get(level).all().values());
+	}
+
+	/** The chunks kept for {@code sites}: each one's workstation chunk and the chunk its worker is in, at most {@link #MAX_VILLAGE_CHUNKS}. */
+	public static Set<ChunkPos> villageChunks(ServerLevel level, java.util.Collection<WorkSites.Site> sites) {
+		Set<ChunkPos> out = new HashSet<>();
+		for (WorkSites.Site site : sites) {
+			if (out.size() >= MAX_VILLAGE_CHUNKS) {
+				if (!warned) {
+					warned = true;
+					io.github.jcondedata.aliveworkplace.AliveWorkplace.LOG.warn("Keeping only {} chunks loaded for villages in {} ({} workers)",
+						MAX_VILLAGE_CHUNKS, level.dimension().location(), sites.size());
+				}
+				break;
+			}
+			out.add(new ChunkPos(site.station()));
+			out.add(new ChunkPos(site.at()));
 		}
 		return out;
 	}

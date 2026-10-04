@@ -62,6 +62,8 @@ public class BuilderWork extends Behavior<Villager> {
 	private static final float SPEED = 0.6f;
 	/** How many upcoming steps to gather materials for in one trip. */
 	private static final int LOOKAHEAD = 192;
+	/** How far ahead a builder takes for, at chests far from its site (23.5): fewer long walks. */
+	private static final int FAR_LOOKAHEAD = 4 * LOOKAHEAD;
 	/** Already-finished steps skipped per tick (cheap checks). */
 	private static final int SKIP_BUDGET = 256;
 	private static final int STUCK_TICKS = 100;
@@ -244,7 +246,7 @@ public class BuilderWork extends Behavior<Villager> {
 		// doesn't walk all the way back to its chests the moment the site is clear. Only from stock: never waits here.
 		if (!helping && !free && site.stage() == BuildPlan.Stage.CLEAR && action == Action.BREAK && !site.id().equals(stockedFor)) {
 			MaterialRules.Requirement first = firstNeed(level, site, plan, bag);
-			if (first == null || !farFromChests(plan, bench) || !inStock(level, bench, plan, first)) {
+			if (first == null || !farFromChests(plan, bench) || !inStock(level, villager, site, bench, plan, first)) {
 				stockedFor = site.id();
 			} else {
 				fetch(level, villager, site, plan, bag, bench, first);
@@ -559,13 +561,18 @@ public class BuilderWork extends Behavior<Villager> {
 		return bench.distSqr(plan.bounds().getCenter()) > (double) FAR_FROM_CHESTS * FAR_FROM_CHESTS;
 	}
 
-	private static boolean inStock(ServerLevel level, BlockPos bench, BuildPlan plan, MaterialRules.Requirement r) {
+	/** True if our chests, or the village's (23.5: a storehouse, another worker's), hold what {@code r} asks for. */
+	private static boolean inStock(ServerLevel level, Villager villager, BuildSite site, BlockPos bench, BuildPlan plan,
+								   MaterialRules.Requirement r) {
 		List<BlockPos> supplies = SupplyContainers.find(level, bench, plan.bounds());
 		long have = 0;
 		for (Item item : MaterialFamilies.accepted(r.item())) {
 			have += SupplyContainers.count(level, supplies, item);
 		}
-		return have >= r.count();
+		if (have >= r.count()) {
+			return true;
+		}
+		return have + spareElsewhere(level, villager, site, plan, bench).getOrDefault(MaterialFamilies.key(r.item()), 0L) >= r.count();
 	}
 
 	private void fetch(ServerLevel level, Villager villager, BuildSite site, BuildPlan plan, BuilderBag bag, BlockPos bench,
@@ -599,22 +606,31 @@ public class BuilderWork extends Behavior<Villager> {
 				return;
 			}
 			// Nothing in our chests: another worker in the village may have it (the miner's stone, the lumberjack's logs).
-			// Another builder's chests hold what their own builds need: only what they can spare (B31).
-			for (Village.Stash stash : Village.stashes(level, villager, bench, plan.bounds())) {
-				Map<Item, Integer> reserved = stash.job() == ModVillagers.BUILDER ? Builders.reservedAt(level, stash.station(), site) : Map.of();
-				if (Builders.spare(level, stash.chests(), requirement.item(), reserved) <= 0) {
-					continue;
+			// Another builder's chests hold what their own builds need: only what they can spare (B31). From a storehouse,
+			// first only what the other builders near it can spare (23.5: one that could also reach another storehouse
+			// took what builders who can reach only this one were waiting for); if nothing anywhere is spare that way,
+			// first come first served, so builders short of the same thing never wait on each other.
+			List<Village.Stash> stashes = Village.stashes(level, villager, bench, plan.bounds());
+			for (int pass = 0; pass < 2; pass++) {
+				for (Village.Stash stash : stashes) {
+					if (pass == 1 && stash.job() != ModVillagers.PORTER) {
+						continue;
+					}
+					Map<Item, Integer> reserved = reservedIn(level, stash, site, pass == 0);
+					if (Builders.spare(level, stash.chests(), requirement.item(), reserved) <= 0) {
+						continue;
+					}
+					BlockPos chest = SupplyContainers.firstMatching(level, stash.chests(), stack -> accepted.contains(stack.getItem()));
+					if (chest == null) {
+						continue;
+					}
+					waitTimer = 0;
+					setStatus(site, BuildSite.Status.FETCHING);
+					if (moveInReach(level, villager, site, plan, chest, CONTAINER_REACH, false)) {
+						takeWanted(level, site, plan, bag, requirement, stash.chests(), chest, reserved, supplies);
+					}
+					return;
 				}
-				BlockPos chest = SupplyContainers.firstMatching(level, stash.chests(), stack -> accepted.contains(stack.getItem()));
-				if (chest == null) {
-					continue;
-				}
-				waitTimer = 0;
-				setStatus(site, BuildSite.Status.FETCHING);
-				if (moveInReach(level, villager, site, plan, chest, CONTAINER_REACH, false)) {
-					takeWanted(level, site, plan, bag, requirement, stash.chests(), chest, reserved);
-				}
-				return;
 			}
 			waitForMaterials(level, villager, site, plan, bag, bench, supplies);
 			return;
@@ -643,7 +659,11 @@ public class BuilderWork extends Behavior<Villager> {
 	 */
 	/** The next stretch of work, for what to take and what to keep: later stages, or the rest of the levelling. */
 	private static List<BuildPlan.Step> ahead(BuildSite site, BuildPlan plan) {
-		return site.stage() == BuildPlan.Stage.LANDSCAPE ? site.landscapeLeft(plan, LOOKAHEAD) : site.upcoming(plan, LOOKAHEAD);
+		return ahead(site, plan, LOOKAHEAD);
+	}
+
+	private static List<BuildPlan.Step> ahead(BuildSite site, BuildPlan plan, int steps) {
+		return site.stage() == BuildPlan.Stage.LANDSCAPE ? site.landscapeLeft(plan, steps) : site.upcoming(plan, steps);
 	}
 
 	/**
@@ -672,15 +692,23 @@ public class BuilderWork extends Behavior<Villager> {
 
 	private void takeWanted(ServerLevel level, BuildSite site, BuildPlan plan, BuilderBag bag, MaterialRules.Requirement requirement,
 							List<BlockPos> supplies, BlockPos source) {
-		takeWanted(level, site, plan, bag, requirement, supplies, source, Map.of());
+		takeWanted(level, site, plan, bag, requirement, supplies, source, Map.of(), List.of());
 	}
 
-	/** The same, leaving {@code reserved} (by family key) in the chests: another builder's builds need it. */
+	/**
+	 * The same at a village-mate's chests, leaving {@code reserved} (by family key) in them: another builder's builds
+	 * need it. Of the rest of the work's needs it takes only what {@code mine} (our own chests) can't cover (23.5: a
+	 * builder at the storehouse took everything its next stretch needed, though its own chests held half of it, and the
+	 * builder whose share that was waited for it).
+	 */
 	private void takeWanted(ServerLevel level, BuildSite site, BuildPlan plan, BuilderBag bag, MaterialRules.Requirement requirement,
-							List<BlockPos> supplies, BlockPos source, Map<Item, Integer> reserved) {
+							List<BlockPos> supplies, BlockPos source, Map<Item, Integer> reserved, List<BlockPos> mine) {
 		Map<Item, Integer> wanted = new LinkedHashMap<>();
 		wanted.put(requirement.item(), requirement.count() + (helping ? 3 : 0));
-		for (BuildPlan.Step s : helping ? List.<BuildPlan.Step>of() : ahead(site, plan)) {
+		// 23.5: chests far from the site (a village storehouse, a bench far away): take for a longer stretch, so the
+		// builder walks there less often (each trip was 30 s and more without placing a block).
+		boolean far = farFromChests(plan, source);
+		for (BuildPlan.Step s : helping ? List.<BuildPlan.Step>of() : far ? ahead(site, plan, FAR_LOOKAHEAD) : ahead(site, plan)) {
 			if (!MaterialRules.matches(level.getBlockState(s.pos()), s.state())) {
 				for (MaterialRules.Requirement r : s.requirements()) {
 					wanted.merge(r.item(), r.count(), Integer::sum);
@@ -690,6 +718,9 @@ public class BuilderWork extends Behavior<Villager> {
 		boolean tookAny = false;
 		for (Map.Entry<Item, Integer> e : wanted.entrySet()) {
 			int want = e.getValue() - bag.count(e.getKey());
+			if (!mine.isEmpty()) {
+				want -= (int) Math.min(want, Builders.spare(level, mine, e.getKey(), Map.of()));
+			}
 			int take = Math.min(want, bag.spaceFor(e.getKey()));
 			if (!reserved.isEmpty()) {
 				take = (int) Math.min(take, Builders.spare(level, supplies, e.getKey(), reserved));
@@ -805,7 +836,7 @@ public class BuilderWork extends Behavior<Villager> {
 		for (Village.Stash stash : Village.stashes(level, villager, bench, plan.bounds())) {
 			Map<Item, Long> held = new HashMap<>();
 			SupplyContainers.contents(level, stash.chests()).forEach((item, n) -> held.merge(MaterialFamilies.key(item), n, Long::sum));
-			Map<Item, Integer> reserved = stash.job() == ModVillagers.BUILDER ? Builders.reservedAt(level, stash.station(), site) : Map.of();
+			Map<Item, Integer> reserved = reservedIn(level, stash, site, false);
 			held.forEach((key, n) -> {
 				long spare = n - reserved.getOrDefault(key, 0);
 				if (spare > 0) {
@@ -816,8 +847,29 @@ public class BuilderWork extends Behavior<Villager> {
 		return out;
 	}
 
+	/**
+	 * Empties the bag of what the next stretch of work doesn't need: into our chests, or (23.5) when they are full or
+	 * there are none, into the village storehouse's, so a full bag never ends on the ground or stops the work.
+	 */
+	/** What a village-mate's chests keep back from this build: a builder's for its own builds, a storehouse's for the other builders near it. */
+	private static Map<Item, Integer> reservedIn(ServerLevel level, Village.Stash stash, BuildSite site, boolean fair) {
+		if (stash.job() == ModVillagers.BUILDER) {
+			return Builders.reservedAt(level, stash.station(), site);
+		}
+		if (fair && stash.job() == ModVillagers.PORTER) {
+			return Builders.reservedForOthers(level, stash.station(), site);
+		}
+		return Map.of();
+	}
+
 	private void deposit(ServerLevel level, Villager villager, BuildSite site, BuildPlan plan, BuilderBag bag, BlockPos bench) {
 		List<BlockPos> supplies = SupplyContainers.find(level, bench, plan.bounds());
+		if (supplies.isEmpty() || SupplyContainers.freeSlots(level, supplies) == 0) {
+			List<BlockPos> store = Builders.storehouseChests(level, villager, bench, plan.bounds());
+			if (!store.isEmpty() && SupplyContainers.freeSlots(level, store) > 0) {
+				supplies = store;
+			}
+		}
 		BlockPos target = supplies.isEmpty() ? bench : supplies.get(0);
 		if (!moveInReach(level, villager, site, plan, target, CONTAINER_REACH, false)) {
 			return;
@@ -833,8 +885,17 @@ public class BuilderWork extends Behavior<Villager> {
 		if (junk.isEmpty()) {
 			junk = bag.takeAll(); // bag is full of materials for later: drop them back off
 		}
+		List<BlockPos> store = null;
 		for (ItemStack stack : junk) {
 			ItemStack rest = SupplyContainers.insert(level, supplies, stack);
+			if (!rest.isEmpty()) {
+				if (store == null) {
+					store = Builders.storehouseChests(level, villager, bench, plan.bounds());
+				}
+				if (!store.equals(supplies)) {
+					rest = SupplyContainers.insert(level, store, rest);
+				}
+			}
 			if (!rest.isEmpty()) {
 				Builders.dropNear(level, bench, rest);
 			}

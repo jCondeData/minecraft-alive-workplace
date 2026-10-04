@@ -630,6 +630,50 @@ public final class ModVillagers {
 		)
 	);
 
+	/**
+	 * Cobblemon's Pasture Block (ROADMAP 28.10): its lower half is the Habitat Keeper's workstation, by a POI of ours
+	 * registered when Cobblemon registers {@code cobblemon:pasture}. Only a honey bottle gives the job there; a jobless
+	 * villager never takes a player's pasture.
+	 */
+	public static final ResourceLocation PASTURE_BLOCK = ResourceLocation.fromNamespaceAndPath("cobblemon", "pasture");
+	public static final ResourceLocation PASTURE_ID = AliveWorkplace.id("pasture");
+	public static final ResourceKey<PoiType> PASTURE_POI = ResourceKey.create(Registries.POINT_OF_INTEREST_TYPE, PASTURE_ID);
+
+	static {
+		Platform.get().whenBlockRegistered(PASTURE_BLOCK, block -> Platform.get().registerPoi(PASTURE_ID, 1, 1,
+			block.getStateDefinition().getPossibleStates().stream().filter(ModVillagers::lowerHalf).toList()));
+	}
+
+	/** Whether {@code state} is a two-block block's lower half (its {@code part} is {@code bottom}), or has no halves. */
+	private static boolean lowerHalf(net.minecraft.world.level.block.state.BlockState state) {
+		for (net.minecraft.world.level.block.state.properties.Property<?> property : state.getProperties()) {
+			if (property.getName().equals("part")) {
+				return valueName(state, property).equals("bottom");
+			}
+		}
+		return true;
+	}
+
+	/** The name a block state file uses for {@code property}'s value in {@code state} (an enum's own name may differ). */
+	private static <T extends Comparable<T>> String valueName(net.minecraft.world.level.block.state.BlockState state,
+			net.minecraft.world.level.block.state.properties.Property<T> property) {
+		return property.getName(state.getValue(property));
+	}
+
+	/** Keeps the wild Pokémon round a Pasture Block (ROADMAP 28.10): only ever by a honey bottle, with Cobblemon and config {@code habitatKeepers}. */
+	public static final VillagerProfession HABITAT_KEEPER = Registry.register(
+		BuiltInRegistries.VILLAGER_PROFESSION,
+		AliveWorkplace.id("habitat_keeper"),
+		new VillagerProfession(
+			"habitat_keeper",
+			holder -> holder.is(PASTURE_POI),
+			holder -> holder.is(PASTURE_POI),
+			ImmutableSet.of(),
+			ImmutableSet.of(),
+			SoundEvents.BEEHIVE_DRIP
+		)
+	);
+
 	/** Revives fossils for players, for a price (only with Cobblemon installed). */
 	public static final VillagerProfession FOSSIL_SCIENTIST = Registry.register(
 		BuiltInRegistries.VILLAGER_PROFESSION,

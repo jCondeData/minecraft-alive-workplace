@@ -154,6 +154,12 @@ public final class ModAttachments {
 	/** How many dishes a Camp Cook has cooked (shown above her head; ROADMAP 28.8). */
 	public static final Attachment<Integer> DISHES_COOKED = Attachment.saved("dishes_cooked", com.mojang.serialization.Codec.INT);
 
+	/** A Habitat Keeper's lure spots, where she keeps Poké Snacks set out (ROADMAP 28.10). */
+	public static final Attachment<java.util.List<net.minecraft.core.BlockPos>> LURE_SPOTS = Attachment.saved("lure_spots", net.minecraft.core.BlockPos.CODEC.listOf());
+
+	/** The Saccharine logs a Habitat Keeper has found round her pasture and keeps slathered with honey (ROADMAP 28.10). */
+	public static final Attachment<java.util.List<net.minecraft.core.BlockPos>> HONEY_LOGS = Attachment.saved("honey_logs", net.minecraft.core.BlockPos.CODEC.listOf());
+
 	/** How many berries a Berry Breeder has picked (shown above her head). */
 	public static final Attachment<Integer> BERRIES_PICKED = Attachment.saved("berries_picked", com.mojang.serialization.Codec.INT);
 

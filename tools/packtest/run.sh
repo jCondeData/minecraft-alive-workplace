@@ -6,6 +6,8 @@
 #   PACK_VERSION_URL=... tools/packtest/run.sh
 #   PERF=true PLOTS=20 tools/packtest/run.sh   # performance mode: /workplace benchmark fills an area with busy
 #                                              # workers; tick times before/after and a CPU profile of our code
+#   SOAK=true tools/packtest/run.sh            # the builder soak (23.1; SOAK_DAYS=n for longer): /workplace soak, then 2 in-game days at
+#                                              # full speed (/tick sprint); prints the "Soak result:" line and the stalls
 # Needs ~6 GB of RAM and ~1 GB of disk; takes ~5 minutes. Output: build/packtest/server/server.log
 set -euo pipefail
 cd "$(dirname "$0")/../.."
@@ -56,7 +58,7 @@ rm -f console && mkfifo console
 sleep 100000 > console &
 KEEP=$!
 JAVA_OPTS=""
-if [ "${PERF:-false}" = "true" ]; then JAVA_OPTS="-Daliveworkplace.benchmark=true"; fi
+if [ "${PERF:-false}" = "true" ] || [ "${SOAK:-false}" = "true" ]; then JAVA_OPTS="-Daliveworkplace.benchmark=true"; fi
 java -Xmx5G -Xms1G $JAVA_OPTS -jar fabric-server-launch.jar nogui < console > server.log 2>&1 &
 PID=$!
 for _ in $(seq 1 90); do
@@ -99,6 +101,28 @@ if [ "${PERF:-false}" = "true" ]; then
     grep -E -A1 "\] \[Server thread/INFO\]: Builder — " server.log | head -6
     exit 1
   fi
+  exit 0
+fi
+
+# Soak mode (23.1): 10 builders on the whole starter set, materials only in chests, 2 in-game days at full speed.
+# Passes only when every build finished, no item count is off and no builder stalled for 30 s.
+if [ "${SOAK:-false}" = "true" ]; then
+  say "forceload add 990 990 1160 1150" 60
+  say "execute positioned 1000 80 1000 run workplace soak ${SOAK_DAYS:-2}" 60
+  say "tick sprint $(( ${SOAK_DAYS:-2} * 24000 ))" 5
+  for _ in $(seq 1 ${SOAK_MINUTES:-40}); do
+    sleep 60
+    grep -q "Soak result:" server.log && break
+    kill -0 $PID 2>/dev/null || break
+  done
+  say "workplace sites" 5
+  say "stop" 30
+  kill $KEEP 2>/dev/null || true
+  wait $PID 2>/dev/null || true
+  echo "--- soak (full log: $SERVER/server.log)"
+  grep -E "Soak:|Soak result:|Builder stalled|Sprint completed|Crash|Exception" server.log | grep -v "No data fixer" || true
+  echo "--- stalls: $(grep -c "Builder stalled" server.log || true)"
+  grep -q "Soak result: \([0-9]*\)/\1 builds finished.*; 0 stalls; items off: none" server.log || { echo "The soak did not pass."; exit 1; }
   exit 0
 fi
 

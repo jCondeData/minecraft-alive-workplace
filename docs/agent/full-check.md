@@ -127,6 +127,21 @@ Done in pieces by night runs; each piece lands with `land --keep-open`. Newest f
 - A world saved by the real 0.137.0 jar on the Cobbleverse pack, with all 26 retired job blocks and their workers,
   opened with 0.138.0: 26/26 blocks, jobs and job sites kept, no errors from our mod (ROADMAP 21.4).
 
+### Performance on GitHub's machines (lane-a-1004-0932, 2026-10-04)
+- Nightly run 37193458879 (6b24c85, 2026-10-04), after B14's fix: the performance soak on GitHub's runner with the
+  real pack, 80 workers on 40 plots, 39 of 46 sites working when measured; ticks 7.3 / 5.2 ms on average with the
+  workers (p99 42.1 / 15.9 ms). From tonight the same step runs 25.1's 150 workers in three villages
+  (docs/performance.md).
+  https://github.com/jCondeData/minecraft-alive-workplace/actions/runs/37193458879
+
+### A world saved by 0.138.0 opened with this version (lane-a-1004-0932, 2026-10-04)
+- The real Cobbleverse pack (Java 21) with the released v0.138.0 jar: `/workplace benchmark 10` (20 workers: 9
+  builders, 2 miners and their neighbours), a few minutes of work, saved and stopped. The same world opened with main
+  (739d02e): `KEEP_WORLD=true SITES_ONLY=true tools/packtest/run.sh`.
+- All 11 sites came back with their builders and miners, 9 of 11 working (as before the restart), no error or
+  exception from our mod in the log. 9 sites went on (Berry Farm 91% → 100%, Research Lab 57% → 67%, quarries 29% →
+  33%, ...). Two sites laying their foundation showed less progress after the restart (Lookout Tower 12% → 1%,
+  Healing Center 19% → 7%): filed as B46.
+
 ## Still to do
-- An old world saved by 0.138.0 opened with the next version (at the release check).
-- Performance on GitHub's machines once B14 is fixed (the dev-container numbers above stand meanwhile).
+- Nothing: every part above is a passing test or a green run, and the one finding is B46.

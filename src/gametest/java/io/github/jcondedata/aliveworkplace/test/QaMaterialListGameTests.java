@@ -63,7 +63,7 @@ public class QaMaterialListGameTests implements FabricGameTest {
 	 * same items, the same counts), every kind once, at most 7 lines a page, and the book is one the game can save and
 	 * send to a client (title and pages within vanilla's limits).
 	 */
-	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
+	//$ gametest_ticks 'FabricGameTest.EMPTY_STRUCTURE' '200'
 	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE, timeoutTicks = 200)
 	public void everyLibraryBlueprintsListMatchesItsPlanAndFitsABook(GameTestHelper helper) {
 		ServerLevel level = helper.getLevel();

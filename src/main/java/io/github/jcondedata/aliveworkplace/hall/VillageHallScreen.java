@@ -40,7 +40,7 @@ import net.minecraft.world.phys.Vec3;
  * with what they're doing and waiting for; clicking one makes them glow for a while so they can be found.
  */
 public final class VillageHallScreen {
-	static final int NAME = 0;
+	public static final int NAME = 0;
 	static final int PEOPLE = 1;
 	static final int BEDS = 2;
 	static final int FOOD = 3;
@@ -130,7 +130,8 @@ public final class VillageHallScreen {
 				: owned.owner() == null ? Component.translatable("screen.aliveworkplace.hall.unowned")
 				: Component.translatable("screen.aliveworkplace.hall.unprotected", owned.ownerName()),
 				owned.isProtected() ? ChatFormatting.GREEN : ChatFormatting.GRAY));
-			nameLore.add(line("screen.aliveworkplace.hall.protect_click", ChatFormatting.DARK_GRAY));
+			nameLore.add(line(owned.isProtected() ? "screen.aliveworkplace.hall.unprotect_click" : "screen.aliveworkplace.hall.protect_click",
+				ChatFormatting.DARK_GRAY));
 		}
 		nameLore.add(line("screen.aliveworkplace.hall.rename", ChatFormatting.DARK_GRAY));
 		menu.button(NAME, icon(Items.NAME_TAG, VillageHalls.name(level, hall).copy(), ChatFormatting.GOLD, nameLore.toArray(Component[]::new)), p -> {

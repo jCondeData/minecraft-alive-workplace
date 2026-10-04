@@ -18,6 +18,7 @@
 			"io.github.jcondedata.aliveworkplace.test.VillageGameTests",
 			"io.github.jcondedata.aliveworkplace.test.StructureVillagerGameTests",
 			"io.github.jcondedata.aliveworkplace.test.ProtectionGameTests",
+			"io.github.jcondedata.aliveworkplace.test.HallProtectHintGameTests",
 			"io.github.jcondedata.aliveworkplace.test.HomesGameTests",
 			"io.github.jcondedata.aliveworkplace.test.HomesSpecGameTests",
 			"io.github.jcondedata.aliveworkplace.test.SaveReloadGameTests",

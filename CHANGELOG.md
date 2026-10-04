@@ -14,6 +14,8 @@
   with Cobblemon the Pokémon jobs. Lost it? Craft another from a book and wheat.
 
 ### Fixed
+- The Village Hall's name tag now says what a shift-click will do: protect an open village, or open a protected one
+  to everyone again (it always said "protect").
 - Masons and carpenters helping one builder no longer use up the stone or wood another builder's build is waiting
   for: from that builder's chests they take only what's spare.
 - Nurses, shopkeepers and ferrymen keep their block when they get stuck on the way back to it, instead of giving it up

@@ -45,6 +45,7 @@ public class QaB37HallHintGameTests {
 		Leftovers.after(helper, () -> level.getServer().getPlayerList().remove(owner));
 		helper.setBlock(HALL, ModBlocks.VILLAGE_HALL);
 		BlockPos at = helper.absolutePos(HALL);
+		unprotectAfter(helper, at);
 		VillageHallBlockEntity hall = (VillageHallBlockEntity) level.getBlockEntity(at);
 		hall.setOwner(owner.getUUID(), owner.getGameProfile().getName());
 		hall.setProtected(true);
@@ -79,6 +80,7 @@ public class QaB37HallHintGameTests {
 		});
 		helper.setBlock(HALL, ModBlocks.VILLAGE_HALL);
 		BlockPos at = helper.absolutePos(HALL);
+		unprotectAfter(helper, at);
 		VillageHallBlockEntity hall = (VillageHallBlockEntity) level.getBlockEntity(at);
 		hall.setOwner(owner.getUUID(), owner.getGameProfile().getName());
 		hall.setProtected(true);
@@ -104,6 +106,7 @@ public class QaB37HallHintGameTests {
 		Leftovers.after(helper, () -> level.getServer().getPlayerList().remove(player));
 		helper.setBlock(HALL, ModBlocks.VILLAGE_HALL);
 		BlockPos at = helper.absolutePos(HALL);
+		unprotectAfter(helper, at);
 		VillageHallBlockEntity hall = (VillageHallBlockEntity) level.getBlockEntity(at);
 		Leftovers.after(helper, () -> hall.setProtected(false)); // a protected hall left behind locks later tests' halls nearby
 		ChoiceMenu menu = VillageHallScreen.forTest(player, at);
@@ -130,6 +133,15 @@ public class QaB37HallHintGameTests {
 			"the open-again hint reads '" + open + "'");
 		helper.assertFalse(open.contains("%"), "the open-again hint has a placeholder nobody fills: '" + open + "'");
 		helper.succeed();
+	}
+
+	/** Leaves nothing protected behind: a protected hall keeps the next batches' mock players out for 64 blocks. */
+	private static void unprotectAfter(GameTestHelper helper, BlockPos at) {
+		Leftovers.after(helper, () -> {
+			if (helper.getLevel().getBlockEntity(at) instanceof VillageHallBlockEntity hall) {
+				hall.setProtected(false);
+			}
+		});
 	}
 
 	private static List<String> keys(ServerLevel level, ServerPlayer player, ItemStack stack) {

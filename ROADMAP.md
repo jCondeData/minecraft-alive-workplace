@@ -231,7 +231,7 @@ Before polishing, make sure nothing regresses unnoticed.
   10 PM Central (`17 3 * * *`), before the night runs, which read its result first.
 - [x] **22.2** (approved auto 2026-10-03) (verified 2026-10-03: inventory.py: 73/73 saved values have a save/reload test [list empty]; both suites reflect over every ModAttachments field and fail on one without a sample; mutants 3/3 killed [FieldJob.adopted dropped, trees_felled and ball_orders lost on load]) Save/reload tests for every value `inventory.py` lists as "never saved and reloaded" (69 at 0.136.0), done in
   batches: builder, miner and lumberjack data first. Done when: that list is empty, or each remaining entry has a reason.
-- [x] **22.3** (review: pending 2026-10-04) A bot scene for every player-visible feature, so any feature can be shown again on demand
+- [x] **22.3** (review: pending 2026-10-04) (verified 2026-10-04: README's 43 jobs and its screens each map to a scene in tools/showcase/scenes.py [73 scenes]; the live showcase [e39f973] passes 70: missing, battle and soak fail and are filed as B41 [harness title check false positive], B43 [battle once], B42 [soak 21/22, 23.1]) A bot scene for every player-visible feature, so any feature can be shown again on demand
   (`tools/screenshots/run.sh SCENE=…`). Done when: every job and every screen in the README has a scene. A new feature
   gets its scene in the same commit.
 - [x] **22.4** (approved auto 2026-09-30) (verified 2026-10-02: its tester Check, shipped in 0.138.0) **A daily showcase page** (owner, 2026-09-30): screenshots and GIFs of everything the mod does, so the
@@ -245,13 +245,13 @@ Before polishing, make sure nothing regresses unnoticed.
     dug, the screen opened). A failed scene or a broken picture (missing textures, raw text keys, villagers stuck in
     walls) opens the nightly-tests issue, so the night runs fix it;
   - if publishing the page needs a GitHub setting only he can change, he gets the exact clicks.
-- [x] **22.5** (review: pending 2026-10-04) **Room on the Village Hall's screen.** Milestones 27, 29, 30, 31 and 33 each add a page to the hall, and
+- [x] **22.5** (review: pending 2026-10-04) (verified 2026-10-04: QaHallPagesSeasonsGameTests [5, from the Done when]: six more pages by one register call each get their own tab and open by a real click with header, content and back [old buttons in place], duplicate id and a 10th page refused; 28 villagers list as a full page of 27 + next page and back; Nether reads the overworld's date, server clock drives the calendar; 2 years day by day for season lengths 1,2,3,7,8,9,120: a day each day, seasons in order on each first day, one festival per season, year turns after winter; calendar tab/header/seasons all translated. Full build at 6d5c003 569/569 + compat 56/56. Hall stills at GUI 2 and 4 checked on the showcase page [page row: clock tab then free slots]. Mutation/repeats: no nightly since 2026-10-03 09:11Z, not read) **Room on the Village Hall's screen.** Milestones 27, 29, 30, 31 and 33 each add a page to the hall, and
   its screen has no free slot. Give it page tabs (or a second row of page buttons) with room for at least six more
   pages, keeping every existing page and button where players know it. Done when:
   - a GameTest opens every existing page through the new layout;
   - a new page is one registration call (documented in `docs/agent/layout.md`), and the expansions use it;
   - the hall scene shows the new layout at GUI scales 2 and 4.
-- [x] **22.6** (review: pending 2026-10-04) **One season calendar.** Milestones 28 (the Festival Cup), 30 (harvest season), 31 and 34 need seasons,
+- [x] **22.6** (review: pending 2026-10-04) (verified 2026-10-04: QaHallPagesSeasonsGameTests [5, from the Done when]: six more pages by one register call each get their own tab and open by a real click with header, content and back [old buttons in place], duplicate id and a 10th page refused; 28 villagers list as a full page of 27 + next page and back; Nether reads the overworld's date, server clock drives the calendar; 2 years day by day for season lengths 1,2,3,7,8,9,120: a day each day, seasons in order on each first day, one festival per season, year turns after winter; calendar tab/header/seasons all translated. Full build at 6d5c003 569/569 + compat 56/56. Hall stills at GUI 2 and 4 checked on the showcase page [page row: clock tab then free slots]. Mutation/repeats: no nightly since 2026-10-03 09:11Z, not read) **One season calendar.** Milestones 28 (the Festival Cup), 30 (harvest season), 31 and 34 need seasons,
   and none exist. A village calendar: four seasons of `seasonDays` days (default 8, one festival each), the same for
   the whole world, shown on the hall with the day of the season; an event API the expansions listen to. Done when:
   GameTests cover the rollover, save and reload, and the config length; nothing else changes until an expansion uses

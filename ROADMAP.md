@@ -315,7 +315,7 @@ first; many items below are "verify and harden", not "build".
 - [x] **23.7** (approved auto 2026-10-04) **Imports that just work.** `.litematic`, `.schem` and `.nbt` files in common sizes and versions, including big
   builds (48×8×48), unknown modded blocks and old formats. Done when: a test corpus of permissively licensed or
   self-made sample files imports, or fails with a clear message that says which block or format was the problem.
-- [x] **23.8** (review: pending 2026-10-04) **Placing a build feels good.**
+- [x] **23.8** (approved 2026-10-04) **Placing a build feels good.**
   - Rotation and mirroring before placing.
   - The ghost preview shows exactly where it goes.
   - The site can be moved or cancelled, with its materials returned.

@@ -128,6 +128,9 @@ loom {
                 name = "Compat Game Test"
                 source(compattest)
                 runDir = "build/run/compatGameTest"
+                // The pack's ~350k block states fill the JVM's default heap (1.5 GB in a 7 GB dev container) and
+                // the compat server thrashes in full GC; GitHub's runners default to more. 3 GB fits both.
+                vmArg("-Xmx3G")
                 vmArg("-Dfabric-api.gametest")
                 vmArg("-Dfabric-api.gametest.report-file=${layout.buildDirectory.get().asFile}/junit-compat.xml")
                 ideConfigGenerated(false)

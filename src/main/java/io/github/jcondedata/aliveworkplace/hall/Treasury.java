@@ -47,7 +47,9 @@ public final class Treasury {
 		VillageRanks.Rank rank = entity.rank();
 		float wellbeing = entity.needs() == null ? 0.5f : entity.needs().wellbeing();
 		long add = (long) takings(workers, wellbeing, rank) * Math.min(MAX_DAYS, day - last);
+		int before = entity.treasury();
 		entity.setTreasury((int) Math.min(cap(rank) * 100L, entity.treasury() + add));
+		entity.addTreasuryTotal(entity.treasury() - before);
 	}
 
 	/** Whole emeralds waiting at the hall at {@code hall}. */

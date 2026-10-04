@@ -133,7 +133,7 @@ public class ConfigGameTests implements FabricGameTest {
 				problems.add("range for " + name + ", which isn't a number setting");
 			}
 		}
-		helper.assertTrue(names.size() == 38, "expected 38 settings (28.8 added campCooks, 27.5 steward and stewardMaxOpenBuilds), found " + names.size() + ": " + names);
+		helper.assertTrue(names.size() == 39, "expected 39 settings (28.8 added campCooks, 27.5 steward and stewardMaxOpenBuilds, 29.2 legends), found " + names.size() + ": " + names);
 		helper.assertTrue(problems.isEmpty(), String.join("; ", problems));
 		helper.succeed();
 	}

@@ -561,8 +561,33 @@ def steward():
     return t.save_profession(ASSETS, "steward", hat="full")
 
 
+def legend():
+    """A Legend without a trade of their own: a gold circlet on the brow, and a long wine-red mantle with a gold hem,
+    a gold-edged collar and a gold clasp at the throat. Plain on purpose: each Legend's own outfit (29.4) is drawn over
+    their trade's."""
+    t = vg.VillagerTexture()
+    wine = vg.cloth("#6e2434")
+    vg.hat(t, GOLD, style="band", crown=1, noise=0)
+    hat_front = t.face("hat", "front")
+    hat_front.put(3, 1, "#5fb3c9")                      # a small blue stone set in the circlet
+    hat_front.put(4, 1, "#3c7f95")
+    vg.robe(t, wine, length=18, sleeves_too=False, body_too=False, noise=0)
+    for side in SIDES:                                   # the gold hem
+        f = t.face("jacket", side)
+        for x in range(f.w):
+            f.put(x, 17, GOLD[1])
+            f.put(x, 16, GOLD[2] if side == "front" else GOLD[1])
+    jf = t.face("jacket", "front")
+    paint(jf, ((1, 0), (2, 0), (5, 0), (6, 0)), GOLD[2])   # the collar's edges
+    paint(jf, ((2, 1), (5, 1)), GOLD[1])
+    paint(jf, ((3, 0), (4, 0)), wine[3])
+    paint(jf, ((3, 1), (4, 1)), GOLD[3])                 # the clasp
+    paint(jf, ((3, 2), (4, 2)), GOLD[0])
+    return t.save_profession(ASSETS, "legend", hat="partial")
+
+
 DRAW = [orchard_keeper, berry_breeder, camp_cook, pokemon_trader, porter, postman, rancher, scholar, shopkeeper, sifter, teacher, tinkerer,
-        trainer, trainer_leader, tutor, undertaker, steward]
+        trainer, trainer_leader, tutor, undertaker, steward, legend]
 
 if __name__ == "__main__":
     run(DRAW)

@@ -1,0 +1,20 @@
+{
+  "rarity": "rare",
+  "job": "aliveworkplace:builder",
+  "title": "legend.aliveworkplace_test.test_legend.title",
+  "lore": "legend.aliveworkplace_test.test_legend.lore",
+  "names": ["legend.aliveworkplace_test.test_legend.name.1", "legend.aliveworkplace_test.test_legend.name.2"],
+  "conditions": [
+    {"type": "rank_at_least", "rank": "town"},
+    {"type": "treasury_total", "emeralds": 100}
+  ],
+  "arrive": [
+    {"way": "visit", "place": "inn", "chance": 0.25}
+  ],
+  "needs": {"luxury": "books"},
+  "powers": [
+    {"type": "pace", "trades": ["aliveworkplace:builder"], "radius": 8, "factor": 1.5},
+    {"type": "mood", "points": 7, "radius": 8}
+  ],
+  "outfit": "aliveworkplace:textures/entity/villager/profession/legend.png"
+}

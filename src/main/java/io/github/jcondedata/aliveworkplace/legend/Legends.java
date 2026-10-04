@@ -1,0 +1,190 @@
+package io.github.jcondedata.aliveworkplace.legend;
+
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import io.github.jcondedata.aliveworkplace.AliveWorkplace;
+import io.github.jcondedata.aliveworkplace.hall.VillageHalls;
+import io.github.jcondedata.aliveworkplace.mc.Lookup;
+import io.github.jcondedata.aliveworkplace.platform.Platform;
+import io.github.jcondedata.aliveworkplace.registry.ModAttachments;
+import io.github.jcondedata.aliveworkplace.registry.ModVillagers;
+import io.github.jcondedata.aliveworkplace.rules.Conditions;
+import io.github.jcondedata.aliveworkplace.school.Schools;
+import java.io.Reader;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.packs.resources.Resource;
+import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
+import net.minecraft.world.entity.npc.Villager;
+import net.minecraft.world.entity.npc.VillagerData;
+import net.minecraft.world.entity.npc.VillagerProfession;
+import org.jetbrains.annotations.Nullable;
+
+/**
+ * The Legends (M29): named villagers, one file each in {@code data/<ns>/legends/}, read when data packs load so server
+ * owners can add their own. A file that fails (an unknown condition or power type, a bad field) is logged with its name
+ * and skipped; the rest still load. A file whose {@code requires} names a mod that isn't installed is skipped quietly.
+ * {@code legends} in the config switches it all off: nothing loads, nothing ticks, and Legends already settled stay
+ * as ordinary Masters of their trade (their attachment is kept for when it's switched back on).
+ */
+public final class Legends implements ResourceManagerReloadListener {
+	public static final String FOLDER = "legends";
+	public static final Set<String> WAYS = Set.of("visit", "found", "born", "inspired");
+	public static final Set<String> LUXURIES = Set.of("wine", "jewels", "books", "clothes");
+	public static boolean ENABLED = true;
+
+	private static Map<ResourceLocation, Legend> legends = Map.of();
+
+	public static void init() {
+		Platform.get().onDataReload(AliveWorkplace.id("legends"), new Legends());
+	}
+
+	public static Collection<Legend> all() {
+		return ENABLED ? legends.values() : List.of();
+	}
+
+	public static Optional<Legend> get(ResourceLocation id) {
+		return ENABLED ? Optional.ofNullable(legends.get(id)) : Optional.empty();
+	}
+
+	@Override
+	public void onResourceManagerReload(ResourceManager manager) {
+		reload(manager);
+	}
+
+	/** Reads every Legend file again (also tests, after switching {@link #ENABLED}). */
+	public static void reload(ResourceManager manager) {
+		Map<ResourceLocation, Legend> out = new LinkedHashMap<>();
+		if (ENABLED) {
+			for (Map.Entry<ResourceLocation, Resource> e : manager.listResources(FOLDER, p -> p.getPath().endsWith(".json")).entrySet()) {
+				ResourceLocation file = e.getKey();
+				String path = file.getPath().substring(FOLDER.length() + 1, file.getPath().length() - ".json".length());
+				ResourceLocation id = ResourceLocation.fromNamespaceAndPath(file.getNamespace(), path);
+				try (Reader reader = e.getValue().openAsReader()) {
+					Legend legend = read(id, JsonParser.parseReader(reader).getAsJsonObject());
+					if (legend != null) {
+						out.put(id, legend);
+					}
+				} catch (Exception ex) {
+					AliveWorkplace.LOG.warn("Skipping Legend {}: {}", file, ex.getMessage());
+				}
+			}
+		}
+		legends = java.util.Collections.unmodifiableMap(out);
+		LegendPowers.forget();
+		AliveWorkplace.LOG.info("Legends: {}", ENABLED ? legends.keySet() : "switched off");
+	}
+
+	/** Reads one Legend file; null when it needs a mod that isn't installed. Throws for a bad file. */
+	@Nullable
+	public static Legend read(ResourceLocation id, JsonObject json) {
+		if (json.has("requires")) {
+			for (JsonElement mod : json.getAsJsonArray("requires")) {
+				if (!Platform.get().isModLoaded(mod.getAsString())) {
+					return null;
+				}
+			}
+		}
+		Rarity rarity = Rarity.parse(string(json, "rarity"));
+		ResourceLocation job = ResourceLocation.tryParse(string(json, "job"));
+		if (job == null || !BuiltInRegistries.VILLAGER_PROFESSION.containsKey(job)) {
+			throw new IllegalArgumentException("unknown job '" + string(json, "job") + "'");
+		}
+		List<String> names = new ArrayList<>();
+		for (JsonElement n : json.has("names") ? json.getAsJsonArray("names") : new JsonArray()) {
+			names.add(n.getAsString());
+		}
+		List<JsonObject> arrive = new ArrayList<>();
+		for (JsonElement a : json.has("arrive") ? json.getAsJsonArray("arrive") : new JsonArray()) {
+			JsonObject way = a.getAsJsonObject();
+			if (!way.has("way") || !WAYS.contains(way.get("way").getAsString())) {
+				throw new IllegalArgumentException("unknown way " + way.get("way"));
+			}
+			arrive.add(way);
+		}
+		Optional<String> luxury = Optional.empty();
+		if (json.has("needs") && json.getAsJsonObject("needs").has("luxury")) {
+			String l = json.getAsJsonObject("needs").get("luxury").getAsString();
+			if (!LUXURIES.contains(l)) {
+				throw new IllegalArgumentException("unknown luxury '" + l + "'");
+			}
+			luxury = Optional.of(l);
+		}
+		Optional<ResourceLocation> outfit = Optional.empty();
+		if (json.has("outfit")) {
+			outfit = Optional.ofNullable(ResourceLocation.tryParse(json.get("outfit").getAsString()));
+			if (outfit.isEmpty()) {
+				throw new IllegalArgumentException("bad outfit");
+			}
+		}
+		return new Legend(id, rarity, job, string(json, "title"), string(json, "lore"), List.copyOf(names),
+			Conditions.parseAll(json.has("conditions") ? json.getAsJsonArray("conditions") : new JsonArray()), List.copyOf(arrive), luxury,
+			Powers.parseAll(json.has("powers") ? json.getAsJsonArray("powers") : new JsonArray()),
+			json.has("masterwork") ? json.getAsJsonObject("masterwork") : null, outfit);
+	}
+
+	private static String string(JsonObject json, String field) {
+		if (!json.has(field)) {
+			throw new IllegalArgumentException("missing '" + field + "'");
+		}
+		return json.get(field).getAsString();
+	}
+
+	/** Puts loaded Legends in place (tests). */
+	public static void setForTest(Map<ResourceLocation, Legend> map) {
+		legends = java.util.Collections.unmodifiableMap(new LinkedHashMap<>(map));
+		LegendPowers.forget();
+	}
+
+	/** The Legend {@code villager} is, while Legends are on. */
+	public static Optional<Legend> of(Villager villager) {
+		LegendData data = ModAttachments.LEGEND.get(villager);
+		return data == null ? Optional.empty() : get(data.id());
+	}
+
+	/**
+	 * Makes {@code villager} the Legend {@code legend}, settled in the village they stand in: a Master of the Legend's
+	 * trade with every level's trades (through {@link Schools#headStart}); they keep their own name.
+	 */
+	public static void make(ServerLevel level, Villager villager, Legend legend, String way) {
+		VillagerProfession job = Lookup.value(BuiltInRegistries.VILLAGER_PROFESSION, legend.job());
+		if (villager.getVillagerData().getProfession() != job || villager.getVillagerData().getLevel() < VillagerData.MAX_VILLAGER_LEVEL) {
+			villager.setVillagerData(villager.getVillagerData().setProfession(job).setLevel(1));
+			villager.setVillagerXp(0);
+			villager.setOffers(null); // the new trade's trades, from Novice up
+			ModAttachments.HEAD_START.set(villager, VillagerData.MAX_VILLAGER_LEVEL);
+			Schools.headStart(villager);
+		}
+		Optional<BlockPos> hall = VillageHalls.nearest(level, villager.blockPosition());
+		ModAttachments.LEGEND.set(villager, LegendData.settled(legend.id(), "", hall, level.getDayTime() / 24000L, way));
+		LegendPowers.seen(villager);
+	}
+
+	/** {@code villager} is no longer a Legend (they stay a Master of their trade). */
+	public static void clear(Villager villager) {
+		ModAttachments.LEGEND.remove(villager);
+		LegendPowers.forget();
+	}
+
+	/** Every 200 ticks of a Legend's life: they join their dimension's list for the auras. */
+	public static void tick(Villager villager) {
+		if (ENABLED && villager.tickCount % 200 == 0 && ModAttachments.LEGEND.has(villager)) {
+			LegendPowers.seen(villager);
+		}
+	}
+
+	private Legends() {
+	}
+}

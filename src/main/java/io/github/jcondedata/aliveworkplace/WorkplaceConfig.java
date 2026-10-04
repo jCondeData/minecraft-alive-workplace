@@ -67,6 +67,8 @@ public final class WorkplaceConfig {
 	public boolean villagerSickness = true;
 	/** Villagers in a village with a Village Hall have moods that change how fast they work. */
 	public boolean villagerMoods = true;
+	/** Legends (rare named villagers with powers) can come to villages that earn them. */
+	public boolean legends = true;
 	/** Idle builders repair the buildings they finished when blocks go missing. */
 	public boolean builderRepairs = true;
 	/** A village with a Village Hall and a Market Square holds a market once a week. */
@@ -300,6 +302,7 @@ public final class WorkplaceConfig {
 		io.github.jcondedata.aliveworkplace.people.Couples.ENABLED = villagerCouples && System.getProperty("fabric-api.gametest") == null;
 		io.github.jcondedata.aliveworkplace.hall.Treasury.ENABLED = villageTreasury && System.getProperty("fabric-api.gametest") == null;
 		io.github.jcondedata.aliveworkplace.hall.VillageProtection.ENABLED = villageProtection;
+		io.github.jcondedata.aliveworkplace.legend.Legends.ENABLED = legends;
 		// Off in gametests (tickets around every test's workers would keep the test areas loaded); KeepLoaded's tests turn it on.
 		io.github.jcondedata.aliveworkplace.work.KeepLoaded.VILLAGES = keepVillagesWorking && System.getProperty("fabric-api.gametest") == null;
 		// Off in gametests (a partner walking off mid-test would move the numbers); the show tests turn them on.

@@ -39,11 +39,15 @@ public final class BuilderLevels {
 		return delay(Rules.number(level, ModGameRules.BUILD_DELAY), villager);
 	}
 
-	/** {@code baseDelay} for this villager: shorter with each level, with Pokémon partners helping and in a well-kept village. */
+	/**
+	 * {@code baseDelay} for this villager: shorter with each level, with Pokémon partners helping and in a well-kept village, and
+	 * near a Legend with a {@code pace} power (never more than twice as fast from those: {@link io.github.jcondedata.aliveworkplace.legend.LegendPowers#PACE_CAP}).
+	 */
 	public static int delay(int baseDelay, Villager villager) {
 		return Math.round(delay(baseDelay, level(villager)) * io.github.jcondedata.aliveworkplace.work.Partners.factor(villager)
 			* io.github.jcondedata.aliveworkplace.hall.VillageNeeds.factor(villager) * io.github.jcondedata.aliveworkplace.people.Traits.pace(villager)
-			* io.github.jcondedata.aliveworkplace.people.Sickness.pace(villager) * io.github.jcondedata.aliveworkplace.people.Moods.pace(villager));
+			* io.github.jcondedata.aliveworkplace.people.Sickness.pace(villager) * io.github.jcondedata.aliveworkplace.people.Moods.pace(villager)
+			/ io.github.jcondedata.aliveworkplace.legend.LegendPowers.pace(villager));
 	}
 
 	public static int delay(int baseDelay, int villagerLevel) {

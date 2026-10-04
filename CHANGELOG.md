@@ -122,6 +122,8 @@ asks for the steps, `latest.log` and any crash report).
   partners than before.**
 
 ### Fixed
+- A builder whose path leads somewhere it can't actually walk (under a trapdoor flower box, up into a loft) now hops
+  there after two seconds standing still instead of five, so a crew's last blocks no longer drag on.
 - **Helpers really speed a build up now**: two builders on one build take about half the time of one, four about a
   third (the stone house: 4200 ticks alone, about 2110 with two, 1220-1470 with four; before, 63-71% and 46%). Helpers
   fetch for a stretch of work instead of a handful per block, pass each other materials when close instead of walking

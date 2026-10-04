@@ -74,6 +74,14 @@ public final class Soak {
 
 	@Nullable
 	private static Run running;
+	/**
+	 * {@code /workplace soak <days> split} (23.5): each builder's chests by its bench hold only part of its materials, at
+	 * most 3 chests; the rest is in two village storehouses, each with its porter and chests, which the builders must find
+	 * themselves. Without it everything is in chests by the benches.
+	 */
+	static boolean split;
+	/** In split mode, the share of a builder's stacks that stays by its bench. */
+	static final double BY_THE_BENCH = 0.5;
 
 	public static void init() {
 		if (!Boolean.getBoolean("aliveworkplace.benchmark")) {
@@ -84,7 +92,16 @@ public final class Soak {
 				.requires(s -> s.hasPermission(4))
 				.executes(ctx -> run(ctx.getSource(), DAYS))
 				.then(Commands.argument("days", com.mojang.brigadier.arguments.IntegerArgumentType.integer(1, 30))
-					.executes(ctx -> run(ctx.getSource(), com.mojang.brigadier.arguments.IntegerArgumentType.getInteger(ctx, "days")))))));
+					.executes(ctx -> run(ctx.getSource(), com.mojang.brigadier.arguments.IntegerArgumentType.getInteger(ctx, "days")))
+					.then(Commands.literal("split")
+						.executes(ctx -> {
+							split = true;
+							try {
+								return run(ctx.getSource(), com.mojang.brigadier.arguments.IntegerArgumentType.getInteger(ctx, "days"));
+							} finally {
+								split = false;
+							}
+						}))))));
 		Platform.get().onServerTick(Soak::tick);
 	}
 
@@ -146,6 +163,8 @@ public final class Soak {
 		List<BlockPos> chests = new ArrayList<>();
 		List<Villager> builders = new ArrayList<>();
 		Map<Item, Integer> stocked = new TreeMap<>(Soak::byId);
+		List<ItemStack> storeNorth = new ArrayList<>();
+		List<ItemStack> storeSouth = new ArrayList<>();
 		for (int b = 0; b < BUILDERS; b++) {
 			int x = origin.getX() + (b % COLUMNS) * COLUMN + 8;
 			int z = origin.getZ() + (b / COLUMNS) * ROW;
@@ -177,7 +196,20 @@ public final class Soak {
 				plan.materials().forEach((item, n) -> mine.merge(item, n, Integer::sum));
 			}
 			mine.forEach((item, n) -> stocked.merge(item, n, Integer::sum));
-			chests.addAll(stock(level, bench, mine));
+			if (split) {
+				List<ItemStack> stacks = stacks(mine);
+				int here = Math.min(3 * 27, (int) Math.ceil(stacks.size() * BY_THE_BENCH));
+				chests.addAll(stock(level, bench, stacks.subList(0, here), 3));
+				(b / COLUMNS < 3 ? storeNorth : storeSouth).addAll(stacks.subList(here, stacks.size()));
+			} else {
+				chests.addAll(stock(level, bench, stacks(mine), Integer.MAX_VALUE));
+			}
+		}
+		if (split) {
+			// Between the two columns, one storehouse for the first three rows and one for the last two: every bench is
+			// within the village's 48 blocks of its own.
+			chests.addAll(storehouse(level, origin.offset(COLUMN / 2 + 8, 0, ROW + 6), storeNorth));
+			chests.addAll(storehouse(level, origin.offset(COLUMN / 2 + 8, 0, 3 * ROW + 19), storeSouth));
 		}
 		// Count from here: everything builders gain, build in or drop is in the ledger.
 		MaterialLedger.start();
@@ -239,8 +271,8 @@ public final class Soak {
 		return ground;
 	}
 
-	/** Fills chests west of the bench (all within the bench's reach) with exactly {@code items}. */
-	private static List<BlockPos> stock(ServerLevel level, BlockPos bench, Map<Item, Integer> items) {
+	/** {@code items} as full stacks. */
+	private static List<ItemStack> stacks(Map<Item, Integer> items) {
 		List<ItemStack> stacks = new ArrayList<>();
 		items.forEach((item, n) -> {
 			int left = n;
@@ -250,17 +282,22 @@ public final class Soak {
 				left -= take;
 			}
 		});
+		return stacks;
+	}
+
+	/** Fills up to {@code most} chests west of the bench (all within the bench's reach) with exactly {@code stacks}. */
+	private static List<BlockPos> stock(ServerLevel level, BlockPos bench, List<ItemStack> stacks, int most) {
 		List<BlockPos> out = new ArrayList<>();
 		int next = 0;
 		// Two layers of single chests, a gap between columns so none of them join into double chests.
-		for (int layer = 0; layer < 2 && next < stacks.size(); layer++) {
-			for (int dx = -2; dx >= -6 && next < stacks.size(); dx -= 2) {
-				for (int dz = -6; dz <= 6 && next < stacks.size(); dz++) {
+		for (int layer = 0; layer < 2 && next < stacks.size() && out.size() < most; layer++) {
+			for (int dx = -2; dx >= -6 && next < stacks.size() && out.size() < most; dx -= 2) {
+				for (int dz = -6; dz <= 6 && next < stacks.size() && out.size() < most; dz++) {
 					BlockPos pos = bench.offset(dx, layer, dz);
 					level.setBlockAndUpdate(pos, Blocks.CHEST.defaultBlockState());
 					if (level.getBlockEntity(pos) instanceof Container chest) {
 						for (int slot = 0; slot < chest.getContainerSize() && next < stacks.size(); slot++) {
-							chest.setItem(slot, stacks.get(next++));
+							chest.setItem(slot, stacks.get(next++).copy());
 						}
 						out.add(pos);
 					}
@@ -271,6 +308,19 @@ public final class Soak {
 			AliveWorkplace.LOG.warn("Soak: {} stacks didn't fit in the chests by the bench at {}", stacks.size() - next, bench.toShortString());
 		}
 		return out;
+	}
+
+	/** A storehouse on a levelled pad at {@code at}, its porter, and chests beside it holding {@code stacks}. */
+	private static List<BlockPos> storehouse(ServerLevel level, BlockPos at, List<ItemStack> stacks) {
+		BlockPos block = pad(level, at.getX(), at.getZ());
+		level.setBlockAndUpdate(block, ModBlocks.STOREHOUSE.defaultBlockState());
+		Villager porter = EntityType.VILLAGER.spawn(level, block.south(), MobSpawnType.COMMAND);
+		if (porter != null) {
+			porter.setPersistenceRequired();
+			io.github.jcondedata.aliveworkplace.work.Jobs.employ(level, porter, block,
+				io.github.jcondedata.aliveworkplace.registry.ModVillagers.STOREHOUSE_POI, io.github.jcondedata.aliveworkplace.registry.ModVillagers.PORTER);
+		}
+		return stock(level, block, stacks, Integer.MAX_VALUE);
 	}
 
 	private static BlockPos top(ServerLevel level, int x, int z) {

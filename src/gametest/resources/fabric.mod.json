@@ -25,6 +25,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaB38B39GameTests",
 			"io.github.jcondedata.aliveworkplace.test.PartnerShowsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.OverheadSupplyGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaGlanceSupplyGameTests",
 			"io.github.jcondedata.aliveworkplace.test.StockUpBeforeClearingGameTests",
 			"io.github.jcondedata.aliveworkplace.test.HomesGameTests",
 			"io.github.jcondedata.aliveworkplace.test.HomesSpecGameTests",

@@ -1,0 +1,6 @@
+{
+  "dish": "cobblemon:rage_candy_bar",
+  "keep": 64,
+  "when": "order",
+  "order": 500
+}

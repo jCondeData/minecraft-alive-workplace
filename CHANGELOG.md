@@ -8,6 +8,11 @@
   three seconds at each stop, then goes back to the hall for the day. He trades City Plans, Blank Blueprints and
   Village Ledgers and buys paper and books; his level will set how many of his builds may be open at once (1 to 4,
   capped by the village's rank and `stewardMaxOpenBuilds`). New outfit; breaking the hall ends the job; config `steward`.
+- With Cobblemon, the **Camp Cook**: sneak-right-click a villager by a Campfire Pot with Hearty Grains. She cooks in the
+  pot itself (makings in, seasonings on top, lid shut, the pot's own cooking time) from the chest beside it: Poké Snacks
+  and Bait, Aprijuice, Exp. Candy, Ponigiri, stews, curry and more, 16 of each, and the sweets and candies for a
+  Storehouse's stock orders. Her menu is data (`camp_menu/*.json`); her meals feed the village and count for Diet;
+  farmers sow Hearty Grains and Vivichoke. Fire and Normal partners. Config `campCooks` (on).
 - With Cobblemon, the **Berry Breeder**: sneak-right-click a villager by a composter with any Cobblemon berry. Her
   berry book (sneak-right-click her) lists every berry Cobblemon knows (data packs' too): the ones the village has found
   lit, the rest with the pairs that make them. Click one and she works out the chain from the village's berries, plants

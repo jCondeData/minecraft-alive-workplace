@@ -83,7 +83,8 @@ public final class Stations {
 		/** Whether a jobless villager takes this block by themselves (for its first job); if not, only an item gives a job. */
 		public boolean byItself() {
 			return !ONLY_BY_ITEM.contains(block()) && !block().builtInRegistryHolder().is(ModVillagers.FOSSIL_ANALYZER_BLOCK)
-				&& !block().builtInRegistryHolder().is(ModVillagers.HEALING_MACHINE_BLOCK);
+				&& !block().builtInRegistryHolder().is(ModVillagers.HEALING_MACHINE_BLOCK)
+				&& !block().builtInRegistryHolder().is(ModVillagers.CAMPFIRE_POT_BLOCK);
 		}
 	}
 
@@ -113,7 +114,7 @@ public final class Stations {
 	private static final Set<Block> ONLY_BY_ITEM = Set.of(Blocks.CRAFTING_TABLE, Blocks.BEEHIVE, Blocks.JUKEBOX, ModBlocks.MAILBOX);
 	/** The jobs that need Cobblemon (their items are Cobblemon's, or they work with Pokémon). */
 	private static final Set<String> COBBLEMON_JOBS = Set.of("ball_smith", "pokemon_trader", "trainer", "trainer_leader", "tutor",
-		"fossil_scientist", "berry_breeder");
+		"fossil_scientist", "berry_breeder", "camp_cook");
 
 	private static Predicate<ItemStack> any(Item... items) {
 		Set<Item> set = Set.of(items);
@@ -211,7 +212,11 @@ public final class Stations {
 			job(() -> ModVillagers.FOSSIL_SCIENTIST, FossilScientists::isFossil))),
 		new Station(is(ModVillagers.HEALING_MACHINE_POI),
 			() -> BuiltInRegistries.BLOCK.getOptional(ModVillagers.HEALING_MACHINE_BLOCK).orElse(Blocks.AIR), List.of(
-			job(() -> ModVillagers.NURSE, any(Items.HONEY_BOTTLE))))
+			job(() -> ModVillagers.NURSE, any(Items.HONEY_BOTTLE)))),
+		// Cobblemon's Campfire Pot (28.8): Hearty Grains, with Cobblemon and config campCooks on
+		new Station(is(ModVillagers.CAMPFIRE_POT_POI),
+			() -> BuiltInRegistries.BLOCK.getOptional(ModVillagers.CAMPFIRE_POT_BLOCK).orElse(Blocks.AIR), List.of(
+			job(() -> ModVillagers.CAMP_COOK, io.github.jcondedata.aliveworkplace.camp.CampCooks::isGrains)))
 	);
 
 	/**

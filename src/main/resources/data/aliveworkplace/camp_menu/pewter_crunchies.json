@@ -1,0 +1,6 @@
+{
+  "dish": "cobblemon:pewter_crunchies",
+  "keep": 64,
+  "when": "order",
+  "order": 500
+}

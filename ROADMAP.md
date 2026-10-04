@@ -990,7 +990,7 @@ here adds a new kind of speed bonus (the new jobs get the partners' existing one
     full); a jobless villager left by a machine for 2400 ticks doesn't take it;
   - a builder builds both tiers (GameTest), and the renders are in the package;
   - showcase scene `pokemon_center` (stills of both tiers, a GIF of the healing).
-- [ ] **28.8** **The Camp Cook.** Stand a villager by a Campfire Pot (Cobblemon's campfire with a pot on it; POI when
+- [x] **28.8** (review: pending 2026-10-04) **The Camp Cook.** Stand a villager by a Campfire Pot (Cobblemon's campfire with a pot on it; POI when
   Cobblemon registers `cobblemon:campfire`) and sneak-right-click them with Hearty Grains. Never taken by a jobless
   villager. Config `campCooks` (true).
   - She cooks in the pot itself: the makings into its slots and seasonings into its top row through its container (as
@@ -4277,6 +4277,13 @@ item waits.
   build sites going up as dashed white outlines; `CityPlans.Outline` has a `proposal` flag (drawn dashed yellow) for
   27.8 to fill in `CityPlans.screen`. Undo keeps the last 10 changes per hall on the server (not saved), shared by
   everyone editing that plan, so an undo always matches what the hall holds.
+- 2026-10-04 (28.8, decisions; lane b): `asked` dishes in the camp menu name the jobs that ask in `for`; the cook keeps
+  their `keep` while a villager of one of those jobs is within 48 blocks of the pot (fishermen for Poké Bait; the Poké
+  Snack line names `aliveworkplace:habitat_keeper`, so it starts working when 28.10 registers that job; seasoning comes
+  from whatever berries the chests hold, until 28.10 says which ones the keeper wants). Cobblemon's campfire has no
+  unlit state, so "a Fire partner lights the campfire" is the `flames` show on the `cook` cue when she shuts the lid.
+  Order-only dishes go to the Storehouse that ordered them; porters take the cook's dishes past her `keep` to the store.
+  Farmers now sow any crop block whose seed is in `#minecraft:villager_plantable_seeds` (other Cobblemon crops in it too).
 - 2026-10-04 (28.9, decisions; lane b): the breeder's `berry_goal` saves the goal only; the step is worked out afresh
   from what the village has (chests, her bag, her plot), so it never goes stale. "Found" is the hall's
   `berriesFound` plus what the village has now (a village without a hall still lights what it has). Plants of other

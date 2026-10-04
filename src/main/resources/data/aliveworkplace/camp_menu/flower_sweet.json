@@ -1,0 +1,6 @@
+{
+  "dish": "cobblemon:flower_sweet",
+  "keep": 64,
+  "when": "order",
+  "order": 500
+}

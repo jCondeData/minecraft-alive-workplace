@@ -1,0 +1,14 @@
+{
+  "jobs": [
+    "aliveworkplace:camp_cook"
+  ],
+  "types": [
+    "fire"
+  ],
+  "cue": "cook",
+  "animation": "special",
+  "particles": "cobblemon:impact_fire",
+  "sound": "minecraft:item.firecharge.use",
+  "ticks": 60,
+  "effect": "flames"
+}

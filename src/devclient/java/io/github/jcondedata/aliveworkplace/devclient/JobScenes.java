@@ -641,6 +641,21 @@ final class JobScenes {
 			ScreenshotHarness.hoverLookingAt(player, CAMERA, TARGET);
 			return l -> n(ModAttachments.FOSSILS_REVIVED, sci) >= 1;
 		}));
+		SCENES.put("camp_cook", job("the camp cook cooked a Poké Snack in the Campfire Pot", 2400, (level, player) -> {
+			// ROADMAP 28.8: Cobblemon's campfire with a red pot on it, picked with Hearty Grains; the makings of a Poké
+			// Snack in the chest beside it. She fills the pot, shuts the lid, and the snack comes out into the chest.
+			net.minecraft.world.level.block.Block campfire = net.minecraft.core.registries.BuiltInRegistries.BLOCK.get(
+				io.github.jcondedata.aliveworkplace.registry.ModVillagers.CAMPFIRE_POT_BLOCK);
+			level.setBlockAndUpdate(STATION, campfire.defaultBlockState());
+			if (level.getBlockEntity(STATION) instanceof com.cobblemon.mod.common.block.entity.CampfireBlockEntity pot) {
+				pot.setPotItem(new ItemStack(cobblemonItem("campfire_pot_red")));
+			}
+			Villager cook = picked(level, player, STATION, level.getBlockState(STATION), cobblemonItem("hearty_grains"));
+			Container c = chest(level, chestPos(), new ItemStack(cobblemonItem("moomoo_milk"), 3), new ItemStack(Items.HONEY_BOTTLE, 2),
+				new ItemStack(cobblemonItem("vivichoke"), 1), new ItemStack(cobblemonItem("hearty_grains"), 3),
+				new ItemStack(cobblemonItem("oran_berry"), 3));
+			return l -> c.countItem(cobblemonItem("poke_snack")) > 0 && n(ModAttachments.DISHES_COOKED, cook) >= 1;
+		}));
 		SCENES.put("berry_breeder", new Job("the berry breeder bred a Lum Berry from Oran and Cheri", 2400, CAMERA, TARGET, (level, player) -> {
 			// ROADMAP 28.9: a composter picked with an Oran Berry; Oran, Cheri and Surprise Mulch in the chest; two rows of
 			// farmland east of the composter (x 2 and 3), so the parents go in side by side; a hall to note the find.

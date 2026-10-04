@@ -18,6 +18,7 @@
 			"io.github.jcondedata.aliveworkplace.compat.StationsCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.PokemonCenterCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.BerryBreederCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.CampCookCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.PokemonFeaturesCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.PartnerShowsCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.PartnersAtWorkCompatTests",

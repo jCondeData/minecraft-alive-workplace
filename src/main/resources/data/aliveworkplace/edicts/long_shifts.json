@@ -1,0 +1,10 @@
+{
+  "icon": "minecraft:clock",
+  "name": {"translate": "edict.aliveworkplace.long_shifts"},
+  "description": {"translate": "edict.aliveworkplace.long_shifts.desc"},
+  "order": 1,
+  "boost": [{"type": "aliveworkplace:work_pace", "percent": 20}],
+  "cost": [{"type": "aliveworkplace:mood", "points": -10, "reason": {"translate": "mood.aliveworkplace.reason.long_shifts"}}],
+  "excludes": [],
+  "enabled": true
+}

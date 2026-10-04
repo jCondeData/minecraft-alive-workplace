@@ -94,6 +94,10 @@ public final class WorkplaceConfig {
 	 * research, traits, mood, edicts...). Sickness and bad moods still slow them after that; their level doesn't count.
 	 */
 	public int maxWorkPace = 200;
+	/** Villages' owners proclaim edicts at the hall (off: none can be, and those in force do nothing but stay saved). */
+	public boolean villageEdicts = true;
+	/** Days an edict stays in force before it can be lifted. */
+	public int edictMinDays = 3;
 	/** Days in each of the village calendar's four seasons (each has a festival on its middle day). */
 	public int seasonDays = 16;
 	/** Hundredths of an emerald each worker brings the treasury a day (before wellbeing and rank). */
@@ -180,6 +184,7 @@ public final class WorkplaceConfig {
 		"villageHallRadius", 16, 160,
 		"villageGrowthCap", 0, 500,
 		"maxWorkPace", 100, 400,
+		"edictMinDays", 0, 30,
 		"seasonDays", 1, 120,
 		"treasuryPerWorker", 0, 500,
 		"dollarsPerEmerald", 1, 10_000);
@@ -266,6 +271,8 @@ public final class WorkplaceConfig {
 		FisherWork.RADIUS = fisherRadius;
 		Partners.RADIUS = partnerRadius;
 		io.github.jcondedata.aliveworkplace.work.Pace.MAX_PERCENT = maxWorkPace;
+		io.github.jcondedata.aliveworkplace.hall.Edicts.setEnabled(villageEdicts);
+		io.github.jcondedata.aliveworkplace.hall.Edicts.MIN_DAYS = edictMinDays;
 		io.github.jcondedata.aliveworkplace.explore.ExplorerWork.RANGE = explorerRange;
 		PostOffice.ROUND = postmanRange;
 		// Gametests run side by side: workers sharing chests across them would mix the tests up. The village tests

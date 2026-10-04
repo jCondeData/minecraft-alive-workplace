@@ -101,6 +101,9 @@ public final class Pace {
 	public static final Source EXPEDITIONS = register(new Source("expeditions", Kind.BONUS,
 		v -> v.getVillagerData().getProfession() == VillagerProfession.CARTOGRAPHER || v.getVillagerData().getProfession() == ModVillagers.NETHERWORKER
 			? expeditions(Research.level(v, Research.Topic.EXPEDITIONS)) : 1f));
+	/** The edicts in force in the villager's village ({@code work_pace} effects, 30.3): "the Long Shifts edict". */
+	public static final Source EDICTS = register(new Source("edicts", Kind.BONUS,
+		io.github.jcondedata.aliveworkplace.hall.CivicEffects::pace, io.github.jcondedata.aliveworkplace.hall.CivicEffects::paceLabel));
 	public static final Source ILL = register(new Source("ill", Kind.PENALTY, Sickness::pace));
 	public static final Source UNHAPPY = register(new Source("unhappy", Kind.PENALTY, Moods::pace));
 	public static final Source LAZY = register(new Source("lazy", Kind.PENALTY, Traits::pace));

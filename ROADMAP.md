@@ -1813,7 +1813,7 @@ the Village Hall (`VillageNeeds`, `VillageQuests`, `VillageRanks`, `Festivals`, 
     or `Partners.factor` today gets its pace from `Pace` (a test per job family: builder, miner, crafter, explorer,
     teacher, scholar, rancher);
   - showcase scene `pace`: a capped builder's status line (its check: the line says "at the cap").
-- [ ] **30.3** **Edicts, and Long Shifts.** The engine and the first edict:
+- [x] **30.3** (review: pending 2026-10-04) **Edicts, and Long Shifts.** The engine and the first edict:
   - `hall/Edicts` loads `data/aliveworkplace/edicts/*.json` (a reload listener through `Platform`); a data pack can
     add edicts or switch ours off (`"enabled": false`); ours take their texts from the lang file, a data pack's may
     give plain text;

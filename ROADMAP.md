@@ -902,7 +902,7 @@ here adds a new kind of speed bonus (the new jobs get the partners' existing one
   - a display left by a cut-off show is removed when its chunk loads (GameTest); no show runs with no player near, or
     with `partnerShows` off;
   - showcase scene `partners_engine`.
-- [x] **28.4** (review: pending 2026-10-04) **Partners at work: building and the land.** Shows (one data file each, cued from the job's own code):
+- [x] **28.4** (approved 2026-10-04) **Partners at work: building and the land.** Shows (one data file each, cued from the job's own code):
   - Builder + Fighting: shoulders the logs or planks the builder fetches from the supply chest (cue `fetch`) and punches
     each block home with a physical move as it's placed (cue `place`); + Rock: carries the stone; + Steel: carries the
     iron parts (bars, doors, chains, lanterns).

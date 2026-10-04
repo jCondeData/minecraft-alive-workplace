@@ -1,0 +1,9 @@
+{
+  "dish": "cobblemon:poke_snack",
+  "keep": 32,
+  "when": "asked",
+  "for": [
+    "aliveworkplace:habitat_keeper"
+  ],
+  "order": 5
+}

@@ -34,6 +34,7 @@ public final class ModTrades {
 		chefTrades();
 		fossilScientistTrades();
 		berryBreederTrades();
+		campCookTrades();
 		Platform.get().addTrades(ModVillagers.BARD, 1, offers -> {
 			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 2), new ItemStack(Items.NOTE_BLOCK, 2), 12, 2, 0.05f));
 			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.STRING, 16), new ItemStack(Items.EMERALD), 16, 2, 0.05f));
@@ -535,6 +536,34 @@ public final class ModTrades {
 			.getOptional(net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("cobblemon", item))
 			.map(i -> new MerchantOffer(new ItemCost(Items.EMERALD, emeralds), new ItemStack(i, count), uses, xp, 0.05f))
 			.orElse(null);
+	}
+
+	/** The Aprijuice colours (Cobblemon's {@code aprijuice_<colour>}). */
+	private static final String[] APRIJUICE = {"black", "blue", "green", "pink", "red", "white", "yellow"};
+
+	/**
+	 * Camp Cooks (28.8; Cobblemon only): Poké Bait and Poké Snacks (Novice), Aprijuice (Apprentice), Exp. Candy S and M
+	 * (Journeyman), Lumiose Galette and Big Malasada (Expert), Exp. Candy L (Master).
+	 */
+	private static void campCookTrades() {
+		Platform.get().addTrades(ModVillagers.CAMP_COOK, 1, offers -> {
+			offers.add((entity, random) -> cobblemon("poke_bait", 2, 2, 12, 1));
+			offers.add((entity, random) -> cobblemon("poke_snack", 3, 1, 12, 2));
+		});
+		Platform.get().addTrades(ModVillagers.CAMP_COOK, 2, offers -> {
+			offers.add((entity, random) -> cobblemon("aprijuice_" + APRIJUICE[random.nextInt(APRIJUICE.length)], 3, 1, 12, 5));
+			offers.add((entity, random) -> cobblemon("aprijuice_" + APRIJUICE[random.nextInt(APRIJUICE.length)], 3, 1, 12, 5));
+		});
+		Platform.get().addTrades(ModVillagers.CAMP_COOK, 3, offers -> {
+			offers.add((entity, random) -> cobblemon("exp_candy_s", 4, 1, 12, 10));
+			offers.add((entity, random) -> cobblemon("exp_candy_m", 8, 1, 8, 15));
+		});
+		Platform.get().addTrades(ModVillagers.CAMP_COOK, 4, offers -> {
+			offers.add((entity, random) -> cobblemon("lumiose_galette", 6, 1, 8, 20));
+			offers.add((entity, random) -> cobblemon("big_malasada", 6, 1, 8, 20));
+		});
+		Platform.get().addTrades(ModVillagers.CAMP_COOK, 5, offers ->
+			offers.add((entity, random) -> cobblemon("exp_candy_l", 16, 1, 4, 30)));
 	}
 
 	private static void nurseTrades() {

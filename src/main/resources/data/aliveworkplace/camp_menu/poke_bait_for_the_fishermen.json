@@ -1,0 +1,9 @@
+{
+  "dish": "cobblemon:poke_bait",
+  "keep": 32,
+  "when": "asked",
+  "for": [
+    "minecraft:fisherman"
+  ],
+  "order": 6
+}

@@ -1,0 +1,29 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "cobblemon:ponigiri",
+      "required": false
+    },
+    {
+      "id": "cobblemon:leek_and_potato_stew",
+      "required": false
+    },
+    {
+      "id": "cobblemon:smoked_tail_curry",
+      "required": false
+    },
+    {
+      "id": "cobblemon:open_faced_sandwich",
+      "required": false
+    },
+    {
+      "id": "cobblemon:vivichoke_dip",
+      "required": false
+    },
+    {
+      "id": "cobblemon:sinister_tea",
+      "required": false
+    }
+  ]
+}

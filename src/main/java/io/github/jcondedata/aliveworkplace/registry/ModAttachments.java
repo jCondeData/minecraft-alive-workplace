@@ -151,6 +151,9 @@ public final class ModAttachments {
 	/** The Berry Breeder's plot, marked with a Field Marker (absent: the farmland round her composter). */
 	public static final Attachment<io.github.jcondedata.aliveworkplace.farm.FieldJob> BERRY_PLOT = Attachment.saved("berry_plot", io.github.jcondedata.aliveworkplace.farm.FieldJob.CODEC);
 
+	/** How many dishes a Camp Cook has cooked (shown above her head; ROADMAP 28.8). */
+	public static final Attachment<Integer> DISHES_COOKED = Attachment.saved("dishes_cooked", com.mojang.serialization.Codec.INT);
+
 	/** How many berries a Berry Breeder has picked (shown above her head). */
 	public static final Attachment<Integer> BERRIES_PICKED = Attachment.saved("berries_picked", com.mojang.serialization.Codec.INT);
 

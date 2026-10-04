@@ -342,6 +342,7 @@ placed keep working, so old worlds are fine.
 | Tinkerer | Smithing Table + redstone | coal (iron ingots to mend golems) | nothing (uses the builders' ore) |
 | Composter | Composter + bone meal | scraps: seeds, saplings, leaves, crop waste, rotten flesh | nothing |
 | Berry Breeder (with Cobblemon) | Composter + any Cobblemon berry | berries, Growth and Surprise Mulch | sneak-right-click: pick a goal in the berry book (a Field Marker for a plot of her own) |
+| Camp Cook (with Cobblemon) | Campfire Pot (Cobblemon's campfire with a pot on it) + Hearty Grains | the makings of her dishes (Hearty Grains, Vivichoke, apricorns, milk, honey, berries for seasoning) | nothing (a Storehouse's stock orders for the order-only treats) |
 | Netherworker | Cartography Table + netherrack | food (a pickaxe, an axe, a sword, a chestplate, fire resistance) | nothing (a Nether portal within 32 blocks) |
 | Undertaker | Brewing Stand + a golden apple, an enchanted golden apple or a totem | golden apples, healing potions or totems | nothing (graves within 32 blocks) |
 | Innkeeper | Shop Counter + a bed | — | nothing (hire the travellers who come to stay) |
@@ -988,6 +989,23 @@ scientists at Journeyman level sell the **Research Lab** blueprint (a stone lab 
 show: hand the villager there a fossil and they become its scientist; the **Research Lab II** adds a museum hall with
 a big skeleton).
 
+## Camp Cooks (with Cobblemon)
+Put one of Cobblemon's **Campfire Pots** on a campfire, put a chest beside it, stand a villager by the pot and
+sneak-right-click them with **Hearty Grains**: they become a **Camp Cook** (a jobless villager never takes your pot by
+themselves). She cooks in the pot itself, the way you do: the makings from the chest into its grid, seasonings (berries,
+for Aprijuice that comes out Tasty or Delicious) into its top row, the lid shut, the pot's own cooking time, then the
+dish into the chest. She keeps 16 of each of these in the chest: Poké Snacks, Poké Bait, Aprijuice in all seven
+colours, Exp. Candy XS, S and M, Ponigiri, Leek and Potato Stew, Smoked-Tail Curry, Open-Faced Sandwich, Vivichoke Dip
+and Sinister Tea. With fishermen at work nearby she keeps more Poké Bait (and Poké Snacks for a Habitat Keeper). The
+sweets and treats (Big Malasada, Casteliacone, Lava Cookies, the seven Sweets, the mochi, the EV candies, potions and
+status heals...) she only makes for a **Storehouse's stock order**, and takes them to its chests. Her meals count as
+meals in the village store, so villagers eat them and they add to a varied diet, and village farmers sow and harvest
+Hearty Grains and Vivichoke from the chests' seeds. Her menu is data: one file per dish in
+`data/<namespace>/camp_menu/` (`dish`, `keep`, `when`: `always`, `asked` with `for` the jobs that ask, or `order`), so a
+data pack can add or change dishes. She sells Poké Bait and Poké Snacks, then Aprijuice, Exp. Candy S and M, Lumiose
+Galette and Big Malasada, and at Master Exp. Candy L; Fire and Normal Pokémon help her, and a Fire partner breathes on
+the campfire while it cooks.
+
 ## Pokémon Traders (with Cobblemon)
 Stand a villager by a **Shop Counter** and sneak-right-click them with a **Poké Ball**: they become a **Pokémon
 Trader**. Right-click them with an empty hand (sneak to buy Poké Balls and candies instead) to see today's
@@ -1115,6 +1133,7 @@ saves the file and puts the settings into effect in your own worlds (a dedicated
 | `partnerShows` | true | Pokémon pastured near a workstation are seen helping: they walk over to the work, carry things and lend a hand (with Cobblemon) |
 | `nurseHealingMachine` | true | a nurse at Cobblemon's Healing Machine puts your team in it to heal them (free) and keeps it charged while on shift; off, she heals by hand |
 | `berryBreeders` | true | with Cobblemon, a berry makes a villager at a composter a Berry Breeder, who breeds new berries from the village's own; off, no Berry Breeder job |
+| `campCooks` | true | with Cobblemon, Hearty Grains make a villager at a Campfire Pot a Camp Cook, who cooks Cobblemon dishes in the pot; off, no Camp Cook job |
 | `seasonDays` | 16 | days in each of the village calendar's four seasons (each season's festival is on its middle day) |
 | `treasuryPerWorker` | 20 | what each worker brings the treasury a day, in hundredths of an emerald, before wellbeing and rank |
 | `villageProtection` | true | a Village Hall's owner may protect the village from other players (shift-click the hall's name tag; off until they do) |

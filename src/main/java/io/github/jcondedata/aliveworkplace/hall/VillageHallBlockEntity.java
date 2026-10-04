@@ -150,6 +150,16 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 		setChanged();
 	}
 
+	/** The day (by {@link Chronicle#day}) the village was last raided; -100 if never. */
+	public long lastRaidDay() {
+		return lastRaidDay;
+	}
+
+	public void setLastRaidDay(long day) {
+		this.lastRaidDay = day;
+		setChanged();
+	}
+
 	public io.github.jcondedata.aliveworkplace.research.Research.State research() {
 		return research;
 	}

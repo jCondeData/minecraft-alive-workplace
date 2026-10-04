@@ -2,6 +2,7 @@ package io.github.jcondedata.aliveworkplace.city;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import io.github.jcondedata.aliveworkplace.AliveWorkplace;
 import io.github.jcondedata.aliveworkplace.blueprint.Blueprint;
 import io.github.jcondedata.aliveworkplace.blueprint.BlueprintData;
 import io.github.jcondedata.aliveworkplace.blueprint.BlueprintLibrary;
@@ -21,6 +22,8 @@ import io.github.jcondedata.aliveworkplace.hall.VillageHalls;
 import io.github.jcondedata.aliveworkplace.hall.VillageProtection;
 import io.github.jcondedata.aliveworkplace.mc.Chat;
 import io.github.jcondedata.aliveworkplace.mc.Ids;
+import io.github.jcondedata.aliveworkplace.research.Research;
+import io.github.jcondedata.aliveworkplace.research.ScholarWork;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -63,12 +66,20 @@ public final class StewardDesk {
 	public static final int SHOW_TICKS = 600;
 	/** Materials listed on a proposal. */
 	public static final int MATERIALS = 5;
+	/** The blueprint a jobs proposal and a research proposal stand for: none (27.9). */
+	public static final ResourceLocation JOBS = AliveWorkplace.id("steward/jobs");
+	public static final ResourceLocation RESEARCH = AliveWorkplace.id("steward/research");
 	/** Config {@code stewardSelfRun}: off, every village asks first whatever its mode. */
 	public static boolean SELF_RUN = true;
 
-	/** A proposal: a wish with where it goes. {@code searching}: "Another spot" asked, the next plot not found yet. */
+	/**
+	 * A proposal: a wish with where it goes. {@code searching}: "Another spot" asked, the next plot not found yet. A
+	 * proposal with {@code jobs} gives jobless villagers work (27.9), one with a {@code topic} picks the next research
+	 * (27.9); both stand at the hall with {@link #JOBS} or {@link #RESEARCH} for a blueprint.
+	 */
 	public record Proposal(int id, ResourceLocation rule, boolean upgrade, ResourceLocation blueprint, BlueprintData.Placement placement,
-						   String zone, String kind, String why, List<Long> numbers, long day, int skip, boolean searching) {
+						   String zone, String kind, String why, List<Long> numbers, long day, int skip, boolean searching,
+						   List<StewardJobs.Job> jobs, String topic) {
 		public static final Codec<Proposal> CODEC = RecordCodecBuilder.create(i -> i.group(
 			Codec.INT.fieldOf("id").forGetter(Proposal::id),
 			ResourceLocation.CODEC.fieldOf("rule").forGetter(Proposal::rule),
@@ -81,11 +92,27 @@ public final class StewardDesk {
 			Codec.LONG.listOf().optionalFieldOf("numbers", List.of()).forGetter(Proposal::numbers),
 			Codec.LONG.optionalFieldOf("day", 0L).forGetter(Proposal::day),
 			Codec.INT.optionalFieldOf("skip", 0).forGetter(Proposal::skip),
-			Codec.BOOL.optionalFieldOf("searching", false).forGetter(Proposal::searching)
+			Codec.BOOL.optionalFieldOf("searching", false).forGetter(Proposal::searching),
+			StewardJobs.Job.CODEC.listOf().optionalFieldOf("jobs", List.of()).forGetter(Proposal::jobs),
+			Codec.STRING.optionalFieldOf("topic", "").forGetter(Proposal::topic)
 		).apply(i, Proposal::new));
 
 		public Proposal {
 			numbers = List.copyOf(numbers);
+			jobs = List.copyOf(jobs);
+		}
+
+		/** A build or an upgrade (not jobs or research). */
+		public boolean isBuild() {
+			return jobs.isEmpty() && topic.isEmpty();
+		}
+
+		public boolean isJobs() {
+			return !jobs.isEmpty();
+		}
+
+		public Optional<Research.Topic> researchTopic() {
+			return topic.isEmpty() ? Optional.empty() : StewardRules.topicOf(topic);
 		}
 
 		/** "3 villagers have no bed". */
@@ -93,25 +120,37 @@ public final class StewardDesk {
 			return why.isEmpty() ? Component.empty() : Component.translatable(why, numbers.toArray());
 		}
 
-		/** "Stone House (Cherry)". */
+		/** "Stone House (Cherry)", "Give 3 villagers jobs", "Research Fortification". */
 		public Component name() {
+			if (isJobs()) {
+				return StewardJobs.title(jobs.size());
+			}
+			if (!topic.isEmpty()) {
+				return Component.translatable("steward.aliveworkplace.research.title",
+					researchTopic().map(Research.Topic::title).orElse(Component.literal(topic)));
+			}
 			return Blueprints.displayName(blueprint);
 		}
 
 		Proposal with(ResourceLocation blueprint, BlueprintData.Placement placement, int skip, boolean searching) {
-			return new Proposal(id, rule, upgrade, blueprint, placement, zone, kind, why, numbers, day, skip, searching);
+			return new Proposal(id, rule, upgrade, blueprint, placement, zone, kind, why, numbers, day, skip, searching, jobs, topic);
 		}
 	}
 
-	/** The desk saved on the hall: proposals, rules declined until a day, the last day told and run, the next id. */
-	public record State(List<Proposal> proposals, Map<String, Long> declined, long told, long ran, int next) {
-		public static final State EMPTY = new State(List.of(), Map.of(), -1, -1, 1);
+	/**
+	 * The desk saved on the hall: proposals, rules declined until a day, the last day told and run, the next id, and the
+	 * last day the jobs were planned and a research topic picked (27.9).
+	 */
+	public record State(List<Proposal> proposals, Map<String, Long> declined, long told, long ran, int next, long jobsDay, long researchDay) {
+		public static final State EMPTY = new State(List.of(), Map.of(), -1, -1, 1, -1, -1);
 		public static final Codec<State> CODEC = RecordCodecBuilder.create(i -> i.group(
 			Proposal.CODEC.listOf().optionalFieldOf("proposals", List.of()).forGetter(State::proposals),
 			Codec.unboundedMap(Codec.STRING, Codec.LONG).optionalFieldOf("declined", Map.of()).forGetter(State::declined),
 			Codec.LONG.optionalFieldOf("told", -1L).forGetter(State::told),
 			Codec.LONG.optionalFieldOf("ran", -1L).forGetter(State::ran),
-			Codec.INT.optionalFieldOf("next", 1).forGetter(State::next)
+			Codec.INT.optionalFieldOf("next", 1).forGetter(State::next),
+			Codec.LONG.optionalFieldOf("jobs_day", -1L).forGetter(State::jobsDay),
+			Codec.LONG.optionalFieldOf("research_day", -1L).forGetter(State::researchDay)
 		).apply(i, State::new));
 
 		public State {
@@ -124,13 +163,40 @@ public final class StewardDesk {
 		}
 
 		State withProposals(List<Proposal> list) {
-			return new State(list, declined, told, ran, next);
+			return new State(list, declined, told, ran, next, jobsDay, researchDay);
+		}
+
+		State withDeclined(Map<String, Long> map) {
+			return new State(proposals, map, told, ran, next, jobsDay, researchDay);
+		}
+
+		State withTold(long day) {
+			return new State(proposals, declined, day, ran, next, jobsDay, researchDay);
+		}
+
+		State withRan(long day) {
+			return new State(proposals, declined, told, day, next, jobsDay, researchDay);
+		}
+
+		State withJobsDay(long day) {
+			return new State(proposals, declined, told, ran, next, day, researchDay);
+		}
+
+		State withResearchDay(long day) {
+			return new State(proposals, declined, told, ran, next, jobsDay, day);
+		}
+
+		/** {@code list} with one more proposal, and the next id after it. */
+		State adding(Proposal proposal) {
+			List<Proposal> list = new ArrayList<>(proposals);
+			list.add(proposal);
+			return new State(list, declined, told, ran, next + 1, jobsDay, researchDay);
 		}
 	}
 
 	/** What happened to an approval. */
 	public enum Outcome {
-		STARTED, QUEUED, NOT_ALLOWED, GONE, NO_STEWARD, NO_BUILDER, FULL, OVERLAPS, SEARCHING;
+		STARTED, QUEUED, NOT_ALLOWED, GONE, NO_STEWARD, NO_BUILDER, FULL, OVERLAPS, SEARCHING, JOBS_TAKEN, RESEARCHING;
 
 		public boolean ok() {
 			return this == STARTED || this == QUEUED;
@@ -198,10 +264,23 @@ public final class StewardDesk {
 			return Optional.empty();
 		}
 		Proposal proposal = new Proposal(state.next(), wish.rule(), upgrade, blueprint, placement, zone, wish.effect().zone().orElse(""),
-			wish.why(), wish.numbers(), day, 0, false);
-		List<Proposal> list = new ArrayList<>(state.proposals());
-		list.add(proposal);
-		save(level, hall, new State(list, state.declined(), state.told(), state.ran(), state.next() + 1));
+			wish.why(), wish.numbers(), day, 0, false, List.of(), "");
+		save(level, hall, state.adding(proposal));
+		return Optional.of(proposal);
+	}
+
+	/** {@link #offer} for jobs or research: no blueprint, at the hall. */
+	static Optional<Proposal> offerOther(ServerLevel level, BlockPos hall, ResourceLocation rule, String why, List<Long> numbers,
+										 List<StewardJobs.Job> jobs, String topic) {
+		State state = of(level, hall);
+		long day = StewardWishes.day(level);
+		if (declined(state, rule, day) || state.proposals().size() >= MAX_PROPOSALS
+			|| state.proposals().stream().anyMatch(p -> p.rule().equals(rule))) {
+			return Optional.empty();
+		}
+		Proposal proposal = new Proposal(state.next(), rule, false, jobs.isEmpty() ? RESEARCH : JOBS,
+			new BlueprintData.Placement(Ids.of(level.dimension()), hall, Rotation.NONE, Mirror.NONE), "", "", why, numbers, day, 0, false, jobs, topic);
+		save(level, hall, state.adding(proposal));
 		return Optional.of(proposal);
 	}
 
@@ -222,7 +301,7 @@ public final class StewardDesk {
 			}
 		});
 		if (kept.size() != state.proposals().size() || declined.size() != state.declined().size()) {
-			save(level, hall, new State(kept, declined, state.told(), state.ran(), state.next()));
+			save(level, hall, state.withProposals(kept).withDeclined(declined));
 		}
 	}
 
@@ -238,7 +317,7 @@ public final class StewardDesk {
 		}
 		Map<String, Long> declined = new HashMap<>(state.declined());
 		declined.put(proposal.get().rule().toString(), StewardWishes.day(level) + DECLINE_DAYS);
-		save(level, hall, new State(state.proposals().stream().filter(p -> p.id() != id).toList(), declined, state.told(), state.ran(), state.next()));
+		save(level, hall, state.withProposals(state.proposals().stream().filter(p -> p.id() != id).toList()).withDeclined(declined));
 		return true;
 	}
 
@@ -260,7 +339,7 @@ public final class StewardDesk {
 		}
 		State state = of(level, hall);
 		Optional<Proposal> proposal = state.get(id);
-		if (proposal.isEmpty() || proposal.get().upgrade()) {
+		if (proposal.isEmpty() || proposal.get().upgrade() || !proposal.get().isBuild()) {
 			return false;
 		}
 		Proposal p = proposal.get();
@@ -298,7 +377,7 @@ public final class StewardDesk {
 			return false;
 		}
 		Optional<Proposal> proposal = of(level, hall).get(id);
-		if (proposal.isEmpty()) {
+		if (proposal.isEmpty() || !proposal.get().isBuild()) {
 			return false;
 		}
 		Proposal p = proposal.get();
@@ -393,6 +472,12 @@ public final class StewardDesk {
 		if (steward == null) {
 			return Outcome.NO_STEWARD;
 		}
+		if (proposal.isJobs()) {
+			return approveJobs(level, hall, steward, proposal);
+		}
+		if (!proposal.topic().isEmpty()) {
+			return approveResearch(level, hall, entity, steward, proposal);
+		}
 		if (openSites(level, hall).size() >= Stewards.maxOpenBuilds(level, steward)) {
 			return Outcome.FULL;
 		}
@@ -428,12 +513,53 @@ public final class StewardDesk {
 		return busy ? Outcome.QUEUED : Outcome.STARTED;
 	}
 
+	/** The jobs that could be given: gone from the desk, the wish carried out; none left (all taken meanwhile): kept. */
+	private static Outcome approveJobs(ServerLevel level, BlockPos hall, Villager steward, Proposal proposal) {
+		List<StewardJobs.Job> given = StewardJobs.give(level, steward, proposal.jobs());
+		State state = of(level, hall);
+		if (given.isEmpty()) {
+			save(level, hall, state.withProposals(state.proposals().stream().filter(p -> p.id() != proposal.id()).toList()));
+			return Outcome.JOBS_TAKEN;
+		}
+		save(level, hall, state.withProposals(state.proposals().stream().filter(p -> p.id() != proposal.id()).toList()));
+		StewardWishes.carriedOut(level, hall, proposal.rule());
+		Chronicle.record(level, hall, Chronicle.Kind.PLANS, Component.translatable("chronicle.aliveworkplace.plans_jobs",
+			steward.getDisplayName(), StewardJobs.list(level, hall, given)));
+		return Outcome.STARTED;
+	}
+
+	/** The topic chosen for the scholars, if nothing else is being researched and it can still be taken up. */
+	private static Outcome approveResearch(ServerLevel level, BlockPos hall, VillageHallBlockEntity entity, Villager steward, Proposal proposal) {
+		Research.State research = entity.research();
+		Optional<Research.Topic> topic = proposal.researchTopic();
+		State state = of(level, hall);
+		if (research.currentTopic() != null) {
+			return Outcome.RESEARCHING;
+		}
+		save(level, hall, state.withProposals(state.proposals().stream().filter(p -> p.id() != proposal.id()).toList()));
+		if (topic.isEmpty() || !research.available(topic.get())) {
+			return Outcome.GONE;
+		}
+		entity.setResearch(research.choose(topic.get()));
+		Research.forget();
+		StewardWishes.carriedOut(level, hall, proposal.rule());
+		Chronicle.record(level, hall, Chronicle.Kind.PLANS, Component.translatable("chronicle.aliveworkplace.plans_research",
+			steward.getDisplayName(), topic.get().title()));
+		return Outcome.STARTED;
+	}
+
+	/** What a proposal is called in the morning's line: a build's name, or the jobs with who goes where. */
+	static Component told(ServerLevel level, BlockPos hall, Proposal p) {
+		return p.isJobs() ? StewardJobs.line(level, hall, p.jobs()) : p.name();
+	}
+
 	/** Approves every proposal it can, in order; the names of those started or queued. */
 	public static List<Component> approveAll(ServerLevel level, BlockPos hall, @Nullable ServerPlayer player) {
 		List<Component> started = new ArrayList<>();
 		for (Proposal p : of(level, hall).proposals()) {
+			Component name = told(level, hall, p);
 			if (approve(level, hall, player, p.id()).ok()) {
-				started.add(p.name());
+				started.add(name);
 			}
 		}
 		return started;
@@ -482,6 +608,8 @@ public final class StewardDesk {
 					continue;
 				}
 				result.get().ifPresent(plot -> offer(level, hall, wish, plot.blueprint(), plot.placement(), plot.zone(), false));
+			} else if (effect.kind() == StewardRules.Kind.ASSIGN_JOBS) {
+				offerJobs(level, hall, wish, day);
 			} else if (effect.kind() == StewardRules.Kind.UPGRADE) {
 				upgradeFor(level, hall, effect.blueprint()).ifPresent(f -> {
 					if (upgrading.putIfAbsent(f.structure(), true) == null) {
@@ -491,24 +619,99 @@ public final class StewardDesk {
 			}
 		}
 		State state = of(level, hall);
-		if (state.next() != before && state.told() != day && !runsItself(level, hall)) {
-			ServerPlayer owner = owner(level, hall);
-			if (owner != null) {
-				Chat.chat(owner, Component.translatable("message.aliveworkplace.steward.desk.new", steward.getDisplayName(),
-					VillageHalls.name(level, hall), state.proposals().size()).withStyle(ChatFormatting.GOLD));
-			}
-			state = of(level, hall);
-			save(level, hall, new State(state.proposals(), state.declined(), day, state.ran(), state.next()));
+		if (state.next() != before) {
+			tell(level, hall, steward);
 		}
 		if (runsItself(level, hall) && !searching && of(level, hall).ran() != day) {
 			List<Component> started = approveAll(level, hall, null);
 			state = of(level, hall);
-			save(level, hall, new State(state.proposals(), state.declined(), state.told(), day, state.next()));
+			save(level, hall, state.withRan(day));
 			ServerPlayer owner = owner(level, hall);
 			if (owner != null && !started.isEmpty()) {
 				Chat.chat(owner, Component.translatable("message.aliveworkplace.steward.desk.ran", steward.getDisplayName(),
 					VillageHalls.name(level, hall), list(started)).withStyle(ChatFormatting.GOLD));
 			}
+		}
+	}
+
+	/** Once a morning, unless he runs the village himself: tells the owner there are new proposals on the desk. */
+	static void tell(ServerLevel level, BlockPos hall, Villager steward) {
+		State state = of(level, hall);
+		long day = StewardWishes.day(level);
+		if (state.told() == day || runsItself(level, hall)) {
+			return;
+		}
+		ServerPlayer owner = owner(level, hall);
+		if (owner != null) {
+			Chat.chat(owner, Component.translatable("message.aliveworkplace.steward.desk.new", steward.getDisplayName(),
+				VillageHalls.name(level, hall), state.proposals().size()).withStyle(ChatFormatting.GOLD));
+		}
+		save(level, hall, of(level, hall).withTold(day));
+	}
+
+	/**
+	 * {@code assign_jobs} (27.9), once a morning: the morning's jobs ({@link StewardJobs#plan}) as one proposal, which Run
+	 * the village approves with the rest; jobs with no free block go to 27.11 ({@link StewardJobs#WORKPLACE_WANTED}).
+	 */
+	static void offerJobs(ServerLevel level, BlockPos hall, StewardWishes.Wish wish, long day) {
+		State state = of(level, hall);
+		if (state.jobsDay() == day || declined(state, wish.rule(), day) || state.proposals().stream().anyMatch(p -> p.rule().equals(wish.rule()))) {
+			return;
+		}
+		save(level, hall, state.withJobsDay(day));
+		StewardJobs.Plan plan = StewardJobs.plan(level, hall);
+		plan.wanted().forEach(job -> StewardJobs.WORKPLACE_WANTED.want(level, hall, job));
+		if (!plan.jobs().isEmpty()) {
+			offerOther(level, hall, wish.rule(), wish.why(), wish.numbers(), plan.jobs(), "");
+		}
+	}
+
+	/**
+	 * {@link ScholarWork#IDLE}: a scholar works and nothing is being researched. With a {@code research} wish today, the
+	 * Steward picks the next topic ({@link StewardResearch#pick}): himself in Run the village, else as a proposal.
+	 */
+	public static void scholarIdle(ServerLevel level, Villager scholar, BlockPos hall) {
+		if (!(level.getBlockEntity(hall) instanceof VillageHallBlockEntity entity) || mode(level, hall) == CityPlan.Mode.REST
+			|| entity.research().currentTopic() != null) {
+			return;
+		}
+		long day = StewardWishes.day(level);
+		State state = of(level, hall);
+		StewardWishes.State wishes = StewardWishes.of(level, hall);
+		if (state.researchDay() == day || wishes.day() != day) {
+			return;
+		}
+		Optional<StewardWishes.Wish> wish = wishes.wishes().stream()
+			.filter(w -> w.effect().kind() == StewardRules.Kind.RESEARCH && !declined(state, w.rule(), day))
+			.findFirst(); // highest priority first
+		if (wish.isEmpty() || state.proposals().stream().anyMatch(p -> !p.topic().isEmpty())) {
+			return;
+		}
+		Villager steward = Stewards.stewardOf(level, hall);
+		if (steward == null) {
+			return;
+		}
+		save(level, hall, state.withResearchDay(day));
+		Optional<StewardResearch.Pick> pick = StewardResearch.pick(entity.research(), StewardResearch.village(level, hall),
+			wish.get().effect().topic().flatMap(StewardRules::topicOf));
+		if (pick.isEmpty()) {
+			return;
+		}
+		Optional<Proposal> proposal = offerOther(level, hall, wish.get().rule(), pick.get().why(), List.of(pick.get().number()), List.of(),
+			pick.get().topic().key());
+		if (proposal.isEmpty()) {
+			return;
+		}
+		if (runsItself(level, hall)) {
+			if (approve(level, hall, null, proposal.get().id()).ok()) {
+				ServerPlayer owner = owner(level, hall);
+				if (owner != null) {
+					Chat.chat(owner, Component.translatable("message.aliveworkplace.steward.research.chosen", steward.getDisplayName(),
+						VillageHalls.name(level, hall), pick.get().topic().title()).withStyle(ChatFormatting.GOLD));
+				}
+			}
+		} else {
+			tell(level, hall, steward);
 		}
 	}
 
@@ -575,6 +778,7 @@ public final class StewardDesk {
 	}
 
 	public static void init() {
+		ScholarWork.IDLE = StewardDesk::scholarIdle;
 		StewardWork.OPEN_SITES = (level, steward) -> Stewards.hallOf(level, steward)
 			.map(hall -> openSites(level, hall).stream().map(s -> s.placement().origin()).toList()).orElse(List.of());
 	}

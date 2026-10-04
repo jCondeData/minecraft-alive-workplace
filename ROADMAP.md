@@ -4269,6 +4269,13 @@ item waits.
 - (Sessions: anything that needs the owner, and the link to the latest Full test report. Handoffs go here through
   `sessions.py handoff "<in progress, next, traps>" --as <you>`, which keeps one per kind of session (chat, night):
   carry over anything still true from the previous one.)
+- 2026-10-04 (27.9, decisions; lane c): 27.11 isn't built, so a job the village wants with no free block left goes to
+  `StewardJobs.WORKPLACE_WANTED` (does nothing yet; called once a morning per job): 27.11 fills it to propose the
+  building. `StewardJobs.BUILDING_JOBS` (Berry Farm: Orchard Keeper, Flower Shop: Florist, ...) says which job a shared
+  block inside a finished building is for; 27.11 can reuse it. "A farmer while food is short" and "a scholar while
+  research is idle" give one a morning (food doesn't fill by noon); a worker who has traded and only lost his block is
+  left to find one of its kind. A rule naming its topic (`hearth.json`) gets it while available, before the order.
+  The research pick happens from the scholar's own work (`ScholarWork.IDLE`), once a day.
 - 2026-10-04 (27.4, decision; lane c): the plan on the ground is drawn as the Scan Tool's box really is: dust the
   server sends to the holder alone (`city/CityPlanGround`, every 10 ticks, at most 900 dots, within 24 blocks), not a
   client renderer, so nothing new has to be synced to the client. Road styles don't exist until 27.15, so a road's style

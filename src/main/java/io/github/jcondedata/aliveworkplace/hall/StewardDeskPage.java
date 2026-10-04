@@ -95,7 +95,7 @@ public final class StewardDeskPage {
 			}
 			List<Component> lore = describe(level, hall, proposal);
 			lore.add(VillageHallScreen.line("screen.aliveworkplace.desk.open_hint", ChatFormatting.DARK_GRAY));
-			menu.button(slot++, VillageHallScreen.icon(ModItems.BLUEPRINT, proposal.name(), ChatFormatting.YELLOW, lore.toArray(Component[]::new)), p -> {
+			menu.button(slot++, VillageHallScreen.icon(iconOf(proposal), proposal.name(), ChatFormatting.YELLOW, lore.toArray(Component[]::new)), p -> {
 				renderProposal(menu, level, hall, proposal.id());
 				menu.broadcastChanges();
 			});
@@ -168,9 +168,35 @@ public final class StewardDeskPage {
 		});
 	}
 
+	/** A build's blueprint, the jobs' crafting table, the research topic's own icon. */
+	static Item iconOf(StewardDesk.Proposal proposal) {
+		if (proposal.isJobs()) {
+			return Items.CRAFTING_TABLE;
+		}
+		return proposal.researchTopic().map(t -> t.icon).orElse(ModItems.BLUEPRINT);
+	}
+
 	/** Why, where, the five materials it needs most with how many are in store, and who builds it after what. */
 	static List<Component> describe(ServerLevel level, BlockPos hall, StewardDesk.Proposal proposal) {
 		List<Component> lore = new ArrayList<>();
+		if (proposal.isJobs()) { // 27.9: who goes where
+			if (!proposal.why().isEmpty()) {
+				lore.add(VillageHallScreen.line(Component.translatable("screen.aliveworkplace.desk.why", proposal.reason()), ChatFormatting.AQUA));
+			}
+			for (io.github.jcondedata.aliveworkplace.city.StewardJobs.Job job : proposal.jobs()) {
+				lore.add(VillageHallScreen.line(io.github.jcondedata.aliveworkplace.city.StewardJobs.describe(level, hall, job), ChatFormatting.GRAY));
+			}
+			return lore;
+		}
+		if (proposal.researchTopic().isPresent()) { // 27.9: the scholars' next topic
+			io.github.jcondedata.aliveworkplace.research.Research.Topic topic = proposal.researchTopic().get();
+			lore.add(VillageHallScreen.line(Component.translatable("screen.aliveworkplace.desk.why", proposal.reason()), ChatFormatting.AQUA));
+			lore.add(VillageHallScreen.line(topic.effect(), ChatFormatting.GRAY));
+			int next = io.github.jcondedata.aliveworkplace.research.Research.at(level, hall).level(topic) + 1;
+			lore.add(VillageHallScreen.line(Component.translatable("screen.aliveworkplace.desk.research_cost", BuilderLevels.levelName(next),
+				io.github.jcondedata.aliveworkplace.research.Research.describe(topic.cost(next))), ChatFormatting.GRAY));
+			return lore;
+		}
 		if (proposal.upgrade()) {
 			lore.add(VillageHallScreen.line("screen.aliveworkplace.desk.upgrade", ChatFormatting.AQUA));
 		}
@@ -209,14 +235,17 @@ public final class StewardDeskPage {
 		menu.clearButtons();
 		menu.button(0, VillageHallScreen.icon(Items.ARROW, Component.translatable("screen.aliveworkplace.hall.back"), ChatFormatting.WHITE),
 			p -> rerender(menu, level, hall));
-		menu.button(4, VillageHallScreen.icon(ModItems.BLUEPRINT, proposal.name(), ChatFormatting.GOLD,
+		menu.button(4, VillageHallScreen.icon(iconOf(proposal), proposal.name(), ChatFormatting.GOLD,
 			describe(level, hall, proposal).toArray(Component[]::new)), null);
 		menu.divider(1);
 		menu.button(APPROVE, VillageHallScreen.icon(Items.EMERALD, Component.translatable("screen.aliveworkplace.desk.approve"), ChatFormatting.GREEN,
 			VillageHallScreen.line("screen.aliveworkplace.desk.approve_hint", ChatFormatting.GRAY)), p -> {
 			StewardDesk.Outcome outcome = StewardDesk.approve(level, hall, p, id);
 			if (outcome.ok()) {
-				approved(level, p, Component.translatable(outcome == StewardDesk.Outcome.STARTED
+				approved(level, p, proposal.isJobs() ? Component.translatable("message.aliveworkplace.steward.desk.approved_jobs")
+					: proposal.researchTopic().isPresent() ? Component.translatable("message.aliveworkplace.steward.desk.approved_research",
+					proposal.researchTopic().get().title())
+					: Component.translatable(outcome == StewardDesk.Outcome.STARTED
 					? "message.aliveworkplace.steward.desk.approved" : "message.aliveworkplace.steward.desk.queued", proposal.name()));
 				rerender(menu, level, hall);
 			} else {
@@ -236,6 +265,9 @@ public final class StewardDeskPage {
 			}
 			rerender(menu, level, hall);
 		});
+		if (!proposal.isBuild()) {
+			return; // jobs and research: Approve or Decline
+		}
 		menu.button(SHOW, VillageHallScreen.icon(Items.SPYGLASS, Component.translatable("screen.aliveworkplace.desk.show"), ChatFormatting.WHITE,
 			VillageHallScreen.line(Component.translatable("screen.aliveworkplace.desk.show_hint", StewardDesk.SHOW_TICKS / 20), ChatFormatting.GRAY)), p -> {
 			if (StewardDesk.show(level, hall, p, id)) {

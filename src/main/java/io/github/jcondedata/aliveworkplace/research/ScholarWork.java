@@ -44,6 +44,15 @@ import net.minecraft.world.level.block.Block;
 public class ScholarWork extends Behavior<Villager> {
 	static final int EVERY = 20;
 
+	/** A scholar at work with nothing being researched (the Steward's {@code research} effect, ROADMAP 27.9, fills it). */
+	@FunctionalInterface
+	public interface Idle {
+		void idle(ServerLevel level, Villager scholar, BlockPos hall);
+	}
+
+	public static Idle IDLE = (level, scholar, hall) -> {
+	};
+
 	private final Walker walker = new Walker(0.5f);
 	private int timer;
 	private String state = "idle";
@@ -103,6 +112,11 @@ public class ScholarWork extends Behavior<Villager> {
 		}
 		Research.State research = entity.research();
 		Research.Topic topic = research.currentTopic();
+		if (topic == null) {
+			IDLE.idle(level, villager, hall); // the Steward may pick the next topic (27.9)
+			research = entity.research();
+			topic = research.currentTopic();
+		}
 		if (topic == null) {
 			state = "idle";
 			detail = Component.empty();

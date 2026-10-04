@@ -72,6 +72,20 @@ public class BlueprintItem extends Item {
 		return new BlueprintData.Placement(dimension, anchorWorld.subtract(rotatedAnchor), rotation, mirror);
 	}
 
+	/**
+	 * {@code data} flipped left to right or back (23.8). A blueprint already placed is flipped where it stands, around
+	 * the middle of its front, facing the same way, so its ghost shows the change at once.
+	 */
+	public static BlueprintData mirrored(BlueprintData data, boolean flip) {
+		BlueprintData flipped = data.withMirrored(flip);
+		if (data.placement().isEmpty() || data.size().isEmpty()) {
+			return flipped;
+		}
+		BlueprintData.Placement old = data.placement().get();
+		Vec3i size = data.size().get();
+		return flipped.withPlacement(Optional.of(placementAt(old.dimension(), size, anchorWorld(old, size), old.rotation(), flipped.mirror())));
+	}
+
 	public static BlockPos anchorWorld(BlueprintData.Placement placement, Vec3i size) {
 		return placement.origin().offset(StructureTemplate.transform(anchor(size), placement.mirror(), placement.rotation(), BlockPos.ZERO));
 	}

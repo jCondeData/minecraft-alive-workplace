@@ -10,6 +10,7 @@
 			"io.github.jcondedata.aliveworkplace.test.BuilderBenchGameTests",
 			"io.github.jcondedata.aliveworkplace.test.BuilderKeepsBenchGameTests",
 			"io.github.jcondedata.aliveworkplace.test.BuilderChaosGameTests",
+			"io.github.jcondedata.aliveworkplace.test.PlacingGameTests",
 			"io.github.jcondedata.aliveworkplace.test.BuildersShareSpareGameTests",
 			"io.github.jcondedata.aliveworkplace.test.CraftersShareSpareGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaSpareMaterialsGameTests",

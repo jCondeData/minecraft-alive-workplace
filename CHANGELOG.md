@@ -3,6 +3,9 @@
 ## Unreleased
 
 ### Added
+- Mirroring a blueprint you already placed (on the style screen) flips it where it stands, and its ghost shows it at
+  once. Cancelling a build gives the blueprint back still placed: hand it back to carry on, or click the ground to
+  move it; what the builder carried goes back to its chests.
 - Builders are now tested against getting stuck: five long runs trap a builder in water, beside lava, in holes, behind
   fences, in a room with a door, on its own roof and through chunk reloads; it gets out every time, finishes the build
   and never breaks a block it placed.

@@ -312,7 +312,7 @@ first; many items below are "verify and harden", not "build".
 - [x] **23.7** (approved auto 2026-10-04) **Imports that just work.** `.litematic`, `.schem` and `.nbt` files in common sizes and versions, including big
   builds (48×8×48), unknown modded blocks and old formats. Done when: a test corpus of permissively licensed or
   self-made sample files imports, or fails with a clear message that says which block or format was the problem.
-- [ ] **23.8** **Placing a build feels good.**
+- [x] **23.8** (review: pending 2026-10-04) **Placing a build feels good.**
   - Rotation and mirroring before placing.
   - The ghost preview shows exactly where it goes.
   - The site can be moved or cancelled, with its materials returned.
@@ -323,7 +323,7 @@ first; many items below are "verify and harden", not "build".
   flagship buildings in-game. Claude tidies them with the Architect skill, and they are scanned in with the Scan Tool
   and shipped as blueprints with upgrades. This gives the mod human-made content; see 26.1. Done when: each is in the
   Blueprint Table with its upgrades, and a builder has built it in a test.
-- [ ] **23.10** **Every shipped build reviewed.** One gallery package per build family (houses, workshops, defences,
+- [x] **23.10** (review: pending 2026-10-04) **Every shipped build reviewed.** One gallery package per build family (houses, workshops, defences,
   decorations, village pieces in five styles), each build shown front and back. Vetoed builds get redrawn with the
   Architect skill. Done when: every family's package has been sent.
 
@@ -359,6 +359,7 @@ about 12% of that. For villager mods, the cost is pathfinding to distant points 
   - 150 workers over 3 villages in the Cobbleverse pack;
   - `tick query` p50/p95, heap after GC and a JFR profile (`tools/packtest`, `PERF=true`);
   - run on GitHub's runner and recorded in `docs/performance.md`.
+  - Status (lane-a-1004-0932): built: `PERF=true VILLAGES=3 PLOTS=25` (150 workers, heap after GC), the nightly's performance step runs it every night and a Sunday `benchmark` job (or `part: benchmark`) on its own; method in docs/performance.md. Left: copy the first run's numbers (nightly-tests run tonight, `perf.log` in its artifact) into docs/performance.md's table and tick. Sessions can't start workflows (403), so it waits for tonight's run.
 
   Done when: the numbers are recorded and the nightly job repeats them weekly.
 - [ ] **25.2** **Targets.** Propose these after 25.1's first measurement, and ask the owner to confirm them. Carry on

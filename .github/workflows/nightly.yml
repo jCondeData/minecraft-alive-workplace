@@ -7,10 +7,11 @@ name: nightly-tests
 on:
   schedule:
     - cron: "17 3 * * *"        # ~10 PM US Central, before the night runs
+    - cron: "41 4 * * 0"        # Sundays: the weekly benchmark (25.1), nothing else
   workflow_dispatch:
     inputs:
       part:
-        description: "all: everything; mutation: only the mutants and repeats (ROADMAP 22.7)"
+        description: "all: everything; mutation: only the mutants and repeats (ROADMAP 22.7); benchmark: only the weekly 150-worker benchmark (25.1)"
         required: false
         default: all
 
@@ -25,7 +26,7 @@ env:
 
 jobs:
   tests:
-    if: github.event_name != 'workflow_dispatch' || github.event.inputs.part != 'mutation'
+    if: (github.event_name != 'workflow_dispatch' && github.event.schedule != '41 4 * * 0') || github.event.inputs.part == 'all'
     runs-on: ubuntu-latest
     timeout-minutes: 300
     steps:
@@ -76,7 +77,8 @@ jobs:
         if: always() && hashFiles('tools/packtest/run.sh') != ''
         run: |
           export JAVA_HOME="$JAVA_HOME_21_X64" PATH="$JAVA_HOME_21_X64/bin:$PATH"
-          PERF=true PLOTS=40 tools/packtest/run.sh 2>&1 | tee build/modtest/perf.log
+          # 25.1's benchmark load (150 workers, 3 villages) every night too; the Sunday job below repeats it on its own.
+          PERF=true VILLAGES=3 PLOTS=25 tools/packtest/run.sh 2>&1 | tee build/modtest/perf.log
 
       # The screenshot scenes run in their own workflow, every one of them: showcase.yml.
 
@@ -107,9 +109,45 @@ jobs:
           if [ -n "$n" ]; then gh issue comment "$n" --body-file build/modtest/issue.md
           else gh issue create --title "Nightly tests failing" --label nightly-tests --body-file build/modtest/issue.md; fi
 
+  # ROADMAP 25.1: the benchmark, weekly (the Sunday schedule) or on demand (part: benchmark): 150 workers over three
+  # villages in the real Cobbleverse pack; tick p50/p95, heap after GC and a profile of our code. The numbers go in
+  # docs/performance.md (from the run's summary or the benchmark artifact).
+  benchmark:
+    if: github.event.schedule == '41 4 * * 0' || github.event.inputs.part == 'benchmark'
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: |
+            21
+            25
+      - uses: gradle/actions/setup-gradle@v4
+      - name: Build the jar
+        run: ./gradlew ":$NODE:remapJar" --stacktrace
+      - name: Benchmark (150 workers, 3 villages)
+        run: |
+          mkdir -p build/modtest
+          export JAVA_HOME="$JAVA_HOME_21_X64" PATH="$JAVA_HOME_21_X64/bin:$PATH"
+          PERF=true VILLAGES=3 PLOTS=25 tools/packtest/run.sh 2>&1 | tee build/modtest/benchmark.log; status=${PIPESTATUS[0]}
+          { echo "## Benchmark: 150 workers over 3 villages ($(git rev-parse --short HEAD))"; echo '```'
+            grep -E "Benchmark:|Average time per tick|Percentiles|Heap after GC|sites working|%" build/modtest/benchmark.log | head -60
+            echo '```'; } >> "$GITHUB_STEP_SUMMARY"
+          exit $status
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: benchmark-${{ github.run_id }}
+          path: |
+            build/modtest/benchmark.log
+            build/packtest/server/perf.jfr
+          if-no-files-found: ignore
+
   # ROADMAP 28.2: the compat suite again with Cobblemon 1.8.1 (the full build above runs it with the pack's 1.7.3).
   compat-cobblemon18:
-    if: github.event_name != 'workflow_dispatch' || github.event.inputs.part != 'mutation'
+    if: (github.event_name != 'workflow_dispatch' && github.event.schedule != '41 4 * * 0') || github.event.inputs.part == 'all'
     runs-on: ubuntu-latest
     timeout-minutes: 90
     steps:
@@ -151,6 +189,7 @@ jobs:
   # and unfinished jobs go to the nightly-tests issue; the report is always in the run's summary and the
   # nightly-mutation artifact (the QA lane reads it: docs/agent/sessions.md, "The QA lane").
   mutation-plan:
+    if: (github.event_name != 'workflow_dispatch' && github.event.schedule != '41 4 * * 0') || (github.event_name == 'workflow_dispatch' && github.event.inputs.part != 'benchmark')
     runs-on: ubuntu-latest
     outputs:
       since: ${{ steps.plan.outputs.since }}

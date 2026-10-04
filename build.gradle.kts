@@ -128,6 +128,9 @@ loom {
                 name = "Compat Game Test"
                 source(compattest)
                 runDir = "build/run/compatGameTest"
+                // The pack's mods alone keep about 1 GB live; the JVM's default heap (a quarter of the RAM: 1.5 GB in
+                // a 7 GB dev container) ran out mid-suite. CI's runners default to about 4 GB.
+                vmArg("-Xmx3G")
                 vmArg("-Dfabric-api.gametest")
                 vmArg("-Dfabric-api.gametest.report-file=${layout.buildDirectory.get().asFile}/junit-compat.xml")
                 ideConfigGenerated(false)

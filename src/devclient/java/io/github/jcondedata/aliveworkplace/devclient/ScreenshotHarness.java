@@ -70,6 +70,7 @@ public class ScreenshotHarness implements ClientModInitializer {
 	private final WordsScene words = new WordsScene();
 	private final PartnersScene partners = new PartnersScene();
 	private final PartnersLandScene partnersLand = new PartnersLandScene();
+	private final PartnersForgeScene partnersForge = new PartnersForgeScene();
 
 	private void onTick(Minecraft mc) {
 		if (mc.level == null || mc.player == null || mc.getSingleplayerServer() == null) {
@@ -93,6 +94,10 @@ public class ScreenshotHarness implements ClientModInitializer {
 		}
 		if ("guide".equals(System.getProperty("aliveworkplace.scene"))) {
 			guideScene(mc, mc.getSingleplayerServer());
+			return;
+		}
+		if ("partners_forge".equals(System.getProperty("aliveworkplace.scene"))) {
+			partnersForge.tick(mc, mc.getSingleplayerServer());
 			return;
 		}
 		if ("partners_land".equals(System.getProperty("aliveworkplace.scene"))) {

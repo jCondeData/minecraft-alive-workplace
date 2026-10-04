@@ -1,0 +1,15 @@
+{
+  "jobs": [
+    "minecraft:fletcher"
+  ],
+  "types": [
+    "bug"
+  ],
+  "cue": "fletch",
+  "carry": "minecraft:string",
+  "animation": "special",
+  "particles": "cobblemon:impact_bug",
+  "sound": "minecraft:entity.spider.ambient",
+  "ticks": 30,
+  "effect": "none"
+}

@@ -23,6 +23,14 @@
 - **Partners at work**: a Fighting-type Pokémon pastured by a Builder's Bench is now seen helping: when the builder
   fetches materials it walks over to the work (never leaving its pasture's range) carrying them, lends a punch and walks
   back. Shows are data packs (`data/<namespace>/partner_shows/`); setting "Partners at Work" turns them off.
+- **Partners at work in the post, the forge and the kitchen**: a Flying partner by the Postal Desk takes the air mail
+  up with a bundle, climbs out of sight and lands back empty-handed, and on the round flies ahead to the next mailbox.
+  A Fire partner breathes fire into the furnace, blast furnace or smoker each time it smelts on the spot for an Armorer,
+  Miner or Fisherman. By the Chef's stove a Fire partner fans the flames and a Normal one carries the dish to the
+  chest. A Steel or Fire partner sparks at the Toolsmith's or Ball Smith's table, then carries the new tool or the
+  batch of balls to the chest; a Steel or Fighting one holds the worn piece at the Weaponsmith's grindstone; a Flying
+  one brings the Fletcher a feather and a Bug one string; an Electric or Steel one sparks over the Tinkerer's work and
+  over the iron golem being mended.
 - **Partners at work on building and the land**: pastured Pokémon now help more workers, each by its type. For the
   builder, a Fighting partner shoulders the logs and planks and punches each block home, a Rock one carries the stone
   and a Steel one the iron parts (bars, doors, chains, lanterns). A Fighting or Normal partner hauls a barrel along on

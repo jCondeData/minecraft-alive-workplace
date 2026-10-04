@@ -1,0 +1,15 @@
+{
+  "jobs": [
+    "aliveworkplace:tinkerer"
+  ],
+  "types": [
+    "electric",
+    "steel"
+  ],
+  "cue": "tinker",
+  "animation": "special",
+  "particles": "cobblemon:impact_electric",
+  "sound": "minecraft:block.copper_bulb.turn_on",
+  "ticks": 40,
+  "effect": "sparks"
+}

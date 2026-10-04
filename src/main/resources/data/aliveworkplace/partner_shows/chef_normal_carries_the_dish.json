@@ -1,0 +1,14 @@
+{
+  "jobs": [
+    "aliveworkplace:chef"
+  ],
+  "types": [
+    "normal"
+  ],
+  "cue": "cook",
+  "animation": "cry",
+  "sound": "minecraft:entity.item.pickup",
+  "ticks": 20,
+  "effect": "none",
+  "deliver": true
+}

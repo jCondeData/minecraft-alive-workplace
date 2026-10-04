@@ -203,6 +203,8 @@ public class MendingWork extends Behavior<Villager> {
 		villager.getBrain().setMemory(MemoryModuleType.LOOK_TARGET, new BlockPosTracker(station));
 		if (timer < 0) {
 			timer = Math.max(20, BuilderLevels.delay(MEND_TICKS, villager));
+			// A Steel or Fighting partner holds the worn piece at the grindstone (ROADMAP 28.5).
+			io.github.jcondedata.aliveworkplace.work.PartnerShows.cue(villager, "mend", station, job.item());
 		}
 		if (timer % 10 == 0) {
 			villager.swing(InteractionHand.MAIN_HAND);

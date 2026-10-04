@@ -161,6 +161,8 @@ public class PostmanWork extends Behavior<Villager> {
 					// Air mail: a Flying-type partner by the desk takes it there straight away.
 					office.remove(parcel);
 					level.playSound(null, target, SoundEvents.PHANTOM_FLAP, SoundSource.NEUTRAL, 0.8f, 1.4f);
+					// It takes off with the bundle, climbs out of sight and lands back empty-handed (ROADMAP 28.5).
+					io.github.jcondedata.aliveworkplace.work.PartnerShows.cue(villager, "air_mail", target);
 					ModAttachments.MAIL_DELIVERED.set(villager, ModAttachments.MAIL_DELIVERED.getOrElse(villager, 0) + 1);
 				} else {
 					parcel.setStatus(Parcel.Status.IN_TRANSIT);
@@ -327,6 +329,10 @@ public class PostmanWork extends Behavior<Villager> {
 		parcelId = chosen.id();
 		mode = chosenMode;
 		target = chosenTarget;
+		if (mode == Mode.DELIVER) {
+			// A Flying partner flies ahead to the mailbox the parcel is for (ROADMAP 28.5).
+			io.github.jcondedata.aliveworkplace.work.PartnerShows.cue(villager, "deliver", target);
+		}
 		walker.reset();
 		return true;
 	}

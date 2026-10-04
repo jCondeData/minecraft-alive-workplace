@@ -1,0 +1,15 @@
+{
+  "jobs": [
+    "minecraft:fletcher"
+  ],
+  "types": [
+    "flying"
+  ],
+  "cue": "fletch",
+  "carry": "minecraft:feather",
+  "animation": "cry",
+  "particles": "cobblemon:impact_flying",
+  "sound": "minecraft:entity.parrot.fly",
+  "ticks": 30,
+  "effect": "none"
+}

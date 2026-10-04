@@ -86,4 +86,10 @@ public class FletcherWork extends CrafterWork {
 		}
 		return null;
 	}
+
+	/** Partners at work (ROADMAP 28.5): a feather or string brought to the table. */
+	@Override
+	protected String partnerCue() {
+		return "fletch";
+	}
 }

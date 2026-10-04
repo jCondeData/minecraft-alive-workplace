@@ -36,6 +36,15 @@ public final class Furnaces {
 	 * returns how many items were moved in or out.
 	 */
 	public static int tend(ServerLevel level, BlockPos station, List<BlockPos> supplies, Predicate<Item> goods) {
+		return tend(level, station, supplies, goods, null);
+	}
+
+	/**
+	 * As {@link #tend(ServerLevel, BlockPos, List, Predicate)}, by {@code worker}: when a Fire partner smelts on the spot,
+	 * it comes and breathes fire into that furnace (the {@code fire_smelt} partner show, ROADMAP 28.5).
+	 */
+	public static int tend(ServerLevel level, BlockPos station, List<BlockPos> supplies, Predicate<Item> goods,
+						   @org.jetbrains.annotations.Nullable net.minecraft.world.entity.npc.Villager worker) {
 		int moved = 0;
 		int fire = -1;
 		for (BlockPos pos : SupplyContainers.furnaces(level, station)) {
@@ -45,7 +54,11 @@ public final class Furnaces {
 					fire = firePartners(level, station);
 				}
 				if (fire > 0) {
-					moved += blaze(level, furnace, pos, supplies, goods, fire * PER_FIRE_PARTNER);
+					int blazed = blaze(level, furnace, pos, supplies, goods, fire * PER_FIRE_PARTNER);
+					moved += blazed;
+					if (blazed > 0 && worker != null) {
+						PartnerShows.cue(worker, "fire_smelt", pos);
+					}
 				}
 			}
 		}

@@ -1,0 +1,16 @@
+{
+  "jobs": [
+    "aliveworkplace:postman"
+  ],
+  "types": [
+    "flying"
+  ],
+  "cue": "air_mail",
+  "carry": "minecraft:bundle",
+  "animation": "special",
+  "particles": "cobblemon:impact_flying",
+  "sound": "minecraft:entity.phantom.flap",
+  "ticks": 100,
+  "effect": "none",
+  "flies_off": true
+}

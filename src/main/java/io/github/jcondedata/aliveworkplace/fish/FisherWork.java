@@ -194,7 +194,7 @@ public class FisherWork extends Behavior<Villager> {
 			}
 			status(villager, Phase.DEPOSITING);
 			if (walker.walkTo(level, villager, barrel, 3.0)) {
-				deposit(level, barrel, bag);
+				deposit(level, villager, barrel, bag);
 				catches = 0;
 			}
 			return;
@@ -604,7 +604,7 @@ public class FisherWork extends Behavior<Villager> {
 		return false;
 	}
 
-	private static void deposit(ServerLevel level, BlockPos barrel, BuilderBag bag) {
+	private static void deposit(ServerLevel level, Villager villager, BlockPos barrel, BuilderBag bag) {
 		List<BlockPos> supplies = SupplyContainers.find(level, barrel, null);
 		for (ItemStack stack : bag.takeAll()) {
 			ItemStack rest = SupplyContainers.insert(level, supplies, stack);
@@ -612,7 +612,7 @@ public class FisherWork extends Behavior<Villager> {
 				Block.popResource(level, barrel.above(), rest);
 			}
 		}
-		io.github.jcondedata.aliveworkplace.work.Furnaces.tend(level, barrel, supplies, io.github.jcondedata.aliveworkplace.work.Furnaces::isFish);
+		io.github.jcondedata.aliveworkplace.work.Furnaces.tend(level, barrel, supplies, io.github.jcondedata.aliveworkplace.work.Furnaces::isFish, villager);
 		level.playSound(null, barrel, SoundEvents.BARREL_CLOSE, SoundSource.BLOCKS, 0.4f, 1.1f);
 	}
 

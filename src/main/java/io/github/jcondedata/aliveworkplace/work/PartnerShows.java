@@ -64,8 +64,11 @@ import org.jetbrains.annotations.Nullable;
  *   "particles": "minecraft:crit",   // a vanilla particle, or a Cobblemon effect such as cobblemon:impact_water
  *   "sound": "minecraft:entity.player.attack.strong",
  *   "ticks": 40,                     // how long the show itself lasts, 10 to 400
- *   "effect": "none" }               // none, hydrate_farmland, smoke, sparks, crack or dust
+ *   "effect": "none",                // none, hydrate_farmland, smoke, sparks, crack, dust or flames
+ *   "flies_off": false,              // true: rises out of sight and lands back (what it carried left up there)
+ *   "deliver": false }               // true: then carries what the work made to the chest the job names
  * </pre>
+ * A {@code deliver} show plays only when the job's cue says what it made and where it goes ({@link Delivery}).
  * What it carries is a vanilla Item Display that follows the Pokémon by teleport (never riding it), tagged
  * {@link #DISPLAY_TAG}; it goes when the show ends, and a display whose show was cut off (a restart, an unloaded chunk)
  * is removed when its chunk loads. A pastured Pokémon is never untethered, and a show never touches a Pokémon in
@@ -99,8 +102,17 @@ public final class PartnerShows implements ResourceManagerReloadListener {
 		/** The crack particles of the block carried (or of the block at the spot): a board or a stone being worked. */
 		CRACK,
 		/** Dust of the ground at the spot: a furrow being walked. */
-		DUST
+		DUST,
+		/** Flames licking up from the spot: a furnace breathed into, a smoker's fire fanned. */
+		FLAMES
 	}
+
+	/** What a job's work made ({@code what}) and the chest it goes to ({@code to}): for a {@code deliver} show. */
+	public record Delivery(ItemStack what, BlockPos to) {
+	}
+
+	/** How high a {@code flies_off} partner climbs: out of sight from the ground. */
+	static final int FLIGHT_HEIGHT = 24;
 
 	/** The marker for "carry what the worker is handling". */
 	static final String FROM_WORK = "from_work";
@@ -108,7 +120,13 @@ public final class PartnerShows implements ResourceManagerReloadListener {
 	/** One show, as its data file says. */
 	public record Show(ResourceLocation name, Set<ResourceLocation> jobs, Set<String> types, String cue, @Nullable String carry,
 					   @Nullable TagKey<Item> carryTag, @Nullable String animation, @Nullable ResourceLocation particles,
-					   @Nullable ResourceLocation sound, int ticks, Effect effect) {
+					   @Nullable ResourceLocation sound, int ticks, Effect effect, boolean fliesOff, boolean deliver) {
+		public Show(ResourceLocation name, Set<ResourceLocation> jobs, Set<String> types, String cue, @Nullable String carry,
+					@Nullable TagKey<Item> carryTag, @Nullable String animation, @Nullable ResourceLocation particles,
+					@Nullable ResourceLocation sound, int ticks, Effect effect) {
+			this(name, jobs, types, cue, carry, carryTag, animation, particles, sound, ticks, effect, false, false);
+		}
+
 		/** Whether this show plays for a worker handling {@code handling}: a show with a carry tag only for what's in it. */
 		public boolean plays(ItemStack handling) {
 			return carryTag == null || !handling.isEmpty() && handling.is(carryTag);
@@ -116,7 +134,7 @@ public final class PartnerShows implements ResourceManagerReloadListener {
 	}
 
 	private enum Phase {
-		GO, PLAY, BACK
+		GO, PLAY, DELIVER, BACK
 	}
 
 	/** A show on, for one partner. */
@@ -133,6 +151,14 @@ public final class PartnerShows implements ResourceManagerReloadListener {
 		/** What the show is about (what the worker handles): the crack particles' block. */
 		ItemStack handling = ItemStack.EMPTY;
 		@Nullable Display.ItemDisplay display;
+		/** What the work made and where it goes (a {@code deliver} show), else null. */
+		@Nullable Delivery delivery;
+		/** A {@code flies_off} show: where it took off, and how high it may climb there (null: not flying). */
+		@Nullable Vec3 takeOff;
+		int ceiling;
+		/** Where a deliver show's partner sets what was made down (the nearest its pasture lets it get to the chest). */
+		BlockPos spot2;
+		boolean delivered;
 		Phase phase = Phase.GO;
 		int phaseTicks;
 
@@ -151,6 +177,7 @@ public final class PartnerShows implements ResourceManagerReloadListener {
 	private static final List<Running> RUNNING = new ArrayList<>();
 	private static final Map<Villager, Long> LAST_CUE = new WeakHashMap<>();
 	private static final Set<UUID> DISPLAYS = new HashSet<>();
+	private static int DELIVERIES;
 	/** The last show each worker's cue started, and its partner: for tests and the debug log. */
 	private static final Map<UUID, ResourceLocation> LAST_SHOW = new java.util.HashMap<>();
 
@@ -228,9 +255,11 @@ public final class PartnerShows implements ResourceManagerReloadListener {
 		try {
 			effect = json.has("effect") ? Effect.valueOf(json.get("effect").getAsString().toUpperCase(Locale.ROOT)) : Effect.NONE;
 		} catch (IllegalArgumentException ex) {
-			throw new IllegalArgumentException("effect: " + json.get("effect").getAsString() + " (none, hydrate_farmland, smoke, sparks, crack or dust)");
+			throw new IllegalArgumentException("effect: " + json.get("effect").getAsString() + " (none, hydrate_farmland, smoke, sparks, crack, dust or flames)");
 		}
-		return new Show(name, Set.copyOf(jobs), Set.copyOf(types), cue, carry, carryTag, animation, particles, sound, ticks, effect);
+		boolean fliesOff = json.has("flies_off") && json.get("flies_off").getAsBoolean();
+		boolean deliver = json.has("deliver") && json.get("deliver").getAsBoolean();
+		return new Show(name, Set.copyOf(jobs), Set.copyOf(types), cue, carry, carryTag, animation, particles, sound, ticks, effect, fliesOff, deliver);
 	}
 
 	private static JsonArray array(JsonObject json, String key) {
@@ -259,11 +288,20 @@ public final class PartnerShows implements ResourceManagerReloadListener {
 	 * if the budget allows. True if a show started.
 	 */
 	public static boolean cue(Villager worker, String cue, BlockPos pos, ItemStack handling) {
+		return cue(worker, cue, pos, handling, null);
+	}
+
+	/**
+	 * As {@link #cue(Villager, String, BlockPos, ItemStack)}, and {@code delivery} says what the work makes and the chest it
+	 * goes to: a {@code deliver} show then carries it there (with no delivery, {@code deliver} shows don't play).
+	 */
+	public static boolean cue(Villager worker, String cue, BlockPos pos, ItemStack handling, @Nullable Delivery delivery) {
 		if (!ENABLED || !(worker.level() instanceof ServerLevel level) || shows.isEmpty() || !PokemonPartners.EXTENSION.present()) {
 			return refuse("off, no shows or no Cobblemon");
 		}
 		ResourceLocation job = BuiltInRegistries.VILLAGER_PROFESSION.getKey(worker.getVillagerData().getProfession());
-		List<Show> matching = shows.stream().filter(s -> s.cue().equals(cue) && s.jobs().contains(job) && s.plays(handling)).toList();
+		List<Show> matching = shows.stream().filter(s -> s.cue().equals(cue) && s.jobs().contains(job) && s.plays(handling)
+			&& (!s.deliver() || delivery != null && !delivery.what().isEmpty())).toList();
 		if (matching.isEmpty()) {
 			return refuse("no show for " + job + " at " + cue + (handling.isEmpty() ? "" : " handling " + BuiltInRegistries.ITEM.getKey(handling.getItem())));
 		}
@@ -295,6 +333,9 @@ public final class PartnerShows implements ResourceManagerReloadListener {
 				Running run = new Running(show, level, pokemon, worker, spot);
 				run.handling = handling.copyWithCount(1);
 				run.work = pos.immutable();
+				if (show.deliver()) {
+					run.delivery = new Delivery(delivery.what().copyWithCount(1), delivery.to().immutable());
+				}
 				if (carry != null) {
 					run.display = display(level, pokemon, new ItemStack(carry));
 				}
@@ -435,24 +476,52 @@ public final class PartnerShows implements ResourceManagerReloadListener {
 					// At the work itself when the partner got close to it (its standing spot may be a block off), else where it stands.
 					boolean atWork = run.work != null && pokemon.position().distanceToSqr(Vec3.atBottomCenterOf(run.work)) <= (ARRIVED + 1.5) * (ARRIVED + 1.5);
 					apply(run.level, run.show.effect(), atWork ? run.work : there ? run.spot : pokemon.blockPosition(), run.handling);
+					if (run.show.fliesOff()) {
+						run.takeOff = pokemon.position();
+						run.ceiling = headroom(run.level, pokemon);
+					}
 				} else if (run.phaseTicks % 20 == 0) {
 					PokemonPartners.EXTENSION.run(p -> p.walkTo(pokemon, run.spot, 1.0)); // the brain may have sent it elsewhere
 				}
 			}
 			case PLAY -> {
+				if (run.takeOff != null) {
+					fly(run, pokemon);
+				}
 				if (run.phaseTicks % 10 == 1) {
 					particles(run.level, run.show.particles(), pokemon);
 					sound(run.level, run.show.sound(), pokemon);
 				}
 				if (run.phaseTicks >= run.show.ticks()) {
+					run.phaseTicks = 0;
+					if (run.takeOff != null) {
+						land(run, pokemon);
+					}
+					dropDisplay(run); // set down at the spot (or left up there with the air mail)
+					if (run.delivery != null) {
+						// Then what the work made goes to its chest, carried.
+						run.phase = Phase.DELIVER;
+						run.display = display(run.level, pokemon, run.delivery.what());
+						run.spot2 = PokemonPartners.EXTENSION.call(p -> p.reachable(pokemon, run.delivery.to()), pokemon.blockPosition());
+						PokemonPartners.EXTENSION.run(p -> p.walkTo(pokemon, run.spot2, 1.0));
+					} else {
+						run.phase = Phase.BACK;
+						PokemonPartners.EXTENSION.run(p -> p.walkTo(pokemon, BlockPos.containing(run.start), 1.0));
+					}
+				}
+			}
+			case DELIVER -> {
+				boolean there = pokemon.position().distanceToSqr(Vec3.atBottomCenterOf(run.spot2)) <= ARRIVED * ARRIVED;
+				if (there || run.phaseTicks >= WALK_LIMIT) {
+					run.delivered = true;
+					DELIVERIES++;
+					dropDisplay(run);
+					run.level.playSound(null, run.delivery.to(), net.minecraft.sounds.SoundEvents.CHEST_CLOSE, SoundSource.NEUTRAL, 0.4f, 1.2f);
 					run.phase = Phase.BACK;
 					run.phaseTicks = 0;
-					if (run.display != null) {
-						DISPLAYS.remove(run.display.getUUID());
-						run.display.discard(); // set down at the spot
-						run.display = null;
-					}
 					PokemonPartners.EXTENSION.run(p -> p.walkTo(pokemon, BlockPos.containing(run.start), 1.0));
+				} else if (run.phaseTicks % 20 == 0) {
+					PokemonPartners.EXTENSION.run(p -> p.walkTo(pokemon, run.spot2, 1.0));
 				}
 			}
 			case BACK -> {
@@ -469,6 +538,9 @@ public final class PartnerShows implements ResourceManagerReloadListener {
 	}
 
 	private static void end(Running run) {
+		if (run.takeOff != null && run.pokemon.isAlive()) {
+			land(run, run.pokemon); // cut off mid-flight: back on the ground, never left hanging in the air
+		}
 		if (run.phase == Phase.BACK && run.pokemon.isAlive() && run.pokemon.position().distanceToSqr(run.start) > HOME * HOME) {
 			PokemonPartners.EXTENSION.run(p -> p.goHome(run.pokemon)); // didn't make it back in time: off to its pasture
 		}
@@ -477,6 +549,58 @@ public final class PartnerShows implements ResourceManagerReloadListener {
 			run.display.discard();
 			run.display = null;
 		}
+	}
+
+	private static void dropDisplay(Running run) {
+		if (run.display != null) {
+			DISPLAYS.remove(run.display.getUUID());
+			run.display.discard();
+			run.display = null;
+		}
+	}
+
+	/** Free blocks above {@code pokemon}, up to {@link #FLIGHT_HEIGHT}: a roof or a cave keeps the flight low. */
+	private static int headroom(ServerLevel level, Entity pokemon) {
+		for (int up = 1; up <= FLIGHT_HEIGHT; up++) {
+			if (!level.noCollision(pokemon, pokemon.getBoundingBox().move(0, up, 0))) {
+				return up - 1;
+			}
+		}
+		return FLIGHT_HEIGHT;
+	}
+
+	/**
+	 * A {@code flies_off} show: the first half the partner climbs out of sight (what it carries goes with the air mail at
+	 * the top), the second half it comes back down where it took off.
+	 */
+	private static void fly(Running run, Entity pokemon) {
+		int half = Math.max(1, run.show.ticks() / 2);
+		double t = run.phaseTicks <= half ? run.phaseTicks / (double) half : Math.max(0, run.show.ticks() - run.phaseTicks) / (double) half;
+		double height = run.ceiling * Math.min(1.0, t * 1.25); // a moment out of sight at the top
+		pokemon.teleportTo(run.takeOff.x, run.takeOff.y + height, run.takeOff.z);
+		pokemon.setDeltaMovement(Vec3.ZERO);
+		pokemon.resetFallDistance();
+		if (run.phaseTicks == half) {
+			dropDisplay(run); // off it goes: the partner comes back empty-handed
+		}
+	}
+
+	private static void land(Running run, Entity pokemon) {
+		pokemon.teleportTo(run.takeOff.x, run.takeOff.y, run.takeOff.z);
+		pokemon.setDeltaMovement(Vec3.ZERO);
+		pokemon.resetFallDistance();
+		run.takeOff = null;
+	}
+
+	/** How high above where it took off {@code pokemon} is in a {@code flies_off} show now (0 when not flying). */
+	public static double flying(Entity pokemon) {
+		return RUNNING.stream().filter(r -> r.pokemon == pokemon && r.takeOff != null).findFirst()
+			.map(r -> pokemon.getY() - r.takeOff.y).orElse(0.0);
+	}
+
+	/** How many deliver shows have set what was made down at its chest (tests). */
+	public static int deliveries() {
+		return DELIVERIES;
 	}
 
 	private static void face(Entity pokemon, Vec3 target) {
@@ -536,6 +660,10 @@ public final class PartnerShows implements ResourceManagerReloadListener {
 				ParticleOptions crumbs = !worked.isAir() ? new BlockParticleOption(ParticleTypes.BLOCK, worked)
 					: !handling.isEmpty() ? new ItemParticleOption(ParticleTypes.ITEM, handling) : ParticleTypes.CRIT;
 				spread(level, crumbs, at, 16);
+			}
+			case FLAMES -> {
+				level.sendParticles(ParticleTypes.FLAME, at.getX() + 0.5, at.getY() + 0.9, at.getZ() + 0.5, 14, 0.25, 0.15, 0.25, 0.02);
+				level.sendParticles(ParticleTypes.LAVA, at.getX() + 0.5, at.getY() + 1.0, at.getZ() + 0.5, 3, 0.2, 0.1, 0.2, 0.0);
 			}
 			case DUST -> {
 				BlockState ground = level.getBlockState(at.below());

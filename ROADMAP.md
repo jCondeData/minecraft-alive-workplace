@@ -177,7 +177,7 @@ its first findings fixed. Nothing is released until these are done.
     **Left for later:** the Hall's free-workstations list still offers only the vanilla job at a shared block (the
     player switches with the item afterwards); the sifter has no "panning" look at a water cauldron; /workplace
     benchmark still places old blocks (they work). A real 0.137.0 world opened with this version is 21.2's check.
-  - [x] **21.1b** (review: pending 2026-10-02) (verified 2026-10-02: its tester Check, shipped in 0.138.0) Change from the owner (2026-10-01): lets move to textures, what i want to do is for every item in the game (except for villager skins, and blocks) send me a couple versions, such as blueprints, i will go through the versions and pick my favorites, and give guidance when i can.
+  - [x] **21.1b** (verified 2026-10-02: its tester Check, shipped in 0.138.0) (approved 2026-10-04) Change from the owner (2026-10-01): lets move to textures, what i want to do is for every item in the game (except for villager skins, and blocks) send me a couple versions, such as blueprints, i will go through the versions and pick my favorites, and give guidance when i can.
     **Plan** (chat, 2026-10-01): the 13 items of ours that aren't blocks (Blueprint, Blank Blueprint, Scan Tool, Shape
     Planner, Patrol Map, Village Ledger, Rally Banner, Quarry Marker, Field Marker, Travel Ticket, Delivery Note, Price
     Tag, Settler's Wagon). Each gets its current icon plus three new versions, each a different idea, drawn with the

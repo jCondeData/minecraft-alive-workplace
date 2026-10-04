@@ -104,8 +104,12 @@ test to ship, not a bug. Each run, after checking CI and the nightly issue:
      player's entry points, then the ways it breaks, every boundary from both sides, and every new sentence a player
      reads;
    - run them on the real code with `runGameTest`; mutation and the 10x repeats run on GitHub every night (roadmap
-     22.7): read their results for these items instead. Until 22.7 is live, plant 3 mutants in the riskiest changed
-     lines yourself;
+     22.7), so don't run them yourself: read last night's report instead. It is the summary of the `mutation-report`
+     job in the newest `nightly-tests` run (GitHub MCP: `actions_list` `list_workflow_runs` with `resource_id:
+     nightly.yml`, then `list_workflow_jobs`; or the run's `nightly-mutation` artifact, `report.md`): mutants killed
+     and each survivor's line and change, and each new test's failures out of 10. Survivors and flaky tests are also
+     in the `nightly-tests` issue. A survivor in an item's code is a test to write; a flaky new test is a bug. To check
+     something sooner, start the workflow by hand with `part: mutation`;
    - visual items: check their scenes on the showcase page or the item's showcase run; run the client yourself only
      for a scene that failed or is missing.
 3. Passing tests go on a branch `qa/<topic>-<MMDD>` and onto `main` with `sessions.py ship`. A test that fails because

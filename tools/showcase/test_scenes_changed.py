@@ -119,6 +119,18 @@ results = [
     case("a scene method shared by several scenes films them all",
          [(H, "private void galleryScene(Minecraft mc, MinecraftServer server) {\n\t\ttick++;",
            "private void galleryScene(Minecraft mc, MinecraftServer server) {\n\t\ttick += 2;")], ["decor", "gallery", "styles"]),
+    case("a new scene (its dispatch, its method and its catalog entry) films just it",
+         [(H, """		if ("hall".equals(System.getProperty("aliveworkplace.scene"))) {""",
+           """		if ("beekeeper".equals(System.getProperty("aliveworkplace.scene"))) {
+			beeScene(mc, server);
+		}
+		if ("hall".equals(System.getProperty("aliveworkplace.scene"))) {"""),
+          (H, "	static void pointAt(", """	private void beeScene(Minecraft mc, MinecraftServer server) {
+		tick++;
+	}
+
+	static void pointAt("""),
+          (C, '    job("beekeeper"', '    # new\n    job("beekeeper"')], ["beekeeper"]),
     case("a shared helper films every scene", [(H, "move(slot);", "move(slot + 1);")], None),
     case("a job scene's own lines film it", [(J, "level.setBlock(STAND);", "level.setBlock(STAND);\n\t\t\tlevel.setBlock(POT);")], ["florist"]),
     case("JobScenes' helpers film every scene", [(J, "return new Job(what, ticks, setup);", "return new Job(what, ticks * 2, setup);")], None),

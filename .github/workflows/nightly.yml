@@ -8,6 +8,11 @@ on:
   schedule:
     - cron: "17 3 * * *"        # ~10 PM US Central, before the night runs
   workflow_dispatch:
+    inputs:
+      part:
+        description: "all: everything; mutation: only the mutants and repeats (ROADMAP 22.7)"
+        required: false
+        default: all
 
 permissions:
   contents: read
@@ -20,6 +25,7 @@ env:
 
 jobs:
   tests:
+    if: github.event_name != 'workflow_dispatch' || github.event.inputs.part != 'mutation'
     runs-on: ubuntu-latest
     timeout-minutes: 300
     steps:
@@ -100,3 +106,139 @@ jobs:
           gh label create nightly-tests --color B60205 2>/dev/null || true
           if [ -n "$n" ]; then gh issue comment "$n" --body-file build/modtest/issue.md
           else gh issue create --title "Nightly tests failing" --label nightly-tests --body-file build/modtest/issue.md; fi
+
+  # ROADMAP 22.7: about 20 mutants in the code changed in the last 24 hours (tools/modtest/mutate.py, the same set split
+  # over 5 parallel jobs), and every GameTest added in that time run 10 times (RepeatNewTests). Survivors, flaky tests
+  # and unfinished jobs go to the nightly-tests issue; the report is always in the run's summary and the
+  # nightly-mutation artifact (the QA lane reads it: docs/agent/sessions.md, "The QA lane").
+  mutation-plan:
+    runs-on: ubuntu-latest
+    outputs:
+      since: ${{ steps.plan.outputs.since }}
+      tests: ${{ steps.plan.outputs.tests }}
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - id: plan
+        run: |
+          since=$(git rev-list -1 --before="24 hours ago" HEAD)
+          if [ -n "$since" ]; then
+            tests=$(python3 tools/modtest/newtests.py --since "$since" --csv)
+            python3 tools/modtest/mutate.py --since "$since" --max 20 --seed "$(date -u +%j)" --list || true
+          fi
+          echo "since=$since" >> "$GITHUB_OUTPUT"
+          echo "tests=$tests" >> "$GITHUB_OUTPUT"
+          echo "Window starts at ${since:-nothing (no commit that old)}; new tests: ${tests:-none}" >> "$GITHUB_STEP_SUMMARY"
+
+  mutants:
+    needs: mutation-plan
+    if: needs.mutation-plan.outputs.since != ''
+    name: mutants ${{ matrix.shard }}/5
+    runs-on: ubuntu-latest
+    timeout-minutes: 150
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3, 4, 5]
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: |
+            21
+            25
+      - uses: gradle/actions/setup-gradle@v4
+      - name: Mutants (shard ${{ matrix.shard }} of 5)
+        env:
+          SINCE: ${{ needs.mutation-plan.outputs.since }}
+        run: |
+          mkdir -p build/nightly
+          python3 tools/modtest/mutate.py --since "$SINCE" --max 20 --seed "$(date -u +%j)" --shard "${{ matrix.shard }}/5" \
+            --cmd "./gradlew :$NODE:runGameTest" --timeout 1800 > "build/nightly/mutants-${{ matrix.shard }}.md" 2>&1 || true
+          cat "build/nightly/mutants-${{ matrix.shard }}.md"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: nightly-mutants-${{ matrix.shard }}
+          path: build/nightly/
+          retention-days: 14
+
+  repeats:
+    needs: mutation-plan
+    if: needs.mutation-plan.outputs.tests != ''
+    runs-on: ubuntu-latest
+    timeout-minutes: 150
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: |
+            21
+            25
+      - uses: gradle/actions/setup-gradle@v4
+      - name: Every new GameTest, 10 times
+        env:
+          ALIVEWORKPLACE_REPEAT: ${{ needs.mutation-plan.outputs.tests }}
+        run: |
+          mkdir -p build/nightly
+          echo "$ALIVEWORKPLACE_REPEAT" | tr ',' '\n' > build/nightly/repeats.txt
+          python3 tools/modtest/only_tests.py RepeatNewTests
+          ./gradlew ":$NODE:runGameTest" > build/nightly/repeats.log 2>&1 || true
+          cp "versions/$NODE/build/junit.xml" build/nightly/repeats.xml || true
+          tail -5 build/nightly/repeats.log
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: nightly-repeats
+          path: build/nightly/
+          retention-days: 14
+
+  mutation-report:
+    needs: [mutation-plan, mutants, repeats]
+    if: always() && needs.mutation-plan.result == 'success'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/download-artifact@v4
+        continue-on-error: true    # nothing changed in the window: no mutants artifacts
+        with:
+          pattern: nightly-mutants-*
+          path: build/nightly
+          merge-multiple: true
+      - uses: actions/download-artifact@v4
+        continue-on-error: true    # no new tests: no repeats artifact
+        with:
+          name: nightly-repeats
+          path: build/nightly
+      - name: Report
+        id: report
+        env:
+          SINCE: ${{ needs.mutation-plan.outputs.since }}
+        run: |
+          mkdir -p build/nightly
+          echo "$SINCE" > build/nightly/since.txt
+          if python3 tools/modtest/nightly_report.py --dir build/nightly --out build/nightly/report.md
+          then echo "bad=no" >> "$GITHUB_OUTPUT"; else echo "bad=yes" >> "$GITHUB_OUTPUT"; fi
+          cat build/nightly/report.md >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: nightly-mutation
+          path: build/nightly/report.md
+          retention-days: 30
+      - name: Survivors and flakes to the nightly-tests issue
+        if: steps.report.outputs.bad == 'yes' && github.ref == 'refs/heads/main'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          { echo "Nightly mutation and repeats: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"; echo
+            head -c 20000 build/nightly/report.md; } > build/nightly/issue.md
+          gh label create nightly-tests --color B60205 2>/dev/null || true
+          n=$(gh issue list --label nightly-tests --state open --json number -q '.[0].number')
+          if [ -n "$n" ]; then gh issue comment "$n" --body-file build/nightly/issue.md
+          else gh issue create --title "Nightly tests failing" --label nightly-tests --body-file build/nightly/issue.md; fi

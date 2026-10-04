@@ -2224,7 +2224,11 @@ public class ScreenshotHarness implements ClientModInitializer {
 		int shots = workshops.size();
 		if (tick >= 500 && (tick - 500) % 80 == 0 && (tick - 500) / 80 < shots) {
 			BlockPos bench = workshops.get((tick - 500) / 80);
-			server.execute(() -> hover(server.getPlayerList().getPlayers().get(0), new Vec3(bench.getX() + 9.5, bench.getY() + 6, bench.getZ() + 9.5), 135, 25));
+			server.execute(() -> {
+				ServerPlayer player = server.getPlayerList().getPlayers().get(0);
+				Vec3 target = Vec3.atCenterOf(bench);
+				hoverLookingAt(player, clearView(server.overworld(), player, target), target);
+			});
 		}
 		if (tick >= 560 && (tick - 560) % 80 == 0 && (tick - 560) / 80 < shots) {
 			shot(mc, "40_workshop_" + ((tick - 560) / 80));
@@ -2568,6 +2572,31 @@ public class ScreenshotHarness implements ClientModInitializer {
 	}
 
 	/** Hovers at {@code pos} looking at {@code target}. */
+	/**
+	 * ROADMAP 24.3: a camera spot that sees {@code target} (or the building around it) with nothing in between (the village scene's fixed spot was
+	 * sometimes inside the next house, filling the still with a log). Tries the four diagonals at a few distances and
+	 * heights, the south-east first (the old spot).
+	 */
+	static Vec3 clearView(ServerLevel level, ServerPlayer player, Vec3 target) {
+		int[][] dirs = {{1, 1}, {-1, 1}, {1, -1}, {-1, -1}};
+		for (double height : new double[] {6, 9, 13}) {
+			for (double dist : new double[] {9, 12, 7}) {
+				for (int[] dir : dirs) {
+					Vec3 cam = target.add(dir[0] * dist, height, dir[1] * dist);
+					if (!level.getBlockState(BlockPos.containing(cam)).isAir()) {
+						continue;
+					}
+					var hit = level.clip(new net.minecraft.world.level.ClipContext(cam, target, net.minecraft.world.level.ClipContext.Block.COLLIDER,
+						net.minecraft.world.level.ClipContext.Fluid.NONE, player));
+					if (hit.getType() == net.minecraft.world.phys.HitResult.Type.MISS || hit.getLocation().distanceTo(target) < 6) {
+						return cam;
+					}
+				}
+			}
+		}
+		return target.add(9, 13, 9);
+	}
+
 	static void hoverLookingAt(ServerPlayer player, Vec3 pos, Vec3 target) {
 		Vec3 d = target.subtract(pos);
 		float yaw = (float) (Math.toDegrees(Math.atan2(d.z, d.x)) - 90);

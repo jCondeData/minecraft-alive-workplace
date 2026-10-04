@@ -54,6 +54,7 @@ public class QaB37HallHintGameTests {
 		helper.setBlock(HALL, ModBlocks.VILLAGE_HALL);
 		VillageHallBlockEntity reloaded = (VillageHallBlockEntity) level.getBlockEntity(at);
 		reloaded.loadWithComponents(saved, level.registryAccess());
+		Leftovers.after(helper, () -> reloaded.setProtected(false)); // a protected hall left behind locks later tests' halls nearby
 		helper.assertTrue(reloaded.isProtected(), "the hall forgot it was protected after a save and reload");
 
 		ChoiceMenu menu = VillageHallScreen.forTest(owner, at);
@@ -81,6 +82,7 @@ public class QaB37HallHintGameTests {
 		VillageHallBlockEntity hall = (VillageHallBlockEntity) level.getBlockEntity(at);
 		hall.setOwner(owner.getUUID(), owner.getGameProfile().getName());
 		hall.setProtected(true);
+		Leftovers.after(helper, () -> hall.setProtected(false)); // a protected hall left behind locks later tests' halls nearby
 		helper.assertFalse(stranger.hasPermissions(2), "the test's stranger is an operator, so it can't play a stranger");
 
 		ChoiceMenu menu = VillageHallScreen.forTest(stranger, at);
@@ -103,6 +105,7 @@ public class QaB37HallHintGameTests {
 		helper.setBlock(HALL, ModBlocks.VILLAGE_HALL);
 		BlockPos at = helper.absolutePos(HALL);
 		VillageHallBlockEntity hall = (VillageHallBlockEntity) level.getBlockEntity(at);
+		Leftovers.after(helper, () -> hall.setProtected(false)); // a protected hall left behind locks later tests' halls nearby
 		ChoiceMenu menu = VillageHallScreen.forTest(player, at);
 		List<String> before = keys(level, player, menu.icon(VillageHallScreen.NAME));
 		helper.assertTrue(before.contains(PROTECT) && !before.contains(UNPROTECT), "an unowned, open hall doesn't hint 'protect': " + before);

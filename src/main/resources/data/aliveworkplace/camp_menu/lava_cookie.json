@@ -1,0 +1,6 @@
+{
+  "dish": "cobblemon:lava_cookie",
+  "keep": 64,
+  "when": "order",
+  "order": 500
+}

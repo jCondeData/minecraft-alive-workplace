@@ -136,6 +136,7 @@ public final class Graves {
 		ModAttachments.MINER_JOB.remove(villager);
 		ModAttachments.TREE_FARM.remove(villager);
 		ModAttachments.ORCHARD.remove(villager);
+		ModAttachments.BERRY_PLOT.remove(villager);
 		ModAttachments.FARM_FIELD.remove(villager);
 		level.removeBlock(pos, false);
 		if (!level.addFreshEntity(villager)) {

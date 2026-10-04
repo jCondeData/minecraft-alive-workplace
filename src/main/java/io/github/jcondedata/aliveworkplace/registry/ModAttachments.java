@@ -145,6 +145,18 @@ public final class ModAttachments {
 	/** How many flowers a Florist has grown (shown above its head). */
 	public static final Attachment<Integer> FLOWERS_GROWN = Attachment.saved("flowers_grown", com.mojang.serialization.Codec.INT);
 
+	/** The Berry Breeder's goal berry (ROADMAP 28.9; the step towards it is worked out afresh from what the village has). */
+	public static final Attachment<net.minecraft.resources.ResourceLocation> BERRY_GOAL = Attachment.saved("berry_goal", net.minecraft.resources.ResourceLocation.CODEC);
+
+	/** The Berry Breeder's plot, marked with a Field Marker (absent: the farmland round her composter). */
+	public static final Attachment<io.github.jcondedata.aliveworkplace.farm.FieldJob> BERRY_PLOT = Attachment.saved("berry_plot", io.github.jcondedata.aliveworkplace.farm.FieldJob.CODEC);
+
+	/** How many dishes a Camp Cook has cooked (shown above her head; ROADMAP 28.8). */
+	public static final Attachment<Integer> DISHES_COOKED = Attachment.saved("dishes_cooked", com.mojang.serialization.Codec.INT);
+
+	/** How many berries a Berry Breeder has picked (shown above her head). */
+	public static final Attachment<Integer> BERRIES_PICKED = Attachment.saved("berries_picked", com.mojang.serialization.Codec.INT);
+
 	/** How many beehives a Beekeeper has harvested (shown above its head). */
 	public static final Attachment<Integer> HIVES_HARVESTED = Attachment.saved("hives_harvested", com.mojang.serialization.Codec.INT);
 

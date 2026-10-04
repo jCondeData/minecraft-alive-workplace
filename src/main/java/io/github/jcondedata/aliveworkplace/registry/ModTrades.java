@@ -33,6 +33,8 @@ public final class ModTrades {
 		carpenterTrades();
 		chefTrades();
 		fossilScientistTrades();
+		berryBreederTrades();
+		campCookTrades();
 		Platform.get().addTrades(ModVillagers.BARD, 1, offers -> {
 			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 2), new ItemStack(Items.NOTE_BLOCK, 2), 12, 2, 0.05f));
 			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.STRING, 16), new ItemStack(Items.EMERALD), 16, 2, 0.05f));
@@ -462,6 +464,45 @@ public final class ModTrades {
 		});
 	}
 
+	/**
+	 * Berry Breeders (28.9; Cobblemon only): common berries (Novice), Growth and Surprise Mulch (Apprentice), and from
+	 * Journeyman the berries her village has found (bred ones too, from the hall's book).
+	 */
+	private static void berryBreederTrades() {
+		Platform.get().addTrades(ModVillagers.BERRY_BREEDER, 1, offers -> {
+			offers.add((entity, random) -> cobblemon(COMMON_BERRIES[random.nextInt(COMMON_BERRIES.length)] + "_berry", 1, 3, 12, 1));
+			offers.add((entity, random) -> cobblemon(COMMON_BERRIES[random.nextInt(COMMON_BERRIES.length)] + "_berry", 1, 3, 12, 1));
+		});
+		Platform.get().addTrades(ModVillagers.BERRY_BREEDER, 2, offers -> {
+			offers.add((entity, random) -> cobblemon("growth_mulch", 2, 4, 12, 5));
+			offers.add((entity, random) -> cobblemon("surprise_mulch", 3, 4, 12, 10));
+		});
+		for (int level = 3; level <= 5; level++) {
+			int emeralds = level * 2;
+			int xp = level == 3 ? 15 : level == 4 ? 20 : 30;
+			Platform.get().addTrades(ModVillagers.BERRY_BREEDER, level, offers ->
+				offers.add((entity, random) -> foundBerry(entity, random, emeralds, xp)));
+		}
+	}
+
+	/** One of the berries the breeder's village has found (a common one when it has found none yet), for emeralds. */
+	private static MerchantOffer foundBerry(net.minecraft.world.entity.Entity entity, net.minecraft.util.RandomSource random, int emeralds, int xp) {
+		java.util.List<net.minecraft.resources.ResourceLocation> found = new java.util.ArrayList<>();
+		io.github.jcondedata.aliveworkplace.berry.BerryChains.BerryData data = io.github.jcondedata.aliveworkplace.berry.BerryBreeders.data();
+		if (data == null) {
+			return null;
+		}
+		if (entity instanceof net.minecraft.world.entity.npc.Villager villager && villager.level() instanceof net.minecraft.server.level.ServerLevel level) {
+			found.addAll(io.github.jcondedata.aliveworkplace.berry.BerryBreeders.found(level, villager));
+		}
+		if (found.isEmpty()) {
+			return cobblemon(COMMON_BERRIES[random.nextInt(COMMON_BERRIES.length)] + "_berry", emeralds, 2, 8, xp);
+		}
+		found.sort(java.util.Comparator.comparing(Object::toString));
+		ItemStack berry = data.item(found.get(random.nextInt(found.size())));
+		return berry.isEmpty() ? null : new MerchantOffer(new ItemCost(Items.EMERALD, emeralds), berry.copyWithCount(2), 8, xp, 0.05f);
+	}
+
 	/** Ball Smiths buy apricorns and copper, and sell balls (nothing but the copper without Cobblemon). */
 	private static void ballSmithTrades() {
 		Platform.get().addTrades(ModVillagers.BALL_SMITH, 1, offers -> {
@@ -485,6 +526,8 @@ public final class ModTrades {
 	}
 
 	private static final String[] APRICORNS = {"red", "yellow", "green", "blue", "pink", "black", "white"};
+	/** The berries that grow wild (no pair makes them): what a Berry Breeder sells from the start. */
+	private static final String[] COMMON_BERRIES = {"oran", "cheri", "chesto", "pecha", "rawst", "aspear", "persim"};
 	private static final String[] BERRIES = {"oran", "sitrus", "lum", "leppa", "pecha", "cheri", "chesto", "rawst", "aspear", "persim"};
 
 	/** Emeralds for a Cobblemon item, or no offer when Cobblemon (or that item) isn't there. */
@@ -493,6 +536,34 @@ public final class ModTrades {
 			.getOptional(net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("cobblemon", item))
 			.map(i -> new MerchantOffer(new ItemCost(Items.EMERALD, emeralds), new ItemStack(i, count), uses, xp, 0.05f))
 			.orElse(null);
+	}
+
+	/** The Aprijuice colours (Cobblemon's {@code aprijuice_<colour>}). */
+	private static final String[] APRIJUICE = {"black", "blue", "green", "pink", "red", "white", "yellow"};
+
+	/**
+	 * Camp Cooks (28.8; Cobblemon only): Poké Bait and Poké Snacks (Novice), Aprijuice (Apprentice), Exp. Candy S and M
+	 * (Journeyman), Lumiose Galette and Big Malasada (Expert), Exp. Candy L (Master).
+	 */
+	private static void campCookTrades() {
+		Platform.get().addTrades(ModVillagers.CAMP_COOK, 1, offers -> {
+			offers.add((entity, random) -> cobblemon("poke_bait", 2, 2, 12, 1));
+			offers.add((entity, random) -> cobblemon("poke_snack", 3, 1, 12, 2));
+		});
+		Platform.get().addTrades(ModVillagers.CAMP_COOK, 2, offers -> {
+			offers.add((entity, random) -> cobblemon("aprijuice_" + APRIJUICE[random.nextInt(APRIJUICE.length)], 3, 1, 12, 5));
+			offers.add((entity, random) -> cobblemon("aprijuice_" + APRIJUICE[random.nextInt(APRIJUICE.length)], 3, 1, 12, 5));
+		});
+		Platform.get().addTrades(ModVillagers.CAMP_COOK, 3, offers -> {
+			offers.add((entity, random) -> cobblemon("exp_candy_s", 4, 1, 12, 10));
+			offers.add((entity, random) -> cobblemon("exp_candy_m", 8, 1, 8, 15));
+		});
+		Platform.get().addTrades(ModVillagers.CAMP_COOK, 4, offers -> {
+			offers.add((entity, random) -> cobblemon("lumiose_galette", 6, 1, 8, 20));
+			offers.add((entity, random) -> cobblemon("big_malasada", 6, 1, 8, 20));
+		});
+		Platform.get().addTrades(ModVillagers.CAMP_COOK, 5, offers ->
+			offers.add((entity, random) -> cobblemon("exp_candy_l", 16, 1, 4, 30)));
 	}
 
 	private static void nurseTrades() {

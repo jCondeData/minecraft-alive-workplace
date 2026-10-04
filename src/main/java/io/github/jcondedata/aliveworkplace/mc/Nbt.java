@@ -102,6 +102,10 @@ public final class Nbt {
 		return list.getDouble(index);
 	}
 
+	public static String stringAt(ListTag list, int index) {
+		return list.getString(index);
+	}
+
 	private Nbt() {
 	}
 }

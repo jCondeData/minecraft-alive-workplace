@@ -1,4 +1,4 @@
-"""Villager outfits, second set: orchard keeper, Pokemon trader, porter, postman, rancher, scholar, shopkeeper, sifter,
+"""Villager outfits, second set: orchard keeper, berry breeder, camp cook, Pokemon trader, porter, postman, rancher, scholar, shopkeeper, sifter,
 teacher, tinkerer, trainer, trainer leader, tutor and undertaker. Drawn in the style of the Builder's outfit
 (builders.py): the villager helpers for the garments, then the details by hand. Each keeps the headwear, colours and
 accessory of the outfit it replaces.
@@ -124,6 +124,89 @@ def orchard_keeper():
     f.put(2, 10, "#3f7a2a")
     f.put(3, 12, "#5e1a3a")
     return t.save_profession(ASSETS, "orchard_keeper", hat="full")
+
+
+def berry_breeder():
+    """A plum headscarf with a sprig of two berries (a blue Oran and a red Cheri, the first pair she breeds), a sage
+    gardening apron whose hem is stitched in alternating blue and red like her paired rows, and a pocket of berries
+    with a seed dibber; mulch on the hem."""
+    t = vg.VillagerTexture()
+    plum = vg.cloth("#7a3d6e")
+    sage = vg.cloth("#7f9a63")
+    oran = ["#2f4fa8", "#4f78d0"]                       # dark, lit
+    cheri = ["#a3202a", "#d8414a"]
+    leaf = ["#3f7a2a", "#5f9a3a"]
+    mulch = ["#4a3320", "#5e4229"]
+
+    vg.hat(t, plum, style="beanie", crown=3, noise=0.05)
+    crown_top(t, plum)
+    back = t.face("hat", "back")                        # the knot and its tails at the back
+    back.fill(plum[1], rows=[3])
+    paint(back, [(3, 4), (4, 4), (3, 5)], plum[2])
+    back.put(4, 5, plum[0])
+    front = t.face("hat", "front")                      # the sprig, tucked in on the villager's left
+    front.put(5, 1, leaf[1])
+    front.put(6, 1, leaf[0])
+    front.put(5, 2, oran[1])
+    front.put(6, 2, cheri[1])
+    front.put(6, 3, cheri[0])
+
+    vg.apron(t, sage, top=2, bottom=17, left=1, right=6, ties=True)
+    apron_back(t, sage)
+    jf = t.face("jacket", "front")
+    for x in range(1, 7):                               # the hem: paired rows, blue and red
+        jf.put(x, 17, oran[0] if x % 2 else cheri[0])
+    f = pocket(t, sage)
+    f.put(1, 11, oran[1])                               # berries peeking out of the pocket
+    f.put(1, 12, oran[0])
+    f.put(2, 11, cheri[1])
+    f.put(2, 12, cheri[0])
+    f.put(2, 10, leaf[1])
+    f.put(3, 10, "#9a7446")                             # the dibber's handle
+    f.put(3, 11, "#7a5a34")
+    paint(jf, [(1, 16), (5, 16)], mulch[1])             # mulch on the apron
+    jf.put(6, 16, mulch[0])
+    return t.save_profession(ASSETS, "berry_breeder", hat="full")
+
+
+def camp_cook():
+    """A rust-red bandana knotted at the back with a sprig of Hearty Grains tucked in it, a canvas camp apron over the
+    robe, its hem scorched by the campfire, and in the pocket a wooden ladle and a Poke Snack wrapped in leaf (ROADMAP
+    28.8)."""
+    t = vg.VillagerTexture()
+    rust = vg.cloth("#9a3b22")
+    canvas = vg.cloth("#a8946a")
+    grain = ["#b08a3a", "#d8b85a"]                      # Hearty Grains: dark, lit
+    soot = ["#3a3330", "#4e4540"]
+    wood = ["#7a5a34", "#9a7446"]
+
+    vg.hat(t, rust, style="beanie", crown=3, noise=0.05)
+    crown_top(t, rust)
+    back = t.face("hat", "back")                        # the knot and its two tails
+    back.fill(rust[1], rows=[3])
+    paint(back, [(3, 4), (4, 4), (4, 5)], rust[2])
+    back.put(3, 5, rust[0])
+    front = t.face("hat", "front")                      # the grain sprig on the villager's left
+    front.put(6, 1, grain[1])
+    front.put(5, 1, grain[0])
+    front.put(6, 2, grain[0])
+    front.put(5, 2, "#5f7a2a")
+
+    vg.apron(t, canvas, top=2, bottom=17, left=1, right=6, ties=True)
+    apron_back(t, canvas)
+    jf = t.face("jacket", "front")
+    for x in range(1, 7):                               # the hem, scorched by the campfire
+        jf.put(x, 17, soot[x % 2])
+    paint(jf, [(2, 16), (5, 16)], soot[1])
+    jf.put(6, 15, "#c8641e")                            # an ember burn
+    f = pocket(t, canvas)
+    f.put(1, 10, wood[1])                               # the ladle: its bowl above the pocket, the handle inside
+    f.put(2, 10, wood[1])
+    f.put(1, 11, wood[0])
+    f.put(2, 11, wood[1])
+    f.put(3, 11, "#4f7a2a")                             # a snack wrapped in leaf
+    f.put(3, 12, "#d8b85a")
+    return t.save_profession(ASSETS, "camp_cook", hat="full")
 
 
 def pokemon_trader():
@@ -452,7 +535,7 @@ def undertaker():
     return t.save_profession(ASSETS, "undertaker", hat="full")
 
 
-DRAW = [orchard_keeper, pokemon_trader, porter, postman, rancher, scholar, shopkeeper, sifter, teacher, tinkerer,
+DRAW = [orchard_keeper, berry_breeder, camp_cook, pokemon_trader, porter, postman, rancher, scholar, shopkeeper, sifter, teacher, tinkerer,
         trainer, trainer_leader, tutor, undertaker]
 
 if __name__ == "__main__":

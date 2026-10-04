@@ -223,6 +223,9 @@ public final class VillageNeeds {
 
 	/** Food a villager eats: something to eat with no effects (not golden, not rotten), and not in {@link #NOT_A_MEAL}. */
 	public static boolean isMeal(ItemStack stack) {
+		if (io.github.jcondedata.aliveworkplace.camp.CampCooks.isCampMeal(stack)) {
+			return true; // the Camp Cook's meals (ROADMAP 28.8), whatever seasoning they got
+		}
 		FoodProperties food = stack.get(DataComponents.FOOD);
 		return food != null && food.effects().isEmpty() && !stack.is(NOT_A_MEAL);
 	}

@@ -116,6 +116,7 @@ stay in the list, ticked, so their numbers stay unique.
 - [ ] **B48** PartnersForgeCompatTests aPidgeyBringsAFeatherToTheFletcher (28.5) failed once in a local full build (lane-a-1004-1233, main 5e66474 + 25.4 tooling, 2026-10-04 15:00Z): 'no bow for the guard' at the time-out, though it passed in the build 40 minutes earlier on the same code. Expected: the fletcher always makes the guard's bow within the test's time. Test: runCompatGameTest a few times, or the repeat generator on that test (found by lane-a-1004-1233) (found by lane-a-1004-1233, 2026-10-04)
 - [ ] **B49** StructureVillagerGameTests b10ZombieDesertHouseRotated90 failed in a local full build of main edc1750 (lane-a-1004-1533, 2026-10-04 17:36Z): 'the villager is not on the house floor (CLOCKWISE_90): 2.45 1.00 1.85 from the spot'; main's CI was already red at 0f5e530 (28.7). Also seen once in the build before (same session, main 0f5e530 + 23.1a): BuilderGameTests idleBuildersHelpNearbyBuilds 'the helper should stop once the build is done' (passed 8/8 alone with the repeat generator and in two other full builds; may come from 23.1a's crew changes, which let helpers work during the lead's retry). Expected: both pass on every run. Test: the two tests repeated 10x with RepeatNewTests (found by lane-a-1004-1533, 2026-10-04)
 - [ ] **B50** Flaky crew-speed GameTest: on CI run 37224223821 (db2887db, 2026-10-04) a crew of 4 built the stone house in 1966 ticks, 47% of the 4200 alone (limit 42%). Expected <=42%. Recent CI runs measured 29-36%; locally (class alone) passed twice at 39% and 35%, crew of 2 once 57%. Timing varies with villager pathing; the db2887db change (Nurse mixin) does not touch builders. Test: BuilderCrewGameTests.aCrewBuildsInAboutTheTimeOfOneBuilderDividedByItsSize (found by lane-b-1004-1832, 2026-10-04)
+- [ ] **B51** PartnersForgeCompatTests aPidgeyTakesTheAirMailUpAndLandsBackEmptyHanded (28.5) failed once in a local full build (lane-c-1004-1832, main cd957fd + 27.3, 2026-10-04 20:06Z): 'pastured pidgey: 0'; the 27.x changes don't touch pastures or the post. Expected: passes every run. Test: runCompatGameTest a few times or the repeat generator on that test; likely the same family as B48 (found by lane-c-1004-1832, 2026-10-04) (found by lane-c-1004-1832, 2026-10-04)
 
 ## Milestone 21: Finish 0.138.0
 
@@ -989,7 +990,7 @@ here adds a new kind of speed bonus (the new jobs get the partners' existing one
     full); a jobless villager left by a machine for 2400 ticks doesn't take it;
   - a builder builds both tiers (GameTest), and the renders are in the package;
   - showcase scene `pokemon_center` (stills of both tiers, a GIF of the healing).
-- [ ] **28.8** **The Camp Cook.** Stand a villager by a Campfire Pot (Cobblemon's campfire with a pot on it; POI when
+- [x] **28.8** (review: pending 2026-10-04) **The Camp Cook.** Stand a villager by a Campfire Pot (Cobblemon's campfire with a pot on it; POI when
   Cobblemon registers `cobblemon:campfire`) and sneak-right-click them with Hearty Grains. Never taken by a jobless
   villager. Config `campCooks` (true).
   - She cooks in the pot itself: the makings into its slots and seasonings into its top row through its container (as
@@ -1016,7 +1017,7 @@ here adds a new kind of speed bonus (the new jobs get the partners' existing one
     harvests and replants Hearty Grains;
   - the README section and job table say how to start her;
   - showcase scene `camp_cook` with its GIF.
-- [ ] **28.9** **The Berry Breeder.** Stand a villager by a composter and sneak-right-click them with any Cobblemon
+- [x] **28.9** (review: pending 2026-10-04) **The Berry Breeder.** Stand a villager by a composter and sneak-right-click them with any Cobblemon
   berry. Config `berryBreeders` (true).
   - The berry book: every berry and its `mutations` read from Cobblemon's own berry data (70 in 1.7.3), so a data pack's
     berries come too. Sneak-right-click the breeder: one page lists every berry, found ones lit, the rest with the pair
@@ -1325,7 +1326,7 @@ happy village, and an unhappy Legend never leaves but goes on strike. It builds 
 Homes, Couples), inn/ (Innkeepers), school/ (Schools), hall/ (VillageRanks, Chronicle, Festivals, Treasury, Caravans,
 MarketDays) and research/.
 
-- [ ] **29.1** **Design note.** `docs/design/M29.md`: what the player sees (the Gifted, each Legend, how each arrives,
+- [x] **29.1** (approved auto 2026-10-04) **Design note.** `docs/design/M29.md`: what the player sees (the Gifted, each Legend, how each arrives,
   the hall's Legends page, needs and strikes); the data formats (`legends/`, `gifted/` and `research_trees/` under
   `data/aliveworkplace/`, and the four `aliveworkplace:luxury/*` item tags); the config switches (`legends`,
   `giftedChance`, `legendSites`, `strangeMoods`, `legendNeeds`, `mythicLegendCap`); the save data (the villager
@@ -4267,6 +4268,19 @@ item waits.
 - (Sessions: anything that needs the owner, and the link to the latest Full test report. Handoffs go here through
   `sessions.py handoff "<in progress, next, traps>" --as <you>`, which keeps one per kind of session (chat, night):
   carry over anything still true from the previous one.)
+- 2026-10-04 (28.8, decisions; lane b): `asked` dishes in the camp menu name the jobs that ask in `for`; the cook keeps
+  their `keep` while a villager of one of those jobs is within 48 blocks of the pot (fishermen for Poké Bait; the Poké
+  Snack line names `aliveworkplace:habitat_keeper`, so it starts working when 28.10 registers that job; seasoning comes
+  from whatever berries the chests hold, until 28.10 says which ones the keeper wants). Cobblemon's campfire has no
+  unlit state, so "a Fire partner lights the campfire" is the `flames` show on the `cook` cue when she shuts the lid.
+  Order-only dishes go to the Storehouse that ordered them; porters take the cook's dishes past her `keep` to the store.
+  Farmers now sow any crop block whose seed is in `#minecraft:villager_plantable_seeds` (other Cobblemon crops in it too).
+- 2026-10-04 (28.9, decisions; lane b): the breeder's `berry_goal` saves the goal only; the step is worked out afresh
+  from what the village has (chests, her bag, her plot), so it never goes stale. "Found" is the hall's
+  `berriesFound` plus what the village has now (a village without a hall still lights what it has). Plants of other
+  kinds in her plot are dug up (the berry comes back) only when the step has no free pair of beds. Rows alternate by
+  x (east-west neighbours), so a plot needs farmland beds side by side east-west. The showcase grows the plot on the
+  spot with a forced mutation (Cobblemon's growth takes in-game days).
 - 2026-10-04 (23.10a, owner question; lane a): the village pieces aren't built by our builders: Minecraft's village
   generator places them (one shared outside per style, baked into each piece's file), and the mod has no "village
   leader" yet (the nearest is the Village Hall's owner: whoever first switches its protection on, with their friends).
@@ -4276,6 +4290,11 @@ item waits.
   porch or yard), and the village's builder rebuilds that house's outside in place (inside and its worker kept); or
   (b) it only changes the look of pieces built from then on (by a builder, 27.x), not the generated ones. Default if
   you don't answer: 1a + 2a with the five existing outsides (no new art), after the current lane work. Waiting.
+- 2026-10-04 (29.1, decisions; lane a): `docs/design/M29.md` section 7 records eight choices lanes build on unless
+  the owner changes them. The one that changes a spec: `mythicLegendCap` is one number (the City cap, default 2; a Town
+  half, Hamlet and Village 0), not 29.3's list, because the config file and Mod Menu screen take only switches and
+  whole numbers; same defaults. Also: an existing City gets the Founder's mood once after the update; zombie
+  conversion must copy `LEGEND`/`GIFTED`/`STRANGE_MOOD` (new UUID), for 29.3.
 - 2026-10-04 (28.7, owner question; lane b): Cobblemon 1.7.3 has its own villager job, `cobblemon:nurse`, whose
   workstation is the Healing Machine, so a jobless villager next to any Healing Machine already becomes Cobblemon's nurse
   (compat test on `wip/lane-b`). 28.7 says "a jobless villager never takes a player's machine by themselves". Which:

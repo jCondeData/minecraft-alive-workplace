@@ -401,6 +401,23 @@ public final class ModVillagers {
 		)
 	);
 
+	/**
+	 * Breeds Cobblemon berries at a composter (ROADMAP 28.9): only ever by a berry, with Cobblemon installed and config
+	 * {@code berryBreeders} on.
+	 */
+	public static final VillagerProfession BERRY_BREEDER = Registry.register(
+		BuiltInRegistries.VILLAGER_PROFESSION,
+		AliveWorkplace.id("berry_breeder"),
+		new VillagerProfession(
+			"berry_breeder",
+			holder -> holder.is(PoiTypes.FARMER),
+			holder -> holder.is(PoiTypes.FARMER),
+			ImmutableSet.of(),
+			ImmutableSet.of(),
+			SoundEvents.VILLAGER_WORK_FARMER
+		)
+	);
+
 	public static final ResourceLocation SCHOLARS_DESK_ID = AliveWorkplace.id("scholars_desk");
 	public static final ResourceKey<PoiType> SCHOLARS_DESK_POI = ResourceKey.create(Registries.POINT_OF_INTEREST_TYPE, SCHOLARS_DESK_ID);
 	public static final PoiType SCHOLARS_DESK_POI_TYPE = Platform.get().registerPoi(SCHOLARS_DESK_ID, 1, 1, ModBlocks.SCHOLARS_DESK);
@@ -586,6 +603,33 @@ public final class ModVillagers {
 	public static final ResourceKey<PoiType> HEALING_MACHINE_POI = ResourceKey.create(Registries.POINT_OF_INTEREST_TYPE,
 		ResourceLocation.fromNamespaceAndPath("cobblemon", "nurse"));
 
+	/**
+	 * Cobblemon's Campfire Pot (ROADMAP 28.8): its campfire with a pot on it ({@code cobblemon:campfire}) is the Camp Cook's
+	 * workstation, by a POI of ours registered when Cobblemon registers the block. Only Hearty Grains give the job there;
+	 * a jobless villager never takes a player's pot.
+	 */
+	public static final ResourceLocation CAMPFIRE_POT_BLOCK = ResourceLocation.fromNamespaceAndPath("cobblemon", "campfire");
+	public static final ResourceLocation CAMPFIRE_POT_ID = AliveWorkplace.id("campfire_pot");
+	public static final ResourceKey<PoiType> CAMPFIRE_POT_POI = ResourceKey.create(Registries.POINT_OF_INTEREST_TYPE, CAMPFIRE_POT_ID);
+
+	static {
+		Platform.get().whenBlockRegistered(CAMPFIRE_POT_BLOCK, block -> Platform.get().registerPoi(CAMPFIRE_POT_ID, 1, 1, block));
+	}
+
+	/** Cooks Cobblemon dishes in a Campfire Pot (ROADMAP 28.8): only ever by Hearty Grains, with Cobblemon and config {@code campCooks}. */
+	public static final VillagerProfession CAMP_COOK = Registry.register(
+		BuiltInRegistries.VILLAGER_PROFESSION,
+		AliveWorkplace.id("camp_cook"),
+		new VillagerProfession(
+			"camp_cook",
+			holder -> holder.is(CAMPFIRE_POT_POI),
+			holder -> holder.is(CAMPFIRE_POT_POI),
+			ImmutableSet.of(),
+			ImmutableSet.of(),
+			SoundEvents.CAMPFIRE_CRACKLE
+		)
+	);
+
 	/** Revives fossils for players, for a price (only with Cobblemon installed). */
 	public static final VillagerProfession FOSSIL_SCIENTIST = Registry.register(
 		BuiltInRegistries.VILLAGER_PROFESSION,
@@ -623,7 +667,8 @@ public final class ModVillagers {
 			|| profession == TRAINER || profession == TRAINER_LEADER || profession == TUTOR || profession == POKEMON_TRADER
 			|| profession == ORCHARD_KEEPER || profession == BALL_SMITH || profession == PORTER || profession == CARPENTER || profession == CHEF || profession == FOSSIL_SCIENTIST
 			|| profession == BEEKEEPER || profession == FLORIST || profession == RANCHER || profession == TEACHER || profession == INNKEEPER || profession == UNDERTAKER || profession == SCHOLAR
-			|| profession == SIFTER || profession == TINKERER || profession == NETHERWORKER || profession == COMPOSTER;
+			|| profession == SIFTER || profession == TINKERER || profession == NETHERWORKER || profession == COMPOSTER
+			|| profession == BERRY_BREEDER || profession == CAMP_COOK;
 	}
 
 	/**

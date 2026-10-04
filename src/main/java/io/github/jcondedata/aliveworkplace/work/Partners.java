@@ -104,6 +104,12 @@ public final class Partners {
 		if (profession == ModVillagers.RANCHER) {
 			return Set.of("normal", "ground"); // Tauros, Mudbray, Ponyta's cousins: wild horses calm down quicker
 		}
+		if (profession == ModVillagers.CAMP_COOK) {
+			return Set.of("fire", "normal"); // Charmander, Snorlax...: the pot cooks quicker
+		}
+		if (profession == ModVillagers.BERRY_BREEDER) {
+			return Set.of("grass", "bug"); // Cherrim, Ribombee, Vivillon...: the berries grow quicker
+		}
 		if (profession == ModVillagers.FLORIST) {
 			return Set.of("grass", "fairy"); // Bellossom, Comfey, Flabébé...
 		}

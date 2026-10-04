@@ -1,0 +1,14 @@
+{
+  "jobs": [
+    "aliveworkplace:berry_breeder"
+  ],
+  "types": [
+    "bug"
+  ],
+  "cue": "pair",
+  "animation": "special",
+  "particles": "minecraft:falling_spore_blossom",
+  "sound": "minecraft:entity.bee.pollinate",
+  "ticks": 40,
+  "effect": "none"
+}

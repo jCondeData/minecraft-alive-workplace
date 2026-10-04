@@ -407,6 +407,12 @@ public class FieldWork extends Behavior<Villager> {
 	private static boolean isRipe(ServerLevel level, BlockPos pos, BlockState state) {
 		Block block = state.getBlock();
 		if (block instanceof CropBlock crop) {
+			// A two-block crop (Cobblemon's Hearty Grains) is cut from its bottom half: the top comes with it.
+			if (state.hasProperty(net.minecraft.world.level.block.state.properties.BlockStateProperties.DOUBLE_BLOCK_HALF)
+				&& state.getValue(net.minecraft.world.level.block.state.properties.BlockStateProperties.DOUBLE_BLOCK_HALF)
+					== net.minecraft.world.level.block.state.properties.DoubleBlockHalf.UPPER) {
+				return false;
+			}
 			return crop.isMaxAge(state);
 		}
 		if (block instanceof NetherWartBlock) {
@@ -636,6 +642,8 @@ public class FieldWork extends Behavior<Villager> {
 	public static boolean isSeed(ItemStack stack) {
 		return !stack.isEmpty() && stack.getItem() instanceof BlockItem bi
 			&& (bi.getBlock().defaultBlockState().is(BlockTags.CROPS) || bi.getBlock() instanceof NetherWartBlock
+				// crops other mods give villagers to plant, such as Cobblemon's Hearty Grains and Vivichoke (ROADMAP 28.8)
+				|| bi.getBlock() instanceof CropBlock && stack.is(ItemTags.VILLAGER_PLANTABLE_SEEDS)
 				|| stack.is(Items.SUGAR_CANE) || stack.is(Items.CACTUS) || stack.is(Items.BAMBOO) || stack.is(Items.KELP));
 	}
 

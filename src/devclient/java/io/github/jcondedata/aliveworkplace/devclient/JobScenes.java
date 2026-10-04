@@ -619,6 +619,69 @@ final class JobScenes {
 			ScreenshotHarness.hoverLookingAt(player, CAMERA, TARGET);
 			return l -> n(ModAttachments.FOSSILS_REVIVED, sci) >= 1;
 		}));
+		SCENES.put("camp_cook", job("the camp cook cooked a Poké Snack in the Campfire Pot", 2400, (level, player) -> {
+			// ROADMAP 28.8: Cobblemon's campfire with a red pot on it, picked with Hearty Grains; the makings of a Poké
+			// Snack in the chest beside it. She fills the pot, shuts the lid, and the snack comes out into the chest.
+			net.minecraft.world.level.block.Block campfire = net.minecraft.core.registries.BuiltInRegistries.BLOCK.get(
+				io.github.jcondedata.aliveworkplace.registry.ModVillagers.CAMPFIRE_POT_BLOCK);
+			level.setBlockAndUpdate(STATION, campfire.defaultBlockState());
+			if (level.getBlockEntity(STATION) instanceof com.cobblemon.mod.common.block.entity.CampfireBlockEntity pot) {
+				pot.setPotItem(new ItemStack(cobblemonItem("campfire_pot_red")));
+			}
+			Villager cook = picked(level, player, STATION, level.getBlockState(STATION), cobblemonItem("hearty_grains"));
+			Container c = chest(level, chestPos(), new ItemStack(cobblemonItem("moomoo_milk"), 3), new ItemStack(Items.HONEY_BOTTLE, 2),
+				new ItemStack(cobblemonItem("vivichoke"), 1), new ItemStack(cobblemonItem("hearty_grains"), 3),
+				new ItemStack(cobblemonItem("oran_berry"), 3));
+			return l -> c.countItem(cobblemonItem("poke_snack")) > 0 && n(ModAttachments.DISHES_COOKED, cook) >= 1;
+		}));
+		SCENES.put("berry_breeder", new Job("the berry breeder bred a Lum Berry from Oran and Cheri", 2400, CAMERA, TARGET, (level, player) -> {
+			// ROADMAP 28.9: a composter picked with an Oran Berry; Oran, Cheri and Surprise Mulch in the chest; two rows of
+			// farmland east of the composter (x 2 and 3), so the parents go in side by side; a hall to note the find.
+			Villager breeder = picked(level, player, STATION, Blocks.COMPOSTER, cobblemonItem("oran_berry"));
+			Container c = chest(level, chestPos(), new ItemStack(cobblemonItem("oran_berry"), 6), new ItemStack(cobblemonItem("cheri_berry"), 6),
+				new ItemStack(cobblemonItem("surprise_mulch"), 6));
+			place(level, new BlockPos(-4, -60, -3), ModBlocks.VILLAGE_HALL);
+			for (int x = 2; x <= 3; x++) {
+				for (int z = -2; z <= 0; z++) {
+					level.setBlockAndUpdate(new BlockPos(x, -61, z), Blocks.FARMLAND.defaultBlockState());
+				}
+			}
+			io.github.jcondedata.aliveworkplace.berry.BerryBreeders.setGoal(breeder, net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("cobblemon", "lum_berry"));
+			boolean[] ripened = {false};
+			return l -> {
+				var data = io.github.jcondedata.aliveworkplace.berry.BerryBreeders.data();
+				if (data == null) {
+					return false;
+				}
+				int planted = 0;
+				for (int x = 2; x <= 3; x++) {
+					for (int z = -2; z <= 0; z++) {
+						planted += data.plantOf(l.getBlockState(new BlockPos(x, -60, z))) != null ? 1 : 0;
+					}
+				}
+				if (planted == 6 && !ripened[0]) {
+					// Cobblemon's growth takes in-game days: the plot is grown on the spot, with a mutation, so the scene ends.
+					ripened[0] = true;
+					for (int z = -2; z <= 0; z++) {
+						data.ripen(l, new BlockPos(2, -60, z), new net.minecraft.world.level.levelgen.SingleThreadedRandomSource(z) {
+							@Override
+							public int nextInt(int bound) {
+								return 0;
+							}
+						});
+					}
+				}
+				return io.github.jcondedata.aliveworkplace.berry.BerryBreeders.found(l, breeder)
+					.contains(net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("cobblemon", "lum_berry"))
+					&& c.countItem(cobblemonItem("lum_berry")) > 0;
+			};
+		}, new After("04_berry_book", (level, player) -> {
+			Villager breeder = level.getEntitiesOfClass(Villager.class, new net.minecraft.world.phys.AABB(STATION).inflate(12),
+				io.github.jcondedata.aliveworkplace.berry.BerryBreeders::isBreeder).get(0);
+			breeder.setNoAi(true);
+			ScreenshotHarness.hover(player, breeder.position().add(1.5, 1.2, 3), 160, 15);
+			io.github.jcondedata.aliveworkplace.berry.BerryBreeders.open(player, breeder);
+		}, 49, 6)));
 		SCENES.put("dropbox", new Job("the porter emptied the Drop Box into the store", 2000, CAMERA, TARGET, (level, player) -> {
 			place(level, STATION, ModBlocks.STOREHOUSE);
 			Container store = chest(level, STATION.west(2));

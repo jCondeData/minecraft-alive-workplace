@@ -44,6 +44,8 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 	/** The village's City Plan (27.2): empty until someone paints it. */
 	private io.github.jcondedata.aliveworkplace.city.CityPlan plan = io.github.jcondedata.aliveworkplace.city.CityPlan.EMPTY;
 	private long lastTaxDay = -1;
+	/** The berries the village has found (ROADMAP 28.9, the Berry Breeder's book): none by default. */
+	private final java.util.Set<net.minecraft.resources.ResourceLocation> berriesFound = new java.util.LinkedHashSet<>();
 	/** The day of the last market (see {@link MarketDays}). */
 	private long lastMarketDay = -1;
 	/** What happened in the village, oldest first (see {@link Chronicle}). */
@@ -349,6 +351,14 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 		edicts = Edicts.InForce.CODEC.listOf().parse(net.minecraft.nbt.NbtOps.INSTANCE, tag.get("edicts"))
 			.result().map(java.util.List::copyOf).orElse(java.util.List.of());
 		civic = null;
+		berriesFound.clear();
+		net.minecraft.nbt.ListTag berries = Nbt.getList(tag, "berriesFound", net.minecraft.nbt.Tag.TAG_STRING);
+		for (int i = 0; i < berries.size(); i++) {
+			net.minecraft.resources.ResourceLocation id = net.minecraft.resources.ResourceLocation.tryParse(Nbt.stringAt(berries, i));
+			if (id != null) {
+				berriesFound.add(id);
+			}
+		}
 		chronicle = new java.util.ArrayList<>();
 		net.minecraft.nbt.ListTag lines = Nbt.getList(tag, "chronicle", net.minecraft.nbt.Tag.TAG_COMPOUND);
 		for (int i = 0; i < lines.size(); i++) {
@@ -401,6 +411,23 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 			lines.add(line);
 		}
 		tag.put("chronicle", lines);
+		net.minecraft.nbt.ListTag berries = new net.minecraft.nbt.ListTag();
+		berriesFound.forEach(id -> berries.add(net.minecraft.nbt.StringTag.valueOf(id.toString())));
+		tag.put("berriesFound", berries);
+	}
+
+	/** The berries the village has found (ROADMAP 28.9), in the order found. */
+	public java.util.Set<net.minecraft.resources.ResourceLocation> berriesFound() {
+		return java.util.Collections.unmodifiableSet(berriesFound);
+	}
+
+	/** Notes a berry the village found; whether it's new. */
+	public boolean findBerry(net.minecraft.resources.ResourceLocation berry) {
+		boolean added = berriesFound.add(berry);
+		if (added) {
+			setChanged();
+		}
+		return added;
 	}
 
 	@Override

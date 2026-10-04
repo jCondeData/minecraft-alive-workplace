@@ -30,7 +30,7 @@ GROUPS = [
     "Carpenter", "Mason", "Leatherworker (dyer)", "Chef", "Armorer (smelter)", "Toolsmith", "Weaponsmith", "Fletcher",
     "Shepherd", "Butcher (herder)", "Cleric (alchemist)", "Librarian (scribe)", "Cartographer (explorer)", "Postman",
     "Guard", "Nurse", "Shopkeeper", "Ferryman", "Bard", "Trainer", "Trainer Leader", "Move Tutor", "Ball Smith",
-    "Pokémon Trader", "Fossil Scientist", "Village Hall", "Everyone at work", "Build families",
+    "Pokémon Trader", "Fossil Scientist", "Berry Breeder", "Camp Cook", "Village Hall", "Everyone at work", "Build families",
 ]
 
 START, WORKING, DONE = ("01_start", "Start"), ("work_*@middle", "At work"), ("03_done", "Done")
@@ -197,6 +197,10 @@ SCENES = [
       [("01_trader_offer", "An offer"), ("02_trader_party", "A Pokémon that fits"), ("03_trader_refused", "One that doesn't")],
       cobblemon=True),
     job("fossil", "Fossil Scientist", "Reviving a fossil", "the fossil scientist revived the fossil", 150, cobblemon=True),
+    job("berry_breeder", "Berry Breeder", "Breeding a Lum Berry", "the berry breeder bred a Lum Berry from Oran and Cheri", 150,
+        [("04_berry_book", "The berry book")], cobblemon=True),
+    job("camp_cook", "Camp Cook", "Cooking a Poké Snack in the Campfire Pot", "the camp cook cooked a Poké Snack in the Campfire Pot", 150,
+        cobblemon=True),
     # Village-wide
     S("hall", "Village Hall", "The Village Hall, its screen and calendar", "the Village Hall screen and its calendar page opened", 75,
       [("02_hall_people", "People, under the page row"), ("03_hall_builder", "A builder"), ("08_hall_calendar", "The calendar"),

@@ -327,7 +327,7 @@ public final class Miners {
 	public static void employ(ServerLevel level, Villager villager, BlockPos bench) {
 		level.getPoiManager().take(h -> true, (h, p) -> p.equals(bench), bench, 1); // a blast furnace, or an old Miner's Bench
 		villager.getBrain().setMemory(net.minecraft.world.entity.ai.memory.MemoryModuleType.JOB_SITE, net.minecraft.core.GlobalPos.of(level.dimension(), bench));
-		villager.setVillagerData(villager.getVillagerData().setProfession(ModVillagers.MINER));
+		io.github.jcondedata.aliveworkplace.work.WorkerLimits.order(villager, ModVillagers.MINER);
 		if (villager.getVillagerXp() == 0) {
 			villager.setVillagerXp(1);
 		}

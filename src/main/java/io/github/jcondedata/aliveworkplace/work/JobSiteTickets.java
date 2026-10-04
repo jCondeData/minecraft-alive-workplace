@@ -66,7 +66,7 @@ public final class JobSiteTickets extends SavedData {
 		tickets.setDirty();
 	}
 
-	private static boolean workstation(Holder<PoiType> type) {
+	static boolean workstation(Holder<PoiType> type) {
 		return type.is(PoiTypeTags.ACQUIRABLE_JOB_SITE) || Stations.ALL.stream().anyMatch(s -> s.poi().test(type));
 	}
 

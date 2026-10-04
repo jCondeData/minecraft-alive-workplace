@@ -3,6 +3,9 @@
 ## Unreleased
 
 ### Added
+- Server owners get two new settings for big villages: `maxWorkersPerVillage` (jobless villagers stop taking free
+  workstations once a village has that many workers; nobody loses a job) and `workerPathRange` (how far workers look
+  for a path in one go). Every config option, including each village system's on/off switch, is now in the README.
 - Mirroring a blueprint you already placed (on the style screen) flips it where it stands, and its ghost shows it at
   once. Cancelling a build gives the blueprint back still placed: hand it back to carry on, or click the ground to
   move it; what the builder carried goes back to its chests.

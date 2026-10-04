@@ -45,6 +45,10 @@ public final class WorkplaceConfig {
 	public int partnerRadius = 16;
 	/** How far from the Postal Desk a postman walks to deliver (farther mail arrives at dawn). */
 	public int postmanRange = 64;
+	/** At most this many workers per village (taken workstations within villageRadius); 0: no cap. */
+	public int maxWorkersPerVillage = 0;
+	/** How far villagers with a job look for a path in one go (vanilla: 48). */
+	public int workerPathRange = 48;
 	/** Workers whose workstations are this close together are one village and share their chests. */
 	public int villageRadius = 48;
 	/** How far from a Village Hall its village reaches. */
@@ -150,6 +154,8 @@ public final class WorkplaceConfig {
 		"explorerRange", 16, 128,
 		"partnerRadius", 4, 48,
 		"postmanRange", 16, 256,
+		"maxWorkersPerVillage", 0, 500,
+		"workerPathRange", 16, 128,
 		"villageRadius", 0, 128,
 		"villageHallRadius", 16, 160,
 		"villageGrowthCap", 0, 500,
@@ -243,6 +249,9 @@ public final class WorkplaceConfig {
 		// Gametests run side by side: workers sharing chests across them would mix the tests up. The village tests
 		// switch sharing on in batches of their own.
 		io.github.jcondedata.aliveworkplace.work.Village.RADIUS = System.getProperty("fabric-api.gametest") != null ? 0 : villageRadius;
+		io.github.jcondedata.aliveworkplace.work.WorkerLimits.MAX_PER_VILLAGE = maxWorkersPerVillage;
+		io.github.jcondedata.aliveworkplace.work.WorkerLimits.RADIUS = villageRadius;
+		io.github.jcondedata.aliveworkplace.work.WorkerLimits.PATH_RANGE = workerPathRange;
 		Money.DOLLARS_PER_EMERALD = dollarsPerEmerald;
 		io.github.jcondedata.aliveworkplace.hall.Treasury.CENTS_PER_WORKER = treasuryPerWorker;
 		io.github.jcondedata.aliveworkplace.hall.VillageHalls.RADIUS = villageHallRadius;

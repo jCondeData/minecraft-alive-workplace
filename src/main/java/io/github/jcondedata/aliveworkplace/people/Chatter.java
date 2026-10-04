@@ -58,6 +58,11 @@ public final class Chatter {
 		});
 	}
 
+	/** Whether a villager has said something to {@code player} since the server started. */
+	public static boolean spokeTo(ServerPlayer player) {
+		return LAST.containsKey(player.getUUID());
+	}
+
 	static void tick(ServerLevel level) {
 		long now = level.getGameTime();
 		for (ServerPlayer player : level.players()) {

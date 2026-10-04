@@ -836,7 +836,7 @@ public final class Builders {
 	public static void employ(ServerLevel level, Villager villager, BlockPos bench) {
 		level.getPoiManager().take(h -> true, (h, p) -> p.equals(bench), bench, 1); // a Blueprint Table, or an old Builder's Bench
 		villager.getBrain().setMemory(MemoryModuleType.JOB_SITE, GlobalPos.of(level.dimension(), bench));
-		villager.setVillagerData(villager.getVillagerData().setProfession(ModVillagers.BUILDER));
+		io.github.jcondedata.aliveworkplace.work.WorkerLimits.order(villager, ModVillagers.BUILDER);
 		if (villager.getVillagerXp() == 0) {
 			villager.setVillagerXp(1); // keeps the profession even if the bench is briefly missing
 		}

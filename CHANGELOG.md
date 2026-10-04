@@ -17,6 +17,15 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Added
+- **The Steward's desk** (27.8): with a Steward, the hall's "What next?" page is his desk: his level, the mode (**Ask me
+  first**, **Run the village**, **Rest**), his open builds (shift-click cancels one), up to 9 proposals and the tips as
+  before. Each proposal shows the building and its style, why, where, the five materials it needs most against the
+  store, and which builder takes it after what; its page has **Approve**, **Decline** (not proposed again for 3 days),
+  **Show me** (its outline glows for 30 seconds), **Another spot** and **Another style**, and the desk has **Approve
+  all**. Approving starts the build for that builder, owned by the hall's owner, and notes it in the chronicle (new
+  kind: Plans); upgrades go on the building's own spot. In Run the village he approves them himself each morning and
+  tells the owner in one line; Rest plans nothing. Unanswered proposals lapse after 3 days; the owner hears once a
+  morning when new ones are waiting. Same rights as the plan. Config `stewardSelfRun` (off: every village asks first).
 - **Finding a plot** (27.7): for each building he wishes for, the Steward finds where it fits in a zone of its kind, in
   the zone's style: nearest the hall first, its front facing the nearest road on the plan (else the hall), the
   footprint and 2 blocks round it inside the zone and off its roads, the ground under it within 4 blocks of level, at

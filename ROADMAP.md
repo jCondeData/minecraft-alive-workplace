@@ -597,7 +597,7 @@ and an old vanilla village slowly rebuilds itself one house at a time. It answer
   - no plot across a zone's edge, over a player's cobblestone wall or a chest, overlapping another village's build
     site, or on a slope of 6;
   - the counter never passes 64 columns in a tick, and a search over a fully painted plan ends within 200 ticks.
-- [ ] **27.8** **The Steward's desk: ask first, or run itself.** When a village has a Steward, the hall's "What
+- [x] **27.8** (review: pending 2026-10-04) **The Steward's desk: ask first, or run itself.** When a village has a Steward, the hall's "What
   next?" page (the compass) becomes his desk: his icon and level, the mode (**Ask me first**, **Run the village**,
   **Rest**), his open builds with **Cancel** (`Builders.cancel`), the "What next?" tips as now, and up to 9
   proposals. Each proposal shows its blueprint, name and style; why ("3 villagers have no bed"); where ("22 blocks

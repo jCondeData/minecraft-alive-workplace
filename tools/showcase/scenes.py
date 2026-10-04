@@ -106,6 +106,11 @@ SCENES = [
       "the Steward ranked today's wishes from his rules, and explain listed rules that held and that didn't", 45,
       [("01_steward_wish", "His first wish, over his head"), ("02_steward_explain_end", "Explain: the last rules and today's wishes"),
        ("03_steward_explain_top", "Explain: the first rules")]),
+    # The Steward's desk (ROADMAP 27.8): proposals on the hall's What next? page, Show me, Approve and the builder setting off
+    S("steward_desk", "Steward", "The Steward's desk",
+      "the hall's What next? page became the Steward's desk with three proposals, Show me lit one's outline, and approving it started the build", 45,
+      [("01_steward_desk", "The desk: his modes, three proposals and the tips"), ("02_steward_proposal", "A proposal's page"),
+       ("03_steward_show_me", "Show me: the outline in the world"), ("04_builder_sets_off", "Approved: the builder sets off")]),
     job("netherworker", "Netherworker", "A trip to the Nether", "the netherworker came back from the Nether with loot", 240),
     job("undertaker", "Undertaker", "Bringing a worker back from the grave", "the undertaker revived the villager"),
     job("innkeeper", "Innkeeper", "A traveller checks in", "a traveller came to stay at the inn", 120,

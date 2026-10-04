@@ -87,6 +87,7 @@ public final class StewardWishes {
 	public static void init() {
 		StewardWork.PLANNER = StewardWishes::plan;
 		Plots.init();
+		StewardDesk.init();
 	}
 
 	/** The Steward's day: the world's day count (as his rounds go by). */
@@ -170,11 +171,16 @@ public final class StewardWishes {
 
 	/** {@link StewardWork#PLANNER}: at the hall, he ranks the day's wishes once and says the first. */
 	static Component plan(ServerLevel level, Villager steward, BlockPos hall) {
+		if (StewardDesk.mode(level, hall) == CityPlan.Mode.REST) {
+			return Component.translatable("message.aliveworkplace.steward.state.resting"); // Rest (27.8): he plans nothing
+		}
 		rankIfDue(level, hall);
 		List<Wish> wishes = of(level, hall).wishes();
 		for (Wish wish : wishes) {
 			plotFor(wish).ifPresent(request -> Plots.request(level, hall, request)); // the morning's plots (27.7), kept till the plan changes
 		}
+		StewardDesk.plan(level, steward, hall); // proposals on his desk, or builds started in Run the village (27.8)
+		wishes = of(level, hall).wishes();
 		if (wishes.isEmpty()) {
 			return Component.translatable("message.aliveworkplace.steward.state.reading");
 		}

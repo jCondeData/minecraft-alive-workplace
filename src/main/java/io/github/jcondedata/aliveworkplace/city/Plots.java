@@ -113,9 +113,19 @@ public final class Plots {
 	}
 
 	/** What the Steward wants a plot for: blueprints in order (the next is tried where the first can't go), and a zone kind. */
-	public record Request(List<ResourceLocation> blueprints, String zoneKind) {
+	public record Request(List<ResourceLocation> blueprints, String zoneKind, int skip) {
 		public Request {
 			blueprints = List.copyOf(blueprints);
+			skip = Math.max(0, skip);
+		}
+
+		public Request(List<ResourceLocation> blueprints, String zoneKind) {
+			this(blueprints, zoneKind, 0);
+		}
+
+		/** The same, passing over the first {@code skip} spots that fit ("Another spot" on the Steward's desk, 27.8). */
+		public Request skipping(int skip) {
+			return new Request(blueprints, zoneKind, skip);
 		}
 	}
 
@@ -333,6 +343,8 @@ public final class Plots {
 		private final Map<Reason, Integer> rejected = new EnumMap<>(Reason.class);
 		private int spot;
 		private int option;
+		/** Spots that fit passed over so far ({@link Request#skip}). */
+		private int passed;
 		private boolean done;
 		@Nullable
 		private Plot result;
@@ -458,6 +470,12 @@ public final class Plots {
 				Verdict verdict = tryAt(base, at[0], at[1], turn, mirror);
 				if (verdict == null) {
 					break; // out of columns: the same option next tick
+				}
+				if (verdict.plot().isPresent() && passed < request.skip()) {
+					passed++; // a spot that fits, passed over for another: on to the next spot
+					option = 0;
+					spot++;
+					continue;
 				}
 				if (verdict.plot().isPresent()) {
 					result = verdict.plot().get();

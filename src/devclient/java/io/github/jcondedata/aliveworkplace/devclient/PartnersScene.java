@@ -59,6 +59,13 @@ final class PartnersScene {
 					Showcase.check(false, "the Machop and the builder are there");
 					return;
 				}
+				// start the walk from the pasture: a Machop that wandered over to the work before the cue has no walk
+				// left to measure (B45)
+				machop.teleportTo(PASTURE.getX() - 0.5, PASTURE.getY(), PASTURE.getZ() + 0.5);
+				machop.setDeltaMovement(Vec3.ZERO);
+				if (machop instanceof net.minecraft.world.entity.Mob mob) {
+					mob.getNavigation().stop();
+				}
 				machopStart = machop.position();
 				cued = PartnerShows.cue(builder, "fetch", WORK, new ItemStack(Items.OAK_PLANKS));
 				Showcase.check(cued, "the builder's fetch cued the Machop" + (cued ? "" : ": " + PartnerShows.lastRefusal()));

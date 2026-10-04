@@ -1,0 +1,15 @@
+{
+  "jobs": [
+    "aliveworkplace:builder"
+  ],
+  "types": [
+    "rock"
+  ],
+  "cue": "fetch",
+  "carry": "from_work",
+  "carry_tag": "aliveworkplace:partner_carry/stone",
+  "animation": "physical",
+  "sound": "minecraft:block.stone.place",
+  "ticks": 30,
+  "effect": "crack"
+}

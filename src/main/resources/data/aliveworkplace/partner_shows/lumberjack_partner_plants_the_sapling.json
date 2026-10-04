@@ -1,0 +1,16 @@
+{
+  "jobs": [
+    "aliveworkplace:lumberjack"
+  ],
+  "types": [
+    "grass",
+    "bug"
+  ],
+  "cue": "replant",
+  "carry": "from_work",
+  "animation": "special",
+  "particles": "minecraft:happy_villager",
+  "sound": "minecraft:block.grass.place",
+  "ticks": 30,
+  "effect": "none"
+}

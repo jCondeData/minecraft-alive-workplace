@@ -291,6 +291,10 @@ public class FieldWork extends Behavior<Villager> {
 		}
 		progress = 0;
 		current = null;
+		// Partners at work (28.4): a Water partner waters the patch being tended, a Grass one sparkles over it; a Ground
+		// one walks the furrow being tilled.
+		io.github.jcondedata.aliveworkplace.work.PartnerShows.cue(villager, task.kind() == Kind.TILL ? "till" : "tend",
+			task.kind() == Kind.TILL ? task.pos().above() : task.pos());
 		switch (task.kind()) {
 			case HARVEST -> harvest(level, villager, bag, task.pos());
 			case PLANT -> {

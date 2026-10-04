@@ -1,0 +1,17 @@
+{
+  "jobs": [
+    "aliveworkplace:carpenter",
+    "minecraft:mason"
+  ],
+  "types": [
+    "fighting",
+    "rock",
+    "steel"
+  ],
+  "cue": "craft",
+  "carry": "from_work",
+  "animation": "physical",
+  "sound": "minecraft:entity.player.attack.knockback",
+  "ticks": 40,
+  "effect": "crack"
+}

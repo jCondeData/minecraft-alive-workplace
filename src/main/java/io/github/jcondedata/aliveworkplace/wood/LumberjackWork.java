@@ -151,6 +151,7 @@ public class LumberjackWork extends Behavior<Villager> {
 					level.playSound(null, spot, SoundEvents.GRASS_PLACE, SoundSource.BLOCKS, 0.8f, 1f);
 					unplanted.remove(spot);
 					replanted.add(spot);
+					io.github.jcondedata.aliveworkplace.work.PartnerShows.cue(villager, "replant", spot, new ItemStack(sapling.asItem()));
 				} else if (walker.noSpot()) {
 					unplanted.remove(spot);
 				}
@@ -245,6 +246,10 @@ public class LumberjackWork extends Behavior<Villager> {
 			chopTotal = Math.max(10, BuilderLevels.delay(total, villager));
 		}
 		chopProgress++;
+		if (chopProgress == 1) {
+			// A Fighting partner lends its fists at the trunk (28.4).
+			io.github.jcondedata.aliveworkplace.work.PartnerShows.cue(villager, "chop", tree, new ItemStack(level.getBlockState(tree).getBlock().asItem()));
+		}
 		if (chopProgress % 5 == 0) {
 			villager.swing(InteractionHand.MAIN_HAND);
 			level.playSound(null, tree, SoundEvents.AXE_STRIP, SoundSource.NEUTRAL, 0.5f, 0.9f + level.random.nextFloat() * 0.2f);
@@ -335,6 +340,8 @@ public class LumberjackWork extends Behavior<Villager> {
 					level.setBlockAndUpdate(spot, Trees.plantState(level, spot, sapling));
 					bag.remove(seed, 1);
 					replanted.add(spot.immutable());
+					// A Grass or Bug partner brings the sapling to the stump (28.4).
+					io.github.jcondedata.aliveworkplace.work.PartnerShows.cue(villager, "replant", spot, new ItemStack(seed));
 				} else {
 					unplanted.put(spot.immutable(), sapling);
 				}

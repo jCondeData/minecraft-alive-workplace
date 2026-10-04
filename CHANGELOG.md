@@ -9,6 +9,14 @@
 - **Partners at work**: a Fighting-type Pokémon pastured by a Builder's Bench is now seen helping: when the builder
   fetches materials it walks over to the work (never leaving its pasture's range) carrying them, lends a punch and walks
   back. Shows are data packs (`data/<namespace>/partner_shows/`); setting "Partners at Work" turns them off.
+- **Partners at work on building and the land**: pastured Pokémon now help more workers, each by its type. For the
+  builder, a Fighting partner shoulders the logs and planks and punches each block home, a Rock one carries the stone
+  and a Steel one the iron parts (bars, doors, chains, lanterns). A Fighting or Normal partner hauls a barrel along on
+  the Porter's round; a Fighting, Rock or Steel one holds the board or stone at the Carpenter's or Mason's table. A Water
+  partner waters the patch the Farmer tends (that farmland turns fully moist), a Grass one sparkles over the crops and a
+  Ground one walks the furrow being tilled. A Fighting partner punches the Lumberjack's trunk and a Grass or Bug one
+  brings the sapling to the stump; a Flying or Bug one flutters through the plant the Orchard Keeper picks. Show files
+  can now limit what's carried with `carry_tag`, and the toolbox has `crack` and `dust`.
 - **Cobblemon 1.8**: tested with Cobblemon 1.8.1 as well as the pack's 1.7.3 (every Pokémon job passes its tests on
   both); 1.8 no longer logs an "outside the tested versions" warning.
 - Names read the same everywhere: the Fisherman is never "Fisher", and the mod's blocks and items keep their capitals

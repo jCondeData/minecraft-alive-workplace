@@ -1,0 +1,14 @@
+{
+  "jobs": [
+    "aliveworkplace:lumberjack"
+  ],
+  "types": [
+    "fighting"
+  ],
+  "cue": "chop",
+  "animation": "physical",
+  "particles": "minecraft:crit",
+  "sound": "minecraft:item.axe.strip",
+  "ticks": 40,
+  "effect": "crack"
+}

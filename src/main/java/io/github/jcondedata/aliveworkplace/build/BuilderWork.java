@@ -1023,6 +1023,8 @@ public class BuilderWork extends Behavior<Villager> {
 			site.markPlaced();
 		}
 		BuilderLevels.onPlaced(level, villager, site);
+		// A Fighting partner punches the block home (28.4).
+		PartnerShows.cue(villager, "place", pos, new ItemStack(state.getBlock().asItem()));
 	}
 
 	/**

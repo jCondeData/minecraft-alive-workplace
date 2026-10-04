@@ -142,7 +142,7 @@ final class Showcase {
 				if (!(e instanceof Villager v) || !v.isAlive() || v.isPassenger() || v.isSleeping() || v.isInvisible()) {
 					continue;
 				}
-				boolean inWall = v.isInWall() || !level.noCollision(v, v.getBoundingBox().deflate(0.1));
+				boolean inWall = v.isInWall() || !level.noCollision(v, v.getBoundingBox().deflate(0.1)) && !onlyOpenDoors(level, v);
 				int n = inWall ? IN_WALL.merge(v.getUUID(), 1, Integer::sum) : 0;
 				if (!inWall) {
 					IN_WALL.remove(v.getUUID());
@@ -156,6 +156,28 @@ final class Showcase {
 				}
 			}
 		}
+	}
+
+	/**
+	 * Whether everything the villager's body overlaps is the swung-open panel of a door: a villager in a doorway brushing
+	 * the door it opened, which it walks out of (B42), not a villager stuck in a block.
+	 */
+	private static boolean onlyOpenDoors(ServerLevel level, Villager v) {
+		net.minecraft.world.phys.AABB box = v.getBoundingBox().deflate(0.1);
+		boolean any = false;
+		for (net.minecraft.core.BlockPos p : net.minecraft.core.BlockPos.betweenClosed(net.minecraft.util.Mth.floor(box.minX), net.minecraft.util.Mth.floor(box.minY),
+				net.minecraft.util.Mth.floor(box.minZ), net.minecraft.util.Mth.floor(box.maxX), net.minecraft.util.Mth.floor(box.maxY), net.minecraft.util.Mth.floor(box.maxZ))) {
+			net.minecraft.world.level.block.state.BlockState state = level.getBlockState(p);
+			net.minecraft.world.phys.shapes.VoxelShape shape = state.getCollisionShape(level, p);
+			if (shape.isEmpty() || !shape.bounds().move(p).intersects(box)) {
+				continue;
+			}
+			if (!(state.getBlock() instanceof net.minecraft.world.level.block.DoorBlock) || !state.getValue(net.minecraft.world.level.block.DoorBlock.OPEN)) {
+				return false;
+			}
+			any = true;
+		}
+		return any;
 	}
 
 	/** The generated structure pieces (e.g. a village house's template) at a spot, so a stuck villager names what it's in. */

@@ -1,0 +1,10 @@
+{
+  "values": [
+    "minecraft:stone", "minecraft:cobblestone", "minecraft:mossy_cobblestone", "minecraft:smooth_stone",
+    "#minecraft:stone_bricks", "minecraft:cobbled_deepslate", "minecraft:deepslate_bricks", "minecraft:deepslate_tiles",
+    "minecraft:polished_deepslate", "minecraft:andesite", "minecraft:polished_andesite", "minecraft:diorite",
+    "minecraft:polished_diorite", "minecraft:granite", "minecraft:polished_granite", "minecraft:tuff", "minecraft:tuff_bricks",
+    "minecraft:calcite", "minecraft:sandstone", "minecraft:cut_sandstone", "minecraft:smooth_sandstone", "minecraft:bricks",
+    "minecraft:blackstone", "minecraft:polished_blackstone_bricks", "minecraft:mud_bricks"
+  ]
+}

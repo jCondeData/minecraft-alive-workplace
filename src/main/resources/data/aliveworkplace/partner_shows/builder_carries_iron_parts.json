@@ -3,14 +3,14 @@
     "aliveworkplace:builder"
   ],
   "types": [
-    "fighting"
+    "steel"
   ],
   "cue": "fetch",
   "carry": "from_work",
-  "carry_tag": "aliveworkplace:partner_carry/wood",
+  "carry_tag": "aliveworkplace:partner_carry/iron_parts",
   "animation": "physical",
-  "particles": "minecraft:crit",
-  "sound": "minecraft:entity.player.attack.strong",
+  "particles": "minecraft:electric_spark",
+  "sound": "minecraft:block.chain.place",
   "ticks": 30,
   "effect": "none"
 }

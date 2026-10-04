@@ -166,6 +166,8 @@ public class OrchardWork extends Behavior<Villager> {
 		}
 		pickTimer = 0;
 		villager.swing(InteractionHand.MAIN_HAND);
+		// A Flying or Bug partner flutters through the plant being picked (28.4).
+		io.github.jcondedata.aliveworkplace.work.PartnerShows.cue(villager, "pick", fruit);
 		for (ItemStack stack : Fruit.pick(level, fruit, villager)) {
 			ItemStack rest = bag.add(stack);
 			if (!rest.isEmpty()) {

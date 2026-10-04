@@ -197,6 +197,8 @@ SCENES = [
         [("04_berry_book", "The berry book")], cobblemon=True),
     job("camp_cook", "Camp Cook", "Cooking a Poké Snack in the Campfire Pot", "the camp cook cooked a Poké Snack in the Campfire Pot", 150,
         cobblemon=True),
+    job("habitat_keeper", "Habitat Keeper", "A snack set out, a log slathered, a shiny spotted",
+        "the habitat keeper set out a snack, slathered the log and spotted a shiny Eevee", 150, cobblemon=True),
     # Village-wide
     S("hall", "Village Hall", "The Village Hall, its screen and calendar", "the Village Hall screen and its calendar page opened", 75,
       [("02_hall_people", "People, under the page row"), ("03_hall_builder", "A builder"), ("08_hall_calendar", "The calendar"),

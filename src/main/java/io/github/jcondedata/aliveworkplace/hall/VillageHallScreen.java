@@ -507,6 +507,10 @@ public final class VillageHallScreen {
 		for (Component doing : doing(level, villager)) {
 			lore.add(plain(doing, ChatFormatting.WHITE));
 		}
+		// A Habitat Keeper's last five sightings (28.10).
+		for (Component sighting : io.github.jcondedata.aliveworkplace.habitat.HabitatKeepers.sightingLines(villager)) {
+			lore.add(line(sighting, ChatFormatting.AQUA));
+		}
 		io.github.jcondedata.aliveworkplace.people.Moods.Mood mood = io.github.jcondedata.aliveworkplace.people.Moods.of(villager);
 		if (mood != null) {
 			net.minecraft.network.chat.MutableComponent why = Component.empty();

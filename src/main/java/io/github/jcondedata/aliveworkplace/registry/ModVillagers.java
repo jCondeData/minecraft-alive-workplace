@@ -730,7 +730,7 @@ public final class ModVillagers {
 			|| profession == ORCHARD_KEEPER || profession == BALL_SMITH || profession == PORTER || profession == CARPENTER || profession == CHEF || profession == FOSSIL_SCIENTIST
 			|| profession == BEEKEEPER || profession == FLORIST || profession == RANCHER || profession == TEACHER || profession == INNKEEPER || profession == UNDERTAKER || profession == SCHOLAR
 			|| profession == SIFTER || profession == TINKERER || profession == NETHERWORKER || profession == COMPOSTER
-			|| profession == BERRY_BREEDER || profession == CAMP_COOK;
+			|| profession == BERRY_BREEDER || profession == CAMP_COOK || profession == HABITAT_KEEPER;
 	}
 
 	/**

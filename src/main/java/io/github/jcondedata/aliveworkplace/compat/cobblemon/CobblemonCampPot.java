@@ -88,5 +88,10 @@ public final class CobblemonCampPot implements CampCooks.Pot {
 		}
 		return out;
 	}
+
+	@Override
+	public java.util.Set<net.minecraft.resources.ResourceLocation> seasonings(net.minecraft.world.item.ItemStack dish) {
+		return CobblemonHabitat.seasoningsOf(dish);
+	}
 }
 //?}

@@ -163,6 +163,16 @@ public final class ModAttachments {
 	/** The Saccharine logs a Habitat Keeper has found round her pasture and keeps slathered with honey (ROADMAP 28.10). */
 	public static final Attachment<java.util.List<net.minecraft.core.BlockPos>> HONEY_LOGS = Attachment.saved("honey_logs", net.minecraft.core.BlockPos.CODEC.listOf());
 
+	/** The lure a Habitat Keeper's snacks are seasoned for ("typing/fire", "egg_group/field", "alpha"; absent = any snack) (ROADMAP 28.10). */
+	public static final Attachment<String> HABITAT_LURE = Attachment.saved("habitat_lure", com.mojang.serialization.Codec.STRING);
+
+	/** A Habitat Keeper's last sightings of shiny, rare and Alpha wild Pokémon, newest first (ROADMAP 28.10). */
+	public static final Attachment<java.util.List<io.github.jcondedata.aliveworkplace.habitat.HabitatKeepers.Sighting>> SIGHTINGS =
+		Attachment.saved("sightings", io.github.jcondedata.aliveworkplace.habitat.HabitatKeepers.Sighting.CODEC.listOf());
+
+	/** The wild Pokémon a Habitat Keeper has already told the village of, so each is told once (ROADMAP 28.10). */
+	public static final Attachment<java.util.List<java.util.UUID>> SIGHTED = Attachment.saved("sighted", net.minecraft.core.UUIDUtil.STRING_CODEC.listOf());
+
 	/** How many berries a Berry Breeder has picked (shown above her head). */
 	public static final Attachment<Integer> BERRIES_PICKED = Attachment.saved("berries_picked", com.mojang.serialization.Codec.INT);
 

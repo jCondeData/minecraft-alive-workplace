@@ -17,6 +17,12 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Added
+- With Cobblemon, the **Habitat Keeper** (28.10): sneak-right-click a villager by a Pasture Block with a honey bottle.
+  She keeps Poké Snacks set out on up to three lure spots (marked with a Field Marker, or grass 16-32 blocks out) and
+  sets out another when one is eaten up; picks a lure (a type or egg group, Alphas on 1.8) and asks the Camp Cook for
+  snacks seasoned with its berries; slathers Saccharine logs with honey and plants Saccharine saplings; and tells the
+  village of shiny, rare and Alpha wild Pokémon (chronicle, the hall's list). Flying and Grass partners. Config
+  `habitatKeepers`, `habitatSightings` (on).
 - The **Steward** (27.5): sneak-right-click a grown villager beside a Village Hall with that hall's City Plan and he
   becomes its Steward, one per hall. Each morning he walks his rounds holding the plan (each zone, the storehouse),
   three seconds at each stop, then goes back to the hall for the day. He trades City Plans, Blank Blueprints and

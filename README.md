@@ -343,6 +343,7 @@ placed keep working, so old worlds are fine.
 | Composter | Composter + bone meal | scraps: seeds, saplings, leaves, crop waste, rotten flesh | nothing |
 | Berry Breeder (with Cobblemon) | Composter + any Cobblemon berry | berries, Growth and Surprise Mulch | sneak-right-click: pick a goal in the berry book (a Field Marker for a plot of her own) |
 | Camp Cook (with Cobblemon) | Campfire Pot (Cobblemon's campfire with a pot on it) + Hearty Grains | the makings of her dishes (Hearty Grains, Vivichoke, apricorns, milk, honey, berries for seasoning) | nothing (a Storehouse's stock orders for the order-only treats) |
+| Habitat Keeper (with Cobblemon) | Pasture Block (Cobblemon's) + a honey bottle | Poké Snacks (or the Camp Cook's), honey bottles, Saccharine saplings | Field Markers for her lure spots (optional) |
 | Netherworker | Cartography Table + netherrack | food (a pickaxe, an axe, a sword, a chestplate, fire resistance) | nothing (a Nether portal within 32 blocks) |
 | Undertaker | Brewing Stand + a golden apple, an enchanted golden apple or a totem | golden apples, healing potions or totems | nothing (graves within 32 blocks) |
 | Innkeeper | Shop Counter + a bed | — | nothing (hire the travellers who come to stay) |
@@ -1006,6 +1007,28 @@ data pack can add or change dishes. She sells Poké Bait and Poké Snacks, then 
 Galette and Big Malasada, and at Master Exp. Candy L; Fire and Normal Pokémon help her, and a Fire partner breathes on
 the campfire while it cooks.
 
+## Habitat Keepers (with Cobblemon)
+Put a chest by one of Cobblemon's **Pasture Blocks**, stand a villager beside it and sneak-right-click them with a
+**honey bottle**: they become a **Habitat Keeper** (a jobless villager never takes your pasture by themselves). She keeps
+the wild Pokémon round her pasture:
+- **Lure spots.** She keeps a Poké Snack set out on up to three spots within 32 blocks, from her chest or a Camp Cook's,
+  and sets out another when the Pokémon have eaten one up. Hand her a Field Marker with a spot marked (one block, or the
+  middle of an area) to choose them; with none marked she uses grass 16 to 32 blocks out. Sneak-right-click her with an
+  empty hand to pick a **lure**: a type or an egg group (the berries Cobblemon's own bait data gives it, such as Occa
+  Berries for Fire), or Alphas with Cobblemon 1.8 (Hopo Berries). She asks the Camp Cook nearby for snacks seasoned
+  with those berries, and sets out the seasoned ones first.
+- **Honey.** She finds the Saccharine logs within 32 blocks (a scan of a few thousand blocks a tick, remembered) and
+  slathers each with a honey bottle from her chest, as you would (a slathered log raises the hidden-ability chance
+  nearby), and again once the honey is gone; the empty bottle goes back. She plants Saccharine saplings from her chest
+  round the lure spots.
+- **Sightings.** Every minute she looks over the wild Pokémon within 48 blocks: a shiny one, a species Cobblemon only
+  spawns as rare or ultra-rare, or an Alpha is told to the players in the village ("Bramble spotted a shiny Eevee
+  north-east of her pasture") and written in the chronicle once; the hall's list shows her last five.
+
+She sells Saccharine saplings and honey, then honeycomb, Poké Snacks at Journeyman, Saccharine logs and a spyglass;
+Flying and Grass Pokémon help her, and a Flying partner circles each new sighting. Config `habitatKeepers` and
+`habitatSightings` (both on).
+
 ## Pokémon Traders (with Cobblemon)
 Stand a villager by a **Shop Counter** and sneak-right-click them with a **Poké Ball**: they become a **Pokémon
 Trader**. Right-click them with an empty hand (sneak to buy Poké Balls and candies instead) to see today's
@@ -1134,6 +1157,8 @@ saves the file and puts the settings into effect in your own worlds (a dedicated
 | `nurseHealingMachine` | true | a nurse at Cobblemon's Healing Machine puts your team in it to heal them (free) and keeps it charged while on shift; off, she heals by hand |
 | `berryBreeders` | true | with Cobblemon, a berry makes a villager at a composter a Berry Breeder, who breeds new berries from the village's own; off, no Berry Breeder job |
 | `campCooks` | true | with Cobblemon, Hearty Grains make a villager at a Campfire Pot a Camp Cook, who cooks Cobblemon dishes in the pot; off, no Camp Cook job |
+| `habitatKeepers` | true | with Cobblemon, a honey bottle makes a villager at a Pasture Block a Habitat Keeper, who sets out Poké Snacks, slathers Saccharine logs and watches the wild Pokémon; off, no Habitat Keeper job |
+| `habitatSightings` | true | Habitat Keepers tell the village of the shiny, rare and Alpha wild Pokémon near their pasture and write them in the chronicle |
 | `seasonDays` | 16 | days in each of the village calendar's four seasons (each season's festival is on its middle day) |
 | `treasuryPerWorker` | 20 | what each worker brings the treasury a day, in hundredths of an emerald, before wellbeing and rank |
 | `villageProtection` | true | a Village Hall's owner may protect the village from other players (shift-click the hall's name tag; off until they do) |

@@ -67,9 +67,8 @@ SCENES = [
     S("preview", "Builder", "Ghost preview and the status over a builder", "the builder made progress on the previewed site", 120,
       [("20_preview_start", "Ghost preview"), ("21_preview_half_built", "Half built"), ("22_status_closeup", "Over the builder: progress, what it is short of, where it takes from")]),
     S("placing", "Builder", "Placing a build: turn, mirror, cancel, move onto a slope", "on the slope the builder filled a foundation", 240,
-      [("10_placed", "Placed: the ghost"), ("11_turned", "Turned a quarter"), ("12_mirrored", "Mirrored where it stands"),
-       ("13_building", "Handed to the builder"), ("14_cancelled", "Cancelled: the blueprint is back, still placed"),
-       ("15_moved_to_slope", "Moved onto a slope"), ("16_slope_building", "Foundation filled on the slope")]),
+      [("10_placed", "Placed: the ghost"), ("12_mirrored", "Turned and mirrored where it stands"),
+       ("14_cancelled", "Cancelled: the blueprint is back, still placed"), ("16_slope_building", "Moved onto a slope: foundation filled")]),
     S("missing", "Builder", "What a build is still missing, and its material list", "the blueprint's tooltip lists what the chests are short of, and a Book and Quill becomes the list", 60,
       [("00_missing_site", "The placed blueprint and the Blueprint Table"), ("01_blueprint_missing", "Still-missing tooltip"),
        ("02_material_list", "The material list (a book)"), ("03_material_list_page", "What's still to bring")]),
@@ -340,14 +339,40 @@ def harness_methods(text):
         while j < len(rows) and not rows[j].rstrip().endswith("{"):
             j += 1
             names += DISPATCH.findall(rows[j]) if j < len(rows) else []
-        call = re.match(r"\s*(\w+)\(", rows[j + 1]) if j + 1 < len(rows) else None
+        call = re.match(r"\s*(\w+)(?:\.\w+)?\(", rows[j + 1]) if j + 1 < len(rows) else None
         if call:
             out.setdefault(call.group(1), set()).update(names)
     return out
 
 
-def scenes_for(path, text, lines, catalog_text=None):
-    """The scenes the changed {lines} of {path} belong to, or None when they could touch any scene."""
+FIELD = re.compile(r"^\t(?:private |final |static )*(\w+) (\w+) = new \1\(")
+
+
+def scene_fields(text):
+    """ScreenshotHarness: {line number: (class, field)} for each scene object it keeps (`private final XScene x = new
+    XScene();`), whose dispatch calls `x.tick(...)`."""
+    out = {}
+    for i, row in enumerate(text.splitlines()):
+        m = FIELD.match(row)
+        if m:
+            out[i + 1] = (m.group(1), m.group(2))
+    return out
+
+
+def class_scenes(harness_text, cls):
+    """The scenes a scene class of its own (PartnersLandScene.java) belongs to: those whose dispatch calls the harness's
+    field of that class. Empty when the harness keeps none."""
+    methods = harness_methods(harness_text)
+    names = set()
+    for _, (c, field) in scene_fields(harness_text).items():
+        if c == cls:
+            names |= methods.get(field, set())
+    return names
+
+
+def scenes_for(path, text, lines, catalog_text=None, harness_text=None):
+    """The scenes the changed {lines} of {path} belong to, or None when they could touch any scene. {harness_text}: the
+    ScreenshotHarness, for a scene class of its own (ROADMAP 22.8: a new scene in its own file films just it)."""
     names = set()
     if path.endswith(".java"):
         rows = text.splitlines()
@@ -371,15 +396,23 @@ def scenes_for(path, text, lines, catalog_text=None):
     if path.endswith("ScreenshotHarness.java"):
         methods = harness_methods(text)
         blocks = dispatch_lines(text)
+        fields = scene_fields(text)
         for line in lines:
             if line in blocks:
                 names |= blocks[line]
+                continue
+            if line in fields and methods.get(fields[line][1]):
+                names |= methods[fields[line][1]]  # the harness's field for a scene class of its own
                 continue
             name, _ = method_at(text, line)
             if name not in methods:
                 return None
             names |= methods[name]
         return names
+    if path.startswith(DEVCLIENT) and path.endswith("Scene.java") and harness_text is not None:
+        # A scene class of its own, such as PartnersLandScene: the scenes the harness runs it for (none: unsure).
+        found = class_scenes(harness_text, os.path.basename(path)[:-len(".java")])
+        return found or None
     if path == "tools/showcase/scenes.py":
         rows = text.splitlines()
         first = next(i for i, r in enumerate(rows) if r.startswith("SCENES = [")) + 1
@@ -408,7 +441,8 @@ def changed(base, head="HEAD", root="."):
         if shown.returncode != 0:
             return None  # a removed file
         text = shown.stdout
-        found = scenes_for(path, text, lines)
+        harness = subprocess.run(["git", "show", f"{head}:{DEVCLIENT}ScreenshotHarness.java"], capture_output=True, text=True, cwd=root)
+        found = scenes_for(path, text, lines, harness_text=harness.stdout if harness.returncode == 0 else None)
         if found is None:
             return None
         names |= found

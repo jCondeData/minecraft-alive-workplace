@@ -326,7 +326,7 @@ first; many items below are "verify and harden", not "build".
   flagship buildings in-game. Claude tidies them with the Architect skill, and they are scanned in with the Scan Tool
   and shipped as blueprints with upgrades. This gives the mod human-made content; see 26.1. Done when: each is in the
   Blueprint Table with its upgrades, and a builder has built it in a test.
-- [x] **23.10** (review: pending 2026-10-04) **Every shipped build reviewed.** One gallery package per build family (houses, workshops, defences,
+- [x] **23.10** (approved 2026-10-04) **Every shipped build reviewed.** One gallery package per build family (houses, workshops, defences,
   decorations, village pieces in five styles), each build shown front and back. Vetoed builds get redrawn with the
   Architect skill. Done when: every family's package has been sent.
 

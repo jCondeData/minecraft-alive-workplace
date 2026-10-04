@@ -14,6 +14,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaSpareMaterialsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaB28BenchGameTests",
 			"io.github.jcondedata.aliveworkplace.test.StallWatchGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaStallWatchGameTests",
 			"io.github.jcondedata.aliveworkplace.test.ImportGameTests",
 			"io.github.jcondedata.aliveworkplace.test.TableGameTests",
 			"io.github.jcondedata.aliveworkplace.test.ShapeGameTests",

@@ -637,6 +637,30 @@ final class JobScenes {
 			io.github.jcondedata.aliveworkplace.explore.ExplorerWork.REST_TICKS = 100;
 			return l -> n(ModAttachments.EXPEDITIONS, v) >= 1;
 		}, null));
+		SCENES.put("legend", job("a villager became a Legend, a Master who speeds up the builder beside them", 1200, (level, player) -> {
+			// ROADMAP 29.2: no Legend ships yet, so the scene loads one of its own (the plain Legend outfit, a pace power)
+			// and makes the villager beside the builder that Legend five seconds in.
+			net.minecraft.resources.ResourceLocation id = io.github.jcondedata.aliveworkplace.AliveWorkplace.id("showcase_legend");
+			io.github.jcondedata.aliveworkplace.legend.Legend legend = io.github.jcondedata.aliveworkplace.legend.Legends.read(id,
+				com.google.gson.JsonParser.parseString("{\"rarity\": \"rare\", \"job\": \"aliveworkplace:legend\", \"title\": \"entity.minecraft.villager.legend\","
+					+ " \"lore\": \"entity.minecraft.villager.legend\", \"powers\": [{\"type\": \"pace\", \"trades\": [\"aliveworkplace:builder\"],"
+					+ " \"radius\": 16, \"factor\": 2.0}, {\"type\": \"mood\", \"points\": 5, \"radius\": 16}]}").getAsJsonObject());
+			io.github.jcondedata.aliveworkplace.legend.Legends.setForTest(Map.of(id, legend));
+			Villager builder = worker(level, STATION, io.github.jcondedata.aliveworkplace.registry.ModBlocks.BUILDERS_BENCH,
+				io.github.jcondedata.aliveworkplace.registry.ModVillagers.BUILDERS_BENCH_POI, io.github.jcondedata.aliveworkplace.registry.ModVillagers.BUILDER);
+			Villager hero = EntityType.VILLAGER.spawn(level, STATION.south().east(2), MobSpawnType.COMMAND);
+			hero.setNoAi(true);
+			hero.setYRot(180);
+			hero.setYHeadRot(180);
+			long start = level.getGameTime();
+			return l -> {
+				if (!ModAttachments.LEGEND.has(hero) && l.getGameTime() >= start + 100) {
+					io.github.jcondedata.aliveworkplace.legend.Legends.make(l, hero, legend, "showcase");
+				}
+				return ModAttachments.LEGEND.has(hero) && hero.getVillagerData().getLevel() == 5
+					&& io.github.jcondedata.aliveworkplace.legend.LegendPowers.pace(builder) == 2f;
+			};
+		}));
 		SCENES.put("bard", job("the bard played a record at the Music Stand", 1200, (level, player) -> {
 			Villager b = picked(level, player, STATION, Blocks.JUKEBOX, Items.MUSIC_DISC_CAT);
 			chest(level, chestPos(), new ItemStack(Items.MUSIC_DISC_CAT));
@@ -1057,6 +1081,39 @@ final class JobScenes {
 				new Step("04_hall_mercenaries", io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.MERCENARIES, 6, (level, player) ->
 					io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.open(player, STATION), 30),
 				step("05_hall_festival", io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FESTIVAL, 6)),
+			(level, player) -> player.containerMenu instanceof ChoiceMenu));
+		// Long Shifts proclaimed (ROADMAP 30.3): the builder's line in the hall's list says "long shifts" and 20% faster,
+		// and the chronicle keeps the proclamation.
+		SCREENS.put("long_shifts", new Screen("Long Shifts was proclaimed: the hall's list shows the \"long shifts\" mood and the chronicle keeps it",
+			new Vec3(2.5, -58.4, 4.5), TARGET,
+			(level, player) -> {
+				level.setBlockAndUpdate(STATION, ModBlocks.VILLAGE_HALL.defaultBlockState()
+					.setValue(io.github.jcondedata.aliveworkplace.hall.VillageHallBlock.FACING, Direction.SOUTH));
+				subject = worker(level, new BlockPos(-4, -60, -3), ModBlocks.BLUEPRINT_TABLE, ModVillagers.BLUEPRINT_TABLE_POI, ModVillagers.BUILDER);
+				io.github.jcondedata.aliveworkplace.hall.VillageNeeds.check(level, STATION);
+				var shifts = io.github.jcondedata.aliveworkplace.hall.Edicts.find("long_shifts").orElseThrow();
+				var told = io.github.jcondedata.aliveworkplace.hall.Edicts.proclaim(level, STATION, player, shifts);
+				Showcase.check(told.done(), "Long Shifts was proclaimed: " + told.message().getString());
+				io.github.jcondedata.aliveworkplace.people.Moods.forget();
+			},
+			List.of(new Step("01_long_shifts_list", io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_PERSON, 6, (level, player) -> {
+					io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.open(player, STATION);
+					var mood = io.github.jcondedata.aliveworkplace.people.Moods.of(subject);
+					Showcase.check(mood != null && mood.bad().stream().anyMatch(c -> c.getString().equals("long shifts")),
+						"the builder's mood lists \"long shifts\": " + (mood == null ? "no mood" : mood.bad()));
+					var pace = io.github.jcondedata.aliveworkplace.work.Pace.describe(subject);
+					Showcase.check(pace != null && pace.getString().contains("the Long Shifts edict"),
+						"the builder works faster under Long Shifts: " + (pace == null ? "usual pace" : pace.getString()));
+				}, 30),
+				new Step("02_long_shifts_chronicle", -1, 6, (level, player) -> {
+					io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.open(player, STATION);
+					if (player.containerMenu instanceof ChoiceMenu m) {
+						m.press(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.CHRONICLE, player);
+					}
+					var hall = (io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(STATION);
+					Showcase.check(hall.chronicle().stream().anyMatch(e -> e.text().getString().equals("The edict Long Shifts was proclaimed")),
+						"the chronicle keeps the proclamation");
+				}, 30)),
 			(level, player) -> player.containerMenu instanceof ChoiceMenu));
 		SCREENS.put("hall_treasury", new Screen("the hall's treasury was collected, the village protected and its screen opened from a Village Ledger",
 			new Vec3(2.5, -58.4, 4.5), TARGET,

@@ -8,7 +8,6 @@ import io.github.jcondedata.aliveworkplace.build.Builders;
 import io.github.jcondedata.aliveworkplace.build.SupplyContainers;
 import io.github.jcondedata.aliveworkplace.registry.ModAttachments;
 import io.github.jcondedata.aliveworkplace.registry.ModVillagers;
-import io.github.jcondedata.aliveworkplace.work.Partners;
 import io.github.jcondedata.aliveworkplace.work.Requests;
 import io.github.jcondedata.aliveworkplace.work.Village;
 import io.github.jcondedata.aliveworkplace.work.Walker;
@@ -119,7 +118,7 @@ public class CompostWork extends Behavior<Villager> {
 		if (!atBin || --timer > 0) {
 			return;
 		}
-		timer = Math.max(8, Math.round(BuilderLevels.delay(COMPOST_TICKS, villager) * Partners.factor(villager)));
+		timer = Math.max(8, BuilderLevels.delay(COMPOST_TICKS, villager)); // partners counted once, in the pace (ROADMAP 30.2)
 		state = compost(level, villager, bin) ? "composting" : "needs";
 	}
 

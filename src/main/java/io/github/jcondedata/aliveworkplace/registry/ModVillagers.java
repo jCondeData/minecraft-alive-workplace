@@ -41,6 +41,23 @@ public final class ModVillagers {
 	public static final ResourceKey<PoiType> MAILBOX_POI = ResourceKey.create(Registries.POINT_OF_INTEREST_TYPE, MAILBOX_ID);
 	public static final PoiType MAILBOX_POI_TYPE = Platform.get().registerPoi(MAILBOX_ID, 1, 1, ModBlocks.MAILBOX);
 
+	/**
+	 * A Legend without a trade of their own (M29: the Old Sage, the Seer...): no workstation, and, always a Master, never
+	 * reset to a jobless Novice.
+	 */
+	public static final VillagerProfession LEGEND = Registry.register(
+		BuiltInRegistries.VILLAGER_PROFESSION,
+		AliveWorkplace.id("legend"),
+		new VillagerProfession(
+			"legend",
+			holder -> false,
+			holder -> false,
+			ImmutableSet.of(),
+			ImmutableSet.of(),
+			SoundEvents.AMETHYST_BLOCK_CHIME
+		)
+	);
+
 	public static final VillagerProfession BUILDER = Registry.register(
 		BuiltInRegistries.VILLAGER_PROFESSION,
 		AliveWorkplace.id("builder"),

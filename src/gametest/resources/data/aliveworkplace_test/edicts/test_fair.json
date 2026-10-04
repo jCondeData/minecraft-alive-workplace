@@ -1,0 +1,6 @@
+{
+  "name": "Fair Wages",
+  "description": "Everyone is a little happier.",
+  "order": 52,
+  "boost": [{"type": "aliveworkplace:mood", "points": 5, "reason": "fair wages"}]
+}

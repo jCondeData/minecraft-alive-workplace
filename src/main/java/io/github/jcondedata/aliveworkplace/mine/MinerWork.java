@@ -63,6 +63,11 @@ public class MinerWork extends Behavior<Villager> {
 	private int sinceTorch;
 	private final io.github.jcondedata.aliveworkplace.work.Walker walker = new io.github.jcondedata.aliveworkplace.work.Walker(SPEED);
 
+	/** Ticks digging a block that takes {@code ticks} with the pickaxe in hand takes this miner: the level's share at their pace (ROADMAP 30.2). */
+	public static int digTicks(Villager villager, int ticks) {
+		return Math.max(2, BuilderLevels.delay(Math.max(2, ticks), villager));
+	}
+
 	public MinerWork() {
 		super(ImmutableMap.of(
 			MemoryModuleType.JOB_SITE, MemoryStatus.VALUE_PRESENT,
@@ -419,7 +424,7 @@ public class MinerWork extends Behavior<Villager> {
 			float hardness = state.getDestroySpeed(level, target);
 			float speed = Math.max(1f, pick.getDestroySpeed(state));
 			int ticks = (int) Math.ceil(hardness * 30f / speed);
-			digTotal = Math.max(2, BuilderLevels.delay(Math.max(2, ticks), villager));
+			digTotal = digTicks(villager, ticks);
 		}
 		digProgress++;
 		if (digProgress % 4 == 0) {

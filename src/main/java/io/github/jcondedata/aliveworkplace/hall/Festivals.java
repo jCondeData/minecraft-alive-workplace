@@ -50,6 +50,8 @@ public final class Festivals {
 	/** Time of day the gathering begins (after work), the fireworks go up, and it's over. */
 	public static final long START = 9000;
 	public static final long FIREWORKS = 11500;
+	/** How near the square a villager counts in the fireworks' crowd. */
+	public static final int CROWD_RANGE = 16;
 	public static final long END = 13000;
 	/** Days a festival lifts the moods of everyone who came, and by how much. */
 	public static final int MOOD_DAYS = 2;
@@ -215,6 +217,10 @@ public final class Festivals {
 			BlockPos square = square(level, hall);
 			for (Villager villager : level.getEntitiesOfClass(Villager.class, VillageHalls.area(hall), v -> v.isAlive() && !v.isSleeping())) {
 				gather(level, villager, square);
+			}
+			if (timeOfDay(level) >= FIREWORKS && level.getBlockEntity(hall) instanceof VillageHallBlockEntity entity) {
+				// The crowd at the fireworks, for Legends that come to a big festival (29.2's festival_crowd).
+				entity.setFestivalCrowd(level.getEntitiesOfClass(Villager.class, new net.minecraft.world.phys.AABB(square).inflate(CROWD_RANGE), Villager::isAlive).size());
 			}
 			if (timeOfDay(level) >= FIREWORKS && level.random.nextFloat() < 0.4f) {
 				BlockPos column = square.offset(level.random.nextInt(13) - 6, 0, level.random.nextInt(13) - 6);

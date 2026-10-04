@@ -63,7 +63,9 @@ public final class AliveWorkplace {
 		io.github.jcondedata.aliveworkplace.people.Chatter.init();
 		io.github.jcondedata.aliveworkplace.hall.VillageProtection.init();
 		io.github.jcondedata.aliveworkplace.city.CityPlans.init();
+		io.github.jcondedata.aliveworkplace.hall.Edicts.init();
 		io.github.jcondedata.aliveworkplace.ranch.PokemonChores.init();
+		io.github.jcondedata.aliveworkplace.legend.Legends.init();
 		io.github.jcondedata.aliveworkplace.work.PartnerShows.init();
 		io.github.jcondedata.aliveworkplace.camp.CampCooks.init();
 		io.github.jcondedata.aliveworkplace.habitat.HabitatKeepers.init();

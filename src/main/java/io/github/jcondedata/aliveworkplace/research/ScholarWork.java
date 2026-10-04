@@ -11,7 +11,7 @@ import io.github.jcondedata.aliveworkplace.hall.VillageHalls;
 import io.github.jcondedata.aliveworkplace.mc.Chat;
 import io.github.jcondedata.aliveworkplace.registry.ModAttachments;
 import io.github.jcondedata.aliveworkplace.registry.ModVillagers;
-import io.github.jcondedata.aliveworkplace.work.Partners;
+import io.github.jcondedata.aliveworkplace.work.Pace;
 import io.github.jcondedata.aliveworkplace.work.Requests;
 import io.github.jcondedata.aliveworkplace.work.Walker;
 import io.github.jcondedata.aliveworkplace.work.WorkerStatus;
@@ -43,6 +43,11 @@ import net.minecraft.world.level.block.Block;
  */
 public class ScholarWork extends Behavior<Villager> {
 	static final int EVERY = 20;
+
+	/** Research points a round at the desk makes: {@link #EVERY} at the scholar's pace (ROADMAP 30.2). */
+	public static int progress(Villager villager) {
+		return Pace.progress(EVERY, villager);
+	}
 
 	private final Walker walker = new Walker(0.5f);
 	private int timer;
@@ -137,7 +142,7 @@ public class ScholarWork extends Behavior<Villager> {
 			return;
 		}
 		state = "researching";
-		int progress = research.progress() + Math.round(EVERY / Partners.factor(villager));
+		int progress = research.progress() + progress(villager);
 		villager.swing(InteractionHand.MAIN_HAND);
 		level.sendParticles(ParticleTypes.ENCHANT, desk.getX() + 0.5, desk.getY() + 1.3, desk.getZ() + 0.5, 5, 0.3, 0.2, 0.3, 0.5);
 		// A Psychic partner floats a book beside the desk, among enchanting glyphs (ROADMAP 28.6).

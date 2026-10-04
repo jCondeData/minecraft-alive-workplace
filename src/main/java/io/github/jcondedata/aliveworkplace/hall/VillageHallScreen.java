@@ -479,7 +479,7 @@ public final class VillageHallScreen {
 	}
 
 	/** A villager: their workstation (stacked as high as their level), name, level, what they're doing and waiting for. */
-	static ItemStack person(ServerLevel level, BlockPos hall, Villager villager) {
+	public static ItemStack person(ServerLevel level, BlockPos hall, Villager villager) {
 		boolean working = villager.getBrain().getMemory(MemoryModuleType.JOB_SITE).isPresent()
 			&& villager.getVillagerData().getProfession() != net.minecraft.world.entity.npc.VillagerProfession.NONE;
 		Item station = working ? workstation(level, villager) : Items.PAPER;
@@ -510,6 +510,11 @@ public final class VillageHallScreen {
 		// A Habitat Keeper's last five sightings (28.10).
 		for (Component sighting : io.github.jcondedata.aliveworkplace.habitat.HabitatKeepers.sightingLines(villager)) {
 			lore.add(line(sighting, ChatFormatting.AQUA));
+		}
+		Component pace = working ? io.github.jcondedata.aliveworkplace.work.Pace.describe(villager) : null;
+		if (pace != null) {
+			// "Works 62% faster (Machop from the pasture, a happy mood)", "Works 100% faster: at the cap (...)" (ROADMAP 30.2)
+			lore.add(line(Component.translatable("screen.aliveworkplace.hall.pace", pace).withStyle(pace.getStyle()), ChatFormatting.GRAY));
 		}
 		io.github.jcondedata.aliveworkplace.people.Moods.Mood mood = io.github.jcondedata.aliveworkplace.people.Moods.of(villager);
 		if (mood != null) {

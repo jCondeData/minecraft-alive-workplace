@@ -30,7 +30,7 @@ GROUPS = [
     "Carpenter", "Mason", "Leatherworker (dyer)", "Chef", "Armorer (smelter)", "Toolsmith", "Weaponsmith", "Fletcher",
     "Shepherd", "Butcher (herder)", "Cleric (alchemist)", "Librarian (scribe)", "Cartographer (explorer)", "Postman",
     "Guard", "Nurse", "Shopkeeper", "Ferryman", "Bard", "Trainer", "Trainer Leader", "Move Tutor", "Ball Smith",
-    "Pokémon Trader", "Fossil Scientist", "Berry Breeder", "Steward", "Camp Cook", "Village Hall", "Everyone at work", "Build families",
+    "Pokémon Trader", "Fossil Scientist", "Berry Breeder", "Steward", "Camp Cook", "Village Hall", "Legends", "Everyone at work", "Build families",
 ]
 
 START, WORKING, DONE = ("01_start", "Start"), ("work_*@middle", "At work"), ("03_done", "Done")
@@ -103,6 +103,9 @@ SCENES = [
     job("steward", "Steward", "The Steward's morning rounds", "the steward walked his morning rounds and came back to the hall", 200),
     job("netherworker", "Netherworker", "A trip to the Nether", "the netherworker came back from the Nether with loot", 240),
     job("undertaker", "Undertaker", "Bringing a worker back from the grave", "the undertaker revived the villager"),
+    # Legends (ROADMAP 29.2): the engine, with a Legend of the scene's own: the plain outfit, Master level, a pace power
+    job("legend", "Legends", "A villager becomes a Legend",
+        "a villager became a Legend, a Master who speeds up the builder beside them"),
     job("innkeeper", "Innkeeper", "A traveller checks in", "a traveller came to stay at the inn", 120,
         [("04_hire_screen", "Hire a traveller")]),
     job("teacher", "Teacher", "Lessons for the village children", "the teacher schooled the children", 180),
@@ -149,6 +152,11 @@ SCENES = [
     S("partners_engine", "Builder", "A Pokémon partner helps the builder", "the Machop carried the planks to the work and came back", 60,
       [("01_partner_carries", "Shouldering the planks"), ("02_partner_at_work", "At the work"), ("03_partner_back", "Back, empty-handed")],
       cobblemon=True),
+    # One pace, one cap (ROADMAP 30.2): a builder past the speed cap, then ill
+    S("pace", "Builder", "One pace, one cap: a builder past the speed cap",
+      "the capped builder's status line says \"at the cap\", and ill they're held back", 40,
+      [("01_pace_capped", "Three partners, a kept village, research, a happy mood: 100% faster, at the cap"),
+       ("02_pace_ill", "The same builder ill: held back to the usual pace")], cobblemon=True),
     S("partners_land", "Builder", "Pokémon partners at work: building and the land",
       "the Machamp carried the beams and the Wartortle watered the farmer's patch", 60,
       [("01_partners_carry", "Beams on its shoulder"), ("02_partners_at_work", "At work"), ("03_watered_field", "The patch watered")],
@@ -213,6 +221,10 @@ SCENES = [
        ("03_city_plan_framed", "The plan on the hall's map, framed")]),
     S("hall_pages", "Village Hall", "The chronicle and trade routes", "the chronicle and trade-route pages opened", 45,
       [("01_hall_chronicle", "Chronicle"), ("02_hall_routes", "Trade routes")]),
+    S("long_shifts", "Village Hall", "Edicts: Long Shifts proclaimed",
+      "Long Shifts was proclaimed: the hall's list shows the \"long shifts\" mood and the chronicle keeps it", 45,
+      [("01_long_shifts_list", "The builder: 20% faster, and \"long shifts\" in their mood"),
+       ("02_long_shifts_chronicle", "The chronicle: the edict proclaimed")]),
     S("hall_quests", "Village Hall", "Quests, advice, the village map and the festival",
       "the quests, advice, village map, mercenaries and festival opened", 60,
       [("01_hall_quests", "Quests"), ("02_hall_advice", "What next?"), ("03_hall_map", "Village map"),

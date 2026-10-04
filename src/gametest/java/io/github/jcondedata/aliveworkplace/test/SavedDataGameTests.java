@@ -76,6 +76,8 @@ public class SavedDataGameTests implements FabricGameTest {
 			List.of(Items.WHEAT, Items.COBBLESTONE)), new RouteData(Optional.empty(), Optional.of(new BlockPos(-8, 65, 9)), List.of())));
 		samples.put("JOB_SITE_HELD", new io.github.jcondedata.aliveworkplace.work.JobSiteTickets.Held(
 			net.minecraft.core.GlobalPos.of(net.minecraft.world.level.Level.OVERWORLD, new BlockPos(12, 64, -7)), 3));
+		samples.put("LEGEND", new io.github.jcondedata.aliveworkplace.legend.LegendData(net.minecraft.resources.ResourceLocation.parse("aliveworkplace:master_architect"),
+			"legend.aliveworkplace.master_architect.name.2", true, Optional.of(new BlockPos(5, 70, -9)), 12, 15, Map.of("home", 2), 14, 9, "visit"));
 		return samples;
 	}
 

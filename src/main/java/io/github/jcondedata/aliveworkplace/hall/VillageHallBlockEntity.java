@@ -29,6 +29,9 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 	private int questsDone;
 	/** The village's rank at the last round (see {@link VillageRanks}). */
 	private VillageRanks.Rank rank = VillageRanks.Rank.HAMLET;
+	private long treasuryTotal;
+	private int festivalCrowd;
+	private long founderMoodDay;
 	/** The day of the last raid on the village (see {@code guard/VillageRaids}). */
 	private long lastRaidDay = -100;
 	/** The day of the village's next (or last) festival, when it last feasted, when a player last called one. */
@@ -52,6 +55,12 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 	private java.util.List<Chronicle.Entry> chronicle = new java.util.ArrayList<>();
 	/** The village's research (see {@code research/Research}). */
 	private io.github.jcondedata.aliveworkplace.research.Research.State research = io.github.jcondedata.aliveworkplace.research.Research.State.EMPTY;
+	/** The edicts in force, oldest first (see {@link Edicts}). */
+	private java.util.List<Edicts.InForce> edicts = java.util.List.of();
+	/** Their effects summed (not saved: summed again after a load, a data pack reload or the switch). */
+	@Nullable
+	private CivicEffects.Sum civic;
+	private int civicGeneration;
 
 	/**
 	 * Whether the hall's point-of-interest record was checked for its Steward's place since it loaded (27.5): halls saved
@@ -78,6 +87,11 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 	@Nullable
 	public VillageNeeds.Needs needs() {
 		return needs;
+	}
+
+	/** Sets how the village is doing until the next round (tests, and the screens' examples). */
+	public void setNeeds(VillageNeeds.Needs needs) {
+		this.needs = needs;
 	}
 
 	/** Every {@link VillageNeeds#CHECK_EVERY} ticks (and on the first): the hungry fed, the village counted. */
@@ -136,6 +150,30 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 		setChanged();
 	}
 
+	/** The edicts in force, oldest first. */
+	public java.util.List<Edicts.InForce> edicts() {
+		return edicts;
+	}
+
+	/** Sets the edicts in force (proclaiming and lifting go through {@link Edicts}; tests set the day proclaimed). */
+	public void setEdicts(java.util.List<Edicts.InForce> edicts) {
+		this.edicts = java.util.List.copyOf(edicts);
+		civic = null;
+		setChanged();
+	}
+
+	/** The effects of the edicts in force, summed once and kept until they change. */
+	public CivicEffects.Sum civicEffects() {
+		CivicEffects.Sum sum = civic;
+		int generation = Edicts.generation();
+		if (sum == null || civicGeneration != generation) {
+			sum = Edicts.sum(edicts);
+			civic = sum;
+			civicGeneration = generation;
+		}
+		return sum;
+	}
+
 	public java.util.List<VillageQuests.Quest> quests() {
 		return quests;
 	}
@@ -158,7 +196,8 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 		return rank;
 	}
 
-	void setRank(VillageRanks.Rank rank) {
+	/** Sets the rank until the next round counts it again (the round, and tests). */
+	public void setRank(VillageRanks.Rank rank) {
 		this.rank = rank;
 		setChanged();
 	}
@@ -285,6 +324,36 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 		}
 	}
 
+	/** Every emerald (in cents) the treasury has ever taken in (0 in halls from before 29.2). */
+	public long treasuryTotal() {
+		return treasuryTotal;
+	}
+
+	public void addTreasuryTotal(long cents) {
+		treasuryTotal = Math.max(0, treasuryTotal + Math.max(0, cents));
+		setChanged();
+	}
+
+	/** How many villagers came to the last festival's fireworks. */
+	public int festivalCrowd() {
+		return festivalCrowd;
+	}
+
+	public void setFestivalCrowd(int crowd) {
+		festivalCrowd = Math.max(0, crowd);
+		setChanged();
+	}
+
+	/** The day the Founder's mood came (0: not yet). */
+	public long founderMoodDay() {
+		return founderMoodDay;
+	}
+
+	public void setFounderMoodDay(long day) {
+		founderMoodDay = day;
+		setChanged();
+	}
+
 	public int treasury() {
 		return treasury;
 	}
@@ -338,6 +407,9 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 		feastDay = tag.contains("feastDay") ? Nbt.getLong(tag, "feastDay") : -1;
 		festivalCalled = tag.contains("festivalCalled") ? Nbt.getLong(tag, "festivalCalled") : -100;
 		treasury = Nbt.getInt(tag, "treasury");
+		treasuryTotal = Nbt.getLong(tag, "treasuryTotal");
+		festivalCrowd = Nbt.getInt(tag, "festivalCrowd");
+		founderMoodDay = Nbt.getLong(tag, "founderMoodDay");
 		owner = Nbt.hasUuid(tag, "owner") ? Nbt.getUuid(tag, "owner") : null;
 		ownerName = Nbt.getString(tag, "ownerName");
 		protectedVillage = Nbt.getBoolean(tag, "protected");
@@ -349,6 +421,9 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 		rank = VillageRanks.Rank.values()[Math.max(0, Math.min(VillageRanks.Rank.values().length - 1, r))];
 		research = io.github.jcondedata.aliveworkplace.research.Research.State.CODEC.parse(net.minecraft.nbt.NbtOps.INSTANCE, tag.get("research"))
 			.result().orElse(io.github.jcondedata.aliveworkplace.research.Research.State.EMPTY);
+		edicts = Edicts.InForce.CODEC.listOf().parse(net.minecraft.nbt.NbtOps.INSTANCE, tag.get("edicts"))
+			.result().map(java.util.List::copyOf).orElse(java.util.List.of());
+		civic = null;
 		berriesFound.clear();
 		net.minecraft.nbt.ListTag berries = Nbt.getList(tag, "berriesFound", net.minecraft.nbt.Tag.TAG_STRING);
 		for (int i = 0; i < berries.size(); i++) {
@@ -385,6 +460,9 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 		tag.putLong("feastDay", feastDay);
 		tag.putLong("festivalCalled", festivalCalled);
 		tag.putInt("treasury", treasury);
+		tag.putLong("treasuryTotal", treasuryTotal);
+		tag.putInt("festivalCrowd", festivalCrowd);
+		tag.putLong("founderMoodDay", founderMoodDay);
 		if (owner != null) {
 			Nbt.putUuid(tag, "owner", owner);
 			tag.putString("ownerName", ownerName);
@@ -398,6 +476,9 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 		tag.putInt("rank", rank.ordinal());
 		io.github.jcondedata.aliveworkplace.research.Research.State.CODEC.encodeStart(net.minecraft.nbt.NbtOps.INSTANCE, research).result()
 			.ifPresent(t -> tag.put("research", t));
+		if (!edicts.isEmpty()) {
+			Edicts.InForce.CODEC.listOf().encodeStart(net.minecraft.nbt.NbtOps.INSTANCE, edicts).result().ifPresent(t -> tag.put("edicts", t));
+		}
 		net.minecraft.nbt.ListTag lines = new net.minecraft.nbt.ListTag();
 		for (Chronicle.Entry entry : chronicle) {
 			CompoundTag line = new CompoundTag();

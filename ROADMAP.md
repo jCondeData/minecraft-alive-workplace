@@ -118,6 +118,7 @@ stay in the list, ticked, so their numbers stay unique.
 - [x] **B50** (approved auto 2026-10-04) Flaky crew-speed GameTest: on CI run 37224223821 (db2887db, 2026-10-04) a crew of 4 built the stone house in 1966 ticks, 47% of the 4200 alone (limit 42%). Expected <=42%. Recent CI runs measured 29-36%; locally (class alone) passed twice at 39% and 35%, crew of 2 once 57%. Timing varies with villager pathing; the db2887db change (Nurse mixin) does not touch builders. Test: BuilderCrewGameTests.aCrewBuildsInAboutTheTimeOfOneBuilderDividedByItsSize (found by lane-b-1004-1832, 2026-10-04)
 - [ ] **B51** PartnersForgeCompatTests aPidgeyTakesTheAirMailUpAndLandsBackEmptyHanded (28.5) failed once in a local full build (lane-c-1004-1832, main cd957fd + 27.3, 2026-10-04 20:06Z): 'pastured pidgey: 0'; the 27.x changes don't touch pastures or the post. Expected: passes every run. Test: runCompatGameTest a few times or the repeat generator on that test; likely the same family as B48 (found by lane-c-1004-1832, 2026-10-04) (found by lane-c-1004-1832, 2026-10-04)
 - [ ] **B52** PartnersForgeCompatTests aPidgeyTakesTheAirmailUpAndLandsBackEmptyHanded failed once in a local full build (main d002634 + 29.2, 2026-10-04 21:02Z): 'pastured pidgey: 0'; passed on the immediate runCompatGameTest rerun. Expected: passes every run. Test: repeat it 10x. (found by lane-a-1004-1832, 2026-10-04)
+- [ ] **B53** Berry Breeders count Pokémon partners twice: BerryBreederWork.java:414 multiplies BuilderLevels.delay (which already includes Partners via Pace) by Partners.factor again, so a partnered breeder works faster than Pace's cap allows. Expected: one partner bonus, under maxWorkPace. Test: none yet (seen reading the code, 2026-10-04) (found by lane-d-1004-2133, 2026-10-04)
 
 ## Milestone 21: Finish 0.138.0
 
@@ -1335,7 +1336,7 @@ MarketDays) and research/.
   the server-wide `aliveworkplace_legends` record) and what an existing world sees after the update (some villagers
   turn out Gifted; nobody is a Legend until a village earns one). Sent to the owner as a review package; lanes don't
   wait for his reply. Done when: the note is on `main` and the package is sent.
-- [ ] **29.2** **The Legend engine.** A new `legend/` package. `Legends` loads one file per Legend from
+- [x] **29.2** (review: pending 2026-10-04) **The Legend engine.** A new `legend/` package. `Legends` loads one file per Legend from
   `data/aliveworkplace/legends/<id>.json` through `Platform.get().onDataReload` (as `ranch/PokemonChores` does), so
   server owners can add their own. A file holds: `rarity` (`rare`, `legendary`, `mythic`); `job` (the trade they work,
   always as a Master, with every level's trades through `Schools.headStart`; `aliveworkplace:legend` for Legends
@@ -1793,7 +1794,7 @@ the Village Hall (`VillageNeeds`, `VillageQuests`, `VillageRanks`, `Festivals`, 
     friends and operators (anyone, while the hall has no owner).
 
   Done when: the note is on `main` and its review package is sent.
-- [ ] **30.2** **One pace, one cap.** A core `work/Pace` that every job's work speed goes through (if another
+- [x] **30.2** (review: pending 2026-10-04) **One pace, one cap.** A core `work/Pace` that every job's work speed goes through (if another
   milestone built it first, check it covers this list and add what's missing):
   - bonuses: Pokémon partners, a well-kept village, Swift Hands, Diligent, a happy mood, Craftsmanship (crafters),
     Expeditions (explorers, netherworkers), and later this milestone's edicts, Work Horn, tonics and guilds, each
@@ -1815,7 +1816,7 @@ the Village Hall (`VillageNeeds`, `VillageQuests`, `VillageRanks`, `Festivals`, 
     or `Partners.factor` today gets its pace from `Pace` (a test per job family: builder, miner, crafter, explorer,
     teacher, scholar, rancher);
   - showcase scene `pace`: a capped builder's status line (its check: the line says "at the cap").
-- [ ] **30.3** **Edicts, and Long Shifts.** The engine and the first edict:
+- [x] **30.3** (review: pending 2026-10-04) **Edicts, and Long Shifts.** The engine and the first edict:
   - `hall/Edicts` loads `data/aliveworkplace/edicts/*.json` (a reload listener through `Platform`); a data pack can
     add edicts or switch ours off (`"enabled": false`); ours take their texts from the lang file, a data pack's may
     give plain text;

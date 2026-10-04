@@ -30,8 +30,8 @@ public final class BlueprintImporter {
 
 	public record Imported(ResourceLocation id, Blueprint blueprint, String format, int unknownBlocks) {
 		public Component summary() {
-			return Component.translatable(unknownBlocks > 0 ? "message.aliveworkplace.import.done_with_unknown" : "message.aliveworkplace.import.done",
-				id.toString(), blueprint.size().getX(), blueprint.size().getY(), blueprint.size().getZ(), unknownBlocks);
+			return io.github.jcondedata.aliveworkplace.work.Words.counted(unknownBlocks > 0 ? "message.aliveworkplace.import.done_with_unknown"
+				: "message.aliveworkplace.import.done", unknownBlocks > 0 ? unknownBlocks : 0, id.toString(), blueprint.size().getX(), blueprint.size().getY(), blueprint.size().getZ(), unknownBlocks);
 		}
 	}
 

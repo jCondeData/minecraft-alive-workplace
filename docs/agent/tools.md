@@ -63,7 +63,9 @@ multi-version layout (ROADMAP, Milestone 19): **Stonecutter**, one Gradle node p
   `scholar` (and the research screen), `sifter`, `tinkerer`, `composter`, `netherworker`, `undertaker`, `innkeeper`
   (and the hire screen), `teacher`, `rancher`, `mason`, `dyer`, `nurse`, `smelter`, `toolsmith`, `weaponsmith`,
   `fletcher`, `shepherd`, `herder`, `alchemist`, `scribe`, `explorer`, `bard`, `dropbox` (the Drop Box and its screen),
-  `fossil` (Cobblemon); screens: `shapes`, `style_menu`, `counter` (the Shop Counter's prices), `ferry_menu`, and with
+  `fossil` (Cobblemon); screens: `shapes`, `style_menu` (with the Mirror button), `counter` (the Shop Counter's prices
+  and the owner's sales log), `ferry_menu`, `scan` (the Scan Tool marks a hut and saves it), `config` (the settings
+  screen Mod Menu opens; it puts the run's config file back afterwards), and with
   Cobblemon `daycare`, `smith_orders`, `leader` (a Trainer Leader's challenge). `python3 tools/showcase/scenes.py list`
   lists them all.
 - **The nightly showcase** (`.github/workflows/showcase.yml`, ROADMAP 22.4). Every night at about 10:40 PM Central,

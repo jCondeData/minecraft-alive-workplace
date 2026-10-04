@@ -227,7 +227,7 @@ Before polishing, make sure nothing regresses unnoticed.
   10 PM Central (`17 3 * * *`), before the night runs, which read its result first.
 - [x] **22.2** (approved auto 2026-10-03) (verified 2026-10-03: inventory.py: 73/73 saved values have a save/reload test [list empty]; both suites reflect over every ModAttachments field and fail on one without a sample; mutants 3/3 killed [FieldJob.adopted dropped, trees_felled and ball_orders lost on load]) Save/reload tests for every value `inventory.py` lists as "never saved and reloaded" (69 at 0.136.0), done in
   batches: builder, miner and lumberjack data first. Done when: that list is empty, or each remaining entry has a reason.
-- [ ] **22.3** A bot scene for every player-visible feature, so any feature can be shown again on demand
+- [x] **22.3** (review: pending 2026-10-04) A bot scene for every player-visible feature, so any feature can be shown again on demand
   (`tools/screenshots/run.sh SCENE=…`). Done when: every job and every screen in the README has a scene. A new feature
   gets its scene in the same commit.
 - [x] **22.4** (approved auto 2026-09-30) (verified 2026-10-02: its tester Check, shipped in 0.138.0) **A daily showcase page** (owner, 2026-09-30): screenshots and GIFs of everything the mod does, so the
@@ -337,7 +337,7 @@ texture has no clear direction yet.
   floats; approved 2026-09-29). Left: any clipping, floating or z-fighting in the scenes (`SCENE=extras`, `staff`,
   `village`, …). Done when: each one found has a before/after in a review package, or a package shows the scenes
   clean.
-- [ ] **24.4** **Screens.** Village Hall, Blueprint Table, requests board, mailbox, shop and research screens are readable at
+- [x] **24.4** (review: pending 2026-10-04) **Screens.** Village Hall, Blueprint Table, requests board, mailbox, shop and research screens are readable at
   GUI scales 2–4, have no clipped or overlapping text, and use vanilla-style panels. Done when: screenshots of each
   screen at scales 2 and 4 are in a review package, with no clipping visible.
 - [ ] **24.5** **Words.** `langcheck.py` is clean. Every tooltip and message has been read in context (screenshots), with
@@ -4262,6 +4262,16 @@ item waits.
   run's mutation-report summary has posted, and fix whatever its first run shows. 22.8's code is on main; tick it when
   a push changing one scene films only that scene (the plan job's summary says "Scenes: <name>"). 24.4: GUI_SCALE=4
   works (mailbox checked); film the other screens and hand in the package.
+- 2026-10-04 (26.3, lane-b-1004-0332), **for the owner**: the `LICENSE` file is the **GPL version 2** text (GitHub's
+  initial commit), while `fabric.mod.json`, the README and the design decision say **GPL-3.0-or-later** (needed to
+  adapt MineColonies code). Sessions may not change the license, so this waits for him: replacing `LICENSE` with the
+  GPL-3.0 text makes them agree. The two MineColonies-inspired files (ExplorerWork, Netherworkers) say "adapted in
+  spirit; the code is ours", so no file carries copied GPL code needing a header today. 26.3's other open parts: the
+  version `1.0.0+1.21.1` and the CHANGELOG cleanup go in the 1.0 release commit (sessions don't bump versions).
+- 2026-10-04 (24.5, lane-b-1004-0332): `langcheck.py` is clean (its 4 title/detail pairs were checked against the code
+  and listed in its CHECKED_PAIRS with why). "(s)" is gone: counted sentences use `work/Words.counted` with a `.one`
+  key (WordsGameTests guards it), and item counts read "28× Spruce Planks" everywhere. Left for 24.5: reading every
+  other tooltip and message in context, and the package showing them.
 - **lane-a handoff** (lane-a-1003-2232, 2026-10-03 23:24Z): lane-a-1003-2232: health green (CI main; the 22:24Z red run died in Gradle setup, next commit green; nightly issue #1 old). Nothing landed. 21.2 PAUSED (blocked on B34/B36): new piece on item/21.2 - NetworkPayloadsGameTests (payload round-trips at limits, oversized client packets refused, mailbox Send and table Take via player.connection.handleCustomPayload; first test of Mail.send; 3/3 mutants killed) and full-check.md maps inventory.py's 14 'untested' mixins to their behaviour tests (name-matching gap only). Land passed 497+56 once, then main moved and the rebuild failed only on WorkersKeepTheirBlockGameTests.aStuckTrainerKeepsTheirPost (filed B36, B34's sibling). NEXT: once B34/B36 land, land 21.2 --keep-open (only the 0.138.0 old-world check at release and GitHub perf after B14 remain). Traps: every mock player is named test-mock-player, so getPlayerByName can return another test's player; run './gradlew --stop' before land or the daemon dies of memory during compat tests; land JAVA_HOME=/root/.local/jdk-25.
 - **lane-b handoff** (lane-b-1003-2232, 2026-10-03 23:26Z): lane-b-1003-2232: health: CI on main had gone red intermittently on aStuckTutorKeepsTheirDesk (ab7c4d76); took B34 (B33 went to lane-c, simultaneous start). LANDED B34 --no-review (70efb814): not neighbours - the tutor failed 2-3/20 even alone in its batch, because after reaching the desk it strolls up to 10 blocks around it (StrollAroundPoi in DeskPackages) and could be 12+ off at tick 260. WorkersKeepTheirBlockGameTests now judges the closest approach, each test runs alone in its batch with Leftovers.clear, and the failure message names activity/day time/walk target; 40/40 repeats green, full land 490+56 green. Nothing in progress. Next: whatever status names. Traps: CI's failure messages aren't in the job log (only the gametest-report artifact) - wrap a repeat test with a GameTestListener that prints getError(); the default batch is split into 50-test chunks, so adding any test reshuffles neighbours; land rebuilt 3x because main moved (about 30 min).
 - **lane-c handoff** (lane-c-1003-2232, 2026-10-03 23:45Z): lane-c-1003-2232: health: main CI had a red run at ab7c4d76 (the B34 flake, lane-b on it). LANDED B33 --no-review: crafters take from another builder's chests only what Builders.reservedAt leaves spare (guarded chests last, live cap at fetch); CraftersShareSpareGameTests 2/2, reserved case fails without the fix; full land 490+56 green. LANDED part of 22.3 (--keep-open): hall_treasury scene, 3/3 checks, stills checked. 22.3 PAUSED: next scenes for the shop owner's sales, the style picker's Mirror, the worker helper line. Filed a bug: hall name tag's protect hint is wrong when already protected. Traps: land picks Java 21 unless JAVA_HOME=/root/.local/jdk-25 is exported (loom 1.18.2 needs 25); --keep-open and --no-review can't be combined; land retried 4x because main kept moving (~40 min).

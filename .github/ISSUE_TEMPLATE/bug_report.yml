@@ -1,0 +1,65 @@
+name: Bug report
+description: Something in Alive Workplace doesn't work as it should (a crash, a stuck villager, a wrong build...).
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time! A bug we can make happen again is a bug we can fix, so the steps and the log
+        matter most. Please search the open issues first: someone may have reported it already.
+  - type: input
+    id: version
+    attributes:
+      label: Alive Workplace version
+      description: The file name of the jar, or the version in Mod Menu (for example 1.0.0+1.21.1).
+      placeholder: 1.0.0+1.21.1
+    validations:
+      required: true
+  - type: dropdown
+    id: where
+    attributes:
+      label: Where does it happen?
+      options:
+        - Singleplayer
+        - On a server (dedicated)
+        - On a LAN world
+    validations:
+      required: true
+  - type: input
+    id: mods
+    attributes:
+      label: Modpack or other mods
+      description: The modpack and its version (for example Cobbleverse), or the mods you added. Cobblemon's version helps if a Pokémon job is involved.
+      placeholder: Cobbleverse, or "Fabric API only"
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened, and what did you expect?
+      description: One or two sentences each. A screenshot or a short video helps a lot.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to make it happen again
+      description: From a fresh world if you can. Which job, which block, which blueprint, and what you clicked.
+      placeholder: |
+        1. Place a Builder's Bench and a chest with oak planks next to it.
+        2. Give a villager the Builder job and pick "Cozy Hut" at the bench.
+        3. ...
+    validations:
+      required: true
+  - type: textarea
+    id: log
+    attributes:
+      label: latest.log
+      description: |
+        Drag in `logs/latest.log` from your game folder (on a server, the server's `logs/latest.log`) after the bug
+        happened, before restarting. Or paste a link to https://mclo.gs.
+    validations:
+      required: true
+  - type: textarea
+    id: crash
+    attributes:
+      label: Crash report (if the game crashed)
+      description: Drag in the newest file from the `crash-reports` folder, or paste a https://mclo.gs link.

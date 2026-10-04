@@ -739,7 +739,7 @@ final class JobScenes {
 				step("02_shapes_info", io.github.jcondedata.aliveworkplace.blueprint.Shapes.INFO, 6)),
 			(level, player) -> player.containerMenu instanceof ChoiceMenu m
 				&& m.icon(io.github.jcondedata.aliveworkplace.blueprint.Shapes.FIRST_MATERIAL).is(Items.STONE_BRICKS)));
-		SCREENS.put("style_menu", new Screen("the style picker opened and dark oak was chosen", new Vec3(2.5, -58.4, 4.5), TARGET,
+		SCREENS.put("style_menu", new Screen("the style picker opened, dark oak was chosen and the build mirrored", new Vec3(2.5, -58.4, 4.5), TARGET,
 			(level, player) -> {
 				player.setItemInHand(InteractionHand.MAIN_HAND, BlueprintItem.create(StarterBlueprints.STONE_HOUSE.id(), StarterBlueprints.STONE_HOUSE.size()));
 				io.github.jcondedata.aliveworkplace.blueprint.StylePicker.open(player, InteractionHand.MAIN_HAND);
@@ -749,9 +749,47 @@ final class JobScenes {
 					if (player.containerMenu instanceof ChoiceMenu m) {
 						m.press(io.github.jcondedata.aliveworkplace.blueprint.StylePicker.slot(3), player);
 					}
+				}, 25),
+				// The Mirror button flips the build left to right (ROADMAP 22.3).
+				new Step("03_style_mirrored", io.github.jcondedata.aliveworkplace.blueprint.StylePicker.MIRROR, 6, (level, player) -> {
+					if (player.containerMenu instanceof ChoiceMenu m) {
+						m.press(io.github.jcondedata.aliveworkplace.blueprint.StylePicker.MIRROR, player);
+					}
 				}, 25)),
-			(level, player) -> BlueprintItem.data(player.getMainHandItem()).map(d -> d.structure().equals(
+			(level, player) -> BlueprintItem.data(player.getMainHandItem()).map(d -> d.mirrored() && d.structure().equals(
 				io.github.jcondedata.aliveworkplace.blueprint.BlueprintStyles.styled(StarterBlueprints.STONE_HOUSE.id(), "dark_oak"))).orElse(false)));
+		// The Scan Tool (ROADMAP 22.3): two corners of a little hut marked (the purple box shows while it's held), then
+		// sneak-use saves it as a blueprint.
+		SCREENS.put("scan", new Screen("a hut was marked with the Scan Tool and saved as a blueprint", new Vec3(6.5, -56.2, 5.5), new Vec3(0, -58.5, -4),
+			(level, player) -> {
+				for (BlockPos p : BlockPos.betweenClosed(-2, -60, -6, 2, -57, -2)) {
+					boolean wall = p.getX() == -2 || p.getX() == 2 || p.getZ() == -6 || p.getZ() == -2;
+					level.setBlockAndUpdate(p, wall ? Blocks.OAK_PLANKS.defaultBlockState() : Blocks.AIR.defaultBlockState());
+				}
+				for (BlockPos p : BlockPos.betweenClosed(-2, -56, -6, 2, -56, -2)) {
+					level.setBlockAndUpdate(p, Blocks.SPRUCE_SLAB.defaultBlockState());
+				}
+				level.setBlockAndUpdate(new BlockPos(0, -60, -2), Blocks.AIR.defaultBlockState());
+				level.setBlockAndUpdate(new BlockPos(0, -59, -2), Blocks.AIR.defaultBlockState());
+				level.setBlockAndUpdate(new BlockPos(2, -59, -4), Blocks.GLASS_PANE.defaultBlockState());
+				ItemStack tool = new ItemStack(ModItems.SCAN_TOOL);
+				tool.set(net.minecraft.core.component.DataComponents.CUSTOM_NAME, net.minecraft.network.chat.Component.literal("Little Hut"));
+				player.setItemInHand(InteractionHand.MAIN_HAND, tool);
+				for (BlockPos corner : List.of(new BlockPos(-2, -60, -6), new BlockPos(2, -56, -2))) {
+					tool.useOn(new net.minecraft.world.item.context.UseOnContext(player, InteractionHand.MAIN_HAND,
+						new net.minecraft.world.phys.BlockHitResult(Vec3.atCenterOf(corner), Direction.UP, corner, false)));
+				}
+			},
+			List.of(new Step("01_scan_marked", -1, 6, null, 40),
+				new Step("02_scan_saved", -1, 6, (level, player) -> {
+					var data = io.github.jcondedata.aliveworkplace.blueprint.ScanToolItem.data(player.getMainHandItem());
+					Showcase.check(data.isComplete(), "both corners are marked");
+					player.setShiftKeyDown(true);
+					player.getMainHandItem().use(level, player, InteractionHand.MAIN_HAND);
+					player.setShiftKeyDown(false);
+				}, 30)),
+			(level, player) -> player.getInventory().items.stream().anyMatch(stack -> BlueprintItem.data(stack)
+				.map(d -> d.structure().getPath().startsWith("scans/")).orElse(false))));
 		SCREENS.put("counter", new Screen("the Price Tag's screen opened", new Vec3(2.5, -58.4, 4.5), TARGET,
 			(level, player) -> {
 				place(level, STATION, ModBlocks.SHOP_COUNTER);
@@ -765,12 +803,25 @@ final class JobScenes {
 				ItemStack tag = new ItemStack(ModItems.PRICE_TAG);
 				io.github.jcondedata.aliveworkplace.shop.PriceTagItem.setPrice(tag, 250);
 				counter.setItem(columns + 1, tag);
+				// Two earlier sales for the owner's log (ROADMAP 22.3).
+				long day = level.getDayTime() / 24000L;
+				counter.logSale(new io.github.jcondedata.aliveworkplace.shop.ShopCounterBlockEntity.Sale(day, "Ana", new ItemStack(Items.BREAD, 6), 0,
+					new ItemStack(Items.EMERALD, 1)));
+				counter.logSale(new io.github.jcondedata.aliveworkplace.shop.ShopCounterBlockEntity.Sale(day, "Clover", new ItemStack(Items.OAK_LOG, 16), 0,
+					new ItemStack(Items.EMERALD, 2)));
 				player.openMenu(counter);
 			},
 			List.of(step("01_counter_screen", 0, 2),
 				step("02_counter_price", io.github.jcondedata.aliveworkplace.shop.ShopCounterBlockEntity.COLUMNS + 1, 2),
-				new Step("03_price_tag", 22, 6, (level, player) -> {
+				// The owner's sales log in chat (sneak-right-click on the counter).
+				new Step("03_counter_sales", -1, 6, (level, player) -> {
 					Showcase.check(player.containerMenu instanceof ChestMenu m && m.getRowCount() == 2, "the Shop Counter's price list opened");
+					player.closeContainer();
+					var counter = (io.github.jcondedata.aliveworkplace.shop.ShopCounterBlockEntity) level.getBlockEntity(STATION);
+					Showcase.check(counter.sales().size() == 2, "the owner's sales log lists both sales");
+					io.github.jcondedata.aliveworkplace.shop.Shops.sendLog(player, counter);
+				}, 30),
+				new Step("04_price_tag", 22, 6, (level, player) -> {
 					player.closeContainer();
 					player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(ModItems.PRICE_TAG));
 					ModItems.PRICE_TAG.use(level, player, InteractionHand.MAIN_HAND);

@@ -89,6 +89,10 @@ public class ScreenshotHarness implements ClientModInitializer {
 			guideScene(mc, mc.getSingleplayerServer());
 			return;
 		}
+		if ("config".equals(System.getProperty("aliveworkplace.scene"))) {
+			configScene(mc);
+			return;
+		}
 		if ("guard".equals(System.getProperty("aliveworkplace.scene")) || "guard_pokemon".equals(System.getProperty("aliveworkplace.scene"))) {
 			guardScene(mc, mc.getSingleplayerServer());
 			return;
@@ -1157,6 +1161,101 @@ public class ScreenshotHarness implements ClientModInitializer {
 	}
 
 	// --- Guide: the Guide Book a new player is given, every page in turn ------------------------------------
+
+	/**
+	 * ROADMAP 24.4: a chest-style screen's title must fit inside its panel at every GUI scale (the Shop Counter's ran
+	 * past the right edge). Only a failure is recorded, so scenes keep their own checks.
+	 */
+	private static void titleFits(Minecraft mc, String shot) {
+		if (!(mc.screen instanceof net.minecraft.client.gui.screens.inventory.AbstractContainerScreen<?> screen)) {
+			return;
+		}
+		try {
+			java.lang.reflect.Field width = net.minecraft.client.gui.screens.inventory.AbstractContainerScreen.class.getDeclaredField("imageWidth");
+			java.lang.reflect.Field labelX = net.minecraft.client.gui.screens.inventory.AbstractContainerScreen.class.getDeclaredField("titleLabelX");
+			width.setAccessible(true);
+			labelX.setAccessible(true);
+			int room = width.getInt(screen) - 2 * labelX.getInt(screen);
+			if (mc.font.width(screen.getTitle()) > room) {
+				Showcase.check(false, shot + ": the title '" + screen.getTitle().getString() + "' is wider than its screen ("
+					+ mc.font.width(screen.getTitle()) + " > " + room + " pixels)");
+			}
+		} catch (ReflectiveOperationException e) {
+			// Not a vanilla container screen layout: nothing to measure.
+		}
+	}
+
+	private io.github.jcondedata.aliveworkplace.client.ConfigScreen configScreen;
+	private String configBefore;
+
+	/**
+	 * The settings screen Mod Menu opens (ROADMAP 26.3): every option's label fits its button, a switch turned off is
+	 * saved to config/aliveworkplace.json and put into effect when the screen closes. The file is put back afterwards
+	 * (the run directory's config is shared by every scene).
+	 */
+	private void configScene(Minecraft mc) {
+		tick++;
+		java.nio.file.Path file = io.github.jcondedata.aliveworkplace.platform.Platform.get().configDir()
+			.resolve(io.github.jcondedata.aliveworkplace.WorkplaceConfig.FILE);
+		if (tick == 40) {
+			try {
+				configBefore = java.nio.file.Files.readString(file);
+			} catch (java.io.IOException e) {
+				configBefore = null;
+			}
+			configScreen = new io.github.jcondedata.aliveworkplace.client.ConfigScreen(null);
+			mc.setScreen(configScreen);
+		}
+		if (tick == 55) {
+			List<String> problems = new ArrayList<>();
+			for (var widget : configScreen.optionWidgets()) {
+				if (widget == null) {
+					problems.add("an option has no button");
+					continue;
+				}
+				String text = widget.getMessage().getString();
+				if (text.contains("aliveworkplace.config")) {
+					problems.add("untranslated " + text);
+				} else if (mc.font.width(widget.getMessage()) > widget.getWidth() - 8) {
+					problems.add("'" + text + "' is wider than its button");
+				}
+			}
+			Showcase.check(problems.isEmpty() && configScreen.optionWidgets().size() == io.github.jcondedata.aliveworkplace.WorkplaceConfig.optionNames().size(),
+				"every setting has a button whose label fits (" + configScreen.optionWidgets().size() + " settings"
+					+ (problems.isEmpty() ? "" : ": " + String.join(", ", problems)) + ")");
+			shot(mc, "01_config_numbers");
+		}
+		if (tick == 60) {
+			configScreen.scrollToEnd();
+		}
+		if (tick == 70) {
+			shot(mc, "02_config_switches");
+			// Turn the festivals off with the button itself, as a player would.
+			for (var widget : configScreen.optionWidgets()) {
+				if (widget.getMessage().getString().startsWith(net.minecraft.client.resources.language.I18n.get("aliveworkplace.config.festivals"))) {
+					widget.onClick(widget.getX() + 2, widget.getY() + 2);
+				}
+			}
+		}
+		if (tick == 80) {
+			shot(mc, "03_config_festivals_off");
+			mc.setScreen(null);
+		}
+		if (tick == 90) {
+			var saved = io.github.jcondedata.aliveworkplace.WorkplaceConfig.load(file.getParent());
+			Showcase.check(!saved.festivals && !io.github.jcondedata.aliveworkplace.hall.Festivals.ENABLED,
+				"turning Festivals off and closing the screen saves it and puts it into effect");
+			try {
+				if (configBefore != null) {
+					java.nio.file.Files.writeString(file, configBefore);
+				}
+			} catch (java.io.IOException e) {
+				Showcase.check(false, "the config file was put back: " + e);
+			}
+			io.github.jcondedata.aliveworkplace.WorkplaceConfig.loadAndApply(file.getParent());
+			mc.stop();
+		}
+	}
 
 	private io.github.jcondedata.aliveworkplace.client.guide.GuideScreen guide;
 	private final List<String> guideProblems = new ArrayList<>();
@@ -2521,6 +2620,7 @@ public class ScreenshotHarness implements ClientModInitializer {
 	}
 
 	static void shot(Minecraft mc, String name) {
+		titleFits(mc, name);
 		Screenshot.grab(mc.gameDirectory, name + ".png", mc.getMainRenderTarget(), msg -> {
 		});
 	}

@@ -1,0 +1,21 @@
+name: Idea or request
+description: A job, a building, a screen or a change you would like to see.
+labels: ["idea"]
+body:
+  - type: textarea
+    id: idea
+    attributes:
+      label: Your idea
+      description: What would you like villagers (or the Village Hall, the builder, ...) to do?
+    validations:
+      required: true
+  - type: textarea
+    id: why
+    attributes:
+      label: Why
+      description: What would it add to your world or your server? What do you do today instead?
+  - type: input
+    id: mods
+    attributes:
+      label: Modpack
+      description: If the idea involves another mod (Cobblemon, Chipped, ...), which one.

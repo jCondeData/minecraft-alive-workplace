@@ -4,7 +4,14 @@ import io.github.jcondedata.aliveworkplace.WorkplaceConfig;
 import io.github.jcondedata.aliveworkplace.build.SupplyContainers;
 import io.github.jcondedata.aliveworkplace.guard.Guards;
 import io.github.jcondedata.aliveworkplace.work.Money;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 import net.fabricmc.fabric.api.gametest.v1.FabricGameTest;
+import net.minecraft.gametest.framework.GameTestAssertException;
+import net.minecraft.locale.Language;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import io.github.jcondedata.aliveworkplace.explore.ExplorerWork;
@@ -87,6 +94,85 @@ public class ConfigGameTests implements FabricGameTest {
 		helper.assertTrue(applied, "apply() didn't put the values into effect: " + inUse);
 		helper.assertTrue(LumberjackWork.RADIUS == 16 && FisherWork.RADIUS == 16 && Partners.RADIUS == 16 && ExplorerWork.RANGE == 48 && PostOffice.ROUND == 64
 			&& VillageHalls.RADIUS == 64 && VillageGrowth.CAP == 40 && Treasury.CENTS_PER_WORKER == 20, "defaults not restored");
+		helper.succeed();
+	}
+
+	/**
+	 * The settings screen (Mod Menu, ROADMAP 26.3) lists every option: each has a label and a tooltip in the language
+	 * file, and every number has a range its default sits in, which is also what the file is clamped to.
+	 */
+	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
+	public void everySettingHasItsWordsAndRange(GameTestHelper helper) {
+		Language lang = Language.getInstance();
+		List<String> problems = new ArrayList<>();
+		for (String key : List.of("aliveworkplace.config.title", "aliveworkplace.config.note")) {
+			if (!lang.has(key)) {
+				problems.add(key);
+			}
+		}
+		WorkplaceConfig defaults = new WorkplaceConfig();
+		List<String> names = WorkplaceConfig.optionNames();
+		for (String name : names) {
+			for (String key : List.of("aliveworkplace.config." + name, "aliveworkplace.config." + name + ".tooltip")) {
+				if (!lang.has(key)) {
+					problems.add("untranslated " + key);
+				}
+			}
+			if (!WorkplaceConfig.isSwitch(name)) {
+				WorkplaceConfig.Range range = WorkplaceConfig.RANGES.get(name);
+				if (range == null) {
+					problems.add(name + " has no range");
+				} else if (defaults.getInt(name) < range.min() || defaults.getInt(name) > range.max()) {
+					problems.add(name + "'s default " + defaults.getInt(name) + " is outside " + range);
+				}
+			}
+		}
+		for (String name : WorkplaceConfig.RANGES.keySet()) {
+			if (!names.contains(name) || WorkplaceConfig.isSwitch(name)) {
+				problems.add("range for " + name + ", which isn't a number setting");
+			}
+		}
+		helper.assertTrue(names.size() == 29, "expected 29 settings, found " + names.size() + ": " + names);
+		helper.assertTrue(problems.isEmpty(), String.join("; ", problems));
+		helper.succeed();
+	}
+
+	/**
+	 * What the settings screen does when it closes: the edited values are written to the file (clamped) and read back
+	 * the same; a broken file gives the defaults and is replaced by a complete one.
+	 */
+	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
+	public void savedSettingsAreReadBack(GameTestHelper helper) {
+		Path dir;
+		try {
+			dir = Files.createTempDirectory("aliveworkplace-config");
+		} catch (IOException e) {
+			throw new GameTestAssertException("no temp dir: " + e);
+		}
+		WorkplaceConfig config = WorkplaceConfig.load(dir);
+		helper.assertTrue(config.supplyRadius == 8 && config.festivals, "no file means the defaults");
+		config.setBoolean("festivals", false);
+		config.setInt("seasonDays", 12);
+		config.setInt("guardRadius", 1000);
+		config.save(dir);
+		WorkplaceConfig read = WorkplaceConfig.load(dir);
+		helper.assertTrue(!read.festivals && read.seasonDays == 12, "saved values should be read back: festivals " + read.festivals
+			+ ", seasonDays " + read.seasonDays);
+		helper.assertTrue(read.guardRadius == 64, "an out-of-range value should be saved clamped, not " + read.guardRadius);
+		helper.assertTrue(read.villagerNames && read.dollarsPerEmerald == 100, "values not edited keep their defaults");
+
+		try {
+			Files.writeString(dir.resolve(WorkplaceConfig.FILE), "{ not json");
+			WorkplaceConfig broken = WorkplaceConfig.loadAndApply(dir);
+			new WorkplaceConfig().apply();
+			helper.assertTrue(broken.festivals && broken.seasonDays == 8, "a broken file should give the defaults");
+			helper.assertTrue(Files.readString(dir.resolve(WorkplaceConfig.FILE)).contains("\"villageProtection\""),
+				"a broken file should be rewritten with every setting");
+		} catch (IOException e) {
+			throw new GameTestAssertException("file trouble: " + e);
+		}
 		helper.succeed();
 	}
 }

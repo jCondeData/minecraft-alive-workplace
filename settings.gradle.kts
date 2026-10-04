@@ -5,6 +5,10 @@ pluginManagement {
         maven("https://maven.fabricmc.net/")
         maven("https://maven.kikugie.dev/releases")
     }
+    plugins {
+        // Versions for plugins applied in build.gradle.kts (one place to bump them).
+        id("me.modmuss50.mod-publish-plugin") version "2.2.1"
+    }
 }
 
 plugins {

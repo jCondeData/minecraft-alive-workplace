@@ -54,7 +54,7 @@ public class BuildersBenchBlock extends HorizontalDirectionalBlock {
 		}
 		if (level instanceof ServerLevel serverLevel) {
 			int chests = SupplyContainers.find(serverLevel, pos, null).size();
-			Chat.chat(player, Component.translatable("message.aliveworkplace.bench.info", chests, SupplyContainers.RADIUS));
+			Chat.chat(player, io.github.jcondedata.aliveworkplace.work.Words.counted("message.aliveworkplace.bench.info", chests, chests, SupplyContainers.RADIUS));
 		}
 		return Interact.success(level.isClientSide());
 	}

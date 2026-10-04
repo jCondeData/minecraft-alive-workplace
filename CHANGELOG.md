@@ -3,6 +3,10 @@
 ## Unreleased
 
 ### Added
+- **A settings screen**: with Mod Menu installed, the mod's Configure button opens every setting of
+  `config/aliveworkplace.json` as sliders and on/off buttons, each with a tooltip saying what it does. Closing the
+  screen saves the file and puts the settings into effect in your own worlds; a server keeps its own file.
+- Bug reports on GitHub now use a form that asks for the version, the steps, `latest.log` and any crash report.
 - Over a builder's head, under its progress: the three materials the build is shortest of, with counts (or that it
   has everything), and where the builder takes materials from (its chests, or the storehouse, by its bench at x y z).
 - **The village calendar**: the world now has four seasons of 8 days (`seasonDays` in the config), each with a festival
@@ -20,6 +24,11 @@
   checks that no item was duplicated or lost.
 
 ### Fixed
+- Screens checked at GUI scales 2 and 4: the Shop Counter's title no longer runs off its panel ("Goods on top, prices
+  below"), and the Blueprint Table's list no longer draws a blueprint's size over its selection box, nor 3-digit
+  material counts over the next icon.
+- Messages with a number say "1 parcel" and "3 parcels" instead of "parcel(s)", and item counts read "28× Spruce
+  Planks" everywhere (the Village Hall's requests, research costs, the shop's sales log), as the builder's already did.
 - A builder whose next build is far from its chests takes the first materials along before clearing the site, instead
   of walking all the way back for them once the site is clear (it stood idle for over half a minute).
 - With Chipped or Rechiseled installed, a builder carrying a variant of the block it needed (taken in place of

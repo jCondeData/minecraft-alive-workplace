@@ -372,7 +372,7 @@ public final class Builders {
 		}
 		if (site.skipped() > 0) {
 			text.append(Component.literal("\n  "));
-			text.append(Component.translatable("message.aliveworkplace.status.skipped", site.skipped()).withStyle(ChatFormatting.DARK_GRAY));
+			text.append(io.github.jcondedata.aliveworkplace.work.Words.counted("message.aliveworkplace.status.skipped", site.skipped(), site.skipped()).withStyle(ChatFormatting.DARK_GRAY));
 		}
 		if (villager != null) {
 			List<BuildSite> queue = queue(level, villager);
@@ -542,7 +542,7 @@ public final class Builders {
 			tell(owner, Component.translatable(site.isDeconstruction() ? "message.aliveworkplace.finished_deconstruct" : "message.aliveworkplace.finished",
 				villager.getDisplayName(), Blueprints.displayName(site.structure())), ChatFormatting.GREEN);
 			if (entitiesLeft > 0) {
-				tell(owner, Component.translatable("message.aliveworkplace.entities_left", entitiesLeft), ChatFormatting.YELLOW);
+				tell(owner, io.github.jcondedata.aliveworkplace.work.Words.counted("message.aliveworkplace.entities_left", entitiesLeft, entitiesLeft), ChatFormatting.YELLOW);
 			}
 		}
 		if (site.isDeconstruction()) {

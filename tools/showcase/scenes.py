@@ -72,8 +72,10 @@ SCENES = [
       [("10_table_library", "Library"), ("11_table_upload", "Upload a file"), ("12_table_uploaded", "Uploaded")]),
     S("shapes", "Builder", "Shape Planner", "the Shape Planner screen opened with its materials", 45,
       [("01_shapes_screen", "Shape Planner"), ("02_shapes_info", "Size and blocks")]),
-    S("style_menu", "Builder", "Build it in a style", "the style picker opened and a style was chosen", 45,
-      [("01_style_screen", "Style picker"), ("02_style_chosen", "Dark oak chosen")]),
+    S("scan", "Builder", "The Scan Tool: your own build as a blueprint", "a hut was marked with the Scan Tool and saved as a blueprint", 30,
+      [("01_scan_marked", "Two corners marked"), ("02_scan_saved", "Saved as a blueprint")]),
+    S("style_menu", "Builder", "Build it in a style", "the style picker opened, a style was chosen and the build mirrored", 50,
+      [("01_style_screen", "Style picker"), ("02_style_chosen", "Dark oak chosen"), ("03_style_mirrored", "Mirrored")]),
     # Miner
     S("quarry", "Miner", "A miner digs out a quarry", "the miner dug out the whole quarry", 420,
       [("frame_*@first", "Start"), ("frame_*@middle", "Digging"), ("50_quarry_done", "Dug out")]),
@@ -144,8 +146,8 @@ SCENES = [
     # Shopkeeper
     S("shop", "Shopkeeper", "The shop", "the shop screen opened with prices", 60,
       [("01_shop_menu", "Shop screen"), ("02_shop_counter", "The counter")], cobblemon=True),
-    S("counter", "Shopkeeper", "Setting prices at the Shop Counter", "the price list and a Price Tag's screen opened", 45,
-      [("01_counter_screen", "Price list"), ("02_counter_price", "A price"), ("03_price_tag", "Price Tag")]),
+    S("counter", "Shopkeeper", "Setting prices at the Shop Counter", "the price list, the owner's sales log and a Price Tag's screen opened", 55,
+      [("01_counter_screen", "Price list"), ("02_counter_price", "A price"), ("03_counter_sales", "Sales log"), ("04_price_tag", "Price Tag")]),
     # Ferryman
     S("ferry_menu", "Ferryman", "Buying a travel ticket", "the ferryman's ticket screen opened", 45,
       [("01_ferry_screen", "Destinations"), ("02_ferry_confirm", "Confirm the fare")]),
@@ -184,6 +186,8 @@ SCENES = [
       [("[0-9][0-9]_*@spread", "")]),
     S("guide", "Everyone at work", "The Guide Book", "a new player is given the Guide Book; every page opens with its picture", 60,
       [("[0-9][0-9]_guide_*@spread", "")]),
+    S("config", "Everyone at work", "The settings screen (Mod Menu)", "every setting fits its button; a switch turned off is saved", 30,
+      [("01_config_numbers", "Distances and numbers"), ("02_config_switches", "Switches"), ("03_config_festivals_off", "Festivals off")]),
     S("staff", "Everyone at work", "Every workstation with its villager", "every workstation stands with its worker", 45,
       [("01_staff", "Every workstation"), ("02_staff_close_1", "Builder to Village Hall"),
        ("03_staff_close_2", "Village Hall to Trainer"), ("04_staff_above", "From above")]),

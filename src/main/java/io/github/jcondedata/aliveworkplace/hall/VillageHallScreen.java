@@ -223,7 +223,7 @@ public final class VillageHallScreen {
 		menu.button(FESTIVAL, icon(Items.FIREWORK_ROCKET, Component.translatable("screen.aliveworkplace.hall.festival"), ChatFormatting.WHITE,
 			line(Festivals.isOn(level, hall) ? Component.translatable("screen.aliveworkplace.hall.festival_on")
 				: inDays <= 0 ? Component.translatable("screen.aliveworkplace.hall.festival_today")
-				: Component.translatable("screen.aliveworkplace.hall.festival_in", inDays), ChatFormatting.GOLD),
+				: io.github.jcondedata.aliveworkplace.work.Words.counted("screen.aliveworkplace.hall.festival_in", inDays, inDays), ChatFormatting.GOLD),
 			line("screen.aliveworkplace.hall.festival_hint", ChatFormatting.GRAY)), p -> {
 			Chat.chat(p, Festivals.call(level, hall, p));
 			refresh(menu, level, hall, shown);

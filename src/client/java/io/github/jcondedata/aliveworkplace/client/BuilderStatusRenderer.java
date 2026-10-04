@@ -21,14 +21,15 @@ import net.minecraft.world.phys.Vec3;
 import org.joml.Matrix4f;
 
 /**
- * Draws a builder's status above its head: "Starter Cottage · 42%", a progress bar, and what it is
- * doing right now. Fed by {@link BuilderStatusSync} packets; an entry disappears a few seconds after
+ * Draws a builder's status above its head: "Starter Cottage · 42%", a progress bar, what it is
+ * doing right now, and under that what the build is short of and where its builder takes materials from. Fed by {@link BuilderStatusSync} packets; an entry disappears a few seconds after
  * the last update (build finished, builder out of range).
  */
 public final class BuilderStatusRenderer {
 	private static final double MAX_DISTANCE = 24;
 	private static final long FORGET_AFTER_MS = 3500;
 	private static final int BAR_WIDTH = 60;
+	private static final int LINE = 10;
 
 	private record Entry(BuilderStatusSync.Status status, long received) {
 	}
@@ -83,14 +84,19 @@ public final class BuilderStatusRenderer {
 	private static void draw(Font font, Matrix4f matrix, MultiBufferSource buffers, BuilderStatusSync.Status status) {
 		int background = (int) (Minecraft.getInstance().options.getBackgroundOpacity(0.25f) * 255) << 24;
 		int light = LightTexture.FULL_BRIGHT;
-		// Lines from the bottom up: status line, bar, title.
-		text(font, matrix, buffers, status.line(), 0, background, light);
+		// Lines from the bottom up: the materials lines (short of, takes from), status line, bar, title.
+		int more = status.more().size();
+		for (int i = 0; i < more; i++) {
+			text(font, matrix, buffers, status.more().get(i), -LINE * (more - 1 - i), background, light);
+		}
+		float base = -LINE * more;
+		text(font, matrix, buffers, status.line(), base, background, light);
 		if (status.progress() < 0) {
-			text(font, matrix, buffers, status.title(), -11, background, light); // no progress to show (lumberjacks)
+			text(font, matrix, buffers, status.title(), base - 11, background, light); // no progress to show (lumberjacks)
 			return;
 		}
-		bar(matrix, buffers, -6, status.progress(), light);
-		text(font, matrix, buffers, status.title(), -18, background, light);
+		bar(matrix, buffers, base - 6, status.progress(), light);
+		text(font, matrix, buffers, status.title(), base - 18, background, light);
 	}
 
 	private static void text(Font font, Matrix4f matrix, MultiBufferSource buffers, Component text, float y, int background, int light) {

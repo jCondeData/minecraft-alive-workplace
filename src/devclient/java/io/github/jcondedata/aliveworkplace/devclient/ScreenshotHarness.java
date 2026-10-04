@@ -340,18 +340,36 @@ public class ScreenshotHarness implements ClientModInitializer {
 				}
 				Villager v = builders.get(0);
 				v.setNoAi(true);
+				// 23.3: empty the barrels so the overhead names what the cottage is now short of, under where it takes from.
+				for (int b = 0; b < 6; b++) {
+					if (server.overworld().getBlockEntity(new BlockPos(4 + b, -60, 4)) instanceof BaseContainerBlockEntity barrel) {
+						barrel.clearContent();
+					}
+				}
+				// The close-up shows the overhead, not the ghost: put the blueprint away.
+				ServerPlayer p = server.getPlayerList().getPlayers().get(0);
+				p.getInventory().setItem(p.getInventory().selected, ItemStack.EMPTY);
 				Vec3 eye = v.getEyePosition();
-				Vec3 cam = eye.add(2.2, 0.9, 3.2);
+				Vec3 cam = eye.add(3.3, 1.1, 4.6);
 				Vec3 d = eye.add(0, 0.8, 0).subtract(cam);
 				float yaw = (float) Math.toDegrees(Math.atan2(-d.x, d.z));
 				float pitch = (float) -Math.toDegrees(Math.atan2(d.y, Math.sqrt(d.x * d.x + d.z * d.z)));
 				hover(server.getPlayerList().getPlayers().get(0), cam, yaw, pitch);
 			});
 		}
-		if (tick == 1000) {
+		if (tick == 1050) { // the materials lines are worked out every 100 ticks
 			shot(mc, "22_status_closeup");
+			server.execute(() -> {
+				ServerLevel level = server.overworld();
+				Villager v = builders.isEmpty() ? null : builders.get(0);
+				var site = v == null ? null : BuildSiteManager.get(level).all().stream().filter(x -> v.getUUID().equals(x.builder())).findFirst().orElse(null);
+				var status = site == null ? null : io.github.jcondedata.aliveworkplace.build.BuilderStatusSync.status(level, site, v);
+				List<String> more = status == null ? List.of() : status.more().stream().map(Component::getString).toList();
+				Showcase.check(more.size() == 2 && more.get(0).startsWith("Short of: ") && more.get(1).startsWith("Takes from: "),
+					"the builder's overhead names what the build is short of and where it takes from: " + more);
+			});
 		}
-		if (tick == 1020) {
+		if (tick == 1070) {
 			mc.stop();
 		}
 	}

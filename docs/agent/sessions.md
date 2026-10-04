@@ -5,8 +5,10 @@ features, a release every hour) in four days by building feature after feature s
 followed (claims, item branches, `land`, an hourly QA lane, a review package per item) spent its runs on bookkeeping:
 on 2026-10-03, 40 runs made 311 commits, 211 of them bookkeeping and 125 merges, and built one feature. So:
 
-- **Build lanes a and b** (`--as lane-<letter>-<MMDD>-<HHMM>`, the UTC start): a fresh run every 3 hours, working
-  about 170 minutes. Lane a owns odd milestones and odd bugs, lane b even ones (`sessions.py next`).
+- **Build lanes a, b, c and d** (`--as lane-<letter>-<MMDD>-<HHMM>`, the UTC start): a fresh run every 3 hours,
+  working about 170 minutes. They split milestones and bugs by number mod 4 (owner, 2026-10-04): lane a 1 (21, 25,
+  29, 33), lane b 0 (24, 28, 32), lane c 3 (23, 27, 31, 35), lane d 2 (22, 26, 30, 34). `sessions.py next` lists
+  each lane's own.
 - **The QA lane** (`--as qa-<MMDD>-<HHMM>`): overnight only (11 PM to 6 AM Central). Its bugs are waiting in the
   morning.
 - **The owner's chat** (`--as chat`) talks with Jesse live and takes any item.
@@ -24,26 +26,36 @@ on 2026-10-03, 40 runs made 311 commits, 211 of them bookkeeping and 125 merges,
 
 ## Sprint mode: a build lane's run
 
+The speed review of 2026-10-04 (owner: "name of the game is speed"): a lane run's cost is mostly the AI re-reading its
+own conversation every step. A 2.5-hour run grows from 95k to 300k-470k tokens and costs $13-25; runs that stayed near
+130k cost $2-4. Filming took 10-22% of a run. So each feature gets a fresh conversation, nothing is filmed locally, and
+the full build runs once per 2-3 features.
+
 1. **Start, in one step** (aim for 5 minutes): name yourself, `git pull`, `sessions.py next --as <you>`, the latest CI
-   run on `main` (red is the first thing you fix), and Java setup (CLAUDE.md). Don't read the brief or ROADMAP whole;
-   `sessions.py show <id>` for your items. If an `item/<id>` or `wip/<lane>` branch from an earlier run has work for
-   one of your items, merge it into `main` and finish it.
-2. **Build features back to back**, like the first chat did:
-   - read the code you'll change, build the item's whole Done when (art, builds, text, scene), and write its
-     GameTests: the happy path and the likeliest ways it breaks. Iterate with `runGameTest` and only your test classes;
-   - visible to a player: run its scene once, look at the pictures, hand in the package (`sessions.py review`), then
-     `sessions.py done <id> --review`. Not visible: `sessions.py done <id>`;
-   - CHANGELOG line, `./gradlew --max-workers=1 build` (in the background; plan the next item meanwhile), commit the
-     work with its tick, push to `main`. If the push is refused: `git pull --no-rebase`, build again only if the pull
-     brought in code under `src/`, push. Two or three small items may share one build;
-   - commit messages say what's done and what's next: they are the handoff. No claim, pause, land or handoff
-     commits.
-3. **Wrap up at about 170 minutes, and never past 175:** the next run of your lane starts at 180, and with no claims it
-   takes the same item and builds it twice (on 2026-10-04 a 229-minute run overlapped the next one, which redid 23.4
-   and 23.5 and threw them away). Push what's green. Unfinished work goes to `wip/<lane>` (e.g. `wip/lane-a`) with
-   a commit message saying what's left; the next run of your lane continues it. Log the cost
-   (`python3 tools/agent/usage.py --log --as <you> --note "<items>"`) if that script exists.
-4. **No messages to the owner**; the digest reports. End with a 2-line summary (what landed, what's next).
+   run on `main` (red is the first thing you fix), and Java setup (CLAUDE.md). Don't read the brief or ROADMAP whole.
+   If an `item/<id>` or `wip/<lane>` branch from an earlier run has work for one of your items, finish it first
+   (lane b's `wip/lane-b` may hold 28.x; lanes c and d check `wip/lane-a` and `wip/lane-b` for their milestones once).
+2. **You are the coordinator; each feature is built by a fresh subagent.** For each item, start one `Agent`
+   (general-purpose, no model override: it uses yours) with a self-contained prompt: the item id, "read CLAUDE.md and
+   `sessions.py show <id>`, build its whole Done when, write its GameTests and run only them with `runGameTest`, add
+   its showcase scene to the harness and `tools/showcase/scenes.py` if a player sees it, add the CHANGELOG line, tick
+   it (`sessions.py done <id> --review` if a player sees it, else `done <id>`), commit locally with the work and the
+   tick (stage files by name), don't push, and reply in 5 lines: what was built, files, tests, anything left". Keep
+   your own context small: read its reply, not its files. One feature per subagent; two only if both are tiny.
+3. **Build and push every 2-3 features** (or before the run ends): `./gradlew --max-workers=1 build`; green, push to
+   `main` (refused: `git pull --no-rebase`, build again only if the pull brought in code under `src/`, push). Red: give
+   the failure to a fresh subagent to fix, then build again. Never push red.
+4. **Don't film.** The showcase workflow films every changed scene on GitHub after each push, and the nightly one
+   films them all; a failing scene lands in the `nightly-tests` issue for the QA lane. Run a scene locally only to
+   debug one that fails. No review packages either: the digest makes one per expansion stage from the showcase
+   pictures.
+5. **Sonnet only for translations and routine tests** (owner, 2026-10-04): a subagent with `model: "sonnet"` may
+   write `en_us.json` text or plain GameTests after the feature exists. Everything else, art, builds and design
+   included, stays on your model.
+6. **Wrap up at about 170 minutes, and never past 175:** the next run of your lane starts at 180, and with no claims it
+   takes the same item and builds it twice. Push what's green; unfinished work goes to `wip/<lane>` with a commit
+   message saying what's left. Log the cost (`python3 tools/agent/usage.py --log --as <you> --note "<items>"`).
+7. **No messages to the owner**; the digest reports. End with a 2-line summary (what landed, what's next).
 
 Never wait: an owner question goes in the Notes and you take the next item. Never thin an item to go faster.
 
@@ -130,8 +142,9 @@ the new jar and nothing is lost. Report it in the Notes.
 
 ## Review packages and the digests
 
-- A lane makes the package as `docs/agent/review.md` says and hands it in with `sessions.py review`, never with a
-  message of its own. Keep each file under 8 MB: a JPEG sheet and a short 640-wide MP4.
+- Lanes don't make packages (2026-10-04). The digest makes **one package per expansion stage** (a few related items,
+  e.g. "the five new 1.2 jobs") from the showcase page's stills and GIFs, under 8 MB, and sends it; packages a lane
+  handed in before still go out as they are.
 - **The digests** (8 AM and 6 PM Central) are scheduled sessions for Jesse:
   1. `sessions.py pending` lists every item waiting on him and whether its package exists. Send every package not yet
      sent (SendUserFile, one message per package), then mark it sent (`(sent)` in its `message.md`, committed to

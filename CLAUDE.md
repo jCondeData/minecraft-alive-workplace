@@ -19,8 +19,9 @@ The goal (owner, 2026-10-03): the public **1.0**, then nine expansions up to **2
 
 Productivity first. The first chat built most of this mod in four days by building feature after feature straight on
 `main`; work the same way (`docs/agent/sessions.md`, "Sprint mode"). Sessions: the owner's chat (`chat`), build lanes
-a and b (`lane-<letter>-<MMDD>-<HHMM>`, the UTC start; lane a owns odd milestones and bugs, lane b even ones), the
-overnight QA lane (`qa-<MMDD>-<HHMM>`) and two digests a day.
+a to d (`lane-<letter>-<MMDD>-<HHMM>`, the UTC start; they split milestones and bugs by number mod 4, see
+`sessions.py next`), the overnight QA lane (`qa-<MMDD>-<HHMM>`) and two digests a day. A lane coordinates and each
+feature is built by a fresh subagent (sessions.md), which keeps every conversation short and cheap.
 
 **Start** (one step, about five minutes): `git pull`, `python3 tools/agent/sessions.py next --as <you>`, the latest CI
 run on `main` (red comes first: `sessions.py bug`, then fix it), Java setup (below). `sessions.py show <id>` prints an
@@ -36,12 +37,11 @@ item; don't read ROADMAP.md whole (it's over 4,000 lines).
    breaks (missing materials, the block broken mid-job, save and reload, its config switch off), and every new
    sentence a player reads. Iterate with `runGameTest` and only your test classes. Never special-case code to pass a
    test; never weaken or delete a test.
-4. Visible to a player: run its scene once (`SCENE=<name> tools/screenshots/run.sh`), look at the pictures, hand in
-   the package (`sessions.py review`, `docs/agent/review.md`), then `sessions.py done <id> --review`. Not visible:
-   `sessions.py done <id>`.
-5. CHANGELOG line under *Unreleased*, `./gradlew --max-workers=1 build` green, then one commit with the work and its
-   tick, pushed straight to `main` (stage files by name). Push refused: `git pull --no-rebase`, build again only if
-   the pull brought in code, push. The commit message says what's done and what's next.
+4. Visible to a player: add its scene to the harness and `tools/showcase/scenes.py` (GitHub films it after the push;
+   don't film locally unless debugging), then `sessions.py done <id> --review`. Not visible: `sessions.py done <id>`.
+5. CHANGELOG line under *Unreleased*, one local commit with the work and its tick (stage files by name). Every 2-3
+   features, `./gradlew --max-workers=1 build` green, then push to `main`. Push refused: `git pull --no-rebase`, build
+   again only if the pull brought in code, push. The commit message says what's done and what's next.
 6. Next item straight away. No claims, landings, handoff or bookkeeping commits.
 7. A bug that only a test or a showcase scene sees (a flake, a scene check, nothing a player would notice) is the
    QA lane's: skip it in `next` unless it turns `main` red. On 2026-10-04, 16 of 47 bugs were of this kind and
@@ -50,8 +50,8 @@ item; don't read ROADMAP.md whole (it's over 4,000 lines).
 **End of a run** (about 170 minutes): push what's green; unfinished work goes to `wip/<lane>` with a message saying
 what's left. When compacting, keep the modified files, the current item and its Done when, and the test commands.
 
-**Usage**: subagents for searching or reading code get `model: "sonnet"`; the session's own model does the building.
-Don't print whole big files or logs; grep them.
+**Usage**: one fresh subagent per feature (no model override); Sonnet subagents only for translations and routine
+tests (owner, 2026-10-04) and for searching or reading code. Don't print whole big files or logs; grep them.
 
 ## Reporting to the owner
 

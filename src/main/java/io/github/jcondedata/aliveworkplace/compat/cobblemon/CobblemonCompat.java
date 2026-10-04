@@ -69,6 +69,36 @@ public final class CobblemonCompat {
 			public boolean isPastured(Entity entity) {
 				return CobblemonPartners.isPastured(entity);
 			}
+
+			@Override
+			public boolean canPerform(Entity entity) {
+				return CobblemonPartners.canPerform(entity);
+			}
+
+			@Override
+			public BlockPos reachable(Entity entity, BlockPos target) {
+				return CobblemonPartners.reachable(entity, target);
+			}
+
+			@Override
+			public boolean walkTo(Entity entity, BlockPos pos, double speed) {
+				return CobblemonPartners.walkTo(entity, pos, speed);
+			}
+
+			@Override
+			public void goHome(Entity entity) {
+				CobblemonPartners.goHome(entity);
+			}
+
+			@Override
+			public void animate(ServerLevel level, Entity entity, String animation) {
+				CobblemonPartners.animate(level, entity, animation);
+			}
+
+			@Override
+			public boolean effect(ServerLevel level, ResourceLocation id, net.minecraft.world.phys.Vec3 at) {
+				return CobblemonPartners.effect(level, id, at);
+			}
 		});
 		PokemonFruit.EXTENSION.register("cobblemon", new PokemonFruit() {
 			@Override

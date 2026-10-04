@@ -1,5 +1,7 @@
 package io.github.jcondedata.aliveworkplace.build;
 
+import io.github.jcondedata.aliveworkplace.work.PartnerShows;
+
 import io.github.jcondedata.aliveworkplace.mc.Chat;
 import io.github.jcondedata.aliveworkplace.mc.Rules;
 import io.github.jcondedata.aliveworkplace.registry.ModVillagers;
@@ -651,6 +653,8 @@ public class BuilderWork extends Behavior<Villager> {
 			return;
 		}
 		takeWanted(level, site, plan, bag, requirement, supplies, source);
+		// A Fighting partner shoulders what was fetched over to the work (28.3).
+		PartnerShows.cue(villager, "fetch", currentStep != null ? currentStep : source, new ItemStack(requirement.item()));
 	}
 
 	/**

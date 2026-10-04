@@ -65,6 +65,7 @@ public class ScreenshotHarness implements ClientModInitializer {
 
 	private final JobScenes jobScenes = new JobScenes();
 	private final WordsScene words = new WordsScene();
+	private final PartnersScene partners = new PartnersScene();
 
 	private void onTick(Minecraft mc) {
 		if (mc.level == null || mc.player == null || mc.getSingleplayerServer() == null) {
@@ -88,6 +89,10 @@ public class ScreenshotHarness implements ClientModInitializer {
 		}
 		if ("guide".equals(System.getProperty("aliveworkplace.scene"))) {
 			guideScene(mc, mc.getSingleplayerServer());
+			return;
+		}
+		if ("partners_engine".equals(System.getProperty("aliveworkplace.scene"))) {
+			partners.tick(mc, mc.getSingleplayerServer());
 			return;
 		}
 		if ("words".equals(System.getProperty("aliveworkplace.scene"))) {
@@ -958,12 +963,12 @@ public class ScreenshotHarness implements ClientModInitializer {
 	private Villager keeper;
 	private int orchardFruit;
 
-	private static BlockState cobblemonBlock(String id) {
+	static BlockState cobblemonBlock(String id) {
 		return net.minecraft.core.registries.BuiltInRegistries.BLOCK.getOptional(net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("cobblemon", id))
 			.map(net.minecraft.world.level.block.Block::defaultBlockState).orElse(null);
 	}
 
-	private static <T extends Comparable<T>> BlockState with(BlockState state, String property, T value) {
+	static <T extends Comparable<T>> BlockState with(BlockState state, String property, T value) {
 		for (var p : state.getProperties()) {
 			if (p.getName().equals(property)) {
 				@SuppressWarnings("unchecked")

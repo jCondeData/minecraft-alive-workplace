@@ -41,7 +41,7 @@ public class GoalPackagesMixinGameTests implements FabricGameTest {
 	}
 
 	/** Each of our professions gets exactly the package its job's class builds, never vanilla's. */
-	//$ gametest FabricGameTest.EMPTY_STRUCTURE
+	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
 	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
 	public void eachOfOurJobsGetsItsOwnWorkPackage(GameTestHelper helper) {
 		Map<VillagerProfession, Supplier<ImmutableList<Pair<Integer, ? extends BehaviorControl<? super Villager>>>>> jobs = new LinkedHashMap<>();
@@ -101,7 +101,7 @@ public class GoalPackagesMixinGameTests implements FabricGameTest {
 	 * The vanilla jobs we upgrade: our work runs first (priority 0) and vanilla's routine waits behind a gate, except
 	 * the always-run schedule update (priority 99 and later).
 	 */
-	//$ gametest FabricGameTest.EMPTY_STRUCTURE
+	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
 	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
 	public void upgradedVanillaJobsPutTheirWorkFirstAndGateVanillas(GameTestHelper helper) {
 		Object[][] cases = {
@@ -156,7 +156,7 @@ public class GoalPackagesMixinGameTests implements FabricGameTest {
 	}
 
 	/** Guards patrol in a raid and before it instead of hiding, and their combat sits in CORE; other villagers keep vanilla's. */
-	//$ gametest FabricGameTest.EMPTY_STRUCTURE
+	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
 	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
 	public void guardsGetTheirRaidAndCombatPackages(GameTestHelper helper) {
 		String raid = signature(io.github.jcondedata.aliveworkplace.guard.GuardPackages.raid(SPEED, Activity.RAID));

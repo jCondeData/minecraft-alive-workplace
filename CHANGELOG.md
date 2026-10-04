@@ -17,6 +17,11 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Added
+- The **Steward** (27.5): sneak-right-click a grown villager beside a Village Hall with that hall's City Plan and he
+  becomes its Steward, one per hall. Each morning he walks his rounds holding the plan (each zone, the storehouse),
+  three seconds at each stop, then goes back to the hall for the day. He trades City Plans, Blank Blueprints and
+  Village Ledgers and buys paper and books; his level will set how many of his builds may be open at once (1 to 4,
+  capped by the village's rank and `stewardMaxOpenBuilds`). New outfit; breaking the hall ends the job; config `steward`.
 - With Cobblemon, the **Camp Cook**: sneak-right-click a villager by a Campfire Pot with Hearty Grains. She cooks in the
   pot itself (makings in, seasonings on top, lid shut, the pot's own cooking time) from the chest beside it: Poké Snacks
   and Bait, Aprijuice, Exp. Candy, Ponigiri, stews, curry and more, 16 of each, and the sweets and candies for a
@@ -33,7 +38,17 @@ asks for the steps, `latest.log` and any crash report).
   Blank Blueprint. Right-click a Village Hall to bind it; right-clicked in the village it tells you which zone of the
   plan you stand in. Each hall now keeps its village's plan (zones of eight kinds: Homes, Workshops, Farms, Market,
   Civic, Gardens, Defences, Keep Clear, which packs can add to), and a broken hall carries its plan to wherever it's
-  put down. Only the hall's owner, their friends and operators may change a plan. The screen to paint it comes next.
+  put down. Only the hall's owner, their friends and operators may change a plan.
+- **Painting the plan**: right-click the air with a bound City Plan to open the plan screen: the village map with a
+  grid over it, each zone tinted in its colour and named, Keep Clear hatched and build sites going up outlined. Add,
+  rename and delete zones, set each one's kind, style and "renew old houses" switch, paint cells with the brush or
+  drag an area, erase (right-click erases too), undo the last 10 changes, and read the legend.
+- **Roads and the wall line on the plan**: the plan screen's Road tool draws a road point by point (double-click or
+  Enter to end) as a lane (1 wide), a street (3) or an avenue (5), in the style of the zone it starts in unless you pick
+  one; right-click a road to take it off. The Wall tool draws one wall line round the village, open or closed. A plan
+  holds up to 24 roads of up to 64 points, and roads you draw are approved for the builders. While you hold the City
+  Plan, the zones' edges, the roads and the wall line show on the ground round you in their colours, and the hall's
+  map button now draws the zones and roads on the map, ready to hang in an item frame by the hall.
 - With Cobblemon, the **Pokémon Center**: a bright hall with a glass front under a red roof, Cobblemon's Healing
   Machine on the counter, a PC beside it, potions and benches; **Pokémon Center II** adds a lodge with four beds and a
   trade corner with a Shop Counter, and a garden with a Pasture Block. In the Blueprint Table (with Cobblemon only)

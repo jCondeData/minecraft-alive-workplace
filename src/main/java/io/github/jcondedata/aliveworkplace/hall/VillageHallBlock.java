@@ -69,6 +69,7 @@ public class VillageHallBlock extends BaseEntityBlock {
 	protected void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean movedByPiston) {
 		if (!state.is(newState.getBlock()) && level instanceof net.minecraft.server.level.ServerLevel server) {
 			Caravans.Data.get(server).remove(pos);
+			io.github.jcondedata.aliveworkplace.city.Stewards.hallGone(server, pos); // breaking the hall ends its Steward's job (27.5)
 		}
 		super.onRemove(state, level, pos, newState, movedByPiston);
 	}

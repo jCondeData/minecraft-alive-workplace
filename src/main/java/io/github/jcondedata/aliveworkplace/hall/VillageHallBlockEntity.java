@@ -53,6 +53,12 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 	/** The village's research (see {@code research/Research}). */
 	private io.github.jcondedata.aliveworkplace.research.Research.State research = io.github.jcondedata.aliveworkplace.research.Research.State.EMPTY;
 
+	/**
+	 * Whether the hall's point-of-interest record was checked for its Steward's place since it loaded (27.5): halls saved
+	 * before it had one get it on their first tick. Saved, so a hall whose Steward holds the place isn't checked again.
+	 */
+	private boolean stewardPlaceChecked;
+
 	public VillageHallBlockEntity(BlockPos pos, BlockState state) {
 		super(ModBlocks.VILLAGE_HALL_ENTITY, pos, state);
 	}
@@ -76,6 +82,11 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 
 	/** Every {@link VillageNeeds#CHECK_EVERY} ticks (and on the first): the hungry fed, the village counted. */
 	public static void serverTick(net.minecraft.world.level.Level level, BlockPos pos, BlockState state, VillageHallBlockEntity hall) {
+		if (!hall.stewardPlaceChecked && level instanceof net.minecraft.server.level.ServerLevel server) {
+			io.github.jcondedata.aliveworkplace.city.Stewards.fixTicket(server, pos);
+			hall.stewardPlaceChecked = true;
+			hall.setChanged();
+		}
 		if (level instanceof net.minecraft.server.level.ServerLevel server
 			&& (hall.needs == null || Math.floorMod(level.getGameTime() + pos.hashCode(), VillageNeeds.CHECK_EVERY) == 0)) {
 			hall.needs = VillageNeeds.check(server, pos);
@@ -227,6 +238,31 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 		setChanged();
 	}
 
+	/** The plan before each of the last changes made on the plan screen (27.3), newest first; not saved. */
+	private final java.util.Deque<io.github.jcondedata.aliveworkplace.city.CityPlan> planUndo = new java.util.ArrayDeque<>();
+
+	/** Changes the plan, remembering the one before for undo (at most {@code depth} steps). */
+	public void changePlan(io.github.jcondedata.aliveworkplace.city.CityPlan next, int depth) {
+		planUndo.push(plan);
+		while (planUndo.size() > depth) {
+			planUndo.removeLast();
+		}
+		setPlan(next);
+	}
+
+	/** Puts back the plan before the last change; false if there is nothing to undo. */
+	public boolean undoPlan() {
+		if (planUndo.isEmpty()) {
+			return false;
+		}
+		setPlan(planUndo.pop());
+		return true;
+	}
+
+	public int planUndoSteps() {
+		return planUndo.size();
+	}
+
 	public void setProtected(boolean on) {
 		protectedVillage = on;
 		setChanged();
@@ -305,6 +341,7 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 		owner = Nbt.hasUuid(tag, "owner") ? Nbt.getUuid(tag, "owner") : null;
 		ownerName = Nbt.getString(tag, "ownerName");
 		protectedVillage = Nbt.getBoolean(tag, "protected");
+		stewardPlaceChecked = Nbt.getBoolean(tag, "stewardPlaceChecked");
 		plan = io.github.jcondedata.aliveworkplace.city.CityPlan.CODEC.parse(net.minecraft.nbt.NbtOps.INSTANCE, tag.get("plan"))
 			.result().orElse(io.github.jcondedata.aliveworkplace.city.CityPlan.EMPTY);
 		lastTaxDay = tag.contains("lastTaxDay") ? Nbt.getLong(tag, "lastTaxDay") : -1;
@@ -353,6 +390,7 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 			tag.putString("ownerName", ownerName);
 		}
 		tag.putBoolean("protected", protectedVillage);
+		tag.putBoolean("stewardPlaceChecked", stewardPlaceChecked);
 		if (!plan.isEmpty() || plan.mode() != io.github.jcondedata.aliveworkplace.city.CityPlan.Mode.ASK) {
 			io.github.jcondedata.aliveworkplace.city.CityPlan.CODEC.encodeStart(net.minecraft.nbt.NbtOps.INSTANCE, plan).result().ifPresent(t -> tag.put("plan", t));
 		}

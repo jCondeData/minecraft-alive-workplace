@@ -118,6 +118,9 @@ public final class ModAttachments {
 	/** When a villager fell ill (see {@code people/Sickness}); absent while they're well. */
 	public static final Attachment<Long> ILL_SINCE = Attachment.saved("ill_since", com.mojang.serialization.Codec.LONG);
 
+	/** The day a Steward last finished his morning rounds (27.5); absent: not yet. */
+	public static final Attachment<Long> STEWARD_ROUND_DAY = Attachment.saved("steward_round_day", com.mojang.serialization.Codec.LONG);
+
 	/** How many blocks a Sifter has sifted (shown above its head). */
 	public static final Attachment<Integer> BLOCKS_SIFTED = Attachment.saved("blocks_sifted", com.mojang.serialization.Codec.INT);
 

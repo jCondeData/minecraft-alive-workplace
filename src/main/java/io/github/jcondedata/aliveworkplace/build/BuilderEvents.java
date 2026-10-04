@@ -18,6 +18,11 @@ public final class BuilderEvents {
 			if (hand != InteractionHand.MAIN_HAND || player.isSpectator() || !(entity instanceof Villager villager)) {
 				return InteractionResult.PASS;
 			}
+			// Sneak-right-click with a City Plan: the villager becomes the Steward of its hall, if he stands by it (ROADMAP 27.5).
+			if (player.isShiftKeyDown() && player.getItemInHand(hand).is(ModItems.CITY_PLAN)) {
+				return level.isClientSide() ? InteractionResult.SUCCESS
+					: io.github.jcondedata.aliveworkplace.city.Stewards.appoint((ServerPlayer) player, villager, player.getItemInHand(hand));
+			}
 			// Sneak-right-click with a job's item: the villager takes that job at the block they stand by (ROADMAP 21.1a,
 			// work/Stations). Passes when they already have it, so the item's other uses (hiring) still happen.
 			if (player.isShiftKeyDown() && io.github.jcondedata.aliveworkplace.work.Stations.picksAny(player.getItemInHand(hand))) {

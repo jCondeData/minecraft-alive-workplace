@@ -68,6 +68,8 @@ public class ScreenshotHarness implements ClientModInitializer {
 
 	private final JobScenes jobScenes = new JobScenes();
 	private final WordsScene words = new WordsScene();
+	private final CityPlanScene cityPlan = new CityPlanScene();
+	private final CityPlanGroundScene cityPlanGround = new CityPlanGroundScene();
 	private final PartnersScene partners = new PartnersScene();
 	private final PartnersLandScene partnersLand = new PartnersLandScene();
 	private final PokemonCenterScene pokemonCenter = new PokemonCenterScene();
@@ -120,6 +122,14 @@ public class ScreenshotHarness implements ClientModInitializer {
 		}
 		if ("words".equals(System.getProperty("aliveworkplace.scene"))) {
 			words.tick(mc);
+			return;
+		}
+		if ("city_plan".equals(System.getProperty("aliveworkplace.scene"))) {
+			cityPlan.tick(mc);
+			return;
+		}
+		if ("city_plan_ground".equals(System.getProperty("aliveworkplace.scene"))) {
+			cityPlanGround.tick(mc);
 			return;
 		}
 		if ("config".equals(System.getProperty("aliveworkplace.scene"))) {

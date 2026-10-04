@@ -535,8 +535,34 @@ def undertaker():
     return t.save_profession(ASSETS, "undertaker", hat="full")
 
 
+def steward():
+    """The Steward (27.5): a clerk's long bottle-green coat with brass buttons down the front and a pale collar, a
+    flat clerk's cap of the same cloth, a brown belt and a rolled plan (pale paper tied with blue string) tucked
+    at the belt on the villager's right."""
+    t = vg.VillagerTexture()
+    coat = vg.cloth("#2f5a46")
+    vg.hat(t, coat, style="cap", crown=2, visor=1, noise=0)
+    crown_top(t, coat)
+    vg.robe(t, coat, length=18, sleeves_too=True, body_too=False, noise=0)
+    vg.sleeves(t, coat, cuff=LINEN_SHADE, noise=0)
+    jf = t.face("jacket", "front")
+    paint(jf, ((2, 0), (3, 0), (4, 0), (5, 0)), LINEN)   # the collar
+    paint(jf, ((3, 1), (4, 1)), LINEN_SHADE)
+    for y in (3, 6, 9, 15):                              # brass buttons down the front edge (not on the badge)
+        jf.put(4, y, BRASS[3] if y < 10 else BRASS[2])
+    paint(jf, ((3, y) for y in range(2, 18)), coat[1])   # where the coat closes
+    vg.belt(t, LEATHER, row=10, buckle=BRASS[2])
+    paper = Ramp(["#a89f86", "#cfc6aa", "#e9e2c9", "#f4efdc"], name="paper")
+    for y in range(8, 15):                               # the rolled plan, upright at the belt, its end lit
+        jf.put(1, y, paper[2] if y > 8 else paper[3])
+        jf.put(2, y, paper[1] if y > 8 else paper[2])
+    paint(jf, ((1, 9), (2, 9), (1, 13), (2, 13)), "#3c5fa0")   # blue string ties
+    jf.put(0, 11, paper[0])
+    return t.save_profession(ASSETS, "steward", hat="full")
+
+
 DRAW = [orchard_keeper, berry_breeder, camp_cook, pokemon_trader, porter, postman, rancher, scholar, shopkeeper, sifter, teacher, tinkerer,
-        trainer, trainer_leader, tutor, undertaker]
+        trainer, trainer_leader, tutor, undertaker, steward]
 
 if __name__ == "__main__":
     run(DRAW)

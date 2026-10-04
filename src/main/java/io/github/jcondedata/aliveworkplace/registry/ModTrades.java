@@ -34,6 +34,7 @@ public final class ModTrades {
 		chefTrades();
 		fossilScientistTrades();
 		berryBreederTrades();
+		stewardTrades();
 		campCookTrades();
 		Platform.get().addTrades(ModVillagers.BARD, 1, offers -> {
 			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 2), new ItemStack(Items.NOTE_BLOCK, 2), 12, 2, 0.05f));
@@ -288,6 +289,24 @@ public final class ModTrades {
 			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 3), new ItemStack(Items.MYCELIUM, 4), 8, 20, 0.05f)));
 		Platform.get().addTrades(ModVillagers.COMPOSTER, 5, offers ->
 			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 4), new ItemStack(Items.ROOTED_DIRT, 8), 8, 30, 0.05f)));
+	}
+
+	/** Stewards (27.5) buy paper and books and sell the village's paperwork: Blank Blueprints, City Plans, Village Ledgers. */
+	private static void stewardTrades() {
+		Platform.get().addTrades(ModVillagers.STEWARD, 1, offers -> {
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.PAPER, 24), new ItemStack(Items.EMERALD), 16, 2, 0.05f));
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 1), new ItemStack(ModItems.BLANK_BLUEPRINT, 2), 12, 1, 0.05f));
+		});
+		Platform.get().addTrades(ModVillagers.STEWARD, 2, offers -> {
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.BOOK, 4), new ItemStack(Items.EMERALD), 12, 10, 0.05f));
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 4), new ItemStack(ModItems.VILLAGE_LEDGER), 6, 5, 0.05f));
+		});
+		Platform.get().addTrades(ModVillagers.STEWARD, 3, offers ->
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 6), new ItemStack(ModItems.CITY_PLAN), 4, 15, 0.05f)));
+		Platform.get().addTrades(ModVillagers.STEWARD, 4, offers ->
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.WRITABLE_BOOK, 1), new ItemStack(Items.EMERALD, 2), 12, 20, 0.05f)));
+		Platform.get().addTrades(ModVillagers.STEWARD, 5, offers ->
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 3), new ItemStack(ModItems.BLANK_BLUEPRINT, 8), 8, 30, 0.05f)));
 	}
 
 	/** Sifters buy gravel and sand and sell what they find in them. */

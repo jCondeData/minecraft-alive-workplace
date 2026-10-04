@@ -32,6 +32,14 @@ public class AliveWorkplaceClient implements ClientModInitializer {
 				mc.setScreen(new BlueprintTableScreen(payload));
 			}
 		});
+		// The City Plan screen (27.3).
+		ClientPlayNetworking.registerGlobalReceiver(io.github.jcondedata.aliveworkplace.city.CityPlans.Open.TYPE,
+			(payload, context) -> context.client().setScreen(new CityPlanScreen(payload)));
+		ClientPlayNetworking.registerGlobalReceiver(io.github.jcondedata.aliveworkplace.city.CityPlans.Sync.TYPE, (payload, context) -> {
+			if (context.client().screen instanceof CityPlanScreen screen && screen.hall().equals(payload.hall())) {
+				screen.sync(payload);
+			}
+		});
 		ClientPlayNetworking.registerGlobalReceiver(TablePayloads.Details.TYPE, (payload, context) -> {
 			if (context.client().screen instanceof BlueprintTableScreen screen) {
 				screen.setDetails(payload);

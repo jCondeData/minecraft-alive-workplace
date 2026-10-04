@@ -91,6 +91,10 @@ public final class WorkplaceConfig {
 	public boolean nurseHealingMachine = true;
 	/** Villagers at a composter can be made Berry Breeders with a Cobblemon berry (ROADMAP 28.9). Off: no Berry Breeder job. */
 	public boolean berryBreeders = true;
+	/** A grown villager by a Village Hall can be made its Steward with the hall's City Plan (ROADMAP 27.5). Off: no new Stewards, and those appointed stand idle. */
+	public boolean steward = true;
+	/** The most builds a Steward may have open at once, whatever his level and the village's rank. */
+	public int stewardMaxOpenBuilds = 4;
 	/** Villagers at a Campfire Pot can be made Camp Cooks with Hearty Grains (ROADMAP 28.8). Off: no Camp Cook job. */
 	public boolean campCooks = true;
 	/** Days in each of the village calendar's four seasons (each has a festival on its middle day). */
@@ -180,7 +184,8 @@ public final class WorkplaceConfig {
 		"villageGrowthCap", 0, 500,
 		"seasonDays", 1, 120,
 		"treasuryPerWorker", 0, 500,
-		"dollarsPerEmerald", 1, 10_000);
+		"dollarsPerEmerald", 1, 10_000,
+		"stewardMaxOpenBuilds", 1, 8);
 
 	private static Map<String, Range> ranges(Object... nameMinMax) {
 		Map<String, Range> map = new LinkedHashMap<>();
@@ -278,6 +283,8 @@ public final class WorkplaceConfig {
 		io.github.jcondedata.aliveworkplace.hall.Seasons.DAYS = seasonDays;
 		io.github.jcondedata.aliveworkplace.nurse.Nurses.HEALING_MACHINE = nurseHealingMachine;
 		io.github.jcondedata.aliveworkplace.berry.BerryBreeders.ENABLED = berryBreeders;
+		io.github.jcondedata.aliveworkplace.city.Stewards.ENABLED = steward;
+		io.github.jcondedata.aliveworkplace.city.Stewards.MAX_OPEN_BUILDS = stewardMaxOpenBuilds;
 		io.github.jcondedata.aliveworkplace.camp.CampCooks.ENABLED = campCooks;
 		// Off in gametests (a trait picked by chance would change a test's numbers); the people tests turn them on.
 		io.github.jcondedata.aliveworkplace.people.Names.ENABLED = villagerNames && System.getProperty("fabric-api.gametest") == null;

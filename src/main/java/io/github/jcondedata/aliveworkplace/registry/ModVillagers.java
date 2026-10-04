@@ -323,10 +323,28 @@ public final class ModVillagers {
 		)
 	);
 
-	/** The Village Hall: a point of interest nobody works at, so the nearest hall is quick to find. */
+	/**
+	 * The Village Hall: a point of interest, so the nearest hall is quick to find, with one place for its Steward (27.5).
+	 * It isn't an acquirable job site, so only the City Plan gives it (see {@code city/Stewards}). Halls saved when it had
+	 * no place are registered again when they load ({@code Stewards.fixTicket}).
+	 */
 	public static final ResourceLocation VILLAGE_HALL_ID = AliveWorkplace.id("village_hall");
 	public static final ResourceKey<PoiType> VILLAGE_HALL_POI = ResourceKey.create(Registries.POINT_OF_INTEREST_TYPE, VILLAGE_HALL_ID);
-	public static final PoiType VILLAGE_HALL_POI_TYPE = Platform.get().registerPoi(VILLAGE_HALL_ID, 0, 1, ModBlocks.VILLAGE_HALL);
+	public static final PoiType VILLAGE_HALL_POI_TYPE = Platform.get().registerPoi(VILLAGE_HALL_ID, 1, 1, ModBlocks.VILLAGE_HALL);
+
+	/** The Steward (27.5): plans the village from its hall, appointed with the City Plan. */
+	public static final VillagerProfession STEWARD = Registry.register(
+		BuiltInRegistries.VILLAGER_PROFESSION,
+		AliveWorkplace.id("steward"),
+		new VillagerProfession(
+			"steward",
+			holder -> holder.is(VILLAGE_HALL_POI),
+			holder -> holder.is(VILLAGE_HALL_POI),
+			ImmutableSet.of(),
+			ImmutableSet.of(),
+			SoundEvents.VILLAGER_WORK_CARTOGRAPHER
+		)
+	);
 
 	/** Drop Boxes: a point of interest nobody works at, so the porters find them quickly. */
 	public static final ResourceLocation DROP_BOX_ID = AliveWorkplace.id("drop_box");

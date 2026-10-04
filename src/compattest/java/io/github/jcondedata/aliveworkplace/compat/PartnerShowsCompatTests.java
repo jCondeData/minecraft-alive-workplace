@@ -104,6 +104,12 @@ public class PartnerShowsCompatTests implements FabricGameTest {
 		boolean[] carried = new boolean[1];
 		helper.runAfterDelay(20, () -> {
 			PokemonEntity machop = machop(helper);
+			// start the walk from the pasture: a Machop that wandered toward the work first has no walk left to
+			// measure (B45)
+			BlockPos spot = pasture.relative(Direction.NORTH);
+			machop.teleportTo(spot.getX() + 0.5, spot.getY(), spot.getZ() + 0.5);
+			machop.setDeltaMovement(Vec3.ZERO);
+			machop.getNavigation().stop();
 			start[0] = machop.position();
 			nearest[0] = machop.position().distanceTo(Vec3.atBottomCenterOf(work));
 			PartnerShows.forget(builder);

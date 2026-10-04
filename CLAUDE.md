@@ -43,6 +43,9 @@ item; don't read ROADMAP.md whole (it's over 4,000 lines).
    tick, pushed straight to `main` (stage files by name). Push refused: `git pull --no-rebase`, build again only if
    the pull brought in code, push. The commit message says what's done and what's next.
 6. Next item straight away. No claims, landings, handoff or bookkeeping commits.
+7. A bug that only a test or a showcase scene sees (a flake, a scene check, nothing a player would notice) is the
+   QA lane's: skip it in `next` unless it turns `main` red. On 2026-10-04, 16 of 47 bugs were of this kind and
+   they pulled build lanes off features (digest speed review).
 
 **End of a run** (about 170 minutes): push what's green; unfinished work goes to `wip/<lane>` with a message saying
 what's left. When compacting, keep the modified files, the current item and its Done when, and the test commands.

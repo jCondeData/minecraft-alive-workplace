@@ -8,7 +8,8 @@ import net.minecraft.resources.ResourceLocation;
 
 /**
  * {@code pace}: workers of {@code trades} (none listed: every trade) within {@code radius} blocks of the Legend (0: the
- * whole village) work {@code factor} times as fast, never past {@link LegendPowers#PACE_CAP} with every boost together.
+ * whole village) work {@code factor} times as fast, never past {@link LegendPowers#PACE_CAP} from Legends together, and
+ * never past {@code Pace}'s cap with every other bonus.
  */
 public record PacePower(Set<ResourceLocation> trades, int radius, float factor) implements Power {
 	static PacePower read(JsonObject json) {

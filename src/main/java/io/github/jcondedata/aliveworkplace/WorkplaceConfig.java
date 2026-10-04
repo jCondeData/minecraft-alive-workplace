@@ -96,6 +96,15 @@ public final class WorkplaceConfig {
 	public boolean partnerShows = true;
 	/** A nurse at Cobblemon's Healing Machine heals your team in it, and keeps it charged while on shift (ROADMAP 28.7). */
 	public boolean nurseHealingMachine = true;
+	/**
+	 * How fast every bonus together can make a worker, in percent of the usual pace (partners, a well-kept village,
+	 * research, traits, mood, edicts...). Sickness and bad moods still slow them after that; their level doesn't count.
+	 */
+	public int maxWorkPace = 200;
+	/** Villages' owners proclaim edicts at the hall (off: none can be, and those in force do nothing but stay saved). */
+	public boolean villageEdicts = true;
+	/** Days an edict stays in force before it can be lifted. */
+	public int edictMinDays = 3;
 	/** Villagers at a composter can be made Berry Breeders with a Cobblemon berry (ROADMAP 28.9). Off: no Berry Breeder job. */
 	public boolean berryBreeders = true;
 	/** A grown villager by a Village Hall can be made its Steward with the hall's City Plan (ROADMAP 27.5). Off: no new Stewards, and those appointed stand idle. */
@@ -189,6 +198,8 @@ public final class WorkplaceConfig {
 		"villageRadius", 0, 128,
 		"villageHallRadius", 16, 160,
 		"villageGrowthCap", 0, 500,
+		"maxWorkPace", 100, 400,
+		"edictMinDays", 0, 30,
 		"seasonDays", 1, 120,
 		"treasuryPerWorker", 0, 500,
 		"dollarsPerEmerald", 1, 10_000,
@@ -288,6 +299,9 @@ public final class WorkplaceConfig {
 		OrchardWork.RADIUS = orchardRadius;
 		FisherWork.RADIUS = fisherRadius;
 		Partners.RADIUS = partnerRadius;
+		io.github.jcondedata.aliveworkplace.work.Pace.MAX_PERCENT = maxWorkPace;
+		io.github.jcondedata.aliveworkplace.hall.Edicts.setEnabled(villageEdicts);
+		io.github.jcondedata.aliveworkplace.hall.Edicts.MIN_DAYS = edictMinDays;
 		io.github.jcondedata.aliveworkplace.explore.ExplorerWork.RANGE = explorerRange;
 		PostOffice.ROUND = postmanRange;
 		// Gametests run side by side: workers sharing chests across them would mix the tests up. The village tests

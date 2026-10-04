@@ -1,0 +1,10 @@
+{
+  "icon": "minecraft:iron_pickaxe",
+  "name": "Builders' Drill",
+  "description": "Builders work 50% faster and are proud of it.",
+  "order": 50,
+  "boost": [
+    {"type": "aliveworkplace:work_pace", "percent": 50, "jobs": ["aliveworkplace:builder"]},
+    {"type": "aliveworkplace:mood", "points": 5, "reason": "drilled", "jobs": ["aliveworkplace:builder"]}
+  ]
+}

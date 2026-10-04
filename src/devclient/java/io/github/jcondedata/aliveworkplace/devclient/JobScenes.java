@@ -1073,6 +1073,39 @@ final class JobScenes {
 					io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.open(player, STATION), 30),
 				step("05_hall_festival", io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FESTIVAL, 6)),
 			(level, player) -> player.containerMenu instanceof ChoiceMenu));
+		// Long Shifts proclaimed (ROADMAP 30.3): the builder's line in the hall's list says "long shifts" and 20% faster,
+		// and the chronicle keeps the proclamation.
+		SCREENS.put("long_shifts", new Screen("Long Shifts was proclaimed: the hall's list shows the \"long shifts\" mood and the chronicle keeps it",
+			new Vec3(2.5, -58.4, 4.5), TARGET,
+			(level, player) -> {
+				level.setBlockAndUpdate(STATION, ModBlocks.VILLAGE_HALL.defaultBlockState()
+					.setValue(io.github.jcondedata.aliveworkplace.hall.VillageHallBlock.FACING, Direction.SOUTH));
+				subject = worker(level, new BlockPos(-4, -60, -3), ModBlocks.BLUEPRINT_TABLE, ModVillagers.BLUEPRINT_TABLE_POI, ModVillagers.BUILDER);
+				io.github.jcondedata.aliveworkplace.hall.VillageNeeds.check(level, STATION);
+				var shifts = io.github.jcondedata.aliveworkplace.hall.Edicts.find("long_shifts").orElseThrow();
+				var told = io.github.jcondedata.aliveworkplace.hall.Edicts.proclaim(level, STATION, player, shifts);
+				Showcase.check(told.done(), "Long Shifts was proclaimed: " + told.message().getString());
+				io.github.jcondedata.aliveworkplace.people.Moods.forget();
+			},
+			List.of(new Step("01_long_shifts_list", io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_PERSON, 6, (level, player) -> {
+					io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.open(player, STATION);
+					var mood = io.github.jcondedata.aliveworkplace.people.Moods.of(subject);
+					Showcase.check(mood != null && mood.bad().stream().anyMatch(c -> c.getString().equals("long shifts")),
+						"the builder's mood lists \"long shifts\": " + (mood == null ? "no mood" : mood.bad()));
+					var pace = io.github.jcondedata.aliveworkplace.work.Pace.describe(subject);
+					Showcase.check(pace != null && pace.getString().contains("the Long Shifts edict"),
+						"the builder works faster under Long Shifts: " + (pace == null ? "usual pace" : pace.getString()));
+				}, 30),
+				new Step("02_long_shifts_chronicle", -1, 6, (level, player) -> {
+					io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.open(player, STATION);
+					if (player.containerMenu instanceof ChoiceMenu m) {
+						m.press(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.CHRONICLE, player);
+					}
+					var hall = (io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(STATION);
+					Showcase.check(hall.chronicle().stream().anyMatch(e -> e.text().getString().equals("The edict Long Shifts was proclaimed")),
+						"the chronicle keeps the proclamation");
+				}, 30)),
+			(level, player) -> player.containerMenu instanceof ChoiceMenu));
 		SCREENS.put("hall_treasury", new Screen("the hall's treasury was collected, the village protected and its screen opened from a Village Ledger",
 			new Vec3(2.5, -58.4, 4.5), TARGET,
 			(level, player) -> {

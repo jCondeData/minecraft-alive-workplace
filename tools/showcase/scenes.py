@@ -152,6 +152,11 @@ SCENES = [
     S("partners_engine", "Builder", "A Pokémon partner helps the builder", "the Machop carried the planks to the work and came back", 60,
       [("01_partner_carries", "Shouldering the planks"), ("02_partner_at_work", "At the work"), ("03_partner_back", "Back, empty-handed")],
       cobblemon=True),
+    # One pace, one cap (ROADMAP 30.2): a builder past the speed cap, then ill
+    S("pace", "Builder", "One pace, one cap: a builder past the speed cap",
+      "the capped builder's status line says \"at the cap\", and ill they're held back", 40,
+      [("01_pace_capped", "Three partners, a kept village, research, a happy mood: 100% faster, at the cap"),
+       ("02_pace_ill", "The same builder ill: held back to the usual pace")], cobblemon=True),
     S("partners_land", "Builder", "Pokémon partners at work: building and the land",
       "the Machamp carried the beams and the Wartortle watered the farmer's patch", 60,
       [("01_partners_carry", "Beams on its shoulder"), ("02_partners_at_work", "At work"), ("03_watered_field", "The patch watered")],
@@ -214,6 +219,10 @@ SCENES = [
        ("03_city_plan_framed", "The plan on the hall's map, framed")]),
     S("hall_pages", "Village Hall", "The chronicle and trade routes", "the chronicle and trade-route pages opened", 45,
       [("01_hall_chronicle", "Chronicle"), ("02_hall_routes", "Trade routes")]),
+    S("long_shifts", "Village Hall", "Edicts: Long Shifts proclaimed",
+      "Long Shifts was proclaimed: the hall's list shows the \"long shifts\" mood and the chronicle keeps it", 45,
+      [("01_long_shifts_list", "The builder: 20% faster, and \"long shifts\" in their mood"),
+       ("02_long_shifts_chronicle", "The chronicle: the edict proclaimed")]),
     # Legends (ROADMAP 29.3): a Mythic Legend announced to the whole server in gold, and the chronicle's nether-star line
     S("legend_announce", "Legends", "A Mythic Legend is announced", "a Mythic Legend's coming was announced in chat and written in the chronicle", 45,
       [("01_legend_chat", "The announcement"), ("02_legend_chronicle", "The chronicle line")]),

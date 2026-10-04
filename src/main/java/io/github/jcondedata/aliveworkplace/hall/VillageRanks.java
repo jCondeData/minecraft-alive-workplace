@@ -99,6 +99,8 @@ public final class VillageRanks {
 			entity.setRank(now);
 			if (now.ordinal() > before.ordinal()) {
 				celebrate(level, hall, now);
+			} else {
+				Edicts.fit(level, hall, entity); // a rank lower: the newest edicts lapse until they fit
 			}
 		}
 		return now;

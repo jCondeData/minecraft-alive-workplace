@@ -1,0 +1,7 @@
+{
+  "name": "Quiet Hours",
+  "description": "Nobody works late.",
+  "order": 51,
+  "boost": [{"type": "aliveworkplace:mood", "points": 5, "reason": "quiet evenings"}],
+  "excludes": ["long_shifts"]
+}

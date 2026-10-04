@@ -24,7 +24,11 @@ import net.minecraft.world.level.Level;
  * ticks of its life). A Legend on strike has no powers.
  */
 public final class LegendPowers {
-	/** The most any boosts together may speed a worker up: twice as fast (the shared cap, read in {@code BuilderLevels.delay}). */
+	/**
+	 * The most Legends together may speed a worker up: twice as fast. Their speed-up is the {@code legend} source of
+	 * {@link io.github.jcondedata.aliveworkplace.work.Pace}, whose own cap ({@code maxWorkPace}) then holds it with
+	 * every other bonus.
+	 */
 	public static final float PACE_CAP = 2f;
 	public static final int REFRESH = 200;
 

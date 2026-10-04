@@ -145,10 +145,28 @@ asks for the steps, `latest.log` and any crash report).
   who'd rather pause them set `keepVillagesWorking` to `false` in `config/aliveworkplace.json`.
 - `/workplace soak <days> split` (testers, benchmark servers only): the soak with each builder's materials split
   between at most 3 chests by its bench and the village storehouses.
+- **Edicts**, the village's laws, and the first one, **Long Shifts**: everyone works 20% faster, but every grown
+  villager is 10 less happy ("long shifts" in the hall's list). A Hamlet may keep 1 edict in force, a Village 2, a Town
+  3, a City 4; an edict stays at least 3 days (`edictMinDays`), and a village that drops a rank loses its newest.
+  Everyone in the village is told, and the chronicle keeps it. For now operators proclaim and lift them with
+  `/workplace edict proclaim|lift <id>` in the village (the Book of Edicts on the hall comes next); only the hall's
+  owner, their friends and operators may. Data packs can add edicts (`data/<namespace>/edicts/`) or switch ours off
+  (`"enabled": false`); `villageEdicts` turns them all off.
 
 ### Changed
 - Seasons last 16 days now (a 64-day year), so festivals come every 16 days. A config file that still holds the old
   default of 8 moves to 16 by itself; any other length you chose stays.
+- **One pace, one cap**: everything that makes a worker faster (Pokémon partners, a well-kept village, Swift Hands,
+  Diligent, a happy mood, Craftsmanship, Expeditions) now adds up to at most **twice the usual pace**, set by the new
+  `maxWorkPace` option (100 to 400 percent, default 200). Sickness, a bad mood, Lazy and a badly kept village still slow
+  a worker after that (ill: half the capped pace), and a worker's level (Novice to Master) stays outside the cap. A
+  builder's status and the hall's people list show the total and why ("100% faster: at the cap (Machop from the
+  pasture, a happy mood)"). Teachers, scholars, ranchers, crafters' Craftsmanship and explorers' and netherworkers'
+  rests and trips now get the whole pace too, not only their partners. **This slows down the very fastest workers**:
+  a Master with three partners in a well-kept village was already past twice as fast.
+- **Partners count once**: sifters, beekeepers, florists, composters and explorers searching a stop counted their
+  Pokémon partners twice; now once (two partners: 70% of the usual time, not 49%). **These five jobs are slower with
+  partners than before.**
 
 ### Fixed
 - A builder whose path leads somewhere it can't actually walk (under a trapdoor flower box, up into a loft) now hops

@@ -4,7 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import io.github.jcondedata.aliveworkplace.build.BuilderLevels;
 import io.github.jcondedata.aliveworkplace.build.Builders;
 import io.github.jcondedata.aliveworkplace.registry.ModAttachments;
-import io.github.jcondedata.aliveworkplace.work.Partners;
+import io.github.jcondedata.aliveworkplace.work.Pace;
 import io.github.jcondedata.aliveworkplace.work.Walker;
 import io.github.jcondedata.aliveworkplace.work.WorkerStatus;
 import java.util.List;
@@ -36,6 +36,11 @@ public class TeacherWork extends Behavior<Villager> {
 	static final double CLASS = 5.0;
 	/** How often the class is checked (and lessons counted). */
 	static final int EVERY = 20;
+
+	/** Lesson progress a round of class makes for each child: {@link #EVERY} at the teacher's pace (ROADMAP 30.2). */
+	public static int lesson(Villager villager) {
+		return Pace.progress(EVERY, villager);
+	}
 
 	private final Walker walker = new Walker(0.5f);
 	private int timer;
@@ -82,7 +87,7 @@ public class TeacherWork extends Behavior<Villager> {
 			v -> v.isAlive() && v.isBaby() && !Schools.isSchooled(v));
 		inClass = 0;
 		called = 0;
-		int lesson = Math.round(EVERY / Partners.factor(villager));
+		int lesson = lesson(villager);
 		for (Villager child : children) {
 			if (child.distanceToSqr(middle) > CLASS * CLASS) {
 				// Come to class

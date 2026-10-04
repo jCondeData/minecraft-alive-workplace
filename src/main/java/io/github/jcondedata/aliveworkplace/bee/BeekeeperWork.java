@@ -7,7 +7,6 @@ import io.github.jcondedata.aliveworkplace.build.Builders;
 import io.github.jcondedata.aliveworkplace.build.SupplyContainers;
 import io.github.jcondedata.aliveworkplace.registry.ModAttachments;
 import io.github.jcondedata.aliveworkplace.registry.ModVillagers;
-import io.github.jcondedata.aliveworkplace.work.Partners;
 import io.github.jcondedata.aliveworkplace.work.Walker;
 import io.github.jcondedata.aliveworkplace.work.WorkerStatus;
 import java.util.Comparator;
@@ -271,7 +270,7 @@ public class BeekeeperWork extends Behavior<Villager> {
 		}
 		villager.getBrain().setMemory(MemoryModuleType.LOOK_TARGET, new BlockPosTracker(target));
 		if (timer < 0) {
-			timer = Math.max(10, (int) (BuilderLevels.delay(30, villager) * Partners.factor(villager)));
+			timer = Math.max(10, BuilderLevels.delay(30, villager)); // partners counted once, in the pace (ROADMAP 30.2)
 		}
 		if (--timer > 0) {
 			return;

@@ -8,7 +8,7 @@ import io.github.jcondedata.aliveworkplace.build.Employer;
 import io.github.jcondedata.aliveworkplace.build.SupplyContainers;
 import io.github.jcondedata.aliveworkplace.registry.ModAttachments;
 import io.github.jcondedata.aliveworkplace.registry.ModVillagers;
-import io.github.jcondedata.aliveworkplace.work.Partners;
+import io.github.jcondedata.aliveworkplace.work.Pace;
 import io.github.jcondedata.aliveworkplace.work.WorkerStatus;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -58,6 +58,11 @@ public class RancherWork extends RanchWork {
 	public static long GROOM_EVERY = 24000;
 	/** How much a failed try calms a wild horse down (out of its temper, 100 for a horse). */
 	static final int CALMER = 20;
+
+	/** How much a wild horse calms each time this rancher rides it: {@link #CALMER} at the rancher's pace (ROADMAP 30.2). */
+	public static int calming(Villager villager) {
+		return Pace.progress(CALMER, villager);
+	}
 	private static final boolean COBBLEMON = Platform.get().isModLoaded("cobblemon");
 	private static final TagKey<Item> BERRIES = TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath("cobblemon", "berries"));
 	/** Berries that lower a Pokémon's EVs: players keep them for that, so they're never a treat. */
@@ -246,8 +251,8 @@ public class RancherWork extends RanchWork {
 				ModAttachments.HORSES_TAMED.set(villager, ModAttachments.HORSES_TAMED.getOrElse(villager, 0) + 1);
 				BuilderLevels.addXp(level, villager, 2, null);
 			} else {
-				// Partners (Rapidash, Tauros...) calm them down quicker.
-				horse.modifyTemper(Math.round(CALMER / Partners.factor(villager)));
+				// Partners (Rapidash, Tauros...) calm them down quicker, as does anything else in the rancher's pace.
+				horse.modifyTemper(calming(villager));
 				horse.makeMad();
 			}
 		} else if (chore == Chore.SADDLE && animal instanceof AbstractHorse horse && horse.isSaddleable() && !horse.isSaddled()

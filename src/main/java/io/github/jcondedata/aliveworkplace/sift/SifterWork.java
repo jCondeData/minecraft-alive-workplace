@@ -9,7 +9,6 @@ import io.github.jcondedata.aliveworkplace.build.Builders;
 import io.github.jcondedata.aliveworkplace.build.SupplyContainers;
 import io.github.jcondedata.aliveworkplace.registry.ModAttachments;
 import io.github.jcondedata.aliveworkplace.registry.ModVillagers;
-import io.github.jcondedata.aliveworkplace.work.Partners;
 import io.github.jcondedata.aliveworkplace.work.Requests;
 import io.github.jcondedata.aliveworkplace.work.Walker;
 import io.github.jcondedata.aliveworkplace.work.WorkerStatus;
@@ -109,8 +108,13 @@ public class SifterWork extends Behavior<Villager> {
 		if (!atSieve || --timer > 0) {
 			return;
 		}
-		timer = Math.max(10, Math.round(BuilderLevels.delay(SIFT_TICKS, villager) * Partners.factor(villager)));
+		timer = siftTicks(villager);
 		state = sift(level, villager, sieve) == null ? "needs" : "sifting";
+	}
+
+	/** Ticks one block takes this sifter: its level's share at its pace (partners counted once, in the pace: ROADMAP 30.2). */
+	public static int siftTicks(Villager villager) {
+		return Math.max(10, BuilderLevels.delay(SIFT_TICKS, villager));
 	}
 
 	/** Sifts one block from the chests by the sieve; returns what came out, or null if there was nothing to sift. */

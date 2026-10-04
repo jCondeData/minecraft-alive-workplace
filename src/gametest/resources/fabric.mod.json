@@ -82,6 +82,7 @@
 			"io.github.jcondedata.aliveworkplace.test.MenuIconTooltipGameTests",
 			"io.github.jcondedata.aliveworkplace.test.StyleGameTests",
 			"io.github.jcondedata.aliveworkplace.test.PeopleGameTests",
+			"io.github.jcondedata.aliveworkplace.test.PaceGameTests",
 			"io.github.jcondedata.aliveworkplace.test.CampGameTests",
 			"io.github.jcondedata.aliveworkplace.test.RaidGameTests",
 			"io.github.jcondedata.aliveworkplace.test.SifterGameTests",

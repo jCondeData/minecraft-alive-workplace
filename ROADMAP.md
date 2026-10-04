@@ -1791,7 +1791,7 @@ the Village Hall (`VillageNeeds`, `VillageQuests`, `VillageRanks`, `Festivals`, 
     friends and operators (anyone, while the hall has no owner).
 
   Done when: the note is on `main` and its review package is sent.
-- [ ] **30.2** **One pace, one cap.** A core `work/Pace` that every job's work speed goes through (if another
+- [x] **30.2** (review: pending 2026-10-04) **One pace, one cap.** A core `work/Pace` that every job's work speed goes through (if another
   milestone built it first, check it covers this list and add what's missing):
   - bonuses: Pokémon partners, a well-kept village, Swift Hands, Diligent, a happy mood, Craftsmanship (crafters),
     Expeditions (explorers, netherworkers), and later this milestone's edicts, Work Horn, tonics and guilds, each

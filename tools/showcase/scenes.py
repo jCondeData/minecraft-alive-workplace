@@ -148,6 +148,11 @@ SCENES = [
     S("partners_engine", "Builder", "A Pokémon partner helps the builder", "the Machop carried the planks to the work and came back", 60,
       [("01_partner_carries", "Shouldering the planks"), ("02_partner_at_work", "At the work"), ("03_partner_back", "Back, empty-handed")],
       cobblemon=True),
+    # One pace, one cap (ROADMAP 30.2): a builder past the speed cap, then ill
+    S("pace", "Builder", "One pace, one cap: a builder past the speed cap",
+      "the capped builder's status line says \"at the cap\", and ill they're held back", 40,
+      [("01_pace_capped", "Three partners, a kept village, research, a happy mood: 100% faster, at the cap"),
+       ("02_pace_ill", "The same builder ill: held back to the usual pace")], cobblemon=True),
     S("partners_land", "Builder", "Pokémon partners at work: building and the land",
       "the Machamp carried the beams and the Wartortle watered the farmer's patch", 60,
       [("01_partners_carry", "Beams on its shoulder"), ("02_partners_at_work", "At work"), ("03_watered_field", "The patch watered")],

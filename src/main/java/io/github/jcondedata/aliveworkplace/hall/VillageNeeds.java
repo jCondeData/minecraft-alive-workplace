@@ -69,7 +69,8 @@ public final class VillageNeeds {
 		}
 	}
 
-	private record Pace(float factor, long until) {
+	/** A villager's village pace, remembered for {@link #PACE_TICKS}: how well kept it is, and its Swift Hands. */
+	private record Pace(float kept, float swiftHands, long until) {
 	}
 
 	private static final Map<Villager, Pace> PACE = new WeakHashMap<>();
@@ -85,33 +86,55 @@ public final class VillageNeeds {
 		return 0.4f * fed + 0.3f * housed + 0.3f * safe;
 	}
 
-	/** The work delay multiplier for {@code villager}: their village's, or 1 without a Village Hall nearby. */
+	/** The work delay multiplier for {@code villager}: their village's upkeep and Swift Hands, or 1 without a Village Hall nearby. */
 	public static float factor(Villager villager) {
+		Pace pace = pace(villager);
+		return pace.kept() * pace.swiftHands();
+	}
+
+	/** The upkeep part of {@code villager}'s village pace (under 1 well kept, over 1 badly kept; a source of {@code work/Pace}). */
+	public static float kept(Villager villager) {
+		return pace(villager).kept();
+	}
+
+	/** The Swift Hands part of {@code villager}'s village pace (a source of {@code work/Pace}). */
+	public static float swiftHands(Villager villager) {
+		return pace(villager).swiftHands();
+	}
+
+	private static Pace pace(Villager villager) {
 		if (!(villager.level() instanceof ServerLevel level)) {
-			return 1f;
+			return new Pace(1f, 1f, 0);
 		}
 		long now = level.getGameTime();
-		Pace pace = PACE.get(villager);
-		if (pace != null && now < pace.until()) {
-			return pace.factor();
+		Pace pace;
+		synchronized (PACE) {
+			pace = PACE.get(villager);
 		}
-		float factor = VillageHalls.nearest(level, villager.blockPosition())
-			.map(pos -> level.getBlockEntity(pos) instanceof VillageHallBlockEntity hall
-				? (hall.needs() != null ? hall.needs().factor() : 1f) * swiftHands(hall.research().level(io.github.jcondedata.aliveworkplace.research.Research.Topic.SWIFT_HANDS))
-				: 1f)
-			.orElse(1f);
-		PACE.put(villager, new Pace(factor, now + PACE_TICKS));
-		return factor;
+		if (pace != null && now < pace.until()) {
+			return pace;
+		}
+		VillageHallBlockEntity hall = VillageHalls.nearest(level, villager.blockPosition())
+			.map(pos -> level.getBlockEntity(pos) instanceof VillageHallBlockEntity entity ? entity : null).orElse(null);
+		pace = hall == null ? new Pace(1f, 1f, now + PACE_TICKS)
+			: new Pace(hall.needs() != null ? hall.needs().factor() : 1f,
+				swiftHands(hall.research().level(io.github.jcondedata.aliveworkplace.research.Research.Topic.SWIFT_HANDS)), now + PACE_TICKS);
+		synchronized (PACE) {
+			PACE.put(villager, pace);
+		}
+		return pace;
 	}
 
 	/** The work delay multiplier from the Swift Hands research: 5% faster a level. */
-	static float swiftHands(int level) {
+	public static float swiftHands(int level) {
 		return 1f / (1f + 0.05f * level);
 	}
 
 	/** Forget the villagers' paces (tests). */
 	public static void forget() {
-		PACE.clear();
+		synchronized (PACE) {
+			PACE.clear();
+		}
 	}
 
 	/** The hall's round: whoever hasn't eaten for a day eats from the store; then the village is counted. */

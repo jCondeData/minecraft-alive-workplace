@@ -208,7 +208,7 @@ public final class Netherworkers {
 			}
 		}
 		long now = level.getGameTime();
-		int ticks = Math.max(20, Math.round(BuilderLevels.delay(TRIP_TICKS, villager) * expeditionFactor(villager)));
+		int ticks = tripTicks(villager);
 		ModAttachments.NETHER_TRIP.set(villager, new Trip(now, now + ticks, portal.immutable(), kitOf(bag)));
 		puff(level, villager);
 		// A Fire or Dark partner walks them to the portal, flames at its feet (ROADMAP 28.6).
@@ -220,9 +220,9 @@ public final class Netherworkers {
 		return true;
 	}
 
-	/** Expeditions: trips 20% shorter a level. */
-	public static float expeditionFactor(Villager villager) {
-		return 1f - 0.2f * io.github.jcondedata.aliveworkplace.research.Research.level(villager, io.github.jcondedata.aliveworkplace.research.Research.Topic.EXPEDITIONS);
+	/** Ticks a trip takes this netherworker: the level's share at their pace, Expeditions included (ROADMAP 30.2). */
+	public static int tripTicks(Villager villager) {
+		return Math.max(20, BuilderLevels.delay(TRIP_TICKS, villager));
 	}
 
 	/**

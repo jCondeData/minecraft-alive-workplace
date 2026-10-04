@@ -72,6 +72,11 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 		return needs;
 	}
 
+	/** Sets how the village is doing until the next round (tests, and the screens' examples). */
+	public void setNeeds(VillageNeeds.Needs needs) {
+		this.needs = needs;
+	}
+
 	/** Every {@link VillageNeeds#CHECK_EVERY} ticks (and on the first): the hungry fed, the village counted. */
 	public static void serverTick(net.minecraft.world.level.Level level, BlockPos pos, BlockState state, VillageHallBlockEntity hall) {
 		if (level instanceof net.minecraft.server.level.ServerLevel server

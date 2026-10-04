@@ -89,6 +89,11 @@ public final class WorkplaceConfig {
 	public boolean partnerShows = true;
 	/** A nurse at Cobblemon's Healing Machine heals your team in it, and keeps it charged while on shift (ROADMAP 28.7). */
 	public boolean nurseHealingMachine = true;
+	/**
+	 * How fast every bonus together can make a worker, in percent of the usual pace (partners, a well-kept village,
+	 * research, traits, mood, edicts...). Sickness and bad moods still slow them after that; their level doesn't count.
+	 */
+	public int maxWorkPace = 200;
 	/** Days in each of the village calendar's four seasons (each has a festival on its middle day). */
 	public int seasonDays = 16;
 	/** Hundredths of an emerald each worker brings the treasury a day (before wellbeing and rank). */
@@ -174,6 +179,7 @@ public final class WorkplaceConfig {
 		"villageRadius", 0, 128,
 		"villageHallRadius", 16, 160,
 		"villageGrowthCap", 0, 500,
+		"maxWorkPace", 100, 400,
 		"seasonDays", 1, 120,
 		"treasuryPerWorker", 0, 500,
 		"dollarsPerEmerald", 1, 10_000);
@@ -259,6 +265,7 @@ public final class WorkplaceConfig {
 		OrchardWork.RADIUS = orchardRadius;
 		FisherWork.RADIUS = fisherRadius;
 		Partners.RADIUS = partnerRadius;
+		io.github.jcondedata.aliveworkplace.work.Pace.MAX_PERCENT = maxWorkPace;
 		io.github.jcondedata.aliveworkplace.explore.ExplorerWork.RANGE = explorerRange;
 		PostOffice.ROUND = postmanRange;
 		// Gametests run side by side: workers sharing chests across them would mix the tests up. The village tests

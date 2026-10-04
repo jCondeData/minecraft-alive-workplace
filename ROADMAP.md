@@ -839,7 +839,7 @@ fair on, and the winner's banner flying over the winning village. It builds on `
 so the parts that need Cobblemon 1.8 (Habitat Blocks, Type Gems, Alphas) wait quietly until the pack moves up. Nothing
 here adds a new kind of speed bonus (the new jobs get the partners' existing one).
 
-- [ ] **28.1** **Design note.** `docs/design/M28.md`, sent to the owner as a review package (lanes don't wait for his
+- [x] **28.1** (review: pending 2026-10-04) **Design note.** `docs/design/M28.md`, sent to the owner as a review package (lanes don't wait for his
   reply): what the player sees (the partner shows, the five jobs and their builds, the Pokémon Center, a Cup day hour
   by hour with a sketch of the Arena); the data formats (`partner_shows`, `camp_menu`, `gem_beds`, `village_habitats`,
   `cups`, `type_chart`, all under `data/aliveworkplace/`); every config switch; the save data (new attachments, hall

@@ -259,7 +259,7 @@ public class TerrainStallGameTests implements FabricGameTest {
 	}
 
 	/** Changes whenever the site moves on: stage, cursor, retrying, placed or skipped (as the soak's StallWatch). */
-	private static long mark(BuildSite site) {
+	static long mark(BuildSite site) {
 		try {
 			Field cursor = BuildSite.class.getDeclaredField("cursor");
 			Field retrying = BuildSite.class.getDeclaredField("retrying");

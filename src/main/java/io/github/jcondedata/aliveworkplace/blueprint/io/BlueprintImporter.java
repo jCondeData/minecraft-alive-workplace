@@ -28,11 +28,18 @@ public final class BlueprintImporter {
 	public static final String IMPORT_FOLDER = "aliveworkplace/import";
 	private static final List<String> EXTENSIONS = List.of(".litematic", ".schem", ".schematic", ".nbt");
 
-	public record Imported(ResourceLocation id, Blueprint blueprint, String format, int unknownBlocks) {
+	public record Imported(ResourceLocation id, Blueprint blueprint, String format, int unknownBlocks, List<String> unknownNames) {
 		public Component summary() {
 			return io.github.jcondedata.aliveworkplace.work.Words.counted(unknownBlocks > 0 ? "message.aliveworkplace.import.done_with_unknown"
-				: "message.aliveworkplace.import.done", unknownBlocks > 0 ? unknownBlocks : 0, id.toString(), blueprint.size().getX(), blueprint.size().getY(), blueprint.size().getZ(), unknownBlocks);
+				: "message.aliveworkplace.import.done", unknownBlocks > 0 ? unknownBlocks : 0, id.toString(), blueprint.size().getX(), blueprint.size().getY(),
+				blueprint.size().getZ(), unknownBlocks, names(unknownNames));
 		}
+	}
+
+	/** Up to three block ids, "and N more" after them: what a player needs to know which mod is missing. */
+	public static Component names(List<String> ids) {
+		String shown = String.join(", ", ids.subList(0, Math.min(3, ids.size())));
+		return ids.size() > 3 ? Component.translatable("message.aliveworkplace.import.and_more", shown, ids.size() - 3) : Component.literal(shown);
 	}
 
 	/**
@@ -44,6 +51,9 @@ public final class BlueprintImporter {
 		ResourceLocation id = uniqueId(manager, folder, fileName);
 		BlueprintFiles.Result result = BlueprintFiles.read(id, bytes, server.getFixerUpper(), BlueprintFiles.DEFAULT_MAX_VOLUME);
 		if (result.blueprint().solidBlockCount() == 0) {
+			if (result.unknownBlocks() > 0) {
+				throw new BlueprintFormatException("only_unknown", names(result.unknownNames()));
+			}
 			throw new BlueprintFormatException("empty");
 		}
 		StructureTemplate template = manager.getOrCreate(id);
@@ -54,7 +64,7 @@ public final class BlueprintImporter {
 		}
 		AliveWorkplace.LOG.info("Imported blueprint {} ({} format, {} blocks, {} unknown)", id, result.format(),
 			result.blueprint().solidBlockCount(), result.unknownBlocks());
-		return new Imported(id, result.blueprint(), result.format(), result.unknownBlocks());
+		return new Imported(id, result.blueprint(), result.format(), result.unknownBlocks(), result.unknownNames());
 	}
 
 	/** Imports every supported file in {@code <world>/aliveworkplace/import/}, moving each to {@code done/} or {@code failed/}. */

@@ -68,8 +68,14 @@ final class SpongeSchematicReader {
 			paletteSize = Math.max(paletteSize, Nbt.getInt(paletteTag, key) + 1);
 		}
 		BlockState[] palette = new BlockState[paletteSize];
+		String[] unknown = new String[paletteSize];
 		for (String key : Nbt.keys(paletteTag)) {
-			palette[Nbt.getInt(paletteTag, key)] = states.fromString(key);
+			int i = Nbt.getInt(paletteTag, key);
+			if (i < 0) {
+				throw new BlueprintFormatException("schem.corrupt");
+			}
+			palette[i] = states.fromString(key);
+			unknown[i] = states.lastUnknown();
 		}
 
 		Map<BlockPos, CompoundTag> tiles = new HashMap<>();
@@ -119,6 +125,9 @@ final class SpongeSchematicReader {
 			int z = rest / width;
 			int x = rest % width;
 			BlockState state = value < palette.length && palette[value] != null ? palette[value] : Blocks.AIR.defaultBlockState();
+			if (value < palette.length && unknown[value] != null) {
+				states.unknownBlock(unknown[value]);
+			}
 			BlockPos pos = new BlockPos(x, y, z);
 			CompoundTag nbt = tiles.get(pos);
 			nbt = nbt != null && state.hasBlockEntity() ? BlueprintFiles.withBlockEntityId(states.fixBlockEntity(nbt), state) : null;

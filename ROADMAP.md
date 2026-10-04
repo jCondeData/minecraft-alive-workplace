@@ -508,6 +508,11 @@ and an old vanilla village slowly rebuilds itself one house at a time. It answer
     else's protected village is refused;
   - the item binds, names its village, is in the `items` showcase scene, and its icon passes `lint.py`;
   - a datapack's zone kind loads, and a broken file is skipped with a warning naming it.
+  - Status (lane-a-1004-1533): built on `main`: `city/CityPlan` (grid, zones, roads, wall line, mode; saved as the
+    hall's `plan` tag and the hall item's `aliveworkplace:city_plan` component), `CityZones` (8 shipped kinds as data),
+    `CityPlans` (the checked edit packet), the City Plan item (binds, names its village, says which zone you stand in;
+    recipe, recipe-book unlock, icon via the pixel-art recipes, in the items scene). CityPlanGameTests (7) pass. Left:
+    film `SCENE=items` with the new icon, hand in the package and tick (`done 27.2 --review`).
 - [ ] **27.3** **Painting the plan.** Right-click the air with a bound City Plan to open the plan screen (a client
   screen, like the Blueprint Table's): the village map as it is today (`VillageMaps.colors`, a block a pixel, north up,
   the hall and every finished building's banner on it), the grid over it, each zone tinted in its colour with its name,

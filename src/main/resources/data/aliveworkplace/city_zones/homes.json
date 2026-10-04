@@ -1,0 +1,7 @@
+{
+  "color": "white",
+  "map_tint": "#E8E8E8",
+  "icon": "minecraft:white_bed",
+  "order": 0,
+  "buildable": true
+}

@@ -41,6 +41,8 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 	private java.util.UUID owner;
 	private String ownerName = "";
 	private boolean protectedVillage;
+	/** The village's City Plan (27.2): empty until someone paints it. */
+	private io.github.jcondedata.aliveworkplace.city.CityPlan plan = io.github.jcondedata.aliveworkplace.city.CityPlan.EMPTY;
 	private long lastTaxDay = -1;
 	/** The day of the last market (see {@link MarketDays}). */
 	private long lastMarketDay = -1;
@@ -214,6 +216,15 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 		return protectedVillage;
 	}
 
+	public io.github.jcondedata.aliveworkplace.city.CityPlan plan() {
+		return plan;
+	}
+
+	public void setPlan(io.github.jcondedata.aliveworkplace.city.CityPlan plan) {
+		this.plan = plan;
+		setChanged();
+	}
+
 	public void setProtected(boolean on) {
 		protectedVillage = on;
 		setChanged();
@@ -292,6 +303,8 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 		owner = Nbt.hasUuid(tag, "owner") ? Nbt.getUuid(tag, "owner") : null;
 		ownerName = Nbt.getString(tag, "ownerName");
 		protectedVillage = Nbt.getBoolean(tag, "protected");
+		plan = io.github.jcondedata.aliveworkplace.city.CityPlan.CODEC.parse(net.minecraft.nbt.NbtOps.INSTANCE, tag.get("plan"))
+			.result().orElse(io.github.jcondedata.aliveworkplace.city.CityPlan.EMPTY);
 		lastTaxDay = tag.contains("lastTaxDay") ? Nbt.getLong(tag, "lastTaxDay") : -1;
 		int r = Nbt.getInt(tag, "rank");
 		rank = VillageRanks.Rank.values()[Math.max(0, Math.min(VillageRanks.Rank.values().length - 1, r))];
@@ -330,6 +343,9 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 			tag.putString("ownerName", ownerName);
 		}
 		tag.putBoolean("protected", protectedVillage);
+		if (!plan.isEmpty() || plan.mode() != io.github.jcondedata.aliveworkplace.city.CityPlan.Mode.ASK) {
+			io.github.jcondedata.aliveworkplace.city.CityPlan.CODEC.encodeStart(net.minecraft.nbt.NbtOps.INSTANCE, plan).result().ifPresent(t -> tag.put("plan", t));
+		}
 		tag.putLong("lastTaxDay", lastTaxDay);
 		tag.putInt("rank", rank.ordinal());
 		io.github.jcondedata.aliveworkplace.research.Research.State.CODEC.encodeStart(net.minecraft.nbt.NbtOps.INSTANCE, research).result()
@@ -349,17 +365,25 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 	protected void applyImplicitComponents(BlockEntity.DataComponentInput input) {
 		super.applyImplicitComponents(input);
 		name = input.get(DataComponents.CUSTOM_NAME);
+		var carried = input.get(io.github.jcondedata.aliveworkplace.registry.ModComponents.CITY_PLAN);
+		if (carried != null) {
+			plan = carried; // kept relative to the hall, so it is centred on the new spot
+		}
 	}
 
 	@Override
 	protected void collectImplicitComponents(DataComponentMap.Builder builder) {
 		super.collectImplicitComponents(builder);
 		builder.set(DataComponents.CUSTOM_NAME, name);
+		if (!plan.isEmpty() || plan.mode() != io.github.jcondedata.aliveworkplace.city.CityPlan.Mode.ASK) {
+			builder.set(io.github.jcondedata.aliveworkplace.registry.ModComponents.CITY_PLAN, plan);
+		}
 	}
 
 	@SuppressWarnings("deprecation")
 	@Override
 	public void removeComponentsFromTag(CompoundTag tag) {
 		tag.remove("CustomName");
+		tag.remove("plan");
 	}
 }

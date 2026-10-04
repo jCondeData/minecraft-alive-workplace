@@ -251,6 +251,30 @@ def field_marker():
     return [on(vmap(PARCHMENT), FIELD_PLAN, {"G": "#5a9a2a", "s": "#8a5a2b", "p": ROUTE}).save(item("field_marker"))]
 
 
+# A city plan: the village's zones painted on the map in their banner colours (white homes, orange workshops, lime
+# farms), a grey street running between them and the red hall where it meets the lane.
+CITY = """
+    ................
+    ................
+    ................
+    ................
+    .........ss.....
+    ......kk.s.GG...
+    .....kwwks.Ggg..
+    .....kwwks.Ggg..
+    ......kkRRss....
+    .....OO.s.......
+    ....Ooo.s.......
+    .....oo.........
+"""
+
+
+def city_plan():
+    """The City Plan (27.2): zones in the map banners' colours on vanilla's map paper and outline, a street and the hall."""
+    return [on(vmap(VANILLA_MAP, MAP_PALE), CITY, {"w": "#f4f6f6", "k": "#9da3a3", "o": "#f9801d", "O": "#b85a0e",
+                                                   "g": "#80c71f", "G": "#4f7f12", "s": "#8a8a8a", "R": ROUTE}).save(item("city_plan"))]
+
+
 # --- Paper and card -------------------------------------------------------------------------------------------------
 def village_ledger():
     """The hall's account book lying open on its green cloth cover: two pages of vanilla paper ruled into accounts,
@@ -531,7 +555,7 @@ def guide_book():
 
 
 DRAW = [blank_blueprint, blueprint, shape_planner, patrol_map, delivery_note, travel_ticket, price_tag,
-        village_ledger, field_marker, quarry_marker, rally_banner, scan_tool, settlers_wagon, guide_book]
+        village_ledger, field_marker, city_plan, quarry_marker, rally_banner, scan_tool, settlers_wagon, guide_book]
 
 if __name__ == "__main__":
     run(DRAW)

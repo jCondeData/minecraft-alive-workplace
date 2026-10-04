@@ -1,0 +1,7 @@
+{
+  "color": "black",
+  "map_tint": "#1D1D21",
+  "icon": "minecraft:iron_sword",
+  "order": 6,
+  "buildable": true
+}

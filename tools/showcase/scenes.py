@@ -54,7 +54,7 @@ SCENES = [
        ("04_composter", "Bone meal: Composter"), ("05_farmer", "Wheat: back to Farmer")]),
     # Items (ROADMAP 21.1b): the owner's picked icons in a chest and in hand
     S("items", "Items", "Every item's icon", "every item's icon shows in a chest, in the hotbar and in hand", 50,
-      [("01_items_chest", "All 13 in a chest"), ("03_hand_blueprint", "Blueprint in hand"),
+      [("01_items_chest", "All 14 in a chest"), ("03_hand_blueprint", "Blueprint in hand"),
        ("04_hand_rally_banner", "Rally Banner in hand"), ("07_hand_field_marker", "Field Marker in hand")]),
     # Builder
     S("builders", "Builder", "Three builders, three starter builds", "the builders finished all three builds", 420,

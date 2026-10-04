@@ -1,0 +1,7 @@
+{
+  "color": "lime",
+  "map_tint": "#80C71F",
+  "icon": "minecraft:wheat",
+  "order": 2,
+  "buildable": true
+}

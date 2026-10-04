@@ -1,0 +1,7 @@
+{
+  "color": "yellow",
+  "map_tint": "#FED83D",
+  "icon": "minecraft:emerald",
+  "order": 3,
+  "buildable": true
+}

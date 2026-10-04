@@ -1756,5 +1756,22 @@
   "aliveworkplace.config.treasuryPerWorker": "Daily Takings",
   "aliveworkplace.config.treasuryPerWorker.tooltip": "What each worker brings the village treasury a day, in hundredths of an emerald, before wellbeing and rank.",
   "aliveworkplace.config.dollarsPerEmerald": "CobbleDollar Rate",
-  "aliveworkplace.config.dollarsPerEmerald.tooltip": "What an emerald price comes to in CobbleDollars: lessons, shops and fares (with CobbleDollars)."
+  "aliveworkplace.config.dollarsPerEmerald.tooltip": "What an emerald price comes to in CobbleDollars: lessons, shops and fares (with CobbleDollars).",
+  "item.aliveworkplace.city_plan": "City Plan",
+  "message.aliveworkplace.city_plan.bound": "The plan is now %s's",
+  "message.aliveworkplace.city_plan.unbound": "Right-click a Village Hall with the plan first",
+  "message.aliveworkplace.city_plan.in_zone": "You're in %s (%s) on %s's plan",
+  "message.aliveworkplace.city_plan.no_zone": "No zone here on %s's plan (%s zones)",
+  "message.aliveworkplace.city_plan.denied": "Only %2$s and their friends may change %1$s's plan",
+  "message.aliveworkplace.city_plan.other_village": "%s cells are nearer another village: left out",
+  "tooltip.aliveworkplace.city_plan.unbound": "Right-click a Village Hall to plan that village",
+  "tooltip.aliveworkplace.city_plan.bound": "The plan of %s",
+  "zone.aliveworkplace.homes": "Homes",
+  "zone.aliveworkplace.workshops": "Workshops",
+  "zone.aliveworkplace.farms": "Farms",
+  "zone.aliveworkplace.market": "Market",
+  "zone.aliveworkplace.civic": "Civic",
+  "zone.aliveworkplace.gardens": "Gardens",
+  "zone.aliveworkplace.defences": "Defences",
+  "zone.aliveworkplace.keep_clear": "Keep Clear"
 }

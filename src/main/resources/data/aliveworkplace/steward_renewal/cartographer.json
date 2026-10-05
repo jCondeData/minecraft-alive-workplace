@@ -1,0 +1,6 @@
+{
+  "job": "minecraft:cartographer",
+  "buildings": [
+    "aliveworkplace:map_room"
+  ]
+}

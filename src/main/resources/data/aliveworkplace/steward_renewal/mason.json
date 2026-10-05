@@ -1,0 +1,6 @@
+{
+  "job": "minecraft:mason",
+  "buildings": [
+    "aliveworkplace:masons_yard"
+  ]
+}

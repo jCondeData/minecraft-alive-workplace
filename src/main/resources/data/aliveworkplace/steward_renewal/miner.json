@@ -1,0 +1,6 @@
+{
+  "job": "aliveworkplace:miner",
+  "buildings": [
+    "aliveworkplace:smithy"
+  ]
+}

@@ -134,6 +134,11 @@ SCENES = [
     S("old_houses", "Steward", "Old houses, found and measured",
       "the Steward found the three vanilla houses in the renew zone, the desk says 2 of them can be renewed (one keeps a chest), and Show me outlined each", 30,
       [("01_old_houses_on_the_desk", "The desk: Old houses: 3, 2 can be renewed"), ("02_show_me_outlines", "Show me: each house outlined")]),
+    # Old villages renewed (ROADMAP 27.21): a time-lapse of a vanilla two-bed house taken down and rebuilt as a Stone House (Cherry)
+    S("renewal", "Steward", "An old village house renewed",
+      "the old plains house was scanned and taken down, a Stone House in Cherry went up on its plot, and both villagers who slept there have its beds", 60,
+      [("01_old_house", "The old plains house in a renew zone"), ("02_going_up", "Taken down, the Stone House going up"),
+       ("03_stone_house_cherry", "The Stone House (Cherry), its villagers moved in")]),
     # The Steward gives jobs (ROADMAP 27.9): the morning's jobs as one proposal, approved, the villagers off to their blocks
     S("steward_jobs", "Steward", "The Steward gives out jobs",
       "the Steward proposed jobs for three jobless villagers, approving made them a farmer, a guard and a fletcher, and they walked to their new workstations", 45,

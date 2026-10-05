@@ -37,7 +37,7 @@ import net.minecraft.gametest.framework.GameTestHelper;
  */
 public class ExpansionGateGameTests implements FabricGameTest {
 	/** Every switch of an unfinished expansion (M27 steward; M28 Pokémon jobs and shows; M29 Legends; M30 civic items). */
-	static final List<String> GATED_SWITCHES = List.of("steward", "stewardSelfRun", "stewardRoads", "caravanRoads", "stewardWalls",
+	static final List<String> GATED_SWITCHES = List.of("steward", "stewardSelfRun", "stewardRoads", "caravanRoads", "stewardWalls", "stewardRenewal",
 		"partnerShows", "nurseHealingMachine", "berryBreeders", "campCooks", "habitatKeepers", "habitatSightings",
 		"daycareKeepers", "gemGrowers", "villageHabitats",
 		"legends", "legendNeeds", "legendSites", "strangeMoods",
@@ -149,8 +149,8 @@ public class ExpansionGateGameTests implements FabricGameTest {
 			if (!screen.contains("villageProtection") || !screen.contains("maxWorkPace") || !screen.contains("seasonDays")) {
 				problems.add("a finished option left the screen: " + screen);
 			}
-			if (screen.size() != 63 - GATED_SWITCHES.size() - GATED_NUMBERS.size()) {
-				problems.add("expected " + (63 - GATED_SWITCHES.size() - GATED_NUMBERS.size()) + " options on the screen, found "
+			if (screen.size() != 64 - GATED_SWITCHES.size() - GATED_NUMBERS.size()) {
+				problems.add("expected " + (64 - GATED_SWITCHES.size() - GATED_NUMBERS.size()) + " options on the screen, found "
 					+ screen.size());
 			}
 			empty.setBoolean("tonics", true);
@@ -195,7 +195,7 @@ public class ExpansionGateGameTests implements FabricGameTest {
 		for (String name : GATED_SWITCHES) {
 			helper.assertTrue(new WorkplaceConfig().getBoolean(name), name + " should default on in GameTests");
 		}
-		helper.assertTrue(WorkplaceConfig.optionNames().size() == 63, "every option on the screen in GameTests");
+		helper.assertTrue(WorkplaceConfig.optionNames().size() == 64, "every option on the screen in GameTests");
 		helper.succeed();
 	}
 }

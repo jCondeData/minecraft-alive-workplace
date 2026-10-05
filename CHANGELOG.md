@@ -32,6 +32,14 @@ asks for the steps, `latest.log` and any crash report).
   seed stock, so a Farmstead's field could be harvested without anything landing in its chest. He now takes them from the
   chests to plant with, like seeds, and puts the whole harvest away.
 ### Added
+- **Old villages renewed** (27.21): one old house at a time (at most one every 2 days), the Steward proposes to rebuild
+  it in its zone's style: "Renew the old house 14 blocks west as a Stone House (Cherry)". A home becomes the first of
+  Starter Cottage, Stone House and Terrace with as many beds; a job's house the building that job's workplace rule
+  builds (an armorer's becomes a Smithy). It must fit the old plot plus 3 blocks, its front where the old door was. The
+  old house is saved as a blueprint (`renewal/<hall>/<n>`), taken down by the builders into the store, and the new one
+  goes up on the plot; its villagers keep their beds and jobs, and the chronicle notes it. Ask me first asks for each
+  house; Run the village renews by itself, only in zones with "Renew" on. Lists are data
+  (`data/<ns>/steward_renewal/`). Config `stewardRenewal`.
 - **Old houses, found and measured** (27.20): in zones with "Renew" on, the Steward looks for houses no builder built
   (round a bed or a workstation) and measures each by its blocks. The desk lists them ("Old houses: 4, 3 can be renewed")
   with where each stands and why one is kept (a chest inside, a player built there, not of village blocks, out of the

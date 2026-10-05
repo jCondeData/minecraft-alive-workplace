@@ -1,0 +1,7 @@
+{
+  "job": "aliveworkplace:nurse",
+  "buildings": [
+    "aliveworkplace:clinic",
+    "aliveworkplace:healing_center"
+  ]
+}

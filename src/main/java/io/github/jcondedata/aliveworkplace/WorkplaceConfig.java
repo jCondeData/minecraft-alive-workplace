@@ -143,6 +143,8 @@ public final class WorkplaceConfig {
 	public int caravanRoadReach = 256;
 	/** A raided village's Steward proposes a wall along the plan's wall line, built from a wall kit (ROADMAP 27.18). Off: he never proposes walls. */
 	public boolean stewardWalls = Expansions.on(Expansions.M27);
+	/** A Steward rebuilds the old village houses in zones whose "renew old houses" switch is on, one at a time, in the zone's style (ROADMAP 27.21). Off: he never proposes to renew a house. */
+	public boolean stewardRenewal = Expansions.on(Expansions.M27);
 	/** Villagers at a Campfire Pot can be made Camp Cooks with Hearty Grains (ROADMAP 28.8). Off: no Camp Cook job. */
 	public boolean campCooks = Expansions.on(Expansions.M28);
 	/** Villagers at a Pasture Block can be made Habitat Keepers with a honey bottle (ROADMAP 28.10). Off: no Habitat Keeper job. */
@@ -415,5 +417,7 @@ public final class WorkplaceConfig {
 		io.github.jcondedata.aliveworkplace.city.CaravanRoads.REACH = caravanRoadReach;
 		// Off in gametests (a test's wall would be built under other tests); the wall tests turn it on.
 		io.github.jcondedata.aliveworkplace.city.Walls.ENABLED = stewardWalls && Expansions.on(Expansions.M27) && System.getProperty("fabric-api.gametest") == null;
+		// Off in gametests (another test's old house would be renewed under it); the renewal tests turn it on.
+		io.github.jcondedata.aliveworkplace.city.Renewals.ENABLED = stewardRenewal && Expansions.on(Expansions.M27) && System.getProperty("fabric-api.gametest") == null;
 	}
 }

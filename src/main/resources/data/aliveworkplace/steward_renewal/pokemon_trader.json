@@ -1,0 +1,9 @@
+{
+  "job": "aliveworkplace:pokemon_trader",
+  "buildings": [
+    "aliveworkplace:trade_hall"
+  ],
+  "requires": [
+    "cobblemon"
+  ]
+}

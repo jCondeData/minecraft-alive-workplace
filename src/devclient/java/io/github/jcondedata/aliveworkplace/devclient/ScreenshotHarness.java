@@ -92,6 +92,7 @@ public class ScreenshotHarness implements ClientModInitializer {
 	private final StewardDeskScene stewardDesk = new StewardDeskScene();
 	private final StewardSafetyScene stewardSafety = new StewardSafetyScene();
 	private final OldHousesScene oldHouses = new OldHousesScene();
+	private final RenewalScene renewal = new RenewalScene();
 	private final StewardJobsScene stewardJobs = new StewardJobsScene();
 	private final StewardHomesScene stewardHomes = new StewardHomesScene();
 	private final StewardCivicScene stewardCivic = new StewardCivicScene();
@@ -131,6 +132,10 @@ public class ScreenshotHarness implements ClientModInitializer {
 		}
 		if ("old_houses".equals(System.getProperty("aliveworkplace.scene"))) {
 			oldHouses.tick(mc, mc.getSingleplayerServer());
+			return;
+		}
+		if ("renewal".equals(System.getProperty("aliveworkplace.scene"))) {
+			renewal.tick(mc, mc.getSingleplayerServer());
 			return;
 		}
 		if ("steward_desk".equals(System.getProperty("aliveworkplace.scene"))) {

@@ -1,0 +1,7 @@
+{
+  "job": "minecraft:cleric",
+  "buildings": [
+    "aliveworkplace:clinic",
+    "aliveworkplace:healing_center"
+  ]
+}

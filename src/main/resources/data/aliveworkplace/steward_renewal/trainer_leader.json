@@ -1,0 +1,9 @@
+{
+  "job": "aliveworkplace:trainer_leader",
+  "buildings": [
+    "aliveworkplace:leaders_hall"
+  ],
+  "requires": [
+    "cobblemon"
+  ]
+}

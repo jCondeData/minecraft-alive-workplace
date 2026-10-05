@@ -1,0 +1,6 @@
+{
+  "job": "aliveworkplace:composter",
+  "buildings": [
+    "aliveworkplace:compost_yard"
+  ]
+}

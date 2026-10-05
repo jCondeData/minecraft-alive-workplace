@@ -853,7 +853,7 @@ and an old vanilla village slowly rebuilds itself one house at a time. It answer
   vanilla plains house (placed from its template as a fixture) is found and its box measured exactly; the same shape
   in deepslate and quartz isn't; one with a chest isn't; one a player changed since 1.1 isn't; the fill never passes
   256 blocks in a tick.
-- [ ] **27.21** **Old villages renewed.** One old house at a time (at most one every 2 days in a village), the Steward
+- [x] **27.21** (review: pending 2026-10-05) **Old villages renewed.** One old house at a time (at most one every 2 days in a village), the Steward
   rebuilds it in its zone's style: "Renew the old house 14 blocks west as a Stone House (Cherry)". Renewal lists are
   data: `data/aliveworkplace/steward_renewal/<name>.json` holds one: the kind of old house (a home, or a job's point
   of interest) and the buildings to try, in order. Shipped lists: homes (Starter Cottage, Stone House, Terrace: the

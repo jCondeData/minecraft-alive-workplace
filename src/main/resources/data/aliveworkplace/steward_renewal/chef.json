@@ -1,0 +1,6 @@
+{
+  "job": "aliveworkplace:chef",
+  "buildings": [
+    "aliveworkplace:kitchen"
+  ]
+}

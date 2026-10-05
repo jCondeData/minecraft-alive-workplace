@@ -1,0 +1,6 @@
+{
+  "job": "minecraft:toolsmith",
+  "buildings": [
+    "aliveworkplace:tinkers_workshop"
+  ]
+}

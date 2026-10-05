@@ -1,0 +1,9 @@
+{
+  "job": "aliveworkplace:fossil_scientist",
+  "buildings": [
+    "aliveworkplace:research_lab"
+  ],
+  "requires": [
+    "cobblemon"
+  ]
+}

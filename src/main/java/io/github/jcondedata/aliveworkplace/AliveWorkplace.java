@@ -82,6 +82,7 @@ public final class AliveWorkplace {
 		io.github.jcondedata.aliveworkplace.blueprint.BlueprintStyles.init();
 		io.github.jcondedata.aliveworkplace.city.RoadStyles.init();
 		io.github.jcondedata.aliveworkplace.city.WallKits.init();
+		io.github.jcondedata.aliveworkplace.city.RenewalLists.init();
 		integrations.run();
 		io.github.jcondedata.aliveworkplace.build.MaterialFamilies.init();
 		io.github.jcondedata.aliveworkplace.build.StallWatch.init();

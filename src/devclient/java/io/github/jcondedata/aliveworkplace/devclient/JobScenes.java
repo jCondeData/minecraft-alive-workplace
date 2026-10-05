@@ -2839,6 +2839,9 @@ final class JobScenes {
 				level.setBlockAndUpdate(STATION.east(4).south(1), Blocks.LECTERN.defaultBlockState());
 			},
 			List.of(new Step("01_tree_tab", io.github.jcondedata.aliveworkplace.research.ResearchScreen.TOPIC_SLOTS[1], 6, (level, player) -> {
+					// The hall placed in the setup is not yet in the POI index the tick she settles there, so her record has no hall
+					// and no Legend tab shows; the village's own round (as for a Legend who settled before her hall) takes her in.
+					io.github.jcondedata.aliveworkplace.legend.LegendSlots.round(level, STATION);
 					io.github.jcondedata.aliveworkplace.research.ResearchScreen.openForLegend(player, subject);
 					Showcase.check(player.containerMenu instanceof ChoiceMenu m
 						&& m.icon(io.github.jcondedata.aliveworkplace.research.ResearchScreen.TAB_SLOTS[1]).is(Items.AMETHYST_SHARD)

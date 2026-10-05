@@ -169,6 +169,8 @@ asks for the steps, `latest.log` and any crash report).
   partners than before.**
 
 ### Fixed
+- Berry Breeders count their Pokémon partners once: two partners make mulching take 70% of the usual time, not 49%,
+  so a partnered breeder stays under the `maxWorkPace` cap like every other worker (B53).
 - A builder whose path leads somewhere it can't actually walk (under a trapdoor flower box, up into a loft) now hops
   there after two seconds standing still instead of five, so a crew's last blocks no longer drag on.
 - **Helpers really speed a build up now**: two builders on one build take about half the time of one, four about a

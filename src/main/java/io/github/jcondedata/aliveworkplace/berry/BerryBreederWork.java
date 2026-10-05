@@ -10,7 +10,6 @@ import io.github.jcondedata.aliveworkplace.build.SupplyContainers;
 import io.github.jcondedata.aliveworkplace.mc.Chat;
 import io.github.jcondedata.aliveworkplace.registry.ModAttachments;
 import io.github.jcondedata.aliveworkplace.work.PartnerShows;
-import io.github.jcondedata.aliveworkplace.work.Partners;
 import io.github.jcondedata.aliveworkplace.work.Walker;
 import io.github.jcondedata.aliveworkplace.work.WorkerStatus;
 import java.util.Comparator;
@@ -393,6 +392,11 @@ public class BerryBreederWork extends Behavior<Villager> {
 		done();
 	}
 
+	/** Ticks mulching one bush takes this breeder: her level's share at her pace (partners counted once, in the pace: B53). */
+	public static int mulchTicks(Villager villager) {
+		return Math.max(8, BuilderLevels.delay(20, villager));
+	}
+
 	private void mulch(ServerLevel level, Villager villager, BerryChains.BerryData data, List<BlockPos> own, BuilderBag bag) {
 		if (data.plantOf(level.getBlockState(target)) == null || data.mulched(level, target)) {
 			done();
@@ -411,7 +415,7 @@ public class BerryBreederWork extends Behavior<Villager> {
 		}
 		villager.getBrain().setMemory(MemoryModuleType.LOOK_TARGET, new BlockPosTracker(target));
 		if (timer < 0) {
-			timer = Math.max(8, (int) (BuilderLevels.delay(20, villager) * Partners.factor(villager)));
+			timer = mulchTicks(villager);
 		}
 		if (--timer > 0) {
 			return;

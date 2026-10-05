@@ -48,6 +48,10 @@ abstract class VillagerMixin {
 			ci.cancel();
 			return;
 		}
+		if (io.github.jcondedata.aliveworkplace.legend.Pathfinder.waiting((Villager) (Object) this)) {
+			ci.cancel(); // a Pathfinder waiting for their player stands still (B75)
+			return;
+		}
 		if (io.github.jcondedata.aliveworkplace.nether.Netherworkers.tick((Villager) (Object) this)) {
 			ci.cancel();
 		}

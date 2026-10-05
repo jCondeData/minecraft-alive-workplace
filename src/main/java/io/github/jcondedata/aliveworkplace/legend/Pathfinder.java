@@ -129,6 +129,12 @@ public final class Pathfinder {
 	private static final Map<UUID, Offer> OFFERS = new HashMap<>();
 	private static final Map<Villager, HomeWait> HOME = new WeakHashMap<>();
 	private static final Map<Villager, Integer> COOLDOWN = new WeakHashMap<>();
+	/**
+	 * Pathfinders waiting for their player, with the game time they were last seen waiting. While they wait their brain
+	 * is paused ({@link #waiting}): with only the walk target cleared, its schedule (a stroll, the walk back to the
+	 * table) walked them several blocks back toward the player between two of their 5-tick checks (CI, B75).
+	 */
+	private static final Map<Villager, Long> WAITING = new WeakHashMap<>();
 
 	public static State state(Villager villager) {
 		State s = ModAttachments.PATHFINDER.get(villager);
@@ -305,7 +311,11 @@ public final class Pathfinder {
 
 	/** Every tick of a Legend's life ({@link Legends#tick}); works every 5th tick, only with an expedition on. */
 	static void tick(Villager villager) {
-		if (villager.tickCount % 5 != 0 || !(villager.level() instanceof ServerLevel level) || !ModAttachments.PATHFINDER.has(villager)) {
+		if (villager.tickCount % 5 != 0) {
+			return;
+		}
+		WAITING.remove(villager);
+		if (!(villager.level() instanceof ServerLevel level) || !ModAttachments.PATHFINDER.has(villager)) {
 			return;
 		}
 		State state = state(villager);
@@ -344,6 +354,8 @@ public final class Pathfinder {
 		if (away > WAIT) {
 			stop(villager);
 			villager.getBrain().setMemory(MemoryModuleType.LOOK_TARGET, new EntityTracker(player, true));
+			villager.getLookControl().setLookAt(player);
+			WAITING.put(villager, level.getGameTime());
 			return;
 		}
 		double dx = target.getX() + 0.5 - villager.getX();
@@ -483,6 +495,19 @@ public final class Pathfinder {
 		Chronicle.record(level, home(level, villager, state).orElse(villager.blockPosition()), Chronicle.Kind.LEGEND,
 			Component.translatable("chronicle.aliveworkplace.legend.expedition_cancelled", villager.getDisplayName(),
 				Component.translatable("expedition.aliveworkplace." + state.kind())));
+	}
+
+	/**
+	 * True while the Pathfinder stands waiting for their player to catch up: the villager mixin skips their brain's tick so
+	 * nothing else walks them off. Lapses by itself if the expedition's checks stop running.
+	 */
+	public static boolean waiting(Villager villager) {
+		Long since = WAITING.get(villager);
+		if (since != null && villager.level().getGameTime() - since > 5) {
+			WAITING.remove(villager);
+			return false;
+		}
+		return since != null;
 	}
 
 	private static void stop(Villager villager) {

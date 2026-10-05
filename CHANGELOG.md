@@ -16,6 +16,10 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+### Fixed
+- A Pathfinder waiting for a player who fell behind now stands still instead of drifting a few blocks back toward
+  their table or strolling off (B75).
+
 ## 0.139.0 — 2026-10-05
 
 ### Added

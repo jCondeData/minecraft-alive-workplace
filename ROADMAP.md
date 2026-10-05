@@ -300,7 +300,7 @@ first; many items below are "verify and harden", not "build".
   - the GIF is in the review package.
 
   This test is the yardstick for the rest of the milestone.
-  - [x] **23.1a** (review: pending 2026-10-04) Change from the owner (2026-10-04): builder speed is fine (accept ~3.5 in-game days for the 22 starter builds). Time should grow with bigger builds, but be cut in half with every builder working on it (2 builders ~ half the time, and so on): check helpers really scale like that and fix it if not
+  - [x] **23.1a** (approved 2026-10-05) Change from the owner (2026-10-04): builder speed is fine (accept ~3.5 in-game days for the 22 starter builds). Time should grow with bigger builds, but be cut in half with every builder working on it (2 builders ~ half the time, and so on): check helpers really scale like that and fix it if not
 - [x] **23.2** (approved auto 2026-10-04) **Stuck recovery, proven.** Builders stuck on water, lava, holes, fences, doors, their own scaffolding, or in
   unloaded chunks. Done when: a chaos test (the tester skill's `ChaosTests`, 5 seeds) finishes every time, and the
   recovery (hop, re-path, step back) never breaks a placed block.
@@ -478,7 +478,7 @@ and an old vanilla village slowly rebuilds itself one house at a time. It answer
 (babysitting) and builds on the builder (`BuildSite`, styles, upgrades, `Paths`), the Village Hall (census,
 `VillageAdvice`, ranks, research) and `Caravans`.
 
-- [x] **27.1** (review: pending 2026-10-04) **Design note.** `docs/design/M27.md`: what the player sees (the City Plan and its screen, the
+- [x] **27.1** (approved 2026-10-05) **Design note.** `docs/design/M27.md`: what the player sees (the City Plan and its screen, the
   Steward's day, his desk on the hall's screen, roads, walls, renewed houses), the data formats with one example file
   each (zone kinds, Steward rules, road styles, wall kits, renewal lists), the config switches, every new saved field
   with its default (the plan and the Steward's state on the hall, the player-built ledger), the per-tick budgets, the
@@ -975,7 +975,7 @@ here adds a new kind of speed bonus (the new jobs get the partners' existing one
   - Rancher + Normal or Ground: walks beside the wild horse being broken in (cue `tame`).
 
   Done when: a GameTest per cue, and showcase scene `partners_all`: one still per job with its partner at work.
-- [x] **28.7** (review: pending 2026-10-04) **The Pokémon Center.** Two blueprints (architect skill, an original design, checked against STYLE.md in
+- [x] **28.7** (approved 2026-10-05) **The Pokémon Center.** Two blueprints (architect skill, an original design, checked against STYLE.md in
   a render), in the Blueprint Table with Cobblemon only and sold by Journeyman Nurses:
   - **Pokémon Center**: a bright hall under a red roof, a glass front, a counter with Cobblemon's Healing Machine (the
     nurse's place), a PC by the counter, shelves of potions behind it, benches along the walls;

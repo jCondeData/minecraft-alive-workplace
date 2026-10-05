@@ -16,6 +16,8 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+## 0.139.0 — 2026-10-05
+
 ### Added
 - **Roads** (27.15): the roads drawn on the City Plan get built. The Steward has each approved road's way found over
   the ground (its width kept clear, round water, buildings and anything a player built, steps of one block at most) and

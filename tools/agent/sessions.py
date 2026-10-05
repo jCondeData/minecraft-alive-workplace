@@ -562,7 +562,7 @@ def item_number(it):
 
 
 def next_items(items, who, held_by_others=()):
-    """The open items for this session, best first: bugs, then owner changes and vetoes, then milestones in order."""
+    """The open items for this session, best first: bugs (urgent ones first), then owner changes and vetoes, then milestones in order."""
     slot = lane_slot(who)
 
     def mine(it):
@@ -572,7 +572,8 @@ def next_items(items, who, held_by_others=()):
                   and mine(it)]
     def rank(it):
         if it["area"] == "Bugs":
-            return (0, item_number(it), it["line"])
+            # "(urgent: <who, why>)" puts a bug at the top of its lane's list (owner's calls).
+            return (0, 0 if mark(it, "urgent") else 1, item_number(it), it["line"])
         if mark(it, "vetoed") or re.search(r"[a-z]$", it["id"]):
             return (1, int(it["area"][1:]), it["line"])
         return (2, int(it["area"][1:]), it["line"])

@@ -88,6 +88,20 @@ final class JobScenes {
 	}
 
 	/** One step of a screen scene: optionally act on the server, then point at {@code slot} (-1: nowhere) and shoot. */
+	/** gifted_born's family (29.7): a still villager facing the camera; a parent is a schooled Master farmer. */
+	private static Villager bornSceneVillager(ServerLevel level, BlockPos at, String name, boolean master) {
+		Villager v = EntityType.VILLAGER.spawn(level, at, MobSpawnType.COMMAND);
+		v.setNoAi(true);
+		v.setYRot(0);
+		v.setYHeadRot(0);
+		v.setCustomName(net.minecraft.network.chat.Component.literal(name));
+		if (master) {
+			v.setVillagerData(v.getVillagerData().setProfession(net.minecraft.world.entity.npc.VillagerProfession.FARMER).setLevel(5));
+			io.github.jcondedata.aliveworkplace.registry.ModAttachments.SCHOOLED.set(v, true);
+		}
+		return v;
+	}
+
 	record Step(String shot, int slot, int rows, BiConsumer<ServerLevel, ServerPlayer> before, int hold) {
 	}
 
@@ -100,6 +114,9 @@ final class JobScenes {
 	private static volatile Villager subject;
 	/** curfew: the villagers who go to bed at dusk. */
 	private static final List<Villager> curfewSleepers = new java.util.concurrent.CopyOnWriteArrayList<>();
+	/** conscription: the villagers called up, and the raiders they beat back. */
+	private static final List<Villager> conscripts = new java.util.concurrent.CopyOnWriteArrayList<>();
+	private static final List<net.minecraft.world.entity.monster.Zombie> conscriptionRaiders = new java.util.concurrent.CopyOnWriteArrayList<>();
 	/** smith_orders: the slot where the Poké Ball turned up (found on the server). */
 	private static volatile int pickedSlot = -1;
 	/** A screen a job scene films while its job gets going (the Drop Box's). */
@@ -1106,6 +1123,121 @@ final class JobScenes {
 					}
 				}, 30)),
 			(level, player) -> player.containerMenu instanceof ChoiceMenu));
+		SCREENS.put("gifted_born", new Screen("a child of two schooled Masters grew up Gifted, and the chronicle says so", new Vec3(2.5, -58.4, 4.5), TARGET,
+			(level, player) -> {
+				// ROADMAP 29.7: Dara and Tom, schooled Master farmers, and their daughter Wren, still a child, by the hall.
+				level.setBlockAndUpdate(STATION, ModBlocks.VILLAGE_HALL.defaultBlockState()
+					.setValue(io.github.jcondedata.aliveworkplace.hall.VillageHallBlock.FACING, Direction.SOUTH));
+				Villager dara = bornSceneVillager(level, new BlockPos(-1, -60, 2), "Dara", true);
+				Villager tom = bornSceneVillager(level, new BlockPos(1, -60, 2), "Tom", true);
+				subject = bornSceneVillager(level, new BlockPos(0, -60, 2), "Wren", false);
+				subject.setAge(-24000);
+				io.github.jcondedata.aliveworkplace.people.Families.born(subject, dara, tom);
+				io.github.jcondedata.aliveworkplace.hall.VillageNeeds.check(level, STATION);
+			},
+			List.of(new Step("01_wren_grown_up", -1, 6, (level, player) -> {
+					// She grows up; the hall's round throws the born dice (fixed here: the Legend die misses, the gift die hits).
+					Villager wren = subject;
+					wren.setAge(0);
+					var parents = io.github.jcondedata.aliveworkplace.people.Families.parents(wren);
+					Showcase.check(parents != null && parents.motherSchooledMaster() && parents.fatherSchooledMaster(),
+						"Wren's parents are on record as schooled Masters");
+					io.github.jcondedata.aliveworkplace.people.Families.round(level, STATION, wren, net.minecraft.util.RandomSource.create(1L));
+					Showcase.check(io.github.jcondedata.aliveworkplace.legend.Gifted.of(wren) != null, "Wren grew up Gifted");
+					level.sendParticles(net.minecraft.core.particles.ParticleTypes.TOTEM_OF_UNDYING, wren.getX(), wren.getY() + 1.2, wren.getZ(), 30, 0.4, 0.6, 0.4, 0.15);
+				}, 40),
+				new Step("02_born_chronicle", -1, 6, (level, player) -> {
+					var hall = (io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(STATION);
+					Showcase.check(hall.chronicle().stream().anyMatch(e -> e.text().getContents() instanceof net.minecraft.network.chat.contents.TranslatableContents t
+						&& t.getKey().equals("chronicle.aliveworkplace.grown_up_gifted")), "the chronicle says Wren has grown up Gifted");
+					io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.open(player, STATION);
+					if (player.containerMenu instanceof ChoiceMenu m) {
+						m.press(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.CHRONICLE, player);
+					}
+				}, 30)),
+			(level, player) -> player.containerMenu instanceof ChoiceMenu));
+		SCREENS.put("legend_guest", new Screen("a Legend came to the inn as a guest, showed their terms, and settled once a home was ready", new Vec3(2.5, -57.4, 7.5), TARGET,
+			(level, player) -> {
+				// ROADMAP 29.8: a village with a hall and an inn (an innkeeper at her counter, a free bed), and a showcase Legend
+				// who visits the inn (chance 1, so she comes this morning), a Mason who wants a home of her own and a happy village.
+				level.setBlockAndUpdate(STATION, ModBlocks.VILLAGE_HALL.defaultBlockState()
+					.setValue(io.github.jcondedata.aliveworkplace.hall.VillageHallBlock.FACING, Direction.SOUTH));
+				io.github.jcondedata.aliveworkplace.legend.Legend legend = io.github.jcondedata.aliveworkplace.legend.Legends.read(
+					io.github.jcondedata.aliveworkplace.AliveWorkplace.id("showcase_stonewright"), com.google.gson.JsonParser.parseString(
+						"{\"rarity\": \"rare\", \"job\": \"minecraft:mason\", \"title\": \"Master Stonewright\","
+						+ " \"lore\": \"Her walls have stood for three hundred winters.\", \"names\": [\"Ada Stonewright\"],"
+						+ " \"arrive\": [{\"way\": \"visit\", \"place\": \"inn\", \"chance\": 1.0}],"
+						+ " \"powers\": [{\"type\": \"pace\", \"trades\": [\"minecraft:mason\"], \"radius\": 32, \"factor\": 2.0}]}").getAsJsonObject());
+				io.github.jcondedata.aliveworkplace.legend.Legends.setForTest(java.util.Map.of(legend.id(), legend));
+				BlockPos counter = new BlockPos(-3, -60, -2);
+				level.setBlockAndUpdate(counter, ModBlocks.INN_COUNTER.defaultBlockState());
+				Villager keeper = EntityType.VILLAGER.spawn(level, new BlockPos(-3, -60, -1), MobSpawnType.COMMAND);
+				keeper.setNoAi(true);
+				Jobs.employ(level, keeper, counter, ModVillagers.INN_COUNTER_POI, ModVillagers.INNKEEPER);
+				scholar = keeper;
+				for (int x : new int[] {-6, -5}) {
+					level.setBlockAndUpdate(new BlockPos(x, -60, -4), Blocks.RED_BED.defaultBlockState()
+						.setValue(BlockStateProperties.HORIZONTAL_FACING, Direction.SOUTH)
+						.setValue(BlockStateProperties.BED_PART, net.minecraft.world.level.block.state.properties.BedPart.FOOT));
+					level.setBlockAndUpdate(new BlockPos(x, -60, -5), Blocks.RED_BED.defaultBlockState()
+						.setValue(BlockStateProperties.HORIZONTAL_FACING, Direction.SOUTH)
+						.setValue(BlockStateProperties.BED_PART, net.minecraft.world.level.block.state.properties.BedPart.HEAD));
+				}
+				level.setDayTime(level.getDayTime() / 24000L * 24000L + 24000L + 1000L); // the next morning
+				// A happy village (moods are off for the scene, so its wellbeing decides).
+				io.github.jcondedata.aliveworkplace.people.Moods.ENABLED = false;
+				((io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(STATION))
+					.setNeeds(new io.github.jcondedata.aliveworkplace.hall.VillageNeeds.Needs(1, 1, 1, 1, 1, 0, 0, 0.9f));
+			},
+			List.of(new Step("01_guest_arrives", -1, 6, (level, player) -> {
+					// The inn's morning: instead of a traveller, the Legend walks in, announced in chat and the chronicle.
+					io.github.jcondedata.aliveworkplace.inn.Innkeepers.tend(level, scholar, new BlockPos(-3, -60, -2));
+					subject = io.github.jcondedata.aliveworkplace.legend.LegendGuests.guest(level, STATION);
+					Showcase.check(subject != null, "a Legend came to the inn as a guest");
+					Showcase.check(io.github.jcondedata.aliveworkplace.inn.Innkeepers.guests(level, new BlockPos(-3, -60, -2)).isEmpty(),
+						"no traveller came the same morning");
+					subject.setNoAi(true);
+					subject.moveTo(0.5, -60, 2.5, 180f, 0f);
+					subject.setYHeadRot(180f);
+				}, 40),
+				new Step("02_terms", io.github.jcondedata.aliveworkplace.legend.LegendGuests.WANTS_SLOT, 6, (level, player) -> {
+					// Right-clicked: who she is, what she'd bring, what she wants (no home yet: a cross), the days left.
+					io.github.jcondedata.aliveworkplace.legend.LegendGuests.openTerms(player, subject);
+					Showcase.check(player.containerMenu instanceof ChoiceMenu, "the terms screen opened");
+					var data = io.github.jcondedata.aliveworkplace.registry.ModAttachments.LEGEND.get(subject);
+					Showcase.check(data != null && data.guest() && !data.unmet().isEmpty(), "she wants a home first");
+				}, 40),
+				new Step("03_settled", -1, 6, (level, player) -> {
+					// A tier III home is finished beside the hall: at the next round she claims its bed and settles, a Master Mason.
+					player.closeContainer();
+					net.minecraft.resources.ResourceLocation home = io.github.jcondedata.aliveworkplace.AliveWorkplace.id("showcase_guest_manor_3");
+					BlockPos origin = new BlockPos(3, -60, -6);
+					level.getStructureManager().getOrCreate(home).fillFromWorld(level, origin.above(60), new net.minecraft.core.Vec3i(5, 4, 5), false, Blocks.AIR);
+					io.github.jcondedata.aliveworkplace.build.BuildSiteManager.get(level).recordFinished(home,
+						new io.github.jcondedata.aliveworkplace.blueprint.BlueprintData.Placement(level.dimension().location(), origin,
+							net.minecraft.world.level.block.Rotation.NONE, net.minecraft.world.level.block.Mirror.NONE), java.util.UUID.randomUUID());
+					level.setBlockAndUpdate(new BlockPos(5, -60, -4), Blocks.BLUE_BED.defaultBlockState()
+						.setValue(BlockStateProperties.HORIZONTAL_FACING, Direction.SOUTH)
+						.setValue(BlockStateProperties.BED_PART, net.minecraft.world.level.block.state.properties.BedPart.FOOT));
+					level.setBlockAndUpdate(new BlockPos(5, -60, -5), Blocks.BLUE_BED.defaultBlockState()
+						.setValue(BlockStateProperties.HORIZONTAL_FACING, Direction.SOUTH)
+						.setValue(BlockStateProperties.BED_PART, net.minecraft.world.level.block.state.properties.BedPart.HEAD));
+					io.github.jcondedata.aliveworkplace.legend.LegendGuests.tend(level, STATION);
+					var data = io.github.jcondedata.aliveworkplace.registry.ModAttachments.LEGEND.get(subject);
+					Showcase.check(data != null && data.settled(), "she settled once the home was ready");
+					Showcase.check(subject.getVillagerData().getProfession() == net.minecraft.world.entity.npc.VillagerProfession.MASON
+						&& subject.getVillagerData().getLevel() == 5, "she is a Master Mason");
+				}, 40),
+				new Step("04_settled_chronicle", -1, 6, (level, player) -> {
+					var hall = (io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(STATION);
+					Showcase.check(hall.chronicle().stream().anyMatch(e -> e.text().getContents() instanceof net.minecraft.network.chat.contents.TranslatableContents t
+						&& t.getKey().equals("chronicle.aliveworkplace.legend.settled")), "the chronicle says she settled");
+					io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.open(player, STATION);
+					if (player.containerMenu instanceof ChoiceMenu m) {
+						m.press(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.CHRONICLE, player);
+					}
+				}, 30)),
+			(level, player) -> player.containerMenu instanceof ChoiceMenu));
 		SCREENS.put("hall_quests", new Screen("the Village Hall's quests, advice, village map, mercenaries and festival opened", new Vec3(2.5, -58.4, 4.5), TARGET,
 			(level, player) -> {
 				level.setBlockAndUpdate(STATION, ModBlocks.VILLAGE_HALL.defaultBlockState()
@@ -1246,7 +1378,7 @@ final class JobScenes {
 				var shifts = io.github.jcondedata.aliveworkplace.hall.Edicts.find("long_shifts").orElseThrow();
 				var told = io.github.jcondedata.aliveworkplace.hall.Edicts.proclaim(level, STATION, player, shifts);
 				Showcase.check(told.done(), "Long Shifts was proclaimed: " + told.message().getString());
-				player.getInventory().add(new ItemStack(Items.CLOCK, 4));
+				player.getInventory().add(new ItemStack(Items.CLOCK, 24));
 			},
 			List.of(new Step("01_reform_step", io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.reformSlots(1)[0], 6, (level, player) -> {
 					io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.open(player, STATION);
@@ -1261,7 +1393,7 @@ final class JobScenes {
 					player.closeContainer();
 					var hall = (io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(STATION);
 					String id = io.github.jcondedata.aliveworkplace.AliveWorkplace.id("long_shifts").toString();
-					ItemStack[] hand = {new ItemStack(Items.CLOCK, 4), new ItemStack(Items.GOLD_INGOT, 8), new ItemStack(Items.BREAD, 32)};
+					ItemStack[] hand = {new ItemStack(Items.CLOCK, 24), new ItemStack(Items.GOLD_INGOT, 128), new ItemStack(Items.BREAD, 300)};
 					player.getInventory().clearContent();
 					for (int i = 0; i < hand.length; i++) {
 						// Staged: the next step is due now rather than tomorrow morning.
@@ -1593,6 +1725,74 @@ final class JobScenes {
 					io.github.jcondedata.aliveworkplace.hall.EdictBook.open(player, STATION.offset(-7, 0, 0));
 					if (player.containerMenu instanceof ChoiceMenu m) {
 						Showcase.check(m.icon(io.github.jcondedata.aliveworkplace.hall.EdictBook.SLOTS[0]).is(Items.BELL), "Curfew sits in the first slot");
+					}
+				}, 30)),
+			(level, player) -> player.containerMenu instanceof ChoiceMenu));
+		// Conscription (ROADMAP 30.10): in a night raid every grown villager who isn't ill takes up a stone sword. A farmer,
+		// a builder and a librarian in the street by the guard; the raiders come over the field, the three are handed the
+		// militia's swords and beat them back beside the guard; then the Book of Edicts tells the boost, the cost and the
+		// reform.
+		SCREENS.put("conscription", new Screen("Conscription was proclaimed: in a night raid a farmer, a builder and a librarian took up swords and beat the raiders back beside the guard",
+			new Vec3(0.5, -56.8, 8.5), new Vec3(0, -59.5, -3),
+			(level, player) -> {
+				BlockPos hallPos = STATION.offset(-7, 0, 0);
+				level.setBlockAndUpdate(hallPos, ModBlocks.VILLAGE_HALL.defaultBlockState()
+					.setValue(io.github.jcondedata.aliveworkplace.hall.VillageHallBlock.FACING, Direction.SOUTH));
+				var hall = (io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(hallPos);
+				hall.setRank(io.github.jcondedata.aliveworkplace.hall.VillageRanks.Rank.VILLAGE);
+				hall.setEdicts(List.of());
+				hall.setReforms(List.of());
+				hall.setRaidWorkUntil(0);
+				level.setDayTime((level.getDayTime() / 24000) * 24000 + 14000);
+				conscripts.clear();
+				conscriptionRaiders.clear();
+				VillagerProfession[] jobs = {VillagerProfession.FARMER, ModVillagers.BUILDER, VillagerProfession.LIBRARIAN};
+				for (int i = 0; i < 3; i++) {
+					Villager v = EntityType.VILLAGER.spawn(level, new BlockPos(-4 + 4 * i, -60, -1), MobSpawnType.COMMAND);
+					v.setVillagerData(v.getVillagerData().setProfession(jobs[i]).setLevel(2));
+					v.setVillagerXp(10);
+					v.refreshBrain(level);
+					conscripts.add(v);
+				}
+				// Lanterns along the street, so the night fight shows.
+				for (int x = -6; x <= 6; x += 4) {
+					level.setBlockAndUpdate(new BlockPos(x, -60, 1), Blocks.LANTERN.defaultBlockState());
+				}
+				subject = worker(level, new BlockPos(6, -60, 2), Blocks.GRINDSTONE, net.minecraft.world.entity.ai.village.poi.PoiTypes.WEAPONSMITH, ModVillagers.GUARD);
+				subject.setItemSlot(net.minecraft.world.entity.EquipmentSlot.MAINHAND, new ItemStack(Items.IRON_SWORD));
+				var conscription = io.github.jcondedata.aliveworkplace.hall.Edicts.find("conscription").orElseThrow();
+				var told = io.github.jcondedata.aliveworkplace.hall.Edicts.proclaim(level, hallPos, player, conscription);
+				Showcase.check(told.done(), "Conscription was proclaimed: " + told.message().getString());
+				io.github.jcondedata.aliveworkplace.hall.CivicEffects.forget();
+				io.github.jcondedata.aliveworkplace.hall.Conscription.forget();
+			},
+			List.of(new Step("01_conscription_raid", -1, 0, (level, player) -> {
+					player.closeContainer();
+					// The raiders come over the field: zombies of the village's raid.
+					for (int i = 0; i < 3; i++) {
+						var zombie = EntityType.ZOMBIE.spawn(level, new BlockPos(-4 + 4 * i, -60, -8), MobSpawnType.COMMAND);
+						zombie.addTag(io.github.jcondedata.aliveworkplace.guard.VillageRaids.TAG);
+						zombie.setPersistenceRequired();
+						zombie.setHealth(12f);
+						zombie.setTarget(conscripts.get(i));
+						conscriptionRaiders.add(zombie);
+					}
+					io.github.jcondedata.aliveworkplace.guard.VillageRaids.track(level, STATION.offset(-7, 0, 0), 3);
+					io.github.jcondedata.aliveworkplace.hall.Conscription.forget();
+				}, 40),
+				new Step("02_conscription_fight", -1, 0, (level, player) -> {
+					long armed = conscripts.stream().filter(v -> io.github.jcondedata.aliveworkplace.hall.Conscription.isMilitiaSword(v.getMainHandItem())).count();
+					Showcase.check(armed == 3, "the three took up the militia's swords: " + armed + " of 3");
+				}, 160),
+				new Step("03_conscription_book", io.github.jcondedata.aliveworkplace.hall.EdictBook.SLOTS[0], 6, (level, player) -> {
+					long struck = conscriptionRaiders.stream().filter(z -> z.getLastHurtByMob() instanceof Villager v
+						&& !io.github.jcondedata.aliveworkplace.guard.Guards.isGuard(v)).count();
+					Showcase.check(struck >= 2, "the conscripts struck the raiders: " + struck + " of 3");
+					Showcase.check(conscripts.stream().anyMatch(io.github.jcondedata.aliveworkplace.hall.Conscription::workStopped), "no work in the raid");
+					player.teleportTo(-5.5, -60, 1.5);
+					io.github.jcondedata.aliveworkplace.hall.EdictBook.open(player, STATION.offset(-7, 0, 0));
+					if (player.containerMenu instanceof ChoiceMenu m) {
+						Showcase.check(m.icon(io.github.jcondedata.aliveworkplace.hall.EdictBook.SLOTS[0]).is(Items.STONE_SWORD), "Conscription sits in the first slot");
 					}
 				}, 30)),
 			(level, player) -> player.containerMenu instanceof ChoiceMenu));

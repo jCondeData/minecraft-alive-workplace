@@ -14,9 +14,9 @@
     "name": {"translate": "reform.aliveworkplace.watchful_gate"},
     "line": {"translate": "reform.aliveworkplace.watchful_gate.line"},
     "steps": [
-      {"kind": "bring", "item": "minecraft:iron_ingot", "count": 16, "reward": 5},
-      {"kind": "bring", "item": "minecraft:arrow", "count": 32, "reward": 4},
-      {"kind": "slay", "count": 12, "reward": 6}
+      {"kind": "bring", "item": "minecraft:iron_ingot", "count": 192, "reward": 5},
+      {"kind": "bring", "item": "minecraft:arrow", "count": 256, "reward": 4},
+      {"kind": "slay", "count": 40, "reward": 6}
     ],
     "effects": []
   },

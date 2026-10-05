@@ -245,7 +245,7 @@ public final class EdictBook {
 	 * ({@code legend_visits} before M29's inn visitors), which the Book leaves out.
 	 */
 	@org.jetbrains.annotations.Nullable
-	static Component describe(CivicEffects.Effect effect) {
+	public static Component describe(CivicEffects.Effect effect) {
 		if (effect instanceof CivicEffects.Inn inn) {
 			List<Component> parts = new ArrayList<>();
 			inn.guests().ifPresent(n -> parts.add(Component.translatable("screen.aliveworkplace.edicts.effect.inn_guests", n,
@@ -284,6 +284,16 @@ public final class EdictBook {
 				parts.add(Component.translatable("screen.aliveworkplace.edicts.effect.stay_in"));
 			}
 			return parts.isEmpty() ? null : joined(parts);
+		}
+		if (effect instanceof CivicEffects.Militia militia) {
+			return Component.translatable("screen.aliveworkplace.edicts.effect.militia", militia.damage() == Math.round(militia.damage())
+				? Integer.toString(Math.round(militia.damage())) : String.format(java.util.Locale.ROOT, "%.1f", militia.damage()), militia.range());
+		}
+		if (effect instanceof CivicEffects.WorkStops stops) {
+			if (stops.near().isPresent()) {
+				return Component.translatable("screen.aliveworkplace.edicts.effect.work_stops_near", stops.near().get());
+			}
+			return Component.translatable(stops.untilNoon() ? "screen.aliveworkplace.edicts.effect.work_stops_noon" : "screen.aliveworkplace.edicts.effect.work_stops");
 		}
 		if (effect instanceof CivicEffects.TitheShare tithe) {
 			return Component.translatable("screen.aliveworkplace.edicts.effect.tithe", tithe.percent());

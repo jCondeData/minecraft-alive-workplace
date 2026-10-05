@@ -68,9 +68,9 @@ public class TreasuryEdictGameTests implements FabricGameTest {
 			"cost: " + season.cost());
 		Reforms.Reform fund = season.reform().orElse(null);
 		helper.assertTrue(fund != null && fund.name().getString().equals("The Festival Fund") && fund.effects().isEmpty() && fund.steps().size() == 3, "reform: " + fund);
-		step(helper, fund.steps().get(0), "minecraft:cake", 4, 5);
-		step(helper, fund.steps().get(1), "minecraft:firework_rocket", 32, 5);
-		step(helper, fund.steps().get(2), "minecraft:note_block", 8, 4);
+		step(helper, fund.steps().get(0), "minecraft:cake", 24, 5);
+		step(helper, fund.steps().get(1), "minecraft:firework_rocket", 256, 5);
+		step(helper, fund.steps().get(2), "minecraft:note_block", 48, 4);
 
 		Edicts.Edict tithe = Edicts.get(TITHE).orElse(null);
 		helper.assertTrue(tithe != null && tithe.name().getString().equals("Tithe") && tithe.icon().equals(ResourceLocation.withDefaultNamespace("emerald")),
@@ -80,12 +80,12 @@ public class TreasuryEdictGameTests implements FabricGameTest {
 		Reforms.Reform ledger = tithe.reform().orElse(null);
 		helper.assertTrue(ledger != null && ledger.name().getString().equals("The Fair Ledger") && ledger.effects().isEmpty() && ledger.steps().size() == 3,
 			"reform: " + ledger);
-		step(helper, ledger.steps().get(0), "minecraft:writable_book", 4, 4);
-		step(helper, ledger.steps().get(1), "minecraft:gold_ingot", 16, 6);
+		step(helper, ledger.steps().get(0), "minecraft:writable_book", 24, 4);
+		step(helper, ledger.steps().get(1), "minecraft:gold_ingot", 192, 6);
 		Reforms.Step battle = ledger.steps().get(2);
 		helper.assertTrue(battle.kind() == VillageQuests.Kind.BATTLE && battle.reward() == 8, "step 3: " + battle);
 		Reforms.Step without = battle.resolve(false);
-		helper.assertTrue(without.kind() == VillageQuests.Kind.SLAY && without.count() == 8 && without.reward() == 8, "without a trainer: " + without);
+		helper.assertTrue(without.kind() == VillageQuests.Kind.SLAY && without.count() == 32 && without.reward() == 8, "without a trainer: " + without);
 
 		// Summed: the fewest days, costs add, shares and prices add; none: every 8 days, free, no tithe.
 		CivicEffects.Sum sum = new CivicEffects.Sum(List.of(

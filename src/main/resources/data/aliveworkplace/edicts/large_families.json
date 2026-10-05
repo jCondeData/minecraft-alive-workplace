@@ -13,9 +13,9 @@
     "name": {"translate": "reform.aliveworkplace.midwives"},
     "line": {"translate": "reform.aliveworkplace.midwives.line"},
     "steps": [
-      {"kind": "bring", "item": "minecraft:honey_bottle", "count": 8, "reward": 4},
-      {"kind": "bring", "item": "minecraft:white_wool", "count": 16, "reward": 3},
-      {"kind": "bring", "item": "minecraft:golden_carrot", "count": 4, "reward": 5}
+      {"kind": "bring", "item": "minecraft:honey_bottle", "count": 48, "reward": 4},
+      {"kind": "bring", "item": "minecraft:white_wool", "count": 192, "reward": 3},
+      {"kind": "bring", "item": "minecraft:golden_carrot", "count": 64, "reward": 5}
     ],
     "effects": []
   },

@@ -70,7 +70,7 @@ public class FamilyEdictGameTests implements FabricGameTest {
 		helper.assertTrue(bread.cost().size() == 1 && bread.cost().get(0) instanceof CivicEffects.FoodUse food && food.percent() == 30, "cost: " + bread.cost());
 		Reforms.Reform granary = bread.reform().orElse(null);
 		helper.assertTrue(granary != null && granary.name().getString().equals("The Common Granary") && granary.effects().isEmpty(), "reform: " + granary);
-		steps(helper, granary, "minecraft:wheat", 64, 4, "minecraft:hay_block", 16, 5, "minecraft:barrel", 8, 3);
+		steps(helper, granary, "minecraft:wheat", 512, 4, "minecraft:hay_block", 128, 5, "minecraft:barrel", 48, 3);
 
 		Edicts.Edict families = Edicts.get(LARGE_FAMILIES).orElse(null);
 		helper.assertTrue(families != null, "Large Families didn't load: " + Edicts.all());
@@ -83,7 +83,7 @@ public class FamilyEdictGameTests implements FabricGameTest {
 			&& families.cost().get(1) instanceof CivicEffects.Illness ill && ill.percent() == 50, "cost: " + families.cost());
 		Reforms.Reform midwives = families.reform().orElse(null);
 		helper.assertTrue(midwives != null && midwives.name().getString().equals("The Midwives") && midwives.effects().isEmpty(), "reform: " + midwives);
-		steps(helper, midwives, "minecraft:honey_bottle", 8, 4, "minecraft:white_wool", 16, 3, "minecraft:golden_carrot", 4, 5);
+		steps(helper, midwives, "minecraft:honey_bottle", 48, 4, "minecraft:white_wool", 192, 3, "minecraft:golden_carrot", 64, 5);
 
 		// Summed: babies a day add what each has over 1, the food named is the highest, percents add.
 		CivicEffects.Sum sum = new CivicEffects.Sum(List.of(
@@ -337,7 +337,7 @@ public class FamilyEdictGameTests implements FabricGameTest {
 
 			helper.assertTrue(Edicts.proclaim(level, hall, null, Edicts.get(FREE_BREAD).orElseThrow()).done(), "Free Bread proclaimed");
 			List<VillageQuests.Quest> shown = Reforms.shown(entity);
-			helper.assertTrue(shown.size() == 1 && shown.get(0).item().equals("minecraft:wheat") && shown.get(0).count() == 64
+			helper.assertTrue(shown.size() == 1 && shown.get(0).item().equals("minecraft:wheat") && shown.get(0).count() == 512
 				&& shown.get(0).reward() == Math.round(4 * VillageRanks.questRewardFactor(entity.rank())), "the Granary's first step: " + shown);
 
 			helper.assertTrue(Edicts.proclaim(level, hall, null, Edicts.get(LARGE_FAMILIES).orElseThrow()).done(), "Large Families proclaimed");

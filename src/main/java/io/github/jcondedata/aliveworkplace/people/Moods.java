@@ -156,6 +156,11 @@ public final class Moods {
 			score += legend.points();
 			(legend.points() >= 0 ? good : bad).add(legend.reason());
 		}
+		// Beloved neighbours (29.7): a Gifted villager whose bed is near this one's.
+		for (io.github.jcondedata.aliveworkplace.legend.LegendPowers.MoodReason beloved : io.github.jcondedata.aliveworkplace.legend.GiftedAuras.moods(level, villager)) {
+			score += beloved.points();
+			(beloved.points() >= 0 ? good : bad).add(beloved.reason());
+		}
 		// A Legend's luxury (29.5), for the week it lasts.
 		io.github.jcondedata.aliveworkplace.legend.LegendPowers.MoodReason luxury = io.github.jcondedata.aliveworkplace.legend.LegendNeeds.luxuryMood(level, villager);
 		if (luxury != null) {

@@ -323,6 +323,11 @@ public class LegendEngineGameTests implements net.fabricmc.fabric.api.gametest.v
 		Leftovers.clear(helper);
 		Leftovers.halls(helper); // the builders' pace is only theirs and the Legends' (no village's needs or edicts)
 		sendLegendsAway(helper);
+		// Only the Legends' pace is under test: a village hall left nearby by another test (legendMakeAndReload's) made
+		// the builders "well kept" (x0.86), and with the Legends' 2x that reached the shared pace cap first (B58).
+		int radius = VillageHalls.RADIUS;
+		VillageHalls.RADIUS = 0;
+		Leftovers.after(helper, () -> VillageHalls.RADIUS = radius);
 		helper.runAfterDelay(2, () -> {
 			ServerLevel level = helper.getLevel();
 			Legend legend = Legends.get(TEST).orElseThrow();

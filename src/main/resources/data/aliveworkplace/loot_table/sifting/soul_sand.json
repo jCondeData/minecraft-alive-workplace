@@ -8,6 +8,7 @@
           "type": "minecraft:item",
           "name": "minecraft:quartz",
           "weight": 20,
+          "quality": -1,
           "functions": [
             {
               "function": "minecraft:set_count",
@@ -28,6 +29,7 @@
           "type": "minecraft:item",
           "name": "minecraft:gold_nugget",
           "weight": 14,
+          "quality": -1,
           "functions": [
             {
               "function": "minecraft:set_count",
@@ -43,6 +45,7 @@
           "type": "minecraft:item",
           "name": "minecraft:bone",
           "weight": 12,
+          "quality": -1,
           "functions": [
             {
               "function": "minecraft:set_count",
@@ -72,11 +75,13 @@
         {
           "type": "minecraft:item",
           "name": "minecraft:ghast_tear",
-          "weight": 1
+          "weight": 1,
+          "quality": 1
         },
         {
           "type": "minecraft:empty",
-          "weight": 37
+          "weight": 37,
+          "quality": -4
         }
       ]
     }

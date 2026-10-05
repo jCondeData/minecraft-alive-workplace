@@ -1,0 +1,17 @@
+{
+  "plant": "cobblemon:sky_tumblestone",
+  "touch": "#cobblemon:tumblestone_heat_source",
+  "grows": [
+    "cobblemon:small_budding_sky_tumblestone",
+    "cobblemon:medium_budding_sky_tumblestone",
+    "cobblemon:large_budding_sky_tumblestone",
+    "cobblemon:sky_tumblestone_cluster"
+  ],
+  "ripe": "cobblemon:sky_tumblestone_cluster",
+  "harvest": "loot",
+  "plants": 4,
+  "requires": [
+    "cobblemon"
+  ],
+  "order": 11
+}

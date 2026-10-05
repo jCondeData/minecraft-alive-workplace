@@ -48,12 +48,37 @@ public final class BlueprintOutline {
 		line(level, player, particle, x1, y0, z1, x1, y1, z1);
 	}
 
+	/** An outline shown to a player for a while without a blueprint in hand ("Show me" on the Steward's desk, 27.8). */
+	private record Glow(BlueprintData.Placement placement, Vec3i size, long until) {
+	}
+
+	private static final java.util.Map<java.util.UUID, Glow> GLOWS = new java.util.concurrent.ConcurrentHashMap<>();
+
+	/** Shows {@code placement}'s outline to {@code player} for {@code ticks} ticks, in place of any outline shown so before. */
+	public static void glow(ServerPlayer player, BlueprintData.Placement placement, Vec3i size, int ticks) {
+		GLOWS.put(player.getUUID(), new Glow(placement, size, player.serverLevel().getGameTime() + ticks));
+	}
+
+	/** Whether a timed outline is showing to {@code player} (tests). */
+	public static boolean glowing(ServerPlayer player) {
+		Glow glow = GLOWS.get(player.getUUID());
+		return glow != null && player.serverLevel().getGameTime() < glow.until();
+	}
+
 	public static void init() {
 		Platform.get().onLevelTick(level -> {
 			if (level.getGameTime() % INTERVAL != 0) {
 				return;
 			}
 			for (ServerPlayer player : level.players()) {
+				Glow glow = GLOWS.get(player.getUUID());
+				if (glow != null) {
+					if (level.getGameTime() >= glow.until()) {
+						GLOWS.remove(player.getUUID());
+					} else if (glow.placement().dimension().equals(Ids.of(level.dimension()))) {
+						show(level, player, glow.placement(), glow.size());
+					}
+				}
 				for (InteractionHand hand : InteractionHand.values()) {
 					ItemStack stack = player.getItemInHand(hand);
 					var quarry = stack.get(io.github.jcondedata.aliveworkplace.registry.ModComponents.QUARRY);

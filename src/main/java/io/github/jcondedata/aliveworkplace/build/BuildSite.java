@@ -96,6 +96,24 @@ public final class BuildSite {
 
 	/** Whether the ground around the build gets levelled (the blueprint's switch; the gamerule sets how wide). */
 	private boolean levelGround = true;
+	/** The Village Hall whose Steward started this build (ROADMAP 27.8), or null for a player's own. */
+	@Nullable
+	private BlockPos stewardHall;
+
+	/** The hall whose Steward started this build, or null if a player handed it over. */
+	@Nullable
+	public BlockPos stewardHall() {
+		return stewardHall;
+	}
+
+	public boolean isSteward() {
+		return stewardHall != null;
+	}
+
+	public void setStewardHall(@Nullable BlockPos hall) {
+		this.stewardHall = hall == null ? null : hall.immutable();
+		onChange.run();
+	}
 
 	public boolean levelGround() {
 		return levelGround;
@@ -538,6 +556,10 @@ public final class BuildSite {
 		if (bench != null) {
 			tag.putLong("bench", bench.asLong());
 		}
+		if (stewardHall != null) {
+			tag.putBoolean("steward", true);
+			tag.putLong("hall", stewardHall.asLong());
+		}
 		return tag;
 	}
 
@@ -570,6 +592,7 @@ public final class BuildSite {
 		site.repair = Nbt.getBoolean(tag, "repair");
 		site.levelGround = !Nbt.getBoolean(tag, "no_level_ground");
 		site.bench = Nbt.has(tag, "bench", Tag.TAG_LONG) ? BlockPos.of(Nbt.getLong(tag, "bench")) : null;
+		site.stewardHall = Nbt.getBoolean(tag, "steward") && Nbt.has(tag, "hall", Tag.TAG_LONG) ? BlockPos.of(Nbt.getLong(tag, "hall")) : null;
 		return site;
 	}
 

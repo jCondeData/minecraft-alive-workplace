@@ -377,6 +377,11 @@ public final class VillageHallScreen {
 	/** The trade routes page: the villages this one can trade with; a click starts or stops sending them what they need. */
 	/** The "What next?" page: what the village lacks, most pressing first (see {@link VillageAdvice}). */
 	public static void renderAdvice(ChoiceMenu menu, ServerLevel level, BlockPos hall) {
+		Villager steward = io.github.jcondedata.aliveworkplace.city.Stewards.stewardOf(level, hall);
+		if (steward != null) {
+			StewardDeskPage.render(menu, level, hall, steward); // with a Steward, the page is his desk (27.8)
+			return;
+		}
 		menu.clearButtons();
 		menu.button(0, icon(Items.ARROW, Component.translatable("screen.aliveworkplace.hall.back"), ChatFormatting.WHITE), p -> refresh(menu, level, hall, 0));
 		menu.button(4, icon(Items.COMPASS, Component.translatable("screen.aliveworkplace.hall.advice_title", VillageHalls.name(level, hall)), ChatFormatting.GOLD,
@@ -594,6 +599,10 @@ public final class VillageHallScreen {
 		}
 		for (Component doing : doing(level, villager)) {
 			lore.add(plain(doing, ChatFormatting.WHITE));
+		}
+		// A Habitat Keeper's last five sightings (28.10).
+		for (Component sighting : io.github.jcondedata.aliveworkplace.habitat.HabitatKeepers.sightingLines(villager)) {
+			lore.add(line(sighting, ChatFormatting.AQUA));
 		}
 		Component pace = working ? io.github.jcondedata.aliveworkplace.work.Pace.describe(villager) : null;
 		if (pace != null) {

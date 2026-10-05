@@ -1,0 +1,14 @@
+{
+  "jobs": [
+    "aliveworkplace:habitat_keeper"
+  ],
+  "types": [
+    "flying"
+  ],
+  "cue": "sighting",
+  "animation": "cry",
+  "particles": "cobblemon:impact_flying",
+  "sound": "minecraft:entity.parrot.fly",
+  "ticks": 80,
+  "effect": "dust"
+}

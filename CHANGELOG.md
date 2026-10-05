@@ -52,6 +52,49 @@ asks for the steps, `latest.log` and any crash report).
   fall ill 50% more often; its reform **The Midwives** (8 honey bottles, 16 white wool, 4 golden carrots) keeps two
   babies a day with the usual food and sickness. The Book of Edicts tells both in words. Data packs get the effect
   types `food_use`, `births` and `sickness`.
+- The **Gem Grower** (28.11): sneak-right-click a villager by a stonecutter with an amethyst shard. She picks the full
+  amethyst clusters round budding amethyst (never the budding block); with Cobblemon she plants tumblestones against
+  lava or magma and picks the full clusters, and with Cobblemon 1.8 sets Type Gem Blocks against Deepslate Crystal Cores,
+  picks the stage-3 clusters and makes Blank TMs from shards and glass (up to 8). Beds are data files
+  (`gem_beds/<name>.json`); sneak-right-click her to pick which she keeps. Rock and Steel partners. Config `gemGrowers`.
+- With Cobblemon, the **Habitat Keeper** (28.10): sneak-right-click a villager by a Pasture Block with a honey bottle.
+  She keeps Poké Snacks set out on up to three lure spots (marked with a Field Marker, or grass 16-32 blocks out) and
+  sets out another when one is eaten up; picks a lure (a type or egg group, Alphas on 1.8) and asks the Camp Cook for
+  snacks seasoned with its berries; slathers Saccharine logs with honey and plants Saccharine saplings; and tells the
+  village of shiny, rare and Alpha wild Pokémon (chronicle, the hall's list). Flying and Grass partners. Config
+  `habitatKeepers`, `habitatSightings` (on).
+- **The Steward gives jobs and picks research** (27.9): each morning every grown jobless villager (never a nitwit or a
+  child) gets a free workstation for the village's biggest gap: a builder while there's none, a farmer while food is
+  short, guards while they're short, a porter at a free Storehouse, a scholar while research is idle, then the nearest
+  block. At a shared block he gives its other jobs too: the composter in a Berry Farm with no Orchard Keeper gets one.
+  In Ask me first the morning's jobs are one proposal ("Give 3 villagers jobs: Dara, Farmer at the Composter 12 blocks
+  east; ..."). When a scholar works with nothing to research, he picks the next topic: Fortification after a raid this
+  week, Medicine with 2 or more ill, Green Thumb while food is short, Logistics with the store 80% full, else Swift
+  Hands, Hearth and Kinship, never one that can't be taken up yet; in Ask me first it's a proposal. Run the village does
+  both by itself; Rest does neither. Both are noted in the chronicle.
+- **The Steward's desk** (27.8): with a Steward, the hall's "What next?" page is his desk: his level, the mode (**Ask me
+  first**, **Run the village**, **Rest**), his open builds (shift-click cancels one), up to 9 proposals and the tips as
+  before. Each proposal shows the building and its style, why, where, the five materials it needs most against the
+  store, and which builder takes it after what; its page has **Approve**, **Decline** (not proposed again for 3 days),
+  **Show me** (its outline glows for 30 seconds), **Another spot** and **Another style**, and the desk has **Approve
+  all**. Approving starts the build for that builder, owned by the hall's owner, and notes it in the chronicle (new
+  kind: Plans); upgrades go on the building's own spot. In Run the village he approves them himself each morning and
+  tells the owner in one line; Rest plans nothing. Unanswered proposals lapse after 3 days; the owner hears once a
+  morning when new ones are waiting. Same rights as the plan. Config `stewardSelfRun` (off: every village asks first).
+- **Finding a plot** (27.7): for each building he wishes for, the Steward finds where it fits in a zone of its kind, in
+  the zone's style: nearest the hall first, its front facing the nearest road on the plan (else the hall), the
+  footprint and 2 blocks round it inside the zone and off its roads, the ground under it within 4 blocks of level, at
+  most a tenth over water and none over lava, nothing in the way but natural ground, plants and trees (packs add more
+  with the block tag `aliveworkplace:steward_clearable`), 2 blocks clear of every build site and building, within a
+  builder's reach of a Blueprint Table, and never the same building mirrored the same way within 24 blocks. The search
+  reads at most 64 columns of ground a tick per village and keeps its answer until the plan or a build changes.
+- The **Steward's rules** (27.6): what the Steward wants is data, `data/<namespace>/steward_rules/<name>.json` (conditions
+  such as `beds_short`, `food_short`, `jobless`, `store_full`, `research_idle`; one effect: build, upgrade, give jobs,
+  research or ask a player; priority, reason, cooldown, max, rank and mods). Each morning, back at the hall, he ranks
+  the rules that hold into the day's wishes and says the first over his head ("build a Stone House in a Homes zone: 3
+  villagers have no bed"); they're saved with the hall. `/workplace steward explain` lists every rule for the nearest
+  hall with each condition's number and whether it held. 13 starter rules; they read the same numbers as the hall's
+  "What next?" tips, so the two always agree. A broken rule file is skipped with a warning naming the file and field.
 - **Reforms, and The Shift Bell** (30.5): while an edict is in force, the hall's quest page shows its reform's next step
   in the row below the daily quests (a book and quill; it never expires). A new step goes up each morning after the last
   was done, and each pays emeralds like a quest (a quarter more a rank). The last step reforms the edict for that
@@ -296,6 +339,8 @@ asks for the steps, `latest.log` and any crash report).
   "Crafting" no longer fails the `missing` scene (B41).
 - Every value the mod saves on a villager (all 72: a builder's site and bag, a lumberjack's tree farm, a couple's
   marriage, every worker's count...) is now tested to survive the villager being saved and loaded again.
+- A full build with the compat GameTests now finishes in the 7 GB dev container: the compat server gets a 2.5 GB heap
+  and the Gradle daemon hands its unused memory back while it waits (B55).
 
 ## 0.138.0 — 2026-10-02
 

@@ -1,0 +1,8 @@
+{
+  "when": [
+    {"worker_without_workstation": {}}
+  ],
+  "do": {"ask": {"key": "steward.aliveworkplace.ask.workstation"}},
+  "priority": 60,
+  "why": "steward.aliveworkplace.why.workstation"
+}

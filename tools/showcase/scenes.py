@@ -101,6 +101,21 @@ SCENES = [
     job("tinkerer", "Tinkerer", "Mending an iron golem", "the tinkerer mended the iron golem"),
     job("composter", "Composter", "Turning scraps into bone meal", "the composter made bone meal"),
     job("steward", "Steward", "The Steward's morning rounds", "the steward walked his morning rounds and came back to the hall", 200),
+    # The Steward's rules (ROADMAP 27.6): the day's wishes over his head, and /workplace steward explain in chat
+    S("steward_rules", "Steward", "The Steward's rules and wishes",
+      "the Steward ranked today's wishes from his rules, and explain listed rules that held and that didn't", 45,
+      [("01_steward_wish", "His first wish, over his head"), ("02_steward_explain_end", "Explain: the last rules and today's wishes"),
+       ("03_steward_explain_top", "Explain: the first rules")]),
+    # The Steward's desk (ROADMAP 27.8): proposals on the hall's What next? page, Show me, Approve and the builder setting off
+    S("steward_desk", "Steward", "The Steward's desk",
+      "the hall's What next? page became the Steward's desk with three proposals, Show me lit one's outline, and approving it started the build", 45,
+      [("01_steward_desk", "The desk: his modes, three proposals and the tips"), ("02_steward_proposal", "A proposal's page"),
+       ("03_steward_show_me", "Show me: the outline in the world"), ("04_builder_sets_off", "Approved: the builder sets off")]),
+    # The Steward gives jobs (ROADMAP 27.9): the morning's jobs as one proposal, approved, the villagers off to their blocks
+    S("steward_jobs", "Steward", "The Steward gives out jobs",
+      "the Steward proposed jobs for three jobless villagers, approving made them a farmer, a guard and a fletcher, and they walked to their new workstations", 45,
+      [("01_steward_jobs_desk", "The desk: Give 3 villagers jobs"), ("02_steward_jobs_proposal", "Who goes where"),
+       ("03_jobs_walking", "Approved: off to their new work"), ("04_jobs_at_work", "At their workstations")]),
     job("netherworker", "Netherworker", "A trip to the Nether", "the netherworker came back from the Nether with loot", 240),
     job("undertaker", "Undertaker", "Bringing a worker back from the grave", "the undertaker revived the villager"),
     # Legends (ROADMAP 29.2): the engine, with a Legend of the scene's own: the plain outfit, Master level, a pace power
@@ -205,6 +220,10 @@ SCENES = [
         [("04_berry_book", "The berry book")], cobblemon=True),
     job("camp_cook", "Camp Cook", "Cooking a Poké Snack in the Campfire Pot", "the camp cook cooked a Poké Snack in the Campfire Pot", 150,
         cobblemon=True),
+    job("gem_grower", "Gem Grower", "A ripe amethyst cluster picked, the budding block kept",
+        "the gem grower picked the ripe amethyst cluster and left the budding amethyst", 150),
+    job("habitat_keeper", "Habitat Keeper", "A snack set out, a log slathered, a shiny spotted",
+        "the habitat keeper set out a snack, slathered the log and spotted a shiny Eevee", 150, cobblemon=True),
     # Village-wide
     S("hall", "Village Hall", "The Village Hall, its screen and calendar", "the Village Hall screen and its calendar page opened", 75,
       [("02_hall_people", "People, under the page row"), ("03_hall_builder", "A builder"), ("08_hall_calendar", "The calendar"),

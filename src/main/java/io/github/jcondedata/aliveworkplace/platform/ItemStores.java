@@ -26,6 +26,9 @@ public interface ItemStores {
 	/** Empty slots across the stores. */
 	int freeSlots(Level level, List<BlockPos> stores);
 
+	/** All slots across the stores, empty or not. */
+	int slots(Level level, List<BlockPos> stores);
+
 	/** How many of {@code item} (any components) could be taken out. */
 	long count(Level level, List<BlockPos> stores, Item item);
 

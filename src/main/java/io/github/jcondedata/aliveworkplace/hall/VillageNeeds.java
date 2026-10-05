@@ -47,7 +47,7 @@ public final class VillageNeeds {
 	/** Block light by a villager's bed that counts as lit (a torch within a few blocks). */
 	static final int LIT = 8;
 	/** One guard is enough for this many villagers. */
-	static final int VILLAGERS_PER_GUARD = 10;
+	public static final int VILLAGERS_PER_GUARD = 10;
 	/** Food that isn't a meal for a villager (golden food, food that makes you ill, berries kept for Pokémon...). */
 	public static final TagKey<Item> NOT_A_MEAL = TagKey.create(Registries.ITEM, AliveWorkplace.id("not_villager_food"));
 	/** How long a villager's pace is remembered before the hall is asked again. */

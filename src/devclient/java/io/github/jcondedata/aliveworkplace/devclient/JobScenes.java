@@ -334,6 +334,21 @@ final class JobScenes {
 		}
 	}
 
+	/** One half of Cobblemon's Pasture Block ({@code part} bottom or top) in {@code state}'s facing. */
+	static BlockState pastureHalf(BlockState state, String part) {
+		for (net.minecraft.world.level.block.state.properties.Property<?> property : state.getProperties()) {
+			if (property.getName().equals("part")) {
+				return withValue(state, property, part);
+			}
+		}
+		return state;
+	}
+
+	private static <T extends Comparable<T>> BlockState withValue(BlockState state, net.minecraft.world.level.block.state.properties.Property<T> property,
+			String value) {
+		return property.getValue(value).map(v -> state.setValue(property, v)).orElse(state);
+	}
+
 	private static Job job(String what, int maxTicks, Stage stage) {
 		return new Job(what, maxTicks, CAMERA, TARGET, stage, null);
 	}
@@ -681,6 +696,48 @@ final class JobScenes {
 				new ItemStack(cobblemonItem("vivichoke"), 1), new ItemStack(cobblemonItem("hearty_grains"), 3),
 				new ItemStack(cobblemonItem("oran_berry"), 3));
 			return l -> c.countItem(cobblemonItem("poke_snack")) > 0 && n(ModAttachments.DISHES_COOKED, cook) >= 1;
+		}));
+		SCENES.put("gem_grower", job("the gem grower picked the ripe amethyst cluster and left the budding amethyst", 2400, (level, player) -> {
+			// ROADMAP 28.11 (no Cobblemon needed): a stonecutter picked with an amethyst shard; behind it a budding amethyst
+			// with a full cluster on top and a small bud on its side. She finds the bed, picks the full cluster (its shards
+			// into her chest) and leaves the budding block and the small bud to grow.
+			BlockPos budding = STATION.offset(2, 0, -2);
+			level.setBlockAndUpdate(budding, Blocks.BUDDING_AMETHYST.defaultBlockState());
+			level.setBlockAndUpdate(budding.above(), Blocks.AMETHYST_CLUSTER.defaultBlockState()
+				.setValue(net.minecraft.world.level.block.AmethystClusterBlock.FACING, Direction.UP));
+			level.setBlockAndUpdate(budding.west(), Blocks.SMALL_AMETHYST_BUD.defaultBlockState()
+				.setValue(net.minecraft.world.level.block.AmethystClusterBlock.FACING, Direction.WEST));
+			Villager grower = picked(level, player, STATION, Blocks.STONECUTTER, Items.AMETHYST_SHARD);
+			Container c = chest(level, chestPos(), new ItemStack(Items.GLASS, 2));
+			return l -> !l.getBlockState(budding.above()).is(Blocks.AMETHYST_CLUSTER) && l.getBlockState(budding).is(Blocks.BUDDING_AMETHYST)
+				&& c.countItem(Items.AMETHYST_SHARD) >= 4 && io.github.jcondedata.aliveworkplace.gem.GemGrowers.isGrower(grower);
+		}));
+		SCENES.put("habitat_keeper", job("the habitat keeper set out a snack, slathered the log and spotted a shiny Eevee", 2400, (level, player) -> {
+			// ROADMAP 28.10: Cobblemon's Pasture Block picked with a honey bottle; Poké Snacks and a honey bottle in the
+			// chest; a lure spot marked behind the pasture, a Saccharine log beside it, and a shiny wild Eevee nearby. She
+			// sets the snack out, slathers the log and tells the village of the Eevee in chat.
+			net.minecraft.world.level.block.Block pasture = net.minecraft.core.registries.BuiltInRegistries.BLOCK.get(
+				io.github.jcondedata.aliveworkplace.registry.ModVillagers.PASTURE_BLOCK);
+			BlockState bottom = pastureHalf(ScreenshotHarness.standing(pasture.defaultBlockState()), "bottom");
+			BlockPos spot = STATION.offset(-2, 0, -3);
+			BlockPos log = STATION.offset(2, 0, -2);
+			level.setBlockAndUpdate(log, net.minecraft.core.registries.BuiltInRegistries.BLOCK.get(
+				net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("cobblemon", "saccharine_log")).defaultBlockState());
+			level.setBlockAndUpdate(log.above(), net.minecraft.core.registries.BuiltInRegistries.BLOCK.get(
+				net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("cobblemon", "saccharine_log")).defaultBlockState());
+			Villager keeper = picked(level, player, STATION, bottom, Items.HONEY_BOTTLE);
+			level.setBlockAndUpdate(STATION.above(), pastureHalf(bottom, "top"));
+			chest(level, chestPos(), new ItemStack(cobblemonItem("poke_snack"), 2), new ItemStack(Items.HONEY_BOTTLE, 2));
+			io.github.jcondedata.aliveworkplace.habitat.HabitatKeepers.addSpot(keeper, spot);
+			com.cobblemon.mod.common.entity.pokemon.PokemonEntity eevee = com.cobblemon.mod.common.api.pokemon.PokemonProperties.Companion
+				.parse("eevee shiny=yes level=12", " ", "=").createEntity(level);
+			eevee.setPos(STATION.getX() + 4.5, STATION.getY(), STATION.getZ() - 4.5);
+			eevee.setNoAi(true);
+			level.addFreshEntity(eevee);
+			return l -> io.github.jcondedata.aliveworkplace.habitat.HabitatKeepers.snacks() != null
+				&& io.github.jcondedata.aliveworkplace.habitat.HabitatKeepers.snacks().isSnackBlock(l.getBlockState(spot))
+				&& io.github.jcondedata.aliveworkplace.habitat.HabitatKeepers.isSlathered(l.getBlockState(log))
+				&& !io.github.jcondedata.aliveworkplace.habitat.HabitatKeepers.sightings(keeper).isEmpty();
 		}));
 		SCENES.put("berry_breeder", new Job("the berry breeder bred a Lum Berry from Oran and Cheri", 2400, CAMERA, TARGET, (level, player) -> {
 			// ROADMAP 28.9: a composter picked with an Oran Berry; Oran, Cheri and Surprise Mulch in the chest; two rows of

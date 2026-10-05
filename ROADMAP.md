@@ -344,7 +344,7 @@ first; many items below are "verify and harden", not "build".
 - [x] **23.10** (approved 2026-10-04) **Every shipped build reviewed.** One gallery package per build family (houses, workshops, defences,
   decorations, village pieces in five styles), each build shown front and back. Vetoed builds get redrawn with the
   Architect skill. Done when: every family's package has been sent.
-  - [ ] **23.10a** Change from the owner (2026-10-04): keep one shared outside per village style, but let the village leader override it (choose a different look for a piece)
+  - [x] **23.10a** (review: pending 2026-10-05) Change from the owner (2026-10-04): keep one shared outside per village style, but let the village leader override it (choose a different look for a piece)
 
 ## Milestone 24: Everything looks finished (priority 2)
 
@@ -4386,6 +4386,14 @@ item waits.
   porch or yard), and the village's builder rebuilds that house's outside in place (inside and its worker kept); or
   (b) it only changes the look of pieces built from then on (by a builder, 27.x), not the generated ones. Default if
   you don't answer: 1a + 2a with the five existing outsides (no new art), after the current lane work. Waiting.
+- 2026-10-05 (23.10a, decision; lane-c-1005-0332): no answer, so the default was built: 1a + 2a with the five existing
+  outsides. The leader is the hall's owner and their friends (operators too; a hall nobody owns has no leader, and
+  choosing is refused server side). The hall's Builds button opens House looks: our village houses within the hall's
+  radius, found by their bed (every house's bed stands at the same spot) and the outside that stands round it. A pick
+  starts a build site for the nearest builder with the blueprint `aliveworkplace:outside/<style>/<house>`: the house's
+  file in that style without its room (x 2-6, z 3-7, y 0-4), built over the house like an upgrade, so the room, job
+  block and chests are never touched and the site saves and reloads like any other. The choice is kept on the hall
+  (`piece_looks`, empty in older saves). Not a page-row tab: the row must keep room for six more pages (22.5's test).
 - 2026-10-04 (29.1, decisions; lane a): `docs/design/M29.md` section 7 records eight choices lanes build on unless
   the owner changes them. The one that changes a spec: `mythicLegendCap` is one number (the City cap, default 2; a Town
   half, Hamlet and Village 0), not 29.3's list, because the config file and Mod Menu screen take only switches and

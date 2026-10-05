@@ -17,6 +17,11 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Added
+- **House looks** (23.10a): the Village Hall's Builds button opens House looks, a list of the village's own houses
+  (workshops, clinics, guard houses...). The village's leader (the hall's owner and their friends) can give any of them
+  another village style's outside (plains, desert, savanna, snowy or taiga); the village's builder rebuilds the outside
+  in place and leaves the room inside, its job block and its chests as they were. Builders now also pick up what falls
+  off a block they take down (a lantern under a porch roof) instead of waiting for it.
 - **Gifted villagers** (29.6): about one villager in 30 has a rare gift as well as their traits, shown in gold on the
   Village Hall's list. Prodigy learns three times as fast; Iron Will never panics and keeps working through raids and
   the bell; Silver Tongue's trades are 20% cheaper; a Night Owl works from dusk to dawn and sleeps from mid-morning to

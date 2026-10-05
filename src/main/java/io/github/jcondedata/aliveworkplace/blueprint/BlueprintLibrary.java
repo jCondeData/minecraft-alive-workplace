@@ -40,6 +40,11 @@ public final class BlueprintLibrary {
 			return get(server, styled.get().base()).map(b -> style.map(s -> BlueprintStyles.apply(s, b, id))
 				.orElseGet(() -> new Blueprint(id, b.size(), b.blocks(), b.entities())));
 		}
+		Optional<ResourceLocation> house = io.github.jcondedata.aliveworkplace.world.VillagePieces.outsideOf(id);
+		if (house.isPresent()) {
+			// A village house's outside in a style (23.10a): the house without its room.
+			return get(server, house.get()).map(b -> io.github.jcondedata.aliveworkplace.world.VillagePieces.outside(b, id));
+		}
 		Optional<StructureTemplate> template;
 		try {
 			template = server.getStructureManager().get(id);

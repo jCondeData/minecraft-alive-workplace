@@ -642,7 +642,9 @@ public final class Builders {
 		if (plan != null) {
 			lightPortals(level, plan.bounds(), supplies);
 		}
-		returnBlueprint(level, site, bench, supplies);
+		if (!io.github.jcondedata.aliveworkplace.world.VillagePieces.isOutside(site.structure())) {
+			returnBlueprint(level, site, bench, supplies); // (a house's new outside, 23.10a, came from no blueprint)
+		}
 
 		level.sendParticles(ParticleTypes.HAPPY_VILLAGER, villager.getX(), villager.getY() + 1.8, villager.getZ(), 12, 0.5, 0.5, 0.5, 0.0);
 		level.playSound(null, villager, SoundEvents.VILLAGER_CELEBRATE, SoundSource.NEUTRAL, 1f, 1f);
@@ -733,8 +735,8 @@ public final class Builders {
 
 	/** The blueprint goes to the owner if online, else into the supply chests, else on the ground. */
 	private static void giveBack(ServerLevel level, BuildSite site, BlockPos bench, List<BlockPos> supplies) {
-		if (site.isSteward()) {
-			return; // the Steward's build (27.8): nobody handed a blueprint over, so none comes back
+		if (site.isSteward() || io.github.jcondedata.aliveworkplace.world.VillagePieces.isOutside(site.structure())) {
+			return; // the Steward's build (27.8) or a house's new outside (23.10a): nobody handed a blueprint over, so none comes back
 		}
 		// Still placed where it was (23.8): hand it back to carry on there, or click the ground to move it first.
 		ItemStack blueprint = blueprintFor(level, site);
@@ -756,7 +758,7 @@ public final class Builders {
 	/** The builder died: drop its bag and the blueprint where it fell, keep what was built. */
 	public static void onBuilderDeath(ServerLevel level, Villager villager) {
 		for (BuildSite queued : queue(level, villager)) {
-			if (!queued.isSteward()) {
+			if (!queued.isSteward() && !io.github.jcondedata.aliveworkplace.world.VillagePieces.isOutside(queued.structure())) {
 				dropNear(level, villager.blockPosition(), blueprintFor(level, queued));
 			}
 			BuildSiteManager.get(level).remove(queued.id());
@@ -770,7 +772,7 @@ public final class Builders {
 			}
 		}
 		if (site != null) {
-			if (!site.isSteward()) {
+			if (!site.isSteward() && !io.github.jcondedata.aliveworkplace.world.VillagePieces.isOutside(site.structure())) {
 				dropNear(level, villager.blockPosition(), blueprintFor(level, site));
 			}
 			ServerPlayer owner = level.getServer().getPlayerList().getPlayer(site.owner());

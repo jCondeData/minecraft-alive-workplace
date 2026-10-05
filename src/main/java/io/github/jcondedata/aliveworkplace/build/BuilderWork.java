@@ -1045,6 +1045,15 @@ public class BuilderWork extends Behavior<Villager> {
 		BlockEntity blockEntity = level.getBlockEntity(pos);
 		List<ItemStack> drops = Block.getDrops(state, level, pos, blockEntity, villager, ItemStack.EMPTY);
 		level.destroyBlock(pos, false, villager);
+		// What hung on it or stood on it just fell off (a lantern under a porch roof being rebuilt, 23.10a): the builder
+		// picks that up too, or he'd wait for a lantern lying at his feet.
+		List<ItemStack> fell = new java.util.ArrayList<>(drops);
+		for (net.minecraft.world.entity.item.ItemEntity item : level.getEntitiesOfClass(net.minecraft.world.entity.item.ItemEntity.class,
+			new net.minecraft.world.phys.AABB(pos).inflate(1.5), e -> e.isAlive() && e.getAge() == 0)) {
+			fell.add(item.getItem().copy());
+			item.discard();
+		}
+		drops = fell;
 		for (ItemStack drop : drops) {
 			MaterialLedger.gained(drop);
 			ItemStack rest = bag.add(drop);

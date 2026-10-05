@@ -44,7 +44,8 @@ public final class Expansions {
 	/** The milestone flag of a config option that belongs to an unfinished-or-finished expansion, or null for one that doesn't. */
 	static Boolean milestoneOf(String option) {
 		return switch (option) {
-			case "steward", "stewardSelfRun", "stewardMaxOpenBuilds" -> M27;
+			case "steward", "stewardSelfRun", "stewardMaxOpenBuilds", "stewardRoads", "caravanRoads", "caravanRoadReach",
+				"stewardWalls" -> M27;
 			case "partnerShows", "nurseHealingMachine", "berryBreeders", "campCooks", "habitatKeepers", "habitatSightings",
 				"daycareKeepers", "gemGrowers", "villageHabitats" -> M28;
 			case "legends", "legendNeeds", "legendSites", "strangeMoods", "giftedChance" -> M29;

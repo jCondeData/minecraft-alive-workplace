@@ -239,6 +239,12 @@ SCENES = [
       "every tier's ring centre, boxes and seats are where Arenas says, and Arena III has a Healing Machine in each trainers' room", 50,
       [("01_arena_front", "Arena"), ("03_arena_2_front", "Arena II: stands, gate arch, fair lane"),
        ("05_arena_3_front", "Arena III: the covered grandstand"), ("06_arena_3_above", "Arena III from above")], cobblemon=True),
+    # The Festival Cup (ROADMAP 28.17): the hall's Cup page for a Town host with an Arena, two trade partners on its
+    # circuit, the player signed up, the seeds and the roll of champions
+    S("cup_page", "Trainer Leader", "The Festival Cup's page",
+      "the hall's Cup page shows the Grand Cup's card with its rules, the circuit and who each village sends, and the player signed up", 40,
+      [("01_cup_card", "The Cup's card and rules"), ("02_cup_circuit", "The circuit and its Leaders"),
+       ("03_cup_champions", "The roll of champions"), ("04_cup_seeds", "The seeds")], cobblemon=True),
     S("leader", "Trainer Leader", "Challenging the Trainer Leader", "the Trainer Leader took the challenge", 90,
       [("01_leader", "At the podium"), ("02_leader_battle", "The battle starts")], cobblemon=True),
     S("tutor", "Move Tutor", "The Move Tutor's lessons", "the lesson screen opened", 60,

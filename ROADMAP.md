@@ -1212,7 +1212,7 @@ here adds a new kind of speed bonus (the new jobs get the partners' existing one
 
   Done when: a builder finishes each tier (GameTest); `Arenas.find` is right in 4 rotations and mirrored (GameTest);
   showcase scene `arena` (each tier, front and from above).
-- [ ] **28.17** **The Festival Cup: calendar, themes and entrants.** No battles yet; config `festivalCup` (true),
+- [x] **28.17** (review: pending 2026-10-05) **The Festival Cup: calendar, themes and entrants.** No battles yet; config `festivalCup` (true),
   `cupEveryFestivals` (1; owner, 28.1a).
   - Hosts: a village with a hall, a finished Arena, Cobblemon and at least Village rank holds every festival as
     a Cup (every `cupEveryFestivals`th). Its circuit: the host and every village with a hall it has a trade route with,

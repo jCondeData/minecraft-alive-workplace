@@ -39,11 +39,11 @@ public class ExpansionGateGameTests implements FabricGameTest {
 	/** Every switch of an unfinished expansion (M27 steward; M28 Pokémon jobs and shows; M29 Legends; M30 civic items). */
 	static final List<String> GATED_SWITCHES = List.of("steward", "stewardSelfRun", "stewardRoads", "caravanRoads", "stewardWalls",
 		"partnerShows", "nurseHealingMachine", "berryBreeders", "campCooks", "habitatKeepers", "habitatSightings",
-		"daycareKeepers", "gemGrowers", "villageHabitats", "pokemonVillageHouses",
+		"daycareKeepers", "gemGrowers", "villageHabitats", "pokemonVillageHouses", "festivalCup",
 		"legends", "legendNeeds", "legendSites", "strangeMoods",
 		"villageEdicts", "workHorns", "villageBanners", "cradles", "harvestIdols", "tonics", "guilds");
 	/** The numbers that belong to them (hidden from the screen with them). */
-	static final List<String> GATED_NUMBERS = List.of("stewardMaxOpenBuilds", "caravanRoadReach", "giftedChance", "edictMinDays", "guildsPerRank");
+	static final List<String> GATED_NUMBERS = List.of("stewardMaxOpenBuilds", "caravanRoadReach", "giftedChance", "edictMinDays", "guildsPerRank", "cupEveryFestivals");
 
 	/** A config file as 0.139.0 wrote it: every switch on. */
 	static String oldConfig() {
@@ -69,6 +69,7 @@ public class ExpansionGateGameTests implements FabricGameTest {
 		map.put("DaycareKeepers", () -> DaycareKeepers.ENABLED);
 		map.put("GemGrowers", () -> GemGrowers.ENABLED);
 		map.put("VillageHabitats", () -> VillageHabitats.ENABLED);
+		map.put("Cups", () -> io.github.jcondedata.aliveworkplace.cup.Cups.ENABLED);
 		map.put("VillageHouses.POKEMON_JOBS", () -> io.github.jcondedata.aliveworkplace.world.VillageHouses.POKEMON_JOBS);
 		map.put("Legends", () -> Legends.ENABLED);
 		map.put("LegendSites", () -> LegendSites.ENABLED);
@@ -150,8 +151,8 @@ public class ExpansionGateGameTests implements FabricGameTest {
 			if (!screen.contains("villageProtection") || !screen.contains("maxWorkPace") || !screen.contains("seasonDays")) {
 				problems.add("a finished option left the screen: " + screen);
 			}
-			if (screen.size() != 64 - GATED_SWITCHES.size() - GATED_NUMBERS.size()) {
-				problems.add("expected " + (64 - GATED_SWITCHES.size() - GATED_NUMBERS.size()) + " options on the screen, found "
+			if (screen.size() != 66 - GATED_SWITCHES.size() - GATED_NUMBERS.size()) {
+				problems.add("expected " + (66 - GATED_SWITCHES.size() - GATED_NUMBERS.size()) + " options on the screen, found "
 					+ screen.size());
 			}
 			empty.setBoolean("tonics", true);
@@ -196,7 +197,7 @@ public class ExpansionGateGameTests implements FabricGameTest {
 		for (String name : GATED_SWITCHES) {
 			helper.assertTrue(new WorkplaceConfig().getBoolean(name), name + " should default on in GameTests");
 		}
-		helper.assertTrue(WorkplaceConfig.optionNames().size() == 64, "every option on the screen in GameTests");
+		helper.assertTrue(WorkplaceConfig.optionNames().size() == 66, "every option on the screen in GameTests");
 		helper.succeed();
 	}
 }

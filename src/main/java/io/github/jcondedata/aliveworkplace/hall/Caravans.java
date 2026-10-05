@@ -66,6 +66,14 @@ public final class Caravans {
 	public record Half(BlockPos end, boolean finished, boolean milestone, boolean noted) {
 	}
 
+	/**
+	 * A village's Trainer Leader (28.17), as its hall's last round saw it: id, name ("" without one), tier, experience, and
+	 * whether it's a Leader or (the village having none) its best Trainer. Kept so an unloaded village can still send them
+	 * to a Festival Cup.
+	 */
+	public record Leader(java.util.UUID id, String name, int tier, int xp, boolean leader) {
+	}
+
 	/** Two halves within this many blocks of each other's ends have met: the road is one. */
 	public static final int HALVES_MEET = 4;
 
@@ -81,6 +89,8 @@ public final class Caravans {
 		final List<Shipment> onTheRoad = new ArrayList<>();
 		/** The halves of roads between villages (27.17), from one hall towards another. */
 		final Map<BlockPos, Map<BlockPos, Half>> halves = new LinkedHashMap<>();
+		/** Each village's Trainer Leader (28.17); none until its hall's round writes one. */
+		final Map<BlockPos, Leader> leaders = new LinkedHashMap<>();
 
 		public static Data get(ServerLevel level) {
 			return level.getDataStorage().computeIfAbsent(new SavedData.Factory<>(Data::new, Data::load, null), NAME);
@@ -128,6 +138,7 @@ public final class Caravans {
 			routes.values().forEach(to -> to.remove(hall));
 			halves.remove(hall);
 			halves.values().forEach(to -> to.remove(hall));
+			leaders.remove(hall);
 			setDirty();
 		}
 
@@ -141,6 +152,20 @@ public final class Caravans {
 			});
 			out.remove(hall);
 			return out;
+		}
+
+		/** The village's Trainer Leader as its hall's last round wrote it, or null. */
+		@Nullable
+		public Leader leader(BlockPos hall) {
+			return leaders.get(hall);
+		}
+
+		/** Writes the village's Trainer Leader (null: it has none). */
+		public void setLeader(BlockPos hall, @Nullable Leader leader) {
+			Leader old = leader == null ? leaders.remove(hall) : leaders.put(hall.immutable(), leader);
+			if (!java.util.Objects.equals(old, leader)) {
+				setDirty();
+			}
 		}
 
 		/** {@code hall}'s half of the road towards {@code other}, or null if it has none with a way found yet. */
@@ -242,6 +267,16 @@ public final class Caravans {
 					halfList.add(ht);
 				});
 				t.put("halves", halfList);
+				Leader leader = leaders.get(v.hall());
+				if (leader != null) {
+					CompoundTag lt = new CompoundTag();
+					lt.putUUID("id", leader.id());
+					lt.putString("name", leader.name());
+					lt.putInt("tier", leader.tier());
+					lt.putInt("xp", leader.xp());
+					lt.putBoolean("leader", leader.leader());
+					t.put("leader", lt);
+				}
 				list.add(t);
 			}
 			tag.put("villages", list);
@@ -289,6 +324,11 @@ public final class Caravans {
 					CompoundTag ht = Nbt.compoundAt(hl, j);
 					data.halves.computeIfAbsent(hall, k -> new LinkedHashMap<>()).put(BlockPos.of(Nbt.getLong(ht, "to")),
 						new Half(BlockPos.of(Nbt.getLong(ht, "end")), Nbt.getBoolean(ht, "finished"), Nbt.getBoolean(ht, "milestone"), Nbt.getBoolean(ht, "noted")));
+				}
+				CompoundTag lt = Nbt.getCompound(t, "leader"); // 28.17; older saves have none
+				if (lt.hasUUID("id")) {
+					data.leaders.put(hall, new Leader(lt.getUUID("id"), Nbt.getString(lt, "name"), Nbt.getInt(lt, "tier"), Nbt.getInt(lt, "xp"),
+						Nbt.getBoolean(lt, "leader")));
 				}
 			}
 			ListTag road = Nbt.getList(tag, "road", Tag.TAG_COMPOUND);

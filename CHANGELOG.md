@@ -35,6 +35,13 @@ asks for the steps, `latest.log` and any crash report).
   seed stock, so a Farmstead's field could be harvested without anything landing in its chest. He now takes them from the
   chests to plant with, like seeds, and puts the whole harvest away.
 ### Added
+- **The Festival Cup: calendar, themes and entrants** (28.17): with Cobblemon, a village with a hall, a finished Arena
+  and at least Village rank holds its festivals as a Festival Cup (config `festivalCup`, and `cupEveryFestivals` for
+  every second or third). Its circuit is the host and the villages it has a trade route with; each sends its Trainer
+  Leader (or its best Trainer, even from far away), and players sign up for a village that's theirs, a friend's or
+  nobody's, two a village. The hall's new Cup page shows the next Cup, its rules in plain words, the circuit, the
+  seeds, Sign up / Withdraw and the roll of champions; players hear when sign-up opens and the evening before.
+  Themes are data files; the Grand Cup ships first. No bouts yet: they come next.
 - **The Arena** (28.16): with Cobblemon, three new blueprints in the Blueprint Table (and sold by an Expert Trainer
   Leader). Arena: a 15×9 battle ring of packed mud with white lines and a centre circle, a trainer's box on a dais at
   each end with a lamp post, benches for 12, banner poles and a notice board. Arena II adds stands on both long sides

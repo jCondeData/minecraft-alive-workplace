@@ -110,8 +110,8 @@ public class HallPagesGameTests {
 					twice = true;
 				}
 				helper.assertTrue(twice, "the same page was registered twice");
-				// At least six more pages fit (ROADMAP 22.5): fill the row.
-				helper.assertTrue(HallPages.MAX - before >= 7, "room for " + (HallPages.MAX - before) + " pages besides the calendar");
+				// At least six more pages fit (ROADMAP 22.5) besides the ones the mod registers (the calendar, Legends, the Cup): fill the row.
+				helper.assertTrue(HallPages.MAX - before >= 6, "room for " + (HallPages.MAX - before) + " pages besides the mod's own " + before);
 				while (HallPages.all().size() < HallPages.MAX) {
 					String id = "test_fill_" + HallPages.all().size();
 					HallPages.register(id, (level, h) -> named(Items.PAPER, id), (level, h) -> named(Items.PAPER, id), (m, level, h, v) -> {

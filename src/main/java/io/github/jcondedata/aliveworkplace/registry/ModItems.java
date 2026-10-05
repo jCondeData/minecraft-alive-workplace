@@ -33,6 +33,10 @@ public final class ModItems {
 	/** Tonics (ROADMAP 30.15): brewed by the alchemist or cooked by the chef, never crafted; what they do is data (people/Tonics). */
 	public static final io.github.jcondedata.aliveworkplace.people.TonicItem MINERS_BREW = Reg.item("miners_brew", io.github.jcondedata.aliveworkplace.people.TonicItem::new, new Item.Properties().stacksTo(16));
 	public static final io.github.jcondedata.aliveworkplace.people.TonicItem BUILDERS_TEA = Reg.item("builders_tea", io.github.jcondedata.aliveworkplace.people.TonicItem::new, new Item.Properties().stacksTo(16));
+	public static final io.github.jcondedata.aliveworkplace.people.TonicItem SMITHS_DRAUGHT = Reg.item("smiths_draught", io.github.jcondedata.aliveworkplace.people.TonicItem::new, new Item.Properties().stacksTo(16));
+	public static final io.github.jcondedata.aliveworkplace.people.TonicItem SCHOLARS_INFUSION = Reg.item("scholars_infusion", io.github.jcondedata.aliveworkplace.people.TonicItem::new, new Item.Properties().stacksTo(16));
+	public static final io.github.jcondedata.aliveworkplace.people.TonicItem HARVEST_CORDIAL = Reg.item("harvest_cordial", io.github.jcondedata.aliveworkplace.people.TonicItem::new, new Item.Properties().stacksTo(16));
+	public static final io.github.jcondedata.aliveworkplace.people.TonicItem WOODSMANS_BROTH = Reg.item("woodsmans_broth", io.github.jcondedata.aliveworkplace.people.TonicItem::new, new Item.Properties().stacksTo(16));
 	public static final io.github.jcondedata.aliveworkplace.guard.RallyBannerItem RALLY_BANNER = Reg.item("rally_banner", io.github.jcondedata.aliveworkplace.guard.RallyBannerItem::new, new Item.Properties().stacksTo(1));
 
 	/** Marks out a quarry for a Miner. */
@@ -83,6 +87,10 @@ public final class ModItems {
 				output.accept(VILLAGE_BANNER);
 				output.accept(MINERS_BREW);
 				output.accept(BUILDERS_TEA);
+				output.accept(SMITHS_DRAUGHT);
+				output.accept(SCHOLARS_INFUSION);
+				output.accept(HARVEST_CORDIAL);
+				output.accept(WOODSMANS_BROTH);
 				output.accept(CITY_PLAN);
 				output.accept(QUARRY_MARKER);
 				output.accept(FIELD_MARKER);

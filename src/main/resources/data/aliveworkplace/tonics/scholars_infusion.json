@@ -1,0 +1,10 @@
+{
+  "item": "aliveworkplace:scholars_infusion",
+  "maker": "alchemist",
+  "ingredients": ["minecraft:glass_bottle", "minecraft:amethyst_shard", "minecraft:glow_berries"],
+  "jobs": ["aliveworkplace:scholar", "aliveworkplace:teacher", "minecraft:librarian", "minecraft:cartographer", "aliveworkplace:fossil_scientist"],
+  "effects": [{"type": "aliveworkplace:work_pace", "percent": 25}],
+  "ticks": 24000,
+  "keep": 4,
+  "enabled": true
+}

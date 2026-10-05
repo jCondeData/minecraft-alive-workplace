@@ -1,0 +1,10 @@
+{
+  "item": "aliveworkplace:smiths_draught",
+  "maker": "alchemist",
+  "ingredients": ["minecraft:glass_bottle", "minecraft:blaze_powder", "minecraft:iron_nugget", "minecraft:iron_nugget"],
+  "jobs": ["minecraft:armorer", "minecraft:toolsmith", "minecraft:weaponsmith", "aliveworkplace:tinkerer", "aliveworkplace:ball_smith"],
+  "effects": [{"type": "aliveworkplace:work_pace", "percent": 25}],
+  "ticks": 24000,
+  "keep": 4,
+  "enabled": true
+}

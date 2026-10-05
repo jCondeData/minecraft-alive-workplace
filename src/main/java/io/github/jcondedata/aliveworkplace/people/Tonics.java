@@ -488,12 +488,23 @@ public final class Tonics implements ResourceManagerReloadListener {
 			kinds.putIfAbsent(in.toString(), in);
 		}
 		List<Component> makings = new ArrayList<>();
-		kinds.forEach((key, in) -> makings.add(counts.get(key) == 1 ? in.name()
-			: Component.translatable("tooltip.aliveworkplace.tonic.ingredient_count", counts.get(key), in.name())));
+		kinds.forEach((key, in) -> makings.add(counts.get(key) == 1 ? in.name() : many(in, counts.get(key))));
 		lines.add(Component.translatable("tooltip.aliveworkplace.tonic.maker." + tonic.maker().name().toLowerCase(Locale.ROOT), join(makings))
 			.withStyle(ChatFormatting.GRAY));
 		lines.add(Component.translatable("tooltip.aliveworkplace.tonic.how").withStyle(ChatFormatting.DARK_GRAY));
 		return lines;
+	}
+
+	/**
+	 * {@code count} of an ingredient: "2 Iron Nuggets" when the lang has the item's plural
+	 * ({@code tonic.aliveworkplace.many.<namespace>.<path>}), else "2 Sweet Berries" (the count and the item's name).
+	 */
+	static Component many(Ingredient in, int count) {
+		if (in.item() != null) {
+			ResourceLocation id = BuiltInRegistries.ITEM.getKey(in.item());
+			return Component.translatableWithFallback("tonic.aliveworkplace.many." + id.getNamespace() + "." + id.getPath(), "%s %s", count, in.name());
+		}
+		return Component.translatable("tooltip.aliveworkplace.tonic.ingredient_count", count, in.name());
 	}
 
 	/** A job's name for many of them: "Miners", "Dyers" (a lang key per job, or the job's id made plural). */

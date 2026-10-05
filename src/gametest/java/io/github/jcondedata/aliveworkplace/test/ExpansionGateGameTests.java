@@ -36,14 +36,16 @@ import net.minecraft.gametest.framework.GameTestHelper;
  * moment (synchronously, so no other test sees it) and put the defaults back after.
  */
 public class ExpansionGateGameTests implements FabricGameTest {
-	/** Every switch of an unfinished expansion (M27 steward; M28 Pokémon jobs and shows; M29 Legends; M30 civic items). */
+	/** Every switch of an unfinished expansion (M27 steward; M28 Pokémon jobs and shows; M29 Legends; M30 civic items; M34 classes). */
 	static final List<String> GATED_SWITCHES = List.of("steward", "stewardSelfRun",
 		"partnerShows", "nurseHealingMachine", "berryBreeders", "campCooks", "habitatKeepers", "habitatSightings",
 		"daycareKeepers", "gemGrowers", "villageHabitats",
 		"legends", "legendNeeds", "legendSites", "strangeMoods",
-		"villageEdicts", "workHorns", "villageBanners", "cradles", "harvestIdols", "tonics", "guilds");
+		"villageEdicts", "workHorns", "villageBanners", "cradles", "harvestIdols", "tonics", "guilds",
+		"villageClasses");
 	/** The numbers that belong to them (hidden from the screen with them). */
-	static final List<String> GATED_NUMBERS = List.of("stewardMaxOpenBuilds", "giftedChance", "edictMinDays", "guildsPerRank");
+	static final List<String> GATED_NUMBERS = List.of("stewardMaxOpenBuilds", "giftedChance", "edictMinDays", "guildsPerRank",
+		"classRiseDays", "classFallDays");
 
 	/** A config file as 0.139.0 wrote it: every switch on. */
 	static String oldConfig() {
@@ -108,7 +110,7 @@ public class ExpansionGateGameTests implements FabricGameTest {
 			});
 			protection[0] = VillageProtection.ENABLED;
 		});
-		helper.assertTrue(!Expansions.M27 && !Expansions.M28 && !Expansions.M29 && !Expansions.M30,
+		helper.assertTrue(!Expansions.M27 && !Expansions.M28 && !Expansions.M29 && !Expansions.M30 && !Expansions.M34,
 			"a milestone was marked complete: move its switches out of this test");
 		helper.assertTrue(on.isEmpty(), "a 0.139.0 config turned on unfinished expansions: " + on);
 		helper.assertTrue(protection[0], "a finished feature's switch (villageProtection) should still work");
@@ -147,8 +149,8 @@ public class ExpansionGateGameTests implements FabricGameTest {
 			if (!screen.contains("villageProtection") || !screen.contains("maxWorkPace") || !screen.contains("seasonDays")) {
 				problems.add("a finished option left the screen: " + screen);
 			}
-			if (screen.size() != 59 - GATED_SWITCHES.size() - GATED_NUMBERS.size()) {
-				problems.add("expected " + (59 - GATED_SWITCHES.size() - GATED_NUMBERS.size()) + " options on the screen, found "
+			if (screen.size() != 62 - GATED_SWITCHES.size() - GATED_NUMBERS.size()) {
+				problems.add("expected " + (62 - GATED_SWITCHES.size() - GATED_NUMBERS.size()) + " options on the screen, found "
 					+ screen.size());
 			}
 			empty.setBoolean("tonics", true);
@@ -193,7 +195,7 @@ public class ExpansionGateGameTests implements FabricGameTest {
 		for (String name : GATED_SWITCHES) {
 			helper.assertTrue(new WorkplaceConfig().getBoolean(name), name + " should default on in GameTests");
 		}
-		helper.assertTrue(WorkplaceConfig.optionNames().size() == 59, "every option on the screen in GameTests");
+		helper.assertTrue(WorkplaceConfig.optionNames().size() == 62, "every option on the screen in GameTests");
 		helper.succeed();
 	}
 }

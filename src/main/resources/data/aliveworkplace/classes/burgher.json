@@ -1,0 +1,32 @@
+{
+  "tier": 2,
+  "name": {"translate": "class.aliveworkplace.burgher"},
+  "tax": 2.5,
+  "outfit": "aliveworkplace:textures/entity/villager/class/burgher.png",
+  "needs": [
+    {"type": "home", "grade": 2},
+    {"type": "fed_days", "days": 3},
+    {"type": "diet", "kind": "varied"},
+    {"type": "services", "all": ["school"]},
+    {"type": "services", "count": 2, "any": ["school", "chapel", "clinic", "library", "tavern"]},
+    {"type": "building", "blueprint": "aliveworkplace:market_square"},
+    {"type": "luxury", "id": "aliveworkplace:fine_clothes"},
+    {"type": "luxury", "id": "aliveworkplace:berry_wine"},
+    {"type": "luxury", "id": "aliveworkplace:gazette"}
+  ],
+  "wants": [
+    {"type": "luxury", "id": "aliveworkplace:amethyst_ring"},
+    {"type": "services", "all": ["library"]},
+    {"type": "beauty", "points": 2}
+  ],
+  "jobs": [
+    "aliveworkplace:scholar", "aliveworkplace:undertaker", "aliveworkplace:jeweller", "aliveworkplace:trainer_leader"
+  ],
+  "effects": [
+    {"type": "aliveworkplace:research_pace", "percent": 15, "jobs": ["aliveworkplace:scholar"]},
+    {"type": "aliveworkplace:caravan_routes", "extra": 1, "households": 3},
+    {"type": "aliveworkplace:market_traders", "extra": 1, "households": 3,
+      "sells": ["aliveworkplace:townhouse", "aliveworkplace:manor"], "price": 12}
+  ],
+  "enabled": true
+}

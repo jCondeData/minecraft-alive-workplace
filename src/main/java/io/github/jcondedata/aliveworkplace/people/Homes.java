@@ -71,6 +71,32 @@ public final class Homes {
 		return Optional.ofNullable(best);
 	}
 
+	/**
+	 * Every finished building in the dimension with the box it fills, worked out once (each size read once), for checking
+	 * many beds in one go with {@link #in} (the hall's dawn class check, 34.2).
+	 */
+	public static java.util.List<Building> all(ServerLevel level) {
+		java.util.List<Building> out = new java.util.ArrayList<>();
+		for (BuildSiteManager.Finished f : BuildSiteManager.get(level).finishedIn(level)) {
+			Vec3i size = size(level, f.structure());
+			if (size != null) {
+				out.add(new Building(new Home(f.structure(), BlueprintUpgrades.tier(f.structure())), BlueprintOutline.bounds(f.placement(), size)));
+			}
+		}
+		return out;
+	}
+
+	/** The building of {@code buildings} (from {@link #all}) {@code bed} is in, the highest tier should two overlap, as {@link #building}. */
+	public static Optional<Building> in(java.util.List<Building> buildings, BlockPos bed) {
+		Building best = null;
+		for (Building b : buildings) {
+			if (b.box().isInside(bed) && (best == null || b.home().tier() > best.home().tier())) {
+				best = b;
+			}
+		}
+		return Optional.ofNullable(best);
+	}
+
 	/** A blueprint's size, from its structure file (a styled one is its base's size), or null if it's gone. */
 	@Nullable
 	private static Vec3i size(ServerLevel level, ResourceLocation id) {

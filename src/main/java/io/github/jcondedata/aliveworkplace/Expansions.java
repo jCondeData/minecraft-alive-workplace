@@ -26,6 +26,8 @@ public final class Expansions {
 	 * {@code villageBanners}, {@code cradles}, {@code harvestIdols}, {@code tonics}.
 	 */
 	public static final boolean M30 = false;
+	/** Milestone 34, Classes and luxuries (1.8): {@code villageClasses}, {@code classRiseDays}, {@code classFallDays}. */
+	public static final boolean M34 = false;
 
 	/**
 	 * Open in GameTests (they test the unfinished expansions) and in the screenshot client (the nightly showcase films
@@ -50,6 +52,7 @@ public final class Expansions {
 			case "legends", "legendNeeds", "legendSites", "strangeMoods", "giftedChance" -> M29;
 			case "villageEdicts", "edictMinDays", "workHorns", "villageBanners", "cradles", "harvestIdols", "tonics", "guilds",
 				"guildsPerRank" -> M30;
+			case "villageClasses", "classRiseDays", "classFallDays" -> M34;
 			default -> null;
 		};
 	}

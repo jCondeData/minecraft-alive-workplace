@@ -35,6 +35,12 @@ asks for the steps, `latest.log` and any crash report).
   seed stock, so a Farmstead's field could be harvested without anything landing in its chest. He now takes them from the
   chests to plant with, like seeds, and puts the whole harvest away.
 ### Added
+- **The class engine for 1.8** (34.2, off until 1.8 is finished): households in a village with a hall can climb from
+  Peasant to Artisan, Burgher and Noble. The four classes are data files (`data/<ns>/classes/`) listing what each needs
+  (a home of some grade, fed days running, a varied diet, beauty near home, a finished build, the village's rank,
+  services and luxuries); a household rises after 2 dawns with the next class's needs and falls after 3 without its
+  own, one step a day, never below Peasant; a married couple moves together and children follow the grown-ups of
+  their house. `villageClasses`, `classRiseDays` and `classFallDays` in the config. Nothing changes in game yet.
 - **Edicts and civic items in the village's life** (30.21): villagers talk of each edict in force and of each reformed
   one ("Long shifts again... my back.", "The shift bell's rung. Home we go."), of a rush, their tonic, their guild and
   the village's colours; "What next?" now points out a free edict slot, a reform step waiting, Festival Season with too

@@ -3549,7 +3549,7 @@ on a real world.
   vanilla jobs are never class-gated, family names show on the hall but never rename a villager. Sent to the owner as
   a review package; lanes don't wait for his reply. Done when: the note is on `main`, its tables match this
   milestone's numbers, and the package is sent.
-- [ ] **34.2** **The class engine.** The four classes are data: `data/aliveworkplace/classes/<id>.json` (`peasant`,
+- [x] **34.2** (approved auto 2026-10-05) **The class engine.** The four classes are data: `data/aliveworkplace/classes/<id>.json` (`peasant`,
   `artisan`, `burgher`, `noble`), one file holding the class's tier (0-3), tax factor, outfit, `needs` (all must hold
   to be that class), `wants` (optional extras) and what it gives (`jobs`, `effects`; read by 34.7 and 34.8), e.g.
   `{"tier": 1, "tax": 1.5, "needs": [{"type": "home", "grade": 1}, {"type": "fed_days", "days": 3}, {"type": "diet",

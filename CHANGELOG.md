@@ -338,6 +338,9 @@ asks for the steps, `latest.log` and any crash report).
   partners than before.**
 
 ### Fixed
+- Villagers no longer get stuck against the flower boxes beside the steps of our village houses (every village type):
+  the pots now stand on upside-down stair sills instead of head-height trapdoors, which villagers mistook for open
+  ground (B69).
 - The showcase client starts every scene again without Cobblemon: the Habitat Keeper scene's wild Eevee is spawned
   from a Cobblemon-only helper, so loading the scenes no longer crashes (B59).
 - Every switch on the settings screen fits its button again, on or off: shorter names for Nurse Healing Machines,

@@ -1,0 +1,27 @@
+{
+  "rarity": "legendary",
+  "job": "aliveworkplace:tinkerer",
+  "title": "legend.aliveworkplace.golem_smith.title",
+  "lore": "legend.aliveworkplace.golem_smith.lore",
+  "names": [
+    "legend.aliveworkplace.golem_smith.name.1",
+    "legend.aliveworkplace.golem_smith.name.2",
+    "legend.aliveworkplace.golem_smith.name.3"
+  ],
+  "conditions": [
+    {"type": "iron_golems", "count": 4}
+  ],
+  "arrive": [
+    {"way": "inspired", "trades": ["aliveworkplace:tinkerer"]}
+  ],
+  "masterwork": {
+    "item": "minecraft:heavy_core",
+    "name": "masterwork.aliveworkplace.golem_smith",
+    "materials": ["minecraft:diamond", "minecraft:copper_block", "minecraft:redstone_block", "minecraft:blaze_rod",
+      "minecraft:breeze_rod", "minecraft:amethyst_shard", "minecraft:echo_shard"]
+  },
+  "needs": {"luxury": "wine"},
+  "powers": [
+    {"type": "golem_forge", "days": 2, "villagers_per_golem": 5, "mend_factor": 2.0}
+  ]
+}

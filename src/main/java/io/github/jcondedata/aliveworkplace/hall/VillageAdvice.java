@@ -46,7 +46,8 @@ public final class VillageAdvice {
 
 	public static List<Tip> tips(ServerLevel level, BlockPos hall) {
 		VillageHalls.Census census = VillageHalls.census(level, hall);
-		List<Tip> tips = new ArrayList<>();
+		// The Seer's dawn foretelling first (29.16): tonight, the next festival and market, tomorrow's guest.
+		List<Tip> tips = new ArrayList<>(io.github.jcondedata.aliveworkplace.legend.Seer.tips(level, hall));
 		int villagers = census.villagers();
 		int adults = villagers - census.children();
 		if (!has(census, ModVillagers.BUILDER)) {

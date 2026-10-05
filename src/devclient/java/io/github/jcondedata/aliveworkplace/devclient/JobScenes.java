@@ -856,6 +856,140 @@ final class JobScenes {
 			return l -> io.github.jcondedata.aliveworkplace.legend.Pathfinder.state(pathfinder).arrived()
 				&& l.getBlockState(target).is(Blocks.LIGHT_BLUE_BANNER);
 		}, null));
+		SCENES.put("legend_seer", new Job("the Seer came to the Chapel at midnight under a full moon, and at dawn foretold the night, the festival, the market and the next guest in chat",
+			900, new Vec3(6.5, -55.5, 11.5), new Vec3(0, -54, -9), (level, player) -> {
+			// ROADMAP 29.16: a finished Chapel facing the camera, the Village Hall beside it and six villagers out front,
+			// at midnight under a full moon (day 81). The hall's own round rolls the Chapel's guest (a fixed seed whose roll
+			// is under the Seer's 1 in 2); they come out to the door, end-rod motes round them. Then it's dawn: they settle
+			// and the hall's dawn round has them foretell, in the player's chat.
+			level.getGameRules().getRule(GameRules.RULE_DAYLIGHT).set(false, level.getServer());
+			level.setDayTime(80L * 24000L + 17800L);
+			StarterBlueprints.Entry entry = StarterBlueprints.CHAPEL;
+			BlockPos anchor = new BlockPos(0, -60, -4);
+			Blueprint blueprint = BlueprintLibrary.get(level, entry.id()).orElseThrow();
+			BlueprintData.Placement placement = BlueprintItem.placementAt(level.dimension().location(), blueprint.size(), anchor,
+				BlueprintItem.rotationFacing(Direction.SOUTH));
+			level.getStructureManager().get(entry.id()).orElseThrow().placeInWorld(level, placement.origin(), placement.origin(),
+				new net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings().setRotation(placement.rotation())
+					.setMirror(placement.mirror()), level.getRandom(), 2);
+			BuildSiteManager.get(level).recordFinished(entry.id(), placement, player.getUUID());
+			BlockPos hall = STATION.offset(9, 0, 1);
+			for (int i = 0; i < 6; i++) {
+				Villager v = EntityType.VILLAGER.spawn(level, new BlockPos(-4 + (i % 3) * 4, -60, 3 + (i / 3) * 2), MobSpawnType.COMMAND);
+				v.setNoAi(true);
+				v.setYRot(180);
+				v.setYHeadRot(180);
+			}
+			io.github.jcondedata.aliveworkplace.legend.Legend legend = io.github.jcondedata.aliveworkplace.legend.Legends.get(
+				io.github.jcondedata.aliveworkplace.legend.Seer.ID).orElse(null);
+			Showcase.check(legend != null, "the Seer's file loaded");
+			Showcase.check(level.getMoonPhase() == 0, "a full moon");
+			long began = level.getGameTime();
+			Villager[] seer = {null};
+			boolean[] told = {false};
+			boolean[] rolled = {false};
+			boolean[] dawn = {false};
+			return l -> {
+				long t = l.getGameTime() - began;
+				if (t >= 40 && !rolled[0] && legend != null) {
+					rolled[0] = true;
+					place(l, hall, ModBlocks.VILLAGE_HALL); // here, so its own first round doesn't roll the night first
+					io.github.jcondedata.aliveworkplace.legend.LegendGuests.round(l, hall, net.minecraft.util.RandomSource.create(4242L));
+					seer[0] = io.github.jcondedata.aliveworkplace.legend.LegendGuests.guest(l, hall);
+					Showcase.check(seer[0] != null && ModAttachments.LEGEND.get(seer[0]).id().equals(legend.id()), "the Seer came to the Chapel at midnight");
+					if (seer[0] != null) {
+						seer[0].setNoAi(true);
+						seer[0].moveTo(anchor.getX() + 0.5, anchor.getY(), anchor.getZ() + 1.5, 180f, 0f);
+						seer[0].setYHeadRot(180f);
+					}
+				}
+				if (seer[0] != null) {
+					io.github.jcondedata.aliveworkplace.legend.Legends.tick(seer[0]); // (no AI to tick it: the motes at night)
+				}
+				if (t >= 420 && !dawn[0] && seer[0] != null) {
+					dawn[0] = true;
+					l.setDayTime(81L * 24000L + 300L); // dawn
+					io.github.jcondedata.aliveworkplace.legend.Legends.make(l, seer[0], legend, "showcase");
+					io.github.jcondedata.aliveworkplace.legend.LegendGuests.round(l, hall, net.minecraft.util.RandomSource.create(29L));
+					var entity = (io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) l.getBlockEntity(hall);
+					told[0] = entity.seer().toldDay() == io.github.jcondedata.aliveworkplace.hall.Chronicle.day(l);
+					Showcase.check(told[0], "the Seer foretold at dawn");
+				}
+				return told[0] && t >= 600;
+			};
+		SCENES.put("legend_golem_smith", new Job("the Golem Smith forged a Hauler Golem, and the hauler, a farmhand and a wall sentry went to work",
+			2400, new Vec3(1.5, -51.5, 11), new Vec3(0, -60, -5), (level, player) -> {
+			// ROADMAP 29.15: the Golem Smith at a smithing table, the costs of a Hauler in the chest beside it and five
+			// villagers round the hall: the forge builds the hauler at once. A farmhand and a wall sentry are already out:
+			// the hauler empties a full Drop Box into the Storehouse's chest, the farmhand harvests and replants a ripe
+			// wheat field into its farmer's chest, and the sentry holds the first point of its Patrol Map against zombies.
+			level.getGameRules().getRule(GameRules.RULE_DAYLIGHT).set(false, level.getServer());
+			level.setDayTime(3000);
+			BlockPos hall = STATION.offset(-3, 0, 3);
+			place(level, hall, ModBlocks.VILLAGE_HALL);
+			Villager smith = worker(level, STATION, Blocks.SMITHING_TABLE, PoiTypes.TOOLSMITH, io.github.jcondedata.aliveworkplace.registry.ModVillagers.TINKERER);
+			io.github.jcondedata.aliveworkplace.legend.Legend legend = io.github.jcondedata.aliveworkplace.legend.Legends.get(
+				io.github.jcondedata.aliveworkplace.legend.GolemSmith.ID).orElse(null);
+			Showcase.check(legend != null, "the Golem Smith's file loaded");
+			if (legend == null) {
+				return l -> true;
+			}
+			io.github.jcondedata.aliveworkplace.legend.Legends.make(level, smith, legend, "showcase");
+			Container costs = chest(level, STATION.east(), new ItemStack(Items.IRON_BLOCK, 4), new ItemStack(Items.CARVED_PUMPKIN), new ItemStack(Items.CHEST));
+			for (int i = 0; i < 4; i++) {
+				Villager v = EntityType.VILLAGER.spawn(level, STATION.offset(-6 + 2 * i, 0, 4), MobSpawnType.COMMAND);
+				v.setNoAi(true);
+			}
+			// The hauler's round: a full Drop Box out east, the Storehouse and its chest out west.
+			BlockPos box = STATION.offset(5, 0, -3);
+			place(level, box, ModBlocks.DROP_BOX);
+			Container drop = (Container) level.getBlockEntity(box);
+			for (int i = 0; i < 9; i++) {
+				drop.setItem(i, new ItemStack(i % 3 == 0 ? Items.COBBLESTONE : i % 3 == 1 ? Items.OAK_LOG : Items.COAL, 64));
+			}
+			place(level, STATION.offset(-6, 0, -3), ModBlocks.STOREHOUSE);
+			Container store = chest(level, STATION.offset(-5, 0, -3));
+			// The farmhand's field: 5x5 ripe wheat behind, its farmer's composter and chest beside it.
+			for (int x = -2; x <= 2; x++) {
+				for (int z = -12; z <= -8; z++) {
+					level.setBlockAndUpdate(new BlockPos(x, -61, z), Blocks.FARMLAND.defaultBlockState());
+					level.setBlockAndUpdate(new BlockPos(x, -60, z), Blocks.WHEAT.defaultBlockState().setValue(net.minecraft.world.level.block.CropBlock.AGE, 7));
+				}
+			}
+			BlockPos composter = new BlockPos(4, -60, -10);
+			Villager farmer = worker(level, composter, Blocks.COMPOSTER, PoiTypes.FARMER, VillagerProfession.FARMER);
+			farmer.setNoAi(true);
+			ModAttachments.FARM_FIELD.set(farmer, new io.github.jcondedata.aliveworkplace.farm.FieldJob(
+				net.minecraft.world.level.levelgen.structure.BoundingBox.fromCorners(new BlockPos(-2, -61, -12), new BlockPos(2, -61, -8))));
+			Container field = chest(level, composter.east());
+			// The wall: a stone-brick walk west with the sentry's post on it, and three zombies (helmeted against the sun)
+			// coming from beyond it.
+			BlockPos post = STATION.offset(-8, 0, -7);
+			for (int dx = -1; dx <= 1; dx++) {
+				for (int dz = -3; dz <= 3; dz++) {
+					level.setBlockAndUpdate(post.offset(dx, -1, dz), Blocks.STONE_BRICKS.defaultBlockState());
+				}
+			}
+			net.minecraft.world.entity.animal.IronGolem hauler = io.github.jcondedata.aliveworkplace.legend.GolemSmith.forgeOne(level, hall, smith);
+			Showcase.check(hauler != null && costs.isEmpty(), "the Golem Smith forged a Hauler Golem from the chest");
+			net.minecraft.world.entity.animal.IronGolem farmhand = io.github.jcondedata.aliveworkplace.legend.GolemSmith.build(level, STATION.offset(2, 0, -5),
+				io.github.jcondedata.aliveworkplace.legend.GolemSmith.Role.FARMHAND);
+			net.minecraft.world.entity.animal.IronGolem sentry = io.github.jcondedata.aliveworkplace.legend.GolemSmith.build(level, STATION.offset(-4, 0, -2),
+				io.github.jcondedata.aliveworkplace.legend.GolemSmith.Role.SENTRY);
+			if (sentry != null) {
+				ModAttachments.GOLEM_POST.set(sentry, post);
+			}
+			List<net.minecraft.world.entity.monster.Zombie> zombies = new java.util.ArrayList<>();
+			for (int i = 0; i < 3; i++) {
+				var zombie = EntityType.ZOMBIE.spawn(level, post.offset(-7, 0, -2 + 2 * i), MobSpawnType.COMMAND);
+				zombie.setItemSlot(EquipmentSlot.HEAD, new ItemStack(Items.LEATHER_HELMET));
+				zombie.setTarget(sentry);
+				zombies.add(zombie);
+			}
+			return l -> farmhand != null && sentry != null && store.countItem(Items.COBBLESTONE) + store.countItem(Items.OAK_LOG) + store.countItem(Items.COAL) >= 9 * 64
+				&& field.countItem(Items.WHEAT) >= 25 && zombies.stream().noneMatch(net.minecraft.world.entity.Entity::isAlive)
+				&& sentry.position().distanceTo(net.minecraft.world.phys.Vec3.atBottomCenterOf(post)) < 3;
+		}, null));
 		SCENES.put("bard", job("the bard played a record at the Music Stand", 1200, (level, player) -> {
 			Villager b = picked(level, player, STATION, Blocks.JUKEBOX, Items.MUSIC_DISC_CAT);
 			chest(level, chestPos(), new ItemStack(Items.MUSIC_DISC_CAT));

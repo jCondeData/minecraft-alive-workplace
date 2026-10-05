@@ -33,6 +33,8 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 	private int festivalCrowd;
 	/** Legends visiting as guests (29.8): who last came when, the guest staying now, and the day each place last rolled. */
 	private io.github.jcondedata.aliveworkplace.legend.LegendGuests.State legendGuests = io.github.jcondedata.aliveworkplace.legend.LegendGuests.State.EMPTY;
+	/** The Seer's dawn foretelling (29.16): tonight's raid, the next festival and market days, tomorrow's guest; empty in older halls. */
+	private io.github.jcondedata.aliveworkplace.legend.Seer.State seer = io.github.jcondedata.aliveworkplace.legend.Seer.State.EMPTY;
 	private long founderMoodDay;
 	/** Strange moods (29.10): the day they may come again after one failed, and the day the village last rolled for one. */
 	private long noMoodUntil;
@@ -522,6 +524,16 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 		setChanged();
 	}
 
+	/** The Seer's last dawn foretelling here (29.16). */
+	public io.github.jcondedata.aliveworkplace.legend.Seer.State seer() {
+		return seer;
+	}
+
+	public void setSeer(io.github.jcondedata.aliveworkplace.legend.Seer.State state) {
+		seer = state;
+		setChanged();
+	}
+
 	/** The day the Founder's mood came (0: not yet). */
 	public long founderMoodDay() {
 		return founderMoodDay;
@@ -619,6 +631,7 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 		treasuryTotal = Nbt.getLong(tag, "treasuryTotal");
 		festivalCrowd = Nbt.getInt(tag, "festivalCrowd");
 		legendGuests = io.github.jcondedata.aliveworkplace.legend.LegendGuests.State.load(tag);
+		seer = io.github.jcondedata.aliveworkplace.legend.Seer.State.load(tag);
 		founderMoodDay = Nbt.getLong(tag, "founderMoodDay");
 		noMoodUntil = Nbt.getLong(tag, "noMoodUntil");
 		moodRolledDay = Nbt.getLong(tag, "moodRolledDay");
@@ -698,6 +711,7 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 		tag.putLong("treasuryTotal", treasuryTotal);
 		tag.putInt("festivalCrowd", festivalCrowd);
 		legendGuests.save(tag);
+		seer.save(tag);
 		tag.putLong("founderMoodDay", founderMoodDay);
 		tag.putLong("noMoodUntil", noMoodUntil);
 		tag.putLong("moodRolledDay", moodRolledDay);

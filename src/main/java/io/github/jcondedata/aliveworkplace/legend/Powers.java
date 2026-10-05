@@ -20,7 +20,9 @@ public final class Powers {
 		register("grand_rebuild", GrandRebuildPower::read);
 		register("far_expeditions", FarExpeditionsPower::read);
 		register("expedition", ExpeditionPower::read);
+		register("golem_forge", GolemForgePower::read);
 		GiftPowers.register();
+		Seer.register();
 	}
 
 	/** Adds a named power (each Legend item adds its own). */

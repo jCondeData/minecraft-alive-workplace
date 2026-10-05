@@ -1,0 +1,21 @@
+{
+  "rarity": "rare",
+  "job": "aliveworkplace:legend",
+  "title": "legend.aliveworkplace.seer.title",
+  "lore": "legend.aliveworkplace.seer.lore",
+  "names": [
+    "legend.aliveworkplace.seer.name.1",
+    "legend.aliveworkplace.seer.name.2",
+    "legend.aliveworkplace.seer.name.3"
+  ],
+  "conditions": [],
+  "arrive": [
+    {"way": "visit", "place": "chapel", "chance": 0.5},
+    {"way": "born", "trades": ["minecraft:cleric"]}
+  ],
+  "needs": {"luxury": "jewels"},
+  "powers": [
+    {"type": "foretell", "warning_days": 2},
+    {"type": "bless_weddings", "mood": 10, "days": 7, "baby_days": 2}
+  ]
+}

@@ -141,6 +141,17 @@ public final class VillageRaids {
 			return;
 		}
 		long day = Chronicle.day(level);
+		// With a Seer in the village (29.16) the night was rolled at dawn, and goes as foretold.
+		Optional<io.github.jcondedata.aliveworkplace.legend.Seer.State> told = io.github.jcondedata.aliveworkplace.legend.Seer.tonight(level, hall);
+		if (told.isPresent()) {
+			Night night = told.get().night();
+			if (ENABLED && night.raid() && !told.get().raidStarted() && isNight(level) && level.getDayTime() % VillageNeeds.DAY >= night.at()
+				&& start(level, hall, villagers, guards, night.angle()) != null) {
+				io.github.jcondedata.aliveworkplace.legend.Seer.raidStarted(level, hall);
+				raided.accept(day);
+			}
+			return;
+		}
 		if (!ENABLED || !isNight(level) || day - lastRaidDay < REST_DAYS) {
 			return;
 		}
@@ -157,11 +168,56 @@ public final class VillageRaids {
 		return level.getEntitiesOfClass(Mob.class, new AABB(hall).inflate(r, 48, r), m -> m.isAlive() && m.getTags().contains(TAG));
 	}
 
+	/**
+	 * A night rolled ahead (29.16: at dawn, with a Seer in the village): whether raiders come, from which side ({@code angle},
+	 * radians from the hall as {@code atan2(dz, dx)}) and at what time of night ({@code at}, day time).
+	 */
+	public record Night(boolean raid, double angle, long at) {
+		public static final Night QUIET = new Night(false, 0, 0);
+
+		/** The side they come from: "north", "south-east"... */
+		public Component side(BlockPos hall) {
+			return io.github.jcondedata.aliveworkplace.legend.Pathfinder.direction(hall,
+				hall.offset((int) Math.round(Math.cos(angle) * 100), 0, (int) Math.round(Math.sin(angle) * 100)));
+		}
+	}
+
+	/** How far the raiders' gathering point may stray from a foretold side (radians): well inside its eighth of the compass. */
+	static final double FORETOLD_SPREAD = 0.3;
+
+	/**
+	 * Rolls tonight's raid on the village of {@code villagers} round {@code hall} ahead, as the hall's night rounds would:
+	 * none while raids are off or within {@link #REST_DAYS} of the last, else with {@link #chance} for the night. The side
+	 * is the bandit camp's when there is one near, else any of the eight; the hour falls between nightfall and well
+	 * before dawn.
+	 */
+	public static Night rollNight(ServerLevel level, BlockPos hall, int villagers, long lastRaidDay, net.minecraft.util.RandomSource random) {
+		long day = Chronicle.day(level);
+		float roll = random.nextFloat();
+		double eighth = Math.PI / 4;
+		Optional<BanditCamps.Camp> camp = BanditCamps.near(level, hall);
+		double angle = camp.map(c -> Math.atan2(c.pos().getZ() - hall.getZ(), c.pos().getX() - hall.getX()))
+			.orElseGet(() -> random.nextInt(8) * eighth);
+		angle = Math.round(angle / eighth) * eighth; // the middle of its eighth, so the side told is the side they come from
+		long at = 13500 + random.nextInt(4500);
+		if (!ENABLED || day - lastRaidDay < REST_DAYS || roll >= chance(level, hall, villagers)) {
+			return new Night(false, angle, at);
+		}
+		return new Night(true, angle, at);
+	}
+
 	/** Starts a raid on the village round {@code hall} now; null if the raiders found nowhere to gather. */
 	@Nullable
 	public static Raid start(ServerLevel level, BlockPos hall, int villagers, int guards) {
+		return start(level, hall, villagers, guards, Double.NaN);
+	}
+
+	/** As {@link #start(ServerLevel, BlockPos, int, int)}, gathering on the side {@code angle} (NaN: wherever they like). */
+	@Nullable
+	public static Raid start(ServerLevel level, BlockPos hall, int villagers, int guards, double angle) {
 		Optional<BanditCamps.Camp> camp = BanditCamps.near(level, hall);
-		BlockPos gather = camp.map(c -> gatheringPoint(level, hall, Math.atan2(c.pos().getZ() - hall.getZ(), c.pos().getX() - hall.getX()), 0.5))
+		BlockPos gather = !Double.isNaN(angle) ? gatheringPoint(level, hall, angle, FORETOLD_SPREAD)
+			: camp.map(c -> gatheringPoint(level, hall, Math.atan2(c.pos().getZ() - hall.getZ(), c.pos().getX() - hall.getX()), 0.5))
 			.orElse(null);
 		if (gather == null) {
 			gather = gatheringPoint(level, hall);

@@ -868,8 +868,106 @@ def old_sage():
     return [path]
 
 
+def seer():
+    """The Seer (29.16), drawn over the Legend trade's mantle: a deep purple robe to the feet with its hood up, sewn
+    with silver stars (single stitches and a few four-point sparkles), a silver hem and cuffs, a silver circlet (the
+    Legend's mark) at the hood's edge with a pale moonstone, and a crescent moon clasp at the throat."""
+    t = vg.VillagerTexture()
+    robe_ = vg.cloth("#3b2160")
+    silver = STEEL
+    star, glint = "#c9cfe0", "#eef1fa"
+    vg.hat(t, robe_, style="hood")
+    hb = t.face("hat", "back")                           # the hood's back: a seam, a darker hem, a star
+    paint(hb, ((4, y) for y in range(1, 8)), robe_[1])
+    paint(hb, ((x, 7) for x in range(hb.w)), robe_[1])
+    paint(hb, ((x, 0) for x in range(hb.w)), robe_[3])
+    paint(hb, ((2, 3), (6, 5)), star)
+    for side in ("west", "east"):
+        f = t.face("hat", side)
+        f.put(2 if side == "west" else 5, 4, star)
+    for side in SIDES:                                   # the silver circlet at the hood's edge
+        f = t.face("head", side)
+        for x in range(f.w):
+            f.put(x, 4, silver[2] if side in ("front", "west") else silver[1])
+    hf = t.face("head", "front")
+    paint(hf, ((3, 4),), "#d8e6f2")                      # the moonstone, lit on its top-left
+    paint(hf, ((4, 4),), "#9fb4cc")
+    vg.robe(t, robe_, length=20, sleeves_too=True, body_too=True, noise=0)
+    vg.sleeves(t, robe_, cuff=silver[1], noise=0)
+    jf = t.face("jacket", "front")
+    paint(jf, ((3, y) for y in range(2, 20)), robe_[0])  # where the robe closes
+    paint(jf, ((3, 0), (4, 0)), silver[3])               # the crescent clasp at the throat
+    paint(jf, ((2, 1), (3, 1)), silver[2])
+    jf.put(4, 1, robe_[2])
+    for side in SIDES:                                   # the silver hem
+        f = t.face("jacket", side)
+        for x in range(f.w):
+            f.put(x, 19, silver[1])
+    # The stars: single stitches, and four-point sparkles with a bright heart (off the badge, x 4..7 rows 10..13).
+    def sparkle(f, x, y):
+        f.put(x, y, glint)
+        for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+            f.put(x + dx, y + dy, star)
+    paint(jf, ((1, 3), (6, 4), (0, 9), (2, 15), (6, 17), (1, 18)), star)
+    sparkle(jf, 1, 12)
+    sparkle(jf, 6, 7)
+    jb = t.face("jacket", "back")
+    paint(jb, ((1, 2), (6, 1), (3, 6), (0, 11), (7, 13), (2, 17), (5, 18)), star)
+    sparkle(jb, 5, 9)
+    sparkle(jb, 2, 14)
+    for side, pts in (("west", ((1, 3), (4, 8), (2, 14), (4, 17))), ("east", ((3, 2), (1, 9), (3, 15), (1, 17)))):
+        f = t.face("jacket", side)
+        paint(f, pts, star)
+        sparkle(f, 2, 11)
+    am = t.face("arms_middle", "front")                  # a star on the folded sleeves
+    paint(am, ((1, 1), (6, 2)), star)
+    path = ASSETS / "textures" / "entity" / "villager" / "legend" / "seer.png"
+def golem_smith():
+    """The Golem Smith (29.15), drawn over the Tinkerer's outfit: a heavy dark leather smith's apron from the chest to
+    the shins with iron rivets and a scorched hem; riveted iron-rimmed goggles down over the eyes on a leather strap;
+    iron-banded leather gloves where the crossed arms meet, iron bands round the cuffs; a gold circlet (the Legend's
+    mark) above the goggle strap."""
+    t = vg.VillagerTexture()
+    apron = vg.cloth("#4a3220")
+    vg.apron(t, apron, top=1, bottom=18, left=1, right=6, ties=True)
+    apron_back(t, apron)
+    jf = t.face("jacket", "front")
+    paint(jf, ((1, 1), (6, 1)), STEEL[3])                # rivets at the bib's corners
+    paint(jf, ((1, 9), (6, 9)), STEEL[2])                # and at the waist
+    paint(jf, ((x, 18) for x in range(1, 7)), "#2a1c12")  # the hem, scorched at the forge
+    jf.put(2, 17, "#3a281a")
+    jf.put(5, 17, "#3a281a")
+    glove = vg.cloth("#6b4a2c", n=4)
+    vg.sleeves(t, vg.cloth("#5c4a3a"), cuff=STEEL[1], gloves=glove, noise=0)
+    af = t.face("arm", "front")                          # iron bands across the gloves' backs
+    for x in range(af.w):
+        if af.get(x, 1)[3]:
+            af.put(x, 1, STEEL[2] if x % 4 else STEEL[3])
+    vg.glasses(t, frame=STEEL[1], lens="#e0803a", strap="#3b2a1e")
+    hf = t.face("hat", "front")
+    paint(hf, ((0, 5), (7, 5)), STEEL[0])                # rivets where the strap meets the rims
+    paint(hf, ((3, 7), (4, 7)), STEEL[2])                # the bridge
+    cap = vg.cloth("#3b2a1e")                            # a close leather smith's cap over the Tinkerer's pushed-up goggles
+    top = t.face("hat", "top")
+    for y in range(top.h):
+        for x in range(top.w):
+            top.put(x, y, cap[2] if y < 2 else cap[1])
+    for side in SIDES:
+        f = t.face("hat", side)
+        for y in range(0, 4):
+            for x in range(f.w):
+                f.put(x, y, cap[2] if y == 0 and side in ("front", "west") else cap[1] if y < 3 else cap[0])
+        for x in range(f.w):                             # the Legend's circlet at the cap's edge
+            f.put(x, 4, GOLD[2] if side in ("front", "west") else GOLD[1])
+    hf.put(3, 1, STEEL[2])                               # an iron rivet on the cap's front
+    hf.put(4, 1, STEEL[1])
+    path = ASSETS / "textures" / "entity" / "villager" / "legend" / "golem_smith.png"
+    t.save(path)
+    return [path]
+
+
 DRAW = [orchard_keeper, berry_breeder, camp_cook, habitat_keeper, daycare_keeper, gem_grower, pokemon_trader, porter, postman, rancher, scholar, shopkeeper, sifter, teacher, tinkerer,
-        trainer, trainer_leader, tutor, undertaker, steward, legend, legend_placeholder, master_architect, pathfinder, old_sage]
+        trainer, trainer_leader, tutor, undertaker, steward, legend, legend_placeholder, master_architect, pathfinder, old_sage, seer, golem_smith]
 
 if __name__ == "__main__":
     run(DRAW)

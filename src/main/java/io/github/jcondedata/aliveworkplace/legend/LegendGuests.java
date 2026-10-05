@@ -230,6 +230,14 @@ public final class LegendGuests {
 		if (entity.legendGuests().rolled().getOrDefault(place, -1L) == today) {
 			return null;
 		}
+		// Rolled a day ahead by the Seer (29.16): the one foretold comes (if they still may), and nobody else.
+		Optional<Seer.Told> told = Seer.toldGuest(entity, place, today);
+		if (told.isPresent()) {
+			entity.setLegendGuests(entity.legendGuests().rolledOn(place, today));
+			Optional<ResourceLocation> id = told.get().legend();
+			Legend foretold = id.flatMap(Legends::get).orElse(null);
+			return foretold != null && candidates(level, hall, place, today).contains(foretold) ? come(level, hall, foretold, place, at, random) : null;
+		}
 		List<Legend> candidates = candidates(level, hall, place, today);
 		if (candidates.isEmpty()) {
 			return null;
@@ -242,6 +250,53 @@ public final class LegendGuests {
 			}
 		}
 		return null;
+	}
+
+	/** The places a guest may come to, in the order a day reaches them: the morning's inn and hall, the market, a festival's fireworks, the Chapel's midnight. */
+	public static final List<String> PLACES = List.of("inn", "hall", "market", "festival", "chapel");
+
+	/** Whether {@code place} rolls for a guest on {@code day} in the village round {@code hall}, as far as can be told ahead. */
+	static boolean rollsOn(ServerLevel level, BlockPos hall, VillageHallBlockEntity entity, String place, long day) {
+		return switch (place) {
+			case "inn" -> io.github.jcondedata.aliveworkplace.hall.VillageAdvice.poiCount(level, hall,
+				io.github.jcondedata.aliveworkplace.registry.ModVillagers.INN_COUNTER_POI) > 0;
+			case "market" -> io.github.jcondedata.aliveworkplace.hall.MarketDays.ENABLED && io.github.jcondedata.aliveworkplace.hall.MarketDays.isMarketDay(hall, day)
+				&& io.github.jcondedata.aliveworkplace.hall.MarketDays.square(level, hall).isPresent();
+			case "festival" -> io.github.jcondedata.aliveworkplace.hall.Festivals.nextDay(level, hall, entity) == day;
+			case "chapel" -> level.dimensionType().moonPhase((day - 1) * VillageNeeds.DAY) == 0 && chapel(level, hall).isPresent();
+			default -> true;
+		};
+	}
+
+	/**
+	 * Rolls the guest of {@code day} ahead (the Seer, 29.16): place by place in the day's order, as {@link #visit} would,
+	 * stopping at the first who comes; every place gets its answer (nobody, at the rest), so the day goes as foretold.
+	 * A guest staying through that day, or one told to come the day before ({@code guestDayBefore}), means nobody; a place
+	 * that already rolled that day is nobody too. Returns the answers by place.
+	 */
+	public static Map<String, Seer.Told> rollAhead(ServerLevel level, BlockPos hall, long day, boolean guestDayBefore, RandomSource random) {
+		VillageHallBlockEntity entity = hall(level, hall);
+		Map<String, Seer.Told> out = new LinkedHashMap<>();
+		if (!Legends.ENABLED || entity == null) {
+			return out;
+		}
+		boolean taken = guestDayBefore // they will still be staying
+			|| entity.legendGuests().guest().map(g -> g.lastDay() >= day).orElse(false) && staying(level, hall, entity, Chronicle.day(level));
+		for (String place : PLACES) {
+			Legend found = null;
+			if (!taken && entity.legendGuests().rolled().getOrDefault(place, -1L) != day && rollsOn(level, hall, entity, place, day)) {
+				for (Legend legend : candidates(level, hall, place, day)) {
+					float chance = ways(legend, place).stream().map(w -> chance(level, hall, w)).max(Float::compare).orElse(0f);
+					if (random.nextFloat() < chance) {
+						found = legend;
+						break;
+					}
+				}
+			}
+			out.put(place, new Seer.Told(day, Optional.ofNullable(found).map(Legend::id)));
+			taken |= found != null;
+		}
+		return out;
 	}
 
 	/** Whether a guest is staying (one who is gone, unloaded past their last day or no longer a guest, is let go). */
@@ -324,19 +379,28 @@ public final class LegendGuests {
 	 * settles (every need met) or, from the evening of their last day and out of sight, leaves.
 	 */
 	public static void round(ServerLevel level, BlockPos hall) {
+		round(level, hall, level.random);
+	}
+
+	/** As {@link #round(ServerLevel, BlockPos)}, rolling with {@code random} (tests: a fixed one). */
+	public static void round(ServerLevel level, BlockPos hall, RandomSource random) {
 		VillageHallBlockEntity entity = hall(level, hall);
 		if (!Legends.ENABLED || entity == null) {
 			return;
 		}
 		long time = level.getDayTime() % VillageNeeds.DAY;
+		Seer.round(level, hall, random); // the dawn foretelling (29.16), before the day's rolls
 		if (time >= MORNING_FROM && time < MORNING_TO) {
-			visit(level, hall, "hall", hall, level.random);
+			visit(level, hall, "hall", hall, random);
 		}
 		if (level.getMoonPhase() == 0 && time >= MIDNIGHT_FROM && time < MIDNIGHT_TO) {
-			chapel(level, hall).ifPresent(at -> visit(level, hall, "chapel", at, level.random));
+			chapel(level, hall).ifPresent(at -> visit(level, hall, "chapel", at, random));
 		}
 		LegendSites.arrive(level, hall);
 		OldSage.round(level, hall); // the hermit's hut, the Iron Pact's golems (29.14)
+		if (time >= MORNING_FROM && time < MORNING_TO) {
+			GolemSmith.round(level, hall); // the Golem Smith's golems (29.15)
+		}
 		tend(level, hall);
 	}
 

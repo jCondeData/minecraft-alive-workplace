@@ -1957,7 +1957,7 @@ the Village Hall (`VillageNeeds`, `VillageQuests`, `VillageRanks`, `Festivals`, 
   villager hide; no work during the raid or before noon after it; reformed, a builder with no raider near keeps
   building and work goes on at dawn; showcase scene `conscription`: a GIF of villagers and guards beating back a
   night raid.
-- [ ] **30.11** **The Work Horn.** An item of its own (pixel-art: a brass-banded horn), crafted from a goat horn, a
+- [x] **30.11** (review: pending 2026-10-05) **The Work Horn.** An item of its own (pixel-art: a brass-banded horn), crafted from a goat horn, a
   gold ingot and an emerald. Blown in a village (held like a goat horn until it sounds), it calls a rush: every grown
   villager of the village works 50% faster for 5 minutes (6000 ticks; a `Pace` source, so the cap holds), with sparks
   over the rushing workers now and then. Once a village a day (the hall keeps the day; a second blow is refused with

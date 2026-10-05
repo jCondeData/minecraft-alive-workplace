@@ -107,6 +107,8 @@ public final class WorkplaceConfig {
 	public int maxWorkPace = 200;
 	/** Villages' owners proclaim edicts at the hall (off: none can be, and those in force do nothing but stay saved). */
 	public boolean villageEdicts = true;
+	/** The Work Horn calls a rush when blown in a village (ROADMAP 30.11). Off: it only sounds. */
+	public boolean workHorns = true;
 	/** Days an edict stays in force before it can be lifted. */
 	public int edictMinDays = 3;
 	/** Villagers at a composter can be made Berry Breeders with a Cobblemon berry (ROADMAP 28.9). Off: no Berry Breeder job. */
@@ -315,6 +317,7 @@ public final class WorkplaceConfig {
 		io.github.jcondedata.aliveworkplace.work.Pace.MAX_PERCENT = maxWorkPace;
 		io.github.jcondedata.aliveworkplace.hall.Edicts.setEnabled(villageEdicts);
 		io.github.jcondedata.aliveworkplace.hall.Edicts.MIN_DAYS = edictMinDays;
+		io.github.jcondedata.aliveworkplace.hall.WorkHorn.ENABLED = workHorns;
 		io.github.jcondedata.aliveworkplace.explore.ExplorerWork.RANGE = explorerRange;
 		PostOffice.ROUND = postmanRange;
 		// Gametests run side by side: workers sharing chests across them would mix the tests up. The village tests

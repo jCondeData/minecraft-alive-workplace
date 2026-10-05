@@ -111,6 +111,8 @@ public final class Pace {
 	 */
 	public static final Source LEGEND = register(new Source("legend", Kind.BONUS,
 		v -> 1f / io.github.jcondedata.aliveworkplace.legend.LegendPowers.pace(v)));
+	/** A Work Horn's rush in the villager's village (30.11): 50% faster for 5 minutes. */
+	public static final Source WORK_HORN = register(new Source("work_horn", Kind.BONUS, io.github.jcondedata.aliveworkplace.hall.WorkHorn::pace));
 	public static final Source ILL = register(new Source("ill", Kind.PENALTY, Sickness::pace));
 	public static final Source UNHAPPY = register(new Source("unhappy", Kind.PENALTY, Moods::pace));
 	public static final Source LAZY = register(new Source("lazy", Kind.PENALTY, Traits::pace));

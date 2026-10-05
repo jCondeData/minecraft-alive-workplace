@@ -26,7 +26,7 @@ import org.jetbrains.annotations.Nullable;
  * sneak-using a Village Ledger. At the top the village's name; the second row holds its edict slots (one per rank: in
  * force with its days, free, or locked with the rank that opens it); below, every edict with its boost and cost. Click
  * an edict twice to proclaim it, once to lift one in force. Only the hall's owner, friends and operators may click;
- * everyone else reads it and is told why. The last row is kept for the civic items and guilds (30.11 onwards).
+ * everyone else reads it and is told why. The last row is kept for the civic items and guilds: the Work Horn's state first (30.11).
  */
 public final class EdictBook {
 	/** Back to the hall's screen (only when opened from it). */
@@ -40,6 +40,8 @@ public final class EdictBook {
 	public static final int END_EDICTS = 45;
 	/** The last row, kept for the civic items and guilds. */
 	public static final int RESERVED_ROW = 5;
+	/** The Work Horn on the last row (30.11): ready, rushing or used today. */
+	public static final int HORN = RESERVED_ROW * 9;
 
 	/** Opens the Book on its own (from a Village Ledger: it stays open while the hall stands). */
 	public static void open(ServerPlayer player, BlockPos hall) {
@@ -134,6 +136,10 @@ public final class EdictBook {
 				});
 			}
 		}
+		// The last row: the civic items.
+		menu.button(HORN, VillageHallScreen.icon(io.github.jcondedata.aliveworkplace.registry.ModItems.WORK_HORN,
+			Component.translatable("screen.aliveworkplace.edicts.horn"), ChatFormatting.GOLD,
+			WorkHorn.status(level, entity).toArray(Component[]::new)), null);
 		filler(menu, RESERVED_ROW);
 	}
 

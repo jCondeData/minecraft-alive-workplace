@@ -17,6 +17,11 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Added
+- **The Work Horn** (30.11): a brass-banded horn crafted from a goat horn, a gold ingot and an emerald. Hold it up in
+  a village like a goat horn and, when it sounds, every grown villager works 50% faster for 5 minutes (the speed cap
+  still holds), with sparks over them. Once a village a day; afterwards the villagers are worn out (10 less happy) until
+  dawn. Only the hall's owner and friends can call a rush in an owned village. The Book of Edicts' last row shows the
+  horn ready or used. `workHorns` in the config.
 - **Gifted villagers** (29.6): about one villager in 30 has a rare gift as well as their traits, shown in gold on the
   Village Hall's list. Prodigy learns three times as fast; Iron Will never panics and keeps working through raids and
   the bell; Silver Tongue's trades are 20% cheaper; a Night Owl works from dusk to dawn and sleeps from mid-morning to

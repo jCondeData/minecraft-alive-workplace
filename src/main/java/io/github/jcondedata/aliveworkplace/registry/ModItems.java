@@ -28,6 +28,8 @@ public final class ModItems {
 	public static final io.github.jcondedata.aliveworkplace.guard.PatrolMapItem PATROL_MAP = Reg.item("patrol_map", io.github.jcondedata.aliveworkplace.guard.PatrolMapItem::new, new Item.Properties().stacksTo(1));
 	public static final io.github.jcondedata.aliveworkplace.city.CityPlanItem CITY_PLAN = Reg.item("city_plan", io.github.jcondedata.aliveworkplace.city.CityPlanItem::new, new Item.Properties().stacksTo(1));
 	public static final io.github.jcondedata.aliveworkplace.hall.VillageLedgerItem VILLAGE_LEDGER = Reg.item("village_ledger", io.github.jcondedata.aliveworkplace.hall.VillageLedgerItem::new, new Item.Properties().stacksTo(1));
+	/** Calls a rush in a village once a day (ROADMAP 30.11). */
+	public static final io.github.jcondedata.aliveworkplace.hall.WorkHornItem WORK_HORN = Reg.item("work_horn", io.github.jcondedata.aliveworkplace.hall.WorkHornItem::new, new Item.Properties().stacksTo(1));
 	public static final io.github.jcondedata.aliveworkplace.guard.RallyBannerItem RALLY_BANNER = Reg.item("rally_banner", io.github.jcondedata.aliveworkplace.guard.RallyBannerItem::new, new Item.Properties().stacksTo(1));
 
 	/** Marks out a quarry for a Miner. */
@@ -68,6 +70,7 @@ public final class ModItems {
 				output.accept(PATROL_MAP);
 				output.accept(RALLY_BANNER);
 				output.accept(VILLAGE_LEDGER);
+				output.accept(WORK_HORN);
 				output.accept(CITY_PLAN);
 				output.accept(QUARRY_MARKER);
 				output.accept(FIELD_MARKER);

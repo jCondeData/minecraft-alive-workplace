@@ -301,6 +301,11 @@ SCENES = [
       [("01_conscription_raid", "The raid comes: the villagers take up the militia's stone swords"),
        ("02_conscription_fight", "Villagers and the guard beat the raiders back"),
        ("03_conscription_book", "Conscription in the Book of Edicts")]),
+    # The Work Horn (ROADMAP 30.11): two builders before and during a rush, then the Book's last row
+    S("work_horn", "Village Hall", "The Work Horn: a rush",
+      "the hall's owner blew the Work Horn and the two builders placed more blocks a minute during the rush than before it", 75,
+      [("01_work_horn_before", "Two builders at their usual pace"), ("02_work_horn_blown", "The Work Horn blown"),
+       ("03_work_horn_rush", "The rush: 50% faster, sparks over the builders"), ("04_work_horn_book", "Used today, on the Book of Edicts' last row")]),
     S("hall_quests", "Village Hall", "Quests, advice, the village map and the festival",
       "the quests, advice, village map, mercenaries and festival opened", 60,
       [("01_hall_quests", "Quests"), ("02_hall_advice", "What next?"), ("03_hall_map", "Village map"),

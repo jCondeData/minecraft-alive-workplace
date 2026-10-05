@@ -69,6 +69,9 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 	private int extraMeals;
 	/** Conscription (30.10): the game time work may start again after a raid (noon the next day); saved as {@code raidWorkUntil}, 0: none. */
 	private long raidWorkUntil;
+	/** The Work Horn (30.11): the day it was last blown here (-1: never) and the game time the rush ends (0: none). */
+	private long hornDay = -1;
+	private long rushUntil;
 
 	/**
 	 * Whether the hall's point-of-interest record was checked for its Steward's place since it loaded (27.5): halls saved
@@ -106,6 +109,9 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 
 	/** Every {@link VillageNeeds#CHECK_EVERY} ticks (and on the first): the hungry fed, the village counted. */
 	public static void serverTick(net.minecraft.world.level.Level level, BlockPos pos, BlockState state, VillageHallBlockEntity hall) {
+		if (hall.rushUntil > 0 && level instanceof net.minecraft.server.level.ServerLevel server) {
+			WorkHorn.tick(server, pos, hall);
+		}
 		if (!hall.stewardPlaceChecked && level instanceof net.minecraft.server.level.ServerLevel server) {
 			io.github.jcondedata.aliveworkplace.city.Stewards.fixTicket(server, pos);
 			hall.stewardPlaceChecked = true;
@@ -241,6 +247,23 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 			raidWorkUntil = until;
 			setChanged();
 		}
+	}
+
+	/** The day (by {@link Chronicle#day}) the Work Horn was last blown in the village; -1 if never. */
+	public long hornDay() {
+		return hornDay;
+	}
+
+	/** The game time the village's rush ends (0: no rush yet). */
+	public long rushUntil() {
+		return rushUntil;
+	}
+
+	/** A rush called on {@code day}, until {@code until} (game time); see {@link WorkHorn}. */
+	public void startRush(long day, long until) {
+		hornDay = day;
+		rushUntil = Math.max(0, until);
+		setChanged();
 	}
 
 	/** Sets when work may start again after a raid (tests). */
@@ -526,6 +549,8 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 		civic = null;
 		extraMeals = Math.max(0, Math.min(99, Math.round(Nbt.getFloat(tag, "extraMeals") * 100f)));
 		raidWorkUntil = Math.max(0, Nbt.getLong(tag, "raidWorkUntil"));
+		hornDay = tag.contains("hornDay") ? Nbt.getLong(tag, "hornDay") : -1;
+		rushUntil = Math.max(0, Nbt.getLong(tag, "rushUntil"));
 		stewardWishes = !tag.contains("steward") ? io.github.jcondedata.aliveworkplace.city.StewardWishes.State.EMPTY
 			: io.github.jcondedata.aliveworkplace.city.StewardWishes.State.CODEC.parse(net.minecraft.nbt.NbtOps.INSTANCE, tag.get("steward"))
 				.result().orElse(io.github.jcondedata.aliveworkplace.city.StewardWishes.State.EMPTY);
@@ -602,6 +627,10 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 		}
 		if (raidWorkUntil > 0) {
 			tag.putLong("raidWorkUntil", raidWorkUntil);
+		}
+		if (hornDay >= 0) {
+			tag.putLong("hornDay", hornDay);
+			tag.putLong("rushUntil", rushUntil);
 		}
 		net.minecraft.nbt.ListTag lines = new net.minecraft.nbt.ListTag();
 		for (Chronicle.Entry entry : chronicle) {

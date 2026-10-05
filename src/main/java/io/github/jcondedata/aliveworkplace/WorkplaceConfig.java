@@ -141,6 +141,14 @@ public final class WorkplaceConfig {
 	public int stewardMaxOpenBuilds = 4;
 	/** A Steward set to "Run the village" starts the builds he proposes by himself (ROADMAP 27.8). Off: every village asks first. */
 	public boolean stewardSelfRun = Expansions.on(Expansions.M27);
+	/** A Steward's builders build the approved roads on the plan, and new buildings' doors join them with lanes (ROADMAP 27.15). Off: roads are drawn but not built. */
+	public boolean stewardRoads = Expansions.on(Expansions.M27);
+	/** Villages with a trade route each build their half of a road to the other, ending at a milestone if it stops short (ROADMAP 27.17). Off: no roads between villages. */
+	public boolean caravanRoads = Expansions.on(Expansions.M27);
+	/** The longest half of a road a village builds towards another (ROADMAP 27.17); it goes halfway at most. */
+	public int caravanRoadReach = 256;
+	/** A raided village's Steward proposes a wall along the plan's wall line, built from a wall kit (ROADMAP 27.18). Off: he never proposes walls. */
+	public boolean stewardWalls = Expansions.on(Expansions.M27);
 	/** Villagers at a Campfire Pot can be made Camp Cooks with Hearty Grains (ROADMAP 28.8). Off: no Camp Cook job. */
 	public boolean campCooks = Expansions.on(Expansions.M28);
 	/** Villagers at a Pasture Block can be made Habitat Keepers with a honey bottle (ROADMAP 28.10). Off: no Habitat Keeper job. */
@@ -247,7 +255,8 @@ public final class WorkplaceConfig {
 		"seasonDays", 1, 120,
 		"treasuryPerWorker", 0, 500,
 		"dollarsPerEmerald", 1, 10_000,
-		"stewardMaxOpenBuilds", 1, 8);
+		"stewardMaxOpenBuilds", 1, 8,
+		"caravanRoadReach", 32, 512);
 
 	private static Map<String, Range> ranges(Object... nameMinMax) {
 		Map<String, Range> map = new LinkedHashMap<>();
@@ -412,5 +421,11 @@ public final class WorkplaceConfig {
 		// Off in gametests (a partner walking off mid-test would move the numbers); the show tests turn them on.
 		io.github.jcondedata.aliveworkplace.work.PartnerShows.ENABLED = partnerShows && Expansions.on(Expansions.M28) && System.getProperty("fabric-api.gametest") == null;
 		io.github.jcondedata.aliveworkplace.build.Paths.ENABLED = builderPaths && System.getProperty("fabric-api.gametest") == null;
+		// Off in gametests (a test's approved road would be built under other tests); the road tests turn it on.
+		io.github.jcondedata.aliveworkplace.city.Roads.ENABLED = stewardRoads && Expansions.on(Expansions.M27) && System.getProperty("fabric-api.gametest") == null;
+		io.github.jcondedata.aliveworkplace.city.CaravanRoads.ENABLED = caravanRoads && Expansions.on(Expansions.M27);
+		io.github.jcondedata.aliveworkplace.city.CaravanRoads.REACH = caravanRoadReach;
+		// Off in gametests (a test's wall would be built under other tests); the wall tests turn it on.
+		io.github.jcondedata.aliveworkplace.city.Walls.ENABLED = stewardWalls && Expansions.on(Expansions.M27) && System.getProperty("fabric-api.gametest") == null;
 	}
 }

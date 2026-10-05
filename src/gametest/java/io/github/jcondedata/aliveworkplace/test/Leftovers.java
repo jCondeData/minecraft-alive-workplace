@@ -21,6 +21,9 @@ final class Leftovers {
 		for (Entity e : helper.getLevel().getEntitiesOfClass(Entity.class, around, e -> !(e instanceof Player))) {
 			e.discard();
 		}
+		// 27.19: what an earlier batch's players built here isn't this test's
+		io.github.jcondedata.aliveworkplace.city.PlayerBuilt.get(helper.getLevel()).forget(net.minecraft.world.level.levelgen.structure.BoundingBox.fromCorners(
+			net.minecraft.core.BlockPos.containing(around.minX, around.minY, around.minZ), net.minecraft.core.BlockPos.containing(around.maxX, around.maxY, around.maxZ)));
 	}
 
 	/**

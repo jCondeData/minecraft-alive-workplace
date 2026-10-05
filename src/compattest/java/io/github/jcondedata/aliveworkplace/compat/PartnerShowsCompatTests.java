@@ -48,6 +48,23 @@ public class PartnerShowsCompatTests implements FabricGameTest {
 		}
 	}
 
+	/**
+	 * Removes every Village Hall whose village reaches the test area. Halls set outside a test's area (the scholar's
+	 * test puts one at 17,2,17) are never cleared, and one nearby makes this test's villagers its village. Only for
+	 * tests alone in their batch.
+	 */
+	static void clearHalls(GameTestHelper helper) {
+		net.minecraft.server.level.ServerLevel level = helper.getLevel();
+		net.minecraft.world.phys.AABB box = helper.getBounds();
+		int reach = io.github.jcondedata.aliveworkplace.hall.VillageHalls.RADIUS + (int) Math.ceil(Math.max(box.getXsize(), box.getZsize()) / 2);
+		java.util.List<BlockPos> halls = level.getPoiManager().findAll(
+			h -> h.is(io.github.jcondedata.aliveworkplace.registry.ModVillagers.VILLAGE_HALL_POI), p -> true,
+			BlockPos.containing(box.getCenter()), reach, net.minecraft.world.entity.ai.village.poi.PoiManager.Occupancy.ANY).toList();
+		for (BlockPos hall : halls) {
+			level.removeBlock(hall, false);
+		}
+	}
+
 	/** Turns the shows on for this test and off again when it ends, passed or failed. */
 	static void showsOn(GameTestHelper helper) {
 		PartnerShows.ENABLED = true;

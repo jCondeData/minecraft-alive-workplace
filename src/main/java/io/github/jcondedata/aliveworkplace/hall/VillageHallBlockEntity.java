@@ -129,6 +129,10 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 			hall.stewardPlaceChecked = true;
 			hall.setChanged();
 		}
+		if (level instanceof net.minecraft.server.level.ServerLevel server) {
+			io.github.jcondedata.aliveworkplace.city.Roads.tick(server, pos, hall); // 27.15
+			io.github.jcondedata.aliveworkplace.city.Walls.tick(server, pos, hall); // 27.18
+		}
 		if (level instanceof net.minecraft.server.level.ServerLevel server
 			&& (hall.needs == null || Math.floorMod(level.getGameTime() + pos.hashCode(), VillageNeeds.CHECK_EVERY) == 0)) {
 			hall.needs = VillageNeeds.check(server, pos);

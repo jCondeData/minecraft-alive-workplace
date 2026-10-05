@@ -55,6 +55,9 @@ public final class Homes {
 	public static Optional<Building> building(ServerLevel level, BlockPos bed) {
 		Building best = null;
 		for (BuildSiteManager.Finished f : BuildSiteManager.get(level).finishedIn(level)) {
+			if (io.github.jcondedata.aliveworkplace.city.Roads.isSegment(f.structure())) {
+				continue; // a road is nobody's home (27.15)
+			}
 			Vec3i size = size(level, f.structure());
 			if (size == null || Math.abs(f.placement().origin().getX() - bed.getX()) >= size.getX() + size.getZ()
 				|| Math.abs(f.placement().origin().getZ() - bed.getZ()) >= size.getX() + size.getZ()) {

@@ -65,6 +65,7 @@ public final class BlueprintLibrary {
 		Path generated = server.getWorldPath(LevelResource.GENERATED_DIR);
 		return server.getStructureManager().listTemplates()
 			.filter(id -> everything || cobblemonOk(id))
+			.filter(id -> everything || !io.github.jcondedata.aliveworkplace.city.Roads.isSegment(id)) // a Steward's road segments (27.15)
 			.filter(id -> everything || id.getNamespace().equals(AliveWorkplace.MOD_ID) && !isWorldgenPiece(id)
 				|| Files.isRegularFile(generated.resolve(id.getNamespace()).resolve("structures").resolve(id.getPath() + ".nbt")))
 			.sorted()

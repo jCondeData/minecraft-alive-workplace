@@ -1,5 +1,6 @@
 package io.github.jcondedata.aliveworkplace.build;
 
+import io.github.jcondedata.aliveworkplace.city.StewardSafety;
 import io.github.jcondedata.aliveworkplace.work.PartnerShows;
 
 import io.github.jcondedata.aliveworkplace.mc.Chat;
@@ -81,7 +82,8 @@ public class BuilderWork extends Behavior<Villager> {
 	private static final double STILL_DISTANCE = 0.02;
 	private static final int WAIT_RECHECK = 100;
 
-	private enum Action { NONE, BREAK, PLACE, SKIP }
+	/** PLAYER_BLOCK: a player's block in the way of the Steward's build, left there (27.19); skipped like SKIP. */
+	private enum Action { NONE, BREAK, PLACE, SKIP, PLAYER_BLOCK }
 
 	/** -Daliveworkplace.debug=true logs what every builder is doing every two seconds. */
 	private static final boolean DEBUG = Boolean.getBoolean("aliveworkplace.debug");
@@ -267,7 +269,10 @@ public class BuilderWork extends Behavior<Villager> {
 			action = actionFor(level, site, candidate, bench);
 			if (action == Action.NONE) {
 				site.advance();
-			} else if (action == Action.SKIP) {
+			} else if (action == Action.SKIP || action == Action.PLAYER_BLOCK) {
+				if (action == Action.PLAYER_BLOCK && site.isRetrying()) {
+					site.playerBlockInTheWay(); // 27.19: counted once, as it is skipped for good
+				}
 				site.defer(); // (lead only: helpers pick their own steps)
 			} else if (helperWait < HELPER_WAIT && site.claimedByOther(villager.getUUID(), candidate.pos())) {
 				// A helper is on this block (23.1a): leave it to them rather than both walking over to it. If they don't
@@ -510,14 +515,21 @@ public class BuilderWork extends Behavior<Villager> {
 			if (!wantedEmpty && (world.canBeReplaced() || skipped)) {
 				return Action.NONE; // placing will overwrite it, or we leave this spot alone
 			}
-			return isProtected(level, pos, world, bench) ? Action.NONE : Action.BREAK;
+			if (isProtected(level, pos, world, bench)) {
+				return Action.NONE;
+			}
+			// 27.19: the Steward's sites clear only natural blocks; a player's block in the way stays
+			return site.isSteward() && StewardSafety.playersBlock(level, pos, world) ? Action.PLAYER_BLOCK : Action.BREAK;
 		}
 
 		if (!worldEmpty && !world.canBeReplaced()) {
 			if (site.isRepair()) {
 				return Action.NONE; // something's been put there since: a repair only fills holes
 			}
-			return isProtected(level, pos, world, bench) ? Action.SKIP : Action.BREAK;
+			if (isProtected(level, pos, world, bench)) {
+				return Action.SKIP;
+			}
+			return site.isSteward() && StewardSafety.playersBlock(level, pos, world) ? Action.PLAYER_BLOCK : Action.BREAK;
 		}
 		return Action.PLACE;
 	}

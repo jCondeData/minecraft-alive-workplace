@@ -393,7 +393,11 @@ public class StewardCivicRulesGameTests implements FabricGameTest {
 		BlockPos lit = bed(helper, 3, 17);
 		helper.setBlock(new BlockPos(3, 2, 19), Blocks.GLOWSTONE);
 		bed(helper, 12, 17); // far enough from the glowstone to stay dark
-		helper.runAfterDelay(3, () -> {
+		// The light engine runs on its own thread: on a busy machine the glowstone's light can reach the bed later than
+		// 3 ticks after it was set (CI run 37289855963), and until then that bed counts as a second dark one.
+		helper.startSequence().thenIdle(3).thenWaitUntil(() -> helper.assertTrue(
+			helper.getLevel().getBrightness(net.minecraft.world.level.LightLayer.BLOCK, lit) >= 8, "the glowstone's light hasn't reached the lit bed yet"))
+		.thenExecute(() -> {
 			absent(helper, wishes(helper, hall), "street_lamps"); // one bed in the dark
 			BlockPos dark = bed(helper, 18, 17);
 			helper.runAfterDelay(3, () -> {

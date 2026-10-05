@@ -72,6 +72,7 @@ public class MasterArchitectGameTests implements net.fabricmc.fabric.api.gametes
 	private static void setUp(GameTestHelper helper, List<BlueprintData.Placement> recorded) {
 		Leftovers.clear(helper);
 		Leftovers.halls(helper);
+		Leftovers.finished(helper);
 		// A Legendary Legend comes once to each world: an Architect another test left in the server's record holds the slot.
 		LegendRecord stale = LegendRecord.get(helper.getLevel());
 		stale.entries().stream().filter(e -> e.id().equals(ID)).map(LegendRecord.Entry::villager).toList().forEach(stale::forget);

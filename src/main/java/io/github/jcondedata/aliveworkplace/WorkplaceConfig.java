@@ -111,7 +111,7 @@ public final class WorkplaceConfig {
 	public int edictMinDays = 3;
 	/** Villagers at a composter can be made Berry Breeders with a Cobblemon berry (ROADMAP 28.9). Off: no Berry Breeder job. */
 	public boolean berryBreeders = true;
-	/** A grown villager by a Village Hall can be made its Steward with the hall's City Plan (ROADMAP 27.5). Off: no new Stewards, and those appointed stand idle. */
+	/** A Journeyman Builder (or higher) by a Village Hall can be made its Steward with the hall's City Plan (ROADMAP 27.5). Off: no new Stewards, and those appointed stand idle. */
 	public boolean steward = true;
 	/** The most builds a Steward may have open at once, whatever his level and the village's rank. */
 	public int stewardMaxOpenBuilds = 4;

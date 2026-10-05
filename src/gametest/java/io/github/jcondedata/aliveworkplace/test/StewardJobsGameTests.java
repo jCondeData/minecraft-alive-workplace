@@ -253,7 +253,7 @@ public class StewardJobsGameTests implements FabricGameTest {
 		helper.setBlock(table, ModBlocks.BLUEPRINT_TABLE);
 		Villager builder = jobless(helper, table.north());
 		Builders.employ(level, builder, helper.absolutePos(table));
-		Villager steward = helper.spawn(EntityType.VILLAGER, HALL.south(2));
+		Villager steward = StewardGameTests.seasoned(helper.spawn(EntityType.VILLAGER, HALL.south(2)));
 		ItemStack plan = new ItemStack(ModItems.CITY_PLAN);
 		CityPlanItem.bind(level, owner, plan, hall);
 		helper.assertTrue(Stewards.appoint(owner, steward, plan) == InteractionResult.SUCCESS, "setup: Steward not appointed");

@@ -1487,6 +1487,87 @@ public class BuilderGameTests implements FabricGameTest {
 		});
 	}
 
+	/**
+	 * 23.1b: a crewmate close by passes the lead its material with only a sound: no item flies (no item entity at any
+	 * tick) and the toss sound is played through the server-wide cap.
+	 */
+	//$ gametest_ticks_batch AREA '2400' '"toss_sound"'
+	@GameTest(template = AREA, timeoutTicks = 2400, batch = "toss_sound")
+	public void aCrewmatePassesMaterialsWithOnlyASound(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		Setup s = setup(helper, TEST_HUT, HUT_ORIGIN, Rotation.NONE, hutMaterials());
+		int cobble = s.plan().materials().getOrDefault(Items.COBBLESTONE, 0);
+		helper.assertTrue(cobble > 1, "the test hut should need some cobblestone, needs " + cobble);
+		Container chest = (Container) helper.getBlockEntity(CHEST);
+		for (int i = 0; i < chest.getContainerSize(); i++) {
+			if (chest.getItem(i).is(Items.COBBLESTONE)) {
+				chest.setItem(i, ItemStack.EMPTY);
+			}
+		}
+		BlockPos planksBlock = null;
+		for (BuildPlan.Stage stage : BuildPlan.Stage.values()) {
+			for (BuildPlan.Step step : s.plan().steps(stage)) {
+				if (planksBlock == null && step.requirements().stream().anyMatch(r -> r.item() == Items.OAK_PLANKS)
+					&& step.requirements().stream().noneMatch(r -> r.item() == Items.COBBLESTONE)) {
+					planksBlock = step.pos();
+				}
+			}
+		}
+		helper.assertTrue(planksBlock != null, "the test hut should have a planks block");
+		BlockPos claimed = planksBlock;
+		Villager mate = helper.spawn(EntityType.VILLAGER, HELPER);
+		mate.setNoAi(true);
+		ModAttachments.BUILDER_BAG.getOrCreate(mate).addAll(Items.COBBLESTONE, cobble);
+		long playedBefore = io.github.jcondedata.aliveworkplace.build.TossSounds.played();
+		AtomicBoolean itemFlew = new AtomicBoolean(false);
+		net.minecraft.world.phys.AABB area = new net.minecraft.world.phys.AABB(helper.absolutePos(BlockPos.ZERO)).inflate(24);
+		helper.onEachTick(() -> {
+			long now = s.level().getGameTime();
+			if (BuildSiteManager.get(s.level()).get(s.site().id()) != null) {
+				s.site().claim(mate.getUUID(), claimed, now);
+			}
+			if (!s.level().getEntitiesOfClass(net.minecraft.world.entity.item.ItemEntity.class, area).isEmpty()) {
+				itemFlew.set(true);
+			}
+		});
+		helper.succeedWhen(() -> {
+			helper.assertFalse(itemFlew.get(), "an item entity appeared while the crew passed materials");
+			assertBuilt(helper, s);
+			helper.assertTrue(ModAttachments.BUILDER_BAG.getOrCreate(mate).count(Items.COBBLESTONE) == 0,
+				"the crewmate still holds the cobblestone");
+			helper.assertTrue(io.github.jcondedata.aliveworkplace.build.TossSounds.played() > playedBefore,
+				"no toss sound was played when the crewmate passed the cobblestone");
+		});
+	}
+
+	/** 23.1b: past {@code TossSounds.MAX} in one window the toss sounds are skipped, and the next window plays again. */
+	//$ gametest_batch 'net.fabricmc.fabric.api.gametest.v1.FabricGameTest.EMPTY_STRUCTURE' '"toss_cap"'
+	@GameTest(template = net.fabricmc.fabric.api.gametest.v1.FabricGameTest.EMPTY_STRUCTURE, batch = "toss_cap")
+	public void tossSoundsPastTheCapAreSkippedUntilTheNextWindow(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		BlockPos pos = helper.absolutePos(new BlockPos(1, 2, 1));
+		int max = io.github.jcondedata.aliveworkplace.build.TossSounds.MAX;
+		// Whatever is left of the current window, then the window is full: a burst many builders would make.
+		for (int i = 0; i < max; i++) {
+			io.github.jcondedata.aliveworkplace.build.TossSounds.play(level, pos);
+		}
+		long skippedBefore = io.github.jcondedata.aliveworkplace.build.TossSounds.skipped();
+		for (int i = 0; i < 20; i++) {
+			helper.assertFalse(io.github.jcondedata.aliveworkplace.build.TossSounds.play(level, pos),
+				"toss sound " + (max + i + 1) + " in one window was played");
+		}
+		helper.assertTrue(io.github.jcondedata.aliveworkplace.build.TossSounds.skipped() - skippedBefore == 20,
+			"the skipped sounds were not counted");
+		helper.runAfterDelay(io.github.jcondedata.aliveworkplace.build.TossSounds.WINDOW, () -> {
+			int playedNow = 0;
+			for (int i = 0; i < max + 5; i++) {
+				playedNow += io.github.jcondedata.aliveworkplace.build.TossSounds.play(level, pos) ? 1 : 0;
+			}
+			helper.assertTrue(playedNow == max, "a fresh window should play exactly " + max + " toss sounds, played " + playedNow);
+			helper.succeed();
+		});
+	}
+
 	// --- keeping work loaded ----------------------------------------------------------------
 
 	/** A build keeps its chunks loaded while the player who ordered it is online, and not otherwise. */

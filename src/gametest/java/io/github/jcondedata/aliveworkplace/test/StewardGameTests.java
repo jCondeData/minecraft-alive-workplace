@@ -37,6 +37,13 @@ public class StewardGameTests implements net.fabricmc.fabric.api.gametest.v1.Fab
 		return stack;
 	}
 
+	/** {@code villager} made a Builder of {@link Stewards#MIN_BUILDER_LEVEL}, as a Steward must be (27.1a). */
+	static Villager seasoned(Villager villager) {
+		villager.setVillagerData(villager.getVillagerData().setProfession(ModVillagers.BUILDER).setLevel(Stewards.MIN_BUILDER_LEVEL));
+		villager.setVillagerXp(70);
+		return villager;
+	}
+
 	private static boolean stewardAt(GameTestHelper helper, Villager villager, BlockPos hall) {
 		return villager.getVillagerData().getProfession() == ModVillagers.STEWARD && villager.getBrain().getMemory(MemoryModuleType.JOB_SITE)
 			.filter(GlobalPos.of(helper.getLevel().dimension(), helper.absolutePos(hall))::equals).isPresent();
@@ -54,7 +61,7 @@ public class StewardGameTests implements net.fabricmc.fabric.api.gametest.v1.Fab
 		Villager byB = helper.spawn(EntityType.VILLAGER, HALL_B.east(2));
 		helper.assertTrue(Stewards.appoint(player, byB, plan) == InteractionResult.CONSUME, "refusal not answered");
 		helper.assertTrue(byB.getVillagerData().getProfession() == VillagerProfession.NONE, "appointed at another hall");
-		Villager byA = helper.spawn(EntityType.VILLAGER, HALL_A.east(2));
+		Villager byA = seasoned(helper.spawn(EntityType.VILLAGER, HALL_A.east(2)));
 		helper.assertTrue(Stewards.appoint(player, byA, plan) == InteractionResult.SUCCESS, "not appointed");
 		helper.assertTrue(stewardAt(helper, byA, HALL_A), "not the Steward of his hall: " + byA.getVillagerData());
 		helper.assertTrue(helper.getLevel().getPoiManager().getFreeTickets(helper.absolutePos(HALL_A)) == 0, "the hall's place is still free");
@@ -70,13 +77,13 @@ public class StewardGameTests implements net.fabricmc.fabric.api.gametest.v1.Fab
 		helper.setBlock(HALL_A, ModBlocks.VILLAGE_HALL);
 		ServerPlayer player = helper.makeMockServerPlayerInLevel();
 		ItemStack plan = planFor(helper, player, HALL_A);
-		Villager first = helper.spawn(EntityType.VILLAGER, HALL_A.east(2));
-		Villager second = helper.spawn(EntityType.VILLAGER, HALL_A.south(2));
+		Villager first = seasoned(helper.spawn(EntityType.VILLAGER, HALL_A.east(2)));
+		Villager second = seasoned(helper.spawn(EntityType.VILLAGER, HALL_A.south(2)));
 		helper.assertTrue(Stewards.appoint(player, first, plan) == InteractionResult.SUCCESS, "first not appointed");
 		helper.assertTrue(Stewards.appoint(player, second, plan) == InteractionResult.CONSUME, "second not refused");
-		helper.assertTrue(second.getVillagerData().getProfession() == VillagerProfession.NONE, "the hall took a second Steward");
+		helper.assertTrue(second.getVillagerData().getProfession() == ModVillagers.BUILDER, "the hall took a second Steward");
 		helper.assertTrue(Stewards.appoint(player, second, new ItemStack(ModItems.CITY_PLAN)) == InteractionResult.CONSUME
-			&& second.getVillagerData().getProfession() == VillagerProfession.NONE, "an unbound plan appointed");
+			&& second.getVillagerData().getProfession() == ModVillagers.BUILDER, "an unbound plan appointed");
 		Villager child = helper.spawn(EntityType.VILLAGER, HALL_A.west(2));
 		child.setAge(-24000);
 		helper.assertTrue(Stewards.appoint(player, child, plan) == InteractionResult.CONSUME
@@ -103,7 +110,7 @@ public class StewardGameTests implements net.fabricmc.fabric.api.gametest.v1.Fab
 		helper.runAfterDelay(10, () -> {
 			helper.assertTrue(level.getPoiManager().getFreeTickets(hall) == 1, "the loaded hall has no free place");
 			ServerPlayer player = helper.makeMockServerPlayerInLevel();
-			Villager villager = helper.spawn(EntityType.VILLAGER, HALL_A.east(2));
+			Villager villager = seasoned(helper.spawn(EntityType.VILLAGER, HALL_A.east(2)));
 			helper.assertTrue(Stewards.appoint(player, villager, planFor(helper, player, HALL_A)) == InteractionResult.SUCCESS, "not appointed");
 			helper.assertTrue(stewardAt(helper, villager, HALL_A), "no Steward after reload");
 			// Checked once: saved again with its Steward, it isn't registered anew.
@@ -136,7 +143,7 @@ public class StewardGameTests implements net.fabricmc.fabric.api.gametest.v1.Fab
 		Leftovers.clear(helper);
 		helper.setBlock(HALL_A, ModBlocks.VILLAGE_HALL);
 		ServerPlayer player = helper.makeMockServerPlayerInLevel();
-		Villager villager = helper.spawn(EntityType.VILLAGER, HALL_A.east(2));
+		Villager villager = seasoned(helper.spawn(EntityType.VILLAGER, HALL_A.east(2)));
 		helper.assertTrue(Stewards.appoint(player, villager, planFor(helper, player, HALL_A)) == InteractionResult.SUCCESS, "not appointed");
 		helper.destroyBlock(HALL_A);
 		helper.succeedWhen(() -> {
@@ -197,7 +204,7 @@ public class StewardGameTests implements net.fabricmc.fabric.api.gametest.v1.Fab
 		BlockPos hall = helper.absolutePos(HALL_A);
 		VillageHallBlockEntity entity = (VillageHallBlockEntity) level.getBlockEntity(hall);
 		ServerPlayer player = helper.makeMockServerPlayerInLevel();
-		Villager villager = helper.spawn(EntityType.VILLAGER, HALL_A.east(2));
+		Villager villager = seasoned(helper.spawn(EntityType.VILLAGER, HALL_A.east(2)));
 		Stewards.appoint(player, villager, planFor(helper, player, HALL_A));
 		helper.assertTrue(StewardWork.stops(level, villager, hall).isEmpty(), "stops with an empty plan");
 		CityPlan plan = CityPlan.EMPTY;
@@ -213,6 +220,92 @@ public class StewardGameTests implements net.fabricmc.fabric.api.gametest.v1.Fab
 			helper.assertTrue(stops.get(i - 1).pos().distSqr(hall) <= stops.get(i).pos().distSqr(hall), "not nearest first");
 		}
 		helper.assertTrue(stops.get(0).what().getString().startsWith("the Homes"), "named " + stops.get(0).what().getString());
+		helper.succeed();
+	}
+
+	/** 27.1a: a jobless villager and an Apprentice Builder are refused, and told a Journeyman Builder is needed. */
+	//$ gametest_ticks_batch AREA '40' '"stewardUnseasoned"'
+	@GameTest(template = AREA, timeoutTicks = 40, batch = "stewardUnseasoned")
+	public void onlyASeasonedBuilderCanBeAppointed(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		helper.setBlock(HALL_A, ModBlocks.VILLAGE_HALL);
+		List<String> seen = new java.util.ArrayList<>();
+		ServerPlayer player = StationsSpecGameTests.listeningPlayer(helper, seen);
+		ItemStack plan = planFor(helper, player, HALL_A);
+		Villager jobless = helper.spawn(EntityType.VILLAGER, HALL_A.east(2));
+		helper.assertTrue(Stewards.appoint(player, jobless, plan) == InteractionResult.CONSUME, "a jobless villager wasn't refused");
+		helper.assertTrue(jobless.getVillagerData().getProfession() == VillagerProfession.NONE, "a jobless villager was appointed");
+		helper.assertTrue(seen.stream().anyMatch(m -> m.contains("only a Builder who has reached Journeyman")), "no reason given: " + seen);
+		Villager apprentice = helper.spawn(EntityType.VILLAGER, HALL_A.south(2));
+		apprentice.setVillagerData(apprentice.getVillagerData().setProfession(ModVillagers.BUILDER).setLevel(2));
+		apprentice.setVillagerXp(20);
+		helper.assertTrue(Stewards.appoint(player, apprentice, plan) == InteractionResult.CONSUME
+			&& apprentice.getVillagerData().getProfession() == ModVillagers.BUILDER, "an Apprentice Builder was appointed");
+		Villager librarian = helper.spawn(EntityType.VILLAGER, HALL_A.west(2));
+		librarian.setVillagerData(librarian.getVillagerData().setProfession(VillagerProfession.LIBRARIAN).setLevel(5));
+		librarian.setVillagerXp(250);
+		helper.assertTrue(Stewards.appoint(player, librarian, plan) == InteractionResult.CONSUME
+			&& librarian.getVillagerData().getProfession() == VillagerProfession.LIBRARIAN, "a Master librarian was appointed");
+		helper.assertTrue(helper.getLevel().getPoiManager().getFreeTickets(helper.absolutePos(HALL_A)) == 1, "a refusal took the hall's place");
+		helper.succeed();
+	}
+
+	/** 27.1a: a Journeyman Builder is appointed, and starts his new job as a Novice Steward. */
+	//$ gametest_ticks_batch AREA '40' '"stewardSeasoned"'
+	@GameTest(template = AREA, timeoutTicks = 40, batch = "stewardSeasoned")
+	public void aJourneymanBuilderIsAppointed(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		helper.setBlock(HALL_A, ModBlocks.VILLAGE_HALL);
+		ServerPlayer player = helper.makeMockServerPlayerInLevel();
+		Villager builder = seasoned(helper.spawn(EntityType.VILLAGER, HALL_A.east(2)));
+		helper.assertTrue(Stewards.qualifies(builder), "a Journeyman Builder doesn't qualify");
+		helper.assertTrue(Stewards.appoint(player, builder, planFor(helper, player, HALL_A)) == InteractionResult.SUCCESS, "not appointed");
+		helper.assertTrue(stewardAt(helper, builder, HALL_A), "not the Steward of his hall: " + builder.getVillagerData());
+		helper.assertTrue(builder.getVillagerData().getLevel() == 1 && builder.getVillagerXp() == 1, "not a Novice Steward: " + builder.getVillagerData());
+		helper.succeed();
+	}
+
+	/** 27.1a: a Steward appointed before the rule (a jobless villager then) keeps his job through a save and reload. */
+	//$ gametest_ticks_batch AREA '200' '"stewardGrandfathered"'
+	@GameTest(template = AREA, timeoutTicks = 200, batch = "stewardGrandfathered")
+	public void aStewardFromAnOldSaveKeepsHisJob(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		ServerLevel level = helper.getLevel();
+		helper.setBlock(HALL_A, ModBlocks.VILLAGE_HALL);
+		BlockPos hall = helper.absolutePos(HALL_A);
+		Villager old = helper.spawn(EntityType.VILLAGER, HALL_A.east(2));
+		// As 27.5 appointed him: any grown villager, straight onto the hall.
+		io.github.jcondedata.aliveworkplace.work.Stations.assign(level, old, hall, ModVillagers.STEWARD);
+		helper.assertTrue(stewardAt(helper, old, HALL_A), "setup: not a Steward");
+		CompoundTag saved = new CompoundTag();
+		helper.assertTrue(old.save(saved), "setup: couldn't save him");
+		old.remove(net.minecraft.world.entity.Entity.RemovalReason.UNLOADED_TO_CHUNK);
+		net.minecraft.world.entity.Entity back = EntityType.loadEntityRecursive(saved, level, e -> e);
+		helper.assertTrue(back instanceof Villager && level.addFreshEntity(back), "setup: couldn't load him again");
+		Villager steward = (Villager) back;
+		helper.assertTrue(Stewards.qualifies(steward), "an old Steward doesn't qualify");
+		helper.runAfterDelay(150, () -> {
+			helper.assertTrue(stewardAt(helper, steward, HALL_A), "lost his job after reload: " + steward.getVillagerData());
+			helper.assertTrue(Stewards.stewardOf(level, hall) == steward, "the hall doesn't know its Steward");
+			helper.succeed();
+		});
+	}
+
+	/** 27.1a: the City Plan takes a Map, a Blank Blueprint and a Heart of the Sea; without the heart nothing is made. */
+	//$ gametest EMPTY_STRUCTURE
+	@GameTest(template = EMPTY_STRUCTURE)
+	public void theCityPlanNeedsAHeartOfTheSea(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		ItemStack map = new ItemStack(net.minecraft.world.item.Items.MAP);
+		ItemStack blank = new ItemStack(ModItems.BLANK_BLUEPRINT);
+		ItemStack heart = new ItemStack(net.minecraft.world.item.Items.HEART_OF_THE_SEA);
+		var full = net.minecraft.world.item.crafting.CraftingInput.of(3, 1, List.of(map, blank, heart));
+		ItemStack made = level.getRecipeManager().getRecipeFor(net.minecraft.world.item.crafting.RecipeType.CRAFTING, full, level)
+			.map(r -> r.value().assemble(full, level.registryAccess())).orElse(ItemStack.EMPTY);
+		helper.assertTrue(made.is(ModItems.CITY_PLAN), "a map, a blank blueprint and a heart of the sea make " + made);
+		var old = net.minecraft.world.item.crafting.CraftingInput.of(2, 1, List.of(map.copy(), blank.copy()));
+		helper.assertTrue(level.getRecipeManager().getRecipeFor(net.minecraft.world.item.crafting.RecipeType.CRAFTING, old, level).isEmpty(),
+			"a map and a blank blueprint alone still make something");
 		helper.succeed();
 	}
 }

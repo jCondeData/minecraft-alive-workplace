@@ -74,6 +74,9 @@ public final class Guilds implements ResourceManagerReloadListener {
 	public static final ResourceLocation BUILD_HELPERS = AliveWorkplace.id("build_helpers");
 	public static final ResourceLocation TOOL_WEAR = AliveWorkplace.id("tool_wear");
 	public static final ResourceLocation MEND_PER_UNIT = AliveWorkplace.id("mend_per_unit");
+	public static final ResourceLocation WORK_REACH = AliveWorkplace.id("work_reach");
+	public static final ResourceLocation HERD_SIZE = AliveWorkplace.id("herd_size");
+	public static final ResourceLocation RESEARCH_COST = AliveWorkplace.id("research_cost");
 
 	/** {@code build_helpers}: up to {@code max} idle builders help at one build (not {@link Builders#MAX_HELPERS}). */
 	public record BuildHelpers(int max, List<ResourceLocation> jobs) implements CivicEffects.Effect {
@@ -110,7 +113,52 @@ public final class Guilds implements ResourceManagerReloadListener {
 		}
 	}
 
+	/**
+	 * {@code work_reach} (30.19): the work members do around their workstation reaches {@code blocks} further (the
+	 * Harvest Guild: the farm a village farmer takes on by their composter, and the orchard keeper's rounds, 16 -> 24).
+	 */
+	public record WorkReach(int blocks, List<ResourceLocation> jobs) implements CivicEffects.Effect {
+		@Override
+		public ResourceLocation type() {
+			return WORK_REACH;
+		}
+	}
+
+	/**
+	 * {@code herd_size} (30.19): every herd members keep may be {@code extra} bigger (shepherds, ranchers and herders
+	 * breed up to 12 of a kind instead of 8; a hired herder keeps 14 instead of 10).
+	 */
+	public record HerdSize(int extra, List<ResourceLocation> jobs) implements CivicEffects.Effect {
+		@Override
+		public ResourceLocation type() {
+			return HERD_SIZE;
+		}
+	}
+
+	/**
+	 * {@code research_cost} (30.19): the village's research levels cost {@code percent} more paper, books and emeralds
+	 * (-25: a quarter less, rounded up). Village-wide once the guild is founded, like {@code build_helpers}.
+	 */
+	public record ResearchCost(int percent, List<ResourceLocation> jobs) implements CivicEffects.Effect {
+		@Override
+		public ResourceLocation type() {
+			return RESEARCH_COST;
+		}
+	}
+
 	static {
+		CivicEffects.register(WORK_REACH, RecordCodecBuilder.<WorkReach>mapCodec(i -> i.group(
+			Codec.intRange(-64, 64).fieldOf("blocks").forGetter(WorkReach::blocks),
+			ResourceLocation.CODEC.listOf().optionalFieldOf("jobs", List.of()).forGetter(WorkReach::jobs)
+		).apply(i, WorkReach::new)));
+		CivicEffects.register(HERD_SIZE, RecordCodecBuilder.<HerdSize>mapCodec(i -> i.group(
+			Codec.intRange(-64, 64).fieldOf("extra").forGetter(HerdSize::extra),
+			ResourceLocation.CODEC.listOf().optionalFieldOf("jobs", List.of()).forGetter(HerdSize::jobs)
+		).apply(i, HerdSize::new)));
+		CivicEffects.register(RESEARCH_COST, RecordCodecBuilder.<ResearchCost>mapCodec(i -> i.group(
+			Codec.intRange(-100, 1000).fieldOf("percent").forGetter(ResearchCost::percent),
+			ResourceLocation.CODEC.listOf().optionalFieldOf("jobs", List.of()).forGetter(ResearchCost::jobs)
+		).apply(i, ResearchCost::new)));
 		CivicEffects.register(TOOL_WEAR, RecordCodecBuilder.<ToolWear>mapCodec(i -> i.group(
 			Codec.intRange(-100, 1000).fieldOf("percent").forGetter(ToolWear::percent),
 			ResourceLocation.CODEC.listOf().optionalFieldOf("jobs", List.of()).forGetter(ToolWear::jobs)
@@ -501,6 +549,58 @@ public final class Guilds implements ResourceManagerReloadListener {
 			}
 		}
 		return share;
+	}
+
+	/** How far {@code villager}'s work reaches: {@code usual}, plus a founded guild's {@code work_reach} (never under 1). */
+	public static int reach(Villager villager, int usual) {
+		int reach = usual;
+		for (Guild g : inForce(villager)) {
+			for (CivicEffects.Effect e : g.perks()) {
+				if (e instanceof WorkReach r && CivicEffects.reaches(e, villager)) {
+					reach += r.blocks();
+				}
+			}
+		}
+		return Math.max(1, reach);
+	}
+
+	/** How big {@code villager} lets a herd grow: {@code usual}, plus a founded guild's {@code herd_size} (never under 2). */
+	public static int herd(Villager villager, int usual) {
+		int size = usual;
+		for (Guild g : inForce(villager)) {
+			for (CivicEffects.Effect e : g.perks()) {
+				if (e instanceof HerdSize h && CivicEffects.reaches(e, villager)) {
+					size += h.extra();
+				}
+			}
+		}
+		return Math.max(2, size);
+	}
+
+	/**
+	 * What {@code amount} of a research level's paper, books or emeralds costs in {@code hall}'s village: changed by its
+	 * founded guilds' {@code research_cost} (-25: a quarter less, rounded up; never under 0).
+	 */
+	public static int researchCost(ServerLevel level, @Nullable VillageHallBlockEntity hall, int amount) {
+		if (!ENABLED || hall == null || amount <= 0) {
+			return amount;
+		}
+		int percent = 0;
+		for (Charter c : hall.guilds()) {
+			Guild g = get(c.id());
+			if (g != null && founded(level, hall, c.id())) {
+				for (CivicEffects.Effect e : g.perks()) {
+					if (e instanceof ResearchCost r) {
+						percent += r.percent();
+					}
+				}
+			}
+		}
+		if (percent == 0) {
+			return amount;
+		}
+		long scaled = (long) amount * Math.max(0, 100 + percent);
+		return (int) Math.min(Integer.MAX_VALUE, (scaled + 99) / 100);
 	}
 
 	/** How the guild's pace reads in the status line: "the Builders' Guild". */

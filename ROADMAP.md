@@ -2114,7 +2114,7 @@ the Village Hall (`VillageNeeds`, `VillageQuests`, `VillageRanks`, `Festivals`, 
   New effects: `tool_wear` and `mend_per_unit`. Done when: a GameTest per guild with its numbers, founded and not
   (durability lost over 20 blocks dug, 20 logs cut and 10 fish caught; what one ingot puts back); showcase scene
   `guilds`: each Guild Master's status and the guilds' row of the Book.
-- [ ] **30.19** **The Harvest, Herders' and Scholars' Guilds.** A data file each; members work 15% faster:
+- [x] **30.19** (review: pending 2026-10-05) **The Harvest, Herders' and Scholars' Guilds.** A data file each; members work 15% faster:
   - **Harvest Guild** (Farmers, Orchard Keepers, Florists, Beekeepers, Composters, Chefs): the village's own farms and
     the orchard keepers' rounds reach 24 blocks instead of 16;
   - **Herders' Guild** (Shepherds, Butchers, Ranchers): every herd may be 4 bigger (shepherds and ranchers breed up to

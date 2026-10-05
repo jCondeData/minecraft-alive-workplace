@@ -133,7 +133,7 @@ public class OrchardWork extends Behavior<Villager> {
 					return;
 				}
 				searchTimer = SEARCH_EVERY;
-				ripe.addAll(findFruit(level, basket, orchard, gameTime, unreachable));
+				ripe.addAll(findFruit(level, basket, orchard, gameTime, unreachable, radius(villager)));
 				fruit = next(level, villager);
 				if (fruit == null && orchard != null && choosePlanting(level, villager, basket, bag, orchard)) {
 					return;
@@ -197,12 +197,17 @@ public class OrchardWork extends Behavior<Villager> {
 		return best;
 	}
 
-	/** Every ripe fruit within {@link #RADIUS} of the basket (and in the orchard) that hasn't been given up on lately. */
-	static List<BlockPos> findFruit(ServerLevel level, BlockPos basket, @Nullable net.minecraft.world.level.levelgen.structure.BoundingBox orchard,
-		long now, Map<BlockPos, Long> unreachable) {
+	/** How far from the basket {@code keeper}'s rounds reach: {@link #RADIUS}, 8 more in a founded Harvest Guild (30.19). */
+	public static int radius(Villager keeper) {
+		return io.github.jcondedata.aliveworkplace.hall.Guilds.reach(keeper, RADIUS);
+	}
+
+	/** Every ripe fruit within {@code radius} of the basket (and in the orchard) that hasn't been given up on lately. */
+	public static List<BlockPos> findFruit(ServerLevel level, BlockPos basket, @Nullable net.minecraft.world.level.levelgen.structure.BoundingBox orchard,
+		long now, Map<BlockPos, Long> unreachable, int radius) {
 		unreachable.values().removeIf(until -> until < now);
 		List<BlockPos> found = new ArrayList<>();
-		Iterable<BlockPos> around = BlockPos.betweenClosed(basket.offset(-RADIUS, -DOWN, -RADIUS), basket.offset(RADIUS, UP, RADIUS));
+		Iterable<BlockPos> around = BlockPos.betweenClosed(basket.offset(-radius, -DOWN, -radius), basket.offset(radius, UP, radius));
 		if (orchard != null) {
 			around = com.google.common.collect.Iterables.concat(around,
 				BlockPos.betweenClosed(orchard.minX(), orchard.minY() - 2, orchard.minZ(), orchard.maxX(), orchard.maxY() + 6, orchard.maxZ()));

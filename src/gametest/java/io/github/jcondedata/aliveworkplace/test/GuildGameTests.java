@@ -141,7 +141,7 @@ public class GuildGameTests implements FabricGameTest {
 			} finally {
 				Guilds.ENABLED = true;
 			}
-			say(helper, Guilds.offer(player, fenn, charters), Guilds.Outcome.GRANTED, "Fenn is now the Guild Master of the Test Farmers' Guild in " + village + "!");
+			say(helper, Guilds.offer(player, fenn, charters), Guilds.Outcome.GRANTED, "Fenn is now the Guild Master of the Harvest Guild in " + village + "!");
 			helper.assertTrue(hall.guilds().size() == 2, "a Town has two");
 			helper.succeed();
 		});

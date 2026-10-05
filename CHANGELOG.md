@@ -30,6 +30,12 @@ asks for the steps, `latest.log` and any crash report).
   back a third of the durability, not a quarter (Armorers, Toolsmiths, Weaponsmiths, Tinkerers, Ball Smiths); axes and
   fishing rods wear half as fast (Lumberjacks, Fletchers, Fishermen). New guild perks for packs: `tool_wear` and
   `mend_per_unit`.
+- **The Harvest, Herders' and Scholars' Guilds** (30.19): members work 15% faster once founded. The village's own farms
+  and the Orchard Keepers' rounds reach 24 blocks from the composter or basket, not 16 (Farmers, Orchard Keepers,
+  Florists, Beekeepers, Composters, Chefs); shepherds, ranchers and butchers breed up to 12 of a kind (not 8) and a hired
+  butcher keeps 14 (not 10) (Shepherds, Butchers, Ranchers); research levels cost a quarter less paper, books and
+  emeralds, rounded up (Scholars, Teachers, Librarians, Cartographers). New guild perks for packs: `work_reach`,
+  `herd_size` and `research_cost`.
 
 ## 0.139.0 — 2026-10-05
 

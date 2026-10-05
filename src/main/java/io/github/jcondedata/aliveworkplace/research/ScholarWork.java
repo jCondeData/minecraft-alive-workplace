@@ -144,11 +144,12 @@ public class ScholarWork extends Behavior<Villager> {
 		detail = Component.translatable("research.aliveworkplace.level", topic.title(), BuilderLevels.levelName(next));
 		if (!research.paid()) {
 			List<BlockPos> own = SupplyContainers.find(level, desk, null);
-			Map<Item, Integer> cost = topic.cost(next).items();
+			Research.Cost price = topic.cost(next, level, entity); // a quarter less with a founded Scholars' Guild (30.19)
+			Map<Item, Integer> cost = price.items();
 			for (var e : cost.entrySet()) {
 				if (SupplyContainers.count(level, own, e.getKey()) < e.getValue()) {
 					state = "needs";
-					detail = Research.describe(topic.cost(next));
+					detail = Research.describe(price);
 					Requests.post(villager, new ItemStack(e.getKey()), (int) (e.getValue() - SupplyContainers.count(level, own, e.getKey())),
 						e.getKey().getDescription(), s -> s.is(e.getKey()));
 					return;

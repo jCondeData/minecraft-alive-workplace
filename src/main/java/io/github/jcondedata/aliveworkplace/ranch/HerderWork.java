@@ -43,6 +43,11 @@ public class HerderWork extends RanchWork {
 	/** A hired herder takes grown animals of a kind for meat above this many. */
 	static final int CULL_ABOVE = CAP + 2;
 
+	/** Grown animals of a kind a hired herder keeps: {@link #CULL_ABOVE}, 4 more in a founded Herders' Guild (30.19). */
+	public static int keeps(Villager villager) {
+		return io.github.jcondedata.aliveworkplace.hall.Guilds.herd(villager, CULL_ABOVE);
+	}
+
 	private boolean culling;
 	/** With Cobblemon: the chore for a pastured Pokémon being done now (milking a Miltank, brushing a Pidgeotto...). */
 	@Nullable
@@ -78,8 +83,9 @@ public class HerderWork extends RanchWork {
 		if (ModAttachments.BUILDER_EMPLOYER.get(villager) != null) {
 			Map<EntityType<?>, List<Animal>> grown = animals.stream().filter(a -> !a.isBaby())
 				.collect(Collectors.groupingBy(Animal::getType));
+			int keeps = keeps(villager);
 			for (List<Animal> kind : grown.values()) {
-				if (kind.size() > CULL_ABOVE) {
+				if (kind.size() > keeps) {
 					Animal one = kind.stream().filter(a -> !a.hasCustomName() && !a.isLeashed() && !a.isInLove())
 						.min(Comparator.comparingDouble(villager::distanceToSqr)).orElse(null);
 					if (one != null) {

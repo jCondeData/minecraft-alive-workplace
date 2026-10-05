@@ -20,6 +20,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaB28BenchGameTests",
 			"io.github.jcondedata.aliveworkplace.test.StallWatchGameTests",
 			"io.github.jcondedata.aliveworkplace.test.ImportCorpusGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaImportEdgesGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaStallWatchGameTests",
 			"io.github.jcondedata.aliveworkplace.test.ImportGameTests",
 			"io.github.jcondedata.aliveworkplace.test.TableGameTests",
@@ -162,7 +163,8 @@
 			"io.github.jcondedata.aliveworkplace.test.QaB29FlowersGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaB23TurnedHillsideGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaB30JobSitesGameTests",
-			"io.github.jcondedata.aliveworkplace.test.QaStuckJobsGameTests"
+			"io.github.jcondedata.aliveworkplace.test.QaStuckJobsGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaLegendCampGameTests"
 		]
 	},
 	"depends": {

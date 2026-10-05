@@ -4286,6 +4286,7 @@ item waits.
   slay steps went to 32-40 monsters (Conscription's planned 48), the one battle step stays one battle. The emeralds a
   step pays were left as they were (the reform is the reward); owner's call if he wants them raised too. Hand-in
   already took every slot up to what's left and kept partial progress; a GameTest now proves it over three trips.
+- 2026-10-05 (30.12, decision; lane d): "within 4 blocks of a bed" is measured to the bed's head (where the game records a bed as a POI), so a cradle 4 blocks from the foot may be 5 from the head and not count.
 - 2026-10-05 (30.10, decisions; lane d): two effect types: `militia` {`damage` 3, `range` 24} (highest of each) read by
   the new `guard/MilitiaCombat`, a behaviour every villager's CORE package now starts with (a guard's does nothing; for
   guards it sits after their own four, so GoalPackagesMixinGameTests holds unchanged), and `work_stops_in_raids`

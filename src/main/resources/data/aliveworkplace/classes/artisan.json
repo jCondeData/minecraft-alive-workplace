@@ -1,0 +1,29 @@
+{
+  "tier": 1,
+  "name": {"translate": "class.aliveworkplace.artisan"},
+  "tax": 1.5,
+  "outfit": "aliveworkplace:textures/entity/villager/class/artisan.png",
+  "needs": [
+    {"type": "home", "grade": 1},
+    {"type": "fed_days", "days": 3},
+    {"type": "diet", "kind": "varied"},
+    {"type": "services", "count": 1, "any": ["chapel", "school", "clinic"]},
+    {"type": "luxury", "id": "aliveworkplace:work_clothes"}
+  ],
+  "wants": [
+    {"type": "luxury", "id": "aliveworkplace:cider"},
+    {"type": "services", "count": 1, "any": ["tavern"]}
+  ],
+  "jobs": [
+    "aliveworkplace:tinkerer", "aliveworkplace:chef", "aliveworkplace:netherworker", "aliveworkplace:nurse",
+    "aliveworkplace:teacher", "aliveworkplace:shopkeeper", "aliveworkplace:innkeeper", "aliveworkplace:printer",
+    "aliveworkplace:ball_smith", "aliveworkplace:tutor", "aliveworkplace:pokemon_trader", "aliveworkplace:fossil_scientist"
+  ],
+  "effects": [
+    {"type": "aliveworkplace:work_pace", "percent": 10, "jobs": [
+      "aliveworkplace:carpenter", "minecraft:mason", "aliveworkplace:tinkerer", "aliveworkplace:chef",
+      "minecraft:leatherworker", "minecraft:toolsmith", "aliveworkplace:vintner", "aliveworkplace:tailor",
+      "aliveworkplace:printer", "aliveworkplace:jeweller"]}
+  ],
+  "enabled": true
+}

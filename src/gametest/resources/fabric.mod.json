@@ -94,6 +94,8 @@
 			"io.github.jcondedata.aliveworkplace.test.PaceGameTests",
 			"io.github.jcondedata.aliveworkplace.test.EdictGameTests",
 			"io.github.jcondedata.aliveworkplace.test.GuildGameTests",
+			"io.github.jcondedata.aliveworkplace.test.ClassGameTests",
+			"io.github.jcondedata.aliveworkplace.test.ServiceGameTests",
 			"io.github.jcondedata.aliveworkplace.test.GuildPerkGameTests",
 			"io.github.jcondedata.aliveworkplace.test.GuildHarvestGameTests",
 			"io.github.jcondedata.aliveworkplace.test.GuildServiceGameTests",

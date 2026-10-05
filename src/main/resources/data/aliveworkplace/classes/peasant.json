@@ -1,0 +1,10 @@
+{
+  "tier": 0,
+  "name": {"translate": "class.aliveworkplace.peasant"},
+  "tax": 1,
+  "needs": [],
+  "wants": [],
+  "jobs": [],
+  "effects": [],
+  "enabled": true
+}

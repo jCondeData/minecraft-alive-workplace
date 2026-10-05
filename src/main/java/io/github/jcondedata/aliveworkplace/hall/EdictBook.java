@@ -26,7 +26,7 @@ import org.jetbrains.annotations.Nullable;
  * sneak-using a Village Ledger. At the top the village's name; the second row holds its edict slots (one per rank: in
  * force with its days, free, or locked with the rank that opens it); below, every edict with its boost and cost. Click
  * an edict twice to proclaim it, once to lift one in force. Only the hall's owner, friends and operators may click;
- * everyone else reads it and is told why. The last row is kept for the civic items and guilds: the Work Horn's state first (30.11), then the Cradle (30.12), then the village's colours (30.13).
+ * everyone else reads it and is told why. The last row is kept for the civic items and guilds: the Work Horn's state first (30.11), then the Cradle (30.12), then the village's colours (30.13), then its guilds (30.17), paged when there are more than the row holds.
  */
 public final class EdictBook {
 	/** Back to the hall's screen (only when opened from it). */
@@ -48,6 +48,11 @@ public final class EdictBook {
 	public static final int BANNER = RESERVED_ROW * 9 + 2;
 	/** The village's guilds on the last row (30.17), from here to the row's end: master, members, perk, founded or not. */
 	public static final int FIRST_GUILD = RESERVED_ROW * 9 + 3;
+	/** The guild row's last slot: when the village has more guilds than the row holds (B78), the button to turn its page. */
+	public static final int MORE_GUILDS = RESERVED_ROW * 9 + 8;
+	/** Guilds the row holds without paging, and per page when it pages (the last slot then turns the page). */
+	public static final int GUILD_ROW = MORE_GUILDS - FIRST_GUILD + 1;
+	public static final int GUILDS_PER_PAGE = GUILD_ROW - 1;
 
 	/** Opens the Book on its own (from a Village Ledger: it stays open while the hall stands). */
 	public static void open(ServerPlayer player, BlockPos hall) {
@@ -62,11 +67,21 @@ public final class EdictBook {
 		return ChoiceMenu.detached(player, menu -> render(menu, Players.level(player), hall, null, -1));
 	}
 
+	/** The Book on its own at page {@code guildPage} of its guild row, not shown to anyone (tests). */
+	public static ChoiceMenu forTest(ServerPlayer player, BlockPos hall, int guildPage) {
+		return ChoiceMenu.detached(player, menu -> render(menu, Players.level(player), hall, null, -1, guildPage));
+	}
+
 	/**
 	 * Lays the Book out in {@code menu}. {@code back} (null: none) returns to the hall's screen; {@code armed} is the
 	 * slot of an edict clicked once (-1: none), which a second click proclaims.
 	 */
 	public static void render(ChoiceMenu menu, ServerLevel level, BlockPos hall, @Nullable Runnable back, int armed) {
+		render(menu, level, hall, back, armed, 0);
+	}
+
+	/** As {@link #render(ChoiceMenu, ServerLevel, BlockPos, Runnable, int)}, with the guild row at page {@code guildPage}. */
+	public static void render(ChoiceMenu menu, ServerLevel level, BlockPos hall, @Nullable Runnable back, int armed, int guildPage) {
 		menu.clearButtons();
 		if (!(level.getBlockEntity(hall) instanceof VillageHallBlockEntity entity)) {
 			return;
@@ -101,7 +116,7 @@ public final class EdictBook {
 			int slot = SLOTS[i];
 			if (i < inForce.size()) {
 				Edicts.InForce f = inForce.get(i);
-				menu.button(slot, inForceIcon(entity, f, today), p -> lift(menu, level, hall, back, p, f.id()));
+				menu.button(slot, inForceIcon(entity, f, today), p -> lift(menu, level, hall, back, guildPage, p, f.id()));
 			} else if (i < open) {
 				menu.button(slot, VillageHallScreen.icon(Items.PAPER, Component.translatable("screen.aliveworkplace.edicts.free"), ChatFormatting.WHITE,
 					VillageHallScreen.line("screen.aliveworkplace.edicts.free_hint", ChatFormatting.GRAY)), null);
@@ -123,7 +138,7 @@ public final class EdictBook {
 			Optional<Edicts.InForce> held = inForce.stream().filter(f -> f.id().equals(id)).findFirst();
 			int here = slot++;
 			if (held.isPresent()) {
-				menu.button(here, edictIcon(entity, edict, held.get(), today, false), p -> lift(menu, level, hall, back, p, id));
+				menu.button(here, edictIcon(entity, edict, held.get(), today, false), p -> lift(menu, level, hall, back, guildPage, p, id));
 			} else {
 				boolean ready = here == armed;
 				menu.button(here, edictIcon(entity, edict, null, today, ready), p -> {
@@ -133,14 +148,14 @@ public final class EdictBook {
 						return;
 					}
 					if (!ready) {
-						refresh(menu, level, hall, back, here);
+						refresh(menu, level, hall, back, here, guildPage);
 						return;
 					}
 					Edicts.Result result = Edicts.proclaim(level, hall, p, edict);
 					if (!result.told().contains(p)) {
 						Chat.chat(p, result.message());
 					}
-					refresh(menu, level, hall, back, -1);
+					refresh(menu, level, hall, back, -1, guildPage);
 				});
 			}
 		}
@@ -152,8 +167,24 @@ public final class EdictBook {
 			Component.translatable("screen.aliveworkplace.edicts.cradle"), ChatFormatting.GOLD, Cradles.status(level, hall)), null);
 		menu.button(BANNER, bannerIcon(colours), null);
 		List<ItemStack> guilds = guildIcons(level, entity);
-		for (int i = 0; i < guilds.size() && FIRST_GUILD + i < RESERVED_ROW * 9 + 9; i++) {
-			menu.button(FIRST_GUILD + i, guilds.get(i), null);
+		if (guilds.size() <= GUILD_ROW) {
+			for (int i = 0; i < guilds.size(); i++) {
+				menu.button(FIRST_GUILD + i, guilds.get(i), null);
+			}
+		} else {
+			// More guilds than the row holds (a City may have 12): a page of them, and the last slot turns the page (B78).
+			int pages = (guilds.size() + GUILDS_PER_PAGE - 1) / GUILDS_PER_PAGE;
+			int page = Math.floorMod(guildPage, pages);
+			int from = page * GUILDS_PER_PAGE;
+			int to = Math.min(guilds.size(), from + GUILDS_PER_PAGE);
+			for (int i = from; i < to; i++) {
+				menu.button(FIRST_GUILD + i - from, guilds.get(i), null);
+			}
+			menu.button(MORE_GUILDS, VillageHallScreen.icon(Items.ARROW, Component.translatable("screen.aliveworkplace.edicts.guild_more"), ChatFormatting.GOLD,
+				VillageHallScreen.line(Component.translatable("screen.aliveworkplace.edicts.guild_page", from + 1, to, guilds.size()), ChatFormatting.GRAY),
+				VillageHallScreen.line(page + 1 < pages ? "screen.aliveworkplace.edicts.guild_next" : "screen.aliveworkplace.edicts.guild_first",
+					ChatFormatting.DARK_GRAY)),
+				p -> refresh(menu, level, hall, back, armed, page + 1));
 		}
 		filler(menu, RESERVED_ROW);
 	}
@@ -198,16 +229,16 @@ public final class EdictBook {
 				VillageBanners.ENABLED ? ChatFormatting.GRAY : ChatFormatting.RED));
 	}
 
-	private static void lift(ChoiceMenu menu, ServerLevel level, BlockPos hall, @Nullable Runnable back, ServerPlayer p, String id) {
+	private static void lift(ChoiceMenu menu, ServerLevel level, BlockPos hall, @Nullable Runnable back, int guildPage, ServerPlayer p, String id) {
 		Edicts.Result result = Edicts.lift(level, hall, p, id);
 		if (!result.told().contains(p)) {
 			Chat.chat(p, result.message());
 		}
-		refresh(menu, level, hall, back, -1);
+		refresh(menu, level, hall, back, -1, guildPage);
 	}
 
-	private static void refresh(ChoiceMenu menu, ServerLevel level, BlockPos hall, @Nullable Runnable back, int armed) {
-		render(menu, level, hall, back, armed);
+	private static void refresh(ChoiceMenu menu, ServerLevel level, BlockPos hall, @Nullable Runnable back, int armed, int guildPage) {
+		render(menu, level, hall, back, armed, guildPage);
 		menu.broadcastChanges();
 	}
 

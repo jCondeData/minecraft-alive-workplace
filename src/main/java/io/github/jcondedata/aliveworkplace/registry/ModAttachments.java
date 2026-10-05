@@ -310,6 +310,13 @@ public final class ModAttachments {
 	/** The villager's job site and how often a workstation there had been broken when they got it (bug B15; see JobSiteTickets). */
 	public static final Attachment<io.github.jcondedata.aliveworkplace.work.JobSiteTickets.Held> JOB_SITE_HELD = Attachment.saved("job_site_held", io.github.jcondedata.aliveworkplace.work.JobSiteTickets.Held.CODEC);
 
+	/** A villager's social class (ROADMAP 34.2): the class id, e.g. {@code aliveworkplace:artisan}. Absent: not seeded yet (34.22). */
+	public static final Attachment<net.minecraft.resources.ResourceLocation> SOCIAL_CLASS = Attachment.saved("social_class", net.minecraft.resources.ResourceLocation.CODEC);
+	/** Their progress on the class ladder (34.2): dawns met and missed, days fed running, the last dawn counted. Absent: all 0. */
+	public static final Attachment<io.github.jcondedata.aliveworkplace.people.SocialClasses.Progress> CLASS_PROGRESS = Attachment.saved("class_progress", io.github.jcondedata.aliveworkplace.people.SocialClasses.Progress.CODEC);
+	/** Luxury id to the day they last had one (34.4 fills it; a {@code luxury} class need reads it). Absent: none had. */
+	public static final Attachment<java.util.Map<net.minecraft.resources.ResourceLocation, Long>> LUXURIES_HAD = Attachment.saved("luxuries_had", com.mojang.serialization.Codec.unboundedMap(net.minecraft.resources.ResourceLocation.CODEC, com.mojang.serialization.Codec.LONG));
+
 	public static void init() {
 	}
 

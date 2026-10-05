@@ -10,6 +10,11 @@ Stopped quarry .* stretched over its Miner's Bench .* by a bug before 0\.45\.0
 skipping gem bed testpack:gem_beds/
 # StewardRulesGameTests feeds the rule loader broken Steward rule files to prove each is skipped, naming its field.
 Skipping Steward rule aliveworkplace_test:steward_rules/bad_
+# ClassGameTests feeds the class loader a broken pack file and a need of an unknown type to prove each is logged and skipped.
+Skipping class somepack:broken
+Unknown class need type no_such_need
+# ServiceGameTests feeds the service loader a file with neither jobs nor blueprints to prove it is skipped.
+Skipping service aliveworkplace_test:broken
 
 # --- other mods in the compat test server (dev environment, not our code) ---
 # Modded entities have no DataFixerUpper schema; every mod's entity logs this once.

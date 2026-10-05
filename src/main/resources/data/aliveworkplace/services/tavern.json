@@ -1,0 +1,7 @@
+{
+  "name": {"translate": "service.aliveworkplace.tavern"},
+  "jobs": ["aliveworkplace:innkeeper"],
+  "blueprints": ["aliveworkplace:inn"],
+  "range": 48,
+  "icon": "minecraft:barrel"
+}

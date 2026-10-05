@@ -9,12 +9,16 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-/** Guards and the Iron-Willed (29.6) stand their ground: getting hurt or seeing a monster doesn't send them into a panic. */
+/**
+ * Guards, the Iron-Willed (29.6) and conscripts in a raid under Conscription (30.10) stand their ground: getting hurt or
+ * seeing a monster doesn't send them into a panic.
+ */
 @Mixin(VillagerPanicTrigger.class)
 abstract class VillagerPanicTriggerMixin {
 	@Inject(method = "start(Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/world/entity/npc/Villager;J)V", at = @At("HEAD"), cancellable = true)
 	private void aliveworkplace$guardsDontPanic(ServerLevel level, Villager villager, long gameTime, CallbackInfo ci) {
-		if (Guards.isGuard(villager) || io.github.jcondedata.aliveworkplace.legend.Gifted.noPanic(villager)) {
+		if (Guards.isGuard(villager) || io.github.jcondedata.aliveworkplace.legend.Gifted.noPanic(villager)
+			|| io.github.jcondedata.aliveworkplace.hall.Conscription.militia(villager) != null) {
 			ci.cancel();
 		}
 	}

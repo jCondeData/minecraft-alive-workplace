@@ -69,6 +69,8 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 	private int civicGeneration;
 	/** Free Bread's running share of an extra meal (30.6), in hundredths (0 to 99); saved as {@code extraMeals}, 0 to 1. */
 	private int extraMeals;
+	/** Conscription (30.10): the game time work may start again after a raid (noon the next day); saved as {@code raidWorkUntil}, 0: none. */
+	private long raidWorkUntil;
 
 	/**
 	 * Whether the hall's point-of-interest record was checked for its Steward's place since it loaded (27.5): halls saved
@@ -133,6 +135,7 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 				hall.lastRaidDay = day;
 				hall.setChanged();
 			});
+			Conscription.round(server, pos, hall);
 			if (VillageGrowth.grow(server, pos, hall.needs, hall.lastBirth) != null) {
 				hall.lastBirth = level.getGameTime();
 				hall.births++;
@@ -227,6 +230,25 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 
 	public void setExtraMeals(int hundredths) {
 		extraMeals = Math.max(0, Math.min(99, hundredths));
+		setChanged();
+	}
+
+	/** The game time work may start again after a raid under Conscription (0: no raid kept it). */
+	public long raidWorkUntil() {
+		return raidWorkUntil;
+	}
+
+	/** Keeps work stopped until {@code until} (game time) at least ({@link Conscription}); never shortens it. */
+	public void keepWorkStoppedUntil(long until) {
+		if (until > raidWorkUntil) {
+			raidWorkUntil = until;
+			setChanged();
+		}
+	}
+
+	/** Sets when work may start again after a raid (tests). */
+	public void setRaidWorkUntil(long until) {
+		raidWorkUntil = Math.max(0, until);
 		setChanged();
 	}
 
@@ -517,6 +539,7 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 			.result().map(java.util.List::copyOf).orElse(java.util.List.of());
 		civic = null;
 		extraMeals = Math.max(0, Math.min(99, Math.round(Nbt.getFloat(tag, "extraMeals") * 100f)));
+		raidWorkUntil = Math.max(0, Nbt.getLong(tag, "raidWorkUntil"));
 		stewardWishes = !tag.contains("steward") ? io.github.jcondedata.aliveworkplace.city.StewardWishes.State.EMPTY
 			: io.github.jcondedata.aliveworkplace.city.StewardWishes.State.CODEC.parse(net.minecraft.nbt.NbtOps.INSTANCE, tag.get("steward"))
 				.result().orElse(io.github.jcondedata.aliveworkplace.city.StewardWishes.State.EMPTY);
@@ -591,6 +614,9 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 		}
 		if (extraMeals > 0) {
 			tag.putFloat("extraMeals", extraMeals / 100f);
+		}
+		if (raidWorkUntil > 0) {
+			tag.putLong("raidWorkUntil", raidWorkUntil);
 		}
 		net.minecraft.nbt.ListTag lines = new net.minecraft.nbt.ListTag();
 		for (Chronicle.Entry entry : chronicle) {

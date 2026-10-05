@@ -62,6 +62,13 @@ asks for the steps, `latest.log` and any crash report).
   told to the village and the hall's owner, Mythic ones to every player in gold with the village's direction from spawn;
   all go in the chronicle under a nether star. A Legend in a grave or turned zombie keeps their slot and comes back as
   themselves; with no grave their slot frees after 7 days; Legends join a hall placed again.
+- **Conscription** (30.10): a new edict under a stone sword. While the village is raided (a monster or bandit raid, or a
+  pillager raid there) every grown villager who isn't ill fights beside the guards: they wake, never panic, hold a stone
+  sword made for the raid (never taken from a chest, gone when the raid ends) and go for the nearest raider within 24
+  blocks, 3 damage a blow, 15% more if Strong. Children and the ill hide as before, and conscripts can fall like anyone
+  else. The cost: all work in the village stops during the raid and until noon the next day. Reform **The Militia
+  Drill** (32 iron swords, 32 shields, clear out 48 monsters): everyone still fights, but work stops only for villagers
+  with a raider within 24 blocks, and the morning after is a normal day.
 - **Curfew** (30.9): a new edict under a bell. From dusk to dawn every grown villager but the guards and mercenaries
   goes to bed, and a monster can't hurt a villager asleep in their bed; monster raids and bandit camps are half as
   likely, and the nights count as safe in the village's wellbeing. The cost: nobody trades with players at night
@@ -278,6 +285,9 @@ asks for the steps, `latest.log` and any crash report).
   (`"enabled": false`); `villageEdicts` turns them all off.
 
 ### Changed
+- **Reforms are a real grind** (30.1a): every edict's reform now asks for hundreds of items, handed in over as many
+  trips as it takes (The Shift Bell: 24 clocks, 128 gold ingots, 300 bread, where it was 4, 8 and 32; the clearing-out
+  steps ask for 32 to 40 monsters). What a step already has is kept; the emeralds each step pays are unchanged.
 - **A Steward must be a seasoned Builder** (27.1a): only a Builder of Journeyman level or higher can be appointed
   Steward (he starts the job as a Novice Steward); others are refused with what's needed. Stewards already appointed
   keep their job. The City Plan now also takes a Heart of the Sea (Map + Blank Blueprint + Heart of the Sea).

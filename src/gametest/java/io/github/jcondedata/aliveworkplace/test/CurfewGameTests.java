@@ -77,10 +77,10 @@ public class CurfewGameTests implements FabricGameTest {
 		Reforms.Reform lamps = curfew.reform().orElse(null);
 		helper.assertTrue(lamps != null && lamps.name().getString().equals("The Lamplighters") && lamps.effects().isEmpty() && lamps.steps().size() == 3,
 			"reform: " + lamps);
-		step(helper, lamps.steps().get(0), "minecraft:lantern", 24, 5);
-		step(helper, lamps.steps().get(1), "minecraft:glowstone", 8, 4);
+		step(helper, lamps.steps().get(0), "minecraft:lantern", 192, 5);
+		step(helper, lamps.steps().get(1), "minecraft:glowstone", 96, 4);
 		Reforms.Step slay = lamps.steps().get(2);
-		helper.assertTrue(slay.kind() == VillageQuests.Kind.SLAY && slay.count() == 8 && slay.reward() == 6, "step 3: " + slay);
+		helper.assertTrue(slay.kind() == VillageQuests.Kind.SLAY && slay.count() == 32 && slay.reward() == 6, "step 3: " + slay);
 		helper.assertTrue(Component.translatable("message.aliveworkplace.curfew.no_trade").getString().equals("Curfew: come back in the morning."),
 			"the refusal reads " + Component.translatable("message.aliveworkplace.curfew.no_trade").getString());
 

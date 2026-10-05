@@ -1803,7 +1803,7 @@ the Village Hall (`VillageNeeds`, `VillageQuests`, `VillageRanks`, `Festivals`, 
     friends and operators (anyone, while the hall has no owner).
 
   Done when: the note is on `main` and its review package is sent.
-  - [ ] **30.1a** Change from the owner (2026-10-05): Reforming an edict must cost far more, hundreds of items, so the grind is worth it: e.g. instead of 4 clocks, 8 gold ingots, 32 bread, something like 24 clocks, 2 stacks of gold ingots and 300 bread. Most players get the small amounts quickly, so scale the reform costs up a lot in the design note and the edict data files.
+  - [x] **30.1a** (review: pending 2026-10-05) Change from the owner (2026-10-05): Reforming an edict must cost far more, hundreds of items, so the grind is worth it: e.g. instead of 4 clocks, 8 gold ingots, 32 bread, something like 24 clocks, 2 stacks of gold ingots and 300 bread. Most players get the small amounts quickly, so scale the reform costs up a lot in the design note and the edict data files.
 - [x] **30.2** (approved 2026-10-05) **One pace, one cap.** A core `work/Pace` that every job's work speed goes through (if another
   milestone built it first, check it covers this list and add what's missing):
   - bonuses: Pokémon partners, a well-kept village, Swift Hands, Diligent, a happy mood, Craftsmanship (crafters),
@@ -1941,7 +1941,7 @@ the Village Hall (`VillageNeeds`, `VillageQuests`, `VillageRanks`, `Festivals`, 
   and hurts without it; the raid chance halved; a trade refused at night, allowed by day and after the reform; the
   festival's fireworks skipped; showcase scene `curfew`: a GIF of the village going indoors at dusk, the streets
   empty, the guards on watch.
-- [ ] **30.10** **Conscription.** Effects `militia` and `work_stops_in_raids`:
+- [x] **30.10** (review: pending 2026-10-05) **Conscription.** Effects `militia` and `work_stops_in_raids`:
   - boost: while the village is raided (our monster and bandit raids, or a vanilla pillager raid there) every grown
     villager who isn't ill fights: they wake, never panic (as `VillagerPanicTriggerMixin` keeps guards from panicking),
     hold a stone sword (shown in their hands, not taken from any chest, gone when the raid ends) and go for the nearest
@@ -4292,6 +4292,26 @@ item waits.
   often") undersells it; owner's call whether to reword it "Legends visit twice as often". The chapel's midnight is
   day time 17500 to 19000 (a hall round falls in it); the chapel and hall rolls run in the hall's round, the festival's
   in `Festivals.fireworks`. Hall fields `legendVisits`, `legendGuest`, `legendRolled` (absent: empty).
+- 2026-10-05 (30.1a, decisions; lane d): reform costs scaled to the owner's example (The Shift Bell 24 clocks, 128 gold
+  ingots, 300 bread) and the rest in proportion, so each reform asks for hundreds of items (the design note's table);
+  slay steps went to 32-40 monsters (Conscription's planned 48), the one battle step stays one battle. The emeralds a
+  step pays were left as they were (the reform is the reward); owner's call if he wants them raised too. Hand-in
+  already took every slot up to what's left and kept partial progress; a GameTest now proves it over three trips.
+- 2026-10-05 (30.10, decisions; lane d): two effect types: `militia` {`damage` 3, `range` 24} (highest of each) read by
+  the new `guard/MilitiaCombat`, a behaviour every villager's CORE package now starts with (a guard's does nothing; for
+  guards it sits after their own four, so GoalPackagesMixinGameTests holds unchanged), and `work_stops_in_raids`
+  {`until_noon`, optional `near`} (strictest: any without `near` stops everyone) read by `hall/Conscription.workStopped`,
+  the one work gate: `mixin/BrainMixin` takes a stopped villager out of WORK into IDLE, stops every running WORK
+  behaviour (ours and vanilla's) and keeps the schedule from sending them back. "Raided" is `VillageRaids.raided`: our
+  raid on the hall, or a vanilla raid at the hall or at the villager. Guards and mercenaries are never conscripts and
+  their watch isn't stopped. While fighting, a conscript's brain idles (bell and hiding memories cleared, schedule held);
+  with no raider in range they hide as the bell says. Whatever a conscript held moves to their empty off hand with its
+  drop chance and comes back after (both hands full: they fight without a sword showing); the sword is a stone sword
+  marked with custom data `aliveworkplace_militia`, drop chance 0, removed when the raid ends and on every entity load.
+  `raidWorkUntil` on the hall is in the level's day time, not game time as the design note says: a night slept through
+  jumps the day time to dawn, so game time would have kept work stopped well past noon; a value more than a day ahead
+  (the clock set back) is ignored. Nothing a player reads was added besides the Book's lines (no status text for
+  conscripts). `VillageRaids.track` starts a raid without the gathering and horn, for the showcase scene and tests.
 - 2026-10-05 (30.9, decisions; lane d): `curfew` is one effect type with three fields: `raids` (factor, multiplied;
   also read by `BanditCamps.dailyChance`), `safe_nights` (night safety full in `VillageNeeds.count`, and a monster's blow
   on a villager asleep in bed cancelled through `allowDamage`) and `stay_in` (bedtime, no trading, festival over at

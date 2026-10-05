@@ -112,13 +112,18 @@ abstract class VillagerGoalPackagesMixin {
 		}
 	}
 
-	/** Guards fight in every activity, so their combat goes in CORE. */
+	/** Guards fight in every activity, so their combat goes in CORE; so does a conscript's (Conscription, 30.10). */
 	@Inject(method = "getCorePackage", at = @At("RETURN"), cancellable = true)
 	private static void aliveworkplace$guardCorePackage(VillagerProfession profession, float speed,
 			CallbackInfoReturnable<ImmutableList<Pair<Integer, ? extends BehaviorControl<? super Villager>>>> cir) {
-		if (profession == ModVillagers.GUARD) {
-			cir.setReturnValue(io.github.jcondedata.aliveworkplace.guard.GuardPackages.core(cir.getReturnValue()));
-		}
+		// Anyone may be called up under Conscription (30.10): the militia's fighting goes in CORE (a guard's does nothing:
+		// guards are never conscripts, they have their own combat).
+		ImmutableList<Pair<Integer, ? extends BehaviorControl<? super Villager>>> core =
+			ImmutableList.<Pair<Integer, ? extends BehaviorControl<? super Villager>>>builder()
+				.add(Pair.of(0, new io.github.jcondedata.aliveworkplace.guard.MilitiaCombat()))
+				.addAll(cir.getReturnValue())
+				.build();
+		cir.setReturnValue(profession == ModVillagers.GUARD ? io.github.jcondedata.aliveworkplace.guard.GuardPackages.core(core) : core);
 	}
 
 	/** Farmers keep their vanilla routine, paused while they have a field that needs work (see {@code Fields}). */

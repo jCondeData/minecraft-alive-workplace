@@ -31,7 +31,8 @@ import org.jetbrains.annotations.Nullable;
  * {@code market_traders} by {@code MarketDays}, {@code bandit_camps} by {@code guard/BanditCamps} and {@code legend_visits}
  * by M29's guests ({@code legend/Legends.visitFactor}, 29.8), {@code festival_every} and
  * {@code festival_cost} by {@code Festivals}, {@code tithe} and {@code trade_prices} by {@code Tithe}, {@code curfew} by
- * {@code hall/Curfew} and the systems it names there. Later items add their
+ * {@code hall/Curfew} and the systems it names there, {@code militia} by {@code guard/MilitiaCombat} and
+ * {@code work_stops_in_raids} by {@code hall/Conscription}'s one work gate. Later items add their
  * own types with {@link #register}.
  *
  * <p>The effects in force are summed per hall ({@link Sum}) whenever its edicts change, a data pack reloads or the
@@ -88,6 +89,8 @@ public final class CivicEffects {
 	public static final ResourceLocation TITHE = AliveWorkplace.id("tithe");
 	public static final ResourceLocation TRADE_PRICES = AliveWorkplace.id("trade_prices");
 	public static final ResourceLocation CURFEW = AliveWorkplace.id("curfew");
+	public static final ResourceLocation MILITIA = AliveWorkplace.id("militia");
+	public static final ResourceLocation WORK_STOPS_IN_RAIDS = AliveWorkplace.id("work_stops_in_raids");
 
 	/**
 	 * Whether anything reads {@code legend_visits}: M29's guests do since 29.8 ({@code Legends.visitFactor}); the Book of
@@ -160,6 +163,16 @@ public final class CivicEffects {
 			Codec.BOOL.optionalFieldOf("stay_in", false).forGetter(CurfewRules::stayIn),
 			JOBS.optionalFieldOf("jobs", List.of()).forGetter(CurfewRules::jobs)
 		).apply(i, CurfewRules::new)));
+		register(MILITIA, RecordCodecBuilder.<Militia>mapCodec(i -> i.group(
+			Codec.floatRange(0f, 100f).optionalFieldOf("damage", 3f).forGetter(Militia::damage),
+			Codec.intRange(1, 64).optionalFieldOf("range", 24).forGetter(Militia::range),
+			JOBS.optionalFieldOf("jobs", List.of()).forGetter(Militia::jobs)
+		).apply(i, Militia::new)));
+		register(WORK_STOPS_IN_RAIDS, RecordCodecBuilder.<WorkStops>mapCodec(i -> i.group(
+			Codec.BOOL.optionalFieldOf("until_noon", false).forGetter(WorkStops::untilNoon),
+			Codec.intRange(1, 64).optionalFieldOf("near").forGetter(WorkStops::near),
+			JOBS.optionalFieldOf("jobs", List.of()).forGetter(WorkStops::jobs)
+		).apply(i, WorkStops::new)));
 	}
 
 	/** {@code work_pace}: work {@code percent} faster (a bonus of {@code work/Pace}, up to its cap). */
@@ -326,6 +339,31 @@ public final class CivicEffects {
 		@Override
 		public ResourceLocation type() {
 			return CURFEW;
+		}
+	}
+
+	/**
+	 * {@code militia} (Conscription, 30.10; {@code guard/MilitiaCombat}): while the village is raided every grown villager
+	 * who isn't ill fights, with a stone sword, {@code damage} a blow (15% more if Strong), going for the nearest raider
+	 * within {@code range} blocks. Several: the highest of each. Village-wide: {@code jobs} doesn't narrow it.
+	 */
+	public record Militia(float damage, int range, List<ResourceLocation> jobs) implements Effect {
+		@Override
+		public ResourceLocation type() {
+			return MILITIA;
+		}
+	}
+
+	/**
+	 * {@code work_stops_in_raids} (Conscription, 30.10; {@code hall/Conscription}): while the village is raided its work
+	 * stops, for everyone, or with {@code near} only for villagers with a raider within that many blocks; with
+	 * {@code until_noon} it stays stopped until noon the next day. Several: the strictest (one without {@code near}
+	 * stops everyone, any {@code until_noon} counts). Village-wide: {@code jobs} doesn't narrow it.
+	 */
+	public record WorkStops(boolean untilNoon, Optional<Integer> near, List<ResourceLocation> jobs) implements Effect {
+		@Override
+		public ResourceLocation type() {
+			return WORK_STOPS_IN_RAIDS;
 		}
 	}
 
@@ -556,6 +594,39 @@ public final class CivicEffects {
 		/** Whether the village stays in from dusk to dawn ({@code curfew} with {@code stay_in}). */
 		public boolean stayIn() {
 			return all.stream().anyMatch(a -> a.effect() instanceof CurfewRules c && c.stayIn());
+		}
+
+		/** The village's militia: the highest damage and range its {@code militia} effects name, or null without one. */
+		@Nullable
+		public Militia militia() {
+			Militia out = null;
+			for (Active a : all) {
+				if (a.effect() instanceof Militia m) {
+					out = out == null ? m : new Militia(Math.max(out.damage(), m.damage()), Math.max(out.range(), m.range()), List.of());
+				}
+			}
+			return out;
+		}
+
+		/**
+		 * How the village's work stops in raids: the strictest of its {@code work_stops_in_raids} effects (any without
+		 * {@code near}: everyone; else the widest {@code near}; any {@code until_noon}), or null without one.
+		 */
+		@Nullable
+		public WorkStops workStops() {
+			WorkStops out = null;
+			for (Active a : all) {
+				if (a.effect() instanceof WorkStops w) {
+					if (out == null) {
+						out = w;
+					} else {
+						Optional<Integer> near = out.near().isEmpty() || w.near().isEmpty() ? Optional.empty()
+							: Optional.of(Math.max(out.near().get(), w.near().get()));
+						out = new WorkStops(out.untilNoon() || w.untilNoon(), near, List.of());
+					}
+				}
+			}
+			return out;
 		}
 
 		/** The {@code mood} effects that count for {@code villager} now. */

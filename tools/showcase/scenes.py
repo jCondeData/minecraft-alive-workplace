@@ -302,6 +302,12 @@ SCENES = [
       "Curfew was proclaimed: at dusk the villagers went to bed, the street emptied and the guard kept watch", 60,
       [("01_curfew_evening", "Evening: the villagers still out in the street"), ("02_curfew_dusk", "Dusk: everyone indoors and asleep, the guard on watch"),
        ("03_curfew_book", "Curfew in the Book of Edicts")]),
+    # Conscription (ROADMAP 30.10): a night raid beaten back by the villagers with the militia's swords, beside the guard
+    S("conscription", "Village Hall", "Edicts: Conscription",
+      "Conscription was proclaimed: in a night raid a farmer, a builder and a librarian took up swords and beat the raiders back beside the guard", 60,
+      [("01_conscription_raid", "The raid comes: the villagers take up the militia's stone swords"),
+       ("02_conscription_fight", "Villagers and the guard beat the raiders back"),
+       ("03_conscription_book", "Conscription in the Book of Edicts")]),
     S("hall_quests", "Village Hall", "Quests, advice, the village map and the festival",
       "the quests, advice, village map, mercenaries and festival opened", 60,
       [("01_hall_quests", "Quests"), ("02_hall_advice", "What next?"), ("03_hall_map", "Village map"),

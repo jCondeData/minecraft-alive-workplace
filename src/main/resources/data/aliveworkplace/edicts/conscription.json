@@ -1,0 +1,20 @@
+{
+  "icon": "minecraft:stone_sword",
+  "name": {"translate": "edict.aliveworkplace.conscription"},
+  "description": {"translate": "edict.aliveworkplace.conscription.desc"},
+  "order": 8,
+  "boost": [{"type": "aliveworkplace:militia", "damage": 3, "range": 24}],
+  "cost": [{"type": "aliveworkplace:work_stops_in_raids", "until_noon": true}],
+  "excludes": [],
+  "reform": {
+    "name": {"translate": "reform.aliveworkplace.militia_drill"},
+    "line": {"translate": "reform.aliveworkplace.militia_drill.line"},
+    "steps": [
+      {"kind": "bring", "item": "minecraft:iron_sword", "count": 32, "reward": 6},
+      {"kind": "bring", "item": "minecraft:shield", "count": 32, "reward": 5},
+      {"kind": "slay", "count": 48, "reward": 8}
+    ],
+    "effects": [{"type": "aliveworkplace:work_stops_in_raids", "near": 24}]
+  },
+  "enabled": true
+}

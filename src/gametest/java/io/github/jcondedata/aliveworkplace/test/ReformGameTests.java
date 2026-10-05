@@ -32,6 +32,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.monster.Zombie;
 import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.entity.projectile.FireworkRocketEntity;
@@ -68,7 +69,7 @@ public class ReformGameTests implements FabricGameTest {
 			"line: " + bell.line().getString());
 		helper.assertTrue(bell.effects().isEmpty(), "reformed, the cost just goes: " + bell.effects());
 		List<String> steps = bell.steps().stream().map(s -> s.kind() + " " + s.count() + " " + s.item() + " for " + s.reward()).toList();
-		helper.assertTrue(steps.equals(List.of("BRING 4 minecraft:clock for 5", "BRING 8 minecraft:gold_ingot for 5", "BRING 32 minecraft:bread for 4")),
+		helper.assertTrue(steps.equals(List.of("BRING 24 minecraft:clock for 5", "BRING 128 minecraft:gold_ingot for 5", "BRING 300 minecraft:bread for 4")),
 			"steps: " + steps);
 
 		Reforms.Reform ring = Edicts.find(DUEL).orElseThrow().reform().orElseThrow();
@@ -132,9 +133,9 @@ public class ReformGameTests implements FabricGameTest {
 			ItemStack step = menu.icon(STEP_SLOT);
 			helper.assertTrue(step.is(Items.WRITABLE_BOOK) && step.getHoverName().getString().equals("The Shift Bell, step 1 of 3"), "the step: " + step);
 			List<String> lines = lore(step);
-			helper.assertTrue(lines.contains("Bring 4 Clock") && lines.contains("A reform step: it never expires")
+			helper.assertTrue(lines.contains("Bring 24 Clock") && lines.contains("A reform step: it never expires")
 				&& lines.contains("A bell in the yard calls the shifts, so nobody works past their hour.") && lines.contains("Reform of the edict Long Shifts")
-				&& lines.contains("Done so far: 0 of 4") && lines.contains("You have none on you"), "lore: " + lines);
+				&& lines.contains("Done so far: 0 of 24") && lines.contains("You have none on you"), "lore: " + lines);
 			if (!Money.cobbleDollars()) {
 				helper.assertTrue(lines.contains("Reward: 5 emeralds"), "a Hamlet pays 5: " + lines);
 			}
@@ -196,11 +197,11 @@ public class ReformGameTests implements FabricGameTest {
 			ChoiceMenu menu = questPage(player, hall);
 			click(menu, STEP_SLOT, player);
 			helper.assertTrue(player.getInventory().countItem(Items.CLOCK) == 0, "the clocks weren't taken");
-			helper.assertTrue(lore(menu.icon(STEP_SLOT)).contains("Done so far: 2 of 4"), "progress: " + lore(menu.icon(STEP_SLOT)));
+			helper.assertTrue(lore(menu.icon(STEP_SLOT)).contains("Done so far: 2 of 24"), "progress: " + lore(menu.icon(STEP_SLOT)));
 			helper.assertTrue(Reforms.progress(entity, LONG_SHIFTS).step() == 0, "moved on at half");
 
 			// The rest: paid, and nothing more until tomorrow.
-			player.getInventory().add(new ItemStack(Items.CLOCK, 3));
+			player.getInventory().add(new ItemStack(Items.CLOCK, 23));
 			click(menu, STEP_SLOT, player);
 			helper.assertTrue(player.getInventory().countItem(Items.CLOCK) == 1, "took more than asked: " + player.getInventory().countItem(Items.CLOCK));
 			if (!Money.cobbleDollars()) {
@@ -212,13 +213,13 @@ public class ReformGameTests implements FabricGameTest {
 			Reforms.round(level, hall, entity);
 			helper.assertTrue(Reforms.shown(entity).isEmpty(), "the next step went up the same day");
 			helper.assertTrue(entity.chronicle().stream().anyMatch(e -> e.kind() == Chronicle.Kind.QUEST
-				&& e.text().getString().endsWith("The Shift Bell, step 1 of 3: Bring 4 Clock")), "the chronicle: " + chronicle(entity));
+				&& e.text().getString().endsWith("The Shift Bell, step 1 of 3: Bring 24 Clock")), "the chronicle: " + chronicle(entity));
 
 			// The next morning: step two.
 			nextMorning(helper);
 			Reforms.round(level, hall, entity);
 			ItemStack two = questPage(player, hall).icon(STEP_SLOT);
-			helper.assertTrue(two.getHoverName().getString().equals("The Shift Bell, step 2 of 3") && lore(two).contains("Bring 8 Gold Ingot"),
+			helper.assertTrue(two.getHoverName().getString().equals("The Shift Bell, step 2 of 3") && lore(two).contains("Bring 128 Gold Ingot"),
 				"step two: " + two.getHoverName().getString() + " " + lore(two));
 			helper.assertTrue(Reforms.shown(entity).get(0).reward() == 6, "step two pays 5 and a quarter: " + Reforms.shown(entity).get(0));
 			helper.assertTrue(lore(EdictBook.forTest(player, hall).icon(find(EdictBook.forTest(player, hall), "Long Shifts")))
@@ -242,7 +243,7 @@ public class ReformGameTests implements FabricGameTest {
 			BlockPos hall = helper.absolutePos(HALL);
 			VillageHallBlockEntity entity = ready(helper);
 			helper.assertTrue(Edicts.proclaim(level, hall, null, Edicts.find("long_shifts").orElseThrow()).done(), "proclaimed");
-			player.getInventory().add(new ItemStack(Items.CLOCK, 4));
+			player.getInventory().add(new ItemStack(Items.CLOCK, 24));
 			click(questPage(player, hall), STEP_SLOT, player);
 			nextMorning(helper);
 			Reforms.round(level, hall, entity);
@@ -267,7 +268,7 @@ public class ReformGameTests implements FabricGameTest {
 			List<VillageQuests.Quest> shown = Reforms.shown(entity);
 			helper.assertTrue(shown.size() == 1 && shown.get(0).progress() == 3 && shown.get(0).reform().orElseThrow().step() == 1,
 				"after proclaiming again: " + shown);
-			helper.assertTrue(lore(questPage(player, hall).icon(STEP_SLOT)).contains("Done so far: 3 of 8"), "the page");
+			helper.assertTrue(lore(questPage(player, hall).icon(STEP_SLOT)).contains("Done so far: 3 of 128"), "the page");
 
 			// A hall from before reforms: no progress; a quest saved without "reform" is a daily one.
 			tag.remove("reforms");
@@ -304,15 +305,15 @@ public class ReformGameTests implements FabricGameTest {
 			Moods.forget();
 			helper.assertTrue(Moods.work(level, builder).score() == mood - 10, "Long Shifts' cost first");
 
-			hand(helper, player, Items.CLOCK, 4);
+			hand(helper, player, Items.CLOCK, 24);
 			nextMorning(helper);
 			Reforms.round(level, hall, entity);
-			hand(helper, player, Items.GOLD_INGOT, 8);
+			hand(helper, player, Items.GOLD_INGOT, 128);
 			helper.assertTrue(!Reforms.reformed(entity, LONG_SHIFTS), "reformed before the last step");
 			nextMorning(helper);
 			Reforms.round(level, hall, entity);
 			helper.assertTrue(level.getEntitiesOfClass(FireworkRocketEntity.class, new AABB(hall).inflate(8)).isEmpty(), "fireworks too soon");
-			hand(helper, player, Items.BREAD, 32);
+			hand(helper, player, Items.BREAD, 300);
 
 			helper.assertTrue(Reforms.reformed(entity, LONG_SHIFTS), "not reformed: " + entity.reforms());
 			if (!Money.cobbleDollars()) {
@@ -382,13 +383,77 @@ public class ReformGameTests implements FabricGameTest {
 		});
 	}
 
+	/**
+	 * A step of hundreds (30.1a: The Shift Bell's 300 bread) is handed in over many trips: a stack, then more than a
+	 * stack spread over several slots, then the rest with some over. Each trip keeps what was given, the hint names what
+	 * a click will take, nothing is lost (no store here, so it lands by the hall), and the last trip reforms the edict.
+	 */
+	//$ gametest_ticks_batch AREA '100' '"reformHundreds"'
+	@GameTest(template = AREA, timeoutTicks = 100, batch = "reformHundreds")
+	public void aStepOfHundredsTakesManyTrips(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		village(helper);
+		ServerPlayer player = player(helper);
+		helper.runAfterDelay(5, () -> {
+			ServerLevel level = helper.getLevel();
+			BlockPos hall = helper.absolutePos(HALL);
+			VillageHallBlockEntity entity = ready(helper);
+			helper.assertTrue(Edicts.proclaim(level, hall, null, Edicts.find("long_shifts").orElseThrow()).done(), "proclaimed");
+			entity.setReforms(List.of(new Reforms.Progress(LONG_SHIFTS, 2, false, 0)));
+			entity.setQuests(List.of());
+			Reforms.round(level, hall, entity);
+			List<VillageQuests.Quest> shown = Reforms.shown(entity);
+			helper.assertTrue(shown.size() == 1 && shown.get(0).item().equals("minecraft:bread") && shown.get(0).count() == 300,
+				"the last step: " + shown);
+			helper.assertTrue(lore(questPage(player, hall).icon(STEP_SLOT)).contains("Bring 300 Bread"), "the page: " + lore(questPage(player, hall).icon(STEP_SLOT)));
+
+			// Trip one: a full stack.
+			give(player, Items.BREAD, 64);
+			click(questPage(player, hall), STEP_SLOT, player);
+			helper.assertTrue(player.getInventory().countItem(Items.BREAD) == 0, "a stack not taken: " + player.getInventory().countItem(Items.BREAD));
+			helper.assertTrue(Reforms.shown(entity).get(0).progress() == 64 && Reforms.progress(entity, LONG_SHIFTS).step() == 2, "after a stack: " + entity.quests());
+
+			// Trip two: 200 over four slots, all of it taken in one click; kept through a save and a reload.
+			give(player, Items.BREAD, 200);
+			helper.assertTrue(lore(questPage(player, hall).icon(STEP_SLOT)).contains("Click: hand in 200"), "the hint: " + lore(questPage(player, hall).icon(STEP_SLOT)));
+			click(questPage(player, hall), STEP_SLOT, player);
+			helper.assertTrue(player.getInventory().countItem(Items.BREAD) == 0, "not all 200 taken: " + player.getInventory().countItem(Items.BREAD));
+			helper.assertTrue(lore(questPage(player, hall).icon(STEP_SLOT)).contains("Done so far: 264 of 300"), "progress: " + lore(questPage(player, hall).icon(STEP_SLOT)));
+			CompoundTag tag = entity.saveWithFullMetadata(level.registryAccess());
+			VillageHallBlockEntity copy = (VillageHallBlockEntity) BlockEntity.loadStatic(hall, level.getBlockState(hall), tag, level.registryAccess());
+			helper.assertTrue(copy != null && copy.quests().equals(entity.quests()), "reloaded: " + (copy == null ? null : copy.quests()));
+
+			// Trip three: 50 carried, 36 wanted: 14 kept, the edict reformed, paid once.
+			give(player, Items.BREAD, 50);
+			helper.assertTrue(lore(questPage(player, hall).icon(STEP_SLOT)).contains("Click: hand in 36"), "the last hint: " + lore(questPage(player, hall).icon(STEP_SLOT)));
+			click(questPage(player, hall), STEP_SLOT, player);
+			helper.assertTrue(player.getInventory().countItem(Items.BREAD) == 14, "took more than asked: " + player.getInventory().countItem(Items.BREAD));
+			helper.assertTrue(Reforms.reformed(entity, LONG_SHIFTS) && Reforms.shown(entity).isEmpty(), "not reformed: " + entity.reforms());
+			if (!Money.cobbleDollars()) {
+				helper.assertTrue(player.getInventory().countItem(Items.EMERALD) == 4, "paid: " + player.getInventory().countItem(Items.EMERALD));
+			}
+			int landed = level.getEntitiesOfClass(ItemEntity.class, new AABB(hall).inflate(4), e -> e.getItem().is(Items.BREAD)).stream()
+				.mapToInt(e -> e.getItem().getCount()).sum();
+			helper.assertTrue(landed == 300, "bread by the hall: " + landed + " of 300");
+			helper.succeed();
+		});
+	}
+
 	// --- Helpers ---------------------------------------------------------------------------------------------------
 
 	/** Hands in {@code count} of {@code item} at the only reform step on the quest page. */
 	private static void hand(GameTestHelper helper, ServerPlayer player, net.minecraft.world.item.Item item, int count) {
-		player.getInventory().add(new ItemStack(item, count));
+		give(player, item, count);
 		click(questPage(player, helper.absolutePos(HALL)), STEP_SLOT, player);
 		helper.assertTrue(player.getInventory().countItem(item) == 0, "not handed in: " + item);
+	}
+
+	/** Puts {@code count} of {@code item} in {@code player}'s inventory, a full stack a slot. */
+	private static void give(ServerPlayer player, net.minecraft.world.item.Item item, int count) {
+		int max = new ItemStack(item).getMaxStackSize();
+		for (int left = count; left > 0; left -= max) {
+			player.getInventory().add(new ItemStack(item, Math.min(max, left)));
+		}
 	}
 
 	/** Moves the clock to the next morning (put back when the test ends). */

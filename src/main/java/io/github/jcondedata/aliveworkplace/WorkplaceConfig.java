@@ -147,6 +147,8 @@ public final class WorkplaceConfig {
 	public boolean habitatSightings = Expansions.on(Expansions.M28);
 	/** An Expert Habitat Keeper puts one Habitat Block in a finished Habitat Garden, with Cobblemon 1.8 (ROADMAP 28.14). Off: none founded. */
 	public boolean villageHabitats = Expansions.on(Expansions.M28);
+	/** With Cobblemon, villages grow a Pokémon Center, Camp Kitchen, Berry Nursery, Daycare and Gem Grotto, each with its worker (ROADMAP 28.15). Off: they don't (from the next server start). */
+	public boolean pokemonVillageHouses = Expansions.on(Expansions.M28);
 	/** Days in each of the village calendar's four seasons (each has a festival on its middle day). */
 	public int seasonDays = 16;
 	/** Hundredths of an emerald each worker brings the treasury a day (before wellbeing and rank). */
@@ -371,6 +373,7 @@ public final class WorkplaceConfig {
 		io.github.jcondedata.aliveworkplace.habitat.HabitatKeepers.ENABLED = habitatKeepers && Expansions.on(Expansions.M28);
 		io.github.jcondedata.aliveworkplace.habitat.HabitatKeepers.SIGHTINGS = habitatSightings && Expansions.on(Expansions.M28);
 		io.github.jcondedata.aliveworkplace.habitat.VillageHabitats.ENABLED = villageHabitats && Expansions.on(Expansions.M28);
+		io.github.jcondedata.aliveworkplace.world.VillageHouses.POKEMON_JOBS = pokemonVillageHouses && Expansions.on(Expansions.M28);
 		io.github.jcondedata.aliveworkplace.gem.GemGrowers.ENABLED = gemGrowers && Expansions.on(Expansions.M28);
 		io.github.jcondedata.aliveworkplace.daycare.DaycareKeepers.ENABLED = daycareKeepers && Expansions.on(Expansions.M28);
 		// Off in gametests (a trait picked by chance would change a test's numbers); the people tests turn them on.

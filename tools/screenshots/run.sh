@@ -45,7 +45,7 @@ catalog() { python3 tools/showcase/scenes.py env "${SCENE:-builders}" 2>/dev/nul
 
 # 3. Run the client (the dev-only harness stages the scene, takes shots and quits).
 LIBGL_ALWAYS_SOFTWARE=1 GALLIUM_DRIVER=llvmpipe xvfb-run -a -s "-screen 0 1920x1080x24" \
-  ./gradlew :$MC:runScreenshots --no-daemon -Pscene="${SCENE:-builders}" -PguiScale="${GUI_SCALE:-2}" -PworkshopWeight="${WORKSHOP_WEIGHT:-3}" ${HOUSE_WEIGHT:+-PhouseWeight=$HOUSE_WEIGHT} \
+  ./gradlew :$MC:runScreenshots --no-daemon -Pscene="${SCENE:-builders}" -PguiScale="${GUI_SCALE:-2}" -PworkshopWeight="${WORKSHOP_WEIGHT:-3}" ${HOUSE_WEIGHT:+-PhouseWeight=$HOUSE_WEIGHT} ${POKEMON_HOUSE_WEIGHT:+-PpokemonHouseWeight=$POKEMON_HOUSE_WEIGHT} \
     -Pcobblemon="${COBBLEMON:-$(catalog COBBLEMON)}" -Pmega="${MEGA:-$(catalog MEGA)}" -PperfStack="${PERF_STACK:-false}" -PbuilderDebug="${DEBUG:-false}" -Pcobblemon18="${COBBLEMON18:-false}" > "$SCRATCH/client.log" 2>&1 || true
 cp "$SCRATCH/client.log" $RUN/screenshots/client.log 2>/dev/null || true
 grep -E "finished building|Stopping!" "$SCRATCH/client.log" || true

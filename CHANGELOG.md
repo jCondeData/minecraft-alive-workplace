@@ -35,6 +35,11 @@ asks for the steps, `latest.log` and any crash report).
   seed stock, so a Farmstead's field could be harvested without anything landing in its chest. He now takes them from the
   chests to plant with, like seeds, and puts the whole harvest away.
 ### Added
+- **Villages grow the Pokémon jobs' houses** (28.15): with Cobblemon, villages sometimes grow a Pokémon Center (a nurse
+  at a Healing Machine, a PC by the counter), a Camp Kitchen (a Camp Cook at a Campfire Pot), a Berry Nursery (a Berry
+  Breeder by farmland beds), a Daycare (a Daycare Keeper at a Pasture Block on a straw floor) and a Gem Grotto (a Gem
+  Grower at a stonecutter, an amethyst niche, tumblestones on magma behind glass), in all five village styles, each
+  with its worker already in the job and a chest of the job's things. Config `pokemonVillageHouses` (on).
 - **Edicts and civic items in the village's life** (30.21): villagers talk of each edict in force and of each reformed
   one ("Long shifts again... my back.", "The shift bell's rung. Home we go."), of a rush, their tonic, their guild and
   the village's colours; "What next?" now points out a free edict slot, a reform step waiting, Festival Season with too

@@ -16,7 +16,7 @@ public final class Expansions {
 	/**
 	 * Milestone 28, Pokémon and villagers, together (1.2): {@code partnerShows}, {@code nurseHealingMachine},
 	 * {@code berryBreeders}, {@code campCooks}, {@code habitatKeepers}, {@code habitatSightings}, {@code daycareKeepers},
-	 * {@code gemGrowers}, {@code villageHabitats}.
+	 * {@code gemGrowers}, {@code villageHabitats}, {@code pokemonVillageHouses}.
 	 */
 	public static final boolean M28 = false;
 	/** Milestone 29, Legends (1.3): {@code legends}, {@code legendNeeds}, {@code legendSites}, {@code strangeMoods}, {@code giftedChance}. */
@@ -46,7 +46,7 @@ public final class Expansions {
 		return switch (option) {
 			case "steward", "stewardSelfRun", "stewardMaxOpenBuilds" -> M27;
 			case "partnerShows", "nurseHealingMachine", "berryBreeders", "campCooks", "habitatKeepers", "habitatSightings",
-				"daycareKeepers", "gemGrowers", "villageHabitats" -> M28;
+				"daycareKeepers", "gemGrowers", "villageHabitats", "pokemonVillageHouses" -> M28;
 			case "legends", "legendNeeds", "legendSites", "strangeMoods", "giftedChance" -> M29;
 			case "villageEdicts", "edictMinDays", "workHorns", "villageBanners", "cradles", "harvestIdols", "tonics", "guilds",
 				"guildsPerRank" -> M30;

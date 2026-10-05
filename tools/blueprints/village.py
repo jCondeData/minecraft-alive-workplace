@@ -135,7 +135,10 @@ def village_house(style, fit_out, job=None):
             "selection_priority": Int(0), "placement_priority": Int(0)}))
     else:
         b.set(4, 0, 5, floor_name)
-        b.villager(5, 1, 5, job, VILLAGER_TYPES[style])  # in the open middle of the room: no fit-out uses x = 5
+        # in the open middle of the room: no fit-out uses x = 5. A job block the job can't take by itself (a nurse's Healing
+        # Machine) is taken through the tag (work/Stations.takeHouseBlock).
+        tags = ("aliveworkplace_house_worker",) if getattr(fit_out, "claims_job_block", False) else ()
+        b.villager(5, 1, 5, job, VILLAGER_TYPES[style], tags)
     b.fill_air()
     return b
 
@@ -363,6 +366,101 @@ def compost_yard_house(b, style):
     b.set(1, 1, 2, "coarse_dirt")
 
 
+# --- The Pokémon jobs' village houses (ROADMAP 28.15): only with Cobblemon (and config pokemonVillageHouses) -----
+# Each keeps its one job block and comes with its villager already in the job: Cobblemon's blocks (the Healing Machine,
+# the Campfire Pot, the Pasture Block) are never taken by a jobless villager, and a composter or a stonecutter would
+# make a farmer or a mason.
+def loot_chest(b, x, y, z, table, facing="east"):
+    """A chest of the house's loot (each table loads only with Cobblemon: its items are Cobblemon's)."""
+    b.set(x, y, z, "chest", facing=facing, type="single", waterlogged=False)
+    b.set_nbt(x, y, z, Compound({"LootTable": String("aliveworkplace:chests/" + table), "id": String("minecraft:chest")}))
+
+
+def pokemon_center_room(b, style):
+    """The nurse's counter along the back wall: Cobblemon's PC, the Healing Machine (the nurse's, where she heals your
+    team) and a quartz counter top with flowers on it; a red carpet from the door to the counter, a white mat where the
+    nurse stands and a waiting bench by the west wall."""
+    b.set(1, 1, 6, "cobblemon:pc", facing="north", part="bottom", on=False, waterlogged=False)
+    b.set(1, 2, 6, "cobblemon:pc", facing="north", part="top", on=False, waterlogged=False)
+    b.set(2, 1, 6, "cobblemon:healing_machine", facing="north")
+    b.set(3, 1, 6, "smooth_quartz")
+    b.set(3, 2, 6, "potted_allium")
+    b.set(2, 1, 5, "white_carpet")
+    for z in (2, 3, 4, 5):
+        b.set(3, 1, z, "red_carpet")
+    for z in (3, 4):  # the waiting bench, its back to the west wall
+        b.set(1, 1, z, "quartz_stairs", facing="west", half="bottom", shape="straight", waterlogged=False)
+    b.set(1, 1, 2, "potted_red_tulip")
+
+
+pokemon_center_room.claims_job_block = True  # a nurse takes a Healing Machine only by a honey bottle
+
+
+def camp_kitchen_room(b, style):
+    """The Camp Cook's Campfire Pot (Cobblemon's campfire with a red pot on it) on a stone hearth at the back, the grain
+    store beside it (Hearty Grain bales), her chest of makings on the other side and a bench by the west wall."""
+    for x in (1, 2, 3):
+        for z in (5, 6):
+            b.set(x, 0, z, "stone_bricks")
+    b.set(2, 0, 6, "mud_bricks")
+    b.set(2, 1, 6, "cobblemon:campfire", facing="north", lid=False)
+    b.set_nbt(2, 1, 6, Compound({"id": String("cobblemon:campfire_pot"),
+                                 "PotComponent": Compound({"id": String("cobblemon:campfire_pot_red"), "count": Int(1)})}))
+    b.set(1, 1, 6, "cobblemon:hearty_grain_bale", axis="y")
+    b.set(1, 2, 6, "cobblemon:hearty_grain_bale", axis="z")
+    b.set(1, 1, 5, "cobblemon:hearty_grain_bale", axis="y")
+    loot_chest(b, 3, 1, 6, "village_camp_kitchen", facing="north")
+    for z in (3, 4):  # the bench, its back to the west wall
+        b.set(1, 1, z, "spruce_stairs", facing="west", half="bottom", shape="straight", waterlogged=False)
+    b.set(1, 1, 2, "potted_fern")
+
+
+def berry_nursery_room(b, style):
+    """The Berry Breeder's composter at the back over a hidden water source (it wets every bed), two pairs of farmland
+    beds in the floor either side of it and by the west wall, her chest of berries and mulch by the door."""
+    b.set(2, 0, 6, "water", level=0)
+    b.set(2, 1, 6, "composter", level=0)
+    for x, z in ((1, 5), (1, 6), (3, 5), (3, 6), (1, 3), (1, 4)):
+        b.set(x, 0, z, "farmland", moisture=7)
+    loot_chest(b, 1, 1, 2, "village_berry_nursery")
+    b.set(1, 2, 2, "potted_flowering_azalea_bush")
+
+
+def daycare_room(b, style):
+    """The Daycare Keeper's Pasture Block in the back corner, a straw floor (hay) round it, a nest of hay with a soft
+    white blanket in it, her chest and a lantern on a post by the nursery."""
+    for x in (1, 2, 3):
+        for z in (4, 5, 6):
+            b.set(x, 0, z, "hay_block", axis="y")
+    b.set(1, 1, 6, "cobblemon:pasture", facing="north", part="bottom", on=False, waterlogged=False)
+    b.set(1, 2, 6, "cobblemon:pasture", facing="north", part="top", on=False, waterlogged=False)
+    b.set(2, 1, 6, "hay_block", axis="x")
+    b.set(2, 2, 6, "white_carpet")
+    loot_chest(b, 3, 1, 6, "village_daycare", facing="north")
+    b.set(1, 1, 3, "spruce_fence", north=False, south=False, east=False, west=False, waterlogged=False)
+    b.set(1, 2, 3, "lantern", hanging=False, waterlogged=False)
+    b.set(1, 1, 2, "potted_azalea_bush")
+
+
+def gem_grotto_room(b, style):
+    """The Gem Grower's stonecutter, an amethyst niche in the back corner (a budding amethyst with a cluster on it: world
+    generation may place one, a builder can't), and a ledge of magma along the back wall behind glass panes with
+    tumblestones growing on it (no open lava in a village); her chest by the door."""
+    b.set(1, 1, 6, "budding_amethyst")
+    b.set(1, 2, 6, "amethyst_cluster", facing="up", waterlogged=False)
+    b.set(1, 1, 5, "amethyst_block")
+    b.set(1, 2, 5, "medium_amethyst_bud", facing="up", waterlogged=False)
+    for x, stone in ((2, "cobblemon:small_budding_tumblestone"), (3, "cobblemon:medium_budding_tumblestone")):
+        b.set(x, 1, 6, "magma_block")
+        b.set(x, 2, 6, stone, facing="up", waterlogged=False)
+        for y in (1, 2):
+            pane(b, x, y, 5)
+    b.set(4, 1, 6, "polished_blackstone")
+    pane(b, 4, 2, 6)
+    b.set(1, 1, 3, "stonecutter", facing="east")
+    loot_chest(b, 1, 1, 2, "village_gem_grotto")
+
+
 VILLAGE_HOUSES = {"trainers_house": trainers_house, "guard_house": guard_house, "clinic": clinic, "post_office": post_office,
                   "leaders_hall": leaders_hall, "school": school, "trade_hall": trade_hall, "orchard_house": orchard_house,
                   "ball_workshop": ball_workshop, "ferry_house": ferry_house, "storehouse": storehouse_room,
@@ -370,7 +468,9 @@ VILLAGE_HOUSES = {"trainers_house": trainers_house, "guard_house": guard_house, 
                   "fossil_lab": fossil_lab, "flower_shop": flower_shop, "ranch_house": ranch_house,
                   "schoolhouse": schoolhouse, "inn_room": inn_room, "mortuary": mortuary,
                   "tinkers_shop": tinkers_shop, "sifting_shed": sifting_shed_house,
-                  "compost_yard": compost_yard_house}
+                  "compost_yard": compost_yard_house,
+                  "pokemon_center": pokemon_center_room, "camp_kitchen": camp_kitchen_room,
+                  "berry_nursery": berry_nursery_room, "daycare": daycare_room, "gem_grotto": gem_grotto_room}
 
 # The job of each house's villager where it isn't the job block's own (see village_house): these share their block
 # with a vanilla job, or with another of ours, since ROADMAP 21.1a.
@@ -379,7 +479,9 @@ HOUSE_JOBS = {"guard_house": "guard", "clinic": "nurse", "post_office": "postman
               "ball_workshop": "ball_smith", "carpenters_workshop": "carpenter", "kitchen": "chef",
               "fossil_lab": "fossil_scientist", "flower_shop": "florist", "ranch_house": "rancher",
               "schoolhouse": "teacher", "inn_room": "innkeeper", "mortuary": "undertaker", "tinkers_shop": "tinkerer",
-              "sifting_shed": "sifter", "compost_yard": "composter"}
+              "sifting_shed": "sifter", "compost_yard": "composter",
+              "pokemon_center": "nurse", "camp_kitchen": "camp_cook", "berry_nursery": "berry_breeder",
+              "daycare": "daycare_keeper", "gem_grotto": "gem_grower"}
 
 
 

@@ -352,6 +352,39 @@ public final class Stations {
 	}
 
 	/**
+	 * The entity tag a village house's template puts on a worker who comes with a job whose block there they couldn't
+	 * take by themselves (ROADMAP 28.15: the Pokémon Center's nurse, a Healing Machine being hers only by a honey bottle).
+	 */
+	public static final String HOUSE_WORKER_TAG = "aliveworkplace_house_worker";
+	/** How far from such a worker the house's block may be (the house is 9 x 10). */
+	private static final int HOUSE_REACH = 6;
+
+	/**
+	 * Once a second, a village house's worker tagged {@link #HOUSE_WORKER_TAG} with no job site takes the nearest free
+	 * block their job works at, within {@link #HOUSE_REACH} blocks: the one their house was built round. The tag goes once
+	 * they have a job site, so they never take a player's block later (called from mixin/VillagerMixin).
+	 */
+	public static void takeHouseBlock(Villager villager) {
+		if (!villager.getTags().contains(HOUSE_WORKER_TAG) || !(villager.level() instanceof ServerLevel level)) {
+			return;
+		}
+		if (villager.getBrain().getMemory(MemoryModuleType.JOB_SITE).isPresent()) {
+			villager.removeTag(HOUSE_WORKER_TAG);
+			return;
+		}
+		if (villager.tickCount % 20 != 11) {
+			return;
+		}
+		VillagerProfession job = villager.getVillagerData().getProfession();
+		level.getPoiManager().take(job.heldJobSite(), (h, p) -> true, villager.blockPosition(), HOUSE_REACH).ifPresent(pos -> {
+			villager.getBrain().setMemory(MemoryModuleType.JOB_SITE, GlobalPos.of(level.dimension(), pos));
+			JobSiteTickets.hold(level, villager);
+			level.broadcastEntityEvent(villager, (byte) 14); // the happy particles vanilla shows for a new job site
+			villager.removeTag(HOUSE_WORKER_TAG);
+		});
+	}
+
+	/**
 	 * Gives {@code villager} {@code profession} at {@code station}, letting go of any other workstation. Only what the
 	 * job is changes: an unhired villager stays the village's (so they keep sharing chests with its other workers, as
 	 * when a villager took one of the old job blocks by itself), and someone else's hired worker can't be changed.

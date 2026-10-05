@@ -2639,14 +2639,16 @@ public class ScreenshotHarness implements ClientModInitializer {
 					villagesBuilt += built > 0 ? 1 : 0;
 				}
 				workshops.addAll(otherHouses);
+				findPokemonHouses(level);
 				// Workshops are random (WORKSHOP_WEIGHT makes them likely, not certain): counted, not required.
 				Showcase.check(villagesBuilt == styles.size() && villageVoids == 0, "every village type generated (" + villagesBuilt + " of "
 					+ styles.size() + ", " + villagesWithWorkshop + " with a builder's workshop, " + villageVoids + " structure_void blocks)");
 			});
 		}
-		int shots = workshops.size();
+		int shots = workshops.size() + pokemonWorkers.size();
 		if (tick >= 500 && (tick - 500) % 80 == 0 && (tick - 500) / 80 < shots) {
-			BlockPos bench = workshops.get((tick - 500) / 80);
+			int i = (tick - 500) / 80;
+			BlockPos bench = i < workshops.size() ? workshops.get(i) : pokemonWorkers.get(i - workshops.size()).blockPosition();
 			server.execute(() -> {
 				ServerPlayer player = server.getPlayerList().getPlayers().get(0);
 				Vec3 target = Vec3.atCenterOf(bench);
@@ -2654,11 +2656,57 @@ public class ScreenshotHarness implements ClientModInitializer {
 			});
 		}
 		if (tick >= 560 && (tick - 560) % 80 == 0 && (tick - 560) / 80 < shots) {
-			shot(mc, "40_workshop_" + ((tick - 560) / 80));
+			int i = (tick - 560) / 80;
+			shot(mc, i < workshops.size() ? "40_workshop_" + i : "41_pokemon_" + (i - workshops.size()));
+		}
+		if (tick == 570 + Math.max(1, shots) * 80) {
+			server.execute(this::checkPokemonHouses);
 		}
 		if (tick == 580 + Math.max(1, shots) * 80) {
 			mc.stop();
 		}
+	}
+
+	/** The workers of the Pokémon jobs' village houses found in the villages (ROADMAP 28.15), one per job at most. */
+	private final List<Villager> pokemonWorkers = new ArrayList<>();
+
+	/** The Pokémon jobs' houses: their workers, by the job each house's villager comes with. */
+	private static final List<net.minecraft.world.entity.npc.VillagerProfession> POKEMON_HOUSE_JOBS = List.of(
+		io.github.jcondedata.aliveworkplace.registry.ModVillagers.NURSE, io.github.jcondedata.aliveworkplace.registry.ModVillagers.CAMP_COOK,
+		io.github.jcondedata.aliveworkplace.registry.ModVillagers.BERRY_BREEDER, io.github.jcondedata.aliveworkplace.registry.ModVillagers.DAYCARE_KEEPER,
+		io.github.jcondedata.aliveworkplace.registry.ModVillagers.GEM_GROWER);
+
+	/** Finds the Pokémon jobs' houses the villages grew (with Cobblemon): a villager of one of their jobs, the first of each. */
+	private void findPokemonHouses(ServerLevel level) {
+		if (!io.github.jcondedata.aliveworkplace.platform.Platform.get().isModLoaded("cobblemon")) {
+			return;
+		}
+		List<String> styles = io.github.jcondedata.aliveworkplace.world.VillageHouses.STYLES;
+		for (int i = 0; i < styles.size(); i++) {
+			net.minecraft.world.phys.AABB box = new net.minecraft.world.phys.AABB(i * 256 - 96, -64, -96, i * 256 + 96, -40, 96);
+			for (Villager v : level.getEntitiesOfClass(Villager.class, box)) {
+				var job = v.getVillagerData().getProfession();
+				if (POKEMON_HOUSE_JOBS.contains(job) && pokemonWorkers.stream().noneMatch(w -> w.getVillagerData().getProfession() == job)) {
+					pokemonWorkers.add(v);
+					io.github.jcondedata.aliveworkplace.AliveWorkplace.LOG.info("[village] {} village: a {} at {}", styles.get(i), job, v.blockPosition());
+				}
+			}
+		}
+	}
+
+	/** With Cobblemon: a Pokémon jobs' house grew, and each such worker still has the job and stands free and unhurt (B6). */
+	private void checkPokemonHouses() {
+		if (!io.github.jcondedata.aliveworkplace.platform.Platform.get().isModLoaded("cobblemon")) {
+			return;
+		}
+		List<String> problems = new ArrayList<>();
+		for (Villager v : pokemonWorkers) {
+			if (!v.isAlive() || v.isInWall() || v.getHealth() < v.getMaxHealth() || !POKEMON_HOUSE_JOBS.contains(v.getVillagerData().getProfession())) {
+				problems.add(v.getVillagerData().getProfession() + " at " + v.blockPosition() + (v.isInWall() ? " in a wall" : "") + " health " + v.getHealth());
+			}
+		}
+		Showcase.check(!pokemonWorkers.isEmpty() && problems.isEmpty(), "a Pokémon jobs' house grew in a Cobblemon village with its worker in the job, standing free ("
+			+ pokemonWorkers.stream().map(w -> String.valueOf(w.getVillagerData().getProfession())).toList() + (problems.isEmpty() ? "" : "; " + problems) + ")");
 	}
 
 	// --- Fish: a fisherman casting into a pond (the bobber and its line) --------------------------

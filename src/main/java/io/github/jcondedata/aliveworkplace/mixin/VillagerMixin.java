@@ -39,6 +39,7 @@ abstract class VillagerMixin {
 	private void aliveworkplace$nether(CallbackInfo ci) {
 		io.github.jcondedata.aliveworkplace.guard.Mercenaries.tick((Villager) (Object) this);
 		io.github.jcondedata.aliveworkplace.work.Stations.retakeHive((Villager) (Object) this);
+		io.github.jcondedata.aliveworkplace.work.Stations.takeHouseBlock((Villager) (Object) this);
 		io.github.jcondedata.aliveworkplace.work.JobSiteTickets.tick((Villager) (Object) this);
 		io.github.jcondedata.aliveworkplace.city.Stewards.tick((Villager) (Object) this);
 		io.github.jcondedata.aliveworkplace.work.WorkerLimits.tick((Villager) (Object) this);

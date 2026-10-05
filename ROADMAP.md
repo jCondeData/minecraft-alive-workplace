@@ -1184,7 +1184,7 @@ here adds a new kind of speed bonus (the new jobs get the partners' existing one
     biome's pool, and a forced spawn round brings a Pokémon from that pool within its range; breaking the garden
     removes the block with no drop; on 1.7.3 nothing is placed and the keeper's page says it needs Cobblemon 1.8;
   - showcase scene `village_habitat`, filmed with `-Pcobblemon18=true`.
-- [ ] **28.15** **Villages grow them.** With Cobblemon, villages (the pools that grow trainer's houses) sometimes grow
+- [x] **28.15** (review: pending 2026-10-05) **Villages grow them.** With Cobblemon, villages (the pools that grow trainer's houses) sometimes grow
   five new houses, each in the five village styles through `tools/blueprints/village.py`'s `village_house` fit-outs,
   each with exactly one job block and its villager already in the job (an entity in the template): a **Pokémon Center**
   (a counter with a Healing Machine and a PC; a nurse), a **Camp Kitchen** (a cook), a **Berry Nursery** (a breeder), a
@@ -4465,6 +4465,21 @@ item waits.
   spawn round test runs Cobblemon 1.8.1's `PlayerSpawner.runForArea` (by reflection, signatures from the jar) over a
   zone round the block, with the chunks 48 blocks round it force-loaded (Cobblemon spawns only there) and the mock
   player's ticking spawner switched off. Untested: the Habitat Garden II upgrade rebuilding over the centre.
+- 2026-10-05 (28.15, decisions; lane b): the five houses are fit-outs of the village house (`village.py`
+  `pokemon_center_room` ... `gem_grotto_room`), 25 templates, all Cobblemon-only (the Gem Grotto too, as the spec says,
+  though its blocks are vanilla) and behind `pokemonVillageHouses` (an M28 switch, read at server start when the pools
+  fill). Weights: Pokémon Center 2, the others 1. A nurse only takes a Healing Machine by a honey bottle (it isn't her
+  acquirable site), so the Pokémon Center's nurse carries the entity tag `aliveworkplace_house_worker`: once she ticks
+  with no job site she takes the nearest free block her job holds within 6 blocks (`Stations.takeHouseBlock`) and the tag
+  goes. The Campfire Pot's red pot is in the template's block entity data (`PotComponent`). The Gem Grotto has a real
+  budding amethyst (world generation, never a builder) and tumblestones on a magma ledge behind panes. Each house but the
+  Pokémon Center has a chest with its own loot table (Cobblemon items, loaded only with Cobblemon). The per-house tests
+  need Cobblemon's blocks, so they are in `VillageCompatTests` (compat suite), not `VillageGameTests`; the core test
+  checks the 25 templates' blocks and villagers by name. "Open space" there means the villager's box overlaps no block
+  (a cook stood on her chest, a keeper on the hay nest). The `village` showcase scene now runs with Cobblemon and
+  `POKEMON_HOUSE_WEIGHT=60` (new `-PpokemonHouseWeight`), shoots the Pokémon houses' workers and checks they stand free.
+  Renders of the 25 cut open checked locally; the static renderer has no Cobblemon textures, so the Healing Machine, PC,
+  pot and pasture show only in the showcase.
 - 2026-10-05 (30.9, decisions; lane d): `curfew` is one effect type with three fields: `raids` (factor, multiplied;
   also read by `BanditCamps.dailyChance`), `safe_nights` (night safety full in `VillageNeeds.count`, and a monster's blow
   on a villager asleep in bed cancelled through `allowDamage`) and `stay_in` (bedtime, no trading, festival over at

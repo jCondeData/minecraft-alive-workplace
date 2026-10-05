@@ -100,7 +100,13 @@ public class VillageGameTests implements FabricGameTest {
 			java.util.Map.entry("mortuary", new House(Blocks.BREWING_STAND, ModVillagers.UNDERTAKER)),
 			java.util.Map.entry("tinkers_shop", new House(Blocks.SMITHING_TABLE, ModVillagers.TINKERER)),
 			java.util.Map.entry("sifting_shed", new House(Blocks.CAULDRON, ModVillagers.SIFTER)),
-			java.util.Map.entry("compost_yard", new House(Blocks.COMPOSTER, ModVillagers.COMPOSTER)));
+			java.util.Map.entry("compost_yard", new House(Blocks.COMPOSTER, ModVillagers.COMPOSTER)),
+			// The Pokémon jobs' houses (ROADMAP 28.15): only with Cobblemon, so Cobblemon's blocks are checked by name
+			java.util.Map.entry("pokemon_center", new House(null, ModVillagers.NURSE, ModVillagers.HEALING_MACHINE_BLOCK)),
+			java.util.Map.entry("camp_kitchen", new House(null, ModVillagers.CAMP_COOK, ModVillagers.CAMPFIRE_POT_BLOCK)),
+			java.util.Map.entry("berry_nursery", new House(Blocks.COMPOSTER, ModVillagers.BERRY_BREEDER)),
+			java.util.Map.entry("daycare", new House(null, ModVillagers.DAYCARE_KEEPER, ModVillagers.PASTURE_BLOCK)),
+			java.util.Map.entry("gem_grotto", new House(Blocks.STONECUTTER, ModVillagers.GEM_GROWER)));
 		// No Cobblemon here: the Pokémon houses stay out of the pools.
 		helper.assertTrue(VillageHouses.houseNames().equals(List.of("guard_house", "clinic", "post_office", "orchard_house", "ferry_house", "storehouse", "carpenters_workshop", "kitchen",
 				"flower_shop", "ranch_house", "schoolhouse", "inn_room", "mortuary", "tinkers_shop", "sifting_shed", "compost_yard")),
@@ -121,7 +127,8 @@ public class VillageGameTests implements FabricGameTest {
 						id + " should have one " + house.getValue().block().getName().getString());
 				} else {
 					long found = named(level, id, modBlock);
-					helper.assertTrue(found == 1, id + " should have one " + modBlock + ", not " + found);
+					long halves = modBlock.equals(ModVillagers.PASTURE_BLOCK) ? 2 : 1; // the Pasture Block is two blocks tall
+					helper.assertTrue(found == halves, id + " should have one " + modBlock + ", not " + found + " blocks of it");
 				}
 				// Exactly one job block, so its villager isn't joined by another for a second block's vanilla job (another
 				// mod's block is no job block while that mod is missing, as here).

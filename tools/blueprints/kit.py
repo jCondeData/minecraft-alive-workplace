@@ -49,7 +49,7 @@ class Build:
         """(id, properties) of the block at (x, y, z), or None if nothing is there yet."""
         return self.blocks.get((x, y, z))
 
-    def villager(self, x, y, z, profession, villager_type):
+    def villager(self, x, y, z, profession, villager_type, tags=()):
         """A villager standing on (x, y, z) when the structure is placed (as vanilla's village villagers are), with
         `profession` (an id such as "aliveworkplace:florist") and a little experience, so the job stays theirs
         until they take a workstation of it."""
@@ -63,6 +63,7 @@ class Build:
                 "VillagerData": Compound({"profession": String(profession), "level": Int(1), "type": String(villager_type)}),
                 "Xp": Int(1),
                 "PersistenceRequired": nbtlib.Byte(1),
+                **({"Tags": List[String]([String(t) for t in tags])} if tags else {}),
             }),
         }))
 

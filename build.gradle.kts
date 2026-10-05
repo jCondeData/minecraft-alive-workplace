@@ -119,6 +119,8 @@ loom {
                 vmArg("-Daliveworkplace.workshopWeight=${findProperty("workshopWeight") ?: 3}")
                 // ... and HOUSE_WEIGHT the other staffed houses (trainer's house, guard house, clinic, post office)
                 findProperty("houseWeight")?.let { vmArg("-Daliveworkplace.houseWeight=$it") }
+                // ... and POKEMON_HOUSE_WEIGHT the five Pokémon jobs' houses (ROADMAP 28.15, SCENE=village)
+                findProperty("pokemonHouseWeight")?.let { vmArg("-Daliveworkplace.pokemonHouseWeight=$it") }
                 vmArg("-Daliveworkplace.debug=${findProperty("builderDebug") ?: "false"}")
             }
         }

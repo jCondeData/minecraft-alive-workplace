@@ -40,7 +40,19 @@ public final class VillageHouses {
 	private static final java.util.Map<String, Integer> HOUSES = houses();
 
 	/** Houses whose job only works with Cobblemon: villages without it don't grow them. */
-	public static final java.util.Set<String> COBBLEMON_HOUSES = java.util.Set.of("trainers_house", "leaders_hall", "school", "trade_hall", "ball_workshop", "fossil_lab");
+	public static final java.util.Set<String> COBBLEMON_HOUSES = java.util.Set.of("trainers_house", "leaders_hall", "school", "trade_hall", "ball_workshop", "fossil_lab",
+		"pokemon_center", "camp_kitchen", "berry_nursery", "daycare", "gem_grotto");
+
+	/**
+	 * The Pokémon jobs' houses (ROADMAP 28.15): a Pokémon Center (a nurse at a Healing Machine), a Camp Kitchen (a Camp
+	 * Cook), a Berry Nursery (a Berry Breeder), a Daycare (a Daycare Keeper) and a Gem Grotto (a Gem Grower), each with
+	 * its villager already in the job. Only with Cobblemon, like the other Pokémon houses, and config
+	 * {@code pokemonVillageHouses}; read when the server starts, which is when the pools are filled.
+	 */
+	public static final java.util.Set<String> POKEMON_JOB_HOUSES = java.util.Set.of("pokemon_center", "camp_kitchen", "berry_nursery", "daycare", "gem_grotto");
+
+	/** Config switch {@code pokemonVillageHouses}: off, villages don't grow the five Pokémon jobs' houses (houses already grown stay). */
+	public static boolean POKEMON_JOBS = true;
 
 	private static java.util.Map<String, Integer> houses() {
 		Integer override = Integer.getInteger("aliveworkplace.houseWeight");
@@ -75,13 +87,22 @@ public final class VillageHouses {
 		out.put("tinkers_shop", override != null ? override : 2);
 		out.put("sifting_shed", override != null ? override : 1);
 		out.put("compost_yard", override != null ? override : 1);
+		// The Pokémon jobs' houses (ROADMAP 28.15; Cobblemon and config pokemonVillageHouses): the Pokémon Center most often.
+		// (-Daliveworkplace.pokemonHouseWeight overrides these five, for the village screenshots.)
+		Integer pokemon = Integer.getInteger("aliveworkplace.pokemonHouseWeight", override);
+		out.put("pokemon_center", pokemon != null ? pokemon : 2);
+		out.put("camp_kitchen", pokemon != null ? pokemon : 1);
+		out.put("berry_nursery", pokemon != null ? pokemon : 1);
+		out.put("daycare", pokemon != null ? pokemon : 1);
+		out.put("gem_grotto", pokemon != null ? pokemon : 1);
 		return out;
 	}
 
 	/** The staffed houses (besides the workshop) villages grow here, by name. */
 	public static java.util.List<String> houseNames() {
 		boolean cobblemon = Platform.get().isModLoaded("cobblemon");
-		return HOUSES.keySet().stream().filter(h -> cobblemon || !COBBLEMON_HOUSES.contains(h)).toList();
+		return HOUSES.keySet().stream().filter(h -> cobblemon || !COBBLEMON_HOUSES.contains(h))
+			.filter(h -> POKEMON_JOBS || !POKEMON_JOB_HOUSES.contains(h)).toList();
 	}
 
 	/**

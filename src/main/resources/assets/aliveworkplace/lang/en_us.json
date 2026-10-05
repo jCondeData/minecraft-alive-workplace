@@ -2544,6 +2544,8 @@
   "aliveworkplace.config.habitatSightings.tooltip": "Habitat Keepers tell the village of the shiny, rare and Alpha wild Pokémon they spot near their pasture, and write them in the chronicle. Off: they keep their sightings to themselves.",
   "aliveworkplace.config.villageHabitats": "Village habitats",
   "aliveworkplace.config.villageHabitats.tooltip": "With Cobblemon 1.8, an Expert Habitat Keeper puts one Habitat Block under the centre stone of a finished Habitat Garden, with Pokémon that suit the biome. One per village; taking the garden down removes it. Off: no village gets one.",
+  "aliveworkplace.config.pokemonVillageHouses": "Pokémon village houses",
+  "aliveworkplace.config.pokemonVillageHouses.tooltip": "With Cobblemon, villages sometimes grow a Pokémon Center, a Camp Kitchen, a Berry Nursery, a Daycare and a Gem Grotto, each with its worker already in the job. Off: new villages don't grow them (from the next server start).",
   "aliveworkplace.config.partnerShows.tooltip": "Pokémon pastured near a workstation are seen helping: they walk over to the work, carry things and lend a hand (with Cobblemon).",
   "aliveworkplace.config.villagerChatter": "Villager Chatter",
   "aliveworkplace.config.villagerChatter.tooltip": "Villagers near a player now and then say something about their day, over their heads.",

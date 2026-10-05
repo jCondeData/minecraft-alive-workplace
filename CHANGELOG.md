@@ -16,6 +16,8 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+## 0.139.0 — 2026-10-05
+
 ### Added
 - **Farmstead, Fisher's Hut, Weaver's Cottage and Bandstand** (27.14), new blueprints in the Blueprint Table: a
   farmhouse with one bed beside a field of farmland round a water channel, a scarecrow and a composter (II: a barn and a

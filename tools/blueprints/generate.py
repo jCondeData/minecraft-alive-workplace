@@ -118,7 +118,7 @@ if __name__ == "__main__":
     for name, draw in (("traveller_camp", traveller_camp), ("prisoner_cage", prisoner_cage), ("castaway_camp", castaway_camp),
                        ("hermit_hut", hermit_hut)):
         draw().save(os.path.join(MAIN_STRUCTURES, "legend"), name)
-    for name, draw in (("palisade", palisade), ("palisade_gate", palisade_gate), ("stone_wall", stone_wall), ("wall_tower", wall_tower),
+    for name, draw in (("palisade", palisade), ("palisade_gate", palisade_gate), ("palisade_tower", palisade_tower), ("stone_wall", stone_wall), ("wall_tower", wall_tower),
                        ("gatehouse", gatehouse), ("barracks", barracks), ("barracks_2", barracks_2)):
         draw().save(MAIN_STRUCTURES, name)
     tinkers_workshop().save(MAIN_STRUCTURES, "tinkers_workshop")

@@ -2956,5 +2956,16 @@
   "screen.aliveworkplace.daycare_keeper.get_along.very_well": "very well",
   "screen.aliveworkplace.daycare_keeper.get_along.well": "well",
   "screen.aliveworkplace.daycare_keeper.get_along.so_so": "so-so",
-  "screen.aliveworkplace.daycare_keeper.get_along.not_at_all": "not at all"
+  "screen.aliveworkplace.daycare_keeper.get_along.not_at_all": "not at all",
+  "blueprint.aliveworkplace.palisade_tower": "Palisade Tower",
+  "wall_kit.aliveworkplace.palisade": "Palisade",
+  "wall_kit.aliveworkplace.stone": "Stone",
+  "steward.aliveworkplace.wall.title": "A %s wall",
+  "steward.aliveworkplace.why.wall": "The village was raided in the last %s days, or bandits camp nearby",
+  "screen.aliveworkplace.desk.wall_pieces": "%1$s segments, %2$s towers and %3$s gates",
+  "screen.aliveworkplace.desk.wall_line": "Along the wall line, %s blocks round",
+  "chronicle.aliveworkplace.wall_started": "%1$s set the village's %2$s wall going",
+  "chronicle.aliveworkplace.wall_built": "%1$s finished the village's %2$s wall",
+  "aliveworkplace.config.stewardWalls": "Stewards Build Walls",
+  "aliveworkplace.config.stewardWalls.tooltip": "A village raided in the last 7 days, or with bandits camped nearby, has its Steward propose a wall along the City Plan's wall line (or a line of his own round the zones): a palisade up to a Village, stone from a Town, with a tower at every corner and a gate on every road. Off: he never proposes walls."
 }

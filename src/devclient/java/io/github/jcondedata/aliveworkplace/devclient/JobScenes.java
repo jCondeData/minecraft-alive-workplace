@@ -538,6 +538,82 @@ final class JobScenes {
 				return done && road.lamps() >= 2;
 			};
 		}, null));
+		SCENES.put("walls", new Job("the builders raised the village's palisade along the wall line (towers at its corners, a gate on the road) "
+			+ "and the guards shut the gate at nightfall", 18000, new Vec3(0.5, -42, -30), new Vec3(0.5, -58, -4), (level, player) -> {
+			// A small village: the hall, a cottage, three builders with the palisade's blocks, a Steward, a street out
+			// to the north and a wall line 11 blocks round the hall, already approved for the Palisade kit (27.18).
+			for (int x = -20; x <= 20; x++) {
+				for (int z = -20; z <= 16; z++) {
+					level.setBlock(STATION.offset(x, -2, z), Blocks.DIRT.defaultBlockState(), Block.UPDATE_CLIENTS);
+					level.setBlock(STATION.offset(x, -1, z), Blocks.GRASS_BLOCK.defaultBlockState(), Block.UPDATE_CLIENTS);
+					for (int y = 0; y < 10; y++) {
+						level.setBlock(STATION.offset(x, y, z), Blocks.AIR.defaultBlockState(), Block.UPDATE_CLIENTS);
+					}
+				}
+			}
+			BlockPos hallAt = STATION;
+			var cottage = io.github.jcondedata.aliveworkplace.blueprint.BlueprintLibrary.get(level,
+				io.github.jcondedata.aliveworkplace.blueprint.StarterBlueprints.STARTER_COTTAGE.id()).orElseThrow();
+			BlockPos cottageAt = STATION.offset(-4, 0, 4);
+			for (var e : cottage.blocks()) {
+				level.setBlock(cottageAt.offset(e.pos()), e.state(), Block.UPDATE_CLIENTS);
+			}
+			io.github.jcondedata.aliveworkplace.build.BuildSiteManager.get(level).recordFinished(cottage.id(),
+				new io.github.jcondedata.aliveworkplace.blueprint.BlueprintData.Placement(io.github.jcondedata.aliveworkplace.mc.Ids.of(level.dimension()),
+					cottageAt, net.minecraft.world.level.block.Rotation.NONE, net.minecraft.world.level.block.Mirror.NONE), player.getUUID());
+			level.setBlockAndUpdate(hallAt, ModBlocks.VILLAGE_HALL.defaultBlockState());
+			var hall = (io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(hallAt);
+			hall.setOwner(player.getUUID(), player.getGameProfile().getName());
+			hall.setLastRaidDay(io.github.jcondedata.aliveworkplace.hall.Chronicle.day(level)); // raided today: he wants a wall
+			var wall = new io.github.jcondedata.aliveworkplace.city.CityPlan.Wall(
+				List.of(new BlockPos(-11, 0, -11), new BlockPos(11, 0, -11), new BlockPos(11, 0, 11), new BlockPos(-11, 0, 11)), true);
+			hall.setPlan(io.github.jcondedata.aliveworkplace.city.CityPlan.EMPTY
+				.addRoad(new io.github.jcondedata.aliveworkplace.city.CityPlan.Road(List.of(new BlockPos(0, 0, -4), new BlockPos(0, 0, -18)),
+					io.github.jcondedata.aliveworkplace.city.CityPlan.Road.STREET, "", true))
+				.withWall(wall.approvedWith("palisade")));
+			for (int i = 0; i < 3; i++) {
+				BlockPos table = STATION.offset(-6 + i * 6, 0, 10);
+				level.setBlockAndUpdate(table, ModBlocks.BLUEPRINT_TABLE.defaultBlockState());
+				chest(level, table.south(), new ItemStack(Items.SPRUCE_LOG, 64), new ItemStack(Items.SPRUCE_LOG, 64),
+					new ItemStack(Items.STRIPPED_SPRUCE_LOG, 64), new ItemStack(Items.SPRUCE_FENCE, 64), new ItemStack(Items.SPRUCE_SLAB, 64),
+					new ItemStack(Items.SPRUCE_PLANKS, 64), new ItemStack(Items.SPRUCE_FENCE_GATE, 16), new ItemStack(Items.DARK_OAK_STAIRS, 64),
+					new ItemStack(Items.DARK_OAK_SLAB, 16), new ItemStack(Items.DARK_OAK_PLANKS, 16), new ItemStack(Items.LADDER, 32),
+					new ItemStack(Items.LANTERN, 16), new ItemStack(Items.COBBLESTONE, 64), new ItemStack(Items.STONE, 64),
+					new ItemStack(Items.ANDESITE, 64), new ItemStack(Items.DIRT, 64));
+				Villager builder = EntityType.VILLAGER.spawn(level, table.east(), MobSpawnType.COMMAND);
+				io.github.jcondedata.aliveworkplace.build.Builders.employ(level, builder, table);
+			}
+			ItemStack cityPlan = new ItemStack(ModItems.CITY_PLAN);
+			io.github.jcondedata.aliveworkplace.city.CityPlanItem.bind(level, player, cityPlan, hallAt);
+			Villager steward = EntityType.VILLAGER.spawn(level, hallAt.south(2), MobSpawnType.COMMAND);
+			steward.setVillagerData(steward.getVillagerData().setProfession(io.github.jcondedata.aliveworkplace.registry.ModVillagers.BUILDER)
+				.setLevel(io.github.jcondedata.aliveworkplace.city.Stewards.MIN_BUILDER_LEVEL));
+			steward.setVillagerXp(70); // a seasoned Builder (27.1a)
+			io.github.jcondedata.aliveworkplace.city.Stewards.appoint(player, steward, cityPlan);
+			Showcase.check(io.github.jcondedata.aliveworkplace.city.Walls.ENABLED, "stewardWalls is on");
+			Showcase.check(!io.github.jcondedata.aliveworkplace.city.Walls.pieces(level, hallAt).isEmpty(), "the wall line has pieces to build");
+			return l -> {
+				var pieces = io.github.jcondedata.aliveworkplace.city.Walls.pieces(l, hallAt);
+				long standing = pieces.stream().filter(p -> io.github.jcondedata.aliveworkplace.city.Walls.stands(l, p)).count();
+				var gate = pieces.stream().filter(p -> p.kind() == io.github.jcondedata.aliveworkplace.city.Walls.Kind.GATE).findFirst();
+				boolean gateUp = gate.isPresent() && io.github.jcondedata.aliveworkplace.city.Walls.stands(l, gate.get());
+				boolean towerUp = pieces.stream().anyMatch(p -> p.kind() == io.github.jcondedata.aliveworkplace.city.Walls.Kind.TOWER
+					&& io.github.jcondedata.aliveworkplace.city.Walls.stands(l, p));
+				if (!(gateUp && towerUp && standing >= 6)) {
+					return false;
+				}
+				l.setDayTime(18000); // midnight: the guards shut the gate
+				io.github.jcondedata.aliveworkplace.guard.Gates.round(l, hallAt, 1);
+				for (BlockPos p : BlockPos.betweenClosed(gate.get().box().getCenter().offset(-4, -1, -4), gate.get().box().getCenter().offset(4, 3, 4))) {
+					var state = l.getBlockState(p);
+					if (state.getBlock() instanceof net.minecraft.world.level.block.FenceGateBlock
+						&& state.getValue(net.minecraft.world.level.block.FenceGateBlock.OPEN)) {
+						return false; // a gate still standing open at night
+					}
+				}
+				return true;
+			};
+		}, null));
 		SCENES.put("composter", job("the composter made bone meal", 1800, (level, player) -> {
 			Villager v = picked(level, player, STATION, Blocks.COMPOSTER, Items.BONE_MEAL);
 			Container c = chest(level, chestPos(), new ItemStack(Items.PUMPKIN_PIE, 10), new ItemStack(Items.WHEAT_SEEDS, 16));

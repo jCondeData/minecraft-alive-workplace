@@ -108,6 +108,10 @@ SCENES = [
     # Lamps, bridges and steps (ROADMAP 27.16): a street drawn over a river is bridged and lit, shown at night at the end
     job("bridges", "Steward", "A bridge over the river, and the street lit at night",
         "the builder bridged the river 9 wide (2 pillars, rails, a stair up at each end) and lit the street with Street Lamps", 600),
+    # Walls (ROADMAP 27.18): a palisade goes up round a small village along its wall line, and its gate shuts at night
+    job("walls", "Steward", "A palisade going up round the village, its gate shut at night",
+        "the builders raised the village's palisade along the wall line (towers at its corners, a gate on the road) "
+        "and the guards shut the gate at nightfall", 700),
     # The Steward's rules (ROADMAP 27.6): the day's wishes over his head, and /workplace steward explain in chat
     S("steward_rules", "Steward", "The Steward's rules and wishes",
       "the Steward ranked today's wishes from his rules, and explain listed rules that held and that didn't", 45,

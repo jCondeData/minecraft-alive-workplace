@@ -20,6 +20,15 @@ asks for the steps, `latest.log` and any crash report).
 - A Pathfinder waiting for a player who fell behind now stands still instead of drifting a few blocks back toward
   their table or strolling off (B75).
 ### Added
+- **Walls along the wall line** (27.18): a village raided in the last 7 days, or with bandits camped nearby, has its
+  Steward propose a wall on the hall's "What next?" — along the City Plan's wall line, or a line of his own 4 blocks
+  round the zones, drawn on the plan so you see it before you approve. Walls are kits as data
+  (`data/aliveworkplace/wall_kits/<name>.json`): **Palisade** up to a Village (Palisade, Palisade Gate and the new
+  **Palisade Tower**, a log watch platform with a ladder and a lookout under a dark oak roof) and **Stone** from a Town
+  (Stone Wall, Wall Tower, Gatehouse), a Town replacing its palisade a piece at a time. A tower stands at every corner
+  and at least every 28 blocks, the segments between fit whole, a gate goes wherever a road crosses (shut at night by
+  the guards as ever), and each piece sits at its own ground height with its foundation under it. At most 3 wall sites
+  are open at once, and the whole wall counts as one building for the village's rank. New setting `stewardWalls`.
 - **Lamps, bridges and steps** (27.16): streets and avenues get the Street Lamp in their road's style every 16 blocks on
   alternate sides and before every crossing (never by a door), lanes a lantern post every 12; they count as Street
   Lamps for beauty and light the homes near them. A road that meets water or a drop deeper than 2 blocks, up to 16

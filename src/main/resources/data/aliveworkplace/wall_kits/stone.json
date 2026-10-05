@@ -1,0 +1,7 @@
+{
+  "segment": "aliveworkplace:stone_wall",
+  "corner_tower": "aliveworkplace:wall_tower",
+  "gate": "aliveworkplace:gatehouse",
+  "min_rank": "town",
+  "max_rank": "city"
+}

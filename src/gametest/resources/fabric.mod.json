@@ -163,6 +163,7 @@
 			"io.github.jcondedata.aliveworkplace.test.StewardGameTests",
 			"io.github.jcondedata.aliveworkplace.test.StewardDeskGameTests",
 			"io.github.jcondedata.aliveworkplace.test.RoadGameTests",
+			"io.github.jcondedata.aliveworkplace.test.WallGameTests",
 			"io.github.jcondedata.aliveworkplace.test.StewardJobsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.StewardRulesGameTests",
 			"io.github.jcondedata.aliveworkplace.test.StewardHomesRulesGameTests",

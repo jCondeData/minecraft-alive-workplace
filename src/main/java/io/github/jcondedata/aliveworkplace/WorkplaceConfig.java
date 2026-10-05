@@ -133,6 +133,8 @@ public final class WorkplaceConfig {
 	public boolean stewardSelfRun = true;
 	/** A Steward's builders build the approved roads on the plan, and new buildings' doors join them with lanes (ROADMAP 27.15). Off: roads are drawn but not built. */
 	public boolean stewardRoads = true;
+	/** A raided village's Steward proposes a wall along the plan's wall line, built from a wall kit (ROADMAP 27.18). Off: he never proposes walls. */
+	public boolean stewardWalls = true;
 	/** Villagers at a Campfire Pot can be made Camp Cooks with Hearty Grains (ROADMAP 28.8). Off: no Camp Cook job. */
 	public boolean campCooks = true;
 	/** Villagers at a Pasture Block can be made Habitat Keepers with a honey bottle (ROADMAP 28.10). Off: no Habitat Keeper job. */
@@ -393,5 +395,7 @@ public final class WorkplaceConfig {
 		io.github.jcondedata.aliveworkplace.build.Paths.ENABLED = builderPaths && System.getProperty("fabric-api.gametest") == null;
 		// Off in gametests (a test's approved road would be built under other tests); the road tests turn it on.
 		io.github.jcondedata.aliveworkplace.city.Roads.ENABLED = stewardRoads && System.getProperty("fabric-api.gametest") == null;
+		// Off in gametests (a test's wall would be built under other tests); the wall tests turn it on.
+		io.github.jcondedata.aliveworkplace.city.Walls.ENABLED = stewardWalls && System.getProperty("fabric-api.gametest") == null;
 	}
 }

@@ -35,6 +35,8 @@ public record CityPlan(List<Zone> zones, List<Road> roads, Optional<Wall> wall, 
 	public static final int MAX_ROAD_POINTS = 64;
 	/** Most lanes from doors (27.15) a plan keeps, besides its {@link #MAX_ROADS} roads. */
 	public static final int MAX_LANES = 64;
+	/** Most halves of roads to other villages (27.17) a plan keeps: one for every trade route out of it or into it. */
+	public static final int MAX_CARAVAN_ROADS = 8;
 	public static final CityPlan EMPTY = new CityPlan(List.of(), List.of(), Optional.empty(), Mode.ASK);
 
 	/** The Steward's mode (27.8). A new plan asks first. */
@@ -83,9 +85,11 @@ public record CityPlan(List<Zone> zones, List<Road> roads, Optional<Wall> wall, 
 	 * finished. {@code lane} marks a lane a finished building's door was joined to the roads by (it doesn't count
 	 * towards {@link #MAX_ROADS}). Older saves load unrouted, nothing built. 27.16: {@code gap} is the width of the gap the
 	 * road stopped at, too wide to bridge (0: none), and {@code lamps} the street lamps on its finished segments.
+	 * 27.17: {@code toward} is set on the village's half of a road to another village ({@link CaravanRoads}): the offset
+	 * from this hall to the other one. Such a road doesn't count towards {@link #MAX_ROADS} either.
 	 */
 	public record Road(List<BlockPos> points, int width, String style, boolean approved, List<BlockPos> route, boolean routed,
-					   List<Integer> built, boolean lane, int gap, int lamps) {
+					   List<Integer> built, boolean lane, int gap, int lamps, Optional<BlockPos> toward) {
 		public static final int LANE = 1;
 		public static final int STREET = 3;
 		public static final int AVENUE = 5;
@@ -99,7 +103,8 @@ public record CityPlan(List<Zone> zones, List<Road> roads, Optional<Wall> wall, 
 			Codec.INT.listOf().optionalFieldOf("built", List.of()).forGetter(Road::built),
 			Codec.BOOL.optionalFieldOf("lane", false).forGetter(Road::lane),
 			Codec.INT.optionalFieldOf("gap", 0).forGetter(Road::gap),
-			Codec.INT.optionalFieldOf("lamps", 0).forGetter(Road::lamps)
+			Codec.INT.optionalFieldOf("lamps", 0).forGetter(Road::lamps),
+			BlockPos.CODEC.optionalFieldOf("toward").forGetter(Road::toward)
 		).apply(i, Road::new));
 
 		public Road {
@@ -110,7 +115,7 @@ public record CityPlan(List<Zone> zones, List<Road> roads, Optional<Wall> wall, 
 
 		public Road(List<BlockPos> points, int width, String style, boolean approved, List<BlockPos> route, boolean routed,
 					List<Integer> built, boolean lane) {
-			this(points, width, style, approved, route, routed, built, lane, 0, 0);
+			this(points, width, style, approved, route, routed, built, lane, 0, 0, Optional.empty());
 		}
 
 		public Road(List<BlockPos> points, int width, String style, boolean approved) {
@@ -132,7 +137,7 @@ public record CityPlan(List<Zone> zones, List<Road> roads, Optional<Wall> wall, 
 
 		/** This road with its way found, stopping at a gap {@code gapWidth} wide too wide to bridge (27.16; 0: none). */
 		public Road withRoute(List<BlockPos> newRoute, int gapWidth) {
-			return new Road(points, width, style, approved, newRoute, true, List.of(), lane, gapWidth, 0);
+			return new Road(points, width, style, approved, newRoute, true, List.of(), lane, gapWidth, 0, toward);
 		}
 
 		/** This road with segment {@code n} finished. */
@@ -142,13 +147,18 @@ public record CityPlan(List<Zone> zones, List<Road> roads, Optional<Wall> wall, 
 			}
 			List<Integer> out = new ArrayList<>(built);
 			out.add(n);
-			return new Road(points, width, style, approved, route, routed, out, lane, gap, lamps);
+			return new Road(points, width, style, approved, route, routed, out, lane, gap, lamps, toward);
 		}
 
 		/** This road with segment {@code n} finished and {@code more} street lamps standing on it (27.16). */
 		public Road withBuilt(int n, int more) {
 			Road done = withBuilt(n);
-			return done == this ? this : new Road(points, width, style, approved, route, routed, done.built, lane, gap, lamps + more);
+			return done == this ? this : new Road(points, width, style, approved, route, routed, done.built, lane, gap, lamps + more, toward);
+		}
+
+		/** The village's half of a road to another village (27.17). */
+		public boolean caravan() {
+			return toward.isPresent();
 		}
 
 		/** How many segments the route is cut into. */
@@ -187,9 +197,19 @@ public record CityPlan(List<Zone> zones, List<Road> roads, Optional<Wall> wall, 
 		roads = List.copyOf(roads);
 	}
 
-	/** Roads players drew (not lanes from doors, 27.15). */
+	/** Roads players drew (not lanes from doors, 27.15, nor roads to other villages, 27.17). */
 	public int drawnRoads() {
-		return (int) roads.stream().filter(r -> !r.lane()).count();
+		return (int) roads.stream().filter(r -> !r.lane() && !r.caravan()).count();
+	}
+
+	/** Lanes from doors (27.15). */
+	public int lanes() {
+		return (int) roads.stream().filter(Road::lane).count();
+	}
+
+	/** Halves of roads to other villages (27.17). */
+	public int caravanRoads() {
+		return (int) roads.stream().filter(Road::caravan).count();
 	}
 
 	public boolean isEmpty() {
@@ -329,7 +349,8 @@ public record CityPlan(List<Zone> zones, List<Road> roads, Optional<Wall> wall, 
 
 	@Nullable
 	public CityPlan addRoad(Road road) {
-		if (!road.lane() && drawnRoads() >= MAX_ROADS || road.lane() && roads.size() - drawnRoads() >= MAX_LANES || road.points().size() < 2 || road.points().size() > MAX_ROAD_POINTS || !Road.validWidth(road.width())) {
+		boolean full = road.caravan() ? caravanRoads() >= MAX_CARAVAN_ROADS : road.lane() ? lanes() >= MAX_LANES : drawnRoads() >= MAX_ROADS;
+		if (full || road.points().size() < 2 || road.points().size() > MAX_ROAD_POINTS || !Road.validWidth(road.width())) {
 			return null;
 		}
 		List<Road> out = new ArrayList<>(roads);

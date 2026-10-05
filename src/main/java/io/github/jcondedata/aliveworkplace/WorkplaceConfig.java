@@ -133,6 +133,10 @@ public final class WorkplaceConfig {
 	public boolean stewardSelfRun = true;
 	/** A Steward's builders build the approved roads on the plan, and new buildings' doors join them with lanes (ROADMAP 27.15). Off: roads are drawn but not built. */
 	public boolean stewardRoads = true;
+	/** Villages with a trade route each build their half of a road to the other, ending at a milestone if it stops short (ROADMAP 27.17). Off: no roads between villages. */
+	public boolean caravanRoads = true;
+	/** The longest half of a road a village builds towards another (ROADMAP 27.17); it goes halfway at most. */
+	public int caravanRoadReach = 256;
 	/** Villagers at a Campfire Pot can be made Camp Cooks with Hearty Grains (ROADMAP 28.8). Off: no Camp Cook job. */
 	public boolean campCooks = true;
 	/** Villagers at a Pasture Block can be made Habitat Keepers with a honey bottle (ROADMAP 28.10). Off: no Habitat Keeper job. */
@@ -236,7 +240,8 @@ public final class WorkplaceConfig {
 		"seasonDays", 1, 120,
 		"treasuryPerWorker", 0, 500,
 		"dollarsPerEmerald", 1, 10_000,
-		"stewardMaxOpenBuilds", 1, 8);
+		"stewardMaxOpenBuilds", 1, 8,
+		"caravanRoadReach", 32, 512);
 
 	private static Map<String, Range> ranges(Object... nameMinMax) {
 		Map<String, Range> map = new LinkedHashMap<>();
@@ -393,5 +398,7 @@ public final class WorkplaceConfig {
 		io.github.jcondedata.aliveworkplace.build.Paths.ENABLED = builderPaths && System.getProperty("fabric-api.gametest") == null;
 		// Off in gametests (a test's approved road would be built under other tests); the road tests turn it on.
 		io.github.jcondedata.aliveworkplace.city.Roads.ENABLED = stewardRoads && System.getProperty("fabric-api.gametest") == null;
+		io.github.jcondedata.aliveworkplace.city.CaravanRoads.ENABLED = caravanRoads;
+		io.github.jcondedata.aliveworkplace.city.CaravanRoads.REACH = caravanRoadReach;
 	}
 }

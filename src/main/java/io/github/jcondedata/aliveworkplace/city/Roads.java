@@ -94,7 +94,7 @@ public final class Roads {
 
 	/** A road's way being found, one stretch (point to point) after another. */
 	private static final class Routing {
-		final int index;
+		int index;
 		final CityPlan.Road road;
 		final List<BlockPos> goals;
 		final List<BoundingBox> avoid;
@@ -106,6 +106,8 @@ public final class Roads {
 		/** The gap the road stops at, too wide to bridge (0: none). */
 		int gap;
 		int leg;
+		/** A road to another village (27.17) waiting for the world round its next stretch to be loaded. */
+		boolean paused;
 		@Nullable
 		Paths.Search search;
 
@@ -118,10 +120,16 @@ public final class Roads {
 	}
 
 	private static final Map<ServerLevel, Map<BlockPos, Routing>> ROUTING = new WeakHashMap<>();
+	/** Roads to other villages (27.17) set aside, paused, while the hall's other roads have their ways found. */
+	private static final Map<ServerLevel, Map<BlockPos, List<Routing>>> PARKED = new WeakHashMap<>();
 
 	/** Every tick, from the hall's tick: the way of a road being found moves on; every second, a segment may open. */
 	public static void tick(ServerLevel level, BlockPos hall, VillageHallBlockEntity entity) {
-		if (!ENABLED || entity.plan().roads().isEmpty()) {
+		if (!ENABLED) {
+			return;
+		}
+		CaravanRoads.tick(level, hall, entity); // 27.17
+		if (entity.plan().roads().isEmpty()) {
 			return;
 		}
 		Map<BlockPos, Routing> routing = ROUTING.get(level);
@@ -146,25 +154,75 @@ public final class Roads {
 			return;
 		}
 		Map<BlockPos, Routing> routing = ROUTING.computeIfAbsent(level, l -> new HashMap<>());
+		List<Routing> parked = PARKED.computeIfAbsent(level, l -> new HashMap<>()).computeIfAbsent(hall.immutable(), h -> new ArrayList<>());
+		parked.removeIf(p -> !onPlan(plan, p));
 		Routing current = routing.get(hall);
-		if (current != null && (current.index >= plan.roads().size() || !sameRoad(plan.roads().get(current.index), current.road))) {
+		if (current != null && !onPlan(plan, current)) {
 			routing.remove(hall); // the road was changed or taken off the plan
 			current = null;
 		}
-		if (current == null) {
-			for (int i = 0; i < plan.roads().size(); i++) {
-				CityPlan.Road road = plan.roads().get(i);
-				if (road.approved() && !road.routed()) {
-					routing.put(hall.immutable(), startRouting(level, hall, i, road));
-					break;
+		if (current == null || current.paused) {
+			int index = nextToRoute(plan, current);
+			if (index >= 0 && (current == null || index != current.index)) {
+				if (current != null) {
+					parked.add(current); // a road to another village waiting for the world to load waits its turn (27.17)
 				}
+				Routing resumed = null;
+				for (Routing p : parked) {
+					if (p.index == index && p != current) {
+						resumed = p;
+					}
+				}
+				parked.remove(resumed);
+				routing.put(hall.immutable(), resumed != null ? resumed : startRouting(level, hall, index, plan.roads().get(index)));
 			}
 		}
 		openSegments(level, hall, entity);
 	}
 
+	/** Whether a routing's road is still on the plan as it was and without a way; its index brought up to date. */
+	private static boolean onPlan(CityPlan plan, Routing r) {
+		for (int i = 0; i < plan.roads().size(); i++) {
+			CityPlan.Road road = plan.roads().get(i);
+			if (sameRoad(road, r.road) && !road.routed()) {
+				r.index = i;
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * The next road to find the way of: the first approved road without one, the village's own before its roads to other
+	 * villages (27.17); with only those left, the one after {@code current}'s, so each paused one waits its turn. -1: none.
+	 */
+	private static int nextToRoute(CityPlan plan, @Nullable Routing current) {
+		List<Integer> caravan = new ArrayList<>();
+		for (int i = 0; i < plan.roads().size(); i++) {
+			CityPlan.Road road = plan.roads().get(i);
+			if (road.approved() && !road.routed()) {
+				if (!road.caravan()) {
+					return i;
+				}
+				caravan.add(i);
+			}
+		}
+		if (caravan.isEmpty()) {
+			return -1;
+		}
+		if (current != null) {
+			for (int i : caravan) {
+				if (i > current.index) {
+					return i;
+				}
+			}
+		}
+		return caravan.get(0);
+	}
+
 	private static boolean sameRoad(CityPlan.Road a, CityPlan.Road b) {
-		return a.points().equals(b.points()) && a.width() == b.width() && a.style().equals(b.style()) && a.lane() == b.lane();
+		return a.points().equals(b.points()) && a.width() == b.width() && a.style().equals(b.style()) && a.lane() == b.lane()
+			&& a.toward().equals(b.toward());
 	}
 
 	// ---- routing --------------------------------------------------------------------------------------------------
@@ -198,11 +256,12 @@ public final class Roads {
 	/** Works on {@code r} for up to {@code budget} nodes; when the last stretch is done, the way is saved on the road. */
 	static void route(ServerLevel level, BlockPos hall, VillageHallBlockEntity entity, Routing r, int budget) {
 		CityPlan plan = entity.plan();
-		if (r.index >= plan.roads().size() || !sameRoad(plan.roads().get(r.index), r.road)) {
+		if (!onPlan(plan, r)) {
 			ROUTING.get(level).remove(hall);
 			return;
 		}
 		int halfWidth = (r.road.width() - 1) / 2;
+		boolean caravan = r.road.caravan();
 		boolean stop = false;
 		while (budget > 0 && !stop) {
 			if (r.search == null) {
@@ -216,8 +275,16 @@ public final class Roads {
 					r.leg++;
 					continue;
 				}
+				BlockPos fromColumn = r.route.isEmpty() ? r.goals.get(r.leg) : r.route.get(r.route.size() - 1);
+				BlockPos toColumn = r.goals.get(r.leg + 1);
+				if (caravan && !CaravanRoads.loaded(level, fromColumn, toColumn)) {
+					r.paused = true; // a road to another village goes on only where the world is loaded (27.17)
+					break;
+				}
+				r.paused = false;
 				BlockPos from = r.route.isEmpty() ? feet(level, r.goals.get(r.leg), halfWidth) : r.route.get(r.route.size() - 1);
-				BlockPos to = feet(level, r.goals.get(r.leg + 1), halfWidth);
+				// far from the hall, the ground is looked for round the height the road has come to, not the hall's
+				BlockPos to = feet(level, caravan && from != null ? toColumn.atY(from.getY()) : toColumn, halfWidth);
 				if (from == null || to == null) {
 					stop = true; // a point with nowhere to stand: the road ends before it
 					break;
@@ -228,7 +295,7 @@ public final class Roads {
 				if (r.checked.add(r.leg) && splitAtGap(level, r, from, to)) {
 					continue; // the stretch now ends at the near bank (and a bridge, or the road's end, follows)
 				}
-				int reach = (int) Math.sqrt(from.distSqr(to)) + 32;
+				int reach = (int) Math.sqrt(from.distSqr(to)) + (caravan ? 16 : 32); // a road to another village keeps within the loaded margin
 				r.search = new Paths.Search(level, from, to, new Paths.Options(halfWidth, r.avoid, reach, Roads::clear));
 			}
 			int before = r.search.visited();
@@ -266,29 +333,50 @@ public final class Roads {
 		}
 	}
 
-	/** Runs the hall's routing to the end at once (tests, and the showcase). */
-	public static void routeNow(ServerLevel level, BlockPos hall) {
+	/**
+	 * Runs the hall's routing to the end at once (tests, and the showcase), going on with the road being routed if there
+	 * is one. False if it stopped at a road to another village waiting for the world to load (27.17): it goes on from
+	 * there next time.
+	 */
+	public static boolean routeNow(ServerLevel level, BlockPos hall) {
 		if (!(level.getBlockEntity(hall) instanceof VillageHallBlockEntity entity)) {
-			return;
+			return true;
 		}
-		for (int guard = 0; guard < CityPlan.MAX_ROADS + CityPlan.MAX_LANES; guard++) {
+		Map<BlockPos, Routing> routing = ROUTING.computeIfAbsent(level, l -> new HashMap<>());
+		for (int guard = 0; guard < CityPlan.MAX_ROADS + CityPlan.MAX_LANES + CityPlan.MAX_CARAVAN_ROADS; guard++) {
 			CityPlan plan = entity.plan();
-			int index = -1;
-			for (int i = 0; i < plan.roads().size(); i++) {
-				if (plan.roads().get(i).approved() && !plan.roads().get(i).routed()) {
-					index = i;
-					break;
+			Routing r = routing.get(hall);
+			if (r == null || !r.paused || !onPlan(plan, r)) { // only a paused road goes on where it was; any other starts afresh
+				int index = nextToRoute(plan, null);
+				if (index < 0) {
+					routing.remove(hall);
+					return true;
+				}
+				r = startRouting(level, hall, index, plan.roads().get(index));
+				routing.put(hall.immutable(), r);
+			}
+			for (int i = 0; i < 1000 && routing.get(hall) == r; i++) {
+				route(level, hall, entity, r, NODES_PER_TICK);
+				if (r.paused) {
+					return false;
 				}
 			}
-			if (index < 0) {
-				return;
-			}
-			Routing r = startRouting(level, hall, index, plan.roads().get(index));
-			ROUTING.computeIfAbsent(level, l -> new HashMap<>()).put(hall.immutable(), r);
-			for (int i = 0; i < 1000 && ROUTING.get(level).get(hall) == r; i++) {
-				route(level, hall, entity, r, NODES_PER_TICK);
-			}
 		}
+		return true;
+	}
+
+	/** Whether the hall's road being routed waits for the world round its next stretch to load (27.17). */
+	public static boolean routingPaused(ServerLevel level, BlockPos hall) {
+		Map<BlockPos, Routing> routing = ROUTING.get(level);
+		Routing r = routing == null ? null : routing.get(hall);
+		return r != null && r.paused;
+	}
+
+	/** How many nodes of its way the hall's road being routed has so far (0: none being routed). */
+	public static int routedSoFar(ServerLevel level, BlockPos hall) {
+		Map<BlockPos, Routing> routing = ROUTING.get(level);
+		Routing r = routing == null ? null : routing.get(hall);
+		return r == null ? 0 : r.route.size();
 	}
 
 	/** A gap on a road's line (27.16): the near bank (feet), the far bank (feet; null if none was found), its width, the nodes over it. */
@@ -522,11 +610,14 @@ public final class Roads {
 				if (taken.contains(id)) {
 					continue;
 				}
+				if (road.caravan() && !segmentLoaded(level, hall, road, n)) {
+					continue; // a stretch of a road to another village where the world isn't loaded: later (27.17)
+				}
 				Optional<Segment> segment = segment(level, hall, road, n);
 				if (segment.isEmpty()) {
 					continue;
 				}
-				Villager builder = builderFor(level, hall, segment.get().box());
+				Villager builder = builderFor(level, hall, segment.get().box(), road.caravan());
 				if (builder == null || !save(level, segment.get().blueprint())) {
 					return; // nobody free: wait
 				}
@@ -542,16 +633,37 @@ public final class Roads {
 		}
 	}
 
-	/** The nearest idle builder of the village (nothing being built, nothing queued) whose bench reaches the segment. */
+	/** Whether the world is loaded round segment {@code n} of {@code road} (its nodes, and the room its lamps and milestone take). */
+	static boolean segmentLoaded(ServerLevel level, BlockPos hall, CityPlan.Road road, int n) {
+		int from = n * SEGMENT;
+		int to = Math.min(road.route().size(), from + SEGMENT);
+		for (int j = from; j < to; j++) {
+			BlockPos p = road.route().get(j).offset(hall);
+			for (int dx = -8; dx <= 8; dx += 8) {
+				for (int dz = -8; dz <= 8; dz += 8) {
+					if (!level.hasChunk((p.getX() + dx) >> 4, (p.getZ() + dz) >> 4)) {
+						return false;
+					}
+				}
+			}
+		}
+		return true;
+	}
+
+	/**
+	 * The nearest idle builder of the village (nothing being built, nothing queued) whose bench reaches the segment; for
+	 * a road to another village (27.17, {@code far}), any idle builder of the village: the road goes out past the benches'
+	 * reach, and the builder walks out to it.
+	 */
 	@Nullable
-	static Villager builderFor(ServerLevel level, BlockPos hall, BoundingBox box) {
+	static Villager builderFor(ServerLevel level, BlockPos hall, BoundingBox box, boolean far) {
 		BlockPos centre = box.getCenter();
 		Villager best = null;
 		double bestDist = Double.MAX_VALUE;
 		for (Villager v : StewardDesk.builders(level, hall)) {
 			BlockPos bench = Builders.benchPos(v).orElseThrow();
 			if (Builders.activeSite(level, v) != null || !Builders.queue(level, v).isEmpty()
-				|| Math.sqrt(centre.distSqr(bench)) > Builders.MAX_SITE_DISTANCE) {
+				|| !far && Math.sqrt(centre.distSqr(bench)) > Builders.MAX_SITE_DISTANCE) {
 				continue;
 			}
 			double d = v.distanceToSqr(centre.getX(), centre.getY(), centre.getZ());
@@ -665,13 +777,18 @@ public final class Roads {
 			}
 		}
 		lamps(level, hall, road, style, route, from, to, r, columns, others, blocks);
+		Map<BlockPos, net.minecraft.nbt.CompoundTag> data = new HashMap<>();
+		if (to == route.size() && CaravanRoads.endsShort(hall, road)) {
+			// a road to another village that stops short of halfway ends at a milestone (27.17)
+			CaravanRoads.milestone(level, hall, road, route, r, p -> fits(level, p, 0, 4, columns, others, blocks), blocks, data);
+		}
 		if (blocks.isEmpty()) {
 			return Optional.empty();
 		}
 		BoundingBox box = BoundingBox.encapsulatingPositions(blocks.keySet()).orElseThrow();
 		BlockPos origin = new BlockPos(box.minX(), box.minY(), box.minZ());
 		List<Blueprint.Entry> entries = new ArrayList<>();
-		blocks.forEach((pos, state) -> entries.add(new Blueprint.Entry(pos.subtract(origin), state, null)));
+		blocks.forEach((pos, state) -> entries.add(new Blueprint.Entry(pos.subtract(origin), state, data.get(pos))));
 		ResourceLocation id = segmentId(hall, road, n);
 		Blueprint blueprint = new Blueprint(id, new Vec3i(box.getXSpan(), box.getYSpan(), box.getZSpan()), entries);
 		return Optional.of(new Segment(blueprint, new BlueprintData.Placement(Ids.of(level.dimension()), origin, Rotation.NONE, Mirror.NONE), box));
@@ -911,7 +1028,9 @@ public final class Roads {
 				if (next != null) {
 					entity.setPlan(next);
 				}
-				if (done.finished() && !road.finished() && !done.lane()) {
+				if (done.caravan()) {
+					CaravanRoads.segmentBuilt(level, hall, done); // the caravans' list and both chronicles (27.17)
+				} else if (done.finished() && !road.finished() && !done.lane()) {
 					Component who = builder != null ? builder.getDisplayName() : Component.translatable("steward.aliveworkplace.jobs.someone");
 					Chronicle.record(level, hall, Chronicle.Kind.PLANS, Component.translatable("chronicle.aliveworkplace.road_built", who,
 						done.route().size(), RoadStyles.title(RoadStyles.forBlueprintStyle(done.style()))));

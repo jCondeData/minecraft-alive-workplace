@@ -790,7 +790,7 @@ and an old vanilla village slowly rebuilds itself one house at a time. It answer
     is bridged with 2 pillars and villagers walk over it; a 20-wide gap is refused with the desk's note; stairs on a
     slope of one in one;
   - showcase scene `bridges`: a GIF of a bridge going up over a river, and the street lit at night.
-- [ ] **27.17** **Roads between villages.** For each caravan route (`Caravans`), the village builds its half of a road
+- [x] **27.17** (review: pending 2026-10-05) **Roads between villages.** For each caravan route (`Caravans`), the village builds its half of a road
   to the other village: a street from the end of its nearest road toward the other hall, in the style of the zone it
   starts from, planned only in loaded chunks (no chunk tickets for roads), up to `caravanRoadReach` (256) blocks or
   halfway, whichever is less. The other village builds the other half, and the two are joined when they come within

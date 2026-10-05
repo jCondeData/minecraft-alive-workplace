@@ -20,6 +20,11 @@ asks for the steps, `latest.log` and any crash report).
 - A Pathfinder waiting for a player who fell behind now stands still instead of drifting a few blocks back toward
   their table or strolling off (B75).
 ### Added
+- **Roads between villages** (27.17): two villages with a trade route each build their half of a street to the other,
+  from the end of their nearest road and in the style of the zone it starts from, up to 256 blocks or halfway; the
+  halves meet halfway, and a half that can't reach that far ends at a milestone (a stone post with a lantern and a sign
+  naming the other village and how far it is). Only loaded land is planned. Caravans on a finished road arrive in three
+  quarters of the time, and both chronicles note the road. Settings `caravanRoads` and `caravanRoadReach`.
 - **Lamps, bridges and steps** (27.16): streets and avenues get the Street Lamp in their road's style every 16 blocks on
   alternate sides and before every crossing (never by a door), lanes a lantern post every 12; they count as Street
   Lamps for beauty and light the homes near them. A road that meets water or a drop deeper than 2 blocks, up to 16

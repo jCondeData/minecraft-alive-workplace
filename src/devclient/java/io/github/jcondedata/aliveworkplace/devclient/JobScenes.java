@@ -538,6 +538,53 @@ final class JobScenes {
 				return done && road.lamps() >= 2;
 			};
 		}, null));
+		SCENES.put("caravan_road", new Job("each village's builder laid its half of the Stonework road to the other, and the halves met halfway",
+			16000, new Vec3(-44.5, -44, 16.5), new Vec3(16.5, -61, -7), (level, player) -> {
+			// Two villages 64 blocks apart with a trade route (27.17): each a hall in a Stonework zone, a Steward, and a
+			// builder with Stonework (and the lamps' blocks) in his chest. Each plans its half of a road to the other.
+			BlockPos[] halls = {STATION.offset(-32, 0, 0), STATION.offset(32, 0, 0)};
+			String[] names = {"Ashford", "Bramble"};
+			for (int x = -48; x <= 48; x++) {
+				for (int z = -18; z <= 10; z++) {
+					level.setBlock(STATION.offset(x, -1, z), Blocks.GRASS_BLOCK.defaultBlockState(), Block.UPDATE_CLIENTS);
+					for (int y = 0; y < 8; y++) {
+						level.setBlock(STATION.offset(x, y, z), Blocks.AIR.defaultBlockState(), Block.UPDATE_CLIENTS);
+					}
+				}
+			}
+			var data = io.github.jcondedata.aliveworkplace.hall.Caravans.Data.get(level);
+			for (int i = 0; i < 2; i++) {
+				BlockPos hallAt = halls[i];
+				level.setBlockAndUpdate(hallAt, ModBlocks.VILLAGE_HALL.defaultBlockState());
+				var hall = (io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(hallAt);
+				hall.setOwner(player.getUUID(), player.getGameProfile().getName());
+				java.util.BitSet cells = new java.util.BitSet();
+				cells.set(io.github.jcondedata.aliveworkplace.city.CityPlan.cellAt(hallAt, hallAt));
+				hall.setPlan(io.github.jcondedata.aliveworkplace.city.CityPlan.EMPTY.addZone("homes", names[i], "stonework").paint(0, cells));
+				BlockPos table = hallAt.offset(0, 0, 5);
+				level.setBlockAndUpdate(table, ModBlocks.BLUEPRINT_TABLE.defaultBlockState());
+				chest(level, table.east(), new ItemStack(Items.STONE_BRICKS, 64), new ItemStack(Items.STONE_BRICKS, 64),
+					new ItemStack(Items.CRACKED_STONE_BRICKS, 32), new ItemStack(Items.COBBLESTONE, 64), new ItemStack(Items.STONE_BRICK_STAIRS, 16),
+					new ItemStack(Items.STONE_BRICK_WALL, 16), new ItemStack(Items.CHISELED_STONE_BRICKS, 8), new ItemStack(Items.DARK_OAK_FENCE, 8),
+					new ItemStack(Items.DARK_OAK_TRAPDOOR, 4), new ItemStack(Items.LANTERN, 4));
+				Villager builder = EntityType.VILLAGER.spawn(level, table.south(), MobSpawnType.COMMAND);
+				io.github.jcondedata.aliveworkplace.build.Builders.employ(level, builder, table);
+				ItemStack cityPlan = new ItemStack(ModItems.CITY_PLAN);
+				io.github.jcondedata.aliveworkplace.city.CityPlanItem.bind(level, player, cityPlan, hallAt);
+				Villager steward = EntityType.VILLAGER.spawn(level, hallAt.south(2), MobSpawnType.COMMAND);
+				steward.setVillagerData(steward.getVillagerData().setProfession(io.github.jcondedata.aliveworkplace.registry.ModVillagers.BUILDER)
+					.setLevel(io.github.jcondedata.aliveworkplace.city.Stewards.MIN_BUILDER_LEVEL));
+				steward.setVillagerXp(70); // a seasoned Builder (27.1a)
+				io.github.jcondedata.aliveworkplace.city.Stewards.appoint(player, steward, cityPlan);
+				data.setWants(hallAt, Component.literal(names[i]), List.of());
+			}
+			data.toggleRoute(halls[0], halls[1]);
+			Showcase.check(io.github.jcondedata.aliveworkplace.city.Roads.ENABLED && io.github.jcondedata.aliveworkplace.city.CaravanRoads.ENABLED,
+				"stewardRoads and caravanRoads are on");
+			return l -> data.roadFinished(halls[0], halls[1])
+				&& io.github.jcondedata.aliveworkplace.city.Roads.openSegments(l, halls[0]).isEmpty()
+				&& io.github.jcondedata.aliveworkplace.city.Roads.openSegments(l, halls[1]).isEmpty();
+		}, null));
 		SCENES.put("composter", job("the composter made bone meal", 1800, (level, player) -> {
 			Villager v = picked(level, player, STATION, Blocks.COMPOSTER, Items.BONE_MEAL);
 			Container c = chest(level, chestPos(), new ItemStack(Items.PUMPKIN_PIE, 10), new ItemStack(Items.WHEAT_SEEDS, 16));
@@ -1010,6 +1057,7 @@ final class JobScenes {
 				}
 				return told[0] && t >= 600;
 			};
+		}, null));
 		SCENES.put("legend_golem_smith", new Job("the Golem Smith forged a Hauler Golem, and the hauler, a farmhand and a wall sentry went to work",
 			2400, new Vec3(1.5, -51.5, 11), new Vec3(0, -60, -5), (level, player) -> {
 			// ROADMAP 29.15: the Golem Smith at a smithing table, the costs of a Hauler in the chest beside it and five

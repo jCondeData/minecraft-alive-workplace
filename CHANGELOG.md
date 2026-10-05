@@ -23,6 +23,14 @@ asks for the steps, `latest.log` and any crash report).
   told to the village and the hall's owner, Mythic ones to every player in gold with the village's direction from spawn;
   all go in the chronicle under a nether star. A Legend in a grave or turned zombie keeps their slot and comes back as
   themselves; with no grave their slot frees after 7 days; Legends join a hall placed again.
+- **Reforms, and The Shift Bell** (30.5): while an edict is in force, the hall's quest page shows its reform's next step
+  in the row below the daily quests (a book and quill; it never expires). A new step goes up each morning after the last
+  was done, and each pays emeralds like a quest (a quarter more a rank). The last step reforms the edict for that
+  village for good: its boost stays, its cost goes, fireworks go up over the hall, the village is told and the chronicle
+  and the Book of Edicts keep it. Progress is kept while an edict is lifted. Long Shifts' reform is **The Shift Bell**:
+  bring 4 clocks, 8 gold ingots and 32 bread, and the village keeps working 20% faster without the mood loss. Data
+  packs give their edicts a `reform` with `bring`, `slay` or `battle` steps (a battle falls back to its `fallback` step
+  without Cobblemon or a trainer).
 - The **Book of Edicts** (30.4): the Village Hall's lectern button (slot 9), or a Village Ledger used while sneaking,
   opens the village's laws: its edict slots (in force with their days, free, or locked until the next rank), and every
   edict with its boost in green and its cost in red. Click an edict twice to proclaim it, once in force to lift it; only

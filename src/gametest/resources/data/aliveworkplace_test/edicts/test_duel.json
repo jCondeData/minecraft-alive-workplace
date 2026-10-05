@@ -1,0 +1,18 @@
+{
+  "icon": "minecraft:target",
+  "name": "Duelling Days",
+  "description": "Everyone is a little happier, but the trainers want a match.",
+  "order": 53,
+  "boost": [{"type": "aliveworkplace:mood", "points": 3, "reason": "duelling days"}],
+  "cost": [{"type": "aliveworkplace:mood", "points": -1, "reason": "duelling noise"}],
+  "reform": {
+    "name": "The Duelling Ring",
+    "line": "A ring for the matches, away from the houses.",
+    "arc": "aliveworkplace_test:ring_story",
+    "steps": [
+      {"kind": "battle", "reward": 8, "fallback": {"kind": "slay", "count": 3, "reward": 6}, "arc": "aliveworkplace_test:ring_story_1"},
+      {"kind": "bring", "item": "minecraft:oak_fence", "count": 4, "reward": 2}
+    ],
+    "effects": [{"type": "aliveworkplace:mood", "points": 1, "reason": "a quiet ring"}]
+  }
+}

@@ -91,7 +91,7 @@ public final class EdictBook {
 			int slot = SLOTS[i];
 			if (i < inForce.size()) {
 				Edicts.InForce f = inForce.get(i);
-				menu.button(slot, inForceIcon(f, today), p -> lift(menu, level, hall, back, p, f.id()));
+				menu.button(slot, inForceIcon(entity, f, today), p -> lift(menu, level, hall, back, p, f.id()));
 			} else if (i < open) {
 				menu.button(slot, VillageHallScreen.icon(Items.PAPER, Component.translatable("screen.aliveworkplace.edicts.free"), ChatFormatting.WHITE,
 					VillageHallScreen.line("screen.aliveworkplace.edicts.free_hint", ChatFormatting.GRAY)), null);
@@ -113,10 +113,10 @@ public final class EdictBook {
 			Optional<Edicts.InForce> held = inForce.stream().filter(f -> f.id().equals(id)).findFirst();
 			int here = slot++;
 			if (held.isPresent()) {
-				menu.button(here, edictIcon(edict, held.get(), today, false), p -> lift(menu, level, hall, back, p, id));
+				menu.button(here, edictIcon(entity, edict, held.get(), today, false), p -> lift(menu, level, hall, back, p, id));
 			} else {
 				boolean ready = here == armed;
-				menu.button(here, edictIcon(edict, null, today, ready), p -> {
+				menu.button(here, edictIcon(entity, edict, null, today, ready), p -> {
 					if (!VillageProtection.mayBuild(level, entity, p)) {
 						Chat.chat(p, Component.translatable("message.aliveworkplace.edict.not_allowed", entity.ownerName(), village)
 							.withStyle(ChatFormatting.RED));
@@ -164,11 +164,11 @@ public final class EdictBook {
 	}
 
 	/** An edict in its slot of the second row: its name, since when, and when it can be lifted. */
-	private static ItemStack inForceIcon(Edicts.InForce f, long today) {
+	private static ItemStack inForceIcon(VillageHallBlockEntity entity, Edicts.InForce f, long today) {
 		ResourceLocation id = ResourceLocation.tryParse(f.id());
 		Optional<Edicts.Edict> edict = id == null ? Optional.empty() : Edicts.get(id);
 		List<Component> lore = new ArrayList<>();
-		edict.ifPresent(e -> effects(e, lore));
+		edict.ifPresent(e -> effects(entity, e, lore));
 		days(f, today, lore);
 		ItemStack icon = VillageHallScreen.icon(edict.map(e -> item(e.icon())).orElse(Items.PAPER), Edicts.name(f.id()).copy(), ChatFormatting.GOLD,
 			lore.toArray(Component[]::new));
@@ -177,10 +177,10 @@ public final class EdictBook {
 	}
 
 	/** An edict in the list: its description, boost (green), cost (red) and what a click does. */
-	private static ItemStack edictIcon(Edicts.Edict edict, @Nullable Edicts.InForce held, long today, boolean armed) {
+	private static ItemStack edictIcon(VillageHallBlockEntity entity, Edicts.Edict edict, @Nullable Edicts.InForce held, long today, boolean armed) {
 		List<Component> lore = new ArrayList<>();
 		lore.add(VillageHallScreen.line(edict.description(), ChatFormatting.GRAY));
-		effects(edict, lore);
+		effects(entity, edict, lore);
 		if (held != null) {
 			days(held, today, lore);
 		} else {
@@ -195,13 +195,32 @@ public final class EdictBook {
 		return icon;
 	}
 
-	private static void effects(Edicts.Edict edict, List<Component> lore) {
+	/**
+	 * Its boost (green) and cost (red), then its reform (30.5): "Reform: The Shift Bell, step 1 of 3" with its line, or
+	 * "Reformed: The Shift Bell" once the village has reformed it (then the reform's effects replace the cost).
+	 */
+	private static void effects(VillageHallBlockEntity entity, Edicts.Edict edict, List<Component> lore) {
+		String id = edict.id().toString();
+		boolean reformed = edict.reform().isPresent() && Reforms.reformed(entity, id);
 		for (CivicEffects.Effect e : edict.boost()) {
 			lore.add(VillageHallScreen.line(Component.translatable("screen.aliveworkplace.edicts.boost", describe(e)), ChatFormatting.GREEN));
 		}
-		for (CivicEffects.Effect e : edict.cost()) {
+		List<CivicEffects.Effect> cost = reformed ? edict.reform().get().effects() : edict.cost();
+		for (CivicEffects.Effect e : cost) {
 			lore.add(VillageHallScreen.line(Component.translatable("screen.aliveworkplace.edicts.cost", describe(e)), ChatFormatting.RED));
 		}
+		edict.reform().ifPresent(reform -> {
+			if (reformed) {
+				lore.add(VillageHallScreen.line(Component.translatable("screen.aliveworkplace.edicts.reformed", reform.name()), ChatFormatting.LIGHT_PURPLE));
+				return;
+			}
+			int done = Math.min(Reforms.progress(entity, id).step(), reform.steps().size() - 1);
+			lore.add(VillageHallScreen.line(Component.translatable("screen.aliveworkplace.edicts.reform", reform.name(), done + 1, reform.steps().size()),
+				ChatFormatting.LIGHT_PURPLE));
+			if (!reform.line().getString().isEmpty()) {
+				lore.add(VillageHallScreen.line(reform.line(), ChatFormatting.DARK_PURPLE));
+			}
+		});
 	}
 
 	/** Since when an edict is in force, and from which day it can be lifted (or that it can be now). */

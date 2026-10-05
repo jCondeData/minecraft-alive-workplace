@@ -2470,5 +2470,15 @@
   "message.aliveworkplace.steward.desk.outcome.researching": "The scholars are already researching something",
   "message.aliveworkplace.steward.research.chosen": "In %2$s, %1$s set the scholars on %3$s",
   "chronicle.aliveworkplace.plans_jobs": "%1$s gave out work: %2$s",
-  "chronicle.aliveworkplace.plans_research": "%1$s set the scholars on %2$s"
+  "chronicle.aliveworkplace.plans_research": "%1$s set the scholars on %2$s",
+  "aliveworkplace.config.legendSites": "Legends found at ruins, outposts and wrecks",
+  "aliveworkplace.config.legendSites.tooltip": "A Legend may wait at a ruined portal (a traveller's camp), a pillager outpost (a prisoner in a cage) or a shipwreck (a castaway on the beach) for a player whose village has earned them. Off: no camps, and no structure lookups at all.",
+  "message.aliveworkplace.legend_site.found.ruined_portal": "Beside the ruined portal, a traveller has made camp: %s. Talk to them.",
+  "message.aliveworkplace.legend_site.found.outpost": "At the foot of the outpost's tower, a prisoner rattles an iron cage: %s. Break the bars to free them.",
+  "message.aliveworkplace.legend_site.found.shipwreck": "On the beach near the wreck, a castaway has made camp: %s. They look starved: bring them a cooked meal.",
+  "message.aliveworkplace.legend_site.thanks.ruined_portal": "%s: \"Well met! I've heard of %s. I'll be at your Village Hall in the morning.\"",
+  "message.aliveworkplace.legend_site.thanks.outpost": "%s: \"Free at last, thank you! I'll find my way to %s and be at your hall by morning.\"",
+  "message.aliveworkplace.legend_site.thanks.shipwreck": "%s: \"A hot meal, at last! I owe you my life. Look for me at %s's hall in the morning.\"",
+  "message.aliveworkplace.legend_site.caged": "%s grips the bars: \"Break them, quickly!\"",
+  "message.aliveworkplace.legend_site.hungry": "%s is too weak to walk: \"Food... something cooked, please.\""
 }

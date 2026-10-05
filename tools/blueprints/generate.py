@@ -18,6 +18,7 @@ from workshops import *
 from nether import *
 from yards import *
 from bandits import *
+from legend_sites import *
 from pokemon import *
 
 
@@ -112,6 +113,8 @@ if __name__ == "__main__":
     stone_house_3().save(MAIN_STRUCTURES, "stone_house_3")
     settlers_camp().save(os.path.join(MAIN_STRUCTURES, "camp"), "settlers_camp")
     bandit_camp().save(os.path.join(MAIN_STRUCTURES, "camp"), "bandit_camp")
+    for name, draw in (("traveller_camp", traveller_camp), ("prisoner_cage", prisoner_cage), ("castaway_camp", castaway_camp)):
+        draw().save(os.path.join(MAIN_STRUCTURES, "legend"), name)
     for name, draw in (("palisade", palisade), ("palisade_gate", palisade_gate), ("stone_wall", stone_wall), ("wall_tower", wall_tower),
                        ("gatehouse", gatehouse), ("barracks", barracks), ("barracks_2", barracks_2)):
         draw().save(MAIN_STRUCTURES, name)

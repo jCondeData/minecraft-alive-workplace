@@ -269,6 +269,10 @@ SCENES = [
     S("legend_guest", "Legends", "A Legend visits the inn, and settles", "a Legend came to the inn as a guest, showed their terms, and settled once a home was ready", 50,
       [("01_guest_arrives", "A Legend walks into the inn"), ("02_terms", "Her terms: what she brings, what she wants"),
        ("03_settled", "A home is ready: she settles"), ("04_settled_chronicle", "The chronicle: settled in the village")]),
+    # Legends found in the world (ROADMAP 29.9): a traveller's camp, a prisoner's cage and a castaway's camp; a bar broken frees the prisoner
+    S("legend_sites", "Legends", "Legends found at ruins, outposts and wrecks",
+      "the three camps of Legends found in the world, and a prisoner freed from the outpost cage", 40,
+      [("01_three_camps", "A traveller's camp, a prisoner's cage, a castaway's camp"), ("02_cage_opened", "A bar broken: the prisoner is free")]),
     job("legend_strike", "Legends", "A Legend on strike", "a Legend on strike left her stonecutter and picketed by the Village Hall under a red line", 120),
     S("edicts", "Village Hall", "The Book of Edicts",
       "the Book of Edicts opened from the hall's lectern button, with Long Shifts in force, at GUI scales 2 and 4", 45,

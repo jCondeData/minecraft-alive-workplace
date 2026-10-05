@@ -17,6 +17,11 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Added
+- **Legends found in the world** (29.9): standing in a ruined portal, a pillager outpost or a shipwreck, a player whose
+  village has earned a Legend found there may come on their camp: a traveller beside the portal (talk to them), a
+  prisoner in an iron cage at the tower's foot (break the bars) or a castaway on the nearest beach (hand them a cooked
+  meal). Freed, they thank you, walk off and come to your Village Hall the next morning as a guest. Each structure is
+  used once; `legendSites` in the config turns it off.
 - **Gifted villagers** (29.6): about one villager in 30 has a rare gift as well as their traits, shown in gold on the
   Village Hall's list. Prodigy learns three times as fast; Iron Will never panics and keeps working through raids and
   the bell; Silver Tongue's trades are 20% cheaper; a Night Owl works from dusk to dawn and sleeps from mid-morning to

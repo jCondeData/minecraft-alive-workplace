@@ -1238,6 +1238,50 @@ final class JobScenes {
 					}
 				}, 30)),
 			(level, player) -> player.containerMenu instanceof ChoiceMenu));
+		SCREENS.put("legend_sites", new Screen("the three camps of Legends found in the world, and a prisoner freed from the outpost cage",
+			new Vec3(0.5, -53.0, 13.5), new Vec3(0.5, -59.5, -4.5),
+			(level, player) -> {
+				// ROADMAP 29.9: the camps a qualifying player finds at a ruined portal, a pillager outpost and a shipwreck's beach,
+				// set down side by side (a traveller's camp, a prisoner's cage, a castaway's camp), each with its Legend waiting.
+				java.util.Map<net.minecraft.resources.ResourceLocation, io.github.jcondedata.aliveworkplace.legend.Legend> map = new java.util.LinkedHashMap<>();
+				String[][] sites = {{"ruined_portal", "Wren the Wayfarer"}, {"outpost", "Bram the Captive"}, {"shipwreck", "Old Tamsin"}};
+				int[] xs = {-11, 0, 11};
+				for (int i = 0; i < 3; i++) {
+					io.github.jcondedata.aliveworkplace.legend.Legend legend = io.github.jcondedata.aliveworkplace.legend.Legends.read(
+						io.github.jcondedata.aliveworkplace.AliveWorkplace.id("showcase_found_" + sites[i][0]), com.google.gson.JsonParser.parseString(
+							"{\"rarity\": \"rare\", \"job\": \"minecraft:cartographer\", \"title\": \"Pathfinder\", \"lore\": \"Found in the wild.\","
+							+ " \"names\": [\"" + sites[i][1] + "\"], \"arrive\": [{\"way\": \"found\", \"site\": \"" + sites[i][0] + "\"}]}").getAsJsonObject());
+					map.put(legend.id(), legend);
+					Villager v = io.github.jcondedata.aliveworkplace.legend.LegendSites.place(level, io.github.jcondedata.aliveworkplace.legend.LegendSites.site(sites[i][0]),
+						new io.github.jcondedata.aliveworkplace.legend.LegendSites.Match(STATION, legend), new BlockPos(xs[i], -61, -4),
+						net.minecraft.util.RandomSource.create(4));
+					Showcase.check(v != null, "the " + sites[i][0] + " camp was set down");
+					v.setYHeadRot(180f);
+					if (i == 1) {
+						subject = v;
+					}
+				}
+				io.github.jcondedata.aliveworkplace.legend.Legends.setForTest(map);
+				level.setDayTime(level.getDayTime() / 24000L * 24000L + 6000L);
+			},
+			List.of(new Step("01_three_camps", -1, 6, (level, player) -> {
+					Showcase.check(io.github.jcondedata.aliveworkplace.legend.LegendSites.isCaptive(subject), "the prisoner waits in the cage");
+				}, 40),
+				new Step("02_cage_opened", -1, 6, (level, player) -> {
+					// A bar of the cage broken: the prisoner is free, thanks the player and walks off to the village.
+					player.teleportTo(0.5, -60, 2.5);
+					BlockPos bar = null;
+					for (BlockPos p : BlockPos.betweenClosed(subject.blockPosition().offset(-3, -1, -3), subject.blockPosition().offset(3, 3, 3))) {
+						if (level.getBlockState(p).is(Blocks.IRON_BARS) && p.getZ() > subject.getZ()) {
+							bar = p.immutable();
+							break;
+						}
+					}
+					Showcase.check(bar != null, "the cage has a bar facing the camera");
+					player.gameMode.destroyBlock(bar);
+					Showcase.check(!io.github.jcondedata.aliveworkplace.legend.LegendSites.isCaptive(subject), "breaking a bar freed the prisoner");
+				}, 60)),
+			(level, player) -> true));
 		SCREENS.put("hall_quests", new Screen("the Village Hall's quests, advice, village map, mercenaries and festival opened", new Vec3(2.5, -58.4, 4.5), TARGET,
 			(level, player) -> {
 				level.setBlockAndUpdate(STATION, ModBlocks.VILLAGE_HALL.defaultBlockState()

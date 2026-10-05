@@ -1496,7 +1496,7 @@ MarketDays) and research/.
   - the terms screen's lines match the needs; a guest survives a save and reload mid-stay;
   - showcase scene `legend_guest` (GIF: a test Legend arrives at the inn, the terms screen, they settle once a home is
     ready).
-- [ ] **29.9** **Legends found in the world.** The second way. Every 5 seconds per player,
+- [x] **29.9** (review: pending 2026-10-05) **Legends found in the world.** The second way. Every 5 seconds per player,
   `StructureManager.getStructureWithPieceAt` asks whether they stand in a structure of a site tag (three cheap lookups
   and no area scans; tags, so packs can add their own variants, such as Repurposed Structures'):
   - `#aliveworkplace:legend_sites/ruined_portal` (vanilla's ruined portals): a traveller's camp beside the portal (a

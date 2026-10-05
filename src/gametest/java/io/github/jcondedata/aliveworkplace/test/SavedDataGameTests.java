@@ -79,6 +79,10 @@ public class SavedDataGameTests implements FabricGameTest {
 		samples.put("GIFTED", "aliveworkplace:night_owl");
 		samples.put("LEGEND", new io.github.jcondedata.aliveworkplace.legend.LegendData(net.minecraft.resources.ResourceLocation.parse("aliveworkplace:master_architect"),
 			"legend.aliveworkplace.master_architect.name.2", true, Optional.of(new BlockPos(5, 70, -9)), 12, 15, Map.of("home", 2), 14, 9, "visit"));
+		samples.put("STRANGE_MOOD", new io.github.jcondedata.aliveworkplace.legend.StrangeMood(net.minecraft.resources.ResourceLocation.parse("aliveworkplace:golem_smith"),
+			new BlockPos(3, 64, -2), Optional.of(new BlockPos(5, 70, -9)), List.of(net.minecraft.resources.ResourceLocation.parse("minecraft:diamond"),
+			net.minecraft.resources.ResourceLocation.parse("minecraft:blaze_rod"), net.minecraft.resources.ResourceLocation.parse("minecraft:echo_shard")),
+			Map.of("minecraft:diamond", 1), Map.of("00000000-0000-0000-0000-000000000007", 1), 11, 20));
 		samples.put("WORN_OUT", new io.github.jcondedata.aliveworkplace.hall.WorkHorn.WornOut(48_000L, 24_000L));
 		return samples;
 	}

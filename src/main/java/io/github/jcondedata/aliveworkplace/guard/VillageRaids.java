@@ -272,6 +272,11 @@ public final class VillageRaids {
 		return level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, column);
 	}
 
+	/** Forgets the raid under way on the village round {@code hall} (tests). */
+	public static void forget(BlockPos hall) {
+		ACTIVE.remove(hall);
+	}
+
 	/** Forgets the raids under way (tests). */
 	public static void forget() {
 		ACTIVE.clear();

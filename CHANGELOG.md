@@ -17,6 +17,13 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Added
+- **Strange moods and Masterworks** (29.10): once a day a Master in a happy village whose trade an inspired Legend
+  names may be taken by a strange mood (1 in 8). She claims her workstation under a purple line and asks for three
+  rare materials in the chest beside it within 3 days (the chronicle, the hall, the Storehouse board and the village's
+  players hear of it). Brought, she makes a named Masterwork ("The Ember Ladle", lore naming her, the village, the day
+  and the materials, with a glint) for the player who brought the most, and becomes the Legend; a Masterwork in an item
+  frame in the village is 3 beauty. Not brought, she sulks a week (less happy, half pace) and the village has no mood
+  for 10 days. Config `strangeMoods`.
 - **Legends found in the world** (29.9): standing in a ruined portal, a pillager outpost or a shipwreck, a player whose
   village has earned a Legend found there may come on their camp: a traveller beside the portal (talk to them), a
   prisoner in an iron cage at the tower's foot (break the bars) or a castaway on the nearest beach (hand them a cooked

@@ -274,6 +274,10 @@ SCENES = [
       "the three camps of Legends found in the world, and a prisoner freed from the outpost cage", 40,
       [("01_three_camps", "A traveller's camp, a prisoner's cage, a castaway's camp"), ("02_cage_opened", "A bar broken: the prisoner is free")]),
     job("legend_strike", "Legends", "A Legend on strike", "a Legend on strike left her stonecutter and picketed by the Village Hall under a red line", 120),
+    # Strange moods (ROADMAP 29.10): a Master cleric claims her brewing stand under a purple line, the chest by it fills,
+    # and she makes a named Masterwork, hung in an item frame, and becomes a Legend
+    job("strange_mood", "Legends", "A strange mood and a Masterwork",
+        "a Master cleric taken by a strange mood claimed her brewing stand, the chest was filled, and she made a Masterwork and became a Legend", 120),
     S("edicts", "Village Hall", "The Book of Edicts",
       "the Book of Edicts opened from the hall's lectern button, with Long Shifts in force, at GUI scales 2 and 4", 45,
       [("01_edicts_book", "The Book on the hall's screen: Long Shifts in force, two free slots, one locked for a City"), ("02_edicts_scale4", "The Book at GUI scale 4")]),

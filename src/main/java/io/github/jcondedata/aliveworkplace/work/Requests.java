@@ -59,6 +59,26 @@ public final class Requests {
 
 	private static final Map<Villager, Post> POSTS = new WeakHashMap<>();
 
+	/** Told when a player hands something over for a request (the Storehouse board). */
+	@FunctionalInterface
+	public interface Given {
+		void given(net.minecraft.server.level.ServerPlayer player, Request request, int count);
+	}
+
+	private static final List<Given> GIVEN = new java.util.concurrent.CopyOnWriteArrayList<>();
+
+	/** Adds a listener for hand-overs (a strange mood credits the player, 29.10). */
+	public static void onGiven(Given listener) {
+		GIVEN.add(listener);
+	}
+
+	/** {@code player} handed over {@code count} for {@code request}. */
+	public static void given(net.minecraft.server.level.ServerPlayer player, Request request, int count) {
+		for (Given listener : GIVEN) {
+			listener.given(player, request, count);
+		}
+	}
+
 	/** {@code villager} is waiting for {@code count} of what {@code accepts} (call again every so often while waiting). */
 	public static void post(Villager villager, ItemStack icon, int count, Component what, Predicate<ItemStack> accepts) {
 		synchronized (POSTS) {
@@ -85,6 +105,7 @@ public final class Requests {
 		if (station == null) {
 			return out;
 		}
+		out.addAll(io.github.jcondedata.aliveworkplace.legend.StrangeMoods.requests(level, worker)); // a strange mood's materials (29.10)
 		BuildSite site = Builders.activeSite(level, worker);
 		if (site != null && site.status() == BuildSite.Status.WAITING_FOR_MATERIALS) {
 			site.missing().entrySet().stream()

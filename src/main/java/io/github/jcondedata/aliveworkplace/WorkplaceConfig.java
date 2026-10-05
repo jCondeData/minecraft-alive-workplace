@@ -73,6 +73,8 @@ public final class WorkplaceConfig {
 	public boolean legendNeeds = true;
 	/** Legends can be found at ruined portals, pillager outposts and shipwrecks (a camp set down for a player who qualifies). */
 	public boolean legendSites = true;
+	/** Once a day a Master in a happy village may be taken by a strange mood, asking for three rare materials to make a Masterwork and become a Legend. */
+	public boolean strangeMoods = true;
 	/** One villager in this many is Gifted, with a rare trait (0: nobody is; nothing is erased). */
 	public int giftedChance = 30;
 	/**
@@ -361,6 +363,8 @@ public final class WorkplaceConfig {
 		io.github.jcondedata.aliveworkplace.hall.VillageProtection.ENABLED = villageProtection;
 		io.github.jcondedata.aliveworkplace.legend.Legends.ENABLED = legends;
 		io.github.jcondedata.aliveworkplace.legend.LegendSites.ENABLED = legendSites;
+		// Off in gametests (a round could seize a test's Master); the strange mood tests turn it on.
+		io.github.jcondedata.aliveworkplace.legend.StrangeMoods.ENABLED = strangeMoods && System.getProperty("fabric-api.gametest") == null;
 		io.github.jcondedata.aliveworkplace.legend.Gifted.CHANCE = giftedChance;
 		// Off in gametests (a round could start or end a strike a test staged); the needs tests turn it on.
 		io.github.jcondedata.aliveworkplace.legend.LegendNeeds.ENABLED = legendNeeds && System.getProperty("fabric-api.gametest") == null;

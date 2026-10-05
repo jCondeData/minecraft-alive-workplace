@@ -54,6 +54,7 @@ public final class Legends implements ResourceManagerReloadListener {
 		LegendSlots.init();
 		LegendLook.init();
 		LegendsPage.init();
+		StrangeMoods.init();
 		Platform.get().onServerTick(LegendSites::tick);
 		Platform.get().allowBreakBlock((level, player, pos, state) -> !(level instanceof net.minecraft.server.level.ServerLevel server)
 			|| LegendSites.onBreak(server, player, pos, state));
@@ -201,6 +202,9 @@ public final class Legends implements ResourceManagerReloadListener {
 	public static void tick(Villager villager) {
 		if (ENABLED && villager.tickCount % 20 == 0 && ModAttachments.LEGEND.has(villager)) {
 			LegendNeeds.tick(villager);
+		}
+		if (ENABLED && villager.tickCount % 20 == 0 && ModAttachments.STRANGE_MOOD.has(villager)) {
+			StrangeMoods.tick(villager); // a strange mood or a sulk (29.10)
 		}
 		if (ENABLED && villager.tickCount % 200 == 0 && ModAttachments.LEGEND.has(villager)) {
 			LegendPowers.seen(villager);

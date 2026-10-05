@@ -1526,7 +1526,7 @@ MarketDays) and research/.
     lookups run with nobody online;
   - renders of the three camps in the review package; showcase scene `legend_sites` (the three camps, and a GIF of the
     cage opened).
-- [ ] **29.10** **Strange moods and Masterworks.** The fourth way (Dwarf Fortress). Once a day, in a happy village
+- [x] **29.10** (review: pending 2026-10-05) **Strange moods and Masterworks.** The fourth way (Dwarf Fortress). Once a day, in a happy village
   (29.5's test) with no mood already on, a Master whose trade a Legend's `inspired` way names may be seized by a
   strange mood, 1 time in 8, if the village meets that Legend's conditions and its slot is free (never during a raid
   or a festival; config `strangeMoods`). The villager (attachment `STRANGE_MOOD`):
@@ -4289,6 +4289,20 @@ item waits.
 - (Sessions: anything that needs the owner, and the link to the latest Full test report. Handoffs go here through
   `sessions.py handoff "<in progress, next, traps>" --as <you>`, which keeps one per kind of session (chat, night):
   carry over anything still true from the previous one.)
+- 2026-10-05 (29.10, decisions; lane a): strange moods (`legend/StrangeMoods`). The day's roll picks one qualifying
+  Legend, throws its way's `chance` (default 1 in 8) once, then picks one of its Masters, so a village has at most one
+  roll a day however many Masters it has. The three materials are one of each, picked from `masterwork.materials`; the
+  mood watches the chest(s) by the workstation (the builders' 8-block supply rule) and takes them only when all three
+  are there. Who brought what: a hand-over at a Storehouse board counts for that player (new `Requests.given` hook);
+  otherwise whatever turns up is put to the nearest player within 8 blocks of the workstation. Ties go to the first
+  giver; an offline top giver means the chest. The deadline is the end of the third day (start day included). The
+  name is the file's `name` key with (village, maker, made-up word, item) as arguments, by default "The <word> <item>"
+  from 16 words (Ember, Gilded, Starlit…), picked from the maker and the day so it never changes. If the Legend's slot
+  was taken during the mood, the Masterwork is still made but nobody becomes the Legend. Switching `strangeMoods` off
+  calls a mood already on off quietly at its next check (no sulk). A broken workstation doesn't end the mood: the
+  chest by its spot still counts. The Founder's way (`"founder": true`) is skipped by the daily roll: 29.23 starts it
+  with `StrangeMoods.start` at the first rise to City. No shipped Legend has an `inspired` way yet (29.15, 29.18 and
+  29.23 add them), so in a real world nothing happens until those land.
 - 2026-10-05 (29.8, decisions; lane a): guests (`legend/LegendGuests`) are nitwits until they settle (no job, like inn
   travellers) and go by one of their file's `names` (the title if none). A place's day roll is spent only when some
   Legend may come there that day (conditions met, slot free, no visit in 7 days), so a village that qualifies at noon

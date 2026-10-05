@@ -12,6 +12,9 @@ public final class ModAttachments {
 	/** A villager's gift (29.6): a gift's id, or {@code none}. Absent: the UUID roll decides ({@code Gifted.of}). */
 	public static final Attachment<String> GIFTED = Attachment.saved("gifted", com.mojang.serialization.Codec.STRING);
 
+	/** A villager's strange mood (29.10): the Legend it leads to, the workstation, the materials; or a sulk after one. Absent: none. */
+	public static final Attachment<io.github.jcondedata.aliveworkplace.legend.StrangeMood> STRANGE_MOOD = Attachment.saved("strange_mood", io.github.jcondedata.aliveworkplace.legend.StrangeMood.CODEC);
+
 	/** Which build site this villager is working on. */
 	public static final Attachment<BuilderJob> BUILDER_JOB = Attachment.saved("builder_job", BuilderJob.CODEC);
 

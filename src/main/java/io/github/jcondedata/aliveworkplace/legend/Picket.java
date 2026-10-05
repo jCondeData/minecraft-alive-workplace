@@ -22,7 +22,8 @@ import org.jetbrains.annotations.Nullable;
 /**
  * A Legend on strike (ROADMAP 29.5) pickets: by day their WORK activity is standing by the Village Hall, looking at it,
  * and the rest of their trade's work waits ({@link #work}). A Legend with no workstation (the {@code aliveworkplace:legend}
- * trade) has no WORK activity, so they picket in their IDLE one ({@link #idle}).
+ * trade) has no WORK activity, so they picket in their IDLE one ({@link #idle}). A villager taken by a strange mood
+ * (29.10) stands at the workstation they claimed in the same way, and their trade's work waits too.
  */
 public final class Picket extends Behavior<Villager> {
 	/** Behaviours at this priority or later (vanilla: the schedule update) always run. */
@@ -66,9 +67,17 @@ public final class Picket extends Behavior<Villager> {
 		return out.build();
 	}
 
-	/** Whether {@code villager} pickets in this package: on strike, and (in IDLE) with no workstation. */
+	/** Whether {@code villager} pickets in this package: on strike, and (in IDLE) with no workstation; or (in WORK) in a strange mood. */
 	boolean applies(Villager villager) {
-		return LegendNeeds.striking(villager) && (!idle || villager.getBrain().getMemory(MemoryModuleType.JOB_SITE).isEmpty());
+		return LegendNeeds.striking(villager) && (!idle || villager.getBrain().getMemory(MemoryModuleType.JOB_SITE).isEmpty())
+			|| !idle && StrangeMoods.claiming(villager);
+	}
+
+	/** Where {@code villager} stands: the workstation a strange mood claimed, else the hall they picket. */
+	@Nullable
+	static BlockPos target(ServerLevel level, Villager villager) {
+		BlockPos station = StrangeMoods.claiming(villager) ? StrangeMoods.station(villager) : null;
+		return station != null ? station : hall(level, villager);
 	}
 
 	/** The hall a Legend pickets: their own, else the nearest. */
@@ -84,7 +93,7 @@ public final class Picket extends Behavior<Villager> {
 
 	@Override
 	protected boolean checkExtraStartConditions(ServerLevel level, Villager villager) {
-		return applies(villager) && level.isDay() && !villager.isSleeping() && hall(level, villager) != null;
+		return applies(villager) && level.isDay() && !villager.isSleeping() && target(level, villager) != null;
 	}
 
 	@Override
@@ -100,6 +109,17 @@ public final class Picket extends Behavior<Villager> {
 	@Override
 	protected void tick(ServerLevel level, Villager villager, long gameTime) {
 		if ((gameTime + villager.getId()) % 10 != 0) {
+			return;
+		}
+		BlockPos station = StrangeMoods.claiming(villager) ? StrangeMoods.station(villager) : null;
+		if (station != null) {
+			// a strange mood: at the claimed workstation, looking at it
+			if (villager.blockPosition().closerThan(station, 2.5)) {
+				villager.getBrain().eraseMemory(MemoryModuleType.WALK_TARGET);
+				villager.getBrain().setMemory(MemoryModuleType.LOOK_TARGET, new BlockPosTracker(station));
+				return;
+			}
+			retryWait = Walker.requestWalk(villager, station, SPEED, 1, retryWait);
 			return;
 		}
 		BlockPos hall = hall(level, villager);

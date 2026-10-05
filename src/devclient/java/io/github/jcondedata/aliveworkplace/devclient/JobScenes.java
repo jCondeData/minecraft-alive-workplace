@@ -706,6 +706,64 @@ final class JobScenes {
 				&& io.github.jcondedata.aliveworkplace.legend.LegendNeeds.striking(mason)
 				&& io.github.jcondedata.aliveworkplace.work.WorkerStatus.get(mason, l.getGameTime()) != null;
 		}, null));
+		SCENES.put("strange_mood", job("a Master cleric taken by a strange mood claimed her brewing stand, the chest was filled, and she made a Masterwork and became a Legend", 1800,
+			(level, player) -> {
+			// ROADMAP 29.10: a Master cleric in a village with a hall is seized by a strange mood (the Legend's file is the
+			// scene's own). She claims her brewing stand under a purple line; a little later the three materials she asked
+			// for go into the chest beside it one by one, she makes the Masterwork, becomes the Legend, and the Masterwork
+			// is hung in an item frame by her stand.
+			level.getGameRules().getRule(GameRules.RULE_DAYLIGHT).set(false, level.getServer());
+			level.setDayTime(3000); // mid-morning: work time
+			net.minecraft.resources.ResourceLocation id = io.github.jcondedata.aliveworkplace.AliveWorkplace.id("showcase_mood");
+			io.github.jcondedata.aliveworkplace.legend.Legend legend = io.github.jcondedata.aliveworkplace.legend.Legends.read(id,
+				com.google.gson.JsonParser.parseString("{\"rarity\": \"rare\", \"job\": \"minecraft:cleric\", \"title\": \"entity.minecraft.villager.legend\","
+					+ " \"lore\": \"entity.minecraft.villager.legend\", \"arrive\": [{\"way\": \"inspired\", \"trades\": [\"minecraft:cleric\"]}],"
+					+ " \"masterwork\": {\"item\": \"minecraft:totem_of_undying\", \"materials\": [\"minecraft:diamond\", \"minecraft:blaze_rod\","
+					+ " \"minecraft:echo_shard\", \"minecraft:amethyst_shard\"]}}").getAsJsonObject());
+			io.github.jcondedata.aliveworkplace.legend.Legends.setForTest(Map.of(id, legend));
+			io.github.jcondedata.aliveworkplace.legend.StrangeMoods.ENABLED = true;
+			BlockPos hall = STATION.offset(-6, 0, -3);
+			place(level, hall, ModBlocks.VILLAGE_HALL);
+			Villager cleric = worker(level, STATION, Blocks.BREWING_STAND, PoiTypes.CLERIC, VillagerProfession.CLERIC);
+			cleric.setVillagerData(cleric.getVillagerData().setLevel(5));
+			Container c = chest(level, chestPos());
+			BlockPos wall = STATION.offset(2, 0, -1);
+			place(level, wall, Blocks.POLISHED_ANDESITE);
+			long today = io.github.jcondedata.aliveworkplace.hall.Chronicle.day(level);
+			io.github.jcondedata.aliveworkplace.legend.StrangeMood mood = io.github.jcondedata.aliveworkplace.legend.StrangeMoods.start(level, hall, cleric,
+				legend, today, net.minecraft.util.RandomSource.create(29L));
+			long began = level.getGameTime();
+			boolean[] hung = {false};
+			java.util.function.Function<Container, ItemStack> masterworkIn = box -> {
+				for (int i = 0; i < box.getContainerSize(); i++) {
+					if (io.github.jcondedata.aliveworkplace.legend.StrangeMoods.isMasterwork(box.getItem(i))) {
+						return box.getItem(i);
+					}
+				}
+				return ItemStack.EMPTY;
+			};
+			return l -> {
+				long t = l.getGameTime() - began;
+				for (int i = 0; i < mood.materials().size(); i++) {
+					net.minecraft.world.item.Item item = net.minecraft.core.registries.BuiltInRegistries.ITEM.get(mood.materials().get(i));
+					if (t >= 300 + 60L * i && c.countItem(item) == 0 && io.github.jcondedata.aliveworkplace.legend.StrangeMoods.claiming(cleric)) {
+						c.setItem(i, new ItemStack(item)); // the chest filled, one material at a time
+					}
+				}
+				if (!hung[0] && ModAttachments.LEGEND.has(cleric)) {
+					ItemStack work = c.countItem(Items.TOTEM_OF_UNDYING) > 0 ? masterworkIn.apply(c) : masterworkIn.apply(player.getInventory());
+					if (!work.isEmpty()) {
+						net.minecraft.world.entity.decoration.ItemFrame frame = new net.minecraft.world.entity.decoration.ItemFrame(l, wall.south(), Direction.SOUTH);
+						frame.setItem(work.copy(), false);
+						l.addFreshEntity(frame);
+						hung[0] = true;
+						Showcase.check(io.github.jcondedata.aliveworkplace.legend.StrangeMoods.isMasterwork(work)
+							&& work.getHoverName().getString().startsWith("The "), "the Masterwork has its name: " + work.getHoverName().getString());
+					}
+				}
+				return hung[0] && t >= 600;
+			};
+		}));
 		SCENES.put("bard", job("the bard played a record at the Music Stand", 1200, (level, player) -> {
 			Villager b = picked(level, player, STATION, Blocks.JUKEBOX, Items.MUSIC_DISC_CAT);
 			chest(level, chestPos(), new ItemStack(Items.MUSIC_DISC_CAT));

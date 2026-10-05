@@ -205,6 +205,7 @@ public final class Legends implements ResourceManagerReloadListener {
 		if (ENABLED && villager.tickCount % 20 == 0 && ModAttachments.LEGEND.has(villager)) {
 			LegendNeeds.tick(villager);
 			Seer.tick(villager); // the Seer's motes at night, and the Chapel by day (29.16)
+			BardLaureate.tick(villager); // the Bard Laureate's work songs (29.19)
 		}
 		if (ENABLED && ModAttachments.PATHFINDER.has(villager)) {
 			Pathfinder.tick(villager); // an expedition with a player (29.13), every 5th tick
@@ -217,6 +218,7 @@ public final class Legends implements ResourceManagerReloadListener {
 			LegendSlots.onRecord(villager);
 			LegendLook.sparkle(villager);
 			GrandRebuild.tick(villager);
+			KeepsToPower.tick(villager); // the Merchant Prince keeps to the hall and the square (29.17)
 		}
 	}
 

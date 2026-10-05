@@ -20,9 +20,15 @@ public final class Powers {
 		register("grand_rebuild", GrandRebuildPower::read);
 		register("far_expeditions", FarExpeditionsPower::read);
 		register("expedition", ExpeditionPower::read);
+		register("bank", BankPower::read);
+		register("caravan_pay", CaravanPayPower::read);
+		register("trade_fair", TradeFairPower::read);
+		register("keeps_to", KeepsToPower::read);
 		register("golem_forge", GolemForgePower::read);
+		register("banquet", BanquetPower::read);
 		GiftPowers.register();
 		Seer.register();
+		BardLaureate.register();
 	}
 
 	/** Adds a named power (each Legend item adds its own). */

@@ -1693,7 +1693,7 @@ MarketDays) and research/.
   Seer comes only at midnight, at a full moon, to a Chapel; a raid foretold at dawn comes that night and none comes
   when none is foretold (fixed `RandomSource`); the festival and market days told are right; a blessed wedding's mood
   and baby; showcase scene `legend_seer` (GIF: the arrival under the full moon, the dawn foretelling in chat).
-- [ ] **29.17** **The Merchant Prince (Legendary).** Comes: found as a castaway by a shipwreck (29.9) once the
+- [x] **29.17** (review: pending 2026-10-05) **The Merchant Prince (Legendary).** Comes: found as a castaway by a shipwreck (29.9) once the
   village's treasury has taken in 500 emeralds all told (`treasury_total`) and it sends caravans on 3 routes. Trade:
   `aliveworkplace:legend`; they keep to the Village Hall and the Market Square. Likes: wine. Powers:
   - **the bank** (`bank`): the treasury earns 2% a day on what it holds and holds twice as much; players deposit
@@ -1710,7 +1710,7 @@ MarketDays) and research/.
   cap; deposits and withdrawals with interest, kept through a reload, never more than 10 stacks; a fair with 6 traders
   plus one per linked village; the caravan pay; showcase scene `legend_merchant_prince` (the bank page, a GIF of the
   fair).
-- [ ] **29.18** **The Grand Chef (Rare).** Comes: inspired (29.10): a Master Chef in a happy village whose store has 8
+- [x] **29.18** (review: pending 2026-10-05) **The Grand Chef (Rare).** Comes: inspired (29.10): a Master Chef in a happy village whose store has 8
   kinds of meal (`VillageHalls.mealKinds`); the materials come from a pool of a golden apple, a glistering melon
   slice, a golden carrot, a honeycomb, glow berries, chorus fruit and a pufferfish, and the Masterwork is a cake named
   for the village ("The Thornholm Midsummer Cake"). Also a guest at the inn on the same condition, and born to a Chef
@@ -1724,7 +1724,7 @@ MarketDays) and research/.
   Outfit: a tall white toque and a gold ladle at the apron. Done when: GameTests: a banquet takes two meals each; the
   mood; two births a day for 3 days with free beds, and one a day after; chefs faster; showcase scene
   `legend_grand_chef` (GIF: the banquet).
-- [ ] **29.19** **The Bard Laureate (Rare).** Comes: a guest at a festival once 30 villagers come to it (29.8); born
+- [x] **29.19** (review: pending 2026-10-05) **The Bard Laureate (Rare).** Comes: a guest at a festival once 30 villagers come to it (29.8); born
   to a Bard (29.7). Trade: Bard. Likes: books. Powers:
   - **the anthem** (`anthem`): when they settle they compose the village's anthem, 16 notes on one instrument (harp,
     flute, bell, chime, guitar or xylophone) made from the village's name, so it never changes, kept in the hall. It
@@ -4389,6 +4389,14 @@ item waits.
   build like the Steward's (no blueprint item comes back if it's cancelled). A strike cancels the rebuild under way (the
   blocks placed stay) and none starts until it's over. The Architect can be the builder handed the work if they are
   the least busy one with a bench.
+- 2026-10-05 (29.18, decisions; lane a): "on the same condition" for the inn guest and the born Grand Chef is the
+  file's condition, 8 kinds of meal in the store (a happy village is part of the inspired way itself). Everyone in the
+  village who isn't asleep at supper counts as having come (as at a festival's feast); children are counted for the mood
+  but eat nothing. The banquet is called after work (9000), the feast is at 10500; no banquet on a festival's day (it
+  comes the next evening). The two births a day run from the banquet's day through the next two, and stop if no free bed.
+  The toque can't rise above the hat layer, so "tall" is drawn as pleats from the crown to a gold band at the brow.
+  Also restored the Seer's outfit recipe's lost save lines in tools/textures/art/villagers_2.py (a merge dropped them;
+  the PNG is unchanged).
 - 2026-10-05 (29.16, decisions; lane a): the night's raid and the guests are rolled ahead only in a village with a
   settled Seer (elsewhere nothing changes). The foretelling comes at the hall's first round of the day before 6000;
   the first one (or the first after a missed dawn) also rolls today's guests, unannounced, so tomorrow's roll knows

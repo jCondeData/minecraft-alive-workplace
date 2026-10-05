@@ -31,6 +31,26 @@ asks for the steps, `latest.log` and any crash report).
 - **A farmer's carrots and potatoes reach the chests** (B77): a village farmer kept up to 32 of each in his bag as
   seed stock, so a Farmstead's field could be harvested without anything landing in its chest. He now takes them from the
   chests to plant with, like seeds, and puts the whole harvest away.
+- **The Bard Laureate** (29.19), a Rare Legend in a green doublet with a lute on the back and a laurel wreath: a guest
+  at a festival 30 villagers come to, or born to a Bard. Likes books. On settling they compose the village's anthem,
+  16 notes on one instrument made from the village's name (the same name always gives the same tune), kept in the hall
+  and played over it in note-block notes at every festival, rank-up, wedding and Legend arrival, and from a new
+  button on the hall's Legends page; the hall's owner gets it as a written book, "The Anthem of Thornholm". Twice a day they sing a work song
+  for 2 minutes where work is busiest: workers within 16 blocks work 25% faster while they sing, and everyone who
+  hears is 5 happier for the day.
+- **The Grand Chef** (29.18), a Rare Legend in a tall white toque with a gold band and a gold ladle at the apron: a
+  Master Chef inspired to bake "The <village> Midsummer Cake", a guest at the inn, or born to a Chef, once the store
+  holds 8 kinds of meal. Likes wine. Every 5 days after work the village gathers round the hall (or the Market Square)
+  for a banquet, and at supper each grown-up eats two meals from the store, of as many kinds as it has: everyone who
+  came is 20 happier for 3 days, and for those 3 days the village may have two babies a day (beds and food as usual).
+  Chefs in the village cook 25% faster.
+- **The Merchant Prince** (29.17), a Legendary Legend in a crimson coat and feathered hat: a castaway by a shipwreck
+  once the treasury has taken in 500 emeralds and the village sends caravans on 3 routes. With him the treasury earns
+  2% a day and holds twice as much; the hall gets a **Bank** page where each player keeps up to 10 stacks of emeralds
+  at 5% a week (and takes them out any time, even after he's gone); every 10 days a **trade fair** brings 6 traders and
+  a stall for each village you trade with, red and yellow bunting round the square (taken down the next day),
+  fireworks, and every trade 10% cheaper for the day; and every stack a caravan brings to a village that was waiting
+  for it earns the treasury an emerald (shown on the trade routes page).
 ### Added
 - **Edicts and civic items in the village's life** (30.21): villagers talk of each edict in force and of each reformed
   one ("Long shifts again... my back.", "The shift bell's rung. Home we go."), of a rush, their tonic, their guild and

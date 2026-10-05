@@ -121,6 +121,7 @@ public final class LegendSlots {
 		if (hall != null) {
 			Chronicle.record(level, hall, Chronicle.Kind.LEGEND, Component.translatable("chronicle.aliveworkplace.legend." + (guest ? "guest" : "settled"),
 				villager.getDisplayName(), legend.titleText(), legend.rarity().title()));
+			io.github.jcondedata.aliveworkplace.hall.Anthems.play(level, hall, "legend"); // the Bard Laureate's anthem (29.19)
 		}
 		return told;
 	}

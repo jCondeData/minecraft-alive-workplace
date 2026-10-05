@@ -1,0 +1,30 @@
+{
+  "rarity": "rare",
+  "job": "aliveworkplace:chef",
+  "title": "legend.aliveworkplace.grand_chef.title",
+  "lore": "legend.aliveworkplace.grand_chef.lore",
+  "names": [
+    "legend.aliveworkplace.grand_chef.name.1",
+    "legend.aliveworkplace.grand_chef.name.2",
+    "legend.aliveworkplace.grand_chef.name.3"
+  ],
+  "conditions": [
+    {"type": "meal_kinds", "count": 8}
+  ],
+  "arrive": [
+    {"way": "inspired", "trades": ["aliveworkplace:chef"]},
+    {"way": "visit", "place": "inn"},
+    {"way": "born", "trades": ["aliveworkplace:chef"]}
+  ],
+  "masterwork": {
+    "item": "minecraft:cake",
+    "name": "masterwork.aliveworkplace.grand_chef",
+    "materials": ["minecraft:golden_apple", "minecraft:glistering_melon_slice", "minecraft:golden_carrot", "minecraft:honeycomb",
+      "minecraft:glow_berries", "minecraft:chorus_fruit", "minecraft:pufferfish"]
+  },
+  "needs": {"luxury": "wine"},
+  "powers": [
+    {"type": "banquet", "days": 5, "meals": 2, "mood": 20, "mood_days": 3, "growth_days": 3},
+    {"type": "pace", "trades": ["aliveworkplace:chef"], "radius": 0, "factor": 1.25}
+  ]
+}

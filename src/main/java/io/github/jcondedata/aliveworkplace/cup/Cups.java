@@ -25,7 +25,7 @@ import net.minecraft.world.entity.npc.Villager;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * The Festival Cup (ROADMAP 28.17; the bouts come in 28.18): a village with a Village Hall, a finished Arena, Cobblemon
+ * The Festival Cup (ROADMAP 28.17; the bouts: {@link CupBouts}, 28.18): a village with a Village Hall, a finished Arena, Cobblemon
  * and at least Village rank holds every {@link #EVERY}th of its regular festivals as a Cup. Its circuit is the host and
  * every village with a hall it has a trade route with, either way, {@link #MAX_CIRCUIT} at most, nearest first. Each
  * circuit village sends its Trainer Leader (else its best Trainer); the host adds up to {@link #HOST_TRAINERS} of its
@@ -287,6 +287,7 @@ public final class Cups {
 		if (caravans.village(hall) != null) {
 			caravans.setLeader(hall, liveDelegate(level, hall));
 		}
+		CupBouts.payBanked(level, hall); // 28.18: XP its trainers earned at a Cup while the village was away
 		if (!canHost(level, hall)) {
 			return;
 		}
@@ -303,6 +304,9 @@ public final class Cups {
 		}
 		CupThemes.Theme theme = CupThemes.get(cup.theme);
 		if (cup.day >= 0 && cup.closed && now >= (cup.day - 1) * DAY + theme.end()) {
+			if (cup.bout != null) {
+				CupBouts.stop(level, hall, cup); // the day is over (28.19 settles a bout left)
+			}
 			over(cup);
 			theme = CupThemes.get(cup.theme);
 			if (theme == null) {

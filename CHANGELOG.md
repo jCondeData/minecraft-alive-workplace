@@ -16,6 +16,15 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+### Added
+- **Festival Cup bouts between villagers** (28.18, with Cobblemon): on Cup day the bracket is fought at the host's Arena,
+  one bout at a time, a round when the last one is done. Each trainer stands in their box; their Pokémon (a themed team
+  from the same pool as at home) come out one at a time beside the ring, face each other and trade moves with
+  Cobblemon's animations and impacts, damage from the theme's level, the moves and the 18-type chart
+  (`data/aliveworkplace/type_chart.json`); 90 seconds at most. The winner goes on, both trainers earn trainer XP (kept
+  for a far village's Leader until it next loads) and everyone at the Arena reads the result. Bouts with players come
+  with 28.20.
+
 ### Changed
 - **Expansions still being built are off until the release that finishes them** (B76): 0.139.0 switched on parts of
   1.1 to 1.4 that aren't done yet. The Steward (1.1); partner shows, the nurse at the Healing Machine and the Berry

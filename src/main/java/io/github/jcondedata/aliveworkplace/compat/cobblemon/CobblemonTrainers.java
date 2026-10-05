@@ -154,6 +154,55 @@ public final class CobblemonTrainers {
 		return team;
 	}
 
+	// The trainer's team for a Festival Cup (ROADMAP 28.18): the same seeded pool, filtered by the theme's types (none
+	// listed: any), stage (first, final or any) and banned labels, as many as the theme brings, all at the theme's level
+	// (Cobblemon's level adjust), trained by the trainer's tier as at home. A delegate passes its Leader's UUID, so it
+	// fields the same team.
+	public static List<Pokemon> team(UUID trainer, int tier, io.github.jcondedata.aliveworkplace.cup.CupThemes.Theme theme) {
+		int t = Math.max(1, Math.min(5, tier)) - 1;
+		Random random = new Random(trainer.getMostSignificantBits() ^ trainer.getLeastSignificantBits() ^ (31L * t));
+		Set<String> types = new java.util.HashSet<>();
+		theme.types().forEach(type -> types.add(type.toLowerCase(java.util.Locale.ROOT)));
+		List<Species> pool = new ArrayList<>();
+		for (Species species : PokemonSpecies.getImplemented()) {
+			if (fitsTheme(species, theme, types)) {
+				pool.add(species);
+			}
+		}
+		pool.sort(Comparator.comparing(Species::getName));
+		List<Pokemon> team = new ArrayList<>();
+		for (int i = 0; i < theme.bring() && !pool.isEmpty(); i++) {
+			Species species = pool.remove(random.nextInt(pool.size()));
+			Pokemon pokemon = species.create(theme.level());
+			train(pokemon, t, new Random(trainer.getLeastSignificantBits() ^ (7919L * (i + 1)) ^ (131L * t)));
+			pokemon.heal();
+			team.add(pokemon);
+		}
+		return team;
+	}
+
+	// Whether a species may be in a team for this theme: none of its banned labels, the stage it asks for, and (if the
+	// theme lists types) one of them.
+	public static boolean fitsTheme(Species species, io.github.jcondedata.aliveworkplace.cup.CupThemes.Theme theme, Set<String> types) {
+		if (species.getLabels().stream().anyMatch(theme.banned()::contains)) {
+			return false;
+		}
+		boolean basic = species.getPreEvolution() == null;
+		boolean finalForm = species.getEvolutions().isEmpty();
+		if (theme.stage().equals("first") && !basic || theme.stage().equals("final") && !finalForm) {
+			return false;
+		}
+		if (types.isEmpty()) {
+			return true;
+		}
+		for (com.cobblemon.mod.common.api.types.ElementalType type : species.getStandardForm().getTypes()) {
+			if (types.contains(type.getName().toLowerCase(java.util.Locale.ROOT))) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	// Competitive touches for the stronger trainers: better IVs from Journeyman (15+), Expert (25+) and Master
 	// (31); from Expert, EVs in their better attacking stat and Speed, a nature to match (Adamant or Modest)
 	// and a held item suited to that.

@@ -49,7 +49,7 @@ public final class CupData extends SavedData {
 	public record Signup(UUID player, String name, BlockPos village) {
 	}
 
-	/** A bout's result (the bouts come in 28.18): the round (1 = first), the winner and the loser. */
+	/** A bout's result (28.18): the round (1 = first), the winner and the loser. */
 	public record Result(int round, UUID winner, UUID loser) {
 	}
 
@@ -80,6 +80,9 @@ public final class CupData extends SavedData {
 		public final List<Entrant> bracket = new ArrayList<>();
 		public final List<Result> results = new ArrayList<>();
 		public final List<Champion> champions = new ArrayList<>();
+		/** The bout being fought at the ring (28.18), or null. */
+		@Nullable
+		public CupBout bout;
 	}
 
 	private final Map<BlockPos, Cup> cups = new LinkedHashMap<>();
@@ -156,6 +159,9 @@ public final class CupData extends SavedData {
 				champions.add(ct);
 			}
 			t.put("champions", champions);
+			if (cup.bout != null) {
+				t.put("bout", cup.bout.save());
+			}
 			list.add(t);
 		});
 		tag.put("cups", list);
@@ -243,6 +249,9 @@ public final class CupData extends SavedData {
 				if (theme != null) {
 					cup.champions.add(new Champion(Nbt.getLong(ct, "day"), theme, Nbt.getString(ct, "name"), BlockPos.of(Nbt.getLong(ct, "village"))));
 				}
+			}
+			if (t.contains("bout")) { // 28.18; older saves have none
+				cup.bout = CupBout.load(Nbt.getCompound(t, "bout"));
 			}
 		}
 		return data;

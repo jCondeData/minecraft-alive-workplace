@@ -1246,7 +1246,7 @@ here adds a new kind of speed bonus (the new jobs get the partners' existing one
   Trainer, the players' rights and caps), seeding and byes for 3, 5, 8 and 11 entrants, the Leader record written and
   read while the village is unloaded, the Cup state saved and reloaded, a malformed theme file logged and skipped; and
   showcase scene `cup_page`.
-- [ ] **28.18** **Cup bouts between villagers.** A round starts when the last round's bouts are done; a bout between
+- [x] **28.18** (review: pending 2026-10-05) **Cup bouts between villagers.** A round starts when the last round's bouts are done; a bout between
   two villager entrants is an exhibition at the ring:
   - Teams: `CobblemonTrainers.team` gets a themed variant: the same seeded pool, filtered by the theme's types, stage
     and labels, as many as the theme brings, trained by the trainer's tier as now. A delegate (28.19) uses its Leader's

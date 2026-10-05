@@ -65,6 +65,8 @@ public final class AliveWorkplace {
 		io.github.jcondedata.aliveworkplace.hall.Seasons.init();
 		io.github.jcondedata.aliveworkplace.cup.CupThemes.init(); // 28.17: the Festival Cup's themes and its hall page
 		io.github.jcondedata.aliveworkplace.cup.CupPage.init();
+		io.github.jcondedata.aliveworkplace.cup.TypeChart.init(); // 28.18: the bouts' type chart, and the bouts at the ring
+		io.github.jcondedata.aliveworkplace.cup.CupBouts.init();
 		io.github.jcondedata.aliveworkplace.hall.HarvestIdols.init();
 		io.github.jcondedata.aliveworkplace.people.Chatter.init();
 		io.github.jcondedata.aliveworkplace.hall.VillageProtection.init();

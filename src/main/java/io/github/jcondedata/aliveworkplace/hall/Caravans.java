@@ -91,6 +91,8 @@ public final class Caravans {
 		final Map<BlockPos, Map<BlockPos, Half>> halves = new LinkedHashMap<>();
 		/** Each village's Trainer Leader (28.17); none until its hall's round writes one. */
 		final Map<BlockPos, Leader> leaders = new LinkedHashMap<>();
+		/** Trainer XP a village's entrants earned at a Festival Cup while away (28.18), by village and trainer, until the village next loads. */
+		final Map<BlockPos, Map<java.util.UUID, Integer>> banked = new LinkedHashMap<>();
 
 		public static Data get(ServerLevel level) {
 			return level.getDataStorage().computeIfAbsent(new SavedData.Factory<>(Data::new, Data::load, null), NAME);
@@ -167,6 +169,32 @@ public final class Caravans {
 			if (!java.util.Objects.equals(old, leader)) {
 				setDirty();
 			}
+		}
+
+		/** Banks {@code xp} trainer XP on {@code hall}'s entry for its trainer {@code trainer} (28.18), paid when the village next loads. */
+		public void bankXp(BlockPos hall, java.util.UUID trainer, int xp) {
+			if (xp > 0) {
+				banked.computeIfAbsent(hall.immutable(), k -> new LinkedHashMap<>()).merge(trainer, xp, Integer::sum);
+				setDirty();
+			}
+		}
+
+		/** The trainer XP banked on {@code hall}'s entry, by trainer. */
+		public Map<java.util.UUID, Integer> banked(BlockPos hall) {
+			return Map.copyOf(banked.getOrDefault(hall, Map.of()));
+		}
+
+		/** Takes {@code trainer}'s banked XP off {@code hall}'s entry; returns how much there was. */
+		public int takeBanked(BlockPos hall, java.util.UUID trainer) {
+			Map<java.util.UUID, Integer> m = banked.get(hall);
+			Integer xp = m == null ? null : m.remove(trainer);
+			if (m != null && m.isEmpty()) {
+				banked.remove(hall);
+			}
+			if (xp != null) {
+				setDirty();
+			}
+			return xp == null ? 0 : xp;
 		}
 
 		/** {@code hall}'s half of the road towards {@code other}, or null if it has none with a way found yet. */
@@ -297,6 +325,15 @@ public final class Caravans {
 				road.add(t);
 			}
 			tag.put("road", road);
+			ListTag bank = new ListTag();
+			banked.forEach((hall, m) -> m.forEach((id, xp) -> {
+				CompoundTag t = new CompoundTag();
+				t.putLong("hall", hall.asLong());
+				Nbt.putUuid(t, "id", id);
+				t.putInt("xp", xp);
+				bank.add(t);
+			}));
+			tag.put("bankedXp", bank);
 			return tag;
 		}
 
@@ -341,6 +378,13 @@ public final class Caravans {
 					ItemStack.parse(registries, Nbt.compoundAt(gl, j)).ifPresent(goods::add);
 				}
 				data.onTheRoad.add(new Shipment(BlockPos.of(Nbt.getLong(t, "from")), BlockPos.of(Nbt.getLong(t, "to")), goods, Nbt.getLong(t, "arrives")));
+			}
+			ListTag bank = Nbt.getList(tag, "bankedXp", Tag.TAG_COMPOUND); // 28.18; older saves have none
+			for (int i = 0; i < bank.size(); i++) {
+				CompoundTag t = Nbt.compoundAt(bank, i);
+				if (Nbt.hasUuid(t, "id")) {
+					data.banked.computeIfAbsent(BlockPos.of(Nbt.getLong(t, "hall")), k -> new LinkedHashMap<>()).merge(Nbt.getUuid(t, "id"), Nbt.getInt(t, "xp"), Integer::sum);
+				}
 			}
 			return data;
 		}

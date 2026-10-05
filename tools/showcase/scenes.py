@@ -254,6 +254,12 @@ SCENES = [
       "the hall's Cup page shows the Grand Cup's card with its rules, the circuit and who each village sends, and the player signed up", 40,
       [("01_cup_card", "The Cup's card and rules"), ("02_cup_circuit", "The circuit and its Leaders"),
        ("03_cup_champions", "The roll of champions"), ("04_cup_seeds", "The seeds")], cobblemon=True),
+    # The Cup's bouts (ROADMAP 28.18): two Trainer Leaders' Grand Cup bout at the Arena, their Pokémon coming out one at a
+    # time beside the ring and trading moves until one side has none left, and the result read out
+    S("cup_bout", "Trainer Leader", "A Festival Cup bout between villagers",
+      "both trainers' Pokémon came out beside the ring, the bout ended with a winner on the Cup's results, and no Pokémon was left at the ring", 110,
+      [("01_bout_start", "Both Pokémon out"), ("bout_*@middle", "Trading moves"), ("02_bout_result", "The result"),
+       ("03_ring_cleared", "The ring cleared")], cobblemon=True),
     S("leader", "Trainer Leader", "Challenging the Trainer Leader", "the Trainer Leader took the challenge", 90,
       [("01_leader", "At the podium"), ("02_leader_battle", "The battle starts")], cobblemon=True),
     S("tutor", "Move Tutor", "The Move Tutor's lessons", "the lesson screen opened", 60,

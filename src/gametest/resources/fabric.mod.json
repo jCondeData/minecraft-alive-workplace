@@ -145,6 +145,7 @@
 			"io.github.jcondedata.aliveworkplace.test.LegendSlotsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.LegendsHallGameTests",
 			"io.github.jcondedata.aliveworkplace.test.CupGameTests",
+			"io.github.jcondedata.aliveworkplace.test.CupBoutGameTests",
 			"io.github.jcondedata.aliveworkplace.test.PieceLooksGameTests",
 			"io.github.jcondedata.aliveworkplace.test.LegendNeedsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.GiftedGameTests",

@@ -352,6 +352,10 @@ public class ConscriptionGameTests implements FabricGameTest {
 		Leftovers.after(helper, () -> Edicts.setEnabled(edicts));
 		helper.setBlock(HALL, ModBlocks.VILLAGE_HALL);
 		pen(helper, 1, 9);
+		// The raid's one raider, caged out of the farmer's reach: a raid with no raider left ends at the hall's next round
+		// (every 600 ticks, at a time that depends on the clock and where the hall stands), which once fell in this test.
+		Zombie zombie = caged(helper, new BlockPos(11, 2, 4));
+		Leftovers.after(helper, zombie::discard);
 		helper.runAfterDelay(5, () -> {
 			ServerLevel level = helper.getLevel();
 			BlockPos hall = helper.absolutePos(HALL);

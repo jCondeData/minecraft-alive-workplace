@@ -206,7 +206,19 @@ public final class Legends implements ResourceManagerReloadListener {
 			LegendPowers.seen(villager);
 			LegendSlots.onRecord(villager);
 			LegendLook.sparkle(villager);
+			GrandRebuild.tick(villager);
 		}
+	}
+
+	/**
+	 * The Legend {@code id} settled in the village round {@code hall} with their powers working (not on strike), if any:
+	 * who M35's Wonders ask for (the Master Architect, 29.12).
+	 */
+	public static Optional<Villager> in(ServerLevel level, BlockPos hall, ResourceLocation id) {
+		return LegendPowers.settled(level).stream()
+			.filter(a -> a.legend().id().equals(id))
+			.filter(a -> a.data().hall().map(hall::equals).orElseGet(() -> VillageHalls.nearest(level, a.villager().blockPosition()).map(hall::equals).orElse(false)))
+			.map(LegendPowers.Active::villager).findFirst();
 	}
 
 	/**

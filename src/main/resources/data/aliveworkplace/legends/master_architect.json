@@ -1,0 +1,23 @@
+{
+  "rarity": "legendary",
+  "job": "aliveworkplace:builder",
+  "title": "legend.aliveworkplace.master_architect.title",
+  "lore": "legend.aliveworkplace.master_architect.lore",
+  "names": [
+    "legend.aliveworkplace.master_architect.name.1",
+    "legend.aliveworkplace.master_architect.name.2",
+    "legend.aliveworkplace.master_architect.name.3"
+  ],
+  "conditions": [
+    {"type": "rank_at_least", "rank": "town"},
+    {"type": "finished", "styles": 3}
+  ],
+  "arrive": [
+    {"way": "visit", "place": "inn"}
+  ],
+  "needs": {"luxury": "jewels"},
+  "powers": [
+    {"type": "pace", "trades": ["aliveworkplace:builder"], "radius": 32, "factor": 2.0},
+    {"type": "grand_rebuild", "days": 3, "style": "grand"}
+  ]
+}

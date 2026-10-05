@@ -47,6 +47,13 @@ public final class BuilderEvents {
 					return chosen;
 				}
 			}
+			// The Master Architect (29.12), sneak-right-clicked with an empty hand: pauses grander buildings, or carries on.
+			if (player.isShiftKeyDown() && player.getItemInHand(hand).isEmpty() && io.github.jcondedata.aliveworkplace.legend.GrandRebuild.isArchitect(villager)) {
+				if (!level.isClientSide()) {
+					io.github.jcondedata.aliveworkplace.legend.GrandRebuild.togglePause((ServerPlayer) player, villager);
+				}
+				return InteractionResult.SUCCESS;
+			}
 			// A scholar, sneak-right-clicked with an empty hand: the village's research.
 			if (player.isShiftKeyDown() && player.getItemInHand(hand).isEmpty()
 				&& villager.getVillagerData().getProfession() == io.github.jcondedata.aliveworkplace.registry.ModVillagers.SCHOLAR) {

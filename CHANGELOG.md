@@ -17,6 +17,12 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Added
+- **The Master Architect** (29.12), the first Legendary Legend: a guest at the inn once the village is a Town with
+  finished buildings in 3 styles. Builders within 32 blocks of the Architect work twice as fast, and every 3 days the Architect hands the
+  least busy builder the next upgrade of a finished building (homes first), or redraws it in the new **Grand** style
+  (stone-brick plinths, polished andesite and deepslate trim, dark-oak frames, deepslate-tile roofs), rebuilding only
+  the blocks that change. Sneak-right-click the Architect to pause it; a strike stops it. A long blue coat, a brass compass and a
+  rolled drawing.
 - **Legends found in the world** (29.9): standing in a ruined portal, a pillager outpost or a shipwreck, a player whose
   village has earned a Legend found there may come on their camp: a traveller beside the portal (talk to them), a
   prisoner in an iron cage at the tower's foot (break the bars) or a castaway on the nearest beach (hand them a cooked

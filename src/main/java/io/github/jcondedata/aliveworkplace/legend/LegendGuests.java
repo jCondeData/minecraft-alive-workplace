@@ -245,7 +245,7 @@ public final class LegendGuests {
 	}
 
 	/** Whether a guest is staying (one who is gone, unloaded past their last day or no longer a guest, is let go). */
-	private static boolean staying(ServerLevel level, BlockPos hall, VillageHallBlockEntity entity, long today) {
+	static boolean staying(ServerLevel level, BlockPos hall, VillageHallBlockEntity entity, long today) {
 		Optional<Guest> g = entity.legendGuests().guest();
 		if (g.isEmpty()) {
 			return false;
@@ -261,6 +261,12 @@ public final class LegendGuests {
 	/** {@code legend} comes to the village round {@code hall} as a guest, near {@code at}: announced, and staying {@link #STAY_DAYS} days. */
 	@Nullable
 	public static Villager come(ServerLevel level, BlockPos hall, Legend legend, String place, BlockPos at, RandomSource random) {
+		return come(level, hall, legend, at, random, "visit:" + place);
+	}
+
+	/** As {@link #come(ServerLevel, BlockPos, Legend, String, BlockPos, RandomSource)}, with the way they came by ({@code found:<site>}, 29.9). */
+	@Nullable
+	public static Villager come(ServerLevel level, BlockPos hall, Legend legend, BlockPos at, RandomSource random, String way) {
 		VillageHallBlockEntity entity = hall(level, hall);
 		BlockPos spot = standingSpot(level, at);
 		Villager guest = entity == null || spot == null ? null : EntityType.VILLAGER.create(level);
@@ -279,7 +285,7 @@ public final class LegendGuests {
 		long today = Chronicle.day(level);
 		long lastDay = today + STAY_DAYS - 1;
 		ModAttachments.LEGEND.set(guest, new LegendData(legend.id(), name, true, Optional.of(hall), level.getDayTime() / VillageNeeds.DAY, lastDay,
-			Map.of(), -1, -1, "visit:" + place));
+			Map.of(), -1, -1, way));
 		level.addFreshEntityWithPassengers(guest);
 		LegendLook.update(guest);
 		entity.setLegendGuests(entity.legendGuests().withGuest(Optional.of(new Guest(guest.getUUID(), legend.id(), lastDay))).visited(legend.id(), today));
@@ -329,6 +335,7 @@ public final class LegendGuests {
 		if (level.getMoonPhase() == 0 && time >= MIDNIGHT_FROM && time < MIDNIGHT_TO) {
 			chapel(level, hall).ifPresent(at -> visit(level, hall, "chapel", at, level.random));
 		}
+		LegendSites.arrive(level, hall);
 		tend(level, hall);
 	}
 

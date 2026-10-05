@@ -135,8 +135,12 @@ public class EdictBookGameTests implements FabricGameTest {
 			helper.assertTrue(menu.icon(EdictBook.SLOTS[1]).is(Items.PAPER) && menu.icon(EdictBook.SLOTS[2]).is(Items.PAPER), "a Town's free slots");
 			helper.assertTrue(lore(menu.icon(EdictBook.SLOTS[3])).contains(opens[3]), "a Town's fourth: " + lore(menu.icon(EdictBook.SLOTS[3])));
 			helper.assertTrue(lore(menu.icon(EdictBook.HEADER)).contains("1 in force of 3 edicts"), "header: " + lore(menu.icon(EdictBook.HEADER)));
-			// The last row is kept free (glass) for the civic items and guilds.
-			for (int x = 0; x < 9; x++) {
+			// The last row holds the civic items: the Work Horn first (30.11), the Cradle (30.12), the rest kept free (glass) for the others and guilds.
+			helper.assertTrue(menu.icon(EdictBook.HORN).is(ModItems.WORK_HORN), "the last row's horn: " + menu.icon(EdictBook.HORN));
+			// Then the Cradle (30.12): no cradle near a bed in this village.
+			helper.assertTrue(menu.icon(EdictBook.CRADLE).is(io.github.jcondedata.aliveworkplace.registry.ModBlocks.CRADLE.asItem())
+				&& lore(menu.icon(EdictBook.CRADLE)).stream().anyMatch(l -> l.startsWith("No Cradle near a bed")), "the last row's cradle: " + lore(menu.icon(EdictBook.CRADLE)));
+			for (int x = 2; x < 9; x++) {
 				helper.assertTrue(menu.icon(EdictBook.RESERVED_ROW * 9 + x).is(Items.LIGHT_GRAY_STAINED_GLASS_PANE), "the last row, slot " + x);
 			}
 			helper.succeed();

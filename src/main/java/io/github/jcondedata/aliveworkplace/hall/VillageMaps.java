@@ -64,7 +64,7 @@ public final class VillageMaps {
 	public static Optional<Kind> kindOf(ResourceLocation blueprint) {
 		ResourceLocation id = BlueprintStyles.parse(blueprint).map(BlueprintStyles.Styled::base).orElse(blueprint);
 		String path = id.getPath();
-		if (path.startsWith("shapes/") || path.startsWith("camp/")) {
+		if (path.startsWith("shapes/") || path.startsWith("camp/") || path.startsWith("legend/")) {
 			return Optional.empty();
 		}
 		String name = path.substring(path.lastIndexOf('/') + 1).replaceAll("_\\d+$", "");

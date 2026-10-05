@@ -98,6 +98,78 @@ public final class LegendRecord extends SavedData {
 	}
 
 	private final Map<UUID, Entry> entries = new LinkedHashMap<>();
+	/** The structure starts a found Legend's camp was placed at (29.9), each used once: see {@link LegendSites#key}. */
+	private final java.util.Set<String> usedSites = new java.util.LinkedHashSet<>();
+	/** Found Legends waiting at their camp, or freed and on their way to the hall (29.9), by villager. */
+	private final Map<UUID, Captive> captives = new LinkedHashMap<>();
+
+	/**
+	 * A found Legend (29.9): their villager at the camp, which Legend, the site ({@code ruined_portal}, {@code outpost},
+	 * {@code shipwreck}), the hall they'll go to, the dimension, the camp's corners, and the day and game time they were
+	 * freed (-1: not yet). Every field but the first two has a default.
+	 */
+	public record Captive(UUID villager, ResourceLocation id, String site, Optional<BlockPos> hall, String dimension, BlockPos min, BlockPos max,
+						  long freedDay, long freedAt) {
+		public static final Codec<Captive> CODEC = RecordCodecBuilder.create(i -> i.group(
+			UUIDUtil.CODEC.fieldOf("villager").forGetter(Captive::villager),
+			ResourceLocation.CODEC.fieldOf("id").forGetter(Captive::id),
+			Codec.STRING.optionalFieldOf("site", "").forGetter(Captive::site),
+			BlockPos.CODEC.optionalFieldOf("hall").forGetter(Captive::hall),
+			Codec.STRING.optionalFieldOf("dimension", "minecraft:overworld").forGetter(Captive::dimension),
+			BlockPos.CODEC.optionalFieldOf("min", BlockPos.ZERO).forGetter(Captive::min),
+			BlockPos.CODEC.optionalFieldOf("max", BlockPos.ZERO).forGetter(Captive::max),
+			Codec.LONG.optionalFieldOf("freed_day", -1L).forGetter(Captive::freedDay),
+			Codec.LONG.optionalFieldOf("freed_at", -1L).forGetter(Captive::freedAt)
+		).apply(i, Captive::new));
+
+		public boolean freed() {
+			return freedDay >= 0;
+		}
+
+		/** Whether {@code pos} is inside the camp (the cage's bars, for the prisoner). */
+		public boolean holds(BlockPos pos) {
+			return pos.getX() >= min.getX() && pos.getX() <= max.getX() && pos.getY() >= min.getY() && pos.getY() <= max.getY()
+				&& pos.getZ() >= min.getZ() && pos.getZ() <= max.getZ();
+		}
+	}
+
+	/** Whether the structure start {@code key} has had its found Legend. */
+	public boolean siteUsed(String key) {
+		return usedSites.contains(key);
+	}
+
+	/** Marks the structure start {@code key} as used (its camp is placed). */
+	public void useSite(String key) {
+		if (usedSites.add(key)) {
+			setDirty();
+		}
+	}
+
+	/** Forgets a used structure start (tests). */
+	public void forgetSite(String key) {
+		if (usedSites.remove(key)) {
+			setDirty();
+		}
+	}
+
+	public List<Captive> captives() {
+		return List.copyOf(captives.values());
+	}
+
+	public Optional<Captive> captive(UUID villager) {
+		return Optional.ofNullable(captives.get(villager));
+	}
+
+	public void putCaptive(Captive c) {
+		captives.put(c.villager(), c);
+		setDirty();
+	}
+
+	public void forgetCaptive(UUID villager) {
+		if (captives.remove(villager) != null) {
+			setDirty();
+		}
+	}
 
 	public static LegendRecord get(MinecraftServer server) {
 		return server.overworld().getDataStorage().computeIfAbsent(new SavedData.Factory<>(LegendRecord::new, LegendRecord::load, null), NAME);
@@ -215,6 +287,12 @@ public final class LegendRecord extends SavedData {
 	@Override
 	public CompoundTag save(CompoundTag tag, HolderLookup.Provider registries) {
 		Entry.CODEC.listOf().encodeStart(NbtOps.INSTANCE, List.copyOf(entries.values())).result().ifPresent(t -> tag.put("legends", t));
+		if (!usedSites.isEmpty()) {
+			Codec.STRING.listOf().encodeStart(NbtOps.INSTANCE, List.copyOf(usedSites)).result().ifPresent(t -> tag.put("found_sites", t));
+		}
+		if (!captives.isEmpty()) {
+			Captive.CODEC.listOf().encodeStart(NbtOps.INSTANCE, List.copyOf(captives.values())).result().ifPresent(t -> tag.put("captives", t));
+		}
 		return tag;
 	}
 
@@ -225,6 +303,17 @@ public final class LegendRecord extends SavedData {
 			Entry.CODEC.listOf().parse(NbtOps.INSTANCE, list)
 				.resultOrPartial(err -> AliveWorkplace.LOG.warn("Legend record: {}", err))
 				.ifPresent(all -> all.forEach(e -> record.entries.put(e.villager(), e)));
+		}
+		// Both absent in saves from before 29.9.
+		Tag sites = tag.get("found_sites");
+		if (sites != null) {
+			Codec.STRING.listOf().parse(NbtOps.INSTANCE, sites).result().ifPresent(record.usedSites::addAll);
+		}
+		Tag caught = tag.get("captives");
+		if (caught != null) {
+			Captive.CODEC.listOf().parse(NbtOps.INSTANCE, caught)
+				.resultOrPartial(err -> AliveWorkplace.LOG.warn("Legend record, captives: {}", err))
+				.ifPresent(all -> all.forEach(c -> record.captives.put(c.villager(), c)));
 		}
 		return record;
 	}

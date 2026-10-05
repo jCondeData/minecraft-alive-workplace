@@ -54,6 +54,9 @@ public final class Legends implements ResourceManagerReloadListener {
 		LegendSlots.init();
 		LegendLook.init();
 		LegendsPage.init();
+		Platform.get().onServerTick(LegendSites::tick);
+		Platform.get().allowBreakBlock((level, player, pos, state) -> !(level instanceof net.minecraft.server.level.ServerLevel server)
+			|| LegendSites.onBreak(server, player, pos, state));
 	}
 
 	public static Collection<Legend> all() {

@@ -2,6 +2,7 @@
   "replace": false,
   "values": [
     "aliveworkplace:builders_bench",
+    "aliveworkplace:cradle",
     "aliveworkplace:blueprint_table",
     "aliveworkplace:miners_bench",
     "aliveworkplace:chopping_block",

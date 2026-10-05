@@ -696,8 +696,37 @@ def village_hall():
     return [top.save(block("village_hall_top")), side.save(block("village_hall_side")),
             front.save(block("village_hall_front"))]
 
+# --- Cradle (30.12) --------------------------------------------------------------------------------------------------
+def cradle():
+    """A wooden cradle on rockers with a wool blanket, drawn like vanilla's beds and lectern. Wood: oak planks laid
+    across, framed in the darkest shade (a built piece); end: the same with a heart cut in the headboard; rocker: a
+    darker oak runner with its grain along it; blanket: white wool in small clusters with a red band at either end and a
+    running stitch inside each band, like the bed's cover."""
+    wool = P("wool_white")
+    red = P("wool_red")
+    wood = bench_face(301)
+    end = bench_face(302)
+    end.paste(grid("""
+        .00.00.
+        0333330
+        0333330
+        .03330.
+        ..030..
+        ...0...
+    """, ramp=OAK), 5, 4)
+    rocker = planks_tile([OAK[0], OAK[1], OAK[2], OAK[2], OAK[3]], boards=4, seed=303)
+    blanket = clusters([wool[1], wool[3], wool[4], wool[5]], seed=304, base=wool[4], size=(1, 2), density=0.35)
+    for x in range(16):
+        for y, c in ((0, red[1]), (1, red[3]), (2, red[0]), (13, red[1]), (14, red[3]), (15, red[0])):
+            blanket.put(x, y, c)
+        if x % 3 == 1:
+            blanket.put(x, 4, wool[0])
+            blanket.put(x, 11, wool[0])
+    return [wood.save(block("cradle_wood")), end.save(block("cradle_end")), rocker.save(block("cradle_rocker")),
+            blanket.save(block("cradle_blanket"))]
 
-DRAW = [sieve, storehouse, teachers_desk, tinkers_bench, trade_board, training_dummy, training_post, travel_post,
+
+DRAW = [cradle, sieve, storehouse, teachers_desk, tinkers_bench, trade_board, training_dummy, training_post, travel_post,
         tutors_desk, undertakers_table, village_hall]
 
 if __name__ == "__main__":

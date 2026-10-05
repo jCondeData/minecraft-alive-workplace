@@ -349,6 +349,11 @@ public final class ModVillagers {
 	public static final ResourceKey<PoiType> VILLAGE_HALL_POI = ResourceKey.create(Registries.POINT_OF_INTEREST_TYPE, VILLAGE_HALL_ID);
 	public static final PoiType VILLAGE_HALL_POI_TYPE = Platform.get().registerPoi(VILLAGE_HALL_ID, 1, 1, ModBlocks.VILLAGE_HALL);
 
+	/** The Cradle (30.12): a point of interest nobody claims, so the hall finds its village's cradles without scanning. */
+	public static final ResourceLocation CRADLE_ID = AliveWorkplace.id("cradle");
+	public static final ResourceKey<PoiType> CRADLE_POI = ResourceKey.create(Registries.POINT_OF_INTEREST_TYPE, CRADLE_ID);
+	public static final PoiType CRADLE_POI_TYPE = Platform.get().registerPoi(CRADLE_ID, 0, 1, ModBlocks.CRADLE);
+
 	/** The Steward (27.5): plans the village from its hall, appointed with the City Plan. */
 	public static final VillagerProfession STEWARD = Registry.register(
 		BuiltInRegistries.VILLAGER_PROFESSION,

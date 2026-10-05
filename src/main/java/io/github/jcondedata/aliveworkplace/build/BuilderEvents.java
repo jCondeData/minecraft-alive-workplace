@@ -18,6 +18,11 @@ public final class BuilderEvents {
 			if (hand != InteractionHand.MAIN_HAND || player.isSpectator() || !(entity instanceof Villager villager)) {
 				return InteractionResult.PASS;
 			}
+			// A Legend found at their camp (29.9): the traveller talks, the castaway takes a meal, the prisoner's bars hold.
+			if (io.github.jcondedata.aliveworkplace.legend.LegendSites.isCaptive(villager)) {
+				return level.isClientSide() ? InteractionResult.SUCCESS
+					: io.github.jcondedata.aliveworkplace.legend.LegendSites.use((ServerPlayer) player, villager, hand);
+			}
 			// A Legend visiting as a guest (29.8): their terms. They take no job, so nothing else is done with them.
 			if (io.github.jcondedata.aliveworkplace.legend.LegendGuests.isGuest(villager)) {
 				if (!level.isClientSide()) {

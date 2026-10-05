@@ -71,6 +71,8 @@ public final class WorkplaceConfig {
 	public boolean legends = true;
 	/** A settled Legend needs a home of their own, their luxury and a happy village, and strikes without them. */
 	public boolean legendNeeds = true;
+	/** Legends can be found at ruined portals, pillager outposts and shipwrecks (a camp set down for a player who qualifies). */
+	public boolean legendSites = true;
 	/** One villager in this many is Gifted, with a rare trait (0: nobody is; nothing is erased). */
 	public int giftedChance = 30;
 	/**
@@ -107,6 +109,10 @@ public final class WorkplaceConfig {
 	public int maxWorkPace = 200;
 	/** Villages' owners proclaim edicts at the hall (off: none can be, and those in force do nothing but stay saved). */
 	public boolean villageEdicts = true;
+	/** The Work Horn calls a rush when blown in a village (ROADMAP 30.11). Off: it only sounds. */
+	public boolean workHorns = true;
+	/** A Cradle near a bed makes a nursery village (ROADMAP 30.12): children grow up twice as fast, one more baby a day. Off: cradles are furniture. */
+	public boolean cradles = true;
 	/** Days an edict stays in force before it can be lifted. */
 	public int edictMinDays = 3;
 	/** Villagers at a composter can be made Berry Breeders with a Cobblemon berry (ROADMAP 28.9). Off: no Berry Breeder job. */
@@ -315,6 +321,8 @@ public final class WorkplaceConfig {
 		io.github.jcondedata.aliveworkplace.work.Pace.MAX_PERCENT = maxWorkPace;
 		io.github.jcondedata.aliveworkplace.hall.Edicts.setEnabled(villageEdicts);
 		io.github.jcondedata.aliveworkplace.hall.Edicts.MIN_DAYS = edictMinDays;
+		io.github.jcondedata.aliveworkplace.hall.WorkHorn.ENABLED = workHorns;
+		io.github.jcondedata.aliveworkplace.hall.Cradles.ENABLED = cradles;
 		io.github.jcondedata.aliveworkplace.explore.ExplorerWork.RANGE = explorerRange;
 		PostOffice.ROUND = postmanRange;
 		// Gametests run side by side: workers sharing chests across them would mix the tests up. The village tests
@@ -352,6 +360,7 @@ public final class WorkplaceConfig {
 		io.github.jcondedata.aliveworkplace.hall.Treasury.ENABLED = villageTreasury && System.getProperty("fabric-api.gametest") == null;
 		io.github.jcondedata.aliveworkplace.hall.VillageProtection.ENABLED = villageProtection;
 		io.github.jcondedata.aliveworkplace.legend.Legends.ENABLED = legends;
+		io.github.jcondedata.aliveworkplace.legend.LegendSites.ENABLED = legendSites;
 		io.github.jcondedata.aliveworkplace.legend.Gifted.CHANCE = giftedChance;
 		// Off in gametests (a round could start or end a strike a test staged); the needs tests turn it on.
 		io.github.jcondedata.aliveworkplace.legend.LegendNeeds.ENABLED = legendNeeds && System.getProperty("fabric-api.gametest") == null;

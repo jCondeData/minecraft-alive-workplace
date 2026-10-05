@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "aliveworkplace:block/cradle"
+    },
+    "facing=east": {
+      "model": "aliveworkplace:block/cradle",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "aliveworkplace:block/cradle",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "aliveworkplace:block/cradle",
+      "y": 270
+    }
+  }
+}

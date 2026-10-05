@@ -43,6 +43,11 @@ public final class ModBlocks {
 				(id, inventory, pos) -> new io.github.jcondedata.aliveworkplace.mail.MailboxMenu(id, inventory, pos),
 				net.minecraft.core.BlockPos.STREAM_CODEC));
 
+	/** The Village Hall's screen (ROADMAP 30.4a): a ChoiceMenu on the server, drawn by the client's own hall screen. */
+	public static final net.minecraft.world.inventory.MenuType<io.github.jcondedata.aliveworkplace.work.ChoiceView> VILLAGE_HALL_MENU =
+		Registry.register(BuiltInRegistries.MENU, AliveWorkplace.id("village_hall"),
+			new net.minecraft.world.inventory.MenuType<>(io.github.jcondedata.aliveworkplace.work.ChoiceView::new, net.minecraft.world.flag.FeatureFlags.VANILLA_SET));
+
 	/** Workstation for the Postman profession: they collect and deliver mail within 64 blocks of it. */
 	public static final BuildersBenchBlock POSTAL_DESK = Reg.block("postal_desk", BuildersBenchBlock::new, BlockBehaviour.Properties.ofFullCopy(Blocks.CARTOGRAPHY_TABLE));
 
@@ -59,6 +64,9 @@ public final class ModBlocks {
 		Reg.blockEntity("shop_counter", io.github.jcondedata.aliveworkplace.shop.ShopCounterBlockEntity::new, SHOP_COUNTER);
 
 	/** A stop on the travel network, and the Ferryman's workstation. */
+	/** A cradle near a bed makes a nursery village (ROADMAP 30.12). */
+	public static final io.github.jcondedata.aliveworkplace.hall.CradleBlock CRADLE = Reg.block("cradle", io.github.jcondedata.aliveworkplace.hall.CradleBlock::new,
+		BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_PLANKS).strength(1.0f).noOcclusion());
 	public static final io.github.jcondedata.aliveworkplace.travel.TravelPostBlock TRAVEL_POST = Reg.block("travel_post", io.github.jcondedata.aliveworkplace.travel.TravelPostBlock::new, BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_PLANKS));
 
 	/** Workstation for the Bard profession: they play the music discs from the chests nearby. */

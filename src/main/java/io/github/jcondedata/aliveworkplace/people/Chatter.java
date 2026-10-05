@@ -47,7 +47,8 @@ public final class Chatter {
 		Map.entry("child", 2), Map.entry("ill", 2), Map.entry("hungry", 2), Map.entry("fed", 2), Map.entry("no_bed", 2),
 		Map.entry("bed", 1), Map.entry("job", 2), Map.entry("no_job", 2), Map.entry("varied_diet", 1), Map.entry("same_food", 2),
 		Map.entry("decorations", 2), Map.entry("company", 1), Map.entry("cheerful", 1),
-		Map.entry("married", 2), Map.entry("courting", 2), Map.entry("mourning", 1));
+		Map.entry("married", 2), Map.entry("courting", 2), Map.entry("mourning", 1),
+		Map.entry("legend_here", 2), Map.entry("legend_guest", 2), Map.entry("legend_strike", 1), Map.entry("legend_self", 1));
 	private static final Map<UUID, Long> LAST = new HashMap<>();
 
 	public static void init() {
@@ -124,6 +125,7 @@ public final class Chatter {
 		if (Sickness.isIll(villager)) {
 			news.add("ill");
 		}
+		news.addAll(legendTopics(level, villager, hall));
 		topics.addAll(news);
 		topics.addAll(news);
 		Moods.Mood mood = Moods.of(villager);
@@ -137,6 +139,42 @@ public final class Chatter {
 		}
 		topics.add("hello");
 		return topics;
+	}
+
+	/**
+	 * Talk of the village's Legends and guests (29.4): a Legend speaks of their own title, others of the Legend living
+	 * here, a Legend visiting as a guest, or one on strike.
+	 */
+	static List<String> legendTopics(ServerLevel level, Villager villager, BlockPos hall) {
+		List<String> out = new ArrayList<>();
+		if (io.github.jcondedata.aliveworkplace.legend.Legends.of(villager).isPresent()) {
+			out.add("legend_self");
+			return out;
+		}
+		for (Villager legend : io.github.jcondedata.aliveworkplace.legend.LegendsPage.villagers(level, hall)) {
+			io.github.jcondedata.aliveworkplace.legend.LegendData data = io.github.jcondedata.aliveworkplace.registry.ModAttachments.LEGEND.get(legend);
+			String topic = data.guest() ? "legend_guest" : data.onStrike() ? "legend_strike" : "legend_here";
+			if (!out.contains(topic)) {
+				out.add(topic);
+			}
+		}
+		return out;
+	}
+
+	/** Who a Legend topic is about: "Ada, Master Architect" (the speaker's own title for {@code legend_self}). */
+	static Component legendArg(ServerLevel level, Villager villager, BlockPos hall, String topic) {
+		if (topic.equals("legend_self")) {
+			return io.github.jcondedata.aliveworkplace.legend.Legends.of(villager).map(l -> l.titleText()).orElse(Component.empty());
+		}
+		for (Villager legend : io.github.jcondedata.aliveworkplace.legend.LegendsPage.villagers(level, hall)) {
+			io.github.jcondedata.aliveworkplace.legend.LegendData data = io.github.jcondedata.aliveworkplace.registry.ModAttachments.LEGEND.get(legend);
+			String about = data.guest() ? "legend_guest" : data.onStrike() ? "legend_strike" : "legend_here";
+			if (about.equals(topic)) {
+				Component name = io.github.jcondedata.aliveworkplace.legend.LegendText.hallName(legend);
+				return name != null ? name : legend.getDisplayName();
+			}
+		}
+		return Component.empty();
 	}
 
 	private static Optional<String> topicOf(Component reason) {
@@ -160,6 +198,7 @@ public final class Chatter {
 			case "hello" -> player.getDisplayName();
 			case "bandits" -> BanditCamps.near(level, hall).map(camp -> VillageHallScreen.where(hall, camp.pos())).orElse(Component.empty());
 			case "married", "courting" -> Couples.partner(villager) != null ? Couples.partner(villager).name() : Component.empty();
+			case "legend_here", "legend_guest", "legend_strike", "legend_self" -> legendArg(level, villager, hall, topic);
 			default -> "";
 		};
 		return Component.translatable("chatter.aliveworkplace." + topic + "." + variant, arg).withStyle(ChatFormatting.ITALIC);

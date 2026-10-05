@@ -150,6 +150,7 @@ public final class VillageNeeds {
 			}
 			io.github.jcondedata.aliveworkplace.people.Sickness.round(level, villager, (int) (DAY / CHECK_EVERY));
 			io.github.jcondedata.aliveworkplace.people.Families.round(level, hall, villager);
+			io.github.jcondedata.aliveworkplace.legend.Gifted.keep(villager);
 			Long meal = ModAttachments.LAST_MEAL.get(villager);
 			if (meal == null) {
 				ModAttachments.LAST_MEAL.set(villager, now); // new to the village: they ate before they came
@@ -256,7 +257,7 @@ public final class VillageNeeds {
 	}
 
 	/** The store: the chests by the village's kitchens (smokers, old Kitchen Stoves), then by its Storehouses. */
-	static List<BlockPos> store(ServerLevel level, BlockPos hall) {
+	public static List<BlockPos> store(ServerLevel level, BlockPos hall) {
 		Set<BlockPos> chests = new LinkedHashSet<>();
 		PoiManager poi = level.getPoiManager();
 		// Kitchens: smokers, where chefs cook since 21.1a (and butchers smoke), and old Kitchen Stoves.

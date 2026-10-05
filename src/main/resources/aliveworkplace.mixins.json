@@ -9,6 +9,7 @@
 		"BrewingStandAccessor",
 		"EntityAccessor",
 		"ExplosionMixin",
+		"IronWillMixin",
 		"PlayerListMixin",
 		"PoiManagerMixin",
 		"ServerLevelMixin",

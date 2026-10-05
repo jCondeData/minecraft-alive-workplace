@@ -245,6 +245,19 @@ SCENES = [
     # Legends (ROADMAP 29.3): a Mythic Legend announced to the whole server in gold, and the chronicle's nether-star line
     S("legend_announce", "Legends", "A Mythic Legend is announced", "a Mythic Legend's coming was announced in chat and written in the chronicle", 45,
       [("01_legend_chat", "The announcement"), ("02_legend_chronicle", "The chronicle line")]),
+    # Legends on the hall (ROADMAP 29.4): a Legend in the stand-in outfit with a gold name and the sparkle, the hall's
+    # list with her first, and the Legends page's cards at GUI scales 2 and 4
+    S("legends_hall", "Legends", "Legends on the hall, and how they look",
+      "a Legend in her outfit with a gold name and sparkle, first on the hall's list, and the Legends page's cards", 60,
+      [("01_legend_look", "A Legend: outfit, gold name, sparkle"), ("03_legend_list", "First on the hall's list"),
+       ("04_legends_page_scale2", "The Legends page, GUI scale 2"), ("05_legends_page_scale4", "The Legends page, GUI scale 4")]),
+    # Needs and strikes (ROADMAP 29.5): a Legend with no home of her own on strike, picketing by the hall under a red line
+    # Gifted villagers (ROADMAP 29.6): Wren, a Night Owl builder, building a market stall at midnight, and her gift in
+    # gold on the hall's list
+    S("gifted", "Legends", "A Night Owl builds by moonlight", "a Night Owl builder placed blocks at midnight, and the hall's list shows her gift in gold", 60,
+      [("01_night_owl_building", "Building at midnight"), ("04_night_owl_building", "Still at it"),
+       ("05_gifted_list", "The hall's list: her gift in gold")]),
+    job("legend_strike", "Legends", "A Legend on strike", "a Legend on strike left her stonecutter and picketed by the Village Hall under a red line", 120),
     S("edicts", "Village Hall", "The Book of Edicts",
       "the Book of Edicts opened from the hall's lectern button, with Long Shifts in force, at GUI scales 2 and 4", 45,
       [("01_edicts_book", "Long Shifts in force, two free slots, one locked for a City"), ("02_edicts_scale4", "At GUI scale 4")]),

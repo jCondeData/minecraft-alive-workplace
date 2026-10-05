@@ -312,6 +312,34 @@ blocks and bring the villager back — job, level, trades and name as they were.
 on the Storehouse's requests board. A villager a zombie turns into a zombie villager leaves no grave (cure them
 instead). The Village Hall counts the graves.
 
+## Legends
+
+Now and then a village that has earned it gains a **Legend**: one named villager, a Master of their trade, with powers
+that change what the village can do. A Rare Legend comes once to each village, a Legendary one once to each world, and
+a Mythic one as often as the villages' ranks allow (a Town holds one, a City two). Legends wear their own outfit over
+their trade's, their name shows in gold over their head, and they give off a soft sparkle every few seconds.
+
+Nothing about them is secret. The Village Hall's **Legends page** (the nether star in the page row) lists the
+village's own Legends first, then every other Legend as a card: its rarity, how it comes ("Visits the inn", "Found at
+a ruined portal"), each thing the village must have with how far it has got ("Kinds of meal in the store: 5 of 8"),
+the luxury it likes, its powers, "lives in Thornholm" for a Legendary already living somewhere else, and the Mythic
+line ("Mythic Legends: 0 of 1, as a Town"). On the hall's list a Legend comes first, "Ada Stonewright, Master
+Architect" in gold, with their rarity, each power on a line and each of their needs (a home of their own, their
+luxury, a happy village) with a tick or a cross; a Legend on strike shows it in red. "What next?" says when a Legend
+lacks only one thing, and villagers chat about their Legends and the Legends who visit.
+
+A settled Legend has needs, checked once a day: **a home of their own** (their bed in a finished tier III building that
+nobody but their spouse also sleeps in), **their luxury** once a week (wine, jewels, books or fine clothes, which they
+take from a chest in their home or else the village store; for now honey bottles, amethyst shards and emeralds, books,
+and leather armour, through the `aliveworkplace:luxury/<kind>` item tags; it lifts their mood 10) and **a happy village**
+(the grown-ups' average mood 60 or more, or wellbeing 60% with moods off). Three days after settling, a need unmet two
+days running starts a **strike**: their powers stop, their trade's work stops, they picket by the Village Hall by day
+with "On strike: a home of my own" over their head in red, and the hall and chronicle say so. The day every need is
+met they go back to work. Legends never leave, strike or not. `legendNeeds` in the config turns needs and strikes off.
+
+`legends` in the config switches them off: none come, and those already settled stay as ordinary Masters of their
+trade. Each Legend that ships adds its paragraph below.
+
 ## All the jobs at a glance
 **Vanilla jobs work as in vanilla**: place their block near a villager without a job and they take it. Most of our jobs
 **share a vanilla block** with a vanilla job, and a jobless villager by it still takes the vanilla job. For one of ours,

@@ -659,8 +659,50 @@ def legend():
     return t.save_profession(ASSETS, "legend", hat="partial")
 
 
+def legend_placeholder():
+    """The Legend outfit layer's stand-in (29.4), drawn over any trade's outfit until a Legend has its own
+    (textures/entity/villager/legend/<id>.png): a gold circlet with a blue stone round the brow (on the head, so it
+    shows under every job's hat rule), and a wine-red cape from the shoulders down the back with a gold hem and a gold
+    clasp at the collar. The front stays clear so the trade's own outfit and badge show through."""
+    t = vg.VillagerTexture()
+    wine = vg.cloth("#6e2434")
+    for side in SIDES:                                   # the circlet: a gold band at the brow, just under any hat's
+        f = t.face("head", side)                         # brim (head rows 0..3 sit under the hat layer's crown)
+        for x in range(f.w):
+            f.put(x, 4, GOLD[2] if side in ("front", "west") else GOLD[1])
+    hf = t.face("head", "front")
+    paint(hf, ((2, 4), (5, 4)), GOLD[3])                 # the setting, and the blue stone in it
+    paint(hf, ((3, 4),), "#5fb3c9")
+    paint(hf, ((4, 4),), "#3c7f95")
+    vg.robe(t, wine, length=18, sleeves_too=False, body_too=False, noise=0)
+    jf = t.face("jacket", "front")
+    jf.clear(rows=range(2, 20))                          # the front shows the trade's outfit
+    jf.clear(rows=range(0, 2), cols=range(3, 5))
+    paint(jf, ((0, 0), (1, 0), (6, 0), (7, 0)), GOLD[2])  # the cape's gold-edged collar on the shoulders
+    paint(jf, ((0, 1), (1, 1), (6, 1), (7, 1)), wine[2])
+    paint(jf, ((2, 0), (5, 0)), GOLD[3])                 # the clasp's two ends
+    paint(jf, ((2, 1), (5, 1)), GOLD[1])
+    for side, back_cols in (("west", range(0, 3)), ("east", range(3, 6))):
+        f = t.face("jacket", side)
+        keep = set(back_cols)
+        f.clear(rows=range(3, 20), cols=[x for x in range(f.w) if x not in keep])
+        f.clear(rows=range(18, 20))
+        for x in back_cols:                              # the hem where the cape wraps round
+            f.put(x, 17, GOLD[1])
+    jb = t.face("jacket", "back")
+    jb.clear(rows=range(18, 20))
+    for x in range(jb.w):                                # the gold hem along the bottom of the cape
+        jb.put(x, 17, GOLD[1])
+        jb.put(x, 16, GOLD[2])
+    paint(jb, ((3, 0), (4, 0)), GOLD[2])                 # the clasp's chain over the shoulders
+    t.face("jacket", "bottom").clear()
+    path = ASSETS / "textures" / "entity" / "villager" / "legend" / "placeholder.png"
+    t.save(path)
+    return [path]
+
+
 DRAW = [orchard_keeper, berry_breeder, camp_cook, habitat_keeper, gem_grower, pokemon_trader, porter, postman, rancher, scholar, shopkeeper, sifter, teacher, tinkerer,
-        trainer, trainer_leader, tutor, undertaker, steward, legend]
+        trainer, trainer_leader, tutor, undertaker, steward, legend, legend_placeholder]
 
 if __name__ == "__main__":
     run(DRAW)

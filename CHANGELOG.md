@@ -17,6 +17,27 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Added
+- **Gifted villagers** (29.6): about one villager in 30 has a rare gift as well as their traits, shown in gold on the
+  Village Hall's list. Prodigy learns three times as fast; Iron Will never panics and keeps working through raids and
+  the bell; Silver Tongue's trades are 20% cheaper; a Night Owl works from dusk to dawn and sleeps from mid-morning to
+  mid-afternoon (builders and miners too). A Gifted villager sparkles when they level up, and the chronicle notes one
+  who joins from the inn or grows up. Gifts are data (`data/<ns>/gifted/<id>.json`); config `giftedChance` (30; 0: none).
+- **Legends' needs and strikes** (29.5): once a day the Village Hall checks what each settled Legend needs: a home of
+  their own (their bed in a finished tier III building, shared with nobody but their spouse), their luxury once a week
+  (wine, jewels, books or fine clothes, taken from a chest in their home or else the village store, +10 mood; for now
+  honey bottles, amethyst shards and emeralds, books, and leather armour, through the `aliveworkplace:luxury/*` item
+  tags) and a happy village (average mood 60, or wellbeing 60% with moods off). After a 3-day grace, a need unmet two
+  days running starts a strike: their powers stop, their trade's work stops, they picket by the hall by day under a red
+  "On strike: a home of my own" line, and the hall, the Legends page and the chronicle say so. The day every need is
+  met they go back to work. Legends never leave: no inn departure, no despawning, and the hall's call-home passes them
+  by. `legendNeeds` in the config turns it off.
+- **Legends on the hall, and how they look** (29.4): the Village Hall has a Legends page (a nether star in the page
+  row): the village's own Legends first, then every Legend as a card with its rarity, how it comes, each condition with
+  the village's progress, the luxury it likes, its powers, "lives in ..." for a Legendary taken elsewhere and the Mythic
+  line. The hall's list puts Legends first, name and title in gold, with their powers, needs (tick or cross) and any
+  strike in red. "What next?" names a Legend one condition short, villagers chat about Legends and guests, and Legends
+  wear an outfit over their trade's (a gold circlet and wine-red cape until each has its own), sparkle every 10 seconds
+  and have their name in gold over their head. README has a new Legends section.
 - **Legends: rarities, caps and the server's record** (29.3): the server keeps a saved record of every Legend. A Rare
   Legend comes once to each village, a Legendary one once to each world, and a village holds Mythic ones by its rank
   (`mythicLegendCap` in the config file, default Hamlet 0, Village 0, Town 1, City 2). Rare and Legendary arrivals are
@@ -254,6 +275,8 @@ asks for the steps, `latest.log` and any crash report).
   partners than before.**
 
 ### Fixed
+- Berry Breeders count their Pokémon partners once: two partners make mulching take 70% of the usual time, not 49%,
+  so a partnered breeder stays under the `maxWorkPace` cap like every other worker (B53).
 - A builder whose path leads somewhere it can't actually walk (under a trapdoor flower box, up into a loft) now hops
   there after two seconds standing still instead of five, so a crew's last blocks no longer drag on.
 - **Helpers really speed a build up now**: two builders on one build take about half the time of one, four about a

@@ -1,5 +1,6 @@
 package io.github.jcondedata.aliveworkplace.compat;
 
+import io.github.jcondedata.aliveworkplace.berry.BerryBreederWork;
 import io.github.jcondedata.aliveworkplace.build.BuilderLevels;
 import io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity;
 import io.github.jcondedata.aliveworkplace.hall.VillageHalls;
@@ -33,7 +34,7 @@ import net.minecraft.world.entity.npc.Villager;
 /**
  * One pace, one cap (ROADMAP 30.2) with real Pokémon partners: every bonus there is stacks to exactly twice the pace
  * (three times with {@code maxWorkPace} 300), an ill worker works at exactly half of that, and a sifter's partners
- * count once.
+ * count once, and so do a Berry Breeder's.
  */
 public class PaceCompatTests implements net.fabricmc.fabric.api.gametest.v1.FabricGameTest {
 	private static final String AREA = CompatGameTests.AREA;
@@ -139,6 +140,30 @@ public class PaceCompatTests implements net.fabricmc.fabric.api.gametest.v1.Fabr
 			helper.assertTrue(Partners.helpers(sifter).size() == 2, "partners: " + Partners.helpers(sifter));
 			helper.assertTrue(SifterWork.siftTicks(sifter) == 42, "two partners: " + SifterWork.siftTicks(sifter) + " (49% would be 29)");
 			sifter.discard();
+			helper.succeed();
+		});
+	}
+
+	/** A Berry Breeder with a Grass and a Bug partner mulches in 70% of the usual time (14 of 20 ticks), not 49% (9) as when they counted twice (B53). */
+	//$ gametest_ticks AREA '200'
+	@GameTest(template = AREA, timeoutTicks = 200)
+	public void aBerryBreederWithTwoPartnersTakesSeventyPercent(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		BlockPos composter = new BlockPos(2, 2, 2);
+		helper.setBlock(composter, net.minecraft.world.level.block.Blocks.COMPOSTER);
+		Villager breeder = helper.spawn(EntityType.VILLAGER, new BlockPos(3, 2, 3));
+		breeder.setNoAi(true);
+		Jobs.employ(level, breeder, helper.absolutePos(composter), net.minecraft.world.entity.ai.village.poi.PoiTypes.FARMER, ModVillagers.BERRY_BREEDER);
+		helper.assertTrue(BerryBreederWork.mulchTicks(breeder) == 20, "no partners: " + BerryBreederWork.mulchTicks(breeder));
+		BlockPos pasture = PastureCompatTests.pasture(helper, new BlockPos(10, 2, 10));
+		ServerPlayer player = helper.makeMockServerPlayerInLevel();
+		PastureCompatTests.pastured(helper, pasture, player, "bulbasaur", Direction.NORTH);
+		PastureCompatTests.pastured(helper, pasture, player, "caterpie", Direction.WEST);
+		helper.runAfterDelay(10, () -> {
+			Partners.forget(breeder);
+			helper.assertTrue(Partners.helpers(breeder).size() == 2, "partners: " + Partners.helpers(breeder));
+			helper.assertTrue(BerryBreederWork.mulchTicks(breeder) == 14, "two partners: " + BerryBreederWork.mulchTicks(breeder) + " (49% would be 9)");
+			breeder.discard();
 			helper.succeed();
 		});
 	}

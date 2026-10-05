@@ -122,6 +122,8 @@ public final class VillageHallScreen {
 		VillageHalls.Census census = VillageHalls.census(level, hall);
 		List<Villager> people = new ArrayList<>(census.workers());
 		people.addAll(census.jobless());
+		// Legends come first (29.4); the sort is stable, so everyone else keeps their order.
+		people.sort(java.util.Comparator.comparing(v -> io.github.jcondedata.aliveworkplace.legend.Legends.of(v).isEmpty()));
 		int pages = Math.max(1, (people.size() + PER_PAGE - 1) / PER_PAGE);
 		int shown = Math.min(page, pages - 1);
 
@@ -289,7 +291,7 @@ public final class VillageHallScreen {
 		pageRow(menu, level, hall);
 		int slot = FIRST_PERSON;
 		for (Villager villager : people.subList(shown * PER_PAGE, Math.min(people.size(), (shown + 1) * PER_PAGE))) {
-			boolean jobless = census.jobless().contains(villager);
+			boolean jobless = census.jobless().contains(villager) && io.github.jcondedata.aliveworkplace.legend.Legends.of(villager).isEmpty();
 			if (slot == PREVIOUS) {
 				slot++;
 			}
@@ -580,8 +582,14 @@ public final class VillageHallScreen {
 		Component name = villager.hasCustomName() ? villager.getDisplayName()
 			: working ? Component.translatable("entity.minecraft.villager." + villager.getVillagerData().getProfession().name())
 			: Component.translatable("screen.aliveworkplace.hall.no_job");
-		icon.set(DataComponents.CUSTOM_NAME, plain(name, working ? ChatFormatting.WHITE : ChatFormatting.GRAY));
+		Component legendName = io.github.jcondedata.aliveworkplace.legend.LegendText.hallName(villager);
+		icon.set(DataComponents.CUSTOM_NAME, legendName != null ? plain(legendName, ChatFormatting.GOLD)
+			: plain(name, working ? ChatFormatting.WHITE : ChatFormatting.GRAY));
 		List<Component> lore = new ArrayList<>();
+		// A Legend (29.4): rarity, each power on a line, each need with a tick or a cross, a strike in red.
+		for (Component legendLine : io.github.jcondedata.aliveworkplace.legend.LegendText.hallLines(villager)) {
+			lore.add(plain(legendLine, ChatFormatting.GOLD));
+		}
 		if (villager.hasCustomName() && working) {
 			lore.add(line(Component.translatable("entity.minecraft.villager." + villager.getVillagerData().getProfession().name()), ChatFormatting.GRAY));
 		}
@@ -596,6 +604,11 @@ public final class VillageHallScreen {
 					.append(Component.translatable("screen.aliveworkplace.hall.trait", traits.get(i).title(), traits.get(i).description()));
 			}
 			lore.add(line(Component.translatable("screen.aliveworkplace.hall.traits", list), ChatFormatting.AQUA));
+		}
+		// A Gifted villager's gift, in gold under the traits (29.6).
+		Component gift = io.github.jcondedata.aliveworkplace.legend.Gifted.hallLine(villager);
+		if (gift != null) {
+			lore.add(line(gift, ChatFormatting.GOLD));
 		}
 		for (Component doing : doing(level, villager)) {
 			lore.add(plain(doing, ChatFormatting.WHITE));
@@ -654,7 +667,8 @@ public final class VillageHallScreen {
 			lore.add(line(Component.translatable("screen.aliveworkplace.hall.waiting_for", waitingList(waiting)), ChatFormatting.YELLOW));
 		}
 		lore.add(line(where(hall, villager), ChatFormatting.DARK_GRAY));
-		boolean canBeGivenAJob = !working && !villager.isBaby() && villager.getVillagerData().getProfession() != net.minecraft.world.entity.npc.VillagerProfession.NITWIT;
+		boolean canBeGivenAJob = !working && !villager.isBaby() && villager.getVillagerData().getProfession() != net.minecraft.world.entity.npc.VillagerProfession.NITWIT
+			&& legendName == null;
 		lore.add(line(canBeGivenAJob ? "screen.aliveworkplace.hall.jobless_click" : "screen.aliveworkplace.hall.click_to_find",
 			canBeGivenAJob ? ChatFormatting.GREEN : ChatFormatting.DARK_GRAY));
 		icon.set(DataComponents.LORE, new ItemLore(lore));
@@ -810,7 +824,7 @@ public final class VillageHallScreen {
 			lore.toArray(Component[]::new));
 	}
 
-	static ItemStack icon(Item item, Component name, ChatFormatting color, Component... lore) {
+	public static ItemStack icon(Item item, Component name, ChatFormatting color, Component... lore) {
 		ItemStack icon = new ItemStack(item);
 		icon.set(DataComponents.CUSTOM_NAME, plain(name, color));
 		if (lore.length > 0) {
@@ -819,11 +833,11 @@ public final class VillageHallScreen {
 		return io.github.jcondedata.aliveworkplace.mc.Tooltips.nameAndLoreOnly(icon);
 	}
 
-	static Component line(String key, ChatFormatting color) {
+	public static Component line(String key, ChatFormatting color) {
 		return line(Component.translatable(key), color);
 	}
 
-	static Component line(Component text, ChatFormatting color) {
+	public static Component line(Component text, ChatFormatting color) {
 		return plain(text, color);
 	}
 

@@ -10,4 +10,8 @@ public interface VillagerAccessor {
 	/** Vanilla: level + 1 and new trades. */
 	@Invoker("increaseMerchantCareer")
 	void aliveworkplace$increaseMerchantCareer();
+
+	/** Vanilla: the player's special prices (reputation, Hero of the Village) on every offer. */
+	@Invoker("updateSpecialPrices")
+	void aliveworkplace$updateSpecialPrices(net.minecraft.world.entity.player.Player player);
 }

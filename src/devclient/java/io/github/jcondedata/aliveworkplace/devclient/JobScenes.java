@@ -663,6 +663,31 @@ final class JobScenes {
 					&& io.github.jcondedata.aliveworkplace.legend.LegendPowers.pace(builder) == 2f;
 			};
 		}));
+		SCENES.put("legend_strike", new Job("a Legend on strike left her stonecutter and picketed by the Village Hall under a red line", 1600,
+			new Vec3(3.5, -57.2, 6.5), new Vec3(-3, -59.4, -1.5), (level, player) -> {
+			// ROADMAP 29.5: a Mason Legend whose bed is in no home of her own, two days unmet and on strike. By day her
+			// WORK activity is a picket: she walks from her stonecutter to the hall, and the red line over her head says
+			// what she wants. The scene loads a Legend of its own (the stand-in outfit).
+			level.getGameRules().getRule(GameRules.RULE_DAYLIGHT).set(false, level.getServer());
+			level.setDayTime(3000); // mid-morning: work time
+			net.minecraft.resources.ResourceLocation id = io.github.jcondedata.aliveworkplace.AliveWorkplace.id("showcase_strike");
+			io.github.jcondedata.aliveworkplace.legend.Legend legend = io.github.jcondedata.aliveworkplace.legend.Legends.read(id,
+				com.google.gson.JsonParser.parseString("{\"rarity\": \"rare\", \"job\": \"minecraft:mason\", \"title\": \"entity.minecraft.villager.legend\","
+					+ " \"lore\": \"entity.minecraft.villager.legend\", \"needs\": {\"luxury\": \"jewels\"},"
+					+ " \"powers\": [{\"type\": \"pace\", \"trades\": [\"minecraft:mason\"], \"radius\": 16, \"factor\": 2.0}]}").getAsJsonObject());
+			io.github.jcondedata.aliveworkplace.legend.Legends.setForTest(Map.of(id, legend));
+			BlockPos hall = STATION.offset(-6, 0, -3);
+			place(level, hall, ModBlocks.VILLAGE_HALL);
+			Villager mason = worker(level, STATION, Blocks.STONECUTTER, PoiTypes.MASON, VillagerProfession.MASON);
+			io.github.jcondedata.aliveworkplace.legend.Legends.make(level, mason, legend, "showcase");
+			long today = io.github.jcondedata.aliveworkplace.hall.Chronicle.day(level);
+			io.github.jcondedata.aliveworkplace.legend.LegendData data = ModAttachments.LEGEND.get(mason);
+			ModAttachments.LEGEND.set(mason, new io.github.jcondedata.aliveworkplace.legend.LegendData(data.id(), data.name(), false,
+				java.util.Optional.of(hall), today - 6, -1, Map.of("home", 3), today, today, data.way(), today));
+			return l -> mason.blockPosition().closerThan(hall, 7)
+				&& io.github.jcondedata.aliveworkplace.legend.LegendNeeds.striking(mason)
+				&& io.github.jcondedata.aliveworkplace.work.WorkerStatus.get(mason, l.getGameTime()) != null;
+		}, null));
 		SCENES.put("bard", job("the bard played a record at the Music Stand", 1200, (level, player) -> {
 			Villager b = picked(level, player, STATION, Blocks.JUKEBOX, Items.MUSIC_DISC_CAT);
 			chest(level, chestPos(), new ItemStack(Items.MUSIC_DISC_CAT));

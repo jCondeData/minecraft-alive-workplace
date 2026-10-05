@@ -180,12 +180,18 @@ public final class Innkeepers {
 
 	/** Travellers whose stay is over (and nobody's watching) move on. */
 	public static void leave(ServerLevel level, Villager guest) {
+		if (io.github.jcondedata.aliveworkplace.legend.LegendNeeds.staying(guest)) {
+			return;
+		}
 		level.sendParticles(ParticleTypes.POOF, guest.getX(), guest.getY() + 0.5, guest.getZ(), 10, 0.3, 0.5, 0.3, 0.02);
 		guest.discard();
 	}
 
 	/** Whether {@code guest}'s stay is over. */
 	public static boolean stayOver(ServerLevel level, Villager guest) {
+		if (io.github.jcondedata.aliveworkplace.legend.LegendNeeds.staying(guest)) {
+			return false; // a settled Legend never moves on (ROADMAP 29.5)
+		}
 		Traveller t = traveller(guest);
 		return t != null && level.getGameTime() - t.arrived() >= STAY;
 	}
@@ -263,6 +269,11 @@ public final class Innkeepers {
 			.withStyle(ChatFormatting.GREEN));
 		io.github.jcondedata.aliveworkplace.hall.Chronicle.record(level, guest.blockPosition(), io.github.jcondedata.aliveworkplace.hall.Chronicle.Kind.JOINED, Component.translatable("chronicle.aliveworkplace.joined",
 			BuilderLevels.levelName(t.level()), player.getDisplayName()));
+		io.github.jcondedata.aliveworkplace.legend.Gifted.Gift gift = io.github.jcondedata.aliveworkplace.legend.Gifted.of(guest);
+		if (gift != null) {
+			io.github.jcondedata.aliveworkplace.hall.Chronicle.record(level, guest.blockPosition(), io.github.jcondedata.aliveworkplace.hall.Chronicle.Kind.JOINED,
+				Component.translatable("chronicle.aliveworkplace.joined_gifted", guest.getDisplayName(), gift.title()));
+		}
 		return true;
 	}
 

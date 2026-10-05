@@ -215,17 +215,22 @@ public class LegendEngineGameTests implements net.fabricmc.fabric.api.gametest.v
 			Leftovers.after(helper, () -> caravans.remove(hall));
 			check(helper, routes, hall, true, 1, 1);
 
-			// meal_kinds: the chest by the smoker is the store
-			// (counted from what other tests left in stores near the hall, like "finished" above, with kinds they don't use)
-			int k0 = condition("{\"type\": \"meal_kinds\", \"count\": 0}").progress(level, hall).have();
-			Condition meals = condition("{\"type\": \"meal_kinds\", \"count\": " + (k0 + 2) + "}");
-			check(helper, meals, hall, false, k0, k0 + 2);
+			// meal_kinds: the chest by the smoker is the store. Batches run one after another on the same spots, and a store an
+			// earlier batch left outside this area (within the hall's 64 blocks) would count too: emptied first.
+			for (BlockPos store : io.github.jcondedata.aliveworkplace.hall.VillageNeeds.store(level, hall)) {
+				if (!helper.getBounds().contains(net.minecraft.world.phys.Vec3.atCenterOf(store))
+					&& level.getBlockEntity(store) instanceof net.minecraft.world.Container leftover) {
+					leftover.clearContent();
+				}
+			}
+			Condition meals = condition("{\"type\": \"meal_kinds\", \"count\": 2}");
+			check(helper, meals, hall, false, 0, 2);
 			Container chest = (Container) helper.getBlockEntity(new BlockPos(4, 2, 3));
-			chest.setItem(0, new ItemStack(Items.PUMPKIN_PIE, 3));
-			chest.setItem(1, new ItemStack(Items.PUMPKIN_PIE, 3));
-			check(helper, meals, hall, false, k0 + 1, k0 + 2);
-			chest.setItem(2, new ItemStack(Items.RABBIT_STEW, 1));
-			check(helper, meals, hall, true, k0 + 2, k0 + 2);
+			chest.setItem(0, new ItemStack(Items.BREAD, 3));
+			chest.setItem(1, new ItemStack(Items.BREAD, 3));
+			check(helper, meals, hall, false, 1, 2);
+			chest.setItem(2, new ItemStack(Items.BAKED_POTATO, 1));
+			check(helper, meals, hall, true, 2, 2);
 
 			// animals_at_job: animals within 16 blocks of a rancher's workstation
 			Condition animals = condition("{\"type\": \"animals_at_job\", \"jobs\": [\"aliveworkplace:builder\"], \"count\": 2}");

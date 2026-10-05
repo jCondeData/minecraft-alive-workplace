@@ -30,6 +30,8 @@ public final class ModAttachments {
 	public static final Attachment<io.github.jcondedata.aliveworkplace.legend.Seer.Blessing> SEER_BLESSING = Attachment.saved("seer_blessing", io.github.jcondedata.aliveworkplace.legend.Seer.Blessing.CODEC);
 
 	/** A villager's gift (29.6): a gift's id, or {@code none}. Absent: the UUID roll decides ({@code Gifted.of}). */
+	/** The guild this villager leads and its village's hall (ROADMAP 30.17); absent: they lead none. */
+	public static final Attachment<io.github.jcondedata.aliveworkplace.hall.Guilds.Master> GUILD_MASTER = Attachment.saved("guild_master", io.github.jcondedata.aliveworkplace.hall.Guilds.Master.CODEC);
 	public static final Attachment<String> GIFTED = Attachment.saved("gifted", com.mojang.serialization.Codec.STRING);
 
 	/** A villager's strange mood (29.10): the Legend it leads to, the workstation, the materials; or a sulk after one. Absent: none. */

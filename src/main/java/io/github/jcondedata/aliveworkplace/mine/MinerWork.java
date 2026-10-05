@@ -449,7 +449,7 @@ public class MinerWork extends Behavior<Villager> {
 				Miners.store(level, List.of(), villager.blockPosition(), rest);
 			}
 		}
-		pick.hurtAndBreak(1, villager, EquipmentSlot.MAINHAND);
+		io.github.jcondedata.aliveworkplace.hall.Guilds.hurt(villager, pick, 1, EquipmentSlot.MAINHAND); // the Miners' Guild: half (30.18)
 		boolean torch = state.is(Blocks.TORCH) || state.is(Blocks.WALL_TORCH);
 		if (site.awaitsLadder(target)) {
 			site.countMined(); // the ladder goes in next, then the cursor moves on

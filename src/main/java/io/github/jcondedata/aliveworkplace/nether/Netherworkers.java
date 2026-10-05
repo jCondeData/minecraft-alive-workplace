@@ -272,7 +272,7 @@ public final class Netherworkers {
 		puff(level, villager);
 		level.playSound(null, villager.blockPosition(), SoundEvents.PORTAL_TRAVEL, SoundSource.NEUTRAL, 0.15f, 1.4f);
 		BuilderBag bag = ModAttachments.BUILDER_BAG.getOrCreate(villager);
-		wear(level, bag);
+		wear(level, villager, bag);
 		for (ItemStack found : finds(level, villager, trip.kit())) {
 			ItemStack rest = bag.add(found);
 			if (!rest.isEmpty()) {
@@ -293,7 +293,7 @@ public final class Netherworkers {
 	}
 
 	/** Tools and armor lose some durability; a fire resistance potion is drunk (the bottle comes back). */
-	private static void wear(ServerLevel level, BuilderBag bag) {
+	private static void wear(ServerLevel level, Villager villager, BuilderBag bag) {
 		List<ItemStack> kept = new ArrayList<>();
 		for (ItemStack stack : bag.takeAll()) {
 			if (isFireResistance(stack)) {
@@ -305,7 +305,9 @@ public final class Netherworkers {
 				continue;
 			}
 			if (stack.isDamageableItem()) {
-				stack.setDamageValue(Math.min(stack.getMaxDamage() - 1, stack.getDamageValue() + WEAR / 2 + level.random.nextInt(WEAR / 2 + 1)));
+				// The Miners' Guild: half as much (30.18).
+				int worn = io.github.jcondedata.aliveworkplace.hall.Guilds.wear(villager, WEAR / 2 + level.random.nextInt(WEAR / 2 + 1));
+				stack.setDamageValue(Math.min(stack.getMaxDamage() - 1, stack.getDamageValue() + worn));
 			}
 			kept.add(stack);
 		}

@@ -881,7 +881,7 @@ public class BuilderWork extends Behavior<Villager> {
 		if (claim == null) {
 			return null;
 		}
-		for (BuildPlan.Step s : site.ahead(plan, HELP_WINDOW * (1 + Builders.MAX_HELPERS))) {
+		for (BuildPlan.Step s : site.ahead(plan, HELP_WINDOW * (1 + io.github.jcondedata.aliveworkplace.hall.Guilds.MOST_HELPERS))) {
 			if (s.pos().equals(claim)) {
 				return s;
 			}

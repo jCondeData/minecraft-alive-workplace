@@ -48,7 +48,8 @@ public final class Expansions {
 			case "partnerShows", "nurseHealingMachine", "berryBreeders", "campCooks", "habitatKeepers", "habitatSightings",
 				"daycareKeepers", "gemGrowers", "villageHabitats" -> M28;
 			case "legends", "legendNeeds", "legendSites", "strangeMoods", "giftedChance" -> M29;
-			case "villageEdicts", "edictMinDays", "workHorns", "villageBanners", "cradles", "harvestIdols", "tonics" -> M30;
+			case "villageEdicts", "edictMinDays", "workHorns", "villageBanners", "cradles", "harvestIdols", "tonics", "guilds",
+				"guildsPerRank" -> M30;
 			default -> null;
 		};
 	}

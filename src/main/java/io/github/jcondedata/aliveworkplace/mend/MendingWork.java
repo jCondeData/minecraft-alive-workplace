@@ -77,6 +77,11 @@ public class MendingWork extends Behavior<Villager> {
 		), 1200);
 	}
 
+	/** The share one unit puts back when {@code villager} mends: {@link #PER_UNIT}, a third in the Smiths' Guild (30.18). */
+	public static float perUnit(Villager villager) {
+		return io.github.jcondedata.aliveworkplace.hall.Guilds.mendShare(villager, PER_UNIT);
+	}
+
 	public static boolean isBusy(Villager villager) {
 		synchronized (BUSY) {
 			return BUSY.contains(villager);
@@ -216,7 +221,7 @@ public class MendingWork extends Behavior<Villager> {
 		int units = bag.remove(job.material(), job.units());
 		ItemStack piece = bag.takeFirst(this::isThePiece);
 		if (!piece.isEmpty() && units > 0) {
-			int per = Math.max(1, (int) (piece.getMaxDamage() * PER_UNIT));
+			int per = Math.max(1, (int) (piece.getMaxDamage() * perUnit(villager)));
 			piece.setDamageValue(Math.max(0, piece.getDamageValue() - units * per));
 			level.playSound(null, station, SoundEvents.ANVIL_USE, SoundSource.BLOCKS, 0.5f, 1.1f);
 			ModAttachments.ITEMS_MENDED.set(villager, ModAttachments.ITEMS_MENDED.getOrElse(villager, 0) + 1);
@@ -306,7 +311,7 @@ public class MendingWork extends Behavior<Villager> {
 					if (!worn.getItem().isValidRepairItem(worn, new ItemStack(e.getKey()))) {
 						continue;
 					}
-					int per = Math.max(1, (int) (worn.getMaxDamage() * PER_UNIT));
+					int per = Math.max(1, (int) (worn.getMaxDamage() * perUnit(villager)));
 					int units = (int) Math.min(e.getValue(), Math.min(4, (worn.getDamageValue() + per - 1) / per));
 					BlockPos from = SupplyContainers.firstWith(level, materials, e.getKey());
 					if (units > 0 && from != null) {

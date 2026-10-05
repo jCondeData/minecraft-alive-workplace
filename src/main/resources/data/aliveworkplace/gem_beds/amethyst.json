@@ -1,0 +1,13 @@
+{
+  "plant": "none",
+  "touch": "minecraft:budding_amethyst",
+  "grows": [
+    "minecraft:small_amethyst_bud",
+    "minecraft:medium_amethyst_bud",
+    "minecraft:large_amethyst_bud",
+    "minecraft:amethyst_cluster"
+  ],
+  "ripe": "minecraft:amethyst_cluster",
+  "harvest": "loot",
+  "order": 0
+}

@@ -1,0 +1,14 @@
+{
+  "jobs": [
+    "aliveworkplace:habitat_keeper"
+  ],
+  "types": [
+    "grass"
+  ],
+  "cue": "set_out_snack",
+  "animation": "special",
+  "particles": "minecraft:happy_villager",
+  "sound": "minecraft:block.azalea_leaves.hit",
+  "ticks": 40,
+  "effect": "none"
+}

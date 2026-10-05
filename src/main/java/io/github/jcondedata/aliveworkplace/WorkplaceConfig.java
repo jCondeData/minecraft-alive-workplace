@@ -119,6 +119,12 @@ public final class WorkplaceConfig {
 	public boolean stewardSelfRun = true;
 	/** Villagers at a Campfire Pot can be made Camp Cooks with Hearty Grains (ROADMAP 28.8). Off: no Camp Cook job. */
 	public boolean campCooks = true;
+	/** Villagers at a Pasture Block can be made Habitat Keepers with a honey bottle (ROADMAP 28.10). Off: no Habitat Keeper job. */
+	public boolean habitatKeepers = true;
+	/** Villagers at a stonecutter can be made Gem Growers with an amethyst shard (ROADMAP 28.11). Off: no Gem Grower job. */
+	public boolean gemGrowers = true;
+	/** Habitat Keepers tell the village of shiny, rare and Alpha wild Pokémon near their pasture (ROADMAP 28.10). */
+	public boolean habitatSightings = true;
 	/** Days in each of the village calendar's four seasons (each has a festival on its middle day). */
 	public int seasonDays = 16;
 	/** Hundredths of an emerald each worker brings the treasury a day (before wellbeing and rank). */
@@ -328,6 +334,9 @@ public final class WorkplaceConfig {
 		io.github.jcondedata.aliveworkplace.city.Stewards.MAX_OPEN_BUILDS = stewardMaxOpenBuilds;
 		io.github.jcondedata.aliveworkplace.city.StewardDesk.SELF_RUN = stewardSelfRun;
 		io.github.jcondedata.aliveworkplace.camp.CampCooks.ENABLED = campCooks;
+		io.github.jcondedata.aliveworkplace.habitat.HabitatKeepers.ENABLED = habitatKeepers;
+		io.github.jcondedata.aliveworkplace.habitat.HabitatKeepers.SIGHTINGS = habitatSightings;
+		io.github.jcondedata.aliveworkplace.gem.GemGrowers.ENABLED = gemGrowers;
 		// Off in gametests (a trait picked by chance would change a test's numbers); the people tests turn them on.
 		io.github.jcondedata.aliveworkplace.people.Names.ENABLED = villagerNames && System.getProperty("fabric-api.gametest") == null;
 		io.github.jcondedata.aliveworkplace.people.Traits.ENABLED = villagerTraits && System.getProperty("fabric-api.gametest") == null;

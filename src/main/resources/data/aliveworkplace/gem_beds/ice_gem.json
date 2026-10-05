@@ -1,0 +1,14 @@
+{
+  "plant": "cobblemon:ice_gem_block",
+  "touch": "cobblemon:deepslate_crystal_core",
+  "grows": [
+    "cobblemon:ice_gem_cluster"
+  ],
+  "ripe": "cobblemon:ice_gem_cluster[stage=3]",
+  "harvest": "loot",
+  "requires": [
+    "cobblemon",
+    "type_gems"
+  ],
+  "order": 25
+}

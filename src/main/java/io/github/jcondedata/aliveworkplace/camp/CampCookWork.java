@@ -184,8 +184,11 @@ public class CampCookWork extends Behavior<Villager> {
 			}
 		}
 		if (choice.recipe().seasoning() != null) {
+			// Seasoned as asked (a Habitat Keeper's lure), only with those berries; otherwise with whatever seasons it.
+			java.util.function.Predicate<ItemStack> seasons = choice.seasonWith().isEmpty() ? s -> s.is(choice.recipe().seasoning())
+				: s -> s.is(choice.recipe().seasoning()) && choice.seasonWith().contains(s.getItem());
 			for (int i = 0; i < SEASONINGS; i++) {
-				ItemStack seasoning = SupplyContainers.takeOne(level, chests, s -> s.is(choice.recipe().seasoning()));
+				ItemStack seasoning = SupplyContainers.takeOne(level, chests, seasons);
 				if (seasoning.isEmpty()) {
 					break;
 				}
@@ -199,7 +202,7 @@ public class CampCookWork extends Behavior<Villager> {
 	}
 
 	/** A dish to cook now, with the recipe and the items for each grid slot (null: empty). */
-	record Choice(CampCooks.Dish dish, CampCooks.PotRecipe recipe, List<Item> grid) {
+	record Choice(CampCooks.Dish dish, CampCooks.PotRecipe recipe, List<Item> grid, java.util.Set<Item> seasonWith) {
 	}
 
 	@Nullable
@@ -208,13 +211,21 @@ public class CampCookWork extends Behavior<Villager> {
 		CampCooks.Dish missing = null;
 		for (CampCooks.Dish dish : CampCooks.menu()) {
 			Item item = BuiltInRegistries.ITEM.getOptional(dish.item()).orElse(null);
-			if (item == null || !wanted(level, station, dish, item, stock)) {
+			if (item == null) {
+				continue;
+			}
+			// Asked seasoned a particular way (28.10): only the dishes seasoned so count, and only those berries season it.
+			java.util.Set<Item> asked = new java.util.LinkedHashSet<>();
+			CampCooks.askedSeasonings(level, station, dish).forEach(id -> BuiltInRegistries.ITEM.getOptional(id).ifPresent(asked::add));
+			if (asked.isEmpty() ? !wanted(level, station, dish, item, stock)
+				: seasonedCount(level, chests, pot, item, asked) >= dish.keep() || !CampCooks.When.ASKED.equals(dish.when())) {
 				continue;
 			}
 			for (CampCooks.PotRecipe recipe : pot.recipes(level, item)) {
 				List<Item> grid = makings(recipe, stock);
-				if (grid != null) {
-					return new Choice(dish, recipe, grid);
+				if (grid != null && (asked.isEmpty() || recipe.seasoning() != null
+					&& asked.stream().anyMatch(a -> stock.getOrDefault(a, 0L) > 0 && new ItemStack(a).is(recipe.seasoning())))) {
+					return new Choice(dish, recipe, grid, asked);
 				}
 			}
 			if (missing == null) {
@@ -227,6 +238,20 @@ public class CampCookWork extends Behavior<Villager> {
 			status(villager, "waiting");
 		}
 		return null;
+	}
+
+	/** How many of {@code item} in the chests were seasoned with one of {@code seasonings}. */
+	static long seasonedCount(ServerLevel level, List<BlockPos> chests, CampCooks.Pot pot, Item item, java.util.Set<Item> seasonings) {
+		long n = 0;
+		for (BlockPos chest : chests) {
+			for (ItemStack stack : SupplyContainers.peekMatching(level, chest, s -> s.is(item))) {
+				java.util.Set<net.minecraft.resources.ResourceLocation> with = pot.seasonings(stack);
+				if (seasonings.stream().anyMatch(s -> with.contains(BuiltInRegistries.ITEM.getKey(s)))) {
+					n += stack.getCount();
+				}
+			}
+		}
+		return n;
 	}
 
 	/** Whether the menu wants {@code dish} cooked now. */

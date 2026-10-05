@@ -254,6 +254,11 @@ public final class FabricPlatform implements Platform {
 	}
 
 	@Override
+	public PoiType registerPoi(ResourceLocation id, int tickets, int range, Iterable<net.minecraft.world.level.block.state.BlockState> states) {
+		return PointOfInterestHelper.register(id, tickets, range, states);
+	}
+
+	@Override
 	public void whenBlockRegistered(ResourceLocation id, Consumer<Block> action) {
 		boolean[] done = {false};
 		net.fabricmc.fabric.api.event.registry.RegistryEntryAddedCallback.allEntries(net.minecraft.core.registries.BuiltInRegistries.BLOCK, entry -> {

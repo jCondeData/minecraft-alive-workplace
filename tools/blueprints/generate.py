@@ -134,6 +134,8 @@ if __name__ == "__main__":
         for name, fit_out in VILLAGE_HOUSES.items():
             job = HOUSE_JOBS.get(name)
             staffed_house(style, fit_out, "aliveworkplace:" + job if job else None).save(VILLAGE_STRUCTURES, f"{style}_{name}")
+    for name in WORKPLACES + COBBLEMON_WORKPLACES:
+        workplace(name).save(MAIN_STRUCTURES, name)
     test_hut().save(TEST_STRUCTURES, "test_hut")
     test_hut_2().save(TEST_STRUCTURES, "test_hut_2")
     test_area("build_area", 17, 8, 17)

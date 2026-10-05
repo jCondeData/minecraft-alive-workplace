@@ -49,6 +49,7 @@ public final class StewardConditions {
 		private List<BuildSiteManager.Finished> finished;
 		private List<BuildSiteManager.Finished> upgradable;
 		private int[] store;
+		private List<VillagerProfession> wanted;
 
 		private Facts(ServerLevel level, BlockPos hall) {
 			this.level = level;
@@ -85,6 +86,17 @@ public final class StewardConditions {
 				upgradable = VillageAdvice.upgradable(level, hall);
 			}
 			return upgradable;
+		}
+
+		/**
+		 * The jobs the village wants that have no free block left (27.11): the same gaps the Steward's morning jobs
+		 * ({@link StewardJobs#plan}) hand to {@link StewardJobs#WORKPLACE_WANTED}; none while nobody waits for a job.
+		 */
+		public List<VillagerProfession> wanted() {
+			if (wanted == null) {
+				wanted = census().jobless().stream().anyMatch(StewardJobs::wantsJob) ? StewardJobs.plan(level, hall).wanted() : List.of();
+			}
+			return wanted;
 		}
 
 		public VillageRanks.Rank rank() {
@@ -225,8 +237,12 @@ public final class StewardConditions {
 		}
 	}
 
-	/** {@code worker_without_workstation {professions}}: grown-ups with a job (of those, or any) but no workstation. */
-	public record WorkerWithoutWorkstation(Set<ResourceLocation> professions) implements Condition {
+	/**
+	 * {@code worker_without_workstation {professions, wanted}}: grown-ups with a job (of those, or any) but no
+	 * workstation; with {@code "wanted": true} (27.11's workplace rules) also each of those jobs the village wants with
+	 * no free block left ({@link Facts#wanted}), once the village has a builder to build it.
+	 */
+	public record WorkerWithoutWorkstation(Set<ResourceLocation> professions, boolean wanted) implements Condition {
 		@Override
 		public String type() {
 			return "worker_without_workstation";
@@ -239,9 +255,18 @@ public final class StewardConditions {
 				return job != VillagerProfession.NONE && job != VillagerProfession.NITWIT
 					&& (professions.isEmpty() || professions.contains(BuiltInRegistries.VILLAGER_PROFESSION.getKey(job)));
 			}).count();
-			Component which = professions.isEmpty() ? Component.translatable("steward.aliveworkplace.condition.any_job")
+			if (!wanted) {
+				return new Check(count > 0, count, key(type(), which(), count));
+			}
+			// A wanted job's building waits for someone to build it: with no builder, no_builder asks the player first.
+			long jobs = VillageAdvice.workers(facts.census(), ModVillagers.BUILDER) == 0 ? 0 : facts.wanted().stream()
+				.filter(p -> professions.isEmpty() || professions.contains(BuiltInRegistries.VILLAGER_PROFESSION.getKey(p))).count();
+			return new Check(count + jobs > 0, count + jobs, key(type() + "_or_wanted", which(), count, jobs));
+		}
+
+		private Component which() {
+			return professions.isEmpty() ? Component.translatable("steward.aliveworkplace.condition.any_job")
 				: Component.literal(professions.stream().map(ResourceLocation::toString).sorted().collect(Collectors.joining(", ")));
-			return new Check(count > 0, count, key(type(), which, count));
 		}
 	}
 
@@ -478,7 +503,7 @@ public final class StewardConditions {
 				}
 				jobs.add(job);
 			}
-			return new WorkerWithoutWorkstation(Set.copyOf(jobs));
+			return new WorkerWithoutWorkstation(Set.copyOf(jobs), f.bool("wanted", false));
 		});
 		register("jobless", f -> new Jobless(f.integer("at_least", 1, 1, 10000)));
 		register("no_builder", f -> new NoBuilder());

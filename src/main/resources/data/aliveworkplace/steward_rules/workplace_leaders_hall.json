@@ -1,0 +1,29 @@
+{
+  "when": [
+    {
+      "worker_without_workstation": {
+        "professions": [
+          "aliveworkplace:trainer_leader"
+        ],
+        "wanted": true
+      }
+    },
+    {
+      "mod_loaded": {
+        "mod": "cobblemon"
+      }
+    }
+  ],
+  "do": {
+    "build": {
+      "blueprint": "aliveworkplace:leaders_hall",
+      "zone": "civic"
+    }
+  },
+  "priority": 62,
+  "why": "steward.aliveworkplace.why.workplace",
+  "cooldown_days": 2,
+  "requires": [
+    "cobblemon"
+  ]
+}

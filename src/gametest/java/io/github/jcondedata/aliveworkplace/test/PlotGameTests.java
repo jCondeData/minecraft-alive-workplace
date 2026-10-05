@@ -294,6 +294,35 @@ public class PlotGameTests implements net.fabricmc.fabric.api.gametest.v1.Fabric
 		helper.succeed();
 	}
 
+	/**
+	 * ROADMAP 27.11: a Ferry House goes on the shore, water within {@link Plots#SHORE} blocks of its front; nowhere else.
+	 * Box x 11..20, z 9..17 (helper), its front to the west, the hall's way.
+	 */
+	//$ gametest_ticks_batch AREA '20' '"plotShore"'
+	@GameTest(template = AREA, timeoutTicks = 20, batch = "plotShore")
+	public void aFerryHouseGoesOnTheShore(GameTestHelper helper) {
+		ground(helper);
+		CityPlan plan = homes(helper, "");
+		ResourceLocation ferry = AliveWorkplace.id("ferry_house");
+		BlockPos spot = new BlockPos(16, 2, 13);
+		java.util.function.Supplier<Plots.Verdict> at = () -> Plots.check(helper.getLevel(), helper.absolutePos(HALL), plan, "homes", ferry,
+			helper.absolutePos(spot), Rotation.COUNTERCLOCKWISE_90, Mirror.NONE);
+		refused(helper, at.get(), Plots.Reason.SHORE, "no water at all");
+		helper.setBlock(new BlockPos(6, 1, 13), Blocks.WATER);
+		refused(helper, at.get(), Plots.Reason.SHORE, "water 5 blocks in front");
+		helper.setBlock(new BlockPos(7, 1, 13), Blocks.WATER);
+		fits(helper, at.get(), "water 4 blocks in front");
+		helper.setBlock(new BlockPos(6, 1, 13), Blocks.GRASS_BLOCK);
+		helper.setBlock(new BlockPos(7, 1, 13), Blocks.GRASS_BLOCK);
+		helper.setBlock(new BlockPos(22, 1, 13), Blocks.WATER);
+		refused(helper, at.get(), Plots.Reason.SHORE, "water behind it, not in front");
+		helper.setBlock(new BlockPos(22, 1, 13), Blocks.GRASS_BLOCK);
+		// Other buildings don't care about water.
+		helper.assertTrue(Plots.check(helper.getLevel(), helper.absolutePos(HALL), plan, "homes", AliveWorkplace.id("kitchen"),
+			helper.absolutePos(spot), Rotation.COUNTERCLOCKWISE_90, Mirror.NONE).plot().isPresent(), "a Kitchen there");
+		helper.succeed();
+	}
+
 	/** Its centre within maxSiteDistance of a Blueprint Table; none in reach, no plot. */
 	//$ gametest_ticks_batch AREA '20' '"plotTable"'
 	@GameTest(template = AREA, timeoutTicks = 20, batch = "plotTable")

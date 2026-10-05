@@ -352,7 +352,7 @@ first; many items below are "verify and harden", not "build".
 - [x] **23.10** (approved 2026-10-04) **Every shipped build reviewed.** One gallery package per build family (houses, workshops, defences,
   decorations, village pieces in five styles), each build shown front and back. Vetoed builds get redrawn with the
   Architect skill. Done when: every family's package has been sent.
-  - [ ] **23.10a** Change from the owner (2026-10-04): keep one shared outside per village style, but let the village leader override it (choose a different look for a piece)
+  - [x] **23.10a** (review: pending 2026-10-05) Change from the owner (2026-10-04): keep one shared outside per village style, but let the village leader override it (choose a different look for a piece)
 
 ## Milestone 24: Everything looks finished (priority 2)
 
@@ -667,7 +667,7 @@ and an old vanilla village slowly rebuilds itself one house at a time. It answer
   - a GameTest per rule, in a village staged to need it: the Steward proposes that build in the right zone; with beds
     short and an upgradable Stone House, the upgrade comes before a new house;
   - showcase scene `steward_homes`: a GIF of a Homes zone filling up over three days in Run the village.
-- [ ] **27.11** **A workplace for every worker.** `tools/blueprints/generate.py` writes buildable copies of 12 of our
+- [x] **27.11** (review: pending 2026-10-05) **A workplace for every worker.** `tools/blueprints/generate.py` writes buildable copies of 12 of our
   village houses (`village.py`: the plains look, with the jigsaw, structure voids and villager taken out and calcite
   swapped for white concrete, as STYLE.md asks of builds for builders), in the Blueprint Table too: Builder's
   Workshop, Carpenter's Workshop, Kitchen, Post Office, Guard House, Clinic, Ferry House and, with Cobblemon, Trainer's
@@ -4426,6 +4426,14 @@ item waits.
   porch or yard), and the village's builder rebuilds that house's outside in place (inside and its worker kept); or
   (b) it only changes the look of pieces built from then on (by a builder, 27.x), not the generated ones. Default if
   you don't answer: 1a + 2a with the five existing outsides (no new art), after the current lane work. Waiting.
+- 2026-10-05 (23.10a, decision; lane-c-1005-0332): no answer, so the default was built: 1a + 2a with the five existing
+  outsides. The leader is the hall's owner and their friends (operators too; a hall nobody owns has no leader, and
+  choosing is refused server side). The hall's Builds button opens House looks: our village houses within the hall's
+  radius, found by their bed (every house's bed stands at the same spot) and the outside that stands round it. A pick
+  starts a build site for the nearest builder with the blueprint `aliveworkplace:outside/<style>/<house>`: the house's
+  file in that style without its room (x 2-6, z 3-7, y 0-4), built over the house like an upgrade, so the room, job
+  block and chests are never touched and the site saves and reloads like any other. The choice is kept on the hall
+  (`piece_looks`, empty in older saves). Not a page-row tab: the row must keep room for six more pages (22.5's test).
 - 2026-10-04 (29.1, decisions; lane a): `docs/design/M29.md` section 7 records eight choices lanes build on unless
   the owner changes them. The one that changes a spec: `mythicLegendCap` is one number (the City cap, default 2; a Town
   half, Hamlet and Village 0), not 29.3's list, because the config file and Mod Menu screen take only switches and
@@ -4516,3 +4524,27 @@ item waits.
   with `message.aliveworkplace.steward.unseasoned`; the appointed Builder starts as a Novice Steward. Existing Stewards
   are grandfathered (checked only at appointment; a Steward always qualifies). City Plan recipe: Map + Blank Blueprint
   + Heart of the Sea, shapeless. Written in docs/design/M27.md section 7.
+- 2026-10-05 (27.11, decisions; lane c): the 12 workplaces are `village.py`'s `workplace(name)`: the plains house with
+  its jigsaws and structure voids made air, no villager, no loot tables, all calcite as white concrete; listed in
+  `StarterBlueprints.WORKPLACES` / `COBBLEMON_WORKPLACES` (not `ALL`: they have no tier II, and `ALL` must). One rule
+  per building, `steward_rules/workplace_<building>.json`, all `worker_without_workstation {professions}` at priority
+  62 (just above `workstations` 60, so the build comes first), cooldown 2 days, no max. Zones: workshops (Builder's,
+  Carpenter's, Sifting Shed, Tinker's, Nether Gate, Ball Workshop), market (Kitchen, Storehouse, Flower Shop, Supply
+  Shop, Inn, Ferry House, Trade Hall), civic (Post Office, Clinic, Healing Center, Graveyard, Schoolhouse, Library,
+  Research Lab, Trainer's House, Leader's Hall, School), defences (Guard House, Barracks), farms (Berry Farm, Compost
+  Yard, Ranch), gardens (Apiary Garden). The shore is a plot rule (`Plots.SHORE_BUILDINGS`, reason `SHORE`): water in
+  the 4 rows in front of the footprint. `no_builder` was already `builder.json`; its ask now reads "place a Blueprint
+  Table and give a villager the job: nobody here can build". Done since (lane c, 1005): "a job the village wants with no
+  free block" fires the same rules: with `"wanted": true` (set in 28 `workplace_*` rules; default false, so
+  `workstations.json` is unchanged; not in `workplace_builders_workshop`: a builder is wanted only while there is
+  none, so nobody could build it and `no_builder` asks the player instead) `worker_without_workstation` also counts each of its jobs in
+  `StewardConditions.Facts.wanted()` (the morning plan's `StewardJobs.plan(...).wanted()`, so a wanted guard or scholar with
+  no free block wishes its Guard House/Barracks or Library; a free block stops it, and so does having no builder, since
+  nobody could build it). Each such wish takes one of the
+  day's 8 wish slots (priority 62, above the market stall's 35).
+  The farmer's want gets its building with 27.13. `WORKPLACE_WANTED` stays a no-op seam.
+  The gallery package (front/back, as drawn and in Stonework) is skipped: the digest makes packages from the showcase
+  scene `workplaces` (front and back of all 12). Not rendered here (tools/blueprints/render has no node_modules in
+  this container): the copies are the village houses' already-checked builds with calcite as white concrete. The six
+  Cobblemon rules are tested without Cobblemon (worker counted, held back as MOD_MISSING); their wish with Cobblemon
+  has no compat test yet. Owner: are the zones above where you'd want each building?

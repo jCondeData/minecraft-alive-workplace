@@ -176,6 +176,18 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 		setChanged();
 	}
 
+	/** Looks the village's leader chose for its houses (23.10a); none in halls saved before. */
+	private java.util.List<PieceLooks.Choice> pieceLooks = java.util.List.of();
+
+	public java.util.List<PieceLooks.Choice> pieceLooks() {
+		return pieceLooks;
+	}
+
+	public void setPieceLooks(java.util.List<PieceLooks.Choice> choices) {
+		pieceLooks = java.util.List.copyOf(choices);
+		setChanged();
+	}
+
 	public io.github.jcondedata.aliveworkplace.city.StewardWishes.State stewardWishes() {
 		return stewardWishes;
 	}
@@ -571,6 +583,9 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 				.result().orElse(io.github.jcondedata.aliveworkplace.city.StewardWishes.State.EMPTY);
 		stewardDesk = !tag.contains("steward_desk") ? io.github.jcondedata.aliveworkplace.city.StewardDesk.State.EMPTY
 			: io.github.jcondedata.aliveworkplace.city.StewardDesk.State.CODEC.parse(net.minecraft.nbt.NbtOps.INSTANCE, tag.get("steward_desk")).result().orElse(io.github.jcondedata.aliveworkplace.city.StewardDesk.State.EMPTY);
+		pieceLooks = !tag.contains("piece_looks") ? java.util.List.of()
+			: PieceLooks.Choice.CODEC.listOf().parse(net.minecraft.nbt.NbtOps.INSTANCE, tag.get("piece_looks")).result().map(java.util.List::copyOf)
+				.orElse(java.util.List.of());
 		berriesFound.clear();
 		net.minecraft.nbt.ListTag berries = Nbt.getList(tag, "berriesFound", net.minecraft.nbt.Tag.TAG_STRING);
 		for (int i = 0; i < berries.size(); i++) {
@@ -631,6 +646,9 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 		if (!stewardWishes.equals(io.github.jcondedata.aliveworkplace.city.StewardWishes.State.EMPTY)) {
 			io.github.jcondedata.aliveworkplace.city.StewardWishes.State.CODEC.encodeStart(net.minecraft.nbt.NbtOps.INSTANCE, stewardWishes).result()
 				.ifPresent(t -> tag.put("steward", t));
+		}
+		if (!pieceLooks.isEmpty()) {
+			PieceLooks.Choice.CODEC.listOf().encodeStart(net.minecraft.nbt.NbtOps.INSTANCE, pieceLooks).result().ifPresent(t -> tag.put("piece_looks", t));
 		}
 		if (!stewardDesk.equals(io.github.jcondedata.aliveworkplace.city.StewardDesk.State.EMPTY)) {
 			io.github.jcondedata.aliveworkplace.city.StewardDesk.State.CODEC.encodeStart(net.minecraft.nbt.NbtOps.INSTANCE, stewardDesk).result().ifPresent(t -> tag.put("steward_desk", t));

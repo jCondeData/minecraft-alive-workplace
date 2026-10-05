@@ -1,0 +1,20 @@
+{
+  "when": [
+    {
+      "worker_without_workstation": {
+        "professions": [
+          "aliveworkplace:builder"
+        ]
+      }
+    }
+  ],
+  "do": {
+    "build": {
+      "blueprint": "aliveworkplace:builders_workshop",
+      "zone": "workshops"
+    }
+  },
+  "priority": 62,
+  "why": "steward.aliveworkplace.why.workplace",
+  "cooldown_days": 2
+}

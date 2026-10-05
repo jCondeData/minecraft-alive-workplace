@@ -1,0 +1,22 @@
+{
+  "when": [
+    {
+      "worker_without_workstation": {
+        "professions": [
+          "minecraft:librarian",
+          "aliveworkplace:scholar"
+        ],
+        "wanted": true
+      }
+    }
+  ],
+  "do": {
+    "build": {
+      "blueprint": "aliveworkplace:library",
+      "zone": "civic"
+    }
+  },
+  "priority": 62,
+  "why": "steward.aliveworkplace.why.workplace",
+  "cooldown_days": 2
+}

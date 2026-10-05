@@ -77,6 +77,20 @@ public final class Roads {
 	/** How far a lane may lead from a door to a road. */
 	public static final int LANE_REACH = 48;
 	public static final String FOLDER = "roads/";
+	/** Widest gap (water, or a drop deeper than {@link #DROP}) a bridge spans (27.16). */
+	public static final int BRIDGE_MAX = 16;
+	/** A drop deeper than this under a road's surface is a gap to bridge. */
+	static final int DROP = 2;
+	/** A bridge's pillar stands under every this many blocks of its deck. */
+	public static final int PILLAR_EVERY = 4;
+	/** How deep a pillar goes at most. */
+	static final int PILLAR_DEPTH = 12;
+	/** How far past a gap's start the far bank is looked for. */
+	static final int GAP_LOOK = 40;
+	/** A street lamp every this many blocks of a street or avenue, on alternate sides. */
+	public static final int LAMP_EVERY = 16;
+	/** A lantern post every this many blocks of a lane. */
+	public static final int POST_EVERY = 12;
 
 	/** A road's way being found, one stretch (point to point) after another. */
 	private static final class Routing {
@@ -85,6 +99,12 @@ public final class Roads {
 		final List<BlockPos> goals;
 		final List<BoundingBox> avoid;
 		final List<BlockPos> route = new ArrayList<>();
+		/** Legs laid straight over a gap (27.16): the deck's nodes, then the far bank's. */
+		final Map<Integer, List<BlockPos>> bridges = new HashMap<>();
+		/** Legs already looked along for a gap. */
+		final java.util.Set<Integer> checked = new java.util.HashSet<>();
+		/** The gap the road stops at, too wide to bridge (0: none). */
+		int gap;
 		int leg;
 		@Nullable
 		Paths.Search search;
@@ -92,7 +112,7 @@ public final class Roads {
 		Routing(int index, CityPlan.Road road, List<BlockPos> goals, List<BoundingBox> avoid) {
 			this.index = index;
 			this.road = road;
-			this.goals = goals;
+			this.goals = new ArrayList<>(goals);
 			this.avoid = avoid;
 		}
 	}
@@ -190,6 +210,12 @@ public final class Roads {
 					stop = true;
 					break;
 				}
+				List<BlockPos> bridge = r.bridges.get(r.leg);
+				if (bridge != null) {
+					r.route.addAll(bridge); // over the gap, straight: the deck, then the far bank
+					r.leg++;
+					continue;
+				}
 				BlockPos from = r.route.isEmpty() ? feet(level, r.goals.get(r.leg), halfWidth) : r.route.get(r.route.size() - 1);
 				BlockPos to = feet(level, r.goals.get(r.leg + 1), halfWidth);
 				if (from == null || to == null) {
@@ -198,6 +224,9 @@ public final class Roads {
 				}
 				if (r.route.isEmpty()) {
 					r.route.add(from);
+				}
+				if (r.checked.add(r.leg) && splitAtGap(level, r, from, to)) {
+					continue; // the stretch now ends at the near bank (and a bridge, or the road's end, follows)
 				}
 				int reach = (int) Math.sqrt(from.distSqr(to)) + 32;
 				r.search = new Paths.Search(level, from, to, new Paths.Options(halfWidth, r.avoid, reach, Roads::clear));
@@ -229,7 +258,7 @@ public final class Roads {
 			for (BlockPos p : r.route) {
 				offsets.add(p.subtract(hall));
 			}
-			CityPlan next = plan.withRoad(r.index, r.road.withRoute(offsets));
+			CityPlan next = plan.withRoad(r.index, r.road.withRoute(offsets, r.gap));
 			if (next != null) {
 				entity.setPlan(next);
 			}
@@ -260,6 +289,111 @@ public final class Roads {
 				route(level, hall, entity, r, NODES_PER_TICK);
 			}
 		}
+	}
+
+	/** A gap on a road's line (27.16): the near bank (feet), the far bank (feet; null if none was found), its width, the nodes over it. */
+	public record Gap(BlockPos near, @Nullable BlockPos far, int width, List<BlockPos> nodes) {
+	}
+
+	/**
+	 * Looks along the straight line of a stretch for a gap; if there is one, the stretch is split there: to the near bank,
+	 * a bridge over it ({@link Routing#bridges}) and on from the far bank, or, wider than {@link #BRIDGE_MAX}, the road
+	 * ends at the near bank. False when the line has no gap.
+	 */
+	private static boolean splitAtGap(ServerLevel level, Routing r, BlockPos from, BlockPos to) {
+		Gap g = gap(level, from, to);
+		if (g == null) {
+			return false;
+		}
+		boolean atStart = g.near().equals(from);
+		if (g.far() == null || g.width() > BRIDGE_MAX) {
+			r.gap = g.width();
+			while (r.goals.size() > r.leg + 1) {
+				r.goals.remove(r.goals.size() - 1);
+			}
+			if (!atStart) {
+				r.goals.add(g.near());
+			}
+			return true;
+		}
+		if (atStart) {
+			r.bridges.put(r.leg, g.nodes());
+			r.goals.add(r.leg + 1, g.far());
+		} else {
+			r.goals.add(r.leg + 1, g.near());
+			r.bridges.put(r.leg + 1, g.nodes());
+			r.goals.add(r.leg + 2, g.far());
+		}
+		return true;
+	}
+
+	/**
+	 * The first gap on the straight line from {@code from} to {@code to} (feet positions), following the ground: a column
+	 * with water, or nothing within {@link #DROP} below the surface. The bridge goes straight on (along the line's main
+	 * axis) to the first column with ground again, its deck a block over the higher bank so a stair leads up at each end.
+	 */
+	@Nullable
+	public static Gap gap(ServerLevel level, BlockPos from, BlockPos to) {
+		int dx = to.getX() - from.getX();
+		int dz = to.getZ() - from.getZ();
+		int n = Math.max(Math.abs(dx), Math.abs(dz));
+		BlockPos last = from;
+		for (int i = 1; i <= n; i++) {
+			int x = from.getX() + Math.round(dx * i / (float) n);
+			int z = from.getZ() + Math.round(dz * i / (float) n);
+			if (x == last.getX() && z == last.getZ()) {
+				continue;
+			}
+			Integer ground = ground(level, x, last.getY(), z);
+			if (ground != null) {
+				last = new BlockPos(x, ground + 1, z);
+				continue;
+			}
+			Direction d = Math.abs(dx) >= Math.abs(dz) ? (dx > 0 ? Direction.EAST : Direction.WEST) : (dz > 0 ? Direction.SOUTH : Direction.NORTH);
+			int h = last.getY();
+			for (int k = 1; k <= GAP_LOOK; k++) {
+				BlockPos c = last.relative(d, k);
+				Integer g = ground(level, c.getX(), h, c.getZ());
+				if (g != null) {
+					BlockPos far = new BlockPos(c.getX(), g + 1, c.getZ());
+					int deck = Math.max(h, far.getY()) + 1;
+					List<BlockPos> nodes = new ArrayList<>();
+					for (int j = 1; j < k; j++) {
+						nodes.add(last.relative(d, j).atY(deck));
+					}
+					nodes.add(far);
+					return new Gap(last, far, k - 1, List.copyOf(nodes));
+				}
+			}
+			return new Gap(last, null, GAP_LOOK + 1, List.of());
+		}
+		return null;
+	}
+
+	/** The top of the ground at {@code x, z} for feet at {@code feetY} (from a block up to {@link #DROP} down); null over water or a deeper drop. */
+	@Nullable
+	static Integer ground(ServerLevel level, int x, int feetY, int z) {
+		for (int y = feetY + 1; y >= feetY - 1 - DROP; y--) {
+			BlockPos p = new BlockPos(x, y, z);
+			BlockState s = level.getBlockState(p);
+			if (!level.getFluidState(p).isEmpty()) {
+				return null;
+			}
+			if (!s.isAir() && !cover(s)) {
+				return y;
+			}
+		}
+		return null;
+	}
+
+	/** Whether a road's node stands over a gap (a bridge's deck): nothing solid under its surface nor under that. */
+	static boolean overGap(ServerLevel level, BlockPos node) {
+		return !solid(level, node.below()) && !solid(level, node.below(2));
+	}
+
+	private static boolean solid(ServerLevel level, BlockPos p) {
+		BlockState s = level.getBlockState(p);
+		return level.getFluidState(p).isEmpty() && !s.isAir() && !cover(s);
 	}
 
 	/** Where to stand at a road's point: the ground of its column (or the nearest clear spot within 3 blocks). */
@@ -464,6 +598,24 @@ public final class Roads {
 				}
 			}
 		}
+		// the other roads' columns (27.16): where this road crosses one, the crossing is paved square, all middle
+		java.util.Set<Long> others = new java.util.HashSet<>();
+		if (level.getBlockEntity(hall) instanceof VillageHallBlockEntity entity) {
+			for (CityPlan.Road other : entity.plan().roads()) {
+				if (other.routed() && !sameRoad(other, road)) {
+					int or = (other.width() - 1) / 2;
+					for (BlockPos o : other.route()) {
+						for (int dx = -or; dx <= or; dx++) {
+							for (int dz = -or; dz <= or; dz++) {
+								others.add(BlockPos.asLong(hall.getX() + o.getX() + dx, 0, hall.getZ() + o.getZ() + dz));
+							}
+						}
+					}
+				}
+			}
+		}
+		Map<Integer, Boolean> gaps = new HashMap<>();
+		java.util.function.IntPredicate bridge = j -> gaps.computeIfAbsent(j, k -> overGap(level, route.get(k)));
 		Map<BlockPos, BlockState> blocks = new LinkedHashMap<>();
 		for (Map.Entry<Long, int[]> e : columns.entrySet()) {
 			int j = e.getValue()[0];
@@ -473,13 +625,10 @@ public final class Roads {
 			BlockPos column = BlockPos.of(e.getKey());
 			BlockPos node = route.get(j);
 			BlockPos surface = new BlockPos(column.getX(), node.getY() - 1, column.getZ());
-			BlockState state = (r > 0 && e.getValue()[1] == r ? style.edge() : style.middle()).at(surface).defaultBlockState();
-			Direction up = null;
-			if (j > 0 && route.get(j - 1).getY() < node.getY()) {
-				up = facing(route.get(j - 1), node);
-			} else if (j + 1 < route.size() && route.get(j + 1).getY() < node.getY()) {
-				up = facing(route.get(j + 1), node);
-			}
+			boolean crossing = others.contains(e.getKey());
+			BlockState state = (bridge.test(j) ? RoadStyles.Mix.of(style.deck()) : r > 0 && e.getValue()[1] == r && !crossing ? style.edge() : style.middle())
+				.at(surface).defaultBlockState();
+			Direction up = step(route, j);
 			if (up != null && style.stairs().defaultBlockState().hasProperty(StairBlock.FACING)) {
 				state = style.stairs().defaultBlockState().setValue(StairBlock.FACING, up);
 			}
@@ -491,6 +640,31 @@ public final class Roads {
 				}
 			}
 		}
+		// bridges (27.16): rails along both sides of the deck, a pillar under every PILLAR_EVERY-th block down to the bed
+		for (int j = from; j < to; j++) {
+			if (!bridge.test(j)) {
+				continue;
+			}
+			BlockPos node = route.get(j);
+			Direction side = along(route, j).getClockWise();
+			for (Direction d : new Direction[] {side, side.getOpposite()}) {
+				BlockPos rail = node.relative(d, r + 1);
+				if (!columns.containsKey(BlockPos.asLong(rail.getX(), 0, rail.getZ())) && !others.contains(BlockPos.asLong(rail.getX(), 0, rail.getZ()))) {
+					blocks.putIfAbsent(rail, style.rail().defaultBlockState());
+				}
+			}
+			int run = 1;
+			while (j - run >= 0 && bridge.test(j - run)) {
+				run++;
+			}
+			if (run % PILLAR_EVERY == 0) {
+				BlockPos p = node.below(2);
+				for (int depth = 0; depth < PILLAR_DEPTH && !solid(level, p); depth++, p = p.below()) {
+					blocks.put(p, style.pillar().defaultBlockState());
+				}
+			}
+		}
+		lamps(level, hall, road, style, route, from, to, r, columns, others, blocks);
 		if (blocks.isEmpty()) {
 			return Optional.empty();
 		}
@@ -503,13 +677,198 @@ public final class Roads {
 		return Optional.of(new Segment(blueprint, new BlueprintData.Placement(Ids.of(level.dimension()), origin, Rotation.NONE, Mirror.NONE), box));
 	}
 
+	/** Node {@code j}'s stairs' facing when the way steps a block up onto it from the last or next node (null: no step). */
+	@Nullable
+	static Direction step(List<BlockPos> route, int j) {
+		BlockPos node = route.get(j);
+		if (j > 0 && route.get(j - 1).getY() == node.getY() - 1) {
+			return facing(route.get(j - 1), node);
+		}
+		if (j + 1 < route.size() && route.get(j + 1).getY() == node.getY() - 1) {
+			return facing(route.get(j + 1), node);
+		}
+		return null;
+	}
+
+	/** The way the road runs at node {@code j}: from the node before to the node after, along the main axis. */
+	static Direction along(List<BlockPos> route, int j) {
+		BlockPos a = route.get(Math.max(0, j - 1));
+		BlockPos b = route.get(Math.min(route.size() - 1, j + 1));
+		int dx = b.getX() - a.getX();
+		int dz = b.getZ() - a.getZ();
+		if (dx == 0 && dz == 0) {
+			return Direction.EAST;
+		}
+		return Math.abs(dx) >= Math.abs(dz) ? (dx > 0 ? Direction.EAST : Direction.WEST) : (dz > 0 ? Direction.SOUTH : Direction.NORTH);
+	}
+
+	/** The Street Lamp in the road's style (27.16): the blueprint {@code street_lamp} styled like the road, as drawn if it isn't there. */
+	static Optional<Blueprint> lampBlueprint(ServerLevel level, CityPlan.Road road) {
+		ResourceLocation base = io.github.jcondedata.aliveworkplace.blueprint.StarterBlueprints.STREET_LAMP.id();
+		Optional<Blueprint> styled = BlueprintLibrary.get(level, io.github.jcondedata.aliveworkplace.blueprint.BlueprintStyles.styled(base, road.style()));
+		return styled.isPresent() ? styled : BlueprintLibrary.get(level, base);
+	}
+
+	/**
+	 * The lamps of a segment (27.16). A street or avenue gets the Street Lamp (in its style, the style's lamp in it) beside it
+	 * every {@link #LAMP_EVERY} nodes on alternate sides, and one before every crossing; a lane gets a lantern post (the
+	 * style's post two high, its lamp on top) every {@link #POST_EVERY} nodes. A lamp stands only on clear natural ground
+	 * off every road, with no door within 2 blocks: else it moves up to 3 nodes on, or is left out.
+	 */
+	private static void lamps(ServerLevel level, BlockPos hall, CityPlan.Road road, RoadStyles.Style style, List<BlockPos> route, int from, int to,
+							  int r, Map<Long, int[]> columns, java.util.Set<Long> others, Map<BlockPos, BlockState> blocks) {
+		if (road.lane()) {
+			for (int j = POST_EVERY; j < route.size() - 1; j += POST_EVERY) {
+				for (int jj = j; jj < Math.min(j + 4, route.size() - 1); jj++) {
+					BlockPos node = route.get(jj);
+					BlockPos post = node.relative(along(route, jj).getCounterClockWise(), r + 1);
+					if (jj < from || jj >= to) {
+						break;
+					}
+					if (fits(level, post, 0, 3, columns, others, blocks)) {
+						blocks.put(post, style.lanternPost().defaultBlockState());
+						blocks.put(post.above(), style.lanternPost().defaultBlockState());
+						blocks.put(post.above(2), lamp(style, Blocks.LANTERN.defaultBlockState()));
+						break;
+					}
+				}
+			}
+			return;
+		}
+		Optional<Blueprint> lamp = lampBlueprint(level, road);
+		if (lamp.isEmpty()) {
+			return;
+		}
+		List<int[]> spots = new ArrayList<>(); // {node, side: 0 left, 1 right}
+		for (int j = LAMP_EVERY, k = 0; j < route.size(); j += LAMP_EVERY, k++) {
+			spots.add(new int[] {j, k % 2});
+		}
+		for (int j = 1; j < route.size(); j++) {
+			BlockPos c = route.get(j);
+			BlockPos b = route.get(j - 1);
+			if (others.contains(BlockPos.asLong(c.getX(), 0, c.getZ())) && !others.contains(BlockPos.asLong(b.getX(), 0, b.getZ())) && j >= 3) {
+				spots.add(new int[] {j - 3, 0}); // the crossing's corner, before it
+			}
+		}
+		for (int[] spot : spots) {
+			if (spot[0] < from || spot[0] >= to) {
+				continue;
+			}
+			for (int jj = spot[0]; jj < Math.min(spot[0] + 4, to); jj++) {
+				BlockPos node = route.get(jj);
+				Direction side = spot[1] == 0 ? along(route, jj).getCounterClockWise() : along(route, jj).getClockWise();
+				BlockPos centre = node.relative(side, r + 2);
+				if (fits(level, centre, 1, 6, columns, others, blocks)) {
+					for (Blueprint.Entry e : lamp.get().blocks()) {
+						if (!e.state().isAir()) {
+							blocks.put(centre.offset(e.pos().getX() - 1, e.pos().getY(), e.pos().getZ() - 1), lamp(style, e.state()));
+						}
+					}
+					break;
+				}
+			}
+		}
+	}
+
+	/** The style's lamp in place of a lantern (hanging as the lantern was); any other block as it is. */
+	private static BlockState lamp(RoadStyles.Style style, BlockState state) {
+		if (!state.is(Blocks.LANTERN)) {
+			return state;
+		}
+		BlockState out = style.lamp().defaultBlockState();
+		if (out.hasProperty(net.minecraft.world.level.block.LanternBlock.HANGING)) {
+			out = out.setValue(net.minecraft.world.level.block.LanternBlock.HANGING, state.getValue(net.minecraft.world.level.block.LanternBlock.HANGING));
+		}
+		return out;
+	}
+
+	/**
+	 * Whether a lamp {@code radius} round {@code centre} (feet), {@code height} tall, fits: every column clear natural ground
+	 * with only air or cover over it, off every road and anything this segment lays, and no door within 2 blocks.
+	 */
+	private static boolean fits(ServerLevel level, BlockPos centre, int radius, int height, Map<Long, int[]> columns, java.util.Set<Long> others,
+								Map<BlockPos, BlockState> blocks) {
+		for (int dx = -radius; dx <= radius; dx++) {
+			for (int dz = -radius; dz <= radius; dz++) {
+				BlockPos p = centre.offset(dx, 0, dz);
+				long key = BlockPos.asLong(p.getX(), 0, p.getZ());
+				if (columns.containsKey(key) || others.contains(key) || !natural(level.getBlockState(p.below())) || blocks.containsKey(p.below())) {
+					return false;
+				}
+				for (int dy = 0; dy < height; dy++) {
+					BlockState s = level.getBlockState(p.above(dy));
+					if (!(s.isAir() || cover(s)) || blocks.containsKey(p.above(dy))) {
+						return false;
+					}
+				}
+			}
+		}
+		for (BlockPos p : BlockPos.betweenClosed(centre.offset(-radius - 2, -1, -radius - 2), centre.offset(radius + 2, 2, radius + 2))) {
+			if (level.getBlockState(p).is(BlockTags.DOORS)) {
+				return false; // never in front of a door
+			}
+		}
+		return true;
+	}
+
+	/** The street lamps in segment {@code id}'s blueprint (counted by the lamp's top block, which nothing else of a road lays). */
+	static int lampsIn(ServerLevel level, CityPlan.Road road, ResourceLocation id) {
+		Optional<Blueprint> lamp = lampBlueprint(level, road);
+		Optional<Blueprint> segment = BlueprintLibrary.get(level, id);
+		if (lamp.isEmpty() || segment.isEmpty() || road.lane()) {
+			return 0;
+		}
+		BlockState top = null;
+		int topY = -1;
+		for (Blueprint.Entry e : lamp.get().blocks()) {
+			if (!e.state().isAir() && e.pos().getY() > topY) {
+				top = e.state();
+				topY = e.pos().getY();
+			}
+		}
+		if (top == null) {
+			return 0;
+		}
+		BlockState mark = lamp(RoadStyles.forBlueprintStyle(road.style()), top);
+		int n = 0;
+		for (Blueprint.Entry e : segment.get().blocks()) {
+			if (e.state().equals(mark)) {
+				n++;
+			}
+		}
+		return n;
+	}
+
+	/** The village's street lamps on its roads, for beauty (27.16: they count as Street Lamps). */
+	public static int lamps(ServerLevel level, BlockPos hall) {
+		if (!(level.getBlockEntity(hall) instanceof VillageHallBlockEntity entity)) {
+			return 0;
+		}
+		int n = 0;
+		for (CityPlan.Road road : entity.plan().roads()) {
+			n += road.lamps();
+		}
+		return n;
+	}
+
+	/** What the Steward's desk says of roads that stopped at a gap too wide to bridge. */
+	public static List<Component> deskNotes(CityPlan plan) {
+		List<Component> out = new ArrayList<>();
+		for (CityPlan.Road road : plan.roads()) {
+			if (road.gap() > 0) {
+				out.add(Component.translatable("screen.aliveworkplace.desk.road_gap", road.gap() > GAP_LOOK ? GAP_LOOK + "+" : String.valueOf(road.gap()), BRIDGE_MAX));
+			}
+		}
+		return out;
+	}
+
 	/** The way up from {@code low} to {@code high}: the stairs' facing (their high side), along the step. */
 	private static Direction facing(BlockPos low, BlockPos high) {
 		return Direction.getNearest(high.getX() - low.getX(), 0, high.getZ() - low.getZ());
 	}
 
 	/** Saves a segment's blueprint as a structure (as the Shape Planner does), unless one is saved under its id already. */
-	static boolean save(ServerLevel level, Blueprint blueprint) {
+	public static boolean save(ServerLevel level, Blueprint blueprint) {
 		StructureTemplateManager manager = level.getServer().getStructureManager();
 		if (manager.get(blueprint.id()).isPresent()) {
 			return true;
@@ -547,7 +906,7 @@ public final class Roads {
 				} catch (NumberFormatException e) {
 					continue;
 				}
-				CityPlan.Road done = road.withBuilt(n);
+				CityPlan.Road done = road.withBuilt(n, road.built().contains(n) ? 0 : lampsIn(level, road, site.structure()));
 				CityPlan next = plan.withRoad(i, done);
 				if (next != null) {
 					entity.setPlan(next);

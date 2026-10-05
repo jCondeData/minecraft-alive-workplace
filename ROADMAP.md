@@ -774,7 +774,7 @@ and an old vanilla village slowly rebuilds itself one house at a time. It answer
     its line is gone round and left standing; a half-built segment survives save and reload; roads leave the village's
     rank and building count unchanged; a new building's lane joins the street;
   - showcase scene `roads`: a GIF of a street being laid between two houses.
-- [ ] **27.16** **Lamps, bridges and steps.**
+- [x] **27.16** (review: pending 2026-10-05) **Lamps, bridges and steps.**
   - **Lamps:** the road style's lamp (the Street Lamp blueprint in the road's style, a styled id) every 16 blocks on
     alternate sides of streets and avenues and at every crossing, never in front of a door; lanes get a lantern post
     (the style's fence, two high, a lantern on top) every 12 blocks. Lamps count as Street Lamps for beauty
@@ -4330,6 +4330,25 @@ item waits.
   is a road on the plan with `lane` (approved, 1 wide, the joined road's style), built like the others; lanes don't
   count towards the 24 roads (at most 64 lanes). Lamps, bridges and the slab use of steps wait for 27.16 (the style
   files already name their blocks).
+- 2026-10-05 (27.16, decisions; lane c): lamps and bridges are part of a road's segment blueprints, so a builder lays
+  them with the road and nothing new is saved per lamp. A street or avenue's lamp is the `street_lamp` blueprint styled
+  like the road (`BlueprintStyles.styled`, the road style's `lamp` swapped in for its lanterns), its foot a block beside
+  the road's edge, at nodes 16, 32, 48... alternating left and right of the way the road runs, plus one 3 nodes before
+  each place it enters another road ("at every crossing"). A lamp needs clear natural ground for its 3x3 foot off every
+  road and no door within 2 blocks of it; else it moves up to 3 nodes on, or is left out (so corners and bridges get
+  none). Lanes get the style's `lantern_post` two high with the lamp on top every 12 nodes. Beauty counts the lamps on
+  finished segments (`Road.lamps`, saved, default 0) at a Street Lamp's 1 point each, inside the same 10% cap; the light
+  is real block light, so the "dark" tip sees it with no change. Gaps: each stretch's straight line is looked along
+  before routing; a column with water on top, or no ground within 2 blocks under the surface, starts a gap, which runs
+  straight on along the line's main axis to the first column with ground (40 at most). Up to 16 wide it is bridged:
+  the deck is one block over the higher bank (the spec's "at the banks' height" read as on top of them, so the deck
+  clears the water and the first and last deck blocks are the stairs up, the "ramp"), rails (the style's wall/fence) on
+  both sides, a pillar under the middle of every 4th deck block down to the bed, 12 deep at most. Wider, the road ends
+  at the near bank, the width is saved on the road (`Road.gap`, default 0) and the Steward's card on the desk says "A
+  road stops at a gap 20 blocks wide: a bridge spans 16 at most". Banks of different heights are not evened out (a
+  drop of 2 off the deck's low end is possible). Steps: 27.15's stairs already run across the road's whole width; the
+  style's slab is still unused. Crossings: columns another routed road also covers are paved with the middle mix (no
+  edge stripe through the crossing).
 - 2026-10-05 (30.15, decisions; lane d): the status line keeps the pace line's one format for every source, so a
   tonic reads "25% faster (Miner's Brew, 19 min left)" (the spec wrote "25% faster: Miner's Brew, 19 min left"); minutes
   are whole minutes left, rounded down (20 right after drinking, 19 a tick later). Only our own tonic items are refused

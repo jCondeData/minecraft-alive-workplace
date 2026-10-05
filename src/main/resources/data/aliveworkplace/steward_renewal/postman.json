@@ -1,0 +1,6 @@
+{
+  "job": "aliveworkplace:postman",
+  "buildings": [
+    "aliveworkplace:post_office"
+  ]
+}

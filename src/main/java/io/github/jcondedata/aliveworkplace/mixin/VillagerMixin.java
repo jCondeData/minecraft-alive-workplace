@@ -63,6 +63,7 @@ abstract class VillagerMixin {
 	@Inject(method = "customServerAiStep", at = @At("RETURN"))
 	private void aliveworkplace$thought(CallbackInfo ci) {
 		io.github.jcondedata.aliveworkplace.work.WorkerLimits.thinking(null);
+		io.github.jcondedata.aliveworkplace.work.BedLadders.tick((Villager) (Object) this); // up a ladder to a bed upstairs (B79)
 		io.github.jcondedata.aliveworkplace.legend.Pathfinder.hold((Villager) (Object) this); // after the brain: waiting stays put
 	}
 
@@ -192,5 +193,6 @@ abstract class VillagerMixin {
 	@Inject(method = "updateSpecialPrices", at = @At("TAIL"))
 	private void aliveworkplace$silverTongue(net.minecraft.world.entity.player.Player player, CallbackInfo ci) {
 		io.github.jcondedata.aliveworkplace.legend.Gifted.discount((Villager) (Object) this);
+		io.github.jcondedata.aliveworkplace.hall.TradeFairs.discount((Villager) (Object) this); // a trade fair's day (29.17)
 	}
 }

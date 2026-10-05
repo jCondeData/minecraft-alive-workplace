@@ -1,0 +1,8 @@
+{
+  "kind": "home",
+  "buildings": [
+    "aliveworkplace:starter_cottage",
+    "aliveworkplace:stone_house",
+    "aliveworkplace:terrace"
+  ]
+}

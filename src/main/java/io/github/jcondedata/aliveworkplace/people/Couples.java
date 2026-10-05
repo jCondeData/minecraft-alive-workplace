@@ -153,6 +153,7 @@ public final class Couples {
 		Chronicle.record(level, hall, Chronicle.Kind.WEDDING, Component.translatable("chronicle.aliveworkplace.wedding", a.getDisplayName(),
 			b.getDisplayName()));
 		io.github.jcondedata.aliveworkplace.legend.Seer.bless(level, hall, a, b, square); // at the Chapel with the Seer there (29.16)
+		io.github.jcondedata.aliveworkplace.hall.Anthems.play(level, hall, "wedding"); // the Bard Laureate's anthem (29.19)
 	}
 
 	/** Where weddings are held: the village's finished Chapel, else its bell. */

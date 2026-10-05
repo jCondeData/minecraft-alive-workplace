@@ -87,6 +87,7 @@ public final class StewardWishes {
 	public static void init() {
 		StewardWork.PLANNER = StewardWishes::plan;
 		Plots.init();
+		OldHouses.init();
 		StewardDesk.init();
 	}
 

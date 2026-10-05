@@ -1,0 +1,9 @@
+{
+  "job": "aliveworkplace:tutor",
+  "buildings": [
+    "aliveworkplace:school"
+  ],
+  "requires": [
+    "cobblemon"
+  ]
+}

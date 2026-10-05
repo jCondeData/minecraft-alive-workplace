@@ -1,0 +1,6 @@
+{
+  "name": {"translate": "service.aliveworkplace.market"},
+  "blueprints": ["aliveworkplace:market_square"],
+  "range": -1,
+  "icon": "minecraft:emerald"
+}

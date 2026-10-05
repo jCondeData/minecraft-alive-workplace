@@ -142,11 +142,13 @@ stay in the list, ticked, so their numbers stay unique.
 - [x] **B73** (approved auto 2026-10-05) (verified 2026-10-05: B46: QaB46GameTests [two restarts in a row hold 24%, a save without shown_progress loads] + B46GameTests pass; B69: QaB69FrontWalkGameTests, all 5 styles, villagers walking the guard house's front walk row reach the door from both corners: 5/5 fail on the pre-fix templates [stuck beside the flower box], pass on main twice and in a full build [1014/1014]; B73: 'Refresh active project' on main leaves git diff unchanged. Tests on qa/b46-b69-1005 [ship blocked by the B57 flake]) QaImportEdgesGameTests (QA commit 33ddd5b0): its '//$ gametest' swap line drops timeoutTicks = 400, so ./gradlew 'Refresh active project' rewrites the @GameTest without the 400-tick timeout (seen by lane-c-1005-0932, 2026-10-05). Expected: refresh leaves git diff unchanged; the swap line carries the timeout. Test: run 'Refresh active project' on main, git diff (found by lane-c-1005-0932, 2026-10-05)
 - [x] **B74** (approved auto 2026-10-05) (verified 2026-10-05: flake fixes: no failure of the fletcher, air-mail, lamp or Pathfinder tests in the 10 CI builds on main since 78b6a27/c8aeabb [15:34Z-18:26Z, the only reds were countryWorkplaceBuilt_farmstead=B77 and one seer flake] nor in this run's two full ship builds) PartnersForgeCompatTests aPidgeyBringsAFeatherToTheFletcher still fails after B57's fix (bf4d4091, leftovers cleared): 'no bow for the guard' in qa-1005-1034's ship build of qa/b46-b69-1005 (main a5a723f9+ merged, 2026-10-05 11:26Z; 1014 gametests passed, this the only compat failure). Expected: passes every run. Test: runCompatGameTest, or the repeat generator on that test (QA lane: test-only flake, but it turns the build red) (found by qa-1005-1034, 2026-10-05)
 - [x] **B75** (approved auto 2026-10-05) (verified 2026-10-05: flake fixes: no failure of the fletcher, air-mail, lamp or Pathfinder tests in the 10 CI builds on main since 78b6a27/c8aeabb [15:34Z-18:26Z, the only reds were countryWorkplaceBuilt_farmstead=B77 and one seer flake] nor in this run's two full ship builds) PathfinderGameTests.expeditionLeadsWaitsAndCatchesUp failed on CI build 37305086133 (main 2cafe50, 2026-10-05 11:46Z) and turned main red; passed in lane-a-1005-1233's local runGameTest on 4d1ee21. The next CI run (4d1ee21) was red from B66 instead. Expected: passes every run. Test: the repeat generator on that test (found by lane-a-1005-1233, 2026-10-05)
-- [x] **B76** (urgent: owner 2026-10-05, before more players update to 0.139.0) (approved auto 2026-10-05) Unfinished expansions are switched ON by default, against the ROADMAP rule that they stay off until their milestone is complete: WorkplaceConfig defaults legends, legendNeeds, legendSites, strangeMoods (M29), villageEdicts, workHorns, villageBanners, cradles, harvestIdols, tonics (M30), steward, stewardSelfRun (M27), berryBreeders, campCooks, habitatKeepers, daycareKeepers, gemGrowers, habitatSightings, villageHabitats (M28) to true, so 0.139.0 (released 2026-10-05) ships M27-M30 half-built and on. Expected: each unfinished milestone's switches default to false (new worlds and configs that never set them), and the release that completes a milestone turns its switches on. Check which switch belongs to which milestone before changing; GameTests set the switch they need. Owner (2026-10-05): switched off to avoid bugs; when a whole expansion (e.g. all of 1.1) is done, its release turns it back on. Configs that 0.139.0 already wrote to disk hold `true` for these switches, so a new default alone won't turn them off on his server: gate each unfinished milestone in code (e.g. a per-milestone 'complete' flag the switch is ANDed with), not only by the config default, and test that a 0.139.0 config with the switch true still leaves the feature off. (found by speed-1005-1232, 2026-10-05) (found by speed-1005-1232, 2026-10-05)
+- [x] **B76** (urgent: owner 2026-10-05, before more players update to 0.139.0) (approved auto 2026-10-05) (verified 2026-10-05: ExpansionGateGameTests' 3 tests [0.139.0 config with switches on stays off, unfinished switches default off and hidden, tests can open the gates] passed in a local full build on a8af069; M27-M30 and M34 flags false in Expansions; no new tests) Unfinished expansions are switched ON by default, against the ROADMAP rule that they stay off until their milestone is complete: WorkplaceConfig defaults legends, legendNeeds, legendSites, strangeMoods (M29), villageEdicts, workHorns, villageBanners, cradles, harvestIdols, tonics (M30), steward, stewardSelfRun (M27), berryBreeders, campCooks, habitatKeepers, daycareKeepers, gemGrowers, habitatSightings, villageHabitats (M28) to true, so 0.139.0 (released 2026-10-05) ships M27-M30 half-built and on. Expected: each unfinished milestone's switches default to false (new worlds and configs that never set them), and the release that completes a milestone turns its switches on. Check which switch belongs to which milestone before changing; GameTests set the switch they need. Owner (2026-10-05): switched off to avoid bugs; when a whole expansion (e.g. all of 1.1) is done, its release turns it back on. Configs that 0.139.0 already wrote to disk hold `true` for these switches, so a new default alone won't turn them off on his server: gate each unfinished milestone in code (e.g. a per-milestone 'complete' flag the switch is ANDed with), not only by the config default, and test that a 0.139.0 config with the switch true still leaves the feature off. (found by speed-1005-1232, 2026-10-05) (found by speed-1005-1232, 2026-10-05)
 - [x] **B77** (approved auto 2026-10-05) CountryWorkplacesGameTests countryWorkplaceBuilt_farmstead (27.14) failed in qa-1005-1434's ship build (main d519846 + compat-test-only changes, 2026-10-05 15:07Z, 1 of 1048): 'no harvest in the Farmstead's chests (harvested 36)' at the time-out: the farmer harvested 36 crops but none were in a container within the house's 15x13 footprint at y 1. Not yet known whether a player would see it (harvest kept in his inventory, put in a chest elsewhere, or taken by another worker) or it is the test's timing. Expected: the Farmstead farmer's harvest reaches its chests every run. Test: countryWorkplaceBuilt_farmstead, a few runGameTest runs (found by qa-1005-1434, 2026-10-05) (found by qa-1005-1434, 2026-10-05)
-- [ ] **B78** The Book of Edicts' guild row lists only 6 guilds, but a City can now hold up to 12 guilds (30.17-30.20), so the rest are never shown. Expected: every guild of the village on the Book's guild row (paged or wrapped). Test: GuildsScene / EdictBook guild row with more than 6 guilds (found by lane-d-1005-1533, 2026-10-05)
-- [ ] **B79** Renewal (27.21): villagers whose old home was renewed may not walk to their new beds on their own. RenewalGameTests' two-bed test teleports both villagers to the new beds before night, because without it they lost the bed memory (the 27.21 subagent's guess: they couldn't path to it in the test village). Expected: after a home is renewed, its villagers keep their claim on the new beds and walk there and sleep without help. Test: the two-bed renewal test without the teleport (found by lane-c-1005-1833, 2026-10-05)
+- [x] **B78** (review: pending 2026-10-05) The Book of Edicts' guild row lists only 6 guilds, but a City can now hold up to 12 guilds (30.17-30.20), so the rest are never shown. Expected: every guild of the village on the Book's guild row (paged or wrapped). Test: GuildsScene / EdictBook guild row with more than 6 guilds (found by lane-d-1005-1533, 2026-10-05)
+- [x] **B79** (approved auto 2026-10-05) Renewal (27.21): villagers whose old home was renewed may not walk to their new beds on their own. RenewalGameTests' two-bed test teleports both villagers to the new beds before night, because without it they lost the bed memory (the 27.21 subagent's guess: they couldn't path to it in the test village). Expected: after a home is renewed, its villagers keep their claim on the new beds and walk there and sleep without help. Test: the two-bed renewal test without the teleport (found by lane-c-1005-1833, 2026-10-05)
 - [ ] **B80** RoadGameTests.aHalfBuiltSegmentSurvivesSaveAndReloadAndRoadsLeaveTheRankAlone (batch roadReload, 27.15) fails 'the road opened 0 segments, not 1' in every run of a trimmed suite (Caravan, StewardSafety, ResearchTrees, Road, Wall, CityPlanRoad GameTests; 5 of 5), while it passes in the full suite: it depends on test order, likely a leftover finished-building record or site on its line from an earlier batch (as CaravanRoadGameTests had, fixed in f88686b2 by forgetting finished records round the area). Expected: passes in any order. Test: runGameTest with those classes only (QA lane: test-only) (found by lane-c-1005-1833, 2026-10-05)
+- [ ] **B81** ConscriptionGameTests.aConscriptSavedMidRaidLoadsWithoutTheSword failed on main CI build 696 (7b40b9c5, 2026-10-05 19:41Z), its only failure, turning main red: 'armed: 3 minecraft:wheat / 0 minecraft:air' (after the save and reload mid-raid the conscript holds wheat, no sword). Builds 695 and 697-699 were cancelled by the runner at about 15 min (no concurrency or timeout in build.yml), so they say nothing. Expected: passes every run; a player would see a conscript reloaded mid-raid holding the wrong item, so check whether the test or the mod drops the sword. Test: the test repeated with the repeat generator (found by red duty) (found by lane-c-1005-1833, 2026-10-05)
+- [ ] **B82** SeerGameTests.aRaidForetoldComesAndNoneWhenNoneIs (29.16) failed in qa-1005-2033's full build (main a8af069 + a test-message change, 2026-10-05 21:04Z, 1 failure in the suite): 'foretold from the south-east, came from the east'. From reading VillageRaids (not proven): a foretold raid gathers at angle +-FORETOLD_SPREAD (0.3 rad, 17 deg) at 0.6x VillageHalls.RADIUS, then each raider is placed +-3 blocks round that point, and the test takes the raiders' centre to the nearest eighth (+-22.5 deg), so the centre can cross into the next eighth; with a small RADIUS (PeopleGameTests sets 16) the 3-block scatter alone is about 15 deg. A player may hear 'south-east' and see raiders come from the east-south-east. Expected: raiders always gather well inside the eighth told (smaller spread, or the spread and scatter scaled to the distance), and the test passes every run. Test: aRaidForetoldComesAndNoneWhenNoneIs repeated 10x with the repeat generator (found by qa-1005-2033, 2026-10-05)
 
 ## Milestone 21: Finish 0.138.0
 
@@ -841,7 +843,7 @@ and an old vanilla village slowly rebuilds itself one house at a time. It answer
   missing materials of two waiting sites; proposals stop while two sites wait and start again once supplied; the
   ledger survives save and reload; a chaos run (the tester skill's `ChaosTests`, 3 seeds) of a self-run village breaks
   no block a player placed.
-- [ ] **27.20** **Old houses, found and measured.** In zones with "renew old houses" on, the Steward looks for houses
+- [x] **27.20** (review: pending 2026-10-05) **Old houses, found and measured.** In zones with "renew old houses" on, the Steward looks for houses
   no builder built: a bed or a workstation (by its point of interest) that isn't in a finished build (`Homes.at`,
   `BuildSiteManager.finishedAt`), and the house round it, measured by a flood fill over built blocks (not terrain,
   plants or natural trees: at most 2000 blocks and 20×16×20, 256 blocks a tick). Keyed on blocks, never on the
@@ -855,7 +857,7 @@ and an old vanilla village slowly rebuilds itself one house at a time. It answer
   vanilla plains house (placed from its template as a fixture) is found and its box measured exactly; the same shape
   in deepslate and quartz isn't; one with a chest isn't; one a player changed since 1.1 isn't; the fill never passes
   256 blocks in a tick.
-- [ ] **27.21** **Old villages renewed.** One old house at a time (at most one every 2 days in a village), the Steward
+- [x] **27.21** (review: pending 2026-10-05) **Old villages renewed.** One old house at a time (at most one every 2 days in a village), the Steward
   rebuilds it in its zone's style: "Renew the old house 14 blocks west as a Stone House (Cherry)". Renewal lists are
   data: `data/aliveworkplace/steward_renewal/<name>.json` holds one: the kind of old house (a home, or a job's point
   of interest) and the buildings to try, in order. Shipped lists: homes (Starter Cottage, Stone House, Terrace: the
@@ -1695,7 +1697,7 @@ MarketDays) and research/.
   Seer comes only at midnight, at a full moon, to a Chapel; a raid foretold at dawn comes that night and none comes
   when none is foretold (fixed `RandomSource`); the festival and market days told are right; a blessed wedding's mood
   and baby; showcase scene `legend_seer` (GIF: the arrival under the full moon, the dawn foretelling in chat).
-- [ ] **29.17** **The Merchant Prince (Legendary).** Comes: found as a castaway by a shipwreck (29.9) once the
+- [x] **29.17** (review: pending 2026-10-05) **The Merchant Prince (Legendary).** Comes: found as a castaway by a shipwreck (29.9) once the
   village's treasury has taken in 500 emeralds all told (`treasury_total`) and it sends caravans on 3 routes. Trade:
   `aliveworkplace:legend`; they keep to the Village Hall and the Market Square. Likes: wine. Powers:
   - **the bank** (`bank`): the treasury earns 2% a day on what it holds and holds twice as much; players deposit
@@ -1712,7 +1714,7 @@ MarketDays) and research/.
   cap; deposits and withdrawals with interest, kept through a reload, never more than 10 stacks; a fair with 6 traders
   plus one per linked village; the caravan pay; showcase scene `legend_merchant_prince` (the bank page, a GIF of the
   fair).
-- [ ] **29.18** **The Grand Chef (Rare).** Comes: inspired (29.10): a Master Chef in a happy village whose store has 8
+- [x] **29.18** (review: pending 2026-10-05) **The Grand Chef (Rare).** Comes: inspired (29.10): a Master Chef in a happy village whose store has 8
   kinds of meal (`VillageHalls.mealKinds`); the materials come from a pool of a golden apple, a glistering melon
   slice, a golden carrot, a honeycomb, glow berries, chorus fruit and a pufferfish, and the Masterwork is a cake named
   for the village ("The Thornholm Midsummer Cake"). Also a guest at the inn on the same condition, and born to a Chef
@@ -1726,7 +1728,7 @@ MarketDays) and research/.
   Outfit: a tall white toque and a gold ladle at the apron. Done when: GameTests: a banquet takes two meals each; the
   mood; two births a day for 3 days with free beds, and one a day after; chefs faster; showcase scene
   `legend_grand_chef` (GIF: the banquet).
-- [ ] **29.19** **The Bard Laureate (Rare).** Comes: a guest at a festival once 30 villagers come to it (29.8); born
+- [x] **29.19** (review: pending 2026-10-05) **The Bard Laureate (Rare).** Comes: a guest at a festival once 30 villagers come to it (29.8); born
   to a Bard (29.7). Trade: Bard. Likes: books. Powers:
   - **the anthem** (`anthem`): when they settle they compose the village's anthem, 16 notes on one instrument (harp,
     flute, bell, chime, guitar or xylophone) made from the village's name, so it never changes, kept in the hall. It
@@ -1740,7 +1742,7 @@ MarketDays) and research/.
   Outfit: a green doublet, a lute on the back and a laurel wreath. Done when: GameTests: the same name always gives
   the same anthem and another name a different one; it is saved and played at each event (the sounds counted); the
   work-song pace only while they sing; showcase scene `legend_bard` (GIF with the notes).
-- [ ] **29.20** **The Beastmaster (Rare).** Comes: found as a prisoner in a pillager outpost (29.9) once the village
+- [x] **29.20** (review: pending 2026-10-05) **The Beastmaster (Rare).** Comes: found as a prisoner in a pillager outpost (29.9) once the village
   has a ranch: 10 animals within 16 blocks of a Rancher's, Butcher's or Shepherd's workstation; born to a Rancher
   (29.7). Trade: Rancher. Likes: clothes. Powers:
   - **war dogs** (`war_dogs`): with bones in their chest they tame a wolf for each guard without one (the village's
@@ -1787,7 +1789,7 @@ MarketDays) and research/.
   an Alpha (or the level-50 stand-in) near; a calmed Alpha doesn't attack a villager; a befriended Pokémon belongs to
   the owner and is in the pasture, and a banned species never is; nothing loads without Cobblemon; showcase scene
   `legend_ranger`.
-- [ ] **29.23** **The Founder (Mythic).** Comes: inspired (29.10), always, at the village's first rise to City: its
+- [x] **29.23** (review: pending 2026-10-05) **The Founder (Mythic).** Comes: inspired (29.10), always, at the village's first rise to City: its
   most experienced Master (the most XP) is seized by the Founder's mood and asks for a block of gold, a block of
   emeralds and a diamond. The Masterwork is **The Charter of <village>**, a written book of the village's story drawn
   from its chronicle (its founding, each rank, its Legends, its first wedding, the raids it beat), signed by the
@@ -3542,7 +3544,7 @@ into elders who retire and teach, and every family has a tree. It builds on `peo
 switches on for every village of the owner's live server at once, so it ends with a careful migration and a rehearsal
 on a real world.
 
-- [ ] **34.1** **Design note.** `docs/design/M34.md`: what the player sees (the class ladder, a household rising at
+- [x] **34.1** (review: pending 2026-10-05) **Design note.** `docs/design/M34.md`: what the player sees (the class ladder, a household rising at
   dawn, the four luxury trades and their goods, villagers dressed by class, grander homes, elders, family trees, and
   the first week after the update); the data formats with one example file each (`classes/`, `services/`,
   `luxuries/`, `luxury_recipes/`, `homes/` under `data/aliveworkplace/`); every config switch; every new saved field
@@ -3551,7 +3553,7 @@ on a real world.
   vanilla jobs are never class-gated, family names show on the hall but never rename a villager. Sent to the owner as
   a review package; lanes don't wait for his reply. Done when: the note is on `main`, its tables match this
   milestone's numbers, and the package is sent.
-- [ ] **34.2** **The class engine.** The four classes are data: `data/aliveworkplace/classes/<id>.json` (`peasant`,
+- [x] **34.2** (approved auto 2026-10-05) **The class engine.** The four classes are data: `data/aliveworkplace/classes/<id>.json` (`peasant`,
   `artisan`, `burgher`, `noble`), one file holding the class's tier (0-3), tax factor, outfit, `needs` (all must hold
   to be that class), `wants` (optional extras) and what it gives (`jobs`, `effects`; read by 34.7 and 34.8), e.g.
   `{"tier": 1, "tax": 1.5, "needs": [{"type": "home", "grade": 1}, {"type": "fed_days", "days": 3}, {"type": "diet",
@@ -3582,7 +3584,7 @@ on a real world.
   step a day, children following their household, a datapack class file changing a need) pass; a save and reload
   keeps class and progress; 60 households take under 2 ms a hall round (timed in a GameTest). Nothing to see yet:
   `--no-review`.
-- [ ] **34.3** **Services nearby.** `data/aliveworkplace/services/<id>.json`: which workers or finished builds give a
+- [x] **34.3** (approved auto 2026-10-05) **Services nearby.** `data/aliveworkplace/services/<id>.json`: which workers or finished builds give a
   service and how far it reaches, e.g. `{"jobs": ["aliveworkplace:teacher"], "blueprints":
   ["aliveworkplace:schoolhouse"], "range": 48, "icon": "minecraft:lectern"}`. Six to start: **chapel** (a finished
   Chapel), **school** (a Teacher, or a Schoolhouse), **clinic** (a Nurse, or a Healing Center), **library** (a
@@ -4438,6 +4440,14 @@ item waits.
   build like the Steward's (no blueprint item comes back if it's cancelled). A strike cancels the rebuild under way (the
   blocks placed stay) and none starts until it's over. The Architect can be the builder handed the work if they are
   the least busy one with a bench.
+- 2026-10-05 (29.18, decisions; lane a): "on the same condition" for the inn guest and the born Grand Chef is the
+  file's condition, 8 kinds of meal in the store (a happy village is part of the inspired way itself). Everyone in the
+  village who isn't asleep at supper counts as having come (as at a festival's feast); children are counted for the mood
+  but eat nothing. The banquet is called after work (9000), the feast is at 10500; no banquet on a festival's day (it
+  comes the next evening). The two births a day run from the banquet's day through the next two, and stop if no free bed.
+  The toque can't rise above the hat layer, so "tall" is drawn as pleats from the crown to a gold band at the brow.
+  Also restored the Seer's outfit recipe's lost save lines in tools/textures/art/villagers_2.py (a merge dropped them;
+  the PNG is unchanged).
 - 2026-10-05 (29.16, decisions; lane a): the night's raid and the guests are rolled ahead only in a village with a
   settled Seer (elsewhere nothing changes). The foretelling comes at the hall's first round of the day before 6000;
   the first one (or the first after a missed dawn) also rolls today's guests, unannounced, so tomorrow's roll knows
@@ -4783,6 +4793,14 @@ item waits.
   and the still shows none rising (FAIL "a schoolhouse went up"); the day-2 wishes also still listed `well` after the
   well was finished. Left for QA/the next lane: why the schoolhouse doesn't start (plot in Civic z 16..40, two open
   builds in a Village) and whether `built_count_below` misses a just-finished well at the morning's ranking.
+- 2026-10-05 (34.1, decision for the owner; lane d): `docs/design/M34.md` is the Classes and luxuries note. One clash
+  with the code: 34.12 picks the Jeweller with an amethyst shard at the stonecutter, but since 28.11 the shard there
+  already picks the Gem Grower (`GemGrowers.isShard`), and the Mason is picked with a clay ball, not cobblestone. Default
+  until the owner says otherwise: the **Jeweller is picked with a gold nugget**; 34.12's test reads "picked with a gold
+  nugget". Also decided there: the Noble's class file repeats the Burgher's food and diet (34.2 lists none), the
+  Burgher's "one more service" excludes the market (the Market Square is its own `building` need), and new chronicle
+  kind `LIFE` for elders, retirements and generations beside 34.6's `CLASS`.
 - **qa handoff** (qa-1005-1034, 2026-10-05 11:27Z): qa-1005-1034: verified B46, B69, B73. Unshipped: qa/b46-b69-1005 (QaB46GameTests, QaB69FrontWalkGameTests; its ship build passed 1014/1014 gametests but failed on the compat flake B74 = B57 again): ship it once B74 is fixed (or retry ship). qa/import-swap-1005 is obsolete (B73 fixed on main). B50 and B57 not verified: read nightly run 37297003813 (on 5b489b7, after both fixes) for the crew test and the Pidgey test's repeats; B57 recurred (B74). qa/placing-1005 still waits on B71. Next QA: B50 from the nightly, B72 scene setup, then 21.2, M23.
 - **lane-c handoff** (lane-c-1005-1532, 2026-10-05 18:13Z): wip/lane-c (ce73d6ed) = main as of 17:55Z + 27.15, 27.16, B67, B71 (old wip, B75 dup fix dropped for main's Pathfinder.hold), 27.17 caravan roads, 27.18 walls, 27.19 Steward safety, all ticked. Full build: compile, devclient and 1117/1118 GameTests pass; CaravanRoadGameTests.twoVillages120ApartBuildBothHalvesAndTheyMeet fails in the full suite (passed alone 16/16 and in 79-test targeted runs; likely batch interference with 27.18/27.19 or chunk tickets). Next run: git switch wip/lane-c, fix that test, merge main, full build (compat not yet run), push to main. Trap: worktree subagents leave Gradle daemons; stop them or full runs get OOM-killed.
 - **lane-b wip** (lane-b-1005-1833, 2026-10-05 21:26Z): wip/lane-b holds 28.17 (Festival Cup, commit 7e8a53fd, its 8 CupGameTests pass) not on main: the full build failed GiftedBornGameTests.bornRollsLegendGiftedNeitherAndTakenSlot ('the Rare's slot is still open with Wren in it'), green on main without 28.17. Suspect `Cups.round`, now called in the hall round just before `LegendSlots.round`. Left: find the cause, fix, merge main (ConfigGameTests/ExpansionGateGameTests option counts), full build, push.
+- **lane-c handoff** (lane-c-1005-1833, 2026-10-05 20:59Z): lane-c-1005-1833 (21:01Z): landed on main 2f801600: 27.15-27.19 (old wip/lane-c, M27-gated), 27.20 old houses, 27.21 renewal, B79 (ladder to upstairs beds), CaravanRoad test isolation fix. Local full build green (1169+151) before merging lane a's 29.x, pushed without rebuilding that merge (clean, no config changes). Next: 27.22 (the 1.1 yardstick), then 31.x. Red duty notes: main CI 695/697-699 were cancelled by the runner at ~15 min (infra), 696 failed only ConscriptionGameTests.aConscriptSavedMidRaidLoadsWithoutTheSword (B81). wip/lane-c is now stale (all merged); B80 is test-order (QA).

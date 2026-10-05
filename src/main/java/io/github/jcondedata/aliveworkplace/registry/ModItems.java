@@ -58,6 +58,8 @@ public final class ModItems {
 
 	/** Two settlers make camp where it's used: a covered wagon, supplies, a Builder's Bench. */
 	public static final io.github.jcondedata.aliveworkplace.camp.SettlersWagonItem SETTLERS_WAGON = Reg.item("settlers_wagon", io.github.jcondedata.aliveworkplace.camp.SettlersWagonItem::new, new Item.Properties().stacksTo(1));
+	/** The Founder's gift every week (29.23): a Settler's Wagon whose camp brings a Village Hall named after the mother village. */
+	public static final io.github.jcondedata.aliveworkplace.camp.FoundersWagonItem FOUNDERS_WAGON = Reg.item("founders_wagon", io.github.jcondedata.aliveworkplace.camp.FoundersWagonItem::new, new Item.Properties().stacksTo(1).rarity(net.minecraft.world.item.Rarity.EPIC));
 
 	/** The Guide Book: how the mod works, page by page, with in-game screenshots (ROADMAP 26.2a). */
 	public static final io.github.jcondedata.aliveworkplace.guide.GuideBookItem GUIDE_BOOK = Reg.item("guide_book", io.github.jcondedata.aliveworkplace.guide.GuideBookItem::new, new Item.Properties().stacksTo(1));
@@ -109,6 +111,7 @@ public final class ModItems {
 				output.accept(ModBlocks.VILLAGE_HALL);
 				output.accept(ModBlocks.DROP_BOX);
 				output.accept(SETTLERS_WAGON);
+				output.accept(FOUNDERS_WAGON);
 				for (StarterBlueprints.Entry entry : StarterBlueprints.ALL) {
 					output.accept(BlueprintItem.create(entry.id(), entry.size()));
 				}

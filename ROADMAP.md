@@ -1437,7 +1437,7 @@ MarketDays) and research/.
   - unmet two days: a strike, during which the Legend's `pace` power is gone and their trade's work stops; met again:
     back at work that day; a Legend on strike for 20 days is still in the village;
   - a screenshot and a GIF of a Legend picketing at the hall under the red line; showcase scene `legend_strike`.
-- [ ] **29.6** **Gifted villagers (1): the engine, Prodigy, Iron Will, Silver Tongue and Night Owl.** Gifted traits
+- [x] **29.6** (review: pending 2026-10-05) **Gifted villagers (1): the engine, Prodigy, Iron Will, Silver Tongue and Night Owl.** Gifted traits
   are data: `data/aliveworkplace/gifted/<id>.json` holds a weight and effects from the shared toolbox, with lang keys
   for the name and description. About one villager in 30 is Gifted (config `giftedChance`, 30; 0 turns them off),
   rolled from the UUID as `Traits.of` does, so every existing villager has theirs with nothing to migrate; the

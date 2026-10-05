@@ -1,0 +1,11 @@
+{
+  "name": "gifted.aliveworkplace.prodigy",
+  "description": "gifted.aliveworkplace.prodigy.desc",
+  "weight": 10,
+  "effects": [
+    {
+      "type": "xp",
+      "factor": 3.0
+    }
+  ]
+}

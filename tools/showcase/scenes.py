@@ -248,6 +248,11 @@ SCENES = [
       [("01_legend_look", "A Legend: outfit, gold name, sparkle"), ("03_legend_list", "First on the hall's list"),
        ("04_legends_page_scale2", "The Legends page, GUI scale 2"), ("05_legends_page_scale4", "The Legends page, GUI scale 4")]),
     # Needs and strikes (ROADMAP 29.5): a Legend with no home of her own on strike, picketing by the hall under a red line
+    # Gifted villagers (ROADMAP 29.6): Wren, a Night Owl builder, building a market stall at midnight, and her gift in
+    # gold on the hall's list
+    S("gifted", "Legends", "A Night Owl builds by moonlight", "a Night Owl builder placed blocks at midnight, and the hall's list shows her gift in gold", 60,
+      [("01_night_owl_building", "Building at midnight"), ("04_night_owl_building", "Still at it"),
+       ("05_gifted_list", "The hall's list: her gift in gold")]),
     job("legend_strike", "Legends", "A Legend on strike", "a Legend on strike left her stonecutter and picketed by the Village Hall under a red line", 120),
     S("edicts", "Village Hall", "The Book of Edicts",
       "the Book of Edicts opened from the hall's lectern button, with Long Shifts in force, at GUI scales 2 and 4", 45,

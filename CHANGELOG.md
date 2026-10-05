@@ -17,6 +17,11 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Added
+- **Gifted villagers** (29.6): about one villager in 30 has a rare gift as well as their traits, shown in gold on the
+  Village Hall's list. Prodigy learns three times as fast; Iron Will never panics and keeps working through raids and
+  the bell; Silver Tongue's trades are 20% cheaper; a Night Owl works from dusk to dawn and sleeps from mid-morning to
+  mid-afternoon (builders and miners too). A Gifted villager sparkles when they level up, and the chronicle notes one
+  who joins from the inn or grows up. Gifts are data (`data/<ns>/gifted/<id>.json`); config `giftedChance` (30; 0: none).
 - **Legends' needs and strikes** (29.5): once a day the Village Hall checks what each settled Legend needs: a home of
   their own (their bed in a finished tier III building, shared with nobody but their spouse), their luxury once a week
   (wine, jewels, books or fine clothes, taken from a chest in their home or else the village store, +10 mood; for now

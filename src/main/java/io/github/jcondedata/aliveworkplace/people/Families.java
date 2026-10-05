@@ -63,8 +63,10 @@ public final class Families {
 		}
 		if (!parents.grownUp()) {
 			ModAttachments.PARENTS.set(villager, parents.grown());
-			Chronicle.record(level, hall, Chronicle.Kind.BIRTH, Component.translatable("chronicle.aliveworkplace.grown_up", villager.getDisplayName(),
-				parents.mother(), parents.father()));
+			io.github.jcondedata.aliveworkplace.legend.Gifted.Gift gift = io.github.jcondedata.aliveworkplace.legend.Gifted.of(villager);
+			Chronicle.record(level, hall, Chronicle.Kind.BIRTH, gift != null
+				? Component.translatable("chronicle.aliveworkplace.grown_up_gifted", villager.getDisplayName(), parents.mother(), parents.father(), gift.title())
+				: Component.translatable("chronicle.aliveworkplace.grown_up", villager.getDisplayName(), parents.mother(), parents.father()));
 		}
 		if (villager.getVillagerData().getProfession() != VillagerProfession.NONE) {
 			return;

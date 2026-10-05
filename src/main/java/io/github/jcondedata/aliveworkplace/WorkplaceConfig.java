@@ -71,6 +71,8 @@ public final class WorkplaceConfig {
 	public boolean legends = true;
 	/** A settled Legend needs a home of their own, their luxury and a happy village, and strikes without them. */
 	public boolean legendNeeds = true;
+	/** One villager in this many is Gifted, with a rare trait (0: nobody is; nothing is erased). */
+	public int giftedChance = 30;
 	/**
 	 * Mythic Legends a village may hold, by its rank: Hamlet, Village, Town, City. Edited in the file only (a list isn't
 	 * on the settings screen); each is clamped to 0-10, a short list is filled from the defaults.
@@ -204,6 +206,7 @@ public final class WorkplaceConfig {
 		"villageGrowthCap", 0, 500,
 		"maxWorkPace", 100, 400,
 		"edictMinDays", 0, 30,
+		"giftedChance", 0, 1000,
 		"seasonDays", 1, 120,
 		"treasuryPerWorker", 0, 500,
 		"dollarsPerEmerald", 1, 10_000,
@@ -340,6 +343,7 @@ public final class WorkplaceConfig {
 		io.github.jcondedata.aliveworkplace.hall.Treasury.ENABLED = villageTreasury && System.getProperty("fabric-api.gametest") == null;
 		io.github.jcondedata.aliveworkplace.hall.VillageProtection.ENABLED = villageProtection;
 		io.github.jcondedata.aliveworkplace.legend.Legends.ENABLED = legends;
+		io.github.jcondedata.aliveworkplace.legend.Gifted.CHANCE = giftedChance;
 		// Off in gametests (a round could start or end a strike a test staged); the needs tests turn it on.
 		io.github.jcondedata.aliveworkplace.legend.LegendNeeds.ENABLED = legendNeeds && System.getProperty("fabric-api.gametest") == null;
 		io.github.jcondedata.aliveworkplace.legend.Legends.MYTHIC_CAP = mythicLegendCap.stream().mapToInt(Integer::intValue).toArray();

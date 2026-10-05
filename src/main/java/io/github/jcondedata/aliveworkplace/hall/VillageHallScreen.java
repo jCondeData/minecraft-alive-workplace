@@ -587,6 +587,11 @@ public final class VillageHallScreen {
 			}
 			lore.add(line(Component.translatable("screen.aliveworkplace.hall.traits", list), ChatFormatting.AQUA));
 		}
+		// A Gifted villager's gift, in gold under the traits (29.6).
+		Component gift = io.github.jcondedata.aliveworkplace.legend.Gifted.hallLine(villager);
+		if (gift != null) {
+			lore.add(line(gift, ChatFormatting.GOLD));
+		}
 		for (Component doing : doing(level, villager)) {
 			lore.add(plain(doing, ChatFormatting.WHITE));
 		}

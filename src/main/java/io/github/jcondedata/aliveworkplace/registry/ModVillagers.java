@@ -695,6 +695,21 @@ public final class ModVillagers {
 			.build()
 	);
 
+	/**
+	 * Night Owls (a gift, 29.6) work from dusk to dawn: up at dawn for the village's morning, asleep from mid-morning
+	 * to mid-afternoon, about the village until dusk, then at work all night. Builders and miners too.
+	 */
+	public static final Schedule NIGHT_OWL_SCHEDULE = Registry.register(
+		BuiltInRegistries.SCHEDULE,
+		AliveWorkplace.id("night_owl"),
+		new ScheduleBuilder(new Schedule())
+			.changeActivityAt(10, Activity.IDLE)
+			.changeActivityAt(3000, Activity.REST)
+			.changeActivityAt(9000, Activity.IDLE)
+			.changeActivityAt(12000, Activity.WORK)
+			.build()
+	);
+
 	/** Villagers whose work this mod runs: they get the long shift and our WORK package. */
 	public static boolean isWorker(VillagerProfession profession) {
 		return profession == BUILDER || profession == MINER || profession == LUMBERJACK || profession == POSTMAN

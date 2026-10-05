@@ -1,0 +1,10 @@
+{
+  "name": "gifted.aliveworkplace.iron_will",
+  "description": "gifted.aliveworkplace.iron_will.desc",
+  "weight": 10,
+  "effects": [
+    {
+      "type": "no_panic"
+    }
+  ]
+}

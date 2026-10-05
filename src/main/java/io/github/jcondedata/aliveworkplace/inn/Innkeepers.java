@@ -219,6 +219,11 @@ public final class Innkeepers {
 			.withStyle(ChatFormatting.GREEN));
 		io.github.jcondedata.aliveworkplace.hall.Chronicle.record(level, guest.blockPosition(), io.github.jcondedata.aliveworkplace.hall.Chronicle.Kind.JOINED, Component.translatable("chronicle.aliveworkplace.joined",
 			BuilderLevels.levelName(t.level()), player.getDisplayName()));
+		io.github.jcondedata.aliveworkplace.legend.Gifted.Gift gift = io.github.jcondedata.aliveworkplace.legend.Gifted.of(guest);
+		if (gift != null) {
+			io.github.jcondedata.aliveworkplace.hall.Chronicle.record(level, guest.blockPosition(), io.github.jcondedata.aliveworkplace.hall.Chronicle.Kind.JOINED,
+				Component.translatable("chronicle.aliveworkplace.joined_gifted", guest.getDisplayName(), gift.title()));
+		}
 		return true;
 	}
 

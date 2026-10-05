@@ -98,6 +98,18 @@ public final class Stories {
 		return e.quests.stream().filter(q -> q.giver.equals("hall")).toList();
 	}
 
+	/** Puts an already resolved and located quest up in the village round {@code hall} (arcs, tests). */
+	public static void post(ServerLevel level, BlockPos hall, Quest quest) {
+		Data data = Data.get(level);
+		data.entry(hall).quests.add(quest);
+		data.setDirty();
+	}
+
+	/** The halls of {@code level} the engine keeps quests for. */
+	public static List<BlockPos> halls(ServerLevel level) {
+		return List.copyOf(Data.get(level).halls.keySet());
+	}
+
 	/** Every open quest of the village round {@code hall} (old ones moved in first). */
 	public static List<Quest> open(ServerLevel level, BlockPos hall) {
 		if (level.getBlockEntity(hall) instanceof VillageHallBlockEntity entity) {
@@ -134,17 +146,64 @@ public final class Stories {
 					total += f.weight();
 				}
 			}
-			if (total > 0) {
+			// One by weight; a quest whose place can't be found (31.3) is withdrawn and the next option drawn.
+			while (total > 0) {
 				int roll = random.nextInt(total);
 				for (int i = 0; i < can.size(); i++) {
 					roll -= weights.get(i);
 					if (roll < 0) {
-						return can.get(i);
+						Quest located = locate(level, hall, can.get(i));
+						if (located != null) {
+							return located;
+						}
+						Chronicle.atHall(level, hall, Chronicle.Kind.QUEST, Component.translatable("chronicle.aliveworkplace.quest_withdrawn", can.get(i).title()));
+						total -= weights.get(i);
+						can.remove(i);
+						weights.remove(i);
+						break;
 					}
 				}
 			}
 		}
 		return null;
+	}
+
+	/**
+	 * {@code quest} with its places looked up (31.3): each {@code reach} objective's and {@code map} reward's place, once,
+	 * from the hall, and saved with the quest. The same place named twice is looked up once. Null when one can't be found.
+	 */
+	@Nullable
+	public static Quest locate(ServerLevel level, BlockPos hall, Quest quest) {
+		Map<List<Places.Option>, Places.Place> found = new java.util.HashMap<>();
+		boolean changed = false;
+		List<Objectives.Objective> objectives = new ArrayList<>();
+		for (Objectives.Objective o : quest.objectives) {
+			if (o instanceof Objectives.Reach reach && !reach.place().located()) {
+				Places.Place p = found.computeIfAbsent(reach.place().options(), k -> Places.locate(level, hall, reach.place()));
+				if (p == null) {
+					return null;
+				}
+				objectives.add(new Objectives.Reach(p, reach.radius()));
+				changed = true;
+			} else {
+				objectives.add(o);
+			}
+		}
+		List<Rewards.Reward> rewards = new ArrayList<>();
+		for (Rewards.Reward r : quest.rewards) {
+			if (r instanceof Rewards.MapReward map && !map.place().located()) {
+				Places.Place p = found.computeIfAbsent(map.place().options(), k -> Places.locate(level, hall, map.place()));
+				if (p == null) {
+					return null;
+				}
+				rewards.add(new Rewards.MapReward(p));
+				changed = true;
+			} else {
+				rewards.add(r);
+			}
+		}
+		return !changed ? quest : new Quest(quest.id, quest.file, quest.giver, quest.name, quest.poster, quest.posted, quest.due, objectives,
+			quest.progress, rewards);
 	}
 
 	/** {@code file} as a quest going up now, or null when its conditions don't hold or an objective can't be asked for. */
@@ -278,6 +337,7 @@ public final class Stories {
 		if (quest.done()) {
 			finish(level, hall, entity, quest, player);
 		}
+		QuestTracker.changed(level.getServer(), quest.id);
 	}
 
 	/** Takes {@code quest} down and pays it: money and items to {@code player}, the rest to the village. */
@@ -288,6 +348,7 @@ public final class Stories {
 			return;
 		}
 		data.setDirty();
+		QuestTracker.changed(level.getServer(), quest.id); // its bar goes
 		entity.questDone();
 		if (player != null) {
 			e.done.computeIfAbsent(player.getUUID(), k -> new java.util.LinkedHashSet<>()).add(quest.file.toString());
@@ -428,6 +489,8 @@ public final class Stories {
 	public static final class Data extends SavedData {
 		private static final String NAME = "aliveworkplace_stories";
 		final Map<BlockPos, Entry> halls = new LinkedHashMap<>();
+		/** The quest each player tracks (31.3); only the overworld's is used, so it survives a change of dimension. */
+		final Map<UUID, QuestTracker.Track> tracked = new LinkedHashMap<>();
 
 		public static Data get(ServerLevel level) {
 			return level.getDataStorage().computeIfAbsent(new SavedData.Factory<>(Data::new, Data::load, null), NAME);
@@ -489,6 +552,11 @@ public final class Stories {
 				list.add(h);
 			}
 			tag.put("halls", list);
+			if (!tracked.isEmpty()) {
+				ListTag tracks = new ListTag();
+				tracked.forEach((player, t) -> tracks.add(t.save(player)));
+				tag.put("tracked", tracks);
+			}
 			return tag;
 		}
 
@@ -525,6 +593,11 @@ public final class Stories {
 					e.moods.add(new Mood(Nbt.getInt(t, "points"), Nbt.getLong(t, "until_day"),
 						Rewards.text(com.google.gson.JsonParser.parseString(Nbt.getString(t, "reason")))));
 				}
+			}
+			ListTag tracks = Nbt.getList(tag, "tracked", Tag.TAG_COMPOUND);
+			for (int i = 0; i < tracks.size(); i++) {
+				CompoundTag t = Nbt.compoundAt(tracks, i);
+				data.tracked.put(Nbt.getUuid(t, "player"), QuestTracker.Track.load(t));
 			}
 			return data;
 		}

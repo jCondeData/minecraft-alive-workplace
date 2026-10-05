@@ -497,6 +497,10 @@ public final class VillageHallScreen {
 
 	/** The quests page: each open quest with what it takes and pays; a click hands in what a quest asks for. */
 	public static void renderQuests(ChoiceMenu menu, ServerLevel level, BlockPos hall, ServerPlayer viewer) {
+		if (io.github.jcondedata.aliveworkplace.story.QuestTracker.enabled()) {
+			QuestJournal.render(menu, level, hall, viewer, QuestJournal.Tab.VILLAGE); // the journal (31.3)
+			return;
+		}
 		menu.clearButtons();
 		menu.button(0, icon(Items.ARROW, Component.translatable("screen.aliveworkplace.hall.back"), ChatFormatting.WHITE), p -> refresh(menu, level, hall, 0));
 		VillageHallBlockEntity entity = level.getBlockEntity(hall) instanceof VillageHallBlockEntity e ? e : null;
@@ -520,7 +524,7 @@ public final class VillageHallScreen {
 
 	/** What clicking a quest does: a BRING quest takes what the player has of it; the others are done elsewhere. */
 	@org.jetbrains.annotations.Nullable
-	private static java.util.function.Consumer<ServerPlayer> handIn(ChoiceMenu menu, ServerLevel level, BlockPos hall, VillageQuests.Quest quest) {
+	static java.util.function.Consumer<ServerPlayer> handIn(ChoiceMenu menu, ServerLevel level, BlockPos hall, VillageQuests.Quest quest) {
 		return quest.kind() != VillageQuests.Kind.BRING ? null : p -> {
 			int given = VillageQuests.handIn(p, hall, quest.id());
 			if (given == 0) {

@@ -208,6 +208,17 @@ can use; clear out 8 monsters round the village; or, with Cobblemon, beat one of
 to the worker who asked, or the store). Monsters and battles count wherever they happen in the village. Whoever
 finishes a quest gets its reward in emeralds (CobbleDollars with CobbleDollars installed).
 
+**The quest journal** (1.5). The Quests page is a journal with four tabs along the top: **Village** (the hall's daily
+quests), **Personal** (requests from villagers who are your friends), **Story** (the tale the village is living
+through) and **Bounties** (wanted outlaws); a tab whose part isn't in the game yet says so in grey. Each quest shows
+who asked, a line per step with its progress, the reward and the days left. Click a quest to hand in what it asks
+for, or to **track** it when there's nothing to hand in; shift-click always tracks or untracks. A tracked quest (one
+at a time) is a bar at the top of your screen, for you only: "Slay 6 monsters (2/6)", filling as you go and gone
+when the quest ends or you untrack it. `/workplace quests` lists your quests in chat with a clickable **[Track]** or
+**[Untrack]**, and the Village Ledger opens the journal from anywhere. Some quests send you somewhere (a village, a
+biome, a spot marked by the village's story); the place is found once, when the quest goes up, and a quest may pay a
+map to it with the place marked.
+
 **A village with a hall has needs.** Every grown villager eats once a day from the store — the chests by the smokers
 first (the chef's cooking), then by the Storehouses; anything plain to eat, never golden food, food that makes you ill,
 honey or Pokémon berries. Villagers like a bed of their own, guards (one for every ten villagers) and light by their
@@ -1317,6 +1328,7 @@ the Builder's workstation too: a villager without a job near it takes it and bec
 |---|---|
 | `/workplace sites` | your builds in progress, with a cancel button |
 | `/workplace mail` | parcels on their way to and from you, and where they are |
+| `/workplace quests` | the quests of the village nearest you, each with a clickable [Track] or [Untrack] (1.5) |
 | `/workplace strip <height>` | the Quarry Marker in your hand digs a strip mine at that height, down a ladder shaft |
 | `/workplace cancel <id>` | stop a build (placed blocks stay; you get the blueprint back) |
 | `/workplace friend add <player>` | let a friend give orders to your builders (`remove`, `list` too) |

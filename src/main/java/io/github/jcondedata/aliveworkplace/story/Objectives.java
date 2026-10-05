@@ -75,6 +75,7 @@ public final class Objectives {
 		register("kill", Kill::read);
 		register("battle", j -> new Battle(GsonHelper.getAsInt(j, "count", 1)));
 		register("wait", j -> new Wait(positive(j, "days")));
+		register("reach", Reach::read);
 	}
 
 	public static void register(String type, Function<JsonObject, Objective> reader) {
@@ -326,6 +327,55 @@ public final class Objectives {
 			JsonObject o = new JsonObject();
 			o.addProperty("type", type());
 			o.addProperty("days", days);
+			return o;
+		}
+	}
+
+	/**
+	 * {@code reach} (31.3): be within {@code radius} blocks (across the ground) of a place: a structure, a biome or a point
+	 * an arc set ({@link Places}). The place is looked up once, when the quest opens ({@link Stories#locate}).
+	 */
+	public record Reach(Places.Place place, int radius) implements Objective {
+		static Reach read(JsonObject json) {
+			int radius = GsonHelper.getAsInt(json, "radius", 32);
+			if (radius < 1) {
+				throw new IllegalArgumentException("'radius' below 1");
+			}
+			return new Reach(Places.read(json.get("place")), radius);
+		}
+
+		/** Whether {@code pos} is within the radius of the found place. */
+		public boolean inside(BlockPos pos) {
+			if (place.found().isEmpty()) {
+				return false;
+			}
+			BlockPos at = place.found().get();
+			double dx = pos.getX() + 0.5 - (at.getX() + 0.5);
+			double dz = pos.getZ() + 0.5 - (at.getZ() + 0.5);
+			return dx * dx + dz * dz <= (double) radius * radius;
+		}
+
+		@Override
+		public String type() {
+			return "reach";
+		}
+
+		@Override
+		public int need() {
+			return 1;
+		}
+
+		@Override
+		public Component line() {
+			return Component.translatable("quest.aliveworkplace.reach", Places.name(place));
+		}
+
+		@Override
+		public JsonObject json() {
+			JsonObject o = new JsonObject();
+			o.addProperty("type", type());
+			o.add("place", place.json());
+			o.addProperty("radius", radius);
 			return o;
 		}
 	}

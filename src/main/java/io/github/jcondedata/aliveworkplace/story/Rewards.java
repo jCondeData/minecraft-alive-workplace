@@ -60,6 +60,7 @@ public final class Rewards {
 		register("village_mood", j -> new VillageMood(GsonHelper.getAsInt(j, "points"), Objectives.positive(j, "days"),
 			j.has("reason") ? text(j.get("reason")) : Component.translatable("mood.aliveworkplace.reason.quest")));
 		register("treasury", j -> new Treasury(Objectives.positive(j, "emeralds")));
+		register("map", j -> new MapReward(Places.read(j.get("place"))));
 	}
 
 	public static void register(String type, Function<JsonObject, Reward> reader) {
@@ -294,6 +295,32 @@ public final class Rewards {
 			JsonObject o = new JsonObject();
 			o.addProperty("type", type());
 			o.addProperty("emeralds", emeralds);
+			return o;
+		}
+	}
+
+	/**
+	 * {@code map} (31.3): a map to a place (a structure, a biome or a point, {@link Places}), drawn like an explorer map
+	 * with the place marked, for whoever finished it. The place is looked up once, when the quest opens.
+	 */
+	public record MapReward(Places.Place place) implements Reward {
+		@Override
+		public String type() {
+			return "map";
+		}
+
+		@Override
+		public void give(ServerLevel level, BlockPos hall, @Nullable ServerPlayer finisher) {
+			if (place.located()) {
+				hand(level, hall, finisher, Places.map(level, place));
+			}
+		}
+
+		@Override
+		public JsonObject json() {
+			JsonObject o = new JsonObject();
+			o.addProperty("type", type());
+			o.add("place", place.json());
 			return o;
 		}
 	}

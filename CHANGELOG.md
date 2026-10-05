@@ -16,6 +16,14 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+### Added
+- **The quest journal, tracking and quest maps** (31.3, part of 1.5, off until 1.5 is finished): the hall's Quests page
+  becomes a journal with Village, Personal, Story and Bounties tabs; each quest shows who asked, its steps with their
+  progress, the reward and the days left. Track a quest (a click, or shift-click) to see it as a boss bar at the top of
+  your screen, for you only; `/workplace quests` lists your quests in chat with [Track]. Quest files gain the objective
+  `reach` (go near a structure, a biome or a point) and the reward `map` (a map with the place marked), the place found
+  once when the quest goes up.
+
 ### Changed
 - **Village quests run on a new quest engine** (31.2): the hall's daily quests are now data files
   (`data/<namespace>/quests/<group>/<id>.json`) that data packs can add to, switch off or change (`/reload` reads them

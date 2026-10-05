@@ -2240,7 +2240,7 @@ write their own stories; nothing waits forever on a player.
   - a quest file in the gametest datapack is posted and completes; a broken file is skipped with one log line naming
     it (added to `allow.txt`); `/reload` picks up a changed file;
   - `villageQuests` off: no new quests, and nothing else changes.
-- [ ] **31.3** **The quest journal, tracking and quest maps.** The hall's Quests page becomes a journal with four tabs
+- [x] **31.3** (review: pending 2026-10-05) **The quest journal, tracking and quest maps.** The hall's Quests page becomes a journal with four tabs
   along the top: **Village** (the daily quests), **Personal** (requests from villagers who are your friends, 31.9),
   **Story** (the village's arc, 31.4) and **Bounties** (31.13); a tab whose item hasn't landed yet says so in grey.
   Each quest shows who asked, one line per objective with its progress, the reward and the days left, and has two

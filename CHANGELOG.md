@@ -29,8 +29,8 @@ asks for the steps, `latest.log` and any crash report).
   through a raised foundation (or in its walls) dropped to a few percent the first time it loaded. It now works out
   the progress it showed from the saved stage and step.
 - **A farmer's carrots and potatoes reach the chests** (B77): a village farmer kept up to 32 of each in his bag as
-  seed stock, so a Farmstead's field could be harvested without anything landing in its chest. He now carries a few to
-  plant with (as with sugar cane) and puts the rest of that harvest away.
+  seed stock, so a Farmstead's field could be harvested without anything landing in its chest. He now takes them from the
+  chests to plant with, like seeds, and puts the whole harvest away.
 ### Added
 - **Guild Charters, the Guildhall and the Builders' Guild** (30.17): craft a Guild Charter (three paper, an emerald, a
   gold ingot, red dye) and sneak-right-click a Master in a village of Village rank or more: they become the Guild Master

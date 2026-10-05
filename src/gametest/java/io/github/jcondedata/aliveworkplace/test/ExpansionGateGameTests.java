@@ -41,9 +41,9 @@ public class ExpansionGateGameTests implements FabricGameTest {
 		"partnerShows", "nurseHealingMachine", "berryBreeders", "campCooks", "habitatKeepers", "habitatSightings",
 		"daycareKeepers", "gemGrowers", "villageHabitats",
 		"legends", "legendNeeds", "legendSites", "strangeMoods",
-		"villageEdicts", "workHorns", "villageBanners", "cradles", "harvestIdols", "tonics");
+		"villageEdicts", "workHorns", "villageBanners", "cradles", "harvestIdols", "tonics", "guilds");
 	/** The numbers that belong to them (hidden from the screen with them). */
-	static final List<String> GATED_NUMBERS = List.of("stewardMaxOpenBuilds", "giftedChance", "edictMinDays");
+	static final List<String> GATED_NUMBERS = List.of("stewardMaxOpenBuilds", "giftedChance", "edictMinDays", "guildsPerRank");
 
 	/** A config file as 0.139.0 wrote it: every switch on. */
 	static String oldConfig() {
@@ -76,6 +76,7 @@ public class ExpansionGateGameTests implements FabricGameTest {
 		map.put("Cradles", () -> Cradles.ENABLED);
 		map.put("HarvestIdols", () -> HarvestIdols.ENABLED);
 		map.put("Tonics", () -> Tonics.ENABLED);
+		map.put("Guilds", () -> io.github.jcondedata.aliveworkplace.hall.Guilds.ENABLED);
 		return map;
 	}
 
@@ -146,8 +147,8 @@ public class ExpansionGateGameTests implements FabricGameTest {
 			if (!screen.contains("villageProtection") || !screen.contains("maxWorkPace") || !screen.contains("seasonDays")) {
 				problems.add("a finished option left the screen: " + screen);
 			}
-			if (screen.size() != 57 - GATED_SWITCHES.size() - GATED_NUMBERS.size()) {
-				problems.add("expected " + (57 - GATED_SWITCHES.size() - GATED_NUMBERS.size()) + " options on the screen, found "
+			if (screen.size() != 59 - GATED_SWITCHES.size() - GATED_NUMBERS.size()) {
+				problems.add("expected " + (59 - GATED_SWITCHES.size() - GATED_NUMBERS.size()) + " options on the screen, found "
 					+ screen.size());
 			}
 			empty.setBoolean("tonics", true);
@@ -192,7 +193,7 @@ public class ExpansionGateGameTests implements FabricGameTest {
 		for (String name : GATED_SWITCHES) {
 			helper.assertTrue(new WorkplaceConfig().getBoolean(name), name + " should default on in GameTests");
 		}
-		helper.assertTrue(WorkplaceConfig.optionNames().size() == 57, "every option on the screen in GameTests");
+		helper.assertTrue(WorkplaceConfig.optionNames().size() == 59, "every option on the screen in GameTests");
 		helper.succeed();
 	}
 }

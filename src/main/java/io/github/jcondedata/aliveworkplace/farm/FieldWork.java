@@ -75,7 +75,7 @@ public class FieldWork extends Behavior<Villager> {
 
 	/** Bone meal a farmer keeps in the bag; the rest stays in the chests. */
 	static final int KEEP_BONE_MEAL = 16;
-	/** Sugar cane, cactus, carrots, potatoes... taken to plant with (the harvest of them all goes to the chests). */
+	/** Sugar cane, cactus... taken to plant with (the harvest of them all goes to the chests, as does that of carrots and potatoes). */
 	static final int KEEP_PLANTATION = 8;
 	/** Seeds kept in the chests before the rest go in the composter for bone meal. */
 	static final int COMPOST_ABOVE = 64;
@@ -641,16 +641,20 @@ public class FieldWork extends Behavior<Villager> {
 
 	/**
 	 * Something planted that is the harvest too: the column plants, and carrots and potatoes (food that is its own seed).
-	 * A farmer takes a few from the chests to plant with, but the harvest of them all goes to the chests: kept as seed
+	 * A farmer takes some from the chests to plant with, but the harvest of them all goes to the chests: kept as seed
 	 * stock (32 of each) a Farmstead's carrots and potatoes never reached its chest.
 	 */
 	static boolean isCropToo(ItemStack stack) {
 		return isPlantation(stack) || isSeed(stack) && Villager.FOOD_POINTS.containsKey(stack.getItem());
 	}
 
-	/** How many of a seed a farmer carries to plant with. */
+	/**
+	 * How many of a seed a farmer takes from the chests to plant with. Carrots and potatoes are taken like seeds (a
+	 * field's worth): with only a few, a field of them ran out part way and the rest was sown with whatever else was in
+	 * the bag (wheat seeds from the grass he cut). Their harvest still all goes to the chests ({@link #isCropToo}).
+	 */
 	static int keepOf(ItemStack stack) {
-		return isCropToo(stack) ? KEEP_PLANTATION : KEEP_SEEDS;
+		return isPlantation(stack) ? KEEP_PLANTATION : KEEP_SEEDS;
 	}
 
 	public static boolean isSeed(ItemStack stack) {

@@ -449,6 +449,12 @@ asks for the steps, `latest.log` and any crash report).
   partners than before.**
 
 ### Fixed
+- A crew's last blocks no longer wait on a walk to the chests (B66): a helper with nothing left to help with brings
+  the lead what the last blocks need, where it used to carry it back to the chests (the build's last lantern) for the
+  lead to walk over and fetch. A crew of four built the stone house in 28-35% of the time alone in 15 runs (it was up
+  to 40%, and 44-47% on CI).
+- The Pathfinder really stands still while the player catches up: between its checks, its everyday routine could walk
+  it off (5 blocks once).
 - Villagers no longer get stuck against the flower boxes beside the steps of our village houses (every village type):
   the pots now stand on upside-down stair sills instead of head-height trapdoors, which villagers mistook for open
   ground (B69).

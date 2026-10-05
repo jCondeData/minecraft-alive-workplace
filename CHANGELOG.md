@@ -22,6 +22,17 @@ asks for the steps, `latest.log` and any crash report).
   prisoner in an iron cage at the tower's foot (break the bars) or a castaway on the nearest beach (hand them a cooked
   meal). Freed, they thank you, walk off and come to your Village Hall the next morning as a guest. Each structure is
   used once; `legendSites` in the config turns it off.
+- **The Village Hall's own screen** (30.4a): the hall, all its pages and the Book of Edicts now open on a drawn, vanilla-style window instead of a chest grid: the village's figures on a sunken plaque, the page's actions on an etched toolbar, the page on its own panel, every icon on a raised button that lights up under the mouse. Clicks, pages and permissions are unchanged.
+- **The Cradle** (30.12): a wooden cradle on rockers with a wool blanket, crafted from planks, sticks and white wool.
+  Put one within 4 blocks of a bed in a village with a hall and it becomes a nursery village: children grow up in half
+  the time and one more baby a day may be born (three a day with Large Families). At night a child of the house sleeps
+  in the cradle. More cradles add nothing. The hall's beds icon and the Book of Edicts' last row say whether the village
+  has one; `cradles` in the config.
+- **The Work Horn** (30.11): a brass-banded horn crafted from a goat horn, a gold ingot and an emerald. Hold it up in
+  a village like a goat horn and, when it sounds, every grown villager works 50% faster for 5 minutes (the speed cap
+  still holds), with sparks over them. Once a village a day; afterwards the villagers are worn out (10 less happy) until
+  dawn. Only the hall's owner and friends can call a rush in an owned village. The Book of Edicts' last row shows the
+  horn ready or used. `workHorns` in the config.
 - **Gifted villagers** (29.6): about one villager in 30 has a rare gift as well as their traits, shown in gold on the
   Village Hall's list. Prodigy learns three times as fast; Iron Will never panics and keeps working through raids and
   the bell; Silver Tongue's trades are 20% cheaper; a Night Owl works from dusk to dawn and sleeps from mid-morning to

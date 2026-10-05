@@ -71,6 +71,8 @@ public class ScreenshotHarness implements ClientModInitializer {
 	private final CityPlanScene cityPlan = new CityPlanScene();
 	private final LegendsHallScene legendsHall = new LegendsHallScene();
 	private final GiftedScene gifted = new GiftedScene();
+	private final WorkHornScene workHorn = new WorkHornScene();
+	private final CradleScene cradle = new CradleScene();
 	private final CityPlanGroundScene cityPlanGround = new CityPlanGroundScene();
 	private final PartnersScene partners = new PartnersScene();
 	private final PartnersLandScene partnersLand = new PartnersLandScene();
@@ -161,6 +163,14 @@ public class ScreenshotHarness implements ClientModInitializer {
 		}
 		if ("gifted".equals(System.getProperty("aliveworkplace.scene"))) {
 			gifted.tick(mc);
+			return;
+		}
+		if ("work_horn".equals(System.getProperty("aliveworkplace.scene"))) {
+			workHorn.tick(mc);
+			return;
+		}
+		if ("cradle".equals(System.getProperty("aliveworkplace.scene"))) {
+			cradle.tick(mc);
 			return;
 		}
 		if ("city_plan_ground".equals(System.getProperty("aliveworkplace.scene"))) {
@@ -992,6 +1002,7 @@ public class ScreenshotHarness implements ClientModInitializer {
 		}
 		if (tick == 230) {
 			Showcase.check(mc.screen instanceof net.minecraft.client.gui.screens.inventory.AbstractContainerScreen<?>, "the Village Hall screen opened");
+			Showcase.check(mc.screen instanceof io.github.jcondedata.aliveworkplace.client.VillageHallMenuScreen, "the hall opened on its own drawn screen, not a chest (30.4a): " + mc.screen);
 			shot(mc, "02_hall_people");
 			pointAt(mc, io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_PERSON);
 		}
@@ -2312,6 +2323,12 @@ public class ScreenshotHarness implements ClientModInitializer {
 	/** Moves the mouse over slot {@code slot} of an open chest screen with {@code rows} rows. */
 	static void pointAt(Minecraft mc, int slot, int rows) {
 		double scale = mc.getWindow().getGuiScale();
+		if (mc.screen instanceof io.github.jcondedata.aliveworkplace.client.VillageHallMenuScreen hall) {
+			// The hall's own screen (ROADMAP 30.4a) puts its buttons where its drawing does, not on a chest's grid.
+			int[] at = hall.centre(slot);
+			setMouse(mc, at[0] * scale, at[1] * scale);
+			return;
+		}
 		int left = (mc.getWindow().getGuiScaledWidth() - 176) / 2;
 		int top = (mc.getWindow().getGuiScaledHeight() - (114 + rows * 18)) / 2;
 		setMouse(mc, (left + 8 + (slot % 9) * 18 + 8) * scale, (top + 18 + (slot / 9) * 18 + 8) * scale);

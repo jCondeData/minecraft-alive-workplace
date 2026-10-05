@@ -20,7 +20,8 @@ import org.jetbrains.annotations.Nullable;
 /**
  * A screen of buttons shown as a six-row chest: every slot holds an icon, and clicking one runs code on
  * the server. Nothing can be taken out or put in (the player's own inventory is locked while it's open),
- * so the client needs no screen of its own. Used by jobs that offer choices (the Move Tutor's lessons).
+ * so the client needs no screen of its own. Used by jobs that offer choices (the Move Tutor's lessons). The Village
+ * Hall's opens with {@link #openHall} on its own drawn screen.
  */
 public class ChoiceMenu extends ChestMenu {
 	public static final int ROWS = 6;
@@ -32,8 +33,8 @@ public class ChoiceMenu extends ChestMenu {
 	/** Whether the button being pressed was shift-clicked (buttons that count up or down take bigger steps). */
 	private boolean shift;
 
-	private ChoiceMenu(int id, net.minecraft.world.entity.player.Inventory inventory, SimpleContainer icons, Predicate<Player> valid) {
-		super(MenuType.GENERIC_9x6, id, inventory, icons, ROWS);
+	private ChoiceMenu(MenuType<?> type, int id, net.minecraft.world.entity.player.Inventory inventory, SimpleContainer icons, Predicate<Player> valid) {
+		super(type, id, inventory, icons, ROWS);
 		this.icons = icons;
 		this.valid = valid;
 	}
@@ -41,9 +42,23 @@ public class ChoiceMenu extends ChestMenu {
 	/** Opens an empty menu for {@code player}, lets {@code fill} lay out the buttons and returns it (or null). */
 	@Nullable
 	public static ChoiceMenu open(ServerPlayer player, Component title, Predicate<Player> valid, Consumer<ChoiceMenu> fill) {
+		return open(MenuType.GENERIC_9x6, player, title, valid, fill);
+	}
+
+	/**
+	 * The same, shown on the Village Hall's own drawn screen instead of a chest (ROADMAP 30.4a): the client's copy is a
+	 * {@link ChoiceView} with the same slots, so the buttons and clicks are exactly a chest's.
+	 */
+	@Nullable
+	public static ChoiceMenu openHall(ServerPlayer player, Component title, Predicate<Player> valid, Consumer<ChoiceMenu> fill) {
+		return open(io.github.jcondedata.aliveworkplace.registry.ModBlocks.VILLAGE_HALL_MENU, player, title, valid, fill);
+	}
+
+	@Nullable
+	private static ChoiceMenu open(MenuType<?> type, ServerPlayer player, Component title, Predicate<Player> valid, Consumer<ChoiceMenu> fill) {
 		ChoiceMenu[] opened = new ChoiceMenu[1];
 		player.openMenu(new SimpleMenuProvider((id, inventory, p) -> {
-			ChoiceMenu menu = new ChoiceMenu(id, inventory, new SimpleContainer(SIZE), valid);
+			ChoiceMenu menu = new ChoiceMenu(type, id, inventory, new SimpleContainer(SIZE), valid);
 			fill.accept(menu);
 			opened[0] = menu;
 			return menu;
@@ -53,7 +68,7 @@ public class ChoiceMenu extends ChestMenu {
 
 	/** A menu that isn't shown to anyone (tests). */
 	public static ChoiceMenu detached(ServerPlayer player, Consumer<ChoiceMenu> fill) {
-		ChoiceMenu menu = new ChoiceMenu(0, player.getInventory(), new SimpleContainer(SIZE), p -> true);
+		ChoiceMenu menu = new ChoiceMenu(MenuType.GENERIC_9x6, 0, player.getInventory(), new SimpleContainer(SIZE), p -> true);
 		fill.accept(menu);
 		return menu;
 	}

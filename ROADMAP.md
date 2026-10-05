@@ -1869,7 +1869,7 @@ the Village Hall (`VillageNeeds`, `VillageQuests`, `VillageRanks`, `Festivals`, 
   Done when: GameTests through `ChoiceMenu.forTest`: proclaiming and lifting by clicks, the locked slots, a stranger's
   click refused, the Ledger's sneak-use opening the page, the people list paging at 34; showcase scene `edicts`: the
   Book with Long Shifts in force, at GUI scales 2 and 4.
-  - [ ] **30.4a** Change from the owner (2026-10-05): The Village Hall's screen should be a custom UI like vanilla's workstation screens (furnace, enchanting table, crafting table): its own drawn background, panels and buttons for the hall's pages (edicts, quests, treasury, ledger), instead of a plain chest-style grid of items like a multiplayer server menu. Do this for the whole hall screen, not just the Book of Edicts page: design it with the pixel-art skill, keep every existing feature, check at GUI scales 2 to 4, and show it in the hall scenes.
+  - [x] **30.4a** (review: pending 2026-10-05) Change from the owner (2026-10-05): The Village Hall's screen should be a custom UI like vanilla's workstation screens (furnace, enchanting table, crafting table): its own drawn background, panels and buttons for the hall's pages (edicts, quests, treasury, ledger), instead of a plain chest-style grid of items like a multiplayer server menu. Do this for the whole hall screen, not just the Book of Edicts page: design it with the pixel-art skill, keep every existing feature, check at GUI scales 2 to 4, and show it in the hall scenes.
 - [x] **30.5** (approved 2026-10-05) **Reforms, and The Shift Bell.** While an edict is in force and not reformed, the hall keeps its
   reform's next step on the quest page (extra to the three daily quests, in the row below them, with a book-and-quill
   icon; it never expires). The next step goes up the morning after the last was done, so a reform takes three days at
@@ -1962,7 +1962,7 @@ the Village Hall (`VillageNeeds`, `VillageQuests`, `VillageRanks`, `Festivals`, 
   villager hide; no work during the raid or before noon after it; reformed, a builder with no raider near keeps
   building and work goes on at dawn; showcase scene `conscription`: a GIF of villagers and guards beating back a
   night raid.
-- [ ] **30.11** **The Work Horn.** An item of its own (pixel-art: a brass-banded horn), crafted from a goat horn, a
+- [x] **30.11** (review: pending 2026-10-05) **The Work Horn.** An item of its own (pixel-art: a brass-banded horn), crafted from a goat horn, a
   gold ingot and an emerald. Blown in a village (held like a goat horn until it sounds), it calls a rush: every grown
   villager of the village works 50% faster for 5 minutes (6000 ticks; a `Pace` source, so the cap holds), with sparks
   over the rushing workers now and then. Once a village a day (the hall keeps the day; a second blow is refused with
@@ -1973,7 +1973,7 @@ the Village Hall (`VillageNeeds`, `VillageQuests`, `VillageRanks`, `Festivals`, 
   Shifts and partners the total stops at the cap; a stranger's horn does nothing in an owned village; the icon passes
   `lint.py`; showcase scene `work_horn`: a GIF of builders before and during a rush (its check: more blocks placed a
   minute during the rush).
-- [ ] **30.12** **The Cradle.** A block of its own (pixel-art textures and a model: a wooden cradle on rockers with a
+- [x] **30.12** (review: pending 2026-10-05) **The Cradle.** A block of its own (pixel-art textures and a model: a wooden cradle on rockers with a
   wool blanket), crafted from planks, sticks and white wool; a point of interest, so the hall finds it without
   scanning. A Cradle within 4 blocks of a bed in a village with a hall makes it a nursery village: every child there
   grows up in half the time (each hall round ages the children by the round's length again), and one more baby a day
@@ -4302,6 +4302,7 @@ item waits.
   slay steps went to 32-40 monsters (Conscription's planned 48), the one battle step stays one battle. The emeralds a
   step pays were left as they were (the reform is the reward); owner's call if he wants them raised too. Hand-in
   already took every slot up to what's left and kept partial progress; a GameTest now proves it over three trips.
+- 2026-10-05 (30.12, decision; lane d): "within 4 blocks of a bed" is measured to the bed's head (where the game records a bed as a POI), so a cradle 4 blocks from the foot may be 5 from the head and not count.
 - 2026-10-05 (30.10, decisions; lane d): two effect types: `militia` {`damage` 3, `range` 24} (highest of each) read by
   the new `guard/MilitiaCombat`, a behaviour every villager's CORE package now starts with (a guard's does nothing; for
   guards it sits after their own four, so GoalPackagesMixinGameTests holds unchanged), and `work_stops_in_raids`

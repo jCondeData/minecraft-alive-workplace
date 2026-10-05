@@ -111,6 +111,8 @@ public final class Pace {
 	 */
 	public static final Source LEGEND = register(new Source("legend", Kind.BONUS,
 		v -> 1f / io.github.jcondedata.aliveworkplace.legend.LegendPowers.pace(v)));
+	/** A Work Horn's rush in the villager's village (30.11): 50% faster for 5 minutes. */
+	public static final Source WORK_HORN = register(new Source("work_horn", Kind.BONUS, io.github.jcondedata.aliveworkplace.hall.WorkHorn::pace));
 	/** Born Leaders of the worker's own trade near them (29.7, Gifted): their speed-up as a time factor, under this cap. */
 	public static final Source BORN_LEADER = register(new Source("born_leader", Kind.BONUS,
 		v -> 1f / io.github.jcondedata.aliveworkplace.legend.GiftedAuras.pace(v)));

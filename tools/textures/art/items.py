@@ -554,8 +554,40 @@ def guide_book():
     return [s.save(item("guide_book"))]
 
 
+# Goat horn: the grey-brown of vanilla's horn (sampled), lit .. dark, and its outlines.
+HORN = Ramp(["#3c3633", "#544f4a", "#6e6a63", "#8e8a7f", "#aaa898"], outline=("#4a4643", "#2a2725"), name="horn")
+
+
+def work_horn():
+    """The Work Horn (30.11), drawn as vanilla draws its goat horn: the horn lying with its mouth up at the top-left
+    and its curl sweeping down and back up to the tip at the right, here bound in two brass bands with a brass
+    mouthpiece cap on the tip (the gold ingot of its recipe)."""
+    s = grid("""
+        ................
+        ................
+        ..aaaaa.........
+        .a34443a........
+        .a3kkk3d........
+        .a33222d........
+        .zYYYYyz........
+        .a33221d........
+        ..a3321d....zz..
+        ..a33221a..zYwz.
+        ...zYYyy1aazyyz.
+        ...azYy2211a22d.
+        ....d22221111d..
+        .....dd11111d...
+        .......dddd.....
+        ................
+    """, {"a": HORN.outline_light, "d": HORN.outline_dark, "k": "#1e1b19",
+          "Y": GOLD[2], "y": GOLD[0], "w": GOLD[3], "z": GOLD.outline_light},
+        ramp=HORN)
+    return [s.save(item("work_horn"))]
+
+
 DRAW = [blank_blueprint, blueprint, shape_planner, patrol_map, delivery_note, travel_ticket, price_tag,
-        village_ledger, field_marker, city_plan, quarry_marker, rally_banner, scan_tool, settlers_wagon, guide_book]
+        village_ledger, field_marker, city_plan, quarry_marker, rally_banner, scan_tool, settlers_wagon, guide_book,
+        work_horn]
 
 if __name__ == "__main__":
     run(DRAW)

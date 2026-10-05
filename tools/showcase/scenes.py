@@ -231,8 +231,8 @@ SCENES = [
         "the habitat keeper set out a snack, slathered the log and spotted a shiny Eevee", 150, cobblemon=True),
     # Village-wide
     S("hall", "Village Hall", "The Village Hall, its screen and calendar", "the Village Hall screen and its calendar page opened", 75,
-      [("02_hall_people", "People, under the page row"), ("03_hall_builder", "A builder"), ("08_hall_calendar", "The calendar"),
-       ("09_hall_scale4", "At GUI scale 4")]),
+      [("02_hall_people", "The hall's own screen: figures, toolbar, people"), ("03_hall_builder", "A builder"), ("08_hall_calendar", "The calendar"),
+       ("09_hall_scale4", "The hall's screen at GUI scale 4")]),
     # Painting the plan (ROADMAP 27.3): the City Plan screen over a real village, at GUI scales 2 and 4
     S("city_plan", "Village Hall", "Painting the City Plan", "the City Plan screen opened with Homes, Workshops and Gardens zones in three styles", 60,
       [("01_city_plan_start", "The first zone"), ("02_city_plan_scale2", "Three zones in three styles, GUI scale 2"),
@@ -276,7 +276,7 @@ SCENES = [
     job("legend_strike", "Legends", "A Legend on strike", "a Legend on strike left her stonecutter and picketed by the Village Hall under a red line", 120),
     S("edicts", "Village Hall", "The Book of Edicts",
       "the Book of Edicts opened from the hall's lectern button, with Long Shifts in force, at GUI scales 2 and 4", 45,
-      [("01_edicts_book", "Long Shifts in force, two free slots, one locked for a City"), ("02_edicts_scale4", "At GUI scale 4")]),
+      [("01_edicts_book", "The Book on the hall's screen: Long Shifts in force, two free slots, one locked for a City"), ("02_edicts_scale4", "The Book at GUI scale 4")]),
     # Reforms (ROADMAP 30.5): The Shift Bell's step on the quest page, then the fireworks and the chronicle line
     S("reform", "Village Hall", "Reforms: The Shift Bell",
       "Long Shifts' reform step was on the quest page; its three steps handed in, fireworks went up over the hall and the chronicle kept the reform", 60,
@@ -312,6 +312,16 @@ SCENES = [
       [("01_conscription_raid", "The raid comes: the villagers take up the militia's stone swords"),
        ("02_conscription_fight", "Villagers and the guard beat the raiders back"),
        ("03_conscription_book", "Conscription in the Book of Edicts")]),
+    # The Work Horn (ROADMAP 30.11): two builders before and during a rush, then the Book's last row
+    S("work_horn", "Village Hall", "The Work Horn: a rush",
+      "the hall's owner blew the Work Horn and the two builders placed more blocks a minute during the rush than before it", 75,
+      [("01_work_horn_before", "Two builders at their usual pace"), ("02_work_horn_blown", "The Work Horn blown"),
+       ("03_work_horn_rush", "The rush: 50% faster, sparks over the builders"), ("04_work_horn_book", "Used today, on the Book of Edicts' last row")]),
+    # The Cradle (ROADMAP 30.12): a child asleep in a cradle at night, then a time-lapse of a newborn growing up
+    S("cradle", "Village Hall", "The Cradle: a nursery village",
+      "a child slept seated in the cradle at night, and a newborn was still a child half-way and grew up within 12000 ticks in the nursery village", 45,
+      [("01_cradle_night", "A child asleep in the cradle at night"), ("02_cradle_newborn", "Morning: a newborn"),
+       ("03_cradle_growing", "Half-way: 6000 ticks"), ("04_cradle_grown", "Grown up in half the time (12000 ticks)")]),
     S("hall_quests", "Village Hall", "Quests, advice, the village map and the festival",
       "the quests, advice, village map, mercenaries and festival opened", 60,
       [("01_hall_quests", "Quests"), ("02_hall_advice", "What next?"), ("03_hall_map", "Village map"),

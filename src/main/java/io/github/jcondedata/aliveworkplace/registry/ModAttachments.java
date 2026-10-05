@@ -147,6 +147,9 @@ public final class ModAttachments {
 	/** How much bone meal a Composter has made (shown above its head). */
 	public static final Attachment<Integer> BONE_MEAL_MADE = Attachment.saved("bone_meal_made", com.mojang.serialization.Codec.INT);
 
+	/** A villager worn out by a Work Horn's rush (30.11): less happy from the rush's end until dawn; absent: not. */
+	public static final Attachment<io.github.jcondedata.aliveworkplace.hall.WorkHorn.WornOut> WORN_OUT = Attachment.saved("worn_out", io.github.jcondedata.aliveworkplace.hall.WorkHorn.WornOut.CODEC);
+
 	/** How many villagers a Nurse has cured. */
 	public static final Attachment<Integer> VILLAGERS_CURED = Attachment.saved("villagers_cured", com.mojang.serialization.Codec.INT);
 

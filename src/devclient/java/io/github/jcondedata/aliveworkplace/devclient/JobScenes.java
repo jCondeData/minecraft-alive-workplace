@@ -2202,6 +2202,8 @@ final class JobScenes {
 					}
 					io.github.jcondedata.aliveworkplace.guard.VillageRaids.track(level, STATION.offset(-7, 0, 0), 3);
 					io.github.jcondedata.aliveworkplace.hall.Conscription.forget();
+					// The hall's POI is only registered after the staging tick, so the villagers' hall was remembered as none (B72).
+					io.github.jcondedata.aliveworkplace.hall.CivicEffects.forget();
 				}, 40),
 				new Step("02_conscription_fight", -1, 0, (level, player) -> {
 					long armed = conscripts.stream().filter(v -> io.github.jcondedata.aliveworkplace.hall.Conscription.isMilitiaSword(v.getMainHandItem())).count();

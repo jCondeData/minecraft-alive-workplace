@@ -4529,6 +4529,13 @@ item waits.
   `POKEMON_HOUSE_WEIGHT=60` (new `-PpokemonHouseWeight`), shoots the Pokémon houses' workers and checks they stand free.
   Renders of the 25 cut open checked locally; the static renderer has no Cobblemon textures, so the Healing Machine, PC,
   pot and pasture show only in the showcase.
+- 2026-10-05 (28.16, decisions; lane-b-1005-1833): the hall's Arena tip shows only once `Expansions.M28` is on (the
+  Cup it serves isn't out yet); the blueprints and the Leader's trade aren't held back, like the Pokémon Center. Leaders
+  sell the Arena at villager level 4 (Expert), earned through battles; owner: say if every Leader should sell it at
+  once (level 1). Arena III's top roof slab row was dropped because the builder couldn't place its end block.
+- 2026-10-05 (28.17, decisions; lane-b-1005-1833): only regular festivals count toward the Cup calendar (not ones
+  called with a cake); Cups don't check the `festivals` switch; sign-up closes and the bracket is drawn when the Cup's
+  day begins. The hall's page-room check is now 'room for 6 more pages' (the Cup page is the third page; 22.5 asks for 6).
 - 2026-10-05 (30.9, decisions; lane d): `curfew` is one effect type with three fields: `raids` (factor, multiplied;
   also read by `BanditCamps.dailyChance`), `safe_nights` (night safety full in `VillageNeeds.count`, and a monster's blow
   on a villager asleep in bed cancelled through `allowDamage`) and `stay_in` (bedtime, no trading, festival over at

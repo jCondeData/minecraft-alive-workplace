@@ -151,6 +151,14 @@ public final class CobblemonPartners {
 		return tether.canRoamTo(clamped) ? clamped : entity.blockPosition();
 	}
 
+	// The top of its tether's box: Cobblemon recalls a pastured Pokémon whose position leaves that box (B52).
+	public static double roamTop(net.minecraft.world.entity.Entity entity) {
+		if (!(entity instanceof PokemonEntity pokemon) || pokemon.getTethering() == null) {
+			return Double.POSITIVE_INFINITY;
+		}
+		return pokemon.getTethering().getBox().maxY;
+	}
+
 	// Starts the Pokémon walking (its own navigation; Cobblemon's brain may still overrule it, and the show copes).
 	public static boolean walkTo(net.minecraft.world.entity.Entity entity, BlockPos pos, double speed) {
 		if (!(entity instanceof PokemonEntity pokemon)) {

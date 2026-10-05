@@ -583,14 +583,19 @@ public final class PartnerShows implements ResourceManagerReloadListener {
 		}
 	}
 
-	/** Free blocks above {@code pokemon}, up to {@link #FLIGHT_HEIGHT}: a roof or a cave keeps the flight low. */
+	/**
+	 * Free blocks above {@code pokemon}, up to {@link #FLIGHT_HEIGHT}: a roof or a cave keeps the flight low, and so does
+	 * the top of what its pasture lets it roam (a partner flown above that is sent back to its owner's PC, B52).
+	 */
 	private static int headroom(ServerLevel level, Entity pokemon) {
-		for (int up = 1; up <= FLIGHT_HEIGHT; up++) {
+		double top = PokemonPartners.EXTENSION.call(p -> p.roamTop(pokemon), Double.POSITIVE_INFINITY);
+		int most = (int) Math.max(0, Math.min(FLIGHT_HEIGHT, Math.floor(top - pokemon.getY() - 0.5)));
+		for (int up = 1; up <= most; up++) {
 			if (!level.noCollision(pokemon, pokemon.getBoundingBox().move(0, up, 0))) {
 				return up - 1;
 			}
 		}
-		return FLIGHT_HEIGHT;
+		return most;
 	}
 
 	/**

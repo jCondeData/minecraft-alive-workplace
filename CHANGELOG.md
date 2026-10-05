@@ -16,6 +16,14 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+### Changed
+- **Expansions still being built are off until the release that finishes them** (B76): 0.139.0 switched on parts of
+  1.1 to 1.4 that aren't done yet. The Steward (1.1); partner shows, the nurse at the Healing Machine and the Berry
+  Breeder, Camp Cook, Habitat Keeper, Daycare Keeper and Gem Grower jobs (1.2); Legends, the Gifted and strange moods
+  (1.3); and edicts, the Work Horn, Village Banners, Cradles, Harvest Idols and tonics (1.4) now stay off, even in a
+  config file 0.139.0 wrote with them on, and their switches leave the settings screen until then. Nothing saved is
+  lost: a Steward, a Legend or an edict comes back as it was when its expansion is released.
+
 ## 0.139.0 — 2026-10-05
 
 ### Added
@@ -468,6 +476,8 @@ asks for the steps, `latest.log` and any crash report).
   ground (B69).
 - The showcase client starts every scene again without Cobblemon: the Habitat Keeper scene's wild Eevee is spawned
   from a Cobblemon-only helper, so loading the scenes no longer crashes (B59).
+- A pastured Pidgey (or any flying partner) taking the postman's air mail no longer vanishes into your PC: it climbs
+  only as high as its Pasture Block lets it roam, instead of flying past that and being sent back (B52).
 - Every switch on the settings screen fits its button again, on or off: shorter names for Nurse Healing Machines,
   Villages Work Unseen, Legend Needs, Strikes, Stewards Run Villages and Legends at Ruins (each tooltip still says it
   all) (B61).

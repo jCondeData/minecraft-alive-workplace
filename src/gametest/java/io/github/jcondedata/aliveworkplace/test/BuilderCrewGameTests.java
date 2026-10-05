@@ -37,6 +37,12 @@ import net.minecraft.world.level.levelgen.structure.BoundingBox;
  * <p>Measured when this was written: alone 4200 ticks; two 2110-2117 (50%); four 1224-1468 (29-35%). Before 23.1a the
  * helpers fetched a handful per block, waited out the lead's end of each stage and all chased the block right after
  * the lead's: two took 2650-2997 (63-71%), four 1920-1958 (46%).
+ *
+ * <p>Alone, the build takes the same ticks every time; a crew's builds don't. Who of the crew happens to carry the last
+ * few decoration blocks decides whether the lead walks back to the chests for them while the others wait: over some 70
+ * builds (2026-10-05, here and in CI) four took 28-44% (on average 34%) and two 50-62% (mostly 50%). With one run, CI
+ * failed on a 44% (4d1ee21). So the whole run is made three times, each with new villagers (a builder levels up as it
+ * builds, so the same villagers again would be faster), and each crew's middle share of the time alone is checked.
  */
 public class BuilderCrewGameTests implements net.fabricmc.fabric.api.gametest.v1.FabricGameTest {
 	private static final String HUGE = "aliveworkplace_test:huge_area";
@@ -49,11 +55,13 @@ public class BuilderCrewGameTests implements net.fabricmc.fabric.api.gametest.v1
 		new BlockPos(5, 2, 4), new BlockPos(1, 2, 5), new BlockPos(3, 2, 5), new BlockPos(4, 2, 5), new BlockPos(5, 2, 5)};
 	/** The crews built with, in turn. */
 	private static final int[] CREWS = {1, 2, 4};
-	/** The most a crew of {@code CREWS[i]} may take, as a share of the time alone: a half and a quarter, with slack. */
+	/** The most a crew of {@code CREWS[i]} may take (its middle share), as a share of the time alone: a half and a quarter, with slack. */
 	private static final double[] MOST = {1, 0.62, 0.42};
+	/** How many times the whole run is made, each time with new villagers. */
+	private static final int RUNS = 3;
 
-	//$ gametest_ticks_batch HUGE '20000' '"crewScaling"'
-	@GameTest(template = HUGE, timeoutTicks = 20000, batch = "crewScaling")
+	//$ gametest_ticks_batch HUGE '36000' '"crewScaling"'
+	@GameTest(template = HUGE, timeoutTicks = 36000, batch = "crewScaling")
 	public void aCrewBuildsInAboutTheTimeOfOneBuilderDividedByItsSize(GameTestHelper helper) {
 		Leftovers.clear(helper);
 		ServerLevel level = helper.getLevel();
@@ -65,20 +73,21 @@ public class BuilderCrewGameTests implements net.fabricmc.fabric.api.gametest.v1
 		for (BlockPos barrel : BARRELS) {
 			helper.setBlock(barrel, Blocks.BARREL);
 		}
-		Villager lead = helper.spawn(EntityType.VILLAGER, LEAD_START);
-		Builders.employ(level, lead, helper.absolutePos(BENCH));
-		List<Villager> crew = new ArrayList<>(List.of(lead));
+		List<Villager> crew = new ArrayList<>();
+		newLead(helper, crew);
 
+		int[] run = {0};
 		int[] phase = {0};
 		int[] startedAt = {0};
-		int[] took = new int[CREWS.length];
+		int[][] tookIn = new int[RUNS][CREWS.length];
 		BuildSite[] site = {start(helper, crew, CREWS[0])};
 		helper.onEachTick(() -> {
 			helper.setDayTime(3000); // a working day that doesn't end
-			if (phase[0] >= CREWS.length || !site[0].isDone()) {
+			if (run[0] >= RUNS || !site[0].isDone()) {
 				return;
 			}
 			int p = phase[0];
+			int[] took = tookIn[run[0]];
 			took[p] = (int) helper.getTick() - startedAt[0];
 			BuildPlan plan = site[0].plan(level);
 			if (plan != null && !plan.unfinished(level).isEmpty()) {
@@ -94,25 +103,53 @@ public class BuilderCrewGameTests implements net.fabricmc.fabric.api.gametest.v1
 				least = Math.min(least, n);
 				total += n;
 			}
-			System.out.println("[23.1a] a crew of " + CREWS[p] + " built the stone house in " + took[p] + " ticks"
+			System.out.println("[23.1a] run " + (run[0] + 1) + ": a crew of " + CREWS[p] + " built the stone house in " + took[p] + " ticks"
 				+ (p > 0 ? String.format(" (%.0f%% of the time alone)", 100.0 * took[p] / took[0]) : "") + "; blocks each:" + shares);
 			// Everyone pulls their weight: nobody places less than half an even share.
 			if (least * CREWS[p] * 2 < total) {
 				throw new GameTestAssertException("a builder of the crew of " + CREWS[p] + " placed only " + least + " of " + total
 					+ " blocks (each:" + shares + ")");
 			}
-			if (took[p] > took[0] * MOST[p]) {
-				throw new GameTestAssertException(String.format("a crew of %d took %d ticks, %.0f%% of the %d ticks alone (at most %.0f%%)",
-					CREWS[p], took[p], 100.0 * took[p] / took[0], took[0], 100 * MOST[p]));
-			}
 			phase[0]++;
-			if (phase[0] < CREWS.length) {
-				startedAt[0] = (int) helper.getTick();
-				site[0] = start(helper, crew, CREWS[phase[0]]);
+			if (phase[0] == CREWS.length) {
+				phase[0] = 0;
+				run[0]++;
+				if (run[0] == RUNS) {
+					for (int c = 1; c < CREWS.length; c++) {
+						double[] ofAlone = new double[RUNS];
+						for (int r = 0; r < RUNS; r++) {
+							ofAlone[r] = (double) tookIn[r][c] / tookIn[r][0];
+						}
+						java.util.Arrays.sort(ofAlone);
+						double middle = ofAlone[RUNS / 2];
+						String all = java.util.Arrays.stream(ofAlone).mapToObj(x -> String.format("%.0f%%", 100 * x)).toList().toString();
+						System.out.println(String.format("[23.1a] a crew of %d: %.0f%% of the time alone in the middle run of %s", CREWS[c], 100 * middle, all));
+						if (middle > MOST[c]) {
+							throw new GameTestAssertException(String.format("a crew of %d took %.0f%% of the time alone in the middle run of %s (at most %.0f%%)",
+								CREWS[c], 100 * middle, all, 100 * MOST[c]));
+						}
+					}
+					return;
+				}
+				// A new run with new villagers: these have levelled up building.
+				for (Villager v : crew) {
+					v.discard();
+				}
+				crew.clear();
+				newLead(helper, crew);
 			}
+			startedAt[0] = (int) helper.getTick();
+			site[0] = start(helper, crew, CREWS[phase[0]]);
 		});
-		helper.succeedWhen(() -> helper.assertTrue(phase[0] >= CREWS.length, "still building with a crew of "
-			+ CREWS[Math.min(phase[0], CREWS.length - 1)] + ": stage=" + site[0].stage() + " placed=" + site[0].placed()));
+		helper.succeedWhen(() -> helper.assertTrue(run[0] >= RUNS, "still building in run " + (Math.min(run[0], RUNS - 1) + 1)
+			+ " with a crew of " + CREWS[phase[0]] + ": stage=" + site[0].stage() + " placed=" + site[0].placed()));
+	}
+
+	/** A new builder at the bench, the crew's lead. */
+	private static void newLead(GameTestHelper helper, List<Villager> crew) {
+		Villager lead = helper.spawn(EntityType.VILLAGER, LEAD_START);
+		Builders.employ(helper.getLevel(), lead, helper.absolutePos(BENCH));
+		crew.add(lead);
 	}
 
 	/**

@@ -1220,16 +1220,22 @@ saves the file and puts the settings into effect in your own worlds (a dedicated
 | `villagerChatter` | true | villagers near a player now and then say something about their day, over their heads |
 | `villagerCouples` | true | villagers court, marry (a wedding at the bell) and mourn |
 | `villageTreasury` | true | villages with a Village Hall put by takings every morning for players to collect at the hall |
-| `partnerShows` | true | Pokémon pastured near a workstation are seen helping: they walk over to the work, carry things and lend a hand (with Cobblemon) |
-| `nurseHealingMachine` | true | a nurse at Cobblemon's Healing Machine puts your team in it to heal them (free) and keeps it charged while on shift; off, she heals by hand |
-| `berryBreeders` | true | with Cobblemon, a berry makes a villager at a composter a Berry Breeder, who breeds new berries from the village's own; off, no Berry Breeder job |
-| `campCooks` | true | with Cobblemon, Hearty Grains make a villager at a Campfire Pot a Camp Cook, who cooks Cobblemon dishes in the pot; off, no Camp Cook job |
-| `habitatKeepers` | true | with Cobblemon, a honey bottle makes a villager at a Pasture Block a Habitat Keeper, who sets out Poké Snacks, slathers Saccharine logs and watches the wild Pokémon; off, no Habitat Keeper job |
-| `habitatSightings` | true | Habitat Keepers tell the village of the shiny, rare and Alpha wild Pokémon near their pasture and write them in the chronicle |
+| `partnerShows` | off until 1.2 | Pokémon pastured near a workstation are seen helping: they walk over to the work, carry things and lend a hand (with Cobblemon) |
+| `nurseHealingMachine` | off until 1.2 | a nurse at Cobblemon's Healing Machine puts your team in it to heal them (free) and keeps it charged while on shift; off, she heals by hand |
+| `berryBreeders` | off until 1.2 | with Cobblemon, a berry makes a villager at a composter a Berry Breeder, who breeds new berries from the village's own; off, no Berry Breeder job |
+| `campCooks` | off until 1.2 | with Cobblemon, Hearty Grains make a villager at a Campfire Pot a Camp Cook, who cooks Cobblemon dishes in the pot; off, no Camp Cook job |
+| `habitatKeepers` | off until 1.2 | with Cobblemon, a honey bottle makes a villager at a Pasture Block a Habitat Keeper, who sets out Poké Snacks, slathers Saccharine logs and watches the wild Pokémon; off, no Habitat Keeper job |
+| `habitatSightings` | off until 1.2 | Habitat Keepers tell the village of the shiny, rare and Alpha wild Pokémon near their pasture and write them in the chronicle |
 | `seasonDays` | 16 | days in each of the village calendar's four seasons (each season's festival is on its middle day) |
 | `treasuryPerWorker` | 20 | what each worker brings the treasury a day, in hundredths of an emerald, before wellbeing and rank |
 | `villageProtection` | true | a Village Hall's owner may protect the village from other players (shift-click the hall's name tag; off until they do) |
 | `dollarsPerEmerald` | 100 | CobbleDollars per emerald for lessons, shop prices and fares |
+
+Expansions still being built stay off until the release that finishes them, whatever the file says: 1.1's Steward
+(`steward`, `stewardSelfRun`), 1.2's Pokémon jobs and partner shows (the rows marked "off until 1.2", `daycareKeepers`,
+`gemGrowers`, `villageHabitats`), 1.3's Legends and the Gifted (`legends`, `legendNeeds`, `legendSites`, `strangeMoods`,
+`giftedChance`) and 1.4's edicts and civic items (`villageEdicts`, `workHorns`, `villageBanners`, `cradles`,
+`harvestIdols`, `tonics`). Their switches aren't on the settings screen until then.
 
 Every "needs" system (names, traits, moods, sickness, couples, chatter, markets, festivals, raids, bandit camps, the
 treasury, repairs, paths) has its own switch above: set it to `false` and the village simply goes without it; nothing

@@ -47,6 +47,7 @@
 			"io.github.jcondedata.aliveworkplace.test.LumberjackGameTests",
 			"io.github.jcondedata.aliveworkplace.test.OrchardGameTests",
 			"io.github.jcondedata.aliveworkplace.test.ConfigGameTests",
+			"io.github.jcondedata.aliveworkplace.test.ExpansionGateGameTests",
 			"io.github.jcondedata.aliveworkplace.test.WordsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.FarmerGameTests",
 			"io.github.jcondedata.aliveworkplace.test.FerryEdgeGameTests",

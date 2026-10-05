@@ -344,6 +344,9 @@ public final class LegendSites {
 		}
 		switch (captive.site()) {
 			case "ruined_portal" -> free((ServerLevel) villager.level(), villager, captive, player);
+			case OldSage.SITE -> {
+				return OldSage.use(player, villager, hand, captive); // the riddle quest (29.14)
+			}
 			case "shipwreck" -> {
 				ItemStack held = player.getItemInHand(hand);
 				if (held.is(MEALS)) {

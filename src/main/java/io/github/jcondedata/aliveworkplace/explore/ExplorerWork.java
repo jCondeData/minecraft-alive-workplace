@@ -70,6 +70,16 @@ public class ExplorerWork extends Behavior<Villager> {
 	static final int MIN_FOOD = 2;
 	/** Every so many expeditions, a map to somewhere (with an empty map in the chests). */
 	static final int MAP_EVERY = 3;
+
+	/** How much farther {@code explorer} ranges under the Ancient Lore's Star Charts (29.14): 25% a level. */
+	public static double starCharts(Villager explorer) {
+		return 1 + 0.25 * io.github.jcondedata.aliveworkplace.research.TreeEffects.flagCount(explorer, "star_charts");
+	}
+
+	/** Every how many expeditions {@code explorer} draws a map: every second one with Star Charts II (29.14). */
+	public static int mapEvery(Villager explorer) {
+		return io.github.jcondedata.aliveworkplace.research.TreeEffects.flagCount(explorer, "star_charts") >= 2 ? 2 : MAP_EVERY;
+	}
 	private static final int GIVE_UP_TICKS = 300;
 	private static final int LOOK_EVERY = 100;
 	private static final float SPEED = 0.6f;
@@ -121,7 +131,8 @@ public class ExplorerWork extends Behavior<Villager> {
 
 	@Override
 	protected boolean checkExtraStartConditions(ServerLevel level, Villager villager) {
-		return !villager.isSleeping() && Explorers.isExplorer(villager) && Builders.benchPos(villager).isPresent();
+		return !villager.isSleeping() && Explorers.isExplorer(villager) && Builders.benchPos(villager).isPresent()
+			&& !io.github.jcondedata.aliveworkplace.legend.Pathfinder.isLeading(villager);
 	}
 
 	@Override
@@ -292,7 +303,9 @@ public class ExplorerWork extends Behavior<Villager> {
 	@Nullable
 	private BlockPos pickStop(ServerLevel level, Villager villager, BlockPos station) {
 		BlockPos from = villager.blockPosition();
-		double rangeSqr = (double) RANGE * RANGE;
+		double range = RANGE * io.github.jcondedata.aliveworkplace.legend.Pathfinder.rangeFactor(villager) // twice as far for the Pathfinder (29.13)
+			* starCharts(villager); // a quarter farther a level of the Ancient Lore's Star Charts (29.14)
+		double rangeSqr = range * range;
 		for (int i = 0; i < 16; i++) {
 			double angle = level.random.nextDouble() * Math.PI * 2;
 			int hop = MIN_HOP + level.random.nextInt(Math.max(1, MAX_HOP - MIN_HOP + 1));
@@ -421,7 +434,7 @@ public class ExplorerWork extends Behavior<Villager> {
 			int trips = ModAttachments.EXPEDITIONS.getOrElse(villager, 0) + 1;
 			ModAttachments.EXPEDITIONS.set(villager, trips);
 			BuilderLevels.addXp(level, villager, 3, null);
-			if (trips % MAP_EVERY == 0) {
+			if (trips % mapEvery(villager) == 0) {
 				chart(level, villager, station, own);
 			}
 		}

@@ -818,6 +818,44 @@ final class JobScenes {
 			java.util.UUID id = site == null ? null : site.id();
 			return l -> built(l, id, 1f);
 		}, null));
+		SCENES.put("legend_pathfinder", new Job("the Pathfinder led the player through a forest to a staged Stronghold and planted a banner at its entrance", 1600,
+			new Vec3(9.5, -55, 9.5), new Vec3(0, -59.5, 10), (level, player) -> {
+			// ROADMAP 29.13: the Pathfinder settled at a cartography table with 8 bread in the chest, between rows of oaks.
+			// The scene starts an expedition with the player (hovering at the camera, within 24 blocks of the whole path,
+			// so they never wait) to a Stronghold staged 20 blocks south; they walk the forest path and plant the banner.
+			level.getGameRules().getRule(GameRules.RULE_DAYLIGHT).set(false, level.getServer());
+			level.setDayTime(3000);
+			for (int z = -2; z <= 24; z += 5) {
+				for (int x : new int[] {-4, 4}) {
+					BlockPos trunk = STATION.offset(x, 0, z + (x > 0 ? 2 : 0));
+					for (int y = 0; y < 5; y++) {
+						place(level, trunk.above(y), Blocks.OAK_LOG);
+					}
+					for (BlockPos leaf : BlockPos.betweenClosed(trunk.offset(-2, 3, -2), trunk.offset(2, 5, 2))) {
+						if (level.getBlockState(leaf).isAir() && leaf.distManhattan(trunk.above(4)) <= 3) {
+							level.setBlockAndUpdate(leaf, Blocks.OAK_LEAVES.defaultBlockState()
+								.setValue(net.minecraft.world.level.block.LeavesBlock.PERSISTENT, true));
+						}
+					}
+				}
+			}
+			BlockPos hall = STATION.offset(-2, 0, -4);
+			place(level, hall, ModBlocks.VILLAGE_HALL);
+			Villager pathfinder = worker(level, STATION, Blocks.CARTOGRAPHY_TABLE, PoiTypes.CARTOGRAPHER, VillagerProfession.CARTOGRAPHER);
+			chest(level, chestPos(), new ItemStack(Items.BREAD, 8));
+			io.github.jcondedata.aliveworkplace.legend.Legend legend = io.github.jcondedata.aliveworkplace.legend.Legends.get(
+				io.github.jcondedata.aliveworkplace.AliveWorkplace.id("pathfinder")).orElse(null);
+			Showcase.check(legend != null, "the Pathfinder's file loaded");
+			if (legend == null) {
+				return l -> true;
+			}
+			io.github.jcondedata.aliveworkplace.legend.Legends.make(level, pathfinder, legend, "showcase");
+			BlockPos target = STATION.offset(0, 0, 20);
+			boolean out = io.github.jcondedata.aliveworkplace.legend.Pathfinder.start(level, player, pathfinder, "stronghold", target, null);
+			Showcase.check(out, "the Pathfinder set out with the player");
+			return l -> io.github.jcondedata.aliveworkplace.legend.Pathfinder.state(pathfinder).arrived()
+				&& l.getBlockState(target).is(Blocks.LIGHT_BLUE_BANNER);
+		}, null));
 		SCENES.put("bard", job("the bard played a record at the Music Stand", 1200, (level, player) -> {
 			Villager b = picked(level, player, STATION, Blocks.JUKEBOX, Items.MUSIC_DISC_CAT);
 			chest(level, chestPos(), new ItemStack(Items.MUSIC_DISC_CAT));
@@ -1434,6 +1472,52 @@ final class JobScenes {
 					Showcase.check(!io.github.jcondedata.aliveworkplace.legend.LegendSites.isCaptive(subject), "breaking a bar freed the prisoner");
 				}, 60)),
 			(level, player) -> true));
+		SCREENS.put("legend_sage", new Screen("the Old Sage's hut, a riddle asked and a wrong answer refused with a hint, and the Ancient Lore tab",
+			new Vec3(0.5, -53.0, 13.5), new Vec3(0.5, -59.5, -6.5),
+			(level, player) -> {
+				// ROADMAP 29.14: the hermit's hut set down for the player's village, with the Old Sage waiting in it.
+				level.setBlockAndUpdate(STATION, ModBlocks.VILLAGE_HALL.defaultBlockState()
+					.setValue(io.github.jcondedata.aliveworkplace.hall.VillageHallBlock.FACING, Direction.SOUTH));
+				var hall = (io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(STATION);
+				hall.setOwner(player.getUUID(), player.getGameProfile().getName());
+				subject = io.github.jcondedata.aliveworkplace.legend.OldSage.placeHut(level, STATION, new BlockPos(0, -61, -8),
+					net.minecraft.util.RandomSource.create(14));
+				Showcase.check(subject != null, "the hermit's hut was set down with the Old Sage in it");
+				if (subject != null) {
+					ModAttachments.SAGE_RIDDLES.set(subject, new io.github.jcondedata.aliveworkplace.legend.OldSage.Riddles(List.of(2, 4, 8), 0, 0));
+				}
+				level.setDayTime(level.getDayTime() / 24000L * 24000L + 6000L);
+			},
+			List.of(new Step("01_hermit_hut", -1, 6, (level, player) ->
+					Showcase.check(subject != null && io.github.jcondedata.aliveworkplace.legend.LegendSites.isCaptive(subject), "the Sage waits in the hut"), 40),
+				new Step("02_riddle", -1, 6, (level, player) -> {
+					// The player asks for the riddle, then offers a stick twice: a shake of the head, then a hint.
+					player.teleportTo(subject.getX(), subject.getY(), subject.getZ() + 3.5);
+					player.setItemInHand(InteractionHand.MAIN_HAND, ItemStack.EMPTY);
+					io.github.jcondedata.aliveworkplace.legend.LegendSites.use(player, subject, InteractionHand.MAIN_HAND);
+					player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(Items.STICK));
+					io.github.jcondedata.aliveworkplace.legend.LegendSites.use(player, subject, InteractionHand.MAIN_HAND);
+					io.github.jcondedata.aliveworkplace.legend.LegendSites.use(player, subject, InteractionHand.MAIN_HAND);
+					Showcase.check(ModAttachments.SAGE_RIDDLES.get(subject).misses() == 2 && ModAttachments.SAGE_RIDDLES.get(subject).solved() == 0,
+						"two wrong answers refused (the hint is given)");
+				}, 60),
+				new Step("03_ancient_lore_tab", io.github.jcondedata.aliveworkplace.research.ResearchScreen.TOPIC_SLOTS[1], 6, (level, player) -> {
+					// The Sage settled in the village works the Ancient Lore: Old Tongues done, Star Charts I, Herb Lore in progress.
+					var legend = io.github.jcondedata.aliveworkplace.legend.Legends.get(io.github.jcondedata.aliveworkplace.legend.OldSage.ID).orElseThrow();
+					Villager sage = EntityType.VILLAGER.spawn(level, STATION.south(2).east(2), MobSpawnType.COMMAND);
+					sage.setNoAi(true);
+					io.github.jcondedata.aliveworkplace.legend.Legends.make(level, sage, legend, "showcase");
+					var tree = io.github.jcondedata.aliveworkplace.research.ResearchTrees.get(io.github.jcondedata.aliveworkplace.AliveWorkplace.id("ancient_lore")).orElseThrow();
+					var state = new io.github.jcondedata.aliveworkplace.research.Research.State(Map.of(tree.key() + "/old_tongues", 1, tree.key() + "/star_charts", 1),
+						java.util.Optional.empty(), 0, false);
+					state = io.github.jcondedata.aliveworkplace.research.ResearchTrees.choose(state, tree, tree.topic("herb_lore").orElseThrow());
+					var hall = (io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(STATION);
+					hall.setResearch(io.github.jcondedata.aliveworkplace.research.ResearchTrees.withProgress(state, tree, 30));
+					io.github.jcondedata.aliveworkplace.research.ResearchScreen.openForLegend(player, sage);
+					Showcase.check(player.containerMenu instanceof ChoiceMenu m
+						&& m.icon(io.github.jcondedata.aliveworkplace.research.ResearchScreen.TAB_SLOTS[1]).is(Items.LECTERN), "the Ancient Lore opened on its own tab");
+				}, 40)),
+			(level, player) -> player.containerMenu instanceof ChoiceMenu));
 		SCREENS.put("hall_quests", new Screen("the Village Hall's quests, advice, village map, mercenaries and festival opened", new Vec3(2.5, -58.4, 4.5), TARGET,
 			(level, player) -> {
 				level.setBlockAndUpdate(STATION, ModBlocks.VILLAGE_HALL.defaultBlockState()

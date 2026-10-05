@@ -1,0 +1,7 @@
+{
+  "biomes": [
+    "minecraft:snowy_plains",
+    "minecraft:ice_spikes"
+  ],
+  "pool": "cobblemon:snowy_burrow"
+}

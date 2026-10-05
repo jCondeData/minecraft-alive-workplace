@@ -73,6 +73,7 @@ public class ScreenshotHarness implements ClientModInitializer {
 	private final GiftedScene gifted = new GiftedScene();
 	private final WorkHornScene workHorn = new WorkHornScene();
 	private final CradleScene cradle = new CradleScene();
+	private final HarvestIdolScene harvestIdol = new HarvestIdolScene();
 	private final VillageBannerScene villageBanner = new VillageBannerScene();
 	private final TonicsScene tonics = new TonicsScene();
 	private final CityPlanGroundScene cityPlanGround = new CityPlanGroundScene();
@@ -80,6 +81,7 @@ public class ScreenshotHarness implements ClientModInitializer {
 	private final PartnersLandScene partnersLand = new PartnersLandScene();
 	private final PokemonCenterScene pokemonCenter = new PokemonCenterScene();
 	private final PokemonBuildsScene pokemonBuilds = new PokemonBuildsScene();
+	private final VillageHabitatScene villageHabitat = new VillageHabitatScene();
 	private final PartnersForgeScene partnersForge = new PartnersForgeScene();
 	private final PartnersAllScene partnersAll = new PartnersAllScene();
 	private final PaceScene pace = new PaceScene();
@@ -154,6 +156,10 @@ public class ScreenshotHarness implements ClientModInitializer {
 			pokemonBuilds.tick(mc, mc.getSingleplayerServer());
 			return;
 		}
+		if ("village_habitat".equals(System.getProperty("aliveworkplace.scene"))) {
+			villageHabitat.tick(mc, mc.getSingleplayerServer());
+			return;
+		}
 		if ("partners_land".equals(System.getProperty("aliveworkplace.scene"))) {
 			partnersLand.tick(mc, mc.getSingleplayerServer());
 			return;
@@ -188,6 +194,10 @@ public class ScreenshotHarness implements ClientModInitializer {
 		}
 		if ("cradle".equals(System.getProperty("aliveworkplace.scene"))) {
 			cradle.tick(mc);
+			return;
+		}
+		if ("harvest_idol".equals(System.getProperty("aliveworkplace.scene"))) {
+			harvestIdol.tick(mc);
 			return;
 		}
 		if ("village_banner".equals(System.getProperty("aliveworkplace.scene"))) {

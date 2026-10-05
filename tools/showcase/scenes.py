@@ -36,10 +36,11 @@ GROUPS = [
 START, WORKING, DONE = ("01_start", "Start"), ("work_*@middle", "At work"), ("03_done", "Done")
 
 
-def S(name, group, title, what, est, stills, env=None, cobblemon=False, mega=False):
-    """One scene. est: seconds the scene itself takes on GitHub's runner (the client's start-up is added)."""
+def S(name, group, title, what, est, stills, env=None, cobblemon=False, mega=False, cobblemon18=False):
+    """One scene. est: seconds the scene itself takes on GitHub's runner (the client's start-up is added).
+    cobblemon18: a Cobblemon-1.8-only feature, always filmed with Cobblemon 1.8.1 (-Pcobblemon18=true, ROADMAP 28.14)."""
     return {"name": name, "group": group, "title": title, "what": what, "est": est, "stills": stills,
-            "env": env or {}, "cobblemon": cobblemon, "mega": mega}
+            "env": env or {}, "cobblemon": cobblemon or cobblemon18, "mega": mega, "cobblemon18": cobblemon18}
 
 
 def job(name, group, title, what, est=150, extra=(), **kw):
@@ -289,9 +290,17 @@ SCENES = [
     S("legend_sites", "Legends", "Legends found at ruins, outposts and wrecks",
       "the three camps of Legends found in the world, and a prisoner freed from the outpost cage", 40,
       [("01_three_camps", "A traveller's camp, a prisoner's cage, a castaway's camp"), ("02_cage_opened", "A bar broken: the prisoner is free")]),
+    # The Old Sage (ROADMAP 29.14): the hermit's hut, a riddle with a wrong answer refused and a hint, the Ancient Lore tab
+    S("legend_sage", "Legends", "The Old Sage's hut, riddles and Ancient Lore",
+      "the Old Sage's hut, a riddle asked and a wrong answer refused with a hint, and the Ancient Lore tab", 50,
+      [("01_hermit_hut", "The hermit's hut, the Sage inside"), ("02_riddle", "A riddle, a shake of the head, a hint"),
+       ("03_ancient_lore_tab", "The Ancient Lore tab")]),
     # The Master Architect (ROADMAP 29.12): the top-tier Stone House, finished, redrawn in the Grand style and rebuilt
     job("legend_architect", "Legends", "The Master Architect redraws a house in the Grand style",
         "the Master Architect handed a builder the Stone House redrawn in the Grand style, and it was rebuilt", 360),
+    # The Pathfinder (ROADMAP 29.13): an expedition with the player through a forest to a staged Stronghold
+    job("legend_pathfinder", "Legends", "The Pathfinder leads the player through a forest",
+        "the Pathfinder led the player through a forest to a staged Stronghold and planted a banner at its entrance", 120),
     job("legend_strike", "Legends", "A Legend on strike", "a Legend on strike left her stonecutter and picketed by the Village Hall under a red line", 120),
     # Strange moods (ROADMAP 29.10): a Master cleric claims her brewing stand under a purple line, the chest by it fills,
     # and she makes a named Masterwork, hung in an item frame, and becomes a Legend
@@ -345,6 +354,11 @@ SCENES = [
       "a child slept seated in the cradle at night, and a newborn was still a child half-way and grew up within 12000 ticks in the nursery village", 45,
       [("01_cradle_night", "A child asleep in the cradle at night"), ("02_cradle_newborn", "Morning: a newborn"),
        ("03_cradle_growing", "Half-way: 6000 ticks"), ("04_cradle_grown", "Grown up in half the time (12000 ticks)")]),
+    # Seasons and the Harvest Idol (ROADMAP 30.14): two wheat fields through a harvest season, one with an idol
+    S("harvest_idol", "Village Hall", "The Harvest Idol: crops grow faster in harvest season",
+      "in autumn (harvest season) the wheat field within the idol's 32 blocks grew more stages half-way than the field out of its reach", 50,
+      [("01_harvest_idol", "The Harvest Idol, sparkling in harvest season"), ("02_harvest_idol_fields", "Two fields sown: the idol's (right) and one out of its reach"),
+       ("03_harvest_idol_growing", "Half-way: the idol's field is ahead"), ("04_harvest_idol_ripe", "The idol's field ripens first")]),
     # The Village Banner (ROADMAP 30.13): a street of stone houses under the village's colours, a knight's painted
     # shield, a neighbour by its banner on the routes page, the village by its own in the Book of Edicts
     S("village_banner", "Village Hall", "The Village Banner: the village's colours",
@@ -398,6 +412,10 @@ SCENES = [
       [("40_workshop_*@spread", "")], env={"WORKSHOP_WEIGHT": "200"}),
     S("pokemon_builds", "Build families", "Builds for the Pokémon jobs, both tiers",
       "all ten builds stand with their job blocks", 120, [("[12][0-9]_*@spread", "")], cobblemon=True),
+    S("village_habitat", "Habitat Keeper", "The village's own Habitat Block (Cobblemon 1.8)",
+      "the Expert keeper put a natural Habitat Block under the garden's centre stone and the hall lists today's Pokémon", 120,
+      [("01_garden", "The finished Habitat Garden"), ("02_habitat", "Its centre stone is now a Habitat Block"),
+       ("03_hall_line", "Close up: it still looks like moss")], cobblemon18=True),
     S("camp", "Build families", "A Settler's Wagon camp", "the camp was set up", 45,
       [("01_camp", "The camp"), ("02_camp_back", "From behind")]),
 ]
@@ -635,6 +653,8 @@ def changed(base, head="HEAD", root="."):
 def env(scene):
     s = BY_NAME[scene]
     out = {"SCENE": scene, "COBBLEMON": "true" if s["cobblemon"] else "false", "MEGA": "true" if s["mega"] else "false"}
+    if s["cobblemon18"]:
+        out["COBBLEMON18"] = "true"
     out.update(s["env"])
     return out
 

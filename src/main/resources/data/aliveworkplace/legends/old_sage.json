@@ -1,0 +1,20 @@
+{
+  "rarity": "rare",
+  "job": "aliveworkplace:legend",
+  "title": "legend.aliveworkplace.old_sage.title",
+  "lore": "legend.aliveworkplace.old_sage.lore",
+  "names": [
+    "legend.aliveworkplace.old_sage.name.1",
+    "legend.aliveworkplace.old_sage.name.2",
+    "legend.aliveworkplace.old_sage.name.3"
+  ],
+  "conditions": [
+    {"type": "research_levels", "count": 5}
+  ],
+  "arrive": [
+    {"way": "found", "site": "hermit_hut"},
+    {"way": "born", "trades": ["aliveworkplace:scholar"]}
+  ],
+  "needs": {"luxury": "books"},
+  "powers": []
+}

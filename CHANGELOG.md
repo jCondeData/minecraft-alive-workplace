@@ -32,6 +32,26 @@ asks for the steps, `latest.log` and any crash report).
   tower house with a cartography table and a lookout at the top. The Steward now builds them for an Armorer or Miner,
   a Mason, a Fletcher or Lumberjack, and a Cartographer left without a workstation (or a job the village wants with no
   free block).
+- **The Old Sage** (29.14), a Rare Legend: once a village has finished 5 research levels, a hermit's hut of mossy stone
+  and spruce (a lectern, bookshelves, a cauldron, an herb garden) appears 150-250 blocks out, and the village's players
+  hear a rumour with its distance and direction. The Sage asks three riddles from a pool of eight, each answered by
+  handing over an item; a wrong one gets a shake of the head and, after two misses, a hint. Three right answers and the
+  Sage comes to the village the next morning as a guest (also born to a Scholar). Likes books. They work the
+  **Ancient Lore** at a lectern: Old Tongues, Star Charts, Herb Lore, Deep Memory, Runes of Warding, Old Harvests and
+  one last pick for good (the Undying Flame, the Golden Age or the Iron Pact). Grey robe, long beard, gnarled staff.
+- **The Pathfinder** (29.13), a Rare Cartographer Legend: found at a ruined portal once one of the village's explorers is
+  an Expert, or born to a Cartographer; likes clothes. Their own expeditions range twice as far and bring back more
+  maps, now and then a trial key or an echo shard. Sneak-right-click them with 8 food in their chests and pick a
+  Stronghold, an Ancient City or Trial Chambers: they hand you a map to the nearest within 3,000 blocks and lead the
+  way, waiting when you fall behind, catching up when you're far off and fighting whatever attacks either of you. At
+  the place they plant a banner; right-click them for Home and after 5 seconds standing still you're both back at the
+  Village Hall. Once a day; a logout or a death calls it off. Every trip goes in the chronicle. A hooded travel cloak,
+  a pack and a lantern.
+- **Seasons and the Harvest Idol** (30.14): the hall's festival icon now names the season and its day ("Autumn:
+  harvest season, day 3 of 16"). The Harvest Idol, a straw figure crowned with wheat on a wooden post (a hay bale,
+  three wheat, a stick and a gold ingot), makes the crops within 32 blocks grow 25% faster in harvest season (autumn),
+  with golden sparkles rising from it; a second idol adds nothing. Vanilla crops and, with Cobblemon, its berries,
+  apricorns, mints and Hearty Grains (tag `aliveworkplace:idol_crops`). `harvestIdols` in the config.
 - **The Steward's civic rules** (27.12): he now wishes for a Clinic (a Healing Center from a Village) when two or more
   are ill and nobody nurses them, a Graveyard after a death in a village of 8, a Schoolhouse for 3 children, a Library
   with 6 villagers and no scholar, a Chapel while a couple courts, a Lookout Tower (a Barracks in a Town) while guards are
@@ -113,6 +133,7 @@ asks for the steps, `latest.log` and any crash report).
   another village style's outside (plains, desert, savanna, snowy or taiga); the village's builder rebuilds the outside
   in place and leaves the room inside, its job block and its chests as they were. Builders now also pick up what falls
   off a block they take down (a lantern under a porch roof) instead of waiting for it.
+- A village habitat of its own (Cobblemon 1.8, ROADMAP 28.14): an Expert Habitat Keeper puts one natural Habitat Block under the finished Habitat Garden's mossy centre stone (it still looks like moss), with Pokémon that suit the biome (`data/aliveworkplace/village_habitats`, 20 biome files). One per village; taking the garden down removes it without a drop. Keepers visit the Habitat Blocks round their pasture each day and the hall's list shows who comes today. On Cobblemon 1.7 the keeper's page says it needs 1.8. Config `villageHabitats`.
 - **Builds for the Pokémon jobs** (28.13, with Cobblemon): the Camp Kitchen (an open timber shelter round a Campfire
   Pot, benches and a grain store; II adds a Hearty Grain plot and a smokehouse), the Berry Nursery (fenced farmland beds
   in pairs, a composter and a potting bench; II adds a greenhouse with four more beds) and the Daycare (a barn with a

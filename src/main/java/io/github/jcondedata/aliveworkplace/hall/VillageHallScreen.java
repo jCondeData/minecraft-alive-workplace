@@ -253,6 +253,7 @@ public final class VillageHallScreen {
 		long festival = entity == null ? -1 : Festivals.nextDay(level, hall, entity);
 		long inDays = festival - Chronicle.day(level);
 		List<Component> festivalLore = new ArrayList<>();
+		festivalLore.add(line(Seasons.seasonLine(Seasons.today(level)), ChatFormatting.YELLOW)); // 30.14: the season and its day
 		festivalLore.add(line(Festivals.isOn(level, hall) ? Component.translatable("screen.aliveworkplace.hall.festival_on")
 			: inDays <= 0 ? Component.translatable("screen.aliveworkplace.hall.festival_today")
 			: io.github.jcondedata.aliveworkplace.work.Words.counted("screen.aliveworkplace.hall.festival_in", inDays, inDays), ChatFormatting.GOLD));
@@ -623,6 +624,10 @@ public final class VillageHallScreen {
 		// A Habitat Keeper's last five sightings (28.10).
 		for (Component sighting : io.github.jcondedata.aliveworkplace.habitat.HabitatKeepers.sightingLines(villager)) {
 			lore.add(line(sighting, ChatFormatting.AQUA));
+		}
+		// The phase today of each Habitat Block she tends, or why the village has none (28.14).
+		for (Component habitat : io.github.jcondedata.aliveworkplace.habitat.VillageHabitats.hallLines(villager)) {
+			lore.add(line(habitat, ChatFormatting.GREEN));
 		}
 		Component pace = working ? io.github.jcondedata.aliveworkplace.work.Pace.describe(villager) : null;
 		if (pace != null) {

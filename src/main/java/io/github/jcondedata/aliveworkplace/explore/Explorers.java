@@ -90,6 +90,7 @@ public final class Explorers {
 			out.addAll(roll(level, HUNTING, params));
 		}
 		out.addAll(roll(level, COBBLEMON, params)); // an empty table without Cobblemon
+		io.github.jcondedata.aliveworkplace.legend.Pathfinder.extraLoot(explorer).ifPresent(t -> out.addAll(roll(level, t, params))); // the Pathfinder (29.13)
 		out.removeIf(ItemStack::isEmpty);
 		return out;
 	}

@@ -726,7 +726,101 @@ def cradle():
             blanket.save(block("cradle_blanket"))]
 
 
-DRAW = [cradle, sieve, storehouse, teachers_desk, tinkers_bench, trade_board, training_dummy, training_post, travel_post,
+# --- Harvest Idol (30.14) --------------------------------------------------------------------------------------------
+WHEAT = P("wheat")                          # the wheat item's ramp, darkest first
+TWINE = ["#6e5530", "#8a6c3e", "#a5854f"]   # hemp cord, darker than the straw it ties
+
+
+def straw_strands(seed, base=4):
+    """Bundled straw: strands standing up, each column one shade with breaks where a strand ends, like the hay bale's
+    sides but finer; a few dark stalks and pale glints."""
+    s = Sprite(16, 16)
+    rnd = random.Random(seed)
+    cols = [rnd.choice((3, 4, 4, 5, 6)) for _ in range(16)]
+    for x in range(16):
+        for y in range(16):
+            s.put(x, y, STRAW[cols[x]])
+    for _ in range(18):                                   # strand ends: a short run of another shade
+        x, y = rnd.randrange(16), rnd.randrange(16)
+        c = STRAW[rnd.choice((1, 2, 7, 5))]
+        for k in range(rnd.randint(2, 4)):
+            s.put(x, (y + k) % 16, c)
+    return s
+
+
+def harvest_idol():
+    """A straw figure crowned with wheat on a wooden post. Straw: strands standing up; body: the same tied with hemp
+    twine at the neck (row 3) and waist (rows 9-10); chest: a gold medallion hung from the neck tie; face: two button
+    eyes and a stitched smile; crown: wheat stalks woven on the slant; ear: a wheat ear's kernels in pairs up the stalk;
+    post: an oak pole with its grain along it."""
+    straw = straw_strands(501)
+
+    def tied(seed):
+        s = straw_strands(seed)
+        for x in range(16):
+            s.put(x, 3, TWINE[1] if x % 3 else TWINE[0])
+            s.put(x, 9, TWINE[2] if x % 3 else TWINE[1])
+            s.put(x, 10, TWINE[1] if x % 3 != 1 else TWINE[0])
+        return s
+
+    body = tied(502)
+    chest = tied(503)
+    chest.paste(grid("""
+        t..t
+        .tt.
+        .00.
+        0330
+        0321
+        .00.
+    """, {"t": TWINE[0]}, ramp=GOLD), 6, 4)
+
+    face = straw_strands(504)
+    face.paste(grid("""
+        .k..k.
+        ......
+        .t..t.
+        ..tt..
+    """, {"k": STITCH, "t": TWINE[0]}), 5, 5)
+
+    crown = Sprite(16, 16)
+    for y in range(16):
+        for x in range(16):
+            band = ((x + y) // 2) % 3                      # stalks laid on the slant, three shades round
+            crown.put(x, y, (WHEAT[4], WHEAT[3], WHEAT[2])[band])
+            if (x + y) % 6 == 5:
+                crown.put(x, y, WHEAT[1])                  # the shadow where one stalk passes under the next
+
+    ear = Sprite(16, 16)
+    for x in range(16):
+        for y in range(16):
+            ear.put(x, y, WHEAT[3] if (y + x) % 2 == 0 else WHEAT[2])
+        ear.put(x, 0, WHEAT[4])                            # the pale awns at the tip
+    for x in range(0, 16, 2):
+        ear.put(x, 3, WHEAT[1])                            # the stalk showing between kernels
+
+    oak = P("oak_log")
+    post = Sprite(16, 16)
+    base = [3, 3, 2, 3, 4, 3, 3, 2, 3, 3, 4, 3, 2, 3, 3, 4]
+    for x in range(16):
+        for y in range(16):
+            post.put(x, y, oak[base[x]])
+    rnd = random.Random(505)
+    for _ in range(12):                                    # streaks along the grain
+        x, y = rnd.randrange(16), rnd.randrange(16)
+        c = oak[rnd.choice((1, 2, 4))]
+        for k in range(rnd.randint(3, 6)):
+            post.put(x, (y + k) % 16, c)
+    for kx, ky in ((8, 7), (7, 11)):                       # knots
+        post.put(kx, ky, oak[0])
+        post.put(kx, ky - 1, oak[1])
+        post.put(kx, ky + 1, oak[1])
+    return [straw.save(block("harvest_idol_straw")), body.save(block("harvest_idol_body")),
+            chest.save(block("harvest_idol_chest")), face.save(block("harvest_idol_face")),
+            crown.save(block("harvest_idol_crown")), ear.save(block("harvest_idol_ear")),
+            post.save(block("harvest_idol_post"))]
+
+
+DRAW = [cradle, harvest_idol, sieve, storehouse, teachers_desk, tinkers_bench, trade_board, training_dummy, training_post, travel_post,
         tutors_desk, undertakers_table, village_hall]
 
 if __name__ == "__main__":

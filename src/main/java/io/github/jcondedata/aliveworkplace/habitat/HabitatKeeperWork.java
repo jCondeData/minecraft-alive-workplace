@@ -51,12 +51,19 @@ public class HabitatKeeperWork extends Behavior<Villager> {
 	private static final int LOOK_EVERY = 40;
 	private static final float SPEED = 0.55f;
 	private static final double REACH = 3.0;
+	/** Ticks she tries to walk to a Habitat Block before doing without (it may be out of reach). */
+	private static final int GIVE_UP_WALKING = 600;
 
 	private final Walker walker = new Walker(SPEED);
 	private int lookTimer;
 	private int stuck;
 	private int scanCursor;
 	private long nextSighting = -1;
+	/** Today's round of the Habitat Blocks she tends (28.14): those still to visit, and the lines so far. */
+	@Nullable
+	private List<BlockPos> toVisit;
+	private final List<Component> habitatLines = new ArrayList<>();
+	private int walkTries;
 
 	public HabitatKeeperWork() {
 		super(ImmutableMap.of(
@@ -130,6 +137,10 @@ public class HabitatKeeperWork extends Behavior<Villager> {
 			return;
 		}
 		lookTimer = LOOK_EVERY;
+		// The village's own Habitat Block: founded once she is Expert, and each day a round of the ones she tends (28.14).
+		if (habitats(level, villager, pasture)) {
+			return;
+		}
 		// 2. The next thing to fetch: a snack for an empty spot, honey for a bare log, a sapling for a spot without one.
 		String lure = HabitatKeepers.lure(villager);
 		BlockPos emptySpot = spots.stream().filter(p -> !snacks.isSnackBlock(level.getBlockState(p)) && HabitatKeepers.free(level, p))
@@ -159,6 +170,61 @@ public class HabitatKeeperWork extends Behavior<Villager> {
 			status(villager, "watching", Component.literal(String.valueOf(spots.size())),
 				Component.literal(String.valueOf(ModAttachments.HONEY_LOGS.getOrElse(villager, List.of()).size())));
 		}
+	}
+
+	/**
+	 * Founds the village's Habitat Block if she can ({@link VillageHabitats#foundingSpot}), else makes today's round of
+	 * the natural Habitat Blocks round her pasture, noting each one's phase for the hall: true while that's under way.
+	 */
+	private boolean habitats(ServerLevel level, Villager villager, BlockPos pasture) {
+		BlockPos spot = VillageHabitats.foundingSpot(level, villager, pasture);
+		if (spot != null) {
+			status(villager, "founding");
+			if (!reach(level, villager, spot) && ++walkTries < GIVE_UP_WALKING) {
+				lookTimer = 0;
+				return true;
+			}
+			walkTries = 0;
+			walker.reset();
+			if (VillageHabitats.found(level, villager, spot)) {
+				BuilderLevels.addXp(level, villager, 5, null);
+				ModAttachments.HABITAT_DAY.set(villager, -1L); // her round today takes it in
+				toVisit = null;
+			}
+			lookTimer = 0;
+			return true;
+		}
+		long day = VillageHabitats.day(level);
+		if (ModAttachments.HABITAT_DAY.getOrElse(villager, -1L) == day) {
+			return false;
+		}
+		if (toVisit == null) {
+			toVisit = new ArrayList<>(VillageHabitats.tended(level, pasture));
+			habitatLines.clear();
+		}
+		if (toVisit.isEmpty()) {
+			ModAttachments.HABITAT_TODAY.set(villager, List.copyOf(habitatLines));
+			ModAttachments.HABITAT_DAY.set(villager, day);
+			toVisit = null;
+			return false;
+		}
+		BlockPos next = toVisit.get(0);
+		if (!level.isLoaded(next) || !VillageHabitats.isNatural(level.getBlockState(next))) {
+			toVisit.remove(0);
+			lookTimer = 0;
+			return true;
+		}
+		status(villager, "visiting_habitat");
+		if (!reach(level, villager, next) && !nearEnough(villager, next) && ++walkTries < GIVE_UP_WALKING) {
+			lookTimer = 0;
+			return true;
+		}
+		walkTries = 0;
+		walker.reset();
+		habitatLines.add(VillageHabitats.todayLine(level, next));
+		toVisit.remove(0);
+		lookTimer = 0;
+		return true;
 	}
 
 	/** Walks to the first of {@code containers} with something {@code wanted} and takes one: true while that's under way. */

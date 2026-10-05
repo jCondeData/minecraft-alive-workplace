@@ -21,6 +21,11 @@ public final class Players {
 		return player.getInventory().items;
 	}
 
+	/** Moves the player to {@code x, y, z} in {@code level}, facing as they did (1.21.2 adds relative-movement flags). */
+	public static void teleport(ServerPlayer player, ServerLevel level, double x, double y, double z) {
+		player.teleportTo(level, x, y, z, player.getYRot(), player.getXRot());
+	}
+
 	private Players() {
 	}
 }

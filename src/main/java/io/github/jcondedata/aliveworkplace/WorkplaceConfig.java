@@ -117,6 +117,8 @@ public final class WorkplaceConfig {
 	public boolean villageBanners = true;
 	/** A Cradle near a bed makes a nursery village (ROADMAP 30.12): children grow up twice as fast, one more baby a day. Off: cradles are furniture. */
 	public boolean cradles = true;
+	/** Harvest Idols (ROADMAP 30.14): in harvest season the crops within 32 blocks of one grow 25% faster. Off: idols are ornaments. */
+	public boolean harvestIdols = true;
 	/** Tonics (ROADMAP 30.15): the alchemist and the chef make them and villagers drink them. Off: neither; a tonic drunk does nothing. */
 	public boolean tonics = true;
 	/** Days an edict stays in force before it can be lifted. */
@@ -139,6 +141,8 @@ public final class WorkplaceConfig {
 	public boolean gemGrowers = true;
 	/** Habitat Keepers tell the village of shiny, rare and Alpha wild Pokémon near their pasture (ROADMAP 28.10). */
 	public boolean habitatSightings = true;
+	/** An Expert Habitat Keeper puts one Habitat Block in a finished Habitat Garden, with Cobblemon 1.8 (ROADMAP 28.14). Off: none founded. */
+	public boolean villageHabitats = true;
 	/** Days in each of the village calendar's four seasons (each has a festival on its middle day). */
 	public int seasonDays = 16;
 	/** Hundredths of an emerald each worker brings the treasury a day (before wellbeing and rank). */
@@ -333,6 +337,7 @@ public final class WorkplaceConfig {
 		io.github.jcondedata.aliveworkplace.hall.VillageBanners.ENABLED = villageBanners;
 		io.github.jcondedata.aliveworkplace.hall.Cradles.ENABLED = cradles;
 		io.github.jcondedata.aliveworkplace.people.Tonics.ENABLED = tonics;
+		io.github.jcondedata.aliveworkplace.hall.HarvestIdols.ENABLED = harvestIdols;
 		io.github.jcondedata.aliveworkplace.explore.ExplorerWork.RANGE = explorerRange;
 		PostOffice.ROUND = postmanRange;
 		// Gametests run side by side: workers sharing chests across them would mix the tests up. The village tests
@@ -354,6 +359,7 @@ public final class WorkplaceConfig {
 		io.github.jcondedata.aliveworkplace.camp.CampCooks.ENABLED = campCooks;
 		io.github.jcondedata.aliveworkplace.habitat.HabitatKeepers.ENABLED = habitatKeepers;
 		io.github.jcondedata.aliveworkplace.habitat.HabitatKeepers.SIGHTINGS = habitatSightings;
+		io.github.jcondedata.aliveworkplace.habitat.VillageHabitats.ENABLED = villageHabitats;
 		io.github.jcondedata.aliveworkplace.gem.GemGrowers.ENABLED = gemGrowers;
 		io.github.jcondedata.aliveworkplace.daycare.DaycareKeepers.ENABLED = daycareKeepers;
 		// Off in gametests (a trait picked by chance would change a test's numbers); the people tests turn them on.

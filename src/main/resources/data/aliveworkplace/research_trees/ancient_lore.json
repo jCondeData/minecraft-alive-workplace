@@ -1,0 +1,316 @@
+{
+  "legend": "aliveworkplace:old_sage",
+  "icon": "minecraft:lectern",
+  "name": {
+    "translate": "research.aliveworkplace.ancient_lore.name"
+  },
+  "topics": [
+    {
+      "id": "old_tongues",
+      "icon": "minecraft:writable_book",
+      "name": {
+        "translate": "research.aliveworkplace.ancient_lore.old_tongues"
+      },
+      "description": {
+        "translate": "research.aliveworkplace.ancient_lore.old_tongues.desc"
+      },
+      "levels": 1,
+      "cost": [
+        {
+          "minecraft:paper": 8,
+          "minecraft:book": 2,
+          "minecraft:emerald": 4,
+          "minecraft:amethyst_shard": 2
+        }
+      ],
+      "points": 60,
+      "effects": [
+        {
+          "type": "aliveworkplace:flag",
+          "name": "old_tongues"
+        }
+      ]
+    },
+    {
+      "id": "star_charts",
+      "icon": "minecraft:filled_map",
+      "name": {
+        "translate": "research.aliveworkplace.ancient_lore.star_charts"
+      },
+      "description": {
+        "translate": "research.aliveworkplace.ancient_lore.star_charts.desc"
+      },
+      "levels": 2,
+      "cost": [
+        {
+          "minecraft:paper": 8,
+          "minecraft:book": 2,
+          "minecraft:emerald": 4,
+          "minecraft:amethyst_shard": 2
+        },
+        {
+          "minecraft:paper": 16,
+          "minecraft:book": 4,
+          "minecraft:emerald": 8,
+          "minecraft:amethyst_shard": 4
+        }
+      ],
+      "points": 60,
+      "effects": [
+        {
+          "type": "aliveworkplace:flag",
+          "name": "star_charts"
+        }
+      ]
+    },
+    {
+      "id": "herb_lore",
+      "icon": "minecraft:poppy",
+      "name": {
+        "translate": "research.aliveworkplace.ancient_lore.herb_lore"
+      },
+      "description": {
+        "translate": "research.aliveworkplace.ancient_lore.herb_lore.desc"
+      },
+      "levels": 2,
+      "cost": [
+        {
+          "minecraft:paper": 8,
+          "minecraft:book": 2,
+          "minecraft:emerald": 4,
+          "minecraft:amethyst_shard": 2
+        },
+        {
+          "minecraft:paper": 16,
+          "minecraft:book": 4,
+          "minecraft:emerald": 8,
+          "minecraft:amethyst_shard": 4
+        }
+      ],
+      "points": 60,
+      "effects": [
+        {
+          "type": "aliveworkplace:illness",
+          "days": -1
+        },
+        {
+          "type": "aliveworkplace:flag",
+          "name": "herb_lore"
+        }
+      ]
+    },
+    {
+      "id": "deep_memory",
+      "icon": "minecraft:experience_bottle",
+      "name": {
+        "translate": "research.aliveworkplace.ancient_lore.deep_memory"
+      },
+      "description": {
+        "translate": "research.aliveworkplace.ancient_lore.deep_memory.desc"
+      },
+      "levels": 2,
+      "cost": [
+        {
+          "minecraft:paper": 8,
+          "minecraft:book": 2,
+          "minecraft:emerald": 4,
+          "minecraft:amethyst_shard": 2
+        },
+        {
+          "minecraft:paper": 16,
+          "minecraft:book": 4,
+          "minecraft:emerald": 8,
+          "minecraft:amethyst_shard": 4
+        }
+      ],
+      "points": 60,
+      "effects": [
+        {
+          "type": "aliveworkplace:xp",
+          "percent": 15
+        }
+      ]
+    },
+    {
+      "id": "runes_of_warding",
+      "icon": "minecraft:chiseled_stone_bricks",
+      "name": {
+        "translate": "research.aliveworkplace.ancient_lore.runes_of_warding"
+      },
+      "description": {
+        "translate": "research.aliveworkplace.ancient_lore.runes_of_warding.desc"
+      },
+      "levels": 2,
+      "cost": [
+        {
+          "minecraft:paper": 8,
+          "minecraft:book": 2,
+          "minecraft:emerald": 4,
+          "minecraft:amethyst_shard": 2
+        },
+        {
+          "minecraft:paper": 16,
+          "minecraft:book": 4,
+          "minecraft:emerald": 8,
+          "minecraft:amethyst_shard": 4
+        }
+      ],
+      "points": 60,
+      "effects": [
+        {
+          "type": "aliveworkplace:raid_chance",
+          "factor": 0.8
+        }
+      ]
+    },
+    {
+      "id": "old_harvests",
+      "icon": "minecraft:wheat",
+      "name": {
+        "translate": "research.aliveworkplace.ancient_lore.old_harvests"
+      },
+      "description": {
+        "translate": "research.aliveworkplace.ancient_lore.old_harvests.desc"
+      },
+      "levels": 2,
+      "cost": [
+        {
+          "minecraft:paper": 8,
+          "minecraft:book": 2,
+          "minecraft:emerald": 4,
+          "minecraft:amethyst_shard": 2
+        },
+        {
+          "minecraft:paper": 16,
+          "minecraft:book": 4,
+          "minecraft:emerald": 8,
+          "minecraft:amethyst_shard": 4
+        }
+      ],
+      "points": 60,
+      "effects": [
+        {
+          "type": "aliveworkplace:flag",
+          "name": "old_harvests",
+          "jobs": [
+            "minecraft:farmer",
+            "aliveworkplace:orchard_keeper",
+            "aliveworkplace:beekeeper"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "undying_flame",
+      "icon": "minecraft:soul_lantern",
+      "name": {
+        "translate": "research.aliveworkplace.ancient_lore.undying_flame"
+      },
+      "description": {
+        "translate": "research.aliveworkplace.ancient_lore.undying_flame.desc"
+      },
+      "levels": 1,
+      "cost": [
+        {
+          "minecraft:paper": 32,
+          "minecraft:book": 8,
+          "minecraft:emerald": 16,
+          "minecraft:amethyst_shard": 8,
+          "minecraft:echo_shard": 4
+        }
+      ],
+      "points": 150,
+      "needs": {
+        "old_tongues": 1,
+        "star_charts": 2,
+        "herb_lore": 2,
+        "deep_memory": 2,
+        "runes_of_warding": 2,
+        "old_harvests": 2
+      },
+      "exclusive": "last_pick",
+      "effects": [
+        {
+          "type": "aliveworkplace:flag",
+          "name": "undying_flame"
+        }
+      ]
+    },
+    {
+      "id": "golden_age",
+      "icon": "minecraft:golden_apple",
+      "name": {
+        "translate": "research.aliveworkplace.ancient_lore.golden_age"
+      },
+      "description": {
+        "translate": "research.aliveworkplace.ancient_lore.golden_age.desc"
+      },
+      "levels": 1,
+      "cost": [
+        {
+          "minecraft:paper": 32,
+          "minecraft:book": 8,
+          "minecraft:emerald": 16,
+          "minecraft:amethyst_shard": 8,
+          "minecraft:echo_shard": 4
+        }
+      ],
+      "points": 150,
+      "needs": {
+        "old_tongues": 1,
+        "star_charts": 2,
+        "herb_lore": 2,
+        "deep_memory": 2,
+        "runes_of_warding": 2,
+        "old_harvests": 2
+      },
+      "exclusive": "last_pick",
+      "effects": [
+        {
+          "type": "aliveworkplace:wellbeing",
+          "at_least": 60
+        },
+        {
+          "type": "aliveworkplace:flag",
+          "name": "golden_age"
+        }
+      ]
+    },
+    {
+      "id": "iron_pact",
+      "icon": "minecraft:iron_block",
+      "name": {
+        "translate": "research.aliveworkplace.ancient_lore.iron_pact"
+      },
+      "description": {
+        "translate": "research.aliveworkplace.ancient_lore.iron_pact.desc"
+      },
+      "levels": 1,
+      "cost": [
+        {
+          "minecraft:paper": 32,
+          "minecraft:book": 8,
+          "minecraft:emerald": 16,
+          "minecraft:amethyst_shard": 8,
+          "minecraft:echo_shard": 4
+        }
+      ],
+      "points": 150,
+      "needs": {
+        "old_tongues": 1,
+        "star_charts": 2,
+        "herb_lore": 2,
+        "deep_memory": 2,
+        "runes_of_warding": 2,
+        "old_harvests": 2
+      },
+      "exclusive": "last_pick",
+      "effects": [
+        {
+          "type": "aliveworkplace:flag",
+          "name": "iron_pact"
+        }
+      ]
+    }
+  ]
+}

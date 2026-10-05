@@ -73,6 +73,20 @@ public final class CobblemonHabitat implements HabitatKeepers.Snacks {
 		}
 	}
 
+	/** Cobblemon 1.8's HabitatBlockEntity.getCurrentPhase(), by reflection: this mod compiles against 1.7.3, which has none. */
+	@Override
+	public int habitatPhase(net.minecraft.world.level.block.entity.BlockEntity habitat) {
+		if (habitat == null) {
+			return 0;
+		}
+		try {
+			Object phase = habitat.getClass().getMethod("getCurrentPhase").invoke(habitat);
+			return phase instanceof Integer i ? i : 0;
+		} catch (ReflectiveOperationException | RuntimeException | LinkageError e) {
+			return 0;
+		}
+	}
+
 	@Override
 	public List<HabitatKeepers.Wild> wild(ServerLevel level, AABB box) {
 		List<HabitatKeepers.Wild> out = new ArrayList<>();

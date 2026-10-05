@@ -23,6 +23,11 @@ asks for the steps, `latest.log` and any crash report).
   told to the village and the hall's owner, Mythic ones to every player in gold with the village's direction from spawn;
   all go in the chronicle under a nether star. A Legend in a grave or turned zombie keeps their slot and comes back as
   themselves; with no grave their slot frees after 7 days; Legends join a hall placed again.
+- The **Book of Edicts** (30.4): the Village Hall's lectern button (slot 9), or a Village Ledger used while sneaking,
+  opens the village's laws: its edict slots (in force with their days, free, or locked until the next rank), and every
+  edict with its boost in green and its cost in red. Click an edict twice to proclaim it, once in force to lift it; only
+  the hall's owner, friends and operators may. The hall's name icon lists the edicts in force, and the people list's
+  page arrows moved to its bottom corners (25 people a page).
 - The **Steward** (27.5): sneak-right-click a grown villager beside a Village Hall with that hall's City Plan and he
   becomes its Steward, one per hall. Each morning he walks his rounds holding the plan (each zone, the storehouse),
   three seconds at each stop, then goes back to the hall for the day. He trades City Plans, Blank Blueprints and

@@ -67,15 +67,19 @@ public final class VillageHallScreen {
 	public static final int FIND = 8;
 	/** On the quests page: where the quests are. */
 	public static final int[] QUEST_SLOTS = {20, 22, 24};
-	static final int PREVIOUS = 9;
-	static final int NEXT = 17;
+	/** The Book of Edicts (ROADMAP 30.4), where the people list's "previous page" arrow sat. */
+	public static final int BOOK = 9;
+	/** The people list's page arrows, in the list's bottom corners (30.4). */
+	public static final int PREVIOUS = 45;
+	public static final int NEXT = 53;
 	/** The page row (ROADMAP 22.5): a tab for each page in {@link HallPages}, then light glass for the room left. */
 	public static final int PAGE_ROW = 18;
 	/** Where a page's own rows start (under its header and divider). */
 	public static final int FIRST_ROW = 18;
 	/** Where the list of villagers starts, under the page row. */
 	public static final int FIRST_PERSON = PAGE_ROW + 9;
-	static final int PER_PAGE = ChoiceMenu.SIZE - FIRST_PERSON;
+	/** People a page: the 27 slots under the page row less the two arrows (30.4). */
+	public static final int PER_PAGE = ChoiceMenu.SIZE - FIRST_PERSON - 2;
 	/** Lines of a list shown in a tooltip before "and N more". */
 	private static final int LIST_LINES = 8;
 	/** How long a villager clicked on glows. */
@@ -132,6 +136,12 @@ public final class VillageHallScreen {
 				owned.isProtected() ? ChatFormatting.GREEN : ChatFormatting.GRAY));
 			nameLore.add(line(owned.isProtected() ? "screen.aliveworkplace.hall.unprotect_click" : "screen.aliveworkplace.hall.protect_click",
 				ChatFormatting.DARK_GRAY));
+		}
+		if (level.getBlockEntity(hall) instanceof VillageHallBlockEntity laws && !laws.edicts().isEmpty()) {
+			nameLore.add(line("screen.aliveworkplace.hall.edicts", ChatFormatting.GOLD));
+			for (Edicts.InForce f : laws.edicts()) {
+				nameLore.add(line(Component.translatable("screen.aliveworkplace.hall.edict_line", Edicts.name(f.id())), ChatFormatting.YELLOW));
+			}
 		}
 		nameLore.add(line("screen.aliveworkplace.hall.rename", ChatFormatting.DARK_GRAY));
 		menu.button(NAME, icon(Items.NAME_TAG, VillageHalls.name(level, hall).copy(), ChatFormatting.GOLD, nameLore.toArray(Component[]::new)), p -> {
@@ -238,10 +248,18 @@ public final class VillageHallScreen {
 					p -> refresh(menu, level, hall, shown + 1));
 			}
 		}
+		menu.button(BOOK, icon(Items.LECTERN, Component.translatable("screen.aliveworkplace.hall.book"), ChatFormatting.GOLD,
+			line("screen.aliveworkplace.hall.book_hint", ChatFormatting.GRAY)), p -> {
+			EdictBook.render(menu, level, hall, () -> refresh(menu, level, hall, shown), -1);
+			menu.broadcastChanges();
+		});
 		pageRow(menu, level, hall);
 		int slot = FIRST_PERSON;
 		for (Villager villager : people.subList(shown * PER_PAGE, Math.min(people.size(), (shown + 1) * PER_PAGE))) {
 			boolean jobless = census.jobless().contains(villager);
+			if (slot == PREVIOUS) {
+				slot++;
+			}
 			menu.button(slot++, person(level, hall, villager), p -> {
 				if (jobless && villager.getVillagerData().getProfession() != net.minecraft.world.entity.npc.VillagerProfession.NITWIT) {
 					renderJobs(menu, level, hall, villager, shown);

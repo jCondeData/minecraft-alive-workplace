@@ -119,6 +119,12 @@ public class VillageHallBlock extends BaseEntityBlock {
 			}
 			return ItemInteractionResult.sidedSuccess(level.isClientSide());
 		}
+		if (stack.is(io.github.jcondedata.aliveworkplace.registry.ModItems.VILLAGE_BANNER)) {
+			if (level instanceof net.minecraft.server.level.ServerLevel server && player instanceof ServerPlayer serverPlayer) {
+				VillageBannerItem.setColours(server, serverPlayer, stack, pos);
+			}
+			return ItemInteractionResult.sidedSuccess(level.isClientSide());
+		}
 		if (!stack.is(Items.NAME_TAG) || !stack.has(DataComponents.CUSTOM_NAME)) {
 			return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
 		}

@@ -111,6 +111,9 @@ public final class ModAttachments {
 	/** The last day a villager came to a festival (see {@code hall/Festivals}). */
 	public static final Attachment<Long> FESTIVAL_DAY = Attachment.saved("festival_day", com.mojang.serialization.Codec.LONG);
 
+	/** The last day a villager came to a festival under the village's banner (see {@code hall/Festivals}, 30.13). */
+	public static final Attachment<Long> FESTIVAL_BANNER_DAY = Attachment.saved("festival_banner_day", com.mojang.serialization.Codec.LONG);
+
 	/** The last few kinds of meal a villager ate, newest last (see {@code people/Diet}). */
 	public static final Attachment<java.util.List<net.minecraft.resources.ResourceLocation>> RECENT_MEALS = Attachment.saved("recent_meals", net.minecraft.resources.ResourceLocation.CODEC.listOf());
 
@@ -149,6 +152,9 @@ public final class ModAttachments {
 
 	/** A villager worn out by a Work Horn's rush (30.11): less happy from the rush's end until dawn; absent: not. */
 	public static final Attachment<io.github.jcondedata.aliveworkplace.hall.WorkHorn.WornOut> WORN_OUT = Attachment.saved("worn_out", io.github.jcondedata.aliveworkplace.hall.WorkHorn.WornOut.CODEC);
+
+	/** The tonic a villager drank (30.15) and the game time it wears off; absent: none (and on saves from before). */
+	public static final Attachment<io.github.jcondedata.aliveworkplace.people.Tonics.Drunk> TONIC = Attachment.saved("tonic", io.github.jcondedata.aliveworkplace.people.Tonics.Drunk.CODEC);
 
 	/** How many villagers a Nurse has cured. */
 	public static final Attachment<Integer> VILLAGERS_CURED = Attachment.saved("villagers_cured", com.mojang.serialization.Codec.INT);

@@ -78,7 +78,12 @@ public final class Mercenaries {
 			merc.setItemSlot(EquipmentSlot.HEAD, new ItemStack(Items.IRON_HELMET));
 			merc.setItemSlot(EquipmentSlot.CHEST, new ItemStack(Items.IRON_CHESTPLATE));
 			if (i == 0) {
-				merc.setItemSlot(EquipmentSlot.OFFHAND, new ItemStack(Items.SHIELD));
+				ItemStack shield = new ItemStack(Items.SHIELD);
+				io.github.jcondedata.aliveworkplace.hall.VillageBanners.Colours colours = io.github.jcondedata.aliveworkplace.hall.VillageBanners.of(level, hall);
+				if (colours != null) {
+					io.github.jcondedata.aliveworkplace.hall.VillageBanners.paint(shield, colours); // the hiring village's colours (30.13)
+				}
+				merc.setItemSlot(EquipmentSlot.OFFHAND, shield);
 			}
 			for (EquipmentSlot slot : EquipmentSlot.values()) {
 				merc.setDropChance(slot, 0f);

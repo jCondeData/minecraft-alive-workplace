@@ -1,0 +1,9 @@
+{
+  "item": "minecraft:glow_berries",
+  "maker": "chef",
+  "ingredients": ["minecraft:amethyst_shard", "#minecraft:small_flowers", "#minecraft:small_flowers"],
+  "jobs": ["minecraft:farmer"],
+  "effects": [{"type": "aliveworkplace:work_pace", "percent": 40}],
+  "ticks": 6000,
+  "keep": 2
+}

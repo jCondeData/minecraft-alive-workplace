@@ -134,8 +134,9 @@ public final class Moods {
 			bad.add(reason("mourning"));
 		}
 		if (io.github.jcondedata.aliveworkplace.hall.Festivals.enjoyedLately(level, villager)) {
-			score += io.github.jcondedata.aliveworkplace.hall.Festivals.MOOD;
-			good.add(reason("festival"));
+			int festival = io.github.jcondedata.aliveworkplace.hall.Festivals.mood(level, villager);
+			score += festival;
+			good.add(reason(festival > io.github.jcondedata.aliveworkplace.hall.Festivals.MOOD ? "festival_banner" : "festival"));
 		}
 		if (io.github.jcondedata.aliveworkplace.hall.Festivals.disappointed(level, villager)) {
 			score -= io.github.jcondedata.aliveworkplace.hall.Festivals.DISAPPOINTED;

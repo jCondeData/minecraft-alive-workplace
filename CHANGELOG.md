@@ -17,12 +17,29 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Added
+- **Tonics: Miner's Brew and Builder's Tea** (30.15): right-click a villager with a tonic that suits their job and they
+  drink it, working 25% faster for a day (20 minutes; their status line shows "25% faster (Miner's Brew, 19 min left)").
+  Another tonic starts the day again; they never stack, and the work pace cap still holds. One that doesn't suit them is
+  refused and you keep it ("Dara has no use for Miner's Brew."). Players can't craft them: the Cleric brews Miner's
+  Brew (a glass bottle, glowstone dust, coal and sugar; for Miners, Sifters and Netherworkers) after the guards'
+  potions, the Chef cooks Builder's Tea (a glass bottle, two sweet berries and sugar; for Builders, Carpenters, Masons
+  and Dyers) after the menu, from the chests by their station and the store, keeping 4 of each. Tonics are data
+  (`data/<namespace>/tonics/<id>.json`), so a server can make any item one; the tooltip says what each does, for which
+  jobs and who makes it from what. `tonics` in the config.
 - **Legends found in the world** (29.9): standing in a ruined portal, a pillager outpost or a shipwreck, a player whose
   village has earned a Legend found there may come on their camp: a traveller beside the portal (talk to them), a
   prisoner in an iron cage at the tower's foot (break the bars) or a castaway on the nearest beach (hand them a cooked
   meal). Freed, they thank you, walk off and come to your Village Hall the next morning as a guest. Each structure is
   used once; `legendSites` in the config turns it off.
 - **The Village Hall's own screen** (30.4a): the hall, all its pages and the Book of Edicts now open on a drawn, vanilla-style window instead of a chest grid: the village's figures on a sunken plaque, the page's actions on an etched toolbar, the page on its own panel, every icon on a raised button that lights up under the mouse. Clicks, pages and permissions are unchanged.
+- **The Village Banner** (30.13): any banner and a gold ingot make a Village Banner of that design (its tooltip lists
+  it). Right-click the Village Hall with it to make the design the village's colours (it isn't used up; the chronicle
+  notes it); place it to hang the design anywhere. The colours then show: a builder who finishes a building in the
+  village hangs a wall banner in them over its front door when a banner of their base colour is in the chests (they
+  never ask for one); guards gearing up and hired mercenaries carry plain shields painted in them (a shield a player
+  painted is left alone); the hall's trade routes page shows each village by its banner and the Book of Edicts the
+  village's own, with the colours on its last row; and a festival with a banner in the colours within 16 blocks of the
+  square lifts moods by 20 instead of 15, for 3 days instead of 2. `villageBanners` in the config.
 - **The Cradle** (30.12): a wooden cradle on rockers with a wool blanket, crafted from planks, sticks and white wool.
   Put one within 4 blocks of a bed in a village with a hall and it becomes a nursery village: children grow up in half
   the time and one more baby a day may be born (three a day with Large Families). At night a child of the house sleeps

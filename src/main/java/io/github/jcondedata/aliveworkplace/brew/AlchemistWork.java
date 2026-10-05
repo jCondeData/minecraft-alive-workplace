@@ -10,7 +10,10 @@ import io.github.jcondedata.aliveworkplace.registry.ModAttachments;
 import io.github.jcondedata.aliveworkplace.work.Village;
 import io.github.jcondedata.aliveworkplace.work.Walker;
 import io.github.jcondedata.aliveworkplace.work.WorkerStatus;
+import io.github.jcondedata.aliveworkplace.people.Tonics;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -49,7 +52,10 @@ import org.jetbrains.annotations.Nullable;
  * regeneration, strength — from the chests by the stand (nether wart, glistering melon, ghast tears, blaze powder, and
  * water bottles, or glass bottles filled at water within {@link SupplyContainers#RADIUS} blocks), with blaze powder as
  * fuel, until there are {@link #KEEP} of each; the finished potions go in the chests, and a guard of the village with
- * fewer than {@link #GUARD_KEEP} gets one brought to the chests by their Guard Post.
+ * fewer than {@link #GUARD_KEEP} gets one brought to the chests by their Guard Post. After the guards' potions, the
+ * alchemist's tonics (ROADMAP 30.15, {@link Tonics}): with nothing else to do at the stand, the makings of the first one
+ * short of its keep are fetched from the chests by the stand and the store's, brewed at the stand one at a time, and put
+ * in the chests by it.
  */
 public class AlchemistWork extends Behavior<Villager> {
 	/** Potions brewed, and kept in the chests up to this many each. */
@@ -60,8 +66,10 @@ public class AlchemistWork extends Behavior<Villager> {
 	private static final float SPEED = 0.55f;
 	private static final double REACH = 3.0;
 	private static final int LOOK_EVERY = 40;
+	/** A tonic takes this long at the stand, at the usual pace (half a vanilla brew). */
+	static final int TONIC_TICKS = 200;
 
-	private enum Phase { IDLE, BREWING, FILLING, DELIVERING, NO_CHEST }
+	private enum Phase { IDLE, BREWING, FILLING, DELIVERING, NO_CHEST, TONIC_FETCH, TONIC_BREW }
 
 	private static final Set<Villager> BUSY = Collections.newSetFromMap(new WeakHashMap<>());
 
@@ -74,6 +82,12 @@ public class AlchemistWork extends Behavior<Villager> {
 	@Nullable
 	private List<BlockPos> guardChests;
 	private int lookTimer;
+	/** The tonic being made, what's still to fetch for it, and where from. */
+	@Nullable
+	private Tonics.Order tonic;
+	private Map<Item, Integer> toFetch = new LinkedHashMap<>();
+	private List<BlockPos> tonicSources = List.of();
+	private int tonicTimer;
 
 	public AlchemistWork() {
 		super(ImmutableMap.of(
@@ -130,6 +144,7 @@ public class AlchemistWork extends Behavior<Villager> {
 		walker.reset();
 		phase = Phase.IDLE;
 		lookTimer = 0;
+		tonic = null;
 	}
 
 	@Override
@@ -171,6 +186,18 @@ public class AlchemistWork extends Behavior<Villager> {
 				deliver(level, villager, own, bag);
 				return;
 			}
+			case TONIC_FETCH -> {
+				status(villager, Phase.TONIC_FETCH);
+				fetchTonic(level, villager, own, bag);
+				return;
+			}
+			case TONIC_BREW -> {
+				status(villager, Phase.TONIC_BREW);
+				if (walker.walkTo(level, villager, station, REACH)) {
+					brewTonic(level, villager, stand, own, bag);
+				}
+				return;
+			}
 			default -> {
 			}
 		}
@@ -180,6 +207,7 @@ public class AlchemistWork extends Behavior<Villager> {
 		}
 		lookTimer = LOOK_EVERY;
 		busy(villager, false);
+		putBack(level, own, bag);
 		if (brewing(stand)) {
 			busy(villager, true);
 			return; // wait for it
@@ -206,7 +234,122 @@ public class AlchemistWork extends Behavior<Villager> {
 			phase = Phase.DELIVERING;
 			busy(villager, true);
 			walker.reset();
+			return;
 		}
+		// The guards are seen to: a tonic short of its keep, with the makings to hand?
+		List<BlockPos> sources = Tonics.sources(level, villager, station, own);
+		tonic = Tonics.next(level, Tonics.Maker.ALCHEMIST, own, sources, 1);
+		if (tonic != null) {
+			toFetch = new LinkedHashMap<>(tonic.takes());
+			tonicSources = sources;
+			phase = Phase.TONIC_FETCH;
+			busy(villager, true);
+			walker.reset();
+		}
+	}
+
+	/**
+	 * Between jobs the bag holds only water bottles (and a guard's potion still to bring): anything else (a tonic's
+	 * makings when the shift ended midway, glass bottles there was no water for) goes back in the chests.
+	 */
+	private static void putBack(ServerLevel level, List<BlockPos> own, BuilderBag bag) {
+		for (ItemStack stack : bag.takeAllExcept(Set.of(Items.POTION))) {
+			ItemStack rest = SupplyContainers.insert(level, own, stack);
+			if (!rest.isEmpty()) {
+				bag.add(rest);
+			}
+		}
+	}
+
+	/** Walks round the chests that hold the tonic's makings, taking them. */
+	private void fetchTonic(ServerLevel level, Villager villager, List<BlockPos> own, BuilderBag bag) {
+		if (tonic == null) {
+			phase = Phase.IDLE;
+			return;
+		}
+		if (toFetch.isEmpty()) {
+			phase = Phase.TONIC_BREW;
+			tonicTimer = -1;
+			walker.reset();
+			return;
+		}
+		BlockPos chest = null;
+		for (BlockPos source : tonicSources) {
+			if (SupplyContainers.firstMatching(level, List.of(source), s -> s.getComponentsPatch().isEmpty() && toFetch.containsKey(s.getItem())) != null) {
+				chest = source;
+				break;
+			}
+		}
+		if (chest == null) {
+			// Someone took them: the rest goes back, and the next look decides again.
+			putBack(level, own, bag);
+			tonic = null;
+			phase = Phase.IDLE;
+			lookTimer = 0;
+			return;
+		}
+		if (!walker.walkTo(level, villager, chest, REACH)) {
+			return;
+		}
+		for (Map.Entry<Item, Integer> e : new ArrayList<>(toFetch.entrySet())) {
+			int got = SupplyContainers.extract(level, List.of(chest), e.getKey(), e.getValue());
+			if (got > 0) {
+				int over = bag.addAll(e.getKey(), got);
+				if (over > 0) {
+					SupplyContainers.insert(level, List.of(chest), new ItemStack(e.getKey(), over));
+				}
+				int left = e.getValue() - (got - over);
+				if (left <= 0) {
+					toFetch.remove(e.getKey());
+				} else {
+					toFetch.put(e.getKey(), left);
+				}
+			}
+		}
+		villager.swing(InteractionHand.MAIN_HAND);
+		level.playSound(null, chest, SoundEvents.CHEST_OPEN, SoundSource.BLOCKS, 0.4f, 1.1f);
+		walker.reset();
+	}
+
+	/** At the stand: brews the tonic from the makings in the bag, then puts it in the chests. */
+	private void brewTonic(ServerLevel level, Villager villager, BrewingStandBlockEntity stand, List<BlockPos> own, BuilderBag bag) {
+		if (tonic == null) {
+			phase = Phase.IDLE;
+			return;
+		}
+		BlockPos at = stand.getBlockPos();
+		villager.getBrain().setMemory(MemoryModuleType.LOOK_TARGET, new net.minecraft.world.entity.ai.behavior.BlockPosTracker(at));
+		if (tonicTimer < 0) {
+			tonicTimer = Math.max(20, io.github.jcondedata.aliveworkplace.work.Pace.ticks(TONIC_TICKS, villager));
+		}
+		if (tonicTimer % 20 == 0) {
+			villager.swing(InteractionHand.MAIN_HAND);
+			level.playSound(null, at, SoundEvents.BREWING_STAND_BREW, SoundSource.BLOCKS, 0.5f, 0.9f + level.random.nextFloat() * 0.2f);
+			level.sendParticles(net.minecraft.core.particles.ParticleTypes.BUBBLE_POP, at.getX() + 0.5, at.getY() + 0.9, at.getZ() + 0.5,
+				3, 0.15, 0.05, 0.15, 0.01);
+		}
+		if (--tonicTimer > 0) {
+			return;
+		}
+		Tonics.Order order = tonic;
+		tonic = null;
+		phase = Phase.IDLE;
+		lookTimer = 0;
+		walker.reset();
+		for (Map.Entry<Item, Integer> e : order.takes().entrySet()) {
+			if (bag.count(e.getKey()) < e.getValue()) {
+				putBack(level, own, bag); // something went missing: try again later
+				return;
+			}
+		}
+		order.takes().forEach(bag::remove);
+		ItemStack rest = SupplyContainers.insert(level, own, new ItemStack(order.tonic().item(), order.count()));
+		if (!rest.isEmpty()) {
+			Block.popResource(level, at.above(), rest);
+		}
+		ModAttachments.POTIONS_BREWED.set(villager, ModAttachments.POTIONS_BREWED.getOrElse(villager, 0) + order.count());
+		BuilderLevels.addXp(level, villager, 2, null);
+		level.playSound(null, at, SoundEvents.BREWING_STAND_BREW, SoundSource.BLOCKS, 0.8f, 1.2f);
 	}
 
 	private static boolean brewing(BrewingStandBlockEntity stand) {
@@ -474,7 +617,9 @@ public class AlchemistWork extends Behavior<Villager> {
 
 	private void status(Villager villager, Phase phase) {
 		Component title = Component.translatable("message.aliveworkplace.alchemist.title", ModAttachments.POTIONS_BREWED.getOrElse(villager, 0));
-		WorkerStatus.set(villager, title, -1f, Component.translatable("message.aliveworkplace.alchemist.state." + phase.name().toLowerCase())
-			.withStyle(phase == Phase.NO_CHEST ? ChatFormatting.YELLOW : ChatFormatting.GRAY));
+		Component line = (phase == Phase.TONIC_FETCH || phase == Phase.TONIC_BREW) && tonic != null
+			? Component.translatable("message.aliveworkplace.alchemist.state." + phase.name().toLowerCase(), tonic.tonic().name())
+			: Component.translatable("message.aliveworkplace.alchemist.state." + (phase == Phase.TONIC_FETCH || phase == Phase.TONIC_BREW ? "brewing" : phase.name().toLowerCase()));
+		WorkerStatus.set(villager, title, -1f, line.copy().withStyle(phase == Phase.NO_CHEST ? ChatFormatting.YELLOW : ChatFormatting.GRAY));
 	}
 }

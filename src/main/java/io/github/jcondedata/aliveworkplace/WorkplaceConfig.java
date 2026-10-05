@@ -111,8 +111,12 @@ public final class WorkplaceConfig {
 	public boolean villageEdicts = true;
 	/** The Work Horn calls a rush when blown in a village (ROADMAP 30.11). Off: it only sounds. */
 	public boolean workHorns = true;
+	/** Village Banners (ROADMAP 30.13) can be crafted and set a village's colours at its hall. Off: neither; colours stay saved. */
+	public boolean villageBanners = true;
 	/** A Cradle near a bed makes a nursery village (ROADMAP 30.12): children grow up twice as fast, one more baby a day. Off: cradles are furniture. */
 	public boolean cradles = true;
+	/** Tonics (ROADMAP 30.15): the alchemist and the chef make them and villagers drink them. Off: neither; a tonic drunk does nothing. */
+	public boolean tonics = true;
 	/** Days an edict stays in force before it can be lifted. */
 	public int edictMinDays = 3;
 	/** Villagers at a composter can be made Berry Breeders with a Cobblemon berry (ROADMAP 28.9). Off: no Berry Breeder job. */
@@ -322,7 +326,9 @@ public final class WorkplaceConfig {
 		io.github.jcondedata.aliveworkplace.hall.Edicts.setEnabled(villageEdicts);
 		io.github.jcondedata.aliveworkplace.hall.Edicts.MIN_DAYS = edictMinDays;
 		io.github.jcondedata.aliveworkplace.hall.WorkHorn.ENABLED = workHorns;
+		io.github.jcondedata.aliveworkplace.hall.VillageBanners.ENABLED = villageBanners;
 		io.github.jcondedata.aliveworkplace.hall.Cradles.ENABLED = cradles;
+		io.github.jcondedata.aliveworkplace.people.Tonics.ENABLED = tonics;
 		io.github.jcondedata.aliveworkplace.explore.ExplorerWork.RANGE = explorerRange;
 		PostOffice.ROUND = postmanRange;
 		// Gametests run side by side: workers sharing chests across them would mix the tests up. The village tests

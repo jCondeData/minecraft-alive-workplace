@@ -32,6 +32,11 @@ asks for the steps, `latest.log` and any crash report).
   seed stock, so a Farmstead's field could be harvested without anything landing in its chest. He now takes them from the
   chests to plant with, like seeds, and puts the whole harvest away.
 ### Added
+- **Edicts and civic items in the village's life** (30.21): villagers talk of each edict in force and of each reformed
+  one ("Long shifts again... my back.", "The shift bell's rung. Home we go."), of a rush, their tonic, their guild and
+  the village's colours; "What next?" now points out a free edict slot, a reform step waiting, Festival Season with too
+  little in the treasury, a guild without its Guildhall, Large Families without a Cradle and harvest season without a
+  Harvest Idol; the README has *Edicts* and *Civic items* sections with every edict, tonic and guild.
 - **Guild Charters, the Guildhall and the Builders' Guild** (30.17): craft a Guild Charter (three paper, an emerald, a
   gold ingot, red dye) and sneak-right-click a Master in a village of Village rank or more: they become the Guild Master
   of their trade's guild (one per trade, one per rank above Hamlet; refusals say why), told to the village, in the

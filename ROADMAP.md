@@ -2139,7 +2139,7 @@ the Village Hall (`VillageNeeds`, `VillageQuests`, `VillageRanks`, `Festivals`, 
   `work_radius`, `hire_price`, `carry`, `train_up_to`, `strength`, `lesson_price`, `trainer_xp`. Done when: GameTests
   for each number, founded and not; the Trainers' Guild absent without Cobblemon and working in the compat suite; the
   `guilds` scene gains their rows.
-- [ ] **30.21** **Edicts and civic items in the village's life.**
+- [x] **30.21** (review: pending 2026-10-05) **Edicts and civic items in the village's life.**
   - Chatter (`people/Chatter`): two lines for each edict in force and two for each reformed one ("Long shifts again...
     my back.", "The shift bell's rung. Home we go."), and lines for a rush, a tonic, a guild and the village's colours;
   - "What next?" (`VillageAdvice`): a free edict slot; a reform step waiting on the quest page; Festival Season with a
@@ -4330,6 +4330,10 @@ item waits.
   GameTests and the screenshot client (`-Daliveworkplace.shots`, so the showcase still films them) open every gate
   (`Expansions.openForTests`); `ExpansionGateGameTests` closes them to test a player's game.
   Content with no switch (27.13/27.14 blueprints, crafting recipes, the Healing Machine's Nurse POI) stays visible.
+- 2026-10-05 (30.21, lane d): the In-Game Guidebook (26.2a) has landed, but its pages are screenshots from filmed
+  scenes (`tools/guide/pages.py`) and `GuideGameTests` checks every page's picture; the *Edicts* and *Civic items* pages
+  wait for the first nightly film of `village_talk` (and the existing `work_horn`, `cradle`, `harvest_idol`, `tonics`,
+  `guilds` stills). Next lane on 30.x: add those two chapters' pages from those stills, with the README's text.
 - 2026-10-05 (25.2, question for the owner; lane a): first measurement (nightly-tests 37297003813, 150 workers over 3
   villages, GitHub runner): idle p50/p95 2.3/3.5 ms; busy 18.3/32.8 ms at the start (p99 66.1) and 8.8/16.5 (p99 21.1)
   once settled; heap 1613 MB after GC; our code 13.1% of the server thread. Proposed targets, unchanged from 25.2's

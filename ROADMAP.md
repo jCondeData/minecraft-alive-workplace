@@ -2007,7 +2007,7 @@ the Village Hall (`VillageNeeds`, `VillageQuests`, `VillageRanks`, `Festivals`, 
   shield and a player's left alone, the routes icon, the festival's mood and days); the colours survive a reload; the
   icon passes `lint.py`; showcase scene `village_banner`: a street of finished houses under the village's banners, a
   knight with the painted shield, the routes page.
-- [ ] **30.14** **Seasons and the Harvest Idol.**
+- [x] **30.14** (review: pending 2026-10-05) **Seasons and the Harvest Idol.**
   - A village year (`hall/Seasons`, core; if M28 already added a season clock for its Festival Cup, use that one):
     spring, summer, autumn and winter of `seasonDays` (8) days each, counted from the world's day; autumn is harvest
     season. The hall's festival icon names the season and its day ("Autumn: harvest season, day 3 of 8").

@@ -17,6 +17,11 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Added
+- **Seasons and the Harvest Idol** (30.14): the hall's festival icon now names the season and its day ("Autumn:
+  harvest season, day 3 of 16"). The Harvest Idol, a straw figure crowned with wheat on a wooden post (a hay bale,
+  three wheat, a stick and a gold ingot), makes the crops within 32 blocks grow 25% faster in harvest season (autumn),
+  with golden sparkles rising from it; a second idol adds nothing. Vanilla crops and, with Cobblemon, its berries,
+  apricorns, mints and Hearty Grains (tag `aliveworkplace:idol_crops`). `harvestIdols` in the config.
 - **The Steward's civic rules** (27.12): he now wishes for a Clinic (a Healing Center from a Village) when two or more
   are ill and nobody nurses them, a Graveyard after a death in a village of 8, a Schoolhouse for 3 children, a Library
   with 6 villagers and no scholar, a Chapel while a couple courts, a Lookout Tower (a Barracks in a Town) while guards are

@@ -100,6 +100,7 @@
 			"io.github.jcondedata.aliveworkplace.test.WorkHornGameTests",
 			"io.github.jcondedata.aliveworkplace.test.TonicGameTests",
 			"io.github.jcondedata.aliveworkplace.test.CradleGameTests",
+			"io.github.jcondedata.aliveworkplace.test.HarvestIdolGameTests",
 			"io.github.jcondedata.aliveworkplace.test.TreasuryEdictGameTests",
 			"io.github.jcondedata.aliveworkplace.test.CampGameTests",
 			"io.github.jcondedata.aliveworkplace.test.RaidGameTests",

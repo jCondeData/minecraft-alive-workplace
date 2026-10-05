@@ -16,6 +16,14 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+### Added
+- **Luxuries from the village store for 1.8** (34.4, off until 1.8 is finished): luxuries are data files
+  (`data/<ns>/luxuries/`: an item or a tag, and how many days apart a household wants one). At dawn each household
+  takes one of every luxury its class and the class above ask for that's due, from the village store (the kitchens'
+  chests, then the Storehouses'), and remembers the day; a couple takes one between them, and an empty store leaves
+  the need unmet that day. Porters carry luxuries from the makers' chests to the storehouse. The luxuries themselves
+  come with their jobs later in 1.8, so nothing changes in game yet.
+
 ### Changed
 - **Expansions still being built are off until the release that finishes them** (B76): 0.139.0 switched on parts of
   1.1 to 1.4 that aren't done yet. The Steward (1.1); partner shows, the nurse at the Healing Machine and the Berry

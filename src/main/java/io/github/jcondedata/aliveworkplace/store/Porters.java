@@ -79,6 +79,9 @@ public final class Porters {
 		if (stack.getMaxStackSize() <= 1) {
 			return ALL;
 		}
+		if (io.github.jcondedata.aliveworkplace.people.Luxuries.isLuxury(stack)) {
+			return 0; // a luxury maker keeps the makings, but the luxuries go to the store (34.4), whoever made them
+		}
 		if (stack.is(ItemTags.COALS) && furnaceNear) {
 			return KEEP_FUEL;
 		}

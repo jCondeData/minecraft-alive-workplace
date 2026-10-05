@@ -200,6 +200,9 @@ public final class ClassNeeds {
 		private List<BuildSiteManager.Finished> builds;
 		@Nullable
 		private List<Homes.Building> homes;
+		/** The village store's chests ({@code VillageNeeds.store}), found once a dawn when the first luxury is taken. */
+		@Nullable
+		private List<BlockPos> store;
 		/** Each villager's home grade and beauty, worked out once a dawn (a household's own class and the next both ask). */
 		private final Map<Villager, Integer> grades = new java.util.IdentityHashMap<>();
 		private final Map<Villager, Integer> beauty = new java.util.IdentityHashMap<>();
@@ -219,6 +222,14 @@ public final class ClassNeeds {
 				builds = BuildSiteManager.get(level).finishedNear(level, hall, VillageHalls.RADIUS);
 			}
 			return builds;
+		}
+
+		/** The village store's chests (the kitchens', then the Storehouses'), found once a dawn (34.4's luxuries). */
+		public List<BlockPos> store() {
+			if (store == null) {
+				store = VillageNeeds.store(level, hall);
+			}
+			return store;
 		}
 
 		/** Reads what every household's needs read about the village (the finished builds and their boxes) now, not at the first need. */

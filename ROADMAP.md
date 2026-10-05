@@ -3601,7 +3601,7 @@ on a real world.
   `ServiceGameTests`: each of the six found by its worker and by its build, a Chapel in Stonework counts, one 60
   blocks from home doesn't, a teacher who quits stops counting at the next dawn, a datapack file adds a seventh
   service; the list is worked out at most once a day (a counter in the test). Nothing to see yet: `--no-review`.
-- [ ] **34.4** **Luxuries from the village store.** `data/aliveworkplace/luxuries/<id>.json`: the item (or tag) and
+- [x] **34.4** (approved auto 2026-10-05) **Luxuries from the village store.** `data/aliveworkplace/luxuries/<id>.json`: the item (or tag) and
   how often a household wants one, e.g. `{"item": "aliveworkplace:berry_wine", "every_days": 2}`. At dawn, in 34.2's
   slices, each household takes from the village store (`VillageNeeds.store`: the kitchens' chests, then the
   Storehouses') every luxury of its own class, and of the class above, that is due, and remembers the day it had it
@@ -4799,5 +4799,10 @@ item waits.
   nugget". Also decided there: the Noble's class file repeats the Burgher's food and diet (34.2 lists none), the
   Burgher's "one more service" excludes the market (the Market Square is its own `building` need), and new chronicle
   kind `LIFE` for elders, retirements and generations beside 34.6's `CLASS`.
+- 2026-10-05 (34.4, decision; lane d): the Porters rule is "a luxury in any worker's chests goes to the store"
+  (`Porters.keeps` gives 0 for any item a `luxuries/` file names), so a maker keeps its makings by its own job's rule.
+  A porter only visits jobs in `work/Village.takesPart`: 34.9-34.12 must add the Vintner, Tailor, Printer and Jeweller
+  there, or their goods stay put. The test luxuries are `aliveworkplace_test:test_trinket` (a disc fragment, every 2
+  days) and `test_fine_trinket` (the tag `#aliveworkplace_test:fine_trinkets`, every 4).
 - **qa handoff** (qa-1005-1034, 2026-10-05 11:27Z): qa-1005-1034: verified B46, B69, B73. Unshipped: qa/b46-b69-1005 (QaB46GameTests, QaB69FrontWalkGameTests; its ship build passed 1014/1014 gametests but failed on the compat flake B74 = B57 again): ship it once B74 is fixed (or retry ship). qa/import-swap-1005 is obsolete (B73 fixed on main). B50 and B57 not verified: read nightly run 37297003813 (on 5b489b7, after both fixes) for the crew test and the Pidgey test's repeats; B57 recurred (B74). qa/placing-1005 still waits on B71. Next QA: B50 from the nightly, B72 scene setup, then 21.2, M23.
 - **lane-c handoff** (lane-c-1005-1833, 2026-10-05 20:59Z): lane-c-1005-1833 (21:01Z): landed on main 2f801600: 27.15-27.19 (old wip/lane-c, M27-gated), 27.20 old houses, 27.21 renewal, B79 (ladder to upstairs beds), CaravanRoad test isolation fix. Local full build green (1169+151) before merging lane a's 29.x, pushed without rebuilding that merge (clean, no config changes). Next: 27.22 (the 1.1 yardstick), then 31.x. Red duty notes: main CI 695/697-699 were cancelled by the runner at ~15 min (infra), 696 failed only ConscriptionGameTests.aConscriptSavedMidRaidLoadsWithoutTheSword (B81). wip/lane-c is now stale (all merged); B80 is test-order (QA).

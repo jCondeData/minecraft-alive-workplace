@@ -375,6 +375,8 @@ public final class SocialClasses implements ResourceManagerReloadListener {
 			boolean fed = ModAttachments.LAST_MEAL.has(v) && !VillageNeeds.isHungry(v, now);
 			ModAttachments.CLASS_PROGRESS.set(v, new Progress(p.met(), p.missed(), fed ? p.fed() + 1 : 0, p.day()));
 		}
+		// The day's luxuries (34.4) come before the needs are checked: one taken at dawn holds today.
+		Luxuries.take(level, household.members(), current, village);
 		Progress lead = progress(household.lead());
 		SocialClass next = step(current, 1);
 		SocialClass below = step(current, -1);

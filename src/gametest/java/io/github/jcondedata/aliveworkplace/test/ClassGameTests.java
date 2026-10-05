@@ -71,7 +71,7 @@ public class ClassGameTests implements net.fabricmc.fabric.api.gametest.v1.Fabri
 			VillageHalls.RADIUS = radius;
 			new WorkplaceConfig().apply(); // classes off again (GameTests), rise and fall days back to 2 and 3
 			ClassNeeds.services = io.github.jcondedata.aliveworkplace.hall.Services.HOOK; // the real list back (34.3)
-			ClassNeeds.luxuryEvery = id -> 0;
+			ClassNeeds.luxuryEvery = io.github.jcondedata.aliveworkplace.people.Luxuries.HOOK; // the real files back (34.4)
 			SocialClasses.load(SocialClasses.files(level.getServer().getResourceManager()));
 			SocialClasses.forget();
 		});
@@ -604,7 +604,7 @@ public class ClassGameTests implements net.fabricmc.fabric.api.gametest.v1.Fabri
 			VillageHalls.RADIUS = radius;
 			new WorkplaceConfig().apply();
 			ClassNeeds.services = io.github.jcondedata.aliveworkplace.hall.Services.HOOK; // the real list back (34.3)
-			ClassNeeds.luxuryEvery = id -> 0;
+			ClassNeeds.luxuryEvery = io.github.jcondedata.aliveworkplace.people.Luxuries.HOOK; // the real files back (34.4)
 			SocialClasses.forget();
 		});
 		BlockPos hallRel = new BlockPos(15, 2, 15);

@@ -72,6 +72,7 @@ public final class AliveWorkplace {
 		io.github.jcondedata.aliveworkplace.hall.Guilds.init();
 		io.github.jcondedata.aliveworkplace.people.SocialClasses.init();
 		io.github.jcondedata.aliveworkplace.hall.Services.init(); // services nearby (34.3)
+		io.github.jcondedata.aliveworkplace.people.Luxuries.init(); // luxuries from the village store (34.4)
 		io.github.jcondedata.aliveworkplace.people.Tonics.init();
 		io.github.jcondedata.aliveworkplace.city.StewardRules.init();
 		io.github.jcondedata.aliveworkplace.ranch.PokemonChores.init();

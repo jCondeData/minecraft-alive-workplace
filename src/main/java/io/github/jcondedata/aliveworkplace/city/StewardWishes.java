@@ -200,10 +200,15 @@ public final class StewardWishes {
 	/**
 	 * What a build wish needs a plot for in the village round {@code hall}: as {@link #plotFor(Wish)}, and with {@code near}
 	 * the spots nearest that place first (the darkest bed for {@code "dark_beds"}: a street lamp by the homes left dark).
+	 * A building drawn in several looks (28.7a) is tried in the village's own look first, the others where it doesn't fit.
 	 */
 	public static java.util.Optional<Plots.Request> plotFor(ServerLevel level, BlockPos hall, Wish wish) {
 		java.util.Optional<String> near = wish.effect().near();
-		return plotFor(wish).map(request -> near.isPresent() && near.get().equals(StewardRules.Effect.NEAR_DARK_BEDS)
+		return plotFor(wish).map(request -> request.blueprints().size() == 1
+				? new Plots.Request(io.github.jcondedata.aliveworkplace.blueprint.BlueprintLooks.forVillage(request.blueprints().get(0), hall),
+					request.zoneKind(), request.skip(), request.near())
+				: request)
+			.map(request -> near.isPresent() && near.get().equals(StewardRules.Effect.NEAR_DARK_BEDS)
 			? request.near(io.github.jcondedata.aliveworkplace.hall.VillageAdvice.darkBeds(level, hall).stream().findFirst().orElse(null))
 			: request);
 	}

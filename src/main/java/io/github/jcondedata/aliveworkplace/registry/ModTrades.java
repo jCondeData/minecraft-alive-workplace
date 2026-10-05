@@ -696,7 +696,8 @@ public final class ModTrades {
 		Platform.get().addTrades(ModVillagers.NURSE, 3, offers -> {
 			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 2), new ItemStack(Items.HONEY_BOTTLE, 3), 12, 15, 0.05f));
 			if (Platform.get().isModLoaded("cobblemon")) { // ROADMAP 28.7: Journeyman Nurses sell the Pokémon Center
-				offers.add((entity, random) -> blueprint(StarterBlueprints.POKEMON_CENTER, 14));
+				offers.add((entity, random) -> blueprint( // any of its looks (28.7a)
+					StarterBlueprints.POKEMON_CENTER_LOOKS.get(random.nextInt(StarterBlueprints.POKEMON_CENTER_LOOKS.size())), 14));
 			}
 		});
 		Platform.get().addTrades(ModVillagers.NURSE, 4, offers ->

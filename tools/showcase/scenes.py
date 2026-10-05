@@ -228,8 +228,9 @@ SCENES = [
       cobblemon=True),
     job("nurse", "Nurse", "Healing and curing villagers", "the nurse healed and cured the villagers"),
     S("pokemon_center", "Nurse", "The Pokémon Center",
-      "both tiers stand, and the nurse put the team in her Healing Machine and every Pokémon came out full", 60,
+      "both tiers stand in all three looks, and the nurse put the team in her Healing Machine and every Pokémon came out full", 70,
       [("01_pokemon_center", "Pokémon Center"), ("02_pokemon_center_2", "Pokémon Center II"),
+       ("05_lodge", "Mountain Lodge look, both tiers"), ("06_plaza", "Sunny Plaza look, both tiers"),
        ("03_healing", "In the Healing Machine"), ("04_healed", "All healed")], cobblemon=True),
     # Shopkeeper
     S("shop", "Shopkeeper", "The shop", "the shop screen opened with prices", 60,

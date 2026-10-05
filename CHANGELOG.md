@@ -17,6 +17,10 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Added
+- **Two more looks for the Pokémon Center** (28.7a, with Cobblemon): a timber **Mountain Lodge** under a steep red
+  gable with a porch (II adds a two-storey wing and a pen with a Pasture Block) and a sandstone **Sunny Plaza** with a
+  striped awning and a red-capped drum (II adds a wing and a walled courtyard). Both tiers of each are in the Blueprint
+  Table, Journeyman Nurses sell any of the three looks, and a village's steward builds its own look of the Center.
 - **Festival Cup bouts between villagers** (28.18, with Cobblemon): on Cup day the bracket is fought at the host's Arena,
   one bout at a time, a round when the last one is done. Each trainer stands in their box; their Pokémon (a themed team
   from the same pool as at home) come out one at a time beside the ring, face each other and trade moves with

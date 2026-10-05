@@ -68,6 +68,20 @@ public final class StarterBlueprints {
 	public static final Entry POKEMON_CENTER = new Entry(AliveWorkplace.id("pokemon_center"), new Vec3i(13, 10, 12));
 	/** A lodge behind it (a Shop Counter's trade corner, four beds upstairs) and a garden with a Pasture Block. */
 	public static final Entry POKEMON_CENTER_2 = new Entry(AliveWorkplace.id("pokemon_center_2"), new Vec3i(13, 17, 26));
+	/**
+	 * The Pokémon Center's other looks (ROADMAP 28.7a; tools/blueprints/pokemon_looks.py, see {@link BlueprintLooks}): a
+	 * timber Mountain Lodge under a steep red gable with a porch, and its upgrade with a two-storey wing on the east and
+	 * a pen behind.
+	 */
+	public static final Entry POKEMON_CENTER_LODGE = new Entry(AliveWorkplace.id("looks/lodge/pokemon_center"), new Vec3i(13, 12, 12));
+	public static final Entry POKEMON_CENTER_LODGE_2 = new Entry(AliveWorkplace.id("looks/lodge/pokemon_center_2"), new Vec3i(21, 14, 18));
+	/** A flat-roofed sandstone Sunny Plaza with a striped awning and a red-capped drum; its upgrade adds a wing and a courtyard. */
+	public static final Entry POKEMON_CENTER_PLAZA = new Entry(AliveWorkplace.id("looks/plaza/pokemon_center"), new Vec3i(13, 11, 12));
+	public static final Entry POKEMON_CENTER_PLAZA_2 = new Entry(AliveWorkplace.id("looks/plaza/pokemon_center_2"), new Vec3i(13, 12, 25));
+	/** Every look of the Pokémon Center, first tiers (as drawn first). */
+	public static final List<Entry> POKEMON_CENTER_LOOKS = List.of(POKEMON_CENTER, POKEMON_CENTER_LODGE, POKEMON_CENTER_PLAZA);
+	/** Every look of Pokémon Center II, in the same order. */
+	public static final List<Entry> POKEMON_CENTER_2_LOOKS = List.of(POKEMON_CENTER_2, POKEMON_CENTER_LODGE_2, POKEMON_CENTER_PLAZA_2);
 
 	/**
 	 * With Cobblemon only (ROADMAP 28.16; tools/blueprints/arena.py): a 15 x 9 battle ring (packed mud, white lines, a
@@ -133,7 +147,7 @@ public final class StarterBlueprints {
 	public static final List<Entry> VANILLA_JOB_BUILDS = List.of(GEM_GROTTO, GEM_GROTTO_2);
 
 	/** In the Blueprint Table (and the creative tab) only when Cobblemon is installed: most of what makes them is its. */
-	public static final List<Entry> COBBLEMON_ONLY = java.util.stream.Stream.of(java.util.stream.Stream.of(POKEMON_CENTER, POKEMON_CENTER_2),
+	public static final List<Entry> COBBLEMON_ONLY = java.util.stream.Stream.of(java.util.stream.Stream.concat(POKEMON_CENTER_LOOKS.stream(), POKEMON_CENTER_2_LOOKS.stream()),
 		JOB_BUILDS.stream().filter(e -> !VANILLA_JOB_BUILDS.contains(e)), ARENAS.stream()).flatMap(e -> e).toList();
 
 	/**

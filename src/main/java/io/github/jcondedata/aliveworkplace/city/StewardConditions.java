@@ -620,9 +620,12 @@ public final class StewardConditions {
 		}
 	}
 
-	/** A blueprint's family: the base of its style and of its tiers ({@code styled/cherry/.../stone_house_3} is {@code stone_house}). */
+	/**
+	 * A blueprint's family: the base of its style, its look and its tiers ({@code styled/cherry/.../stone_house_3} is
+	 * {@code stone_house}, {@code looks/lodge/pokemon_center_2} is {@code pokemon_center}).
+	 */
 	public static ResourceLocation family(ResourceLocation id) {
-		ResourceLocation base = BlueprintStyles.base(id);
+		ResourceLocation base = io.github.jcondedata.aliveworkplace.blueprint.BlueprintLooks.base(BlueprintStyles.base(id));
 		for (int i = 0; i < 100; i++) {
 			Optional<ResourceLocation> lower = BlueprintUpgrades.baseOf(base);
 			if (lower.isEmpty()) {

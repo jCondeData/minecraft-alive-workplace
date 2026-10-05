@@ -1058,10 +1058,56 @@ def grand_chef():
     t.save(path)
     return [path]
 
+def bard_laureate():
+    """The Bard Laureate (29.19), drawn over the Bard's look: a green doublet to the hips with darker sleeves, a row of
+    brass buttons and a leather belt; a lute slung on the back (a pear-shaped spruce body with a dark sound hole, its
+    neck running up to the right shoulder, the strap across the chest), and a laurel wreath round the brow: two rows of
+    leaves, lit on top, the ends crossing at the back."""
+    t = vg.VillagerTexture()
+    doublet = vg.cloth("#3f7a32")
+    dark = vg.cloth("#2c5624")
+    vg.robe(t, doublet, length=12, sleeves_too=False, body_too=False, noise=0)
+    vg.sleeves(t, dark, cuff=doublet[3], noise=0)
+    jf = t.face("jacket", "front")
+    paint(jf, ((3, y) for y in range(0, 12)), doublet[0])       # where the doublet closes
+    for y in (2, 5, 8):                                        # brass buttons (clear of the badge rows 10..13)
+        jf.put(4, y, BRASS[3])
+    paint(jf, ((3, 0), (4, 0)), LINEN)                          # the shirt at the throat
+    vg.belt(t, LEATHER, row=9, buckle=BRASS[2])
+    strap_diagonal(jf, 0, 0, 2, 8, LEATHER[1], width=1)         # the lute's strap across the chest
+    wood = Ramp(["#5c3a1a", "#7d5128", "#a06c38", "#c28a4c"], name="spruce")
+    jb = t.face("jacket", "back")                               # the lute on the back
+    body = [(x, y) for y in range(10, 17) for x in range(1, 7) if not ((y in (10, 16)) and x in (1, 6))]
+    paint(jb, body, wood[2])
+    paint(jb, ((x, 16) for x in range(2, 6)), wood[0])          # its shadowed bottom
+    paint(jb, ((1, y) for y in range(11, 16)), wood[1])
+    paint(jb, ((2, 10), (3, 10), (4, 10)), wood[3])            # lit shoulder of the body
+    paint(jb, ((3, 13), (4, 13), (3, 14), (4, 14)), "#2a1a0c")   # the sound hole
+    paint(jb, ((x, 12) for x in (2, 5)), wood[3])
+    for i, y in enumerate(range(9, 1, -1)):                     # the neck up to the right shoulder
+        x = 4 + i // 3
+        jb.put(x, y, wood[1])
+        jb.put(x + 1, y, wood[0])
+    paint(jb, ((7, 1), (7, 0), (6, 0)), "#2a1a0c")              # the pegbox
+    leaf = Ramp(["#2f5a1c", "#4a8a2a", "#6cb03c", "#94cf5a"], name="laurel")
+    for side in SIDES:                                          # the laurel wreath round the brow
+        f = t.face("head", side)
+        lit = side in ("front", "west")
+        for x in range(f.w):
+            f.put(x, 3, leaf[2] if (x % 2 == 0) == lit else leaf[1])
+            f.put(x, 4, leaf[1] if x % 2 == 0 else leaf[0])
+            if x % 2 == 1:
+                f.put(x, 2, leaf[3] if lit else leaf[2])        # leaf tips over the band
+    hb = t.face("head", "back")
+    paint(hb, ((3, 5), (4, 5)), leaf[0])                        # the ends crossing at the back
+    path = ASSETS / "textures" / "entity" / "villager" / "legend" / "bard_laureate.png"
+    t.save(path)
+    return [path]
+
 
 DRAW = [orchard_keeper, berry_breeder, camp_cook, habitat_keeper, daycare_keeper, gem_grower, pokemon_trader, porter, postman, rancher, scholar, shopkeeper, sifter, teacher, tinkerer,
         trainer, trainer_leader, tutor, undertaker, steward, legend, legend_placeholder, master_architect, pathfinder, old_sage, seer, golem_smith,
-        merchant_prince, grand_chef]
+        merchant_prince, grand_chef, bard_laureate]
 
 if __name__ == "__main__":
     run(DRAW)

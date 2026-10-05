@@ -184,6 +184,12 @@ public final class Moods {
 			score += blessed.points();
 			good.add(blessed.reason());
 		}
+		// A Bard Laureate's work song heard today (29.19).
+		io.github.jcondedata.aliveworkplace.legend.LegendPowers.MoodReason song = io.github.jcondedata.aliveworkplace.legend.BardLaureate.heardMood(level, villager);
+		if (song != null) {
+			score += song.points();
+			good.add(song.reason());
+		}
 		// A Grand Chef's banquet (29.18), for the days it lasts.
 		io.github.jcondedata.aliveworkplace.legend.LegendPowers.MoodReason banquet = io.github.jcondedata.aliveworkplace.hall.Banquets.mood(level, villager);
 		if (banquet != null) {

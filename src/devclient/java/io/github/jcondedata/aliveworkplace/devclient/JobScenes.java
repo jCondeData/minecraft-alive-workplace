@@ -968,6 +968,66 @@ final class JobScenes {
 				return meals[0] >= 0 && t >= 640;
 			};
 		}, null));
+		SCENES.put("legend_bard", new Job("the Bard Laureate settled and composed the village's anthem, which rang out over the hall in note-block notes; then they sang a work song among the busiest workers, notes rising round them",
+			900, new Vec3(1.5, -54.5, 12), new Vec3(0, -60, 0), (level, player) -> {
+			// ROADMAP 29.19: the Village Hall, the Bard Laureate (green doublet, lute on the back, laurel wreath) by it and
+			// six workers at their trades in a knot to the east. The hall's round composes the anthem from the village's
+			// name and plays it (16 notes, the note particles over the hall); mid-morning the Laureate walks to the knot of
+			// workers and sings, notes rising round them, the workers there 25% faster.
+			level.getGameRules().getRule(GameRules.RULE_DAYLIGHT).set(false, level.getServer());
+			level.setDayTime(2900);
+			BlockPos hall = STATION;
+			place(level, hall, ModBlocks.VILLAGE_HALL);
+			io.github.jcondedata.aliveworkplace.hall.Anthems.forget();
+			io.github.jcondedata.aliveworkplace.legend.Legend legend = io.github.jcondedata.aliveworkplace.legend.Legends.get(
+				io.github.jcondedata.aliveworkplace.legend.BardLaureate.ID).orElse(null);
+			Showcase.check(legend != null, "the Bard Laureate's file loaded");
+			if (legend == null) {
+				return l -> true;
+			}
+			Villager bard = EntityType.VILLAGER.spawn(level, STATION.offset(-3, 0, 3), MobSpawnType.COMMAND);
+			bard.setVillagerData(bard.getVillagerData().setProfession(io.github.jcondedata.aliveworkplace.registry.ModVillagers.BARD).setLevel(5));
+			bard.setVillagerXp(250);
+			io.github.jcondedata.aliveworkplace.legend.Legends.make(level, bard, legend, "showcase");
+			io.github.jcondedata.aliveworkplace.legend.LegendPowers.forget();
+			net.minecraft.world.entity.npc.VillagerProfession[] trades = {net.minecraft.world.entity.npc.VillagerProfession.FARMER,
+				net.minecraft.world.entity.npc.VillagerProfession.MASON, net.minecraft.world.entity.npc.VillagerProfession.FLETCHER,
+				net.minecraft.world.entity.npc.VillagerProfession.LIBRARIAN, net.minecraft.world.entity.npc.VillagerProfession.TOOLSMITH,
+				net.minecraft.world.entity.npc.VillagerProfession.SHEPHERD};
+			Villager[] workers = new Villager[trades.length];
+			for (int i = 0; i < trades.length; i++) {
+				workers[i] = EntityType.VILLAGER.spawn(level, STATION.offset(5 + (i % 3) * 2, 0, -1 + (i / 3) * 3), MobSpawnType.COMMAND);
+				workers[i].setVillagerData(workers[i].getVillagerData().setProfession(trades[i]).setLevel(2));
+				workers[i].setVillagerXp(20);
+				workers[i].setNoAi(true);
+				workers[i].setYRot(180);
+				workers[i].setYHeadRot(180);
+			}
+			long began = level.getGameTime();
+			boolean[] composed = {false};
+			boolean[] sang = {false};
+			return l -> {
+				long t = l.getGameTime() - began;
+				var entity = (io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) l.getBlockEntity(hall);
+				if (t >= 40 && !composed[0] && entity != null) {
+					composed[0] = true;
+					io.github.jcondedata.aliveworkplace.hall.Anthems.round(l, hall, entity);
+					Showcase.check(entity.anthem().isPresent(), "the anthem was composed");
+				}
+				if (t == 200) {
+					Showcase.check(io.github.jcondedata.aliveworkplace.hall.Anthems.notesPlayed(hall) == 16,
+						"the anthem played 16 notes (" + io.github.jcondedata.aliveworkplace.hall.Anthems.notesPlayed(hall) + ")");
+					l.setDayTime(3000);
+				}
+				if (t == 600 && !sang[0]) {
+					sang[0] = true;
+					Showcase.check(io.github.jcondedata.aliveworkplace.legend.BardLaureate.singing(bard), "the Bard Laureate is singing a work song");
+					Showcase.check(io.github.jcondedata.aliveworkplace.legend.LegendPowers.pace(workers[0]) > 1.2f,
+						"the workers near the song work faster (" + io.github.jcondedata.aliveworkplace.legend.LegendPowers.pace(workers[0]) + "×)");
+				}
+				return sang[0] && t >= 700;
+			};
+		}, null));
 		SCENES.put("legend_golem_smith", new Job("the Golem Smith forged a Hauler Golem, and the hauler, a farmhand and a wall sentry went to work",
 			2400, new Vec3(1.5, -51.5, 11), new Vec3(0, -60, -5), (level, player) -> {
 			// ROADMAP 29.15: the Golem Smith at a smithing table, the costs of a Hauler in the chest beside it and five

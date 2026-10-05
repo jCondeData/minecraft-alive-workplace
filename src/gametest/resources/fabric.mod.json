@@ -144,6 +144,7 @@
 			"io.github.jcondedata.aliveworkplace.test.PathfinderGameTests",
 			"io.github.jcondedata.aliveworkplace.test.MerchantPrinceGameTests",
 			"io.github.jcondedata.aliveworkplace.test.GrandChefGameTests",
+			"io.github.jcondedata.aliveworkplace.test.BardLaureateGameTests",
 			"io.github.jcondedata.aliveworkplace.test.GolemSmithGameTests",
 			"io.github.jcondedata.aliveworkplace.test.LegendSitesGameTests",
 			"io.github.jcondedata.aliveworkplace.test.StrangeMoodGameTests",

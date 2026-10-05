@@ -28,6 +28,7 @@ public final class Powers {
 		register("banquet", BanquetPower::read);
 		GiftPowers.register();
 		Seer.register();
+		BardLaureate.register();
 	}
 
 	/** Adds a named power (each Legend item adds its own). */

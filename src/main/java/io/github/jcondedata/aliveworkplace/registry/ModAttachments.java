@@ -32,6 +32,11 @@ public final class ModAttachments {
 	/** The last banquet of the Grand Chef's (29.18) a villager came to: the day, the mood and its days. Absent: none. */
 	public static final Attachment<io.github.jcondedata.aliveworkplace.hall.Banquets.Feasted> BANQUET = Attachment.saved("banquet", io.github.jcondedata.aliveworkplace.hall.Banquets.Feasted.CODEC);
 
+	/** A Bard Laureate's (29.19) last work song: the day, which of the two, when it ends, where. Absent: none yet. */
+	public static final Attachment<io.github.jcondedata.aliveworkplace.legend.BardLaureate.Song> WORK_SONG = Attachment.saved("work_song", io.github.jcondedata.aliveworkplace.legend.BardLaureate.Song.CODEC);
+	/** The day a villager last heard a Bard Laureate's work song (29.19). Absent: never. */
+	public static final Attachment<Long> SONG_HEARD = Attachment.saved("song_heard", com.mojang.serialization.Codec.LONG);
+
 	/** A villager's gift (29.6): a gift's id, or {@code none}. Absent: the UUID roll decides ({@code Gifted.of}). */
 	/** The guild this villager leads and its village's hall (ROADMAP 30.17); absent: they lead none. */
 	public static final Attachment<io.github.jcondedata.aliveworkplace.hall.Guilds.Master> GUILD_MASTER = Attachment.saved("guild_master", io.github.jcondedata.aliveworkplace.hall.Guilds.Master.CODEC);

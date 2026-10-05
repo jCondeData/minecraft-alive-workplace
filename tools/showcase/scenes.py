@@ -315,6 +315,9 @@ SCENES = [
     # The Grand Chef (ROADMAP 29.18): a banquet called after work, the village gathered round the hall, the feast at supper
     job("legend_grand_chef", "Legends", "The Grand Chef's banquet",
         "the Grand Chef called the village to a banquet: everyone gathered round the hall and at supper each grown-up ate two meals of the eight kinds in the store", 90),
+    # The Bard Laureate (ROADMAP 29.19): the anthem composed and played over the hall, then a work song among the workers
+    job("legend_bard", "Legends", "The Bard Laureate's anthem and work song",
+        "the Bard Laureate settled and composed the village's anthem, which rang out over the hall in note-block notes; then they sang a work song among the busiest workers, notes rising round them", 90),
     job("legend_strike", "Legends", "A Legend on strike", "a Legend on strike left her stonecutter and picketed by the Village Hall under a red line", 120),
     # Strange moods (ROADMAP 29.10): a Master cleric claims her brewing stand under a purple line, the chest by it fills,
     # and she makes a named Masterwork, hung in an item frame, and becomes a Legend

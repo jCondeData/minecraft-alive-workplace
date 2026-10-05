@@ -1,0 +1,21 @@
+{
+  "rarity": "rare",
+  "job": "aliveworkplace:bard",
+  "title": "legend.aliveworkplace.bard_laureate.title",
+  "lore": "legend.aliveworkplace.bard_laureate.lore",
+  "names": [
+    "legend.aliveworkplace.bard_laureate.name.1",
+    "legend.aliveworkplace.bard_laureate.name.2",
+    "legend.aliveworkplace.bard_laureate.name.3"
+  ],
+  "conditions": [],
+  "arrive": [
+    {"way": "visit", "place": "festival", "crowd": 30},
+    {"way": "born", "trades": ["aliveworkplace:bard"]}
+  ],
+  "needs": {"luxury": "books"},
+  "powers": [
+    {"type": "anthem"},
+    {"type": "work_songs", "radius": 16, "factor": 1.25, "seconds": 120, "mood": 5}
+  ]
+}

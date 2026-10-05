@@ -235,7 +235,8 @@ public final class Festivals {
 	}
 
 	/** The feast: every grown villager eats from the store, everyone is remembered as having come. */
-	static void feast(ServerLevel level, BlockPos hall) {
+	public static void feast(ServerLevel level, BlockPos hall) {
+		Anthems.play(level, hall, "festival"); // the Bard Laureate's anthem (29.19)
 		List<BlockPos> store = VillageNeeds.store(level, hall);
 		long today = Chronicle.day(level);
 		int villagers = 0;

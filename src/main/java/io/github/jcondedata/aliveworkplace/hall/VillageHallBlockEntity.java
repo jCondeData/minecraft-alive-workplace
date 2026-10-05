@@ -36,6 +36,9 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 	/** The day of the last banquet (29.18, the Grand Chef), or -1 before the first; whether its feast was eaten yet. */
 	private long banquetDay = -1;
 	private boolean banquetEaten;
+	/** The village's anthem (29.19, the Bard Laureate), composed once; whether the owner has had the book. */
+	private Anthems.Anthem anthem;
+	private boolean anthemBookGiven;
 	/** The trade fair's bunting (29.17): the banners put up round the square, taken down after the fair's day. */
 	private final java.util.List<BlockPos> fairBunting = new java.util.ArrayList<>();
 	private int festivalCrowd;
@@ -160,6 +163,7 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 			PlayerBank.round(server, pos, hall);
 			TradeFairs.round(server, pos, hall);
 			Banquets.round(server, pos, hall);
+			Anthems.round(server, pos, hall);
 			io.github.jcondedata.aliveworkplace.guard.VillageRaids.tick(server, pos, census.villagers(), census.guards(), hall.lastRaidDay, day -> {
 				hall.lastRaidDay = day;
 				hall.setChanged();
@@ -539,6 +543,25 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 		return banquetEaten;
 	}
 
+	/** The village's anthem (29.19), once a Bard Laureate has composed it. */
+	public java.util.Optional<Anthems.Anthem> anthem() {
+		return java.util.Optional.ofNullable(anthem);
+	}
+
+	public void setAnthem(@Nullable Anthems.Anthem anthem) {
+		this.anthem = anthem;
+		setChanged();
+	}
+
+	public boolean anthemBookGiven() {
+		return anthemBookGiven;
+	}
+
+	public void setAnthemBookGiven(boolean given) {
+		anthemBookGiven = given;
+		setChanged();
+	}
+
 	public void setBanquet(long day, boolean eaten) {
 		banquetDay = day;
 		banquetEaten = eaten;
@@ -699,6 +722,10 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 		fairDay = tag.contains("fairDay") ? Nbt.getLong(tag, "fairDay") : -1;
 		banquetDay = tag.contains("banquetDay") ? Nbt.getLong(tag, "banquetDay") : -1;
 		banquetEaten = Nbt.getBoolean(tag, "banquetEaten");
+		String instrument = Nbt.getString(tag, "anthemInstrument");
+		int[] notes = Nbt.getIntArray(tag, "anthemNotes");
+		anthem = !instrument.isEmpty() && notes.length > 0 ? new Anthems.Anthem(instrument, notes) : null;
+		anthemBookGiven = Nbt.getBoolean(tag, "anthemBook");
 		fairBunting.clear();
 		for (long p : Nbt.getLongArray(tag, "fairBunting")) {
 			fairBunting.add(BlockPos.of(p));
@@ -789,6 +816,11 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 		tag.putLong("fairDay", fairDay);
 		tag.putLong("banquetDay", banquetDay);
 		tag.putBoolean("banquetEaten", banquetEaten);
+		if (anthem != null) {
+			tag.putString("anthemInstrument", anthem.instrument());
+			tag.putIntArray("anthemNotes", anthem.notes());
+			tag.putBoolean("anthemBook", anthemBookGiven);
+		}
 		if (!fairBunting.isEmpty()) {
 			tag.put("fairBunting", new net.minecraft.nbt.LongArrayTag(fairBunting.stream().mapToLong(BlockPos::asLong).toArray()));
 		}

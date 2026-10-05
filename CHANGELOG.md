@@ -16,6 +16,13 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+- **The Bard Laureate** (29.19), a Rare Legend in a green doublet with a lute on the back and a laurel wreath: a guest
+  at a festival 30 villagers come to, or born to a Bard. Likes books. On settling they compose the village's anthem,
+  16 notes on one instrument made from the village's name (the same name always gives the same tune), kept in the hall
+  and played over it in note-block notes at every festival, rank-up, wedding and Legend arrival, and from a new
+  button on the hall's Legends page; the hall's owner gets it as a written book, "The Anthem of Thornholm". Twice a day they sing a work song
+  for 2 minutes where work is busiest: workers within 16 blocks work 25% faster while they sing, and everyone who
+  hears is 5 happier for the day.
 - **The Grand Chef** (29.18), a Rare Legend in a tall white toque with a gold band and a gold ladle at the apron: a
   Master Chef inspired to bake "The <village> Midsummer Cake", a guest at the inn, or born to a Chef, once the store
   holds 8 kinds of meal. Likes wine. Every 5 days after work the village gathers round the hall (or the Market Square)

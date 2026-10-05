@@ -129,6 +129,7 @@ public final class LegendPowers {
 				}
 			}
 		}
+		factor *= BardLaureate.songPace(legends, worker); // a Bard Laureate's work song (29.19), while they sing
 		return Math.min(PACE_CAP, factor);
 	}
 

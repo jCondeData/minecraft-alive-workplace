@@ -5,6 +5,7 @@ import io.github.jcondedata.aliveworkplace.AliveWorkplace;
 import io.github.jcondedata.aliveworkplace.WorkplaceConfig;
 import io.github.jcondedata.aliveworkplace.blueprint.BlueprintData;
 import io.github.jcondedata.aliveworkplace.blueprint.StarterBlueprints;
+import io.github.jcondedata.aliveworkplace.build.BuildSite;
 import io.github.jcondedata.aliveworkplace.build.BuildSiteManager;
 import io.github.jcondedata.aliveworkplace.build.Builders;
 import io.github.jcondedata.aliveworkplace.hall.CivicEffects;
@@ -17,6 +18,7 @@ import io.github.jcondedata.aliveworkplace.hall.VillageNeeds;
 import io.github.jcondedata.aliveworkplace.hall.VillageRanks;
 import io.github.jcondedata.aliveworkplace.people.Moods;
 import io.github.jcondedata.aliveworkplace.registry.ModAttachments;
+import io.github.jcondedata.aliveworkplace.registry.ModGameRules;
 import io.github.jcondedata.aliveworkplace.registry.ModBlocks;
 import io.github.jcondedata.aliveworkplace.registry.ModItems;
 import io.github.jcondedata.aliveworkplace.registry.ModVillagers;
@@ -228,23 +230,66 @@ public class GuildGameTests implements FabricGameTest {
 		});
 	}
 
-	/** With five idle builders by a build, five help at once under a founded Builders' Guild. */
+	/**
+	 * Seven idle builders by one build: without a founded guild only 3 join it ({@link Builders#MAX_HELPERS}); once the
+	 * Builders' Guild is founded in its Guildhall, two more join, 5 at one build, and the last two are turned away.
+	 */
 	//$ gametest_ticks_batch AREA '200' '"guildHelpers"'
 	@GameTest(template = AREA, timeoutTicks = 200, batch = "guildHelpers")
 	public void fiveHelpersAtOneBuild(GameTestHelper helper) {
 		Leftovers.clear(helper);
 		village(helper);
-		Villager dara = villager(helper, new BlockPos(6, 2, 6), "Dara", ModVillagers.BUILDER, 5);
+		ServerLevel level = helper.getLevel();
+		boolean help = level.getGameRules().getBoolean(ModGameRules.BUILDERS_HELP);
+		Leftovers.after(helper, () -> level.getGameRules().getRule(ModGameRules.BUILDERS_HELP).set(help, level.getServer()));
+		level.getGameRules().getRule(ModGameRules.BUILDERS_HELP).set(true, level.getServer());
+		Villager dara = villager(helper, new BlockPos(2, 2, 3), "Dara", ModVillagers.BUILDER, 5);
+		helper.setBlock(new BlockPos(2, 2, 2), ModBlocks.BUILDERS_BENCH);
+		List<Villager> idle = new java.util.ArrayList<>();
+		for (int i = 0; i < 7; i++) {
+			BlockPos bench = new BlockPos(4 + i, 2, 2);
+			helper.setBlock(bench, ModBlocks.BUILDERS_BENCH);
+			idle.add(villager(helper, bench.south(), "Helper " + (i + 1), ModVillagers.BUILDER, 1));
+		}
 		helper.runAfterDelay(5, () -> {
-			ServerLevel level = helper.getLevel();
 			BlockPos hallPos = helper.absolutePos(HALL);
 			VillageHallBlockEntity hall = ready(helper);
 			hall.setRank(VillageRanks.Rank.VILLAGE);
+			Builders.employ(level, dara, helper.absolutePos(new BlockPos(2, 2, 2)));
+			for (int i = 0; i < idle.size(); i++) {
+				Builders.employ(level, idle.get(i), helper.absolutePos(new BlockPos(4 + i, 2, 2)));
+			}
+			// Unfinished sites left nearby by earlier batches (their builders gone) would compete for the helpers.
+			for (BuildSite other : new java.util.ArrayList<>(BuildSiteManager.get(level).all())) {
+				if (other.builder() == null || level.getEntity(other.builder()) == null) {
+					BuildSiteManager.get(level).remove(other.id());
+				}
+			}
+			BuildSite site = Builders.start(level, dara, null, ResourceLocation.fromNamespaceAndPath("aliveworkplace_test", "test_hut"),
+				new BlueprintData.Placement(level.dimension().location(), helper.absolutePos(new BlockPos(3, 2, 8)), Rotation.NONE, Mirror.NONE));
+			helper.assertTrue(site != null, "Dara's build started");
 			helper.assertTrue(Guilds.grant(level, dara).outcome() == Guilds.Outcome.GRANTED, "granted");
+
+			int joined = 0;
+			for (Villager v : idle) {
+				BuildSite at = Builders.recruit(level, v);
+				helper.assertTrue(at == null || at == site, "joined another build: " + (at == null ? "" : at.bench()));
+				joined += at == site ? 1 : 0;
+			}
+			helper.assertTrue(joined == 3 && site.helpers(level.getGameTime()).size() == 3, "without a guild 3 help, not " + joined);
+
 			BlueprintData.Placement at = new BlueprintData.Placement(level.dimension().location(), helper.absolutePos(new BlockPos(2, 2, 14)), Rotation.NONE, Mirror.NONE);
 			BuildSiteManager.get(level).recordFinished(StarterBlueprints.GUILDHALL.id(), at, UUID.randomUUID());
 			Guilds.round(level, hallPos, hall);
-			helper.assertTrue(Guilds.helpers(level, hallPos) == 5 && Builders.MAX_HELPERS == 3, "5 with the guild, 3 without");
+			for (Villager v : idle) {
+				if (!Builders.isHelping(v)) {
+					BuildSite more = Builders.recruit(level, v);
+					helper.assertTrue(more == null || more == site, "joined another build");
+				}
+			}
+			long helping = idle.stream().filter(Builders::isHelping).count();
+			helper.assertTrue(helping == 5 && site.helpers(level.getGameTime()).size() == 5,
+				"with the Builders' Guild founded 5 help at one build, not " + helping + " (site: " + site.helpers(level.getGameTime()).size() + ")");
 			helper.succeed();
 		});
 	}

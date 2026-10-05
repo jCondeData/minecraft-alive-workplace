@@ -58,6 +58,8 @@ public class BuilderGameTests implements FabricGameTest {
 	private static final String BIG_AREA = "aliveworkplace_test:big_area";
 	/** 30 x 20 x 30, for the biggest third tiers. */
 	private static final String HUGE_AREA = "aliveworkplace_test:huge_area";
+	/** 30 x 30 x 30: for builds over huge_area's 20 blocks once they stand on y = 2 (the Guildhall II's tower). */
+	private static final String TALL_AREA = "aliveworkplace_test:tall_area";
 	private static final ResourceLocation TEST_HUT = ResourceLocation.fromNamespaceAndPath("aliveworkplace_test", "test_hut");
 
 	// Test areas: relative y=1 is the smooth-stone floor layer, so things stand at y=2.
@@ -976,9 +978,9 @@ public class BuilderGameTests implements FabricGameTest {
 		buildStarter(helper, StarterBlueprints.GUILDHALL, new BlockPos(5, 2, 8));
 	}
 
-	/** ROADMAP 30.17: the Guildhall II with its tower wing, meeting room and bell (20 tall: the huge area). */
-	//$ gametest_ticks_batch HUGE_AREA '60000' '"starter_builds_guildhall_2"'
-	@GameTest(template = HUGE_AREA, timeoutTicks = 60000, batch = "starter_builds_guildhall_2")
+	/** ROADMAP 30.17: the Guildhall II with its tower wing, meeting room and bell (20 tall: the tall area, 30 high). */
+	//$ gametest_ticks_batch TALL_AREA '60000' '"starter_builds_guildhall_2"'
+	@GameTest(template = TALL_AREA, timeoutTicks = 60000, batch = "starter_builds_guildhall_2")
 	public void buildsGuildhallII(GameTestHelper helper) {
 		buildStarter(helper, StarterBlueprints.GUILDHALL_2, new BlockPos(2, 2, 8));
 	}

@@ -155,5 +155,6 @@ if __name__ == "__main__":
     test_area("build_area", 17, 8, 17)
     test_area("big_area", 22, 18, 22)
     test_area("huge_area", 30, 20, 30)
+    test_area("tall_area", 30, 30, 30)  # ROADMAP 30.17: the Guildhall II's 20-tall tower, built from y = 2
     test_area("build_area", 17, 8, 17, COMPAT_AREAS)
     test_area("huge_area", 30, 20, 30, COMPAT_AREAS)

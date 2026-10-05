@@ -2081,7 +2081,7 @@ the Village Hall (`VillageNeeds`, `VillageQuests`, `VillageRanks`, `Festivals`, 
   ferrymen, bards, trainers, tutors or traders. Done when: a GameTest per tonic (its maker makes it, one of its jobs is
   25% faster with it, a job outside its list refuses it); the four icons pass `lint.py` and are shown in slots and in
   hand in the review package; the `tonics` scene films all six.
-- [ ] **30.17** **Guild Charters, the Guildhall and the Builders' Guild.**
+- [x] **30.17** (review: pending 2026-10-05) **Guild Charters, the Guildhall and the Builders' Guild.**
   - The **Guild Charter**, an item of its own (pixel-art: a rolled charter with a red seal), crafted from three paper,
     an emerald, a gold ingot and red dye. Sneak-right-click a Master of a trade with it in a village of Village rank or
     more: they become the **Guild Master** of that trade's guild (attachment `guild_master`; the hall's list and their

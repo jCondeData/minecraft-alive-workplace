@@ -82,6 +82,9 @@ public interface Platform {
 	/** When an entity is loaded into (or spawned in) a server level. */
 	void onEntityLoad(BiConsumer<Entity, ServerLevel> action);
 
+	/** When a player's client starts tracking an entity (it comes into their view distance, or they join beside it). */
+	void onStartTracking(BiConsumer<Entity, ServerPlayer> action);
+
 	/** When a player has joined the server. */
 	void onPlayerJoin(Consumer<ServerPlayer> action);
 
@@ -180,6 +183,9 @@ public interface Platform {
 
 	/** A workstation (point of interest) type for {@code blocks}. */
 	PoiType registerPoi(ResourceLocation id, int tickets, int range, Block... blocks);
+
+	/** A workstation (point of interest) type for only these block states (a two-block block's lower half, say). */
+	PoiType registerPoi(ResourceLocation id, int tickets, int range, Iterable<net.minecraft.world.level.block.state.BlockState> states);
 
 	/**
 	 * Runs {@code action} with the block {@code id} once it is registered: right away if it already is, or when another

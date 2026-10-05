@@ -76,6 +76,37 @@ public final class CampCooks implements ResourceManagerReloadListener {
 
 		/** The pot's recipes that make {@code dish}. */
 		List<PotRecipe> recipes(ServerLevel level, Item dish);
+
+		/** The seasonings (item ids) {@code dish} was cooked with (28.10: a Habitat Keeper's snacks). */
+		default Set<ResourceLocation> seasonings(ItemStack dish) {
+			return Set.of();
+		}
+	}
+
+	/**
+	 * Workers who ask for a dish seasoned a particular way (28.10: a Habitat Keeper asks for Poké Snacks seasoned with the
+	 * berries of her lure): the seasonings wanted for {@code dish} at the pot, or none.
+	 */
+	public interface SeasoningAsk {
+		Set<ResourceLocation> seasonings(ServerLevel level, BlockPos pot, Dish dish);
+	}
+
+	private static final List<SeasoningAsk> SEASONING_ASKS = new java.util.concurrent.CopyOnWriteArrayList<>();
+
+	public static void onSeasoningAsk(SeasoningAsk ask) {
+		SEASONING_ASKS.add(ask);
+	}
+
+	/** The seasonings the workers near the pot ask {@code dish} to be cooked with (empty: any). */
+	public static Set<ResourceLocation> askedSeasonings(ServerLevel level, BlockPos pot, Dish dish) {
+		if (dish.when() != When.ASKED) {
+			return Set.of();
+		}
+		Set<ResourceLocation> out = new LinkedHashSet<>();
+		for (SeasoningAsk ask : SEASONING_ASKS) {
+			out.addAll(ask.seasonings(level, pot, dish));
+		}
+		return out;
 	}
 
 	private static List<Dish> menu = List.of();

@@ -9,6 +9,9 @@ public final class ModAttachments {
 	/** What makes a villager a Legend (M29): which one, guest or settled, their hall and needs. Absent: not a Legend. */
 	public static final Attachment<io.github.jcondedata.aliveworkplace.legend.LegendData> LEGEND = Attachment.saved("legend", io.github.jcondedata.aliveworkplace.legend.LegendData.CODEC);
 
+	/** A villager's gift (29.6): a gift's id, or {@code none}. Absent: the UUID roll decides ({@code Gifted.of}). */
+	public static final Attachment<String> GIFTED = Attachment.saved("gifted", com.mojang.serialization.Codec.STRING);
+
 	/** Which build site this villager is working on. */
 	public static final Attachment<BuilderJob> BUILDER_JOB = Attachment.saved("builder_job", BuilderJob.CODEC);
 
@@ -159,6 +162,31 @@ public final class ModAttachments {
 
 	/** How many dishes a Camp Cook has cooked (shown above her head; ROADMAP 28.8). */
 	public static final Attachment<Integer> DISHES_COOKED = Attachment.saved("dishes_cooked", com.mojang.serialization.Codec.INT);
+
+	/** A Habitat Keeper's lure spots, where she keeps Poké Snacks set out (ROADMAP 28.10). */
+	public static final Attachment<java.util.List<net.minecraft.core.BlockPos>> LURE_SPOTS = Attachment.saved("lure_spots", net.minecraft.core.BlockPos.CODEC.listOf());
+
+	/** The Saccharine logs a Habitat Keeper has found round her pasture and keeps slathered with honey (ROADMAP 28.10). */
+	public static final Attachment<java.util.List<net.minecraft.core.BlockPos>> HONEY_LOGS = Attachment.saved("honey_logs", net.minecraft.core.BlockPos.CODEC.listOf());
+
+	/** The lure a Habitat Keeper's snacks are seasoned for ("typing/fire", "egg_group/field", "alpha"; absent = any snack) (ROADMAP 28.10). */
+	public static final Attachment<String> HABITAT_LURE = Attachment.saved("habitat_lure", com.mojang.serialization.Codec.STRING);
+
+	/** A Habitat Keeper's last sightings of shiny, rare and Alpha wild Pokémon, newest first (ROADMAP 28.10). */
+	public static final Attachment<java.util.List<io.github.jcondedata.aliveworkplace.habitat.HabitatKeepers.Sighting>> SIGHTINGS =
+		Attachment.saved("sightings", io.github.jcondedata.aliveworkplace.habitat.HabitatKeepers.Sighting.CODEC.listOf());
+
+	/** The wild Pokémon a Habitat Keeper has already told the village of, so each is told once (ROADMAP 28.10). */
+	public static final Attachment<java.util.List<java.util.UUID>> SIGHTED = Attachment.saved("sighted", net.minecraft.core.UUIDUtil.STRING_CODEC.listOf());
+
+	/** The beds a Gem Grower has been asked to keep (bed ids; absent = every bed she has the makings for) (ROADMAP 28.11). */
+	public static final Attachment<java.util.List<net.minecraft.resources.ResourceLocation>> GEM_ORDERS = Attachment.saved("gem_orders", net.minecraft.resources.ResourceLocation.CODEC.listOf());
+
+	/** The gem beds (the blocks they grow against) a Gem Grower has found round her stonecutter (ROADMAP 28.11). */
+	public static final Attachment<java.util.List<net.minecraft.core.BlockPos>> GEM_BEDS = Attachment.saved("gem_beds", net.minecraft.core.BlockPos.CODEC.listOf());
+
+	/** How many ripe clusters a Gem Grower has picked (shown above her head) (ROADMAP 28.11). */
+	public static final Attachment<Integer> GEMS_PICKED = Attachment.saved("gems_picked", com.mojang.serialization.Codec.INT);
 
 	/** How many berries a Berry Breeder has picked (shown above her head). */
 	public static final Attachment<Integer> BERRIES_PICKED = Attachment.saved("berries_picked", com.mojang.serialization.Codec.INT);

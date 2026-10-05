@@ -17,12 +17,44 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Added
+- **Gifted villagers** (29.6): about one villager in 30 has a rare gift as well as their traits, shown in gold on the
+  Village Hall's list. Prodigy learns three times as fast; Iron Will never panics and keeps working through raids and
+  the bell; Silver Tongue's trades are 20% cheaper; a Night Owl works from dusk to dawn and sleeps from mid-morning to
+  mid-afternoon (builders and miners too). A Gifted villager sparkles when they level up, and the chronicle notes one
+  who joins from the inn or grows up. Gifts are data (`data/<ns>/gifted/<id>.json`); config `giftedChance` (30; 0: none).
+- **Legends' needs and strikes** (29.5): once a day the Village Hall checks what each settled Legend needs: a home of
+  their own (their bed in a finished tier III building, shared with nobody but their spouse), their luxury once a week
+  (wine, jewels, books or fine clothes, taken from a chest in their home or else the village store, +10 mood; for now
+  honey bottles, amethyst shards and emeralds, books, and leather armour, through the `aliveworkplace:luxury/*` item
+  tags) and a happy village (average mood 60, or wellbeing 60% with moods off). After a 3-day grace, a need unmet two
+  days running starts a strike: their powers stop, their trade's work stops, they picket by the hall by day under a red
+  "On strike: a home of my own" line, and the hall, the Legends page and the chronicle say so. The day every need is
+  met they go back to work. Legends never leave: no inn departure, no despawning, and the hall's call-home passes them
+  by. `legendNeeds` in the config turns it off.
+- **Legends on the hall, and how they look** (29.4): the Village Hall has a Legends page (a nether star in the page
+  row): the village's own Legends first, then every Legend as a card with its rarity, how it comes, each condition with
+  the village's progress, the luxury it likes, its powers, "lives in ..." for a Legendary taken elsewhere and the Mythic
+  line. The hall's list puts Legends first, name and title in gold, with their powers, needs (tick or cross) and any
+  strike in red. "What next?" names a Legend one condition short, villagers chat about Legends and guests, and Legends
+  wear an outfit over their trade's (a gold circlet and wine-red cape until each has its own), sparkle every 10 seconds
+  and have their name in gold over their head. README has a new Legends section.
 - **Legends: rarities, caps and the server's record** (29.3): the server keeps a saved record of every Legend. A Rare
   Legend comes once to each village, a Legendary one once to each world, and a village holds Mythic ones by its rank
   (`mythicLegendCap` in the config file, default Hamlet 0, Village 0, Town 1, City 2). Rare and Legendary arrivals are
   told to the village and the hall's owner, Mythic ones to every player in gold with the village's direction from spawn;
   all go in the chronicle under a nether star. A Legend in a grave or turned zombie keeps their slot and comes back as
   themselves; with no grave their slot frees after 7 days; Legends join a hall placed again.
+- The **Gem Grower** (28.11): sneak-right-click a villager by a stonecutter with an amethyst shard. She picks the full
+  amethyst clusters round budding amethyst (never the budding block); with Cobblemon she plants tumblestones against
+  lava or magma and picks the full clusters, and with Cobblemon 1.8 sets Type Gem Blocks against Deepslate Crystal Cores,
+  picks the stage-3 clusters and makes Blank TMs from shards and glass (up to 8). Beds are data files
+  (`gem_beds/<name>.json`); sneak-right-click her to pick which she keeps. Rock and Steel partners. Config `gemGrowers`.
+- With Cobblemon, the **Habitat Keeper** (28.10): sneak-right-click a villager by a Pasture Block with a honey bottle.
+  She keeps Poké Snacks set out on up to three lure spots (marked with a Field Marker, or grass 16-32 blocks out) and
+  sets out another when one is eaten up; picks a lure (a type or egg group, Alphas on 1.8) and asks the Camp Cook for
+  snacks seasoned with its berries; slathers Saccharine logs with honey and plants Saccharine saplings; and tells the
+  village of shiny, rare and Alpha wild Pokémon (chronicle, the hall's list). Flying and Grass partners. Config
+  `habitatKeepers`, `habitatSightings` (on).
 - **The Steward gives jobs and picks research** (27.9): each morning every grown jobless villager (never a nitwit or a
   child) gets a free workstation for the village's biggest gap: a builder while there's none, a farmer while food is
   short, guards while they're short, a porter at a free Storehouse, a scholar while research is idle, then the nearest
@@ -219,6 +251,8 @@ asks for the steps, `latest.log` and any crash report).
   partners than before.**
 
 ### Fixed
+- Berry Breeders count their Pokémon partners once: two partners make mulching take 70% of the usual time, not 49%,
+  so a partnered breeder stays under the `maxWorkPace` cap like every other worker (B53).
 - A builder whose path leads somewhere it can't actually walk (under a trapdoor flower box, up into a loft) now hops
   there after two seconds standing still instead of five, so a crew's last blocks no longer drag on.
 - **Helpers really speed a build up now**: two builders on one build take about half the time of one, four about a

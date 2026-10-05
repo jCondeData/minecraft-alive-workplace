@@ -114,6 +114,14 @@ public final class Porters {
 			// What's to be sifted stays; what came out of the sieve goes.
 			return io.github.jcondedata.aliveworkplace.sift.SifterWork.isSiftable(stack) ? ALL : 0;
 		}
+		if (job == ModVillagers.GEM_GROWER) {
+			// Her plantings, shards and glass stay (16 of each); the rest of her picking goes to the store.
+			return io.github.jcondedata.aliveworkplace.gem.GemGrowers.keeps(stack);
+		}
+		if (job == ModVillagers.HABITAT_KEEPER) {
+			// Her snacks, honey and saplings stay; the empty bottles from slathering go.
+			return stack.is(Items.GLASS_BOTTLE) ? 0 : ALL;
+		}
 		if (job == ModVillagers.CAMP_COOK) {
 			// The makings stay; of each dish on her menu she keeps what the menu says, and the porter takes the rest to the store.
 			return io.github.jcondedata.aliveworkplace.camp.CampCooks.keeps(stack);

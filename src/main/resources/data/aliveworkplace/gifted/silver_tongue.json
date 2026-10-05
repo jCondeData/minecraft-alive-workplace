@@ -1,0 +1,11 @@
+{
+  "name": "gifted.aliveworkplace.silver_tongue",
+  "description": "gifted.aliveworkplace.silver_tongue.desc",
+  "weight": 10,
+  "effects": [
+    {
+      "type": "trade_discount",
+      "percent": 20
+    }
+  ]
+}

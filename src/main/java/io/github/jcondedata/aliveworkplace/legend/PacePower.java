@@ -35,6 +35,16 @@ public record PacePower(Set<ResourceLocation> trades, int radius, float factor) 
 		return "pace";
 	}
 
+	/** "Every Builder within 32 blocks works 2× as fast", "Every worker in the village works 1.5× as fast". */
+	@Override
+	public net.minecraft.network.chat.Component describe() {
+		net.minecraft.network.chat.Component who = trades.isEmpty() ? net.minecraft.network.chat.Component.translatable("legend.aliveworkplace.power.pace_everyone")
+			: LegendText.trades(trades.stream().sorted().toList());
+		String times = LegendText.number(factor);
+		return radius > 0 ? net.minecraft.network.chat.Component.translatable("legend.aliveworkplace.power.pace", who, radius, times)
+			: net.minecraft.network.chat.Component.translatable("legend.aliveworkplace.power.pace_village", who, times);
+	}
+
 	public boolean covers(ResourceLocation trade) {
 		return trades.isEmpty() || trades.contains(trade);
 	}

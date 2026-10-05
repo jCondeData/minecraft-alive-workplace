@@ -1,0 +1,10 @@
+{
+  "name": "gifted.aliveworkplace.night_owl",
+  "description": "gifted.aliveworkplace.night_owl.desc",
+  "weight": 10,
+  "effects": [
+    {
+      "type": "night_shift"
+    }
+  ]
+}

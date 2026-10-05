@@ -312,6 +312,34 @@ blocks and bring the villager back — job, level, trades and name as they were.
 on the Storehouse's requests board. A villager a zombie turns into a zombie villager leaves no grave (cure them
 instead). The Village Hall counts the graves.
 
+## Legends
+
+Now and then a village that has earned it gains a **Legend**: one named villager, a Master of their trade, with powers
+that change what the village can do. A Rare Legend comes once to each village, a Legendary one once to each world, and
+a Mythic one as often as the villages' ranks allow (a Town holds one, a City two). Legends wear their own outfit over
+their trade's, their name shows in gold over their head, and they give off a soft sparkle every few seconds.
+
+Nothing about them is secret. The Village Hall's **Legends page** (the nether star in the page row) lists the
+village's own Legends first, then every other Legend as a card: its rarity, how it comes ("Visits the inn", "Found at
+a ruined portal"), each thing the village must have with how far it has got ("Kinds of meal in the store: 5 of 8"),
+the luxury it likes, its powers, "lives in Thornholm" for a Legendary already living somewhere else, and the Mythic
+line ("Mythic Legends: 0 of 1, as a Town"). On the hall's list a Legend comes first, "Ada Stonewright, Master
+Architect" in gold, with their rarity, each power on a line and each of their needs (a home of their own, their
+luxury, a happy village) with a tick or a cross; a Legend on strike shows it in red. "What next?" says when a Legend
+lacks only one thing, and villagers chat about their Legends and the Legends who visit.
+
+A settled Legend has needs, checked once a day: **a home of their own** (their bed in a finished tier III building that
+nobody but their spouse also sleeps in), **their luxury** once a week (wine, jewels, books or fine clothes, which they
+take from a chest in their home or else the village store; for now honey bottles, amethyst shards and emeralds, books,
+and leather armour, through the `aliveworkplace:luxury/<kind>` item tags; it lifts their mood 10) and **a happy village**
+(the grown-ups' average mood 60 or more, or wellbeing 60% with moods off). Three days after settling, a need unmet two
+days running starts a **strike**: their powers stop, their trade's work stops, they picket by the Village Hall by day
+with "On strike: a home of my own" over their head in red, and the hall and chronicle say so. The day every need is
+met they go back to work. Legends never leave, strike or not. `legendNeeds` in the config turns needs and strikes off.
+
+`legends` in the config switches them off: none come, and those already settled stay as ordinary Masters of their
+trade. Each Legend that ships adds its paragraph below.
+
 ## All the jobs at a glance
 **Vanilla jobs work as in vanilla**: place their block near a villager without a job and they take it. Most of our jobs
 **share a vanilla block** with a vanilla job, and a jobless villager by it still takes the vanilla job. For one of ours,
@@ -343,6 +371,8 @@ placed keep working, so old worlds are fine.
 | Composter | Composter + bone meal | scraps: seeds, saplings, leaves, crop waste, rotten flesh | nothing |
 | Berry Breeder (with Cobblemon) | Composter + any Cobblemon berry | berries, Growth and Surprise Mulch | sneak-right-click: pick a goal in the berry book (a Field Marker for a plot of her own) |
 | Camp Cook (with Cobblemon) | Campfire Pot (Cobblemon's campfire with a pot on it) + Hearty Grains | the makings of her dishes (Hearty Grains, Vivichoke, apricorns, milk, honey, berries for seasoning) | nothing (a Storehouse's stock orders for the order-only treats) |
+| Habitat Keeper (with Cobblemon) | Pasture Block (Cobblemon's) + a honey bottle | Poké Snacks (or the Camp Cook's), honey bottles, Saccharine saplings | Field Markers for her lure spots (optional) |
+| Gem Grower | Stonecutter + an amethyst shard | tumblestones or Type Gem Blocks to plant (with Cobblemon), glass and shards for Blank TMs (1.8) | sneak-right-click: pick which gem beds she keeps |
 | Netherworker | Cartography Table + netherrack | food (a pickaxe, an axe, a sword, a chestplate, fire resistance) | nothing (a Nether portal within 32 blocks) |
 | Undertaker | Brewing Stand + a golden apple, an enchanted golden apple or a totem | golden apples, healing potions or totems | nothing (graves within 32 blocks) |
 | Innkeeper | Shop Counter + a bed | — | nothing (hire the travellers who come to stay) |
@@ -1006,6 +1036,47 @@ data pack can add or change dishes. She sells Poké Bait and Poké Snacks, then 
 Galette and Big Malasada, and at Master Exp. Candy L; Fire and Normal Pokémon help her, and a Fire partner breathes on
 the campfire while it cooks.
 
+## Gem Growers
+Put a chest by a **stonecutter**, stand a villager beside it and sneak-right-click them with an **amethyst shard**: they
+become a **Gem Grower** (a jobless villager still takes a stonecutter as a Mason, and a clay ball turns a grower back into
+one). Works without Cobblemon. She finds the gem beds within 16 blocks of the stonecutter (a scan of a few thousand
+blocks a tick, remembered) and tends them:
+- **Amethyst.** Budding amethyst: she picks only the full clusters (four shards each, as with a pickaxe) and never
+  breaks the budding block.
+- **Tumblestones** (with Cobblemon). She plants tumblestones, sky tumblestones and black tumblestones from her chest
+  against lava or a magma block, as Cobblemon grows them, and picks the full clusters.
+- **Type Gems** (with Cobblemon 1.8). She sets a type's Gem Block from her chest against a Deepslate Crystal Core and
+  picks the stage-3 clusters that grow on it, keeping the Gem Block. With glass and shards in her chests she also makes
+  Blank TMs at the stonecutter by Cobblemon's own recipe, keeping up to 8.
+
+Sneak-right-click her with an empty hand to pick which beds she keeps; with none picked she keeps every bed she has the
+makings for. The beds are data files (`data/<namespace>/gem_beds/<name>.json`: what's planted, what it grows against,
+which blocks grow and which is ripe), so a data pack can add more. She sells amethyst shards, then tumblestones, and Type
+Gems at Expert (1.8); Rock and Steel Pokémon help her, and a Rock partner taps each ripe cluster loose. Config
+`gemGrowers` (on).
+
+## Habitat Keepers (with Cobblemon)
+Put a chest by one of Cobblemon's **Pasture Blocks**, stand a villager beside it and sneak-right-click them with a
+**honey bottle**: they become a **Habitat Keeper** (a jobless villager never takes your pasture by themselves). She keeps
+the wild Pokémon round her pasture:
+- **Lure spots.** She keeps a Poké Snack set out on up to three spots within 32 blocks, from her chest or a Camp Cook's,
+  and sets out another when the Pokémon have eaten one up. Hand her a Field Marker with a spot marked (one block, or the
+  middle of an area) to choose them; with none marked she uses grass 16 to 32 blocks out. Sneak-right-click her with an
+  empty hand to pick a **lure**: a type or an egg group (the berries Cobblemon's own bait data gives it, such as Occa
+  Berries for Fire), or Alphas with Cobblemon 1.8 (Hopo Berries). She asks the Camp Cook nearby for snacks seasoned
+  with those berries, and sets out the seasoned ones first.
+- **Honey.** She finds the Saccharine logs within 32 blocks (a scan of a few thousand blocks a tick, remembered) and
+  slathers each with a honey bottle from her chest, as you would (a slathered log raises the hidden-ability chance
+  nearby), and again once the honey is gone; the empty bottle goes back. She plants Saccharine saplings from her chest
+  round the lure spots.
+- **Sightings.** Every minute she looks over the wild Pokémon within 48 blocks: a shiny one, a species Cobblemon only
+  spawns as rare or ultra-rare, or an Alpha is told to the players in the village ("Bramble spotted a shiny Eevee
+  north-east of her pasture") and written in the chronicle once; the hall's list shows her last five.
+
+She sells Saccharine saplings and honey, then honeycomb, Poké Snacks at Journeyman, Saccharine logs and a spyglass;
+Flying and Grass Pokémon help her, and a Flying partner circles each new sighting. Config `habitatKeepers` and
+`habitatSightings` (both on).
+
 ## Pokémon Traders (with Cobblemon)
 Stand a villager by a **Shop Counter** and sneak-right-click them with a **Poké Ball**: they become a **Pokémon
 Trader**. Right-click them with an empty hand (sneak to buy Poké Balls and candies instead) to see today's
@@ -1134,6 +1205,8 @@ saves the file and puts the settings into effect in your own worlds (a dedicated
 | `nurseHealingMachine` | true | a nurse at Cobblemon's Healing Machine puts your team in it to heal them (free) and keeps it charged while on shift; off, she heals by hand |
 | `berryBreeders` | true | with Cobblemon, a berry makes a villager at a composter a Berry Breeder, who breeds new berries from the village's own; off, no Berry Breeder job |
 | `campCooks` | true | with Cobblemon, Hearty Grains make a villager at a Campfire Pot a Camp Cook, who cooks Cobblemon dishes in the pot; off, no Camp Cook job |
+| `habitatKeepers` | true | with Cobblemon, a honey bottle makes a villager at a Pasture Block a Habitat Keeper, who sets out Poké Snacks, slathers Saccharine logs and watches the wild Pokémon; off, no Habitat Keeper job |
+| `habitatSightings` | true | Habitat Keepers tell the village of the shiny, rare and Alpha wild Pokémon near their pasture and write them in the chronicle |
 | `seasonDays` | 16 | days in each of the village calendar's four seasons (each season's festival is on its middle day) |
 | `treasuryPerWorker` | 20 | what each worker brings the treasury a day, in hundredths of an emerald, before wellbeing and rank |
 | `villageProtection` | true | a Village Hall's owner may protect the village from other players (shift-click the hall's name tag; off until they do) |

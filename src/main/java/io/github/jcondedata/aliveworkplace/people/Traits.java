@@ -105,12 +105,16 @@ public final class Traits {
 		return has(villager, Trait.STRONG) ? 1.15f : 1f;
 	}
 
-	/** The XP {@code xp} is worth to {@code villager}: a quarter more for clever ones (the fraction by chance). */
+	/**
+	 * The XP {@code xp} is worth to {@code villager}: a quarter more for clever ones, three times as much for a Prodigy
+	 * (a gift, 29.6; with Clever too, still three times). The fraction goes by chance.
+	 */
 	public static int xp(Villager villager, int xp, RandomSource random) {
-		if (xp <= 0 || !has(villager, Trait.CLEVER)) {
+		float gift = io.github.jcondedata.aliveworkplace.legend.Gifted.xpFactor(villager);
+		if (xp <= 0 || gift <= 1f && !has(villager, Trait.CLEVER)) {
 			return xp;
 		}
-		float more = xp * 0.25f;
+		float more = gift > 1f ? xp * (gift - 1f) : xp * 0.25f;
 		int whole = (int) more;
 		return xp + whole + (random.nextFloat() < more - whole ? 1 : 0);
 	}

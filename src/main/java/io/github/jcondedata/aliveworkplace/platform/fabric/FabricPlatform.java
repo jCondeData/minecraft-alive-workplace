@@ -131,6 +131,11 @@ public final class FabricPlatform implements Platform {
 	}
 
 	@Override
+	public void onStartTracking(BiConsumer<Entity, ServerPlayer> action) {
+		net.fabricmc.fabric.api.networking.v1.EntityTrackingEvents.START_TRACKING.register(action::accept);
+	}
+
+	@Override
 	public void onPlayerJoin(Consumer<ServerPlayer> action) {
 		ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> action.accept(handler.getPlayer()));
 	}
@@ -246,6 +251,11 @@ public final class FabricPlatform implements Platform {
 	@Override
 	public PoiType registerPoi(ResourceLocation id, int tickets, int range, Block... blocks) {
 		return PointOfInterestHelper.register(id, tickets, range, blocks);
+	}
+
+	@Override
+	public PoiType registerPoi(ResourceLocation id, int tickets, int range, Iterable<net.minecraft.world.level.block.state.BlockState> states) {
+		return PointOfInterestHelper.register(id, tickets, range, states);
 	}
 
 	@Override

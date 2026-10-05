@@ -84,7 +84,8 @@ public final class Stations {
 		public boolean byItself() {
 			return !ONLY_BY_ITEM.contains(block()) && !block().builtInRegistryHolder().is(ModVillagers.FOSSIL_ANALYZER_BLOCK)
 				&& !block().builtInRegistryHolder().is(ModVillagers.HEALING_MACHINE_BLOCK)
-				&& !block().builtInRegistryHolder().is(ModVillagers.CAMPFIRE_POT_BLOCK);
+				&& !block().builtInRegistryHolder().is(ModVillagers.CAMPFIRE_POT_BLOCK)
+				&& !block().builtInRegistryHolder().is(ModVillagers.PASTURE_BLOCK);
 		}
 	}
 
@@ -114,7 +115,7 @@ public final class Stations {
 	private static final Set<Block> ONLY_BY_ITEM = Set.of(Blocks.CRAFTING_TABLE, Blocks.BEEHIVE, Blocks.JUKEBOX, ModBlocks.MAILBOX);
 	/** The jobs that need Cobblemon (their items are Cobblemon's, or they work with Pokémon). */
 	private static final Set<String> COBBLEMON_JOBS = Set.of("ball_smith", "pokemon_trader", "trainer", "trainer_leader", "tutor",
-		"fossil_scientist", "berry_breeder", "camp_cook");
+		"fossil_scientist", "berry_breeder", "camp_cook", "habitat_keeper");
 
 	private static Predicate<ItemStack> any(Item... items) {
 		Set<Item> set = Set.of(items);
@@ -187,6 +188,10 @@ public final class Stations {
 			job(() -> ModVillagers.CHEF, any(Items.BEEF, Items.PORKCHOP, Items.CHICKEN, Items.MUTTON, Items.RABBIT, Items.COD, Items.SALMON,
 				Items.POTATO)),
 			job(() -> ModVillagers.RANCHER, any(Items.SADDLE, Items.GOLDEN_CARROT)))),
+		// The stonecutter (28.11): a jobless villager still takes it as a Mason; an amethyst shard picks the Gem Grower
+		new Station(is(PoiTypes.MASON), Blocks.STONECUTTER, List.of(
+			job(() -> VillagerProfession.MASON, any(Items.CLAY_BALL)),
+			job(() -> ModVillagers.GEM_GROWER, io.github.jcondedata.aliveworkplace.gem.GemGrowers::isShard))),
 		new Station(is(PoiTypes.WEAPONSMITH), Blocks.GRINDSTONE, List.of(
 			job(() -> VillagerProfession.WEAPONSMITH, any(Items.IRON_INGOT)),
 			job(() -> ModVillagers.GUARD, tag(ItemTags.SWORDS)))),
@@ -216,7 +221,11 @@ public final class Stations {
 		// Cobblemon's Campfire Pot (28.8): Hearty Grains, with Cobblemon and config campCooks on
 		new Station(is(ModVillagers.CAMPFIRE_POT_POI),
 			() -> BuiltInRegistries.BLOCK.getOptional(ModVillagers.CAMPFIRE_POT_BLOCK).orElse(Blocks.AIR), List.of(
-			job(() -> ModVillagers.CAMP_COOK, io.github.jcondedata.aliveworkplace.camp.CampCooks::isGrains)))
+			job(() -> ModVillagers.CAMP_COOK, io.github.jcondedata.aliveworkplace.camp.CampCooks::isGrains))),
+		// Cobblemon's Pasture Block (28.10): a honey bottle, with Cobblemon and config habitatKeepers on
+		new Station(is(ModVillagers.PASTURE_POI),
+			() -> BuiltInRegistries.BLOCK.getOptional(ModVillagers.PASTURE_BLOCK).orElse(Blocks.AIR), List.of(
+			job(() -> ModVillagers.HABITAT_KEEPER, io.github.jcondedata.aliveworkplace.habitat.HabitatKeepers::isHoney)))
 	);
 
 	/**

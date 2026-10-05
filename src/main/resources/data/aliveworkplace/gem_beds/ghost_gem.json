@@ -1,0 +1,14 @@
+{
+  "plant": "cobblemon:ghost_gem_block",
+  "touch": "cobblemon:deepslate_crystal_core",
+  "grows": [
+    "cobblemon:ghost_gem_cluster"
+  ],
+  "ripe": "cobblemon:ghost_gem_cluster[stage=3]",
+  "harvest": "loot",
+  "requires": [
+    "cobblemon",
+    "type_gems"
+  ],
+  "order": 33
+}

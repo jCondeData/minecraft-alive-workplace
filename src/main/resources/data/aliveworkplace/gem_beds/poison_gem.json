@@ -1,0 +1,14 @@
+{
+  "plant": "cobblemon:poison_gem_block",
+  "touch": "cobblemon:deepslate_crystal_core",
+  "grows": [
+    "cobblemon:poison_gem_cluster"
+  ],
+  "ripe": "cobblemon:poison_gem_cluster[stage=3]",
+  "harvest": "loot",
+  "requires": [
+    "cobblemon",
+    "type_gems"
+  ],
+  "order": 27
+}

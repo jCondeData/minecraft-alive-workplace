@@ -118,12 +118,13 @@ stay in the list, ticked, so their numbers stay unique.
 - [x] **B50** (approved auto 2026-10-04) Flaky crew-speed GameTest: on CI run 37224223821 (db2887db, 2026-10-04) a crew of 4 built the stone house in 1966 ticks, 47% of the 4200 alone (limit 42%). Expected <=42%. Recent CI runs measured 29-36%; locally (class alone) passed twice at 39% and 35%, crew of 2 once 57%. Timing varies with villager pathing; the db2887db change (Nurse mixin) does not touch builders. Test: BuilderCrewGameTests.aCrewBuildsInAboutTheTimeOfOneBuilderDividedByItsSize (found by lane-b-1004-1832, 2026-10-04)
 - [ ] **B51** PartnersForgeCompatTests aPidgeyTakesTheAirMailUpAndLandsBackEmptyHanded (28.5) failed once in a local full build (lane-c-1004-1832, main cd957fd + 27.3, 2026-10-04 20:06Z): 'pastured pidgey: 0'; the 27.x changes don't touch pastures or the post. Expected: passes every run. Test: runCompatGameTest a few times or the repeat generator on that test; likely the same family as B48 (found by lane-c-1004-1832, 2026-10-04) (found by lane-c-1004-1832, 2026-10-04)
 - [ ] **B52** PartnersForgeCompatTests aPidgeyTakesTheAirmailUpAndLandsBackEmptyHanded failed once in a local full build (main d002634 + 29.2, 2026-10-04 21:02Z): 'pastured pidgey: 0'; passed on the immediate runCompatGameTest rerun. Expected: passes every run. Test: repeat it 10x. (found by lane-a-1004-1832, 2026-10-04)
-- [ ] **B53** Berry Breeders count Pokémon partners twice: BerryBreederWork.java:414 multiplies BuilderLevels.delay (which already includes Partners via Pace) by Partners.factor again, so a partnered breeder works faster than Pace's cap allows. Expected: one partner bonus, under maxWorkPace. Test: none yet (seen reading the code, 2026-10-04) (found by lane-d-1004-2133, 2026-10-04)
+- [x] **B53** (approved auto 2026-10-05) Berry Breeders count Pokémon partners twice: BerryBreederWork.java:414 multiplies BuilderLevels.delay (which already includes Partners via Pace) by Partners.factor again, so a partnered breeder works faster than Pace's cap allows. Expected: one partner bonus, under maxWorkPace. Test: none yet (seen reading the code, 2026-10-04) (found by lane-d-1004-2133, 2026-10-04)
 - [ ] **B54** BuilderGameTests idleBuildersHelpNearbyBuilds sometimes fails 'the helper should stop once the build is done' in the shared crews batch (split out of B49, whose zombie-house half was fixed in fd9078b; this half is crew logic, not spawning). Expected: passes every run. Test: idleBuildersHelpNearbyBuilds repeated 10x with RepeatNewTests (found by lane-a-1004-2133, 2026-10-05)
 - [ ] **B55** Local full builds can't finish runCompatGameTest in the 7 GB dev container: with the default 1.5 GB heap the compat server fills with the pack's block states and thrashes in full GC until it hangs; with -Xmx3G the OS kills it (exit 137) next to the Gradle daemon (lane-a-1004-2133, 2026-10-04). CI runs compat fine. Expected: a local build finishes (e.g. stop the daemon or lower org.gradle.jvmargs for the compat run, ~2.5 GB server heap). Test: ./gradlew --max-workers=1 runCompatGameTest locally (found by lane-a-1004-2133, 2026-10-05)
 - [ ] **B56** LegendEngineGameTests.legendConditions fails in some full runs (2 of 3 here on 2026-10-05, also seen on clean main with legendPace failing instead): meal_kinds reads 1 of 2 before the test fills the chest, so a store or chest left by another test near its hall counts. Test-only (QA lane): the test should count the store's kinds before it fills it, as its 'finished' check does. (found by lane-d-1005-0032, 2026-10-05) Status (lane-c-1005-0033): legendConditions' cause was a Storehouse chest (bread) left by VillageHallGameTests.villagersEatFromTheStore inside the default 64-block village radius; caa26c8f (27.9) gives that test VillageHalls.RADIUS 18 for its run, so legendConditions passed 731/731 twice and in two full builds; legendPace not looked at.
 - [x] **B55** (approved auto 2026-10-05) Local full builds can't finish runCompatGameTest in the 7 GB dev container: with the default 1.5 GB heap the compat server fills with the pack's block states and thrashes in full GC until it hangs; with -Xmx3G the OS kills it (exit 137) next to the Gradle daemon (lane-a-1004-2133, 2026-10-04). CI runs compat fine. Expected: a local build finishes (e.g. stop the daemon or lower org.gradle.jvmargs for the compat run, ~2.5 GB server heap). Test: ./gradlew --max-workers=1 runCompatGameTest locally (found by lane-a-1004-2133, 2026-10-05)
 - [ ] **B57** PartnersForgeCompatTests aPidgeyBringsAFeatherToTheFletcher failed once in a local full build (lane-c-1005-0033, main 38c54127 + 27.6-27.9 + B55, 2026-10-05 02:10Z): 'no bow for the guard'; it passed in the full build before the merge and in a runCompatGameTest rerun right after (117/117). Expected: passes every run. Test: the repeat generator on that test; likely the same family as B48/B51 (found by lane-c-1005-0033, 2026-10-05)
+- [ ] **B58** LegendEngineGameTests.legendPace failed with 'capped delay: 500' in a filtered runGameTest (5 classes) on 2026-10-05 but passed in every full run: looks order-dependent (leftover state from another test). Expected: passes in any order. Test: LegendEngineGameTests.legendPace (QA lane: test-only flake) (found by lane-a-1005-0032, 2026-10-05)
 
 ## Milestone 21: Finish 0.138.0
 
@@ -1047,7 +1048,7 @@ here adds a new kind of speed bonus (the new jobs get the partners' existing one
     harvest with a mutation gives Lum and the book marks it found; the chain to Sitrus (Lum + Figy) is planned from Oran,
     Cheri and Figy;
   - showcase scene `berry_breeder` (the book page, the paired plot).
-- [ ] **28.10** **The Habitat Keeper.** Stand a villager by a Pasture Block (POI when Cobblemon registers
+- [x] **28.10** (review: pending 2026-10-04) **The Habitat Keeper.** Stand a villager by a Pasture Block (POI when Cobblemon registers
   `cobblemon:pasture`; never taken by a jobless villager) and sneak-right-click them with a honey bottle. Config
   `habitatKeepers` (true), `habitatSightings` (true).
   - Lure spots: up to 3 Poké Snacks kept set out within 32 blocks of the pasture, on spots marked with a Field Marker
@@ -1069,7 +1070,7 @@ here adds a new kind of speed bonus (the new jobs get the partners' existing one
   - compat GameTests: a snack set on a marked spot and set out again after it's used up; a Saccharine log slathered; a
     shiny wild Pokémon placed nearby is announced and written in the chronicle once, not every minute;
   - showcase scene `habitat_keeper` (a snack spot, the slathered log, the sighting in chat).
-- [ ] **28.11** **The Gem Grower.** Stand a villager by a stonecutter and sneak-right-click them with an amethyst shard
+- [x] **28.11** (review: pending 2026-10-05) **The Gem Grower.** Stand a villager by a stonecutter and sneak-right-click them with an amethyst shard
   (masons keep the stonecutter's own job). Works without Cobblemon too. Config `gemGrowers` (true).
   - Gem beds are data: `data/aliveworkplace/gem_beds/<name>.json` holds what's planted (an item, or nothing), what it
     must touch (a block or tag), which blocks grow and which state is ripe, and the harvest (the block's own loot). Beds
@@ -1374,7 +1375,7 @@ MarketDays) and research/.
   - a `pace` power makes a builder within its radius faster and one outside it not, never past the shared cap; a
     `mood` power shows as a reason in the villager's mood;
   - with `legends` off no Legend loads, nothing ticks and the command says so.
-- [x] **29.3** (review: pending 2026-10-04) **Rarities, caps and the server's record of Legends.** `legend/LegendRecord`, saved data on the
+- [x] **29.3** (approved 2026-10-05) **Rarities, caps and the server's record of Legends.** `legend/LegendRecord`, saved data on the
   overworld (`aliveworkplace_legends`), lists every Legend that has settled anywhere on the server: id, villager UUID,
   dimension, hall, rarity, the day they settled and the day they fell. `Legends.canCome(level, hall, legend)` is asked
   before any arrival:
@@ -1397,7 +1398,7 @@ MarketDays) and research/.
     the Legend again; a slot frees 7 days after a death with no grave; the record survives a reload;
   - a Mythic announcement reaches a player 5,000 blocks away and a Rare one doesn't; showcase scene `legend_announce`
     (the message in chat, the chronicle line).
-- [ ] **29.4** **Legends on the hall, and how they look.**
+- [x] **29.4** (review: pending 2026-10-05) **Legends on the hall, and how they look.**
   - The hall's list (`VillageHallScreen`) puts Legends first: name and title in gold ("Ada Stonewright, Master
     Architect"), rarity, each power on a line, each need with a tick or a cross, a strike in red. A Gifted villager's
     trait shows in gold under their traits.
@@ -1417,7 +1418,7 @@ MarketDays) and research/.
   Done when: GameTests check the page's cards (each condition's progress, the taken and Mythic lines) against staged
   villages; screenshots show a test Legend in a placeholder outfit (pixel-art skill) and the page at GUI scales 2 and
   4; showcase scene `legends_hall`.
-- [ ] **29.5** **Needs and strikes.** Each settled Legend's needs are checked once a day in the hall's round:
+- [x] **29.5** (review: pending 2026-10-05) **Needs and strikes.** Each settled Legend's needs are checked once a day in the hall's round:
   - **a home of their own**: their bed is in a finished building of tier III or higher (`Homes.at`), and nobody else's
     bed is in it but their spouse's (`Couples`);
   - **a liked luxury**: once every 7 days they take one item of their kind from a chest in their home, else the
@@ -1437,7 +1438,7 @@ MarketDays) and research/.
   - unmet two days: a strike, during which the Legend's `pace` power is gone and their trade's work stops; met again:
     back at work that day; a Legend on strike for 20 days is still in the village;
   - a screenshot and a GIF of a Legend picketing at the hall under the red line; showcase scene `legend_strike`.
-- [ ] **29.6** **Gifted villagers (1): the engine, Prodigy, Iron Will, Silver Tongue and Night Owl.** Gifted traits
+- [x] **29.6** (review: pending 2026-10-05) **Gifted villagers (1): the engine, Prodigy, Iron Will, Silver Tongue and Night Owl.** Gifted traits
   are data: `data/aliveworkplace/gifted/<id>.json` holds a weight and effects from the shared toolbox, with lang keys
   for the name and description. About one villager in 30 is Gifted (config `giftedChance`, 30; 0 turns them off),
   rolled from the UUID as `Traits.of` does, so every existing villager has theirs with nothing to migrate; the
@@ -1803,7 +1804,7 @@ the Village Hall (`VillageNeeds`, `VillageQuests`, `VillageRanks`, `Festivals`, 
 
   Done when: the note is on `main` and its review package is sent.
   - [ ] **30.1a** Change from the owner (2026-10-05): Reforming an edict must cost far more, hundreds of items, so the grind is worth it: e.g. instead of 4 clocks, 8 gold ingots, 32 bread, something like 24 clocks, 2 stacks of gold ingots and 300 bread. Most players get the small amounts quickly, so scale the reform costs up a lot in the design note and the edict data files.
-- [x] **30.2** (review: pending 2026-10-04) **One pace, one cap.** A core `work/Pace` that every job's work speed goes through (if another
+- [x] **30.2** (approved 2026-10-05) **One pace, one cap.** A core `work/Pace` that every job's work speed goes through (if another
   milestone built it first, check it covers this list and add what's missing):
   - bonuses: Pokémon partners, a well-kept village, Swift Hands, Diligent, a happy mood, Craftsmanship (crafters),
     Expeditions (explorers, netherworkers), and later this milestone's edicts, Work Horn, tonics and guilds, each
@@ -1825,7 +1826,7 @@ the Village Hall (`VillageNeeds`, `VillageQuests`, `VillageRanks`, `Festivals`, 
     or `Partners.factor` today gets its pace from `Pace` (a test per job family: builder, miner, crafter, explorer,
     teacher, scholar, rancher);
   - showcase scene `pace`: a capped builder's status line (its check: the line says "at the cap").
-- [x] **30.3** (review: pending 2026-10-04) **Edicts, and Long Shifts.** The engine and the first edict:
+- [x] **30.3** (approved 2026-10-05) **Edicts, and Long Shifts.** The engine and the first edict:
   - `hall/Edicts` loads `data/aliveworkplace/edicts/*.json` (a reload listener through `Platform`); a data pack can
     add edicts or switch ours off (`"enabled": false`); ours take their texts from the lang file, a data pack's may
     give plain text;
@@ -1848,7 +1849,7 @@ the Village Hall (`VillageNeeds`, `VillageQuests`, `VillageRanks`, `Festivals`, 
     and their mood 10 lower, with the reason listed;
   - an edict from a test data pack loads and works, and `"enabled": false` hides Long Shifts;
   - showcase scene `long_shifts`: the hall's list with the "long shifts" mood, and the chronicle line.
-- [x] **30.4** (review: pending 2026-10-04) **The Book of Edicts page.** The page players use, in the hall's screen and the Village Ledger:
+- [x] **30.4** (approved 2026-10-05) **The Book of Edicts page.** The page players use, in the hall's screen and the Village Ledger:
   - the hall's screen: the people list's page arrows move to the list's bottom corners (slots 45 and 53, 34 people a
     page), which frees slot 9 for the Book of Edicts (a lectern icon) and leaves slot 17 for another milestone's page;
   - the Village Ledger: sneak-right-click the air opens the Book straight away (its tooltip says so);
@@ -1863,7 +1864,8 @@ the Village Hall (`VillageNeeds`, `VillageQuests`, `VillageRanks`, `Festivals`, 
   Done when: GameTests through `ChoiceMenu.forTest`: proclaiming and lifting by clicks, the locked slots, a stranger's
   click refused, the Ledger's sneak-use opening the page, the people list paging at 34; showcase scene `edicts`: the
   Book with Long Shifts in force, at GUI scales 2 and 4.
-- [x] **30.5** (review: pending 2026-10-05) **Reforms, and The Shift Bell.** While an edict is in force and not reformed, the hall keeps its
+  - [ ] **30.4a** Change from the owner (2026-10-05): The Village Hall's screen should be a custom UI like vanilla's workstation screens (furnace, enchanting table, crafting table): its own drawn background, panels and buttons for the hall's pages (edicts, quests, treasury, ledger), instead of a plain chest-style grid of items like a multiplayer server menu. Do this for the whole hall screen, not just the Book of Edicts page: design it with the pixel-art skill, keep every existing feature, check at GUI scales 2 to 4, and show it in the hall scenes.
+- [x] **30.5** (approved 2026-10-05) **Reforms, and The Shift Bell.** While an edict is in force and not reformed, the hall keeps its
   reform's next step on the quest page (extra to the three daily quests, in the row below them, with a book-and-quill
   icon; it never expires). The next step goes up the morning after the last was done, so a reform takes three days at
   least. Steps use the quest kinds there are (bring, clear out monsters, beat a trainer), with a `fallback` step for a
@@ -4279,6 +4281,26 @@ item waits.
 - (Sessions: anything that needs the owner, and the link to the latest Full test report. Handoffs go here through
   `sessions.py handoff "<in progress, next, traps>" --as <you>`, which keeps one per kind of session (chat, night):
   carry over anything still true from the previous one.)
+- 2026-10-05 (29.5, decisions; lane a): needs are checked in the hall's round on its first round of each `Chronicle.day`
+  (saved as `LegendData.checked`, default -1), and on every round while a Legend is on strike, so they go back to work
+  within half a minute of the last need being met. The 3-day grace only holds a strike off: days unmet are still counted
+  (and shown as crosses), so a need unmet since settling starts the strike on the first day after the grace. Home: no
+  bed of anyone else in the village (by their HOME memory) may be in the building's box but a married spouse's (a
+  sweetheart still courting doesn't count). The luxury is due 7 days after the last one; taken, it gives "enjoying their
+  wine" +10 mood for those 7 days. The picket is the first behaviour of every trade's WORK package (added where the
+  villager's brain takes it, `VillagerMixin`); the rest of the package is held (`work/Gated`) while they strike; Legends with no workstation (`aliveworkplace:legend`) have no WORK
+  activity, so they picket in IDLE. The red line is the worker status line over the head (`WorkerStatus`), with "No work
+  till then" under it. `legendNeeds` off: the round checks nothing and clears strikes and days unmet. Question for the
+  owner: "the hall's call-home passes them by" is built as written (Call everyone home doesn't bring a Legend back);
+  if it should instead always bring them home, it's one line in `VillageHalls.recall`.
+- 2026-10-05 (29.4, decision; lane a): two parts of 29.4 lean on items not built yet. (1) No Gifted villagers exist
+  until 29.6, so the gold gift line under a villager's traits on the hall's list is left to 29.6 (it goes in
+  `VillageHallScreen.person` beside the traits line). (2) Needs aren't checked until 29.5: the hall and the Legends page
+  read each need's tick or cross from `LegendData.unmet` (keys `home`, `luxury`, `happy`, `LegendText.HOME` and so on;
+  more than 0 days unmet shows a cross) and the strike from `strikeSince`, so 29.5 only has to write them. Until then
+  every need shows a tick. A Legend's outfit is `textures/entity/villager/legend/<id>.png` (or the file's `outfit`);
+  one that isn't there falls back to `legend/placeholder.png` (a gold circlet and a wine-red cape), never the magenta
+  check. Each power's line is `legend.<ns>.power.<type>` unless the power overrides `Power.describe`.
 - 2026-10-04 (27.9, decisions; lane c): 27.11 isn't built, so a job the village wants with no free block left goes to
   `StewardJobs.WORKPLACE_WANTED` (does nothing yet; called once a morning per job): 27.11 fills it to propose the
   building. `StewardJobs.BUILDING_JOBS` (Berry Farm: Orchard Keeper, Flower Shop: Florist, ...) says which job a shared
@@ -4304,6 +4326,14 @@ item waits.
   build sites going up as dashed white outlines; `CityPlans.Outline` has a `proposal` flag (drawn dashed yellow) for
   27.8 to fill in `CityPlans.screen`. Undo keeps the last 10 changes per hall on the server (not saved), shared by
   everyone editing that plan, so an undo always matches what the hall holds.
+- 2026-10-04 (28.10, decisions; lane b): a lure spot is the middle of the area on a Field Marker handed to her (one
+  block marked: that block), up to three, the oldest given up for a fourth; the marker stays with the player. Lures are
+  read from Cobblemon's `spawn_bait_effects` (`cobblemon:typing` and `cobblemon:egg_group` effects: 18 types, 13 egg
+  groups on 1.7.3), Alphas only when `PokemonFeatures.ALPHAS` (Hopo by id). The Camp Cook asked for a lure seasons the
+  keeper's snacks with those berries only and counts only the snacks seasoned so; the keeper sets out a seasoned one
+  first, else any snack. "Rare" means every world spawn of the species is in the rare or ultra-rare bucket (147 species
+  in the compat pack). Alphas are recognised by the Pokémon's `alpha` aspect: not yet checked against 1.8.1 (the compat run
+  used 1.7.3). The hall's list is each villager's tooltip on the People page: her last five sightings go there.
 - 2026-10-04 (28.8, decisions; lane b): `asked` dishes in the camp menu name the jobs that ask in `for`; the cook keeps
   their `keep` while a villager of one of those jobs is within 48 blocks of the pot (fishermen for Poké Bait; the Poké
   Snack line names `aliveworkplace:habitat_keeper`, so it starts working when 28.10 registers that job; seasoning comes

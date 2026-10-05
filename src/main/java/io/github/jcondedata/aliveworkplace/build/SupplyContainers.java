@@ -39,6 +39,27 @@ public final class SupplyContainers {
 			&& STORES.isStore(level, be.getBlockPos()));
 	}
 
+	/** Storage inside {@code box} (a building: a Legend's home chests, ROADMAP 29.5), the same kinds {@link #find} lists. */
+	public static List<BlockPos> inside(ServerLevel level, BoundingBox box) {
+		List<BlockPos> found = new ArrayList<>();
+		for (int cx = SectionPos.blockToSectionCoord(box.minX()); cx <= SectionPos.blockToSectionCoord(box.maxX()); cx++) {
+			for (int cz = SectionPos.blockToSectionCoord(box.minZ()); cz <= SectionPos.blockToSectionCoord(box.maxZ()); cz++) {
+				if (!level.hasChunk(cx, cz)) {
+					continue;
+				}
+				for (BlockEntity be : level.getChunk(cx, cz).getBlockEntities().values()) {
+					if (box.isInside(be.getBlockPos()) && !(be instanceof io.github.jcondedata.aliveworkplace.work.PrivateContainer)
+						&& !(be instanceof net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity) && !isMachine(be)
+						&& !ModdedBlocks.isStorageNetwork(be.getBlockState().getBlock()) && STORES.isStore(level, be.getBlockPos())
+						&& !otherHalfFound(be, found)) {
+						found.add(be.getBlockPos().immutable());
+					}
+				}
+			}
+		}
+		return found;
+	}
+
 	/**
 	 * Blocks that hold items for their own work, not as storage: a brewing stand's bottles, a jukebox's disc, a lectern's
 	 * book, a crafter's grid.

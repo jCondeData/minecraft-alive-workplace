@@ -139,6 +139,7 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 				hall.setChanged();
 			});
 			Conscription.round(server, pos, hall);
+			Cradles.round(server, pos, VillageNeeds.CHECK_EVERY);
 			if (VillageGrowth.grow(server, pos, hall.needs, hall.lastBirth) != null) {
 				hall.lastBirth = level.getGameTime();
 				hall.births++;

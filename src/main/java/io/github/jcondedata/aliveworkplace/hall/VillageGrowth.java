@@ -35,9 +35,9 @@ public final class VillageGrowth {
 	/** A village stops growing at this many villagers (0: never grows). */
 	public static int CAP = 40;
 
-	/** Game time between two births in the village of the hall at {@code hall}: {@link #EVERY} over its babies a day (Large Families: 2). */
+	/** Game time between two births in the village of the hall at {@code hall}: {@link #EVERY} over its babies a day (Large Families: 2; a Cradle one more). */
 	public static long every(ServerLevel level, BlockPos hall) {
-		return EVERY / Math.max(1, CivicEffects.of(level, hall).birthsPerDay());
+		return EVERY / Math.max(1, CivicEffects.of(level, hall).birthsPerDay() + Cradles.extraBirths(level, hall));
 	}
 
 	/** Meals the store of the village round {@code hall} must hold before a baby is on the way (Large Families: 24). */

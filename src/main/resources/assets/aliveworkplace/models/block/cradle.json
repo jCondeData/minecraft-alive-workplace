@@ -1,0 +1,417 @@
+{
+  "parent": "minecraft:block/block",
+  "ambientocclusion": false,
+  "textures": {
+    "particle": "aliveworkplace:block/cradle_wood",
+    "wood": "aliveworkplace:block/cradle_wood",
+    "end": "aliveworkplace:block/cradle_end",
+    "rocker": "aliveworkplace:block/cradle_rocker",
+    "blanket": "aliveworkplace:block/cradle_blanket"
+  },
+  "elements": [
+    {
+      "from": [
+        3,
+        0,
+        4
+      ],
+      "to": [
+        5,
+        1,
+        12
+      ],
+      "faces": {
+        "north": {
+          "texture": "#rocker"
+        },
+        "south": {
+          "texture": "#rocker"
+        },
+        "east": {
+          "texture": "#rocker"
+        },
+        "west": {
+          "texture": "#rocker"
+        },
+        "up": {
+          "texture": "#rocker"
+        },
+        "down": {
+          "texture": "#rocker",
+          "cullface": "down"
+        }
+      },
+      "name": "rocker foot"
+    },
+    {
+      "from": [
+        3,
+        1,
+        1
+      ],
+      "to": [
+        5,
+        2,
+        15
+      ],
+      "faces": {
+        "north": {
+          "texture": "#rocker"
+        },
+        "south": {
+          "texture": "#rocker"
+        },
+        "east": {
+          "texture": "#rocker"
+        },
+        "west": {
+          "texture": "#rocker"
+        },
+        "up": {
+          "texture": "#rocker"
+        },
+        "down": {
+          "texture": "#rocker"
+        }
+      },
+      "name": "rocker"
+    },
+    {
+      "from": [
+        3,
+        2,
+        3
+      ],
+      "to": [
+        5,
+        3,
+        13
+      ],
+      "faces": {
+        "north": {
+          "texture": "#rocker"
+        },
+        "south": {
+          "texture": "#rocker"
+        },
+        "east": {
+          "texture": "#rocker"
+        },
+        "west": {
+          "texture": "#rocker"
+        },
+        "up": {
+          "texture": "#rocker"
+        },
+        "down": {
+          "texture": "#rocker"
+        }
+      },
+      "name": "rocker post"
+    },
+    {
+      "from": [
+        11,
+        0,
+        4
+      ],
+      "to": [
+        13,
+        1,
+        12
+      ],
+      "faces": {
+        "north": {
+          "texture": "#rocker"
+        },
+        "south": {
+          "texture": "#rocker"
+        },
+        "east": {
+          "texture": "#rocker"
+        },
+        "west": {
+          "texture": "#rocker"
+        },
+        "up": {
+          "texture": "#rocker"
+        },
+        "down": {
+          "texture": "#rocker",
+          "cullface": "down"
+        }
+      },
+      "name": "rocker foot"
+    },
+    {
+      "from": [
+        11,
+        1,
+        1
+      ],
+      "to": [
+        13,
+        2,
+        15
+      ],
+      "faces": {
+        "north": {
+          "texture": "#rocker"
+        },
+        "south": {
+          "texture": "#rocker"
+        },
+        "east": {
+          "texture": "#rocker"
+        },
+        "west": {
+          "texture": "#rocker"
+        },
+        "up": {
+          "texture": "#rocker"
+        },
+        "down": {
+          "texture": "#rocker"
+        }
+      },
+      "name": "rocker"
+    },
+    {
+      "from": [
+        11,
+        2,
+        3
+      ],
+      "to": [
+        13,
+        3,
+        13
+      ],
+      "faces": {
+        "north": {
+          "texture": "#rocker"
+        },
+        "south": {
+          "texture": "#rocker"
+        },
+        "east": {
+          "texture": "#rocker"
+        },
+        "west": {
+          "texture": "#rocker"
+        },
+        "up": {
+          "texture": "#rocker"
+        },
+        "down": {
+          "texture": "#rocker"
+        }
+      },
+      "name": "rocker post"
+    },
+    {
+      "from": [
+        2,
+        3,
+        3
+      ],
+      "to": [
+        14,
+        4,
+        13
+      ],
+      "faces": {
+        "north": {
+          "texture": "#wood"
+        },
+        "south": {
+          "texture": "#wood"
+        },
+        "east": {
+          "texture": "#wood"
+        },
+        "west": {
+          "texture": "#wood"
+        },
+        "up": {
+          "texture": "#wood"
+        },
+        "down": {
+          "texture": "#wood"
+        }
+      },
+      "name": "floor"
+    },
+    {
+      "from": [
+        3,
+        3,
+        3
+      ],
+      "to": [
+        13,
+        9,
+        4
+      ],
+      "faces": {
+        "north": {
+          "texture": "#wood"
+        },
+        "south": {
+          "texture": "#wood"
+        },
+        "east": {
+          "texture": "#wood"
+        },
+        "west": {
+          "texture": "#wood"
+        },
+        "up": {
+          "texture": "#wood"
+        },
+        "down": {
+          "texture": "#wood"
+        }
+      },
+      "name": "north side"
+    },
+    {
+      "from": [
+        3,
+        3,
+        12
+      ],
+      "to": [
+        13,
+        9,
+        13
+      ],
+      "faces": {
+        "north": {
+          "texture": "#wood"
+        },
+        "south": {
+          "texture": "#wood"
+        },
+        "east": {
+          "texture": "#wood"
+        },
+        "west": {
+          "texture": "#wood"
+        },
+        "up": {
+          "texture": "#wood"
+        },
+        "down": {
+          "texture": "#wood"
+        }
+      },
+      "name": "south side"
+    },
+    {
+      "from": [
+        2,
+        3,
+        3
+      ],
+      "to": [
+        3,
+        12,
+        13
+      ],
+      "faces": {
+        "north": {
+          "texture": "#wood"
+        },
+        "south": {
+          "texture": "#wood"
+        },
+        "east": {
+          "texture": "#end"
+        },
+        "west": {
+          "texture": "#end"
+        },
+        "up": {
+          "texture": "#wood"
+        },
+        "down": {
+          "texture": "#wood"
+        }
+      },
+      "name": "headboard"
+    },
+    {
+      "from": [
+        13,
+        3,
+        3
+      ],
+      "to": [
+        14,
+        10,
+        13
+      ],
+      "faces": {
+        "north": {
+          "texture": "#wood"
+        },
+        "south": {
+          "texture": "#wood"
+        },
+        "east": {
+          "texture": "#end"
+        },
+        "west": {
+          "texture": "#end"
+        },
+        "up": {
+          "texture": "#wood"
+        },
+        "down": {
+          "texture": "#wood"
+        }
+      },
+      "name": "footboard"
+    },
+    {
+      "from": [
+        3,
+        4,
+        4
+      ],
+      "to": [
+        13,
+        7,
+        12
+      ],
+      "faces": {
+        "north": {
+          "texture": "#blanket"
+        },
+        "south": {
+          "texture": "#blanket"
+        },
+        "east": {
+          "texture": "#blanket"
+        },
+        "west": {
+          "texture": "#blanket"
+        },
+        "up": {
+          "texture": "#blanket",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#blanket"
+        }
+      },
+      "name": "blanket"
+    }
+  ]
+}

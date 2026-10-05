@@ -2468,5 +2468,13 @@
   "message.aliveworkplace.steward.desk.outcome.researching": "The scholars are already researching something",
   "message.aliveworkplace.steward.research.chosen": "In %2$s, %1$s set the scholars on %3$s",
   "chronicle.aliveworkplace.plans_jobs": "%1$s gave out work: %2$s",
-  "chronicle.aliveworkplace.plans_research": "%1$s set the scholars on %2$s"
+  "chronicle.aliveworkplace.plans_research": "%1$s set the scholars on %2$s",
+  "block.aliveworkplace.cradle": "Cradle",
+  "entity.aliveworkplace.cradle_seat": "Cradle",
+  "screen.aliveworkplace.hall.cradle.yes": "A Cradle near a bed: children grow up twice as fast, one more baby a day",
+  "screen.aliveworkplace.hall.cradle.no": "No Cradle near a bed (a Cradle: children grow up twice as fast, one more baby a day)",
+  "screen.aliveworkplace.hall.cradle.off": "Cradles are off in the config",
+  "screen.aliveworkplace.edicts.cradle": "The Cradle",
+  "aliveworkplace.config.cradles": "Cradles",
+  "aliveworkplace.config.cradles.tooltip": "A Cradle within 4 blocks of a bed in a village with a hall: its children grow up twice as fast, one more baby a day may be born, and a child sleeps in it at night. Off: cradles are furniture."
 }

@@ -1968,7 +1968,7 @@ the Village Hall (`VillageNeeds`, `VillageQuests`, `VillageRanks`, `Festivals`, 
   Shifts and partners the total stops at the cap; a stranger's horn does nothing in an owned village; the icon passes
   `lint.py`; showcase scene `work_horn`: a GIF of builders before and during a rush (its check: more blocks placed a
   minute during the rush).
-- [ ] **30.12** **The Cradle.** A block of its own (pixel-art textures and a model: a wooden cradle on rockers with a
+- [x] **30.12** (review: pending 2026-10-05) **The Cradle.** A block of its own (pixel-art textures and a model: a wooden cradle on rockers with a
   wool blanket), crafted from planks, sticks and white wool; a point of interest, so the hall finds it without
   scanning. A Cradle within 4 blocks of a bed in a village with a hall makes it a nursery village: every child there
   grows up in half the time (each hall round ages the children by the round's length again), and one more baby a day

@@ -95,6 +95,7 @@
 			"io.github.jcondedata.aliveworkplace.test.CurfewGameTests",
 			"io.github.jcondedata.aliveworkplace.test.ConscriptionGameTests",
 			"io.github.jcondedata.aliveworkplace.test.WorkHornGameTests",
+			"io.github.jcondedata.aliveworkplace.test.CradleGameTests",
 			"io.github.jcondedata.aliveworkplace.test.TreasuryEdictGameTests",
 			"io.github.jcondedata.aliveworkplace.test.CampGameTests",
 			"io.github.jcondedata.aliveworkplace.test.RaidGameTests",

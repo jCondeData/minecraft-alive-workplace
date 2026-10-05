@@ -176,7 +176,8 @@ public final class VillageHallScreen {
 				Math.round(VillageGrowth.WELLBEING_NEEDED * 100), VillageRanks.growthCap(VillageRanks.of(level, hall))), growth == VillageGrowth.Blocker.NONE ? ChatFormatting.GREEN : ChatFormatting.YELLOW)), null);
 		menu.button(BEDS, icon(Items.RED_BED, Component.translatable("screen.aliveworkplace.hall.beds", census.beds()), ChatFormatting.WHITE,
 			line(Component.translatable("screen.aliveworkplace.hall.free_beds", census.freeBeds()),
-				census.freeBeds() > 0 ? ChatFormatting.GREEN : ChatFormatting.YELLOW)), null);
+				census.freeBeds() > 0 ? ChatFormatting.GREEN : ChatFormatting.YELLOW),
+			Cradles.status(level, hall)), null);
 		int kinds = VillageHalls.mealKinds(level, hall);
 		menu.button(FOOD, icon(Items.BREAD, Component.translatable("screen.aliveworkplace.hall.food", census.food()), ChatFormatting.WHITE,
 			line("screen.aliveworkplace.hall.food_where", ChatFormatting.GRAY),

@@ -306,6 +306,11 @@ SCENES = [
       "the hall's owner blew the Work Horn and the two builders placed more blocks a minute during the rush than before it", 75,
       [("01_work_horn_before", "Two builders at their usual pace"), ("02_work_horn_blown", "The Work Horn blown"),
        ("03_work_horn_rush", "The rush: 50% faster, sparks over the builders"), ("04_work_horn_book", "Used today, on the Book of Edicts' last row")]),
+    # The Cradle (ROADMAP 30.12): a child asleep in a cradle at night, then a time-lapse of a newborn growing up
+    S("cradle", "Village Hall", "The Cradle: a nursery village",
+      "a child slept seated in the cradle at night, and a newborn was still a child half-way and grew up within 12000 ticks in the nursery village", 45,
+      [("01_cradle_night", "A child asleep in the cradle at night"), ("02_cradle_newborn", "Morning: a newborn"),
+       ("03_cradle_growing", "Half-way: 6000 ticks"), ("04_cradle_grown", "Grown up in half the time (12000 ticks)")]),
     S("hall_quests", "Village Hall", "Quests, advice, the village map and the festival",
       "the quests, advice, village map, mercenaries and festival opened", 60,
       [("01_hall_quests", "Quests"), ("02_hall_advice", "What next?"), ("03_hall_map", "Village map"),

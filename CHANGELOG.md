@@ -16,6 +16,14 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+### Changed
+- **Expansions still being built are off until the release that finishes them** (B76): 0.139.0 switched on parts of
+  1.1 to 1.4 that aren't done yet. The Steward (1.1); partner shows, the nurse at the Healing Machine and the Berry
+  Breeder, Camp Cook, Habitat Keeper, Daycare Keeper and Gem Grower jobs (1.2); Legends, the Gifted and strange moods
+  (1.3); and edicts, the Work Horn, Village Banners, Cradles, Harvest Idols and tonics (1.4) now stay off, even in a
+  config file 0.139.0 wrote with them on, and their switches leave the settings screen until then. Nothing saved is
+  lost: a Steward, a Legend or an edict comes back as it was when its expansion is released.
+
 ## 0.139.0 — 2026-10-05
 
 ### Added

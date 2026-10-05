@@ -1,0 +1,9 @@
+{
+  "name": "Test Bards' Guild",
+  "perk": "Bards work a tenth faster.",
+  "icon": "minecraft:jukebox",
+  "trades": ["aliveworkplace:bard"],
+  "perks": [
+    {"type": "aliveworkplace:work_pace", "percent": 10}
+  ]
+}

@@ -83,6 +83,14 @@ public final class Research {
 			return new Cost(16 * lvl, 2 * (lvl - 1) + (this == ARCHITECTURE || this == LORE ? 4 : 0), 4 * lvl);
 		}
 
+		/** What level {@code lvl} costs in {@code hall}'s village: a quarter less with a founded Scholars' Guild (30.19). */
+		public Cost cost(int lvl, ServerLevel level, @Nullable VillageHallBlockEntity hall) {
+			Cost usual = cost(lvl);
+			return new Cost(io.github.jcondedata.aliveworkplace.hall.Guilds.researchCost(level, hall, usual.paper()),
+				io.github.jcondedata.aliveworkplace.hall.Guilds.researchCost(level, hall, usual.books()),
+				io.github.jcondedata.aliveworkplace.hall.Guilds.researchCost(level, hall, usual.emeralds()));
+		}
+
 		/** The topics (and levels) that must be done first. */
 		public Map<Topic, Integer> needs() {
 			return switch (this) {

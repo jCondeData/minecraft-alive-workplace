@@ -291,11 +291,11 @@ public class PorterWork extends Behavior<Villager> {
 	}
 
 	/** Stacks this porter carries in one trip. */
-	static int capacity(Villager villager) {
+	public static int capacity(Villager villager) {
 		int stacks = BASE_STACKS + STACKS_PER_LEVEL * (BuilderLevels.level(villager) - 1)
 			+ STACKS_PER_PARTNER * Math.min(Partners.max(villager), Partners.helpers(villager).size())
 			+ 3 * io.github.jcondedata.aliveworkplace.research.Research.level(villager, io.github.jcondedata.aliveworkplace.research.Research.Topic.LOGISTICS);
-		return Math.min(BuilderBag.SLOTS, stacks);
+		return Math.min(BuilderBag.SLOTS, io.github.jcondedata.aliveworkplace.hall.Guilds.carry(villager, stacks)); // the Merchants' Guild: 3 more (30.20)
 	}
 
 	private void status(Villager villager, Phase phase, @Nullable VillagerProfession from) {

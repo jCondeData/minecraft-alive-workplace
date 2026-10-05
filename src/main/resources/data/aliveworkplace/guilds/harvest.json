@@ -1,0 +1,28 @@
+{
+  "name": {
+    "translate": "guild.aliveworkplace.harvest"
+  },
+  "perk": {
+    "translate": "guild.aliveworkplace.harvest.perk"
+  },
+  "icon": "minecraft:wheat",
+  "trades": [
+    "minecraft:farmer",
+    "aliveworkplace:orchard_keeper",
+    "aliveworkplace:florist",
+    "aliveworkplace:beekeeper",
+    "aliveworkplace:composter",
+    "aliveworkplace:chef"
+  ],
+  "perks": [
+    {
+      "type": "aliveworkplace:work_pace",
+      "percent": 15
+    },
+    {
+      "type": "aliveworkplace:work_reach",
+      "blocks": 8
+    }
+  ],
+  "enabled": true
+}

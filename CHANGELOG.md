@@ -45,6 +45,20 @@ asks for the steps, `latest.log` and any crash report).
   back a third of the durability, not a quarter (Armorers, Toolsmiths, Weaponsmiths, Tinkerers, Ball Smiths); axes and
   fishing rods wear half as fast (Lumberjacks, Fletchers, Fishermen). New guild perks for packs: `tool_wear` and
   `mend_per_unit`.
+- **The Harvest, Herders' and Scholars' Guilds** (30.19): members work 15% faster once founded. The village's own farms
+  and the Orchard Keepers' rounds reach 24 blocks from the composter or basket, not 16 (Farmers, Orchard Keepers,
+  Florists, Beekeepers, Composters, Chefs); shepherds, ranchers and butchers breed up to 12 of a kind (not 8) and a hired
+  butcher keeps 14 (not 10) (Shepherds, Butchers, Ranchers); research levels cost a quarter less paper, books and
+  emeralds, rounded up (Scholars, Teachers, Librarians, Cartographers). New guild perks for packs: `work_reach`,
+  `herd_size` and `research_cost`.
+- **The Healers', Merchants', Wardens' and Trainers' Guilds** (30.20): with these every trade but the Bard has a guild.
+  Healers (Nurses, Clerics, Undertakers): 15% faster, the village's ill get well in two days instead of three, nurses
+  and undertakers look 48 blocks out instead of 32. Merchants (Shopkeepers, Innkeepers, Ferrymen, Postmen, Porters):
+  15% faster, travellers cost a quarter less to hire, porters carry 3 more stacks. Wardens (Guards): guards train on
+  the dummies up to Master instead of Expert and hit 10% harder. Trainers (only with Cobblemon: Trainers, Trainer
+  Leaders, Move Tutors, Pokémon Traders, Fossil Scientists): lessons and revivals cost a fifth less, trainers rank up a
+  quarter faster. Guild files may carry `fabric:load_conditions`. New guild perks for packs: `recovery_days`,
+  `work_radius`, `hire_price`, `carry`, `train_up_to`, `strength`, `lesson_price` and `trainer_xp`.
 
 ## 0.139.0 — 2026-10-05
 

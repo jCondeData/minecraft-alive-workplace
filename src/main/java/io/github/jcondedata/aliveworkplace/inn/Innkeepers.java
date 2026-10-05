@@ -236,9 +236,10 @@ public final class Innkeepers {
 		io.github.jcondedata.aliveworkplace.legend.Gifted.set(guest, gift == null ? null : gift.id());
 	}
 
-	/** Emeralds to hire {@code guest}: their level's price, twice it for a Gifted traveller (29.7). */
+	/** Emeralds to hire {@code guest}: their level's price, twice it for a Gifted traveller (29.7), after the village's {@code hire_price} (30.20). */
 	public static int emeralds(Villager guest, Traveller t) {
-		return emeralds(t.level()) * (io.github.jcondedata.aliveworkplace.legend.Gifted.of(guest) != null ? 2 : 1);
+		// The Merchants' Guild founded in the village: a quarter less, rounded up (30.20).
+		return io.github.jcondedata.aliveworkplace.hall.Guilds.hirePrice(guest, emeralds(t.level()) * (io.github.jcondedata.aliveworkplace.legend.Gifted.of(guest) != null ? 2 : 1));
 	}
 
 	public static long dollars(Villager guest, Traveller t) {

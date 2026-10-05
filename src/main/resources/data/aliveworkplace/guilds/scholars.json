@@ -1,0 +1,26 @@
+{
+  "name": {
+    "translate": "guild.aliveworkplace.scholars"
+  },
+  "perk": {
+    "translate": "guild.aliveworkplace.scholars.perk"
+  },
+  "icon": "minecraft:writable_book",
+  "trades": [
+    "aliveworkplace:scholar",
+    "aliveworkplace:teacher",
+    "minecraft:librarian",
+    "minecraft:cartographer"
+  ],
+  "perks": [
+    {
+      "type": "aliveworkplace:work_pace",
+      "percent": 15
+    },
+    {
+      "type": "aliveworkplace:research_cost",
+      "percent": -25
+    }
+  ],
+  "enabled": true
+}

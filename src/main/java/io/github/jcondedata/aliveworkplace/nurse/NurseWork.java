@@ -77,9 +77,14 @@ public class NurseWork extends Behavior<Villager> {
 		state = cure(level, villager);
 	}
 
+	/** How far {@code nurse} looks for the ill: {@link #CURE_RANGE}, further with the Healers' Guild founded (30.20: 48). */
+	public static int cureRange(Villager nurse) {
+		return io.github.jcondedata.aliveworkplace.hall.Guilds.radius(nurse, CURE_RANGE);
+	}
+
 	/** Cures the nearest ill villager if there's a remedy by the station; what she's doing, for her status. */
 	static Component cure(ServerLevel level, Villager nurse) {
-		List<Villager> ill = level.getEntitiesOfClass(Villager.class, nurse.getBoundingBox().inflate(CURE_RANGE, 8, CURE_RANGE),
+		List<Villager> ill = level.getEntitiesOfClass(Villager.class, nurse.getBoundingBox().inflate(cureRange(nurse), 8, cureRange(nurse)),
 				v -> v.isAlive() && Sickness.isIll(v)).stream()
 			.sorted(Comparator.comparingDouble(v -> v.distanceToSqr(nurse))).toList();
 		if (ill.isEmpty()) {

@@ -86,9 +86,9 @@ public final class Fields {
 				tell(player, Component.translatable("message.aliveworkplace.field.no_composter"), ChatFormatting.RED);
 				return InteractionResult.CONSUME;
 			}
-			area = farmNear(level, composter.get());
+			area = farmNear(level, composter.get(), farmReach(villager));
 			if (area.isEmpty()) {
-				tell(player, Component.translatable("message.aliveworkplace.field.no_farm", FARM_SEARCH), ChatFormatting.YELLOW);
+				tell(player, Component.translatable("message.aliveworkplace.field.no_farm", farmReach(villager)), ChatFormatting.YELLOW);
 				return InteractionResult.CONSUME;
 			}
 			data = new FieldData(Optional.of(Ids.of(level.dimension())), Optional.empty(), Optional.empty());
@@ -138,8 +138,18 @@ public final class Fields {
 	 * {@link FieldData#MAX_SIDE} a side. Empty if there's no farmland near.
 	 */
 	public static Optional<BoundingBox> farmNear(ServerLevel level, BlockPos composter) {
+		return farmNear(level, composter, FARM_SEARCH);
+	}
+
+	/** How far from their composter {@code farmer} looks for the farm: {@link #FARM_SEARCH}, 8 more in a founded Harvest Guild (30.19). */
+	public static int farmReach(Villager farmer) {
+		return io.github.jcondedata.aliveworkplace.hall.Guilds.reach(farmer, FARM_SEARCH);
+	}
+
+	/** {@link #farmNear(ServerLevel, BlockPos)}, looking {@code reach} blocks out from the composter. */
+	public static Optional<BoundingBox> farmNear(ServerLevel level, BlockPos composter, int reach) {
 		BlockPos start = null;
-		for (BlockPos p : BlockPos.betweenClosed(composter.offset(-FARM_SEARCH, -4, -FARM_SEARCH), composter.offset(FARM_SEARCH, 4, FARM_SEARCH))) {
+		for (BlockPos p : BlockPos.betweenClosed(composter.offset(-reach, -4, -reach), composter.offset(reach, 4, reach))) {
 			if (level.getBlockState(p).getBlock() instanceof net.minecraft.world.level.block.FarmBlock
 				&& (start == null || p.distSqr(composter) < start.distSqr(composter))) {
 				start = p.immutable();
@@ -200,7 +210,7 @@ public final class Fields {
 		if (composter.isEmpty() || SupplyContainers.find(level, composter.get(), null).isEmpty()) {
 			return false;
 		}
-		Optional<BoundingBox> farm = farmNear(level, composter.get());
+		Optional<BoundingBox> farm = farmNear(level, composter.get(), farmReach(villager));
 		if (farm.isEmpty()) {
 			return false;
 		}

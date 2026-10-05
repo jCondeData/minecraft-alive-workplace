@@ -37,9 +37,10 @@ public final class Sickness {
 		return ModAttachments.ILL_SINCE.has(villager);
 	}
 
-	/** How long {@code villager}'s illness lasts without a nurse: {@link #RECOVERY}, with the village's {@code illness} days (29.11). */
+	/** How long {@code villager}'s illness lasts without a nurse: {@link #RECOVERY}, with its founded guilds' {@code recovery_days} (30.20) and the village's {@code illness} days (29.11). */
 	public static long recovery(Villager villager) {
-		return io.github.jcondedata.aliveworkplace.research.TreeEffects.illnessLasts(villager, RECOVERY);
+		long days = Math.max(VillageNeeds.DAY, RECOVERY + io.github.jcondedata.aliveworkplace.hall.Guilds.recoveryDays(villager) * VillageNeeds.DAY); // the Healers' Guild: two days (30.20)
+		return io.github.jcondedata.aliveworkplace.research.TreeEffects.illnessLasts(villager, days);
 	}
 
 	/** Work delay multiplier: the ill work at half pace. */

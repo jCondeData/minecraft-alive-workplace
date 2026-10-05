@@ -81,9 +81,10 @@ public final class FossilScientists {
 			tell(player, Component.translatable("message.aliveworkplace.fossil.busy", scientist.getDisplayName(), MAX_QUEUE), ChatFormatting.YELLOW);
 			return;
 		}
-		long dollars = (long) PRICE * Money.DOLLARS_PER_EMERALD;
-		if (!Money.charge(player, dollars, PRICE)) {
-			tell(player, Component.translatable("message.aliveworkplace.fossil.cant_afford", Money.describe(dollars, PRICE)), ChatFormatting.RED);
+		int price = price(scientist);
+		long dollars = (long) price * Money.DOLLARS_PER_EMERALD;
+		if (!Money.charge(player, dollars, price)) {
+			tell(player, Component.translatable("message.aliveworkplace.fossil.cant_afford", Money.describe(dollars, price)), ChatFormatting.RED);
 			return;
 		}
 		List<ResourceLocation> names = items.stream().map(s -> BuiltInRegistries.ITEM.getKey(s.getItem())).toList();
@@ -102,6 +103,11 @@ public final class FossilScientists {
 			scientist.getDisplayName(), what(names), Math.max(1, Math.round(ticks * (ahead + 1) / 1200f)), ahead), ChatFormatting.GREEN);
 	}
 
+	/** What {@code scientist} charges for a revival: {@link #PRICE}, a fifth less (rounded up) with the Trainers' Guild founded (30.20). */
+	public static int price(Villager scientist) {
+		return io.github.jcondedata.aliveworkplace.hall.Guilds.lessonPrice(scientist, PRICE);
+	}
+
 	/** Right-click with an empty hand: collect what's ready for this player, or hear how it's going. */
 	public static void check(ServerPlayer player, Villager scientist) {
 		if (!COBBLEMON) {
@@ -113,7 +119,7 @@ public final class FossilScientists {
 		}
 		List<Revival> mine = queue(scientist).stream().filter(r -> r.owner().equals(player.getUUID())).toList();
 		if (mine.isEmpty()) {
-			tell(player, Component.translatable("message.aliveworkplace.fossil.hint", scientist.getDisplayName(), Money.describe((long) PRICE * Money.DOLLARS_PER_EMERALD, PRICE)),
+			tell(player, Component.translatable("message.aliveworkplace.fossil.hint", scientist.getDisplayName(), Money.describe((long) price(scientist) * Money.DOLLARS_PER_EMERALD, price(scientist))),
 				ChatFormatting.GRAY);
 			return;
 		}

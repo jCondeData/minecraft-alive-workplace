@@ -154,7 +154,7 @@ public final class ResearchScreen {
 				Component.translatable("research.aliveworkplace.level", current.title(), BuilderLevels.levelName(next)),
 				Math.round(100f * state.progress() / current.points(next))), ChatFormatting.GREEN));
 			if (!state.paid()) {
-				about.add(line(Component.translatable("screen.aliveworkplace.research.unpaid", Research.describe(current.cost(next))), ChatFormatting.YELLOW));
+				about.add(line(Component.translatable("screen.aliveworkplace.research.unpaid", Research.describe(current.cost(next, level, entity))), ChatFormatting.YELLOW));
 			}
 		}
 		about.add(line(Component.translatable("screen.aliveworkplace.research.how"), ChatFormatting.DARK_GRAY));
@@ -163,7 +163,7 @@ public final class ResearchScreen {
 		Research.Topic[] topics = Research.Topic.values();
 		for (int i = 0; i < topics.length; i++) {
 			Research.Topic topic = topics[i];
-			menu.button(TOPIC_SLOTS[i], topicIcon(state, topic), p -> {
+			menu.button(TOPIC_SLOTS[i], topicIcon(state, topic, topic.cost(state.level(topic) + 1, level, entity)), p -> {
 				Research.State now = entity.research();
 				Research.Topic busy = now.currentTopic();
 				if (busy != null && now.paid()) {
@@ -276,7 +276,8 @@ public final class ResearchScreen {
 		return icon;
 	}
 
-	static ItemStack topicIcon(Research.State state, Research.Topic topic) {
+	/** {@code price}: what its next level costs in the village (a founded Scholars' Guild: a quarter less, 30.19). */
+	static ItemStack topicIcon(Research.State state, Research.Topic topic, Research.Cost price) {
 		int lvl = state.level(topic);
 		List<Component> lore = new ArrayList<>();
 		lore.add(line(topic.effect(), ChatFormatting.GRAY));
@@ -284,7 +285,7 @@ public final class ResearchScreen {
 		if (lvl >= topic.maxLevel) {
 			lore.add(line(Component.translatable("screen.aliveworkplace.research.complete"), ChatFormatting.GREEN));
 		} else {
-			lore.add(line(Component.translatable("screen.aliveworkplace.research.cost", Research.describe(topic.cost(lvl + 1))), ChatFormatting.GRAY));
+			lore.add(line(Component.translatable("screen.aliveworkplace.research.cost", Research.describe(price)), ChatFormatting.GRAY));
 			for (var need : topic.needs().entrySet()) {
 				if (state.level(need.getKey()) < need.getValue()) {
 					lore.add(line(Component.translatable("screen.aliveworkplace.research.needs",

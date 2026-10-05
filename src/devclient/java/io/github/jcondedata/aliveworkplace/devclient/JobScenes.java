@@ -100,6 +100,9 @@ final class JobScenes {
 	private static volatile Villager subject;
 	/** curfew: the villagers who go to bed at dusk. */
 	private static final List<Villager> curfewSleepers = new java.util.concurrent.CopyOnWriteArrayList<>();
+	/** conscription: the villagers called up, and the raiders they beat back. */
+	private static final List<Villager> conscripts = new java.util.concurrent.CopyOnWriteArrayList<>();
+	private static final List<net.minecraft.world.entity.monster.Zombie> conscriptionRaiders = new java.util.concurrent.CopyOnWriteArrayList<>();
 	/** smith_orders: the slot where the Poké Ball turned up (found on the server). */
 	private static volatile int pickedSlot = -1;
 	/** A screen a job scene films while its job gets going (the Drop Box's). */
@@ -1593,6 +1596,74 @@ final class JobScenes {
 					io.github.jcondedata.aliveworkplace.hall.EdictBook.open(player, STATION.offset(-7, 0, 0));
 					if (player.containerMenu instanceof ChoiceMenu m) {
 						Showcase.check(m.icon(io.github.jcondedata.aliveworkplace.hall.EdictBook.SLOTS[0]).is(Items.BELL), "Curfew sits in the first slot");
+					}
+				}, 30)),
+			(level, player) -> player.containerMenu instanceof ChoiceMenu));
+		// Conscription (ROADMAP 30.10): in a night raid every grown villager who isn't ill takes up a stone sword. A farmer,
+		// a builder and a librarian in the street by the guard; the raiders come over the field, the three are handed the
+		// militia's swords and beat them back beside the guard; then the Book of Edicts tells the boost, the cost and the
+		// reform.
+		SCREENS.put("conscription", new Screen("Conscription was proclaimed: in a night raid a farmer, a builder and a librarian took up swords and beat the raiders back beside the guard",
+			new Vec3(0.5, -56.8, 8.5), new Vec3(0, -59.5, -3),
+			(level, player) -> {
+				BlockPos hallPos = STATION.offset(-7, 0, 0);
+				level.setBlockAndUpdate(hallPos, ModBlocks.VILLAGE_HALL.defaultBlockState()
+					.setValue(io.github.jcondedata.aliveworkplace.hall.VillageHallBlock.FACING, Direction.SOUTH));
+				var hall = (io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(hallPos);
+				hall.setRank(io.github.jcondedata.aliveworkplace.hall.VillageRanks.Rank.VILLAGE);
+				hall.setEdicts(List.of());
+				hall.setReforms(List.of());
+				hall.setRaidWorkUntil(0);
+				level.setDayTime((level.getDayTime() / 24000) * 24000 + 14000);
+				conscripts.clear();
+				conscriptionRaiders.clear();
+				VillagerProfession[] jobs = {VillagerProfession.FARMER, ModVillagers.BUILDER, VillagerProfession.LIBRARIAN};
+				for (int i = 0; i < 3; i++) {
+					Villager v = EntityType.VILLAGER.spawn(level, new BlockPos(-4 + 4 * i, -60, -1), MobSpawnType.COMMAND);
+					v.setVillagerData(v.getVillagerData().setProfession(jobs[i]).setLevel(2));
+					v.setVillagerXp(10);
+					v.refreshBrain(level);
+					conscripts.add(v);
+				}
+				// Lanterns along the street, so the night fight shows.
+				for (int x = -6; x <= 6; x += 4) {
+					level.setBlockAndUpdate(new BlockPos(x, -60, 1), Blocks.LANTERN.defaultBlockState());
+				}
+				subject = worker(level, new BlockPos(6, -60, 2), Blocks.GRINDSTONE, net.minecraft.world.entity.ai.village.poi.PoiTypes.WEAPONSMITH, ModVillagers.GUARD);
+				subject.setItemSlot(net.minecraft.world.entity.EquipmentSlot.MAINHAND, new ItemStack(Items.IRON_SWORD));
+				var conscription = io.github.jcondedata.aliveworkplace.hall.Edicts.find("conscription").orElseThrow();
+				var told = io.github.jcondedata.aliveworkplace.hall.Edicts.proclaim(level, hallPos, player, conscription);
+				Showcase.check(told.done(), "Conscription was proclaimed: " + told.message().getString());
+				io.github.jcondedata.aliveworkplace.hall.CivicEffects.forget();
+				io.github.jcondedata.aliveworkplace.hall.Conscription.forget();
+			},
+			List.of(new Step("01_conscription_raid", -1, 0, (level, player) -> {
+					player.closeContainer();
+					// The raiders come over the field: zombies of the village's raid.
+					for (int i = 0; i < 3; i++) {
+						var zombie = EntityType.ZOMBIE.spawn(level, new BlockPos(-4 + 4 * i, -60, -8), MobSpawnType.COMMAND);
+						zombie.addTag(io.github.jcondedata.aliveworkplace.guard.VillageRaids.TAG);
+						zombie.setPersistenceRequired();
+						zombie.setHealth(12f);
+						zombie.setTarget(conscripts.get(i));
+						conscriptionRaiders.add(zombie);
+					}
+					io.github.jcondedata.aliveworkplace.guard.VillageRaids.track(level, STATION.offset(-7, 0, 0), 3);
+					io.github.jcondedata.aliveworkplace.hall.Conscription.forget();
+				}, 40),
+				new Step("02_conscription_fight", -1, 0, (level, player) -> {
+					long armed = conscripts.stream().filter(v -> io.github.jcondedata.aliveworkplace.hall.Conscription.isMilitiaSword(v.getMainHandItem())).count();
+					Showcase.check(armed == 3, "the three took up the militia's swords: " + armed + " of 3");
+				}, 160),
+				new Step("03_conscription_book", io.github.jcondedata.aliveworkplace.hall.EdictBook.SLOTS[0], 6, (level, player) -> {
+					long struck = conscriptionRaiders.stream().filter(z -> z.getLastHurtByMob() instanceof Villager v
+						&& !io.github.jcondedata.aliveworkplace.guard.Guards.isGuard(v)).count();
+					Showcase.check(struck >= 2, "the conscripts struck the raiders: " + struck + " of 3");
+					Showcase.check(conscripts.stream().anyMatch(io.github.jcondedata.aliveworkplace.hall.Conscription::workStopped), "no work in the raid");
+					player.teleportTo(-5.5, -60, 1.5);
+					io.github.jcondedata.aliveworkplace.hall.EdictBook.open(player, STATION.offset(-7, 0, 0));
+					if (player.containerMenu instanceof ChoiceMenu m) {
+						Showcase.check(m.icon(io.github.jcondedata.aliveworkplace.hall.EdictBook.SLOTS[0]).is(Items.STONE_SWORD), "Conscription sits in the first slot");
 					}
 				}, 30)),
 			(level, player) -> player.containerMenu instanceof ChoiceMenu));

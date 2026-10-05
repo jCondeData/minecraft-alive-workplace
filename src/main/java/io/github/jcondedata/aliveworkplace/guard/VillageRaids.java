@@ -63,6 +63,30 @@ public final class VillageRaids {
 	}
 
 	/**
+	 * Whether the village round {@code hall} is raided now: one of our raids (monsters or bandits) on it, or a vanilla
+	 * pillager raid at {@code hall} or at {@code at} (Conscription, 30.10).
+	 */
+	public static boolean raided(ServerLevel level, BlockPos hall, BlockPos at) {
+		return ACTIVE.containsKey(hall) || vanillaRaid(level, hall) || !at.equals(hall) && vanillaRaid(level, at);
+	}
+
+	private static boolean vanillaRaid(ServerLevel level, BlockPos pos) {
+		net.minecraft.world.entity.raid.Raid vanilla = level.getRaidAt(pos);
+		return vanilla != null && vanilla.isActive();
+	}
+
+	/**
+	 * Counts a raid on the village round {@code hall} as under way from now, with {@code raiders} raiders (the mobs carrying
+	 * {@link #TAG} near it): the showcase scenes and tests start one this way, without the gathering and the horn. It ends
+	 * as every raid does, when those raiders are gone or fled at dawn.
+	 */
+	public static Raid track(ServerLevel level, BlockPos hall, int raiders) {
+		Raid raid = new Raid(hall.immutable(), raiders, level.getGameTime());
+		ACTIVE.put(raid.hall(), raid);
+		return raid;
+	}
+
+	/**
 	 * Where a guard with its post (or rally point) at {@code center} should look for foes while a raid is on: the whole
 	 * village being raided, or a vanilla raid's area; empty when there's no raid there.
 	 */

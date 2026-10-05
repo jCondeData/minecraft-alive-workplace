@@ -10,6 +10,7 @@
 		"EntityAccessor",
 		"ExplosionMixin",
 		"IronWillMixin",
+		"MobAccessor",
 		"PlayerListMixin",
 		"PoiManagerMixin",
 		"ServerLevelMixin",

@@ -277,6 +277,11 @@ public class StewardGameTests implements net.fabricmc.fabric.api.gametest.v1.Fab
 		// As 27.5 appointed him: any grown villager, straight onto the hall.
 		io.github.jcondedata.aliveworkplace.work.Stations.assign(level, old, hall, ModVillagers.STEWARD);
 		helper.assertTrue(stewardAt(helper, old, HALL_A), "setup: not a Steward");
+		// B83: his rounds done for today (a working morning), so he stays at his hall. Otherwise a storehouse or an open
+		// site another batch left within the hall's reach is a stop on his rounds: he walked out of the loaded test area
+		// and was unloaded (CI, 2026-10-05), which says nothing about his job surviving the reload.
+		helper.setDayTime(1000);
+		io.github.jcondedata.aliveworkplace.registry.ModAttachments.STEWARD_ROUND_DAY.set(old, level.getDayTime() / 24000L);
 		CompoundTag saved = new CompoundTag();
 		helper.assertTrue(old.save(saved), "setup: couldn't save him");
 		old.remove(net.minecraft.world.entity.Entity.RemovalReason.UNLOADED_TO_CHUNK);
@@ -286,7 +291,10 @@ public class StewardGameTests implements net.fabricmc.fabric.api.gametest.v1.Fab
 		helper.assertTrue(Stewards.qualifies(steward), "an old Steward doesn't qualify");
 		helper.runAfterDelay(150, () -> {
 			helper.assertTrue(stewardAt(helper, steward, HALL_A), "lost his job after reload: " + steward.getVillagerData());
-			helper.assertTrue(Stewards.stewardOf(level, hall) == steward, "the hall doesn't know its Steward");
+			Villager known = Stewards.stewardOf(level, hall);
+			helper.assertTrue(known == steward, "the hall doesn't know its Steward: it knows " + (known == null ? "nobody" : known.getUUID() + " at "
+				+ known.blockPosition()) + "; he is " + steward.getUUID() + " at " + steward.blockPosition() + (steward.isRemoved() ? " (removed: "
+				+ steward.getRemovalReason() + ")" : "") + ", hall at " + hall + ", hall radius " + io.github.jcondedata.aliveworkplace.hall.VillageHalls.RADIUS);
 			helper.succeed();
 		});
 	}

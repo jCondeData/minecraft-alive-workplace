@@ -18,6 +18,9 @@ public final class ModAttachments {
 	/** The Old Sage's riddle quest at their hut (29.14): the riddles asked, how many answered, misses on this one. */
 	public static final Attachment<io.github.jcondedata.aliveworkplace.legend.OldSage.Riddles> SAGE_RIDDLES = Attachment.saved("sage_riddles", io.github.jcondedata.aliveworkplace.legend.OldSage.Riddles.CODEC);
 
+	/** A wedding the Seer blessed (29.16), on each of the couple: the day, the mood and its days, the baby's days, whether it's still due. */
+	public static final Attachment<io.github.jcondedata.aliveworkplace.legend.Seer.Blessing> SEER_BLESSING = Attachment.saved("seer_blessing", io.github.jcondedata.aliveworkplace.legend.Seer.Blessing.CODEC);
+
 	/** A villager's gift (29.6): a gift's id, or {@code none}. Absent: the UUID roll decides ({@code Gifted.of}). */
 	public static final Attachment<String> GIFTED = Attachment.saved("gifted", com.mojang.serialization.Codec.STRING);
 

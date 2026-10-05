@@ -178,6 +178,12 @@ public final class Moods {
 			score += sulk.points();
 			bad.add(sulk.reason());
 		}
+		// A wedding the Seer blessed (29.16), for the days it lasts.
+		io.github.jcondedata.aliveworkplace.legend.LegendPowers.MoodReason blessed = io.github.jcondedata.aliveworkplace.legend.Seer.blessedMood(level, villager);
+		if (blessed != null) {
+			score += blessed.points();
+			good.add(blessed.reason());
+		}
 		if (!level.getEntitiesOfClass(Villager.class, villager.getBoundingBox().inflate(COMPANY_RANGE), v -> v != villager && v.isAlive()).isEmpty()) {
 			score += 5;
 			good.add(reason("company"));

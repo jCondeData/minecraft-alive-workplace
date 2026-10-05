@@ -868,8 +868,66 @@ def old_sage():
     return [path]
 
 
+def seer():
+    """The Seer (29.16), drawn over the Legend trade's mantle: a deep purple robe to the feet with its hood up, sewn
+    with silver stars (single stitches and a few four-point sparkles), a silver hem and cuffs, a silver circlet (the
+    Legend's mark) at the hood's edge with a pale moonstone, and a crescent moon clasp at the throat."""
+    t = vg.VillagerTexture()
+    robe_ = vg.cloth("#3b2160")
+    silver = STEEL
+    star, glint = "#c9cfe0", "#eef1fa"
+    vg.hat(t, robe_, style="hood")
+    hb = t.face("hat", "back")                           # the hood's back: a seam, a darker hem, a star
+    paint(hb, ((4, y) for y in range(1, 8)), robe_[1])
+    paint(hb, ((x, 7) for x in range(hb.w)), robe_[1])
+    paint(hb, ((x, 0) for x in range(hb.w)), robe_[3])
+    paint(hb, ((2, 3), (6, 5)), star)
+    for side in ("west", "east"):
+        f = t.face("hat", side)
+        f.put(2 if side == "west" else 5, 4, star)
+    for side in SIDES:                                   # the silver circlet at the hood's edge
+        f = t.face("head", side)
+        for x in range(f.w):
+            f.put(x, 4, silver[2] if side in ("front", "west") else silver[1])
+    hf = t.face("head", "front")
+    paint(hf, ((3, 4),), "#d8e6f2")                      # the moonstone, lit on its top-left
+    paint(hf, ((4, 4),), "#9fb4cc")
+    vg.robe(t, robe_, length=20, sleeves_too=True, body_too=True, noise=0)
+    vg.sleeves(t, robe_, cuff=silver[1], noise=0)
+    jf = t.face("jacket", "front")
+    paint(jf, ((3, y) for y in range(2, 20)), robe_[0])  # where the robe closes
+    paint(jf, ((3, 0), (4, 0)), silver[3])               # the crescent clasp at the throat
+    paint(jf, ((2, 1), (3, 1)), silver[2])
+    jf.put(4, 1, robe_[2])
+    for side in SIDES:                                   # the silver hem
+        f = t.face("jacket", side)
+        for x in range(f.w):
+            f.put(x, 19, silver[1])
+    # The stars: single stitches, and four-point sparkles with a bright heart (off the badge, x 4..7 rows 10..13).
+    def sparkle(f, x, y):
+        f.put(x, y, glint)
+        for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+            f.put(x + dx, y + dy, star)
+    paint(jf, ((1, 3), (6, 4), (0, 9), (2, 15), (6, 17), (1, 18)), star)
+    sparkle(jf, 1, 12)
+    sparkle(jf, 6, 7)
+    jb = t.face("jacket", "back")
+    paint(jb, ((1, 2), (6, 1), (3, 6), (0, 11), (7, 13), (2, 17), (5, 18)), star)
+    sparkle(jb, 5, 9)
+    sparkle(jb, 2, 14)
+    for side, pts in (("west", ((1, 3), (4, 8), (2, 14), (4, 17))), ("east", ((3, 2), (1, 9), (3, 15), (1, 17)))):
+        f = t.face("jacket", side)
+        paint(f, pts, star)
+        sparkle(f, 2, 11)
+    am = t.face("arms_middle", "front")                  # a star on the folded sleeves
+    paint(am, ((1, 1), (6, 2)), star)
+    path = ASSETS / "textures" / "entity" / "villager" / "legend" / "seer.png"
+    t.save(path)
+    return [path]
+
+
 DRAW = [orchard_keeper, berry_breeder, camp_cook, habitat_keeper, daycare_keeper, gem_grower, pokemon_trader, porter, postman, rancher, scholar, shopkeeper, sifter, teacher, tinkerer,
-        trainer, trainer_leader, tutor, undertaker, steward, legend, legend_placeholder, master_architect, pathfinder, old_sage]
+        trainer, trainer_leader, tutor, undertaker, steward, legend, legend_placeholder, master_architect, pathfinder, old_sage, seer]
 
 if __name__ == "__main__":
     run(DRAW)

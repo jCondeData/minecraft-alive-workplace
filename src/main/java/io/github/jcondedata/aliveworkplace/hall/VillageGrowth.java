@@ -100,6 +100,10 @@ public final class VillageGrowth {
 	 */
 	@Nullable
 	public static Villager grow(ServerLevel level, BlockPos hall, VillageNeeds.Needs needs, long lastBirth) {
+		Villager blessed = blessedBirth(level, hall, needs);
+		if (blessed != null) {
+			return blessed;
+		}
 		if (blocker(level, hall, needs, lastBirth) != Blocker.NONE) {
 			return null;
 		}
@@ -114,6 +118,33 @@ public final class VillageGrowth {
 		if (parents.size() < 2) {
 			return null;
 		}
+		return born(level, hall, parents);
+	}
+
+	/**
+	 * A wedding the Seer blessed (29.16): the couple's first baby comes within the blessing's days as soon as a bed is free
+	 * and the village isn't full, past the daily wait, the store and the mood (once). Returns it, or null.
+	 */
+	@Nullable
+	static Villager blessedBirth(ServerLevel level, BlockPos hall, @Nullable VillageNeeds.Needs needs) {
+		int cap = VillageRanks.growthCap(VillageRanks.of(level, hall));
+		if (needs == null || cap <= 0 || needs.villagers() >= cap || freeBed(level, hall) == null) {
+			return null;
+		}
+		List<Villager> parents = io.github.jcondedata.aliveworkplace.legend.Seer.blessedCouple(level, hall);
+		if (parents.size() < 2) {
+			return null;
+		}
+		Villager baby = born(level, hall, parents);
+		if (baby != null) {
+			io.github.jcondedata.aliveworkplace.legend.Seer.babyCame(parents);
+		}
+		return baby;
+	}
+
+	/** {@code parents}' baby is born; the family eats {@link #familyMeals} meals from the store. */
+	@Nullable
+	private static Villager born(ServerLevel level, BlockPos hall, List<Villager> parents) {
 		Villager baby = EntityType.VILLAGER.create(level);
 		if (baby == null) {
 			return null;

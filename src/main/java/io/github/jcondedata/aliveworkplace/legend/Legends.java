@@ -203,6 +203,7 @@ public final class Legends implements ResourceManagerReloadListener {
 	public static void tick(Villager villager) {
 		if (ENABLED && villager.tickCount % 20 == 0 && ModAttachments.LEGEND.has(villager)) {
 			LegendNeeds.tick(villager);
+			Seer.tick(villager); // the Seer's motes at night, and the Chapel by day (29.16)
 		}
 		if (ENABLED && ModAttachments.PATHFINDER.has(villager)) {
 			Pathfinder.tick(villager); // an expedition with a player (29.13), every 5th tick
@@ -227,6 +228,14 @@ public final class Legends implements ResourceManagerReloadListener {
 			.filter(a -> a.legend().id().equals(id))
 			.filter(a -> a.data().hall().map(hall::equals).orElseGet(() -> VillageHalls.nearest(level, a.villager().blockPosition()).map(hall::equals).orElse(false)))
 			.map(LegendPowers.Active::villager).findFirst();
+	}
+
+	/**
+	 * How many days ahead the village round {@code hall} is warned of attacks of {@code kind} ({@code raid}, a warband, a
+	 * disaster: M32's sources, 32.14) by a settled Legend who foretells (the Seer, 29.16: two days); 0 without one.
+	 */
+	public static int foretold(ServerLevel level, BlockPos hall, String kind) {
+		return ENABLED ? Seer.warningDays(level, hall, kind) : 0;
 	}
 
 	/**

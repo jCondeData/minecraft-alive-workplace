@@ -21,6 +21,7 @@ public final class Powers {
 		register("far_expeditions", FarExpeditionsPower::read);
 		register("expedition", ExpeditionPower::read);
 		GiftPowers.register();
+		Seer.register();
 	}
 
 	/** Adds a named power (each Legend item adds its own). */

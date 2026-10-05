@@ -856,6 +856,68 @@ final class JobScenes {
 			return l -> io.github.jcondedata.aliveworkplace.legend.Pathfinder.state(pathfinder).arrived()
 				&& l.getBlockState(target).is(Blocks.LIGHT_BLUE_BANNER);
 		}, null));
+		SCENES.put("legend_seer", new Job("the Seer came to the Chapel at midnight under a full moon, and at dawn foretold the night, the festival, the market and the next guest in chat",
+			900, new Vec3(6.5, -55.5, 11.5), new Vec3(0, -54, -9), (level, player) -> {
+			// ROADMAP 29.16: a finished Chapel facing the camera, the Village Hall beside it and six villagers out front,
+			// at midnight under a full moon (day 81). The hall's own round rolls the Chapel's guest (a fixed seed whose roll
+			// is under the Seer's 1 in 2); they come out to the door, end-rod motes round them. Then it's dawn: they settle
+			// and the hall's dawn round has them foretell, in the player's chat.
+			level.getGameRules().getRule(GameRules.RULE_DAYLIGHT).set(false, level.getServer());
+			level.setDayTime(80L * 24000L + 17800L);
+			StarterBlueprints.Entry entry = StarterBlueprints.CHAPEL;
+			BlockPos anchor = new BlockPos(0, -60, -4);
+			Blueprint blueprint = BlueprintLibrary.get(level, entry.id()).orElseThrow();
+			BlueprintData.Placement placement = BlueprintItem.placementAt(level.dimension().location(), blueprint.size(), anchor,
+				BlueprintItem.rotationFacing(Direction.SOUTH));
+			level.getStructureManager().get(entry.id()).orElseThrow().placeInWorld(level, placement.origin(), placement.origin(),
+				new net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings().setRotation(placement.rotation())
+					.setMirror(placement.mirror()), level.getRandom(), 2);
+			BuildSiteManager.get(level).recordFinished(entry.id(), placement, player.getUUID());
+			BlockPos hall = STATION.offset(9, 0, 1);
+			for (int i = 0; i < 6; i++) {
+				Villager v = EntityType.VILLAGER.spawn(level, new BlockPos(-4 + (i % 3) * 4, -60, 3 + (i / 3) * 2), MobSpawnType.COMMAND);
+				v.setNoAi(true);
+				v.setYRot(180);
+				v.setYHeadRot(180);
+			}
+			io.github.jcondedata.aliveworkplace.legend.Legend legend = io.github.jcondedata.aliveworkplace.legend.Legends.get(
+				io.github.jcondedata.aliveworkplace.legend.Seer.ID).orElse(null);
+			Showcase.check(legend != null, "the Seer's file loaded");
+			Showcase.check(level.getMoonPhase() == 0, "a full moon");
+			long began = level.getGameTime();
+			Villager[] seer = {null};
+			boolean[] told = {false};
+			boolean[] rolled = {false};
+			boolean[] dawn = {false};
+			return l -> {
+				long t = l.getGameTime() - began;
+				if (t >= 40 && !rolled[0] && legend != null) {
+					rolled[0] = true;
+					place(l, hall, ModBlocks.VILLAGE_HALL); // here, so its own first round doesn't roll the night first
+					io.github.jcondedata.aliveworkplace.legend.LegendGuests.round(l, hall, net.minecraft.util.RandomSource.create(4242L));
+					seer[0] = io.github.jcondedata.aliveworkplace.legend.LegendGuests.guest(l, hall);
+					Showcase.check(seer[0] != null && ModAttachments.LEGEND.get(seer[0]).id().equals(legend.id()), "the Seer came to the Chapel at midnight");
+					if (seer[0] != null) {
+						seer[0].setNoAi(true);
+						seer[0].moveTo(anchor.getX() + 0.5, anchor.getY(), anchor.getZ() + 1.5, 180f, 0f);
+						seer[0].setYHeadRot(180f);
+					}
+				}
+				if (seer[0] != null) {
+					io.github.jcondedata.aliveworkplace.legend.Legends.tick(seer[0]); // (no AI to tick it: the motes at night)
+				}
+				if (t >= 420 && !dawn[0] && seer[0] != null) {
+					dawn[0] = true;
+					l.setDayTime(81L * 24000L + 300L); // dawn
+					io.github.jcondedata.aliveworkplace.legend.Legends.make(l, seer[0], legend, "showcase");
+					io.github.jcondedata.aliveworkplace.legend.LegendGuests.round(l, hall, net.minecraft.util.RandomSource.create(29L));
+					var entity = (io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) l.getBlockEntity(hall);
+					told[0] = entity.seer().toldDay() == io.github.jcondedata.aliveworkplace.hall.Chronicle.day(l);
+					Showcase.check(told[0], "the Seer foretold at dawn");
+				}
+				return told[0] && t >= 600;
+			};
+		}, null));
 		SCENES.put("bard", job("the bard played a record at the Music Stand", 1200, (level, player) -> {
 			Villager b = picked(level, player, STATION, Blocks.JUKEBOX, Items.MUSIC_DISC_CAT);
 			chest(level, chestPos(), new ItemStack(Items.MUSIC_DISC_CAT));

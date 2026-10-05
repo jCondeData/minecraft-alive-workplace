@@ -17,6 +17,13 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Added
+- **The Seer** (29.16), a Rare Legend in a deep purple hooded robe sewn with silver stars: they come to the village's
+  finished Chapel at midnight under a full moon, 1 time in 2, or are born to a Cleric; they like jewels, keep to the
+  Chapel by day and drift with end-rod motes at night. Each dawn they foretell, in chat and first on the hall's
+  "What next?", whether raiders come that night and from which side, the next festival and market day, and the next
+  day's Legend guest; with a Seer the night's raid and the next day's guest are rolled at dawn, so they are never
+  wrong. A wedding at the Chapel with the Seer there is blessed: the couple is 10 happier for 7 days and their first
+  baby comes within 2 days when a bed is free. `Legends.foretold` gives M32 its two days' warning.
 - **The Old Sage** (29.14), a Rare Legend: once a village has finished 5 research levels, a hermit's hut of mossy stone
   and spruce (a lectern, bookshelves, a cauldron, an herb garden) appears 150-250 blocks out, and the village's players
   hear a rumour with its distance and direction. The Sage asks three riddles from a pool of eight, each answered by

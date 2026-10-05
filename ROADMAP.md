@@ -1660,7 +1660,7 @@ MarketDays) and research/.
   and replants a 9x9 wheat field into its chest; a sentry holds its point through a staged fight; the costs are taken
   and the cap and the 2-day wait kept; the golem textures pass `lint.py`; showcase scene `legend_golem_smith` (GIF:
   the three at work).
-- [ ] **29.16** **The Seer (Rare).** Comes: a guest at the village's finished Chapel at midnight under a full moon, 1
+- [x] **29.16** (review: pending 2026-10-05) **The Seer (Rare).** Comes: a guest at the village's finished Chapel at midnight under a full moon, 1
   time in 2 (29.8); born to a Cleric (29.7). Trade: `aliveworkplace:legend`; by day they keep to the Chapel. Likes:
   jewels. Powers:
   - **foretelling** (`foretell`), each dawn, to the village's players in chat and on the hall's "What next?": whether
@@ -4356,6 +4356,15 @@ item waits.
   build like the Steward's (no blueprint item comes back if it's cancelled). A strike cancels the rebuild under way (the
   blocks placed stay) and none starts until it's over. The Architect can be the builder handed the work if they are
   the least busy one with a bench.
+- 2026-10-05 (29.16, decisions; lane a): the night's raid and the guests are rolled ahead only in a village with a
+  settled Seer (elsewhere nothing changes). The foretelling comes at the hall's first round of the day before 6000;
+  the first one (or the first after a missed dawn) also rolls today's guests, unannounced, so tomorrow's roll knows
+  whether today's guest will still be staying. A told guest who may no longer come (their slot taken meanwhile) doesn't,
+  and nobody else does. The raid's side is the middle of one of the eight directions (the bandit camp's when there is
+  one), its hour between 13500 and 18000. A wedding is blessed when held at the Chapel with the Seer within 32 blocks;
+  the blessed baby needs only a free bed and room under the village cap (no daily wait, store or mood), from the
+  wedding day to 2 days after. `Legends.foretold(level, hall, kind)` returns days of warning (the Seer: 2, from
+  `warning_days`; 0 without). The scene moves the arrived Seer from the nave to the Chapel's door for the camera.
 - 2026-10-05 (29.14, decisions; lane a): the hut is looked for once a day per hall, in the morning round, while the
   village qualifies and no Sage is out at a hut (a killed Sage frees the slot for a new hut another day); its site is
   `BanditCamps.site` at 150-250 blocks. The rumour goes to the owner and their friends online. The Sage is a found

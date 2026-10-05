@@ -47,7 +47,22 @@ public final class MarketDays {
 	public static boolean isMarketMorning(ServerLevel level, BlockPos hall, long lastMarketDay) {
 		long day = Chronicle.day(level);
 		long time = level.getDayTime() % VillageNeeds.DAY;
-		return day != lastMarketDay && Math.floorMod(day + hall.hashCode(), EVERY_DAYS) == 0 && time >= 1000 && time < 6000;
+		return day != lastMarketDay && isMarketDay(hall, day) && time >= 1000 && time < 6000;
+	}
+
+	/** Whether {@code day} (a {@link Chronicle#day}) is market day for the village round {@code hall}. */
+	public static boolean isMarketDay(BlockPos hall, long day) {
+		return Math.floorMod(day + hall.hashCode(), EVERY_DAYS) == 0;
+	}
+
+	/**
+	 * The village's next market day (a {@link Chronicle#day}): today while this morning's market is still to come, else the
+	 * next market day after it (the Seer's foretelling, 29.16).
+	 */
+	public static long nextDay(ServerLevel level, BlockPos hall, long lastMarketDay) {
+		long today = Chronicle.day(level);
+		long day = today + Math.floorMod(-(today + hall.hashCode()), EVERY_DAYS);
+		return day == today && (lastMarketDay == today || level.getDayTime() % VillageNeeds.DAY >= 6000) ? day + EVERY_DAYS : day;
 	}
 
 	/** The village's Market Square (a finished one within the hall's reach), or empty. */

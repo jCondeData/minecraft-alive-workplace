@@ -18,6 +18,13 @@ public final class BuilderEvents {
 			if (hand != InteractionHand.MAIN_HAND || player.isSpectator() || !(entity instanceof Villager villager)) {
 				return InteractionResult.PASS;
 			}
+			// A Legend visiting as a guest (29.8): their terms. They take no job, so nothing else is done with them.
+			if (io.github.jcondedata.aliveworkplace.legend.LegendGuests.isGuest(villager)) {
+				if (!level.isClientSide()) {
+					io.github.jcondedata.aliveworkplace.legend.LegendGuests.openTerms((ServerPlayer) player, villager);
+				}
+				return InteractionResult.SUCCESS;
+			}
 			// Sneak-right-click with a City Plan: the villager becomes the Steward of its hall, if he stands by it (ROADMAP 27.5).
 			if (player.isShiftKeyDown() && player.getItemInHand(hand).is(ModItems.CITY_PLAN)) {
 				return level.isClientSide() ? InteractionResult.SUCCESS

@@ -31,6 +31,8 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 	private VillageRanks.Rank rank = VillageRanks.Rank.HAMLET;
 	private long treasuryTotal;
 	private int festivalCrowd;
+	/** Legends visiting as guests (29.8): who last came when, the guest staying now, and the day each place last rolled. */
+	private io.github.jcondedata.aliveworkplace.legend.LegendGuests.State legendGuests = io.github.jcondedata.aliveworkplace.legend.LegendGuests.State.EMPTY;
 	private long founderMoodDay;
 	/** The day of the last raid on the village (see {@code guard/VillageRaids}). */
 	private long lastRaidDay = -100;
@@ -121,6 +123,7 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 			io.github.jcondedata.aliveworkplace.guard.BanditCamps.round(server, pos);
 			Festivals.round(server, pos, hall, census.villagers());
 			io.github.jcondedata.aliveworkplace.legend.LegendSlots.round(server, pos);
+			io.github.jcondedata.aliveworkplace.legend.LegendGuests.round(server, pos);
 			io.github.jcondedata.aliveworkplace.legend.LegendNeeds.round(server, pos);
 			io.github.jcondedata.aliveworkplace.people.Couples.round(server, pos);
 			if (Treasury.ENABLED) {
@@ -419,6 +422,16 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 		setChanged();
 	}
 
+	/** The village's Legend guests (29.8). */
+	public io.github.jcondedata.aliveworkplace.legend.LegendGuests.State legendGuests() {
+		return legendGuests;
+	}
+
+	public void setLegendGuests(io.github.jcondedata.aliveworkplace.legend.LegendGuests.State state) {
+		legendGuests = state;
+		setChanged();
+	}
+
 	/** The day the Founder's mood came (0: not yet). */
 	public long founderMoodDay() {
 		return founderMoodDay;
@@ -485,6 +498,7 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 		treasury = Nbt.getInt(tag, "treasury");
 		treasuryTotal = Nbt.getLong(tag, "treasuryTotal");
 		festivalCrowd = Nbt.getInt(tag, "festivalCrowd");
+		legendGuests = io.github.jcondedata.aliveworkplace.legend.LegendGuests.State.load(tag);
 		founderMoodDay = Nbt.getLong(tag, "founderMoodDay");
 		owner = Nbt.hasUuid(tag, "owner") ? Nbt.getUuid(tag, "owner") : null;
 		ownerName = Nbt.getString(tag, "ownerName");
@@ -547,6 +561,7 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 		tag.putInt("treasury", treasury);
 		tag.putLong("treasuryTotal", treasuryTotal);
 		tag.putInt("festivalCrowd", festivalCrowd);
+		legendGuests.save(tag);
 		tag.putLong("founderMoodDay", founderMoodDay);
 		if (owner != null) {
 			Nbt.putUuid(tag, "owner", owner);

@@ -109,6 +109,7 @@ public final class MarketDays {
 			Chat.chat(player, Component.translatable("message.aliveworkplace.market.day", name).withStyle(ChatFormatting.GOLD));
 		}
 		Chronicle.record(level, hall, Chronicle.Kind.MARKET, Component.translatable("chronicle.aliveworkplace.market", traders.size()), true);
+		io.github.jcondedata.aliveworkplace.legend.LegendGuests.visit(level, hall, "market", square, level.random); // a Legend may come with them (29.8)
 		return traders;
 	}
 

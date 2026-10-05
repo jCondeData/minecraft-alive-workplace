@@ -104,6 +104,15 @@ public final class Innkeepers {
 		long day = level.getDayTime() / 24000;
 		int today = arrivedOn(innkeeper, day);
 		if (level.getDayTime() % 24000 < MORNING && today < arrivalsPerMorning(innkeeper)) {
+			// A Legend may come instead of the day's traveller (29.8): the morning's arrivals are then over.
+			java.util.Optional<BlockPos> hall = io.github.jcondedata.aliveworkplace.hall.VillageHalls.nearest(level, counter);
+			if (hall.isPresent() && io.github.jcondedata.aliveworkplace.legend.LegendGuests.visit(level, hall.get(), "inn", counter, level.random) != null) {
+				ModAttachments.LAST_GUEST_DAY.set(innkeeper, day);
+				ModAttachments.GUESTS_TODAY.set(innkeeper, arrivalsPerMorning(innkeeper));
+				ModAttachments.GUESTS_HOSTED.set(innkeeper, ModAttachments.GUESTS_HOSTED.getOrElse(innkeeper, 0) + 1);
+				BuilderLevels.addXp(level, innkeeper, 3, null);
+				return "hosting";
+			}
 			if (arrive(level, innkeeper, counter) != null) {
 				ModAttachments.LAST_GUEST_DAY.set(innkeeper, day);
 				ModAttachments.GUESTS_TODAY.set(innkeeper, today + 1);

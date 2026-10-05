@@ -1153,6 +1153,88 @@ final class JobScenes {
 					}
 				}, 30)),
 			(level, player) -> player.containerMenu instanceof ChoiceMenu));
+		SCREENS.put("legend_guest", new Screen("a Legend came to the inn as a guest, showed their terms, and settled once a home was ready", new Vec3(2.5, -57.4, 7.5), TARGET,
+			(level, player) -> {
+				// ROADMAP 29.8: a village with a hall and an inn (an innkeeper at her counter, a free bed), and a showcase Legend
+				// who visits the inn (chance 1, so she comes this morning), a Mason who wants a home of her own and a happy village.
+				level.setBlockAndUpdate(STATION, ModBlocks.VILLAGE_HALL.defaultBlockState()
+					.setValue(io.github.jcondedata.aliveworkplace.hall.VillageHallBlock.FACING, Direction.SOUTH));
+				io.github.jcondedata.aliveworkplace.legend.Legend legend = io.github.jcondedata.aliveworkplace.legend.Legends.read(
+					io.github.jcondedata.aliveworkplace.AliveWorkplace.id("showcase_stonewright"), com.google.gson.JsonParser.parseString(
+						"{\"rarity\": \"rare\", \"job\": \"minecraft:mason\", \"title\": \"Master Stonewright\","
+						+ " \"lore\": \"Her walls have stood for three hundred winters.\", \"names\": [\"Ada Stonewright\"],"
+						+ " \"arrive\": [{\"way\": \"visit\", \"place\": \"inn\", \"chance\": 1.0}],"
+						+ " \"powers\": [{\"type\": \"pace\", \"trades\": [\"minecraft:mason\"], \"radius\": 32, \"factor\": 2.0}]}").getAsJsonObject());
+				io.github.jcondedata.aliveworkplace.legend.Legends.setForTest(java.util.Map.of(legend.id(), legend));
+				BlockPos counter = new BlockPos(-3, -60, -2);
+				level.setBlockAndUpdate(counter, ModBlocks.INN_COUNTER.defaultBlockState());
+				Villager keeper = EntityType.VILLAGER.spawn(level, new BlockPos(-3, -60, -1), MobSpawnType.COMMAND);
+				keeper.setNoAi(true);
+				Jobs.employ(level, keeper, counter, ModVillagers.INN_COUNTER_POI, ModVillagers.INNKEEPER);
+				scholar = keeper;
+				for (int x : new int[] {-6, -5}) {
+					level.setBlockAndUpdate(new BlockPos(x, -60, -4), Blocks.RED_BED.defaultBlockState()
+						.setValue(BlockStateProperties.HORIZONTAL_FACING, Direction.SOUTH)
+						.setValue(BlockStateProperties.BED_PART, net.minecraft.world.level.block.state.properties.BedPart.FOOT));
+					level.setBlockAndUpdate(new BlockPos(x, -60, -5), Blocks.RED_BED.defaultBlockState()
+						.setValue(BlockStateProperties.HORIZONTAL_FACING, Direction.SOUTH)
+						.setValue(BlockStateProperties.BED_PART, net.minecraft.world.level.block.state.properties.BedPart.HEAD));
+				}
+				level.setDayTime(level.getDayTime() / 24000L * 24000L + 24000L + 1000L); // the next morning
+				// A happy village (moods are off for the scene, so its wellbeing decides).
+				io.github.jcondedata.aliveworkplace.people.Moods.ENABLED = false;
+				((io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(STATION))
+					.setNeeds(new io.github.jcondedata.aliveworkplace.hall.VillageNeeds.Needs(1, 1, 1, 1, 1, 0, 0, 0.9f));
+			},
+			List.of(new Step("01_guest_arrives", -1, 6, (level, player) -> {
+					// The inn's morning: instead of a traveller, the Legend walks in, announced in chat and the chronicle.
+					io.github.jcondedata.aliveworkplace.inn.Innkeepers.tend(level, scholar, new BlockPos(-3, -60, -2));
+					subject = io.github.jcondedata.aliveworkplace.legend.LegendGuests.guest(level, STATION);
+					Showcase.check(subject != null, "a Legend came to the inn as a guest");
+					Showcase.check(io.github.jcondedata.aliveworkplace.inn.Innkeepers.guests(level, new BlockPos(-3, -60, -2)).isEmpty(),
+						"no traveller came the same morning");
+					subject.setNoAi(true);
+					subject.moveTo(0.5, -60, 2.5, 180f, 0f);
+					subject.setYHeadRot(180f);
+				}, 40),
+				new Step("02_terms", io.github.jcondedata.aliveworkplace.legend.LegendGuests.WANTS_SLOT, 6, (level, player) -> {
+					// Right-clicked: who she is, what she'd bring, what she wants (no home yet: a cross), the days left.
+					io.github.jcondedata.aliveworkplace.legend.LegendGuests.openTerms(player, subject);
+					Showcase.check(player.containerMenu instanceof ChoiceMenu, "the terms screen opened");
+					var data = io.github.jcondedata.aliveworkplace.registry.ModAttachments.LEGEND.get(subject);
+					Showcase.check(data != null && data.guest() && !data.unmet().isEmpty(), "she wants a home first");
+				}, 40),
+				new Step("03_settled", -1, 6, (level, player) -> {
+					// A tier III home is finished beside the hall: at the next round she claims its bed and settles, a Master Mason.
+					player.closeContainer();
+					net.minecraft.resources.ResourceLocation home = io.github.jcondedata.aliveworkplace.AliveWorkplace.id("showcase_guest_manor_3");
+					BlockPos origin = new BlockPos(3, -60, -6);
+					level.getStructureManager().getOrCreate(home).fillFromWorld(level, origin.above(60), new net.minecraft.core.Vec3i(5, 4, 5), false, Blocks.AIR);
+					io.github.jcondedata.aliveworkplace.build.BuildSiteManager.get(level).recordFinished(home,
+						new io.github.jcondedata.aliveworkplace.blueprint.BlueprintData.Placement(level.dimension().location(), origin,
+							net.minecraft.world.level.block.Rotation.NONE, net.minecraft.world.level.block.Mirror.NONE), java.util.UUID.randomUUID());
+					level.setBlockAndUpdate(new BlockPos(5, -60, -4), Blocks.BLUE_BED.defaultBlockState()
+						.setValue(BlockStateProperties.HORIZONTAL_FACING, Direction.SOUTH)
+						.setValue(BlockStateProperties.BED_PART, net.minecraft.world.level.block.state.properties.BedPart.FOOT));
+					level.setBlockAndUpdate(new BlockPos(5, -60, -5), Blocks.BLUE_BED.defaultBlockState()
+						.setValue(BlockStateProperties.HORIZONTAL_FACING, Direction.SOUTH)
+						.setValue(BlockStateProperties.BED_PART, net.minecraft.world.level.block.state.properties.BedPart.HEAD));
+					io.github.jcondedata.aliveworkplace.legend.LegendGuests.tend(level, STATION);
+					var data = io.github.jcondedata.aliveworkplace.registry.ModAttachments.LEGEND.get(subject);
+					Showcase.check(data != null && data.settled(), "she settled once the home was ready");
+					Showcase.check(subject.getVillagerData().getProfession() == net.minecraft.world.entity.npc.VillagerProfession.MASON
+						&& subject.getVillagerData().getLevel() == 5, "she is a Master Mason");
+				}, 40),
+				new Step("04_settled_chronicle", -1, 6, (level, player) -> {
+					var hall = (io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(STATION);
+					Showcase.check(hall.chronicle().stream().anyMatch(e -> e.text().getContents() instanceof net.minecraft.network.chat.contents.TranslatableContents t
+						&& t.getKey().equals("chronicle.aliveworkplace.legend.settled")), "the chronicle says she settled");
+					io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.open(player, STATION);
+					if (player.containerMenu instanceof ChoiceMenu m) {
+						m.press(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.CHRONICLE, player);
+					}
+				}, 30)),
+			(level, player) -> player.containerMenu instanceof ChoiceMenu));
 		SCREENS.put("hall_quests", new Screen("the Village Hall's quests, advice, village map, mercenaries and festival opened", new Vec3(2.5, -58.4, 4.5), TARGET,
 			(level, player) -> {
 				level.setBlockAndUpdate(STATION, ModBlocks.VILLAGE_HALL.defaultBlockState()

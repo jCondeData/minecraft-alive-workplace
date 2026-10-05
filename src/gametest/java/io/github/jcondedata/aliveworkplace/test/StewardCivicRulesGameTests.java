@@ -386,29 +386,18 @@ public class StewardCivicRulesGameTests implements FabricGameTest {
 		helper.succeed();
 	}
 
-	/**
-	 * Runs {@code then} once the village's dark beds are exactly {@code dark}: the light engine works off the server
-	 * thread, so a few ticks after a light is placed a bed by it can still read dark on a busy machine (CI run 652).
-	 * Fails after {@code ticks}.
-	 */
-	private static void onceDark(GameTestHelper helper, BlockPos hall, List<BlockPos> dark, int ticks, Runnable then) {
-		List<BlockPos> now = VillageAdvice.darkBeds(helper.getLevel(), hall);
-		if (now.equals(dark)) {
-			then.run();
-			return;
-		}
-		helper.assertTrue(ticks > 0, "the light never settled: dark beds " + now + ", expected " + dark);
-		helper.runAfterDelay(1, () -> onceDark(helper, hall, dark, ticks - 1, then));
-	}
-
-	//$ gametest_ticks_batch AREA '100' '"civicLamps"'
-	@GameTest(template = AREA, timeoutTicks = 100, batch = "civicLamps")
+	//$ gametest_ticks_batch AREA '60' '"civicLamps"'
+	@GameTest(template = AREA, timeoutTicks = 60, batch = "civicLamps")
 	public void twoDarkBedsGetAStreetLampByTheDarkestBed(GameTestHelper helper) {
 		BlockPos hall = hall(helper, VillageRanks.Rank.HAMLET);
 		BlockPos lit = bed(helper, 3, 17);
 		helper.setBlock(new BlockPos(3, 2, 19), Blocks.GLOWSTONE);
-		BlockPos far = bed(helper, 12, 17); // far enough from the glowstone to stay dark
-		onceDark(helper, hall, List.of(far), 60, () -> {
+		bed(helper, 12, 17); // far enough from the glowstone to stay dark
+		// The light engine runs on its own thread: on a busy machine the glowstone's light can reach the bed later than
+		// 3 ticks after it was set (CI run 37289855963), and until then that bed counts as a second dark one.
+		helper.startSequence().thenIdle(3).thenWaitUntil(() -> helper.assertTrue(
+			helper.getLevel().getBrightness(net.minecraft.world.level.LightLayer.BLOCK, lit) >= 8, "the glowstone's light hasn't reached the lit bed yet"))
+		.thenExecute(() -> {
 			absent(helper, wishes(helper, hall), "street_lamps"); // one bed in the dark
 			BlockPos dark = bed(helper, 18, 17);
 			helper.runAfterDelay(3, () -> {

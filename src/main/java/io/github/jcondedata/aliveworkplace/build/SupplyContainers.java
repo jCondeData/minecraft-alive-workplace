@@ -62,10 +62,12 @@ public final class SupplyContainers {
 
 	/**
 	 * Blocks that hold items for their own work, not as storage: a brewing stand's bottles, a jukebox's disc, a lectern's
-	 * book, a crafter's grid.
+	 * book, a crafter's grid, a Cobblemon Pasture Block's eggs (Cobbreeding makes it a container for the eggs it lays,
+	 * so a keeper putting things away would fill her own pasture instead of her chest).
 	 */
 	static boolean isMachine(BlockEntity be) {
-		return be instanceof net.minecraft.world.level.block.entity.BrewingStandBlockEntity
+		return io.github.jcondedata.aliveworkplace.work.Pastures.isPasture(be.getBlockState())
+			|| be instanceof net.minecraft.world.level.block.entity.BrewingStandBlockEntity
 			|| be instanceof net.minecraft.world.level.block.entity.JukeboxBlockEntity
 			|| be instanceof net.minecraft.world.level.block.entity.LecternBlockEntity
 			|| be instanceof net.minecraft.world.level.block.entity.CrafterBlockEntity;

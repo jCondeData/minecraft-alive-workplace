@@ -37,6 +37,11 @@ public final class Sickness {
 		return ModAttachments.ILL_SINCE.has(villager);
 	}
 
+	/** How long {@code villager}'s illness lasts without a nurse: {@link #RECOVERY}, with the village's {@code illness} days (29.11). */
+	public static long recovery(Villager villager) {
+		return io.github.jcondedata.aliveworkplace.research.TreeEffects.illnessLasts(villager, RECOVERY);
+	}
+
 	/** Work delay multiplier: the ill work at half pace. */
 	public static float pace(Villager villager) {
 		return isIll(villager) ? PACE : 1f;
@@ -50,7 +55,7 @@ public final class Sickness {
 		Long since = ModAttachments.ILL_SINCE.get(villager);
 		long now = level.getGameTime();
 		if (since != null) {
-			if (now - since >= RECOVERY || io.github.jcondedata.aliveworkplace.legend.Gifted.noIllness(villager)) {
+			if (now - since >= recovery(villager) ||io.github.jcondedata.aliveworkplace.legend.Gifted.noIllness(villager)) {
 				recover(level, villager);
 			} else {
 				villager.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 20 * 40, 0, false, false));
@@ -76,6 +81,8 @@ public final class Sickness {
 		}
 		float chance = DAILY + (VillageNeeds.isHungry(villager, level.getGameTime()) ? HUNGRY : 0f) + (VillageNeeds.bed(level, villager) == null ? HOMELESS : 0f);
 		chance *= Math.max(0f, 1f + io.github.jcondedata.aliveworkplace.hall.CivicEffects.of(villager).sickness(villager) / 100f);
+		// The illness effects of the village's research trees (29.11): Herb Lore and the like.
+		chance *= Math.max(0f, 1f + io.github.jcondedata.aliveworkplace.research.TreeEffects.illnessPercent(villager) / 100f);
 		// Medicine: a third less likely a level.
 		return chance * (1f - io.github.jcondedata.aliveworkplace.research.Research.level(villager, io.github.jcondedata.aliveworkplace.research.Research.Topic.MEDICINE) / 3f);
 	}

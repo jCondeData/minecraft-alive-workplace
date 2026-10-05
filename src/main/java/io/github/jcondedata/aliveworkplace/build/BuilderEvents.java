@@ -47,11 +47,26 @@ public final class BuilderEvents {
 					return chosen;
 				}
 			}
+			// The Master Architect (29.12), sneak-right-clicked with an empty hand: pauses grander buildings, or carries on.
+			if (player.isShiftKeyDown() && player.getItemInHand(hand).isEmpty() && io.github.jcondedata.aliveworkplace.legend.GrandRebuild.isArchitect(villager)) {
+				if (!level.isClientSide()) {
+					io.github.jcondedata.aliveworkplace.legend.GrandRebuild.togglePause((ServerPlayer) player, villager);
+				}
+				return InteractionResult.SUCCESS;
+			}
 			// A scholar, sneak-right-clicked with an empty hand: the village's research.
 			if (player.isShiftKeyDown() && player.getItemInHand(hand).isEmpty()
 				&& villager.getVillagerData().getProfession() == io.github.jcondedata.aliveworkplace.registry.ModVillagers.SCHOLAR) {
 				if (!level.isClientSide()) {
 					io.github.jcondedata.aliveworkplace.research.ResearchScreen.open((ServerPlayer) player, villager);
+				}
+				return InteractionResult.SUCCESS;
+			}
+			// A Legend without a trade of their own, sneak-right-clicked with an empty hand: their research tree's tab (29.11).
+			if (player.isShiftKeyDown() && player.getItemInHand(hand).isEmpty()
+				&& villager.getVillagerData().getProfession() == io.github.jcondedata.aliveworkplace.registry.ModVillagers.LEGEND) {
+				if (!level.isClientSide()) {
+					io.github.jcondedata.aliveworkplace.research.ResearchScreen.openForLegend((ServerPlayer) player, villager);
 				}
 				return InteractionResult.SUCCESS;
 			}
@@ -118,6 +133,16 @@ public final class BuilderEvents {
 				if (player.getItemInHand(hand).isEmpty() && player.isShiftKeyDown()) {
 					if (!level.isClientSide()) {
 						io.github.jcondedata.aliveworkplace.gem.GemGrowers.openOrders((ServerPlayer) player, villager);
+					}
+					return InteractionResult.SUCCESS;
+				}
+				return InteractionResult.PASS;
+			}
+			if (io.github.jcondedata.aliveworkplace.daycare.DaycareKeepers.isKeeper(villager)) {
+				// Right-click with an empty hand: the daycare. Sneak for the trades.
+				if (player.getItemInHand(hand).isEmpty() && !player.isShiftKeyDown()) {
+					if (!level.isClientSide()) {
+						io.github.jcondedata.aliveworkplace.daycare.DaycareKeepers.open((ServerPlayer) player, villager);
 					}
 					return InteractionResult.SUCCESS;
 				}
@@ -391,6 +416,7 @@ public final class BuilderEvents {
 				io.github.jcondedata.aliveworkplace.berry.BerryBreeders.onDeath(level, villager);
 				io.github.jcondedata.aliveworkplace.people.Couples.onDeath(level, villager);
 				io.github.jcondedata.aliveworkplace.ranch.Daycare.onDeath(level, villager); // (before the grave keeps the villager)
+				io.github.jcondedata.aliveworkplace.daycare.DaycareKeepers.onDeath(level, villager);
 				net.minecraft.core.BlockPos grave = io.github.jcondedata.aliveworkplace.grave.Graves.onDeath(level, villager);
 				io.github.jcondedata.aliveworkplace.legend.LegendSlots.onDeath(level, villager, grave);
 				io.github.jcondedata.aliveworkplace.hall.Chronicle.record(level, villager.blockPosition(), io.github.jcondedata.aliveworkplace.hall.Chronicle.Kind.DEATH, source.getLocalizedDeathMessage(villager));

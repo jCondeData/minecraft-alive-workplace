@@ -30,7 +30,7 @@ GROUPS = [
     "Carpenter", "Mason", "Leatherworker (dyer)", "Chef", "Armorer (smelter)", "Toolsmith", "Weaponsmith", "Fletcher",
     "Shepherd", "Butcher (herder)", "Cleric (alchemist)", "Librarian (scribe)", "Cartographer (explorer)", "Postman",
     "Guard", "Nurse", "Shopkeeper", "Ferryman", "Bard", "Trainer", "Trainer Leader", "Move Tutor", "Ball Smith",
-    "Pokémon Trader", "Fossil Scientist", "Berry Breeder", "Steward", "Camp Cook", "Gem Grower", "Habitat Keeper", "Village Hall", "Legends", "Everyone at work", "Build families",
+    "Pokémon Trader", "Fossil Scientist", "Berry Breeder", "Steward", "Camp Cook", "Gem Grower", "Habitat Keeper", "Daycare Keeper", "Village Hall", "Legends", "Everyone at work", "Build families",
 ]
 
 START, WORKING, DONE = ("01_start", "Start"), ("work_*@middle", "At work"), ("03_done", "Done")
@@ -135,6 +135,10 @@ SCENES = [
     job("rancher", "Rancher", "Breaking in a horse", "the rancher tamed and saddled the horse"),
     S("daycare", "Rancher", "Pokémon daycare", "the daycare screen opened with a boarder", 75,
       [("01_daycare_screen", "Daycare"), ("02_daycare_boarder", "A boarder")], cobblemon=True),
+    S("daycare_keeper", "Daycare Keeper", "A pair left at the daycare, eggs collected",
+      "the daycare keeper took a pair of Eevee and two eggs were collected", 90,
+      [("01_daycare_keeper_screen", "The daycare"), ("03_daycare_keeper_pair", "How well they get along"), ("04_daycare_keeper_eggs", "Eggs waiting"),
+       ("05_daycare_keeper_collected", "Collected")], cobblemon=True),
     # Fisherman
     S("fish", "Fisherman", "Fishing from the shore", "the fisherman caught a fish", 120,
       [("60_fish_0", "Casting"), ("60_fish_3", "The bobber out"), ("61_fish_caught", "Caught")]),
@@ -258,6 +262,10 @@ SCENES = [
     # Legends (ROADMAP 29.3): a Mythic Legend announced to the whole server in gold, and the chronicle's nether-star line
     S("legend_announce", "Legends", "A Mythic Legend is announced", "a Mythic Legend's coming was announced in chat and written in the chronicle", 45,
       [("01_legend_chat", "The announcement"), ("02_legend_chronicle", "The chronicle line")]),
+    # Research trees as data (ROADMAP 29.11): the test tree's own tab, worked by a Legend who lives in the village
+    S("research_trees", "Legends", "A Legend's research tree",
+      "a Legend's research tree has its own tab on the research screen: levels done, one in progress, an exclusive pick taken", 45,
+      [("01_tree_tab", "The tree's tab"), ("02_tree_exclusive", "An exclusive pick taken")]),
     # Legends on the hall (ROADMAP 29.4): a Legend in the stand-in outfit with a gold name and the sparkle, the hall's
     # list with her first, and the Legends page's cards at GUI scales 2 and 4
     S("legends_hall", "Legends", "Legends on the hall, and how they look",
@@ -281,7 +289,14 @@ SCENES = [
     S("legend_sites", "Legends", "Legends found at ruins, outposts and wrecks",
       "the three camps of Legends found in the world, and a prisoner freed from the outpost cage", 40,
       [("01_three_camps", "A traveller's camp, a prisoner's cage, a castaway's camp"), ("02_cage_opened", "A bar broken: the prisoner is free")]),
+    # The Master Architect (ROADMAP 29.12): the top-tier Stone House, finished, redrawn in the Grand style and rebuilt
+    job("legend_architect", "Legends", "The Master Architect redraws a house in the Grand style",
+        "the Master Architect handed a builder the Stone House redrawn in the Grand style, and it was rebuilt", 360),
     job("legend_strike", "Legends", "A Legend on strike", "a Legend on strike left her stonecutter and picketed by the Village Hall under a red line", 120),
+    # Strange moods (ROADMAP 29.10): a Master cleric claims her brewing stand under a purple line, the chest by it fills,
+    # and she makes a named Masterwork, hung in an item frame, and becomes a Legend
+    job("strange_mood", "Legends", "A strange mood and a Masterwork",
+        "a Master cleric taken by a strange mood claimed her brewing stand, the chest was filled, and she made a Masterwork and became a Legend", 120),
     S("edicts", "Village Hall", "The Book of Edicts",
       "the Book of Edicts opened from the hall's lectern button, with Long Shifts in force, at GUI scales 2 and 4", 45,
       [("01_edicts_book", "The Book on the hall's screen: Long Shifts in force, two free slots, one locked for a City"), ("02_edicts_scale4", "The Book at GUI scale 4")]),
@@ -379,6 +394,8 @@ SCENES = [
       [("30_*@spread", "")]),
     S("village", "Build families", "One village of each type", "every village type generated, none leaving structure_void", 360,
       [("40_workshop_*@spread", "")], env={"WORKSHOP_WEIGHT": "200"}),
+    S("pokemon_builds", "Build families", "Builds for the Pokémon jobs, both tiers",
+      "all ten builds stand with their job blocks", 120, [("[12][0-9]_*@spread", "")], cobblemon=True),
     S("camp", "Build families", "A Settler's Wagon camp", "the camp was set up", 45,
       [("01_camp", "The camp"), ("02_camp_back", "From behind")]),
 ]

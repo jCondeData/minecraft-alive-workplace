@@ -27,7 +27,8 @@ public record ResearchLevels(int count, Optional<String> tree) implements Condit
 		int n = 0;
 		if (entity != null) {
 			for (Map.Entry<String, Integer> e : entity.research().levels().entrySet()) {
-				if (tree.isEmpty() || e.getKey().startsWith(tree.get() + "/")) {
+				if (io.github.jcondedata.aliveworkplace.research.Research.State.isLevel(e.getKey())
+					&& (tree.isEmpty() || e.getKey().startsWith(tree.get() + "/"))) {
 					n += Math.max(0, e.getValue());
 				}
 			}

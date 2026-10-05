@@ -1,0 +1,47 @@
+{
+  "legend": "aliveworkplace_test:test_sage",
+  "icon": "minecraft:amethyst_shard",
+  "name": "Test Lore",
+  "topics": [
+    {
+      "id": "calm_minds", "icon": "minecraft:campfire", "name": "Calm Minds", "description": "Wellbeing 10% higher a level",
+      "levels": 2, "cost": [{"minecraft:paper": 4}, {"minecraft:paper": 8, "minecraft:book": 1}], "points": 40,
+      "effects": [{"type": "aliveworkplace:wellbeing", "percent": 10}]
+    },
+    {
+      "id": "herb_lore", "icon": "minecraft:poppy", "name": "Herb Lore", "description": "Illness a fifth less likely and a day shorter a level",
+      "levels": 2, "cost": [{"minecraft:paper": 2}], "points": 40, "needs": {"calm_minds": 1},
+      "effects": [{"type": "aliveworkplace:illness", "percent": -20, "days": -1}]
+    },
+    {
+      "id": "warding", "icon": "minecraft:obsidian", "name": "Warding", "description": "Night raids a fifth less likely",
+      "cost": [{"minecraft:paper": 2}], "points": 40,
+      "effects": [{"type": "aliveworkplace:raid_chance", "factor": 0.8}]
+    },
+    {
+      "id": "deep_memory", "icon": "minecraft:experience_bottle", "name": "Deep Memory", "description": "Every villager learns 15% faster",
+      "cost": [{"minecraft:paper": 2}], "points": 40,
+      "effects": [{"type": "aliveworkplace:xp", "percent": 15}]
+    },
+    {
+      "id": "fortune", "icon": "minecraft:rabbit_foot", "name": "Fortune", "description": "Two more luck on every loot roll",
+      "cost": [{"minecraft:paper": 2}], "points": 40,
+      "effects": [{"type": "aliveworkplace:loot_luck", "luck": 2}]
+    },
+    {
+      "id": "census", "icon": "minecraft:name_tag", "name": "Census", "description": "Turns on the test switch",
+      "cost": [{"minecraft:paper": 2}], "points": 40, "unlock": {"counter": "test_counter", "at": 3},
+      "effects": [{"type": "aliveworkplace:flag", "name": "test_flag"}]
+    },
+    {
+      "id": "flame", "icon": "minecraft:soul_lantern", "name": "The Flame", "description": "Wellbeing never below 90%",
+      "cost": [{"minecraft:paper": 2}], "points": 40, "exclusive": "last_pick",
+      "effects": [{"type": "aliveworkplace:wellbeing", "at_least": 90}, {"type": "aliveworkplace:flag", "name": "flame"}]
+    },
+    {
+      "id": "iron_pact", "icon": "minecraft:iron_block", "name": "The Iron Pact", "description": "Turns on the iron switch",
+      "cost": [{"minecraft:paper": 2}], "points": 40, "exclusive": "last_pick",
+      "effects": [{"type": "aliveworkplace:flag", "name": "iron"}]
+    }
+  ]
+}

@@ -1,18 +1,23 @@
 package io.github.jcondedata.aliveworkplace.build;
 
+import io.github.jcondedata.aliveworkplace.camp.CampCooks;
 import io.github.jcondedata.aliveworkplace.mc.Lookup;
 import io.github.jcondedata.aliveworkplace.mc.Nbt;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
 
 /**
  * Build rules for blocks from other mods in the Cobbleverse pack, matched by id so none of those mods
@@ -47,6 +52,37 @@ final class ModdedBlocks {
 		ResourceLocation.fromNamespaceAndPath("sophisticatedstorage", "storage_input"),
 		ResourceLocation.fromNamespaceAndPath("sophisticatedstorage", "storage_output")
 	);
+
+	/**
+	 * Cobblemon's Campfire Pot (ROADMAP 28.13: the Camp Kitchen's job block) is a campfire with a pot put on it and has
+	 * no item of its own: a builder sets a campfire and puts a red pot on it ({@link #afterPlaced}).
+	 */
+	static final ResourceLocation CAMPFIRE_POT = ResourceLocation.fromNamespaceAndPath("cobblemon", "campfire");
+	static final ResourceLocation CAMPFIRE_POT_ITEM = ResourceLocation.fromNamespaceAndPath("cobblemon", "campfire_pot_red");
+
+	/**
+	 * What a block with no item of its own costs, or false when it isn't one of those: a Campfire Pot costs a campfire
+	 * and a pot.
+	 */
+	static boolean ownCosts(Block block, List<MaterialRules.Requirement> out) {
+		if (!BuiltInRegistries.BLOCK.getKey(block).equals(CAMPFIRE_POT)) {
+			return false;
+		}
+		Optional<Item> pot = BuiltInRegistries.ITEM.getOptional(CAMPFIRE_POT_ITEM);
+		if (pot.isPresent()) {
+			out.add(new MaterialRules.Requirement(Items.CAMPFIRE, 1));
+			out.add(new MaterialRules.Requirement(pot.get(), 1));
+		}
+		return true;
+	}
+
+	/** Finishes a block a builder has just placed: puts the pot on a Campfire Pot (its cost included it). */
+	static void afterPlaced(ServerLevel level, BlockPos pos, BlockState state) {
+		if (BuiltInRegistries.BLOCK.getKey(state.getBlock()).equals(CAMPFIRE_POT)) {
+			BuiltInRegistries.ITEM.getOptional(CAMPFIRE_POT_ITEM).ifPresent(pot ->
+				CampCooks.Pot.EXTENSION.run(p -> p.fitPot(level, pos, new ItemStack(pot))));
+		}
+	}
 
 	static boolean isStorageNetwork(Block block) {
 		ResourceLocation id = BuiltInRegistries.BLOCK.getKey(block);

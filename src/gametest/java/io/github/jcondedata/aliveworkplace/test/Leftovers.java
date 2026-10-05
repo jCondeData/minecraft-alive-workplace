@@ -59,6 +59,24 @@ final class Leftovers {
 	}
 
 	/**
+	 * Forgets every finished building recorded within a village's reach of the test area. The record is saved world data,
+	 * so buildings another batch's test recorded at this spot (Steward and upgrade tests record many, and not all forget
+	 * them) are still "finished" here: the Master Architect picked one of those for a rebuild when the test expected none
+	 * (CI, 2026-10-05). Only for tests alone in their batch.
+	 */
+	static void finished(GameTestHelper helper) {
+		net.minecraft.server.level.ServerLevel level = helper.getLevel();
+		AABB box = helper.getBounds();
+		// a hall anywhere in the area: its reach plus half the area's diagonal
+		int reach = io.github.jcondedata.aliveworkplace.hall.VillageHalls.RADIUS
+			+ (int) Math.ceil(Math.sqrt(box.getXsize() * box.getXsize() + box.getYsize() * box.getYsize() + box.getZsize() * box.getZsize()) / 2);
+		io.github.jcondedata.aliveworkplace.build.BuildSiteManager sites = io.github.jcondedata.aliveworkplace.build.BuildSiteManager.get(level);
+		for (io.github.jcondedata.aliveworkplace.build.BuildSiteManager.Finished f : sites.finishedNear(level, net.minecraft.core.BlockPos.containing(box.getCenter()), reach)) {
+			sites.forgetFinished(f.placement());
+		}
+	}
+
+	/**
 	 * Turns village sharing on for this test ({@code Village.RADIUS}, normally off in tests) and off again when the test
 	 * ends, passed or failed — a failed test that left it on made the next batches' builders share chests and fail too.
 	 */

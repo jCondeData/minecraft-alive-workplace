@@ -1,8 +1,12 @@
 package io.github.jcondedata.aliveworkplace.blueprint;
 
 import io.github.jcondedata.aliveworkplace.AliveWorkplace;
+import io.github.jcondedata.aliveworkplace.work.PokemonFeatures;
 import java.util.List;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Vec3i;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.resources.ResourceLocation;
 
 /**
@@ -65,8 +69,74 @@ public final class StarterBlueprints {
 	/** A lodge behind it (a Shop Counter's trade corner, four beds upstairs) and a garden with a Pasture Block. */
 	public static final Entry POKEMON_CENTER_2 = new Entry(AliveWorkplace.id("pokemon_center_2"), new Vec3i(13, 17, 26));
 
+	/*
+	 * The Pokémon jobs' builds (ROADMAP 28.13; tools/blueprints/pokemon_jobs.py), with Cobblemon only, each with its job
+	 * block in place and sold by its job's Journeyman. A new one: an Entry here, in COBBLEMON_ONLY and JOB_BUILDS.
+	 */
+	/** An open timber shelter round a Campfire Pot (the Camp Cook's), benches and a grain store. */
+	public static final Entry CAMP_KITCHEN = new Entry(AliveWorkplace.id("camp_kitchen"), new Vec3i(13, 10, 11));
+	/** A Hearty Grain plot behind and a smokehouse with a smoker. */
+	public static final Entry CAMP_KITCHEN_2 = new Entry(AliveWorkplace.id("camp_kitchen_2"), new Vec3i(21, 10, 19));
+	/** Fenced farmland beds in pairs round a composter (the Berry Breeder's) and a potting bench. */
+	public static final Entry BERRY_NURSERY = new Entry(AliveWorkplace.id("berry_nursery"), new Vec3i(13, 6, 11));
+	/** A greenhouse behind with four more beds. */
+	public static final Entry BERRY_NURSERY_2 = new Entry(AliveWorkplace.id("berry_nursery_2"), new Vec3i(13, 12, 20));
+	/** A barn with a straw-floored nursery and a fenced paddock round a Pasture Block (the Daycare Keeper's). */
+	public static final Entry DAYCARE = new Entry(AliveWorkplace.id("daycare"), new Vec3i(15, 11, 18));
+	/** A second paddock with its own Pasture Block and a hatchery corner with lanterns. */
+	public static final Entry DAYCARE_2 = new Entry(AliveWorkplace.id("daycare_2"), new Vec3i(19, 11, 27));
+
+	/**
+	 * A wild garden in a hedge round a mossy centre stone ({@link #HABITAT_GARDEN_CENTRE}), a pond, a Saccharine tree and
+	 * the Habitat Keeper's Pasture Block in the hedge.
+	 */
+	public static final Entry HABITAT_GARDEN = new Entry(AliveWorkplace.id("habitat_garden"), new Vec3i(15, 8, 15));
+	/** The garden runs on behind to a second pond and a keeper's hide on stilts. */
+	public static final Entry HABITAT_GARDEN_2 = new Entry(AliveWorkplace.id("habitat_garden_2"), new Vec3i(15, 11, 25));
+	/**
+	 * The Habitat Garden's mossy centre stone, a template spot of both tiers (ROADMAP 28.14 puts the village's habitat
+	 * under it; HABITAT_CENTRE in pokemon_jobs.py).
+	 */
+	public static final BlockPos HABITAT_GARDEN_CENTRE = new BlockPos(7, 0, 7);
+	/**
+	 * A stone shed over a lava pool behind glass, ledges round it for tumblestones, the Gem Grower's stonecutter and an
+	 * amethyst niche. All vanilla, like her job: in the table without Cobblemon too.
+	 */
+	public static final Entry GEM_GROTTO = new Entry(AliveWorkplace.id("gem_grotto"), new Vec3i(13, 12, 11));
+	/** A deeper chamber behind with four Deepslate Crystal Cores ({@link #GEM_GROTTO_2_CORES}). */
+	public static final Entry GEM_GROTTO_2 = new Entry(AliveWorkplace.id("gem_grotto_2"), new Vec3i(13, 12, 20));
+	/**
+	 * Gem Grotto II's crystal cores (template spots, GEM_GROTTO_CORES in pokemon_jobs.py): drawn as plain deepslate,
+	 * they are Cobblemon 1.8's Deepslate Crystal Cores when it's there ({@link #withFeatures}).
+	 */
+	public static final List<BlockPos> GEM_GROTTO_2_CORES = List.of(new BlockPos(4, 1, 13), new BlockPos(8, 1, 13), new BlockPos(4, 1, 16),
+		new BlockPos(8, 1, 16));
+
+	/** The Pokémon jobs' builds, both tiers of each (28.13). */
+	public static final List<Entry> JOB_BUILDS = List.of(CAMP_KITCHEN, CAMP_KITCHEN_2, BERRY_NURSERY, BERRY_NURSERY_2, DAYCARE, DAYCARE_2,
+		HABITAT_GARDEN, HABITAT_GARDEN_2, GEM_GROTTO, GEM_GROTTO_2);
+
+	/** The job builds that need no Cobblemon: the Gem Grower works without it (28.11), and her grotto is all vanilla. */
+	public static final List<Entry> VANILLA_JOB_BUILDS = List.of(GEM_GROTTO, GEM_GROTTO_2);
+
 	/** In the Blueprint Table (and the creative tab) only when Cobblemon is installed: most of what makes them is its. */
-	public static final List<Entry> COBBLEMON_ONLY = List.of(POKEMON_CENTER, POKEMON_CENTER_2);
+	public static final List<Entry> COBBLEMON_ONLY = java.util.stream.Stream.concat(java.util.stream.Stream.of(POKEMON_CENTER, POKEMON_CENTER_2),
+		JOB_BUILDS.stream().filter(e -> !VANILLA_JOB_BUILDS.contains(e))).toList();
+
+	/**
+	 * {@code blueprint} with the blocks only some Cobblemon versions have put in where it was drawn with a vanilla
+	 * stand-in: Gem Grotto II's crystal cores with Cobblemon 1.8 (plain deepslate otherwise).
+	 */
+	public static Blueprint withFeatures(Blueprint blueprint) {
+		if (!blueprint.id().equals(GEM_GROTTO_2.id()) || !PokemonFeatures.TYPE_GEMS.available()) {
+			return blueprint;
+		}
+		Block core = BuiltInRegistries.BLOCK.get(PokemonFeatures.TYPE_GEMS.blockId());
+		List<Blueprint.Entry> blocks = blueprint.blocks().stream()
+			.map(e -> GEM_GROTTO_2_CORES.contains(e.pos()) ? new Blueprint.Entry(e.pos(), core.defaultBlockState(), e.nbt()) : e)
+			.toList();
+		return new Blueprint(blueprint.id(), blueprint.size(), blocks, blueprint.entities());
+	}
 
 	/** Two row houses of two storeys, four beds: building houses grows a village with a Village Hall. */
 	public static final Entry TERRACE = new Entry(AliveWorkplace.id("terrace"), new Vec3i(13, 16, 10));

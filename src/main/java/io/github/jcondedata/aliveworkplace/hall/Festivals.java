@@ -87,7 +87,7 @@ public final class Festivals {
 	}
 
 	/** Which of the {@link #EVERY_DAYS} days is the festival day of the village round {@code hall}. */
-	static long offset(BlockPos hall) {
+	public static long offset(BlockPos hall) {
 		return Math.floorMod(hall.asLong() * 0x9E3779B97F4A7C15L >>> 20, EVERY_DAYS);
 	}
 

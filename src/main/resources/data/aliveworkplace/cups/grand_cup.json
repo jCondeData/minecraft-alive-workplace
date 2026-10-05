@@ -1,0 +1,23 @@
+{
+  "name": "cup.aliveworkplace.grand_cup",
+  "order": 8,
+  "format": "singles",
+  "level": 100,
+  "bring": 6,
+  "types": [],
+  "stage": "any",
+  "banned": ["legendary", "mythical", "ultra_beast", "paradox"],
+  "rules": ["Species Clause", "Item Clause"],
+  "start": 6000,
+  "end": 18000,
+  "wares": [
+    {"item": "cobblemon:ability_capsule", "price": 16},
+    {"item": "cobblemon:life_orb", "price": 12},
+    {"item": "cobblemon:leftovers", "price": 10},
+    {"item": "cobblemon:choice_scarf", "price": 12},
+    {"item": "cobblemon:rare_candy", "price": 8}
+  ],
+  "dish": "cobblemon:big_malasada",
+  "fireworks": ["#F5C542", "#E83F3F"],
+  "disc": "minecraft:music_disc_creator"
+}

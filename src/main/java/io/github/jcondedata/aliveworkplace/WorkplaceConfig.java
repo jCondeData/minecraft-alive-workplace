@@ -165,6 +165,10 @@ public final class WorkplaceConfig {
 	public boolean villageHabitats = Expansions.on(Expansions.M28);
 	/** With Cobblemon, villages grow a Pokémon Center, Camp Kitchen, Berry Nursery, Daycare and Gem Grotto, each with its worker (ROADMAP 28.15). Off: they don't (from the next server start). */
 	public boolean pokemonVillageHouses = Expansions.on(Expansions.M28);
+	/** With Cobblemon, a village with a hall, a finished Arena and Village rank holds its festivals as a Festival Cup (ROADMAP 28.17). Off: no Cups. */
+	public boolean festivalCup = Expansions.on(Expansions.M28);
+	/** Which of a host's festivals are Cups: every one (1), every second (2), ... (owner, 28.1a: every festival). */
+	public int cupEveryFestivals = 1;
 	/** Days in each of the village calendar's four seasons (each has a festival on its middle day). */
 	public int seasonDays = 16;
 	/** Hundredths of an emerald each worker brings the treasury a day (before wellbeing and rank). */
@@ -260,7 +264,8 @@ public final class WorkplaceConfig {
 		"treasuryPerWorker", 0, 500,
 		"dollarsPerEmerald", 1, 10_000,
 		"stewardMaxOpenBuilds", 1, 8,
-		"caravanRoadReach", 32, 512);
+		"caravanRoadReach", 32, 512,
+		"cupEveryFestivals", 1, 8);
 
 	private static Map<String, Range> ranges(Object... nameMinMax) {
 		Map<String, Range> map = new LinkedHashMap<>();
@@ -399,6 +404,8 @@ public final class WorkplaceConfig {
 		io.github.jcondedata.aliveworkplace.world.VillageHouses.POKEMON_JOBS = pokemonVillageHouses && Expansions.on(Expansions.M28);
 		io.github.jcondedata.aliveworkplace.gem.GemGrowers.ENABLED = gemGrowers && Expansions.on(Expansions.M28);
 		io.github.jcondedata.aliveworkplace.daycare.DaycareKeepers.ENABLED = daycareKeepers && Expansions.on(Expansions.M28);
+		io.github.jcondedata.aliveworkplace.cup.Cups.ENABLED = festivalCup && Expansions.on(Expansions.M28);
+		io.github.jcondedata.aliveworkplace.cup.Cups.EVERY = cupEveryFestivals;
 		// Off in gametests (a trait picked by chance would change a test's numbers); the people tests turn them on.
 		io.github.jcondedata.aliveworkplace.people.Names.ENABLED = villagerNames && System.getProperty("fabric-api.gametest") == null;
 		io.github.jcondedata.aliveworkplace.people.Traits.ENABLED = villagerTraits && System.getProperty("fabric-api.gametest") == null;

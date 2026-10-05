@@ -63,6 +63,8 @@ final class CradleScene {
 		if (tick == 60) {
 			server.execute(() -> {
 				ServerLevel level = server.overworld();
+				// Checked a second after staging: the cradle's POI is registered after the tick that placed it (B72).
+				Showcase.check(Cradles.nursery(level, HALL), "the cradle beside the bed makes a nursery village");
 				Cradles.round(level, HALL, 0);
 				Showcase.check(sleeper.getVehicle() instanceof CradleSeat, "the child is asleep in the cradle at night");
 			});
@@ -118,7 +120,6 @@ final class CradleScene {
 		level.setBlockAndUpdate(new BlockPos(4, -60, 0), Blocks.LANTERN.defaultBlockState());
 		level.setBlockAndUpdate(new BlockPos(-1, -60, 2), Blocks.LANTERN.defaultBlockState());
 		sleeper = baby(level, new Vec3(1.5, -60, 2.5));
-		Showcase.check(Cradles.nursery(level, HALL), "the cradle beside the bed makes a nursery village");
 		ScreenshotHarness.hoverLookingAt(player, new Vec3(4.5, -58.4, 3.0), new Vec3(2.5, -59.6, 0.5));
 	}
 

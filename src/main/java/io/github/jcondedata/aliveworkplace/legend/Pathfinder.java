@@ -355,6 +355,7 @@ public final class Pathfinder {
 			stop(villager);
 			WAITING.put(villager, Boolean.TRUE);
 			villager.getBrain().setMemory(MemoryModuleType.LOOK_TARGET, new EntityTracker(player, true));
+			villager.getLookControl().setLookAt(player);
 			return;
 		}
 		double dx = target.getX() + 0.5 - villager.getX();

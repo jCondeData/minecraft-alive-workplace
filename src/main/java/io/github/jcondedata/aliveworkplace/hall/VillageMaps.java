@@ -64,7 +64,7 @@ public final class VillageMaps {
 	public static Optional<Kind> kindOf(ResourceLocation blueprint) {
 		ResourceLocation id = BlueprintStyles.parse(blueprint).map(BlueprintStyles.Styled::base).orElse(blueprint);
 		String path = id.getPath();
-		if (path.startsWith("shapes/") || path.startsWith("camp/") || path.startsWith("legend/")) {
+		if (path.startsWith("shapes/") || path.startsWith("camp/") || path.startsWith("legend/") || path.startsWith("roads/")) {
 			return Optional.empty();
 		}
 		String name = path.substring(path.lastIndexOf('/') + 1).replaceAll("_\\d+$", "");
@@ -75,7 +75,7 @@ public final class VillageMaps {
 			case "storehouse", "supply_shop", "market_stall", "market_square" -> Kind.TRADE;
 			case "berry_farm", "ranch", "apiary_garden", "flower_shop", "compost_yard", "sifting_shed", "camp_kitchen", "berry_nursery",
 				"habitat_garden", "gem_grotto", "farmstead", "fishers_hut" -> Kind.FARMS;
-			case "lookout_tower", "barracks", "gatehouse", "wall_tower", "palisade_gate" -> Kind.DEFENCE;
+			case "lookout_tower", "barracks", "gatehouse", "wall_tower", "palisade_gate", "palisade_tower" -> Kind.DEFENCE;
 			case "tinkers_workshop", "nether_gate", "smithy", "masons_yard", "fletchers_lodge", "weavers_cottage" -> Kind.WORKSHOPS;
 			case "well", "fountain", "gazebo", "chapel", "bandstand" -> Kind.DECORATIONS;
 			case "town_hall", "guildhall" -> Kind.HALL;

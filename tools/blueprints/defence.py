@@ -45,6 +45,59 @@ def palisade_gate():
     return b
 
 
+def palisade_tower():
+    """5 x 10 x 5: a log watch platform to turn a palisade's corner (ROADMAP 27.18) — four spruce posts on a cobbled
+    footing, the sides and back closed with stakes to shoulder height, a way in at the front, a ladder up the back to a
+    plank platform with a fence parapet, and a dark oak roof on the posts with a lantern under it. It fits inside the
+    Wall Tower's 5 x 10 x 5, so a Town's stone tower takes its place cleanly."""
+    b = Build(5, 10, 5)
+    corners = ((0, 0), (4, 0), (0, 4), (4, 4))
+    for x, z in corners:  # the footing: a stone under each post
+        b.set(x, 0, z, STONE_MIX.at(x, 0, z))
+    posts(b, corners, 1, 7, "spruce_log")
+    # the lower walls: stakes on the sides and back (a taller one in the middle of each), open at the front but for
+    # a stake either side of the way in
+    for i in (1, 2, 3):
+        for x, z in ((0, i), (4, i), (i, 4)):
+            top = 3 if i == 2 else 2
+            for y in range(0, top + 1):
+                log(b, x, y, z, "stripped_spruce_log" if y == 0 else "spruce_log")
+            if top == 2:
+                fence(b, x, 3, z, "spruce_fence")
+    for x in (1, 3):
+        for y in range(0, 3):
+            log(b, x, y, 0, "spruce_log")
+        fence(b, x, 3, 0, "spruce_fence")
+    # the platform: a beam ring on the posts, a plank floor with the ladder's hole, a fence parapet
+    beam_ring(b, 0, 0, 4, 4, 4, "spruce_log")
+    box(b, 1, 5, 1, 3, 5, 3, "spruce_planks")
+    beam_ring(b, 0, 0, 4, 4, 5, "stripped_spruce_log")
+    b.set(2, 5, 3, "air")
+    for y in range(0, 6):
+        b.set(2, y, 3, "ladder", facing="north", waterlogged=False)
+    for i in (1, 2, 3):
+        for x, z in ((i, 0), (i, 4), (0, i), (4, i)):
+            fence(b, x, 6, z, "spruce_fence")
+    # the roof on the posts: a low pyramid of dark oak stairs in two steps, a slab cap, a lantern under it
+    for i in range(5):
+        stairs(b, i, 8, 0, DARK_OAK, "south")
+        stairs(b, i, 8, 4, DARK_OAK, "north")
+    for i in (1, 2, 3):
+        stairs(b, 0, 8, i, DARK_OAK, "east")
+        stairs(b, 4, 8, i, DARK_OAK, "west")
+    for i in (1, 2, 3):
+        stairs(b, i, 9, 1, DARK_OAK, "south")
+        stairs(b, i, 9, 3, DARK_OAK, "north")
+    stairs(b, 1, 9, 2, DARK_OAK, "east")
+    stairs(b, 3, 9, 2, DARK_OAK, "west")
+    slab(b, 2, 9, 2, DARK_OAK)
+    lantern(b, 2, 8, 2, hanging=True)
+    # a light at the way in, hanging from the beam
+    lantern(b, 2, 3, 0, hanging=True)
+    b.fill_air()
+    return b
+
+
 def stone_wall():
     """7 x 6 x 3: a stone wall two blocks thick with battlements along its outer edge, a walkway on top, a ladder up the
     inside and a lantern by it."""

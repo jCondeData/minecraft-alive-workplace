@@ -144,6 +144,10 @@ public final class LegendSlots {
 
 	/** A Legend turned into a zombie villager stays the Legend inside it, and cured is themselves again. */
 	static void onConversion(Entity before, Entity after) {
+		StrangeMood mood = ModAttachments.STRANGE_MOOD.get(before);
+		if (mood != null) {
+			ModAttachments.STRANGE_MOOD.set(after, mood); // a strange mood or a sulk goes with them (29.10)
+		}
 		LegendData data = ModAttachments.LEGEND.get(before);
 		if (data == null || !(after.level() instanceof ServerLevel level)) {
 			return;

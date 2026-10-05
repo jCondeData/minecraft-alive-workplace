@@ -45,6 +45,26 @@ asks for the steps, `latest.log` and any crash report).
   and Dyers) after the menu, from the chests by their station and the store, keeping 4 of each. Tonics are data
   (`data/<namespace>/tonics/<id>.json`), so a server can make any item one; the tooltip says what each does, for which
   jobs and who makes it from what. `tonics` in the config.
+- **Strange moods and Masterworks** (29.10): once a day a Master in a happy village whose trade an inspired Legend
+  names may be taken by a strange mood (1 in 8). She claims her workstation under a purple line and asks for three
+  rare materials in the chest beside it within 3 days (the chronicle, the hall, the Storehouse board and the village's
+  players hear of it). Brought, she makes a named Masterwork ("The Ember Ladle", lore naming her, the village, the day
+  and the materials, with a glint) for the player who brought the most, and becomes the Legend; a Masterwork in an item
+  frame in the village is 3 beauty. Not brought, she sulks a week (less happy, half pace) and the village has no mood
+  for 10 days. Config `strangeMoods`.
+- **Research trees for Legends, as data** (29.11): a Legend can bring a research tree of their own
+  (`data/<ns>/research_trees/<tree>.json`, so packs can add more). While they live in the village it gets its own tab
+  on the research screen (or sneak-right-click a Legend with no trade). Choose a topic there and the Legend pays for it
+  from the chests by a lectern near their home and researches it there; idle scholars help at half speed, and nothing
+  moves while the Legend is on strike. Topics can wait for a village count or be one-of-a-kind picks. New village
+  effects for trees and edicts: wellbeing, illness (chance and length), raid chance, XP, loot luck and named switches.
+  Old halls keep their research as it was.
+- **The Master Architect** (29.12), the first Legendary Legend: a guest at the inn once the village is a Town with
+  finished buildings in 3 styles. Builders within 32 blocks of the Architect work twice as fast, and every 3 days the Architect hands the
+  least busy builder the next upgrade of a finished building (homes first), or redraws it in the new **Grand** style
+  (stone-brick plinths, polished andesite and deepslate trim, dark-oak frames, deepslate-tile roofs), rebuilding only
+  the blocks that change. Sneak-right-click the Architect to pause it; a strike stops it. A long blue coat, a brass compass and a
+  rolled drawing.
 - **Legends found in the world** (29.9): standing in a ruined portal, a pillager outpost or a shipwreck, a player whose
   village has earned a Legend found there may come on their camp: a traveller beside the portal (talk to them), a
   prisoner in an iron cage at the tower's foot (break the bars) or a castaway on the nearest beach (hand them a cooked
@@ -83,6 +103,20 @@ asks for the steps, `latest.log` and any crash report).
   another village style's outside (plains, desert, savanna, snowy or taiga); the village's builder rebuilds the outside
   in place and leaves the room inside, its job block and its chests as they were. Builders now also pick up what falls
   off a block they take down (a lantern under a porch roof) instead of waiting for it.
+- **Builds for the Pokémon jobs** (28.13, with Cobblemon): the Camp Kitchen (an open timber shelter round a Campfire
+  Pot, benches and a grain store; II adds a Hearty Grain plot and a smokehouse), the Berry Nursery (fenced farmland beds
+  in pairs, a composter and a potting bench; II adds a greenhouse with four more beds) and the Daycare (a barn with a
+  straw-floored nursery and a paddock round a Pasture Block; II adds a second paddock and a hatchery), the Habitat Garden
+  (a wild garden in a hedge with a pond, a Saccharine tree and a Pasture Block round a mossy centre stone; II adds a
+  keeper's hide on stilts and a second pond) and the Gem Grotto (a stone shed over a lava pool behind glass, ledges for
+  tumblestones, a stonecutter and an amethyst niche; II adds a deeper chamber with four Deepslate Crystal Cores, plain
+  deepslate before Cobblemon 1.8). In the Blueprint Table and sold by Journeyman Camp Cooks, Berry Breeders, Daycare
+  Keepers, Habitat Keepers and Gem Growers; the Gem Grotto needs no Cobblemon. Builders put the pot on the Campfire Pot.
+- **The Daycare Keeper** (28.12, with Cobblemon): a villager at a Pasture Block, picked with an egg. Leave one pair of
+  Pokémon per player (three pairs per keeper); her screen says how well they get along. Each dawn she may find an egg
+  (70/50/20%, +10% at Expert), 4 emeralds each to collect: a real Cobbreeding egg with Cobbreeding, otherwise the level-1
+  hatchling with inherited IVs, Everstone nature, ball, hidden ability and egg moves. Her pairs go to their PCs if she
+  dies. Config `daycareKeepers`.
 - **Gifted villagers** (29.6): about one villager in 30 has a rare gift as well as their traits, shown in gold on the
   Village Hall's list. Prodigy learns three times as fast; Iron Will never panics and keeps working through raids and
   the bell; Silver Tongue's trades are 20% cheaper; a Night Owl works from dusk to dawn and sleeps from mid-morning to
@@ -374,6 +408,9 @@ asks for the steps, `latest.log` and any crash report).
   partners than before.**
 
 ### Fixed
+- Villagers no longer get stuck against the flower boxes beside the steps of our village houses (every village type):
+  the pots now stand on upside-down stair sills instead of head-height trapdoors, which villagers mistook for open
+  ground (B69).
 - The showcase client starts every scene again without Cobblemon: the Habitat Keeper scene's wild Eevee is spawned
   from a Cobblemon-only helper, so loading the scenes no longer crashes (B59).
 - Every switch on the settings screen fits its button again, on or off: shorter names for Nurse Healing Machines,

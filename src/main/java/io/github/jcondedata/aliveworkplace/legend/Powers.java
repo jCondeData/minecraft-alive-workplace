@@ -17,6 +17,7 @@ public final class Powers {
 	static {
 		register("pace", PacePower::read);
 		register("mood", MoodPower::read);
+		register("grand_rebuild", GrandRebuildPower::read);
 		GiftPowers.register();
 	}
 

@@ -706,6 +706,118 @@ final class JobScenes {
 				&& io.github.jcondedata.aliveworkplace.legend.LegendNeeds.striking(mason)
 				&& io.github.jcondedata.aliveworkplace.work.WorkerStatus.get(mason, l.getGameTime()) != null;
 		}, null));
+		SCENES.put("strange_mood", job("a Master cleric taken by a strange mood claimed her brewing stand, the chest was filled, and she made a Masterwork and became a Legend", 1800,
+			(level, player) -> {
+			// ROADMAP 29.10: a Master cleric in a village with a hall is seized by a strange mood (the Legend's file is the
+			// scene's own). She claims her brewing stand under a purple line; a little later the three materials she asked
+			// for go into the chest beside it one by one, she makes the Masterwork, becomes the Legend, and the Masterwork
+			// is hung in an item frame by her stand.
+			level.getGameRules().getRule(GameRules.RULE_DAYLIGHT).set(false, level.getServer());
+			level.setDayTime(3000); // mid-morning: work time
+			net.minecraft.resources.ResourceLocation id = io.github.jcondedata.aliveworkplace.AliveWorkplace.id("showcase_mood");
+			io.github.jcondedata.aliveworkplace.legend.Legend legend = io.github.jcondedata.aliveworkplace.legend.Legends.read(id,
+				com.google.gson.JsonParser.parseString("{\"rarity\": \"rare\", \"job\": \"minecraft:cleric\", \"title\": \"entity.minecraft.villager.legend\","
+					+ " \"lore\": \"entity.minecraft.villager.legend\", \"arrive\": [{\"way\": \"inspired\", \"trades\": [\"minecraft:cleric\"]}],"
+					+ " \"masterwork\": {\"item\": \"minecraft:totem_of_undying\", \"materials\": [\"minecraft:diamond\", \"minecraft:blaze_rod\","
+					+ " \"minecraft:echo_shard\", \"minecraft:amethyst_shard\"]}}").getAsJsonObject());
+			io.github.jcondedata.aliveworkplace.legend.Legends.setForTest(Map.of(id, legend));
+			io.github.jcondedata.aliveworkplace.legend.StrangeMoods.ENABLED = true;
+			BlockPos hall = STATION.offset(-6, 0, -3);
+			place(level, hall, ModBlocks.VILLAGE_HALL);
+			Villager cleric = worker(level, STATION, Blocks.BREWING_STAND, PoiTypes.CLERIC, VillagerProfession.CLERIC);
+			cleric.setVillagerData(cleric.getVillagerData().setLevel(5));
+			Container c = chest(level, chestPos());
+			BlockPos wall = STATION.offset(2, 0, -1);
+			place(level, wall, Blocks.POLISHED_ANDESITE);
+			long today = io.github.jcondedata.aliveworkplace.hall.Chronicle.day(level);
+			io.github.jcondedata.aliveworkplace.legend.StrangeMood mood = io.github.jcondedata.aliveworkplace.legend.StrangeMoods.start(level, hall, cleric,
+				legend, today, net.minecraft.util.RandomSource.create(29L));
+			long began = level.getGameTime();
+			boolean[] hung = {false};
+			java.util.function.Function<Container, ItemStack> masterworkIn = box -> {
+				for (int i = 0; i < box.getContainerSize(); i++) {
+					if (io.github.jcondedata.aliveworkplace.legend.StrangeMoods.isMasterwork(box.getItem(i))) {
+						return box.getItem(i);
+					}
+				}
+				return ItemStack.EMPTY;
+			};
+			return l -> {
+				long t = l.getGameTime() - began;
+				for (int i = 0; i < mood.materials().size(); i++) {
+					net.minecraft.world.item.Item item = net.minecraft.core.registries.BuiltInRegistries.ITEM.get(mood.materials().get(i));
+					if (t >= 300 + 60L * i && c.countItem(item) == 0 && io.github.jcondedata.aliveworkplace.legend.StrangeMoods.claiming(cleric)) {
+						c.setItem(i, new ItemStack(item)); // the chest filled, one material at a time
+					}
+				}
+				if (!hung[0] && ModAttachments.LEGEND.has(cleric)) {
+					ItemStack work = c.countItem(Items.TOTEM_OF_UNDYING) > 0 ? masterworkIn.apply(c) : masterworkIn.apply(player.getInventory());
+					if (!work.isEmpty()) {
+						net.minecraft.world.entity.decoration.ItemFrame frame = new net.minecraft.world.entity.decoration.ItemFrame(l, wall.south(), Direction.SOUTH);
+						frame.setItem(work.copy(), false);
+						l.addFreshEntity(frame);
+						hung[0] = true;
+						Showcase.check(io.github.jcondedata.aliveworkplace.legend.StrangeMoods.isMasterwork(work)
+							&& work.getHoverName().getString().startsWith("The "), "the Masterwork has its name: " + work.getHoverName().getString());
+					}
+				}
+				return hung[0] && t >= 600;
+			};
+		}));
+		SCENES.put("legend_architect", new Job("the Master Architect handed a builder the Stone House redrawn in the Grand style, and it was rebuilt", 7000,
+			new Vec3(5.5, -52, 10.5), new Vec3(-5, -56, -6), (level, player) -> {
+			// ROADMAP 29.12: a finished Stone House the village's builder put up, a builder at his bench with the Grand
+			// style's materials in barrels, and the Master Architect settled beside them. A building's next tier comes
+			// first, so the scene stages the top tier, stone_house_3, which has none: his round hands the builder the
+			// house redrawn in the Grand style, and only the blocks that differ are taken down and placed.
+			level.getGameRules().getRule(ModGameRules.BUILD_DELAY).set(2, level.getServer());
+			StarterBlueprints.Entry entry = StarterBlueprints.STONE_HOUSE_3;
+			BlockPos anchor = new BlockPos(-8, -60, -3);
+			Blueprint blueprint = BlueprintLibrary.get(level, entry.id()).orElseThrow();
+			BlueprintData.Placement placement = BlueprintItem.placementAt(level.dimension().location(), blueprint.size(), anchor,
+				BlueprintItem.rotationFacing(Direction.SOUTH));
+			level.getStructureManager().get(entry.id()).orElseThrow().placeInWorld(level, placement.origin(), placement.origin(),
+				new net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings().setRotation(placement.rotation())
+					.setMirror(placement.mirror()), level.getRandom(), 2);
+			BuildSiteManager.get(level).recordFinished(entry.id(), placement, player.getUUID());
+			place(level, STATION.offset(6, 0, 2), ModBlocks.VILLAGE_HALL);
+			net.minecraft.resources.ResourceLocation grandId = io.github.jcondedata.aliveworkplace.blueprint.BlueprintStyles.styled(entry.id(), "grand");
+			Map<Item, Integer> stock = new LinkedHashMap<>(BuildPlan.create(BlueprintLibrary.get(level, grandId).orElseThrow(), placement).materials());
+			List<ItemStack> stacks = new ArrayList<>();
+			stock.forEach((item, total) -> {
+				for (int left = total; left > 0; left -= item.getDefaultMaxStackSize()) {
+					stacks.add(new ItemStack(item, Math.min(left, item.getDefaultMaxStackSize())));
+				}
+			});
+			BlockPos bench = STATION.offset(2, 0, 3);
+			level.setBlockAndUpdate(bench, ModBlocks.BLUEPRINT_TABLE.defaultBlockState());
+			for (int b = 0; b * 27 < stacks.size(); b++) {
+				BlockPos barrelPos = bench.offset(1 + b, 0, 0);
+				level.setBlockAndUpdate(barrelPos, Blocks.BARREL.defaultBlockState());
+				Container barrel = (Container) level.getBlockEntity(barrelPos);
+				for (int slot = 0; slot < 27 && b * 27 + slot < stacks.size(); slot++) {
+					barrel.setItem(slot, stacks.get(b * 27 + slot));
+				}
+			}
+			Villager builder = EntityType.VILLAGER.spawn(level, bench.south(2), MobSpawnType.COMMAND);
+			Builders.employ(level, builder, bench);
+			Villager architect = EntityType.VILLAGER.spawn(level, bench.offset(-2, 0, 2), MobSpawnType.COMMAND);
+			architect.setNoAi(true);
+			architect.setYRot(200);
+			architect.setYHeadRot(200);
+			io.github.jcondedata.aliveworkplace.legend.Legend legend = io.github.jcondedata.aliveworkplace.legend.Legends.get(
+				io.github.jcondedata.aliveworkplace.AliveWorkplace.id("master_architect")).orElse(null);
+			Showcase.check(legend != null, "the Master Architect's file loaded");
+			if (legend == null) {
+				return l -> true;
+			}
+			io.github.jcondedata.aliveworkplace.legend.Legends.make(level, architect, legend, "showcase");
+			BuildSite site = io.github.jcondedata.aliveworkplace.legend.GrandRebuild.round(level, architect, ModAttachments.LEGEND.get(architect),
+				legend.powers(io.github.jcondedata.aliveworkplace.legend.GrandRebuildPower.class).get(0));
+			Showcase.check(site != null && site.structure().equals(grandId), "the Architect handed over the Stone House in the Grand style");
+			java.util.UUID id = site == null ? null : site.id();
+			return l -> built(l, id, 1f);
+		}, null));
 		SCENES.put("bard", job("the bard played a record at the Music Stand", 1200, (level, player) -> {
 			Villager b = picked(level, player, STATION, Blocks.JUKEBOX, Items.MUSIC_DISC_CAT);
 			chest(level, chestPos(), new ItemStack(Items.MUSIC_DISC_CAT));
@@ -928,6 +1040,50 @@ final class JobScenes {
 			List.of(step("01_daycare_screen", io.github.jcondedata.aliveworkplace.compat.cobblemon.CobblemonDaycare.INFO, 6),
 				step("02_daycare_boarder", io.github.jcondedata.aliveworkplace.compat.cobblemon.CobblemonDaycare.FIRST_BOARDER_SLOT, 6)),
 			(level, player) -> player.containerMenu instanceof ChoiceMenu && io.github.jcondedata.aliveworkplace.ranch.Daycare.boarders(subject).size() == 1));
+		SCREENS.put("daycare_keeper", new Screen("the daycare keeper took a pair of Eevee and two eggs were collected", new Vec3(2.5, -58.4, 4.5), TARGET,
+			(level, player) -> {
+				// ROADMAP 28.12: Cobblemon's Pasture Block picked with an egg; two Eevee (mother and father) and a Bulbasaur
+				// in the party. The screen: pick the mother, then the father; two dawns later, collect the eggs.
+				net.minecraft.world.level.block.Block pasture = net.minecraft.core.registries.BuiltInRegistries.BLOCK.get(
+					io.github.jcondedata.aliveworkplace.registry.ModVillagers.PASTURE_BLOCK);
+				BlockState bottom = pastureHalf(ScreenshotHarness.standing(pasture.defaultBlockState()), "bottom");
+				subject = picked(level, player, STATION, bottom, Items.EGG);
+				level.setBlockAndUpdate(STATION.above(), pastureHalf(bottom, "top"));
+				subject.setNoAi(true);
+				party(player, "bulbasaur level=10", "eevee gender=female level=20", "eevee gender=male level=20");
+				io.github.jcondedata.aliveworkplace.compat.cobbledollars.CobbleDollarsBank.add(player, 5000);
+				io.github.jcondedata.aliveworkplace.daycare.DaycareKeepers.open(player, subject);
+			},
+			List.of(step("01_daycare_keeper_screen", io.github.jcondedata.aliveworkplace.compat.cobblemon.CobblemonDaycareKeeper.FIRST_PARTY_SLOT + 1, 6),
+				new Step("02_daycare_keeper_picked", io.github.jcondedata.aliveworkplace.compat.cobblemon.CobblemonDaycareKeeper.FIRST_PARTY_SLOT + 2, 6,
+					(level, player) -> {
+						if (player.containerMenu instanceof ChoiceMenu m) {
+							m.press(io.github.jcondedata.aliveworkplace.compat.cobblemon.CobblemonDaycareKeeper.FIRST_PARTY_SLOT + 1, player);
+						}
+					}, 25),
+				new Step("03_daycare_keeper_pair", io.github.jcondedata.aliveworkplace.compat.cobblemon.CobblemonDaycareKeeper.GET_ALONG, 6,
+					(level, player) -> {
+						if (player.containerMenu instanceof ChoiceMenu m) {
+							m.press(io.github.jcondedata.aliveworkplace.compat.cobblemon.CobblemonDaycareKeeper.FIRST_PARTY_SLOT + 2, player);
+						}
+					}, 25),
+				new Step("04_daycare_keeper_eggs", io.github.jcondedata.aliveworkplace.compat.cobblemon.CobblemonDaycareKeeper.EGGS, 6,
+					(level, player) -> {
+						// Two dawns found two eggs
+						var pairs = io.github.jcondedata.aliveworkplace.daycare.DaycareKeepers.pairs(subject);
+						if (!pairs.isEmpty()) {
+							io.github.jcondedata.aliveworkplace.daycare.DaycareKeepers.setPairs(subject, List.of(pairs.get(0).withEggs(2, pairs.get(0).day())));
+						}
+						io.github.jcondedata.aliveworkplace.daycare.DaycareKeepers.open(player, subject);
+					}, 25),
+				new Step("05_daycare_keeper_collected", -1, 6,
+					(level, player) -> {
+						if (player.containerMenu instanceof ChoiceMenu m) {
+							m.press(io.github.jcondedata.aliveworkplace.compat.cobblemon.CobblemonDaycareKeeper.EGGS, player);
+						}
+					}, 25)),
+			(level, player) -> player.containerMenu instanceof ChoiceMenu && io.github.jcondedata.aliveworkplace.daycare.DaycareKeepers.pairs(subject).size() == 1
+				&& io.github.jcondedata.aliveworkplace.daycare.DaycareKeepers.pairs(subject).get(0).eggs() == 0));
 		SCREENS.put("smith_orders", new Screen("the orders screen opened and a Poké Ball was picked", new Vec3(2.5, -58.4, 4.5), TARGET,
 			(level, player) -> {
 				subject = picked(level, player, STATION, Blocks.SMITHING_TABLE, cobblemonItem("red_apricorn"));
@@ -1872,6 +2028,58 @@ final class JobScenes {
 				new Step("04_ledger_opens", -1, 6, (level, player) ->
 					ModItems.VILLAGE_LEDGER.use(level, player, InteractionHand.MAIN_HAND), 30)),
 			(level, player) -> player.containerMenu instanceof ChoiceMenu m && m.getType() == ModBlocks.VILLAGE_HALL_MENU)); // the hall's own screen (30.4a)
+		SCREENS.put("research_trees", new Screen("a Legend's research tree has its own tab on the research screen: levels done, one in progress, an exclusive pick taken",
+			new Vec3(2.5, -58.4, 4.5), TARGET,
+			(level, player) -> {
+				// ROADMAP 29.11: the test tree as data, worked by a Legend of the scene's own who lives in the village.
+				level.setBlockAndUpdate(STATION, ModBlocks.VILLAGE_HALL.defaultBlockState()
+					.setValue(io.github.jcondedata.aliveworkplace.hall.VillageHallBlock.FACING, Direction.SOUTH));
+				net.minecraft.resources.ResourceLocation sageId = io.github.jcondedata.aliveworkplace.AliveWorkplace.id("showcase_sage");
+				io.github.jcondedata.aliveworkplace.legend.Legend sage = io.github.jcondedata.aliveworkplace.legend.Legends.read(sageId,
+					com.google.gson.JsonParser.parseString("{\"rarity\": \"rare\", \"job\": \"aliveworkplace:legend\", \"title\": \"entity.minecraft.villager.legend\","
+						+ " \"lore\": \"entity.minecraft.villager.legend\"}").getAsJsonObject());
+				io.github.jcondedata.aliveworkplace.legend.Legends.setForTest(Map.of(sageId, sage));
+				String effect = "\"cost\": [{\"minecraft:paper\": 8, \"minecraft:book\": 2}], \"points\": 40";
+				var tree = io.github.jcondedata.aliveworkplace.research.ResearchTrees.read(io.github.jcondedata.aliveworkplace.AliveWorkplace.id("showcase_lore"),
+					com.google.gson.JsonParser.parseString("{\"legend\": \"" + sageId + "\", \"icon\": \"minecraft:amethyst_shard\", \"name\": \"Test Lore\", \"topics\": ["
+						+ "{\"id\": \"calm_minds\", \"icon\": \"minecraft:campfire\", \"name\": \"Calm Minds\", \"description\": \"Wellbeing 10% higher a level\", \"levels\": 2, " + effect
+						+ ", \"effects\": [{\"type\": \"aliveworkplace:wellbeing\", \"percent\": 10}]},"
+						+ "{\"id\": \"herb_lore\", \"icon\": \"minecraft:poppy\", \"name\": \"Herb Lore\", \"description\": \"Illness a fifth less likely and a day shorter a level\", \"levels\": 2, "
+						+ effect + ", \"needs\": {\"calm_minds\": 1}, \"effects\": [{\"type\": \"aliveworkplace:illness\", \"percent\": -20, \"days\": -1}]},"
+						+ "{\"id\": \"warding\", \"icon\": \"minecraft:obsidian\", \"name\": \"Warding\", \"description\": \"Night raids a fifth less likely\", " + effect
+						+ ", \"effects\": [{\"type\": \"aliveworkplace:raid_chance\", \"factor\": 0.8}]},"
+						+ "{\"id\": \"deep_memory\", \"icon\": \"minecraft:experience_bottle\", \"name\": \"Deep Memory\", \"description\": \"Every villager learns 15% faster\", " + effect
+						+ ", \"effects\": [{\"type\": \"aliveworkplace:xp\", \"percent\": 15}]},"
+						+ "{\"id\": \"fortune\", \"icon\": \"minecraft:rabbit_foot\", \"name\": \"Fortune\", \"description\": \"Two more luck on every loot roll\", " + effect
+						+ ", \"effects\": [{\"type\": \"aliveworkplace:loot_luck\", \"luck\": 2}]},"
+						+ "{\"id\": \"census\", \"icon\": \"minecraft:name_tag\", \"name\": \"Census\", \"description\": \"Opens when the village is large\", " + effect
+						+ ", \"unlock\": {\"counter\": \"villagers\", \"at\": 30}},"
+						+ "{\"id\": \"flame\", \"icon\": \"minecraft:soul_lantern\", \"name\": \"The Flame\", \"description\": \"Wellbeing never below 90%\", " + effect
+						+ ", \"exclusive\": \"last_pick\", \"effects\": [{\"type\": \"aliveworkplace:wellbeing\", \"at_least\": 90}]},"
+						+ "{\"id\": \"iron_pact\", \"icon\": \"minecraft:iron_block\", \"name\": \"The Iron Pact\", \"description\": \"Golems join the village\", " + effect
+						+ ", \"exclusive\": \"last_pick\", \"effects\": [{\"type\": \"aliveworkplace:flag\", \"name\": \"iron_pact\"}]}]}"));
+				io.github.jcondedata.aliveworkplace.research.ResearchTrees.set(List.of(tree));
+				subject = EntityType.VILLAGER.spawn(level, STATION.south(2).east(2), MobSpawnType.COMMAND);
+				subject.setNoAi(true);
+				subject.setYRot(180);
+				subject.setYHeadRot(180);
+				subject.setCustomName(net.minecraft.network.chat.Component.literal("Old Wynn"));
+				io.github.jcondedata.aliveworkplace.legend.Legends.make(level, subject, sage, "showcase");
+				var hall = (io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(STATION);
+				var state = new io.github.jcondedata.aliveworkplace.research.Research.State(Map.of(tree.key() + "/calm_minds", 2, tree.key() + "/flame", 1,
+					tree.key() + "/warding", 1), java.util.Optional.empty(), 0, false);
+				state = io.github.jcondedata.aliveworkplace.research.ResearchTrees.choose(state, tree, tree.topic("herb_lore").orElseThrow());
+				hall.setResearch(io.github.jcondedata.aliveworkplace.research.ResearchTrees.withProgress(state, tree, 40));
+				level.setBlockAndUpdate(STATION.east(4).south(1), Blocks.LECTERN.defaultBlockState());
+			},
+			List.of(new Step("01_tree_tab", io.github.jcondedata.aliveworkplace.research.ResearchScreen.TOPIC_SLOTS[1], 6, (level, player) -> {
+					io.github.jcondedata.aliveworkplace.research.ResearchScreen.openForLegend(player, subject);
+					Showcase.check(player.containerMenu instanceof ChoiceMenu m
+						&& m.icon(io.github.jcondedata.aliveworkplace.research.ResearchScreen.TAB_SLOTS[1]).is(Items.AMETHYST_SHARD)
+						&& m.icon(io.github.jcondedata.aliveworkplace.research.ResearchScreen.TOPIC_SLOTS[1]).is(Items.POPPY), "the Legend's tree opened on its own tab");
+				}, 40),
+				new Step("02_tree_exclusive", io.github.jcondedata.aliveworkplace.research.ResearchScreen.TOPIC_SLOTS[7], 6, null, 40)),
+			(level, player) -> player.containerMenu instanceof ChoiceMenu));
 		SCREENS.put("leader",new Screen("the Trainer Leader took the challenge and the battle started", new Vec3(-4.5, -57.5, 11.5),
 			new Vec3(0.5, -59, 5.5),
 			(level, player) -> {

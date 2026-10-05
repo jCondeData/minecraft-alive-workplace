@@ -199,6 +199,7 @@ public final class StorehouseBoard {
 		}
 		if (given > 0) {
 			inventory.setChanged();
+			Requests.given(player, request, given);
 		}
 		return given;
 	}

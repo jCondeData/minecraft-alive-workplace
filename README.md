@@ -373,6 +373,7 @@ placed keep working, so old worlds are fine.
 | Camp Cook (with Cobblemon) | Campfire Pot (Cobblemon's campfire with a pot on it) + Hearty Grains | the makings of her dishes (Hearty Grains, Vivichoke, apricorns, milk, honey, berries for seasoning) | nothing (a Storehouse's stock orders for the order-only treats) |
 | Habitat Keeper (with Cobblemon) | Pasture Block (Cobblemon's) + a honey bottle | Poké Snacks (or the Camp Cook's), honey bottles, Saccharine saplings | Field Markers for her lure spots (optional) |
 | Gem Grower | Stonecutter + an amethyst shard | tumblestones or Type Gem Blocks to plant (with Cobblemon), glass and shards for Blank TMs (1.8) | sneak-right-click: pick which gem beds she keeps |
+| Daycare Keeper (with Cobblemon) | Pasture Block (Cobblemon's) + an egg | emeralds (or CobbleDollars) to collect eggs | right-click: leave a pair, collect eggs |
 | Netherworker | Cartography Table + netherrack | food (a pickaxe, an axe, a sword, a chestplate, fire resistance) | nothing (a Nether portal within 32 blocks) |
 | Undertaker | Brewing Stand + a golden apple, an enchanted golden apple or a totem | golden apples, healing potions or totems | nothing (graves within 32 blocks) |
 | Innkeeper | Shop Counter + a bed | — | nothing (hire the travellers who come to stay) |
@@ -1054,6 +1055,24 @@ makings for. The beds are data files (`data/<namespace>/gem_beds/<name>.json`: w
 which blocks grow and which is ripe), so a data pack can add more. She sells amethyst shards, then tumblestones, and Type
 Gems at Expert (1.8); Rock and Steel Pokémon help her, and a Rock partner taps each ripe cluster loose. Config
 `gemGrowers` (on).
+
+## Daycare Keepers (with Cobblemon)
+Stand a villager by a **Pasture Block** and sneak-right-click them with an **egg**: they become a **Daycare Keeper**.
+Right-click her (sneak for her trades) to open the daycare: pick one Pokémon of your party, then its partner, and she
+keeps the pair (one pair per player, three pairs per keeper). The screen says how well they get along, from Cobblemon's
+species data: **very well** (same species, different original trainers), **well** (same species, or an egg group in
+common), **so-so** (Ditto with anything that breeds), **not at all** (no group in common, the Undiscovered group, two
+Ditto, or not a mother and a father). Each dawn she may find an egg with them: 70%, 50% or 20% (10% more at Expert and
+Master), up to three kept for you, 4 emeralds (or their worth in CobbleDollars) each to collect.
+- **With Cobbreeding** (the Cobbleverse pack's breeding mod) an egg is a real Cobbreeding egg, made with its own
+  `/givepokemonegg`, which hatches as Cobbreeding hatches its eggs.
+- **Without it** you get the hatchling itself, at level 1, to your party or PC: the base form of the mother (or of the
+  parent that isn't Ditto), 3 IVs from the parents (5 when one holds a Destiny Knot), the nature of a parent holding an
+  Everstone, the mother's ball, a 1 in 5 chance of a hidden ability the mother has, and the egg moves both parents know.
+
+If she dies, the pairs go to their trainers' PCs. She sells Exp. Candy XS, an Everstone at Journeyman and a Destiny Knot
+at Master; Normal and Fairy Pokémon help her, and a Normal partner keeps the pairs company in the pasture. Config
+`daycareKeepers` (on).
 
 ## Habitat Keepers (with Cobblemon)
 Put a chest by one of Cobblemon's **Pasture Blocks**, stand a villager beside it and sneak-right-click them with a

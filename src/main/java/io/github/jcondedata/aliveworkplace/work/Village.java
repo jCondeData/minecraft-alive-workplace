@@ -94,7 +94,8 @@ public final class Village {
 			return out;
 		}
 		double radiusSqr = (double) RADIUS * RADIUS;
-		for (Villager v : level.getEntitiesOfClass(Villager.class, new AABB(pos).inflate(RADIUS + 16), v -> v.isAlive() && takesPart(v))) {
+		for (Villager v : level.getEntitiesOfClass(Villager.class, new AABB(pos).inflate(RADIUS + 16), v -> v.isAlive()
+			&& (takesPart(v) || io.github.jcondedata.aliveworkplace.legend.StrangeMoods.claiming(v)))) { // a strange mood's wants are on the board (29.10)
 			BlockPos theirs = Builders.benchPos(v).orElse(null);
 			if (theirs != null && theirs.distSqr(pos) <= radiusSqr && sameSide(level, boss, ModAttachments.BUILDER_EMPLOYER.get(v))) {
 				out.add(v);

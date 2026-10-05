@@ -1,0 +1,10 @@
+{
+  "rarity": "rare",
+  "job": "aliveworkplace:legend",
+  "title": "legend.aliveworkplace_test.test_sage.title",
+  "lore": "legend.aliveworkplace_test.test_sage.lore",
+  "names": ["legend.aliveworkplace_test.test_sage.name.1"],
+  "conditions": [],
+  "arrive": [],
+  "powers": []
+}

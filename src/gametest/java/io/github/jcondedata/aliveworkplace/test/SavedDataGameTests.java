@@ -58,6 +58,11 @@ public class SavedDataGameTests implements FabricGameTest {
 		samples.put("SIGHTINGS", List.of(new io.github.jcondedata.aliveworkplace.habitat.HabitatKeepers.Sighting(
 			Component.translatable("message.aliveworkplace.habitat_keeper.sighting.shiny", Component.translatable("cobblemon.species.eevee.name")), "shiny", new BlockPos(12, 70, -40), 12L)));
 		samples.put("SIGHTED", List.of(A, B));
+		net.minecraft.nbt.CompoundTag eevee = new net.minecraft.nbt.CompoundTag();
+		eevee.putString("Species", "cobblemon:eevee");
+		net.minecraft.nbt.CompoundTag ditto = new net.minecraft.nbt.CompoundTag();
+		ditto.putString("Species", "cobblemon:ditto");
+		samples.put("DAYCARE_PAIRS", List.of(new io.github.jcondedata.aliveworkplace.daycare.DaycareKeepers.Pair(A, "Jesse", eevee, ditto, 2, 41L)));
 		samples.put("BERRY_PLOT", new FieldJob(new BoundingBox(2, 64, -3, 9, 65, 5), false));
 		samples.put("FARM_FIELD", new FieldJob(new BoundingBox(100, 63, 200, 108, 63, 209), true));
 		samples.put("FOSSIL_REVIVALS", List.of(new Revival(A, "Jesse", ResourceLocation.parse("cobblemon:helix_fossil"),
@@ -79,6 +84,12 @@ public class SavedDataGameTests implements FabricGameTest {
 		samples.put("GIFTED", "aliveworkplace:night_owl");
 		samples.put("LEGEND", new io.github.jcondedata.aliveworkplace.legend.LegendData(net.minecraft.resources.ResourceLocation.parse("aliveworkplace:master_architect"),
 			"legend.aliveworkplace.master_architect.name.2", true, Optional.of(new BlockPos(5, 70, -9)), 12, 15, Map.of("home", 2), 14, 9, "visit"));
+		samples.put("ARCHITECT", new io.github.jcondedata.aliveworkplace.legend.GrandRebuild.State(12L, true,
+			Optional.of(java.util.UUID.fromString("5e1f3c4a-0b6d-4c2e-9a7f-1d2c3b4a5e6f"))));
+		samples.put("STRANGE_MOOD", new io.github.jcondedata.aliveworkplace.legend.StrangeMood(net.minecraft.resources.ResourceLocation.parse("aliveworkplace:golem_smith"),
+			new BlockPos(3, 64, -2), Optional.of(new BlockPos(5, 70, -9)), List.of(net.minecraft.resources.ResourceLocation.parse("minecraft:diamond"),
+			net.minecraft.resources.ResourceLocation.parse("minecraft:blaze_rod"), net.minecraft.resources.ResourceLocation.parse("minecraft:echo_shard")),
+			Map.of("minecraft:diamond", 1), Map.of("00000000-0000-0000-0000-000000000007", 1), 11, 20));
 		samples.put("WORN_OUT", new io.github.jcondedata.aliveworkplace.hall.WorkHorn.WornOut(48_000L, 24_000L));
 		samples.put("TONIC", new io.github.jcondedata.aliveworkplace.people.Tonics.Drunk("aliveworkplace:miners_brew", 48_000L));
 		return samples;

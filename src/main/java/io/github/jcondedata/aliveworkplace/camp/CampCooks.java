@@ -77,6 +77,10 @@ public final class CampCooks implements ResourceManagerReloadListener {
 		/** The pot's recipes that make {@code dish}. */
 		List<PotRecipe> recipes(ServerLevel level, Item dish);
 
+		/** Puts {@code pot} on the Campfire Pot at {@code pos} (28.13: a builder building a Camp Kitchen). */
+		default void fitPot(ServerLevel level, BlockPos pos, ItemStack pot) {
+		}
+
 		/** The seasonings (item ids) {@code dish} was cooked with (28.10: a Habitat Keeper's snacks). */
 		default Set<ResourceLocation> seasonings(ItemStack dish) {
 			return Set.of();

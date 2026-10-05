@@ -111,10 +111,15 @@ public final class Traits {
 	 */
 	public static int xp(Villager villager, int xp, RandomSource random) {
 		float gift = io.github.jcondedata.aliveworkplace.legend.Gifted.xpFactor(villager);
-		if (xp <= 0 || gift <= 1f && !has(villager, Trait.CLEVER)) {
+		// The village's xp effects (research trees and edicts, 29.11): every villager learns that much faster.
+		float village = xp <= 0 ? 0f : io.github.jcondedata.aliveworkplace.research.TreeEffects.xpPercent(villager) / 100f;
+		if (xp <= 0 || gift <= 1f && !has(villager, Trait.CLEVER) && village == 0f) {
 			return xp;
 		}
-		float more = gift > 1f ? xp * (gift - 1f) : xp * 0.25f;
+		float more = (gift > 1f ? xp * (gift - 1f) : has(villager, Trait.CLEVER) ? xp * 0.25f : 0f) + xp * village;
+		if (more < 0f) {
+			return Math.max(0, xp + (int) Math.floor(more));
+		}
 		int whole = (int) more;
 		return xp + whole + (random.nextFloat() < more - whole ? 1 : 0);
 	}

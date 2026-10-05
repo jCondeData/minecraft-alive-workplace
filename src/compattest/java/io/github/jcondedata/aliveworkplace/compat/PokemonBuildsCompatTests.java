@@ -1,7 +1,9 @@
 package io.github.jcondedata.aliveworkplace.compat;
 
 import com.cobblemon.mod.common.block.entity.CampfireBlockEntity;
+import io.github.jcondedata.aliveworkplace.blueprint.Blueprint;
 import io.github.jcondedata.aliveworkplace.blueprint.BlueprintData;
+import io.github.jcondedata.aliveworkplace.blueprint.BlueprintLibrary;
 import io.github.jcondedata.aliveworkplace.blueprint.StarterBlueprints;
 import io.github.jcondedata.aliveworkplace.build.BuildPlan;
 import io.github.jcondedata.aliveworkplace.build.BuildSite;
@@ -10,6 +12,7 @@ import io.github.jcondedata.aliveworkplace.build.Builders;
 import io.github.jcondedata.aliveworkplace.registry.ModBlocks;
 import io.github.jcondedata.aliveworkplace.registry.ModGameRules;
 import io.github.jcondedata.aliveworkplace.table.TableServer;
+import io.github.jcondedata.aliveworkplace.work.PokemonFeatures;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -35,7 +38,7 @@ import net.minecraft.world.level.block.state.BlockState;
  * ROADMAP 28.13 with the real Cobblemon: the Pokémon jobs' builds are in the Blueprint Table, and a builder finishes
  * each tier from barrels holding exactly its materials, with its job block in place (a point of interest a villager can
  * take the job at): the Camp Kitchen's Campfire Pot (with its pot on), the Berry Nursery's composter, the Daycare's
- * Pasture Block. A new build is a row: its test below, with the spots its job block (and what's new in it) stand on.
+ * and the Habitat Garden's Pasture Blocks (the Gem Grotto, all vanilla, is built in PokemonBuildsGameTests). A new build is a row: its test below, with the spots its job block (and what's new in it) stand on.
  */
 public class PokemonBuildsCompatTests implements FabricGameTest {
 	private static final String HUGE_AREA = "aliveworkplace_compat:huge_area";
@@ -103,6 +106,46 @@ public class PokemonBuildsCompatTests implements FabricGameTest {
 	public void aBuilderBuildsDaycareII(GameTestHelper helper) {
 		build(helper, StarterBlueprints.DAYCARE_2, List.of(at(7, 1, 12, "cobblemon:pasture"), at(7, 1, 20, "cobblemon:pasture"),
 			at(14, 1, 5, "minecraft:hay_block")));
+	}
+
+	/** The Habitat Garden: the Pasture Block in the east hedge, the mossy centre stone, the Saccharine tree, the pond. */
+	//$ gametest_ticks_batch HUGE_AREA '30000' '"habitat_garden_build"'
+	@GameTest(template = HUGE_AREA, timeoutTicks = 30000, batch = "habitat_garden_build")
+	public void aBuilderBuildsTheHabitatGarden(GameTestHelper helper) {
+		build(helper, StarterBlueprints.HABITAT_GARDEN, List.of(at(14, 1, 7, "cobblemon:pasture"), centreStone(),
+			at(10, 1, 11, "cobblemon:saccharine_log"), at(3, 0, 9, "minecraft:water")));
+	}
+
+	/** Habitat Garden II: the keeper's hide on its stilts and the second pond, the centre stone where it was. */
+	//$ gametest_ticks_batch HUGE_AREA '60000' '"habitat_garden_2_build"'
+	@GameTest(template = HUGE_AREA, timeoutTicks = 60000, batch = "habitat_garden_2_build")
+	public void aBuilderBuildsHabitatGardenII(GameTestHelper helper) {
+		build(helper, StarterBlueprints.HABITAT_GARDEN_2, List.of(at(14, 1, 7, "cobblemon:pasture"), centreStone(),
+			at(3, 3, 17, "minecraft:spruce_planks"), at(2, 5, 16, "minecraft:spruce_log"), at(10, 0, 19, "minecraft:water")));
+	}
+
+	/** The centre stone, at the spot ROADMAP 28.14 puts the habitat under. */
+	private static Expect centreStone() {
+		BlockPos c = StarterBlueprints.HABITAT_GARDEN_CENTRE;
+		return at(c.getX(), c.getY(), c.getZ(), "minecraft:mossy_cobblestone");
+	}
+
+	/** With Cobblemon the Gem Grotto is in the table too, and II's cores are crystal cores exactly when Cobblemon has them (1.8). */
+	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
+	public void gemGrottoIIGetsCrystalCoresWithCobblemon18(GameTestHelper helper) {
+		Blueprint grotto = BlueprintLibrary.get(helper.getLevel(), StarterBlueprints.GEM_GROTTO_2.id()).orElseThrow();
+		String want = PokemonFeatures.TYPE_GEMS.available() ? "cobblemon:deepslate_crystal_core" : "minecraft:deepslate";
+		int found = 0;
+		for (Blueprint.Entry e : grotto.blocks()) {
+			if (StarterBlueprints.GEM_GROTTO_2_CORES.contains(e.pos())) {
+				String id = BuiltInRegistries.BLOCK.getKey(e.state().getBlock()).toString();
+				helper.assertTrue(id.equals(want), "core at " + e.pos().toShortString() + " is " + id + ", not " + want);
+				found++;
+			}
+		}
+		helper.assertTrue(found == 4, found + " cores");
+		helper.succeed();
 	}
 
 	/**

@@ -592,8 +592,8 @@ public final class ModTrades {
 	}
 
 	/**
-	 * Habitat Keepers (28.10; Cobblemon only): Saccharine saplings and honey (Novice), Poké Snacks (Journeyman), and on the
-	 * way honeycomb and Saccharine logs.
+	 * Habitat Keepers (28.10; Cobblemon only): Saccharine saplings and honey (Novice), Poké Snacks and the Habitat Garden's
+	 * blueprint (Journeyman, 28.13), and on the way honeycomb and Saccharine logs.
 	 */
 	private static void habitatKeeperTrades() {
 		Platform.get().addTrades(ModVillagers.HABITAT_KEEPER, 1, offers -> {
@@ -606,7 +606,7 @@ public final class ModTrades {
 		});
 		Platform.get().addTrades(ModVillagers.HABITAT_KEEPER, 3, offers -> {
 			offers.add((entity, random) -> cobblemon("poke_snack", 4, 1, 12, 10));
-			offers.add((entity, random) -> cobblemon("poke_snack", 4, 1, 12, 10));
+			offers.add((entity, random) -> blueprint(StarterBlueprints.HABITAT_GARDEN, 12)); // 28.13
 		});
 		Platform.get().addTrades(ModVillagers.HABITAT_KEEPER, 4, offers ->
 			offers.add((entity, random) -> cobblemon("saccharine_log", 3, 4, 12, 15)));
@@ -619,8 +619,8 @@ public final class ModTrades {
 		"flying", "psychic", "bug", "rock", "ghost", "dragon", "dark", "steel", "fairy"};
 
 	/**
-	 * Gem Growers (28.11; work without Cobblemon): amethyst shards (Novice), tumblestones (Apprentice, with Cobblemon), a
-	 * Type Gem (Expert, Cobblemon 1.8), and on the way glass, spyglasses and tinted glass.
+	 * Gem Growers (28.11; work without Cobblemon): amethyst shards (Novice), tumblestones (Apprentice, with Cobblemon), the
+	 * Gem Grotto's blueprint (Journeyman, 28.13), a Type Gem (Expert, Cobblemon 1.8), and on the way glass, spyglasses and tinted glass.
 	 */
 	private static void gemGrowerTrades() {
 		Platform.get().addTrades(ModVillagers.GEM_GROWER, 1, offers -> {
@@ -634,8 +634,10 @@ public final class ModTrades {
 			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 2), new ItemStack(Items.TINTED_GLASS, 2), 12, 5, 0.05f));
 		});
 		Platform.get().addTrades(ModVillagers.GEM_GROWER, 3, offers -> {
-			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 4), new ItemStack(Items.SPYGLASS), 8, 10, 0.05f));
-			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.AMETHYST_SHARD, 12), new ItemStack(Items.EMERALD), 16, 10, 0.05f));
+			offers.add((entity, random) -> random.nextBoolean()
+				? new MerchantOffer(new ItemCost(Items.EMERALD, 4), new ItemStack(Items.SPYGLASS), 8, 10, 0.05f)
+				: new MerchantOffer(new ItemCost(Items.AMETHYST_SHARD, 12), new ItemStack(Items.EMERALD), 16, 10, 0.05f));
+			offers.add((entity, random) -> blueprint(StarterBlueprints.GEM_GROTTO, 12)); // 28.13
 		});
 		Platform.get().addTrades(ModVillagers.GEM_GROWER, 4, offers -> {
 			offers.add((entity, random) -> cobblemon(GEM_TYPES[random.nextInt(GEM_TYPES.length)] + "_gem", 6, 1, 8, 15));

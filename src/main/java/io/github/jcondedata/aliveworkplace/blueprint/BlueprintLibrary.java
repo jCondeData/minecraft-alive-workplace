@@ -46,7 +46,8 @@ public final class BlueprintLibrary {
 		} catch (RuntimeException e) {
 			return Optional.empty();
 		}
-		return template.map(t -> CACHE.computeIfAbsent(t, k -> Blueprint.fromTemplate(id, k, Lookup.lookup(BuiltInRegistries.BLOCK))));
+		return template.map(t -> CACHE.computeIfAbsent(t, k -> StarterBlueprints.withFeatures(
+			Blueprint.fromTemplate(id, k, Lookup.lookup(BuiltInRegistries.BLOCK)))));
 	}
 
 	/**

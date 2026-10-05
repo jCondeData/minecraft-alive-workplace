@@ -25,6 +25,10 @@ asks for the steps, `latest.log` and any crash report).
   lost: a Steward, a Legend or an edict comes back as it was when its expansion is released.
 
 ### Fixed
+- **Foretold raids now come from the side the Seer named** (B82): raiders could gather near the edge of the foretold
+  side and spread out across it, so a player told "south-east" might see them come from the east. They now gather
+  well inside that side, spread out less in a small village, and look further out on the same side when the ground
+  there is water.
 - **Builders no longer end up stuck inside the ground** (B60): a builder that couldn't walk to its next block hopped
   to the spot it had picked earlier, even if a crewmate or a neighbouring site had filled that spot with dirt since
   (the soak found one inside a landscaping fill). It now checks the spot is still free and looks for another one.

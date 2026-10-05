@@ -121,7 +121,8 @@ public class ExplorerWork extends Behavior<Villager> {
 
 	@Override
 	protected boolean checkExtraStartConditions(ServerLevel level, Villager villager) {
-		return !villager.isSleeping() && Explorers.isExplorer(villager) && Builders.benchPos(villager).isPresent();
+		return !villager.isSleeping() && Explorers.isExplorer(villager) && Builders.benchPos(villager).isPresent()
+			&& !io.github.jcondedata.aliveworkplace.legend.Pathfinder.isLeading(villager);
 	}
 
 	@Override
@@ -292,7 +293,8 @@ public class ExplorerWork extends Behavior<Villager> {
 	@Nullable
 	private BlockPos pickStop(ServerLevel level, Villager villager, BlockPos station) {
 		BlockPos from = villager.blockPosition();
-		double rangeSqr = (double) RANGE * RANGE;
+		double range = RANGE * io.github.jcondedata.aliveworkplace.legend.Pathfinder.rangeFactor(villager); // twice as far for the Pathfinder (29.13)
+		double rangeSqr = range * range;
 		for (int i = 0; i < 16; i++) {
 			double angle = level.random.nextDouble() * Math.PI * 2;
 			int hop = MIN_HOP + level.random.nextInt(Math.max(1, MAX_HOP - MIN_HOP + 1));

@@ -65,6 +65,11 @@ public final class WorkplaceCommand {
 				.executes(WorkplaceCommand::importFolder))
 			.then(Commands.literal("sites")
 				.executes(WorkplaceCommand::listSites))
+			.then(Commands.literal("expedition")
+				.then(Commands.argument("kind", com.mojang.brigadier.arguments.StringArgumentType.word())
+					.suggests((ctx, builder) -> SharedSuggestionProvider.suggest(io.github.jcondedata.aliveworkplace.legend.Pathfinder.KINDS, builder))
+					.executes(ctx -> io.github.jcondedata.aliveworkplace.legend.Pathfinder.choose(ctx.getSource().getPlayerOrException(),
+						com.mojang.brigadier.arguments.StringArgumentType.getString(ctx, "kind")) ? 1 : 0)))
 			.then(Commands.literal("mail")
 				.executes(WorkplaceCommand::trackMail))
 			.then(Commands.literal("steward")

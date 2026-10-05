@@ -1584,7 +1584,7 @@ MarketDays) and research/.
   isn't; a rebuild picks an upgrade, the Grand style when there's none, places only the changed blocks, never touches
   a player's build and stops on strike; the Grand style's renders (three builds, front and back) and the outfit in the
   review package; showcase scene `legend_architect` (GIF: the Stone House redrawn in the Grand style).
-- [ ] **29.13** **The Pathfinder (Rare).** Comes: found at a ruined portal (29.9) once one of the village's explorers
+- [x] **29.13** (review: pending 2026-10-05) **The Pathfinder (Rare).** Comes: found at a ruined portal (29.9) once one of the village's explorers
   (Cartographers) is an Expert; born to a Cartographer (29.7). Trade: Cartographer. Likes: clothes. Powers:
   - their own expeditions (`ExplorerWork`) range twice as far and roll the new `explorer/pathfinder` loot table (more
     maps, now and then a trial key or an echo shard);
@@ -4344,6 +4344,13 @@ item waits.
   build like the Steward's (no blueprint item comes back if it's cancelled). A strike cancels the rebuild under way (the
   blocks placed stay) and none starts until it's over. The Architect can be the builder handed the work if they are
   the least busy one with a bench.
+- 2026-10-05 (29.13, decisions; lane a): the Pathfinder's place is picked from three chat buttons after the
+  sneak-right-click (`/workplace expedition <kind>`, open 60 s, only for the player who clicked); the lookup runs once,
+  when a place is picked, and nothing is used up when there is none within 3,000 blocks. "Standing still" for Home is
+  the player (the Pathfinder is held still); Home goes beside the hall of the Pathfinder's village. A player in another
+  dimension is waited for where the Pathfinder stands. The entrance banner is light blue and stays. The chronicle line
+  is written on arrival, and a cancelled trip gets its own "turned back" line. Their own expeditions roll
+  `explorer/pathfinder` on top of the usual finds.
 - 2026-10-05 (29.8, decisions; lane a): guests (`legend/LegendGuests`) are nitwits until they settle (no job, like inn
   travellers) and go by one of their file's `names` (the title if none). A place's day roll is spent only when some
   Legend may come there that day (conditions met, slot free, no visit in 7 days), so a village that qualifies at noon

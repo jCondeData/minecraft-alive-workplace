@@ -12,6 +12,9 @@ public final class ModAttachments {
 	/** The Master Architect's grander buildings (29.12): the last rebuild's day, paused or not, the site under way. */
 	public static final Attachment<io.github.jcondedata.aliveworkplace.legend.GrandRebuild.State> ARCHITECT = Attachment.saved("architect", io.github.jcondedata.aliveworkplace.legend.GrandRebuild.State.CODEC);
 
+	/** The Pathfinder's expeditions with a player (29.13): the last day, the player led, the place, arrived, stranded. */
+	public static final Attachment<io.github.jcondedata.aliveworkplace.legend.Pathfinder.State> PATHFINDER = Attachment.saved("pathfinder", io.github.jcondedata.aliveworkplace.legend.Pathfinder.State.CODEC);
+
 	/** A villager's gift (29.6): a gift's id, or {@code none}. Absent: the UUID roll decides ({@code Gifted.of}). */
 	public static final Attachment<String> GIFTED = Attachment.saved("gifted", com.mojang.serialization.Codec.STRING);
 

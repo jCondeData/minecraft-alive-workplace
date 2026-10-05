@@ -18,6 +18,8 @@ public final class Powers {
 		register("pace", PacePower::read);
 		register("mood", MoodPower::read);
 		register("grand_rebuild", GrandRebuildPower::read);
+		register("far_expeditions", FarExpeditionsPower::read);
+		register("expedition", ExpeditionPower::read);
 		GiftPowers.register();
 	}
 

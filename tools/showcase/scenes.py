@@ -292,6 +292,9 @@ SCENES = [
     # The Master Architect (ROADMAP 29.12): the top-tier Stone House, finished, redrawn in the Grand style and rebuilt
     job("legend_architect", "Legends", "The Master Architect redraws a house in the Grand style",
         "the Master Architect handed a builder the Stone House redrawn in the Grand style, and it was rebuilt", 360),
+    # The Pathfinder (ROADMAP 29.13): an expedition with the player through a forest to a staged Stronghold
+    job("legend_pathfinder", "Legends", "The Pathfinder leads the player through a forest",
+        "the Pathfinder led the player through a forest to a staged Stronghold and planted a banner at its entrance", 120),
     job("legend_strike", "Legends", "A Legend on strike", "a Legend on strike left her stonecutter and picketed by the Village Hall under a red line", 120),
     # Strange moods (ROADMAP 29.10): a Master cleric claims her brewing stand under a purple line, the chest by it fills,
     # and she makes a named Masterwork, hung in an item frame, and becomes a Legend

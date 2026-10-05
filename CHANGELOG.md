@@ -17,6 +17,14 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Added
+- **The Pathfinder** (29.13), a Rare Cartographer Legend: found at a ruined portal once one of the village's explorers is
+  an Expert, or born to a Cartographer; likes clothes. Their own expeditions range twice as far and bring back more
+  maps, now and then a trial key or an echo shard. Sneak-right-click them with 8 food in their chests and pick a
+  Stronghold, an Ancient City or Trial Chambers: they hand you a map to the nearest within 3,000 blocks and lead the
+  way, waiting when you fall behind, catching up when you're far off and fighting whatever attacks either of you. At
+  the place they plant a banner; right-click them for Home and after 5 seconds standing still you're both back at the
+  Village Hall. Once a day; a logout or a death calls it off. Every trip goes in the chronicle. A hooded travel cloak,
+  a pack and a lantern.
 - **The Steward's civic rules** (27.12): he now wishes for a Clinic (a Healing Center from a Village) when two or more
   are ill and nobody nurses them, a Graveyard after a death in a village of 8, a Schoolhouse for 3 children, a Library
   with 6 villagers and no scholar, a Chapel while a couple courts, a Lookout Tower (a Barracks in a Town) while guards are

@@ -818,6 +818,44 @@ final class JobScenes {
 			java.util.UUID id = site == null ? null : site.id();
 			return l -> built(l, id, 1f);
 		}, null));
+		SCENES.put("legend_pathfinder", new Job("the Pathfinder led the player through a forest to a staged Stronghold and planted a banner at its entrance", 1600,
+			new Vec3(9.5, -55, 9.5), new Vec3(0, -59.5, 10), (level, player) -> {
+			// ROADMAP 29.13: the Pathfinder settled at a cartography table with 8 bread in the chest, between rows of oaks.
+			// The scene starts an expedition with the player (hovering at the camera, within 24 blocks of the whole path,
+			// so they never wait) to a Stronghold staged 20 blocks south; they walk the forest path and plant the banner.
+			level.getGameRules().getRule(GameRules.RULE_DAYLIGHT).set(false, level.getServer());
+			level.setDayTime(3000);
+			for (int z = -2; z <= 24; z += 5) {
+				for (int x : new int[] {-4, 4}) {
+					BlockPos trunk = STATION.offset(x, 0, z + (x > 0 ? 2 : 0));
+					for (int y = 0; y < 5; y++) {
+						place(level, trunk.above(y), Blocks.OAK_LOG);
+					}
+					for (BlockPos leaf : BlockPos.betweenClosed(trunk.offset(-2, 3, -2), trunk.offset(2, 5, 2))) {
+						if (level.getBlockState(leaf).isAir() && leaf.distManhattan(trunk.above(4)) <= 3) {
+							level.setBlockAndUpdate(leaf, Blocks.OAK_LEAVES.defaultBlockState()
+								.setValue(net.minecraft.world.level.block.LeavesBlock.PERSISTENT, true));
+						}
+					}
+				}
+			}
+			BlockPos hall = STATION.offset(-2, 0, -4);
+			place(level, hall, ModBlocks.VILLAGE_HALL);
+			Villager pathfinder = worker(level, STATION, Blocks.CARTOGRAPHY_TABLE, PoiTypes.CARTOGRAPHER, VillagerProfession.CARTOGRAPHER);
+			chest(level, chestPos(), new ItemStack(Items.BREAD, 8));
+			io.github.jcondedata.aliveworkplace.legend.Legend legend = io.github.jcondedata.aliveworkplace.legend.Legends.get(
+				io.github.jcondedata.aliveworkplace.AliveWorkplace.id("pathfinder")).orElse(null);
+			Showcase.check(legend != null, "the Pathfinder's file loaded");
+			if (legend == null) {
+				return l -> true;
+			}
+			io.github.jcondedata.aliveworkplace.legend.Legends.make(level, pathfinder, legend, "showcase");
+			BlockPos target = STATION.offset(0, 0, 20);
+			boolean out = io.github.jcondedata.aliveworkplace.legend.Pathfinder.start(level, player, pathfinder, "stronghold", target, null);
+			Showcase.check(out, "the Pathfinder set out with the player");
+			return l -> io.github.jcondedata.aliveworkplace.legend.Pathfinder.state(pathfinder).arrived()
+				&& l.getBlockState(target).is(Blocks.LIGHT_BLUE_BANNER);
+		}, null));
 		SCENES.put("bard", job("the bard played a record at the Music Stand", 1200, (level, player) -> {
 			Villager b = picked(level, player, STATION, Blocks.JUKEBOX, Items.MUSIC_DISC_CAT);
 			chest(level, chestPos(), new ItemStack(Items.MUSIC_DISC_CAT));

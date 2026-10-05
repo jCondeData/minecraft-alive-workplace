@@ -773,8 +773,53 @@ def master_architect():
     return [path]
 
 
+def pathfinder():
+    """The Pathfinder (29.13), drawn over the Cartographer's outfit: a hooded travel cloak in weathered forest green to
+    the shins, its hood up with a gold circlet (the Legend's mark) at the brow; a brown leather pack on the back with a
+    rolled blanket on top and straps over the shoulders; a lit lantern hanging at the belt on the villager's left, and a
+    brass-buckled belt."""
+    t = vg.VillagerTexture()
+    cloak = vg.cloth("#3f5a34")
+    vg.hat(t, cloak, style="hood")
+    hb = t.face("hat", "back")                           # the hood's back: a seam down the middle, a darker hem
+    paint(hb, ((4, y) for y in range(1, 8)), cloak[1])
+    paint(hb, ((x, 7) for x in range(hb.w)), cloak[1])
+    paint(hb, ((x, 0) for x in range(hb.w)), cloak[3])
+    for side in SIDES:                                   # the Legend's circlet at the hood's edge
+        f = t.face("head", side)
+        for x in range(f.w):
+            f.put(x, 4, GOLD[2] if side in ("front", "west") else GOLD[1])
+    vg.robe(t, cloak, length=18, sleeves_too=True, body_too=False, noise=0)
+    vg.sleeves(t, cloak, cuff="#2d4226", noise=0)
+    jf = t.face("jacket", "front")
+    paint(jf, ((3, y) for y in range(0, 18)), cloak[0])  # where the cloak closes
+    paint(jf, ((1, 1), (6, 1)), LEATHER[1])              # the pack's straps over the shoulders
+    paint(jf, ((1, 2), (6, 2), (1, 3), (6, 3)), LEATHER[2])
+    vg.belt(t, LEATHER, row=9, buckle=BRASS[2])
+    jb = t.face("jacket", "back")                        # the pack: leather, a flap, a rolled blanket on top
+    for y in range(2, 11):
+        for x in range(1, 7):
+            jb.put(x, y, LEATHER[2] if x < 6 and y < 10 else LEATHER[1])
+    paint(jb, ((x, 4) for x in range(1, 7)), LEATHER[0])  # the flap's edge
+    jb.put(3, 5, BRASS[2])
+    jb.put(4, 5, BRASS[1])
+    roll = Ramp(["#6b2e22", "#8f4130", "#b25a40"], name="blanket")
+    for x in range(1, 7):
+        jb.put(x, 1, roll[2] if x < 4 else roll[1])
+        jb.put(x, 2, roll[1] if x < 4 else roll[0])
+    ef = t.face("jacket", "east")                        # the lantern on the left hip: iron cap, lit glass, iron base
+    paint(ef, ((1, 10), (2, 10)), "#3c3c44")
+    paint(ef, ((1, 11), (2, 11), (1, 12), (2, 12)), "#f2b33d")
+    ef.put(1, 11, "#fde08a")
+    paint(ef, ((0, 11), (3, 11), (0, 12), (3, 12)), "#4a4a52")
+    paint(ef, ((1, 13), (2, 13)), "#3c3c44")
+    path = ASSETS / "textures" / "entity" / "villager" / "legend" / "pathfinder.png"
+    t.save(path)
+    return [path]
+
+
 DRAW = [orchard_keeper, berry_breeder, camp_cook, habitat_keeper, daycare_keeper, gem_grower, pokemon_trader, porter, postman, rancher, scholar, shopkeeper, sifter, teacher, tinkerer,
-        trainer, trainer_leader, tutor, undertaker, steward, legend, legend_placeholder, master_architect]
+        trainer, trainer_leader, tutor, undertaker, steward, legend, legend_placeholder, master_architect, pathfinder]
 
 if __name__ == "__main__":
     run(DRAW)

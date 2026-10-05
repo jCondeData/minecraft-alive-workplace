@@ -1,0 +1,23 @@
+{
+  "rarity": "rare",
+  "job": "minecraft:cartographer",
+  "title": "legend.aliveworkplace.pathfinder.title",
+  "lore": "legend.aliveworkplace.pathfinder.lore",
+  "names": [
+    "legend.aliveworkplace.pathfinder.name.1",
+    "legend.aliveworkplace.pathfinder.name.2",
+    "legend.aliveworkplace.pathfinder.name.3"
+  ],
+  "conditions": [
+    {"type": "job_level", "job": "minecraft:cartographer", "level": 3, "count": 1}
+  ],
+  "arrive": [
+    {"way": "found", "site": "ruined_portal"},
+    {"way": "born", "trades": ["minecraft:cartographer"]}
+  ],
+  "needs": {"luxury": "clothes"},
+  "powers": [
+    {"type": "far_expeditions", "factor": 2.0, "loot": "aliveworkplace:explorer/pathfinder"},
+    {"type": "expedition", "food": 8, "reach": 3000}
+  ]
+}

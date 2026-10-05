@@ -1,0 +1,29 @@
+{
+  "when": [
+    {
+      "worker_without_workstation": {
+        "professions": [
+          "aliveworkplace:nurse",
+          "minecraft:cleric"
+        ],
+        "wanted": true
+      }
+    },
+    {
+      "not": {
+        "rank_at_least": {
+          "rank": "village"
+        }
+      }
+    }
+  ],
+  "do": {
+    "build": {
+      "blueprint": "aliveworkplace:clinic",
+      "zone": "civic"
+    }
+  },
+  "priority": 62,
+  "why": "steward.aliveworkplace.why.workplace",
+  "cooldown_days": 2
+}

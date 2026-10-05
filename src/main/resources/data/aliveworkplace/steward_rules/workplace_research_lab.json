@@ -1,0 +1,29 @@
+{
+  "when": [
+    {
+      "worker_without_workstation": {
+        "professions": [
+          "aliveworkplace:fossil_scientist"
+        ],
+        "wanted": true
+      }
+    },
+    {
+      "mod_loaded": {
+        "mod": "cobblemon"
+      }
+    }
+  ],
+  "do": {
+    "build": {
+      "blueprint": "aliveworkplace:research_lab",
+      "zone": "civic"
+    }
+  },
+  "priority": 62,
+  "why": "steward.aliveworkplace.why.workplace",
+  "cooldown_days": 2,
+  "requires": [
+    "cobblemon"
+  ]
+}

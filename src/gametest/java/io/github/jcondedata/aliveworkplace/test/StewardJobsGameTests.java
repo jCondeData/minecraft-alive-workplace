@@ -151,13 +151,13 @@ public class StewardJobsGameTests implements FabricGameTest {
 			helper.setBlock(post, Blocks.GRINDSTONE);
 			Villager guard = jobless(helper, post.north());
 			Stations.assign(level, guard, helper.absolutePos(post), ModVillagers.GUARD);
-			BlockPos storehouse = new BlockPos(4, 2, 24);
+			BlockPos storehouse = new BlockPos(5, 2, 23); // within RADIUS of the hall (POIs are counted by distance)
 			helper.setBlock(storehouse, ModBlocks.STOREHOUSE);
 			helper.setBlock(storehouse.east(), Blocks.CHEST);
 			if (helper.getBlockEntity(storehouse.east()) instanceof Container chest) {
 				chest.setItem(0, new ItemStack(Items.BREAD, 64));
 			}
-			BlockPos lectern = new BlockPos(4, 2, 4);
+			BlockPos lectern = new BlockPos(6, 2, 5);
 			BlockPos fletching = new BlockPos(11, 2, 13); // the nearest to all three
 			helper.setBlock(lectern, Blocks.LECTERN);
 			helper.setBlock(fletching, Blocks.FLETCHING_TABLE);
@@ -295,7 +295,7 @@ public class StewardJobsGameTests implements FabricGameTest {
 			String name = proposals.get(0).name().getString();
 			helper.assertTrue(name.equals("Give 2 villagers jobs"), "its name: " + name);
 			String line = StewardJobs.line(v.level(), v.hall(), proposals.get(0).jobs()).getString();
-			helper.assertTrue(line.startsWith("Give 2 villagers jobs: ") && line.contains("Farmer at the Composter (") && line.contains("; "),
+			helper.assertTrue(line.startsWith("Give 2 villagers jobs: ") && line.contains("Farmer at the Composter ") && line.contains(" blocks ") && line.contains("; "),
 				"its line: " + line);
 			helper.assertTrue(StewardDesk.approve(v.level(), v.hall(), v.owner(), proposals.get(0).id()) == StewardDesk.Outcome.STARTED, "not approved");
 			helper.assertTrue(dara.getVillagerData().getProfession() == VillagerProfession.FARMER, "Dara is " + dara.getVillagerData().getProfession());
@@ -482,7 +482,7 @@ public class StewardJobsGameTests implements FabricGameTest {
 			helper.assertTrue(lang.has(key), "untranslated: " + key);
 			helper.assertTrue(!lang.getOrDefault(key).contains("(s)"), "\"(s)\" in " + key);
 		}
-		helper.assertTrue(StewardJobs.title(1).getString().equals("Give a villager a job"), "one: " + StewardJobs.title(1).getString());
+		helper.assertTrue(StewardJobs.title(1).getString().equals("Give 1 villager a job"), "one: " + StewardJobs.title(1).getString());
 		helper.assertTrue(StewardJobs.title(3).getString().equals("Give 3 villagers jobs"), "three: " + StewardJobs.title(3).getString());
 		for (StewardJobs.Gap gap : StewardJobs.Gap.values()) {
 			helper.assertTrue(BuiltInRegistries.VILLAGER_PROFESSION.getKey(gap.profession()) != null, "gap " + gap);

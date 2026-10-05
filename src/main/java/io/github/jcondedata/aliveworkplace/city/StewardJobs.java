@@ -287,10 +287,9 @@ public final class StewardJobs {
 			VillageHallScreen.where(hall, job.station()));
 	}
 
-	/** "Give 3 villagers jobs" (one: "Give a villager a job"). */
+	/** "Give 3 villagers jobs" (one: "Give 1 villager a job"). */
 	public static Component title(int n) {
-		return n == 1 ? Component.translatable("steward.aliveworkplace.jobs.title.one")
-			: Component.translatable("steward.aliveworkplace.jobs.title", n);
+		return Component.translatable(n == 1 ? "steward.aliveworkplace.jobs.title.one" : "steward.aliveworkplace.jobs.title", n);
 	}
 
 	/** "Give 3 villagers jobs: Dara, Farmer at the Composter 12 blocks east; ...". */
@@ -298,7 +297,7 @@ public final class StewardJobs {
 		return Component.translatable("steward.aliveworkplace.jobs.line", title(jobs.size()), list(level, hall, jobs));
 	}
 
-	/** "Dara, Farmer at the Composter (12 blocks east); Bram, ...". */
+	/** "Dara, Farmer at the Composter 12 blocks east; Bram, ...". */
 	public static Component list(ServerLevel level, BlockPos hall, List<Job> jobs) {
 		MutableComponent list = Component.empty();
 		for (int i = 0; i < jobs.size(); i++) {

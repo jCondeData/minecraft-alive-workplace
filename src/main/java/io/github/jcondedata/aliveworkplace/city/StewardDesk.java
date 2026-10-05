@@ -513,7 +513,7 @@ public final class StewardDesk {
 		return busy ? Outcome.QUEUED : Outcome.STARTED;
 	}
 
-	/** The jobs that could be given: gone from the desk, the wish carried out; none left (all taken meanwhile): kept. */
+	/** The jobs that can still be given: the proposal leaves the desk, and with any job given the wish is carried out. */
 	private static Outcome approveJobs(ServerLevel level, BlockPos hall, Villager steward, Proposal proposal) {
 		List<StewardJobs.Job> given = StewardJobs.give(level, steward, proposal.jobs());
 		State state = of(level, hall);

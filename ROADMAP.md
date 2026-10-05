@@ -619,7 +619,7 @@ and an old vanilla village slowly rebuilds itself one house at a time. It answer
     stays away for 3 days; a proposal lapses; a stranger can't approve in a protected village; Run the village starts
     a build with no click and Rest does nothing; proposals survive save and reload;
   - showcase scene `steward_desk`: the desk with three proposals, Show me, the approval and the builder setting off.
-- [ ] **27.9** **Jobs and research.** Two more effects:
+- [x] **27.9** (review: pending 2026-10-05) **Jobs and research.** Two more effects:
   - `assign_jobs`: each morning every grown jobless villager (not a nitwit) gets a free workstation
     (`VillageHalls.freeStations`), the village's biggest gap first: a builder while there's none, a farmer while food
     is short, guards while guards are short, a porter at a free Storehouse, a scholar while research is idle, then the

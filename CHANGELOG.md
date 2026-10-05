@@ -27,8 +27,8 @@ asks for the steps, `latest.log` and any crash report).
   child) gets a free workstation for the village's biggest gap: a builder while there's none, a farmer while food is
   short, guards while they're short, a porter at a free Storehouse, a scholar while research is idle, then the nearest
   block. At a shared block he gives its other jobs too: the composter in a Berry Farm with no Orchard Keeper gets one.
-  In Ask me first the morning's jobs are one proposal ("Give 3 villagers jobs: Dara, Farmer at the Composter (12 blocks
-  east); ..."). When a scholar works with nothing to research, he picks the next topic: Fortification after a raid this
+  In Ask me first the morning's jobs are one proposal ("Give 3 villagers jobs: Dara, Farmer at the Composter 12 blocks
+  east; ..."). When a scholar works with nothing to research, he picks the next topic: Fortification after a raid this
   week, Medicine with 2 or more ill, Green Thumb while food is short, Logistics with the store 80% full, else Swift
   Hands, Hearth and Kinship, never one that can't be taken up yet; in Ask me first it's a proposal. Run the village does
   both by itself; Rest does neither. Both are noted in the chronicle.

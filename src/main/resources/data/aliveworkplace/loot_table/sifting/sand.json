@@ -48,6 +48,7 @@
           "type": "minecraft:item",
           "name": "minecraft:clay_ball",
           "weight": 14,
+          "quality": -1,
           "functions": [
             {
               "function": "minecraft:set_count",
@@ -62,21 +63,25 @@
         {
           "type": "minecraft:item",
           "name": "minecraft:glass_bottle",
-          "weight": 2
+          "weight": 2,
+          "quality": 1
         },
         {
           "type": "minecraft:item",
           "name": "minecraft:prismarine_shard",
-          "weight": 2
+          "weight": 2,
+          "quality": 1
         },
         {
           "type": "minecraft:item",
           "name": "minecraft:nautilus_shell",
-          "weight": 1
+          "weight": 1,
+          "quality": 1
         },
         {
           "type": "minecraft:empty",
-          "weight": 56
+          "weight": 56,
+          "quality": -4
         }
       ]
     }

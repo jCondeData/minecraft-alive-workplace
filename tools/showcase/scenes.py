@@ -262,6 +262,13 @@ SCENES = [
     S("gifted", "Legends", "A Night Owl builds by moonlight", "a Night Owl builder placed blocks at midnight, and the hall's list shows her gift in gold", 60,
       [("01_night_owl_building", "Building at midnight"), ("04_night_owl_building", "Still at it"),
        ("05_gifted_list", "The hall's list: her gift in gold")]),
+    # Gifted born (ROADMAP 29.7): Wren, daughter of two schooled Master farmers, grows up Gifted, and the chronicle says so
+    S("gifted_born", "Legends", "A child of two Masters grows up Gifted", "a child of two schooled Masters grew up Gifted, and the chronicle says so", 45,
+      [("01_wren_grown_up", "Wren grows up, with her parents"), ("02_born_chronicle", "The chronicle: grown up Gifted")]),
+    # Legends who visit (ROADMAP 29.8): a Legend comes to the inn as a guest, shows her terms, and settles once a home is ready
+    S("legend_guest", "Legends", "A Legend visits the inn, and settles", "a Legend came to the inn as a guest, showed their terms, and settled once a home was ready", 50,
+      [("01_guest_arrives", "A Legend walks into the inn"), ("02_terms", "Her terms: what she brings, what she wants"),
+       ("03_settled", "A home is ready: she settles"), ("04_settled_chronicle", "The chronicle: settled in the village")]),
     job("legend_strike", "Legends", "A Legend on strike", "a Legend on strike left her stonecutter and picketed by the Village Hall under a red line", 120),
     S("edicts", "Village Hall", "The Book of Edicts",
       "the Book of Edicts opened from the hall's lectern button, with Long Shifts in force, at GUI scales 2 and 4", 45,

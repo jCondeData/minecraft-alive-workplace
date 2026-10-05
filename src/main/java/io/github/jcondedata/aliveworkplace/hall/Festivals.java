@@ -277,8 +277,7 @@ public final class Festivals {
 				gather(level, villager, square);
 			}
 			if (timeOfDay(level) >= FIREWORKS && level.getBlockEntity(hall) instanceof VillageHallBlockEntity entity) {
-				// The crowd at the fireworks, for Legends that come to a big festival (29.2's festival_crowd).
-				entity.setFestivalCrowd(level.getEntitiesOfClass(Villager.class, new net.minecraft.world.phys.AABB(square).inflate(CROWD_RANGE), Villager::isAlive).size());
+				fireworks(level, hall, entity, square, level.random);
 			}
 			if (timeOfDay(level) >= FIREWORKS && level.getBlockEntity(hall) instanceof VillageHallBlockEntity held && Curfew.fireworks(held)
 				&& level.random.nextFloat() < 0.4f) {
@@ -286,6 +285,16 @@ public final class Festivals {
 				launch(level, level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, column));
 			}
 		}
+	}
+
+	/**
+	 * While the fireworks are up: the crowd at the square is counted and kept on the hall ({@code festivalCrowd}, for 29.2's
+	 * {@code festival_crowd}), and a Legend who comes to a festival that big may arrive (29.8, once a day). Returns the guest.
+	 */
+	@org.jetbrains.annotations.Nullable
+	public static Villager fireworks(ServerLevel level, BlockPos hall, VillageHallBlockEntity entity, BlockPos square, net.minecraft.util.RandomSource random) {
+		entity.setFestivalCrowd(level.getEntitiesOfClass(Villager.class, new net.minecraft.world.phys.AABB(square).inflate(CROWD_RANGE), Villager::isAlive).size());
+		return io.github.jcondedata.aliveworkplace.legend.LegendGuests.visit(level, hall, "festival", square, random);
 	}
 
 	/** A villager off work (idle, meeting or playing) comes to the square; one there dances now and then. */

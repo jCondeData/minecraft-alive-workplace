@@ -103,7 +103,7 @@ public final class LegendPowers {
 		Optional<BlockPos> village = null;
 		for (Active legend : legends) {
 			for (PacePower p : legend.legend().powers(PacePower.class)) {
-				if (!p.covers(trade)) {
+				if (!p.covers(trade, BuiltInRegistries.VILLAGER_PROFESSION.getKey(legend.villager().getVillagerData().getProfession()))) {
 					continue;
 				}
 				if (p.radius() == 0 && village == null) {

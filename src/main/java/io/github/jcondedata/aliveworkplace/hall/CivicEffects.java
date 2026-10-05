@@ -29,7 +29,7 @@ import org.jetbrains.annotations.Nullable;
  * it changes: {@code work_pace} by {@code work/Pace}, {@code mood} by {@code people/Moods.work}, {@code food_use} by
  * {@code VillageNeeds}, {@code births} by {@code VillageGrowth}, {@code sickness} by {@code people/Sickness}, {@code inn} by {@code inn/Innkeepers},
  * {@code market_traders} by {@code MarketDays}, {@code bandit_camps} by {@code guard/BanditCamps} and {@code legend_visits}
- * by M29's inn visitors once they exist (until then nothing reads it, see {@link #LEGEND_VISITS_READ}), {@code festival_every} and
+ * by M29's guests ({@code legend/Legends.visitFactor}, 29.8), {@code festival_every} and
  * {@code festival_cost} by {@code Festivals}, {@code tithe} and {@code trade_prices} by {@code Tithe}, {@code curfew} by
  * {@code hall/Curfew} and the systems it names there, {@code militia} by {@code guard/MilitiaCombat} and
  * {@code work_stops_in_raids} by {@code hall/Conscription}'s one work gate. Later items add their
@@ -93,10 +93,10 @@ public final class CivicEffects {
 	public static final ResourceLocation WORK_STOPS_IN_RAIDS = AliveWorkplace.id("work_stops_in_raids");
 
 	/**
-	 * Whether anything reads {@code legend_visits} yet: M29's inn visitors (29.8) set it when they land, and until then the
-	 * Book of Edicts leaves the effect out rather than promise Legends nobody sends.
+	 * Whether anything reads {@code legend_visits}: M29's guests do since 29.8 ({@code Legends.visitFactor}); the Book of
+	 * Edicts leaves the effect out while this is false rather than promise Legends nobody sends.
 	 */
-	public static boolean LEGEND_VISITS_READ = false;
+	public static boolean LEGEND_VISITS_READ = true;
 
 	static {
 		register(WORK_PACE, RecordCodecBuilder.<WorkPace>mapCodec(i -> i.group(

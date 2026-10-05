@@ -1,0 +1,13 @@
+{
+  "name": "gifted.aliveworkplace.born_leader",
+  "description": "gifted.aliveworkplace.born_leader.desc",
+  "weight": 10,
+  "effects": [
+    {
+      "type": "pace",
+      "own_trade": true,
+      "radius": 16,
+      "factor": 1.1
+    }
+  ]
+}

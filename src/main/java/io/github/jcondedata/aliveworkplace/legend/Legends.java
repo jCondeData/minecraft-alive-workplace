@@ -206,6 +206,14 @@ public final class Legends implements ResourceManagerReloadListener {
 		}
 	}
 
+	/**
+	 * How many times as often Legends visit the village round {@code hall} as guests (29.8): the {@code legend_visits}
+	 * effects in force there (M30's Open Gates edict), 1 without.
+	 */
+	public static float visitFactor(ServerLevel level, BlockPos hall) {
+		return io.github.jcondedata.aliveworkplace.hall.CivicEffects.of(level, hall).legendVisits();
+	}
+
 	/** Whether {@code legend} may come to the village round {@code hall} (29.3's rarity rules; see {@link LegendSlots#whyNot}). */
 	public static boolean canCome(ServerLevel level, BlockPos hall, Legend legend) {
 		return LegendSlots.whyNot(level, hall, legend, null).isEmpty();

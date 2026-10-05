@@ -406,6 +406,7 @@ final class JobScenes {
 			ItemStack cityPlan = new ItemStack(ModItems.CITY_PLAN);
 			io.github.jcondedata.aliveworkplace.city.CityPlanItem.bind(level, player, cityPlan, STATION);
 			Villager v = EntityType.VILLAGER.spawn(level, STATION.south(2), MobSpawnType.COMMAND);
+			v.setVillagerData(v.getVillagerData().setProfession(io.github.jcondedata.aliveworkplace.registry.ModVillagers.BUILDER).setLevel(io.github.jcondedata.aliveworkplace.city.Stewards.MIN_BUILDER_LEVEL)); v.setVillagerXp(70); // a seasoned Builder (27.1a)
 			io.github.jcondedata.aliveworkplace.city.Stewards.appoint(player, v, cityPlan);
 			return l -> io.github.jcondedata.aliveworkplace.city.StewardWork.roundDone(l, v)
 				&& v.distanceToSqr(STATION.getCenter()) < 16 && !io.github.jcondedata.aliveworkplace.city.StewardWork.holdsPlan(v);

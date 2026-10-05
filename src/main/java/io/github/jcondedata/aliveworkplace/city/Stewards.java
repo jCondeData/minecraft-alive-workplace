@@ -36,8 +36,8 @@ import net.minecraft.world.phys.AABB;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * The Steward (ROADMAP 27.5): one per Village Hall. A player appoints him by sneak-right-clicking a grown villager
- * standing by the hall with that hall's City Plan; the hall isn't an acquirable job site, so nobody takes it by
+ * The Steward (ROADMAP 27.5): one per Village Hall. A player appoints him by sneak-right-clicking a seasoned Builder
+ * ({@link #qualifies}) standing by the hall with that hall's City Plan; the hall isn't an acquirable job site, so nobody takes it by
  * himself. His day is {@link StewardWork}. His level sets how many of his builds may be open at once
  * ({@link #maxOpenBuilds}). Breaking the hall ends the job. Config {@code steward}.
  */
@@ -53,9 +53,23 @@ public final class Stewards {
 	/** XP for each of his builds finished, and for each job he gives (27.6-27.9 call {@link #credit}). */
 	public static final int XP_BUILD = 10;
 	public static final int XP_JOB = 3;
+	/**
+	 * Only a seasoned Builder can be appointed (owner, 2026-10-05, ROADMAP 27.1a): a Builder at this level or higher
+	 * (Journeyman: about 350 blocks placed, a few in-game days of steady building). Stewards appointed before keep
+	 * their job; a Steward moving to another hall qualifies too.
+	 */
+	public static final int MIN_BUILDER_LEVEL = 3;
 
 	public static boolean isSteward(Villager villager) {
 		return !villager.isBaby() && villager.getVillagerData().getProfession() == ModVillagers.STEWARD;
+	}
+
+	/** Whether {@code villager} may be appointed Steward: a Builder of {@link #MIN_BUILDER_LEVEL} or more, or a Steward already. */
+	public static boolean qualifies(Villager villager) {
+		if (isSteward(villager)) {
+			return true;
+		}
+		return villager.getVillagerData().getProfession() == ModVillagers.BUILDER && BuilderLevels.level(villager) >= MIN_BUILDER_LEVEL;
 	}
 
 	/** How many of his builds a Steward may have open at once: by level (1, 2, 2, 3, 4), the rank's cap and the config. */
@@ -121,6 +135,10 @@ public final class Stewards {
 		if (isSteward(villager) && villager.getBrain().getMemory(MemoryModuleType.JOB_SITE).filter(GlobalPos.of(level.dimension(), hall)::equals).isPresent()) {
 			return refuse(player, Component.translatable("message.aliveworkplace.steward.already", villager.getDisplayName(), bound.name()));
 		}
+		if (!qualifies(villager)) {
+			return refuse(player, Component.translatable("message.aliveworkplace.steward.unseasoned", villager.getDisplayName(),
+				BuilderLevels.levelName(MIN_BUILDER_LEVEL)));
+		}
 		if (!Friends.mayCommand(player, villager)) {
 			return Hiring.hire(player, villager, Component.empty()); // refuses, and says whose they are
 		}
@@ -131,7 +149,13 @@ public final class Stewards {
 				other != null ? other.getDisplayName() : Component.translatable("message.aliveworkplace.steward.someone")));
 		}
 		Component who = villager.getDisplayName();
+		boolean wasSteward = isSteward(villager);
 		Stations.assign(level, villager, hall, ModVillagers.STEWARD);
+		if (!wasSteward) {
+			// A new job: his Builder levels let him in, and he starts it as a Novice Steward (27.1a).
+			villager.setVillagerData(villager.getVillagerData().setLevel(1));
+			villager.setVillagerXp(1);
+		}
 		ModAttachments.STEWARD_ROUND_DAY.remove(villager);
 		level.playSound(null, villager, SoundEvents.VILLAGER_YES, SoundSource.NEUTRAL, 1f, 1f);
 		Chat.chat(player, Component.translatable("message.aliveworkplace.steward.appointed", who, VillageHalls.name(level, hall))

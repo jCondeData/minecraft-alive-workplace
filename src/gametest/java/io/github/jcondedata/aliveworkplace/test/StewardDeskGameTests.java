@@ -105,7 +105,7 @@ public class StewardDeskGameTests implements net.fabricmc.fabric.api.gametest.v1
 		entity.setPlan(CityPlan.EMPTY.addZone("homes", "Homes 1", "").paint(0, cells));
 		Villager builder = helper.spawn(EntityType.VILLAGER, TABLE.east());
 		Builders.employ(level, builder, helper.absolutePos(TABLE));
-		Villager steward = helper.spawn(EntityType.VILLAGER, HALL.south(2));
+		Villager steward = StewardGameTests.seasoned(helper.spawn(EntityType.VILLAGER, HALL.south(2)));
 		ItemStack plan = new ItemStack(ModItems.CITY_PLAN);
 		CityPlanItem.bind(level, owner, plan, hall);
 		helper.assertTrue(Stewards.appoint(owner, steward, plan) == InteractionResult.SUCCESS, "setup: Steward not appointed");

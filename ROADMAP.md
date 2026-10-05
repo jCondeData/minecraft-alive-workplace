@@ -494,7 +494,7 @@ and an old vanilla village slowly rebuilds itself one house at a time. It answer
   don't wait for his reply. Done when:
   - the note is on `main` with every section above;
   - the package is sent, and his answers, when they come, are recorded with `sessions.py reply`.
-  - [ ] **27.1a** Change from the owner (2026-10-05): A Steward must be a villager who has been an architect/builder for a certain amount of time (decide the amount and write it in the design note; default meanwhile: Builder at a level or for N days). Also make the City Plan's recipe harder: Map and Blank Blueprint plus something hard to get, such as a Heart of the Sea (or similar).
+  - [x] **27.1a** (review: pending 2026-10-05) Change from the owner (2026-10-05): A Steward must be a villager who has been an architect/builder for a certain amount of time (decide the amount and write it in the design note; default meanwhile: Builder at a level or for N days). Also make the City Plan's recipe harder: Map and Blank Blueprint plus something hard to get, such as a Heart of the Sea (or similar).
 - [x] **27.2** (approved 2026-10-05) **The plan and the City Plan item.** A village's plan, saved on the Village Hall
   (`VillageHallBlockEntity`, new tag `plan`, empty by default) and kept on the hall item when the hall is broken (as
   its name is; put down again, the plan is centred on the new spot):
@@ -4411,3 +4411,9 @@ item waits.
   had no flying item, only the item-pickup sound; it now goes through `build/TossSounds`, capped server-wide at 4 toss
   sounds per 10 ticks (8 a second at most, whatever the number of crews); sounds past the cap are skipped, the
   materials still change hands. No config switch existed for it, so none was added.
+- 2026-10-05 (27.1a, decision; lane c): a Steward must be a Builder at Journeyman (level 3) or higher
+  (`Stewards.MIN_BUILDER_LEVEL`, `Stewards.qualifies`): builder levels are already saved (1 XP per 5 blocks, 10 per
+  build), so Journeyman is about 350 blocks of work, a few in-game days, with no new saved field. Others are refused
+  with `message.aliveworkplace.steward.unseasoned`; the appointed Builder starts as a Novice Steward. Existing Stewards
+  are grandfathered (checked only at appointment; a Steward always qualifies). City Plan recipe: Map + Blank Blueprint
+  + Heart of the Sea, shapeless. Written in docs/design/M27.md section 7.

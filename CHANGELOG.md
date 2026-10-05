@@ -199,6 +199,9 @@ asks for the steps, `latest.log` and any crash report).
   (`"enabled": false`); `villageEdicts` turns them all off.
 
 ### Changed
+- **A Steward must be a seasoned Builder** (27.1a): only a Builder of Journeyman level or higher can be appointed
+  Steward (he starts the job as a Novice Steward); others are refused with what's needed. Stewards already appointed
+  keep their job. The City Plan now also takes a Heart of the Sea (Map + Blank Blueprint + Heart of the Sea).
 - Builders passing materials to a crewmate close by make only a soft sound (no item flies), and the whole server plays
   at most 4 of those sounds every half second, so many busy crews can't cause lag; the rest are skipped.
 - Seasons last 16 days now (a 64-day year), so festivals come every 16 days. A config file that still holds the old

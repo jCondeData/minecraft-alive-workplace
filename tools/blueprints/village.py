@@ -78,8 +78,13 @@ def village_house(style, fit_out, job=None):
         walls(b, 1, 2, 7, 8, 4, 4, s.frame)
     door(b, 4, 1, 2, s.door, "south")
     stairs(b, 4, 0, 1, s.roof, "south")
+    # The front windows' pots stand on upside-down stair sills, not on trapdoor flower boxes: they sit at head height
+    # beside the steps, and mob pathfinding takes any trapdoor for open ground, so a villager coming along the front
+    # wall to the door walked into a top-half one and stayed stuck there for good (27.11, B69). A stair is a block the
+    # pathfinder walks around.
     for x, plant in ((2, "potted_red_tulip"), (6, "potted_oxeye_daisy")):
-        window(b, x, 2, 2, "north", shutters=s.trapdoor, flowers=(s.trapdoor, [plant]))
+        window(b, x, 2, 2, "north", shutters=s.trapdoor, sill=s.roof)
+        b.set(x, 2, 1, plant)
     for z in (4, 6):
         window(b, 1, 2, z, "west", shutters=s.trapdoor)
         window(b, 7, 2, z, "east", shutters=s.trapdoor)
@@ -399,10 +404,4 @@ def workplace(name):
             b.blocks[pos] = ("minecraft:air", ())
         elif block == "minecraft:calcite":
             b.blocks[pos] = ("minecraft:white_concrete", ())
-    # The front windows' flower boxes sit at head height beside the steps. Mob pathfinding takes any trapdoor for open
-    # ground, so a worker coming along the front wall walks into a top-half one and stays stuck there, never reaching
-    # the job block (the guard of workplaceBuilt_guard_house, 3 runs in 20). An upside-down stair sill holds the pot
-    # just the same and is a block the pathfinder walks around.
-    for x in (2, 6):
-        stairs(b, x, 1, 1, VILLAGE_STYLES["plains"].roof, "south", top=True)
     return b

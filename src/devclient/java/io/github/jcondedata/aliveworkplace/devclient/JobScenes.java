@@ -1134,6 +1134,236 @@ final class JobScenes {
 				return told[0] && t >= 600;
 			};
 		}, null));
+		SCENES.put("legend_grand_chef", new Job("the Grand Chef called the village to a banquet: everyone gathered round the hall and at supper each grown-up ate two meals of the eight kinds in the store",
+			900, new Vec3(1.5, -54.5, 12), new Vec3(0, -60, 0), (level, player) -> {
+			// ROADMAP 29.18: the Village Hall, a kitchen (a smoker with the store's chest beside it, eight kinds of meal) with
+			// the Grand Chef at it in the tall toque, and six villagers about the place. After work the banquet is called
+			// and the hall's banquet gathering walks them to the hall; at supper the feast: two meals each.
+			level.getGameRules().getRule(GameRules.RULE_DAYLIGHT).set(false, level.getServer());
+			level.setDayTime(9100);
+			BlockPos hall = STATION;
+			place(level, hall, ModBlocks.VILLAGE_HALL);
+			BlockPos smoker = STATION.offset(5, 0, -3);
+			Villager chef = worker(level, smoker, Blocks.SMOKER, PoiTypes.BUTCHER, io.github.jcondedata.aliveworkplace.registry.ModVillagers.CHEF);
+			chest(level, smoker.east(), new ItemStack(Items.BREAD, 16), new ItemStack(Items.BAKED_POTATO, 16), new ItemStack(Items.COOKED_BEEF, 16),
+				new ItemStack(Items.PUMPKIN_PIE, 16), new ItemStack(Items.COOKED_SALMON, 16), new ItemStack(Items.MUSHROOM_STEW, 1),
+				new ItemStack(Items.COOKED_CHICKEN, 16), new ItemStack(Items.COOKIE, 16), new ItemStack(Items.MUSHROOM_STEW, 1),
+				new ItemStack(Items.MUSHROOM_STEW, 1));
+			io.github.jcondedata.aliveworkplace.legend.Legend legend = io.github.jcondedata.aliveworkplace.legend.Legends.get(
+				io.github.jcondedata.aliveworkplace.AliveWorkplace.id("grand_chef")).orElse(null);
+			Showcase.check(legend != null, "the Grand Chef's file loaded");
+			if (legend == null) {
+				return l -> true;
+			}
+			io.github.jcondedata.aliveworkplace.legend.Legends.make(level, chef, legend, "showcase");
+			io.github.jcondedata.aliveworkplace.legend.LegendPowers.forget();
+			for (int i = 0; i < 6; i++) {
+				EntityType.VILLAGER.spawn(level, STATION.offset(-9 + 3 * i, 0, i % 2 == 0 ? 6 : -6), MobSpawnType.COMMAND);
+			}
+			place(level, STATION.offset(-2, 0, 3), Blocks.CAKE);
+			long began = level.getGameTime();
+			boolean[] called = {false};
+			int[] meals = {-1};
+			return l -> {
+				long t = l.getGameTime() - began;
+				var entity = (io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) l.getBlockEntity(hall);
+				if (t >= 20 && !called[0] && entity != null) {
+					called[0] = true;
+					io.github.jcondedata.aliveworkplace.hall.Banquets.round(l, hall, entity);
+					Showcase.check(entity.banquetDay() == io.github.jcondedata.aliveworkplace.hall.Chronicle.day(l), "the Grand Chef called a banquet");
+				}
+				if (t >= 400 && meals[0] < 0 && entity != null) {
+					l.setDayTime(io.github.jcondedata.aliveworkplace.hall.Banquets.SUPPER + 100);
+					int grown = l.getEntitiesOfClass(Villager.class, io.github.jcondedata.aliveworkplace.hall.VillageHalls.area(hall),
+						v -> v.isAlive() && !v.isBaby() && !v.isSleeping()).size();
+					io.github.jcondedata.aliveworkplace.hall.Banquets.round(l, hall, entity);
+					meals[0] = l.getEntitiesOfClass(Villager.class, io.github.jcondedata.aliveworkplace.hall.VillageHalls.area(hall),
+						v -> io.github.jcondedata.aliveworkplace.registry.ModAttachments.BANQUET.has(v)).size();
+					Showcase.check(entity.banquetEaten() && meals[0] >= grown && grown >= 7, "everyone came to the feast (" + meals[0] + " of " + grown + ")");
+				}
+				return meals[0] >= 0 && t >= 640;
+			};
+		}, null));
+		SCENES.put("legend_bard", new Job("the Bard Laureate settled and composed the village's anthem, which rang out over the hall in note-block notes; then they sang a work song among the busiest workers, notes rising round them",
+			900, new Vec3(1.5, -54.5, 12), new Vec3(0, -60, 0), (level, player) -> {
+			// ROADMAP 29.19: the Village Hall, the Bard Laureate (green doublet, lute on the back, laurel wreath) by it and
+			// six workers at their trades in a knot to the east. The hall's round composes the anthem from the village's
+			// name and plays it (16 notes, the note particles over the hall); mid-morning the Laureate walks to the knot of
+			// workers and sings, notes rising round them, the workers there 25% faster.
+			level.getGameRules().getRule(GameRules.RULE_DAYLIGHT).set(false, level.getServer());
+			level.setDayTime(2900);
+			BlockPos hall = STATION;
+			place(level, hall, ModBlocks.VILLAGE_HALL);
+			io.github.jcondedata.aliveworkplace.hall.Anthems.forget();
+			io.github.jcondedata.aliveworkplace.legend.Legend legend = io.github.jcondedata.aliveworkplace.legend.Legends.get(
+				io.github.jcondedata.aliveworkplace.legend.BardLaureate.ID).orElse(null);
+			Showcase.check(legend != null, "the Bard Laureate's file loaded");
+			if (legend == null) {
+				return l -> true;
+			}
+			Villager bard = EntityType.VILLAGER.spawn(level, STATION.offset(-3, 0, 3), MobSpawnType.COMMAND);
+			bard.setVillagerData(bard.getVillagerData().setProfession(io.github.jcondedata.aliveworkplace.registry.ModVillagers.BARD).setLevel(5));
+			bard.setVillagerXp(250);
+			io.github.jcondedata.aliveworkplace.legend.Legends.make(level, bard, legend, "showcase");
+			io.github.jcondedata.aliveworkplace.legend.LegendPowers.forget();
+			net.minecraft.world.entity.npc.VillagerProfession[] trades = {net.minecraft.world.entity.npc.VillagerProfession.FARMER,
+				net.minecraft.world.entity.npc.VillagerProfession.MASON, net.minecraft.world.entity.npc.VillagerProfession.FLETCHER,
+				net.minecraft.world.entity.npc.VillagerProfession.LIBRARIAN, net.minecraft.world.entity.npc.VillagerProfession.TOOLSMITH,
+				net.minecraft.world.entity.npc.VillagerProfession.SHEPHERD};
+			Villager[] workers = new Villager[trades.length];
+			for (int i = 0; i < trades.length; i++) {
+				workers[i] = EntityType.VILLAGER.spawn(level, STATION.offset(5 + (i % 3) * 2, 0, -1 + (i / 3) * 3), MobSpawnType.COMMAND);
+				workers[i].setVillagerData(workers[i].getVillagerData().setProfession(trades[i]).setLevel(2));
+				workers[i].setVillagerXp(20);
+				workers[i].setNoAi(true);
+				workers[i].setYRot(180);
+				workers[i].setYHeadRot(180);
+			}
+			long began = level.getGameTime();
+			boolean[] composed = {false};
+			boolean[] sang = {false};
+			return l -> {
+				long t = l.getGameTime() - began;
+				var entity = (io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) l.getBlockEntity(hall);
+				if (t >= 40 && !composed[0] && entity != null) {
+					composed[0] = true;
+					io.github.jcondedata.aliveworkplace.hall.Anthems.round(l, hall, entity);
+					Showcase.check(entity.anthem().isPresent(), "the anthem was composed");
+				}
+				if (t == 200) {
+					Showcase.check(io.github.jcondedata.aliveworkplace.hall.Anthems.notesPlayed(hall) == 16,
+						"the anthem played 16 notes (" + io.github.jcondedata.aliveworkplace.hall.Anthems.notesPlayed(hall) + ")");
+					l.setDayTime(3000);
+				}
+				if (t == 600 && !sang[0]) {
+					sang[0] = true;
+					Showcase.check(io.github.jcondedata.aliveworkplace.legend.BardLaureate.singing(bard), "the Bard Laureate is singing a work song");
+					Showcase.check(io.github.jcondedata.aliveworkplace.legend.LegendPowers.pace(workers[0]) > 1.2f,
+						"the workers near the song work faster (" + io.github.jcondedata.aliveworkplace.legend.LegendPowers.pace(workers[0]) + "×)");
+				}
+				return sang[0] && t >= 700;
+			};
+		}, null));
+		SCENES.put("legend_beastmaster", new Job("the Beastmaster tamed a war dog for the guard with bones from the chest and fitted it with wolf armour from the scutes; the dog followed its guard and fought the zombies beside them",
+			900, new Vec3(1.5, -54.5, 12), new Vec3(0, -60, 0), (level, player) -> {
+			// ROADMAP 29.20: the Village Hall, the Beastmaster (furs, a wolf-pelt hood) at their feed trough with bones and
+			// armadillo scutes in the chest beside it, a wild wolf, and a guard at a Guard Post to the east. The hall's round
+			// tames the wolf for the guard (hearts, wolf armour, "<guard>'s War Dog"); then three zombies come at the guard
+			// and the dog goes for them at the guard's side.
+			level.getGameRules().getRule(GameRules.RULE_DAYLIGHT).set(false, level.getServer());
+			level.setDayTime(2000);
+			BlockPos hall = STATION;
+			place(level, hall, ModBlocks.VILLAGE_HALL);
+			io.github.jcondedata.aliveworkplace.legend.Legend legend = io.github.jcondedata.aliveworkplace.legend.Legends.get(
+				io.github.jcondedata.aliveworkplace.legend.Beastmaster.ID).orElse(null);
+			Showcase.check(legend != null, "the Beastmaster's file loaded");
+			if (legend == null) {
+				return l -> true;
+			}
+			Villager beastmaster = worker(level, STATION.offset(-5, 0, 2), ModBlocks.FEED_TROUGH, ModVillagers.FEED_TROUGH_POI, ModVillagers.RANCHER);
+			beastmaster.setVillagerData(beastmaster.getVillagerData().setLevel(5));
+			beastmaster.setVillagerXp(250);
+			beastmaster.setNoAi(true);
+			beastmaster.setYRot(180);
+			beastmaster.setYHeadRot(180);
+			io.github.jcondedata.aliveworkplace.legend.Legends.make(level, beastmaster, legend, "showcase");
+			io.github.jcondedata.aliveworkplace.legend.LegendPowers.forget();
+			chest(level, STATION.offset(-6, 0, 2), new ItemStack(Items.BONE, 6), new ItemStack(Items.ARMADILLO_SCUTE, 6));
+			Villager guard = worker(level, STATION.offset(5, 0, 2), ModBlocks.GUARD_POST, ModVillagers.GUARD_POST_POI, ModVillagers.GUARD);
+			guard.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.IRON_SWORD));
+			guard.setItemSlot(EquipmentSlot.HEAD, new ItemStack(Items.IRON_HELMET));
+			net.minecraft.world.entity.animal.Wolf wolf = EntityType.WOLF.spawn(level, STATION.offset(-1, 0, 5), MobSpawnType.COMMAND);
+			long began = level.getGameTime();
+			boolean[] tamed = {false};
+			net.minecraft.world.entity.monster.Zombie[] zombies = new net.minecraft.world.entity.monster.Zombie[3];
+			boolean[] bit = {false};
+			return l -> {
+				long t = l.getGameTime() - began;
+				if (t == 60 && !tamed[0]) {
+					tamed[0] = true;
+					io.github.jcondedata.aliveworkplace.legend.Beastmaster.round(l, hall);
+					Showcase.check(io.github.jcondedata.aliveworkplace.legend.Beastmaster.dog(l, guard) == wolf, "the wolf was tamed as the guard's war dog");
+					Showcase.check(wolf.hasArmor(), "the war dog wears wolf armour");
+				}
+				if (t == 220) {
+					for (int i = 0; i < zombies.length; i++) {
+						zombies[i] = EntityType.ZOMBIE.spawn(l, STATION.offset(2 + i * 3, 0, -6), MobSpawnType.COMMAND);
+						if (zombies[i] != null) {
+							zombies[i].setItemSlot(EquipmentSlot.HEAD, new ItemStack(Items.LEATHER_HELMET)); // no burning by day
+						}
+					}
+				}
+				for (net.minecraft.world.entity.monster.Zombie z : zombies) {
+					if (z != null && wolf.getTarget() == z) {
+						bit[0] = true;
+					}
+				}
+				boolean cleared = t > 220 && java.util.Arrays.stream(zombies).allMatch(z -> z == null || !z.isAlive());
+				if (cleared && t >= 400 || t == 880) {
+					Showcase.check(bit[0], "the war dog went for the guard's zombies");
+					Showcase.check(cleared, "the guard and the dog beat the zombies");
+					return true;
+				}
+				return false;
+			};
+		}, null));
+		SCENES.put("legend_founder", new Job("the Founder asked for a statue, and the village's builder raised it by the hall from the materials in the barrels: a stepped plinth, a copper plaque and the Founder in stone with a hand raised",
+			6000, new Vec3(3.5, -53.5, 10.5), new Vec3(-5, -58, -5), (level, player) -> {
+			// ROADMAP 29.23: the Village Hall, the Founder (a burgundy mantle, a gold chain of office) by it, and a builder
+			// at a Blueprint Table with barrels holding the statue's materials. The hall's round hands the builder the
+			// Founder's statue on open ground near the hall, and the GIF shows it going up.
+			level.getGameRules().getRule(GameRules.RULE_DAYLIGHT).set(false, level.getServer());
+			level.setDayTime(2000);
+			level.getGameRules().getRule(ModGameRules.BUILD_DELAY).set(2, level.getServer());
+			BlockPos hall = STATION;
+			place(level, hall, ModBlocks.VILLAGE_HALL);
+			io.github.jcondedata.aliveworkplace.legend.Legend legend = io.github.jcondedata.aliveworkplace.legend.Legends.get(
+				io.github.jcondedata.aliveworkplace.legend.Founder.ID).orElse(null);
+			Showcase.check(legend != null, "the Founder's file loaded");
+			if (legend == null) {
+				return l -> true;
+			}
+			BlockPos bench = STATION.offset(6, 0, 4);
+			level.setBlockAndUpdate(bench, ModBlocks.BLUEPRINT_TABLE.defaultBlockState());
+			Villager builder = EntityType.VILLAGER.spawn(level, bench.offset(-1, 0, 1), MobSpawnType.COMMAND);
+			Builders.employ(level, builder, bench);
+			Villager founder = EntityType.VILLAGER.spawn(level, STATION.offset(2, 0, 2), MobSpawnType.COMMAND);
+			founder.setVillagerData(founder.getVillagerData().setProfession(VillagerProfession.LIBRARIAN).setLevel(5));
+			founder.setNoAi(true);
+			founder.setYRot(180);
+			founder.setYHeadRot(180);
+			io.github.jcondedata.aliveworkplace.legend.Legends.make(level, founder, legend, "inspired");
+			io.github.jcondedata.aliveworkplace.legend.LegendPowers.forget();
+			BuildSite site = io.github.jcondedata.aliveworkplace.legend.Founder.statue(level, hall);
+			Showcase.check(site != null, "the statue was handed to the builder");
+			if (site == null) {
+				return l -> true;
+			}
+			List<ItemStack> stacks = new ArrayList<>();
+			site.plan(level).materials().forEach((item, total) -> {
+				for (int left = total; left > 0; left -= item.getDefaultMaxStackSize()) {
+					stacks.add(new ItemStack(item, Math.min(left, item.getDefaultMaxStackSize())));
+				}
+			});
+			for (int b = 0; b * 27 < stacks.size(); b++) {
+				BlockPos barrelPos = bench.offset(1, 0, b);
+				level.setBlockAndUpdate(barrelPos, Blocks.BARREL.defaultBlockState());
+				Container barrel = (Container) level.getBlockEntity(barrelPos);
+				for (int slot = 0; slot < 27 && b * 27 + slot < stacks.size(); slot++) {
+					barrel.setItem(slot, stacks.get(b * 27 + slot));
+				}
+			}
+			java.util.UUID id = site.id();
+			return l -> {
+				if (!built(l, id, 1f)) {
+					return false;
+				}
+				io.github.jcondedata.aliveworkplace.legend.Founder.forgetStands();
+				Showcase.check(io.github.jcondedata.aliveworkplace.legend.Founder.stands(l, hall), "the statue stands");
+				Showcase.check(io.github.jcondedata.aliveworkplace.legend.Founder.beauty(l, hall) == 5, "the statue is worth 5 beauty");
+				return true;
+			};
+		}, null));
 		SCENES.put("legend_golem_smith", new Job("the Golem Smith forged a Hauler Golem, and the hauler, a farmhand and a wall sentry went to work",
 			2400, new Vec3(1.5, -51.5, 11), new Vec3(0, -60, -5), (level, player) -> {
 			// ROADMAP 29.15: the Golem Smith at a smithing table, the costs of a Hauler in the chest beside it and five
@@ -1779,6 +2009,49 @@ final class JobScenes {
 					}
 				}, 30)),
 			(level, player) -> player.containerMenu instanceof ChoiceMenu));
+		SCREENS.put("legend_merchant_prince", new Screen("the Merchant Prince settled by the hall in his crimson coat, the hall's bank page with emeralds put in, and a trade fair",
+			new Vec3(0.5, -58.0, 6.5), new Vec3(0.5, -59.5, 0.5),
+			(level, player) -> {
+				// ROADMAP 29.17: a Village Hall with the Merchant Prince settled beside it, so its bank is open.
+				level.setBlockAndUpdate(STATION, ModBlocks.VILLAGE_HALL.defaultBlockState()
+					.setValue(io.github.jcondedata.aliveworkplace.hall.VillageHallBlock.FACING, Direction.SOUTH));
+				var hall = (io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(STATION);
+				hall.setOwner(player.getUUID(), player.getGameProfile().getName());
+				var legend = io.github.jcondedata.aliveworkplace.legend.Legends.get(io.github.jcondedata.aliveworkplace.AliveWorkplace.id("merchant_prince")).orElseThrow();
+				subject = EntityType.VILLAGER.spawn(level, STATION.south(2), MobSpawnType.COMMAND);
+				subject.setNoAi(true);
+				subject.setYRot(0);
+				subject.setYHeadRot(0);
+				io.github.jcondedata.aliveworkplace.legend.Legends.make(level, subject, legend, "showcase");
+				io.github.jcondedata.aliveworkplace.legend.LegendPowers.forget();
+				level.setDayTime(level.getDayTime() / 24000L * 24000L + 6000L);
+			},
+			List.of(new Step("01_merchant_prince", -1, 6, (level, player) ->
+					Showcase.check(io.github.jcondedata.aliveworkplace.hall.PlayerBank.open(level, STATION), "the Prince settled and the bank is open"), 40),
+				new Step("02_bank_page", io.github.jcondedata.aliveworkplace.hall.PlayerBank.BALANCE, 6, (level, player) -> {
+					// The player puts in 64 emeralds, then 16, on the hall's bank page.
+					player.getInventory().add(new ItemStack(Items.EMERALD, 64));
+					player.getInventory().add(new ItemStack(Items.EMERALD, 64));
+					io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.open(player, STATION);
+					if (player.containerMenu instanceof ChoiceMenu m) {
+						m.press(io.github.jcondedata.aliveworkplace.hall.PlayerBank.BUTTON, player);
+						m.press(io.github.jcondedata.aliveworkplace.hall.PlayerBank.DEPOSIT + 2, player);
+						m.press(io.github.jcondedata.aliveworkplace.hall.PlayerBank.DEPOSIT + 1, player);
+					}
+					var hall = (io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(STATION);
+					Showcase.check(hall.playerBank().emeralds(player.getUUID()) == 80, "80 emeralds in the player's account ("
+						+ hall.playerBank().emeralds(player.getUUID()) + ")");
+				}, 40),
+				new Step("03_trade_fair", -1, 6, (level, player) -> {
+					// The fair: six traders round the hall (no Market Square here), red and yellow bunting round them, fireworks overhead.
+					player.closeContainer();
+					var power = io.github.jcondedata.aliveworkplace.legend.TradeFairPower.of(level, STATION).orElseThrow();
+					var traders = io.github.jcondedata.aliveworkplace.hall.TradeFairs.hold(level, STATION, power);
+					Showcase.check(traders.size() == 6, "six traders came to the fair (" + traders.size() + ")");
+					var hall = (io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(STATION);
+					Showcase.check(hall.fairBunting().size() >= 8, "the fair's bunting is up (" + hall.fairBunting().size() + " banners)");
+				}, 80)),
+			(level, player) -> true));
 		SCREENS.put("legend_sites", new Screen("the three camps of Legends found in the world, and a prisoner freed from the outpost cage",
 			new Vec3(0.5, -53.0, 13.5), new Vec3(0.5, -59.5, -4.5),
 			(level, player) -> {

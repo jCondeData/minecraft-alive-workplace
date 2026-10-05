@@ -65,11 +65,12 @@ public final class Cavalry {
 			&& !(horse instanceof Llama);
 	}
 
-	/** The free horse nearest {@code villager} within {@link #HORSE_RANGE} of their post, or null. */
+	/** The free horse within {@link #HORSE_RANGE} of their post: a Beastmaster's bred horse first (29.20), then the nearest; or null. */
 	@Nullable
 	public static AbstractHorse freeHorse(ServerLevel level, Villager villager, BlockPos post) {
 		return level.getEntitiesOfClass(AbstractHorse.class, new AABB(post).inflate(HORSE_RANGE, 8, HORSE_RANGE), Cavalry::usable).stream()
-			.min(Comparator.comparingDouble(villager::distanceToSqr))
+			.min(Comparator.comparing((AbstractHorse h) -> !io.github.jcondedata.aliveworkplace.legend.Beastmaster.bred(h))
+				.thenComparingDouble(villager::distanceToSqr))
 			.orElse(null);
 	}
 

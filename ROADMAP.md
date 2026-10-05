@@ -147,6 +147,7 @@ stay in the list, ticked, so their numbers stay unique.
 - [x] **B78** (review: pending 2026-10-05) The Book of Edicts' guild row lists only 6 guilds, but a City can now hold up to 12 guilds (30.17-30.20), so the rest are never shown. Expected: every guild of the village on the Book's guild row (paged or wrapped). Test: GuildsScene / EdictBook guild row with more than 6 guilds (found by lane-d-1005-1533, 2026-10-05)
 - [x] **B79** (approved auto 2026-10-05) Renewal (27.21): villagers whose old home was renewed may not walk to their new beds on their own. RenewalGameTests' two-bed test teleports both villagers to the new beds before night, because without it they lost the bed memory (the 27.21 subagent's guess: they couldn't path to it in the test village). Expected: after a home is renewed, its villagers keep their claim on the new beds and walk there and sleep without help. Test: the two-bed renewal test without the teleport (found by lane-c-1005-1833, 2026-10-05)
 - [ ] **B80** RoadGameTests.aHalfBuiltSegmentSurvivesSaveAndReloadAndRoadsLeaveTheRankAlone (batch roadReload, 27.15) fails 'the road opened 0 segments, not 1' in every run of a trimmed suite (Caravan, StewardSafety, ResearchTrees, Road, Wall, CityPlanRoad GameTests; 5 of 5), while it passes in the full suite: it depends on test order, likely a leftover finished-building record or site on its line from an earlier batch (as CaravanRoadGameTests had, fixed in f88686b2 by forgetting finished records round the area). Expected: passes in any order. Test: runGameTest with those classes only (QA lane: test-only) (found by lane-c-1005-1833, 2026-10-05)
+- [ ] **B81** ConscriptionGameTests.aConscriptSavedMidRaidLoadsWithoutTheSword failed on main CI build 696 (7b40b9c5, 2026-10-05 19:41Z), its only failure, turning main red: 'armed: 3 minecraft:wheat / 0 minecraft:air' (after the save and reload mid-raid the conscript holds wheat, no sword). Builds 695 and 697-699 were cancelled by the runner at about 15 min (no concurrency or timeout in build.yml), so they say nothing. Expected: passes every run; a player would see a conscript reloaded mid-raid holding the wrong item, so check whether the test or the mod drops the sword. Test: the test repeated with the repeat generator (found by red duty) (found by lane-c-1005-1833, 2026-10-05)
 
 ## Milestone 21: Finish 0.138.0
 
@@ -1695,7 +1696,7 @@ MarketDays) and research/.
   Seer comes only at midnight, at a full moon, to a Chapel; a raid foretold at dawn comes that night and none comes
   when none is foretold (fixed `RandomSource`); the festival and market days told are right; a blessed wedding's mood
   and baby; showcase scene `legend_seer` (GIF: the arrival under the full moon, the dawn foretelling in chat).
-- [ ] **29.17** **The Merchant Prince (Legendary).** Comes: found as a castaway by a shipwreck (29.9) once the
+- [x] **29.17** (review: pending 2026-10-05) **The Merchant Prince (Legendary).** Comes: found as a castaway by a shipwreck (29.9) once the
   village's treasury has taken in 500 emeralds all told (`treasury_total`) and it sends caravans on 3 routes. Trade:
   `aliveworkplace:legend`; they keep to the Village Hall and the Market Square. Likes: wine. Powers:
   - **the bank** (`bank`): the treasury earns 2% a day on what it holds and holds twice as much; players deposit
@@ -1712,7 +1713,7 @@ MarketDays) and research/.
   cap; deposits and withdrawals with interest, kept through a reload, never more than 10 stacks; a fair with 6 traders
   plus one per linked village; the caravan pay; showcase scene `legend_merchant_prince` (the bank page, a GIF of the
   fair).
-- [ ] **29.18** **The Grand Chef (Rare).** Comes: inspired (29.10): a Master Chef in a happy village whose store has 8
+- [x] **29.18** (review: pending 2026-10-05) **The Grand Chef (Rare).** Comes: inspired (29.10): a Master Chef in a happy village whose store has 8
   kinds of meal (`VillageHalls.mealKinds`); the materials come from a pool of a golden apple, a glistering melon
   slice, a golden carrot, a honeycomb, glow berries, chorus fruit and a pufferfish, and the Masterwork is a cake named
   for the village ("The Thornholm Midsummer Cake"). Also a guest at the inn on the same condition, and born to a Chef
@@ -1726,7 +1727,7 @@ MarketDays) and research/.
   Outfit: a tall white toque and a gold ladle at the apron. Done when: GameTests: a banquet takes two meals each; the
   mood; two births a day for 3 days with free beds, and one a day after; chefs faster; showcase scene
   `legend_grand_chef` (GIF: the banquet).
-- [ ] **29.19** **The Bard Laureate (Rare).** Comes: a guest at a festival once 30 villagers come to it (29.8); born
+- [x] **29.19** (review: pending 2026-10-05) **The Bard Laureate (Rare).** Comes: a guest at a festival once 30 villagers come to it (29.8); born
   to a Bard (29.7). Trade: Bard. Likes: books. Powers:
   - **the anthem** (`anthem`): when they settle they compose the village's anthem, 16 notes on one instrument (harp,
     flute, bell, chime, guitar or xylophone) made from the village's name, so it never changes, kept in the hall. It
@@ -1740,7 +1741,7 @@ MarketDays) and research/.
   Outfit: a green doublet, a lute on the back and a laurel wreath. Done when: GameTests: the same name always gives
   the same anthem and another name a different one; it is saved and played at each event (the sounds counted); the
   work-song pace only while they sing; showcase scene `legend_bard` (GIF with the notes).
-- [ ] **29.20** **The Beastmaster (Rare).** Comes: found as a prisoner in a pillager outpost (29.9) once the village
+- [x] **29.20** (review: pending 2026-10-05) **The Beastmaster (Rare).** Comes: found as a prisoner in a pillager outpost (29.9) once the village
   has a ranch: 10 animals within 16 blocks of a Rancher's, Butcher's or Shepherd's workstation; born to a Rancher
   (29.7). Trade: Rancher. Likes: clothes. Powers:
   - **war dogs** (`war_dogs`): with bones in their chest they tame a wolf for each guard without one (the village's
@@ -1787,7 +1788,7 @@ MarketDays) and research/.
   an Alpha (or the level-50 stand-in) near; a calmed Alpha doesn't attack a villager; a befriended Pokémon belongs to
   the owner and is in the pasture, and a banned species never is; nothing loads without Cobblemon; showcase scene
   `legend_ranger`.
-- [ ] **29.23** **The Founder (Mythic).** Comes: inspired (29.10), always, at the village's first rise to City: its
+- [x] **29.23** (review: pending 2026-10-05) **The Founder (Mythic).** Comes: inspired (29.10), always, at the village's first rise to City: its
   most experienced Master (the most XP) is seized by the Founder's mood and asks for a block of gold, a block of
   emeralds and a diamond. The Masterwork is **The Charter of <village>**, a written book of the village's story drawn
   from its chronicle (its founding, each rank, its Legends, its first wedding, the raids it beat), signed by the
@@ -4438,6 +4439,14 @@ item waits.
   build like the Steward's (no blueprint item comes back if it's cancelled). A strike cancels the rebuild under way (the
   blocks placed stay) and none starts until it's over. The Architect can be the builder handed the work if they are
   the least busy one with a bench.
+- 2026-10-05 (29.18, decisions; lane a): "on the same condition" for the inn guest and the born Grand Chef is the
+  file's condition, 8 kinds of meal in the store (a happy village is part of the inspired way itself). Everyone in the
+  village who isn't asleep at supper counts as having come (as at a festival's feast); children are counted for the mood
+  but eat nothing. The banquet is called after work (9000), the feast is at 10500; no banquet on a festival's day (it
+  comes the next evening). The two births a day run from the banquet's day through the next two, and stop if no free bed.
+  The toque can't rise above the hat layer, so "tall" is drawn as pleats from the crown to a gold band at the brow.
+  Also restored the Seer's outfit recipe's lost save lines in tools/textures/art/villagers_2.py (a merge dropped them;
+  the PNG is unchanged).
 - 2026-10-05 (29.16, decisions; lane a): the night's raid and the guests are rolled ahead only in a village with a
   settled Seer (elsewhere nothing changes). The foretelling comes at the hall's first round of the day before 6000;
   the first one (or the first after a missed dawn) also rolls today's guests, unannounced, so tomorrow's roll knows

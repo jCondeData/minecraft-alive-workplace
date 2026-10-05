@@ -1,0 +1,25 @@
+{
+  "rarity": "legendary",
+  "job": "aliveworkplace:legend",
+  "title": "legend.aliveworkplace.merchant_prince.title",
+  "lore": "legend.aliveworkplace.merchant_prince.lore",
+  "names": [
+    "legend.aliveworkplace.merchant_prince.name.1",
+    "legend.aliveworkplace.merchant_prince.name.2",
+    "legend.aliveworkplace.merchant_prince.name.3"
+  ],
+  "conditions": [
+    {"type": "treasury_total", "emeralds": 500},
+    {"type": "caravan_routes", "count": 3}
+  ],
+  "arrive": [
+    {"way": "found", "site": "shipwreck"}
+  ],
+  "needs": {"luxury": "wine"},
+  "powers": [
+    {"type": "bank", "interest": 2, "cap": 2},
+    {"type": "trade_fair", "days": 10, "traders": 6, "discount": 10},
+    {"type": "caravan_pay", "emeralds": 1},
+    {"type": "keeps_to", "radius": 10}
+  ]
+}

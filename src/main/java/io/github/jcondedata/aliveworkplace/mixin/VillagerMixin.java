@@ -192,5 +192,6 @@ abstract class VillagerMixin {
 	@Inject(method = "updateSpecialPrices", at = @At("TAIL"))
 	private void aliveworkplace$silverTongue(net.minecraft.world.entity.player.Player player, CallbackInfo ci) {
 		io.github.jcondedata.aliveworkplace.legend.Gifted.discount((Villager) (Object) this);
+		io.github.jcondedata.aliveworkplace.hall.TradeFairs.discount((Villager) (Object) this); // a trade fair's day (29.17)
 	}
 }

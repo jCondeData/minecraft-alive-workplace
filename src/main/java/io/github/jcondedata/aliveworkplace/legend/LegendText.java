@@ -58,7 +58,8 @@ public final class LegendText {
 
 	/** "Rare Legend · Builder", in the rarity's colour. */
 	public static Component rarityLine(Legend legend) {
-		Component job = legend.job().equals(io.github.jcondedata.aliveworkplace.AliveWorkplace.id("legend"))
+		Component job = Founder.ownTrade(legend) ? Component.translatable("legend.aliveworkplace.own_trade")
+			: legend.job().equals(io.github.jcondedata.aliveworkplace.AliveWorkplace.id("legend"))
 			? Component.translatable("legend.aliveworkplace.no_trade") : trade(legend.job());
 		return Component.translatable("legend.aliveworkplace.rarity_line", legend.rarity().title(), job).withStyle(legend.rarity().color);
 	}

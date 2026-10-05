@@ -108,7 +108,8 @@ public final class VillageRanks {
 		return now;
 	}
 
-	static void celebrate(ServerLevel level, BlockPos hall, Rank rank) {
+	public static void celebrate(ServerLevel level, BlockPos hall, Rank rank) {
+		Anthems.play(level, hall, "rank"); // the Bard Laureate's anthem (29.19)
 		Component name = VillageHalls.name(level, hall);
 		for (ServerPlayer player : level.getPlayers(p -> p.blockPosition().distSqr(hall) <= (double) VillageHalls.RADIUS * VillageHalls.RADIUS)) {
 			Chat.chat(player, Component.translatable("message.aliveworkplace.rank.up", name, rank.title()).withStyle(ChatFormatting.GOLD));

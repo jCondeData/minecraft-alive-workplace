@@ -219,3 +219,53 @@ def hermit_hut():
     b.fill_air()
     _keep_world_ground(b)
     return b
+
+
+STATUE_SQUARE = Mix((6, "stone_bricks"), (2, "cracked_stone_bricks"), (1, "andesite"), seed=23)
+
+
+def founder_statue():
+    """7 x 8 x 7: the Founder's statue (ROADMAP 29.23), built by the village's builders near the hall. A paved square
+    with a lamp post at each front corner; a stepped 5 x 5 plinth of stone bricks (chiseled corners, a ring of stairs
+    up to a 3 x 3 polished andesite pedestal) with a copper plaque set into its front; on it the Founder in stone, robe
+    and shoulders of polished andesite, a chiseled head, one arm down and the right hand raised over the village. The
+    head is the top of the middle column: legend/Founder.stands looks for it there."""
+    b = Build(7, 8, 7)
+    # The square round it, and two lamp posts flanking the front (z = 0)
+    for x in range(7):
+        for z in range(7):
+            edge = x in (0, 6) or z in (0, 6)
+            b.set(x, 0, z, "polished_andesite" if edge else STATUE_SQUARE.at(x, 0, z))
+    for x in (0, 6):
+        wall_block(b, x, 1, 0, "stone_brick_wall")
+        lantern(b, x, 2, 0)
+    # The plinth: a 5 x 5 step with chiseled corners, then a ring of stairs round the 3 x 3 pedestal
+    for x in range(1, 6):
+        for z in range(1, 6):
+            corner = x in (1, 5) and z in (1, 5)
+            b.set(x, 1, z, "chiseled_stone_bricks" if corner else "stone_bricks")
+    for x in range(1, 6):
+        for z in range(1, 6):
+            if x in (1, 5) or z in (1, 5):
+                if not (x in (1, 5) and z in (1, 5)):
+                    side = "north" if z == 1 else "south" if z == 5 else "west" if x == 1 else "east"
+                    stairs(b, x, 2, z, STONE_BRICK, OPP[side])
+                else:
+                    slab(b, x, 2, z, STONE_BRICK)
+            else:
+                b.set(x, 2, z, "polished_andesite")
+    # The copper plaque, set into the front of the pedestal under the stairs' lip
+    b.set(3, 1, 1, "waxed_cut_copper")
+    # The Founder: a two-block robe, shoulders and chest, the left arm down, the right arm raised, a chiseled head
+    b.set(3, 3, 3, "polished_andesite")
+    b.set(3, 4, 3, "polished_andesite")
+    b.set(3, 5, 3, "polished_andesite")
+    stairs(b, 2, 5, 3, ANDESITE, "east", top=True)   # the left shoulder, its arm hanging
+    wall_block(b, 2, 4, 3, "andesite_wall")
+    stairs(b, 4, 5, 3, ANDESITE, "west", top=True)   # the right shoulder
+    wall_block(b, 4, 6, 3, "andesite_wall")          # the right arm, raised
+    b.set(4, 7, 3, "stone_button", face="floor", facing="south", powered=False)  # the raised hand
+    b.set(3, 6, 3, "chiseled_stone_bricks")          # the head
+    b.set(3, 7, 3, "stone_slab", type="bottom", waterlogged=False)  # a cap of hair
+    b.fill_air()
+    return b

@@ -114,7 +114,8 @@ public final class Caravans {
 			update(hall, name, wants);
 		}
 
-		void sent(BlockPos hall, long day) {
+		/** Marks {@code hall}'s caravans sent on {@code day} (tests set it back to send again the same day). */
+		public void sent(BlockPos hall, long day) {
 			Village v = villages.get(hall);
 			if (v != null) {
 				villages.put(hall, new Village(v.hall(), v.name(), v.wants(), day));
@@ -413,14 +414,20 @@ public final class Caravans {
 			return;
 		}
 		List<BlockPos> chests = storehouse(level, hall);
+		Village us = data.village(hall);
 		for (Shipment s : arrived) {
 			List<ItemStack> left = new ArrayList<>();
+			int paid = 0;
 			for (ItemStack stack : s.goods()) {
 				ItemStack rest = chests.isEmpty() ? stack.copy() : SupplyContainers.insert(level, chests, stack.copy());
 				if (!rest.isEmpty()) {
 					left.add(rest);
 				}
+				if (rest.getCount() < stack.getCount() && us != null && us.wants().stream().anyMatch(w -> w.item() == stack.getItem())) {
+					paid++;
+				}
 			}
+			pay(level, s.from(), paid);
 			if (!left.isEmpty()) {
 				data.ship(new Shipment(s.from(), s.to(), left, level.getGameTime() + VillageNeeds.CHECK_EVERY));
 			}
@@ -431,6 +438,18 @@ public final class Caravans {
 				level.playSound(null, hall, SoundEvents.LLAMA_CHEST, SoundSource.NEUTRAL, 1f, 1.2f);
 			}
 		}
+	}
+
+	/**
+	 * The Merchant Prince's caravan pay (29.17): {@code stacks} stacks the caravan from {@code from} brought to a village
+	 * waiting for them earn {@code from}'s treasury its power's emeralds a stack, up to the treasury's cap.
+	 */
+	static void pay(ServerLevel level, BlockPos from, int stacks) {
+		if (stacks <= 0 || !(level.getBlockEntity(from) instanceof VillageHallBlockEntity entity)) {
+			return;
+		}
+		io.github.jcondedata.aliveworkplace.legend.CaravanPayPower.of(level, from)
+			.ifPresent(p -> Tithe.put(entity, stacks * p.emeralds() * 100));
 	}
 
 	/** "32 × Oak Log, 16 × Bread". */

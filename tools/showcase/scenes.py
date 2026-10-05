@@ -322,6 +322,11 @@ SCENES = [
       "the Old Sage's hut, a riddle asked and a wrong answer refused with a hint, and the Ancient Lore tab", 50,
       [("01_hermit_hut", "The hermit's hut, the Sage inside"), ("02_riddle", "A riddle, a shake of the head, a hint"),
        ("03_ancient_lore_tab", "The Ancient Lore tab")]),
+    # The Merchant Prince (ROADMAP 29.17): settled by the hall in his crimson coat, and the hall's bank page
+    S("legend_merchant_prince", "Legends", "The Merchant Prince, the hall's bank and a trade fair",
+      "the Merchant Prince settled by the hall in his crimson coat, the hall's bank page with emeralds put in, and a trade fair", 60,
+      [("01_merchant_prince", "The Merchant Prince by the hall"), ("02_bank_page", "The bank page: 80 emeralds put in"),
+       ("03_trade_fair", "A trade fair: six traders, bunting and fireworks round the hall")]),
     # The Master Architect (ROADMAP 29.12): the top-tier Stone House, finished, redrawn in the Grand style and rebuilt
     job("legend_architect", "Legends", "The Master Architect redraws a house in the Grand style",
         "the Master Architect handed a builder the Stone House redrawn in the Grand style, and it was rebuilt", 360),
@@ -334,6 +339,18 @@ SCENES = [
     # The Golem Smith (ROADMAP 29.15): a Hauler forged from the chest; the hauler, a farmhand and a wall sentry at work
     job("legend_golem_smith", "Legends", "The Golem Smith's golems at work",
         "the Golem Smith forged a Hauler Golem, and the hauler, a farmhand and a wall sentry went to work", 150),
+    # The Grand Chef (ROADMAP 29.18): a banquet called after work, the village gathered round the hall, the feast at supper
+    job("legend_grand_chef", "Legends", "The Grand Chef's banquet",
+        "the Grand Chef called the village to a banquet: everyone gathered round the hall and at supper each grown-up ate two meals of the eight kinds in the store", 90),
+    # The Bard Laureate (ROADMAP 29.19): the anthem composed and played over the hall, then a work song among the workers
+    job("legend_bard", "Legends", "The Bard Laureate's anthem and work song",
+        "the Bard Laureate settled and composed the village's anthem, which rang out over the hall in note-block notes; then they sang a work song among the busiest workers, notes rising round them", 90),
+    # The Beastmaster (ROADMAP 29.20): a war dog tamed for a guard, then the guard and the dog against zombies
+    job("legend_beastmaster", "Legends", "The Beastmaster's war dog",
+        "the Beastmaster tamed a war dog for the guard with bones from the chest and fitted it with wolf armour from the scutes; the dog followed its guard and fought the zombies beside them", 90),
+    # The Founder (ROADMAP 29.23): the village's builder raises the Founder's statue by the hall from the barrels
+    job("legend_founder", "Legends", "The Founder's statue going up",
+        "the Founder asked for a statue, and the village's builder raised it by the hall from the materials in the barrels: a stepped plinth, a copper plaque and the Founder in stone with a hand raised", 360),
     job("legend_strike", "Legends", "A Legend on strike", "a Legend on strike left her stonecutter and picketed by the Village Hall under a red line", 120),
     # Strange moods (ROADMAP 29.10): a Master cleric claims her brewing stand under a purple line, the chest by it fills,
     # and she makes a named Masterwork, hung in an item frame, and becomes a Legend

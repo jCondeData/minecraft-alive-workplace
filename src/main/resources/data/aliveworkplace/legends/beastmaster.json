@@ -1,0 +1,23 @@
+{
+  "rarity": "rare",
+  "job": "aliveworkplace:rancher",
+  "title": "legend.aliveworkplace.beastmaster.title",
+  "lore": "legend.aliveworkplace.beastmaster.lore",
+  "names": [
+    "legend.aliveworkplace.beastmaster.name.1",
+    "legend.aliveworkplace.beastmaster.name.2",
+    "legend.aliveworkplace.beastmaster.name.3"
+  ],
+  "conditions": [
+    {"type": "animals_at_job", "jobs": ["aliveworkplace:rancher", "minecraft:butcher", "minecraft:shepherd"], "count": 10}
+  ],
+  "arrive": [
+    {"way": "found", "site": "outpost"},
+    {"way": "born", "trades": ["aliveworkplace:rancher"]}
+  ],
+  "needs": {"luxury": "clothes"},
+  "powers": [
+    {"type": "war_dogs", "bones": 3, "scutes": 6, "days": 2},
+    {"type": "horse_breeding", "bonus": 0.05, "horses": 8}
+  ]
+}

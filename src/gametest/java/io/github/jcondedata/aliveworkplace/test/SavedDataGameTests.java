@@ -96,6 +96,13 @@ public class SavedDataGameTests implements FabricGameTest {
 			Optional.of(new BlockPos(300, 40, -900)), "stronghold", Optional.of(new BlockPos(5, 70, -9)), true, 14L));
 		samples.put("SAGE_RIDDLES", new io.github.jcondedata.aliveworkplace.legend.OldSage.Riddles(List.of(2, 7, 5), 1, 2));
 		samples.put("SEER_BLESSING", new io.github.jcondedata.aliveworkplace.legend.Seer.Blessing(31L, 10, 7, 2, true));
+		samples.put("BANQUET", new io.github.jcondedata.aliveworkplace.hall.Banquets.Feasted(40L, 20, 3));
+		samples.put("WORK_SONG", new io.github.jcondedata.aliveworkplace.legend.BardLaureate.Song(40L, 1, 123456L, new net.minecraft.core.BlockPos(4, 64, -7)));
+		samples.put("SONG_HEARD", 40L);
+		samples.put("WAR_DOG", new io.github.jcondedata.aliveworkplace.legend.Beastmaster.Dog(java.util.Optional.of(A), 12L));
+		samples.put("WAR_DOG_OF", B);
+		samples.put("BRED_HORSE", 41L);
+		samples.put("LAST_FOAL", 41L);
 		samples.put("GOLEM_ROLE", "hauler");
 		samples.put("GOLEM_POST", new net.minecraft.core.BlockPos(10, 64, -3));
 		samples.put("HAULER_LOAD", java.util.Map.of(net.minecraft.world.item.Items.COBBLESTONE, 64));

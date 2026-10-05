@@ -59,6 +59,11 @@ public class UndertakerWork extends Behavior<Villager> {
 		), 1200);
 	}
 
+	/** The Ancient Lore's Undying Flame (29.14): the village's undertakers bring the dead back with nothing from the chest. */
+	public static boolean undyingFlame(Villager villager) {
+		return io.github.jcondedata.aliveworkplace.research.TreeEffects.flag(villager, "undying_flame");
+	}
+
 	public static boolean isUndertaker(Villager villager) {
 		return !villager.isBaby() && villager.getVillagerData().getProfession() == ModVillagers.UNDERTAKER;
 	}
@@ -130,7 +135,7 @@ public class UndertakerWork extends Behavior<Villager> {
 			Requests.clear(villager);
 			return;
 		}
-		boolean inBag = bag.stacks().stream().anyMatch(Graves::isRevivalItem);
+		boolean inBag = bag.stacks().stream().anyMatch(Graves::isRevivalItem) || undyingFlame(villager);
 		if (!inBag && (own.isEmpty() || SupplyContainers.firstMatching(level, own, Graves::isRevivalItem) == null)) {
 			state = own.isEmpty() ? "no_chest" : "needs";
 			Requests.post(villager, new ItemStack(Items.GOLDEN_APPLE), 1, Component.translatable("request.aliveworkplace.revival"), Graves::isRevivalItem);
@@ -154,17 +159,22 @@ public class UndertakerWork extends Behavior<Villager> {
 		if (--timer > 0) {
 			return;
 		}
-		ItemStack item = bag.takeFirst(Graves::isRevivalItem);
-		if (item.isEmpty()) {
+		boolean flame = undyingFlame(villager);
+		ItemStack item = flame ? ItemStack.EMPTY : bag.takeFirst(Graves::isRevivalItem);
+		if (item.isEmpty() && !flame) {
 			task = Task.NONE;
 			return;
 		}
 		Component name = level.getBlockEntity(grave) instanceof GraveBlockEntity g ? g.name() : null;
 		Villager back = Graves.revive(level, grave);
 		if (back == null) {
-			bag.add(item); // couldn't: keep what they'd have used
+			if (!item.isEmpty()) {
+				bag.add(item); // couldn't: keep what they'd have used
+			}
 		} else {
-			item.shrink(1);
+			if (!item.isEmpty()) {
+				item.shrink(1);
+			}
 			if (item.is(Items.POTION) || item.is(Items.SPLASH_POTION)) {
 				bag.add(new ItemStack(Items.GLASS_BOTTLE));
 			} else if (!item.isEmpty()) {

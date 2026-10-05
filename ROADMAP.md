@@ -111,7 +111,7 @@ stay in the list, ticked, so their numbers stay unique.
 - [ ] **B43** The showcase's battle scene (a Master trainer, with Cobblemon) failed 'the battle ran to the end' in showcase run 46 (e39f973, 2026-10-04 06:48Z): no battle end within its 8000 ticks, while runs 44 and 45 passed it. Expected: the scripted battle always finishes inside the scene (or the scene waits on something that always ends it). Test: SCENE=battle tools/screenshots/run.sh, a few runs; its '[battle scene] tick N turn T' lines show where it hangs (found by qa-1004-0733, 2026-10-04) Status (lane-a-1004-0932): a local stuck run sat at turn 10 from tick 1100 to 4000+ with request=false and mustChoose=false on both sides and nothing in the log, so the battle is stuck, not slow; 5 more local runs all finished (420-1220 ticks). The scene now dumps every field of a battle that hasn't changed turn for 300 ticks (its dispatch queue, dispatchResult, showdownMessages) as '[battle scene] stuck' lines, so the next showcase run that hangs shows what it waits on (likeliest: a dispatchFuture that never completes, e.g. a send-out or recall of the trainer's Pokémon).
 - [x] **B44** (approved auto 2026-10-04) (verified 2026-10-05: showcase evidence, nightly issue #1: partners_engine passed all 7 full showcase runs after 64d8b98 [13:16Z-23:14Z 2026-10-04]; soak passed 6 of 7 [every build finished, its result check read right], the 7th [b7be7a0] failed on a stuck builder, filed as B60; no local run) Showcase scene 'soak' fails although the soak passes: showcase run 51 (36f3d20, 2026-10-04) reports 'not done: 10 builders finished every starter build with nothing duplicated or lost: Soak result: 22/22 builds finished in 81338 ticks (3.4 days); 0 stalls; items off: none; village chunks: 14 for 10 workers'. ScreenshotHarness's soak check requires the result to end with 'items off: none', and 23.6 (2000c41) appended '; village chunks: …' to Soak.finish()'s line, so the scene fails on every run, a false failure in the harness. Expected: the soak scene passes when every build finishes and items off is none (match '; items off: none;' or the end, like tools/packtest/run.sh's grep). Test: SCENE=soak tools/screenshots/run.sh passes (found by qa-1004-0933, 2026-10-04)
 - [x] **B45** (approved auto 2026-10-04) (verified 2026-10-05: showcase evidence, nightly issue #1: partners_engine passed all 7 full showcase runs after 64d8b98 [13:16Z-23:14Z 2026-10-04]; soak passed 6 of 7 [every build finished, its result check read right], the 7th [b7be7a0] failed on a stuck builder, filed as B60; no local run) Showcase scene 'partners_engine' (28.3) failed in showcase run 55 (265d1a2, 2026-10-04 10:33Z, nightly issue #1): 'not done: the Machop walked toward the work (from 1.5 to 0.1 blocks)'. The Machop had already wandered to 1.5 blocks from the work spot before the cue, so PartnersScene's check (nearest < start - 1.5) can't pass however well the show runs; earlier showcase runs passed it. Expected: the scene passes every run, the Machop starts at its pasture (or the check measures the walk from the pasture/tether, not from wherever it wandered). Test: SCENE=partners_engine tools/screenshots/run.sh passes; PartnerShowsCompatTests has the same nearest < before - 1.5 check, look at it too (found by qa-1004-1033, 2026-10-04)
-- [x] **B46** (approved auto 2026-10-04) A build's progress goes down after a restart: a world saved by 0.138.0 (pack test, 10 benchmark plots) opened with main 739d02e showed the Lookout Tower (laying its foundation) at 1% after 12% before the restart and the Healing Center at 7% after 19%, while the other 9 sites went up as expected. The placed blocks are still there (FOUNDATION restarts its list on load and skips what's done), but the percentage over the builder and in /workplace sites drops. Not yet checked whether a reload with the same jar does it too. Expected: a site's progress never goes down across a restart. Test: JAR=<0.138.0 jar> PERF=true PLOTS=10 tools/packtest/run.sh, then KEEP_WORLD=true SITES_ONLY=true tools/packtest/run.sh, compare the 'Builder — ' lines (found by lane-a-1004-0932, 2026-10-04)
+- [x] **B46** (approved auto 2026-10-04) (verified 2026-10-05: B46: QaB46GameTests [two restarts in a row hold 24%, a save without shown_progress loads] + B46GameTests pass; B69: QaB69FrontWalkGameTests, all 5 styles, villagers walking the guard house's front walk row reach the door from both corners: 5/5 fail on the pre-fix templates [stuck beside the flower box], pass on main twice and in a full build [1014/1014]; B73: 'Refresh active project' on main leaves git diff unchanged. Tests on qa/b46-b69-1005 [ship blocked by the B57 flake]) A build's progress goes down after a restart: a world saved by 0.138.0 (pack test, 10 benchmark plots) opened with main 739d02e showed the Lookout Tower (laying its foundation) at 1% after 12% before the restart and the Healing Center at 7% after 19%, while the other 9 sites went up as expected. The placed blocks are still there (FOUNDATION restarts its list on load and skips what's done), but the percentage over the builder and in /workplace sites drops. Not yet checked whether a reload with the same jar does it too. Expected: a site's progress never goes down across a restart. Test: JAR=<0.138.0 jar> PERF=true PLOTS=10 tools/packtest/run.sh, then KEEP_WORLD=true SITES_ONLY=true tools/packtest/run.sh, compare the 'Builder — ' lines (found by lane-a-1004-0932, 2026-10-04)
 - [ ] **B47** BuilderChaosGameTests builder_chaos_23205 failed once in a local full build (lane-b-1004-0932, main 87ee45a + 28.4, 2026-10-04 11:43Z): '1 block(s) wrong after the build, e.g. [-19, 3, -16]=air; seed 23205', then passed alone and in the next full build. Expected: every seed finishes with every block right on every run. Test: the five chaos seeds repeated 10x (tester skill's repeat generator); the trap that removed a placed block (found by lane-b-1004-0932, 2026-10-04) Lane a (lane-a-1004-0932) saw it too: 1 block of the build missing at the end; with the B46 fix the traps also keep off a door's top half (likely the cause, not proven): if it fails again, the failure message names the cell.
 - [ ] **B48** PartnersForgeCompatTests aPidgeyBringsAFeatherToTheFletcher (28.5) failed once in a local full build (lane-a-1004-1233, main 5e66474 + 25.4 tooling, 2026-10-04 15:00Z): 'no bow for the guard' at the time-out, though it passed in the build 40 minutes earlier on the same code. Expected: the fletcher always makes the guard's bow within the test's time. Test: runCompatGameTest a few times, or the repeat generator on that test (found by lane-a-1004-1233) (found by lane-a-1004-1233, 2026-10-04)
 - [x] **B49** (approved auto 2026-10-04) (verified 2026-10-05: B53: QaBerryPaceCompatTests [two partners: 14/20 at the default cap, held at 16/20 with maxWorkPace 125; the old code gave 11] passes; B49: b10ZombieDesertHouseRotated90 and idleBuildersHelpNearbyBuilds 5x each with RepeatNewTests, 10/10; B58: legendPace 5x in a filtered run, 5/5. No nightly mutation/repeat report since these fixes [newest nightly 2026-10-04 09:50Z]) StructureVillagerGameTests b10ZombieDesertHouseRotated90 failed in a local full build of main edc1750 (lane-a-1004-1533, 2026-10-04 17:36Z): 'the villager is not on the house floor (CLOCKWISE_90): 2.45 1.00 1.85 from the spot'; main's CI was already red at 0f5e530 (28.7). Also seen once in the build before (same session, main 0f5e530 + 23.1a): BuilderGameTests idleBuildersHelpNearbyBuilds 'the helper should stop once the build is done' (passed 8/8 alone with the repeat generator and in two other full builds; may come from 23.1a's crew changes, which let helpers work during the lead's retry). Expected: both pass on every run. Test: the two tests repeated 10x with RepeatNewTests (found by lane-a-1004-1533, 2026-10-04)
@@ -134,11 +134,12 @@ stay in the list, ticked, so their numbers stay unique.
 - [ ] **B66** B50 is back after its fix (90808c7): BuilderCrewGameTests.aCrewBuildsInAboutTheTimeOfOneBuilderDividedByItsSize failed in qa-1005-0533's local full build of main a026511 + qa/b46-b53-1005 (2026-10-05 06:25Z): 'a crew of 4 took 1868 ticks, 44% of the 4200 ticks alone (at most 42%)'; crew of 2 took 50%. It blocked that ship. Expected: passes every run (find what the slow 4-crew runs wait on, as 90808c7 did for the stuck lead). Test: the test itself, repeated 10x with RepeatNewTests (QA lane: test-only flake that turns main red) (found by qa-1005-0533, 2026-10-05)
 - [ ] **B67** B57's fix (bf4d409, clear leftovers) didn't hold: PartnersForgeCompatTests aPidgeyBringsAFeatherToTheFletcher was the 1 failed compat test in CI run 37271696140 on main f0594ec (2026-10-05 06:23Z, which includes bf4d409), turning main red; the next run passed. CI's log doesn't print the assertion message (the gametest-report artifact has it). Same test as the still-open B48. Expected: passes every run; look past leftover guards (e.g. the fletcher's sticks or string taken by another worker within Village.RADIUS 48, or the guard's own bow choice). Test: the test itself in a few full compat runs (QA lane: test-only flake that turns main red) (found by qa-1005-0633, 2026-10-05)
 - [ ] **B68** Setting a traveller's camp down (29.9, legend/traveller_camp.nbt) logs an ERROR each time: 'Block-attached entity at invalid position: BlockPos{x=0, y=0, z=0}' (3x in every full GameTest run, from LegendSitesGameTests; the nightly log audit counts it). The camp's item frame is saved without TileX/TileY/TileZ (tools/blueprints/legend_sites.py). The frame and its map still appear (QaLegendCampGameTests, shipped), so players see nothing; only the log. Expected: no ERROR when a camp is placed (write TileX/Y/Z from blockPos in the generator, as vanilla's templates do). Test: logaudit.py after runGameTest, batch legendSitesPlace (found by qa-1005-0633, 2026-10-05) (found by qa-1005-0633, 2026-10-05)
-- [ ] **B69** Village houses (all five styles, tools/blueprints/village.py village_house) have head-height top-half trapdoor flower boxes beside the front steps at (2,1,1) and (6,1,1). Vanilla pathfinding treats any trapdoor as open ground, so a villager walking along the front wall to the door gets stuck against one for good (seen with the guard of workplaceBuilt_guard_house: 3 in 20 runs). The 12 buildable workplace copies got upside-down stair sills instead (27.11); the worldgen village houses still have the trapdoors. (found by lane-c-1005-0633, 2026-10-05)
-- [ ] **B70** 'Refresh active project' changes QaImportEdgesGameTests.java: its //$ gametest swap line drops timeoutTicks = 400, so git diff isn't clean after a refresh (seen by lane-d-1005-0632 on 30.16, 2026-10-05). Expected: refresh leaves git diff unchanged (fix the swap line). Test: ./gradlew "Refresh active project" then git diff (found by lane-d-1005-0632, 2026-10-05)
+- [x] **B69** (approved auto 2026-10-05) (verified 2026-10-05: B46: QaB46GameTests [two restarts in a row hold 24%, a save without shown_progress loads] + B46GameTests pass; B69: QaB69FrontWalkGameTests, all 5 styles, villagers walking the guard house's front walk row reach the door from both corners: 5/5 fail on the pre-fix templates [stuck beside the flower box], pass on main twice and in a full build [1014/1014]; B73: 'Refresh active project' on main leaves git diff unchanged. Tests on qa/b46-b69-1005 [ship blocked by the B57 flake]) Village houses (all five styles, tools/blueprints/village.py village_house) have head-height top-half trapdoor flower boxes beside the front steps at (2,1,1) and (6,1,1). Vanilla pathfinding treats any trapdoor as open ground, so a villager walking along the front wall to the door gets stuck against one for good (seen with the guard of workplaceBuilt_guard_house: 3 in 20 runs). The 12 buildable workplace copies got upside-down stair sills instead (27.11); the worldgen village houses still have the trapdoors. (found by lane-c-1005-0633, 2026-10-05)
+- [x] **B70** (approved auto 2026-10-05) 'Refresh active project' changes QaImportEdgesGameTests.java: its //$ gametest swap line drops timeoutTicks = 400, so git diff isn't clean after a refresh (seen by lane-d-1005-0632 on 30.16, 2026-10-05). Expected: refresh leaves git diff unchanged (fix the swap line). Test: ./gradlew "Refresh active project" then git diff (found by lane-d-1005-0632, 2026-10-05)
 - [ ] **B71** StewardCivicRulesGameTests twoDarkBedsGetAStreetLampByTheDarkestBed failed once and turned main red (CI run 37289855963 on a2294ed9, 2026-10-05 09:30Z, the only failure of 962; the next runs passed). CI's log names only the test, not the assertion. Likely cause (not confirmed): VillageAdvice.darkBeds counts every HOME POI within VillageHalls.RADIUS 64 of the hall, so a bed left by another test's area within 64 blocks makes 'darkBeds.size() == 2' fail, or two equally dark beds tie in the sort. Expected: passes every run (count only this test's beds, e.g. a smaller radius for the test or assert on the test's own beds). Test: the test itself, repeated with RepeatNewTests (QA lane: test-only flake that turned main red) (found by qa-1005-0934, 2026-10-05)
 - [ ] **B72** 13 showcase scenes fail now that B59 lets every scene run (full showcase run 37279004841 on main 9127357, 98 pass / 17 fail; soak=B60, steward=B62, words=B63 known): cradle, steward_rules, steward_desk, steward_jobs, steward_homes, long_shifts, free_bread, legend_guest, curfew, conscription, open_gates, piece_look, habitat_keeper, plus edicts (4532 missing-texture magenta pixels in 02_edicts_scale4 only). The matching GameTests pass (e.g. EdictGameTests Long Shifts), so most look like scene setup, not the mod: from reading the harness (not run), the scenes place beds/halls with setBlockAndUpdate and read POIs in the same tick (Cradles.nursery, Stewards.appoint's result ignored so no Steward is appointed, LegendGuests.tend), and long_shifts/free_bread don't call CivicEffects.forget() after the hall exists (hall cached null 200 ticks). Expected: every scene passes; each scene waits a tick or two after placing POI blocks, checks Stewards.appoint's result, and forgets the civic caches; any scene still failing after that is a mod bug of its own. Test: SCENE=<name> tools/screenshots/run.sh (QA lane: scene-only; found by qa-1005-0934) (found by qa-1005-0934, 2026-10-05)
-- [x] **B73** (approved auto 2026-10-05) QaImportEdgesGameTests (QA commit 33ddd5b0): its '//$ gametest' swap line drops timeoutTicks = 400, so ./gradlew 'Refresh active project' rewrites the @GameTest without the 400-tick timeout (seen by lane-c-1005-0932, 2026-10-05). Expected: refresh leaves git diff unchanged; the swap line carries the timeout. Test: run 'Refresh active project' on main, git diff (found by lane-c-1005-0932, 2026-10-05)
+- [x] **B73** (approved auto 2026-10-05) (verified 2026-10-05: B46: QaB46GameTests [two restarts in a row hold 24%, a save without shown_progress loads] + B46GameTests pass; B69: QaB69FrontWalkGameTests, all 5 styles, villagers walking the guard house's front walk row reach the door from both corners: 5/5 fail on the pre-fix templates [stuck beside the flower box], pass on main twice and in a full build [1014/1014]; B73: 'Refresh active project' on main leaves git diff unchanged. Tests on qa/b46-b69-1005 [ship blocked by the B57 flake]) QaImportEdgesGameTests (QA commit 33ddd5b0): its '//$ gametest' swap line drops timeoutTicks = 400, so ./gradlew 'Refresh active project' rewrites the @GameTest without the 400-tick timeout (seen by lane-c-1005-0932, 2026-10-05). Expected: refresh leaves git diff unchanged; the swap line carries the timeout. Test: run 'Refresh active project' on main, git diff (found by lane-c-1005-0932, 2026-10-05)
+- [ ] **B74** PartnersForgeCompatTests aPidgeyBringsAFeatherToTheFletcher still fails after B57's fix (bf4d4091, leftovers cleared): 'no bow for the guard' in qa-1005-1034's ship build of qa/b46-b69-1005 (main a5a723f9+ merged, 2026-10-05 11:26Z; 1014 gametests passed, this the only compat failure). Expected: passes every run. Test: runCompatGameTest, or the repeat generator on that test (QA lane: test-only flake, but it turns the build red) (found by qa-1005-1034, 2026-10-05)
 
 ## Milestone 21: Finish 0.138.0
 
@@ -388,7 +389,7 @@ texture has no clear direction yet.
 Baseline at 0.136.0: 80 busy workers in the full pack took the tick from about 2 ms to about 7 ms, and our code was
 about 12% of that. For villager mods, the cost is pathfinding to distant points of interest and brain ticks.
 
-- [ ] **25.1** **Measure first.** A repeatable benchmark:
+- [x] **25.1** (approved auto 2026-10-05) **Measure first.** A repeatable benchmark:
   - 150 workers over 3 villages in the Cobbleverse pack;
   - `tick query` p50/p95, heap after GC and a JFR profile (`tools/packtest`, `PERF=true`);
   - run on GitHub's runner and recorded in `docs/performance.md`.
@@ -420,6 +421,10 @@ about 12% of that. For villager mods, the cost is pathfinding to distant points 
     passes its scene. The benchmark and the soak already run with them (they run the whole pack). Left: tonight's
     nightly soak and the first benchmark (25.1) give the numbers; compare them with the 25.2 targets, add the row and
     tick.
+  - Status (lane-a-1005-0932): nightly-tests 37297003813 (5b489b7) ran the load with the stack and no error of ours;
+    share 13.1% (<15% ok). Off: busy p99 66.1 ms in the first sample (not shown to be ours) and no 60-minute soak
+    exists, so the heap-flat target is unmeasured (one reading, 1613 MB). Left: a 60-minute soak with heap readings
+    (`PERF` heap sampled every 10 min) and the profile of the p99 spikes; then tick.
 - [x] **25.5** (approved 2026-10-05) **Server owner controls.** Config caps like MineColonies' (max workers per village, how far workers path, the
   far-from-players behaviour from Milestone 23). Needs systems (moods, sickness, raids, festivals) are easy to switch
   off, because "babysitting" is the top complaint about big colony mods. Done when: each key is documented in the README
@@ -1532,7 +1537,7 @@ MarketDays) and research/.
     lookups run with nobody online;
   - renders of the three camps in the review package; showcase scene `legend_sites` (the three camps, and a GIF of the
     cage opened).
-- [ ] **29.10** **Strange moods and Masterworks.** The fourth way (Dwarf Fortress). Once a day, in a happy village
+- [x] **29.10** (review: pending 2026-10-05) **Strange moods and Masterworks.** The fourth way (Dwarf Fortress). Once a day, in a happy village
   (29.5's test) with no mood already on, a Master whose trade a Legend's `inspired` way names may be seized by a
   strange mood, 1 time in 8, if the village meets that Legend's conditions and its slot is free (never during a raid
   or a festival; config `strangeMoods`). The villager (attachment `STRANGE_MOOD`):
@@ -1552,7 +1557,7 @@ MarketDays) and research/.
   three materials are on the board; success makes the Masterwork (name, lore) and the Legend; failure sulks a week and
   blocks moods for 10 days; a mood survives a save and reload halfway; showcase scene `strange_mood` (GIF: the claim,
   the chest filled, the Masterwork).
-- [ ] **29.11** **More research trees, as data.** For the Old Sage (29.14) and the Pokémon Professor (29.21).
+- [x] **29.11** (review: pending 2026-10-05) **More research trees, as data.** For the Old Sage (29.14) and the Pokémon Professor (29.21).
   `research/ResearchTrees` loads `data/aliveworkplace/research_trees/<tree>.json`: the Legend who researches it, an
   icon, and its topics, each with levels, a cost per level (items), research points, the topics it needs, an optional
   `unlock` (a named village counter at a number, such as species in the village Pokédex), an optional `exclusive`
@@ -1565,7 +1570,7 @@ MarketDays) and research/.
   it loads; costs are taken; levels are saved in the hall and come back after a reload; an exclusive group refuses a
   second pick; an unlock waits for its counter; each effect works; an old hall's research loads unchanged; a
   screenshot of the test tree's tab.
-- [ ] **29.12** **The Master Architect (Legendary).** `legends/master_architect.json`. Comes: a guest at the inn once
+- [x] **29.12** (review: pending 2026-10-05) **The Master Architect (Legendary).** `legends/master_architect.json`. Comes: a guest at the inn once
   the village is a Town with finished buildings in at least 3 styles (a blueprint's own drawing counts as one;
   `BlueprintStyles` ids tell the rest). Trade: Builder. Likes: jewels. Powers:
   - builders working on a site within 32 blocks of the Architect build twice as fast (`pace`; with the shared cap,
@@ -1584,7 +1589,7 @@ MarketDays) and research/.
   isn't; a rebuild picks an upgrade, the Grand style when there's none, places only the changed blocks, never touches
   a player's build and stops on strike; the Grand style's renders (three builds, front and back) and the outfit in the
   review package; showcase scene `legend_architect` (GIF: the Stone House redrawn in the Grand style).
-- [ ] **29.13** **The Pathfinder (Rare).** Comes: found at a ruined portal (29.9) once one of the village's explorers
+- [x] **29.13** (review: pending 2026-10-05) **The Pathfinder (Rare).** Comes: found at a ruined portal (29.9) once one of the village's explorers
   (Cartographers) is an Expert; born to a Cartographer (29.7). Trade: Cartographer. Likes: clothes. Powers:
   - their own expeditions (`ExplorerWork`) range twice as far and roll the new `explorer/pathfinder` loot table (more
     maps, now and then a trial key or an echo shard);
@@ -1600,7 +1605,7 @@ MarketDays) and research/.
   Outfit: a hooded travel cloak, a pack and a lantern. Done when: GameTests: they are found only for a village with an
   Expert explorer; an expedition to a staged target leads, waits and catches up; Home brings both back; a logout
   cancels it; the loot table rolls; showcase scene `legend_pathfinder` (GIF: leading the player through a forest).
-- [ ] **29.14** **The Old Sage (Rare).** Comes: found in a hermit's hut once the village has finished 5 research
+- [x] **29.14** (review: pending 2026-10-05) **The Old Sage (Rare).** Comes: found in a hermit's hut once the village has finished 5 research
   levels; born to a Scholar (29.7). The hut (`legend/hermit_hut` through the architect skill: mossy cobblestone and
   spruce, a lectern, bookshelves, a cauldron and an herb garden) is placed 150-250 blocks from the hall on dry, flat,
   loaded ground (as `BanditCamps.site` picks), and the village's players hear a rumour of it with its direction.
@@ -2010,7 +2015,7 @@ the Village Hall (`VillageNeeds`, `VillageQuests`, `VillageRanks`, `Festivals`, 
   shield and a player's left alone, the routes icon, the festival's mood and days); the colours survive a reload; the
   icon passes `lint.py`; showcase scene `village_banner`: a street of finished houses under the village's banners, a
   knight with the painted shield, the routes page.
-- [ ] **30.14** **Seasons and the Harvest Idol.**
+- [x] **30.14** (review: pending 2026-10-05) **Seasons and the Harvest Idol.**
   - A village year (`hall/Seasons`, core; if M28 already added a season clock for its Festival Cup, use that one):
     spring, summer, autumn and winter of `seasonDays` (8) days each, counted from the world's day; autumn is harvest
     season. The hall's festival icon names the season and its day ("Autumn: harvest season, day 3 of 8").
@@ -4295,6 +4300,12 @@ item waits.
 - (Sessions: anything that needs the owner, and the link to the latest Full test report. Handoffs go here through
   `sessions.py handoff "<in progress, next, traps>" --as <you>`, which keeps one per kind of session (chat, night):
   carry over anything still true from the previous one.)
+- 2026-10-05 (25.2, question for the owner; lane a): first measurement (nightly-tests 37297003813, 150 workers over 3
+  villages, GitHub runner): idle p50/p95 2.3/3.5 ms; busy 18.3/32.8 ms at the start (p99 66.1) and 8.8/16.5 (p99 21.1)
+  once settled; heap 1613 MB after GC; our code 13.1% of the server thread. Proposed targets, unchanged from 25.2's
+  draft: our code under 15% of the tick at 150 workers (met, 13.1%); no tick over 50 ms from us (the 66 ms p99 is in the
+  start-up sample, unattributed); heap flat within 5% over 60 minutes (not yet measured); no regression over 10%
+  between releases (baseline: this row). Do you confirm these? Jesse: yes/no or changes.
 - 2026-10-05 (30.15, decisions; lane d): the status line keeps the pace line's one format for every source, so a
   tonic reads "25% faster (Miner's Brew, 19 min left)" (the spec wrote "25% faster: Miner's Brew, 19 min left"); minutes
   are whole minutes left, rounded down (20 right after drinking, 19 a tick later). Only our own tonic items are refused
@@ -4309,6 +4320,56 @@ item waits.
   of the door, else a block to the side; a front door with none of these free gets none and the banner stays in the
   chest (38 of the 43 door-bearing starter blueprints have a spot). Guards repaint nothing: only shields with no base
   colour are painted, so a shield painted for an earlier set of colours keeps them.
+- 2026-10-05 (29.10, decisions; lane a): strange moods (`legend/StrangeMoods`). The day's roll picks one qualifying
+  Legend, throws its way's `chance` (default 1 in 8) once, then picks one of its Masters, so a village has at most one
+  roll a day however many Masters it has. The three materials are one of each, picked from `masterwork.materials`; the
+  mood watches the chest(s) by the workstation (the builders' 8-block supply rule) and takes them only when all three
+  are there. Who brought what: a hand-over at a Storehouse board counts for that player (new `Requests.given` hook);
+  otherwise whatever turns up is put to the nearest player within 8 blocks of the workstation. Ties go to the first
+  giver; an offline top giver means the chest. The deadline is the end of the third day (start day included). The
+  name is the file's `name` key with (village, maker, made-up word, item) as arguments, by default "The <word> <item>"
+  from 16 words (Ember, Gilded, Starlit…), picked from the maker and the day so it never changes. If the Legend's slot
+  was taken during the mood, the Masterwork is still made but nobody becomes the Legend. Switching `strangeMoods` off
+  calls a mood already on off quietly at its next check (no sulk). A broken workstation doesn't end the mood: the
+  chest by its spot still counts. The Founder's way (`"founder": true`) is skipped by the daily roll: 29.23 starts it
+  with `StrangeMoods.start` at the first rise to City. No shipped Legend has an `inspired` way yet (29.15, 29.18 and
+  29.23 add them), so in a real world nothing happens until those land.
+- 2026-10-05 (29.11, decisions; lane a): the Old Sage (29.14) and the Professor (29.21) don't exist yet, so 29.11 is
+  the generic system proven with the gametest tree (`aliveworkplace_test:test_tree`, worked by `test_sage`); those
+  items add `research_trees/ancient_lore.json` and `pokedex.json` (and the `pokedex_species` counter through
+  `ResearchTrees.counter`). File format: `legend`, `icon`, `name` (text), optional `requires`, `topics` (≤ 14): `id`,
+  `icon`, `name`, `description`, `levels`, `cost` (a list of item maps, one per level, the last repeating), `points`
+  (per level, times the level), `needs`, `unlock` {`counter`, `at`}, `exclusive` (group), `effects` (per level). The
+  topic in progress is kept in the same levels map as `@<tree>/<topic>` (-1 unpaid, else points done), so there's no
+  new save field; `Research.State.isLevel`/`totalLevels` skip it for ranks and `research_levels`. An exclusive group
+  counts as taken once a rival is paid for or researched (a chosen, unpaid pick can still be changed). Scholars help a
+  tree only when the scholars' own tree has nothing chosen, at half their pace, and only while its Legend works (not on
+  strike). Tabs list Legends from the server's record (living, holding their slot, settled in that hall). A Legend
+  with no trade of their own opens their tab by sneak-right-click. The new effects also work in edicts.
+- 2026-10-05 (29.12, decisions; lane a): Minecraft 1.21.1 has no copper lantern (it arrives in 1.21.9), so the Grand
+  style's rule turns lanterns into `minecraft:copper_lantern` where that block exists and leaves them iron lanterns on
+  1.21.1 (a style rule whose result isn't a block is skipped). The Grand style is an ordinary style, so players can also
+  pick it on a blueprint (owner's call whether it should be the Architect's alone). "Never anything a player built":
+  only buildings in the builders' finished list are picked (a player's own hand-built house is never in it);
+  decorations and defences (`StarterBlueprints.DECORATIONS`, `DEFENCES` families) are left out. A rebuild is a village
+  build like the Steward's (no blueprint item comes back if it's cancelled). A strike cancels the rebuild under way (the
+  blocks placed stay) and none starts until it's over. The Architect can be the builder handed the work if they are
+  the least busy one with a bench.
+- 2026-10-05 (29.14, decisions; lane a): the hut is looked for once a day per hall, in the morning round, while the
+  village qualifies and no Sage is out at a hut (a killed Sage frees the slot for a new hut another day); its site is
+  `BanditCamps.site` at 150-250 blocks. The rumour goes to the owner and their friends online. The Sage is a found
+  Legend (`LegendSites` captive, site `hermit_hut`); the answer is the item in the hand (a filled or empty map, any
+  book, wet or dry sponge; the water bucket's bucket comes back), an empty hand repeats the riddle, and the hint comes
+  with every miss from the second on. Ancient Lore effects outside the shared toolbox are `flag`s counted per level
+  (`TreeEffects.flagCount`); the Iron Pact's golem comes on days divisible by 5, and the 25% damage cut is a mixin on
+  `LivingEntity.actuallyHurt` for golems inside a village's area and guards of the village.
+- 2026-10-05 (29.13, decisions; lane a): the Pathfinder's place is picked from three chat buttons after the
+  sneak-right-click (`/workplace expedition <kind>`, open 60 s, only for the player who clicked); the lookup runs once,
+  when a place is picked, and nothing is used up when there is none within 3,000 blocks. "Standing still" for Home is
+  the player (the Pathfinder is held still); Home goes beside the hall of the Pathfinder's village. A player in another
+  dimension is waited for where the Pathfinder stands. The entrance banner is light blue and stays. The chronicle line
+  is written on arrival, and a cancelled trip gets its own "turned back" line. Their own expeditions roll
+  `explorer/pathfinder` on top of the usual finds.
 - 2026-10-05 (29.8, decisions; lane a): guests (`legend/LegendGuests`) are nitwits until they settle (no job, like inn
   travellers) and go by one of their file's `names` (the title if none). A place's day roll is spent only when some
   Legend may come there that day (conditions met, slot free, no visit in 7 days), so a village that qualifies at noon
@@ -4609,4 +4670,4 @@ item waits.
   and the still shows none rising (FAIL "a schoolhouse went up"); the day-2 wishes also still listed `well` after the
   well was finished. Left for QA/the next lane: why the schoolhouse doesn't start (plot in Civic z 16..40, two open
   builds in a Village) and whether `built_count_below` misses a just-finished well at the morning's ranking.
-- **qa handoff** (qa-1005-0934, 2026-10-05 10:12Z): qa-1005-0934: verified B59, B61 (full showcase run 37279004841: every scene starts, stations and config pass), B63 (words scene passes locally on main), 23.8 (3 tests on qa/placing-1005: rotation/mirror inside the ghost, cancel with a full chest, slope; pass alone). Bugs: B71 (street-lamp test flake: CI run 652 red, and it failed again in my local ship of qa/placing-1005 with '(…) street_lamps shouldn't hold' at the one-bed step, i.e. extra dark beds within the hall's 64-block radius at start; my new tests may make it likelier, so ship qa/placing-1005 only after B71 is fixed), B72 (13 showcase scenes fail now that B59 lets them run; reads like scene setup: POIs read the tick they're placed, Stewards.appoint result ignored; QA lane's). Also unshipped: qa/import-swap-1005 (QaImportEdgesGameTests swap line dropped timeoutTicks 400 on Refresh active project): ship it. qa/crew-looks-1005 is on main. Next QA: B72 scene setup, then M23 rest (23.1 soak waits on B60, 23.2 chaos results, 23.10).
+- **qa handoff** (qa-1005-1034, 2026-10-05 11:27Z): qa-1005-1034: verified B46, B69, B73. Unshipped: qa/b46-b69-1005 (QaB46GameTests, QaB69FrontWalkGameTests; its ship build passed 1014/1014 gametests but failed on the compat flake B74 = B57 again): ship it once B74 is fixed (or retry ship). qa/import-swap-1005 is obsolete (B73 fixed on main). B50 and B57 not verified: read nightly run 37297003813 (on 5b489b7, after both fixes) for the crew test and the Pidgey test's repeats; B57 recurred (B74). qa/placing-1005 still waits on B71. Next QA: B50 from the nightly, B72 scene setup, then 21.2, M23.

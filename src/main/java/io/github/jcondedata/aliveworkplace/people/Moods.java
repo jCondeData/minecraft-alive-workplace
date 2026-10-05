@@ -172,6 +172,12 @@ public final class Moods {
 			score += luxury.points();
 			good.add(luxury.reason());
 		}
+		// Sulking after a strange mood that failed (29.10), for the week it lasts.
+		io.github.jcondedata.aliveworkplace.legend.LegendPowers.MoodReason sulk = io.github.jcondedata.aliveworkplace.legend.StrangeMoods.sulkMood(level, villager);
+		if (sulk != null) {
+			score += sulk.points();
+			bad.add(sulk.reason());
+		}
 		if (!level.getEntitiesOfClass(Villager.class, villager.getBoundingBox().inflate(COMPANY_RANGE), v -> v != villager && v.isAlive()).isEmpty()) {
 			score += 5;
 			good.add(reason("company"));

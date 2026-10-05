@@ -735,8 +735,141 @@ def legend_placeholder():
     return [path]
 
 
+def master_architect():
+    """The Master Architect (29.12), drawn over the Builder's outfit: a long deep-blue coat to the shins with paler
+    cuffs and a turned-down collar, brass buttons down the front edge, a brown belt with a brass buckle, a brass
+    compass hanging at the belt on the villager's left and a rolled drawing (pale paper tied with red string) tucked
+    upright at the belt on the right. A gold circlet at the brow marks the Legend under any hat."""
+    t = vg.VillagerTexture()
+    coat = vg.cloth("#2a4a86")
+    for side in SIDES:                                   # the Legend's circlet, under any hat's brim
+        f = t.face("head", side)
+        for x in range(f.w):
+            f.put(x, 4, GOLD[2] if side in ("front", "west") else GOLD[1])
+    vg.robe(t, coat, length=18, sleeves_too=True, body_too=False, noise=0)
+    vg.sleeves(t, coat, cuff="#7f9ccf", noise=0)
+    jf = t.face("jacket", "front")
+    paint(jf, ((1, 0), (2, 0), (5, 0), (6, 0)), coat[3])  # the turned-down collar
+    paint(jf, ((2, 1), (5, 1)), coat[2])
+    paint(jf, ((3, 0), (4, 0)), LINEN)                   # a pale shirt at the throat
+    paint(jf, ((3, y) for y in range(2, 18)), coat[0])   # where the coat closes
+    for y in (3, 6, 15):                                 # brass buttons down the front edge (the badge sits on 10..13)
+        jf.put(4, y, BRASS[3])
+    vg.belt(t, LEATHER, row=9, buckle=BRASS[2])
+    paper = Ramp(["#a89f86", "#cfc6aa", "#e9e2c9", "#f4efdc"], name="paper")
+    for y in range(6, 15):                               # the rolled drawing, upright at the belt, its end lit
+        jf.put(1, y, paper[2] if y > 6 else paper[3])
+        jf.put(2, y, paper[1] if y > 6 else paper[2])
+    paint(jf, ((1, 8), (2, 8), (1, 12), (2, 12)), "#a8322a")   # red string ties
+    jf.put(0, 10, paper[0])
+    ef = t.face("jacket", "east")                        # the compass on the left hip: a brass ring on a short chain
+    ef.put(1, 10, BRASS[1])
+    paint(ef, ((1, 11), (2, 11), (0, 12), (3, 12), (1, 13), (2, 13)), BRASS[2])
+    paint(ef, ((1, 12), (2, 12)), "#e9e2c9")             # its pale face
+    ef.put(2, 12, "#a8322a")                             # and the red needle
+    paint(ef, ((0, 11), (3, 11), (0, 13), (3, 13)), BRASS[0])
+    path = ASSETS / "textures" / "entity" / "villager" / "legend" / "master_architect.png"
+    t.save(path)
+    return [path]
+
+
+def pathfinder():
+    """The Pathfinder (29.13), drawn over the Cartographer's outfit: a hooded travel cloak in weathered forest green to
+    the shins, its hood up with a gold circlet (the Legend's mark) at the brow; a brown leather pack on the back with a
+    rolled blanket on top and straps over the shoulders; a lit lantern hanging at the belt on the villager's left, and a
+    brass-buckled belt."""
+    t = vg.VillagerTexture()
+    cloak = vg.cloth("#3f5a34")
+    vg.hat(t, cloak, style="hood")
+    hb = t.face("hat", "back")                           # the hood's back: a seam down the middle, a darker hem
+    paint(hb, ((4, y) for y in range(1, 8)), cloak[1])
+    paint(hb, ((x, 7) for x in range(hb.w)), cloak[1])
+    paint(hb, ((x, 0) for x in range(hb.w)), cloak[3])
+    for side in SIDES:                                   # the Legend's circlet at the hood's edge
+        f = t.face("head", side)
+        for x in range(f.w):
+            f.put(x, 4, GOLD[2] if side in ("front", "west") else GOLD[1])
+    vg.robe(t, cloak, length=18, sleeves_too=True, body_too=False, noise=0)
+    vg.sleeves(t, cloak, cuff="#2d4226", noise=0)
+    jf = t.face("jacket", "front")
+    paint(jf, ((3, y) for y in range(0, 18)), cloak[0])  # where the cloak closes
+    paint(jf, ((1, 1), (6, 1)), LEATHER[1])              # the pack's straps over the shoulders
+    paint(jf, ((1, 2), (6, 2), (1, 3), (6, 3)), LEATHER[2])
+    vg.belt(t, LEATHER, row=9, buckle=BRASS[2])
+    jb = t.face("jacket", "back")                        # the pack: leather, a flap, a rolled blanket on top
+    for y in range(2, 11):
+        for x in range(1, 7):
+            jb.put(x, y, LEATHER[2] if x < 6 and y < 10 else LEATHER[1])
+    paint(jb, ((x, 4) for x in range(1, 7)), LEATHER[0])  # the flap's edge
+    jb.put(3, 5, BRASS[2])
+    jb.put(4, 5, BRASS[1])
+    roll = Ramp(["#6b2e22", "#8f4130", "#b25a40"], name="blanket")
+    for x in range(1, 7):
+        jb.put(x, 1, roll[2] if x < 4 else roll[1])
+        jb.put(x, 2, roll[1] if x < 4 else roll[0])
+    ef = t.face("jacket", "east")                        # the lantern on the left hip: iron cap, lit glass, iron base
+    paint(ef, ((1, 10), (2, 10)), "#3c3c44")
+    paint(ef, ((1, 11), (2, 11), (1, 12), (2, 12)), "#f2b33d")
+    ef.put(1, 11, "#fde08a")
+    paint(ef, ((0, 11), (3, 11), (0, 12), (3, 12)), "#4a4a52")
+    paint(ef, ((1, 13), (2, 13)), "#3c3c44")
+    path = ASSETS / "textures" / "entity" / "villager" / "legend" / "pathfinder.png"
+    t.save(path)
+    return [path]
+
+
+def old_sage():
+    """The Old Sage (29.14): a long grey wool robe to the feet with a darker hem and a rope belt, its hood down on the
+    shoulders; a long white beard from the chin down over the chest; a silver circlet (the Legend's mark) on the brow;
+    a gnarled oak staff with a knot of moss carried at the villager's left side."""
+    t = vg.VillagerTexture()
+    robe_ = vg.cloth("#7d7f84")
+    vg.robe(t, robe_, length=20, sleeves_too=True, body_too=True, noise=0)
+    vg.sleeves(t, robe_, cuff="#5c5e63", noise=0)
+    vg.belt(t, ROPE, row=9)
+    beard = Ramp(["#a9a59a", "#cfcbc0", "#e3dfd4"], name="beard")
+    hf = t.face("head", "front")                         # the beard: from the cheeks down past the chin
+    for y in range(6, hf.h):
+        for x in range(hf.w):
+            if y >= 7 or x in (0, 1, 6, 7):
+                hf.put(x, y, beard[0] if y == hf.h - 1 and x in (0, 7) else beard[1])
+    for x in range(2, 6):
+        hf.put(x, 9, beard[2] if x in (2, 3) else beard[1])
+    for side in ("west", "east"):                       # the beard round the jaw
+        f = t.face("head", side)
+        for y in range(7, f.h):
+            for x in range(f.w):
+                if (side == "west" and x >= f.w - 3) or (side == "east" and x < 3):
+                    f.put(x, y, beard[0] if y == f.h - 1 else beard[1])
+    for side in SIDES:                                   # the silver circlet at the brow
+        f = t.face("head", side)
+        for x in range(f.w):
+            f.put(x, 2, STEEL[2] if side in ("front", "west") else STEEL[1])
+    jf = t.face("jacket", "front")                       # the beard falls down the chest
+    for y in range(0, 9):
+        for x in range(2, 6):
+            if y < 7 or x in (3, 4):
+                jf.put(x, y, beard[2] if x == 2 else beard[0] if y == 8 or x == 5 else beard[1])
+    paint(jf, ((7, y) for y in range(8, 20)), "#5c4024")  # the staff, seen past the robe's edge
+    paint(jf, ((7, 12), (7, 17)), "#3f2b17")
+    jb = t.face("jacket", "back")                        # the hood down on the shoulders
+    paint(jb, ((x, y) for x in range(jb.w) for y in (0, 1, 2)), robe_[1])
+    paint(jb, ((x, 3) for x in range(1, jb.w - 1)), robe_[0])
+    staff = Ramp(["#3f2b17", "#5c4024", "#7a5732"], name="staff")
+    ef = t.face("jacket", "east")                        # the gnarled staff: a crooked shaft, knots and a mossy knob
+    shaft = [(1, y) for y in range(3, 20)] + [(2, y) for y in (6, 7, 13)]
+    paint(ef, shaft, staff[1])
+    paint(ef, ((0, 9), (2, 11), (0, 16)), staff[0])      # the knots
+    paint(ef, ((1, 0), (2, 0), (0, 1), (1, 1), (2, 1), (1, 2), (2, 2)), staff[2])
+    paint(ef, ((0, 0), (0, 2)), "#4f6b2c")               # moss on the knob
+    ef.put(2, 1, "#6d8a3a")
+    path = ASSETS / "textures" / "entity" / "villager" / "legend" / "old_sage.png"
+    t.save(path)
+    return [path]
+
+
 DRAW = [orchard_keeper, berry_breeder, camp_cook, habitat_keeper, daycare_keeper, gem_grower, pokemon_trader, porter, postman, rancher, scholar, shopkeeper, sifter, teacher, tinkerer,
-        trainer, trainer_leader, tutor, undertaker, steward, legend, legend_placeholder]
+        trainer, trainer_leader, tutor, undertaker, steward, legend, legend_placeholder, master_architect, pathfinder, old_sage]
 
 if __name__ == "__main__":
     run(DRAW)

@@ -47,11 +47,36 @@ public final class BuilderEvents {
 					return chosen;
 				}
 			}
+			// The Pathfinder (29.13): a sneak-right-click with an empty hand offers an expedition; a right-click there asks for Home.
+			if (!level.isClientSide() && io.github.jcondedata.aliveworkplace.legend.Pathfinder.isPathfinder(villager)) {
+				if (player.isShiftKeyDown() && player.getItemInHand(hand).isEmpty()) {
+					io.github.jcondedata.aliveworkplace.legend.Pathfinder.offer((ServerPlayer) player, villager);
+					return InteractionResult.SUCCESS;
+				}
+				if (!player.isShiftKeyDown() && io.github.jcondedata.aliveworkplace.legend.Pathfinder.askHome((ServerPlayer) player, villager)) {
+					return InteractionResult.SUCCESS;
+				}
+			}
+			// The Master Architect (29.12), sneak-right-clicked with an empty hand: pauses grander buildings, or carries on.
+			if (player.isShiftKeyDown() && player.getItemInHand(hand).isEmpty() && io.github.jcondedata.aliveworkplace.legend.GrandRebuild.isArchitect(villager)) {
+				if (!level.isClientSide()) {
+					io.github.jcondedata.aliveworkplace.legend.GrandRebuild.togglePause((ServerPlayer) player, villager);
+				}
+				return InteractionResult.SUCCESS;
+			}
 			// A scholar, sneak-right-clicked with an empty hand: the village's research.
 			if (player.isShiftKeyDown() && player.getItemInHand(hand).isEmpty()
 				&& villager.getVillagerData().getProfession() == io.github.jcondedata.aliveworkplace.registry.ModVillagers.SCHOLAR) {
 				if (!level.isClientSide()) {
 					io.github.jcondedata.aliveworkplace.research.ResearchScreen.open((ServerPlayer) player, villager);
+				}
+				return InteractionResult.SUCCESS;
+			}
+			// A Legend without a trade of their own, sneak-right-clicked with an empty hand: their research tree's tab (29.11).
+			if (player.isShiftKeyDown() && player.getItemInHand(hand).isEmpty()
+				&& villager.getVillagerData().getProfession() == io.github.jcondedata.aliveworkplace.registry.ModVillagers.LEGEND) {
+				if (!level.isClientSide()) {
+					io.github.jcondedata.aliveworkplace.research.ResearchScreen.openForLegend((ServerPlayer) player, villager);
 				}
 				return InteractionResult.SUCCESS;
 			}

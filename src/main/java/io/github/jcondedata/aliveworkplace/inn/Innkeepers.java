@@ -158,12 +158,13 @@ public final class Innkeepers {
 		VillagerType[] types = {VillagerType.PLAINS, VillagerType.DESERT, VillagerType.SAVANNA, VillagerType.SNOW, VillagerType.TAIGA,
 			VillagerType.JUNGLE, VillagerType.SWAMP};
 		guest.setVillagerData(guest.getVillagerData().setType(types[level.random.nextInt(types.length)]).setProfession(VillagerProfession.NITWIT));
-		int lvl = newcomerLevel(level, innkeeper);
+		boolean oldTongues = io.github.jcondedata.aliveworkplace.research.TreeEffects.flag(innkeeper, "old_tongues"); // the Old Sage's Ancient Lore (29.14)
+		int lvl = oldTongues ? Math.max(3, newcomerLevel(level, innkeeper)) : newcomerLevel(level, innkeeper);
 		ModAttachments.TRAVELLER.set(guest, new Traveller(level.getGameTime(), lvl));
 		guest.setCustomName(Component.translatable("entity.aliveworkplace.traveller", BuilderLevels.levelName(lvl)));
 		level.addFreshEntityWithPassengers(guest);
 		if (io.github.jcondedata.aliveworkplace.legend.Gifted.ROLL) { // (gifts by chance are off in GameTests, as the UUID roll is)
-			giftTraveller(guest, level.random);
+			giftTraveller(guest, level.random, oldTongues);
 		}
 		level.sendParticles(ParticleTypes.HAPPY_VILLAGER, guest.getX(), guest.getY() + 1.0, guest.getZ(), 8, 0.3, 0.5, 0.3, 0.0);
 		level.playSound(null, counter, SoundEvents.VILLAGER_CELEBRATE, SoundSource.NEUTRAL, 0.8f, 1f);
@@ -221,10 +222,16 @@ public final class Innkeepers {
 	 * and otherwise not (the dice decide, not their UUID). Nothing with {@code giftedChance} 0.
 	 */
 	public static void giftTraveller(Villager guest, net.minecraft.util.RandomSource random) {
+		giftTraveller(guest, random, false);
+	}
+
+	/** As {@link #giftTraveller(Villager, net.minecraft.util.RandomSource)}; twice as often under Old Tongues (the Ancient Lore, 29.14). */
+	public static void giftTraveller(Villager guest, net.minecraft.util.RandomSource random, boolean twice) {
 		if (io.github.jcondedata.aliveworkplace.legend.Gifted.CHANCE <= 0) {
 			return;
 		}
-		io.github.jcondedata.aliveworkplace.legend.Gifted.Gift gift = random.nextInt(io.github.jcondedata.aliveworkplace.legend.Gifted.TRAVELLER_ONE_IN) == 0
+		int oneIn = Math.max(1, io.github.jcondedata.aliveworkplace.legend.Gifted.TRAVELLER_ONE_IN / (twice ? 2 : 1));
+		io.github.jcondedata.aliveworkplace.legend.Gifted.Gift gift = random.nextInt(oneIn) == 0
 			? io.github.jcondedata.aliveworkplace.legend.Gifted.pick(random) : null;
 		io.github.jcondedata.aliveworkplace.legend.Gifted.set(guest, gift == null ? null : gift.id());
 	}

@@ -150,3 +150,72 @@ def castaway_camp():
     b.fill_air()
     _keep_world_ground(b)
     return b
+
+
+# The Old Sage (29.14): where they stand in the hut (legend/OldSage reads the same spot).
+SAGE_SPOT = (4, 1, 5)
+HUT_STONE = Mix((5, "mossy_cobblestone"), (4, "cobblestone"), (1, "andesite"), seed=14)
+
+
+def hermit_hut():
+    """12 x 10 x 11: the Old Sage's hut, set down 150-250 blocks out from a village: a 7 x 7 room of mossy cobblestone in
+    a spruce frame under a dark oak roof, a stone chimney, a lectern before bookshelves, a cauldron of water, and an
+    herb garden in a fence beside the door."""
+    b = Build(12, 10, 11)
+    # the ground: a worn path to the door, coarse dirt round the hut
+    for x in range(12):
+        for z in range(11):
+            b.set(x, 0, z, CAMP_GROUND.at(x, 0, z))
+    for z in range(0, 3):
+        b.set(4, 0, z, "dirt_path")
+    # plinth and walls: mossy stone, spruce posts at the corners and beside the door, a beam round the top
+    plinth(b, 1, 2, 7, 8, HUT_STONE)
+    for x in range(1, 8):
+        for z in range(2, 9):
+            if x in (1, 7) or z in (2, 8):
+                for y in (1, 2):
+                    b.set(x, y, z, HUT_STONE.at(x, y, z))
+                b.set(x, 3, z, "spruce_planks")
+            else:
+                b.set(x, 0, z, "spruce_planks")
+    posts(b, [(1, 2), (7, 2), (1, 8), (7, 8), (3, 2), (5, 2), (1, 5), (7, 5)], 1, 3, "spruce_log")
+    beam_ring(b, 1, 2, 7, 8, 4, "stripped_spruce_log")
+    # the door, with a step and a lantern by it
+    door(b, 4, 1, 2, "spruce_door", "north")
+    stairs(b, 4, 0, 1, COBBLE, "south")
+    lantern(b, 3, 1, 1)
+    # windows with shutters: one each side, one at the back
+    window(b, 1, 2, 4, "west", shutters="spruce_trapdoor")
+    window(b, 7, 2, 4, "east", shutters="spruce_trapdoor")
+    window(b, 4, 2, 8, "south", shutters="spruce_trapdoor", sill=COBBLE)
+    # the roof, ridge front to back, gables of spruce
+    gable_roof(b, 0, 8, 1, 9, 4, DARK_OAK, axis="x", gable="spruce_planks", eave_trim=SPRUCE)
+    # the chimney up the east side, smoking
+    chimney(b, 8, 6, 0, 7, HUT_STONE)
+    # inside: shelves of books along the back, the lectern before them, the cauldron, a bed, a hanging lantern
+    for x in (2, 3, 5, 6):
+        for y in (1, 2):
+            b.set(x, y, 7, "bookshelf")
+    b.set(2, 1, 6, "bookshelf")
+    b.set(4, 1, 6, "lectern", facing="north", has_book=False, powered=False)
+    b.set(6, 1, 3, "water_cauldron", level=3)
+    b.bed(2, 1, 4, "green", facing="south")
+    b.set(6, 1, 6, "barrel", facing="up", open=False)
+    b.set(6, 2, 6, "potted_fern")
+    for x in range(2, 7):  # a tie beam across the room, the lantern hung from it
+        log(b, x, 4, 5, "stripped_spruce_log", axis="x")
+    lantern(b, 4, 3, 5, hanging=True)
+    # the herb garden east of the door: a fenced bed of herbs and flowers, a composter
+    flower_bed(b, 9, 1, 11, 4, 0, ["fern", "allium", "lily_of_the_valley", "oxeye_daisy", "azure_bluet", "sweet_berry_bush"],
+               soil="podzol")
+    for z in range(0, 6):
+        fence(b, 8, 1, z, "spruce_fence") if z != 2 else None
+    for x in range(9, 12):
+        fence(b, x, 1, 0, "spruce_fence")
+        fence(b, x, 1, 5, "spruce_fence")
+    b.set(8, 1, 2, "spruce_fence_gate", facing="west", open=False, in_wall=False, powered=False)
+    b.set(10, 1, 6, "composter", level=0)
+    lamp_post(b, 11, 1, 6)
+    b.fill_air()
+    _keep_world_ground(b)
+    return b

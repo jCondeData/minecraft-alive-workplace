@@ -145,6 +145,49 @@ public class VillageGameTests implements FabricGameTest {
 	}
 
 	/**
+	 * B69: no village house (every style, the workshop and every house, the Cobblemon ones too) nor any of the 12 buildable
+	 * workplace copies has a trapdoor in its front walk row (z = 1, the row along the front wall, at a walker's feet or
+	 * head: y = 0 and 1). Mob pathfinding takes any trapdoor for open ground, so a villager heading for the door along
+	 * the wall walked into the old top-half trapdoor flower boxes beside the steps and stayed stuck. Read from the files,
+	 * so a block of a mod that isn't installed can't hide one.
+	 */
+	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
+	public void noVillageHouseHasATrapdoorInItsFrontWalkRow(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		var resources = level.getServer().getResourceManager();
+		List<net.minecraft.resources.ResourceLocation> files = new java.util.ArrayList<>(resources
+			.listResources("structure/village", r -> r.getPath().endsWith(".nbt")).keySet().stream()
+			.filter(r -> r.getNamespace().equals(io.github.jcondedata.aliveworkplace.AliveWorkplace.MOD_ID)).sorted().toList());
+		helper.assertTrue(files.size() >= 115, "only " + files.size() + " village templates found");
+		for (String workplace : List.of("builders_workshop", "carpenters_workshop", "kitchen", "post_office", "guard_house", "clinic",
+				"ferry_house", "trainers_house", "leaders_hall", "ball_workshop", "trade_hall", "school")) {
+			files.add(io.github.jcondedata.aliveworkplace.AliveWorkplace.id("structure/" + workplace + ".nbt"));
+		}
+		List<String> problems = new java.util.ArrayList<>();
+		for (var file : files) {
+			CompoundTag tag;
+			try (var in = resources.getResourceOrThrow(file).open()) {
+				tag = net.minecraft.nbt.NbtIo.readCompressed(in, net.minecraft.nbt.NbtAccounter.unlimitedHeap());
+			} catch (java.io.IOException e) {
+				throw new net.minecraft.gametest.framework.GameTestAssertException("can't read " + file + ": " + e);
+			}
+			net.minecraft.nbt.ListTag palette = tag.getList("palette", net.minecraft.nbt.Tag.TAG_COMPOUND);
+			net.minecraft.nbt.ListTag blocks = tag.getList("blocks", net.minecraft.nbt.Tag.TAG_COMPOUND);
+			for (int i = 0; i < blocks.size(); i++) {
+				CompoundTag block = blocks.getCompound(i);
+				net.minecraft.nbt.ListTag pos = block.getList("pos", net.minecraft.nbt.Tag.TAG_INT);
+				String name = palette.getCompound(block.getInt("state")).getString("Name");
+				if (pos.getInt(2) == 1 && pos.getInt(1) <= 1 && name.endsWith("_trapdoor")) {
+					problems.add(file.getPath() + " " + name + " at " + pos);
+				}
+			}
+		}
+		helper.assertTrue(problems.isEmpty(), problems.size() + " trapdoors in front walk rows: " + problems);
+		helper.succeed();
+	}
+
+	/**
 	 * How many blocks named {@code block} the template {@code id} has, read from its file: a block of a mod that isn't
 	 * installed loads as air, so the loaded template no longer knows its name.
 	 */

@@ -82,13 +82,15 @@ public final class Explorers {
 		LootParams params = new LootParams.Builder(level)
 			.withParameter(LootContextParams.ORIGIN, Vec3.atCenterOf(pos))
 			.withOptionalParameter(LootContextParams.THIS_ENTITY, explorer)
-			.withLuck(BuilderLevels.level(explorer) - 1 + io.github.jcondedata.aliveworkplace.legend.Gifted.lootLuck(explorer))
+			.withLuck(BuilderLevels.level(explorer) - 1 + io.github.jcondedata.aliveworkplace.legend.Gifted.lootLuck(explorer)
+				+ io.github.jcondedata.aliveworkplace.research.TreeEffects.lootLuck(explorer))
 			.create(LootContextParamSets.CHEST);
 		List<ItemStack> out = new ArrayList<>(roll(level, FINDS, params));
 		if (armed) {
 			out.addAll(roll(level, HUNTING, params));
 		}
 		out.addAll(roll(level, COBBLEMON, params)); // an empty table without Cobblemon
+		io.github.jcondedata.aliveworkplace.legend.Pathfinder.extraLoot(explorer).ifPresent(t -> out.addAll(roll(level, t, params))); // the Pathfinder (29.13)
 		out.removeIf(ItemStack::isEmpty);
 		return out;
 	}

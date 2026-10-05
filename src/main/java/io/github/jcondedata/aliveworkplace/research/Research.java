@@ -125,6 +125,11 @@ public final class Research {
 	 */
 	public record State(Map<String, Integer> levels, Optional<String> current, int progress, boolean paid) {
 		public static final State EMPTY = new State(Map.of(), Optional.empty(), 0, false);
+		/**
+		 * Keys in {@link #levels} starting with this hold a research tree's topic in progress ({@code @<tree>/<topic>},
+		 * 29.11), not a level; levels of the trees are kept under {@code <tree>/<topic>}.
+		 */
+		public static final String CURRENT = "@";
 		public static final Codec<State> CODEC = RecordCodecBuilder.create(i -> i.group(
 			Codec.unboundedMap(Codec.STRING, Codec.INT).optionalFieldOf("levels", Map.of()).forGetter(State::levels),
 			Codec.STRING.optionalFieldOf("current").forGetter(State::current),
@@ -134,6 +139,16 @@ public final class Research {
 
 		public int level(Topic topic) {
 			return levels.getOrDefault(topic.key(), 0);
+		}
+
+		/** Whether a key of {@link #levels} is a level (of the scholars' tree or a Legend's), not a tree's work in progress. */
+		public static boolean isLevel(String key) {
+			return !key.startsWith(CURRENT);
+		}
+
+		/** Every level researched, in every tree. */
+		public int totalLevels() {
+			return levels.entrySet().stream().filter(e -> isLevel(e.getKey())).mapToInt(e -> Math.max(0, e.getValue())).sum();
 		}
 
 		@Nullable
@@ -213,9 +228,14 @@ public final class Research {
 
 	/** "16 Paper, 2 Book, 4 Emerald". */
 	public static Component describe(Cost cost) {
+		return describe(cost.items());
+	}
+
+	/** "4× Paper, 1× Amethyst Shard" (also a research tree's cost, 29.11). */
+	public static Component describe(Map<Item, Integer> cost) {
 		net.minecraft.network.chat.MutableComponent out = Component.empty();
 		boolean first = true;
-		for (var e : cost.items().entrySet()) {
+		for (var e : cost.entrySet()) {
 			if (!first) {
 				out.append(", ");
 			}

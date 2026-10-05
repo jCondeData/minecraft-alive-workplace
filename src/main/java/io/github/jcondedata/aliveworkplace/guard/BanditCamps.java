@@ -138,9 +138,15 @@ public final class BanditCamps {
 	/** Somewhere out beyond the village for a camp: loaded, dry, fairly flat and open; null if there's nowhere. */
 	@Nullable
 	static BlockPos site(ServerLevel level, BlockPos hall) {
+		return site(level, hall, NEAR, FAR, level.random);
+	}
+
+	/** As {@link #site(ServerLevel, BlockPos)}, {@code near} to {@code far} blocks out (the Old Sage's hut, 29.14). */
+	@Nullable
+	public static BlockPos site(ServerLevel level, BlockPos hall, int near, int far, net.minecraft.util.RandomSource random) {
 		for (int tries = 0; tries < 12; tries++) {
-			double angle = level.random.nextDouble() * Math.PI * 2;
-			int distance = NEAR + level.random.nextInt(FAR - NEAR + 1);
+			double angle = random.nextDouble() * Math.PI * 2;
+			int distance = near + random.nextInt(far - near + 1);
 			BlockPos column = hall.offset((int) (Math.cos(angle) * distance), 0, (int) (Math.sin(angle) * distance));
 			if (!level.isLoaded(column) || !level.isLoaded(column.offset(16, 0, 16)) || !level.isLoaded(column.offset(-16, 0, -16))) {
 				continue;
@@ -149,7 +155,7 @@ public final class BanditCamps {
 			if (Math.abs(ground.getY() - hall.getY()) > 32 || !fits(level, ground)) {
 				continue;
 			}
-			if (!VillageHalls.nearest(level, ground).map(other -> other.distSqr(ground) > (double) NEAR * NEAR / 2).orElse(true)) {
+			if (!VillageHalls.nearest(level, ground).map(other -> other.distSqr(ground) > (double) near * near / 2).orElse(true)) {
 				continue; // too close to another village
 			}
 			return ground;

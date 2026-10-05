@@ -263,6 +263,10 @@ SCENES = [
     # Legends (ROADMAP 29.3): a Mythic Legend announced to the whole server in gold, and the chronicle's nether-star line
     S("legend_announce", "Legends", "A Mythic Legend is announced", "a Mythic Legend's coming was announced in chat and written in the chronicle", 45,
       [("01_legend_chat", "The announcement"), ("02_legend_chronicle", "The chronicle line")]),
+    # Research trees as data (ROADMAP 29.11): the test tree's own tab, worked by a Legend who lives in the village
+    S("research_trees", "Legends", "A Legend's research tree",
+      "a Legend's research tree has its own tab on the research screen: levels done, one in progress, an exclusive pick taken", 45,
+      [("01_tree_tab", "The tree's tab"), ("02_tree_exclusive", "An exclusive pick taken")]),
     # Legends on the hall (ROADMAP 29.4): a Legend in the stand-in outfit with a gold name and the sparkle, the hall's
     # list with her first, and the Legends page's cards at GUI scales 2 and 4
     S("legends_hall", "Legends", "Legends on the hall, and how they look",
@@ -286,7 +290,22 @@ SCENES = [
     S("legend_sites", "Legends", "Legends found at ruins, outposts and wrecks",
       "the three camps of Legends found in the world, and a prisoner freed from the outpost cage", 40,
       [("01_three_camps", "A traveller's camp, a prisoner's cage, a castaway's camp"), ("02_cage_opened", "A bar broken: the prisoner is free")]),
+    # The Old Sage (ROADMAP 29.14): the hermit's hut, a riddle with a wrong answer refused and a hint, the Ancient Lore tab
+    S("legend_sage", "Legends", "The Old Sage's hut, riddles and Ancient Lore",
+      "the Old Sage's hut, a riddle asked and a wrong answer refused with a hint, and the Ancient Lore tab", 50,
+      [("01_hermit_hut", "The hermit's hut, the Sage inside"), ("02_riddle", "A riddle, a shake of the head, a hint"),
+       ("03_ancient_lore_tab", "The Ancient Lore tab")]),
+    # The Master Architect (ROADMAP 29.12): the top-tier Stone House, finished, redrawn in the Grand style and rebuilt
+    job("legend_architect", "Legends", "The Master Architect redraws a house in the Grand style",
+        "the Master Architect handed a builder the Stone House redrawn in the Grand style, and it was rebuilt", 360),
+    # The Pathfinder (ROADMAP 29.13): an expedition with the player through a forest to a staged Stronghold
+    job("legend_pathfinder", "Legends", "The Pathfinder leads the player through a forest",
+        "the Pathfinder led the player through a forest to a staged Stronghold and planted a banner at its entrance", 120),
     job("legend_strike", "Legends", "A Legend on strike", "a Legend on strike left her stonecutter and picketed by the Village Hall under a red line", 120),
+    # Strange moods (ROADMAP 29.10): a Master cleric claims her brewing stand under a purple line, the chest by it fills,
+    # and she makes a named Masterwork, hung in an item frame, and becomes a Legend
+    job("strange_mood", "Legends", "A strange mood and a Masterwork",
+        "a Master cleric taken by a strange mood claimed her brewing stand, the chest was filled, and she made a Masterwork and became a Legend", 120),
     S("edicts", "Village Hall", "The Book of Edicts",
       "the Book of Edicts opened from the hall's lectern button, with Long Shifts in force, at GUI scales 2 and 4", 45,
       [("01_edicts_book", "The Book on the hall's screen: Long Shifts in force, two free slots, one locked for a City"), ("02_edicts_scale4", "The Book at GUI scale 4")]),
@@ -335,6 +354,11 @@ SCENES = [
       "a child slept seated in the cradle at night, and a newborn was still a child half-way and grew up within 12000 ticks in the nursery village", 45,
       [("01_cradle_night", "A child asleep in the cradle at night"), ("02_cradle_newborn", "Morning: a newborn"),
        ("03_cradle_growing", "Half-way: 6000 ticks"), ("04_cradle_grown", "Grown up in half the time (12000 ticks)")]),
+    # Seasons and the Harvest Idol (ROADMAP 30.14): two wheat fields through a harvest season, one with an idol
+    S("harvest_idol", "Village Hall", "The Harvest Idol: crops grow faster in harvest season",
+      "in autumn (harvest season) the wheat field within the idol's 32 blocks grew more stages half-way than the field out of its reach", 50,
+      [("01_harvest_idol", "The Harvest Idol, sparkling in harvest season"), ("02_harvest_idol_fields", "Two fields sown: the idol's (right) and one out of its reach"),
+       ("03_harvest_idol_growing", "Half-way: the idol's field is ahead"), ("04_harvest_idol_ripe", "The idol's field ripens first")]),
     # The Village Banner (ROADMAP 30.13): a street of stone houses under the village's colours, a knight's painted
     # shield, a neighbour by its banner on the routes page, the village by its own in the Book of Edicts
     S("village_banner", "Village Hall", "The Village Banner: the village's colours",

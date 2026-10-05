@@ -110,7 +110,8 @@ public final class VillageRaids {
 	 */
 	public static float chance(ServerLevel level, BlockPos hall, int villagers) {
 		return nightlyChance(villagers) * (BanditCamps.near(level, hall).isPresent() ? 2 : 1)
-			* io.github.jcondedata.aliveworkplace.hall.CivicEffects.of(level, hall).raids();
+			* io.github.jcondedata.aliveworkplace.hall.CivicEffects.of(level, hall).raids()
+			* io.github.jcondedata.aliveworkplace.research.TreeEffects.raidChance(level, hall); // raid_chance (29.11)
 	}
 
 	/** The chance a night that a village of {@code villagers} is raided. */
@@ -270,6 +271,11 @@ public final class VillageRaids {
 
 	static BlockPos surface(ServerLevel level, BlockPos column) {
 		return level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, column);
+	}
+
+	/** Forgets the raid under way on the village round {@code hall} (tests). */
+	public static void forget(BlockPos hall) {
+		ACTIVE.remove(hall);
 	}
 
 	/** Forgets the raids under way (tests). */

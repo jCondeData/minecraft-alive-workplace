@@ -9,8 +9,20 @@ public final class ModAttachments {
 	/** What makes a villager a Legend (M29): which one, guest or settled, their hall and needs. Absent: not a Legend. */
 	public static final Attachment<io.github.jcondedata.aliveworkplace.legend.LegendData> LEGEND = Attachment.saved("legend", io.github.jcondedata.aliveworkplace.legend.LegendData.CODEC);
 
+	/** The Master Architect's grander buildings (29.12): the last rebuild's day, paused or not, the site under way. */
+	public static final Attachment<io.github.jcondedata.aliveworkplace.legend.GrandRebuild.State> ARCHITECT = Attachment.saved("architect", io.github.jcondedata.aliveworkplace.legend.GrandRebuild.State.CODEC);
+
+	/** The Pathfinder's expeditions with a player (29.13): the last day, the player led, the place, arrived, stranded. */
+	public static final Attachment<io.github.jcondedata.aliveworkplace.legend.Pathfinder.State> PATHFINDER = Attachment.saved("pathfinder", io.github.jcondedata.aliveworkplace.legend.Pathfinder.State.CODEC);
+
+	/** The Old Sage's riddle quest at their hut (29.14): the riddles asked, how many answered, misses on this one. */
+	public static final Attachment<io.github.jcondedata.aliveworkplace.legend.OldSage.Riddles> SAGE_RIDDLES = Attachment.saved("sage_riddles", io.github.jcondedata.aliveworkplace.legend.OldSage.Riddles.CODEC);
+
 	/** A villager's gift (29.6): a gift's id, or {@code none}. Absent: the UUID roll decides ({@code Gifted.of}). */
 	public static final Attachment<String> GIFTED = Attachment.saved("gifted", com.mojang.serialization.Codec.STRING);
+
+	/** A villager's strange mood (29.10): the Legend it leads to, the workstation, the materials; or a sulk after one. Absent: none. */
+	public static final Attachment<io.github.jcondedata.aliveworkplace.legend.StrangeMood> STRANGE_MOOD = Attachment.saved("strange_mood", io.github.jcondedata.aliveworkplace.legend.StrangeMood.CODEC);
 
 	/** Which build site this villager is working on. */
 	public static final Attachment<BuilderJob> BUILDER_JOB = Attachment.saved("builder_job", BuilderJob.CODEC);

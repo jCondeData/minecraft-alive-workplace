@@ -73,6 +73,8 @@ public final class WorkplaceConfig {
 	public boolean legendNeeds = true;
 	/** Legends can be found at ruined portals, pillager outposts and shipwrecks (a camp set down for a player who qualifies). */
 	public boolean legendSites = true;
+	/** Once a day a Master in a happy village may be taken by a strange mood, asking for three rare materials to make a Masterwork and become a Legend. */
+	public boolean strangeMoods = true;
 	/** One villager in this many is Gifted, with a rare trait (0: nobody is; nothing is erased). */
 	public int giftedChance = 30;
 	/**
@@ -115,6 +117,8 @@ public final class WorkplaceConfig {
 	public boolean villageBanners = true;
 	/** A Cradle near a bed makes a nursery village (ROADMAP 30.12): children grow up twice as fast, one more baby a day. Off: cradles are furniture. */
 	public boolean cradles = true;
+	/** Harvest Idols (ROADMAP 30.14): in harvest season the crops within 32 blocks of one grow 25% faster. Off: idols are ornaments. */
+	public boolean harvestIdols = true;
 	/** Tonics (ROADMAP 30.15): the alchemist and the chef make them and villagers drink them. Off: neither; a tonic drunk does nothing. */
 	public boolean tonics = true;
 	/** Days an edict stays in force before it can be lifted. */
@@ -333,6 +337,7 @@ public final class WorkplaceConfig {
 		io.github.jcondedata.aliveworkplace.hall.VillageBanners.ENABLED = villageBanners;
 		io.github.jcondedata.aliveworkplace.hall.Cradles.ENABLED = cradles;
 		io.github.jcondedata.aliveworkplace.people.Tonics.ENABLED = tonics;
+		io.github.jcondedata.aliveworkplace.hall.HarvestIdols.ENABLED = harvestIdols;
 		io.github.jcondedata.aliveworkplace.explore.ExplorerWork.RANGE = explorerRange;
 		PostOffice.ROUND = postmanRange;
 		// Gametests run side by side: workers sharing chests across them would mix the tests up. The village tests
@@ -373,6 +378,8 @@ public final class WorkplaceConfig {
 		io.github.jcondedata.aliveworkplace.hall.VillageProtection.ENABLED = villageProtection;
 		io.github.jcondedata.aliveworkplace.legend.Legends.ENABLED = legends;
 		io.github.jcondedata.aliveworkplace.legend.LegendSites.ENABLED = legendSites;
+		// Off in gametests (a round could seize a test's Master); the strange mood tests turn it on.
+		io.github.jcondedata.aliveworkplace.legend.StrangeMoods.ENABLED = strangeMoods && System.getProperty("fabric-api.gametest") == null;
 		io.github.jcondedata.aliveworkplace.legend.Gifted.CHANCE = giftedChance;
 		// Off in gametests (a round could start or end a strike a test staged); the needs tests turn it on.
 		io.github.jcondedata.aliveworkplace.legend.LegendNeeds.ENABLED = legendNeeds && System.getProperty("fabric-api.gametest") == null;

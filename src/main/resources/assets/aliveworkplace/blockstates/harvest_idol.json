@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "aliveworkplace:block/harvest_idol"
+    },
+    "facing=east": {
+      "model": "aliveworkplace:block/harvest_idol",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "aliveworkplace:block/harvest_idol",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "aliveworkplace:block/harvest_idol",
+      "y": 270
+    }
+  }
+}

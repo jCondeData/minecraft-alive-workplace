@@ -23,6 +23,16 @@ asks for the steps, `latest.log` and any crash report).
   told to the village and the hall's owner, Mythic ones to every player in gold with the village's direction from spawn;
   all go in the chronicle under a nether star. A Legend in a grave or turned zombie keeps their slot and comes back as
   themselves; with no grave their slot frees after 7 days; Legends join a hall placed again.
+- **Festival Season and Tithe** (30.8): the two treasury edicts. **Festival Season** holds a festival every 4 days
+  instead of 8; each costs the treasury 3 emeralds and 1 more for every 4 villagers, taken on the festival's morning.
+  When the treasury can't pay there's no festival: the chronicle says there was no money and the village is 5 less
+  happy that day ("disappointed"). A festival called with a cake stays free, and the hall's festival icon shows the
+  cost and what the treasury holds. Its reform **The Festival Fund** (4 cakes, 32 firework rockets, 8 note blocks) keeps
+  them every 4 days for free. **Tithe** puts a tenth of the emeralds players pay the village's villagers into the
+  treasury (up to its cap), but their emerald prices are 10% higher (rounded: 20 becomes 22, trades under 5 emeralds
+  don't change). Its reform **The Fair Ledger** (4 books and quills, 16 gold ingots, beat one of the village's trainers,
+  or clear out 8 monsters without one) keeps the tithe at the usual prices. Data packs get the effect types
+  `festival_every`, `festival_cost`, `tithe` and `trade_prices`.
 - **Open Gates** (30.7): a new edict. Inns in the village take 4 guests (not 2) and up to two travellers arrive a
   morning; market days bring one more trader. The cost: bandits make camp near the village twice as often. Open Gates
   can't be in force alongside Curfew. Its reform **The Watchful Gate** (16 iron ingots, 32 arrows, clear out 12

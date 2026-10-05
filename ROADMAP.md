@@ -1902,7 +1902,7 @@ the Village Hall (`VillageNeeds`, `VillageQuests`, `VillageRanks`, `Festivals`, 
 
   Done when: GameTests for the guests, the arrivals, the market traders and the bandits' chance, with and without the
   reform, and Open Gates refused while Curfew is in force; showcase scene `open_gates`: an inn with four guests.
-- [ ] **30.8** **Festival Season and Tithe**, the two treasury edicts. Effects `festival_every`, `festival_cost`,
+- [x] **30.8** (review: pending 2026-10-05) **Festival Season and Tithe**, the two treasury edicts. Effects `festival_every`, `festival_cost`,
   `tithe` and `trade_prices`:
   - **Festival Season**: a festival every 4 days instead of 8 (`Festivals` counts the days per hall); each one costs
     the treasury 3 emeralds and 1 more for every 4 villagers, taken on the festival's morning; when the treasury can't

@@ -29,7 +29,8 @@ import org.jetbrains.annotations.Nullable;
  * it changes: {@code work_pace} by {@code work/Pace}, {@code mood} by {@code people/Moods.work}, {@code food_use} by
  * {@code VillageNeeds}, {@code births} by {@code VillageGrowth}, {@code sickness} by {@code people/Sickness}, {@code inn} by {@code inn/Innkeepers},
  * {@code market_traders} by {@code MarketDays}, {@code bandit_camps} by {@code guard/BanditCamps} and {@code legend_visits}
- * by M29's inn visitors once they exist (until then nothing reads it, see {@link #LEGEND_VISITS_READ}). Later items add their
+ * by M29's inn visitors once they exist (until then nothing reads it, see {@link #LEGEND_VISITS_READ}), {@code festival_every} and
+ * {@code festival_cost} by {@code Festivals}, {@code tithe} and {@code trade_prices} by {@code Tithe}. Later items add their
  * own types with {@link #register}.
  *
  * <p>The effects in force are summed per hall ({@link Sum}) whenever its edicts change, a data pack reloads or the
@@ -81,6 +82,10 @@ public final class CivicEffects {
 	public static final ResourceLocation MARKET_TRADERS = AliveWorkplace.id("market_traders");
 	public static final ResourceLocation LEGEND_VISITS = AliveWorkplace.id("legend_visits");
 	public static final ResourceLocation BANDIT_CAMPS = AliveWorkplace.id("bandit_camps");
+	public static final ResourceLocation FESTIVAL_EVERY = AliveWorkplace.id("festival_every");
+	public static final ResourceLocation FESTIVAL_COST = AliveWorkplace.id("festival_cost");
+	public static final ResourceLocation TITHE = AliveWorkplace.id("tithe");
+	public static final ResourceLocation TRADE_PRICES = AliveWorkplace.id("trade_prices");
 
 	/**
 	 * Whether anything reads {@code legend_visits} yet: M29's inn visitors (29.8) set it when they land, and until then the
@@ -130,6 +135,23 @@ public final class CivicEffects {
 			Codec.floatRange(0f, 100f).fieldOf("factor").forGetter(BanditCampChance::factor),
 			JOBS.optionalFieldOf("jobs", List.of()).forGetter(BanditCampChance::jobs)
 		).apply(i, BanditCampChance::new)));
+		register(FESTIVAL_EVERY, RecordCodecBuilder.<FestivalEvery>mapCodec(i -> i.group(
+			Codec.intRange(1, 64).fieldOf("days").forGetter(FestivalEvery::days),
+			JOBS.optionalFieldOf("jobs", List.of()).forGetter(FestivalEvery::jobs)
+		).apply(i, FestivalEvery::new)));
+		register(FESTIVAL_COST, RecordCodecBuilder.<FestivalCost>mapCodec(i -> i.group(
+			Codec.intRange(0, 4096).fieldOf("emeralds").forGetter(FestivalCost::emeralds),
+			Codec.intRange(0, 4096).optionalFieldOf("per_villagers", 0).forGetter(FestivalCost::perVillagers),
+			JOBS.optionalFieldOf("jobs", List.of()).forGetter(FestivalCost::jobs)
+		).apply(i, FestivalCost::new)));
+		register(TITHE, RecordCodecBuilder.<TitheShare>mapCodec(i -> i.group(
+			Codec.intRange(0, 100).fieldOf("percent").forGetter(TitheShare::percent),
+			JOBS.optionalFieldOf("jobs", List.of()).forGetter(TitheShare::jobs)
+		).apply(i, TitheShare::new)));
+		register(TRADE_PRICES, RecordCodecBuilder.<TradePrices>mapCodec(i -> i.group(
+			Codec.intRange(-90, 1000).fieldOf("percent").forGetter(TradePrices::percent),
+			JOBS.optionalFieldOf("jobs", List.of()).forGetter(TradePrices::jobs)
+		).apply(i, TradePrices::new)));
 	}
 
 	/** {@code work_pace}: work {@code percent} faster (a bonus of {@code work/Pace}, up to its cap). */
@@ -231,6 +253,56 @@ public final class CivicEffects {
 		@Override
 		public ResourceLocation type() {
 			return BANDIT_CAMPS;
+		}
+	}
+
+	/**
+	 * {@code festival_every}: the village holds a festival every {@code days} days, not {@code Festivals.EVERY_DAYS}; the
+	 * fewest named counts (Festival Season, 30.8). Village-wide: {@code jobs} doesn't narrow it.
+	 */
+	public record FestivalEvery(int days, List<ResourceLocation> jobs) implements Effect {
+		@Override
+		public ResourceLocation type() {
+			return FESTIVAL_EVERY;
+		}
+	}
+
+	/**
+	 * {@code festival_cost}: each regular festival costs the treasury {@code emeralds}, and one more for every
+	 * {@code per_villagers} villagers (0: none more), taken on its morning; several add (Festival Season, 30.8). A
+	 * festival called with a cake is free. Village-wide: {@code jobs} doesn't narrow it.
+	 */
+	public record FestivalCost(int emeralds, int perVillagers, List<ResourceLocation> jobs) implements Effect {
+		@Override
+		public ResourceLocation type() {
+			return FESTIVAL_COST;
+		}
+
+		/** What it costs a village of {@code villagers}, in emeralds. */
+		public int cost(int villagers) {
+			return emeralds + (perVillagers > 0 ? villagers / perVillagers : 0);
+		}
+	}
+
+	/**
+	 * {@code tithe}: {@code percent} of the emeralds players pay the villagers it reaches in trades goes into the village's
+	 * treasury, in hundredths, up to its cap ({@code Tithe}); several add (Tithe, 30.8).
+	 */
+	public record TitheShare(int percent, List<ResourceLocation> jobs) implements Effect {
+		@Override
+		public ResourceLocation type() {
+			return TITHE;
+		}
+	}
+
+	/**
+	 * {@code trade_prices}: the emerald prices of the villagers it reaches are {@code percent} higher, rounded to whole
+	 * emeralds ({@code Tithe}); several add (Tithe, 30.8).
+	 */
+	public record TradePrices(int percent, List<ResourceLocation> jobs) implements Effect {
+		@Override
+		public ResourceLocation type() {
+			return TRADE_PRICES;
 		}
 	}
 
@@ -402,6 +474,46 @@ public final class CivicEffects {
 			return f;
 		}
 
+		/** Days between the village's festivals: the fewest a {@code festival_every} effect names, else {@code usual}. */
+		public int festivalEvery(int usual) {
+			int out = usual;
+			for (Active a : all) {
+				if (a.effect() instanceof FestivalEvery f) {
+					out = Math.min(out, f.days());
+				}
+			}
+			return out;
+		}
+
+		/** Emeralds a regular festival costs a village of {@code villagers} ({@code festival_cost} effects, added; 0 without). */
+		public int festivalCost(int villagers) {
+			int out = 0;
+			for (Active a : all) {
+				if (a.effect() instanceof FestivalCost c) {
+					out += c.cost(villagers);
+				}
+			}
+			return out;
+		}
+
+		/** Percent of what players pay {@code villager} in emeralds that goes to the treasury ({@code tithe} effects, added). */
+		public int tithe(Villager villager) {
+			int percent = 0;
+			for (TitheShare e : of(TitheShare.class, villager)) {
+				percent += e.percent();
+			}
+			return percent;
+		}
+
+		/** How much higher {@code villager}'s emerald prices are, in percent ({@code trade_prices} effects, added). */
+		public int tradePrices(Villager villager) {
+			int percent = 0;
+			for (TradePrices e : of(TradePrices.class, villager)) {
+				percent += e.percent();
+			}
+			return percent;
+		}
+
 		/** The {@code mood} effects that count for {@code villager} now. */
 		public List<Mood> moods(Villager villager, long now) {
 			List<Mood> out = new ArrayList<>();
@@ -446,6 +558,12 @@ public final class CivicEffects {
 	/** The effects in force in the village of the hall at {@code pos} (none without a hall there, or with edicts off). */
 	public static Sum of(ServerLevel level, net.minecraft.core.BlockPos pos) {
 		return of(level.getBlockEntity(pos) instanceof VillageHallBlockEntity hall ? hall : null);
+	}
+
+	/** The hall of the village {@code villager} lives in (remembered a while), or null; with edicts on or off. */
+	@Nullable
+	public static VillageHallBlockEntity hallOf(Villager villager) {
+		return villager.level() instanceof ServerLevel level ? hall(level, villager) : null;
 	}
 
 	@Nullable

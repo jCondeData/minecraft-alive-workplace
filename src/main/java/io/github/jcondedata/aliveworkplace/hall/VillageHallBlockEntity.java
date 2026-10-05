@@ -38,6 +38,8 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 	private long festivalDay = -1;
 	private long feastDay = -1;
 	private long festivalCalled = -100;
+	/** The day a festival was due and the treasury couldn't pay for it (Festival Season, 30.8); -1: never. */
+	private long festivalMissed = -1;
 	/** The treasury, in hundredths of an emerald, and the day it last took the village's takings (see {@link Treasury}). */
 	private int treasury;
 	@Nullable
@@ -276,6 +278,16 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 		setChanged();
 	}
 
+	/** The day a festival was due and the treasury couldn't pay for it (-1: never). See {@link Festivals}. */
+	public long festivalMissed() {
+		return festivalMissed;
+	}
+
+	public void setFestivalMissed(long day) {
+		festivalMissed = day;
+		setChanged();
+	}
+
 	/** Whoever placed the hall (or claimed it first); null for a hall nobody has claimed. See {@link VillageProtection}. */
 	@Nullable
 	public java.util.UUID owner() {
@@ -435,6 +447,7 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 		festivalDay = tag.contains("festivalDay") ? Nbt.getLong(tag, "festivalDay") : -1;
 		feastDay = tag.contains("feastDay") ? Nbt.getLong(tag, "feastDay") : -1;
 		festivalCalled = tag.contains("festivalCalled") ? Nbt.getLong(tag, "festivalCalled") : -100;
+		festivalMissed = tag.contains("festivalMissed") ? Nbt.getLong(tag, "festivalMissed") : -1;
 		treasury = Nbt.getInt(tag, "treasury");
 		treasuryTotal = Nbt.getLong(tag, "treasuryTotal");
 		festivalCrowd = Nbt.getInt(tag, "festivalCrowd");
@@ -491,6 +504,7 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 		tag.putLong("festivalDay", festivalDay);
 		tag.putLong("feastDay", feastDay);
 		tag.putLong("festivalCalled", festivalCalled);
+		tag.putLong("festivalMissed", festivalMissed);
 		tag.putInt("treasury", treasury);
 		tag.putLong("treasuryTotal", treasuryTotal);
 		tag.putInt("festivalCrowd", festivalCrowd);

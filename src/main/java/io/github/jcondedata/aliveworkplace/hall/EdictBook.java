@@ -263,6 +263,21 @@ public final class EdictBook {
 		if (effect instanceof CivicEffects.BanditCampChance bandits) {
 			return often("screen.aliveworkplace.edicts.effect.bandits", bandits.factor());
 		}
+		if (effect instanceof CivicEffects.FestivalEvery every) {
+			return Words.counted("screen.aliveworkplace.edicts.effect.festival_every", every.days(), every.days(), Festivals.EVERY_DAYS);
+		}
+		if (effect instanceof CivicEffects.FestivalCost cost) {
+			return cost.perVillagers() > 0
+				? Component.translatable("screen.aliveworkplace.edicts.effect.festival_cost_per", cost.emeralds(), cost.perVillagers())
+				: Words.counted("screen.aliveworkplace.edicts.effect.festival_cost", cost.emeralds(), cost.emeralds());
+		}
+		if (effect instanceof CivicEffects.TitheShare tithe) {
+			return Component.translatable("screen.aliveworkplace.edicts.effect.tithe", tithe.percent());
+		}
+		if (effect instanceof CivicEffects.TradePrices prices) {
+			return Component.translatable(prices.percent() >= 0 ? "screen.aliveworkplace.edicts.effect.prices_up" : "screen.aliveworkplace.edicts.effect.prices_down",
+				Math.abs(prices.percent()));
+		}
 		if (effect instanceof CivicEffects.WorkPace pace) {
 			return Component.translatable(pace.jobs().isEmpty() ? "screen.aliveworkplace.edicts.effect.pace" : "screen.aliveworkplace.edicts.effect.pace_jobs",
 				pace.percent(), pace.jobs().size());

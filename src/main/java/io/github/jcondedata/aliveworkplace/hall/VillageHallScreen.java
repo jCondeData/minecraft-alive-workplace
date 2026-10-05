@@ -245,11 +245,29 @@ public final class VillageHallScreen {
 		});
 		long festival = entity == null ? -1 : Festivals.nextDay(level, hall, entity);
 		long inDays = festival - Chronicle.day(level);
+		List<Component> festivalLore = new ArrayList<>();
+		festivalLore.add(line(Festivals.isOn(level, hall) ? Component.translatable("screen.aliveworkplace.hall.festival_on")
+			: inDays <= 0 ? Component.translatable("screen.aliveworkplace.hall.festival_today")
+			: io.github.jcondedata.aliveworkplace.work.Words.counted("screen.aliveworkplace.hall.festival_in", inDays, inDays), ChatFormatting.GOLD));
+		if (entity != null) {
+			// Festival Season (30.8): how often, what the treasury pays, and a festival that fell through today.
+			int every = Festivals.every(entity);
+			if (every != Festivals.EVERY_DAYS) {
+				festivalLore.add(line(io.github.jcondedata.aliveworkplace.work.Words.counted("screen.aliveworkplace.hall.festival_every", every, every), ChatFormatting.GRAY));
+			}
+			int cost = Festivals.cost(entity, census.villagers());
+			if (cost > 0) {
+				int have = entity.treasury() / 100;
+				festivalLore.add(line(io.github.jcondedata.aliveworkplace.work.Words.counted("screen.aliveworkplace.hall.festival_cost", cost, cost, have),
+					have >= cost ? ChatFormatting.GRAY : ChatFormatting.RED));
+			}
+			if (entity.festivalMissed() == Chronicle.day(level) && entity.festivalDay() != Chronicle.day(level)) {
+				festivalLore.add(line("screen.aliveworkplace.hall.festival_no_money", ChatFormatting.RED));
+			}
+		}
+		festivalLore.add(line("screen.aliveworkplace.hall.festival_hint", ChatFormatting.GRAY));
 		menu.button(FESTIVAL, icon(Items.FIREWORK_ROCKET, Component.translatable("screen.aliveworkplace.hall.festival"), ChatFormatting.WHITE,
-			line(Festivals.isOn(level, hall) ? Component.translatable("screen.aliveworkplace.hall.festival_on")
-				: inDays <= 0 ? Component.translatable("screen.aliveworkplace.hall.festival_today")
-				: io.github.jcondedata.aliveworkplace.work.Words.counted("screen.aliveworkplace.hall.festival_in", inDays, inDays), ChatFormatting.GOLD),
-			line("screen.aliveworkplace.hall.festival_hint", ChatFormatting.GRAY)), p -> {
+			festivalLore.toArray(Component[]::new)), p -> {
 			Chat.chat(p, Festivals.call(level, hall, p));
 			refresh(menu, level, hall, shown);
 		});

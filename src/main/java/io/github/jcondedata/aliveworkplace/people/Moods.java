@@ -137,6 +137,10 @@ public final class Moods {
 			score += io.github.jcondedata.aliveworkplace.hall.Festivals.MOOD;
 			good.add(reason("festival"));
 		}
+		if (io.github.jcondedata.aliveworkplace.hall.Festivals.disappointed(level, villager)) {
+			score -= io.github.jcondedata.aliveworkplace.hall.Festivals.DISAPPOINTED;
+			bad.add(reason("disappointed"));
+		}
 		// The edicts in force (and later tonics and guilds): Long Shifts' "long shifts", listed first.
 		int civic = 0;
 		for (io.github.jcondedata.aliveworkplace.hall.CivicEffects.Mood effect : io.github.jcondedata.aliveworkplace.hall.CivicEffects.of(villager).moods(villager, now)) {

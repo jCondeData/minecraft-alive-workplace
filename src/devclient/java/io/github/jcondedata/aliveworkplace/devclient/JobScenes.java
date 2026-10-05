@@ -1351,6 +1351,96 @@ final class JobScenes {
 					}
 				}, 30)),
 			(level, player) -> player.containerMenu instanceof ChoiceMenu));
+		// Festival Season (ROADMAP 30.8): a festival every 4 days, paid for by the treasury (3 emeralds and 1 for every 4
+		// villagers: 5 for this village of 8). The hall's festival icon before (10 emeralds put by) and after the festival
+		// morning's round took its 5, and the name tag's treasury line after.
+		SCREENS.put("festival_season", new Screen("Festival Season was proclaimed: the festival morning took its 5 emeralds from the treasury",
+			new Vec3(2.5, -58.4, 4.5), TARGET,
+			(level, player) -> {
+				level.setBlockAndUpdate(STATION, ModBlocks.VILLAGE_HALL.defaultBlockState()
+					.setValue(io.github.jcondedata.aliveworkplace.hall.VillageHallBlock.FACING, Direction.SOUTH));
+				var hall = (io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(STATION);
+				hall.setRank(io.github.jcondedata.aliveworkplace.hall.VillageRanks.Rank.HAMLET);
+				hall.setEdicts(List.of());
+				hall.setReforms(List.of());
+				hall.setFestivalDay(-1);
+				hall.setTreasury(1000); // 10 emeralds put by
+				// The evening, so no round plans the festival before the pictures ask for it.
+				level.setDayTime((level.getDayTime() / 24000) * 24000 + io.github.jcondedata.aliveworkplace.hall.Festivals.END + 500);
+				for (int i = 0; i < 8; i++) {
+					Villager v = EntityType.VILLAGER.spawn(level, new BlockPos(-4 + (i % 4) * 2, -60, -4 - (i / 4) * 2), MobSpawnType.COMMAND);
+					v.setNoAi(true);
+				}
+				var season = io.github.jcondedata.aliveworkplace.hall.Edicts.find("festival_season").orElseThrow();
+				var told = io.github.jcondedata.aliveworkplace.hall.Edicts.proclaim(level, STATION, player, season);
+				Showcase.check(told.done(), "Festival Season was proclaimed: " + told.message().getString());
+				io.github.jcondedata.aliveworkplace.hall.CivicEffects.forget();
+			},
+			List.of(new Step("01_festival_season_before", io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FESTIVAL, 6, (level, player) -> {
+					io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.open(player, STATION);
+					var hall = (io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(STATION);
+					Showcase.check(io.github.jcondedata.aliveworkplace.hall.Festivals.cost(hall, 8) == 5 && hall.treasury() == 1000,
+						"before: a festival costs 5 emeralds, the treasury holds 10 (" + hall.treasury() + " hundredths)");
+				}, 30),
+				new Step("02_festival_season_after", io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FESTIVAL, 6, (level, player) -> {
+					player.closeContainer();
+					var hall = (io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(STATION);
+					long day = io.github.jcondedata.aliveworkplace.hall.Festivals.nextDay(level, STATION, hall);
+					level.setDayTime((day - 1) * 24000 + 1000); // that festival's morning
+					io.github.jcondedata.aliveworkplace.hall.Festivals.round(level, STATION, hall,
+						io.github.jcondedata.aliveworkplace.hall.VillageHalls.census(level, STATION).villagers());
+					Showcase.check(hall.festivalDay() == day && hall.treasury() == 500, "the festival morning took 5 emeralds: festival day "
+						+ hall.festivalDay() + " (expected " + day + "), treasury " + hall.treasury() + " hundredths");
+					io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.open(player, STATION);
+				}, 30),
+				new Step("03_festival_season_treasury", 0, 6, (level, player) ->
+					io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.open(player, STATION), 30)),
+			(level, player) -> player.containerMenu instanceof ChoiceMenu));
+		// Tithe (ROADMAP 30.8): a librarian's emerald prices are 10% higher (20 is 22, 9 is 10, 5 is 6, 4 stays 4), and a
+		// tenth of what players pay goes into the treasury. Her trade screen without the edict, then with it.
+		SCREENS.put("tithe", new Screen("Tithe was proclaimed: the librarian's 20-emerald trade costs 22 and her 4-emerald one still 4",
+			new Vec3(2.5, -58.4, 4.5), TARGET,
+			(level, player) -> {
+				level.setBlockAndUpdate(STATION, ModBlocks.VILLAGE_HALL.defaultBlockState()
+					.setValue(io.github.jcondedata.aliveworkplace.hall.VillageHallBlock.FACING, Direction.SOUTH));
+				var hall = (io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(STATION);
+				hall.setRank(io.github.jcondedata.aliveworkplace.hall.VillageRanks.Rank.HAMLET);
+				hall.setEdicts(List.of());
+				hall.setReforms(List.of());
+				subject = worker(level, new BlockPos(2, -60, -2), Blocks.LECTERN, PoiTypes.LIBRARIAN, VillagerProfession.LIBRARIAN);
+				subject.setNoAi(true);
+				subject.setVillagerData(subject.getVillagerData().setLevel(3));
+				var offers = new net.minecraft.world.item.trading.MerchantOffers();
+				offers.add(new net.minecraft.world.item.trading.MerchantOffer(new net.minecraft.world.item.trading.ItemCost(Items.EMERALD, 20),
+					new ItemStack(Items.BOOKSHELF, 3), 12, 5, 0.05f));
+				offers.add(new net.minecraft.world.item.trading.MerchantOffer(new net.minecraft.world.item.trading.ItemCost(Items.EMERALD, 9),
+					new ItemStack(Items.CLOCK), 12, 5, 0.05f));
+				offers.add(new net.minecraft.world.item.trading.MerchantOffer(new net.minecraft.world.item.trading.ItemCost(Items.EMERALD, 5),
+					new ItemStack(Items.COMPASS), 12, 5, 0.05f));
+				offers.add(new net.minecraft.world.item.trading.MerchantOffer(new net.minecraft.world.item.trading.ItemCost(Items.EMERALD, 4),
+					new ItemStack(Items.LANTERN), 12, 1, 0.05f));
+				subject.setOffers(offers);
+				io.github.jcondedata.aliveworkplace.hall.CivicEffects.forget();
+			},
+			List.of(new Step("01_tithe_without", -1, 0, (level, player) -> {
+					subject.mobInteract(player, InteractionHand.MAIN_HAND);
+					Showcase.check(subject.getOffers().get(0).getCostA().getCount() == 20, "without the Tithe: 20 emeralds, got "
+						+ subject.getOffers().get(0).getCostA().getCount());
+				}, 30),
+				new Step("02_tithe_with", -1, 0, (level, player) -> {
+					player.closeContainer();
+					var tithe = io.github.jcondedata.aliveworkplace.hall.Edicts.find("tithe").orElseThrow();
+					var told = io.github.jcondedata.aliveworkplace.hall.Edicts.proclaim(level, STATION, player, tithe);
+					Showcase.check(told.done(), "Tithe was proclaimed: " + told.message().getString());
+					io.github.jcondedata.aliveworkplace.hall.CivicEffects.forget();
+					subject.mobInteract(player, InteractionHand.MAIN_HAND);
+					var offers = subject.getOffers();
+					Showcase.check(offers.get(0).getCostA().getCount() == 22 && offers.get(1).getCostA().getCount() == 10
+						&& offers.get(2).getCostA().getCount() == 6 && offers.get(3).getCostA().getCount() == 4,
+						"with the Tithe: 22, 10, 6 and 4 emeralds, got " + offers.get(0).getCostA().getCount() + ", " + offers.get(1).getCostA().getCount()
+							+ ", " + offers.get(2).getCostA().getCount() + ", " + offers.get(3).getCostA().getCount());
+				}, 30)),
+			(level, player) -> player.containerMenu instanceof net.minecraft.world.inventory.MerchantMenu));
 		SCREENS.put("hall_treasury", new Screen("the hall's treasury was collected, the village protected and its screen opened from a Village Ledger",
 			new Vec3(2.5, -58.4, 4.5), TARGET,
 			(level, player) -> {

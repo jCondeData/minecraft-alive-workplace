@@ -41,6 +41,11 @@ import net.minecraft.world.level.levelgen.Heightmap;
  * music and dancing; at dusk ({@link #FIREWORKS}) fireworks go up. Everyone who came is in a better mood for
  * {@link #MOOD_DAYS} days, and players in the village are Heroes of the Village for the evening: cheaper trades, and
  * the villagers throw them gifts. {@code festivals} in the config turns the regular ones off (called ones still happen).
+ *
+ * <p>Festival Season (30.8): {@code festival_every} shortens the days between a village's regular festivals (counted
+ * per hall from its own day), and {@code festival_cost} has the treasury pay for each one on its morning; a treasury
+ * that can't pay means no festival, a line in the chronicle and a village {@link #DISAPPOINTED} less happy that day. A
+ * festival called with a cake stays free.
  */
 public final class Festivals {
 	public static boolean ENABLED = true;
@@ -56,6 +61,8 @@ public final class Festivals {
 	/** Days a festival lifts the moods of everyone who came, and by how much. */
 	public static final int MOOD_DAYS = 2;
 	public static final int MOOD = 15;
+	/** How much less happy a village is the day its festival fell through for want of money. */
+	public static final int DISAPPOINTED = 5;
 	/** How close to the square counts as being at the festival. */
 	static final int SQUARE = 7;
 	static final int TICK_EVERY = 40;
@@ -81,6 +88,16 @@ public final class Festivals {
 		return Math.floorMod(hall.asLong() * 0x9E3779B97F4A7C15L >>> 20, EVERY_DAYS);
 	}
 
+	/** Days between the regular festivals of {@code entity}'s village: {@link #EVERY_DAYS}, or fewer under Festival Season. */
+	public static int every(VillageHallBlockEntity entity) {
+		return Math.max(1, CivicEffects.of(entity).festivalEvery(EVERY_DAYS));
+	}
+
+	/** Emeralds a regular festival costs the treasury of {@code entity}'s village of {@code villagers} (0: free). */
+	public static int cost(VillageHallBlockEntity entity, int villagers) {
+		return CivicEffects.of(entity).festivalCost(villagers);
+	}
+
 	/** True while the festival of the village round {@code hall} is on. */
 	public static boolean isOn(ServerLevel level, BlockPos hall) {
 		if (!(level.getBlockEntity(hall) instanceof VillageHallBlockEntity entity)) {
@@ -97,16 +114,25 @@ public final class Festivals {
 		if (entity.festivalDay() > today || entity.festivalDay() == today && !over) {
 			return entity.festivalDay();
 		}
-		long day = today + Math.floorMod(offset(hall) - today, EVERY_DAYS);
-		return day == today && over ? day + EVERY_DAYS : day;
+		int every = every(entity);
+		long day = today + Math.floorMod(offset(hall) - today, every);
+		return day == today && over ? day + every : day;
 	}
 
 	/** The hall's round: a festival due today is planned; while one is on, the feast and the heroes. */
 	public static void round(ServerLevel level, BlockPos hall, VillageHallBlockEntity entity, int villagers) {
 		long today = Chronicle.day(level);
-		if (ENABLED && entity.festivalDay() < today && villagers >= MIN_VILLAGERS && Math.floorMod(today - offset(hall), EVERY_DAYS) == 0
-			&& timeOfDay(level) < START) {
-			plan(level, hall, entity, today);
+		if (ENABLED && entity.festivalDay() < today && entity.festivalMissed() < today && villagers >= MIN_VILLAGERS
+			&& Math.floorMod(today - offset(hall), every(entity)) == 0 && timeOfDay(level) < START) {
+			int cost = cost(entity, villagers);
+			if (cost <= 0) {
+				plan(level, hall, entity, today);
+			} else if (entity.treasury() >= cost * 100) {
+				entity.setTreasury(entity.treasury() - cost * 100);
+				plan(level, hall, entity, today, cost);
+			} else {
+				noMoney(level, hall, entity, today, cost);
+			}
 		}
 		Set<BlockPos> on = ON.computeIfAbsent(level.dimension(), k -> ConcurrentHashMap.newKeySet());
 		if (!isOn(level, hall)) {
@@ -129,13 +155,45 @@ public final class Festivals {
 
 	/** Sets the festival for {@code day} and tells the players about. */
 	static void plan(ServerLevel level, BlockPos hall, VillageHallBlockEntity entity, long day) {
+		plan(level, hall, entity, day, 0);
+	}
+
+	/** Sets the festival for {@code day} and tells the players about, with what the treasury {@code paid} for it (emeralds). */
+	static void plan(ServerLevel level, BlockPos hall, VillageHallBlockEntity entity, long day, int paid) {
 		entity.setFestivalDay(day);
 		boolean today = day == Chronicle.day(level);
 		Component name = VillageHalls.name(level, hall);
-		for (ServerPlayer player : level.getPlayers(p -> p.blockPosition().distSqr(hall) <= (double) (VillageHalls.RADIUS + 32) * (VillageHalls.RADIUS + 32))) {
-			Chat.chat(player, Component.translatable(today ? "message.aliveworkplace.festival.today" : "message.aliveworkplace.festival.tomorrow", name)
-				.withStyle(ChatFormatting.GOLD));
+		Component message = paid > 0 ? io.github.jcondedata.aliveworkplace.work.Words.counted("message.aliveworkplace.festival.today_paid", paid, name, paid)
+			: Component.translatable(today ? "message.aliveworkplace.festival.today" : "message.aliveworkplace.festival.tomorrow", name);
+		for (ServerPlayer player : nearby(level, hall)) {
+			Chat.chat(player, message.copy().withStyle(ChatFormatting.GOLD));
 		}
+	}
+
+	/** The treasury can't pay for the festival due {@code today}: none, the chronicle says why, the village is disappointed. */
+	static void noMoney(ServerLevel level, BlockPos hall, VillageHallBlockEntity entity, long today, int cost) {
+		entity.setFestivalMissed(today);
+		Component name = VillageHalls.name(level, hall);
+		Chronicle.record(level, hall, Chronicle.Kind.FESTIVAL,
+			io.github.jcondedata.aliveworkplace.work.Words.counted("chronicle.aliveworkplace.festival_no_money", cost, cost));
+		for (ServerPlayer player : nearby(level, hall)) {
+			Chat.chat(player, io.github.jcondedata.aliveworkplace.work.Words.counted("message.aliveworkplace.festival.no_money", cost, name, cost)
+				.withStyle(ChatFormatting.YELLOW));
+		}
+	}
+
+	private static List<ServerPlayer> nearby(ServerLevel level, BlockPos hall) {
+		return level.getPlayers(p -> p.blockPosition().distSqr(hall) <= (double) (VillageHalls.RADIUS + 32) * (VillageHalls.RADIUS + 32));
+	}
+
+	/**
+	 * True if the festival of {@code villager}'s village fell through today for want of money (and none was called
+	 * instead): they are {@link #DISAPPOINTED} less happy.
+	 */
+	public static boolean disappointed(ServerLevel level, Villager villager) {
+		VillageHallBlockEntity entity = CivicEffects.hallOf(villager);
+		long today = Chronicle.day(level);
+		return entity != null && entity.festivalMissed() == today && entity.festivalDay() != today;
 	}
 
 	/** {@code player} calls a festival from the hall with a cake; returns what to tell them. */

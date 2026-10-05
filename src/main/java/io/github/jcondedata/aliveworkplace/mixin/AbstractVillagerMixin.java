@@ -10,13 +10,23 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-/** A shopkeeper's sale moves real items: the goods out of the shop's chests, the payment into them. */
+/**
+ * A shopkeeper's sale moves real items: the goods out of the shop's chests, the payment into them. Any villager's sale
+ * to a player pays the village's tithe (30.8, {@code hall/Tithe}).
+ */
 @Mixin(AbstractVillager.class)
 abstract class AbstractVillagerMixin {
 	@Inject(method = "notifyTrade", at = @At("HEAD"))
 	private void aliveworkplace$shopSale(MerchantOffer offer, CallbackInfo ci) {
 		if ((Object) this instanceof Villager villager && villager.level() instanceof ServerLevel level && Shops.isShopkeeper(villager)) {
 			Shops.onSale(level, villager, offer);
+		}
+	}
+
+	@Inject(method = "notifyTrade", at = @At("HEAD"))
+	private void aliveworkplace$tithe(MerchantOffer offer, CallbackInfo ci) {
+		if ((Object) this instanceof Villager villager && villager.level() instanceof ServerLevel) {
+			io.github.jcondedata.aliveworkplace.hall.Tithe.paid(villager, offer);
 		}
 	}
 }

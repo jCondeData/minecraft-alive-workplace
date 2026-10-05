@@ -1,0 +1,20 @@
+{
+  "icon": "minecraft:emerald",
+  "name": {"translate": "edict.aliveworkplace.tithe"},
+  "description": {"translate": "edict.aliveworkplace.tithe.desc"},
+  "order": 6,
+  "boost": [{"type": "aliveworkplace:tithe", "percent": 10}],
+  "cost": [{"type": "aliveworkplace:trade_prices", "percent": 10}],
+  "excludes": [],
+  "reform": {
+    "name": {"translate": "reform.aliveworkplace.fair_ledger"},
+    "line": {"translate": "reform.aliveworkplace.fair_ledger.line"},
+    "steps": [
+      {"kind": "bring", "item": "minecraft:writable_book", "count": 4, "reward": 4},
+      {"kind": "bring", "item": "minecraft:gold_ingot", "count": 16, "reward": 6},
+      {"kind": "battle", "reward": 8, "fallback": {"kind": "slay", "count": 8, "reward": 8}}
+    ],
+    "effects": []
+  },
+  "enabled": true
+}

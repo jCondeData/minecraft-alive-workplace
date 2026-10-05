@@ -25,6 +25,15 @@ abstract class VillagerMixin {
 		}
 	}
 
+	/** The Tithe edict's higher emerald prices, after vanilla's reputation and Hero discounts (30.8, {@code hall/Tithe}). */
+	@Inject(method = "updateSpecialPrices", at = @At("TAIL"))
+	private void aliveworkplace$tithePrices(net.minecraft.world.entity.player.Player player, CallbackInfo ci) {
+		Villager self = (Villager) (Object) this;
+		if (self.level() instanceof net.minecraft.server.level.ServerLevel) {
+			io.github.jcondedata.aliveworkplace.hall.Tithe.prices(self);
+		}
+	}
+
 	/** A netherworker away in the Nether: vanilla's portals leave them be, and the brain waits till they're back. */
 	@Inject(method = "customServerAiStep", at = @At("HEAD"), cancellable = true)
 	private void aliveworkplace$nether(CallbackInfo ci) {

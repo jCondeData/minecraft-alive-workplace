@@ -124,7 +124,7 @@ stay in the list, ticked, so their numbers stay unique.
 - [x] **B55** (approved auto 2026-10-05) Local full builds can't finish runCompatGameTest in the 7 GB dev container: with the default 1.5 GB heap the compat server fills with the pack's block states and thrashes in full GC until it hangs; with -Xmx3G the OS kills it (exit 137) next to the Gradle daemon (lane-a-1004-2133, 2026-10-04). CI runs compat fine. Expected: a local build finishes (e.g. stop the daemon or lower org.gradle.jvmargs for the compat run, ~2.5 GB server heap). Test: ./gradlew --max-workers=1 runCompatGameTest locally (found by lane-a-1004-2133, 2026-10-05)
 - [x] **B57** (approved auto 2026-10-05) PartnersForgeCompatTests aPidgeyBringsAFeatherToTheFletcher failed once in a local full build (lane-c-1005-0033, main 38c54127 + 27.6-27.9 + B55, 2026-10-05 02:10Z): 'no bow for the guard'; it passed in the full build before the merge and in a runCompatGameTest rerun right after (117/117). Expected: passes every run. Test: the repeat generator on that test; likely the same family as B48/B51 (found by lane-c-1005-0033, 2026-10-05)
 - [x] **B58** (approved auto 2026-10-05) (verified 2026-10-05: B53: QaBerryPaceCompatTests [two partners: 14/20 at the default cap, held at 16/20 with maxWorkPace 125; the old code gave 11] passes; B49: b10ZombieDesertHouseRotated90 and idleBuildersHelpNearbyBuilds 5x each with RepeatNewTests, 10/10; B58: legendPace 5x in a filtered run, 5/5. No nightly mutation/repeat report since these fixes [newest nightly 2026-10-04 09:50Z]) LegendEngineGameTests.legendPace failed with 'capped delay: 500' in a filtered runGameTest (5 classes) on 2026-10-05 but passed in every full run: looks order-dependent (leftover state from another test). Expected: passes in any order. Test: LegendEngineGameTests.legendPace (QA lane: test-only flake) (found by lane-a-1005-0032, 2026-10-05) Also fails with LegendEngineGameTests alone in runGameTest, on a clean worktree of d0038ea9 (29.7) as well (29.8's subagent, 2026-10-05): not order-dependent there; with the 2x cap the near builder's delay is 500 while `nearBase / 2` expects otherwise, so look at 29.7's shared pace cap in `BuilderLevels.delay`.
-- [ ] **B59** Every showcase scene crashes the client at start since the Habitat Keeper scene (338fd6c9, 2026-10-04 22:11Z): showcase run 37260221259 (9856e95) failed 87 of 106 scenes with 'the scene left no showcase.json', and push run 37262922422 (eb3ef3f) crashed too (steward_rules, steward_homes). client-log.txt: NoClassDefFoundError com/cobblemon/mod/common/entity/pokemon/PokemonEntity at ScreenshotHarness.<init> (new JobScenes()), because JobScenes.java:775 declares a PokemonEntity local outside the compat guard, and the screenshot client runs without Cobblemon. The nightly showcase page and the digests' pictures are empty until fixed. Expected: every scene starts without Cobblemon; Cobblemon types only behind a guarded class or //? if cobblemon. Done when: SCENE=stations tools/screenshots/run.sh starts and passes, and the next showcase run has no 'left no showcase.json'. Test: SCENE=stations tools/screenshots/run.sh (found by qa-1005-0434, 2026-10-05)
+- [x] **B59** (approved auto 2026-10-05) Every showcase scene crashes the client at start since the Habitat Keeper scene (338fd6c9, 2026-10-04 22:11Z): showcase run 37260221259 (9856e95) failed 87 of 106 scenes with 'the scene left no showcase.json', and push run 37262922422 (eb3ef3f) crashed too (steward_rules, steward_homes). client-log.txt: NoClassDefFoundError com/cobblemon/mod/common/entity/pokemon/PokemonEntity at ScreenshotHarness.<init> (new JobScenes()), because JobScenes.java:775 declares a PokemonEntity local outside the compat guard, and the screenshot client runs without Cobblemon. The nightly showcase page and the digests' pictures are empty until fixed. Expected: every scene starts without Cobblemon; Cobblemon types only behind a guarded class or //? if cobblemon. Done when: SCENE=stations tools/screenshots/run.sh starts and passes, and the next showcase run has no 'left no showcase.json'. Test: SCENE=stations tools/screenshots/run.sh (found by qa-1005-0434, 2026-10-05)
 - [ ] **B60** A builder got stuck in a wall during the builder soak: nightly showcase run 37240994365 (b7be7a0, 2026-10-04 23:14Z, nightly issue #1) scene soak reported 'a villager (builder) is stuck in a wall at 307 -54 315, ticked 79404, onGround true' with dirt at y-1 and y and oak leaves above (column y-1..y+2: dirt, dirt, air, oak_leaves). A player would see a builder trapped in the ground or suffocating near a site. Expected: builders never end up inside a block while clearing, levelling or landscaping. Done when: the cause is found, a GameTest of it passes, and the soak scene passes without the stuck-villager check. Test: SCENE=soak tools/screenshots/run.sh (found by qa-1005-0434, 2026-10-05)
 - [x] **B61** (approved auto 2026-10-05) The settings screen cuts off a label: nightly showcase run 37240994365 (b7be7a0) scene config reported 'Nurses Use Healing Machines: ON' is wider than its button (lang key aliveworkplace.config.nurseHealingMachine, still the same on main). Expected: every setting's label fits its button in Mod Menu's screen at the default GUI scale (a shorter label, or a tooltip with the full text). Done when: the config scene passes 'every setting has a button whose label fits'. Test: SCENE=config tools/screenshots/run.sh (found by qa-1005-0434, 2026-10-05)
 - [ ] **B62** Showcase scene steward fails 'the steward walked his morning rounds and came back to the hall (not within 120 seconds)' in the full showcase runs 37235147722 (7d9f036) and 37240994365 (b7be7a0), 2026-10-04, after passing before 27.1a/27.9 changed who can be a Steward and his jobs. Expected: the Steward walks his rounds and returns to the hall within the scene's 120 s, or the scene is staged for the new rules (a seasoned Builder). Test: SCENE=steward tools/screenshots/run.sh (found by qa-1005-0434, 2026-10-05)
@@ -354,7 +354,7 @@ first; many items below are "verify and harden", not "build".
 - [x] **23.10** (approved 2026-10-04) **Every shipped build reviewed.** One gallery package per build family (houses, workshops, defences,
   decorations, village pieces in five styles), each build shown front and back. Vetoed builds get redrawn with the
   Architect skill. Done when: every family's package has been sent.
-  - [ ] **23.10a** Change from the owner (2026-10-04): keep one shared outside per village style, but let the village leader override it (choose a different look for a piece)
+  - [x] **23.10a** (review: pending 2026-10-05) Change from the owner (2026-10-04): keep one shared outside per village style, but let the village leader override it (choose a different look for a piece)
 
 ## Milestone 24: Everything looks finished (priority 2)
 
@@ -669,7 +669,7 @@ and an old vanilla village slowly rebuilds itself one house at a time. It answer
   - a GameTest per rule, in a village staged to need it: the Steward proposes that build in the right zone; with beds
     short and an upgradable Stone House, the upgrade comes before a new house;
   - showcase scene `steward_homes`: a GIF of a Homes zone filling up over three days in Run the village.
-- [ ] **27.11** **A workplace for every worker.** `tools/blueprints/generate.py` writes buildable copies of 12 of our
+- [x] **27.11** (review: pending 2026-10-05) **A workplace for every worker.** `tools/blueprints/generate.py` writes buildable copies of 12 of our
   village houses (`village.py`: the plains look, with the jigsaw, structure voids and villager taken out and calcite
   swapped for white concrete, as STYLE.md asks of builds for builders), in the Blueprint Table too: Builder's
   Workshop, Carpenter's Workshop, Kitchen, Post Office, Guard House, Clinic, Ferry House and, with Cobblemon, Trainer's
@@ -4428,6 +4428,14 @@ item waits.
   porch or yard), and the village's builder rebuilds that house's outside in place (inside and its worker kept); or
   (b) it only changes the look of pieces built from then on (by a builder, 27.x), not the generated ones. Default if
   you don't answer: 1a + 2a with the five existing outsides (no new art), after the current lane work. Waiting.
+- 2026-10-05 (23.10a, decision; lane-c-1005-0332): no answer, so the default was built: 1a + 2a with the five existing
+  outsides. The leader is the hall's owner and their friends (operators too; a hall nobody owns has no leader, and
+  choosing is refused server side). The hall's Builds button opens House looks: our village houses within the hall's
+  radius, found by their bed (every house's bed stands at the same spot) and the outside that stands round it. A pick
+  starts a build site for the nearest builder with the blueprint `aliveworkplace:outside/<style>/<house>`: the house's
+  file in that style without its room (x 2-6, z 3-7, y 0-4), built over the house like an upgrade, so the room, job
+  block and chests are never touched and the site saves and reloads like any other. The choice is kept on the hall
+  (`piece_looks`, empty in older saves). Not a page-row tab: the row must keep room for six more pages (22.5's test).
 - 2026-10-04 (29.1, decisions; lane a): `docs/design/M29.md` section 7 records eight choices lanes build on unless
   the owner changes them. The one that changes a spec: `mythicLegendCap` is one number (the City cap, default 2; a Town
   half, Hamlet and Village 0), not 29.3's list, because the config file and Mod Menu screen take only switches and
@@ -4517,4 +4525,28 @@ item waits.
   with `message.aliveworkplace.steward.unseasoned`; the appointed Builder starts as a Novice Steward. Existing Stewards
   are grandfathered (checked only at appointment; a Steward always qualifies). City Plan recipe: Map + Blank Blueprint
   + Heart of the Sea, shapeless. Written in docs/design/M27.md section 7.
+- 2026-10-05 (27.11, decisions; lane c): the 12 workplaces are `village.py`'s `workplace(name)`: the plains house with
+  its jigsaws and structure voids made air, no villager, no loot tables, all calcite as white concrete; listed in
+  `StarterBlueprints.WORKPLACES` / `COBBLEMON_WORKPLACES` (not `ALL`: they have no tier II, and `ALL` must). One rule
+  per building, `steward_rules/workplace_<building>.json`, all `worker_without_workstation {professions}` at priority
+  62 (just above `workstations` 60, so the build comes first), cooldown 2 days, no max. Zones: workshops (Builder's,
+  Carpenter's, Sifting Shed, Tinker's, Nether Gate, Ball Workshop), market (Kitchen, Storehouse, Flower Shop, Supply
+  Shop, Inn, Ferry House, Trade Hall), civic (Post Office, Clinic, Healing Center, Graveyard, Schoolhouse, Library,
+  Research Lab, Trainer's House, Leader's Hall, School), defences (Guard House, Barracks), farms (Berry Farm, Compost
+  Yard, Ranch), gardens (Apiary Garden). The shore is a plot rule (`Plots.SHORE_BUILDINGS`, reason `SHORE`): water in
+  the 4 rows in front of the footprint. `no_builder` was already `builder.json`; its ask now reads "place a Blueprint
+  Table and give a villager the job: nobody here can build". Done since (lane c, 1005): "a job the village wants with no
+  free block" fires the same rules: with `"wanted": true` (set in 28 `workplace_*` rules; default false, so
+  `workstations.json` is unchanged; not in `workplace_builders_workshop`: a builder is wanted only while there is
+  none, so nobody could build it and `no_builder` asks the player instead) `worker_without_workstation` also counts each of its jobs in
+  `StewardConditions.Facts.wanted()` (the morning plan's `StewardJobs.plan(...).wanted()`, so a wanted guard or scholar with
+  no free block wishes its Guard House/Barracks or Library; a free block stops it, and so does having no builder, since
+  nobody could build it). Each such wish takes one of the
+  day's 8 wish slots (priority 62, above the market stall's 35).
+  The farmer's want gets its building with 27.13. `WORKPLACE_WANTED` stays a no-op seam.
+  The gallery package (front/back, as drawn and in Stonework) is skipped: the digest makes packages from the showcase
+  scene `workplaces` (front and back of all 12). Not rendered here (tools/blueprints/render has no node_modules in
+  this container): the copies are the village houses' already-checked builds with calcite as white concrete. The six
+  Cobblemon rules are tested without Cobblemon (worker counted, held back as MOD_MISSING); their wish with Cobblemon
+  has no compat test yet. Owner: are the zones above where you'd want each building?
 - **qa handoff** (qa-1005-0633, 2026-10-05 07:21Z): qa-1005-0633: B55 passes (local runCompatGameTest 129/129 in 4m21s; full build 851+129 in 8m48s) but verify refuses it: ROADMAP has B55 twice (an unticked copy above the ticked one), so the helper sees it unlanded. B67 (B57's fletch flake back) reproduced locally too: 'no bow for the guard' after 2.8 s in qa-1005-0633's ship build (main 6f6b6ea), so B57's leftover clear isn't the whole cause; it blocked shipping qa/legend-camp-map-1005 (QaLegendCampGameTests, passes): ship it next run. B61 not verified: the config scene can't film until B59 is fixed; a font-width estimate puts every switch label at most 141 px of 142 with ': OFF'. B46/B50 wait on B64/B66.

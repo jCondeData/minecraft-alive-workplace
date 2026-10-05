@@ -17,6 +17,13 @@ public final class Blueprints {
 			return Component.translatable("blueprint.aliveworkplace.styled", displayName(styled.get().base()),
 				Component.translatableWithFallback("style.aliveworkplace." + style, BlueprintStyles.prettify(style)));
 		}
+		java.util.Optional<String[]> outside = io.github.jcondedata.aliveworkplace.world.VillagePieces.outsideParts(id);
+		if (outside.isPresent()) {
+			// A village house's new outside (23.10a): "Guard House: Desert outside"
+			return Component.translatable("blueprint.aliveworkplace.outside",
+				io.github.jcondedata.aliveworkplace.world.VillagePieces.houseName(outside.get()[1]),
+				io.github.jcondedata.aliveworkplace.world.VillagePieces.styleName(outside.get()[0]));
+		}
 		String key = "blueprint." + id.getNamespace() + "." + id.getPath().replace('/', '.');
 		return Component.translatableWithFallback(key, prettify(id));
 	}

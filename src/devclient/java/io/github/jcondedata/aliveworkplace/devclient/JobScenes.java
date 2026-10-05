@@ -772,11 +772,7 @@ final class JobScenes {
 			level.setBlockAndUpdate(STATION.above(), pastureHalf(bottom, "top"));
 			chest(level, chestPos(), new ItemStack(cobblemonItem("poke_snack"), 2), new ItemStack(Items.HONEY_BOTTLE, 2));
 			io.github.jcondedata.aliveworkplace.habitat.HabitatKeepers.addSpot(keeper, spot);
-			com.cobblemon.mod.common.entity.pokemon.PokemonEntity eevee = com.cobblemon.mod.common.api.pokemon.PokemonProperties.Companion
-				.parse("eevee shiny=yes level=12", " ", "=").createEntity(level);
-			eevee.setPos(STATION.getX() + 4.5, STATION.getY(), STATION.getZ() - 4.5);
-			eevee.setNoAi(true);
-			level.addFreshEntity(eevee);
+			WildPokemon.spawnStill(level, "eevee shiny=yes level=12", STATION.getX() + 4.5, STATION.getY(), STATION.getZ() - 4.5);
 			return l -> io.github.jcondedata.aliveworkplace.habitat.HabitatKeepers.snacks() != null
 				&& io.github.jcondedata.aliveworkplace.habitat.HabitatKeepers.snacks().isSnackBlock(l.getBlockState(spot))
 				&& io.github.jcondedata.aliveworkplace.habitat.HabitatKeepers.isSlathered(l.getBlockState(log))

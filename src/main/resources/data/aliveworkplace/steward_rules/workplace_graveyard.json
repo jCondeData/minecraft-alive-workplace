@@ -1,0 +1,21 @@
+{
+  "when": [
+    {
+      "worker_without_workstation": {
+        "professions": [
+          "aliveworkplace:undertaker"
+        ],
+        "wanted": true
+      }
+    }
+  ],
+  "do": {
+    "build": {
+      "blueprint": "aliveworkplace:graveyard",
+      "zone": "civic"
+    }
+  },
+  "priority": 62,
+  "why": "steward.aliveworkplace.why.workplace",
+  "cooldown_days": 2
+}

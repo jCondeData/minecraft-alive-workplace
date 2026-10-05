@@ -1,0 +1,29 @@
+{
+  "when": [
+    {
+      "worker_without_workstation": {
+        "professions": [
+          "aliveworkplace:guard",
+          "minecraft:weaponsmith"
+        ],
+        "wanted": true
+      }
+    },
+    {
+      "not": {
+        "rank_at_least": {
+          "rank": "town"
+        }
+      }
+    }
+  ],
+  "do": {
+    "build": {
+      "blueprint": "aliveworkplace:guard_house",
+      "zone": "defences"
+    }
+  },
+  "priority": 62,
+  "why": "steward.aliveworkplace.why.workplace",
+  "cooldown_days": 2
+}

@@ -1,0 +1,22 @@
+{
+  "when": [
+    {
+      "worker_without_workstation": {
+        "professions": [
+          "aliveworkplace:tinkerer",
+          "minecraft:toolsmith"
+        ],
+        "wanted": true
+      }
+    }
+  ],
+  "do": {
+    "build": {
+      "blueprint": "aliveworkplace:tinkers_workshop",
+      "zone": "workshops"
+    }
+  },
+  "priority": 62,
+  "why": "steward.aliveworkplace.why.workplace",
+  "cooldown_days": 2
+}

@@ -17,6 +17,11 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Added
+- **A household's rise and fall is felt for 1.8** (part of 34.6, off until 1.8 is finished): a household that
+  rises gets golden sparkles and a chime at their door, a chat line to players within 32 blocks, a line in the hall's
+  Chronicle and "rose in the world" (+10 mood for 2 days); one that falls gets a Chronicle line and "came down in the
+  world" (-10 for 2 days). Moods add "has what their class needs" (+5) or -5 for each need lacking (at most -15), and
+  villagers talk of their rise or fall (three lines each).
 - **The luxury workshop engine for 1.8** (34.5, nothing to see until the four new makers arrive): luxury recipes are
   data files (`data/<namespace>/luxury_recipes/<id>.json`: the job, the level, the makings by item or tag, what comes
   out and how long it takes). A maker fills the store's stock orders first, then makes whatever the village store has

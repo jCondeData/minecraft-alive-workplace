@@ -16,6 +16,8 @@ public final class MaterialLedger {
 	private static final Map<Item, Integer> USED = new HashMap<>();
 	private static final Map<Item, Integer> GAINED = new HashMap<>();
 	private static final Map<Item, Integer> DROPPED = new HashMap<>();
+	/** Meals villagers ate from the village's store (27.22: the city soak's storehouse feeds the village too). */
+	private static final Map<Item, Integer> EATEN = new HashMap<>();
 
 	private MaterialLedger() {
 	}
@@ -25,6 +27,7 @@ public final class MaterialLedger {
 		USED.clear();
 		GAINED.clear();
 		DROPPED.clear();
+		EATEN.clear();
 		on = true;
 	}
 
@@ -65,6 +68,11 @@ public final class MaterialLedger {
 		add(DROPPED, stack.getItem(), stack.getCount());
 	}
 
+	/** A meal a villager ate from the store. */
+	public static void eaten(ItemStack meal) {
+		add(EATEN, meal.getItem(), meal.getCount());
+	}
+
 	private static void add(Map<Item, Integer> map, Item item, int count) {
 		if (on && count > 0) {
 			map.merge(item, count, Integer::sum);
@@ -81,5 +89,9 @@ public final class MaterialLedger {
 
 	public static Map<Item, Integer> dropped() {
 		return Map.copyOf(DROPPED);
+	}
+
+	public static Map<Item, Integer> eaten() {
+		return Map.copyOf(EATEN);
 	}
 }

@@ -180,7 +180,9 @@ public final class VillageNeeds {
 		int taken = 0;
 		while (count >= 100) {
 			count -= 100;
-			if (!SupplyContainers.takeOne(level, store, VillageNeeds::isMeal).isEmpty()) {
+			ItemStack extra = SupplyContainers.takeOne(level, store, VillageNeeds::isMeal);
+			if (!extra.isEmpty()) {
+				io.github.jcondedata.aliveworkplace.build.MaterialLedger.eaten(extra);
 				taken++;
 			}
 		}
@@ -284,6 +286,7 @@ public final class VillageNeeds {
 			return false;
 		}
 		io.github.jcondedata.aliveworkplace.people.Diet.ate(villager, meal);
+		io.github.jcondedata.aliveworkplace.build.MaterialLedger.eaten(meal); // counted only while a soak counts (27.22)
 		ModAttachments.LAST_MEAL.set(villager, level.getGameTime());
 		villager.heal(4f);
 		level.sendParticles(new ItemParticleOption(ParticleTypes.ITEM, meal), villager.getX(), villager.getEyeY() - 0.2, villager.getZ(),

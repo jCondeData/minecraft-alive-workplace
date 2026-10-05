@@ -2089,6 +2089,8 @@
   "guide.aliveworkplace.page.storehouse.text": "Craft a Storehouse and put chests near it: a villager without a job becomes its Porter. The porter carries what the other workers make to its chests and leaves them the tools they need.",
   "guide.aliveworkplace.page.villages.title": "Villages grow",
   "guide.aliveworkplace.page.villages.text": "Villages grow workshops, guard houses, clinics, post offices, kitchens and inns by themselves. With a hall a village ranks up from Hamlet to City and keeps a chronicle of what happened there.",
+  "guide.aliveworkplace.page.city_plan.title": "A village from a plan",
+  "guide.aliveworkplace.page.city_plan.text": "Craft a City Plan (a map, a Blank Blueprint and a Heart of the Sea) and bind it to the hall. Right-click the air to paint zones, streets and a wall line. Sneak-right-click a Journeyman Builder by the hall with it: as Steward he builds the village into the plan.",
   "guide.aliveworkplace.page.miner.title": "Miner",
   "guide.aliveworkplace.page.miner.text": "A pickaxe at a blast furnace makes a Miner. Mark a quarry's two corners with a Quarry Marker and give it to them. Keep pickaxes and torches in a chest near the furnace; they bring the stone and ore back.",
   "guide.aliveworkplace.page.lumberjack.title": "Lumberjack",

@@ -133,7 +133,12 @@ public class StewardWork extends Behavior<Villager> {
 		Component title = Component.translatable("message.aliveworkplace.steward.title", VillageHalls.name(level, hall));
 		if (!roundDone(level, villager)) {
 			if (stops == null) {
-				stops = stops(level, villager, hall);
+				long cost = StewardCost.start(); // 27.22
+				try {
+					stops = stops(level, villager, hall);
+				} finally {
+					StewardCost.stop(cost, "rounds");
+				}
 				stop = 0;
 				wait = 0;
 				travel = 0;
@@ -173,7 +178,12 @@ public class StewardWork extends Behavior<Villager> {
 			return;
 		}
 		if (gameTime % 20 == 0 || line.getString().isEmpty()) {
-			line = PLANNER.plan(level, villager, hall);
+			long cost = StewardCost.start(); // 27.22
+			try {
+				line = PLANNER.plan(level, villager, hall);
+			} finally {
+				StewardCost.stop(cost, "planning");
+			}
 		}
 		villager.getLookControl().setLookAt(hall.getX() + 0.5, hall.getY() + 0.5, hall.getZ() + 0.5);
 		WorkerStatus.set(villager, title, -1f, line.copy().withStyle(ChatFormatting.GRAY));

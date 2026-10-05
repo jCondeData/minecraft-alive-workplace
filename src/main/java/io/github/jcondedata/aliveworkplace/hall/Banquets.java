@@ -184,6 +184,7 @@ public final class Banquets {
 		if (meal.isEmpty()) {
 			meal = SupplyContainers.takeOne(level, store, VillageNeeds::isMeal);
 		}
+		io.github.jcondedata.aliveworkplace.build.MaterialLedger.eaten(meal); // a soak's count (27.22); nothing when empty
 		return meal;
 	}
 

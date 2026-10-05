@@ -149,6 +149,11 @@ SCENES = [
       "over three mornings in Run the village, the Steward read the homes rules and started the builds himself, and the builders filled the Homes zone", 200,
       [("01_steward_homes_day_1", "Day 1: the first home"), ("02_steward_homes_day_2", "Day 2"),
        ("03_steward_homes_day_3", "Day 3: the zone filling up")]),
+    # The 1.1 yardstick (ROADMAP 27.22): a village from a plan, its Steward running it for 6 days (sprinted); the GIF leads the 1.1 notes
+    S("city_timelapse", "Steward", "A village from a plan: 6 days in Run the village",
+      "the village grew into its plan: every build the Steward started finished, each in its zone, nothing duplicated or lost", 1800,
+      [("01_city_start", "Day 1: the hall, the plan's zones, streets and wall line"), ("frame_*@middle", "Halfway"),
+       ("02_city_done", "Day 8: the village grown into its plan"), ("03_city_close", "Close up")]),
     S("steward_civic", "Steward", "The village asks, the Steward builds",
       "the village asked for light, beauty and a school, and the Steward started a street lamp, a well and a schoolhouse himself", 240,
       [("01_steward_civic_day_1", "Day 1: a lamp by the dark beds and a well"), ("02_steward_civic_day_2", "Day 2: children came, so a schoolhouse")]),

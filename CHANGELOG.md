@@ -176,6 +176,16 @@ asks for the steps, `latest.log` and any crash report).
   quarter faster. Guild files may carry `fabric:load_conditions`. New guild perks for packs: `recovery_days`,
   `work_radius`, `hire_price`, `carry`, `train_up_to`, `strength`, `lesson_price` and `trainer_xp`.
 
+### Dev
+- **The 1.1 yardstick: a village from a plan** (27.22): `CITY=true tools/packtest/run.sh` lays out a plains village on
+  the real pack server (a hall, a Steward in Run the village, 3 builders, a stocked storehouse, 12 villagers, an old
+  vanilla house; Homes, Workshops, Farms, Market, Gardens and Keep Clear, two streets and a wall line) and lets the
+  Steward run it for 6 in-game days, then prints one `City result:` line: builds started and finished, any outside its
+  zone or in Keep Clear, stalls, every item whose count is off, and what the Steward's work costs a tick (p50, p95, p99,
+  worst; `PERF=true` adds a profile). The new `city_timelapse` showcase scene films the same village growing. The
+  README has a "Villages that build themselves" section, and the Guide Book an "A village from a plan" page that shows
+  once 1.1 is on.
+
 ## 0.139.0 — 2026-10-05
 
 ### Added

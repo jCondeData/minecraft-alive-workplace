@@ -312,6 +312,83 @@ blocks and bring the villager back — job, level, trades and name as they were.
 on the Storehouse's requests board. A villager a zombie turns into a zombie villager leaves no grave (cure them
 instead). The Village Hall counts the graves.
 
+## Villages that build themselves
+
+*Arrives in 1.1: its switches stay off until then (see the config table).* Draw what you want a village to become on
+its **City Plan**, make a seasoned builder its **Steward**, and the village grows into the plan by itself: homes when
+beds run short, a workplace for every worker, farms when food is short, roads, lamps, a wall once it's been raided, and
+its old vanilla houses rebuilt one at a time.
+
+**The City Plan.** Craft a Map, a Blank Blueprint and a Heart of the Sea (shapeless). Right-click a Village Hall to bind
+it (its tooltip names the village), then right-click the air to open the plan: the village map with a grid of 32×32
+cells over it (a cell is 4×4 blocks at the default `villageHallRadius`). Paint up to 16 **zones**, each a kind, a
+name, a style (one of the blueprint styles, or as drawn) and a "renew old houses" switch:
+
+| Zone | What goes there |
+|---|---|
+| Homes (white) | cottages, stone houses, terraces, inns; home upgrades |
+| Workshops (orange) | the workplace of each job (Smithy, Mason's Yard, Fletcher's Lodge, Map Room, Weaver's Cottage, …) |
+| Farms (lime) | Berry Farm, Ranch, Farmstead, Fisher's Hut |
+| Market (yellow) | storehouses, market stalls, the Market Square |
+| Civic (blue) | school, library, clinic, chapel, graveyard |
+| Gardens (light blue) | wells, benches, fountains, gazebos |
+| Defences (black) | lookout towers, barracks |
+| Keep Clear (red) | nothing is ever built there (roads may cross) |
+
+Besides the brush, rectangle, eraser and undo, two tools draw on the plan: **Road** (click points, double-click to
+end; a lane 1 block wide, a street 3 or an avenue 5, in a road style) and **Wall line** (one line round the village,
+open or closed). Holding the plan shows its zone edges, roads and wall line on the ground within 24 blocks as coloured
+particles. Only the hall's owner, their friends and operators may change a plan.
+
+**The Steward.** Sneak-right-click a Builder of Journeyman level or more, standing by the hall, with its City Plan: he
+becomes the village's Steward, one per hall, in a clerk's long coat. Each morning he walks his rounds with the plan in
+his hands (his open builds, each zone, the storehouse), then plans at the hall all day; the line over his head says
+what and why ("Planning a Stone House: 3 villagers have no bed"). His level sets how many of his builds may be open at
+once: 1, 2, 2, 3, 4 from Novice to Master, never more than the village's rank allows (Hamlet 1, Village 2, Town 3,
+City 4). `/workplace steward explain` lists every rule for the nearest hall, each condition's number and whether it
+held.
+
+**His desk.** With a Steward, the hall's "What next?" page becomes his desk: three modes, **Ask me first**, **Run the
+village** and **Rest**; his open builds, each with Cancel; and up to 9 proposals, each saying what, why, where, what it
+needs (and how much of it is in store) and which builder will build it, with Approve, Decline, Show me, Another spot and
+Another style. In Run the village he approves them himself and tells you in one line a morning. He also gives jobless
+villagers jobs (the biggest gap first) and picks the scholars' next research. Unanswered proposals lapse after 3 days;
+a declined one stays away 3 days. He never starts a build while two of his builds have waited a whole day for
+materials; instead he tells you the shopping list once a day. He never builds over a player's own blocks, never in
+Keep Clear, and never on a plot that isn't natural ground and trees.
+
+**Roads.** The roads on the plan are built in segments of up to 24 blocks, each by the nearest free builder, in the
+road style of the zone they start in: As drawn (dirt path, coarse dirt and gravel), Stonework, Sandstone, Dark Oak,
+Cherry and, with Cobblemon, Apricorn. Every new building's door joins the nearest road with a lane. Streets get a lamp
+every 16 blocks and at crossings, lanes a lantern post every 12; water or a drop gets a bridge, a one-block rise
+stairs. Villages with a caravan route each build their half of a road to the other village, ending at a milestone sign
+if it stops short; caravans on a finished road arrive sooner.
+
+**Walls.** Once the village has been raided in the last 7 days, or a bandit camp is near, the Steward proposes a wall
+along the wall line (or a line of his own round the zones): a Palisade up to a Village, Stone from a Town (a Town
+replaces its palisade a segment at a time). Towers at the corners and every 28 blocks, a gate wherever a road crosses,
+shut at night.
+
+**Renewal.** In zones with "renew old houses" on, he finds the houses no builder built (by their beds and job blocks;
+never one with a chest, never one a player changed) and lists them on the desk. One at a time, at most one every 2
+days, he renews one in the zone's style: the old house is taken down by the builders (its blocks go to the store) and
+the new one built on its plot; its sleepers move in and its worker keeps the job (an old armorer's house becomes a
+Smithy).
+
+**For packs: everything is data.** Each of these folders, in any namespace (`data/<namespace>/<folder>/`), holds one
+entry per JSON file; a pack adds its own beside ours, and a broken file is skipped with a warning naming it:
+
+| Folder | One file is |
+|---|---|
+| `city_zones/` | a zone kind: its colour, map tint, icon and whether anything may be built there |
+| `steward_rules/` | one of the Steward's rules: `when` (conditions, all must hold), `do` (build, upgrade, assign jobs, research or ask), `priority`, `why`, `cooldown_days`, `max`, `min_rank`, `requires` |
+| `road_styles/` | a road style: its middle and edge blocks, steps, bridge blocks, lamp and lantern post |
+| `wall_kits/` | a wall kit: its segment, corner tower and gate blueprints, and the ranks it is for |
+| `steward_renewal/` | what an old house becomes: by its job (or `home`), the blueprints to try in order |
+
+**Settings** (`config/aliveworkplace.json`, see the table below): `steward`, `stewardMaxOpenBuilds`, `stewardSelfRun`,
+`stewardRoads`, `caravanRoads`, `caravanRoadReach`, `stewardWalls`, `stewardRenewal`.
+
 ## Edicts
 
 A village's owner proclaims **edicts** at the Village Hall (its **Book of Edicts**, or sneak-right-click with a
@@ -1246,6 +1323,7 @@ the Builder's workstation too: a villager without a job near it takes it and bec
 | `/workplace blueprints` (op) | list every blueprint the server knows |
 | `/workplace blueprint <id>` (op) | get a blueprint item |
 | `/workplace import` (op) | import files from `<world>/aliveworkplace/import/` |
+| `/workplace steward explain` | every rule of the nearest hall's Steward, each condition's number and whether it held, and today's wishes |
 | `/gamerule workplaceAllowUploads false` | only operators can upload blueprint files |
 | `/gamerule workplaceFreeMaterials true` | builders need no materials (creative towns) |
 | `/gamerule workplaceBuildDelay 8` | ticks per block (lower is faster) |
@@ -1299,6 +1377,14 @@ saves the file and puts the settings into effect in your own worlds (a dedicated
 | `treasuryPerWorker` | 20 | what each worker brings the treasury a day, in hundredths of an emerald, before wellbeing and rank |
 | `villageProtection` | true | a Village Hall's owner may protect the village from other players (shift-click the hall's name tag; off until they do) |
 | `dollarsPerEmerald` | 100 | CobbleDollars per emerald for lessons, shop prices and fares |
+| `steward` | off until 1.1 | a Journeyman Builder (or higher) by a Village Hall can be made its Steward with the hall's City Plan; off, no new Stewards, and those appointed stand idle (the City Plan still paints) |
+| `stewardMaxOpenBuilds` | 4 | the most of a Steward's builds open at once, whatever his level and the village's rank (1 to 8) |
+| `stewardSelfRun` | off until 1.1 | a Steward set to "Run the village" starts the builds he proposes himself; off, every village asks first |
+| `stewardRoads` | off until 1.1 | the builders build the approved roads on the plan, and new buildings' doors join them with lanes; off, roads are drawn but not built |
+| `caravanRoads` | off until 1.1 | villages with a trade route each build their half of a road to the other, ending at a milestone if it stops short |
+| `caravanRoadReach` | 256 | the longest half of a road a village builds towards another, in blocks (32 to 512; it goes halfway at most) |
+| `stewardWalls` | off until 1.1 | a raided village's Steward proposes a wall along the plan's wall line; off, he never proposes walls |
+| `stewardRenewal` | off until 1.1 | a Steward rebuilds the old village houses in zones whose "renew old houses" switch is on, one at a time; off, they are listed, never renewed |
 
 Expansions still being built stay off until the release that finishes them, whatever the file says: 1.1's Steward
 (`steward`, `stewardSelfRun`), 1.2's Pokémon jobs and partner shows (the rows marked "off until 1.2", `daycareKeepers`,

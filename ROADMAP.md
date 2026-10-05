@@ -877,7 +877,7 @@ and an old vanilla village slowly rebuilds itself one house at a time. It answer
     there; a save and reload between the take-down and the rebuild; a renewal cancelled after the take-down leaves the
     plot to be proposed again;
   - showcase scene `renewal`: a time-lapse GIF of a vanilla village house becoming a Stone House in Cherry.
-- [ ] **27.22** **A village from a plan (the 1.1 yardstick).** The whole milestone at once, as 23.1 is for builders: a
+- [x] **27.22** (review: pending 2026-10-05) **A village from a plan (the 1.1 yardstick).** The whole milestone at once, as 23.1 is for builders: a
   plains village with a hall, a Steward, 3 builders, a stocked storehouse and 12 villagers; a plan with Homes,
   Workshops, Farms, Market, Gardens and Keep Clear zones, two streets and a wall line; Run the village for 6 in-game
   days. Run it as a pack-server scenario (`tools/packtest`) for the numbers and as a screenshot scene for the
@@ -890,6 +890,16 @@ and an old vanilla village slowly rebuilds itself one house at a time. It answer
     renewal, the data folders for packs, every new config key in the table), and the In-Game Guidebook has its page
     if 26.2a has landed (else a note on 26.2a);
   - showcase scene `city_timelapse`: the village growing into its plan, the GIF that leads the 1.1 release notes.
+  - Status (lane-c-1005-2132): built. `command/CitySoak` (`/workplace city`, benchmark servers only) and
+    `CITY=true [PERF=true] tools/packtest/run.sh`; the Steward's cost meter `city/StewardCost`; the ledger counts meals
+    eaten from the store. Pack server, 2026-10-05, run 3: 14/14 of his builds finished (6 buildings, 8 road segments) in
+    6 days, all in their zones, none in Keep Clear, 0 stalls, items off none (133 meals counted); Steward cost p50
+    0.005, **p95 0.591** (0.05 and 0.46 in runs 2 and 1), p99 1.2, worst 882 ms (planning, 710 ms, first call): the
+    p95 target is missed in 1 of 3 runs, B85. Runs 1-2 found B84 (the village eats a Farmstead's crops). The wall
+    (approved day 1) and the old house's renewal never got a turn in a Hamlet: B86. README "Villages that build
+    themselves" and every M27 key in the config table; Guide Book page `city_plan` (shown once M27 is on);
+    `city_timelapse` in the harness and scenes.py, not filmed locally (the nightly films it). `docs/performance.md` has
+    the three runs. CitySoakGameTests (3) pass.
 
 Depends on: nothing.
 

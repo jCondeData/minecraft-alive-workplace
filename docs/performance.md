@@ -29,6 +29,36 @@ One row per run, newest first. Ticks are milliseconds.
 |---|---|---|---|---|---|---|---|
 | 2026-10-05 | 5b489b7 | 150 (65 of 76 sites working when measured) | 2.3 / 3.5 (p99 7.3) | 18.3 / 32.8 (p99 66.1) at the start, then 8.8 / 16.5 (p99 21.1) once the builds settled | 1613 MB | 13.1% (204 of 1556 samples; 49.8% villager brains, 26.5% pathfinding, both ours included) | [nightly-tests 37297003813](https://github.com/jCondeData/minecraft-alive-workplace/actions/runs/37297003813) (the nightly's performance step, same load as the Sunday job) |
 
+## The Steward's cost: a village from a plan (27.22)
+
+- **What runs:** `CITY=true PERF=true tools/packtest/run.sh`, the same pack server as the benchmark. `/workplace city`
+  lays out a plains village round a Village Hall at 1000, 75, 1000: a Steward in Run the village, 3 builders, a
+  storehouse with its porter, 12 more villagers and an old vanilla house; a plan with Homes (renewing old houses),
+  Workshops, Farms, Market, Gardens and Keep Clear, two streets and a wall line, and a raid on record so the village
+  wants its wall. The Steward runs it for 6 in-game days at full speed (`/tick sprint`); then he starts nothing new and
+  the builders get up to 2 more days to finish what he started. The storehouse is kept stocked as a player keeps it:
+  each build he opens has its list put in (and what the list grows by later), counted as stocked.
+- **What is measured:** each server tick, the time spent in the Steward's own work (`city/StewardCost`): his planning
+  at the hall (rules, wishes, the desk, walls and renewals proposed), his morning rounds, the plot searches, the
+  old-house surveys, and the roads and walls ticking at the hall. Per village (one here): p50, p95, p99 and the worst
+  tick, with the slowest single call named. The `City result:` line also counts builds started and finished, any
+  outside its zone or in Keep Clear, stalls, meals eaten from the store and every item whose count is off.
+- **Target:** under 0.5 ms a tick per village at p95.
+
+| Date | Commit | Builds the Steward started → finished | In zone / Keep Clear | Stalls | Items off | Steward p50 / p95 / p99 / worst (ms) | Whole server |
+|---|---|---|---|---|---|---|---|
+| 2026-10-05 | 27.22 run 3 (food in the store, lists topped up) | 14 → 14 (6 buildings, 8 road segments) in 6 days | all in zone, none in Keep Clear | 0 | none (133 meals eaten, counted) | 0.005 / **0.591** / 1.208 / 881.9 (slowest call: planning, 710 ms at tick 3186) | 515 ticks a second sprinting (1.94 ms a tick); our share 13.2% of 6352 samples |
+| 2026-10-05 | 27.22 run 2 (lists not topped up) | 4 → 2 (lamp lanterns short: 16 stalls) | all in zone | 16 | apple -8 (before babies' and banquets' meals were counted) | 0.004 / 0.050 / 1.110 / 135.4 | — |
+| 2026-10-05 | 27.22 run 1 (no food in the store) | 11 → 10 (the Farmstead's crops eaten: B84) | all in zone | 7 | carrot -9, potato -8, wheat_seeds -18 | 0.005 / 0.462 / 1.247 / 197.9 | 512 ticks a second sprinting; our share 13.3% |
+
+**Reading it:** the p95 lands on an edge. His planning runs once a second, so 1 tick in 20 carries it (about 0.5 to
+1.2 ms) and the 95th percentile falls right between those ticks and the free ones: 0.05, 0.46 and 0.59 ms in three runs
+of the same village. Two of three are under the 0.5 ms target, the last is not, and the first planning call took
+710 ms (an 882 ms tick). Both are B85. The whole run is cheap otherwise: the server sprinted at about 515 ticks a
+second with the village working. A Hamlet (this village's rank till it has 5 finished buildings) lets the Steward keep
+one build open at a time, so 6 days give 6 buildings and 8 road segments; the wall (approved on day 1) and the old
+house's renewal (on his desk all week) never got a turn: B86.
+
 ## The pack's performance stack (25.4)
 
 Cobbleverse ships its own performance mods, and the benchmark, the soak and the nightly pack boot all run with them,

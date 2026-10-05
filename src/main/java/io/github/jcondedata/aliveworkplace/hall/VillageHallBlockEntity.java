@@ -145,8 +145,13 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 			hall.setChanged();
 		}
 		if (level instanceof net.minecraft.server.level.ServerLevel server) {
-			io.github.jcondedata.aliveworkplace.city.Roads.tick(server, pos, hall); // 27.15
-			io.github.jcondedata.aliveworkplace.city.Walls.tick(server, pos, hall); // 27.18
+			long cost = io.github.jcondedata.aliveworkplace.city.StewardCost.start(); // 27.22: counted as the Steward's work
+			try {
+				io.github.jcondedata.aliveworkplace.city.Roads.tick(server, pos, hall); // 27.15
+				io.github.jcondedata.aliveworkplace.city.Walls.tick(server, pos, hall); // 27.18
+			} finally {
+				io.github.jcondedata.aliveworkplace.city.StewardCost.stop(cost, "roads and walls");
+			}
 		}
 		if (level instanceof net.minecraft.server.level.ServerLevel server
 			&& (hall.needs == null || Math.floorMod(level.getGameTime() + pos.hashCode(), VillageNeeds.CHECK_EVERY) == 0)) {

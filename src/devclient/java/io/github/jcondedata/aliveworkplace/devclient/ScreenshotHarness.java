@@ -2869,7 +2869,7 @@ public class ScreenshotHarness implements ClientModInitializer {
 			: "workshops".equals(System.getProperty("aliveworkplace.scene")) ? List.of(StarterBlueprints.TINKERS_WORKSHOP, StarterBlueprints.TINKERS_WORKSHOP_2, StarterBlueprints.NETHER_GATE, StarterBlueprints.NETHER_GATE_2)
 			: "styles".equals(System.getProperty("aliveworkplace.scene")) ? styledGallery()
 			: "workplaces".equals(System.getProperty("aliveworkplace.scene")) ? workplacesGallery()
-			// every starter blueprint: the tiered ones, then those with no upgrade (the Map Room, ROADMAP 27.13)
+			// every starter blueprint: the tiered ones, then those with no upgrade (the Map Room and Bandstand, ROADMAP 27.13, 27.14)
 			: java.util.stream.Stream.concat(StarterBlueprints.ALL.stream(), StarterBlueprints.ONE_TIER.stream()).toList();
 		if (tick == 1) {
 			mc.options.renderDistance().set(6);
@@ -2899,6 +2899,14 @@ public class ScreenshotHarness implements ClientModInitializer {
 					if (BlockPos.betweenClosedStream(origin, origin.offset(all.get(i).size()).offset(-1, -1, -1))
 						.allMatch(p -> level.getBlockState(p).isAir())) {
 						emptyBuilds.add(all.get(i).id().getPath());
+					}
+					if (all.get(i).id().getPath().startsWith("fishers_hut")) {
+						// On a shore, as the Steward puts it (city/Plots): two deep water under the jetty and out in front, and
+						// the jetty's log posts down to the bed, as a builder takes them.
+						for (BlockPos p : BlockPos.betweenClosed(origin.offset(-2, -2, -5), origin.offset(all.get(i).size().getX() + 1, -1, 4))) {
+							BlockState above = level.getBlockState(origin.offset(p.getX() - origin.getX(), 0, p.getZ() - origin.getZ()));
+							level.setBlock(p, above.is(net.minecraft.tags.BlockTags.LOGS) ? above : net.minecraft.world.level.block.Blocks.WATER.defaultBlockState(), 2);
+						}
 					}
 					if (all.get(i).id().getPath().startsWith("nether_gate")) {
 						// Lit, as the builder leaves it when there's a flint and steel in the chests.

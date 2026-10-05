@@ -110,15 +110,33 @@ public final class Plots {
 		SLOPE,
 		/** The blueprint isn't in the library. */
 		NO_BLUEPRINT,
-		/** A building for the shore (a Ferry House) with no water within {@link #SHORE} blocks of its front. */
-		SHORE
+		/**
+		 * A building for the shore (a Ferry House, a Fisher's Hut) with no water within {@link #SHORE} blocks of its front;
+		 * for one with a jetty, also when the jetty's end isn't over water.
+		 */
+		SHORE,
+		/** The water under a jetty more than {@link #MAX_JETTY_DEPTH} deep: its posts wouldn't reach the bed. */
+		DEEP
 	}
 
 	/** How far in front of a shore building (see {@link #SHORE_BUILDINGS}) the water may be. */
 	public static final int SHORE = 4;
 	/** Buildings that go on the shore: water within {@link #SHORE} blocks of their front (ROADMAP 27.11). */
 	public static final java.util.Set<ResourceLocation> SHORE_BUILDINGS = java.util.Set.of(
-		ResourceLocation.fromNamespaceAndPath("aliveworkplace", "ferry_house"));
+		ResourceLocation.fromNamespaceAndPath("aliveworkplace", "ferry_house"),
+		ResourceLocation.fromNamespaceAndPath("aliveworkplace", "fishers_hut"),
+		ResourceLocation.fromNamespaceAndPath("aliveworkplace", "fishers_hut_2"));
+	/**
+	 * Shore buildings with a jetty out in front (ROADMAP 27.14), and how many rows of the blueprint from its front (z = 0)
+	 * the jetty takes: the building's own front is that far back, the water must come within {@link #SHORE} blocks of
+	 * it and lie under the jetty's end, those rows may be over water (they don't count against the tenth), and the water
+	 * under the jetty may be at most {@link #MAX_JETTY_DEPTH} deep.
+	 */
+	public static final Map<ResourceLocation, Integer> JETTIES = Map.of(
+		ResourceLocation.fromNamespaceAndPath("aliveworkplace", "fishers_hut"), 5,
+		ResourceLocation.fromNamespaceAndPath("aliveworkplace", "fishers_hut_2"), 5);
+	/** The deepest water a jetty's posts stand in (the builder takes them down to the bed). */
+	public static final int MAX_JETTY_DEPTH = 3;
 
 	/** What the Steward wants a plot for: blueprints in order (the next is tried where the first can't go), and a zone kind. */
 	public record Request(List<ResourceLocation> blueprints, String zoneKind, int skip, @Nullable BlockPos near) {
@@ -613,8 +631,10 @@ public final class Plots {
 			int water = 0;
 			int lowest = Integer.MAX_VALUE;
 			int highest = Integer.MIN_VALUE;
-			int area = w * d;
-			int[] heights = new int[area];
+			Integer jetty = JETTIES.get(plain);
+			// a jetty's rows may be over water: the tenth is of the rest
+			int area = w * d - (jetty == null ? 0 : jetty * (front.getAxis() == Direction.Axis.Z ? w : d));
+			int[] heights = new int[w * d];
 			int n = 0;
 			for (int px = box.minX(); px <= box.maxX(); px++) {
 				for (int pz = box.minZ(); pz <= box.maxZ(); pz++) {
@@ -633,7 +653,7 @@ public final class Plots {
 							return Verdict.no(Reason.LAVA);
 						}
 						case WATER -> {
-							if (++water * 10 > area) {
+							if (!(jetty != null && inJetty(box, front, jetty, px, pz)) && ++water * 10 > area) {
 								return Verdict.no(Reason.WATER);
 							}
 						}
@@ -662,7 +682,12 @@ public final class Plots {
 					}
 				}
 			}
-			if (SHORE_BUILDINGS.contains(plain)) {
+			if (jetty != null) {
+				Reason why = jettyShore(blueprint.get(), origin, turn, mirror, jetty);
+				if (why != null) {
+					return Verdict.no(why);
+				}
+			} else if (SHORE_BUILDINGS.contains(plain)) {
 				Boolean shore = shore(box, front);
 				if (shore == null) {
 					return null;
@@ -673,6 +698,62 @@ public final class Plots {
 			}
 			BlueprintData.Placement placement = new BlueprintData.Placement(dim, origin.atY(floor + 1), turn, mirror);
 			return Verdict.ok(new Plot(id, placement, size, zone.name(), front));
+		}
+
+		/** Whether (x, z) is in the {@code rows} rows of {@code box} on its {@code front} side: under a jetty. */
+		private static boolean inJetty(BoundingBox box, Direction front, int rows, int x, int z) {
+			return switch (front) {
+				case NORTH -> z < box.minZ() + rows;
+				case SOUTH -> z > box.maxZ() - rows;
+				case WEST -> x < box.minX() + rows;
+				default -> x > box.maxX() - rows;
+			};
+		}
+
+		/**
+		 * The shore for a building with a jetty in its first {@code rows} rows (its columns are those its blueprint builds
+		 * on in its bottom layer there), placed at {@code origin}: null if it fits, else why not. The jetty's end must be
+		 * over water, water must come within {@link #SHORE} blocks of the building's own front (the jetty's root), and no
+		 * water under the jetty may be more than {@link #MAX_JETTY_DEPTH} deep. The columns were all read for the
+		 * footprint already.
+		 */
+		@Nullable
+		private Reason jettyShore(Blueprint blueprint, BlockPos origin, Rotation turn, Mirror mirror, int rows) {
+			boolean tip = false;
+			boolean near = false;
+			for (Blueprint.Entry e : blueprint.blocks()) {
+				BlockPos p = e.pos();
+				if (p.getY() != 0 || p.getZ() >= rows || e.state().isAir()) {
+					continue;
+				}
+				BlockPos at = origin.offset(net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate.transform(p, mirror, turn, BlockPos.ZERO));
+				Column col = columns.get(BlockPos.asLong(at.getX(), 0, at.getZ()));
+				boolean wet = col != null && col.kind() == Kind.WATER;
+				if (p.getZ() == 0) {
+					if (!wet) {
+						return Reason.SHORE; // the jetty's end on dry land
+					}
+					tip = true;
+				}
+				if (wet && p.getZ() >= rows - SHORE) {
+					near = true;
+				}
+				if (wet && waterDepth(at.getX(), col.ground(), at.getZ()) > MAX_JETTY_DEPTH) {
+					return Reason.DEEP;
+				}
+			}
+			return tip && near ? null : Reason.SHORE;
+		}
+
+		/** How deep the water is from its surface at {@code top} down (counting at most one past {@link #MAX_JETTY_DEPTH}). */
+		private int waterDepth(int x, int top, int z) {
+			BlockPos.MutableBlockPos p = new BlockPos.MutableBlockPos(x, top, z);
+			int depth = 0;
+			while (depth <= MAX_JETTY_DEPTH && p.getY() >= level.getMinBuildHeight() && level.getFluidState(p).is(FluidTags.WATER)) {
+				depth++;
+				p.move(Direction.DOWN);
+			}
+			return depth;
 		}
 
 		/** Whether there's water in the {@link #SHORE} rows in front of {@code box}; null when a column isn't read yet. */

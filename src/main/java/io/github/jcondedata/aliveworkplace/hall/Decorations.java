@@ -8,7 +8,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 
 /**
- * Decorations make a village prettier: every well, lamp post, bench, fountain, gazebo or market square a builder
+ * Decorations make a village prettier: every well, lamp post, bench, fountain, gazebo, bandstand or market square a builder
  * finished within a Village Hall's reach adds to the village's beauty (and each Masterwork in an item frame, 29.10), and each point of beauty adds 1% to its
  * wellbeing, up to {@link #MAX_BONUS}.
  */
@@ -22,7 +22,8 @@ public final class Decorations {
 		StarterBlueprints.FOUNTAIN.id(), 3,
 		StarterBlueprints.GAZEBO.id(), 3,
 		StarterBlueprints.MARKET_SQUARE.id(), 5,
-		StarterBlueprints.CHAPEL.id(), 4);
+		StarterBlueprints.CHAPEL.id(), 4,
+		StarterBlueprints.BANDSTAND.id(), 3); // the Bard's (ROADMAP 27.14)
 	/** Wellbeing per point of beauty. */
 	public static final float PER_POINT = 0.01f;
 	/** Most wellbeing decorations add. */

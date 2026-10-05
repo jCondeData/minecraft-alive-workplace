@@ -210,6 +210,28 @@ public final class StarterBlueprints {
 	/** A narrow tower house with a cartography table (Cartographer) and a lookout at the top; it has no upgrade. */
 	public static final Entry MAP_ROOM = new Entry(AliveWorkplace.id("map_room"), new Vec3i(9, 16, 9));
 
+	/**
+	 * The country workplaces of ROADMAP 27.14 (tools/blueprints/countryside.py), each the building a {@code workplace_*}
+	 * Steward rule builds for its trade. A farmhouse with one bed beside a 9 x 5 field of farmland round a water channel,
+	 * a scarecrow, and the composter (Farmer) with a chest for the harvest.
+	 */
+	public static final Entry FARMSTEAD = new Entry(AliveWorkplace.id("farmstead"), new Vec3i(15, 12, 13));
+	/** A barn behind the house and a second field behind the first, with a second composter. */
+	public static final Entry FARMSTEAD_2 = new Entry(AliveWorkplace.id("farmstead_2"), new Vec3i(15, 12, 22));
+	/**
+	 * A shore hut with a jetty 5 blocks into the water on log posts and a barrel (Fisherman). Its plot must be on a shore:
+	 * water within 4 blocks of its front, no more than 3 deep under the jetty (city/Plots).
+	 */
+	public static final Entry FISHERS_HUT = new Entry(AliveWorkplace.id("fishers_hut"), new Vec3i(13, 13, 13));
+	/** A smokehouse with a smoker (the fisherman's, for his catch) behind, and a boat shed over the water. */
+	public static final Entry FISHERS_HUT_2 = new Entry(AliveWorkplace.id("fishers_hut_2"), new Vec3i(14, 13, 19));
+	/** A cottage with a loom (Shepherd) and a fenced sheep pen. */
+	public static final Entry WEAVERS_COTTAGE = new Entry(AliveWorkplace.id("weavers_cottage"), new Vec3i(15, 11, 11));
+	/** A dye garden behind: beds of the flowers dyes come from and a drying frame of dyed cloth. */
+	public static final Entry WEAVERS_COTTAGE_2 = new Entry(AliveWorkplace.id("weavers_cottage_2"), new Vec3i(15, 11, 16));
+	/** An open eight-sided bandstand with a jukebox (Bard), in the Gardens; it adds 3 to a village's beauty, no upgrade. */
+	public static final Entry BANDSTAND = new Entry(AliveWorkplace.id("bandstand"), new Vec3i(11, 10, 11));
+
 	/** An obsidian portal frame in a blackstone arch, with the Nether Brazier: the builder lights it when done. */
 	public static final Entry NETHER_GATE = new Entry(AliveWorkplace.id("nether_gate"), new Vec3i(11, 9, 7));
 	/** A gatehouse roof over the portal, a storehouse and a nether wart garden. */
@@ -288,10 +310,11 @@ public final class StarterBlueprints {
 		TERRACE, TERRACE_2, INN, INN_2, STONE_HOUSE, STONE_HOUSE_2, STONE_HOUSE_3, BARRACKS, BARRACKS_2, TINKERS_WORKSHOP, TINKERS_WORKSHOP_2, NETHER_GATE, NETHER_GATE_2,
 		COMPOST_YARD, COMPOST_YARD_2, SIFTING_SHED, SIFTING_SHED_2,
 		SMITHY, SMITHY_2, MASONS_YARD, MASONS_YARD_2, FLETCHERS_LODGE, FLETCHERS_LODGE_2,
+		FARMSTEAD, FARMSTEAD_2, FISHERS_HUT, FISHERS_HUT_2, WEAVERS_COTTAGE, WEAVERS_COTTAGE_2,
 		SCHOOLHOUSE, SCHOOLHOUSE_2, LIBRARY, LIBRARY_2, LIBRARY_3, RANCH, RANCH_2, APIARY_GARDEN, APIARY_GARDEN_2, FLOWER_SHOP, FLOWER_SHOP_2, GRAVEYARD, GRAVEYARD_2);
 
 	/** Starter builds with no upgrade (the rest of {@link #ALL} come in tiers): in the Blueprint Table and the creative tab too. */
-	public static final List<Entry> ONE_TIER = List.of(MAP_ROOM);
+	public static final List<Entry> ONE_TIER = List.of(MAP_ROOM, BANDSTAND);
 
 	/** The decorations (in the Blueprint Table with the rest; near a Village Hall they make the village prettier). */
 	public static final List<Entry> DECORATIONS = List.of(WELL, WELL_2, STREET_LAMP, PARK_BENCH, FOUNTAIN, GAZEBO, MARKET_SQUARE, CHAPEL);

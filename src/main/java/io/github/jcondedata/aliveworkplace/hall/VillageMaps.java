@@ -74,10 +74,10 @@ public final class VillageMaps {
 			case "healing_center", "pokemon_center", "graveyard", "daycare" -> Kind.CARE;
 			case "storehouse", "supply_shop", "market_stall", "market_square" -> Kind.TRADE;
 			case "berry_farm", "ranch", "apiary_garden", "flower_shop", "compost_yard", "sifting_shed", "camp_kitchen", "berry_nursery",
-				"habitat_garden", "gem_grotto" -> Kind.FARMS;
+				"habitat_garden", "gem_grotto", "farmstead", "fishers_hut" -> Kind.FARMS;
 			case "lookout_tower", "barracks", "gatehouse", "wall_tower", "palisade_gate" -> Kind.DEFENCE;
-			case "tinkers_workshop", "nether_gate", "smithy", "masons_yard", "fletchers_lodge" -> Kind.WORKSHOPS;
-			case "well", "fountain", "gazebo", "chapel" -> Kind.DECORATIONS;
+			case "tinkers_workshop", "nether_gate", "smithy", "masons_yard", "fletchers_lodge", "weavers_cottage" -> Kind.WORKSHOPS;
+			case "well", "fountain", "gazebo", "chapel", "bandstand" -> Kind.DECORATIONS;
 			case "town_hall" -> Kind.HALL;
 			case "street_lamp", "park_bench", "palisade", "stone_wall" -> null;
 			default -> Kind.OTHER;

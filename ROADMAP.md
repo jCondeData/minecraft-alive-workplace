@@ -727,7 +727,7 @@ and an old vanilla village slowly rebuilds itself one house at a time. It answer
   - each is in `StarterBlueprints` with its size, in the Blueprint Table, clean in `check.py`, and built by a builder
     in a GameTest with its workers taking their blocks; the rules' GameTests pass;
   - a gallery package (front and back, as drawn and in two styles) and their builds in showcase scene `gallery`.
-- [ ] **27.14** **New workplaces II: Farmstead, Fisher's Hut, Weaver's Cottage, Bandstand.** Drawn the same way, each
+- [x] **27.14** (review: pending 2026-10-05) **New workplaces II: Farmstead, Fisher's Hut, Weaver's Cottage, Bandstand.** Drawn the same way, each
   with its rule:
   - **Farmstead**: a farmhouse with one bed beside a 9×5 field of farmland round a water channel, a scarecrow, a
     composter (Farmer). **Farmstead II**: a barn and a second field;

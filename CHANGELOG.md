@@ -313,6 +313,9 @@ asks for the steps, `latest.log` and any crash report).
   partners than before.**
 
 ### Fixed
+- Every switch on the settings screen fits its button again, on or off: shorter names for Nurse Healing Machines,
+  Villages Work Unseen, Legend Needs, Strikes, Stewards Run Villages and Legends at Ruins (each tooltip still says it
+  all) (B61).
 - Berry Breeders count their Pokémon partners once: two partners make mulching take 70% of the usual time, not 49%,
   so a partnered breeder stays under the `maxWorkPace` cap like every other worker (B53).
 - A builder whose path leads somewhere it can't actually walk (under a trapdoor flower box, up into a loft) now hops

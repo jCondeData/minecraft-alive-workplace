@@ -1491,6 +1491,18 @@ public class ScreenshotHarness implements ClientModInitializer {
 					problems.add("'" + text + "' is wider than its button");
 				}
 			}
+			// A switch reads wider turned off ("OFF" vs "ON"): every switch must fit that way too (B61).
+			int buttonWidth = configScreen.optionWidgets().isEmpty() || configScreen.optionWidgets().get(0) == null ? 150
+				: configScreen.optionWidgets().get(0).getWidth();
+			for (String name : io.github.jcondedata.aliveworkplace.WorkplaceConfig.optionNames()) {
+				if (io.github.jcondedata.aliveworkplace.WorkplaceConfig.isSwitch(name)) {
+					Component off = net.minecraft.client.Options.genericValueLabel(
+						Component.translatable(io.github.jcondedata.aliveworkplace.client.ConfigScreen.labelKey(name)), net.minecraft.network.chat.CommonComponents.OPTION_OFF);
+					if (mc.font.width(off) > buttonWidth - 8) {
+						problems.add("'" + off.getString() + "' is wider than its button");
+					}
+				}
+			}
 			Showcase.check(problems.isEmpty() && configScreen.optionWidgets().size() == io.github.jcondedata.aliveworkplace.WorkplaceConfig.optionNames().size(),
 				"every setting has a button whose label fits (" + configScreen.optionWidgets().size() + " settings"
 					+ (problems.isEmpty() ? "" : ": " + String.join(", ", problems)) + ")");

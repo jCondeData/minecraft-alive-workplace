@@ -181,6 +181,10 @@ public final class ModAttachments {
 	/** The wild Pokémon a Habitat Keeper has already told the village of, so each is told once (ROADMAP 28.10). */
 	public static final Attachment<java.util.List<java.util.UUID>> SIGHTED = Attachment.saved("sighted", net.minecraft.core.UUIDUtil.STRING_CODEC.listOf());
 
+	/** The pairs of Pokémon in a Daycare Keeper's care, with the eggs found for them (ROADMAP 28.12). */
+	public static final Attachment<java.util.List<io.github.jcondedata.aliveworkplace.daycare.DaycareKeepers.Pair>> DAYCARE_PAIRS =
+		Attachment.saved("daycare_pairs", io.github.jcondedata.aliveworkplace.daycare.DaycareKeepers.Pair.CODEC.listOf());
+
 	/** The beds a Gem Grower has been asked to keep (bed ids; absent = every bed she has the makings for) (ROADMAP 28.11). */
 	public static final Attachment<java.util.List<net.minecraft.resources.ResourceLocation>> GEM_ORDERS = Attachment.saved("gem_orders", net.minecraft.resources.ResourceLocation.CODEC.listOf());
 

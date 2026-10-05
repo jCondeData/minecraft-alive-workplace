@@ -1,4 +1,4 @@
-"""Villager outfits, second set: orchard keeper, berry breeder, camp cook, habitat keeper, gem grower, Pokemon trader, porter, postman, rancher, scholar, shopkeeper, sifter,
+"""Villager outfits, second set: orchard keeper, berry breeder, camp cook, habitat keeper, daycare keeper, gem grower, Pokemon trader, porter, postman, rancher, scholar, shopkeeper, sifter,
 teacher, tinkerer, trainer, trainer leader, tutor and undertaker. Drawn in the style of the Builder's outfit
 (builders.py): the villager helpers for the garments, then the details by hand. Each keeps the headwear, colours and
 accessory of the outfit it replaces.
@@ -246,6 +246,40 @@ def habitat_keeper():
     west.put(2, 9, "#8a6a3e")                           # the dipper's handle
     west.put(2, 8, "#a8844e")
     return t.save_profession(ASSETS, "habitat_keeper", hat="full")
+
+
+def daycare_keeper():
+    """A soft rose headscarf knotted at the brow, a sage-green dress under a linen pinafore apron with a bib, a
+    spotted Pokémon egg peeking out of the apron pocket, and a rolled wool blanket on a strap at the hip for the
+    hatchlings (ROADMAP 28.12)."""
+    t = vg.VillagerTexture()
+    rose = vg.cloth("#c46a7e")
+    sage = vg.cloth("#6e8a64")
+    linen = vg.cloth("#d8d2bc")
+    egg = ["#c9c2a4", "#ece6cc", "#f8f4e2"]           # dark, mid, lit
+    spot = "#5aa04a"
+    vg.hat(t, rose, style="band", noise=0)
+    front = t.face("hat", "front")                      # the scarf's knot, over the villager's left brow
+    front.put(5, 3, rose[3])
+    front.put(6, 3, rose[1])
+    vg.vest(t, sage, length=10, open_front=False, noise=0)
+    vg.apron(t, linen, top=2, bottom=17, ties=True, bib=True)
+    vg.sleeves(t, sage, noise=0)
+    f = pocket(t, linen, top=11, bottom=14)             # the egg in the apron pocket: lit top-left, a green spot
+    paint(f, ((1, 9), (2, 9)), egg[2])
+    paint(f, ((0, 10), (3, 10)), egg[1])
+    f.put(1, 10, egg[2])
+    f.put(2, 10, spot)
+    paint(f, ((0, 11), (3, 11)), egg[0])
+    f.put(1, 11, egg[1])
+    f.put(2, 11, egg[1])
+    west = t.face("jacket", "west")                     # the rolled blanket on the villager's right hip
+    strap_diagonal(west, 0, 2, 2, 9, LEATHER[1], width=1)
+    for y in range(11, 14):
+        for x in range(0, 5):
+            west.put(x, y, rose[3] if y == 11 else rose[2] if y == 12 else rose[1])
+    west.put(2, 12, "#e6e2d4")                          # the rolled-in end
+    return t.save_profession(ASSETS, "daycare_keeper", hat="partial")
 
 
 def gem_grower():
@@ -701,7 +735,7 @@ def legend_placeholder():
     return [path]
 
 
-DRAW = [orchard_keeper, berry_breeder, camp_cook, habitat_keeper, gem_grower, pokemon_trader, porter, postman, rancher, scholar, shopkeeper, sifter, teacher, tinkerer,
+DRAW = [orchard_keeper, berry_breeder, camp_cook, habitat_keeper, daycare_keeper, gem_grower, pokemon_trader, porter, postman, rancher, scholar, shopkeeper, sifter, teacher, tinkerer,
         trainer, trainer_leader, tutor, undertaker, steward, legend, legend_placeholder]
 
 if __name__ == "__main__":

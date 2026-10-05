@@ -17,6 +17,11 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Added
+- **The Daycare Keeper** (28.12, with Cobblemon): a villager at a Pasture Block, picked with an egg. Leave one pair of
+  Pokémon per player (three pairs per keeper); her screen says how well they get along. Each dawn she may find an egg
+  (70/50/20%, +10% at Expert), 4 emeralds each to collect: a real Cobbreeding egg with Cobbreeding, otherwise the level-1
+  hatchling with inherited IVs, Everstone nature, ball, hidden ability and egg moves. Her pairs go to their PCs if she
+  dies. Config `daycareKeepers`.
 - **Gifted villagers** (29.6): about one villager in 30 has a rare gift as well as their traits, shown in gold on the
   Village Hall's list. Prodigy learns three times as fast; Iron Will never panics and keeps working through raids and
   the bell; Silver Tongue's trades are 20% cheaper; a Night Owl works from dusk to dawn and sleeps from mid-morning to

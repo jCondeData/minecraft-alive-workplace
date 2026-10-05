@@ -278,13 +278,16 @@ public final class BuildPlan {
 	 * Under every solid block of the bottom layer, fill down to the first solid ground (leaves, plants,
 	 * snow and water don't count as ground). The fill uses the block above it when that is a plain full
 	 * block (so a cobblestone rim gets a cobblestone footing), otherwise cobblestone; grass becomes dirt.
+	 * Nothing goes under a block in the top half of its space (a top slab, upside-down stairs or trapdoor): it
+	 * isn't standing on what is under it, as a jetty's deck over the water isn't (ROADMAP 27.14: only its log
+	 * posts go down to the bed).
 	 */
 	private static List<Step> foundation(Level level, List<Step> structure, BoundingBox bounds, int maxDepth) {
 		List<Step> out = new ArrayList<>();
 		int bottom = bounds.minY();
 		for (Step step : structure) {
 			BlockPos top = step.pos();
-			if (top.getY() != bottom || step.state().getCollisionShape(level, top).isEmpty()) {
+			if (top.getY() != bottom || step.state().getCollisionShape(level, top).isEmpty() || inTopHalf(step.state())) {
 				continue;
 			}
 			BlockState fill = foundationBlock(level, top, step.state());
@@ -297,6 +300,17 @@ public final class BuildPlan {
 			}
 		}
 		return out;
+	}
+
+	/** A top slab, or stairs or a trapdoor in the top half of its space: it hangs from above rather than stands. */
+	public static boolean inTopHalf(BlockState state) {
+		if (state.hasProperty(net.minecraft.world.level.block.state.properties.BlockStateProperties.SLAB_TYPE)) {
+			return state.getValue(net.minecraft.world.level.block.state.properties.BlockStateProperties.SLAB_TYPE)
+				== net.minecraft.world.level.block.state.properties.SlabType.TOP;
+		}
+		return state.hasProperty(net.minecraft.world.level.block.state.properties.BlockStateProperties.HALF)
+			&& state.getValue(net.minecraft.world.level.block.state.properties.BlockStateProperties.HALF)
+			== net.minecraft.world.level.block.state.properties.Half.TOP;
 	}
 
 	private static boolean isGround(Level level, BlockPos pos) {

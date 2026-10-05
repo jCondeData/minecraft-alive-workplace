@@ -9,8 +9,8 @@ on 2026-10-03, 40 runs made 311 commits, 211 of them bookkeeping and 125 merges,
   working about 170 minutes. They split milestones and bugs by number mod 4 (owner, 2026-10-04): lane a 1 (21, 25,
   29, 33), lane b 0 (24, 28, 32), lane c 3 (23, 27, 31, 35), lane d 2 (22, 26, 30, 34). `sessions.py next` lists
   each lane's own.
-- **The QA lane** (`--as qa-<MMDD>-<HHMM>`): overnight only (11 PM to 6 AM Central). Its bugs are waiting in the
-  morning.
+- **The QA lane** (`--as qa-<MMDD>-<HHMM>`): hourly overnight (11 PM to 6 AM Central) and every 2 hours by day
+  (owner, 2026-10-05). It owns the bugs only a test or a showcase scene sees, so build lanes stay on features.
 - **The owner's chat** (`--as chat`) talks with Jesse live and takes any item.
 - **The digests** (`--as digest-<MMDD>-<HHMM>`), 8 AM and 6 PM Central: they send the review packages and a short
   report, record his replies, and the evening one releases.
@@ -18,6 +18,7 @@ on 2026-10-03, 40 runs made 311 commits, 211 of them bookkeeping and 125 merges,
 ## Contents
 - Sprint mode: a build lane's run
 - The helper
+- Red main
 - The QA lane
 - Review packages and the digests
 - Merging cleanly
@@ -32,7 +33,8 @@ own conversation every step. A 2.5-hour run grows from 95k to 300k-470k tokens a
 the full build runs once per 2-3 features.
 
 1. **Start, in one step** (aim for 5 minutes): name yourself, `git pull`, `sessions.py next --as <you>`, the latest CI
-   run on `main` (red is the first thing you fix), and Java setup (CLAUDE.md). Don't read the brief or ROADMAP whole.
+   run on `main` (red is the first thing you fix only if you are on red duty: see "Red main"), and Java setup
+   (CLAUDE.md). Don't read the brief or ROADMAP whole.
    If an `item/<id>` or `wip/<lane>` branch from an earlier run has work for one of your items, finish it first
    (lane b's `wip/lane-b` may hold 28.x; lanes c and d check `wip/lane-a` and `wip/lane-b` for their milestones once).
 2. **You are the coordinator; each feature is built by a fresh subagent.** For each item, start one `Agent`
@@ -44,7 +46,9 @@ the full build runs once per 2-3 features.
    your own context small: read its reply, not its files. One feature per subagent; two only if both are tiny.
 3. **Build and push every 2-3 features** (or before the run ends): `./gradlew --max-workers=1 build`; green, push to
    `main` (refused: `git pull --no-rebase`, build again only if the pull brought in code under `src/`, push). Red: give
-   the failure to a fresh subagent to fix, then build again. Never push red.
+   the failure to a fresh subagent to fix, then build again. Never push red, with one exception: when the only
+   failures are tests that also fail on `main`'s latest CI run (and aren't in your items' test classes), they belong to
+   the red-duty lane; push, and name them in the commit message.
 4. **Don't film.** The showcase workflow films every changed scene on GitHub after each push, and the nightly one
    films them all; a failing scene lands in the `nightly-tests` issue for the QA lane. Run a scene locally only to
    debug one that fails. No review packages either: the digest makes one per expansion stage from the showcase
@@ -52,12 +56,30 @@ the full build runs once per 2-3 features.
 5. **Sonnet only for translations and routine tests** (owner, 2026-10-04): a subagent with `model: "sonnet"` may
    write `en_us.json` text or plain GameTests after the feature exists. Everything else, art, builds and design
    included, stays on your model.
-6. **Wrap up at about 170 minutes, and never past 175:** the next run of your lane starts at 180, and with no claims it
-   takes the same item and builds it twice. Push what's green; unfinished work goes to `wip/<lane>` with a commit
-   message saying what's left. Log the cost (`python3 tools/agent/usage.py --log --as <you> --note "<items>"`).
+6. **At minute 140, start no new feature** (owner, 2026-10-05: on 2026-10-05, 5 items sat on `wip/` branches and
+   merging them back took 6 extra subagent jobs). Finish what's in flight, run the build, and push to `main` by about
+   170, never past 175: the next run of your lane starts at 180, and with no claims it takes the same item and builds
+   it twice. Only a feature that truly can't be finished goes to `wip/<lane>`, with a commit message saying what's
+   left. Log the cost (`python3 tools/agent/usage.py --log --as <you> --note "<items>"`).
 7. **No messages to the owner**; the digest reports. End with a 2-line summary (what landed, what's next).
 
 Never wait: an owner question goes in the Notes and you take the next item. Never thin an item to go faster.
+
+## Red main
+
+Owner, 2026-10-05. On 2026-10-04/05, 27 of 90 builds on `main` were red, three lanes fixed the same red build at the
+same time, and 9 of the 13 bugs the lanes closed were test-only or showcase-only. So a red `main` has **one owner per
+window**:
+
+- **Red duty** goes by the run's UTC start hour: 00 and 12 lane a, 03 and 15 lane b, 06 and 18 lane c, 09 and 21
+  lane d. At the start, and again before each push, the lane on red duty checks the latest CI run on `main`; red, it
+  files the bug (`sessions.py bug`, if nobody has) and hands it to a fresh subagent before its own items. A failure
+  that comes back on the next green-then-red cycle is still its own until the window ends.
+- **Every other lane keeps building** and doesn't touch the red, even when it sees the failing test locally (step 3
+  says when to push anyway). If the red lasts more than an hour and the duty lane's run has ended or stalled, the next
+  lane to start takes it.
+- **Test-only and showcase-only bugs** (a flake, a scene check, nothing a player would notice; CLAUDE.md rule 7) go to
+  the QA lane, which now also runs by day. The red-duty lane takes one only when it is what turns `main` red.
 
 ## The helper
 
@@ -105,8 +127,10 @@ the `export JAVA_HOME=…` line from CLAUDE.md in front.
 
 ## The QA lane
 
-The QA lane is the independent tester, overnight only. It never builds features; it tests what landed and turns
-problems into bugs. Only file a bug for something a player would hit or a red check: an untested corner that works is a
+The QA lane is the independent tester: hourly overnight and every 2 hours by day. It never builds features; it tests
+what landed and turns problems into bugs. It also owns the bugs only a test or a showcase scene sees (a flake, a scene
+check, a test-harness fix): take those first, oldest first, unless they turn `main` red (then they are the red-duty
+lane's, see "Red main"). Only file a bug for something a player would hit or a red check: an untested corner that works is a
 test to ship, not a bug. Each run, after checking CI and the nightly issue:
 
 1. `sessions.py status --as qa-…` lists the landed items not yet verified. Take up to six, oldest first, from one
@@ -150,11 +174,14 @@ the new jar and nothing is lost. Report it in the Notes.
      sent (SendUserFile, one message per package), then mark it sent (`(sent)` in its `message.md`, committed to
      `reviews`). For a pending item with **NO PACKAGE**, make one from what exists (its scene's stills on the
      showcase page, or the item's text for a document) and send it; never just list it.
-  2. Send one short report: what landed since the last digest (one line each), what the QA lane found overnight, the
+  2. Send one short report. **It opens with the progress bars** (owner, 2026-10-05, asked twice): paste the output of
+     `python3 tools/agent/progress.py` as a code block, one line per stage (1.1 to 2.0), and say how each moved since the last
+     digest. Then what landed since the last digest (one line each), what the QA lane found overnight, the
      lanes' health (a lane with no push in 3 hours, a red run on `main`), releases, and only the decisions that are
      his.
-  3. **The evening digest releases** (CLAUDE.md "Releasing") when `main` is green and something new landed since the
-     last release; pending reviews don't hold it back.
+  3. **The evening digest releases** (CLAUDE.md "Releasing") when something new landed since the last release,
+     whether or not `main` is green at that moment: CI tags the first green build with the new version (owner,
+     2026-10-05). Pending reviews don't hold it back. Report the version and whether it is tagged yet.
   4. Stay for his replies and record each one with `sessions.py reply`.
 
 ## Merging cleanly

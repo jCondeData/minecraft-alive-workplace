@@ -38,7 +38,7 @@ CHECKED_PAIRS = {
 # Job names other than the README job table's, and the name to use instead (ROADMAP 24.5). Prose may write a job in
 # lowercase ("the builder"); these are other words for the same job.
 JOB_NAMES = {
-    r"\bFishers?\b": "Fisherman",
+    r"\bFishers?\b(?!'s Hut)": "Fisherman",  # the Fisher's Hut is a building's name (ROADMAP 27.14), not the job's
     r"\bfishers\b": "fishermen",
     r"\b[Oo]rchardists?\b": "Orchard Keeper",
     r"\b[Gg]ravediggers?\b": "Undertaker",

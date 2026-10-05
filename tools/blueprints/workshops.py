@@ -5,6 +5,11 @@ Tinker's Workshop: I a brick workshop with its gable to the street (a hoist over
 catslide roof with a big brick chimney, a smithing table inside (the tinkerer's: hand the villager there redstone); II
 the hall run back to twice the length, with a storage loft, a cart track in through the back and a lightning rod on the
 ridge.
+
+The workplaces of ROADMAP 27.13, each the building the Steward builds for its workers (steward_rules/workplace_*.json):
+Smithy (Armorer, Miner; with a smithing table and a grindstone too), Mason's Yard (Mason), Fletcher's Lodge (Fletcher,
+Lumberjack) and Map Room (Cartographer). Each keeps only the job blocks of its trades: no barrels, lecterns or other
+blocks that would give a passing villager another job.
 """
 from kit import *
 
@@ -182,5 +187,605 @@ def tinkers_workshop_2():
     b.set(0, 0, 3, "barrel", facing="up", open=False)
     b.set(0, 0, 4, "barrel", facing="north", open=False)
     b.set(0, 1, 3, "barrel", facing="up", open=False)
+    b.fill_air()
+    return b
+
+
+# --- Smithy (ROADMAP 27.13) ------------------------------------------------------------------------------------------
+# Smithy: I a stone forge under a dark oak roof, its gable to the street over an open front: the anvil and a quench
+# trough inside, the blast furnace (Armorer; Miner with a pickaxe) glowing in a brick chimney breast in the west wall
+# with the stack up outside to a smoking campfire, the smithing table (Toolsmith) at the back, and a lean-to on the east
+# side over the grindstone (Weaponsmith); II a coal and ore store in a wing behind, with a second blast furnace and its
+# own flue.
+SMITHY_STONE = Mix((6, "cobblestone"), (3, "stone_bricks"), (2, "andesite"), (1, "cracked_stone_bricks"), seed=41)
+SMITHY_FLOOR = Mix((5, "stone_bricks"), (3, "polished_andesite"), (2, "cobblestone"), seed=42)
+SMITHY_FRAME = "spruce_log"
+SMITHY_BOARDS = "spruce_planks"
+SMITHY_ROOF = DARK_OAK
+
+
+def smithy_hall(b):
+    """The smithy (walls x 1-9, z 2-8, four high): stone walls with spruce posts at the corners and halfway along, the
+    front open to the street under a log beam on brackets, a cobbled apron and a step in front."""
+    plinth(b, 1, 2, 9, 8, FOUNDATION_MIX, floor=SMITHY_FLOOR)
+    for y in range(1, 5):
+        for x in range(1, 10):
+            b.set(x, y, 8, resolve(SMITHY_STONE, x, y, 8))
+        for z in range(3, 8):
+            b.set(1, y, z, resolve(SMITHY_STONE, 1, y, z))
+            b.set(9, y, z, resolve(SMITHY_STONE, 9, y, z))
+    posts(b, [(1, 2), (9, 2), (1, 8), (9, 8), (5, 8), (9, 5)], 1, 4, SMITHY_FRAME)
+    beam_ring(b, 1, 2, 9, 8, 4, SMITHY_FRAME)
+    window(b, 1, 2, 7, "west", height=2, sill=STONE_BRICK)
+    window(b, 9, 3, 7, "east")
+    for x in (3, 7):
+        window(b, x, 2, 8, "south", height=2, shutters="spruce_trapdoor", sill=STONE_BRICK)
+    # Brackets under the front beam by the corner posts, a lantern hung in the middle
+    stairs(b, 2, 3, 2, SPRUCE, "west", top=True)
+    stairs(b, 8, 3, 2, SPRUCE, "east", top=True)
+    lantern(b, 5, 3, 2, hanging=True)
+    # A cobbled apron in front, a step up in the middle
+    for x in range(1, 12):
+        b.set(x, 0, 1, resolve(STONE_MIX, x, 0, 1))
+    for x in (4, 5, 6):
+        stairs(b, x, 0, 0, STONE_BRICK, "south")
+
+
+def smithy_roof(b):
+    """A dark oak roof, its gables front and back (spruce boards, a king post and a little window in the front one), tie
+    beams across the hall with a lantern under each."""
+    gable_roof(b, 0, 10, 1, 9, 5, SMITHY_ROOF, axis="z", gable=SMITHY_BOARDS, gable_at=(2, 8), eave_trim=SPRUCE)
+    smithy_gables(b)
+
+
+def smithy_gables(b):
+    """Both gables framed: a king post up the middle, a two-high window either side of it, studs further out."""
+    for z in (2, 8):
+        for y in range(5, 10):
+            log(b, 5, y, z, SMITHY_FRAME)
+        for x in (4, 6):
+            pane(b, x, 6, z)
+            pane(b, x, 7, z)
+        for x in (3, 7):
+            b.set(x, 5, z, "stripped_spruce_log", axis="y")
+            b.set(x, 6, z, "stripped_spruce_log", axis="y")
+    for z in (4, 6):
+        for x in range(2, 9):
+            log(b, x, 4, z, SMITHY_FRAME, axis="x")
+        lantern(b, 5, 3, z, hanging=True)
+
+
+def smithy_forge(b):
+    """The forge in the west wall: a brick chimney breast round the blast furnace (the armorer's; a miner's, picked with a
+    pickaxe), a hood of brick stairs over it, and the stack up outside the wall, through the eaves, to a campfire
+    smoking on top."""
+    for z in (4, 5, 6):
+        for y in range(1, 5):
+            b.set(1, y, z, "bricks")
+    b.set(2, 1, 4, "bricks")
+    b.set(2, 1, 6, "bricks")
+    b.set(2, 1, 5, "blast_furnace", facing="east", lit=False)
+    for z in (4, 6):
+        wall_block(b, 2, 2, z, "brick_wall")
+    for z in (4, 5, 6):
+        stairs(b, 2, 3, z, BRICK, "west", top=True)
+        b.set(2, 4, z, "bricks")
+    # The stack outside: three wide up the wall, stepping in to one through the eaves
+    for z in (4, 5, 6):
+        for y in range(0, 6):
+            b.set(0, y, z, "bricks")
+    stairs(b, 0, 6, 4, BRICK, "south")
+    stairs(b, 0, 6, 6, BRICK, "north")
+    for y in range(6, 11):
+        b.set(0, y, 5, "bricks")
+    b.set(0, 11, 5, "campfire", facing="north", lit=True, signal_fire=False, waterlogged=False)
+
+
+def smithy_lean_to(b):
+    """The lean-to on the east wall (x 10-11, z 3-7): a post at the open corner, a stone back wall, the main roof's
+    slope carried down over it; under it the weaponsmith's grindstone and a stack of firewood."""
+    plinth(b, 10, 3, 11, 7, SMITHY_STONE)
+    box(b, 10, 0, 4, 10, 0, 6, SMITHY_FLOOR)
+    posts(b, [(11, 3), (11, 7)], 1, 3, SMITHY_FRAME)
+    for y in (1, 2, 3):
+        b.set(10, y, 7, resolve(SMITHY_STONE, 10, y, 7))
+    for z in range(4, 7):
+        b.set(11, 1, z, resolve(SMITHY_STONE, 11, 1, z))
+        log(b, 11, 2, z, "oak_log", axis="x")
+    log(b, 11, 3, 5, SMITHY_FRAME, axis="z")
+    log(b, 11, 3, 4, SMITHY_FRAME, axis="z")
+    log(b, 11, 3, 6, SMITHY_FRAME, axis="z")
+    for z in range(2, 9):
+        if 3 <= z <= 7:
+            log(b, 10, 4, z, SMITHY_FRAME, axis="z")
+        stairs(b, 11, 4, z, SMITHY_ROOF, "west")
+        stairs(b, 12, 3, z, SMITHY_ROOF, "west")
+    b.set(10, 1, 5, "grindstone", face="floor", facing="north")
+    lantern(b, 11, 0, 2)
+
+
+def smithy_floor(b):
+    """The working floor: the anvil, the toolsmith's smithing table, a stone quench trough of water against the east wall,
+    a rack of iron bars and a chest of stock."""
+    b.set(4, 1, 7, "smithing_table")
+    b.set(4, 1, 4, "anvil", facing="north")
+    for z in (4, 5):
+        b.set(7, 1, z, "stone_bricks")
+        b.set(8, 1, z, "water", level=0)
+    b.set(8, 1, 3, "stone_bricks")
+    b.set(8, 1, 6, "stone_bricks")
+    b.set(7, 1, 3, "stone_brick_slab", type="bottom", waterlogged=False)
+    b.set(7, 1, 6, "stone_brick_slab", type="bottom", waterlogged=False)
+    b.set(8, 1, 7, "chest", facing="west", type="single", waterlogged=False)
+    for x in (2, 3):
+        b.set(x, 1, 7, "iron_bars", north=False, south=False, east=False, west=False, waterlogged=False)
+    b.set(3, 2, 7, "chain", axis="y", waterlogged=False)
+
+
+def smithy():
+    """13 x 12 x 10: a stone forge under a dark oak roof, its gable to the street over an open front: the anvil and a
+    quench trough inside, a blast furnace in a brick chimney breast (Armorer, or Miner with a pickaxe), its stack up the
+    west wall with a campfire smoking on top, a smithing table (Toolsmith) at the back, and a lean-to on the east side
+    over a grindstone (Weaponsmith)."""
+    b = Build(13, 12, 10)
+    smithy_hall(b)
+    smithy_roof(b)
+    smithy_forge(b)
+    smithy_lean_to(b)
+    smithy_floor(b)
+    b.fill_air()
+    return b
+
+
+def smithy_store(b):
+    """The coal and ore store behind (walls x 3-7, z 8-12, four high, through a door in the back wall): bins of coal,
+    raw iron and copper behind boards, a chest, and the second blast furnace with a brick flue up the back gable."""
+    plinth(b, 3, 8, 7, 12, FOUNDATION_MIX, floor=SMITHY_FLOOR)
+    for y in range(1, 5):
+        for z in range(9, 13):
+            for x in (3, 7):
+                b.set(x, y, z, resolve(SMITHY_STONE, x, y, z))
+        for x in range(4, 7):
+            b.set(x, y, 12, resolve(SMITHY_STONE, x, y, 12))
+    posts(b, [(3, 12), (7, 12)], 1, 4, SMITHY_FRAME)
+    for z in range(9, 13):
+        log(b, 3, 4, z, SMITHY_FRAME, axis="z")
+        log(b, 7, 4, z, SMITHY_FRAME, axis="z")
+    # Through the back wall: the window there becomes a door
+    b.set(5, 0, 8, "stone_bricks")
+    for y in (1, 2):
+        b.set(5, y, 8, "air")
+    b.set(5, 3, 8, SMITHY_FRAME, axis="x")
+    b.set(5, 4, 8, SMITHY_FRAME, axis="x")
+    # The bins: coal, raw iron, raw copper, behind spruce boards
+    for x, ore in ((4, "coal_block"), (6, "raw_iron_block")):
+        b.set(x, 1, 11, ore)
+        b.set(x, 1, 10, ore if x == 4 else "raw_copper_block")
+        trapdoor(b, x, 2, 11, "spruce_trapdoor", "south", open_=True)
+    b.set(4, 1, 9, "chest", facing="east", type="single", waterlogged=False)
+    window(b, 3, 2, 10, "west", height=2, shutters="spruce_trapdoor", sill=STONE_BRICK)
+    window(b, 7, 2, 10, "east", height=2, shutters="spruce_trapdoor", sill=STONE_BRICK)
+    # The second blast furnace on the back wall, its flue up the gable
+    b.set(5, 1, 11, "blast_furnace", facing="north", lit=False)
+    for y in range(1, 9):
+        b.set(5, y, 12, "bricks")
+    b.set(5, 2, 11, "brick_wall", north="none", south="none", east="none", west="none", up=True, waterlogged=False)
+    stairs(b, 5, 3, 11, BRICK, "south", top=True)
+    slab(b, 5, 9, 12, BRICK)
+    lantern(b, 4, 2, 9)
+
+
+def smithy_2():
+    """13 x 12 x 13: the smithy with a coal and ore store in a stone wing behind, under a lower roof of its own: bins of
+    coal and raw ore and a second blast furnace (a second armorer, or a miner) with its own brick flue."""
+    b = smithy().grow(13, 12, 13)
+    smithy_store(b)
+    roofs(b,
+          lambda t: gable_roof(t, 0, 10, 1, 9, 5, SMITHY_ROOF, axis="z", gable=SMITHY_BOARDS, gable_at=(2, 8), eave_trim=SPRUCE),
+          lambda t: gable_roof(t, 2, 8, 9, 12, 5, SMITHY_ROOF, axis="z", gable=SMITHY_BOARDS, gable_at=(12, 12), eave_trim=SPRUCE))
+    smithy_gables(b)
+    for y in range(1, 10):
+        b.set(5, y, 12, "bricks")
+    slab(b, 5, 10, 12, BRICK)
+    smithy_forge(b)
+    b.fill_air()
+    return b
+
+
+# --- Mason's Yard (ROADMAP 27.13) -----------------------------------------------------------------------------------
+# Mason's Yard: I a yard paved with cut stone behind a fence on stone pillars, a way in between lit piers, stacks
+# of dressed stone and a mason's bench in the yard, a lean-to along the back wall over the stonecutter (Mason);
+# II a second stonecutter under the lean-to, and a timber hoist over the stacks with a block of stone on its chain.
+YARD_PAVING = Mix((5, "stone_bricks"), (3, "smooth_stone"), (2, "polished_andesite"), (1, "cracked_stone_bricks"), seed=51)
+YARD_WALL = Mix((5, "cobblestone"), (3, "stone"), (2, "andesite"), seed=52)
+YARD_FRAME = "dark_oak_log"
+YARD_ROOF = SPRUCE
+
+
+def masons_yard_ground(b):
+    """The yard (x 0-10, z 1-9) paved with cut stone, a step up to the gate."""
+    for x in range(0, 11):
+        for z in range(1, 10):
+            b.set(x, 0, z, YARD_PAVING.at(x, 0, z))
+    stairs(b, 5, 0, 0, STONE_BRICK, "south")
+
+
+def masons_yard_fence(b):
+    """A spruce fence round the front of the yard between stone brick piers; the way in, in the middle, between two piers
+    with a lantern on each (no gate: villagers can't open one, and the mason must reach his stonecutter)."""
+    for x in range(0, 11):
+        if x != 5:
+            fence(b, x, 1, 1, "spruce_fence")
+    for z in range(2, 6):
+        fence(b, 0, 1, z, "spruce_fence")
+        fence(b, 10, 1, z, "spruce_fence")
+    for x, z in ((0, 1), (10, 1), (4, 1), (6, 1), (0, 4), (10, 4)):
+        b.set(x, 1, z, "stone_bricks")
+        wall_block(b, x, 2, z, "stone_brick_wall")
+    for x in (4, 6):
+        lantern(b, x, 3, 1)
+
+
+def masons_yard_lean_to(b):
+    """The lean-to along the back (x 0-10, z 6-9): a stone back wall split by a dark oak beam halfway up, stone brick
+    piers buttressed outside it, dark oak posts in front under a beam, a spruce roof rising to the back wall; the
+    mason's stonecutter and a chest under it."""
+    for x in range(0, 11):
+        for y in range(1, 8):
+            b.set(x, y, 9, resolve(YARD_WALL, x, y, 9))
+        b.set(x, 1, 9, "stone_bricks")
+        log(b, x, 4, 9, YARD_FRAME, axis="x")
+    for z, top in ((7, 5), (8, 6)):
+        for x in (0, 10):
+            for y in range(1, top + 1):
+                b.set(x, y, z, resolve(YARD_WALL, x, y, z))
+            b.set(x, 1, z, "stone_bricks")
+            log(b, x, 4, z, YARD_FRAME, axis="z")
+    # Piers: stone brick columns through the back wall, buttressed outside with a stair cap
+    for x in (0, 5, 10):
+        for y in range(1, 8):
+            b.set(x, y, 9, "stone_bricks")
+        for y in (0, 1, 2):
+            b.set(x, y, 10, "stone_bricks")
+        stairs(b, x, 3, 10, STONE_BRICK, "north")
+    posts(b, [(0, 6), (5, 6), (10, 6)], 1, 3, YARD_FRAME)
+    for x in range(0, 11):
+        log(b, x, 4, 6, YARD_FRAME, axis="x")
+        for z, y in ((5, 4), (6, 5), (7, 6), (8, 7), (9, 8)):
+            stairs(b, x, y, z, YARD_ROOF, "south")
+        slab(b, x, 8, 10, YARD_ROOF)
+        if x not in (0, 5, 10):
+            stairs(b, x, 7, 10, SPRUCE, "north", top=True)
+    for x in (1, 4, 6, 9):
+        stairs(b, x, 3, 6, SPRUCE, "east" if x in (1, 6) else "west", top=True)
+    # Little windows high in the back wall either side of the middle pier
+    for x in (2, 8):
+        window(b, x, 5, 9, "south", height=2)
+    b.set(3, 1, 8, "stonecutter", facing="north")
+    b.set(1, 1, 8, "chest", facing="east", type="single", waterlogged=False)
+    lantern(b, 2, 3, 6, hanging=True)
+    lantern(b, 8, 3, 6, hanging=True)
+
+
+def masons_yard_stock(b):
+    """What lies in the yard: stacks of dressed stone on pallets, a mason's bench (a smooth stone slab on stone brick
+    legs) with a block on it being shaped, a heap of rubble."""
+    for x, z in ((1, 2), (2, 2), (1, 3)):
+        slab(b, x, 1, z, SPRUCE)
+    b.set(1, 2, 2, "stone_bricks")
+    b.set(2, 2, 2, "polished_andesite")
+    b.set(1, 2, 3, "stone_bricks")
+    b.set(1, 3, 2, "polished_andesite")
+    for x, z, block in ((9, 2, "smooth_stone"), (9, 3, "smooth_stone"), (8, 2, "stone_bricks")):
+        slab(b, x, 1, z, SPRUCE)
+    b.set(9, 2, 2, "smooth_stone")
+    b.set(9, 2, 3, "chiseled_stone_bricks")
+    b.set(8, 2, 2, "polished_andesite")
+    wall_block(b, 7, 1, 5, "stone_brick_wall")
+    wall_block(b, 9, 1, 5, "stone_brick_wall")
+    slab(b, 7, 2, 5, "smooth_stone_slab")
+    slab(b, 8, 2, 5, "smooth_stone_slab")
+    slab(b, 9, 2, 5, "smooth_stone_slab")
+    slab(b, 8, 1, 5, STONE_BRICK, top=True)
+    b.set(8, 3, 5, "andesite_wall", north="none", south="none", east="none", west="none", up=True, waterlogged=False)
+    b.set(2, 1, 6, "cobblestone")
+    slab(b, 1, 1, 6, COBBLE)
+    slab(b, 2, 1, 5, COBBLE)
+    b.set(9, 1, 6, "stone_brick_slab", type="bottom", waterlogged=False)
+
+
+def masons_yard():
+    """11 x 9 x 11: a yard paved with cut stone behind a fence on stone brick piers, a lantern on each pier of the way in,
+    stacks of dressed stone and a mason's bench, and a spruce lean-to along the stone back wall over the stonecutter
+    (Mason)."""
+    b = Build(11, 9, 11)
+    masons_yard_ground(b)
+    masons_yard_lean_to(b)
+    masons_yard_fence(b)
+    masons_yard_stock(b)
+    b.fill_air()
+    return b
+
+
+def masons_yard_2():
+    """11 x 9 x 11: a second stonecutter under the lean-to (a second mason), and a timber hoist over the stacks, a block
+    of stone on its chain and a windlass of logs at its foot."""
+    b = masons_yard().grow(11, 9, 11)
+    b.set(7, 1, 8, "stonecutter", facing="north")
+    b.set(9, 1, 8, "chest", facing="west", type="single", waterlogged=False)
+    # The hoist: two posts, a beam across them and an arm out over the stacks
+    for z in (2, 5):
+        for y in range(1, 6):
+            log(b, 3, y, z, YARD_FRAME)
+    for z in range(2, 6):
+        log(b, 3, 6, z, YARD_FRAME, axis="z")
+    for z in (3, 4):
+        stairs(b, 3, 5, z, SPRUCE, "north" if z == 3 else "south", top=True)
+    log(b, 2, 6, 3, YARD_FRAME, axis="x")
+    log(b, 1, 6, 3, YARD_FRAME, axis="x")
+    b.set(1, 5, 3, "chain", axis="y", waterlogged=False)
+    b.set(1, 4, 3, "chain", axis="y", waterlogged=False)
+    b.clear(1, 3, 2, 1, 3, 2)
+    b.set(1, 3, 3, "polished_andesite")
+    b.set(1, 2, 3, "air")
+    b.set(1, 1, 3, "spruce_slab", type="bottom", waterlogged=False)
+    # The windlass at the hoist's foot: a log drum between two posts
+    fence(b, 4, 1, 3, "spruce_fence")
+    fence(b, 4, 1, 4, "spruce_fence")
+    log(b, 4, 2, 3, "stripped_spruce_log", axis="z")
+    log(b, 4, 2, 4, "stripped_spruce_log", axis="z")
+    lantern(b, 3, 7, 2)
+    b.fill_air()
+    return b
+
+
+# --- Fletcher's Lodge (ROADMAP 27.13) -------------------------------------------------------------------------------
+# Fletcher's Lodge: I a log cabin of spruce logs on a mossy stone footing, the logs crossing at the corners, a dark oak roof
+# with its gable to the street, a stone chimney up the west side, a log pile against the east wall and a straw target
+# (a target on hay bales) in front; inside the fletching table (Fletcher; Lumberjack with an axe). II a drying-rack wing
+# on the east under a lower roof of its own, open on its sides, with a second fletching table; the log pile moves to the
+# back of the cabin.
+LODGE_LOG = "spruce_log"
+LODGE_PLINTH = Mix((5, "cobblestone"), (3, "mossy_cobblestone"), (2, "stone"), seed=61)
+LODGE_ROOF = DARK_OAK
+LODGE_GABLE = "spruce_planks"
+
+
+def lodge_cabin(b):
+    """The cabin (walls x 1-7, z 2-8, four logs high): logs laid along each wall, crossing past the corners on alternate
+    courses as a log cabin's do; a door in the middle of the front under a hood, shuttered windows."""
+    plinth(b, 1, 2, 7, 8, LODGE_PLINTH, floor="spruce_planks")
+    for y in range(1, 5):
+        for x in range(1, 8):
+            log(b, x, y, 2, LODGE_LOG, axis="x")
+            log(b, x, y, 8, LODGE_LOG, axis="x")
+        for z in range(3, 8):
+            log(b, 1, y, z, LODGE_LOG, axis="z")
+            log(b, 7, y, z, LODGE_LOG, axis="z")
+        # the corners: one course runs on past the corner along x, the next along z
+        for x, z in ((1, 2), (7, 2), (1, 8), (7, 8)):
+            if y % 2:
+                log(b, x, y, z, LODGE_LOG, axis="x")
+                log(b, x + (1 if x == 7 else -1), y, z, LODGE_LOG, axis="x")
+            else:
+                log(b, x, y, z, LODGE_LOG, axis="z")
+                log(b, x, y, z + (1 if z == 8 else -1), LODGE_LOG, axis="z")
+    for x, z in ((0, 2), (8, 2), (0, 8), (8, 8), (1, 1), (7, 1), (1, 9), (7, 9)):
+        b.set(x, 0, z, resolve(LODGE_PLINTH, x, 0, z))
+    door(b, 4, 1, 2, "spruce_door", "north")
+    stairs(b, 4, 0, 1, COBBLE, "south")
+    for x in (3, 4, 5):
+        stairs(b, x, 3, 1, SPRUCE, "south", top=True)
+    for x in (2, 6):
+        window(b, x, 2, 2, "north", shutters="spruce_trapdoor", sill=SPRUCE)
+    window(b, 7, 2, 5, "east", height=2, shutters="spruce_trapdoor", sill=SPRUCE)
+    window(b, 4, 2, 8, "south", height=2, shutters="spruce_trapdoor", sill=SPRUCE)
+    # Lanterns on stones either side of the step
+    for x in (2, 6):
+        b.set(x, 0, 1, resolve(LODGE_PLINTH, x, 0, 1))
+    lantern(b, 2, 1, 1)
+    lantern(b, 6, 1, 1)
+
+
+def lodge_roof(b, back=9):
+    """A dark oak roof with its gables front and back (spruce boards round a little window), the ridge front to back."""
+    gable_roof(b, 0, 8, 1, back, 5, LODGE_ROOF, axis="z", gable=LODGE_GABLE, gable_at=(2, 8), eave_trim=SPRUCE)
+    lodge_gables(b)
+
+
+def lodge_gables(b):
+    for z in (2, 8):
+        log(b, 4, 5, z, "stripped_oak_log")
+        log(b, 4, 7, z, "stripped_oak_log")
+        pane(b, 4, 6, z)
+        for x in (2, 6):
+            log(b, x, 5, z, "stripped_oak_log")
+
+
+def lodge_chimney(b):
+    """A stone chimney up the west wall, outside, smoking."""
+    for z in (4, 5, 6):
+        for y in range(0, 3):
+            b.set(0, y, z, resolve(LODGE_PLINTH, 0, y, z))
+    stairs(b, 0, 3, 4, COBBLE, "south")
+    stairs(b, 0, 3, 6, COBBLE, "north")
+    for y in range(3, 10):
+        b.set(0, y, 5, resolve(LODGE_PLINTH, 0, y, 5))
+    b.set(0, 10, 5, "campfire", facing="north", lit=True, signal_fire=False, waterlogged=False)
+
+
+def lodge_inside(b):
+    """The fletcher's fletching table at the back, a chest of feathers and flint, a hearth of stone by the chimney, a
+    lantern on the beam."""
+    b.set(6, 1, 7, "fletching_table")
+    b.set(2, 1, 7, "chest", facing="east", type="single", waterlogged=False)
+    for z in (4, 6):
+        b.set(2, 1, z, "stone_bricks")
+    b.set(2, 1, 5, "campfire", facing="east", lit=False, signal_fire=False, waterlogged=False)
+    for z in range(3, 8):
+        log(b, 4, 4, z, "stripped_oak_log", axis="z")
+    lantern(b, 4, 3, 5, hanging=True)
+
+
+def lodge_target(b, x):
+    """A straw target: hay bales with a target on top, a step of cobble to stand on in front."""
+    b.set(x, 0, 0, "hay_block", axis="y")
+    b.set(x, 1, 0, "hay_block", axis="x")
+    b.set(x, 2, 0, "target", power=0)
+
+
+def fletchers_lodge():
+    """11 x 11 x 10: a log cabin of spruce logs crossing at the corners, a dark oak roof with its gable to the street, a stone
+    chimney up the west side, a log pile against the east wall and a straw target in front; inside the fletching table
+    (Fletcher; Lumberjack with an axe)."""
+    b = Build(11, 11, 10)
+    lodge_cabin(b)
+    lodge_roof(b)
+    lodge_chimney(b)
+    lodge_inside(b)
+    # The log pile against the east wall, under the eaves
+    for z in range(4, 8):
+        for y in range(0, 3):
+            log(b, 8, y, z, "oak_log", axis="z")
+        for y in range(0, 2):
+            log(b, 9, y, z, "spruce_log", axis="z")
+    b.set(10, 0, 5, "oak_log", axis="y")
+    b.set(10, 1, 5, "oak_log", axis="y")
+    lodge_target(b, 10)
+    b.fill_air()
+    return b
+
+
+def lodge_wing(b):
+    """The drying-rack wing on the east (x 8-11, z 3-7): spruce posts on a stone footing, open sides, racks of fence
+    rails with drying bundles hung on chains, a second fletching table under one of them."""
+    plinth(b, 8, 3, 11, 7, LODGE_PLINTH, floor="spruce_planks")
+    posts(b, [(11, 3), (11, 7), (8, 3), (8, 7), (11, 5)], 1, 3, "spruce_log")
+    for x in range(8, 12):
+        log(b, x, 4, 3, "spruce_log", axis="x")
+        log(b, x, 4, 7, "spruce_log", axis="x")
+    for z in range(4, 7):
+        log(b, 11, 4, z, "spruce_log", axis="z")
+    # Low fences round the open sides; the way in at the front
+    for z in (4, 6):
+        fence(b, 11, 1, z, "spruce_fence")
+    for x in (9, 10):
+        fence(b, x, 1, 7, "spruce_fence")
+    # The racks: two rails across the wing. The front one carries bundles laid over it to dry, clear underneath for the
+    # way in; from the back one sheaves hang on chains over hay and kelp, and over the fletching table
+    for x in (9, 10):
+        for z in (4, 6):
+            fence(b, x, 3, z, "spruce_fence")
+    b.set(9, 4, 4, "hay_block", axis="x")
+    b.set(10, 4, 4, "dried_kelp_block")
+    for x in (9, 10):
+        b.set(x, 2, 6, "chain", axis="y", waterlogged=False)
+    b.set(9, 1, 6, "hay_block", axis="x")
+    b.set(10, 1, 6, "fletching_table")
+    lantern(b, 11, 0, 2)
+
+
+def fletchers_lodge_2():
+    """13 x 11 x 10: the cabin with a drying-rack wing on the east under a lower roof of its own, open on its sides, its
+    racks hung with bundles, and a second fletching table (a second fletcher, or a lumberjack); the log pile moved to the
+    back of the cabin, the target to the wing's corner."""
+    b = fletchers_lodge().grow(13, 11, 10)
+    b.clear(8, 0, 4, 10, 2, 7)
+    b.clear(10, 0, 0, 10, 2, 0)
+    lodge_wing(b)
+    roofs(b,
+          lambda t: gable_roof(t, 0, 8, 1, 9, 5, LODGE_ROOF, axis="z", gable=LODGE_GABLE, gable_at=(2, 8), eave_trim=SPRUCE),
+          lambda t: gable_roof(t, 8, 12, 2, 8, 4, LODGE_ROOF, axis="x", gable=LODGE_GABLE, gable_at=(11, 11), eave_trim=SPRUCE))
+    for z in range(4, 7):
+        log(b, 11, 4, z, "spruce_log", axis="z")
+    # The log pile now along the back, under the eaves
+    for x in range(2, 7):
+        log(b, x, 0, 9, "oak_log", axis="x")
+        if x in (3, 4, 5):
+            log(b, x, 1, 9, "oak_log", axis="x")
+    lodge_target(b, 12)
+    b.fill_air()
+    return b
+
+
+# --- Map Room (ROADMAP 27.13) ---------------------------------------------------------------------------------------
+# Map Room: a narrow tower house: a stone ground floor (flared at the foot) with the cartography table (Cartographer),
+# a timber-framed plaster storey above with shelves of charts, and at the top a lookout: a balcony on stair brackets all
+# round, a railing, and a slate cap on four posts. A ladder runs up inside from the ground to the lookout.
+MAP_STONE = Mix((5, "stone_bricks"), (3, "cobblestone"), (2, "andesite"), (1, "mossy_stone_bricks"), seed=71)
+MAP_FRAME = "spruce_log"
+MAP_PLASTER = Mix((7, "white_concrete"), (1, "polished_diorite"), seed=72)
+MAP_ROOF = DEEPSLATE_TILE
+
+
+def map_room():
+    """9 x 16 x 9: a narrow tower house: a stone ground floor flared at the foot, with the cartography table
+    (Cartographer); a timber-framed plaster storey of shelves and charts; a lookout at the top on stair brackets with a
+    railing all round under a slate cap on four posts; a ladder up inside."""
+    b = Build(9, 16, 9)
+    # Ground floor: stone walls x 1-7, z 1-7, four high, on a flared foot
+    plinth(b, 1, 1, 7, 7, FOUNDATION_MIX, floor=Mix((3, "spruce_planks"), (1, "stripped_spruce_wood"), seed=73))
+    walls(b, 1, 1, 7, 7, 1, 4, MAP_STONE)
+    skirt(b, 1, 1, 7, 7, STONE_BRICK)
+    for x, z in ((1, 1), (7, 1), (1, 7), (7, 7)):
+        for y in range(1, 5):
+            b.set(x, y, z, "stone_bricks" if y % 2 else "polished_andesite")
+    door(b, 4, 1, 1, "spruce_door", "north")
+    stairs(b, 4, 0, 0, STONE_BRICK, "south")
+    stairs(b, 4, 3, 0, SPRUCE, "south", top=True)
+    for x in (3, 5):
+        fence(b, x, 3, 0, "spruce_fence")
+        lantern(b, x, 2, 0, hanging=True)
+    for out, (x, z) in (("west", (1, 4)), ("east", (7, 4)), ("south", (4, 7))):
+        window(b, x, 2, z, out, height=2, sill=STONE_BRICK)
+    # The upper storey: a spruce beam round the floor, posts at the corners, white plaster, a shuttered window a side
+    beam_ring(b, 1, 1, 7, 7, 5, MAP_FRAME)
+    box(b, 2, 5, 2, 6, 5, 6, "spruce_planks")
+    walls(b, 1, 1, 7, 7, 6, 8, MAP_PLASTER)
+    posts(b, [(1, 1), (7, 1), (1, 7), (7, 7)], 6, 8, MAP_FRAME)
+    for out, (x, z) in (("north", (4, 1)), ("west", (1, 4)), ("east", (7, 4)), ("south", (4, 7))):
+        b.set(x, 6, z, MAP_FRAME, axis="y")
+        b.set(x, 8, z, MAP_FRAME, axis="y")
+        window(b, x, 7, z, out, shutters="spruce_trapdoor")
+        for s in (-1, 1):
+            sx, sz = (x + s, z) if out in ("north", "south") else (x, z + s)
+            pane(b, sx, 7, sz)
+    # The lookout: its floor a block out all round on stair brackets, a railing, posts and a slate cap
+    for x in range(0, 9):
+        for z in range(0, 9):
+            b.set(x, 9, z, "spruce_planks")
+    for i in range(1, 8):
+        stairs(b, i, 8, 0, SPRUCE, "south", top=True)
+        stairs(b, i, 8, 8, SPRUCE, "north", top=True)
+        stairs(b, 0, 8, i, SPRUCE, "east", top=True)
+        stairs(b, 8, 8, i, SPRUCE, "west", top=True)
+    for i in range(0, 9):
+        for x, z in ((i, 0), (i, 8), (0, i), (8, i)):
+            fence(b, x, 10, z, "spruce_fence")
+    posts(b, [(1, 1), (7, 1), (1, 7), (7, 7)], 10, 12, MAP_FRAME)
+    beam_ring(b, 1, 1, 7, 7, 12, MAP_FRAME)
+    hip_roof(b, 0, 8, 0, 8, 12, MAP_ROOF, rings=4)
+    b.set(4, 15, 4, "deepslate_tiles")
+    lantern(b, 4, 10, 4)
+    # The ladder up the east wall, through both floors
+    for y in range(1, 10):
+        b.set(6, y, 6, "ladder", facing="west", waterlogged=False)
+    # The ground floor: the cartography table, a chest of maps, a lantern on the beam
+    b.set(2, 1, 6, "cartography_table")
+    b.set(2, 1, 5, "chest", facing="east", type="single", waterlogged=False)
+    b.set(6, 1, 2, "chest", facing="west", type="single", waterlogged=False)
+    lantern(b, 6, 2, 2)
+    for z in range(2, 7):
+        log(b, 4, 4, z, MAP_FRAME, axis="z")
+    lantern(b, 4, 3, 4, hanging=True)
+    # The chart room: shelves along the walls, a table with a chart on it
+    for x in (2, 3):
+        b.set(x, 6, 6, "bookshelf")
+    b.set(2, 6, 5, "bookshelf")
+    fence(b, 4, 6, 4, "spruce_fence")
+    b.set(4, 7, 4, "spruce_pressure_plate", powered=False)
+    b.set(5, 6, 4, "spruce_stairs", facing="west", half="bottom", shape="straight", waterlogged=False)
+    b.set(2, 6, 2, "chest", facing="east", type="single", waterlogged=False)
+    lantern(b, 2, 7, 2)
     b.fill_air()
     return b

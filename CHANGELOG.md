@@ -17,6 +17,12 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Added
+- **The Merchant Prince** (29.17), a Legendary Legend in a crimson coat and feathered hat: a castaway by a shipwreck
+  once the treasury has taken in 500 emeralds and the village sends caravans on 3 routes. With him the treasury earns
+  2% a day and holds twice as much; the hall gets a **Bank** page where each player keeps up to 10 stacks of emeralds
+  at 5% a week (and takes them out any time, even after he's gone); every 10 days a **trade fair** brings 6 traders and
+  a stall for each village you trade with, with fireworks and every trade 10% cheaper for the day; and every stack a
+  caravan brings to a village that was waiting for it earns the treasury an emerald (shown on the trade routes page).
 - **The Old Sage** (29.14), a Rare Legend: once a village has finished 5 research levels, a hermit's hut of mossy stone
   and spruce (a lectern, bookshelves, a cauldron, an herb garden) appears 150-250 blocks out, and the village's players
   hear a rumour with its distance and direction. The Sage asks three riddles from a pool of eight, each answered by

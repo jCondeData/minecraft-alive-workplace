@@ -133,7 +133,7 @@ public final class MarketDays {
 	}
 
 	@Nullable
-	private static BlockPos spot(ServerLevel level, BlockPos square, int n) {
+	static BlockPos spot(ServerLevel level, BlockPos square, int n) {
 		List<BlockPos> spots = new ArrayList<>();
 		for (BlockPos p : BlockPos.betweenClosed(square.offset(-4, -2, -4), square.offset(4, 3, 4))) {
 			if (Walker.canStand(level, p)) {

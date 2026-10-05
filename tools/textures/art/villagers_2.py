@@ -868,8 +868,50 @@ def old_sage():
     return [path]
 
 
+def merchant_prince():
+    """The Merchant Prince (29.17): a long crimson coat to the shins with black cuffs and a turned-down collar, gold
+    buttons down the front edge, a white shirt and cravat at the throat, a black belt with a gold buckle and a coin
+    purse at the left hip; a wide-brimmed black hat with a gold band and a white feather sweeping back on the left.
+    A gold circlet at the brow marks the Legend under the hat."""
+    t = vg.VillagerTexture()
+    coat = vg.cloth("#9a1f2a")
+    felt = vg.cloth("#2a2226")
+    vg.hat(t, felt, style="brim", band=GOLD[1])
+    for side in SIDES:                                   # the Legend's circlet, under the hat's brim
+        f = t.face("head", side)
+        for x in range(f.w):
+            f.put(x, 4, GOLD[2] if side in ("front", "west") else GOLD[1])
+    feather = Ramp(["#b9b4a6", "#dcd8cc", "#f1eee6"], name="feather")
+    he = t.face("hat", "east")                           # the feather on the hat's left side, sweeping back and up
+    paint(he, ((1, 3), (2, 2), (3, 2), (4, 1), (5, 1), (6, 0), (7, 0)), feather[1])
+    paint(he, ((2, 3), (3, 3), (4, 2), (5, 2)), feather[2])
+    paint(he, ((6, 1), (7, 1)), feather[0])
+    hb = t.face("hat", "back")
+    paint(hb, ((0, 0), (1, 0), (0, 1)), feather[1])      # its tip seen from behind
+    vg.robe(t, coat, length=18, sleeves_too=True, body_too=False, noise=0)
+    vg.sleeves(t, coat, cuff="#1e1a1c", noise=0)
+    jf = t.face("jacket", "front")
+    paint(jf, ((1, 0), (2, 0), (5, 0), (6, 0)), coat[3])  # the turned-down collar
+    paint(jf, ((2, 1), (5, 1)), coat[2])
+    paint(jf, ((3, 0), (4, 0), (3, 1), (4, 1)), LINEN)   # the shirt and cravat at the throat
+    paint(jf, ((3, 2), (4, 2)), LINEN_SHADE)
+    paint(jf, ((3, y) for y in range(3, 18)), coat[0])   # where the coat closes
+    for y in (4, 7, 15):                                 # gold buttons down the front edge (the badge sits on 10..13)
+        jf.put(4, y, GOLD[3])
+        jf.put(2, y, GOLD[2])
+    vg.belt(t, vg.cloth("#1e1a1c"), row=9, buckle=GOLD[2])
+    ef = t.face("jacket", "east")                        # the coin purse on the left hip: leather, a gold clasp
+    paint(ef, ((1, 10), (2, 10)), LEATHER[0])
+    paint(ef, ((0, 11), (1, 11), (2, 11), (3, 11), (0, 12), (1, 12), (2, 12), (3, 12)), LEATHER[2])
+    paint(ef, ((1, 13), (2, 13)), LEATHER[1])
+    paint(ef, ((1, 11), (2, 11)), GOLD[2])
+    path = ASSETS / "textures" / "entity" / "villager" / "legend" / "merchant_prince.png"
+    t.save(path)
+    return [path]
+
+
 DRAW = [orchard_keeper, berry_breeder, camp_cook, habitat_keeper, daycare_keeper, gem_grower, pokemon_trader, porter, postman, rancher, scholar, shopkeeper, sifter, teacher, tinkerer,
-        trainer, trainer_leader, tutor, undertaker, steward, legend, legend_placeholder, master_architect, pathfinder, old_sage]
+        trainer, trainer_leader, tutor, undertaker, steward, legend, legend_placeholder, master_architect, pathfinder, old_sage, merchant_prince]
 
 if __name__ == "__main__":
     run(DRAW)

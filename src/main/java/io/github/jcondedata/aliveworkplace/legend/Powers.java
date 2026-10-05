@@ -20,6 +20,10 @@ public final class Powers {
 		register("grand_rebuild", GrandRebuildPower::read);
 		register("far_expeditions", FarExpeditionsPower::read);
 		register("expedition", ExpeditionPower::read);
+		register("bank", BankPower::read);
+		register("caravan_pay", CaravanPayPower::read);
+		register("trade_fair", TradeFairPower::read);
+		register("keeps_to", KeepsToPower::read);
 		GiftPowers.register();
 	}
 

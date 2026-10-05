@@ -215,6 +215,7 @@ public final class Legends implements ResourceManagerReloadListener {
 			LegendSlots.onRecord(villager);
 			LegendLook.sparkle(villager);
 			GrandRebuild.tick(villager);
+			KeepsToPower.tick(villager); // the Merchant Prince keeps to the hall and the square (29.17)
 		}
 	}
 

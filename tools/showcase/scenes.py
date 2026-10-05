@@ -295,6 +295,11 @@ SCENES = [
       "the Old Sage's hut, a riddle asked and a wrong answer refused with a hint, and the Ancient Lore tab", 50,
       [("01_hermit_hut", "The hermit's hut, the Sage inside"), ("02_riddle", "A riddle, a shake of the head, a hint"),
        ("03_ancient_lore_tab", "The Ancient Lore tab")]),
+    # The Merchant Prince (ROADMAP 29.17): settled by the hall in his crimson coat, and the hall's bank page
+    S("legend_merchant_prince", "Legends", "The Merchant Prince, the hall's bank and a trade fair",
+      "the Merchant Prince settled by the hall in his crimson coat, the hall's bank page with emeralds put in, and a trade fair", 60,
+      [("01_merchant_prince", "The Merchant Prince by the hall"), ("02_bank_page", "The bank page: 80 emeralds put in"),
+       ("03_trade_fair", "A trade fair: six traders and fireworks round the hall")]),
     # The Master Architect (ROADMAP 29.12): the top-tier Stone House, finished, redrawn in the Grand style and rebuilt
     job("legend_architect", "Legends", "The Master Architect redraws a house in the Grand style",
         "the Master Architect handed a builder the Stone House redrawn in the Grand style, and it was rebuilt", 360),

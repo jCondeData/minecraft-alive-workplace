@@ -219,6 +219,7 @@ public final class VillageHallScreen {
 			renderRoutes(menu, level, hall);
 			menu.broadcastChanges();
 		});
+		menu.button(PlayerBank.BUTTON, PlayerBank.tab(level, hall), p -> PlayerBank.open(menu, level, hall, p)); // the bank (29.17)
 		List<VillageAdvice.Tip> tips = VillageAdvice.tips(level, hall);
 		menu.button(ADVICE, icon(Items.COMPASS, Component.translatable("screen.aliveworkplace.hall.advice"), ChatFormatting.WHITE,
 			line(tips.isEmpty() ? Component.translatable("screen.aliveworkplace.hall.advice_none")
@@ -417,6 +418,7 @@ public final class VillageHallScreen {
 			line(Component.translatable("screen.aliveworkplace.hall.routes_road", onTheRoad), ChatFormatting.GRAY)), null);
 		menu.divider(1);
 		List<Caravans.Village> neighbours = Caravans.neighbours(level, hall);
+		java.util.Optional<io.github.jcondedata.aliveworkplace.legend.CaravanPayPower> pay = io.github.jcondedata.aliveworkplace.legend.CaravanPayPower.of(level, hall);
 		int slot = FIRST_ROW;
 		for (Caravans.Village other : neighbours) {
 			if (slot >= ChoiceMenu.SIZE) {
@@ -434,6 +436,10 @@ public final class VillageHallScreen {
 						.append(Component.translatable("chronicle.aliveworkplace.goods", w.count(), w.item().getDescription()));
 				}
 				lore.add(line(Component.translatable("screen.aliveworkplace.hall.route_wants", wants), ChatFormatting.YELLOW));
+				int pays = pay.map(p -> p.emeralds()).orElse(0);
+				if (pays > 0) { // the Merchant Prince's caravan pay (29.17): what they wait for is what they pay for
+					lore.add(line(Component.translatable("screen.aliveworkplace.hall.route_pays", pays), ChatFormatting.GOLD));
+				}
 			} else {
 				lore.add(line(Component.translatable("screen.aliveworkplace.hall.route_wants_nothing"), ChatFormatting.DARK_GRAY));
 			}

@@ -80,6 +80,21 @@ public final class LegendPowers {
 		return LISTS.get(level.dimension());
 	}
 
+	/** The first power of {@code kind} a settled Legend of the village round {@code hall} holds (29.17's bank and caravan pay). */
+	public static <P extends Power> Optional<P> ofVillage(ServerLevel level, BlockPos hall, Class<P> kind) {
+		for (Active legend : settled(level)) {
+			List<P> powers = legend.legend().powers(kind);
+			if (powers.isEmpty()) {
+				continue;
+			}
+			Optional<BlockPos> theirs = legend.data().hall().isPresent() ? legend.data().hall() : VillageHalls.nearest(level, legend.villager().blockPosition());
+			if (theirs.isPresent() && theirs.get().equals(hall)) {
+				return Optional.of(powers.get(0));
+			}
+		}
+		return Optional.empty();
+	}
+
 	/** Whether {@code pos} is within {@code radius} of the Legend, or (radius 0) in the Legend's village. */
 	private static boolean inReach(ServerLevel level, Active legend, BlockPos pos, int radius, Optional<BlockPos> village) {
 		if (radius > 0) {

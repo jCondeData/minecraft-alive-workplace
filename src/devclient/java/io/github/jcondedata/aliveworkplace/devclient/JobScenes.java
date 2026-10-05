@@ -1428,6 +1428,47 @@ final class JobScenes {
 					}
 				}, 30)),
 			(level, player) -> player.containerMenu instanceof ChoiceMenu));
+		SCREENS.put("legend_merchant_prince", new Screen("the Merchant Prince settled by the hall in his crimson coat, the hall's bank page with emeralds put in, and a trade fair",
+			new Vec3(0.5, -58.0, 6.5), new Vec3(0.5, -59.5, 0.5),
+			(level, player) -> {
+				// ROADMAP 29.17: a Village Hall with the Merchant Prince settled beside it, so its bank is open.
+				level.setBlockAndUpdate(STATION, ModBlocks.VILLAGE_HALL.defaultBlockState()
+					.setValue(io.github.jcondedata.aliveworkplace.hall.VillageHallBlock.FACING, Direction.SOUTH));
+				var hall = (io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(STATION);
+				hall.setOwner(player.getUUID(), player.getGameProfile().getName());
+				var legend = io.github.jcondedata.aliveworkplace.legend.Legends.get(io.github.jcondedata.aliveworkplace.AliveWorkplace.id("merchant_prince")).orElseThrow();
+				subject = EntityType.VILLAGER.spawn(level, STATION.south(2), MobSpawnType.COMMAND);
+				subject.setNoAi(true);
+				subject.setYRot(0);
+				subject.setYHeadRot(0);
+				io.github.jcondedata.aliveworkplace.legend.Legends.make(level, subject, legend, "showcase");
+				io.github.jcondedata.aliveworkplace.legend.LegendPowers.forget();
+				level.setDayTime(level.getDayTime() / 24000L * 24000L + 6000L);
+			},
+			List.of(new Step("01_merchant_prince", -1, 6, (level, player) ->
+					Showcase.check(io.github.jcondedata.aliveworkplace.hall.PlayerBank.open(level, STATION), "the Prince settled and the bank is open"), 40),
+				new Step("02_bank_page", io.github.jcondedata.aliveworkplace.hall.PlayerBank.BALANCE, 6, (level, player) -> {
+					// The player puts in 64 emeralds, then 16, on the hall's bank page.
+					player.getInventory().add(new ItemStack(Items.EMERALD, 64));
+					player.getInventory().add(new ItemStack(Items.EMERALD, 64));
+					io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.open(player, STATION);
+					if (player.containerMenu instanceof ChoiceMenu m) {
+						m.press(io.github.jcondedata.aliveworkplace.hall.PlayerBank.BUTTON, player);
+						m.press(io.github.jcondedata.aliveworkplace.hall.PlayerBank.DEPOSIT + 2, player);
+						m.press(io.github.jcondedata.aliveworkplace.hall.PlayerBank.DEPOSIT + 1, player);
+					}
+					var hall = (io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(STATION);
+					Showcase.check(hall.playerBank().emeralds(player.getUUID()) == 80, "80 emeralds in the player's account ("
+						+ hall.playerBank().emeralds(player.getUUID()) + ")");
+				}, 40),
+				new Step("03_trade_fair", -1, 6, (level, player) -> {
+					// The fair: six traders round the hall (no Market Square here), fireworks overhead.
+					player.closeContainer();
+					var power = io.github.jcondedata.aliveworkplace.legend.TradeFairPower.of(level, STATION).orElseThrow();
+					var traders = io.github.jcondedata.aliveworkplace.hall.TradeFairs.hold(level, STATION, power);
+					Showcase.check(traders.size() == 6, "six traders came to the fair (" + traders.size() + ")");
+				}, 80)),
+			(level, player) -> true));
 		SCREENS.put("legend_sites", new Screen("the three camps of Legends found in the world, and a prisoner freed from the outpost cage",
 			new Vec3(0.5, -53.0, 13.5), new Vec3(0.5, -59.5, -4.5),
 			(level, player) -> {

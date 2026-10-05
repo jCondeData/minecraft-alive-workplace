@@ -110,6 +110,32 @@ public final class BuildSite {
 		return stewardHall != null;
 	}
 
+	/** {@link #waitingSince} when the build isn't waiting. */
+	public static final long NOT_WAITING = Long.MIN_VALUE;
+	/** When this Steward's build began waiting for materials (game time; 27.19), or {@link #NOT_WAITING}. */
+	private long waitingSince = NOT_WAITING;
+	/** Steps skipped because a player's block was in the way of the Steward's build (27.19). */
+	private int playerBlocks;
+
+	public long waitingSince() {
+		return waitingSince;
+	}
+
+	public void setWaitingSince(long time) {
+		this.waitingSince = time;
+		onChange.run();
+	}
+
+	public int playerBlocks() {
+		return playerBlocks;
+	}
+
+	/** A player's block is in the way: left where it is, its step skipped. */
+	public void playerBlockInTheWay() {
+		playerBlocks++;
+		onChange.run();
+	}
+
 	public void setStewardHall(@Nullable BlockPos hall) {
 		this.stewardHall = hall == null ? null : hall.immutable();
 		onChange.run();
@@ -560,6 +586,12 @@ public final class BuildSite {
 			tag.putBoolean("steward", true);
 			tag.putLong("hall", stewardHall.asLong());
 		}
+		if (waitingSince != NOT_WAITING) {
+			tag.putLong("waiting_since", waitingSince);
+		}
+		if (playerBlocks > 0) {
+			tag.putInt("player_blocks", playerBlocks);
+		}
 		return tag;
 	}
 
@@ -593,6 +625,8 @@ public final class BuildSite {
 		site.levelGround = !Nbt.getBoolean(tag, "no_level_ground");
 		site.bench = Nbt.has(tag, "bench", Tag.TAG_LONG) ? BlockPos.of(Nbt.getLong(tag, "bench")) : null;
 		site.stewardHall = Nbt.getBoolean(tag, "steward") && Nbt.has(tag, "hall", Tag.TAG_LONG) ? BlockPos.of(Nbt.getLong(tag, "hall")) : null;
+		site.waitingSince = Nbt.has(tag, "waiting_since", Tag.TAG_LONG) ? Nbt.getLong(tag, "waiting_since") : NOT_WAITING;
+		site.playerBlocks = Nbt.getInt(tag, "player_blocks");
 		return site;
 	}
 

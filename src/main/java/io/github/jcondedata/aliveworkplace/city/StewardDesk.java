@@ -156,8 +156,9 @@ public final class StewardDesk {
 	 * The desk saved on the hall: proposals, rules declined until a day, the last day told and run, the next id, and the
 	 * last day the jobs were planned and a research topic picked (27.9).
 	 */
-	public record State(List<Proposal> proposals, Map<String, Long> declined, long told, long ran, int next, long jobsDay, long researchDay) {
-		public static final State EMPTY = new State(List.of(), Map.of(), -1, -1, 1, -1, -1);
+	public record State(List<Proposal> proposals, Map<String, Long> declined, long told, long ran, int next, long jobsDay, long researchDay,
+						long shopDay) {
+		public static final State EMPTY = new State(List.of(), Map.of(), -1, -1, 1, -1, -1, -1);
 		public static final Codec<State> CODEC = RecordCodecBuilder.create(i -> i.group(
 			Proposal.CODEC.listOf().optionalFieldOf("proposals", List.of()).forGetter(State::proposals),
 			Codec.unboundedMap(Codec.STRING, Codec.LONG).optionalFieldOf("declined", Map.of()).forGetter(State::declined),
@@ -165,7 +166,8 @@ public final class StewardDesk {
 			Codec.LONG.optionalFieldOf("ran", -1L).forGetter(State::ran),
 			Codec.INT.optionalFieldOf("next", 1).forGetter(State::next),
 			Codec.LONG.optionalFieldOf("jobs_day", -1L).forGetter(State::jobsDay),
-			Codec.LONG.optionalFieldOf("research_day", -1L).forGetter(State::researchDay)
+			Codec.LONG.optionalFieldOf("research_day", -1L).forGetter(State::researchDay),
+			Codec.LONG.optionalFieldOf("shop_day", -1L).forGetter(State::shopDay)
 		).apply(i, State::new));
 
 		public State {
@@ -178,40 +180,44 @@ public final class StewardDesk {
 		}
 
 		State withProposals(List<Proposal> list) {
-			return new State(list, declined, told, ran, next, jobsDay, researchDay);
+			return new State(list, declined, told, ran, next, jobsDay, researchDay, shopDay);
 		}
 
 		State withDeclined(Map<String, Long> map) {
-			return new State(proposals, map, told, ran, next, jobsDay, researchDay);
+			return new State(proposals, map, told, ran, next, jobsDay, researchDay, shopDay);
 		}
 
 		State withTold(long day) {
-			return new State(proposals, declined, day, ran, next, jobsDay, researchDay);
+			return new State(proposals, declined, day, ran, next, jobsDay, researchDay, shopDay);
 		}
 
 		State withRan(long day) {
-			return new State(proposals, declined, told, day, next, jobsDay, researchDay);
+			return new State(proposals, declined, told, day, next, jobsDay, researchDay, shopDay);
 		}
 
 		State withJobsDay(long day) {
-			return new State(proposals, declined, told, ran, next, day, researchDay);
+			return new State(proposals, declined, told, ran, next, day, researchDay, shopDay);
 		}
 
 		State withResearchDay(long day) {
-			return new State(proposals, declined, told, ran, next, jobsDay, day);
+			return new State(proposals, declined, told, ran, next, jobsDay, day, shopDay);
+		}
+
+		State withShopDay(long day) {
+			return new State(proposals, declined, told, ran, next, jobsDay, researchDay, day);
 		}
 
 		/** {@code list} with one more proposal, and the next id after it. */
 		State adding(Proposal proposal) {
 			List<Proposal> list = new ArrayList<>(proposals);
 			list.add(proposal);
-			return new State(list, declined, told, ran, next + 1, jobsDay, researchDay);
+			return new State(list, declined, told, ran, next + 1, jobsDay, researchDay, shopDay);
 		}
 	}
 
 	/** What happened to an approval. */
 	public enum Outcome {
-		STARTED, QUEUED, NOT_ALLOWED, GONE, NO_STEWARD, NO_BUILDER, FULL, OVERLAPS, SEARCHING, JOBS_TAKEN, RESEARCHING;
+		STARTED, QUEUED, NOT_ALLOWED, GONE, NO_STEWARD, NO_BUILDER, FULL, OVERLAPS, SEARCHING, JOBS_TAKEN, RESEARCHING, UNSAFE;
 
 		public boolean ok() {
 			return this == STARTED || this == QUEUED;
@@ -526,6 +532,11 @@ public final class StewardDesk {
 			return Outcome.GONE;
 		}
 		BoundingBox box = BlueprintOutline.bounds(proposal.placement(), blueprint.get().size());
+		// 27.19: checked again as it starts (a player may have built there since); approved by hand, the owner's word
+		// overrides the ledger of what players built, but never the rest
+		if (StewardSafety.check(level, hall, box, player != null).isPresent()) {
+			return Outcome.UNSAFE;
+		}
 		for (BuildSite other : BuildSiteManager.get(level).all()) {
 			if (other.placement().dimension().equals(proposal.placement().dimension()) && BlueprintLibrary.get(level, other.structure())
 				.map(b -> BlueprintOutline.bounds(other.placement(), b.size()).intersects(box)).orElse(false)) {
@@ -642,13 +653,20 @@ public final class StewardDesk {
 		}
 		lapse(level, hall);
 		resolve(level, hall);
+		StewardSafety.track(level, hall);
 		long day = StewardWishes.day(level);
+		tellShopping(level, hall, steward, day);
+		// 27.19: no new build while two of his builds have waited a whole day for materials
+		boolean paused = StewardSafety.paused(level, hall);
 		int before = of(level, hall).next();
 		boolean searching = false;
 		Map<ResourceLocation, Boolean> upgrading = new HashMap<>();
 		for (StewardWishes.Wish wish : StewardWishes.of(level, hall).wishes()) {
 			StewardRules.Effect effect = wish.effect();
 			if (effect.kind() == StewardRules.Kind.BUILD) {
+				if (paused) {
+					continue;
+				}
 				Optional<Plots.Request> request = StewardWishes.plotFor(level, hall, wish);
 				if (request.isEmpty()) {
 					continue;
@@ -661,7 +679,7 @@ public final class StewardDesk {
 				result.get().ifPresent(plot -> offer(level, hall, wish, plot.blueprint(), plot.placement(), plot.zone(), false));
 			} else if (effect.kind() == StewardRules.Kind.ASSIGN_JOBS) {
 				offerJobs(level, hall, wish, day);
-			} else if (effect.kind() == StewardRules.Kind.UPGRADE) {
+			} else if (effect.kind() == StewardRules.Kind.UPGRADE && !paused) {
 				upgradeFor(level, hall, effect.blueprint(), effect.addsBeds()).ifPresent(f -> {
 					if (upgrading.putIfAbsent(f.structure(), true) == null) {
 						offer(level, hall, wish, BlueprintUpgrades.upgradeOf(f.structure()), f.placement(), "", true);
@@ -669,7 +687,9 @@ public final class StewardDesk {
 				});
 			}
 		}
-		Walls.propose(level, hall, steward); // 27.18: a raided village's wall
+		if (!paused) {
+			Walls.propose(level, hall, steward); // 27.18: a raided village's wall
+		}
 		State state = of(level, hall);
 		if (state.next() != before) {
 			tell(level, hall, steward);
@@ -684,6 +704,23 @@ public final class StewardDesk {
 					VillageHalls.name(level, hall), list(started)).withStyle(ChatFormatting.GOLD));
 			}
 		}
+	}
+
+	/** Once a day while his builds wait for materials (27.19): the owner hears the shopping list. */
+	static void tellShopping(ServerLevel level, BlockPos hall, Villager steward, long day) {
+		if (of(level, hall).shopDay() == day) {
+			return;
+		}
+		List<Map.Entry<net.minecraft.world.item.Item, Integer>> list = StewardSafety.shoppingList(level, hall);
+		if (list.isEmpty()) {
+			return;
+		}
+		ServerPlayer owner = owner(level, hall);
+		if (owner != null) {
+			Chat.chat(owner, Component.translatable("message.aliveworkplace.steward.shopping", steward.getDisplayName(),
+				VillageHalls.name(level, hall), StewardSafety.describe(list)).withStyle(ChatFormatting.GOLD));
+		}
+		save(level, hall, of(level, hall).withShopDay(day));
 	}
 
 	/** Once a morning, unless he runs the village himself: tells the owner there are new proposals on the desk. */

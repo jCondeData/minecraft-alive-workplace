@@ -65,6 +65,7 @@ public final class AliveWorkplace {
 		io.github.jcondedata.aliveworkplace.hall.HarvestIdols.init();
 		io.github.jcondedata.aliveworkplace.people.Chatter.init();
 		io.github.jcondedata.aliveworkplace.hall.VillageProtection.init();
+		io.github.jcondedata.aliveworkplace.city.StewardSafety.init(); // 27.19: after protection, so a refused break isn't marked
 		io.github.jcondedata.aliveworkplace.city.CityPlans.init();
 		io.github.jcondedata.aliveworkplace.hall.Edicts.init();
 		io.github.jcondedata.aliveworkplace.hall.Guilds.init();

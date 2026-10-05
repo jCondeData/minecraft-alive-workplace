@@ -3013,5 +3013,13 @@
   "chronicle.aliveworkplace.wall_started": "%1$s set the village's %2$s wall going",
   "chronicle.aliveworkplace.wall_built": "%1$s finished the village's %2$s wall",
   "aliveworkplace.config.stewardWalls": "Stewards Build Walls",
-  "aliveworkplace.config.stewardWalls.tooltip": "A village raided in the last 7 days, or with bandits camped nearby, has its Steward propose a wall along the City Plan's wall line (or a line of his own round the zones): a palisade up to a Village, stone from a Town, with a tower at every corner and a gate on every road. Off: he never proposes walls."
+  "aliveworkplace.config.stewardWalls.tooltip": "A village raided in the last 7 days, or with bandits camped nearby, has its Steward propose a wall along the City Plan's wall line (or a line of his own round the zones): a palisade up to a Village, stone from a Town, with a tower at every corner and a gate on every road. Off: he never proposes walls.",
+  "screen.aliveworkplace.shopping.item": "%s %s",
+  "screen.aliveworkplace.shopping.and": "%s, %s",
+  "message.aliveworkplace.steward.shopping": "%1$s of %2$s needs these for his builds: %3$s",
+  "screen.aliveworkplace.desk.shopping": "Shopping list: %s",
+  "screen.aliveworkplace.desk.paused": "No new builds until his waiting builds are supplied",
+  "screen.aliveworkplace.desk.player_block": "A player's block is in the way",
+  "screen.aliveworkplace.storehouse.shopping": "The Steward's shopping list",
+  "message.aliveworkplace.steward.desk.outcome.unsafe": "The %s would go through a player's build, a Keep Clear zone or another village"
 }

@@ -512,13 +512,16 @@ public final class Walls {
 			if (taken.stream().anyMatch(box -> box.intersects(piece.box()))) {
 				continue;
 			}
+			if (!StewardSafety.allowed(level, hall, piece.box(), false)) {
+				continue; // 27.19: not through a player's build, Keep Clear or another village
+			}
 			if (replaces(level, piece)) {
 				if (replacing) {
 					continue; // a Town replaces its palisade with stone one piece at a time
 				}
 				replacing = true;
 			}
-			Villager builder = Roads.builderFor(level, hall, piece.box());
+			Villager builder = Roads.builderFor(level, hall, piece.box(), false);
 			if (builder == null) {
 				return; // nobody free: wait
 			}

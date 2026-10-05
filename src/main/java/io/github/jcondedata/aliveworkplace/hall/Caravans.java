@@ -336,6 +336,10 @@ public final class Caravans {
 				out.merge(item, r.count(), Math::max);
 			}
 		}
+		// 27.19: what the Steward's waiting builds miss
+		for (Map.Entry<Item, Integer> e : io.github.jcondedata.aliveworkplace.city.StewardSafety.shoppingList(level, hall)) {
+			out.merge(e.getKey(), e.getValue(), Math::max);
+		}
 		int needed = VillageGrowth.foodNeeded(level, hall);
 		if (census.food() < needed) {
 			out.merge(Items.BREAD, needed, Math::max);

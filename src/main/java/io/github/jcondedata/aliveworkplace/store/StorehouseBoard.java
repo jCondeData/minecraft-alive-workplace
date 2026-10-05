@@ -37,6 +37,8 @@ public final class StorehouseBoard {
 	static final int INFO_SLOT = 4;
 	/** The stock orders (and, on their page, adding the item in hand). */
 	public static final int ORDERS_SLOT = 8;
+	/** The Steward's shopping list (27.19). */
+	public static final int SHOPPING_SLOT = 6;
 	/** Back to the requests, on the orders page. */
 	public static final int BACK_SLOT = 0;
 	public static final int FIRST_REQUEST = 9;
@@ -69,6 +71,7 @@ public final class StorehouseBoard {
 			plain(Component.translatable(requests.isEmpty() ? "screen.aliveworkplace.storehouse.nothing" : "screen.aliveworkplace.storehouse.click"),
 				ChatFormatting.GRAY))));
 		menu.button(INFO_SLOT, info, null);
+		shoppingList(menu, level, storehouse);
 		ItemStack ordersIcon = new ItemStack(Items.WRITABLE_BOOK);
 		int orders = StockOrders.of(level, storehouse).size();
 		ordersIcon.set(DataComponents.CUSTOM_NAME, plain(Component.translatable("screen.aliveworkplace.storehouse.orders", orders), ChatFormatting.AQUA));
@@ -95,6 +98,26 @@ public final class StorehouseBoard {
 				menu.broadcastChanges();
 			});
 		}
+	}
+
+	/** 27.19: the Steward's one shopping list for all his builds waiting for materials, by the info. */
+	static void shoppingList(ChoiceMenu menu, ServerLevel level, BlockPos storehouse) {
+		java.util.Optional<BlockPos> hall = io.github.jcondedata.aliveworkplace.hall.VillageHalls.nearest(level, storehouse);
+		if (hall.isEmpty()) {
+			return;
+		}
+		List<java.util.Map.Entry<net.minecraft.world.item.Item, Integer>> list = io.github.jcondedata.aliveworkplace.city.StewardSafety.shoppingList(level, hall.get());
+		if (list.isEmpty()) {
+			return;
+		}
+		List<Component> lines = new java.util.ArrayList<>();
+		for (java.util.Map.Entry<net.minecraft.world.item.Item, Integer> e : list) {
+			lines.add(plain(Component.translatable("screen.aliveworkplace.shopping.item", e.getValue(), e.getKey().getDescription()), ChatFormatting.GRAY));
+		}
+		ItemStack icon = new ItemStack(Items.PAPER);
+		icon.set(DataComponents.CUSTOM_NAME, plain(Component.translatable("screen.aliveworkplace.storehouse.shopping"), ChatFormatting.YELLOW));
+		icon.set(DataComponents.LORE, new ItemLore(lines));
+		menu.button(SHOPPING_SLOT, icon, null);
 	}
 
 	/**

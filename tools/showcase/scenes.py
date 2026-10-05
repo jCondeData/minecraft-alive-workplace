@@ -125,6 +125,11 @@ SCENES = [
       "the hall's What next? page became the Steward's desk with three proposals, Show me lit one's outline, and approving it started the build", 45,
       [("01_steward_desk", "The desk: his modes, three proposals and the tips"), ("02_steward_proposal", "A proposal's page"),
        ("03_steward_show_me", "Show me: the outline in the world"), ("04_builder_sets_off", "Approved: the builder sets off")]),
+    # Safe by design (ROADMAP 27.19): one shopping list for his waiting builds, a player's block left in the way
+    S("steward_safety", "Steward", "The Steward's shopping list, and a player's block left alone",
+      "two of the Steward's builds wait for materials: the desk and the Storehouse board show one shopping list adding up both, new builds wait, and the build with a player's block in the way says so", 30,
+      [("01_shopping_list_on_the_desk", "The desk: one shopping list for both builds"), ("02_players_block_in_the_way", "A player's block is in the way"),
+       ("03_shopping_list_on_the_storehouse_board", "The Storehouse board's shopping list")]),
     # The Steward gives jobs (ROADMAP 27.9): the morning's jobs as one proposal, approved, the villagers off to their blocks
     S("steward_jobs", "Steward", "The Steward gives out jobs",
       "the Steward proposed jobs for three jobless villagers, approving made them a farmer, a guard and a fletcher, and they walked to their new workstations", 45,

@@ -617,6 +617,13 @@ public final class Roads {
 				if (segment.isEmpty()) {
 					continue;
 				}
+				// 27.19: never in Keep Clear or a protected village not the owner's; a road on the plan was drawn or
+				// approved by hand, so the ledger of what players built doesn't hold it back; a caravan road's far half
+				// runs towards the other village by design
+				Optional<StewardSafety.Refusal> refusal = StewardSafety.check(level, hall, segment.get().box(), true);
+				if (refusal.isPresent() && !(road.caravan() && refusal.get() == StewardSafety.Refusal.OTHER_VILLAGE)) {
+					continue;
+				}
 				Villager builder = builderFor(level, hall, segment.get().box(), road.caravan());
 				if (builder == null || !save(level, segment.get().blueprint())) {
 					return; // nobody free: wait

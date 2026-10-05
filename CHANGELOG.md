@@ -17,6 +17,12 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Added
+- **The Steward is safe by design** (27.19): his plans, roads and walls never go into Keep Clear, another village or a
+  protected village that isn't his owner's, and a ledger of what players built in a village (from 1.1 on) keeps his
+  plans and walls out of those spots unless the owner approves one by hand. His sites leave a player's block where it
+  is ("a player's block is in the way" on the desk); when his builds wait for materials, the desk and the Storehouse
+  board show one shopping list (the owner hears it once a day, caravans bring it), and he proposes nothing new while
+  two builds have waited a whole day.
 - **Guild Charters, the Guildhall and the Builders' Guild** (30.17): craft a Guild Charter (three paper, an emerald, a
   gold ingot, red dye) and sneak-right-click a Master in a village of Village rank or more: they become the Guild Master
   of their trade's guild (one per trade, one per rank above Hamlet; refusals say why), told to the village, in the

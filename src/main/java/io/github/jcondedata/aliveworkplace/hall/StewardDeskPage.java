@@ -71,6 +71,7 @@ public final class StewardDeskPage {
 				io.github.jcondedata.aliveworkplace.city.Stewards.maxOpenBuilds(level, steward)), ChatFormatting.GRAY),
 			VillageHallScreen.line(Component.translatable("screen.aliveworkplace.desk.mode." + mode.getSerializedName()), ChatFormatting.GRAY));
 		roadNotes(head, level, hall);
+		safetyNotes(head, level, hall);
 		head.setCount(Math.max(1, Math.min(5, lvl)));
 		menu.button(STEWARD, head, null);
 		StewardDesk.State state = StewardDesk.of(level, hall);
@@ -115,12 +116,17 @@ public final class StewardDeskPage {
 			UUID id = site.id();
 			Villager builder = site.builder() != null && level.getEntity(site.builder()) instanceof Villager v ? v : null;
 			int percent = Math.round(site.progress(site.plan(level)) * 100);
-			menu.button(slot++, VillageHallScreen.icon(Items.BRICKS, Blueprints.displayName(site.structure()).copy(), ChatFormatting.WHITE,
-				VillageHallScreen.line(builder == null ? Component.translatable("screen.aliveworkplace.desk.site_idle", percent)
+			List<Component> siteLore = new java.util.ArrayList<>();
+			siteLore.add(VillageHallScreen.line(builder == null ? Component.translatable("screen.aliveworkplace.desk.site_idle", percent)
 					: Component.translatable(site.isQueued() ? "screen.aliveworkplace.desk.site_queued" : "screen.aliveworkplace.desk.site", percent,
-					builder.getDisplayName()), ChatFormatting.GRAY),
-				VillageHallScreen.line(VillageHallScreen.where(hall, site.placement().origin()), ChatFormatting.GRAY),
-				VillageHallScreen.line("screen.aliveworkplace.desk.cancel_hint", ChatFormatting.RED)), p -> {
+					builder.getDisplayName()), ChatFormatting.GRAY));
+			siteLore.add(VillageHallScreen.line(VillageHallScreen.where(hall, site.placement().origin()), ChatFormatting.GRAY));
+			if (site.playerBlocks() > 0) {
+				siteLore.add(VillageHallScreen.line("screen.aliveworkplace.desk.player_block", ChatFormatting.YELLOW)); // 27.19
+			}
+			siteLore.add(VillageHallScreen.line("screen.aliveworkplace.desk.cancel_hint", ChatFormatting.RED));
+			menu.button(slot++, VillageHallScreen.icon(Items.BRICKS, Blueprints.displayName(site.structure()).copy(), ChatFormatting.WHITE,
+				siteLore.toArray(Component[]::new)), p -> {
 				if (!menu.shiftClicked()) {
 					Chat.actionBar(p, Component.translatable("screen.aliveworkplace.desk.cancel_hint").withStyle(ChatFormatting.YELLOW));
 					return;
@@ -145,6 +151,22 @@ public final class StewardDeskPage {
 	}
 
 	/** Roads that stopped at a gap too wide to bridge, on the Steward's card (27.16). */
+	/** 27.19: the shopping list for all his waiting builds, and whether new builds wait for it. */
+	private static void safetyNotes(ItemStack head, ServerLevel level, BlockPos hall) {
+		List<java.util.Map.Entry<net.minecraft.world.item.Item, Integer>> list = io.github.jcondedata.aliveworkplace.city.StewardSafety.shoppingList(level, hall);
+		if (list.isEmpty()) {
+			return;
+		}
+		net.minecraft.world.item.component.ItemLore lore = head.getOrDefault(net.minecraft.core.component.DataComponents.LORE,
+			net.minecraft.world.item.component.ItemLore.EMPTY);
+		lore = lore.withLineAdded(VillageHallScreen.line(Component.translatable("screen.aliveworkplace.desk.shopping",
+			io.github.jcondedata.aliveworkplace.city.StewardSafety.describe(list)), ChatFormatting.YELLOW));
+		if (io.github.jcondedata.aliveworkplace.city.StewardSafety.paused(level, hall)) {
+			lore = lore.withLineAdded(VillageHallScreen.line("screen.aliveworkplace.desk.paused", ChatFormatting.RED));
+		}
+		head.set(net.minecraft.core.component.DataComponents.LORE, lore);
+	}
+
 	private static void roadNotes(ItemStack head, ServerLevel level, BlockPos hall) {
 		if (!(level.getBlockEntity(hall) instanceof io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity entity)) {
 			return;

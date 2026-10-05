@@ -820,7 +820,7 @@ and an old vanilla village slowly rebuilds itself one house at a time. It answer
     gets no wall proposal; the rank's building count goes up by one for the whole wall; the Palisade Tower is clean in
     `check.py` and a builder builds it;
   - showcase scene `walls`: a GIF of a palisade going up round a small village, and its gate shut at night.
-- [ ] **27.19** **Safe by design.** Everything the Steward builds passes one check (`steward/StewardSafety`), and his
+- [x] **27.19** (review: pending 2026-10-05) **Safe by design.** Everything the Steward builds passes one check (`steward/StewardSafety`), and his
   sites are careful on their own:
   - only inside his own village's zones of the right kind: never in Keep Clear, never nearer another hall, never in a
     protected village whose owner isn't his hall's owner;
@@ -4326,6 +4326,13 @@ item waits.
   draft: our code under 15% of the tick at 150 workers (met, 13.1%); no tick over 50 ms from us (the 66 ms p99 is in the
   start-up sample, unattributed); heap flat within 5% over 60 minutes (not yet measured); no regression over 10%
   between releases (baseline: this row). Do you confirm these? Jesse: yes/no or changes.
+- 2026-10-05 (27.19, decisions; lane c): "approved by hand" for the ledger: a build proposal the owner approves on the
+  desk (the Steward's own approval in Run the village rechecks the ledger and refuses with "would go through a player's
+  build"); roads count as approved by hand (they're drawn or approved on the plan), so the ledger doesn't hold them back,
+  but Keep Clear and protected villages do; wall pieces never cross a marked section. A site leaves a block only when it
+  isn't natural *and* its section is in the ledger, so an upgrade still takes down parts of the village's own building.
+  The ledger starts empty on old worlds (from 1.1 on, as specced). Walls.java called the 3-argument
+  `Roads.builderFor` after the 27.17/27.18 merge (main didn't compile): fixed with `far = false`.
 - 2026-10-05 (27.15, decisions; lane c): roads are built only with a Steward appointed at the hall (and `steward` on),
   and not while the plan is set to Rest; with `stewardRoads` off (and in GameTests, which the road tests turn on) the
   plan's roads are drawn but never routed or built. A road's way (`CityPlan.Road.route`, offsets from the hall with y,

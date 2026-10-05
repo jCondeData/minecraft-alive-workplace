@@ -57,6 +57,8 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 	private io.github.jcondedata.aliveworkplace.research.Research.State research = io.github.jcondedata.aliveworkplace.research.Research.State.EMPTY;
 	/** The edicts in force, oldest first (see {@link Edicts}). */
 	private java.util.List<Edicts.InForce> edicts = java.util.List.of();
+	/** Each edict's reform progress, also of edicts lifted since (see {@link Reforms}). */
+	private java.util.List<Reforms.Progress> reforms = java.util.List.of();
 	/** Their effects summed (not saved: summed again after a load, a data pack reload or the switch). */
 	@Nullable
 	private CivicEffects.Sum civic;
@@ -201,11 +203,25 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 		CivicEffects.Sum sum = civic;
 		int generation = Edicts.generation();
 		if (sum == null || civicGeneration != generation) {
-			sum = Edicts.sum(edicts);
+			java.util.Set<String> reformed = new java.util.HashSet<>();
+			reforms.stream().filter(Reforms.Progress::reformed).forEach(p -> reformed.add(p.id()));
+			sum = Edicts.sum(edicts, reformed);
 			civic = sum;
 			civicGeneration = generation;
 		}
 		return sum;
+	}
+
+	/** Each edict's reform progress (see {@link Reforms}). */
+	public java.util.List<Reforms.Progress> reforms() {
+		return reforms;
+	}
+
+	/** Sets the reforms' progress (through {@link Reforms}; tests). */
+	public void setReforms(java.util.List<Reforms.Progress> reforms) {
+		this.reforms = java.util.List.copyOf(reforms);
+		civic = null;
+		setChanged();
 	}
 
 	public java.util.List<VillageQuests.Quest> quests() {
@@ -457,6 +473,8 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 			.result().orElse(io.github.jcondedata.aliveworkplace.research.Research.State.EMPTY);
 		edicts = Edicts.InForce.CODEC.listOf().parse(net.minecraft.nbt.NbtOps.INSTANCE, tag.get("edicts"))
 			.result().map(java.util.List::copyOf).orElse(java.util.List.of());
+		reforms = Reforms.Progress.CODEC.listOf().parse(net.minecraft.nbt.NbtOps.INSTANCE, tag.get("reforms"))
+			.result().map(java.util.List::copyOf).orElse(java.util.List.of());
 		civic = null;
 		stewardWishes = !tag.contains("steward") ? io.github.jcondedata.aliveworkplace.city.StewardWishes.State.EMPTY
 			: io.github.jcondedata.aliveworkplace.city.StewardWishes.State.CODEC.parse(net.minecraft.nbt.NbtOps.INSTANCE, tag.get("steward"))
@@ -524,6 +542,9 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 		}
 		if (!stewardDesk.equals(io.github.jcondedata.aliveworkplace.city.StewardDesk.State.EMPTY)) {
 			io.github.jcondedata.aliveworkplace.city.StewardDesk.State.CODEC.encodeStart(net.minecraft.nbt.NbtOps.INSTANCE, stewardDesk).result().ifPresent(t -> tag.put("steward_desk", t));
+		}
+		if (!reforms.isEmpty()) {
+			Reforms.Progress.CODEC.listOf().encodeStart(net.minecraft.nbt.NbtOps.INSTANCE, reforms).result().ifPresent(t -> tag.put("reforms", t));
 		}
 		net.minecraft.nbt.ListTag lines = new net.minecraft.nbt.ListTag();
 		for (Chronicle.Entry entry : chronicle) {

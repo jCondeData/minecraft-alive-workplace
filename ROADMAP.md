@@ -300,7 +300,8 @@ first; many items below are "verify and harden", not "build".
   - the GIF is in the review package.
 
   This test is the yardstick for the rest of the milestone.
-  - [x] **23.1a** (review: pending 2026-10-04) Change from the owner (2026-10-04): builder speed is fine (accept ~3.5 in-game days for the 22 starter builds). Time should grow with bigger builds, but be cut in half with every builder working on it (2 builders ~ half the time, and so on): check helpers really scale like that and fix it if not
+  - [x] **23.1a** (approved 2026-10-05) Change from the owner (2026-10-04): builder speed is fine (accept ~3.5 in-game days for the 22 starter builds). Time should grow with bigger builds, but be cut in half with every builder working on it (2 builders ~ half the time, and so on): check helpers really scale like that and fix it if not
+  - [ ] **23.1b** Change from the owner (2026-10-05): Helpers' material-toss sounds only (no flying item), but cap how many play at once so many builders can't cause lag: keep it to a maximum number and skip sounds past the limit.
 - [x] **23.2** (approved auto 2026-10-04) **Stuck recovery, proven.** Builders stuck on water, lava, holes, fences, doors, their own scaffolding, or in
   unloaded chunks. Done when: a chaos test (the tester skill's `ChaosTests`, 5 seeds) finishes every time, and the
   recovery (hop, re-path, step back) never breaks a placed block.
@@ -401,7 +402,7 @@ about 12% of that. For villager mods, the cost is pathfinding to distant points 
     passes its scene. The benchmark and the soak already run with them (they run the whole pack). Left: tonight's
     nightly soak and the first benchmark (25.1) give the numbers; compare them with the 25.2 targets, add the row and
     tick.
-- [x] **25.5** (review: pending 2026-10-04) **Server owner controls.** Config caps like MineColonies' (max workers per village, how far workers path, the
+- [x] **25.5** (approved 2026-10-05) **Server owner controls.** Config caps like MineColonies' (max workers per village, how far workers path, the
   far-from-players behaviour from Milestone 23). Needs systems (moods, sickness, raids, festivals) are easy to switch
   off, because "babysitting" is the top complaint about big colony mods. Done when: each key is documented in the README
   and tested switched off (the tester's config matrix).
@@ -451,7 +452,7 @@ about 12% of that. For villager mods, the cost is pathfinding to distant points 
     vanilla's book on its outline, bound in blueprint blue with a gold house (lint warns of 12 single pixels, as it does
     for vanilla's own book: the page edges). New scene `guide` opens every page and checks its picture and that its words
     fit; GuideGameTests checks the gift, the recipe and every page's picture.
-- [x] **26.3** (review: pending 2026-10-04) **Hygiene:**
+- [x] **26.3** (approved 2026-10-05) **Hygiene:**
   - a Mod Menu config screen and links (issues, source);
   - GitHub issue forms (steps, `latest.log`, crash report);
   - the version `1.0.0+1.21.1`;
@@ -478,7 +479,7 @@ and an old vanilla village slowly rebuilds itself one house at a time. It answer
 (babysitting) and builds on the builder (`BuildSite`, styles, upgrades, `Paths`), the Village Hall (census,
 `VillageAdvice`, ranks, research) and `Caravans`.
 
-- [x] **27.1** (review: pending 2026-10-04) **Design note.** `docs/design/M27.md`: what the player sees (the City Plan and its screen, the
+- [x] **27.1** (approved 2026-10-05) **Design note.** `docs/design/M27.md`: what the player sees (the City Plan and its screen, the
   Steward's day, his desk on the hall's screen, roads, walls, renewed houses), the data formats with one example file
   each (zone kinds, Steward rules, road styles, wall kits, renewal lists), the config switches, every new saved field
   with its default (the plan and the Steward's state on the hall, the player-built ledger), the per-tick budgets, the
@@ -490,7 +491,8 @@ and an old vanilla village slowly rebuilds itself one house at a time. It answer
   don't wait for his reply. Done when:
   - the note is on `main` with every section above;
   - the package is sent, and his answers, when they come, are recorded with `sessions.py reply`.
-- [x] **27.2** (review: pending 2026-10-04) **The plan and the City Plan item.** A village's plan, saved on the Village Hall
+  - [ ] **27.1a** Change from the owner (2026-10-05): A Steward must be a villager who has been an architect/builder for a certain amount of time (decide the amount and write it in the design note; default meanwhile: Builder at a level or for N days). Also make the City Plan's recipe harder: Map and Blank Blueprint plus something hard to get, such as a Heart of the Sea (or similar).
+- [x] **27.2** (approved 2026-10-05) **The plan and the City Plan item.** A village's plan, saved on the Village Hall
   (`VillageHallBlockEntity`, new tag `plan`, empty by default) and kept on the hall item when the hall is broken (as
   its name is; put down again, the plan is centred on the new spot):
   - a grid of 32×32 cells centred on the hall, a cell 4×4 blocks at the default `villageHallRadius` of 64 (8×8 at
@@ -519,7 +521,7 @@ and an old vanilla village slowly rebuilds itself one house at a time. It answer
     `CityPlans` (the checked edit packet), the City Plan item (binds, names its village, says which zone you stand in;
     recipe, recipe-book unlock, icon via the pixel-art recipes, in the items scene). CityPlanGameTests (7) pass. Left:
     film `SCENE=items` with the new icon, hand in the package and tick (`done 27.2 --review`).
-- [x] **27.3** (review: pending 2026-10-04) **Painting the plan.** Right-click the air with a bound City Plan to open the plan screen (a client
+- [x] **27.3** (approved 2026-10-05) **Painting the plan.** Right-click the air with a bound City Plan to open the plan screen (a client
   screen, like the Blueprint Table's): the village map as it is today (`VillageMaps.colors`, a block a pixel, north up,
   the hall and every finished building's banner on it), the grid over it, each zone tinted in its colour with its name,
   Keep Clear hatched, build sites going up and the Steward's proposals as outlines. A side panel: the zones (new,
@@ -529,7 +531,7 @@ and an old vanilla village slowly rebuilds itself one house at a time. It answer
   - screenshots at GUI scales 2 and 4 show no clipped or overlapping text (as 24.4 checks the other screens);
   - showcase scene `city_plan`: Homes, Workshops and Gardens zones painted in three styles over a real village, with
     stills of the screen and the finished plan.
-- [x] **27.4** (review: pending 2026-10-04) **Roads and the wall line on the plan, and the plan on the ground.** Two more tools on the plan
+- [x] **27.4** (approved 2026-10-05) **Roads and the wall line on the plan, and the plan on the ground.** Two more tools on the plan
   screen: **Road** (click points, double-click to end; a lane 1 wide, a street 3 wide or an avenue 5 wide, with a
   style, by default that of the zone it starts in) and **Wall line** (one line round the village, open or closed).
   Roads a player draws count as approved: the Steward builds them without asking (27.15). While a player holds the
@@ -541,7 +543,7 @@ and an old vanilla village slowly rebuilds itself one house at a time. It answer
     refused; the map drawn for a planned village has its zone tints on the right pixels;
   - showcase scene `city_plan_ground`: a player walks the village holding the plan (a still of the borders on the
     ground) and the framed plan by the hall.
-- [x] **27.5** (review: pending 2026-10-04) **The Steward.** A new job, `aliveworkplace:steward`, at the Village Hall, one per hall:
+- [x] **27.5** (approved 2026-10-05) **The Steward.** A new job, `aliveworkplace:steward`, at the Village Hall, one per hall:
   - **Appointing:** sneak-right-click a grown villager standing by the hall with its City Plan (a Village Hall entry in
     `work/Stations`), or the desk's "Appoint a Steward" button (27.8), which lists the jobless. The hall isn't an
     acquirable job site, so nobody takes it by himself. Its point of interest has 0 tickets today: it gets 1, and a
@@ -943,7 +945,7 @@ here adds a new kind of speed bonus (the new jobs get the partners' existing one
   Done when: a GameTest per cue (the show starts when the worker reaches that moment in real work; the watered
   farmland is at moisture 7), and showcase scene `partners_land` (the builder with a Machamp carrying beams, the farmer
   with a Wartortle watering) with its GIF in the review package.
-- [x] **28.5** (review: pending 2026-10-04) **Partners at work: post, forge and kitchen.** Shows:
+- [x] **28.5** (approved 2026-10-05) **Partners at work: post, forge and kitchen.** Shows:
   - Postman + Flying: when a parcel goes by air mail it takes off from the Mailbox with a bundle, climbs out of sight
     and lands back empty-handed (cue `air_mail`); on the round it flies ahead to the next mailbox (cue `deliver`).
   - Armorer, Miner or Fisherman + Fire: breathes fire into the furnace or smoker each time it smelts the 8 on the spot
@@ -958,7 +960,7 @@ here adds a new kind of speed bonus (the new jobs get the partners' existing one
 
   Done when: a GameTest per cue, and showcase scene `partners_forge` with its GIF (the air mail take-off, a Charmander
   breathing into the blast furnace).
-- [x] **28.6** (review: pending 2026-10-04) **Partners at work: everyone else.** Shows:
+- [x] **28.6** (approved 2026-10-05) **Partners at work: everyone else.** Shows:
   - Miner + Ground, Rock or Steel: digs at the next block along with the miner (cue `dig`), with that block's crack
     particles.
   - Fisherman + Water or Ice: swims out round the bobber, with bubbles (cue `cast`).
@@ -975,7 +977,7 @@ here adds a new kind of speed bonus (the new jobs get the partners' existing one
   - Rancher + Normal or Ground: walks beside the wild horse being broken in (cue `tame`).
 
   Done when: a GameTest per cue, and showcase scene `partners_all`: one still per job with its partner at work.
-- [x] **28.7** (review: pending 2026-10-04) **The Pokémon Center.** Two blueprints (architect skill, an original design, checked against STYLE.md in
+- [x] **28.7** (approved 2026-10-05) **The Pokémon Center.** Two blueprints (architect skill, an original design, checked against STYLE.md in
   a render), in the Blueprint Table with Cobblemon only and sold by Journeyman Nurses:
   - **Pokémon Center**: a bright hall under a red roof, a glass front, a counter with Cobblemon's Healing Machine (the
     nurse's place), a PC by the counter, shelves of potions behind it, benches along the walls;
@@ -994,7 +996,8 @@ here adds a new kind of speed bonus (the new jobs get the partners' existing one
     full); a jobless villager left by a machine for 2400 ticks doesn't take it;
   - a builder builds both tiers (GameTest), and the renders are in the package;
   - showcase scene `pokemon_center` (stills of both tiers, a GIF of the healing).
-- [x] **28.8** (review: pending 2026-10-04) **The Camp Cook.** Stand a villager by a Campfire Pot (Cobblemon's campfire with a pot on it; POI when
+  - [ ] **28.7a** Change from the owner (2026-10-05): Approved, but add more Pokémon Center variants later (more looks for the tiers).
+- [x] **28.8** (approved 2026-10-05) **The Camp Cook.** Stand a villager by a Campfire Pot (Cobblemon's campfire with a pot on it; POI when
   Cobblemon registers `cobblemon:campfire`) and sneak-right-click them with Hearty Grains. Never taken by a jobless
   villager. Config `campCooks` (true).
   - She cooks in the pot itself: the makings into its slots and seasonings into its top row through its container (as
@@ -1021,7 +1024,7 @@ here adds a new kind of speed bonus (the new jobs get the partners' existing one
     harvests and replants Hearty Grains;
   - the README section and job table say how to start her;
   - showcase scene `camp_cook` with its GIF.
-- [x] **28.9** (review: pending 2026-10-04) **The Berry Breeder.** Stand a villager by a composter and sneak-right-click them with any Cobblemon
+- [x] **28.9** (approved 2026-10-05) **The Berry Breeder.** Stand a villager by a composter and sneak-right-click them with any Cobblemon
   berry. Config `berryBreeders` (true).
   - The berry book: every berry and its `mutations` read from Cobblemon's own berry data (70 in 1.7.3), so a data pack's
     berries come too. Sneak-right-click the breeder: one page lists every berry, found ones lit, the rest with the pair
@@ -1338,7 +1341,7 @@ MarketDays) and research/.
   the server-wide `aliveworkplace_legends` record) and what an existing world sees after the update (some villagers
   turn out Gifted; nobody is a Legend until a village earns one). Sent to the owner as a review package; lanes don't
   wait for his reply. Done when: the note is on `main` and the package is sent.
-- [x] **29.2** (review: pending 2026-10-04) **The Legend engine.** A new `legend/` package. `Legends` loads one file per Legend from
+- [x] **29.2** (approved 2026-10-05) **The Legend engine.** A new `legend/` package. `Legends` loads one file per Legend from
   `data/aliveworkplace/legends/<id>.json` through `Platform.get().onDataReload` (as `ranch/PokemonChores` does), so
   server owners can add their own. A file holds: `rarity` (`rare`, `legendary`, `mythic`); `job` (the trade they work,
   always as a Master, with every level's trades through `Schools.headStart`; `aliveworkplace:legend` for Legends
@@ -1776,7 +1779,7 @@ Guildhalls, and six tonics from the alchemist and the chef), give players more w
 the Village Hall (`VillageNeeds`, `VillageQuests`, `VillageRanks`, `Festivals`, `Treasury`), `people/Moods` and
 `BuilderLevels.delay`, and adds the one shared cap that stops all speed bonuses together at twice normal pace.
 
-- [x] **30.1** (review: pending 2026-10-04) **Design note.** `docs/design/M30.md`, sent to the owner as a review package (lanes don't wait for his
+- [x] **30.1** (approved 2026-10-05) **Design note.** `docs/design/M30.md`, sent to the owner as a review package (lanes don't wait for his
   reply). It covers:
   - what the player sees: a sketch of the Book of Edicts page, each edict's boost, cost and reform, each civic item,
     and the changes to the hall's screen and the Village Ledger;
@@ -1796,6 +1799,7 @@ the Village Hall (`VillageNeeds`, `VillageQuests`, `VillageRanks`, `Festivals`, 
     friends and operators (anyone, while the hall has no owner).
 
   Done when: the note is on `main` and its review package is sent.
+  - [ ] **30.1a** Change from the owner (2026-10-05): Reforming an edict must cost far more, hundreds of items, so the grind is worth it: e.g. instead of 4 clocks, 8 gold ingots, 32 bread, something like 24 clocks, 2 stacks of gold ingots and 300 bread. Most players get the small amounts quickly, so scale the reform costs up a lot in the design note and the edict data files.
 - [x] **30.2** (review: pending 2026-10-04) **One pace, one cap.** A core `work/Pace` that every job's work speed goes through (if another
   milestone built it first, check it covers this list and add what's missing):
   - bonuses: Pokémon partners, a well-kept village, Swift Hands, Diligent, a happy mood, Craftsmanship (crafters),
@@ -1841,7 +1845,7 @@ the Village Hall (`VillageNeeds`, `VillageQuests`, `VillageRanks`, `Festivals`, 
     and their mood 10 lower, with the reason listed;
   - an edict from a test data pack loads and works, and `"enabled": false` hides Long Shifts;
   - showcase scene `long_shifts`: the hall's list with the "long shifts" mood, and the chronicle line.
-- [ ] **30.4** **The Book of Edicts page.** The page players use, in the hall's screen and the Village Ledger:
+- [x] **30.4** (review: pending 2026-10-04) **The Book of Edicts page.** The page players use, in the hall's screen and the Village Ledger:
   - the hall's screen: the people list's page arrows move to the list's bottom corners (slots 45 and 53, 34 people a
     page), which frees slot 9 for the Book of Edicts (a lectern icon) and leaves slot 17 for another milestone's page;
   - the Village Ledger: sneak-right-click the air opens the Book straight away (its tooltip says so);
@@ -1856,7 +1860,7 @@ the Village Hall (`VillageNeeds`, `VillageQuests`, `VillageRanks`, `Festivals`, 
   Done when: GameTests through `ChoiceMenu.forTest`: proclaiming and lifting by clicks, the locked slots, a stranger's
   click refused, the Ledger's sneak-use opening the page, the people list paging at 34; showcase scene `edicts`: the
   Book with Long Shifts in force, at GUI scales 2 and 4.
-- [ ] **30.5** **Reforms, and The Shift Bell.** While an edict is in force and not reformed, the hall keeps its
+- [x] **30.5** (review: pending 2026-10-05) **Reforms, and The Shift Bell.** While an edict is in force and not reformed, the hall keeps its
   reform's next step on the quest page (extra to the three daily quests, in the row below them, with a book-and-quill
   icon; it never expires). The next step goes up the morning after the last was done, so a reform takes three days at
   least. Steps use the quest kinds there are (bring, clear out monsters, beat a trainer), with a `fallback` step for a
@@ -4279,6 +4283,15 @@ item waits.
   research is idle" give one a morning (food doesn't fill by noon); a worker who has traded and only lost his block is
   left to find one of its kind. A rule naming its topic (`hearth.json`) gets it while available, before the order.
   The research pick happens from the scholar's own work (`ScholarWork.IDLE`), once a day.
+- 2026-10-05 (30.5, decisions; lane d): a reform step is a `VillageQuests.Quest` with `reform` {edict, step} kept in the
+  hall's quest list (not counted in the 3 daily ones, never expired) and shown only while its edict is in force and not
+  reformed, so a step half handed in keeps its count while the edict is lifted; the hall's `reforms` list keeps {id,
+  step, reformed, nextDay}. The first step goes up when the edict is proclaimed (the round runs then too), later ones on
+  the first round of the day after (`Chronicle.day`). A monster or a trainer beaten counts for the first daily quest of
+  that kind and every reform step of it on the page. Data: `reform.steps[]` take `kind`/`item`/`count`/`reward`/
+  `fallback`/`arc`; a fallback can't be a battle; a battle step with no `fallback` written clears out 8 monsters for its
+  pay. `arc` (on the reform and each step) loads and is kept, unread until M31. The Book's line says "Reform: <name>,
+  step N of M" or "Reformed: <name>", and a reformed edict lists the reform's `effects` (if any) as its cost.
 - 2026-10-04 (27.4, decision; lane c): the plan on the ground is drawn as the Scan Tool's box really is: dust the
   server sends to the holder alone (`city/CityPlanGround`, every 10 ticks, at most 900 dots, within 24 blocks), not a
   client renderer, so nothing new has to be synced to the client. Road styles don't exist until 27.15, so a road's style

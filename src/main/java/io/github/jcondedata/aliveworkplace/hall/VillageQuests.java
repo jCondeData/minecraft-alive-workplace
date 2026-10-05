@@ -52,11 +52,23 @@ public final class VillageQuests {
 	public enum Kind { BRING, SLAY, BATTLE }
 
 	/**
+	 * What makes a quest a reform step (ROADMAP 30.5, see {@link Reforms}): the edict's id and the step (0 for the first).
+	 * Saved as a map so M31 can add an {@code arc} field beside them without touching saves.
+	 */
+	public record ReformStep(String edict, int step) {
+		public static final Codec<ReformStep> CODEC = RecordCodecBuilder.create(i -> i.group(
+			Codec.STRING.fieldOf("edict").forGetter(ReformStep::edict),
+			Codec.INT.fieldOf("step").forGetter(ReformStep::step)
+		).apply(i, ReformStep::new));
+	}
+
+	/**
 	 * A quest: what kind, the item and how many (for BRING; monsters or battles otherwise), how far along, the reward in
-	 * emeralds, when it went up, who asked (a villager's name) and where a BRING quest's items go (a worker's station).
+	 * emeralds, when it went up, who asked (a villager's name), where a BRING quest's items go (a worker's station), and
+	 * the edict's reform it is a step of (empty: one of the daily quests, as every quest saved before 30.5).
 	 */
 	public record Quest(UUID id, Kind kind, String item, int count, int progress, int reward, long posted, String poster,
-						Optional<BlockPos> deliverTo) {
+						Optional<BlockPos> deliverTo, Optional<ReformStep> reform) {
 		public static final Codec<Quest> CODEC = RecordCodecBuilder.create(i -> i.group(
 			UUIDUtil.CODEC.fieldOf("id").forGetter(Quest::id),
 			Codec.STRING.xmap(Kind::valueOf, Kind::name).fieldOf("kind").forGetter(Quest::kind),
@@ -66,8 +78,19 @@ public final class VillageQuests {
 			Codec.INT.fieldOf("reward").forGetter(Quest::reward),
 			Codec.LONG.fieldOf("posted").forGetter(Quest::posted),
 			Codec.STRING.optionalFieldOf("poster", "").forGetter(Quest::poster),
-			BlockPos.CODEC.optionalFieldOf("deliver_to").forGetter(Quest::deliverTo)
+			BlockPos.CODEC.optionalFieldOf("deliver_to").forGetter(Quest::deliverTo),
+			ReformStep.CODEC.optionalFieldOf("reform").forGetter(Quest::reform)
 		).apply(i, Quest::new));
+
+		/** A daily quest (no reform). */
+		public Quest(UUID id, Kind kind, String item, int count, int progress, int reward, long posted, String poster, Optional<BlockPos> deliverTo) {
+			this(id, kind, item, count, progress, reward, posted, poster, deliverTo, Optional.empty());
+		}
+
+		/** Whether this is one of the daily quests (not a reform step). */
+		public boolean daily() {
+			return reform.isEmpty();
+		}
 
 		public Item itemType() {
 			return Lookup.value(BuiltInRegistries.ITEM, ResourceLocation.parse(item));
@@ -78,7 +101,7 @@ public final class VillageQuests {
 		}
 
 		Quest withProgress(int p) {
-			return new Quest(id, kind, item, count, p, reward, posted, poster, deliverTo);
+			return new Quest(id, kind, item, count, p, reward, posted, poster, deliverTo, reform);
 		}
 	}
 
@@ -91,13 +114,13 @@ public final class VillageQuests {
 		new Want(Items.TORCH, 32, 2), new Want(Items.LEATHER, 8, 3), new Want(Items.COAL, 16, 3), new Want(Items.BREAD, 16, 3),
 		new Want(Items.BOOK, 4, 4), new Want(Items.GOLD_INGOT, 4, 5));
 
-	/** The hall's daily round: old quests come down, and in the morning a new one goes up if there's room. */
-	static void tick(ServerLevel level, BlockPos hall, VillageHallBlockEntity entity) {
+	/** The hall's daily round: old quests come down, in the morning a new one goes up if there's room, and reform steps fall due. */
+	public static void tick(ServerLevel level, BlockPos hall, VillageHallBlockEntity entity) {
 		long now = level.getGameTime();
 		List<Quest> quests = new ArrayList<>(entity.quests());
-		boolean changed = quests.removeIf(q -> now - q.posted() >= LASTS);
+		boolean changed = quests.removeIf(q -> q.daily() && now - q.posted() >= LASTS);
 		long day = level.getDayTime() / 24000;
-		if (quests.size() < MAX_OPEN && level.getDayTime() % 24000 < 3000 && entity.lastQuestDay() < day) {
+		if (daily(quests).size() < MAX_OPEN && level.getDayTime() % 24000 < 3000 && entity.lastQuestDay() < day) {
 			Quest quest = make(level, hall);
 			if (quest != null) {
 				float factor = VillageRanks.questRewardFactor(entity.rank());
@@ -112,6 +135,12 @@ public final class VillageQuests {
 		if (changed) {
 			entity.setQuests(quests);
 		}
+		Reforms.round(level, hall, entity);
+	}
+
+	/** The daily quests among {@code quests} (reform steps left out). */
+	public static List<Quest> daily(List<Quest> quests) {
+		return quests.stream().filter(Quest::daily).toList();
 	}
 
 	/** A new quest for the village round {@code hall}: what a worker's waiting for, food, monsters, a battle, or a want. */
@@ -162,8 +191,14 @@ public final class VillageQuests {
 		}
 	}
 
-	/** "Bring 16 Bread", "Clear out 8 monsters", "Beat one of the village's trainers". */
+	/** "Bring 16 Bread", "Clear out 8 monsters", "Beat one of the village's trainers"; a reform step leads with its reform. */
 	public static Component describe(Quest quest) {
+		Component task = task(quest);
+		return quest.reform().<Component>map(r -> Component.translatable("quest.aliveworkplace.reform_task", Reforms.title(r), task)).orElse(task);
+	}
+
+	/** What a quest asks: "Bring 16 Bread". */
+	public static Component task(Quest quest) {
 		return switch (quest.kind()) {
 			case BRING -> Component.translatable("quest.aliveworkplace.bring", quest.count(), quest.itemType().getDescription());
 			case SLAY -> Component.translatable("quest.aliveworkplace.slay", quest.count());
@@ -232,6 +267,7 @@ public final class VillageQuests {
 				(long) quest.reward() * Money.DOLLARS_PER_EMERALD, quest.reward())).withStyle(ChatFormatting.GREEN));
 			level.playSound(null, player.blockPosition(), SoundEvents.PLAYER_LEVELUP, SoundSource.PLAYERS, 0.6f, 1.3f);
 		}
+		quest.reform().ifPresent(r -> Reforms.stepDone(level, hall, entity, r, player));
 	}
 
 	/** A player killed a monster: it counts towards the nearest village's clearing-out quest. */
@@ -250,8 +286,13 @@ public final class VillageQuests {
 	private static void count(ServerLevel level, BlockPos where, Kind kind, ServerPlayer player) {
 		VillageHalls.nearest(level, where).ifPresent(hall -> {
 			if (level.getBlockEntity(hall) instanceof VillageHallBlockEntity entity) {
-				entity.quests().stream().filter(q -> q.kind() == kind).findFirst()
-					.ifPresent(q -> progress(level, hall, entity, q, 1, player));
+				// The first daily quest of that kind, and every reform step of it on the page (a lifted edict's waits).
+				List<Quest> counted = new ArrayList<>();
+				daily(entity.quests()).stream().filter(q -> q.kind() == kind).findFirst().ifPresent(counted::add);
+				Reforms.shown(entity).stream().filter(q -> q.kind() == kind).forEach(counted::add);
+				for (Quest q : counted) {
+					entity.quests().stream().filter(o -> o.id().equals(q.id())).findFirst().ifPresent(o -> progress(level, hall, entity, o, 1, player));
+				}
 			}
 		});
 	}

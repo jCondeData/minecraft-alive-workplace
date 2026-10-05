@@ -55,6 +55,19 @@ asks for the steps, `latest.log` and any crash report).
   villagers have no bed"); they're saved with the hall. `/workplace steward explain` lists every rule for the nearest
   hall with each condition's number and whether it held. 13 starter rules; they read the same numbers as the hall's
   "What next?" tips, so the two always agree. A broken rule file is skipped with a warning naming the file and field.
+- **Reforms, and The Shift Bell** (30.5): while an edict is in force, the hall's quest page shows its reform's next step
+  in the row below the daily quests (a book and quill; it never expires). A new step goes up each morning after the last
+  was done, and each pays emeralds like a quest (a quarter more a rank). The last step reforms the edict for that
+  village for good: its boost stays, its cost goes, fireworks go up over the hall, the village is told and the chronicle
+  and the Book of Edicts keep it. Progress is kept while an edict is lifted. Long Shifts' reform is **The Shift Bell**:
+  bring 4 clocks, 8 gold ingots and 32 bread, and the village keeps working 20% faster without the mood loss. Data
+  packs give their edicts a `reform` with `bring`, `slay` or `battle` steps (a battle falls back to its `fallback` step
+  without Cobblemon or a trainer).
+- The **Book of Edicts** (30.4): the Village Hall's lectern button (slot 9), or a Village Ledger used while sneaking,
+  opens the village's laws: its edict slots (in force with their days, free, or locked until the next rank), and every
+  edict with its boost in green and its cost in red. Click an edict twice to proclaim it, once in force to lift it; only
+  the hall's owner, friends and operators may. The hall's name icon lists the edicts in force, and the people list's
+  page arrows moved to its bottom corners (25 people a page).
 - The **Steward** (27.5): sneak-right-click a grown villager beside a Village Hall with that hall's City Plan and he
   becomes its Steward, one per hall. Each morning he walks his rounds holding the plan (each zone, the storehouse),
   three seconds at each stop, then goes back to the hall for the day. He trades City Plans, Blank Blueprints and

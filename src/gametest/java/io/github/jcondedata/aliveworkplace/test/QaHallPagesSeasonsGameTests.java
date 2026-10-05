@@ -139,7 +139,7 @@ public class QaHallPagesSeasonsGameTests {
 	public void everyVillagerIsListedAcrossPages(GameTestHelper helper) {
 		Leftovers.clear(helper);
 		helper.setBlock(HALL, ModBlocks.VILLAGE_HALL);
-		int perPage = ChoiceMenu.SIZE - VillageHallScreen.FIRST_PERSON;
+		int perPage = VillageHallScreen.PER_PAGE; // 25: the list's 27 slots less the arrows in its bottom corners (30.4)
 		int spawned = 0;
 		for (int x = 1; x <= 15 && spawned < perPage + 1; x += 2) {
 			for (int z = 1; z <= 15 && spawned < perPage + 1; z += 2) {
@@ -158,13 +158,15 @@ public class QaHallPagesSeasonsGameTests {
 			ChoiceMenu menu = openHall(helper, player);
 			int first = listed(menu);
 			helper.assertTrue(first == perPage, "the first page lists " + first + " villagers, a full page is " + perPage);
-			helper.assertTrue(!menu.icon(17).isEmpty() && menu.icon(17).is(Items.SPECTRAL_ARROW), "no next-page button: " + menu.icon(17));
-			click(menu, 17, player);
+			helper.assertTrue(perPage == 25, "people a page: " + perPage);
+			helper.assertTrue(menu.icon(53).is(Items.SPECTRAL_ARROW), "no next-page button in slot 53: " + menu.icon(53));
+			helper.assertTrue(menu.icon(9).is(Items.LECTERN), "slot 9 isn't the Book of Edicts: " + menu.icon(9));
+			click(menu, 53, player);
 			int second = listed(menu);
 			helper.assertTrue(first + second >= perPage + 1, "only " + (first + second) + " of " + (perPage + 1) + "+ villagers listed");
-			helper.assertTrue(menu.icon(9).is(Items.ARROW), "no previous-page button on page 2: " + menu.icon(9));
+			helper.assertTrue(menu.icon(45).is(Items.ARROW), "no previous-page button in slot 45 on page 2: " + menu.icon(45));
 			helper.assertTrue(menu.icon(VillageHallScreen.PAGE_ROW).is(Items.CLOCK), "the page row is gone on page 2");
-			click(menu, 9, player);
+			click(menu, 45, player);
 			helper.assertTrue(listed(menu) == perPage, "back on page 1: " + listed(menu));
 			player.closeContainer();
 			helper.succeed();
@@ -174,7 +176,7 @@ public class QaHallPagesSeasonsGameTests {
 	private static int listed(ChoiceMenu menu) {
 		int n = 0;
 		for (int slot = VillageHallScreen.FIRST_PERSON; slot < ChoiceMenu.SIZE; slot++) {
-			if (!menu.icon(slot).isEmpty()) {
+			if (!menu.icon(slot).isEmpty() && slot != VillageHallScreen.PREVIOUS && slot != VillageHallScreen.NEXT) {
 				n++;
 			}
 		}

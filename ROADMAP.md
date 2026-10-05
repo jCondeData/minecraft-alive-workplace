@@ -1659,6 +1659,15 @@ MarketDays) and research/.
   and replants a 9x9 wheat field into its chest; a sentry holds its point through a staged fight; the costs are taken
   and the cap and the 2-day wait kept; the golem textures pass `lint.py`; showcase scene `legend_golem_smith` (GIF:
   the three at work).
+  Status (lane-a-1005-0932): on wip/lane-a: legends/golem_smith.json (inspired in Tinkerers, iron_golems 4, heavy-core
+  Masterwork "The Heart of <name>", wine), `golem_forge` power, legend/GolemSmith (cadence 2 days, cap 1 per 5
+  villagers, costs from the chests by the smithing table, sneak-right-click choice, 2x mending in TinkererWork), saved
+  attachments GOLEM_ROLE/GOLEM_FORGE/HAULER_LOAD, store/HaulerGolems (PorterWork's goods rules, 9 stacks, Storehouse
+  POI), lang, GolemSmithGameTests (file, forge costs/cap/wait/reload, short cost, hauler). Compiles. Left: hauler test
+  fails (golem never delivers: check navigation vs the golem's own goals / reach, maybe a goal via mixin); rerun suite
+  (pathfinder expeditionLeads and legendNeeds strike failed in the same run: check Moods/LegendNeeds restore in
+  GolemSmithGameTests.restore and the staged roster); hall line; outfit + golem textures (pixel-art); farmhand and
+  sentry roles; showcase scene legend_golem_smith; CHANGELOG.
 - [ ] **29.16** **The Seer (Rare).** Comes: a guest at the village's finished Chapel at midnight under a full moon, 1
   time in 2 (29.8); born to a Cleric (29.7). Trade: `aliveworkplace:legend`; by day they keep to the Chapel. Likes:
   jewels. Powers:

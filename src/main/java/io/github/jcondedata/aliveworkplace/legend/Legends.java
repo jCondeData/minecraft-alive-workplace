@@ -56,6 +56,7 @@ public final class Legends implements ResourceManagerReloadListener {
 		LegendsPage.init();
 		StrangeMoods.init();
 		Platform.get().onServerTick(LegendSites::tick);
+		Platform.get().onServerTick(io.github.jcondedata.aliveworkplace.store.HaulerGolems::tick); // the Golem Smith's haulers (29.15)
 		Platform.get().onPlayerLeave(player -> Pathfinder.forgetOffer(player.getUUID()));
 		Platform.get().allowBreakBlock((level, player, pos, state) -> !(level instanceof net.minecraft.server.level.ServerLevel server)
 			|| LegendSites.onBreak(server, player, pos, state));

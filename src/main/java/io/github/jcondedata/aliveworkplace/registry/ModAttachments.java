@@ -17,6 +17,12 @@ public final class ModAttachments {
 
 	/** The Old Sage's riddle quest at their hut (29.14): the riddles asked, how many answered, misses on this one. */
 	public static final Attachment<io.github.jcondedata.aliveworkplace.legend.OldSage.Riddles> SAGE_RIDDLES = Attachment.saved("sage_riddles", io.github.jcondedata.aliveworkplace.legend.OldSage.Riddles.CODEC);
+	/** A golem's role from the Golem Smith (29.15): hauler, farmhand or sentry; absent on a plain golem. */
+	public static final Attachment<String> GOLEM_ROLE = Attachment.saved("golem_role", com.mojang.serialization.Codec.STRING);
+	/** What a Hauler Golem is carrying to the Storehouse (29.15); absent when nothing. */
+	public static final Attachment<java.util.Map<net.minecraft.world.item.Item, Integer>> HAULER_LOAD = Attachment.saved("hauler_load", io.github.jcondedata.aliveworkplace.store.HaulerGolems.LOAD_CODEC);
+	/** The Golem Smith's forge (29.15): which golem comes next and the day the last was built. */
+	public static final Attachment<io.github.jcondedata.aliveworkplace.legend.GolemSmith.Forge> GOLEM_FORGE = Attachment.saved("golem_forge", io.github.jcondedata.aliveworkplace.legend.GolemSmith.Forge.CODEC);
 
 	/** A villager's gift (29.6): a gift's id, or {@code none}. Absent: the UUID roll decides ({@code Gifted.of}). */
 	public static final Attachment<String> GIFTED = Attachment.saved("gifted", com.mojang.serialization.Codec.STRING);

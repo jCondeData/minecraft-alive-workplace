@@ -802,7 +802,7 @@ and an old vanilla village slowly rebuilds itself one house at a time. It answer
     builds 256 blocks and a milestone naming it; an unloaded chunk pauses the planning without an error, and it goes
     on when loaded; a finished road shortens the caravan's trip;
   - showcase scene `caravan_road`: a GIF along the road from one village to the other.
-- [ ] **27.18** **Walls along the wall line.** Once the village has been raided in the last 7 days, or a bandit camp
+- [x] **27.18** (review: pending 2026-10-05) **Walls along the wall line.** Once the village has been raided in the last 7 days, or a bandit camp
   is near, the Steward proposes its wall: along the plan's wall line, or, when none is drawn, a line of his own (round
   the zones, 4 blocks out), shown on the plan for approval. Walls are kits, as data:
   `data/aliveworkplace/wall_kits/<name>.json` holds one kit: a segment, a corner tower, a gate and the rank it needs.

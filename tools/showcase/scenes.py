@@ -111,6 +111,10 @@ SCENES = [
     # Roads between villages (ROADMAP 27.17): two villages with a trade route each build their half, and the halves meet
     job("caravan_road", "Steward", "The road from one village to the other",
         "each village's builder laid its half of the Stonework road to the other, and the halves met halfway", 800),
+    # Walls (ROADMAP 27.18): a palisade goes up round a small village along its wall line, and its gate shuts at night
+    job("walls", "Steward", "A palisade going up round the village, its gate shut at night",
+        "the builders raised the village's palisade along the wall line (towers at its corners, a gate on the road) "
+        "and the guards shut the gate at nightfall", 700),
     # The Steward's rules (ROADMAP 27.6): the day's wishes over his head, and /workplace steward explain in chat
     S("steward_rules", "Steward", "The Steward's rules and wishes",
       "the Steward ranked today's wishes from his rules, and explain listed rules that held and that didn't", 45,

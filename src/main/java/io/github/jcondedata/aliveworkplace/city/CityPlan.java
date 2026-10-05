@@ -172,15 +172,37 @@ public record CityPlan(List<Zone> zones, List<Road> roads, Optional<Wall> wall, 
 		}
 	}
 
-	/** The wall line (27.4): points as offsets from the hall, open or closed. */
-	public record Wall(List<BlockPos> points, boolean closed) {
+	/**
+	 * The wall line (27.4): points as offsets from the hall, open or closed. 27.18: {@code kit} is the wall kit
+	 * ({@link WallKits}) the Steward proposed for it ("" none yet), {@code approved} that it may be built, and
+	 * {@code own} that the Steward drew the line himself (round the zones) rather than a player. Older saves load with
+	 * no kit, unapproved, a player's line.
+	 */
+	public record Wall(List<BlockPos> points, boolean closed, String kit, boolean approved, boolean own) {
 		public static final Codec<Wall> CODEC = RecordCodecBuilder.create(i -> i.group(
 			BlockPos.CODEC.listOf().fieldOf("points").forGetter(Wall::points),
-			Codec.BOOL.optionalFieldOf("closed", true).forGetter(Wall::closed)
+			Codec.BOOL.optionalFieldOf("closed", true).forGetter(Wall::closed),
+			Codec.STRING.optionalFieldOf("kit", "").forGetter(Wall::kit),
+			Codec.BOOL.optionalFieldOf("approved", false).forGetter(Wall::approved),
+			Codec.BOOL.optionalFieldOf("own", false).forGetter(Wall::own)
 		).apply(i, Wall::new));
 
 		public Wall {
 			points = List.copyOf(points);
+		}
+
+		public Wall(List<BlockPos> points, boolean closed) {
+			this(points, closed, "", false, false);
+		}
+
+		/** This line with the kit the Steward proposes for it (not approved yet). */
+		public Wall proposed(String newKit, boolean stewardsOwn) {
+			return new Wall(points, closed, newKit, false, stewardsOwn || own);
+		}
+
+		/** This line approved, to be built with {@code newKit}. */
+		public Wall approvedWith(String newKit) {
+			return new Wall(points, closed, newKit, true, own);
 		}
 	}
 

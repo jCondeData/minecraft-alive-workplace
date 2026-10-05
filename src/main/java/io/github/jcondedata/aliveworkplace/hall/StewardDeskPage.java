@@ -186,10 +186,13 @@ public final class StewardDeskPage {
 		});
 	}
 
-	/** A build's blueprint, the jobs' crafting table, the research topic's own icon. */
+	/** A build's blueprint, the jobs' crafting table, the research topic's own icon, the wall's oak fence. */
 	static Item iconOf(StewardDesk.Proposal proposal) {
 		if (proposal.isJobs()) {
 			return Items.CRAFTING_TABLE;
+		}
+		if (proposal.wall().isPresent()) {
+			return Items.OAK_FENCE;
 		}
 		return proposal.researchTopic().map(t -> t.icon).orElse(ModItems.BLUEPRINT);
 	}
@@ -204,6 +207,19 @@ public final class StewardDeskPage {
 			for (io.github.jcondedata.aliveworkplace.city.StewardJobs.Job job : proposal.jobs()) {
 				lore.add(VillageHallScreen.line(io.github.jcondedata.aliveworkplace.city.StewardJobs.describe(level, hall, job), ChatFormatting.GRAY));
 			}
+			return lore;
+		}
+		if (proposal.wall().isPresent()) { // 27.18: the wall along the plan's line, with what it is made of
+			lore.add(VillageHallScreen.line(Component.translatable("screen.aliveworkplace.desk.why", proposal.reason()), ChatFormatting.AQUA));
+			java.util.List<io.github.jcondedata.aliveworkplace.city.Walls.Piece> pieces =
+				io.github.jcondedata.aliveworkplace.city.Walls.proposedPieces(level, hall, proposal.wall().get());
+			int[] counts = io.github.jcondedata.aliveworkplace.city.Walls.counts(pieces);
+			lore.add(VillageHallScreen.line(Component.translatable("screen.aliveworkplace.desk.wall_pieces",
+				counts[io.github.jcondedata.aliveworkplace.city.Walls.Kind.SEGMENT.ordinal()],
+				counts[io.github.jcondedata.aliveworkplace.city.Walls.Kind.TOWER.ordinal()],
+				counts[io.github.jcondedata.aliveworkplace.city.Walls.Kind.GATE.ordinal()]), ChatFormatting.GRAY));
+			lore.add(VillageHallScreen.line(Component.translatable("screen.aliveworkplace.desk.wall_line",
+				io.github.jcondedata.aliveworkplace.city.Walls.lineLength(level, hall)), ChatFormatting.GRAY));
 			return lore;
 		}
 		if (proposal.researchTopic().isPresent()) { // 27.9: the scholars' next topic

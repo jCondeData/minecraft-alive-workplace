@@ -27,7 +27,7 @@ FAMILIES = {
                                 "nether_gate*", "graveyard*", "research/town_hall"]),
     "shops": ("Shops, farms and services", ["supply_shop*", "market_stall*", "berry_farm*", "apiary_garden*", "ranch*",
                                             "flower_shop*", "healing_center*", "library*", "schoolhouse*"]),
-    "defences": ("Defences", ["palisade", "palisade_gate", "stone_wall", "wall_tower", "gatehouse", "barracks*",
+    "defences": ("Defences", ["palisade", "palisade_gate", "palisade_tower", "stone_wall", "wall_tower", "gatehouse", "barracks*",
                               "lookout_tower*", "camp/bandit_camp"]),
     "decorations": ("Decorations", ["well*", "street_lamp", "park_bench", "fountain", "gazebo", "market_square", "chapel"]),
 }

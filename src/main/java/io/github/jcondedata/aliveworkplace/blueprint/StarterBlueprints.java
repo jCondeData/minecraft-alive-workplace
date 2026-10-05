@@ -267,6 +267,8 @@ public final class StarterBlueprints {
 	public static final Entry PALISADE = new Entry(AliveWorkplace.id("palisade"), new Vec3i(7, 6, 2));
 	/** A gate in the palisade (shut at night). */
 	public static final Entry PALISADE_GATE = new Entry(AliveWorkplace.id("palisade_gate"), new Vec3i(7, 6, 2));
+	/** A log watch platform for a palisade's corner (27.18): fits inside the Wall Tower, which takes its place in a Town. */
+	public static final Entry PALISADE_TOWER = new Entry(AliveWorkplace.id("palisade_tower"), new Vec3i(5, 10, 5));
 	/** A stone wall with battlements. */
 	public static final Entry STONE_WALL = new Entry(AliveWorkplace.id("stone_wall"), new Vec3i(7, 6, 3));
 	/** A stone tower for a wall's end or corner. */
@@ -320,7 +322,7 @@ public final class StarterBlueprints {
 	public static final List<Entry> DECORATIONS = List.of(WELL, WELL_2, STREET_LAMP, PARK_BENCH, FOUNTAIN, GAZEBO, MARKET_SQUARE, CHAPEL);
 
 	/** Walls and gates. */
-	public static final List<Entry> DEFENCES = List.of(PALISADE, PALISADE_GATE, STONE_WALL, WALL_TOWER, GATEHOUSE);
+	public static final List<Entry> DEFENCES = List.of(PALISADE, PALISADE_GATE, PALISADE_TOWER, STONE_WALL, WALL_TOWER, GATEHOUSE);
 
 	private StarterBlueprints() {
 	}

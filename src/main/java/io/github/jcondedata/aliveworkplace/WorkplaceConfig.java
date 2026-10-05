@@ -137,6 +137,8 @@ public final class WorkplaceConfig {
 	public boolean caravanRoads = true;
 	/** The longest half of a road a village builds towards another (ROADMAP 27.17); it goes halfway at most. */
 	public int caravanRoadReach = 256;
+	/** A raided village's Steward proposes a wall along the plan's wall line, built from a wall kit (ROADMAP 27.18). Off: he never proposes walls. */
+	public boolean stewardWalls = true;
 	/** Villagers at a Campfire Pot can be made Camp Cooks with Hearty Grains (ROADMAP 28.8). Off: no Camp Cook job. */
 	public boolean campCooks = true;
 	/** Villagers at a Pasture Block can be made Habitat Keepers with a honey bottle (ROADMAP 28.10). Off: no Habitat Keeper job. */
@@ -400,5 +402,7 @@ public final class WorkplaceConfig {
 		io.github.jcondedata.aliveworkplace.city.Roads.ENABLED = stewardRoads && System.getProperty("fabric-api.gametest") == null;
 		io.github.jcondedata.aliveworkplace.city.CaravanRoads.ENABLED = caravanRoads;
 		io.github.jcondedata.aliveworkplace.city.CaravanRoads.REACH = caravanRoadReach;
+		// Off in gametests (a test's wall would be built under other tests); the wall tests turn it on.
+		io.github.jcondedata.aliveworkplace.city.Walls.ENABLED = stewardWalls && System.getProperty("fabric-api.gametest") == null;
 	}
 }

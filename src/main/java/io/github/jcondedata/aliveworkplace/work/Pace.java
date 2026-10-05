@@ -119,6 +119,9 @@ public final class Pace {
 	/** A tonic the villager drank (30.15): its {@code work_pace} for as long as it lasts, "Miner's Brew, 19 min left". */
 	public static final Source TONIC = register(new Source("tonic", Kind.BONUS, io.github.jcondedata.aliveworkplace.people.Tonics::pace,
 		io.github.jcondedata.aliveworkplace.people.Tonics::paceLabel));
+	/** The worker's founded guild (30.17): its {@code work_pace} perk, "the Builders' Guild". */
+	public static final Source GUILD = register(new Source("guild", Kind.BONUS, io.github.jcondedata.aliveworkplace.hall.Guilds::pace,
+		io.github.jcondedata.aliveworkplace.hall.Guilds::paceLabel));
 	public static final Source ILL = register(new Source("ill", Kind.PENALTY, Sickness::pace));
 	public static final Source UNHAPPY = register(new Source("unhappy", Kind.PENALTY, Moods::pace));
 	public static final Source LAZY = register(new Source("lazy", Kind.PENALTY, Traits::pace));

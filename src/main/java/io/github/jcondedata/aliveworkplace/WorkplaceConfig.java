@@ -121,6 +121,10 @@ public final class WorkplaceConfig {
 	public boolean harvestIdols = true;
 	/** Tonics (ROADMAP 30.15): the alchemist and the chef make them and villagers drink them. Off: neither; a tonic drunk does nothing. */
 	public boolean tonics = true;
+	/** Guilds (ROADMAP 30.17): Guild Charters make Masters Guild Masters, and founded guilds' perks reach their members. Off: charters are refused and perks are off; guilds stay saved. */
+	public boolean guilds = true;
+	/** Guilds a village may have per rank above Hamlet (Village 1x, Town 2x, City 3x). */
+	public int guildsPerRank = 1;
 	/** Days an edict stays in force before it can be lifted. */
 	public int edictMinDays = 3;
 	/** Villagers at a composter can be made Berry Breeders with a Cobblemon berry (ROADMAP 28.9). Off: no Berry Breeder job. */
@@ -228,6 +232,7 @@ public final class WorkplaceConfig {
 		"villageGrowthCap", 0, 500,
 		"maxWorkPace", 100, 400,
 		"edictMinDays", 0, 30,
+		"guildsPerRank", 1, 4,
 		"giftedChance", 0, 1000,
 		"seasonDays", 1, 120,
 		"treasuryPerWorker", 0, 500,
@@ -335,6 +340,8 @@ public final class WorkplaceConfig {
 		io.github.jcondedata.aliveworkplace.hall.VillageBanners.ENABLED = villageBanners;
 		io.github.jcondedata.aliveworkplace.hall.Cradles.ENABLED = cradles;
 		io.github.jcondedata.aliveworkplace.people.Tonics.ENABLED = tonics;
+		io.github.jcondedata.aliveworkplace.hall.Guilds.ENABLED = guilds;
+		io.github.jcondedata.aliveworkplace.hall.Guilds.PER_RANK = guildsPerRank;
 		io.github.jcondedata.aliveworkplace.hall.HarvestIdols.ENABLED = harvestIdols;
 		io.github.jcondedata.aliveworkplace.explore.ExplorerWork.RANGE = explorerRange;
 		PostOffice.ROUND = postmanRange;

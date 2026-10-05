@@ -21,6 +21,7 @@ from bandits import *
 from legend_sites import *
 from pokemon import *
 from pokemon_jobs import *
+from guildhall import *
 
 
 # --- Gametest fixtures ------------------------------------------------------------------
@@ -132,6 +133,8 @@ if __name__ == "__main__":
     pokemon_center_2().save(MAIN_STRUCTURES, "pokemon_center_2")
     for name, draw in JOB_BUILDS:  # ROADMAP 28.13: the Pokémon jobs' builds
         draw().save(MAIN_STRUCTURES, name)
+    guildhall().save(MAIN_STRUCTURES, "guildhall")
+    guildhall_2().save(MAIN_STRUCTURES, "guildhall_2")
     for style in VILLAGE_STYLES:
         builders_workshop(style).save(VILLAGE_STRUCTURES, f"{style}_builders_workshop")
         for name, fit_out in VILLAGE_HOUSES.items():

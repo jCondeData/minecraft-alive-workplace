@@ -29,6 +29,8 @@ public final class ModItems {
 	public static final io.github.jcondedata.aliveworkplace.city.CityPlanItem CITY_PLAN = Reg.item("city_plan", io.github.jcondedata.aliveworkplace.city.CityPlanItem::new, new Item.Properties().stacksTo(1));
 	public static final io.github.jcondedata.aliveworkplace.hall.VillageLedgerItem VILLAGE_LEDGER = Reg.item("village_ledger", io.github.jcondedata.aliveworkplace.hall.VillageLedgerItem::new, new Item.Properties().stacksTo(1));
 	/** Calls a rush in a village once a day (ROADMAP 30.11). */
+	/** The Guild Charter (ROADMAP 30.17): sneak-right-click a Master to make them their trade's Guild Master. */
+	public static final Item GUILD_CHARTER = Reg.item("guild_charter", Item::new, new Item.Properties().stacksTo(16));
 	public static final io.github.jcondedata.aliveworkplace.hall.WorkHornItem WORK_HORN = Reg.item("work_horn", io.github.jcondedata.aliveworkplace.hall.WorkHornItem::new, new Item.Properties().stacksTo(1));
 	/** Tonics (ROADMAP 30.15): brewed by the alchemist or cooked by the chef, never crafted; what they do is data (people/Tonics). */
 	public static final io.github.jcondedata.aliveworkplace.people.TonicItem MINERS_BREW = Reg.item("miners_brew", io.github.jcondedata.aliveworkplace.people.TonicItem::new, new Item.Properties().stacksTo(16));
@@ -83,6 +85,7 @@ public final class ModItems {
 				output.accept(RALLY_BANNER);
 				output.accept(VILLAGE_LEDGER);
 				output.accept(WORK_HORN);
+				output.accept(GUILD_CHARTER);
 				output.accept(ModBlocks.CRADLE);
 				output.accept(ModBlocks.HARVEST_IDOL);
 				output.accept(VILLAGE_BANNER);

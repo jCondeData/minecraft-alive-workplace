@@ -78,7 +78,7 @@ public final class VillageMaps {
 			case "lookout_tower", "barracks", "gatehouse", "wall_tower", "palisade_gate" -> Kind.DEFENCE;
 			case "tinkers_workshop", "nether_gate" -> Kind.WORKSHOPS;
 			case "well", "fountain", "gazebo", "chapel" -> Kind.DECORATIONS;
-			case "town_hall" -> Kind.HALL;
+			case "town_hall", "guildhall" -> Kind.HALL;
 			case "street_lamp", "park_bench", "palisade", "stone_wall" -> null;
 			default -> Kind.OTHER;
 		});

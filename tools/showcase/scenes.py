@@ -358,6 +358,12 @@ SCENES = [
        ("02_village_banner_knight", "A knight with his shield painted in the colours"),
        ("03_village_banner_routes", "The trade routes page: Redfield by its banner"),
        ("04_village_banner_book", "The Book of Edicts under the village's own banner")]),
+    # Guilds (ROADMAP 30.17): the Guildhall II with its Guild Master inside, the Builders' Guild on the Book's last row
+    S("guildhall", "Village Hall", "Guild Charters and the Guildhall",
+      "the player granted a Master builder a Guild Charter, the Builders' Guild was founded in the finished Guildhall II, and the Book of Edicts' last row showed it", 30,
+      [("01_guildhall_front", "The Guildhall II: the hall and its tower wing with the bell"),
+       ("02_guildhall_master", "Dara, Guild Master of the Builders' Guild, at the head of the long table"),
+       ("03_guildhall_book", "The Builders' Guild on the Book of Edicts' last row: founded")]),
     # Tonics (ROADMAP 30.15): a miner given Miner's Brew, its tooltip, the drink, then her status line
     S("tonics", "Village Hall", "Tonics: all six",
       "the miner drank the Miner's Brew she was offered and her status line showed her 25% faster with 19 minutes left; a Toolsmith, a Scholar, an Orchard Keeper and a Lumberjack drank the four new tonics", 40,

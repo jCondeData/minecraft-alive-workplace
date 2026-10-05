@@ -64,6 +64,8 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 	private io.github.jcondedata.aliveworkplace.research.Research.State research = io.github.jcondedata.aliveworkplace.research.Research.State.EMPTY;
 	/** The edicts in force, oldest first (see {@link Edicts}). */
 	private java.util.List<Edicts.InForce> edicts = java.util.List.of();
+	/** The village's chartered guilds (30.17, {@link Guilds}), oldest first. */
+	private java.util.List<Guilds.Charter> guilds = java.util.List.of();
 	/** Each edict's reform progress, also of edicts lifted since (see {@link Reforms}). */
 	private java.util.List<Reforms.Progress> reforms = java.util.List.of();
 	/** Their effects summed (not saved: summed again after a load, a data pack reload or the switch). */
@@ -129,6 +131,7 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 			MarketDays.tick(server, pos, hall);
 			VillageHalls.Census census = VillageHalls.census(server, pos);
 			VillageRanks.round(server, pos, hall, census.villagers());
+			Guilds.round(server, pos, hall);
 			Caravans.round(server, pos, census);
 			io.github.jcondedata.aliveworkplace.guard.Gates.round(server, pos, census.guards());
 			io.github.jcondedata.aliveworkplace.guard.BanditCamps.round(server, pos);
@@ -243,6 +246,17 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 	public void setEdicts(java.util.List<Edicts.InForce> edicts) {
 		this.edicts = java.util.List.copyOf(edicts);
 		civic = null;
+		setChanged();
+	}
+
+	/** The village's chartered guilds, oldest first (30.17). */
+	public java.util.List<Guilds.Charter> guilds() {
+		return guilds;
+	}
+
+	/** Sets the chartered guilds (charters, founding and succession go through {@link Guilds}). */
+	public void setGuilds(java.util.List<Guilds.Charter> guilds) {
+		this.guilds = java.util.List.copyOf(guilds);
 		setChanged();
 	}
 
@@ -620,6 +634,8 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 			.result().orElse(io.github.jcondedata.aliveworkplace.research.Research.State.EMPTY);
 		edicts = Edicts.InForce.CODEC.listOf().parse(net.minecraft.nbt.NbtOps.INSTANCE, tag.get("edicts"))
 			.result().map(java.util.List::copyOf).orElse(java.util.List.of());
+		guilds = Guilds.Charter.CODEC.listOf().parse(net.minecraft.nbt.NbtOps.INSTANCE, tag.get("guilds"))
+			.result().map(java.util.List::copyOf).orElse(java.util.List.of());
 		reforms = Reforms.Progress.CODEC.listOf().parse(net.minecraft.nbt.NbtOps.INSTANCE, tag.get("reforms"))
 			.result().map(java.util.List::copyOf).orElse(java.util.List.of());
 		civic = null;
@@ -696,6 +712,9 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 		tag.putInt("rank", rank.ordinal());
 		io.github.jcondedata.aliveworkplace.research.Research.State.CODEC.encodeStart(net.minecraft.nbt.NbtOps.INSTANCE, research).result()
 			.ifPresent(t -> tag.put("research", t));
+		if (!guilds.isEmpty()) {
+			Guilds.Charter.CODEC.listOf().encodeStart(net.minecraft.nbt.NbtOps.INSTANCE, guilds).result().ifPresent(t -> tag.put("guilds", t));
+		}
 		if (!edicts.isEmpty()) {
 			Edicts.InForce.CODEC.listOf().encodeStart(net.minecraft.nbt.NbtOps.INSTANCE, edicts).result().ifPresent(t -> tag.put("edicts", t));
 		}

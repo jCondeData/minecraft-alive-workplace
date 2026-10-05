@@ -415,6 +415,7 @@ public final class BuilderEvents {
 				io.github.jcondedata.aliveworkplace.orchard.Orchards.onDeath(level, villager);
 				io.github.jcondedata.aliveworkplace.berry.BerryBreeders.onDeath(level, villager);
 				io.github.jcondedata.aliveworkplace.people.Couples.onDeath(level, villager);
+				io.github.jcondedata.aliveworkplace.hall.Guilds.onDeath(level, villager);
 				io.github.jcondedata.aliveworkplace.ranch.Daycare.onDeath(level, villager); // (before the grave keeps the villager)
 				io.github.jcondedata.aliveworkplace.daycare.DaycareKeepers.onDeath(level, villager);
 				net.minecraft.core.BlockPos grave = io.github.jcondedata.aliveworkplace.grave.Graves.onDeath(level, villager);

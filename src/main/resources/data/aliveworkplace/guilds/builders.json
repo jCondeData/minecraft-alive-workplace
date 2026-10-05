@@ -1,0 +1,26 @@
+{
+  "name": {
+    "translate": "guild.aliveworkplace.builders"
+  },
+  "perk": {
+    "translate": "guild.aliveworkplace.builders.perk"
+  },
+  "icon": "minecraft:bricks",
+  "trades": [
+    "aliveworkplace:builder",
+    "aliveworkplace:carpenter",
+    "minecraft:mason",
+    "minecraft:leatherworker"
+  ],
+  "perks": [
+    {
+      "type": "aliveworkplace:work_pace",
+      "percent": 15
+    },
+    {
+      "type": "aliveworkplace:build_helpers",
+      "max": 5
+    }
+  ],
+  "enabled": true
+}

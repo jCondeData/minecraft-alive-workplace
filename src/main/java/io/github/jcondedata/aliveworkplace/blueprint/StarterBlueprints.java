@@ -205,6 +205,11 @@ public final class StarterBlueprints {
 	/** Twice the depth with a second Sieve, a side door and a lean-to over stone bins. */
 	public static final Entry SIFTING_SHED_2 = new Entry(AliveWorkplace.id("sifting_shed_2"), new Vec3i(11, 9, 13));
 
+	/** A two-storey guildhall (stone below, timber above) with a long table, the charter framed over the hearth and banners by the door. */
+	public static final Entry GUILDHALL = new Entry(AliveWorkplace.id("guildhall"), new Vec3i(19, 15, 14));
+	/** A stone tower wing with a meeting room, a chart room and the guild bell in an open belfry. */
+	public static final Entry GUILDHALL_2 = new Entry(AliveWorkplace.id("guildhall_2"), new Vec3i(26, 20, 14));
+
 	/** Decorations: a well with a lantern on a chain over the water. */
 	public static final Entry WELL = new Entry(AliveWorkplace.id("well"), new Vec3i(7, 5, 7));
 	/** A roof over the well, benches and lamp posts. */
@@ -268,7 +273,8 @@ public final class StarterBlueprints {
 		STOREHOUSE, STOREHOUSE_2, STOREHOUSE_3, BERRY_FARM, BERRY_FARM_2, RESEARCH_LAB, RESEARCH_LAB_2,
 		TERRACE, TERRACE_2, INN, INN_2, STONE_HOUSE, STONE_HOUSE_2, STONE_HOUSE_3, BARRACKS, BARRACKS_2, TINKERS_WORKSHOP, TINKERS_WORKSHOP_2, NETHER_GATE, NETHER_GATE_2,
 		COMPOST_YARD, COMPOST_YARD_2, SIFTING_SHED, SIFTING_SHED_2,
-		SCHOOLHOUSE, SCHOOLHOUSE_2, LIBRARY, LIBRARY_2, LIBRARY_3, RANCH, RANCH_2, APIARY_GARDEN, APIARY_GARDEN_2, FLOWER_SHOP, FLOWER_SHOP_2, GRAVEYARD, GRAVEYARD_2);
+		SCHOOLHOUSE, SCHOOLHOUSE_2, LIBRARY, LIBRARY_2, LIBRARY_3, RANCH, RANCH_2, APIARY_GARDEN, APIARY_GARDEN_2, FLOWER_SHOP, FLOWER_SHOP_2, GRAVEYARD, GRAVEYARD_2,
+		GUILDHALL, GUILDHALL_2);
 
 	/** The decorations (in the Blueprint Table with the rest; near a Village Hall they make the village prettier). */
 	public static final List<Entry> DECORATIONS = List.of(WELL, WELL_2, STREET_LAMP, PARK_BENCH, FOUNTAIN, GAZEBO, MARKET_SQUARE, CHAPEL);

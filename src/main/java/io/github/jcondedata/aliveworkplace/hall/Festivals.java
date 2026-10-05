@@ -61,6 +61,9 @@ public final class Festivals {
 	/** Days a festival lifts the moods of everyone who came, and by how much. */
 	public static final int MOOD_DAYS = 2;
 	public static final int MOOD = 15;
+	/** With a banner in the village's colours within {@link VillageBanners#FESTIVAL_RANGE} of the square (30.13): better, and longer. */
+	public static final int BANNER_MOOD_DAYS = 3;
+	public static final int BANNER_MOOD = 20;
 	/** How much less happy a village is the day its festival fell through for want of money. */
 	public static final int DISAPPOINTED = 5;
 	/** How close to the square counts as being at the festival. */
@@ -237,9 +240,13 @@ public final class Festivals {
 		long today = Chronicle.day(level);
 		int villagers = 0;
 		int fed = 0;
+		boolean bannered = underBanner(level, hall);
 		for (Villager villager : level.getEntitiesOfClass(Villager.class, VillageHalls.area(hall), Villager::isAlive)) {
 			villagers++;
 			ModAttachments.FESTIVAL_DAY.set(villager, today);
+			if (bannered) {
+				ModAttachments.FESTIVAL_BANNER_DAY.set(villager, today);
+			}
 			if (!villager.isBaby() && VillageNeeds.eat(level, villager, store)) {
 				fed++;
 			}
@@ -250,10 +257,30 @@ public final class Festivals {
 		level.playSound(null, hall, SoundEvents.VILLAGER_CELEBRATE, SoundSource.NEUTRAL, 1.5f, 1.1f);
 	}
 
-	/** True if {@code villager} came to a festival in the last {@link #MOOD_DAYS} days. */
+	/**
+	 * True if {@code villager} came to a festival in the last {@link #MOOD_DAYS} days ({@link #BANNER_MOOD_DAYS} if it
+	 * was held under the village's banner).
+	 */
 	public static boolean enjoyedLately(ServerLevel level, Villager villager) {
 		Long day = ModAttachments.FESTIVAL_DAY.get(villager);
-		return day != null && Chronicle.day(level) - day <= MOOD_DAYS;
+		return day != null && Chronicle.day(level) - day <= (bannered(villager) ? BANNER_MOOD_DAYS : MOOD_DAYS);
+	}
+
+	/** How much {@code villager}'s last festival lifts their mood now: {@link #MOOD}, {@link #BANNER_MOOD} under the banner, 0 if it's past. */
+	public static int mood(ServerLevel level, Villager villager) {
+		return !enjoyedLately(level, villager) ? 0 : bannered(villager) ? BANNER_MOOD : MOOD;
+	}
+
+	/** True if {@code villager}'s last festival flew the village's banner (30.13). */
+	static boolean bannered(Villager villager) {
+		Long day = ModAttachments.FESTIVAL_DAY.get(villager);
+		return day != null && day.equals(ModAttachments.FESTIVAL_BANNER_DAY.get(villager));
+	}
+
+	/** True if a banner in the colours of the village round {@code hall} flies within {@link VillageBanners#FESTIVAL_RANGE} blocks of its square. */
+	public static boolean underBanner(ServerLevel level, BlockPos hall) {
+		VillageBanners.Colours colours = VillageBanners.of(level, hall);
+		return colours != null && VillageBanners.fliesNear(level, square(level, hall), colours);
 	}
 
 	/** Where the festival is: the village's bell nearest the hall, else the hall. */

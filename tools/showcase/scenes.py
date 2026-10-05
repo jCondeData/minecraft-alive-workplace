@@ -322,6 +322,14 @@ SCENES = [
       "a child slept seated in the cradle at night, and a newborn was still a child half-way and grew up within 12000 ticks in the nursery village", 45,
       [("01_cradle_night", "A child asleep in the cradle at night"), ("02_cradle_newborn", "Morning: a newborn"),
        ("03_cradle_growing", "Half-way: 6000 ticks"), ("04_cradle_grown", "Grown up in half the time (12000 ticks)")]),
+    # The Village Banner (ROADMAP 30.13): a street of stone houses under the village's colours, a knight's painted
+    # shield, a neighbour by its banner on the routes page, the village by its own in the Book of Edicts
+    S("village_banner", "Village Hall", "The Village Banner: the village's colours",
+      "three builders hung the colours over their houses' doors, the knight's plain shield came out painted in them, and the routes page and the Book of Edicts showed the villages by their banners", 240,
+      [("01_village_banner_street", "A street of finished houses under the village's banners"),
+       ("02_village_banner_knight", "A knight with his shield painted in the colours"),
+       ("03_village_banner_routes", "The trade routes page: Redfield by its banner"),
+       ("04_village_banner_book", "The Book of Edicts under the village's own banner")]),
     S("hall_quests", "Village Hall", "Quests, advice, the village map and the festival",
       "the quests, advice, village map, mercenaries and festival opened", 60,
       [("01_hall_quests", "Quests"), ("02_hall_advice", "What next?"), ("03_hall_map", "Village map"),

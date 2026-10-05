@@ -1987,7 +1987,7 @@ the Village Hall (`VillageNeeds`, `VillageQuests`, `VillageRanks`, `Festivals`, 
   with a cradle and not without; with Large Families too, births a third of a day apart; a cradle with no bed near
   doesn't count; a child seated in it at night; the art passes `lint.py`; showcase scene `cradle`: a child asleep in a
   cradle at night, and a time-lapse of a child growing up.
-- [ ] **30.13** **The Village Banner.** An item of its own (pixel-art icon: a banner on a gilded crossbar), crafted
+- [x] **30.13** (review: pending 2026-10-05) **The Village Banner.** An item of its own (pixel-art icon: a banner on a gilded crossbar), crafted
   from any banner (it keeps that banner's design, which its tooltip lists) and a gold ingot. Right-click the Village
   Hall with it to make that design the village's colours (saved on the hall; the banner isn't used up, as a Name Tag
   isn't; the chronicle notes it); place it like a banner to hang the design anywhere. The colours show:
@@ -4289,6 +4289,14 @@ item waits.
 - (Sessions: anything that needs the owner, and the link to the latest Full test report. Handoffs go here through
   `sessions.py handoff "<in progress, next, traps>" --as <you>`, which keeps one per kind of session (chat, night):
   carry over anything still true from the previous one.)
+- 2026-10-05 (30.13, decisions; lane d): a placed Village Banner hangs a vanilla banner of the design, and breaking it
+  gives back that vanilla banner, not the Village Banner (the gold is spent on the hanging); it can be made a Village
+  Banner again with another gold ingot. Kept that way so placed banners stay plain vanilla blocks (no new block, saves
+  stay vanilla); owner's call if the gilded item should come back instead. The door banner goes on the outside of the
+  front door's wall: a block above the door's top, higher past a hood or an awning (up to 4 above), else right on top
+  of the door, else a block to the side; a front door with none of these free gets none and the banner stays in the
+  chest (38 of the 43 door-bearing starter blueprints have a spot). Guards repaint nothing: only shields with no base
+  colour are painted, so a shield painted for an earlier set of colours keeps them.
 - 2026-10-05 (29.8, decisions; lane a): guests (`legend/LegendGuests`) are nitwits until they settle (no job, like inn
   travellers) and go by one of their file's `names` (the title if none). A place's day roll is spent only when some
   Legend may come there that day (conditions met, slot free, no visit in 7 days), so a village that qualifies at noon

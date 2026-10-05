@@ -641,6 +641,8 @@ public final class Builders {
 		int entitiesLeft = plan == null ? 0 : BuildEntities.placeAll(level, plan, supplies);
 		if (plan != null) {
 			lightPortals(level, plan.bounds(), supplies);
+			// The village's colours over the front door, if a banner of their base colour is in the chests (30.13).
+			io.github.jcondedata.aliveworkplace.hall.VillageBanners.hangOverDoor(level, plan.bounds(), supplies);
 		}
 		returnBlueprint(level, site, bench, supplies);
 

@@ -140,7 +140,10 @@ public class EdictBookGameTests implements FabricGameTest {
 			// Then the Cradle (30.12): no cradle near a bed in this village.
 			helper.assertTrue(menu.icon(EdictBook.CRADLE).is(io.github.jcondedata.aliveworkplace.registry.ModBlocks.CRADLE.asItem())
 				&& lore(menu.icon(EdictBook.CRADLE)).stream().anyMatch(l -> l.startsWith("No Cradle near a bed")), "the last row's cradle: " + lore(menu.icon(EdictBook.CRADLE)));
-			for (int x = 2; x < 9; x++) {
+			// Then the village's colours (30.13): none set here, so the Village Banner and how to set them.
+			helper.assertTrue(menu.icon(EdictBook.BANNER).is(ModItems.VILLAGE_BANNER)
+				&& menu.icon(EdictBook.BANNER).getHoverName().getString().equals("No colours yet"), "the last row's banner: " + menu.icon(EdictBook.BANNER));
+			for (int x = 3; x < 9; x++) {
 				helper.assertTrue(menu.icon(EdictBook.RESERVED_ROW * 9 + x).is(Items.LIGHT_GRAY_STAINED_GLASS_PANE), "the last row, slot " + x);
 			}
 			helper.succeed();

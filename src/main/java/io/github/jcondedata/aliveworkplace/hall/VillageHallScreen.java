@@ -437,8 +437,10 @@ public final class VillageHallScreen {
 			}
 			lore.add(line(Component.translatable(sending ? "screen.aliveworkplace.hall.route_on" : "screen.aliveworkplace.hall.route_off"),
 				sending ? ChatFormatting.GREEN : ChatFormatting.GRAY));
-			ItemStack icon = icon(sending ? Items.CHEST_MINECART : Items.MINECART, other.name().copy(), sending ? ChatFormatting.GREEN : ChatFormatting.WHITE,
-				lore.toArray(Component[]::new));
+			// Each village by its banner, when it has colours (30.13); else by a cart, loaded if this one sends it goods.
+			VillageBanners.Colours colours = VillageBanners.of(level, other.hall());
+			ItemStack icon = icon(colours != null ? colours.banner() : new ItemStack(sending ? Items.CHEST_MINECART : Items.MINECART), other.name().copy(),
+				sending ? ChatFormatting.GREEN : ChatFormatting.WHITE, lore.toArray(Component[]::new));
 			menu.button(slot++, icon, p -> {
 				int max = VillageRanks.caravanRoutes(VillageRanks.of(level, hall));
 				boolean on = data.toggleRoute(hall, other.hall(), max);
@@ -826,7 +828,11 @@ public final class VillageHallScreen {
 	}
 
 	public static ItemStack icon(Item item, Component name, ChatFormatting color, Component... lore) {
-		ItemStack icon = new ItemStack(item);
+		return icon(new ItemStack(item), name, color, lore);
+	}
+
+	/** An icon made from {@code icon} itself (a banner in a village's colours keeps its design). */
+	public static ItemStack icon(ItemStack icon, Component name, ChatFormatting color, Component... lore) {
 		icon.set(DataComponents.CUSTOM_NAME, plain(name, color));
 		if (lore.length > 0) {
 			icon.set(DataComponents.LORE, new ItemLore(List.of(lore)));

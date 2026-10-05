@@ -77,6 +77,7 @@ public final class ModItems {
 				output.accept(VILLAGE_LEDGER);
 				output.accept(WORK_HORN);
 				output.accept(ModBlocks.CRADLE);
+				output.accept(VILLAGE_BANNER);
 				output.accept(CITY_PLAN);
 				output.accept(QUARRY_MARKER);
 				output.accept(FIELD_MARKER);

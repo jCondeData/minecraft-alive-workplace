@@ -399,4 +399,10 @@ def workplace(name):
             b.blocks[pos] = ("minecraft:air", ())
         elif block == "minecraft:calcite":
             b.blocks[pos] = ("minecraft:white_concrete", ())
+    # The front windows' flower boxes sit at head height beside the steps. Mob pathfinding takes any trapdoor for open
+    # ground, so a worker coming along the front wall walks into a top-half one and stays stuck there, never reaching
+    # the job block (the guard of workplaceBuilt_guard_house, 3 runs in 20). An upside-down stair sill holds the pot
+    # just the same and is a block the pathfinder walks around.
+    for x in (2, 6):
+        stairs(b, x, 1, 1, VILLAGE_STYLES["plains"].roof, "south", top=True)
     return b

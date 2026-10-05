@@ -79,6 +79,13 @@ public final class BuilderEvents {
 				}
 				return InteractionResult.SUCCESS;
 			}
+			// The Pokémon Professor (29.21), right-clicked with an empty hand: hints about the player's party.
+			if (!player.isShiftKeyDown() && player.getItemInHand(hand).isEmpty() && io.github.jcondedata.aliveworkplace.legend.PokemonProfessor.isProfessor(villager)) {
+				if (!level.isClientSide()) {
+					io.github.jcondedata.aliveworkplace.legend.PokemonProfessor.open((ServerPlayer) player, villager);
+				}
+				return InteractionResult.SUCCESS;
+			}
 			// A Legend without a trade of their own, sneak-right-clicked with an empty hand: their research tree's tab (29.11).
 			if (player.isShiftKeyDown() && player.getItemInHand(hand).isEmpty()
 				&& villager.getVillagerData().getProfession() == io.github.jcondedata.aliveworkplace.registry.ModVillagers.LEGEND) {

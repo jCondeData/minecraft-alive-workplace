@@ -25,4 +25,9 @@ public interface PokemonFruit {
 
 	/** Picks the ripe fruit at {@code pos}; what came off. */
 	List<ItemStack> pick(ServerLevel level, BlockPos pos, Entity picker);
+
+	/** A berry plant (not an apricorn): Berry Science (29.21) gets one more berry from each. */
+	default boolean isBerryPlant(BlockState state) {
+		return false;
+	}
 }

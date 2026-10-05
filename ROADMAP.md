@@ -1756,7 +1756,7 @@ MarketDays) and research/.
   and is replaced 2 days after it dies; a foal's stats are at least its best parent's and never over vanilla's
   highest; cavalry picks the bred horses; showcase scene `legend_beastmaster` (GIF: a guard and a war dog against
   zombies).
-- [ ] **29.21** **The Pokémon Professor (Legendary, with Cobblemon).** Comes: a guest at the inn once the village's
+- [x] **29.21** (review: pending 2026-10-05) **The Pokémon Professor (Legendary, with Cobblemon).** Comes: a guest at the inn once the village's
   Pasture Blocks hold 25 Pokémon of 10 types (the condition `pastured_pokemon`, through a new extension point
   `legend/PokemonCensus` filled in `compat/cobblemon/`; without Cobblemon the file doesn't load). Trade:
   `aliveworkplace:legend`, at a lectern. Likes: books. Powers:
@@ -4793,5 +4793,18 @@ item waits.
   nugget". Also decided there: the Noble's class file repeats the Burgher's food and diet (34.2 lists none), the
   Burgher's "one more service" excludes the market (the Market Square is its own `building` need), and new chronicle
   kind `LIFE` for elders, retirements and generations beside 34.6's `CLASS`.
+- 2026-10-05 (29.21, decisions; lane a): the Pokémon Professor. **Field Notes** "partners help 5% more a level" is
+  read as each partner's help growing by a twentieth a level (one partner takes 15% off a job, 15.75% at I, 16.5% at
+  II), not 5 more points. **Breeding Records** "eggs 20% sooner" shortens the wait: the keeper's dawn odds are divided
+  by 0.8 (I) or 0.6 (II), at most 100% (50% becomes 63% and 83%). The hints give EVs in words too (no, a few, some, a
+  lot of, full EVs), so **Regional Survey**'s "exact IVs and EVs" has something to change; IVs use the games' judge
+  words (0 No good, 1-15 Decent, 16-25 Pretty good, 26-29 Very good, 30 Fantastic, 31 Best). The village Pokédex logs
+  species only while a Professor lives in the village (it is their power), at the hall's round, from the Pokémon
+  tethered to Pasture Blocks inside the hall's area; the count shows as a book on the hall's Legends page (slot 7, by
+  the anthem) and as the research counter `pokedex_species`. **Evolution Studies**: one stone a day per Professor, the
+  day's stone going round Cobblemon's ten evolution stones, bought from the hints screen. Hints open on a right-click
+  with an empty hand; the Pokédex tab stays on the sneak-right-click every tradeless Legend has. The Pokédex topics
+  only need their species count (the spec names no topic prerequisites), and pay in vanilla items so the file never
+  fails to parse without Cobblemon.
 - **qa handoff** (qa-1005-1034, 2026-10-05 11:27Z): qa-1005-1034: verified B46, B69, B73. Unshipped: qa/b46-b69-1005 (QaB46GameTests, QaB69FrontWalkGameTests; its ship build passed 1014/1014 gametests but failed on the compat flake B74 = B57 again): ship it once B74 is fixed (or retry ship). qa/import-swap-1005 is obsolete (B73 fixed on main). B50 and B57 not verified: read nightly run 37297003813 (on 5b489b7, after both fixes) for the crew test and the Pidgey test's repeats; B57 recurred (B74). qa/placing-1005 still waits on B71. Next QA: B50 from the nightly, B72 scene setup, then 21.2, M23.
 - **lane-c handoff** (lane-c-1005-1833, 2026-10-05 20:59Z): lane-c-1005-1833 (21:01Z): landed on main 2f801600: 27.15-27.19 (old wip/lane-c, M27-gated), 27.20 old houses, 27.21 renewal, B79 (ladder to upstairs beds), CaravanRoad test isolation fix. Local full build green (1169+151) before merging lane a's 29.x, pushed without rebuilding that merge (clean, no config changes). Next: 27.22 (the 1.1 yardstick), then 31.x. Red duty notes: main CI 695/697-699 were cancelled by the runner at ~15 min (infra), 696 failed only ConscriptionGameTests.aConscriptSavedMidRaidLoadsWithoutTheSword (B81). wip/lane-c is now stale (all merged); B80 is test-order (QA).

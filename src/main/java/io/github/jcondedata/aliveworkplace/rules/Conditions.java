@@ -33,6 +33,7 @@ public final class Conditions {
 		register("full_moon", FullMoon::read);
 		register("first_city", FirstCity::read);
 		register("legend", LegendSettled::read);
+		register("pastured_pokemon", PasturedPokemon::read);
 	}
 
 	public static void register(String type, Function<JsonObject, Condition> reader) {

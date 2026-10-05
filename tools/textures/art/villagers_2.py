@@ -1200,9 +1200,64 @@ def founder():
     return [path]
 
 
+def pokemon_professor():
+    """The Pokemon Professor (29.21): a long white lab coat to the shins, pale linen and never pure white, with white
+    sleeves and turned-back cuffs, wide lapels open over a blue shirt and a red tie, a pocket on the right below the
+    crossed arms with a red and a blue pen clipped in it, and the coat's centre seam and fold shadows down the front; a vent up the back.
+    A gold circlet at the brow marks the Legend."""
+    t = vg.VillagerTexture()
+    coat = Ramp(["#a6a59b", "#c6c5bc", "#dddcd4", "#ebeae3", "#f5f4ee"], name="labcoat")
+    vg.robe(t, coat, length=18, folds=False, sleeves_too=True, body_too=True, noise=0)
+    vg.sleeves(t, coat, cuff=coat[1], noise=0)
+    for side in SIDES:                                   # the Legend's gold circlet at the brow
+        f = t.face("head", side)
+        for x in range(f.w):
+            f.put(x, 2, GOLD[2] if side in ("front", "west") else GOLD[1])
+    hf = t.face("head", "front")
+    hf.put(3, 2, GOLD[3])
+    hf.put(4, 2, GOLD[3])
+    jf = t.face("jacket", "front")
+    shirt = Ramp(["#3c5a86", "#56769f", "#7493b8"], name="shirt")
+    tie = Ramp(["#8e1f24", "#b3302f", "#cf4a3f"], name="tie")
+    paint(jf, ((3, 0), (4, 0)), shirt[2])                # the shirt's collar, lit
+    paint(jf, ((3, y) for y in range(1, 6)), shirt[1])   # the shirt in the open front
+    paint(jf, ((4, y) for y in range(1, 6)), shirt[0])
+    paint(jf, ((3, 1), (4, 1)), tie[2])                  # the tie's knot, then the blade down the shirt
+    paint(jf, ((3, 2), (4, 2), (4, 3), (4, 4)), tie[1])
+    paint(jf, ((3, 3), (3, 4)), tie[0])
+    jf.put(4, 5, tie[0])
+    paint(jf, ((2, 0), (5, 0)), coat[4])                 # the lapels: lit edges folding out from the neck
+    paint(jf, ((2, 1), (2, 2), (2, 3), (2, 4), (2, 5)), coat[3])
+    paint(jf, ((5, 1), (5, 2), (5, 3), (5, 4), (5, 5)), coat[2])
+    paint(jf, ((1, 1), (6, 1)), coat[2])
+    paint(jf, ((2, 6), (5, 6)), coat[1])                 # where the lapels close
+    paint(jf, ((3, y) for y in range(6, 18)), coat[1])   # the coat's closing seam, buttoned
+    for y in (7, 9, 14):
+        jf.put(4, y, coat[0])
+    paint(jf, ((0, 12), (1, 12), (2, 12)), coat[1])      # the pocket on the right (under the crossed arms, where it
+    paint(jf, ((x, y) for x in range(3) for y in (13, 14)), coat[2])  # shows), and a red and a blue pen in it
+    paint(jf, ((x, 15) for x in range(3)), coat[1])
+    jf.put(0, 11, "#cf4a3f")
+    jf.put(0, 12, "#8e1f24")
+    jf.put(2, 11, "#56769f")
+    jf.put(2, 12, "#2c4468")
+    paint(jf, ((x, 17) for x in range(jf.w)), coat[1])   # the hem's shadow
+    for side in ("west", "east"):                        # side pockets' seams
+        f = t.face("jacket", side)
+        paint(f, ((x, 12) for x in range(1, 4)), coat[1])
+        paint(f, ((x, 17) for x in range(f.w)), coat[1])
+    jb = t.face("jacket", "back")                        # the back vent from the hem to the hips
+    paint(jb, ((3, y) for y in range(12, 18)), coat[0])
+    paint(jb, ((4, y) for y in range(12, 18)), coat[2])
+    paint(jb, ((x, 17) for x in range(jb.w)), coat[1])  # the hem's shadow
+    path = ASSETS / "textures" / "entity" / "villager" / "legend" / "pokemon_professor.png"
+    t.save(path)
+    return [path]
+
+
 DRAW = [orchard_keeper, berry_breeder, camp_cook, habitat_keeper, daycare_keeper, gem_grower, pokemon_trader, porter, postman, rancher, scholar, shopkeeper, sifter, teacher, tinkerer,
         trainer, trainer_leader, tutor, undertaker, steward, legend, legend_placeholder, master_architect, pathfinder, old_sage, seer, golem_smith,
-        merchant_prince, grand_chef, bard_laureate, beastmaster, founder]
+        merchant_prince, grand_chef, bard_laureate, beastmaster, founder, pokemon_professor]
 
 if __name__ == "__main__":
     run(DRAW)

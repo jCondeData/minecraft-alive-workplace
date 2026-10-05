@@ -69,6 +69,8 @@ public class ScreenshotHarness implements ClientModInitializer {
 	private final JobScenes jobScenes = new JobScenes();
 	private final WordsScene words = new WordsScene();
 	private final CityPlanScene cityPlan = new CityPlanScene();
+	private final LegendsHallScene legendsHall = new LegendsHallScene();
+	private final GiftedScene gifted = new GiftedScene();
 	private final CityPlanGroundScene cityPlanGround = new CityPlanGroundScene();
 	private final PartnersScene partners = new PartnersScene();
 	private final PartnersLandScene partnersLand = new PartnersLandScene();
@@ -146,6 +148,14 @@ public class ScreenshotHarness implements ClientModInitializer {
 		}
 		if ("city_plan".equals(System.getProperty("aliveworkplace.scene"))) {
 			cityPlan.tick(mc);
+			return;
+		}
+		if ("legends_hall".equals(System.getProperty("aliveworkplace.scene"))) {
+			legendsHall.tick(mc);
+			return;
+		}
+		if ("gifted".equals(System.getProperty("aliveworkplace.scene"))) {
+			gifted.tick(mc);
 			return;
 		}
 		if ("city_plan_ground".equals(System.getProperty("aliveworkplace.scene"))) {

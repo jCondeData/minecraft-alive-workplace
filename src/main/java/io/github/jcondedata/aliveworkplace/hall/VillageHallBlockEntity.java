@@ -117,6 +117,7 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 			io.github.jcondedata.aliveworkplace.guard.BanditCamps.round(server, pos);
 			Festivals.round(server, pos, hall, census.villagers());
 			io.github.jcondedata.aliveworkplace.legend.LegendSlots.round(server, pos);
+			io.github.jcondedata.aliveworkplace.legend.LegendNeeds.round(server, pos);
 			io.github.jcondedata.aliveworkplace.people.Couples.round(server, pos);
 			if (Treasury.ENABLED) {
 				Treasury.round(server, pos, hall, census.workers().size());

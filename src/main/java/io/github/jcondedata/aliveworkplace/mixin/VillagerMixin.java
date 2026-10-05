@@ -34,6 +34,7 @@ abstract class VillagerMixin {
 		io.github.jcondedata.aliveworkplace.city.Stewards.tick((Villager) (Object) this);
 		io.github.jcondedata.aliveworkplace.work.WorkerLimits.tick((Villager) (Object) this);
 		io.github.jcondedata.aliveworkplace.legend.Legends.tick((Villager) (Object) this);
+		io.github.jcondedata.aliveworkplace.legend.Gifted.tick((Villager) (Object) this);
 		if (((Villager) (Object) this).isRemoved()) {
 			ci.cancel();
 			return;
@@ -119,6 +120,24 @@ abstract class VillagerMixin {
 		}
 	}
 
+	/** Every trade's WORK package (the first activity added with conditions) starts with a Legend's picket (29.5). */
+	@org.spongepowered.asm.mixin.injection.ModifyArg(method = "registerBrainGoals", at = @At(value = "INVOKE", ordinal = 0,
+		target = "Lnet/minecraft/world/entity/ai/Brain;addActivityWithConditions(Lnet/minecraft/world/entity/schedule/Activity;Lcom/google/common/collect/ImmutableList;Ljava/util/Set;)V"),
+		index = 1)
+	private com.google.common.collect.ImmutableList<com.mojang.datafixers.util.Pair<Integer, ? extends net.minecraft.world.entity.ai.behavior.BehaviorControl<? super Villager>>> aliveworkplace$picketAtWork(
+			com.google.common.collect.ImmutableList<com.mojang.datafixers.util.Pair<Integer, ? extends net.minecraft.world.entity.ai.behavior.BehaviorControl<? super Villager>>> work) {
+		return io.github.jcondedata.aliveworkplace.legend.Picket.work(work);
+	}
+
+	/** And the IDLE package (the fourth activity added plainly: after PLAY, CORE and REST), for a Legend with no workstation. */
+	@org.spongepowered.asm.mixin.injection.ModifyArg(method = "registerBrainGoals", at = @At(value = "INVOKE", ordinal = 3,
+		target = "Lnet/minecraft/world/entity/ai/Brain;addActivity(Lnet/minecraft/world/entity/schedule/Activity;Lcom/google/common/collect/ImmutableList;)V"),
+		index = 1)
+	private com.google.common.collect.ImmutableList<com.mojang.datafixers.util.Pair<Integer, ? extends net.minecraft.world.entity.ai.behavior.BehaviorControl<? super Villager>>> aliveworkplace$picketIdle(
+			com.google.common.collect.ImmutableList<com.mojang.datafixers.util.Pair<Integer, ? extends net.minecraft.world.entity.ai.behavior.BehaviorControl<? super Villager>>> idle) {
+		return io.github.jcondedata.aliveworkplace.legend.Picket.idle(idle);
+	}
+
 	@Inject(method = "registerBrainGoals", at = @At("TAIL"))
 	private void aliveworkplace$builderSchedule(Brain<Villager> brain, CallbackInfo ci) {
 		Villager self = (Villager) (Object) this;
@@ -134,6 +153,23 @@ abstract class VillagerMixin {
 			brain.setSchedule(ModVillagers.BARD_SCHEDULE);
 			brain.updateActivityFromSchedule(self.level().getDayTime(), self.level().getGameTime());
 		}
+		if (io.github.jcondedata.aliveworkplace.legend.Gifted.nightOwl(self)) {
+			// A Night Owl (29.6) works the night, whatever their trade.
+			brain.setSchedule(ModVillagers.NIGHT_OWL_SCHEDULE);
+			brain.updateActivityFromSchedule(self.level().getDayTime(), self.level().getGameTime());
+		}
 		io.github.jcondedata.aliveworkplace.guard.Guards.updateHealth(self);
+	}
+
+	/** A Gifted villager sparkles when they level up (29.6). */
+	@Inject(method = "increaseMerchantCareer", at = @At("TAIL"))
+	private void aliveworkplace$giftedSparkle(CallbackInfo ci) {
+		io.github.jcondedata.aliveworkplace.legend.Gifted.onLevelUp((Villager) (Object) this);
+	}
+
+	/** Silver Tongue (29.6): every trade with a player is cheaper, on top of vanilla's special prices. */
+	@Inject(method = "updateSpecialPrices", at = @At("TAIL"))
+	private void aliveworkplace$silverTongue(net.minecraft.world.entity.player.Player player, CallbackInfo ci) {
+		io.github.jcondedata.aliveworkplace.legend.Gifted.discount((Villager) (Object) this);
 	}
 }

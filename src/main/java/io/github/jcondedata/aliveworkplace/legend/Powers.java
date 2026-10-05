@@ -17,6 +17,7 @@ public final class Powers {
 	static {
 		register("pace", PacePower::read);
 		register("mood", MoodPower::read);
+		GiftPowers.register();
 	}
 
 	/** Adds a named power (each Legend item adds its own). */

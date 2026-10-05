@@ -133,7 +133,7 @@ public class ConfigGameTests implements FabricGameTest {
 				problems.add("range for " + name + ", which isn't a number setting");
 			}
 		}
-		helper.assertTrue(names.size() == 47, "expected 47 settings on the screen (28.12 added daycareKeepers, 27.8 stewardSelfRun, 28.11 gemGrowers, 28.10 added habitatKeepers and habitatSightings, 30.3 villageEdicts and edictMinDays, 30.2 maxWorkPace, 29.2 legends, 28.9 berryBreeders, 28.8 campCooks, 27.5 steward and stewardMaxOpenBuilds;"
+		helper.assertTrue(names.size() == 49, "expected 49 settings on the screen (28.12 added daycareKeepers, 29.6 giftedChance, 29.5 legendNeeds, 27.8 stewardSelfRun, 28.11 gemGrowers, 28.10 habitatKeepers and habitatSightings, 30.3 villageEdicts and edictMinDays, 30.2 maxWorkPace, 29.2 legends, 28.9 berryBreeders, 28.8 campCooks, 27.5 steward and stewardMaxOpenBuilds;"
 			+ " 29.3's mythicLegendCap list is in the file only), found " + names.size() + ": " + names);
 		helper.assertTrue(!names.contains("mythicLegendCap"), "a list on the settings screen");
 		helper.assertTrue(problems.isEmpty(), String.join("; ", problems));

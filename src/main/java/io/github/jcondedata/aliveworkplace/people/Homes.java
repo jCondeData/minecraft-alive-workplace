@@ -13,6 +13,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.npc.Villager;
+import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 import org.jetbrains.annotations.Nullable;
 
@@ -43,17 +44,27 @@ public final class Homes {
 	 * the dimension is looked at (their sizes are cheap to get): imports can be any size, so no search radius is safe.
 	 */
 	public static Optional<Home> at(ServerLevel level, BlockPos bed) {
-		Home best = null;
+		return building(level, bed).map(Building::home);
+	}
+
+	/** A home and the box its building fills in the world. */
+	public record Building(Home home, BoundingBox box) {
+	}
+
+	/** {@link #at}, with the box the building fills (a Legend's home is shared by every bed in it, ROADMAP 29.5). */
+	public static Optional<Building> building(ServerLevel level, BlockPos bed) {
+		Building best = null;
 		for (BuildSiteManager.Finished f : BuildSiteManager.get(level).finishedIn(level)) {
 			Vec3i size = size(level, f.structure());
 			if (size == null || Math.abs(f.placement().origin().getX() - bed.getX()) >= size.getX() + size.getZ()
 				|| Math.abs(f.placement().origin().getZ() - bed.getZ()) >= size.getX() + size.getZ()) {
 				continue; // (too far away to be in it whichever way it's turned)
 			}
-			if (BlueprintOutline.bounds(f.placement(), size).isInside(bed)) {
+			BoundingBox box = BlueprintOutline.bounds(f.placement(), size);
+			if (box.isInside(bed)) {
 				Home home = new Home(f.structure(), BlueprintUpgrades.tier(f.structure()));
-				if (best == null || home.tier() > best.tier()) {
-					best = home;
+				if (best == null || home.tier() > best.home().tier()) {
+					best = new Building(home, box);
 				}
 			}
 		}

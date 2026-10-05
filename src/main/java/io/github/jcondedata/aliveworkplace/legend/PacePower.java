@@ -7,11 +7,16 @@ import java.util.Set;
 import net.minecraft.resources.ResourceLocation;
 
 /**
- * {@code pace}: workers of {@code trades} (none listed: every trade) within {@code radius} blocks of the Legend (0: the
+ * {@code pace}: workers of {@code trades} (none listed: every trade; {@code "own_trade": true}: only the holder's own
+ * trade, as a Born Leader's, 29.7) within {@code radius} blocks of the Legend (0: the
  * whole village) work {@code factor} times as fast, never past {@link LegendPowers#PACE_CAP} from Legends together, and
  * never past {@code Pace}'s cap with every other bonus.
  */
-public record PacePower(Set<ResourceLocation> trades, int radius, float factor) implements Power {
+public record PacePower(Set<ResourceLocation> trades, int radius, float factor, boolean ownTrade) implements Power {
+	public PacePower(Set<ResourceLocation> trades, int radius, float factor) {
+		this(trades, radius, factor, false);
+	}
+
 	static PacePower read(JsonObject json) {
 		Set<ResourceLocation> trades = new HashSet<>();
 		if (json.has("trades")) {
@@ -27,7 +32,8 @@ public record PacePower(Set<ResourceLocation> trades, int radius, float factor) 
 		if (factor < 1) {
 			throw new IllegalArgumentException("'factor' below 1");
 		}
-		return new PacePower(Set.copyOf(trades), json.has("radius") ? Math.max(0, json.get("radius").getAsInt()) : 0, factor);
+		boolean own = json.has("own_trade") && json.get("own_trade").getAsBoolean();
+		return new PacePower(Set.copyOf(trades), json.has("radius") ? Math.max(0, json.get("radius").getAsInt()) : 0, factor, own);
 	}
 
 	@Override
@@ -38,7 +44,8 @@ public record PacePower(Set<ResourceLocation> trades, int radius, float factor) 
 	/** "Every Builder within 32 blocks works 2× as fast", "Every worker in the village works 1.5× as fast". */
 	@Override
 	public net.minecraft.network.chat.Component describe() {
-		net.minecraft.network.chat.Component who = trades.isEmpty() ? net.minecraft.network.chat.Component.translatable("legend.aliveworkplace.power.pace_everyone")
+		net.minecraft.network.chat.Component who = ownTrade ? net.minecraft.network.chat.Component.translatable("legend.aliveworkplace.power.pace_own_trade")
+			: trades.isEmpty() ? net.minecraft.network.chat.Component.translatable("legend.aliveworkplace.power.pace_everyone")
 			: LegendText.trades(trades.stream().sorted().toList());
 		String times = LegendText.number(factor);
 		return radius > 0 ? net.minecraft.network.chat.Component.translatable("legend.aliveworkplace.power.pace", who, radius, times)
@@ -47,5 +54,10 @@ public record PacePower(Set<ResourceLocation> trades, int radius, float factor) 
 
 	public boolean covers(ResourceLocation trade) {
 		return trades.isEmpty() || trades.contains(trade);
+	}
+
+	/** Whether a worker of {@code trade} is sped up by this power held by someone of {@code holder}'s trade. */
+	public boolean covers(ResourceLocation trade, ResourceLocation holder) {
+		return ownTrade ? trade.equals(holder) : covers(trade);
 	}
 }

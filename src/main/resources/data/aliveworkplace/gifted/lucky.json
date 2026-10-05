@@ -1,0 +1,11 @@
+{
+  "name": "gifted.aliveworkplace.lucky",
+  "description": "gifted.aliveworkplace.lucky.desc",
+  "weight": 10,
+  "effects": [
+    {
+      "type": "loot_luck",
+      "luck": 3
+    }
+  ]
+}

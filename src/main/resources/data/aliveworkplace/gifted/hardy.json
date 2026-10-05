@@ -1,0 +1,14 @@
+{
+  "name": "gifted.aliveworkplace.hardy",
+  "description": "gifted.aliveworkplace.hardy.desc",
+  "weight": 10,
+  "effects": [
+    {
+      "type": "no_illness"
+    },
+    {
+      "type": "health",
+      "factor": 2.0
+    }
+  ]
+}

@@ -319,7 +319,7 @@ public final class Netherworkers {
 		LootParams params = new LootParams.Builder(level)
 			.withParameter(LootContextParams.ORIGIN, villager.position())
 			.withOptionalParameter(LootContextParams.THIS_ENTITY, villager)
-			.withLuck(BuilderLevels.level(villager) - 1)
+			.withLuck(BuilderLevels.level(villager) - 1 + io.github.jcondedata.aliveworkplace.legend.Gifted.lootLuck(villager))
 			.create(LootContextParamSets.CHEST);
 		List<ItemStack> out = new ArrayList<>(roll(level, WASTES, params));
 		if ((kit & Kit.FIRE_RESISTANCE) != 0) {

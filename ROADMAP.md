@@ -1456,7 +1456,7 @@ MarketDays) and research/.
   builder places blocks at midnight and sleeps at noon); the roll over 3,000 fixed UUIDs gives about 1 in 30 and the
   same answer twice; with `giftedChance` 0 nobody is Gifted; showcase scene `gifted` (the hall's list, a Night Owl
   building by moonlight).
-- [ ] **29.7** **Gifted villagers (2), and Legends born.** Four more traits:
+- [x] **29.7** (review: pending 2026-10-05) **Gifted villagers (2), and Legends born.** Four more traits:
   - **Lucky**: luck +3 on every loot roll their work makes, on top of the level luck `Explorers` and `Netherworkers`
     already give (explorer finds, Netherworker trips, sifting, fishing) (`loot_luck`; our sifting tables get `quality`
     weights for it);

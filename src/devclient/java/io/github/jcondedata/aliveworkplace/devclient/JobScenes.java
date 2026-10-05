@@ -88,6 +88,20 @@ final class JobScenes {
 	}
 
 	/** One step of a screen scene: optionally act on the server, then point at {@code slot} (-1: nowhere) and shoot. */
+	/** gifted_born's family (29.7): a still villager facing the camera; a parent is a schooled Master farmer. */
+	private static Villager bornSceneVillager(ServerLevel level, BlockPos at, String name, boolean master) {
+		Villager v = EntityType.VILLAGER.spawn(level, at, MobSpawnType.COMMAND);
+		v.setNoAi(true);
+		v.setYRot(0);
+		v.setYHeadRot(0);
+		v.setCustomName(net.minecraft.network.chat.Component.literal(name));
+		if (master) {
+			v.setVillagerData(v.getVillagerData().setProfession(net.minecraft.world.entity.npc.VillagerProfession.FARMER).setLevel(5));
+			io.github.jcondedata.aliveworkplace.registry.ModAttachments.SCHOOLED.set(v, true);
+		}
+		return v;
+	}
+
 	record Step(String shot, int slot, int rows, BiConsumer<ServerLevel, ServerPlayer> before, int hold) {
 	}
 
@@ -1100,6 +1114,39 @@ final class JobScenes {
 					var hall = (io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(STATION);
 					Showcase.check(hall.chronicle().stream().anyMatch(e -> e.kind() == io.github.jcondedata.aliveworkplace.hall.Chronicle.Kind.LEGEND),
 						"the chronicle has the Legend's line");
+					io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.open(player, STATION);
+					if (player.containerMenu instanceof ChoiceMenu m) {
+						m.press(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.CHRONICLE, player);
+					}
+				}, 30)),
+			(level, player) -> player.containerMenu instanceof ChoiceMenu));
+		SCREENS.put("gifted_born", new Screen("a child of two schooled Masters grew up Gifted, and the chronicle says so", new Vec3(2.5, -58.4, 4.5), TARGET,
+			(level, player) -> {
+				// ROADMAP 29.7: Dara and Tom, schooled Master farmers, and their daughter Wren, still a child, by the hall.
+				level.setBlockAndUpdate(STATION, ModBlocks.VILLAGE_HALL.defaultBlockState()
+					.setValue(io.github.jcondedata.aliveworkplace.hall.VillageHallBlock.FACING, Direction.SOUTH));
+				Villager dara = bornSceneVillager(level, new BlockPos(-1, -60, 2), "Dara", true);
+				Villager tom = bornSceneVillager(level, new BlockPos(1, -60, 2), "Tom", true);
+				subject = bornSceneVillager(level, new BlockPos(0, -60, 2), "Wren", false);
+				subject.setAge(-24000);
+				io.github.jcondedata.aliveworkplace.people.Families.born(subject, dara, tom);
+				io.github.jcondedata.aliveworkplace.hall.VillageNeeds.check(level, STATION);
+			},
+			List.of(new Step("01_wren_grown_up", -1, 6, (level, player) -> {
+					// She grows up; the hall's round throws the born dice (fixed here: the Legend die misses, the gift die hits).
+					Villager wren = subject;
+					wren.setAge(0);
+					var parents = io.github.jcondedata.aliveworkplace.people.Families.parents(wren);
+					Showcase.check(parents != null && parents.motherSchooledMaster() && parents.fatherSchooledMaster(),
+						"Wren's parents are on record as schooled Masters");
+					io.github.jcondedata.aliveworkplace.people.Families.round(level, STATION, wren, net.minecraft.util.RandomSource.create(1L));
+					Showcase.check(io.github.jcondedata.aliveworkplace.legend.Gifted.of(wren) != null, "Wren grew up Gifted");
+					level.sendParticles(net.minecraft.core.particles.ParticleTypes.TOTEM_OF_UNDYING, wren.getX(), wren.getY() + 1.2, wren.getZ(), 30, 0.4, 0.6, 0.4, 0.15);
+				}, 40),
+				new Step("02_born_chronicle", -1, 6, (level, player) -> {
+					var hall = (io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(STATION);
+					Showcase.check(hall.chronicle().stream().anyMatch(e -> e.text().getContents() instanceof net.minecraft.network.chat.contents.TranslatableContents t
+						&& t.getKey().equals("chronicle.aliveworkplace.grown_up_gifted")), "the chronicle says Wren has grown up Gifted");
 					io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.open(player, STATION);
 					if (player.containerMenu instanceof ChoiceMenu m) {
 						m.press(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.CHRONICLE, player);

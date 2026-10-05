@@ -76,6 +76,18 @@ public class SifterWork extends Behavior<Villager> {
 		return !villager.isBaby() && villager.getVillagerData().getProfession() == ModVillagers.SIFTER;
 	}
 
+	/**
+	 * What a sift by {@code villager} at {@code sieve} rolls with: a Lucky sifter's luck (29.7) raises the tables'
+	 * {@code quality}-weighted finds.
+	 */
+	public static LootParams params(ServerLevel level, Villager villager, BlockPos sieve) {
+		return new LootParams.Builder(level)
+			.withParameter(LootContextParams.ORIGIN, Vec3.atCenterOf(sieve))
+			.withParameter(LootContextParams.THIS_ENTITY, villager)
+			.withLuck(io.github.jcondedata.aliveworkplace.legend.Gifted.lootLuck(villager))
+			.create(LootContextParamSets.GIFT);
+	}
+
 	public static boolean isSiftable(ItemStack stack) {
 		return SIFTABLE.containsKey(stack.getItem());
 	}
@@ -128,10 +140,7 @@ public class SifterWork extends Behavior<Villager> {
 		}
 		Requests.clear(villager);
 		LootTable table = level.getServer().reloadableRegistries().getLootTable(SIFTABLE.get(block.getItem()));
-		LootParams params = new LootParams.Builder(level)
-			.withParameter(LootContextParams.ORIGIN, Vec3.atCenterOf(sieve))
-			.withParameter(LootContextParams.THIS_ENTITY, villager)
-			.create(LootContextParamSets.GIFT);
+		LootParams params = params(level, villager, sieve);
 		List<ItemStack> found = new java.util.ArrayList<>(table.getRandomItems(params));
 		if (Platform.get().isModLoaded("cobblemon")) {
 			// Now and then an evolution stone (a table that loads only with Cobblemon; missing tables are empty).

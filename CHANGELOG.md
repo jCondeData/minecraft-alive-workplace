@@ -22,6 +22,12 @@ asks for the steps, `latest.log` and any crash report).
   the bell; Silver Tongue's trades are 20% cheaper; a Night Owl works from dusk to dawn and sleeps from mid-morning to
   mid-afternoon (builders and miners too). A Gifted villager sparkles when they level up, and the chronicle notes one
   who joins from the inn or grows up. Gifts are data (`data/<ns>/gifted/<id>.json`); config `giftedChance` (30; 0: none).
+- **Four more gifts, and Legends born** (29.7): Lucky (luck +3 on explorer finds, Netherworker trips, sifting and
+  fishing; the sifting tables now weigh their rare finds by luck), Hardy (never ill, twice a villager's health), Beloved
+  (everyone whose bed is within 16 blocks of theirs is +5 mood, "a beloved neighbour") and Born Leader (workers of their
+  trade within 16 blocks work 10% faster). A child of two schooled Masters grows up a Legend 1 time in 20 (a Rare one
+  born to a parent's trade, when the village qualifies and the slot is free), else Gifted 1 time in 4, and the chronicle
+  says so. Inn travellers are Gifted 1 time in 10, shown on the hire screen, at twice the price.
 - **Legends' needs and strikes** (29.5): once a day the Village Hall checks what each settled Legend needs: a home of
   their own (their bed in a finished tier III building, shared with nobody but their spouse), their luxury once a week
   (wine, jewels, books or fine clothes, taken from a chest in their home or else the village store, +10 mood; for now

@@ -153,6 +153,9 @@ public final class Innkeepers {
 		ModAttachments.TRAVELLER.set(guest, new Traveller(level.getGameTime(), lvl));
 		guest.setCustomName(Component.translatable("entity.aliveworkplace.traveller", BuilderLevels.levelName(lvl)));
 		level.addFreshEntityWithPassengers(guest);
+		if (io.github.jcondedata.aliveworkplace.legend.Gifted.ROLL) { // (gifts by chance are off in GameTests, as the UUID roll is)
+			giftTraveller(guest, level.random);
+		}
 		level.sendParticles(ParticleTypes.HAPPY_VILLAGER, guest.getX(), guest.getY() + 1.0, guest.getZ(), 8, 0.3, 0.5, 0.3, 0.0);
 		level.playSound(null, counter, SoundEvents.VILLAGER_CELEBRATE, SoundSource.NEUTRAL, 0.8f, 1f);
 		for (ServerPlayer player : level.getPlayers(p -> p.distanceToSqr(counter.getCenter()) < 64 * 64)) {
@@ -204,6 +207,28 @@ public final class Innkeepers {
 		return PRICE[Math.max(1, Math.min(PRICE.length - 1, lvl))];
 	}
 
+	/**
+	 * A traveller is Gifted one time in {@link io.github.jcondedata.aliveworkplace.legend.Gifted#TRAVELLER_ONE_IN} (29.7),
+	 * and otherwise not (the dice decide, not their UUID). Nothing with {@code giftedChance} 0.
+	 */
+	public static void giftTraveller(Villager guest, net.minecraft.util.RandomSource random) {
+		if (io.github.jcondedata.aliveworkplace.legend.Gifted.CHANCE <= 0) {
+			return;
+		}
+		io.github.jcondedata.aliveworkplace.legend.Gifted.Gift gift = random.nextInt(io.github.jcondedata.aliveworkplace.legend.Gifted.TRAVELLER_ONE_IN) == 0
+			? io.github.jcondedata.aliveworkplace.legend.Gifted.pick(random) : null;
+		io.github.jcondedata.aliveworkplace.legend.Gifted.set(guest, gift == null ? null : gift.id());
+	}
+
+	/** Emeralds to hire {@code guest}: their level's price, twice it for a Gifted traveller (29.7). */
+	public static int emeralds(Villager guest, Traveller t) {
+		return emeralds(t.level()) * (io.github.jcondedata.aliveworkplace.legend.Gifted.of(guest) != null ? 2 : 1);
+	}
+
+	public static long dollars(Villager guest, Traveller t) {
+		return (long) emeralds(guest, t) * Money.DOLLARS_PER_EMERALD;
+	}
+
 	/** The traveller's screen: who they are, what they'd start as, and a button to hire them. */
 	public static void openHire(ServerPlayer player, Villager guest) {
 		Traveller t = traveller(guest);
@@ -233,11 +258,21 @@ public final class Innkeepers {
 			plain(Component.translatable("screen.aliveworkplace.inn.starts_as", BuilderLevels.levelName(t.level())), ChatFormatting.GRAY),
 			plain(Component.translatable("screen.aliveworkplace.inn.staying", daysLeft), ChatFormatting.GRAY))));
 		menu.button(INFO_SLOT, info, null);
-		ItemStack hire = new ItemStack(Items.EMERALD, Math.min(64, emeralds(t.level())));
+		Component gifted = io.github.jcondedata.aliveworkplace.legend.Gifted.hallLine(guest);
+		if (gifted != null) {
+			List<Component> lore = new java.util.ArrayList<>(info.getOrDefault(DataComponents.LORE, ItemLore.EMPTY).lines());
+			lore.add(0, plain(gifted, ChatFormatting.GOLD));
+			info.set(DataComponents.LORE, new ItemLore(List.copyOf(lore)));
+		}
+		ItemStack hire = new ItemStack(Items.EMERALD, Math.min(64, emeralds(guest, t)));
 		hire.set(DataComponents.CUSTOM_NAME, plain(Component.translatable("screen.aliveworkplace.inn.hire",
-			Money.describe(dollars(t.level()), emeralds(t.level()))), ChatFormatting.GREEN));
-		hire.set(DataComponents.LORE, new ItemLore(List.of(
-			plain(Component.translatable("screen.aliveworkplace.inn.hire_hint"), ChatFormatting.GRAY))));
+			Money.describe(dollars(guest, t), emeralds(guest, t))), ChatFormatting.GREEN));
+		List<Component> hireLore = new java.util.ArrayList<>();
+		hireLore.add(plain(Component.translatable("screen.aliveworkplace.inn.hire_hint"), ChatFormatting.GRAY));
+		if (gifted != null) {
+			hireLore.add(plain(Component.translatable("screen.aliveworkplace.inn.gifted_price"), ChatFormatting.GOLD));
+		}
+		hire.set(DataComponents.LORE, new ItemLore(List.copyOf(hireLore)));
 		menu.button(HIRE_SLOT, hire, p -> {
 			if (hire(p, guest)) {
 				p.closeContainer();
@@ -251,9 +286,9 @@ public final class Innkeepers {
 		if (t == null || !guest.isAlive()) {
 			return false;
 		}
-		if (!Money.charge(player, dollars(t.level()), emeralds(t.level()))) {
+		if (!Money.charge(player, dollars(guest, t), emeralds(guest, t))) {
 			Chat.actionBar(player, Component.translatable("message.aliveworkplace.inn.cant_afford",
-				Money.describe(dollars(t.level()), emeralds(t.level())), Money.balance(player)).withStyle(ChatFormatting.YELLOW));
+				Money.describe(dollars(guest, t), emeralds(guest, t)), Money.balance(player)).withStyle(ChatFormatting.YELLOW));
 			return false;
 		}
 		ModAttachments.TRAVELLER.remove(guest);

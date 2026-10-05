@@ -121,6 +121,7 @@
 			"io.github.jcondedata.aliveworkplace.test.InnGameTests",
 			"io.github.jcondedata.aliveworkplace.test.GraveGameTests",
 			"io.github.jcondedata.aliveworkplace.test.ResearchGameTests",
+			"io.github.jcondedata.aliveworkplace.test.ResearchTreesGameTests",
 			"io.github.jcondedata.aliveworkplace.test.LegendEngineGameTests",
 			"io.github.jcondedata.aliveworkplace.test.LegendSlotsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.LegendsHallGameTests",

@@ -250,6 +250,10 @@ SCENES = [
     # Legends (ROADMAP 29.3): a Mythic Legend announced to the whole server in gold, and the chronicle's nether-star line
     S("legend_announce", "Legends", "A Mythic Legend is announced", "a Mythic Legend's coming was announced in chat and written in the chronicle", 45,
       [("01_legend_chat", "The announcement"), ("02_legend_chronicle", "The chronicle line")]),
+    # Research trees as data (ROADMAP 29.11): the test tree's own tab, worked by a Legend who lives in the village
+    S("research_trees", "Legends", "A Legend's research tree",
+      "a Legend's research tree has its own tab on the research screen: levels done, one in progress, an exclusive pick taken", 45,
+      [("01_tree_tab", "The tree's tab"), ("02_tree_exclusive", "An exclusive pick taken")]),
     # Legends on the hall (ROADMAP 29.4): a Legend in the stand-in outfit with a gold name and the sparkle, the hall's
     # list with her first, and the Legends page's cards at GUI scales 2 and 4
     S("legends_hall", "Legends", "Legends on the hall, and how they look",

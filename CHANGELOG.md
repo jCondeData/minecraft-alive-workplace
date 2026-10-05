@@ -24,6 +24,13 @@ asks for the steps, `latest.log` and any crash report).
   and the materials, with a glint) for the player who brought the most, and becomes the Legend; a Masterwork in an item
   frame in the village is 3 beauty. Not brought, she sulks a week (less happy, half pace) and the village has no mood
   for 10 days. Config `strangeMoods`.
+- **Research trees for Legends, as data** (29.11): a Legend can bring a research tree of their own
+  (`data/<ns>/research_trees/<tree>.json`, so packs can add more). While they live in the village it gets its own tab
+  on the research screen (or sneak-right-click a Legend with no trade). Choose a topic there and the Legend pays for it
+  from the chests by a lectern near their home and researches it there; idle scholars help at half speed, and nothing
+  moves while the Legend is on strike. Topics can wait for a village count or be one-of-a-kind picks. New village
+  effects for trees and edicts: wellbeing, illness (chance and length), raid chance, XP, loot luck and named switches.
+  Old halls keep their research as it was.
 - **Legends found in the world** (29.9): standing in a ruined portal, a pillager outpost or a shipwreck, a player whose
   village has earned a Legend found there may come on their camp: a traveller beside the portal (talk to them), a
   prisoner in an iron cage at the tower's foot (break the bars) or a castaway on the nearest beach (hand them a cooked

@@ -61,6 +61,8 @@ public final class Picket extends Behavior<Villager> {
 		Predicate<Villager> mayRun = v -> !picket.applies(v);
 		ImmutableList.Builder<Pair<Integer, ? extends BehaviorControl<? super Villager>>> out = ImmutableList.builder();
 		out.add(Pair.of(0, picket));
+		// A Legend's research tree at a lectern by their home (29.11); it starts only for a settled Legend with a topic chosen.
+		out.add(Pair.of(0, new Gated<Villager>(mayRun, new io.github.jcondedata.aliveworkplace.research.TreeWork())));
 		for (Pair<Integer, ? extends BehaviorControl<? super Villager>> entry : pkg) {
 			out.add(entry.getFirst() >= ALWAYS ? entry : Pair.of(entry.getFirst(), new Gated<Villager>(mayRun, entry.getSecond())));
 		}

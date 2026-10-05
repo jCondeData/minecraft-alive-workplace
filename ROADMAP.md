@@ -1546,7 +1546,7 @@ MarketDays) and research/.
   three materials are on the board; success makes the Masterwork (name, lore) and the Legend; failure sulks a week and
   blocks moods for 10 days; a mood survives a save and reload halfway; showcase scene `strange_mood` (GIF: the claim,
   the chest filled, the Masterwork).
-- [ ] **29.11** **More research trees, as data.** For the Old Sage (29.14) and the Pokémon Professor (29.21).
+- [x] **29.11** (review: pending 2026-10-05) **More research trees, as data.** For the Old Sage (29.14) and the Pokémon Professor (29.21).
   `research/ResearchTrees` loads `data/aliveworkplace/research_trees/<tree>.json`: the Legend who researches it, an
   icon, and its topics, each with levels, a cost per level (items), research points, the topics it needs, an optional
   `unlock` (a named village counter at a number, such as species in the village Pokédex), an optional `exclusive`
@@ -4303,6 +4303,18 @@ item waits.
   chest by its spot still counts. The Founder's way (`"founder": true`) is skipped by the daily roll: 29.23 starts it
   with `StrangeMoods.start` at the first rise to City. No shipped Legend has an `inspired` way yet (29.15, 29.18 and
   29.23 add them), so in a real world nothing happens until those land.
+- 2026-10-05 (29.11, decisions; lane a): the Old Sage (29.14) and the Professor (29.21) don't exist yet, so 29.11 is
+  the generic system proven with the gametest tree (`aliveworkplace_test:test_tree`, worked by `test_sage`); those
+  items add `research_trees/ancient_lore.json` and `pokedex.json` (and the `pokedex_species` counter through
+  `ResearchTrees.counter`). File format: `legend`, `icon`, `name` (text), optional `requires`, `topics` (≤ 14): `id`,
+  `icon`, `name`, `description`, `levels`, `cost` (a list of item maps, one per level, the last repeating), `points`
+  (per level, times the level), `needs`, `unlock` {`counter`, `at`}, `exclusive` (group), `effects` (per level). The
+  topic in progress is kept in the same levels map as `@<tree>/<topic>` (-1 unpaid, else points done), so there's no
+  new save field; `Research.State.isLevel`/`totalLevels` skip it for ranks and `research_levels`. An exclusive group
+  counts as taken once a rival is paid for or researched (a chosen, unpaid pick can still be changed). Scholars help a
+  tree only when the scholars' own tree has nothing chosen, at half their pace, and only while its Legend works (not on
+  strike). Tabs list Legends from the server's record (living, holding their slot, settled in that hall). A Legend
+  with no trade of their own opens their tab by sneak-right-click. The new effects also work in edicts.
 - 2026-10-05 (29.8, decisions; lane a): guests (`legend/LegendGuests`) are nitwits until they settle (no job, like inn
   travellers) and go by one of their file's `names` (the title if none). A place's day roll is spent only when some
   Legend may come there that day (conditions met, slot free, no visit in 7 days), so a village that qualifies at noon

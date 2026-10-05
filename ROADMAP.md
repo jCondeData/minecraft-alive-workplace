@@ -4298,6 +4298,7 @@ item waits.
   kinds in her plot are dug up (the berry comes back) only when the step has no free pair of beds. Rows alternate by
   x (east-west neighbours), so a plot needs farmland beds side by side east-west. The showcase grows the plot on the
   spot with a forced mutation (Cobblemon's growth takes in-game days).
+- 2026-10-05 (lane-c-1004-2132): 27.6, 27.7 and 27.8 are built and committed on wip/lane-c but not on main: the local full build passed all 689 GameTests, but runCompatGameTest ran out of heap twice (both times slowing at the batch cobblemon_orchard_planting; the 2026-10-03 QA note says the compat run OOMs locally unless `./gradlew --stop` comes first, and this run did stop the daemon). Next lane-c run: merge wip/lane-c, finish 27.9 (left: compile, runGameTest with StewardJobsGameTests and StewardDeskGameTests, checkLayers, Stonecutter refresh, tick), full build (compat with -Xmx1536m if needed), push to main.
 - 2026-10-04 (23.10a, owner question; lane a): the village pieces aren't built by our builders: Minecraft's village
   generator places them (one shared outside per style, baked into each piece's file), and the mod has no "village
   leader" yet (the nearest is the Village Hall's owner: whoever first switches its protection on, with their friends).

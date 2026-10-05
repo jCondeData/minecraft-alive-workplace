@@ -435,8 +435,9 @@ public class StewardRulesGameTests implements net.fabricmc.fabric.api.gametest.v
 			"loaded: " + loaded.stream().map(StewardRules.Rule::id).toList());
 		// The starter rules all load.
 		List<String> ids = StewardRules.all().stream().map(r -> r.id().toString()).toList();
-		for (String name : List.of("builder", "homes", "storehouse", "food", "jobs", "store_full", "workstations", "better_homes", "scholar",
-				"pokemon_center", "hearth", "research", "market")) {
+		for (String name : List.of("builder", "homes_upgrade", "homes_starter_cottage", "homes_stone_house", "homes_terrace", "homes_inn",
+				"homes_better", "storehouse", "storehouse_grow", "market_stall", "food_berry_farm", "food_ranch", "jobs", "workstations", "scholar",
+				"pokemon_center", "hearth", "research")) {
 			helper.assertTrue(ids.contains("aliveworkplace:" + name), "starter rule " + name + " didn't load: " + ids);
 		}
 		helper.succeed();
@@ -492,10 +493,10 @@ public class StewardRulesGameTests implements net.fabricmc.fabric.api.gametest.v
 			.withPosition(Vec3.atCenterOf(hall.east(3))), "workplace steward explain");
 		String all = String.join("\n", lines);
 		helper.assertTrue(!lines.isEmpty() && lines.get(0).startsWith("command.aliveworkplace.steward.explain.header"), "no header:\n" + all);
-		int homes = indexOf(lines, "explain.held(),aliveworkplace:homes,");
+		int homes = indexOf(lines, "explain.held(),aliveworkplace:homes_stone_house,");
 		int storehouse = indexOf(lines, "explain.not_held(),aliveworkplace:storehouse,");
 		helper.assertTrue(homes >= 0, "the homes rule (2 villagers, no bed) isn't shown held:\n" + all);
-		helper.assertTrue(lines.get(homes + 1).contains("✔") && lines.get(homes + 1).contains("condition.beds_short(2,1,)"),
+		helper.assertTrue(lines.get(homes + 1).contains("✔") && lines.get(homes + 1).contains("condition.beds_short(2,2,)"),
 			"its condition isn't shown with its number:\n" + all);
 		helper.assertTrue(storehouse >= 0, "the storehouse rule (2 villagers of 3) isn't shown not held:\n" + all);
 		helper.assertTrue(lines.get(storehouse + 1).contains("✔") && lines.get(storehouse + 1).contains("condition.missing_poi(aliveworkplace:storehouse,0,)")
@@ -528,8 +529,8 @@ public class StewardRulesGameTests implements net.fabricmc.fabric.api.gametest.v
 		StewardWishes.State state = entity.stewardWishes();
 		List<String> rules = state.wishes().stream().map(w -> w.rule().getPath()).toList();
 		helper.assertTrue(state.day() == StewardWishes.day(level), "not ranked today: " + state.day());
-		helper.assertTrue(rules.size() >= 3 && rules.get(0).equals("builder") && rules.get(1).equals("homes") && rules.contains("jobs"), "wishes: " + rules);
-		helper.assertTrue(state.wishes().get(1).numbers().equals(List.of(2L)), "the homes wish's numbers: " + state.wishes().get(1));
+		helper.assertTrue(rules.size() >= 3 && rules.get(0).equals("builder") && rules.get(1).equals("homes_stone_house") && rules.contains("jobs"), "wishes: " + rules);
+		helper.assertTrue(state.wishes().get(1).numbers().get(0) == 2L, "the homes wish's numbers: " + state.wishes().get(1));
 		helper.assertTrue(line.getContents() instanceof TranslatableContents t && t.getKey().equals("message.aliveworkplace.steward.state.wish"),
 			"the Steward's line: " + flat(line));
 		for (int i = 0; i + 1 < state.wishes().size(); i++) {

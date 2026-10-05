@@ -141,7 +141,7 @@ def catalog_tests(tmp):
     # 22.3: every job in the README has a scene.
     readme = open(os.path.join(ROOT, "README.md"), encoding="utf-8").read()
     table = readme.split("## All the jobs at a glance", 1)[1].split("\n## ", 1)[0]
-    jobs = [re.sub(r"\s*\(Cobblemon\)$", "", row.split("|")[1].strip()) for row in table.splitlines()
+    jobs = [re.sub(r"\s*\((with )?Cobblemon\)$", "", row.split("|")[1].strip()) for row in table.splitlines()
             if row.startswith("| ") and not row.startswith("| Job") and not row.startswith("| ---")]
     groups = {s["group"] for s in scenes.SCENES}
     missing = [j for j in jobs if j not in groups]

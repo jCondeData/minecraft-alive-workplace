@@ -90,6 +90,7 @@
 			"io.github.jcondedata.aliveworkplace.test.EdictBookGameTests",
 			"io.github.jcondedata.aliveworkplace.test.ReformGameTests",
 			"io.github.jcondedata.aliveworkplace.test.FamilyEdictGameTests",
+			"io.github.jcondedata.aliveworkplace.test.OpenGatesGameTests",
 			"io.github.jcondedata.aliveworkplace.test.CampGameTests",
 			"io.github.jcondedata.aliveworkplace.test.RaidGameTests",
 			"io.github.jcondedata.aliveworkplace.test.SifterGameTests",

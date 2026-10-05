@@ -203,11 +203,17 @@ public final class EdictBook {
 		String id = edict.id().toString();
 		boolean reformed = edict.reform().isPresent() && Reforms.reformed(entity, id);
 		for (CivicEffects.Effect e : edict.boost()) {
-			lore.add(VillageHallScreen.line(Component.translatable("screen.aliveworkplace.edicts.boost", describe(e)), ChatFormatting.GREEN));
+			Component said = describe(e);
+			if (said != null) {
+				lore.add(VillageHallScreen.line(Component.translatable("screen.aliveworkplace.edicts.boost", said), ChatFormatting.GREEN));
+			}
 		}
 		List<CivicEffects.Effect> cost = reformed ? edict.reform().get().effects() : edict.cost();
 		for (CivicEffects.Effect e : cost) {
-			lore.add(VillageHallScreen.line(Component.translatable("screen.aliveworkplace.edicts.cost", describe(e)), ChatFormatting.RED));
+			Component said = describe(e);
+			if (said != null) {
+				lore.add(VillageHallScreen.line(Component.translatable("screen.aliveworkplace.edicts.cost", said), ChatFormatting.RED));
+			}
 		}
 		edict.reform().ifPresent(reform -> {
 			if (reformed) {
@@ -234,8 +240,29 @@ public final class EdictBook {
 			: VillageHallScreen.line("screen.aliveworkplace.edicts.click_lift", ChatFormatting.DARK_GRAY));
 	}
 
-	/** One effect in words: "20% faster work", "10 less happy (long shifts)". */
+	/**
+	 * One effect in words: "20% faster work", "10 less happy (long shifts)"; null for one nothing reads yet
+	 * ({@code legend_visits} before M29's inn visitors), which the Book leaves out.
+	 */
+	@org.jetbrains.annotations.Nullable
 	static Component describe(CivicEffects.Effect effect) {
+		if (effect instanceof CivicEffects.Inn inn) {
+			List<Component> parts = new ArrayList<>();
+			inn.guests().ifPresent(n -> parts.add(Component.translatable("screen.aliveworkplace.edicts.effect.inn_guests", n,
+				io.github.jcondedata.aliveworkplace.inn.Innkeepers.MAX_GUESTS)));
+			inn.arrivals().ifPresent(n -> parts.add(Words.counted("screen.aliveworkplace.edicts.effect.inn_arrivals", n, n)));
+			return parts.isEmpty() ? Component.translatable("screen.aliveworkplace.edicts.effect.inn_usual") : joined(parts);
+		}
+		if (effect instanceof CivicEffects.MarketTraders market) {
+			int n = Math.abs(market.extra());
+			return Words.counted(market.extra() >= 0 ? "screen.aliveworkplace.edicts.effect.traders_more" : "screen.aliveworkplace.edicts.effect.traders_fewer", n, n);
+		}
+		if (effect instanceof CivicEffects.LegendVisits visits) {
+			return CivicEffects.LEGEND_VISITS_READ ? often("screen.aliveworkplace.edicts.effect.legends", visits.factor()) : null;
+		}
+		if (effect instanceof CivicEffects.BanditCampChance bandits) {
+			return often("screen.aliveworkplace.edicts.effect.bandits", bandits.factor());
+		}
 		if (effect instanceof CivicEffects.WorkPace pace) {
 			return Component.translatable(pace.jobs().isEmpty() ? "screen.aliveworkplace.edicts.effect.pace" : "screen.aliveworkplace.edicts.effect.pace_jobs",
 				pace.percent(), pace.jobs().size());
@@ -262,16 +289,32 @@ public final class EdictBook {
 			if (parts.isEmpty()) {
 				return Component.translatable("screen.aliveworkplace.edicts.effect.babies_usual");
 			}
-			net.minecraft.network.chat.MutableComponent out = Component.empty();
-			for (int i = 0; i < parts.size(); i++) {
-				if (i > 0) {
-					out.append(Component.literal(", "));
-				}
-				out.append(parts.get(i));
-			}
-			return out;
+			return joined(parts);
 		}
 		return Component.literal(effect.type().getPath().replace('_', ' '));
+	}
+
+	private static Component joined(List<Component> parts) {
+		net.minecraft.network.chat.MutableComponent out = Component.empty();
+		for (int i = 0; i < parts.size(); i++) {
+			if (i > 0) {
+				out.append(Component.literal(", "));
+			}
+			out.append(parts.get(i));
+		}
+		return out;
+	}
+
+	/** "{@code key}.twice" for 2, "{@code key}.usual" for 1, "{@code key}.less" below 1, else "{@code key}" with the factor ("3"). */
+	private static Component often(String key, float factor) {
+		if (Math.abs(factor - 2f) < 1e-4f) {
+			return Component.translatable(key + ".twice");
+		}
+		if (Math.abs(factor - 1f) < 1e-4f) {
+			return Component.translatable(key + ".usual");
+		}
+		String n = factor == Math.round(factor) ? Integer.toString(Math.round(factor)) : String.format(java.util.Locale.ROOT, "%.1f", factor);
+		return Component.translatable(factor < 1f ? key + ".less" : key, n);
 	}
 
 	private static Item item(ResourceLocation id) {

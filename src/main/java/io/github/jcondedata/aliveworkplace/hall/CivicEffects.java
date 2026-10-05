@@ -27,7 +27,9 @@ import org.jetbrains.annotations.Nullable;
  * edicts (village-wide), and later tonics (the drinker) and guilds (the members). {@code "type"} picks the codec; an
  * optional {@code jobs} list (profession ids) narrows any effect to those jobs. Each type is read by exactly the system
  * it changes: {@code work_pace} by {@code work/Pace}, {@code mood} by {@code people/Moods.work}, {@code food_use} by
- * {@code VillageNeeds}, {@code births} by {@code VillageGrowth}, {@code sickness} by {@code people/Sickness}. Later items add their
+ * {@code VillageNeeds}, {@code births} by {@code VillageGrowth}, {@code sickness} by {@code people/Sickness}, {@code inn} by {@code inn/Innkeepers},
+ * {@code market_traders} by {@code MarketDays}, {@code bandit_camps} by {@code guard/BanditCamps} and {@code legend_visits}
+ * by M29's inn visitors once they exist (until then nothing reads it, see {@link #LEGEND_VISITS_READ}). Later items add their
  * own types with {@link #register}.
  *
  * <p>The effects in force are summed per hall ({@link Sum}) whenever its edicts change, a data pack reloads or the
@@ -75,6 +77,16 @@ public final class CivicEffects {
 	public static final ResourceLocation FOOD_USE = AliveWorkplace.id("food_use");
 	public static final ResourceLocation BIRTHS = AliveWorkplace.id("births");
 	public static final ResourceLocation SICKNESS = AliveWorkplace.id("sickness");
+	public static final ResourceLocation INN = AliveWorkplace.id("inn");
+	public static final ResourceLocation MARKET_TRADERS = AliveWorkplace.id("market_traders");
+	public static final ResourceLocation LEGEND_VISITS = AliveWorkplace.id("legend_visits");
+	public static final ResourceLocation BANDIT_CAMPS = AliveWorkplace.id("bandit_camps");
+
+	/**
+	 * Whether anything reads {@code legend_visits} yet: M29's inn visitors (29.8) set it when they land, and until then the
+	 * Book of Edicts leaves the effect out rather than promise Legends nobody sends.
+	 */
+	public static boolean LEGEND_VISITS_READ = false;
 
 	static {
 		register(WORK_PACE, RecordCodecBuilder.<WorkPace>mapCodec(i -> i.group(
@@ -101,6 +113,23 @@ public final class CivicEffects {
 			Codec.intRange(-100, 1000).fieldOf("percent").forGetter(Illness::percent),
 			JOBS.optionalFieldOf("jobs", List.of()).forGetter(Illness::jobs)
 		).apply(i, Illness::new)));
+		register(INN, RecordCodecBuilder.<Inn>mapCodec(i -> i.group(
+			Codec.intRange(1, 64).optionalFieldOf("guests").forGetter(Inn::guests),
+			Codec.intRange(1, 16).optionalFieldOf("arrivals").forGetter(Inn::arrivals),
+			JOBS.optionalFieldOf("jobs", List.of()).forGetter(Inn::jobs)
+		).apply(i, Inn::new)));
+		register(MARKET_TRADERS, RecordCodecBuilder.<MarketTraders>mapCodec(i -> i.group(
+			Codec.intRange(-16, 16).fieldOf("extra").forGetter(MarketTraders::extra),
+			JOBS.optionalFieldOf("jobs", List.of()).forGetter(MarketTraders::jobs)
+		).apply(i, MarketTraders::new)));
+		register(LEGEND_VISITS, RecordCodecBuilder.<LegendVisits>mapCodec(i -> i.group(
+			Codec.floatRange(0f, 100f).fieldOf("factor").forGetter(LegendVisits::factor),
+			JOBS.optionalFieldOf("jobs", List.of()).forGetter(LegendVisits::jobs)
+		).apply(i, LegendVisits::new)));
+		register(BANDIT_CAMPS, RecordCodecBuilder.<BanditCampChance>mapCodec(i -> i.group(
+			Codec.floatRange(0f, 100f).fieldOf("factor").forGetter(BanditCampChance::factor),
+			JOBS.optionalFieldOf("jobs", List.of()).forGetter(BanditCampChance::jobs)
+		).apply(i, BanditCampChance::new)));
 	}
 
 	/** {@code work_pace}: work {@code percent} faster (a bonus of {@code work/Pace}, up to its cap). */
@@ -166,6 +195,42 @@ public final class CivicEffects {
 		@Override
 		public ResourceLocation type() {
 			return SICKNESS;
+		}
+	}
+
+	/**
+	 * {@code inn}: the village's inns take up to {@code guests} travellers at once (not {@code inn/Innkeepers.MAX_GUESTS})
+	 * and up to {@code arrivals} of them arrive a morning (not 1); the highest named counts (Open Gates, 30.7).
+	 * Village-wide: {@code jobs} doesn't narrow it.
+	 */
+	public record Inn(Optional<Integer> guests, Optional<Integer> arrivals, List<ResourceLocation> jobs) implements Effect {
+		@Override
+		public ResourceLocation type() {
+			return INN;
+		}
+	}
+
+	/** {@code market_traders}: {@code extra} more traders come on market days ({@code MarketDays}); several add. */
+	public record MarketTraders(int extra, List<ResourceLocation> jobs) implements Effect {
+		@Override
+		public ResourceLocation type() {
+			return MARKET_TRADERS;
+		}
+	}
+
+	/** {@code legend_visits}: Legends visit the inn {@code factor} times as often (M29's inn visitors); several multiply. */
+	public record LegendVisits(float factor, List<ResourceLocation> jobs) implements Effect {
+		@Override
+		public ResourceLocation type() {
+			return LEGEND_VISITS;
+		}
+	}
+
+	/** {@code bandit_camps}: bandits make camp near the village {@code factor} times as often ({@code guard/BanditCamps}); several multiply. */
+	public record BanditCampChance(float factor, List<ResourceLocation> jobs) implements Effect {
+		@Override
+		public ResourceLocation type() {
+			return BANDIT_CAMPS;
 		}
 	}
 
@@ -280,6 +345,61 @@ public final class CivicEffects {
 				}
 			}
 			return out < 0 ? usual : out;
+		}
+
+		/** Travellers an inn takes at once: the highest an {@code inn} effect names, else {@code usual}. */
+		public int innGuests(int usual) {
+			int out = -1;
+			for (Active a : all) {
+				if (a.effect() instanceof Inn inn && inn.guests().isPresent()) {
+					out = Math.max(out, inn.guests().get());
+				}
+			}
+			return out < 0 ? usual : out;
+		}
+
+		/** Travellers who may arrive at an inn a morning: the highest an {@code inn} effect names, else 1. */
+		public int innArrivals() {
+			int out = 1;
+			for (Active a : all) {
+				if (a.effect() instanceof Inn inn && inn.arrivals().isPresent()) {
+					out = Math.max(out, inn.arrivals().get());
+				}
+			}
+			return out;
+		}
+
+		/** Extra traders on market days ({@code market_traders} effects, added; may be negative). */
+		public int marketTraders() {
+			int extra = 0;
+			for (Active a : all) {
+				if (a.effect() instanceof MarketTraders m) {
+					extra += m.extra();
+				}
+			}
+			return extra;
+		}
+
+		/** How many times as often Legends visit the inn ({@code legend_visits} effects, multiplied; 1 without). */
+		public float legendVisits() {
+			float f = 1f;
+			for (Active a : all) {
+				if (a.effect() instanceof LegendVisits l) {
+					f *= l.factor();
+				}
+			}
+			return f;
+		}
+
+		/** How many times as often bandits make camp near the village ({@code bandit_camps} effects, multiplied; 1 without). */
+		public float banditCamps() {
+			float f = 1f;
+			for (Active a : all) {
+				if (a.effect() instanceof BanditCampChance b) {
+					f *= b.factor();
+				}
+			}
+			return f;
 		}
 
 		/** The {@code mood} effects that count for {@code villager} now. */

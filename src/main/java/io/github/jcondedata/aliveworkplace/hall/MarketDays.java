@@ -72,12 +72,21 @@ public final class MarketDays {
 		return !hold(level, hall, square.get()).isEmpty();
 	}
 
+	/**
+	 * How many traders come to the village's market: its rank's, one more a level of Commerce research, and the
+	 * {@code market_traders} effects in force (Open Gates, 30.7: one more); never fewer than none.
+	 */
+	public static int traders(ServerLevel level, BlockPos hall) {
+		return Math.max(0, VillageRanks.marketTraders(VillageRanks.of(level, hall))
+			+ io.github.jcondedata.aliveworkplace.research.Research.at(level, hall).level(io.github.jcondedata.aliveworkplace.research.Research.Topic.COMMERCE)
+			+ CivicEffects.of(level, hall).marketTraders());
+	}
+
 	/** The traders come to the square at {@code square}. */
 	public static List<WanderingTrader> hold(ServerLevel level, BlockPos hall, BlockPos square) {
 		List<WanderingTrader> traders = new ArrayList<>();
-		int traders_ = VillageRanks.marketTraders(VillageRanks.of(level, hall))
-			+ io.github.jcondedata.aliveworkplace.research.Research.at(level, hall).level(io.github.jcondedata.aliveworkplace.research.Research.Topic.COMMERCE);
-		for (int i = 0; i < traders_; i++) {
+		int count = traders(level, hall);
+		for (int i = 0; i < count; i++) {
 			BlockPos spot = spot(level, square, i);
 			if (spot == null) {
 				break;

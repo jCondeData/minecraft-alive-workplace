@@ -1886,7 +1886,7 @@ the Village Hall (`VillageNeeds`, `VillageQuests`, `VillageRanks`, `Festivals`, 
   Done when: GameTests for each number, with and without the reform (meals taken for 10 eaten, the gap between births,
   the food needed and taken, the daily chance of falling ill); showcase scenes `free_bread` (the hall's list with the
   "free bread" mood) and `large_families` (two births in one day, with the chronicle lines).
-- [ ] **30.7** **Open Gates.** Effects `inn`, `market_traders`, `legend_visits` and `bandit_camps`:
+- [x] **30.7** (review: pending 2026-10-05) **Open Gates.** Effects `inn`, `market_traders`, `legend_visits` and `bandit_camps`:
   - boost: inns in the village take 4 guests instead of 2, and up to two travellers arrive a morning; market days
     bring one more trader; Legends visit the inn twice as often once M29's inn visitors exist (until then nothing reads
     that effect, and the Book only promises travellers);
@@ -4272,6 +4272,14 @@ item waits.
 - (Sessions: anything that needs the owner, and the link to the latest Full test report. Handoffs go here through
   `sessions.py handoff "<in progress, next, traps>" --as <you>`, which keeps one per kind of session (chat, night):
   carry over anything still true from the previous one.)
+- 2026-10-05 (30.7, decisions; lane d): `legend_visits` is parsed and summed (`CivicEffects.Sum.legendVisits()`, factors
+  multiply) but nothing reads it; 29.8's `Legends.visitFactor(hall)` should return `CivicEffects.of(level, hall)
+  .legendVisits()` and set `CivicEffects.LEGEND_VISITS_READ = true`, which makes the Book show "Legends visit the inn
+  twice as often" (left out until then). Arrivals a morning are counted per innkeeper in the saved attachment
+  `guests_today` (with `last_guest_day`; an old save with a guest today and no count counts as 1). The inn's round moved
+  to `Innkeepers.tend` (InnkeeperWork calls it). Curfew: Open Gates' file lists `curfew` in `excludes`, and exclusion
+  already works either way round, so 30.9 needn't list Open Gates (it may); the test uses the real Curfew once it exists
+  and a stand-in file at its path until then.
 - 2026-10-05 (30.5, decisions; lane d): a reform step is a `VillageQuests.Quest` with `reform` {edict, step} kept in the
   hall's quest list (not counted in the 3 daily ones, never expired) and shown only while its edict is in force and not
   reformed, so a step half handed in keeps its count while the edict is lifted; the hall's `reforms` list keeps {id,

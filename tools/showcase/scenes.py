@@ -241,6 +241,10 @@ SCENES = [
     S("large_families", "Village Hall", "Edicts: Large Families",
       "Large Families was proclaimed: two babies were born in one day and the chronicle kept both births", 45,
       [("01_large_families_babies", "Two babies born half a day apart"), ("02_large_families_chronicle", "The chronicle: both births")]),
+    # Open Gates (ROADMAP 30.7): an inn with four guests, two a morning
+    S("open_gates", "Village Hall", "Edicts: Open Gates",
+      "Open Gates was proclaimed: the inn took in two travellers a morning and is full with four guests", 45,
+      [("01_open_gates_inn", "Four travellers at the inn after two mornings"), ("02_open_gates_book", "Open Gates in the Book of Edicts")]),
     S("hall_quests", "Village Hall", "Quests, advice, the village map and the festival",
       "the quests, advice, village map, mercenaries and festival opened", 60,
       [("01_hall_quests", "Quests"), ("02_hall_advice", "What next?"), ("03_hall_map", "Village map"),

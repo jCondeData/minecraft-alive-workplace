@@ -23,6 +23,11 @@ asks for the steps, `latest.log` and any crash report).
   told to the village and the hall's owner, Mythic ones to every player in gold with the village's direction from spawn;
   all go in the chronicle under a nether star. A Legend in a grave or turned zombie keeps their slot and comes back as
   themselves; with no grave their slot frees after 7 days; Legends join a hall placed again.
+- **Open Gates** (30.7): a new edict. Inns in the village take 4 guests (not 2) and up to two travellers arrive a
+  morning; market days bring one more trader. The cost: bandits make camp near the village twice as often. Open Gates
+  can't be in force alongside Curfew. Its reform **The Watchful Gate** (16 iron ingots, 32 arrows, clear out 12
+  monsters) keeps the travellers coming with bandits no likelier than usual. The Book of Edicts tells it in words. Data
+  packs get the effect types `inn`, `market_traders`, `bandit_camps` and `legend_visits` (read once Legends visit inns).
 - **Free Bread and Large Families** (30.6): two new edicts. **Free Bread** makes everyone fed in the last day 10
   happier ("free bread"), but the village eats 30% more (the hall takes 3 extra meals for every 10 eaten); its reform
   **The Common Granary** (64 wheat, 16 hay bales, 8 barrels) takes the extra food away. **Large Families** lets up to

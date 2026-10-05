@@ -118,12 +118,20 @@ public final class BanditCamps {
 			return;
 		}
 		int rounds = (int) Math.max(1, VillageNeeds.DAY / VillageNeeds.CHECK_EVERY);
-		if (level.random.nextFloat() < DAILY_CHANCE / rounds) {
+		if (level.random.nextFloat() < dailyChance(level, hall) / rounds) {
 			BlockPos site = site(level, hall);
 			if (site != null) {
 				found(level, hall, site);
 			}
 		}
+	}
+
+	/**
+	 * The chance a day that bandits make camp near the village round {@code hall}: {@link #DAILY_CHANCE}, times the
+	 * village's {@code bandit_camps} effects (Open Gates, 30.7: twice; reformed by The Watchful Gate: as usual).
+	 */
+	public static float dailyChance(ServerLevel level, BlockPos hall) {
+		return Math.min(1f, DAILY_CHANCE * io.github.jcondedata.aliveworkplace.hall.CivicEffects.of(level, hall).banditCamps());
 	}
 
 	/** Somewhere out beyond the village for a camp: loaded, dry, fairly flat and open; null if there's nowhere. */

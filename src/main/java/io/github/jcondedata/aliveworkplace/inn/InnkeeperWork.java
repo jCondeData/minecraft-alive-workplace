@@ -1,12 +1,10 @@
 package io.github.jcondedata.aliveworkplace.inn;
 
 import com.google.common.collect.ImmutableMap;
-import io.github.jcondedata.aliveworkplace.build.BuilderLevels;
 import io.github.jcondedata.aliveworkplace.build.Builders;
 import io.github.jcondedata.aliveworkplace.registry.ModAttachments;
 import io.github.jcondedata.aliveworkplace.work.Walker;
 import io.github.jcondedata.aliveworkplace.work.WorkerStatus;
-import java.util.List;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -18,13 +16,11 @@ import net.minecraft.world.entity.npc.Villager;
 
 /**
  * An Innkeeper's shift at the Inn Counter: in the morning, a traveller comes to stay while there's a free bed nearby and
- * fewer than {@link Innkeepers#MAX_GUESTS} guests; guests nobody hired move on when their stay is over (out of sight of
- * players).
+ * fewer guests than the inn takes ({@link Innkeepers#maxGuests}); guests nobody hired move on when their stay is over (out
+ * of sight of players).
  */
 public class InnkeeperWork extends Behavior<Villager> {
 	static final int EVERY = 200;
-	/** Travellers arrive in the morning (day time below this). */
-	static final long MORNING = 6000;
 
 	private final Walker walker = new Walker(0.5f);
 	private int timer;
@@ -72,32 +68,9 @@ public class InnkeeperWork extends Behavior<Villager> {
 				.withStyle(state.equals("no_bed") ? ChatFormatting.YELLOW : ChatFormatting.GRAY));
 	}
 
-	/** The inn's round: guests whose stay is over leave, and in the morning a new one may arrive. */
+	/** The inn's round ({@link Innkeepers#tend}). */
 	void tend(ServerLevel level, Villager villager, BlockPos counter) {
-		List<Villager> guests = Innkeepers.guests(level, counter);
-		for (Villager guest : guests) {
-			if (Innkeepers.stayOver(level, guest) && level.getNearestPlayer(guest, 24) == null) {
-				Innkeepers.leave(level, guest);
-			}
-		}
-		guests = Innkeepers.guests(level, counter);
-		if (guests.size() >= Innkeepers.MAX_GUESTS) {
-			state = "full";
-			return;
-		}
-		if (!Innkeepers.hasFreeBed(level, counter)) {
-			state = "no_bed";
-			return;
-		}
-		long day = level.getDayTime() / 24000;
-		if (level.getDayTime() % 24000 < MORNING && ModAttachments.LAST_GUEST_DAY.getOrElse(villager, -1L) < day) {
-			if (Innkeepers.arrive(level, villager, counter) != null) {
-				ModAttachments.LAST_GUEST_DAY.set(villager, day);
-				ModAttachments.GUESTS_HOSTED.set(villager, ModAttachments.GUESTS_HOSTED.getOrElse(villager, 0) + 1);
-				BuilderLevels.addXp(level, villager, 3, null);
-			}
-		}
-		state = guests.isEmpty() ? "waiting" : "hosting";
+		state = Innkeepers.tend(level, villager, counter);
 	}
 
 	@Override

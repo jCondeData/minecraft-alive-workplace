@@ -1293,6 +1293,64 @@ final class JobScenes {
 					Showcase.check(births >= 2, "the chronicle keeps both births: " + births);
 				}, 30)),
 			(level, player) -> player.containerMenu instanceof ChoiceMenu));
+		// Open Gates (ROADMAP 30.7): inns take 4 guests (not 2) and up to two travellers arrive a morning. An innkeeper by
+		// five free beds takes in two travellers one morning and two the next (the inn's own rounds), and is then full;
+		// the Book of Edicts tells the boost, the bandits' cost and the reform, The Watchful Gate.
+		SCREENS.put("open_gates", new Screen("Open Gates was proclaimed: the inn took in two travellers a morning and is full with four guests",
+			new Vec3(2.5, -58.4, 4.5), TARGET,
+			(level, player) -> {
+				level.setBlockAndUpdate(STATION, ModBlocks.VILLAGE_HALL.defaultBlockState()
+					.setValue(io.github.jcondedata.aliveworkplace.hall.VillageHallBlock.FACING, Direction.SOUTH));
+				var hall = (io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(STATION);
+				hall.setRank(io.github.jcondedata.aliveworkplace.hall.VillageRanks.Rank.HAMLET);
+				hall.setEdicts(List.of());
+				hall.setReforms(List.of());
+				for (int x = -4; x <= 4; x += 2) {
+					level.setBlockAndUpdate(new BlockPos(x, -60, -5), Blocks.RED_BED.defaultBlockState()
+						.setValue(BlockStateProperties.HORIZONTAL_FACING, Direction.SOUTH)
+						.setValue(BlockStateProperties.BED_PART, net.minecraft.world.level.block.state.properties.BedPart.FOOT));
+					level.setBlockAndUpdate(new BlockPos(x, -60, -6), Blocks.RED_BED.defaultBlockState()
+						.setValue(BlockStateProperties.HORIZONTAL_FACING, Direction.SOUTH)
+						.setValue(BlockStateProperties.BED_PART, net.minecraft.world.level.block.state.properties.BedPart.HEAD));
+				}
+				subject = worker(level, new BlockPos(-3, -60, -2), ModBlocks.INN_COUNTER, ModVillagers.INN_COUNTER_POI, ModVillagers.INNKEEPER);
+				subject.setNoAi(true);
+				var gates = io.github.jcondedata.aliveworkplace.hall.Edicts.find("open_gates").orElseThrow();
+				var told = io.github.jcondedata.aliveworkplace.hall.Edicts.proclaim(level, STATION, player, gates);
+				Showcase.check(told.done(), "Open Gates was proclaimed: " + told.message().getString());
+				io.github.jcondedata.aliveworkplace.hall.CivicEffects.forget();
+			},
+			List.of(new Step("01_open_gates_inn", -1, 0, (level, player) -> {
+					player.closeContainer();
+					BlockPos counter = new BlockPos(-3, -60, -2);
+					long morning = (level.getDayTime() / 24000 + 1) * 24000 + 1000;
+					// Two mornings of the inn's rounds: two travellers each.
+					for (long day = 0; day < 2; day++) {
+						level.setDayTime(morning + day * 24000);
+						for (int round = 0; round < 3; round++) {
+							io.github.jcondedata.aliveworkplace.inn.Innkeepers.tend(level, subject, counter);
+						}
+					}
+					List<Villager> guests = io.github.jcondedata.aliveworkplace.inn.Innkeepers.guests(level, counter);
+					// Held where they stand for the picture, side by side in front of the hall.
+					for (int i = 0; i < guests.size(); i++) {
+						Villager guest = guests.get(i);
+						guest.setNoAi(true);
+						guest.moveTo(-2.5 + 2 * i, -60, 1.5, 180f, 0f);
+						guest.setYHeadRot(180f);
+					}
+					Showcase.check(guests.size() == 4, "the inn took in four guests over two mornings: " + guests.size());
+					level.setDayTime(morning + 2 * 24000);
+					Showcase.check(io.github.jcondedata.aliveworkplace.inn.Innkeepers.tend(level, subject, counter).equals("full"),
+						"a fifth guest is turned away: the inn is full");
+				}, 40),
+				new Step("02_open_gates_book", io.github.jcondedata.aliveworkplace.hall.EdictBook.SLOTS[0], 6, (level, player) -> {
+					io.github.jcondedata.aliveworkplace.hall.EdictBook.open(player, STATION);
+					if (player.containerMenu instanceof ChoiceMenu m) {
+						Showcase.check(m.icon(io.github.jcondedata.aliveworkplace.hall.EdictBook.SLOTS[0]).is(Items.OAK_FENCE_GATE), "Open Gates sits in the first slot");
+					}
+				}, 30)),
+			(level, player) -> player.containerMenu instanceof ChoiceMenu));
 		SCREENS.put("hall_treasury", new Screen("the hall's treasury was collected, the village protected and its screen opened from a Village Ledger",
 			new Vec3(2.5, -58.4, 4.5), TARGET,
 			(level, player) -> {

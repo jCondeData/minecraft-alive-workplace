@@ -32,7 +32,7 @@ import org.jetbrains.annotations.Nullable;
 
 /**
  * Inns and travellers: an Innkeeper at an Inn Counter takes in a traveller each morning while there's a free bed nearby
- * (at most {@link #MAX_GUESTS} at a time). A traveller has a trade already — an Apprentice, a Journeyman, now and then an
+ * (at most {@link #MAX_GUESTS} at a time; the village's {@code inn} effect, Open Gates (30.7), raises both). A traveller has a trade already — an Apprentice, a Journeyman, now and then an
  * Expert — and can be hired for emeralds (or CobbleDollars): they stay, take the first free job and start at that level.
  * Travellers nobody hires move on after {@link #STAY} ticks. Until they're hired they won't take a job (they're nitwits
  * while they travel).
@@ -44,6 +44,8 @@ public final class Innkeepers {
 	public static int MAX_GUESTS = 2;
 	/** How long an unhired traveller stays (two days). */
 	public static long STAY = 48000;
+	/** Travellers arrive in the morning (day time below this). */
+	public static final long MORNING = 6000;
 	/** Emeralds to hire a traveller of each level (index = level; CobbleDollars at the usual rate). */
 	static final int[] PRICE = {0, 4, 8, 16, 32, 64};
 
@@ -63,6 +65,54 @@ public final class Innkeepers {
 	/** The travellers staying round {@code counter}. */
 	public static List<Villager> guests(ServerLevel level, BlockPos counter) {
 		return level.getEntitiesOfClass(Villager.class, new AABB(counter).inflate(RADIUS, 16, RADIUS), v -> v.isAlive() && isTraveller(v));
+	}
+
+	/** Travellers {@code innkeeper}'s inn takes at once: {@link #MAX_GUESTS}, or what the village's {@code inn} effect names. */
+	public static int maxGuests(Villager innkeeper) {
+		return io.github.jcondedata.aliveworkplace.hall.CivicEffects.of(innkeeper).innGuests(MAX_GUESTS);
+	}
+
+	/** Travellers who may arrive at {@code innkeeper}'s inn a morning: 1, or what the village's {@code inn} effect names. */
+	public static int arrivalsPerMorning(Villager innkeeper) {
+		return io.github.jcondedata.aliveworkplace.hall.CivicEffects.of(innkeeper).innArrivals();
+	}
+
+	/** How many travellers {@code innkeeper} has taken in on game day {@code day} (a save from before 30.7 kept no count: 1). */
+	public static int arrivedOn(Villager innkeeper, long day) {
+		return ModAttachments.LAST_GUEST_DAY.getOrElse(innkeeper, -1L) == day ? ModAttachments.GUESTS_TODAY.getOrElse(innkeeper, 1) : 0;
+	}
+
+	/**
+	 * The inn's round: guests whose stay is over leave (out of sight of players), and in the morning a new one may arrive
+	 * while the inn has room ({@link #maxGuests}), a free bed and fewer arrivals today than {@link #arrivalsPerMorning}.
+	 * Returns the innkeeper's state for the status line: full, no_bed, waiting or hosting.
+	 */
+	public static String tend(ServerLevel level, Villager innkeeper, BlockPos counter) {
+		List<Villager> guests = guests(level, counter);
+		for (Villager guest : guests) {
+			if (stayOver(level, guest) && level.getNearestPlayer(guest, 24) == null) {
+				leave(level, guest);
+			}
+		}
+		guests = guests(level, counter);
+		if (guests.size() >= maxGuests(innkeeper)) {
+			return "full";
+		}
+		if (!hasFreeBed(level, counter)) {
+			return "no_bed";
+		}
+		long day = level.getDayTime() / 24000;
+		int today = arrivedOn(innkeeper, day);
+		if (level.getDayTime() % 24000 < MORNING && today < arrivalsPerMorning(innkeeper)) {
+			if (arrive(level, innkeeper, counter) != null) {
+				ModAttachments.LAST_GUEST_DAY.set(innkeeper, day);
+				ModAttachments.GUESTS_TODAY.set(innkeeper, today + 1);
+				ModAttachments.GUESTS_HOSTED.set(innkeeper, ModAttachments.GUESTS_HOSTED.getOrElse(innkeeper, 0) + 1);
+				BuilderLevels.addXp(level, innkeeper, 3, null);
+				return "hosting";
+			}
+		}
+		return guests.isEmpty() ? "waiting" : "hosting";
 	}
 
 	/** A bed nobody has claimed near the counter. */

@@ -82,6 +82,8 @@ public final class ModAttachments {
 	/** The day an Innkeeper last took in a traveller, and how many they've hosted. */
 	public static final Attachment<Long> LAST_GUEST_DAY = Attachment.saved("last_guest_day", com.mojang.serialization.Codec.LONG);
 	public static final Attachment<Integer> GUESTS_HOSTED = Attachment.saved("guests_hosted", com.mojang.serialization.Codec.INT);
+	/** How many travellers an Innkeeper took in on {@link #LAST_GUEST_DAY} (Open Gates lets two arrive a morning; none saved: 1). */
+	public static final Attachment<Integer> GUESTS_TODAY = Attachment.saved("guests_today", com.mojang.serialization.Codec.INT);
 
 	/** Whether a villager went to school as a child (a Teacher's lessons), and how many ticks of lessons they've had. */
 	public static final Attachment<Boolean> SCHOOLED = Attachment.saved("schooled", com.mojang.serialization.Codec.BOOL);

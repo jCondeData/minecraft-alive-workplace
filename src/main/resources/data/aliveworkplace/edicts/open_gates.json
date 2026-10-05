@@ -1,0 +1,24 @@
+{
+  "icon": "minecraft:oak_fence_gate",
+  "name": {"translate": "edict.aliveworkplace.open_gates"},
+  "description": {"translate": "edict.aliveworkplace.open_gates.desc"},
+  "order": 4,
+  "boost": [
+    {"type": "aliveworkplace:inn", "guests": 4, "arrivals": 2},
+    {"type": "aliveworkplace:market_traders", "extra": 1},
+    {"type": "aliveworkplace:legend_visits", "factor": 2}
+  ],
+  "cost": [{"type": "aliveworkplace:bandit_camps", "factor": 2}],
+  "excludes": ["curfew"],
+  "reform": {
+    "name": {"translate": "reform.aliveworkplace.watchful_gate"},
+    "line": {"translate": "reform.aliveworkplace.watchful_gate.line"},
+    "steps": [
+      {"kind": "bring", "item": "minecraft:iron_ingot", "count": 16, "reward": 5},
+      {"kind": "bring", "item": "minecraft:arrow", "count": 32, "reward": 4},
+      {"kind": "slay", "count": 12, "reward": 6}
+    ],
+    "effects": []
+  },
+  "enabled": true
+}

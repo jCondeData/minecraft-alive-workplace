@@ -177,7 +177,7 @@ public final class LegendSlots {
 				continue;
 			}
 			ModAttachments.LEGEND.set(v, new LegendData(data.id(), data.name(), data.guest(), Optional.of(hall), data.since(), data.lastDay(),
-				data.unmet(), data.strikeSince(), data.lastLuxury(), data.way()));
+				data.unmet(), data.strikeSince(), data.lastLuxury(), data.way(), data.checked()));
 			LegendRecord.get(level).moved(v.getUUID(), hall);
 			Legends.get(data.id()).ifPresent(legend -> Chronicle.record(level, hall, Chronicle.Kind.LEGEND,
 				Component.translatable("chronicle.aliveworkplace.legend.joined", v.getDisplayName(), legend.titleText())));

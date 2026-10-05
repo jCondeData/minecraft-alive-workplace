@@ -232,6 +232,8 @@ SCENES = [
       "a Legend in her outfit with a gold name and sparkle, first on the hall's list, and the Legends page's cards", 60,
       [("01_legend_look", "A Legend: outfit, gold name, sparkle"), ("03_legend_list", "First on the hall's list"),
        ("04_legends_page_scale2", "The Legends page, GUI scale 2"), ("05_legends_page_scale4", "The Legends page, GUI scale 4")]),
+    # Needs and strikes (ROADMAP 29.5): a Legend with no home of her own on strike, picketing by the hall under a red line
+    job("legend_strike", "Legends", "A Legend on strike", "a Legend on strike left her stonecutter and picketed by the Village Hall under a red line", 120),
     S("edicts", "Village Hall", "The Book of Edicts",
       "the Book of Edicts opened from the hall's lectern button, with Long Shifts in force, at GUI scales 2 and 4", 45,
       [("01_edicts_book", "Long Shifts in force, two free slots, one locked for a City"), ("02_edicts_scale4", "At GUI scale 4")]),

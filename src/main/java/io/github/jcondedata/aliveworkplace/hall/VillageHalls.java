@@ -188,6 +188,9 @@ public final class VillageHalls {
 			if (v.blockPosition().distSqr(hall) <= r2 || v.isPassenger()) {
 				continue;
 			}
+			if (io.github.jcondedata.aliveworkplace.registry.ModAttachments.LEGEND.has(v)) {
+				continue; // the call-home passes Legends by (ROADMAP 29.5): they come and go as they will, and never leave
+			}
 			boolean ours = java.util.stream.Stream.of(MemoryModuleType.HOME, MemoryModuleType.JOB_SITE)
 				.map(m -> v.getBrain().getMemory(m).orElse(null))
 				.anyMatch(g -> g != null && g.dimension().equals(level.dimension()) && g.pos().distSqr(hall) <= r2);
@@ -209,7 +212,7 @@ public final class VillageHalls {
 
 	/** A spot to stand near the hall ({@code n}: the how-manyth, to spread them out). */
 	@Nullable
-	static BlockPos besideHall(ServerLevel level, BlockPos hall, int n) {
+	public static BlockPos besideHall(ServerLevel level, BlockPos hall, int n) {
 		List<BlockPos> spots = new ArrayList<>();
 		for (BlockPos p : BlockPos.betweenClosed(hall.offset(-4, -2, -4), hall.offset(4, 2, 4))) {
 			if (io.github.jcondedata.aliveworkplace.work.Walker.canStand(level, p) && !p.equals(hall)) {

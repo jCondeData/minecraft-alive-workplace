@@ -171,10 +171,7 @@ public final class LegendsPage {
 		lore.addAll(LegendText.powerLines(o.legend(), data != null && data.onStrike()));
 		if (data != null && data.settled()) {
 			lore.addAll(LegendText.needLines(o.legend(), data));
-			Component strike = LegendText.strikeLine(data);
-			if (strike != null) {
-				lore.add(strike);
-			}
+			lore.addAll(LegendText.strikeLines(o.legend(), data));
 		}
 		ItemStack icon = VillageHallScreen.icon(Items.NETHER_STAR, LegendText.name(o.name(), o.legend()), ChatFormatting.GOLD, lore.toArray(Component[]::new));
 		icon.set(DataComponents.ENCHANTMENT_GLINT_OVERRIDE, true);

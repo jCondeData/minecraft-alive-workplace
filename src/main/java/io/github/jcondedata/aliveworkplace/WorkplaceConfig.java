@@ -69,6 +69,8 @@ public final class WorkplaceConfig {
 	public boolean villagerMoods = true;
 	/** Legends (rare named villagers with powers) can come to villages that earn them. */
 	public boolean legends = true;
+	/** A settled Legend needs a home of their own, their luxury and a happy village, and strikes without them. */
+	public boolean legendNeeds = true;
 	/**
 	 * Mythic Legends a village may hold, by its rank: Hamlet, Village, Town, City. Edited in the file only (a list isn't
 	 * on the settings screen); each is clamped to 0-10, a short list is filled from the defaults.
@@ -335,6 +337,8 @@ public final class WorkplaceConfig {
 		io.github.jcondedata.aliveworkplace.hall.Treasury.ENABLED = villageTreasury && System.getProperty("fabric-api.gametest") == null;
 		io.github.jcondedata.aliveworkplace.hall.VillageProtection.ENABLED = villageProtection;
 		io.github.jcondedata.aliveworkplace.legend.Legends.ENABLED = legends;
+		// Off in gametests (a round could start or end a strike a test staged); the needs tests turn it on.
+		io.github.jcondedata.aliveworkplace.legend.LegendNeeds.ENABLED = legendNeeds && System.getProperty("fabric-api.gametest") == null;
 		io.github.jcondedata.aliveworkplace.legend.Legends.MYTHIC_CAP = mythicLegendCap.stream().mapToInt(Integer::intValue).toArray();
 		// Off in gametests (tickets around every test's workers would keep the test areas loaded); KeepLoaded's tests turn it on.
 		io.github.jcondedata.aliveworkplace.work.KeepLoaded.VILLAGES = keepVillagesWorking && System.getProperty("fabric-api.gametest") == null;

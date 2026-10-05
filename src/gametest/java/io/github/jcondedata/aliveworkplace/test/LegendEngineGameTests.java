@@ -209,7 +209,14 @@ public class LegendEngineGameTests implements net.fabricmc.fabric.api.gametest.v
 			Leftovers.after(helper, () -> caravans.remove(hall));
 			check(helper, routes, hall, true, 1, 1);
 
-			// meal_kinds: the chest by the smoker is the store
+			// meal_kinds: the chest by the smoker is the store. Batches run one after another on the same spots, and a store an
+			// earlier batch left outside this area (within the hall's 64 blocks) would count too: emptied first.
+			for (BlockPos store : io.github.jcondedata.aliveworkplace.hall.VillageNeeds.store(level, hall)) {
+				if (!helper.getBounds().contains(net.minecraft.world.phys.Vec3.atCenterOf(store))
+					&& level.getBlockEntity(store) instanceof net.minecraft.world.Container leftover) {
+					leftover.clearContent();
+				}
+			}
 			Condition meals = condition("{\"type\": \"meal_kinds\", \"count\": 2}");
 			check(helper, meals, hall, false, 0, 2);
 			Container chest = (Container) helper.getBlockEntity(new BlockPos(4, 2, 3));

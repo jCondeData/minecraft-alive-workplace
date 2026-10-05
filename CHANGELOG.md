@@ -17,6 +17,15 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Added
+- **Legends' needs and strikes** (29.5): once a day the Village Hall checks what each settled Legend needs: a home of
+  their own (their bed in a finished tier III building, shared with nobody but their spouse), their luxury once a week
+  (wine, jewels, books or fine clothes, taken from a chest in their home or else the village store, +10 mood; for now
+  honey bottles, amethyst shards and emeralds, books, and leather armour, through the `aliveworkplace:luxury/*` item
+  tags) and a happy village (average mood 60, or wellbeing 60% with moods off). After a 3-day grace, a need unmet two
+  days running starts a strike: their powers stop, their trade's work stops, they picket by the hall by day under a red
+  "On strike: a home of my own" line, and the hall, the Legends page and the chronicle say so. The day every need is
+  met they go back to work. Legends never leave: no inn departure, no despawning, and the hall's call-home passes them
+  by. `legendNeeds` in the config turns it off.
 - **Legends on the hall, and how they look** (29.4): the Village Hall has a Legends page (a nether star in the page
   row): the village's own Legends first, then every Legend as a card with its rarity, how it comes, each condition with
   the village's progress, the luxury it likes, its powers, "lives in ..." for a Legendary taken elsewhere and the Mythic

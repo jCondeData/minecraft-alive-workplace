@@ -152,6 +152,12 @@ public final class Moods {
 			score += legend.points();
 			(legend.points() >= 0 ? good : bad).add(legend.reason());
 		}
+		// A Legend's luxury (29.5), for the week it lasts.
+		io.github.jcondedata.aliveworkplace.legend.LegendPowers.MoodReason luxury = io.github.jcondedata.aliveworkplace.legend.LegendNeeds.luxuryMood(level, villager);
+		if (luxury != null) {
+			score += luxury.points();
+			good.add(luxury.reason());
+		}
 		if (!level.getEntitiesOfClass(Villager.class, villager.getBoundingBox().inflate(COMPANY_RANGE), v -> v != villager && v.isAlive()).isEmpty()) {
 			score += 5;
 			good.add(reason("company"));
@@ -175,6 +181,11 @@ public final class Moods {
 	/** Forget the remembered moods (tests). */
 	public static void forget() {
 		KEPT.clear();
+	}
+
+	/** Forget {@code villager}'s remembered mood (something just changed it: a Legend's luxury). */
+	public static void forget(Villager villager) {
+		KEPT.remove(villager);
 	}
 
 	private Moods() {

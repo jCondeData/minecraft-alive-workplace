@@ -231,7 +231,7 @@ public final class VillageNeeds {
 	}
 
 	/** The store: the chests by the village's kitchens (smokers, old Kitchen Stoves), then by its Storehouses. */
-	static List<BlockPos> store(ServerLevel level, BlockPos hall) {
+	public static List<BlockPos> store(ServerLevel level, BlockPos hall) {
 		Set<BlockPos> chests = new LinkedHashSet<>();
 		PoiManager poi = level.getPoiManager();
 		// Kitchens: smokers, where chefs cook since 21.1a (and butchers smoke), and old Kitchen Stoves.

@@ -1411,7 +1411,7 @@ MarketDays) and research/.
   Done when: GameTests check the page's cards (each condition's progress, the taken and Mythic lines) against staged
   villages; screenshots show a test Legend in a placeholder outfit (pixel-art skill) and the page at GUI scales 2 and
   4; showcase scene `legends_hall`.
-- [ ] **29.5** **Needs and strikes.** Each settled Legend's needs are checked once a day in the hall's round:
+- [x] **29.5** (review: pending 2026-10-05) **Needs and strikes.** Each settled Legend's needs are checked once a day in the hall's round:
   - **a home of their own**: their bed is in a finished building of tier III or higher (`Homes.at`), and nobody else's
     bed is in it but their spouse's (`Couples`);
   - **a liked luxury**: once every 7 days they take one item of their kind from a chest in their home, else the
@@ -4272,6 +4272,18 @@ item waits.
 - (Sessions: anything that needs the owner, and the link to the latest Full test report. Handoffs go here through
   `sessions.py handoff "<in progress, next, traps>" --as <you>`, which keeps one per kind of session (chat, night):
   carry over anything still true from the previous one.)
+- 2026-10-05 (29.5, decisions; lane a): needs are checked in the hall's round on its first round of each `Chronicle.day`
+  (saved as `LegendData.checked`, default -1), and on every round while a Legend is on strike, so they go back to work
+  within half a minute of the last need being met. The 3-day grace only holds a strike off: days unmet are still counted
+  (and shown as crosses), so a need unmet since settling starts the strike on the first day after the grace. Home: no
+  bed of anyone else in the village (by their HOME memory) may be in the building's box but a married spouse's (a
+  sweetheart still courting doesn't count). The luxury is due 7 days after the last one; taken, it gives "enjoying their
+  wine" +10 mood for those 7 days. The picket is the first behaviour of every trade's WORK package (added where the
+  villager's brain takes it, `VillagerMixin`); the rest of the package is held (`work/Gated`) while they strike; Legends with no workstation (`aliveworkplace:legend`) have no WORK
+  activity, so they picket in IDLE. The red line is the worker status line over the head (`WorkerStatus`), with "No work
+  till then" under it. `legendNeeds` off: the round checks nothing and clears strikes and days unmet. Question for the
+  owner: "the hall's call-home passes them by" is built as written (Call everyone home doesn't bring a Legend back);
+  if it should instead always bring them home, it's one line in `VillageHalls.recall`.
 - 2026-10-05 (29.4, decision; lane a): two parts of 29.4 lean on items not built yet. (1) No Gifted villagers exist
   until 29.6, so the gold gift line under a villager's traits on the hall's list is left to 29.6 (it goes in
   `VillageHallScreen.person` beside the traits line). (2) Needs aren't checked until 29.5: the hall and the Legends page

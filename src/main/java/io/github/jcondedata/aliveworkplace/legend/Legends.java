@@ -191,8 +191,14 @@ public final class Legends implements ResourceManagerReloadListener {
 		LegendPowers.forget();
 	}
 
-	/** Every 200 ticks (10 seconds) of a Legend's life: they join their dimension's list for the auras, and sparkle. */
+	/**
+	 * Every 200 ticks (10 seconds) of a Legend's life: they join their dimension's list for the auras, and sparkle; every
+	 * second, a Legend on strike shows what they want over their head (29.5).
+	 */
 	public static void tick(Villager villager) {
+		if (ENABLED && villager.tickCount % 20 == 0 && ModAttachments.LEGEND.has(villager)) {
+			LegendNeeds.tick(villager);
+		}
 		if (ENABLED && villager.tickCount % 200 == 0 && ModAttachments.LEGEND.has(villager)) {
 			LegendPowers.seen(villager);
 			LegendSlots.onRecord(villager);

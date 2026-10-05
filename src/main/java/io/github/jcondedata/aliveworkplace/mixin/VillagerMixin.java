@@ -119,6 +119,24 @@ abstract class VillagerMixin {
 		}
 	}
 
+	/** Every trade's WORK package (the first activity added with conditions) starts with a Legend's picket (29.5). */
+	@org.spongepowered.asm.mixin.injection.ModifyArg(method = "registerBrainGoals", at = @At(value = "INVOKE", ordinal = 0,
+		target = "Lnet/minecraft/world/entity/ai/Brain;addActivityWithConditions(Lnet/minecraft/world/entity/schedule/Activity;Lcom/google/common/collect/ImmutableList;Ljava/util/Set;)V"),
+		index = 1)
+	private com.google.common.collect.ImmutableList<com.mojang.datafixers.util.Pair<Integer, ? extends net.minecraft.world.entity.ai.behavior.BehaviorControl<? super Villager>>> aliveworkplace$picketAtWork(
+			com.google.common.collect.ImmutableList<com.mojang.datafixers.util.Pair<Integer, ? extends net.minecraft.world.entity.ai.behavior.BehaviorControl<? super Villager>>> work) {
+		return io.github.jcondedata.aliveworkplace.legend.Picket.work(work);
+	}
+
+	/** And the IDLE package (the fourth activity added plainly: after PLAY, CORE and REST), for a Legend with no workstation. */
+	@org.spongepowered.asm.mixin.injection.ModifyArg(method = "registerBrainGoals", at = @At(value = "INVOKE", ordinal = 3,
+		target = "Lnet/minecraft/world/entity/ai/Brain;addActivity(Lnet/minecraft/world/entity/schedule/Activity;Lcom/google/common/collect/ImmutableList;)V"),
+		index = 1)
+	private com.google.common.collect.ImmutableList<com.mojang.datafixers.util.Pair<Integer, ? extends net.minecraft.world.entity.ai.behavior.BehaviorControl<? super Villager>>> aliveworkplace$picketIdle(
+			com.google.common.collect.ImmutableList<com.mojang.datafixers.util.Pair<Integer, ? extends net.minecraft.world.entity.ai.behavior.BehaviorControl<? super Villager>>> idle) {
+		return io.github.jcondedata.aliveworkplace.legend.Picket.idle(idle);
+	}
+
 	@Inject(method = "registerBrainGoals", at = @At("TAIL"))
 	private void aliveworkplace$builderSchedule(Brain<Villager> brain, CallbackInfo ci) {
 		Villager self = (Villager) (Object) this;

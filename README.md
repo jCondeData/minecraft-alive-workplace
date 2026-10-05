@@ -328,6 +328,15 @@ Architect" in gold, with their rarity, each power on a line and each of their ne
 luxury, a happy village) with a tick or a cross; a Legend on strike shows it in red. "What next?" says when a Legend
 lacks only one thing, and villagers chat about their Legends and the Legends who visit.
 
+A settled Legend has needs, checked once a day: **a home of their own** (their bed in a finished tier III building that
+nobody but their spouse also sleeps in), **their luxury** once a week (wine, jewels, books or fine clothes, which they
+take from a chest in their home or else the village store; for now honey bottles, amethyst shards and emeralds, books,
+and leather armour, through the `aliveworkplace:luxury/<kind>` item tags; it lifts their mood 10) and **a happy village**
+(the grown-ups' average mood 60 or more, or wellbeing 60% with moods off). Three days after settling, a need unmet two
+days running starts a **strike**: their powers stop, their trade's work stops, they picket by the Village Hall by day
+with "On strike: a home of my own" over their head in red, and the hall and chronicle say so. The day every need is
+met they go back to work. Legends never leave, strike or not. `legendNeeds` in the config turns needs and strikes off.
+
 `legends` in the config switches them off: none come, and those already settled stay as ordinary Masters of their
 trade. Each Legend that ships adds its paragraph below.
 

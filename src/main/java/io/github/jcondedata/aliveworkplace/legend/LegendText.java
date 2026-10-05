@@ -104,6 +104,15 @@ public final class LegendText {
 		return data.onStrike() ? Component.translatable("legend.aliveworkplace.strike", data.strikeSince()).withStyle(ChatFormatting.RED) : null;
 	}
 
+	/** "On strike since day 12" and "Wants: a home of my own", both in red; none when they aren't on strike. */
+	public static List<Component> strikeLines(Legend legend, LegendData data) {
+		Component strike = strikeLine(data);
+		if (strike == null) {
+			return List.of();
+		}
+		return List.of(strike, Component.translatable("legend.aliveworkplace.strike_wants", LegendNeeds.wants(legend, data)).withStyle(ChatFormatting.RED));
+	}
+
 	/** The hall's list's name for {@code villager} if they are a Legend: "Ada Stonewright, Master Architect" in gold. */
 	@Nullable
 	public static Component hallName(Villager villager) {
@@ -128,10 +137,7 @@ public final class LegendText {
 		}
 		out.addAll(powerLines(legend, data.onStrike()));
 		out.addAll(needLines(legend, data));
-		Component strike = strikeLine(data);
-		if (strike != null) {
-			out.add(strike);
-		}
+		out.addAll(strikeLines(legend, data));
 		return out;
 	}
 

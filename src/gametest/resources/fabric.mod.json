@@ -115,6 +115,7 @@
 			"io.github.jcondedata.aliveworkplace.test.LegendEngineGameTests",
 			"io.github.jcondedata.aliveworkplace.test.LegendSlotsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.LegendsHallGameTests",
+			"io.github.jcondedata.aliveworkplace.test.LegendNeedsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.ScribeGameTests",
 			"io.github.jcondedata.aliveworkplace.test.OptionalModsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.OutfitGameTests",

@@ -377,3 +377,32 @@ HOUSE_JOBS = {"guard_house": "guard", "clinic": "nurse", "post_office": "postman
               "sifting_shed": "sifter", "compost_yard": "composter"}
 
 
+
+
+# --- Buildable copies for the Blueprint Table (ROADMAP 27.11) ---------------------------------------------
+# The plains look of twelve village houses, for a builder to build: one workplace per job the Steward asks for.
+WORKPLACES = ("builders_workshop", "carpenters_workshop", "kitchen", "post_office", "guard_house", "clinic", "ferry_house")
+# Made of Cobblemon jobs' places: in the Blueprint Table only with Cobblemon (StarterBlueprints.COBBLEMON_WORKPLACES).
+COBBLEMON_WORKPLACES = ("trainers_house", "leaders_hall", "ball_workshop", "trade_hall", "school")
+
+
+def workplace(name):
+    """A village house (plains) made buildable: no jigsaws, structure voids or villager (the worker who wants it moves
+    in), no loot in its chests (builders never fill containers), and white concrete for the calcite (STYLE.md: calcite
+    is for village houses, never paid for). Same 9 x 10 x 10 as the house, its front at z = 0."""
+    fit_out = workshop_fit_out if name == "builders_workshop" else VILLAGE_HOUSES[name]
+    b = village_house("plains", fit_out, "aliveworkplace:builder")
+    b.entities = []
+    b.nbt = {}
+    for pos, (block, props) in list(b.blocks.items()):
+        if block in ("minecraft:jigsaw", "minecraft:structure_void"):
+            b.blocks[pos] = ("minecraft:air", ())
+        elif block == "minecraft:calcite":
+            b.blocks[pos] = ("minecraft:white_concrete", ())
+    # The front windows' flower boxes sit at head height beside the steps. Mob pathfinding takes any trapdoor for open
+    # ground, so a worker coming along the front wall walks into a top-half one and stays stuck there, never reaching
+    # the job block (the guard of workplaceBuilt_guard_house, 3 runs in 20). An upside-down stair sill holds the pot
+    # just the same and is a block the pathfinder walks around.
+    for x in (2, 6):
+        stairs(b, x, 1, 1, VILLAGE_STYLES["plains"].roof, "south", top=True)
+    return b

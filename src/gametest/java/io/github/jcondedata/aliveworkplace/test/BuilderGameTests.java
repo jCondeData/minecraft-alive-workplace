@@ -1707,6 +1707,8 @@ public class BuilderGameTests implements FabricGameTest {
 		all.addAll(StarterBlueprints.DEFENCES);
 		all.add(StarterBlueprints.TOWN_HALL);
 		all.addAll(StarterBlueprints.COBBLEMON_ONLY);
+		all.addAll(StarterBlueprints.WORKPLACES);
+		all.addAll(StarterBlueprints.COBBLEMON_WORKPLACES);
 		for (StarterBlueprints.Entry entry : all) {
 			Optional<Blueprint> blueprint = BlueprintLibrary.get(helper.getLevel(), entry.id());
 			helper.assertTrue(blueprint.isPresent(), "missing " + entry.id());

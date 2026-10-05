@@ -48,7 +48,7 @@ import org.jetbrains.annotations.Nullable;
  * At a block several jobs share ({@link Stations}) he can give its other jobs, which the hall's own list can't: a block
  * inside a finished building made for one of them ({@link #BUILDING_JOBS}, a Berry Farm's composter for an Orchard
  * Keeper) goes to that job while the building has none, and no other gap takes it. A gap with no free block left is
- * handed to {@link #WORKPLACE_WANTED}, where 27.11's rules propose its building.
+ * handed to {@link #WORKPLACE_WANTED}, and 27.11's workplace rules propose its building ({@link StewardConditions.Facts#wanted}).
  */
 public final class StewardJobs {
 	/** One job given: who, which job, at which block. */
@@ -83,7 +83,11 @@ public final class StewardJobs {
 		}
 	}
 
-	/** 27.11's seam: a job the village wants has no free block left. Nothing until 27.11 proposes the building. */
+	/**
+	 * A job the village wants has no free block left, called once a morning per job. The building itself is proposed by
+	 * 27.11's {@code workplace_*} rules, whose {@code worker_without_workstation} reads the same wants
+	 * ({@link StewardConditions.Facts#wanted}); this hook stays a seam for anything else that wants to know.
+	 */
 	@FunctionalInterface
 	public interface WorkplaceWanted {
 		void want(ServerLevel level, BlockPos hall, VillagerProfession profession);

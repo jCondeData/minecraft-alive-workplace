@@ -1,0 +1,29 @@
+{
+  "when": [
+    {
+      "worker_without_workstation": {
+        "professions": [
+          "aliveworkplace:ball_smith"
+        ],
+        "wanted": true
+      }
+    },
+    {
+      "mod_loaded": {
+        "mod": "cobblemon"
+      }
+    }
+  ],
+  "do": {
+    "build": {
+      "blueprint": "aliveworkplace:ball_workshop",
+      "zone": "workshops"
+    }
+  },
+  "priority": 62,
+  "why": "steward.aliveworkplace.why.workplace",
+  "cooldown_days": 2,
+  "requires": [
+    "cobblemon"
+  ]
+}

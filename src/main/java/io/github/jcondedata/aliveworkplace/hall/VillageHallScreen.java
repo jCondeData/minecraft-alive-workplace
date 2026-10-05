@@ -47,7 +47,8 @@ public final class VillageHallScreen {
 	public static final int GUARDS = 4;
 	static final int WELLBEING = 5;
 	static final int REQUESTS = 6;
-	static final int BUILDS = 7;
+	/** The village's builds; a click opens House looks (23.10a). */
+	public static final int BUILDS = 7;
 	public static final int QUESTS = 8;
 	/** The chronicle button, in the middle of the divider. */
 	public static final int CHRONICLE = 13;
@@ -191,7 +192,10 @@ public final class VillageHallScreen {
 				.orElse(line("screen.aliveworkplace.hall.no_bandits", ChatFormatting.DARK_GRAY))), null);
 		menu.button(WELLBEING, wellbeingIcon(needs), null);
 		menu.button(REQUESTS, requestsIcon(census.requests()), null);
-		menu.button(BUILDS, buildsIcon(census.builds()), null);
+		menu.button(BUILDS, buildsIcon(census.builds()), p -> {
+			PieceLooks.render(menu, level, hall);
+			menu.broadcastChanges();
+		});
 		List<VillageQuests.Quest> quests = new ArrayList<>(entity == null ? List.of() : VillageQuests.daily(entity.quests()));
 		if (entity != null) {
 			quests.addAll(Reforms.shown(entity));
@@ -821,6 +825,7 @@ public final class VillageHallScreen {
 		if (builds.size() > LIST_LINES) {
 			lore.add(line(Component.translatable("screen.aliveworkplace.hall.more", builds.size() - LIST_LINES), ChatFormatting.GRAY));
 		}
+		lore.add(line("screen.aliveworkplace.piece_looks.open", ChatFormatting.DARK_GRAY));
 		return icon(Items.BRICKS, Component.translatable("screen.aliveworkplace.hall.builds", builds.size()), ChatFormatting.WHITE,
 			lore.toArray(Component[]::new));
 	}

@@ -1,0 +1,29 @@
+{
+  "when": [
+    {
+      "worker_without_workstation": {
+        "professions": [
+          "aliveworkplace:pokemon_trader"
+        ],
+        "wanted": true
+      }
+    },
+    {
+      "mod_loaded": {
+        "mod": "cobblemon"
+      }
+    }
+  ],
+  "do": {
+    "build": {
+      "blueprint": "aliveworkplace:trade_hall",
+      "zone": "market"
+    }
+  },
+  "priority": 62,
+  "why": "steward.aliveworkplace.why.workplace",
+  "cooldown_days": 2,
+  "requires": [
+    "cobblemon"
+  ]
+}

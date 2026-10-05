@@ -47,6 +47,20 @@ asks for the steps, `latest.log` and any crash report).
   still holds), with sparks over them. Once a village a day; afterwards the villagers are worn out (10 less happy) until
   dawn. Only the hall's owner and friends can call a rush in an owned village. The Book of Edicts' last row shows the
   horn ready or used. `workHorns` in the config.
+- **A workplace for every worker** (27.11): twelve of the village houses are now in the Blueprint Table for builders to
+  build: Builder's Workshop, Carpenter's Workshop, Kitchen, Post Office, Guard House, Clinic and Ferry House, and with
+  Cobblemon the Trainer's House, Leader's Hall, Ball Workshop, Trade Hall and School. Each has its job block and a bed;
+  the worker who needs it moves in. The Steward now builds a workplace for every worker left without a workstation:
+  Kitchen for chefs and butchers, Guard House (Barracks from a Town) for guards and weaponsmiths, Clinic (Healing
+  Center from a Village) for nurses and clerics, Library for librarians and scholars, and so on for 27 jobs, six more
+  with Cobblemon. He also builds one for a job the village wants when no block for it is free: a Guard House when
+  guards are short and no grindstone or Guard Post is free. A Ferry House goes on the shore, with water within 4 blocks of its door. With no builder he asks you
+  to place a Blueprint Table and give a villager the job.
+- **House looks** (23.10a): the Village Hall's Builds button opens House looks, a list of the village's own houses
+  (workshops, clinics, guard houses...). The village's leader (the hall's owner and their friends) can give any of them
+  another village style's outside (plains, desert, savanna, snowy or taiga); the village's builder rebuilds the outside
+  in place and leaves the room inside, its job block and its chests as they were. Builders now also pick up what falls
+  off a block they take down (a lantern under a porch roof) instead of waiting for it.
 - **Gifted villagers** (29.6): about one villager in 30 has a rare gift as well as their traits, shown in gold on the
   Village Hall's list. Prodigy learns three times as fast; Iron Will never panics and keeps working through raids and
   the bell; Silver Tongue's trades are 20% cheaper; a Night Owl works from dusk to dawn and sleeps from mid-morning to
@@ -338,6 +352,8 @@ asks for the steps, `latest.log` and any crash report).
   partners than before.**
 
 ### Fixed
+- The showcase client starts every scene again without Cobblemon: the Habitat Keeper scene's wild Eevee is spawned
+  from a Cobblemon-only helper, so loading the scenes no longer crashes (B59).
 - Every switch on the settings screen fits its button again, on or off: shorter names for Nurse Healing Machines,
   Villages Work Unseen, Legend Needs, Strikes, Stewards Run Villages and Legends at Ruins (each tooltip still says it
   all) (B61).

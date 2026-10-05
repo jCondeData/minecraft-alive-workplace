@@ -1738,7 +1738,7 @@ MarketDays) and research/.
   Outfit: a green doublet, a lute on the back and a laurel wreath. Done when: GameTests: the same name always gives
   the same anthem and another name a different one; it is saved and played at each event (the sounds counted); the
   work-song pace only while they sing; showcase scene `legend_bard` (GIF with the notes).
-- [ ] **29.20** **The Beastmaster (Rare).** Comes: found as a prisoner in a pillager outpost (29.9) once the village
+- [x] **29.20** (review: pending 2026-10-05) **The Beastmaster (Rare).** Comes: found as a prisoner in a pillager outpost (29.9) once the village
   has a ranch: 10 animals within 16 blocks of a Rancher's, Butcher's or Shepherd's workstation; born to a Rancher
   (29.7). Trade: Rancher. Likes: clothes. Powers:
   - **war dogs** (`war_dogs`): with bones in their chest they tame a wolf for each guard without one (the village's

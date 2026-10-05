@@ -1028,6 +1028,69 @@ final class JobScenes {
 				return sang[0] && t >= 700;
 			};
 		}, null));
+		SCENES.put("legend_beastmaster", new Job("the Beastmaster tamed a war dog for the guard with bones from the chest and fitted it with wolf armour from the scutes; the dog followed its guard and fought the zombies beside them",
+			900, new Vec3(1.5, -54.5, 12), new Vec3(0, -60, 0), (level, player) -> {
+			// ROADMAP 29.20: the Village Hall, the Beastmaster (furs, a wolf-pelt hood) at their feed trough with bones and
+			// armadillo scutes in the chest beside it, a wild wolf, and a guard at a Guard Post to the east. The hall's round
+			// tames the wolf for the guard (hearts, wolf armour, "<guard>'s War Dog"); then three zombies come at the guard
+			// and the dog goes for them at the guard's side.
+			level.getGameRules().getRule(GameRules.RULE_DAYLIGHT).set(false, level.getServer());
+			level.setDayTime(2000);
+			BlockPos hall = STATION;
+			place(level, hall, ModBlocks.VILLAGE_HALL);
+			io.github.jcondedata.aliveworkplace.legend.Legend legend = io.github.jcondedata.aliveworkplace.legend.Legends.get(
+				io.github.jcondedata.aliveworkplace.legend.Beastmaster.ID).orElse(null);
+			Showcase.check(legend != null, "the Beastmaster's file loaded");
+			if (legend == null) {
+				return l -> true;
+			}
+			Villager beastmaster = worker(level, STATION.offset(-5, 0, 2), ModBlocks.FEED_TROUGH, ModVillagers.FEED_TROUGH_POI, ModVillagers.RANCHER);
+			beastmaster.setVillagerData(beastmaster.getVillagerData().setLevel(5));
+			beastmaster.setVillagerXp(250);
+			beastmaster.setNoAi(true);
+			beastmaster.setYRot(180);
+			beastmaster.setYHeadRot(180);
+			io.github.jcondedata.aliveworkplace.legend.Legends.make(level, beastmaster, legend, "showcase");
+			io.github.jcondedata.aliveworkplace.legend.LegendPowers.forget();
+			chest(level, STATION.offset(-6, 0, 2), new ItemStack(Items.BONE, 6), new ItemStack(Items.ARMADILLO_SCUTE, 6));
+			Villager guard = worker(level, STATION.offset(5, 0, 2), ModBlocks.GUARD_POST, ModVillagers.GUARD_POST_POI, ModVillagers.GUARD);
+			guard.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.IRON_SWORD));
+			guard.setItemSlot(EquipmentSlot.HEAD, new ItemStack(Items.IRON_HELMET));
+			net.minecraft.world.entity.animal.Wolf wolf = EntityType.WOLF.spawn(level, STATION.offset(-1, 0, 5), MobSpawnType.COMMAND);
+			long began = level.getGameTime();
+			boolean[] tamed = {false};
+			net.minecraft.world.entity.monster.Zombie[] zombies = new net.minecraft.world.entity.monster.Zombie[3];
+			boolean[] bit = {false};
+			return l -> {
+				long t = l.getGameTime() - began;
+				if (t == 60 && !tamed[0]) {
+					tamed[0] = true;
+					io.github.jcondedata.aliveworkplace.legend.Beastmaster.round(l, hall);
+					Showcase.check(io.github.jcondedata.aliveworkplace.legend.Beastmaster.dog(l, guard) == wolf, "the wolf was tamed as the guard's war dog");
+					Showcase.check(wolf.hasArmor(), "the war dog wears wolf armour");
+				}
+				if (t == 220) {
+					for (int i = 0; i < zombies.length; i++) {
+						zombies[i] = EntityType.ZOMBIE.spawn(l, STATION.offset(2 + i * 3, 0, -6), MobSpawnType.COMMAND);
+						if (zombies[i] != null) {
+							zombies[i].setItemSlot(EquipmentSlot.HEAD, new ItemStack(Items.LEATHER_HELMET)); // no burning by day
+						}
+					}
+				}
+				for (net.minecraft.world.entity.monster.Zombie z : zombies) {
+					if (z != null && wolf.getTarget() == z) {
+						bit[0] = true;
+					}
+				}
+				boolean cleared = t > 220 && java.util.Arrays.stream(zombies).allMatch(z -> z == null || !z.isAlive());
+				if (cleared && t >= 400 || t == 880) {
+					Showcase.check(bit[0], "the war dog went for the guard's zombies");
+					Showcase.check(cleared, "the guard and the dog beat the zombies");
+					return true;
+				}
+				return false;
+			};
+		}, null));
 		SCENES.put("legend_golem_smith", new Job("the Golem Smith forged a Hauler Golem, and the hauler, a farmhand and a wall sentry went to work",
 			2400, new Vec3(1.5, -51.5, 11), new Vec3(0, -60, -5), (level, player) -> {
 			// ROADMAP 29.15: the Golem Smith at a smithing table, the costs of a Hauler in the chest beside it and five

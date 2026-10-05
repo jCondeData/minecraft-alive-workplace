@@ -401,6 +401,7 @@ public final class LegendGuests {
 		if (time >= MORNING_FROM && time < MORNING_TO) {
 			GolemSmith.round(level, hall); // the Golem Smith's golems (29.15)
 		}
+		Beastmaster.round(level, hall); // the Beastmaster's war dogs and foals (29.20)
 		tend(level, hall);
 	}
 

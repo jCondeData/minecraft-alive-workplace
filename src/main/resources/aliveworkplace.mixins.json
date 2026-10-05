@@ -23,6 +23,7 @@
 		"VillagerMixin",
 		"VillagerPanicTriggerMixin",
 		"VillagerSeatMixin",
+		"WarDogSitMixin",
 		"ZombieVillagerMixin"
 	],
 	"injectors": {

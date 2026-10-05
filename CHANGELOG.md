@@ -31,6 +31,14 @@ asks for the steps, `latest.log` and any crash report).
 - **A farmer's carrots and potatoes reach the chests** (B77): a village farmer kept up to 32 of each in his bag as
   seed stock, so a Farmstead's field could be harvested without anything landing in its chest. He now takes them from the
   chests to plant with, like seeds, and puts the whole harvest away.
+- **The Beastmaster** (29.20), a Rare Legend in brown furs under a wolf-pelt hood: found as a prisoner in a pillager
+  outpost once the village keeps a ranch (10 animals within 16 blocks of a Rancher's, Butcher's or Shepherd's
+  workstation), or born to a Rancher. Likes clothes. With bones in their chest they tame a war dog for every guard
+  without one (a village wolf; when only a pair is left, they breed the pair), fit it with wolf armour from armadillo
+  scutes, and send it to the guard: it follows them on patrol and in a raid and goes for what they fight. One per
+  guard; a lost dog is replaced after 2 days. Once a day, with golden carrots in the chest, they breed the ranch's two
+  best horses: the foal gets the best speed, jump and health of its parents and a little more (never past vanilla's
+  best), is saddled from the chest when grown, and guards on cavalry duty ride their horses first.
 - **The Bard Laureate** (29.19), a Rare Legend in a green doublet with a lute on the back and a laurel wreath: a guest
   at a festival 30 villagers come to, or born to a Bard. Likes books. On settling they compose the village's anthem,
   16 notes on one instrument made from the village's name (the same name always gives the same tune), kept in the hall

@@ -318,6 +318,9 @@ SCENES = [
     # The Bard Laureate (ROADMAP 29.19): the anthem composed and played over the hall, then a work song among the workers
     job("legend_bard", "Legends", "The Bard Laureate's anthem and work song",
         "the Bard Laureate settled and composed the village's anthem, which rang out over the hall in note-block notes; then they sang a work song among the busiest workers, notes rising round them", 90),
+    # The Beastmaster (ROADMAP 29.20): a war dog tamed for a guard, then the guard and the dog against zombies
+    job("legend_beastmaster", "Legends", "The Beastmaster's war dog",
+        "the Beastmaster tamed a war dog for the guard with bones from the chest and fitted it with wolf armour from the scutes; the dog followed its guard and fought the zombies beside them", 90),
     job("legend_strike", "Legends", "A Legend on strike", "a Legend on strike left her stonecutter and picketed by the Village Hall under a red line", 120),
     # Strange moods (ROADMAP 29.10): a Master cleric claims her brewing stand under a purple line, the chest by it fills,
     # and she makes a named Masterwork, hung in an item frame, and becomes a Legend

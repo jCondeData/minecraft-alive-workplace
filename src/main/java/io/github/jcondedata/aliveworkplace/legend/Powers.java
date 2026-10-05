@@ -29,6 +29,7 @@ public final class Powers {
 		GiftPowers.register();
 		Seer.register();
 		BardLaureate.register();
+		Beastmaster.register();
 	}
 
 	/** Adds a named power (each Legend item adds its own). */

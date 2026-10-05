@@ -37,6 +37,15 @@ public final class ModAttachments {
 	/** The day a villager last heard a Bard Laureate's work song (29.19). Absent: never. */
 	public static final Attachment<Long> SONG_HEARD = Attachment.saved("song_heard", com.mojang.serialization.Codec.LONG);
 
+	/** A guard's war dog from the Beastmaster (29.20): the dog, and the day the last one fell. Absent: never had one. */
+	public static final Attachment<io.github.jcondedata.aliveworkplace.legend.Beastmaster.Dog> WAR_DOG = Attachment.saved("war_dog", io.github.jcondedata.aliveworkplace.legend.Beastmaster.Dog.CODEC);
+	/** On a wolf: the guard it's the war dog of (29.20). Absent: nobody's war dog. */
+	public static final Attachment<java.util.UUID> WAR_DOG_OF = Attachment.saved("war_dog_of", net.minecraft.core.UUIDUtil.CODEC);
+	/** On a horse: the day a Beastmaster (29.20) bred it. Absent: not theirs. */
+	public static final Attachment<Long> BRED_HORSE = Attachment.saved("bred_horse", com.mojang.serialization.Codec.LONG);
+	/** On a Beastmaster (29.20): the day of their last foal. Absent: none yet. */
+	public static final Attachment<Long> LAST_FOAL = Attachment.saved("last_foal", com.mojang.serialization.Codec.LONG);
+
 	/** A villager's gift (29.6): a gift's id, or {@code none}. Absent: the UUID roll decides ({@code Gifted.of}). */
 	/** The guild this villager leads and its village's hall (ROADMAP 30.17); absent: they lead none. */
 	public static final Attachment<io.github.jcondedata.aliveworkplace.hall.Guilds.Master> GUILD_MASTER = Attachment.saved("guild_master", io.github.jcondedata.aliveworkplace.hall.Guilds.Master.CODEC);

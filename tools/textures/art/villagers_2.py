@@ -1105,9 +1105,70 @@ def bard_laureate():
     return [path]
 
 
+def beastmaster():
+    """The Beastmaster (29.20), drawn over the Rancher's look: a wolf-pelt hood, grey fur over the head with the wolf's
+    dark-tipped ears at the crown, its brow and amber glass eyes over the villager's own, and the pelt running down the
+    back to a bushy tail; under it a cloak of brown furs to the knees with a shaggy hem, a cream fur collar and cuffs,
+    darker fur sleeves and a leather belt with a bone toggle."""
+    t = vg.VillagerTexture()
+    pelt = Ramp(["#4a4a4e", "#6c6b6e", "#8e8c8c", "#b2aeaa"], name="wolf")
+    dark = "#2f2d30"
+    cream = Ramp(["#a8957a", "#c8b698", "#e0d2b4"], name="cream fur")
+    vg.hat(t, pelt, style="hood", noise=0)
+    hf = t.face("hat", "front")                          # the wolf's brow over the face: dark mask, amber eyes
+    paint(hf, ((x, 0) for x in range(hf.w)), pelt[2])
+    paint(hf, ((x, 1) for x in range(1, hf.w - 1)), pelt[1])
+    paint(hf, ((1, 1), (6, 1)), dark)
+    paint(hf, ((2, 1), (5, 1)), "#d89a2a")              # the glass eyes
+    paint(hf, ((3, 1), (4, 1)), pelt[3])                # the pale blaze down the nose
+    paint(hf, ((0, 0), (1, 0), (6, 0), (7, 0)), dark)   # the ears at the front corners
+    for side in ("west", "east"):                       # from the side: the ears at the crown, the pale fringe of the pelt
+        f = t.face("hat", side)
+        paint(f, ((x, 0) for x in range(f.w - 3, f.w) if side == "west"), dark)
+        paint(f, ((x, 0) for x in range(0, 3) if side == "east"), dark)
+        paint(f, ((x, f.h - 1) for x in range(f.w)), pelt[3] if side == "west" else pelt[2])
+        paint(f, ((x, f.h - 2) for x in range(0, f.w, 2)), pelt[3] if side == "west" else pelt[2])
+    top = t.face("hat", "top")
+    paint(top, ((x, y) for x in (0, 1, 6, 7) for y in (0, 1)), dark)   # the ears from above
+    paint(top, ((x, y) for x in range(2, 6) for y in range(2, 8)), pelt[1])
+    paint(top, ((3, y) for y in range(2, 8)), pelt[0])  # the dark stripe along the wolf's back
+    hb = t.face("hat", "back")
+    paint(hb, ((3, y) for y in range(hb.h)), pelt[0])
+    paint(hb, ((4, y) for y in range(hb.h)), pelt[1])
+    furs = Ramp(["#3e2816", "#5c3c22", "#7a5432", "#986c44"], name="furs")
+    vg.robe(t, furs, length=14, sleeves_too=False, body_too=False, noise=0)
+    vg.sleeves(t, vg.cloth("#4e3220"), cuff=cream[1], noise=0)
+    for side in SIDES:                                  # the shaggy hem: tufts hanging a pixel lower
+        f = t.face("jacket", side)
+        for x in range(f.w):
+            if x % 2 == 0:
+                f.put(x, 14, furs[0])
+            if (x + 1) % 4 == 0:
+                f.put(x, 15, furs[0])
+    jf = t.face("jacket", "front")
+    paint(jf, ((x, y) for x in range(jf.w) for y in (0, 1)), cream[2])   # the cream fur collar
+    paint(jf, ((x, 1) for x in range(0, jf.w, 2)), cream[1])
+    paint(jf, ((3, y) for y in range(2, 14)), furs[0])  # where the cloak closes
+    vg.belt(t, LEATHER, row=9, buckle="#e8e0c8")        # a bone toggle for a buckle
+    jb = t.face("jacket", "back")                       # the pelt down the back, ending in the bushy tail
+    for y in range(0, 16):
+        for x in range(1, 7):
+            if y < 10 or (y < 16 and 2 <= x <= 5 and not (y == 15 and x in (2, 5))):
+                jb.put(x, y, pelt[2] if x < 3 else pelt[1])
+    paint(jb, ((x, y) for y in range(0, 10) for x in (3, 4)), pelt[0])   # its dark back stripe
+    paint(jb, ((x, y) for y in range(13, 16) for x in (3, 4)), pelt[3])  # the pale tip of the tail
+    paint(jb, ((1, 10), (6, 10)), pelt[0])
+    for side in ("west", "east"):
+        f = t.face("jacket", side)
+        paint(f, ((x, y) for x in range(f.w) for y in (0, 1)), cream[1] if side == "west" else cream[0])
+    path = ASSETS / "textures" / "entity" / "villager" / "legend" / "beastmaster.png"
+    t.save(path)
+    return [path]
+
+
 DRAW = [orchard_keeper, berry_breeder, camp_cook, habitat_keeper, daycare_keeper, gem_grower, pokemon_trader, porter, postman, rancher, scholar, shopkeeper, sifter, teacher, tinkerer,
         trainer, trainer_leader, tutor, undertaker, steward, legend, legend_placeholder, master_architect, pathfinder, old_sage, seer, golem_smith,
-        merchant_prince, grand_chef, bard_laureate]
+        merchant_prince, grand_chef, bard_laureate, beastmaster]
 
 if __name__ == "__main__":
     run(DRAW)

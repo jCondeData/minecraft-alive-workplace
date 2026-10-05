@@ -258,6 +258,10 @@ SCENES = [
     # Legends (ROADMAP 29.3): a Mythic Legend announced to the whole server in gold, and the chronicle's nether-star line
     S("legend_announce", "Legends", "A Mythic Legend is announced", "a Mythic Legend's coming was announced in chat and written in the chronicle", 45,
       [("01_legend_chat", "The announcement"), ("02_legend_chronicle", "The chronicle line")]),
+    # Research trees as data (ROADMAP 29.11): the test tree's own tab, worked by a Legend who lives in the village
+    S("research_trees", "Legends", "A Legend's research tree",
+      "a Legend's research tree has its own tab on the research screen: levels done, one in progress, an exclusive pick taken", 45,
+      [("01_tree_tab", "The tree's tab"), ("02_tree_exclusive", "An exclusive pick taken")]),
     # Legends on the hall (ROADMAP 29.4): a Legend in the stand-in outfit with a gold name and the sparkle, the hall's
     # list with her first, and the Legends page's cards at GUI scales 2 and 4
     S("legends_hall", "Legends", "Legends on the hall, and how they look",
@@ -281,7 +285,14 @@ SCENES = [
     S("legend_sites", "Legends", "Legends found at ruins, outposts and wrecks",
       "the three camps of Legends found in the world, and a prisoner freed from the outpost cage", 40,
       [("01_three_camps", "A traveller's camp, a prisoner's cage, a castaway's camp"), ("02_cage_opened", "A bar broken: the prisoner is free")]),
+    # The Master Architect (ROADMAP 29.12): the top-tier Stone House, finished, redrawn in the Grand style and rebuilt
+    job("legend_architect", "Legends", "The Master Architect redraws a house in the Grand style",
+        "the Master Architect handed a builder the Stone House redrawn in the Grand style, and it was rebuilt", 360),
     job("legend_strike", "Legends", "A Legend on strike", "a Legend on strike left her stonecutter and picketed by the Village Hall under a red line", 120),
+    # Strange moods (ROADMAP 29.10): a Master cleric claims her brewing stand under a purple line, the chest by it fills,
+    # and she makes a named Masterwork, hung in an item frame, and becomes a Legend
+    job("strange_mood", "Legends", "A strange mood and a Masterwork",
+        "a Master cleric taken by a strange mood claimed her brewing stand, the chest was filled, and she made a Masterwork and became a Legend", 120),
     S("edicts", "Village Hall", "The Book of Edicts",
       "the Book of Edicts opened from the hall's lectern button, with Long Shifts in force, at GUI scales 2 and 4", 45,
       [("01_edicts_book", "The Book on the hall's screen: Long Shifts in force, two free slots, one locked for a City"), ("02_edicts_scale4", "The Book at GUI scale 4")]),

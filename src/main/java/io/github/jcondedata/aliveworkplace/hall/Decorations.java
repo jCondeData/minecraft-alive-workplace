@@ -9,7 +9,7 @@ import net.minecraft.server.level.ServerLevel;
 
 /**
  * Decorations make a village prettier: every well, lamp post, bench, fountain, gazebo or market square a builder
- * finished within a Village Hall's reach adds to the village's beauty, and each point of beauty adds 1% to its
+ * finished within a Village Hall's reach adds to the village's beauty (and each Masterwork in an item frame, 29.10), and each point of beauty adds 1% to its
  * wellbeing, up to {@link #MAX_BONUS}.
  */
 public final class Decorations {
@@ -39,7 +39,7 @@ public final class Decorations {
 		for (BuildSiteManager.Finished f : BuildSiteManager.get(level).finishedNear(level, hall, VillageHalls.RADIUS)) {
 			beauty += points(f.structure());
 		}
-		return beauty;
+		return beauty + io.github.jcondedata.aliveworkplace.legend.StrangeMoods.beauty(level, hall); // Masterworks in item frames (29.10)
 	}
 
 	/** The wellbeing that much beauty adds. */

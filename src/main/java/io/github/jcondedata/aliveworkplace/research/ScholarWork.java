@@ -123,6 +123,18 @@ public class ScholarWork extends Behavior<Villager> {
 			topic = research.currentTopic();
 		}
 		if (topic == null) {
+			// Nothing of their own: they help a Legend's research tree at half speed (29.11).
+			ResearchTree helped = ResearchTrees.help(level, villager, hall, entity, progress(villager), atDesk);
+			if (helped != null) {
+				state = "helping";
+				detail = helped.name();
+				Requests.clear(villager);
+				if (atDesk) {
+					villager.swing(InteractionHand.MAIN_HAND);
+					level.sendParticles(ParticleTypes.ENCHANT, desk.getX() + 0.5, desk.getY() + 1.3, desk.getZ() + 0.5, 3, 0.3, 0.2, 0.3, 0.5);
+				}
+				return;
+			}
 			state = "idle";
 			detail = Component.empty();
 			Requests.clear(villager);

@@ -134,7 +134,7 @@ stay in the list, ticked, so their numbers stay unique.
 - [ ] **B66** B50 is back after its fix (90808c7): BuilderCrewGameTests.aCrewBuildsInAboutTheTimeOfOneBuilderDividedByItsSize failed in qa-1005-0533's local full build of main a026511 + qa/b46-b53-1005 (2026-10-05 06:25Z): 'a crew of 4 took 1868 ticks, 44% of the 4200 ticks alone (at most 42%)'; crew of 2 took 50%. It blocked that ship. Expected: passes every run (find what the slow 4-crew runs wait on, as 90808c7 did for the stuck lead). Test: the test itself, repeated 10x with RepeatNewTests (QA lane: test-only flake that turns main red) (found by qa-1005-0533, 2026-10-05)
 - [ ] **B67** B57's fix (bf4d409, clear leftovers) didn't hold: PartnersForgeCompatTests aPidgeyBringsAFeatherToTheFletcher was the 1 failed compat test in CI run 37271696140 on main f0594ec (2026-10-05 06:23Z, which includes bf4d409), turning main red; the next run passed. CI's log doesn't print the assertion message (the gametest-report artifact has it). Same test as the still-open B48. Expected: passes every run; look past leftover guards (e.g. the fletcher's sticks or string taken by another worker within Village.RADIUS 48, or the guard's own bow choice). Test: the test itself in a few full compat runs (QA lane: test-only flake that turns main red) (found by qa-1005-0633, 2026-10-05)
 - [ ] **B68** Setting a traveller's camp down (29.9, legend/traveller_camp.nbt) logs an ERROR each time: 'Block-attached entity at invalid position: BlockPos{x=0, y=0, z=0}' (3x in every full GameTest run, from LegendSitesGameTests; the nightly log audit counts it). The camp's item frame is saved without TileX/TileY/TileZ (tools/blueprints/legend_sites.py). The frame and its map still appear (QaLegendCampGameTests, shipped), so players see nothing; only the log. Expected: no ERROR when a camp is placed (write TileX/Y/Z from blockPos in the generator, as vanilla's templates do). Test: logaudit.py after runGameTest, batch legendSitesPlace (found by qa-1005-0633, 2026-10-05) (found by qa-1005-0633, 2026-10-05)
-- [ ] **B69** Village houses (all five styles, tools/blueprints/village.py village_house) have head-height top-half trapdoor flower boxes beside the front steps at (2,1,1) and (6,1,1). Vanilla pathfinding treats any trapdoor as open ground, so a villager walking along the front wall to the door gets stuck against one for good (seen with the guard of workplaceBuilt_guard_house: 3 in 20 runs). The 12 buildable workplace copies got upside-down stair sills instead (27.11); the worldgen village houses still have the trapdoors. (found by lane-c-1005-0633, 2026-10-05)
+- [x] **B69** (approved auto 2026-10-05) Village houses (all five styles, tools/blueprints/village.py village_house) have head-height top-half trapdoor flower boxes beside the front steps at (2,1,1) and (6,1,1). Vanilla pathfinding treats any trapdoor as open ground, so a villager walking along the front wall to the door gets stuck against one for good (seen with the guard of workplaceBuilt_guard_house: 3 in 20 runs). The 12 buildable workplace copies got upside-down stair sills instead (27.11); the worldgen village houses still have the trapdoors. (found by lane-c-1005-0633, 2026-10-05)
 - [ ] **B70** 'Refresh active project' changes QaImportEdgesGameTests.java: its //$ gametest swap line drops timeoutTicks = 400, so git diff isn't clean after a refresh (seen by lane-d-1005-0632 on 30.16, 2026-10-05). Expected: refresh leaves git diff unchanged (fix the swap line). Test: ./gradlew "Refresh active project" then git diff (found by lane-d-1005-0632, 2026-10-05)
 
 ## Milestone 21: Finish 0.138.0
@@ -1529,7 +1529,7 @@ MarketDays) and research/.
     lookups run with nobody online;
   - renders of the three camps in the review package; showcase scene `legend_sites` (the three camps, and a GIF of the
     cage opened).
-- [ ] **29.10** **Strange moods and Masterworks.** The fourth way (Dwarf Fortress). Once a day, in a happy village
+- [x] **29.10** (review: pending 2026-10-05) **Strange moods and Masterworks.** The fourth way (Dwarf Fortress). Once a day, in a happy village
   (29.5's test) with no mood already on, a Master whose trade a Legend's `inspired` way names may be seized by a
   strange mood, 1 time in 8, if the village meets that Legend's conditions and its slot is free (never during a raid
   or a festival; config `strangeMoods`). The villager (attachment `STRANGE_MOOD`):
@@ -1549,7 +1549,7 @@ MarketDays) and research/.
   three materials are on the board; success makes the Masterwork (name, lore) and the Legend; failure sulks a week and
   blocks moods for 10 days; a mood survives a save and reload halfway; showcase scene `strange_mood` (GIF: the claim,
   the chest filled, the Masterwork).
-- [ ] **29.11** **More research trees, as data.** For the Old Sage (29.14) and the Pokémon Professor (29.21).
+- [x] **29.11** (review: pending 2026-10-05) **More research trees, as data.** For the Old Sage (29.14) and the Pokémon Professor (29.21).
   `research/ResearchTrees` loads `data/aliveworkplace/research_trees/<tree>.json`: the Legend who researches it, an
   icon, and its topics, each with levels, a cost per level (items), research points, the topics it needs, an optional
   `unlock` (a named village counter at a number, such as species in the village Pokédex), an optional `exclusive`
@@ -1562,7 +1562,7 @@ MarketDays) and research/.
   it loads; costs are taken; levels are saved in the hall and come back after a reload; an exclusive group refuses a
   second pick; an unlock waits for its counter; each effect works; an old hall's research loads unchanged; a
   screenshot of the test tree's tab.
-- [ ] **29.12** **The Master Architect (Legendary).** `legends/master_architect.json`. Comes: a guest at the inn once
+- [x] **29.12** (review: pending 2026-10-05) **The Master Architect (Legendary).** `legends/master_architect.json`. Comes: a guest at the inn once
   the village is a Town with finished buildings in at least 3 styles (a blueprint's own drawing counts as one;
   `BlueprintStyles` ids tell the rest). Trade: Builder. Likes: jewels. Powers:
   - builders working on a site within 32 blocks of the Architect build twice as fast (`pace`; with the shared cap,
@@ -4306,6 +4306,41 @@ item waits.
   of the door, else a block to the side; a front door with none of these free gets none and the banner stays in the
   chest (38 of the 43 door-bearing starter blueprints have a spot). Guards repaint nothing: only shields with no base
   colour are painted, so a shield painted for an earlier set of colours keeps them.
+- 2026-10-05 (29.10, decisions; lane a): strange moods (`legend/StrangeMoods`). The day's roll picks one qualifying
+  Legend, throws its way's `chance` (default 1 in 8) once, then picks one of its Masters, so a village has at most one
+  roll a day however many Masters it has. The three materials are one of each, picked from `masterwork.materials`; the
+  mood watches the chest(s) by the workstation (the builders' 8-block supply rule) and takes them only when all three
+  are there. Who brought what: a hand-over at a Storehouse board counts for that player (new `Requests.given` hook);
+  otherwise whatever turns up is put to the nearest player within 8 blocks of the workstation. Ties go to the first
+  giver; an offline top giver means the chest. The deadline is the end of the third day (start day included). The
+  name is the file's `name` key with (village, maker, made-up word, item) as arguments, by default "The <word> <item>"
+  from 16 words (Ember, Gilded, Starlit…), picked from the maker and the day so it never changes. If the Legend's slot
+  was taken during the mood, the Masterwork is still made but nobody becomes the Legend. Switching `strangeMoods` off
+  calls a mood already on off quietly at its next check (no sulk). A broken workstation doesn't end the mood: the
+  chest by its spot still counts. The Founder's way (`"founder": true`) is skipped by the daily roll: 29.23 starts it
+  with `StrangeMoods.start` at the first rise to City. No shipped Legend has an `inspired` way yet (29.15, 29.18 and
+  29.23 add them), so in a real world nothing happens until those land.
+- 2026-10-05 (29.11, decisions; lane a): the Old Sage (29.14) and the Professor (29.21) don't exist yet, so 29.11 is
+  the generic system proven with the gametest tree (`aliveworkplace_test:test_tree`, worked by `test_sage`); those
+  items add `research_trees/ancient_lore.json` and `pokedex.json` (and the `pokedex_species` counter through
+  `ResearchTrees.counter`). File format: `legend`, `icon`, `name` (text), optional `requires`, `topics` (≤ 14): `id`,
+  `icon`, `name`, `description`, `levels`, `cost` (a list of item maps, one per level, the last repeating), `points`
+  (per level, times the level), `needs`, `unlock` {`counter`, `at`}, `exclusive` (group), `effects` (per level). The
+  topic in progress is kept in the same levels map as `@<tree>/<topic>` (-1 unpaid, else points done), so there's no
+  new save field; `Research.State.isLevel`/`totalLevels` skip it for ranks and `research_levels`. An exclusive group
+  counts as taken once a rival is paid for or researched (a chosen, unpaid pick can still be changed). Scholars help a
+  tree only when the scholars' own tree has nothing chosen, at half their pace, and only while its Legend works (not on
+  strike). Tabs list Legends from the server's record (living, holding their slot, settled in that hall). A Legend
+  with no trade of their own opens their tab by sneak-right-click. The new effects also work in edicts.
+- 2026-10-05 (29.12, decisions; lane a): Minecraft 1.21.1 has no copper lantern (it arrives in 1.21.9), so the Grand
+  style's rule turns lanterns into `minecraft:copper_lantern` where that block exists and leaves them iron lanterns on
+  1.21.1 (a style rule whose result isn't a block is skipped). The Grand style is an ordinary style, so players can also
+  pick it on a blueprint (owner's call whether it should be the Architect's alone). "Never anything a player built":
+  only buildings in the builders' finished list are picked (a player's own hand-built house is never in it);
+  decorations and defences (`StarterBlueprints.DECORATIONS`, `DEFENCES` families) are left out. A rebuild is a village
+  build like the Steward's (no blueprint item comes back if it's cancelled). A strike cancels the rebuild under way (the
+  blocks placed stay) and none starts until it's over. The Architect can be the builder handed the work if they are
+  the least busy one with a bench.
 - 2026-10-05 (29.8, decisions; lane a): guests (`legend/LegendGuests`) are nitwits until they settle (no job, like inn
   travellers) and go by one of their file's `names` (the title if none). A place's day roll is spent only when some
   Legend may come there that day (conditions met, slot free, no visit in 7 days), so a village that qualifies at noon

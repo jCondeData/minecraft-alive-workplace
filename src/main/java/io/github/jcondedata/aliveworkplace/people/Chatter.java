@@ -48,7 +48,15 @@ public final class Chatter {
 		Map.entry("bed", 1), Map.entry("job", 2), Map.entry("no_job", 2), Map.entry("varied_diet", 1), Map.entry("same_food", 2),
 		Map.entry("decorations", 2), Map.entry("company", 1), Map.entry("cheerful", 1),
 		Map.entry("married", 2), Map.entry("courting", 2), Map.entry("mourning", 1),
-		Map.entry("legend_here", 2), Map.entry("legend_guest", 2), Map.entry("legend_strike", 1), Map.entry("legend_self", 1));
+		Map.entry("legend_here", 2), Map.entry("legend_guest", 2), Map.entry("legend_strike", 1), Map.entry("legend_self", 1),
+		// The village's edicts in force and reformed, a rush, a tonic, a guild and the village's colours (30.21)
+		Map.entry("edict_long_shifts", 2), Map.entry("edict_free_bread", 2), Map.entry("edict_large_families", 2),
+		Map.entry("edict_open_gates", 2), Map.entry("edict_festival_season", 2), Map.entry("edict_tithe", 2),
+		Map.entry("edict_curfew", 2), Map.entry("edict_conscription", 2),
+		Map.entry("reformed_long_shifts", 2), Map.entry("reformed_free_bread", 2), Map.entry("reformed_large_families", 2),
+		Map.entry("reformed_open_gates", 2), Map.entry("reformed_festival_season", 2), Map.entry("reformed_tithe", 2),
+		Map.entry("reformed_curfew", 2), Map.entry("reformed_conscription", 2),
+		Map.entry("rush", 2), Map.entry("tonic", 2), Map.entry("guild", 2), Map.entry("colours", 2));
 	private static final Map<UUID, Long> LAST = new HashMap<>();
 
 	public static void init() {
@@ -126,6 +134,7 @@ public final class Chatter {
 			news.add("ill");
 		}
 		news.addAll(legendTopics(level, villager, hall));
+		news.addAll(civicTopics(level, villager, hall));
 		topics.addAll(news);
 		topics.addAll(news);
 		Moods.Mood mood = Moods.of(villager);
@@ -159,6 +168,58 @@ public final class Chatter {
 			}
 		}
 		return out;
+	}
+
+	/**
+	 * Talk of the village's civic life (30.21): each of our edicts in force ({@code edict_<id>}, or {@code reformed_<id>}
+	 * once reformed), a rush of the Work Horn, the tonic working in the speaker, the speaker's founded guild and the
+	 * village's colours. A pack's edicts have no lines, so they aren't talked of.
+	 */
+	public static List<String> civicTopics(ServerLevel level, Villager villager, BlockPos hall) {
+		List<String> out = new ArrayList<>();
+		if (!(level.getBlockEntity(hall) instanceof VillageHallBlockEntity entity)) {
+			return out;
+		}
+		if (io.github.jcondedata.aliveworkplace.hall.Edicts.ENABLED) {
+			for (io.github.jcondedata.aliveworkplace.hall.Edicts.InForce f : entity.edicts()) {
+				net.minecraft.resources.ResourceLocation id = net.minecraft.resources.ResourceLocation.tryParse(f.id());
+				if (id == null || !id.getNamespace().equals(io.github.jcondedata.aliveworkplace.AliveWorkplace.MOD_ID)) {
+					continue;
+				}
+				String topic = (io.github.jcondedata.aliveworkplace.hall.Reforms.reformed(entity, f.id()) ? "reformed_" : "edict_") + id.getPath();
+				if (VARIANTS.containsKey(topic)) {
+					out.add(topic);
+				}
+			}
+		}
+		if (!villager.isBaby() && io.github.jcondedata.aliveworkplace.hall.WorkHorn.rushing(level, entity)) {
+			out.add("rush");
+		}
+		if (Tonics.active(villager) != null) {
+			out.add("tonic");
+		}
+		if (guildOf(level, villager, entity) != null) {
+			out.add("guild");
+		}
+		if (entity.colours() != null) {
+			out.add("colours");
+		}
+		return out;
+	}
+
+	/** The founded guild of the village that gathers {@code villager}'s trade, or null. */
+	@Nullable
+	static io.github.jcondedata.aliveworkplace.hall.Guilds.Guild guildOf(ServerLevel level, Villager villager, VillageHallBlockEntity entity) {
+		if (!io.github.jcondedata.aliveworkplace.hall.Guilds.ENABLED) {
+			return null;
+		}
+		for (io.github.jcondedata.aliveworkplace.hall.Guilds.Charter c : entity.guilds()) {
+			io.github.jcondedata.aliveworkplace.hall.Guilds.Guild g = io.github.jcondedata.aliveworkplace.hall.Guilds.get(c.id());
+			if (g != null && g.gathers(villager) && io.github.jcondedata.aliveworkplace.hall.Guilds.founded(level, entity, c.id())) {
+				return g;
+			}
+		}
+		return null;
 	}
 
 	/** Who a Legend topic is about: "Ada, Master Architect" (the speaker's own title for {@code legend_self}). */
@@ -199,9 +260,19 @@ public final class Chatter {
 			case "bandits" -> BanditCamps.near(level, hall).map(camp -> VillageHallScreen.where(hall, camp.pos())).orElse(Component.empty());
 			case "married", "courting" -> Couples.partner(villager) != null ? Couples.partner(villager).name() : Component.empty();
 			case "legend_here", "legend_guest", "legend_strike", "legend_self" -> legendArg(level, villager, hall, topic);
+			case "tonic" -> Tonics.active(villager) != null ? Tonics.active(villager).item().getDescription() : Component.empty();
+			case "guild" -> level.getBlockEntity(hall) instanceof VillageHallBlockEntity entity && guildOf(level, villager, entity) != null
+				? guildOf(level, villager, entity).name() : Component.empty();
 			default -> "";
 		};
 		return Component.translatable("chatter.aliveworkplace." + topic + "." + variant, arg).withStyle(ChatFormatting.ITALIC);
+	}
+
+	/** {@code villager} says line {@code variant} of {@code topic} to {@code player} (a showcase scene picks the line). */
+	public static Component say(ServerLevel level, Villager villager, ServerPlayer player, String topic, int variant, Object arg) {
+		Component line = Component.translatable("chatter.aliveworkplace." + topic + "." + variant, arg).withStyle(ChatFormatting.ITALIC);
+		say(level, villager, player, line);
+		return line;
 	}
 
 	/** {@code villager} turns to {@code player} and says {@code line} (over their head, for a few seconds). */

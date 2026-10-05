@@ -312,6 +312,75 @@ blocks and bring the villager back — job, level, trades and name as they were.
 on the Storehouse's requests board. A villager a zombie turns into a zombie villager leaves no grave (cure them
 instead). The Village Hall counts the graves.
 
+## Edicts
+
+A village's owner proclaims **edicts** at the Village Hall (its **Book of Edicts**, or sneak-right-click with a
+**Village Ledger**): laws that each give the village a boost at a cost. A village keeps one edict in force per rank
+(Hamlet 1 ... City 4), each for at least 3 days; some exclude each other. Every edict has a **reform**: three steps on
+the hall's Quests page that, once done, take its cost away and keep the boost. The villagers talk about the edicts in
+force, and about the reformed ones, and the hall's "What next?" page says when a slot is free or a reform step waits.
+
+![Villagers by the hall talking of Long Shifts](https://jcondedata.github.io/minecraft-alive-workplace/village_talk/still-1.jpg)
+![After The Shift Bell: "The shift bell's rung. Home we go."](https://jcondedata.github.io/minecraft-alive-workplace/village_talk/still-2.jpg)
+
+| Edict | Boost and cost | Reform (three steps) | Once reformed |
+|---|---|---|---|
+| Long Shifts | Everyone works 20% faster; every grown villager is 10 less happy. | The Shift Bell: 24 clocks, 128 gold ingots, 300 bread | the boost without the unhappiness |
+| Free Bread | Everyone fed in the last day is 10 happier; the village eats 30% more. | The Common Granary: 512 wheat, 128 hay bales, 48 barrels | the free bread no longer eats into the store |
+| Large Families | Up to two babies a day; a baby needs 24 meals in the store and the family eats 12; villagers fall ill 50% more often. | The Midwives: 48 honey bottles, 192 white wool, 64 golden carrots | no more food needed, no more illness |
+| Open Gates | Inns take 4 guests and up to two travellers arrive a morning; one more trader comes on market days; bandits camp nearby twice as often. | The Watchful Gate: 192 iron ingots, 256 arrows, 40 monsters slain | bandits no likelier than usual |
+| Festival Season | A festival every 4 days instead of 8; each costs the treasury 3 emeralds and 1 more for every 4 villagers (no money, no festival). | The Festival Fund: 24 cakes, 256 firework rockets, 48 note blocks | festivals every 4 days, free |
+| Tithe | A tenth of the emeralds players pay villagers goes into the treasury; their prices are 10% higher. | The Fair Ledger: 24 book and quills, 192 gold ingots, a Pokémon battle (without Cobblemon or a trainer: 32 monsters slain) | prices back to normal |
+| Curfew | From dusk to dawn everyone but guards stays in bed and raids are half as likely; no night trading, festivals and markets end at dusk. | The Lamplighters: 192 lanterns, 96 glowstone, 32 monsters slain | safe nights, and trade, festivals and markets go on |
+| Conscription | In a raid every grown villager fights beside the guards with a stone sword; but all work stops until noon the next day. | The Militia Drill: 32 iron swords, 32 shields, 48 monsters slain | work stops only near a raider |
+
+The edicts are data files (`data/aliveworkplace/edicts/*.json`: `conscription`, `curfew`, `festival_season`,
+`free_bread`, `large_families`, `long_shifts`, `open_gates`, `tithe`); a data pack adds its own or switches one off with
+`"enabled": false`. The config switch `villageEdicts` turns edicts off.
+
+## Civic items
+
+| Item | Recipe | What it does |
+|---|---|---|
+| Village Ledger | book + emerald | Right-click a hall to bind it; then open the hall's screen from anywhere nearby (sneak: the Book of Edicts). |
+| Work Horn | goat horn + gold ingot + emerald | Blow it in a village: every grown villager works 50% faster for 5 minutes, once a day, and is worn out (10 less happy) until dawn. ![The Work Horn](https://jcondedata.github.io/minecraft-alive-workplace/work_horn/still-3.jpg) |
+| Cradle | 3 white wool, 2 planks, 2 sticks (`W W` / `PWP` / `S S`) | Near a bed it makes a nursery village: children grow up twice as fast, sleep in it at night, and one more baby a day may be born. ![The Cradle](https://jcondedata.github.io/minecraft-alive-workplace/cradle/still-1.jpg) |
+| Harvest Idol | hay bale, 3 wheat, stick, gold ingot | In harvest season (autumn) the crops within 32 blocks grow a quarter faster. ![The Harvest Idol](https://jcondedata.github.io/minecraft-alive-workplace/harvest_idol/still-1.jpg) |
+| Village Banner | any banner + gold ingot | Right-click the hall: its design becomes the village's colours. ![The Village Banner](https://jcondedata.github.io/minecraft-alive-workplace/village_banner/still-1.jpg) |
+| Guild Charter | 3 paper, emerald, gold ingot, red dye | Sneak-right-click a villager of a guild's trade: they become its master. A village may have one guild per rank above Hamlet; its perks start once a builder finishes a **Guildhall**. ![The guilds](https://jcondedata.github.io/minecraft-alive-workplace/guilds/still-1.jpg) |
+| Tonics | see below | Hand one to a villager of its trades (right-click): they work 25% faster for a Minecraft day. ![Tonics](https://jcondedata.github.io/minecraft-alive-workplace/tonics/still-3.jpg) |
+
+**Tonics** (`data/aliveworkplace/tonics/*.json`), made by a Chef or an Alchemist from the ingredients in their chest:
+
+| Tonic (file) | Maker | Ingredients | For | Effect |
+|---|---|---|---|---|
+| Builder's Tea (`builders_tea`) | Chef | glass bottle, 2 sweet berries, sugar | Builders, Carpenters, Masons, Dyers | 25% faster for 24000 ticks |
+| Harvest Cordial (`harvest_cordial`) | Chef | glass bottle, apple, wheat, sugar | Farmers, Orchard Keepers, Florists, Beekeepers, Composters, Shepherds, Butchers, Ranchers, Chefs | 25% faster for 24000 ticks |
+| Miner's Brew (`miners_brew`) | Alchemist | glass bottle, glowstone dust, coal, sugar | Miners, Sifters, Netherworkers | 25% faster for 24000 ticks |
+| Scholar's Infusion (`scholars_infusion`) | Alchemist | glass bottle, amethyst shard, glow berries | Scholars, Teachers, Librarians, Cartographers, Fossil Scientists | 25% faster for 24000 ticks |
+| Smith's Draught (`smiths_draught`) | Alchemist | glass bottle, blaze powder, 2 iron nuggets | Armorers, Toolsmiths, Weaponsmiths, Tinkerers, Ball Smiths | 25% faster for 24000 ticks |
+| Woodsman's Broth (`woodsmans_broth`) | Chef | bowl, cooked salmon, carrot, brown mushroom | Lumberjacks, Fletchers, Fishermen, Porters, Postmen | 25% faster for 24000 ticks |
+
+**Guilds** (`data/aliveworkplace/guilds/*.json`):
+
+| Guild (file) | Trades | Perks |
+|---|---|---|
+| Builders' Guild (`builders`) | Builders, Carpenters, Masons, Dyers | 15% faster; up to 5 idle builders help at a build (not 3) |
+| Harvest Guild (`harvest`) | Farmers, Orchard Keepers, Florists, Beekeepers, Composters, Chefs | 15% faster; the village's farms and orchard rounds reach 24 blocks (not 16) |
+| Healers' Guild (`healers`) | Nurses, Clerics, Undertakers | 15% faster; the ill get well in two days (not three); nurses and undertakers look 48 blocks out |
+| Herders' Guild (`herders`) | Shepherds, Butchers, Ranchers | 15% faster; every herd may be 4 bigger |
+| Merchants' Guild (`merchants`) | Shopkeepers, Innkeepers, Ferrymen, Postmen, Porters | 15% faster; travellers a quarter cheaper to hire; porters carry 3 more stacks |
+| Miners' Guild (`miners`) | Miners, Sifters, Netherworkers | 15% faster; pickaxes and nether gear wear half as fast |
+| Scholars' Guild (`scholars`) | Scholars, Teachers, Librarians, Cartographers | 15% faster; research a quarter cheaper |
+| Smiths' Guild (`smiths`) | Armorers, Toolsmiths, Weaponsmiths, Tinkerers, Ball Smiths | 15% faster; a Weaponsmith's ingot mends a third (not a quarter) |
+| Trainers' Guild (`trainers`, with Cobblemon) | Trainers, Trainer Leaders, Move Tutors, Pokémon Traders, Fossil Scientists | lessons and revivals a fifth cheaper; trainers rank up a quarter faster |
+| Wardens' Guild (`wardens`) | Guards | train up to Master (not Expert); hit 10% harder |
+| Woodsmen's Guild (`woodsmen`) | Lumberjacks, Fletchers, Fishermen | 15% faster; axes and fishing rods wear half as fast |
+
+Villagers talk of all this too: a rush, the tonic they drank, their guild and the village's colours. The "What next?"
+page reminds you of Festival Season with too little in the treasury, a guild still without its Guildhall, Large
+Families without a Cradle, and harvest season without an idol by the fields.
+
 ## Legends
 
 Now and then a village that has earned it gains a **Legend**: one named villager, a Master of their trade, with powers

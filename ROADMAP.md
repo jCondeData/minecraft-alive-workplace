@@ -3540,7 +3540,7 @@ into elders who retire and teach, and every family has a tree. It builds on `peo
 switches on for every village of the owner's live server at once, so it ends with a careful migration and a rehearsal
 on a real world.
 
-- [ ] **34.1** **Design note.** `docs/design/M34.md`: what the player sees (the class ladder, a household rising at
+- [x] **34.1** (review: pending 2026-10-05) **Design note.** `docs/design/M34.md`: what the player sees (the class ladder, a household rising at
   dawn, the four luxury trades and their goods, villagers dressed by class, grander homes, elders, family trees, and
   the first week after the update); the data formats with one example file each (`classes/`, `services/`,
   `luxuries/`, `luxury_recipes/`, `homes/` under `data/aliveworkplace/`); every config switch; every new saved field
@@ -4712,5 +4712,12 @@ item waits.
   and the still shows none rising (FAIL "a schoolhouse went up"); the day-2 wishes also still listed `well` after the
   well was finished. Left for QA/the next lane: why the schoolhouse doesn't start (plot in Civic z 16..40, two open
   builds in a Village) and whether `built_count_below` misses a just-finished well at the morning's ranking.
+- 2026-10-05 (34.1, decision for the owner; lane d): `docs/design/M34.md` is the Classes and luxuries note. One clash
+  with the code: 34.12 picks the Jeweller with an amethyst shard at the stonecutter, but since 28.11 the shard there
+  already picks the Gem Grower (`GemGrowers.isShard`), and the Mason is picked with a clay ball, not cobblestone. Default
+  until the owner says otherwise: the **Jeweller is picked with a gold nugget**; 34.12's test reads "picked with a gold
+  nugget". Also decided there: the Noble's class file repeats the Burgher's food and diet (34.2 lists none), the
+  Burgher's "one more service" excludes the market (the Market Square is its own `building` need), and new chronicle
+  kind `LIFE` for elders, retirements and generations beside 34.6's `CLASS`.
 - **qa handoff** (qa-1005-1034, 2026-10-05 11:27Z): qa-1005-1034: verified B46, B69, B73. Unshipped: qa/b46-b69-1005 (QaB46GameTests, QaB69FrontWalkGameTests; its ship build passed 1014/1014 gametests but failed on the compat flake B74 = B57 again): ship it once B74 is fixed (or retry ship). qa/import-swap-1005 is obsolete (B73 fixed on main). B50 and B57 not verified: read nightly run 37297003813 (on 5b489b7, after both fixes) for the crew test and the Pidgey test's repeats; B57 recurred (B74). qa/placing-1005 still waits on B71. Next QA: B50 from the nightly, B72 scene setup, then 21.2, M23.
 - **lane-c handoff** (lane-c-1005-1532, 2026-10-05 18:13Z): wip/lane-c (ce73d6ed) = main as of 17:55Z + 27.15, 27.16, B67, B71 (old wip, B75 dup fix dropped for main's Pathfinder.hold), 27.17 caravan roads, 27.18 walls, 27.19 Steward safety, all ticked. Full build: compile, devclient and 1117/1118 GameTests pass; CaravanRoadGameTests.twoVillages120ApartBuildBothHalvesAndTheyMeet fails in the full suite (passed alone 16/16 and in 79-test targeted runs; likely batch interference with 27.18/27.19 or chunk tickets). Next run: git switch wip/lane-c, fix that test, merge main, full build (compat not yet run), push to main. Trap: worktree subagents leave Gradle daemons; stop them or full runs get OOM-killed.

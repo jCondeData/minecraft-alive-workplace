@@ -362,7 +362,7 @@ public final class BuilderEvents {
 				return level.isClientSide() ? InteractionResult.SUCCESS
 					: io.github.jcondedata.aliveworkplace.work.Hiring.hire((ServerPlayer) player, villager,
 						net.minecraft.network.chat.Component.translatable("message.aliveworkplace.herder.hired", villager.getDisplayName(),
-							io.github.jcondedata.aliveworkplace.ranch.RanchWork.RADIUS, io.github.jcondedata.aliveworkplace.ranch.RanchWork.CAP));
+							io.github.jcondedata.aliveworkplace.ranch.RanchWork.RADIUS, io.github.jcondedata.aliveworkplace.ranch.RanchWork.cap(villager)));
 			}
 			if (player.isShiftKeyDown() && player.getItemInHand(hand).is(net.minecraft.world.item.Items.SHEARS)
 					&& io.github.jcondedata.aliveworkplace.ranch.ShepherdWork.isShepherd(villager)) {

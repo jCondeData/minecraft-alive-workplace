@@ -34,7 +34,7 @@ import org.jetbrains.annotations.Nullable;
 
 /**
  * Looking after the animals around a workstation (shepherds, herders): what's dropped is picked up and put in the chests
- * by the workstation, pairs are fed to breed while there are fewer than {@link #CAP} of a kind, and each job has its own
+ * by the workstation, pairs are fed to breed while there are fewer than {@link #cap} of a kind ({@link #CAP}, more in a guild), and each job has its own
  * work on the animals (shearing, milking...). The pen is everything within {@link #RADIUS} blocks of the workstation.
  */
 public abstract class RanchWork extends Behavior<Villager> {
@@ -43,6 +43,11 @@ public abstract class RanchWork extends Behavior<Villager> {
 	/** Animals of a kind kept: no breeding at this many. */
 	public static final int CAP = 8;
 	protected static final double REACH = 2.5;
+
+	/** Animals of a kind {@code villager} breeds up to: {@link #CAP}, 4 more in a founded Herders' Guild (30.19). */
+	public static int cap(Villager villager) {
+		return io.github.jcondedata.aliveworkplace.hall.Guilds.herd(villager, CAP);
+	}
 	private static final float SPEED = 0.55f;
 	private static final int LOOK_EVERY = 40;
 	/** Picked-up items are taken to the chests once there's this many stacks (or nothing else to do). */
@@ -243,7 +248,7 @@ public abstract class RanchWork extends Behavior<Villager> {
 			target = animal;
 			return;
 		}
-		if (pickPair(level, station, own)) {
+		if (pickPair(level, villager, station, own)) {
 			task = Task.BREED;
 		}
 	}
@@ -260,11 +265,12 @@ public abstract class RanchWork extends Behavior<Villager> {
 	}
 
 	/** Two animals of a kind that's short, ready to breed, and food for them in the chests. */
-	private boolean pickPair(ServerLevel level, BlockPos station, List<BlockPos> own) {
+	private boolean pickPair(ServerLevel level, Villager villager, BlockPos station, List<BlockPos> own) {
 		List<Animal> all = animals(level, station);
+		int cap = cap(villager);
 		for (EntityType<?> kind : herd()) {
 			List<Animal> ofKind = all.stream().filter(a -> a.getType() == kind).toList();
-			if (ofKind.size() >= CAP) {
+			if (ofKind.size() >= cap) {
 				continue;
 			}
 			List<Animal> ready = ofKind.stream().filter(a -> a.getAge() == 0 && a.canFallInLove() && !a.isInLove() && mayBreed(a)).toList();

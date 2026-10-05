@@ -45,7 +45,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 
 /**
  * Guild Charters, the Guildhall and the Builders' Guild (ROADMAP 30.17): guilds load from data (ours and the test
- * pack's {@code test_farmers}), the charter's refusals and grant (told, chronicled, on the hall's list and the status,
+ * pack's {@code test_bards}, the one trade none of ours gathers), the charter's refusals and grant (told, chronicled, on the hall's list and the status,
  * Guildhall blueprints for sale), a Guild Master kept over a reload, the perks off before a finished Guildhall and on
  * after (a carpenter 15% faster, 5 helpers at a build), waiting while the Guildhall is gone, the config switch,
  * succession and dissolution, and the Book of Edicts' last row.
@@ -54,7 +54,7 @@ public class GuildGameTests implements FabricGameTest {
 	private static final String AREA = "aliveworkplace_test:big_area";
 	private static final BlockPos HALL = new BlockPos(11, 2, 11);
 	private static final ResourceLocation BUILDERS = AliveWorkplace.id("builders");
-	private static final ResourceLocation FARMERS = ResourceLocation.fromNamespaceAndPath("aliveworkplace_test", "test_farmers");
+	private static final ResourceLocation BARDS = ResourceLocation.fromNamespaceAndPath("aliveworkplace_test", "test_bards");
 
 	/** Ours loads with its lang texts and perks, the test pack's with plain ones; the config's switches and cap. */
 	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
@@ -69,8 +69,8 @@ public class GuildGameTests implements FabricGameTest {
 			ResourceLocation.withDefaultNamespace("mason"), ResourceLocation.withDefaultNamespace("leatherworker"))), "trades: " + builders.trades());
 		helper.assertTrue(builders.perks().size() == 2 && builders.perks().get(0) instanceof CivicEffects.WorkPace pace && pace.percent() == 15
 			&& builders.perks().get(1) instanceof Guilds.BuildHelpers h && h.max() == 5, "perks: " + builders.perks());
-		Guilds.Guild farmers = Guilds.get(FARMERS);
-		helper.assertTrue(farmers != null && farmers.name().getString().equals("Test Farmers' Guild"), "the test pack's guild: " + farmers);
+		Guilds.Guild bards = Guilds.get(BARDS);
+		helper.assertTrue(bards != null && bards.name().getString().equals("Test Bards' Guild"), "the test pack's guild: " + bards);
 		helper.assertTrue(Guilds.read(AliveWorkplace.id("off"), JsonParser.parseString("{\"enabled\": false}")) == null, "switched off");
 		String missing = "";
 		try {
@@ -98,8 +98,8 @@ public class GuildGameTests implements FabricGameTest {
 		village(helper);
 		Villager dara = villager(helper, new BlockPos(6, 2, 6), "Dara", ModVillagers.BUILDER, 4);
 		Villager bram = villager(helper, new BlockPos(7, 2, 6), "Bram", ModVillagers.CARPENTER, 5);
-		Villager fenn = villager(helper, new BlockPos(8, 2, 6), "Fenn", VillagerProfession.FARMER, 5);
-		Villager gus = villager(helper, new BlockPos(9, 2, 6), "Gus", VillagerProfession.CLERIC, 5);
+		Villager fenn = villager(helper, new BlockPos(8, 2, 6), "Fenn", ModVillagers.BARD, 5); // only the test pack's guild gathers Bards
+		Villager gus = villager(helper, new BlockPos(9, 2, 6), "Gus", ModVillagers.TUTOR, 5); // the Trainers' Guild loads only with Cobblemon
 		helper.runAfterDelay(5, () -> {
 			ServerLevel level = helper.getLevel();
 			VillageHallBlockEntity hall = ready(helper);
@@ -141,7 +141,7 @@ public class GuildGameTests implements FabricGameTest {
 			} finally {
 				Guilds.ENABLED = true;
 			}
-			say(helper, Guilds.offer(player, fenn, charters), Guilds.Outcome.GRANTED, "Fenn is now the Guild Master of the Test Farmers' Guild in " + village + "!");
+			say(helper, Guilds.offer(player, fenn, charters), Guilds.Outcome.GRANTED, "Fenn is now the Guild Master of the Test Bards' Guild in " + village + "!");
 			helper.assertTrue(hall.guilds().size() == 2, "a Town has two");
 			helper.succeed();
 		});

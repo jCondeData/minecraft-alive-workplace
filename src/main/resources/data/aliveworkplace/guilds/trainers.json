@@ -1,0 +1,35 @@
+{
+  "fabric:load_conditions": [
+    {
+      "condition": "fabric:all_mods_loaded",
+      "values": [
+        "cobblemon"
+      ]
+    }
+  ],
+  "name": {
+    "translate": "guild.aliveworkplace.trainers"
+  },
+  "perk": {
+    "translate": "guild.aliveworkplace.trainers.perk"
+  },
+  "icon": "cobblemon:poke_ball",
+  "trades": [
+    "aliveworkplace:trainer",
+    "aliveworkplace:trainer_leader",
+    "aliveworkplace:tutor",
+    "aliveworkplace:pokemon_trader",
+    "aliveworkplace:fossil_scientist"
+  ],
+  "perks": [
+    {
+      "type": "aliveworkplace:lesson_price",
+      "percent": -20
+    },
+    {
+      "type": "aliveworkplace:trainer_xp",
+      "percent": 25
+    }
+  ],
+  "enabled": true
+}

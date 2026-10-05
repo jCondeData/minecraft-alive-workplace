@@ -144,6 +144,7 @@ stay in the list, ticked, so their numbers stay unique.
 - [x] **B75** (approved auto 2026-10-05) PathfinderGameTests.expeditionLeadsWaitsAndCatchesUp failed on CI build 37305086133 (main 2cafe50, 2026-10-05 11:46Z) and turned main red; passed in lane-a-1005-1233's local runGameTest on 4d1ee21. The next CI run (4d1ee21) was red from B66 instead. Expected: passes every run. Test: the repeat generator on that test (found by lane-a-1005-1233, 2026-10-05)
 - [ ] **B76** (urgent: owner 2026-10-05, before more players update to 0.139.0) Unfinished expansions are switched ON by default, against the ROADMAP rule that they stay off until their milestone is complete: WorkplaceConfig defaults legends, legendNeeds, legendSites, strangeMoods (M29), villageEdicts, workHorns, villageBanners, cradles, harvestIdols, tonics (M30), steward, stewardSelfRun (M27), berryBreeders, campCooks, habitatKeepers, daycareKeepers, gemGrowers, habitatSightings, villageHabitats (M28) to true, so 0.139.0 (released 2026-10-05) ships M27-M30 half-built and on. Expected: each unfinished milestone's switches default to false (new worlds and configs that never set them), and the release that completes a milestone turns its switches on. Check which switch belongs to which milestone before changing; GameTests set the switch they need. Owner (2026-10-05): switched off to avoid bugs; when a whole expansion (e.g. all of 1.1) is done, its release turns it back on. Configs that 0.139.0 already wrote to disk hold `true` for these switches, so a new default alone won't turn them off on his server: gate each unfinished milestone in code (e.g. a per-milestone 'complete' flag the switch is ANDed with), not only by the config default, and test that a 0.139.0 config with the switch true still leaves the feature off. (found by speed-1005-1232, 2026-10-05) (found by speed-1005-1232, 2026-10-05)
 - [ ] **B77** CountryWorkplacesGameTests countryWorkplaceBuilt_farmstead (27.14) failed in qa-1005-1434's ship build (main d519846 + compat-test-only changes, 2026-10-05 15:07Z, 1 of 1048): 'no harvest in the Farmstead's chests (harvested 36)' at the time-out: the farmer harvested 36 crops but none were in a container within the house's 15x13 footprint at y 1. Not yet known whether a player would see it (harvest kept in his inventory, put in a chest elsewhere, or taken by another worker) or it is the test's timing. Expected: the Farmstead farmer's harvest reaches its chests every run. Test: countryWorkplaceBuilt_farmstead, a few runGameTest runs (found by qa-1005-1434, 2026-10-05) (found by qa-1005-1434, 2026-10-05)
+- [ ] **B78** The Book of Edicts' guild row lists only 6 guilds, but a City can now hold up to 12 guilds (30.17-30.20), so the rest are never shown. Expected: every guild of the village on the Book's guild row (paged or wrapped). Test: GuildsScene / EdictBook guild row with more than 6 guilds (found by lane-d-1005-1533, 2026-10-05)
 
 ## Milestone 21: Finish 0.138.0
 
@@ -2114,7 +2115,7 @@ the Village Hall (`VillageNeeds`, `VillageQuests`, `VillageRanks`, `Festivals`, 
   New effects: `tool_wear` and `mend_per_unit`. Done when: a GameTest per guild with its numbers, founded and not
   (durability lost over 20 blocks dug, 20 logs cut and 10 fish caught; what one ingot puts back); showcase scene
   `guilds`: each Guild Master's status and the guilds' row of the Book.
-- [ ] **30.19** **The Harvest, Herders' and Scholars' Guilds.** A data file each; members work 15% faster:
+- [x] **30.19** (review: pending 2026-10-05) **The Harvest, Herders' and Scholars' Guilds.** A data file each; members work 15% faster:
   - **Harvest Guild** (Farmers, Orchard Keepers, Florists, Beekeepers, Composters, Chefs): the village's own farms and
     the orchard keepers' rounds reach 24 blocks instead of 16;
   - **Herders' Guild** (Shepherds, Butchers, Ranchers): every herd may be 4 bigger (shepherds and ranchers breed up to
@@ -2124,7 +2125,7 @@ the Village Hall (`VillageNeeds`, `VillageQuests`, `VillageRanks`, `Festivals`, 
 
   New effects: `work_reach`, `herd_size`, `research_cost`. Done when: GameTests for each number, founded and not; the
   `guilds` scene gains their rows.
-- [ ] **30.20** **The Healers', Merchants', Wardens' and Trainers' Guilds.** A data file each:
+- [x] **30.20** (review: pending 2026-10-05) **The Healers', Merchants', Wardens' and Trainers' Guilds.** A data file each:
   - **Healers' Guild** (Nurses, Clerics, Undertakers): members work 15% faster; the village's ill get well in two days
     instead of three, and nurses and undertakers look 48 blocks out instead of 32;
   - **Merchants' Guild** (Shopkeepers, Innkeepers, Ferrymen, Postmen, Porters): members work 15% faster; travellers

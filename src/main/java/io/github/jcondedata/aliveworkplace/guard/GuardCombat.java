@@ -176,10 +176,15 @@ public class GuardCombat extends Behavior<Villager> {
 		}
 	}
 
+	/** What {@code guard} hits for with {@code weapon} before enchantments: its base, the level bonus and the Wardens' Guild's {@code strength} (30.20). */
+	public static float damage(Villager guard, ItemStack weapon) {
+		return Guards.baseDamage(weapon) * Guards.levelBonus(guard) * io.github.jcondedata.aliveworkplace.hall.Guilds.strength(guard);
+	}
+
 	private static void strike(ServerLevel level, Villager villager, LivingEntity foe) {
 		ItemStack weapon = villager.getItemBySlot(EquipmentSlot.MAINHAND);
 		DamageSource source = level.damageSources().mobAttack(villager);
-		float damage = Guards.baseDamage(weapon) * Guards.levelBonus(villager);
+		float damage = damage(villager, weapon);
 		damage = EnchantmentHelper.modifyDamage(level, weapon, foe, source, damage);
 		villager.swing(InteractionHand.MAIN_HAND);
 		if (!Damage.hurt(foe, source, damage)) {

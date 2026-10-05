@@ -1,0 +1,33 @@
+{
+  "name": {
+    "translate": "guild.aliveworkplace.healers"
+  },
+  "perk": {
+    "translate": "guild.aliveworkplace.healers.perk"
+  },
+  "icon": "minecraft:honey_bottle",
+  "trades": [
+    "aliveworkplace:nurse",
+    "minecraft:cleric",
+    "aliveworkplace:undertaker"
+  ],
+  "perks": [
+    {
+      "type": "aliveworkplace:work_pace",
+      "percent": 15
+    },
+    {
+      "type": "aliveworkplace:recovery_days",
+      "days": -1
+    },
+    {
+      "type": "aliveworkplace:work_radius",
+      "blocks": 16,
+      "jobs": [
+        "aliveworkplace:nurse",
+        "aliveworkplace:undertaker"
+      ]
+    }
+  ],
+  "enabled": true
+}

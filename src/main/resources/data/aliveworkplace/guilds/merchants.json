@@ -1,0 +1,34 @@
+{
+  "name": {
+    "translate": "guild.aliveworkplace.merchants"
+  },
+  "perk": {
+    "translate": "guild.aliveworkplace.merchants.perk"
+  },
+  "icon": "minecraft:emerald",
+  "trades": [
+    "aliveworkplace:shopkeeper",
+    "aliveworkplace:innkeeper",
+    "aliveworkplace:ferryman",
+    "aliveworkplace:postman",
+    "aliveworkplace:porter"
+  ],
+  "perks": [
+    {
+      "type": "aliveworkplace:work_pace",
+      "percent": 15
+    },
+    {
+      "type": "aliveworkplace:hire_price",
+      "percent": -25
+    },
+    {
+      "type": "aliveworkplace:carry",
+      "stacks": 3,
+      "jobs": [
+        "aliveworkplace:porter"
+      ]
+    }
+  ],
+  "enabled": true
+}

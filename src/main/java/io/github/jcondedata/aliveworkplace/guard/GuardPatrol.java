@@ -252,9 +252,14 @@ public class GuardPatrol extends Behavior<Villager> {
 		return waypoint;
 	}
 
+	/** The level {@code guard} trains up to: {@link #TRAIN_UP_TO}, Master with the Wardens' Guild founded (30.20). */
+	public static int trainUpTo(Villager guard) {
+		return io.github.jcondedata.aliveworkplace.hall.Guilds.trainUpTo(guard, TRAIN_UP_TO);
+	}
+
 	/** Whether sparring still teaches this guard anything. */
 	public static boolean canTrain(Villager villager) {
-		return villager.getVillagerData().getLevel() < TRAIN_UP_TO;
+		return villager.getVillagerData().getLevel() < trainUpTo(villager);
 	}
 
 	/** The Training Dummy nearest the post, within {@link #DUMMY_RADIUS}. */

@@ -49,12 +49,13 @@ public final class CobblemonTutors {
 
 	// A move a tutor could teach: how hard it is (1..5) and whether it's an egg move.
 	public record Lesson(MoveTemplate move, boolean egg, int grade) {
-		public int price() {
-			return Tutors.price(grade);
+		// What tutor charges for it (the Trainers' Guild's lesson_price, 30.20).
+		public int price(Villager tutor) {
+			return Tutors.price(tutor, grade);
 		}
 
-		public long dollars() {
-			return Tutors.dollars(grade);
+		public long dollars(Villager tutor) {
+			return Tutors.dollars(tutor, grade);
 		}
 	}
 
@@ -181,8 +182,8 @@ public final class CobblemonTutors {
 			Lesson lesson = lessons.get(index);
 			boolean canTeach = lesson.grade() <= tier;
 			boolean pending = lesson.move().getName().equals(state.pending);
-			menu.button(FIRST_MOVE_SLOT + i, lessonIcon(lesson, chosen, canTeach, pending,
-				io.github.jcondedata.aliveworkplace.work.Money.canAfford(player, lesson.dollars(), lesson.price())),
+			menu.button(FIRST_MOVE_SLOT + i, lessonIcon(tutor, lesson, chosen, canTeach, pending,
+				io.github.jcondedata.aliveworkplace.work.Money.canAfford(player, lesson.dollars(tutor), lesson.price(tutor))),
 				!canTeach ? null : p -> {
 					if (!lesson.move().getName().equals(state.pending)) {
 						state.pending = lesson.move().getName();
@@ -216,7 +217,7 @@ public final class CobblemonTutors {
 		menu.button(INFO, info, null);
 	}
 
-	private static ItemStack lessonIcon(Lesson lesson, @Nullable Pokemon pokemon, boolean canTeach, boolean pending, boolean affordable) {
+	private static ItemStack lessonIcon(Villager tutor, Lesson lesson, @Nullable Pokemon pokemon, boolean canTeach, boolean pending, boolean affordable) {
 		MoveTemplate move = lesson.move();
 		Item item = !canTeach ? Items.PAPER : lesson.egg() ? Items.EGG : Items.BOOK;
 		MutableComponent name = move.getDisplayName().copy();
@@ -241,7 +242,7 @@ public final class CobblemonTutors {
 			lines.add(Component.translatable("message.aliveworkplace.tutor.needs_tier", BuilderLevels.levelName(lesson.grade())).withStyle(ChatFormatting.RED));
 		} else {
 			lines.add(Component.translatable("message.aliveworkplace.tutor.price",
-				io.github.jcondedata.aliveworkplace.work.Money.describe(lesson.dollars(), lesson.price()))
+				io.github.jcondedata.aliveworkplace.work.Money.describe(lesson.dollars(tutor), lesson.price(tutor)))
 				.withStyle(affordable ? ChatFormatting.GREEN : ChatFormatting.RED));
 			lines.add(pending && pokemon != null
 				? Component.translatable("message.aliveworkplace.tutor.confirm", move.getDisplayName(), pokemon.getDisplayName(false)).withStyle(ChatFormatting.YELLOW)
@@ -266,9 +267,9 @@ public final class CobblemonTutors {
 		if (!inParty || lesson.grade() > Tutors.tier(tutor) || !lessons(pokemon).stream().anyMatch(l -> l.move().getName().equals(lesson.move().getName()))) {
 			return;
 		}
-		if (!io.github.jcondedata.aliveworkplace.work.Money.charge(player, lesson.dollars(), lesson.price())) {
+		if (!io.github.jcondedata.aliveworkplace.work.Money.charge(player, lesson.dollars(tutor), lesson.price(tutor))) {
 			Chat.actionBar(player, Component.translatable("message.aliveworkplace.tutor.too_poor",
-				io.github.jcondedata.aliveworkplace.work.Money.describe(lesson.dollars(), lesson.price())).withStyle(ChatFormatting.RED));
+				io.github.jcondedata.aliveworkplace.work.Money.describe(lesson.dollars(tutor), lesson.price(tutor))).withStyle(ChatFormatting.RED));
 			return;
 		}
 		boolean inMoves = teach(pokemon, lesson.move());

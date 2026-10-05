@@ -34,6 +34,9 @@ public final class BuildSiteManager extends SavedData {
 
 	/** Remembers a finished building (replacing an older one on the same spot, such as the tier it upgraded). */
 	public void recordFinished(ResourceLocation structure, BlueprintData.Placement placement, UUID owner) {
+		if (io.github.jcondedata.aliveworkplace.city.Roads.isSegment(structure)) {
+			return; // road segments are kept on the City Plan (27.15), not with the buildings
+		}
 		finished.removeIf(f -> f.placement().equals(placement));
 		finished.addLast(new Finished(structure, placement, owner));
 		while (finished.size() > MAX_FINISHED) {

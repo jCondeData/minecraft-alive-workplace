@@ -327,7 +327,7 @@ public final class CityPlans {
 	@Nullable
 	static CityPlan road(@Nullable ServerPlayer player, Edit edit, CityPlan plan) {
 		Component problem = null;
-		if (plan.roads().size() >= CityPlan.MAX_ROADS) {
+		if (plan.drawnRoads() >= CityPlan.MAX_ROADS) {
 			problem = Component.translatable("message.aliveworkplace.city_plan.too_many_roads", CityPlan.MAX_ROADS);
 		} else if (edit.points().size() > CityPlan.MAX_ROAD_POINTS) {
 			problem = Component.translatable("message.aliveworkplace.city_plan.too_many_points", CityPlan.MAX_ROAD_POINTS);

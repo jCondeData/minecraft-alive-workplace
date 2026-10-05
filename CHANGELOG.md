@@ -40,6 +40,12 @@ asks for the steps, `latest.log` and any crash report).
   Breeder by farmland beds), a Daycare (a Daycare Keeper at a Pasture Block on a straw floor) and a Gem Grotto (a Gem
   Grower at a stonecutter, an amethyst niche, tumblestones on magma behind glass), in all five village styles, each
   with its worker already in the job and a chest of the job's things. Config `pokemonVillageHouses` (on).
+- **The Steward is safe by design** (27.19): his plans, roads and walls never go into Keep Clear, another village or a
+  protected village that isn't his owner's, and a ledger of what players built in a village (from 1.1 on) keeps his
+  plans and walls out of those spots unless the owner approves one by hand. His sites leave a player's block where it
+  is ("a player's block is in the way" on the desk); when his builds wait for materials, the desk and the Storehouse
+  board show one shopping list (the owner hears it once a day, caravans bring it), and he proposes nothing new while
+  two builds have waited a whole day.
 - **Edicts and civic items in the village's life** (30.21): villagers talk of each edict in force and of each reformed
   one ("Long shifts again... my back.", "The shift bell's rung. Home we go."), of a rush, their tonic, their guild and
   the village's colours; "What next?" now points out a free edict slot, a reform step waiting, Festival Season with too
@@ -58,6 +64,29 @@ asks for the steps, `latest.log` and any crash report).
   back a third of the durability, not a quarter (Armorers, Toolsmiths, Weaponsmiths, Tinkerers, Ball Smiths); axes and
   fishing rods wear half as fast (Lumberjacks, Fletchers, Fishermen). New guild perks for packs: `tool_wear` and
   `mend_per_unit`.
+### Fixed
+- A Pathfinder waiting for a player who fell behind now stands still instead of drifting a few blocks back toward
+  their table or strolling off (B75).
+### Added
+- **Roads between villages** (27.17): two villages with a trade route each build their half of a street to the other,
+  from the end of their nearest road and in the style of the zone it starts from, up to 256 blocks or halfway; the
+  halves meet halfway, and a half that can't reach that far ends at a milestone (a stone post with a lantern and a sign
+  naming the other village and how far it is). Only loaded land is planned. Caravans on a finished road arrive in three
+  quarters of the time, and both chronicles note the road. Settings `caravanRoads` and `caravanRoadReach`.
+- **Walls along the wall line** (27.18): a village raided in the last 7 days, or with bandits camped nearby, has its
+  Steward propose a wall on the hall's "What next?" — along the City Plan's wall line, or a line of his own 4 blocks
+  round the zones, drawn on the plan so you see it before you approve. Walls are kits as data
+  (`data/aliveworkplace/wall_kits/<name>.json`): **Palisade** up to a Village (Palisade, Palisade Gate and the new
+  **Palisade Tower**, a log watch platform with a ladder and a lookout under a dark oak roof) and **Stone** from a Town
+  (Stone Wall, Wall Tower, Gatehouse), a Town replacing its palisade a piece at a time. A tower stands at every corner
+  and at least every 28 blocks, the segments between fit whole, a gate goes wherever a road crosses (shut at night by
+  the guards as ever), and each piece sits at its own ground height with its foundation under it. At most 3 wall sites
+  are open at once, and the whole wall counts as one building for the village's rank. New setting `stewardWalls`.
+- **Lamps, bridges and steps** (27.16): streets and avenues get the Street Lamp in their road's style every 16 blocks on
+  alternate sides and before every crossing (never by a door), lanes a lantern post every 12; they count as Street
+  Lamps for beauty and light the homes near them. A road that meets water or a drop deeper than 2 blocks, up to 16
+  wide, gets a bridge in its style (rails, a pillar every 4 blocks down to the bed, a stair up at each end); a wider
+  gap stops the road at the bank, and the Steward's desk says why. Crossings are paved square.
 - **The Harvest, Herders' and Scholars' Guilds** (30.19): members work 15% faster once founded. The village's own farms
   and the Orchard Keepers' rounds reach 24 blocks from the composter or basket, not 16 (Farmers, Orchard Keepers,
   Florists, Beekeepers, Composters, Chefs); shepherds, ranchers and butchers breed up to 12 of a kind (not 8) and a hired
@@ -92,6 +121,14 @@ asks for the steps, `latest.log` and any crash report).
   the Smith to choose which comes next. Each golem wears its role (a crate pack, a straw hat, a helm), has its name
   over its head and a line on the hall's guards button; the Smith mends golems twice as fast as a Tinkerer and wears a
   leather apron, goggles and iron-banded gloves.
+- **Roads** (27.15): the roads drawn on the City Plan get built. The Steward has each approved road's way found over
+  the ground (its width kept clear, round water, buildings and anything a player built, steps of one block at most) and
+  hands it, 24 blocks at a time, to the village's idle builders when no building waits (two at once at most). Each road
+  is paved in its style: As drawn (dirt path, coarse dirt and gravel edges), Stonework (stone bricks with cracked ones,
+  cobblestone edges), Sandstone, Dark Oak (deepslate), Cherry (polished diorite) and, with Cobblemon, Apricorn (bricks
+  with mud brick edges), with stairs up and down each step. Every new building's door joins the nearest road with a
+  lane (villages without roads keep the dirt path to the bell). Roads aren't buildings: the rank, the map and homes
+  leave them out. Road styles are data (`road_styles/`). Config `stewardRoads`.
 - **Farmstead, Fisher's Hut, Weaver's Cottage and Bandstand** (27.14), new blueprints in the Blueprint Table: a
   farmhouse with one bed beside a field of farmland round a water channel, a scarecrow and a composter (II: a barn and a
   second field); a shore hut with a jetty out over the water on log posts and a barrel (II: a smokehouse with a smoker

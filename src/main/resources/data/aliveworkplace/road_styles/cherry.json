@@ -1,0 +1,10 @@
+{
+  "blueprint_styles": ["cherry"],
+  "middle": "minecraft:polished_diorite",
+  "edge": "minecraft:stone_bricks",
+  "slab": "minecraft:polished_diorite_slab",
+  "stairs": "minecraft:polished_diorite_stairs",
+  "bridge": {"deck": "minecraft:cherry_planks", "rail": "minecraft:cherry_fence", "pillar": "minecraft:cherry_log"},
+  "lamp": "minecraft:lantern",
+  "lantern_post": "minecraft:cherry_fence"
+}

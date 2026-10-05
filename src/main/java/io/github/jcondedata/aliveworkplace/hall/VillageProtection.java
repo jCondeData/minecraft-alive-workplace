@@ -123,6 +123,27 @@ public final class VillageProtection {
 			.findFirst();
 	}
 
+	/**
+	 * A protected hall whose area takes in {@code pos} and whose owner isn't {@code owner} (nor counts them a friend), if
+	 * any: where the Steward of {@code owner}'s village never builds (27.19). Works with protection switched off too,
+	 * since that switch is about players.
+	 */
+	public static Optional<BlockPos> foreignKeeper(ServerLevel level, @org.jetbrains.annotations.Nullable UUID owner, BlockPos pos) {
+		long radiusSqr = (long) VillageHalls.RADIUS * VillageHalls.RADIUS;
+		return PROTECTED.stream()
+			.filter(g -> g.dimension() == level.dimension())
+			.map(GlobalPos::pos)
+			.filter(h -> {
+				long dx = h.getX() - pos.getX();
+				long dz = h.getZ() - pos.getZ();
+				return dx * dx + dz * dz <= radiusSqr;
+			})
+			.filter(h -> level.isLoaded(h) && level.getBlockEntity(h) instanceof VillageHallBlockEntity entity && entity.isProtected()
+				&& entity.owner() != null && !entity.owner().equals(owner)
+				&& (owner == null || !Friends.get(level.getServer()).mayDirect(entity.owner(), owner)))
+			.findFirst();
+	}
+
 	/** Keeps the list of loaded protected halls up to date (from the hall's block entity). */
 	static void mark(Level level, BlockPos hall, boolean on) {
 		if (level.isClientSide()) {

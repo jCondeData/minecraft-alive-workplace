@@ -1,0 +1,7 @@
+{
+  "segment": "aliveworkplace:palisade",
+  "corner_tower": "aliveworkplace:palisade_tower",
+  "gate": "aliveworkplace:palisade_gate",
+  "min_rank": "hamlet",
+  "max_rank": "village"
+}

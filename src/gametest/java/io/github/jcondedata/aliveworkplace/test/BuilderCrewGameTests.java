@@ -166,6 +166,60 @@ public class BuilderCrewGameTests implements net.fabricmc.fabric.api.gametest.v1
 	}
 
 	/**
+	 * QA (qa-1005-0833): a crew of four passing materials to each other builds the stone house from exactly its
+	 * material list, and nothing is duplicated or lost on the way: the house is finished, and no plan material is left
+	 * over anywhere (barrels, chest or anyone's bag).
+	 */
+	//$ gametest_ticks_batch HUGE '12000' '"qaCrewMaterials"'
+	@GameTest(template = HUGE, timeoutTicks = 12000, batch = "qaCrewMaterials")
+	public void aCrewOfFourUsesExactlyTheMaterialList(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		ServerLevel level = helper.getLevel();
+		helper.setDayTime(3000);
+		level.getGameRules().getRule(ModGameRules.BUILD_DELAY).set(2, level.getServer());
+		level.getGameRules().getRule(ModGameRules.BUILDERS_HELP).set(true, level.getServer());
+		helper.setBlock(BENCH, ModBlocks.BUILDERS_BENCH);
+		helper.setBlock(CHEST, Blocks.CHEST);
+		for (BlockPos barrel : BARRELS) {
+			helper.setBlock(barrel, Blocks.BARREL);
+		}
+		Villager lead = helper.spawn(EntityType.VILLAGER, LEAD_START);
+		Builders.employ(level, lead, helper.absolutePos(BENCH));
+		List<Villager> crew = new ArrayList<>(List.of(lead));
+		BuildSite site = start(helper, crew, 4);
+		BuildPlan plan = site.plan(level);
+		Map<Item, Integer> materials = plan.materials();
+		helper.onEachTick(() -> helper.setDayTime(3000));
+		helper.succeedWhen(() -> {
+			helper.assertTrue(site.isDone(), "still building: stage=" + site.stage() + " status=" + site.status() + " placed=" + site.placed());
+			helper.assertTrue(plan.unfinished(level).isEmpty(), "the stone house isn't finished: " + plan.unfinished(level).size() + " blocks left");
+			Map<Item, Integer> left = new java.util.HashMap<>();
+			List<Container> stores = new ArrayList<>();
+			stores.add(helper.getBlockEntity(CHEST));
+			for (BlockPos barrel : BARRELS) {
+				stores.add(helper.getBlockEntity(barrel));
+			}
+			for (Container c : stores) {
+				for (int slot = 0; slot < c.getContainerSize(); slot++) {
+					ItemStack st = c.getItem(slot);
+					if (materials.containsKey(st.getItem())) {
+						left.merge(st.getItem(), st.getCount(), Integer::sum);
+					}
+				}
+			}
+			for (Villager v : crew) {
+				for (Item item : materials.keySet()) {
+					int n = ModAttachments.BUILDER_BAG.getOrCreate(v).count(item);
+					if (n > 0) {
+						left.merge(item, n, Integer::sum);
+					}
+				}
+			}
+			helper.assertTrue(left.isEmpty(), "materials left over after building from exactly the list (duplicated): " + left);
+		});
+	}
+
+	/**
 	 * Takes down what's there, sends the crew (grown to {@code size}) back to their benches with empty bags, puts exactly
 	 * the stone house's materials in the barrels and starts the build.
 	 */

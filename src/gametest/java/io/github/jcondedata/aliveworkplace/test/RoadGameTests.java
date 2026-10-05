@@ -113,6 +113,7 @@ public class RoadGameTests implements net.fabricmc.fabric.api.gametest.v1.Fabric
 				}
 				BuildSite site = BuildSiteManager.get(level).create(entity.owner() != null ? entity.owner() : java.util.UUID.randomUUID(), "",
 					segment.get().blueprint().id(), segment.get().placement());
+				Roads.save(level, segment.get().blueprint()); // as opening it would: the lamps are counted from it (27.16)
 				Roads.segmentBuilt(level, site, null);
 				BuildSiteManager.get(level).remove(site.id());
 			}
@@ -416,5 +417,173 @@ public class RoadGameTests implements net.fabricmc.fabric.api.gametest.v1.Fabric
 			helper.assertTrue(Roads.openSegments(level, v.hall()).isEmpty(), "a segment opened with the config off");
 			helper.succeed();
 		});
+	}
+
+	// ---- 27.16: lamps, bridges and steps ------------------------------------------------------------------------------
+
+	/** A river (water 2 deep, bed at y 0) at test x {@code x0..x1} across the whole area, the banks raised to y 2. */
+	private static void river(GameTestHelper helper, int x0, int x1) {
+		for (int x = 0; x < 30; x++) {
+			for (int z = 0; z < 30; z++) {
+				boolean water = x >= x0 && x <= x1;
+				helper.setBlock(new BlockPos(x, 1, z), water ? Blocks.WATER : Blocks.DIRT);
+				helper.setBlock(new BlockPos(x, 2, z), water ? Blocks.WATER : Blocks.GRASS_BLOCK);
+			}
+		}
+	}
+
+	/** A 60-block street: a Street Lamp every 16 blocks on alternate sides, the one by a door moved along; they add beauty. */
+	//$ gametest_ticks_batch AREA '40' '"roadLamps"'
+	@GameTest(template = AREA, timeoutTicks = 40, batch = "roadLamps")
+	public void aSixtyBlockStreetGetsLampsEverySixteenBlocksOnAlternateSidesNoneByADoor(GameTestHelper helper) {
+		BlockPos hall = ground(helper, new BlockPos(14, 2, 14));
+		helper.setBlock(new BlockPos(16, 2, 1), Blocks.OAK_DOOR.defaultBlockState());
+		helper.setBlock(new BlockPos(16, 3, 1), Blocks.OAK_DOOR.defaultBlockState().setValue(net.minecraft.world.level.block.DoorBlock.HALF,
+			net.minecraft.world.level.block.state.properties.DoubleBlockHalf.UPPER));
+		VillageHallBlockEntity entity = hall(helper, hall);
+		entity.setPlan(CityPlan.EMPTY.addRoad(road(CityPlan.Road.STREET, "stonework", p(helper, hall, 2, 4), p(helper, hall, 26, 4),
+			p(helper, hall, 26, 22), p(helper, hall, 8, 22))));
+		Roads.routeNow(helper.getLevel(), hall);
+		CityPlan.Road street = entity.plan().roads().get(0);
+		helper.assertTrue(street.route().size() >= 55, "the street is " + street.route().size() + " nodes, not about 60");
+		int beautyBefore = io.github.jcondedata.aliveworkplace.hall.Decorations.beauty(helper.getLevel(), hall);
+		layAll(helper, hall);
+		street = entity.plan().roads().get(0);
+		// each lamp's top (a trapdoor, 5 over its foot): one north of the first stretch, one west of the second, one south of the third
+		List<BlockPos> tops = new ArrayList<>();
+		for (int x = 0; x < 30; x++) {
+			for (int z = 0; z < 30; z++) {
+				if (!helper.getBlockState(new BlockPos(x, 7, z)).isAir()) {
+					tops.add(new BlockPos(x, 7, z));
+				}
+			}
+		}
+		helper.assertTrue(tops.size() == 3, "not 3 lamps on a 60-block street: " + tops);
+		helper.assertTrue(tops.stream().anyMatch(t -> t.getZ() <= 2 && t.getX() >= 19 && t.getX() <= 22), "the first lamp isn't north of the street, moved past the door: " + tops);
+		helper.assertTrue(tops.stream().anyMatch(t -> t.getX() >= 21 && t.getX() <= 24 && t.getZ() >= 6 && t.getZ() <= 20), "the second lamp isn't on the other side: " + tops);
+		helper.assertTrue(tops.stream().anyMatch(t -> t.getZ() >= 24), "the third lamp isn't back on the first side: " + tops);
+		// none in front of the door: only air round it but the door
+		for (BlockPos q : BlockPos.betweenClosed(new BlockPos(14, 2, 0), new BlockPos(18, 7, 2))) {
+			BlockState st = helper.getBlockState(q);
+			helper.assertTrue(st.isAir() || st.is(Blocks.OAK_DOOR), "a lamp stands by the door: " + st + " at " + q);
+		}
+		int lanterns = 0;
+		for (BlockPos q : BlockPos.betweenClosed(new BlockPos(0, 2, 0), new BlockPos(29, 7, 29))) {
+			if (helper.getBlockState(q).is(Blocks.LANTERN)) {
+				lanterns++;
+			}
+		}
+		helper.assertTrue(lanterns == 6, lanterns + " lanterns, not 2 on each of 3 lamps");
+		helper.assertTrue(street.lamps() == 3, "the plan counts " + street.lamps() + " lamps, not 3");
+		int beauty = io.github.jcondedata.aliveworkplace.hall.Decorations.beauty(helper.getLevel(), hall);
+		helper.assertTrue(beauty == beautyBefore + 3, "the lamps add " + (beauty - beautyBefore) + " beauty, not 3 (as Street Lamps)");
+		helper.succeed();
+	}
+
+	/** A river 9 wide: a Stonework bridge, a stair up at each end, rails, 2 pillars down to the bed; a villager walks over. */
+	//$ gametest_ticks_batch AREA '600' '"roadBridge"'
+	@GameTest(template = AREA, timeoutTicks = 600, batch = "roadBridge")
+	public void aRiverNineWideIsBridgedWithTwoPillarsAndVillagersWalkOverIt(GameTestHelper helper) {
+		BlockPos hall = ground(helper, new BlockPos(3, 3, 26));
+		river(helper, 10, 18);
+		helper.setBlock(new BlockPos(3, 3, 26), ModBlocks.VILLAGE_HALL);
+		VillageHallBlockEntity entity = hall(helper, hall);
+		entity.setPlan(CityPlan.EMPTY.addRoad(road(CityPlan.Road.STREET, "stonework", p(helper, hall, 2, 8), p(helper, hall, 27, 8))));
+		Roads.routeNow(helper.getLevel(), hall);
+		CityPlan.Road street = entity.plan().roads().get(0);
+		helper.assertTrue(street.gap() == 0, "a 9-wide river was refused: gap " + street.gap());
+		BlockPos end = street.route().get(street.route().size() - 1).offset(hall);
+		helper.assertTrue(end.distManhattan(helper.absolutePos(new BlockPos(27, 3, 8))) <= 2, "the street doesn't cross the river: it ends at " + end);
+		layAll(helper, hall);
+		for (int x = 10; x <= 18; x++) {
+			for (int z = 7; z <= 9; z++) {
+				BlockState deck = helper.getBlockState(new BlockPos(x, 3, z));
+				if (x == 10 || x == 18) {
+					helper.assertTrue(deck.is(Blocks.STONE_BRICK_STAIRS) && deck.getValue(StairBlock.FACING) == (x == 10 ? Direction.EAST : Direction.WEST),
+						"no stair up onto the bridge at x " + x + " z " + z + ": " + deck);
+				} else {
+					helper.assertTrue(deck.is(Blocks.STONE_BRICKS), "the deck at x " + x + " z " + z + " is " + deck);
+				}
+			}
+			helper.assertTrue(at(helper, x, 4, 6) == Blocks.STONE_BRICK_WALL && at(helper, x, 4, 10) == Blocks.STONE_BRICK_WALL, "no rails at x " + x);
+		}
+		int pillars = 0;
+		for (int x = 10; x <= 18; x++) {
+			if (at(helper, x, 2, 8) == Blocks.STONE_BRICKS) {
+				pillars++;
+				helper.assertTrue(at(helper, x, 1, 8) == Blocks.STONE_BRICKS, "the pillar at x " + x + " doesn't reach the bed");
+			}
+		}
+		helper.assertTrue(pillars == 2, pillars + " pillars under a 9-wide bridge, not 2");
+		helper.assertTrue(at(helper, 12, 2, 8) == Blocks.WATER, "the river under the bridge was filled");
+		// a villager walks from one bank to the other over it
+		Villager walker = helper.spawn(EntityType.VILLAGER, new BlockPos(5, 3, 8));
+		BlockPos goal = helper.absolutePos(new BlockPos(23, 3, 8));
+		boolean[] wet = {false};
+		helper.succeedWhen(() -> {
+			walker.getBrain().setMemory(net.minecraft.world.entity.ai.memory.MemoryModuleType.WALK_TARGET,
+				new net.minecraft.world.entity.ai.memory.WalkTarget(goal, 0.6f, 0));
+			wet[0] = wet[0] || walker.isInWater();
+			helper.assertTrue(walker.getX() >= goal.getX() - 2, "the villager hasn't crossed: " + walker.blockPosition());
+			helper.assertTrue(!wet[0], "the villager crossed through the river, not over the bridge");
+		});
+	}
+
+	/** A gap 20 wide (wider than a bridge spans): the road stops at the near bank and the Steward's desk says why. */
+	//$ gametest_ticks_batch AREA '40' '"roadGap"'
+	@GameTest(template = AREA, timeoutTicks = 40, batch = "roadGap")
+	public void aGapTwentyWideIsRefusedAndTheDeskSaysWhy(GameTestHelper helper) {
+		BlockPos hall = ground(helper, new BlockPos(2, 3, 26));
+		river(helper, 5, 24);
+		helper.setBlock(new BlockPos(2, 3, 26), ModBlocks.VILLAGE_HALL);
+		VillageHallBlockEntity entity = hall(helper, hall);
+		entity.setPlan(CityPlan.EMPTY.addRoad(road(CityPlan.Road.STREET, "stonework", p(helper, hall, 1, 8), p(helper, hall, 28, 8))));
+		Roads.routeNow(helper.getLevel(), hall);
+		CityPlan.Road street = entity.plan().roads().get(0);
+		helper.assertTrue(street.routed() && street.gap() == 20, "the 20-wide gap: routed " + street.routed() + ", gap " + street.gap());
+		for (BlockPos o : street.route()) {
+			helper.assertTrue(o.offset(hall).getX() <= helper.absolutePos(new BlockPos(4, 0, 0)).getX(), "the road goes past the bank: " + o.offset(hall));
+		}
+		List<net.minecraft.network.chat.Component> notes = Roads.deskNotes(entity.plan());
+		helper.assertTrue(notes.size() == 1 && notes.get(0).getContents() instanceof net.minecraft.network.chat.contents.TranslatableContents t
+			&& t.getKey().equals("screen.aliveworkplace.desk.road_gap") && "20".equals(String.valueOf(t.getArgs()[0])) && "16".equals(String.valueOf(t.getArgs()[1])),
+			"the desk's note: " + notes);
+		// saved and loaded, the gap stays on the road (and older saves load with none)
+		CompoundTag saved = (CompoundTag) CityPlan.Road.CODEC.encodeStart(NbtOps.INSTANCE, street).getOrThrow();
+		helper.assertTrue(CityPlan.Road.CODEC.parse(NbtOps.INSTANCE, saved).getOrThrow().gap() == 20, "the gap isn't saved");
+		saved.remove("gap");
+		saved.remove("lamps");
+		CityPlan.Road old = CityPlan.Road.CODEC.parse(NbtOps.INSTANCE, saved).getOrThrow();
+		helper.assertTrue(old.gap() == 0 && old.lamps() == 0, "an older save doesn't load with no gap and no lamps");
+		helper.succeed();
+	}
+
+	/** A slope of one in one: every one-block rise of the street becomes stairs across its width. */
+	//$ gametest_ticks_batch AREA '40' '"roadSlope"'
+	@GameTest(template = AREA, timeoutTicks = 40, batch = "roadSlope")
+	public void aSlopeOfOneInOneGetsStairsAcrossTheRoad(GameTestHelper helper) {
+		BlockPos hall = ground(helper, new BlockPos(2, 2, 26));
+		for (int x = 8; x < 30; x++) {
+			int top = Math.min(7, x - 6);
+			for (int z = 0; z < 22; z++) {
+				for (int y = 1; y < top; y++) {
+					helper.setBlock(new BlockPos(x, y, z), Blocks.DIRT);
+				}
+				helper.setBlock(new BlockPos(x, top, z), Blocks.GRASS_BLOCK);
+			}
+		}
+		VillageHallBlockEntity entity = hall(helper, hall);
+		entity.setPlan(CityPlan.EMPTY.addRoad(road(CityPlan.Road.STREET, "stonework", p(helper, hall, 2, 8), p(helper, hall, 27, 8))));
+		Roads.routeNow(helper.getLevel(), hall);
+		layAll(helper, hall);
+		for (int x = 8; x <= 13; x++) {
+			for (int z = 7; z <= 9; z++) {
+				BlockState st = helper.getBlockState(new BlockPos(x, x - 6, z));
+				helper.assertTrue(st.is(Blocks.STONE_BRICK_STAIRS) && st.getValue(StairBlock.FACING) == Direction.EAST,
+					"no stairs up the slope at x " + x + " z " + z + ": " + st);
+			}
+		}
+		helper.assertTrue(STONEWORK_MIDDLE.contains(at(helper, 20, 7, 8)), "the top isn't paved: " + at(helper, 20, 7, 8));
+		helper.succeed();
 	}
 }

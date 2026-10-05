@@ -19,6 +19,12 @@ asks for the steps, `latest.log` and any crash report).
 ### Fixed
 - A Pathfinder waiting for a player who fell behind now stands still instead of drifting a few blocks back toward
   their table or strolling off (B75).
+### Added
+- **Lamps, bridges and steps** (27.16): streets and avenues get the Street Lamp in their road's style every 16 blocks on
+  alternate sides and before every crossing (never by a door), lanes a lantern post every 12; they count as Street
+  Lamps for beauty and light the homes near them. A road that meets water or a drop deeper than 2 blocks, up to 16
+  wide, gets a bridge in its style (rails, a pillar every 4 blocks down to the bed, a stair up at each end); a wider
+  gap stops the road at the bank, and the Steward's desk says why. Crossings are paved square.
 
 ## 0.139.0 — 2026-10-05
 

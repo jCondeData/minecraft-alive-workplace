@@ -105,6 +105,9 @@ SCENES = [
     # Roads (ROADMAP 27.15): an approved street on the plan, routed and laid 3 wide in Stonework by the village's builder
     job("roads", "Steward", "A street between two houses",
         "the builder laid the approved Stonework street between the two houses, 3 wide, segment by segment", 480),
+    # Lamps, bridges and steps (ROADMAP 27.16): a street drawn over a river is bridged and lit, shown at night at the end
+    job("bridges", "Steward", "A bridge over the river, and the street lit at night",
+        "the builder bridged the river 9 wide (2 pillars, rails, a stair up at each end) and lit the street with Street Lamps", 600),
     # The Steward's rules (ROADMAP 27.6): the day's wishes over his head, and /workplace steward explain in chat
     S("steward_rules", "Steward", "The Steward's rules and wishes",
       "the Steward ranked today's wishes from his rules, and explain listed rules that held and that didn't", 45,

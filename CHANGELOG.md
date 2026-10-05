@@ -25,6 +25,9 @@ asks for the steps, `latest.log` and any crash report).
   lost: a Steward, a Legend or an edict comes back as it was when its expansion is released.
 
 ### Fixed
+- **Villagers climb the ladder to a bed upstairs** (B79): a villager whose bed is in an attic reached by a ladder (the
+  Stone House's, which a renewed two-bed home becomes) couldn't find a way up, and after a minute gave the bed up. At
+  bedtime they now walk to the ladder, climb it, step off towards the bed and sleep there.
 - **A build saved by 0.138.0 or earlier keeps its progress on upgrade** (B64): opened with a newer jar, a site half
   through a raised foundation (or in its walls) dropped to a few percent the first time it loaded. It now works out
   the progress it showed from the saved stage and step.

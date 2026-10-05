@@ -282,11 +282,7 @@ public class RenewalGameTests implements net.fabricmc.fabric.api.gametest.v1.Fab
 			helper.assertTrue(villager.getBrain().getMemory(MemoryModuleType.HOME).map(g -> box.isInside(g.pos())).orElse(false),
 				"a villager of the old house has no bed in the new one: " + villager.getBrain().getMemory(MemoryModuleType.HOME));
 		}
-		// they come home for the night (the walk there over the test's flat grass is the villagers' own, not this item's)
-		for (Villager villager : sleepers) {
-			BlockPos bed = villager.getBrain().getMemory(MemoryModuleType.HOME).orElseThrow().pos();
-			villager.teleportTo(bed.getX() + 0.5, bed.getY() + 0.6, bed.getZ() + 0.5);
-		}
+		// they come home for the night on foot, from where they stood while the house was renewed
 		helper.setDayTime(13000);
 		helper.succeedWhen(() -> {
 			for (Villager villager : sleepers) {

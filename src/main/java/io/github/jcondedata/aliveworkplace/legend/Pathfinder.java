@@ -129,6 +129,12 @@ public final class Pathfinder {
 	private static final Map<UUID, Offer> OFFERS = new HashMap<>();
 	private static final Map<Villager, HomeWait> HOME = new WeakHashMap<>();
 	private static final Map<Villager, Integer> COOLDOWN = new WeakHashMap<>();
+	/**
+	 * Pathfinders standing still for a player who fell behind, held every tick after their brain has run ({@link #hold}).
+	 * Stopped only on every 5th tick, before the brain, vanilla's routine (back to the job site, a stroll) set a walk
+	 * target in between and one drifted 5 blocks while "waiting" (CI, 2026-10-05).
+	 */
+	private static final Map<Villager, Boolean> WAITING = new WeakHashMap<>();
 
 	public static State state(Villager villager) {
 		State s = ModAttachments.PATHFINDER.get(villager);
@@ -305,7 +311,11 @@ public final class Pathfinder {
 
 	/** Every tick of a Legend's life ({@link Legends#tick}); works every 5th tick, only with an expedition on. */
 	static void tick(Villager villager) {
-		if (villager.tickCount % 5 != 0 || !(villager.level() instanceof ServerLevel level) || !ModAttachments.PATHFINDER.has(villager)) {
+		if (villager.tickCount % 5 != 0) {
+			return;
+		}
+		WAITING.remove(villager);
+		if (!(villager.level() instanceof ServerLevel level) || !ModAttachments.PATHFINDER.has(villager)) {
 			return;
 		}
 		State state = state(villager);
@@ -343,6 +353,7 @@ public final class Pathfinder {
 		}
 		if (away > WAIT) {
 			stop(villager);
+			WAITING.put(villager, Boolean.TRUE);
 			villager.getBrain().setMemory(MemoryModuleType.LOOK_TARGET, new EntityTracker(player, true));
 			return;
 		}
@@ -483,6 +494,14 @@ public final class Pathfinder {
 		Chronicle.record(level, home(level, villager, state).orElse(villager.blockPosition()), Chronicle.Kind.LEGEND,
 			Component.translatable("chronicle.aliveworkplace.legend.expedition_cancelled", villager.getDisplayName(),
 				Component.translatable("expedition.aliveworkplace." + state.kind())));
+	}
+
+	/** After the villager's brain has run, every tick: one waiting for its player stays where it is. */
+	public static void hold(Villager villager) {
+		if (WAITING.containsKey(villager)) {
+			stop(villager);
+			villager.getMoveControl().setWantedPosition(villager.getX(), villager.getY(), villager.getZ(), 0);
+		}
 	}
 
 	private static void stop(Villager villager) {

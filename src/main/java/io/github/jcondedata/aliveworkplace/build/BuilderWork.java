@@ -238,6 +238,9 @@ public class BuilderWork extends Behavior<Villager> {
 		if (helping) {
 			step = helperStep(level, villager, site, plan, bench);
 			if (step == null) {
+				if (!bag.isEmpty() && handToLead(level, villager, site, plan, bag)) {
+					return; // B66: on its way to the lead with what the rest of the build needs
+				}
 				if (!bag.isEmpty()) {
 					deposit(level, villager, site, plan, bag, bench); // hand back what it was carrying
 				} else {
@@ -933,6 +936,46 @@ public class BuilderWork extends Behavior<Villager> {
 			}
 			return true;
 		}
+		return false;
+	}
+
+	/**
+	 * A helper with nothing left to help with, in the build's last blocks, brings the lead what it is short of (B66):
+	 * passed over when close, else it walks over first. It used to carry it all back to the chests, and the lead walked over there after
+	 * it for the build's last blocks (with exactly the build's materials, a lantern a helper had fetched and then left to
+	 * the lead): 200 ticks and more at the end of a crew's build. True while it is walking over.
+	 */
+	private boolean handToLead(ServerLevel level, Villager villager, BuildSite site, BuildPlan plan, BuilderBag bag) {
+		if (site.builder() == null || !(level.getEntity(site.builder()) instanceof Villager lead) || !lead.isAlive()) {
+			return false;
+		}
+		BuilderBag leadBag = ModAttachments.BUILDER_BAG.getOrCreate(lead);
+		// Only what the lead is short of for its next stretch, so it never fills up on a helper's spares.
+		Map<Item, Integer> needed = new LinkedHashMap<>();
+		int left = 0;
+		for (BuildPlan.Step s : ahead(site, plan)) {
+			if (!MaterialRules.matches(level.getBlockState(s.pos()), s.state())) {
+				left++;
+				for (MaterialRules.Requirement r : s.requirements()) {
+					needed.merge(r.item(), r.count(), Integer::sum);
+				}
+			}
+		}
+		needed.replaceAll((item, n) -> Math.min(Math.min(n - leadBag.count(item), bag.count(item)), leadBag.spaceFor(item)));
+		needed.values().removeIf(n -> n <= 0);
+		// Only for the build's last blocks: earlier, the lead's next chest trip takes it anyway, and handing it over
+		// then only shuffled the crew's loads about (a crew of two took 6% longer).
+		if (needed.isEmpty() || left > HELP_WINDOW) {
+			return false;
+		}
+		if (villager.distanceToSqr(lead) > PASS_DISTANCE * PASS_DISTANCE) {
+			walkTo(villager, lead.blockPosition(), 2);
+			return true;
+		}
+		needed.forEach((item, n) -> leadBag.addAll(item, bag.remove(item, n)));
+		site.supplied();
+		villager.getBrain().setMemory(MemoryModuleType.LOOK_TARGET, new net.minecraft.world.entity.ai.behavior.EntityTracker(lead, true));
+		TossSounds.play(level, villager.blockPosition()); // 23.1b: only a sound, capped server-wide
 		return false;
 	}
 

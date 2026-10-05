@@ -152,7 +152,8 @@ public final class Pace {
 	public static boolean isCrafter(VillagerProfession job) {
 		return job == VillagerProfession.MASON || job == VillagerProfession.TOOLSMITH || job == VillagerProfession.WEAPONSMITH
 			|| job == VillagerProfession.FLETCHER || job == VillagerProfession.LEATHERWORKER || job == VillagerProfession.LIBRARIAN
-			|| job == ModVillagers.CARPENTER || job == ModVillagers.CHEF || job == ModVillagers.TINKERER;
+			|| job == ModVillagers.CARPENTER || job == ModVillagers.CHEF || job == ModVillagers.TINKERER
+			|| io.github.jcondedata.aliveworkplace.craft.LuxuryRecipes.isMaker(job); // the luxury workshops' (34.5)
 	}
 
 	/** Craftsmanship: crafting 15% quicker a level. */

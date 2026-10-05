@@ -14,6 +14,7 @@ public class AliveWorkplaceClient implements ClientModInitializer {
 		BlueprintTooltip.init();
 		StationTooltip.init();
 		TonicTooltip.init();
+		MadeDayTooltip.init();
 		LegendLookLayer.init();
 		GolemRoleLayer.init();
 		io.github.jcondedata.aliveworkplace.guide.GuideBookItem.open = () -> Minecraft.getInstance()

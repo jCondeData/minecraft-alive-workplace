@@ -1,0 +1,1 @@
+{"job": "minecraft:nitwit", "level": 1, "inputs": [{"item": "minecraft:sugar"}, {"tag": "#minecraft:small_flowers"}], "output": {"id": "minecraft:glow_ink_sac"}, "ticks": 20}

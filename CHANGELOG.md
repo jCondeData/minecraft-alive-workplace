@@ -17,6 +17,12 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Added
+- **The luxury workshop engine for 1.8** (34.5, nothing to see until the four new makers arrive): luxury recipes are
+  data files (`data/<namespace>/luxury_recipes/<id>.json`: the job, the level, the makings by item or tag, what comes
+  out and how long it takes). A maker fills the store's stock orders first, then makes whatever the village store has
+  fewer than 8 of, from their own chests, the store and the village's stashes (crafting-table makings up to two steps
+  down), asks on the requests board for what's missing, and gets faster with Craftsmanship. Goods that age carry the
+  day they were made, and the tooltip says "Pressed on day 42 · vintage in 2 days".
 - **Luxuries from the village store for 1.8** (34.4, off until 1.8 is finished): luxuries are data files
   (`data/<ns>/luxuries/`: an item or a tag, and how many days apart a household wants one). At dawn each household
   takes one of every luxury its class and the class above ask for that's due, from the village store (the kitchens'

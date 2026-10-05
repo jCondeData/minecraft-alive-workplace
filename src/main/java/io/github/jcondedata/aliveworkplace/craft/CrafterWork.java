@@ -205,7 +205,7 @@ public class CrafterWork extends Behavior<Villager> {
 		BlockPos chest = null;
 		for (BlockPos source : job.sources()) {
 			Guard guard = job.guarded().get(source);
-			if (SupplyContainers.firstMatching(level, List.of(source), s -> s.getComponentsPatch().isEmpty() && toFetch.containsKey(s.getItem())
+			if (SupplyContainers.firstMatching(level, List.of(source), s -> fetchable(level, s) && toFetch.containsKey(s.getItem())
 				&& allowance(level, guard, reserved, s.getItem()) > 0) != null) {
 				chest = source;
 				break;
@@ -221,7 +221,7 @@ public class CrafterWork extends Behavior<Villager> {
 		}
 		for (Map.Entry<Item, Integer> e : new ArrayList<>(toFetch.entrySet())) {
 			int allowed = (int) Math.min(e.getValue(), allowance(level, job.guarded().get(chest), reserved, e.getKey()));
-			int got = allowed <= 0 ? 0 : SupplyContainers.extract(level, List.of(chest), e.getKey(), allowed);
+			int got = allowed <= 0 ? 0 : takeFrom(level, chest, e.getKey(), allowed);
 			if (got > 0) {
 				int over = bag.addAll(e.getKey(), got);
 				if (over > 0) {
@@ -258,7 +258,7 @@ public class CrafterWork extends Behavior<Villager> {
 		villager.getBrain().setMemory(MemoryModuleType.LOOK_TARGET, new BlockPosTracker(station));
 		int crafts = job.plan().steps().stream().mapToInt(Crafting.Step::times).sum();
 		if (timer < 0) {
-			timer = craftTicks(villager, crafts);
+			timer = ticksFor(villager, job.plan(), crafts);
 			// A Fighting, Rock or Steel partner holds the board or stone at the table while it's worked (28.4); a toolsmith's,
 			// fletcher's, tinkerer's or chef's partner does their trade's show, and may carry what's made to the chest (28.5).
 			Item worked = job.plan().takes().keySet().stream().findFirst().orElse(job.plan().target()); // the board, the stone
@@ -342,7 +342,7 @@ public class CrafterWork extends Behavior<Villager> {
 			return;
 		}
 		for (ItemStack stack : bag.takeAll()) {
-			ItemStack rest = SupplyContainers.insert(level, chests, stack);
+			ItemStack rest = SupplyContainers.insert(level, chests, finished(level, stack));
 			if (!rest.isEmpty()) {
 				Block.popResource(level, chests.get(0).above(), rest);
 			}
@@ -485,8 +485,8 @@ public class CrafterWork extends Behavior<Villager> {
 			if (store.isEmpty()) {
 				continue;
 			}
-			Map<Item, Long> stock = SupplyContainers.contents(level, store);
-			Map<Item, Long> usable = new HashMap<>(stock);
+			Map<Item, Long> stock = held(level, store);
+			Map<Item, Long> usable = new HashMap<>(usableIn(level, store));
 			orders.forEach((item, keep) -> usable.computeIfPresent(item, (k, n) -> n > keep ? n - keep : null));
 			for (Map.Entry<Item, Integer> order : orders.entrySet()) {
 				long have = stock.getOrDefault(order.getKey(), 0L);
@@ -506,6 +506,36 @@ public class CrafterWork extends Behavior<Villager> {
 			}
 		}
 		return null;
+	}
+
+	/** Whether a stack in a chest may be fetched as an ingredient (plain items only, unless a trade says otherwise). */
+	protected boolean fetchable(ServerLevel level, ItemStack stack) {
+		return stack.getComponentsPatch().isEmpty();
+	}
+
+	/** Takes up to {@code max} of {@code item} out of {@code chest} as an ingredient; returns how many were taken. */
+	protected int takeFrom(ServerLevel level, BlockPos chest, Item item, int max) {
+		return SupplyContainers.extract(level, List.of(chest), item, max);
+	}
+
+	/** How long making {@code plan} ({@code crafts} crafts) takes this villager. */
+	protected int ticksFor(Villager villager, Crafting.Plan plan, int crafts) {
+		return craftTicks(villager, crafts);
+	}
+
+	/** A stack from the bag as it goes into the job's chests (a luxury maker stamps the day an aging good was made). */
+	protected ItemStack finished(ServerLevel level, ItemStack stack) {
+		return stack;
+	}
+
+	/** How many of each thing {@code chests} hold, for a stock order's count. */
+	protected Map<Item, Long> held(ServerLevel level, List<BlockPos> chests) {
+		return SupplyContainers.contents(level, chests);
+	}
+
+	/** How many of each thing in {@code chests} may go into a plan. */
+	protected Map<Item, Long> usableIn(ServerLevel level, List<BlockPos> chests) {
+		return SupplyContainers.contents(level, chests);
 	}
 
 	/** Whether this crafter makes {@code item} for builders (everything its recipes make, unless a job says otherwise). */

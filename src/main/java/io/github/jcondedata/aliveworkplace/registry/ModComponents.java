@@ -127,6 +127,15 @@ public final class ModComponents {
 			.networkSynchronized(io.github.jcondedata.aliveworkplace.blueprint.SupplyReport.STREAM_CODEC).build()
 	);
 
+	/** The day a luxury good that ages was made, and how long it takes to be vintage (34.5). */
+	public static final DataComponentType<io.github.jcondedata.aliveworkplace.craft.LuxuryRecipes.MadeDay> MADE_DAY = Registry.register(
+		BuiltInRegistries.DATA_COMPONENT_TYPE,
+		AliveWorkplace.id("made_day"),
+		DataComponentType.<io.github.jcondedata.aliveworkplace.craft.LuxuryRecipes.MadeDay>builder()
+			.persistent(io.github.jcondedata.aliveworkplace.craft.LuxuryRecipes.MadeDay.CODEC)
+			.networkSynchronized(io.github.jcondedata.aliveworkplace.craft.LuxuryRecipes.MadeDay.STREAM_CODEC).build()
+	);
+
 	public static void init() {
 	}
 

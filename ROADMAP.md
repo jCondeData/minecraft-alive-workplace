@@ -3612,7 +3612,7 @@ on a real world.
   nothing is taken before it's due, an Artisan household also takes the Burgher luxuries the store has, an empty
   store counts as missed, a porter carries a maker's goods to the storehouse, a reload keeps `luxuries_had`. Nothing
   to see yet: `--no-review`.
-- [ ] **34.5** **The luxury workshop engine** that the four new jobs share.
+- [x] **34.5** (approved auto 2026-10-05) **The luxury workshop engine** that the four new jobs share.
   `data/aliveworkplace/luxury_recipes/<id>.json`: the job, the job level that may make it, the makings, what comes
   out and how long it takes, e.g. `{"job": "aliveworkplace:vintner", "level": 3, "inputs": [{"item":
   "aliveworkplace:berry_wine", "count": 1, "min_age_days": 3}], "output": {"id": "aliveworkplace:vintage_wine"},
@@ -4804,5 +4804,13 @@ item waits.
   A porter only visits jobs in `work/Village.takesPart`: 34.9-34.12 must add the Vintner, Tailor, Printer and Jeweller
   there, or their goods stay put. The test luxuries are `aliveworkplace_test:test_trinket` (a disc fragment, every 2
   days) and `test_fine_trinket` (the tag `#aliveworkplace_test:fine_trinkets`, every 4).
+- 2026-10-05 (34.5, decisions; lane d): `craft/LuxuryWork` isn't on any job yet: 34.9-34.12 add it to their job's work
+  package (`new LuxuryWork("<job>")`, with a `message.aliveworkplace.<job>.title` line); its recipes name the job id.
+  The tests drive it on a NoAI Nitwit (test recipes `aliveworkplace_test:test_cordial`, `test_vintage`, `test_new_good`).
+  A good gets a `made_day` (the chronicle's day number, and the days to vintage) when some recipe takes it with
+  `min_age_days`; a stack without one (old stock, a player's) counts as aged. An aging good is only counted as a
+  making once old enough, whichever recipe uses it. "The village store" is the hall's store (`VillageNeeds.store`), or,
+  without a hall, the Storehouses within 48 blocks; the "fewer than 8" counts it plus the maker's own chests. Stashes of
+  builders are never taken from. The tooltip has a one-day form ("vintage in 1 day") and "· vintage" once ready.
 - **qa handoff** (qa-1005-1034, 2026-10-05 11:27Z): qa-1005-1034: verified B46, B69, B73. Unshipped: qa/b46-b69-1005 (QaB46GameTests, QaB69FrontWalkGameTests; its ship build passed 1014/1014 gametests but failed on the compat flake B74 = B57 again): ship it once B74 is fixed (or retry ship). qa/import-swap-1005 is obsolete (B73 fixed on main). B50 and B57 not verified: read nightly run 37297003813 (on 5b489b7, after both fixes) for the crew test and the Pidgey test's repeats; B57 recurred (B74). qa/placing-1005 still waits on B71. Next QA: B50 from the nightly, B72 scene setup, then 21.2, M23.
 - **lane-c handoff** (lane-c-1005-1833, 2026-10-05 20:59Z): lane-c-1005-1833 (21:01Z): landed on main 2f801600: 27.15-27.19 (old wip/lane-c, M27-gated), 27.20 old houses, 27.21 renewal, B79 (ladder to upstairs beds), CaravanRoad test isolation fix. Local full build green (1169+151) before merging lane a's 29.x, pushed without rebuilding that merge (clean, no config changes). Next: 27.22 (the 1.1 yardstick), then 31.x. Red duty notes: main CI 695/697-699 were cancelled by the runner at ~15 min (infra), 696 failed only ConscriptionGameTests.aConscriptSavedMidRaidLoadsWithoutTheSword (B81). wip/lane-c is now stale (all merged); B80 is test-order (QA).

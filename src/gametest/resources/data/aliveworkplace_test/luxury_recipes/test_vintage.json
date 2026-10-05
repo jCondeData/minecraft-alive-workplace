@@ -1,0 +1,1 @@
+{"job": "minecraft:nitwit", "level": 2, "inputs": [{"item": "minecraft:glow_ink_sac", "count": 1, "min_age_days": 3}], "output": {"id": "minecraft:nautilus_shell"}, "ticks": 20}

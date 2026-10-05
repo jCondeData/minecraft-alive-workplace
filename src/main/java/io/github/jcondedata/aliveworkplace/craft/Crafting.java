@@ -7,6 +7,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
+import java.util.function.Predicate;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -44,7 +45,12 @@ public final class Crafting {
 		 * and nether brick items — never food, ingots or melted-down gear), the stonecutter's and the crafting table's
 		 * (clay into bricks into a brick block). A mason only uses it for a plan with something fired in it.
 		 */
-		KILN
+		KILN,
+		/**
+		 * A luxury maker's (ROADMAP 34.5): the {@link LuxuryRecipes} files the maker may use, with the crafting table's for
+		 * the makings further down. An aged making is never made in the same plan (it has to have aged).
+		 */
+		LUXURY
 	}
 
 	/** Recipes this deep below the thing asked for may be used for its ingredients (fences: sticks from planks from logs). */
@@ -67,9 +73,15 @@ public final class Crafting {
 	/** A plan to make {@code count} of {@code target} out of {@code usable}, or null if it can't be made from it. */
 	@Nullable
 	public static Plan plan(ServerLevel level, Kind kind, Item target, int count, Map<Item, Long> usable) {
+		return plan(level, kind, target, count, usable, r -> true);
+	}
+
+	/** {@link #plan} with only the luxury recipes {@code allowed} lets a maker use (for {@link Kind#LUXURY}). */
+	@Nullable
+	public static Plan plan(ServerLevel level, Kind kind, Item target, int count, Map<Item, Long> usable, Predicate<LuxuryRecipes.Recipe> allowed) {
 		Pool pool = new Pool(usable);
 		List<Step> steps = new ArrayList<>();
-		if (!make(level, kind, target, count, pool, steps, DEPTH)) {
+		if (!make(level, kind, target, count, pool, steps, DEPTH, allowed)) {
 			return null;
 		}
 		Map<Item, Integer> makes = new LinkedHashMap<>();
@@ -127,9 +139,33 @@ public final class Crafting {
 	}
 
 	/** Adds the steps that make {@code count} of {@code target} to {@code steps}, using up the pool; false if no recipe works. */
-	private static boolean make(ServerLevel level, Kind kind, Item target, int count, Pool pool, List<Step> steps, int depth) {
+	private static boolean make(ServerLevel level, Kind kind, Item target, int count, Pool pool, List<Step> steps, int depth,
+			Predicate<LuxuryRecipes.Recipe> allowed) {
 		if (count <= 0) {
 			return true;
+		}
+		if (kind == Kind.LUXURY) {
+			for (LuxuryRecipes.Recipe recipe : LuxuryRecipes.making(target)) {
+				if (!allowed.test(recipe)) {
+					continue;
+				}
+				int times = Math.min(MAX_CRAFTS, (count + recipe.count() - 1) / recipe.count());
+				List<Slot> slots = new ArrayList<>();
+				for (LuxuryRecipes.Input input : recipe.inputs()) {
+					slots.add(new Slot(input.options(), input.count(), input.minAgeDays() <= 0));
+				}
+				Pool trial = pool.copy();
+				List<Step> trialSteps = new ArrayList<>();
+				Map<Item, Integer> in = pick(level, kind, slots, times, trial, trialSteps, depth, allowed);
+				if (in == null) {
+					continue;
+				}
+				pool.set(trial);
+				steps.addAll(trialSteps);
+				steps.add(new Step(in, new ItemStack(target, recipe.count()), times));
+				pool.made.merge(target, (long) recipe.count() * times, Long::sum);
+				return true;
+			}
 		}
 		for (RecipeHolder<?> holder : recipesFor(level, kind, target)) {
 			Recipe<?> recipe = holder.value();
@@ -141,7 +177,7 @@ public final class Crafting {
 			// Try it on a copy, so a recipe that doesn't work out leaves everything as it was.
 			Pool trial = pool.copy();
 			List<Step> trialSteps = new ArrayList<>();
-			Map<Item, Integer> in = choose(level, kind, Recipes.ingredients(recipe), times, trial, trialSteps, depth);
+			Map<Item, Integer> in = choose(level, kind, Recipes.ingredients(recipe), times, trial, trialSteps, depth, allowed);
 			if (in == null) {
 				continue;
 			}
@@ -159,7 +195,8 @@ public final class Crafting {
 	 * and uses them up; returns how many of each one craft takes, or null if something is short.
 	 */
 	@Nullable
-	private static Map<Item, Integer> choose(ServerLevel level, Kind kind, List<Ingredient> ingredients, int times, Pool pool, List<Step> steps, int depth) {
+	private static Map<Item, Integer> choose(ServerLevel level, Kind kind, List<Ingredient> ingredients, int times, Pool pool, List<Step> steps, int depth,
+			Predicate<LuxuryRecipes.Recipe> allowed) {
 		// The same ingredient in several slots (six planks for stairs) is needed that many times over.
 		Map<List<Item>, Integer> slots = new LinkedHashMap<>();
 		for (Ingredient ingredient : ingredients) {
@@ -177,21 +214,37 @@ public final class Crafting {
 			}
 			slots.merge(options, 1, Integer::sum);
 		}
+		List<Slot> list = new ArrayList<>();
+		slots.forEach((options, n) -> list.add(new Slot(options, n, true)));
+		return pick(level, kind, list, times, pool, steps, depth, allowed);
+	}
+
+	/** One making of a recipe: one of {@code options}, {@code count} a craft; {@code makeable}: it may be made from further down. */
+	private record Slot(List<Item> options, int count, boolean makeable) {
+	}
+
+	/** Picks an item for each slot made {@code times} times (from the pool, or made from further down) and uses them up. */
+	@Nullable
+	private static Map<Item, Integer> pick(ServerLevel level, Kind kind, List<Slot> slots, int times, Pool pool, List<Step> steps, int depth,
+			Predicate<LuxuryRecipes.Recipe> allowed) {
+		if (slots.isEmpty()) {
+			return null;
+		}
 		Map<Item, Integer> perCraft = new LinkedHashMap<>();
-		for (Map.Entry<List<Item>, Integer> slot : slots.entrySet()) {
-			long need = (long) slot.getValue() * times;
+		for (Slot slot : slots) {
+			long need = (long) slot.count() * times;
 			Item pick = null;
 			long best = 0;
-			for (Item option : slot.getKey()) {
+			for (Item option : slot.options()) {
 				long have = pool.have(option);
 				if (have >= need && have > best) {
 					pick = option;
 					best = have;
 				}
 			}
-			if (pick == null && depth > 0) {
-				for (Item option : slot.getKey()) {
-					if (make(level, kind, option, (int) (need - pool.have(option)), pool, steps, depth - 1)) {
+			if (pick == null && depth > 0 && slot.makeable()) {
+				for (Item option : slot.options()) {
+					if (make(level, kind, option, (int) (need - pool.have(option)), pool, steps, depth - 1, allowed)) {
 						pick = option;
 						break;
 					}
@@ -201,7 +254,7 @@ public final class Crafting {
 				return null;
 			}
 			pool.use(pick, need);
-			perCraft.merge(pick, slot.getValue(), Integer::sum);
+			perCraft.merge(pick, slot.count(), Integer::sum);
 		}
 		return perCraft.isEmpty() ? null : perCraft;
 	}
@@ -231,6 +284,7 @@ public final class Crafting {
 				switch (kind) {
 					case CRAFTING -> all.addAll(Recipes.all(manager, RecipeType.CRAFTING));
 					case STONECUTTING -> all.addAll(Recipes.all(manager, RecipeType.STONECUTTING));
+					case LUXURY -> all.addAll(Recipes.all(manager, RecipeType.CRAFTING)); // below the luxury recipes
 					case KITCHEN -> {
 						// Pot dishes first (a Poké Puff is made in the pot even if some mod adds a crafting recipe too).
 						for (RecipeHolder<?> holder : Recipes.all(manager)) {

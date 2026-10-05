@@ -324,6 +324,8 @@ asks for the steps, `latest.log` and any crash report).
   partners than before.**
 
 ### Fixed
+- The showcase client starts every scene again without Cobblemon: the Habitat Keeper scene's wild Eevee is spawned
+  from a Cobblemon-only helper, so loading the scenes no longer crashes (B59).
 - Every switch on the settings screen fits its button again, on or off: shorter names for Nurse Healing Machines,
   Villages Work Unseen, Legend Needs, Strikes, Stewards Run Villages and Legends at Ruins (each tooltip still says it
   all) (B61).

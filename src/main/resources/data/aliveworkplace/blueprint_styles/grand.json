@@ -1,0 +1,20 @@
+{
+  "order": 6,
+  "icon": "minecraft:chiseled_stone_bricks",
+  "replace": [
+    {"from": "minecraft:lantern", "to": "minecraft:copper_lantern"},
+    {"from": "minecraft:(spruce|oak|birch|dark_oak)_stairs", "to": "minecraft:deepslate_tile_stairs"},
+    {"from": "minecraft:(spruce|oak|birch|dark_oak)_slab", "to": "minecraft:deepslate_tile_slab"},
+    {"from": "minecraft:(stripped_)?(spruce|oak|birch)_(log|wood)", "to": "minecraft:$1dark_oak_$3"},
+    {"from": "minecraft:(spruce|oak)_(planks|fence|fence_gate|trapdoor|door|pressure_plate|button)", "to": "minecraft:dark_oak_$2"},
+    {"from": "minecraft:birch_planks", "to": "minecraft:polished_andesite"},
+    {"from": "minecraft:white_terracotta", "to": "minecraft:polished_andesite"},
+    {"from": "minecraft:(mossy_)?cobblestone", "to": "minecraft:stone_bricks"},
+    {"from": "minecraft:(mossy_)?cobblestone_(stairs|slab|wall)", "to": "minecraft:stone_brick_$2"},
+    {"from": "minecraft:stone", "to": "minecraft:stone_bricks"},
+    {"from": "minecraft:(cracked|mossy)_stone_bricks", "to": "minecraft:stone_bricks"},
+    {"from": "minecraft:stone_brick_(stairs|slab)", "to": "minecraft:polished_deepslate_$1"},
+    {"from": "minecraft:andesite", "to": "minecraft:polished_deepslate"},
+    {"from": "minecraft:andesite_(stairs|slab|wall)", "to": "minecraft:polished_deepslate_$1"}
+  ]
+}

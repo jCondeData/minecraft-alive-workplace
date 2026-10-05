@@ -1561,7 +1561,7 @@ MarketDays) and research/.
   it loads; costs are taken; levels are saved in the hall and come back after a reload; an exclusive group refuses a
   second pick; an unlock waits for its counter; each effect works; an old hall's research loads unchanged; a
   screenshot of the test tree's tab.
-- [ ] **29.12** **The Master Architect (Legendary).** `legends/master_architect.json`. Comes: a guest at the inn once
+- [x] **29.12** (review: pending 2026-10-05) **The Master Architect (Legendary).** `legends/master_architect.json`. Comes: a guest at the inn once
   the village is a Town with finished buildings in at least 3 styles (a blueprint's own drawing counts as one;
   `BlueprintStyles` ids tell the rest). Trade: Builder. Likes: jewels. Powers:
   - builders working on a site within 32 blocks of the Architect build twice as fast (`pace`; with the shared cap,
@@ -4317,6 +4317,15 @@ item waits.
   tree only when the scholars' own tree has nothing chosen, at half their pace, and only while its Legend works (not on
   strike). Tabs list Legends from the server's record (living, holding their slot, settled in that hall). A Legend
   with no trade of their own opens their tab by sneak-right-click. The new effects also work in edicts.
+- 2026-10-05 (29.12, decisions; lane a): Minecraft 1.21.1 has no copper lantern (it arrives in 1.21.9), so the Grand
+  style's rule turns lanterns into `minecraft:copper_lantern` where that block exists and leaves them iron lanterns on
+  1.21.1 (a style rule whose result isn't a block is skipped). The Grand style is an ordinary style, so players can also
+  pick it on a blueprint (owner's call whether it should be the Architect's alone). "Never anything a player built":
+  only buildings in the builders' finished list are picked (a player's own hand-built house is never in it);
+  decorations and defences (`StarterBlueprints.DECORATIONS`, `DEFENCES` families) are left out. A rebuild is a village
+  build like the Steward's (no blueprint item comes back if it's cancelled). A strike cancels the rebuild under way (the
+  blocks placed stay) and none starts until it's over. The Architect can be the builder handed the work if they are
+  the least busy one with a bench.
 - 2026-10-05 (29.8, decisions; lane a): guests (`legend/LegendGuests`) are nitwits until they settle (no job, like inn
   travellers) and go by one of their file's `names` (the title if none). A place's day roll is spent only when some
   Legend may come there that day (conditions met, slot free, no visit in 7 days), so a village that qualifies at noon

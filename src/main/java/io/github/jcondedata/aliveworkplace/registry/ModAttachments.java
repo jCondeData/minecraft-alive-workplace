@@ -9,6 +9,9 @@ public final class ModAttachments {
 	/** What makes a villager a Legend (M29): which one, guest or settled, their hall and needs. Absent: not a Legend. */
 	public static final Attachment<io.github.jcondedata.aliveworkplace.legend.LegendData> LEGEND = Attachment.saved("legend", io.github.jcondedata.aliveworkplace.legend.LegendData.CODEC);
 
+	/** The Master Architect's grander buildings (29.12): the last rebuild's day, paused or not, the site under way. */
+	public static final Attachment<io.github.jcondedata.aliveworkplace.legend.GrandRebuild.State> ARCHITECT = Attachment.saved("architect", io.github.jcondedata.aliveworkplace.legend.GrandRebuild.State.CODEC);
+
 	/** A villager's gift (29.6): a gift's id, or {@code none}. Absent: the UUID roll decides ({@code Gifted.of}). */
 	public static final Attachment<String> GIFTED = Attachment.saved("gifted", com.mojang.serialization.Codec.STRING);
 

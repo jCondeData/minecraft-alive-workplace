@@ -764,6 +764,60 @@ final class JobScenes {
 				return hung[0] && t >= 600;
 			};
 		}));
+		SCENES.put("legend_architect", new Job("the Master Architect handed a builder the Stone House redrawn in the Grand style, and it was rebuilt", 7000,
+			new Vec3(5.5, -52, 10.5), new Vec3(-5, -56, -6), (level, player) -> {
+			// ROADMAP 29.12: a finished Stone House the village's builder put up, a builder at his bench with the Grand
+			// style's materials in barrels, and the Master Architect settled beside them. A building's next tier comes
+			// first, so the scene stages the top tier, stone_house_3, which has none: his round hands the builder the
+			// house redrawn in the Grand style, and only the blocks that differ are taken down and placed.
+			level.getGameRules().getRule(ModGameRules.BUILD_DELAY).set(2, level.getServer());
+			StarterBlueprints.Entry entry = StarterBlueprints.STONE_HOUSE_3;
+			BlockPos anchor = new BlockPos(-8, -60, -3);
+			Blueprint blueprint = BlueprintLibrary.get(level, entry.id()).orElseThrow();
+			BlueprintData.Placement placement = BlueprintItem.placementAt(level.dimension().location(), blueprint.size(), anchor,
+				BlueprintItem.rotationFacing(Direction.SOUTH));
+			level.getStructureManager().get(entry.id()).orElseThrow().placeInWorld(level, placement.origin(), placement.origin(),
+				new net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings().setRotation(placement.rotation())
+					.setMirror(placement.mirror()), level.getRandom(), 2);
+			BuildSiteManager.get(level).recordFinished(entry.id(), placement, player.getUUID());
+			place(level, STATION.offset(6, 0, 2), ModBlocks.VILLAGE_HALL);
+			net.minecraft.resources.ResourceLocation grandId = io.github.jcondedata.aliveworkplace.blueprint.BlueprintStyles.styled(entry.id(), "grand");
+			Map<Item, Integer> stock = new LinkedHashMap<>(BuildPlan.create(BlueprintLibrary.get(level, grandId).orElseThrow(), placement).materials());
+			List<ItemStack> stacks = new ArrayList<>();
+			stock.forEach((item, total) -> {
+				for (int left = total; left > 0; left -= item.getDefaultMaxStackSize()) {
+					stacks.add(new ItemStack(item, Math.min(left, item.getDefaultMaxStackSize())));
+				}
+			});
+			BlockPos bench = STATION.offset(2, 0, 3);
+			level.setBlockAndUpdate(bench, ModBlocks.BLUEPRINT_TABLE.defaultBlockState());
+			for (int b = 0; b * 27 < stacks.size(); b++) {
+				BlockPos barrelPos = bench.offset(1 + b, 0, 0);
+				level.setBlockAndUpdate(barrelPos, Blocks.BARREL.defaultBlockState());
+				Container barrel = (Container) level.getBlockEntity(barrelPos);
+				for (int slot = 0; slot < 27 && b * 27 + slot < stacks.size(); slot++) {
+					barrel.setItem(slot, stacks.get(b * 27 + slot));
+				}
+			}
+			Villager builder = EntityType.VILLAGER.spawn(level, bench.south(2), MobSpawnType.COMMAND);
+			Builders.employ(level, builder, bench);
+			Villager architect = EntityType.VILLAGER.spawn(level, bench.offset(-2, 0, 2), MobSpawnType.COMMAND);
+			architect.setNoAi(true);
+			architect.setYRot(200);
+			architect.setYHeadRot(200);
+			io.github.jcondedata.aliveworkplace.legend.Legend legend = io.github.jcondedata.aliveworkplace.legend.Legends.get(
+				io.github.jcondedata.aliveworkplace.AliveWorkplace.id("master_architect")).orElse(null);
+			Showcase.check(legend != null, "the Master Architect's file loaded");
+			if (legend == null) {
+				return l -> true;
+			}
+			io.github.jcondedata.aliveworkplace.legend.Legends.make(level, architect, legend, "showcase");
+			BuildSite site = io.github.jcondedata.aliveworkplace.legend.GrandRebuild.round(level, architect, ModAttachments.LEGEND.get(architect),
+				legend.powers(io.github.jcondedata.aliveworkplace.legend.GrandRebuildPower.class).get(0));
+			Showcase.check(site != null && site.structure().equals(grandId), "the Architect handed over the Stone House in the Grand style");
+			java.util.UUID id = site == null ? null : site.id();
+			return l -> built(l, id, 1f);
+		}, null));
 		SCENES.put("bard", job("the bard played a record at the Music Stand", 1200, (level, player) -> {
 			Villager b = picked(level, player, STATION, Blocks.JUKEBOX, Items.MUSIC_DISC_CAT);
 			chest(level, chestPos(), new ItemStack(Items.MUSIC_DISC_CAT));

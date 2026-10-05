@@ -131,6 +131,7 @@
 			"io.github.jcondedata.aliveworkplace.test.GiftedGameTests",
 			"io.github.jcondedata.aliveworkplace.test.GiftedBornGameTests",
 			"io.github.jcondedata.aliveworkplace.test.LegendGuestsGameTests",
+			"io.github.jcondedata.aliveworkplace.test.MasterArchitectGameTests",
 			"io.github.jcondedata.aliveworkplace.test.LegendSitesGameTests",
 			"io.github.jcondedata.aliveworkplace.test.StrangeMoodGameTests",
 			"io.github.jcondedata.aliveworkplace.test.ScribeGameTests",

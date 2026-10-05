@@ -701,8 +701,46 @@ def legend_placeholder():
     return [path]
 
 
+def master_architect():
+    """The Master Architect (29.12), drawn over the Builder's outfit: a long deep-blue coat to the shins with paler
+    cuffs and a turned-down collar, brass buttons down the front edge, a brown belt with a brass buckle, a brass
+    compass hanging at the belt on the villager's left and a rolled drawing (pale paper tied with red string) tucked
+    upright at the belt on the right. A gold circlet at the brow marks the Legend under any hat."""
+    t = vg.VillagerTexture()
+    coat = vg.cloth("#2a4a86")
+    for side in SIDES:                                   # the Legend's circlet, under any hat's brim
+        f = t.face("head", side)
+        for x in range(f.w):
+            f.put(x, 4, GOLD[2] if side in ("front", "west") else GOLD[1])
+    vg.robe(t, coat, length=18, sleeves_too=True, body_too=False, noise=0)
+    vg.sleeves(t, coat, cuff="#7f9ccf", noise=0)
+    jf = t.face("jacket", "front")
+    paint(jf, ((1, 0), (2, 0), (5, 0), (6, 0)), coat[3])  # the turned-down collar
+    paint(jf, ((2, 1), (5, 1)), coat[2])
+    paint(jf, ((3, 0), (4, 0)), LINEN)                   # a pale shirt at the throat
+    paint(jf, ((3, y) for y in range(2, 18)), coat[0])   # where the coat closes
+    for y in (3, 6, 15):                                 # brass buttons down the front edge (the badge sits on 10..13)
+        jf.put(4, y, BRASS[3])
+    vg.belt(t, LEATHER, row=9, buckle=BRASS[2])
+    paper = Ramp(["#a89f86", "#cfc6aa", "#e9e2c9", "#f4efdc"], name="paper")
+    for y in range(6, 15):                               # the rolled drawing, upright at the belt, its end lit
+        jf.put(1, y, paper[2] if y > 6 else paper[3])
+        jf.put(2, y, paper[1] if y > 6 else paper[2])
+    paint(jf, ((1, 8), (2, 8), (1, 12), (2, 12)), "#a8322a")   # red string ties
+    jf.put(0, 10, paper[0])
+    ef = t.face("jacket", "east")                        # the compass on the left hip: a brass ring on a short chain
+    ef.put(1, 10, BRASS[1])
+    paint(ef, ((1, 11), (2, 11), (0, 12), (3, 12), (1, 13), (2, 13)), BRASS[2])
+    paint(ef, ((1, 12), (2, 12)), "#e9e2c9")             # its pale face
+    ef.put(2, 12, "#a8322a")                             # and the red needle
+    paint(ef, ((0, 11), (3, 11), (0, 13), (3, 13)), BRASS[0])
+    path = ASSETS / "textures" / "entity" / "villager" / "legend" / "master_architect.png"
+    t.save(path)
+    return [path]
+
+
 DRAW = [orchard_keeper, berry_breeder, camp_cook, habitat_keeper, gem_grower, pokemon_trader, porter, postman, rancher, scholar, shopkeeper, sifter, teacher, tinkerer,
-        trainer, trainer_leader, tutor, undertaker, steward, legend, legend_placeholder]
+        trainer, trainer_leader, tutor, undertaker, steward, legend, legend_placeholder, master_architect]
 
 if __name__ == "__main__":
     run(DRAW)

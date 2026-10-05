@@ -78,11 +78,11 @@ public class OpenGatesGameTests implements FabricGameTest {
 		Reforms.Step iron = watch.steps().get(0);
 		Reforms.Step arrows = watch.steps().get(1);
 		Reforms.Step monsters = watch.steps().get(2);
-		helper.assertTrue(iron.kind() == VillageQuests.Kind.BRING && iron.item().equals("minecraft:iron_ingot") && iron.count() == 16 && iron.reward() == 5,
+		helper.assertTrue(iron.kind() == VillageQuests.Kind.BRING && iron.item().equals("minecraft:iron_ingot") && iron.count() == 192 && iron.reward() == 5,
 			"step 1: " + iron);
-		helper.assertTrue(arrows.kind() == VillageQuests.Kind.BRING && arrows.item().equals("minecraft:arrow") && arrows.count() == 32 && arrows.reward() == 4,
+		helper.assertTrue(arrows.kind() == VillageQuests.Kind.BRING && arrows.item().equals("minecraft:arrow") && arrows.count() == 256 && arrows.reward() == 4,
 			"step 2: " + arrows);
-		helper.assertTrue(monsters.kind() == VillageQuests.Kind.SLAY && monsters.count() == 12 && monsters.reward() == 6, "step 3: " + monsters);
+		helper.assertTrue(monsters.kind() == VillageQuests.Kind.SLAY && monsters.count() == 40 && monsters.reward() == 6, "step 3: " + monsters);
 
 		// Summed: guests and arrivals the highest named, traders add, factors multiply; none: the usual.
 		CivicEffects.Sum sum = new CivicEffects.Sum(List.of(
@@ -325,7 +325,7 @@ public class OpenGatesGameTests implements FabricGameTest {
 
 			helper.assertTrue(Edicts.proclaim(level, hall, null, Edicts.get(OPEN_GATES).orElseThrow()).done(), "proclaimed");
 			List<VillageQuests.Quest> shown = Reforms.shown(entity);
-			helper.assertTrue(shown.size() == 1 && shown.get(0).item().equals("minecraft:iron_ingot") && shown.get(0).count() == 16,
+			helper.assertTrue(shown.size() == 1 && shown.get(0).item().equals("minecraft:iron_ingot") && shown.get(0).count() == 192,
 				"the Watchful Gate's first step: " + shown);
 			entity.setReforms(List.of(new Reforms.Progress(OPEN_GATES.toString(), 3, true, 0)));
 			List<String> reformed = bookLore(owner, hall);

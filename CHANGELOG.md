@@ -22,6 +22,20 @@ asks for the steps, `latest.log` and any crash report).
   the bell; Silver Tongue's trades are 20% cheaper; a Night Owl works from dusk to dawn and sleeps from mid-morning to
   mid-afternoon (builders and miners too). A Gifted villager sparkles when they level up, and the chronicle notes one
   who joins from the inn or grows up. Gifts are data (`data/<ns>/gifted/<id>.json`); config `giftedChance` (30; 0: none).
+- **Legends who visit** (29.8): once a day a Legend whose village qualifies may come as a guest (1 time in 4 by
+  default; Open Gates makes it likelier): to the inn in the morning instead of a traveller, with the traders on market
+  day, to a big festival's fireworks, to a finished Chapel at a full-moon midnight, or to the Village Hall in the
+  morning. Guests are announced, take no job and stay up to 3 days; right-click one for their terms (who they are, what
+  they'd bring, what they want with ticks and crosses, days left). The round every need is met they settle: they claim
+  the bed in the tier III home, become a Master of their trade (taking a free workstation) and go in the chronicle.
+  Otherwise they leave on the third evening when nobody's looking, the chronicle says what they missed, and they don't
+  come back for a week.
+- **Four more gifts, and Legends born** (29.7): Lucky (luck +3 on explorer finds, Netherworker trips, sifting and
+  fishing; the sifting tables now weigh their rare finds by luck), Hardy (never ill, twice a villager's health), Beloved
+  (everyone whose bed is within 16 blocks of theirs is +5 mood, "a beloved neighbour") and Born Leader (workers of their
+  trade within 16 blocks work 10% faster). A child of two schooled Masters grows up a Legend 1 time in 20 (a Rare one
+  born to a parent's trade, when the village qualifies and the slot is free), else Gifted 1 time in 4, and the chronicle
+  says so. Inn travellers are Gifted 1 time in 10, shown on the hire screen, at twice the price.
 - **Legends' needs and strikes** (29.5): once a day the Village Hall checks what each settled Legend needs: a home of
   their own (their bed in a finished tier III building, shared with nobody but their spouse), their luxury once a week
   (wine, jewels, books or fine clothes, taken from a chest in their home or else the village store, +10 mood; for now
@@ -48,6 +62,13 @@ asks for the steps, `latest.log` and any crash report).
   told to the village and the hall's owner, Mythic ones to every player in gold with the village's direction from spawn;
   all go in the chronicle under a nether star. A Legend in a grave or turned zombie keeps their slot and comes back as
   themselves; with no grave their slot frees after 7 days; Legends join a hall placed again.
+- **Conscription** (30.10): a new edict under a stone sword. While the village is raided (a monster or bandit raid, or a
+  pillager raid there) every grown villager who isn't ill fights beside the guards: they wake, never panic, hold a stone
+  sword made for the raid (never taken from a chest, gone when the raid ends) and go for the nearest raider within 24
+  blocks, 3 damage a blow, 15% more if Strong. Children and the ill hide as before, and conscripts can fall like anyone
+  else. The cost: all work in the village stops during the raid and until noon the next day. Reform **The Militia
+  Drill** (32 iron swords, 32 shields, clear out 48 monsters): everyone still fights, but work stops only for villagers
+  with a raider within 24 blocks, and the morning after is a normal day.
 - **Curfew** (30.9): a new edict under a bell. From dusk to dawn every grown villager but the guards and mercenaries
   goes to bed, and a monster can't hurt a villager asleep in their bed; monster raids and bandit camps are half as
   likely, and the nights count as safe in the village's wellbeing. The cost: nobody trades with players at night
@@ -264,6 +285,9 @@ asks for the steps, `latest.log` and any crash report).
   (`"enabled": false`); `villageEdicts` turns them all off.
 
 ### Changed
+- **Reforms are a real grind** (30.1a): every edict's reform now asks for hundreds of items, handed in over as many
+  trips as it takes (The Shift Bell: 24 clocks, 128 gold ingots, 300 bread, where it was 4, 8 and 32; the clearing-out
+  steps ask for 32 to 40 monsters). What a step already has is kept; the emeralds each step pays are unchanged.
 - **A Steward must be a seasoned Builder** (27.1a): only a Builder of Journeyman level or higher can be appointed
   Steward (he starts the job as a Novice Steward); others are refused with what's needed. Stewards already appointed
   keep their job. The City Plan now also takes a Heart of the Sea (Map + Blank Blueprint + Heart of the Sea).

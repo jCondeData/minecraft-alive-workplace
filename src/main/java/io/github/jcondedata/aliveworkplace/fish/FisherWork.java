@@ -536,6 +536,7 @@ public class FisherWork extends Behavior<Villager> {
 			.withParameter(LootContextParams.ORIGIN, bobber)
 			.withParameter(LootContextParams.TOOL, rod)
 			.withParameter(LootContextParams.THIS_ENTITY, villager)
+			.withLuck(io.github.jcondedata.aliveworkplace.legend.Gifted.lootLuck(villager)) // Lucky (29.7)
 			.create(LootContextParamSets.FISHING);
 		for (ItemStack stack : table.getRandomItems(params)) {
 			ItemStack rest = bag.add(stack);

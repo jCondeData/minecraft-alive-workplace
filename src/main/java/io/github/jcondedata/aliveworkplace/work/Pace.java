@@ -111,6 +111,9 @@ public final class Pace {
 	 */
 	public static final Source LEGEND = register(new Source("legend", Kind.BONUS,
 		v -> 1f / io.github.jcondedata.aliveworkplace.legend.LegendPowers.pace(v)));
+	/** Born Leaders of the worker's own trade near them (29.7, Gifted): their speed-up as a time factor, under this cap. */
+	public static final Source BORN_LEADER = register(new Source("born_leader", Kind.BONUS,
+		v -> 1f / io.github.jcondedata.aliveworkplace.legend.GiftedAuras.pace(v)));
 	public static final Source ILL = register(new Source("ill", Kind.PENALTY, Sickness::pace));
 	public static final Source UNHAPPY = register(new Source("unhappy", Kind.PENALTY, Moods::pace));
 	public static final Source LAZY = register(new Source("lazy", Kind.PENALTY, Traits::pace));

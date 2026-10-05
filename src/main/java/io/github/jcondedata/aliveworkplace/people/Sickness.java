@@ -50,7 +50,7 @@ public final class Sickness {
 		Long since = ModAttachments.ILL_SINCE.get(villager);
 		long now = level.getGameTime();
 		if (since != null) {
-			if (now - since >= RECOVERY) {
+			if (now - since >= RECOVERY || io.github.jcondedata.aliveworkplace.legend.Gifted.noIllness(villager)) {
 				recover(level, villager);
 			} else {
 				villager.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 20 * 40, 0, false, false));
@@ -71,13 +71,20 @@ public final class Sickness {
 	 * as their village's {@code sickness} effects say (Large Families, 30.6: half again).
 	 */
 	public static float dailyChance(ServerLevel level, Villager villager) {
+		if (io.github.jcondedata.aliveworkplace.legend.Gifted.noIllness(villager)) {
+			return 0f; // Hardy (29.7)
+		}
 		float chance = DAILY + (VillageNeeds.isHungry(villager, level.getGameTime()) ? HUNGRY : 0f) + (VillageNeeds.bed(level, villager) == null ? HOMELESS : 0f);
 		chance *= Math.max(0f, 1f + io.github.jcondedata.aliveworkplace.hall.CivicEffects.of(villager).sickness(villager) / 100f);
 		// Medicine: a third less likely a level.
 		return chance * (1f - io.github.jcondedata.aliveworkplace.research.Research.level(villager, io.github.jcondedata.aliveworkplace.research.Research.Topic.MEDICINE) / 3f);
 	}
 
+	/** {@code villager} falls ill, unless they're Hardy (29.7), who never do. */
 	public static void fallIll(ServerLevel level, Villager villager) {
+		if (io.github.jcondedata.aliveworkplace.legend.Gifted.noIllness(villager)) {
+			return;
+		}
 		ModAttachments.ILL_SINCE.set(villager, level.getGameTime());
 		villager.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 20 * 40, 0, false, false));
 		sneeze(level, villager);

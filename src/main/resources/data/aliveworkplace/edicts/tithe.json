@@ -10,9 +10,9 @@
     "name": {"translate": "reform.aliveworkplace.fair_ledger"},
     "line": {"translate": "reform.aliveworkplace.fair_ledger.line"},
     "steps": [
-      {"kind": "bring", "item": "minecraft:writable_book", "count": 4, "reward": 4},
-      {"kind": "bring", "item": "minecraft:gold_ingot", "count": 16, "reward": 6},
-      {"kind": "battle", "reward": 8, "fallback": {"kind": "slay", "count": 8, "reward": 8}}
+      {"kind": "bring", "item": "minecraft:writable_book", "count": 24, "reward": 4},
+      {"kind": "bring", "item": "minecraft:gold_ingot", "count": 192, "reward": 6},
+      {"kind": "battle", "reward": 8, "fallback": {"kind": "slay", "count": 32, "reward": 8}}
     ],
     "effects": []
   },

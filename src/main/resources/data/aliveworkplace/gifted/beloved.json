@@ -1,0 +1,12 @@
+{
+  "name": "gifted.aliveworkplace.beloved",
+  "description": "gifted.aliveworkplace.beloved.desc",
+  "weight": 10,
+  "effects": [
+    {
+      "type": "mood",
+      "points": 5,
+      "radius": 16
+    }
+  ]
+}

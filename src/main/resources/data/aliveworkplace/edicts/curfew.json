@@ -10,9 +10,9 @@
     "name": {"translate": "reform.aliveworkplace.lamplighters"},
     "line": {"translate": "reform.aliveworkplace.lamplighters.line"},
     "steps": [
-      {"kind": "bring", "item": "minecraft:lantern", "count": 24, "reward": 5},
-      {"kind": "bring", "item": "minecraft:glowstone", "count": 8, "reward": 4},
-      {"kind": "slay", "count": 8, "reward": 6}
+      {"kind": "bring", "item": "minecraft:lantern", "count": 192, "reward": 5},
+      {"kind": "bring", "item": "minecraft:glowstone", "count": 96, "reward": 4},
+      {"kind": "slay", "count": 32, "reward": 6}
     ],
     "effects": []
   },

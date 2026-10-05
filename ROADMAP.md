@@ -124,7 +124,7 @@ stay in the list, ticked, so their numbers stay unique.
 - [ ] **B56** LegendEngineGameTests.legendConditions fails in some full runs (2 of 3 here on 2026-10-05, also seen on clean main with legendPace failing instead): meal_kinds reads 1 of 2 before the test fills the chest, so a store or chest left by another test near its hall counts. Test-only (QA lane): the test should count the store's kinds before it fills it, as its 'finished' check does. (found by lane-d-1005-0032, 2026-10-05) Status (lane-c-1005-0033): legendConditions' cause was a Storehouse chest (bread) left by VillageHallGameTests.villagersEatFromTheStore inside the default 64-block village radius; caa26c8f (27.9) gives that test VillageHalls.RADIUS 18 for its run, so legendConditions passed 731/731 twice and in two full builds; legendPace not looked at.
 - [x] **B55** (approved auto 2026-10-05) Local full builds can't finish runCompatGameTest in the 7 GB dev container: with the default 1.5 GB heap the compat server fills with the pack's block states and thrashes in full GC until it hangs; with -Xmx3G the OS kills it (exit 137) next to the Gradle daemon (lane-a-1004-2133, 2026-10-04). CI runs compat fine. Expected: a local build finishes (e.g. stop the daemon or lower org.gradle.jvmargs for the compat run, ~2.5 GB server heap). Test: ./gradlew --max-workers=1 runCompatGameTest locally (found by lane-a-1004-2133, 2026-10-05)
 - [ ] **B57** PartnersForgeCompatTests aPidgeyBringsAFeatherToTheFletcher failed once in a local full build (lane-c-1005-0033, main 38c54127 + 27.6-27.9 + B55, 2026-10-05 02:10Z): 'no bow for the guard'; it passed in the full build before the merge and in a runCompatGameTest rerun right after (117/117). Expected: passes every run. Test: the repeat generator on that test; likely the same family as B48/B51 (found by lane-c-1005-0033, 2026-10-05)
-- [ ] **B58** LegendEngineGameTests.legendPace failed with 'capped delay: 500' in a filtered runGameTest (5 classes) on 2026-10-05 but passed in every full run: looks order-dependent (leftover state from another test). Expected: passes in any order. Test: LegendEngineGameTests.legendPace (QA lane: test-only flake) (found by lane-a-1005-0032, 2026-10-05)
+- [x] **B58** (approved auto 2026-10-05) LegendEngineGameTests.legendPace failed with 'capped delay: 500' in a filtered runGameTest (5 classes) on 2026-10-05 but passed in every full run: looks order-dependent (leftover state from another test). Expected: passes in any order. Test: LegendEngineGameTests.legendPace (QA lane: test-only flake) (found by lane-a-1005-0032, 2026-10-05) Also fails with LegendEngineGameTests alone in runGameTest, on a clean worktree of d0038ea9 (29.7) as well (29.8's subagent, 2026-10-05): not order-dependent there; with the 2x cap the near builder's delay is 500 while `nearBase / 2` expects otherwise, so look at 29.7's shared pace cap in `BuilderLevels.delay`.
 
 ## Milestone 21: Finish 0.138.0
 
@@ -1456,7 +1456,7 @@ MarketDays) and research/.
   builder places blocks at midnight and sleeps at noon); the roll over 3,000 fixed UUIDs gives about 1 in 30 and the
   same answer twice; with `giftedChance` 0 nobody is Gifted; showcase scene `gifted` (the hall's list, a Night Owl
   building by moonlight).
-- [ ] **29.7** **Gifted villagers (2), and Legends born.** Four more traits:
+- [x] **29.7** (review: pending 2026-10-05) **Gifted villagers (2), and Legends born.** Four more traits:
   - **Lucky**: luck +3 on every loot roll their work makes, on top of the level luck `Explorers` and `Netherworkers`
     already give (explorer finds, Netherworker trips, sifting, fishing) (`loot_luck`; our sifting tables get `quality`
     weights for it);
@@ -1474,7 +1474,7 @@ MarketDays) and research/.
   Gifted, neither, and a taken slot falling back to Gifted); an old `parents` record loads with the new fields false;
   a Gifted traveller's price; showcase scene `gifted_born` (a child of two Masters grows up Gifted, with the chronicle
   line).
-- [ ] **29.8** **Legends who visit (Terraria-style guests).** The first way Legends come. Once a day, at the way's own
+- [x] **29.8** (review: pending 2026-10-05) **Legends who visit (Terraria-style guests).** The first way Legends come. Once a day, at the way's own
   time, a village with no Legend guest may get one: a Legend whose `visit` way's conditions the village meets, whose
   slot is free (29.3) and who hasn't visited it in 7 days comes with the way's chance (default 1 in 4; a hook
   `Legends.visitFactor(hall)` for M30's Open Gates edict) to the way's place:
@@ -1803,7 +1803,7 @@ the Village Hall (`VillageNeeds`, `VillageQuests`, `VillageRanks`, `Festivals`, 
     friends and operators (anyone, while the hall has no owner).
 
   Done when: the note is on `main` and its review package is sent.
-  - [ ] **30.1a** Change from the owner (2026-10-05): Reforming an edict must cost far more, hundreds of items, so the grind is worth it: e.g. instead of 4 clocks, 8 gold ingots, 32 bread, something like 24 clocks, 2 stacks of gold ingots and 300 bread. Most players get the small amounts quickly, so scale the reform costs up a lot in the design note and the edict data files.
+  - [x] **30.1a** (review: pending 2026-10-05) Change from the owner (2026-10-05): Reforming an edict must cost far more, hundreds of items, so the grind is worth it: e.g. instead of 4 clocks, 8 gold ingots, 32 bread, something like 24 clocks, 2 stacks of gold ingots and 300 bread. Most players get the small amounts quickly, so scale the reform costs up a lot in the design note and the edict data files.
 - [x] **30.2** (approved 2026-10-05) **One pace, one cap.** A core `work/Pace` that every job's work speed goes through (if another
   milestone built it first, check it covers this list and add what's missing):
   - bonuses: Pokémon partners, a well-kept village, Swift Hands, Diligent, a happy mood, Craftsmanship (crafters),
@@ -1941,7 +1941,7 @@ the Village Hall (`VillageNeeds`, `VillageQuests`, `VillageRanks`, `Festivals`, 
   and hurts without it; the raid chance halved; a trade refused at night, allowed by day and after the reform; the
   festival's fireworks skipped; showcase scene `curfew`: a GIF of the village going indoors at dusk, the streets
   empty, the guards on watch.
-- [ ] **30.10** **Conscription.** Effects `militia` and `work_stops_in_raids`:
+- [x] **30.10** (review: pending 2026-10-05) **Conscription.** Effects `militia` and `work_stops_in_raids`:
   - boost: while the village is raided (our monster and bandit raids, or a vanilla pillager raid there) every grown
     villager who isn't ill fights: they wake, never panic (as `VillagerPanicTriggerMixin` keeps guards from panicking),
     hold a stone sword (shown in their hands, not taken from any chest, gone when the raid ends) and go for the nearest
@@ -4281,6 +4281,37 @@ item waits.
 - (Sessions: anything that needs the owner, and the link to the latest Full test report. Handoffs go here through
   `sessions.py handoff "<in progress, next, traps>" --as <you>`, which keeps one per kind of session (chat, night):
   carry over anything still true from the previous one.)
+- 2026-10-05 (29.8, decisions; lane a): guests (`legend/LegendGuests`) are nitwits until they settle (no job, like inn
+  travellers) and go by one of their file's `names` (the title if none). A place's day roll is spent only when some
+  Legend may come there that day (conditions met, slot free, no visit in 7 days), so a village that qualifies at noon
+  still gets that place's roll when its time comes, and the inn's traveller isn't lost to a roll nobody could win. When a
+  Legend comes to the inn, that morning's arrivals are over (no traveller too). "Out of sight" is the inn's rule: no
+  player within 24 blocks. The home need for a guest is a free bed in a finished tier III+ building with nobody else's
+  bed in it; their luxury counts if it's in that home's chests or the store (29.5 takes it the round they settle).
+  `Legends.visitFactor` multiplies every place's chance, so the Book's Open Gates line ("Legends visit the inn twice as
+  often") undersells it; owner's call whether to reword it "Legends visit twice as often". The chapel's midnight is
+  day time 17500 to 19000 (a hall round falls in it); the chapel and hall rolls run in the hall's round, the festival's
+  in `Festivals.fireworks`. Hall fields `legendVisits`, `legendGuest`, `legendRolled` (absent: empty).
+- 2026-10-05 (30.1a, decisions; lane d): reform costs scaled to the owner's example (The Shift Bell 24 clocks, 128 gold
+  ingots, 300 bread) and the rest in proportion, so each reform asks for hundreds of items (the design note's table);
+  slay steps went to 32-40 monsters (Conscription's planned 48), the one battle step stays one battle. The emeralds a
+  step pays were left as they were (the reform is the reward); owner's call if he wants them raised too. Hand-in
+  already took every slot up to what's left and kept partial progress; a GameTest now proves it over three trips.
+- 2026-10-05 (30.10, decisions; lane d): two effect types: `militia` {`damage` 3, `range` 24} (highest of each) read by
+  the new `guard/MilitiaCombat`, a behaviour every villager's CORE package now starts with (a guard's does nothing; for
+  guards it sits after their own four, so GoalPackagesMixinGameTests holds unchanged), and `work_stops_in_raids`
+  {`until_noon`, optional `near`} (strictest: any without `near` stops everyone) read by `hall/Conscription.workStopped`,
+  the one work gate: `mixin/BrainMixin` takes a stopped villager out of WORK into IDLE, stops every running WORK
+  behaviour (ours and vanilla's) and keeps the schedule from sending them back. "Raided" is `VillageRaids.raided`: our
+  raid on the hall, or a vanilla raid at the hall or at the villager. Guards and mercenaries are never conscripts and
+  their watch isn't stopped. While fighting, a conscript's brain idles (bell and hiding memories cleared, schedule held);
+  with no raider in range they hide as the bell says. Whatever a conscript held moves to their empty off hand with its
+  drop chance and comes back after (both hands full: they fight without a sword showing); the sword is a stone sword
+  marked with custom data `aliveworkplace_militia`, drop chance 0, removed when the raid ends and on every entity load.
+  `raidWorkUntil` on the hall is in the level's day time, not game time as the design note says: a night slept through
+  jumps the day time to dawn, so game time would have kept work stopped well past noon; a value more than a day ahead
+  (the clock set back) is ignored. Nothing a player reads was added besides the Book's lines (no status text for
+  conscripts). `VillageRaids.track` starts a raid without the gathering and horn, for the showcase scene and tests.
 - 2026-10-05 (30.9, decisions; lane d): `curfew` is one effect type with three fields: `raids` (factor, multiplied;
   also read by `BanditCamps.dailyChance`), `safe_nights` (night safety full in `VillageNeeds.count`, and a monster's blow
   on a villager asleep in bed cancelled through `allowDamage`) and `stay_in` (bedtime, no trading, festival over at

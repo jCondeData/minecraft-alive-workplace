@@ -21,6 +21,10 @@ import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.entity.ai.attributes.AttributeInstance;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.entity.npc.VillagerProfession;
 import net.minecraft.world.item.trading.MerchantOffer;
@@ -38,8 +42,16 @@ public final class Gifted implements ResourceManagerReloadListener {
 	public static final String NONE = "none";
 	/** One villager in this many is Gifted (config {@code giftedChance}; 0: nobody). */
 	public static volatile int CHANCE = 30;
-	/** Whether the UUID roll decides (off in GameTests, so no test villager turns up with a gift by chance). */
+	/**
+	 * Whether gifts come by chance: the UUID roll, and the inn's travellers' dice (off in GameTests, so no test villager
+	 * turns up with a gift by chance; tests throw those dice themselves).
+	 */
 	public static volatile boolean ROLL = System.getProperty("fabric-api.gametest") == null;
+
+	/** Inn travellers are Gifted one time in this many (29.7). */
+	public static final int TRAVELLER_ONE_IN = 10;
+	/** The Hardy's extra health (a saved modifier, so it survives a reload with their health). */
+	public static final ResourceLocation HEALTH_ID = AliveWorkplace.id("gifted_health");
 
 	private static final long CHANCE_SALT = 0x6A09E667F3BCC909L;
 	private static final long PICK_SALT = 0xBB67AE8584CAA73BL;
@@ -155,6 +167,29 @@ public final class Gifted implements ResourceManagerReloadListener {
 		return null;
 	}
 
+	/**
+	 * A gift picked by weight with {@code random} (the born and the inn's travellers, 29.7), or null with no gifts or
+	 * {@code giftedChance} 0.
+	 */
+	@Nullable
+	public static Gift pick(RandomSource random) {
+		if (CHANCE <= 0 || gifts.isEmpty()) {
+			return null;
+		}
+		int total = 0;
+		for (Gift g : gifts.values()) {
+			total += g.weight();
+		}
+		int pick = random.nextInt(total);
+		for (Gift g : gifts.values()) {
+			pick -= g.weight();
+			if (pick < 0) {
+				return g;
+			}
+		}
+		return null;
+	}
+
 	/** Whether a UUID falls under a 1-in-{@code chance} threshold. */
 	public static boolean isGifted(UUID id, int chance) {
 		if (chance <= 0) {
@@ -174,6 +209,8 @@ public final class Gifted implements ResourceManagerReloadListener {
 	/** Gives {@code villager} this gift (or none, with null), whatever the roll says; their schedule follows. */
 	public static void set(Villager villager, @Nullable ResourceLocation gift) {
 		ModAttachments.GIFTED.set(villager, gift == null ? NONE : gift.toString());
+		GiftedAuras.forget();
+		refresh(villager);
 		if (villager.level() instanceof ServerLevel level) {
 			villager.refreshBrain(level);
 		}
@@ -233,6 +270,51 @@ public final class Gifted implements ResourceManagerReloadListener {
 		}
 	}
 
+	/** Lucky: how much more luck every loot roll of {@code villager}'s work has (0: none). */
+	public static int lootLuck(Villager villager) {
+		Gift gift = of(villager);
+		GiftPowers.LootLuck l = gift == null ? null : gift.effect(GiftPowers.LootLuck.class);
+		return l == null ? 0 : l.luck();
+	}
+
+	/** Hardy: never falls ill. */
+	public static boolean noIllness(Villager villager) {
+		return has(villager, "no_illness");
+	}
+
+	/** Hardy: how many times a villager's health {@code villager} has from their gift (1: no gift for it). */
+	public static float healthFactor(Villager villager) {
+		Gift gift = of(villager);
+		GiftPowers.Health h = gift == null ? null : gift.effect(GiftPowers.Health.class);
+		return h == null ? 1f : h.factor();
+	}
+
+	/**
+	 * Keeps what a gift does to the body and to others in step with the gift: the Hardy's extra health (on, or off when
+	 * the gift goes), and a Beloved or Born Leader in their dimension's aura list.
+	 */
+	public static void refresh(Villager villager) {
+		Gift gift = of(villager);
+		if (gift != null && GiftedAuras.hasAura(gift) && villager.level() instanceof ServerLevel) {
+			GiftedAuras.seen(villager);
+		}
+		AttributeInstance health = villager.getAttribute(Attributes.MAX_HEALTH);
+		if (health == null) {
+			return;
+		}
+		double extra = healthFactor(villager) - 1.0;
+		AttributeModifier current = health.getModifier(HEALTH_ID);
+		if (extra > 0 && (current == null || current.amount() != extra)) {
+			float share = villager.getHealth() / villager.getMaxHealth();
+			health.removeModifier(HEALTH_ID);
+			health.addPermanentModifier(new AttributeModifier(HEALTH_ID, extra, AttributeModifier.Operation.ADD_MULTIPLIED_BASE));
+			villager.setHealth(share * villager.getMaxHealth()); // as healthy as before, of the larger whole
+		} else if (extra <= 0 && current != null) {
+			health.removeModifier(HEALTH_ID);
+			villager.setHealth(Math.min(villager.getHealth(), villager.getMaxHealth()));
+		}
+	}
+
 	/** Whether the Night Owl schedule applies: a grown villager with a trade and the night shift. */
 	public static boolean nightOwl(Villager villager) {
 		VillagerProfession p = villager.getVillagerData().getProfession();
@@ -244,6 +326,7 @@ public final class Gifted implements ResourceManagerReloadListener {
 		if ((villager.tickCount + villager.getId()) % 100 != 0 || !(villager.level() instanceof ServerLevel level)) {
 			return;
 		}
+		refresh(villager);
 		boolean owl = nightOwl(villager);
 		boolean onIt = villager.getBrain().getSchedule() == ModVillagers.NIGHT_OWL_SCHEDULE;
 		if (owl != onIt) {

@@ -10,9 +10,9 @@
     "name": {"translate": "reform.aliveworkplace.common_granary"},
     "line": {"translate": "reform.aliveworkplace.common_granary.line"},
     "steps": [
-      {"kind": "bring", "item": "minecraft:wheat", "count": 64, "reward": 4},
-      {"kind": "bring", "item": "minecraft:hay_block", "count": 16, "reward": 5},
-      {"kind": "bring", "item": "minecraft:barrel", "count": 8, "reward": 3}
+      {"kind": "bring", "item": "minecraft:wheat", "count": 512, "reward": 4},
+      {"kind": "bring", "item": "minecraft:hay_block", "count": 128, "reward": 5},
+      {"kind": "bring", "item": "minecraft:barrel", "count": 48, "reward": 3}
     ],
     "effects": []
   },

@@ -33,6 +33,11 @@ public final class Conditions {
 		register("full_moon", FullMoon::read);
 		register("first_city", FirstCity::read);
 		register("legend", LegendSettled::read);
+		register("food_below", FoodBelow::read);
+		register("cobblemon", j -> new CobblemonLoaded());
+		register("chance", Chance::read);
+		register("quest_done", QuestDone::read);
+		register("not", j -> new Not(parse(j.getAsJsonObject("condition"))));
 	}
 
 	public static void register(String type, Function<JsonObject, Condition> reader) {

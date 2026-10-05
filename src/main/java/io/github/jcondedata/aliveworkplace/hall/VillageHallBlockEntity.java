@@ -408,7 +408,7 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 		return questsDone;
 	}
 
-	void questDone() {
+	public void questDone() {
 		questsDone++;
 		setChanged();
 	}

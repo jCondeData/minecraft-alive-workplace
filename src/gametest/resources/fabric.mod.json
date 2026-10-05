@@ -164,6 +164,7 @@
 			"io.github.jcondedata.aliveworkplace.test.OutfitGameTests",
 			"io.github.jcondedata.aliveworkplace.test.GuideGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaHallIconGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QuestEngineGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaWardingGameTests",
 			"io.github.jcondedata.aliveworkplace.test.FerryLeaveQaGameTests",
 			"io.github.jcondedata.aliveworkplace.test.StationsB8UnloadedGameTests",

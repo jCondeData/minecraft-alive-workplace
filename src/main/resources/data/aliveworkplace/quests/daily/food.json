@@ -1,0 +1,24 @@
+{
+  "giver": "hall",
+  "priority": 1,
+  "conditions": [
+    {
+      "type": "food_below",
+      "count": 16
+    }
+  ],
+  "objectives": [
+    {
+      "type": "bring",
+      "item": "minecraft:bread",
+      "count": 16
+    }
+  ],
+  "rewards": [
+    {
+      "type": "money",
+      "emeralds": 4
+    }
+  ],
+  "days": 3
+}

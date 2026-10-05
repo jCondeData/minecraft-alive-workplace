@@ -1,0 +1,18 @@
+{
+  "giver": "hall",
+  "priority": 2,
+  "objectives": [
+    {
+      "type": "bring_request"
+    }
+  ],
+  "rewards": [
+    {
+      "type": "money",
+      "emeralds": 2,
+      "per_count": 8,
+      "max": 10
+    }
+  ],
+  "days": 3
+}

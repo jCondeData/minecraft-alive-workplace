@@ -60,6 +60,11 @@ public final class Chronicle {
 		}
 	}
 
+	/** Writes {@code text} into the chronicle of the hall at {@code hall} (the quest engine, 31.2). */
+	public static void atHall(ServerLevel level, BlockPos hall, Kind kind, Component text) {
+		record(level, hall, kind, text, true);
+	}
+
 	private Chronicle() {
 	}
 }

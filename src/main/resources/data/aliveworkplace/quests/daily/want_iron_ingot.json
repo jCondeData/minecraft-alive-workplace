@@ -1,0 +1,18 @@
+{
+  "giver": "hall",
+  "weight": 1,
+  "objectives": [
+    {
+      "type": "bring",
+      "item": "minecraft:iron_ingot",
+      "count": 8
+    }
+  ],
+  "rewards": [
+    {
+      "type": "money",
+      "emeralds": 5
+    }
+  ],
+  "days": 3
+}

@@ -1,0 +1,340 @@
+package io.github.jcondedata.aliveworkplace.story;
+
+import com.google.gson.JsonObject;
+import io.github.jcondedata.aliveworkplace.hall.VillageHalls;
+import io.github.jcondedata.aliveworkplace.mc.Lookup;
+import io.github.jcondedata.aliveworkplace.trainer.Trainers;
+import io.github.jcondedata.aliveworkplace.work.Requests;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Optional;
+import java.util.function.Function;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.tags.TagKey;
+import net.minecraft.util.GsonHelper;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.monster.Enemy;
+import net.minecraft.world.entity.npc.Villager;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import org.jetbrains.annotations.Nullable;
+
+/**
+ * The objectives a quest file may ask for (ROADMAP 31.2), by type. Each is a small record read from its JSON and written
+ * back the same way, so an open quest saves exactly what it asked when it was posted ({@link Quest}). An unknown type is
+ * an error, so a typo never makes a quest free.
+ */
+public final class Objectives {
+	/** One objective: its type, how many it takes, its line ("Bring 16 Bread") and its resolved form for the save. */
+	public interface Objective {
+		String type();
+
+		int need();
+
+		Component line();
+
+		JsonObject json();
+
+		/** What this objective asks for at posting time; null when it can't be asked for now (the file sits the morning out). */
+		@Nullable
+		default Objective resolve(Context context) {
+			return this;
+		}
+	}
+
+	/** What a quest is resolved against when it goes up: the village, its census and who posted it (set by objectives). */
+	public static final class Context {
+		public final ServerLevel level;
+		public final BlockPos hall;
+		public final VillageHalls.Census census;
+		public final RandomSource random;
+		public String poster;
+
+		public Context(ServerLevel level, BlockPos hall, VillageHalls.Census census, RandomSource random, String poster) {
+			this.level = level;
+			this.hall = hall;
+			this.census = census;
+			this.random = random;
+			this.poster = poster;
+		}
+	}
+
+	private static final Map<String, Function<JsonObject, Objective>> KINDS = new LinkedHashMap<>();
+
+	static {
+		register("bring", Bring::read);
+		register("bring_request", j -> new BringRequest());
+		register("kill", Kill::read);
+		register("battle", j -> new Battle(GsonHelper.getAsInt(j, "count", 1)));
+		register("wait", j -> new Wait(positive(j, "days")));
+	}
+
+	public static void register(String type, Function<JsonObject, Objective> reader) {
+		KINDS.put(type, reader);
+	}
+
+	/** One objective; throws {@link IllegalArgumentException} for an unknown type or a bad field. */
+	public static Objective parse(JsonObject json) {
+		String type = GsonHelper.getAsString(json, "type", "");
+		Function<JsonObject, Objective> reader = KINDS.get(type);
+		if (reader == null) {
+			throw new IllegalArgumentException("unknown objective type '" + type + "'");
+		}
+		try {
+			return reader.apply(json);
+		} catch (RuntimeException e) {
+			throw new IllegalArgumentException("objective '" + type + "': " + e.getMessage(), e);
+		}
+	}
+
+	static int positive(JsonObject json, String field) {
+		if (!json.has(field)) {
+			throw new IllegalArgumentException("missing '" + field + "'");
+		}
+		int n = json.get(field).getAsInt();
+		if (n < 1) {
+			throw new IllegalArgumentException("'" + field + "' below 1");
+		}
+		return n;
+	}
+
+	/** An item id or a {@code #tag}; throws when it names nothing. */
+	static String itemOrTag(JsonObject json, String field) {
+		String s = GsonHelper.getAsString(json, field, "");
+		ResourceLocation id = ResourceLocation.tryParse(s.startsWith("#") ? s.substring(1) : s);
+		if (id == null || !s.startsWith("#") && !BuiltInRegistries.ITEM.containsKey(id)) {
+			throw new IllegalArgumentException("unknown item '" + s + "'");
+		}
+		return s;
+	}
+
+	/** Whether {@code stack} is the item or in the tag {@code item}. */
+	public static boolean matches(String item, ItemStack stack) {
+		if (item.startsWith("#")) {
+			ResourceLocation tag = ResourceLocation.tryParse(item.substring(1));
+			return tag != null && stack.is(TagKey.create(Registries.ITEM, tag));
+		}
+		ResourceLocation id = ResourceLocation.tryParse(item);
+		return id != null && !stack.isEmpty() && BuiltInRegistries.ITEM.getKey(stack.getItem()).equals(id);
+	}
+
+	/** The item that stands for {@code item} (a tag's first member). */
+	public static Item icon(String item) {
+		if (item.startsWith("#")) {
+			ResourceLocation tag = ResourceLocation.tryParse(item.substring(1));
+			return tag == null ? Items.PAPER : Lookup.tag(BuiltInRegistries.ITEM, TagKey.create(Registries.ITEM, tag))
+				.flatMap(set -> set.stream().findFirst()).map(h -> h.value()).orElse(Items.PAPER);
+		}
+		ResourceLocation id = ResourceLocation.tryParse(item);
+		return id == null ? Items.PAPER : Lookup.value(BuiltInRegistries.ITEM, id);
+	}
+
+	/** {@code bring}: {@code count} of an item or tag, into the hall's store, the giver's chests or a worker's station. */
+	public record Bring(String item, int count, String to, Optional<BlockPos> station) implements Objective {
+		static Bring read(JsonObject json) {
+			String to = GsonHelper.getAsString(json, "to", "hall");
+			if (!to.equals("hall") && !to.equals("giver") && !to.equals("station")) {
+				throw new IllegalArgumentException("unknown 'to' '" + to + "'");
+			}
+			Optional<BlockPos> station = json.has("station") ? Optional.of(BlockPos.of(json.get("station").getAsLong())) : Optional.empty();
+			return new Bring(itemOrTag(json, "item"), positive(json, "count"), to, station);
+		}
+
+		@Override
+		public String type() {
+			return "bring";
+		}
+
+		@Override
+		public int need() {
+			return count;
+		}
+
+		@Override
+		public Component line() {
+			return Component.translatable("quest.aliveworkplace.bring", count, icon(item).getDescription());
+		}
+
+		@Override
+		public JsonObject json() {
+			JsonObject o = new JsonObject();
+			o.addProperty("type", type());
+			o.addProperty("item", item);
+			o.addProperty("count", count);
+			o.addProperty("to", to);
+			station.ifPresent(s -> o.addProperty("station", s.asLong()));
+			return o;
+		}
+	}
+
+	/** {@code bring_request}: what a worker is waiting for today (a plain item), into their station's chests. */
+	public record BringRequest() implements Objective {
+		@Override
+		public String type() {
+			return "bring_request";
+		}
+
+		@Override
+		public int need() {
+			return 1;
+		}
+
+		@Override
+		public Component line() {
+			return Component.translatable("quest.aliveworkplace.bring_request");
+		}
+
+		@Override
+		public JsonObject json() {
+			JsonObject o = new JsonObject();
+			o.addProperty("type", type());
+			return o;
+		}
+
+		@Override
+		@Nullable
+		public Objective resolve(Context context) {
+			for (Requests.Request request : context.census.requests()) {
+				if (request.item() != null && request.item() != Items.AIR) {
+					context.poster = request.worker().getDisplayName().getString();
+					return new Bring(BuiltInRegistries.ITEM.getKey(request.item()).toString(), Math.min(64, Math.max(1, request.count())), "station",
+						Optional.of(request.station()));
+				}
+			}
+			return null;
+		}
+	}
+
+	/** {@code kill}: {@code count} of an entity type, a {@code #tag} or {@code monster}, in the village or anywhere. */
+	public record Kill(String entity, int count, boolean anywhere) implements Objective {
+		static Kill read(JsonObject json) {
+			String entity = GsonHelper.getAsString(json, "entity", "monster");
+			if (!entity.equals("monster")) {
+				ResourceLocation id = ResourceLocation.tryParse(entity.startsWith("#") ? entity.substring(1) : entity);
+				if (id == null || !entity.startsWith("#") && !BuiltInRegistries.ENTITY_TYPE.containsKey(id)) {
+					throw new IllegalArgumentException("unknown entity '" + entity + "'");
+				}
+			}
+			String where = GsonHelper.getAsString(json, "where", "village");
+			if (!where.equals("village") && !where.equals("anywhere")) {
+				throw new IllegalArgumentException("unknown 'where' '" + where + "'");
+			}
+			return new Kill(entity, positive(json, "count"), where.equals("anywhere"));
+		}
+
+		public boolean matches(Entity killed) {
+			if (entity.equals("monster")) {
+				return killed instanceof Enemy;
+			}
+			if (entity.startsWith("#")) {
+				ResourceLocation tag = ResourceLocation.tryParse(entity.substring(1));
+				return tag != null && killed.getType().is(TagKey.create(Registries.ENTITY_TYPE, tag));
+			}
+			return BuiltInRegistries.ENTITY_TYPE.getKey(killed.getType()).toString().equals(entity);
+		}
+
+		@Override
+		public String type() {
+			return "kill";
+		}
+
+		@Override
+		public int need() {
+			return count;
+		}
+
+		@Override
+		public Component line() {
+			if (entity.equals("monster") || entity.startsWith("#")) {
+				return Component.translatable("quest.aliveworkplace.slay", count);
+			}
+			EntityType<?> type = Lookup.value(BuiltInRegistries.ENTITY_TYPE, ResourceLocation.parse(entity));
+			return Component.translatable("quest.aliveworkplace.kill", count, type.getDescription());
+		}
+
+		@Override
+		public JsonObject json() {
+			JsonObject o = new JsonObject();
+			o.addProperty("type", type());
+			o.addProperty("entity", entity);
+			o.addProperty("count", count);
+			o.addProperty("where", anywhere ? "anywhere" : "village");
+			return o;
+		}
+	}
+
+	/** {@code battle}: beat one of the village's trainers ({@code count} times); not asked for with no trainer there. */
+	public record Battle(int count) implements Objective {
+		@Override
+		public String type() {
+			return "battle";
+		}
+
+		@Override
+		public int need() {
+			return Math.max(1, count);
+		}
+
+		@Override
+		public Component line() {
+			return count <= 1 ? Component.translatable("quest.aliveworkplace.battle") : Component.translatable("quest.aliveworkplace.battles", count);
+		}
+
+		@Override
+		public JsonObject json() {
+			JsonObject o = new JsonObject();
+			o.addProperty("type", type());
+			o.addProperty("count", count);
+			return o;
+		}
+
+		@Override
+		@Nullable
+		public Objective resolve(Context context) {
+			boolean trainer = Trainers.COBBLEMON && context.census.workers().stream().anyMatch(Trainers::isTrainer);
+			return trainer ? this : null;
+		}
+	}
+
+	/** {@code wait}: some days go by (counted in the hall's round). */
+	public record Wait(int days) implements Objective {
+		@Override
+		public String type() {
+			return "wait";
+		}
+
+		@Override
+		public int need() {
+			return days;
+		}
+
+		@Override
+		public Component line() {
+			return Component.translatable("quest.aliveworkplace.wait", days);
+		}
+
+		@Override
+		public JsonObject json() {
+			JsonObject o = new JsonObject();
+			o.addProperty("type", type());
+			o.addProperty("days", days);
+			return o;
+		}
+	}
+
+	/** A worker's name, as a poster. */
+	static String name(Villager villager) {
+		return villager.getDisplayName().getString();
+	}
+
+	private Objectives() {
+	}
+}

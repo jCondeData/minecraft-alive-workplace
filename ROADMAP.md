@@ -2207,7 +2207,7 @@ write their own stories; nothing waits forever on a player.
   never clashes with trading or picking a job). Sent to the owner as a review package; lanes don't wait for his reply.
   Done when: the note is on `main` with every config key and saved field of this milestone and its default, and the
   package is sent.
-- [ ] **31.2** **The quest engine.** A new `story/` package. Quests are data,
+- [x] **31.2** (approved auto 2026-10-05) **The quest engine.** A new `story/` package. Quests are data,
   `data/<namespace>/quests/<group>/<id>.json`, loaded with `Platform.onDataReload` the way `ranch/PokemonChores` loads
   its files. One file is one quest: who gives it (`hall`, `villager`, `bounty` or `arc`), `weight`, `conditions`,
   `objectives`, `rewards`, the `days` it stays up and whether it's `repeatable`. The first toolbox, each piece a small
@@ -4811,3 +4811,10 @@ item waits.
   kind `LIFE` for elders, retirements and generations beside 34.6's `CLASS`.
 - **qa handoff** (qa-1005-1034, 2026-10-05 11:27Z): qa-1005-1034: verified B46, B69, B73. Unshipped: qa/b46-b69-1005 (QaB46GameTests, QaB69FrontWalkGameTests; its ship build passed 1014/1014 gametests but failed on the compat flake B74 = B57 again): ship it once B74 is fixed (or retry ship). qa/import-swap-1005 is obsolete (B73 fixed on main). B50 and B57 not verified: read nightly run 37297003813 (on 5b489b7, after both fixes) for the crew test and the Pidgey test's repeats; B57 recurred (B74). qa/placing-1005 still waits on B71. Next QA: B50 from the nightly, B72 scene setup, then 21.2, M23.
 - **lane-c handoff** (lane-c-1005-1833, 2026-10-05 20:59Z): lane-c-1005-1833 (21:01Z): landed on main 2f801600: 27.15-27.19 (old wip/lane-c, M27-gated), 27.20 old houses, 27.21 renewal, B79 (ladder to upstairs beds), CaravanRoad test isolation fix. Local full build green (1169+151) before merging lane a's 29.x, pushed without rebuilding that merge (clean, no config changes). Next: 27.22 (the 1.1 yardstick), then 31.x. Red duty notes: main CI 695/697-699 were cancelled by the runner at ~15 min (infra), 696 failed only ConscriptionGameTests.aConscriptSavedMidRaidLoadsWithoutTheSword (B81). wip/lane-c is now stale (all merged); B80 is test-order (QA).
+- 2026-10-05 (31.2, decision; lane c): the quest engine moves the hall's old daily quests into `aliveworkplace_stories`
+  (by id, safe to repeat; also on a hand-in, kill or page view, so a quest set on the hall is never missed). M30's
+  reform steps stay in the hall's own `quests` list for now: `Reforms` and its GameTests read and write that list
+  directly (25 places), so moving them is left to the item that brings the journal (31.22's reform rewards or the
+  journal item), which can move them the same way. Open quests save their objectives and rewards as their JSON
+  (strings in NBT), so a changed file never changes a quest already up. `days: "festival"` (31.9) isn't read yet: a file
+  using it is skipped with its log line until 31.9 adds it.

@@ -202,7 +202,7 @@ public final class VillageHallScreen {
 			PieceLooks.render(menu, level, hall);
 			menu.broadcastChanges();
 		});
-		List<VillageQuests.Quest> quests = new ArrayList<>(entity == null ? List.of() : VillageQuests.daily(entity.quests()));
+		List<VillageQuests.Quest> quests = new ArrayList<>(entity == null ? List.of() : VillageQuests.open(level, hall));
 		if (entity != null) {
 			quests.addAll(Reforms.shown(entity));
 		}
@@ -500,7 +500,7 @@ public final class VillageHallScreen {
 		menu.clearButtons();
 		menu.button(0, icon(Items.ARROW, Component.translatable("screen.aliveworkplace.hall.back"), ChatFormatting.WHITE), p -> refresh(menu, level, hall, 0));
 		VillageHallBlockEntity entity = level.getBlockEntity(hall) instanceof VillageHallBlockEntity e ? e : null;
-		List<VillageQuests.Quest> quests = entity == null ? List.of() : VillageQuests.daily(entity.quests());
+		List<VillageQuests.Quest> quests = entity == null ? List.of() : VillageQuests.open(level, hall);
 		menu.button(4, icon(Items.WRITABLE_BOOK, Component.translatable("screen.aliveworkplace.hall.quests_title", VillageHalls.name(level, hall)),
 			ChatFormatting.GOLD, line(Component.translatable("screen.aliveworkplace.hall.quests_about", VillageQuests.MAX_OPEN), ChatFormatting.GRAY),
 			line(Component.translatable("screen.aliveworkplace.hall.quests_done", entity == null ? 0 : entity.questsDone()), ChatFormatting.GRAY)), null);

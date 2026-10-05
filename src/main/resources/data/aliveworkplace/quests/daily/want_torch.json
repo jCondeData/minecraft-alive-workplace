@@ -1,0 +1,18 @@
+{
+  "giver": "hall",
+  "weight": 1,
+  "objectives": [
+    {
+      "type": "bring",
+      "item": "minecraft:torch",
+      "count": 32
+    }
+  ],
+  "rewards": [
+    {
+      "type": "money",
+      "emeralds": 2
+    }
+  ],
+  "days": 3
+}

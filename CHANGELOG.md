@@ -17,6 +17,11 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Changed
+- **Village quests run on a new quest engine** (31.2): the hall's daily quests are now data files
+  (`data/<namespace>/quests/<group>/<id>.json`) that data packs can add to, switch off or change (`/reload` reads them
+  again), with the same odds, numbers and rewards as before. Quests already up on a hall move over with their progress
+  the first time the hall is loaded. New setting **Village Quests** (on); off, no new quests go up and open ones can
+  still be finished.
 - **Expansions still being built are off until the release that finishes them** (B76): 0.139.0 switched on parts of
   1.1 to 1.4 that aren't done yet. The Steward (1.1); partner shows, the nurse at the Healing Machine and the Berry
   Breeder, Camp Cook, Habitat Keeper, Daycare Keeper and Gem Grower jobs (1.2); Legends, the Gifted and strange moods

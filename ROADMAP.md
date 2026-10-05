@@ -31,13 +31,14 @@ feature in four days. So we work the way that chat did. Details: `docs/agent/ses
 - **"Done when" is the spec.** Build all of it, art and builds included. If it can't be met as written, write the
   question in the Notes, ask through the digest, and take the next item. Don't invent the spec.
 - **Bugs first, but only real ones.** Red CI and bugs a player would hit go into "Bugs" (`sessions.py bug`) and come
-  first. The QA lane runs overnight only.
+  first; a red `main` belongs to the lane on red duty (docs/agent/sessions.md, "Red main"). The QA lane runs hourly
+  overnight and every 2 hours by day, and owns the bugs only a test or a scene sees.
 - **Reviews never block work or releases.** A visible item's review package goes to the `reviews` branch
   (`sessions.py review`) and is marked `(review: pending)`; the digest sends it. A veto becomes a fix item.
 - **His replies** are recorded with `sessions.py reply "<his words>" --as <you>`: `approve <ids>`,
   `veto <id>: <why>` (unticked, redone next), `change <id>: <what>` (a sub-item `<id>a`, done next).
-- **Releases:** the evening digest releases every day when `main` is green and something new landed (minor bump for
-  features, patch for fixes only). GitHub only; store pages wait for the owner.
+- **Releases:** the evening digest releases every day when something new landed, even if `main` is red then: CI tags
+  the first green build (minor bump for features, patch for fixes only). GitHub only; store pages wait for the owner.
 - **Unfinished expansions stay switched off** behind their config switch until the milestone is complete; the release
   that ships the milestone turns it on.
 - Items are numbered `<milestone>.<n>`, bugs `B<n>`; numbers are never reused.

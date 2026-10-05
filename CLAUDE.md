@@ -20,11 +20,15 @@ The goal (owner, 2026-10-03): the public **1.0**, then nine expansions up to **2
 Productivity first. The first chat built most of this mod in four days by building feature after feature straight on
 `main`; work the same way (`docs/agent/sessions.md`, "Sprint mode"). Sessions: the owner's chat (`chat`), build lanes
 a to d (`lane-<letter>-<MMDD>-<HHMM>`, the UTC start; they split milestones and bugs by number mod 4, see
-`sessions.py next`), the overnight QA lane (`qa-<MMDD>-<HHMM>`) and two digests a day. A lane coordinates and each
+`sessions.py next`), the QA lane (`qa-<MMDD>-<HHMM>`, hourly overnight and every 2 hours by day) and two digests a
+day. A lane coordinates and each
 feature is built by a fresh subagent (sessions.md), which keeps every conversation short and cheap.
 
 **Start** (one step, about five minutes): `git pull`, `python3 tools/agent/sessions.py next --as <you>`, the latest CI
-run on `main` (red comes first: `sessions.py bug`, then fix it), Java setup (below). `sessions.py show <id>` prints an
+run on `main`, Java setup (below). **Red `main` has one owner per window** (owner, 2026-10-05: three lanes once fixed
+the same red build at once): the lane on red duty, by the run's UTC start hour, 00/12 lane a, 03/15 lane b, 06/18
+lane c, 09/21 lane d. That lane fixes it first (`sessions.py bug`, then a subagent); the others keep building
+(sessions.md, "Red main"). `sessions.py show <id>` prints an
 item; don't read ROADMAP.md whole (it's over 4,000 lines).
 
 **Build, back to back:**
@@ -44,11 +48,12 @@ item; don't read ROADMAP.md whole (it's over 4,000 lines).
    again only if the pull brought in code, push. The commit message says what's done and what's next.
 6. Next item straight away. No claims, landings, handoff or bookkeeping commits.
 7. A bug that only a test or a showcase scene sees (a flake, a scene check, nothing a player would notice) is the
-   QA lane's: skip it in `next` unless it turns `main` red. On 2026-10-04, 16 of 47 bugs were of this kind and
+   QA lane's: skip it in `next`, even when it turns `main` red, unless you are on red duty. On 2026-10-04, 16 of 47 bugs were of this kind and
    they pulled build lanes off features (digest speed review).
 
-**End of a run** (about 170 minutes): push what's green; unfinished work goes to `wip/<lane>` with a message saying
-what's left. When compacting, keep the modified files, the current item and its Done when, and the test commands.
+**End of a run:** at **minute 140, start no new feature** (owner, 2026-10-05: unfinished runs left 5 items on `wip/`
+branches for the next run to merge). Finish the ones in flight, build, and push to `main` by minute 170, never past
+175. Only a feature that truly can't be finished goes to `wip/<lane>`, with a message saying what's left. When compacting, keep the modified files, the current item and its Done when, and the test commands.
 
 **Usage**: one fresh subagent per feature (no model override); Sonnet subagents only for translations and routine
 tests (owner, 2026-10-04) and for searching or reading code. Don't print whole big files or logs; grep them.
@@ -171,10 +176,13 @@ Commands:
 ## Releasing
 
 CI publishes, because pushing tags isn't allowed from the dev environment. The evening digest releases once a day when
-`main` is green and something new landed since the last release (the owner's chat may also release when he says
+something new landed since the last release, **whether or not `main` is green at that moment** (owner, 2026-10-05:
+a red build at digest time held every release back for three days); CI releases from the first green build (the owner's chat may also release when he says
 `release`); pending reviews don't hold it back. On a fresh `main` (`git switch main && git pull`), bump `mod.version` in
 `stonecutter.properties.toml` and move the *Unreleased* notes in CHANGELOG.md under `## X.Y.Z — date` in the same
 commit, and push (if refused: pull, push). The first green build on `main` with a new version tags `vX.Y.Z` and
-creates the GitHub Release (a pre-release while 0.x); a red build tags nothing.
+creates the GitHub Release (a pre-release while 0.x); a red build tags nothing, so the release waits for the next
+green build by itself. Work pushed between the bump and that build ships in the jar but is listed under the next
+version's notes; that's fine.
 - Bump the minor version for features, the patch version for fixes only.
 - Store-page publishing (Modrinth, CurseForge) waits for the owner's release-channel decision (ROADMAP 26.1).

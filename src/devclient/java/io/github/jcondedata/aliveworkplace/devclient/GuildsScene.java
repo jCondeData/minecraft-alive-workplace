@@ -44,8 +44,8 @@ import net.minecraft.world.phys.Vec3;
  * Cobblemon, a move tutor), and the Miners', Smiths', Woodsmen's, Harvest, Herders', Scholars', Healers', Merchants' and
  * Wardens' (and Trainers') Guilds are founded in them. Stills: each Guild Master's card on the hall's list (Guild Master
  * of their guild, and 15% faster through it for the guilds that make their trades faster), then the guilds' row of the
- * Book of Edicts. Its checks: all chartered and founded, each card says so, the 30.19 and 30.20 numbers and the Book's
- * row shows the first six.
+ * Book of Edicts, page by page (B78: more guilds than the row holds page five at a time). Its checks: all chartered and
+ * founded, each card says so, the 30.19 and 30.20 numbers, and every guild on one of the Book's two guild pages.
  */
 final class GuildsScene {
 	private static final BlockPos HALL = new BlockPos(30, -60, 17);
@@ -110,11 +110,38 @@ final class GuildsScene {
 			server.execute(() -> Showcase.check(player(server).containerMenu instanceof ChoiceMenu m
 					&& m.icon(EdictBook.FIRST_GUILD).is(Items.IRON_PICKAXE) && m.icon(EdictBook.FIRST_GUILD + 1).is(Items.ANVIL)
 					&& m.icon(EdictBook.FIRST_GUILD + 2).is(Items.IRON_AXE) && m.icon(EdictBook.FIRST_GUILD + 3).is(Items.WHEAT)
-					&& m.icon(EdictBook.FIRST_GUILD + 4).is(Items.LEAD) && m.icon(EdictBook.FIRST_GUILD + 5).is(Items.WRITABLE_BOOK),
-				"the Book's last row shows the Miners', Smiths', Woodsmen's, Harvest, Herders' and Scholars' Guilds"));
+					&& m.icon(EdictBook.FIRST_GUILD + 4).is(Items.LEAD) && m.icon(EdictBook.MORE_GUILDS).is(Items.ARROW),
+				"the Book's guild row, page one: the Miners', Smiths', Woodsmen's, Harvest and Herders' Guilds and the More guilds button"));
 			ScreenshotHarness.shot(mc, "07_guilds_book");
 		}
-		if (tick == book + 60) {
+		// B78: the More guilds button turns the row to the rest.
+		if (tick == book + 45) {
+			server.execute(() -> {
+				if (player(server).containerMenu instanceof ChoiceMenu m) {
+					m.press(EdictBook.MORE_GUILDS, player(server));
+				}
+			});
+		}
+		if (tick == book + 55) {
+			ScreenshotHarness.pointAt(mc, EdictBook.MORE_GUILDS, 6);
+		}
+		if (tick == book + 70) {
+			server.execute(() -> {
+				List<String> rest = new ArrayList<>();
+				if (player(server).containerMenu instanceof ChoiceMenu m) {
+					for (int x = 0; x < EdictBook.GUILDS_PER_PAGE; x++) {
+						ItemStack icon = m.icon(EdictBook.FIRST_GUILD + x);
+						if (!icon.is(Items.LIGHT_GRAY_STAINED_GLASS_PANE)) {
+							rest.add(icon.getHoverName().getString());
+						}
+					}
+				}
+				List<String> want = java.util.Arrays.asList(GUILDS).subList(EdictBook.GUILDS_PER_PAGE, count);
+				Showcase.check(rest.equals(want), "the Book's guild row, page two: " + want + " (shown: " + rest + ")");
+			});
+			ScreenshotHarness.shot(mc, "12_guilds_book_more");
+		}
+		if (tick == book + 95) {
 			mc.stop();
 		}
 	}

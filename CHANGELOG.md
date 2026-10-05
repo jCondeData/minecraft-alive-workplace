@@ -25,6 +25,9 @@ asks for the steps, `latest.log` and any crash report).
   lost: a Steward, a Legend or an edict comes back as it was when its expansion is released.
 
 ### Fixed
+- **Every guild shows in the Book of Edicts** (B78): the Book's guild row had room for six, so a City's seventh to
+  twelfth guilds never appeared. With more than six, the row now shows five at a time and its last slot, More guilds,
+  turns to the next ones (and back to the first after the last).
 - **A build saved by 0.138.0 or earlier keeps its progress on upgrade** (B64): opened with a newer jar, a site half
   through a raised foundation (or in its walls) dropped to a few percent the first time it loaded. It now works out
   the progress it showed from the saved stage and step.

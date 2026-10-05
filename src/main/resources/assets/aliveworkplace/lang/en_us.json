@@ -3049,5 +3049,9 @@
   "screen.aliveworkplace.edicts.guild_founded": "Founded: its Guildhall stands, its perks are in force",
   "screen.aliveworkplace.edicts.guild_waiting": "Waiting for a finished Guildhall: its perks wait until then",
   "screen.aliveworkplace.edicts.guild_none": "No guilds yet",
-  "screen.aliveworkplace.edicts.guild_how": "Sneak-right-click a Master with a Guild Charter (Village rank or more) to charter their trade's guild."
+  "screen.aliveworkplace.edicts.guild_how": "Sneak-right-click a Master with a Guild Charter (Village rank or more) to charter their trade's guild.",
+  "screen.aliveworkplace.edicts.guild_more": "More guilds",
+  "screen.aliveworkplace.edicts.guild_page": "Showing guilds %s to %s of %s",
+  "screen.aliveworkplace.edicts.guild_next": "Click to see the next ones",
+  "screen.aliveworkplace.edicts.guild_first": "Click to go back to the first ones"
 }

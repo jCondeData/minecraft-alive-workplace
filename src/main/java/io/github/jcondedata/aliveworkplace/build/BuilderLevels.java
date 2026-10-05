@@ -107,6 +107,10 @@ public final class BuilderLevels {
 			? Component.translatable("message.aliveworkplace.status.level_max", levelName(lvl), speedBonus(lvl))
 			: Component.translatable("message.aliveworkplace.status.level", levelName(lvl), villager.getVillagerXp(),
 				VillagerData.getMaxXpPerLevel(lvl), speedBonus(lvl));
+		Component guildMaster = io.github.jcondedata.aliveworkplace.hall.Guilds.masterLine(villager);
+		if (guildMaster != null) {
+			out.append(Component.literal(" · ")).append(guildMaster);
+		}
 		Component pace = io.github.jcondedata.aliveworkplace.work.Pace.describe(villager);
 		if (pace != null) {
 			out.append(Component.translatable("message.aliveworkplace.pace.status", pace).withStyle(pace.getStyle()));

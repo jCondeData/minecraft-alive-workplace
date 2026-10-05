@@ -630,6 +630,11 @@ public final class VillageHallScreen {
 		if (gift != null) {
 			lore.add(line(gift, ChatFormatting.GOLD));
 		}
+		// "Guild Master of the Builders' Guild" (30.17).
+		Component guildMaster = Guilds.masterLine(villager);
+		if (guildMaster != null) {
+			lore.add(line(guildMaster, ChatFormatting.GOLD));
+		}
 		for (Component doing : doing(level, villager)) {
 			lore.add(plain(doing, ChatFormatting.WHITE));
 		}

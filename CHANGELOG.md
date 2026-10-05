@@ -29,6 +29,20 @@ asks for the steps, `latest.log` and any crash report).
   a stall for each village you trade with, red and yellow bunting round the square (taken down the next day),
   fireworks, and every trade 10% cheaper for the day; and every stack a caravan brings to a village that was waiting
   for it earns the treasury an emerald (shown on the trade routes page).
+### Added
+- **Guild Charters, the Guildhall and the Builders' Guild** (30.17): craft a Guild Charter (three paper, an emerald, a
+  gold ingot, red dye) and sneak-right-click a Master in a village of Village rank or more: they become the Guild Master
+  of their trade's guild (one per trade, one per rank above Hamlet; refusals say why), told to the village, in the
+  chronicle, the hall's list and their status, and they sell the Guildhall I and II blueprints. A guild is founded once
+  a finished Guildhall stands for it; the Builders' Guild then makes Builders, Carpenters, Masons and Dyers 15% faster
+  and lets 5 idle builders help at a build (not 3). When a Guild Master dies, the most experienced member takes over.
+  The Book of Edicts' last row shows each guild. Guilds are data files (`data/<ns>/guilds/`); `guilds` and
+  `guildsPerRank` in the config.
+- **The Miners', Smiths' and Woodsmen's Guilds** (30.18): members work 15% faster once founded. Miners' pickaxes and
+  the netherworker's gear wear half as fast (Miners, Sifters, Netherworkers); each ingot a Weaponsmith mends with puts
+  back a third of the durability, not a quarter (Armorers, Toolsmiths, Weaponsmiths, Tinkerers, Ball Smiths); axes and
+  fishing rods wear half as fast (Lumberjacks, Fletchers, Fishermen). New guild perks for packs: `tool_wear` and
+  `mend_per_unit`.
 
 ## 0.139.0 — 2026-10-05
 

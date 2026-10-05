@@ -143,7 +143,10 @@ public class EdictBookGameTests implements FabricGameTest {
 			// Then the village's colours (30.13): none set here, so the Village Banner and how to set them.
 			helper.assertTrue(menu.icon(EdictBook.BANNER).is(ModItems.VILLAGE_BANNER)
 				&& menu.icon(EdictBook.BANNER).getHoverName().getString().equals("No colours yet"), "the last row's banner: " + menu.icon(EdictBook.BANNER));
-			for (int x = 3; x < 9; x++) {
+			// Then the guilds (30.17): none chartered here, so the Guild Charter and how to charter one; the rest kept free.
+			helper.assertTrue(menu.icon(EdictBook.FIRST_GUILD).is(ModItems.GUILD_CHARTER)
+				&& menu.icon(EdictBook.FIRST_GUILD).getHoverName().getString().equals("No guilds yet"), "the last row's guilds: " + menu.icon(EdictBook.FIRST_GUILD));
+			for (int x = 4; x < 9; x++) {
 				helper.assertTrue(menu.icon(EdictBook.RESERVED_ROW * 9 + x).is(Items.LIGHT_GRAY_STAINED_GLASS_PANE), "the last row, slot " + x);
 			}
 			helper.succeed();

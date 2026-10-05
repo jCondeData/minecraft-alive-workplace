@@ -46,6 +46,8 @@ public final class EdictBook {
 	public static final int CRADLE = RESERVED_ROW * 9 + 1;
 	/** The village's colours on the last row (30.13): its banner, or how to give it one. */
 	public static final int BANNER = RESERVED_ROW * 9 + 2;
+	/** The village's guilds on the last row (30.17), from here to the row's end: master, members, perk, founded or not. */
+	public static final int FIRST_GUILD = RESERVED_ROW * 9 + 3;
 
 	/** Opens the Book on its own (from a Village Ledger: it stays open while the hall stands). */
 	public static void open(ServerPlayer player, BlockPos hall) {
@@ -149,7 +151,39 @@ public final class EdictBook {
 		menu.button(CRADLE, VillageHallScreen.icon(io.github.jcondedata.aliveworkplace.registry.ModBlocks.CRADLE.asItem(),
 			Component.translatable("screen.aliveworkplace.edicts.cradle"), ChatFormatting.GOLD, Cradles.status(level, hall)), null);
 		menu.button(BANNER, bannerIcon(colours), null);
+		List<ItemStack> guilds = guildIcons(level, entity);
+		for (int i = 0; i < guilds.size() && FIRST_GUILD + i < RESERVED_ROW * 9 + 9; i++) {
+			menu.button(FIRST_GUILD + i, guilds.get(i), null);
+		}
 		filler(menu, RESERVED_ROW);
+	}
+
+	/** The last row's guilds: one icon each (master, members, perk, founded or waiting), or how to charter one. */
+	static List<ItemStack> guildIcons(ServerLevel level, VillageHallBlockEntity entity) {
+		List<ItemStack> out = new java.util.ArrayList<>();
+		for (Guilds.Charter c : entity.guilds()) {
+			Guilds.Guild guild = Guilds.get(c.id());
+			if (guild == null) {
+				continue;
+			}
+			int members = level.getEntitiesOfClass(net.minecraft.world.entity.npc.Villager.class, VillageHalls.area(entity.getBlockPos()), guild::gathers).size();
+			boolean founded = Guilds.founded(level, entity, c.id());
+			List<Component> lore = new java.util.ArrayList<>();
+			lore.add(VillageHallScreen.line(Component.translatable("screen.aliveworkplace.edicts.guild_master", c.masterName()), ChatFormatting.GRAY));
+			lore.add(VillageHallScreen.line(Component.translatable("screen.aliveworkplace.edicts.guild_members", members), ChatFormatting.GRAY));
+			lore.add(VillageHallScreen.line(guild.perk(), ChatFormatting.AQUA));
+			lore.add(!Guilds.ENABLED ? VillageHallScreen.line("message.aliveworkplace.guild.disabled", ChatFormatting.RED)
+				: VillageHallScreen.line(founded ? "screen.aliveworkplace.edicts.guild_founded" : "screen.aliveworkplace.edicts.guild_waiting",
+					founded ? ChatFormatting.GREEN : ChatFormatting.YELLOW));
+			out.add(VillageHallScreen.icon(net.minecraft.core.registries.BuiltInRegistries.ITEM.get(guild.icon()), guild.name(), ChatFormatting.GOLD,
+				lore.toArray(Component[]::new)));
+		}
+		if (out.isEmpty()) {
+			out.add(VillageHallScreen.icon(io.github.jcondedata.aliveworkplace.registry.ModItems.GUILD_CHARTER, Component.translatable("screen.aliveworkplace.edicts.guild_none"),
+				ChatFormatting.GOLD, VillageHallScreen.line(Guilds.ENABLED ? "screen.aliveworkplace.edicts.guild_how" : "message.aliveworkplace.guild.disabled",
+					Guilds.ENABLED ? ChatFormatting.GRAY : ChatFormatting.RED)));
+		}
+		return out;
 	}
 
 	/** The last row's banner: the village's colours, or how to set them. */

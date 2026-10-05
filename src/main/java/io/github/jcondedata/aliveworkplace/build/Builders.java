@@ -139,7 +139,7 @@ public final class Builders {
 				continue; // a hired builder only helps its employer and their friends
 			}
 			if (site.isQueued() || site.isDone() || site.bench() == null || villager.getUUID().equals(site.builder())
-				|| site.helpers(level.getGameTime()).size() >= MAX_HELPERS) {
+				|| site.helpers(level.getGameTime()).size() >= io.github.jcondedata.aliveworkplace.hall.Guilds.helpers(level, site.bench())) {
 				continue;
 			}
 			double distance = Math.sqrt(site.bench().distSqr(bench.get()));

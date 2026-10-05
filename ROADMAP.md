@@ -2081,7 +2081,7 @@ the Village Hall (`VillageNeeds`, `VillageQuests`, `VillageRanks`, `Festivals`, 
   ferrymen, bards, trainers, tutors or traders. Done when: a GameTest per tonic (its maker makes it, one of its jobs is
   25% faster with it, a job outside its list refuses it); the four icons pass `lint.py` and are shown in slots and in
   hand in the review package; the `tonics` scene films all six.
-- [ ] **30.17** **Guild Charters, the Guildhall and the Builders' Guild.**
+- [x] **30.17** (review: pending 2026-10-05) **Guild Charters, the Guildhall and the Builders' Guild.**
   - The **Guild Charter**, an item of its own (pixel-art: a rolled charter with a red seal), crafted from three paper,
     an emerald, a gold ingot and red dye. Sneak-right-click a Master of a trade with it in a village of Village rank or
     more: they become the **Guild Master** of that trade's guild (attachment `guild_master`; the hall's list and their
@@ -2105,7 +2105,7 @@ the Village Hall (`VillageNeeds`, `VillageQuests`, `VillageRanks`, `Festivals`, 
   faster, 5 helpers at one build); succession when the master dies; a builder builds the Guildhall I and II in a test;
   the renders checked against `STYLE.md` in the review package; showcase scene `guildhall`: the Guildhall II with its
   Guild Master inside, and the Builders' Guild on the Book's last row.
-- [ ] **30.18** **The Miners', Smiths' and Woodsmen's Guilds.** A data file each; members work 15% faster:
+- [x] **30.18** (review: pending 2026-10-05) **The Miners', Smiths' and Woodsmen's Guilds.** A data file each; members work 15% faster:
   - **Miners' Guild** (Miners, Sifters, Netherworkers): pickaxes, and the netherworker's gear, wear half as fast;
   - **Smiths' Guild** (Armorers, Toolsmiths, Weaponsmiths, Tinkerers, Ball Smiths): every material a weaponsmith
     mends with puts back a third of the durability instead of a quarter (`MendingWork.PER_UNIT`);

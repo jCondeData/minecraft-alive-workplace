@@ -643,7 +643,7 @@ and an old vanilla village slowly rebuilds itself one house at a time. It answer
     composter; a nitwit and a child get nothing; the topic after a raid is Fortification, after a sickness Medicine,
     and a topic that isn't available is never picked;
   - showcase scene `steward_jobs`: jobless villagers walking to their new workstations.
-- [ ] **27.10** **Rules: homes and storage.** Shipped rule files, each its own JSON:
+- [x] **27.10** (review: pending 2026-10-05) **Rules: homes and storage.** Shipped rule files, each its own JSON:
   - `homes_upgrade`: beds short → upgrade a finished home whose next tier adds beds (Starter Cottage to II to III,
     Stone House to II to III, Terrace to II), before any new house; the beds a tier adds are counted from the
     blueprints, never written down;
@@ -4318,6 +4318,18 @@ item waits.
   every need shows a tick. A Legend's outfit is `textures/entity/villager/legend/<id>.png` (or the file's `outfit`);
   one that isn't there falls back to `legend/placeholder.png` (a gold circlet and a wine-red cape), never the magenta
   check. Each power's line is `legend.<ns>.power.<type>` unless the power overrides `Power.describe`.
+- 2026-10-05 (27.10, decisions; lane c): the 11 rule files replace the 27.6 starters `homes`, `better_homes`,
+  `store_full`, `market` and `food` (`storehouse` keeps its name and moves to Market). New condition
+  `upgrade_adds_beds {}` (finished buildings whose next tier has more bed heads, both blueprints counted) and
+  `upgrade {"adds_beds": true}` with no blueprint (upgrades any such building). Every new-house rule has
+  `{"not": {"upgrade_adds_beds": {}}}`, so while a home can be upgraded to sleep more no new house is wished for.
+  "N short" reads as at least N (the cottage: exactly 1, Hamlet only); terrace and inn rank above the stone house when
+  they hold. Starter Cottage II to III adds no bed in our blueprints (2 and 2), so the Steward never picks that upgrade
+  for beds. `homes_better` upgrades a home whose next tier adds beds (every home tier but cottage III), not only Stone
+  Houses. The tests' well-kept staged halls were left behind and sped up `legendPace`'s builder (well_kept 0.86, so the
+  2x cap hit early): the homes tests now remove their hall, and `Leftovers.halls` clears halls in reach for legendPace.
+  Scene `steward_homes`: free materials, build delay 1, three builders; each morning is set by hand (nights skipped) and
+  two villagers move in before days 2 and 3. Not filmed locally.
 - 2026-10-04 (27.9, decisions; lane c): 27.11 isn't built, so a job the village wants with no free block left goes to
   `StewardJobs.WORKPLACE_WANTED` (does nothing yet; called once a morning per job): 27.11 fills it to propose the
   building. `StewardJobs.BUILDING_JOBS` (Berry Farm: Orchard Keeper, Flower Shop: Florist, ...) says which job a shared

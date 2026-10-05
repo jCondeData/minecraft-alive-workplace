@@ -333,6 +333,37 @@ public final class StewardConditions {
 		}
 	}
 
+	/**
+	 * {@code upgrade_adds_beds {}}: finished buildings in the village whose next tier has more beds (homes_upgrade, 27.10).
+	 * The beds are counted in the two blueprints, never written down.
+	 */
+	public record UpgradeAddsBeds() implements Condition {
+		@Override
+		public String type() {
+			return "upgrade_adds_beds";
+		}
+
+		@Override
+		public Check test(Facts facts) {
+			long count = facts.upgradable().stream().filter(f -> addsBeds(facts.level, f.structure())).count();
+			return new Check(count > 0, count, key(type(), count));
+		}
+	}
+
+	/** The beds (head halves) in a blueprint, 0 if the server doesn't have it. */
+	public static int beds(net.minecraft.server.level.ServerLevel level, ResourceLocation blueprint) {
+		return io.github.jcondedata.aliveworkplace.blueprint.BlueprintLibrary.get(level, blueprint)
+			.map(b -> (int) b.blocks().stream().filter(e -> e.state().getBlock() instanceof net.minecraft.world.level.block.BedBlock
+				&& e.state().getValue(net.minecraft.world.level.block.BedBlock.PART) == net.minecraft.world.level.block.state.properties.BedPart.HEAD).count())
+			.orElse(0);
+	}
+
+	/** Whether the next tier of a building has more beds than it (counted from both blueprints). */
+	public static boolean addsBeds(net.minecraft.server.level.ServerLevel level, ResourceLocation structure) {
+		ResourceLocation up = BlueprintUpgrades.upgradeOf(structure);
+		return !up.equals(structure) && beds(level, up) > beds(level, structure);
+	}
+
 	/** {@code homes_tier_low {share}}: more than that share of grown-ups live in tier I homes or none (the "homes" tip at 0.5). */
 	public record HomesTierLow(double share) implements Condition {
 		@Override
@@ -455,6 +486,7 @@ public final class StewardConditions {
 		register("villagers_at_least", f -> new VillagersAtLeast(f.integer("n", null, 0, 10000)));
 		register("built_count_below", f -> new BuiltCountBelow(f.id("blueprint"), f.integer("n", null, 1, 10000)));
 		register("upgrade_available", f -> new UpgradeAvailable(f.has("blueprint") ? Optional.of(f.id("blueprint")) : Optional.empty()));
+		register("upgrade_adds_beds", f -> new UpgradeAddsBeds());
 		register("homes_tier_low", f -> new HomesTierLow(f.share("share", 0.5)));
 		register("store_full", f -> new StoreFull(f.share("share", 0.9)));
 		register("research_idle", f -> new ResearchIdle());

@@ -3,7 +3,7 @@
     {"missing_poi": {"poi": "aliveworkplace:storehouse"}},
     {"villagers_at_least": {"n": 3}}
   ],
-  "do": {"build": {"blueprint": "aliveworkplace:storehouse", "zone": "workshops"}},
+  "do": {"build": {"blueprint": "aliveworkplace:storehouse", "zone": "market"}},
   "priority": 85,
   "why": "steward.aliveworkplace.why.storehouse",
   "cooldown_days": 2

@@ -83,22 +83,30 @@ public final class StewardRules implements ResourceManagerReloadListener {
 		}, Kind::key);
 	}
 
-	/** A rule's effect: {@code build {blueprint, zone}}, {@code upgrade {blueprint}}, {@code assign_jobs}, {@code research {topic?}}, {@code ask {key}}. */
-	public record Effect(Kind kind, Optional<ResourceLocation> blueprint, Optional<String> zone, Optional<String> topic, Optional<String> key) {
+	/** A rule's effect: {@code build {blueprint, zone}}, {@code upgrade {blueprint?, adds_beds?}}, {@code assign_jobs}, {@code research {topic?}}, {@code ask {key}}. */
+	public record Effect(Kind kind, Optional<ResourceLocation> blueprint, Optional<String> zone, Optional<String> topic, Optional<String> key,
+						 boolean addsBeds) {
 		public static final Codec<Effect> CODEC = RecordCodecBuilder.create(i -> i.group(
 			Kind.CODEC.fieldOf("type").forGetter(Effect::kind),
 			ResourceLocation.CODEC.optionalFieldOf("blueprint").forGetter(Effect::blueprint),
 			Codec.STRING.optionalFieldOf("zone").forGetter(Effect::zone),
 			Codec.STRING.optionalFieldOf("topic").forGetter(Effect::topic),
-			Codec.STRING.optionalFieldOf("key").forGetter(Effect::key)
+			Codec.STRING.optionalFieldOf("key").forGetter(Effect::key),
+			Codec.BOOL.optionalFieldOf("adds_beds", false).forGetter(Effect::addsBeds)
 		).apply(i, Effect::new));
+
+		public Effect(Kind kind, Optional<ResourceLocation> blueprint, Optional<String> zone, Optional<String> topic, Optional<String> key) {
+			this(kind, blueprint, zone, topic, key, false);
+		}
 
 		/** "Build a Stone House in a Homes zone", for explain and the Steward's line. */
 		public Component describe() {
 			return switch (kind) {
 				case BUILD -> Component.translatable("steward.aliveworkplace.effect.build", Blueprints.displayName(blueprint.orElseThrow()),
 					CityZones.get(zone.orElse("")).map(CityZones.Kind::title).orElse(Component.literal(zone.orElse(""))));
-				case UPGRADE -> Component.translatable("steward.aliveworkplace.effect.upgrade", Blueprints.displayName(blueprint.orElseThrow()));
+				case UPGRADE -> blueprint.isPresent()
+					? Component.translatable("steward.aliveworkplace.effect.upgrade", Blueprints.displayName(blueprint.get()))
+					: Component.translatable(addsBeds ? "steward.aliveworkplace.effect.upgrade.beds" : "steward.aliveworkplace.effect.upgrade.any");
 				case ASSIGN_JOBS -> Component.translatable("steward.aliveworkplace.effect.assign_jobs");
 				case RESEARCH -> topic.flatMap(StewardRules::topicOf)
 					.<Component>map(t -> Component.translatable("steward.aliveworkplace.effect.research", t.title()))
@@ -234,7 +242,8 @@ public final class StewardRules implements ResourceManagerReloadListener {
 				}
 				yield new Effect(kind, Optional.of(blueprint), Optional.of(zone), Optional.empty(), Optional.empty());
 			}
-			case UPGRADE -> new Effect(kind, Optional.of(f.id("blueprint")), Optional.empty(), Optional.empty(), Optional.empty());
+			case UPGRADE -> new Effect(kind, f.has("blueprint") ? Optional.of(f.id("blueprint")) : Optional.empty(), Optional.empty(), Optional.empty(),
+				Optional.empty(), f.bool("adds_beds", false));
 			case ASSIGN_JOBS -> new Effect(kind, Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty());
 			case RESEARCH -> new Effect(kind, Optional.empty(), Optional.empty(),
 				f.has("topic") ? Optional.of(topic(f, "topic").key()) : Optional.empty(), Optional.empty());

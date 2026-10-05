@@ -611,7 +611,7 @@ public final class StewardDesk {
 			} else if (effect.kind() == StewardRules.Kind.ASSIGN_JOBS) {
 				offerJobs(level, hall, wish, day);
 			} else if (effect.kind() == StewardRules.Kind.UPGRADE) {
-				upgradeFor(level, hall, effect.blueprint()).ifPresent(f -> {
+				upgradeFor(level, hall, effect.blueprint(), effect.addsBeds()).ifPresent(f -> {
 					if (upgrading.putIfAbsent(f.structure(), true) == null) {
 						offer(level, hall, wish, BlueprintUpgrades.upgradeOf(f.structure()), f.placement(), "", true);
 					}
@@ -716,11 +716,12 @@ public final class StewardDesk {
 	}
 
 	/** A finished building by the hall (of {@code blueprint}'s family, if given) with a next tier, nobody building there yet. */
-	static Optional<BuildSiteManager.Finished> upgradeFor(ServerLevel level, BlockPos hall, Optional<ResourceLocation> blueprint) {
+	static Optional<BuildSiteManager.Finished> upgradeFor(ServerLevel level, BlockPos hall, Optional<ResourceLocation> blueprint, boolean addsBeds) {
 		List<BuildSite> sites = new ArrayList<>(BuildSiteManager.get(level).all());
 		List<Proposal> proposed = of(level, hall).proposals();
 		return VillageAdvice.upgradable(level, hall).stream()
 			.filter(f -> blueprint.isEmpty() || StewardConditions.family(f.structure()).equals(StewardConditions.family(blueprint.get())))
+			.filter(f -> !addsBeds || StewardConditions.addsBeds(level, f.structure()))
 			.filter(f -> sites.stream().noneMatch(s -> s.placement().equals(f.placement())))
 			.filter(f -> proposed.stream().noneMatch(p -> p.placement().equals(f.placement())))
 			.findFirst();

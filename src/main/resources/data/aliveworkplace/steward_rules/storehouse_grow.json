@@ -1,6 +1,6 @@
 {
   "when": [
-    {"store_full": {"share": 0.9}},
+    {"store_full": {"share": 0.8}},
     {"upgrade_available": {"blueprint": "aliveworkplace:storehouse"}}
   ],
   "do": {"upgrade": {"blueprint": "aliveworkplace:storehouse"}},

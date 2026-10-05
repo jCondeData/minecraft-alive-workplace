@@ -4318,6 +4318,15 @@ item waits.
   every need shows a tick. A Legend's outfit is `textures/entity/villager/legend/<id>.png` (or the file's `outfit`);
   one that isn't there falls back to `legend/placeholder.png` (a gold circlet and a wine-red cape), never the magenta
   check. Each power's line is `legend.<ns>.power.<type>` unless the power overrides `Power.describe`.
+- 2026-10-05 (27.10, decisions; lane c): the 11 rule files replace the 27.6 starters `homes`, `better_homes`,
+  `store_full`, `market` and `food` (`storehouse` keeps its name and moves to Market). New condition
+  `upgrade_adds_beds {}` (finished buildings whose next tier has more bed heads, both blueprints counted) and
+  `upgrade {"adds_beds": true}` with no blueprint (upgrades any such building). Every new-house rule has
+  `{"not": {"upgrade_adds_beds": {}}}`, so while a home can be upgraded to sleep more no new house is wished for.
+  "N short" reads as at least N (the cottage: exactly 1, Hamlet only); terrace and inn rank above the stone house when
+  they hold. Starter Cottage II to III adds no bed in our blueprints (2 and 2), so the Steward never picks that upgrade
+  for beds. `homes_better` upgrades a home whose next tier adds beds (every home tier but cottage III), not only Stone
+  Houses.
 - 2026-10-04 (27.9, decisions; lane c): 27.11 isn't built, so a job the village wants with no free block left goes to
   `StewardJobs.WORKPLACE_WANTED` (does nothing yet; called once a morning per job): 27.11 fills it to propose the
   building. `StewardJobs.BUILDING_JOBS` (Berry Farm: Orchard Keeper, Flower Shop: Florist, ...) says which job a shared

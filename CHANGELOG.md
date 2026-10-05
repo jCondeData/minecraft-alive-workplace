@@ -23,6 +23,7 @@ asks for the steps, `latest.log` and any crash report).
   chests, then the Storehouses'), and remembers the day; a couple takes one between them, and an empty store leaves
   the need unmet that day. Porters carry luxuries from the makers' chests to the storehouse. The luxuries themselves
   come with their jobs later in 1.8, so nothing changes in game yet.
+## 0.140.0 — 2026-10-05
 
 ### Changed
 - **Expansions still being built are off until the release that finishes them** (B76): 0.139.0 switched on parts of

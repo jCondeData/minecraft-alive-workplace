@@ -38,6 +38,7 @@ public final class ModTrades {
 		campCookTrades();
 		habitatKeeperTrades();
 		gemGrowerTrades();
+		daycareKeeperTrades();
 		Platform.get().addTrades(ModVillagers.BARD, 1, offers -> {
 			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 2), new ItemStack(Items.NOTE_BLOCK, 2), 12, 2, 0.05f));
 			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.STRING, 16), new ItemStack(Items.EMERALD), 16, 2, 0.05f));
@@ -486,8 +487,9 @@ public final class ModTrades {
 	}
 
 	/**
-	 * Berry Breeders (28.9; Cobblemon only): common berries (Novice), Growth and Surprise Mulch (Apprentice), and from
-	 * Journeyman the berries her village has found (bred ones too, from the hall's book).
+	 * Berry Breeders (28.9; Cobblemon only): common berries (Novice), Growth and Surprise Mulch (Apprentice), the Berry
+	 * Nursery's blueprint (Journeyman, 28.13), and from Journeyman the berries her village has found (bred ones too, from
+	 * the hall's book).
 	 */
 	private static void berryBreederTrades() {
 		Platform.get().addTrades(ModVillagers.BERRY_BREEDER, 1, offers -> {
@@ -498,6 +500,8 @@ public final class ModTrades {
 			offers.add((entity, random) -> cobblemon("growth_mulch", 2, 4, 12, 5));
 			offers.add((entity, random) -> cobblemon("surprise_mulch", 3, 4, 12, 10));
 		});
+		Platform.get().addTrades(ModVillagers.BERRY_BREEDER, 3, offers ->
+			offers.add((entity, random) -> blueprint(StarterBlueprints.BERRY_NURSERY, 10))); // 28.13
 		for (int level = 3; level <= 5; level++) {
 			int emeralds = level * 2;
 			int xp = level == 3 ? 15 : level == 4 ? 20 : 30;
@@ -563,8 +567,8 @@ public final class ModTrades {
 	private static final String[] APRIJUICE = {"black", "blue", "green", "pink", "red", "white", "yellow"};
 
 	/**
-	 * Camp Cooks (28.8; Cobblemon only): Poké Bait and Poké Snacks (Novice), Aprijuice (Apprentice), Exp. Candy S and M
-	 * (Journeyman), Lumiose Galette and Big Malasada (Expert), Exp. Candy L (Master).
+	 * Camp Cooks (28.8; Cobblemon only): Poké Bait and Poké Snacks (Novice), Aprijuice (Apprentice), Exp. Candy S or M and
+	 * the Camp Kitchen's blueprint (Journeyman, 28.13), Lumiose Galette and Big Malasada (Expert), Exp. Candy L (Master).
 	 */
 	private static void campCookTrades() {
 		Platform.get().addTrades(ModVillagers.CAMP_COOK, 1, offers -> {
@@ -576,8 +580,8 @@ public final class ModTrades {
 			offers.add((entity, random) -> cobblemon("aprijuice_" + APRIJUICE[random.nextInt(APRIJUICE.length)], 3, 1, 12, 5));
 		});
 		Platform.get().addTrades(ModVillagers.CAMP_COOK, 3, offers -> {
-			offers.add((entity, random) -> cobblemon("exp_candy_s", 4, 1, 12, 10));
-			offers.add((entity, random) -> cobblemon("exp_candy_m", 8, 1, 8, 15));
+			offers.add((entity, random) -> random.nextBoolean() ? cobblemon("exp_candy_s", 4, 1, 12, 10) : cobblemon("exp_candy_m", 8, 1, 8, 15));
+			offers.add((entity, random) -> blueprint(StarterBlueprints.CAMP_KITCHEN, 12)); // 28.13
 		});
 		Platform.get().addTrades(ModVillagers.CAMP_COOK, 4, offers -> {
 			offers.add((entity, random) -> cobblemon("lumiose_galette", 6, 1, 8, 20));
@@ -588,8 +592,8 @@ public final class ModTrades {
 	}
 
 	/**
-	 * Habitat Keepers (28.10; Cobblemon only): Saccharine saplings and honey (Novice), Poké Snacks (Journeyman), and on the
-	 * way honeycomb and Saccharine logs.
+	 * Habitat Keepers (28.10; Cobblemon only): Saccharine saplings and honey (Novice), Poké Snacks and the Habitat Garden's
+	 * blueprint (Journeyman, 28.13), and on the way honeycomb and Saccharine logs.
 	 */
 	private static void habitatKeeperTrades() {
 		Platform.get().addTrades(ModVillagers.HABITAT_KEEPER, 1, offers -> {
@@ -602,7 +606,7 @@ public final class ModTrades {
 		});
 		Platform.get().addTrades(ModVillagers.HABITAT_KEEPER, 3, offers -> {
 			offers.add((entity, random) -> cobblemon("poke_snack", 4, 1, 12, 10));
-			offers.add((entity, random) -> cobblemon("poke_snack", 4, 1, 12, 10));
+			offers.add((entity, random) -> blueprint(StarterBlueprints.HABITAT_GARDEN, 12)); // 28.13
 		});
 		Platform.get().addTrades(ModVillagers.HABITAT_KEEPER, 4, offers ->
 			offers.add((entity, random) -> cobblemon("saccharine_log", 3, 4, 12, 15)));
@@ -615,8 +619,8 @@ public final class ModTrades {
 		"flying", "psychic", "bug", "rock", "ghost", "dragon", "dark", "steel", "fairy"};
 
 	/**
-	 * Gem Growers (28.11; work without Cobblemon): amethyst shards (Novice), tumblestones (Apprentice, with Cobblemon), a
-	 * Type Gem (Expert, Cobblemon 1.8), and on the way glass, spyglasses and tinted glass.
+	 * Gem Growers (28.11; work without Cobblemon): amethyst shards (Novice), tumblestones (Apprentice, with Cobblemon), the
+	 * Gem Grotto's blueprint (Journeyman, 28.13), a Type Gem (Expert, Cobblemon 1.8), and on the way glass, spyglasses and tinted glass.
 	 */
 	private static void gemGrowerTrades() {
 		Platform.get().addTrades(ModVillagers.GEM_GROWER, 1, offers -> {
@@ -630,8 +634,10 @@ public final class ModTrades {
 			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 2), new ItemStack(Items.TINTED_GLASS, 2), 12, 5, 0.05f));
 		});
 		Platform.get().addTrades(ModVillagers.GEM_GROWER, 3, offers -> {
-			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 4), new ItemStack(Items.SPYGLASS), 8, 10, 0.05f));
-			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.AMETHYST_SHARD, 12), new ItemStack(Items.EMERALD), 16, 10, 0.05f));
+			offers.add((entity, random) -> random.nextBoolean()
+				? new MerchantOffer(new ItemCost(Items.EMERALD, 4), new ItemStack(Items.SPYGLASS), 8, 10, 0.05f)
+				: new MerchantOffer(new ItemCost(Items.AMETHYST_SHARD, 12), new ItemStack(Items.EMERALD), 16, 10, 0.05f));
+			offers.add((entity, random) -> blueprint(StarterBlueprints.GEM_GROTTO, 12)); // 28.13
 		});
 		Platform.get().addTrades(ModVillagers.GEM_GROWER, 4, offers -> {
 			offers.add((entity, random) -> cobblemon(GEM_TYPES[random.nextInt(GEM_TYPES.length)] + "_gem", 6, 1, 8, 15));
@@ -639,6 +645,30 @@ public final class ModTrades {
 		});
 		Platform.get().addTrades(ModVillagers.GEM_GROWER, 5, offers ->
 			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 12), new ItemStack(Items.AMETHYST_BLOCK, 4), 4, 30, 0.05f)));
+	}
+
+	/**
+	 * Daycare Keepers (28.12; Cobblemon only): Exp. Candy XS (Novice), an Everstone and the Daycare's
+	 * blueprint (Journeyman, 28.13), a Destiny Knot (Master),
+	 * and on the way eggs, wheat and hay.
+	 */
+	private static void daycareKeeperTrades() {
+		Platform.get().addTrades(ModVillagers.DAYCARE_KEEPER, 1, offers -> {
+			offers.add((entity, random) -> cobblemon("exp_candy_xs", 2, 3, 16, 1));
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.WHEAT, 20), new ItemStack(Items.EMERALD), 16, 2, 0.05f));
+		});
+		Platform.get().addTrades(ModVillagers.DAYCARE_KEEPER, 2, offers -> {
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EGG, 16), new ItemStack(Items.EMERALD), 16, 5, 0.05f));
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 2), new ItemStack(Items.HAY_BLOCK, 2), 12, 5, 0.05f));
+		});
+		Platform.get().addTrades(ModVillagers.DAYCARE_KEEPER, 3, offers -> {
+			offers.add((entity, random) -> cobblemon("everstone", 10, 1, 4, 10));
+			offers.add((entity, random) -> blueprint(StarterBlueprints.DAYCARE, 14)); // 28.13
+		});
+		Platform.get().addTrades(ModVillagers.DAYCARE_KEEPER, 4, offers ->
+			offers.add((entity, random) -> cobblemon("exp_candy_s", 4, 2, 12, 15)));
+		Platform.get().addTrades(ModVillagers.DAYCARE_KEEPER, 5, offers ->
+			offers.add((entity, random) -> cobblemon("destiny_knot", 24, 1, 2, 30)));
 	}
 
 	private static void nurseTrades() {

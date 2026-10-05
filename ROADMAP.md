@@ -1104,7 +1104,7 @@ here adds a new kind of speed bonus (the new jobs get the partners' existing one
     and a forced full cluster picked (compat, 1.7.3); a Fire Gem Block set on a core and a forced stage-3 Fire Gem
     cluster picked (compat, 1.8.1); a malformed bed file is logged and skipped;
   - showcase scene `gem_grower`.
-- [ ] **28.12** **The Daycare Keeper.** Cobblemon has no breeding; the Cobbleverse pack adds it with Cobbreeding
+- [x] **28.12** (review: pending 2026-10-05) **The Daycare Keeper.** Cobblemon has no breeding; the Cobbleverse pack adds it with Cobbreeding
   (eggs in the Pasture Block). Stand a villager by a Pasture Block and sneak-right-click them with an egg. Config
   `daycareKeepers` (true).
   - Right-click her (sneak for trades): the daycare screen (as the Rancher's, `compat/cobblemon/CobblemonDaycare`):
@@ -1129,7 +1129,7 @@ here adds a new kind of speed bonus (the new jobs get the partners' existing one
     nature; an incompatible pair never does; with Cobbreeding a Cobbreeding egg item is given; the keeper's death sends
     both to their PCs;
   - showcase scene `daycare_keeper` (the screen, collecting).
-- [ ] **28.13** **Builds for the new jobs.** Five builds with an upgrade each (architect skill, STYLE.md, renders), in
+- [x] **28.13** (review: pending 2026-10-05) **Builds for the new jobs.** Five builds with an upgrade each (architect skill, STYLE.md, renders), in
   the Blueprint Table (the Cobblemon ones only with Cobblemon) and sold by their job's Journeyman, each with its job
   block taking a villager with the item:
   - **Camp Kitchen**: an open timber shelter round a Campfire Pot, a grain store and benches; **II**: a Hearty Grain
@@ -4338,6 +4338,14 @@ item waits.
   jumps the day time to dawn, so game time would have kept work stopped well past noon; a value more than a day ahead
   (the clock set back) is ignored. Nothing a player reads was added besides the Book's lines (no status text for
   conscripts). `VillageRaids.track` starts a raid without the gathering and horn, for the showcase scene and tests.
+- 2026-10-05 (28.13, decisions; lane b): the Gem Grotto (both tiers) is all vanilla and in the Blueprint Table without
+  Cobblemon (`StarterBlueprints.VANILLA_JOB_BUILDS`), since the Gem Grower works without it; its "tumblestone ledges" are
+  polished blackstone round the lava where she sets tumblestones over it. A budding amethyst can't be carried in
+  survival (builders never place one), so the niche has amethyst blocks with clusters. Gem Grotto II's four cores are
+  drawn as deepslate and swapped to `cobblemon:deepslate_crystal_core` when it exists (`StarterBlueprints.withFeatures`,
+  spots in `GEM_GROTTO_2_CORES`). For 28.14: the Habitat Garden's mossy centre stone is
+  `StarterBlueprints.HABITAT_GARDEN_CENTRE` (template (7, 0, 7), both tiers). Sugar cane by the ponds was dropped
+  (a builder places it before pouring the water, so it pops off): large ferns instead.
 - 2026-10-05 (30.9, decisions; lane d): `curfew` is one effect type with three fields: `raids` (factor, multiplied;
   also read by `BanditCamps.dailyChance`), `safe_nights` (night safety full in `VillageNeeds.count`, and a monster's blow
   on a villager asleep in bed cancelled through `allowDamage`) and `stay_in` (bedtime, no trading, festival over at

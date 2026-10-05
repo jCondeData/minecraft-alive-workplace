@@ -78,6 +78,20 @@ asks for the steps, `latest.log` and any crash report).
   another village style's outside (plains, desert, savanna, snowy or taiga); the village's builder rebuilds the outside
   in place and leaves the room inside, its job block and its chests as they were. Builders now also pick up what falls
   off a block they take down (a lantern under a porch roof) instead of waiting for it.
+- **Builds for the Pokémon jobs** (28.13, with Cobblemon): the Camp Kitchen (an open timber shelter round a Campfire
+  Pot, benches and a grain store; II adds a Hearty Grain plot and a smokehouse), the Berry Nursery (fenced farmland beds
+  in pairs, a composter and a potting bench; II adds a greenhouse with four more beds) and the Daycare (a barn with a
+  straw-floored nursery and a paddock round a Pasture Block; II adds a second paddock and a hatchery), the Habitat Garden
+  (a wild garden in a hedge with a pond, a Saccharine tree and a Pasture Block round a mossy centre stone; II adds a
+  keeper's hide on stilts and a second pond) and the Gem Grotto (a stone shed over a lava pool behind glass, ledges for
+  tumblestones, a stonecutter and an amethyst niche; II adds a deeper chamber with four Deepslate Crystal Cores, plain
+  deepslate before Cobblemon 1.8). In the Blueprint Table and sold by Journeyman Camp Cooks, Berry Breeders, Daycare
+  Keepers, Habitat Keepers and Gem Growers; the Gem Grotto needs no Cobblemon. Builders put the pot on the Campfire Pot.
+- **The Daycare Keeper** (28.12, with Cobblemon): a villager at a Pasture Block, picked with an egg. Leave one pair of
+  Pokémon per player (three pairs per keeper); her screen says how well they get along. Each dawn she may find an egg
+  (70/50/20%, +10% at Expert), 4 emeralds each to collect: a real Cobbreeding egg with Cobbreeding, otherwise the level-1
+  hatchling with inherited IVs, Everstone nature, ball, hidden ability and egg moves. Her pairs go to their PCs if she
+  dies. Config `daycareKeepers`.
 - **Gifted villagers** (29.6): about one villager in 30 has a rare gift as well as their traits, shown in gold on the
   Village Hall's list. Prodigy learns three times as fast; Iron Will never panics and keeps working through raids and
   the bell; Silver Tongue's trades are 20% cheaper; a Night Owl works from dusk to dawn and sleeps from mid-morning to

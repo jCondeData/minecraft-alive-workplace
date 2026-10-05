@@ -57,7 +57,7 @@ public class QaImportEdgesGameTests implements FabricGameTest {
 	}
 
 	/** The build-size limit (1,000,000 blocks in total): exactly at it imports, one layer more is refused and says so. */
-	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
+	//$ gametest_ticks 'FabricGameTest.EMPTY_STRUCTURE' '400'
 	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE, timeoutTicks = 400)
 	public void theBuildSizeLimitFromBothSides(GameTestHelper helper) {
 		ImportGameTests.clearGenerated(helper, FOLDER);

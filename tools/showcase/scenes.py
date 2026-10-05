@@ -30,7 +30,7 @@ GROUPS = [
     "Carpenter", "Mason", "Leatherworker (dyer)", "Chef", "Armorer (smelter)", "Toolsmith", "Weaponsmith", "Fletcher",
     "Shepherd", "Butcher (herder)", "Cleric (alchemist)", "Librarian (scribe)", "Cartographer (explorer)", "Postman",
     "Guard", "Nurse", "Shopkeeper", "Ferryman", "Bard", "Trainer", "Trainer Leader", "Move Tutor", "Ball Smith",
-    "Pokémon Trader", "Fossil Scientist", "Berry Breeder", "Steward", "Camp Cook", "Gem Grower", "Habitat Keeper", "Village Hall", "Legends", "Everyone at work", "Build families",
+    "Pokémon Trader", "Fossil Scientist", "Berry Breeder", "Steward", "Camp Cook", "Gem Grower", "Habitat Keeper", "Daycare Keeper", "Village Hall", "Legends", "Everyone at work", "Build families",
 ]
 
 START, WORKING, DONE = ("01_start", "Start"), ("work_*@middle", "At work"), ("03_done", "Done")
@@ -135,6 +135,10 @@ SCENES = [
     job("rancher", "Rancher", "Breaking in a horse", "the rancher tamed and saddled the horse"),
     S("daycare", "Rancher", "Pokémon daycare", "the daycare screen opened with a boarder", 75,
       [("01_daycare_screen", "Daycare"), ("02_daycare_boarder", "A boarder")], cobblemon=True),
+    S("daycare_keeper", "Daycare Keeper", "A pair left at the daycare, eggs collected",
+      "the daycare keeper took a pair of Eevee and two eggs were collected", 90,
+      [("01_daycare_keeper_screen", "The daycare"), ("03_daycare_keeper_pair", "How well they get along"), ("04_daycare_keeper_eggs", "Eggs waiting"),
+       ("05_daycare_keeper_collected", "Collected")], cobblemon=True),
     # Fisherman
     S("fish", "Fisherman", "Fishing from the shore", "the fisherman caught a fish", 120,
       [("60_fish_0", "Casting"), ("60_fish_3", "The bobber out"), ("61_fish_caught", "Caught")]),
@@ -379,6 +383,8 @@ SCENES = [
       [("30_*@spread", "")]),
     S("village", "Build families", "One village of each type", "every village type generated, none leaving structure_void", 360,
       [("40_workshop_*@spread", "")], env={"WORKSHOP_WEIGHT": "200"}),
+    S("pokemon_builds", "Build families", "Builds for the Pokémon jobs, both tiers",
+      "all ten builds stand with their job blocks", 120, [("[12][0-9]_*@spread", "")], cobblemon=True),
     S("camp", "Build families", "A Settler's Wagon camp", "the camp was set up", 45,
       [("01_camp", "The camp"), ("02_camp_back", "From behind")]),
 ]

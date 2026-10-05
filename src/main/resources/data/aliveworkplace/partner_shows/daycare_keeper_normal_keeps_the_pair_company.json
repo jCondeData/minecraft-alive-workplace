@@ -1,0 +1,14 @@
+{
+  "jobs": [
+    "aliveworkplace:daycare_keeper"
+  ],
+  "types": [
+    "normal"
+  ],
+  "cue": "keep_company",
+  "animation": "special",
+  "particles": "minecraft:heart",
+  "sound": "minecraft:entity.cat.purr",
+  "ticks": 60,
+  "effect": "none"
+}

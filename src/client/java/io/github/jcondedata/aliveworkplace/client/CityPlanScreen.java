@@ -746,7 +746,7 @@ public class CityPlanScreen extends Screen {
 			status = Component.translatable("screen.aliveworkplace.city_plan.view_only");
 		} else if (tool == Tool.ROAD || tool == Tool.WALL) {
 			status = Component.translatable(tool == Tool.WALL ? "screen.aliveworkplace.city_plan.wall.hint" : "screen.aliveworkplace.city_plan.road.hint",
-				plan.roads().size(), CityPlan.MAX_ROADS);
+				plan.drawnRoads(), CityPlan.MAX_ROADS);
 		} else if (cell >= 0 && of[cell] >= 0) {
 			CityPlan.Zone z = plan.zones().get(of[cell]);
 			status = Component.translatable("screen.aliveworkplace.city_plan.cell", z.name(), kindTitle(z.kind()), styleTitle(z.style()));

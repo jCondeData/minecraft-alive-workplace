@@ -40,6 +40,7 @@ public final class Decorations {
 		for (BuildSiteManager.Finished f : BuildSiteManager.get(level).finishedNear(level, hall, VillageHalls.RADIUS)) {
 			beauty += points(f.structure());
 		}
+		beauty += io.github.jcondedata.aliveworkplace.city.Roads.lamps(level, hall) * POINTS.get(StarterBlueprints.STREET_LAMP.id()); // the roads' lamps (27.16)
 		return beauty + io.github.jcondedata.aliveworkplace.legend.StrangeMoods.beauty(level, hall); // Masterworks in item frames (29.10)
 	}
 

@@ -79,7 +79,7 @@ public final class StewardDesk {
 	 */
 	public record Proposal(int id, ResourceLocation rule, boolean upgrade, ResourceLocation blueprint, BlueprintData.Placement placement,
 						   String zone, String kind, String why, List<Long> numbers, long day, int skip, boolean searching,
-						   List<StewardJobs.Job> jobs, String topic) {
+						   List<StewardJobs.Job> jobs, String topic, String wallKit) {
 		public static final Codec<Proposal> CODEC = RecordCodecBuilder.create(i -> i.group(
 			Codec.INT.fieldOf("id").forGetter(Proposal::id),
 			ResourceLocation.CODEC.fieldOf("rule").forGetter(Proposal::rule),
@@ -94,7 +94,8 @@ public final class StewardDesk {
 			Codec.INT.optionalFieldOf("skip", 0).forGetter(Proposal::skip),
 			Codec.BOOL.optionalFieldOf("searching", false).forGetter(Proposal::searching),
 			StewardJobs.Job.CODEC.listOf().optionalFieldOf("jobs", List.of()).forGetter(Proposal::jobs),
-			Codec.STRING.optionalFieldOf("topic", "").forGetter(Proposal::topic)
+			Codec.STRING.optionalFieldOf("topic", "").forGetter(Proposal::topic),
+			Codec.STRING.optionalFieldOf("wall_kit", "").forGetter(Proposal::wallKit)
 		).apply(i, Proposal::new));
 
 		public Proposal {
@@ -102,9 +103,20 @@ public final class StewardDesk {
 			jobs = List.copyOf(jobs);
 		}
 
-		/** A build or an upgrade (not jobs or research). */
+		public Proposal(int id, ResourceLocation rule, boolean upgrade, ResourceLocation blueprint, BlueprintData.Placement placement,
+						String zone, String kind, String why, List<Long> numbers, long day, int skip, boolean searching,
+						List<StewardJobs.Job> jobs, String topic) {
+			this(id, rule, upgrade, blueprint, placement, zone, kind, why, numbers, day, skip, searching, jobs, topic, "");
+		}
+
+		/** A build or an upgrade (not jobs, research or the wall). */
 		public boolean isBuild() {
-			return jobs.isEmpty() && topic.isEmpty();
+			return jobs.isEmpty() && topic.isEmpty() && wallKit.isEmpty();
+		}
+
+		/** The wall (27.18): its kit, if this proposal is one. */
+		public Optional<WallKits.Kit> wall() {
+			return wallKit.isEmpty() ? Optional.empty() : WallKits.get(wallKit);
 		}
 
 		public boolean isJobs() {
@@ -120,8 +132,11 @@ public final class StewardDesk {
 			return why.isEmpty() ? Component.empty() : Component.translatable(why, numbers.toArray());
 		}
 
-		/** "Stone House (Cherry)", "Give 3 villagers jobs", "Research Fortification". */
+		/** "Stone House (Cherry)", "Give 3 villagers jobs", "Research Fortification", "A Palisade wall". */
 		public Component name() {
+			if (!wallKit.isEmpty()) {
+				return wall().map(Walls::title).orElse(Component.literal(wallKit));
+			}
 			if (isJobs()) {
 				return StewardJobs.title(jobs.size());
 			}
@@ -133,7 +148,7 @@ public final class StewardDesk {
 		}
 
 		Proposal with(ResourceLocation blueprint, BlueprintData.Placement placement, int skip, boolean searching) {
-			return new Proposal(id, rule, upgrade, blueprint, placement, zone, kind, why, numbers, day, skip, searching, jobs, topic);
+			return new Proposal(id, rule, upgrade, blueprint, placement, zone, kind, why, numbers, day, skip, searching, jobs, topic, wallKit);
 		}
 	}
 
@@ -281,6 +296,28 @@ public final class StewardDesk {
 		Proposal proposal = new Proposal(state.next(), rule, false, jobs.isEmpty() ? RESEARCH : JOBS,
 			new BlueprintData.Placement(Ids.of(level.dimension()), hall, Rotation.NONE, Mirror.NONE), "", "", why, numbers, day, 0, false, jobs, topic);
 		save(level, hall, state.adding(proposal));
+		return Optional.of(proposal);
+	}
+
+	/**
+	 * {@link #offer} for the wall (27.18): no plot of its own (it is many pieces along the plan's wall line), at the
+	 * hall. Nothing is offered while one is on the desk already, or while the rule is declined.
+	 */
+	public static Optional<Proposal> offerWall(ServerLevel level, BlockPos hall, WallKits.Kit kit) {
+		State state = of(level, hall);
+		long day = StewardWishes.day(level);
+		if (declined(state, Walls.RULE, day) || state.proposals().size() >= MAX_PROPOSALS
+			|| state.proposals().stream().anyMatch(p -> p.rule().equals(Walls.RULE))) {
+			return Optional.empty();
+		}
+		Proposal proposal = new Proposal(state.next(), Walls.RULE, false, Walls.WALL,
+			new BlueprintData.Placement(Ids.of(level.dimension()), hall, Rotation.NONE, Mirror.NONE), "", "",
+			"steward.aliveworkplace.why.wall", List.of((long) Walls.RAID_DAYS), day, 0, false, List.of(), "", kit.name());
+		save(level, hall, state.adding(proposal));
+		Villager steward = Stewards.stewardOf(level, hall);
+		if (steward != null) {
+			tell(level, hall, steward);
+		}
 		return Optional.of(proposal);
 	}
 
@@ -478,6 +515,9 @@ public final class StewardDesk {
 		if (!proposal.topic().isEmpty()) {
 			return approveResearch(level, hall, entity, steward, proposal);
 		}
+		if (proposal.wall().isPresent()) {
+			return approveWall(level, hall, steward, proposal, proposal.wall().get());
+		}
 		if (openSites(level, hall).size() >= Stewards.maxOpenBuilds(level, steward)) {
 			return Outcome.FULL;
 		}
@@ -525,6 +565,17 @@ public final class StewardDesk {
 		StewardWishes.carriedOut(level, hall, proposal.rule());
 		Chronicle.record(level, hall, Chronicle.Kind.PLANS, Component.translatable("chronicle.aliveworkplace.plans_jobs",
 			steward.getDisplayName(), StewardJobs.list(level, hall, given)));
+		return Outcome.STARTED;
+	}
+
+	/** The wall approved (27.18): the line on the plan is marked for building, and its pieces open from the hall's round. */
+	private static Outcome approveWall(ServerLevel level, BlockPos hall, Villager steward, Proposal proposal, WallKits.Kit kit) {
+		State state = of(level, hall);
+		save(level, hall, state.withProposals(state.proposals().stream().filter(p -> p.id() != proposal.id()).toList()));
+		if (!Walls.approve(level, hall, steward, kit)) {
+			return Outcome.GONE;
+		}
+		StewardWishes.carriedOut(level, hall, proposal.rule());
 		return Outcome.STARTED;
 	}
 
@@ -618,6 +669,7 @@ public final class StewardDesk {
 				});
 			}
 		}
+		Walls.propose(level, hall, steward); // 27.18: a raided village's wall
 		State state = of(level, hall);
 		if (state.next() != before) {
 			tell(level, hall, steward);

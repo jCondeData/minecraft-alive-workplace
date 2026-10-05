@@ -102,6 +102,19 @@ SCENES = [
     job("tinkerer", "Tinkerer", "Mending an iron golem", "the tinkerer mended the iron golem"),
     job("composter", "Composter", "Turning scraps into bone meal", "the composter made bone meal"),
     job("steward", "Steward", "The Steward's morning rounds", "the steward walked his morning rounds and came back to the hall", 200),
+    # Roads (ROADMAP 27.15): an approved street on the plan, routed and laid 3 wide in Stonework by the village's builder
+    job("roads", "Steward", "A street between two houses",
+        "the builder laid the approved Stonework street between the two houses, 3 wide, segment by segment", 480),
+    # Lamps, bridges and steps (ROADMAP 27.16): a street drawn over a river is bridged and lit, shown at night at the end
+    job("bridges", "Steward", "A bridge over the river, and the street lit at night",
+        "the builder bridged the river 9 wide (2 pillars, rails, a stair up at each end) and lit the street with Street Lamps", 600),
+    # Roads between villages (ROADMAP 27.17): two villages with a trade route each build their half, and the halves meet
+    job("caravan_road", "Steward", "The road from one village to the other",
+        "each village's builder laid its half of the Stonework road to the other, and the halves met halfway", 800),
+    # Walls (ROADMAP 27.18): a palisade goes up round a small village along its wall line, and its gate shuts at night
+    job("walls", "Steward", "A palisade going up round the village, its gate shut at night",
+        "the builders raised the village's palisade along the wall line (towers at its corners, a gate on the road) "
+        "and the guards shut the gate at nightfall", 700),
     # The Steward's rules (ROADMAP 27.6): the day's wishes over his head, and /workplace steward explain in chat
     S("steward_rules", "Steward", "The Steward's rules and wishes",
       "the Steward ranked today's wishes from his rules, and explain listed rules that held and that didn't", 45,

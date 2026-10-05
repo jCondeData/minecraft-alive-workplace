@@ -1,0 +1,11 @@
+{
+  "requires": ["cobblemon"],
+  "blueprint_styles": ["apricorn"],
+  "middle": "minecraft:bricks",
+  "edge": "minecraft:mud_bricks",
+  "slab": "minecraft:brick_slab",
+  "stairs": "minecraft:brick_stairs",
+  "bridge": {"deck": "minecraft:bricks", "rail": "minecraft:brick_wall", "pillar": "minecraft:mud_bricks"},
+  "lamp": "minecraft:lantern",
+  "lantern_post": "minecraft:mud_brick_wall"
+}

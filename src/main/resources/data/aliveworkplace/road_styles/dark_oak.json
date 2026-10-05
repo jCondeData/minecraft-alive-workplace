@@ -1,0 +1,10 @@
+{
+  "blueprint_styles": ["dark_oak"],
+  "middle": {"minecraft:polished_deepslate": 3, "minecraft:cobbled_deepslate": 1},
+  "edge": "minecraft:cobbled_deepslate",
+  "slab": "minecraft:polished_deepslate_slab",
+  "stairs": "minecraft:polished_deepslate_stairs",
+  "bridge": {"deck": "minecraft:dark_oak_planks", "rail": "minecraft:dark_oak_fence", "pillar": "minecraft:dark_oak_log"},
+  "lamp": "minecraft:lantern",
+  "lantern_post": "minecraft:dark_oak_fence"
+}

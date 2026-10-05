@@ -70,6 +70,7 @@ public final class StewardDeskPage {
 			VillageHallScreen.line(Component.translatable("screen.aliveworkplace.desk.open", open.size(),
 				io.github.jcondedata.aliveworkplace.city.Stewards.maxOpenBuilds(level, steward)), ChatFormatting.GRAY),
 			VillageHallScreen.line(Component.translatable("screen.aliveworkplace.desk.mode." + mode.getSerializedName()), ChatFormatting.GRAY));
+		roadNotes(head, level, hall);
 		head.setCount(Math.max(1, Math.min(5, lvl)));
 		menu.button(STEWARD, head, null);
 		StewardDesk.State state = StewardDesk.of(level, hall);
@@ -143,7 +144,24 @@ public final class StewardDeskPage {
 		}
 	}
 
-	private static void mode(ChoiceMenu menu, ServerLevel level, BlockPos hall, Villager steward, int slot, CityPlan.Mode which, Item item,
+	/** Roads that stopped at a gap too wide to bridge, on the Steward's card (27.16). */
+	private static void roadNotes(ItemStack head, ServerLevel level, BlockPos hall) {
+		if (!(level.getBlockEntity(hall) instanceof io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity entity)) {
+			return;
+		}
+		List<Component> notes = io.github.jcondedata.aliveworkplace.city.Roads.deskNotes(entity.plan());
+		if (notes.isEmpty()) {
+			return;
+		}
+		net.minecraft.world.item.component.ItemLore lore = head.getOrDefault(net.minecraft.core.component.DataComponents.LORE,
+			net.minecraft.world.item.component.ItemLore.EMPTY);
+		for (Component note : notes) {
+			lore = lore.withLineAdded(VillageHallScreen.line(note, ChatFormatting.YELLOW));
+		}
+		head.set(net.minecraft.core.component.DataComponents.LORE, lore);
+	}
+
+		private static void mode(ChoiceMenu menu, ServerLevel level, BlockPos hall, Villager steward, int slot, CityPlan.Mode which, Item item,
 							 CityPlan.Mode current) {
 		boolean on = which == current;
 		boolean refused = which == CityPlan.Mode.RUN && !StewardDesk.SELF_RUN;
@@ -168,10 +186,13 @@ public final class StewardDeskPage {
 		});
 	}
 
-	/** A build's blueprint, the jobs' crafting table, the research topic's own icon. */
+	/** A build's blueprint, the jobs' crafting table, the research topic's own icon, the wall's oak fence. */
 	static Item iconOf(StewardDesk.Proposal proposal) {
 		if (proposal.isJobs()) {
 			return Items.CRAFTING_TABLE;
+		}
+		if (proposal.wall().isPresent()) {
+			return Items.OAK_FENCE;
 		}
 		return proposal.researchTopic().map(t -> t.icon).orElse(ModItems.BLUEPRINT);
 	}
@@ -186,6 +207,19 @@ public final class StewardDeskPage {
 			for (io.github.jcondedata.aliveworkplace.city.StewardJobs.Job job : proposal.jobs()) {
 				lore.add(VillageHallScreen.line(io.github.jcondedata.aliveworkplace.city.StewardJobs.describe(level, hall, job), ChatFormatting.GRAY));
 			}
+			return lore;
+		}
+		if (proposal.wall().isPresent()) { // 27.18: the wall along the plan's line, with what it is made of
+			lore.add(VillageHallScreen.line(Component.translatable("screen.aliveworkplace.desk.why", proposal.reason()), ChatFormatting.AQUA));
+			java.util.List<io.github.jcondedata.aliveworkplace.city.Walls.Piece> pieces =
+				io.github.jcondedata.aliveworkplace.city.Walls.proposedPieces(level, hall, proposal.wall().get());
+			int[] counts = io.github.jcondedata.aliveworkplace.city.Walls.counts(pieces);
+			lore.add(VillageHallScreen.line(Component.translatable("screen.aliveworkplace.desk.wall_pieces",
+				counts[io.github.jcondedata.aliveworkplace.city.Walls.Kind.SEGMENT.ordinal()],
+				counts[io.github.jcondedata.aliveworkplace.city.Walls.Kind.TOWER.ordinal()],
+				counts[io.github.jcondedata.aliveworkplace.city.Walls.Kind.GATE.ordinal()]), ChatFormatting.GRAY));
+			lore.add(VillageHallScreen.line(Component.translatable("screen.aliveworkplace.desk.wall_line",
+				io.github.jcondedata.aliveworkplace.city.Walls.lineLength(level, hall)), ChatFormatting.GRAY));
 			return lore;
 		}
 		if (proposal.researchTopic().isPresent()) { // 27.9: the scholars' next topic

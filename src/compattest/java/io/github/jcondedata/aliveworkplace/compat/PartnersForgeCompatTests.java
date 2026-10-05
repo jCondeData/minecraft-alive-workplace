@@ -327,6 +327,7 @@ public class PartnersForgeCompatTests implements FabricGameTest {
 	@GameTest(template = AREA, timeoutTicks = 1600, batch = "partners_fletch")
 	public void aPidgeyBringsAFeatherToTheFletcher(GameTestHelper helper) {
 		PartnerShowsCompatTests.clearLeftovers(helper);
+		PartnerShowsCompatTests.clearHalls(helper);
 		PartnerShowsCompatTests.showsOn(helper);
 		Village.RADIUS = 48;
 		PartnerShowsCompatTests.after(helper, () -> Village.RADIUS = 0);
@@ -340,13 +341,17 @@ public class PartnersForgeCompatTests implements FabricGameTest {
 		chest.setItem(1, new ItemStack(Items.STRING, 3));
 		Villager fletcher = helper.spawn(EntityType.VILLAGER, new BlockPos(3, 2, 3));
 		Jobs.employ(helper.getLevel(), fletcher, helper.absolutePos(table), PoiTypes.FLETCHER, VillagerProfession.FLETCHER);
-		BlockPos post = new BlockPos(19, 2, 19);
+		// The guard's post, chest and guard stand inside the 17-block area: outside it (they were at x/z 17-19) there is no
+		// floor, so the guard fell beside a floating post, and nothing there is ever cleared, so other batches' blocks
+		// (a hall left at 17,2,17 by the scholar's test, chests) shared the post's chest search.
+		BlockPos post = new BlockPos(13, 2, 13);
+		BlockPos guardsChestPos = new BlockPos(13, 2, 11);
 		helper.setBlock(post, ModBlocks.GUARD_POST);
-		helper.setBlock(new BlockPos(19, 2, 17), Blocks.CHEST);
-		Villager guard = helper.spawn(EntityType.VILLAGER, new BlockPos(18, 2, 18));
+		helper.setBlock(guardsChestPos, Blocks.CHEST);
+		Villager guard = helper.spawn(EntityType.VILLAGER, new BlockPos(12, 2, 12));
 		Jobs.employ(helper.getLevel(), guard, helper.absolutePos(post), ModVillagers.GUARD_POST_POI, ModVillagers.GUARD);
 		guard.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.IRON_SWORD));
-		Container guardsChest = helper.getBlockEntity(new BlockPos(19, 2, 17));
+		Container guardsChest = helper.getBlockEntity(guardsChestPos);
 		PartnersAtWorkCompatTests.partner(helper, new BlockPos(10, 2, 3), "pidgey");
 		Set<Item> carried = new HashSet<>();
 		Set<ResourceLocation> started = PartnersAtWorkCompatTests.watch(helper, fletcher, "pidgey", carried);

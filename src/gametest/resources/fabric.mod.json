@@ -31,6 +31,8 @@
 			"io.github.jcondedata.aliveworkplace.test.HallProtectHintGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaB37HallHintGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaB38B39GameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaB46GameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaB69FrontWalkGameTests",
 			"io.github.jcondedata.aliveworkplace.test.PartnerShowsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaPartnerShowsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.OverheadSupplyGameTests",

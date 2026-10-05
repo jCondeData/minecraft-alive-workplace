@@ -79,7 +79,7 @@ public final class StewardDesk {
 	 */
 	public record Proposal(int id, ResourceLocation rule, boolean upgrade, ResourceLocation blueprint, BlueprintData.Placement placement,
 						   String zone, String kind, String why, List<Long> numbers, long day, int skip, boolean searching,
-						   List<StewardJobs.Job> jobs, String topic, String wallKit) {
+						   List<StewardJobs.Job> jobs, String topic, String wallKit, List<Integer> house) {
 		public static final Codec<Proposal> CODEC = RecordCodecBuilder.create(i -> i.group(
 			Codec.INT.fieldOf("id").forGetter(Proposal::id),
 			ResourceLocation.CODEC.fieldOf("rule").forGetter(Proposal::rule),
@@ -95,23 +95,47 @@ public final class StewardDesk {
 			Codec.BOOL.optionalFieldOf("searching", false).forGetter(Proposal::searching),
 			StewardJobs.Job.CODEC.listOf().optionalFieldOf("jobs", List.of()).forGetter(Proposal::jobs),
 			Codec.STRING.optionalFieldOf("topic", "").forGetter(Proposal::topic),
-			Codec.STRING.optionalFieldOf("wall_kit", "").forGetter(Proposal::wallKit)
+			Codec.STRING.optionalFieldOf("wall_kit", "").forGetter(Proposal::wallKit),
+			Codec.INT.listOf().optionalFieldOf("house", List.of()).forGetter(Proposal::house)
 		).apply(i, Proposal::new));
 
 		public Proposal {
 			numbers = List.copyOf(numbers);
 			jobs = List.copyOf(jobs);
+			house = List.copyOf(house);
+		}
+
+		public Proposal(int id, ResourceLocation rule, boolean upgrade, ResourceLocation blueprint, BlueprintData.Placement placement,
+						String zone, String kind, String why, List<Long> numbers, long day, int skip, boolean searching,
+						List<StewardJobs.Job> jobs, String topic, String wallKit) {
+			this(id, rule, upgrade, blueprint, placement, zone, kind, why, numbers, day, skip, searching, jobs, topic, wallKit, List.of());
 		}
 
 		public Proposal(int id, ResourceLocation rule, boolean upgrade, ResourceLocation blueprint, BlueprintData.Placement placement,
 						String zone, String kind, String why, List<Long> numbers, long day, int skip, boolean searching,
 						List<StewardJobs.Job> jobs, String topic) {
-			this(id, rule, upgrade, blueprint, placement, zone, kind, why, numbers, day, skip, searching, jobs, topic, "");
+			this(id, rule, upgrade, blueprint, placement, zone, kind, why, numbers, day, skip, searching, jobs, topic, "", List.of());
 		}
 
-		/** A build or an upgrade (not jobs, research or the wall). */
+		/** A build or an upgrade (not jobs, research, the wall or an old house renewed). */
 		public boolean isBuild() {
-			return jobs.isEmpty() && topic.isEmpty() && wallKit.isEmpty();
+			return jobs.isEmpty() && topic.isEmpty() && wallKit.isEmpty() && house.isEmpty();
+		}
+
+		/** An old house renewed (27.21): {@code house} holds its box and the bed or workstation it was found by. */
+		public boolean isRenewal() {
+			return house.size() == 9;
+		}
+
+		/** The old house's box, for a renewal. */
+		public Optional<BoundingBox> houseBox() {
+			return isRenewal() ? Optional.of(new BoundingBox(house.get(0), house.get(1), house.get(2), house.get(3), house.get(4), house.get(5)))
+				: Optional.empty();
+		}
+
+		/** The bed or workstation the old house was found by, for a renewal. */
+		public Optional<BlockPos> houseSeed() {
+			return isRenewal() ? Optional.of(new BlockPos(house.get(6), house.get(7), house.get(8))) : Optional.empty();
 		}
 
 		/** The wall (27.18): its kit, if this proposal is one. */
@@ -134,6 +158,9 @@ public final class StewardDesk {
 
 		/** "Stone House (Cherry)", "Give 3 villagers jobs", "Research Fortification", "A Palisade wall". */
 		public Component name() {
+			if (isRenewal()) {
+				return Renewals.title(this);
+			}
 			if (!wallKit.isEmpty()) {
 				return wall().map(Walls::title).orElse(Component.literal(wallKit));
 			}
@@ -148,7 +175,7 @@ public final class StewardDesk {
 		}
 
 		Proposal with(ResourceLocation blueprint, BlueprintData.Placement placement, int skip, boolean searching) {
-			return new Proposal(id, rule, upgrade, blueprint, placement, zone, kind, why, numbers, day, skip, searching, jobs, topic, wallKit);
+			return new Proposal(id, rule, upgrade, blueprint, placement, zone, kind, why, numbers, day, skip, searching, jobs, topic, wallKit, house);
 		}
 	}
 
@@ -157,8 +184,8 @@ public final class StewardDesk {
 	 * last day the jobs were planned and a research topic picked (27.9).
 	 */
 	public record State(List<Proposal> proposals, Map<String, Long> declined, long told, long ran, int next, long jobsDay, long researchDay,
-						long shopDay) {
-		public static final State EMPTY = new State(List.of(), Map.of(), -1, -1, 1, -1, -1, -1);
+						long shopDay, Renewals.Book renewals) {
+		public static final State EMPTY = new State(List.of(), Map.of(), -1, -1, 1, -1, -1, -1, Renewals.Book.EMPTY);
 		public static final Codec<State> CODEC = RecordCodecBuilder.create(i -> i.group(
 			Proposal.CODEC.listOf().optionalFieldOf("proposals", List.of()).forGetter(State::proposals),
 			Codec.unboundedMap(Codec.STRING, Codec.LONG).optionalFieldOf("declined", Map.of()).forGetter(State::declined),
@@ -167,7 +194,8 @@ public final class StewardDesk {
 			Codec.INT.optionalFieldOf("next", 1).forGetter(State::next),
 			Codec.LONG.optionalFieldOf("jobs_day", -1L).forGetter(State::jobsDay),
 			Codec.LONG.optionalFieldOf("research_day", -1L).forGetter(State::researchDay),
-			Codec.LONG.optionalFieldOf("shop_day", -1L).forGetter(State::shopDay)
+			Codec.LONG.optionalFieldOf("shop_day", -1L).forGetter(State::shopDay),
+			Renewals.Book.CODEC.optionalFieldOf("renewals", Renewals.Book.EMPTY).forGetter(State::renewals)
 		).apply(i, State::new));
 
 		public State {
@@ -180,38 +208,42 @@ public final class StewardDesk {
 		}
 
 		State withProposals(List<Proposal> list) {
-			return new State(list, declined, told, ran, next, jobsDay, researchDay, shopDay);
+			return new State(list, declined, told, ran, next, jobsDay, researchDay, shopDay, renewals);
 		}
 
 		State withDeclined(Map<String, Long> map) {
-			return new State(proposals, map, told, ran, next, jobsDay, researchDay, shopDay);
+			return new State(proposals, map, told, ran, next, jobsDay, researchDay, shopDay, renewals);
 		}
 
 		State withTold(long day) {
-			return new State(proposals, declined, day, ran, next, jobsDay, researchDay, shopDay);
+			return new State(proposals, declined, day, ran, next, jobsDay, researchDay, shopDay, renewals);
 		}
 
 		State withRan(long day) {
-			return new State(proposals, declined, told, day, next, jobsDay, researchDay, shopDay);
+			return new State(proposals, declined, told, day, next, jobsDay, researchDay, shopDay, renewals);
 		}
 
 		State withJobsDay(long day) {
-			return new State(proposals, declined, told, ran, next, day, researchDay, shopDay);
+			return new State(proposals, declined, told, ran, next, day, researchDay, shopDay, renewals);
 		}
 
 		State withResearchDay(long day) {
-			return new State(proposals, declined, told, ran, next, jobsDay, day, shopDay);
+			return new State(proposals, declined, told, ran, next, jobsDay, day, shopDay, renewals);
+		}
+
+		State withRenewals(Renewals.Book book) {
+			return new State(proposals, declined, told, ran, next, jobsDay, researchDay, shopDay, book);
 		}
 
 		State withShopDay(long day) {
-			return new State(proposals, declined, told, ran, next, jobsDay, researchDay, day);
+			return new State(proposals, declined, told, ran, next, jobsDay, researchDay, day, renewals);
 		}
 
 		/** {@code list} with one more proposal, and the next id after it. */
 		State adding(Proposal proposal) {
 			List<Proposal> list = new ArrayList<>(proposals);
 			list.add(proposal);
-			return new State(list, declined, told, ran, next + 1, jobsDay, researchDay, shopDay);
+			return new State(list, declined, told, ran, next + 1, jobsDay, researchDay, shopDay, renewals);
 		}
 	}
 
@@ -234,7 +266,7 @@ public final class StewardDesk {
 		return level.getBlockEntity(hall) instanceof VillageHallBlockEntity entity ? entity.stewardDesk() : State.EMPTY;
 	}
 
-	private static void save(ServerLevel level, BlockPos hall, State state) {
+	static void save(ServerLevel level, BlockPos hall, State state) {
 		if (level.getBlockEntity(hall) instanceof VillageHallBlockEntity entity) {
 			entity.setStewardDesk(state);
 		}
@@ -327,6 +359,31 @@ public final class StewardDesk {
 		return Optional.of(proposal);
 	}
 
+	/**
+	 * {@link #offer} for an old house renewed (27.21): the new building where it goes, the old house's box and seed kept
+	 * on the proposal, how far and which way it stands in its numbers. Not while one is on the desk, or declined.
+	 */
+	public static Optional<Proposal> offerRenewal(ServerLevel level, BlockPos hall, OldHouses.House house, Renewals.Replacement replacement) {
+		State state = of(level, hall);
+		long day = StewardWishes.day(level);
+		if (declined(state, Renewals.RULE, day) || state.proposals().size() >= MAX_PROPOSALS || state.proposals().stream().anyMatch(Proposal::isRenewal)) {
+			return Optional.empty();
+		}
+		BoundingBox box = house.box();
+		BlockPos seed = house.seed();
+		Proposal proposal = new Proposal(state.next(), Renewals.RULE, false, replacement.blueprint(), replacement.placement(), replacement.zone(), "",
+			"steward.aliveworkplace.why.renew", Renewals.where(hall, box), day, 0, false, List.of(), "", "",
+			List.of(box.minX(), box.minY(), box.minZ(), box.maxX(), box.maxY(), box.maxZ(), seed.getX(), seed.getY(), seed.getZ()));
+		save(level, hall, state.adding(proposal));
+		return Optional.of(proposal);
+	}
+
+	/** Takes a proposal off the desk (gone: nothing to approve any more). */
+	static void drop(ServerLevel level, BlockPos hall, int id) {
+		State state = of(level, hall);
+		save(level, hall, state.withProposals(state.proposals().stream().filter(p -> p.id() != id).toList()));
+	}
+
 	static boolean declined(State state, ResourceLocation rule, long day) {
 		Long until = state.declined().get(rule.toString());
 		return until != null && day < until;
@@ -373,6 +430,21 @@ public final class StewardDesk {
 		}
 		BlueprintOutline.glow(player, proposal.get().placement(), blueprint.get().size(), SHOW_TICKS);
 		return true;
+	}
+
+	/**
+	 * "Show me" on the old houses (27.20): every old house the last survey found glows for {@code player} for
+	 * {@link #SHOW_TICKS}, those that can be renewed in orange. Returns how many; 0 if none were found yet.
+	 */
+	public static int showOldHouses(ServerLevel level, BlockPos hall, ServerPlayer player) {
+		List<OldHouses.House> houses = OldHouses.result(level, hall).orElse(List.of());
+		List<BoundingBox> renew = houses.stream().filter(OldHouses.House::renewable).map(OldHouses.House::box).toList();
+		List<BoundingBox> kept = houses.stream().filter(h -> !h.renewable()).map(OldHouses.House::box).toList();
+		if (houses.isEmpty()) {
+			return 0;
+		}
+		BlueprintOutline.glowBoxes(player, renew, kept, SHOW_TICKS);
+		return houses.size();
 	}
 
 	/** "Another spot": the search goes on past the spots found so far; the proposal waits for it. False for an upgrade. */
@@ -524,6 +596,9 @@ public final class StewardDesk {
 		if (proposal.wall().isPresent()) {
 			return approveWall(level, hall, steward, proposal, proposal.wall().get());
 		}
+		if (proposal.isRenewal()) {
+			return Renewals.approve(level, hall, player, steward, entity, proposal);
+		}
 		if (openSites(level, hall).size() >= Stewards.maxOpenBuilds(level, steward)) {
 			return Outcome.FULL;
 		}
@@ -654,6 +729,7 @@ public final class StewardDesk {
 		lapse(level, hall);
 		resolve(level, hall);
 		StewardSafety.track(level, hall);
+		OldHouses.request(level, hall); // 27.20: keeps the survey of old houses fresh (a day old at most)
 		long day = StewardWishes.day(level);
 		tellShopping(level, hall, steward, day);
 		// 27.19: no new build while two of his builds have waited a whole day for materials
@@ -687,8 +763,10 @@ public final class StewardDesk {
 				});
 			}
 		}
+		Renewals.tidy(level, hall);
 		if (!paused) {
 			Walls.propose(level, hall, steward); // 27.18: a raided village's wall
+			Renewals.propose(level, hall, steward); // 27.21: an old house renewed
 		}
 		State state = of(level, hall);
 		if (state.next() != before) {

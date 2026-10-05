@@ -57,7 +57,7 @@ public final class Tithe {
 	/** {@code cents} hundredths of an emerald into {@code hall}'s treasury, up to its cap; returns what went in. */
 	public static int put(VillageHallBlockEntity hall, int cents) {
 		int before = hall.treasury();
-		hall.setTreasury((int) Math.max(before, Math.min(Treasury.cap(hall.rank()) * 100L, (long) before + Math.max(0, cents))));
+		hall.setTreasury((int) Math.max(before, Math.min(Treasury.cap(hall) * 100L, (long) before + Math.max(0, cents))));
 		int added = hall.treasury() - before;
 		hall.addTreasuryTotal(added);
 		return added;

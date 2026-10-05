@@ -127,6 +127,12 @@ public final class WorkplaceConfig {
 	public int guildsPerRank = 1;
 	/** Days an edict stays in force before it can be lifted. */
 	public int edictMinDays = 3;
+	/** Households in villages with a hall climb the class ladder (ROADMAP 34.2). Off: no classes; classes and progress stay saved. */
+	public boolean villageClasses = Expansions.on(Expansions.M34);
+	/** Dawns running the next class's needs must hold for a household to rise one class. */
+	public int classRiseDays = 2;
+	/** Dawns running a need of their own class must fail for a household to fall one class. */
+	public int classFallDays = 3;
 	/** Villagers at a composter can be made Berry Breeders with a Cobblemon berry (ROADMAP 28.9). Off: no Berry Breeder job. */
 	public boolean berryBreeders = Expansions.on(Expansions.M28);
 	/** A Journeyman Builder (or higher) by a Village Hall can be made its Steward with the hall's City Plan (ROADMAP 27.5). Off: no new Stewards, and those appointed stand idle. */
@@ -143,6 +149,8 @@ public final class WorkplaceConfig {
 	public int caravanRoadReach = 256;
 	/** A raided village's Steward proposes a wall along the plan's wall line, built from a wall kit (ROADMAP 27.18). Off: he never proposes walls. */
 	public boolean stewardWalls = Expansions.on(Expansions.M27);
+	/** A Steward rebuilds the old village houses in zones whose "renew old houses" switch is on, one at a time, in the zone's style (ROADMAP 27.21). Off: he never proposes to renew a house. */
+	public boolean stewardRenewal = Expansions.on(Expansions.M27);
 	/** Villagers at a Campfire Pot can be made Camp Cooks with Hearty Grains (ROADMAP 28.8). Off: no Camp Cook job. */
 	public boolean campCooks = Expansions.on(Expansions.M28);
 	/** Villagers at a Pasture Block can be made Habitat Keepers with a honey bottle (ROADMAP 28.10). Off: no Habitat Keeper job. */
@@ -245,6 +253,8 @@ public final class WorkplaceConfig {
 		"maxWorkPace", 100, 400,
 		"edictMinDays", 0, 30,
 		"guildsPerRank", 1, 4,
+		"classRiseDays", 1, 30,
+		"classFallDays", 1, 30,
 		"giftedChance", 0, 1000,
 		"seasonDays", 1, 120,
 		"treasuryPerWorker", 0, 500,
@@ -359,6 +369,10 @@ public final class WorkplaceConfig {
 		io.github.jcondedata.aliveworkplace.people.Tonics.ENABLED = tonics && Expansions.on(Expansions.M30);
 		io.github.jcondedata.aliveworkplace.hall.Guilds.ENABLED = guilds && Expansions.on(Expansions.M30);
 		io.github.jcondedata.aliveworkplace.hall.Guilds.PER_RANK = guildsPerRank;
+		// Off in gametests (a hall round could move a test's household a class); the class tests turn it on.
+		io.github.jcondedata.aliveworkplace.people.SocialClasses.ENABLED = villageClasses && Expansions.on(Expansions.M34) && System.getProperty("fabric-api.gametest") == null;
+		io.github.jcondedata.aliveworkplace.people.SocialClasses.RISE_DAYS = classRiseDays;
+		io.github.jcondedata.aliveworkplace.people.SocialClasses.FALL_DAYS = classFallDays;
 		io.github.jcondedata.aliveworkplace.hall.HarvestIdols.ENABLED = harvestIdols && Expansions.on(Expansions.M30);
 		io.github.jcondedata.aliveworkplace.explore.ExplorerWork.RANGE = explorerRange;
 		PostOffice.ROUND = postmanRange;
@@ -418,5 +432,7 @@ public final class WorkplaceConfig {
 		io.github.jcondedata.aliveworkplace.city.CaravanRoads.REACH = caravanRoadReach;
 		// Off in gametests (a test's wall would be built under other tests); the wall tests turn it on.
 		io.github.jcondedata.aliveworkplace.city.Walls.ENABLED = stewardWalls && Expansions.on(Expansions.M27) && System.getProperty("fabric-api.gametest") == null;
+		// Off in gametests (another test's old house would be renewed under it); the renewal tests turn it on.
+		io.github.jcondedata.aliveworkplace.city.Renewals.ENABLED = stewardRenewal && Expansions.on(Expansions.M27) && System.getProperty("fabric-api.gametest") == null;
 	}
 }

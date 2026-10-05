@@ -422,6 +422,9 @@ public final class StrangeMoods {
 		level.playSound(null, villager.blockPosition(), SoundEvents.PLAYER_LEVELUP, SoundSource.NEUTRAL, 1f, 1f);
 		if (LegendSlots.whyNot(level, hall, legend, villager.getUUID()).isEmpty()) {
 			Legends.make(level, villager, legend, "inspired");
+			if (Founder.isFounder(legend)) {
+				Founder.made(level, hall); // the Founder's mood never comes again (29.23)
+			}
 		}
 		return record;
 	}
@@ -501,6 +504,9 @@ public final class StrangeMoods {
 	 * the maker and the day, so the same mood always makes the same name.
 	 */
 	public static ItemStack masterwork(ServerLevel level, @Nullable BlockPos hall, Villager maker, Legend legend, StrangeMood mood, long day) {
+		if (Founder.isFounder(legend)) {
+			return Founder.charter(level, hall, maker, legend, day); // the Charter of the village (29.23)
+		}
 		Item item = masterworkItem(legend);
 		ItemStack stack = new ItemStack(item == Items.AIR ? Items.NETHER_STAR : item);
 		JsonObject mw = legend.masterwork();

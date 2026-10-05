@@ -29,6 +29,23 @@ public final class ModAttachments {
 	/** A wedding the Seer blessed (29.16), on each of the couple: the day, the mood and its days, the baby's days, whether it's still due. */
 	public static final Attachment<io.github.jcondedata.aliveworkplace.legend.Seer.Blessing> SEER_BLESSING = Attachment.saved("seer_blessing", io.github.jcondedata.aliveworkplace.legend.Seer.Blessing.CODEC);
 
+	/** The last banquet of the Grand Chef's (29.18) a villager came to: the day, the mood and its days. Absent: none. */
+	public static final Attachment<io.github.jcondedata.aliveworkplace.hall.Banquets.Feasted> BANQUET = Attachment.saved("banquet", io.github.jcondedata.aliveworkplace.hall.Banquets.Feasted.CODEC);
+
+	/** A Bard Laureate's (29.19) last work song: the day, which of the two, when it ends, where. Absent: none yet. */
+	public static final Attachment<io.github.jcondedata.aliveworkplace.legend.BardLaureate.Song> WORK_SONG = Attachment.saved("work_song", io.github.jcondedata.aliveworkplace.legend.BardLaureate.Song.CODEC);
+	/** The day a villager last heard a Bard Laureate's work song (29.19). Absent: never. */
+	public static final Attachment<Long> SONG_HEARD = Attachment.saved("song_heard", com.mojang.serialization.Codec.LONG);
+
+	/** A guard's war dog from the Beastmaster (29.20): the dog, and the day the last one fell. Absent: never had one. */
+	public static final Attachment<io.github.jcondedata.aliveworkplace.legend.Beastmaster.Dog> WAR_DOG = Attachment.saved("war_dog", io.github.jcondedata.aliveworkplace.legend.Beastmaster.Dog.CODEC);
+	/** On a wolf: the guard it's the war dog of (29.20). Absent: nobody's war dog. */
+	public static final Attachment<java.util.UUID> WAR_DOG_OF = Attachment.saved("war_dog_of", net.minecraft.core.UUIDUtil.CODEC);
+	/** On a horse: the day a Beastmaster (29.20) bred it. Absent: not theirs. */
+	public static final Attachment<Long> BRED_HORSE = Attachment.saved("bred_horse", com.mojang.serialization.Codec.LONG);
+	/** On a Beastmaster (29.20): the day of their last foal. Absent: none yet. */
+	public static final Attachment<Long> LAST_FOAL = Attachment.saved("last_foal", com.mojang.serialization.Codec.LONG);
+
 	/** A villager's gift (29.6): a gift's id, or {@code none}. Absent: the UUID roll decides ({@code Gifted.of}). */
 	/** The guild this villager leads and its village's hall (ROADMAP 30.17); absent: they lead none. */
 	public static final Attachment<io.github.jcondedata.aliveworkplace.hall.Guilds.Master> GUILD_MASTER = Attachment.saved("guild_master", io.github.jcondedata.aliveworkplace.hall.Guilds.Master.CODEC);
@@ -309,6 +326,13 @@ public final class ModAttachments {
 
 	/** The villager's job site and how often a workstation there had been broken when they got it (bug B15; see JobSiteTickets). */
 	public static final Attachment<io.github.jcondedata.aliveworkplace.work.JobSiteTickets.Held> JOB_SITE_HELD = Attachment.saved("job_site_held", io.github.jcondedata.aliveworkplace.work.JobSiteTickets.Held.CODEC);
+
+	/** A villager's social class (ROADMAP 34.2): the class id, e.g. {@code aliveworkplace:artisan}. Absent: not seeded yet (34.22). */
+	public static final Attachment<net.minecraft.resources.ResourceLocation> SOCIAL_CLASS = Attachment.saved("social_class", net.minecraft.resources.ResourceLocation.CODEC);
+	/** Their progress on the class ladder (34.2): dawns met and missed, days fed running, the last dawn counted. Absent: all 0. */
+	public static final Attachment<io.github.jcondedata.aliveworkplace.people.SocialClasses.Progress> CLASS_PROGRESS = Attachment.saved("class_progress", io.github.jcondedata.aliveworkplace.people.SocialClasses.Progress.CODEC);
+	/** Luxury id to the day they last had one (34.4 fills it; a {@code luxury} class need reads it). Absent: none had. */
+	public static final Attachment<java.util.Map<net.minecraft.resources.ResourceLocation, Long>> LUXURIES_HAD = Attachment.saved("luxuries_had", com.mojang.serialization.Codec.unboundedMap(net.minecraft.resources.ResourceLocation.CODEC, com.mojang.serialization.Codec.LONG));
 
 	public static void init() {
 	}

@@ -59,6 +59,7 @@ public final class AliveWorkplace {
 		io.github.jcondedata.aliveworkplace.guard.GuardPartners.init();
 		io.github.jcondedata.aliveworkplace.guard.Escorts.init();
 		io.github.jcondedata.aliveworkplace.hall.Festivals.init();
+		io.github.jcondedata.aliveworkplace.hall.Banquets.init();
 		io.github.jcondedata.aliveworkplace.hall.Curfew.init();
 		io.github.jcondedata.aliveworkplace.hall.Conscription.init();
 		io.github.jcondedata.aliveworkplace.hall.Seasons.init();
@@ -69,10 +70,13 @@ public final class AliveWorkplace {
 		io.github.jcondedata.aliveworkplace.city.CityPlans.init();
 		io.github.jcondedata.aliveworkplace.hall.Edicts.init();
 		io.github.jcondedata.aliveworkplace.hall.Guilds.init();
+		io.github.jcondedata.aliveworkplace.people.SocialClasses.init();
+		io.github.jcondedata.aliveworkplace.hall.Services.init(); // services nearby (34.3)
 		io.github.jcondedata.aliveworkplace.people.Tonics.init();
 		io.github.jcondedata.aliveworkplace.city.StewardRules.init();
 		io.github.jcondedata.aliveworkplace.ranch.PokemonChores.init();
 		io.github.jcondedata.aliveworkplace.legend.Legends.init();
+		io.github.jcondedata.aliveworkplace.hall.Anthems.init(); // the anthem's player (29.19)
 		io.github.jcondedata.aliveworkplace.legend.Gifted.init();
 		io.github.jcondedata.aliveworkplace.research.ResearchTrees.init();
 		io.github.jcondedata.aliveworkplace.work.PartnerShows.init();
@@ -82,6 +86,7 @@ public final class AliveWorkplace {
 		io.github.jcondedata.aliveworkplace.blueprint.BlueprintStyles.init();
 		io.github.jcondedata.aliveworkplace.city.RoadStyles.init();
 		io.github.jcondedata.aliveworkplace.city.WallKits.init();
+		io.github.jcondedata.aliveworkplace.city.RenewalLists.init();
 		integrations.run();
 		io.github.jcondedata.aliveworkplace.build.MaterialFamilies.init();
 		io.github.jcondedata.aliveworkplace.build.StallWatch.init();

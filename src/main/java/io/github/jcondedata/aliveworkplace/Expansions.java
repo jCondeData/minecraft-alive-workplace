@@ -11,7 +11,7 @@ package io.github.jcondedata.aliveworkplace;
  * are open while they run ({@link #openForTests}); a test of the gate itself closes them for a moment.
  */
 public final class Expansions {
-	/** Milestone 27, Villages that build themselves (1.1): {@code steward}, {@code stewardSelfRun}, {@code stewardMaxOpenBuilds}, {@code stewardRoads}, {@code caravanRoads}, {@code stewardWalls}. */
+	/** Milestone 27, Villages that build themselves (1.1): {@code steward}, {@code stewardSelfRun}, {@code stewardMaxOpenBuilds}, {@code stewardRoads}, {@code caravanRoads}, {@code stewardWalls}, {@code stewardRenewal}. */
 	public static final boolean M27 = false;
 	/**
 	 * Milestone 28, Pokémon and villagers, together (1.2): {@code partnerShows}, {@code nurseHealingMachine},
@@ -26,6 +26,8 @@ public final class Expansions {
 	 * {@code villageBanners}, {@code cradles}, {@code harvestIdols}, {@code tonics}.
 	 */
 	public static final boolean M30 = false;
+	/** Milestone 34, Classes and luxuries (1.8): {@code villageClasses}, {@code classRiseDays}, {@code classFallDays}. */
+	public static final boolean M34 = false;
 
 	/**
 	 * Open in GameTests (they test the unfinished expansions) and in the screenshot client (the nightly showcase films
@@ -45,12 +47,13 @@ public final class Expansions {
 	static Boolean milestoneOf(String option) {
 		return switch (option) {
 			case "steward", "stewardSelfRun", "stewardMaxOpenBuilds", "stewardRoads", "caravanRoads", "caravanRoadReach",
-				"stewardWalls" -> M27;
+				"stewardWalls", "stewardRenewal" -> M27;
 			case "partnerShows", "nurseHealingMachine", "berryBreeders", "campCooks", "habitatKeepers", "habitatSightings",
 				"daycareKeepers", "gemGrowers", "villageHabitats", "pokemonVillageHouses" -> M28;
 			case "legends", "legendNeeds", "legendSites", "strangeMoods", "giftedChance" -> M29;
 			case "villageEdicts", "edictMinDays", "workHorns", "villageBanners", "cradles", "harvestIdols", "tonics", "guilds",
 				"guildsPerRank" -> M30;
+			case "villageClasses", "classRiseDays", "classFallDays" -> M34;
 			default -> null;
 		};
 	}

@@ -28,12 +28,55 @@ asks for the steps, `latest.log` and any crash report).
 - **Builders no longer end up stuck inside the ground** (B60): a builder that couldn't walk to its next block hopped
   to the spot it had picked earlier, even if a crewmate or a neighbouring site had filled that spot with dirt since
   (the soak found one inside a landscaping fill). It now checks the spot is still free and looks for another one.
+- **Villagers climb the ladder to a bed upstairs** (B79): a villager whose bed is in an attic reached by a ladder (the
+  Stone House's, which a renewed two-bed home becomes) couldn't find a way up, and after a minute gave the bed up. At
+  bedtime they now walk to the ladder, climb it, step off towards the bed and sleep there.
+- **Every guild shows in the Book of Edicts** (B78): the Book's guild row had room for six, so a City's seventh to
+  twelfth guilds never appeared. With more than six, the row now shows five at a time and its last slot, More guilds,
+  turns to the next ones (and back to the first after the last).
 - **A build saved by 0.138.0 or earlier keeps its progress on upgrade** (B64): opened with a newer jar, a site half
   through a raised foundation (or in its walls) dropped to a few percent the first time it loaded. It now works out
   the progress it showed from the saved stage and step.
 - **A farmer's carrots and potatoes reach the chests** (B77): a village farmer kept up to 32 of each in his bag as
   seed stock, so a Farmstead's field could be harvested without anything landing in its chest. He now takes them from the
   chests to plant with, like seeds, and puts the whole harvest away.
+- **The Founder** (29.23), a Mythic Legend in a burgundy mantle with a gold chain of office, who keeps their own
+  trade: at the village's first rise to City (only the first), its most experienced Master is seized by the Founder's
+  mood and asks for a block of gold, a block of emeralds and a diamond. Their Masterwork is **The Charter of
+  <village>**, a written book of the village's story from its chronicle (its founding, each rank, its Legends, its first
+  wedding, the raids it beat), signed by the Founder. A failed mood passes to the next most experienced Master after
+  the week of sulking. Announced to the whole server, within the Mythic cap. The village's builders raise the
+  Founder's statue by the hall from the chests (a stepped plinth, a copper plaque, the Founder with a hand raised):
+  5 beauty and everyone 5 happier while it stands. Every 7 days the hall's owner gets a **Founder's Wagon**: a
+  Settler's Wagon whose camp brings a Village Hall named "New <village>" and blueprints in the village's styles.
+- **The Beastmaster** (29.20), a Rare Legend in brown furs under a wolf-pelt hood: found as a prisoner in a pillager
+  outpost once the village keeps a ranch (10 animals within 16 blocks of a Rancher's, Butcher's or Shepherd's
+  workstation), or born to a Rancher. Likes clothes. With bones in their chest they tame a war dog for every guard
+  without one (a village wolf; when only a pair is left, they breed the pair), fit it with wolf armour from armadillo
+  scutes, and send it to the guard: it follows them on patrol and in a raid and goes for what they fight. One per
+  guard; a lost dog is replaced after 2 days. Once a day, with golden carrots in the chest, they breed the ranch's two
+  best horses: the foal gets the best speed, jump and health of its parents and a little more (never past vanilla's
+  best), is saddled from the chest when grown, and guards on cavalry duty ride their horses first.
+- **The Bard Laureate** (29.19), a Rare Legend in a green doublet with a lute on the back and a laurel wreath: a guest
+  at a festival 30 villagers come to, or born to a Bard. Likes books. On settling they compose the village's anthem,
+  16 notes on one instrument made from the village's name (the same name always gives the same tune), kept in the hall
+  and played over it in note-block notes at every festival, rank-up, wedding and Legend arrival, and from a new
+  button on the hall's Legends page; the hall's owner gets it as a written book, "The Anthem of Thornholm". Twice a day they sing a work song
+  for 2 minutes where work is busiest: workers within 16 blocks work 25% faster while they sing, and everyone who
+  hears is 5 happier for the day.
+- **The Grand Chef** (29.18), a Rare Legend in a tall white toque with a gold band and a gold ladle at the apron: a
+  Master Chef inspired to bake "The <village> Midsummer Cake", a guest at the inn, or born to a Chef, once the store
+  holds 8 kinds of meal. Likes wine. Every 5 days after work the village gathers round the hall (or the Market Square)
+  for a banquet, and at supper each grown-up eats two meals from the store, of as many kinds as it has: everyone who
+  came is 20 happier for 3 days, and for those 3 days the village may have two babies a day (beds and food as usual).
+  Chefs in the village cook 25% faster.
+- **The Merchant Prince** (29.17), a Legendary Legend in a crimson coat and feathered hat: a castaway by a shipwreck
+  once the treasury has taken in 500 emeralds and the village sends caravans on 3 routes. With him the treasury earns
+  2% a day and holds twice as much; the hall gets a **Bank** page where each player keeps up to 10 stacks of emeralds
+  at 5% a week (and takes them out any time, even after he's gone); every 10 days a **trade fair** brings 6 traders and
+  a stall for each village you trade with, red and yellow bunting round the square (taken down the next day),
+  fireworks, and every trade 10% cheaper for the day; and every stack a caravan brings to a village that was waiting
+  for it earns the treasury an emerald (shown on the trade routes page).
 ### Added
 - **The Arena** (28.16): with Cobblemon, three new blueprints in the Blueprint Table (and sold by an Expert Trainer
   Leader). Arena: a 15×9 battle ring of packed mud with white lines and a centre circle, a trainer's box on a dais at
@@ -47,6 +90,30 @@ asks for the steps, `latest.log` and any crash report).
   Breeder by farmland beds), a Daycare (a Daycare Keeper at a Pasture Block on a straw floor) and a Gem Grotto (a Gem
   Grower at a stonecutter, an amethyst niche, tumblestones on magma behind glass), in all five village styles, each
   with its worker already in the job and a chest of the job's things. Config `pokemonVillageHouses` (on).
+- **Old villages renewed** (27.21): one old house at a time (at most one every 2 days), the Steward proposes to rebuild
+  it in its zone's style: "Renew the old house 14 blocks west as a Stone House (Cherry)". A home becomes the first of
+  Starter Cottage, Stone House and Terrace with as many beds; a job's house the building that job's workplace rule
+  builds (an armorer's becomes a Smithy). It must fit the old plot plus 3 blocks, its front where the old door was. The
+  old house is saved as a blueprint (`renewal/<hall>/<n>`), taken down by the builders into the store, and the new one
+  goes up on the plot; its villagers keep their beds and jobs, and the chronicle notes it. Ask me first asks for each
+  house; Run the village renews by itself, only in zones with "Renew" on. Lists are data
+  (`data/<ns>/steward_renewal/`). Config `stewardRenewal`.
+- **Old houses, found and measured** (27.20): in zones with "Renew" on, the Steward looks for houses no builder built
+  (round a bed or a workstation) and measures each by its blocks. The desk lists them ("Old houses: 4, 3 can be renewed")
+  with where each stands and why one is kept (a chest inside, a player built there, not of village blocks, out of the
+  zone), and a click outlines them all in the world. Packs add their village blocks to the tag
+  `aliveworkplace:village_house_blocks`. Nothing is rebuilt yet.
+- **The class engine for 1.8** (34.2, off until 1.8 is finished): households in a village with a hall can climb from
+  Peasant to Artisan, Burgher and Noble. The four classes are data files (`data/<ns>/classes/`) listing what each needs
+  (a home of some grade, fed days running, a varied diet, beauty near home, a finished build, the village's rank,
+  services and luxuries); a household rises after 2 dawns with the next class's needs and falls after 3 without its
+  own, one step a day, never below Peasant; a married couple moves together and children follow the grown-ups of
+  their house. `villageClasses`, `classRiseDays` and `classFallDays` in the config. Nothing changes in game yet.
+- **Services nearby for 1.8** (34.3, off until 1.8 is finished): six services a home can have nearby, as data files
+  (`data/<ns>/services/`): a chapel (a finished Chapel), a school (a Teacher, or a Schoolhouse or School), a clinic (a
+  Nurse, or a Healing Center or Clinic), a library (a Scholar or Librarian, or a Library), a market (a Market Square,
+  village-wide) and a tavern (an Innkeeper, or an Inn). Each reaches homes within 48 blocks; styled and upgraded builds
+  count. The hall works out where its services are once a day, and the classes' `services` needs read that list.
 - **The Steward is safe by design** (27.19): his plans, roads and walls never go into Keep Clear, another village or a
   protected village that isn't his owner's, and a ledger of what players built in a village (from 1.1 on) keeps his
   plans and walls out of those spots unless the owner approves one by hand. His sites leave a player's block where it

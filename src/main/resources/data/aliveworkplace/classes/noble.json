@@ -1,0 +1,27 @@
+{
+  "tier": 3,
+  "name": {"translate": "class.aliveworkplace.noble"},
+  "tax": 4,
+  "outfit": "aliveworkplace:textures/entity/villager/class/noble.png",
+  "needs": [
+    {"type": "home", "grade": 3},
+    {"type": "fed_days", "days": 3},
+    {"type": "diet", "kind": "varied"},
+    {"type": "services", "all": ["chapel", "school", "clinic", "library"]},
+    {"type": "village_rank", "rank": "town"},
+    {"type": "beauty", "points": 3},
+    {"type": "luxury", "id": "aliveworkplace:noble_robes"},
+    {"type": "luxury", "id": "aliveworkplace:vintage_wine"},
+    {"type": "luxury", "id": "aliveworkplace:emerald_brooch"}
+  ],
+  "wants": [
+    {"type": "luxury", "id": "aliveworkplace:illuminated_book"},
+    {"type": "luxury", "id": "aliveworkplace:gold_circlet"}
+  ],
+  "jobs": [],
+  "effects": [
+    {"type": "aliveworkplace:wellbeing", "percent": 3, "max": 9},
+    {"type": "aliveworkplace:festival", "replace_every": 2, "kind": "aliveworkplace:noble_ball"}
+  ],
+  "enabled": true
+}

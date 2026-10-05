@@ -45,16 +45,26 @@ public class CaravanRoadGameTests implements net.fabricmc.fabric.api.gametest.v1
 	/** How far either side of the road's line the ground laid north of the area reaches. */
 	private static final int SIDE = 7;
 
-	/** The area cleared to flat grass (floor y 1), the old sites round it forgotten, and the hall; its absolute position. */
+	/**
+	 * The area cleared to flat grass (floor y 1), the old sites and finished buildings round it and along the roads north
+	 * of it forgotten, and the hall; its absolute position. The roads run up to 276 blocks north, over the spots of earlier
+	 * batches' tests (the test grid grows south, batch after batch): a finished building one of them recorded there stays
+	 * on the record after the corridor wipes its blocks, and a road keeps out of it (CI, 2026-10-05: an earlier Builder
+	 * test's guildhall record over the second hall walled that half in at its first node).
+	 */
 	private static BlockPos ground(GameTestHelper helper) {
 		Leftovers.clear(helper);
 		ServerLevel level = helper.getLevel();
 		BlockPos a = helper.absolutePos(BlockPos.ZERO);
 		BuildSiteManager manager = BuildSiteManager.get(level);
 		for (BuildSite site : new ArrayList<>(manager.all())) {
-			if (Math.abs(site.placement().origin().getX() - a.getX()) < 80 && site.placement().origin().getZ() > a.getZ() - 400
-				&& site.placement().origin().getZ() < a.getZ() + 80) {
+			if (near(site.placement().origin(), a)) {
 				manager.remove(site.id());
+			}
+		}
+		for (BuildSiteManager.Finished f : manager.finishedIn(level)) {
+			if (near(f.placement().origin(), a)) {
+				manager.forgetFinished(f.placement());
 			}
 		}
 		for (int x = 0; x < 30; x++) {
@@ -68,6 +78,11 @@ public class CaravanRoadGameTests implements net.fabricmc.fabric.api.gametest.v1
 		}
 		helper.setBlock(HALL, ModBlocks.VILLAGE_HALL);
 		return helper.absolutePos(HALL);
+	}
+
+	/** Whether a site's or building's origin is round the area or the roads north of it (any of them within reach of a road). */
+	private static boolean near(BlockPos origin, BlockPos area) {
+		return Math.abs(origin.getX() - area.getX()) < 80 && origin.getZ() > area.getZ() - 400 && origin.getZ() < area.getZ() + 80;
 	}
 
 	/** The test's own chunk tickets: let go when the test ends without touching the chunks the test framework forces. */

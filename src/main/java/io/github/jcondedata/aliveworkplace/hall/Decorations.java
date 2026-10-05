@@ -41,6 +41,7 @@ public final class Decorations {
 			beauty += points(f.structure());
 		}
 		beauty += io.github.jcondedata.aliveworkplace.city.Roads.lamps(level, hall) * POINTS.get(StarterBlueprints.STREET_LAMP.id()); // the roads' lamps (27.16)
+		beauty += io.github.jcondedata.aliveworkplace.legend.Founder.beauty(level, hall); // the Founder's statue while it stands (29.23)
 		return beauty + io.github.jcondedata.aliveworkplace.legend.StrangeMoods.beauty(level, hall); // Masterworks in item frames (29.10)
 	}
 

@@ -1,0 +1,7 @@
+{
+  "job": "minecraft:weaponsmith",
+  "buildings": [
+    "aliveworkplace:guard_house",
+    "aliveworkplace:barracks"
+  ]
+}

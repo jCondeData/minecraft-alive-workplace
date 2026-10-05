@@ -53,6 +53,27 @@ public final class BlueprintOutline {
 	}
 
 	private static final java.util.Map<java.util.UUID, Glow> GLOWS = new java.util.concurrent.ConcurrentHashMap<>();
+	/** Old houses' outlines ("Show me" on the Steward's desk, 27.20): those that can be renewed, and those that can't. */
+	private static final DustParticleOptions OLD_HOUSE = new DustParticleOptions(new Vector3f(1.0f, 0.55f, 0.1f), 1.0f);
+	private static final DustParticleOptions OLD_HOUSE_KEPT = new DustParticleOptions(new Vector3f(0.6f, 0.6f, 0.6f), 1.0f);
+
+	private record Boxes(net.minecraft.resources.ResourceLocation dimension, java.util.List<BoundingBox> renew, java.util.List<BoundingBox> kept,
+						 long until) {
+	}
+
+	private static final java.util.Map<java.util.UUID, Boxes> BOXES = new java.util.concurrent.ConcurrentHashMap<>();
+
+	/** Shows plain box outlines to {@code player} for {@code ticks} ticks: {@code renew} in orange, {@code kept} in grey. */
+	public static void glowBoxes(ServerPlayer player, java.util.List<BoundingBox> renew, java.util.List<BoundingBox> kept, int ticks) {
+		BOXES.put(player.getUUID(), new Boxes(Ids.of(player.serverLevel().dimension()), java.util.List.copyOf(renew), java.util.List.copyOf(kept),
+			player.serverLevel().getGameTime() + ticks));
+	}
+
+	/** How many box outlines are showing to {@code player} (tests). */
+	public static int glowingBoxes(ServerPlayer player) {
+		Boxes boxes = BOXES.get(player.getUUID());
+		return boxes == null || player.serverLevel().getGameTime() >= boxes.until() ? 0 : boxes.renew().size() + boxes.kept().size();
+	}
 
 	/** Shows {@code placement}'s outline to {@code player} for {@code ticks} ticks, in place of any outline shown so before. */
 	public static void glow(ServerPlayer player, BlueprintData.Placement placement, Vec3i size, int ticks) {
@@ -77,6 +98,15 @@ public final class BlueprintOutline {
 						GLOWS.remove(player.getUUID());
 					} else if (glow.placement().dimension().equals(Ids.of(level.dimension()))) {
 						show(level, player, glow.placement(), glow.size());
+					}
+				}
+				Boxes boxes = BOXES.get(player.getUUID());
+				if (boxes != null) {
+					if (level.getGameTime() >= boxes.until()) {
+						BOXES.remove(player.getUUID());
+					} else if (boxes.dimension().equals(Ids.of(level.dimension()))) {
+						boxes.renew().forEach(b -> box(level, player, b, OLD_HOUSE));
+						boxes.kept().forEach(b -> box(level, player, b, OLD_HOUSE_KEPT));
 					}
 				}
 				for (InteractionHand hand : InteractionHand.values()) {

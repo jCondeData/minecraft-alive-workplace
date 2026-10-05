@@ -51,6 +51,7 @@ public class GuardCombat extends Behavior<Villager> {
 
 	/** Guards in a fight right now (their patrol waits). */
 	private static final Set<Villager> FIGHTING = Collections.newSetFromMap(new WeakHashMap<>());
+	private static final java.util.Map<Villager, LivingEntity> FOES = new WeakHashMap<>();
 
 	@Nullable
 	private LivingEntity target;
@@ -67,6 +68,12 @@ public class GuardCombat extends Behavior<Villager> {
 
 	public static boolean isFighting(Villager villager) {
 		return FIGHTING.contains(villager);
+	}
+
+	/** What {@code villager} is fighting now (their war dog goes for it, 29.20), or null. */
+	@Nullable
+	public static LivingEntity foe(Villager villager) {
+		return FOES.get(villager);
 	}
 
 	@Override
@@ -113,6 +120,7 @@ public class GuardCombat extends Behavior<Villager> {
 	@Override
 	protected void stop(ServerLevel level, Villager villager, long gameTime) {
 		FIGHTING.remove(villager);
+		FOES.remove(villager);
 		villager.getBrain().eraseMemory(MemoryModuleType.WALK_TARGET);
 		target = null;
 		searchTimer = 0;
@@ -122,8 +130,10 @@ public class GuardCombat extends Behavior<Villager> {
 	protected void tick(ServerLevel level, Villager villager, long gameTime) {
 		LivingEntity foe = target;
 		if (foe == null) {
+			FOES.remove(villager);
 			return;
 		}
+		FOES.put(villager, foe);
 		villager.getBrain().setMemory(MemoryModuleType.LOOK_TARGET, new EntityTracker(foe, true));
 		villager.getLookControl().setLookAt(foe, 30f, 30f);
 		WorkerStatus.set(villager, title(villager), -1f,

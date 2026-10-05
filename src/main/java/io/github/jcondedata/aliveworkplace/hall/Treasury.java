@@ -14,6 +14,7 @@ import net.minecraft.sounds.SoundSource;
  * worker (the config's {@code treasuryPerWorker}, in hundredths), half as much in a village that's badly kept and half
  * again in one that's well kept, a quarter more a rank — and whoever opens the hall collects them (in CobbleDollars
  * when the pack has them). It keeps up to a stack of emeralds a rank; days the hall wasn't loaded count up to three.
+ * A Merchant Prince's bank (29.17) adds interest each day on what it holds and lets it hold more ({@link #cap(VillageHallBlockEntity)}).
  */
 public final class Treasury {
 	public static boolean ENABLED = true;
@@ -25,6 +26,23 @@ public final class Treasury {
 	/** Most emeralds the treasury holds at {@code rank}. */
 	public static int cap(VillageRanks.Rank rank) {
 		return 64 * (1 + rank.ordinal());
+	}
+
+	/**
+	 * Most emeralds the treasury of {@code entity} holds: {@link #cap(VillageRanks.Rank)}, times a Merchant Prince's
+	 * bank's (29.17).
+	 */
+	public static int cap(VillageHallBlockEntity entity) {
+		int base = cap(entity.rank());
+		if (entity.getLevel() instanceof ServerLevel level) {
+			return base * io.github.jcondedata.aliveworkplace.legend.BankPower.of(level, entity.getBlockPos()).map(b -> b.cap()).orElse(1);
+		}
+		return base;
+	}
+
+	/** A day's interest on {@code cents} at {@code percent}, in hundredths of an emerald (rounded down). */
+	public static long interest(long cents, int percent) {
+		return Math.max(0, cents) * percent / 100;
 	}
 
 	/** A day's takings, in hundredths of an emerald. */
@@ -46,9 +64,16 @@ public final class Treasury {
 		}
 		VillageRanks.Rank rank = entity.rank();
 		float wellbeing = entity.needs() == null ? 0.5f : entity.needs().wellbeing();
-		long add = (long) takings(workers, wellbeing, rank) * Math.min(MAX_DAYS, day - last);
+		long days = Math.min(MAX_DAYS, day - last);
+		long add = (long) takings(workers, wellbeing, rank) * days;
 		int before = entity.treasury();
-		entity.setTreasury((int) Math.min(cap(rank) * 100L, entity.treasury() + add));
+		long cap = cap(entity) * 100L;
+		long held = before;
+		int percent = io.github.jcondedata.aliveworkplace.legend.BankPower.of(level, hall).map(b -> b.interest()).orElse(0);
+		for (long d = 0; d < days && percent > 0; d++) { // a bank's interest on what it held each day, then the takings
+			held = Math.min(cap, held + interest(held, percent));
+		}
+		entity.setTreasury((int) Math.max(before, Math.min(cap, held + add)));
 		entity.addTreasuryTotal(entity.treasury() - before);
 	}
 

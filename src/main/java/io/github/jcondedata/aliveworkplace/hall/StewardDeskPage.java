@@ -36,7 +36,11 @@ public final class StewardDeskPage {
 	public static final int RUN = 2;
 	public static final int REST = 3;
 	public static final int STEWARD = 4;
+	/** The old houses in renew zones (27.20). */
+	public static final int OLD_HOUSES = 6;
 	public static final int APPROVE_ALL = 8;
+	/** Old houses listed on their button, besides "and 3 more". */
+	static final int OLD_HOUSES_LISTED = 6;
 	/** The proposals' row. */
 	public static final int FIRST_PROPOSAL = VillageHallScreen.FIRST_ROW;
 	/** His open builds' row. */
@@ -74,6 +78,7 @@ public final class StewardDeskPage {
 		safetyNotes(head, level, hall);
 		head.setCount(Math.max(1, Math.min(5, lvl)));
 		menu.button(STEWARD, head, null);
+		oldHouses(menu, level, hall);
 		StewardDesk.State state = StewardDesk.of(level, hall);
 		if (state.proposals().size() > 1) {
 			menu.button(APPROVE_ALL, VillageHallScreen.icon(Items.EMERALD_BLOCK, Component.translatable("screen.aliveworkplace.desk.approve_all",
@@ -148,6 +153,50 @@ public final class StewardDeskPage {
 			menu.button(slot++, VillageHallScreen.icon(tip.icon(), tip.title().copy(), ChatFormatting.YELLOW,
 				VillageHallScreen.line(tip.how(), ChatFormatting.GRAY)), null);
 		}
+	}
+
+	/**
+	 * 27.20: in a plan with a renew zone, the old houses found there ("Old houses: 4, 3 can be renewed"), each with where it
+	 * is and whether it can be renewed; a click shows their outlines.
+	 */
+	private static void oldHouses(ChoiceMenu menu, ServerLevel level, BlockPos hall) {
+		if (!io.github.jcondedata.aliveworkplace.city.OldHouses.renewing(level, hall)) {
+			return;
+		}
+		io.github.jcondedata.aliveworkplace.city.OldHouses.request(level, hall);
+		Optional<List<io.github.jcondedata.aliveworkplace.city.OldHouses.House>> result =
+			io.github.jcondedata.aliveworkplace.city.OldHouses.result(level, hall);
+		if (result.isEmpty()) {
+			menu.button(OLD_HOUSES, VillageHallScreen.icon(Items.MOSSY_COBBLESTONE, Component.translatable("screen.aliveworkplace.desk.old_houses.looking"),
+				ChatFormatting.GRAY, VillageHallScreen.line("screen.aliveworkplace.desk.old_houses.looking_hint", ChatFormatting.DARK_GRAY)), null);
+			return;
+		}
+		List<io.github.jcondedata.aliveworkplace.city.OldHouses.House> houses = result.get();
+		long renewable = houses.stream().filter(io.github.jcondedata.aliveworkplace.city.OldHouses.House::renewable).count();
+		List<Component> lore = new ArrayList<>();
+		for (int i = 0; i < houses.size(); i++) {
+			if (i >= OLD_HOUSES_LISTED) {
+				lore.add(VillageHallScreen.line(Component.translatable("screen.aliveworkplace.desk.old_houses.more", houses.size() - OLD_HOUSES_LISTED),
+					ChatFormatting.DARK_GRAY));
+				break;
+			}
+			io.github.jcondedata.aliveworkplace.city.OldHouses.House house = houses.get(i);
+			lore.add(VillageHallScreen.line(Component.translatable("screen.aliveworkplace.desk.old_houses.house",
+				VillageHallScreen.where(hall, house.box().getCenter()), Component.translatable("screen.aliveworkplace.desk.old_houses.verdict."
+					+ house.verdict().name().toLowerCase(java.util.Locale.ROOT))), house.renewable() ? ChatFormatting.GREEN : ChatFormatting.GRAY));
+		}
+		lore.add(houses.isEmpty() ? VillageHallScreen.line("screen.aliveworkplace.desk.old_houses.none_hint", ChatFormatting.DARK_GRAY)
+			: VillageHallScreen.line(Component.translatable("screen.aliveworkplace.desk.old_houses.show_hint", StewardDesk.SHOW_TICKS / 20),
+			ChatFormatting.DARK_GRAY));
+		menu.button(OLD_HOUSES, VillageHallScreen.icon(Items.MOSSY_COBBLESTONE, Component.translatable("screen.aliveworkplace.desk.old_houses_count",
+			houses.size(), renewable), renewable > 0 ? ChatFormatting.YELLOW : ChatFormatting.GRAY, lore.toArray(Component[]::new)), houses.isEmpty() ? null : p -> {
+			int shown = StewardDesk.showOldHouses(level, hall, p);
+			if (shown > 0) {
+				Chat.actionBar(p, Component.translatable("message.aliveworkplace.steward.desk.old_houses_shown", shown, StewardDesk.SHOW_TICKS / 20)
+					.withStyle(ChatFormatting.AQUA));
+				p.closeContainer();
+			}
+		});
 	}
 
 	/** Roads that stopped at a gap too wide to bridge, on the Steward's card (27.16). */

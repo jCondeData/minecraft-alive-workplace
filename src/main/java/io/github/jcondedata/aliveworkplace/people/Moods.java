@@ -184,6 +184,24 @@ public final class Moods {
 			score += blessed.points();
 			good.add(blessed.reason());
 		}
+		// A Bard Laureate's work song heard today (29.19).
+		io.github.jcondedata.aliveworkplace.legend.LegendPowers.MoodReason song = io.github.jcondedata.aliveworkplace.legend.BardLaureate.heardMood(level, villager);
+		if (song != null) {
+			score += song.points();
+			good.add(song.reason());
+		}
+		// The Founder's statue (29.23), while it stands.
+		io.github.jcondedata.aliveworkplace.legend.LegendPowers.MoodReason statue = io.github.jcondedata.aliveworkplace.legend.Founder.statueMood(level, villager);
+		if (statue != null) {
+			score += statue.points();
+			good.add(statue.reason());
+		}
+		// A Grand Chef's banquet (29.18), for the days it lasts.
+		io.github.jcondedata.aliveworkplace.legend.LegendPowers.MoodReason banquet = io.github.jcondedata.aliveworkplace.hall.Banquets.mood(level, villager);
+		if (banquet != null) {
+			score += banquet.points();
+			good.add(banquet.reason());
+		}
 		if (!level.getEntitiesOfClass(Villager.class, villager.getBoundingBox().inflate(COMPANY_RANGE), v -> v != villager && v.isAlive()).isEmpty()) {
 			score += 5;
 			good.add(reason("company"));

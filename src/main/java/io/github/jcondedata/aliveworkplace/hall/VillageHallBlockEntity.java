@@ -30,12 +30,27 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 	/** The village's rank at the last round (see {@link VillageRanks}). */
 	private VillageRanks.Rank rank = VillageRanks.Rank.HAMLET;
 	private long treasuryTotal;
+	private PlayerBank.State playerBank = new PlayerBank.State();
+	/** The day of the last trade fair (29.17), or -1 before the first is counted. */
+	private long fairDay = -1;
+	/** The day of the last banquet (29.18, the Grand Chef), or -1 before the first; whether its feast was eaten yet. */
+	private long banquetDay = -1;
+	private boolean banquetEaten;
+	/** The village's anthem (29.19, the Bard Laureate), composed once; whether the owner has had the book. */
+	private Anthems.Anthem anthem;
+	private boolean anthemBookGiven;
+	/** The trade fair's bunting (29.17): the banners put up round the square, taken down after the fair's day. */
+	private final java.util.List<BlockPos> fairBunting = new java.util.ArrayList<>();
 	private int festivalCrowd;
 	/** Legends visiting as guests (29.8): who last came when, the guest staying now, and the day each place last rolled. */
 	private io.github.jcondedata.aliveworkplace.legend.LegendGuests.State legendGuests = io.github.jcondedata.aliveworkplace.legend.LegendGuests.State.EMPTY;
 	/** The Seer's dawn foretelling (29.16): tonight's raid, the next festival and market days, tomorrow's guest; empty in older halls. */
 	private io.github.jcondedata.aliveworkplace.legend.Seer.State seer = io.github.jcondedata.aliveworkplace.legend.Seer.State.EMPTY;
 	private long founderMoodDay;
+	/** The Founder (29.23): Masters whose Founder's mood failed (comma-joined UUIDs), whether the Founder was made, the last wagon day. */
+	private String founderTried = "";
+	private boolean founderMade;
+	private long founderWagonDay;
 	/** Strange moods (29.10): the day they may come again after one failed, and the day the village last rolled for one. */
 	private long noMoodUntil;
 	private long moodRolledDay;
@@ -150,9 +165,15 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 			io.github.jcondedata.aliveworkplace.legend.LegendNeeds.round(server, pos);
 			io.github.jcondedata.aliveworkplace.legend.StrangeMoods.round(server, pos);
 			io.github.jcondedata.aliveworkplace.people.Couples.round(server, pos);
+			Services.round(server, pos, hall, census.workers()); // the day's service list (34.3), before the class check reads it
+			io.github.jcondedata.aliveworkplace.people.SocialClasses.round(server, pos, hall); // the dawn class check (34.2)
 			if (Treasury.ENABLED) {
 				Treasury.round(server, pos, hall, census.workers().size());
 			}
+			PlayerBank.round(server, pos, hall);
+			TradeFairs.round(server, pos, hall);
+			Banquets.round(server, pos, hall);
+			Anthems.round(server, pos, hall);
 			io.github.jcondedata.aliveworkplace.guard.VillageRaids.tick(server, pos, census.villagers(), census.guards(), hall.lastRaidDay, day -> {
 				hall.lastRaidDay = day;
 				hall.setChanged();
@@ -513,6 +534,66 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 	}
 
 	/** Every emerald (in cents) the treasury has ever taken in (0 in halls from before 29.2). */
+	/** The players' deposits on the hall's bank page (29.17). */
+	public PlayerBank.State playerBank() {
+		return playerBank;
+	}
+
+	public long fairDay() {
+		return fairDay;
+	}
+
+	/** The day of the village's last banquet (29.18), -1 before the first. */
+	public long banquetDay() {
+		return banquetDay;
+	}
+
+	/** Whether that banquet's feast has been eaten (the village gathers first, then eats). */
+	public boolean banquetEaten() {
+		return banquetEaten;
+	}
+
+	/** The village's anthem (29.19), once a Bard Laureate has composed it. */
+	public java.util.Optional<Anthems.Anthem> anthem() {
+		return java.util.Optional.ofNullable(anthem);
+	}
+
+	public void setAnthem(@Nullable Anthems.Anthem anthem) {
+		this.anthem = anthem;
+		setChanged();
+	}
+
+	public boolean anthemBookGiven() {
+		return anthemBookGiven;
+	}
+
+	public void setAnthemBookGiven(boolean given) {
+		anthemBookGiven = given;
+		setChanged();
+	}
+
+	public void setBanquet(long day, boolean eaten) {
+		banquetDay = day;
+		banquetEaten = eaten;
+		setChanged();
+	}
+
+	public void setFairDay(long day) {
+		fairDay = day;
+		setChanged();
+	}
+
+	/** The banners of the trade fair's bunting still up (29.17); changed through {@link TradeFairs} only. */
+	public java.util.List<BlockPos> fairBunting() {
+		return java.util.Collections.unmodifiableList(fairBunting);
+	}
+
+	void setFairBunting(java.util.Collection<BlockPos> bunting) {
+		fairBunting.clear();
+		fairBunting.addAll(bunting);
+		setChanged();
+	}
+
 	public long treasuryTotal() {
 		return treasuryTotal;
 	}
@@ -562,6 +643,48 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 		setChanged();
 	}
 
+	/** The Masters whose Founder's mood came and failed (29.23), in order. */
+	public java.util.List<java.util.UUID> founderTried() {
+		java.util.List<java.util.UUID> out = new java.util.ArrayList<>();
+		for (String s : founderTried.split(",")) {
+			try {
+				if (!s.isEmpty()) {
+					out.add(java.util.UUID.fromString(s));
+				}
+			} catch (IllegalArgumentException ignored) {
+				// a damaged entry: skipped
+			}
+		}
+		return out;
+	}
+
+	public void addFounderTried(java.util.UUID who) {
+		if (!founderTried().contains(who)) {
+			founderTried = founderTried.isEmpty() ? who.toString() : founderTried + "," + who;
+			setChanged();
+		}
+	}
+
+	/** Whether the village's Founder's mood ended in a Founder (then it never comes again). */
+	public boolean founderMade() {
+		return founderMade;
+	}
+
+	public void setFounderMade(boolean made) {
+		founderMade = made;
+		setChanged();
+	}
+
+	/** The Chronicle day the Founder last gave a Founder's Wagon (0: never). */
+	public long founderWagonDay() {
+		return founderWagonDay;
+	}
+
+	public void setFounderWagonDay(long day) {
+		founderWagonDay = day;
+		setChanged();
+	}
+
 	/** The day strange moods may come again after one failed (0: any day). */
 	public long noMoodUntil() {
 		return noMoodUntil;
@@ -597,6 +720,26 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 
 	public void setLastTaxDay(long day) {
 		lastTaxDay = day;
+		setChanged();
+	}
+
+	/** Where the village's services were at the last daily count (34.3); empty in halls saved before. */
+	private java.util.List<Services.Found> services = java.util.List.of();
+	/** The day ({@link Chronicle#day}) the service list was worked out; 0 never. */
+	private long servicesDay;
+
+	public java.util.List<Services.Found> services() {
+		return services;
+	}
+
+	public long servicesDay() {
+		return servicesDay;
+	}
+
+	/** Keeps {@code found} as the service list worked out on {@code day}. */
+	public void setServices(java.util.List<Services.Found> found, long day) {
+		services = java.util.List.copyOf(found);
+		servicesDay = day;
 		setChanged();
 	}
 
@@ -647,10 +790,25 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 		festivalMissed = tag.contains("festivalMissed") ? Nbt.getLong(tag, "festivalMissed") : -1;
 		treasury = Nbt.getInt(tag, "treasury");
 		treasuryTotal = Nbt.getLong(tag, "treasuryTotal");
+		playerBank = PlayerBank.State.load(tag);
+		fairDay = tag.contains("fairDay") ? Nbt.getLong(tag, "fairDay") : -1;
+		banquetDay = tag.contains("banquetDay") ? Nbt.getLong(tag, "banquetDay") : -1;
+		banquetEaten = Nbt.getBoolean(tag, "banquetEaten");
+		String instrument = Nbt.getString(tag, "anthemInstrument");
+		int[] notes = Nbt.getIntArray(tag, "anthemNotes");
+		anthem = !instrument.isEmpty() && notes.length > 0 ? new Anthems.Anthem(instrument, notes) : null;
+		anthemBookGiven = Nbt.getBoolean(tag, "anthemBook");
+		fairBunting.clear();
+		for (long p : Nbt.getLongArray(tag, "fairBunting")) {
+			fairBunting.add(BlockPos.of(p));
+		}
 		festivalCrowd = Nbt.getInt(tag, "festivalCrowd");
 		legendGuests = io.github.jcondedata.aliveworkplace.legend.LegendGuests.State.load(tag);
 		seer = io.github.jcondedata.aliveworkplace.legend.Seer.State.load(tag);
 		founderMoodDay = Nbt.getLong(tag, "founderMoodDay");
+		founderTried = Nbt.getString(tag, "founderTried");
+		founderMade = Nbt.getBoolean(tag, "founderMade");
+		founderWagonDay = Nbt.getLong(tag, "founderWagonDay");
 		noMoodUntil = Nbt.getLong(tag, "noMoodUntil");
 		moodRolledDay = Nbt.getLong(tag, "moodRolledDay");
 		owner = Nbt.hasUuid(tag, "owner") ? Nbt.getUuid(tag, "owner") : null;
@@ -675,6 +833,10 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 		raidWorkUntil = Math.max(0, Nbt.getLong(tag, "raidWorkUntil"));
 		hornDay = tag.contains("hornDay") ? Nbt.getLong(tag, "hornDay") : -1;
 		rushUntil = Math.max(0, Nbt.getLong(tag, "rushUntil"));
+		services = !tag.contains("services") ? java.util.List.of()
+			: Services.Found.CODEC.listOf().parse(net.minecraft.nbt.NbtOps.INSTANCE, tag.get("services")).result().map(java.util.List::copyOf)
+				.orElse(java.util.List.of());
+		servicesDay = Nbt.getLong(tag, "servicesDay");
 		stewardWishes = !tag.contains("steward") ? io.github.jcondedata.aliveworkplace.city.StewardWishes.State.EMPTY
 			: io.github.jcondedata.aliveworkplace.city.StewardWishes.State.CODEC.parse(net.minecraft.nbt.NbtOps.INSTANCE, tag.get("steward"))
 				.result().orElse(io.github.jcondedata.aliveworkplace.city.StewardWishes.State.EMPTY);
@@ -709,6 +871,10 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 			tag.putString("CustomName", Component.Serializer.toJson(name, registries));
 		}
 		tag.putLong("lastBirth", lastBirth);
+		if (servicesDay != 0) {
+			Services.Found.CODEC.listOf().encodeStart(net.minecraft.nbt.NbtOps.INSTANCE, services).result().ifPresent(t -> tag.put("services", t));
+			tag.putLong("servicesDay", servicesDay);
+		}
 		tag.putInt("births", births);
 		if (colours != null) {
 			tag.putString("bannerBase", colours.base().getName());
@@ -729,10 +895,25 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 		tag.putLong("festivalMissed", festivalMissed);
 		tag.putInt("treasury", treasury);
 		tag.putLong("treasuryTotal", treasuryTotal);
+		playerBank.save(tag);
+		tag.putLong("fairDay", fairDay);
+		tag.putLong("banquetDay", banquetDay);
+		tag.putBoolean("banquetEaten", banquetEaten);
+		if (anthem != null) {
+			tag.putString("anthemInstrument", anthem.instrument());
+			tag.putIntArray("anthemNotes", anthem.notes());
+			tag.putBoolean("anthemBook", anthemBookGiven);
+		}
+		if (!fairBunting.isEmpty()) {
+			tag.put("fairBunting", new net.minecraft.nbt.LongArrayTag(fairBunting.stream().mapToLong(BlockPos::asLong).toArray()));
+		}
 		tag.putInt("festivalCrowd", festivalCrowd);
 		legendGuests.save(tag);
 		seer.save(tag);
 		tag.putLong("founderMoodDay", founderMoodDay);
+		tag.putString("founderTried", founderTried);
+		tag.putBoolean("founderMade", founderMade);
+		tag.putLong("founderWagonDay", founderWagonDay);
 		tag.putLong("noMoodUntil", noMoodUntil);
 		tag.putLong("moodRolledDay", moodRolledDay);
 		if (owner != null) {

@@ -922,6 +922,10 @@ def seer():
     am = t.face("arms_middle", "front")                  # a star on the folded sleeves
     paint(am, ((1, 1), (6, 2)), star)
     path = ASSETS / "textures" / "entity" / "villager" / "legend" / "seer.png"
+    t.save(path)
+    return [path]
+
+
 def golem_smith():
     """The Golem Smith (29.15), drawn over the Tinkerer's outfit: a heavy dark leather smith's apron from the chest to
     the shins with iron rivets and a scorched hem; riveted iron-rimmed goggles down over the eyes on a leather strap;
@@ -966,8 +970,239 @@ def golem_smith():
     return [path]
 
 
+def merchant_prince():
+    """The Merchant Prince (29.17): a long crimson coat to the shins with black cuffs and a turned-down collar, gold
+    buttons down the front edge, a white shirt and cravat at the throat, a black belt with a gold buckle and a coin
+    purse at the left hip; a wide-brimmed black hat with a gold band and a white feather sweeping back on the left.
+    A gold circlet at the brow marks the Legend under the hat."""
+    t = vg.VillagerTexture()
+    coat = vg.cloth("#9a1f2a")
+    felt = vg.cloth("#2a2226")
+    vg.hat(t, felt, style="brim", band=GOLD[1])
+    for side in SIDES:                                   # the Legend's circlet, under the hat's brim
+        f = t.face("head", side)
+        for x in range(f.w):
+            f.put(x, 4, GOLD[2] if side in ("front", "west") else GOLD[1])
+    feather = Ramp(["#b9b4a6", "#dcd8cc", "#f1eee6"], name="feather")
+    he = t.face("hat", "east")                           # the feather on the hat's left side, sweeping back and up
+    paint(he, ((1, 3), (2, 2), (3, 2), (4, 1), (5, 1), (6, 0), (7, 0)), feather[1])
+    paint(he, ((2, 3), (3, 3), (4, 2), (5, 2)), feather[2])
+    paint(he, ((6, 1), (7, 1)), feather[0])
+    hb = t.face("hat", "back")
+    paint(hb, ((0, 0), (1, 0), (0, 1)), feather[1])      # its tip seen from behind
+    vg.robe(t, coat, length=18, sleeves_too=True, body_too=False, noise=0)
+    vg.sleeves(t, coat, cuff="#1e1a1c", noise=0)
+    jf = t.face("jacket", "front")
+    paint(jf, ((1, 0), (2, 0), (5, 0), (6, 0)), coat[3])  # the turned-down collar
+    paint(jf, ((2, 1), (5, 1)), coat[2])
+    paint(jf, ((3, 0), (4, 0), (3, 1), (4, 1)), LINEN)   # the shirt and cravat at the throat
+    paint(jf, ((3, 2), (4, 2)), LINEN_SHADE)
+    paint(jf, ((3, y) for y in range(3, 18)), coat[0])   # where the coat closes
+    for y in (4, 7, 15):                                 # gold buttons down the front edge (the badge sits on 10..13)
+        jf.put(4, y, GOLD[3])
+        jf.put(2, y, GOLD[2])
+    vg.belt(t, vg.cloth("#1e1a1c"), row=9, buckle=GOLD[2])
+    ef = t.face("jacket", "east")                        # the coin purse on the left hip: leather, a gold clasp
+    paint(ef, ((1, 10), (2, 10)), LEATHER[0])
+    paint(ef, ((0, 11), (1, 11), (2, 11), (3, 11), (0, 12), (1, 12), (2, 12), (3, 12)), LEATHER[2])
+    paint(ef, ((1, 13), (2, 13)), LEATHER[1])
+    paint(ef, ((1, 11), (2, 11)), GOLD[2])
+    path = ASSETS / "textures" / "entity" / "villager" / "legend" / "merchant_prince.png"
+    t.save(path)
+    return [path]
+
+
+def grand_chef():
+    """The Grand Chef (29.18), drawn over the Chef's outfit: a tall, full white toque pleated from the crown to the
+    band (deep shadowed pleats, a lit ridge on each, the crown's puff swelling over the edge), a gold band round it (the
+    Legend's mark, in place of the Chef's white one), and a gold ladle hanging at the apron's right side: its bowl at the
+    hip, the handle up to the apron string."""
+    t = vg.VillagerTexture()
+    white = Ramp(["#a9a99e", "#c4c3b9", "#dcdbd2", "#ebeae3", "#f6f5ef"], name="linen")
+    for side in SIDES:                                   # the toque: four rows of deep pleats, the band at row 4
+        f = t.face("hat", side)
+        lit = side in ("front", "west")
+        for y in range(0, 4):
+            for x in range(f.w):
+                c = white[3]
+                if x % 3 == 2:
+                    c = white[1] if y > 0 else white[2]  # the pleat's deep shadow, shallower where the puff swells
+                elif x % 3 == 0 and lit:
+                    c = white[4]                         # the pleat's lit ridge
+                if y == 0 and x % 3 != 2:
+                    c = white[4] if lit else white[3]    # the puff swelling over the edge
+                f.put(x, y, c)
+        for x in range(f.w):                             # the gold band
+            f.put(x, 4, GOLD[2] if lit else GOLD[1])
+        if side == "front":
+            f.put(3, 4, GOLD[3])                         # a gold stud at the brow
+            f.put(4, 4, GOLD[3])
+    top = t.face("hat", "top")                           # the crown: a big puff, darker at the rim, gathered in the middle
+    for y in range(8):
+        for x in range(8):
+            edge = x in (0, 7) or y in (0, 7)
+            top.put(x, y, white[2] if edge else white[3])
+    for x, y in ((3, 3), (4, 3), (3, 4), (4, 4)):
+        top.put(x, y, white[1])
+    for x, y in ((1, 6), (2, 6), (1, 5), (2, 5)):
+        top.put(x, y, white[4])
+    jf = t.face("jacket", "front")                       # the gold ladle at the apron (x 0..3, clear of the badge)
+    paint(jf, ((1, y) for y in range(9, 14)), GOLD[2])   # the handle, hooked over the apron string
+    jf.put(2, 9, GOLD[1])
+    jf.put(1, 9, GOLD[3])
+    paint(jf, ((0, 14), (1, 14), (2, 14)), GOLD[2])      # the bowl
+    paint(jf, ((0, 15), (1, 15), (2, 15)), GOLD[1])
+    jf.put(0, 14, GOLD[3])
+    jf.put(1, 16, GOLD[0])
+    path = ASSETS / "textures" / "entity" / "villager" / "legend" / "grand_chef.png"
+    t.save(path)
+    return [path]
+
+def bard_laureate():
+    """The Bard Laureate (29.19), drawn over the Bard's look: a green doublet to the hips with darker sleeves, a row of
+    brass buttons and a leather belt; a lute slung on the back (a pear-shaped spruce body with a dark sound hole, its
+    neck running up to the right shoulder, the strap across the chest), and a laurel wreath round the brow: two rows of
+    leaves, lit on top, the ends crossing at the back."""
+    t = vg.VillagerTexture()
+    doublet = vg.cloth("#3f7a32")
+    dark = vg.cloth("#2c5624")
+    vg.robe(t, doublet, length=12, sleeves_too=False, body_too=False, noise=0)
+    vg.sleeves(t, dark, cuff=doublet[3], noise=0)
+    jf = t.face("jacket", "front")
+    paint(jf, ((3, y) for y in range(0, 12)), doublet[0])       # where the doublet closes
+    for y in (2, 5, 8):                                        # brass buttons (clear of the badge rows 10..13)
+        jf.put(4, y, BRASS[3])
+    paint(jf, ((3, 0), (4, 0)), LINEN)                          # the shirt at the throat
+    vg.belt(t, LEATHER, row=9, buckle=BRASS[2])
+    strap_diagonal(jf, 0, 0, 2, 8, LEATHER[1], width=1)         # the lute's strap across the chest
+    wood = Ramp(["#5c3a1a", "#7d5128", "#a06c38", "#c28a4c"], name="spruce")
+    jb = t.face("jacket", "back")                               # the lute on the back
+    body = [(x, y) for y in range(10, 17) for x in range(1, 7) if not ((y in (10, 16)) and x in (1, 6))]
+    paint(jb, body, wood[2])
+    paint(jb, ((x, 16) for x in range(2, 6)), wood[0])          # its shadowed bottom
+    paint(jb, ((1, y) for y in range(11, 16)), wood[1])
+    paint(jb, ((2, 10), (3, 10), (4, 10)), wood[3])            # lit shoulder of the body
+    paint(jb, ((3, 13), (4, 13), (3, 14), (4, 14)), "#2a1a0c")   # the sound hole
+    paint(jb, ((x, 12) for x in (2, 5)), wood[3])
+    for i, y in enumerate(range(9, 1, -1)):                     # the neck up to the right shoulder
+        x = 4 + i // 3
+        jb.put(x, y, wood[1])
+        jb.put(x + 1, y, wood[0])
+    paint(jb, ((7, 1), (7, 0), (6, 0)), "#2a1a0c")              # the pegbox
+    leaf = Ramp(["#2f5a1c", "#4a8a2a", "#6cb03c", "#94cf5a"], name="laurel")
+    for side in SIDES:                                          # the laurel wreath round the brow
+        f = t.face("head", side)
+        lit = side in ("front", "west")
+        for x in range(f.w):
+            f.put(x, 3, leaf[2] if (x % 2 == 0) == lit else leaf[1])
+            f.put(x, 4, leaf[1] if x % 2 == 0 else leaf[0])
+            if x % 2 == 1:
+                f.put(x, 2, leaf[3] if lit else leaf[2])        # leaf tips over the band
+    hb = t.face("head", "back")
+    paint(hb, ((3, 5), (4, 5)), leaf[0])                        # the ends crossing at the back
+    path = ASSETS / "textures" / "entity" / "villager" / "legend" / "bard_laureate.png"
+    t.save(path)
+    return [path]
+
+
+def beastmaster():
+    """The Beastmaster (29.20), drawn over the Rancher's look: a wolf-pelt hood, grey fur over the head with the wolf's
+    dark-tipped ears at the crown, its brow and amber glass eyes over the villager's own, and the pelt running down the
+    back to a bushy tail; under it a cloak of brown furs to the knees with a shaggy hem, a cream fur collar and cuffs,
+    darker fur sleeves and a leather belt with a bone toggle."""
+    t = vg.VillagerTexture()
+    pelt = Ramp(["#4a4a4e", "#6c6b6e", "#8e8c8c", "#b2aeaa"], name="wolf")
+    dark = "#2f2d30"
+    cream = Ramp(["#a8957a", "#c8b698", "#e0d2b4"], name="cream fur")
+    vg.hat(t, pelt, style="hood", noise=0)
+    hf = t.face("hat", "front")                          # the wolf's brow over the face: dark mask, amber eyes
+    paint(hf, ((x, 0) for x in range(hf.w)), pelt[2])
+    paint(hf, ((x, 1) for x in range(1, hf.w - 1)), pelt[1])
+    paint(hf, ((1, 1), (6, 1)), dark)
+    paint(hf, ((2, 1), (5, 1)), "#d89a2a")              # the glass eyes
+    paint(hf, ((3, 1), (4, 1)), pelt[3])                # the pale blaze down the nose
+    paint(hf, ((0, 0), (1, 0), (6, 0), (7, 0)), dark)   # the ears at the front corners
+    for side in ("west", "east"):                       # from the side: the ears at the crown, the pale fringe of the pelt
+        f = t.face("hat", side)
+        paint(f, ((x, 0) for x in range(f.w - 3, f.w) if side == "west"), dark)
+        paint(f, ((x, 0) for x in range(0, 3) if side == "east"), dark)
+        paint(f, ((x, f.h - 1) for x in range(f.w)), pelt[3] if side == "west" else pelt[2])
+        paint(f, ((x, f.h - 2) for x in range(0, f.w, 2)), pelt[3] if side == "west" else pelt[2])
+    top = t.face("hat", "top")
+    paint(top, ((x, y) for x in (0, 1, 6, 7) for y in (0, 1)), dark)   # the ears from above
+    paint(top, ((x, y) for x in range(2, 6) for y in range(2, 8)), pelt[1])
+    paint(top, ((3, y) for y in range(2, 8)), pelt[0])  # the dark stripe along the wolf's back
+    hb = t.face("hat", "back")
+    paint(hb, ((3, y) for y in range(hb.h)), pelt[0])
+    paint(hb, ((4, y) for y in range(hb.h)), pelt[1])
+    furs = Ramp(["#3e2816", "#5c3c22", "#7a5432", "#986c44"], name="furs")
+    vg.robe(t, furs, length=14, sleeves_too=False, body_too=False, noise=0)
+    vg.sleeves(t, vg.cloth("#4e3220"), cuff=cream[1], noise=0)
+    for side in SIDES:                                  # the shaggy hem: tufts hanging a pixel lower
+        f = t.face("jacket", side)
+        for x in range(f.w):
+            if x % 2 == 0:
+                f.put(x, 14, furs[0])
+            if (x + 1) % 4 == 0:
+                f.put(x, 15, furs[0])
+    jf = t.face("jacket", "front")
+    paint(jf, ((x, y) for x in range(jf.w) for y in (0, 1)), cream[2])   # the cream fur collar
+    paint(jf, ((x, 1) for x in range(0, jf.w, 2)), cream[1])
+    paint(jf, ((3, y) for y in range(2, 14)), furs[0])  # where the cloak closes
+    vg.belt(t, LEATHER, row=9, buckle="#e8e0c8")        # a bone toggle for a buckle
+    jb = t.face("jacket", "back")                       # the pelt down the back, ending in the bushy tail
+    for y in range(0, 16):
+        for x in range(1, 7):
+            if y < 10 or (y < 16 and 2 <= x <= 5 and not (y == 15 and x in (2, 5))):
+                jb.put(x, y, pelt[2] if x < 3 else pelt[1])
+    paint(jb, ((x, y) for y in range(0, 10) for x in (3, 4)), pelt[0])   # its dark back stripe
+    paint(jb, ((x, y) for y in range(13, 16) for x in (3, 4)), pelt[3])  # the pale tip of the tail
+    paint(jb, ((1, 10), (6, 10)), pelt[0])
+    for side in ("west", "east"):
+        f = t.face("jacket", side)
+        paint(f, ((x, y) for x in range(f.w) for y in (0, 1)), cream[1] if side == "west" else cream[0])
+    path = ASSETS / "textures" / "entity" / "villager" / "legend" / "beastmaster.png"
+    t.save(path)
+    return [path]
+
+
+def founder():
+    """The Founder (29.23): a burgundy mantle to the shins over the shoulders and down the sleeves, edged in a band of
+    ermine-white at the collar; over it a gold chain of office, links running from both shoulders down to a round
+    medallion on the chest (above the crossed arms, so it shows from the front), and a gold circlet at the brow."""
+    t = vg.VillagerTexture()
+    mantle = Ramp(["#3e0f1a", "#5c1626", "#7a2034", "#962c44"], name="burgundy")
+    ermine = Ramp(["#bdb6a6", "#dcd6c8", "#eeeae0"], name="ermine")
+    for side in SIDES:                                   # the circlet at the brow
+        f = t.face("head", side)
+        for x in range(f.w):
+            f.put(x, 1, GOLD[2] if side in ("front", "west") else GOLD[1])
+    vg.robe(t, mantle, length=18, sleeves_too=True, body_too=False, noise=0)
+    vg.sleeves(t, mantle, cuff=ermine[1], noise=0)
+    jf = t.face("jacket", "front")
+    paint(jf, ((x, 0) for x in range(jf.w)), ermine[2])  # the ermine collar
+    paint(jf, ((3, y) for y in range(1, 18)), mantle[0])  # where the mantle closes
+    # The chain of office, high on the chest where the crossed arms leave it showing: links from each shoulder down
+    # to a round medallion, lit and shaded in turn
+    paint(jf, ((0, 1), (1, 2), (2, 2), (7, 1), (6, 2), (5, 2)), GOLD[2])
+    paint(jf, ((1, 1), (6, 1)), GOLD[0])
+    paint(jf, ((3, 2), (4, 2), (3, 3), (4, 3)), GOLD[3])  # the medallion
+    paint(jf, ((4, 3),), GOLD[1])
+    for side in ("west", "east"):                       # the chain over the shoulders
+        f = t.face("jacket", side)
+        paint(f, ((x, 0) for x in range(f.w)), ermine[1] if side == "west" else ermine[0])
+        paint(f, ((x, 1) for x in range(1, f.w, 2)), GOLD[2] if side == "west" else GOLD[1])
+    jb = t.face("jacket", "back")
+    paint(jb, ((x, 0) for x in range(jb.w)), ermine[1])
+    paint(jb, ((x, 1) for x in range(0, jb.w, 2)), GOLD[1])    # the chain round the back of the neck
+    path = ASSETS / "textures" / "entity" / "villager" / "legend" / "founder.png"
+    t.save(path)
+    return [path]
+
+
 DRAW = [orchard_keeper, berry_breeder, camp_cook, habitat_keeper, daycare_keeper, gem_grower, pokemon_trader, porter, postman, rancher, scholar, shopkeeper, sifter, teacher, tinkerer,
-        trainer, trainer_leader, tutor, undertaker, steward, legend, legend_placeholder, master_architect, pathfinder, old_sage, seer, golem_smith]
+        trainer, trainer_leader, tutor, undertaker, steward, legend, legend_placeholder, master_architect, pathfinder, old_sage, seer, golem_smith,
+        merchant_prince, grand_chef, bard_laureate, beastmaster, founder]
 
 if __name__ == "__main__":
     run(DRAW)

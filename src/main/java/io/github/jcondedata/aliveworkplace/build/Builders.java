@@ -620,7 +620,8 @@ public final class Builders {
 
 	// --- finishing / cancelling --------------------------------------------------------------
 
-	static void finish(ServerLevel level, Villager villager, BuildSite site) {
+	/** A site's last step done: hands back what's left, tells the owner, records it. Also used by tests (27.21). */
+	public static void finish(ServerLevel level, Villager villager, BuildSite site) {
 		BlockPos bench = benchPos(villager).orElse(villager.blockPosition());
 		List<BlockPos> supplies = SupplyContainers.find(level, bench, null);
 		emptyBag(level, villager, bench, supplies);
@@ -652,7 +653,8 @@ public final class Builders {
 			// The village's colours over the front door, if a banner of their base colour is in the chests (30.13).
 			io.github.jcondedata.aliveworkplace.hall.VillageBanners.hangOverDoor(level, plan.bounds(), supplies);
 		}
-		if (!io.github.jcondedata.aliveworkplace.world.VillagePieces.isOutside(site.structure())) {
+		if (!io.github.jcondedata.aliveworkplace.world.VillagePieces.isOutside(site.structure())
+			&& !io.github.jcondedata.aliveworkplace.city.Renewals.isScan(site.structure())) { // (nor an old house's scan, 27.21)
 			returnBlueprint(level, site, bench, supplies); // (a house's new outside, 23.10a, came from no blueprint)
 		}
 
@@ -688,6 +690,7 @@ public final class Builders {
 		}
 		endJob(level, villager, site);
 		BuilderLevels.onFinished(level, villager, site);
+		io.github.jcondedata.aliveworkplace.city.Renewals.siteFinished(level, villager, site); // 27.21: the old house down, the new one next
 	}
 
 	/**
@@ -725,6 +728,7 @@ public final class Builders {
 
 	/** Stops a build. Placed blocks stay; the blueprint goes back to the owner (or the bench). */
 	public static void cancel(ServerLevel level, BuildSite site) {
+		io.github.jcondedata.aliveworkplace.city.Renewals.siteCancelled(level, site); // 27.21
 		Villager villager = site.builder() != null && level.getEntity(site.builder()) instanceof Villager v ? v : null;
 		if (site.isQueued()) {
 			// Not started: nothing to tidy up on the builder, just hand the blueprint back.

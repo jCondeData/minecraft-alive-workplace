@@ -1,0 +1,7 @@
+{
+  "job": "aliveworkplace:guard",
+  "buildings": [
+    "aliveworkplace:guard_house",
+    "aliveworkplace:barracks"
+  ]
+}

@@ -130,6 +130,15 @@ SCENES = [
       "two of the Steward's builds wait for materials: the desk and the Storehouse board show one shopping list adding up both, new builds wait, and the build with a player's block in the way says so", 30,
       [("01_shopping_list_on_the_desk", "The desk: one shopping list for both builds"), ("02_players_block_in_the_way", "A player's block is in the way"),
        ("03_shopping_list_on_the_storehouse_board", "The Storehouse board's shopping list")]),
+    # Old houses (ROADMAP 27.20): three vanilla plains houses in a renew zone, counted on the desk, outlined by Show me
+    S("old_houses", "Steward", "Old houses, found and measured",
+      "the Steward found the three vanilla houses in the renew zone, the desk says 2 of them can be renewed (one keeps a chest), and Show me outlined each", 30,
+      [("01_old_houses_on_the_desk", "The desk: Old houses: 3, 2 can be renewed"), ("02_show_me_outlines", "Show me: each house outlined")]),
+    # Old villages renewed (ROADMAP 27.21): a time-lapse of a vanilla two-bed house taken down and rebuilt as a Stone House (Cherry)
+    S("renewal", "Steward", "An old village house renewed",
+      "the old plains house was scanned and taken down, a Stone House in Cherry went up on its plot, and both villagers who slept there have its beds", 60,
+      [("01_old_house", "The old plains house in a renew zone"), ("02_going_up", "Taken down, the Stone House going up"),
+       ("03_stone_house_cherry", "The Stone House (Cherry), its villagers moved in")]),
     # The Steward gives jobs (ROADMAP 27.9): the morning's jobs as one proposal, approved, the villagers off to their blocks
     S("steward_jobs", "Steward", "The Steward gives out jobs",
       "the Steward proposed jobs for three jobless villagers, approving made them a farmer, a guard and a fletcher, and they walked to their new workstations", 45,
@@ -317,6 +326,11 @@ SCENES = [
       "the Old Sage's hut, a riddle asked and a wrong answer refused with a hint, and the Ancient Lore tab", 50,
       [("01_hermit_hut", "The hermit's hut, the Sage inside"), ("02_riddle", "A riddle, a shake of the head, a hint"),
        ("03_ancient_lore_tab", "The Ancient Lore tab")]),
+    # The Merchant Prince (ROADMAP 29.17): settled by the hall in his crimson coat, and the hall's bank page
+    S("legend_merchant_prince", "Legends", "The Merchant Prince, the hall's bank and a trade fair",
+      "the Merchant Prince settled by the hall in his crimson coat, the hall's bank page with emeralds put in, and a trade fair", 60,
+      [("01_merchant_prince", "The Merchant Prince by the hall"), ("02_bank_page", "The bank page: 80 emeralds put in"),
+       ("03_trade_fair", "A trade fair: six traders, bunting and fireworks round the hall")]),
     # The Master Architect (ROADMAP 29.12): the top-tier Stone House, finished, redrawn in the Grand style and rebuilt
     job("legend_architect", "Legends", "The Master Architect redraws a house in the Grand style",
         "the Master Architect handed a builder the Stone House redrawn in the Grand style, and it was rebuilt", 360),
@@ -329,6 +343,18 @@ SCENES = [
     # The Golem Smith (ROADMAP 29.15): a Hauler forged from the chest; the hauler, a farmhand and a wall sentry at work
     job("legend_golem_smith", "Legends", "The Golem Smith's golems at work",
         "the Golem Smith forged a Hauler Golem, and the hauler, a farmhand and a wall sentry went to work", 150),
+    # The Grand Chef (ROADMAP 29.18): a banquet called after work, the village gathered round the hall, the feast at supper
+    job("legend_grand_chef", "Legends", "The Grand Chef's banquet",
+        "the Grand Chef called the village to a banquet: everyone gathered round the hall and at supper each grown-up ate two meals of the eight kinds in the store", 90),
+    # The Bard Laureate (ROADMAP 29.19): the anthem composed and played over the hall, then a work song among the workers
+    job("legend_bard", "Legends", "The Bard Laureate's anthem and work song",
+        "the Bard Laureate settled and composed the village's anthem, which rang out over the hall in note-block notes; then they sang a work song among the busiest workers, notes rising round them", 90),
+    # The Beastmaster (ROADMAP 29.20): a war dog tamed for a guard, then the guard and the dog against zombies
+    job("legend_beastmaster", "Legends", "The Beastmaster's war dog",
+        "the Beastmaster tamed a war dog for the guard with bones from the chest and fitted it with wolf armour from the scutes; the dog followed its guard and fought the zombies beside them", 90),
+    # The Founder (ROADMAP 29.23): the village's builder raises the Founder's statue by the hall from the barrels
+    job("legend_founder", "Legends", "The Founder's statue going up",
+        "the Founder asked for a statue, and the village's builder raised it by the hall from the materials in the barrels: a stepped plinth, a copper plaque and the Founder in stone with a hand raised", 360),
     job("legend_strike", "Legends", "A Legend on strike", "a Legend on strike left her stonecutter and picketed by the Village Hall under a red line", 120),
     # Strange moods (ROADMAP 29.10): a Master cleric claims her brewing stand under a purple line, the chest by it fills,
     # and she makes a named Masterwork, hung in an item frame, and becomes a Legend
@@ -403,7 +429,7 @@ SCENES = [
        ("03_guildhall_book", "The Builders' Guild on the Book of Edicts' last row: founded")]),
     # The Miners', Smiths', Woodsmen's (ROADMAP 30.18), Harvest, Herders' and Scholars' Guilds (30.19): each Guild Master's card, then the Book's guild row
     S("guilds", "Village Hall", "Nine guilds: Miners', Smiths', Woodsmen's, Harvest, Herders', Scholars', Healers', Merchants' and Wardens'",
-      "the player chartered a Master miner, weaponsmith, lumberjack, farmer, shepherd, scholar, nurse, innkeeper and guard, the nine guilds were founded in nine finished Guildhalls, each master's card on the hall's list named their guild (and its pace where it has one), the farmer's farm reached 24 blocks, the shepherd bred up to 12, research cost a quarter less, the ill got well in 2 days, the nurse looked 48 blocks out, a 16-emerald traveller cost 12, guards trained up to Master and hit 10% harder, and the Book of Edicts' last row showed the first six", 40,
+      "the player chartered a Master miner, weaponsmith, lumberjack, farmer, shepherd, scholar, nurse, innkeeper and guard, the nine guilds were founded in nine finished Guildhalls, each master's card on the hall's list named their guild (and its pace where it has one), the farmer's farm reached 24 blocks, the shepherd bred up to 12, research cost a quarter less, the ill got well in 2 days, the nurse looked 48 blocks out, a 16-emerald traveller cost 12, guards trained up to Master and hit 10% harder, and the Book of Edicts' guild row showed every guild, five a page with a More guilds button", 40,
       [("01_guilds_miner", "Brokk, Guild Master of the Miners' Guild, working faster through it"),
        ("02_guilds_smith", "Hilde, Guild Master of the Smiths' Guild"),
        ("03_guilds_woodsman", "Rowan, Guild Master of the Woodsmen's Guild"),
@@ -413,7 +439,8 @@ SCENES = [
        ("08_guilds_nurse", "Mira, Guild Master of the Healers' Guild"),
        ("09_guilds_innkeeper", "Mara, Guild Master of the Merchants' Guild"),
        ("10_guilds_guard", "Wulf, Guild Master of the Wardens' Guild"),
-       ("07_guilds_book", "The first six guilds on the Book of Edicts' last row, founded, each with its perk")]),
+       ("07_guilds_book", "The Book of Edicts' guild row, page one: five guilds, founded, each with its perk, and the More guilds button"),
+       ("12_guilds_book_more", "The guild row's next page: the Scholars', Healers', Merchants' and Wardens' Guilds")]),
     # Tonics (ROADMAP 30.15): a miner given Miner's Brew, its tooltip, the drink, then her status line
     # Edicts in the village's talk (ROADMAP 30.21): lines under Long Shifts, then after The Shift Bell
     S("village_talk", "Village Hall", "Village talk: Long Shifts and The Shift Bell",

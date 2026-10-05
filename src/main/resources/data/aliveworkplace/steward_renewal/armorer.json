@@ -1,0 +1,6 @@
+{
+  "job": "minecraft:armorer",
+  "buildings": [
+    "aliveworkplace:smithy"
+  ]
+}

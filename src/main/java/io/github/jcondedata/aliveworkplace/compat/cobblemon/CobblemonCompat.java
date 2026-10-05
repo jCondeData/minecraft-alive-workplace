@@ -81,6 +81,11 @@ public final class CobblemonCompat {
 			}
 
 			@Override
+			public double roamTop(Entity entity) {
+				return CobblemonPartners.roamTop(entity);
+			}
+
+			@Override
 			public boolean walkTo(Entity entity, BlockPos pos, double speed) {
 				return CobblemonPartners.walkTo(entity, pos, speed);
 			}

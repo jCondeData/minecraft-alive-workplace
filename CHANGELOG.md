@@ -429,6 +429,8 @@ asks for the steps, `latest.log` and any crash report).
   ground (B69).
 - The showcase client starts every scene again without Cobblemon: the Habitat Keeper scene's wild Eevee is spawned
   from a Cobblemon-only helper, so loading the scenes no longer crashes (B59).
+- A pastured Pidgey (or any flying partner) taking the postman's air mail no longer vanishes into your PC: it climbs
+  only as high as its Pasture Block lets it roam, instead of flying past that and being sent back (B52).
 - Every switch on the settings screen fits its button again, on or off: shorter names for Nurse Healing Machines,
   Villages Work Unseen, Legend Needs, Strikes, Stewards Run Villages and Legends at Ruins (each tooltip still says it
   all) (B61).

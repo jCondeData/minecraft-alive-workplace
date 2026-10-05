@@ -56,6 +56,14 @@ public interface PokemonPartners {
 		return entity.blockPosition();
 	}
 
+	/**
+	 * The height {@code entity} must stay below to remain in its pasture's range (Cobblemon sends a pastured Pokémon that
+	 * leaves it back to the PC); unbounded when it isn't pastured.
+	 */
+	default double roamTop(Entity entity) {
+		return Double.POSITIVE_INFINITY;
+	}
+
 	/** Starts {@code entity} walking to {@code pos}; false if it can't be told to. */
 	default boolean walkTo(Entity entity, BlockPos pos, double speed) {
 		return false;

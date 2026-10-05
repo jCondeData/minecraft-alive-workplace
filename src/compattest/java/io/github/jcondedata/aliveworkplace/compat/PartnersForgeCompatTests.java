@@ -128,6 +128,55 @@ public class PartnersForgeCompatTests implements FabricGameTest {
 		});
 	}
 
+	/**
+	 * B52: air mail never carries a Pidgey out of what its pasture lets it roam (Cobblemon sends a pastured Pokémon that
+	 * leaves that box back to the PC). With the pasture's range cut to 16 blocks the Pidgey climbs only as high as that
+	 * allows, stays pastured, and lands back where it took off.
+	 */
+	//$ gametest_ticks_batch AREA '1600' '"partners_air_mail_low"'
+	@GameTest(template = AREA, timeoutTicks = 1600, batch = "partners_air_mail_low")
+	public void airMailKeepsThePidgeyWithinItsPasturesRange(GameTestHelper helper) {
+		PartnerShowsCompatTests.clearLeftovers(helper);
+		PartnerShowsCompatTests.showsOn(helper);
+		int round = PostOffice.ROUND;
+		PostOffice.ROUND = 8;
+		var config = com.cobblemon.mod.common.Cobblemon.INSTANCE.getConfig();
+		int wander = config.getPastureMaxWanderDistance();
+		config.setPastureMaxWanderDistance(16); // read when the Pasture Block is placed
+		PartnerShowsCompatTests.after(helper, () -> {
+			PostOffice.ROUND = round;
+			config.setPastureMaxWanderDistance(wander);
+		});
+		Post p = post(helper, new BlockPos(14, 2, 14)); // outside the round: air mail
+		PartnersAtWorkCompatTests.partner(helper, new BlockPos(6, 2, 2), "pidgey");
+		double top = helper.absolutePos(new BlockPos(6, 2, 2)).getY() + 16; // the pasture's range, upward
+		Set<Item> carried = new HashSet<>();
+		Set<ResourceLocation> started = PartnersAtWorkCompatTests.watch(helper, p.postman(), "pidgey", carried);
+		double[] highest = {0};
+		double[] takeOffY = {Double.NaN};
+		helper.onEachTick(() -> {
+			if (helper.getTick() > 5) {
+				PokemonEntity pidgey = PartnersAtWorkCompatTests.pokemon(helper, "pidgey");
+				helper.assertTrue(pidgey.getTethering() != null, "the Pidgey left its pasture at y " + pidgey.getY() + " (top " + top + ")");
+				double up = PartnerShows.flying(pidgey);
+				if (up > 0 && Double.isNaN(takeOffY[0])) {
+					takeOffY[0] = pidgey.getY() - up;
+				}
+				highest[0] = Math.max(highest[0], up);
+			}
+		});
+		helper.succeedWhen(() -> {
+			helper.assertTrue(started.contains(show("postman_flying_takes_the_air_mail")), "no air mail show: " + why(started));
+			helper.assertTrue(highest[0] > 0, "the Pidgey never took off");
+			helper.assertTrue(takeOffY[0] + highest[0] < top, "the Pidgey climbed to " + (takeOffY[0] + highest[0]) + ", its pasture's top is " + top);
+			helper.assertTrue(p.bobs().countItem(Items.DIAMOND) == 2, "Bob's mailbox is still empty");
+			noDisplaysLeft(helper);
+			PokemonEntity pidgey = PartnersAtWorkCompatTests.pokemon(helper, "pidgey");
+			helper.assertTrue(PartnerShows.flying(pidgey) == 0 && Math.abs(pidgey.getY() - takeOffY[0]) < 1.5,
+				"the Pidgey didn't land back: y " + pidgey.getY() + ", took off at " + takeOffY[0]);
+		});
+	}
+
 	/** On the round, a Pidgey flies ahead to the mailbox the postman is carrying a parcel to. */
 	//$ gametest_ticks_batch AREA '1600' '"partners_deliver"'
 	@GameTest(template = AREA, timeoutTicks = 1600, batch = "partners_deliver")
@@ -340,13 +389,16 @@ public class PartnersForgeCompatTests implements FabricGameTest {
 		chest.setItem(1, new ItemStack(Items.STRING, 3));
 		Villager fletcher = helper.spawn(EntityType.VILLAGER, new BlockPos(3, 2, 3));
 		Jobs.employ(helper.getLevel(), fletcher, helper.absolutePos(table), PoiTypes.FLETCHER, VillagerProfession.FLETCHER);
-		BlockPos post = new BlockPos(19, 2, 19);
+		// The guard's post across the area, inside it (B48): its 17 x 17 floor is all the test keeps loaded and ticking. A
+		// post at (19, 19) was off the floor, in a chunk that often isn't ticked, where the guard and then the fletcher
+		// bringing the bow stood frozen.
+		BlockPos post = new BlockPos(15, 2, 15);
 		helper.setBlock(post, ModBlocks.GUARD_POST);
-		helper.setBlock(new BlockPos(19, 2, 17), Blocks.CHEST);
-		Villager guard = helper.spawn(EntityType.VILLAGER, new BlockPos(18, 2, 18));
+		helper.setBlock(new BlockPos(15, 2, 13), Blocks.CHEST);
+		Villager guard = helper.spawn(EntityType.VILLAGER, new BlockPos(14, 2, 14));
 		Jobs.employ(helper.getLevel(), guard, helper.absolutePos(post), ModVillagers.GUARD_POST_POI, ModVillagers.GUARD);
 		guard.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.IRON_SWORD));
-		Container guardsChest = helper.getBlockEntity(new BlockPos(19, 2, 17));
+		Container guardsChest = helper.getBlockEntity(new BlockPos(15, 2, 13));
 		PartnersAtWorkCompatTests.partner(helper, new BlockPos(10, 2, 3), "pidgey");
 		Set<Item> carried = new HashSet<>();
 		Set<ResourceLocation> started = PartnersAtWorkCompatTests.watch(helper, fletcher, "pidgey", carried);

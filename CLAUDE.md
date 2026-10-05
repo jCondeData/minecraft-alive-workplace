@@ -63,6 +63,7 @@ tests (owner, 2026-10-04) and for searching or reading code. Don't print whole b
 - Show, don't tell: screenshots, GIFs and numbers from this session's tool results.
 - Before sending a status, check each claim against a tool result from this session. Anything not run is "not
   tested", never "works".
+- Every report to him starts with the stage progress bars: `python3 tools/agent/progress.py` (owner, 2026-10-05).
 - Keep it short: what changed from a player's point of view, what you want him to judge, and the tester's verdict
   and risks.
 - He wants to be hands-off. He judges looks from screenshots and behaviour from GIFs; work with nothing to see is

@@ -1345,6 +1345,14 @@ here adds a new kind of speed bonus (the new jobs get the partners' existing one
   day of helping and never twice a day; `langcheck.py` is clean; showcase scene `cup_themes` (each theme's Cup page and
   fair).
 
+- [ ] **28.23** **A custom screen for Pokémon trades (owner, 2026-10-05).** The Pokémon Trader's offers use vanilla's
+  plain trading screen. Give them a screen of their own, like the Village Hall's (30.4a): the Trader's offers as cards
+  showing the Pokémon (name, level, ball, shiny mark) next to what it costs, the player's party on the other side so
+  a trade can be picked from it, and a plain "no offers today" state. Same look as the other workstation screens
+  (pixel-art skill, sprites drawn the way vanilla draws its GUIs), every sentence through `lang`. Done when: a GameTest
+  opens the screen from a right-click on the Trader and completes a trade through it, refuses one the player can't
+  afford, and survives save and reload; `langcheck.py` is clean; showcase scene `trader` gains stills of the new screen.
+
 Depends on: nothing. (Later milestones build on this one: M29's Pokémon Professor and Ranger on 28.3 and 28.10, M31's
 bounty board on 28.10's sightings, M35's Stadium on 28.16 to 28.21.)
 

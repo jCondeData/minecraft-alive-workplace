@@ -174,7 +174,9 @@ the new jar and nothing is lost. Report it in the Notes.
      sent (SendUserFile, one message per package), then mark it sent (`(sent)` in its `message.md`, committed to
      `reviews`). For a pending item with **NO PACKAGE**, make one from what exists (its scene's stills on the
      showcase page, or the item's text for a document) and send it; never just list it.
-  2. Send one short report: what landed since the last digest (one line each), what the QA lane found overnight, the
+  2. Send one short report. **It opens with the progress bars** (owner, 2026-10-05, asked twice): paste the output of
+     `python3 tools/agent/progress.py` as a code block, one line per stage (1.1 to 2.0), and say how each moved since the last
+     digest. Then what landed since the last digest (one line each), what the QA lane found overnight, the
      lanes' health (a lane with no push in 3 hours, a red run on `main`), releases, and only the decisions that are
      his.
   3. **The evening digest releases** (CLAUDE.md "Releasing") when something new landed since the last release,

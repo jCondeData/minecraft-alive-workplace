@@ -5,7 +5,8 @@
         "professions": [
           "aliveworkplace:tinkerer",
           "minecraft:toolsmith"
-        ]
+        ],
+        "wanted": true
       }
     }
   ],

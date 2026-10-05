@@ -4530,8 +4530,15 @@ item waits.
   Research Lab, Trainer's House, Leader's Hall, School), defences (Guard House, Barracks), farms (Berry Farm, Compost
   Yard, Ranch), gardens (Apiary Garden). The shore is a plot rule (`Plots.SHORE_BUILDINGS`, reason `SHORE`): water in
   the 4 rows in front of the footprint. `no_builder` was already `builder.json`; its ask now reads "place a Blueprint
-  Table and give a villager the job: nobody here can build". Left for later: "a job the village wants with no free
-  block" (`StewardJobs.WORKPLACE_WANTED`) still does nothing; the rules fire on workers without a workstation only.
+  Table and give a villager the job: nobody here can build". Done since (lane c, 1005): "a job the village wants with no
+  free block" fires the same rules: with `"wanted": true` (set in 28 `workplace_*` rules; default false, so
+  `workstations.json` is unchanged; not in `workplace_builders_workshop`: a builder is wanted only while there is
+  none, so nobody could build it and `no_builder` asks the player instead) `worker_without_workstation` also counts each of its jobs in
+  `StewardConditions.Facts.wanted()` (the morning plan's `StewardJobs.plan(...).wanted()`, so a wanted guard or scholar with
+  no free block wishes its Guard House/Barracks or Library; a free block stops it, and so does having no builder, since
+  nobody could build it). Each such wish takes one of the
+  day's 8 wish slots (priority 62, above the market stall's 35).
+  The farmer's want gets its building with 27.13. `WORKPLACE_WANTED` stays a no-op seam.
   The gallery package (front/back, as drawn and in Stonework) is skipped: the digest makes packages from the showcase
   scene `workplaces` (front and back of all 12). Not rendered here (tools/blueprints/render has no node_modules in
   this container): the copies are the village houses' already-checked builds with calcite as white concrete. The six

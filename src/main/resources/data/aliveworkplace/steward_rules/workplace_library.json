@@ -5,7 +5,8 @@
         "professions": [
           "minecraft:librarian",
           "aliveworkplace:scholar"
-        ]
+        ],
+        "wanted": true
       }
     }
   ],

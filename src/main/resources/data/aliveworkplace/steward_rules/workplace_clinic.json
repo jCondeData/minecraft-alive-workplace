@@ -5,7 +5,8 @@
         "professions": [
           "aliveworkplace:nurse",
           "minecraft:cleric"
-        ]
+        ],
+        "wanted": true
       }
     },
     {

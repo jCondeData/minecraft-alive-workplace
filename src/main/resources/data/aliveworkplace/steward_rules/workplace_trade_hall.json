@@ -4,7 +4,8 @@
       "worker_without_workstation": {
         "professions": [
           "aliveworkplace:pokemon_trader"
-        ]
+        ],
+        "wanted": true
       }
     },
     {

@@ -23,7 +23,8 @@ asks for the steps, `latest.log` and any crash report).
   the worker who needs it moves in. The Steward now builds a workplace for every worker left without a workstation:
   Kitchen for chefs and butchers, Guard House (Barracks from a Town) for guards and weaponsmiths, Clinic (Healing
   Center from a Village) for nurses and clerics, Library for librarians and scholars, and so on for 27 jobs, six more
-  with Cobblemon. A Ferry House goes on the shore, with water within 4 blocks of its door. With no builder he asks you
+  with Cobblemon. He also builds one for a job the village wants when no block for it is free: a Guard House when
+  guards are short and no grindstone or Guard Post is free. A Ferry House goes on the shore, with water within 4 blocks of its door. With no builder he asks you
   to place a Blueprint Table and give a villager the job.
 - **House looks** (23.10a): the Village Hall's Builds button opens House looks, a list of the village's own houses
   (workshops, clinics, guard houses...). The village's leader (the hall's owner and their friends) can give any of them

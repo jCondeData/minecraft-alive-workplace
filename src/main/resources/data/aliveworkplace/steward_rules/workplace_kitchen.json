@@ -5,7 +5,8 @@
         "professions": [
           "aliveworkplace:chef",
           "minecraft:butcher"
-        ]
+        ],
+        "wanted": true
       }
     }
   ],

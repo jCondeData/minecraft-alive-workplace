@@ -4,7 +4,8 @@
       "worker_without_workstation": {
         "professions": [
           "aliveworkplace:orchard_keeper"
-        ]
+        ],
+        "wanted": true
       }
     }
   ],

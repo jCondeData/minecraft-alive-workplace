@@ -10,6 +10,7 @@ import io.github.jcondedata.aliveworkplace.build.BuildSite;
 import io.github.jcondedata.aliveworkplace.build.BuildSiteManager;
 import io.github.jcondedata.aliveworkplace.build.Builders;
 import io.github.jcondedata.aliveworkplace.city.StewardConditions;
+import io.github.jcondedata.aliveworkplace.city.StewardJobs;
 import io.github.jcondedata.aliveworkplace.city.StewardRules;
 import io.github.jcondedata.aliveworkplace.city.StewardWishes;
 import io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity;
@@ -18,13 +19,16 @@ import io.github.jcondedata.aliveworkplace.hall.VillageRanks;
 import io.github.jcondedata.aliveworkplace.platform.Platform;
 import io.github.jcondedata.aliveworkplace.registry.ModBlocks;
 import io.github.jcondedata.aliveworkplace.registry.ModGameRules;
+import io.github.jcondedata.aliveworkplace.registry.ModVillagers;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestAssertException;
 import net.minecraft.gametest.framework.GameTestGenerator;
 import net.minecraft.gametest.framework.GameTestHelper;
@@ -164,6 +168,125 @@ public class WorkplacesGameTests implements net.fabricmc.fabric.api.gametest.v1.
 			StewardWishes.Verdict o = StewardWishes.judge(ruleOf(helper, otherTier), StewardConditions.Facts.of(level, hall), StewardWishes.State.EMPTY, day);
 			helper.assertTrue(o.status() != StewardWishes.Status.HELD, otherTier + " holds too at " + c.rank() + ": " + o.status());
 		}
+		helper.succeed();
+	}
+
+	// --- a job the village wants with no free block --------------------------------------------------------
+
+	/** A hamlet with its builder and one villager waiting for a job, no other workstation; the hall counted within 16 blocks. */
+	private static Villager wantingVillage(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		Leftovers.halls(helper);
+		int radius = VillageHalls.RADIUS;
+		VillageHalls.RADIUS = 16;
+		Leftovers.after(helper, () -> VillageHalls.RADIUS = radius);
+		ServerLevel level = helper.getLevel();
+		helper.setBlock(HALL, ModBlocks.VILLAGE_HALL);
+		BlockPos hall = helper.absolutePos(HALL);
+		Leftovers.after(helper, () -> level.removeBlock(hall, false));
+		((VillageHallBlockEntity) level.getBlockEntity(hall)).setRank(VillageRanks.Rank.HAMLET);
+		helper.setBlock(new BlockPos(3, 2, 18), ModBlocks.BLUEPRINT_TABLE);
+		Villager builder = helper.spawn(EntityType.VILLAGER, new BlockPos(3, 2, 17));
+		builder.setNoAi(true);
+		Builders.employ(level, builder, helper.absolutePos(new BlockPos(3, 2, 18)));
+		helper.assertTrue(builder.getVillagerData().getProfession() == ModVillagers.BUILDER, "setup: no builder");
+		Villager waiting = helper.spawn(EntityType.VILLAGER, new BlockPos(5, 2, 14));
+		waiting.setNoAi(true); // stays jobless: vanilla's own job search mustn't race the Steward
+		return waiting;
+	}
+
+	/** Today's wishes among the workplace rules alone, as the Steward ranks them each morning. */
+	private static List<StewardWishes.Wish> workplaceWishes(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		BlockPos hall = helper.absolutePos(HALL);
+		List<StewardRules.Rule> rules = StewardRules.all().stream().filter(r -> r.id().getPath().startsWith("workplace_")).toList();
+		return StewardWishes.rank(rules, StewardConditions.Facts.of(level, hall), StewardWishes.State.EMPTY, StewardWishes.day(level));
+	}
+
+	private static Optional<StewardWishes.Wish> wish(List<StewardWishes.Wish> wishes, String rule) {
+		return wishes.stream().filter(w -> w.rule().equals(AliveWorkplace.id(rule))).findFirst();
+	}
+
+	/**
+	 * Guards are short and no grindstone or Guard Post is free: the village wants a guard with no free block, so the
+	 * Guard House rule holds with nobody yet working as a guard. A wanted builder doesn't ask for a Builder's Workshop
+	 * (with no builder nobody could build it: {@code no_builder} asks the player instead), and jobs the village doesn't
+	 * want (a carpenter) don't either.
+	 */
+	//$ gametest_ticks_batch AREA '40' '"workplaceWanted"'
+	@GameTest(template = AREA, timeoutTicks = 40, batch = "workplaceWanted")
+	public void wantedJobWithNoFreeBlockWishesItsBuilding(GameTestHelper helper) {
+		wantingVillage(helper);
+		ServerLevel level = helper.getLevel();
+		BlockPos hall = helper.absolutePos(HALL);
+		List<VillagerProfession> wanted = StewardJobs.plan(level, hall).wanted();
+		helper.assertTrue(wanted.contains(ModVillagers.GUARD), "the village wants: " + wanted);
+		List<StewardWishes.Wish> wishes = workplaceWishes(helper);
+		Optional<StewardWishes.Wish> guardHouse = wish(wishes, "workplace_guard_house");
+		helper.assertTrue(guardHouse.isPresent(), "no Guard House for the wanted guard: " + wishes.stream().map(w -> w.rule().getPath()).toList());
+		helper.assertTrue(guardHouse.get().numbers().get(0) == 1L && guardHouse.get().why().equals("steward.aliveworkplace.why.workplace"),
+			"the reason doesn't count the wanted job: " + guardHouse.get());
+		helper.assertTrue(StewardWishes.plotFor(guardHouse.get()).map(r -> r.zoneKind().equals("defences")).orElse(false), "no plot asked in defences");
+		helper.assertTrue(wish(wishes, "workplace_builders_workshop").isEmpty(), "a Builder's Workshop with nobody to build it");
+		helper.assertTrue(wish(wishes, "workplace_barracks").isEmpty(), "Barracks wished in a hamlet");
+		helper.assertTrue(wish(wishes, "workplace_carpenters_workshop").isEmpty(), "a Carpenter's Workshop nobody wants");
+		// What /workplace steward explain says of it.
+		String explained = StewardWishes.explain(level, hall, List.of(ruleOf(helper, "workplace_guard_house"))).stream()
+			.map(c -> c.getString()).collect(Collectors.joining("\n"));
+		helper.assertTrue(explained.contains("Workers without a workstation (aliveworkplace:guard, minecraft:weaponsmith): 0; jobs wanted with no free block: 1")
+			&& explained.contains("1 jobs here have no workplace of their trade"),
+			"explain: " + explained);
+		helper.succeed();
+	}
+
+	/** The same village with a free grindstone: the guard's job has a block, so no Guard House. */
+	//$ gametest_ticks_batch AREA '40' '"workplaceWantedFree"'
+	@GameTest(template = AREA, timeoutTicks = 40, batch = "workplaceWantedFree")
+	public void wantedJobWithAFreeBlockWishesNothing(GameTestHelper helper) {
+		wantingVillage(helper);
+		helper.setBlock(new BlockPos(8, 2, 14), Blocks.GRINDSTONE);
+		ServerLevel level = helper.getLevel();
+		BlockPos hall = helper.absolutePos(HALL);
+		StewardJobs.Plan plan = StewardJobs.plan(level, hall);
+		helper.assertTrue(!plan.wanted().contains(ModVillagers.GUARD) && plan.jobs().stream().anyMatch(j -> j.job().orElse(null) == ModVillagers.GUARD),
+			"the guard isn't given the free grindstone: " + plan);
+		List<StewardWishes.Wish> wishes = workplaceWishes(helper);
+		helper.assertTrue(wish(wishes, "workplace_guard_house").isEmpty(), "a Guard House with a free grindstone: " + wish(wishes, "workplace_guard_house"));
+		StewardWishes.Verdict v = StewardWishes.judge(ruleOf(helper, "workplace_guard_house"), StewardConditions.Facts.of(level, hall),
+			StewardWishes.State.EMPTY, StewardWishes.day(level));
+		helper.assertTrue(!v.checks().get(0).held() && v.checks().get(0).value() == 0, "the guard counted: " + v.checks().get(0));
+		helper.succeed();
+	}
+
+	/** No builder: the guard is wanted, but a Guard House nobody could build isn't wished (no_builder asks first). */
+	//$ gametest_ticks_batch AREA '40' '"workplaceWantedNoBuilder"'
+	@GameTest(template = AREA, timeoutTicks = 40, batch = "workplaceWantedNoBuilder")
+	public void wantedJobWaitsForABuilder(GameTestHelper helper) {
+		wantingVillage(helper);
+		ServerLevel level = helper.getLevel();
+		BlockPos hall = helper.absolutePos(HALL);
+		level.getEntitiesOfClass(Villager.class, new net.minecraft.world.phys.AABB(hall).inflate(20),
+			v -> v.getVillagerData().getProfession() == ModVillagers.BUILDER).forEach(v -> v.discard());
+		helper.setBlock(new BlockPos(3, 2, 18), Blocks.AIR); // and no free table to make another
+		List<VillagerProfession> wanted = StewardJobs.plan(level, hall).wanted();
+		helper.assertTrue(wanted.contains(ModVillagers.GUARD), "the village wants: " + wanted);
+		helper.assertTrue(wish(workplaceWishes(helper), "workplace_guard_house").isEmpty(), "a Guard House with nobody to build it");
+		helper.succeed();
+	}
+
+	/** Nobody waits for a job (the one villager has traded, only his block lost): nothing is wanted, no workplace wished. */
+	//$ gametest_ticks_batch AREA '40' '"workplaceWantedNone"'
+	@GameTest(template = AREA, timeoutTicks = 40, batch = "workplaceWantedNone")
+	public void noWantedJobWithoutAJoblessVillager(GameTestHelper helper) {
+		Villager v = wantingVillage(helper);
+		v.setVillagerData(v.getVillagerData().setProfession(VillagerProfession.FISHERMAN));
+		v.setVillagerXp(1);
+		ServerLevel level = helper.getLevel();
+		BlockPos hall = helper.absolutePos(HALL);
+		helper.assertTrue(StewardConditions.Facts.of(level, hall).wanted().isEmpty(), "wanted with nobody waiting");
+		List<StewardWishes.Wish> wishes = workplaceWishes(helper);
+		helper.assertTrue(wish(wishes, "workplace_guard_house").isEmpty() && wish(wishes, "workplace_builders_workshop").isEmpty(),
+			"workplaces wished: " + wishes.stream().map(w -> w.rule().getPath()).toList());
 		helper.succeed();
 	}
 

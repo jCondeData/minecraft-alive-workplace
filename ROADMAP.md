@@ -1371,7 +1371,7 @@ MarketDays) and research/.
   - a `pace` power makes a builder within its radius faster and one outside it not, never past the shared cap; a
     `mood` power shows as a reason in the villager's mood;
   - with `legends` off no Legend loads, nothing ticks and the command says so.
-- [x] **29.3** (approved 2026-10-05) **Rarities, caps and the server's record of Legends.** `legend/LegendRecord`, saved data on the
+- [x] **29.3** (review: pending 2026-10-04) **Rarities, caps and the server's record of Legends.** `legend/LegendRecord`, saved data on the
   overworld (`aliveworkplace_legends`), lists every Legend that has settled anywhere on the server: id, villager UUID,
   dimension, hall, rarity, the day they settled and the day they fell. `Legends.canCome(level, hall, legend)` is asked
   before any arrival:
@@ -1800,7 +1800,7 @@ the Village Hall (`VillageNeeds`, `VillageQuests`, `VillageRanks`, `Festivals`, 
 
   Done when: the note is on `main` and its review package is sent.
   - [ ] **30.1a** Change from the owner (2026-10-05): Reforming an edict must cost far more, hundreds of items, so the grind is worth it: e.g. instead of 4 clocks, 8 gold ingots, 32 bread, something like 24 clocks, 2 stacks of gold ingots and 300 bread. Most players get the small amounts quickly, so scale the reform costs up a lot in the design note and the edict data files.
-- [x] **30.2** (approved 2026-10-05) **One pace, one cap.** A core `work/Pace` that every job's work speed goes through (if another
+- [x] **30.2** (review: pending 2026-10-04) **One pace, one cap.** A core `work/Pace` that every job's work speed goes through (if another
   milestone built it first, check it covers this list and add what's missing):
   - bonuses: Pokémon partners, a well-kept village, Swift Hands, Diligent, a happy mood, Craftsmanship (crafters),
     Expeditions (explorers, netherworkers), and later this milestone's edicts, Work Horn, tonics and guilds, each
@@ -1822,7 +1822,7 @@ the Village Hall (`VillageNeeds`, `VillageQuests`, `VillageRanks`, `Festivals`, 
     or `Partners.factor` today gets its pace from `Pace` (a test per job family: builder, miner, crafter, explorer,
     teacher, scholar, rancher);
   - showcase scene `pace`: a capped builder's status line (its check: the line says "at the cap").
-- [x] **30.3** (approved 2026-10-05) **Edicts, and Long Shifts.** The engine and the first edict:
+- [x] **30.3** (review: pending 2026-10-04) **Edicts, and Long Shifts.** The engine and the first edict:
   - `hall/Edicts` loads `data/aliveworkplace/edicts/*.json` (a reload listener through `Platform`); a data pack can
     add edicts or switch ours off (`"enabled": false`); ours take their texts from the lang file, a data pack's may
     give plain text;
@@ -1845,7 +1845,7 @@ the Village Hall (`VillageNeeds`, `VillageQuests`, `VillageRanks`, `Festivals`, 
     and their mood 10 lower, with the reason listed;
   - an edict from a test data pack loads and works, and `"enabled": false` hides Long Shifts;
   - showcase scene `long_shifts`: the hall's list with the "long shifts" mood, and the chronicle line.
-- [x] **30.4** (approved 2026-10-05) **The Book of Edicts page.** The page players use, in the hall's screen and the Village Ledger:
+- [x] **30.4** (review: pending 2026-10-04) **The Book of Edicts page.** The page players use, in the hall's screen and the Village Ledger:
   - the hall's screen: the people list's page arrows move to the list's bottom corners (slots 45 and 53, 34 people a
     page), which frees slot 9 for the Book of Edicts (a lectern icon) and leaves slot 17 for another milestone's page;
   - the Village Ledger: sneak-right-click the air opens the Book straight away (its tooltip says so);
@@ -1860,7 +1860,7 @@ the Village Hall (`VillageNeeds`, `VillageQuests`, `VillageRanks`, `Festivals`, 
   Done when: GameTests through `ChoiceMenu.forTest`: proclaiming and lifting by clicks, the locked slots, a stranger's
   click refused, the Ledger's sneak-use opening the page, the people list paging at 34; showcase scene `edicts`: the
   Book with Long Shifts in force, at GUI scales 2 and 4.
-- [x] **30.5** (approved 2026-10-05) **Reforms, and The Shift Bell.** While an edict is in force and not reformed, the hall keeps its
+- [x] **30.5** (review: pending 2026-10-05) **Reforms, and The Shift Bell.** While an edict is in force and not reformed, the hall keeps its
   reform's next step on the quest page (extra to the three daily quests, in the row below them, with a book-and-quill
   icon; it never expires). The next step goes up the morning after the last was done, so a reform takes three days at
   least. Steps use the quest kinds there are (bring, clear out monsters, beat a trainer), with a `fallback` step for a

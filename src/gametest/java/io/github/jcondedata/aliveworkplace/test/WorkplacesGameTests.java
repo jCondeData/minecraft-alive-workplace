@@ -135,13 +135,14 @@ public class WorkplacesGameTests implements net.fabricmc.fabric.api.gametest.v1.
 		// No worker of the trade: the rule doesn't hold.
 		StewardWishes.Verdict before = StewardWishes.judge(rule, StewardConditions.Facts.of(level, hall), StewardWishes.State.EMPTY, day);
 		helper.assertTrue(before.status() != StewardWishes.Status.HELD, c.rule() + " holds with no " + c.job());
-		// A worker of a trade the rule isn't for: still not.
+		// A worker of a trade the rule isn't for: still not (a fisherman; a mason for the Fisher's Hut's rule, ROADMAP 27.14).
+		VillagerProfession otherJob = c.job().equals("minecraft:fisherman") ? VillagerProfession.MASON : VillagerProfession.FISHERMAN;
 		Villager other = helper.spawn(EntityType.VILLAGER, new BlockPos(3, 2, 20));
 		other.setNoAi(true);
-		other.setVillagerData(other.getVillagerData().setProfession(VillagerProfession.FISHERMAN));
+		other.setVillagerData(other.getVillagerData().setProfession(otherJob));
 		other.setVillagerXp(1);
 		StewardWishes.Verdict wrongJob = StewardWishes.judge(rule, StewardConditions.Facts.of(level, hall), StewardWishes.State.EMPTY, day);
-		helper.assertTrue(wrongJob.status() != StewardWishes.Status.HELD, c.rule() + " holds for a fisherman");
+		helper.assertTrue(wrongJob.status() != StewardWishes.Status.HELD, c.rule() + " holds for a " + otherJob);
 		// The worker without a workstation.
 		Villager worker = helper.spawn(EntityType.VILLAGER, new BlockPos(5, 2, 20));
 		worker.setNoAi(true);

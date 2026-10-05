@@ -323,6 +323,77 @@ public class PlotGameTests implements net.fabricmc.fabric.api.gametest.v1.Fabric
 		helper.succeed();
 	}
 
+	/**
+	 * ROADMAP 27.14: a Fisher's Hut goes on a shore with its jetty (the blueprint's first 5 rows) out over the water: the
+	 * jetty's end over water, water within {@link Plots#SHORE} blocks of the hut's front, at most
+	 * {@link Plots#MAX_JETTY_DEPTH} deep under the jetty; the jetty's rows over water don't count against the tenth.
+	 * Centred at (16, 13), turned to face west (the hall's way): box x 10..22, z 7..19, the jetty in x 10..14.
+	 */
+	//$ gametest_ticks_batch AREA '20' '"plotJetty"'
+	@GameTest(template = AREA, timeoutTicks = 20, batch = "plotJetty")
+	public void aFishersHutGoesOnAShoreWithShallowWaterUnderItsJetty(GameTestHelper helper) {
+		ground(helper);
+		ServerLevel level = helper.getLevel();
+		CityPlan plan = homes(helper, "");
+		ResourceLocation hut = AliveWorkplace.id("fishers_hut");
+		BlockPos spot = new BlockPos(16, 2, 13);
+		java.util.function.Supplier<Plots.Verdict> at = () -> Plots.check(level, helper.absolutePos(HALL), plan, "homes", hut,
+			helper.absolutePos(spot), Rotation.COUNTERCLOCKWISE_90, Mirror.NONE);
+		// the layers under the area's floor this test digs into, put back afterwards
+		java.util.Map<BlockPos, net.minecraft.world.level.block.state.BlockState> under = new java.util.HashMap<>();
+		for (BlockPos p : BlockPos.betweenClosed(helper.absolutePos(new BlockPos(4, -3, 5)), helper.absolutePos(new BlockPos(24, -1, 21)))) {
+			under.put(p.immutable(), level.getBlockState(p));
+		}
+		Leftovers.after(helper, () -> under.forEach((p, s) -> level.setBlock(p, s, 2)));
+		for (BlockPos p : BlockPos.betweenClosed(new BlockPos(4, -3, 5), new BlockPos(24, -1, 21))) {
+			helper.setBlock(p, Blocks.STONE);
+		}
+		java.util.function.BiConsumer<int[], Integer> pond = (xs, deep) -> {
+			for (int x = xs[0]; x <= xs[1]; x++) {
+				for (int z = 7; z <= 19; z++) {
+					for (int y = 1; y > 1 - deep; y--) {
+						helper.setBlock(new BlockPos(x, y, z), Blocks.WATER);
+					}
+				}
+			}
+		};
+		java.util.function.Consumer<int[]> dry = xs -> {
+			for (int x = xs[0]; x <= xs[1]; x++) {
+				for (int z = 7; z <= 19; z++) {
+					for (int y = -2; y <= 1; y++) {
+						helper.setBlock(new BlockPos(x, y, z), y == 1 ? Blocks.GRASS_BLOCK : y == 0 ? Blocks.DIRT : Blocks.STONE);
+					}
+				}
+			}
+		};
+		refused(helper, at.get(), Plots.Reason.SHORE, "no water at all");
+		pond.accept(new int[]{6, 14}, 2);
+		fits(helper, at.get(), "the jetty over water 2 deep, on out past its end");
+		helper.assertTrue(at.get().plot().get().placement().origin().getY() == helper.absolutePos(new BlockPos(0, 2, 0)).getY(),
+			"the hut's floor isn't on the shore: " + at.get().plot().get().placement());
+		pond.accept(new int[]{6, 14}, 3);
+		fits(helper, at.get(), "water 3 deep under the jetty");
+		pond.accept(new int[]{12, 12}, 4);
+		refused(helper, at.get(), Plots.Reason.DEEP, "a hole 4 deep under the jetty");
+		dry.accept(new int[]{6, 14});
+		pond.accept(new int[]{6, 9}, 2);
+		refused(helper, at.get(), Plots.Reason.SHORE, "water only past the jetty's end: it ends on dry land");
+		dry.accept(new int[]{6, 9});
+		pond.accept(new int[]{11, 14}, 2);
+		refused(helper, at.get(), Plots.Reason.SHORE, "water by the hut, the jetty's end on dry land");
+		pond.accept(new int[]{6, 10}, 2);
+		fits(helper, at.get(), "the whole jetty over water");
+		pond.accept(new int[]{15, 16}, 1);
+		refused(helper, at.get(), Plots.Reason.WATER, "the hut itself two rows into the water");
+		dry.accept(new int[]{6, 16});
+		// A Ferry House doesn't care how deep its water is, nor has a jetty to put over it.
+		pond.accept(new int[]{6, 7}, 4);
+		fits(helper, Plots.check(level, helper.absolutePos(HALL), plan, "homes", AliveWorkplace.id("ferry_house"),
+			helper.absolutePos(new BlockPos(13, 2, 13)), Rotation.COUNTERCLOCKWISE_90, Mirror.NONE), "a Ferry House by deep water");
+		dry.accept(new int[]{6, 7});
+		helper.succeed();
+	}
+
 	/** Its centre within maxSiteDistance of a Blueprint Table; none in reach, no plot. */
 	//$ gametest_ticks_batch AREA '20' '"plotTable"'
 	@GameTest(template = AREA, timeoutTicks = 20, batch = "plotTable")

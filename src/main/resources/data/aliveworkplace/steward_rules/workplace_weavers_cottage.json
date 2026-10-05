@@ -1,0 +1,21 @@
+{
+  "when": [
+    {
+      "worker_without_workstation": {
+        "professions": [
+          "minecraft:shepherd"
+        ],
+        "wanted": true
+      }
+    }
+  ],
+  "do": {
+    "build": {
+      "blueprint": "aliveworkplace:weavers_cottage",
+      "zone": "workshops"
+    }
+  },
+  "priority": 62,
+  "why": "steward.aliveworkplace.why.workplace",
+  "cooldown_days": 2
+}

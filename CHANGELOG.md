@@ -16,6 +16,8 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+## 0.139.0 — 2026-10-05
+
 ### Added
 - **The Seer** (29.16), a Rare Legend in a deep purple hooded robe sewn with silver stars: they come to the village's
   finished Chapel at midnight under a full moon, 1 time in 2, or are born to a Cleric; they like jewels, keep to the
@@ -33,6 +35,21 @@ asks for the steps, `latest.log` and any crash report).
   the Smith to choose which comes next. Each golem wears its role (a crate pack, a straw hat, a helm), has its name
   over its head and a line on the hall's guards button; the Smith mends golems twice as fast as a Tinkerer and wears a
   leather apron, goggles and iron-banded gloves.
+- **Farmstead, Fisher's Hut, Weaver's Cottage and Bandstand** (27.14), new blueprints in the Blueprint Table: a
+  farmhouse with one bed beside a field of farmland round a water channel, a scarecrow and a composter (II: a barn and a
+  second field); a shore hut with a jetty out over the water on log posts and a barrel (II: a smokehouse with a smoker
+  and a boat shed); a cottage with a loom and a fenced sheep pen (II: a dye garden); and an open eight-sided bandstand
+  with a jukebox, which adds 3 to a village's beauty. The Steward now builds them for a Farmer, a Fisherman, a Shepherd
+  and a Bard left without a workstation. A Fisher's Hut goes only on a shore, with water within 4 blocks of its front
+  and no more than 3 deep under its jetty; a fisherman fishes from the end of a jetty before the bank. Builders put no
+  foundation under a top slab or upside-down stairs (they hang, they don't stand).
+- **Smithy, Mason's Yard, Fletcher's Lodge and Map Room** (27.13), new blueprints in the Blueprint Table: a stone forge
+  open to the street with a blast furnace, smithing table and grindstone (II: a coal and ore store with a second blast
+  furnace); a fenced yard of cut stone with a lean-to over a stonecutter (II: a second stonecutter and a hoist); a log
+  cabin with a log pile, a straw target and a fletching table (II: a drying-rack wing with a second one); and a narrow
+  tower house with a cartography table and a lookout at the top. The Steward now builds them for an Armorer or Miner,
+  a Mason, a Fletcher or Lumberjack, and a Cartographer left without a workstation (or a job the village wants with no
+  free block).
 - **The Old Sage** (29.14), a Rare Legend: once a village has finished 5 research levels, a hermit's hut of mossy stone
   and spruce (a lectern, bookshelves, a cauldron, an herb garden) appears 150-250 blocks out, and the village's players
   hear a rumour with its distance and direction. The Sage asks three riddles from a pool of eight, each answered by
@@ -440,6 +457,12 @@ asks for the steps, `latest.log` and any crash report).
   partners than before.**
 
 ### Fixed
+- A crew's last blocks no longer wait on a walk to the chests (B66): a helper with nothing left to help with brings
+  the lead what the last blocks need, where it used to carry it back to the chests (the build's last lantern) for the
+  lead to walk over and fetch. A crew of four built the stone house in 28-35% of the time alone in 15 runs (it was up
+  to 40%, and 44-47% on CI).
+- The Pathfinder really stands still while the player catches up: between its checks, its everyday routine could walk
+  it off (5 blocks once).
 - Villagers no longer get stuck against the flower boxes beside the steps of our village houses (every village type):
   the pots now stand on upside-down stair sills instead of head-height trapdoors, which villagers mistook for open
   ground (B69).

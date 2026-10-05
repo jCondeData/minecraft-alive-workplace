@@ -52,6 +52,9 @@ import org.jetbrains.annotations.Nullable;
  * of the barrel, straight across the water, and fishes from the boat — where one catch in twenty is treasure, as for
  * a player. They row back to where they set out to bring the catch in, and the boat goes back in the chest. A shift
  * that ends out on the water (nightfall, a cancelled job) brings them ashore at once.
+ *
+ * <p>From the shore, water off a jetty (a deck over the water to stand on beside it, and no bank within reach: a Fisher's
+ * Hut's jetty end, ROADMAP 27.14) is fished before any other, wherever the fisher stands.
  */
 public class FisherWork extends Behavior<Villager> {
 	/** How far from the barrel the fisherman looks for water. */
@@ -586,13 +589,45 @@ public class FisherWork extends Behavior<Villager> {
 					around++;
 				}
 			}
-			double score = p.distSqr(from) - around * 2.0;
+			double score = p.distSqr(from) - around * 2.0 - (offAJetty(level, p) ? JETTY_FIRST : 0);
 			if (score < bestScore) {
 				bestScore = score;
 				best = p.immutable();
 			}
 		}
 		return best;
+	}
+
+	/** What water off a jetty takes off its score: more than any water within {@link #RADIUS} of the barrel is apart. */
+	private static final double JETTY_FIRST = 4.0 * (2 * RADIUS + 1) * (2 * RADIUS + 1);
+	/** How far round water off a jetty there's no bank: farther than a fisher reaches from one. */
+	static final int JETTY_CLEAR = 4;
+
+	/**
+	 * Water off a jetty: a deck (a walkable block over the water, standing on its surface) right beside it, and no bank
+	 * (a walkable spot not over water) within {@link #JETTY_CLEAR} blocks, so the fisher stands out on the deck to fish it.
+	 */
+	public static boolean offAJetty(ServerLevel level, BlockPos water) {
+		boolean deck = false;
+		for (Direction d : Direction.Plane.HORIZONTAL) {
+			BlockPos side = water.relative(d);
+			if (level.getFluidState(side).is(FluidTags.WATER) && Walker.canStand(level, side.above(2))) {
+				deck = true;
+				break;
+			}
+		}
+		if (!deck) {
+			return false;
+		}
+		for (BlockPos s : BlockPos.betweenClosed(water.offset(-JETTY_CLEAR, 1, -JETTY_CLEAR), water.offset(JETTY_CLEAR, 2, JETTY_CLEAR))) {
+			int dx = s.getX() - water.getX();
+			int dz = s.getZ() - water.getZ();
+			if (dx * dx + dz * dz <= JETTY_CLEAR * JETTY_CLEAR && Walker.canStand(level, s)
+				&& !level.getFluidState(s.below(2)).is(FluidTags.WATER)) {
+				return false; // a bank in reach
+			}
+		}
+		return true;
 	}
 
 	/** A block of dry ground within two blocks of the water, level with it or one up. */

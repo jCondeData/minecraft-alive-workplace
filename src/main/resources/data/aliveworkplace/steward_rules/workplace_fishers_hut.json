@@ -1,0 +1,21 @@
+{
+  "when": [
+    {
+      "worker_without_workstation": {
+        "professions": [
+          "minecraft:fisherman"
+        ],
+        "wanted": true
+      }
+    }
+  ],
+  "do": {
+    "build": {
+      "blueprint": "aliveworkplace:fishers_hut",
+      "zone": "farms"
+    }
+  },
+  "priority": 62,
+  "why": "steward.aliveworkplace.why.workplace",
+  "cooldown_days": 2
+}

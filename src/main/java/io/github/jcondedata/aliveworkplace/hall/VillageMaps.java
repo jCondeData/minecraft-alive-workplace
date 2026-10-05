@@ -70,14 +70,14 @@ public final class VillageMaps {
 		String name = path.substring(path.lastIndexOf('/') + 1).replaceAll("_\\d+$", "");
 		return Optional.ofNullable(switch (name) {
 			case "starter_cottage", "stone_house", "terrace", "inn" -> Kind.HOMES;
-			case "schoolhouse", "library", "research_lab" -> Kind.LEARNING;
+			case "schoolhouse", "library", "research_lab", "map_room" -> Kind.LEARNING;
 			case "healing_center", "pokemon_center", "graveyard", "daycare" -> Kind.CARE;
 			case "storehouse", "supply_shop", "market_stall", "market_square" -> Kind.TRADE;
 			case "berry_farm", "ranch", "apiary_garden", "flower_shop", "compost_yard", "sifting_shed", "camp_kitchen", "berry_nursery",
-				"habitat_garden", "gem_grotto" -> Kind.FARMS;
+				"habitat_garden", "gem_grotto", "farmstead", "fishers_hut" -> Kind.FARMS;
 			case "lookout_tower", "barracks", "gatehouse", "wall_tower", "palisade_gate" -> Kind.DEFENCE;
-			case "tinkers_workshop", "nether_gate" -> Kind.WORKSHOPS;
-			case "well", "fountain", "gazebo", "chapel" -> Kind.DECORATIONS;
+			case "tinkers_workshop", "nether_gate", "smithy", "masons_yard", "fletchers_lodge", "weavers_cottage" -> Kind.WORKSHOPS;
+			case "well", "fountain", "gazebo", "chapel", "bandstand" -> Kind.DECORATIONS;
 			case "town_hall" -> Kind.HALL;
 			case "street_lamp", "park_bench", "palisade", "stone_wall" -> null;
 			default -> Kind.OTHER;

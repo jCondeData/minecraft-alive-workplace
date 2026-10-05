@@ -15,6 +15,7 @@ from decor import *
 from houses import *
 from defence import *
 from workshops import *
+from countryside import *
 from nether import *
 from yards import *
 from bandits import *
@@ -122,6 +123,12 @@ if __name__ == "__main__":
         draw().save(MAIN_STRUCTURES, name)
     tinkers_workshop().save(MAIN_STRUCTURES, "tinkers_workshop")
     tinkers_workshop_2().save(MAIN_STRUCTURES, "tinkers_workshop_2")
+    for name, draw in (("smithy", smithy), ("smithy_2", smithy_2), ("masons_yard", masons_yard), ("masons_yard_2", masons_yard_2),
+                       ("fletchers_lodge", fletchers_lodge), ("fletchers_lodge_2", fletchers_lodge_2), ("map_room", map_room)):
+        draw().save(MAIN_STRUCTURES, name)
+    for name, draw in (("farmstead", farmstead), ("farmstead_2", farmstead_2), ("fishers_hut", fishers_hut), ("fishers_hut_2", fishers_hut_2),
+                       ("weavers_cottage", weavers_cottage), ("weavers_cottage_2", weavers_cottage_2), ("bandstand", bandstand)):
+        draw().save(MAIN_STRUCTURES, name)
     nether_gate().save(MAIN_STRUCTURES, "nether_gate")
     nether_gate_2().save(MAIN_STRUCTURES, "nether_gate_2")
     chapel().save(MAIN_STRUCTURES, "chapel")

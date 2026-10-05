@@ -16,7 +16,24 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+## 0.139.0 — 2026-10-05
+
 ### Added
+- **Farmstead, Fisher's Hut, Weaver's Cottage and Bandstand** (27.14), new blueprints in the Blueprint Table: a
+  farmhouse with one bed beside a field of farmland round a water channel, a scarecrow and a composter (II: a barn and a
+  second field); a shore hut with a jetty out over the water on log posts and a barrel (II: a smokehouse with a smoker
+  and a boat shed); a cottage with a loom and a fenced sheep pen (II: a dye garden); and an open eight-sided bandstand
+  with a jukebox, which adds 3 to a village's beauty. The Steward now builds them for a Farmer, a Fisherman, a Shepherd
+  and a Bard left without a workstation. A Fisher's Hut goes only on a shore, with water within 4 blocks of its front
+  and no more than 3 deep under its jetty; a fisherman fishes from the end of a jetty before the bank. Builders put no
+  foundation under a top slab or upside-down stairs (they hang, they don't stand).
+- **Smithy, Mason's Yard, Fletcher's Lodge and Map Room** (27.13), new blueprints in the Blueprint Table: a stone forge
+  open to the street with a blast furnace, smithing table and grindstone (II: a coal and ore store with a second blast
+  furnace); a fenced yard of cut stone with a lean-to over a stonecutter (II: a second stonecutter and a hoist); a log
+  cabin with a log pile, a straw target and a fletching table (II: a drying-rack wing with a second one); and a narrow
+  tower house with a cartography table and a lookout at the top. The Steward now builds them for an Armorer or Miner,
+  a Mason, a Fletcher or Lumberjack, and a Cartographer left without a workstation (or a job the village wants with no
+  free block).
 - **The Old Sage** (29.14), a Rare Legend: once a village has finished 5 research levels, a hermit's hut of mossy stone
   and spruce (a lectern, bookshelves, a cauldron, an herb garden) appears 150-250 blocks out, and the village's players
   hear a rumour with its distance and direction. The Sage asks three riddles from a pool of eight, each answered by

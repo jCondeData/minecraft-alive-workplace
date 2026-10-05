@@ -88,6 +88,7 @@
 			"io.github.jcondedata.aliveworkplace.test.PeopleGameTests",
 			"io.github.jcondedata.aliveworkplace.test.PaceGameTests",
 			"io.github.jcondedata.aliveworkplace.test.EdictGameTests",
+			"io.github.jcondedata.aliveworkplace.test.VillageBannerGameTests",
 			"io.github.jcondedata.aliveworkplace.test.EdictBookGameTests",
 			"io.github.jcondedata.aliveworkplace.test.HallUiGameTests",
 			"io.github.jcondedata.aliveworkplace.test.ReformGameTests",

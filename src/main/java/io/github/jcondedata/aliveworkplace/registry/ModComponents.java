@@ -13,6 +13,13 @@ public final class ModComponents {
 		DataComponentType.<BlueprintData>builder().persistent(BlueprintData.CODEC).networkSynchronized(BlueprintData.STREAM_CODEC).build()
 	);
 
+	/** A Village Banner's base colour (30.13); its patterns are vanilla's {@code banner_patterns}. */
+	public static final DataComponentType<net.minecraft.world.item.DyeColor> VILLAGE_BANNER = Registry.register(
+		BuiltInRegistries.DATA_COMPONENT_TYPE,
+		AliveWorkplace.id("village_banner"),
+		DataComponentType.<net.minecraft.world.item.DyeColor>builder().persistent(net.minecraft.world.item.DyeColor.CODEC).networkSynchronized(net.minecraft.world.item.DyeColor.STREAM_CODEC).build()
+	);
+
 	/** A Quarry Marker's corners and depth. */
 	public static final DataComponentType<io.github.jcondedata.aliveworkplace.mine.QuarryData> QUARRY = Registry.register(
 		BuiltInRegistries.DATA_COMPONENT_TYPE,

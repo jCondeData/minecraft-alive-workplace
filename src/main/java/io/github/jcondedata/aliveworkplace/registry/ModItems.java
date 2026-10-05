@@ -53,6 +53,11 @@ public final class ModItems {
 	/** The Guide Book: how the mod works, page by page, with in-game screenshots (ROADMAP 26.2a). */
 	public static final io.github.jcondedata.aliveworkplace.guide.GuideBookItem GUIDE_BOOK = Reg.item("guide_book", io.github.jcondedata.aliveworkplace.guide.GuideBookItem::new, new Item.Properties().stacksTo(1));
 
+	/** The Village Banner (30.13): a banner's design on a gilded crossbar; sets a village's colours at its hall. */
+	public static final io.github.jcondedata.aliveworkplace.hall.VillageBannerItem VILLAGE_BANNER = Reg.item("village_banner", io.github.jcondedata.aliveworkplace.hall.VillageBannerItem::new, new Item.Properties().stacksTo(16));
+	public static final net.minecraft.world.item.crafting.RecipeSerializer<io.github.jcondedata.aliveworkplace.hall.VillageBannerItem.Recipe> VILLAGE_BANNER_RECIPE = Registry.register(
+		BuiltInRegistries.RECIPE_SERIALIZER, AliveWorkplace.id("village_banner"), io.github.jcondedata.aliveworkplace.hall.VillageBannerItem.RECIPE);
+
 	public static final CreativeModeTab TAB = Registry.register(
 		BuiltInRegistries.CREATIVE_MODE_TAB,
 		AliveWorkplace.id("main"),

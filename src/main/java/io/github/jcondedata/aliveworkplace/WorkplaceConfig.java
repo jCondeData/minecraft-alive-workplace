@@ -109,6 +109,8 @@ public final class WorkplaceConfig {
 	public boolean villageEdicts = true;
 	/** The Work Horn calls a rush when blown in a village (ROADMAP 30.11). Off: it only sounds. */
 	public boolean workHorns = true;
+	/** Village Banners (ROADMAP 30.13) can be crafted and set a village's colours at its hall. Off: neither; colours stay saved. */
+	public boolean villageBanners = true;
 	/** A Cradle near a bed makes a nursery village (ROADMAP 30.12): children grow up twice as fast, one more baby a day. Off: cradles are furniture. */
 	public boolean cradles = true;
 	/** Days an edict stays in force before it can be lifted. */
@@ -320,6 +322,7 @@ public final class WorkplaceConfig {
 		io.github.jcondedata.aliveworkplace.hall.Edicts.setEnabled(villageEdicts);
 		io.github.jcondedata.aliveworkplace.hall.Edicts.MIN_DAYS = edictMinDays;
 		io.github.jcondedata.aliveworkplace.hall.WorkHorn.ENABLED = workHorns;
+		io.github.jcondedata.aliveworkplace.hall.VillageBanners.ENABLED = villageBanners;
 		io.github.jcondedata.aliveworkplace.hall.Cradles.ENABLED = cradles;
 		io.github.jcondedata.aliveworkplace.explore.ExplorerWork.RANGE = explorerRange;
 		PostOffice.ROUND = postmanRange;

@@ -398,6 +398,9 @@ public final class LegendGuests {
 		}
 		LegendSites.arrive(level, hall);
 		OldSage.round(level, hall); // the hermit's hut, the Iron Pact's golems (29.14)
+		if (time >= MORNING_FROM && time < MORNING_TO) {
+			GolemSmith.round(level, hall); // the Golem Smith's golems (29.15)
+		}
 		tend(level, hall);
 	}
 

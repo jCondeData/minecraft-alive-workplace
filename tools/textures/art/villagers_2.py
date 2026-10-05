@@ -922,12 +922,52 @@ def seer():
     am = t.face("arms_middle", "front")                  # a star on the folded sleeves
     paint(am, ((1, 1), (6, 2)), star)
     path = ASSETS / "textures" / "entity" / "villager" / "legend" / "seer.png"
+def golem_smith():
+    """The Golem Smith (29.15), drawn over the Tinkerer's outfit: a heavy dark leather smith's apron from the chest to
+    the shins with iron rivets and a scorched hem; riveted iron-rimmed goggles down over the eyes on a leather strap;
+    iron-banded leather gloves where the crossed arms meet, iron bands round the cuffs; a gold circlet (the Legend's
+    mark) above the goggle strap."""
+    t = vg.VillagerTexture()
+    apron = vg.cloth("#4a3220")
+    vg.apron(t, apron, top=1, bottom=18, left=1, right=6, ties=True)
+    apron_back(t, apron)
+    jf = t.face("jacket", "front")
+    paint(jf, ((1, 1), (6, 1)), STEEL[3])                # rivets at the bib's corners
+    paint(jf, ((1, 9), (6, 9)), STEEL[2])                # and at the waist
+    paint(jf, ((x, 18) for x in range(1, 7)), "#2a1c12")  # the hem, scorched at the forge
+    jf.put(2, 17, "#3a281a")
+    jf.put(5, 17, "#3a281a")
+    glove = vg.cloth("#6b4a2c", n=4)
+    vg.sleeves(t, vg.cloth("#5c4a3a"), cuff=STEEL[1], gloves=glove, noise=0)
+    af = t.face("arm", "front")                          # iron bands across the gloves' backs
+    for x in range(af.w):
+        if af.get(x, 1)[3]:
+            af.put(x, 1, STEEL[2] if x % 4 else STEEL[3])
+    vg.glasses(t, frame=STEEL[1], lens="#e0803a", strap="#3b2a1e")
+    hf = t.face("hat", "front")
+    paint(hf, ((0, 5), (7, 5)), STEEL[0])                # rivets where the strap meets the rims
+    paint(hf, ((3, 7), (4, 7)), STEEL[2])                # the bridge
+    cap = vg.cloth("#3b2a1e")                            # a close leather smith's cap over the Tinkerer's pushed-up goggles
+    top = t.face("hat", "top")
+    for y in range(top.h):
+        for x in range(top.w):
+            top.put(x, y, cap[2] if y < 2 else cap[1])
+    for side in SIDES:
+        f = t.face("hat", side)
+        for y in range(0, 4):
+            for x in range(f.w):
+                f.put(x, y, cap[2] if y == 0 and side in ("front", "west") else cap[1] if y < 3 else cap[0])
+        for x in range(f.w):                             # the Legend's circlet at the cap's edge
+            f.put(x, 4, GOLD[2] if side in ("front", "west") else GOLD[1])
+    hf.put(3, 1, STEEL[2])                               # an iron rivet on the cap's front
+    hf.put(4, 1, STEEL[1])
+    path = ASSETS / "textures" / "entity" / "villager" / "legend" / "golem_smith.png"
     t.save(path)
     return [path]
 
 
 DRAW = [orchard_keeper, berry_breeder, camp_cook, habitat_keeper, daycare_keeper, gem_grower, pokemon_trader, porter, postman, rancher, scholar, shopkeeper, sifter, teacher, tinkerer,
-        trainer, trainer_leader, tutor, undertaker, steward, legend, legend_placeholder, master_architect, pathfinder, old_sage, seer]
+        trainer, trainer_leader, tutor, undertaker, steward, legend, legend_placeholder, master_architect, pathfinder, old_sage, seer, golem_smith]
 
 if __name__ == "__main__":
     run(DRAW)

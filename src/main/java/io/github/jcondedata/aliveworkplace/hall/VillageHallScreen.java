@@ -184,12 +184,18 @@ public final class VillageHallScreen {
 			line("screen.aliveworkplace.hall.food_where", ChatFormatting.GRAY),
 			line(Component.translatable("screen.aliveworkplace.hall.meal_kinds", kinds, io.github.jcondedata.aliveworkplace.people.Diet.VARIED_KINDS),
 				kinds >= io.github.jcondedata.aliveworkplace.people.Diet.VARIED_KINDS ? ChatFormatting.GREEN : ChatFormatting.YELLOW)), null);
+		List<Component> guardLore = new ArrayList<>();
+		guardLore.add(line(census.guards() > 0 ? "screen.aliveworkplace.hall.guarded" : "screen.aliveworkplace.hall.unguarded",
+			census.guards() > 0 ? ChatFormatting.GRAY : ChatFormatting.YELLOW));
+		guardLore.add(io.github.jcondedata.aliveworkplace.guard.BanditCamps.near(level, hall)
+			.map(camp -> line(Component.translatable("screen.aliveworkplace.hall.bandits", where(hall, camp.pos())), ChatFormatting.RED))
+			.orElse(line("screen.aliveworkplace.hall.no_bandits", ChatFormatting.DARK_GRAY)));
+		// The Golem Smith's golems (29.15), a line each.
+		for (Component golem : io.github.jcondedata.aliveworkplace.legend.GolemSmith.hallLines(level, hall)) {
+			guardLore.add(line(golem, ChatFormatting.GOLD));
+		}
 		menu.button(GUARDS, icon(Items.IRON_SWORD, Component.translatable("screen.aliveworkplace.hall.guards", census.guards()), ChatFormatting.WHITE,
-			line(census.guards() > 0 ? "screen.aliveworkplace.hall.guarded" : "screen.aliveworkplace.hall.unguarded",
-				census.guards() > 0 ? ChatFormatting.GRAY : ChatFormatting.YELLOW),
-			io.github.jcondedata.aliveworkplace.guard.BanditCamps.near(level, hall)
-				.map(camp -> line(Component.translatable("screen.aliveworkplace.hall.bandits", where(hall, camp.pos())), ChatFormatting.RED))
-				.orElse(line("screen.aliveworkplace.hall.no_bandits", ChatFormatting.DARK_GRAY))), null);
+			guardLore.toArray(Component[]::new)), null);
 		menu.button(WELLBEING, wellbeingIcon(needs), null);
 		menu.button(REQUESTS, requestsIcon(census.requests()), null);
 		menu.button(BUILDS, buildsIcon(census.builds()), p -> {

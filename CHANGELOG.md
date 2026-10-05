@@ -24,6 +24,15 @@ asks for the steps, `latest.log` and any crash report).
   day's Legend guest; with a Seer the night's raid and the next day's guest are rolled at dawn, so they are never
   wrong. A wedding at the Chapel with the Seer there is blessed: the couple is 10 happier for 7 days and their first
   baby comes within 2 days when a bed is free. `Legends.foretold` gives M32 its two days' warning.
+- **The Golem Smith** (29.15), a Legendary Legend: a Master Tinkerer may be inspired in a happy village with 4 iron
+  golems (their Masterwork is a heavy core, "The Heart of <name>"; they like wine). From the chests by their smithing
+  table they build a golem every 2 days, up to one per 5 villagers: a **Hauler Golem** (4 iron blocks, a carved pumpkin,
+  a chest) carries what the workers make to the Storehouse, 9 stacks a trip; a **Farmhand Golem** (an iron hoe instead
+  of the chest) harvests and replants the village's fields into the field's chest; a **Wall Sentry** (a shield) holds
+  the first point of a Patrol Map you give it, with twice a golem's health, throwing attackers back. Sneak-right-click
+  the Smith to choose which comes next. Each golem wears its role (a crate pack, a straw hat, a helm), has its name
+  over its head and a line on the hall's guards button; the Smith mends golems twice as fast as a Tinkerer and wears a
+  leather apron, goggles and iron-banded gloves.
 - **The Old Sage** (29.14), a Rare Legend: once a village has finished 5 research levels, a hermit's hut of mossy stone
   and spruce (a lectern, bookshelves, a cauldron, an herb garden) appears 150-250 blocks out, and the village's players
   hear a rumour with its distance and direction. The Sage asks three riddles from a pool of eight, each answered by

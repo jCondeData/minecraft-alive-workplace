@@ -1640,7 +1640,7 @@ MarketDays) and research/.
   village; each riddle takes its answer and refuses others, with the hint after two misses; the guest arrives; every
   topic's effect and the exclusive last pick; the hut's render in the review package; showcase scene `legend_sage`
   (the hut, a riddle, the Ancient Lore tab).
-- [ ] **29.15** **The Golem Smith (Legendary).** Comes: inspired (29.10): a Master Tinkerer in a happy village with 4
+- [x] **29.15** (review: pending 2026-10-05) **The Golem Smith (Legendary).** Comes: inspired (29.10): a Master Tinkerer in a happy village with 4
   iron golems; the materials come from a pool of a diamond, a block of copper, a block of redstone, a blaze rod, a
   breeze rod, an amethyst shard and an echo shard, and the Masterwork is a heavy core named "The Heart of <name>".
   Trade: Tinkerer. Likes: wine. Powers (`golem_forge`): from the chests by their smithing table they build one golem
@@ -1660,6 +1660,12 @@ MarketDays) and research/.
   and replants a 9x9 wheat field into its chest; a sentry holds its point through a staged fight; the costs are taken
   and the cap and the 2-day wait kept; the golem textures pass `lint.py`; showcase scene `legend_golem_smith` (GIF:
   the three at work).
+  Decisions (lane-a-1005-1233): the golems work through goals added to every iron golem (mixin IronGolemRolesMixin,
+  idle on a plain golem): the Wall Sentry's post outranks the attack, haulers' and farmhands' work ranks below it, so a
+  fight comes first. A sentry fights foes within 6 blocks of its post and never steps more than 3 off; without a map
+  it is an ordinary golem. A farmhand tends the fields of farmers within 48 blocks (Field Marker or adopted farms),
+  picks only crops and nether wart, and carries up to 9 stacks to the chests by that farmer's composter. A new golem
+  stands on solid ground beside the Smith (never on a roof). The hall's line for each golem is on the guards button.
 - [x] **29.16** (review: pending 2026-10-05) **The Seer (Rare).** Comes: a guest at the village's finished Chapel at midnight under a full moon, 1
   time in 2 (29.8); born to a Cleric (29.7). Trade: `aliveworkplace:legend`; by day they keep to the Chapel. Likes:
   jewels. Powers:

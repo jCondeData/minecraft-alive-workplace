@@ -57,6 +57,13 @@ public final class BuilderEvents {
 					return InteractionResult.SUCCESS;
 				}
 			}
+			// The Golem Smith (29.15), sneak-right-clicked with an empty hand: chooses which golem comes next.
+			if (player.isShiftKeyDown() && player.getItemInHand(hand).isEmpty() && io.github.jcondedata.aliveworkplace.legend.GolemSmith.isSmith(villager)) {
+				if (!level.isClientSide()) {
+					io.github.jcondedata.aliveworkplace.legend.GolemSmith.choose((ServerPlayer) player, villager);
+				}
+				return InteractionResult.SUCCESS;
+			}
 			// The Master Architect (29.12), sneak-right-clicked with an empty hand: pauses grander buildings, or carries on.
 			if (player.isShiftKeyDown() && player.getItemInHand(hand).isEmpty() && io.github.jcondedata.aliveworkplace.legend.GrandRebuild.isArchitect(villager)) {
 				if (!level.isClientSide()) {

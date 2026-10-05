@@ -1,0 +1,639 @@
+package io.github.jcondedata.aliveworkplace.city;
+
+import io.github.jcondedata.aliveworkplace.AliveWorkplace;
+import io.github.jcondedata.aliveworkplace.blueprint.Blueprint;
+import io.github.jcondedata.aliveworkplace.blueprint.BlueprintData;
+import io.github.jcondedata.aliveworkplace.blueprint.BlueprintLibrary;
+import io.github.jcondedata.aliveworkplace.blueprint.BlueprintOutline;
+import io.github.jcondedata.aliveworkplace.blueprint.io.BlueprintFiles;
+import io.github.jcondedata.aliveworkplace.build.BuildPlan;
+import io.github.jcondedata.aliveworkplace.build.BuildSite;
+import io.github.jcondedata.aliveworkplace.build.BuildSiteManager;
+import io.github.jcondedata.aliveworkplace.build.Builders;
+import io.github.jcondedata.aliveworkplace.build.Paths;
+import io.github.jcondedata.aliveworkplace.hall.Chronicle;
+import io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity;
+import io.github.jcondedata.aliveworkplace.hall.VillageHalls;
+import io.github.jcondedata.aliveworkplace.mc.Ids;
+import io.github.jcondedata.aliveworkplace.mc.Lookup;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.WeakHashMap;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.core.Vec3i;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.tags.BlockTags;
+import net.minecraft.world.entity.npc.Villager;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.Mirror;
+import net.minecraft.world.level.block.Rotation;
+import net.minecraft.world.level.block.StairBlock;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.levelgen.Heightmap;
+import net.minecraft.world.level.levelgen.structure.BoundingBox;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplateManager;
+import org.jetbrains.annotations.Nullable;
+
+/**
+ * Roads (ROADMAP 27.15): the approved roads on a hall's plan get built. Each hall's Steward has their way found over the
+ * ground ({@link Paths.Search}, {@link #NODES_PER_TICK} nodes a tick per hall): the road's width kept clear, round water,
+ * buildings and anything not natural, steps of at most one block. The way is saved on the road
+ * ({@link CityPlan.Road#route}) and cut into segments of {@link #SEGMENT} nodes; each segment becomes a generated
+ * blueprint ({@code aliveworkplace:roads/<hall>/<road>_<n>}, saved as the Shape Planner saves its blueprints) of the
+ * surface in the road's style ({@link RoadStyles}: middle and edges, stairs at each one-block step) and of the air over
+ * it where natural cover stands, and a build site for the nearest idle builder, while no building of the village waits.
+ * At most {@link #MAX_OPEN} segments are open at once. Finished segments are kept on the plan ({@link CityPlan.Road#built}),
+ * not in {@link BuildSiteManager}'s finished list, so ranks, the map and homes never see them.
+ *
+ * <p>A finished building's door joins the nearest road with a lane ({@link #joinNearest}), itself a road on the plan
+ * built the same way. Config {@code stewardRoads}.
+ */
+public final class Roads {
+	/** Config {@code stewardRoads}: off, roads on the plan are drawn but not built (and doors get the builders' dirt paths). */
+	public static boolean ENABLED = true;
+	/** Route nodes per segment. */
+	public static final int SEGMENT = 24;
+	/** Path nodes looked at per tick per hall. */
+	public static final int NODES_PER_TICK = 600;
+	/** Road segments open at once per hall. */
+	public static final int MAX_OPEN = 2;
+	/** Nodes one stretch between two of a road's points may take before it's given up. */
+	static final int MAX_LEG_NODES = 30000;
+	/** How often (ticks) a hall looks for a segment to open. */
+	static final int CHECK_EVERY = 20;
+	/** How high over the surface natural cover (grass, leaves, a bank of earth) is cleared. */
+	static final int HEADROOM = 3;
+	/** How far a lane may lead from a door to a road. */
+	public static final int LANE_REACH = 48;
+	public static final String FOLDER = "roads/";
+
+	/** A road's way being found, one stretch (point to point) after another. */
+	private static final class Routing {
+		final int index;
+		final CityPlan.Road road;
+		final List<BlockPos> goals;
+		final List<BoundingBox> avoid;
+		final List<BlockPos> route = new ArrayList<>();
+		int leg;
+		@Nullable
+		Paths.Search search;
+
+		Routing(int index, CityPlan.Road road, List<BlockPos> goals, List<BoundingBox> avoid) {
+			this.index = index;
+			this.road = road;
+			this.goals = goals;
+			this.avoid = avoid;
+		}
+	}
+
+	private static final Map<ServerLevel, Map<BlockPos, Routing>> ROUTING = new WeakHashMap<>();
+
+	/** Every tick, from the hall's tick: the way of a road being found moves on; every second, a segment may open. */
+	public static void tick(ServerLevel level, BlockPos hall, VillageHallBlockEntity entity) {
+		if (!ENABLED || entity.plan().roads().isEmpty()) {
+			return;
+		}
+		Map<BlockPos, Routing> routing = ROUTING.get(level);
+		Routing r = routing == null ? null : routing.get(hall);
+		if (r != null) {
+			route(level, hall, entity, r, NODES_PER_TICK);
+		}
+		if (Math.floorMod(level.getGameTime() + hall.hashCode(), CHECK_EVERY) == 0) {
+			round(level, hall, entity);
+		}
+	}
+
+	/** Whether the hall's Steward is at work on roads: one appointed, Stewards on, and the plan not resting. */
+	static boolean working(ServerLevel level, BlockPos hall, CityPlan plan) {
+		return Stewards.ENABLED && plan.mode() != CityPlan.Mode.REST && Stewards.stewardOf(level, hall) != null;
+	}
+
+	/** Starts finding the way of the first approved road without one; opens segments while fewer than {@link #MAX_OPEN} are. */
+	public static void round(ServerLevel level, BlockPos hall, VillageHallBlockEntity entity) {
+		CityPlan plan = entity.plan();
+		if (!working(level, hall, plan)) {
+			return;
+		}
+		Map<BlockPos, Routing> routing = ROUTING.computeIfAbsent(level, l -> new HashMap<>());
+		Routing current = routing.get(hall);
+		if (current != null && (current.index >= plan.roads().size() || !sameRoad(plan.roads().get(current.index), current.road))) {
+			routing.remove(hall); // the road was changed or taken off the plan
+			current = null;
+		}
+		if (current == null) {
+			for (int i = 0; i < plan.roads().size(); i++) {
+				CityPlan.Road road = plan.roads().get(i);
+				if (road.approved() && !road.routed()) {
+					routing.put(hall.immutable(), startRouting(level, hall, i, road));
+					break;
+				}
+			}
+		}
+		openSegments(level, hall, entity);
+	}
+
+	private static boolean sameRoad(CityPlan.Road a, CityPlan.Road b) {
+		return a.points().equals(b.points()) && a.width() == b.width() && a.style().equals(b.style()) && a.lane() == b.lane();
+	}
+
+	// ---- routing --------------------------------------------------------------------------------------------------
+
+	private static Routing startRouting(ServerLevel level, BlockPos hall, int index, CityPlan.Road road) {
+		List<BoundingBox> avoid = buildings(level, hall);
+		List<BlockPos> goals = new ArrayList<>();
+		for (BlockPos p : road.points()) {
+			goals.add(new BlockPos(hall.getX() + p.getX(), hall.getY(), hall.getZ() + p.getZ()));
+		}
+		return new Routing(index, road, goals, avoid);
+	}
+
+	/** The buildings to keep off: every finished building and build site round the hall (roads' own sites aside), a block wider. */
+	static List<BoundingBox> buildings(ServerLevel level, BlockPos hall) {
+		List<BoundingBox> out = new ArrayList<>();
+		BuildSiteManager manager = BuildSiteManager.get(level);
+		for (BuildSiteManager.Finished f : manager.finishedNear(level, hall, VillageHalls.RADIUS + 32)) {
+			BlueprintLibrary.get(level, f.structure()).ifPresent(b -> out.add(BlueprintOutline.bounds(f.placement(), b.size()).inflatedBy(1)));
+		}
+		String dimension = Ids.of(level.dimension()).toString();
+		for (BuildSite site : manager.all()) {
+			if (!isSegment(site.structure()) && site.placement().dimension().toString().equals(dimension)
+				&& site.placement().origin().distSqr(hall) <= (double) (VillageHalls.RADIUS + 32) * (VillageHalls.RADIUS + 32)) {
+				BlueprintLibrary.get(level, site.structure()).ifPresent(b -> out.add(BlueprintOutline.bounds(site.placement(), b.size()).inflatedBy(1)));
+			}
+		}
+		return out;
+	}
+
+	/** Works on {@code r} for up to {@code budget} nodes; when the last stretch is done, the way is saved on the road. */
+	static void route(ServerLevel level, BlockPos hall, VillageHallBlockEntity entity, Routing r, int budget) {
+		CityPlan plan = entity.plan();
+		if (r.index >= plan.roads().size() || !sameRoad(plan.roads().get(r.index), r.road)) {
+			ROUTING.get(level).remove(hall);
+			return;
+		}
+		int halfWidth = (r.road.width() - 1) / 2;
+		boolean stop = false;
+		while (budget > 0 && !stop) {
+			if (r.search == null) {
+				if (r.leg + 1 >= r.goals.size()) {
+					stop = true;
+					break;
+				}
+				BlockPos from = r.route.isEmpty() ? feet(level, r.goals.get(r.leg), halfWidth) : r.route.get(r.route.size() - 1);
+				BlockPos to = feet(level, r.goals.get(r.leg + 1), halfWidth);
+				if (from == null || to == null) {
+					stop = true; // a point with nowhere to stand: the road ends before it
+					break;
+				}
+				if (r.route.isEmpty()) {
+					r.route.add(from);
+				}
+				int reach = (int) Math.sqrt(from.distSqr(to)) + 32;
+				r.search = new Paths.Search(level, from, to, new Paths.Options(halfWidth, r.avoid, reach, Roads::clear));
+			}
+			int before = r.search.visited();
+			boolean done = r.search.step(budget);
+			budget -= Math.max(1, r.search.visited() - before);
+			if (!done && r.search.visited() >= MAX_LEG_NODES) {
+				stop = true; // too far round: the road ends here
+				break;
+			}
+			if (done) {
+				List<BlockPos> way = r.search.result();
+				if (way.isEmpty()) {
+					stop = true;
+					break;
+				}
+				for (BlockPos p : way) {
+					if (!p.equals(r.route.get(r.route.size() - 1))) {
+						r.route.add(p);
+					}
+				}
+				r.search = null;
+				r.leg++;
+			}
+		}
+		if (stop) {
+			List<BlockPos> offsets = new ArrayList<>(r.route.size());
+			for (BlockPos p : r.route) {
+				offsets.add(p.subtract(hall));
+			}
+			CityPlan next = plan.withRoad(r.index, r.road.withRoute(offsets));
+			if (next != null) {
+				entity.setPlan(next);
+			}
+			ROUTING.get(level).remove(hall);
+		}
+	}
+
+	/** Runs the hall's routing to the end at once (tests, and the showcase). */
+	public static void routeNow(ServerLevel level, BlockPos hall) {
+		if (!(level.getBlockEntity(hall) instanceof VillageHallBlockEntity entity)) {
+			return;
+		}
+		for (int guard = 0; guard < CityPlan.MAX_ROADS + CityPlan.MAX_LANES; guard++) {
+			CityPlan plan = entity.plan();
+			int index = -1;
+			for (int i = 0; i < plan.roads().size(); i++) {
+				if (plan.roads().get(i).approved() && !plan.roads().get(i).routed()) {
+					index = i;
+					break;
+				}
+			}
+			if (index < 0) {
+				return;
+			}
+			Routing r = startRouting(level, hall, index, plan.roads().get(index));
+			ROUTING.computeIfAbsent(level, l -> new HashMap<>()).put(hall.immutable(), r);
+			for (int i = 0; i < 1000 && ROUTING.get(level).get(hall) == r; i++) {
+				route(level, hall, entity, r, NODES_PER_TICK);
+			}
+		}
+	}
+
+	/** Where to stand at a road's point: the ground of its column (or the nearest clear spot within 3 blocks). */
+	@Nullable
+	static BlockPos feet(ServerLevel level, BlockPos column, int halfWidth) {
+		for (int r = 0; r <= 3; r++) {
+			for (int dx = -r; dx <= r; dx++) {
+				for (int dz = -r; dz <= r; dz++) {
+					if (Math.max(Math.abs(dx), Math.abs(dz)) != r) {
+						continue;
+					}
+					int x = column.getX() + dx;
+					int z = column.getZ() + dz;
+					// the highest spot to stand within 16 blocks of the hall's height (not the heightmap: a roof or a
+					// tree over the point would hide the ground)
+					int top = Math.min(level.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, x, z), column.getY() + 16);
+					for (int y = top; y >= column.getY() - 16; y--) {
+						BlockPos feet = Paths.walkable(level, new BlockPos(x, y, z));
+						if (feet != null && feet.getY() == y && clear(level, x, y, z)) {
+							return feet;
+						}
+					}
+				}
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Whether a road may take the column at {@code x, z}, its feet at {@code feetY}: natural ground or road under it (or a
+	 * dip of one block onto natural ground), and over it nothing but air, natural cover or natural ground to dig away;
+	 * no water. A player's fence, wall, path block or anything built is never a road's.
+	 */
+	public static boolean clear(ServerLevel level, int x, int feetY, int z) {
+		BlockPos feet = new BlockPos(x, feetY, z);
+		BlockState ground = level.getBlockState(feet.below());
+		if (!level.getFluidState(feet.below()).isEmpty()) {
+			return false;
+		}
+		if (!natural(ground) && !RoadStyles.isPaving(ground)) {
+			if (!(ground.isAir() || cover(ground))) {
+				return false;
+			}
+			BlockState under = level.getBlockState(feet.below(2));
+			if (!level.getFluidState(feet.below(2)).isEmpty() || !natural(under) && !RoadStyles.isPaving(under)) {
+				return false;
+			}
+		}
+		for (int dy = 0; dy < HEADROOM; dy++) {
+			BlockPos p = feet.above(dy);
+			BlockState s = level.getBlockState(p);
+			if (!level.getFluidState(p).isEmpty() || !(s.isAir() || cover(s) || natural(s) || dy == 0 && RoadStyles.isPaving(s))) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	/** Natural ground (dirt, grass, sand, stone, gravel...): {@link BuildPlan#isTerrain} without the plants. */
+	static boolean natural(BlockState state) {
+		return BuildPlan.isTerrain(state) && !state.canBeReplaced();
+	}
+
+	/** Natural cover a road clears away: grass, flowers, snow, leaves. */
+	static boolean cover(BlockState state) {
+		return !state.isAir() && state.getFluidState().isEmpty() && !state.hasBlockEntity()
+			&& (state.canBeReplaced() || state.is(BlockTags.FLOWERS) || state.is(BlockTags.LEAVES));
+	}
+
+	// ---- segments -------------------------------------------------------------------------------------------------
+
+	/** Whether {@code id} is a road segment's blueprint. */
+	public static boolean isSegment(ResourceLocation id) {
+		return id.getNamespace().equals(AliveWorkplace.MOD_ID) && id.getPath().startsWith(FOLDER);
+	}
+
+	static String hallKey(BlockPos hall) {
+		return hall.getX() + "_" + hall.getY() + "_" + hall.getZ();
+	}
+
+	/** The road's part of its segments' ids: the same road routed the same way keeps it. */
+	static String roadKey(CityPlan.Road road) {
+		return Integer.toHexString(Objects.hash(road.points(), road.width(), road.style(), road.route(), road.lane()));
+	}
+
+	/** Segment {@code n} of {@code road}'s blueprint id. */
+	public static ResourceLocation segmentId(BlockPos hall, CityPlan.Road road, int n) {
+		return AliveWorkplace.id(FOLDER + hallKey(hall) + "/" + roadKey(road) + "_" + n);
+	}
+
+	/** The open road segments of the hall. */
+	public static List<BuildSite> openSegments(ServerLevel level, BlockPos hall) {
+		String prefix = FOLDER + hallKey(hall) + "/";
+		return BuildSiteManager.get(level).all().stream()
+			.filter(s -> s.structure().getNamespace().equals(AliveWorkplace.MOD_ID) && s.structure().getPath().startsWith(prefix)).toList();
+	}
+
+	/** Whether a building of the village waits for a builder: a Steward's build queued or with nobody on it. */
+	static boolean buildingWaits(ServerLevel level, BlockPos hall) {
+		for (BuildSite site : StewardDesk.openSites(level, hall)) {
+			if (!isSegment(site.structure()) && (site.isQueued() || site.builder() == null)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/** Opens segments (first road first, each from its start) while fewer than {@link #MAX_OPEN} are open and builders are free. */
+	static void openSegments(ServerLevel level, BlockPos hall, VillageHallBlockEntity entity) {
+		List<BuildSite> open = openSegments(level, hall);
+		if (open.size() >= MAX_OPEN || buildingWaits(level, hall)) {
+			return;
+		}
+		List<ResourceLocation> taken = new ArrayList<>(open.stream().map(BuildSite::structure).toList());
+		int opened = open.size();
+		CityPlan plan = entity.plan();
+		for (CityPlan.Road road : plan.roads()) {
+			if (!road.approved() || !road.routed()) {
+				continue;
+			}
+			for (int n = 0; n < road.segments(); n++) {
+				if (road.built().contains(n)) {
+					continue;
+				}
+				ResourceLocation id = segmentId(hall, road, n);
+				if (taken.contains(id)) {
+					continue;
+				}
+				Optional<Segment> segment = segment(level, hall, road, n);
+				if (segment.isEmpty()) {
+					continue;
+				}
+				Villager builder = builderFor(level, hall, segment.get().box());
+				if (builder == null || !save(level, segment.get().blueprint())) {
+					return; // nobody free: wait
+				}
+				UUID owner = entity.owner() != null ? entity.owner() : builder.getUUID();
+				String ownerName = entity.owner() != null ? entity.ownerName() : "";
+				BuildSite site = Builders.start(level, builder, owner, ownerName, id, segment.get().placement());
+				site.setLevelGround(false); // a road is laid on the ground as it is, not levelled round
+				taken.add(id);
+				if (++opened >= MAX_OPEN) {
+					return;
+				}
+			}
+		}
+	}
+
+	/** The nearest idle builder of the village (nothing being built, nothing queued) whose bench reaches the segment. */
+	@Nullable
+	static Villager builderFor(ServerLevel level, BlockPos hall, BoundingBox box) {
+		BlockPos centre = box.getCenter();
+		Villager best = null;
+		double bestDist = Double.MAX_VALUE;
+		for (Villager v : StewardDesk.builders(level, hall)) {
+			BlockPos bench = Builders.benchPos(v).orElseThrow();
+			if (Builders.activeSite(level, v) != null || !Builders.queue(level, v).isEmpty()
+				|| Math.sqrt(centre.distSqr(bench)) > Builders.MAX_SITE_DISTANCE) {
+				continue;
+			}
+			double d = v.distanceToSqr(centre.getX(), centre.getY(), centre.getZ());
+			if (d < bestDist) {
+				bestDist = d;
+				best = v;
+			}
+		}
+		return best;
+	}
+
+	/** A segment worked out: its blueprint, where it goes, and its bounds. */
+	public record Segment(Blueprint blueprint, BlueprintData.Placement placement, BoundingBox box) {
+	}
+
+	/**
+	 * Segment {@code n} of {@code road} as a blueprint, from the ground as it is now: every column within the road's width
+	 * of a node of the segment (and nearer it than any other node) gets the style's surface (the edge's at the outermost
+	 * columns) at the node's ground height, stairs where the way steps up or down a block, and air over it where natural
+	 * cover stands.
+	 */
+	public static Optional<Segment> segment(ServerLevel level, BlockPos hall, CityPlan.Road road, int n) {
+		List<BlockPos> route = road.route().stream().map(p -> p.offset(hall)).toList();
+		int from = n * SEGMENT;
+		int to = Math.min(route.size(), from + SEGMENT);
+		if (from >= to) {
+			return Optional.empty();
+		}
+		int r = (road.width() - 1) / 2;
+		RoadStyles.Style style = RoadStyles.forBlueprintStyle(road.style());
+		// each column goes to the nearest node of the whole route (the first, on a tie), so segments never overlap
+		Map<Long, int[]> columns = new LinkedHashMap<>(); // column -> {node, distance, rank}
+		for (int j = Math.max(0, from - 2 * r - 1); j < Math.min(route.size(), to + 2 * r + 1); j++) {
+			BlockPos node = route.get(j);
+			for (int dx = -r; dx <= r; dx++) {
+				for (int dz = -r; dz <= r; dz++) {
+					long key = BlockPos.asLong(node.getX() + dx, 0, node.getZ() + dz);
+					int d = Math.max(Math.abs(dx), Math.abs(dz));
+					int rank = d * 64 + Math.abs(dx) + Math.abs(dz); // nearest across the road, then straight across
+					int[] had = columns.get(key);
+					if (had == null || rank < had[2]) {
+						columns.put(key, new int[] {j, d, rank});
+					}
+				}
+			}
+		}
+		Map<BlockPos, BlockState> blocks = new LinkedHashMap<>();
+		for (Map.Entry<Long, int[]> e : columns.entrySet()) {
+			int j = e.getValue()[0];
+			if (j < from || j >= to) {
+				continue;
+			}
+			BlockPos column = BlockPos.of(e.getKey());
+			BlockPos node = route.get(j);
+			BlockPos surface = new BlockPos(column.getX(), node.getY() - 1, column.getZ());
+			BlockState state = (r > 0 && e.getValue()[1] == r ? style.edge() : style.middle()).at(surface).defaultBlockState();
+			Direction up = null;
+			if (j > 0 && route.get(j - 1).getY() < node.getY()) {
+				up = facing(route.get(j - 1), node);
+			} else if (j + 1 < route.size() && route.get(j + 1).getY() < node.getY()) {
+				up = facing(route.get(j + 1), node);
+			}
+			if (up != null && style.stairs().defaultBlockState().hasProperty(StairBlock.FACING)) {
+				state = style.stairs().defaultBlockState().setValue(StairBlock.FACING, up);
+			}
+			blocks.put(surface, state);
+			for (int dy = 1; dy <= HEADROOM; dy++) {
+				BlockState over = level.getBlockState(surface.above(dy));
+				if (!over.isAir() && (cover(over) || natural(over))) {
+					blocks.put(surface.above(dy), Blocks.AIR.defaultBlockState());
+				}
+			}
+		}
+		if (blocks.isEmpty()) {
+			return Optional.empty();
+		}
+		BoundingBox box = BoundingBox.encapsulatingPositions(blocks.keySet()).orElseThrow();
+		BlockPos origin = new BlockPos(box.minX(), box.minY(), box.minZ());
+		List<Blueprint.Entry> entries = new ArrayList<>();
+		blocks.forEach((pos, state) -> entries.add(new Blueprint.Entry(pos.subtract(origin), state, null)));
+		ResourceLocation id = segmentId(hall, road, n);
+		Blueprint blueprint = new Blueprint(id, new Vec3i(box.getXSpan(), box.getYSpan(), box.getZSpan()), entries);
+		return Optional.of(new Segment(blueprint, new BlueprintData.Placement(Ids.of(level.dimension()), origin, Rotation.NONE, Mirror.NONE), box));
+	}
+
+	/** The way up from {@code low} to {@code high}: the stairs' facing (their high side), along the step. */
+	private static Direction facing(BlockPos low, BlockPos high) {
+		return Direction.getNearest(high.getX() - low.getX(), 0, high.getZ() - low.getZ());
+	}
+
+	/** Saves a segment's blueprint as a structure (as the Shape Planner does), unless one is saved under its id already. */
+	static boolean save(ServerLevel level, Blueprint blueprint) {
+		StructureTemplateManager manager = level.getServer().getStructureManager();
+		if (manager.get(blueprint.id()).isPresent()) {
+			return true;
+		}
+		StructureTemplate template = manager.getOrCreate(blueprint.id());
+		template.load(Lookup.lookup(BuiltInRegistries.BLOCK), BlueprintFiles.toStructureNbt(blueprint));
+		template.setAuthor("Steward");
+		if (!manager.save(blueprint.id())) {
+			manager.remove(blueprint.id());
+			return false;
+		}
+		return true;
+	}
+
+	/**
+	 * A builder finished a road segment: it's marked built on its road (the plan, not the finished buildings' list), and
+	 * the chronicle notes a road finished.
+	 */
+	public static void segmentBuilt(ServerLevel level, BuildSite site, @Nullable Villager builder) {
+		String path = site.structure().getPath();
+		for (BlockPos hall : hallsOf(level, site)) {
+			if (!(level.getBlockEntity(hall) instanceof VillageHallBlockEntity entity) || !path.startsWith(FOLDER + hallKey(hall) + "/")) {
+				continue;
+			}
+			CityPlan plan = entity.plan();
+			for (int i = 0; i < plan.roads().size(); i++) {
+				CityPlan.Road road = plan.roads().get(i);
+				String prefix = FOLDER + hallKey(hall) + "/" + roadKey(road) + "_";
+				if (!path.startsWith(prefix)) {
+					continue;
+				}
+				int n;
+				try {
+					n = Integer.parseInt(path.substring(prefix.length()));
+				} catch (NumberFormatException e) {
+					continue;
+				}
+				CityPlan.Road done = road.withBuilt(n);
+				CityPlan next = plan.withRoad(i, done);
+				if (next != null) {
+					entity.setPlan(next);
+				}
+				if (done.finished() && !road.finished() && !done.lane()) {
+					Component who = builder != null ? builder.getDisplayName() : Component.translatable("steward.aliveworkplace.jobs.someone");
+					Chronicle.record(level, hall, Chronicle.Kind.PLANS, Component.translatable("chronicle.aliveworkplace.road_built", who,
+						done.route().size(), RoadStyles.title(RoadStyles.forBlueprintStyle(done.style()))));
+				}
+				return;
+			}
+		}
+	}
+
+	private static List<BlockPos> hallsOf(ServerLevel level, BuildSite site) {
+		String[] parts = site.structure().getPath().substring(FOLDER.length()).split("/", 2)[0].split("_");
+		if (parts.length == 3) {
+			try {
+				return List.of(new BlockPos(Integer.parseInt(parts[0]), Integer.parseInt(parts[1]), Integer.parseInt(parts[2])));
+			} catch (NumberFormatException ignored) {
+				// not one of ours
+			}
+		}
+		return List.of();
+	}
+
+	// ---- lanes --------------------------------------------------------------------------------------------------
+
+	/**
+	 * A building finished (27.15): its door joins the nearest road of the nearest hall's plan with a lane (a road 1 wide
+	 * in that road's style, approved, built like the rest). False when the village has no road with a way found within
+	 * {@link #LANE_REACH} of the door, so the builder lays {@link Paths}' dirt path to the bell instead.
+	 */
+	public static boolean joinNearest(ServerLevel level, BuildSite site) {
+		if (!ENABLED || site.isDeconstruction() || isSegment(site.structure())) {
+			return false;
+		}
+		Optional<Blueprint> blueprint = BlueprintLibrary.get(level, site.structure());
+		if (blueprint.isEmpty()) {
+			return false;
+		}
+		BoundingBox box = BlueprintOutline.bounds(site.placement(), blueprint.get().size());
+		Optional<BlockPos> hall = VillageHalls.nearest(level, box.getCenter());
+		if (hall.isEmpty() || !(level.getBlockEntity(hall.get()) instanceof VillageHallBlockEntity entity)) {
+			return false;
+		}
+		CityPlan plan = entity.plan();
+		BlockPos door = Paths.doorstep(level, box);
+		if (door == null) {
+			return false;
+		}
+		BlockPos nearest = null;
+		CityPlan.Road along = null;
+		for (CityPlan.Road road : plan.roads()) {
+			if (road.lane() || !road.routed()) {
+				continue;
+			}
+			for (BlockPos offset : road.route()) {
+				BlockPos p = offset.offset(hall.get());
+				if (nearest == null || p.distSqr(door) < nearest.distSqr(door)) {
+					nearest = p;
+					along = road;
+				}
+			}
+		}
+		if (nearest == null || nearest.distSqr(door) > (double) LANE_REACH * LANE_REACH) {
+			return false;
+		}
+		if (Math.abs(nearest.getX() - door.getX()) + Math.abs(nearest.getZ() - door.getZ()) <= 1) {
+			return true; // the door opens onto the road
+		}
+		BlockPos a = door.subtract(hall.get());
+		BlockPos b = nearest.subtract(hall.get());
+		CityPlan.Road lane = new CityPlan.Road(List.of(new BlockPos(a.getX(), 0, a.getZ()), new BlockPos(b.getX(), 0, b.getZ())),
+			CityPlan.Road.LANE, along.style(), true, List.of(), false, List.of(), true);
+		if (!CityPlan.onGrid(lane.points().get(0)) || !CityPlan.onGrid(lane.points().get(1))) {
+			return false;
+		}
+		CityPlan next = plan.addRoad(lane);
+		if (next == null) {
+			return false;
+		}
+		entity.setPlan(next);
+		return true;
+	}
+
+	private Roads() {
+	}
+}

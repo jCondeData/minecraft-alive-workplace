@@ -102,6 +102,9 @@ SCENES = [
     job("tinkerer", "Tinkerer", "Mending an iron golem", "the tinkerer mended the iron golem"),
     job("composter", "Composter", "Turning scraps into bone meal", "the composter made bone meal"),
     job("steward", "Steward", "The Steward's morning rounds", "the steward walked his morning rounds and came back to the hall", 200),
+    # Roads (ROADMAP 27.15): an approved street on the plan, routed and laid 3 wide in Stonework by the village's builder
+    job("roads", "Steward", "A street between two houses",
+        "the builder laid the approved Stonework street between the two houses, 3 wide, segment by segment", 480),
     # The Steward's rules (ROADMAP 27.6): the day's wishes over his head, and /workplace steward explain in chat
     S("steward_rules", "Steward", "The Steward's rules and wishes",
       "the Steward ranked today's wishes from his rules, and explain listed rules that held and that didn't", 45,

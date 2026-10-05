@@ -78,7 +78,7 @@ public final class Paths {
 	 * at the first spot outside the building's bounds; without a door, in front of the middle of the front edge.
 	 */
 	@Nullable
-	static BlockPos doorstep(ServerLevel level, BoundingBox box) {
+	public static BlockPos doorstep(ServerLevel level, BoundingBox box) {
 		BlockPos best = null;
 		int bestSteps = Integer.MAX_VALUE;
 		int lowest = Integer.MAX_VALUE;
@@ -135,7 +135,7 @@ public final class Paths {
 
 	/** The feet position of a spot a villager can stand at in {@code pos}'s column (within a block up or down), or null. */
 	@Nullable
-	static BlockPos walkable(ServerLevel level, BlockPos pos) {
+	public static BlockPos walkable(ServerLevel level, BlockPos pos) {
 		for (int dy : new int[] {0, 1, -1}) {
 			BlockPos feet = pos.above(dy);
 			BlockState ground = level.getBlockState(feet.below());
@@ -162,49 +162,147 @@ public final class Paths {
 	}
 
 	/**
+	 * What a route keeps to (27.15 widens the builders' paths for roads): {@code halfWidth} blocks either side of each
+	 * step kept clear ({@link #ok}), out of every box in {@code avoid}, within {@code reach} of the start; {@code clear}
+	 * decides which spots a road may take (null: any spot a villager can stand at, as paths do).
+	 */
+	public record Options(int halfWidth, List<BoundingBox> avoid, int reach, @Nullable Clearance clear) {
+		public Options {
+			avoid = List.copyOf(avoid);
+		}
+
+		static Options path(@Nullable BoundingBox avoid) {
+			return new Options(0, avoid == null ? List.of() : List.of(avoid), REACH, null);
+		}
+	}
+
+	/** Whether a road may take the column at {@code x, z} with its feet at {@code feetY} (27.15's roads: natural ground only). */
+	@FunctionalInterface
+	public interface Clearance {
+		boolean clear(ServerLevel level, int x, int feetY, int z);
+	}
+
+	/**
 	 * The shortest walk from {@code start} to {@code goal} (feet positions), keeping out of {@code avoid} (the building)
 	 * and within {@link #REACH} of the start; steps onto natural ground are cheaper than onto anything else, so the path
 	 * keeps to the fields. Empty if there's no way.
 	 */
 	public static List<BlockPos> route(ServerLevel level, BlockPos start, BlockPos goal, @Nullable BoundingBox avoid) {
-		Map<Long, Integer> best = new HashMap<>();
-		Map<Long, BlockPos> from = new HashMap<>();
-		PriorityQueue<Node> open = new PriorityQueue<>(Comparator.comparingInt(n -> n.cost() + n.estimate()));
-		open.add(new Node(start, 0, estimate(start, goal)));
-		best.put(start.asLong(), 0);
-		int visited = 0;
-		while (!open.isEmpty() && visited++ < MAX_NODES) {
-			Node node = open.poll();
-			BlockPos p = node.pos();
-			if (node.cost() > best.getOrDefault(p.asLong(), Integer.MAX_VALUE)) {
-				continue;
-			}
-			if (Math.abs(p.getX() - goal.getX()) + Math.abs(p.getZ() - goal.getZ()) <= 1 && Math.abs(p.getY() - goal.getY()) <= 1) {
-				List<BlockPos> out = new ArrayList<>();
-				for (BlockPos c = p; c != null; c = from.get(c.asLong())) {
-					out.add(c);
+		Search search = new Search(level, start, goal, Options.path(avoid));
+		search.step(MAX_NODES);
+		return search.result();
+	}
+
+	/**
+	 * A route being found a few nodes at a time ({@link #step}), so a long road's way can be looked for over several
+	 * ticks (27.15: 600 nodes a tick per hall). Steps of at most one block up or down, round water.
+	 */
+	public static final class Search {
+		private final ServerLevel level;
+		private final BlockPos start;
+		private final BlockPos goal;
+		private final Options options;
+		private final Map<Long, Integer> best = new HashMap<>();
+		private final Map<Long, BlockPos> from = new HashMap<>();
+		private final PriorityQueue<Node> open = new PriorityQueue<>(Comparator.comparingInt(n -> n.cost() + n.estimate()));
+		private int visited;
+		private boolean done;
+		private List<BlockPos> result = List.of();
+
+		public Search(ServerLevel level, BlockPos start, BlockPos goal, Options options) {
+			this.level = level;
+			this.start = start.immutable();
+			this.goal = goal.immutable();
+			this.options = options;
+			open.add(new Node(this.start, 0, estimate(this.start, this.goal)));
+			best.put(this.start.asLong(), 0);
+		}
+
+		public boolean done() {
+			return done;
+		}
+
+		/** The way found (start to goal), or empty if there's none (or not yet). */
+		public List<BlockPos> result() {
+			return result;
+		}
+
+		/** Nodes looked at so far. */
+		public int visited() {
+			return visited;
+		}
+
+		/** Looks at up to {@code nodes} more spots; true once finished (found or not). */
+		public boolean step(int nodes) {
+			int n = 0;
+			while (!done && n++ < nodes) {
+				if (open.isEmpty()) {
+					done = true;
+					break;
 				}
-				Collections.reverse(out);
-				return out;
-			}
-			for (Direction side : Direction.Plane.HORIZONTAL) {
-				BlockPos next = walkable(level, p.relative(side));
-				if (next == null || avoid != null && avoid.isInside(next) || next.distSqr(start) > (double) REACH * REACH) {
+				visited++;
+				Node node = open.poll();
+				BlockPos p = node.pos();
+				if (node.cost() > best.getOrDefault(p.asLong(), Integer.MAX_VALUE)) {
 					continue;
 				}
-				int step = convertible(level.getBlockState(next.below())) || level.getBlockState(next.below()).is(Blocks.DIRT_PATH) ? 2 : 3;
-				if (next.getY() != p.getY()) {
-					step += 2;
+				if (Math.abs(p.getX() - goal.getX()) + Math.abs(p.getZ() - goal.getZ()) <= 1 && Math.abs(p.getY() - goal.getY()) <= 1) {
+					List<BlockPos> out = new ArrayList<>();
+					for (BlockPos c = p; c != null; c = from.get(c.asLong())) {
+						out.add(c);
+					}
+					Collections.reverse(out);
+					result = List.copyOf(out);
+					done = true;
+					break;
 				}
-				int cost = node.cost() + step;
-				if (cost < best.getOrDefault(next.asLong(), Integer.MAX_VALUE)) {
-					best.put(next.asLong(), cost);
-					from.put(next.asLong(), p);
-					open.add(new Node(next, cost, estimate(next, goal)));
+				for (Direction side : Direction.Plane.HORIZONTAL) {
+					BlockPos next = walkable(level, p.relative(side));
+					if (next == null || !ok(next) || next.distSqr(start) > (double) options.reach() * options.reach()) {
+						continue;
+					}
+					int step = convertible(level.getBlockState(next.below())) || level.getBlockState(next.below()).is(Blocks.DIRT_PATH) ? 2 : 3;
+					if (next.getY() != p.getY()) {
+						step += 2;
+					}
+					int cost = node.cost() + step;
+					if (cost < best.getOrDefault(next.asLong(), Integer.MAX_VALUE)) {
+						best.put(next.asLong(), cost);
+						from.put(next.asLong(), p);
+						open.add(new Node(next, cost, estimate(next, goal)));
+					}
 				}
 			}
+			return done;
 		}
-		return List.of();
+
+		/** The spot and the road's width round it: out of every box to avoid, and clear for a road. */
+		private boolean ok(BlockPos feet) {
+			int r = options.halfWidth();
+			for (BoundingBox box : options.avoid()) {
+				if (options.clear() == null) {
+					if (box.isInside(feet)) {
+						return false; // a builder's path: only the building itself is kept out of
+					}
+					continue;
+				}
+				if (box.intersects(feet.getX() - r, feet.getZ() - r, feet.getX() + r, feet.getZ() + r)
+					&& feet.getY() >= box.minY() - 2 && feet.getY() <= box.maxY() + 1) {
+					return false;
+				}
+			}
+			if (options.clear() == null) {
+				return true;
+			}
+			for (int dx = -r; dx <= r; dx++) {
+				for (int dz = -r; dz <= r; dz++) {
+					if (!options.clear().clear(level, feet.getX() + dx, feet.getY(), feet.getZ() + dz)) {
+						return false;
+					}
+				}
+			}
+			return true;
+		}
 	}
 
 	private static int estimate(BlockPos a, BlockPos b) {

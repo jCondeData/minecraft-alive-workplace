@@ -751,7 +751,7 @@ and an old vanilla village slowly rebuilds itself one house at a time. It answer
   - as 27.13: in `StarterBlueprints` and the table, clean in `check.py`, built by a builder in a GameTest with its
     worker taking the block, the farmer working the field and the fisherman fishing from the jetty; the rules' tests;
   - a gallery package and their builds in showcase scene `gallery`.
-- [ ] **27.15** **Roads.** The roads on the plan get built, and every new building joins them. Road styles are data:
+- [x] **27.15** (review: pending 2026-10-05) **Roads.** The roads on the plan get built, and every new building joins them. Road styles are data:
   `data/aliveworkplace/road_styles/<name>.json` holds one style: the surface blocks for the middle and the edges
   (weighted mixes, as STYLE.md's), the slab and stairs for steps, the bridge's deck, rail and pillar blocks, its lamp
   and lantern post (27.16). One shipped style per blueprint style: **As drawn** (dirt path, coarse dirt and gravel
@@ -4309,6 +4309,27 @@ item waits.
   draft: our code under 15% of the tick at 150 workers (met, 13.1%); no tick over 50 ms from us (the 66 ms p99 is in the
   start-up sample, unattributed); heap flat within 5% over 60 minutes (not yet measured); no regression over 10%
   between releases (baseline: this row). Do you confirm these? Jesse: yes/no or changes.
+- 2026-10-05 (27.15, decisions; lane c): roads are built only with a Steward appointed at the hall (and `steward` on),
+  and not while the plan is set to Rest; with `stewardRoads` off (and in GameTests, which the road tests turn on) the
+  plan's roads are drawn but never routed or built. A road's way (`CityPlan.Road.route`, offsets from the hall with y,
+  saved with `routed` and the `built` segment numbers; older saves load unrouted) is found once per road and kept, so
+  a reload doesn't route again; a road changed on the plan is a new road. A stretch that finds no way (or takes over
+  30,000 nodes) ends the road there. "Kept clear" is the road's whole width at each node: natural ground or paving
+  underneath (or a one-block dip onto it), only air, plants, leaves or natural ground (dug away) for 3 blocks over,
+  no water; buildings (finished, or sites) are kept off a block wider. The segment id is
+  `roads/<hall x_y_z>/<road key>_<n>` (the key a hash of the road and its route), not a running number, so it needs
+  no new saved counter. A segment's columns go to the nearest node (straight across first), its surface at that node's
+  ground height: the middle mix, the edge mix on the outermost column (a lane is all middle), stairs where the next or
+  last node is a block lower, facing the climb. Road styles map from building styles by `blueprint_styles` in each file
+  (Stonework also paves Grand; any other style is As drawn); 27.4's style names are kept. "No building of the village
+  waits" is read as: no Steward's build queued or without a builder; a segment goes to the nearest idle builder
+  (nothing building, nothing queued) whose bench is within `Builders.MAX_SITE_DISTANCE`. Segments are sites owned by
+  the hall's owner but not the Steward's open builds (no `stewardHall`), so they don't take his build slots; they
+  don't level the ground round them. A finished segment gives the builder 2 XP (like a repair), no blueprint back and
+  no chronicle line; the whole road finished gets one ("Bram finished a Stonework road, 40 blocks long"). A door's lane
+  is a road on the plan with `lane` (approved, 1 wide, the joined road's style), built like the others; lanes don't
+  count towards the 24 roads (at most 64 lanes). Lamps, bridges and the slab use of steps wait for 27.16 (the style
+  files already name their blocks).
 - 2026-10-05 (30.15, decisions; lane d): the status line keeps the pace line's one format for every source, so a
   tonic reads "25% faster (Miner's Brew, 19 min left)" (the spec wrote "25% faster: Miner's Brew, 19 min left"); minutes
   are whole minutes left, rounded down (20 right after drinking, 19 a tick later). Only our own tonic items are refused

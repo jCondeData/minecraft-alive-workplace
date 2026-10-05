@@ -19,6 +19,14 @@ asks for the steps, `latest.log` and any crash report).
 ## 0.139.0 — 2026-10-05
 
 ### Added
+- **Roads** (27.15): the roads drawn on the City Plan get built. The Steward has each approved road's way found over
+  the ground (its width kept clear, round water, buildings and anything a player built, steps of one block at most) and
+  hands it, 24 blocks at a time, to the village's idle builders when no building waits (two at once at most). Each road
+  is paved in its style: As drawn (dirt path, coarse dirt and gravel edges), Stonework (stone bricks with cracked ones,
+  cobblestone edges), Sandstone, Dark Oak (deepslate), Cherry (polished diorite) and, with Cobblemon, Apricorn (bricks
+  with mud brick edges), with stairs up and down each step. Every new building's door joins the nearest road with a
+  lane (villages without roads keep the dirt path to the bell). Roads aren't buildings: the rank, the map and homes
+  leave them out. Road styles are data (`road_styles/`). Config `stewardRoads`.
 - **Farmstead, Fisher's Hut, Weaver's Cottage and Bandstand** (27.14), new blueprints in the Blueprint Table: a
   farmhouse with one bed beside a field of farmland round a water channel, a scarecrow and a composter (II: a barn and a
   second field); a shore hut with a jetty out over the water on log posts and a barrel (II: a smokehouse with a smoker

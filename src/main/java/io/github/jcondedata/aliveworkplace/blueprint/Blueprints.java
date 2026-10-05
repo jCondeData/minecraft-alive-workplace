@@ -24,6 +24,9 @@ public final class Blueprints {
 				io.github.jcondedata.aliveworkplace.world.VillagePieces.houseName(outside.get()[1]),
 				io.github.jcondedata.aliveworkplace.world.VillagePieces.styleName(outside.get()[0]));
 		}
+		if (io.github.jcondedata.aliveworkplace.city.Roads.isSegment(id)) {
+			return Component.translatable("blueprint.aliveworkplace.road"); // a road segment (27.15)
+		}
 		String key = "blueprint." + id.getNamespace() + "." + id.getPath().replace('/', '.');
 		return Component.translatableWithFallback(key, prettify(id));
 	}

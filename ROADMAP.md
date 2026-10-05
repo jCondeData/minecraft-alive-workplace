@@ -315,8 +315,8 @@ first; many items below are "verify and harden", not "build".
   - the GIF is in the review package.
 
   This test is the yardstick for the rest of the milestone.
-  - [x] **23.1a** (approved 2026-10-05) Change from the owner (2026-10-04): builder speed is fine (accept ~3.5 in-game days for the 22 starter builds). Time should grow with bigger builds, but be cut in half with every builder working on it (2 builders ~ half the time, and so on): check helpers really scale like that and fix it if not
-  - [x] **23.1b** (review: pending 2026-10-05) Change from the owner (2026-10-05): Helpers' material-toss sounds only (no flying item), but cap how many play at once so many builders can't cause lag: keep it to a maximum number and skip sounds past the limit.
+  - [x] **23.1a** (approved 2026-10-05) (verified 2026-10-05: qa/crew-looks-1005: crew of 4 builds the stone house from exactly its list with nothing duplicated or lost [scaling log: 2 = 50%, 4 = 29%]; toss-sound cap full every tick still passes materials, no item entity; house looks SAME/NO_BUILDER/BUILDING sentences, forged styles refused, change of mind desert->taiga mid-rebuild ends taiga with the room kept. No mutants this run [time].) Change from the owner (2026-10-04): builder speed is fine (accept ~3.5 in-game days for the 22 starter builds). Time should grow with bigger builds, but be cut in half with every builder working on it (2 builders ~ half the time, and so on): check helpers really scale like that and fix it if not
+  - [x] **23.1b** (review: pending 2026-10-05) (verified 2026-10-05: qa/crew-looks-1005: crew of 4 builds the stone house from exactly its list with nothing duplicated or lost [scaling log: 2 = 50%, 4 = 29%]; toss-sound cap full every tick still passes materials, no item entity; house looks SAME/NO_BUILDER/BUILDING sentences, forged styles refused, change of mind desert->taiga mid-rebuild ends taiga with the room kept. No mutants this run [time].) Change from the owner (2026-10-05): Helpers' material-toss sounds only (no flying item), but cap how many play at once so many builders can't cause lag: keep it to a maximum number and skip sounds past the limit.
 - [x] **23.2** (approved auto 2026-10-04) **Stuck recovery, proven.** Builders stuck on water, lava, holes, fences, doors, their own scaffolding, or in
   unloaded chunks. Done when: a chaos test (the tester skill's `ChaosTests`, 5 seeds) finishes every time, and the
   recovery (hop, re-path, step back) never breaks a placed block.
@@ -355,7 +355,7 @@ first; many items below are "verify and harden", not "build".
 - [x] **23.10** (approved 2026-10-04) **Every shipped build reviewed.** One gallery package per build family (houses, workshops, defences,
   decorations, village pieces in five styles), each build shown front and back. Vetoed builds get redrawn with the
   Architect skill. Done when: every family's package has been sent.
-  - [x] **23.10a** (review: pending 2026-10-05) Change from the owner (2026-10-04): keep one shared outside per village style, but let the village leader override it (choose a different look for a piece)
+  - [x] **23.10a** (review: pending 2026-10-05) (verified 2026-10-05: qa/crew-looks-1005: crew of 4 builds the stone house from exactly its list with nothing duplicated or lost [scaling log: 2 = 50%, 4 = 29%]; toss-sound cap full every tick still passes materials, no item entity; house looks SAME/NO_BUILDER/BUILDING sentences, forged styles refused, change of mind desert->taiga mid-rebuild ends taiga with the room kept. No mutants this run [time].) Change from the owner (2026-10-04): keep one shared outside per village style, but let the village leader override it (choose a different look for a piece)
 
 ## Milestone 24: Everything looks finished (priority 2)
 

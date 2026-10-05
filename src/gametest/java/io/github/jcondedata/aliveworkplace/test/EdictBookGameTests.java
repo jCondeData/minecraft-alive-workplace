@@ -5,6 +5,7 @@ import io.github.jcondedata.aliveworkplace.hall.Chronicle;
 import io.github.jcondedata.aliveworkplace.hall.CivicEffects;
 import io.github.jcondedata.aliveworkplace.hall.EdictBook;
 import io.github.jcondedata.aliveworkplace.hall.Edicts;
+import io.github.jcondedata.aliveworkplace.hall.Guilds;
 import io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity;
 import io.github.jcondedata.aliveworkplace.hall.VillageHallScreen;
 import io.github.jcondedata.aliveworkplace.hall.VillageLedgerItem;
@@ -15,6 +16,7 @@ import io.github.jcondedata.aliveworkplace.registry.ModItems;
 import io.github.jcondedata.aliveworkplace.work.ChoiceMenu;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import net.fabricmc.fabric.api.gametest.v1.FabricGameTest;
 import net.minecraft.core.BlockPos;
@@ -22,6 +24,7 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
@@ -208,6 +211,86 @@ public class EdictBookGameTests implements FabricGameTest {
 			helper.assertTrue(player.containerMenu instanceof ChoiceMenu m && m.icon(VillageHallScreen.BOOK).is(Items.LECTERN),
 				"without sneaking, not the hall's screen: " + player.containerMenu);
 			player.closeContainer();
+			helper.succeed();
+		});
+	}
+
+	/**
+	 * B78: a City's 12 guilds all reach the Book's last row. Six fit the row as they are; more page five at a time, the
+	 * row's last slot turning the page (and back to the first after the last), and the page holds while edicts are clicked.
+	 */
+	//$ gametest_ticks_batch AREA '100' '"edictBookGuildPages"'
+	@GameTest(template = AREA, timeoutTicks = 100, batch = "edictBookGuildPages")
+	public void everyGuildShowsOnTheGuildRow(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		ServerPlayer player = player(helper);
+		VillageHallBlockEntity entity = hall(helper);
+		Leftovers.after(helper, () -> {
+			entity.setGuilds(List.of());
+			Guilds.forget();
+		});
+		helper.runAfterDelay(5, () -> {
+			BlockPos hall = helper.absolutePos(HALL);
+			entity.setOwner(player.getUUID(), player.getGameProfile().getName());
+			entity.setRank(VillageRanks.Rank.CITY);
+			entity.setEdicts(List.of());
+			List<ResourceLocation> ids = Guilds.all().keySet().stream().sorted().toList();
+			helper.assertTrue(ids.size() >= 7, "the test needs more than six guilds: " + ids);
+			long day = Chronicle.day(helper.getLevel());
+
+			// Six guilds fill the row with no page button.
+			List<Guilds.Charter> six = new ArrayList<>();
+			for (int i = 0; i < 6; i++) {
+				six.add(new Guilds.Charter(ids.get(i), UUID.randomUUID(), "Master " + i, day, Optional.empty()));
+			}
+			entity.setGuilds(six);
+			Guilds.forget();
+			ChoiceMenu menu = EdictBook.forTest(player, hall);
+			for (int i = 0; i < 6; i++) {
+				String name = Guilds.get(ids.get(i)).name().getString();
+				helper.assertTrue(menu.icon(EdictBook.FIRST_GUILD + i).getHoverName().getString().equals(name),
+					"six guilds, slot " + i + ": " + menu.icon(EdictBook.FIRST_GUILD + i) + " not " + name);
+			}
+
+			// Twelve (a City's most): five per page, the last slot turns the page.
+			List<Guilds.Charter> twelve = new ArrayList<>();
+			List<String> names = new ArrayList<>();
+			for (int i = 0; i < 12; i++) {
+				ResourceLocation id = ids.get(i % ids.size());
+				twelve.add(new Guilds.Charter(id, UUID.randomUUID(), "Master " + i, day, Optional.empty()));
+				names.add(Guilds.get(id).name().getString() + "|Guild Master: Master " + i);
+			}
+			entity.setGuilds(twelve);
+			Guilds.forget();
+			menu = EdictBook.forTest(player, hall);
+			String[] shown = {"Showing guilds 1 to 5 of 12", "Showing guilds 6 to 10 of 12", "Showing guilds 11 to 12 of 12"};
+			List<String> seen = new ArrayList<>();
+			for (int page = 0; page < 3; page++) {
+				ItemStack more = menu.icon(EdictBook.MORE_GUILDS);
+				helper.assertTrue(more.is(Items.ARROW) && more.getHoverName().getString().equals("More guilds"), "page " + page + "'s button: " + more);
+				helper.assertTrue(lore(more).equals(List.of(shown[page], page < 2 ? "Click to see the next ones" : "Click to go back to the first ones")),
+					"page " + page + "'s button: " + lore(more));
+				for (int x = 0; x < EdictBook.GUILDS_PER_PAGE; x++) {
+					ItemStack icon = menu.icon(EdictBook.FIRST_GUILD + x);
+					if (icon.is(Items.LIGHT_GRAY_STAINED_GLASS_PANE)) {
+						helper.assertTrue(page == 2 && x >= 2, "an empty guild slot on page " + page + ", slot " + x);
+						continue;
+					}
+					seen.add(icon.getHoverName().getString() + "|" + lore(icon).get(0));
+				}
+				if (page == 1) {
+					// Clicking an edict keeps the page.
+					int drill = find(menu, "Builders' Drill");
+					click(menu, drill, player);
+					helper.assertTrue(lore(menu.icon(EdictBook.MORE_GUILDS)).contains(shown[1]), "an edict click turned the guild page back");
+				}
+				click(menu, EdictBook.MORE_GUILDS, player);
+			}
+			helper.assertTrue(seen.equals(names), "every guild once, in order: " + seen + " not " + names);
+			helper.assertTrue(lore(menu.icon(EdictBook.MORE_GUILDS)).contains(shown[0]), "after the last page, back to the first: " + lore(menu.icon(EdictBook.MORE_GUILDS)));
+			helper.assertTrue(lore(EdictBook.forTest(player, hall, 2).icon(EdictBook.MORE_GUILDS)).contains(shown[2]), "opened at the third page");
+			// Turning pages proclaims and charters nothing.
+			helper.assertTrue(entity.edicts().isEmpty() && entity.guilds().size() == 12, "the page button changed the village: " + entity.edicts());
 			helper.succeed();
 		});
 	}

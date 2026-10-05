@@ -1,0 +1,6 @@
+{
+  "name": {"translate": "service.aliveworkplace.chapel"},
+  "blueprints": ["aliveworkplace:chapel"],
+  "range": 48,
+  "icon": "minecraft:bell"
+}

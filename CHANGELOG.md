@@ -28,6 +28,9 @@ asks for the steps, `latest.log` and any crash report).
 - **Villagers climb the ladder to a bed upstairs** (B79): a villager whose bed is in an attic reached by a ladder (the
   Stone House's, which a renewed two-bed home becomes) couldn't find a way up, and after a minute gave the bed up. At
   bedtime they now walk to the ladder, climb it, step off towards the bed and sleep there.
+- **Every guild shows in the Book of Edicts** (B78): the Book's guild row had room for six, so a City's seventh to
+  twelfth guilds never appeared. With more than six, the row now shows five at a time and its last slot, More guilds,
+  turns to the next ones (and back to the first after the last).
 - **A build saved by 0.138.0 or earlier keeps its progress on upgrade** (B64): opened with a newer jar, a site half
   through a raised foundation (or in its walls) dropped to a few percent the first time it loaded. It now works out
   the progress it showed from the saved stage and step.
@@ -48,6 +51,17 @@ asks for the steps, `latest.log` and any crash report).
   with where each stands and why one is kept (a chest inside, a player built there, not of village blocks, out of the
   zone), and a click outlines them all in the world. Packs add their village blocks to the tag
   `aliveworkplace:village_house_blocks`. Nothing is rebuilt yet.
+- **The class engine for 1.8** (34.2, off until 1.8 is finished): households in a village with a hall can climb from
+  Peasant to Artisan, Burgher and Noble. The four classes are data files (`data/<ns>/classes/`) listing what each needs
+  (a home of some grade, fed days running, a varied diet, beauty near home, a finished build, the village's rank,
+  services and luxuries); a household rises after 2 dawns with the next class's needs and falls after 3 without its
+  own, one step a day, never below Peasant; a married couple moves together and children follow the grown-ups of
+  their house. `villageClasses`, `classRiseDays` and `classFallDays` in the config. Nothing changes in game yet.
+- **Services nearby for 1.8** (34.3, off until 1.8 is finished): six services a home can have nearby, as data files
+  (`data/<ns>/services/`): a chapel (a finished Chapel), a school (a Teacher, or a Schoolhouse or School), a clinic (a
+  Nurse, or a Healing Center or Clinic), a library (a Scholar or Librarian, or a Library), a market (a Market Square,
+  village-wide) and a tavern (an Innkeeper, or an Inn). Each reaches homes within 48 blocks; styled and upgraded builds
+  count. The hall works out where its services are once a day, and the classes' `services` needs read that list.
 - **The Steward is safe by design** (27.19): his plans, roads and walls never go into Keep Clear, another village or a
   protected village that isn't his owner's, and a ledger of what players built in a village (from 1.1 on) keeps his
   plans and walls out of those spots unless the owner approves one by hand. His sites leave a player's block where it

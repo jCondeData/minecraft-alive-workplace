@@ -712,7 +712,7 @@ public final class Guilds implements ResourceManagerReloadListener {
 	 * here, not by the loader, since guild files aren't a vanilla JSON folder: {@code fabric:all_mods_loaded},
 	 * {@code fabric:any_mods_loaded}, {@code fabric:not}, {@code fabric:true}; any other condition doesn't hold.
 	 */
-	static boolean conditionsMet(JsonObject object) {
+	public static boolean conditionsMet(JsonObject object) {
 		JsonElement list = object.get("fabric:load_conditions");
 		if (list == null) {
 			return true;

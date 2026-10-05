@@ -40,6 +40,9 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 	private long festivalDay = -1;
 	private long feastDay = -1;
 	private long festivalCalled = -100;
+	/** The village's own Habitat Block (ROADMAP 28.14), or null. */
+	@org.jetbrains.annotations.Nullable
+	private net.minecraft.core.BlockPos habitat;
 	/** The day a festival was due and the treasury couldn't pay for it (Festival Season, 30.8); -1: never. */
 	private long festivalMissed = -1;
 	/** The treasury, in hundredths of an emerald, and the day it last took the village's takings (see {@link Treasury}). */
@@ -378,6 +381,17 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 		setChanged();
 	}
 
+	/** The village's own Habitat Block (ROADMAP 28.14), or null if it has none. */
+	@org.jetbrains.annotations.Nullable
+	public net.minecraft.core.BlockPos habitat() {
+		return habitat;
+	}
+
+	public void setHabitat(@org.jetbrains.annotations.Nullable net.minecraft.core.BlockPos pos) {
+		habitat = pos == null ? null : pos.immutable();
+		setChanged();
+	}
+
 	public long festivalCalled() {
 		return festivalCalled;
 	}
@@ -575,6 +589,7 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 		festivalDay = tag.contains("festivalDay") ? Nbt.getLong(tag, "festivalDay") : -1;
 		feastDay = tag.contains("feastDay") ? Nbt.getLong(tag, "feastDay") : -1;
 		festivalCalled = tag.contains("festivalCalled") ? Nbt.getLong(tag, "festivalCalled") : -100;
+		habitat = tag.contains("habitat") ? net.minecraft.core.BlockPos.of(Nbt.getLong(tag, "habitat")) : null;
 		festivalMissed = tag.contains("festivalMissed") ? Nbt.getLong(tag, "festivalMissed") : -1;
 		treasury = Nbt.getInt(tag, "treasury");
 		treasuryTotal = Nbt.getLong(tag, "treasuryTotal");
@@ -649,6 +664,9 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 		tag.putLong("festivalDay", festivalDay);
 		tag.putLong("feastDay", feastDay);
 		tag.putLong("festivalCalled", festivalCalled);
+		if (habitat != null) {
+			tag.putLong("habitat", habitat.asLong());
+		}
 		tag.putLong("festivalMissed", festivalMissed);
 		tag.putInt("treasury", treasury);
 		tag.putLong("treasuryTotal", treasuryTotal);

@@ -36,10 +36,11 @@ GROUPS = [
 START, WORKING, DONE = ("01_start", "Start"), ("work_*@middle", "At work"), ("03_done", "Done")
 
 
-def S(name, group, title, what, est, stills, env=None, cobblemon=False, mega=False):
-    """One scene. est: seconds the scene itself takes on GitHub's runner (the client's start-up is added)."""
+def S(name, group, title, what, est, stills, env=None, cobblemon=False, mega=False, cobblemon18=False):
+    """One scene. est: seconds the scene itself takes on GitHub's runner (the client's start-up is added).
+    cobblemon18: a Cobblemon-1.8-only feature, always filmed with Cobblemon 1.8.1 (-Pcobblemon18=true, ROADMAP 28.14)."""
     return {"name": name, "group": group, "title": title, "what": what, "est": est, "stills": stills,
-            "env": env or {}, "cobblemon": cobblemon, "mega": mega}
+            "env": env or {}, "cobblemon": cobblemon or cobblemon18, "mega": mega, "cobblemon18": cobblemon18}
 
 
 def job(name, group, title, what, est=150, extra=(), **kw):
@@ -385,6 +386,10 @@ SCENES = [
       [("40_workshop_*@spread", "")], env={"WORKSHOP_WEIGHT": "200"}),
     S("pokemon_builds", "Build families", "Builds for the Pokémon jobs, both tiers",
       "all ten builds stand with their job blocks", 120, [("[12][0-9]_*@spread", "")], cobblemon=True),
+    S("village_habitat", "Habitat Keeper", "The village's own Habitat Block (Cobblemon 1.8)",
+      "the Expert keeper put a natural Habitat Block under the garden's centre stone and the hall lists today's Pokémon", 120,
+      [("01_garden", "The finished Habitat Garden"), ("02_habitat", "Its centre stone is now a Habitat Block"),
+       ("03_hall_line", "Close up: it still looks like moss")], cobblemon18=True),
     S("camp", "Build families", "A Settler's Wagon camp", "the camp was set up", 45,
       [("01_camp", "The camp"), ("02_camp_back", "From behind")]),
 ]
@@ -622,6 +627,8 @@ def changed(base, head="HEAD", root="."):
 def env(scene):
     s = BY_NAME[scene]
     out = {"SCENE": scene, "COBBLEMON": "true" if s["cobblemon"] else "false", "MEGA": "true" if s["mega"] else "false"}
+    if s["cobblemon18"]:
+        out["COBBLEMON18"] = "true"
     out.update(s["env"])
     return out
 

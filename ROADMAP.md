@@ -1150,7 +1150,7 @@ here adds a new kind of speed bonus (the new jobs get the partners' existing one
 
   Done when: the ten blueprints are in the table, lint-clean, with renders front and back in the package; a builder
   finishes each in a GameTest with its job block in place; showcase scene `pokemon_builds`.
-- [ ] **28.14** **A habitat of the village's own (Cobblemon 1.8).** The Habitat Block has no recipe and drops nothing:
+- [x] **28.14** (review: pending 2026-10-05) **A habitat of the village's own (Cobblemon 1.8).** The Habitat Block has no recipe and drops nothing:
   in survival it only comes in Cobblemon's 49 habitat structures. With `PokemonFeatures.HABITATS`:
   - Tending: natural Habitat Blocks within 64 blocks of the keeper's pasture (found through the loaded chunks' block
     entities, never a block scan) are visited each morning, and the hall's list posts today's phase ("Lush Cenote,
@@ -4349,6 +4349,18 @@ item waits.
   spots in `GEM_GROTTO_2_CORES`). For 28.14: the Habitat Garden's mossy centre stone is
   `StarterBlueprints.HABITAT_GARDEN_CENTRE` (template (7, 0, 7), both tiers). Sugar cane by the ponds was dropped
   (a builder places it before pouring the water, so it pops off): large ferns instead.
+- 2026-10-05 (28.14, owner's call and decisions; lane b): **Owner: may survival villages get a Habitat Block at all?**
+  Cobblemon gives none (no recipe, no drop). Meanwhile `villageHabitats` is on: one per village, founded by an Expert
+  keeper in place of the finished Habitat Garden's moss centre stone. The block is set up through its saved NBT (the
+  keys Cobblemon 1.8.1's own habitat structures carry: SpawningStyle natural, PoolId, MimicId moss, ReplaceSpawns), so
+  no Cobblemon class is touched; the phase today comes from `HabitatBlockEntity.getCurrentPhase` by reflection in
+  `compat/cobblemon/CobblemonHabitat` (the mod compiles against 1.7.3). Biome files list biome ids or vanilla tags
+  (`#minecraft:is_savanna`, `is_badlands`, `is_jungle`); 20 files, `zen_garden.json` has no biomes (anywhere else).
+  The village's block is kept on the hall (`VillageHallBlockEntity.habitat`). The block must be saved without the
+  inline `Name`/`Spawns` a new block carries, or Cobblemon reads an empty custom pool under that PoolId. The forced
+  spawn round test runs Cobblemon 1.8.1's `PlayerSpawner.runForArea` (by reflection, signatures from the jar) over a
+  zone round the block, with the chunks 48 blocks round it force-loaded (Cobblemon spawns only there) and the mock
+  player's ticking spawner switched off. Untested: the Habitat Garden II upgrade rebuilding over the centre.
 - 2026-10-05 (30.9, decisions; lane d): `curfew` is one effect type with three fields: `raids` (factor, multiplied;
   also read by `BanditCamps.dailyChance`), `safe_nights` (night safety full in `VillageNeeds.count`, and a monster's blow
   on a villager asleep in bed cancelled through `allowDamage`) and `stay_in` (bedtime, no trading, festival over at

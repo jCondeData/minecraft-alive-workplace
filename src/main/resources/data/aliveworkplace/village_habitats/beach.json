@@ -1,0 +1,7 @@
+{
+  "biomes": [
+    "minecraft:beach",
+    "minecraft:snowy_beach"
+  ],
+  "pool": "cobblemon:sandy_tide_pool"
+}

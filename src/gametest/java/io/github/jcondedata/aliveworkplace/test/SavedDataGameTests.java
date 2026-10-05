@@ -58,6 +58,8 @@ public class SavedDataGameTests implements FabricGameTest {
 		samples.put("SIGHTINGS", List.of(new io.github.jcondedata.aliveworkplace.habitat.HabitatKeepers.Sighting(
 			Component.translatable("message.aliveworkplace.habitat_keeper.sighting.shiny", Component.translatable("cobblemon.species.eevee.name")), "shiny", new BlockPos(12, 70, -40), 12L)));
 		samples.put("SIGHTED", List.of(A, B));
+		samples.put("HABITAT_TODAY", List.of(net.minecraft.network.chat.Component.literal("Lush Cenote, today: Lotad")));
+		samples.put("HABITAT_DAY", 12L);
 		net.minecraft.nbt.CompoundTag eevee = new net.minecraft.nbt.CompoundTag();
 		eevee.putString("Species", "cobblemon:eevee");
 		net.minecraft.nbt.CompoundTag ditto = new net.minecraft.nbt.CompoundTag();

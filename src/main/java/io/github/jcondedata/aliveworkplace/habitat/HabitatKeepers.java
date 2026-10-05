@@ -130,6 +130,11 @@ public final class HabitatKeepers {
 
 		/** The wild Pokémon (no owner, not in battle) in {@code box}. */
 		List<Wild> wild(ServerLevel level, AABB box);
+
+		/** The phase a Habitat Block is in now (from 1), or 0 if unknown (ROADMAP 28.14). */
+		default int habitatPhase(@Nullable net.minecraft.world.level.block.entity.BlockEntity habitat) {
+			return 0;
+		}
 	}
 
 	@Nullable

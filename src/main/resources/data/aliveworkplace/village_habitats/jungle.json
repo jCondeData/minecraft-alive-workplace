@@ -1,0 +1,6 @@
+{
+  "biomes": [
+    "#minecraft:is_jungle"
+  ],
+  "pool": "cobblemon:lush_canopy"
+}

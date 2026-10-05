@@ -1,0 +1,6 @@
+{
+  "biomes": [
+    "#minecraft:is_badlands"
+  ],
+  "pool": "cobblemon:badlands_shaded_rock"
+}

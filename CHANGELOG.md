@@ -78,6 +78,7 @@ asks for the steps, `latest.log` and any crash report).
   another village style's outside (plains, desert, savanna, snowy or taiga); the village's builder rebuilds the outside
   in place and leaves the room inside, its job block and its chests as they were. Builders now also pick up what falls
   off a block they take down (a lantern under a porch roof) instead of waiting for it.
+- A village habitat of its own (Cobblemon 1.8, ROADMAP 28.14): an Expert Habitat Keeper puts one natural Habitat Block under the finished Habitat Garden's mossy centre stone (it still looks like moss), with Pokémon that suit the biome (`data/aliveworkplace/village_habitats`, 20 biome files). One per village; taking the garden down removes it without a drop. Keepers visit the Habitat Blocks round their pasture each day and the hall's list shows who comes today. On Cobblemon 1.7 the keeper's page says it needs 1.8. Config `villageHabitats`.
 - **Builds for the Pokémon jobs** (28.13, with Cobblemon): the Camp Kitchen (an open timber shelter round a Campfire
   Pot, benches and a grain store; II adds a Hearty Grain plot and a smokehouse), the Berry Nursery (fenced farmland beds
   in pairs, a composter and a potting bench; II adds a greenhouse with four more beds) and the Daycare (a barn with a

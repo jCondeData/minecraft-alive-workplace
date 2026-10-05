@@ -137,6 +137,8 @@ public final class WorkplaceConfig {
 	public boolean gemGrowers = true;
 	/** Habitat Keepers tell the village of shiny, rare and Alpha wild Pokémon near their pasture (ROADMAP 28.10). */
 	public boolean habitatSightings = true;
+	/** An Expert Habitat Keeper puts one Habitat Block in a finished Habitat Garden, with Cobblemon 1.8 (ROADMAP 28.14). Off: none founded. */
+	public boolean villageHabitats = true;
 	/** Days in each of the village calendar's four seasons (each has a festival on its middle day). */
 	public int seasonDays = 16;
 	/** Hundredths of an emerald each worker brings the treasury a day (before wellbeing and rank). */
@@ -352,6 +354,7 @@ public final class WorkplaceConfig {
 		io.github.jcondedata.aliveworkplace.camp.CampCooks.ENABLED = campCooks;
 		io.github.jcondedata.aliveworkplace.habitat.HabitatKeepers.ENABLED = habitatKeepers;
 		io.github.jcondedata.aliveworkplace.habitat.HabitatKeepers.SIGHTINGS = habitatSightings;
+		io.github.jcondedata.aliveworkplace.habitat.VillageHabitats.ENABLED = villageHabitats;
 		io.github.jcondedata.aliveworkplace.gem.GemGrowers.ENABLED = gemGrowers;
 		io.github.jcondedata.aliveworkplace.daycare.DaycareKeepers.ENABLED = daycareKeepers;
 		// Off in gametests (a trait picked by chance would change a test's numbers); the people tests turn them on.

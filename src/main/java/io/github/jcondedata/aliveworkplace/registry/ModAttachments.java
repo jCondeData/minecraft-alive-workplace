@@ -190,6 +190,13 @@ public final class ModAttachments {
 	/** The wild Pokémon a Habitat Keeper has already told the village of, so each is told once (ROADMAP 28.10). */
 	public static final Attachment<java.util.List<java.util.UUID>> SIGHTED = Attachment.saved("sighted", net.minecraft.core.UUIDUtil.STRING_CODEC.listOf());
 
+	/** The phase today of each Habitat Block a Habitat Keeper tends, for the hall's list (ROADMAP 28.14). */
+	public static final Attachment<java.util.List<net.minecraft.network.chat.Component>> HABITAT_TODAY =
+		Attachment.saved("habitat_today", net.minecraft.network.chat.ComponentSerialization.CODEC.listOf());
+
+	/** The day a Habitat Keeper last visited the Habitat Blocks she tends (ROADMAP 28.14). */
+	public static final Attachment<Long> HABITAT_DAY = Attachment.saved("habitat_day", com.mojang.serialization.Codec.LONG);
+
 	/** The pairs of Pokémon in a Daycare Keeper's care, with the eggs found for them (ROADMAP 28.12). */
 	public static final Attachment<java.util.List<io.github.jcondedata.aliveworkplace.daycare.DaycareKeepers.Pair>> DAYCARE_PAIRS =
 		Attachment.saved("daycare_pairs", io.github.jcondedata.aliveworkplace.daycare.DaycareKeepers.Pair.CODEC.listOf());

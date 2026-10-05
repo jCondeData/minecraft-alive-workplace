@@ -1540,6 +1540,64 @@ public class BuilderGameTests implements FabricGameTest {
 		});
 	}
 
+	/**
+	 * 23.1b (QA): with the server-wide cap full every tick (a village of busy crews), the sounds are skipped but the
+	 * crewmate still passes the cobblestone and the hut is finished, with no item entity.
+	 */
+	//$ gametest_ticks_batch AREA '2400' '"qa_toss_capped"'
+	@GameTest(template = AREA, timeoutTicks = 2400, batch = "qa_toss_capped")
+	public void materialsStillChangeHandsWhenTheSoundsAreCapped(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		Setup s = setup(helper, TEST_HUT, HUT_ORIGIN, Rotation.NONE, hutMaterials());
+		int cobble = s.plan().materials().getOrDefault(Items.COBBLESTONE, 0);
+		helper.assertTrue(cobble > 1, "the test hut should need some cobblestone, needs " + cobble);
+		Container chest = (Container) helper.getBlockEntity(CHEST);
+		for (int i = 0; i < chest.getContainerSize(); i++) {
+			if (chest.getItem(i).is(Items.COBBLESTONE)) {
+				chest.setItem(i, ItemStack.EMPTY);
+			}
+		}
+		BlockPos planksBlock = null;
+		for (BuildPlan.Stage stage : BuildPlan.Stage.values()) {
+			for (BuildPlan.Step step : s.plan().steps(stage)) {
+				if (planksBlock == null && step.requirements().stream().anyMatch(r -> r.item() == Items.OAK_PLANKS)
+					&& step.requirements().stream().noneMatch(r -> r.item() == Items.COBBLESTONE)) {
+					planksBlock = step.pos();
+				}
+			}
+		}
+		helper.assertTrue(planksBlock != null, "the test hut should have a planks block");
+		BlockPos claimed = planksBlock;
+		Villager mate = helper.spawn(EntityType.VILLAGER, HELPER);
+		mate.setNoAi(true);
+		ModAttachments.BUILDER_BAG.getOrCreate(mate).addAll(Items.COBBLESTONE, cobble);
+		long skippedBefore = io.github.jcondedata.aliveworkplace.build.TossSounds.skipped();
+		long[] ourSkips = {0};
+		AtomicBoolean itemFlew = new AtomicBoolean(false);
+		net.minecraft.world.phys.AABB area = new net.minecraft.world.phys.AABB(helper.absolutePos(BlockPos.ZERO)).inflate(24);
+		helper.onEachTick(() -> {
+			long now = s.level().getGameTime();
+			while (io.github.jcondedata.aliveworkplace.build.TossSounds.allow(now)) {
+				// fill the window: every builder's toss this tick is past the cap
+			}
+			ourSkips[0]++; // (the call that found it full)
+			if (BuildSiteManager.get(s.level()).get(s.site().id()) != null) {
+				s.site().claim(mate.getUUID(), claimed, now);
+			}
+			if (!s.level().getEntitiesOfClass(net.minecraft.world.entity.item.ItemEntity.class, area).isEmpty()) {
+				itemFlew.set(true);
+			}
+		});
+		helper.succeedWhen(() -> {
+			helper.assertFalse(itemFlew.get(), "an item entity appeared while the crew passed materials");
+			assertBuilt(helper, s);
+			helper.assertTrue(ModAttachments.BUILDER_BAG.getOrCreate(mate).count(Items.COBBLESTONE) == 0,
+				"the crewmate still holds the cobblestone");
+			helper.assertTrue(io.github.jcondedata.aliveworkplace.build.TossSounds.skipped() - skippedBefore > ourSkips[0],
+				"no toss sound was skipped: the cap never applied");
+		});
+	}
+
 	/** 23.1b: past {@code TossSounds.MAX} in one window the toss sounds are skipped, and the next window plays again. */
 	//$ gametest_batch 'net.fabricmc.fabric.api.gametest.v1.FabricGameTest.EMPTY_STRUCTURE' '"toss_cap"'
 	@GameTest(template = net.fabricmc.fabric.api.gametest.v1.FabricGameTest.EMPTY_STRUCTURE, batch = "toss_cap")

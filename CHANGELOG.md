@@ -17,6 +17,13 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Added
+- **Smithy, Mason's Yard, Fletcher's Lodge and Map Room** (27.13), new blueprints in the Blueprint Table: a stone forge
+  open to the street with a blast furnace, smithing table and grindstone (II: a coal and ore store with a second blast
+  furnace); a fenced yard of cut stone with a lean-to over a stonecutter (II: a second stonecutter and a hoist); a log
+  cabin with a log pile, a straw target and a fletching table (II: a drying-rack wing with a second one); and a narrow
+  tower house with a cartography table and a lookout at the top. The Steward now builds them for an Armorer or Miner,
+  a Mason, a Fletcher or Lumberjack, and a Cartographer left without a workstation (or a job the village wants with no
+  free block).
 - **The Steward's civic rules** (27.12): he now wishes for a Clinic (a Healing Center from a Village) when two or more
   are ill and nobody nurses them, a Graveyard after a death in a village of 8, a Schoolhouse for 3 children, a Library
   with 6 villagers and no scholar, a Chapel while a couple courts, a Lookout Tower (a Barracks in a Town) while guards are

@@ -1,0 +1,22 @@
+{
+  "when": [
+    {
+      "worker_without_workstation": {
+        "professions": [
+          "minecraft:armorer",
+          "aliveworkplace:miner"
+        ],
+        "wanted": true
+      }
+    }
+  ],
+  "do": {
+    "build": {
+      "blueprint": "aliveworkplace:smithy",
+      "zone": "workshops"
+    }
+  },
+  "priority": 62,
+  "why": "steward.aliveworkplace.why.workplace",
+  "cooldown_days": 2
+}

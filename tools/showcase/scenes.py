@@ -367,7 +367,8 @@ SCENES = [
       [("01_staff", "Every workstation"), ("02_staff_close_1", "Builder to Village Hall"),
        ("03_staff_close_2", "Village Hall to Trainer"), ("04_staff_above", "From above")]),
     # Build families
-    S("gallery", "Build families", "Every starter blueprint", "every starter build was placed", 240,
+    S("gallery", "Build families", "Every starter blueprint, with the Smithy, Mason's Yard, Fletcher's Lodge and Map Room",
+      "every starter build was placed", 270,
       [("30_*@spread", "")]),
     S("workshops", "Build families", "Tinker's Workshops and Nether Gates", "every workshop and gate was placed", 60,
       [("30_*@spread", "")]),

@@ -337,7 +337,7 @@ first; many items below are "verify and harden", not "build".
   it. Add a config option (default: keep working, so a server owner can still choose to pause), and document it
   in the README. Done when: both settings are tested, and there are no chunk-loading surprises (count the tickets
   before and after the soak).
-- [x] **23.7** (approved auto 2026-10-04) **Imports that just work.** `.litematic`, `.schem` and `.nbt` files in common sizes and versions, including big
+- [x] **23.7** (approved auto 2026-10-04) (verified 2026-10-05: 6 new tests [QaImportEdgesGameTests, shipped 30f2d6f]: not-a-build files [text, empty, PNG], uncompressed .nbt, the 1,000,000-block limit both sides [.nbt and .schem], the 8 MB file limit both sides, empty/all-air/0-wide/no-region files, a schematic with cut-off data; plus the 6 corpus tests. Not filed [only a hand-damaged file shows it]: a .schem block index past its palette imports as air instead of 'damaged'. Mutation not run here.) **Imports that just work.** `.litematic`, `.schem` and `.nbt` files in common sizes and versions, including big
   builds (48×8×48), unknown modded blocks and old formats. Done when: a test corpus of permissively licensed or
   self-made sample files imports, or fails with a clear message that says which block or format was the problem.
 - [x] **23.8** (approved 2026-10-04) **Placing a build feels good.**

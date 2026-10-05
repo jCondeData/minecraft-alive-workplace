@@ -39,6 +39,7 @@ public final class ModTrades {
 		habitatKeeperTrades();
 		gemGrowerTrades();
 		daycareKeeperTrades();
+		trainerLeaderTrades();
 		Platform.get().addTrades(ModVillagers.BARD, 1, offers -> {
 			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 2), new ItemStack(Items.NOTE_BLOCK, 2), 12, 2, 0.05f));
 			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.STRING, 16), new ItemStack(Items.EMERALD), 16, 2, 0.05f));
@@ -669,6 +670,18 @@ public final class ModTrades {
 			offers.add((entity, random) -> cobblemon("exp_candy_s", 4, 2, 12, 15)));
 		Platform.get().addTrades(ModVillagers.DAYCARE_KEEPER, 5, offers ->
 			offers.add((entity, random) -> cobblemon("destiny_knot", 24, 1, 2, 30)));
+	}
+
+	/**
+	 * Trainer Leaders (with Cobblemon; ROADMAP 28.16): an Expert Leader sells the Arena's blueprint, where the village's
+	 * Festival Cup is fought. Leaders trade nothing else (sneak and right-click to see).
+	 */
+	private static void trainerLeaderTrades() {
+		Platform.get().addTrades(ModVillagers.TRAINER_LEADER, 4, offers -> {
+			if (Platform.get().isModLoaded("cobblemon")) {
+				offers.add((entity, random) -> blueprint(StarterBlueprints.ARENA, 20));
+			}
+		});
 	}
 
 	private static void nurseTrades() {

@@ -92,6 +92,12 @@ public final class VillageAdvice {
 				VillageRanks.of(level, hall), built)) {
 			tips.add(new Tip("pokemon_center", ModItems.BLUEPRINT));
 		}
+		// The Arena is for the Festival Cup (28.17-28.22): suggested once 1.2 is released (Expansions.M28), not before
+		if (io.github.jcondedata.aliveworkplace.Expansions.on(io.github.jcondedata.aliveworkplace.Expansions.M28)
+				&& wantsArena(io.github.jcondedata.aliveworkplace.platform.Platform.get().isModLoaded("cobblemon"), VillageRanks.of(level, hall),
+				hasTrainerLeader(level, hall), built)) {
+			tips.add(new Tip("arena", ModItems.BLUEPRINT));
+		}
 		for (BuildSiteManager.Finished f : upgradable(level, hall).stream().limit(MAX_UPGRADES).toList()) {
 			tips.add(new Tip("upgrade", ModItems.BLUEPRINT, Blueprints.displayName(f.structure()),
 				Blueprints.displayName(BlueprintUpgrades.upgradeOf(f.structure()))));
@@ -174,6 +180,21 @@ public final class VillageAdvice {
 		return cobblemon && rank.ordinal() >= VillageRanks.Rank.VILLAGE.ordinal()
 			&& built.stream().noneMatch(id -> id.equals(io.github.jcondedata.aliveworkplace.blueprint.StarterBlueprints.POKEMON_CENTER.id())
 				|| id.equals(io.github.jcondedata.aliveworkplace.blueprint.StarterBlueprints.POKEMON_CENTER_2.id()));
+	}
+
+	/**
+	 * ROADMAP 28.16: a Cobblemon village of at least Village rank with a Trainer Leader and no Arena (any tier or style,
+	 * finished near the hall) is told to build one.
+	 */
+	public static boolean wantsArena(boolean cobblemon, VillageRanks.Rank rank, boolean trainerLeader, List<ResourceLocation> built) {
+		return cobblemon && trainerLeader && rank.ordinal() >= VillageRanks.Rank.VILLAGE.ordinal()
+			&& built.stream().noneMatch(id -> Arenas.tier(id) > 0);
+	}
+
+	/** Whether a grown-up Trainer Leader lives in the village round {@code hall}. */
+	public static boolean hasTrainerLeader(ServerLevel level, BlockPos hall) {
+		return !level.getEntitiesOfClass(Villager.class, VillageHalls.area(hall),
+			v -> v.isAlive() && io.github.jcondedata.aliveworkplace.trainer.Trainers.isLeader(v)).isEmpty();
 	}
 
 	// The numbers the tips go by, shared with the Steward's rules (ROADMAP 27.6) so his desk and these tips agree.

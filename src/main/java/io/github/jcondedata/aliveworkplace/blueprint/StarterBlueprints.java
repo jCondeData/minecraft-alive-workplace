@@ -69,6 +69,19 @@ public final class StarterBlueprints {
 	/** A lodge behind it (a Shop Counter's trade corner, four beds upstairs) and a garden with a Pasture Block. */
 	public static final Entry POKEMON_CENTER_2 = new Entry(AliveWorkplace.id("pokemon_center_2"), new Vec3i(13, 17, 26));
 
+	/**
+	 * With Cobblemon only (ROADMAP 28.16; tools/blueprints/arena.py): a 15 x 9 battle ring (packed mud, white lines, a
+	 * centre circle), a trainer's box on a dais at each end, benches for 12, banner poles and a notice board. The spots
+	 * the mod uses (the ring centre, the boxes, the seats...) are {@code hall.Arenas}'.
+	 */
+	public static final Entry ARENA = new Entry(AliveWorkplace.id("arena"), new Vec3i(25, 8, 19));
+	/** Stands on both long sides (30 seats), a gate arch, lanterns round the ring and a fair lane with two striped kiosks. */
+	public static final Entry ARENA_2 = new Entry(AliveWorkplace.id("arena_2"), new Vec3i(25, 9, 29));
+	/** A covered grandstand on stone terraces, a trainers' room with a Healing Machine at each end, the champion's pole. */
+	public static final Entry ARENA_3 = new Entry(AliveWorkplace.id("arena_3"), new Vec3i(25, 12, 29));
+	/** The Arena's three tiers. */
+	public static final List<Entry> ARENAS = List.of(ARENA, ARENA_2, ARENA_3);
+
 	/*
 	 * The Pokémon jobs' builds (ROADMAP 28.13; tools/blueprints/pokemon_jobs.py), with Cobblemon only, each with its job
 	 * block in place and sold by its job's Journeyman. A new one: an Entry here, in COBBLEMON_ONLY and JOB_BUILDS.
@@ -120,8 +133,8 @@ public final class StarterBlueprints {
 	public static final List<Entry> VANILLA_JOB_BUILDS = List.of(GEM_GROTTO, GEM_GROTTO_2);
 
 	/** In the Blueprint Table (and the creative tab) only when Cobblemon is installed: most of what makes them is its. */
-	public static final List<Entry> COBBLEMON_ONLY = java.util.stream.Stream.concat(java.util.stream.Stream.of(POKEMON_CENTER, POKEMON_CENTER_2),
-		JOB_BUILDS.stream().filter(e -> !VANILLA_JOB_BUILDS.contains(e))).toList();
+	public static final List<Entry> COBBLEMON_ONLY = java.util.stream.Stream.of(java.util.stream.Stream.of(POKEMON_CENTER, POKEMON_CENTER_2),
+		JOB_BUILDS.stream().filter(e -> !VANILLA_JOB_BUILDS.contains(e)), ARENAS.stream()).flatMap(e -> e).toList();
 
 	/**
 	 * {@code blueprint} with the blocks only some Cobblemon versions have put in where it was drawn with a vanilla

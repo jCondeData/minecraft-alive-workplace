@@ -35,6 +35,13 @@ asks for the steps, `latest.log` and any crash report).
   seed stock, so a Farmstead's field could be harvested without anything landing in its chest. He now takes them from the
   chests to plant with, like seeds, and puts the whole harvest away.
 ### Added
+- **The Arena** (28.16): with Cobblemon, three new blueprints in the Blueprint Table (and sold by an Expert Trainer
+  Leader). Arena: a 15×9 battle ring of packed mud with white lines and a centre circle, a trainer's box on a dais at
+  each end with a lamp post, benches for 12, banner poles and a notice board. Arena II adds stands on both long sides
+  (30 seats), a gate arch, lanterns round the ring and a fair lane with two striped kiosks. Arena III adds a covered
+  grandstand on stone terraces, a trainers' room with a Healing Machine at each end and a champion's pole before the
+  gate. It's where the Festival Cup will be fought (from 1.2), when the hall's "What next?" starts suggesting one to a
+  Village with a Trainer Leader.
 - **Villages grow the Pokémon jobs' houses** (28.15): with Cobblemon, villages sometimes grow a Pokémon Center (a nurse
   at a Healing Machine, a PC by the counter), a Camp Kitchen (a Camp Cook at a Campfire Pot), a Berry Nursery (a Berry
   Breeder by farmland beds), a Daycare (a Daycare Keeper at a Pasture Block on a straw floor) and a Gem Grotto (a Gem

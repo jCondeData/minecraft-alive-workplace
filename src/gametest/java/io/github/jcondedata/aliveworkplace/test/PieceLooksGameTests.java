@@ -11,6 +11,7 @@ import io.github.jcondedata.aliveworkplace.build.Builders;
 import io.github.jcondedata.aliveworkplace.hall.PieceLooks;
 import io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity;
 import io.github.jcondedata.aliveworkplace.hall.VillageHallScreen;
+import io.github.jcondedata.aliveworkplace.registry.ModAttachments;
 import io.github.jcondedata.aliveworkplace.registry.ModBlocks;
 import io.github.jcondedata.aliveworkplace.registry.ModGameRules;
 import io.github.jcondedata.aliveworkplace.work.ChoiceMenu;
@@ -379,6 +380,141 @@ public class PieceLooksGameTests implements FabricGameTest {
 		}
 		helper.assertTrue(missing.isEmpty(), "not in en_us.json: " + missing);
 		helper.succeed();
+	}
+
+	// ---- QA (qa-1005-0833): the outcomes a player's click can meet, and a change of mind mid-rebuild ----------------
+
+	/** Fills chest {@code index} with all the {@code look}'s outside needs, counted as if the chests were empty. */
+	private static void stockIn(GameTestHelper helper, Village v, String look, int index) {
+		List<List<ItemStack>> saved = new ArrayList<>();
+		for (BlockPos c : CHESTS) {
+			Container chest = (Container) helper.getBlockEntity(c);
+			List<ItemStack> held = new ArrayList<>();
+			for (int i = 0; i < chest.getContainerSize(); i++) {
+				held.add(chest.getItem(i).copy());
+				chest.setItem(i, ItemStack.EMPTY);
+			}
+			saved.add(held);
+		}
+		stock(helper, v, look);
+		Container first = (Container) helper.getBlockEntity(CHESTS[0]);
+		List<ItemStack> made = new ArrayList<>();
+		for (int i = 0; i < first.getContainerSize(); i++) {
+			made.add(first.getItem(i).copy());
+		}
+		for (int c = 0; c < CHESTS.length; c++) {
+			Container chest = (Container) helper.getBlockEntity(CHESTS[c]);
+			for (int i = 0; i < chest.getContainerSize(); i++) {
+				chest.setItem(i, c == index ? made.get(i) : saved.get(c).get(i));
+			}
+		}
+	}
+
+	private static int inChests(GameTestHelper helper, net.minecraft.world.item.Item item) {
+		int n = 0;
+		for (BlockPos c : CHESTS) {
+			Container chest = (Container) helper.getBlockEntity(c);
+			for (int i = 0; i < chest.getContainerSize(); i++) {
+				n += chest.getItem(i).is(item) ? chest.getItem(i).getCount() : 0;
+			}
+		}
+		return n;
+	}
+
+	/** Clicking the outside the house already has starts nothing, keeps nothing new, and says so in a plain sentence. */
+	//$ gametest_ticks_batch AREA '200' '"qaPieceLookSame"'
+	@GameTest(template = AREA, timeoutTicks = 200, batch = "qaPieceLookSame")
+	public void pickingTheOutsideItHasStartsNothing(GameTestHelper helper) {
+		Village v = village(helper, true);
+		VillagePieces.Piece found = piece(helper, v);
+		choose(helper, v, v.owner(), "plains");
+		helper.assertTrue(PieceLooks.rebuild(v.level(), found) == null, "picking its own outside started a rebuild");
+		helper.assertTrue(PieceLooks.choose(v.level(), v.hall(), v.owner(), found, "plains") == PieceLooks.Outcome.SAME, "not SAME");
+		String said = PieceLooks.message(v.level(), v.hall(), found, "plains", PieceLooks.Outcome.SAME).getString();
+		helper.assertTrue(said.equals("The Guard House already has the Plains outside."), "said: " + said);
+		assertRoomKept(helper, v);
+		helper.succeed();
+	}
+
+	/** With no builder near, a pick starts nothing and the player is told why, with the distance as a number. */
+	//$ gametest_ticks_batch AREA '200' '"qaPieceLookNoBuilder"'
+	@GameTest(template = AREA, timeoutTicks = 200, batch = "qaPieceLookNoBuilder")
+	public void withNoBuilderAPickIsExplained(GameTestHelper helper) {
+		Village v = village(helper, true);
+		VillagePieces.Piece found = piece(helper, v);
+		v.builder().discard();
+		PieceLooks.Outcome outcome = PieceLooks.choose(v.level(), v.hall(), v.owner(), found, "desert");
+		helper.assertTrue(outcome == PieceLooks.Outcome.NO_BUILDER, "outcome " + outcome);
+		helper.assertTrue(PieceLooks.rebuild(v.level(), found) == null, "a rebuild started with no builder");
+		String said = PieceLooks.message(v.level(), v.hall(), found, "desert", outcome).getString();
+		helper.assertTrue(said.equals("No builder of this village can reach the Guard House: give one a bench within "
+			+ Builders.MAX_SITE_DISTANCE + " blocks of it."), "said: " + said);
+		helper.assertTrue(VillagePieces.lookAt(v.level(), v.placement()).equals(Optional.of("plains")), "the house changed");
+		helper.succeed();
+	}
+
+	/** An unknown style (a forged click) is refused and changes nothing. */
+	//$ gametest_ticks_batch AREA '200' '"qaPieceLookForged"'
+	@GameTest(template = AREA, timeoutTicks = 200, batch = "qaPieceLookForged")
+	public void anUnknownStyleIsRefused(GameTestHelper helper) {
+		Village v = village(helper, true);
+		VillagePieces.Piece found = piece(helper, v);
+		for (String look : List.of("", "nether", "PLAINS", "desert/../plains")) {
+			PieceLooks.Outcome outcome = PieceLooks.choose(v.level(), v.hall(), v.owner(), found, look);
+			helper.assertTrue(!outcome.ok(), "'" + look + "' was accepted: " + outcome);
+		}
+		helper.assertTrue(PieceLooks.rebuild(v.level(), found) == null, "a forged style started a rebuild");
+		helper.assertTrue(v.entity().pieceLooks().isEmpty(), "a forged style was kept: " + v.entity().pieceLooks());
+		helper.succeed();
+	}
+
+	/**
+	 * The owner picks desert, the builder starts, then he clicks desert again (told it's already happening) and changes
+	 * his mind to taiga (and stocks what it needs then): the house ends with the taiga outside, the room kept, one choice kept on the hall, one site.
+	 */
+	//$ gametest_ticks_batch AREA '16000' '"qaPieceLookChange"'
+	@GameTest(template = AREA, timeoutTicks = 16000, batch = "qaPieceLookChange")
+	public void changingTheLookMidRebuildEndsWithTheLastPick(GameTestHelper helper) {
+		Village v = village(helper, true);
+		VillagePieces.Piece found = piece(helper, v);
+		stockIn(helper, v, "desert", 1);
+		choose(helper, v, v.owner(), "desert");
+		BuildSite first = PieceLooks.rebuild(v.level(), found);
+		helper.assertTrue(first != null, "no desert rebuild started");
+		PieceLooks.Outcome again = PieceLooks.choose(v.level(), v.hall(), v.owner(), found, "desert");
+		helper.assertTrue(again == PieceLooks.Outcome.BUILDING, "clicking desert again: " + again);
+		String said = PieceLooks.message(v.level(), v.hall(), found, "desert", again).getString();
+		helper.assertTrue(said.equals("The Guard House is already being rebuilt with the Desert outside."), "said: " + said);
+		BuildPlan firstPlan = first.plan(v.level());
+		BuildSite[] second = {null};
+		helper.onEachTick(() -> {
+			if (second[0] == null && first.stage() == BuildPlan.Stage.STRUCTURE && first.progress(firstPlan) >= 0.25f) {
+				// what the taiga outside needs now, as the page's "Waiting for" would tell him (the desert clearing took
+				// down some of the plains blocks the taiga outside could have kept)
+				stockIn(helper, v, "taiga", 2);
+				choose(helper, v, v.owner(), "taiga");
+				second[0] = PieceLooks.rebuild(v.level(), found);
+			}
+		});
+		helper.succeedWhen(() -> {
+			helper.assertTrue(second[0] != null, "never changed: desert at " + first.stage() + " " + Math.round(first.progress(firstPlan) * 100) + "%");
+			helper.assertTrue(second[0] != first && second[0].structure().equals(VillagePieces.outsideId("taiga", "guard_house")),
+				"the change of mind: " + second[0].structure());
+			helper.assertTrue(BuildSiteManager.get(v.level()).get(first.id()) == null, "the desert rebuild is still open");
+			BuildPlan plan = second[0].plan(v.level());
+			helper.assertTrue(BuildSiteManager.get(v.level()).get(second[0].id()) == null, "still rebuilding: " + second[0].stage() + " "
+				+ Math.round(second[0].progress(plan) * 100) + "% missing=" + second[0].missing() + " status=" + second[0].status()
+				+ " bag=" + ModAttachments.BUILDER_BAG.getOrCreate(v.builder()).count(Items.STONE) + " stone, "
+				+ ModAttachments.BUILDER_BAG.getOrCreate(v.builder()).count(Items.GLASS_PANE) + " panes, "
+				+ ModAttachments.BUILDER_BAG.getOrCreate(v.builder()).count(Items.CAMPFIRE) + " campfires; in chests "
+				+ inChests(helper, Items.STONE) + " stone, " + inChests(helper, Items.GLASS_PANE) + " panes, " + inChests(helper, Items.CAMPFIRE) + " campfires");
+			List<BlockPos> unfinished = plan.unfinished(v.level());
+			helper.assertTrue(unfinished.isEmpty(), unfinished.size() + " outside blocks wrong, e.g. "
+				+ unfinished.stream().limit(3).map(p -> helper.relativePos(p) + "=" + v.level().getBlockState(p)).toList());
+			assertRoomKept(helper, v);
+			helper.assertTrue(VillagePieces.lookAt(v.level(), v.placement()).equals(Optional.of("taiga")), "looks like " + VillagePieces.lookAt(v.level(), v.placement()));
+			helper.assertTrue(v.entity().pieceLooks().size() == 1 && v.entity().pieceLooks().get(0).look().equals("taiga"), "kept: " + v.entity().pieceLooks());
+		});
 	}
 
 	private static void collect(ChoiceMenu menu, List<Component> out) {

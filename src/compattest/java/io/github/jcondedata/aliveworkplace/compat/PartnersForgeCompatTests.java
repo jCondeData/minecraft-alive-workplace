@@ -353,7 +353,10 @@ public class PartnersForgeCompatTests implements FabricGameTest {
 		helper.succeedWhen(() -> {
 			helper.assertTrue(started.contains(show("fletcher_flying_brings_a_feather")), "no feather show: " + why(started));
 			helper.assertTrue(carried.contains(Items.FEATHER), "the Pidgey brought " + carried + ", not a feather");
-			helper.assertTrue(guard.getItemBySlot(EquipmentSlot.OFFHAND).is(Items.BOW) || guardsChest.countItem(Items.BOW) == 1, "no bow for the guard");
+			helper.assertTrue(guard.getItemBySlot(EquipmentSlot.OFFHAND).is(Items.BOW) || guardsChest.countItem(Items.BOW) == 1,
+				"no bow for the guard (B74): guard holds " + guard.getItemBySlot(EquipmentSlot.MAINHAND) + " / " + guard.getItemBySlot(EquipmentSlot.OFFHAND)
+					+ ", guard's chest " + contents(guardsChest) + ", fletcher's chest " + contents(chest) + ", fletcher holds " + fletcher.getMainHandItem()
+					+ ", fletcher at " + helper.relativePos(fletcher.blockPosition()) + ", day time " + helper.getLevel().getDayTime() % 24000);
 			noDisplaysLeft(helper);
 		});
 	}
@@ -386,5 +389,16 @@ public class PartnersForgeCompatTests implements FabricGameTest {
 			noDisplaysLeft(helper);
 			golem.discard();
 		});
+	}
+
+	/** A chest's stacks, for failure messages. */
+	private static List<ItemStack> contents(Container c) {
+		List<ItemStack> out = new java.util.ArrayList<>();
+		for (int i = 0; i < c.getContainerSize(); i++) {
+			if (!c.getItem(i).isEmpty()) {
+				out.add(c.getItem(i));
+			}
+		}
+		return out;
 	}
 }

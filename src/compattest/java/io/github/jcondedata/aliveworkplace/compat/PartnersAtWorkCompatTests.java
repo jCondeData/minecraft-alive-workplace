@@ -57,11 +57,25 @@ public class PartnersAtWorkCompatTests implements FabricGameTest {
 		PartnerShowsCompatTests.after(helper, () -> helper.getLevel().getServer().getPlayerList().remove(player));
 	}
 
+	/** Each test's partner, once found: a pastured Pokémon wanders its pasture's radius, past the area's edge (B51). */
+	private static final Map<GameTestHelper, Map<String, java.util.UUID>> PARTNERS = new java.util.WeakHashMap<>();
+
 	static PokemonEntity pokemon(GameTestHelper helper, String species) {
+		Map<String, java.util.UUID> mine = PARTNERS.computeIfAbsent(helper, h -> new java.util.HashMap<>());
+		java.util.UUID known = mine.get(species);
+		if (known != null && helper.getLevel().getEntity(known) instanceof PokemonEntity partner && partner.isAlive()) {
+			return partner;
+		}
 		// (Up to 30 above the area: an air mail partner climbs out of sight, ROADMAP 28.5.)
 		List<PokemonEntity> found = helper.getLevel().getEntitiesOfClass(PokemonEntity.class, helper.getBounds().inflate(4).expandTowards(0, 30, 0),
 			e -> e.getPokemon().getSpecies().getName().equalsIgnoreCase(species));
-		helper.assertTrue(found.size() == 1, "pastured " + species + ": " + found.size());
+		if (found.size() != 1) {
+			List<BlockPos> wider = helper.getLevel().getEntitiesOfClass(PokemonEntity.class, helper.getBounds().inflate(48),
+				e -> e.getPokemon().getSpecies().getName().equalsIgnoreCase(species)).stream().map(e -> helper.relativePos(e.blockPosition())).toList();
+			helper.fail("pastured " + species + ": " + found.size() + (known != null ? " (the one found earlier is gone)" : "")
+				+ "; within 48 blocks: " + wider);
+		}
+		mine.put(species, found.get(0).getUUID());
 		return found.get(0);
 	}
 

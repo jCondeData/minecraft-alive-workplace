@@ -286,6 +286,8 @@ asks for the steps, `latest.log` and any crash report).
   "Crafting" no longer fails the `missing` scene (B41).
 - Every value the mod saves on a villager (all 72: a builder's site and bag, a lumberjack's tree farm, a couple's
   marriage, every worker's count...) is now tested to survive the villager being saved and loaded again.
+- A full build with the compat GameTests now finishes in the 7 GB dev container: the compat server gets a 2.5 GB heap
+  and the Gradle daemon hands its unused memory back while it waits (B55).
 
 ## 0.138.0 — 2026-10-02
 

@@ -1803,7 +1803,7 @@ the Village Hall (`VillageNeeds`, `VillageQuests`, `VillageRanks`, `Festivals`, 
     friends and operators (anyone, while the hall has no owner).
 
   Done when: the note is on `main` and its review package is sent.
-  - [ ] **30.1a** Change from the owner (2026-10-05): Reforming an edict must cost far more, hundreds of items, so the grind is worth it: e.g. instead of 4 clocks, 8 gold ingots, 32 bread, something like 24 clocks, 2 stacks of gold ingots and 300 bread. Most players get the small amounts quickly, so scale the reform costs up a lot in the design note and the edict data files.
+  - [x] **30.1a** (review: pending 2026-10-05) Change from the owner (2026-10-05): Reforming an edict must cost far more, hundreds of items, so the grind is worth it: e.g. instead of 4 clocks, 8 gold ingots, 32 bread, something like 24 clocks, 2 stacks of gold ingots and 300 bread. Most players get the small amounts quickly, so scale the reform costs up a lot in the design note and the edict data files.
 - [x] **30.2** (approved 2026-10-05) **One pace, one cap.** A core `work/Pace` that every job's work speed goes through (if another
   milestone built it first, check it covers this list and add what's missing):
   - bonuses: Pokémon partners, a well-kept village, Swift Hands, Diligent, a happy mood, Craftsmanship (crafters),
@@ -4281,6 +4281,11 @@ item waits.
 - (Sessions: anything that needs the owner, and the link to the latest Full test report. Handoffs go here through
   `sessions.py handoff "<in progress, next, traps>" --as <you>`, which keeps one per kind of session (chat, night):
   carry over anything still true from the previous one.)
+- 2026-10-05 (30.1a, decisions; lane d): reform costs scaled to the owner's example (The Shift Bell 24 clocks, 128 gold
+  ingots, 300 bread) and the rest in proportion, so each reform asks for hundreds of items (the design note's table);
+  slay steps went to 32-40 monsters (Conscription's planned 48), the one battle step stays one battle. The emeralds a
+  step pays were left as they were (the reform is the reward); owner's call if he wants them raised too. Hand-in
+  already took every slot up to what's left and kept partial progress; a GameTest now proves it over three trips.
 - 2026-10-05 (30.9, decisions; lane d): `curfew` is one effect type with three fields: `raids` (factor, multiplied;
   also read by `BanditCamps.dailyChance`), `safe_nights` (night safety full in `VillageNeeds.count`, and a monster's blow
   on a villager asleep in bed cancelled through `allowDamage`) and `stay_in` (bedtime, no trading, festival over at

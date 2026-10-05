@@ -1246,7 +1246,7 @@ final class JobScenes {
 				var shifts = io.github.jcondedata.aliveworkplace.hall.Edicts.find("long_shifts").orElseThrow();
 				var told = io.github.jcondedata.aliveworkplace.hall.Edicts.proclaim(level, STATION, player, shifts);
 				Showcase.check(told.done(), "Long Shifts was proclaimed: " + told.message().getString());
-				player.getInventory().add(new ItemStack(Items.CLOCK, 4));
+				player.getInventory().add(new ItemStack(Items.CLOCK, 24));
 			},
 			List.of(new Step("01_reform_step", io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.reformSlots(1)[0], 6, (level, player) -> {
 					io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.open(player, STATION);
@@ -1261,7 +1261,7 @@ final class JobScenes {
 					player.closeContainer();
 					var hall = (io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(STATION);
 					String id = io.github.jcondedata.aliveworkplace.AliveWorkplace.id("long_shifts").toString();
-					ItemStack[] hand = {new ItemStack(Items.CLOCK, 4), new ItemStack(Items.GOLD_INGOT, 8), new ItemStack(Items.BREAD, 32)};
+					ItemStack[] hand = {new ItemStack(Items.CLOCK, 24), new ItemStack(Items.GOLD_INGOT, 128), new ItemStack(Items.BREAD, 300)};
 					player.getInventory().clearContent();
 					for (int i = 0; i < hand.length; i++) {
 						// Staged: the next step is due now rather than tomorrow morning.

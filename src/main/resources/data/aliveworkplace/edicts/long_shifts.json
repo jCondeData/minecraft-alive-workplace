@@ -10,9 +10,9 @@
     "name": {"translate": "reform.aliveworkplace.shift_bell"},
     "line": {"translate": "reform.aliveworkplace.shift_bell.line"},
     "steps": [
-      {"kind": "bring", "item": "minecraft:clock", "count": 4, "reward": 5},
-      {"kind": "bring", "item": "minecraft:gold_ingot", "count": 8, "reward": 5},
-      {"kind": "bring", "item": "minecraft:bread", "count": 32, "reward": 4}
+      {"kind": "bring", "item": "minecraft:clock", "count": 24, "reward": 5},
+      {"kind": "bring", "item": "minecraft:gold_ingot", "count": 128, "reward": 5},
+      {"kind": "bring", "item": "minecraft:bread", "count": 300, "reward": 4}
     ],
     "effects": []
   },

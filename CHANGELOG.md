@@ -260,6 +260,9 @@ asks for the steps, `latest.log` and any crash report).
   (`"enabled": false`); `villageEdicts` turns them all off.
 
 ### Changed
+- **Reforms are a real grind** (30.1a): every edict's reform now asks for hundreds of items, handed in over as many
+  trips as it takes (The Shift Bell: 24 clocks, 128 gold ingots, 300 bread, where it was 4, 8 and 32; the clearing-out
+  steps ask for 32 to 40 monsters). What a step already has is kept; the emeralds each step pays are unchanged.
 - **A Steward must be a seasoned Builder** (27.1a): only a Builder of Journeyman level or higher can be appointed
   Steward (he starts the job as a Novice Steward); others are refused with what's needed. Stewards already appointed
   keep their job. The City Plan now also takes a Heart of the Sea (Map + Blank Blueprint + Heart of the Sea).

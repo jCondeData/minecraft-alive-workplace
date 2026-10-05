@@ -10,9 +10,9 @@
     "name": {"translate": "reform.aliveworkplace.festival_fund"},
     "line": {"translate": "reform.aliveworkplace.festival_fund.line"},
     "steps": [
-      {"kind": "bring", "item": "minecraft:cake", "count": 4, "reward": 5},
-      {"kind": "bring", "item": "minecraft:firework_rocket", "count": 32, "reward": 5},
-      {"kind": "bring", "item": "minecraft:note_block", "count": 8, "reward": 4}
+      {"kind": "bring", "item": "minecraft:cake", "count": 24, "reward": 5},
+      {"kind": "bring", "item": "minecraft:firework_rocket", "count": 256, "reward": 5},
+      {"kind": "bring", "item": "minecraft:note_block", "count": 48, "reward": 4}
     ],
     "effects": []
   },

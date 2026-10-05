@@ -191,6 +191,25 @@ public final class StarterBlueprints {
 	/** The hall run back to twice the length: a storage loft, a cart track in, a lightning rod on the ridge. */
 	public static final Entry TINKERS_WORKSHOP_2 = new Entry(AliveWorkplace.id("tinkers_workshop_2"), new Vec3i(12, 11, 14));
 
+	/**
+	 * The workplaces of ROADMAP 27.13 (tools/blueprints/workshops.py), each the building a {@code workplace_*} Steward rule
+	 * builds for its trades. A stone forge under a timber roof, open to the street: a blast furnace (Armorer; Miner with
+	 * a pickaxe), a smithing table (Toolsmith) and a grindstone (Weaponsmith) in a lean-to.
+	 */
+	public static final Entry SMITHY = new Entry(AliveWorkplace.id("smithy"), new Vec3i(13, 12, 10));
+	/** A coal and ore store behind, with a second blast furnace. */
+	public static final Entry SMITHY_2 = new Entry(AliveWorkplace.id("smithy_2"), new Vec3i(13, 12, 13));
+	/** A fenced yard of cut stone with a lean-to over a stonecutter (Mason). */
+	public static final Entry MASONS_YARD = new Entry(AliveWorkplace.id("masons_yard"), new Vec3i(11, 9, 11));
+	/** A second stonecutter and a hoist. */
+	public static final Entry MASONS_YARD_2 = new Entry(AliveWorkplace.id("masons_yard_2"), new Vec3i(11, 9, 11));
+	/** A log cabin with a log pile and a straw target, a fletching table inside (Fletcher; Lumberjack with an axe). */
+	public static final Entry FLETCHERS_LODGE = new Entry(AliveWorkplace.id("fletchers_lodge"), new Vec3i(11, 11, 10));
+	/** A drying-rack wing with a second fletching table. */
+	public static final Entry FLETCHERS_LODGE_2 = new Entry(AliveWorkplace.id("fletchers_lodge_2"), new Vec3i(13, 11, 10));
+	/** A narrow tower house with a cartography table (Cartographer) and a lookout at the top; it has no upgrade. */
+	public static final Entry MAP_ROOM = new Entry(AliveWorkplace.id("map_room"), new Vec3i(9, 16, 9));
+
 	/** An obsidian portal frame in a blackstone arch, with the Nether Brazier: the builder lights it when done. */
 	public static final Entry NETHER_GATE = new Entry(AliveWorkplace.id("nether_gate"), new Vec3i(11, 9, 7));
 	/** A gatehouse roof over the portal, a storehouse and a nether wart garden. */
@@ -268,7 +287,11 @@ public final class StarterBlueprints {
 		STOREHOUSE, STOREHOUSE_2, STOREHOUSE_3, BERRY_FARM, BERRY_FARM_2, RESEARCH_LAB, RESEARCH_LAB_2,
 		TERRACE, TERRACE_2, INN, INN_2, STONE_HOUSE, STONE_HOUSE_2, STONE_HOUSE_3, BARRACKS, BARRACKS_2, TINKERS_WORKSHOP, TINKERS_WORKSHOP_2, NETHER_GATE, NETHER_GATE_2,
 		COMPOST_YARD, COMPOST_YARD_2, SIFTING_SHED, SIFTING_SHED_2,
+		SMITHY, SMITHY_2, MASONS_YARD, MASONS_YARD_2, FLETCHERS_LODGE, FLETCHERS_LODGE_2,
 		SCHOOLHOUSE, SCHOOLHOUSE_2, LIBRARY, LIBRARY_2, LIBRARY_3, RANCH, RANCH_2, APIARY_GARDEN, APIARY_GARDEN_2, FLOWER_SHOP, FLOWER_SHOP_2, GRAVEYARD, GRAVEYARD_2);
+
+	/** Starter builds with no upgrade (the rest of {@link #ALL} come in tiers): in the Blueprint Table and the creative tab too. */
+	public static final List<Entry> ONE_TIER = List.of(MAP_ROOM);
 
 	/** The decorations (in the Blueprint Table with the rest; near a Village Hall they make the village prettier). */
 	public static final List<Entry> DECORATIONS = List.of(WELL, WELL_2, STREET_LAMP, PARK_BENCH, FOUNTAIN, GAZEBO, MARKET_SQUARE, CHAPEL);

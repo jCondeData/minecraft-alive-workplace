@@ -1753,7 +1753,7 @@ public class BuilderGameTests implements FabricGameTest {
 			long kept = base.blocks().stream().filter(e -> !e.state().isAir() && e.state().equals(up.get(e.pos()))).count();
 			helper.assertTrue(kept >= solid * 0.6, entry.id() + " keeps only " + kept + " of " + baseId.get() + "'s " + solid + " blocks");
 		}
-		helper.assertTrue(upgrades == 30, "expected 30 starter upgrades, found " + upgrades);
+		helper.assertTrue(upgrades == 33, "expected 33 starter upgrades, found " + upgrades);
 		helper.succeed();
 	}
 
@@ -1761,6 +1761,7 @@ public class BuilderGameTests implements FabricGameTest {
 	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
 	public void starterBlueprintsMatchTheirDeclaredSizesAndAreBuildable(GameTestHelper helper) {
 		List<StarterBlueprints.Entry> all = new ArrayList<>(StarterBlueprints.ALL);
+		all.addAll(StarterBlueprints.ONE_TIER);
 		all.addAll(StarterBlueprints.DECORATIONS);
 		all.addAll(StarterBlueprints.DEFENCES);
 		all.add(StarterBlueprints.TOWN_HALL);

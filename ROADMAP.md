@@ -712,7 +712,7 @@ and an old vanilla village slowly rebuilds itself one house at a time. It answer
   Done when:
   - a GameTest for each new condition, holding and not holding, and one per rule in a village staged to need it;
   - showcase scene `steward_civic`: a GIF of a lamp, a well and a schoolhouse going up as the village asks for them.
-- [ ] **27.13** **New workplaces I: Smithy, Mason's Yard, Fletcher's Lodge, Map Room.** Drawn with the architect
+- [x] **27.13** (review: pending 2026-10-05) **New workplaces I: Smithy, Mason's Yard, Fletcher's Lodge, Map Room.** Drawn with the architect
   skill in `tools/blueprints/workshops.py` to STYLE.md, each checked in a render, each with its rule (27.11's form):
   - **Smithy**: a stone forge under a timber roof, an open front with an anvil and a quench trough, a chimney with a
     campfire for smoke; a blast furnace (Armorer; Miner with a pickaxe), a smithing table (Toolsmith) and a grindstone

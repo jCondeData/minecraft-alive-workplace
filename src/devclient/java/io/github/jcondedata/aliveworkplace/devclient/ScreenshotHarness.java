@@ -2868,7 +2868,9 @@ public class ScreenshotHarness implements ClientModInitializer {
 			: "defences".equals(System.getProperty("aliveworkplace.scene")) ? StarterBlueprints.DEFENCES
 			: "workshops".equals(System.getProperty("aliveworkplace.scene")) ? List.of(StarterBlueprints.TINKERS_WORKSHOP, StarterBlueprints.TINKERS_WORKSHOP_2, StarterBlueprints.NETHER_GATE, StarterBlueprints.NETHER_GATE_2)
 			: "styles".equals(System.getProperty("aliveworkplace.scene")) ? styledGallery()
-			: "workplaces".equals(System.getProperty("aliveworkplace.scene")) ? workplacesGallery() : StarterBlueprints.ALL;
+			: "workplaces".equals(System.getProperty("aliveworkplace.scene")) ? workplacesGallery()
+			// every starter blueprint: the tiered ones, then those with no upgrade (the Map Room, ROADMAP 27.13)
+			: java.util.stream.Stream.concat(StarterBlueprints.ALL.stream(), StarterBlueprints.ONE_TIER.stream()).toList();
 		if (tick == 1) {
 			mc.options.renderDistance().set(6);
 			mc.options.cloudStatus().set(CloudStatus.OFF);

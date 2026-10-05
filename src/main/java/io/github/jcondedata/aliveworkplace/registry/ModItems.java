@@ -108,6 +108,9 @@ public final class ModItems {
 				for (StarterBlueprints.Entry entry : StarterBlueprints.ALL) {
 					output.accept(BlueprintItem.create(entry.id(), entry.size()));
 				}
+				for (StarterBlueprints.Entry entry : StarterBlueprints.ONE_TIER) {
+					output.accept(BlueprintItem.create(entry.id(), entry.size()));
+				}
 				for (StarterBlueprints.Entry entry : StarterBlueprints.WORKPLACES) {
 					output.accept(BlueprintItem.create(entry.id(), entry.size()));
 				}

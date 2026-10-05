@@ -9,6 +9,7 @@ import io.github.jcondedata.aliveworkplace.hall.Treasury;
 import io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity;
 import io.github.jcondedata.aliveworkplace.hall.VillageHallScreen;
 import io.github.jcondedata.aliveworkplace.hall.VillageHalls;
+import io.github.jcondedata.aliveworkplace.hall.VillageNeeds;
 import io.github.jcondedata.aliveworkplace.legend.BankPower;
 import io.github.jcondedata.aliveworkplace.legend.CaravanPayPower;
 import io.github.jcondedata.aliveworkplace.legend.Legend;
@@ -427,6 +428,12 @@ public class MerchantPrinceGameTests implements net.fabricmc.fabric.api.gametest
 		long travel = Caravans.MIN_TRAVEL;
 		Caravans.MIN_TRAVEL = 0;
 		Leftovers.after(helper, () -> Caravans.MIN_TRAVEL = travel);
+		// The halls' own rounds (every CHECK_EVERY ticks, at a time set by the game time and the hall's position) would
+		// replace Bramble's wants with its census's and unload the caravan themselves, so the treasury would be paid
+		// before `before` is read: hold them off while the test drives the rounds itself.
+		int every = VillageNeeds.CHECK_EVERY;
+		VillageNeeds.CHECK_EVERY = 1_000_000;
+		Leftovers.after(helper, () -> VillageNeeds.CHECK_EVERY = every);
 		ServerLevel level = helper.getLevel();
 		helper.setBlock(new BlockPos(5, 2, 3), ModBlocks.STOREHOUSE);
 		helper.setBlock(new BlockPos(5, 2, 5), Blocks.CHEST);

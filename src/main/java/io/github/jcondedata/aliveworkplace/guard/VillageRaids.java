@@ -182,8 +182,24 @@ public final class VillageRaids {
 		}
 	}
 
-	/** How far the raiders' gathering point may stray from a foretold side (radians): well inside its eighth of the compass. */
-	static final double FORETOLD_SPREAD = 0.3;
+	/**
+	 * How far each raider stands from the gathering point (blocks, each way): 3, or less in a small village, so that on a
+	 * foretold side the raiders' middle can't stray out of the eighth the Seer named (B82).
+	 */
+	static int scatter(double distance) {
+		return (int) Math.max(1, Math.min(3, distance / 8));
+	}
+
+	/**
+	 * How far the gathering point may stray from a foretold side (radians) at {@code distance} from the hall: the
+	 * gathering point, the raiders' scatter round it and the rounding to blocks together stay within half of the eighth's
+	 * half-width, so the raid comes well inside the side told (B82: a fixed 0.3 rad plus a 3-block scatter could cross
+	 * into the next eighth).
+	 */
+	static double foretoldSpread(double distance) {
+		double room = distance * Math.sin(Math.PI / 8) / 2 - (scatter(distance) + 1) * Math.sqrt(2);
+		return room <= 0 ? 0 : Math.asin(Math.min(1, room / distance));
+	}
 
 	/**
 	 * Rolls tonight's raid on the village of {@code villagers} round {@code hall} ahead, as the hall's night rounds would:
@@ -216,7 +232,8 @@ public final class VillageRaids {
 	@Nullable
 	public static Raid start(ServerLevel level, BlockPos hall, int villagers, int guards, double angle) {
 		Optional<BanditCamps.Camp> camp = BanditCamps.near(level, hall);
-		BlockPos gather = !Double.isNaN(angle) ? gatheringPoint(level, hall, angle, FORETOLD_SPREAD)
+		boolean foretold = !Double.isNaN(angle);
+		BlockPos gather = foretold ? foretoldPoint(level, hall, angle)
 			: camp.map(c -> gatheringPoint(level, hall, Math.atan2(c.pos().getZ() - hall.getZ(), c.pos().getX() - hall.getX()), 0.5))
 			.orElse(null);
 		if (gather == null) {
@@ -225,6 +242,7 @@ public final class VillageRaids {
 		if (gather == null) {
 			return null;
 		}
+		int scatter = foretold ? scatter(VillageHalls.RADIUS * 0.6) : 3;
 		int plain = Math.min(MAX_RAIDERS, 3 + villagers / 4);
 		int armored = Math.min(4, guards / 2);
 		List<Villager> targets = level.getEntitiesOfClass(Villager.class, new AABB(hall).inflate(VillageHalls.RADIUS, 16, VillageHalls.RADIUS),
@@ -237,7 +255,7 @@ public final class VillageRaids {
 			if (mob == null) {
 				continue;
 			}
-			BlockPos at = surface(level, gather.offset(level.random.nextInt(7) - 3, 0, level.random.nextInt(7) - 3));
+			BlockPos at = surface(level, gather.offset(level.random.nextInt(2 * scatter + 1) - scatter, 0, level.random.nextInt(2 * scatter + 1) - scatter));
 			mob.moveTo(at.getX() + 0.5, at.getY(), at.getZ() + 0.5, level.random.nextFloat() * 360f, 0f);
 			mob.finalizeSpawn(level, level.getCurrentDifficultyAt(at), MobSpawnType.EVENT, null);
 			if (camp.isPresent() && mob instanceof net.minecraft.world.entity.raid.Raider raider) {
@@ -305,6 +323,35 @@ public final class VillageRaids {
 	@Nullable
 	static BlockPos gatheringPoint(ServerLevel level, BlockPos hall) {
 		return gatheringPoint(level, hall, 0, Math.PI);
+	}
+
+	/**
+	 * Where the raiders of a foretold raid gather: on the side {@code toward}, give or take {@link #foretoldSpread}; when
+	 * that ground is no good (water, unloaded), further out along the same side rather than round the compass.
+	 */
+	@Nullable
+	static BlockPos foretoldPoint(ServerLevel level, BlockPos hall, double toward) {
+		double nearest = VillageHalls.RADIUS * 0.6;
+		double spread = foretoldSpread(nearest);
+		for (int tries = 0; tries < 8; tries++) {
+			double distance = nearest + VillageHalls.RADIUS * 0.3 * tries / 7;
+			double angle = toward + (level.random.nextDouble() * 2 - 1) * spread;
+			BlockPos at = groundAt(level, hall, hall.offset((int) Math.round(Math.cos(angle) * distance), 0, (int) Math.round(Math.sin(angle) * distance)));
+			if (at != null) {
+				return at;
+			}
+		}
+		return null;
+	}
+
+	/** The open ground at the top of {@code column}, near the hall's height and dry; null if there is none. */
+	@Nullable
+	private static BlockPos groundAt(ServerLevel level, BlockPos hall, BlockPos column) {
+		if (!level.isLoaded(column)) {
+			return null;
+		}
+		BlockPos at = surface(level, column);
+		return Math.abs(at.getY() - hall.getY()) <= 24 && level.getFluidState(at.below()).isEmpty() && level.getFluidState(at).isEmpty() ? at : null;
 	}
 
 	/** Where the raiders gather: out at the edge of the village, about {@code angle} from the hall (give or take {@code spread}). */

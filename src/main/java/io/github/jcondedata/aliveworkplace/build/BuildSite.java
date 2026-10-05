@@ -46,6 +46,11 @@ public final class BuildSite {
 	 * after a restart, and the foundation already filled then counts as ground, so the raw figure would drop.
 	 */
 	private float shownProgress;
+	/**
+	 * Loaded from a save written before B46 (no shown_progress): the progress it showed is worked out from the saved
+	 * cursor before the first plan redoes the foundation list (B64). Transient.
+	 */
+	private boolean progressFromCursor;
 	@Nullable
 	private UUID builder;
 	/** Waiting in the builder's queue (the builder is busy with an earlier site). */
@@ -140,6 +145,10 @@ public final class BuildSite {
 			plan = deconstruct ? BuildPlan.deconstruct(blueprint.get(), placement)
 				: repair ? BuildPlan.repair(blueprint.get(), placement, level)
 				: BuildPlan.create(blueprint.get(), placement, level, depth, margin);
+			if (progressFromCursor) {
+				progressFromCursor = false;
+				shownProgress = Math.max(shownProgress, oldSaveProgress(plan));
+			}
 			if (stage == BuildPlan.Stage.FOUNDATION || stage == BuildPlan.Stage.LANDSCAPE) {
 				// The foundation and landscaping lists depend on the terrain, which we have been changing:
 				// start over (what's already done is skipped straight away).
@@ -149,6 +158,36 @@ public final class BuildSite {
 			}
 		}
 		return plan;
+	}
+
+	/**
+	 * B64: the progress a pre-B46 save showed when it was written, from its saved stage and cursor. Progress counts
+	 * the foundation, and its list is worked out again from the terrain on load: the blocks already filled there count
+	 * as ground now and drop off it, so a save in the foundation, walls or decoration would show less than it did. The
+	 * list it was saved against is about the new one plus the foundation blocks placed so far: {@link #placed} minus
+	 * the blocks of later stages the cursor has passed.
+	 */
+	private float oldSaveProgress(BuildPlan plan) {
+		if (deconstruct || repair) {
+			return 0f;
+		}
+		int structure = plan.steps(BuildPlan.Stage.STRUCTURE).size();
+		int decoration = plan.steps(BuildPlan.Stage.DECORATION).size();
+		int after = switch (stage) { // blocks of the stages after the foundation already passed
+			case STRUCTURE -> retrying ? structure : cursor;
+			case DECORATION -> structure + (retrying ? decoration : cursor);
+			default -> 0;
+		};
+		if (stage != BuildPlan.Stage.FOUNDATION && stage != BuildPlan.Stage.STRUCTURE && stage != BuildPlan.Stage.DECORATION) {
+			return 0f; // nothing placed yet (clearing), or the building is finished (landscaping, done: 100% anyway)
+		}
+		int foundation = plan.steps(BuildPlan.Stage.FOUNDATION).size() + Math.max(0, placed - after);
+		int total = foundation + structure + decoration;
+		if (total <= 0) {
+			return 0f;
+		}
+		int done = stage == BuildPlan.Stage.FOUNDATION ? (retrying ? foundation : Math.min(cursor, foundation)) : foundation + after;
+		return Math.max(0f, Math.min(1f, done / (float) total));
 	}
 
 	/** The step at the cursor for the current stage, or null when the stage's list is exhausted. */
@@ -586,6 +625,8 @@ public final class BuildSite {
 		site.skipped = Nbt.getInt(tag, "skipped");
 		site.placed = Nbt.getInt(tag, "placed");
 		site.shownProgress = Nbt.getFloat(tag, "shown_progress");
+		// B64: saves from 0.138.0 and earlier have no shown_progress; the first plan works it out from the cursor.
+		site.progressFromCursor = !Nbt.has(tag, "shown_progress", Tag.TAG_ANY_NUMERIC);
 		site.builder = Nbt.hasUuid(tag, "builder") ? Nbt.getUuid(tag, "builder") : null;
 		site.queued = Nbt.getBoolean(tag, "queued");
 		site.deconstruct = Nbt.getBoolean(tag, "deconstruct");

@@ -12,6 +12,7 @@
 			"io.github.jcondedata.aliveworkplace.test.BuilderBenchGameTests",
 			"io.github.jcondedata.aliveworkplace.test.BuilderKeepsBenchGameTests",
 			"io.github.jcondedata.aliveworkplace.test.B46GameTests",
+			"io.github.jcondedata.aliveworkplace.test.B46OldSaveGameTests",
 			"io.github.jcondedata.aliveworkplace.test.BuilderChaosGameTests",
 			"io.github.jcondedata.aliveworkplace.test.PlacingGameTests",
 			"io.github.jcondedata.aliveworkplace.test.BuildersShareSpareGameTests",

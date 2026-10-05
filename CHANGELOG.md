@@ -24,6 +24,11 @@ asks for the steps, `latest.log` and any crash report).
   config file 0.139.0 wrote with them on, and their switches leave the settings screen until then. Nothing saved is
   lost: a Steward, a Legend or an edict comes back as it was when its expansion is released.
 
+### Fixed
+- **A build saved by 0.138.0 or earlier keeps its progress on upgrade** (B64): opened with a newer jar, a site half
+  through a raised foundation (or in its walls) dropped to a few percent the first time it loaded. It now works out
+  the progress it showed from the saved stage and step.
+
 ## 0.139.0 — 2026-10-05
 
 ### Added

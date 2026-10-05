@@ -38,6 +38,7 @@ public final class ModTrades {
 		campCookTrades();
 		habitatKeeperTrades();
 		gemGrowerTrades();
+		daycareKeeperTrades();
 		Platform.get().addTrades(ModVillagers.BARD, 1, offers -> {
 			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 2), new ItemStack(Items.NOTE_BLOCK, 2), 12, 2, 0.05f));
 			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.STRING, 16), new ItemStack(Items.EMERALD), 16, 2, 0.05f));
@@ -639,6 +640,27 @@ public final class ModTrades {
 		});
 		Platform.get().addTrades(ModVillagers.GEM_GROWER, 5, offers ->
 			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 12), new ItemStack(Items.AMETHYST_BLOCK, 4), 4, 30, 0.05f)));
+	}
+
+	/**
+	 * Daycare Keepers (28.12; Cobblemon only): Exp. Candy XS (Novice), an Everstone (Journeyman), a Destiny Knot (Master),
+	 * and on the way eggs, wheat and hay.
+	 */
+	private static void daycareKeeperTrades() {
+		Platform.get().addTrades(ModVillagers.DAYCARE_KEEPER, 1, offers -> {
+			offers.add((entity, random) -> cobblemon("exp_candy_xs", 2, 3, 16, 1));
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.WHEAT, 20), new ItemStack(Items.EMERALD), 16, 2, 0.05f));
+		});
+		Platform.get().addTrades(ModVillagers.DAYCARE_KEEPER, 2, offers -> {
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EGG, 16), new ItemStack(Items.EMERALD), 16, 5, 0.05f));
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 2), new ItemStack(Items.HAY_BLOCK, 2), 12, 5, 0.05f));
+		});
+		Platform.get().addTrades(ModVillagers.DAYCARE_KEEPER, 3, offers ->
+			offers.add((entity, random) -> cobblemon("everstone", 10, 1, 4, 10)));
+		Platform.get().addTrades(ModVillagers.DAYCARE_KEEPER, 4, offers ->
+			offers.add((entity, random) -> cobblemon("exp_candy_s", 4, 2, 12, 15)));
+		Platform.get().addTrades(ModVillagers.DAYCARE_KEEPER, 5, offers ->
+			offers.add((entity, random) -> cobblemon("destiny_knot", 24, 1, 2, 30)));
 	}
 
 	private static void nurseTrades() {

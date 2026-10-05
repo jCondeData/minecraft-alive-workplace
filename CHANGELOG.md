@@ -65,6 +65,14 @@ asks for the steps, `latest.log` and any crash report).
   the place they plant a banner; right-click them for Home and after 5 seconds standing still you're both back at the
   Village Hall. Once a day; a logout or a death calls it off. Every trip goes in the chronicle. A hooded travel cloak,
   a pack and a lantern.
+- **Guild Charters, the Guildhall and the Builders' Guild** (30.17): craft a Guild Charter (three paper, an emerald, a
+  gold ingot, red dye) and sneak-right-click a Master in a village of Village rank or more: they become the Guild Master
+  of their trade's guild (one per trade, one per rank above Hamlet; refusals say why), told to the village, in the
+  chronicle, the hall's list and their status, and they sell the Guildhall I and II blueprints. A guild is founded once
+  a finished Guildhall stands for it; the Builders' Guild then makes Builders, Carpenters, Masons and Dyers 15% faster
+  and lets 5 idle builders help at a build (not 3). When a Guild Master dies, the most experienced member takes over.
+  The Book of Edicts' last row shows each guild. Guilds are data files (`data/<ns>/guilds/`); `guilds` and
+  `guildsPerRank` in the config.
 - **Seasons and the Harvest Idol** (30.14): the hall's festival icon now names the season and its day ("Autumn:
   harvest season, day 3 of 16"). The Harvest Idol, a straw figure crowned with wheat on a wooden post (a hay bale,
   three wheat, a stick and a gold ingot), makes the crops within 32 blocks grow 25% faster in harvest season (autumn),

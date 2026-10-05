@@ -155,6 +155,12 @@ public final class BlueprintSupplies {
 					}
 				}
 			}
+			for (Blueprint.EntityEntry entity : blueprint.get().entities()) { // item frames, paintings, armour stands: as the plan counts them
+				Item cost = io.github.jcondedata.aliveworkplace.blueprint.BlueprintEntities.cost(entity.nbt());
+				if (cost != null && cost != net.minecraft.world.item.Items.AIR) {
+					need.merge(MaterialFamilies.key(cost), 1, Integer::sum);
+				}
+			}
 			need.forEach((item, n) -> lines.add(new Line(item, n, n)));
 		}
 		// Still to bring first, biggest first; then what's all there, biggest first.

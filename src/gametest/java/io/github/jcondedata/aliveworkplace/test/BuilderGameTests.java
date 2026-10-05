@@ -969,6 +969,20 @@ public class BuilderGameTests implements FabricGameTest {
 		buildStarter(helper, StarterBlueprints.POKEMON_CENTER_2, new BlockPos(9, 2, 3));
 	}
 
+	/** ROADMAP 30.17: the Guildhall I, two storeys with the long table and the charter's frame over the hearth. */
+	//$ gametest_ticks_batch HUGE_AREA '50000' '"starter_builds_guildhall"'
+	@GameTest(template = HUGE_AREA, timeoutTicks = 50000, batch = "starter_builds_guildhall")
+	public void buildsGuildhall(GameTestHelper helper) {
+		buildStarter(helper, StarterBlueprints.GUILDHALL, new BlockPos(5, 2, 8));
+	}
+
+	/** ROADMAP 30.17: the Guildhall II with its tower wing, meeting room and bell (20 tall: the huge area). */
+	//$ gametest_ticks_batch HUGE_AREA '60000' '"starter_builds_guildhall_2"'
+	@GameTest(template = HUGE_AREA, timeoutTicks = 60000, batch = "starter_builds_guildhall_2")
+	public void buildsGuildhallII(GameTestHelper helper) {
+		buildStarter(helper, StarterBlueprints.GUILDHALL_2, new BlockPos(2, 2, 8));
+	}
+
 	//$ gametest_ticks_batch HUGE_AREA '50000' '"starter_builds_library_3"'
 	@GameTest(template = HUGE_AREA, timeoutTicks = 50000, batch = "starter_builds_library_3")
 	public void buildsLibraryIII(GameTestHelper helper) {
@@ -1753,7 +1767,7 @@ public class BuilderGameTests implements FabricGameTest {
 			long kept = base.blocks().stream().filter(e -> !e.state().isAir() && e.state().equals(up.get(e.pos()))).count();
 			helper.assertTrue(kept >= solid * 0.6, entry.id() + " keeps only " + kept + " of " + baseId.get() + "'s " + solid + " blocks");
 		}
-		helper.assertTrue(upgrades == 36, "expected 36 starter upgrades, found " + upgrades);
+		helper.assertTrue(upgrades == 37, "expected 37 starter upgrades, found " + upgrades);
 		helper.succeed();
 	}
 

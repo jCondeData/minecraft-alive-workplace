@@ -246,6 +246,11 @@ public final class StarterBlueprints {
 	/** Twice the depth with a second Sieve, a side door and a lean-to over stone bins. */
 	public static final Entry SIFTING_SHED_2 = new Entry(AliveWorkplace.id("sifting_shed_2"), new Vec3i(11, 9, 13));
 
+	/** A two-storey guildhall (stone below, timber above) with a long table, the charter framed over the hearth and banners by the door. */
+	public static final Entry GUILDHALL = new Entry(AliveWorkplace.id("guildhall"), new Vec3i(19, 15, 14));
+	/** A stone tower wing with a meeting room, a chart room and the guild bell in an open belfry. */
+	public static final Entry GUILDHALL_2 = new Entry(AliveWorkplace.id("guildhall_2"), new Vec3i(26, 20, 14));
+
 	/** Decorations: a well with a lantern on a chain over the water. */
 	public static final Entry WELL = new Entry(AliveWorkplace.id("well"), new Vec3i(7, 5, 7));
 	/** A roof over the well, benches and lamp posts. */
@@ -311,7 +316,8 @@ public final class StarterBlueprints {
 		COMPOST_YARD, COMPOST_YARD_2, SIFTING_SHED, SIFTING_SHED_2,
 		SMITHY, SMITHY_2, MASONS_YARD, MASONS_YARD_2, FLETCHERS_LODGE, FLETCHERS_LODGE_2,
 		FARMSTEAD, FARMSTEAD_2, FISHERS_HUT, FISHERS_HUT_2, WEAVERS_COTTAGE, WEAVERS_COTTAGE_2,
-		SCHOOLHOUSE, SCHOOLHOUSE_2, LIBRARY, LIBRARY_2, LIBRARY_3, RANCH, RANCH_2, APIARY_GARDEN, APIARY_GARDEN_2, FLOWER_SHOP, FLOWER_SHOP_2, GRAVEYARD, GRAVEYARD_2);
+		SCHOOLHOUSE, SCHOOLHOUSE_2, LIBRARY, LIBRARY_2, LIBRARY_3, RANCH, RANCH_2, APIARY_GARDEN, APIARY_GARDEN_2, FLOWER_SHOP, FLOWER_SHOP_2, GRAVEYARD, GRAVEYARD_2,
+		GUILDHALL, GUILDHALL_2);
 
 	/** Starter builds with no upgrade (the rest of {@link #ALL} come in tiers): in the Blueprint Table and the creative tab too. */
 	public static final List<Entry> ONE_TIER = List.of(MAP_ROOM, BANDSTAND);

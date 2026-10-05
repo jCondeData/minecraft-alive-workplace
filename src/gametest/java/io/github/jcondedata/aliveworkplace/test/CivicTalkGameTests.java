@@ -44,7 +44,7 @@ public class CivicTalkGameTests implements FabricGameTest {
 	public void aFreeEdictSlotIsAdvisedUntilItIsFilled(GameTestHelper helper) {
 		hall(helper, (level, hall, entity) -> {
 			Tip tip = tip(level, hall, "edict_slot");
-			helper.assertTrue(tip != null && tip.title.equals("1 free edict slot(s) for a Hamlet"), "a Hamlet with no edict: " + tip);
+			helper.assertTrue(tip != null && tip.title.equals("Edict slots free: 1 (a Hamlet)"), "a Hamlet with no edict: " + tip);
 			helper.assertTrue(Edicts.proclaim(level, hall, null, Edicts.get(LONG_SHIFTS).orElseThrow()).done(), "Long Shifts proclaimed");
 			helper.assertTrue(tip(level, hall, "edict_slot") == null, "the Hamlet's one slot is full, yet: " + tip(level, hall, "edict_slot"));
 			Edicts.setEnabled(false);

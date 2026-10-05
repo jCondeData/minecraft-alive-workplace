@@ -52,15 +52,25 @@ public class PartnersAtWorkCompatTests implements FabricGameTest {
 		BlockPos by = helper.absolutePos(new BlockPos(1, 2, 8)); // a mock player starts at the world spawn: bring it to the test
 		player.teleportTo(by.getX() + 0.5, by.getY(), by.getZ() + 0.5);
 		BlockPos pasture = PastureCompatTests.pasture(helper, pastureAt);
-		PastureCompatTests.pastured(helper, pasture, player, species, Direction.NORTH);
+		java.util.UUID id = PastureCompatTests.pastured(helper, pasture, player, species, Direction.NORTH).getUuid();
+		PARTNERS.computeIfAbsent(helper, h -> new java.util.HashMap<>()).put(species.toLowerCase(java.util.Locale.ROOT), id);
 		// The partner's entity appears a tick or so later: see pokemon(). The player leaves with the test.
-		PartnerShowsCompatTests.after(helper, () -> helper.getLevel().getServer().getPlayerList().remove(player));
+		PartnerShowsCompatTests.after(helper, () -> {
+			helper.getLevel().getServer().getPlayerList().remove(player);
+			PARTNERS.remove(helper);
+		});
 	}
 
+	/** The partner each test pastured, by species: found by its own id, so one from an earlier batch never counts. */
+	private static final Map<GameTestHelper, Map<String, java.util.UUID>> PARTNERS = new java.util.concurrent.ConcurrentHashMap<>();
+
 	static PokemonEntity pokemon(GameTestHelper helper, String species) {
-		// (Up to 30 above the area: an air mail partner climbs out of sight, ROADMAP 28.5.)
-		List<PokemonEntity> found = helper.getLevel().getEntitiesOfClass(PokemonEntity.class, helper.getBounds().inflate(4).expandTowards(0, 30, 0),
-			e -> e.getPokemon().getSpecies().getName().equalsIgnoreCase(species));
+		// A pastured partner wanders as far as its pasture lets it (a Pidgey flies well past the area's edge: B51,
+		// B52), and an air mail partner climbs out of sight (ROADMAP 28.5), so look well around and above the area.
+		java.util.UUID id = PARTNERS.getOrDefault(helper, Map.of()).get(species.toLowerCase(java.util.Locale.ROOT));
+		List<PokemonEntity> found = helper.getLevel().getEntitiesOfClass(PokemonEntity.class,
+			helper.getBounds().inflate(48).expandTowards(0, 30, 0),
+			e -> id != null ? e.getPokemon().getUuid().equals(id) : e.getPokemon().getSpecies().getName().equalsIgnoreCase(species));
 		helper.assertTrue(found.size() == 1, "pastured " + species + ": " + found.size());
 		return found.get(0);
 	}

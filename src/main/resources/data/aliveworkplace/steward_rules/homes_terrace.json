@@ -1,0 +1,11 @@
+{
+  "when": [
+    {"beds_short": {"at_least": 3}},
+    {"not": {"upgrade_adds_beds": {}}}
+  ],
+  "do": {"build": {"blueprint": "aliveworkplace:terrace", "zone": "homes"}},
+  "priority": 90,
+  "why": "steward.aliveworkplace.why.beds",
+  "cooldown_days": 1,
+  "min_rank": "village"
+}

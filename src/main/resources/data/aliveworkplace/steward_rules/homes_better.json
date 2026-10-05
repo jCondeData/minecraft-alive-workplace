@@ -1,0 +1,11 @@
+{
+  "when": [
+    {"homes_tier_low": {"share": 0.5}},
+    {"not": {"beds_short": {"at_least": 1}}},
+    {"upgrade_adds_beds": {}}
+  ],
+  "do": {"upgrade": {"adds_beds": true}},
+  "priority": 55,
+  "why": "steward.aliveworkplace.why.better_homes",
+  "cooldown_days": 2
+}

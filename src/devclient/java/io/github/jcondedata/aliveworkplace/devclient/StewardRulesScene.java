@@ -57,7 +57,7 @@ final class StewardRulesScene {
 				ServerLevel level = server.overworld();
 				StewardWishes.State state = StewardWishes.of(level, HALL);
 				List<String> rules = state.wishes().stream().map(w -> w.rule().getPath()).toList();
-				Showcase.check(state.day() == StewardWishes.day(level) && !rules.isEmpty() && rules.get(0).equals("homes"),
+				Showcase.check(state.day() == StewardWishes.day(level) && !rules.isEmpty() && rules.get(0).startsWith("homes_"),
 					"back at the hall, the Steward ranked today's wishes from his rules, more homes first (" + rules + ")");
 				Vec3 at = steward.position();
 				ScreenshotHarness.hoverLookingAt(server.getPlayerList().getPlayers().get(0), at.add(2.5, 1.6, 3.5), at.add(0, 1.6, 0));

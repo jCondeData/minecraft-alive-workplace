@@ -1,0 +1,12 @@
+{
+  "when": [
+    {"food_short": {"meals_per_adult": 2}},
+    {"built_count_below": {"blueprint": "aliveworkplace:ranch", "n": 1}}
+  ],
+  "do": {"build": {"blueprint": "aliveworkplace:ranch", "zone": "farms"}},
+  "priority": 78,
+  "why": "steward.aliveworkplace.why.food",
+  "cooldown_days": 2,
+  "max": 1,
+  "min_rank": "village"
+}

@@ -1,11 +1,11 @@
 {
   "when": [
-    {"villagers_at_least": {"n": 10}},
+    {"villagers_at_least": {"n": 1}},
     {"built_count_below": {"blueprint": "aliveworkplace:market_stall", "n": 1}}
   ],
   "do": {"build": {"blueprint": "aliveworkplace:market_stall", "zone": "market"}},
   "priority": 35,
   "why": "steward.aliveworkplace.why.market",
-  "max": 2,
+  "max": 1,
   "min_rank": "village"
 }

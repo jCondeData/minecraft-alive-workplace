@@ -231,8 +231,8 @@ SCENES = [
         "the habitat keeper set out a snack, slathered the log and spotted a shiny Eevee", 150, cobblemon=True),
     # Village-wide
     S("hall", "Village Hall", "The Village Hall, its screen and calendar", "the Village Hall screen and its calendar page opened", 75,
-      [("02_hall_people", "People, under the page row"), ("03_hall_builder", "A builder"), ("08_hall_calendar", "The calendar"),
-       ("09_hall_scale4", "At GUI scale 4")]),
+      [("02_hall_people", "The hall's own screen: figures, toolbar, people"), ("03_hall_builder", "A builder"), ("08_hall_calendar", "The calendar"),
+       ("09_hall_scale4", "The hall's screen at GUI scale 4")]),
     # Painting the plan (ROADMAP 27.3): the City Plan screen over a real village, at GUI scales 2 and 4
     S("city_plan", "Village Hall", "Painting the City Plan", "the City Plan screen opened with Homes, Workshops and Gardens zones in three styles", 60,
       [("01_city_plan_start", "The first zone"), ("02_city_plan_scale2", "Three zones in three styles, GUI scale 2"),
@@ -272,7 +272,7 @@ SCENES = [
     job("legend_strike", "Legends", "A Legend on strike", "a Legend on strike left her stonecutter and picketed by the Village Hall under a red line", 120),
     S("edicts", "Village Hall", "The Book of Edicts",
       "the Book of Edicts opened from the hall's lectern button, with Long Shifts in force, at GUI scales 2 and 4", 45,
-      [("01_edicts_book", "Long Shifts in force, two free slots, one locked for a City"), ("02_edicts_scale4", "At GUI scale 4")]),
+      [("01_edicts_book", "The Book on the hall's screen: Long Shifts in force, two free slots, one locked for a City"), ("02_edicts_scale4", "The Book at GUI scale 4")]),
     # Reforms (ROADMAP 30.5): The Shift Bell's step on the quest page, then the fireworks and the chronicle line
     S("reform", "Village Hall", "Reforms: The Shift Bell",
       "Long Shifts' reform step was on the quest page; its three steps handed in, fireworks went up over the hall and the chronicle kept the reform", 60,

@@ -48,7 +48,7 @@ public final class EdictBook {
 	/** Opens the Book on its own (from a Village Ledger: it stays open while the hall stands). */
 	public static void open(ServerPlayer player, BlockPos hall) {
 		ServerLevel level = Players.level(player);
-		ChoiceMenu.open(player, Component.translatable("screen.aliveworkplace.edicts.title", VillageHalls.name(level, hall)),
+		ChoiceMenu.openHall(player, Component.translatable("screen.aliveworkplace.edicts.title", VillageHalls.name(level, hall)),
 			p -> p.isAlive() && p.level() == level && level.isLoaded(hall) && level.getBlockState(hall).is(ModBlocks.VILLAGE_HALL),
 			menu -> render(menu, level, hall, null, -1));
 	}

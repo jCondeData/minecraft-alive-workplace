@@ -43,6 +43,11 @@ public final class ModBlocks {
 				(id, inventory, pos) -> new io.github.jcondedata.aliveworkplace.mail.MailboxMenu(id, inventory, pos),
 				net.minecraft.core.BlockPos.STREAM_CODEC));
 
+	/** The Village Hall's screen (ROADMAP 30.4a): a ChoiceMenu on the server, drawn by the client's own hall screen. */
+	public static final net.minecraft.world.inventory.MenuType<io.github.jcondedata.aliveworkplace.work.ChoiceView> VILLAGE_HALL_MENU =
+		Registry.register(BuiltInRegistries.MENU, AliveWorkplace.id("village_hall"),
+			new net.minecraft.world.inventory.MenuType<>(io.github.jcondedata.aliveworkplace.work.ChoiceView::new, net.minecraft.world.flag.FeatureFlags.VANILLA_SET));
+
 	/** Workstation for the Postman profession: they collect and deliver mail within 64 blocks of it. */
 	public static final BuildersBenchBlock POSTAL_DESK = Reg.block("postal_desk", BuildersBenchBlock::new, BlockBehaviour.Properties.ofFullCopy(Blocks.CARTOGRAPHY_TABLE));
 

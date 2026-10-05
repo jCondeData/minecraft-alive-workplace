@@ -1089,7 +1089,7 @@ final class JobScenes {
 						m.press(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.ROUTES, player);
 					}
 				}, 30)),
-			(level, player) -> player.containerMenu instanceof ChoiceMenu));
+			(level, player) -> player.containerMenu instanceof ChoiceMenu m && m.getType() == ModBlocks.VILLAGE_HALL_MENU)); // the hall's own screen (30.4a)
 		SCREENS.put("legend_announce", new Screen("a Mythic Legend's coming was announced in chat and written in the chronicle", new Vec3(2.5, -58.4, 4.5), TARGET,
 			(level, player) -> {
 				// ROADMAP 29.3: a Mythic Legend of the scene's own settles by the hall; everyone on the server hears it, in gold.
@@ -1289,7 +1289,7 @@ final class JobScenes {
 				new Step("04_hall_mercenaries", io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.MERCENARIES, 6, (level, player) ->
 					io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.open(player, STATION), 30),
 				step("05_hall_festival", io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FESTIVAL, 6)),
-			(level, player) -> player.containerMenu instanceof ChoiceMenu));
+			(level, player) -> player.containerMenu instanceof ChoiceMenu m && m.getType() == ModBlocks.VILLAGE_HALL_MENU)); // the hall's own screen (30.4a)
 		// Long Shifts proclaimed (ROADMAP 30.3): the builder's line in the hall's list says "long shifts" and 20% faster,
 		// and the chronicle keeps the proclamation.
 		SCREENS.put("long_shifts", new Screen("Long Shifts was proclaimed: the hall's list shows the \"long shifts\" mood and the chronicle keeps it",
@@ -1363,7 +1363,7 @@ final class JobScenes {
 					}, "edicts-scale").start();
 					io.github.jcondedata.aliveworkplace.hall.EdictBook.open(player, STATION);
 				}, 40)),
-			(level, player) -> player.containerMenu instanceof ChoiceMenu));
+			(level, player) -> player.containerMenu instanceof ChoiceMenu m && m.getType() == ModBlocks.VILLAGE_HALL_MENU)); // the hall's own screen (30.4a)
 		// Reforms (ROADMAP 30.5): Long Shifts in force puts The Shift Bell's step on the quest page (the row below the daily
 		// quests, a book and quill); its three steps handed in, fireworks go up over the hall and the chronicle keeps it.
 		SCREENS.put("reform", new Screen("Long Shifts' reform step was on the quest page; its three steps handed in, fireworks went up over the hall and the chronicle kept the reform",
@@ -1831,7 +1831,7 @@ final class JobScenes {
 				}, 30),
 				new Step("04_ledger_opens", -1, 6, (level, player) ->
 					ModItems.VILLAGE_LEDGER.use(level, player, InteractionHand.MAIN_HAND), 30)),
-			(level, player) -> player.containerMenu instanceof ChoiceMenu));
+			(level, player) -> player.containerMenu instanceof ChoiceMenu m && m.getType() == ModBlocks.VILLAGE_HALL_MENU)); // the hall's own screen (30.4a)
 		SCREENS.put("leader",new Screen("the Trainer Leader took the challenge and the battle started", new Vec3(-4.5, -57.5, 11.5),
 			new Vec3(0.5, -59, 5.5),
 			(level, player) -> {

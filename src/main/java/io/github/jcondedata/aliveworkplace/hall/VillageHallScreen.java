@@ -99,7 +99,7 @@ public final class VillageHallScreen {
 
 	public static void open(ServerPlayer player, BlockPos hall) {
 		ServerLevel level = Players.level(player);
-		ChoiceMenu.open(player, Component.translatable("screen.aliveworkplace.hall.title", VillageHalls.name(level, hall)),
+		ChoiceMenu.openHall(player, Component.translatable("screen.aliveworkplace.hall.title", VillageHalls.name(level, hall)),
 			p -> p.isAlive() && level.getBlockState(hall).is(ModBlocks.VILLAGE_HALL) && p.position().distanceToSqr(Vec3.atCenterOf(hall)) <= 64,
 			menu -> render(menu, level, hall, 0));
 	}
@@ -107,7 +107,7 @@ public final class VillageHallScreen {
 	/** The screen opened from afar with a Village Ledger (it stays open while the hall stands). */
 	public static void openRemote(ServerPlayer player, BlockPos hall) {
 		ServerLevel level = Players.level(player);
-		ChoiceMenu.open(player, Component.translatable("screen.aliveworkplace.hall.title", VillageHalls.name(level, hall)),
+		ChoiceMenu.openHall(player, Component.translatable("screen.aliveworkplace.hall.title", VillageHalls.name(level, hall)),
 			p -> p.isAlive() && p.level() == level && level.isLoaded(hall) && level.getBlockState(hall).is(ModBlocks.VILLAGE_HALL),
 			menu -> render(menu, level, hall, 0));
 	}

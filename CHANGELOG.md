@@ -17,6 +17,7 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Added
+- **The Village Hall's own screen** (30.4a): the hall, all its pages and the Book of Edicts now open on a drawn, vanilla-style window instead of a chest grid: the village's figures on a sunken plaque, the page's actions on an etched toolbar, the page on its own panel, every icon on a raised button that lights up under the mouse. Clicks, pages and permissions are unchanged.
 - **The Cradle** (30.12): a wooden cradle on rockers with a wool blanket, crafted from planks, sticks and white wool.
   Put one within 4 blocks of a bed in a village with a hall and it becomes a nursery village: children grow up in half
   the time and one more baby a day may be born (three a day with Large Families). At night a child of the house sleeps

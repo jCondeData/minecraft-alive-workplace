@@ -112,6 +112,10 @@ SCENES = [
     job("rancher", "Rancher", "Breaking in a horse", "the rancher tamed and saddled the horse"),
     S("daycare", "Rancher", "Pokémon daycare", "the daycare screen opened with a boarder", 75,
       [("01_daycare_screen", "Daycare"), ("02_daycare_boarder", "A boarder")], cobblemon=True),
+    S("daycare_keeper", "Daycare Keeper", "A pair left at the daycare, eggs collected",
+      "the daycare keeper took a pair of Eevee and two eggs were collected", 90,
+      [("01_daycare_keeper_screen", "The daycare"), ("03_daycare_keeper_pair", "How well they get along"), ("04_daycare_keeper_eggs", "Eggs waiting"),
+       ("05_daycare_keeper_collected", "Collected")], cobblemon=True),
     # Fisherman
     S("fish", "Fisherman", "Fishing from the shore", "the fisherman caught a fish", 120,
       [("60_fish_0", "Casting"), ("60_fish_3", "The bobber out"), ("61_fish_caught", "Caught")]),

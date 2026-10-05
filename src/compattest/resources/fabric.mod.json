@@ -22,6 +22,7 @@
 			"io.github.jcondedata.aliveworkplace.compat.CampCookCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.HabitatKeeperCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.GemGrowerCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.DaycareKeeperCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.PokemonFeaturesCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.PartnerShowsCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.PartnersAtWorkCompatTests",

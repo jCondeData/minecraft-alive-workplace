@@ -17,6 +17,11 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Added
+- **The Daycare Keeper** (28.12, with Cobblemon): a villager at a Pasture Block, picked with an egg. Leave one pair of
+  Pokémon per player (three pairs per keeper); her screen says how well they get along. Each dawn she may find an egg
+  (70/50/20%, +10% at Expert), 4 emeralds each to collect: a real Cobbreeding egg with Cobbreeding, otherwise the level-1
+  hatchling with inherited IVs, Everstone nature, ball, hidden ability and egg moves. Her pairs go to their PCs if she
+  dies. Config `daycareKeepers`.
 - **Legends: rarities, caps and the server's record** (29.3): the server keeps a saved record of every Legend. A Rare
   Legend comes once to each village, a Legendary one once to each world, and a village holds Mythic ones by its rank
   (`mythicLegendCap` in the config file, default Hamlet 0, Village 0, Town 1, City 2). Rare and Legendary arrivals are

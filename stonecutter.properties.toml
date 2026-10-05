@@ -39,6 +39,7 @@ tests.compat_mods = [
     "maven.modrinth:repurposed-structures-fabric:4uDzF4B9", # Repurposed Structures 7.5.21 (villages)
     "maven.modrinth:midnightlib:vqqujBpd",      # MidnightLib 1.7.5 (for Repurposed Structures)
     "maven.modrinth:cobbledollars:cqsHXSXe",    # CobbleDollars 2.0.0 Beta-5.1 (the pack's money)
+    "maven.modrinth:ItmVb4zY:RNbPHodv",         # Cobbreeding 2.2.2 (the pack's breeding; the Daycare Keeper's eggs, 28.12)
     # The Cobbleverse pack's (1.7.42) building and storage mods
     "maven.modrinth:pJmCFF0p:f0pKpUWd",         # Handcrafted 4.0.3
     "maven.modrinth:DhSSvaxs:ZyaUkJxq",         # Beautify 2.0.0

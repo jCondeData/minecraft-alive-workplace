@@ -709,6 +709,20 @@ public final class ModVillagers {
 		)
 	);
 
+	/** Looks after pairs of Pokémon at a Pasture Block and finds their eggs (ROADMAP 28.12): only ever by an egg, with Cobblemon and config {@code daycareKeepers}. */
+	public static final VillagerProfession DAYCARE_KEEPER = Registry.register(
+		BuiltInRegistries.VILLAGER_PROFESSION,
+		AliveWorkplace.id("daycare_keeper"),
+		new VillagerProfession(
+			"daycare_keeper",
+			holder -> holder.is(PASTURE_POI),
+			holder -> holder.is(PASTURE_POI),
+			ImmutableSet.of(),
+			ImmutableSet.of(),
+			SoundEvents.CHICKEN_EGG
+		)
+	);
+
 	/**
 	 * Tends the gem beds round a stonecutter (ROADMAP 28.11): only ever by an amethyst shard, with config {@code gemGrowers}.
 	 * A jobless villager by a stonecutter still becomes a Mason, which vanilla registers first.
@@ -764,7 +778,8 @@ public final class ModVillagers {
 			|| profession == ORCHARD_KEEPER || profession == BALL_SMITH || profession == PORTER || profession == CARPENTER || profession == CHEF || profession == FOSSIL_SCIENTIST
 			|| profession == BEEKEEPER || profession == FLORIST || profession == RANCHER || profession == TEACHER || profession == INNKEEPER || profession == UNDERTAKER || profession == SCHOLAR
 			|| profession == SIFTER || profession == TINKERER || profession == NETHERWORKER || profession == COMPOSTER
-			|| profession == BERRY_BREEDER || profession == CAMP_COOK || profession == HABITAT_KEEPER || profession == GEM_GROWER;
+			|| profession == BERRY_BREEDER || profession == CAMP_COOK || profession == HABITAT_KEEPER || profession == GEM_GROWER
+			|| profession == DAYCARE_KEEPER;
 	}
 
 	/**

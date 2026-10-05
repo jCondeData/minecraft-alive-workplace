@@ -115,7 +115,7 @@ public final class Stations {
 	private static final Set<Block> ONLY_BY_ITEM = Set.of(Blocks.CRAFTING_TABLE, Blocks.BEEHIVE, Blocks.JUKEBOX, ModBlocks.MAILBOX);
 	/** The jobs that need Cobblemon (their items are Cobblemon's, or they work with Pokémon). */
 	private static final Set<String> COBBLEMON_JOBS = Set.of("ball_smith", "pokemon_trader", "trainer", "trainer_leader", "tutor",
-		"fossil_scientist", "berry_breeder", "camp_cook", "habitat_keeper");
+		"fossil_scientist", "berry_breeder", "camp_cook", "habitat_keeper", "daycare_keeper");
 
 	private static Predicate<ItemStack> any(Item... items) {
 		Set<Item> set = Set.of(items);
@@ -222,10 +222,11 @@ public final class Stations {
 		new Station(is(ModVillagers.CAMPFIRE_POT_POI),
 			() -> BuiltInRegistries.BLOCK.getOptional(ModVillagers.CAMPFIRE_POT_BLOCK).orElse(Blocks.AIR), List.of(
 			job(() -> ModVillagers.CAMP_COOK, io.github.jcondedata.aliveworkplace.camp.CampCooks::isGrains))),
-		// Cobblemon's Pasture Block (28.10): a honey bottle, with Cobblemon and config habitatKeepers on
+		// Cobblemon's Pasture Block (28.10, 28.12): a honey bottle or an egg, with Cobblemon and config habitatKeepers/daycareKeepers on
 		new Station(is(ModVillagers.PASTURE_POI),
 			() -> BuiltInRegistries.BLOCK.getOptional(ModVillagers.PASTURE_BLOCK).orElse(Blocks.AIR), List.of(
-			job(() -> ModVillagers.HABITAT_KEEPER, io.github.jcondedata.aliveworkplace.habitat.HabitatKeepers::isHoney)))
+			job(() -> ModVillagers.HABITAT_KEEPER, io.github.jcondedata.aliveworkplace.habitat.HabitatKeepers::isHoney),
+			job(() -> ModVillagers.DAYCARE_KEEPER, io.github.jcondedata.aliveworkplace.daycare.DaycareKeepers::isEgg)))
 	);
 
 	/**

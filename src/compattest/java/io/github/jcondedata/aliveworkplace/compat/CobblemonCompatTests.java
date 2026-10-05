@@ -182,8 +182,8 @@ public class CobblemonCompatTests implements FabricGameTest {
 		boolean knows = pokemon.getAllAccessibleMoves().stream().anyMatch(m -> m.getName().equals(name))
 			|| pokemon.getMoveSet().getMoves().stream().anyMatch(m -> m.getName().equals(name));
 		helper.assertTrue(knows, "the Pokémon didn't learn " + name);
-		helper.assertTrue(io.github.jcondedata.aliveworkplace.compat.cobbledollars.CobbleDollarsBank.balance(player) == 10_000 - lesson.dollars(),
-			"paid " + (10_000 - io.github.jcondedata.aliveworkplace.compat.cobbledollars.CobbleDollarsBank.balance(player)) + ", expected " + lesson.dollars());
+		helper.assertTrue(io.github.jcondedata.aliveworkplace.compat.cobbledollars.CobbleDollarsBank.balance(player) == 10_000 - lesson.dollars(tutor),
+			"paid " + (10_000 - io.github.jcondedata.aliveworkplace.compat.cobbledollars.CobbleDollarsBank.balance(player)) + ", expected " + lesson.dollars(tutor));
 		helper.assertTrue(io.github.jcondedata.aliveworkplace.registry.ModAttachments.TUTOR_LESSONS.getOrElse(tutor, 0) == 1, "lesson not counted");
 		String title = io.github.jcondedata.aliveworkplace.tutor.Tutors.title(tutor).getString();
 		helper.assertTrue(title.equals("Master Move Tutor"), "title: " + title);

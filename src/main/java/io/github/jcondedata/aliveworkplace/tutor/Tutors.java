@@ -45,6 +45,15 @@ public final class Tutors {
 		return PRICE[Math.max(1, Math.min(5, grade)) - 1];
 	}
 
+	/** What {@code tutor} charges for a lesson of {@code grade}: after the Trainers' Guild's {@code lesson_price} (30.20). */
+	public static int price(Villager tutor, int grade) {
+		return io.github.jcondedata.aliveworkplace.hall.Guilds.lessonPrice(tutor, price(grade));
+	}
+
+	public static long dollars(Villager tutor, int grade) {
+		return price(tutor, grade) * (long) io.github.jcondedata.aliveworkplace.work.Money.DOLLARS_PER_EMERALD;
+	}
+
 	/** The same lesson in CobbleDollars (used when that mod is installed): 100 per emerald. */
 	public static long dollars(int grade) {
 		return price(grade) * (long) io.github.jcondedata.aliveworkplace.work.Money.DOLLARS_PER_EMERALD;

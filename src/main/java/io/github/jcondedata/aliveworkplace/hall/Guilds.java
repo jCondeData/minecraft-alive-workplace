@@ -77,6 +77,14 @@ public final class Guilds implements ResourceManagerReloadListener {
 	public static final ResourceLocation WORK_REACH = AliveWorkplace.id("work_reach");
 	public static final ResourceLocation HERD_SIZE = AliveWorkplace.id("herd_size");
 	public static final ResourceLocation RESEARCH_COST = AliveWorkplace.id("research_cost");
+	public static final ResourceLocation RECOVERY_DAYS = AliveWorkplace.id("recovery_days");
+	public static final ResourceLocation WORK_RADIUS = AliveWorkplace.id("work_radius");
+	public static final ResourceLocation HIRE_PRICE = AliveWorkplace.id("hire_price");
+	public static final ResourceLocation CARRY = AliveWorkplace.id("carry");
+	public static final ResourceLocation TRAIN_UP_TO = AliveWorkplace.id("train_up_to");
+	public static final ResourceLocation STRENGTH = AliveWorkplace.id("strength");
+	public static final ResourceLocation LESSON_PRICE = AliveWorkplace.id("lesson_price");
+	public static final ResourceLocation TRAINER_XP = AliveWorkplace.id("trainer_xp");
 
 	/** {@code build_helpers}: up to {@code max} idle builders help at one build (not {@link Builders#MAX_HELPERS}). */
 	public record BuildHelpers(int max, List<ResourceLocation> jobs) implements CivicEffects.Effect {
@@ -146,7 +154,103 @@ public final class Guilds implements ResourceManagerReloadListener {
 		}
 	}
 
+	/** {@code recovery_days} (30.20): the village's ill get well {@code days} days sooner (or later) without a nurse; village-wide once founded. */
+	public record RecoveryDays(int days, List<ResourceLocation> jobs) implements CivicEffects.Effect {
+		@Override
+		public ResourceLocation type() {
+			return RECOVERY_DAYS;
+		}
+	}
+
+	/** {@code work_radius} (30.20): members look {@code blocks} further for those they serve (nurses' patients, undertakers' graves: 32 -> 48). */
+	public record WorkRadius(int blocks, List<ResourceLocation> jobs) implements CivicEffects.Effect {
+		@Override
+		public ResourceLocation type() {
+			return WORK_RADIUS;
+		}
+	}
+
+	/** {@code hire_price} (30.20): travellers at the village's inns cost {@code percent} more to hire (-25: a quarter less, rounded up); village-wide. */
+	public record HirePrice(int percent, List<ResourceLocation> jobs) implements CivicEffects.Effect {
+		@Override
+		public ResourceLocation type() {
+			return HIRE_PRICE;
+		}
+	}
+
+	/** {@code carry} (30.20): members carry {@code stacks} more stacks a trip (porters). */
+	public record Carry(int stacks, List<ResourceLocation> jobs) implements CivicEffects.Effect {
+		@Override
+		public ResourceLocation type() {
+			return CARRY;
+		}
+	}
+
+	/** {@code train_up_to} (30.20): members train at a Training Dummy up to {@code level} (5: Master) instead of Expert. */
+	public record TrainUpTo(int level, List<ResourceLocation> jobs) implements CivicEffects.Effect {
+		@Override
+		public ResourceLocation type() {
+			return TRAIN_UP_TO;
+		}
+	}
+
+	/** {@code strength} (30.20): members hit {@code percent} harder. */
+	public record Strength(int percent, List<ResourceLocation> jobs) implements CivicEffects.Effect {
+		@Override
+		public ResourceLocation type() {
+			return STRENGTH;
+		}
+	}
+
+	/** {@code lesson_price} (30.20): what members charge for lessons and revivals changes by {@code percent} (-20: a fifth less, rounded up). */
+	public record LessonPrice(int percent, List<ResourceLocation> jobs) implements CivicEffects.Effect {
+		@Override
+		public ResourceLocation type() {
+			return LESSON_PRICE;
+		}
+	}
+
+	/** {@code trainer_xp} (30.20): members earn {@code percent} more experience from battles (25: rank up a quarter faster). */
+	public record TrainerXp(int percent, List<ResourceLocation> jobs) implements CivicEffects.Effect {
+		@Override
+		public ResourceLocation type() {
+			return TRAINER_XP;
+		}
+	}
+
 	static {
+		CivicEffects.register(RECOVERY_DAYS, RecordCodecBuilder.<RecoveryDays>mapCodec(i -> i.group(
+			Codec.intRange(-30, 30).fieldOf("days").forGetter(RecoveryDays::days),
+			ResourceLocation.CODEC.listOf().optionalFieldOf("jobs", List.of()).forGetter(RecoveryDays::jobs)
+		).apply(i, RecoveryDays::new)));
+		CivicEffects.register(WORK_RADIUS, RecordCodecBuilder.<WorkRadius>mapCodec(i -> i.group(
+			Codec.intRange(-64, 64).fieldOf("blocks").forGetter(WorkRadius::blocks),
+			ResourceLocation.CODEC.listOf().optionalFieldOf("jobs", List.of()).forGetter(WorkRadius::jobs)
+		).apply(i, WorkRadius::new)));
+		CivicEffects.register(HIRE_PRICE, RecordCodecBuilder.<HirePrice>mapCodec(i -> i.group(
+			Codec.intRange(-100, 1000).fieldOf("percent").forGetter(HirePrice::percent),
+			ResourceLocation.CODEC.listOf().optionalFieldOf("jobs", List.of()).forGetter(HirePrice::jobs)
+		).apply(i, HirePrice::new)));
+		CivicEffects.register(CARRY, RecordCodecBuilder.<Carry>mapCodec(i -> i.group(
+			Codec.intRange(-27, 27).fieldOf("stacks").forGetter(Carry::stacks),
+			ResourceLocation.CODEC.listOf().optionalFieldOf("jobs", List.of()).forGetter(Carry::jobs)
+		).apply(i, Carry::new)));
+		CivicEffects.register(TRAIN_UP_TO, RecordCodecBuilder.<TrainUpTo>mapCodec(i -> i.group(
+			Codec.intRange(1, 5).fieldOf("level").forGetter(TrainUpTo::level),
+			ResourceLocation.CODEC.listOf().optionalFieldOf("jobs", List.of()).forGetter(TrainUpTo::jobs)
+		).apply(i, TrainUpTo::new)));
+		CivicEffects.register(STRENGTH, RecordCodecBuilder.<Strength>mapCodec(i -> i.group(
+			Codec.intRange(-100, 1000).fieldOf("percent").forGetter(Strength::percent),
+			ResourceLocation.CODEC.listOf().optionalFieldOf("jobs", List.of()).forGetter(Strength::jobs)
+		).apply(i, Strength::new)));
+		CivicEffects.register(LESSON_PRICE, RecordCodecBuilder.<LessonPrice>mapCodec(i -> i.group(
+			Codec.intRange(-100, 1000).fieldOf("percent").forGetter(LessonPrice::percent),
+			ResourceLocation.CODEC.listOf().optionalFieldOf("jobs", List.of()).forGetter(LessonPrice::jobs)
+		).apply(i, LessonPrice::new)));
+		CivicEffects.register(TRAINER_XP, RecordCodecBuilder.<TrainerXp>mapCodec(i -> i.group(
+			Codec.intRange(-100, 1000).fieldOf("percent").forGetter(TrainerXp::percent),
+			ResourceLocation.CODEC.listOf().optionalFieldOf("jobs", List.of()).forGetter(TrainerXp::jobs)
+		).apply(i, TrainerXp::new)));
 		CivicEffects.register(WORK_REACH, RecordCodecBuilder.<WorkReach>mapCodec(i -> i.group(
 			Codec.intRange(-64, 64).fieldOf("blocks").forGetter(WorkReach::blocks),
 			ResourceLocation.CODEC.listOf().optionalFieldOf("jobs", List.of()).forGetter(WorkReach::jobs)
@@ -265,7 +369,7 @@ public final class Guilds implements ResourceManagerReloadListener {
 	@Nullable
 	public static Guild read(ResourceLocation id, JsonElement json) {
 		JsonObject object = json.getAsJsonObject();
-		if (object.has("enabled") && !object.get("enabled").getAsBoolean()) {
+		if (object.has("enabled") && !object.get("enabled").getAsBoolean() || !conditionsMet(object)) {
 			return null;
 		}
 		Body body = BODY.codec().parse(JsonOps.INSTANCE, object).getOrThrow(IllegalArgumentException::new);
@@ -601,6 +705,139 @@ public final class Guilds implements ResourceManagerReloadListener {
 		}
 		long scaled = (long) amount * Math.max(0, 100 + percent);
 		return (int) Math.min(Integer.MAX_VALUE, (scaled + 99) / 100);
+	}
+
+	/**
+	 * Whether a guild file's {@code fabric:load_conditions} hold (30.20: the Trainers' Guild only with Cobblemon). Read
+	 * here, not by the loader, since guild files aren't a vanilla JSON folder: {@code fabric:all_mods_loaded},
+	 * {@code fabric:any_mods_loaded}, {@code fabric:not}, {@code fabric:true}; any other condition doesn't hold.
+	 */
+	static boolean conditionsMet(JsonObject object) {
+		JsonElement list = object.get("fabric:load_conditions");
+		if (list == null) {
+			return true;
+		}
+		for (JsonElement c : list.isJsonArray() ? list.getAsJsonArray() : java.util.List.of(list)) {
+			if (!condition(c.getAsJsonObject())) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	private static boolean condition(JsonObject c) {
+		String type = c.has("condition") ? c.get("condition").getAsString() : "";
+		switch (type) {
+			case "fabric:true":
+				return true;
+			case "fabric:not":
+				return !condition(c.getAsJsonObject("value"));
+			case "fabric:all_mods_loaded", "fabric:any_mods_loaded": {
+				boolean all = type.equals("fabric:all_mods_loaded");
+				boolean any = false;
+				for (JsonElement v : c.getAsJsonArray("values")) {
+					boolean loaded = Platform.get().isModLoaded(v.getAsString());
+					if (all && !loaded) {
+						return false;
+					}
+					any |= loaded;
+				}
+				return all || any;
+			}
+			default:
+				AliveWorkplace.LOG.warn("Unknown guild load condition {}", type);
+				return false;
+		}
+	}
+
+	/** Every number the founded guilds of {@code villager}'s trade put on effects of {@code kind}, summed by {@code number}. */
+	private static <T extends CivicEffects.Effect> int memberSum(Villager villager, Class<T> kind, java.util.function.ToIntFunction<T> number) {
+		int sum = 0;
+		for (Guild g : inForce(villager)) {
+			for (CivicEffects.Effect e : g.perks()) {
+				if (kind.isInstance(e) && CivicEffects.reaches(e, villager)) {
+					sum += number.applyAsInt(kind.cast(e));
+				}
+			}
+		}
+		return sum;
+	}
+
+	/** Every number the founded guilds of {@code hall}'s village (any trade) put on effects of {@code kind}, summed. */
+	private static <T extends CivicEffects.Effect> int villageSum(ServerLevel level, @Nullable VillageHallBlockEntity hall, Class<T> kind,
+																	  java.util.function.ToIntFunction<T> number) {
+		if (!ENABLED || hall == null) {
+			return 0;
+		}
+		int sum = 0;
+		for (Charter c : hall.guilds()) {
+			Guild g = get(c.id());
+			if (g != null && founded(level, hall, c.id())) {
+				for (CivicEffects.Effect e : g.perks()) {
+					if (kind.isInstance(e)) {
+						sum += number.applyAsInt(kind.cast(e));
+					}
+				}
+			}
+		}
+		return sum;
+	}
+
+	/** {@code amount} changed by {@code percent}, rounded up (never under 0). */
+	public static int byPercent(int amount, int percent) {
+		if (percent == 0 || amount <= 0) {
+			return amount;
+		}
+		long scaled = (long) amount * Math.max(0, 100 + percent);
+		return (int) Math.min(Integer.MAX_VALUE, (scaled + 99) / 100);
+	}
+
+	/** How many days {@code villager}'s village's founded guilds take off an illness ({@code recovery_days}; negative: sooner). */
+	public static int recoveryDays(Villager villager) {
+		return villager.level() instanceof ServerLevel level ? villageSum(level, CivicEffects.hallOf(villager), RecoveryDays.class, RecoveryDays::days) : 0;
+	}
+
+	/** How far {@code villager} looks for those they serve: {@code usual}, plus a founded guild's {@code work_radius} (never under 1). */
+	public static int radius(Villager villager, int usual) {
+		return Math.max(1, usual + memberSum(villager, WorkRadius.class, WorkRadius::blocks));
+	}
+
+	/** What hiring a traveller for {@code emeralds} costs in {@code guest}'s village after its founded guilds' {@code hire_price}. */
+	public static int hirePrice(Villager guest, int emeralds) {
+		return guest.level() instanceof ServerLevel level ? byPercent(emeralds, villageSum(level, CivicEffects.hallOf(guest), HirePrice.class, HirePrice::percent)) : emeralds;
+	}
+
+	/** How many stacks {@code villager} carries a trip: {@code usual}, plus a founded guild's {@code carry}. */
+	public static int carry(Villager villager, int usual) {
+		return Math.max(1, usual + memberSum(villager, Carry.class, Carry::stacks));
+	}
+
+	/** The level {@code villager} trains up to at a Training Dummy: {@code usual}, or a founded guild's higher {@code train_up_to}. */
+	public static int trainUpTo(Villager villager, int usual) {
+		int to = usual;
+		for (Guild g : inForce(villager)) {
+			for (CivicEffects.Effect e : g.perks()) {
+				if (e instanceof TrainUpTo t && CivicEffects.reaches(e, villager)) {
+					to = Math.max(to, t.level());
+				}
+			}
+		}
+		return to;
+	}
+
+	/** How much harder {@code villager} hits after their founded guild's {@code strength} (1 without). */
+	public static float strength(Villager villager) {
+		return Math.max(0f, 1f + memberSum(villager, Strength.class, Strength::percent) / 100f);
+	}
+
+	/** What {@code villager} charges for a lesson or revival of {@code emeralds}, after their founded guild's {@code lesson_price}. */
+	public static int lessonPrice(Villager villager, int emeralds) {
+		return byPercent(emeralds, memberSum(villager, LessonPrice.class, LessonPrice::percent));
+	}
+
+	/** The battle experience {@code xp} earns {@code villager} after their founded guild's {@code trainer_xp} (rounded up). */
+	public static int trainerXp(Villager villager, int xp) {
+		return byPercent(xp, memberSum(villager, TrainerXp.class, TrainerXp::percent));
 	}
 
 	/** How the guild's pace reads in the status line: "the Builders' Guild". */

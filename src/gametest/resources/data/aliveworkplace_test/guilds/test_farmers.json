@@ -1,9 +1,0 @@
-{
-  "name": "Test Farmers' Guild",
-  "perk": "Farmers work a tenth faster.",
-  "icon": "minecraft:wheat",
-  "trades": ["minecraft:farmer"],
-  "perks": [
-    {"type": "aliveworkplace:work_pace", "percent": 10}
-  ]
-}

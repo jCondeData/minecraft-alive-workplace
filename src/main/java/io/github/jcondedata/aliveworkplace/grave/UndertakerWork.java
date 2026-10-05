@@ -123,13 +123,18 @@ public class UndertakerWork extends Behavior<Villager> {
 		status(villager);
 	}
 
+	/** How far {@code undertaker} looks for a grave: {@link #RADIUS}, further with the Healers' Guild founded (30.20: 48). */
+	public static int radius(Villager undertaker) {
+		return io.github.jcondedata.aliveworkplace.hall.Guilds.radius(undertaker, RADIUS);
+	}
+
 	private void choose(ServerLevel level, Villager villager, BlockPos table, List<BlockPos> own, BuilderBag bag) {
 		walker.walkTo(level, villager, table, 2.5);
 		if (--timer > 0) {
 			return;
 		}
 		timer = LOOK_EVERY;
-		List<BlockPos> graves = Graves.near(level, table, RADIUS);
+		List<BlockPos> graves = Graves.near(level, table, radius(villager));
 		if (graves.isEmpty()) {
 			state = "none";
 			Requests.clear(villager);

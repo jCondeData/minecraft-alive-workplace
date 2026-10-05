@@ -1,0 +1,23 @@
+{
+  "name": {
+    "translate": "guild.aliveworkplace.wardens"
+  },
+  "perk": {
+    "translate": "guild.aliveworkplace.wardens.perk"
+  },
+  "icon": "minecraft:iron_sword",
+  "trades": [
+    "aliveworkplace:guard"
+  ],
+  "perks": [
+    {
+      "type": "aliveworkplace:train_up_to",
+      "level": 5
+    },
+    {
+      "type": "aliveworkplace:strength",
+      "percent": 10
+    }
+  ],
+  "enabled": true
+}

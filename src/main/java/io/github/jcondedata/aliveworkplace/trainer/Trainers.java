@@ -119,6 +119,11 @@ public final class Trainers {
 		TrainerBattles.EXTENSION.run(battles -> battles.challenge(player, trainer));
 	}
 
+	/** The experience a battle earns {@code trainer}: more for a win, a quarter more with the Trainers' Guild founded (30.20). */
+	public static int battleXp(Villager trainer, boolean playerWon) {
+		return io.github.jcondedata.aliveworkplace.hall.Guilds.trainerXp(trainer, XP_PER_BATTLE + (playerWon ? 0 : XP_FOR_WIN));
+	}
+
 	/** A battle with a trainer ended (won by the player or not). Levels the trainer and pays the prize. */
 	public static void battleOver(MinecraftServer server, UUID trainerId, UUID playerId, boolean playerWon) {
 		Villager trainer = find(server, trainerId);
@@ -128,7 +133,7 @@ public final class Trainers {
 		}
 		int tierBefore = tier(trainer);
 		ModAttachments.TRAINER_BATTLES.set(trainer, ModAttachments.TRAINER_BATTLES.getOrElse(trainer, 0) + 1);
-		BuilderLevels.addXp((ServerLevel) trainer.level(), trainer, XP_PER_BATTLE + (playerWon ? 0 : XP_FOR_WIN), null);
+		BuilderLevels.addXp((ServerLevel) trainer.level(), trainer, battleXp(trainer, playerWon), null);
 		if (player == null) {
 			return;
 		}

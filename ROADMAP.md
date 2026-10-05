@@ -2124,7 +2124,7 @@ the Village Hall (`VillageNeeds`, `VillageQuests`, `VillageRanks`, `Festivals`, 
 
   New effects: `work_reach`, `herd_size`, `research_cost`. Done when: GameTests for each number, founded and not; the
   `guilds` scene gains their rows.
-- [ ] **30.20** **The Healers', Merchants', Wardens' and Trainers' Guilds.** A data file each:
+- [x] **30.20** (review: pending 2026-10-05) **The Healers', Merchants', Wardens' and Trainers' Guilds.** A data file each:
   - **Healers' Guild** (Nurses, Clerics, Undertakers): members work 15% faster; the village's ill get well in two days
     instead of three, and nurses and undertakers look 48 blocks out instead of 32;
   - **Merchants' Guild** (Shopkeepers, Innkeepers, Ferrymen, Postmen, Porters): members work 15% faster; travellers

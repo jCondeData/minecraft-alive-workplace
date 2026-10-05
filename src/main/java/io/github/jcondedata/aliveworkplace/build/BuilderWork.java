@@ -927,7 +927,8 @@ public class BuilderWork extends Behavior<Villager> {
 				site.supplied();
 				villager.getBrain().setMemory(MemoryModuleType.LOOK_TARGET, new net.minecraft.world.entity.ai.behavior.EntityTracker(mate, true));
 				if (close) {
-					level.playSound(null, villager.blockPosition(), SoundEvents.ITEM_PICKUP, SoundSource.NEUTRAL, 0.3f, 1.4f);
+					// 23.1b: only a sound, capped server-wide (TossSounds).
+					TossSounds.play(level, villager.blockPosition());
 				}
 			}
 			return true;

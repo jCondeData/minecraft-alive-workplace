@@ -8,6 +8,8 @@ a test integration from test turned off
 Stopped quarry .* stretched over its Miner's Bench .* by a bug before 0\.45\.0
 # GemGrowerGameTests feeds the bed reader malformed files (from a test pack) to prove each is logged and skipped.
 skipping gem bed testpack:gem_beds/
+# StewardRulesGameTests feeds the rule loader broken Steward rule files to prove each is skipped, naming its field.
+Skipping Steward rule aliveworkplace_test:steward_rules/bad_
 
 # --- other mods in the compat test server (dev environment, not our code) ---
 # Modded entities have no DataFixerUpper schema; every mod's entity logs this once.

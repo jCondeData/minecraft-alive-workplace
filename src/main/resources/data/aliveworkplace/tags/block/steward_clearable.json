@@ -1,0 +1,25 @@
+{
+  "replace": false,
+  "values": [
+    "minecraft:sweet_berry_bush",
+    "minecraft:cactus",
+    "minecraft:sugar_cane",
+    "minecraft:bamboo",
+    "minecraft:bamboo_sapling",
+    "minecraft:brown_mushroom",
+    "minecraft:red_mushroom",
+    "minecraft:pumpkin",
+    "minecraft:melon",
+    "minecraft:moss_carpet",
+    "minecraft:moss_block",
+    "minecraft:azalea",
+    "minecraft:flowering_azalea",
+    "minecraft:dead_bush",
+    "minecraft:big_dripleaf",
+    "minecraft:big_dripleaf_stem",
+    "minecraft:small_dripleaf",
+    "minecraft:cocoa",
+    "minecraft:pink_petals",
+    "minecraft:mangrove_roots"
+  ]
+}

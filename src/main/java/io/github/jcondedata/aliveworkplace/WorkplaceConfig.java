@@ -111,6 +111,8 @@ public final class WorkplaceConfig {
 	public boolean steward = true;
 	/** The most builds a Steward may have open at once, whatever his level and the village's rank. */
 	public int stewardMaxOpenBuilds = 4;
+	/** A Steward set to "Run the village" starts the builds he proposes by himself (ROADMAP 27.8). Off: every village asks first. */
+	public boolean stewardSelfRun = true;
 	/** Villagers at a Campfire Pot can be made Camp Cooks with Hearty Grains (ROADMAP 28.8). Off: no Camp Cook job. */
 	public boolean campCooks = true;
 	/** Villagers at a Pasture Block can be made Habitat Keepers with a honey bottle (ROADMAP 28.10). Off: no Habitat Keeper job. */
@@ -325,6 +327,7 @@ public final class WorkplaceConfig {
 		io.github.jcondedata.aliveworkplace.berry.BerryBreeders.ENABLED = berryBreeders;
 		io.github.jcondedata.aliveworkplace.city.Stewards.ENABLED = steward;
 		io.github.jcondedata.aliveworkplace.city.Stewards.MAX_OPEN_BUILDS = stewardMaxOpenBuilds;
+		io.github.jcondedata.aliveworkplace.city.StewardDesk.SELF_RUN = stewardSelfRun;
 		io.github.jcondedata.aliveworkplace.camp.CampCooks.ENABLED = campCooks;
 		io.github.jcondedata.aliveworkplace.habitat.HabitatKeepers.ENABLED = habitatKeepers;
 		io.github.jcondedata.aliveworkplace.habitat.HabitatKeepers.SIGHTINGS = habitatSightings;

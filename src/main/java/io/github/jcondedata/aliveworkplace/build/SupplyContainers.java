@@ -96,6 +96,11 @@ public final class SupplyContainers {
 		return STORES.freeSlots(level, containers);
 	}
 
+	/** All slots across the containers, empty or not. */
+	public static int slots(ServerLevel level, List<BlockPos> containers) {
+		return STORES.slots(level, containers);
+	}
+
 	/** How many of {@code item} are available across all containers. */
 	public static long count(ServerLevel level, List<BlockPos> containers, Item item) {
 		return STORES.count(level, containers, item);

@@ -7,6 +7,7 @@ import io.github.jcondedata.aliveworkplace.build.BuildSiteManager;
 import io.github.jcondedata.aliveworkplace.build.BuilderLevels;
 import io.github.jcondedata.aliveworkplace.hall.Caravans;
 import io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity;
+import io.github.jcondedata.aliveworkplace.hall.VillageHalls;
 import io.github.jcondedata.aliveworkplace.hall.VillageRanks;
 import io.github.jcondedata.aliveworkplace.legend.Legend;
 import io.github.jcondedata.aliveworkplace.legend.LegendCommand;
@@ -137,6 +138,11 @@ public class LegendEngineGameTests implements net.fabricmc.fabric.api.gametest.v
 		ServerLevel level = helper.getLevel();
 		long dayTime = level.getDayTime();
 		Leftovers.after(helper, () -> level.setDayTime(dayTime));
+		// The village is counted within its own area: the default radius (64) reaches the spots around it, where tests of
+		// earlier batches left their stores (villagersEatFromTheStore's Storehouse chest with its bread was a meal kind).
+		int radius = VillageHalls.RADIUS;
+		VillageHalls.RADIUS = 18;
+		Leftovers.after(helper, () -> VillageHalls.RADIUS = radius);
 		helper.setBlock(new BlockPos(3, 2, 3), Blocks.SMOKER);
 		helper.setBlock(new BlockPos(4, 2, 3), Blocks.CHEST);
 		helper.runAfterDelay(5, () -> {

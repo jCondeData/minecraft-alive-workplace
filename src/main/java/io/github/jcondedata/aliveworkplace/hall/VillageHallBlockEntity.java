@@ -151,6 +151,20 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 		}
 	}
 
+	/** The village's colours (30.13), set with a Village Banner; null (none) in halls saved before. */
+	@org.jetbrains.annotations.Nullable
+	private VillageBanners.Colours colours;
+
+	@org.jetbrains.annotations.Nullable
+	public VillageBanners.Colours colours() {
+		return colours;
+	}
+
+	public void setColours(@org.jetbrains.annotations.Nullable VillageBanners.Colours colours) {
+		this.colours = colours;
+		setChanged();
+	}
+
 	/** The chronicle, oldest first. */
 	public java.util.List<Chronicle.Entry> chronicle() {
 		return java.util.List.copyOf(chronicle);
@@ -531,6 +545,15 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 		name = Nbt.has(tag, "CustomName", 8) ? parseCustomNameSafe(Nbt.getString(tag, "CustomName"), registries) : null;
 		lastBirth = Nbt.getLong(tag, "lastBirth");
 		births = Nbt.getInt(tag, "births");
+		colours = null;
+		if (Nbt.has(tag, "bannerBase", 8)) {
+			net.minecraft.world.item.DyeColor base = net.minecraft.world.item.DyeColor.byName(Nbt.getString(tag, "bannerBase"), net.minecraft.world.item.DyeColor.WHITE);
+			net.minecraft.world.level.block.entity.BannerPatternLayers patterns = tag.contains("bannerPatterns")
+				? net.minecraft.world.level.block.entity.BannerPatternLayers.CODEC.parse(registries.createSerializationContext(net.minecraft.nbt.NbtOps.INSTANCE), tag.get("bannerPatterns"))
+					.result().orElse(net.minecraft.world.level.block.entity.BannerPatternLayers.EMPTY)
+				: net.minecraft.world.level.block.entity.BannerPatternLayers.EMPTY;
+			colours = new VillageBanners.Colours(base, patterns);
+		}
 		quests = VillageQuests.Quest.CODEC.listOf().parse(net.minecraft.nbt.NbtOps.INSTANCE, tag.get("quests"))
 			.result().map(java.util.List::copyOf).orElse(java.util.List.of());
 		lastQuestDay = tag.contains("lastQuestDay") ? Nbt.getLong(tag, "lastQuestDay") : -1;
@@ -598,6 +621,11 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 		}
 		tag.putLong("lastBirth", lastBirth);
 		tag.putInt("births", births);
+		if (colours != null) {
+			tag.putString("bannerBase", colours.base().getName());
+			net.minecraft.world.level.block.entity.BannerPatternLayers.CODEC.encodeStart(registries.createSerializationContext(net.minecraft.nbt.NbtOps.INSTANCE), colours.patterns())
+				.result().ifPresent(t -> tag.put("bannerPatterns", t));
+		}
 		VillageQuests.Quest.CODEC.listOf().encodeStart(net.minecraft.nbt.NbtOps.INSTANCE, quests).result().ifPresent(t -> tag.put("quests", t));
 		tag.putLong("lastQuestDay", lastQuestDay);
 		tag.putInt("questsDone", questsDone);

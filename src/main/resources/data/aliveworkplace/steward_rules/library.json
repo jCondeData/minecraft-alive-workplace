@@ -1,0 +1,30 @@
+{
+  "when": [
+    {
+      "villagers_at_least": {
+        "n": 6
+      }
+    },
+    {
+      "no_worker": {
+        "profession": "aliveworkplace:scholar"
+      }
+    },
+    {
+      "built_count_below": {
+        "blueprint": "aliveworkplace:library",
+        "n": 1
+      }
+    }
+  ],
+  "do": {
+    "build": {
+      "blueprint": "aliveworkplace:library",
+      "zone": "civic"
+    }
+  },
+  "priority": 42,
+  "why": "steward.aliveworkplace.why.library",
+  "cooldown_days": 2,
+  "max": 1
+}

@@ -1,0 +1,31 @@
+{
+  "when": [
+    {
+      "ill": {
+        "at_least": 2
+      }
+    },
+    {
+      "no_worker": {
+        "profession": "aliveworkplace:nurse"
+      }
+    },
+    {
+      "built_count_below": {
+        "blueprint": "aliveworkplace:healing_center",
+        "n": 1
+      }
+    }
+  ],
+  "do": {
+    "build": {
+      "blueprint": "aliveworkplace:healing_center",
+      "zone": "civic"
+    }
+  },
+  "priority": 70,
+  "why": "steward.aliveworkplace.why.ill",
+  "cooldown_days": 2,
+  "max": 1,
+  "min_rank": "village"
+}

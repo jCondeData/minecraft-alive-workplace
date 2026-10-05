@@ -5,6 +5,7 @@ import io.github.jcondedata.aliveworkplace.blueprint.BlueprintUpgrades;
 import io.github.jcondedata.aliveworkplace.blueprint.Blueprints;
 import io.github.jcondedata.aliveworkplace.build.BuildSiteManager;
 import io.github.jcondedata.aliveworkplace.build.SupplyContainers;
+import io.github.jcondedata.aliveworkplace.hall.Chronicle;
 import io.github.jcondedata.aliveworkplace.hall.VillageAdvice;
 import io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity;
 import io.github.jcondedata.aliveworkplace.hall.VillageHalls;
@@ -37,7 +38,8 @@ import net.minecraft.world.entity.npc.VillagerProfession;
  * ({@link VillageAdvice}'s {@code bedsShort}, {@code jobless}, {@code foodWanted}, {@code homes}, {@code upgradable},
  * {@code poiCount}), so the Steward and the tips always agree. Each gives whether it held, one number (what a rule's
  * {@code why} is filled with) and a line for {@code /workplace steward explain}. {@code {"not": {...}}} turns any
- * condition round. 27.12 adds more through {@link #register}.
+ * condition round. 27.12 added the care, learning, safety, beauty and market ones; packs
+ * add more through {@link #register}.
  */
 public final class StewardConditions {
 	/** The village round a hall, counted lazily and once: every rule's conditions read the same numbers. */
@@ -467,6 +469,157 @@ public final class StewardConditions {
 		}
 	}
 
+	/** {@code no_worker {profession}}: nobody in the village works at that job (a nurse, a scholar); the number is how many do. */
+	public record NoWorker(ResourceLocation profession) implements Condition {
+		@Override
+		public String type() {
+			return "no_worker";
+		}
+
+		@Override
+		public Check test(Facts facts) {
+			VillagerProfession job = BuiltInRegistries.VILLAGER_PROFESSION.get(profession);
+			long workers = VillageAdvice.workers(facts.census(), job);
+			return new Check(workers == 0, workers, key(type(), profession.toString(), workers));
+		}
+	}
+
+	/** {@code guards_short {}}: fewer guards than one for every 10 villagers, the "guards" tip; the number is how many short. */
+	public record GuardsShort() implements Condition {
+		@Override
+		public String type() {
+			return "guards_short";
+		}
+
+		@Override
+		public Check test(Facts facts) {
+			int villagers = facts.census().villagers();
+			int wanted = VillageAdvice.guardsWanted(villagers);
+			int shortBy = Math.max(0, wanted - facts.census().guards());
+			return new Check(villagers > 0 && shortBy > 0, shortBy, key(type(), facts.census().guards(), wanted));
+		}
+	}
+
+	/** {@code raided_within {days}}: the hall's last raid was fewer than that many days ago; the number is the days since. */
+	public record RaidedWithin(int days) implements Condition {
+		/** The last raid day a hall that was never raided keeps. */
+		static final long NEVER_RAIDED = -100;
+
+		@Override
+		public String type() {
+			return "raided_within";
+		}
+
+		@Override
+		public Check test(Facts facts) {
+			long last = facts.level.getBlockEntity(facts.hall) instanceof VillageHallBlockEntity entity ? entity.lastRaidDay() : -100;
+			long since = last <= NEVER_RAIDED ? -1 : Chronicle.day(facts.level) - last; // the hall's -100: never raided
+			boolean held = since >= 0 && since < days;
+			return new Check(held, Math.max(0, since), since < 0 ? key(type() + "_never", days) : key(type(), since, days));
+		}
+	}
+
+	/** {@code bandit_camp_near {}}: a bandit camp preys on the village (the "bandits" tip); the number is its distance. */
+	public record BanditCampNear() implements Condition {
+		@Override
+		public String type() {
+			return "bandit_camp_near";
+		}
+
+		@Override
+		public Check test(Facts facts) {
+			Optional<io.github.jcondedata.aliveworkplace.guard.BanditCamps.Camp> camp = io.github.jcondedata.aliveworkplace.guard.BanditCamps.near(facts.level, facts.hall);
+			long distance = camp.map(c -> (long) Math.sqrt(c.pos().distSqr(facts.hall))).orElse(0L);
+			return new Check(camp.isPresent(), distance, camp.isPresent() ? key(type(), distance) : key(type() + "_none"));
+		}
+	}
+
+	/** {@code ill {at_least}}: villagers who are ill (the "ill" tip's number). */
+	public record Ill(int atLeast) implements Condition {
+		@Override
+		public String type() {
+			return "ill";
+		}
+
+		@Override
+		public Check test(Facts facts) {
+			long ill = VillageAdvice.ill(facts.level, facts.hall);
+			return new Check(ill >= atLeast, ill, key(type(), ill, atLeast));
+		}
+	}
+
+	/** {@code dark_beds {at_least}}: beds of the village with too little block light by them (the "dark" tip's light level). */
+	public record DarkBeds(int atLeast) implements Condition {
+		@Override
+		public String type() {
+			return "dark_beds";
+		}
+
+		@Override
+		public Check test(Facts facts) {
+			int dark = VillageAdvice.darkBeds(facts.level, facts.hall).size();
+			return new Check(dark >= atLeast, dark, key(type(), dark, atLeast));
+		}
+	}
+
+	/** {@code beauty_below {points}}: the village's beauty (its decorations' points, the "beauty" tip) is under that. */
+	public record BeautyBelow(int points) implements Condition {
+		@Override
+		public String type() {
+			return "beauty_below";
+		}
+
+		@Override
+		public Check test(Facts facts) {
+			int beauty = io.github.jcondedata.aliveworkplace.hall.Decorations.beauty(facts.level, facts.hall);
+			return new Check(beauty < points, beauty, key(type(), beauty, points));
+		}
+	}
+
+	/** {@code children_at_least {n}}: at least that many children in the village. */
+	public record ChildrenAtLeast(int n) implements Condition {
+		@Override
+		public String type() {
+			return "children_at_least";
+		}
+
+		@Override
+		public Check test(Facts facts) {
+			int children = facts.census().children();
+			return new Check(children >= n, children, key(type(), children, n));
+		}
+	}
+
+	/** {@code courting_couples {at_least}}: couples courting in the village, not married yet ({@code Couples}). */
+	public record CourtingCouples(int atLeast) implements Condition {
+		@Override
+		public String type() {
+			return "courting_couples";
+		}
+
+		@Override
+		public Check test(Facts facts) {
+			long couples = io.github.jcondedata.aliveworkplace.people.Couples.courting(facts.level, facts.hall);
+			return new Check(couples >= atLeast, couples, key(type(), couples, atLeast));
+		}
+	}
+
+	/** {@code died_within {days}}: a villager's death is in the chronicle from fewer than that many days ago; the number is the deaths. */
+	public record DiedWithin(int days) implements Condition {
+		@Override
+		public String type() {
+			return "died_within";
+		}
+
+		@Override
+		public Check test(Facts facts) {
+			long today = Chronicle.day(facts.level);
+			long deaths = facts.level.getBlockEntity(facts.hall) instanceof VillageHallBlockEntity entity
+				? entity.chronicle().stream().filter(e -> e.kind() == Chronicle.Kind.DEATH && today - e.day() < days).count() : 0;
+			return new Check(deaths > 0, deaths, key(type(), deaths, days));
+		}
+	}
+
 	/** A blueprint's family: the base of its style and of its tiers ({@code styled/cherry/.../stone_house_3} is {@code stone_house}). */
 	public static ResourceLocation family(ResourceLocation id) {
 		ResourceLocation base = BlueprintStyles.base(id);
@@ -520,6 +673,23 @@ public final class StewardConditions {
 			return new ResearchAtLeast(topic, f.integer("level", 1, 1, topic.maxLevel));
 		});
 		register("mod_loaded", f -> new ModLoaded(f.string("mod", null)));
+		// 27.12: care, learning, safety, beauty and the market
+		register("no_worker", f -> {
+			ResourceLocation job = f.id("profession");
+			if (!BuiltInRegistries.VILLAGER_PROFESSION.containsKey(job)) {
+				throw new StewardRules.BadRule(f.path("profession"), "unknown profession " + job);
+			}
+			return new NoWorker(job);
+		});
+		register("guards_short", f -> new GuardsShort());
+		register("raided_within", f -> new RaidedWithin(f.integer("days", 7, 1, 10000)));
+		register("bandit_camp_near", f -> new BanditCampNear());
+		register("ill", f -> new Ill(f.integer("at_least", 1, 1, 10000)));
+		register("dark_beds", f -> new DarkBeds(f.integer("at_least", 1, 1, 10000)));
+		register("beauty_below", f -> new BeautyBelow(f.integer("points", 3, 1, 10000)));
+		register("children_at_least", f -> new ChildrenAtLeast(f.integer("n", 1, 0, 10000)));
+		register("courting_couples", f -> new CourtingCouples(f.integer("at_least", 1, 1, 10000)));
+		register("died_within", f -> new DiedWithin(f.integer("days", 30, 1, 10000)));
 	}
 
 	private StewardConditions() {

@@ -128,7 +128,7 @@ stay in the list, ticked, so their numbers stay unique.
 - [ ] **B60** A builder got stuck in a wall during the builder soak: nightly showcase run 37240994365 (b7be7a0, 2026-10-04 23:14Z, nightly issue #1) scene soak reported 'a villager (builder) is stuck in a wall at 307 -54 315, ticked 79404, onGround true' with dirt at y-1 and y and oak leaves above (column y-1..y+2: dirt, dirt, air, oak_leaves). A player would see a builder trapped in the ground or suffocating near a site. Expected: builders never end up inside a block while clearing, levelling or landscaping. Done when: the cause is found, a GameTest of it passes, and the soak scene passes without the stuck-villager check. Test: SCENE=soak tools/screenshots/run.sh (found by qa-1005-0434, 2026-10-05)
 - [x] **B61** (approved auto 2026-10-05) The settings screen cuts off a label: nightly showcase run 37240994365 (b7be7a0) scene config reported 'Nurses Use Healing Machines: ON' is wider than its button (lang key aliveworkplace.config.nurseHealingMachine, still the same on main). Expected: every setting's label fits its button in Mod Menu's screen at the default GUI scale (a shorter label, or a tooltip with the full text). Done when: the config scene passes 'every setting has a button whose label fits'. Test: SCENE=config tools/screenshots/run.sh (found by qa-1005-0434, 2026-10-05)
 - [ ] **B62** Showcase scene steward fails 'the steward walked his morning rounds and came back to the hall (not within 120 seconds)' in the full showcase runs 37235147722 (7d9f036) and 37240994365 (b7be7a0), 2026-10-04, after passing before 27.1a/27.9 changed who can be a Steward and his jobs. Expected: the Steward walks his rounds and returns to the hall within the scene's 120 s, or the scene is staged for the new rules (a seasoned Builder). Test: SCENE=steward tools/screenshots/run.sh (found by qa-1005-0434, 2026-10-05)
-- [ ] **B63** Showcase scene words has failed every full showcase run since 2026-10-04 13:16Z (nightly issue #1): message.aliveworkplace.import.done_with_unknown and .one read 'Imported %s (%s × %s × %s). %s block(s) ... became air: %s.' with raw %s. Expected: the scene shows each message with its arguments filled (if the scene passes no arguments, it is the scene's fault; if a player's import message can show %s, it is the mod's). Test: SCENE=words tools/screenshots/run.sh (found by qa-1005-0434, 2026-10-05)
+- [x] **B63** (approved auto 2026-10-05) Showcase scene words has failed every full showcase run since 2026-10-04 13:16Z (nightly issue #1): message.aliveworkplace.import.done_with_unknown and .one read 'Imported %s (%s × %s × %s). %s block(s) ... became air: %s.' with raw %s. Expected: the scene shows each message with its arguments filled (if the scene passes no arguments, it is the scene's fault; if a player's import message can show %s, it is the mod's). Test: SCENE=words tools/screenshots/run.sh (found by qa-1005-0434, 2026-10-05)
 - [ ] **B64** B46's fix doesn't cover worlds saved before it: a site saved by 0.138.0 or earlier (no shown_progress) still drops its progress the first time the new jar loads it, 24% to 0% half through a raised hut's foundation (QaB46GameTests log, qa-1005-0533) - exactly B46's own repro (a 0.138.0 world opened with main), so the owner's server will see it once on upgrade. Expected: an old save keeps the progress its saved cursor showed (e.g. set shown_progress from the saved stage and cursor before the foundation list is redone). Test: B46OldSaveGameTests on tests/b46-old-saves (written from QaB46GameTests, not yet compiled on its own) (found by qa-1005-0533, 2026-10-05)
 - [ ] **B65** ConscriptionGameTests noWorkDuringARaidNorTheMorningAfterUntilNoon failed once in lane-c-1005-0332's local full build (06:05Z, main + 23.10a): 'back at work in the raid'; passed in the next full build, and a 27.11 subagent saw it fail once too. Expected: passes every run. Test: the repeat generator on that test (found by lane-c-1005-0332, 2026-10-05)
 - [ ] **B66** B50 is back after its fix (90808c7): BuilderCrewGameTests.aCrewBuildsInAboutTheTimeOfOneBuilderDividedByItsSize failed in qa-1005-0533's local full build of main a026511 + qa/b46-b53-1005 (2026-10-05 06:25Z): 'a crew of 4 took 1868 ticks, 44% of the 4200 ticks alone (at most 42%)'; crew of 2 took 50%. It blocked that ship. Expected: passes every run (find what the slow 4-crew runs wait on, as 90808c7 did for the stuck lead). Test: the test itself, repeated 10x with RepeatNewTests (QA lane: test-only flake that turns main red) (found by qa-1005-0533, 2026-10-05)
@@ -691,7 +691,7 @@ and an old vanilla village slowly rebuilds itself one house at a time. It answer
   Done when:
   - a GameTest per rule, and each of the 12 copies built by a builder in a test, its job block taken by its worker;
   - a gallery package of the 12 copies (front and back, as drawn and in Stonework) and showcase scene `workplaces`.
-- [ ] **27.12** **Rules: care, learning, safety, beauty and the market.** The other conditions: `guards_short`,
+- [x] **27.12** (review: pending 2026-10-05) **Rules: care, learning, safety, beauty and the market.** The other conditions: `guards_short`,
   `raided_within {days}` (from the hall's last raid day), `bandit_camp_near`, `ill {at_least}`, `dark_beds
   {at_least}`, `beauty_below {points}`, `children_at_least {n}`, `courting_couples {at_least}` (`Couples`) and
   `died_within {days}` (the chronicle). Shipped rules:
@@ -4564,4 +4564,26 @@ item waits.
   this container): the copies are the village houses' already-checked builds with calcite as white concrete. The six
   Cobblemon rules are tested without Cobblemon (worker counted, held back as MOD_MISSING); their wish with Cobblemon
   has no compat test yet. Owner: are the zones above where you'd want each building?
+- 2026-10-05 (27.12, decisions; lane c): the nine conditions read the hall's numbers (`guards_short` and `ill` are the
+  "guards" and "ill" tips' counts, now `VillageAdvice.guardsWanted`/`ill`; `dark_beds` counts HOME points with block
+  light under `VillageNeeds.LIT`, `VillageAdvice.darkBeds`, darkest first; `raided_within` treats the hall's -100 as never;
+  `courting_couples` is `Couples.courting`; `died_within` counts DEATH entries in the chronicle). "No nurse" and "no
+  scholar" needed one more condition, `no_worker {profession}`. The Clinic/Healing Center choice is two files,
+  `clinic_for_the_ill` (below a Village) and `healing_center_for_the_ill` (`min_rank` village). Every civic, defence,
+  garden and market rule also has `built_count_below {that building, 1}` and `max` 1, so it's built once; street lamps
+  have `max` 8, cooldown 1 day. Priorities: clinic 70, barracks 57, lookout tower 55, lamps 48, schoolhouse 45, library 42,
+  chapel 38, market square 36, well 34, bench 33, fountain 32, gazebo 31, graveyard 30 (all below homes, food, storehouse
+  and workplaces, so with the day's 8 wishes the pressing ones come first). "By the darkest homes' doors, in their
+  zone": a `build` effect may say `"near": "dark_beds"` (saved with the wish, default none); the plot search in the Homes
+  zone then tries spots nearest the darkest bed first instead of nearest the hall (`Plots.Request.near`). The bed, not
+  its door: a door isn't tied to a bed. "Another spot" on the desk searches from the hall again. `raided_within` and
+  `bandit_camp_near` ship with no rule (none of the listed rules asks for them): for packs and later items. With beauty
+  3 reached by a well (2) and a bench (1), the fountain and gazebo come only while beauty stays under 3 (another
+  village's decorations gone, or a pack's rule). Scene `steward_civic`: Couples and Sickness off, a scholar at his desk
+  and a lit row of beds, so only the lamp, the well and (day 2, three children) the schoolhouse are asked for.
+  Filmed locally once (08:41Z): the Steward is appointed, day 1 the lamp (by the darker bed) and the well are built
+  (PASS), day 2 the schoolhouse is wished and the desk starts something, but no schoolhouse was finished in 2400 ticks
+  and the still shows none rising (FAIL "a schoolhouse went up"); the day-2 wishes also still listed `well` after the
+  well was finished. Left for QA/the next lane: why the schoolhouse doesn't start (plot in Civic z 16..40, two open
+  builds in a Village) and whether `built_count_below` misses a just-finished well at the morning's ranking.
 - **qa handoff** (qa-1005-0734, 2026-10-05 08:19Z): qa-1005-0734: shipped qa/legend-camp-map-1005 and qa/import-edges-1005 (full local build 917+129 green, B67's fletch test passed this time); verified 23.7, B55. Next QA: M23 rest (23.1, 23.1a, 23.2, 23.8, 23.10); B46/B50/B57/B61 still wait on B64/B66/B67/B59.

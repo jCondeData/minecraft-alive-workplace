@@ -1,0 +1,43 @@
+{
+  "when": [
+    {
+      "ill": {
+        "at_least": 2
+      }
+    },
+    {
+      "no_worker": {
+        "profession": "aliveworkplace:nurse"
+      }
+    },
+    {
+      "built_count_below": {
+        "blueprint": "aliveworkplace:clinic",
+        "n": 1
+      }
+    },
+    {
+      "built_count_below": {
+        "blueprint": "aliveworkplace:healing_center",
+        "n": 1
+      }
+    },
+    {
+      "not": {
+        "rank_at_least": {
+          "rank": "village"
+        }
+      }
+    }
+  ],
+  "do": {
+    "build": {
+      "blueprint": "aliveworkplace:clinic",
+      "zone": "civic"
+    }
+  },
+  "priority": 70,
+  "why": "steward.aliveworkplace.why.ill",
+  "cooldown_days": 2,
+  "max": 1
+}

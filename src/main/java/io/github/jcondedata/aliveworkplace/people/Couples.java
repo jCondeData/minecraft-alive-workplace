@@ -178,6 +178,12 @@ public final class Couples {
 		}
 	}
 
+	/** Couples courting (not married yet) in the village round {@code hall}: one for every two villagers courting, rounded up. */
+	public static long courting(ServerLevel level, BlockPos hall) {
+		long courting = level.getEntitiesOfClass(Villager.class, VillageHalls.area(hall), v -> v.isAlive() && partner(v) != null && !partner(v).married()).size();
+		return (courting + 1) / 2;
+	}
+
 	/** The married couple (both in the village) nearest {@code at}, or empty: the first to have a baby. */
 	public static List<Villager> coupleNear(ServerLevel level, BlockPos hall, BlockPos at) {
 		List<Villager> village = level.getEntitiesOfClass(Villager.class, VillageHalls.area(hall), v -> v.isAlive() && !v.isBaby() && !v.isSleeping());

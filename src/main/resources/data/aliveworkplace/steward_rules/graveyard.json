@@ -1,0 +1,30 @@
+{
+  "when": [
+    {
+      "died_within": {
+        "days": 30
+      }
+    },
+    {
+      "villagers_at_least": {
+        "n": 8
+      }
+    },
+    {
+      "built_count_below": {
+        "blueprint": "aliveworkplace:graveyard",
+        "n": 1
+      }
+    }
+  ],
+  "do": {
+    "build": {
+      "blueprint": "aliveworkplace:graveyard",
+      "zone": "civic"
+    }
+  },
+  "priority": 30,
+  "why": "steward.aliveworkplace.why.graveyard",
+  "cooldown_days": 3,
+  "max": 1
+}

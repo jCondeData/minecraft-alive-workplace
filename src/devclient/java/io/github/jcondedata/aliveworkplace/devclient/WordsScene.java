@@ -28,8 +28,9 @@ final class WordsScene {
 			new Line("command.aliveworkplace.blueprints.one", 1),
 			new Line("command.aliveworkplace.blueprints", 38)),
 		List.of(
-			new Line("message.aliveworkplace.import.done_with_unknown.one", "tavern", 11, 9, 13, 1),
-			new Line("message.aliveworkplace.import.done_with_unknown", "tavern", 11, 9, 13, 5),
+			new Line("message.aliveworkplace.import.done_with_unknown.one", "tavern", 11, 9, 13, 1, "create:shaft"),
+			new Line("message.aliveworkplace.import.done_with_unknown", "tavern", 11, 9, 13, 5,
+				"create:shaft, create:cogwheel, supplementaries:sconce and 2 more"),
 			new Line("message.aliveworkplace.mail.collected.one", 1, "Bramble"),
 			new Line("message.aliveworkplace.mail.collected", 3, "Bramble"),
 			new Line("message.aliveworkplace.mail.waiting_at_desk.one", 1),

@@ -1,0 +1,25 @@
+{
+  "when": [
+    {
+      "courting_couples": {
+        "at_least": 1
+      }
+    },
+    {
+      "built_count_below": {
+        "blueprint": "aliveworkplace:chapel",
+        "n": 1
+      }
+    }
+  ],
+  "do": {
+    "build": {
+      "blueprint": "aliveworkplace:chapel",
+      "zone": "civic"
+    }
+  },
+  "priority": 38,
+  "why": "steward.aliveworkplace.why.chapel",
+  "cooldown_days": 2,
+  "max": 1
+}

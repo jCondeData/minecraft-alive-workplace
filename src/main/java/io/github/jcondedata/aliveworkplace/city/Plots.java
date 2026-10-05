@@ -121,19 +121,29 @@ public final class Plots {
 		ResourceLocation.fromNamespaceAndPath("aliveworkplace", "ferry_house"));
 
 	/** What the Steward wants a plot for: blueprints in order (the next is tried where the first can't go), and a zone kind. */
-	public record Request(List<ResourceLocation> blueprints, String zoneKind, int skip) {
+	public record Request(List<ResourceLocation> blueprints, String zoneKind, int skip, @Nullable BlockPos near) {
 		public Request {
 			blueprints = List.copyOf(blueprints);
 			skip = Math.max(0, skip);
+			near = near == null ? null : near.immutable();
+		}
+
+		public Request(List<ResourceLocation> blueprints, String zoneKind, int skip) {
+			this(blueprints, zoneKind, skip, null);
 		}
 
 		public Request(List<ResourceLocation> blueprints, String zoneKind) {
-			this(blueprints, zoneKind, 0);
+			this(blueprints, zoneKind, 0, null);
 		}
 
 		/** The same, passing over the first {@code skip} spots that fit ("Another spot" on the Steward's desk, 27.8). */
 		public Request skipping(int skip) {
-			return new Request(blueprints, zoneKind, skip);
+			return new Request(blueprints, zoneKind, skip, near);
+		}
+
+		/** The same, nearest {@code near} first instead of nearest the hall (a street lamp by the darkest beds, 27.12). */
+		public Request near(@Nullable BlockPos near) {
+			return new Request(blueprints, zoneKind, skip, near);
 		}
 	}
 
@@ -446,7 +456,8 @@ public final class Plots {
 					}
 				}
 			}
-			out.sort(Comparator.<int[]>comparingLong(p -> sq(p[0] - hall.getX()) + sq(p[1] - hall.getZ()))
+			BlockPos anchor = request.near() != null ? request.near() : hall;
+			out.sort(Comparator.<int[]>comparingLong(p -> sq(p[0] - anchor.getX()) + sq(p[1] - anchor.getZ()))
 				.thenComparingInt(p -> p[0]).thenComparingInt(p -> p[1]));
 			return out;
 		}

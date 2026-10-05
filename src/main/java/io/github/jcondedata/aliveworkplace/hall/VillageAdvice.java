@@ -61,13 +61,13 @@ public final class VillageAdvice {
 		if (poiCount(level, hall, ModVillagers.STOREHOUSE_POI) == 0) {
 			tips.add(new Tip("storehouse", ModBlocks.STOREHOUSE.asItem()));
 		}
-		int guardsNeeded = (villagers + VillageNeeds.VILLAGERS_PER_GUARD - 1) / VillageNeeds.VILLAGERS_PER_GUARD;
+		int guardsNeeded = guardsWanted(villagers);
 		if (villagers > 0 && census.guards() < guardsNeeded) {
 			tips.add(new Tip("guards", Items.GRINDSTONE, guardsNeeded - census.guards()));
 		}
 		io.github.jcondedata.aliveworkplace.guard.BanditCamps.near(level, hall)
 			.ifPresent(camp -> tips.add(new Tip("bandits", Items.CROSSBOW, VillageHallScreen.where(hall, camp.pos()))));
-		long ill = level.getEntitiesOfClass(Villager.class, VillageHalls.area(hall), io.github.jcondedata.aliveworkplace.people.Sickness::isIll).size();
+		long ill = ill(level, hall);
 		if (ill > 0) {
 			tips.add(new Tip("ill", Items.GLISTERING_MELON_SLICE, ill));
 		}
@@ -141,6 +141,30 @@ public final class VillageAdvice {
 	/** Grown-ups without work, nitwits aside: no job, or a job but no workstation (the "jobless" tip). */
 	public static long jobless(VillageHalls.Census census) {
 		return census.jobless().stream().filter(v -> v.getVillagerData().getProfession() != VillagerProfession.NITWIT).count();
+	}
+
+	/** Guards a village of {@code villagers} wants: one for every {@link VillageNeeds#VILLAGERS_PER_GUARD} (the "guards" tip). */
+	public static int guardsWanted(int villagers) {
+		return (villagers + VillageNeeds.VILLAGERS_PER_GUARD - 1) / VillageNeeds.VILLAGERS_PER_GUARD;
+	}
+
+	/** Villagers of the village who are ill (the "ill" tip). */
+	public static long ill(ServerLevel level, BlockPos hall) {
+		return level.getEntitiesOfClass(Villager.class, VillageHalls.area(hall), v -> v.isAlive() && io.github.jcondedata.aliveworkplace.people.Sickness.isIll(v)).size();
+	}
+
+	/**
+	 * The village's beds (their head halves, as villagers claim them) with less block light than counts as lit
+	 * ({@link VillageNeeds#LIT}), darkest first: where the Steward's street lamps go (27.12).
+	 */
+	public static List<BlockPos> darkBeds(ServerLevel level, BlockPos hall) {
+		return level.getPoiManager().findAll(h -> h.is(net.minecraft.world.entity.ai.village.poi.PoiTypes.HOME), p -> true, hall, VillageHalls.RADIUS,
+				PoiManager.Occupancy.ANY)
+			.map(BlockPos::immutable)
+			.filter(p -> level.getBrightness(net.minecraft.world.level.LightLayer.BLOCK, p) < VillageNeeds.LIT)
+			.sorted(java.util.Comparator.<BlockPos>comparingInt(p -> level.getBrightness(net.minecraft.world.level.LightLayer.BLOCK, p))
+				.thenComparingDouble(p -> p.distSqr(hall)).thenComparingLong(BlockPos::asLong))
+			.toList();
 	}
 
 	/** Workers of {@code job} in the village (with their workstation). */

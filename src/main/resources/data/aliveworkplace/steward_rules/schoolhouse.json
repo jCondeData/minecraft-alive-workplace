@@ -1,0 +1,25 @@
+{
+  "when": [
+    {
+      "children_at_least": {
+        "n": 3
+      }
+    },
+    {
+      "built_count_below": {
+        "blueprint": "aliveworkplace:schoolhouse",
+        "n": 1
+      }
+    }
+  ],
+  "do": {
+    "build": {
+      "blueprint": "aliveworkplace:schoolhouse",
+      "zone": "civic"
+    }
+  },
+  "priority": 45,
+  "why": "steward.aliveworkplace.why.schoolhouse",
+  "cooldown_days": 2,
+  "max": 1
+}

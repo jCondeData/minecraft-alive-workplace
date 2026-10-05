@@ -121,6 +121,9 @@ SCENES = [
       "over three mornings in Run the village, the Steward read the homes rules and started the builds himself, and the builders filled the Homes zone", 200,
       [("01_steward_homes_day_1", "Day 1: the first home"), ("02_steward_homes_day_2", "Day 2"),
        ("03_steward_homes_day_3", "Day 3: the zone filling up")]),
+    S("steward_civic", "Steward", "The village asks, the Steward builds",
+      "the village asked for light, beauty and a school, and the Steward started a street lamp, a well and a schoolhouse himself", 240,
+      [("01_steward_civic_day_1", "Day 1: a lamp by the dark beds and a well"), ("02_steward_civic_day_2", "Day 2: children came, so a schoolhouse")]),
     job("netherworker", "Netherworker", "A trip to the Nether", "the netherworker came back from the Nether with loot", 240),
     job("undertaker", "Undertaker", "Bringing a worker back from the grave", "the undertaker revived the villager"),
     # Legends (ROADMAP 29.2): the engine, with a Legend of the scene's own: the plain outfit, Master level, a pace power

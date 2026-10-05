@@ -34,6 +34,20 @@ public class PartnerShowsCompatTests implements FabricGameTest {
 	private static final BlockPos PASTURE = new BlockPos(10, 2, 10);
 	private static final BlockPos WORK = new BlockPos(5, 2, 5);
 
+	/**
+	 * Removes every entity but players near the test area, like the main suite's {@code Leftovers.clear}. Batches reuse
+	 * the same spots and only what stands inside a test's area is cleared between them: a guard that wandered out of
+	 * the guard_partners test still remembers its post at (2, 2, 2), which in the fletcher's test is the fletching table
+	 * with the fletcher's chest beside it, so the fletcher made that guard the bow, with the only sticks and string
+	 * (B57). Only for tests alone in their batch.
+	 */
+	static void clearLeftovers(GameTestHelper helper) {
+		for (net.minecraft.world.entity.Entity e : helper.getLevel().getEntitiesOfClass(net.minecraft.world.entity.Entity.class,
+				helper.getBounds().inflate(48), e -> !(e instanceof net.minecraft.world.entity.player.Player))) {
+			e.discard();
+		}
+	}
+
 	/** Turns the shows on for this test and off again when it ends, passed or failed. */
 	static void showsOn(GameTestHelper helper) {
 		PartnerShows.ENABLED = true;

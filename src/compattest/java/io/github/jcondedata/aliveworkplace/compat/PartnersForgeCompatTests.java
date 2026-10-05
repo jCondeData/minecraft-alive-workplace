@@ -326,6 +326,7 @@ public class PartnersForgeCompatTests implements FabricGameTest {
 	//$ gametest_ticks_batch AREA '1600' '"partners_fletch"'
 	@GameTest(template = AREA, timeoutTicks = 1600, batch = "partners_fletch")
 	public void aPidgeyBringsAFeatherToTheFletcher(GameTestHelper helper) {
+		PartnerShowsCompatTests.clearLeftovers(helper);
 		PartnerShowsCompatTests.showsOn(helper);
 		Village.RADIUS = 48;
 		PartnerShowsCompatTests.after(helper, () -> Village.RADIUS = 0);

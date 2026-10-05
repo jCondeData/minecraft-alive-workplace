@@ -521,6 +521,16 @@ public class ConscriptionGameTests implements FabricGameTest {
 		entity.setRaidWorkUntil(0);
 		entity.setFestivalDay(-1);
 		VillageRaids.forget(); // no raid left from an earlier test at this spot
+		// Afterwards no hall with Conscription (or a raid's morning) is left standing here: a later test's villagers nearby
+		// would be called up, or kept from work, by it.
+		Leftovers.after(helper, () -> {
+			entity.setEdicts(List.of());
+			entity.setReforms(List.of());
+			entity.setRaidWorkUntil(0);
+			helper.getLevel().setBlockAndUpdate(hall, Blocks.AIR.defaultBlockState());
+			VillageRaids.forget();
+			forget();
+		});
 		VillageNeeds.forget();
 		forget();
 		Moods.forget();

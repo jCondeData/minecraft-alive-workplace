@@ -30,6 +30,9 @@ public final class ModItems {
 	public static final io.github.jcondedata.aliveworkplace.hall.VillageLedgerItem VILLAGE_LEDGER = Reg.item("village_ledger", io.github.jcondedata.aliveworkplace.hall.VillageLedgerItem::new, new Item.Properties().stacksTo(1));
 	/** Calls a rush in a village once a day (ROADMAP 30.11). */
 	public static final io.github.jcondedata.aliveworkplace.hall.WorkHornItem WORK_HORN = Reg.item("work_horn", io.github.jcondedata.aliveworkplace.hall.WorkHornItem::new, new Item.Properties().stacksTo(1));
+	/** Tonics (ROADMAP 30.15): brewed by the alchemist or cooked by the chef, never crafted; what they do is data (people/Tonics). */
+	public static final io.github.jcondedata.aliveworkplace.people.TonicItem MINERS_BREW = Reg.item("miners_brew", io.github.jcondedata.aliveworkplace.people.TonicItem::new, new Item.Properties().stacksTo(16));
+	public static final io.github.jcondedata.aliveworkplace.people.TonicItem BUILDERS_TEA = Reg.item("builders_tea", io.github.jcondedata.aliveworkplace.people.TonicItem::new, new Item.Properties().stacksTo(16));
 	public static final io.github.jcondedata.aliveworkplace.guard.RallyBannerItem RALLY_BANNER = Reg.item("rally_banner", io.github.jcondedata.aliveworkplace.guard.RallyBannerItem::new, new Item.Properties().stacksTo(1));
 
 	/** Marks out a quarry for a Miner. */
@@ -78,6 +81,8 @@ public final class ModItems {
 				output.accept(WORK_HORN);
 				output.accept(ModBlocks.CRADLE);
 				output.accept(VILLAGE_BANNER);
+				output.accept(MINERS_BREW);
+				output.accept(BUILDERS_TEA);
 				output.accept(CITY_PLAN);
 				output.accept(QUARRY_MARKER);
 				output.accept(FIELD_MARKER);

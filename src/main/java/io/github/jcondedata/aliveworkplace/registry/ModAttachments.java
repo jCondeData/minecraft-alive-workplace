@@ -153,6 +153,9 @@ public final class ModAttachments {
 	/** A villager worn out by a Work Horn's rush (30.11): less happy from the rush's end until dawn; absent: not. */
 	public static final Attachment<io.github.jcondedata.aliveworkplace.hall.WorkHorn.WornOut> WORN_OUT = Attachment.saved("worn_out", io.github.jcondedata.aliveworkplace.hall.WorkHorn.WornOut.CODEC);
 
+	/** The tonic a villager drank (30.15) and the game time it wears off; absent: none (and on saves from before). */
+	public static final Attachment<io.github.jcondedata.aliveworkplace.people.Tonics.Drunk> TONIC = Attachment.saved("tonic", io.github.jcondedata.aliveworkplace.people.Tonics.Drunk.CODEC);
+
 	/** How many villagers a Nurse has cured. */
 	public static final Attachment<Integer> VILLAGERS_CURED = Attachment.saved("villagers_cured", com.mojang.serialization.Codec.INT);
 

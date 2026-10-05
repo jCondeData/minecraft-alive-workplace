@@ -330,6 +330,11 @@ SCENES = [
        ("02_village_banner_knight", "A knight with his shield painted in the colours"),
        ("03_village_banner_routes", "The trade routes page: Redfield by its banner"),
        ("04_village_banner_book", "The Book of Edicts under the village's own banner")]),
+    # Tonics (ROADMAP 30.15): a miner given Miner's Brew, its tooltip, the drink, then her status line
+    S("tonics", "Village Hall", "Tonics: Miner's Brew",
+      "the miner drank the Miner's Brew she was offered and her status line showed her 25% faster with 19 minutes left", 40,
+      [("01_tonics_offer", "Dara the miner, and Miner's Brew in hand"), ("02_tonics_tooltip", "What the brew does, for whom, who makes it"),
+       ("03_tonics_drunk", "She drinks it: 25% faster for 20 minutes"), ("04_tonics_status", "Her status line: 25% faster (Miner's Brew, 19 min left)")]),
     S("hall_quests", "Village Hall", "Quests, advice, the village map and the festival",
       "the quests, advice, village map, mercenaries and festival opened", 60,
       [("01_hall_quests", "Quests"), ("02_hall_advice", "What next?"), ("03_hall_map", "Village map"),

@@ -17,6 +17,15 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Added
+- **Tonics: Miner's Brew and Builder's Tea** (30.15): right-click a villager with a tonic that suits their job and they
+  drink it, working 25% faster for a day (20 minutes; their status line shows "25% faster (Miner's Brew, 19 min left)").
+  Another tonic starts the day again; they never stack, and the work pace cap still holds. One that doesn't suit them is
+  refused and you keep it ("Dara has no use for Miner's Brew."). Players can't craft them: the Cleric brews Miner's
+  Brew (a glass bottle, glowstone dust, coal and sugar; for Miners, Sifters and Netherworkers) after the guards'
+  potions, the Chef cooks Builder's Tea (a glass bottle, two sweet berries and sugar; for Builders, Carpenters, Masons
+  and Dyers) after the menu, from the chests by their station and the store, keeping 4 of each. Tonics are data
+  (`data/<namespace>/tonics/<id>.json`), so a server can make any item one; the tooltip says what each does, for which
+  jobs and who makes it from what. `tonics` in the config.
 - **Legends found in the world** (29.9): standing in a ruined portal, a pillager outpost or a shipwreck, a player whose
   village has earned a Legend found there may come on their camp: a traveller beside the portal (talk to them), a
   prisoner in an iron cage at the tower's foot (break the bars) or a castaway on the nearest beach (hand them a cooked

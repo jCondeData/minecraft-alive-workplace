@@ -116,6 +116,9 @@ public final class Pace {
 	/** Born Leaders of the worker's own trade near them (29.7, Gifted): their speed-up as a time factor, under this cap. */
 	public static final Source BORN_LEADER = register(new Source("born_leader", Kind.BONUS,
 		v -> 1f / io.github.jcondedata.aliveworkplace.legend.GiftedAuras.pace(v)));
+	/** A tonic the villager drank (30.15): its {@code work_pace} for as long as it lasts, "Miner's Brew, 19 min left". */
+	public static final Source TONIC = register(new Source("tonic", Kind.BONUS, io.github.jcondedata.aliveworkplace.people.Tonics::pace,
+		io.github.jcondedata.aliveworkplace.people.Tonics::paceLabel));
 	public static final Source ILL = register(new Source("ill", Kind.PENALTY, Sickness::pace));
 	public static final Source UNHAPPY = register(new Source("unhappy", Kind.PENALTY, Moods::pace));
 	public static final Source LAZY = register(new Source("lazy", Kind.PENALTY, Traits::pace));

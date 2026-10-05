@@ -250,7 +250,7 @@ public class ScreenshotHarness implements ClientModInitializer {
 		}
 		if ("gallery".equals(System.getProperty("aliveworkplace.scene")) || "decor".equals(System.getProperty("aliveworkplace.scene"))
 			|| "styles".equals(System.getProperty("aliveworkplace.scene")) || "defences".equals(System.getProperty("aliveworkplace.scene"))
-			|| "workshops".equals(System.getProperty("aliveworkplace.scene"))) {
+			|| "workshops".equals(System.getProperty("aliveworkplace.scene")) || "workplaces".equals(System.getProperty("aliveworkplace.scene"))) {
 			galleryScene(mc, mc.getSingleplayerServer());
 			return;
 		}
@@ -2806,12 +2806,20 @@ public class ScreenshotHarness implements ClientModInitializer {
 
 	// --- Gallery: every starter blueprint placed instantly, one shot each -------------------------
 
+	/** The 12 workplaces (ROADMAP 27.11): the village houses a builder can build, Cobblemon's five too. */
+	private static List<StarterBlueprints.Entry> workplacesGallery() {
+		List<StarterBlueprints.Entry> out = new java.util.ArrayList<>(StarterBlueprints.WORKPLACES);
+		out.addAll(StarterBlueprints.COBBLEMON_WORKPLACES);
+		return out;
+	}
+
 	private void galleryScene(Minecraft mc, MinecraftServer server) {
 		tick++;
 		List<StarterBlueprints.Entry> all = "decor".equals(System.getProperty("aliveworkplace.scene")) ? StarterBlueprints.DECORATIONS
 			: "defences".equals(System.getProperty("aliveworkplace.scene")) ? StarterBlueprints.DEFENCES
 			: "workshops".equals(System.getProperty("aliveworkplace.scene")) ? List.of(StarterBlueprints.TINKERS_WORKSHOP, StarterBlueprints.TINKERS_WORKSHOP_2, StarterBlueprints.NETHER_GATE, StarterBlueprints.NETHER_GATE_2)
-			: "styles".equals(System.getProperty("aliveworkplace.scene")) ? styledGallery() : StarterBlueprints.ALL;
+			: "styles".equals(System.getProperty("aliveworkplace.scene")) ? styledGallery()
+			: "workplaces".equals(System.getProperty("aliveworkplace.scene")) ? workplacesGallery() : StarterBlueprints.ALL;
 		if (tick == 1) {
 			mc.options.renderDistance().set(6);
 			mc.options.cloudStatus().set(CloudStatus.OFF);

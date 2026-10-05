@@ -659,7 +659,7 @@ and an old vanilla village slowly rebuilds itself one house at a time. It answer
   - a GameTest per rule, in a village staged to need it: the Steward proposes that build in the right zone; with beds
     short and an upgradable Stone House, the upgrade comes before a new house;
   - showcase scene `steward_homes`: a GIF of a Homes zone filling up over three days in Run the village.
-- [ ] **27.11** **A workplace for every worker.** `tools/blueprints/generate.py` writes buildable copies of 12 of our
+- [x] **27.11** (review: pending 2026-10-05) **A workplace for every worker.** `tools/blueprints/generate.py` writes buildable copies of 12 of our
   village houses (`village.py`: the plains look, with the jigsaw, structure voids and villager taken out and calcite
   swapped for white concrete, as STYLE.md asks of builds for builders), in the Blueprint Table too: Builder's
   Workshop, Carpenter's Workshop, Kitchen, Post Office, Guard House, Clinic, Ferry House and, with Cobblemon, Trainer's
@@ -4515,3 +4515,20 @@ item waits.
   with `message.aliveworkplace.steward.unseasoned`; the appointed Builder starts as a Novice Steward. Existing Stewards
   are grandfathered (checked only at appointment; a Steward always qualifies). City Plan recipe: Map + Blank Blueprint
   + Heart of the Sea, shapeless. Written in docs/design/M27.md section 7.
+- 2026-10-05 (27.11, decisions; lane c): the 12 workplaces are `village.py`'s `workplace(name)`: the plains house with
+  its jigsaws and structure voids made air, no villager, no loot tables, all calcite as white concrete; listed in
+  `StarterBlueprints.WORKPLACES` / `COBBLEMON_WORKPLACES` (not `ALL`: they have no tier II, and `ALL` must). One rule
+  per building, `steward_rules/workplace_<building>.json`, all `worker_without_workstation {professions}` at priority
+  62 (just above `workstations` 60, so the build comes first), cooldown 2 days, no max. Zones: workshops (Builder's,
+  Carpenter's, Sifting Shed, Tinker's, Nether Gate, Ball Workshop), market (Kitchen, Storehouse, Flower Shop, Supply
+  Shop, Inn, Ferry House, Trade Hall), civic (Post Office, Clinic, Healing Center, Graveyard, Schoolhouse, Library,
+  Research Lab, Trainer's House, Leader's Hall, School), defences (Guard House, Barracks), farms (Berry Farm, Compost
+  Yard, Ranch), gardens (Apiary Garden). The shore is a plot rule (`Plots.SHORE_BUILDINGS`, reason `SHORE`): water in
+  the 4 rows in front of the footprint. `no_builder` was already `builder.json`; its ask now reads "place a Blueprint
+  Table and give a villager the job: nobody here can build". Left for later: "a job the village wants with no free
+  block" (`StewardJobs.WORKPLACE_WANTED`) still does nothing; the rules fire on workers without a workstation only.
+  The gallery package (front/back, as drawn and in Stonework) is skipped: the digest makes packages from the showcase
+  scene `workplaces` (front and back of all 12). Not rendered here (tools/blueprints/render has no node_modules in
+  this container): the copies are the village houses' already-checked builds with calcite as white concrete. The six
+  Cobblemon rules are tested without Cobblemon (worker counted, held back as MOD_MISSING); their wish with Cobblemon
+  has no compat test yet. Owner: are the zones above where you'd want each building?

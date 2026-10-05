@@ -70,10 +70,11 @@ public final class BlueprintLibrary {
 			.toList();
 	}
 
-	/** Blueprints made of Cobblemon's blocks ({@link StarterBlueprints#COBBLEMON_ONLY}) are listed only with Cobblemon. */
+	/** Blueprints made of Cobblemon's blocks or for its jobs ({@link StarterBlueprints#COBBLEMON_ONLY}, {@link StarterBlueprints#COBBLEMON_WORKPLACES}) are listed only with Cobblemon. */
 	private static boolean cobblemonOk(ResourceLocation id) {
 		return io.github.jcondedata.aliveworkplace.platform.Platform.get().isModLoaded("cobblemon")
-			|| StarterBlueprints.COBBLEMON_ONLY.stream().noneMatch(e -> e.id().equals(id));
+			|| StarterBlueprints.COBBLEMON_ONLY.stream().noneMatch(e -> e.id().equals(id))
+			&& StarterBlueprints.COBBLEMON_WORKPLACES.stream().noneMatch(e -> e.id().equals(id));
 	}
 
 	/** Our village pieces ({@code aliveworkplace:village/...}) are for world generation, not the library; research blueprints come from scholars. */

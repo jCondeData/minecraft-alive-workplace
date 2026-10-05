@@ -1,0 +1,28 @@
+{
+  "when": [
+    {
+      "worker_without_workstation": {
+        "professions": [
+          "aliveworkplace:tutor"
+        ]
+      }
+    },
+    {
+      "mod_loaded": {
+        "mod": "cobblemon"
+      }
+    }
+  ],
+  "do": {
+    "build": {
+      "blueprint": "aliveworkplace:school",
+      "zone": "civic"
+    }
+  },
+  "priority": 62,
+  "why": "steward.aliveworkplace.why.workplace",
+  "cooldown_days": 2,
+  "requires": [
+    "cobblemon"
+  ]
+}

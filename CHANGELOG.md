@@ -17,6 +17,14 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Added
+- **A workplace for every worker** (27.11): twelve of the village houses are now in the Blueprint Table for builders to
+  build: Builder's Workshop, Carpenter's Workshop, Kitchen, Post Office, Guard House, Clinic and Ferry House, and with
+  Cobblemon the Trainer's House, Leader's Hall, Ball Workshop, Trade Hall and School. Each has its job block and a bed;
+  the worker who needs it moves in. The Steward now builds a workplace for every worker left without a workstation:
+  Kitchen for chefs and butchers, Guard House (Barracks from a Town) for guards and weaponsmiths, Clinic (Healing
+  Center from a Village) for nurses and clerics, Library for librarians and scholars, and so on for 27 jobs, six more
+  with Cobblemon. A Ferry House goes on the shore, with water within 4 blocks of its door. With no builder he asks you
+  to place a Blueprint Table and give a villager the job.
 - **House looks** (23.10a): the Village Hall's Builds button opens House looks, a list of the village's own houses
   (workshops, clinics, guard houses...). The village's leader (the hall's owner and their friends) can give any of them
   another village style's outside (plains, desert, savanna, snowy or taiga); the village's builder rebuilds the outside

@@ -337,6 +337,8 @@ SCENES = [
       [("30_*@spread", "")]),
     S("workshops", "Build families", "Tinker's Workshops and Nether Gates", "every workshop and gate was placed", 60,
       [("30_*@spread", "")]),
+    S("workplaces", "Build families", "A workplace for every worker: the 12 village houses a builder can build",
+      "every workplace was placed", 90, [("30_*@spread", "")]),
     S("decor", "Build families", "Decorations", "every decoration was placed", 120, [("30_*@spread", "")]),
     S("defences", "Build families", "Walls and gates", "every wall and gate was placed", 90, [("30_*@spread", "")]),
     S("styles", "Build families", "Cottage II and Stone House II in every style", "every style was placed", 120,

@@ -109,8 +109,16 @@ public final class Plots {
 		/** The ground under it rises more than {@link #MAX_STEP}. */
 		SLOPE,
 		/** The blueprint isn't in the library. */
-		NO_BLUEPRINT
+		NO_BLUEPRINT,
+		/** A building for the shore (a Ferry House) with no water within {@link #SHORE} blocks of its front. */
+		SHORE
 	}
+
+	/** How far in front of a shore building (see {@link #SHORE_BUILDINGS}) the water may be. */
+	public static final int SHORE = 4;
+	/** Buildings that go on the shore: water within {@link #SHORE} blocks of their front (ROADMAP 27.11). */
+	public static final java.util.Set<ResourceLocation> SHORE_BUILDINGS = java.util.Set.of(
+		ResourceLocation.fromNamespaceAndPath("aliveworkplace", "ferry_house"));
 
 	/** What the Steward wants a plot for: blueprints in order (the next is tried where the first can't go), and a zone kind. */
 	public record Request(List<ResourceLocation> blueprints, String zoneKind, int skip) {
@@ -643,8 +651,40 @@ public final class Plots {
 					}
 				}
 			}
+			if (SHORE_BUILDINGS.contains(plain)) {
+				Boolean shore = shore(box, front);
+				if (shore == null) {
+					return null;
+				}
+				if (!shore) {
+					return Verdict.no(Reason.SHORE);
+				}
+			}
 			BlueprintData.Placement placement = new BlueprintData.Placement(dim, origin.atY(floor + 1), turn, mirror);
 			return Verdict.ok(new Plot(id, placement, size, zone.name(), front));
+		}
+
+		/** Whether there's water in the {@link #SHORE} rows in front of {@code box}; null when a column isn't read yet. */
+		@Nullable
+		private Boolean shore(BoundingBox box, Direction front) {
+			for (int step = 1; step <= SHORE; step++) {
+				int fx = front.getStepX();
+				int fz = front.getStepZ();
+				int ax = fx != 0 ? (fx > 0 ? box.maxX() : box.minX()) + fx * step : 0;
+				int az = fz != 0 ? (fz > 0 ? box.maxZ() : box.minZ()) + fz * step : 0;
+				int from = fx != 0 ? box.minZ() : box.minX();
+				int to = fx != 0 ? box.maxZ() : box.maxX();
+				for (int i = from; i <= to; i++) {
+					Column col = fx != 0 ? column(ax, i) : column(i, az);
+					if (col == null) {
+						return null;
+					}
+					if (col.kind() == Kind.WATER) {
+						return true;
+					}
+				}
+			}
+			return false;
 		}
 
 		/** {@code from} to {@code to} every {@code step} blocks and {@code to} itself: one block in every cell the span crosses. */

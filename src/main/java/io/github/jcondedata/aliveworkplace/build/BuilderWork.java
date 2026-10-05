@@ -218,7 +218,11 @@ public class BuilderWork extends Behavior<Villager> {
 			if (clear) {
 				stepAsideSpot = null;
 			} else if (--stepAsideTicks <= 0) {
-				hop(level, villager, stepAsideSpot);
+				// B60: the spot was picked 40 ticks ago; a crewmate may have built on it since. Never hop into a block.
+				BlockPos spot = canStandAt(level, stepAsideSpot) ? stepAsideSpot : freshSpot(level, plan, stepAsideFrom, villager, new AABB(stepAsideFrom));
+				if (spot != null) {
+					hop(level, villager, spot);
+				}
 				stepAsideSpot = null;
 			} else {
 				if (villager.blockPosition().equals(stepAsideSpot)) {
@@ -567,6 +571,12 @@ public class BuilderWork extends Behavior<Villager> {
 			stuckTimer = 0;
 			reachTicks = 0;
 			stillTicks = 0;
+			// B60: the approach spot was picked when this target was first chosen, up to 300 ticks ago. A crewmate (or a
+			// neighbouring site, or a player) may have filled it since: a landscaping hole filled with dirt put the builder
+			// inside the ground. Look again rather than hop into a block.
+			if (approachSpot != null && !canStandAt(level, approachSpot)) {
+				approachSpot = findStandingSpot(level, plan, target, villager.blockPosition(), null, reach - 0.5);
+			}
 			BlockPos spot = approachSpot != null ? approachSpot : findStandingSpot(level, null, target, villager.blockPosition(), null, reach - 0.3);
 			if (spot != null) {
 				hop(level, villager, spot);
@@ -638,7 +648,18 @@ public class BuilderWork extends Behavior<Villager> {
 			&& level.getFluidState(feet).isEmpty();
 	}
 
+	/** A place to step aside to from {@code from} that's free right now (with the plan's rules first, then without). */
+	@Nullable
+	private static BlockPos freshSpot(ServerLevel level, @Nullable BuildPlan plan, BlockPos from, Villager villager, AABB avoid) {
+		BlockPos spot = findStandingSpot(level, plan, from, villager.blockPosition(), avoid, REACH - 0.5);
+		return spot != null ? spot : findStandingSpot(level, null, from, villager.blockPosition(), avoid, REACH - 0.5);
+	}
+
+	/** Teleports the builder onto {@code spot}, only if there's still room to stand there (B60). */
 	private static void hop(ServerLevel level, Villager villager, BlockPos spot) {
+		if (!canStandAt(level, spot)) {
+			return;
+		}
 		level.sendParticles(ParticleTypes.POOF, villager.getX(), villager.getY() + 0.5, villager.getZ(), 6, 0.2, 0.3, 0.2, 0.01);
 		villager.getNavigation().stop();
 		villager.getBrain().eraseMemory(MemoryModuleType.WALK_TARGET);

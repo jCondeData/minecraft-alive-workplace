@@ -25,6 +25,9 @@ asks for the steps, `latest.log` and any crash report).
   lost: a Steward, a Legend or an edict comes back as it was when its expansion is released.
 
 ### Fixed
+- **Builders no longer end up stuck inside the ground** (B60): a builder that couldn't walk to its next block hopped
+  to the spot it had picked earlier, even if a crewmate or a neighbouring site had filled that spot with dirt since
+  (the soak found one inside a landscaping fill). It now checks the spot is still free and looks for another one.
 - **A build saved by 0.138.0 or earlier keeps its progress on upgrade** (B64): opened with a newer jar, a site half
   through a raised foundation (or in its walls) dropped to a few percent the first time it loaded. It now works out
   the progress it showed from the saved stage and step.

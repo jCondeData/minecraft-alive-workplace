@@ -82,6 +82,7 @@
 			"io.github.jcondedata.aliveworkplace.test.DaycareKeeperGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaHallPagesSeasonsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.B38GameTests",
+			"io.github.jcondedata.aliveworkplace.test.B60GameTests",
 			"io.github.jcondedata.aliveworkplace.test.SelfHealingSupplyGameTests",
 			"io.github.jcondedata.aliveworkplace.test.MaterialListGameTests",
 			"io.github.jcondedata.aliveworkplace.test.KeepVillagesWorkingGameTests",

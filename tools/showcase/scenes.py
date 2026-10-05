@@ -301,6 +301,9 @@ SCENES = [
     # The Pathfinder (ROADMAP 29.13): an expedition with the player through a forest to a staged Stronghold
     job("legend_pathfinder", "Legends", "The Pathfinder leads the player through a forest",
         "the Pathfinder led the player through a forest to a staged Stronghold and planted a banner at its entrance", 120),
+    # The Golem Smith (ROADMAP 29.15): a Hauler forged from the chest; the hauler, a farmhand and a wall sentry at work
+    job("legend_golem_smith", "Legends", "The Golem Smith's golems at work",
+        "the Golem Smith forged a Hauler Golem, and the hauler, a farmhand and a wall sentry went to work", 150),
     job("legend_strike", "Legends", "A Legend on strike", "a Legend on strike left her stonecutter and picketed by the Village Hall under a red line", 120),
     # Strange moods (ROADMAP 29.10): a Master cleric claims her brewing stand under a purple line, the chest by it fills,
     # and she makes a named Masterwork, hung in an item frame, and becomes a Legend

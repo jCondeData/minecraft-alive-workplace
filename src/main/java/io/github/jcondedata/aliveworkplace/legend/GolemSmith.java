@@ -9,8 +9,22 @@ import io.github.jcondedata.aliveworkplace.hall.Chronicle;
 import io.github.jcondedata.aliveworkplace.hall.VillageHalls;
 import io.github.jcondedata.aliveworkplace.mc.Chat;
 import io.github.jcondedata.aliveworkplace.registry.ModAttachments;
+import io.github.jcondedata.aliveworkplace.guard.WallSentries;
+import io.github.jcondedata.aliveworkplace.hall.VillageProtection;
+import io.github.jcondedata.aliveworkplace.platform.Platform;
+import io.github.jcondedata.aliveworkplace.registry.ModItems;
+import io.github.jcondedata.aliveworkplace.store.HaulerGolems;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.ai.attributes.AttributeInstance;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import java.util.Map;
 import java.util.Optional;
 import net.minecraft.ChatFormatting;
@@ -83,8 +97,50 @@ public final class GolemSmith {
 		}
 	}
 
-	/** The roles the forge offers now (farmhands and sentries land in 29.15's second piece). */
-	public static final List<Role> OFFERED = List.of(Role.HAULER);
+	/** The roles the forge offers, in the order a sneak-right-click goes through them. */
+	public static final List<Role> OFFERED = List.of(Role.HAULER, Role.FARMHAND, Role.SENTRY);
+	/** A Wall Sentry's health, against a golem's 100. */
+	public static final double SENTRY_HEALTH = 200.0;
+	/** The hall lists at most this many forged golems, one line each. */
+	public static final int HALL_LINES = 6;
+
+	/** S2C: {@code entityId} is a forged golem with {@code role} (its texture drawn over the golem's). */
+	public record Look(int entityId, String role) implements CustomPacketPayload {
+		public static final Type<Look> TYPE = new Type<>(AliveWorkplace.id("golem_look"));
+		public static final StreamCodec<RegistryFriendlyByteBuf, Look> CODEC = StreamCodec.composite(
+			ByteBufCodecs.VAR_INT, Look::entityId,
+			ByteBufCodecs.STRING_UTF8, Look::role,
+			Look::new);
+
+		@Override
+		public Type<? extends CustomPacketPayload> type() {
+			return TYPE;
+		}
+	}
+
+	/** The texture drawn over a forged golem: {@code textures/entity/iron_golem/<role>.png}. */
+	public static ResourceLocation texture(String role) {
+		return AliveWorkplace.id("textures/entity/iron_golem/" + role + ".png");
+	}
+
+	static void init() {
+		Platform.get().clientbound(Look.TYPE, Look.CODEC);
+		Platform.get().onStartTracking((entity, player) -> {
+			Role role = entity instanceof IronGolem golem ? role(golem) : null;
+			if (role != null && Platform.get().canSend(player, Look.TYPE)) {
+				Platform.get().send(player, new Look(entity.getId(), role.id));
+			}
+		});
+		// A Patrol Map sneak-right-clicked on a Wall Sentry gives it its post. The client doesn't know the golem's role,
+		// so it passes and the server answers.
+		Platform.get().onUseEntity((player, level, hand, entity, hit) -> {
+			if (level.isClientSide() || hand != InteractionHand.MAIN_HAND || !(entity instanceof IronGolem golem)
+				|| !player.getItemInHand(hand).is(ModItems.PATROL_MAP) || role(golem) != Role.SENTRY) {
+				return InteractionResult.PASS;
+			}
+			return WallSentries.giveMap((ServerPlayer) player, golem, player.getItemInHand(hand));
+		});
+	}
 
 	/** A Smith's forge: which golem comes next, and the day the last was built (-1: never). */
 	public record Forge(String next, long lastDay) {
@@ -133,8 +189,11 @@ public final class GolemSmith {
 		return Role.of(ModAttachments.GOLEM_ROLE.get(golem));
 	}
 
-	/** A sneak-right-click with an empty hand: the next golem in {@link #OFFERED} comes next. */
+	/** A sneak-right-click with an empty hand: the next golem in {@link #OFFERED} comes next (in a protected village, only its people choose). */
 	public static void choose(ServerPlayer player, Villager smith) {
+		if (!VillageProtection.mayChange(player.level(), player, smith.blockPosition())) {
+			return;
+		}
 		Forge forge = forge(smith);
 		int at = OFFERED.indexOf(forge.role());
 		Role next = OFFERED.get((at + 1) % OFFERED.size());
@@ -229,11 +288,18 @@ public final class GolemSmith {
 		if (golem == null) {
 			return null;
 		}
-		BlockPos spot = level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, near.offset(1, 0, 1));
+		BlockPos spot = spot(level, golem, near);
 		golem.moveTo(spot.getX() + 0.5, spot.getY(), spot.getZ() + 0.5, level.random.nextFloat() * 360f, 0f);
 		golem.finalizeSpawn(level, level.getCurrentDifficultyAt(spot), MobSpawnType.MOB_SUMMONED, null);
 		golem.setPlayerCreated(true);
 		golem.addTag(TAG);
+		if (role == Role.SENTRY) {
+			AttributeInstance health = golem.getAttribute(Attributes.MAX_HEALTH);
+			if (health != null) {
+				health.setBaseValue(SENTRY_HEALTH);
+				golem.setHealth(golem.getMaxHealth());
+			}
+		}
 		golem.setCustomName(role.title().copy().withStyle(ChatFormatting.GOLD));
 		golem.setCustomNameVisible(true);
 		ModAttachments.GOLEM_ROLE.set(golem, role.id);
@@ -241,6 +307,61 @@ public final class GolemSmith {
 		level.sendParticles(ParticleTypes.LAVA, golem.getX(), golem.getY() + 1, golem.getZ(), 12, 0.5, 0.8, 0.5, 0.05);
 		level.playSound(null, golem.blockPosition(), SoundEvents.ANVIL_USE, SoundSource.NEUTRAL, 1f, 0.8f);
 		return golem;
+	}
+
+	/**
+	 * Where a new golem stands: the nearest spot round {@code near} (beside the smith, at their feet's height or a step up
+	 * or down) with solid ground under it and room for a golem; the open sky above {@code near} only if there is none
+	 * (never on a roof when the smith works indoors).
+	 */
+	static BlockPos spot(ServerLevel level, IronGolem golem, BlockPos near) {
+		BlockPos best = null;
+		double bestDistance = Double.MAX_VALUE;
+		for (BlockPos p : BlockPos.betweenClosed(near.offset(-3, -2, -3), near.offset(3, 2, 3))) {
+			double d = p.distSqr(near.offset(1, 0, 1));
+			if (d >= bestDistance || !level.getBlockState(p.below()).isFaceSturdy(level, p.below(), net.minecraft.core.Direction.UP)) {
+				continue;
+			}
+			if (level.noCollision(golem, golem.getType().getDimensions().makeBoundingBox(p.getX() + 0.5, p.getY(), p.getZ() + 0.5))) {
+				best = p.immutable();
+				bestDistance = d;
+			}
+		}
+		return best != null ? best : level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, near.offset(1, 0, 1));
+	}
+
+	/** The hall's lines for the village's forged golems: each one's name and what it is doing. */
+	public static List<Component> hallLines(ServerLevel level, BlockPos hall) {
+		List<IronGolem> golems = new ArrayList<>(level.getEntitiesOfClass(IronGolem.class, VillageHalls.area(hall), g -> g.isAlive() && role(g) != null));
+		golems.sort(Comparator.comparingInt((IronGolem g) -> role(g).ordinal()).thenComparingInt(IronGolem::getId));
+		List<Component> out = new ArrayList<>();
+		for (IronGolem golem : golems) {
+			if (out.size() == HALL_LINES) {
+				out.add(Component.translatable("screen.aliveworkplace.hall.golems_more", golems.size() - HALL_LINES));
+				break;
+			}
+			out.add(Component.translatable("screen.aliveworkplace.hall.golem_line", role(golem).title(), doing(golem)));
+		}
+		return out;
+	}
+
+	/** What a forged golem is doing, for the hall. */
+	static Component doing(IronGolem golem) {
+		if (golem.getTarget() != null) {
+			return Component.translatable("screen.aliveworkplace.hall.golem.fighting");
+		}
+		int carried = HaulerGolems.load(golem).values().stream().mapToInt(Integer::intValue).sum();
+		return switch (role(golem)) {
+			case HAULER -> carried > 0 ? Component.translatable("screen.aliveworkplace.hall.golem.hauling", carried)
+				: Component.translatable("screen.aliveworkplace.hall.golem.waiting");
+			case FARMHAND -> carried > 0 ? Component.translatable("screen.aliveworkplace.hall.golem.harvesting", carried)
+				: Component.translatable("screen.aliveworkplace.hall.golem.tending");
+			case SENTRY -> {
+				BlockPos post = ModAttachments.GOLEM_POST.get(golem);
+				yield post == null ? Component.translatable("screen.aliveworkplace.hall.golem.no_post")
+					: Component.translatable("screen.aliveworkplace.hall.golem.holding", post.getX(), post.getY(), post.getZ());
+			}
+		};
 	}
 
 	private GolemSmith() {

@@ -34,8 +34,10 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Blocks;
 
 /**
- * The Golem Smith (ROADMAP 29.15), first piece: the legend file, the forge's costs, cap and wait, the role saved on the
- * golem, the twice-as-fast mending and a Hauler Golem taking 9 stacks to the Storehouse.
+ * The Golem Smith (ROADMAP 29.15): the legend file, the forge's costs, cap and wait, the choice, the hall's lines and the
+ * config switch, the role saved on the
+ * golem, the twice-as-fast mending, a Hauler Golem taking 9 stacks to the Storehouse, a Farmhand Golem harvesting and
+ * replanting a 9x9 wheat field into its chest, and a Wall Sentry holding its post through a fight.
  */
 public class GolemSmithGameTests implements net.fabricmc.fabric.api.gametest.v1.FabricGameTest {
 	private static final String AREA = "aliveworkplace_test:huge_area";
@@ -64,8 +66,14 @@ public class GolemSmithGameTests implements net.fabricmc.fabric.api.gametest.v1.
 		});
 	}
 
+	/** The switches as they were before {@link #staged} (off in tests: putting them back on leaked moods into later tests). */
+	private static boolean moods;
+	private static boolean needs;
+
 	private static Legend staged(GameTestHelper helper) {
 		ServerLevel level = helper.getLevel();
+		moods = Moods.ENABLED;
+		needs = LegendNeeds.ENABLED;
 		Moods.ENABLED = false;
 		LegendNeeds.ENABLED = false;
 		Legends.reload(level.getServer().getResourceManager());
@@ -77,8 +85,8 @@ public class GolemSmithGameTests implements net.fabricmc.fabric.api.gametest.v1.
 	}
 
 	private static void restore() {
-		Moods.ENABLED = true;
-		LegendNeeds.ENABLED = true;
+		Moods.ENABLED = moods;
+		LegendNeeds.ENABLED = needs;
 	}
 
 	private static Villager smith(GameTestHelper helper, Legend legend) {
@@ -196,11 +204,168 @@ public class GolemSmithGameTests implements net.fabricmc.fabric.api.gametest.v1.
 		IronGolem golem = GolemSmith.build(helper.getLevel(), helper.absolutePos(new BlockPos(12, 1, 12)), GolemSmith.Role.HAULER);
 		helper.assertTrue(golem != null, "a hauler");
 		Leftovers.after(helper, golem::discard);
+		int[] mostCarried = {0};
+		helper.onEachTick(() -> mostCarried[0] = Math.max(mostCarried[0], HaulerGolems.load(golem).values().stream().mapToInt(Integer::intValue).sum()));
 		helper.succeedWhen(() -> {
 			Container store = helper.getBlockEntity(storeChest);
 			helper.assertTrue(store.countItem(Items.COBBLESTONE) >= 9 * 64, "the store has " + store.countItem(Items.COBBLESTONE) + " cobblestone");
-			helper.assertTrue(store.countItem(Items.COBBLESTONE) % (9 * 64) == 0, "whole trips of 9 stacks: " + store.countItem(Items.COBBLESTONE));
-			helper.assertTrue(HaulerGolems.load(golem).isEmpty() || store.countItem(Items.COBBLESTONE) == 9 * 64, "unloaded");
+			helper.assertTrue(mostCarried[0] == 9 * 64, "9 stacks a trip, carried at most " + mostCarried[0]);
+			helper.assertTrue(box.countItem(Items.COBBLESTONE) + store.countItem(Items.COBBLESTONE) + HaulerGolems.load(golem).values().stream().mapToInt(Integer::intValue).sum()
+				== 12 * 64, "nothing lost on the way");
 		});
+	}
+
+	/** A Farmhand Golem harvests a ripe 9x9 wheat field, plants every spot again and carries the wheat to the field's chest. */
+	//$ gametest_ticks_batch AREA '3000' '"golemSmithFarmhand"'
+	@GameTest(template = AREA, timeoutTicks = 3000, batch = "golemSmithFarmhand")
+	public void farmhandHarvestsAndReplantsANineByNineField(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		ServerLevel level = helper.getLevel();
+		for (int x = 4; x <= 12; x++) {
+			for (int z = 4; z <= 12; z++) {
+				helper.setBlock(new BlockPos(x, 1, z), Blocks.FARMLAND);
+				helper.setBlock(new BlockPos(x, 2, z), Blocks.WHEAT.defaultBlockState().setValue(net.minecraft.world.level.block.CropBlock.AGE, 7));
+			}
+		}
+		BlockPos composter = new BlockPos(16, 2, 8);
+		BlockPos chestPos = new BlockPos(17, 2, 8);
+		helper.setBlock(composter, Blocks.COMPOSTER);
+		helper.setBlock(chestPos, Blocks.CHEST);
+		Villager farmer = helper.spawn(EntityType.VILLAGER, new BlockPos(16, 2, 10));
+		farmer.setVillagerData(farmer.getVillagerData().setProfession(net.minecraft.world.entity.npc.VillagerProfession.FARMER));
+		farmer.setNoAi(true); // the golem's field: the farmer looks on
+		farmer.getBrain().setMemory(MemoryModuleType.JOB_SITE, GlobalPos.of(level.dimension(), helper.absolutePos(composter)));
+		ModAttachments.FARM_FIELD.set(farmer, new io.github.jcondedata.aliveworkplace.farm.FieldJob(
+			net.minecraft.world.level.levelgen.structure.BoundingBox.fromCorners(helper.absolutePos(new BlockPos(4, 1, 4)), helper.absolutePos(new BlockPos(12, 1, 12)))));
+		IronGolem golem = GolemSmith.build(level, helper.absolutePos(new BlockPos(16, 1, 14)), GolemSmith.Role.FARMHAND);
+		helper.assertTrue(golem != null, "a farmhand");
+		Leftovers.after(helper, () -> {
+			golem.discard();
+			farmer.discard();
+		});
+		helper.succeedWhen(() -> {
+			Container chest = helper.getBlockEntity(chestPos);
+			helper.assertTrue(chest.countItem(Items.WHEAT) == 81, "the chest has " + chest.countItem(Items.WHEAT) + " wheat");
+			for (int x = 4; x <= 12; x++) {
+				for (int z = 4; z <= 12; z++) {
+					helper.assertBlockPresent(Blocks.WHEAT, new BlockPos(x, 2, z));
+					helper.assertBlockPresent(Blocks.FARMLAND, new BlockPos(x, 1, z));
+				}
+			}
+			helper.assertTrue(HaulerGolems.load(golem).isEmpty(), "the harvest all went in the chest");
+		});
+	}
+
+	/**
+	 * A Wall Sentry given a Patrol Map goes to its first point and holds it through a fight with three zombies: it never
+	 * steps more than its leash off the post, has twice a golem's health, and the zombies fall.
+	 */
+	//$ gametest_ticks_batch AREA '1600' '"golemSmithSentry"'
+	@GameTest(template = AREA, timeoutTicks = 1600, batch = "golemSmithSentry")
+	public void sentryHoldsItsPointThroughAFight(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		ServerLevel level = helper.getLevel();
+		IronGolem golem = GolemSmith.build(level, helper.absolutePos(new BlockPos(4, 1, 4)), GolemSmith.Role.SENTRY);
+		helper.assertTrue(golem != null, "a sentry");
+		Leftovers.after(helper, golem::discard);
+		helper.assertTrue(golem.getMaxHealth() == 200f && golem.getHealth() == 200f, "twice a golem's health: " + golem.getMaxHealth());
+		BlockPos post = helper.absolutePos(new BlockPos(15, 2, 15));
+		net.minecraft.server.level.ServerPlayer player = helper.makeMockServerPlayerInLevel();
+		ItemStack map = new ItemStack(io.github.jcondedata.aliveworkplace.registry.ModItems.PATROL_MAP);
+		map.set(io.github.jcondedata.aliveworkplace.registry.ModComponents.PATROL, new io.github.jcondedata.aliveworkplace.guard.PatrolMapItem.Route(
+			java.util.Optional.of(level.dimension().location()), List.of(post, helper.absolutePos(new BlockPos(20, 2, 20)))));
+		player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, map);
+		player.setShiftKeyDown(true);
+		net.fabricmc.fabric.api.event.player.UseEntityCallback.EVENT.invoker().interact(player, level, net.minecraft.world.InteractionHand.MAIN_HAND, golem, null);
+		level.getServer().getPlayerList().remove(player);
+		helper.assertTrue(post.equals(ModAttachments.GOLEM_POST.get(golem)), "the map's first point is its post: " + ModAttachments.GOLEM_POST.get(golem));
+		net.minecraft.world.phys.Vec3 at = net.minecraft.world.phys.Vec3.atBottomCenterOf(post);
+		List<net.minecraft.world.entity.monster.Zombie> zombies = new java.util.ArrayList<>();
+		helper.onEachTick(() -> {
+			double d = horizontal(golem.position(), at);
+			if (zombies.isEmpty() && d < 1.5) {
+				for (BlockPos z : List.of(new BlockPos(19, 2, 15), new BlockPos(15, 2, 19), new BlockPos(11, 2, 15))) {
+					net.minecraft.world.entity.monster.Zombie zombie = helper.spawn(EntityType.ZOMBIE, z);
+					zombie.setItemSlot(net.minecraft.world.entity.EquipmentSlot.HEAD, new ItemStack(Items.LEATHER_HELMET)); // no burning in the sun
+					zombie.setTarget(golem);
+					zombies.add(zombie);
+				}
+			}
+			if (!zombies.isEmpty()) {
+				helper.assertTrue(d <= io.github.jcondedata.aliveworkplace.guard.WallSentries.LEASH + 0.5, "the sentry left its post: " + d + " blocks off");
+			}
+		});
+		helper.succeedWhen(() -> {
+			helper.assertTrue(!zombies.isEmpty(), "the sentry reached its post");
+			helper.assertTrue(zombies.stream().noneMatch(net.minecraft.world.entity.Entity::isAlive), "zombies still standing");
+			helper.assertTrue(golem.isAlive(), "the sentry fell");
+			helper.assertTrue(horizontal(golem.position(), at) <= 2.0, "back at its post");
+		});
+	}
+
+	private static double horizontal(net.minecraft.world.phys.Vec3 a, net.minecraft.world.phys.Vec3 b) {
+		double dx = a.x - b.x;
+		double dz = a.z - b.z;
+		return Math.sqrt(dx * dx + dz * dz);
+	}
+
+	/**
+	 * A sneak-right-click goes through the three golems; a farmhand takes an iron hoe and a sentry a shield; the hall
+	 * lists each forged golem with what it's doing; with Legends switched off, nothing is forged.
+	 */
+	//$ gametest_ticks_batch AREA '100' '"golemSmithChoice"'
+	@GameTest(template = AREA, timeoutTicks = 100, batch = "golemSmithChoice")
+	public void golemSmithChoiceHallAndSwitch(GameTestHelper helper) {
+		setUp(helper);
+		try {
+			Legend legend = staged(helper);
+			ServerLevel level = helper.getLevel();
+			BlockPos hall = helper.absolutePos(HALL);
+			Villager smith = smith(helper, legend);
+			for (int i = 0; i < 9; i++) {
+				helper.spawn(EntityType.VILLAGER, new BlockPos(14 + i % 5, 2, 4 + 2 * (i / 5)));
+			}
+			net.minecraft.server.level.ServerPlayer player = helper.makeMockServerPlayerInLevel();
+			player.setShiftKeyDown(true);
+			player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, ItemStack.EMPTY);
+			net.fabricmc.fabric.api.event.player.UseEntityCallback.EVENT.invoker().interact(player, level, net.minecraft.world.InteractionHand.MAIN_HAND, smith, null);
+			helper.assertTrue(GolemSmith.forge(smith).role() == GolemSmith.Role.FARMHAND, "first choice: " + GolemSmith.forge(smith).next());
+			Container chest = helper.getBlockEntity(TABLE.east());
+			chest.setItem(0, new ItemStack(Items.IRON_BLOCK, 8));
+			chest.setItem(1, new ItemStack(Items.CARVED_PUMPKIN, 2));
+			chest.setItem(2, new ItemStack(Items.CHEST, 1));
+			helper.assertTrue(GolemSmith.forgeOne(level, hall, smith) == null, "a chest is no hoe: no farmhand");
+			chest.setItem(3, new ItemStack(Items.IRON_HOE));
+			IronGolem farmhand = GolemSmith.forgeOne(level, hall, smith);
+			helper.assertTrue(farmhand != null && GolemSmith.role(farmhand) == GolemSmith.Role.FARMHAND && chest.countItem(Items.IRON_HOE) == 0,
+				"a farmhand for the hoe");
+			net.fabricmc.fabric.api.event.player.UseEntityCallback.EVENT.invoker().interact(player, level, net.minecraft.world.InteractionHand.MAIN_HAND, smith, null);
+			helper.assertTrue(GolemSmith.forge(smith).role() == GolemSmith.Role.SENTRY, "second choice: " + GolemSmith.forge(smith).next());
+			ModAttachments.GOLEM_FORGE.set(smith, new GolemSmith.Forge("sentry", Chronicle.day(level) - 2));
+			chest.setItem(4, new ItemStack(Items.SHIELD));
+			IronGolem sentry = GolemSmith.forgeOne(level, hall, smith);
+			helper.assertTrue(sentry != null && GolemSmith.role(sentry) == GolemSmith.Role.SENTRY && chest.countItem(Items.SHIELD) == 0, "a sentry for the shield");
+			net.fabricmc.fabric.api.event.player.UseEntityCallback.EVENT.invoker().interact(player, level, net.minecraft.world.InteractionHand.MAIN_HAND, smith, null);
+			helper.assertTrue(GolemSmith.forge(smith).role() == GolemSmith.Role.HAULER, "and round to the hauler: " + GolemSmith.forge(smith).next());
+			level.getServer().getPlayerList().remove(player);
+			List<String> keys = GolemSmith.hallLines(level, hall).stream()
+				.map(c -> ((net.minecraft.network.chat.contents.TranslatableContents) c.getContents()).getArgs()[1])
+				.map(a -> ((net.minecraft.network.chat.contents.TranslatableContents) ((Component) a).getContents()).getKey()).toList();
+			helper.assertTrue(keys.equals(List.of("screen.aliveworkplace.hall.golem.tending", "screen.aliveworkplace.hall.golem.no_post")),
+				"the hall's lines: " + keys);
+			ModAttachments.GOLEM_FORGE.set(smith, new GolemSmith.Forge("hauler", Chronicle.day(level) - 2));
+			for (int i = 0; i < 6; i++) {
+				helper.spawn(EntityType.VILLAGER, new BlockPos(14 + i, 2, 10));
+			}
+			Legends.ENABLED = false;
+			try {
+				helper.assertTrue(GolemSmith.forgeOne(level, hall, smith) == null, "Legends off: no golem");
+			} finally {
+				Legends.ENABLED = true;
+			}
+			helper.succeed();
+		} finally {
+			restore();
+		}
 	}
 }

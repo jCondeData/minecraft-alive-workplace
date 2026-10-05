@@ -92,6 +92,7 @@ public class SavedDataGameTests implements FabricGameTest {
 			Optional.of(new BlockPos(300, 40, -900)), "stronghold", Optional.of(new BlockPos(5, 70, -9)), true, 14L));
 		samples.put("SAGE_RIDDLES", new io.github.jcondedata.aliveworkplace.legend.OldSage.Riddles(List.of(2, 7, 5), 1, 2));
 		samples.put("GOLEM_ROLE", "hauler");
+		samples.put("GOLEM_POST", new net.minecraft.core.BlockPos(10, 64, -3));
 		samples.put("HAULER_LOAD", java.util.Map.of(net.minecraft.world.item.Items.COBBLESTONE, 64));
 		samples.put("GOLEM_FORGE", new io.github.jcondedata.aliveworkplace.legend.GolemSmith.Forge("hauler", 7L));
 		samples.put("STRANGE_MOOD", new io.github.jcondedata.aliveworkplace.legend.StrangeMood(net.minecraft.resources.ResourceLocation.parse("aliveworkplace:golem_smith"),

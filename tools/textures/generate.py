@@ -10,6 +10,7 @@ The recipes are in tools/textures/art/, one module per set, drawn with the owner
 - builders.py        the Builder's Bench and the Builder's outfit (the approved style reference)
 - workstations_*.py  every other workstation block
 - villagers_*.py     every other profession's outfit (and its zombie copy)
+- golems.py          the Golem Smith's golems: what each wears over the iron golem
 - items.py           the item icons, each drawn like vanilla draws its kind (books, maps, sticks...)
 - gui.py             screen backgrounds drawn like vanilla's workstation screens (the Village Hall's)
 Outputs go to src/main/resources/assets/aliveworkplace/textures/ (or $ALIVE_ASSETS), plus the mod's icon.png.
@@ -26,7 +27,7 @@ sys.path.insert(0, str(ART))
 import artlib  # noqa: E402
 from PIL import Image  # noqa: E402
 
-MODULES = ["builders", "workstations_1", "workstations_2", "workstations_3", "villagers_1", "villagers_2", "items", "gui"]
+MODULES = ["builders", "workstations_1", "workstations_2", "workstations_3", "villagers_1", "villagers_2", "golems", "items", "gui"]
 
 
 def icon():

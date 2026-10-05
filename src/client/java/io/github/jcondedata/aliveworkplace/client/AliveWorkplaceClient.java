@@ -15,6 +15,7 @@ public class AliveWorkplaceClient implements ClientModInitializer {
 		StationTooltip.init();
 		TonicTooltip.init();
 		LegendLookLayer.init();
+		GolemRoleLayer.init();
 		io.github.jcondedata.aliveworkplace.guide.GuideBookItem.open = () -> Minecraft.getInstance()
 			.setScreen(new io.github.jcondedata.aliveworkplace.client.guide.GuideScreen());
 		net.minecraft.client.gui.screens.MenuScreens.register(io.github.jcondedata.aliveworkplace.registry.ModBlocks.MAILBOX_MENU, MailboxScreen::new);
@@ -28,6 +29,10 @@ public class AliveWorkplaceClient implements ClientModInitializer {
 			if (renderer instanceof net.minecraft.client.renderer.entity.VillagerRenderer villagers) {
 				helper.register(new LegendLookLayer(villagers));
 				helper.register(new GuardArmorLayer(villagers, context.getModelSet()));
+			}
+			// A Golem Smith's golem wears its role (29.15).
+			if (renderer instanceof net.minecraft.client.renderer.entity.IronGolemRenderer golems) {
+				helper.register(new GolemRoleLayer(golems));
 			}
 		});
 		ClientPlayNetworking.registerGlobalReceiver(TablePayloads.Open.TYPE, (payload, context) -> {

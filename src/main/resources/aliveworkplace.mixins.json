@@ -10,6 +10,7 @@
 		"BrewingStandAccessor",
 		"EntityAccessor",
 		"ExplosionMixin",
+		"IronGolemRolesMixin",
 		"IronPactMixin",
 		"IronWillMixin",
 		"MobAccessor",

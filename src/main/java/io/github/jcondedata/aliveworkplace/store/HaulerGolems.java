@@ -2,6 +2,7 @@ package io.github.jcondedata.aliveworkplace.store;
 
 import com.mojang.serialization.Codec;
 import io.github.jcondedata.aliveworkplace.build.SupplyContainers;
+import io.github.jcondedata.aliveworkplace.legend.GolemRoleGoal;
 import io.github.jcondedata.aliveworkplace.legend.GolemSmith;
 import io.github.jcondedata.aliveworkplace.registry.ModAttachments;
 import io.github.jcondedata.aliveworkplace.registry.ModVillagers;
@@ -12,9 +13,7 @@ import java.util.Map;
 import java.util.Optional;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ai.village.poi.PoiManager;
 import net.minecraft.world.entity.animal.IronGolem;
 import net.minecraft.world.entity.npc.Villager;
@@ -28,33 +27,18 @@ import org.jetbrains.annotations.Nullable;
  * make to the chests by the nearest Storehouse, {@link #STACKS} stacks a trip, by {@link PorterWork}'s rules (what a
  * worker's job makes, never what it needs: {@link PorterWork#goods}, at least {@link PorterWork#MIN_LOAD} items to be
  * worth a trip). The load is saved on the golem ({@link ModAttachments#HAULER_LOAD}), so a trip survives a reload:
- * a golem with a load heads to the Storehouse first. They never break blocks.
+ * a golem with a load heads to the Storehouse first. They never break blocks. The walking is the golem's own goal,
+ * {@link GolemRoleGoal}.
  */
 public final class HaulerGolems {
 	public static final int STACKS = PorterWork.BASE_STACKS;
 	public static final int STOREHOUSE_RANGE = 64;
-	private static final int EVERY = 10;
-	private static final double REACH_SQR = 3.0 * 3.0;
-	private static final double SPEED = 0.8;
+	private static final double REACH = 3.0;
 
 	public static final Codec<Map<Item, Integer>> LOAD_CODEC = Codec.unboundedMap(BuiltInRegistries.ITEM.byNameCodec(), Codec.INT);
 
-	public static void tick(MinecraftServer server) {
-		if (server.getTickCount() % EVERY != 0) {
-			return;
-		}
-		for (ServerLevel level : server.getAllLevels()) {
-			for (IronGolem golem : level.getEntities(EntityType.IRON_GOLEM, g -> g.isAlive() && GolemSmith.role(g) == GolemSmith.Role.HAULER)) {
-				work(level, golem);
-			}
-		}
-	}
-
 	/** One step of a hauler's round: store the load, or fetch goods from the nearest worker who has enough. */
 	public static void work(ServerLevel level, IronGolem golem) {
-		if (golem.getTarget() != null) {
-			return; // a fight first
-		}
 		BlockPos storehouse = storehouse(level, golem.blockPosition()).orElse(null);
 		if (storehouse == null) {
 			return;
@@ -65,7 +49,7 @@ public final class HaulerGolems {
 		}
 		Map<Item, Integer> load = load(golem);
 		if (!load.isEmpty()) {
-			if (walkTo(golem, store.get(0))) {
+			if (GolemRoleGoal.walkTo(golem, store.get(0), REACH)) {
 				unload(level, golem, store, load);
 			}
 			return;
@@ -74,7 +58,7 @@ public final class HaulerGolems {
 			return;
 		}
 		Village.Stash stash = choose(level, golem, storehouse);
-		if (stash != null && walkTo(golem, stash.chests().get(0))) {
+		if (stash != null && GolemRoleGoal.walkTo(golem, stash.chests().get(0), REACH)) {
 			collect(level, golem, stash, Math.min(STACKS, SupplyContainers.freeSlots(level, store)));
 		}
 	}
@@ -158,18 +142,6 @@ public final class HaulerGolems {
 		}
 		ModAttachments.HAULER_LOAD.set(golem, rest.isEmpty() ? null : Map.copyOf(rest));
 		return stored;
-	}
-
-	/** Walks toward {@code pos}; true once within reach. */
-	static boolean walkTo(IronGolem golem, BlockPos pos) {
-		if (golem.blockPosition().distSqr(pos) <= REACH_SQR || golem.position().distanceToSqr(pos.getCenter()) <= REACH_SQR + 1) {
-			golem.getNavigation().stop();
-			return true;
-		}
-		if (golem.getNavigation().isDone()) {
-			golem.getNavigation().moveTo(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, SPEED);
-		}
-		return false;
 	}
 
 	private HaulerGolems() {

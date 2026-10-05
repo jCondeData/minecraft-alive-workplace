@@ -19,7 +19,9 @@ public final class ModAttachments {
 	public static final Attachment<io.github.jcondedata.aliveworkplace.legend.OldSage.Riddles> SAGE_RIDDLES = Attachment.saved("sage_riddles", io.github.jcondedata.aliveworkplace.legend.OldSage.Riddles.CODEC);
 	/** A golem's role from the Golem Smith (29.15): hauler, farmhand or sentry; absent on a plain golem. */
 	public static final Attachment<String> GOLEM_ROLE = Attachment.saved("golem_role", com.mojang.serialization.Codec.STRING);
-	/** What a Hauler Golem is carrying to the Storehouse (29.15); absent when nothing. */
+	/** A Wall Sentry's post (29.15), the first point of the Patrol Map it was given; absent until then. */
+	public static final Attachment<net.minecraft.core.BlockPos> GOLEM_POST = Attachment.saved("golem_post", net.minecraft.core.BlockPos.CODEC);
+	/** What a Hauler Golem is carrying to the Storehouse, or a Farmhand Golem to its field's chest (29.15); absent when nothing. */
 	public static final Attachment<java.util.Map<net.minecraft.world.item.Item, Integer>> HAULER_LOAD = Attachment.saved("hauler_load", io.github.jcondedata.aliveworkplace.store.HaulerGolems.LOAD_CODEC);
 	/** The Golem Smith's forge (29.15): which golem comes next and the day the last was built. */
 	public static final Attachment<io.github.jcondedata.aliveworkplace.legend.GolemSmith.Forge> GOLEM_FORGE = Attachment.saved("golem_forge", io.github.jcondedata.aliveworkplace.legend.GolemSmith.Forge.CODEC);

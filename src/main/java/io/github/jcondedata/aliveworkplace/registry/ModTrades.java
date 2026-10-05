@@ -37,6 +37,7 @@ public final class ModTrades {
 		stewardTrades();
 		campCookTrades();
 		habitatKeeperTrades();
+		gemGrowerTrades();
 		Platform.get().addTrades(ModVillagers.BARD, 1, offers -> {
 			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 2), new ItemStack(Items.NOTE_BLOCK, 2), 12, 2, 0.05f));
 			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.STRING, 16), new ItemStack(Items.EMERALD), 16, 2, 0.05f));
@@ -607,6 +608,37 @@ public final class ModTrades {
 			offers.add((entity, random) -> cobblemon("saccharine_log", 3, 4, 12, 15)));
 		Platform.get().addTrades(ModVillagers.HABITAT_KEEPER, 5, offers ->
 			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 8), new ItemStack(Items.SPYGLASS), 4, 30, 0.05f)));
+	}
+
+	/** The 18 types whose Type Gems Cobblemon 1.8 grows ({@code cobblemon:<type>_gem}). */
+	private static final String[] GEM_TYPES = {"normal", "fire", "water", "grass", "electric", "ice", "fighting", "poison", "ground",
+		"flying", "psychic", "bug", "rock", "ghost", "dragon", "dark", "steel", "fairy"};
+
+	/**
+	 * Gem Growers (28.11; work without Cobblemon): amethyst shards (Novice), tumblestones (Apprentice, with Cobblemon), a
+	 * Type Gem (Expert, Cobblemon 1.8), and on the way glass, spyglasses and tinted glass.
+	 */
+	private static void gemGrowerTrades() {
+		Platform.get().addTrades(ModVillagers.GEM_GROWER, 1, offers -> {
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 1), new ItemStack(Items.AMETHYST_SHARD, 4), 16, 1, 0.05f));
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.GLASS, 8), new ItemStack(Items.EMERALD), 16, 2, 0.05f));
+		});
+		Platform.get().addTrades(ModVillagers.GEM_GROWER, 2, offers -> {
+			offers.add((entity, random) -> cobblemon("tumblestone", 2, 4, 12, 5));
+			offers.add((entity, random) -> cobblemon("sky_tumblestone", 3, 4, 12, 5));
+			offers.add((entity, random) -> cobblemon("black_tumblestone", 3, 4, 12, 5));
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 2), new ItemStack(Items.TINTED_GLASS, 2), 12, 5, 0.05f));
+		});
+		Platform.get().addTrades(ModVillagers.GEM_GROWER, 3, offers -> {
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 4), new ItemStack(Items.SPYGLASS), 8, 10, 0.05f));
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.AMETHYST_SHARD, 12), new ItemStack(Items.EMERALD), 16, 10, 0.05f));
+		});
+		Platform.get().addTrades(ModVillagers.GEM_GROWER, 4, offers -> {
+			offers.add((entity, random) -> cobblemon(GEM_TYPES[random.nextInt(GEM_TYPES.length)] + "_gem", 6, 1, 8, 15));
+			offers.add((entity, random) -> cobblemon(GEM_TYPES[random.nextInt(GEM_TYPES.length)] + "_gem", 6, 1, 8, 15));
+		});
+		Platform.get().addTrades(ModVillagers.GEM_GROWER, 5, offers ->
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 12), new ItemStack(Items.AMETHYST_BLOCK, 4), 4, 30, 0.05f)));
 	}
 
 	private static void nurseTrades() {

@@ -1,4 +1,4 @@
-"""Villager outfits, second set: orchard keeper, berry breeder, camp cook, habitat keeper, Pokemon trader, porter, postman, rancher, scholar, shopkeeper, sifter,
+"""Villager outfits, second set: orchard keeper, berry breeder, camp cook, habitat keeper, gem grower, Pokemon trader, porter, postman, rancher, scholar, shopkeeper, sifter,
 teacher, tinkerer, trainer, trainer leader, tutor and undertaker. Drawn in the style of the Builder's outfit
 (builders.py): the villager helpers for the garments, then the details by hand. Each keeps the headwear, colours and
 accessory of the outfit it replaces.
@@ -246,6 +246,40 @@ def habitat_keeper():
     west.put(2, 9, "#8a6a3e")                           # the dipper's handle
     west.put(2, 8, "#a8844e")
     return t.save_profession(ASSETS, "habitat_keeper", hat="full")
+
+
+def gem_grower():
+    """A slate-grey bandana knotted round the head with an amethyst shard pinned at the front, a heavy leather apron
+    (heat-proof, for the beds by the lava) over a stone-grey shirt, leather gloves, a brass hand lens in the apron
+    pocket for judging the clusters, and a pouch of amethyst shards at the hip (ROADMAP 28.11)."""
+    t = vg.VillagerTexture()
+    slate = vg.cloth("#5e6470")
+    stone = vg.cloth("#7d7f84")
+    hide = vg.cloth("#6e4a2c")
+    amethyst = ["#5a3a8a", "#8a5ac0", "#c69ae8"]       # dark, mid, lit
+    vg.hat(t, slate, style="band", noise=0)
+    front = t.face("hat", "front")                      # the shard pinned on the band, over the villager's left eye
+    front.put(5, 3, amethyst[2])                        # (on the band itself, its tip just above it)
+    front.put(5, 4, amethyst[1])
+    front.put(6, 4, amethyst[0])
+    vg.vest(t, stone, length=10, open_front=False, noise=0)
+    vg.apron(t, hide, top=2, bottom=17, ties=True, bib=True)
+    vg.sleeves(t, stone, gloves=vg.cloth("#8a6a3e", n=4), noise=0)
+    f = pocket(t, hide, top=11, bottom=14)              # the hand lens in the apron pocket: a brass ring with glass
+    f.put(1, 9, BRASS[3])
+    f.put(2, 9, BRASS[2])
+    f.put(1, 10, BRASS[1])
+    f.put(2, 10, "#b8dce6")
+    f.put(1, 11, BRASS[0])
+    west = t.face("jacket", "west")                     # the shard pouch on the villager's right hip
+    strap_diagonal(west, 0, 2, 2, 9, LEATHER[1], width=1)
+    for y in range(11, 15):
+        for x in range(1, 4):
+            west.put(x, y, hide[2] if y == 11 else hide[1] if x < 3 else hide[0])
+    west.put(1, 10, amethyst[1])                        # shards peeking out of the pouch
+    west.put(2, 9, amethyst[2])
+    west.put(3, 10, amethyst[0])
+    return t.save_profession(ASSETS, "gem_grower", hat="partial")
 
 
 def pokemon_trader():
@@ -625,7 +659,7 @@ def legend():
     return t.save_profession(ASSETS, "legend", hat="partial")
 
 
-DRAW = [orchard_keeper, berry_breeder, camp_cook, habitat_keeper, pokemon_trader, porter, postman, rancher, scholar, shopkeeper, sifter, teacher, tinkerer,
+DRAW = [orchard_keeper, berry_breeder, camp_cook, habitat_keeper, gem_grower, pokemon_trader, porter, postman, rancher, scholar, shopkeeper, sifter, teacher, tinkerer,
         trainer, trainer_leader, tutor, undertaker, steward, legend]
 
 if __name__ == "__main__":

@@ -695,6 +695,21 @@ final class JobScenes {
 				new ItemStack(cobblemonItem("oran_berry"), 3));
 			return l -> c.countItem(cobblemonItem("poke_snack")) > 0 && n(ModAttachments.DISHES_COOKED, cook) >= 1;
 		}));
+		SCENES.put("gem_grower", job("the gem grower picked the ripe amethyst cluster and left the budding amethyst", 2400, (level, player) -> {
+			// ROADMAP 28.11 (no Cobblemon needed): a stonecutter picked with an amethyst shard; behind it a budding amethyst
+			// with a full cluster on top and a small bud on its side. She finds the bed, picks the full cluster (its shards
+			// into her chest) and leaves the budding block and the small bud to grow.
+			BlockPos budding = STATION.offset(2, 0, -2);
+			level.setBlockAndUpdate(budding, Blocks.BUDDING_AMETHYST.defaultBlockState());
+			level.setBlockAndUpdate(budding.above(), Blocks.AMETHYST_CLUSTER.defaultBlockState()
+				.setValue(net.minecraft.world.level.block.AmethystClusterBlock.FACING, Direction.UP));
+			level.setBlockAndUpdate(budding.west(), Blocks.SMALL_AMETHYST_BUD.defaultBlockState()
+				.setValue(net.minecraft.world.level.block.AmethystClusterBlock.FACING, Direction.WEST));
+			Villager grower = picked(level, player, STATION, Blocks.STONECUTTER, Items.AMETHYST_SHARD);
+			Container c = chest(level, chestPos(), new ItemStack(Items.GLASS, 2));
+			return l -> !l.getBlockState(budding.above()).is(Blocks.AMETHYST_CLUSTER) && l.getBlockState(budding).is(Blocks.BUDDING_AMETHYST)
+				&& c.countItem(Items.AMETHYST_SHARD) >= 4 && io.github.jcondedata.aliveworkplace.gem.GemGrowers.isGrower(grower);
+		}));
 		SCENES.put("habitat_keeper", job("the habitat keeper set out a snack, slathered the log and spotted a shiny Eevee", 2400, (level, player) -> {
 			// ROADMAP 28.10: Cobblemon's Pasture Block picked with a honey bottle; Poké Snacks and a honey bottle in the
 			// chest; a lure spot marked behind the pasture, a Saccharine log beside it, and a shiny wild Eevee nearby. She

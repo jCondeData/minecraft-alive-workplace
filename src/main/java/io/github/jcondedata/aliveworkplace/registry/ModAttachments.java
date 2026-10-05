@@ -176,6 +176,15 @@ public final class ModAttachments {
 	/** The wild Pokémon a Habitat Keeper has already told the village of, so each is told once (ROADMAP 28.10). */
 	public static final Attachment<java.util.List<java.util.UUID>> SIGHTED = Attachment.saved("sighted", net.minecraft.core.UUIDUtil.STRING_CODEC.listOf());
 
+	/** The beds a Gem Grower has been asked to keep (bed ids; absent = every bed she has the makings for) (ROADMAP 28.11). */
+	public static final Attachment<java.util.List<net.minecraft.resources.ResourceLocation>> GEM_ORDERS = Attachment.saved("gem_orders", net.minecraft.resources.ResourceLocation.CODEC.listOf());
+
+	/** The gem beds (the blocks they grow against) a Gem Grower has found round her stonecutter (ROADMAP 28.11). */
+	public static final Attachment<java.util.List<net.minecraft.core.BlockPos>> GEM_BEDS = Attachment.saved("gem_beds", net.minecraft.core.BlockPos.CODEC.listOf());
+
+	/** How many ripe clusters a Gem Grower has picked (shown above her head) (ROADMAP 28.11). */
+	public static final Attachment<Integer> GEMS_PICKED = Attachment.saved("gems_picked", com.mojang.serialization.Codec.INT);
+
 	/** How many berries a Berry Breeder has picked (shown above her head). */
 	public static final Attachment<Integer> BERRIES_PICKED = Attachment.saved("berries_picked", com.mojang.serialization.Codec.INT);
 

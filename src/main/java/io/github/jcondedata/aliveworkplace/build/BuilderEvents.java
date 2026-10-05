@@ -101,6 +101,16 @@ public final class BuilderEvents {
 				}
 				return InteractionResult.PASS;
 			}
+			if (io.github.jcondedata.aliveworkplace.gem.GemGrowers.isGrower(villager)) {
+				// Sneak-right-click with an empty hand: which gem beds she keeps. Otherwise the usual trades.
+				if (player.getItemInHand(hand).isEmpty() && player.isShiftKeyDown()) {
+					if (!level.isClientSide()) {
+						io.github.jcondedata.aliveworkplace.gem.GemGrowers.openOrders((ServerPlayer) player, villager);
+					}
+					return InteractionResult.SUCCESS;
+				}
+				return InteractionResult.PASS;
+			}
 			if (io.github.jcondedata.aliveworkplace.habitat.HabitatKeepers.isKeeper(villager)) {
 				// A Field Marker: a lure spot. Sneak-right-click with an empty hand: the lure picker. Otherwise the usual trades.
 				ItemStack held = player.getItemInHand(hand);

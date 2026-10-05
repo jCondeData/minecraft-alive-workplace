@@ -188,6 +188,10 @@ public final class Stations {
 			job(() -> ModVillagers.CHEF, any(Items.BEEF, Items.PORKCHOP, Items.CHICKEN, Items.MUTTON, Items.RABBIT, Items.COD, Items.SALMON,
 				Items.POTATO)),
 			job(() -> ModVillagers.RANCHER, any(Items.SADDLE, Items.GOLDEN_CARROT)))),
+		// The stonecutter (28.11): a jobless villager still takes it as a Mason; an amethyst shard picks the Gem Grower
+		new Station(is(PoiTypes.MASON), Blocks.STONECUTTER, List.of(
+			job(() -> VillagerProfession.MASON, any(Items.CLAY_BALL)),
+			job(() -> ModVillagers.GEM_GROWER, io.github.jcondedata.aliveworkplace.gem.GemGrowers::isShard))),
 		new Station(is(PoiTypes.WEAPONSMITH), Blocks.GRINDSTONE, List.of(
 			job(() -> VillagerProfession.WEAPONSMITH, any(Items.IRON_INGOT)),
 			job(() -> ModVillagers.GUARD, tag(ItemTags.SWORDS)))),

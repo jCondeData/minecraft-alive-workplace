@@ -69,6 +69,7 @@ public final class AliveWorkplace {
 		io.github.jcondedata.aliveworkplace.work.PartnerShows.init();
 		io.github.jcondedata.aliveworkplace.camp.CampCooks.init();
 		io.github.jcondedata.aliveworkplace.habitat.HabitatKeepers.init();
+		io.github.jcondedata.aliveworkplace.gem.GemGrowers.init();
 		io.github.jcondedata.aliveworkplace.blueprint.BlueprintStyles.init();
 		integrations.run();
 		io.github.jcondedata.aliveworkplace.build.MaterialFamilies.init();

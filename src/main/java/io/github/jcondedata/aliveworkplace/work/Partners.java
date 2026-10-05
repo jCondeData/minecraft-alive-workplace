@@ -104,6 +104,9 @@ public final class Partners {
 		if (profession == ModVillagers.RANCHER) {
 			return Set.of("normal", "ground"); // Tauros, Mudbray, Ponyta's cousins: wild horses calm down quicker
 		}
+		if (profession == ModVillagers.GEM_GROWER) {
+			return Set.of("rock", "steel"); // Roggenrola, Carbink, Bronzor...: the clusters come loose quicker
+		}
 		if (profession == ModVillagers.HABITAT_KEEPER) {
 			return Set.of("flying", "grass"); // Pidgey, Skiploom, Hoothoot...: they scout the wild ones and make the snacks smell sweeter
 		}

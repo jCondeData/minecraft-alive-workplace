@@ -205,6 +205,8 @@ SCENES = [
         [("04_berry_book", "The berry book")], cobblemon=True),
     job("camp_cook", "Camp Cook", "Cooking a Poké Snack in the Campfire Pot", "the camp cook cooked a Poké Snack in the Campfire Pot", 150,
         cobblemon=True),
+    job("gem_grower", "Gem Grower", "A ripe amethyst cluster picked, the budding block kept",
+        "the gem grower picked the ripe amethyst cluster and left the budding amethyst", 150),
     job("habitat_keeper", "Habitat Keeper", "A snack set out, a log slathered, a shiny spotted",
         "the habitat keeper set out a snack, slathered the log and spotted a shiny Eevee", 150, cobblemon=True),
     # Village-wide

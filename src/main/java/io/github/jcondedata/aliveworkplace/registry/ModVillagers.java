@@ -709,6 +709,23 @@ public final class ModVillagers {
 		)
 	);
 
+	/**
+	 * Tends the gem beds round a stonecutter (ROADMAP 28.11): only ever by an amethyst shard, with config {@code gemGrowers}.
+	 * A jobless villager by a stonecutter still becomes a Mason, which vanilla registers first.
+	 */
+	public static final VillagerProfession GEM_GROWER = Registry.register(
+		BuiltInRegistries.VILLAGER_PROFESSION,
+		AliveWorkplace.id("gem_grower"),
+		new VillagerProfession(
+			"gem_grower",
+			holder -> holder.is(net.minecraft.world.entity.ai.village.poi.PoiTypes.MASON),
+			holder -> holder.is(net.minecraft.world.entity.ai.village.poi.PoiTypes.MASON),
+			ImmutableSet.of(),
+			ImmutableSet.of(),
+			SoundEvents.AMETHYST_BLOCK_CHIME
+		)
+	);
+
 	/** Revives fossils for players, for a price (only with Cobblemon installed). */
 	public static final VillagerProfession FOSSIL_SCIENTIST = Registry.register(
 		BuiltInRegistries.VILLAGER_PROFESSION,
@@ -747,7 +764,7 @@ public final class ModVillagers {
 			|| profession == ORCHARD_KEEPER || profession == BALL_SMITH || profession == PORTER || profession == CARPENTER || profession == CHEF || profession == FOSSIL_SCIENTIST
 			|| profession == BEEKEEPER || profession == FLORIST || profession == RANCHER || profession == TEACHER || profession == INNKEEPER || profession == UNDERTAKER || profession == SCHOLAR
 			|| profession == SIFTER || profession == TINKERER || profession == NETHERWORKER || profession == COMPOSTER
-			|| profession == BERRY_BREEDER || profession == CAMP_COOK || profession == HABITAT_KEEPER;
+			|| profession == BERRY_BREEDER || profession == CAMP_COOK || profession == HABITAT_KEEPER || profession == GEM_GROWER;
 	}
 
 	/**

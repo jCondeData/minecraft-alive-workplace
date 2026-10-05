@@ -1,0 +1,14 @@
+{
+  "jobs": [
+    "aliveworkplace:gem_grower"
+  ],
+  "types": [
+    "rock"
+  ],
+  "cue": "pick_cluster",
+  "animation": "physical",
+  "particles": "minecraft:crit",
+  "sound": "minecraft:block.amethyst_cluster.break",
+  "ticks": 30,
+  "effect": "none"
+}

@@ -344,6 +344,7 @@ placed keep working, so old worlds are fine.
 | Berry Breeder (with Cobblemon) | Composter + any Cobblemon berry | berries, Growth and Surprise Mulch | sneak-right-click: pick a goal in the berry book (a Field Marker for a plot of her own) |
 | Camp Cook (with Cobblemon) | Campfire Pot (Cobblemon's campfire with a pot on it) + Hearty Grains | the makings of her dishes (Hearty Grains, Vivichoke, apricorns, milk, honey, berries for seasoning) | nothing (a Storehouse's stock orders for the order-only treats) |
 | Habitat Keeper (with Cobblemon) | Pasture Block (Cobblemon's) + a honey bottle | Poké Snacks (or the Camp Cook's), honey bottles, Saccharine saplings | Field Markers for her lure spots (optional) |
+| Gem Grower | Stonecutter + an amethyst shard | tumblestones or Type Gem Blocks to plant (with Cobblemon), glass and shards for Blank TMs (1.8) | sneak-right-click: pick which gem beds she keeps |
 | Netherworker | Cartography Table + netherrack | food (a pickaxe, an axe, a sword, a chestplate, fire resistance) | nothing (a Nether portal within 32 blocks) |
 | Undertaker | Brewing Stand + a golden apple, an enchanted golden apple or a totem | golden apples, healing potions or totems | nothing (graves within 32 blocks) |
 | Innkeeper | Shop Counter + a bed | — | nothing (hire the travellers who come to stay) |
@@ -1006,6 +1007,25 @@ Hearty Grains and Vivichoke from the chests' seeds. Her menu is data: one file p
 data pack can add or change dishes. She sells Poké Bait and Poké Snacks, then Aprijuice, Exp. Candy S and M, Lumiose
 Galette and Big Malasada, and at Master Exp. Candy L; Fire and Normal Pokémon help her, and a Fire partner breathes on
 the campfire while it cooks.
+
+## Gem Growers
+Put a chest by a **stonecutter**, stand a villager beside it and sneak-right-click them with an **amethyst shard**: they
+become a **Gem Grower** (a jobless villager still takes a stonecutter as a Mason, and a clay ball turns a grower back into
+one). Works without Cobblemon. She finds the gem beds within 16 blocks of the stonecutter (a scan of a few thousand
+blocks a tick, remembered) and tends them:
+- **Amethyst.** Budding amethyst: she picks only the full clusters (four shards each, as with a pickaxe) and never
+  breaks the budding block.
+- **Tumblestones** (with Cobblemon). She plants tumblestones, sky tumblestones and black tumblestones from her chest
+  against lava or a magma block, as Cobblemon grows them, and picks the full clusters.
+- **Type Gems** (with Cobblemon 1.8). She sets a type's Gem Block from her chest against a Deepslate Crystal Core and
+  picks the stage-3 clusters that grow on it, keeping the Gem Block. With glass and shards in her chests she also makes
+  Blank TMs at the stonecutter by Cobblemon's own recipe, keeping up to 8.
+
+Sneak-right-click her with an empty hand to pick which beds she keeps; with none picked she keeps every bed she has the
+makings for. The beds are data files (`data/<namespace>/gem_beds/<name>.json`: what's planted, what it grows against,
+which blocks grow and which is ripe), so a data pack can add more. She sells amethyst shards, then tumblestones, and Type
+Gems at Expert (1.8); Rock and Steel Pokémon help her, and a Rock partner taps each ripe cluster loose. Config
+`gemGrowers` (on).
 
 ## Habitat Keepers (with Cobblemon)
 Put a chest by one of Cobblemon's **Pasture Blocks**, stand a villager beside it and sneak-right-click them with a

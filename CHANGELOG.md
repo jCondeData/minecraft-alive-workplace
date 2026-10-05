@@ -23,6 +23,11 @@ asks for the steps, `latest.log` and any crash report).
   told to the village and the hall's owner, Mythic ones to every player in gold with the village's direction from spawn;
   all go in the chronicle under a nether star. A Legend in a grave or turned zombie keeps their slot and comes back as
   themselves; with no grave their slot frees after 7 days; Legends join a hall placed again.
+- The **Gem Grower** (28.11): sneak-right-click a villager by a stonecutter with an amethyst shard. She picks the full
+  amethyst clusters round budding amethyst (never the budding block); with Cobblemon she plants tumblestones against
+  lava or magma and picks the full clusters, and with Cobblemon 1.8 sets Type Gem Blocks against Deepslate Crystal Cores,
+  picks the stage-3 clusters and makes Blank TMs from shards and glass (up to 8). Beds are data files
+  (`gem_beds/<name>.json`); sneak-right-click her to pick which she keeps. Rock and Steel partners. Config `gemGrowers`.
 - With Cobblemon, the **Habitat Keeper** (28.10): sneak-right-click a villager by a Pasture Block with a honey bottle.
   She keeps Poké Snacks set out on up to three lure spots (marked with a Field Marker, or grass 16-32 blocks out) and
   sets out another when one is eaten up; picks a lure (a type or egg group, Alphas on 1.8) and asks the Camp Cook for

@@ -691,7 +691,7 @@ and an old vanilla village slowly rebuilds itself one house at a time. It answer
   Done when:
   - a GameTest per rule, and each of the 12 copies built by a builder in a test, its job block taken by its worker;
   - a gallery package of the 12 copies (front and back, as drawn and in Stonework) and showcase scene `workplaces`.
-- [ ] **27.12** **Rules: care, learning, safety, beauty and the market.** The other conditions: `guards_short`,
+- [x] **27.12** (review: pending 2026-10-05) **Rules: care, learning, safety, beauty and the market.** The other conditions: `guards_short`,
   `raided_within {days}` (from the hall's last raid day), `bandit_camp_near`, `ill {at_least}`, `dark_beds
   {at_least}`, `beauty_below {points}`, `children_at_least {n}`, `courting_couples {at_least}` (`Couples`) and
   `died_within {days}` (the chronicle). Shipped rules:
@@ -4550,4 +4550,26 @@ item waits.
   this container): the copies are the village houses' already-checked builds with calcite as white concrete. The six
   Cobblemon rules are tested without Cobblemon (worker counted, held back as MOD_MISSING); their wish with Cobblemon
   has no compat test yet. Owner: are the zones above where you'd want each building?
+- 2026-10-05 (27.12, decisions; lane c): the nine conditions read the hall's numbers (`guards_short` and `ill` are the
+  "guards" and "ill" tips' counts, now `VillageAdvice.guardsWanted`/`ill`; `dark_beds` counts HOME points with block
+  light under `VillageNeeds.LIT`, `VillageAdvice.darkBeds`, darkest first; `raided_within` treats the hall's -100 as never;
+  `courting_couples` is `Couples.courting`; `died_within` counts DEATH entries in the chronicle). "No nurse" and "no
+  scholar" needed one more condition, `no_worker {profession}`. The Clinic/Healing Center choice is two files,
+  `clinic_for_the_ill` (below a Village) and `healing_center_for_the_ill` (`min_rank` village). Every civic, defence,
+  garden and market rule also has `built_count_below {that building, 1}` and `max` 1, so it's built once; street lamps
+  have `max` 8, cooldown 1 day. Priorities: clinic 70, barracks 57, lookout tower 55, lamps 48, schoolhouse 45, library 42,
+  chapel 38, market square 36, well 34, bench 33, fountain 32, gazebo 31, graveyard 30 (all below homes, food, storehouse
+  and workplaces, so with the day's 8 wishes the pressing ones come first). "By the darkest homes' doors, in their
+  zone": a `build` effect may say `"near": "dark_beds"` (saved with the wish, default none); the plot search in the Homes
+  zone then tries spots nearest the darkest bed first instead of nearest the hall (`Plots.Request.near`). The bed, not
+  its door: a door isn't tied to a bed. "Another spot" on the desk searches from the hall again. `raided_within` and
+  `bandit_camp_near` ship with no rule (none of the listed rules asks for them): for packs and later items. With beauty
+  3 reached by a well (2) and a bench (1), the fountain and gazebo come only while beauty stays under 3 (another
+  village's decorations gone, or a pack's rule). Scene `steward_civic`: Couples and Sickness off, a scholar at his desk
+  and a lit row of beds, so only the lamp, the well and (day 2, three children) the schoolhouse are asked for.
+  Filmed locally once (08:41Z): the Steward is appointed, day 1 the lamp (by the darker bed) and the well are built
+  (PASS), day 2 the schoolhouse is wished and the desk starts something, but no schoolhouse was finished in 2400 ticks
+  and the still shows none rising (FAIL "a schoolhouse went up"); the day-2 wishes also still listed `well` after the
+  well was finished. Left for QA/the next lane: why the schoolhouse doesn't start (plot in Civic z 16..40, two open
+  builds in a Village) and whether `built_count_below` misses a just-finished well at the morning's ranking.
 - **qa handoff** (qa-1005-0633, 2026-10-05 07:21Z): qa-1005-0633: B55 passes (local runCompatGameTest 129/129 in 4m21s; full build 851+129 in 8m48s) but verify refuses it: ROADMAP has B55 twice (an unticked copy above the ticked one), so the helper sees it unlanded. B67 (B57's fletch flake back) reproduced locally too: 'no bow for the guard' after 2.8 s in qa-1005-0633's ship build (main 6f6b6ea), so B57's leftover clear isn't the whole cause; it blocked shipping qa/legend-camp-map-1005 (QaLegendCampGameTests, passes): ship it next run. B61 not verified: the config scene can't film until B59 is fixed; a font-width estimate puts every switch label at most 141 px of 142 with ': OFF'. B46/B50 wait on B64/B66.

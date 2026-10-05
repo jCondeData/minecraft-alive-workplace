@@ -1,0 +1,30 @@
+{
+  "when": [
+    {
+      "beauty_below": {
+        "points": 3
+      }
+    },
+    {
+      "villagers_at_least": {
+        "n": 5
+      }
+    },
+    {
+      "built_count_below": {
+        "blueprint": "aliveworkplace:gazebo",
+        "n": 1
+      }
+    }
+  ],
+  "do": {
+    "build": {
+      "blueprint": "aliveworkplace:gazebo",
+      "zone": "gardens"
+    }
+  },
+  "priority": 31,
+  "why": "steward.aliveworkplace.why.beauty",
+  "cooldown_days": 1,
+  "max": 1
+}

@@ -17,6 +17,13 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Added
+- **The Steward's civic rules** (27.12): he now wishes for a Clinic (a Healing Center from a Village) when two or more
+  are ill and nobody nurses them, a Graveyard after a death in a village of 8, a Schoolhouse for 3 children, a Library
+  with 6 villagers and no scholar, a Chapel while a couple courts, a Lookout Tower (a Barracks in a Town) while guards are
+  short, a Street Lamp by the darkest beds, a Well, Park Bench, Fountain and Gazebo while the village has little beauty,
+  and a Market Square for a Town. Nine new rule conditions for packs: `guards_short`, `raided_within`,
+  `bandit_camp_near`, `ill`, `dark_beds`, `beauty_below`, `children_at_least`, `courting_couples`, `died_within`, and
+  `no_worker`.
 - **Legends found in the world** (29.9): standing in a ruined portal, a pillager outpost or a shipwreck, a player whose
   village has earned a Legend found there may come on their camp: a traveller beside the portal (talk to them), a
   prisoner in an iron cage at the tower's foot (break the bars) or a castaway on the nearest beach (hand them a cooked

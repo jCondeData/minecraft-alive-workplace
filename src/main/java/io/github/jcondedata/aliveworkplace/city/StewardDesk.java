@@ -598,7 +598,7 @@ public final class StewardDesk {
 		for (StewardWishes.Wish wish : StewardWishes.of(level, hall).wishes()) {
 			StewardRules.Effect effect = wish.effect();
 			if (effect.kind() == StewardRules.Kind.BUILD) {
-				Optional<Plots.Request> request = StewardWishes.plotFor(wish);
+				Optional<Plots.Request> request = StewardWishes.plotFor(level, hall, wish);
 				if (request.isEmpty()) {
 					continue;
 				}

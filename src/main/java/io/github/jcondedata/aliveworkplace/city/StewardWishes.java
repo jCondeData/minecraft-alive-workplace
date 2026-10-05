@@ -177,7 +177,7 @@ public final class StewardWishes {
 		rankIfDue(level, hall);
 		List<Wish> wishes = of(level, hall).wishes();
 		for (Wish wish : wishes) {
-			plotFor(wish).ifPresent(request -> Plots.request(level, hall, request)); // the morning's plots (27.7), kept till the plan changes
+			plotFor(level, hall, wish).ifPresent(request -> Plots.request(level, hall, request)); // the morning's plots (27.7), kept till the plan changes
 		}
 		StewardDesk.plan(level, steward, hall); // proposals on his desk, or builds started in Run the village (27.8)
 		wishes = of(level, hall).wishes();
@@ -194,6 +194,17 @@ public final class StewardWishes {
 			return java.util.Optional.empty();
 		}
 		return java.util.Optional.of(new Plots.Request(List.of(effect.blueprint().get()), effect.zone().get()));
+	}
+
+	/**
+	 * What a build wish needs a plot for in the village round {@code hall}: as {@link #plotFor(Wish)}, and with {@code near}
+	 * the spots nearest that place first (the darkest bed for {@code "dark_beds"}: a street lamp by the homes left dark).
+	 */
+	public static java.util.Optional<Plots.Request> plotFor(ServerLevel level, BlockPos hall, Wish wish) {
+		java.util.Optional<String> near = wish.effect().near();
+		return plotFor(wish).map(request -> near.isPresent() && near.get().equals(StewardRules.Effect.NEAR_DARK_BEDS)
+			? request.near(io.github.jcondedata.aliveworkplace.hall.VillageAdvice.darkBeds(level, hall).stream().findFirst().orElse(null))
+			: request);
 	}
 
 	/** {@code /workplace steward explain}: every rule for the hall, each condition's number and whether it held, and today's wishes. */

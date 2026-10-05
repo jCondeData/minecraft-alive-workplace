@@ -83,20 +83,29 @@ public final class StewardRules implements ResourceManagerReloadListener {
 		}, Kind::key);
 	}
 
-	/** A rule's effect: {@code build {blueprint, zone}}, {@code upgrade {blueprint?, adds_beds?}}, {@code assign_jobs}, {@code research {topic?}}, {@code ask {key}}. */
+	/** A rule's effect: {@code build {blueprint, zone, near?}}, {@code upgrade {blueprint?, adds_beds?}}, {@code assign_jobs}, {@code research {topic?}}, {@code ask {key}}. */
 	public record Effect(Kind kind, Optional<ResourceLocation> blueprint, Optional<String> zone, Optional<String> topic, Optional<String> key,
-						 boolean addsBeds) {
+						 boolean addsBeds, Optional<String> near) {
+		/** {@code build}'s {@code near} that puts the plot by the village's darkest beds (street lamps, 27.12). */
+		public static final String NEAR_DARK_BEDS = "dark_beds";
+
 		public static final Codec<Effect> CODEC = RecordCodecBuilder.create(i -> i.group(
 			Kind.CODEC.fieldOf("type").forGetter(Effect::kind),
 			ResourceLocation.CODEC.optionalFieldOf("blueprint").forGetter(Effect::blueprint),
 			Codec.STRING.optionalFieldOf("zone").forGetter(Effect::zone),
 			Codec.STRING.optionalFieldOf("topic").forGetter(Effect::topic),
 			Codec.STRING.optionalFieldOf("key").forGetter(Effect::key),
-			Codec.BOOL.optionalFieldOf("adds_beds", false).forGetter(Effect::addsBeds)
+			Codec.BOOL.optionalFieldOf("adds_beds", false).forGetter(Effect::addsBeds),
+			Codec.STRING.optionalFieldOf("near").forGetter(Effect::near)
 		).apply(i, Effect::new));
 
 		public Effect(Kind kind, Optional<ResourceLocation> blueprint, Optional<String> zone, Optional<String> topic, Optional<String> key) {
 			this(kind, blueprint, zone, topic, key, false);
+		}
+
+		public Effect(Kind kind, Optional<ResourceLocation> blueprint, Optional<String> zone, Optional<String> topic, Optional<String> key,
+					  boolean addsBeds) {
+			this(kind, blueprint, zone, topic, key, addsBeds, Optional.empty());
 		}
 
 		/** "Build a Stone House in a Homes zone", for explain and the Steward's line. */
@@ -240,7 +249,11 @@ public final class StewardRules implements ResourceManagerReloadListener {
 				if (ResourceLocation.tryParse(zone) == null) {
 					throw new BadRule(f.path("zone"), "not a zone kind: " + zone);
 				}
-				yield new Effect(kind, Optional.of(blueprint), Optional.of(zone), Optional.empty(), Optional.empty());
+				Optional<String> near = f.has("near") ? Optional.of(f.string("near", null)) : Optional.empty();
+				if (near.isPresent() && !near.get().equals(Effect.NEAR_DARK_BEDS)) {
+					throw new BadRule(f.path("near"), "unknown place to build near (known: " + Effect.NEAR_DARK_BEDS + ")");
+				}
+				yield new Effect(kind, Optional.of(blueprint), Optional.of(zone), Optional.empty(), Optional.empty(), false, near);
 			}
 			case UPGRADE -> new Effect(kind, f.has("blueprint") ? Optional.of(f.id("blueprint")) : Optional.empty(), Optional.empty(), Optional.empty(),
 				Optional.empty(), f.bool("adds_beds", false));

@@ -1,0 +1,21 @@
+{
+  "when": [
+    {
+      "built_count_below": {
+        "blueprint": "aliveworkplace:market_square",
+        "n": 1
+      }
+    }
+  ],
+  "do": {
+    "build": {
+      "blueprint": "aliveworkplace:market_square",
+      "zone": "market"
+    }
+  },
+  "priority": 36,
+  "why": "steward.aliveworkplace.why.market_square",
+  "cooldown_days": 2,
+  "max": 1,
+  "min_rank": "town"
+}

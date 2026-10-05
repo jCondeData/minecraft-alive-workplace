@@ -1,0 +1,23 @@
+{
+  "when": [
+    {
+      "guards_short": {}
+    },
+    {
+      "built_count_below": {
+        "blueprint": "aliveworkplace:lookout_tower",
+        "n": 1
+      }
+    }
+  ],
+  "do": {
+    "build": {
+      "blueprint": "aliveworkplace:lookout_tower",
+      "zone": "defences"
+    }
+  },
+  "priority": 55,
+  "why": "steward.aliveworkplace.why.lookout_tower",
+  "cooldown_days": 2,
+  "max": 1
+}

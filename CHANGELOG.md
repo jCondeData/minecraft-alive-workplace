@@ -17,6 +17,13 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Added
+- **Four more tonics** (30.16), each with its own icon: the Cleric brews **Smith's Draught** (a glass bottle, blaze
+  powder and two iron nuggets; for Armorers, Toolsmiths, Weaponsmiths, Tinkerers and Ball Smiths) and **Scholar's
+  Infusion** (a glass bottle, an amethyst shard and glow berries; for Scholars, Teachers, Librarians, Cartographers and
+  Fossil Scientists); the Chef cooks **Harvest Cordial** (a glass bottle, an apple, wheat and sugar; for Farmers,
+  Orchard Keepers, Florists, Beekeepers, Composters, Shepherds, Butchers, Ranchers and Chefs) and **Woodsman's Broth**
+  (a bowl, cooked salmon, a carrot and a brown mushroom; for Lumberjacks, Fletchers, Fishermen, Porters and Postmen).
+  Each makes its villagers 25% faster for a day. Tooltips now say "2 Iron Nuggets", not "2 Iron Nugget".
 - **Tonics: Miner's Brew and Builder's Tea** (30.15): right-click a villager with a tonic that suits their job and they
   drink it, working 25% faster for a day (20 minutes; their status line shows "25% faster (Miner's Brew, 19 min left)").
   Another tonic starts the day again; they never stack, and the work pace cap still holds. One that doesn't suit them is

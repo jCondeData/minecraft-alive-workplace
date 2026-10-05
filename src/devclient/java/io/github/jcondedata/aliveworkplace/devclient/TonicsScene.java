@@ -15,7 +15,9 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.ai.village.poi.PoiTypes;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.npc.Villager;
+import net.minecraft.world.entity.npc.VillagerProfession;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.GameType;
@@ -26,11 +28,21 @@ import net.minecraft.world.level.block.Blocks;
  * the inventory; the player right-clicks her and she drinks it ("Dara drinks the Miner's Brew: 25% faster for 20
  * minutes."); then her status line: "25% faster (Miner's Brew, 19 min left)". Its checks: the tooltip names the jobs,
  * she drank it, and her pace and status line say so.
+ *
+ * <p>30.16: the hotbar holds all six tonics (slots 0-5); the player holds each of the four new ones in turn, then a
+ * Toolsmith, a Scholar, an Orchard Keeper and a Lumberjack beside Dara each drink theirs (Smith's Draught, Scholar's
+ * Infusion, Harvest Cordial, Woodsman's Broth). Checks: each one drank theirs and is 25% faster.
  */
 final class TonicsScene {
 	private static final BlockPos FURNACE = new BlockPos(0, -60, 0);
 	private int tick;
 	private volatile Villager miner;
+	/** 30.16's four tonics, their drinkers beside Dara. */
+	private static final String[] NEW = {"smiths_draught", "scholars_infusion", "harvest_cordial", "woodsmans_broth"};
+	@SuppressWarnings("unchecked")
+	private static final java.util.function.Supplier<net.minecraft.world.item.Item>[] NEW_ITEMS = new java.util.function.Supplier[] {
+		() -> ModItems.SMITHS_DRAUGHT, () -> ModItems.SCHOLARS_INFUSION, () -> ModItems.HARVEST_CORDIAL, () -> ModItems.WOODSMANS_BROTH};
+	private final Villager[] others = new Villager[4];
 
 	void tick(Minecraft mc) {
 		MinecraftServer server = mc.getSingleplayerServer();
@@ -98,7 +110,32 @@ final class TonicsScene {
 		if (tick == 255) {
 			ScreenshotHarness.shot(mc, "04_tonics_status");
 		}
-		if (tick == 280) {
+		for (int i = 0; i < 4; i++) {
+			if (tick == 280 + 20 * i) {
+				int slot = i + 2;
+				mc.player.getInventory().selected = slot;
+				server.execute(() -> server.getPlayerList().getPlayers().get(0).getInventory().selected = slot);
+			}
+			if (tick == 292 + 20 * i) {
+				ScreenshotHarness.shot(mc, String.format("%02d_tonics_hand_%s", 5 + i, NEW[i]));
+			}
+		}
+		if (tick == 370) {
+			server.execute(() -> {
+				for (int i = 0; i < 4; i++) {
+					Villager v = others[i];
+					ItemStack tonic = new ItemStack(NEW_ITEMS[i].get());
+					ServerPlayer player = server.getPlayerList().getPlayers().get(0);
+					Tonics.Offer offer = Tonics.offer(player, v, tonic);
+					Showcase.check(offer.outcome() == Tonics.Outcome.DRUNK && Pace.of(v).percent() == 25,
+						v.getName().getString() + " drank " + NEW[i] + ": " + (offer.message() == null ? offer.outcome() : offer.message().getString()));
+				}
+			});
+		}
+		if (tick == 390) {
+			ScreenshotHarness.shot(mc, "09_tonics_all_six");
+		}
+		if (tick == 410) {
 			mc.stop();
 		}
 	}
@@ -116,6 +153,25 @@ final class TonicsScene {
 		miner = v;
 		player.getInventory().clearContent();
 		player.getInventory().setItem(0, new ItemStack(ModItems.MINERS_BREW, 2));
+		player.getInventory().setItem(1, new ItemStack(ModItems.BUILDERS_TEA));
+		player.getInventory().setItem(2, new ItemStack(ModItems.SMITHS_DRAUGHT));
+		player.getInventory().setItem(3, new ItemStack(ModItems.SCHOLARS_INFUSION));
+		player.getInventory().setItem(4, new ItemStack(ModItems.HARVEST_CORDIAL));
+		player.getInventory().setItem(5, new ItemStack(ModItems.WOODSMANS_BROTH));
+		VillagerProfession[] jobs = {VillagerProfession.TOOLSMITH, ModVillagers.SCHOLAR, ModVillagers.ORCHARD_KEEPER, ModVillagers.LUMBERJACK};
+		String[] names = {"Bram", "Iris", "Mae", "Rowan"};
+		double[] xs = {-2.5, -1.0, 2.0, 3.5};
+		for (int i = 0; i < 4; i++) {
+			Villager o = EntityType.VILLAGER.create(level);
+			o.setVillagerData(o.getVillagerData().setProfession(jobs[i]).setLevel(2));
+			o.setVillagerXp(10);
+			o.setCustomName(Component.literal(names[i]));
+			o.setNoAi(true);
+			o.moveTo(xs[i], FURNACE.getY(), FURNACE.getZ() + 1.5, 180f, 0f);
+			o.setYHeadRot(180f);
+			level.addFreshEntity(o);
+			others[i] = o;
+		}
 		player.getInventory().selected = 0;
 		player.setGameMode(GameType.SURVIVAL);
 		player.getAbilities().flying = false;

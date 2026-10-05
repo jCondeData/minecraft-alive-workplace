@@ -1,0 +1,10 @@
+{
+  "item": "aliveworkplace:woodsmans_broth",
+  "maker": "chef",
+  "ingredients": ["minecraft:bowl", "minecraft:cooked_salmon", "minecraft:carrot", "minecraft:brown_mushroom"],
+  "jobs": ["aliveworkplace:lumberjack", "minecraft:fletcher", "minecraft:fisherman", "aliveworkplace:porter", "aliveworkplace:postman"],
+  "effects": [{"type": "aliveworkplace:work_pace", "percent": 25}],
+  "ticks": 24000,
+  "keep": 4,
+  "enabled": true
+}

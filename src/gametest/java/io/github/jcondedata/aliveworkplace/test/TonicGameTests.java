@@ -410,6 +410,249 @@ public class TonicGameTests implements FabricGameTest {
 	 * The pace's numbers alone: no hall another batch left nearby (its village's pace) and no mood (its own pace comes and
 	 * goes); put back after. Only for tests alone in their batch.
 	 */
+	/** A Cleric with the makings of one Smith's Draught in the chest by their station makes it from them (30.16). */
+	//$ gametest_ticks_batch AREA '3000' '"tonicSmithMade"'
+	@GameTest(template = AREA, timeoutTicks = 3000, batch = "tonicSmithMade")
+	public void theClericBrewsSmithsDraught(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		helper.setDayTime(2000);
+		BlockPos stand = new BlockPos(2, 2, 2);
+		BlockPos chestPos = new BlockPos(2, 2, 4);
+		helper.setBlock(stand, Blocks.BREWING_STAND);
+		helper.setBlock(chestPos, Blocks.CHEST);
+		Container chest = helper.getBlockEntity(chestPos);
+		chest.setItem(0, new ItemStack(Items.GLASS_BOTTLE, 1));
+		chest.setItem(1, new ItemStack(Items.BLAZE_POWDER, 1));
+		chest.setItem(2, new ItemStack(Items.IRON_NUGGET, 2));
+		Villager maker = helper.spawn(EntityType.VILLAGER, new BlockPos(3, 2, 3));
+		Jobs.employ(helper.getLevel(), maker, helper.absolutePos(stand), PoiTypes.CLERIC, VillagerProfession.CLERIC);
+		helper.succeedWhen(() -> {
+			helper.assertTrue(chest.countItem(ModItems.SMITHS_DRAUGHT) == 1, "Smith's Draught in the chest: " + contents(chest));
+			helper.assertTrue(chest.countItem(Items.GLASS_BOTTLE) == 0 && chest.countItem(Items.BLAZE_POWDER) == 0 && chest.countItem(Items.IRON_NUGGET) == 0, "the makings left: " + contents(chest));
+		});
+	}
+
+	/**
+	 * Smith's Draught (30.16): a Toolsmith drinks it from a right-click and works 25% faster for a day; a Cleric has no use
+	 * for it and the player keeps it.
+	 */
+	//$ gametest_ticks_batch AREA '100' '"tonicSmith"'
+	@GameTest(template = AREA, timeoutTicks = 100, batch = "tonicSmith")
+	public void aToolsmithDrinksSmithsDraughtAndAClericRefusesIt(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		quiet(helper);
+		Villager suited = worker(helper, new BlockPos(4, 2, 4), VillagerProfession.TOOLSMITH, "Dara");
+		Villager other = worker(helper, new BlockPos(10, 2, 4), VillagerProfession.CLERIC, "Ash");
+		ServerPlayer player = player(helper, GameType.SURVIVAL);
+		helper.runAfterDelay(5, () -> {
+			player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(ModItems.SMITHS_DRAUGHT));
+			Tonics.Offer refused = Tonics.offer(player, other, player.getMainHandItem());
+			helper.assertTrue(refused.outcome() == Tonics.Outcome.REFUSED && refused.message().getString().equals("Ash has no use for Smith's Draught."),
+				"refused: " + refused.outcome() + " " + (refused.message() == null ? null : refused.message().getString()));
+			helper.assertTrue(rightClick(player, other) == InteractionResult.SUCCESS && player.getMainHandItem().getCount() == 1
+				&& !ModAttachments.TONIC.has(other) && part(other) == 1f, "the Cleric drank it");
+			helper.assertTrue(rightClick(player, suited) == InteractionResult.SUCCESS, "no answer from the Toolsmith");
+			helper.assertTrue(player.getMainHandItem().isEmpty(), "not drunk: " + player.getMainHandItem());
+			Tonics.Drunk drunk = ModAttachments.TONIC.get(suited);
+			helper.assertTrue(drunk != null && drunk.id().equals(AliveWorkplace.id("smiths_draught").toString())
+				&& drunk.until() == helper.getLevel().getGameTime() + 24000, "drunk: " + drunk);
+			helper.assertTrue(Math.abs(Pace.factor(suited) - 1f / 1.25f) < EPSILON && Pace.of(suited).percent() == 25, "pace: " + Pace.of(suited));
+			String status = Pace.describe(suited).getString();
+			helper.assertTrue(status.equals("25% faster (Smith's Draught, 20 min left)"), "status: " + status);
+			helper.succeed();
+		});
+	}
+
+	/** A Cleric with the makings of one Scholar's Infusion in the chest by their station makes it from them (30.16). */
+	//$ gametest_ticks_batch AREA '3000' '"tonicScholarMade"'
+	@GameTest(template = AREA, timeoutTicks = 3000, batch = "tonicScholarMade")
+	public void theClericBrewsScholarsInfusion(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		helper.setDayTime(2000);
+		BlockPos stand = new BlockPos(2, 2, 2);
+		BlockPos chestPos = new BlockPos(2, 2, 4);
+		helper.setBlock(stand, Blocks.BREWING_STAND);
+		helper.setBlock(chestPos, Blocks.CHEST);
+		Container chest = helper.getBlockEntity(chestPos);
+		chest.setItem(0, new ItemStack(Items.GLASS_BOTTLE, 1));
+		chest.setItem(1, new ItemStack(Items.AMETHYST_SHARD, 1));
+		chest.setItem(2, new ItemStack(Items.GLOW_BERRIES, 1));
+		Villager maker = helper.spawn(EntityType.VILLAGER, new BlockPos(3, 2, 3));
+		Jobs.employ(helper.getLevel(), maker, helper.absolutePos(stand), PoiTypes.CLERIC, VillagerProfession.CLERIC);
+		helper.succeedWhen(() -> {
+			helper.assertTrue(chest.countItem(ModItems.SCHOLARS_INFUSION) == 1, "Scholar's Infusion in the chest: " + contents(chest));
+			helper.assertTrue(chest.countItem(Items.GLASS_BOTTLE) == 0 && chest.countItem(Items.AMETHYST_SHARD) == 0 && chest.countItem(Items.GLOW_BERRIES) == 0, "the makings left: " + contents(chest));
+		});
+	}
+
+	/**
+	 * Scholar's Infusion (30.16): a Scholar drinks it from a right-click and works 25% faster for a day; a Farmer has no use
+	 * for it and the player keeps it.
+	 */
+	//$ gametest_ticks_batch AREA '100' '"tonicScholar"'
+	@GameTest(template = AREA, timeoutTicks = 100, batch = "tonicScholar")
+	public void aScholarDrinksScholarsInfusionAndAFarmerRefusesIt(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		quiet(helper);
+		Villager suited = worker(helper, new BlockPos(4, 2, 4), ModVillagers.SCHOLAR, "Dara");
+		Villager other = worker(helper, new BlockPos(10, 2, 4), VillagerProfession.FARMER, "Ash");
+		ServerPlayer player = player(helper, GameType.SURVIVAL);
+		helper.runAfterDelay(5, () -> {
+			player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(ModItems.SCHOLARS_INFUSION));
+			Tonics.Offer refused = Tonics.offer(player, other, player.getMainHandItem());
+			helper.assertTrue(refused.outcome() == Tonics.Outcome.REFUSED && refused.message().getString().equals("Ash has no use for Scholar's Infusion."),
+				"refused: " + refused.outcome() + " " + (refused.message() == null ? null : refused.message().getString()));
+			helper.assertTrue(rightClick(player, other) == InteractionResult.SUCCESS && player.getMainHandItem().getCount() == 1
+				&& !ModAttachments.TONIC.has(other) && part(other) == 1f, "the Farmer drank it");
+			helper.assertTrue(rightClick(player, suited) == InteractionResult.SUCCESS, "no answer from the Scholar");
+			helper.assertTrue(player.getMainHandItem().isEmpty(), "not drunk: " + player.getMainHandItem());
+			Tonics.Drunk drunk = ModAttachments.TONIC.get(suited);
+			helper.assertTrue(drunk != null && drunk.id().equals(AliveWorkplace.id("scholars_infusion").toString())
+				&& drunk.until() == helper.getLevel().getGameTime() + 24000, "drunk: " + drunk);
+			helper.assertTrue(Math.abs(Pace.factor(suited) - 1f / 1.25f) < EPSILON && Pace.of(suited).percent() == 25, "pace: " + Pace.of(suited));
+			String status = Pace.describe(suited).getString();
+			helper.assertTrue(status.equals("25% faster (Scholar's Infusion, 20 min left)"), "status: " + status);
+			helper.succeed();
+		});
+	}
+
+	/** A Chef with the makings of one Harvest Cordial in the chest by their station makes it from them (30.16). */
+	//$ gametest_ticks_batch AREA '3000' '"tonicHarvestMade"'
+	@GameTest(template = AREA, timeoutTicks = 3000, batch = "tonicHarvestMade")
+	public void theChefCooksHarvestCordial(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		helper.setDayTime(2000);
+		BlockPos stand = new BlockPos(2, 2, 2);
+		BlockPos chestPos = new BlockPos(2, 2, 4);
+		helper.setBlock(stand, ModBlocks.KITCHEN_STOVE);
+		helper.setBlock(chestPos, Blocks.CHEST);
+		Container chest = helper.getBlockEntity(chestPos);
+		chest.setItem(0, new ItemStack(Items.GLASS_BOTTLE, 1));
+		chest.setItem(1, new ItemStack(Items.APPLE, 1));
+		chest.setItem(2, new ItemStack(Items.WHEAT, 1));
+		chest.setItem(3, new ItemStack(Items.SUGAR, 1));
+		Villager maker = helper.spawn(EntityType.VILLAGER, new BlockPos(3, 2, 3));
+		Jobs.employ(helper.getLevel(), maker, helper.absolutePos(stand), ModVillagers.KITCHEN_STOVE_POI, ModVillagers.CHEF);
+		helper.succeedWhen(() -> {
+			helper.assertTrue(chest.countItem(ModItems.HARVEST_CORDIAL) == 1, "Harvest Cordial in the chest: " + contents(chest));
+			helper.assertTrue(chest.countItem(Items.GLASS_BOTTLE) == 0 && chest.countItem(Items.APPLE) == 0 && chest.countItem(Items.WHEAT) == 0 && chest.countItem(Items.SUGAR) == 0, "the makings left: " + contents(chest));
+		});
+	}
+
+	/**
+	 * Harvest Cordial (30.16): a Orchard Keeper drinks it from a right-click and works 25% faster for a day; a Librarian has no use
+	 * for it and the player keeps it.
+	 */
+	//$ gametest_ticks_batch AREA '100' '"tonicHarvest"'
+	@GameTest(template = AREA, timeoutTicks = 100, batch = "tonicHarvest")
+	public void anOrchardKeeperDrinksHarvestCordialAndALibrarianRefusesIt(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		quiet(helper);
+		Villager suited = worker(helper, new BlockPos(4, 2, 4), ModVillagers.ORCHARD_KEEPER, "Dara");
+		Villager other = worker(helper, new BlockPos(10, 2, 4), VillagerProfession.LIBRARIAN, "Ash");
+		ServerPlayer player = player(helper, GameType.SURVIVAL);
+		helper.runAfterDelay(5, () -> {
+			player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(ModItems.HARVEST_CORDIAL));
+			Tonics.Offer refused = Tonics.offer(player, other, player.getMainHandItem());
+			helper.assertTrue(refused.outcome() == Tonics.Outcome.REFUSED && refused.message().getString().equals("Ash has no use for Harvest Cordial."),
+				"refused: " + refused.outcome() + " " + (refused.message() == null ? null : refused.message().getString()));
+			helper.assertTrue(rightClick(player, other) == InteractionResult.SUCCESS && player.getMainHandItem().getCount() == 1
+				&& !ModAttachments.TONIC.has(other) && part(other) == 1f, "the Librarian drank it");
+			helper.assertTrue(rightClick(player, suited) == InteractionResult.SUCCESS, "no answer from the Orchard Keeper");
+			helper.assertTrue(player.getMainHandItem().isEmpty(), "not drunk: " + player.getMainHandItem());
+			Tonics.Drunk drunk = ModAttachments.TONIC.get(suited);
+			helper.assertTrue(drunk != null && drunk.id().equals(AliveWorkplace.id("harvest_cordial").toString())
+				&& drunk.until() == helper.getLevel().getGameTime() + 24000, "drunk: " + drunk);
+			helper.assertTrue(Math.abs(Pace.factor(suited) - 1f / 1.25f) < EPSILON && Pace.of(suited).percent() == 25, "pace: " + Pace.of(suited));
+			String status = Pace.describe(suited).getString();
+			helper.assertTrue(status.equals("25% faster (Harvest Cordial, 20 min left)"), "status: " + status);
+			helper.succeed();
+		});
+	}
+
+	/** A Chef with the makings of one Woodsman's Broth in the chest by their station makes it from them (30.16). */
+	//$ gametest_ticks_batch AREA '3000' '"tonicWoodsmanMade"'
+	@GameTest(template = AREA, timeoutTicks = 3000, batch = "tonicWoodsmanMade")
+	public void theChefCooksWoodsmansBroth(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		helper.setDayTime(2000);
+		BlockPos stand = new BlockPos(2, 2, 2);
+		BlockPos chestPos = new BlockPos(2, 2, 4);
+		helper.setBlock(stand, ModBlocks.KITCHEN_STOVE);
+		helper.setBlock(chestPos, Blocks.CHEST);
+		Container chest = helper.getBlockEntity(chestPos);
+		chest.setItem(0, new ItemStack(Items.BOWL, 1));
+		chest.setItem(1, new ItemStack(Items.COOKED_SALMON, 1));
+		chest.setItem(2, new ItemStack(Items.CARROT, 1));
+		chest.setItem(3, new ItemStack(Items.BROWN_MUSHROOM, 1));
+		Villager maker = helper.spawn(EntityType.VILLAGER, new BlockPos(3, 2, 3));
+		Jobs.employ(helper.getLevel(), maker, helper.absolutePos(stand), ModVillagers.KITCHEN_STOVE_POI, ModVillagers.CHEF);
+		helper.succeedWhen(() -> {
+			helper.assertTrue(chest.countItem(ModItems.WOODSMANS_BROTH) == 1, "Woodsman's Broth in the chest: " + contents(chest));
+			helper.assertTrue(chest.countItem(Items.BOWL) == 0 && chest.countItem(Items.COOKED_SALMON) == 0 && chest.countItem(Items.CARROT) == 0 && chest.countItem(Items.BROWN_MUSHROOM) == 0, "the makings left: " + contents(chest));
+		});
+	}
+
+	/**
+	 * Woodsman's Broth (30.16): a Lumberjack drinks it from a right-click and works 25% faster for a day; a Mason has no use
+	 * for it and the player keeps it.
+	 */
+	//$ gametest_ticks_batch AREA '100' '"tonicWoodsman"'
+	@GameTest(template = AREA, timeoutTicks = 100, batch = "tonicWoodsman")
+	public void aLumberjackDrinksWoodsmansBrothAndAMasonRefusesIt(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		quiet(helper);
+		Villager suited = worker(helper, new BlockPos(4, 2, 4), ModVillagers.LUMBERJACK, "Dara");
+		Villager other = worker(helper, new BlockPos(10, 2, 4), VillagerProfession.MASON, "Ash");
+		ServerPlayer player = player(helper, GameType.SURVIVAL);
+		helper.runAfterDelay(5, () -> {
+			player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(ModItems.WOODSMANS_BROTH));
+			Tonics.Offer refused = Tonics.offer(player, other, player.getMainHandItem());
+			helper.assertTrue(refused.outcome() == Tonics.Outcome.REFUSED && refused.message().getString().equals("Ash has no use for Woodsman's Broth."),
+				"refused: " + refused.outcome() + " " + (refused.message() == null ? null : refused.message().getString()));
+			helper.assertTrue(rightClick(player, other) == InteractionResult.SUCCESS && player.getMainHandItem().getCount() == 1
+				&& !ModAttachments.TONIC.has(other) && part(other) == 1f, "the Mason drank it");
+			helper.assertTrue(rightClick(player, suited) == InteractionResult.SUCCESS, "no answer from the Lumberjack");
+			helper.assertTrue(player.getMainHandItem().isEmpty(), "not drunk: " + player.getMainHandItem());
+			Tonics.Drunk drunk = ModAttachments.TONIC.get(suited);
+			helper.assertTrue(drunk != null && drunk.id().equals(AliveWorkplace.id("woodsmans_broth").toString())
+				&& drunk.until() == helper.getLevel().getGameTime() + 24000, "drunk: " + drunk);
+			helper.assertTrue(Math.abs(Pace.factor(suited) - 1f / 1.25f) < EPSILON && Pace.of(suited).percent() == 25, "pace: " + Pace.of(suited));
+			String status = Pace.describe(suited).getString();
+			helper.assertTrue(status.equals("25% faster (Woodsman's Broth, 20 min left)"), "status: " + status);
+			helper.succeed();
+		});
+	}
+
+	/** The four tonics of 30.16: what their tooltips say (who they suit, who makes them from what). */
+	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
+	public void theTooltipsOfTheFourMoreTonics(GameTestHelper helper) {
+		Map<String, List<String>> want = new LinkedHashMap<>();
+		want.put("smiths_draught", List.of("For Armorers, Toolsmiths, Weaponsmiths, Tinkerers and Ball Smiths",
+			"Brewed by a Cleric from Glass Bottle, Blaze Powder and 2 Iron Nuggets"));
+		want.put("scholars_infusion", List.of("For Scholars, Teachers, Librarians, Cartographers and Fossil Scientists",
+			"Brewed by a Cleric from Glass Bottle, Amethyst Shard and Glow Berries"));
+		want.put("harvest_cordial", List.of("For Farmers, Orchard Keepers, Florists, Beekeepers, Composters, Shepherds, Butchers, Ranchers and Chefs",
+			"Cooked by a Chef from Glass Bottle, Apple, Wheat and Sugar"));
+		want.put("woodsmans_broth", List.of("For Lumberjacks, Fletchers, Fishermen, Porters and Postmen",
+			"Cooked by a Chef from Bowl, Cooked Salmon, Carrot and Brown Mushroom"));
+		Map<String, String> names = Map.of("smiths_draught", "Smith's Draught", "scholars_infusion", "Scholar's Infusion",
+			"harvest_cordial", "Harvest Cordial", "woodsmans_broth", "Woodsman's Broth");
+		want.forEach((id, lines) -> {
+			Tonics.Tonic tonic = Tonics.get(AliveWorkplace.id(id)).orElseThrow();
+			List<String> got = Tonics.tooltip(tonic).stream().map(Component::getString).toList();
+			helper.assertTrue(got.equals(List.of("Drink: 25% faster work for 20 minutes", lines.get(0), lines.get(1),
+				"Right-click a villager it suits. Players can't make it")), id + ": " + got);
+			Item item = tonic.item();
+			helper.assertTrue(new ItemStack(item).getHoverName().getString().equals(names.get(id)), "name of " + id);
+			for (var recipe : helper.getLevel().getServer().getRecipeManager().getRecipes()) {
+				helper.assertTrue(recipe.value().getResultItem(helper.getLevel().registryAccess()).getItem() != item, "a recipe makes " + id + ": " + recipe.id());
+			}
+		});
+		helper.succeed();
+	}
+
 	private static void quiet(GameTestHelper helper) {
 		Leftovers.halls(helper);
 		io.github.jcondedata.aliveworkplace.hall.CivicEffects.forget();

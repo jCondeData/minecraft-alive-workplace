@@ -1,0 +1,10 @@
+{
+  "item": "aliveworkplace:harvest_cordial",
+  "maker": "chef",
+  "ingredients": ["minecraft:glass_bottle", "minecraft:apple", "minecraft:wheat", "minecraft:sugar"],
+  "jobs": ["minecraft:farmer", "aliveworkplace:orchard_keeper", "aliveworkplace:florist", "aliveworkplace:beekeeper", "aliveworkplace:composter", "minecraft:shepherd", "minecraft:butcher", "aliveworkplace:rancher", "aliveworkplace:chef"],
+  "effects": [{"type": "aliveworkplace:work_pace", "percent": 25}],
+  "ticks": 24000,
+  "keep": 4,
+  "enabled": true
+}

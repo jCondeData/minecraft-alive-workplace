@@ -2040,7 +2040,7 @@ the Village Hall (`VillageNeeds`, `VillageQuests`, `VillageRanks`, `Festivals`, 
   refuses it; an alchemist with the makings brews it into the chests and stops at 4; a chef cooks Builder's Tea; a
   tonic from a test data pack works; with every bonus the cap holds; both icons pass `lint.py`; showcase scene
   `tonics`: a miner drinking, then their status line ("25% faster: Miner's Brew, 19 min left").
-- [ ] **30.16** **Four more tonics**, each its own item, data file and pixel-art icon:
+- [x] **30.16** (review: pending 2026-10-05) **Four more tonics**, each its own item, data file and pixel-art icon:
   - **Smith's Draught** (alchemist: a glass bottle, blaze powder, two iron nuggets): Armorers, Toolsmiths,
     Weaponsmiths, Tinkerers, Ball Smiths;
   - **Scholar's Infusion** (alchemist: a glass bottle, an amethyst shard, glow berries): Scholars, Teachers,

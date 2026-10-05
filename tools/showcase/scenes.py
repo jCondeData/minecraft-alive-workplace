@@ -228,6 +228,14 @@ SCENES = [
     # Legends (ROADMAP 29.3): a Mythic Legend announced to the whole server in gold, and the chronicle's nether-star line
     S("legend_announce", "Legends", "A Mythic Legend is announced", "a Mythic Legend's coming was announced in chat and written in the chronicle", 45,
       [("01_legend_chat", "The announcement"), ("02_legend_chronicle", "The chronicle line")]),
+    S("edicts", "Village Hall", "The Book of Edicts",
+      "the Book of Edicts opened from the hall's lectern button, with Long Shifts in force, at GUI scales 2 and 4", 45,
+      [("01_edicts_book", "Long Shifts in force, two free slots, one locked for a City"), ("02_edicts_scale4", "At GUI scale 4")]),
+    # Reforms (ROADMAP 30.5): The Shift Bell's step on the quest page, then the fireworks and the chronicle line
+    S("reform", "Village Hall", "Reforms: The Shift Bell",
+      "Long Shifts' reform step was on the quest page; its three steps handed in, fireworks went up over the hall and the chronicle kept the reform", 60,
+      [("01_reform_step", "The Shift Bell's first step, below the daily quests"), ("02_reform_fireworks", "Reformed: fireworks over the hall"),
+       ("03_reform_chronicle", "The chronicle: the edict reformed")]),
     S("hall_quests", "Village Hall", "Quests, advice, the village map and the festival",
       "the quests, advice, village map, mercenaries and festival opened", 60,
       [("01_hall_quests", "Quests"), ("02_hall_advice", "What next?"), ("03_hall_map", "Village map"),

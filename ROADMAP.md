@@ -1841,7 +1841,7 @@ the Village Hall (`VillageNeeds`, `VillageQuests`, `VillageRanks`, `Festivals`, 
     and their mood 10 lower, with the reason listed;
   - an edict from a test data pack loads and works, and `"enabled": false` hides Long Shifts;
   - showcase scene `long_shifts`: the hall's list with the "long shifts" mood, and the chronicle line.
-- [ ] **30.4** **The Book of Edicts page.** The page players use, in the hall's screen and the Village Ledger:
+- [x] **30.4** (review: pending 2026-10-04) **The Book of Edicts page.** The page players use, in the hall's screen and the Village Ledger:
   - the hall's screen: the people list's page arrows move to the list's bottom corners (slots 45 and 53, 34 people a
     page), which frees slot 9 for the Book of Edicts (a lectern icon) and leaves slot 17 for another milestone's page;
   - the Village Ledger: sneak-right-click the air opens the Book straight away (its tooltip says so);
@@ -1856,7 +1856,7 @@ the Village Hall (`VillageNeeds`, `VillageQuests`, `VillageRanks`, `Festivals`, 
   Done when: GameTests through `ChoiceMenu.forTest`: proclaiming and lifting by clicks, the locked slots, a stranger's
   click refused, the Ledger's sneak-use opening the page, the people list paging at 34; showcase scene `edicts`: the
   Book with Long Shifts in force, at GUI scales 2 and 4.
-- [ ] **30.5** **Reforms, and The Shift Bell.** While an edict is in force and not reformed, the hall keeps its
+- [x] **30.5** (review: pending 2026-10-05) **Reforms, and The Shift Bell.** While an edict is in force and not reformed, the hall keeps its
   reform's next step on the quest page (extra to the three daily quests, in the row below them, with a book-and-quill
   icon; it never expires). The next step goes up the morning after the last was done, so a reform takes three days at
   least. Steps use the quest kinds there are (bring, clear out monsters, beat a trainer), with a `fallback` step for a
@@ -4272,6 +4272,15 @@ item waits.
 - (Sessions: anything that needs the owner, and the link to the latest Full test report. Handoffs go here through
   `sessions.py handoff "<in progress, next, traps>" --as <you>`, which keeps one per kind of session (chat, night):
   carry over anything still true from the previous one.)
+- 2026-10-05 (30.5, decisions; lane d): a reform step is a `VillageQuests.Quest` with `reform` {edict, step} kept in the
+  hall's quest list (not counted in the 3 daily ones, never expired) and shown only while its edict is in force and not
+  reformed, so a step half handed in keeps its count while the edict is lifted; the hall's `reforms` list keeps {id,
+  step, reformed, nextDay}. The first step goes up when the edict is proclaimed (the round runs then too), later ones on
+  the first round of the day after (`Chronicle.day`). A monster or a trainer beaten counts for the first daily quest of
+  that kind and every reform step of it on the page. Data: `reform.steps[]` take `kind`/`item`/`count`/`reward`/
+  `fallback`/`arc`; a fallback can't be a battle; a battle step with no `fallback` written clears out 8 monsters for its
+  pay. `arc` (on the reform and each step) loads and is kept, unread until M31. The Book's line says "Reform: <name>,
+  step N of M" or "Reformed: <name>", and a reformed edict lists the reform's `effects` (if any) as its cost.
 - 2026-10-04 (27.4, decision; lane c): the plan on the ground is drawn as the Scan Tool's box really is: dust the
   server sends to the holder alone (`city/CityPlanGround`, every 10 ticks, at most 900 dots, within 24 blocks), not a
   client renderer, so nothing new has to be synced to the client. Road styles don't exist until 27.15, so a road's style

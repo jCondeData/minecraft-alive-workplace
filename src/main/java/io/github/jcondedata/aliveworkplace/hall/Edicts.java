@@ -52,13 +52,28 @@ public final class Edicts implements ResourceManagerReloadListener {
 	/** {@code edictMinDays} in the config: days an edict stays before it can be lifted. */
 	public static int MIN_DAYS = 3;
 
-	/** One edict: its id (the file's), icon, texts, order on the page, its boost and cost, and what it excludes. */
+	/**
+	 * One edict: its id (the file's), icon, texts, order on the page, its boost and cost, what it excludes, and its
+	 * reform (30.5, {@link Reforms}; empty: it can't be reformed).
+	 */
 	public record Edict(ResourceLocation id, ResourceLocation icon, Component name, Component description, int order,
-						List<CivicEffects.Effect> boost, List<CivicEffects.Effect> cost, List<ResourceLocation> excludes) {
+						List<CivicEffects.Effect> boost, List<CivicEffects.Effect> cost, List<ResourceLocation> excludes,
+						Optional<Reforms.Reform> reform) {
+		/** An edict without a reform. */
+		public Edict(ResourceLocation id, ResourceLocation icon, Component name, Component description, int order,
+					 List<CivicEffects.Effect> boost, List<CivicEffects.Effect> cost, List<ResourceLocation> excludes) {
+			this(id, icon, name, description, order, boost, cost, excludes, Optional.empty());
+		}
+
 		/** Every effect it has while in force. */
 		public List<CivicEffects.Effect> effects() {
+			return effects(false);
+		}
+
+		/** Every effect it has while in force, reformed or not: reformed, the reform's effects take the cost's place. */
+		public List<CivicEffects.Effect> effects(boolean reformed) {
 			List<CivicEffects.Effect> all = new ArrayList<>(boost);
-			all.addAll(cost);
+			all.addAll(reformed ? reform.map(Reforms.Reform::effects).orElse(cost) : cost);
 			return all;
 		}
 
@@ -80,7 +95,7 @@ public final class Edicts implements ResourceManagerReloadListener {
 	public static final Codec<ResourceLocation> ID_CODEC = Codec.STRING.xmap(Edicts::id, Edicts::shortId);
 
 	private record Body(ResourceLocation icon, Component name, Component description, int order, List<CivicEffects.Effect> boost,
-						List<CivicEffects.Effect> cost, List<ResourceLocation> excludes) {
+						List<CivicEffects.Effect> cost, List<ResourceLocation> excludes, Optional<Reforms.Reform> reform) {
 	}
 
 	private static final MapCodec<Body> BODY = RecordCodecBuilder.mapCodec(i -> i.group(
@@ -90,7 +105,8 @@ public final class Edicts implements ResourceManagerReloadListener {
 		Codec.INT.optionalFieldOf("order", 100).forGetter(Body::order),
 		CivicEffects.CODEC.listOf().optionalFieldOf("boost", List.of()).forGetter(Body::boost),
 		CivicEffects.CODEC.listOf().optionalFieldOf("cost", List.of()).forGetter(Body::cost),
-		ID_CODEC.listOf().optionalFieldOf("excludes", List.of()).forGetter(Body::excludes)
+		ID_CODEC.listOf().optionalFieldOf("excludes", List.of()).forGetter(Body::excludes),
+		Reforms.Reform.CODEC.optionalFieldOf("reform").forGetter(Body::reform)
 	).apply(i, Body::new));
 
 	private static volatile Map<ResourceLocation, Edict> edicts = Map.of();
@@ -133,7 +149,7 @@ public final class Edicts implements ResourceManagerReloadListener {
 			return null;
 		}
 		Body body = BODY.codec().parse(JsonOps.INSTANCE, object).getOrThrow(IllegalArgumentException::new);
-		return new Edict(id, body.icon(), body.name(), body.description(), body.order(), body.boost(), body.cost(), body.excludes());
+		return new Edict(id, body.icon(), body.name(), body.description(), body.order(), body.boost(), body.cost(), body.excludes(), body.reform());
 	}
 
 	static void set(List<Edict> found) {
@@ -186,11 +202,15 @@ public final class Edicts implements ResourceManagerReloadListener {
 		return rank.ordinal() + 1;
 	}
 
-	/** The effects of the edicts in force (the ones still loaded), with the edict's name as their source. */
-	static CivicEffects.Sum sum(List<InForce> inForce) {
+	/**
+	 * The effects of the edicts in force (the ones still loaded), with the edict's name as their source; those the
+	 * village has reformed ({@code reformed} ids) without their cost.
+	 */
+	static CivicEffects.Sum sum(List<InForce> inForce, java.util.Set<String> reformed) {
 		List<CivicEffects.Active> active = new ArrayList<>();
 		for (InForce f : inForce) {
-			get(ResourceLocation.tryParse(f.id())).ifPresent(edict -> edict.effects().forEach(e -> active.add(new CivicEffects.Active(e, edict.name()))));
+			get(ResourceLocation.tryParse(f.id())).ifPresent(edict -> edict.effects(reformed.contains(f.id()))
+				.forEach(e -> active.add(new CivicEffects.Active(e, edict.name()))));
 		}
 		return new CivicEffects.Sum(active);
 	}
@@ -239,6 +259,7 @@ public final class Edicts implements ResourceManagerReloadListener {
 		next.add(new InForce(edict.id().toString(), Chronicle.day(level)));
 		entity.setEdicts(next);
 		Chronicle.record(level, hall, Chronicle.Kind.EDICT, Component.translatable("chronicle.aliveworkplace.edict.proclaimed", edict.name()), true);
+		Reforms.round(level, hall, entity);
 		level.playSound(null, hall, SoundEvents.BELL_BLOCK, SoundSource.BLOCKS, 1f, 1f);
 		Component told = Component.translatable("message.aliveworkplace.edict.proclaimed", village, edict.name(), edict.description())
 			.withStyle(ChatFormatting.GOLD);

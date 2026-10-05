@@ -1148,6 +1148,106 @@ final class JobScenes {
 						"the chronicle keeps the proclamation");
 				}, 30)),
 			(level, player) -> player.containerMenu instanceof ChoiceMenu));
+		// The Book of Edicts (ROADMAP 30.4): a Town with Long Shifts in force, two free slots and one locked for a City,
+		// every edict below; at GUI scale 2, then at 4.
+		SCREENS.put("edicts", new Screen("the Book of Edicts opened from the hall's lectern button, with Long Shifts in force, at GUI scales 2 and 4",
+			new Vec3(2.5, -58.4, 4.5), TARGET,
+			(level, player) -> {
+				level.setBlockAndUpdate(STATION, ModBlocks.VILLAGE_HALL.defaultBlockState()
+					.setValue(io.github.jcondedata.aliveworkplace.hall.VillageHallBlock.FACING, Direction.SOUTH));
+				var hall = (io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(STATION);
+				hall.setRank(io.github.jcondedata.aliveworkplace.hall.VillageRanks.Rank.TOWN);
+				hall.setEdicts(List.of());
+				var shifts = io.github.jcondedata.aliveworkplace.hall.Edicts.find("long_shifts").orElseThrow();
+				var told = io.github.jcondedata.aliveworkplace.hall.Edicts.proclaim(level, STATION, player, shifts);
+				Showcase.check(told.done(), "Long Shifts was proclaimed: " + told.message().getString());
+			},
+			List.of(new Step("01_edicts_book", io.github.jcondedata.aliveworkplace.hall.EdictBook.SLOTS[0], 6, (level, player) -> {
+					Minecraft.getInstance().execute(() -> Minecraft.getInstance().options.guiScale().set(2));
+					io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.open(player, STATION);
+					if (player.containerMenu instanceof ChoiceMenu m) {
+						Showcase.check(m.icon(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.BOOK).is(Items.LECTERN), "slot 9 is the Book of Edicts");
+						m.press(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.BOOK, player);
+						Showcase.check(m.icon(io.github.jcondedata.aliveworkplace.hall.EdictBook.SLOTS[0]).is(Items.CLOCK), "Long Shifts sits in the first slot");
+						Showcase.check(m.icon(io.github.jcondedata.aliveworkplace.hall.EdictBook.SLOTS[3]).is(Items.GRAY_DYE), "a Town's fourth slot is locked");
+					}
+				}, 30),
+				new Step("02_edicts_scale4", io.github.jcondedata.aliveworkplace.hall.EdictBook.FIRST_EDICT, 6, (level, player) -> {
+					// GUI scale 4 needs a window of at least 1280x960; the option only takes 4 once the window is that big.
+					Minecraft mc = Minecraft.getInstance();
+					mc.execute(() -> org.lwjgl.glfw.GLFW.glfwSetWindowSize(mc.getWindow().getWindow(), 1920, 1080));
+					new Thread(() -> {
+						try {
+							Thread.sleep(400);
+						} catch (InterruptedException ignored) {
+						}
+						mc.execute(() -> {
+							mc.options.guiScale().set(4);
+							mc.resizeDisplay();
+						});
+					}, "edicts-scale").start();
+					io.github.jcondedata.aliveworkplace.hall.EdictBook.open(player, STATION);
+				}, 40)),
+			(level, player) -> player.containerMenu instanceof ChoiceMenu));
+		// Reforms (ROADMAP 30.5): Long Shifts in force puts The Shift Bell's step on the quest page (the row below the daily
+		// quests, a book and quill); its three steps handed in, fireworks go up over the hall and the chronicle keeps it.
+		SCREENS.put("reform", new Screen("Long Shifts' reform step was on the quest page; its three steps handed in, fireworks went up over the hall and the chronicle kept the reform",
+			new Vec3(2.5, -58.4, 4.5), TARGET,
+			(level, player) -> {
+				level.setBlockAndUpdate(STATION, ModBlocks.VILLAGE_HALL.defaultBlockState()
+					.setValue(io.github.jcondedata.aliveworkplace.hall.VillageHallBlock.FACING, Direction.SOUTH));
+				var hall = (io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(STATION);
+				hall.setRank(io.github.jcondedata.aliveworkplace.hall.VillageRanks.Rank.HAMLET);
+				hall.setEdicts(List.of());
+				hall.setReforms(List.of());
+				var shifts = io.github.jcondedata.aliveworkplace.hall.Edicts.find("long_shifts").orElseThrow();
+				var told = io.github.jcondedata.aliveworkplace.hall.Edicts.proclaim(level, STATION, player, shifts);
+				Showcase.check(told.done(), "Long Shifts was proclaimed: " + told.message().getString());
+				player.getInventory().add(new ItemStack(Items.CLOCK, 4));
+			},
+			List.of(new Step("01_reform_step", io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.reformSlots(1)[0], 6, (level, player) -> {
+					io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.open(player, STATION);
+					if (player.containerMenu instanceof ChoiceMenu m) {
+						m.press(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.QUESTS, player);
+						ItemStack step = m.icon(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.reformSlots(1)[0]);
+						Showcase.check(step.is(Items.WRITABLE_BOOK) && step.getHoverName().getString().equals("The Shift Bell, step 1 of 3"),
+							"the quest page shows The Shift Bell's first step: " + step.getHoverName().getString());
+					}
+				}, 30),
+				new Step("02_reform_fireworks", -1, 0, (level, player) -> {
+					player.closeContainer();
+					var hall = (io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(STATION);
+					String id = io.github.jcondedata.aliveworkplace.AliveWorkplace.id("long_shifts").toString();
+					ItemStack[] hand = {new ItemStack(Items.CLOCK, 4), new ItemStack(Items.GOLD_INGOT, 8), new ItemStack(Items.BREAD, 32)};
+					player.getInventory().clearContent();
+					for (int i = 0; i < hand.length; i++) {
+						// Staged: the next step is due now rather than tomorrow morning.
+						var progress = io.github.jcondedata.aliveworkplace.hall.Reforms.progress(hall, id);
+						hall.setReforms(List.of(new io.github.jcondedata.aliveworkplace.hall.Reforms.Progress(id, progress.step(), false, 0)));
+						io.github.jcondedata.aliveworkplace.hall.Reforms.round(level, STATION, hall);
+						var shown = io.github.jcondedata.aliveworkplace.hall.Reforms.shown(hall);
+						player.getInventory().add(hand[i].copy());
+						if (!shown.isEmpty()) {
+							io.github.jcondedata.aliveworkplace.hall.VillageQuests.handIn(player, STATION, shown.get(0).id());
+						}
+					}
+					Showcase.check(io.github.jcondedata.aliveworkplace.hall.Reforms.reformed(hall, id), "Long Shifts was reformed: " + hall.reforms());
+					Showcase.check(!level.getEntitiesOfClass(net.minecraft.world.entity.projectile.FireworkRocketEntity.class,
+						new net.minecraft.world.phys.AABB(STATION).inflate(8)).isEmpty(), "fireworks went up over the hall");
+					// Step back and look up at the sky over the hall.
+					player.teleportTo(level, 0.5, -59, 14.5, 180f, -40f);
+				}, 40),
+				new Step("03_reform_chronicle", -1, 6, (level, player) -> {
+					player.teleportTo(level, 2.5, -60, 4.5, 157f, 20f);
+					io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.open(player, STATION);
+					if (player.containerMenu instanceof ChoiceMenu m) {
+						m.press(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.CHRONICLE, player);
+					}
+					var hall = (io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(STATION);
+					Showcase.check(hall.chronicle().stream().anyMatch(e -> e.kind() == io.github.jcondedata.aliveworkplace.hall.Chronicle.Kind.REFORM
+						&& e.text().getString().equals("The edict Long Shifts was reformed: The Shift Bell")), "the chronicle keeps the reform");
+				}, 30)),
+			(level, player) -> player.containerMenu instanceof ChoiceMenu));
 		SCREENS.put("hall_treasury", new Screen("the hall's treasury was collected, the village protected and its screen opened from a Village Ledger",
 			new Vec3(2.5, -58.4, 4.5), TARGET,
 			(level, player) -> {

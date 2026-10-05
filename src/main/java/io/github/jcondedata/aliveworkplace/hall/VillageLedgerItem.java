@@ -28,7 +28,8 @@ import net.minecraft.world.level.Level;
 /**
  * A Village Ledger: right-click a Village Hall with it to bind it to that village, then right-click the air anywhere
  * in the same dimension to open the hall's screen — its people, requests, builds, quests and chronicle — without
- * walking back to the hall (the hall's chunk has to be loaded, so within a few hundred blocks).
+ * walking back to the hall (the hall's chunk has to be loaded, so within a few hundred blocks). Sneaking opens the
+ * Book of Edicts instead (ROADMAP 30.4).
  */
 public class VillageLedgerItem extends Item {
 	/** The hall a ledger is bound to, and the village's name then (for the tooltip). */
@@ -71,7 +72,11 @@ public class VillageLedgerItem extends Item {
 		if (!VillageProtection.mayChange(server, player, ledger.hall().pos())) {
 			return InteractionResultHolder.fail(stack); // a protected village's screen is only for its owner and their friends
 		}
-		VillageHallScreen.openRemote(serverPlayer, ledger.hall().pos());
+		if (player.isShiftKeyDown()) {
+			EdictBook.open(serverPlayer, ledger.hall().pos()); // sneaking: the Book of Edicts straight away (30.4)
+		} else {
+			VillageHallScreen.openRemote(serverPlayer, ledger.hall().pos());
+		}
 		level.playSound(null, player.blockPosition(), SoundEvents.BOOK_PAGE_TURN, SoundSource.PLAYERS, 0.8f, 1.1f);
 		return InteractionResultHolder.success(stack);
 	}
@@ -81,5 +86,8 @@ public class VillageLedgerItem extends Item {
 		Ledger ledger = stack.get(ModComponents.LEDGER);
 		tooltip.add(ledger == null ? Component.translatable("tooltip.aliveworkplace.ledger.unbound").withStyle(ChatFormatting.GRAY)
 			: Component.translatable("tooltip.aliveworkplace.ledger.bound", ledger.name()).withStyle(ChatFormatting.AQUA));
+		if (ledger != null) {
+			tooltip.add(Component.translatable("tooltip.aliveworkplace.ledger.edicts").withStyle(ChatFormatting.GRAY));
+		}
 	}
 }

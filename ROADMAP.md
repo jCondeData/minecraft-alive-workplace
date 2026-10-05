@@ -344,7 +344,7 @@ first; many items below are "verify and harden", not "build".
 - [x] **23.7** (approved auto 2026-10-04) (verified 2026-10-05: 6 new tests [QaImportEdgesGameTests, shipped 30f2d6f]: not-a-build files [text, empty, PNG], uncompressed .nbt, the 1,000,000-block limit both sides [.nbt and .schem], the 8 MB file limit both sides, empty/all-air/0-wide/no-region files, a schematic with cut-off data; plus the 6 corpus tests. Not filed [only a hand-damaged file shows it]: a .schem block index past its palette imports as air instead of 'damaged'. Mutation not run here.) **Imports that just work.** `.litematic`, `.schem` and `.nbt` files in common sizes and versions, including big
   builds (48×8×48), unknown modded blocks and old formats. Done when: a test corpus of permissively licensed or
   self-made sample files imports, or fails with a clear message that says which block or format was the problem.
-- [x] **23.8** (approved 2026-10-04) **Placing a build feels good.**
+- [x] **23.8** (approved 2026-10-04) (verified 2026-10-05: qa/placing-1005 [3 tests, pass alone; not on main yet]: all 4 turns and mirrored, the build plan's box equals the ghost box with every block inside; cancel mid-build with a stuffed chest, sent twice, returns every material exactly, one blueprint back; a turned, mirrored hut on a 1-block drop stands on its foundation inside the ghost. Showcase placing, preview, shapes pass [run 37279004841]. Moving an active site not covered [no direct move entry point found]. No mutants [time]) **Placing a build feels good.**
   - Rotation and mirroring before placing.
   - The ghost preview shows exactly where it goes.
   - The site can be moved or cancelled, with its materials returned.

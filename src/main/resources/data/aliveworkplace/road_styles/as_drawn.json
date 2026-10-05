@@ -1,0 +1,10 @@
+{
+  "blueprint_styles": [""],
+  "middle": "minecraft:dirt_path",
+  "edge": {"minecraft:coarse_dirt": 2, "minecraft:gravel": 1},
+  "slab": "minecraft:cobblestone_slab",
+  "stairs": "minecraft:cobblestone_stairs",
+  "bridge": {"deck": "minecraft:spruce_planks", "rail": "minecraft:spruce_fence", "pillar": "minecraft:spruce_log"},
+  "lamp": "minecraft:lantern",
+  "lantern_post": "minecraft:spruce_fence"
+}

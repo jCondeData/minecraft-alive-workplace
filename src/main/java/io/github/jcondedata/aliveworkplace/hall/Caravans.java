@@ -37,7 +37,9 @@ import org.jetbrains.annotations.Nullable;
  * isn't loaded). A trade route (set up on the hall's Trade Routes page) sends, once a day, whatever the other village is
  * waiting for that this one has plenty of in its Storehouses' chests — up to {@link #CARGO_STACKS} stacks — and the
  * caravan arrives after a trip as long as the road ({@link #travelTicks}), into the other village's Storehouse chests.
- * Both chronicles note it.
+ * Both chronicles note it. 27.17: each village builds its half of a road to the other ({@code CaravanRoads}); the list
+ * keeps where each half ends and whether it's built ({@link Half}), and on a finished road caravans take three quarters
+ * of the time.
  */
 public final class Caravans {
 	/** How far apart villages can trade. */
@@ -57,6 +59,16 @@ public final class Caravans {
 	public record Village(BlockPos hall, Component name, List<Want> wants, long lastCaravanDay) {
 	}
 
+	/**
+	 * A village's half of the road to another village (27.17): where it ends (feet), whether it's all built, whether it
+	 * stops short at a milestone, and whether the village's chronicle has noted it.
+	 */
+	public record Half(BlockPos end, boolean finished, boolean milestone, boolean noted) {
+	}
+
+	/** Two halves within this many blocks of each other's ends have met: the road is one. */
+	public static final int HALVES_MEET = 4;
+
 	/** Goods on the road. */
 	public record Shipment(BlockPos from, BlockPos to, List<ItemStack> goods, long arrives) {
 	}
@@ -67,6 +79,8 @@ public final class Caravans {
 		final Map<BlockPos, Village> villages = new LinkedHashMap<>();
 		final Map<BlockPos, Set<BlockPos>> routes = new LinkedHashMap<>();
 		final List<Shipment> onTheRoad = new ArrayList<>();
+		/** The halves of roads between villages (27.17), from one hall towards another. */
+		final Map<BlockPos, Map<BlockPos, Half>> halves = new LinkedHashMap<>();
 
 		public static Data get(ServerLevel level) {
 			return level.getDataStorage().computeIfAbsent(new SavedData.Factory<>(Data::new, Data::load, null), NAME);
@@ -113,7 +127,44 @@ public final class Caravans {
 			villages.remove(hall);
 			routes.remove(hall);
 			routes.values().forEach(to -> to.remove(hall));
+			halves.remove(hall);
+			halves.values().forEach(to -> to.remove(hall));
 			setDirty();
+		}
+
+		/** The villages {@code hall} has a trade route with, either way (27.17: each builds its half of the road). */
+		public Set<BlockPos> partners(BlockPos hall) {
+			Set<BlockPos> out = new LinkedHashSet<>(routes.getOrDefault(hall, Set.of()));
+			routes.forEach((from, to) -> {
+				if (to.contains(hall)) {
+					out.add(from);
+				}
+			});
+			out.remove(hall);
+			return out;
+		}
+
+		/** {@code hall}'s half of the road towards {@code other}, or null if it has none with a way found yet. */
+		@Nullable
+		public Half half(BlockPos hall, BlockPos other) {
+			return halves.getOrDefault(hall, Map.of()).get(other);
+		}
+
+		/** Notes {@code hall}'s half of the road towards {@code other}. */
+		public void setHalf(BlockPos hall, BlockPos other, Half half) {
+			Map<BlockPos, Half> to = halves.computeIfAbsent(hall.immutable(), k -> new LinkedHashMap<>());
+			if (!half.equals(to.get(other))) {
+				to.put(other.immutable(), half);
+				setDirty();
+			}
+		}
+
+		/** Whether the road between {@code a} and {@code b} is finished: both halves built, and they meet. */
+		public boolean roadFinished(BlockPos a, BlockPos b) {
+			Half ab = half(a, b);
+			Half ba = half(b, a);
+			return ab != null && ba != null && ab.finished() && ba.finished()
+				&& Math.abs(ab.end().getX() - ba.end().getX()) + Math.abs(ab.end().getZ() - ba.end().getZ()) <= HALVES_MEET;
 		}
 
 		/** Starts or stops the route from {@code from} to {@code to} (at most {@link #MAX_ROUTES}); true if it's on now. */
@@ -181,6 +232,17 @@ public final class Caravans {
 					to.add(pt);
 				}
 				t.put("routes", to);
+				ListTag halfList = new ListTag();
+				halves.getOrDefault(v.hall(), Map.of()).forEach((other, h) -> {
+					CompoundTag ht = new CompoundTag();
+					ht.putLong("to", other.asLong());
+					ht.putLong("end", h.end().asLong());
+					ht.putBoolean("finished", h.finished());
+					ht.putBoolean("milestone", h.milestone());
+					ht.putBoolean("noted", h.noted());
+					halfList.add(ht);
+				});
+				t.put("halves", halfList);
 				list.add(t);
 			}
 			tag.put("villages", list);
@@ -203,7 +265,7 @@ public final class Caravans {
 			return tag;
 		}
 
-		static Data load(CompoundTag tag, HolderLookup.Provider registries) {
+		public static Data load(CompoundTag tag, HolderLookup.Provider registries) {
 			Data data = new Data();
 			ListTag list = Nbt.getList(tag, "villages", Tag.TAG_COMPOUND);
 			for (int i = 0; i < list.size(); i++) {
@@ -222,6 +284,12 @@ public final class Caravans {
 				ListTag rl = Nbt.getList(t, "routes", Tag.TAG_COMPOUND);
 				for (int j = 0; j < rl.size(); j++) {
 					data.routes.computeIfAbsent(hall, k -> new LinkedHashSet<>()).add(BlockPos.of(Nbt.getLong(Nbt.compoundAt(rl, j), "to")));
+				}
+				ListTag hl = Nbt.getList(t, "halves", Tag.TAG_COMPOUND); // 27.17; older saves have none
+				for (int j = 0; j < hl.size(); j++) {
+					CompoundTag ht = Nbt.compoundAt(hl, j);
+					data.halves.computeIfAbsent(hall, k -> new LinkedHashMap<>()).put(BlockPos.of(Nbt.getLong(ht, "to")),
+						new Half(BlockPos.of(Nbt.getLong(ht, "end")), Nbt.getBoolean(ht, "finished"), Nbt.getBoolean(ht, "milestone"), Nbt.getBoolean(ht, "noted")));
 				}
 			}
 			ListTag road = Nbt.getList(tag, "road", Tag.TAG_COMPOUND);
@@ -246,6 +314,12 @@ public final class Caravans {
 		return Math.max(MIN_TRAVEL, (long) (blocks / 2));
 	}
 
+	/** How long a caravan takes over {@code blocks}, three quarters of it on a finished road between the villages (27.17). */
+	public static long travelTicks(double blocks, boolean road) {
+		long ticks = travelTicks(blocks);
+		return road ? ticks * 3 / 4 : ticks;
+	}
+
 	/** The villages {@code hall} can trade with, nearest first. */
 	public static List<Village> neighbours(ServerLevel level, BlockPos hall) {
 		return Data.get(level).villages().stream()
@@ -262,6 +336,10 @@ public final class Caravans {
 			if (item != null && item != Items.AIR) {
 				out.merge(item, r.count(), Math::max);
 			}
+		}
+		// 27.19: what the Steward's waiting builds miss
+		for (Map.Entry<Item, Integer> e : io.github.jcondedata.aliveworkplace.city.StewardSafety.shoppingList(level, hall)) {
+			out.merge(e.getKey(), e.getValue(), Math::max);
 		}
 		int needed = VillageGrowth.foodNeeded(level, hall);
 		if (census.food() < needed) {
@@ -322,7 +400,7 @@ public final class Caravans {
 		if (goods.isEmpty()) {
 			return null;
 		}
-		Shipment shipment = new Shipment(hall.immutable(), to.immutable(), List.copyOf(goods), level.getGameTime() + travelTicks(Math.sqrt(hall.distSqr(to))));
+		Shipment shipment = new Shipment(hall.immutable(), to.immutable(), List.copyOf(goods), level.getGameTime() + travelTicks(Math.sqrt(hall.distSqr(to)), data.roadFinished(hall, to)));
 		data.ship(shipment);
 		level.playSound(null, hall, SoundEvents.LLAMA_CHEST, SoundSource.NEUTRAL, 1f, 1f);
 		Chronicle.record(level, hall, Chronicle.Kind.CARAVAN, Component.translatable("chronicle.aliveworkplace.caravan_left", them.name(), describe(goods)), true);

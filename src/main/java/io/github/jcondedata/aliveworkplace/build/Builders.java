@@ -638,6 +638,14 @@ public final class Builders {
 			BuilderLevels.addXp(level, villager, 2, site.owner());
 			return;
 		}
+		if (io.github.jcondedata.aliveworkplace.city.Roads.isSegment(site.structure())) {
+			// A road segment (27.15): marked built on the City Plan; no blueprint to hand back, not a building, no path.
+			level.sendParticles(ParticleTypes.HAPPY_VILLAGER, villager.getX(), villager.getY() + 1.8, villager.getZ(), 8, 0.5, 0.5, 0.5, 0.0);
+			io.github.jcondedata.aliveworkplace.city.Roads.segmentBuilt(level, site, villager);
+			endJob(level, villager, site);
+			BuilderLevels.addXp(level, villager, 2, site.owner());
+			return;
+		}
 		int entitiesLeft = plan == null ? 0 : BuildEntities.placeAll(level, plan, supplies);
 		if (plan != null) {
 			lightPortals(level, plan.bounds(), supplies);
@@ -663,6 +671,7 @@ public final class Builders {
 			io.github.jcondedata.aliveworkplace.habitat.VillageHabitats.onTakenDown(level, site.structure(), site.placement()); // 28.14
 		} else {
 			BuildSiteManager.get(level).recordFinished(site.structure(), site.placement(), site.owner());
+			io.github.jcondedata.aliveworkplace.city.Walls.pieceBuilt(level, site, villager); // 27.18: the last piece finishes the wall
 			io.github.jcondedata.aliveworkplace.hall.Chronicle.record(level, site.placement().origin(), io.github.jcondedata.aliveworkplace.hall.Chronicle.Kind.BUILT, Component.translatable("chronicle.aliveworkplace.built",
 				villager.getDisplayName(), Blueprints.displayName(site.structure())));
 			// Built something that has an upgrade: the builder sells its blueprint from now on.
@@ -673,7 +682,8 @@ public final class Builders {
 				}
 			});
 		}
-		if (Paths.ENABLED) {
+		// The door joins the village's roads with a lane (27.15); a village without roads gets the dirt path to its bell.
+		if (!io.github.jcondedata.aliveworkplace.city.Roads.joinNearest(level, site) && Paths.ENABLED) {
 			Paths.afterBuild(level, villager, site);
 		}
 		endJob(level, villager, site);

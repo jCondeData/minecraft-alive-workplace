@@ -1,0 +1,10 @@
+{
+  "blueprint_styles": ["stonework", "grand"],
+  "middle": {"minecraft:stone_bricks": 4, "minecraft:cracked_stone_bricks": 1},
+  "edge": "minecraft:cobblestone",
+  "slab": "minecraft:stone_brick_slab",
+  "stairs": "minecraft:stone_brick_stairs",
+  "bridge": {"deck": "minecraft:stone_bricks", "rail": "minecraft:stone_brick_wall", "pillar": "minecraft:stone_bricks"},
+  "lamp": "minecraft:lantern",
+  "lantern_post": "minecraft:cobblestone_wall"
+}

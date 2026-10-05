@@ -23,8 +23,13 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemp
  * minute). Players can still open them by hand.
  */
 public final class Gates {
-	/** The blueprints whose fence gates are the village's gates. */
-	static final Set<ResourceLocation> GATED = Set.of(StarterBlueprints.GATEHOUSE.id(), StarterBlueprints.PALISADE_GATE.id());
+	/** The blueprints whose fence gates are the village's gates: the two we ship, and every wall kit's gate (27.18). */
+	static Set<ResourceLocation> gated() {
+		Set<ResourceLocation> out = new java.util.LinkedHashSet<>(
+			Set.of(StarterBlueprints.GATEHOUSE.id(), StarterBlueprints.PALISADE_GATE.id()));
+		out.addAll(io.github.jcondedata.aliveworkplace.city.WallKits.gates());
+		return out;
+	}
 
 	/** Night for the gates: from dusk until just before dawn. */
 	public static boolean shutTime(ServerLevel level) {
@@ -38,9 +43,10 @@ public final class Gates {
 			return 0;
 		}
 		boolean shut = shutTime(level);
+		Set<ResourceLocation> gated = gated();
 		int moved = 0;
 		for (BuildSiteManager.Finished f : BuildSiteManager.get(level).finishedNear(level, hall, VillageHalls.RADIUS)) {
-			if (!GATED.contains(BlueprintStyles.base(f.structure()))) {
+			if (!gated.contains(BlueprintStyles.base(f.structure()))) {
 				continue;
 			}
 			Blueprint blueprint = BlueprintLibrary.get(level, f.structure()).orElse(null);

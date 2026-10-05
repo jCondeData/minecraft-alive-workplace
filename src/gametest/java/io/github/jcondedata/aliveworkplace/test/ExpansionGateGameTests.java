@@ -37,13 +37,13 @@ import net.minecraft.gametest.framework.GameTestHelper;
  */
 public class ExpansionGateGameTests implements FabricGameTest {
 	/** Every switch of an unfinished expansion (M27 steward; M28 Pokémon jobs and shows; M29 Legends; M30 civic items). */
-	static final List<String> GATED_SWITCHES = List.of("steward", "stewardSelfRun",
+	static final List<String> GATED_SWITCHES = List.of("steward", "stewardSelfRun", "stewardRoads", "caravanRoads", "stewardWalls",
 		"partnerShows", "nurseHealingMachine", "berryBreeders", "campCooks", "habitatKeepers", "habitatSightings",
 		"daycareKeepers", "gemGrowers", "villageHabitats",
 		"legends", "legendNeeds", "legendSites", "strangeMoods",
 		"villageEdicts", "workHorns", "villageBanners", "cradles", "harvestIdols", "tonics", "guilds");
 	/** The numbers that belong to them (hidden from the screen with them). */
-	static final List<String> GATED_NUMBERS = List.of("stewardMaxOpenBuilds", "giftedChance", "edictMinDays", "guildsPerRank");
+	static final List<String> GATED_NUMBERS = List.of("stewardMaxOpenBuilds", "caravanRoadReach", "giftedChance", "edictMinDays", "guildsPerRank");
 
 	/** A config file as 0.139.0 wrote it: every switch on. */
 	static String oldConfig() {
@@ -59,6 +59,8 @@ public class ExpansionGateGameTests implements FabricGameTest {
 		Map<String, BooleanSupplier> map = new LinkedHashMap<>();
 		map.put("Stewards", () -> Stewards.ENABLED);
 		map.put("StewardDesk.SELF_RUN", () -> StewardDesk.SELF_RUN);
+		// Roads and Walls are also off in every GameTest (their own tests turn them on), so only the caravan roads show here.
+		map.put("CaravanRoads", () -> io.github.jcondedata.aliveworkplace.city.CaravanRoads.ENABLED);
 		map.put("Nurses.HEALING_MACHINE", () -> Nurses.HEALING_MACHINE);
 		map.put("BerryBreeders", () -> BerryBreeders.ENABLED);
 		map.put("CampCooks", () -> CampCooks.ENABLED);
@@ -147,8 +149,8 @@ public class ExpansionGateGameTests implements FabricGameTest {
 			if (!screen.contains("villageProtection") || !screen.contains("maxWorkPace") || !screen.contains("seasonDays")) {
 				problems.add("a finished option left the screen: " + screen);
 			}
-			if (screen.size() != 59 - GATED_SWITCHES.size() - GATED_NUMBERS.size()) {
-				problems.add("expected " + (59 - GATED_SWITCHES.size() - GATED_NUMBERS.size()) + " options on the screen, found "
+			if (screen.size() != 63 - GATED_SWITCHES.size() - GATED_NUMBERS.size()) {
+				problems.add("expected " + (63 - GATED_SWITCHES.size() - GATED_NUMBERS.size()) + " options on the screen, found "
 					+ screen.size());
 			}
 			empty.setBoolean("tonics", true);
@@ -193,7 +195,7 @@ public class ExpansionGateGameTests implements FabricGameTest {
 		for (String name : GATED_SWITCHES) {
 			helper.assertTrue(new WorkplaceConfig().getBoolean(name), name + " should default on in GameTests");
 		}
-		helper.assertTrue(WorkplaceConfig.optionNames().size() == 59, "every option on the screen in GameTests");
+		helper.assertTrue(WorkplaceConfig.optionNames().size() == 63, "every option on the screen in GameTests");
 		helper.succeed();
 	}
 }

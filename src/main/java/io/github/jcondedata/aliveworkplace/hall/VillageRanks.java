@@ -50,7 +50,9 @@ public final class VillageRanks {
 	}
 
 	public static Score score(ServerLevel level, BlockPos hall, int villagers) {
-		int buildings = BuildSiteManager.get(level).finishedNear(level, hall, VillageHalls.RADIUS).size();
+		// roads aren't buildings (27.15) and a whole wall counts as one (27.18)
+		int buildings = io.github.jcondedata.aliveworkplace.city.Walls.countsAsBuildings(
+			BuildSiteManager.get(level).finishedNear(level, hall, VillageHalls.RADIUS));
 		int research = level.getBlockEntity(hall) instanceof VillageHallBlockEntity entity
 			? entity.research().totalLevels() : 0;
 		return new Score(villagers, buildings, research);

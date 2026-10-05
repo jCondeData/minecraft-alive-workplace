@@ -1,0 +1,10 @@
+{
+  "blueprint_styles": ["sandstone"],
+  "middle": "minecraft:smooth_sandstone",
+  "edge": "minecraft:cut_sandstone",
+  "slab": "minecraft:smooth_sandstone_slab",
+  "stairs": "minecraft:smooth_sandstone_stairs",
+  "bridge": {"deck": "minecraft:cut_sandstone", "rail": "minecraft:sandstone_wall", "pillar": "minecraft:sandstone"},
+  "lamp": "minecraft:lantern",
+  "lantern_post": "minecraft:sandstone_wall"
+}

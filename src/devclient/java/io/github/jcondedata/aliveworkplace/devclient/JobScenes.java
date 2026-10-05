@@ -445,6 +445,222 @@ final class JobScenes {
 			return l -> io.github.jcondedata.aliveworkplace.city.StewardWork.roundDone(l, v)
 				&& v.distanceToSqr(STATION.getCenter()) < 16 && !io.github.jcondedata.aliveworkplace.city.StewardWork.holdsPlan(v);
 		}, null));
+		SCENES.put("roads", new Job("the builder laid the approved Stonework street between the two houses, 3 wide, segment by segment", 9000,
+			new Vec3(0.5, -45, -26), new Vec3(0.5, -60, -6), (level, player) -> {
+			// Two cottages (stamped, on the books as built), the hall south of them, a builder with Stonework in his chest,
+			// a Steward, and a street drawn on the plan along the cottages' fronts (27.15).
+			BlockPos hallAt = STATION.offset(0, 0, 6);
+			var cottage = io.github.jcondedata.aliveworkplace.blueprint.BlueprintLibrary.get(level,
+				io.github.jcondedata.aliveworkplace.blueprint.StarterBlueprints.STARTER_COTTAGE.id()).orElseThrow();
+			for (BlockPos origin : List.of(STATION.offset(-18, 0, -2), STATION.offset(8, 0, -2))) {
+				for (var e : cottage.blocks()) {
+					level.setBlock(origin.offset(e.pos()), e.state(), Block.UPDATE_CLIENTS);
+				}
+				io.github.jcondedata.aliveworkplace.build.BuildSiteManager.get(level).recordFinished(cottage.id(),
+					new io.github.jcondedata.aliveworkplace.blueprint.BlueprintData.Placement(io.github.jcondedata.aliveworkplace.mc.Ids.of(level.dimension()),
+						origin, net.minecraft.world.level.block.Rotation.NONE, net.minecraft.world.level.block.Mirror.NONE), player.getUUID());
+			}
+			level.setBlockAndUpdate(hallAt, ModBlocks.VILLAGE_HALL.defaultBlockState());
+			var hall = (io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(hallAt);
+			hall.setOwner(player.getUUID(), player.getGameProfile().getName());
+			BlockPos a = STATION.offset(-16, 0, -7).subtract(hallAt);
+			BlockPos b = STATION.offset(16, 0, -7).subtract(hallAt);
+			hall.setPlan(io.github.jcondedata.aliveworkplace.city.CityPlan.EMPTY.addRoad(new io.github.jcondedata.aliveworkplace.city.CityPlan.Road(
+				List.of(new BlockPos(a.getX(), 0, a.getZ()), new BlockPos(b.getX(), 0, b.getZ())),
+				io.github.jcondedata.aliveworkplace.city.CityPlan.Road.STREET, "stonework", true)));
+			BlockPos table = hallAt.offset(4, 0, 0);
+			level.setBlockAndUpdate(table, ModBlocks.BLUEPRINT_TABLE.defaultBlockState());
+			chest(level, table.east(), new ItemStack(Items.STONE_BRICKS, 64), new ItemStack(Items.STONE_BRICKS, 64),
+				new ItemStack(Items.CRACKED_STONE_BRICKS, 32), new ItemStack(Items.COBBLESTONE, 64), new ItemStack(Items.COBBLESTONE, 32),
+				new ItemStack(Items.STONE_BRICK_STAIRS, 16));
+			Villager builder = EntityType.VILLAGER.spawn(level, table.south(), MobSpawnType.COMMAND);
+			io.github.jcondedata.aliveworkplace.build.Builders.employ(level, builder, table);
+			ItemStack cityPlan = new ItemStack(ModItems.CITY_PLAN);
+			io.github.jcondedata.aliveworkplace.city.CityPlanItem.bind(level, player, cityPlan, hallAt);
+			Villager steward = EntityType.VILLAGER.spawn(level, hallAt.south(2), MobSpawnType.COMMAND);
+			steward.setVillagerData(steward.getVillagerData().setProfession(io.github.jcondedata.aliveworkplace.registry.ModVillagers.BUILDER)
+				.setLevel(io.github.jcondedata.aliveworkplace.city.Stewards.MIN_BUILDER_LEVEL));
+			steward.setVillagerXp(70); // a seasoned Builder (27.1a)
+			io.github.jcondedata.aliveworkplace.city.Stewards.appoint(player, steward, cityPlan);
+			Showcase.check(io.github.jcondedata.aliveworkplace.city.Roads.ENABLED, "stewardRoads is on");
+			return l -> {
+				var road = hall.plan().roads().get(0);
+				return road.finished() && road.segments() >= 2
+					&& io.github.jcondedata.aliveworkplace.city.Roads.openSegments(l, hallAt).isEmpty();
+			};
+		}, null));
+		SCENES.put("bridges", new Job("the builder bridged the river 9 wide (2 pillars, rails, a stair up at each end) and lit the street with Street Lamps",
+			14000, new Vec3(14.5, -50, -24), new Vec3(0.5, -61, -7), (level, player) -> {
+			// Flat ground with a river 9 wide and 2 deep across it, the hall south of it, a builder with Stonework (and the
+			// lamps' blocks) in his chest, a Steward, and a 48-block street drawn over the river (27.16).
+			for (int x = -27; x <= 27; x++) {
+				for (int z = -16; z <= 3; z++) {
+					boolean water = Math.abs(x) <= 4;
+					level.setBlock(STATION.offset(x, -3, z), Blocks.DIRT.defaultBlockState(), Block.UPDATE_CLIENTS);
+					level.setBlock(STATION.offset(x, -2, z), water ? Blocks.WATER.defaultBlockState() : Blocks.DIRT.defaultBlockState(), Block.UPDATE_CLIENTS);
+					level.setBlock(STATION.offset(x, -1, z), water ? Blocks.WATER.defaultBlockState() : Blocks.GRASS_BLOCK.defaultBlockState(), Block.UPDATE_CLIENTS);
+					for (int y = 0; y < 8; y++) {
+						level.setBlock(STATION.offset(x, y, z), Blocks.AIR.defaultBlockState(), Block.UPDATE_CLIENTS);
+					}
+				}
+			}
+			BlockPos hallAt = STATION.offset(0, 0, 6);
+			level.setBlockAndUpdate(hallAt, ModBlocks.VILLAGE_HALL.defaultBlockState());
+			var hall = (io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(hallAt);
+			hall.setOwner(player.getUUID(), player.getGameProfile().getName());
+			BlockPos a = STATION.offset(-24, 0, -7).subtract(hallAt);
+			BlockPos b = STATION.offset(24, 0, -7).subtract(hallAt);
+			hall.setPlan(io.github.jcondedata.aliveworkplace.city.CityPlan.EMPTY.addRoad(new io.github.jcondedata.aliveworkplace.city.CityPlan.Road(
+				List.of(new BlockPos(a.getX(), 0, a.getZ()), new BlockPos(b.getX(), 0, b.getZ())),
+				io.github.jcondedata.aliveworkplace.city.CityPlan.Road.STREET, "stonework", true)));
+			BlockPos table = hallAt.offset(6, 0, 0);
+			level.setBlockAndUpdate(table, ModBlocks.BLUEPRINT_TABLE.defaultBlockState());
+			chest(level, table.east(), new ItemStack(Items.STONE_BRICKS, 64), new ItemStack(Items.STONE_BRICKS, 64), new ItemStack(Items.STONE_BRICKS, 64),
+				new ItemStack(Items.CRACKED_STONE_BRICKS, 32), new ItemStack(Items.COBBLESTONE, 64), new ItemStack(Items.COBBLESTONE, 32),
+				new ItemStack(Items.STONE_BRICK_STAIRS, 32), new ItemStack(Items.STONE_BRICK_WALL, 32), new ItemStack(Items.CHISELED_STONE_BRICKS, 8),
+				new ItemStack(Items.DARK_OAK_FENCE, 16), new ItemStack(Items.DARK_OAK_TRAPDOOR, 4), new ItemStack(Items.LANTERN, 8));
+			Villager builder = EntityType.VILLAGER.spawn(level, table.south(), MobSpawnType.COMMAND);
+			io.github.jcondedata.aliveworkplace.build.Builders.employ(level, builder, table);
+			ItemStack cityPlan = new ItemStack(ModItems.CITY_PLAN);
+			io.github.jcondedata.aliveworkplace.city.CityPlanItem.bind(level, player, cityPlan, hallAt);
+			Villager steward = EntityType.VILLAGER.spawn(level, hallAt.south(2), MobSpawnType.COMMAND);
+			steward.setVillagerData(steward.getVillagerData().setProfession(io.github.jcondedata.aliveworkplace.registry.ModVillagers.BUILDER)
+				.setLevel(io.github.jcondedata.aliveworkplace.city.Stewards.MIN_BUILDER_LEVEL));
+			steward.setVillagerXp(70); // a seasoned Builder (27.1a)
+			io.github.jcondedata.aliveworkplace.city.Stewards.appoint(player, steward, cityPlan);
+			Showcase.check(io.github.jcondedata.aliveworkplace.city.Roads.ENABLED, "stewardRoads is on");
+			return l -> {
+				var road = hall.plan().roads().get(0);
+				boolean done = road.finished() && road.gap() == 0 && io.github.jcondedata.aliveworkplace.city.Roads.openSegments(l, hallAt).isEmpty();
+				if (done) {
+					l.setDayTime(18000); // midnight: the street lit by its lamps
+				}
+				return done && road.lamps() >= 2;
+			};
+		}, null));
+		SCENES.put("caravan_road", new Job("each village's builder laid its half of the Stonework road to the other, and the halves met halfway",
+			16000, new Vec3(-44.5, -44, 16.5), new Vec3(16.5, -61, -7), (level, player) -> {
+			// Two villages 64 blocks apart with a trade route (27.17): each a hall in a Stonework zone, a Steward, and a
+			// builder with Stonework (and the lamps' blocks) in his chest. Each plans its half of a road to the other.
+			BlockPos[] halls = {STATION.offset(-32, 0, 0), STATION.offset(32, 0, 0)};
+			String[] names = {"Ashford", "Bramble"};
+			for (int x = -48; x <= 48; x++) {
+				for (int z = -18; z <= 10; z++) {
+					level.setBlock(STATION.offset(x, -1, z), Blocks.GRASS_BLOCK.defaultBlockState(), Block.UPDATE_CLIENTS);
+					for (int y = 0; y < 8; y++) {
+						level.setBlock(STATION.offset(x, y, z), Blocks.AIR.defaultBlockState(), Block.UPDATE_CLIENTS);
+					}
+				}
+			}
+			var data = io.github.jcondedata.aliveworkplace.hall.Caravans.Data.get(level);
+			for (int i = 0; i < 2; i++) {
+				BlockPos hallAt = halls[i];
+				level.setBlockAndUpdate(hallAt, ModBlocks.VILLAGE_HALL.defaultBlockState());
+				var hall = (io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(hallAt);
+				hall.setOwner(player.getUUID(), player.getGameProfile().getName());
+				java.util.BitSet cells = new java.util.BitSet();
+				cells.set(io.github.jcondedata.aliveworkplace.city.CityPlan.cellAt(hallAt, hallAt));
+				hall.setPlan(io.github.jcondedata.aliveworkplace.city.CityPlan.EMPTY.addZone("homes", names[i], "stonework").paint(0, cells));
+				BlockPos table = hallAt.offset(0, 0, 5);
+				level.setBlockAndUpdate(table, ModBlocks.BLUEPRINT_TABLE.defaultBlockState());
+				chest(level, table.east(), new ItemStack(Items.STONE_BRICKS, 64), new ItemStack(Items.STONE_BRICKS, 64),
+					new ItemStack(Items.CRACKED_STONE_BRICKS, 32), new ItemStack(Items.COBBLESTONE, 64), new ItemStack(Items.STONE_BRICK_STAIRS, 16),
+					new ItemStack(Items.STONE_BRICK_WALL, 16), new ItemStack(Items.CHISELED_STONE_BRICKS, 8), new ItemStack(Items.DARK_OAK_FENCE, 8),
+					new ItemStack(Items.DARK_OAK_TRAPDOOR, 4), new ItemStack(Items.LANTERN, 4));
+				Villager builder = EntityType.VILLAGER.spawn(level, table.south(), MobSpawnType.COMMAND);
+				io.github.jcondedata.aliveworkplace.build.Builders.employ(level, builder, table);
+				ItemStack cityPlan = new ItemStack(ModItems.CITY_PLAN);
+				io.github.jcondedata.aliveworkplace.city.CityPlanItem.bind(level, player, cityPlan, hallAt);
+				Villager steward = EntityType.VILLAGER.spawn(level, hallAt.south(2), MobSpawnType.COMMAND);
+				steward.setVillagerData(steward.getVillagerData().setProfession(io.github.jcondedata.aliveworkplace.registry.ModVillagers.BUILDER)
+					.setLevel(io.github.jcondedata.aliveworkplace.city.Stewards.MIN_BUILDER_LEVEL));
+				steward.setVillagerXp(70); // a seasoned Builder (27.1a)
+				io.github.jcondedata.aliveworkplace.city.Stewards.appoint(player, steward, cityPlan);
+				data.setWants(hallAt, Component.literal(names[i]), List.of());
+			}
+			data.toggleRoute(halls[0], halls[1]);
+			Showcase.check(io.github.jcondedata.aliveworkplace.city.Roads.ENABLED && io.github.jcondedata.aliveworkplace.city.CaravanRoads.ENABLED,
+				"stewardRoads and caravanRoads are on");
+			return l -> data.roadFinished(halls[0], halls[1])
+				&& io.github.jcondedata.aliveworkplace.city.Roads.openSegments(l, halls[0]).isEmpty()
+				&& io.github.jcondedata.aliveworkplace.city.Roads.openSegments(l, halls[1]).isEmpty();
+		}, null));
+		SCENES.put("walls", new Job("the builders raised the village's palisade along the wall line (towers at its corners, a gate on the road) "
+			+ "and the guards shut the gate at nightfall", 18000, new Vec3(0.5, -42, -30), new Vec3(0.5, -58, -4), (level, player) -> {
+			// A small village: the hall, a cottage, three builders with the palisade's blocks, a Steward, a street out
+			// to the north and a wall line 11 blocks round the hall, already approved for the Palisade kit (27.18).
+			for (int x = -20; x <= 20; x++) {
+				for (int z = -20; z <= 16; z++) {
+					level.setBlock(STATION.offset(x, -2, z), Blocks.DIRT.defaultBlockState(), Block.UPDATE_CLIENTS);
+					level.setBlock(STATION.offset(x, -1, z), Blocks.GRASS_BLOCK.defaultBlockState(), Block.UPDATE_CLIENTS);
+					for (int y = 0; y < 10; y++) {
+						level.setBlock(STATION.offset(x, y, z), Blocks.AIR.defaultBlockState(), Block.UPDATE_CLIENTS);
+					}
+				}
+			}
+			BlockPos hallAt = STATION;
+			var cottage = io.github.jcondedata.aliveworkplace.blueprint.BlueprintLibrary.get(level,
+				io.github.jcondedata.aliveworkplace.blueprint.StarterBlueprints.STARTER_COTTAGE.id()).orElseThrow();
+			BlockPos cottageAt = STATION.offset(-4, 0, 4);
+			for (var e : cottage.blocks()) {
+				level.setBlock(cottageAt.offset(e.pos()), e.state(), Block.UPDATE_CLIENTS);
+			}
+			io.github.jcondedata.aliveworkplace.build.BuildSiteManager.get(level).recordFinished(cottage.id(),
+				new io.github.jcondedata.aliveworkplace.blueprint.BlueprintData.Placement(io.github.jcondedata.aliveworkplace.mc.Ids.of(level.dimension()),
+					cottageAt, net.minecraft.world.level.block.Rotation.NONE, net.minecraft.world.level.block.Mirror.NONE), player.getUUID());
+			level.setBlockAndUpdate(hallAt, ModBlocks.VILLAGE_HALL.defaultBlockState());
+			var hall = (io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(hallAt);
+			hall.setOwner(player.getUUID(), player.getGameProfile().getName());
+			hall.setLastRaidDay(io.github.jcondedata.aliveworkplace.hall.Chronicle.day(level)); // raided today: he wants a wall
+			var wall = new io.github.jcondedata.aliveworkplace.city.CityPlan.Wall(
+				List.of(new BlockPos(-11, 0, -11), new BlockPos(11, 0, -11), new BlockPos(11, 0, 11), new BlockPos(-11, 0, 11)), true);
+			hall.setPlan(io.github.jcondedata.aliveworkplace.city.CityPlan.EMPTY
+				.addRoad(new io.github.jcondedata.aliveworkplace.city.CityPlan.Road(List.of(new BlockPos(0, 0, -4), new BlockPos(0, 0, -18)),
+					io.github.jcondedata.aliveworkplace.city.CityPlan.Road.STREET, "", true))
+				.withWall(wall.approvedWith("palisade")));
+			for (int i = 0; i < 3; i++) {
+				BlockPos table = STATION.offset(-6 + i * 6, 0, 10);
+				level.setBlockAndUpdate(table, ModBlocks.BLUEPRINT_TABLE.defaultBlockState());
+				chest(level, table.south(), new ItemStack(Items.SPRUCE_LOG, 64), new ItemStack(Items.SPRUCE_LOG, 64),
+					new ItemStack(Items.STRIPPED_SPRUCE_LOG, 64), new ItemStack(Items.SPRUCE_FENCE, 64), new ItemStack(Items.SPRUCE_SLAB, 64),
+					new ItemStack(Items.SPRUCE_PLANKS, 64), new ItemStack(Items.SPRUCE_FENCE_GATE, 16), new ItemStack(Items.DARK_OAK_STAIRS, 64),
+					new ItemStack(Items.DARK_OAK_SLAB, 16), new ItemStack(Items.DARK_OAK_PLANKS, 16), new ItemStack(Items.LADDER, 32),
+					new ItemStack(Items.LANTERN, 16), new ItemStack(Items.COBBLESTONE, 64), new ItemStack(Items.STONE, 64),
+					new ItemStack(Items.ANDESITE, 64), new ItemStack(Items.DIRT, 64));
+				Villager builder = EntityType.VILLAGER.spawn(level, table.east(), MobSpawnType.COMMAND);
+				io.github.jcondedata.aliveworkplace.build.Builders.employ(level, builder, table);
+			}
+			ItemStack cityPlan = new ItemStack(ModItems.CITY_PLAN);
+			io.github.jcondedata.aliveworkplace.city.CityPlanItem.bind(level, player, cityPlan, hallAt);
+			Villager steward = EntityType.VILLAGER.spawn(level, hallAt.south(2), MobSpawnType.COMMAND);
+			steward.setVillagerData(steward.getVillagerData().setProfession(io.github.jcondedata.aliveworkplace.registry.ModVillagers.BUILDER)
+				.setLevel(io.github.jcondedata.aliveworkplace.city.Stewards.MIN_BUILDER_LEVEL));
+			steward.setVillagerXp(70); // a seasoned Builder (27.1a)
+			io.github.jcondedata.aliveworkplace.city.Stewards.appoint(player, steward, cityPlan);
+			Showcase.check(io.github.jcondedata.aliveworkplace.city.Walls.ENABLED, "stewardWalls is on");
+			Showcase.check(!io.github.jcondedata.aliveworkplace.city.Walls.pieces(level, hallAt).isEmpty(), "the wall line has pieces to build");
+			return l -> {
+				var pieces = io.github.jcondedata.aliveworkplace.city.Walls.pieces(l, hallAt);
+				long standing = pieces.stream().filter(p -> io.github.jcondedata.aliveworkplace.city.Walls.stands(l, p)).count();
+				var gate = pieces.stream().filter(p -> p.kind() == io.github.jcondedata.aliveworkplace.city.Walls.Kind.GATE).findFirst();
+				boolean gateUp = gate.isPresent() && io.github.jcondedata.aliveworkplace.city.Walls.stands(l, gate.get());
+				boolean towerUp = pieces.stream().anyMatch(p -> p.kind() == io.github.jcondedata.aliveworkplace.city.Walls.Kind.TOWER
+					&& io.github.jcondedata.aliveworkplace.city.Walls.stands(l, p));
+				if (!(gateUp && towerUp && standing >= 6)) {
+					return false;
+				}
+				l.setDayTime(18000); // midnight: the guards shut the gate
+				io.github.jcondedata.aliveworkplace.guard.Gates.round(l, hallAt, 1);
+				for (BlockPos p : BlockPos.betweenClosed(gate.get().box().getCenter().offset(-4, -1, -4), gate.get().box().getCenter().offset(4, 3, 4))) {
+					var state = l.getBlockState(p);
+					if (state.getBlock() instanceof net.minecraft.world.level.block.FenceGateBlock
+						&& state.getValue(net.minecraft.world.level.block.FenceGateBlock.OPEN)) {
+						return false; // a gate still standing open at night
+					}
+				}
+				return true;
+			};
+		}, null));
 		SCENES.put("composter", job("the composter made bone meal", 1800, (level, player) -> {
 			Villager v = picked(level, player, STATION, Blocks.COMPOSTER, Items.BONE_MEAL);
 			Container c = chest(level, chestPos(), new ItemStack(Items.PUMPKIN_PIE, 10), new ItemStack(Items.WHEAT_SEEDS, 16));
@@ -1936,6 +2152,10 @@ final class JobScenes {
 				io.github.jcondedata.aliveworkplace.people.Moods.forget();
 			},
 			List.of(new Step("01_long_shifts_list", io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_PERSON, 6, (level, player) -> {
+					// The hall's POI is only registered after the staging tick, so the villager's hall was remembered as none
+					// for 200 ticks (CivicEffects.HALL_TICKS): look it up again now (B72).
+					io.github.jcondedata.aliveworkplace.hall.CivicEffects.forget();
+					io.github.jcondedata.aliveworkplace.people.Moods.forget();
 					io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.open(player, STATION);
 					var mood = io.github.jcondedata.aliveworkplace.people.Moods.of(subject);
 					Showcase.check(mood != null && mood.bad().stream().anyMatch(c -> c.getString().equals("long shifts")),
@@ -2073,6 +2293,10 @@ final class JobScenes {
 				io.github.jcondedata.aliveworkplace.people.Moods.forget();
 			},
 			List.of(new Step("01_free_bread_list", io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_PERSON, 6, (level, player) -> {
+					// The hall's POI is only registered after the staging tick, so the villager's hall was remembered as none
+					// for 200 ticks (CivicEffects.HALL_TICKS): look it up again now (B72).
+					io.github.jcondedata.aliveworkplace.hall.CivicEffects.forget();
+					io.github.jcondedata.aliveworkplace.people.Moods.forget();
 					io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.open(player, STATION);
 					var mood = io.github.jcondedata.aliveworkplace.people.Moods.of(subject);
 					Showcase.check(mood != null && mood.good().stream().anyMatch(c -> c.getString().equals("free bread")),
@@ -2410,6 +2634,8 @@ final class JobScenes {
 					}
 					io.github.jcondedata.aliveworkplace.guard.VillageRaids.track(level, STATION.offset(-7, 0, 0), 3);
 					io.github.jcondedata.aliveworkplace.hall.Conscription.forget();
+					// The hall's POI is only registered after the staging tick, so the villagers' hall was remembered as none (B72).
+					io.github.jcondedata.aliveworkplace.hall.CivicEffects.forget();
 				}, 40),
 				new Step("02_conscription_fight", -1, 0, (level, player) -> {
 					long armed = conscripts.stream().filter(v -> io.github.jcondedata.aliveworkplace.hall.Conscription.isMilitiaSword(v.getMainHandItem())).count();

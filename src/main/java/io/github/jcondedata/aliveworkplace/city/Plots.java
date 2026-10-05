@@ -116,7 +116,9 @@ public final class Plots {
 		 */
 		SHORE,
 		/** The water under a jetty more than {@link #MAX_JETTY_DEPTH} deep: its posts wouldn't reach the bed. */
-		DEEP
+		DEEP,
+		/** {@link StewardSafety} refuses it: Keep Clear, another village, or a section where a player built (27.19). */
+		UNSAFE
 	}
 
 	/** How far in front of a shore building (see {@link #SHORE_BUILDINGS}) the water may be. */
@@ -697,6 +699,10 @@ public final class Plots {
 				}
 			}
 			BlueprintData.Placement placement = new BlueprintData.Placement(dim, origin.atY(floor + 1), turn, mirror);
+			BoundingBox built = new BoundingBox(box.minX(), floor + 1, box.minZ(), box.maxX(), floor + size.getY(), box.maxZ());
+			if (!StewardSafety.allowed(level, hall, built, false)) {
+				return Verdict.no(Reason.UNSAFE); // 27.19
+			}
 			return Verdict.ok(new Plot(id, placement, size, zone.name(), front));
 		}
 

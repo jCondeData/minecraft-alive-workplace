@@ -234,6 +234,13 @@ SCENES = [
       "Long Shifts' reform step was on the quest page; its three steps handed in, fireworks went up over the hall and the chronicle kept the reform", 60,
       [("01_reform_step", "The Shift Bell's first step, below the daily quests"), ("02_reform_fireworks", "Reformed: fireworks over the hall"),
        ("03_reform_chronicle", "The chronicle: the edict reformed")]),
+    # Free Bread and Large Families (ROADMAP 30.6): the "free bread" mood in the hall's list; two births in one day
+    S("free_bread", "Village Hall", "Edicts: Free Bread",
+      "Free Bread was proclaimed: the hall's list shows the \"free bread\" mood and the Book tells its cost and reform", 45,
+      [("01_free_bread_list", "The fed builder: \"free bread\" in the hall's list"), ("02_free_bread_book", "Free Bread in the Book of Edicts")]),
+    S("large_families", "Village Hall", "Edicts: Large Families",
+      "Large Families was proclaimed: two babies were born in one day and the chronicle kept both births", 45,
+      [("01_large_families_babies", "Two babies born half a day apart"), ("02_large_families_chronicle", "The chronicle: both births")]),
     S("hall_quests", "Village Hall", "Quests, advice, the village map and the festival",
       "the quests, advice, village map, mercenaries and festival opened", 60,
       [("01_hall_quests", "Quests"), ("02_hall_advice", "What next?"), ("03_hall_map", "Village map"),

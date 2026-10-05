@@ -1,0 +1,20 @@
+{
+  "icon": "minecraft:bread",
+  "name": {"translate": "edict.aliveworkplace.free_bread"},
+  "description": {"translate": "edict.aliveworkplace.free_bread.desc"},
+  "order": 2,
+  "boost": [{"type": "aliveworkplace:mood", "points": 10, "when": "fed_today", "reason": {"translate": "mood.aliveworkplace.reason.free_bread"}}],
+  "cost": [{"type": "aliveworkplace:food_use", "percent": 30}],
+  "excludes": [],
+  "reform": {
+    "name": {"translate": "reform.aliveworkplace.common_granary"},
+    "line": {"translate": "reform.aliveworkplace.common_granary.line"},
+    "steps": [
+      {"kind": "bring", "item": "minecraft:wheat", "count": 64, "reward": 4},
+      {"kind": "bring", "item": "minecraft:hay_block", "count": 16, "reward": 5},
+      {"kind": "bring", "item": "minecraft:barrel", "count": 8, "reward": 3}
+    ],
+    "effects": []
+  },
+  "enabled": true
+}

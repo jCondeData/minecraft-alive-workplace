@@ -66,9 +66,13 @@ public final class Sickness {
 		}
 	}
 
-	/** The chance a day that {@code villager} falls ill: higher when hungry, higher again without a bed. */
+	/**
+	 * The chance a day that {@code villager} falls ill: higher when hungry, higher again without a bed, and as much more
+	 * as their village's {@code sickness} effects say (Large Families, 30.6: half again).
+	 */
 	public static float dailyChance(ServerLevel level, Villager villager) {
 		float chance = DAILY + (VillageNeeds.isHungry(villager, level.getGameTime()) ? HUNGRY : 0f) + (VillageNeeds.bed(level, villager) == null ? HOMELESS : 0f);
+		chance *= Math.max(0f, 1f + io.github.jcondedata.aliveworkplace.hall.CivicEffects.of(villager).sickness(villager) / 100f);
 		// Medicine: a third less likely a level.
 		return chance * (1f - io.github.jcondedata.aliveworkplace.research.Research.level(villager, io.github.jcondedata.aliveworkplace.research.Research.Topic.MEDICINE) / 3f);
 	}

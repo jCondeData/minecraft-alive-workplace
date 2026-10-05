@@ -141,6 +141,7 @@ public final class VillageNeeds {
 	public static Needs check(ServerLevel level, BlockPos hall) {
 		long now = level.getGameTime();
 		List<BlockPos> store = null;
+		VillageHallBlockEntity entity = level.getBlockEntity(hall) instanceof VillageHallBlockEntity e ? e : null;
 		List<Villager> everyone = level.getEntitiesOfClass(Villager.class, VillageHalls.area(hall), Villager::isAlive);
 		io.github.jcondedata.aliveworkplace.people.Names.nameEveryone(everyone);
 		for (Villager villager : everyone) {
@@ -156,10 +157,34 @@ public final class VillageNeeds {
 				if (store == null) {
 					store = store(level, hall);
 				}
-				eat(level, villager, store);
+				if (eat(level, villager, store) && entity != null) {
+					eatMore(level, entity, villager, store);
+				}
 			}
 		}
 		return count(level, hall);
+	}
+
+	/**
+	 * Free Bread (30.6): after {@code villager} ate a meal from the store, the hall counts the village's {@code food_use}
+	 * share of another (30%: 0.3, kept in hundredths and saved) and takes one more meal from the store each time the count
+	 * reaches a whole one (if the store is out, that meal is gone uneaten). Returns the extra meals taken.
+	 */
+	public static int eatMore(ServerLevel level, VillageHallBlockEntity hall, Villager villager, List<BlockPos> store) {
+		int percent = CivicEffects.of(hall).foodUse(villager);
+		if (percent <= 0) {
+			return 0;
+		}
+		int count = hall.extraMeals() + percent;
+		int taken = 0;
+		while (count >= 100) {
+			count -= 100;
+			if (!SupplyContainers.takeOne(level, store, VillageNeeds::isMeal).isEmpty()) {
+				taken++;
+			}
+		}
+		hall.setExtraMeals(count);
+		return taken;
 	}
 
 	/** How the village round {@code hall} is doing right now (nothing eaten). */

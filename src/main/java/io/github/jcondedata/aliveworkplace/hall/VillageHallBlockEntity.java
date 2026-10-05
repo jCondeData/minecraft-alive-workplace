@@ -63,6 +63,8 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 	@Nullable
 	private CivicEffects.Sum civic;
 	private int civicGeneration;
+	/** Free Bread's running share of an extra meal (30.6), in hundredths (0 to 99); saved as {@code extraMeals}, 0 to 1. */
+	private int extraMeals;
 
 	/**
 	 * Whether the hall's point-of-interest record was checked for its Steward's place since it loaded (27.5): halls saved
@@ -177,6 +179,16 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 			civicGeneration = generation;
 		}
 		return sum;
+	}
+
+	/** Free Bread's running share of an extra meal, in hundredths of a meal (see {@code VillageNeeds}). */
+	public int extraMeals() {
+		return extraMeals;
+	}
+
+	public void setExtraMeals(int hundredths) {
+		extraMeals = Math.max(0, Math.min(99, hundredths));
+		setChanged();
 	}
 
 	/** Each edict's reform progress (see {@link Reforms}). */
@@ -443,6 +455,7 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 		reforms = Reforms.Progress.CODEC.listOf().parse(net.minecraft.nbt.NbtOps.INSTANCE, tag.get("reforms"))
 			.result().map(java.util.List::copyOf).orElse(java.util.List.of());
 		civic = null;
+		extraMeals = Math.max(0, Math.min(99, Math.round(Nbt.getFloat(tag, "extraMeals") * 100f)));
 		berriesFound.clear();
 		net.minecraft.nbt.ListTag berries = Nbt.getList(tag, "berriesFound", net.minecraft.nbt.Tag.TAG_STRING);
 		for (int i = 0; i < berries.size(); i++) {
@@ -500,6 +513,9 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 		}
 		if (!reforms.isEmpty()) {
 			Reforms.Progress.CODEC.listOf().encodeStart(net.minecraft.nbt.NbtOps.INSTANCE, reforms).result().ifPresent(t -> tag.put("reforms", t));
+		}
+		if (extraMeals > 0) {
+			tag.putFloat("extraMeals", extraMeals / 100f);
 		}
 		net.minecraft.nbt.ListTag lines = new net.minecraft.nbt.ListTag();
 		for (Chronicle.Entry entry : chronicle) {

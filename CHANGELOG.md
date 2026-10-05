@@ -23,6 +23,13 @@ asks for the steps, `latest.log` and any crash report).
   told to the village and the hall's owner, Mythic ones to every player in gold with the village's direction from spawn;
   all go in the chronicle under a nether star. A Legend in a grave or turned zombie keeps their slot and comes back as
   themselves; with no grave their slot frees after 7 days; Legends join a hall placed again.
+- **Free Bread and Large Families** (30.6): two new edicts. **Free Bread** makes everyone fed in the last day 10
+  happier ("free bread"), but the village eats 30% more (the hall takes 3 extra meals for every 10 eaten); its reform
+  **The Common Granary** (64 wheat, 16 hay bales, 8 barrels) takes the extra food away. **Large Families** lets up to
+  two babies be born a day, but a baby needs 24 meals in the store (not 16), the family eats 12 (not 8) and villagers
+  fall ill 50% more often; its reform **The Midwives** (8 honey bottles, 16 white wool, 4 golden carrots) keeps two
+  babies a day with the usual food and sickness. The Book of Edicts tells both in words. Data packs get the effect
+  types `food_use`, `births` and `sickness`.
 - **Reforms, and The Shift Bell** (30.5): while an edict is in force, the hall's quest page shows its reform's next step
   in the row below the daily quests (a book and quill; it never expires). A new step goes up each morning after the last
   was done, and each pays emeralds like a quest (a quarter more a rank). The last step reforms the edict for that

@@ -1,0 +1,23 @@
+{
+  "icon": "minecraft:white_bed",
+  "name": {"translate": "edict.aliveworkplace.large_families"},
+  "description": {"translate": "edict.aliveworkplace.large_families.desc"},
+  "order": 3,
+  "boost": [{"type": "aliveworkplace:births", "per_day": 2}],
+  "cost": [
+    {"type": "aliveworkplace:births", "food_needed": 24, "family_meals": 12},
+    {"type": "aliveworkplace:sickness", "percent": 50}
+  ],
+  "excludes": [],
+  "reform": {
+    "name": {"translate": "reform.aliveworkplace.midwives"},
+    "line": {"translate": "reform.aliveworkplace.midwives.line"},
+    "steps": [
+      {"kind": "bring", "item": "minecraft:honey_bottle", "count": 8, "reward": 4},
+      {"kind": "bring", "item": "minecraft:white_wool", "count": 16, "reward": 3},
+      {"kind": "bring", "item": "minecraft:golden_carrot", "count": 4, "reward": 5}
+    ],
+    "effects": []
+  },
+  "enabled": true
+}

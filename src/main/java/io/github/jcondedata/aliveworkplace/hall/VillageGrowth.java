@@ -19,7 +19,8 @@ import org.jetbrains.annotations.Nullable;
 /**
  * A village with a Village Hall grows: at most once a day, when there's a free bed, enough food in the store and the
  * village is doing well, the two grown villagers nearest the free bed have a baby (the family eats {@link #MEALS} meals
- * from the store for it). So building houses with beds — and keeping the store full — grows the village, up to
+ * from the store for it). Edicts change this with {@code births} effects (Large Families, 30.6: two babies a day, 24 meals
+ * needed and 12 eaten). So building houses with beds — and keeping the store full — grows the village, up to
  * {@link #CAP} villagers.
  */
 public final class VillageGrowth {
@@ -33,6 +34,21 @@ public final class VillageGrowth {
 	public static float WELLBEING_NEEDED = 0.5f;
 	/** A village stops growing at this many villagers (0: never grows). */
 	public static int CAP = 40;
+
+	/** Game time between two births in the village of the hall at {@code hall}: {@link #EVERY} over its babies a day (Large Families: 2). */
+	public static long every(ServerLevel level, BlockPos hall) {
+		return EVERY / Math.max(1, CivicEffects.of(level, hall).birthsPerDay());
+	}
+
+	/** Meals the store of the village round {@code hall} must hold before a baby is on the way (Large Families: 24). */
+	public static int foodNeeded(ServerLevel level, BlockPos hall) {
+		return CivicEffects.of(level, hall).foodNeeded(FOOD_NEEDED);
+	}
+
+	/** Meals a birth takes from the store of the village round {@code hall} (Large Families: 12). */
+	public static int familyMeals(ServerLevel level, BlockPos hall) {
+		return CivicEffects.of(level, hall).familyMeals(MEALS);
+	}
 
 	/** What's keeping the village from growing (NONE: nothing, a baby is on the way). */
 	public enum Blocker { NONE, FULL, TOO_FEW, NO_BED, FOOD, WELLBEING, TOO_SOON }
@@ -49,13 +65,13 @@ public final class VillageGrowth {
 		if (freeBed(level, hall) == null) {
 			return Blocker.NO_BED;
 		}
-		if (meals(level, VillageNeeds.store(level, hall)) < FOOD_NEEDED) {
+		if (meals(level, VillageNeeds.store(level, hall)) < foodNeeded(level, hall)) {
 			return Blocker.FOOD;
 		}
 		if (needs.wellbeing() < WELLBEING_NEEDED) {
 			return Blocker.WELLBEING;
 		}
-		if (lastBirth > 0 && level.getGameTime() - lastBirth < EVERY) {
+		if (lastBirth != 0 && level.getGameTime() - lastBirth < every(level, hall)) { // 0: never
 			return Blocker.TOO_SOON;
 		}
 		return Blocker.NONE;
@@ -80,7 +96,7 @@ public final class VillageGrowth {
 
 	/**
 	 * A baby for the two grown villagers nearest the free bed, if nothing's in the way; returns it (null if none was born).
-	 * The family eats {@link #MEALS} meals from the store.
+	 * The family eats {@link #familyMeals} meals from the store.
 	 */
 	@Nullable
 	public static Villager grow(ServerLevel level, BlockPos hall, VillageNeeds.Needs needs, long lastBirth) {
@@ -111,7 +127,8 @@ public final class VillageGrowth {
 		io.github.jcondedata.aliveworkplace.people.Families.born(baby, mother, father);
 		level.addFreshEntityWithPassengers(baby);
 		List<BlockPos> store = VillageNeeds.store(level, hall);
-		for (int i = 0; i < MEALS; i++) {
+		int meals = familyMeals(level, hall);
+		for (int i = 0; i < meals; i++) {
 			if (SupplyContainers.takeOne(level, store, VillageNeeds::isMeal).isEmpty()) {
 				break;
 			}

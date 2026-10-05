@@ -1872,7 +1872,7 @@ the Village Hall (`VillageNeeds`, `VillageQuests`, `VillageRanks`, `Festivals`, 
     on; progress survives lifting and a reload; the last step reforms it (no mood loss, pace kept), and it stays
     reformed when lifted and proclaimed again; a battle step falls back to its `fallback` without Cobblemon;
   - showcase scene `reform`: the quest page with a reform step, then the fireworks and the chronicle line.
-- [ ] **30.6** **Free Bread and Large Families.** Effects `food_use`, `births` and `sickness`, read by `VillageNeeds`,
+- [x] **30.6** (review: pending 2026-10-05) **Free Bread and Large Families.** Effects `food_use`, `births` and `sickness`, read by `VillageNeeds`,
   `VillageGrowth` and `people/Sickness`; each edict with its reform:
   - **Free Bread**: everyone fed in the last day is 10 happier ("free bread"); the village eats 30% more (for every
     meal eaten from the store the hall counts 0.3 of another, saved, and takes one more meal each time it reaches 1).

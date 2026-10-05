@@ -262,8 +262,9 @@ public final class Caravans {
 				out.merge(item, r.count(), Math::max);
 			}
 		}
-		if (census.food() < VillageGrowth.FOOD_NEEDED) {
-			out.merge(Items.BREAD, VillageGrowth.FOOD_NEEDED, Math::max);
+		int needed = VillageGrowth.foodNeeded(level, hall);
+		if (census.food() < needed) {
+			out.merge(Items.BREAD, needed, Math::max);
 		}
 		return out.entrySet().stream().limit(12).map(e -> new Want(e.getKey(), e.getValue())).toList();
 	}

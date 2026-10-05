@@ -241,8 +241,35 @@ public final class EdictBook {
 				pace.percent(), pace.jobs().size());
 		}
 		if (effect instanceof CivicEffects.Mood mood) {
-			return Component.translatable(mood.points() >= 0 ? "screen.aliveworkplace.edicts.effect.happier" : "screen.aliveworkplace.edicts.effect.sadder",
-				Math.abs(mood.points()), mood.reason());
+			String key = mood.points() >= 0 ? "screen.aliveworkplace.edicts.effect.happier" : "screen.aliveworkplace.edicts.effect.sadder";
+			return Component.translatable(mood.when() == CivicEffects.When.FED_TODAY ? key + "_fed" : key, Math.abs(mood.points()), mood.reason());
+		}
+		if (effect instanceof CivicEffects.FoodUse food) {
+			return Component.translatable(food.percent() >= 0 ? "screen.aliveworkplace.edicts.effect.eats_more" : "screen.aliveworkplace.edicts.effect.eats_less",
+				Math.abs(food.percent()));
+		}
+		if (effect instanceof CivicEffects.Illness illness) {
+			return Component.translatable(illness.percent() >= 0 ? "screen.aliveworkplace.edicts.effect.ill_more" : "screen.aliveworkplace.edicts.effect.ill_less",
+				Math.abs(illness.percent()));
+		}
+		if (effect instanceof CivicEffects.Births births) {
+			List<Component> parts = new ArrayList<>();
+			if (births.perDay() > 1) {
+				parts.add(Component.translatable("screen.aliveworkplace.edicts.effect.babies", births.perDay()));
+			}
+			births.foodNeeded().ifPresent(n -> parts.add(Component.translatable("screen.aliveworkplace.edicts.effect.baby_food", n, VillageGrowth.FOOD_NEEDED)));
+			births.familyMeals().ifPresent(n -> parts.add(Component.translatable("screen.aliveworkplace.edicts.effect.family_meals", n, VillageGrowth.MEALS)));
+			if (parts.isEmpty()) {
+				return Component.translatable("screen.aliveworkplace.edicts.effect.babies_usual");
+			}
+			net.minecraft.network.chat.MutableComponent out = Component.empty();
+			for (int i = 0; i < parts.size(); i++) {
+				if (i > 0) {
+					out.append(Component.literal(", "));
+				}
+				out.append(parts.get(i));
+			}
+			return out;
 		}
 		return Component.literal(effect.type().getPath().replace('_', ' '));
 	}

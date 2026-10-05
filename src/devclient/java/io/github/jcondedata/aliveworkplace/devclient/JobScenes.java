@@ -1206,6 +1206,93 @@ final class JobScenes {
 						&& e.text().getString().equals("The edict Long Shifts was reformed: The Shift Bell")), "the chronicle keeps the reform");
 				}, 30)),
 			(level, player) -> player.containerMenu instanceof ChoiceMenu));
+		// Free Bread (ROADMAP 30.6): everyone fed in the last day is 10 happier, so the builder's line in the hall's list
+		// says "free bread"; the Book of Edicts tells its cost (the village eats 30% more) and its reform, The Common Granary.
+		SCREENS.put("free_bread", new Screen("Free Bread was proclaimed: the hall's list shows the \"free bread\" mood and the Book tells its cost and reform",
+			new Vec3(2.5, -58.4, 4.5), TARGET,
+			(level, player) -> {
+				level.setBlockAndUpdate(STATION, ModBlocks.VILLAGE_HALL.defaultBlockState()
+					.setValue(io.github.jcondedata.aliveworkplace.hall.VillageHallBlock.FACING, Direction.SOUTH));
+				var hall = (io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(STATION);
+				hall.setRank(io.github.jcondedata.aliveworkplace.hall.VillageRanks.Rank.HAMLET);
+				hall.setEdicts(List.of());
+				hall.setReforms(List.of());
+				subject = worker(level, new BlockPos(-4, -60, -3), ModBlocks.BLUEPRINT_TABLE, ModVillagers.BLUEPRINT_TABLE_POI, ModVillagers.BUILDER);
+				io.github.jcondedata.aliveworkplace.hall.VillageNeeds.check(level, STATION); // (new to the village: they ate before they came)
+				var bread = io.github.jcondedata.aliveworkplace.hall.Edicts.find("free_bread").orElseThrow();
+				var told = io.github.jcondedata.aliveworkplace.hall.Edicts.proclaim(level, STATION, player, bread);
+				Showcase.check(told.done(), "Free Bread was proclaimed: " + told.message().getString());
+				io.github.jcondedata.aliveworkplace.people.Moods.forget();
+			},
+			List.of(new Step("01_free_bread_list", io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_PERSON, 6, (level, player) -> {
+					io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.open(player, STATION);
+					var mood = io.github.jcondedata.aliveworkplace.people.Moods.of(subject);
+					Showcase.check(mood != null && mood.good().stream().anyMatch(c -> c.getString().equals("free bread")),
+						"the fed builder's mood lists \"free bread\": " + (mood == null ? "no mood" : mood.good()));
+				}, 30),
+				new Step("02_free_bread_book", io.github.jcondedata.aliveworkplace.hall.EdictBook.SLOTS[0], 6, (level, player) -> {
+					io.github.jcondedata.aliveworkplace.hall.EdictBook.open(player, STATION);
+					if (player.containerMenu instanceof ChoiceMenu m) {
+						Showcase.check(m.icon(io.github.jcondedata.aliveworkplace.hall.EdictBook.SLOTS[0]).is(Items.BREAD), "Free Bread sits in the first slot");
+					}
+				}, 30)),
+			(level, player) -> player.containerMenu instanceof ChoiceMenu));
+		// Large Families (ROADMAP 30.6): up to two babies a day. A couple by three free beds and 48 meals in the store
+		// have a baby, and half a day later (staged: the second birth is due now) another; the chronicle keeps both.
+		SCREENS.put("large_families", new Screen("Large Families was proclaimed: two babies were born in one day and the chronicle kept both births",
+			new Vec3(2.5, -58.4, 4.5), TARGET,
+			(level, player) -> {
+				level.setBlockAndUpdate(STATION, ModBlocks.VILLAGE_HALL.defaultBlockState()
+					.setValue(io.github.jcondedata.aliveworkplace.hall.VillageHallBlock.FACING, Direction.SOUTH));
+				var hall = (io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(STATION);
+				hall.setRank(io.github.jcondedata.aliveworkplace.hall.VillageRanks.Rank.HAMLET);
+				hall.setEdicts(List.of());
+				hall.setReforms(List.of());
+				for (int x = -5; x <= -1; x += 2) {
+					level.setBlockAndUpdate(new BlockPos(x, -60, -3), Blocks.RED_BED.defaultBlockState()
+						.setValue(BlockStateProperties.HORIZONTAL_FACING, Direction.SOUTH)
+						.setValue(BlockStateProperties.BED_PART, net.minecraft.world.level.block.state.properties.BedPart.FOOT));
+					level.setBlockAndUpdate(new BlockPos(x, -60, -4), Blocks.RED_BED.defaultBlockState()
+						.setValue(BlockStateProperties.HORIZONTAL_FACING, Direction.SOUTH)
+						.setValue(BlockStateProperties.BED_PART, net.minecraft.world.level.block.state.properties.BedPart.HEAD));
+				}
+				place(level, new BlockPos(4, -60, -3), ModBlocks.STOREHOUSE);
+				chest(level, new BlockPos(5, -60, -3), new ItemStack(Items.BREAD, 64));
+				for (int x = -1; x <= 1; x += 2) {
+					Villager parent = EntityType.VILLAGER.spawn(level, STATION.south(2).east(x), MobSpawnType.COMMAND);
+					parent.setNoAi(true);
+				}
+				io.github.jcondedata.aliveworkplace.hall.VillageNeeds.check(level, STATION);
+				var families = io.github.jcondedata.aliveworkplace.hall.Edicts.find("large_families").orElseThrow();
+				var told = io.github.jcondedata.aliveworkplace.hall.Edicts.proclaim(level, STATION, player, families);
+				Showcase.check(told.done(), "Large Families was proclaimed: " + told.message().getString());
+			},
+			List.of(new Step("01_large_families_babies", -1, 0, (level, player) -> {
+					player.closeContainer();
+					var happy = new io.github.jcondedata.aliveworkplace.hall.VillageNeeds.Needs(2, 2, 2, 2, 2, 0, 0, 1f);
+					long gap = io.github.jcondedata.aliveworkplace.hall.VillageGrowth.every(level, STATION);
+					Showcase.check(gap == io.github.jcondedata.aliveworkplace.hall.VillageGrowth.EVERY / 2, "babies come half a day apart: " + gap + " ticks");
+					Villager first = io.github.jcondedata.aliveworkplace.hall.VillageGrowth.grow(level, STATION, happy, 0);
+					// Staged: the first baby came half a day ago, so the second is due now.
+					Villager second = io.github.jcondedata.aliveworkplace.hall.VillageGrowth.grow(level, STATION, happy, level.getGameTime() - gap);
+					Showcase.check(first != null && second != null, "two babies were born in one day");
+					for (Villager baby : new Villager[] {first, second}) {
+						if (baby != null) {
+							baby.setNoAi(true);
+						}
+					}
+				}, 40),
+				new Step("02_large_families_chronicle", -1, 6, (level, player) -> {
+					io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.open(player, STATION);
+					if (player.containerMenu instanceof ChoiceMenu m) {
+						m.press(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.CHRONICLE, player);
+					}
+					var hall = (io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(STATION);
+					long births = hall.chronicle().stream().filter(e -> e.kind() == io.github.jcondedata.aliveworkplace.hall.Chronicle.Kind.BIRTH
+						&& e.text().getString().startsWith("A baby was born to ")).count();
+					Showcase.check(births >= 2, "the chronicle keeps both births: " + births);
+				}, 30)),
+			(level, player) -> player.containerMenu instanceof ChoiceMenu));
 		SCREENS.put("hall_treasury", new Screen("the hall's treasury was collected, the village protected and its screen opened from a Village Ledger",
 			new Vec3(2.5, -58.4, 4.5), TARGET,
 			(level, player) -> {

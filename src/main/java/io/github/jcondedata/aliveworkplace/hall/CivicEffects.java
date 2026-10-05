@@ -26,7 +26,8 @@ import org.jetbrains.annotations.Nullable;
  * The effect toolbox (ROADMAP 30.3, docs/design/M30.md "The effect toolbox"): typed effects with codecs, shared by
  * edicts (village-wide), and later tonics (the drinker) and guilds (the members). {@code "type"} picks the codec; an
  * optional {@code jobs} list (profession ids) narrows any effect to those jobs. Each type is read by exactly the system
- * it changes: {@code work_pace} by {@code work/Pace}, {@code mood} by {@code people/Moods.work}. Later items add their
+ * it changes: {@code work_pace} by {@code work/Pace}, {@code mood} by {@code people/Moods.work}, {@code food_use} by
+ * {@code VillageNeeds}, {@code births} by {@code VillageGrowth}, {@code sickness} by {@code people/Sickness}. Later items add their
  * own types with {@link #register}.
  *
  * <p>The effects in force are summed per hall ({@link Sum}) whenever its edicts change, a data pack reloads or the
@@ -71,6 +72,9 @@ public final class CivicEffects {
 
 	public static final ResourceLocation WORK_PACE = AliveWorkplace.id("work_pace");
 	public static final ResourceLocation MOOD = AliveWorkplace.id("mood");
+	public static final ResourceLocation FOOD_USE = AliveWorkplace.id("food_use");
+	public static final ResourceLocation BIRTHS = AliveWorkplace.id("births");
+	public static final ResourceLocation SICKNESS = AliveWorkplace.id("sickness");
 
 	static {
 		register(WORK_PACE, RecordCodecBuilder.<WorkPace>mapCodec(i -> i.group(
@@ -83,6 +87,20 @@ public final class CivicEffects {
 			When.CODEC.optionalFieldOf("when", When.ALWAYS).forGetter(Mood::when),
 			JOBS.optionalFieldOf("jobs", List.of()).forGetter(Mood::jobs)
 		).apply(i, Mood::new)));
+		register(FOOD_USE, RecordCodecBuilder.<FoodUse>mapCodec(i -> i.group(
+			Codec.intRange(-100, 1000).fieldOf("percent").forGetter(FoodUse::percent),
+			JOBS.optionalFieldOf("jobs", List.of()).forGetter(FoodUse::jobs)
+		).apply(i, FoodUse::new)));
+		register(BIRTHS, RecordCodecBuilder.<Births>mapCodec(i -> i.group(
+			Codec.intRange(1, 24).optionalFieldOf("per_day", 1).forGetter(Births::perDay),
+			Codec.intRange(0, 4096).optionalFieldOf("food_needed").forGetter(Births::foodNeeded),
+			Codec.intRange(0, 4096).optionalFieldOf("family_meals").forGetter(Births::familyMeals),
+			JOBS.optionalFieldOf("jobs", List.of()).forGetter(Births::jobs)
+		).apply(i, Births::new)));
+		register(SICKNESS, RecordCodecBuilder.<Illness>mapCodec(i -> i.group(
+			Codec.intRange(-100, 1000).fieldOf("percent").forGetter(Illness::percent),
+			JOBS.optionalFieldOf("jobs", List.of()).forGetter(Illness::jobs)
+		).apply(i, Illness::new)));
 	}
 
 	/** {@code work_pace}: work {@code percent} faster (a bonus of {@code work/Pace}, up to its cap). */
@@ -116,6 +134,38 @@ public final class CivicEffects {
 		@Override
 		public ResourceLocation type() {
 			return MOOD;
+		}
+	}
+
+	/**
+	 * {@code food_use}: the village eats {@code percent} more (Free Bread, 30.6): for every meal a villager it reaches eats
+	 * from the store, the hall counts that share of another and takes a whole one each time the count reaches 1
+	 * ({@code VillageNeeds}).
+	 */
+	public record FoodUse(int percent, List<ResourceLocation> jobs) implements Effect {
+		@Override
+		public ResourceLocation type() {
+			return FOOD_USE;
+		}
+	}
+
+	/**
+	 * {@code births}: up to {@code per_day} babies a day ({@code VillageGrowth.EVERY} divided by it; several add what each
+	 * has over 1), and optionally the meals a baby needs in the store and the meals the family eats for it (the highest
+	 * named counts). Village-wide: {@code jobs} doesn't narrow it.
+	 */
+	public record Births(int perDay, Optional<Integer> foodNeeded, Optional<Integer> familyMeals, List<ResourceLocation> jobs) implements Effect {
+		@Override
+		public ResourceLocation type() {
+			return BIRTHS;
+		}
+	}
+
+	/** {@code sickness}: villagers it reaches fall ill {@code percent} more often ({@code people/Sickness.dailyChance}). */
+	public record Illness(int percent, List<ResourceLocation> jobs) implements Effect {
+		@Override
+		public ResourceLocation type() {
+			return SICKNESS;
 		}
 	}
 
@@ -183,6 +233,55 @@ public final class CivicEffects {
 			return out;
 		}
 
+		/** How much more {@code villager} eats, in percent ({@code food_use} effects that reach them, added). */
+		public int foodUse(Villager villager) {
+			int percent = 0;
+			for (FoodUse e : of(FoodUse.class, villager)) {
+				percent += e.percent();
+			}
+			return percent;
+		}
+
+		/** How much more often {@code villager} falls ill, in percent ({@code sickness} effects that reach them, added). */
+		public int sickness(Villager villager) {
+			int percent = 0;
+			for (Illness e : of(Illness.class, villager)) {
+				percent += e.percent();
+			}
+			return percent;
+		}
+
+		/** Babies the village may have a day: 1, and what each {@code births} effect has over 1. */
+		public int birthsPerDay() {
+			int perDay = 1;
+			for (Active a : all) {
+				if (a.effect() instanceof Births b) {
+					perDay += b.perDay() - 1;
+				}
+			}
+			return perDay;
+		}
+
+		/** Meals a baby needs in the store: the highest a {@code births} effect names, else {@code usual}. */
+		public int foodNeeded(int usual) {
+			return highest(Births::foodNeeded, usual);
+		}
+
+		/** Meals the family eats for a baby: the highest a {@code births} effect names, else {@code usual}. */
+		public int familyMeals(int usual) {
+			return highest(Births::familyMeals, usual);
+		}
+
+		private int highest(java.util.function.Function<Births, Optional<Integer>> field, int usual) {
+			int out = -1;
+			for (Active a : all) {
+				if (a.effect() instanceof Births b && field.apply(b).isPresent()) {
+					out = Math.max(out, field.apply(b).get());
+				}
+			}
+			return out < 0 ? usual : out;
+		}
+
 		/** The {@code mood} effects that count for {@code villager} now. */
 		public List<Mood> moods(Villager villager, long now) {
 			List<Mood> out = new ArrayList<>();
@@ -217,6 +316,16 @@ public final class CivicEffects {
 		}
 		VillageHallBlockEntity hall = hall(level, villager);
 		return hall == null ? Sum.EMPTY : hall.civicEffects();
+	}
+
+	/** The effects in force in {@code hall}'s village (none with edicts off). */
+	public static Sum of(@Nullable VillageHallBlockEntity hall) {
+		return !Edicts.ENABLED || hall == null ? Sum.EMPTY : hall.civicEffects();
+	}
+
+	/** The effects in force in the village of the hall at {@code pos} (none without a hall there, or with edicts off). */
+	public static Sum of(ServerLevel level, net.minecraft.core.BlockPos pos) {
+		return of(level.getBlockEntity(pos) instanceof VillageHallBlockEntity hall ? hall : null);
 	}
 
 	@Nullable

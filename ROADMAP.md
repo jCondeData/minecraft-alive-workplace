@@ -138,7 +138,7 @@ stay in the list, ticked, so their numbers stay unique.
 - [ ] **B70** 'Refresh active project' changes QaImportEdgesGameTests.java: its //$ gametest swap line drops timeoutTicks = 400, so git diff isn't clean after a refresh (seen by lane-d-1005-0632 on 30.16, 2026-10-05). Expected: refresh leaves git diff unchanged (fix the swap line). Test: ./gradlew "Refresh active project" then git diff (found by lane-d-1005-0632, 2026-10-05)
 - [ ] **B71** StewardCivicRulesGameTests twoDarkBedsGetAStreetLampByTheDarkestBed failed once and turned main red (CI run 37289855963 on a2294ed9, 2026-10-05 09:30Z, the only failure of 962; the next runs passed). CI's log names only the test, not the assertion. Likely cause (not confirmed): VillageAdvice.darkBeds counts every HOME POI within VillageHalls.RADIUS 64 of the hall, so a bed left by another test's area within 64 blocks makes 'darkBeds.size() == 2' fail, or two equally dark beds tie in the sort. Expected: passes every run (count only this test's beds, e.g. a smaller radius for the test or assert on the test's own beds). Test: the test itself, repeated with RepeatNewTests (QA lane: test-only flake that turned main red) (found by qa-1005-0934, 2026-10-05)
 - [ ] **B72** 13 showcase scenes fail now that B59 lets every scene run (full showcase run 37279004841 on main 9127357, 98 pass / 17 fail; soak=B60, steward=B62, words=B63 known): cradle, steward_rules, steward_desk, steward_jobs, steward_homes, long_shifts, free_bread, legend_guest, curfew, conscription, open_gates, piece_look, habitat_keeper, plus edicts (4532 missing-texture magenta pixels in 02_edicts_scale4 only). The matching GameTests pass (e.g. EdictGameTests Long Shifts), so most look like scene setup, not the mod: from reading the harness (not run), the scenes place beds/halls with setBlockAndUpdate and read POIs in the same tick (Cradles.nursery, Stewards.appoint's result ignored so no Steward is appointed, LegendGuests.tend), and long_shifts/free_bread don't call CivicEffects.forget() after the hall exists (hall cached null 200 ticks). Expected: every scene passes; each scene waits a tick or two after placing POI blocks, checks Stewards.appoint's result, and forgets the civic caches; any scene still failing after that is a mod bug of its own. Test: SCENE=<name> tools/screenshots/run.sh (QA lane: scene-only; found by qa-1005-0934) (found by qa-1005-0934, 2026-10-05)
-- [ ] **B73** QaImportEdgesGameTests (QA commit 33ddd5b0): its '//$ gametest' swap line drops timeoutTicks = 400, so ./gradlew 'Refresh active project' rewrites the @GameTest without the 400-tick timeout (seen by lane-c-1005-0932, 2026-10-05). Expected: refresh leaves git diff unchanged; the swap line carries the timeout. Test: run 'Refresh active project' on main, git diff (found by lane-c-1005-0932, 2026-10-05)
+- [x] **B73** (approved auto 2026-10-05) QaImportEdgesGameTests (QA commit 33ddd5b0): its '//$ gametest' swap line drops timeoutTicks = 400, so ./gradlew 'Refresh active project' rewrites the @GameTest without the 400-tick timeout (seen by lane-c-1005-0932, 2026-10-05). Expected: refresh leaves git diff unchanged; the swap line carries the timeout. Test: run 'Refresh active project' on main, git diff (found by lane-c-1005-0932, 2026-10-05)
 
 ## Milestone 21: Finish 0.138.0
 
@@ -344,7 +344,7 @@ first; many items below are "verify and harden", not "build".
 - [x] **23.7** (approved auto 2026-10-04) (verified 2026-10-05: 6 new tests [QaImportEdgesGameTests, shipped 30f2d6f]: not-a-build files [text, empty, PNG], uncompressed .nbt, the 1,000,000-block limit both sides [.nbt and .schem], the 8 MB file limit both sides, empty/all-air/0-wide/no-region files, a schematic with cut-off data; plus the 6 corpus tests. Not filed [only a hand-damaged file shows it]: a .schem block index past its palette imports as air instead of 'damaged'. Mutation not run here.) **Imports that just work.** `.litematic`, `.schem` and `.nbt` files in common sizes and versions, including big
   builds (48×8×48), unknown modded blocks and old formats. Done when: a test corpus of permissively licensed or
   self-made sample files imports, or fails with a clear message that says which block or format was the problem.
-- [x] **23.8** (approved 2026-10-04) **Placing a build feels good.**
+- [x] **23.8** (approved 2026-10-04) (verified 2026-10-05: qa/placing-1005 [3 tests, pass alone; not on main yet]: all 4 turns and mirrored, the build plan's box equals the ghost box with every block inside; cancel mid-build with a stuffed chest, sent twice, returns every material exactly, one blueprint back; a turned, mirrored hut on a 1-block drop stands on its foundation inside the ghost. Showcase placing, preview, shapes pass [run 37279004841]. Moving an active site not covered [no direct move entry point found]. No mutants [time]) **Placing a build feels good.**
   - Rotation and mirroring before placing.
   - The ghost preview shows exactly where it goes.
   - The site can be moved or cancelled, with its materials returned.
@@ -1107,7 +1107,7 @@ here adds a new kind of speed bonus (the new jobs get the partners' existing one
     and a forced full cluster picked (compat, 1.7.3); a Fire Gem Block set on a core and a forced stage-3 Fire Gem
     cluster picked (compat, 1.8.1); a malformed bed file is logged and skipped;
   - showcase scene `gem_grower`.
-- [ ] **28.12** **The Daycare Keeper.** Cobblemon has no breeding; the Cobbleverse pack adds it with Cobbreeding
+- [x] **28.12** (review: pending 2026-10-05) **The Daycare Keeper.** Cobblemon has no breeding; the Cobbleverse pack adds it with Cobbreeding
   (eggs in the Pasture Block). Stand a villager by a Pasture Block and sneak-right-click them with an egg. Config
   `daycareKeepers` (true).
   - Right-click her (sneak for trades): the daycare screen (as the Rancher's, `compat/cobblemon/CobblemonDaycare`):
@@ -1132,7 +1132,7 @@ here adds a new kind of speed bonus (the new jobs get the partners' existing one
     nature; an incompatible pair never does; with Cobbreeding a Cobbreeding egg item is given; the keeper's death sends
     both to their PCs;
   - showcase scene `daycare_keeper` (the screen, collecting).
-- [ ] **28.13** **Builds for the new jobs.** Five builds with an upgrade each (architect skill, STYLE.md, renders), in
+- [x] **28.13** (review: pending 2026-10-05) **Builds for the new jobs.** Five builds with an upgrade each (architect skill, STYLE.md, renders), in
   the Blueprint Table (the Cobblemon ones only with Cobblemon) and sold by their job's Journeyman, each with its job
   block taking a villager with the item:
   - **Camp Kitchen**: an open timber shelter round a Campfire Pot, a grain store and benches; **II**: a Hearty Grain
@@ -4376,6 +4376,14 @@ item waits.
   jumps the day time to dawn, so game time would have kept work stopped well past noon; a value more than a day ahead
   (the clock set back) is ignored. Nothing a player reads was added besides the Book's lines (no status text for
   conscripts). `VillageRaids.track` starts a raid without the gathering and horn, for the showcase scene and tests.
+- 2026-10-05 (28.13, decisions; lane b): the Gem Grotto (both tiers) is all vanilla and in the Blueprint Table without
+  Cobblemon (`StarterBlueprints.VANILLA_JOB_BUILDS`), since the Gem Grower works without it; its "tumblestone ledges" are
+  polished blackstone round the lava where she sets tumblestones over it. A budding amethyst can't be carried in
+  survival (builders never place one), so the niche has amethyst blocks with clusters. Gem Grotto II's four cores are
+  drawn as deepslate and swapped to `cobblemon:deepslate_crystal_core` when it exists (`StarterBlueprints.withFeatures`,
+  spots in `GEM_GROTTO_2_CORES`). For 28.14: the Habitat Garden's mossy centre stone is
+  `StarterBlueprints.HABITAT_GARDEN_CENTRE` (template (7, 0, 7), both tiers). Sugar cane by the ponds was dropped
+  (a builder places it before pouring the water, so it pops off): large ferns instead.
 - 2026-10-05 (30.9, decisions; lane d): `curfew` is one effect type with three fields: `raids` (factor, multiplied;
   also read by `BanditCamps.dailyChance`), `safe_nights` (night safety full in `VillageNeeds.count`, and a monster's blow
   on a villager asleep in bed cancelled through `allowDamage`) and `stay_in` (bedtime, no trading, festival over at
@@ -4624,4 +4632,4 @@ item waits.
   and the still shows none rising (FAIL "a schoolhouse went up"); the day-2 wishes also still listed `well` after the
   well was finished. Left for QA/the next lane: why the schoolhouse doesn't start (plot in Civic z 16..40, two open
   builds in a Village) and whether `built_count_below` misses a just-finished well at the morning's ranking.
-- **qa handoff** (qa-1005-0833, 2026-10-05 09:33Z): qa-1005-0833: verified 23.1a, 23.1b, 23.10a with 6 new tests on qa/crew-looks-1005 (pushed; ship was on its 3rd build as main kept moving: if it isn't on main, run sessions.py ship from that branch). No bugs. Next QA: M23 rest (23.1, 23.2, 23.8, 23.10); B46/B50/B57/B61 still wait on B64/B66/B67/B59. Run 647 (Verify B55) was red on a ROADMAP-only commit and green on the next: an unnamed flake, worth a look in the nightly results.
+- **qa handoff** (qa-1005-0934, 2026-10-05 10:12Z): qa-1005-0934: verified B59, B61 (full showcase run 37279004841: every scene starts, stations and config pass), B63 (words scene passes locally on main), 23.8 (3 tests on qa/placing-1005: rotation/mirror inside the ghost, cancel with a full chest, slope; pass alone). Bugs: B71 (street-lamp test flake: CI run 652 red, and it failed again in my local ship of qa/placing-1005 with '(…) street_lamps shouldn't hold' at the one-bed step, i.e. extra dark beds within the hall's 64-block radius at start; my new tests may make it likelier, so ship qa/placing-1005 only after B71 is fixed), B72 (13 showcase scenes fail now that B59 lets them run; reads like scene setup: POIs read the tick they're placed, Stewards.appoint result ignored; QA lane's). Also unshipped: qa/import-swap-1005 (QaImportEdgesGameTests swap line dropped timeoutTicks 400 on Refresh active project): ship it. qa/crew-looks-1005 is on main. Next QA: B72 scene setup, then M23 rest (23.1 soak waits on B60, 23.2 chaos results, 23.10).

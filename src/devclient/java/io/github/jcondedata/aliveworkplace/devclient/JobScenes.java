@@ -1040,6 +1040,50 @@ final class JobScenes {
 			List.of(step("01_daycare_screen", io.github.jcondedata.aliveworkplace.compat.cobblemon.CobblemonDaycare.INFO, 6),
 				step("02_daycare_boarder", io.github.jcondedata.aliveworkplace.compat.cobblemon.CobblemonDaycare.FIRST_BOARDER_SLOT, 6)),
 			(level, player) -> player.containerMenu instanceof ChoiceMenu && io.github.jcondedata.aliveworkplace.ranch.Daycare.boarders(subject).size() == 1));
+		SCREENS.put("daycare_keeper", new Screen("the daycare keeper took a pair of Eevee and two eggs were collected", new Vec3(2.5, -58.4, 4.5), TARGET,
+			(level, player) -> {
+				// ROADMAP 28.12: Cobblemon's Pasture Block picked with an egg; two Eevee (mother and father) and a Bulbasaur
+				// in the party. The screen: pick the mother, then the father; two dawns later, collect the eggs.
+				net.minecraft.world.level.block.Block pasture = net.minecraft.core.registries.BuiltInRegistries.BLOCK.get(
+					io.github.jcondedata.aliveworkplace.registry.ModVillagers.PASTURE_BLOCK);
+				BlockState bottom = pastureHalf(ScreenshotHarness.standing(pasture.defaultBlockState()), "bottom");
+				subject = picked(level, player, STATION, bottom, Items.EGG);
+				level.setBlockAndUpdate(STATION.above(), pastureHalf(bottom, "top"));
+				subject.setNoAi(true);
+				party(player, "bulbasaur level=10", "eevee gender=female level=20", "eevee gender=male level=20");
+				io.github.jcondedata.aliveworkplace.compat.cobbledollars.CobbleDollarsBank.add(player, 5000);
+				io.github.jcondedata.aliveworkplace.daycare.DaycareKeepers.open(player, subject);
+			},
+			List.of(step("01_daycare_keeper_screen", io.github.jcondedata.aliveworkplace.compat.cobblemon.CobblemonDaycareKeeper.FIRST_PARTY_SLOT + 1, 6),
+				new Step("02_daycare_keeper_picked", io.github.jcondedata.aliveworkplace.compat.cobblemon.CobblemonDaycareKeeper.FIRST_PARTY_SLOT + 2, 6,
+					(level, player) -> {
+						if (player.containerMenu instanceof ChoiceMenu m) {
+							m.press(io.github.jcondedata.aliveworkplace.compat.cobblemon.CobblemonDaycareKeeper.FIRST_PARTY_SLOT + 1, player);
+						}
+					}, 25),
+				new Step("03_daycare_keeper_pair", io.github.jcondedata.aliveworkplace.compat.cobblemon.CobblemonDaycareKeeper.GET_ALONG, 6,
+					(level, player) -> {
+						if (player.containerMenu instanceof ChoiceMenu m) {
+							m.press(io.github.jcondedata.aliveworkplace.compat.cobblemon.CobblemonDaycareKeeper.FIRST_PARTY_SLOT + 2, player);
+						}
+					}, 25),
+				new Step("04_daycare_keeper_eggs", io.github.jcondedata.aliveworkplace.compat.cobblemon.CobblemonDaycareKeeper.EGGS, 6,
+					(level, player) -> {
+						// Two dawns found two eggs
+						var pairs = io.github.jcondedata.aliveworkplace.daycare.DaycareKeepers.pairs(subject);
+						if (!pairs.isEmpty()) {
+							io.github.jcondedata.aliveworkplace.daycare.DaycareKeepers.setPairs(subject, List.of(pairs.get(0).withEggs(2, pairs.get(0).day())));
+						}
+						io.github.jcondedata.aliveworkplace.daycare.DaycareKeepers.open(player, subject);
+					}, 25),
+				new Step("05_daycare_keeper_collected", -1, 6,
+					(level, player) -> {
+						if (player.containerMenu instanceof ChoiceMenu m) {
+							m.press(io.github.jcondedata.aliveworkplace.compat.cobblemon.CobblemonDaycareKeeper.EGGS, player);
+						}
+					}, 25)),
+			(level, player) -> player.containerMenu instanceof ChoiceMenu && io.github.jcondedata.aliveworkplace.daycare.DaycareKeepers.pairs(subject).size() == 1
+				&& io.github.jcondedata.aliveworkplace.daycare.DaycareKeepers.pairs(subject).get(0).eggs() == 0));
 		SCREENS.put("smith_orders", new Screen("the orders screen opened and a Poké Ball was picked", new Vec3(2.5, -58.4, 4.5), TARGET,
 			(level, player) -> {
 				subject = picked(level, player, STATION, Blocks.SMITHING_TABLE, cobblemonItem("red_apricorn"));

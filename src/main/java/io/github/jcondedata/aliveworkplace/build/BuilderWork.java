@@ -1143,6 +1143,7 @@ public class BuilderWork extends Behavior<Villager> {
 			level.setBlock(pos, shaped.isAir() ? state : shaped, Block.UPDATE_ALL);
 		}
 		applyBlockEntityData(level, pos, state, step.nbt());
+		MaterialRules.afterPlaced(level, pos, state);
 		if (state.is(io.github.jcondedata.aliveworkplace.registry.ModBlocks.STOREHOUSE)) {
 			io.github.jcondedata.aliveworkplace.store.Porters.onBuilt(level, pos, site);
 		}

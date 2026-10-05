@@ -93,7 +93,9 @@ public final class MaterialRules {
 		// Supplementaries: a pending rotation its block entity applies (and clears) when it loads
 		"rotate_tile",
 		// Cobblemon (ROADMAP 28.7): a Healing Machine charges by itself, a PC or Pasture Block lights up while in use
-		"charge", "on"
+		"charge", "on",
+		// Cobblemon (ROADMAP 28.13): a Campfire Pot's lid, which its cook shuts and opens
+		"lid"
 	);
 
 	public static Kind classify(BlockState state) {
@@ -130,6 +132,9 @@ public final class MaterialRules {
 			if (plant != Items.AIR) {
 				out.add(new Requirement(plant, 1));
 			}
+			return out;
+		}
+		if (ModdedBlocks.ownCosts(block, out)) {
 			return out;
 		}
 		if (!ModdedBlocks.costFromDataOnly(block)) {
@@ -251,6 +256,11 @@ public final class MaterialRules {
 	/** The filled bucket that pours this liquid (a water bucket for water), or air if there is none. */
 	public static Item bucket(BlockState state) {
 		return state.getFluidState().getType().getBucket();
+	}
+
+	/** Finishes a block a builder has just placed (a Campfire Pot gets its pot). */
+	public static void afterPlaced(net.minecraft.server.level.ServerLevel level, net.minecraft.core.BlockPos pos, BlockState state) {
+		ModdedBlocks.afterPlaced(level, pos, state);
 	}
 
 	/** Adjust a blueprint state before placing it: no free water, no decaying leaves. */

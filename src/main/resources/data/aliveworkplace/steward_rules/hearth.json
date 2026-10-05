@@ -1,0 +1,9 @@
+{
+  "when": [
+    {"research_idle": {}},
+    {"not": {"research_at_least": {"topic": "hearth", "level": 1}}}
+  ],
+  "do": {"research": {"topic": "hearth"}},
+  "priority": 45,
+  "why": "steward.aliveworkplace.why.hearth"
+}

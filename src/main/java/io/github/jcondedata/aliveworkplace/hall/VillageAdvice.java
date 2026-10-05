@@ -29,7 +29,9 @@ public final class VillageAdvice {
 	/** Upgrades suggested at most. */
 	static final int MAX_UPGRADES = 2;
 	/** Grown-ups a village needs before better homes are worth suggesting. */
-	static final int MIN_FOR_HOMES = 3;
+	public static final int MIN_FOR_HOMES = 3;
+	/** Meals in store a grown-up should have for the village not to be short of food (two days' eating). */
+	public static final int MEALS_PER_ADULT = 2;
 
 	/** One piece of advice: {@code advice.aliveworkplace.<key>} (the title) and {@code <key>.how}, with {@code args}. */
 	public record Tip(String key, Item icon, Object... args) {
@@ -47,17 +49,16 @@ public final class VillageAdvice {
 		List<Tip> tips = new ArrayList<>();
 		int villagers = census.villagers();
 		int adults = villagers - census.children();
-		PoiManager poi = level.getPoiManager();
 		if (!has(census, ModVillagers.BUILDER)) {
 			tips.add(new Tip("builder", ModBlocks.BLUEPRINT_TABLE.asItem()));
 		}
-		if (villagers > census.beds()) {
-			tips.add(new Tip("beds", Items.RED_BED, villagers - census.beds()));
+		if (bedsShort(census) > 0) {
+			tips.add(new Tip("beds", Items.RED_BED, bedsShort(census)));
 		}
-		if (adults > 0 && census.food() < adults * 2L) {
-			tips.add(new Tip("food", Items.BREAD, census.food(), adults * 2L));
+		if (adults > 0 && census.food() < foodWanted(census, MEALS_PER_ADULT)) {
+			tips.add(new Tip("food", Items.BREAD, census.food(), foodWanted(census, MEALS_PER_ADULT)));
 		}
-		if (poi.getCountInRange(h -> h.is(ModVillagers.STOREHOUSE_POI), hall, VillageHalls.RADIUS, PoiManager.Occupancy.ANY) == 0) {
+		if (poiCount(level, hall, ModVillagers.STOREHOUSE_POI) == 0) {
 			tips.add(new Tip("storehouse", ModBlocks.STOREHOUSE.asItem()));
 		}
 		int guardsNeeded = (villagers + VillageNeeds.VILLAGERS_PER_GUARD - 1) / VillageNeeds.VILLAGERS_PER_GUARD;
@@ -74,7 +75,7 @@ public final class VillageAdvice {
 		if (needs != null && needs.lit() < needs.villagers()) {
 			tips.add(new Tip("dark", Items.LANTERN, needs.villagers() - needs.lit()));
 		}
-		long jobless = census.jobless().stream().filter(v -> v.getVillagerData().getProfession() != VillagerProfession.NITWIT).count();
+		long jobless = jobless(census);
 		if (jobless > 0) {
 			tips.add(new Tip("jobless", Items.CRAFTING_TABLE, jobless));
 		}
@@ -90,24 +91,14 @@ public final class VillageAdvice {
 				VillageRanks.of(level, hall), built)) {
 			tips.add(new Tip("pokemon_center", ModItems.BLUEPRINT));
 		}
-		int upgrades = 0;
-		for (BuildSiteManager.Finished f : BuildSiteManager.get(level).finishedNear(level, hall, VillageHalls.RADIUS)) {
-			if (upgrades >= MAX_UPGRADES) {
-				break;
-			}
-			ResourceLocation up = BlueprintUpgrades.upgradeOf(f.structure());
-			if (!up.equals(f.structure()) && BlueprintLibrary.get(level, up).isPresent()) {
-				tips.add(new Tip("upgrade", ModItems.BLUEPRINT, Blueprints.displayName(f.structure()), Blueprints.displayName(up)));
-				upgrades++;
-			}
+		for (BuildSiteManager.Finished f : upgradable(level, hall).stream().limit(MAX_UPGRADES).toList()) {
+			tips.add(new Tip("upgrade", ModItems.BLUEPRINT, Blueprints.displayName(f.structure()),
+				Blueprints.displayName(BlueprintUpgrades.upgradeOf(f.structure()))));
 		}
 		// Better homes: most grown-ups sleep in first-tier buildings, or in none a builder put up
-		List<Villager> grown = level.getEntitiesOfClass(Villager.class, VillageHalls.area(hall), v -> !v.isBaby() && v.isAlive());
-		if (grown.size() >= MIN_FOR_HOMES) {
-			long plain = grown.stream().filter(v -> Homes.of(level, v).map(h -> h.tier() < 2).orElse(true)).count();
-			if (plain * 2 > grown.size()) {
-				tips.add(new Tip("homes", Items.OAK_DOOR, plain, grown.size(), Homes.TIER_2_MOOD, Homes.TIER_3_MOOD));
-			}
+		HomeCount homes = homes(level, hall);
+		if (homes.grown() >= MIN_FOR_HOMES && homes.plain() * 2L > homes.grown()) {
+			tips.add(new Tip("homes", Items.OAK_DOOR, homes.plain(), homes.grown(), Homes.TIER_2_MOOD, Homes.TIER_3_MOOD));
 		}
 		// A Legend who lacks only one condition (29.4)
 		tips.addAll(io.github.jcondedata.aliveworkplace.legend.LegendsPage.tips(level, hall));
@@ -130,8 +121,63 @@ public final class VillageAdvice {
 				.anyMatch(e -> e.id().equals(id)));
 	}
 
+	// The numbers the tips go by, shared with the Steward's rules (ROADMAP 27.6) so his desk and these tips agree.
+
+	/** Villagers (children too) more than the village's beds: the "beds" tip. */
+	public static int bedsShort(VillageHalls.Census census) {
+		return Math.max(0, census.villagers() - census.beds());
+	}
+
+	/** Grown-ups in the village. */
+	public static int adults(VillageHalls.Census census) {
+		return census.villagers() - census.children();
+	}
+
+	/** Food the store should hold: {@code mealsPerAdult} for each grown-up (the "food" tip asks {@link #MEALS_PER_ADULT}). */
+	public static long foodWanted(VillageHalls.Census census, int mealsPerAdult) {
+		return (long) adults(census) * mealsPerAdult;
+	}
+
+	/** Grown-ups without work, nitwits aside: no job, or a job but no workstation (the "jobless" tip). */
+	public static long jobless(VillageHalls.Census census) {
+		return census.jobless().stream().filter(v -> v.getVillagerData().getProfession() != VillagerProfession.NITWIT).count();
+	}
+
+	/** Workers of {@code job} in the village (with their workstation). */
+	public static long workers(VillageHalls.Census census, VillagerProfession job) {
+		return census.workers().stream().filter(v -> v.getVillagerData().getProfession() == job).count();
+	}
+
+	/** How many points of interest of {@code type} the village has (the "storehouse" tip asks for one). */
+	public static long poiCount(ServerLevel level, BlockPos hall, net.minecraft.resources.ResourceKey<net.minecraft.world.entity.ai.village.poi.PoiType> type) {
+		return level.getPoiManager().getCountInRange(h -> h.is(type), hall, VillageHalls.RADIUS, PoiManager.Occupancy.ANY);
+	}
+
+	/** Finished buildings in the village whose next tier is a blueprint the server has (the "upgrade" tips, first {@link #MAX_UPGRADES}). */
+	public static List<BuildSiteManager.Finished> upgradable(ServerLevel level, BlockPos hall) {
+		List<BuildSiteManager.Finished> out = new ArrayList<>();
+		for (BuildSiteManager.Finished f : BuildSiteManager.get(level).finishedNear(level, hall, VillageHalls.RADIUS)) {
+			ResourceLocation up = BlueprintUpgrades.upgradeOf(f.structure());
+			if (!up.equals(f.structure()) && BlueprintLibrary.get(level, up).isPresent()) {
+				out.add(f);
+			}
+		}
+		return out;
+	}
+
+	/** Grown-ups living in a tier I building or none a builder put up ({@code plain}), of all grown-ups ({@code grown}). */
+	public record HomeCount(int plain, int grown) {
+	}
+
+	/** The "homes" tip's count: who sleeps in first-tier homes, of the grown-ups in the village. */
+	public static HomeCount homes(ServerLevel level, BlockPos hall) {
+		List<Villager> grown = level.getEntitiesOfClass(Villager.class, VillageHalls.area(hall), v -> !v.isBaby() && v.isAlive());
+		int plain = (int) grown.stream().filter(v -> Homes.of(level, v).map(h -> h.tier() < 2).orElse(true)).count();
+		return new HomeCount(plain, grown.size());
+	}
+
 	private static boolean has(VillageHalls.Census census, VillagerProfession job) {
-		return census.workers().stream().anyMatch(v -> v.getVillagerData().getProfession() == job);
+		return workers(census, job) > 0;
 	}
 
 	private VillageAdvice() {

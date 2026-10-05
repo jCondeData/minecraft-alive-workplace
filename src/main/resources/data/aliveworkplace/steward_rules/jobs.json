@@ -1,0 +1,8 @@
+{
+  "when": [
+    {"jobless": {"at_least": 1}}
+  ],
+  "do": {"assign_jobs": {}},
+  "priority": 75,
+  "why": "steward.aliveworkplace.why.jobless"
+}

@@ -287,10 +287,14 @@ public final class Builders {
 	/** Creates the site and gives the villager the job. Also used by tests and commands. */
 	public static BuildSite start(ServerLevel level, Villager villager, @Nullable Player owner,
 								  net.minecraft.resources.ResourceLocation structure, BlueprintData.Placement placement) {
-		BuildSite site = BuildSiteManager.get(level).create(
-			owner != null ? owner.getUUID() : villager.getUUID(),
-			owner != null ? owner.getGameProfile().getName() : "",
-			structure, placement);
+		return start(level, villager, owner != null ? owner.getUUID() : villager.getUUID(),
+			owner != null ? owner.getGameProfile().getName() : "", structure, placement);
+	}
+
+	/** {@link #start(ServerLevel, Villager, Player, net.minecraft.resources.ResourceLocation, BlueprintData.Placement)} for an owner who may be offline (the Steward's builds, 27.8). */
+	public static BuildSite start(ServerLevel level, Villager villager, java.util.UUID owner, String ownerName,
+								  net.minecraft.resources.ResourceLocation structure, BlueprintData.Placement placement) {
+		BuildSite site = BuildSiteManager.get(level).create(owner, ownerName, structure, placement);
 		if (isHelping(villager)) {
 			stopHelping(level, villager);
 		}
@@ -303,10 +307,14 @@ public final class Builders {
 	/** Adds a site to a busy builder's queue. Also used by tests. */
 	public static BuildSite enqueue(ServerLevel level, Villager villager, @Nullable Player owner,
 									net.minecraft.resources.ResourceLocation structure, BlueprintData.Placement placement) {
-		BuildSite site = BuildSiteManager.get(level).create(
-			owner != null ? owner.getUUID() : villager.getUUID(),
-			owner != null ? owner.getGameProfile().getName() : "",
-			structure, placement);
+		return enqueue(level, villager, owner != null ? owner.getUUID() : villager.getUUID(),
+			owner != null ? owner.getGameProfile().getName() : "", structure, placement);
+	}
+
+	/** {@link #enqueue(ServerLevel, Villager, Player, net.minecraft.resources.ResourceLocation, BlueprintData.Placement)} for an owner who may be offline. */
+	public static BuildSite enqueue(ServerLevel level, Villager villager, java.util.UUID owner, String ownerName,
+									net.minecraft.resources.ResourceLocation structure, BlueprintData.Placement placement) {
+		BuildSite site = BuildSiteManager.get(level).create(owner, ownerName, structure, placement);
 		site.setBuilder(villager.getUUID());
 		site.setBench(benchPos(villager).orElse(null));
 		site.setQueued(true);
@@ -725,6 +733,9 @@ public final class Builders {
 
 	/** The blueprint goes to the owner if online, else into the supply chests, else on the ground. */
 	private static void giveBack(ServerLevel level, BuildSite site, BlockPos bench, List<BlockPos> supplies) {
+		if (site.isSteward()) {
+			return; // the Steward's build (27.8): nobody handed a blueprint over, so none comes back
+		}
 		// Still placed where it was (23.8): hand it back to carry on there, or click the ground to move it first.
 		ItemStack blueprint = blueprintFor(level, site);
 		if (!site.isDeconstruction() && !site.isRepair()) {
@@ -745,7 +756,9 @@ public final class Builders {
 	/** The builder died: drop its bag and the blueprint where it fell, keep what was built. */
 	public static void onBuilderDeath(ServerLevel level, Villager villager) {
 		for (BuildSite queued : queue(level, villager)) {
-			dropNear(level, villager.blockPosition(), blueprintFor(level, queued));
+			if (!queued.isSteward()) {
+				dropNear(level, villager.blockPosition(), blueprintFor(level, queued));
+			}
 			BuildSiteManager.get(level).remove(queued.id());
 		}
 		BuilderJob job = ModAttachments.BUILDER_JOB.get(villager);
@@ -757,7 +770,9 @@ public final class Builders {
 			}
 		}
 		if (site != null) {
-			dropNear(level, villager.blockPosition(), blueprintFor(level, site));
+			if (!site.isSteward()) {
+				dropNear(level, villager.blockPosition(), blueprintFor(level, site));
+			}
 			ServerPlayer owner = level.getServer().getPlayerList().getPlayer(site.owner());
 			if (owner != null) {
 				BlockPos p = villager.blockPosition();

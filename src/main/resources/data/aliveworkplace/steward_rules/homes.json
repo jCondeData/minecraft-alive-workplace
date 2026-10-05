@@ -1,0 +1,9 @@
+{
+  "when": [
+    {"beds_short": {"at_least": 1}}
+  ],
+  "do": {"build": {"blueprint": "aliveworkplace:stone_house", "zone": "homes"}},
+  "priority": 90,
+  "why": "steward.aliveworkplace.why.beds",
+  "cooldown_days": 1
+}

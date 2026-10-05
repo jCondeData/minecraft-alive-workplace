@@ -128,6 +128,9 @@ loom {
                 name = "Compat Game Test"
                 source(compattest)
                 runDir = "build/run/compatGameTest"
+                // The pack's block states keep ~1.5 GB live: the JVM's default heap (a quarter of RAM) thrashes in full GC
+                // in the 7 GB dev container, and 3 GB didn't fit next to Gradle (B55). -PcompatHeap=4G to override.
+                vmArg("-Xmx${findProperty("compatHeap") ?: "2560m"}")
                 vmArg("-Dfabric-api.gametest")
                 vmArg("-Dfabric-api.gametest.report-file=${layout.buildDirectory.get().asFile}/junit-compat.xml")
                 ideConfigGenerated(false)

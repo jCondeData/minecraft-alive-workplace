@@ -1,0 +1,11 @@
+{
+  "when": [
+    {"homes_tier_low": {"share": 0.5}},
+    {"upgrade_available": {"blueprint": "aliveworkplace:stone_house"}}
+  ],
+  "do": {"upgrade": {"blueprint": "aliveworkplace:stone_house"}},
+  "priority": 55,
+  "why": "steward.aliveworkplace.why.better_homes",
+  "cooldown_days": 2,
+  "min_rank": "village"
+}

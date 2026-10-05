@@ -3125,7 +3125,7 @@ guards who ride to each other's aid. Between players come trade pacts, alliances
 feuds that only turn to war on a PvP server. It all builds on what exists: hall/Caravans, the Village Ledger and
 treasury, travel posts, mail, village protection and the Settler's Wagon (camp/).
 
-- [ ] **33.1** **Design note.** `docs/design/M33.md`, sent to the owner as a review package (lanes don't wait for his
+- [x] **33.1** (review: pending 2026-10-05) **Design note.** `docs/design/M33.md`, sent to the owner as a review package (lanes don't wait for his
   reply): what the player sees in each part, with a mock-up of the hall's new Trade page and its tabs (Routes, Prices,
   Pacts, Realm, Colonies); the data formats (`data/aliveworkplace/trade_goods/<good>.json`,
   `data/aliveworkplace/realm_research/<topic>.json`, realm edicts in M30's edict format); the config switches

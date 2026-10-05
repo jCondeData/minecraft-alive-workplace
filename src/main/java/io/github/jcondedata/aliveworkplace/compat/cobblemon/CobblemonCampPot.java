@@ -47,6 +47,13 @@ public final class CobblemonCampPot implements CampCooks.Pot {
 	}
 
 	@Override
+	public void fitPot(ServerLevel level, BlockPos pos, net.minecraft.world.item.ItemStack pot) {
+		if (level.getBlockEntity(pos) instanceof CampfireBlockEntity campfire && (campfire.getPotItem() == null || campfire.getPotItem().isEmpty())) {
+			campfire.setPotItem(pot);
+		}
+	}
+
+	@Override
 	public boolean cooks(ServerLevel level, BlockPos pos) {
 		if (!(level.getBlockEntity(pos) instanceof CampfireBlockEntity pot)) {
 			return false;

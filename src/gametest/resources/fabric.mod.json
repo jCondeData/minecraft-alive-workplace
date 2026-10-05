@@ -72,6 +72,7 @@
 			"io.github.jcondedata.aliveworkplace.test.VillageHallGameTests",
 			"io.github.jcondedata.aliveworkplace.test.HallPagesGameTests",
 			"io.github.jcondedata.aliveworkplace.test.PokemonCenterGameTests",
+			"io.github.jcondedata.aliveworkplace.test.PokemonBuildsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.BerryChainsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.BerryBreederGameTests",
 			"io.github.jcondedata.aliveworkplace.test.GemGrowerGameTests",

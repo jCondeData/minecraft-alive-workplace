@@ -65,8 +65,29 @@ public final class StarterBlueprints {
 	/** A lodge behind it (a Shop Counter's trade corner, four beds upstairs) and a garden with a Pasture Block. */
 	public static final Entry POKEMON_CENTER_2 = new Entry(AliveWorkplace.id("pokemon_center_2"), new Vec3i(13, 17, 26));
 
+	/*
+	 * The Pokémon jobs' builds (ROADMAP 28.13; tools/blueprints/pokemon_jobs.py), with Cobblemon only, each with its job
+	 * block in place and sold by its job's Journeyman. A new one: an Entry here, in COBBLEMON_ONLY and JOB_BUILDS.
+	 */
+	/** An open timber shelter round a Campfire Pot (the Camp Cook's), benches and a grain store. */
+	public static final Entry CAMP_KITCHEN = new Entry(AliveWorkplace.id("camp_kitchen"), new Vec3i(13, 10, 11));
+	/** A Hearty Grain plot behind and a smokehouse with a smoker. */
+	public static final Entry CAMP_KITCHEN_2 = new Entry(AliveWorkplace.id("camp_kitchen_2"), new Vec3i(21, 10, 19));
+	/** Fenced farmland beds in pairs round a composter (the Berry Breeder's) and a potting bench. */
+	public static final Entry BERRY_NURSERY = new Entry(AliveWorkplace.id("berry_nursery"), new Vec3i(13, 6, 11));
+	/** A greenhouse behind with four more beds. */
+	public static final Entry BERRY_NURSERY_2 = new Entry(AliveWorkplace.id("berry_nursery_2"), new Vec3i(13, 12, 20));
+	/** A barn with a straw-floored nursery and a fenced paddock round a Pasture Block (the Daycare Keeper's). */
+	public static final Entry DAYCARE = new Entry(AliveWorkplace.id("daycare"), new Vec3i(15, 11, 18));
+	/** A second paddock with its own Pasture Block and a hatchery corner with lanterns. */
+	public static final Entry DAYCARE_2 = new Entry(AliveWorkplace.id("daycare_2"), new Vec3i(19, 11, 27));
+
+	/** The Pokémon jobs' builds, both tiers of each (28.13). */
+	public static final List<Entry> JOB_BUILDS = List.of(CAMP_KITCHEN, CAMP_KITCHEN_2, BERRY_NURSERY, BERRY_NURSERY_2, DAYCARE, DAYCARE_2);
+
 	/** In the Blueprint Table (and the creative tab) only when Cobblemon is installed: most of what makes them is its. */
-	public static final List<Entry> COBBLEMON_ONLY = List.of(POKEMON_CENTER, POKEMON_CENTER_2);
+	public static final List<Entry> COBBLEMON_ONLY = java.util.stream.Stream.concat(java.util.stream.Stream.of(POKEMON_CENTER, POKEMON_CENTER_2),
+		JOB_BUILDS.stream()).toList();
 
 	/** Two row houses of two storeys, four beds: building houses grows a village with a Village Hall. */
 	public static final Entry TERRACE = new Entry(AliveWorkplace.id("terrace"), new Vec3i(13, 16, 10));

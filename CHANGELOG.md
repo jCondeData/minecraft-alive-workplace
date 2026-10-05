@@ -17,6 +17,11 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Added
+- **Builds for the Pokémon jobs** (28.13, with Cobblemon): the Camp Kitchen (an open timber shelter round a Campfire
+  Pot, benches and a grain store; II adds a Hearty Grain plot and a smokehouse), the Berry Nursery (fenced farmland beds
+  in pairs, a composter and a potting bench; II adds a greenhouse with four more beds) and the Daycare (a barn with a
+  straw-floored nursery and a paddock round a Pasture Block; II adds a second paddock and a hatchery). In the Blueprint
+  Table and sold by Journeyman Camp Cooks, Berry Breeders and Daycare Keepers; builders put the pot on the Campfire Pot.
 - **The Daycare Keeper** (28.12, with Cobblemon): a villager at a Pasture Block, picked with an egg. Leave one pair of
   Pokémon per player (three pairs per keeper); her screen says how well they get along. Each dawn she may find an egg
   (70/50/20%, +10% at Expert), 4 emeralds each to collect: a real Cobbreeding egg with Cobbreeding, otherwise the level-1

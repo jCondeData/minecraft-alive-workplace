@@ -117,8 +117,8 @@ public final class VillageAdvice {
 	 */
 	public static boolean wantsPokemonCenter(boolean cobblemon, VillageRanks.Rank rank, List<ResourceLocation> built) {
 		return cobblemon && rank.ordinal() >= VillageRanks.Rank.VILLAGE.ordinal()
-			&& built.stream().noneMatch(id -> io.github.jcondedata.aliveworkplace.blueprint.StarterBlueprints.COBBLEMON_ONLY.stream()
-				.anyMatch(e -> e.id().equals(id)));
+			&& built.stream().noneMatch(id -> id.equals(io.github.jcondedata.aliveworkplace.blueprint.StarterBlueprints.POKEMON_CENTER.id())
+				|| id.equals(io.github.jcondedata.aliveworkplace.blueprint.StarterBlueprints.POKEMON_CENTER_2.id()));
 	}
 
 	// The numbers the tips go by, shared with the Steward's rules (ROADMAP 27.6) so his desk and these tips agree.

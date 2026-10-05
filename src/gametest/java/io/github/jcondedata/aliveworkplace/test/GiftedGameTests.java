@@ -216,11 +216,15 @@ public class GiftedGameTests implements FabricGameTest {
 			raid[0].setRaidOmenLevel(1);
 		});
 		helper.runAfterDelay(120, () -> ((BellBlock) Blocks.BELL).attemptToRing(level, helper.absolutePos(bell), Direction.NORTH));
-		helper.runAfterDelay(200, () -> {
-			for (Villager v : List.of(iron, plain)) {
-				v.getBrain().setMemory(MemoryModuleType.HURT_BY, level.damageSources().generic());
-			}
-		});
+		// Vanilla's HurtBySensor erases HURT_BY on its own tick when the villager has no real last damage, so a memory
+		// set once can vanish before the panic trigger sees it (CI run 37262922450). Hold it for 20 ticks, for both.
+		for (int t = 200; t < 220; t++) {
+			helper.runAfterDelay(t, () -> {
+				for (Villager v : List.of(iron, plain)) {
+					v.getBrain().setMemory(MemoryModuleType.HURT_BY, level.damageSources().generic());
+				}
+			});
+		}
 		helper.onEachTick(() -> {
 			for (Activity a : List.of(Activity.PANIC, Activity.HIDE, Activity.RAID, Activity.PRE_RAID)) {
 				if (iron.getBrain().isActive(a) && !ironDid.contains(a.getName())) {

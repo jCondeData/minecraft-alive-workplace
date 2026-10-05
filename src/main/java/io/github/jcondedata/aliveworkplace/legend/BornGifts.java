@@ -41,7 +41,7 @@ public final class BornGifts {
 			List<Legend> open = candidates(level, hall, villager, parents);
 			if (!open.isEmpty()) {
 				Legend legend = open.size() == 1 ? open.get(0) : open.get(random.nextInt(open.size()));
-				Legends.make(level, villager, legend, "born");
+				Legends.make(level, villager, legend, "born", java.util.Optional.of(hall)); // settled where the slot was checked
 				return new Outcome(legend, null);
 			}
 		}

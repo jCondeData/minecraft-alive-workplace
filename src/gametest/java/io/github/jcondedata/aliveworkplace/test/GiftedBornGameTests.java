@@ -3,6 +3,7 @@ package io.github.jcondedata.aliveworkplace.test;
 import com.google.gson.JsonParser;
 import io.github.jcondedata.aliveworkplace.hall.Chronicle;
 import io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity;
+import io.github.jcondedata.aliveworkplace.hall.VillageHalls;
 import io.github.jcondedata.aliveworkplace.inn.Innkeepers;
 import io.github.jcondedata.aliveworkplace.inn.Traveller;
 import io.github.jcondedata.aliveworkplace.legend.BornGifts;
@@ -23,6 +24,7 @@ import io.github.jcondedata.aliveworkplace.work.Pace;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import net.fabricmc.fabric.api.gametest.v1.FabricGameTest;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.GlobalPos;
@@ -293,6 +295,51 @@ public class GiftedBornGameTests implements FabricGameTest {
 			Families.round(level, hall, dee, RandomSource.create(101));
 			helper.assertTrue(!ModAttachments.LEGEND.has(dee) && Gifted.of(dee) != null, "Dee, with the slot taken, isn't Gifted");
 
+			helper.succeed();
+		});
+	}
+
+	/**
+	 * A child grown up in one village's round settles there as a born Legend even when another village's hall is nearer
+	 * where they stand: the Legend takes the slot the roll checked, so the next child of that village finds it taken.
+	 */
+	//$ gametest_ticks_batch HUGE '100' '"bornNearerHall"'
+	@GameTest(template = HUGE, timeoutTicks = 100, batch = "bornNearerHall")
+	public void bornLegendSettlesInTheRoundsVillageNotTheNearestHall(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		ResourceLocation id = ResourceLocation.fromNamespaceAndPath("aliveworkplace_test", "born_nearer_hall_legend");
+		Legend legend = Legends.read(id, JsonParser.parseString("{\"rarity\": \"rare\", \"job\": \"minecraft:farmer\", \"title\": \"legend.aliveworkplace_test.test_legend.title\","
+			+ " \"lore\": \"l\", \"arrive\": [{\"way\": \"born\", \"trades\": [\"minecraft:farmer\"]}]}").getAsJsonObject());
+		Map<ResourceLocation, Legend> before = new LinkedHashMap<>();
+		Legends.all().forEach(l -> before.put(l.id(), l));
+		Map<ResourceLocation, Legend> with = new LinkedHashMap<>(before);
+		with.put(id, legend);
+		Legends.setForTest(with);
+		Leftovers.after(helper, () -> {
+			LegendRecord record = LegendRecord.get(helper.getLevel());
+			for (var e : helper.getLevel().getEntitiesOfClass(Villager.class, helper.getBounds().inflate(16), ModAttachments.LEGEND::has)) {
+				record.forget(e.getUUID());
+				e.discard();
+			}
+			Legends.setForTest(before);
+			LegendPowers.forget();
+		});
+		BlockPos nearer = new BlockPos(3, 2, 3);
+		helper.setBlock(HALL, ModBlocks.VILLAGE_HALL);
+		helper.setBlock(nearer, ModBlocks.VILLAGE_HALL);
+		helper.runAfterDelay(2, () -> {
+			ServerLevel level = helper.getLevel();
+			BlockPos hall = helper.absolutePos(HALL);
+			BlockPos other = helper.absolutePos(nearer);
+			Villager wren = child(helper, new BlockPos(5, 2, 4), "Wren", true);
+			helper.assertTrue(VillageHalls.nearest(level, wren.blockPosition()).equals(Optional.of(other)), "setup: the other hall isn't the nearest");
+			Families.round(level, hall, wren, RandomSource.create(18));
+			helper.assertTrue(ModAttachments.LEGEND.has(wren) && ModAttachments.LEGEND.get(wren).hall().equals(Optional.of(hall)),
+				"Wren didn't settle in the village whose round she grew up in: " + ModAttachments.LEGEND.get(wren));
+			helper.assertTrue(LegendRecord.get(level).entry(wren.getUUID()).map(e -> e.in(level.dimension().location().toString(), hall)).orElse(false),
+				"the record doesn't hold her in that village: " + LegendRecord.get(level).entry(wren.getUUID()));
+			Villager dee = child(helper, new BlockPos(6, 2, 4), "Dee", true);
+			helper.assertTrue(BornGifts.candidates(level, hall, dee, Families.parents(dee)).isEmpty(), "the Rare's slot is still open with Wren in it");
 			helper.succeed();
 		});
 	}

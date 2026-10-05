@@ -171,6 +171,15 @@ public final class Legends implements ResourceManagerReloadListener {
 	 * trade with every level's trades (through {@link Schools#headStart}); they keep their own name.
 	 */
 	public static void make(ServerLevel level, Villager villager, Legend legend, String way) {
+		make(level, villager, legend, way, VillageHalls.nearest(level, villager.blockPosition()));
+	}
+
+	/**
+	 * Makes {@code villager} the Legend {@code legend}, settled in the village round {@code hall} (empty: no village). Used
+	 * where the village is already known, so the Legend takes the slot that was checked there, even when another hall's
+	 * village is nearer where they stand (a child grown up in one village's round, 29.7).
+	 */
+	public static void make(ServerLevel level, Villager villager, Legend legend, String way, Optional<BlockPos> hall) {
 		VillagerProfession job = Lookup.value(BuiltInRegistries.VILLAGER_PROFESSION, legend.job());
 		boolean keeps = "inspired".equals(way) && Founder.ownTrade(legend) && villager.getVillagerData().getLevel() >= VillagerData.MAX_VILLAGER_LEVEL;
 		if (!keeps && (villager.getVillagerData().getProfession() != job || villager.getVillagerData().getLevel() < VillagerData.MAX_VILLAGER_LEVEL)) {
@@ -180,7 +189,6 @@ public final class Legends implements ResourceManagerReloadListener {
 			ModAttachments.HEAD_START.set(villager, VillagerData.MAX_VILLAGER_LEVEL);
 			Schools.headStart(villager);
 		}
-		Optional<BlockPos> hall = VillageHalls.nearest(level, villager.blockPosition());
 		ModAttachments.LEGEND.set(villager, LegendData.settled(legend.id(), "", hall, level.getDayTime() / 24000L, way));
 		LegendPowers.seen(villager);
 		LegendLook.update(villager);

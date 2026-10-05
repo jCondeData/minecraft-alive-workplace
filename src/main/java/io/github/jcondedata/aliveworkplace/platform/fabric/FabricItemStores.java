@@ -54,6 +54,21 @@ final class FabricItemStores implements ItemStores {
 	}
 
 	@Override
+	public int slots(Level level, List<BlockPos> stores) {
+		int slots = 0;
+		for (BlockPos p : stores) {
+			Storage<ItemVariant> s = storage(level, p);
+			if (s == null) {
+				continue;
+			}
+			for (var ignored : s) {
+				slots++;
+			}
+		}
+		return slots;
+	}
+
+	@Override
 	public long count(Level level, List<BlockPos> stores, Item item) {
 		ItemVariant variant = ItemVariant.of(item);
 		long total = 0;

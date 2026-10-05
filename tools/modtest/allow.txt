@@ -6,6 +6,8 @@
 a test integration from test turned off
 # MinerGameTests loads a quarry saved by a pre-0.45.0 bug to prove the repair stops it.
 Stopped quarry .* stretched over its Miner's Bench .* by a bug before 0\.45\.0
+# StewardRulesGameTests feeds the rule loader broken Steward rule files to prove each is skipped, naming its field.
+Skipping Steward rule aliveworkplace_test:steward_rules/bad_
 
 # --- other mods in the compat test server (dev environment, not our code) ---
 # Modded entities have no DataFixerUpper schema; every mod's entity logs this once.

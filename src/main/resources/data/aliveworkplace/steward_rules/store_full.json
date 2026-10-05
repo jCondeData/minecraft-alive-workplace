@@ -1,0 +1,10 @@
+{
+  "when": [
+    {"store_full": {"share": 0.9}},
+    {"upgrade_available": {"blueprint": "aliveworkplace:storehouse"}}
+  ],
+  "do": {"upgrade": {"blueprint": "aliveworkplace:storehouse"}},
+  "priority": 65,
+  "why": "steward.aliveworkplace.why.store_full",
+  "cooldown_days": 3
+}

@@ -67,6 +67,8 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 	 * before it had one get it on their first tick. Saved, so a hall whose Steward holds the place isn't checked again.
 	 */
 	private boolean stewardPlaceChecked;
+	/** The Steward's wishes for the day and what each of his rules has done (27.6); empty in halls saved before. */
+	private io.github.jcondedata.aliveworkplace.city.StewardWishes.State stewardWishes = io.github.jcondedata.aliveworkplace.city.StewardWishes.State.EMPTY;
 
 	public VillageHallBlockEntity(BlockPos pos, BlockState state) {
 		super(ModBlocks.VILLAGE_HALL_ENTITY, pos, state);
@@ -139,6 +141,37 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 		while (chronicle.size() > Chronicle.MAX) {
 			chronicle.remove(0);
 		}
+		setChanged();
+	}
+
+	/** The Steward's desk (27.8): proposals and declines; empty in halls saved before. */
+	private io.github.jcondedata.aliveworkplace.city.StewardDesk.State stewardDesk = io.github.jcondedata.aliveworkplace.city.StewardDesk.State.EMPTY;
+
+	public io.github.jcondedata.aliveworkplace.city.StewardDesk.State stewardDesk() {
+		return stewardDesk;
+	}
+
+	public void setStewardDesk(io.github.jcondedata.aliveworkplace.city.StewardDesk.State state) {
+		stewardDesk = state;
+		setChanged();
+	}
+
+	public io.github.jcondedata.aliveworkplace.city.StewardWishes.State stewardWishes() {
+		return stewardWishes;
+	}
+
+	public void setStewardWishes(io.github.jcondedata.aliveworkplace.city.StewardWishes.State state) {
+		stewardWishes = state;
+		setChanged();
+	}
+
+	/** The day (by {@link Chronicle#day}) the village was last raided; -100 if never. */
+	public long lastRaidDay() {
+		return lastRaidDay;
+	}
+
+	public void setLastRaidDay(long day) {
+		this.lastRaidDay = day;
 		setChanged();
 	}
 
@@ -425,6 +458,11 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 		edicts = Edicts.InForce.CODEC.listOf().parse(net.minecraft.nbt.NbtOps.INSTANCE, tag.get("edicts"))
 			.result().map(java.util.List::copyOf).orElse(java.util.List.of());
 		civic = null;
+		stewardWishes = !tag.contains("steward") ? io.github.jcondedata.aliveworkplace.city.StewardWishes.State.EMPTY
+			: io.github.jcondedata.aliveworkplace.city.StewardWishes.State.CODEC.parse(net.minecraft.nbt.NbtOps.INSTANCE, tag.get("steward"))
+				.result().orElse(io.github.jcondedata.aliveworkplace.city.StewardWishes.State.EMPTY);
+		stewardDesk = !tag.contains("steward_desk") ? io.github.jcondedata.aliveworkplace.city.StewardDesk.State.EMPTY
+			: io.github.jcondedata.aliveworkplace.city.StewardDesk.State.CODEC.parse(net.minecraft.nbt.NbtOps.INSTANCE, tag.get("steward_desk")).result().orElse(io.github.jcondedata.aliveworkplace.city.StewardDesk.State.EMPTY);
 		berriesFound.clear();
 		net.minecraft.nbt.ListTag berries = Nbt.getList(tag, "berriesFound", net.minecraft.nbt.Tag.TAG_STRING);
 		for (int i = 0; i < berries.size(); i++) {
@@ -479,6 +517,13 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 			.ifPresent(t -> tag.put("research", t));
 		if (!edicts.isEmpty()) {
 			Edicts.InForce.CODEC.listOf().encodeStart(net.minecraft.nbt.NbtOps.INSTANCE, edicts).result().ifPresent(t -> tag.put("edicts", t));
+		}
+		if (!stewardWishes.equals(io.github.jcondedata.aliveworkplace.city.StewardWishes.State.EMPTY)) {
+			io.github.jcondedata.aliveworkplace.city.StewardWishes.State.CODEC.encodeStart(net.minecraft.nbt.NbtOps.INSTANCE, stewardWishes).result()
+				.ifPresent(t -> tag.put("steward", t));
+		}
+		if (!stewardDesk.equals(io.github.jcondedata.aliveworkplace.city.StewardDesk.State.EMPTY)) {
+			io.github.jcondedata.aliveworkplace.city.StewardDesk.State.CODEC.encodeStart(net.minecraft.nbt.NbtOps.INSTANCE, stewardDesk).result().ifPresent(t -> tag.put("steward_desk", t));
 		}
 		net.minecraft.nbt.ListTag lines = new net.minecraft.nbt.ListTag();
 		for (Chronicle.Entry entry : chronicle) {

@@ -111,6 +111,8 @@ public final class WorkplaceConfig {
 	public boolean steward = true;
 	/** The most builds a Steward may have open at once, whatever his level and the village's rank. */
 	public int stewardMaxOpenBuilds = 4;
+	/** A Steward set to "Run the village" starts the builds he proposes by himself (ROADMAP 27.8). Off: every village asks first. */
+	public boolean stewardSelfRun = true;
 	/** Villagers at a Campfire Pot can be made Camp Cooks with Hearty Grains (ROADMAP 28.8). Off: no Camp Cook job. */
 	public boolean campCooks = true;
 	/** Days in each of the village calendar's four seasons (each has a festival on its middle day). */
@@ -319,6 +321,7 @@ public final class WorkplaceConfig {
 		io.github.jcondedata.aliveworkplace.berry.BerryBreeders.ENABLED = berryBreeders;
 		io.github.jcondedata.aliveworkplace.city.Stewards.ENABLED = steward;
 		io.github.jcondedata.aliveworkplace.city.Stewards.MAX_OPEN_BUILDS = stewardMaxOpenBuilds;
+		io.github.jcondedata.aliveworkplace.city.StewardDesk.SELF_RUN = stewardSelfRun;
 		io.github.jcondedata.aliveworkplace.camp.CampCooks.ENABLED = campCooks;
 		// Off in gametests (a trait picked by chance would change a test's numbers); the people tests turn them on.
 		io.github.jcondedata.aliveworkplace.people.Names.ENABLED = villagerNames && System.getProperty("fabric-api.gametest") == null;

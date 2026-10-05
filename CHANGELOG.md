@@ -25,6 +25,11 @@ asks for the steps, `latest.log` and any crash report).
   and lets 5 idle builders help at a build (not 3). When a Guild Master dies, the most experienced member takes over.
   The Book of Edicts' last row shows each guild. Guilds are data files (`data/<ns>/guilds/`); `guilds` and
   `guildsPerRank` in the config.
+- **The Miners', Smiths' and Woodsmen's Guilds** (30.18): members work 15% faster once founded. Miners' pickaxes and
+  the netherworker's gear wear half as fast (Miners, Sifters, Netherworkers); each ingot a Weaponsmith mends with puts
+  back a third of the durability, not a quarter (Armorers, Toolsmiths, Weaponsmiths, Tinkerers, Ball Smiths); axes and
+  fishing rods wear half as fast (Lumberjacks, Fletchers, Fishermen). New guild perks for packs: `tool_wear` and
+  `mend_per_unit`.
 
 ## 0.139.0 — 2026-10-05
 

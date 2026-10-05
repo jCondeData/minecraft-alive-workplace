@@ -1,0 +1,27 @@
+{
+  "name": {
+    "translate": "guild.aliveworkplace.smiths"
+  },
+  "perk": {
+    "translate": "guild.aliveworkplace.smiths.perk"
+  },
+  "icon": "minecraft:anvil",
+  "trades": [
+    "minecraft:armorer",
+    "minecraft:toolsmith",
+    "minecraft:weaponsmith",
+    "aliveworkplace:tinkerer",
+    "aliveworkplace:ball_smith"
+  ],
+  "perks": [
+    {
+      "type": "aliveworkplace:work_pace",
+      "percent": 15
+    },
+    {
+      "type": "aliveworkplace:mend_per_unit",
+      "share": 0.3334
+    }
+  ],
+  "enabled": true
+}

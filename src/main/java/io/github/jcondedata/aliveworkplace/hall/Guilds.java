@@ -72,6 +72,8 @@ public final class Guilds implements ResourceManagerReloadListener {
 	public static final int MOST_HELPERS = 8;
 
 	public static final ResourceLocation BUILD_HELPERS = AliveWorkplace.id("build_helpers");
+	public static final ResourceLocation TOOL_WEAR = AliveWorkplace.id("tool_wear");
+	public static final ResourceLocation MEND_PER_UNIT = AliveWorkplace.id("mend_per_unit");
 
 	/** {@code build_helpers}: up to {@code max} idle builders help at one build (not {@link Builders#MAX_HELPERS}). */
 	public record BuildHelpers(int max, List<ResourceLocation> jobs) implements CivicEffects.Effect {
@@ -81,7 +83,42 @@ public final class Guilds implements ResourceManagerReloadListener {
 		}
 	}
 
+	/**
+	 * {@code tool_wear} (30.18): the tools members work with (pickaxes, axes, rods, the netherworker's gear) wear
+	 * {@code percent} faster (-50: half as fast). Read where the work wears them ({@link #hurt}).
+	 */
+	public record ToolWear(int percent, List<ResourceLocation> jobs) implements CivicEffects.Effect {
+		@Override
+		public ResourceLocation type() {
+			return TOOL_WEAR;
+		}
+
+		/** The wear this makes, as a share of the usual (-50%: 0.5). */
+		public float factor() {
+			return Math.max(0f, 1f + percent / 100f);
+		}
+	}
+
+	/**
+	 * {@code mend_per_unit} (30.18): each unit of material a member mends with puts back {@code share} of the piece's
+	 * durability (an anvil's quarter otherwise; read by {@code mend/MendingWork}). The best share in force counts.
+	 */
+	public record MendPerUnit(float share, List<ResourceLocation> jobs) implements CivicEffects.Effect {
+		@Override
+		public ResourceLocation type() {
+			return MEND_PER_UNIT;
+		}
+	}
+
 	static {
+		CivicEffects.register(TOOL_WEAR, RecordCodecBuilder.<ToolWear>mapCodec(i -> i.group(
+			Codec.intRange(-100, 1000).fieldOf("percent").forGetter(ToolWear::percent),
+			ResourceLocation.CODEC.listOf().optionalFieldOf("jobs", List.of()).forGetter(ToolWear::jobs)
+		).apply(i, ToolWear::new)));
+		CivicEffects.register(MEND_PER_UNIT, RecordCodecBuilder.<MendPerUnit>mapCodec(i -> i.group(
+			Codec.floatRange(0.01f, 1f).fieldOf("share").forGetter(MendPerUnit::share),
+			ResourceLocation.CODEC.listOf().optionalFieldOf("jobs", List.of()).forGetter(MendPerUnit::jobs)
+		).apply(i, MendPerUnit::new)));
 		CivicEffects.register(BUILD_HELPERS, RecordCodecBuilder.<BuildHelpers>mapCodec(i -> i.group(
 			Codec.intRange(1, MOST_HELPERS).fieldOf("max").forGetter(BuildHelpers::max),
 			ResourceLocation.CODEC.listOf().optionalFieldOf("jobs", List.of()).forGetter(BuildHelpers::jobs)
@@ -412,6 +449,60 @@ public final class Guilds implements ResourceManagerReloadListener {
 		return f;
 	}
 
+	/** The share of the usual wear {@code villager}'s tools take ({@code tool_wear} perks of their founded guild; 1 without). */
+	public static float toolWear(Villager villager) {
+		float f = 1f;
+		for (Guild g : inForce(villager)) {
+			for (CivicEffects.Effect e : g.perks()) {
+				if (e instanceof ToolWear wear && CivicEffects.reaches(e, villager)) {
+					f *= wear.factor();
+				}
+			}
+		}
+		return f;
+	}
+
+	/** What wear is left over below one point, per villager (so half the wear is every other block, not none). */
+	private static final Map<Villager, Float> WEAR_LEFT = new WeakHashMap<>();
+
+	/**
+	 * The durability {@code amount} points of wear take from {@code villager}'s tool after their guild's
+	 * {@code tool_wear}; fractions carry over to the next use.
+	 */
+	public static int wear(Villager villager, int amount) {
+		float f = toolWear(villager);
+		if (f == 1f || amount <= 0) {
+			return amount;
+		}
+		synchronized (WEAR_LEFT) {
+			float total = WEAR_LEFT.getOrDefault(villager, 0f) + amount * f;
+			int whole = (int) Math.floor(total + 1e-4f);
+			WEAR_LEFT.put(villager, Math.max(0f, total - whole));
+			return whole;
+		}
+	}
+
+	/** Wears {@code stack} (held in {@code slot}) by {@code amount} after {@code villager}'s guild ({@link #wear}). */
+	public static void hurt(Villager villager, ItemStack stack, int amount, net.minecraft.world.entity.EquipmentSlot slot) {
+		int n = wear(villager, amount);
+		if (n > 0 && !stack.isEmpty()) {
+			stack.hurtAndBreak(n, villager, slot);
+		}
+	}
+
+	/** The share of a piece's durability one unit of material puts back when {@code villager} mends: {@code usual}, or a founded guild's better {@code mend_per_unit}. */
+	public static float mendShare(Villager villager, float usual) {
+		float share = usual;
+		for (Guild g : inForce(villager)) {
+			for (CivicEffects.Effect e : g.perks()) {
+				if (e instanceof MendPerUnit m && CivicEffects.reaches(e, villager)) {
+					share = Math.max(share, m.share());
+				}
+			}
+		}
+		return share;
+	}
+
 	/** How the guild's pace reads in the status line: "the Builders' Guild". */
 	public static Component paceLabel(Villager villager) {
 		List<Guild> list = inForce(villager);
@@ -517,6 +608,9 @@ public final class Guilds implements ResourceManagerReloadListener {
 	public static void forget() {
 		synchronized (FOUNDED) {
 			FOUNDED.clear();
+		}
+		synchronized (WEAR_LEFT) {
+			WEAR_LEFT.clear();
 		}
 	}
 

@@ -379,6 +379,13 @@ SCENES = [
       [("01_guildhall_front", "The Guildhall II: the hall and its tower wing with the bell"),
        ("02_guildhall_master", "Dara, Guild Master of the Builders' Guild, at the head of the long table"),
        ("03_guildhall_book", "The Builders' Guild on the Book of Edicts' last row: founded")]),
+    # The Miners', Smiths' and Woodsmen's Guilds (ROADMAP 30.18): each Guild Master's card, then the Book's guild row
+    S("guilds", "Village Hall", "The Miners', Smiths' and Woodsmen's Guilds",
+      "the player chartered a Master miner, weaponsmith and lumberjack, the three guilds were founded in three finished Guildhalls, each master's card on the hall's list named their guild and its pace, and the Book of Edicts' last row showed all three", 30,
+      [("01_guilds_miner", "Brokk, Guild Master of the Miners' Guild, working faster through it"),
+       ("02_guilds_smith", "Hilde, Guild Master of the Smiths' Guild"),
+       ("03_guilds_woodsman", "Rowan, Guild Master of the Woodsmen's Guild"),
+       ("04_guilds_book", "The three guilds on the Book of Edicts' last row, founded, each with its perk")]),
     # Tonics (ROADMAP 30.15): a miner given Miner's Brew, its tooltip, the drink, then her status line
     S("tonics", "Village Hall", "Tonics: all six",
       "the miner drank the Miner's Brew she was offered and her status line showed her 25% faster with 19 minutes left; a Toolsmith, a Scholar, an Orchard Keeper and a Lumberjack drank the four new tonics", 40,

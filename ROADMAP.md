@@ -2105,7 +2105,7 @@ the Village Hall (`VillageNeeds`, `VillageQuests`, `VillageRanks`, `Festivals`, 
   faster, 5 helpers at one build); succession when the master dies; a builder builds the Guildhall I and II in a test;
   the renders checked against `STYLE.md` in the review package; showcase scene `guildhall`: the Guildhall II with its
   Guild Master inside, and the Builders' Guild on the Book's last row.
-- [ ] **30.18** **The Miners', Smiths' and Woodsmen's Guilds.** A data file each; members work 15% faster:
+- [x] **30.18** (review: pending 2026-10-05) **The Miners', Smiths' and Woodsmen's Guilds.** A data file each; members work 15% faster:
   - **Miners' Guild** (Miners, Sifters, Netherworkers): pickaxes, and the netherworker's gear, wear half as fast;
   - **Smiths' Guild** (Armorers, Toolsmiths, Weaponsmiths, Tinkerers, Ball Smiths): every material a weaponsmith
     mends with puts back a third of the durability instead of a quarter (`MendingWork.PER_UNIT`);

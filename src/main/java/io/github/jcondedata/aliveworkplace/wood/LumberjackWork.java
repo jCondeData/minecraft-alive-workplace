@@ -366,7 +366,7 @@ public class LumberjackWork extends Behavior<Villager> {
 			}
 		}
 		if (log && !axe.isEmpty()) {
-			axe.hurtAndBreak(1, villager, EquipmentSlot.MAINHAND);
+			io.github.jcondedata.aliveworkplace.hall.Guilds.hurt(villager, axe, 1, EquipmentSlot.MAINHAND); // the Woodsmen's Guild: half (30.18)
 		}
 	}
 
@@ -668,7 +668,7 @@ public class LumberjackWork extends Behavior<Villager> {
 			}
 			villager.swing(InteractionHand.MAIN_HAND);
 			level.playSound(null, block, SoundEvents.AXE_STRIP, SoundSource.NEUTRAL, 0.8f, 1f);
-			axe.hurtAndBreak(Math.max(1, got / 4), villager, EquipmentSlot.MAINHAND);
+			io.github.jcondedata.aliveworkplace.hall.Guilds.hurt(villager, axe, Math.max(1, got / 4), EquipmentSlot.MAINHAND);
 			if (!isAxe(villager.getItemBySlot(EquipmentSlot.MAINHAND))) {
 				return; // the axe broke
 			}

@@ -1,0 +1,25 @@
+{
+  "name": {
+    "translate": "guild.aliveworkplace.miners"
+  },
+  "perk": {
+    "translate": "guild.aliveworkplace.miners.perk"
+  },
+  "icon": "minecraft:iron_pickaxe",
+  "trades": [
+    "aliveworkplace:miner",
+    "aliveworkplace:sifter",
+    "aliveworkplace:netherworker"
+  ],
+  "perks": [
+    {
+      "type": "aliveworkplace:work_pace",
+      "percent": 15
+    },
+    {
+      "type": "aliveworkplace:tool_wear",
+      "percent": -50
+    }
+  ],
+  "enabled": true
+}

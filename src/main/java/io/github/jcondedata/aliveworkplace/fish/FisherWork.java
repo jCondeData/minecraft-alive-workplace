@@ -551,7 +551,7 @@ public class FisherWork extends Behavior<Villager> {
 		villager.swing(InteractionHand.MAIN_HAND);
 		level.sendParticles(ParticleTypes.SPLASH, bobber.x, bobber.y, bobber.z, 12, 0.2, 0, 0.2, 0);
 		level.playSound(null, villager.blockPosition(), SoundEvents.FISHING_BOBBER_RETRIEVE, SoundSource.NEUTRAL, 0.8f, 1f);
-		rod.hurtAndBreak(1, villager, EquipmentSlot.MAINHAND);
+		io.github.jcondedata.aliveworkplace.hall.Guilds.hurt(villager, rod, 1, EquipmentSlot.MAINHAND); // the Woodsmen's Guild: half (30.18)
 		int caught = ModAttachments.FISH_CAUGHT.getOrElse(villager, 0) + 1;
 		ModAttachments.FISH_CAUGHT.set(villager, caught);
 		if (caught % CATCHES_PER_XP == 0) {

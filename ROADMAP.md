@@ -1692,7 +1692,7 @@ MarketDays) and research/.
   Seer comes only at midnight, at a full moon, to a Chapel; a raid foretold at dawn comes that night and none comes
   when none is foretold (fixed `RandomSource`); the festival and market days told are right; a blessed wedding's mood
   and baby; showcase scene `legend_seer` (GIF: the arrival under the full moon, the dawn foretelling in chat).
-- [ ] **29.17** **The Merchant Prince (Legendary).** Comes: found as a castaway by a shipwreck (29.9) once the
+- [x] **29.17** (review: pending 2026-10-05) **The Merchant Prince (Legendary).** Comes: found as a castaway by a shipwreck (29.9) once the
   village's treasury has taken in 500 emeralds all told (`treasury_total`) and it sends caravans on 3 routes. Trade:
   `aliveworkplace:legend`; they keep to the Village Hall and the Market Square. Likes: wine. Powers:
   - **the bank** (`bank`): the treasury earns 2% a day on what it holds and holds twice as much; players deposit

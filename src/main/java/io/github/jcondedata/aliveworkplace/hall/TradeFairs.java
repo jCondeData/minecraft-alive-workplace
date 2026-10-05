@@ -22,12 +22,18 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.trading.ItemCost;
 import net.minecraft.world.item.trading.MerchantOffer;
+import net.minecraft.world.level.block.BannerBlock;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.RotationSegment;
 
 /**
  * Trade fairs, the Merchant Prince's {@code trade_fair} (29.17): every {@link TradeFairPower#days} days, in the morning,
  * a fair at the village's Market Square (round the hall without one): {@link TradeFairPower#traders} travelling traders,
  * plus a stall for each village this one trades with (a trader named after it, selling what its Storehouse has spare),
- * fireworks over the square, every trade at the fair and with the village's villagers {@link TradeFairPower#discount}% cheaper
+ * bunting round the square (crimson and gold banners, put up on free ground only and taken down after the day,
+ * {@link #putUpBunting}), fireworks over the square, every trade at the fair and with the village's villagers {@link TradeFairPower#discount}% cheaper
  * for the day ({@link #discount}); the chronicle notes it.
  */
 public final class TradeFairs {
@@ -36,6 +42,9 @@ public final class TradeFairs {
 
 	/** The hall's round: holds the fair in the morning when its day comes (the first the first morning the Prince is here). */
 	public static List<WanderingTrader> round(ServerLevel level, BlockPos hall, VillageHallBlockEntity entity) {
+		if (!entity.fairBunting().isEmpty() && entity.fairDay() != Chronicle.day(level)) {
+			takeDownBunting(level, entity); // the fair's day is over (also when the Prince has left since)
+		}
 		var power = TradeFairPower.of(level, hall);
 		if (power.isEmpty()) {
 			return List.of();
@@ -90,6 +99,9 @@ public final class TradeFairs {
 		if (traders.isEmpty()) {
 			return traders;
 		}
+		if (level.getBlockEntity(hall) instanceof VillageHallBlockEntity entity) {
+			putUpBunting(level, square, entity);
+		}
 		for (int i = 0; i < 3; i++) {
 			ItemStack rocket = new ItemStack(Items.FIREWORK_ROCKET);
 			rocket.set(net.minecraft.core.component.DataComponents.FIREWORKS, new net.minecraft.world.item.component.Fireworks(1,
@@ -124,6 +136,77 @@ public final class TradeFairs {
 				offer.addToSpecialPriceDiff(-Math.max(1, offer.getBaseCostA().getCount() * p.discount() / 100));
 			}
 		});
+	}
+
+	/** How far from the square's centre the bunting stands (outside the traders' 9 by 9). */
+	public static final int BUNTING_RING = 6;
+	/** A banner every this many blocks along the ring. */
+	public static final int BUNTING_EVERY = 3;
+	/** The bunting's two colours, alternating: the Prince's crimson and gold. */
+	private static final Block[] BUNTING = {Blocks.RED_BANNER, Blocks.YELLOW_BANNER};
+
+	/**
+	 * Puts the fair's bunting up round {@code square}: a banner every {@link #BUNTING_EVERY} blocks on a ring
+	 * {@link #BUNTING_RING} blocks out, red and yellow by turns, each facing the square. Only on air over solid ground
+	 * (it never replaces a block); the banners are saved in the hall so they come down after the day, even after a reload.
+	 */
+	public static List<BlockPos> putUpBunting(ServerLevel level, BlockPos square, VillageHallBlockEntity entity) {
+		takeDownBunting(level, entity);
+		List<BlockPos> placed = new ArrayList<>();
+		List<BlockPos> unloaded = new ArrayList<>(entity.fairBunting()); // an earlier fair's, still to come down
+		List<BlockPos> ring = new ArrayList<>();
+		int r = BUNTING_RING;
+		for (int i = -r; i < r; i++) { // round the ring's edge, one side after another
+			ring.add(square.offset(i, 0, -r));
+		}
+		for (int i = -r; i < r; i++) {
+			ring.add(square.offset(r, 0, i));
+		}
+		for (int i = r; i > -r; i--) {
+			ring.add(square.offset(i, 0, r));
+		}
+		for (int i = r; i > -r; i--) {
+			ring.add(square.offset(-r, 0, i));
+		}
+		for (int i = 0; i < ring.size(); i += BUNTING_EVERY) {
+			BlockPos column = ring.get(i);
+			Block banner = BUNTING[placed.size() % BUNTING.length];
+			double dx = column.getX() - square.getX();
+			double dz = column.getZ() - square.getZ();
+			float yaw = (float) Math.toDegrees(Math.atan2(dz, dx)) - 90.0f; // as if placed by someone at the square's centre
+			BlockState state = banner.defaultBlockState().setValue(BannerBlock.ROTATION, RotationSegment.convertToSegment(yaw + 180.0f));
+			for (int dy = 3; dy >= -2; dy--) {
+				BlockPos p = column.above(dy);
+				if (level.isLoaded(p) && level.getBlockState(p).isAir() && state.canSurvive(level, p)) {
+					level.setBlock(p, state, Block.UPDATE_ALL);
+					placed.add(p.immutable());
+					break;
+				}
+			}
+		}
+		List<BlockPos> all = new ArrayList<>(unloaded);
+		all.addAll(placed);
+		entity.setFairBunting(all);
+		return placed;
+	}
+
+	/**
+	 * Takes the fair's bunting down: each saved banner that is still the bunting's (a player's block in its place is left
+	 * alone), without drops. A banner in a chunk that isn't loaded stays on the list for the next round.
+	 */
+	public static void takeDownBunting(ServerLevel level, VillageHallBlockEntity entity) {
+		List<BlockPos> left = new ArrayList<>();
+		for (BlockPos p : entity.fairBunting()) {
+			if (!level.isLoaded(p)) {
+				left.add(p);
+				continue;
+			}
+			Block block = level.getBlockState(p).getBlock();
+			if (block == BUNTING[0] || block == BUNTING[1]) {
+				level.setBlock(p, Blocks.AIR.defaultBlockState(), Block.UPDATE_ALL);
+			}
+		}
+		entity.setFairBunting(left);
 	}
 
 	private static WanderingTrader trader(ServerLevel level, BlockPos hall, BlockPos square, int n) {

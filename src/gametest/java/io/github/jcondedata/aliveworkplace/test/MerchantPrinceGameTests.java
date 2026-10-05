@@ -316,6 +316,7 @@ public class MerchantPrinceGameTests implements net.fabricmc.fabric.api.gametest
 		Caravans.Data data = Caravans.Data.get(level);
 		Leftovers.after(helper, () -> {
 			List.of(a, b, c, d).forEach(data::remove);
+			io.github.jcondedata.aliveworkplace.hall.TradeFairs.takeDownBunting(level, entity); // part of it stands outside the area
 			level.getEntitiesOfClass(net.minecraft.world.entity.npc.WanderingTrader.class, helper.getBounds().inflate(16), t -> true)
 				.forEach(net.minecraft.world.entity.Entity::discard);
 		});
@@ -352,6 +353,68 @@ public class MerchantPrinceGameTests implements net.fabricmc.fabric.api.gametest
 			farmer.getOffers().forEach(o -> o.setSpecialPriceDiff(0));
 			io.github.jcondedata.aliveworkplace.hall.TradeFairs.discount(farmer);
 			helper.assertTrue(farmer.getOffers().stream().allMatch(o -> o.getSpecialPriceDiff() == 0), "cheaper the day after the fair");
+			helper.succeed();
+		}));
+	}
+
+	/**
+	 * The fair's bunting: red and yellow banners round the square, put up on free ground only (a player's block on the
+	 * ring stays), saved in the hall through a reload, up all the fair's day and taken down the day after, without drops
+	 * and leaving a player's block put where a banner was.
+	 */
+	//$ gametest_ticks_batch AREA '100' '"princeBunting"'
+	@GameTest(template = AREA, timeoutTicks = 100, batch = "princeBunting")
+	public void theFairsBuntingGoesUpAndComesDown(GameTestHelper helper) {
+		setUp(helper);
+		ServerLevel level = helper.getLevel();
+		BlockPos center = new BlockPos(15, 2, 15);
+		helper.setBlock(HALL, Blocks.AIR);
+		helper.setBlock(center, ModBlocks.VILLAGE_HALL);
+		BlockPos hall = helper.absolutePos(center);
+		int r = io.github.jcondedata.aliveworkplace.hall.TradeFairs.BUNTING_RING;
+		BlockPos players = center.offset(-r, 0, -r); // the ring's first spot: a player's planks stand there
+		helper.setBlock(players, Blocks.OAK_PLANKS);
+		Leftovers.after(helper, () -> level.getEntitiesOfClass(net.minecraft.world.entity.npc.WanderingTrader.class, helper.getBounds().inflate(16), t -> true)
+			.forEach(net.minecraft.world.entity.Entity::discard));
+		helper.runAfterDelay(2, () -> staged(helper, legend -> {
+			io.github.jcondedata.aliveworkplace.legend.TradeFairPower power = legend.powers(io.github.jcondedata.aliveworkplace.legend.TradeFairPower.class).get(0);
+			prince(helper, legend, center.offset(2, 0, 0));
+			VillageHallBlockEntity entity = (VillageHallBlockEntity) helper.getBlockEntity(center);
+			helper.assertTrue(entity.fairBunting().isEmpty(), "bunting before any fair");
+			var traders = io.github.jcondedata.aliveworkplace.hall.TradeFairs.hold(level, hall, power);
+			helper.assertTrue(traders.size() == 6, "traders " + traders.size());
+			List<BlockPos> bunting = List.copyOf(entity.fairBunting());
+			int expected = 8 * r / io.github.jcondedata.aliveworkplace.hall.TradeFairs.BUNTING_EVERY;
+			helper.assertTrue(bunting.size() == expected, "banners up: " + bunting.size() + ", not " + expected);
+			long red = bunting.stream().filter(p -> level.getBlockState(p).is(Blocks.RED_BANNER)).count();
+			long yellow = bunting.stream().filter(p -> level.getBlockState(p).is(Blocks.YELLOW_BANNER)).count();
+			helper.assertTrue(red + yellow == bunting.size() && red > 0 && yellow > 0, "not red and yellow banners: " + red + " red, " + yellow + " yellow of " + bunting.size());
+			helper.assertTrue(bunting.stream().allMatch(p -> Math.max(Math.abs(p.getX() - hall.getX()), Math.abs(p.getZ() - hall.getZ())) == r),
+				"a banner off the ring round the square");
+			helper.assertBlockPresent(Blocks.OAK_PLANKS, players);
+			helper.assertTrue(bunting.contains(helper.absolutePos(players.above())), "the banner at the player's planks isn't on top of them");
+
+			CompoundTag saved = entity.saveWithFullMetadata(level.registryAccess());
+			helper.setBlock(center, Blocks.AIR);
+			helper.setBlock(center, ModBlocks.VILLAGE_HALL);
+			VillageHallBlockEntity reloaded = (VillageHallBlockEntity) helper.getBlockEntity(center);
+			reloaded.loadWithComponents(saved, level.registryAccess());
+			helper.assertTrue(reloaded.fairBunting().equals(bunting), "the bunting lost in a reload: " + reloaded.fairBunting().size());
+
+			long today = Chronicle.day(level);
+			io.github.jcondedata.aliveworkplace.hall.TradeFairs.round(level, hall, reloaded);
+			helper.assertTrue(bunting.stream().allMatch(p -> level.getBlockState(p).getBlock() instanceof net.minecraft.world.level.block.BannerBlock),
+				"bunting down on the fair's own day");
+			BlockPos replaced = bunting.get(1); // a player took a banner and put a lantern there
+			level.setBlockAndUpdate(replaced, Blocks.LANTERN.defaultBlockState());
+			reloaded.setFairDay(today - 1); // the fair's day is over
+			io.github.jcondedata.aliveworkplace.hall.TradeFairs.round(level, hall, reloaded);
+			helper.assertTrue(reloaded.fairBunting().isEmpty(), "bunting still listed after the day: " + reloaded.fairBunting().size());
+			helper.assertTrue(bunting.stream().filter(p -> !p.equals(replaced)).allMatch(p -> level.getBlockState(p).isAir()), "a banner left up after the fair");
+			helper.assertTrue(level.getBlockState(replaced).is(Blocks.LANTERN), "the player's lantern was taken down with the bunting");
+			helper.assertBlockPresent(Blocks.OAK_PLANKS, players);
+			helper.assertTrue(level.getEntitiesOfClass(net.minecraft.world.entity.item.ItemEntity.class, helper.getBounds().inflate(4),
+				e -> e.getItem().is(net.minecraft.tags.ItemTags.BANNERS)).isEmpty(), "the bunting dropped banners");
 			helper.succeed();
 		}));
 	}

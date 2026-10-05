@@ -33,6 +33,8 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 	private PlayerBank.State playerBank = new PlayerBank.State();
 	/** The day of the last trade fair (29.17), or -1 before the first is counted. */
 	private long fairDay = -1;
+	/** The trade fair's bunting (29.17): the banners put up round the square, taken down after the fair's day. */
+	private final java.util.List<BlockPos> fairBunting = new java.util.ArrayList<>();
 	private int festivalCrowd;
 	/** Legends visiting as guests (29.8): who last came when, the guest staying now, and the day each place last rolled. */
 	private io.github.jcondedata.aliveworkplace.legend.LegendGuests.State legendGuests = io.github.jcondedata.aliveworkplace.legend.LegendGuests.State.EMPTY;
@@ -514,6 +516,17 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 		setChanged();
 	}
 
+	/** The banners of the trade fair's bunting still up (29.17); changed through {@link TradeFairs} only. */
+	public java.util.List<BlockPos> fairBunting() {
+		return java.util.Collections.unmodifiableList(fairBunting);
+	}
+
+	void setFairBunting(java.util.Collection<BlockPos> bunting) {
+		fairBunting.clear();
+		fairBunting.addAll(bunting);
+		setChanged();
+	}
+
 	public long treasuryTotal() {
 		return treasuryTotal;
 	}
@@ -650,6 +663,10 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 		treasuryTotal = Nbt.getLong(tag, "treasuryTotal");
 		playerBank = PlayerBank.State.load(tag);
 		fairDay = tag.contains("fairDay") ? Nbt.getLong(tag, "fairDay") : -1;
+		fairBunting.clear();
+		for (long p : Nbt.getLongArray(tag, "fairBunting")) {
+			fairBunting.add(BlockPos.of(p));
+		}
 		festivalCrowd = Nbt.getInt(tag, "festivalCrowd");
 		legendGuests = io.github.jcondedata.aliveworkplace.legend.LegendGuests.State.load(tag);
 		seer = io.github.jcondedata.aliveworkplace.legend.Seer.State.load(tag);
@@ -732,6 +749,9 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 		tag.putLong("treasuryTotal", treasuryTotal);
 		playerBank.save(tag);
 		tag.putLong("fairDay", fairDay);
+		if (!fairBunting.isEmpty()) {
+			tag.put("fairBunting", new net.minecraft.nbt.LongArrayTag(fairBunting.stream().mapToLong(BlockPos::asLong).toArray()));
+		}
 		tag.putInt("festivalCrowd", festivalCrowd);
 		legendGuests.save(tag);
 		seer.save(tag);

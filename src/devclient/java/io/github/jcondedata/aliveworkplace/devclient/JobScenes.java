@@ -917,6 +917,7 @@ final class JobScenes {
 				}
 				return told[0] && t >= 600;
 			};
+		}, null));
 		SCENES.put("legend_golem_smith", new Job("the Golem Smith forged a Hauler Golem, and the hauler, a farmhand and a wall sentry went to work",
 			2400, new Vec3(1.5, -51.5, 11), new Vec3(0, -60, -5), (level, player) -> {
 			// ROADMAP 29.15: the Golem Smith at a smithing table, the costs of a Hauler in the chest beside it and five
@@ -1596,11 +1597,13 @@ final class JobScenes {
 						+ hall.playerBank().emeralds(player.getUUID()) + ")");
 				}, 40),
 				new Step("03_trade_fair", -1, 6, (level, player) -> {
-					// The fair: six traders round the hall (no Market Square here), fireworks overhead.
+					// The fair: six traders round the hall (no Market Square here), red and yellow bunting round them, fireworks overhead.
 					player.closeContainer();
 					var power = io.github.jcondedata.aliveworkplace.legend.TradeFairPower.of(level, STATION).orElseThrow();
 					var traders = io.github.jcondedata.aliveworkplace.hall.TradeFairs.hold(level, STATION, power);
 					Showcase.check(traders.size() == 6, "six traders came to the fair (" + traders.size() + ")");
+					var hall = (io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(STATION);
+					Showcase.check(hall.fairBunting().size() >= 8, "the fair's bunting is up (" + hall.fairBunting().size() + " banners)");
 				}, 80)),
 			(level, player) -> true));
 		SCREENS.put("legend_sites", new Screen("the three camps of Legends found in the world, and a prisoner freed from the outpost cage",

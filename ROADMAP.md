@@ -1041,7 +1041,7 @@ here adds a new kind of speed bonus (the new jobs get the partners' existing one
     harvest with a mutation gives Lum and the book marks it found; the chain to Sitrus (Lum + Figy) is planned from Oran,
     Cheri and Figy;
   - showcase scene `berry_breeder` (the book page, the paired plot).
-- [ ] **28.10** **The Habitat Keeper.** Stand a villager by a Pasture Block (POI when Cobblemon registers
+- [x] **28.10** (review: pending 2026-10-04) **The Habitat Keeper.** Stand a villager by a Pasture Block (POI when Cobblemon registers
   `cobblemon:pasture`; never taken by a jobless villager) and sneak-right-click them with a honey bottle. Config
   `habitatKeepers` (true), `habitatSightings` (true).
   - Lure spots: up to 3 Poké Snacks kept set out within 32 blocks of the pasture, on spots marked with a Field Marker
@@ -4281,6 +4281,14 @@ item waits.
   build sites going up as dashed white outlines; `CityPlans.Outline` has a `proposal` flag (drawn dashed yellow) for
   27.8 to fill in `CityPlans.screen`. Undo keeps the last 10 changes per hall on the server (not saved), shared by
   everyone editing that plan, so an undo always matches what the hall holds.
+- 2026-10-04 (28.10, decisions; lane b): a lure spot is the middle of the area on a Field Marker handed to her (one
+  block marked: that block), up to three, the oldest given up for a fourth; the marker stays with the player. Lures are
+  read from Cobblemon's `spawn_bait_effects` (`cobblemon:typing` and `cobblemon:egg_group` effects: 18 types, 13 egg
+  groups on 1.7.3), Alphas only when `PokemonFeatures.ALPHAS` (Hopo by id). The Camp Cook asked for a lure seasons the
+  keeper's snacks with those berries only and counts only the snacks seasoned so; the keeper sets out a seasoned one
+  first, else any snack. "Rare" means every world spawn of the species is in the rare or ultra-rare bucket (147 species
+  in the compat pack). Alphas are recognised by the Pokémon's `alpha` aspect: not yet checked against 1.8.1 (the compat run
+  used 1.7.3). The hall's list is each villager's tooltip on the People page: her last five sightings go there.
 - 2026-10-04 (28.8, decisions; lane b): `asked` dishes in the camp menu name the jobs that ask in `for`; the cook keeps
   their `keep` while a villager of one of those jobs is within 48 blocks of the pot (fishermen for Poké Bait; the Poké
   Snack line names `aliveworkplace:habitat_keeper`, so it starts working when 28.10 registers that job; seasoning comes

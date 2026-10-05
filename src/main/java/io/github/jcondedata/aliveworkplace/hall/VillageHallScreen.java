@@ -507,6 +507,10 @@ public final class VillageHallScreen {
 		for (Component doing : doing(level, villager)) {
 			lore.add(plain(doing, ChatFormatting.WHITE));
 		}
+		// A Habitat Keeper's last five sightings (28.10).
+		for (Component sighting : io.github.jcondedata.aliveworkplace.habitat.HabitatKeepers.sightingLines(villager)) {
+			lore.add(line(sighting, ChatFormatting.AQUA));
+		}
 		Component pace = working ? io.github.jcondedata.aliveworkplace.work.Pace.describe(villager) : null;
 		if (pace != null) {
 			// "Works 62% faster (Machop from the pasture, a happy mood)", "Works 100% faster: at the cap (...)" (ROADMAP 30.2)

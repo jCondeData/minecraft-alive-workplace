@@ -54,6 +54,10 @@ public class SavedDataGameTests implements FabricGameTest {
 		samples.put("TREE_FARM", new FieldJob(new BoundingBox(1, 60, 2, 9, 64, 11), true));
 		samples.put("ORCHARD", new FieldJob(new BoundingBox(-5, 70, -6, 3, 72, 4), false));
 		samples.put("BERRY_GOAL", ResourceLocation.parse("cobblemon:sitrus_berry"));
+		samples.put("HABITAT_LURE", "typing/fire");
+		samples.put("SIGHTINGS", List.of(new io.github.jcondedata.aliveworkplace.habitat.HabitatKeepers.Sighting(
+			Component.translatable("message.aliveworkplace.habitat_keeper.sighting.shiny", Component.translatable("cobblemon.species.eevee.name")), "shiny", new BlockPos(12, 70, -40), 12L)));
+		samples.put("SIGHTED", List.of(A, B));
 		samples.put("BERRY_PLOT", new FieldJob(new BoundingBox(2, 64, -3, 9, 65, 5), false));
 		samples.put("FARM_FIELD", new FieldJob(new BoundingBox(100, 63, 200, 108, 63, 209), true));
 		samples.put("FOSSIL_REVIVALS", List.of(new Revival(A, "Jesse", ResourceLocation.parse("cobblemon:helix_fossil"),

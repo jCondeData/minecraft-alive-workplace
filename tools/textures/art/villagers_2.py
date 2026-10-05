@@ -1,4 +1,4 @@
-"""Villager outfits, second set: orchard keeper, berry breeder, camp cook, Pokemon trader, porter, postman, rancher, scholar, shopkeeper, sifter,
+"""Villager outfits, second set: orchard keeper, berry breeder, camp cook, habitat keeper, Pokemon trader, porter, postman, rancher, scholar, shopkeeper, sifter,
 teacher, tinkerer, trainer, trainer leader, tutor and undertaker. Drawn in the style of the Builder's outfit
 (builders.py): the villager helpers for the garments, then the details by hand. Each keeps the headwear, colours and
 accessory of the outfit it replaces.
@@ -207,6 +207,45 @@ def camp_cook():
     f.put(3, 11, "#4f7a2a")                             # a snack wrapped in leaf
     f.put(3, 12, "#d8b85a")
     return t.save_profession(ASSETS, "camp_cook", hat="full")
+
+
+def habitat_keeper():
+    """A moss-green bush hat with a brim and a Saccharine leaf tucked in its tan band, an olive field vest with a
+    honey-gold neckerchief, a brass spyglass in the vest pocket for her sightings, and a honey jar with a dipper on a
+    strap at the hip (ROADMAP 28.10)."""
+    t = vg.VillagerTexture()
+    moss = vg.cloth("#5a6e34")
+    olive = vg.cloth("#6f6a3a")
+    honey = ["#b8741a", "#e09a26", "#f4c24a"]          # dark, mid, lit
+    leaf = ["#3f6a2a", "#6a9a3a"]
+    vg.hat(t, moss, style="brim", band="#a88a5a", noise=0)
+    crown_top(t, moss)
+    front = t.face("hat", "front")                      # the Saccharine leaf in the band, on the villager's left
+    front.put(6, 2, leaf[1])
+    front.put(5, 2, leaf[0])
+    front.put(6, 1, leaf[1])
+    vg.vest(t, olive, length=10, open_front=True, noise=0)
+    for side in SIDES:                                  # the neckerchief, honey-gold, knotted at the front
+        t.face("jacket", side).fill(honey[1], rows=[0])
+    jf = t.face("jacket", "front")
+    jf.fill(honey[2], rows=[0])
+    paint(jf, ((3, 1), (4, 1)), honey[1])
+    jf.put(3, 2, honey[0])
+    f = pocket(t, olive, top=11, bottom=14)             # the spyglass sticking up out of the vest pocket
+    for y in range(8, 12):
+        f.put(1, y, BRASS[3] if y == 8 else BRASS[2])
+        f.put(2, y, BRASS[1] if y == 8 else BRASS[0])
+    f.put(1, 9, "#3a2a1a")                              # the leather grip ring
+    f.put(2, 9, "#2a1e12")
+    west = t.face("jacket", "west")                     # the honey jar on the villager's right hip, its dipper in it
+    strap_diagonal(west, 0, 2, 2, 9, LEATHER[1], width=1)
+    for y in range(11, 15):
+        for x in range(1, 4):
+            west.put(x, y, honey[2] if y == 11 else honey[1] if x < 3 else honey[0])
+    paint(west, ((1, 10), (2, 10), (3, 10)), "#d8d2c0")  # the cloth lid
+    west.put(2, 9, "#8a6a3e")                           # the dipper's handle
+    west.put(2, 8, "#a8844e")
+    return t.save_profession(ASSETS, "habitat_keeper", hat="full")
 
 
 def pokemon_trader():
@@ -586,7 +625,7 @@ def legend():
     return t.save_profession(ASSETS, "legend", hat="partial")
 
 
-DRAW = [orchard_keeper, berry_breeder, camp_cook, pokemon_trader, porter, postman, rancher, scholar, shopkeeper, sifter, teacher, tinkerer,
+DRAW = [orchard_keeper, berry_breeder, camp_cook, habitat_keeper, pokemon_trader, porter, postman, rancher, scholar, shopkeeper, sifter, teacher, tinkerer,
         trainer, trainer_leader, tutor, undertaker, steward, legend]
 
 if __name__ == "__main__":

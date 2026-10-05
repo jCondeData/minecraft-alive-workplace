@@ -1,0 +1,12 @@
+{
+  "when": [
+    {"beds_short": {"at_least": 1}},
+    {"not": {"beds_short": {"at_least": 2}}},
+    {"not": {"rank_at_least": {"rank": "village"}}},
+    {"not": {"upgrade_adds_beds": {}}}
+  ],
+  "do": {"build": {"blueprint": "aliveworkplace:starter_cottage", "zone": "homes"}},
+  "priority": 88,
+  "why": "steward.aliveworkplace.why.beds",
+  "cooldown_days": 1
+}

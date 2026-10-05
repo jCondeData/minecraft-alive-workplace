@@ -1,9 +1,10 @@
 {
   "when": [
-    {"beds_short": {"at_least": 1}}
+    {"beds_short": {"at_least": 2}},
+    {"not": {"upgrade_adds_beds": {}}}
   ],
   "do": {"build": {"blueprint": "aliveworkplace:stone_house", "zone": "homes"}},
-  "priority": 90,
+  "priority": 89,
   "why": "steward.aliveworkplace.why.beds",
   "cooldown_days": 1
 }

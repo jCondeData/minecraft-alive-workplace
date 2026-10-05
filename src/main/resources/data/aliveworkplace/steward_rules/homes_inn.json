@@ -1,0 +1,13 @@
+{
+  "when": [
+    {"beds_short": {"at_least": 4}},
+    {"not": {"upgrade_adds_beds": {}}},
+    {"built_count_below": {"blueprint": "aliveworkplace:inn", "n": 1}}
+  ],
+  "do": {"build": {"blueprint": "aliveworkplace:inn", "zone": "market"}},
+  "priority": 91,
+  "why": "steward.aliveworkplace.why.inn",
+  "cooldown_days": 2,
+  "max": 1,
+  "min_rank": "town"
+}

@@ -17,6 +17,10 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Added
+- **The Steward's rules for homes and storage** (27.10): with beds short he first upgrades a home whose next tier
+  sleeps more (beds counted from the blueprints), then wishes for a Starter Cottage, Stone House or Terrace in Homes, or
+  an Inn in Market for a town. He also asks for a Storehouse and its upgrades and a Market Stall in Market, and a Berry
+  Farm and a Ranch in Farms when food is short.
 - **Legends: rarities, caps and the server's record** (29.3): the server keeps a saved record of every Legend. A Rare
   Legend comes once to each village, a Legendary one once to each world, and a village holds Mythic ones by its rank
   (`mythicLegendCap` in the config file, default Hamlet 0, Village 0, Town 1, City 2). Rare and Legendary arrivals are

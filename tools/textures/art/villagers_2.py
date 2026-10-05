@@ -1166,9 +1166,43 @@ def beastmaster():
     return [path]
 
 
+def founder():
+    """The Founder (29.23): a burgundy mantle to the shins over the shoulders and down the sleeves, edged in a band of
+    ermine-white at the collar; over it a gold chain of office, links running from both shoulders down to a round
+    medallion on the chest (above the crossed arms, so it shows from the front), and a gold circlet at the brow."""
+    t = vg.VillagerTexture()
+    mantle = Ramp(["#3e0f1a", "#5c1626", "#7a2034", "#962c44"], name="burgundy")
+    ermine = Ramp(["#bdb6a6", "#dcd6c8", "#eeeae0"], name="ermine")
+    for side in SIDES:                                   # the circlet at the brow
+        f = t.face("head", side)
+        for x in range(f.w):
+            f.put(x, 1, GOLD[2] if side in ("front", "west") else GOLD[1])
+    vg.robe(t, mantle, length=18, sleeves_too=True, body_too=False, noise=0)
+    vg.sleeves(t, mantle, cuff=ermine[1], noise=0)
+    jf = t.face("jacket", "front")
+    paint(jf, ((x, 0) for x in range(jf.w)), ermine[2])  # the ermine collar
+    paint(jf, ((3, y) for y in range(1, 18)), mantle[0])  # where the mantle closes
+    # The chain of office, high on the chest where the crossed arms leave it showing: links from each shoulder down
+    # to a round medallion, lit and shaded in turn
+    paint(jf, ((0, 1), (1, 2), (2, 2), (7, 1), (6, 2), (5, 2)), GOLD[2])
+    paint(jf, ((1, 1), (6, 1)), GOLD[0])
+    paint(jf, ((3, 2), (4, 2), (3, 3), (4, 3)), GOLD[3])  # the medallion
+    paint(jf, ((4, 3),), GOLD[1])
+    for side in ("west", "east"):                       # the chain over the shoulders
+        f = t.face("jacket", side)
+        paint(f, ((x, 0) for x in range(f.w)), ermine[1] if side == "west" else ermine[0])
+        paint(f, ((x, 1) for x in range(1, f.w, 2)), GOLD[2] if side == "west" else GOLD[1])
+    jb = t.face("jacket", "back")
+    paint(jb, ((x, 0) for x in range(jb.w)), ermine[1])
+    paint(jb, ((x, 1) for x in range(0, jb.w, 2)), GOLD[1])    # the chain round the back of the neck
+    path = ASSETS / "textures" / "entity" / "villager" / "legend" / "founder.png"
+    t.save(path)
+    return [path]
+
+
 DRAW = [orchard_keeper, berry_breeder, camp_cook, habitat_keeper, daycare_keeper, gem_grower, pokemon_trader, porter, postman, rancher, scholar, shopkeeper, sifter, teacher, tinkerer,
         trainer, trainer_leader, tutor, undertaker, steward, legend, legend_placeholder, master_architect, pathfinder, old_sage, seer, golem_smith,
-        merchant_prince, grand_chef, bard_laureate, beastmaster]
+        merchant_prince, grand_chef, bard_laureate, beastmaster, founder]
 
 if __name__ == "__main__":
     run(DRAW)

@@ -339,6 +339,9 @@ SCENES = [
     # The Beastmaster (ROADMAP 29.20): a war dog tamed for a guard, then the guard and the dog against zombies
     job("legend_beastmaster", "Legends", "The Beastmaster's war dog",
         "the Beastmaster tamed a war dog for the guard with bones from the chest and fitted it with wolf armour from the scutes; the dog followed its guard and fought the zombies beside them", 90),
+    # The Founder (ROADMAP 29.23): the village's builder raises the Founder's statue by the hall from the barrels
+    job("legend_founder", "Legends", "The Founder's statue going up",
+        "the Founder asked for a statue, and the village's builder raised it by the hall from the materials in the barrels: a stepped plinth, a copper plaque and the Founder in stone with a hand raised", 360),
     job("legend_strike", "Legends", "A Legend on strike", "a Legend on strike left her stonecutter and picketed by the Village Hall under a red line", 120),
     # Strange moods (ROADMAP 29.10): a Master cleric claims her brewing stand under a purple line, the chest by it fills,
     # and she makes a named Masterwork, hung in an item frame, and becomes a Legend

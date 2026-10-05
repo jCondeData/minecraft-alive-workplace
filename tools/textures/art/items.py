@@ -526,6 +526,33 @@ def settlers_wagon():
     return [s.save(item("settlers_wagon"))]
 
 
+def founders_wagon():
+    """The Founder's Wagon (29.23): the Settler's Wagon, the same covered wagon facing right, with a dark oak staff at
+    the back of the bonnet flying a gold pennant forward over it: the village's own wagon, off to found another."""
+    s = grid("""
+        ...OGGGg........
+        ...OGgg.........
+        ...OVVVVVVVV....
+        ...VWWWWWWWWV...
+        ..VWWvWWvWWvwV..
+        ..VWwvwwvwwvwV..
+        ..VwwvwwvwwvwV..
+        ..VwwvwwvwwvvX..
+        .OPPPPPPPPPPPPO.
+        .OppppppppppppQQ
+        ..kkkQQQQQkkkQ..
+        .kkhkk...kkhkk..
+        .khhhk...khhhk..
+        .kkhkk...kkhkk..
+        ..kkk.....kkk...
+        ................
+    """, {"W": "#f6f2e6", "w": "#e4ddc9", "v": "#c8bfa6", "V": "#8f866e", "X": "#5f5846",   # canvas
+          "P": OAK[1], "p": OAK[2], "O": "#4a3a18", "Q": "#2e260c",                       # oak bed, the staff
+          "k": "#3a2712", "h": OAK[0],                                                    # wheels: rims, spokes
+          "G": GOLD[3], "g": GOLD[1]})                                                    # the gold pennant
+    return [s.save(item("founders_wagon"))]
+
+
 def guide_book():
     """The Guide Book (ROADMAP 26.2a): vanilla's book, on its exact outline, pages and shading, bound in blueprint blue
     with a gold house stamped on the cover (in place of vanilla's tooled lines), so it reads as a book and as this
@@ -804,7 +831,7 @@ def guild_charter():
 
 
 DRAW = [blank_blueprint, blueprint, shape_planner, patrol_map, delivery_note, travel_ticket, price_tag,
-        village_ledger, field_marker, city_plan, quarry_marker, rally_banner, scan_tool, settlers_wagon, guide_book,
+        village_ledger, field_marker, city_plan, quarry_marker, rally_banner, scan_tool, settlers_wagon, founders_wagon, guide_book,
         work_horn, village_banner, miners_brew, builders_tea, smiths_draught, scholars_infusion,
         harvest_cordial, woodsmans_broth, guild_charter]
 

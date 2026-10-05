@@ -172,7 +172,8 @@ public final class Legends implements ResourceManagerReloadListener {
 	 */
 	public static void make(ServerLevel level, Villager villager, Legend legend, String way) {
 		VillagerProfession job = Lookup.value(BuiltInRegistries.VILLAGER_PROFESSION, legend.job());
-		if (villager.getVillagerData().getProfession() != job || villager.getVillagerData().getLevel() < VillagerData.MAX_VILLAGER_LEVEL) {
+		boolean keeps = "inspired".equals(way) && Founder.ownTrade(legend) && villager.getVillagerData().getLevel() >= VillagerData.MAX_VILLAGER_LEVEL;
+		if (!keeps && (villager.getVillagerData().getProfession() != job || villager.getVillagerData().getLevel() < VillagerData.MAX_VILLAGER_LEVEL)) {
 			villager.setVillagerData(villager.getVillagerData().setProfession(job).setLevel(1));
 			villager.setVillagerXp(0);
 			villager.setOffers(null); // the new trade's trades, from Novice up

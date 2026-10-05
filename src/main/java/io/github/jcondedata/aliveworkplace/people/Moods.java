@@ -190,6 +190,12 @@ public final class Moods {
 			score += song.points();
 			good.add(song.reason());
 		}
+		// The Founder's statue (29.23), while it stands.
+		io.github.jcondedata.aliveworkplace.legend.LegendPowers.MoodReason statue = io.github.jcondedata.aliveworkplace.legend.Founder.statueMood(level, villager);
+		if (statue != null) {
+			score += statue.points();
+			good.add(statue.reason());
+		}
 		// A Grand Chef's banquet (29.18), for the days it lasts.
 		io.github.jcondedata.aliveworkplace.legend.LegendPowers.MoodReason banquet = io.github.jcondedata.aliveworkplace.hall.Banquets.mood(level, villager);
 		if (banquet != null) {

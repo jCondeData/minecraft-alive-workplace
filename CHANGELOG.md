@@ -31,6 +31,15 @@ asks for the steps, `latest.log` and any crash report).
 - **A farmer's carrots and potatoes reach the chests** (B77): a village farmer kept up to 32 of each in his bag as
   seed stock, so a Farmstead's field could be harvested without anything landing in its chest. He now takes them from the
   chests to plant with, like seeds, and puts the whole harvest away.
+- **The Founder** (29.23), a Mythic Legend in a burgundy mantle with a gold chain of office, who keeps their own
+  trade: at the village's first rise to City (only the first), its most experienced Master is seized by the Founder's
+  mood and asks for a block of gold, a block of emeralds and a diamond. Their Masterwork is **The Charter of
+  <village>**, a written book of the village's story from its chronicle (its founding, each rank, its Legends, its first
+  wedding, the raids it beat), signed by the Founder. A failed mood passes to the next most experienced Master after
+  the week of sulking. Announced to the whole server, within the Mythic cap. The village's builders raise the
+  Founder's statue by the hall from the chests (a stepped plinth, a copper plaque, the Founder with a hand raised):
+  5 beauty and everyone 5 happier while it stands. Every 7 days the hall's owner gets a **Founder's Wagon**: a
+  Settler's Wagon whose camp brings a Village Hall named "New <village>" and blueprints in the village's styles.
 - **The Beastmaster** (29.20), a Rare Legend in brown furs under a wolf-pelt hood: found as a prisoner in a pillager
   outpost once the village keeps a ranch (10 animals within 16 blocks of a Rancher's, Butcher's or Shepherd's
   workstation), or born to a Rancher. Likes clothes. With bones in their chest they tame a war dog for every guard

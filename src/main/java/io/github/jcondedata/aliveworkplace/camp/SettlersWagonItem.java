@@ -58,7 +58,8 @@ public class SettlersWagonItem extends Item {
 			return InteractionResult.SUCCESS;
 		}
 		BlockPos clicked = context.getClickedPos().relative(context.getClickedFace());
-		List<Villager> settlers = makeCamp(level, player, clicked);
+		ItemStack wagon = context.getItemInHand().copy();
+		List<Villager> settlers = makeCamp(level, player, clicked, box -> afterCamp(level, player, box, wagon));
 		if (settlers.isEmpty()) {
 			return InteractionResult.FAIL;
 		}
@@ -75,6 +76,16 @@ public class SettlersWagonItem extends Item {
 	 * the builder. Empty (and a message to the player) if there's no room.
 	 */
 	public static List<Villager> makeCamp(ServerLevel level, ServerPlayer player, BlockPos front) {
+		return makeCamp(level, player, front, box -> {
+		});
+	}
+
+	/** What a wagon of another kind adds once the camp stands in {@code box} (the Founder's Wagon, 29.23). */
+	protected void afterCamp(ServerLevel level, ServerPlayer player, BoundingBox box, ItemStack wagon) {
+	}
+
+	/** As {@link #makeCamp(ServerLevel, ServerPlayer, BlockPos)}, telling {@code placed} where the camp stands. */
+	public static List<Villager> makeCamp(ServerLevel level, ServerPlayer player, BlockPos front, java.util.function.Consumer<BoundingBox> placed) {
 		StructureTemplate template = level.getStructureManager().get(CAMP).orElse(null);
 		if (template == null) {
 			return List.of();
@@ -110,6 +121,7 @@ public class SettlersWagonItem extends Item {
 			}
 		}
 		template.placeInWorld(level, placement.origin(), placement.origin(), settings, level.getRandom(), 2);
+		placed.accept(box);
 		BlockPos bench = null;
 		for (BlockPos p : BlockPos.betweenClosed(box.minX(), box.minY(), box.minZ(), box.maxX(), box.maxY(), box.maxZ())) {
 			if ((level.getBlockState(p).is(ModBlocks.BUILDERS_BENCH) || level.getBlockState(p).is(ModBlocks.BLUEPRINT_TABLE))) {

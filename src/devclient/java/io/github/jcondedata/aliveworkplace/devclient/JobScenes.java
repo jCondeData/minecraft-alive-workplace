@@ -1307,6 +1307,63 @@ final class JobScenes {
 				return false;
 			};
 		}, null));
+		SCENES.put("legend_founder", new Job("the Founder asked for a statue, and the village's builder raised it by the hall from the materials in the barrels: a stepped plinth, a copper plaque and the Founder in stone with a hand raised",
+			6000, new Vec3(3.5, -53.5, 10.5), new Vec3(-5, -58, -5), (level, player) -> {
+			// ROADMAP 29.23: the Village Hall, the Founder (a burgundy mantle, a gold chain of office) by it, and a builder
+			// at a Blueprint Table with barrels holding the statue's materials. The hall's round hands the builder the
+			// Founder's statue on open ground near the hall, and the GIF shows it going up.
+			level.getGameRules().getRule(GameRules.RULE_DAYLIGHT).set(false, level.getServer());
+			level.setDayTime(2000);
+			level.getGameRules().getRule(ModGameRules.BUILD_DELAY).set(2, level.getServer());
+			BlockPos hall = STATION;
+			place(level, hall, ModBlocks.VILLAGE_HALL);
+			io.github.jcondedata.aliveworkplace.legend.Legend legend = io.github.jcondedata.aliveworkplace.legend.Legends.get(
+				io.github.jcondedata.aliveworkplace.legend.Founder.ID).orElse(null);
+			Showcase.check(legend != null, "the Founder's file loaded");
+			if (legend == null) {
+				return l -> true;
+			}
+			BlockPos bench = STATION.offset(6, 0, 4);
+			level.setBlockAndUpdate(bench, ModBlocks.BLUEPRINT_TABLE.defaultBlockState());
+			Villager builder = EntityType.VILLAGER.spawn(level, bench.offset(-1, 0, 1), MobSpawnType.COMMAND);
+			Builders.employ(level, builder, bench);
+			Villager founder = EntityType.VILLAGER.spawn(level, STATION.offset(2, 0, 2), MobSpawnType.COMMAND);
+			founder.setVillagerData(founder.getVillagerData().setProfession(VillagerProfession.LIBRARIAN).setLevel(5));
+			founder.setNoAi(true);
+			founder.setYRot(180);
+			founder.setYHeadRot(180);
+			io.github.jcondedata.aliveworkplace.legend.Legends.make(level, founder, legend, "inspired");
+			io.github.jcondedata.aliveworkplace.legend.LegendPowers.forget();
+			BuildSite site = io.github.jcondedata.aliveworkplace.legend.Founder.statue(level, hall);
+			Showcase.check(site != null, "the statue was handed to the builder");
+			if (site == null) {
+				return l -> true;
+			}
+			List<ItemStack> stacks = new ArrayList<>();
+			site.plan(level).materials().forEach((item, total) -> {
+				for (int left = total; left > 0; left -= item.getDefaultMaxStackSize()) {
+					stacks.add(new ItemStack(item, Math.min(left, item.getDefaultMaxStackSize())));
+				}
+			});
+			for (int b = 0; b * 27 < stacks.size(); b++) {
+				BlockPos barrelPos = bench.offset(1, 0, b);
+				level.setBlockAndUpdate(barrelPos, Blocks.BARREL.defaultBlockState());
+				Container barrel = (Container) level.getBlockEntity(barrelPos);
+				for (int slot = 0; slot < 27 && b * 27 + slot < stacks.size(); slot++) {
+					barrel.setItem(slot, stacks.get(b * 27 + slot));
+				}
+			}
+			java.util.UUID id = site.id();
+			return l -> {
+				if (!built(l, id, 1f)) {
+					return false;
+				}
+				io.github.jcondedata.aliveworkplace.legend.Founder.forgetStands();
+				Showcase.check(io.github.jcondedata.aliveworkplace.legend.Founder.stands(l, hall), "the statue stands");
+				Showcase.check(io.github.jcondedata.aliveworkplace.legend.Founder.beauty(l, hall) == 5, "the statue is worth 5 beauty");
+				return true;
+			};
+		}, null));
 		SCENES.put("legend_golem_smith", new Job("the Golem Smith forged a Hauler Golem, and the hauler, a farmhand and a wall sentry went to work",
 			2400, new Vec3(1.5, -51.5, 11), new Vec3(0, -60, -5), (level, player) -> {
 			// ROADMAP 29.15: the Golem Smith at a smithing table, the costs of a Hauler in the chest beside it and five

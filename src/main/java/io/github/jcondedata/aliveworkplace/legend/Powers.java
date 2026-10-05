@@ -30,6 +30,7 @@ public final class Powers {
 		Seer.register();
 		BardLaureate.register();
 		Beastmaster.register();
+		Founder.register();
 	}
 
 	/** Adds a named power (each Legend item adds its own). */

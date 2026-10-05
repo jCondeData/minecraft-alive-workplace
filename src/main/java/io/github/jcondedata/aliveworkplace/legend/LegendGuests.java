@@ -402,6 +402,7 @@ public final class LegendGuests {
 			GolemSmith.round(level, hall); // the Golem Smith's golems (29.15)
 		}
 		Beastmaster.round(level, hall); // the Beastmaster's war dogs and foals (29.20)
+		Founder.round(level, hall); // the Founder's mood, statue and wagons (29.23)
 		tend(level, hall);
 	}
 

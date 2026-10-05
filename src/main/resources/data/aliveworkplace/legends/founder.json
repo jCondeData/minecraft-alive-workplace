@@ -1,0 +1,27 @@
+{
+  "rarity": "mythic",
+  "job": "aliveworkplace:legend",
+  "title": "legend.aliveworkplace.founder.title",
+  "lore": "legend.aliveworkplace.founder.lore",
+  "names": [
+    "legend.aliveworkplace.founder.name.1",
+    "legend.aliveworkplace.founder.name.2",
+    "legend.aliveworkplace.founder.name.3"
+  ],
+  "conditions": [
+    {"type": "first_city"}
+  ],
+  "arrive": [
+    {"way": "inspired", "founder": true, "own_trade": true}
+  ],
+  "masterwork": {
+    "item": "minecraft:written_book",
+    "name": "masterwork.aliveworkplace.founder",
+    "materials": ["minecraft:gold_block", "minecraft:emerald_block", "minecraft:diamond"]
+  },
+  "needs": {"luxury": "books"},
+  "powers": [
+    {"type": "statue", "beauty": 5, "mood": 5},
+    {"type": "found_villages", "days": 7}
+  ]
+}

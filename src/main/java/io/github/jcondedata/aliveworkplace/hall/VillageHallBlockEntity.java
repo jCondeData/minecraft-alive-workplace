@@ -47,6 +47,10 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 	/** The Seer's dawn foretelling (29.16): tonight's raid, the next festival and market days, tomorrow's guest; empty in older halls. */
 	private io.github.jcondedata.aliveworkplace.legend.Seer.State seer = io.github.jcondedata.aliveworkplace.legend.Seer.State.EMPTY;
 	private long founderMoodDay;
+	/** The Founder (29.23): Masters whose Founder's mood failed (comma-joined UUIDs), whether the Founder was made, the last wagon day. */
+	private String founderTried = "";
+	private boolean founderMade;
+	private long founderWagonDay;
 	/** Strange moods (29.10): the day they may come again after one failed, and the day the village last rolled for one. */
 	private long noMoodUntil;
 	private long moodRolledDay;
@@ -637,6 +641,48 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 		setChanged();
 	}
 
+	/** The Masters whose Founder's mood came and failed (29.23), in order. */
+	public java.util.List<java.util.UUID> founderTried() {
+		java.util.List<java.util.UUID> out = new java.util.ArrayList<>();
+		for (String s : founderTried.split(",")) {
+			try {
+				if (!s.isEmpty()) {
+					out.add(java.util.UUID.fromString(s));
+				}
+			} catch (IllegalArgumentException ignored) {
+				// a damaged entry: skipped
+			}
+		}
+		return out;
+	}
+
+	public void addFounderTried(java.util.UUID who) {
+		if (!founderTried().contains(who)) {
+			founderTried = founderTried.isEmpty() ? who.toString() : founderTried + "," + who;
+			setChanged();
+		}
+	}
+
+	/** Whether the village's Founder's mood ended in a Founder (then it never comes again). */
+	public boolean founderMade() {
+		return founderMade;
+	}
+
+	public void setFounderMade(boolean made) {
+		founderMade = made;
+		setChanged();
+	}
+
+	/** The Chronicle day the Founder last gave a Founder's Wagon (0: never). */
+	public long founderWagonDay() {
+		return founderWagonDay;
+	}
+
+	public void setFounderWagonDay(long day) {
+		founderWagonDay = day;
+		setChanged();
+	}
+
 	/** The day strange moods may come again after one failed (0: any day). */
 	public long noMoodUntil() {
 		return noMoodUntil;
@@ -738,6 +784,9 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 		legendGuests = io.github.jcondedata.aliveworkplace.legend.LegendGuests.State.load(tag);
 		seer = io.github.jcondedata.aliveworkplace.legend.Seer.State.load(tag);
 		founderMoodDay = Nbt.getLong(tag, "founderMoodDay");
+		founderTried = Nbt.getString(tag, "founderTried");
+		founderMade = Nbt.getBoolean(tag, "founderMade");
+		founderWagonDay = Nbt.getLong(tag, "founderWagonDay");
 		noMoodUntil = Nbt.getLong(tag, "noMoodUntil");
 		moodRolledDay = Nbt.getLong(tag, "moodRolledDay");
 		owner = Nbt.hasUuid(tag, "owner") ? Nbt.getUuid(tag, "owner") : null;
@@ -832,6 +881,9 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 		legendGuests.save(tag);
 		seer.save(tag);
 		tag.putLong("founderMoodDay", founderMoodDay);
+		tag.putString("founderTried", founderTried);
+		tag.putBoolean("founderMade", founderMade);
+		tag.putLong("founderWagonDay", founderWagonDay);
 		tag.putLong("noMoodUntil", noMoodUntil);
 		tag.putLong("moodRolledDay", moodRolledDay);
 		if (owner != null) {

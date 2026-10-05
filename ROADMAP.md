@@ -1600,7 +1600,7 @@ MarketDays) and research/.
   Outfit: a hooded travel cloak, a pack and a lantern. Done when: GameTests: they are found only for a village with an
   Expert explorer; an expedition to a staged target leads, waits and catches up; Home brings both back; a logout
   cancels it; the loot table rolls; showcase scene `legend_pathfinder` (GIF: leading the player through a forest).
-- [ ] **29.14** **The Old Sage (Rare).** Comes: found in a hermit's hut once the village has finished 5 research
+- [x] **29.14** (review: pending 2026-10-05) **The Old Sage (Rare).** Comes: found in a hermit's hut once the village has finished 5 research
   levels; born to a Scholar (29.7). The hut (`legend/hermit_hut` through the architect skill: mossy cobblestone and
   spruce, a lectern, bookshelves, a cauldron and an herb garden) is placed 150-250 blocks from the hall on dry, flat,
   loaded ground (as `BanditCamps.site` picks), and the village's players hear a rumour of it with its direction.
@@ -4344,6 +4344,14 @@ item waits.
   build like the Steward's (no blueprint item comes back if it's cancelled). A strike cancels the rebuild under way (the
   blocks placed stay) and none starts until it's over. The Architect can be the builder handed the work if they are
   the least busy one with a bench.
+- 2026-10-05 (29.14, decisions; lane a): the hut is looked for once a day per hall, in the morning round, while the
+  village qualifies and no Sage is out at a hut (a killed Sage frees the slot for a new hut another day); its site is
+  `BanditCamps.site` at 150-250 blocks. The rumour goes to the owner and their friends online. The Sage is a found
+  Legend (`LegendSites` captive, site `hermit_hut`); the answer is the item in the hand (a filled or empty map, any
+  book, wet or dry sponge; the water bucket's bucket comes back), an empty hand repeats the riddle, and the hint comes
+  with every miss from the second on. Ancient Lore effects outside the shared toolbox are `flag`s counted per level
+  (`TreeEffects.flagCount`); the Iron Pact's golem comes on days divisible by 5, and the 25% damage cut is a mixin on
+  `LivingEntity.actuallyHurt` for golems inside a village's area and guards of the village.
 - 2026-10-05 (29.13, decisions; lane a): the Pathfinder's place is picked from three chat buttons after the
   sneak-right-click (`/workplace expedition <kind>`, open 60 s, only for the player who clicked); the lookup runs once,
   when a place is picked, and nothing is used up when there is none within 3,000 blocks. "Standing still" for Home is

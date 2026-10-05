@@ -818,8 +818,58 @@ def pathfinder():
     return [path]
 
 
+def old_sage():
+    """The Old Sage (29.14): a long grey wool robe to the feet with a darker hem and a rope belt, its hood down on the
+    shoulders; a long white beard from the chin down over the chest; a silver circlet (the Legend's mark) on the brow;
+    a gnarled oak staff with a knot of moss carried at the villager's left side."""
+    t = vg.VillagerTexture()
+    robe_ = vg.cloth("#7d7f84")
+    vg.robe(t, robe_, length=20, sleeves_too=True, body_too=True, noise=0)
+    vg.sleeves(t, robe_, cuff="#5c5e63", noise=0)
+    vg.belt(t, ROPE, row=9)
+    beard = Ramp(["#a9a59a", "#cfcbc0", "#e3dfd4"], name="beard")
+    hf = t.face("head", "front")                         # the beard: from the cheeks down past the chin
+    for y in range(6, hf.h):
+        for x in range(hf.w):
+            if y >= 7 or x in (0, 1, 6, 7):
+                hf.put(x, y, beard[0] if y == hf.h - 1 and x in (0, 7) else beard[1])
+    for x in range(2, 6):
+        hf.put(x, 9, beard[2] if x in (2, 3) else beard[1])
+    for side in ("west", "east"):                       # the beard round the jaw
+        f = t.face("head", side)
+        for y in range(7, f.h):
+            for x in range(f.w):
+                if (side == "west" and x >= f.w - 3) or (side == "east" and x < 3):
+                    f.put(x, y, beard[0] if y == f.h - 1 else beard[1])
+    for side in SIDES:                                   # the silver circlet at the brow
+        f = t.face("head", side)
+        for x in range(f.w):
+            f.put(x, 2, STEEL[2] if side in ("front", "west") else STEEL[1])
+    jf = t.face("jacket", "front")                       # the beard falls down the chest
+    for y in range(0, 9):
+        for x in range(2, 6):
+            if y < 7 or x in (3, 4):
+                jf.put(x, y, beard[2] if x == 2 else beard[0] if y == 8 or x == 5 else beard[1])
+    paint(jf, ((7, y) for y in range(8, 20)), "#5c4024")  # the staff, seen past the robe's edge
+    paint(jf, ((7, 12), (7, 17)), "#3f2b17")
+    jb = t.face("jacket", "back")                        # the hood down on the shoulders
+    paint(jb, ((x, y) for x in range(jb.w) for y in (0, 1, 2)), robe_[1])
+    paint(jb, ((x, 3) for x in range(1, jb.w - 1)), robe_[0])
+    staff = Ramp(["#3f2b17", "#5c4024", "#7a5732"], name="staff")
+    ef = t.face("jacket", "east")                        # the gnarled staff: a crooked shaft, knots and a mossy knob
+    shaft = [(1, y) for y in range(3, 20)] + [(2, y) for y in (6, 7, 13)]
+    paint(ef, shaft, staff[1])
+    paint(ef, ((0, 9), (2, 11), (0, 16)), staff[0])      # the knots
+    paint(ef, ((1, 0), (2, 0), (0, 1), (1, 1), (2, 1), (1, 2), (2, 2)), staff[2])
+    paint(ef, ((0, 0), (0, 2)), "#4f6b2c")               # moss on the knob
+    ef.put(2, 1, "#6d8a3a")
+    path = ASSETS / "textures" / "entity" / "villager" / "legend" / "old_sage.png"
+    t.save(path)
+    return [path]
+
+
 DRAW = [orchard_keeper, berry_breeder, camp_cook, habitat_keeper, daycare_keeper, gem_grower, pokemon_trader, porter, postman, rancher, scholar, shopkeeper, sifter, teacher, tinkerer,
-        trainer, trainer_leader, tutor, undertaker, steward, legend, legend_placeholder, master_architect, pathfinder]
+        trainer, trainer_leader, tutor, undertaker, steward, legend, legend_placeholder, master_architect, pathfinder, old_sage]
 
 if __name__ == "__main__":
     run(DRAW)

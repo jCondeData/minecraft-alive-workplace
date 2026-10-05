@@ -86,6 +86,9 @@ public class SavedDataGameTests implements FabricGameTest {
 			"legend.aliveworkplace.master_architect.name.2", true, Optional.of(new BlockPos(5, 70, -9)), 12, 15, Map.of("home", 2), 14, 9, "visit"));
 		samples.put("ARCHITECT", new io.github.jcondedata.aliveworkplace.legend.GrandRebuild.State(12L, true,
 			Optional.of(java.util.UUID.fromString("5e1f3c4a-0b6d-4c2e-9a7f-1d2c3b4a5e6f"))));
+		samples.put("PATHFINDER", new io.github.jcondedata.aliveworkplace.legend.Pathfinder.State(12L, Optional.of(java.util.UUID.fromString("5e1f3c4a-0b6d-4c2e-9a7f-1d2c3b4a5e6f")),
+			Optional.of(new BlockPos(300, 40, -900)), "stronghold", Optional.of(new BlockPos(5, 70, -9)), true, 14L));
+		samples.put("SAGE_RIDDLES", new io.github.jcondedata.aliveworkplace.legend.OldSage.Riddles(List.of(2, 7, 5), 1, 2));
 		samples.put("STRANGE_MOOD", new io.github.jcondedata.aliveworkplace.legend.StrangeMood(net.minecraft.resources.ResourceLocation.parse("aliveworkplace:golem_smith"),
 			new BlockPos(3, 64, -2), Optional.of(new BlockPos(5, 70, -9)), List.of(net.minecraft.resources.ResourceLocation.parse("minecraft:diamond"),
 			net.minecraft.resources.ResourceLocation.parse("minecraft:blaze_rod"), net.minecraft.resources.ResourceLocation.parse("minecraft:echo_shard")),

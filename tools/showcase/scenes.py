@@ -289,6 +289,11 @@ SCENES = [
     S("legend_sites", "Legends", "Legends found at ruins, outposts and wrecks",
       "the three camps of Legends found in the world, and a prisoner freed from the outpost cage", 40,
       [("01_three_camps", "A traveller's camp, a prisoner's cage, a castaway's camp"), ("02_cage_opened", "A bar broken: the prisoner is free")]),
+    # The Old Sage (ROADMAP 29.14): the hermit's hut, a riddle with a wrong answer refused and a hint, the Ancient Lore tab
+    S("legend_sage", "Legends", "The Old Sage's hut, riddles and Ancient Lore",
+      "the Old Sage's hut, a riddle asked and a wrong answer refused with a hint, and the Ancient Lore tab", 50,
+      [("01_hermit_hut", "The hermit's hut, the Sage inside"), ("02_riddle", "A riddle, a shake of the head, a hint"),
+       ("03_ancient_lore_tab", "The Ancient Lore tab")]),
     # The Master Architect (ROADMAP 29.12): the top-tier Stone House, finished, redrawn in the Grand style and rebuilt
     job("legend_architect", "Legends", "The Master Architect redraws a house in the Grand style",
         "the Master Architect handed a builder the Stone House redrawn in the Grand style, and it was rebuilt", 360),

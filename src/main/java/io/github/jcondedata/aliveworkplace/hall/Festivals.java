@@ -263,7 +263,9 @@ public final class Festivals {
 	 */
 	public static boolean enjoyedLately(ServerLevel level, Villager villager) {
 		Long day = ModAttachments.FESTIVAL_DAY.get(villager);
-		return day != null && Chronicle.day(level) - day <= (bannered(villager) ? BANNER_MOOD_DAYS : MOOD_DAYS);
+		int days = (bannered(villager) ? BANNER_MOOD_DAYS : MOOD_DAYS)
+			* (io.github.jcondedata.aliveworkplace.research.TreeEffects.flag(villager, "golden_age") ? 2 : 1); // twice as long in a Golden Age (29.14)
+		return day != null && Chronicle.day(level) - day <= days;
 	}
 
 	/** How much {@code villager}'s last festival lifts their mood now: {@link #MOOD}, {@link #BANNER_MOOD} under the banner, 0 if it's past. */

@@ -119,6 +119,9 @@ public final class Pace {
 	/** A tonic the villager drank (30.15): its {@code work_pace} for as long as it lasts, "Miner's Brew, 19 min left". */
 	public static final Source TONIC = register(new Source("tonic", Kind.BONUS, io.github.jcondedata.aliveworkplace.people.Tonics::pace,
 		io.github.jcondedata.aliveworkplace.people.Tonics::paceLabel));
+	/** The Ancient Lore's Old Harvests (29.14): farmers, orchard keepers and beekeepers 10% faster a level. */
+	public static final Source ANCIENT_LORE = register(new Source("ancient_lore", Kind.BONUS,
+		v -> 1f / (1f + 0.1f * io.github.jcondedata.aliveworkplace.research.TreeEffects.flagCount(v, "old_harvests"))));
 	public static final Source ILL = register(new Source("ill", Kind.PENALTY, Sickness::pace));
 	public static final Source UNHAPPY = register(new Source("unhappy", Kind.PENALTY, Moods::pace));
 	public static final Source LAZY = register(new Source("lazy", Kind.PENALTY, Traits::pace));

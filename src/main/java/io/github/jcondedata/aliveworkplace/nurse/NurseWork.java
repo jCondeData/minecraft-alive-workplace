@@ -88,7 +88,8 @@ public class NurseWork extends Behavior<Villager> {
 		}
 		GlobalPos site = nurse.getBrain().getMemory(MemoryModuleType.JOB_SITE).orElse(null);
 		List<BlockPos> chests = site == null ? List.of() : SupplyContainers.find(level, site.pos(), null);
-		ItemStack remedy = SupplyContainers.takeOne(level, chests, Sickness::isRemedy);
+		boolean herbLore = io.github.jcondedata.aliveworkplace.research.TreeEffects.flag(nurse, "herb_lore"); // any small flower (Ancient Lore, 29.14)
+		ItemStack remedy = SupplyContainers.takeOne(level, chests, s -> Sickness.isRemedy(s) || herbLore && s.is(net.minecraft.tags.ItemTags.SMALL_FLOWERS));
 		if (remedy.isEmpty()) {
 			Requests.post(nurse, new ItemStack(Items.HONEY_BOTTLE), 1, Component.translatable("request.aliveworkplace.remedy"), Sickness::isRemedy);
 			return Component.translatable("message.aliveworkplace.nurse.state.no_remedy", ill.size()).withStyle(ChatFormatting.YELLOW);

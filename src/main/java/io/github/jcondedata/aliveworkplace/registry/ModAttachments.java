@@ -15,6 +15,9 @@ public final class ModAttachments {
 	/** The Pathfinder's expeditions with a player (29.13): the last day, the player led, the place, arrived, stranded. */
 	public static final Attachment<io.github.jcondedata.aliveworkplace.legend.Pathfinder.State> PATHFINDER = Attachment.saved("pathfinder", io.github.jcondedata.aliveworkplace.legend.Pathfinder.State.CODEC);
 
+	/** The Old Sage's riddle quest at their hut (29.14): the riddles asked, how many answered, misses on this one. */
+	public static final Attachment<io.github.jcondedata.aliveworkplace.legend.OldSage.Riddles> SAGE_RIDDLES = Attachment.saved("sage_riddles", io.github.jcondedata.aliveworkplace.legend.OldSage.Riddles.CODEC);
+
 	/** A villager's gift (29.6): a gift's id, or {@code none}. Absent: the UUID roll decides ({@code Gifted.of}). */
 	public static final Attachment<String> GIFTED = Attachment.saved("gifted", com.mojang.serialization.Codec.STRING);
 

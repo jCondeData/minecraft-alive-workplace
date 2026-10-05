@@ -336,6 +336,7 @@ public final class LegendGuests {
 			chapel(level, hall).ifPresent(at -> visit(level, hall, "chapel", at, level.random));
 		}
 		LegendSites.arrive(level, hall);
+		OldSage.round(level, hall); // the hermit's hut, the Iron Pact's golems (29.14)
 		tend(level, hall);
 	}
 

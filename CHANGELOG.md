@@ -17,6 +17,13 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Added
+- **The Old Sage** (29.14), a Rare Legend: once a village has finished 5 research levels, a hermit's hut of mossy stone
+  and spruce (a lectern, bookshelves, a cauldron, an herb garden) appears 150-250 blocks out, and the village's players
+  hear a rumour with its distance and direction. The Sage asks three riddles from a pool of eight, each answered by
+  handing over an item; a wrong one gets a shake of the head and, after two misses, a hint. Three right answers and the
+  Sage comes to the village the next morning as a guest (also born to a Scholar). Likes books. They work the
+  **Ancient Lore** at a lectern: Old Tongues, Star Charts, Herb Lore, Deep Memory, Runes of Warding, Old Harvests and
+  one last pick for good (the Undying Flame, the Golden Age or the Iron Pact). Grey robe, long beard, gnarled staff.
 - **The Pathfinder** (29.13), a Rare Cartographer Legend: found at a ruined portal once one of the village's explorers is
   an Expert, or born to a Cartographer; likes clothes. Their own expeditions range twice as far and bring back more
   maps, now and then a trial key or an echo shard. Sneak-right-click them with 8 food in their chests and pick a

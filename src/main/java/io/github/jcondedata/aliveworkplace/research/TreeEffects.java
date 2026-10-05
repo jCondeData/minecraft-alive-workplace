@@ -231,6 +231,19 @@ public final class TreeEffects {
 		return false;
 	}
 
+	/** How many times the switch {@code name} is on for {@code villager} (a topic's flag counts once a level: Star Charts II is 2). */
+	public static int flagCount(Villager villager, String name) {
+		int n = 0;
+		for (CivicEffects.Sum sum : sums(CivicEffects.hallOf(villager))) {
+			for (Flag f : sum.of(Flag.class, villager)) {
+				if (f.name().equals(name)) {
+					n++;
+				}
+			}
+		}
+		return n;
+	}
+
 	/** Whether the switch {@code name} is on in the village {@code villager} lives in (for them, if it names jobs). */
 	public static boolean flag(Villager villager, String name) {
 		for (CivicEffects.Sum sum : sums(CivicEffects.hallOf(villager))) {

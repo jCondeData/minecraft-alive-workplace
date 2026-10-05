@@ -35,7 +35,7 @@ public class StyleGameTests implements FabricGameTest {
 	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
 	public void stylesLoadAndIdsRoundTrip(GameTestHelper helper) {
 		List<String> names = BlueprintStyles.all().stream().map(BlueprintStyles.Style::name).toList();
-		helper.assertTrue(names.equals(List.of("stonework", "sandstone", "dark_oak", "cherry")), "styles: " + names);
+		helper.assertTrue(names.equals(List.of("stonework", "sandstone", "dark_oak", "cherry", "grand")), "styles: " + names);
 		ResourceLocation base = StarterBlueprints.STONE_HOUSE.id();
 		ResourceLocation dark = BlueprintStyles.styled(base, "dark_oak");
 		helper.assertTrue(dark.toString().equals("aliveworkplace:styled/dark_oak/aliveworkplace/stone_house"), "styled id: " + dark);

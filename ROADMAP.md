@@ -301,6 +301,7 @@ first; many items below are "verify and harden", not "build".
 
   This test is the yardstick for the rest of the milestone.
   - [x] **23.1a** (approved 2026-10-05) Change from the owner (2026-10-04): builder speed is fine (accept ~3.5 in-game days for the 22 starter builds). Time should grow with bigger builds, but be cut in half with every builder working on it (2 builders ~ half the time, and so on): check helpers really scale like that and fix it if not
+  - [ ] **23.1b** Change from the owner (2026-10-05): Helpers' material-toss sounds only (no flying item), but cap how many play at once so many builders can't cause lag: keep it to a maximum number and skip sounds past the limit.
 - [x] **23.2** (approved auto 2026-10-04) **Stuck recovery, proven.** Builders stuck on water, lava, holes, fences, doors, their own scaffolding, or in
   unloaded chunks. Done when: a chaos test (the tester skill's `ChaosTests`, 5 seeds) finishes every time, and the
   recovery (hop, re-path, step back) never breaks a placed block.

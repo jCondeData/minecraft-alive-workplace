@@ -27,7 +27,7 @@ One row per run, newest first. Ticks are milliseconds.
 
 | Date | Commit | Workers | Idle p50 / p95 | Busy p50 / p95 | Heap after GC | Our share of the server thread | Run |
 |---|---|---|---|---|---|---|---|
-| (first run pending) | | 150 | | | | | |
+| 2026-10-05 | 5b489b7 | 150 (65 of 76 sites working when measured) | 2.3 / 3.5 (p99 7.3) | 18.3 / 32.8 (p99 66.1) at the start, then 8.8 / 16.5 (p99 21.1) once the builds settled | 1613 MB | 13.1% (204 of 1556 samples; 49.8% villager brains, 26.5% pathfinding, both ours included) | [nightly-tests 37297003813](https://github.com/jCondeData/minecraft-alive-workplace/actions/runs/37297003813) (the nightly's performance step, same load as the Sunday job) |
 
 ## The pack's performance stack (25.4)
 
@@ -44,6 +44,7 @@ modules left out as on a real Java 21 install.
 | Date | Check | Result |
 |---|---|---|
 | 2026-10-04 | Client (`SCENE=config PERF_STACK=true`) | 96 mods, all nine performance mods loaded; the scene's 2 checks pass and the world renders behind the screen; only warnings are other mods' optional mixins and the container's missing sound device |
+| 2026-10-05 | Benchmark load on the pack's stack (nightly-tests 37297003813, 5b489b7) | Runs clean with the six server mods: our share 13.1% (target under 15%); busy p99 66.1 ms at the start, 21.1 ms later (target: none over 50 ms from us, not yet attributed); heap 1613 MB after GC once, but no 60-minute soak yet, so the flat-heap target is unmeasured |
 | 2026-10-04 | Pack boot (`tools/packtest/run.sh`, 0.138.0 + 25.5) | 252 mods loaded, the six server mods among them; no error from Alive Workplace or the performance mods (the 37 error lines are the pack's own: empty registries, data fixers, Cobblemon dex files) |
 
 ## Targets (25.2)

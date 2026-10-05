@@ -389,7 +389,7 @@ texture has no clear direction yet.
 Baseline at 0.136.0: 80 busy workers in the full pack took the tick from about 2 ms to about 7 ms, and our code was
 about 12% of that. For villager mods, the cost is pathfinding to distant points of interest and brain ticks.
 
-- [ ] **25.1** **Measure first.** A repeatable benchmark:
+- [x] **25.1** (approved auto 2026-10-05) **Measure first.** A repeatable benchmark:
   - 150 workers over 3 villages in the Cobbleverse pack;
   - `tick query` p50/p95, heap after GC and a JFR profile (`tools/packtest`, `PERF=true`);
   - run on GitHub's runner and recorded in `docs/performance.md`.
@@ -421,6 +421,10 @@ about 12% of that. For villager mods, the cost is pathfinding to distant points 
     passes its scene. The benchmark and the soak already run with them (they run the whole pack). Left: tonight's
     nightly soak and the first benchmark (25.1) give the numbers; compare them with the 25.2 targets, add the row and
     tick.
+  - Status (lane-a-1005-0932): nightly-tests 37297003813 (5b489b7) ran the load with the stack and no error of ours;
+    share 13.1% (<15% ok). Off: busy p99 66.1 ms in the first sample (not shown to be ours) and no 60-minute soak
+    exists, so the heap-flat target is unmeasured (one reading, 1613 MB). Left: a 60-minute soak with heap readings
+    (`PERF` heap sampled every 10 min) and the profile of the p99 spikes; then tick.
 - [x] **25.5** (approved 2026-10-05) **Server owner controls.** Config caps like MineColonies' (max workers per village, how far workers path, the
   far-from-players behaviour from Milestone 23). Needs systems (moods, sickness, raids, festivals) are easy to switch
   off, because "babysitting" is the top complaint about big colony mods. Done when: each key is documented in the README
@@ -4296,6 +4300,12 @@ item waits.
 - (Sessions: anything that needs the owner, and the link to the latest Full test report. Handoffs go here through
   `sessions.py handoff "<in progress, next, traps>" --as <you>`, which keeps one per kind of session (chat, night):
   carry over anything still true from the previous one.)
+- 2026-10-05 (25.2, question for the owner; lane a): first measurement (nightly-tests 37297003813, 150 workers over 3
+  villages, GitHub runner): idle p50/p95 2.3/3.5 ms; busy 18.3/32.8 ms at the start (p99 66.1) and 8.8/16.5 (p99 21.1)
+  once settled; heap 1613 MB after GC; our code 13.1% of the server thread. Proposed targets, unchanged from 25.2's
+  draft: our code under 15% of the tick at 150 workers (met, 13.1%); no tick over 50 ms from us (the 66 ms p99 is in the
+  start-up sample, unattributed); heap flat within 5% over 60 minutes (not yet measured); no regression over 10%
+  between releases (baseline: this row). Do you confirm these? Jesse: yes/no or changes.
 - 2026-10-05 (30.15, decisions; lane d): the status line keeps the pace line's one format for every source, so a
   tonic reads "25% faster (Miner's Brew, 19 min left)" (the spec wrote "25% faster: Miner's Brew, 19 min left"); minutes
   are whole minutes left, rounded down (20 right after drinking, 19 a tick later). Only our own tonic items are refused

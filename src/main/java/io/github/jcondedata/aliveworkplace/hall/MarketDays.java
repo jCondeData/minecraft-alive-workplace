@@ -95,7 +95,7 @@ public final class MarketDays {
 			if (trader == null) {
 				continue;
 			}
-			trader.setDespawnDelay(STAY);
+			trader.setDespawnDelay(Curfew.marketStay(level, hall, STAY)); // Curfew: gone by dusk
 			trader.setWanderTarget(square);
 			addBlueprintOffer(level, trader);
 			traders.add(trader);

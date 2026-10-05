@@ -175,6 +175,10 @@ public class ExplorerWork extends Behavior<Villager> {
 			return;
 		}
 		lookTimer = LOOK_EVERY;
+		if (io.github.jcondedata.aliveworkplace.hall.Curfew.noTrips(villager)) {
+			status(villager, "curfew"); // home by dusk (30.9)
+			return;
+		}
 		List<BlockPos> own = SupplyContainers.find(level, station, null);
 		if (own.isEmpty()) {
 			status(villager, "no_chest");

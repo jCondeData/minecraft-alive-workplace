@@ -38,7 +38,7 @@ import net.minecraft.world.level.levelgen.Heightmap;
  * Festivals: every {@link #EVERY_DAYS} days a village with a Village Hall and at least {@link #MIN_VILLAGERS} villagers
  * holds a festival, and a player can call one from the hall with a cake (one every {@link #CALL_REST} days at most).
  * After work ({@link #START}) the villagers gather round the village's bell (or the hall) for a feast from the store,
- * music and dancing; at dusk ({@link #FIREWORKS}) fireworks go up. Everyone who came is in a better mood for
+ * music and dancing; at dusk ({@link #FIREWORKS}) fireworks go up (under Curfew it ends at dusk without them, 30.9). Everyone who came is in a better mood for
  * {@link #MOOD_DAYS} days, and players in the village are Heroes of the Village for the evening: cheaper trades, and
  * the villagers throw them gifts. {@code festivals} in the config turns the regular ones off (called ones still happen).
  *
@@ -104,13 +104,13 @@ public final class Festivals {
 			return false;
 		}
 		long t = timeOfDay(level);
-		return entity.festivalDay() == Chronicle.day(level) && t >= START && t < END;
+		return entity.festivalDay() == Chronicle.day(level) && t >= START && t < Curfew.festivalEnd(entity); // Curfew: over at dusk
 	}
 
 	/** The day of the village's next festival (today if it's still to come or on). */
 	public static long nextDay(ServerLevel level, BlockPos hall, VillageHallBlockEntity entity) {
 		long today = Chronicle.day(level);
-		boolean over = timeOfDay(level) >= END;
+		boolean over = timeOfDay(level) >= Curfew.festivalEnd(entity);
 		if (entity.festivalDay() > today || entity.festivalDay() == today && !over) {
 			return entity.festivalDay();
 		}
@@ -144,7 +144,7 @@ public final class Festivals {
 			entity.setFeastDay(today);
 			feast(level, hall);
 		}
-		int left = (int) (END - timeOfDay(level));
+		int left = (int) (Curfew.festivalEnd(entity) - timeOfDay(level));
 		for (ServerPlayer player : level.getPlayers(p -> VillageHalls.area(hall).contains(p.position()))) {
 			MobEffectInstance hero = player.getEffect(MobEffects.HERO_OF_THE_VILLAGE);
 			if (hero == null || hero.getAmplifier() == 0 && hero.getDuration() < left) {
@@ -203,7 +203,7 @@ public final class Festivals {
 		}
 		long today = Chronicle.day(level);
 		long t = timeOfDay(level);
-		if (entity.festivalDay() > today || entity.festivalDay() == today && t < END) {
+		if (entity.festivalDay() > today || entity.festivalDay() == today && t < Curfew.festivalEnd(entity)) {
 			return Component.translatable("message.aliveworkplace.festival.planned").withStyle(ChatFormatting.YELLOW);
 		}
 		if (entity.festivalCalled() >= 0 && today - entity.festivalCalled() < CALL_REST) {
@@ -280,7 +280,8 @@ public final class Festivals {
 				// The crowd at the fireworks, for Legends that come to a big festival (29.2's festival_crowd).
 				entity.setFestivalCrowd(level.getEntitiesOfClass(Villager.class, new net.minecraft.world.phys.AABB(square).inflate(CROWD_RANGE), Villager::isAlive).size());
 			}
-			if (timeOfDay(level) >= FIREWORKS && level.random.nextFloat() < 0.4f) {
+			if (timeOfDay(level) >= FIREWORKS && level.getBlockEntity(hall) instanceof VillageHallBlockEntity held && Curfew.fireworks(held)
+				&& level.random.nextFloat() < 0.4f) {
 				BlockPos column = square.offset(level.random.nextInt(13) - 6, 0, level.random.nextInt(13) - 6);
 				launch(level, level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, column));
 			}

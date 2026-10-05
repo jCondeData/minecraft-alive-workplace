@@ -1,0 +1,20 @@
+{
+  "icon": "minecraft:bell",
+  "name": {"translate": "edict.aliveworkplace.curfew"},
+  "description": {"translate": "edict.aliveworkplace.curfew.desc"},
+  "order": 7,
+  "boost": [{"type": "aliveworkplace:curfew", "raids": 0.5, "safe_nights": true}],
+  "cost": [{"type": "aliveworkplace:curfew", "stay_in": true}],
+  "excludes": ["open_gates"],
+  "reform": {
+    "name": {"translate": "reform.aliveworkplace.lamplighters"},
+    "line": {"translate": "reform.aliveworkplace.lamplighters.line"},
+    "steps": [
+      {"kind": "bring", "item": "minecraft:lantern", "count": 24, "reward": 5},
+      {"kind": "bring", "item": "minecraft:glowstone", "count": 8, "reward": 4},
+      {"kind": "slay", "count": 8, "reward": 6}
+    ],
+    "effects": []
+  },
+  "enabled": true
+}

@@ -131,7 +131,8 @@ public final class BanditCamps {
 	 * village's {@code bandit_camps} effects (Open Gates, 30.7: twice; reformed by The Watchful Gate: as usual).
 	 */
 	public static float dailyChance(ServerLevel level, BlockPos hall) {
-		return Math.min(1f, DAILY_CHANCE * io.github.jcondedata.aliveworkplace.hall.CivicEffects.of(level, hall).banditCamps());
+		io.github.jcondedata.aliveworkplace.hall.CivicEffects.Sum effects = io.github.jcondedata.aliveworkplace.hall.CivicEffects.of(level, hall);
+		return Math.min(1f, DAILY_CHANCE * effects.banditCamps() * effects.raids());
 	}
 
 	/** Somewhere out beyond the village for a camp: loaded, dry, fairly flat and open; null if there's nowhere. */

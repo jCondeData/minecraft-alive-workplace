@@ -271,6 +271,20 @@ public final class EdictBook {
 				? Component.translatable("screen.aliveworkplace.edicts.effect.festival_cost_per", cost.emeralds(), cost.perVillagers())
 				: Words.counted("screen.aliveworkplace.edicts.effect.festival_cost", cost.emeralds(), cost.emeralds());
 		}
+		if (effect instanceof CivicEffects.CurfewRules curfew) {
+			List<Component> parts = new ArrayList<>();
+			if (curfew.raids() != 1f) {
+				parts.add(Math.abs(curfew.raids() - 0.5f) < 1e-4f ? Component.translatable("screen.aliveworkplace.edicts.effect.raids.half")
+					: often("screen.aliveworkplace.edicts.effect.raids", curfew.raids()));
+			}
+			if (curfew.safeNights()) {
+				parts.add(Component.translatable("screen.aliveworkplace.edicts.effect.safe_nights"));
+			}
+			if (curfew.stayIn()) {
+				parts.add(Component.translatable("screen.aliveworkplace.edicts.effect.stay_in"));
+			}
+			return parts.isEmpty() ? null : joined(parts);
+		}
 		if (effect instanceof CivicEffects.TitheShare tithe) {
 			return Component.translatable("screen.aliveworkplace.edicts.effect.tithe", tithe.percent());
 		}

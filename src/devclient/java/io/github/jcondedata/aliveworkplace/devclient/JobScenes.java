@@ -98,6 +98,8 @@ final class JobScenes {
 	/** Villagers the scenes hand from staging to a later step (the scholar, the screen scenes' villager). */
 	private static volatile Villager scholar;
 	private static volatile Villager subject;
+	/** curfew: the villagers who go to bed at dusk. */
+	private static final List<Villager> curfewSleepers = new java.util.concurrent.CopyOnWriteArrayList<>();
 	/** smith_orders: the slot where the Poké Ball turned up (found on the server). */
 	private static volatile int pickedSlot = -1;
 	/** A screen a job scene films while its job gets going (the Drop Box's). */
@@ -1441,6 +1443,76 @@ final class JobScenes {
 							+ ", " + offers.get(2).getCostA().getCount() + ", " + offers.get(3).getCostA().getCount());
 				}, 30)),
 			(level, player) -> player.containerMenu instanceof net.minecraft.world.inventory.MerchantMenu));
+		// Curfew (ROADMAP 30.9): at dusk every grown villager but the guards goes to bed. Three villagers out in the street
+		// by their cabins at dusk; the bell (Curfew) is proclaimed, and as the evening comes they go indoors and sleep,
+		// the street empties and the guard keeps watch; then the Book of Edicts tells the boost, the cost and the reform.
+		SCREENS.put("curfew", new Screen("Curfew was proclaimed: at dusk the villagers went to bed, the street emptied and the guard kept watch",
+			new Vec3(0.5, -56.8, 8.5), new Vec3(0, -59.5, -3),
+			(level, player) -> {
+				level.setBlockAndUpdate(STATION.offset(-7, 0, 0), ModBlocks.VILLAGE_HALL.defaultBlockState()
+					.setValue(io.github.jcondedata.aliveworkplace.hall.VillageHallBlock.FACING, Direction.SOUTH));
+				var hall = (io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(STATION.offset(-7, 0, 0));
+				hall.setRank(io.github.jcondedata.aliveworkplace.hall.VillageRanks.Rank.VILLAGE);
+				hall.setEdicts(List.of());
+				hall.setReforms(List.of());
+				level.setDayTime((level.getDayTime() / 24000) * 24000 + 11000);
+				curfewSleepers.clear();
+				VillagerProfession[] jobs = {VillagerProfession.FARMER, VillagerProfession.LIBRARIAN, VillagerProfession.FLETCHER};
+				for (int i = 0; i < 3; i++) {
+					int x = -4 + 4 * i;
+					// A cabin: spruce walls round a bed, a slab roof, a lantern by the open front.
+					for (int y = -60; y <= -59; y++) {
+						for (int z = -7; z <= -4; z++) {
+							level.setBlockAndUpdate(new BlockPos(x - 1, y, z), Blocks.SPRUCE_PLANKS.defaultBlockState());
+							level.setBlockAndUpdate(new BlockPos(x + 1, y, z), Blocks.SPRUCE_PLANKS.defaultBlockState());
+						}
+						level.setBlockAndUpdate(new BlockPos(x, y, -7), Blocks.SPRUCE_PLANKS.defaultBlockState());
+					}
+					for (int dx = -1; dx <= 1; dx++) {
+						for (int z = -7; z <= -4; z++) {
+							level.setBlockAndUpdate(new BlockPos(x + dx, -58, z), Blocks.SPRUCE_SLAB.defaultBlockState());
+						}
+					}
+					level.setBlockAndUpdate(new BlockPos(x + 1, -58, -3), Blocks.LANTERN.defaultBlockState());
+					BlockPos head = new BlockPos(x, -60, -6);
+					level.setBlockAndUpdate(head.south(), Blocks.RED_BED.defaultBlockState()
+						.setValue(BlockStateProperties.HORIZONTAL_FACING, Direction.NORTH)
+						.setValue(BlockStateProperties.BED_PART, net.minecraft.world.level.block.state.properties.BedPart.FOOT));
+					level.setBlockAndUpdate(head, Blocks.RED_BED.defaultBlockState()
+						.setValue(BlockStateProperties.HORIZONTAL_FACING, Direction.NORTH)
+						.setValue(BlockStateProperties.BED_PART, net.minecraft.world.level.block.state.properties.BedPart.HEAD));
+					Villager v = EntityType.VILLAGER.spawn(level, new BlockPos(x, -60, -1), MobSpawnType.COMMAND);
+					v.setVillagerData(v.getVillagerData().setProfession(jobs[i]).setLevel(2));
+					v.setVillagerXp(10);
+					v.refreshBrain(level);
+					level.getPoiManager().take(t -> t.is(net.minecraft.world.entity.ai.village.poi.PoiTypes.HOME), (t, p) -> p.equals(head), head, 4);
+					v.getBrain().setMemory(net.minecraft.world.entity.ai.memory.MemoryModuleType.HOME, net.minecraft.core.GlobalPos.of(level.dimension(), head));
+					curfewSleepers.add(v);
+				}
+				subject = worker(level, new BlockPos(6, -60, 2), Blocks.GRINDSTONE, net.minecraft.world.entity.ai.village.poi.PoiTypes.WEAPONSMITH, ModVillagers.GUARD);
+				subject.setItemSlot(net.minecraft.world.entity.EquipmentSlot.MAINHAND, new ItemStack(Items.IRON_SWORD));
+				var curfew = io.github.jcondedata.aliveworkplace.hall.Edicts.find("curfew").orElseThrow();
+				var told = io.github.jcondedata.aliveworkplace.hall.Edicts.proclaim(level, STATION.offset(-7, 0, 0), player, curfew);
+				Showcase.check(told.done(), "Curfew was proclaimed: " + told.message().getString());
+				io.github.jcondedata.aliveworkplace.hall.CivicEffects.forget();
+			},
+			List.of(new Step("01_curfew_evening", -1, 0, (level, player) -> {
+					player.closeContainer();
+					level.setDayTime((level.getDayTime() / 24000) * 24000 + 11800);
+				}, 30),
+				new Step("02_curfew_dusk", -1, 0, (level, player) ->
+					level.setDayTime((level.getDayTime() / 24000) * 24000 + io.github.jcondedata.aliveworkplace.hall.Curfew.DUSK + 20), 200),
+				new Step("03_curfew_book", io.github.jcondedata.aliveworkplace.hall.EdictBook.SLOTS[0], 6, (level, player) -> {
+					long asleep = curfewSleepers.stream().filter(io.github.jcondedata.aliveworkplace.hall.Curfew::asleepInBed).count();
+					Showcase.check(asleep == 3, "every villager went to bed at dusk: " + asleep + " of 3 asleep");
+					Showcase.check(!subject.isSleeping() && !io.github.jcondedata.aliveworkplace.hall.Curfew.keepsIn(subject), "the guard stayed on watch");
+					player.teleportTo(-5.5, -60, 1.5);
+					io.github.jcondedata.aliveworkplace.hall.EdictBook.open(player, STATION.offset(-7, 0, 0));
+					if (player.containerMenu instanceof ChoiceMenu m) {
+						Showcase.check(m.icon(io.github.jcondedata.aliveworkplace.hall.EdictBook.SLOTS[0]).is(Items.BELL), "Curfew sits in the first slot");
+					}
+				}, 30)),
+			(level, player) -> player.containerMenu instanceof ChoiceMenu));
 		SCREENS.put("hall_treasury", new Screen("the hall's treasury was collected, the village protected and its screen opened from a Village Ledger",
 			new Vec3(2.5, -58.4, 4.5), TARGET,
 			(level, player) -> {

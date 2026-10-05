@@ -1920,7 +1920,7 @@ the Village Hall (`VillageNeeds`, `VillageQuests`, `VillageRanks`, `Festivals`, 
   reformed free; a 20-emerald trade costs 22 and puts 2.20 in the treasury, a 4-emerald trade is unchanged, and
   reformed it costs 20 and still puts in 2.00; showcase scenes `festival_season` (the hall's festival icon and the
   treasury before and after) and `tithe` (a librarian's trades with and without it).
-- [ ] **30.9** **Curfew.** Effect `curfew`:
+- [x] **30.9** (review: pending 2026-10-05) **Curfew.** Effect `curfew`:
   - boost: from dusk (12000) to dawn every grown villager but the guards and mercenaries goes to bed, and a monster
     can't hurt a villager asleep in their bed; monster and bandit raids on the village are half as likely; at night the
     village's safety counts as full in its wellbeing;
@@ -4277,6 +4277,15 @@ item waits.
 - (Sessions: anything that needs the owner, and the link to the latest Full test report. Handoffs go here through
   `sessions.py handoff "<in progress, next, traps>" --as <you>`, which keeps one per kind of session (chat, night):
   carry over anything still true from the previous one.)
+- 2026-10-05 (30.9, decisions; lane d): `curfew` is one effect type with three fields: `raids` (factor, multiplied;
+  also read by `BanditCamps.dailyChance`), `safe_nights` (night safety full in `VillageNeeds.count`, and a monster's blow
+  on a villager asleep in bed cancelled through `allowDamage`) and `stay_in` (bedtime, no trading, festival over at
+  dusk without fireworks, market traders' stay cut to dusk on arrival, no trips after midday). Curfew's boost is
+  `raids 0.5, safe_nights` and its cost `stay_in`, so The Lamplighters (no effects) keeps the raids, safe nights and the
+  protection in bed but nobody has to stay in. Bedtime overrules the brain's schedule check (`mixin/BrainMixin`, for the
+  villager whose brain runs now: `WorkerLimits.thinker()`); vanilla's REST package walks them to bed. Market traders
+  already in the village when Curfew is proclaimed keep their stay. M29's Night Owls and any night market should check
+  `Curfew.keepsIn` / `CivicEffects.Sum.stayIn()`. 30.7's stand-in Curfew in OpenGatesGameTests is gone (the real one is used).
 - 2026-10-05 (30.7, decisions; lane d): `legend_visits` is parsed and summed (`CivicEffects.Sum.legendVisits()`, factors
   multiply) but nothing reads it; 29.8's `Legends.visitFactor(hall)` should return `CivicEffects.of(level, hall)
   .legendVisits()` and set `CivicEffects.LEGEND_VISITS_READ = true`, which makes the Book show "Legends visit the inn

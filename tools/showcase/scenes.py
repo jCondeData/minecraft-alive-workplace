@@ -253,6 +253,11 @@ SCENES = [
     S("tithe", "Village Hall", "Edicts: Tithe",
       "Tithe was proclaimed: the librarian's 20-emerald trade costs 22 and her 4-emerald one still 4", 40,
       [("01_tithe_without", "A librarian's trades without the Tithe"), ("02_tithe_with", "The same trades under the Tithe: 22, 10, 6, 4")]),
+    # Curfew (ROADMAP 30.9): the village going indoors at dusk, the street empty, the guard on watch
+    S("curfew", "Village Hall", "Edicts: Curfew",
+      "Curfew was proclaimed: at dusk the villagers went to bed, the street emptied and the guard kept watch", 60,
+      [("01_curfew_evening", "Evening: the villagers still out in the street"), ("02_curfew_dusk", "Dusk: everyone indoors and asleep, the guard on watch"),
+       ("03_curfew_book", "Curfew in the Book of Edicts")]),
     S("hall_quests", "Village Hall", "Quests, advice, the village map and the festival",
       "the quests, advice, village map, mercenaries and festival opened", 60,
       [("01_hall_quests", "Quests"), ("02_hall_advice", "What next?"), ("03_hall_map", "Village map"),

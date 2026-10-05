@@ -79,6 +79,16 @@ public final class VillageRaids {
 		return Optional.empty();
 	}
 
+	/**
+	 * The chance a night that the village of {@code villagers} round {@code hall} is raided: {@link #nightlyChance}, twice
+	 * that with a bandit camp near (bandits come from their camp), times the {@code curfew} effects' {@code raids} (Curfew,
+	 * 30.9: half as likely).
+	 */
+	public static float chance(ServerLevel level, BlockPos hall, int villagers) {
+		return nightlyChance(villagers) * (BanditCamps.near(level, hall).isPresent() ? 2 : 1)
+			* io.github.jcondedata.aliveworkplace.hall.CivicEffects.of(level, hall).raids();
+	}
+
 	/** The chance a night that a village of {@code villagers} is raided. */
 	public static float nightlyChance(int villagers) {
 		return villagers < MIN_VILLAGERS ? 0f : Math.min(0.35f, 0.15f + 0.01f * (villagers - MIN_VILLAGERS));
@@ -110,7 +120,7 @@ public final class VillageRaids {
 			return;
 		}
 		int rounds = Math.max(1, 8500 / VillageNeeds.CHECK_EVERY);
-		float chance = nightlyChance(villagers) * (BanditCamps.near(level, hall).isPresent() ? 2 : 1); // bandits come from their camp
+		float chance = chance(level, hall, villagers);
 		if (level.random.nextFloat() < chance / rounds && start(level, hall, villagers, guards) != null) {
 			raided.accept(day);
 		}

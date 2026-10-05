@@ -103,6 +103,12 @@ public final class WorkerLimits {
 		thinking = villager;
 	}
 
+	/** The villager whose brain runs now, or null (Curfew's schedule check, 30.9). */
+	@Nullable
+	public static Villager thinker() {
+		return thinking;
+	}
+
 	/**
 	 * A jobless villager's search for a free workstation (vanilla's): the free ones in a full village are left out, so the
 	 * villager doesn't walk to one (or even look for a path) only to let it go.

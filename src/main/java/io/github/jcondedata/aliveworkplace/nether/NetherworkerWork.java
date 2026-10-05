@@ -127,6 +127,10 @@ public class NetherworkerWork extends Behavior<Villager> {
 			status(villager, "resting", false);
 			return;
 		}
+		if (io.github.jcondedata.aliveworkplace.hall.Curfew.noTrips(villager)) {
+			status(villager, "curfew", false); // home by dusk (30.9)
+			return;
+		}
 		portal = Netherworkers.portalNear(level, brazier);
 		if (portal == null) {
 			status(villager, "no_portal", true);

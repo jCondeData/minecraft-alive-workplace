@@ -71,6 +71,16 @@ abstract class VillagerMixin {
 		io.github.jcondedata.aliveworkplace.world.StructureVillagers.settle((Villager) (Object) this, level, type);
 	}
 
+	/** Under Curfew nobody trades with players from dusk to dawn (30.9, {@code hall/Curfew}). */
+	@Inject(method = "mobInteract", at = @At("HEAD"), cancellable = true)
+	private void aliveworkplace$curfew(net.minecraft.world.entity.player.Player player, net.minecraft.world.InteractionHand hand,
+			org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable<net.minecraft.world.InteractionResult> cir) {
+		Villager self = (Villager) (Object) this;
+		if (!player.getItemInHand(hand).is(net.minecraft.world.item.Items.VILLAGER_SPAWN_EGG) && io.github.jcondedata.aliveworkplace.hall.Curfew.refuseTrade(self, player)) {
+			cir.setReturnValue(net.minecraft.world.InteractionResult.CONSUME);
+		}
+	}
+
 	/** Nobody trades with a netherworker who's away. */
 	@Inject(method = "mobInteract", at = @At("HEAD"), cancellable = true)
 	private void aliveworkplace$away(net.minecraft.world.entity.player.Player player, net.minecraft.world.InteractionHand hand,

@@ -91,6 +91,7 @@
 			"io.github.jcondedata.aliveworkplace.test.ReformGameTests",
 			"io.github.jcondedata.aliveworkplace.test.FamilyEdictGameTests",
 			"io.github.jcondedata.aliveworkplace.test.OpenGatesGameTests",
+			"io.github.jcondedata.aliveworkplace.test.CurfewGameTests",
 			"io.github.jcondedata.aliveworkplace.test.TreasuryEdictGameTests",
 			"io.github.jcondedata.aliveworkplace.test.CampGameTests",
 			"io.github.jcondedata.aliveworkplace.test.RaidGameTests",

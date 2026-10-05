@@ -23,6 +23,13 @@ asks for the steps, `latest.log` and any crash report).
   told to the village and the hall's owner, Mythic ones to every player in gold with the village's direction from spawn;
   all go in the chronicle under a nether star. A Legend in a grave or turned zombie keeps their slot and comes back as
   themselves; with no grave their slot frees after 7 days; Legends join a hall placed again.
+- **Curfew** (30.9): a new edict under a bell. From dusk to dawn every grown villager but the guards and mercenaries
+  goes to bed, and a monster can't hurt a villager asleep in their bed; monster raids and bandit camps are half as
+  likely, and the nights count as safe in the village's wellbeing. The cost: nobody trades with players at night
+  ("Curfew: come back in the morning."), a festival ends at dusk without fireworks, market traders leave at dusk, and
+  netherworkers and explorers don't set out after midday. It can't be in force alongside Open Gates. Reform **The
+  Lamplighters** (24 lanterns, 8 glowstone, clear out 8 monsters): raids stay half as likely and the nights safe, but
+  trading, festivals, markets and night work go on.
 - **Festival Season and Tithe** (30.8): the two treasury edicts. **Festival Season** holds a festival every 4 days
   instead of 8; each costs the treasury 3 emeralds and 1 more for every 4 villagers, taken on the festival's morning.
   When the treasury can't pay there's no festival: the chronicle says there was no money and the village is 5 less

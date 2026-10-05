@@ -30,7 +30,8 @@ import org.jetbrains.annotations.Nullable;
  * {@code VillageNeeds}, {@code births} by {@code VillageGrowth}, {@code sickness} by {@code people/Sickness}, {@code inn} by {@code inn/Innkeepers},
  * {@code market_traders} by {@code MarketDays}, {@code bandit_camps} by {@code guard/BanditCamps} and {@code legend_visits}
  * by M29's inn visitors once they exist (until then nothing reads it, see {@link #LEGEND_VISITS_READ}), {@code festival_every} and
- * {@code festival_cost} by {@code Festivals}, {@code tithe} and {@code trade_prices} by {@code Tithe}. Later items add their
+ * {@code festival_cost} by {@code Festivals}, {@code tithe} and {@code trade_prices} by {@code Tithe}, {@code curfew} by
+ * {@code hall/Curfew} and the systems it names there. Later items add their
  * own types with {@link #register}.
  *
  * <p>The effects in force are summed per hall ({@link Sum}) whenever its edicts change, a data pack reloads or the
@@ -86,6 +87,7 @@ public final class CivicEffects {
 	public static final ResourceLocation FESTIVAL_COST = AliveWorkplace.id("festival_cost");
 	public static final ResourceLocation TITHE = AliveWorkplace.id("tithe");
 	public static final ResourceLocation TRADE_PRICES = AliveWorkplace.id("trade_prices");
+	public static final ResourceLocation CURFEW = AliveWorkplace.id("curfew");
 
 	/**
 	 * Whether anything reads {@code legend_visits} yet: M29's inn visitors (29.8) set it when they land, and until then the
@@ -152,6 +154,12 @@ public final class CivicEffects {
 			Codec.intRange(-90, 1000).fieldOf("percent").forGetter(TradePrices::percent),
 			JOBS.optionalFieldOf("jobs", List.of()).forGetter(TradePrices::jobs)
 		).apply(i, TradePrices::new)));
+		register(CURFEW, RecordCodecBuilder.<CurfewRules>mapCodec(i -> i.group(
+			Codec.floatRange(0f, 100f).optionalFieldOf("raids", 1f).forGetter(CurfewRules::raids),
+			Codec.BOOL.optionalFieldOf("safe_nights", false).forGetter(CurfewRules::safeNights),
+			Codec.BOOL.optionalFieldOf("stay_in", false).forGetter(CurfewRules::stayIn),
+			JOBS.optionalFieldOf("jobs", List.of()).forGetter(CurfewRules::jobs)
+		).apply(i, CurfewRules::new)));
 	}
 
 	/** {@code work_pace}: work {@code percent} faster (a bonus of {@code work/Pace}, up to its cap). */
@@ -303,6 +311,21 @@ public final class CivicEffects {
 		@Override
 		public ResourceLocation type() {
 			return TRADE_PRICES;
+		}
+	}
+
+	/**
+	 * {@code curfew} (Curfew, 30.9; {@code hall/Curfew}): monster raids and bandit camps {@code raids} times as likely
+	 * (several multiply); {@code safe_nights}: from dusk to dawn the village's safety counts as full in its wellbeing and a
+	 * monster can't hurt a villager asleep in their bed; {@code stay_in}: from dusk to dawn every grown villager but the
+	 * guards and mercenaries goes to bed and nobody trades with players, a festival ends at dusk without fireworks, market
+	 * traders leave at dusk, and netherworkers and explorers don't set out after midday. Village-wide: {@code jobs} doesn't
+	 * narrow it.
+	 */
+	public record CurfewRules(float raids, boolean safeNights, boolean stayIn, List<ResourceLocation> jobs) implements Effect {
+		@Override
+		public ResourceLocation type() {
+			return CURFEW;
 		}
 	}
 
@@ -512,6 +535,27 @@ public final class CivicEffects {
 				percent += e.percent();
 			}
 			return percent;
+		}
+
+		/** How many times as likely raids and bandit camps are ({@code curfew} effects' {@code raids}, multiplied; 1 without). */
+		public float raids() {
+			float f = 1f;
+			for (Active a : all) {
+				if (a.effect() instanceof CurfewRules c) {
+					f *= c.raids();
+				}
+			}
+			return f;
+		}
+
+		/** Whether the village's nights count as safe ({@code curfew} with {@code safe_nights}). */
+		public boolean safeNights() {
+			return all.stream().anyMatch(a -> a.effect() instanceof CurfewRules c && c.safeNights());
+		}
+
+		/** Whether the village stays in from dusk to dawn ({@code curfew} with {@code stay_in}). */
+		public boolean stayIn() {
+			return all.stream().anyMatch(a -> a.effect() instanceof CurfewRules c && c.stayIn());
 		}
 
 		/** The {@code mood} effects that count for {@code villager} now. */

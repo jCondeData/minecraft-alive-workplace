@@ -20,11 +20,7 @@ import io.github.jcondedata.aliveworkplace.registry.ModBlocks;
 import io.github.jcondedata.aliveworkplace.registry.ModVillagers;
 import io.github.jcondedata.aliveworkplace.work.ChoiceMenu;
 import io.github.jcondedata.aliveworkplace.work.Jobs;
-import java.io.ByteArrayInputStream;
-import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import net.fabricmc.fabric.api.gametest.v1.FabricGameTest;
 import net.minecraft.core.BlockPos;
@@ -36,7 +32,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.entity.npc.WanderingTrader;
@@ -260,9 +255,8 @@ public class OpenGatesGameTests implements FabricGameTest {
 	}
 
 	/**
-	 * Open Gates names Curfew: while Curfew is in force Open Gates is refused, and the other way round, with a message
-	 * naming both. Until 30.9 adds Curfew, a stand-in file at its path that names nothing proves the exclusion comes
-	 * from Open Gates' own list.
+	 * Open Gates and Curfew (30.9) exclude each other: while Curfew is in force Open Gates is refused, and the other way
+	 * round, with a message naming both.
 	 */
 	//$ gametest_ticks_batch AREA '100' '"openGatesCurfew"'
 	@GameTest(template = AREA, timeoutTicks = 100, batch = "openGatesCurfew")
@@ -275,40 +269,21 @@ public class OpenGatesGameTests implements FabricGameTest {
 			BlockPos hall = helper.absolutePos(HALL);
 			VillageHallBlockEntity entity = ready(helper);
 			entity.setRank(VillageRanks.Rank.VILLAGE);
-			var manager = level.getServer().getResourceManager();
-			Map<ResourceLocation, Resource> real = manager.listResources(Edicts.FOLDER, p -> p.getPath().endsWith(".json"));
-			boolean standIn = Edicts.get(CURFEW).isEmpty();
-			try {
-				if (standIn) {
-					Resource ours = real.get(AliveWorkplace.id("edicts/open_gates.json"));
-					helper.assertTrue(ours != null, "no open_gates.json in " + real.keySet());
-					Map<ResourceLocation, Resource> withCurfew = new HashMap<>(real);
-					withCurfew.put(AliveWorkplace.id("edicts/curfew.json"), new Resource(ours.source(), () -> new ByteArrayInputStream(
-						"{\"name\": \"Curfew\", \"cost\": [{\"type\": \"aliveworkplace:mood\", \"points\": -1, \"reason\": \"curfew\"}]}"
-							.getBytes(StandardCharsets.UTF_8))));
-					Edicts.load(withCurfew);
-				}
-				Edicts.Edict curfew = Edicts.get(CURFEW).orElseThrow();
-				Edicts.Edict gates = Edicts.get(OPEN_GATES).orElseThrow();
-				String c = curfew.name().getString();
-				helper.assertTrue(Edicts.proclaim(level, hall, null, curfew).done(), "Curfew proclaimed");
-				Edicts.Result refused = Edicts.proclaim(level, hall, null, gates);
-				helper.assertTrue(!refused.done() && refused.message().getString().equals("Open Gates can't be in force alongside " + c + "."),
-					"Open Gates under Curfew: " + refused.message().getString());
-				helper.assertTrue(entity.edicts().size() == 1, "in force: " + entity.edicts());
+			Edicts.Edict curfew = Edicts.get(CURFEW).orElseThrow();
+			Edicts.Edict gates = Edicts.get(OPEN_GATES).orElseThrow();
+			String c = curfew.name().getString();
+			helper.assertTrue(Edicts.proclaim(level, hall, null, curfew).done(), "Curfew proclaimed");
+			Edicts.Result refused = Edicts.proclaim(level, hall, null, gates);
+			helper.assertTrue(!refused.done() && refused.message().getString().equals("Open Gates can't be in force alongside " + c + "."),
+				"Open Gates under Curfew: " + refused.message().getString());
+			helper.assertTrue(entity.edicts().size() == 1, "in force: " + entity.edicts());
 
-				entity.setEdicts(List.of());
-				helper.assertTrue(Edicts.proclaim(level, hall, null, gates).done(), "Open Gates proclaimed");
-				Edicts.Result other = Edicts.proclaim(level, hall, null, curfew);
-				helper.assertTrue(!other.done() && other.message().getString().equals(c + " can't be in force alongside Open Gates."),
-					"Curfew under Open Gates: " + other.message().getString());
-				helper.assertTrue(entity.edicts().size() == 1, "in force: " + entity.edicts());
-			} finally {
-				if (standIn) {
-					Edicts.load(real);
-				}
-			}
-			helper.assertTrue(!standIn || Edicts.get(CURFEW).isEmpty(), "the stand-in Curfew stayed");
+			entity.setEdicts(List.of());
+			helper.assertTrue(Edicts.proclaim(level, hall, null, gates).done(), "Open Gates proclaimed");
+			Edicts.Result other = Edicts.proclaim(level, hall, null, curfew);
+			helper.assertTrue(!other.done() && other.message().getString().equals(c + " can't be in force alongside Open Gates."),
+				"Curfew under Open Gates: " + other.message().getString());
+			helper.assertTrue(entity.edicts().size() == 1, "in force: " + entity.edicts());
 			helper.succeed();
 		});
 	}

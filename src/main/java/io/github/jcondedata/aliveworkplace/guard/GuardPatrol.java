@@ -129,6 +129,7 @@ public class GuardPatrol extends Behavior<Villager> {
 		// Better gear in the chests? Go and get it.
 		if (gearChest == null && --gearTimer <= 0) {
 			gearTimer = GEAR_CHECK_EVERY;
+			io.github.jcondedata.aliveworkplace.hall.VillageBanners.paintShield(level, villager); // colours set since they geared up (30.13)
 			gearChest = SupplyContainers.firstMatching(level, SupplyContainers.find(level, post, null), stack -> isUpgrade(villager, stack)
 				|| io.github.jcondedata.aliveworkplace.brew.AlchemistWork.isGuardPotion(stack) && Guards.potions(villager) < Guards.potionsFor(villager)
 				|| Guards.isSpecialArrow(stack) && (Guards.hasBow(villager) || SupplyContainers.firstMatching(level,
@@ -348,6 +349,8 @@ public class GuardPatrol extends Behavior<Villager> {
 		if (villager.getItemBySlot(EquipmentSlot.OFFHAND).isEmpty()) {
 			take(level, villager, chests, EquipmentSlot.OFFHAND, Guards::isShield);
 		}
+		// A plain shield is painted in the village's colours (30.13); one a player painted is kept as it is.
+		io.github.jcondedata.aliveworkplace.hall.VillageBanners.paintShield(level, villager);
 		for (EquipmentSlot slot : ARMOR) {
 			for (int i = 0; i < 4 && take(level, villager, chests, slot, stack -> stack.getItem() instanceof ArmorItem armor
 				&& armor.getEquipmentSlot() == slot && Guards.armorValue(stack) > Guards.armorValue(villager.getItemBySlot(slot))); i++) {

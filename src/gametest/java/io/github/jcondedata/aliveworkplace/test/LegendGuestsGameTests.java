@@ -385,6 +385,7 @@ public class LegendGuestsGameTests implements net.fabricmc.fabric.api.gametest.v
 	//$ gametest_ticks_batch AREA '100' '"legendGuestsLeave"'
 	@GameTest(template = AREA, timeoutTicks = 100, batch = "legendGuestsLeave")
 	public void theyLeaveAfterThreeDays(GameTestHelper helper) {
+		Leftovers.players(helper); // "out of sight" means no player at all: not even one an earlier batch left here
 		List<BlueprintData.Placement> recorded = new ArrayList<>();
 		setUp(helper, recorded);
 		Legend books = legend("books_mason", "hall", ", \"chance\": 1.0", ", \"needs\": {\"luxury\": \"books\"}");
@@ -410,7 +411,8 @@ public class LegendGuestsGameTests implements net.fabricmc.fabric.api.gametest.v
 			helper.assertTrue(guest.isAlive(), "left in sight of a player");
 			player.teleportTo(guest.getX(), guest.getY() + 300, guest.getZ());
 			LegendGuests.tend(level, hall);
-			helper.assertTrue(!guest.isAlive(), "still here on the third evening, out of sight");
+			helper.assertTrue(!guest.isAlive(), "still here on the third evening, out of sight (nearest player: "
+				+ level.getNearestPlayer(guest, LegendGuests.OUT_OF_SIGHT) + ")");
 			helper.assertTrue(hall(helper).legendGuests().guest().isEmpty(), "the hall still has a guest");
 			helper.assertTrue(chronicle(helper).stream().anyMatch(l -> l.contains("left the village") && l.contains("a home of my own")
 				&& l.contains("books once a week") && !l.contains("a happy village")), "the chronicle doesn't say what they missed: " + chronicle(helper));

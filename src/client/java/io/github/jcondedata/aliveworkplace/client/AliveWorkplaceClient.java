@@ -13,6 +13,7 @@ public class AliveWorkplaceClient implements ClientModInitializer {
 		BuilderStatusRenderer.init();
 		BlueprintTooltip.init();
 		StationTooltip.init();
+		TonicTooltip.init();
 		LegendLookLayer.init();
 		io.github.jcondedata.aliveworkplace.guide.GuideBookItem.open = () -> Minecraft.getInstance()
 			.setScreen(new io.github.jcondedata.aliveworkplace.client.guide.GuideScreen());

@@ -26,7 +26,7 @@ import org.jetbrains.annotations.Nullable;
  * sneak-using a Village Ledger. At the top the village's name; the second row holds its edict slots (one per rank: in
  * force with its days, free, or locked with the rank that opens it); below, every edict with its boost and cost. Click
  * an edict twice to proclaim it, once to lift one in force. Only the hall's owner, friends and operators may click;
- * everyone else reads it and is told why. The last row is kept for the civic items and guilds: the Work Horn's state first (30.11), then the Cradle (30.12).
+ * everyone else reads it and is told why. The last row is kept for the civic items and guilds: the Work Horn's state first (30.11), then the Cradle (30.12), then the village's colours (30.13).
  */
 public final class EdictBook {
 	/** Back to the hall's screen (only when opened from it). */
@@ -44,6 +44,8 @@ public final class EdictBook {
 	public static final int HORN = RESERVED_ROW * 9;
 	/** The Cradle on the last row (30.12): whether the village is a nursery. */
 	public static final int CRADLE = RESERVED_ROW * 9 + 1;
+	/** The village's colours on the last row (30.13): its banner, or how to give it one. */
+	public static final int BANNER = RESERVED_ROW * 9 + 2;
 
 	/** Opens the Book on its own (from a Village Ledger: it stays open while the hall stands). */
 	public static void open(ServerPlayer player, BlockPos hall) {
@@ -85,7 +87,9 @@ public final class EdictBook {
 			header.add(VillageHallScreen.line("message.aliveworkplace.edict.disabled", ChatFormatting.RED));
 		}
 		header.add(VillageHallScreen.line("screen.aliveworkplace.edicts.how", ChatFormatting.DARK_GRAY));
-		menu.button(HEADER, VillageHallScreen.icon(Items.LECTERN, Component.translatable("screen.aliveworkplace.edicts.title", village),
+		// The village by its own banner when it has colours (30.13).
+		VillageBanners.Colours colours = VillageBanners.of(entity);
+		menu.button(HEADER, VillageHallScreen.icon(colours != null ? colours.banner() : new ItemStack(Items.LECTERN), Component.translatable("screen.aliveworkplace.edicts.title", village),
 			ChatFormatting.GOLD, header.toArray(Component[]::new)), null);
 		filler(menu, 1);
 
@@ -144,7 +148,20 @@ public final class EdictBook {
 			WorkHorn.status(level, entity).toArray(Component[]::new)), null);
 		menu.button(CRADLE, VillageHallScreen.icon(io.github.jcondedata.aliveworkplace.registry.ModBlocks.CRADLE.asItem(),
 			Component.translatable("screen.aliveworkplace.edicts.cradle"), ChatFormatting.GOLD, Cradles.status(level, hall)), null);
+		menu.button(BANNER, bannerIcon(colours), null);
 		filler(menu, RESERVED_ROW);
+	}
+
+	/** The last row's banner: the village's colours, or how to set them. */
+	static ItemStack bannerIcon(@Nullable VillageBanners.Colours colours) {
+		if (colours != null) {
+			return VillageHallScreen.icon(colours.banner(), Component.translatable("screen.aliveworkplace.edicts.banner"), ChatFormatting.GOLD,
+				VillageHallScreen.line("screen.aliveworkplace.edicts.banner_shown", ChatFormatting.GRAY),
+				VillageHallScreen.line("screen.aliveworkplace.edicts.banner_change", ChatFormatting.DARK_GRAY));
+		}
+		return VillageHallScreen.icon(io.github.jcondedata.aliveworkplace.registry.ModItems.VILLAGE_BANNER, Component.translatable("screen.aliveworkplace.edicts.banner_none"),
+			ChatFormatting.GOLD, VillageHallScreen.line(VillageBanners.ENABLED ? "screen.aliveworkplace.edicts.banner_how" : "message.aliveworkplace.village_banner.off",
+				VillageBanners.ENABLED ? ChatFormatting.GRAY : ChatFormatting.RED));
 	}
 
 	private static void lift(ChoiceMenu menu, ServerLevel level, BlockPos hall, @Nullable Runnable back, ServerPlayer p, String id) {

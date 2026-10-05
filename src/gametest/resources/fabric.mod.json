@@ -20,6 +20,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaB28BenchGameTests",
 			"io.github.jcondedata.aliveworkplace.test.StallWatchGameTests",
 			"io.github.jcondedata.aliveworkplace.test.ImportCorpusGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaImportEdgesGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaStallWatchGameTests",
 			"io.github.jcondedata.aliveworkplace.test.ImportGameTests",
 			"io.github.jcondedata.aliveworkplace.test.TableGameTests",
@@ -88,6 +89,7 @@
 			"io.github.jcondedata.aliveworkplace.test.PeopleGameTests",
 			"io.github.jcondedata.aliveworkplace.test.PaceGameTests",
 			"io.github.jcondedata.aliveworkplace.test.EdictGameTests",
+			"io.github.jcondedata.aliveworkplace.test.VillageBannerGameTests",
 			"io.github.jcondedata.aliveworkplace.test.EdictBookGameTests",
 			"io.github.jcondedata.aliveworkplace.test.HallUiGameTests",
 			"io.github.jcondedata.aliveworkplace.test.ReformGameTests",
@@ -96,6 +98,7 @@
 			"io.github.jcondedata.aliveworkplace.test.CurfewGameTests",
 			"io.github.jcondedata.aliveworkplace.test.ConscriptionGameTests",
 			"io.github.jcondedata.aliveworkplace.test.WorkHornGameTests",
+			"io.github.jcondedata.aliveworkplace.test.TonicGameTests",
 			"io.github.jcondedata.aliveworkplace.test.CradleGameTests",
 			"io.github.jcondedata.aliveworkplace.test.TreasuryEdictGameTests",
 			"io.github.jcondedata.aliveworkplace.test.CampGameTests",
@@ -161,7 +164,8 @@
 			"io.github.jcondedata.aliveworkplace.test.QaB29FlowersGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaB23TurnedHillsideGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaB30JobSitesGameTests",
-			"io.github.jcondedata.aliveworkplace.test.QaStuckJobsGameTests"
+			"io.github.jcondedata.aliveworkplace.test.QaStuckJobsGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaLegendCampGameTests"
 		]
 	},
 	"depends": {

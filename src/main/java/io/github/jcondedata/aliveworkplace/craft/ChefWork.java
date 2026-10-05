@@ -3,20 +3,24 @@ package io.github.jcondedata.aliveworkplace.craft;
 import io.github.jcondedata.aliveworkplace.build.SupplyContainers;
 import io.github.jcondedata.aliveworkplace.registry.ModVillagers;
 import io.github.jcondedata.aliveworkplace.work.Village;
+import io.github.jcondedata.aliveworkplace.people.Tonics;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
 /**
  * The Chef's shift: cook the dishes on the menu ({@link Chefs#menu}), one after another, from what's in the chests by the
  * Kitchen Stove, in the village's storehouse (the porter's chests hold the farms' and fishermen's spare harvest) and at the
  * butcher's (milk and eggs), and
- * put them in the chests by the stove — until those hold {@link Chefs#KEEP} of each.
+ * put them in the chests by the stove — until those hold {@link Chefs#KEEP} of each. After the menu, the chef's tonics
+ * ({@link Tonics}, ROADMAP 30.15) from the same chests, until the stove's chests hold each one's keep.
  */
 public class ChefWork extends CrafterWork {
 	private int next;
@@ -59,7 +63,24 @@ public class ChefWork extends CrafterWork {
 				}
 			}
 		}
+		// After the menu, the chef's tonics (ROADMAP 30.15): one short of its keep in the chests by the stove.
+		Tonics.Order tonic = Tonics.next(level, Tonics.Maker.CHEF, own, sources, Chefs.BATCH);
+		if (tonic != null) {
+			Crafting.Plan plan = plan(tonic);
+			if (fits(plan)) {
+				return new Job(station, null, plan, "", sources);
+			}
+		}
 		return null;
+	}
+
+	/** A tonic's making as a plan: its makings in, the tonic out, no recipe (players can't make it). */
+	static Crafting.Plan plan(Tonics.Order order) {
+		Item item = order.tonic().item();
+		Map<Item, Integer> each = new LinkedHashMap<>();
+		order.takes().forEach((in, n) -> each.put(in, Math.max(1, n / order.count())));
+		Crafting.Step step = new Crafting.Step(each, new ItemStack(item), order.count());
+		return new Crafting.Plan(item, order.count(), List.of(step), new LinkedHashMap<>(order.takes()), Map.of(item, order.count()));
 	}
 
 	/** Partners at work (ROADMAP 28.5): the smoker's flames fanned. */

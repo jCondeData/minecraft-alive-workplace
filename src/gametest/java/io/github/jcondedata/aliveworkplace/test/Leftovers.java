@@ -24,6 +24,22 @@ final class Leftovers {
 	}
 
 	/**
+	 * Logs out every mock player near the test area. Many tests make one, teleport it into their area and never log it
+	 * out, so it stands there into later batches at the same spot: a Legend guest who leaves only with nobody within 24
+	 * blocks stayed because an earlier batch's player was standing by the hall. Only for tests alone in their batch
+	 * (batches run one after another, so no other test's player is still in use).
+	 */
+	static void players(GameTestHelper helper) {
+		AABB around = helper.getBounds().inflate(RADIUS);
+		var list = helper.getLevel().getServer().getPlayerList();
+		for (net.minecraft.server.level.ServerPlayer p : java.util.List.copyOf(helper.getLevel().players())) {
+			if (around.contains(p.position())) {
+				list.remove(p);
+			}
+		}
+	}
+
+	/**
 	 * Removes every Village Hall whose village reaches the test area. A hall another batch's test left nearby (outside
 	 * its own area, so never cleared) makes the villagers here its village, with its needs' pace and its edicts: a
 	 * well-kept hall left by the Steward's homes tests sped up legendPace's builder past its own numbers. Only for tests

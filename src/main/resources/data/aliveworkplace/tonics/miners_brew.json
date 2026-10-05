@@ -1,0 +1,10 @@
+{
+  "item": "aliveworkplace:miners_brew",
+  "maker": "alchemist",
+  "ingredients": ["minecraft:glass_bottle", "minecraft:glowstone_dust", "minecraft:coal", "minecraft:sugar"],
+  "jobs": ["aliveworkplace:miner", "aliveworkplace:sifter", "aliveworkplace:netherworker"],
+  "effects": [{"type": "aliveworkplace:work_pace", "percent": 25}],
+  "ticks": 24000,
+  "keep": 4,
+  "enabled": true
+}

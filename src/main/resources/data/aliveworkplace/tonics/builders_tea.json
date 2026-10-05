@@ -1,0 +1,10 @@
+{
+  "item": "aliveworkplace:builders_tea",
+  "maker": "chef",
+  "ingredients": ["minecraft:glass_bottle", "minecraft:sweet_berries", "minecraft:sweet_berries", "minecraft:sugar"],
+  "jobs": ["aliveworkplace:builder", "aliveworkplace:carpenter", "minecraft:mason", "minecraft:leatherworker"],
+  "effects": [{"type": "aliveworkplace:work_pace", "percent": 25}],
+  "ticks": 24000,
+  "keep": 4,
+  "enabled": true
+}

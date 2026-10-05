@@ -416,7 +416,7 @@ SCENES = [
        ("03_guildhall_book", "The Builders' Guild on the Book of Edicts' last row: founded")]),
     # The Miners', Smiths', Woodsmen's (ROADMAP 30.18), Harvest, Herders' and Scholars' Guilds (30.19): each Guild Master's card, then the Book's guild row
     S("guilds", "Village Hall", "Nine guilds: Miners', Smiths', Woodsmen's, Harvest, Herders', Scholars', Healers', Merchants' and Wardens'",
-      "the player chartered a Master miner, weaponsmith, lumberjack, farmer, shepherd, scholar, nurse, innkeeper and guard, the nine guilds were founded in nine finished Guildhalls, each master's card on the hall's list named their guild (and its pace where it has one), the farmer's farm reached 24 blocks, the shepherd bred up to 12, research cost a quarter less, the ill got well in 2 days, the nurse looked 48 blocks out, a 16-emerald traveller cost 12, guards trained up to Master and hit 10% harder, and the Book of Edicts' last row showed the first six", 40,
+      "the player chartered a Master miner, weaponsmith, lumberjack, farmer, shepherd, scholar, nurse, innkeeper and guard, the nine guilds were founded in nine finished Guildhalls, each master's card on the hall's list named their guild (and its pace where it has one), the farmer's farm reached 24 blocks, the shepherd bred up to 12, research cost a quarter less, the ill got well in 2 days, the nurse looked 48 blocks out, a 16-emerald traveller cost 12, guards trained up to Master and hit 10% harder, and the Book of Edicts' guild row showed every guild, five a page with a More guilds button", 40,
       [("01_guilds_miner", "Brokk, Guild Master of the Miners' Guild, working faster through it"),
        ("02_guilds_smith", "Hilde, Guild Master of the Smiths' Guild"),
        ("03_guilds_woodsman", "Rowan, Guild Master of the Woodsmen's Guild"),
@@ -426,7 +426,8 @@ SCENES = [
        ("08_guilds_nurse", "Mira, Guild Master of the Healers' Guild"),
        ("09_guilds_innkeeper", "Mara, Guild Master of the Merchants' Guild"),
        ("10_guilds_guard", "Wulf, Guild Master of the Wardens' Guild"),
-       ("07_guilds_book", "The first six guilds on the Book of Edicts' last row, founded, each with its perk")]),
+       ("07_guilds_book", "The Book of Edicts' guild row, page one: five guilds, founded, each with its perk, and the More guilds button"),
+       ("12_guilds_book_more", "The guild row's next page: the Scholars', Healers', Merchants' and Wardens' Guilds")]),
     # Tonics (ROADMAP 30.15): a miner given Miner's Brew, its tooltip, the drink, then her status line
     # Edicts in the village's talk (ROADMAP 30.21): lines under Long Shifts, then after The Shift Bell
     S("village_talk", "Village Hall", "Village talk: Long Shifts and The Shift Bell",

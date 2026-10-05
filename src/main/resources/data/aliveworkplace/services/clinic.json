@@ -1,0 +1,7 @@
+{
+  "name": {"translate": "service.aliveworkplace.clinic"},
+  "jobs": ["aliveworkplace:nurse"],
+  "blueprints": ["aliveworkplace:healing_center", "aliveworkplace:clinic"],
+  "range": 48,
+  "icon": "minecraft:brewing_stand"
+}

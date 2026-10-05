@@ -1,0 +1,7 @@
+{
+  "name": {"translate": "service.aliveworkplace.library"},
+  "jobs": ["aliveworkplace:scholar", "minecraft:librarian"],
+  "blueprints": ["aliveworkplace:library"],
+  "range": 48,
+  "icon": "minecraft:bookshelf"
+}

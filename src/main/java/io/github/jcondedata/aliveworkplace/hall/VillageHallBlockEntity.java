@@ -165,6 +165,8 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 			io.github.jcondedata.aliveworkplace.legend.LegendNeeds.round(server, pos);
 			io.github.jcondedata.aliveworkplace.legend.StrangeMoods.round(server, pos);
 			io.github.jcondedata.aliveworkplace.people.Couples.round(server, pos);
+			Services.round(server, pos, hall, census.workers()); // the day's service list (34.3), before the class check reads it
+			io.github.jcondedata.aliveworkplace.people.SocialClasses.round(server, pos, hall); // the dawn class check (34.2)
 			if (Treasury.ENABLED) {
 				Treasury.round(server, pos, hall, census.workers().size());
 			}
@@ -721,6 +723,26 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 		setChanged();
 	}
 
+	/** Where the village's services were at the last daily count (34.3); empty in halls saved before. */
+	private java.util.List<Services.Found> services = java.util.List.of();
+	/** The day ({@link Chronicle#day}) the service list was worked out; 0 never. */
+	private long servicesDay;
+
+	public java.util.List<Services.Found> services() {
+		return services;
+	}
+
+	public long servicesDay() {
+		return servicesDay;
+	}
+
+	/** Keeps {@code found} as the service list worked out on {@code day}. */
+	public void setServices(java.util.List<Services.Found> found, long day) {
+		services = java.util.List.copyOf(found);
+		servicesDay = day;
+		setChanged();
+	}
+
 	public long lastBirth() {
 		return lastBirth;
 	}
@@ -811,6 +833,10 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 		raidWorkUntil = Math.max(0, Nbt.getLong(tag, "raidWorkUntil"));
 		hornDay = tag.contains("hornDay") ? Nbt.getLong(tag, "hornDay") : -1;
 		rushUntil = Math.max(0, Nbt.getLong(tag, "rushUntil"));
+		services = !tag.contains("services") ? java.util.List.of()
+			: Services.Found.CODEC.listOf().parse(net.minecraft.nbt.NbtOps.INSTANCE, tag.get("services")).result().map(java.util.List::copyOf)
+				.orElse(java.util.List.of());
+		servicesDay = Nbt.getLong(tag, "servicesDay");
 		stewardWishes = !tag.contains("steward") ? io.github.jcondedata.aliveworkplace.city.StewardWishes.State.EMPTY
 			: io.github.jcondedata.aliveworkplace.city.StewardWishes.State.CODEC.parse(net.minecraft.nbt.NbtOps.INSTANCE, tag.get("steward"))
 				.result().orElse(io.github.jcondedata.aliveworkplace.city.StewardWishes.State.EMPTY);
@@ -845,6 +871,10 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 			tag.putString("CustomName", Component.Serializer.toJson(name, registries));
 		}
 		tag.putLong("lastBirth", lastBirth);
+		if (servicesDay != 0) {
+			Services.Found.CODEC.listOf().encodeStart(net.minecraft.nbt.NbtOps.INSTANCE, services).result().ifPresent(t -> tag.put("services", t));
+			tag.putLong("servicesDay", servicesDay);
+		}
 		tag.putInt("births", births);
 		if (colours != null) {
 			tag.putString("bannerBase", colours.base().getName());

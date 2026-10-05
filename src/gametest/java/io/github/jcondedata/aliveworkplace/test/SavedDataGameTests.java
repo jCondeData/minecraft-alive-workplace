@@ -85,6 +85,9 @@ public class SavedDataGameTests implements FabricGameTest {
 			net.minecraft.core.GlobalPos.of(net.minecraft.world.level.Level.OVERWORLD, new BlockPos(12, 64, -7)), 3));
 		samples.put("GUILD_MASTER", new io.github.jcondedata.aliveworkplace.hall.Guilds.Master(io.github.jcondedata.aliveworkplace.AliveWorkplace.id("builders"), new net.minecraft.core.BlockPos(1, 2, 3)));
 		samples.put("GIFTED", "aliveworkplace:night_owl");
+		samples.put("SOCIAL_CLASS", io.github.jcondedata.aliveworkplace.AliveWorkplace.id("burgher"));
+		samples.put("CLASS_PROGRESS", new io.github.jcondedata.aliveworkplace.people.SocialClasses.Progress(1, 2, 3, 57L));
+		samples.put("LUXURIES_HAD", Map.of(io.github.jcondedata.aliveworkplace.AliveWorkplace.id("berry_wine"), 55L));
 		samples.put("LEGEND", new io.github.jcondedata.aliveworkplace.legend.LegendData(net.minecraft.resources.ResourceLocation.parse("aliveworkplace:master_architect"),
 			"legend.aliveworkplace.master_architect.name.2", true, Optional.of(new BlockPos(5, 70, -9)), 12, 15, Map.of("home", 2), 14, 9, "visit"));
 		samples.put("ARCHITECT", new io.github.jcondedata.aliveworkplace.legend.GrandRebuild.State(12L, true,

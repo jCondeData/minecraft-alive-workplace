@@ -1,0 +1,177 @@
+package io.github.jcondedata.aliveworkplace.devclient;
+
+import io.github.jcondedata.aliveworkplace.AliveWorkplace;
+import io.github.jcondedata.aliveworkplace.blueprint.BlueprintData;
+import io.github.jcondedata.aliveworkplace.blueprint.StarterBlueprints;
+import io.github.jcondedata.aliveworkplace.build.BuildSiteManager;
+import io.github.jcondedata.aliveworkplace.hall.EdictBook;
+import io.github.jcondedata.aliveworkplace.hall.Guilds;
+import io.github.jcondedata.aliveworkplace.hall.VillageHallBlock;
+import io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity;
+import io.github.jcondedata.aliveworkplace.hall.VillageHallScreen;
+import io.github.jcondedata.aliveworkplace.hall.VillageRanks;
+import io.github.jcondedata.aliveworkplace.registry.ModBlocks;
+import io.github.jcondedata.aliveworkplace.registry.ModItems;
+import io.github.jcondedata.aliveworkplace.registry.ModVillagers;
+import io.github.jcondedata.aliveworkplace.work.ChoiceMenu;
+import java.util.ArrayList;
+import java.util.List;
+import net.minecraft.client.CloudStatus;
+import net.minecraft.client.Minecraft;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.world.entity.npc.Villager;
+import net.minecraft.world.entity.npc.VillagerProfession;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.component.ItemLore;
+import net.minecraft.world.level.GameRules;
+import net.minecraft.world.level.block.Mirror;
+import net.minecraft.world.level.block.Rotation;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
+import net.minecraft.world.phys.Vec3;
+
+/**
+ * SCENE=guilds (ROADMAP 30.18): a City with three finished Guildhalls; the player charters a Master miner, a Master
+ * weaponsmith and a Master lumberjack, and the Miners', Smiths' and Woodsmen's Guilds are founded in them. Stills: each
+ * Guild Master's card on the hall's list (Guild Master of their guild, 15% faster through it), then the guilds' row of
+ * the Book of Edicts. Its checks: all three chartered and founded, each card says so, and the Book's row shows the three.
+ */
+final class GuildsScene {
+	private static final BlockPos HALL = new BlockPos(-8, -60, -6);
+	private static final BlockPos[] HALLS = {new BlockPos(0, -60, 0), new BlockPos(22, -60, 0), new BlockPos(44, -60, 0)};
+	private static final String[] NAMES = {"Brokk", "Hilde", "Rowan"};
+	private static final String[] GUILDS = {"Miners' Guild", "Smiths' Guild", "Woodsmen's Guild"};
+	private static final String[] SHOTS = {"01_guilds_miner", "02_guilds_smith", "03_guilds_woodsman"};
+	private int tick;
+	private final List<Villager> masters = new ArrayList<>();
+	private final int[] slots = {-1, -1, -1};
+
+	void tick(Minecraft mc) {
+		MinecraftServer server = mc.getSingleplayerServer();
+		tick++;
+		if (tick == 1) {
+			mc.options.renderDistance().set(6);
+			mc.options.cloudStatus().set(CloudStatus.OFF);
+			mc.options.guiScale().set(2);
+			mc.resizeDisplay();
+			mc.options.hideGui = false;
+		}
+		if (tick == 20) {
+			server.execute(() -> stage(server));
+		}
+		if (tick == 40) {
+			server.execute(() -> charter(server));
+		}
+		if (tick == 70) {
+			server.execute(() -> VillageHallScreen.open(player(server), HALL));
+		}
+		if (tick == 85) {
+			server.execute(() -> findCards(server));
+		}
+		for (int i = 0; i < 3; i++) {
+			int at = 100 + i * 30;
+			if (tick == at) {
+				ScreenshotHarness.pointAt(mc, slots[i]);
+			}
+			if (tick == at + 15) {
+				ScreenshotHarness.shot(mc, SHOTS[i]);
+			}
+		}
+		if (tick == 200) {
+			mc.setScreen(null);
+			server.execute(() -> EdictBook.open(player(server), HALL));
+		}
+		if (tick == 220) {
+			ScreenshotHarness.pointAt(mc, EdictBook.FIRST_GUILD + 1, 6);
+		}
+		if (tick == 235) {
+			server.execute(() -> Showcase.check(player(server).containerMenu instanceof ChoiceMenu m
+					&& m.icon(EdictBook.FIRST_GUILD).is(Items.IRON_PICKAXE) && m.icon(EdictBook.FIRST_GUILD + 1).is(Items.ANVIL)
+					&& m.icon(EdictBook.FIRST_GUILD + 2).is(Items.IRON_AXE),
+				"the Book's last row shows the Miners', Smiths' and Woodsmen's Guilds"));
+			ScreenshotHarness.shot(mc, "04_guilds_book");
+		}
+		if (tick == 260) {
+			mc.stop();
+		}
+	}
+
+	private static ServerPlayer player(MinecraftServer server) {
+		return server.getPlayerList().getPlayers().get(0);
+	}
+
+	/** Three Guildhalls finished in a row by a Village Hall, a Master of each trade in front of them. */
+	private void stage(MinecraftServer server) {
+		ServerLevel level = server.overworld();
+		ServerPlayer player = player(server);
+		level.getGameRules().getRule(GameRules.RULE_DAYLIGHT).set(false, server);
+		level.getGameRules().getRule(GameRules.RULE_DOMOBSPAWNING).set(false, server);
+		level.setDayTime(5000);
+		for (BlockPos origin : HALLS) {
+			level.getStructureManager().get(StarterBlueprints.GUILDHALL.id()).orElseThrow()
+				.placeInWorld(level, origin, origin, new StructurePlaceSettings(), level.getRandom(), 2);
+			BuildSiteManager.get(level).recordFinished(StarterBlueprints.GUILDHALL.id(),
+				new BlueprintData.Placement(level.dimension().location(), origin, Rotation.NONE, Mirror.NONE), player.getUUID());
+		}
+		level.setBlockAndUpdate(HALL, ModBlocks.VILLAGE_HALL.defaultBlockState().setValue(VillageHallBlock.FACING, Direction.SOUTH));
+		VillageHallBlockEntity hall = (VillageHallBlockEntity) level.getBlockEntity(HALL);
+		hall.setOwner(player.getUUID(), player.getGameProfile().getName());
+		VillagerProfession[] jobs = {ModVillagers.MINER, VillagerProfession.WEAPONSMITH, ModVillagers.LUMBERJACK};
+		for (int i = 0; i < 3; i++) {
+			Villager v = EntityType.VILLAGER.spawn(level, HALLS[i].offset(9, 0, -2), MobSpawnType.COMMAND);
+			v.setVillagerData(v.getVillagerData().setProfession(jobs[i]).setLevel(5));
+			v.setCustomName(Component.literal(NAMES[i]));
+			v.setNoAi(true);
+			masters.add(v);
+		}
+		ScreenshotHarness.hoverLookingAt(player, new Vec3(30, -52, -22), new Vec3(30, -56, 4));
+	}
+
+	/** The player grants each Master a charter; each guild claims a finished Guildhall. */
+	private void charter(MinecraftServer server) {
+		ServerLevel level = server.overworld();
+		VillageHallBlockEntity hall = (VillageHallBlockEntity) level.getBlockEntity(HALL);
+		hall.setRank(VillageRanks.Rank.CITY);
+		for (Villager master : masters) {
+			Guilds.Offer offer = Guilds.offer(player(server), master, new ItemStack(ModItems.GUILD_CHARTER));
+			Showcase.check(offer.outcome() == Guilds.Outcome.GRANTED, master.getName().getString() + " was chartered: " + offer.message().getString());
+		}
+		Guilds.round(level, HALL, hall);
+		for (String id : List.of("miners", "smiths", "woodsmen")) {
+			Showcase.check(Guilds.founded(level, hall, AliveWorkplace.id(id)), "the " + id + "' guild was founded in a Guildhall");
+		}
+	}
+
+	/** Finds each master's card on the hall's list and checks it names their guild and its pace. */
+	private void findCards(MinecraftServer server) {
+		if (!(player(server).containerMenu instanceof ChoiceMenu m)) {
+			Showcase.check(false, "the hall's list opened");
+			return;
+		}
+		for (int s = VillageHallScreen.FIRST_PERSON; s < ChoiceMenu.SIZE; s++) {
+			ItemStack icon = m.icon(s);
+			for (int i = 0; i < 3; i++) {
+				if (icon.getHoverName().getString().startsWith(NAMES[i])) {
+					slots[i] = s;
+					ItemLore lore = icon.get(DataComponents.LORE);
+					List<String> lines = lore == null ? List.of() : lore.lines().stream().map(Component::getString).toList();
+					String guild = GUILDS[i];
+					boolean master = lines.stream().anyMatch(l -> l.equals("Guild Master of the " + guild));
+					boolean pace = lines.stream().anyMatch(l -> l.startsWith("Works ") && l.contains("faster") && l.contains("the " + guild));
+					Showcase.check(master && pace, NAMES[i] + "'s card: Guild Master of the " + guild + ", faster through it (" + String.join(" | ", lines) + ")");
+				}
+			}
+		}
+		for (int i = 0; i < 3; i++) {
+			Showcase.check(slots[i] >= 0, NAMES[i] + " is on the hall's list");
+		}
+	}
+}

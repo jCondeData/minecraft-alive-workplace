@@ -22,6 +22,7 @@ from bandits import *
 from legend_sites import *
 from pokemon import *
 from pokemon_jobs import *
+from guildhall import *
 
 
 # --- Gametest fixtures ------------------------------------------------------------------
@@ -140,6 +141,8 @@ if __name__ == "__main__":
     pokemon_center_2().save(MAIN_STRUCTURES, "pokemon_center_2")
     for name, draw in JOB_BUILDS:  # ROADMAP 28.13: the Pokémon jobs' builds
         draw().save(MAIN_STRUCTURES, name)
+    guildhall().save(MAIN_STRUCTURES, "guildhall")
+    guildhall_2().save(MAIN_STRUCTURES, "guildhall_2")
     for style in VILLAGE_STYLES:
         builders_workshop(style).save(VILLAGE_STRUCTURES, f"{style}_builders_workshop")
         for name, fit_out in VILLAGE_HOUSES.items():
@@ -152,5 +155,6 @@ if __name__ == "__main__":
     test_area("build_area", 17, 8, 17)
     test_area("big_area", 22, 18, 22)
     test_area("huge_area", 30, 20, 30)
+    test_area("tall_area", 30, 30, 30)  # ROADMAP 30.17: the Guildhall II's 20-tall tower, built from y = 2
     test_area("build_area", 17, 8, 17, COMPAT_AREAS)
     test_area("huge_area", 30, 20, 30, COMPAT_AREAS)

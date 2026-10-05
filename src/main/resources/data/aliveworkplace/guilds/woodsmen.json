@@ -1,0 +1,25 @@
+{
+  "name": {
+    "translate": "guild.aliveworkplace.woodsmen"
+  },
+  "perk": {
+    "translate": "guild.aliveworkplace.woodsmen.perk"
+  },
+  "icon": "minecraft:iron_axe",
+  "trades": [
+    "aliveworkplace:lumberjack",
+    "minecraft:fletcher",
+    "minecraft:fisherman"
+  ],
+  "perks": [
+    {
+      "type": "aliveworkplace:work_pace",
+      "percent": 15
+    },
+    {
+      "type": "aliveworkplace:tool_wear",
+      "percent": -50
+    }
+  ],
+  "enabled": true
+}

@@ -16,6 +16,16 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+### Fixed
+- A Pathfinder waiting for a player who fell behind now stands still instead of drifting a few blocks back toward
+  their table or strolling off (B75).
+### Added
+- **Lamps, bridges and steps** (27.16): streets and avenues get the Street Lamp in their road's style every 16 blocks on
+  alternate sides and before every crossing (never by a door), lanes a lantern post every 12; they count as Street
+  Lamps for beauty and light the homes near them. A road that meets water or a drop deeper than 2 blocks, up to 16
+  wide, gets a bridge in its style (rails, a pillar every 4 blocks down to the bed, a stair up at each end); a wider
+  gap stops the road at the bank, and the Steward's desk says why. Crossings are paved square.
+
 ## 0.139.0 — 2026-10-05
 
 ### Added
@@ -35,6 +45,14 @@ asks for the steps, `latest.log` and any crash report).
   the Smith to choose which comes next. Each golem wears its role (a crate pack, a straw hat, a helm), has its name
   over its head and a line on the hall's guards button; the Smith mends golems twice as fast as a Tinkerer and wears a
   leather apron, goggles and iron-banded gloves.
+- **Roads** (27.15): the roads drawn on the City Plan get built. The Steward has each approved road's way found over
+  the ground (its width kept clear, round water, buildings and anything a player built, steps of one block at most) and
+  hands it, 24 blocks at a time, to the village's idle builders when no building waits (two at once at most). Each road
+  is paved in its style: As drawn (dirt path, coarse dirt and gravel edges), Stonework (stone bricks with cracked ones,
+  cobblestone edges), Sandstone, Dark Oak (deepslate), Cherry (polished diorite) and, with Cobblemon, Apricorn (bricks
+  with mud brick edges), with stairs up and down each step. Every new building's door joins the nearest road with a
+  lane (villages without roads keep the dirt path to the bell). Roads aren't buildings: the rank, the map and homes
+  leave them out. Road styles are data (`road_styles/`). Config `stewardRoads`.
 - **Farmstead, Fisher's Hut, Weaver's Cottage and Bandstand** (27.14), new blueprints in the Blueprint Table: a
   farmhouse with one bed beside a field of farmland round a water channel, a scarecrow and a composter (II: a barn and a
   second field); a shore hut with a jetty out over the water on log posts and a barrel (II: a smokehouse with a smoker

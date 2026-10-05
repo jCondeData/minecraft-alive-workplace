@@ -131,6 +131,8 @@ public final class WorkplaceConfig {
 	public int stewardMaxOpenBuilds = 4;
 	/** A Steward set to "Run the village" starts the builds he proposes by himself (ROADMAP 27.8). Off: every village asks first. */
 	public boolean stewardSelfRun = true;
+	/** A Steward's builders build the approved roads on the plan, and new buildings' doors join them with lanes (ROADMAP 27.15). Off: roads are drawn but not built. */
+	public boolean stewardRoads = true;
 	/** Villagers at a Campfire Pot can be made Camp Cooks with Hearty Grains (ROADMAP 28.8). Off: no Camp Cook job. */
 	public boolean campCooks = true;
 	/** Villagers at a Pasture Block can be made Habitat Keepers with a honey bottle (ROADMAP 28.10). Off: no Habitat Keeper job. */
@@ -389,5 +391,7 @@ public final class WorkplaceConfig {
 		// Off in gametests (a partner walking off mid-test would move the numbers); the show tests turn them on.
 		io.github.jcondedata.aliveworkplace.work.PartnerShows.ENABLED = partnerShows && System.getProperty("fabric-api.gametest") == null;
 		io.github.jcondedata.aliveworkplace.build.Paths.ENABLED = builderPaths && System.getProperty("fabric-api.gametest") == null;
+		// Off in gametests (a test's approved road would be built under other tests); the road tests turn it on.
+		io.github.jcondedata.aliveworkplace.city.Roads.ENABLED = stewardRoads && System.getProperty("fabric-api.gametest") == null;
 	}
 }

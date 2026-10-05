@@ -278,6 +278,8 @@ public class PartnersAllCompatTests implements FabricGameTest {
 		});
 		BlockPos hallAt = new BlockPos(17, 2, 17);
 		helper.setBlock(hallAt, ModBlocks.VILLAGE_HALL);
+		// outside the area, so never cleared: removed when the test ends
+		PartnerShowsCompatTests.after(helper, () -> helper.getLevel().removeBlock(helper.absolutePos(hallAt), false));
 		Villager scholar = employ(helper, new BlockPos(8, 2, 8), ModBlocks.SCHOLARS_DESK, ModVillagers.SCHOLARS_DESK_POI, ModVillagers.SCHOLAR,
 			new BlockPos(8, 2, 10), new ItemStack(Items.PAPER, 20), new ItemStack(Items.EMERALD, 5));
 		Set<Item> carried = new HashSet<>();

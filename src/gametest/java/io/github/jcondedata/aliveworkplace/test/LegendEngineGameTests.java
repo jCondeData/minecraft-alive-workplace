@@ -321,6 +321,7 @@ public class LegendEngineGameTests implements net.fabricmc.fabric.api.gametest.v
 	@GameTest(template = AREA, timeoutTicks = 100, batch = "legendPace")
 	public void legendPace(GameTestHelper helper) {
 		Leftovers.clear(helper);
+		Leftovers.halls(helper); // the builders' pace is only theirs and the Legends' (no village's needs or edicts)
 		sendLegendsAway(helper);
 		helper.runAfterDelay(2, () -> {
 			ServerLevel level = helper.getLevel();
@@ -337,7 +338,7 @@ public class LegendEngineGameTests implements net.fabricmc.fabric.api.gametest.v
 			Villager second = villager(helper, new BlockPos(7, 2, 5), VillagerProfession.NONE, 1);
 			Legends.make(level, second, legend, "test");
 			helper.assertTrue(LegendPowers.pace(near) == LegendPowers.PACE_CAP, "two Legends: " + LegendPowers.pace(near) + ", over the cap");
-			helper.assertTrue(BuilderLevels.delay(1000, near) == Math.round(nearBase / 2f), "capped delay: " + BuilderLevels.delay(1000, near));
+			helper.assertTrue(BuilderLevels.delay(1000, near) == Math.round(nearBase / 2f), "capped delay: " + BuilderLevels.delay(1000, near) + " from " + nearBase);
 			// on strike: no powers
 			ModAttachments.LEGEND.set(ada, new LegendData(TEST, "", false, Optional.empty(), 0, -1, Map.of(), 3, -1, "test"));
 			ModAttachments.LEGEND.set(second, new LegendData(TEST, "", false, Optional.empty(), 0, -1, Map.of(), 3, -1, "test"));

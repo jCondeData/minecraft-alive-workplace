@@ -45,6 +45,9 @@ public class StewardHomesRulesGameTests implements net.fabricmc.fabric.api.gamet
 		Leftovers.after(helper, () -> VillageHalls.RADIUS = radius);
 		helper.setBlock(HALL, ModBlocks.VILLAGE_HALL);
 		BlockPos hall = helper.absolutePos(HALL);
+		// The staged village (beds, villagers, a rank) is well kept: gone with the test, so no later batch's villagers nearby
+		// count as its people and get its pace.
+		Leftovers.after(helper, () -> helper.getLevel().removeBlock(hall, false));
 		((VillageHallBlockEntity) helper.getLevel().getBlockEntity(hall)).setRank(rank);
 		return hall;
 	}

@@ -81,6 +81,7 @@ public class ScreenshotHarness implements ClientModInitializer {
 	private final StewardRulesScene stewardRules = new StewardRulesScene();
 	private final StewardDeskScene stewardDesk = new StewardDeskScene();
 	private final StewardJobsScene stewardJobs = new StewardJobsScene();
+	private final StewardHomesScene stewardHomes = new StewardHomesScene();
 
 	private void onTick(Minecraft mc) {
 		if (mc.level == null || mc.player == null || mc.getSingleplayerServer() == null) {
@@ -116,6 +117,10 @@ public class ScreenshotHarness implements ClientModInitializer {
 		}
 		if ("steward_jobs".equals(System.getProperty("aliveworkplace.scene"))) {
 			stewardJobs.tick(mc, mc.getSingleplayerServer());
+			return;
+		}
+		if ("steward_homes".equals(System.getProperty("aliveworkplace.scene"))) {
+			stewardHomes.tick(mc, mc.getSingleplayerServer());
 			return;
 		}
 		if ("partners_all".equals(System.getProperty("aliveworkplace.scene"))) {

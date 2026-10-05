@@ -24,6 +24,25 @@ final class Leftovers {
 	}
 
 	/**
+	 * Removes every Village Hall whose village reaches the test area. A hall another batch's test left nearby (outside
+	 * its own area, so never cleared) makes the villagers here its village, with its needs' pace and its edicts: a
+	 * well-kept hall left by the Steward's homes tests sped up legendPace's builder past its own numbers. Only for tests
+	 * alone in their batch.
+	 */
+	static void halls(GameTestHelper helper) {
+		net.minecraft.server.level.ServerLevel level = helper.getLevel();
+		AABB box = helper.getBounds();
+		int reach = io.github.jcondedata.aliveworkplace.hall.VillageHalls.RADIUS + (int) Math.ceil(Math.max(box.getXsize(), box.getZsize()) / 2);
+		java.util.List<net.minecraft.core.BlockPos> halls = level.getPoiManager().findAll(
+			h -> h.is(io.github.jcondedata.aliveworkplace.registry.ModVillagers.VILLAGE_HALL_POI), p -> true,
+			net.minecraft.core.BlockPos.containing(box.getCenter()), reach, net.minecraft.world.entity.ai.village.poi.PoiManager.Occupancy.ANY).toList();
+		for (net.minecraft.core.BlockPos hall : halls) {
+			level.removeBlock(hall, false);
+		}
+		io.github.jcondedata.aliveworkplace.hall.VillageNeeds.forget();
+	}
+
+	/**
 	 * Turns village sharing on for this test ({@code Village.RADIUS}, normally off in tests) and off again when the test
 	 * ends, passed or failed — a failed test that left it on made the next batches' builders share chests and fail too.
 	 */

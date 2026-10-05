@@ -411,6 +411,11 @@ SCENES = [
        ("10_guilds_guard", "Wulf, Guild Master of the Wardens' Guild"),
        ("07_guilds_book", "The first six guilds on the Book of Edicts' last row, founded, each with its perk")]),
     # Tonics (ROADMAP 30.15): a miner given Miner's Brew, its tooltip, the drink, then her status line
+    # Edicts in the village's talk (ROADMAP 30.21): lines under Long Shifts, then after The Shift Bell
+    S("village_talk", "Village Hall", "Village talk: Long Shifts and The Shift Bell",
+      "three villagers by the hall talked of Long Shifts while it was in force, then of The Shift Bell once it was reformed", 30,
+      [("01_village_talk_long_shifts", "Long Shifts in force: \"Long shifts again... my back.\""),
+       ("02_village_talk_shift_bell", "Reformed: \"The shift bell's rung. Home we go.\"")]),
     S("tonics", "Village Hall", "Tonics: all six",
       "the miner drank the Miner's Brew she was offered and her status line showed her 25% faster with 19 minutes left; a Toolsmith, a Scholar, an Orchard Keeper and a Lumberjack drank the four new tonics", 40,
       [("01_tonics_offer", "Dara the miner, and Miner's Brew in hand"), ("02_tonics_tooltip", "What the brew does, for whom, who makes it"),

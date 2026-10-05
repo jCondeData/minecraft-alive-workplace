@@ -101,6 +101,9 @@ public final class VillageAdvice {
 		if (homes.grown() >= MIN_FOR_HOMES && homes.plain() * 2L > homes.grown()) {
 			tips.add(new Tip("homes", Items.OAK_DOOR, homes.plain(), homes.grown(), Homes.TIER_2_MOOD, Homes.TIER_3_MOOD));
 		}
+		if (level.getBlockEntity(hall) instanceof VillageHallBlockEntity entity) {
+			tips.addAll(civic(level, hall, entity, census));
+		}
 		// A Legend who lacks only one condition (29.4)
 		tips.addAll(io.github.jcondedata.aliveworkplace.legend.LegendsPage.tips(level, hall));
 		VillageRanks.Rank next = VillageRanks.of(level, hall).next();
@@ -110,6 +113,57 @@ public final class VillageAdvice {
 				Math.max(0, next.buildings - score.buildings()), Math.max(0, next.research - score.research())));
 		}
 		return tips;
+	}
+
+	/** The edict Festival Season. */
+	public static final ResourceLocation FESTIVAL_SEASON = io.github.jcondedata.aliveworkplace.AliveWorkplace.id("festival_season");
+	/** The edict Large Families. */
+	public static final ResourceLocation LARGE_FAMILIES = io.github.jcondedata.aliveworkplace.AliveWorkplace.id("large_families");
+
+	/**
+	 * The civic tips (30.21): a free edict slot; a reform step waiting on the quest page; Festival Season with a treasury
+	 * too small for the next festival; a chartered guild without its Guildhall; Large Families without a Cradle; harvest
+	 * season with a farmer in the village but no Harvest Idol near the fields round the hall.
+	 */
+	static List<Tip> civic(ServerLevel level, BlockPos hall, VillageHallBlockEntity entity, VillageHalls.Census census) {
+		List<Tip> tips = new ArrayList<>();
+		if (Edicts.ENABLED) {
+			int slots = Edicts.slots(entity.rank());
+			long open = Edicts.all().stream().filter(e -> entity.edicts().stream().noneMatch(f -> f.id().equals(e.id().toString()))).count();
+			if (entity.edicts().size() < slots && open > 0) {
+				tips.add(new Tip("edict_slot", Items.PAPER, slots - entity.edicts().size(), entity.rank().title()));
+			}
+			for (VillageQuests.Quest q : Reforms.shown(entity)) {
+				q.reform().ifPresent(step -> tips.add(new Tip("reform_step", Items.WRITABLE_BOOK, Reforms.title(step), VillageQuests.describe(q))));
+			}
+			if (inForce(entity, FESTIVAL_SEASON)) {
+				int cost = Festivals.cost(entity, census.villagers());
+				if (cost > 0 && entity.treasury() < cost * 100) {
+					tips.add(new Tip("festival_fund", Items.EMERALD, entity.treasury() / 100, cost));
+				}
+			}
+			if (inForce(entity, LARGE_FAMILIES) && !Cradles.nursery(level, hall)) {
+				tips.add(new Tip("cradle", ModBlocks.CRADLE.asItem()));
+			}
+		}
+		if (Guilds.ENABLED) {
+			for (Guilds.Charter c : entity.guilds()) {
+				Guilds.Guild guild = Guilds.get(c.id());
+				if (guild != null && !Guilds.founded(level, entity, c.id())) {
+					tips.add(new Tip("guildhall", ModItems.BLUEPRINT, guild.name()));
+				}
+			}
+		}
+		if (HarvestIdols.ENABLED && HarvestIdols.harvestSeason(level) && !HarvestIdols.near(level, hall)
+			&& !level.getEntitiesOfClass(Villager.class, VillageHalls.area(hall),
+				v -> v.isAlive() && v.getVillagerData().getProfession() == VillagerProfession.FARMER).isEmpty()) {
+			tips.add(new Tip("harvest_idol", ModBlocks.HARVEST_IDOL.asItem()));
+		}
+		return tips;
+	}
+
+	private static boolean inForce(VillageHallBlockEntity entity, ResourceLocation edict) {
+		return Edicts.get(edict).isPresent() && entity.edicts().stream().anyMatch(f -> f.id().equals(edict.toString()));
 	}
 
 	/**

@@ -16,6 +16,21 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+### Changed
+- **Expansions still being built are off until the release that finishes them** (B76): 0.139.0 switched on parts of
+  1.1 to 1.4 that aren't done yet. The Steward (1.1); partner shows, the nurse at the Healing Machine and the Berry
+  Breeder, Camp Cook, Habitat Keeper, Daycare Keeper and Gem Grower jobs (1.2); Legends, the Gifted and strange moods
+  (1.3); and edicts, the Work Horn, Village Banners, Cradles, Harvest Idols and tonics (1.4) now stay off, even in a
+  config file 0.139.0 wrote with them on, and their switches leave the settings screen until then. Nothing saved is
+  lost: a Steward, a Legend or an edict comes back as it was when its expansion is released.
+
+### Fixed
+- **A build saved by 0.138.0 or earlier keeps its progress on upgrade** (B64): opened with a newer jar, a site half
+  through a raised foundation (or in its walls) dropped to a few percent the first time it loaded. It now works out
+  the progress it showed from the saved stage and step.
+- **A farmer's carrots and potatoes reach the chests** (B77): a village farmer kept up to 32 of each in his bag as
+  seed stock, so a Farmstead's field could be harvested without anything landing in its chest. He now takes them from the
+  chests to plant with, like seeds, and puts the whole harvest away.
 ### Added
 - **The Steward is safe by design** (27.19): his plans, roads and walls never go into Keep Clear, another village or a
   protected village that isn't his owner's, and a ledger of what players built in a village (from 1.1 on) keeps his
@@ -23,6 +38,11 @@ asks for the steps, `latest.log` and any crash report).
   is ("a player's block is in the way" on the desk); when his builds wait for materials, the desk and the Storehouse
   board show one shopping list (the owner hears it once a day, caravans bring it), and he proposes nothing new while
   two builds have waited a whole day.
+- **Edicts and civic items in the village's life** (30.21): villagers talk of each edict in force and of each reformed
+  one ("Long shifts again... my back.", "The shift bell's rung. Home we go."), of a rush, their tonic, their guild and
+  the village's colours; "What next?" now points out a free edict slot, a reform step waiting, Festival Season with too
+  little in the treasury, a guild without its Guildhall, Large Families without a Cradle and harvest season without a
+  Harvest Idol; the README has *Edicts* and *Civic items* sections with every edict, tonic and guild.
 - **Guild Charters, the Guildhall and the Builders' Guild** (30.17): craft a Guild Charter (three paper, an emerald, a
   gold ingot, red dye) and sneak-right-click a Master in a village of Village rank or more: they become the Guild Master
   of their trade's guild (one per trade, one per rank above Hamlet; refusals say why), told to the village, in the
@@ -534,6 +554,8 @@ asks for the steps, `latest.log` and any crash report).
   ground (B69).
 - The showcase client starts every scene again without Cobblemon: the Habitat Keeper scene's wild Eevee is spawned
   from a Cobblemon-only helper, so loading the scenes no longer crashes (B59).
+- A pastured Pidgey (or any flying partner) taking the postman's air mail no longer vanishes into your PC: it climbs
+  only as high as its Pasture Block lets it roam, instead of flying past that and being sent back (B52).
 - Every switch on the settings screen fits its button again, on or off: shorter names for Nurse Healing Machines,
   Villages Work Unseen, Legend Needs, Strikes, Stewards Run Villages and Legends at Ruins (each tooltip still says it
   all) (B61).

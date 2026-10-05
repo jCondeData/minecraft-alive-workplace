@@ -75,7 +75,7 @@ public class FieldWork extends Behavior<Villager> {
 
 	/** Bone meal a farmer keeps in the bag; the rest stays in the chests. */
 	static final int KEEP_BONE_MEAL = 16;
-	/** Sugar cane, cactus... taken to plant with (the harvest of them all goes to the chests). */
+	/** Sugar cane, cactus... taken to plant with (the harvest of them all goes to the chests, as does that of carrots and potatoes). */
 	static final int KEEP_PLANTATION = 8;
 	/** Seeds kept in the chests before the rest go in the composter for bone meal. */
 	static final int COMPOST_ABOVE = 64;
@@ -639,6 +639,24 @@ public class FieldWork extends Behavior<Villager> {
 		return stack.is(Items.SUGAR_CANE) || stack.is(Items.CACTUS) || stack.is(Items.BAMBOO) || stack.is(Items.KELP);
 	}
 
+	/**
+	 * Something planted that is the harvest too: the column plants, and carrots and potatoes (food that is its own seed).
+	 * A farmer takes some from the chests to plant with, but the harvest of them all goes to the chests: kept as seed
+	 * stock (32 of each) a Farmstead's carrots and potatoes never reached its chest.
+	 */
+	static boolean isCropToo(ItemStack stack) {
+		return isPlantation(stack) || isSeed(stack) && Villager.FOOD_POINTS.containsKey(stack.getItem());
+	}
+
+	/**
+	 * How many of a seed a farmer takes from the chests to plant with. Carrots and potatoes are taken like seeds (a
+	 * field's worth): with only a few, a field of them ran out part way and the rest was sown with whatever else was in
+	 * the bag (wheat seeds from the grass he cut). Their harvest still all goes to the chests ({@link #isCropToo}).
+	 */
+	static int keepOf(ItemStack stack) {
+		return isPlantation(stack) ? KEEP_PLANTATION : KEEP_SEEDS;
+	}
+
 	public static boolean isSeed(ItemStack stack) {
 		return !stack.isEmpty() && stack.getItem() instanceof BlockItem bi
 			&& (bi.getBlock().defaultBlockState().is(BlockTags.CROPS) || bi.getBlock() instanceof NetherWartBlock
@@ -663,7 +681,7 @@ public class FieldWork extends Behavior<Villager> {
 	/** Anything in the bag worth carrying to the chests (not just the seeds we keep). */
 	private static boolean hasHarvest(BuilderBag bag) {
 		for (ItemStack stack : bag.stacks()) {
-			if (!stack.isEmpty() && !stack.is(Items.BONE_MEAL) && (!isSeed(stack) || isPlantation(stack) || bag.count(stack.getItem()) > KEEP_SEEDS)) {
+			if (!stack.isEmpty() && !stack.is(Items.BONE_MEAL) && (!isSeed(stack) || isCropToo(stack) || bag.count(stack.getItem()) > KEEP_SEEDS)) {
 				return true;
 			}
 		}
@@ -782,13 +800,13 @@ public class FieldWork extends Behavior<Villager> {
 			return true;
 		}
 		if (seeds) {
-			int more = SupplyContainers.extract(level, supplies, got.getItem(), KEEP_SEEDS - 1);
+			int more = SupplyContainers.extract(level, supplies, got.getItem(), keepOf(got) - 1);
 			bag.addAll(got.getItem(), 1 + more);
 			// And some of every other kind there, so a mixed field (wheat here, sugar cane by the water) gets sown.
 			for (java.util.Map.Entry<Item, Long> e : SupplyContainers.contents(level, supplies).entrySet()) {
 				ItemStack kind = new ItemStack(e.getKey());
 				if (e.getKey() != got.getItem() && isSeed(kind)) {
-					int want = (isPlantation(kind) ? KEEP_PLANTATION : KEEP_SEEDS) - bag.count(e.getKey());
+					int want = keepOf(kind) - bag.count(e.getKey());
 					if (want > 0) {
 						bag.addAll(e.getKey(), SupplyContainers.extract(level, supplies, e.getKey(), Math.min(want, bag.spaceFor(e.getKey()))));
 					}
@@ -810,7 +828,7 @@ public class FieldWork extends Behavior<Villager> {
 		List<ItemStack> all = new ArrayList<>(bag.takeAll());
 		all.sort(Comparator.comparingInt(s -> -s.getCount())); // keep the fullest seed stacks
 		for (ItemStack stack : all) {
-			if (isSeed(stack) && !isPlantation(stack) && bag.count(stack.getItem()) < KEEP_SEEDS) {
+			if (isSeed(stack) && !isCropToo(stack) && bag.count(stack.getItem()) < KEEP_SEEDS) {
 				int keep = Math.min(stack.getCount(), KEEP_SEEDS - bag.count(stack.getItem()));
 				bag.add(stack.split(keep));
 			} else if (stack.is(Items.BONE_MEAL) && bag.count(Items.BONE_MEAL) < KEEP_BONE_MEAL) {

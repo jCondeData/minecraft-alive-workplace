@@ -54,6 +54,17 @@ public final class Seasons {
 		public Season next() {
 			return values()[(ordinal() + 1) % 4];
 		}
+
+		/** Autumn is harvest season (ROADMAP 30.14: Harvest Idols speed crops up in it). */
+		public boolean harvest() {
+			return this == AUTUMN;
+		}
+	}
+
+	/** The season and its day for the hall's festival icon: "Autumn: harvest season, day 3 of 16", "Summer, day 3 of 16". */
+	public static Component seasonLine(Date today) {
+		return Component.translatable(today.season().harvest() ? "screen.aliveworkplace.hall.season_harvest" : "screen.aliveworkplace.hall.season",
+			today.season().title(), today.dayOfSeason(), today.length());
 	}
 
 	/**

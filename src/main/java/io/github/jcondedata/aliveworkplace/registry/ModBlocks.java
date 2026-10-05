@@ -164,6 +164,17 @@ public final class ModBlocks {
 			.noOcclusion()
 			.ignitedByLava());
 
+	/** In harvest season the crops round it grow a quarter faster (ROADMAP 30.14). */
+	public static final io.github.jcondedata.aliveworkplace.hall.HarvestIdolBlock HARVEST_IDOL = Reg.block("harvest_idol", io.github.jcondedata.aliveworkplace.hall.HarvestIdolBlock::new, BlockBehaviour.Properties.of()
+			.mapColor(net.minecraft.world.level.material.MapColor.COLOR_YELLOW)
+			.strength(1.0f)
+			.sound(net.minecraft.world.level.block.SoundType.GRASS)
+			.noOcclusion()
+			.ignitedByLava());
+
+	public static final net.minecraft.world.level.block.entity.BlockEntityType<io.github.jcondedata.aliveworkplace.hall.HarvestIdolBlockEntity> HARVEST_IDOL_ENTITY =
+		Reg.blockEntity("harvest_idol", io.github.jcondedata.aliveworkplace.hall.HarvestIdolBlockEntity::new, HARVEST_IDOL);
+
 	public static void init() {
 	}
 

@@ -73,6 +73,7 @@ public class ScreenshotHarness implements ClientModInitializer {
 	private final GiftedScene gifted = new GiftedScene();
 	private final WorkHornScene workHorn = new WorkHornScene();
 	private final CradleScene cradle = new CradleScene();
+	private final HarvestIdolScene harvestIdol = new HarvestIdolScene();
 	private final VillageBannerScene villageBanner = new VillageBannerScene();
 	private final TonicsScene tonics = new TonicsScene();
 	private final CityPlanGroundScene cityPlanGround = new CityPlanGroundScene();
@@ -188,6 +189,10 @@ public class ScreenshotHarness implements ClientModInitializer {
 		}
 		if ("cradle".equals(System.getProperty("aliveworkplace.scene"))) {
 			cradle.tick(mc);
+			return;
+		}
+		if ("harvest_idol".equals(System.getProperty("aliveworkplace.scene"))) {
+			harvestIdol.tick(mc);
 			return;
 		}
 		if ("village_banner".equals(System.getProperty("aliveworkplace.scene"))) {

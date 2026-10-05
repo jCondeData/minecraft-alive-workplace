@@ -353,6 +353,11 @@ SCENES = [
       "a child slept seated in the cradle at night, and a newborn was still a child half-way and grew up within 12000 ticks in the nursery village", 45,
       [("01_cradle_night", "A child asleep in the cradle at night"), ("02_cradle_newborn", "Morning: a newborn"),
        ("03_cradle_growing", "Half-way: 6000 ticks"), ("04_cradle_grown", "Grown up in half the time (12000 ticks)")]),
+    # Seasons and the Harvest Idol (ROADMAP 30.14): two wheat fields through a harvest season, one with an idol
+    S("harvest_idol", "Village Hall", "The Harvest Idol: crops grow faster in harvest season",
+      "in autumn (harvest season) the wheat field within the idol's 32 blocks grew more stages half-way than the field out of its reach", 50,
+      [("01_harvest_idol", "The Harvest Idol, sparkling in harvest season"), ("02_harvest_idol_fields", "Two fields sown: the idol's (right) and one out of its reach"),
+       ("03_harvest_idol_growing", "Half-way: the idol's field is ahead"), ("04_harvest_idol_ripe", "The idol's field ripens first")]),
     # The Village Banner (ROADMAP 30.13): a street of stone houses under the village's colours, a knight's painted
     # shield, a neighbour by its banner on the routes page, the village by its own in the Book of Edicts
     S("village_banner", "Village Hall", "The Village Banner: the village's colours",

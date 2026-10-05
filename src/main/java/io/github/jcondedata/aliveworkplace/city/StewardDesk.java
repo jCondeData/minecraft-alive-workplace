@@ -375,6 +375,21 @@ public final class StewardDesk {
 		return true;
 	}
 
+	/**
+	 * "Show me" on the old houses (27.20): every old house the last survey found glows for {@code player} for
+	 * {@link #SHOW_TICKS}, those that can be renewed in orange. Returns how many; 0 if none were found yet.
+	 */
+	public static int showOldHouses(ServerLevel level, BlockPos hall, ServerPlayer player) {
+		List<OldHouses.House> houses = OldHouses.result(level, hall).orElse(List.of());
+		List<BoundingBox> renew = houses.stream().filter(OldHouses.House::renewable).map(OldHouses.House::box).toList();
+		List<BoundingBox> kept = houses.stream().filter(h -> !h.renewable()).map(OldHouses.House::box).toList();
+		if (houses.isEmpty()) {
+			return 0;
+		}
+		BlueprintOutline.glowBoxes(player, renew, kept, SHOW_TICKS);
+		return houses.size();
+	}
+
 	/** "Another spot": the search goes on past the spots found so far; the proposal waits for it. False for an upgrade. */
 	public static boolean anotherSpot(ServerLevel level, BlockPos hall, @Nullable ServerPlayer player, int id) {
 		if (player != null && !mayUse(level, hall, player)) {
@@ -654,6 +669,7 @@ public final class StewardDesk {
 		lapse(level, hall);
 		resolve(level, hall);
 		StewardSafety.track(level, hall);
+		OldHouses.request(level, hall); // 27.20: keeps the survey of old houses fresh (a day old at most)
 		long day = StewardWishes.day(level);
 		tellShopping(level, hall, steward, day);
 		// 27.19: no new build while two of his builds have waited a whole day for materials

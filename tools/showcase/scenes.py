@@ -130,6 +130,10 @@ SCENES = [
       "two of the Steward's builds wait for materials: the desk and the Storehouse board show one shopping list adding up both, new builds wait, and the build with a player's block in the way says so", 30,
       [("01_shopping_list_on_the_desk", "The desk: one shopping list for both builds"), ("02_players_block_in_the_way", "A player's block is in the way"),
        ("03_shopping_list_on_the_storehouse_board", "The Storehouse board's shopping list")]),
+    # Old houses (ROADMAP 27.20): three vanilla plains houses in a renew zone, counted on the desk, outlined by Show me
+    S("old_houses", "Steward", "Old houses, found and measured",
+      "the Steward found the three vanilla houses in the renew zone, the desk says 2 of them can be renewed (one keeps a chest), and Show me outlined each", 30,
+      [("01_old_houses_on_the_desk", "The desk: Old houses: 3, 2 can be renewed"), ("02_show_me_outlines", "Show me: each house outlined")]),
     # The Steward gives jobs (ROADMAP 27.9): the morning's jobs as one proposal, approved, the villagers off to their blocks
     S("steward_jobs", "Steward", "The Steward gives out jobs",
       "the Steward proposed jobs for three jobless villagers, approving made them a farmer, a guard and a fletcher, and they walked to their new workstations", 45,

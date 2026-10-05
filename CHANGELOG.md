@@ -32,6 +32,11 @@ asks for the steps, `latest.log` and any crash report).
   seed stock, so a Farmstead's field could be harvested without anything landing in its chest. He now takes them from the
   chests to plant with, like seeds, and puts the whole harvest away.
 ### Added
+- **Old houses, found and measured** (27.20): in zones with "Renew" on, the Steward looks for houses no builder built
+  (round a bed or a workstation) and measures each by its blocks. The desk lists them ("Old houses: 4, 3 can be renewed")
+  with where each stands and why one is kept (a chest inside, a player built there, not of village blocks, out of the
+  zone), and a click outlines them all in the world. Packs add their village blocks to the tag
+  `aliveworkplace:village_house_blocks`. Nothing is rebuilt yet.
 - **The Steward is safe by design** (27.19): his plans, roads and walls never go into Keep Clear, another village or a
   protected village that isn't his owner's, and a ledger of what players built in a village (from 1.1 on) keeps his
   plans and walls out of those spots unless the owner approves one by hand. His sites leave a player's block where it

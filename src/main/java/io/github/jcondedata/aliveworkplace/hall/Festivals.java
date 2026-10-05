@@ -328,20 +328,30 @@ public final class Festivals {
 
 	/** A villager off work (idle, meeting or playing) comes to the square; one there dances now and then. */
 	static void gather(ServerLevel level, Villager villager, BlockPos square) {
+		if (gatherAt(level, villager, square)) {
+			ModAttachments.FESTIVAL_DAY.set(villager, Chronicle.day(level));
+		}
+	}
+
+	/**
+	 * The gathering, shared with the Grand Chef's banquets (29.18): a villager off work walks to {@code square}; one there
+	 * dances now and then. Returns whether they are at the square.
+	 */
+	static boolean gatherAt(ServerLevel level, Villager villager, BlockPos square) {
 		Activity activity = villager.getBrain().getActiveNonCoreActivity().orElse(null);
 		if (activity != Activity.IDLE && activity != Activity.MEET && activity != Activity.PLAY) {
-			return;
+			return false;
 		}
 		if (!square.closerToCenterThan(villager.position(), SQUARE)) {
 			BlockPos spot = square.offset(level.random.nextInt(9) - 4, 0, level.random.nextInt(9) - 4);
 			villager.getBrain().setMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(spot, 0.55f, 1));
-			return;
+			return false;
 		}
 		if (level.random.nextFloat() < 0.25f && villager.onGround()) {
 			villager.getJumpControl().jump();
 			level.sendParticles(ParticleTypes.NOTE, villager.getX(), villager.getY() + 2.2, villager.getZ(), 1, 0.2, 0.1, 0.2, level.random.nextDouble());
 		}
-		ModAttachments.FESTIVAL_DAY.set(villager, Chronicle.day(level));
+		return true;
 	}
 
 	/** A firework from {@code at}, in two or three of the festival's colours. */

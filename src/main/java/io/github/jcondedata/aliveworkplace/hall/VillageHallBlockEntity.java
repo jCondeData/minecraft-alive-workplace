@@ -33,6 +33,9 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 	private PlayerBank.State playerBank = new PlayerBank.State();
 	/** The day of the last trade fair (29.17), or -1 before the first is counted. */
 	private long fairDay = -1;
+	/** The day of the last banquet (29.18, the Grand Chef), or -1 before the first; whether its feast was eaten yet. */
+	private long banquetDay = -1;
+	private boolean banquetEaten;
 	/** The trade fair's bunting (29.17): the banners put up round the square, taken down after the fair's day. */
 	private final java.util.List<BlockPos> fairBunting = new java.util.ArrayList<>();
 	private int festivalCrowd;
@@ -153,6 +156,7 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 			}
 			PlayerBank.round(server, pos, hall);
 			TradeFairs.round(server, pos, hall);
+			Banquets.round(server, pos, hall);
 			io.github.jcondedata.aliveworkplace.guard.VillageRaids.tick(server, pos, census.villagers(), census.guards(), hall.lastRaidDay, day -> {
 				hall.lastRaidDay = day;
 				hall.setChanged();
@@ -511,6 +515,22 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 		return fairDay;
 	}
 
+	/** The day of the village's last banquet (29.18), -1 before the first. */
+	public long banquetDay() {
+		return banquetDay;
+	}
+
+	/** Whether that banquet's feast has been eaten (the village gathers first, then eats). */
+	public boolean banquetEaten() {
+		return banquetEaten;
+	}
+
+	public void setBanquet(long day, boolean eaten) {
+		banquetDay = day;
+		banquetEaten = eaten;
+		setChanged();
+	}
+
 	public void setFairDay(long day) {
 		fairDay = day;
 		setChanged();
@@ -663,6 +683,8 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 		treasuryTotal = Nbt.getLong(tag, "treasuryTotal");
 		playerBank = PlayerBank.State.load(tag);
 		fairDay = tag.contains("fairDay") ? Nbt.getLong(tag, "fairDay") : -1;
+		banquetDay = tag.contains("banquetDay") ? Nbt.getLong(tag, "banquetDay") : -1;
+		banquetEaten = Nbt.getBoolean(tag, "banquetEaten");
 		fairBunting.clear();
 		for (long p : Nbt.getLongArray(tag, "fairBunting")) {
 			fairBunting.add(BlockPos.of(p));
@@ -749,6 +771,8 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 		tag.putLong("treasuryTotal", treasuryTotal);
 		playerBank.save(tag);
 		tag.putLong("fairDay", fairDay);
+		tag.putLong("banquetDay", banquetDay);
+		tag.putBoolean("banquetEaten", banquetEaten);
 		if (!fairBunting.isEmpty()) {
 			tag.put("fairBunting", new net.minecraft.nbt.LongArrayTag(fairBunting.stream().mapToLong(BlockPos::asLong).toArray()));
 		}

@@ -16,6 +16,12 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+- **The Grand Chef** (29.18), a Rare Legend in a tall white toque with a gold band and a gold ladle at the apron: a
+  Master Chef inspired to bake "The <village> Midsummer Cake", a guest at the inn, or born to a Chef, once the store
+  holds 8 kinds of meal. Likes wine. Every 5 days after work the village gathers round the hall (or the Market Square)
+  for a banquet, and at supper each grown-up eats two meals from the store, of as many kinds as it has: everyone who
+  came is 20 happier for 3 days, and for those 3 days the village may have two babies a day (beds and food as usual).
+  Chefs in the village cook 25% faster.
 - **The Merchant Prince** (29.17), a Legendary Legend in a crimson coat and feathered hat: a castaway by a shipwreck
   once the treasury has taken in 500 emeralds and the village sends caravans on 3 routes. With him the treasury earns
   2% a day and holds twice as much; the hall gets a **Bank** page where each player keeps up to 10 stacks of emeralds

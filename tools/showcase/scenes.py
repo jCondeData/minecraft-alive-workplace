@@ -312,6 +312,9 @@ SCENES = [
     # The Golem Smith (ROADMAP 29.15): a Hauler forged from the chest; the hauler, a farmhand and a wall sentry at work
     job("legend_golem_smith", "Legends", "The Golem Smith's golems at work",
         "the Golem Smith forged a Hauler Golem, and the hauler, a farmhand and a wall sentry went to work", 150),
+    # The Grand Chef (ROADMAP 29.18): a banquet called after work, the village gathered round the hall, the feast at supper
+    job("legend_grand_chef", "Legends", "The Grand Chef's banquet",
+        "the Grand Chef called the village to a banquet: everyone gathered round the hall and at supper each grown-up ate two meals of the eight kinds in the store", 90),
     job("legend_strike", "Legends", "A Legend on strike", "a Legend on strike left her stonecutter and picketed by the Village Hall under a red line", 120),
     # Strange moods (ROADMAP 29.10): a Master cleric claims her brewing stand under a purple line, the chest by it fills,
     # and she makes a named Masterwork, hung in an item frame, and becomes a Legend

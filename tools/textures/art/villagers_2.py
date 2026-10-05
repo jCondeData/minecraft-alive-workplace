@@ -922,6 +922,10 @@ def seer():
     am = t.face("arms_middle", "front")                  # a star on the folded sleeves
     paint(am, ((1, 1), (6, 2)), star)
     path = ASSETS / "textures" / "entity" / "villager" / "legend" / "seer.png"
+    t.save(path)
+    return [path]
+
+
 def golem_smith():
     """The Golem Smith (29.15), drawn over the Tinkerer's outfit: a heavy dark leather smith's apron from the chest to
     the shins with iron rivets and a scorched hem; riveted iron-rimmed goggles down over the eyes on a leather strap;
@@ -1008,9 +1012,56 @@ def merchant_prince():
     return [path]
 
 
+def grand_chef():
+    """The Grand Chef (29.18), drawn over the Chef's outfit: a tall, full white toque pleated from the crown to the
+    band (deep shadowed pleats, a lit ridge on each, the crown's puff swelling over the edge), a gold band round it (the
+    Legend's mark, in place of the Chef's white one), and a gold ladle hanging at the apron's right side: its bowl at the
+    hip, the handle up to the apron string."""
+    t = vg.VillagerTexture()
+    white = Ramp(["#a9a99e", "#c4c3b9", "#dcdbd2", "#ebeae3", "#f6f5ef"], name="linen")
+    for side in SIDES:                                   # the toque: four rows of deep pleats, the band at row 4
+        f = t.face("hat", side)
+        lit = side in ("front", "west")
+        for y in range(0, 4):
+            for x in range(f.w):
+                c = white[3]
+                if x % 3 == 2:
+                    c = white[1] if y > 0 else white[2]  # the pleat's deep shadow, shallower where the puff swells
+                elif x % 3 == 0 and lit:
+                    c = white[4]                         # the pleat's lit ridge
+                if y == 0 and x % 3 != 2:
+                    c = white[4] if lit else white[3]    # the puff swelling over the edge
+                f.put(x, y, c)
+        for x in range(f.w):                             # the gold band
+            f.put(x, 4, GOLD[2] if lit else GOLD[1])
+        if side == "front":
+            f.put(3, 4, GOLD[3])                         # a gold stud at the brow
+            f.put(4, 4, GOLD[3])
+    top = t.face("hat", "top")                           # the crown: a big puff, darker at the rim, gathered in the middle
+    for y in range(8):
+        for x in range(8):
+            edge = x in (0, 7) or y in (0, 7)
+            top.put(x, y, white[2] if edge else white[3])
+    for x, y in ((3, 3), (4, 3), (3, 4), (4, 4)):
+        top.put(x, y, white[1])
+    for x, y in ((1, 6), (2, 6), (1, 5), (2, 5)):
+        top.put(x, y, white[4])
+    jf = t.face("jacket", "front")                       # the gold ladle at the apron (x 0..3, clear of the badge)
+    paint(jf, ((1, y) for y in range(9, 14)), GOLD[2])   # the handle, hooked over the apron string
+    jf.put(2, 9, GOLD[1])
+    jf.put(1, 9, GOLD[3])
+    paint(jf, ((0, 14), (1, 14), (2, 14)), GOLD[2])      # the bowl
+    paint(jf, ((0, 15), (1, 15), (2, 15)), GOLD[1])
+    jf.put(0, 14, GOLD[3])
+    jf.put(1, 16, GOLD[0])
+    path = ASSETS / "textures" / "entity" / "villager" / "legend" / "grand_chef.png"
+    t.save(path)
+    return [path]
+
+
 DRAW = [orchard_keeper, berry_breeder, camp_cook, habitat_keeper, daycare_keeper, gem_grower, pokemon_trader, porter, postman, rancher, scholar, shopkeeper, sifter, teacher, tinkerer,
         trainer, trainer_leader, tutor, undertaker, steward, legend, legend_placeholder, master_architect, pathfinder, old_sage, seer, golem_smith,
-        merchant_prince]
+        merchant_prince, grand_chef]
 
 if __name__ == "__main__":
     run(DRAW)

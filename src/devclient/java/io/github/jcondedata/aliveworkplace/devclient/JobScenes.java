@@ -918,6 +918,56 @@ final class JobScenes {
 				return told[0] && t >= 600;
 			};
 		}, null));
+		SCENES.put("legend_grand_chef", new Job("the Grand Chef called the village to a banquet: everyone gathered round the hall and at supper each grown-up ate two meals of the eight kinds in the store",
+			900, new Vec3(1.5, -54.5, 12), new Vec3(0, -60, 0), (level, player) -> {
+			// ROADMAP 29.18: the Village Hall, a kitchen (a smoker with the store's chest beside it, eight kinds of meal) with
+			// the Grand Chef at it in the tall toque, and six villagers about the place. After work the banquet is called
+			// and the hall's banquet gathering walks them to the hall; at supper the feast: two meals each.
+			level.getGameRules().getRule(GameRules.RULE_DAYLIGHT).set(false, level.getServer());
+			level.setDayTime(9100);
+			BlockPos hall = STATION;
+			place(level, hall, ModBlocks.VILLAGE_HALL);
+			BlockPos smoker = STATION.offset(5, 0, -3);
+			Villager chef = worker(level, smoker, Blocks.SMOKER, PoiTypes.BUTCHER, io.github.jcondedata.aliveworkplace.registry.ModVillagers.CHEF);
+			chest(level, smoker.east(), new ItemStack(Items.BREAD, 16), new ItemStack(Items.BAKED_POTATO, 16), new ItemStack(Items.COOKED_BEEF, 16),
+				new ItemStack(Items.PUMPKIN_PIE, 16), new ItemStack(Items.COOKED_SALMON, 16), new ItemStack(Items.MUSHROOM_STEW, 1),
+				new ItemStack(Items.COOKED_CHICKEN, 16), new ItemStack(Items.COOKIE, 16), new ItemStack(Items.MUSHROOM_STEW, 1),
+				new ItemStack(Items.MUSHROOM_STEW, 1));
+			io.github.jcondedata.aliveworkplace.legend.Legend legend = io.github.jcondedata.aliveworkplace.legend.Legends.get(
+				io.github.jcondedata.aliveworkplace.AliveWorkplace.id("grand_chef")).orElse(null);
+			Showcase.check(legend != null, "the Grand Chef's file loaded");
+			if (legend == null) {
+				return l -> true;
+			}
+			io.github.jcondedata.aliveworkplace.legend.Legends.make(level, chef, legend, "showcase");
+			io.github.jcondedata.aliveworkplace.legend.LegendPowers.forget();
+			for (int i = 0; i < 6; i++) {
+				EntityType.VILLAGER.spawn(level, STATION.offset(-9 + 3 * i, 0, i % 2 == 0 ? 6 : -6), MobSpawnType.COMMAND);
+			}
+			place(level, STATION.offset(-2, 0, 3), Blocks.CAKE);
+			long began = level.getGameTime();
+			boolean[] called = {false};
+			int[] meals = {-1};
+			return l -> {
+				long t = l.getGameTime() - began;
+				var entity = (io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) l.getBlockEntity(hall);
+				if (t >= 20 && !called[0] && entity != null) {
+					called[0] = true;
+					io.github.jcondedata.aliveworkplace.hall.Banquets.round(l, hall, entity);
+					Showcase.check(entity.banquetDay() == io.github.jcondedata.aliveworkplace.hall.Chronicle.day(l), "the Grand Chef called a banquet");
+				}
+				if (t >= 400 && meals[0] < 0 && entity != null) {
+					l.setDayTime(io.github.jcondedata.aliveworkplace.hall.Banquets.SUPPER + 100);
+					int grown = l.getEntitiesOfClass(Villager.class, io.github.jcondedata.aliveworkplace.hall.VillageHalls.area(hall),
+						v -> v.isAlive() && !v.isBaby() && !v.isSleeping()).size();
+					io.github.jcondedata.aliveworkplace.hall.Banquets.round(l, hall, entity);
+					meals[0] = l.getEntitiesOfClass(Villager.class, io.github.jcondedata.aliveworkplace.hall.VillageHalls.area(hall),
+						v -> io.github.jcondedata.aliveworkplace.registry.ModAttachments.BANQUET.has(v)).size();
+					Showcase.check(entity.banquetEaten() && meals[0] >= grown && grown >= 7, "everyone came to the feast (" + meals[0] + " of " + grown + ")");
+				}
+				return meals[0] >= 0 && t >= 640;
+			};
+		}, null));
 		SCENES.put("legend_golem_smith", new Job("the Golem Smith forged a Hauler Golem, and the hauler, a farmhand and a wall sentry went to work",
 			2400, new Vec3(1.5, -51.5, 11), new Vec3(0, -60, -5), (level, player) -> {
 			// ROADMAP 29.15: the Golem Smith at a smithing table, the costs of a Hauler in the chest beside it and five

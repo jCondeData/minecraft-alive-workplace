@@ -25,6 +25,7 @@ public final class Powers {
 		register("trade_fair", TradeFairPower::read);
 		register("keeps_to", KeepsToPower::read);
 		register("golem_forge", GolemForgePower::read);
+		register("banquet", BanquetPower::read);
 		GiftPowers.register();
 		Seer.register();
 	}

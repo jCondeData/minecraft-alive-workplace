@@ -67,15 +67,31 @@ public final class VillageHallScreen {
 	public static final int FIND = 8;
 	/** On the quests page: where the quests are. */
 	public static final int[] QUEST_SLOTS = {20, 22, 24};
-	static final int PREVIOUS = 9;
-	static final int NEXT = 17;
+	/** On the quests page: the row below the quests, where the reform steps go (centred, one per edict, 30.5). */
+	public static final int REFORM_ROW = 3;
+
+	/** Where the reform steps sit when there are {@code count} of them: centred in {@link #REFORM_ROW}, a slot apart. */
+	public static int[] reformSlots(int count) {
+		int n = Math.max(0, Math.min(4, count));
+		int[] out = new int[n];
+		for (int i = 0; i < n; i++) {
+			out[i] = REFORM_ROW * 9 + 4 - (n - 1) + 2 * i;
+		}
+		return out;
+	}
+	/** The Book of Edicts (ROADMAP 30.4), where the people list's "previous page" arrow sat. */
+	public static final int BOOK = 9;
+	/** The people list's page arrows, in the list's bottom corners (30.4). */
+	public static final int PREVIOUS = 45;
+	public static final int NEXT = 53;
 	/** The page row (ROADMAP 22.5): a tab for each page in {@link HallPages}, then light glass for the room left. */
 	public static final int PAGE_ROW = 18;
 	/** Where a page's own rows start (under its header and divider). */
 	public static final int FIRST_ROW = 18;
 	/** Where the list of villagers starts, under the page row. */
 	public static final int FIRST_PERSON = PAGE_ROW + 9;
-	static final int PER_PAGE = ChoiceMenu.SIZE - FIRST_PERSON;
+	/** People a page: the 27 slots under the page row less the two arrows (30.4). */
+	public static final int PER_PAGE = ChoiceMenu.SIZE - FIRST_PERSON - 2;
 	/** Lines of a list shown in a tooltip before "and N more". */
 	private static final int LIST_LINES = 8;
 	/** How long a villager clicked on glows. */
@@ -135,6 +151,12 @@ public final class VillageHallScreen {
 			nameLore.add(line(owned.isProtected() ? "screen.aliveworkplace.hall.unprotect_click" : "screen.aliveworkplace.hall.protect_click",
 				ChatFormatting.DARK_GRAY));
 		}
+		if (level.getBlockEntity(hall) instanceof VillageHallBlockEntity laws && !laws.edicts().isEmpty()) {
+			nameLore.add(line("screen.aliveworkplace.hall.edicts", ChatFormatting.GOLD));
+			for (Edicts.InForce f : laws.edicts()) {
+				nameLore.add(line(Component.translatable("screen.aliveworkplace.hall.edict_line", Edicts.name(f.id())), ChatFormatting.YELLOW));
+			}
+		}
 		nameLore.add(line("screen.aliveworkplace.hall.rename", ChatFormatting.DARK_GRAY));
 		menu.button(NAME, icon(Items.NAME_TAG, VillageHalls.name(level, hall).copy(), ChatFormatting.GOLD, nameLore.toArray(Component[]::new)), p -> {
 			Chat.chat(p, menu.shiftClicked() ? VillageProtection.toggle(level, hall, p) : Treasury.collect(level, hall, p));
@@ -169,7 +191,10 @@ public final class VillageHallScreen {
 		menu.button(WELLBEING, wellbeingIcon(needs), null);
 		menu.button(REQUESTS, requestsIcon(census.requests()), null);
 		menu.button(BUILDS, buildsIcon(census.builds()), null);
-		List<VillageQuests.Quest> quests = entity == null ? List.of() : entity.quests();
+		List<VillageQuests.Quest> quests = new ArrayList<>(entity == null ? List.of() : VillageQuests.daily(entity.quests()));
+		if (entity != null) {
+			quests.addAll(Reforms.shown(entity));
+		}
 		menu.button(QUESTS, icon(Items.MAP, Component.translatable("screen.aliveworkplace.hall.quests", quests.size()), ChatFormatting.WHITE,
 			line(quests.isEmpty() ? "screen.aliveworkplace.hall.no_quests" : "screen.aliveworkplace.hall.quests_hint",
 				quests.isEmpty() ? ChatFormatting.GRAY : ChatFormatting.GREEN)), p -> {
@@ -240,10 +265,18 @@ public final class VillageHallScreen {
 					p -> refresh(menu, level, hall, shown + 1));
 			}
 		}
+		menu.button(BOOK, icon(Items.LECTERN, Component.translatable("screen.aliveworkplace.hall.book"), ChatFormatting.GOLD,
+			line("screen.aliveworkplace.hall.book_hint", ChatFormatting.GRAY)), p -> {
+			EdictBook.render(menu, level, hall, () -> refresh(menu, level, hall, shown), -1);
+			menu.broadcastChanges();
+		});
 		pageRow(menu, level, hall);
 		int slot = FIRST_PERSON;
 		for (Villager villager : people.subList(shown * PER_PAGE, Math.min(people.size(), (shown + 1) * PER_PAGE))) {
 			boolean jobless = census.jobless().contains(villager) && io.github.jcondedata.aliveworkplace.legend.Legends.of(villager).isEmpty();
+			if (slot == PREVIOUS) {
+				slot++;
+			}
 			menu.button(slot++, person(level, hall, villager), p -> {
 				if (jobless && villager.getVillagerData().getProfession() != net.minecraft.world.entity.npc.VillagerProfession.NITWIT) {
 					renderJobs(menu, level, hall, villager, shown);
@@ -424,24 +457,69 @@ public final class VillageHallScreen {
 		menu.clearButtons();
 		menu.button(0, icon(Items.ARROW, Component.translatable("screen.aliveworkplace.hall.back"), ChatFormatting.WHITE), p -> refresh(menu, level, hall, 0));
 		VillageHallBlockEntity entity = level.getBlockEntity(hall) instanceof VillageHallBlockEntity e ? e : null;
-		List<VillageQuests.Quest> quests = entity == null ? List.of() : entity.quests();
+		List<VillageQuests.Quest> quests = entity == null ? List.of() : VillageQuests.daily(entity.quests());
 		menu.button(4, icon(Items.WRITABLE_BOOK, Component.translatable("screen.aliveworkplace.hall.quests_title", VillageHalls.name(level, hall)),
 			ChatFormatting.GOLD, line(Component.translatable("screen.aliveworkplace.hall.quests_about", VillageQuests.MAX_OPEN), ChatFormatting.GRAY),
 			line(Component.translatable("screen.aliveworkplace.hall.quests_done", entity == null ? 0 : entity.questsDone()), ChatFormatting.GRAY)), null);
 		menu.divider(1);
 		for (int i = 0; i < Math.min(quests.size(), QUEST_SLOTS.length); i++) {
 			VillageQuests.Quest quest = quests.get(i);
-			menu.button(QUEST_SLOTS[i], questIcon(level, quest, viewer), quest.kind() != VillageQuests.Kind.BRING ? null : p -> {
-				int given = VillageQuests.handIn(p, hall, quest.id());
-				if (given == 0) {
-					Chat.actionBar(p, Component.translatable("message.aliveworkplace.quest.nothing", quest.itemType().getDescription())
-						.withStyle(ChatFormatting.YELLOW));
-				} else {
-					level.playSound(null, p.blockPosition(), SoundEvents.BUNDLE_INSERT, SoundSource.PLAYERS, 0.8f, 1f);
-				}
-				renderQuests(menu, level, hall, p);
-				menu.broadcastChanges();
-			});
+			menu.button(QUEST_SLOTS[i], questIcon(level, quest, viewer), handIn(menu, level, hall, quest));
+		}
+		// The reform steps of the edicts in force, in the row below (30.5): never expire, a book and quill each.
+		List<VillageQuests.Quest> reforms = entity == null ? List.of() : Reforms.shown(entity);
+		int[] slots = reformSlots(reforms.size());
+		for (int i = 0; i < slots.length; i++) {
+			VillageQuests.Quest quest = reforms.get(i);
+			menu.button(slots[i], reformIcon(quest, viewer), handIn(menu, level, hall, quest));
+		}
+	}
+
+	/** What clicking a quest does: a BRING quest takes what the player has of it; the others are done elsewhere. */
+	@org.jetbrains.annotations.Nullable
+	private static java.util.function.Consumer<ServerPlayer> handIn(ChoiceMenu menu, ServerLevel level, BlockPos hall, VillageQuests.Quest quest) {
+		return quest.kind() != VillageQuests.Kind.BRING ? null : p -> {
+			int given = VillageQuests.handIn(p, hall, quest.id());
+			if (given == 0) {
+				Chat.actionBar(p, Component.translatable("message.aliveworkplace.quest.nothing", quest.itemType().getDescription())
+					.withStyle(ChatFormatting.YELLOW));
+			} else {
+				level.playSound(null, p.blockPosition(), SoundEvents.BUNDLE_INSERT, SoundSource.PLAYERS, 0.8f, 1f);
+			}
+			renderQuests(menu, level, hall, p);
+			menu.broadcastChanges();
+		};
+	}
+
+	/** A reform step: a book and quill named for its reform and step, with the reform's line, the task and its pay. */
+	static ItemStack reformIcon(VillageQuests.Quest quest, ServerPlayer viewer) {
+		VillageQuests.ReformStep step = quest.reform().orElseThrow();
+		List<Component> lore = new ArrayList<>();
+		Reforms.of(step.edict()).map(Reforms.Reform::line).filter(l -> !l.getString().isEmpty())
+			.ifPresent(l -> lore.add(line(l, ChatFormatting.GRAY)));
+		lore.add(line(Component.translatable("screen.aliveworkplace.hall.reform_of", Edicts.name(step.edict())), ChatFormatting.AQUA));
+		lore.add(line(VillageQuests.task(quest), ChatFormatting.WHITE));
+		lore.add(line(Component.translatable("screen.aliveworkplace.hall.quest_progress", quest.progress(), quest.count()), ChatFormatting.GRAY));
+		lore.add(line(Component.translatable("screen.aliveworkplace.hall.quest_reward",
+			io.github.jcondedata.aliveworkplace.work.Money.describe((long) quest.reward() * io.github.jcondedata.aliveworkplace.work.Money.DOLLARS_PER_EMERALD,
+				quest.reward())), ChatFormatting.GREEN));
+		lore.add(line("screen.aliveworkplace.hall.reform_never_expires", ChatFormatting.DARK_GRAY));
+		hint(quest, viewer, lore);
+		ItemStack icon = icon(Items.WRITABLE_BOOK, Reforms.title(step).copy(), ChatFormatting.LIGHT_PURPLE, lore.toArray(Component[]::new));
+		icon.set(net.minecraft.core.component.DataComponents.ENCHANTMENT_GLINT_OVERRIDE, true);
+		return icon;
+	}
+
+	/** The last line of a quest's tooltip: what to do (hand in what you carry, fight monsters, beat a trainer). */
+	private static void hint(VillageQuests.Quest quest, ServerPlayer viewer, List<Component> lore) {
+		switch (quest.kind()) {
+			case BRING -> {
+				int have = viewer.getInventory().countItem(quest.itemType());
+				lore.add(line(have > 0 ? Component.translatable("screen.aliveworkplace.hall.quest_hand_in", Math.min(have, quest.left()))
+					: Component.translatable("screen.aliveworkplace.hall.quest_none_on_you"), have > 0 ? ChatFormatting.YELLOW : ChatFormatting.DARK_GRAY));
+			}
+			case SLAY -> lore.add(line(Component.translatable("screen.aliveworkplace.hall.quest_slay_hint", VillageHalls.RADIUS), ChatFormatting.YELLOW));
+			case BATTLE -> lore.add(line("screen.aliveworkplace.hall.quest_battle_hint", ChatFormatting.YELLOW));
 		}
 	}
 
@@ -463,15 +541,7 @@ public final class VillageHallScreen {
 				quest.reward())), ChatFormatting.GREEN));
 		long days = Math.max(1, (VillageQuests.LASTS - (level.getGameTime() - quest.posted()) + 23999) / 24000);
 		lore.add(line(Component.translatable("screen.aliveworkplace.hall.quest_days", days), ChatFormatting.DARK_GRAY));
-		switch (quest.kind()) {
-			case BRING -> {
-				int have = viewer.getInventory().countItem(quest.itemType());
-				lore.add(line(have > 0 ? Component.translatable("screen.aliveworkplace.hall.quest_hand_in", Math.min(have, quest.left()))
-					: Component.translatable("screen.aliveworkplace.hall.quest_none_on_you"), have > 0 ? ChatFormatting.YELLOW : ChatFormatting.DARK_GRAY));
-			}
-			case SLAY -> lore.add(line(Component.translatable("screen.aliveworkplace.hall.quest_slay_hint", VillageHalls.RADIUS), ChatFormatting.YELLOW));
-			case BATTLE -> lore.add(line("screen.aliveworkplace.hall.quest_battle_hint", ChatFormatting.YELLOW));
-		}
+		hint(quest, viewer, lore);
 		return icon(item, VillageQuests.describe(quest).copy(), ChatFormatting.GOLD, lore.toArray(Component[]::new));
 	}
 

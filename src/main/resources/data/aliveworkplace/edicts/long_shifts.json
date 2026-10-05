@@ -6,5 +6,15 @@
   "boost": [{"type": "aliveworkplace:work_pace", "percent": 20}],
   "cost": [{"type": "aliveworkplace:mood", "points": -10, "reason": {"translate": "mood.aliveworkplace.reason.long_shifts"}}],
   "excludes": [],
+  "reform": {
+    "name": {"translate": "reform.aliveworkplace.shift_bell"},
+    "line": {"translate": "reform.aliveworkplace.shift_bell.line"},
+    "steps": [
+      {"kind": "bring", "item": "minecraft:clock", "count": 4, "reward": 5},
+      {"kind": "bring", "item": "minecraft:gold_ingot", "count": 8, "reward": 5},
+      {"kind": "bring", "item": "minecraft:bread", "count": 32, "reward": 4}
+    ],
+    "effects": []
+  },
   "enabled": true
 }

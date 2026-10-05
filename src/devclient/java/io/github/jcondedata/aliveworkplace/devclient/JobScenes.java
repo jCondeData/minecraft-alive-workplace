@@ -1720,6 +1720,10 @@ final class JobScenes {
 				io.github.jcondedata.aliveworkplace.people.Moods.forget();
 			},
 			List.of(new Step("01_long_shifts_list", io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_PERSON, 6, (level, player) -> {
+					// The hall's POI is only registered after the staging tick, so the villager's hall was remembered as none
+					// for 200 ticks (CivicEffects.HALL_TICKS): look it up again now (B72).
+					io.github.jcondedata.aliveworkplace.hall.CivicEffects.forget();
+					io.github.jcondedata.aliveworkplace.people.Moods.forget();
 					io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.open(player, STATION);
 					var mood = io.github.jcondedata.aliveworkplace.people.Moods.of(subject);
 					Showcase.check(mood != null && mood.bad().stream().anyMatch(c -> c.getString().equals("long shifts")),
@@ -1857,6 +1861,10 @@ final class JobScenes {
 				io.github.jcondedata.aliveworkplace.people.Moods.forget();
 			},
 			List.of(new Step("01_free_bread_list", io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_PERSON, 6, (level, player) -> {
+					// The hall's POI is only registered after the staging tick, so the villager's hall was remembered as none
+					// for 200 ticks (CivicEffects.HALL_TICKS): look it up again now (B72).
+					io.github.jcondedata.aliveworkplace.hall.CivicEffects.forget();
+					io.github.jcondedata.aliveworkplace.people.Moods.forget();
 					io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.open(player, STATION);
 					var mood = io.github.jcondedata.aliveworkplace.people.Moods.of(subject);
 					Showcase.check(mood != null && mood.good().stream().anyMatch(c -> c.getString().equals("free bread")),

@@ -17,6 +17,13 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Added
+- **Legends on the hall, and how they look** (29.4): the Village Hall has a Legends page (a nether star in the page
+  row): the village's own Legends first, then every Legend as a card with its rarity, how it comes, each condition with
+  the village's progress, the luxury it likes, its powers, "lives in ..." for a Legendary taken elsewhere and the Mythic
+  line. The hall's list puts Legends first, name and title in gold, with their powers, needs (tick or cross) and any
+  strike in red. "What next?" names a Legend one condition short, villagers chat about Legends and guests, and Legends
+  wear an outfit over their trade's (a gold circlet and wine-red cape until each has its own), sparkle every 10 seconds
+  and have their name in gold over their head. README has a new Legends section.
 - **Legends: rarities, caps and the server's record** (29.3): the server keeps a saved record of every Legend. A Rare
   Legend comes once to each village, a Legendary one once to each world, and a village holds Mythic ones by its rank
   (`mythicLegendCap` in the config file, default Hamlet 0, Village 0, Town 1, City 2). Rare and Legendary arrivals are

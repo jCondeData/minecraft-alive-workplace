@@ -71,7 +71,7 @@ public final class BuilderStatusRenderer {
 			if (at.distanceToSqr(cam) > MAX_DISTANCE * MAX_DISTANCE) {
 				continue;
 			}
-			double top = entity.getBbHeight() + 0.55 + (entity.shouldShowName() ? 0.3 : 0);
+			double top = entity.getBbHeight() + 0.55 + (entity.shouldShowName() || LegendLookLayer.isLegend(entity) ? 0.3 : 0);
 			pose.pushPose();
 			pose.translate(at.x - cam.x, at.y - cam.y + top, at.z - cam.z);
 			pose.mulPose(mc.getEntityRenderDispatcher().cameraOrientation());

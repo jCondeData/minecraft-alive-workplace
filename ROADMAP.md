@@ -1391,7 +1391,7 @@ MarketDays) and research/.
     the Legend again; a slot frees 7 days after a death with no grave; the record survives a reload;
   - a Mythic announcement reaches a player 5,000 blocks away and a Rare one doesn't; showcase scene `legend_announce`
     (the message in chat, the chronicle line).
-- [ ] **29.4** **Legends on the hall, and how they look.**
+- [x] **29.4** (review: pending 2026-10-05) **Legends on the hall, and how they look.**
   - The hall's list (`VillageHallScreen`) puts Legends first: name and title in gold ("Ada Stonewright, Master
     Architect"), rarity, each power on a line, each need with a tick or a cross, a strike in red. A Gifted villager's
     trait shows in gold under their traits.
@@ -4272,6 +4272,14 @@ item waits.
 - (Sessions: anything that needs the owner, and the link to the latest Full test report. Handoffs go here through
   `sessions.py handoff "<in progress, next, traps>" --as <you>`, which keeps one per kind of session (chat, night):
   carry over anything still true from the previous one.)
+- 2026-10-05 (29.4, decision; lane a): two parts of 29.4 lean on items not built yet. (1) No Gifted villagers exist
+  until 29.6, so the gold gift line under a villager's traits on the hall's list is left to 29.6 (it goes in
+  `VillageHallScreen.person` beside the traits line). (2) Needs aren't checked until 29.5: the hall and the Legends page
+  read each need's tick or cross from `LegendData.unmet` (keys `home`, `luxury`, `happy`, `LegendText.HOME` and so on;
+  more than 0 days unmet shows a cross) and the strike from `strikeSince`, so 29.5 only has to write them. Until then
+  every need shows a tick. A Legend's outfit is `textures/entity/villager/legend/<id>.png` (or the file's `outfit`);
+  one that isn't there falls back to `legend/placeholder.png` (a gold circlet and a wine-red cape), never the magenta
+  check. Each power's line is `legend.<ns>.power.<type>` unless the power overrides `Power.describe`.
 - 2026-10-04 (27.4, decision; lane c): the plan on the ground is drawn as the Scan Tool's box really is: dust the
   server sends to the holder alone (`city/CityPlanGround`, every 10 ticks, at most 900 dots, within 24 blocks), not a
   client renderer, so nothing new has to be synced to the client. Road styles don't exist until 27.15, so a road's style

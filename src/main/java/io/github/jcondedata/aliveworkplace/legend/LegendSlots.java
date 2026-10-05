@@ -138,6 +138,7 @@ public final class LegendSlots {
 		if (ModAttachments.LEGEND.has(villager)) {
 			LegendRecord.get(level).back(before, villager.getUUID());
 			LegendPowers.seen(villager);
+			LegendLook.update(villager);
 		}
 	}
 
@@ -154,6 +155,7 @@ public final class LegendSlots {
 		} else if (after instanceof Villager villager) {
 			record.back(before.getUUID(), villager.getUUID());
 			LegendPowers.seen(villager);
+			LegendLook.update(villager); // their clients began tracking them before the attachment came across
 		}
 	}
 

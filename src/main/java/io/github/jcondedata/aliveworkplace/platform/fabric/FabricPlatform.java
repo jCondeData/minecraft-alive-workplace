@@ -131,6 +131,11 @@ public final class FabricPlatform implements Platform {
 	}
 
 	@Override
+	public void onStartTracking(BiConsumer<Entity, ServerPlayer> action) {
+		net.fabricmc.fabric.api.networking.v1.EntityTrackingEvents.START_TRACKING.register(action::accept);
+	}
+
+	@Override
 	public void onPlayerJoin(Consumer<ServerPlayer> action) {
 		ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> action.accept(handler.getPlayer()));
 	}

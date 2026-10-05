@@ -15,4 +15,11 @@ public record MoodPower(int points, int radius) implements Power {
 	public String type() {
 		return "mood";
 	}
+
+	/** "Villagers within 8 blocks are 7 happier", "Everyone in the village is 7 happier". */
+	@Override
+	public net.minecraft.network.chat.Component describe() {
+		return radius > 0 ? net.minecraft.network.chat.Component.translatable("legend.aliveworkplace.power.mood", points, radius)
+			: net.minecraft.network.chat.Component.translatable("legend.aliveworkplace.power.mood_village", points);
+	}
 }

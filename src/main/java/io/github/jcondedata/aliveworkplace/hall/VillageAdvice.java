@@ -109,6 +109,8 @@ public final class VillageAdvice {
 				tips.add(new Tip("homes", Items.OAK_DOOR, plain, grown.size(), Homes.TIER_2_MOOD, Homes.TIER_3_MOOD));
 			}
 		}
+		// A Legend who lacks only one condition (29.4)
+		tips.addAll(io.github.jcondedata.aliveworkplace.legend.LegendsPage.tips(level, hall));
 		VillageRanks.Rank next = VillageRanks.of(level, hall).next();
 		if (next != null) {
 			VillageRanks.Score score = VillageRanks.score(level, hall, villagers);

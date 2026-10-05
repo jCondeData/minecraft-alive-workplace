@@ -52,6 +52,8 @@ public final class Legends implements ResourceManagerReloadListener {
 	public static void init() {
 		Platform.get().onDataReload(AliveWorkplace.id("legends"), new Legends());
 		LegendSlots.init();
+		LegendLook.init();
+		LegendsPage.init();
 	}
 
 	public static Collection<Legend> all() {
@@ -173,6 +175,7 @@ public final class Legends implements ResourceManagerReloadListener {
 		Optional<BlockPos> hall = VillageHalls.nearest(level, villager.blockPosition());
 		ModAttachments.LEGEND.set(villager, LegendData.settled(legend.id(), "", hall, level.getDayTime() / 24000L, way));
 		LegendPowers.seen(villager);
+		LegendLook.update(villager);
 		LegendRecord.get(level).settled(legend.id(), villager.getUUID(), level.dimension(), hall, legend.rarity(), villager.getName().getString(),
 			io.github.jcondedata.aliveworkplace.hall.Chronicle.day(level));
 		LegendSlots.announce(level, hall.orElse(null), villager, legend, false);
@@ -183,15 +186,17 @@ public final class Legends implements ResourceManagerReloadListener {
 		ModAttachments.LEGEND.remove(villager);
 		if (villager.level() instanceof ServerLevel level) {
 			LegendRecord.get(level).forget(villager.getUUID());
+			LegendLook.update(villager);
 		}
 		LegendPowers.forget();
 	}
 
-	/** Every 200 ticks of a Legend's life: they join their dimension's list for the auras. */
+	/** Every 200 ticks (10 seconds) of a Legend's life: they join their dimension's list for the auras, and sparkle. */
 	public static void tick(Villager villager) {
 		if (ENABLED && villager.tickCount % 200 == 0 && ModAttachments.LEGEND.has(villager)) {
 			LegendPowers.seen(villager);
 			LegendSlots.onRecord(villager);
+			LegendLook.sparkle(villager);
 		}
 	}
 

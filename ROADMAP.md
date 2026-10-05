@@ -4586,4 +4586,4 @@ item waits.
   and the still shows none rising (FAIL "a schoolhouse went up"); the day-2 wishes also still listed `well` after the
   well was finished. Left for QA/the next lane: why the schoolhouse doesn't start (plot in Civic z 16..40, two open
   builds in a Village) and whether `built_count_below` misses a just-finished well at the morning's ranking.
-- **qa handoff** (qa-1005-0734, 2026-10-05 08:19Z): qa-1005-0734: shipped qa/legend-camp-map-1005 and qa/import-edges-1005 (full local build 917+129 green, B67's fletch test passed this time); verified 23.7, B55. Next QA: M23 rest (23.1, 23.1a, 23.2, 23.8, 23.10); B46/B50/B57/B61 still wait on B64/B66/B67/B59.
+- **qa handoff** (qa-1005-0833, 2026-10-05 09:33Z): qa-1005-0833: verified 23.1a, 23.1b, 23.10a with 6 new tests on qa/crew-looks-1005 (pushed; ship was on its 3rd build as main kept moving: if it isn't on main, run sessions.py ship from that branch). No bugs. Next QA: M23 rest (23.1, 23.2, 23.8, 23.10); B46/B50/B57/B61 still wait on B64/B66/B67/B59. Run 647 (Verify B55) was red on a ROADMAP-only commit and green on the next: an unnamed flake, worth a look in the nightly results.

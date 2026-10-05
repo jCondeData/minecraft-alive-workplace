@@ -274,7 +274,12 @@ public class RoadGameTests implements net.fabricmc.fabric.api.gametest.v1.Fabric
 		Roads.routeNow(level, v.hall());
 		Roads.round(level, v.hall(), v.entity());
 		List<BuildSite> open = Roads.openSegments(level, v.hall());
-		helper.assertTrue(open.size() == 1, "the road opened " + open.size() + " segments, not 1");
+		helper.assertTrue(open.size() == 1, "the road opened " + open.size() + " segments, not 1 (routed "
+			+ v.entity().plan().roads().get(0).routed() + ", segments " + v.entity().plan().roads().get(0).segments()
+			+ ", steward " + (Stewards.stewardOf(level, v.hall()) != null) + ", Steward's sites " + StewardDesk.openSites(level, v.hall()).size()
+			+ ", builder's site " + Builders.activeSite(level, v.builders().get(0)) + ", refused "
+			+ Roads.segment(level, v.hall(), v.entity().plan().roads().get(0), 0)
+				.flatMap(seg -> io.github.jcondedata.aliveworkplace.city.StewardSafety.check(level, v.hall(), seg.box(), true)) + ")");
 		BuildSite site = open.get(0);
 		helper.assertTrue(v.builders().get(0).getUUID().equals(site.builder()), "not the village's builder");
 		helper.assertTrue(!site.levelGround(), "a road segment would level the ground round it");

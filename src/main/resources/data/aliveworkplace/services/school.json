@@ -1,0 +1,7 @@
+{
+  "name": {"translate": "service.aliveworkplace.school"},
+  "jobs": ["aliveworkplace:teacher"],
+  "blueprints": ["aliveworkplace:schoolhouse", "aliveworkplace:school"],
+  "range": 48,
+  "icon": "minecraft:lectern"
+}

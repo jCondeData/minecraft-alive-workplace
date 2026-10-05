@@ -70,7 +70,7 @@ public class ClassGameTests implements net.fabricmc.fabric.api.gametest.v1.Fabri
 		Leftovers.after(helper, () -> {
 			VillageHalls.RADIUS = radius;
 			new WorkplaceConfig().apply(); // classes off again (GameTests), rise and fall days back to 2 and 3
-			ClassNeeds.services = (l, h, home) -> Set.of();
+			ClassNeeds.services = io.github.jcondedata.aliveworkplace.hall.Services.HOOK; // the real list back (34.3)
 			ClassNeeds.luxuryEvery = id -> 0;
 			SocialClasses.load(SocialClasses.files(level.getServer().getResourceManager()));
 			SocialClasses.forget();
@@ -360,7 +360,7 @@ public class ClassGameTests implements net.fabricmc.fabric.api.gametest.v1.Fabri
 		helper.succeed();
 	}
 
-	/** {@code services}: none reach anyone before the hall's service list (34.3); then {@code count} of {@code any} and every one of {@code all}. */
+	/** {@code services}: none reach anyone in a village that has none; then {@code count} of {@code any} and every one of {@code all}. */
 	//$ gametest_batch AREA '"classNeedServices"'
 	@GameTest(template = AREA, batch = "classNeedServices")
 	public void servicesNeedReadsTheHallsServiceList(GameTestHelper helper) {
@@ -370,7 +370,7 @@ public class ClassGameTests implements net.fabricmc.fabric.api.gametest.v1.Fabri
 		ClassNeeds.Need twoOf = need("{\"type\": \"services\", \"count\": 2, \"any\": [\"chapel\", \"clinic\", \"library\"]}");
 		ClassNeeds.Need school = need("{\"type\": \"services\", \"all\": [\"school\"]}");
 		ClassNeeds.Need library = need("{\"type\": \"services\", \"all\": [\"aliveworkplace:library\"]}");
-		helper.assertTrue(!ClassNeeds.holds(oneOf, v, at(helper, 1)) && !ClassNeeds.holds(school, v, at(helper, 1)), "no services before 34.3");
+		helper.assertTrue(!ClassNeeds.holds(oneOf, v, at(helper, 1)) && !ClassNeeds.holds(school, v, at(helper, 1)), "no services in the village yet");
 		ClassNeeds.services = (level, hall, home) -> Set.of(ours("school"), ours("chapel"));
 		helper.assertTrue(ClassNeeds.holds(oneOf, v, at(helper, 1)), "a school is one of chapel, school, clinic");
 		helper.assertTrue(!ClassNeeds.holds(twoOf, v, at(helper, 1)), "a chapel is only one of chapel, clinic, library");
@@ -603,7 +603,7 @@ public class ClassGameTests implements net.fabricmc.fabric.api.gametest.v1.Fabri
 		Leftovers.after(helper, () -> {
 			VillageHalls.RADIUS = radius;
 			new WorkplaceConfig().apply();
-			ClassNeeds.services = (l, h, home) -> Set.of();
+			ClassNeeds.services = io.github.jcondedata.aliveworkplace.hall.Services.HOOK; // the real list back (34.3)
 			ClassNeeds.luxuryEvery = id -> 0;
 			SocialClasses.forget();
 		});

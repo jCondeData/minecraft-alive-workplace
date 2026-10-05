@@ -3581,7 +3581,7 @@ on a real world.
   step a day, children following their household, a datapack class file changing a need) pass; a save and reload
   keeps class and progress; 60 households take under 2 ms a hall round (timed in a GameTest). Nothing to see yet:
   `--no-review`.
-- [ ] **34.3** **Services nearby.** `data/aliveworkplace/services/<id>.json`: which workers or finished builds give a
+- [x] **34.3** (approved auto 2026-10-05) **Services nearby.** `data/aliveworkplace/services/<id>.json`: which workers or finished builds give a
   service and how far it reaches, e.g. `{"jobs": ["aliveworkplace:teacher"], "blueprints":
   ["aliveworkplace:schoolhouse"], "range": 48, "icon": "minecraft:lectern"}`. Six to start: **chapel** (a finished
   Chapel), **school** (a Teacher, or a Schoolhouse), **clinic** (a Nurse, or a Healing Center), **library** (a

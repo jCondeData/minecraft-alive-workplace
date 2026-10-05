@@ -41,6 +41,11 @@ asks for the steps, `latest.log` and any crash report).
   services and luxuries); a household rises after 2 dawns with the next class's needs and falls after 3 without its
   own, one step a day, never below Peasant; a married couple moves together and children follow the grown-ups of
   their house. `villageClasses`, `classRiseDays` and `classFallDays` in the config. Nothing changes in game yet.
+- **Services nearby for 1.8** (34.3, off until 1.8 is finished): six services a home can have nearby, as data files
+  (`data/<ns>/services/`): a chapel (a finished Chapel), a school (a Teacher, or a Schoolhouse or School), a clinic (a
+  Nurse, or a Healing Center or Clinic), a library (a Scholar or Librarian, or a Library), a market (a Market Square,
+  village-wide) and a tavern (an Innkeeper, or an Inn). Each reaches homes within 48 blocks; styled and upgraded builds
+  count. The hall works out where its services are once a day, and the classes' `services` needs read that list.
 - **The Steward is safe by design** (27.19): his plans, roads and walls never go into Keep Clear, another village or a
   protected village that isn't his owner's, and a ledger of what players built in a village (from 1.1 on) keeps his
   plans and walls out of those spots unless the owner approves one by hand. His sites leave a player's block where it

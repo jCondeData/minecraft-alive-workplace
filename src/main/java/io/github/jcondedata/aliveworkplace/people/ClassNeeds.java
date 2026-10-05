@@ -30,8 +30,8 @@ import org.jetbrains.annotations.Nullable;
  * {@code classes/} file names its {@code "type"}, and holds or doesn't for a villager. For a household (a couple) a need
  * holds when it holds for both. An unknown type is logged once when the file loads and never holds.
  *
- * <p>Two needs read what later items fill: {@code services} asks {@link #services} (the hall's daily service list,
- * 34.3; until then no service reaches anyone, so the need is unmet), and {@code luxury} reads the {@code luxuries_had}
+ * <p>Two needs read hooks other classes fill: {@code services} asks {@link #services} (the hall's daily service list,
+ * {@code hall.Services}, 34.3), and {@code luxury} reads the {@code luxuries_had}
  * record with each luxury's {@code every_days} from {@link #luxuryEvery} (34.4; until then no luxury is known, so the need
  * never holds).
  */
@@ -51,7 +51,7 @@ public final class ClassNeeds {
 		int everyDays(ResourceLocation luxury);
 	}
 
-	/** The hall's service list; filled by 34.3. Until then: none reach anyone. */
+	/** The hall's service list; {@code hall.Services} fills it (34.3). Before that loads: none reach anyone. */
 	public static ServiceList services = (level, hall, home) -> Set.of();
 	/** The luxuries' {@code every_days}; filled by 34.4. Until then: none known, so a luxury need never holds. */
 	public static LuxuryDays luxuryEvery = luxury -> 0;
@@ -180,7 +180,7 @@ public final class ClassNeeds {
 	}
 
 	/** An id; a bare name ({@code school}) is ours ({@code aliveworkplace:school}). */
-	static ResourceLocation id(String text, String field) {
+	public static ResourceLocation id(String text, String field) {
 		ResourceLocation id = text.indexOf(':') >= 0 ? ResourceLocation.tryParse(text) : ResourceLocation.tryBuild(AliveWorkplace.MOD_ID, text);
 		if (id == null) {
 			throw new JsonSyntaxException(field + ": not an id: " + text);
@@ -308,7 +308,7 @@ public final class ClassNeeds {
 	}
 
 	/** A blueprint without its style and its upgrades ({@code house_3} is {@code house}). */
-	private static ResourceLocation root(ResourceLocation id) {
+	public static ResourceLocation root(ResourceLocation id) {
 		ResourceLocation at = BlueprintStyles.base(id);
 		for (int i = 0; i < 100; i++) {
 			ResourceLocation base = BlueprintUpgrades.baseOf(at).orElse(null);

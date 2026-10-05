@@ -1773,7 +1773,7 @@ MarketDays) and research/.
   Outfit: a white lab coat. Done when: compat GameTests (`runCompatGameTest`): the census; hints that match the
   Pokémon's real IVs, nature, ability and EVs; each species logged once; every topic's unlock and effect; without
   Cobblemon nothing loads or errors; showcase scene `legend_professor` (Cobblemon: the hints, the Pokédex tab).
-- [ ] **29.22** **The Pokémon Ranger (Rare, with Cobblemon).** Comes: a guest at the Village Hall, 1 time in 3 a
+- [x] **29.22** (review: pending 2026-10-05) **The Pokémon Ranger (Rare, with Cobblemon).** Comes: a guest at the Village Hall, 1 time in 3 a
   morning, while an Alpha Pokémon is within 96 blocks of the hall (Cobblemon's own Alpha mark if the installed version
   has one, checked with the engineer skill's `api.py`; otherwise a wild Pokémon of level 50 or more): the condition
   `alpha_near`, through a new extension point `legend/WildPokemon` filled in `compat/cobblemon/`. Trade:
@@ -4808,3 +4808,11 @@ item waits.
   fails to parse without Cobblemon.
 - **qa handoff** (qa-1005-1034, 2026-10-05 11:27Z): qa-1005-1034: verified B46, B69, B73. Unshipped: qa/b46-b69-1005 (QaB46GameTests, QaB69FrontWalkGameTests; its ship build passed 1014/1014 gametests but failed on the compat flake B74 = B57 again): ship it once B74 is fixed (or retry ship). qa/import-swap-1005 is obsolete (B73 fixed on main). B50 and B57 not verified: read nightly run 37297003813 (on 5b489b7, after both fixes) for the crew test and the Pidgey test's repeats; B57 recurred (B74). qa/placing-1005 still waits on B71. Next QA: B50 from the nightly, B72 scene setup, then 21.2, M23.
 - **lane-c handoff** (lane-c-1005-1833, 2026-10-05 20:59Z): lane-c-1005-1833 (21:01Z): landed on main 2f801600: 27.15-27.19 (old wip/lane-c, M27-gated), 27.20 old houses, 27.21 renewal, B79 (ladder to upstairs beds), CaravanRoad test isolation fix. Local full build green (1169+151) before merging lane a's 29.x, pushed without rebuilding that merge (clean, no config changes). Next: 27.22 (the 1.1 yardstick), then 31.x. Red duty notes: main CI 695/697-699 were cancelled by the runner at ~15 min (infra), 696 failed only ConscriptionGameTests.aConscriptSavedMidRaidLoadsWithoutTheSword (B81). wip/lane-c is now stale (all merged); B80 is test-order (QA).
+- 2026-10-05 (29.22, decisions; lane a): the Pokémon Ranger. Cobblemon 1.7.3 has an Alpha mark (`cobblemon:mark_alpha`)
+  but nothing gives it to wild Pokémon, so a wild Pokémon is an Alpha with that mark (worn or potential) **or** at level
+  50 or more (the stand-in), whichever the installed version has. Cobblemon lets a Pokémon out in a pasture only for an
+  online trainer (`tether` needs the player), so when the hall owner is away the befriended Pokémon goes into their PC
+  and stays there (chronicle says so) rather than waiting for them. "With room" is a pasture with fewer Pokémon than
+  its maximum, nobody's or the hall owner's (another player's pasture is never filled). A calm is checked at the damage
+  gate (a calmed Alpha's blows on villagers and players inside any village are cancelled and its target dropped); a
+  walk that takes longer than 2 minutes is given up for the day.

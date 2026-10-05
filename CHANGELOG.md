@@ -50,6 +50,14 @@ asks for the steps, `latest.log` and any crash report).
   Berry Science (45: orchard keepers pick one more berry from each berry plant), Evolution Studies (60: the Professor
   sells one evolution stone a day for 8 emeralds) and Regional Survey (80: the hints give exact IVs and EVs). Without
   Cobblemon the Professor never comes.
+- **The Pokémon Ranger** (29.22, with Cobblemon), a Rare Legend in a red field vest with a capture styler on the wrist:
+  a guest at the Village Hall, 1 morning in 3, while a wild Alpha Pokémon (or, as Cobblemon 1.7 gives no wild Pokémon
+  its Alpha mark, a wild one of level 50 or more) is within 96 blocks of the hall. Likes clothes. Each morning they walk
+  to an Alpha near the hall and calm it (sparkles, a chime): it never again hurts a villager or player in the village,
+  saved for good. Once a day they befriend a wild Pokémon within 64 blocks (never a legendary, mythical, Ultra Beast or
+  paradox one) and lead it to a village Pasture Block with room, where it joins as the hall owner's Pokémon (through
+  their PC, as Cobblemon does; it stays in the PC while the owner is away), with a line in the chronicle. None when the
+  pastures are full or the hall has no owner. Without Cobblemon the Ranger never comes.
 - **The Founder** (29.23), a Mythic Legend in a burgundy mantle with a gold chain of office, who keeps their own
   trade: at the village's first rise to City (only the first), its most experienced Master is seized by the Founder's
   mood and asks for a block of gold, a block of emeralds and a diamond. Their Masterwork is **The Charter of

@@ -198,6 +198,7 @@ public final class CobblemonCompat {
 		io.github.jcondedata.aliveworkplace.habitat.HabitatKeepers.Snacks.EXTENSION.register("cobblemon", new CobblemonHabitat()); // 28.10
 		io.github.jcondedata.aliveworkplace.daycare.DaycareKeepers.Breeding.EXTENSION.register("cobblemon", new CobblemonDaycareKeeper()); // 28.12
 		io.github.jcondedata.aliveworkplace.legend.PokemonCensus.EXTENSION.register("cobblemon", new CobblemonProfessor()); // 29.21
+		io.github.jcondedata.aliveworkplace.legend.WildPokemon.EXTENSION.register("cobblemon", new CobblemonRanger()); // 29.22
 	}
 
 	private CobblemonCompat() {

@@ -47,6 +47,10 @@ public final class ModAttachments {
 	public static final Attachment<Long> LAST_FOAL = Attachment.saved("last_foal", com.mojang.serialization.Codec.LONG);
 	/** On a Pokémon Professor (29.21): the day they last sold an evolution stone (Evolution Studies). Absent: never. */
 	public static final Attachment<Long> PROFESSOR_STONE = Attachment.saved("professor_stone", com.mojang.serialization.Codec.LONG);
+	/** On a Pokémon Ranger (29.22): the days they last calmed and befriended, and the walk under way. Absent: nothing yet. */
+	public static final Attachment<io.github.jcondedata.aliveworkplace.legend.PokemonRanger.State> RANGER = Attachment.saved("ranger", io.github.jcondedata.aliveworkplace.legend.PokemonRanger.State.CODEC);
+	/** On a wild Alpha Pokémon: a Pokémon Ranger (29.22) calmed it, for good. Absent: never calmed. */
+	public static final Attachment<Boolean> RANGER_CALMED = Attachment.saved("ranger_calmed", com.mojang.serialization.Codec.BOOL);
 
 	/** A villager's gift (29.6): a gift's id, or {@code none}. Absent: the UUID roll decides ({@code Gifted.of}). */
 	/** The guild this villager leads and its village's hall (ROADMAP 30.17); absent: they lead none. */

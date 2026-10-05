@@ -336,6 +336,11 @@ SCENES = [
       "the Pokémon Professor in a white lab coat by the hall, hints about the player's party, and the Pokédex research tab", 50,
       [("01_professor", "The Professor by the hall"), ("02_professor_hints", "Hints: IVs in words, nature, hidden ability, EVs"),
        ("03_pokedex_tab", "The Pokédex tab")], cobblemon=True),
+    # The Pokémon Ranger (ROADMAP 29.22, Cobblemon): settled by the hall in a red vest, an Alpha calmed, a wild Pikachu befriended
+    S("legend_ranger", "Legends", "The Pokémon Ranger calms an Alpha and befriends a Pikachu",
+      "the Pokémon Ranger in a red vest and capture styler by the hall, an Alpha calmed with sparkles, and a wild Pikachu befriended into the owner's pasture", 50,
+      [("01_ranger", "The Ranger by the hall"), ("02_alpha_calmed", "A wild level-60 Machamp calmed: sparkles and a chime"),
+       ("03_befriended", "A wild Pikachu led into the owner's Pasture Block")], cobblemon=True),
     # The Master Architect (ROADMAP 29.12): the top-tier Stone House, finished, redrawn in the Grand style and rebuilt
     job("legend_architect", "Legends", "The Master Architect redraws a house in the Grand style",
         "the Master Architect handed a builder the Stone House redrawn in the Grand style, and it was rebuilt", 360),

@@ -1,0 +1,23 @@
+{
+  "requires": ["cobblemon"],
+  "rarity": "rare",
+  "job": "aliveworkplace:legend",
+  "title": "legend.aliveworkplace.pokemon_ranger.title",
+  "lore": "legend.aliveworkplace.pokemon_ranger.lore",
+  "names": [
+    "legend.aliveworkplace.pokemon_ranger.name.1",
+    "legend.aliveworkplace.pokemon_ranger.name.2",
+    "legend.aliveworkplace.pokemon_ranger.name.3"
+  ],
+  "conditions": [
+    {"type": "alpha_near", "radius": 96}
+  ],
+  "arrive": [
+    {"way": "visit", "place": "hall", "chance": 0.3333}
+  ],
+  "needs": {"luxury": "clothes"},
+  "powers": [
+    {"type": "calm_alphas"},
+    {"type": "befriend"}
+  ]
+}

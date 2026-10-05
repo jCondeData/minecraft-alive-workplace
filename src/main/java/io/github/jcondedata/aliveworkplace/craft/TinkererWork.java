@@ -191,7 +191,8 @@ public class TinkererWork extends CrafterWork {
 		villager.getBrain().eraseMemory(MemoryModuleType.WALK_TARGET);
 		villager.getBrain().setMemory(MemoryModuleType.LOOK_TARGET, new EntityTracker(golem, true));
 		golem.getNavigation().stop();
-		if (++mendTimer < MEND_EVERY) {
+		// A Golem Smith (29.15) mends faster: the same ingot, less waiting.
+		if (++mendTimer < Math.max(1, Math.round(MEND_EVERY / io.github.jcondedata.aliveworkplace.legend.GolemSmith.mendFactor(villager)))) {
 			return;
 		}
 		mendTimer = 0;

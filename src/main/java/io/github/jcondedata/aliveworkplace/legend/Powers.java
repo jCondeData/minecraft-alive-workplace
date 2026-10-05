@@ -24,6 +24,7 @@ public final class Powers {
 		register("caravan_pay", CaravanPayPower::read);
 		register("trade_fair", TradeFairPower::read);
 		register("keeps_to", KeepsToPower::read);
+		register("golem_forge", GolemForgePower::read);
 		GiftPowers.register();
 	}
 

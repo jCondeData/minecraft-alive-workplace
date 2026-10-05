@@ -84,7 +84,7 @@ public class SifterWork extends Behavior<Villager> {
 		return new LootParams.Builder(level)
 			.withParameter(LootContextParams.ORIGIN, Vec3.atCenterOf(sieve))
 			.withParameter(LootContextParams.THIS_ENTITY, villager)
-			.withLuck(io.github.jcondedata.aliveworkplace.legend.Gifted.lootLuck(villager))
+			.withLuck(io.github.jcondedata.aliveworkplace.legend.Gifted.lootLuck(villager) + io.github.jcondedata.aliveworkplace.research.TreeEffects.lootLuck(villager))
 			.create(LootContextParamSets.GIFT);
 	}
 

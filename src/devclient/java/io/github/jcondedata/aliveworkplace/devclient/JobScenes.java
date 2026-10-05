@@ -1876,6 +1876,58 @@ final class JobScenes {
 				new Step("04_ledger_opens", -1, 6, (level, player) ->
 					ModItems.VILLAGE_LEDGER.use(level, player, InteractionHand.MAIN_HAND), 30)),
 			(level, player) -> player.containerMenu instanceof ChoiceMenu m && m.getType() == ModBlocks.VILLAGE_HALL_MENU)); // the hall's own screen (30.4a)
+		SCREENS.put("research_trees", new Screen("a Legend's research tree has its own tab on the research screen: levels done, one in progress, an exclusive pick taken",
+			new Vec3(2.5, -58.4, 4.5), TARGET,
+			(level, player) -> {
+				// ROADMAP 29.11: the test tree as data, worked by a Legend of the scene's own who lives in the village.
+				level.setBlockAndUpdate(STATION, ModBlocks.VILLAGE_HALL.defaultBlockState()
+					.setValue(io.github.jcondedata.aliveworkplace.hall.VillageHallBlock.FACING, Direction.SOUTH));
+				net.minecraft.resources.ResourceLocation sageId = io.github.jcondedata.aliveworkplace.AliveWorkplace.id("showcase_sage");
+				io.github.jcondedata.aliveworkplace.legend.Legend sage = io.github.jcondedata.aliveworkplace.legend.Legends.read(sageId,
+					com.google.gson.JsonParser.parseString("{\"rarity\": \"rare\", \"job\": \"aliveworkplace:legend\", \"title\": \"entity.minecraft.villager.legend\","
+						+ " \"lore\": \"entity.minecraft.villager.legend\"}").getAsJsonObject());
+				io.github.jcondedata.aliveworkplace.legend.Legends.setForTest(Map.of(sageId, sage));
+				String effect = "\"cost\": [{\"minecraft:paper\": 8, \"minecraft:book\": 2}], \"points\": 40";
+				var tree = io.github.jcondedata.aliveworkplace.research.ResearchTrees.read(io.github.jcondedata.aliveworkplace.AliveWorkplace.id("showcase_lore"),
+					com.google.gson.JsonParser.parseString("{\"legend\": \"" + sageId + "\", \"icon\": \"minecraft:amethyst_shard\", \"name\": \"Test Lore\", \"topics\": ["
+						+ "{\"id\": \"calm_minds\", \"icon\": \"minecraft:campfire\", \"name\": \"Calm Minds\", \"description\": \"Wellbeing 10% higher a level\", \"levels\": 2, " + effect
+						+ ", \"effects\": [{\"type\": \"aliveworkplace:wellbeing\", \"percent\": 10}]},"
+						+ "{\"id\": \"herb_lore\", \"icon\": \"minecraft:poppy\", \"name\": \"Herb Lore\", \"description\": \"Illness a fifth less likely and a day shorter a level\", \"levels\": 2, "
+						+ effect + ", \"needs\": {\"calm_minds\": 1}, \"effects\": [{\"type\": \"aliveworkplace:illness\", \"percent\": -20, \"days\": -1}]},"
+						+ "{\"id\": \"warding\", \"icon\": \"minecraft:obsidian\", \"name\": \"Warding\", \"description\": \"Night raids a fifth less likely\", " + effect
+						+ ", \"effects\": [{\"type\": \"aliveworkplace:raid_chance\", \"factor\": 0.8}]},"
+						+ "{\"id\": \"deep_memory\", \"icon\": \"minecraft:experience_bottle\", \"name\": \"Deep Memory\", \"description\": \"Every villager learns 15% faster\", " + effect
+						+ ", \"effects\": [{\"type\": \"aliveworkplace:xp\", \"percent\": 15}]},"
+						+ "{\"id\": \"fortune\", \"icon\": \"minecraft:rabbit_foot\", \"name\": \"Fortune\", \"description\": \"Two more luck on every loot roll\", " + effect
+						+ ", \"effects\": [{\"type\": \"aliveworkplace:loot_luck\", \"luck\": 2}]},"
+						+ "{\"id\": \"census\", \"icon\": \"minecraft:name_tag\", \"name\": \"Census\", \"description\": \"Opens when the village is large\", " + effect
+						+ ", \"unlock\": {\"counter\": \"villagers\", \"at\": 30}},"
+						+ "{\"id\": \"flame\", \"icon\": \"minecraft:soul_lantern\", \"name\": \"The Flame\", \"description\": \"Wellbeing never below 90%\", " + effect
+						+ ", \"exclusive\": \"last_pick\", \"effects\": [{\"type\": \"aliveworkplace:wellbeing\", \"at_least\": 90}]},"
+						+ "{\"id\": \"iron_pact\", \"icon\": \"minecraft:iron_block\", \"name\": \"The Iron Pact\", \"description\": \"Golems join the village\", " + effect
+						+ ", \"exclusive\": \"last_pick\", \"effects\": [{\"type\": \"aliveworkplace:flag\", \"name\": \"iron_pact\"}]}]}"));
+				io.github.jcondedata.aliveworkplace.research.ResearchTrees.set(List.of(tree));
+				subject = EntityType.VILLAGER.spawn(level, STATION.south(2).east(2), MobSpawnType.COMMAND);
+				subject.setNoAi(true);
+				subject.setYRot(180);
+				subject.setYHeadRot(180);
+				subject.setCustomName(net.minecraft.network.chat.Component.literal("Old Wynn"));
+				io.github.jcondedata.aliveworkplace.legend.Legends.make(level, subject, sage, "showcase");
+				var hall = (io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(STATION);
+				var state = new io.github.jcondedata.aliveworkplace.research.Research.State(Map.of(tree.key() + "/calm_minds", 2, tree.key() + "/flame", 1,
+					tree.key() + "/warding", 1), java.util.Optional.empty(), 0, false);
+				state = io.github.jcondedata.aliveworkplace.research.ResearchTrees.choose(state, tree, tree.topic("herb_lore").orElseThrow());
+				hall.setResearch(io.github.jcondedata.aliveworkplace.research.ResearchTrees.withProgress(state, tree, 40));
+				level.setBlockAndUpdate(STATION.east(4).south(1), Blocks.LECTERN.defaultBlockState());
+			},
+			List.of(new Step("01_tree_tab", io.github.jcondedata.aliveworkplace.research.ResearchScreen.TOPIC_SLOTS[1], 6, (level, player) -> {
+					io.github.jcondedata.aliveworkplace.research.ResearchScreen.openForLegend(player, subject);
+					Showcase.check(player.containerMenu instanceof ChoiceMenu m
+						&& m.icon(io.github.jcondedata.aliveworkplace.research.ResearchScreen.TAB_SLOTS[1]).is(Items.AMETHYST_SHARD)
+						&& m.icon(io.github.jcondedata.aliveworkplace.research.ResearchScreen.TOPIC_SLOTS[1]).is(Items.POPPY), "the Legend's tree opened on its own tab");
+				}, 40),
+				new Step("02_tree_exclusive", io.github.jcondedata.aliveworkplace.research.ResearchScreen.TOPIC_SLOTS[7], 6, null, 40)),
+			(level, player) -> player.containerMenu instanceof ChoiceMenu));
 		SCREENS.put("leader",new Screen("the Trainer Leader took the challenge and the battle started", new Vec3(-4.5, -57.5, 11.5),
 			new Vec3(0.5, -59, 5.5),
 			(level, player) -> {

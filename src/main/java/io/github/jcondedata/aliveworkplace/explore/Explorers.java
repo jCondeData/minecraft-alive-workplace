@@ -82,7 +82,8 @@ public final class Explorers {
 		LootParams params = new LootParams.Builder(level)
 			.withParameter(LootContextParams.ORIGIN, Vec3.atCenterOf(pos))
 			.withOptionalParameter(LootContextParams.THIS_ENTITY, explorer)
-			.withLuck(BuilderLevels.level(explorer) - 1 + io.github.jcondedata.aliveworkplace.legend.Gifted.lootLuck(explorer))
+			.withLuck(BuilderLevels.level(explorer) - 1 + io.github.jcondedata.aliveworkplace.legend.Gifted.lootLuck(explorer)
+				+ io.github.jcondedata.aliveworkplace.research.TreeEffects.lootLuck(explorer))
 			.create(LootContextParamSets.CHEST);
 		List<ItemStack> out = new ArrayList<>(roll(level, FINDS, params));
 		if (armed) {

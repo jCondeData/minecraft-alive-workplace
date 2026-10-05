@@ -230,7 +230,11 @@ public final class VillageNeeds {
 		float cheer = Math.min(io.github.jcondedata.aliveworkplace.people.Traits.MAX_CHEER, cheerful * io.github.jcondedata.aliveworkplace.people.Traits.CHEER);
 		float safe = Curfew.safeNow(level, hall) ? 1f : (0.5f * guarded + 0.5f * litShare) // Curfew: the nights count as safe (30.9)
 			* (io.github.jcondedata.aliveworkplace.guard.BanditCamps.near(level, hall).isPresent() ? io.github.jcondedata.aliveworkplace.guard.BanditCamps.SAFETY : 1f);
-		float wellbeing = Math.min(1f, wellbeing(fedShare, housedShare, safe) + 0.1f * hearth + Decorations.bonus(beauty) + cheer);
+		// The wellbeing effects of the village's research trees and edicts (29.11): points added, and a floor.
+		VillageHallBlockEntity hallEntity = level.getBlockEntity(hall) instanceof VillageHallBlockEntity treeHall ? treeHall : null;
+		float wellbeing = Math.min(1f, Math.max(io.github.jcondedata.aliveworkplace.research.TreeEffects.wellbeingFloor(hallEntity),
+			wellbeing(fedShare, housedShare, safe) + 0.1f * hearth + Decorations.bonus(beauty) + cheer
+				+ io.github.jcondedata.aliveworkplace.research.TreeEffects.wellbeing(hallEntity)));
 		return new Needs(adults, fed, villagers, housed, lit, guards, beauty, wellbeing);
 	}
 

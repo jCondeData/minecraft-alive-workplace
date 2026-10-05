@@ -55,6 +55,14 @@ public final class BuilderEvents {
 				}
 				return InteractionResult.SUCCESS;
 			}
+			// A Legend without a trade of their own, sneak-right-clicked with an empty hand: their research tree's tab (29.11).
+			if (player.isShiftKeyDown() && player.getItemInHand(hand).isEmpty()
+				&& villager.getVillagerData().getProfession() == io.github.jcondedata.aliveworkplace.registry.ModVillagers.LEGEND) {
+				if (!level.isClientSide()) {
+					io.github.jcondedata.aliveworkplace.research.ResearchScreen.openForLegend((ServerPlayer) player, villager);
+				}
+				return InteractionResult.SUCCESS;
+			}
 			// A guard, sneak-right-clicked with a bow, crossbow, shield or healing potion: they hold it, and that makes their kind.
 			if (player.isShiftKeyDown() && io.github.jcondedata.aliveworkplace.guard.Guards.isGuard(villager)) {
 				ItemStack held = player.getItemInHand(hand);

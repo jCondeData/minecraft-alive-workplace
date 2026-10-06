@@ -296,4 +296,80 @@ public class LegendSitesGameTests implements net.fabricmc.fabric.api.gametest.v1
 			&& c.holds(new BlockPos(4, 1, 0)) && !c.holds(new BlockPos(5, 1, 0)), "the captive is saved: " + c);
 		helper.succeed();
 	}
+
+	/**
+	 * B68: the traveller's camp's map hangs on its barrel. The frame in legend/traveller_camp.nbt keeps the block it hangs
+	 * on (TileX/Y/Z), and placing the template moves that to where the frame lands, so it loads attached to the barrel (no
+	 * "Block-attached entity at invalid position" in the log), whichever way the camp is turned.
+	 */
+	//$ gametest_ticks_batch AREA '140' '"legendSitesCampFrame"'
+	@GameTest(template = AREA, timeoutTicks = 140, batch = "legendSitesCampFrame")
+	public void travellersMapHangsOnItsBarrelEveryWayRound(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		ServerLevel level = helper.getLevel();
+		net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate template = level.getStructureManager()
+			.get(ResourceLocation.fromNamespaceAndPath("aliveworkplace", "legend/traveller_camp")).orElse(null);
+		helper.assertTrue(template != null, "the traveller's camp template loads");
+		CompoundTag saved = template.save(new CompoundTag());
+		net.minecraft.nbt.ListTag entities = saved.getList("entities", net.minecraft.nbt.Tag.TAG_COMPOUND);
+		helper.assertTrue(entities.size() == 1 && entities.getCompound(0).getCompound("nbt").getInt("TileY") == 2
+			&& entities.getCompound(0).getCompound("nbt").contains("TileX"), "the camp's frame is saved with the block it hangs on: " + entities);
+		// vanilla logs this when a frame's saved block is more than 16 blocks from where it is set down
+		List<String> errors = new java.util.concurrent.CopyOnWriteArrayList<>();
+		var appender = new org.apache.logging.log4j.core.appender.AbstractAppender("legendSitesCampFrame", null, null, true,
+			org.apache.logging.log4j.core.config.Property.EMPTY_ARRAY) {
+			@Override
+			public void append(org.apache.logging.log4j.core.LogEvent event) {
+				String message = event.getMessage().getFormattedMessage();
+				if (message.contains("Block-attached entity at invalid position")) {
+					errors.add(message);
+				}
+			}
+		};
+		var root = ((org.apache.logging.log4j.core.LoggerContext) org.apache.logging.log4j.LogManager.getContext(false))
+			.getConfiguration().getRootLogger();
+		appender.start();
+		root.addAppender(appender, null, null);
+		List<BoundingBox> boxes = new ArrayList<>();
+		Villager traveller;
+		try {
+			// the camp four ways round, one in each corner of the area
+			net.minecraft.world.level.block.Rotation[] rotations = net.minecraft.world.level.block.Rotation.values();
+			BlockPos[] corners = {new BlockPos(2, 2, 2), new BlockPos(20, 2, 2), new BlockPos(2, 2, 20), new BlockPos(20, 2, 20)};
+			for (int i = 0; i < rotations.length; i++) {
+				var settings = new net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings().setRotation(rotations[i]);
+				BlockPos origin = template.getZeroPositionWithTransform(helper.absolutePos(corners[i]), net.minecraft.world.level.block.Mirror.NONE, rotations[i]);
+				template.placeInWorld(level, origin, origin, settings, RandomSource.create(29), 2);
+				boxes.add(template.getBoundingBox(settings, origin));
+			}
+			// and through the player's own way in: a Legend found beside a ruined portal
+			traveller = camp(helper, "ruined_portal", legend("ruined_portal"));
+		} finally {
+			root.removeAppender("legendSitesCampFrame");
+			appender.stop();
+		}
+		// a frame that isn't hung on a block pops off on its next survival check (every 100 ticks), dropping the map
+		helper.runAfterDelay(120, () -> {
+			LegendRecord.get(level).forgetCaptive(traveller.getUUID());
+			traveller.discard();
+			helper.assertTrue(errors.isEmpty(), "no frame is set down at an invalid position: " + errors);
+			List<net.minecraft.world.entity.decoration.ItemFrame> frames = level.getEntitiesOfClass(
+				net.minecraft.world.entity.decoration.ItemFrame.class, helper.getBounds(), f -> true);
+			helper.assertTrue(frames.size() == 5, "five camps, five frames: " + frames.stream().map(f -> f.getPos().toString()).toList());
+			for (BoundingBox box : boxes) {
+				List<BlockPos> barrels = new ArrayList<>();
+				BlockPos.betweenClosed(box.minX(), box.minY(), box.minZ(), box.maxX(), box.maxY(), box.maxZ()).forEach(p -> {
+					if (level.getBlockState(p).is(Blocks.BARREL)) {
+						barrels.add(p.immutable());
+					}
+				});
+				helper.assertTrue(barrels.size() == 1, "one barrel in the camp at " + box + ": " + barrels);
+				BlockPos above = barrels.get(0).above();
+				helper.assertTrue(frames.stream().anyMatch(f -> f.getPos().equals(above) && f.blockPosition().equals(above)
+						&& f.getDirection() == net.minecraft.core.Direction.UP && f.getItem().is(Items.MAP) && f.survives()),
+					"the map lies on the barrel at " + above + ": " + frames.stream().map(f -> f.getPos() + " " + f.getDirection() + " " + f.getItem()).toList());
+			}
+			helper.succeed();
+		});
+	}
 }

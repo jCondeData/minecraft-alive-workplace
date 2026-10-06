@@ -48,6 +48,9 @@ asks for the steps, `latest.log` and any crash report).
   once when the quest goes up.
 
 ### Fixed
+- **No more log error when a traveller's camp is set down** (B68): the map's item frame on the camp's barrel is saved
+  with the block it hangs on, and structures placed by the mod or by vanilla now hang their frames and paintings on the
+  block where they land, so "Block-attached entity at invalid position" is no longer logged. Players saw nothing wrong.
 - **A build's crops stay in the village store** (B84): villagers no longer eat, cook or sow the carrots, potatoes and
   seeds a build site near the store still needs (meals, feasts, banquets, a new family's meals, farmers and chefs taking
   from the storehouse). A Steward's Farmstead finishes instead of waiting for materials for days; food a build doesn't

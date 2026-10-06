@@ -18,6 +18,7 @@
 		"PlayerListMixin",
 		"PoiManagerMixin",
 		"ServerLevelMixin",
+		"StructureTemplateMixin",
 		"StructureTemplatePoolAccessor",
 		"VillagerAccessor",
 		"VillagerGoalPackagesMixin",

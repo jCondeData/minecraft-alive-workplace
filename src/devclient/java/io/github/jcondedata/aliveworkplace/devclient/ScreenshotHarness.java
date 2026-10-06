@@ -70,6 +70,8 @@ public class ScreenshotHarness implements ClientModInitializer {
 	private final WordsScene words = new WordsScene();
 	private final CityPlanScene cityPlan = new CityPlanScene();
 	private final LegendsHallScene legendsHall = new LegendsHallScene();
+	private final CupPageScene cupPage = new CupPageScene();
+	private final CupBoutScene cupBout = new CupBoutScene();
 	private final GiftedScene gifted = new GiftedScene();
 	private final WorkHornScene workHorn = new WorkHornScene();
 	private final GuildhallScene guildhall = new GuildhallScene();
@@ -97,6 +99,7 @@ public class ScreenshotHarness implements ClientModInitializer {
 	private final StewardJobsScene stewardJobs = new StewardJobsScene();
 	private final StewardHomesScene stewardHomes = new StewardHomesScene();
 	private final StewardCivicScene stewardCivic = new StewardCivicScene();
+	private final CityTimelapseScene cityTimelapse = new CityTimelapseScene();
 	private final PieceLookScene pieceLook = new PieceLookScene();
 
 	private void onTick(Minecraft mc) {
@@ -149,6 +152,10 @@ public class ScreenshotHarness implements ClientModInitializer {
 		}
 		if ("steward_homes".equals(System.getProperty("aliveworkplace.scene"))) {
 			stewardHomes.tick(mc, mc.getSingleplayerServer());
+			return;
+		}
+		if ("city_timelapse".equals(System.getProperty("aliveworkplace.scene"))) {
+			cityTimelapse.tick(mc, mc.getSingleplayerServer());
 			return;
 		}
 		if ("steward_civic".equals(System.getProperty("aliveworkplace.scene"))) {
@@ -205,6 +212,14 @@ public class ScreenshotHarness implements ClientModInitializer {
 		}
 		if ("legends_hall".equals(System.getProperty("aliveworkplace.scene"))) {
 			legendsHall.tick(mc);
+			return;
+		}
+		if ("cup_page".equals(System.getProperty("aliveworkplace.scene"))) {
+			cupPage.tick(mc);
+			return;
+		}
+		if ("cup_bout".equals(System.getProperty("aliveworkplace.scene"))) {
+			cupBout.tick(mc);
 			return;
 		}
 		if ("gifted".equals(System.getProperty("aliveworkplace.scene"))) {

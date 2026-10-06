@@ -971,6 +971,31 @@ public class BuilderGameTests implements FabricGameTest {
 		buildStarter(helper, StarterBlueprints.POKEMON_CENTER_2, new BlockPos(9, 2, 3));
 	}
 
+	/** ROADMAP 28.7a: the Pokémon Center's other looks, both tiers each (without Cobblemon its blocks load as air). */
+	//$ gametest_ticks_batch BIG_AREA '12000' '"starter_builds"'
+	@GameTest(template = BIG_AREA, timeoutTicks = 12000, batch = "starter_builds")
+	public void buildsPokemonCenterLodge(GameTestHelper helper) {
+		buildStarter(helper, StarterBlueprints.POKEMON_CENTER_LODGE);
+	}
+
+	//$ gametest_ticks_batch HUGE_AREA '50000' '"starter_builds_pokemon_center_lodge_2"'
+	@GameTest(template = HUGE_AREA, timeoutTicks = 50000, batch = "starter_builds_pokemon_center_lodge_2")
+	public void buildsPokemonCenterLodgeII(GameTestHelper helper) {
+		buildStarter(helper, StarterBlueprints.POKEMON_CENTER_LODGE_2, new BlockPos(6, 2, 3));
+	}
+
+	//$ gametest_ticks_batch BIG_AREA '12000' '"starter_builds"'
+	@GameTest(template = BIG_AREA, timeoutTicks = 12000, batch = "starter_builds")
+	public void buildsPokemonCenterPlaza(GameTestHelper helper) {
+		buildStarter(helper, StarterBlueprints.POKEMON_CENTER_PLAZA);
+	}
+
+	//$ gametest_ticks_batch HUGE_AREA '50000' '"starter_builds_pokemon_center_plaza_2"'
+	@GameTest(template = HUGE_AREA, timeoutTicks = 50000, batch = "starter_builds_pokemon_center_plaza_2")
+	public void buildsPokemonCenterPlazaII(GameTestHelper helper) {
+		buildStarter(helper, StarterBlueprints.POKEMON_CENTER_PLAZA_2, new BlockPos(9, 2, 3));
+	}
+
 	/** ROADMAP 30.17: the Guildhall I, two storeys with the long table and the charter's frame over the hearth. */
 	//$ gametest_ticks_batch HUGE_AREA '50000' '"starter_builds_guildhall"'
 	@GameTest(template = HUGE_AREA, timeoutTicks = 50000, batch = "starter_builds_guildhall")

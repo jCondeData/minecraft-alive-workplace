@@ -884,7 +884,7 @@ and an old vanilla village slowly rebuilds itself one house at a time. It answer
     there; a save and reload between the take-down and the rebuild; a renewal cancelled after the take-down leaves the
     plot to be proposed again;
   - showcase scene `renewal`: a time-lapse GIF of a vanilla village house becoming a Stone House in Cherry.
-- [ ] **27.22** **A village from a plan (the 1.1 yardstick).** The whole milestone at once, as 23.1 is for builders: a
+- [x] **27.22** (review: pending 2026-10-05) **A village from a plan (the 1.1 yardstick).** The whole milestone at once, as 23.1 is for builders: a
   plains village with a hall, a Steward, 3 builders, a stocked storehouse and 12 villagers; a plan with Homes,
   Workshops, Farms, Market, Gardens and Keep Clear zones, two streets and a wall line; Run the village for 6 in-game
   days. Run it as a pack-server scenario (`tools/packtest`) for the numbers and as a screenshot scene for the
@@ -897,6 +897,16 @@ and an old vanilla village slowly rebuilds itself one house at a time. It answer
     renewal, the data folders for packs, every new config key in the table), and the In-Game Guidebook has its page
     if 26.2a has landed (else a note on 26.2a);
   - showcase scene `city_timelapse`: the village growing into its plan, the GIF that leads the 1.1 release notes.
+  - Status (lane-c-1005-2132): built. `command/CitySoak` (`/workplace city`, benchmark servers only) and
+    `CITY=true [PERF=true] tools/packtest/run.sh`; the Steward's cost meter `city/StewardCost`; the ledger counts meals
+    eaten from the store. Pack server, 2026-10-05, run 3: 14/14 of his builds finished (6 buildings, 8 road segments) in
+    6 days, all in their zones, none in Keep Clear, 0 stalls, items off none (133 meals counted); Steward cost p50
+    0.005, **p95 0.591** (0.05 and 0.46 in runs 2 and 1), p99 1.2, worst 882 ms (planning, 710 ms, first call): the
+    p95 target is missed in 1 of 3 runs, B85. Runs 1-2 found B84 (the village eats a Farmstead's crops). The wall
+    (approved day 1) and the old house's renewal never got a turn in a Hamlet: B86. README "Villages that build
+    themselves" and every M27 key in the config table; Guide Book page `city_plan` (shown once M27 is on);
+    `city_timelapse` in the harness and scenes.py, not filmed locally (the nightly films it). `docs/performance.md` has
+    the three runs. CitySoakGameTests (3) pass.
 
 Depends on: nothing.
 
@@ -1035,7 +1045,7 @@ here adds a new kind of speed bonus (the new jobs get the partners' existing one
     full); a jobless villager left by a machine for 2400 ticks doesn't take it;
   - a builder builds both tiers (GameTest), and the renders are in the package;
   - showcase scene `pokemon_center` (stills of both tiers, a GIF of the healing).
-  - [ ] **28.7a** Change from the owner (2026-10-05): Approved, but add more Pokémon Center variants later (more looks for the tiers).
+  - [x] **28.7a** (review: pending 2026-10-05) Change from the owner (2026-10-05): Approved, but add more Pokémon Center variants later (more looks for the tiers).
 - [x] **28.8** (approved 2026-10-05) **The Camp Cook.** Stand a villager by a Campfire Pot (Cobblemon's campfire with a pot on it; POI when
   Cobblemon registers `cobblemon:campfire`) and sneak-right-click them with Hearty Grains. Never taken by a jobless
   villager. Config `campCooks` (true).
@@ -1222,7 +1232,7 @@ here adds a new kind of speed bonus (the new jobs get the partners' existing one
 
   Done when: a builder finishes each tier (GameTest); `Arenas.find` is right in 4 rotations and mirrored (GameTest);
   showcase scene `arena` (each tier, front and from above).
-- [ ] **28.17** **The Festival Cup: calendar, themes and entrants.** No battles yet; config `festivalCup` (true),
+- [x] **28.17** (review: pending 2026-10-05) **The Festival Cup: calendar, themes and entrants.** No battles yet; config `festivalCup` (true),
   `cupEveryFestivals` (1; owner, 28.1a).
   - Hosts: a village with a hall, a finished Arena, Cobblemon and at least Village rank holds every festival as
     a Cup (every `cupEveryFestivals`th). Its circuit: the host and every village with a hall it has a trade route with,
@@ -1251,7 +1261,7 @@ here adds a new kind of speed bonus (the new jobs get the partners' existing one
   Trainer, the players' rights and caps), seeding and byes for 3, 5, 8 and 11 entrants, the Leader record written and
   read while the village is unloaded, the Cup state saved and reloaded, a malformed theme file logged and skipped; and
   showcase scene `cup_page`.
-- [ ] **28.18** **Cup bouts between villagers.** A round starts when the last round's bouts are done; a bout between
+- [x] **28.18** (review: pending 2026-10-05) **Cup bouts between villagers.** A round starts when the last round's bouts are done; a bout between
   two villager entrants is an exhibition at the ring:
   - Teams: `CobblemonTrainers.team` gets a themed variant: the same seeded pool, filtered by the theme's types, stage
     and labels, as many as the theme brings, trained by the trainer's tier as now. A delegate (28.19) uses its Leader's
@@ -2188,7 +2198,7 @@ Bandit King, The Sickness, The Lost Caravan and The Professor's Thesis. It build
 `hall/Caravans` and `people/Sickness`. Everything a player can be asked to do is a data file, so server owners can
 write their own stories; nothing waits forever on a player.
 
-- [ ] **31.1** **Design note.** `docs/design/M31.md`: what the player sees (hearts on a villager, wrapping and giving
+- [x] **31.1** (approved auto 2026-10-05) **Design note.** `docs/design/M31.md`: what the player sees (hearts on a villager, wrapping and giving
   a gift, a heart event, a personal request asked and done, the journal and its tracker bar, a title in chat, the
   bounty board, one arc chapter by chapter); every data format below with one example file each (`quests/`, `arcs/`,
   `villager_tastes/`, `heart_events/`, `bounties/`); every config key with its default; every new saved field with its
@@ -2198,7 +2208,7 @@ write their own stories; nothing waits forever on a player.
   never clashes with trading or picking a job). Sent to the owner as a review package; lanes don't wait for his reply.
   Done when: the note is on `main` with every config key and saved field of this milestone and its default, and the
   package is sent.
-- [ ] **31.2** **The quest engine.** A new `story/` package. Quests are data,
+- [x] **31.2** (approved auto 2026-10-05) **The quest engine.** A new `story/` package. Quests are data,
   `data/<namespace>/quests/<group>/<id>.json`, loaded with `Platform.onDataReload` the way `ranch/PokemonChores` loads
   its files. One file is one quest: who gives it (`hall`, `villager`, `bounty` or `arc`), `weight`, `conditions`,
   `objectives`, `rewards`, the `days` it stays up and whether it's `repeatable`. The first toolbox, each piece a small
@@ -2231,7 +2241,7 @@ write their own stories; nothing waits forever on a player.
   - a quest file in the gametest datapack is posted and completes; a broken file is skipped with one log line naming
     it (added to `allow.txt`); `/reload` picks up a changed file;
   - `villageQuests` off: no new quests, and nothing else changes.
-- [ ] **31.3** **The quest journal, tracking and quest maps.** The hall's Quests page becomes a journal with four tabs
+- [x] **31.3** (review: pending 2026-10-05) **The quest journal, tracking and quest maps.** The hall's Quests page becomes a journal with four tabs
   along the top: **Village** (the daily quests), **Personal** (requests from villagers who are your friends, 31.9),
   **Story** (the village's arc, 31.4) and **Bounties** (31.13); a tab whose item hasn't landed yet says so in grey.
   Each quest shows who asked, one line per objective with its progress, the reward and the days left, and has two
@@ -4546,6 +4556,13 @@ item waits.
   `POKEMON_HOUSE_WEIGHT=60` (new `-PpokemonHouseWeight`), shoots the Pokémon houses' workers and checks they stand free.
   Renders of the 25 cut open checked locally; the static renderer has no Cobblemon textures, so the Healing Machine, PC,
   pot and pasture show only in the showcase.
+- 2026-10-05 (28.16, decisions; lane-b-1005-1833): the hall's Arena tip shows only once `Expansions.M28` is on (the
+  Cup it serves isn't out yet); the blueprints and the Leader's trade aren't held back, like the Pokémon Center. Leaders
+  sell the Arena at villager level 4 (Expert), earned through battles; owner: say if every Leader should sell it at
+  once (level 1). Arena III's top roof slab row was dropped because the builder couldn't place its end block.
+- 2026-10-05 (28.17, decisions; lane-b-1005-1833): only regular festivals count toward the Cup calendar (not ones
+  called with a cake); Cups don't check the `festivals` switch; sign-up closes and the bracket is drawn when the Cup's
+  day begins. The hall's page-room check is now 'room for 6 more pages' (the Cup page is the third page; 22.5 asks for 6).
 - 2026-10-05 (30.9, decisions; lane d): `curfew` is one effect type with three fields: `raids` (factor, multiplied;
   also read by `BanditCamps.dailyChance`), `safe_nights` (night safety full in `VillageNeeds.count`, and a monster's blow
   on a villager asleep in bed cancelled through `allowDamage`) and `stay_in` (bedtime, no trading, festival over at
@@ -4827,7 +4844,15 @@ item waits.
   only need their species count (the spec names no topic prerequisites), and pay in vanilla items so the file never
   fails to parse without Cobblemon.
 - **qa handoff** (qa-1005-1034, 2026-10-05 11:27Z): qa-1005-1034: verified B46, B69, B73. Unshipped: qa/b46-b69-1005 (QaB46GameTests, QaB69FrontWalkGameTests; its ship build passed 1014/1014 gametests but failed on the compat flake B74 = B57 again): ship it once B74 is fixed (or retry ship). qa/import-swap-1005 is obsolete (B73 fixed on main). B50 and B57 not verified: read nightly run 37297003813 (on 5b489b7, after both fixes) for the crew test and the Pidgey test's repeats; B57 recurred (B74). qa/placing-1005 still waits on B71. Next QA: B50 from the nightly, B72 scene setup, then 21.2, M23.
+- **lane-c handoff** (lane-c-1005-1532, 2026-10-05 18:13Z): wip/lane-c (ce73d6ed) = main as of 17:55Z + 27.15, 27.16, B67, B71 (old wip, B75 dup fix dropped for main's Pathfinder.hold), 27.17 caravan roads, 27.18 walls, 27.19 Steward safety, all ticked. Full build: compile, devclient and 1117/1118 GameTests pass; CaravanRoadGameTests.twoVillages120ApartBuildBothHalvesAndTheyMeet fails in the full suite (passed alone 16/16 and in 79-test targeted runs; likely batch interference with 27.18/27.19 or chunk tickets). Next run: git switch wip/lane-c, fix that test, merge main, full build (compat not yet run), push to main. Trap: worktree subagents leave Gradle daemons; stop them or full runs get OOM-killed.
 - **lane-c handoff** (lane-c-1005-1833, 2026-10-05 20:59Z): lane-c-1005-1833 (21:01Z): landed on main 2f801600: 27.15-27.19 (old wip/lane-c, M27-gated), 27.20 old houses, 27.21 renewal, B79 (ladder to upstairs beds), CaravanRoad test isolation fix. Local full build green (1169+151) before merging lane a's 29.x, pushed without rebuilding that merge (clean, no config changes). Next: 27.22 (the 1.1 yardstick), then 31.x. Red duty notes: main CI 695/697-699 were cancelled by the runner at ~15 min (infra), 696 failed only ConscriptionGameTests.aConscriptSavedMidRaidLoadsWithoutTheSword (B81). wip/lane-c is now stale (all merged); B80 is test-order (QA).
+- 2026-10-05 (31.2, decision; lane c): the quest engine moves the hall's old daily quests into `aliveworkplace_stories`
+  (by id, safe to repeat; also on a hand-in, kill or page view, so a quest set on the hall is never missed). M30's
+  reform steps stay in the hall's own `quests` list for now: `Reforms` and its GameTests read and write that list
+  directly (25 places), so moving them is left to the item that brings the journal (31.22's reform rewards or the
+  journal item), which can move them the same way. Open quests save their objectives and rewards as their JSON
+  (strings in NBT), so a changed file never changes a quest already up. `days: "festival"` (31.9) isn't read yet: a file
+  using it is skipped with its log line until 31.9 adds it.
 - 2026-10-05 (29.22, decisions; lane a): the Pokémon Ranger. Cobblemon 1.7.3 has an Alpha mark (`cobblemon:mark_alpha`)
   but nothing gives it to wild Pokémon, so a wild Pokémon is an Alpha with that mark (worn or potential) **or** at level
   50 or more (the stand-in), whichever the installed version has. Cobblemon lets a Pokémon out in a pasture only for an

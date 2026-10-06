@@ -29,9 +29,31 @@ asks for the steps, `latest.log` and any crash report).
   chests, then the Storehouses'), and remembers the day; a couple takes one between them, and an empty store leaves
   the need unmet that day. Porters carry luxuries from the makers' chests to the storehouse. The luxuries themselves
   come with their jobs later in 1.8, so nothing changes in game yet.
+- **Two more looks for the Pokémon Center** (28.7a, with Cobblemon): a timber **Mountain Lodge** under a steep red
+  gable with a porch (II adds a two-storey wing and a pen with a Pasture Block) and a sandstone **Sunny Plaza** with a
+  striped awning and a red-capped drum (II adds a wing and a walled courtyard). Both tiers of each are in the Blueprint
+  Table, Journeyman Nurses sell any of the three looks, and a village's steward builds its own look of the Center.
+- **Festival Cup bouts between villagers** (28.18, with Cobblemon): on Cup day the bracket is fought at the host's Arena,
+  one bout at a time, a round when the last one is done. Each trainer stands in their box; their Pokémon (a themed team
+  from the same pool as at home) come out one at a time beside the ring, face each other and trade moves with
+  Cobblemon's animations and impacts, damage from the theme's level, the moves and the 18-type chart
+  (`data/aliveworkplace/type_chart.json`); 90 seconds at most. The winner goes on, both trainers earn trainer XP (kept
+  for a far village's Leader until it next loads) and everyone at the Arena reads the result. Bouts with players come
+  with 28.20.
+- **The quest journal, tracking and quest maps** (31.3, part of 1.5, off until 1.5 is finished): the hall's Quests page
+  becomes a journal with Village, Personal, Story and Bounties tabs; each quest shows who asked, its steps with their
+  progress, the reward and the days left. Track a quest (a click, or shift-click) to see it as a boss bar at the top of
+  your screen, for you only; `/workplace quests` lists your quests in chat with [Track]. Quest files gain the objective
+  `reach` (go near a structure, a biome or a point) and the reward `map` (a map with the place marked), the place found
+  once when the quest goes up.
 ## 0.140.0 — 2026-10-05
 
 ### Changed
+- **Village quests run on a new quest engine** (31.2): the hall's daily quests are now data files
+  (`data/<namespace>/quests/<group>/<id>.json`) that data packs can add to, switch off or change (`/reload` reads them
+  again), with the same odds, numbers and rewards as before. Quests already up on a hall move over with their progress
+  the first time the hall is loaded. New setting **Village Quests** (on); off, no new quests go up and open ones can
+  still be finished.
 - **Expansions still being built are off until the release that finishes them** (B76): 0.139.0 switched on parts of
   1.1 to 1.4 that aren't done yet. The Steward (1.1); partner shows, the nurse at the Healing Machine and the Berry
   Breeder, Camp Cook, Habitat Keeper, Daycare Keeper and Gem Grower jobs (1.2); Legends, the Gifted and strange moods
@@ -115,6 +137,13 @@ asks for the steps, `latest.log` and any crash report).
   fireworks, and every trade 10% cheaper for the day; and every stack a caravan brings to a village that was waiting
   for it earns the treasury an emerald (shown on the trade routes page).
 ### Added
+- **The Festival Cup: calendar, themes and entrants** (28.17): with Cobblemon, a village with a hall, a finished Arena
+  and at least Village rank holds its festivals as a Festival Cup (config `festivalCup`, and `cupEveryFestivals` for
+  every second or third). Its circuit is the host and the villages it has a trade route with; each sends its Trainer
+  Leader (or its best Trainer, even from far away), and players sign up for a village that's theirs, a friend's or
+  nobody's, two a village. The hall's new Cup page shows the next Cup, its rules in plain words, the circuit, the
+  seeds, Sign up / Withdraw and the roll of champions; players hear when sign-up opens and the evening before.
+  Themes are data files; the Grand Cup ships first. No bouts yet: they come next.
 - **The Arena** (28.16): with Cobblemon, three new blueprints in the Blueprint Table (and sold by an Expert Trainer
   Leader). Arena: a 15×9 battle ring of packed mud with white lines and a centre circle, a trainer's box on a dais at
   each end with a lamp post, benches for 12, banner poles and a notice board. Arena II adds stands on both long sides
@@ -212,6 +241,16 @@ asks for the steps, `latest.log` and any crash report).
   Leaders, Move Tutors, Pokémon Traders, Fossil Scientists): lessons and revivals cost a fifth less, trainers rank up a
   quarter faster. Guild files may carry `fabric:load_conditions`. New guild perks for packs: `recovery_days`,
   `work_radius`, `hire_price`, `carry`, `train_up_to`, `strength`, `lesson_price` and `trainer_xp`.
+
+### Dev
+- **The 1.1 yardstick: a village from a plan** (27.22): `CITY=true tools/packtest/run.sh` lays out a plains village on
+  the real pack server (a hall, a Steward in Run the village, 3 builders, a stocked storehouse, 12 villagers, an old
+  vanilla house; Homes, Workshops, Farms, Market, Gardens and Keep Clear, two streets and a wall line) and lets the
+  Steward run it for 6 in-game days, then prints one `City result:` line: builds started and finished, any outside its
+  zone or in Keep Clear, stalls, every item whose count is off, and what the Steward's work costs a tick (p50, p95, p99,
+  worst; `PERF=true` adds a profile). The new `city_timelapse` showcase scene films the same village growing. The
+  README has a "Villages that build themselves" section, and the Guide Book an "A village from a plan" page that shows
+  once 1.1 is on.
 
 ## 0.139.0 — 2026-10-05
 

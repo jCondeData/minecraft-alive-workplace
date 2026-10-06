@@ -1,0 +1,19 @@
+{
+  "giver": "hall",
+  "priority": 100,
+  "weight": 1,
+  "conditions": [{"type": "quest_done", "quest": "aliveworkplace_test:test/key"}],
+  "objectives": [
+    {"type": "bring", "item": "minecraft:apple", "count": 3},
+    {"type": "kill", "entity": "minecraft:zombie", "count": 1, "where": "anywhere"}
+  ],
+  "rewards": [
+    {"type": "money", "emeralds": 2, "rank_factor": false},
+    {"type": "item", "item": "minecraft:cake", "count": 1},
+    {"type": "treasury", "emeralds": 5},
+    {"type": "village_mood", "points": 10, "days": 2},
+    {"type": "chronicle", "kind": "festival", "line": {"translate": "quest.aliveworkplace.wait", "with": [9]}}
+  ],
+  "days": 2,
+  "repeatable": false
+}

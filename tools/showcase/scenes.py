@@ -149,6 +149,11 @@ SCENES = [
       "over three mornings in Run the village, the Steward read the homes rules and started the builds himself, and the builders filled the Homes zone", 200,
       [("01_steward_homes_day_1", "Day 1: the first home"), ("02_steward_homes_day_2", "Day 2"),
        ("03_steward_homes_day_3", "Day 3: the zone filling up")]),
+    # The 1.1 yardstick (ROADMAP 27.22): a village from a plan, its Steward running it for 6 days (sprinted); the GIF leads the 1.1 notes
+    S("city_timelapse", "Steward", "A village from a plan: 6 days in Run the village",
+      "the village grew into its plan: every build the Steward started finished, each in its zone, nothing duplicated or lost", 1800,
+      [("01_city_start", "Day 1: the hall, the plan's zones, streets and wall line"), ("frame_*@middle", "Halfway"),
+       ("02_city_done", "Day 8: the village grown into its plan"), ("03_city_close", "Close up")]),
     S("steward_civic", "Steward", "The village asks, the Steward builds",
       "the village asked for light, beauty and a school, and the Steward started a street lamp, a well and a schoolhouse himself", 240,
       [("01_steward_civic_day_1", "Day 1: a lamp by the dark beds and a well"), ("02_steward_civic_day_2", "Day 2: children came, so a schoolhouse")]),
@@ -228,8 +233,9 @@ SCENES = [
       cobblemon=True),
     job("nurse", "Nurse", "Healing and curing villagers", "the nurse healed and cured the villagers"),
     S("pokemon_center", "Nurse", "The Pokémon Center",
-      "both tiers stand, and the nurse put the team in her Healing Machine and every Pokémon came out full", 60,
+      "both tiers stand in all three looks, and the nurse put the team in her Healing Machine and every Pokémon came out full", 70,
       [("01_pokemon_center", "Pokémon Center"), ("02_pokemon_center_2", "Pokémon Center II"),
+       ("05_lodge", "Mountain Lodge look, both tiers"), ("06_plaza", "Sunny Plaza look, both tiers"),
        ("03_healing", "In the Healing Machine"), ("04_healed", "All healed")], cobblemon=True),
     # Shopkeeper
     S("shop", "Shopkeeper", "The shop", "the shop screen opened with prices", 60,
@@ -248,6 +254,18 @@ SCENES = [
       "every tier's ring centre, boxes and seats are where Arenas says, and Arena III has a Healing Machine in each trainers' room", 50,
       [("01_arena_front", "Arena"), ("03_arena_2_front", "Arena II: stands, gate arch, fair lane"),
        ("05_arena_3_front", "Arena III: the covered grandstand"), ("06_arena_3_above", "Arena III from above")], cobblemon=True),
+    # The Festival Cup (ROADMAP 28.17): the hall's Cup page for a Town host with an Arena, two trade partners on its
+    # circuit, the player signed up, the seeds and the roll of champions
+    S("cup_page", "Trainer Leader", "The Festival Cup's page",
+      "the hall's Cup page shows the Grand Cup's card with its rules, the circuit and who each village sends, and the player signed up", 40,
+      [("01_cup_card", "The Cup's card and rules"), ("02_cup_circuit", "The circuit and its Leaders"),
+       ("03_cup_champions", "The roll of champions"), ("04_cup_seeds", "The seeds")], cobblemon=True),
+    # The Cup's bouts (ROADMAP 28.18): two Trainer Leaders' Grand Cup bout at the Arena, their Pokémon coming out one at a
+    # time beside the ring and trading moves until one side has none left, and the result read out
+    S("cup_bout", "Trainer Leader", "A Festival Cup bout between villagers",
+      "both trainers' Pokémon came out beside the ring, the bout ended with a winner on the Cup's results, and no Pokémon was left at the ring", 110,
+      [("01_bout_start", "Both Pokémon out"), ("bout_*@middle", "Trading moves"), ("02_bout_result", "The result"),
+       ("03_ring_cleared", "The ring cleared")], cobblemon=True),
     S("leader", "Trainer Leader", "Challenging the Trainer Leader", "the Trainer Leader took the challenge", 90,
       [("01_leader", "At the podium"), ("02_leader_battle", "The battle starts")], cobblemon=True),
     S("tutor", "Move Tutor", "The Move Tutor's lessons", "the lesson screen opened", 60,
@@ -469,6 +487,10 @@ SCENES = [
       "the quests, advice, village map, mercenaries and festival opened", 60,
       [("01_hall_quests", "Quests"), ("02_hall_advice", "What next?"), ("03_hall_map", "Village map"),
        ("05_hall_festival", "Festival")]),
+    S("quest_journal", "Village Hall", "The quest journal, a tracked quest and a quest map",
+      "the quest journal opened on its four tabs, a quest was tracked (its bar at the top of the screen) and a quest map was held", 50,
+      [("01_journal_tabs", "The journal: Village, Personal, Story and Bounties"), ("02_journal_tracked", "A tracked quest's bar at the top"),
+       ("03_quest_map", "A quest map, the place marked with a red X")]),
     S("hall_treasury", "Village Hall", "The treasury, protection and the Village Ledger",
       "the treasury was collected, the village protected and the hall opened from a Village Ledger", 60,
       [("01_hall_treasury", "Treasury and protection"), ("02_hall_collected", "Collected"), ("03_ledger_held", "Village Ledger"),

@@ -1,0 +1,18 @@
+{
+  "giver": "hall",
+  "weight": 1,
+  "objectives": [
+    {
+      "type": "bring",
+      "item": "minecraft:book",
+      "count": 4
+    }
+  ],
+  "rewards": [
+    {
+      "type": "money",
+      "emeralds": 4
+    }
+  ],
+  "days": 3
+}

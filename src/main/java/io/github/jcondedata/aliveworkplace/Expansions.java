@@ -16,7 +16,8 @@ public final class Expansions {
 	/**
 	 * Milestone 28, Pokémon and villagers, together (1.2): {@code partnerShows}, {@code nurseHealingMachine},
 	 * {@code berryBreeders}, {@code campCooks}, {@code habitatKeepers}, {@code habitatSightings}, {@code daycareKeepers},
-	 * {@code gemGrowers}, {@code villageHabitats}, {@code pokemonVillageHouses}.
+	 * {@code gemGrowers}, {@code villageHabitats}, {@code pokemonVillageHouses},
+	 * {@code festivalCup}, {@code cupEveryFestivals}.
 	 */
 	public static final boolean M28 = false;
 	/** Milestone 29, Legends (1.3): {@code legends}, {@code legendNeeds}, {@code legendSites}, {@code strangeMoods}, {@code giftedChance}. */
@@ -26,6 +27,11 @@ public final class Expansions {
 	 * {@code villageBanners}, {@code cradles}, {@code harvestIdols}, {@code tonics}.
 	 */
 	public static final boolean M30 = false;
+	/**
+	 * Milestone 31, Quests become stories (1.5). The daily quests ({@code villageQuests}) aren't behind it; the journal's
+	 * tabs, Track and {@code /workplace quests} are (design note M31, "The expansion gate").
+	 */
+	public static final boolean M31 = false;
 	/** Milestone 34, Classes and luxuries (1.8): {@code villageClasses}, {@code classRiseDays}, {@code classFallDays}. */
 	public static final boolean M34 = false;
 
@@ -49,7 +55,7 @@ public final class Expansions {
 			case "steward", "stewardSelfRun", "stewardMaxOpenBuilds", "stewardRoads", "caravanRoads", "caravanRoadReach",
 				"stewardWalls", "stewardRenewal" -> M27;
 			case "partnerShows", "nurseHealingMachine", "berryBreeders", "campCooks", "habitatKeepers", "habitatSightings",
-				"daycareKeepers", "gemGrowers", "villageHabitats", "pokemonVillageHouses" -> M28;
+				"daycareKeepers", "gemGrowers", "villageHabitats", "pokemonVillageHouses", "festivalCup", "cupEveryFestivals" -> M28;
 			case "legends", "legendNeeds", "legendSites", "strangeMoods", "giftedChance" -> M29;
 			case "villageEdicts", "edictMinDays", "workHorns", "villageBanners", "cradles", "harvestIdols", "tonics", "guilds",
 				"guildsPerRank" -> M30;

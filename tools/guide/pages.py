@@ -26,6 +26,7 @@ PAGES = {
     "requests": ("hall", 4, (280, 20, 680)),
     "storehouse": ("porter", 3, (180, 100, 480)),
     "villages": ("village", 3, None),
+    "city_plan": ("city_plan", 2, None),  # 27.22: shown only once 1.1 (Villages that build themselves) is on
     # Gathering jobs
     "miner": ("quarry", 2, (290, 140, 420)),
     "lumberjack": ("forest", 2, (330, 90, 560)),

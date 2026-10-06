@@ -1,0 +1,19 @@
+{
+  "giver": "hall",
+  "weight": 10,
+  "objectives": [
+    {
+      "type": "kill",
+      "entity": "monster",
+      "count": 8,
+      "where": "village"
+    }
+  ],
+  "rewards": [
+    {
+      "type": "money",
+      "emeralds": 6
+    }
+  ],
+  "days": 3
+}

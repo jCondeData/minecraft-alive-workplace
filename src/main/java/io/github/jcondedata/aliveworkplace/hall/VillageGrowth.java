@@ -164,9 +164,11 @@ public final class VillageGrowth {
 		List<BlockPos> store = VillageNeeds.store(level, hall);
 		int meals = familyMeals(level, hall);
 		for (int i = 0; i < meals; i++) {
-			if (SupplyContainers.takeOne(level, store, VillageNeeds::isMeal).isEmpty()) {
+			net.minecraft.world.item.ItemStack meal = SupplyContainers.takeOne(level, store, VillageNeeds::isMeal);
+			if (meal.isEmpty()) {
 				break;
 			}
+			io.github.jcondedata.aliveworkplace.build.MaterialLedger.eaten(meal); // a soak's count (27.22)
 		}
 		for (Villager parent : parents) {
 			level.sendParticles(ParticleTypes.HEART, parent.getX(), parent.getEyeY() + 0.4, parent.getZ(), 4, 0.3, 0.2, 0.3, 0.0);

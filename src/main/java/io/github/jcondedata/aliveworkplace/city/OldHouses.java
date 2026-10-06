@@ -96,7 +96,14 @@ public final class OldHouses {
 	private static final Map<ServerLevel, Integer> LAST_TICK = new WeakHashMap<>();
 
 	public static void init() {
-		Platform.get().onLevelTick(OldHouses::tick);
+		Platform.get().onLevelTick(level -> {
+			long cost = StewardCost.start(); // 27.22
+			try {
+				tick(level);
+			} finally {
+				StewardCost.stop(cost, "old-house survey");
+			}
+		});
 	}
 
 	/** Whether any zone of the hall's plan has its renew switch on. */

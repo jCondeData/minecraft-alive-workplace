@@ -133,6 +133,11 @@ public final class Moods {
 			score -= 15;
 			bad.add(reason("mourning"));
 		}
+		int questMood = io.github.jcondedata.aliveworkplace.story.Stories.mood(level, villager); // village_mood rewards (31.2)
+		if (questMood != 0) {
+			score += questMood;
+			(questMood > 0 ? good : bad).add(reason("quest"));
+		}
 		if (io.github.jcondedata.aliveworkplace.hall.Festivals.enjoyedLately(level, villager)) {
 			int festival = io.github.jcondedata.aliveworkplace.hall.Festivals.mood(level, villager);
 			score += festival;

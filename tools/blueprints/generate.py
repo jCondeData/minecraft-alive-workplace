@@ -21,6 +21,7 @@ from yards import *
 from bandits import *
 from legend_sites import *
 from pokemon import *
+from pokemon_looks import *
 from pokemon_jobs import *
 from guildhall import *
 from arena import *
@@ -140,6 +141,9 @@ if __name__ == "__main__":
     sifting_shed_2().save(MAIN_STRUCTURES, "sifting_shed_2")
     pokemon_center().save(MAIN_STRUCTURES, "pokemon_center")
     pokemon_center_2().save(MAIN_STRUCTURES, "pokemon_center_2")
+    for look, tier1, tier2 in POKEMON_CENTER_LOOKS:  # ROADMAP 28.7a: the Center's other looks
+        tier1().save(os.path.join(MAIN_STRUCTURES, LOOK_FOLDER, look), "pokemon_center")
+        tier2().save(os.path.join(MAIN_STRUCTURES, LOOK_FOLDER, look), "pokemon_center_2")
     for name, draw in JOB_BUILDS:  # ROADMAP 28.13: the Pokémon jobs' builds
         draw().save(MAIN_STRUCTURES, name)
     guildhall().save(MAIN_STRUCTURES, "guildhall")

@@ -220,7 +220,14 @@ public final class Plots {
 	private static final Map<ServerLevel, Map<BlockPos, Integer>> LAST_TICK = new WeakHashMap<>();
 
 	public static void init() {
-		Platform.get().onLevelTick(Plots::tick);
+		Platform.get().onLevelTick(level -> {
+			long cost = StewardCost.start(); // 27.22
+			try {
+				tick(level);
+			} finally {
+				StewardCost.stop(cost, "plot search");
+			}
+		});
 	}
 
 	/**

@@ -184,8 +184,29 @@ public class PokemonCenterCompatTests implements FabricGameTest {
 		build(helper, StarterBlueprints.POKEMON_CENTER_2, List.of(new BlockPos(6, 1, 22), new BlockPos(6, 1, 14)));
 	}
 
+	/** ROADMAP 28.7a: a builder builds the Mountain Lodge II with Cobblemon: its Healing Machine, Pasture Block and Shop Counter in place. */
+	//$ gametest_ticks_batch HUGE_AREA '60000' '"pokemon_center_lodge_2_build"'
+	@GameTest(template = HUGE_AREA, timeoutTicks = 60000, batch = "pokemon_center_lodge_2_build")
+	public void aBuilderBuildsTheLodgePokemonCenterII(GameTestHelper helper) {
+		// 21 wide: at (8, 2, 3) it and its landscaping margin (a block round it) stay inside the 30-wide area
+		build(helper, StarterBlueprints.POKEMON_CENTER_LODGE_2, List.of(new BlockPos(6, 1, 7), new BlockPos(6, 1, 15), new BlockPos(16, 1, 6)),
+			new BlockPos(8, 2, 3));
+	}
+
+	/** ROADMAP 28.7a: and the Sunny Plaza II. */
+	//$ gametest_ticks_batch HUGE_AREA '60000' '"pokemon_center_plaza_2_build"'
+	@GameTest(template = HUGE_AREA, timeoutTicks = 60000, batch = "pokemon_center_plaza_2_build")
+	public void aBuilderBuildsThePlazaPokemonCenterII(GameTestHelper helper) {
+		build(helper, StarterBlueprints.POKEMON_CENTER_PLAZA_2, List.of(new BlockPos(6, 1, 7), new BlockPos(6, 1, 21), new BlockPos(6, 1, 14)));
+	}
+
 	/** Builds {@code entry} at (9, 2, 3) from barrels holding exactly its materials; {@code check}: template spots that must hold Cobblemon's blocks (or the Shop Counter). */
 	private static void build(GameTestHelper helper, StarterBlueprints.Entry entry, List<BlockPos> check) {
+		build(helper, entry, check, new BlockPos(9, 2, 3));
+	}
+
+	/** As {@link #build(GameTestHelper, StarterBlueprints.Entry, List)}, at {@code origin}. */
+	private static void build(GameTestHelper helper, StarterBlueprints.Entry entry, List<BlockPos> check, BlockPos origin) {
 		ServerLevel level = helper.getLevel();
 		helper.setDayTime(2000);
 		level.getGameRules().getRule(ModGameRules.BUILD_DELAY).set(1, level.getServer());
@@ -194,7 +215,7 @@ public class PokemonCenterCompatTests implements FabricGameTest {
 		helper.setBlock(bench, ModBlocks.BUILDERS_BENCH);
 		Villager builder = helper.spawn(EntityType.VILLAGER, new BlockPos(3, 2, 3));
 		Builders.employ(level, builder, helper.absolutePos(bench));
-		BlueprintData.Placement placement = new BlueprintData.Placement(level.dimension().location(), helper.absolutePos(new BlockPos(9, 2, 3)),
+		BlueprintData.Placement placement = new BlueprintData.Placement(level.dimension().location(), helper.absolutePos(origin),
 			Rotation.NONE, Mirror.NONE);
 		BuildSite site = Builders.start(level, builder, null, entry.id(), placement);
 		BuildPlan plan = site.plan(level);

@@ -499,6 +499,8 @@ public class ReformGameTests implements FabricGameTest {
 		hall.setEdicts(List.of());
 		hall.setReforms(List.of());
 		hall.setQuests(List.of());
+		// The daily quests live in the quest engine since 31.2: drop any the board posted while the village was set up.
+		io.github.jcondedata.aliveworkplace.story.Stories.Data.get(helper.getLevel()).remove(helper.absolutePos(HALL));
 		hall.setLastQuestDay(Long.MAX_VALUE / 2);
 		VillageNeeds.forget();
 		CivicEffects.forget();

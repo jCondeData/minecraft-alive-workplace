@@ -42,6 +42,7 @@ import net.minecraft.world.entity.npc.Villager;
  * /workplace friend add|remove &lt;player&gt;, /workplace friend list — who may give orders to your builders
  * /workplace strip &lt;height&gt;       — the Quarry Marker in hand digs a strip mine at that height, down a ladder shaft
  * /workplace edict proclaim|lift &lt;id&gt; — proclaims or lifts an edict in the village you stand in (ops)
+ * /workplace quests [track &lt;id&gt;|untrack] — your quests in chat with [Track]/[Untrack] (the quest journal, 31.3)
  * /workplace steward explain       — the Steward's rules for the nearest Village Hall, each condition's number and whether it held
  */
 public final class WorkplaceCommand {
@@ -72,6 +73,13 @@ public final class WorkplaceCommand {
 						com.mojang.brigadier.arguments.StringArgumentType.getString(ctx, "kind")) ? 1 : 0)))
 			.then(Commands.literal("mail")
 				.executes(WorkplaceCommand::trackMail))
+			.then(Commands.literal("quests") // the quest journal in chat (31.3)
+				.executes(ctx -> quests(ctx.getSource().getPlayerOrException(), null, false))
+				.then(Commands.literal("untrack")
+					.executes(ctx -> quests(ctx.getSource().getPlayerOrException(), null, true)))
+				.then(Commands.literal("track")
+					.then(Commands.argument("quest", UuidArgument.uuid())
+						.executes(ctx -> quests(ctx.getSource().getPlayerOrException(), UuidArgument.getUuid(ctx, "quest"), false)))))
 			.then(Commands.literal("steward")
 				.then(Commands.literal("explain")
 					.executes(WorkplaceCommand::explainSteward)))
@@ -103,6 +111,33 @@ public final class WorkplaceCommand {
 				.then(Commands.literal("list")
 					.executes(WorkplaceCommand::listFriends)))
 			.then(io.github.jcondedata.aliveworkplace.legend.LegendCommand.node()));
+	}
+
+	/**
+	 * {@code /workplace quests}: your quests in chat with a clickable [Track] or [Untrack]; {@code track <id>} and
+	 * {@code untrack} are what those buttons run (ROADMAP 31.3). Behind milestone 31's gate.
+	 */
+	public static int quests(net.minecraft.server.level.ServerPlayer player, @org.jetbrains.annotations.Nullable java.util.UUID track, boolean untrack) {
+		if (!io.github.jcondedata.aliveworkplace.story.QuestTracker.enabled()) {
+			io.github.jcondedata.aliveworkplace.mc.Chat.system(player, Component.translatable("command.aliveworkplace.quests.off"));
+			return 0;
+		}
+		if (untrack) {
+			io.github.jcondedata.aliveworkplace.story.QuestTracker.untrack(player);
+			io.github.jcondedata.aliveworkplace.mc.Chat.system(player, Component.translatable("command.aliveworkplace.quests.untracked"));
+			return 1;
+		}
+		if (track != null) {
+			if (!io.github.jcondedata.aliveworkplace.hall.QuestJournal.trackById(player, track)) {
+				io.github.jcondedata.aliveworkplace.mc.Chat.system(player, Component.translatable("command.aliveworkplace.quests.gone"));
+				return 0;
+			}
+			return 1;
+		}
+		for (Component line : io.github.jcondedata.aliveworkplace.hall.QuestJournal.chatList(player)) {
+			io.github.jcondedata.aliveworkplace.mc.Chat.system(player, line);
+		}
+		return 1;
 	}
 
 	/** {@code /workplace steward explain}: every Steward's rule for the nearest Village Hall (ROADMAP 27.6). */

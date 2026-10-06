@@ -25,7 +25,8 @@ import net.minecraft.world.phys.Vec3;
 
 /**
  * SCENE=pokemon_center (ROADMAP 28.7, with Cobblemon): the Pokémon Center from the street, then Pokémon Center II over
- * it (the lodge and the garden behind), then inside: the nurse at the counter puts the player's hurt team in her
+ * it (the lodge and the garden behind), the other looks (28.7a: the Mountain Lodge and the Sunny Plaza, both tiers
+ * each), then inside: the nurse at the counter puts the player's hurt team in her
  * Healing Machine, which runs, and everyone comes out full.
  */
 final class PokemonCenterScene {
@@ -34,7 +35,12 @@ final class PokemonCenterScene {
 	private static final BlockPos MACHINE = ORIGIN.offset(6, 1, 7);
 	/** Pokémon Center II stands beside it, placed at the start so its chunks are drawn by the time it's filmed. */
 	private static final BlockPos ORIGIN_2 = new BlockPos(34, -60, 0);
-	private static final int HEAL = 210;
+	/** The other looks (28.7a) in a row behind them: the Mountain Lodge's two tiers, then the Sunny Plaza's. */
+	private static final BlockPos LODGE = new BlockPos(0, -60, 44);
+	private static final BlockPos LODGE_2 = new BlockPos(18, -60, 44);
+	private static final BlockPos PLAZA = new BlockPos(48, -60, 44);
+	private static final BlockPos PLAZA_2 = new BlockPos(66, -60, 44);
+	private static final int HEAL = 330;
 
 	private int tick;
 	private volatile Villager nurse;
@@ -56,6 +62,10 @@ final class PokemonCenterScene {
 				level.setDayTime(5000);
 				place(level, StarterBlueprints.POKEMON_CENTER, ORIGIN);
 				place(level, StarterBlueprints.POKEMON_CENTER_2, ORIGIN_2);
+				place(level, StarterBlueprints.POKEMON_CENTER_LODGE, LODGE);
+				place(level, StarterBlueprints.POKEMON_CENTER_LODGE_2, LODGE_2);
+				place(level, StarterBlueprints.POKEMON_CENTER_PLAZA, PLAZA);
+				place(level, StarterBlueprints.POKEMON_CENTER_PLAZA_2, PLAZA_2);
 				level.getEntitiesOfClass(net.minecraft.world.entity.monster.Slime.class, new net.minecraft.world.phys.AABB(ORIGIN).inflate(96))
 					.forEach(net.minecraft.world.entity.Entity::discard);
 				ScreenshotHarness.hoverLookingAt(player(server), new Vec3(-5.5, -54, -12), new Vec3(6.5, -57.5, 5));
@@ -73,6 +83,24 @@ final class PokemonCenterScene {
 			server.execute(() -> {
 				Showcase.check(ScreenshotHarness.cobblemonBlock("pasture").getBlock()
 					== server.overworld().getBlockState(ORIGIN_2.offset(6, 1, 22)).getBlock(), "Pokémon Center II's garden has its Pasture Block");
+				ScreenshotHarness.hoverLookingAt(player(server), new Vec3(4, -50, 28), new Vec3(19, -57, 52));
+			});
+		}
+		if (tick == 230) {
+			ScreenshotHarness.shot(mc, "05_lodge");
+			server.execute(() -> {
+				Showcase.check(server.overworld().getBlockEntity(LODGE.offset(6, 1, 7)) instanceof HealingMachineBlockEntity
+					&& ScreenshotHarness.cobblemonBlock("pasture").getBlock() == server.overworld().getBlockState(LODGE_2.offset(6, 1, 15)).getBlock(),
+					"the Mountain Lodge has its Healing Machine and Lodge II its Pasture Block");
+				ScreenshotHarness.hoverLookingAt(player(server), new Vec3(52, -50, 28), new Vec3(66, -57, 54));
+			});
+		}
+		if (tick == 290) {
+			ScreenshotHarness.shot(mc, "06_plaza");
+			server.execute(() -> {
+				Showcase.check(server.overworld().getBlockEntity(PLAZA.offset(6, 1, 7)) instanceof HealingMachineBlockEntity
+					&& ScreenshotHarness.cobblemonBlock("pasture").getBlock() == server.overworld().getBlockState(PLAZA_2.offset(6, 1, 21)).getBlock(),
+					"the Sunny Plaza has its Healing Machine and Plaza II its Pasture Block");
 				setUpHealing(server);
 			});
 		}

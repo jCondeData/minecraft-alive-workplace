@@ -1,0 +1,22 @@
+{
+  "giver": "hall",
+  "weight": 10,
+  "conditions": [
+    {
+      "type": "cobblemon"
+    }
+  ],
+  "objectives": [
+    {
+      "type": "battle",
+      "count": 1
+    }
+  ],
+  "rewards": [
+    {
+      "type": "money",
+      "emeralds": 8
+    }
+  ],
+  "days": 3
+}

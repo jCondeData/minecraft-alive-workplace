@@ -1,0 +1,18 @@
+{
+  "giver": "hall",
+  "weight": 1,
+  "objectives": [
+    {
+      "type": "bring",
+      "item": "minecraft:leather",
+      "count": 8
+    }
+  ],
+  "rewards": [
+    {
+      "type": "money",
+      "emeralds": 3
+    }
+  ],
+  "days": 3
+}

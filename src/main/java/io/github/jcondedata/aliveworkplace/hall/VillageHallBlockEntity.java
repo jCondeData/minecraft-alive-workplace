@@ -147,8 +147,13 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 			hall.setChanged();
 		}
 		if (level instanceof net.minecraft.server.level.ServerLevel server) {
-			io.github.jcondedata.aliveworkplace.city.Roads.tick(server, pos, hall); // 27.15
-			io.github.jcondedata.aliveworkplace.city.Walls.tick(server, pos, hall); // 27.18
+			long cost = io.github.jcondedata.aliveworkplace.city.StewardCost.start(); // 27.22: counted as the Steward's work
+			try {
+				io.github.jcondedata.aliveworkplace.city.Roads.tick(server, pos, hall); // 27.15
+				io.github.jcondedata.aliveworkplace.city.Walls.tick(server, pos, hall); // 27.18
+			} finally {
+				io.github.jcondedata.aliveworkplace.city.StewardCost.stop(cost, "roads and walls");
+			}
 		}
 		if (level instanceof net.minecraft.server.level.ServerLevel server
 			&& (hall.needs == null || Math.floorMod(level.getGameTime() + pos.hashCode(), VillageNeeds.CHECK_EVERY) == 0)) {
@@ -162,6 +167,7 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 			io.github.jcondedata.aliveworkplace.guard.Gates.round(server, pos, census.guards());
 			io.github.jcondedata.aliveworkplace.guard.BanditCamps.round(server, pos);
 			Festivals.round(server, pos, hall, census.villagers());
+			io.github.jcondedata.aliveworkplace.cup.Cups.round(server, pos, hall); // 28.17: after the caravans' list is up to date
 			io.github.jcondedata.aliveworkplace.legend.LegendSlots.round(server, pos);
 			io.github.jcondedata.aliveworkplace.legend.LegendGuests.round(server, pos);
 			io.github.jcondedata.aliveworkplace.legend.LegendNeeds.round(server, pos);
@@ -406,7 +412,7 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 		return questsDone;
 	}
 
-	void questDone() {
+	public void questDone() {
 		questsDone++;
 		setChanged();
 	}

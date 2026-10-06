@@ -38,15 +38,23 @@ public class ChefWork extends CrafterWork {
 		}
 		List<BlockPos> own = SupplyContainers.find(level, station, null);
 		List<BlockPos> sources = new ArrayList<>(own);
+		if (own.isEmpty()) {
+			return null; // nowhere to put what's cooked
+		}
+		Map<Item, Long> stock = new java.util.HashMap<>(SupplyContainers.contents(level, own));
 		for (Village.Stash stash : Village.stashes(level, villager, station, null)) {
 			if (stash.job() == ModVillagers.PORTER || stash.job() == net.minecraft.world.entity.npc.VillagerProfession.BUTCHER) {
 				sources.addAll(stash.chests());
+				// Only what the builds near them don't still need (B84: a Farmstead's potatoes went into the pot).
+				io.github.jcondedata.aliveworkplace.build.BuildReserve reserve = io.github.jcondedata.aliveworkplace.build.BuildReserve.cached(level, stash.chests());
+				for (Item item : SupplyContainers.contents(level, stash.chests()).keySet()) {
+					long spare = reserve.spare(level, item);
+					if (spare > 0) {
+						stock.merge(item, spare, Long::sum);
+					}
+				}
 			}
 		}
-		if (own.isEmpty() || sources.isEmpty()) {
-			return null; // nowhere to put what's cooked
-		}
-		Map<Item, Long> stock = SupplyContainers.contents(level, sources);
 		List<Item> menu = Chefs.menu(level);
 		for (int i = 0; i < menu.size(); i++) {
 			Item dish = menu.get((next + i) % menu.size());

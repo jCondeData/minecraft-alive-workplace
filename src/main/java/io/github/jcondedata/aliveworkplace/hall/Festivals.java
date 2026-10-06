@@ -237,7 +237,8 @@ public final class Festivals {
 	/** The feast: every grown villager eats from the store, everyone is remembered as having come. */
 	public static void feast(ServerLevel level, BlockPos hall) {
 		Anthems.play(level, hall, "festival"); // the Bard Laureate's anthem (29.19)
-		List<BlockPos> store = VillageNeeds.store(level, hall);
+		io.github.jcondedata.aliveworkplace.build.BuildReserve store = io.github.jcondedata.aliveworkplace.build.BuildReserve.of(level,
+			VillageNeeds.store(level, hall)); // B84: never what a build near the store still needs
 		long today = Chronicle.day(level);
 		int villagers = 0;
 		int fed = 0;

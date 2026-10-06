@@ -46,6 +46,13 @@ asks for the steps, `latest.log` and any crash report).
   your screen, for you only; `/workplace quests` lists your quests in chat with [Track]. Quest files gain the objective
   `reach` (go near a structure, a biome or a point) and the reward `map` (a map with the place marked), the place found
   once when the quest goes up.
+
+### Fixed
+- **A build's crops stay in the village store** (B84): villagers no longer eat, cook or sow the carrots, potatoes and
+  seeds a build site near the store still needs (meals, feasts, banquets, a new family's meals, farmers and chefs taking
+  from the storehouse). A Steward's Farmstead finishes instead of waiting for materials for days; food a build doesn't
+  need is eaten as before, and a site frees its share when it finishes or is cancelled.
+
 ## 0.140.0 — 2026-10-05
 
 ### Changed

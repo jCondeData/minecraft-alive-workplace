@@ -1189,6 +1189,13 @@ public class BuilderWork extends Behavior<Villager> {
 			defer(site, villager, pos); // nothing to attach to yet; retried at the end of the stage
 			return;
 		}
+		// B91: an anvil, sand or gravel with nothing under it yet (a helper works out of order) would fall, land in the
+		// floor's place and, broken by hand, drop nothing: the build then waits for an anvil that's gone. It waits too.
+		if (state.getBlock() instanceof net.minecraft.world.level.block.FallingBlock
+			&& net.minecraft.world.level.block.FallingBlock.isFree(level.getBlockState(pos.below())) && pos.getY() > level.getMinBuildHeight()) {
+			defer(site, villager, pos);
+			return;
+		}
 		if (!level.isUnobstructed(state, pos, CollisionContext.empty())) {
 			handleObstruction(level, villager, site, plan, pos);
 			return;

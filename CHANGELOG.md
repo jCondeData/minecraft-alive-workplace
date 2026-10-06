@@ -46,6 +46,12 @@ asks for the steps, `latest.log` and any crash report).
   your screen, for you only; `/workplace quests` lists your quests in chat with [Track]. Quest files gain the objective
   `reach` (go near a structure, a biome or a point) and the reward `map` (a map with the place marked), the place found
   once when the quest goes up.
+
+### Fixed
+- **Builders no longer lose an anvil** (B91): a builder working alongside another could set an anvil (or sand,
+  gravel, concrete powder) down before the floor under it was laid; it fell, and the build then waited for an anvil
+  that was gone. They now leave such a block until there is something under it.
+
 ## 0.140.0 — 2026-10-05
 
 ### Changed

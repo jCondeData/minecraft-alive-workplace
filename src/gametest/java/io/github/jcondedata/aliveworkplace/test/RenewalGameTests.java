@@ -390,6 +390,74 @@ public class RenewalGameTests implements net.fabricmc.fabric.api.gametest.v1.Fab
 		});
 	}
 
+	/** A home proposal for a well at {@code at} (relative), filed under its own test rule. */
+	private static StewardDesk.Proposal home(GameTestHelper helper, Village v, BlockPos at) {
+		ResourceLocation well = ResourceLocation.fromNamespaceAndPath("aliveworkplace", "well");
+		Optional<StewardDesk.Proposal> p = StewardDesk.offer(v.level(), v.hall(), new io.github.jcondedata.aliveworkplace.city.StewardWishes.Wish(
+				ResourceLocation.fromNamespaceAndPath("aliveworkplace", "test/b86_home"), new io.github.jcondedata.aliveworkplace.city.StewardRules.Effect(
+				io.github.jcondedata.aliveworkplace.city.StewardRules.Kind.BUILD, Optional.of(well), Optional.of("homes"), Optional.empty(),
+				Optional.empty()), 50, "steward.aliveworkplace.why.renew", List.of()),
+			well, new io.github.jcondedata.aliveworkplace.blueprint.BlueprintData.Placement(io.github.jcondedata.aliveworkplace.mc.Ids.of(v.level().dimension()),
+				helper.absolutePos(at), net.minecraft.world.level.block.Rotation.NONE, net.minecraft.world.level.block.Mirror.NONE), "Homes 1", false);
+		helper.assertTrue(p.isPresent(), "setup: the home wasn't proposed");
+		return p.get();
+	}
+
+	/**
+	 * B86: one build open at a time (as a Hamlet allows), a home proposed before the renewal: when the Steward approves
+	 * everything himself the renewal takes the free slot (it comes at most every two days), and the home waits for the next.
+	 */
+	//$ gametest_ticks_batch AREA '400' '"renewTurn"'
+	@GameTest(template = AREA, timeoutTicks = 400, batch = "renewTurn")
+	public void aRenewalTakesTheOneFreeSlotAheadOfTheDaysHomes(GameTestHelper helper) {
+		Village v = village(helper, "", true);
+		ServerLevel level = v.level();
+		BoundingBox old = OldHousesGameTests.placeVanilla(helper, SMALL_HOUSE, HOUSE);
+		StewardDesk.Proposal home = home(helper, v, new BlockPos(22, 2, 16));
+		StewardDesk.Proposal renewal = propose(helper, v, measure(helper, v, beds(level, old).get(0)));
+		helper.assertTrue(home.id() < renewal.id(), "setup: the home isn't ahead of the renewal on the desk");
+		int was = Stewards.MAX_OPEN_BUILDS;
+		Stewards.MAX_OPEN_BUILDS = 1;
+		try {
+			helper.assertTrue(Stewards.maxOpenBuilds(level, v.steward()) == 1, "setup: more than one build may be open");
+			StewardDesk.approveAll(level, v.hall(), null);
+			helper.assertTrue(Renewals.active(level, v.hall()).size() == 1, "the renewal didn't start ahead of the home; open: "
+				+ StewardDesk.openSites(level, v.hall()).stream().map(BuildSite::structure).toList());
+			helper.assertTrue(StewardDesk.of(level, v.hall()).get(home.id()).isPresent(), "the home took a second slot");
+			helper.assertTrue(StewardDesk.openSites(level, v.hall()).size() == 1, "more than one build open");
+			// the take-down and the rebuild done, the slot is free again and the home goes next
+			complete(v, site(helper, v));
+			complete(v, site(helper, v));
+			helper.assertTrue(Renewals.active(level, v.hall()).isEmpty(), "the renewal is still under way");
+			StewardDesk.approveAll(level, v.hall(), null);
+			helper.assertTrue(StewardDesk.of(level, v.hall()).get(home.id()).isEmpty(), "the home never got its turn");
+		} finally {
+			Stewards.MAX_OPEN_BUILDS = was;
+		}
+		helper.succeed();
+	}
+
+	/** B86: an old house past every bench's reach (54 blocks out in the City run) is still renewed, by a builder of the village. */
+	//$ gametest_ticks_batch AREA '400' '"renewFar"'
+	@GameTest(template = AREA, timeoutTicks = 400, batch = "renewFar")
+	public void anOldHousePastTheBenchesReachIsStillRenewed(GameTestHelper helper) {
+		Village v = village(helper, "", true);
+		ServerLevel level = v.level();
+		BoundingBox old = OldHousesGameTests.placeVanilla(helper, SMALL_HOUSE, HOUSE);
+		StewardDesk.Proposal renewal = propose(helper, v, measure(helper, v, beds(level, old).get(0)));
+		int was = Builders.MAX_SITE_DISTANCE;
+		Builders.MAX_SITE_DISTANCE = 4;
+		try {
+			StewardDesk.Outcome outcome = StewardDesk.approve(level, v.hall(), null, renewal.id());
+			helper.assertTrue(outcome == StewardDesk.Outcome.STARTED, "the far renewal wasn't started: " + outcome);
+			BuildSite down = site(helper, v);
+			helper.assertTrue(v.builder().getUUID().equals(down.builder()), "the village's builder isn't taking it down");
+		} finally {
+			Builders.MAX_SITE_DISTANCE = was;
+		}
+		helper.succeed();
+	}
+
 	/** Ask me first: the house waits on the desk as a proposal; a zone whose renew switch is off gets none. */
 	//$ gametest_ticks_batch AREA '600' '"renewAsk"'
 	@GameTest(template = AREA, timeoutTicks = 600, batch = "renewAsk")

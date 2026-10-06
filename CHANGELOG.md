@@ -71,6 +71,10 @@ asks for the steps, `latest.log` and any crash report).
 - **Builders no longer lose an anvil** (B91): a builder working alongside another could set an anvil (or sand,
   gravel, concrete powder) down before the floor under it was laid; it fell, and the build then waited for an anvil
   that was gone. They now leave such a block until there is something under it.
+- **A Steward's wall and old-house renewals get built** (B86): an approved wall line past the builders' reach from
+  their tables never opened a piece, and the roads took every free builder ahead of it; wall pieces now go to any
+  free builder of the village, the roads and the wall take turns, and an old house at the village's edge is renewed
+  too. When he approves everything himself, a renewal takes the free slot ahead of the day's homes.
 
 ## 0.140.0 — 2026-10-05
 

@@ -404,7 +404,8 @@ public final class Renewals {
 				return StewardDesk.Outcome.OVERLAPS;
 			}
 		}
-		Optional<StewardDesk.Builder> builder = StewardDesk.builderFor(level, hall, proposal);
+		// B86: the old house stands in the village even past every bench's reach (54 blocks out in the City run)
+		Optional<StewardDesk.Builder> builder = StewardDesk.builderFor(level, hall, proposal, true);
 		if (builder.isEmpty()) {
 			return StewardDesk.Outcome.NO_BUILDER;
 		}

@@ -171,6 +171,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QuestEngineGameTests",
 			"io.github.jcondedata.aliveworkplace.test.FriendshipGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QuestJournalGameTests",
+			"io.github.jcondedata.aliveworkplace.test.StoryArcGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaWardingGameTests",
 			"io.github.jcondedata.aliveworkplace.test.FerryLeaveQaGameTests",
 			"io.github.jcondedata.aliveworkplace.test.StationsB8UnloadedGameTests",

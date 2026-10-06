@@ -91,6 +91,7 @@ public final class Stories {
 		if (changed) {
 			data.setDirty();
 		}
+		Arcs.round(level, hall, entity); // story arcs move on, end or begin (31.4)
 	}
 
 	/** The open quests of the hall's board (giver {@code hall}). */
@@ -295,7 +296,7 @@ public final class Stories {
 			boolean here = near.isPresent() && near.get().equals(en.getKey());
 			for (Quest q : List.copyOf(en.getValue().quests)) {
 				int i = q.current();
-				if (i >= 0 && q.objectives.get(i) instanceof Objectives.Kill kill && (here || kill.anywhere()) && kill.matches(killed)
+				if (i >= 0 && q.objectives.get(i) instanceof Objectives.Kill kill && (here || kill.anywhere() || kill.role() != null) && kill.matches(killed)
 					&& level.getBlockEntity(en.getKey()) instanceof VillageHallBlockEntity entity && mayHelp(level, en.getKey(), q, player)) {
 					progress(level, en.getKey(), entity, q, i, 1, player);
 					break;
@@ -368,12 +369,20 @@ public final class Stories {
 				: Component.translatable("message.aliveworkplace.quest.done_plain", quest.title())).withStyle(ChatFormatting.GREEN));
 			level.playSound(null, player.blockPosition(), SoundEvents.PLAYER_LEVELUP, SoundSource.PLAYERS, 0.6f, 1.3f);
 		}
+		Arcs.questDone(level, hall, quest, player); // a story arc's quest moves its chapter on (31.4)
 	}
 
 	/** Whether anyone has finished the quest file {@code file} in the village round {@code hall}. */
 	public static boolean finished(ServerLevel level, BlockPos hall, ResourceLocation file) {
 		Entry e = Data.get(level).halls.get(hall);
 		return e != null && e.finished.contains(file.toString());
+	}
+
+	/** Whether an arc's lasting flag {@code flag} holds today in the village round {@code hall} (31.4). */
+	public static boolean villageFlag(ServerLevel level, BlockPos hall, String flag) {
+		Entry e = Data.get(level).halls.get(hall);
+		Long until = e == null ? null : e.villageFlags.get(flag);
+		return until != null && until >= Chronicle.day(level);
 	}
 
 	/** How much happier the quests' {@code village_mood} rewards make {@code villager} today. */
@@ -482,6 +491,16 @@ public final class Stories {
 		/** Quest files anyone finished here. */
 		final Set<String> finished = new java.util.LinkedHashSet<>();
 		final List<Mood> moods = new ArrayList<>();
+		/** The story arc running here (31.4), and side arcs beside it. */
+		@Nullable
+		ArcState arc;
+		final List<ArcState> sideArcs = new ArrayList<>();
+		/** The day the last arc ended; {@link #UNSEEN} until the arc engine first sees the hall (it then starts counting). */
+		long lastArcDay = UNSEEN;
+		/** Flags an arc set for some days that outlive it (name → the last day they hold). */
+		final Map<String, Long> villageFlags = new LinkedHashMap<>();
+
+		static final long UNSEEN = Long.MIN_VALUE;
 	}
 
 	record Mood(int points, long until, Component reason) {
@@ -551,6 +570,22 @@ public final class Stories {
 					moods.add(t);
 				}
 				h.put("mood_boosts", moods);
+				if (e.arc != null) {
+					h.put("arc", e.arc.save());
+				}
+				if (!e.sideArcs.isEmpty()) {
+					ListTag sides = new ListTag();
+					e.sideArcs.forEach(a -> sides.add(a.save()));
+					h.put("side_arcs", sides);
+				}
+				if (e.lastArcDay != Entry.UNSEEN) {
+					h.putLong("last_arc_day", e.lastArcDay);
+				}
+				if (!e.villageFlags.isEmpty()) {
+					CompoundTag flags = new CompoundTag();
+					e.villageFlags.forEach(flags::putLong);
+					h.put("village_flags", flags);
+				}
 				list.add(h);
 			}
 			tag.put("halls", list);
@@ -594,6 +629,24 @@ public final class Stories {
 					CompoundTag t = Nbt.compoundAt(moods, j);
 					e.moods.add(new Mood(Nbt.getInt(t, "points"), Nbt.getLong(t, "until_day"),
 						Rewards.text(com.google.gson.JsonParser.parseString(Nbt.getString(t, "reason")))));
+				}
+				try {
+					if (h.contains("arc")) {
+						e.arc = ArcState.load(Nbt.getCompound(h, "arc"));
+					}
+					ListTag sides = Nbt.getList(h, "side_arcs", Tag.TAG_COMPOUND);
+					for (int j = 0; j < sides.size(); j++) {
+						e.sideArcs.add(ArcState.load(Nbt.compoundAt(sides, j)));
+					}
+				} catch (RuntimeException ex) {
+					AliveWorkplace.LOG.warn("Dropping a story arc that can't be read: {}", ex.getMessage());
+				}
+				if (h.contains("last_arc_day")) {
+					e.lastArcDay = Nbt.getLong(h, "last_arc_day");
+				}
+				CompoundTag flags = Nbt.getCompound(h, "village_flags");
+				for (String k : Nbt.keys(flags)) {
+					e.villageFlags.put(k, Nbt.getLong(flags, k));
 				}
 			}
 			ListTag tracks = Nbt.getList(tag, "tracked", Tag.TAG_COMPOUND);

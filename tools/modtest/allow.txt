@@ -19,6 +19,8 @@ Unknown class need type no_such_need
 Skipping service aliveworkplace_test:broken
 # QuestEngineGameTests feeds the quest file loader a broken file to prove it is skipped with one line naming it.
 Skipping quest file aliveworkplace_test:quests/test/broken
+# StoryArcGameTests' pack has an arc with an unknown effect type, to prove it is skipped with one line naming it.
+Skipping story arc aliveworkplace_test:arcs/test/broken
 
 # --- other mods in the compat test server (dev environment, not our code) ---
 # Modded entities have no DataFixerUpper schema; every mod's entity logs this once.

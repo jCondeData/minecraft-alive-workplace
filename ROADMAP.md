@@ -2260,7 +2260,7 @@ write their own stories; nothing waits forever on a player.
     `reach` counts inside its radius and not outside; the map's marker sits on the found place; the lookup runs once
     per quest (a counter);
   - showcase scene `quest_journal`: the four tabs, a tracked bar on screen, a quest map in hand.
-- [ ] **31.4** **The story arc engine.** Arcs are data, `data/<namespace>/arcs/<id>.json`, one arc per file: a
+- [x] **31.4** (review: pending 2026-10-06) **The story arc engine.** Arcs are data, `data/<namespace>/arcs/<id>.json`, one arc per file: a
   `trigger` (conditions, a chance a day), the `chapters` in order and an `ending`. A chapter has a name, intro lines
   for chat and the chronicle, `on_start` effects, its quests (ids or written inline), when it's done (all of them, any
   one, or the ones named), `delay_days` before the next, a `time_limit_days` with what happens on failure, and chatter
@@ -4861,3 +4861,12 @@ item waits.
   its maximum, nobody's or the hall owner's (another player's pasture is never filled). A calm is checked at the damage
   gate (a calmed Alpha's blows on villagers and players inside any village are cancelled and its target dropped); a
   walk that takes longer than 2 minutes is given up for the day.
+- 2026-10-06 (31.4, decisions; lane c): the arc engine reads `threat` but doesn't gate on it yet: 32.21 (the threat
+  level, At peace) hasn't landed, so whoever builds 32.21 adds the check in `Arcs.tryStart` (the comment marks the
+  spot). A chapter's `intro` takes a lang key or a text component (a pack may write `{"text": ...}`); `chatter` lines
+  are lang keys. `place` rules: `ring`, `road` (a share along the hall's nearest caravan route), `biome`, `after` (with
+  `distance`) and `offset` ([x, z] from the hall, for packs and tests); `count` places `key`, `key#2`... (one
+  `<key>_done` flag when all are built). A spot that has no clear natural ground within 32 blocks is given up with a
+  log line and its `<key>_done` set, so no chapter waits on it forever. Spawn groups are `data/<ns>/arc_spawns/<id>.json`
+  (`{"mobs": [...]}`). A mob dying to anything counts as dead (not put back) and sets `<key>_dead`. Flags set with
+  `days` also outlive the arc in the village (`Stories.villageFlag`, for the Bandit King's "no camps for 10 days").

@@ -43,6 +43,7 @@ import net.minecraft.world.entity.npc.Villager;
  * /workplace strip &lt;height&gt;       — the Quarry Marker in hand digs a strip mine at that height, down a ladder shaft
  * /workplace edict proclaim|lift &lt;id&gt; — proclaims or lifts an edict in the village you stand in (ops)
  * /workplace quests [track &lt;id&gt;|untrack] — your quests in chat with [Track]/[Untrack] (the quest journal, 31.3)
+ * /workplace story start &lt;arc&gt;|next|stop — starts a story arc in the village you stand in, moves it on a chapter, or ends it (ops)
  * /workplace steward explain       — the Steward's rules for the nearest Village Hall, each condition's number and whether it held
  */
 public final class WorkplaceCommand {
@@ -110,7 +111,84 @@ public final class WorkplaceCommand {
 						.executes(ctx -> friend(ctx, false))))
 				.then(Commands.literal("list")
 					.executes(WorkplaceCommand::listFriends)))
+			.then(Commands.literal("story") // story arcs (31.4)
+				.requires(s -> s.hasPermission(2))
+				.then(Commands.literal("start")
+					.then(Commands.argument("arc", com.mojang.brigadier.arguments.StringArgumentType.greedyString())
+						.suggests((ctx, builder) -> SharedSuggestionProvider.suggest(
+							io.github.jcondedata.aliveworkplace.story.Arcs.all().stream().map(a -> a.id().toString()), builder))
+						.executes(ctx -> story(ctx.getSource(), "start", com.mojang.brigadier.arguments.StringArgumentType.getString(ctx, "arc").trim()))))
+				.then(Commands.literal("next")
+					.executes(ctx -> story(ctx.getSource(), "next", "")))
+				.then(Commands.literal("stop")
+					.executes(ctx -> story(ctx.getSource(), "stop", ""))))
 			.then(io.github.jcondedata.aliveworkplace.legend.LegendCommand.node()));
+	}
+
+	/** {@code /workplace story start <arc>|next|stop} in the village the command runs in (an operator's tool, 31.4). */
+	public static int story(CommandSourceStack source, String what, String arcName) {
+		ServerLevel level = source.getLevel();
+		net.minecraft.core.BlockPos hall = io.github.jcondedata.aliveworkplace.hall.VillageHalls.nearest(level,
+			net.minecraft.core.BlockPos.containing(source.getPosition())).orElse(null);
+		if (hall == null) {
+			source.sendFailure(Component.translatable("command.aliveworkplace.story.no_hall"));
+			return 0;
+		}
+		Component village = io.github.jcondedata.aliveworkplace.hall.VillageHalls.name(level, hall);
+		io.github.jcondedata.aliveworkplace.story.ArcState now = io.github.jcondedata.aliveworkplace.story.Arcs.running(level, hall);
+		switch (what) {
+			case "start" -> {
+				if (!io.github.jcondedata.aliveworkplace.story.Arcs.ENABLED) {
+					source.sendFailure(Component.translatable("command.aliveworkplace.story.off"));
+					return 0;
+				}
+				var arc = io.github.jcondedata.aliveworkplace.story.Arcs.find(arcName);
+				if (arc.isEmpty()) {
+					source.sendFailure(Component.translatable("command.aliveworkplace.story.unknown", arcName));
+					return 0;
+				}
+				if (!arc.get().side() && now != null) {
+					source.sendFailure(Component.translatable("command.aliveworkplace.story.running", village, storyName(now)));
+					return 0;
+				}
+				var started = io.github.jcondedata.aliveworkplace.story.Arcs.start(level, hall, arc.get());
+				if (started == null) {
+					source.sendFailure(Component.translatable("command.aliveworkplace.story.cannot", arc.get().name(), village));
+					return 0;
+				}
+				source.sendSuccess(() -> Component.translatable("command.aliveworkplace.story.started", arc.get().name(), village), true);
+				return 1;
+			}
+			case "next" -> {
+				if (now == null) {
+					source.sendFailure(Component.translatable("command.aliveworkplace.story.none", village));
+					return 0;
+				}
+				Component name = storyName(now);
+				io.github.jcondedata.aliveworkplace.story.Arcs.next(level, hall);
+				io.github.jcondedata.aliveworkplace.story.ArcState after = io.github.jcondedata.aliveworkplace.story.Arcs.running(level, hall);
+				source.sendSuccess(() -> after == now
+					? Component.translatable("command.aliveworkplace.story.next", name, after.chapter + 1)
+					: Component.translatable("command.aliveworkplace.story.ended", name), true);
+				return 1;
+			}
+			default -> {
+				if (now == null) {
+					source.sendFailure(Component.translatable("command.aliveworkplace.story.none", village));
+					return 0;
+				}
+				Component name = storyName(now);
+				io.github.jcondedata.aliveworkplace.story.Arcs.stop(level, hall);
+				source.sendSuccess(() -> Component.translatable("command.aliveworkplace.story.stopped", name, village), true);
+				return 1;
+			}
+		}
+	}
+
+	private static Component storyName(io.github.jcondedata.aliveworkplace.story.ArcState state) {
+		ResourceLocation id = ResourceLocation.tryParse(state.id);
+		return id == null ? Component.literal(state.id) : io.github.jcondedata.aliveworkplace.story.Arcs.get(id)
+			.map(io.github.jcondedata.aliveworkplace.story.Arcs.Arc::name).orElse(Component.literal(state.id));
 	}
 
 	/**

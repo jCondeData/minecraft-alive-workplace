@@ -496,6 +496,11 @@ SCENES = [
       "a Peasant couple rose to Artisan at dawn with golden sparkles and a chat line, and the hall's Classes page counts each class's needs", 45,
       [("01_classes_rise", "Odo and Pia rise to Artisan at dawn"), ("02_classes_tab", "The Classes tab: households of each class"),
        ("03_classes_page", "The Burgher button: needs counted, what it gives, who's closest")]),
+    # Higher jobs need higher classes (ROADMAP 34.8): a Peasant refused the Scholar's paper, a Burgher taking it
+    S("class_jobs", "Village Hall", "Higher jobs need higher classes",
+      "a Peasant was refused the Scholar's paper (the job needs a Burgher), and a Burgher took it", 30,
+      [("01_class_jobs_refused", "Dara, a Peasant, is refused: a Scholar must be a Burgher"),
+       ("02_class_jobs_taken", "Bram, a Burgher, becomes the Scholar")]),
     # What each class gives (ROADMAP 34.7): the Noble's Ball in place of every other festival, and the takings by class
     S("noble_ball", "Village Hall", "The Noble's Ball, and the takings by class",
       "the village's Noble household turned the festival into a Noble's Ball: guests at the hall, gold fireworks at dusk, the player a Hero for the night, and the takings split by class", 45,

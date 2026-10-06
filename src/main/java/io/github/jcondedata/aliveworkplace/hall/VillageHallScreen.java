@@ -376,6 +376,18 @@ public final class VillageHallScreen {
 			}
 			Component job = Component.translatable("entity.minecraft.villager." + station.profession().name());
 			Item item = level.getBlockState(station.pos()).getBlock().asItem();
+			// A job above their class (34.8) is greyed, with the class it needs; a click says why.
+			Component refusal = io.github.jcondedata.aliveworkplace.people.ClassJobs.refusal(hall, villager, station.profession());
+			if (refusal != null) {
+				io.github.jcondedata.aliveworkplace.people.SocialClasses.SocialClass need = io.github.jcondedata.aliveworkplace.people.ClassJobs.needed(station.profession());
+				menu.button(slot++, icon(item == Items.AIR ? Items.PAPER : item, job.copy(), ChatFormatting.DARK_GRAY,
+					line(where(hall, station.pos()), ChatFormatting.GRAY),
+					line(Component.translatable("screen.aliveworkplace.hall.job_needs_class", need.name()), ChatFormatting.RED)), p -> {
+					Chat.actionBar(p, refusal.copy().withStyle(ChatFormatting.YELLOW));
+					level.playSound(null, p.blockPosition(), SoundEvents.VILLAGER_NO, SoundSource.NEUTRAL, 0.8f, 1f);
+				});
+				continue;
+			}
 			menu.button(slot++, icon(item == Items.AIR ? Items.PAPER : item, job.copy(), ChatFormatting.WHITE,
 				line(where(hall, station.pos()), ChatFormatting.GRAY),
 				line(Component.translatable("screen.aliveworkplace.hall.give_job", villager.getDisplayName(), job), ChatFormatting.GREEN)), p -> {
@@ -690,6 +702,12 @@ public final class VillageHallScreen {
 		Component classLine = ClassesPage.classLine(villager);
 		if (classLine != null) {
 			lore.add(line(classLine, ChatFormatting.GOLD));
+		}
+		// A worker below their job's class keeps it (34.8): the hall marks them.
+		io.github.jcondedata.aliveworkplace.people.SocialClasses.SocialClass above = io.github.jcondedata.aliveworkplace.people.ClassJobs.above(villager);
+		if (above != null) {
+			lore.add(line(Component.translatable("screen.aliveworkplace.hall.job_above_class",
+				io.github.jcondedata.aliveworkplace.work.Stations.name(villager.getVillagerData().getProfession()), above.name()), ChatFormatting.YELLOW));
 		}
 		if (partner != null && (classLine == null || !partner.married())) {
 			lore.add(line(Component.translatable(partner.married() ? "screen.aliveworkplace.hall.married_to" : "screen.aliveworkplace.hall.courting",

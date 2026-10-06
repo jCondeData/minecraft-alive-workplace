@@ -17,6 +17,11 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Added
+- **Higher jobs need higher classes, for 1.8** (34.8, off until 1.8 is finished): in a village with a hall, the
+  Tinkerer, Chef, Netherworker, Nurse, Teacher, Shopkeeper, Innkeeper and the Cobblemon trades need an Artisan, and the
+  Scholar, Undertaker and Trainer Leader a Burgher, when the job is taken (its item, the hall's free workstations, now
+  greyed with the class, a grown child, the Steward). Hired travellers arrive as Peasants, Artisans or Burghers by
+  level. Nobody is fired: a worker below their job's class keeps it and the hall marks them.
 - **What each class gives, for 1.8** (34.7, off until 1.8 is finished): taxes by class (Peasant ×1, Artisan ×1.5,
   Burgher ×2.5, Noble ×4, +10% a want; the hall's name tag shows the split), Artisan crafters 10% faster, Burgher
   scholars 15% faster, a caravan route and a market trader more with 3 Burgher households, +3% wellbeing a Noble

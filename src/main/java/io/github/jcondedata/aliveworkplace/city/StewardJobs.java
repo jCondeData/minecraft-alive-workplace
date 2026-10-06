@@ -161,6 +161,9 @@ public final class StewardJobs {
 					continue;
 				}
 				VillagerProfession p = gap.profession();
+				if (!io.github.jcondedata.aliveworkplace.people.ClassJobs.may(hall, villager, p)) {
+					continue; // a job above their class (34.8)
+				}
 				Optional<VillageHalls.FreeStation> found = free.stream()
 					.filter(f -> p.acquirableJobSite().test(f.poi()) && (gap != Gap.PORTER || f.poi().is(ModVillagers.STOREHOUSE_POI)))
 					.filter(f -> buildingJob(level, buildings, f.pos()).map(b -> b == p).orElse(true))
@@ -175,7 +178,12 @@ public final class StewardJobs {
 				}
 			}
 			if (at == null) {
-				at = free.stream().min(Comparator.comparingDouble(f -> f.pos().distToCenterSqr(villager.position()))).orElseThrow();
+				at = free.stream()
+					.filter(f -> io.github.jcondedata.aliveworkplace.people.ClassJobs.may(hall, villager, jobAt(level, buildings, f)))
+					.min(Comparator.comparingDouble(f -> f.pos().distToCenterSqr(villager.position()))).orElse(null);
+				if (at == null) {
+					continue; // every free block's job is above their class (34.8)
+				}
 				job = jobAt(level, buildings, at);
 			}
 			free.remove(at);

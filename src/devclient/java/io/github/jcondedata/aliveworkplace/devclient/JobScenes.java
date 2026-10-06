@@ -2917,6 +2917,39 @@ final class JobScenes {
 					}
 				}, 30)),
 			(level, player) -> player.containerMenu instanceof ChoiceMenu m && m.getType() == ModBlocks.VILLAGE_HALL_MENU));
+		// Higher jobs need higher classes (ROADMAP 34.8): by a lectern in a village with a hall, Dara, a Peasant, is handed
+		// the Scholar's paper and refused ("Dara is Peasant class; Scholar needs Burgher or better"); Bram, a Burgher, takes it.
+		SCREENS.put("class_jobs", new Screen("a Peasant was refused the Scholar's paper (the job needs a Burgher), and a Burgher took it",
+			new Vec3(2.5, -58.4, 4.5), TARGET,
+			(level, player) -> {
+				level.setBlockAndUpdate(STATION.offset(-6, 0, -4), ModBlocks.VILLAGE_HALL.defaultBlockState()
+					.setValue(io.github.jcondedata.aliveworkplace.hall.VillageHallBlock.FACING, Direction.SOUTH));
+				level.setBlockAndUpdate(STATION, Blocks.LECTERN.defaultBlockState());
+				io.github.jcondedata.aliveworkplace.people.SocialClasses.ENABLED = true;
+				classPeople.clear();
+				String[] names = {"Dara", "Bram"};
+				String[] classes = {"peasant", "burgher"};
+				for (int i = 0; i < names.length; i++) {
+					Villager v = bornSceneVillager(level, new BlockPos(-1 + 2 * i, -60, 2), names[i], false);
+					io.github.jcondedata.aliveworkplace.people.SocialClasses.seed(v, io.github.jcondedata.aliveworkplace.people.SocialClasses.get(
+						io.github.jcondedata.aliveworkplace.AliveWorkplace.id(classes[i])));
+					classPeople.add(v);
+				}
+			},
+			List.of(new Step("01_class_jobs_refused", -1, 0, (level, player) -> {
+					Villager dara = classPeople.get(0);
+					player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, new net.minecraft.world.item.ItemStack(Items.PAPER));
+					io.github.jcondedata.aliveworkplace.work.Stations.choose(player, dara, new net.minecraft.world.item.ItemStack(Items.PAPER));
+					Showcase.check(dara.getVillagerData().getProfession() == net.minecraft.world.entity.npc.VillagerProfession.NONE,
+						"the Peasant was refused the Scholar's job: " + dara.getVillagerData().getProfession());
+				}, 30),
+				new Step("02_class_jobs_taken", -1, 0, (level, player) -> {
+					Villager bram = classPeople.get(1);
+					io.github.jcondedata.aliveworkplace.work.Stations.choose(player, bram, new net.minecraft.world.item.ItemStack(Items.PAPER));
+					Showcase.check(bram.getVillagerData().getProfession() == ModVillagers.SCHOLAR,
+						"the Burgher took the Scholar's job: " + bram.getVillagerData().getProfession());
+				}, 40)),
+			(level, player) -> classPeople.size() == 2 && classPeople.get(1).getVillagerData().getProfession() == ModVillagers.SCHOLAR));
 		// The Noble's Ball (ROADMAP 34.7): a village with a Noble household holds a ball in place of every other festival.
 		// The guests gather at the hall (no Manor yet), gold fireworks go up at dusk, the player is a Hero of the Village
 		// for the night, and the hall's name tag shows the day's takings by class.

@@ -99,6 +99,7 @@
 			"io.github.jcondedata.aliveworkplace.test.ClassGameTests",
 			"io.github.jcondedata.aliveworkplace.test.ClassHallGameTests",
 			"io.github.jcondedata.aliveworkplace.test.ClassPerkGameTests",
+			"io.github.jcondedata.aliveworkplace.test.ClassJobGameTests",
 			"io.github.jcondedata.aliveworkplace.test.LuxuryGameTests",
 			"io.github.jcondedata.aliveworkplace.test.LuxuryWorkGameTests",
 			"io.github.jcondedata.aliveworkplace.test.ServiceGameTests",

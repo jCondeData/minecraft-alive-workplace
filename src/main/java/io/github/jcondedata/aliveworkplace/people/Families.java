@@ -108,7 +108,9 @@ public final class Families {
 				continue;
 			}
 			for (VillageHalls.FreeStation station : free) {
-				if (BuiltInRegistries.VILLAGER_PROFESSION.getKey(station.profession()).toString().equals(job) && VillageHalls.assign(level, villager, station)) {
+				if (BuiltInRegistries.VILLAGER_PROFESSION.getKey(station.profession()).toString().equals(job)
+					&& ClassJobs.may(hall, villager, station.profession()) // a parent's trade above the child's class waits (34.8)
+					&& VillageHalls.assign(level, villager, station)) {
 					Component trade = Component.translatable("entity.minecraft.villager." + station.profession().name());
 					Chronicle.record(level, hall, Chronicle.Kind.JOINED, Component.translatable("chronicle.aliveworkplace.family_trade",
 						villager.getDisplayName(), trade));

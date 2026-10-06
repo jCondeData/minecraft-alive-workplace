@@ -1315,7 +1315,66 @@ def pokemon_ranger():
     return [path]
 
 
-DRAW = [orchard_keeper, berry_breeder, camp_cook, habitat_keeper, daycare_keeper, gem_grower, pokemon_trader, porter, postman, rancher, scholar, shopkeeper, sifter, teacher, tinkerer,
+def vintner():
+    """A straw hat with a green vine band (two grape leaves and a bunch of dark grapes over the brim), a linen shirt
+    with the sleeves rolled to the elbow, and a wine-stained canvas apron: purple splashes and a drip down the front,
+    a stained hem, and a corkscrew in the pocket (ROADMAP 34.9)."""
+    t = vg.VillagerTexture()
+    straw = Ramp(["#947a24", "#ac8c2f", "#c1a137", "#d1bc45", "#dfcc6f"], name="straw")
+    vine = ["#2f5a22", "#4a7d32", "#6ea34a"]             # dark, mid, lit
+    grape = ["#3a1240", "#5e2366", "#86408e"]
+    vg.hat(t, straw, style="brim", band=vine[1], noise=0.1)
+    crown_top(t, straw)
+    front = t.face("hat", "front")                      # leaves on the vine band, and a bunch of grapes by them
+    front.put(2, 3, vine[2])
+    front.put(3, 2, vine[2])
+    front.put(3, 3, vine[0])
+    front.put(5, 2, grape[2])
+    front.put(6, 2, grape[1])
+    front.put(5, 3, grape[1])
+    front.put(6, 3, grape[0])
+    for side in ("west", "east", "back"):               # the band's leaves going round the crown
+        f = t.face("hat", side)
+        f.put(2, 3, vine[2])
+        f.put(5, 3, vine[0])
+
+    linen = vg.cloth(LINEN)
+    canvas = vg.cloth("#c4a676", spread=0.2)
+    vg.vest(t, linen, length=10, open_front=False, noise=0)
+    vg.apron(t, canvas, top=2, bottom=17, left=1, right=6, ties=True)
+    apron_back(t, canvas)
+    vg.sleeves(t, linen, noise=0)
+    roll = vg.cloth("#c9c2ae")
+    for side in ("front", "west", "east", "back"):      # the sleeves rolled up: a thick fold band, the forearm below bare
+        f = t.face("arm", side)
+        paint(f, ((x, 3) for x in range(f.w)), roll[3])
+        paint(f, ((x, 4) for x in range(f.w)), roll[1])
+        for y in range(5, f.h):
+            paint(f, ((x, y) for x in range(f.w)), "#b48a6a" if y < f.h - 1 else "#9c7458")
+    mid = t.face("arms_middle", "front")                 # the bare forearms crossing
+    for y in range(mid.h):
+        for x in range(mid.w):
+            mid.put(x, y, "#9c7458" if x == 4 or y == mid.h - 1 else "#b48a6a")
+
+    wine = ["#4a1236", "#6e1f4e", "#8e3266"]
+    j = t.face("jacket", "front")                       # wine splashes and a drip down the apron
+    for x, y, c in ((1, 4, 2), (2, 5, 1), (5, 6, 2), (6, 7, 0), (5, 7, 1), (2, 15, 1), (3, 16, 0), (6, 16, 1),
+                    (4, 15, 2), (5, 16, 0)):
+        j.put(x, y, wine[c])
+    for y in range(8, 10):
+        j.put(6, y, wine[1])
+    f = pocket(t, canvas, top=11, bottom=14)            # a corkscrew in the pocket: a wooden handle and the steel worm
+    f.put(1, 10, "#8a5a2e")
+    f.put(2, 10, "#6a4220")
+    f.put(1, 9, "#b07a40")
+    f.put(2, 9, "#8a5a2e")
+    f.put(2, 11, STEEL[2])
+    f.put(1, 12, STEEL[1])
+    f.put(2, 13, STEEL[0])
+    return t.save_profession(ASSETS, "vintner", hat="full")
+
+
+DRAW = [orchard_keeper, berry_breeder, camp_cook, habitat_keeper, daycare_keeper, gem_grower, vintner, pokemon_trader, porter, postman, rancher, scholar, shopkeeper, sifter, teacher, tinkerer,
         trainer, trainer_leader, tutor, undertaker, steward, legend, legend_placeholder, master_architect, pathfinder, old_sage, seer, golem_smith,
         merchant_prince, grand_chef, bard_laureate, beastmaster, founder, pokemon_professor, pokemon_ranger]
 

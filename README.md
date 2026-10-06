@@ -581,6 +581,7 @@ placed keep working, so old worlds are fine.
 | Berry Breeder (with Cobblemon) | Composter + any Cobblemon berry | berries, Growth and Surprise Mulch | sneak-right-click: pick a goal in the berry book (a Field Marker for a plot of her own) | any |
 | Camp Cook (with Cobblemon) | Campfire Pot (Cobblemon's campfire with a pot on it) + Hearty Grains | the makings of her dishes (Hearty Grains, Vivichoke, apricorns, milk, honey, berries for seasoning) | nothing (a Storehouse's stock orders for the order-only treats) | any |
 | Habitat Keeper (with Cobblemon) | Pasture Block (Cobblemon's) + a honey bottle | Poké Snacks (or the Camp Cook's), honey bottles, Saccharine saplings | Field Markers for her lure spots (optional) | any |
+| Vintner | Cauldron + sweet berries, glow berries or an apple | apples, sweet or glow berries (with Cobblemon any berry), glass bottles | nothing (keeps the village store in Cider and wines) | any |
 | Gem Grower | Stonecutter + an amethyst shard | tumblestones or Type Gem Blocks to plant (with Cobblemon), glass and shards for Blank TMs (1.8) | sneak-right-click: pick which gem beds she keeps | any |
 | Daycare Keeper (with Cobblemon) | Pasture Block (Cobblemon's) + an egg | emeralds (or CobbleDollars) to collect eggs | right-click: leave a pair, collect eggs | any |
 | Netherworker | Cartography Table + netherrack | food (a pickaxe, an axe, a sword, a chestplate, fire resistance) | nothing (a Nether portal within 32 blocks) | Artisan |
@@ -1264,6 +1265,29 @@ makings for. The beds are data files (`data/<namespace>/gem_beds/<name>.json`: w
 which blocks grow and which is ripe), so a data pack can add more. She sells amethyst shards, then tumblestones, and Type
 Gems at Expert (1.8); Rock and Steel Pokémon help her, and a Rock partner taps each ripe cluster loose. Config
 `gemGrowers` (on).
+
+## Vintners
+
+*Part of 1.8, Classes and luxuries: off until that expansion is finished.*
+
+Put a chest by a **cauldron**, stand a villager beside it and sneak-right-click them with **sweet berries, glow berries
+or an apple**: they become a **Vintner**, and the cauldron is their vat (a jobless villager still takes a cauldron as a
+Leatherworker; leather and gravel still pick the Leatherworker and the Sifter). While pressing, purple splashes jump out
+of the vat and the fruit squelches. They keep the village store (the hall's kitchens and Storehouses, or the
+Storehouses nearby) in 8 of each drink they can make, from their own chests, the store and the village's chests:
+
+| Drink | Made from | Level | Wanted by |
+|---|---|---|---|
+| **Cider** | 3 apples and a glass bottle | Novice | Artisans, every 4 days (a want) |
+| **Berry Wine** | 6 sweet berries or 4 glow berries (with Cobblemon, 4 of any berry) and a glass bottle | Apprentice | Burghers, every 2 days (a need) |
+| **Vintage Wine** | a Berry Wine at least 3 days old, re-corked | Journeyman | Nobles, every 2 days (a need) |
+
+Berry Wine carries the day it was pressed ("Pressed on day 42 · vintage in 2 days"); a bottle without a day (bought or
+old stock) counts as aged. The porters carry the drinks to the store, the Noble's Ball serves them, and what the Vintner
+is short of goes on the requests board. You can drink them too: Cider fills 2 hunger, Berry Wine 3, Vintage Wine 4 and
+gives 5 seconds of Regeneration, and the bottle comes back. Vintners buy apples, berries and bottles and sell the drinks
+of their level; Grass, Bug and Fairy Pokémon help them. The recipes are data (`data/<namespace>/luxury_recipes/`), so a
+data pack can add more. Config `vintners` (on once 1.8 is finished).
 
 ## Daycare Keepers (with Cobblemon)
 Stand a villager by a **Pasture Block** and sneak-right-click them with an **egg**: they become a **Daycare Keeper**.

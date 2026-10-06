@@ -414,6 +414,13 @@ final class JobScenes {
 			ScreenshotHarness.hover(player, scholar.position().add(1.5, 1.2, 3), 160, 15);
 			io.github.jcondedata.aliveworkplace.research.ResearchScreen.open(player, scholar);
 		}, 19, 6)));
+		SCENES.put("vintner", job("the vintner pressed cider in the cauldron, purple splashes and all", 2400, (level, player) -> {
+			// ROADMAP 34.9: a cauldron picked with an apple; apples and glass bottles in the chest. The Novice presses Cider
+			// at the vat (purple splashes, a squelch) and puts the bottles in the chest.
+			picked(level, player, STATION, Blocks.CAULDRON, Items.APPLE);
+			Container c = chest(level, chestPos(), new ItemStack(Items.APPLE, 9), new ItemStack(Items.GLASS_BOTTLE, 3));
+			return l -> c.countItem(io.github.jcondedata.aliveworkplace.registry.ModItems.CIDER) >= 2;
+		}));
 		SCENES.put("sifter", job("the sifter sifted gravel into loot", 1800, (level, player) -> {
 			Villager v = picked(level, player, STATION, Blocks.WATER_CAULDRON.defaultBlockState().setValue(BlockStateProperties.LEVEL_CAULDRON, 3), Items.GRAVEL);
 			chest(level, chestPos(), new ItemStack(Items.GRAVEL, 40));

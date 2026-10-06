@@ -1,0 +1,8 @@
+{
+  "job": "aliveworkplace:vintner",
+  "level": 1,
+  "inputs": [{"item": "minecraft:apple", "count": 3}, {"item": "minecraft:glass_bottle", "count": 1}],
+  "output": {"id": "aliveworkplace:cider", "count": 1},
+  "ticks": 60,
+  "enabled": true
+}

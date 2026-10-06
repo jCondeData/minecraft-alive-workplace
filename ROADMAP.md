@@ -3692,7 +3692,7 @@ on a real world.
   `ClassJobGameTests` cover each way of taking a job, a grandfathered worker keeping their job across a reload, a
   hired Expert arriving as a Burgher, and no gate with `villageClasses` off; scene `class_jobs` (a Peasant refused
   the Scholar's paper, a Burgher taking it) passes; the README's job table gets a Class column.
-- [ ] **34.9** **Vintner.** A new job: stand a villager by a **cauldron** and sneak-right-click them with **sweet
+- [x] **34.9** (review: pending 2026-10-06) **Vintner.** A new job: stand a villager by a **cauldron** and sneak-right-click them with **sweet
   berries, glow berries or an apple** (a new line in `Stations`; the cauldron's Leatherworker and Sifter stay). The
   cauldron is their vat (purple splashes and a squelch while pressing), and through 34.5 they make:
   - **Cider**: 3 apples and a glass bottle (Novice);
@@ -4897,3 +4897,11 @@ item waits.
   Printer and Jeweller are in the Artisan and Burgher files already and are gated once 34.11/34.12 add them. A hired
   traveller's class is given only in a village with a hall. The refusal reads "Dara is Peasant class; Scholar needs
   Burgher or better" (no "a"/"an" before names a data pack may change).
+- **34.9 (2026-10-06, decisions):** the Vintner has a config switch, `vintners`, gated with M34 like `villageClasses`.
+  Sweet berries, glow berries and an apple also pick the Orchard Keeper at a composter: the station by the villager
+  decides (the nearest free one), and a villager already an Orchard Keeper (or a Vintner) isn't switched by the same
+  fruit, as `Stations.picks` has always done. Drinks are `mc/DrinkItem` (food, and the bottle given back by hand, as
+  1.21.2 moves that to a component). The wines are in `not_villager_food` (households take them as luxuries, never as
+  meals). Trades: makings bought at every level (apples, sweet berries, bottles, glow berries, apples); Cider sold at
+  Novice, Berry Wine at Apprentice and Expert, Vintage Wine at Journeyman and Master. Not done here: the "What next?"
+  tip naming the Vintner (34.6 left that how-line generic).

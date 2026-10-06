@@ -62,6 +62,7 @@ asks for the steps, `latest.log` and any crash report).
   lost: a Steward, a Legend or an edict comes back as it was when its expansion is released.
 
 ### Fixed
+- The settings screen's steward renewal switch now reads "Steward Renewals", so its label fits its button (B87).
 - **Foretold raids now come from the side the Seer named** (B82): raiders could gather near the edge of the foretold
   side and spread out across it, so a player told "south-east" might see them come from the east. They now gather
   well inside that side, spread out less in a small village, and look further out on the same side when the ground

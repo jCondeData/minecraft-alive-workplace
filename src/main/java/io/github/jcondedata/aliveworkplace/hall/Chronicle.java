@@ -24,7 +24,9 @@ public final class Chronicle {
 		SIGHTING(Items.SPYGLASS), BANNER(Items.WHITE_BANNER),
 		REFORM(Items.WRITABLE_BOOK), GUILD(Items.PAPER), CUP(Items.GOLD_INGOT),
 		/** A household rose or came down in the world (34.6). */
-		CLASS(Items.GOLD_INGOT);
+		CLASS(Items.GOLD_INGOT),
+		/** A story arc's chapters and endings (31.4). */
+		STORY(Items.BOOK);
 
 		public final Item icon;
 

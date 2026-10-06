@@ -345,6 +345,9 @@ public final class ModAttachments {
 	/** Luxury id to the day they last had one (34.4 fills it; a {@code luxury} class need reads it). Absent: none had. */
 	public static final Attachment<java.util.Map<net.minecraft.resources.ResourceLocation, Long>> LUXURIES_HAD = Attachment.saved("luxuries_had", com.mojang.serialization.Codec.unboundedMap(net.minecraft.resources.ResourceLocation.CODEC, com.mojang.serialization.Codec.LONG));
 
+	/** A named villager's friendships with players (ROADMAP 31.5): player → points, favours' days, gifts, heart events told. Absent: nobody has points. */
+	public static final Attachment<io.github.jcondedata.aliveworkplace.story.Friendship.Data> FRIENDSHIP = Attachment.saved("friendship", io.github.jcondedata.aliveworkplace.story.Friendship.Data.CODEC);
+
 	public static void init() {
 	}
 

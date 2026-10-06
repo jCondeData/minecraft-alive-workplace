@@ -153,7 +153,7 @@ stay in the list, ticked, so their numbers stay unique.
 - [x] **B84** (approved auto 2026-10-06) **A Steward's Farmstead never finishes: the village eats its crops** (27.22's city run): the Farmstead's carrots, potatoes and wheat seeds sit in the storehouse for its builder, but villagers eat a meal from the same store each day (VillageNeeds.eat, which prefers food they haven't had lately) and pick up the seeds from trampled crops, so the build waits for materials for days (8 stalls in 2 in-game days; ledger carrot -9, potato -8, wheat_seeds -18) and holds one of the Steward's open-build slots. Fix idea: a meal never takes items a build site still needs (BuildSite materials reserved), or crop blocks are placed last. Repro: CITY=true tools/packtest/run.sh (found by lane-c-1005-2132, 2026-10-05)
 - [ ] **B85** **The Steward's planning costs too much a tick, with one 0.7 s spike** (27.22's city run, CITY=true PERF=true tools/packtest/run.sh): his planning runs every second at the hall, so 1 tick in 20 carries it and the p95 lands on that edge: 0.46, 0.05 and 0.59 ms in three runs (target under 0.5 ms), p99 about 1.2 ms; and the first planning call took 710 ms (an 882 ms tick, slowest call: planning at tick 3186), likely the first rules, blueprint or plot-search load. Fix ideas: spread his planning over ticks (wishes once a morning, the desk every few seconds), warm the blueprints off the tick; the City result line names the slowest call. (found by lane-c-1005-2132, 2026-10-05)
 - [ ] **B86** **In Run the village the wall and the old-house renewal never start** (27.22's city run): after a raid on record the Steward's palisade was approved on day 1, but in 6 in-game days no wall piece opened (0 standing), and his proposal 'Renew the old house 54 blocks north-west as a Stone House' stayed on the desk all week, never approved by himself, while 14 other builds (6 buildings, 8 road segments) went up. A Hamlet allows one open build at a time, so walls and renewals may simply never get a turn behind homes and roads: check Walls.round's 'no building waits' rule and approveAll's order. Repro: CITY=true tools/packtest/run.sh, the City result line's wall and desk parts. (found by lane-c-1005-2132, 2026-10-05)
-- [ ] **B87** **The config screen's 'Stewards Renew Old Houses: ON/OFF' label is wider than its button** (27.21, 20cd5485; showcase scene config fails on 5f15851, run 37375753016: 'every setting has a button whose label fits (68 settings)'). Players see the text overflow the button. Expected: every config label fits its button (shorter en_us text, e.g. 'Steward Renewals', or a wider button). Test: SCENE=config tools/screenshots/run.sh (found by qa-1005-2233, 2026-10-05) (found by qa-1005-2233, 2026-10-05)
+- [x] **B87** (approved auto 2026-10-06) **The config screen's 'Stewards Renew Old Houses: ON/OFF' label is wider than its button** (27.21, 20cd5485; showcase scene config fails on 5f15851, run 37375753016: 'every setting has a button whose label fits (68 settings)'). Players see the text overflow the button. Expected: every config label fits its button (shorter en_us text, e.g. 'Steward Renewals', or a wider button). Test: SCENE=config tools/screenshots/run.sh (found by qa-1005-2233, 2026-10-05) (found by qa-1005-2233, 2026-10-05)
 - [ ] **B88** Showcase scenes failing with no open bug (full showcase run 37375753016 on main 5f15851, 116 pass / 29 fail; beyond B43/B62/B72/B80-B86): bridges, caravan_road, steward_safety, old_houses, steward_civic, partners_all, research_trees, legend_architect, legend_bard, legend_beastmaster, legend_founder, guilds, village_habitat (reasons on the showcase page / showcase.json). Most were added by recent items (27.x, 29.x); each needs triage: scene setup (QA lane) or the mod (its item's lane). Expected: every scene passes. Test: SCENE=<name> tools/screenshots/run.sh (found by qa-1005-2233, 2026-10-05) (found by qa-1005-2233, 2026-10-05)
 - [ ] **B89** PartnersForgeCompatTests.airMailKeepsThePidgeyWithinItsPasturesRange failed on main CI build 714 (acc0ea16, 2026-10-05 23:05Z), its only failure, and passed in build 715 a minute later on near-identical code: a flake in the compat suite (test-only, QA lane). Expected: passes every run. Test: the test repeated 10x with the repeat generator under runCompatGameTest (found by red duty) (found by lane-d-1005-2132, 2026-10-05)
 - [ ] **B90** Pidgey compat tests turn main red twice in a row: CI build 718 (1ab7d600) PartnersForgeCompatTests.aPidgeyTakesTheAirmailUpAndLandsBackEmptyHanded 'the Pidgey didn't land back: y -55.87, took off at -58.91'; build 719 (fffbc8e9) PastureCompatTests.butcherMilksAMiltankAndBrushesAPidgey 'no feathers from the Pidgey' (old B24). Both after 29.21/29.22 (Professor, Ranger). Expected: both pass every run. Test: those two tests, repeated in runCompatGameTest (red duty) (found by lane-a-1006-0033, 2026-10-06)
@@ -2275,7 +2275,7 @@ write their own stories; nothing waits forever on a player.
     `reach` counts inside its radius and not outside; the map's marker sits on the found place; the lookup runs once
     per quest (a counter);
   - showcase scene `quest_journal`: the four tabs, a tracked bar on screen, a quest map in hand.
-- [ ] **31.4** **The story arc engine.** Arcs are data, `data/<namespace>/arcs/<id>.json`, one arc per file: a
+- [x] **31.4** (review: pending 2026-10-06) **The story arc engine.** Arcs are data, `data/<namespace>/arcs/<id>.json`, one arc per file: a
   `trigger` (conditions, a chance a day), the `chapters` in order and an `ending`. A chapter has a name, intro lines
   for chat and the chronicle, `on_start` effects, its quests (ids or written inline), when it's done (all of them, any
   one, or the ones named), `delay_days` before the next, a `time_limit_days` with what happens on failure, and chatter
@@ -2306,7 +2306,7 @@ write their own stories; nothing waits forever on a player.
   - a far `place` waits until a player comes near, then places once;
   - no more than `arcsAtOnce` arcs run; with `storyArcs` off no arc starts and a running one ends at its next round;
   - showcase scene `story_arc`: the announcement, the Story tab, the chronicle.
-- [ ] **31.5** **Friendship.** Every named villager in a hall's village keeps a friendship with each player: 0 to 1000
+- [x] **31.5** (review: pending 2026-10-06) **Friendship.** Every named villager in a hall's village keeps a friendship with each player: 0 to 1000
   points, ten hearts of 100. It's saved on the villager, in a new attachment `friendship` (empty by default): player →
   points, the last gift's day, gifts this week, heart events told. Favours, each once a day per villager unless said:
   - trading with them: +5;
@@ -4900,6 +4900,15 @@ item waits.
   its maximum, nobody's or the hall owner's (another player's pasture is never filled). A calm is checked at the damage
   gate (a calmed Alpha's blows on villagers and players inside any village are cancelled and its target dropped); a
   walk that takes longer than 2 minutes is given up for the day.
+- 2026-10-06 (31.4, decisions; lane c): the arc engine reads `threat` but doesn't gate on it yet: 32.21 (the threat
+  level, At peace) hasn't landed, so whoever builds 32.21 adds the check in `Arcs.tryStart` (the comment marks the
+  spot). A chapter's `intro` takes a lang key or a text component (a pack may write `{"text": ...}`); `chatter` lines
+  are lang keys. `place` rules: `ring`, `road` (a share along the hall's nearest caravan route), `biome`, `after` (with
+  `distance`) and `offset` ([x, z] from the hall, for packs and tests); `count` places `key`, `key#2`... (one
+  `<key>_done` flag when all are built). A spot that has no clear natural ground within 32 blocks is given up with a
+  log line and its `<key>_done` set, so no chapter waits on it forever. Spawn groups are `data/<ns>/arc_spawns/<id>.json`
+  (`{"mobs": [...]}`). A mob dying to anything counts as dead (not put back) and sets `<key>_dead`. Flags set with
+  `days` also outlive the arc in the village (`Stories.villageFlag`, for the Bandit King's "no camps for 10 days").
 - 2026-10-06 (28.19, decisions; lane b): the Cup's afternoon off counts villagers at work too (the stands fill from
   noon with every grown villager who isn't resting; for the final, children as well); entrants, delegates and the bard
   never sit. An Arena I has no fair lane, so its fair is held by the notice board. The bard's disc plays once, at noon,

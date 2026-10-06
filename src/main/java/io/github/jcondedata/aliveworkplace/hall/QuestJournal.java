@@ -40,12 +40,12 @@ public final class QuestJournal {
 	public enum Tab {
 		VILLAGE(2, Items.MAP, true),
 		PERSONAL(3, Items.POPPY, false),
-		STORY(5, Items.WRITTEN_BOOK, false),
+		STORY(5, Items.WRITTEN_BOOK, true),
 		BOUNTIES(6, Items.CROSSBOW, false);
 
 		public final int slot;
 		final Item item;
-		/** Whether its part of the milestone has landed (Personal 31.9, Story 31.4, Bounties 31.13 haven't yet). */
+		/** Whether its part of the milestone has landed (Personal 31.9 and Bounties 31.13 haven't yet). */
 		public final boolean landed;
 
 		Tab(int slot, Item item, boolean landed) {
@@ -91,13 +91,17 @@ public final class QuestJournal {
 				line("screen.aliveworkplace.journal.not_yet", ChatFormatting.DARK_GRAY)), null);
 			return;
 		}
+		if (tab == Tab.STORY) {
+			renderStory(menu, level, hall, viewer);
+			return;
+		}
 		List<Quest> quests = Stories.open(level, hall).stream().filter(q -> q.giver.equals("hall") && !q.done()).toList();
 		if (quests.isEmpty()) {
 			menu.button(22, icon(Items.PAPER, Component.translatable("screen.aliveworkplace.hall.no_quests"), ChatFormatting.GRAY), null);
 		}
 		for (int i = 0; i < Math.min(quests.size(), VillageHallScreen.QUEST_SLOTS.length); i++) {
 			Quest quest = quests.get(i);
-			menu.button(VillageHallScreen.QUEST_SLOTS[i], questIcon(level, quest, viewer), click(menu, level, hall, quest));
+			menu.button(VillageHallScreen.QUEST_SLOTS[i], questIcon(level, quest, viewer), click(menu, level, hall, quest, Tab.VILLAGE));
 		}
 		// The reform steps of the edicts in force, in the row below (30.5), as on today's page.
 		List<VillageQuests.Quest> reforms = entity == null ? List.of() : Reforms.shown(entity);
@@ -109,7 +113,7 @@ public final class QuestJournal {
 	}
 
 	/** A click hands in (a {@code bring}) or tracks; a shift-click toggles Track. */
-	private static Consumer<ServerPlayer> click(ChoiceMenu menu, ServerLevel level, BlockPos hall, Quest quest) {
+	private static Consumer<ServerPlayer> click(ChoiceMenu menu, ServerLevel level, BlockPos hall, Quest quest, Tab tab) {
 		return p -> {
 			Objectives.Objective now = quest.currentObjective();
 			if (!menu.shiftClicked() && now instanceof Objectives.Bring bring) {
@@ -123,9 +127,76 @@ public final class QuestJournal {
 			} else {
 				toggle(p, level, hall, quest);
 			}
-			render(menu, level, hall, p, Tab.VILLAGE);
+			render(menu, level, hall, p, tab);
 			menu.broadcastChanges();
 		};
+	}
+
+	/** The row the Story tab shows the chapters so far in, and the slots of the current chapter's quests. */
+	public static final int CHAPTER_ROW = 18;
+	public static final int[] STORY_QUEST_SLOTS = {38, 40, 42};
+
+	/**
+	 * The Story tab (31.4): the tale running here (or a side story), its chapters so far, done ones ticked, the one
+	 * running with its quests below (a click hands in or tracks, as on the Village tab) and the days it has left.
+	 */
+	static void renderStory(ChoiceMenu menu, ServerLevel level, BlockPos hall, ServerPlayer viewer) {
+		io.github.jcondedata.aliveworkplace.story.ArcState main = io.github.jcondedata.aliveworkplace.story.Arcs.running(level, hall);
+		List<io.github.jcondedata.aliveworkplace.story.ArcState> sides = io.github.jcondedata.aliveworkplace.story.Arcs.side(level, hall);
+		io.github.jcondedata.aliveworkplace.story.ArcState s = main != null ? main : sides.isEmpty() ? null : sides.get(0);
+		ResourceLocation id = s == null ? null : ResourceLocation.tryParse(s.id);
+		io.github.jcondedata.aliveworkplace.story.Arcs.Arc arc = id == null ? null : io.github.jcondedata.aliveworkplace.story.Arcs.get(id).orElse(null);
+		if (arc == null) {
+			menu.button(22, icon(Items.BOOK, Component.translatable("screen.aliveworkplace.journal.story.none"), ChatFormatting.GRAY,
+				line("screen.aliveworkplace.journal.story.none.about", ChatFormatting.DARK_GRAY)), null);
+			return;
+		}
+		long today = Chronicle.day(level);
+		List<Component> about = new ArrayList<>();
+		about.add(line(Component.translatable("screen.aliveworkplace.journal.story.day", today - s.beganDay + 1), ChatFormatting.GRAY));
+		for (io.github.jcondedata.aliveworkplace.story.ArcState other : sides) {
+			if (other != s) {
+				ResourceLocation oid = ResourceLocation.tryParse(other.id);
+				(oid == null ? java.util.Optional.<io.github.jcondedata.aliveworkplace.story.Arcs.Arc>empty() : io.github.jcondedata.aliveworkplace.story.Arcs.get(oid))
+					.ifPresent(a -> about.add(line(Component.translatable("screen.aliveworkplace.journal.story.side", a.name()), ChatFormatting.DARK_AQUA)));
+			}
+		}
+		ItemStack title = icon(Items.WRITTEN_BOOK, arc.name().copy(), ChatFormatting.GOLD, about.toArray(Component[]::new));
+		menu.button(CHAPTER_ROW, title, null);
+		int last = Math.min(s.chapter, arc.chapters().size() - 1);
+		int first = Math.max(0, last - 6);
+		List<Quest> open = Stories.open(level, hall).stream().filter(q -> s.id.equals(q.arc) && !q.done()).toList();
+		for (int i = first; i <= last; i++) {
+			io.github.jcondedata.aliveworkplace.story.Arcs.Chapter c = arc.chapters().get(i);
+			Component name = Component.translatable("screen.aliveworkplace.journal.story.chapter", i + 1, c.name());
+			ItemStack stack;
+			if (i < s.chapter) {
+				stack = icon(Items.ENCHANTED_BOOK, name.copy(), ChatFormatting.GREEN, line("screen.aliveworkplace.journal.story.done", ChatFormatting.DARK_GREEN));
+			} else if (!s.started) {
+				stack = icon(Items.CLOCK, name.copy(), ChatFormatting.GRAY,
+					line(Component.translatable("screen.aliveworkplace.journal.story.begins", s.nextChapterDay), ChatFormatting.DARK_GRAY));
+			} else {
+				List<Component> lore = new ArrayList<>();
+				lore.add(line("screen.aliveworkplace.journal.story.now", ChatFormatting.YELLOW));
+				for (Quest q : open) {
+					Objectives.Objective o = q.currentObjective();
+					if (o != null) {
+						lore.add(line(Component.translatable("screen.aliveworkplace.journal.objective", o.line(), q.progress[q.current()], o.need()), ChatFormatting.WHITE));
+					}
+				}
+				if (c.timeLimitDays() > 0) {
+					lore.add(line(Component.translatable("screen.aliveworkplace.hall.quest_days", Math.max(1, s.chapterDay + c.timeLimitDays() - today)),
+						ChatFormatting.DARK_GRAY));
+				}
+				stack = icon(Items.WRITABLE_BOOK, name.copy(), ChatFormatting.YELLOW, lore.toArray(Component[]::new));
+				stack.set(DataComponents.ENCHANTMENT_GLINT_OVERRIDE, true);
+			}
+			menu.button(CHAPTER_ROW + 1 + (i - first), stack, null);
+		}
+		for (int i = 0; i < Math.min(open.size(), STORY_QUEST_SLOTS.length); i++) {
+			Quest quest = open.get(i);
+			menu.button(STORY_QUEST_SLOTS[i], questIcon(level, quest, viewer), click(menu, level, hall, quest, Tab.STORY));
+		}
 	}
 
 	/** Tracks or untracks {@code quest} for {@code player}, saying so above the hotbar. */
@@ -204,6 +275,9 @@ public final class QuestJournal {
 		}
 		if (o instanceof Objectives.Reach) {
 			return Items.COMPASS;
+		}
+		if (o instanceof Objectives.Talk) {
+			return Items.BELL;
 		}
 		return Items.PAPER;
 	}

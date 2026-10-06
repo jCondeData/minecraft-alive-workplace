@@ -12,7 +12,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /**
  * A shopkeeper's sale moves real items: the goods out of the shop's chests, the payment into them. Any villager's sale
- * to a player pays the village's tithe (30.8, {@code hall/Tithe}).
+ * to a player pays the village's tithe (30.8, {@code hall/Tithe}) and counts as a favour (31.5, {@code story/Friendship}).
  */
 @Mixin(AbstractVillager.class)
 abstract class AbstractVillagerMixin {
@@ -27,6 +27,14 @@ abstract class AbstractVillagerMixin {
 	private void aliveworkplace$tithe(MerchantOffer offer, CallbackInfo ci) {
 		if ((Object) this instanceof Villager villager && villager.level() instanceof ServerLevel) {
 			io.github.jcondedata.aliveworkplace.hall.Tithe.paid(villager, offer);
+		}
+	}
+
+	/** A trade with a named villager is a favour to their friendship (31.5). */
+	@Inject(method = "notifyTrade", at = @At("HEAD"))
+	private void aliveworkplace$friendship(MerchantOffer offer, CallbackInfo ci) {
+		if ((Object) this instanceof Villager villager && villager.level() instanceof ServerLevel) {
+			io.github.jcondedata.aliveworkplace.story.Friendship.onTrade(villager);
 		}
 	}
 }

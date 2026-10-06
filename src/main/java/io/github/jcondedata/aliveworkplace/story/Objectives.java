@@ -76,6 +76,7 @@ public final class Objectives {
 		register("battle", j -> new Battle(GsonHelper.getAsInt(j, "count", 1)));
 		register("wait", j -> new Wait(positive(j, "days")));
 		register("reach", Reach::read);
+		register("talk", Talk::read);
 	}
 
 	public static void register(String type, Function<JsonObject, Objective> reader) {
@@ -214,11 +215,22 @@ public final class Objectives {
 		}
 	}
 
-	/** {@code kill}: {@code count} of an entity type, a {@code #tag} or {@code monster}, in the village or anywhere. */
-	public record Kill(String entity, int count, boolean anywhere) implements Objective {
+	/**
+	 * {@code kill}: {@code count} of an entity type, a {@code #tag} or {@code monster}, in the village or anywhere; or
+	 * {@code role:<key>}, a mob a story arc spawned (31.4), anywhere, shown by its name ({@code who}).
+	 */
+	public record Kill(String entity, int count, boolean anywhere, Optional<Component> who) implements Objective {
+		public Kill(String entity, int count, boolean anywhere) {
+			this(entity, count, anywhere, Optional.empty());
+		}
+
 		static Kill read(JsonObject json) {
 			String entity = GsonHelper.getAsString(json, "entity", "monster");
-			if (!entity.equals("monster")) {
+			if (entity.startsWith("role:")) {
+				if (entity.length() <= "role:".length()) {
+					throw new IllegalArgumentException("'role:' names no role");
+				}
+			} else if (!entity.equals("monster")) {
 				ResourceLocation id = ResourceLocation.tryParse(entity.startsWith("#") ? entity.substring(1) : entity);
 				if (id == null || !entity.startsWith("#") && !BuiltInRegistries.ENTITY_TYPE.containsKey(id)) {
 					throw new IllegalArgumentException("unknown entity '" + entity + "'");
@@ -228,10 +240,20 @@ public final class Objectives {
 			if (!where.equals("village") && !where.equals("anywhere")) {
 				throw new IllegalArgumentException("unknown 'where' '" + where + "'");
 			}
-			return new Kill(entity, positive(json, "count"), where.equals("anywhere"));
+			Optional<Component> who = json.has("who") ? Optional.of(Rewards.text(json.get("who"))) : Optional.empty();
+			return new Kill(entity, positive(json, "count"), where.equals("anywhere") || entity.startsWith("role:"), who);
+		}
+
+		/** The arc role it names ({@code role:king}), or null. */
+		@Nullable
+		public String role() {
+			return entity.startsWith("role:") ? entity.substring("role:".length()) : null;
 		}
 
 		public boolean matches(Entity killed) {
+			if (role() != null) {
+				return killed.getTags().contains(ArcEffects.roleTag(role()));
+			}
 			if (entity.equals("monster")) {
 				return killed instanceof Enemy;
 			}
@@ -254,6 +276,9 @@ public final class Objectives {
 
 		@Override
 		public Component line() {
+			if (role() != null) {
+				return Component.translatable("quest.aliveworkplace.defeat", who.orElse(Component.literal(role())));
+			}
 			if (entity.equals("monster") || entity.startsWith("#")) {
 				return Component.translatable("quest.aliveworkplace.slay", count);
 			}
@@ -268,6 +293,47 @@ public final class Objectives {
 			o.addProperty("entity", entity);
 			o.addProperty("count", count);
 			o.addProperty("where", anywhere ? "anywhere" : "village");
+			who.ifPresent(w -> o.add("who", Rewards.json(w)));
+			return o;
+		}
+	}
+
+	/**
+	 * {@code talk} (31.4): right-click the villager who plays a story arc's role ({@code villager}: the role's key), once.
+	 * {@code says}, a lang key, is what they tell you.
+	 */
+	public record Talk(String role, Optional<Component> who, Optional<String> says) implements Objective {
+		static Talk read(JsonObject json) {
+			String role = GsonHelper.getAsString(json, "villager", "");
+			if (role.isEmpty()) {
+				throw new IllegalArgumentException("missing 'villager' (an arc role)");
+			}
+			Optional<Component> who = json.has("who") ? Optional.of(Rewards.text(json.get("who"))) : Optional.empty();
+			return new Talk(role, who, json.has("says") ? Optional.of(GsonHelper.getAsString(json, "says")) : Optional.empty());
+		}
+
+		@Override
+		public String type() {
+			return "talk";
+		}
+
+		@Override
+		public int need() {
+			return 1;
+		}
+
+		@Override
+		public Component line() {
+			return Component.translatable("quest.aliveworkplace.talk", who.orElse(Component.literal(role)));
+		}
+
+		@Override
+		public JsonObject json() {
+			JsonObject o = new JsonObject();
+			o.addProperty("type", type());
+			o.addProperty("villager", role);
+			who.ifPresent(w -> o.add("who", Rewards.json(w)));
+			says.ifPresent(k -> o.addProperty("says", k));
 			return o;
 		}
 	}

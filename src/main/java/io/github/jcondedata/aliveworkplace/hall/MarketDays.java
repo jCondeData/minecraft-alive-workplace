@@ -94,13 +94,17 @@ public final class MarketDays {
 	public static int traders(ServerLevel level, BlockPos hall) {
 		return Math.max(0, VillageRanks.marketTraders(VillageRanks.of(level, hall))
 			+ io.github.jcondedata.aliveworkplace.research.Research.at(level, hall).level(io.github.jcondedata.aliveworkplace.research.Research.Topic.COMMERCE)
-			+ CivicEffects.of(level, hall).marketTraders());
+			+ CivicEffects.of(level, hall).marketTraders()
+			+ io.github.jcondedata.aliveworkplace.people.ClassPerks.marketTraders(level, hall)); // the Burghers' trader (34.7)
 	}
 
 	/** The traders come to the square at {@code square}. */
 	public static List<WanderingTrader> hold(ServerLevel level, BlockPos hall, BlockPos square) {
 		List<WanderingTrader> traders = new ArrayList<>();
 		int count = traders(level, hall);
+		// The class traders (34.7) come last, each with a grand-house blueprint to sell as well.
+		List<io.github.jcondedata.aliveworkplace.people.ClassPerks.Offer> grand = io.github.jcondedata.aliveworkplace.people.ClassPerks.marketOffers(level, hall);
+		int classTraders = Math.min(count, io.github.jcondedata.aliveworkplace.people.ClassPerks.marketTraders(level, hall));
 		for (int i = 0; i < count; i++) {
 			BlockPos spot = spot(level, square, i);
 			if (spot == null) {
@@ -113,6 +117,9 @@ public final class MarketDays {
 			trader.setDespawnDelay(Curfew.marketStay(level, hall, STAY)); // Curfew: gone by dusk
 			trader.setWanderTarget(square);
 			addBlueprintOffer(level, trader);
+			if (i >= count - classTraders) {
+				addGrandOffer(level, trader, grand);
+			}
 			traders.add(trader);
 		}
 		if (traders.isEmpty()) {
@@ -145,6 +152,26 @@ public final class MarketDays {
 			return;
 		}
 		trader.getOffers().add(new MerchantOffer(new ItemCost(Items.EMERALD, BLUEPRINT_PRICE), BlueprintItem.create(id, entry.size()), 1, 1, 0.05f));
+	}
+
+	/**
+	 * The class trader's offer (34.7): one of the grand-house blueprints the Burghers' {@code market_traders} sells, at its
+	 * price, among those the library has (the Townhouse and the Manor, 34.15 and 34.16; none before they land).
+	 */
+	public static boolean addGrandOffer(ServerLevel level, WanderingTrader trader, List<io.github.jcondedata.aliveworkplace.people.ClassPerks.Offer> offers) {
+		List<io.github.jcondedata.aliveworkplace.people.ClassPerks.Offer> known = new ArrayList<>();
+		for (io.github.jcondedata.aliveworkplace.people.ClassPerks.Offer o : offers) {
+			if (BlueprintLibrary.get(level, o.blueprint()).isPresent()) {
+				known.add(o);
+			}
+		}
+		if (known.isEmpty()) {
+			return false;
+		}
+		io.github.jcondedata.aliveworkplace.people.ClassPerks.Offer o = known.get(level.random.nextInt(known.size()));
+		net.minecraft.core.Vec3i size = BlueprintLibrary.get(level, o.blueprint()).get().size();
+		trader.getOffers().add(new MerchantOffer(new ItemCost(Items.EMERALD, o.price()), BlueprintItem.create(o.blueprint(), size), 1, 1, 0.05f));
+		return true;
 	}
 
 	@Nullable

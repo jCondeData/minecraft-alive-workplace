@@ -424,6 +424,21 @@ At the Village Hall:
 - **What next?** gives up to three class tips, most households first ("2 Peasant households want A varied diet to rise
   to Artisan").
 
+What each class gives:
+- **Taxes:** each worker pays the treasury's daily share times their class's factor (Peasant 1, Artisan 1.5, Burgher
+  2.5, Noble 4), 10% more for each want they have; a Noble without a job pays like a worker. A Peasant pays exactly
+  what every worker paid before, so no village takes in less. The hall's name tag shows the day's takings by class.
+- **Artisans:** crafters who are Artisans or better (carpenter, mason, tinkerer, chef, leatherworker, toolsmith and the
+  luxury trades) work 10% faster, within the usual 2× pace cap.
+- **Burghers:** Burgher scholars research 15% faster. With 3 Burgher households (or better) the village may send one
+  more caravan route, and market day brings one more trader, who also sells a grand-house blueprint (the Townhouse or
+  the Manor, once they're in the Blueprint Table) for 12 emeralds.
+- **Nobles:** each Noble household lifts the village's wellbeing 3% (9% at most), and every other festival is a
+  **Noble's Ball**: the guests gather at the Manor (or else the hall), wine and the store's best food are served, gold
+  fireworks go up at dusk, everyone who came is happier (+15) for 3 days, and players there are Heroes of the Village
+  for the night.
+- **Legends** live among the Nobles: held to the Noble's needs and counted with them.
+
 Classes are data: `data/<namespace>/classes/<id>.json` (a data pack can replace ours, add its own or switch one off).
 **Settings:** `villageClasses`, `classRiseDays`, `classFallDays`.
 

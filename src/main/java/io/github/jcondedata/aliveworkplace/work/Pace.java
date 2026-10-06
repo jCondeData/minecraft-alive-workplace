@@ -125,6 +125,9 @@ public final class Pace {
 	/** The worker's founded guild (30.17): its {@code work_pace} perk, "the Builders' Guild". */
 	public static final Source GUILD = register(new Source("guild", Kind.BONUS, io.github.jcondedata.aliveworkplace.hall.Guilds::pace,
 		io.github.jcondedata.aliveworkplace.hall.Guilds::paceLabel));
+	/** The worker's class (34.7): Artisans and better craft 10% faster, Burgher scholars research 15% faster, under this cap. */
+	public static final Source CLASS = register(new Source("class", Kind.BONUS, io.github.jcondedata.aliveworkplace.people.ClassPerks::pace,
+		io.github.jcondedata.aliveworkplace.people.ClassPerks::paceLabel));
 	public static final Source ILL = register(new Source("ill", Kind.PENALTY, Sickness::pace));
 	public static final Source UNHAPPY = register(new Source("unhappy", Kind.PENALTY, Moods::pace));
 	public static final Source LAZY = register(new Source("lazy", Kind.PENALTY, Traits::pace));

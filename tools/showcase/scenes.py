@@ -496,6 +496,11 @@ SCENES = [
       "a Peasant couple rose to Artisan at dawn with golden sparkles and a chat line, and the hall's Classes page counts each class's needs", 45,
       [("01_classes_rise", "Odo and Pia rise to Artisan at dawn"), ("02_classes_tab", "The Classes tab: households of each class"),
        ("03_classes_page", "The Burgher button: needs counted, what it gives, who's closest")]),
+    # What each class gives (ROADMAP 34.7): the Noble's Ball in place of every other festival, and the takings by class
+    S("noble_ball", "Village Hall", "The Noble's Ball, and the takings by class",
+      "the village's Noble household turned the festival into a Noble's Ball: guests at the hall, gold fireworks at dusk, the player a Hero for the night, and the takings split by class", 45,
+      [("01_noble_ball_guests", "The ball: the guests gather at the hall"), ("02_noble_ball_fireworks", "Gold fireworks at dusk"),
+       ("03_noble_ball_takings", "The name tag: the day's takings by class")]),
     S("hall_treasury", "Village Hall", "The treasury, protection and the Village Ledger",
       "the treasury was collected, the village protected and the hall opened from a Village Ledger", 60,
       [("01_hall_treasury", "Treasury and protection"), ("02_hall_collected", "Collected"), ("03_ledger_held", "Village Ledger"),

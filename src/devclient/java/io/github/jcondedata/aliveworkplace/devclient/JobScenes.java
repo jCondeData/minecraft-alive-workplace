@@ -2917,6 +2917,68 @@ final class JobScenes {
 					}
 				}, 30)),
 			(level, player) -> player.containerMenu instanceof ChoiceMenu m && m.getType() == ModBlocks.VILLAGE_HALL_MENU));
+		// The Noble's Ball (ROADMAP 34.7): a village with a Noble household holds a ball in place of every other festival.
+		// The guests gather at the hall (no Manor yet), gold fireworks go up at dusk, the player is a Hero of the Village
+		// for the night, and the hall's name tag shows the day's takings by class.
+		SCREENS.put("noble_ball", new Screen("the village's Noble household turned the festival into a Noble's Ball: guests at the hall, gold fireworks at dusk, the player a Hero for the night, and the takings split by class",
+			new Vec3(2.5, -58.4, 4.5), TARGET,
+			(level, player) -> {
+				level.setBlockAndUpdate(STATION, ModBlocks.VILLAGE_HALL.defaultBlockState()
+					.setValue(io.github.jcondedata.aliveworkplace.hall.VillageHallBlock.FACING, Direction.SOUTH));
+				io.github.jcondedata.aliveworkplace.people.SocialClasses.ENABLED = true;
+				var hall = (io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(STATION);
+				hall.setRank(io.github.jcondedata.aliveworkplace.hall.VillageRanks.Rank.HAMLET);
+				hall.setFestivalDay(-1);
+				String[] names = {"Lady Wren", "Odo", "Pia", "Ann", "Bo", "Cy"};
+				String[] classes = {"noble", "burgher", "artisan", "artisan", "peasant", "peasant"};
+				for (int i = 0; i < names.length; i++) {
+					Villager v = bornSceneVillager(level, new BlockPos(-3 + i, -60, 3), names[i], false);
+					v.setVillagerData(v.getVillagerData().setProfession(i == 0 ? net.minecraft.world.entity.npc.VillagerProfession.NONE
+						: i == 1 ? net.minecraft.world.entity.npc.VillagerProfession.LIBRARIAN : i < 4 ? ModVillagers.CARPENTER : net.minecraft.world.entity.npc.VillagerProfession.FARMER));
+					io.github.jcondedata.aliveworkplace.people.SocialClasses.seed(v, io.github.jcondedata.aliveworkplace.people.SocialClasses.get(
+						io.github.jcondedata.aliveworkplace.AliveWorkplace.id(classes[i])));
+				}
+				io.github.jcondedata.aliveworkplace.hall.VillageNeeds.check(level, STATION); // counts the households by class
+				// The evening before, so no round plans a festival before the pictures ask for one.
+				level.setDayTime((level.getDayTime() / 24000) * 24000 + io.github.jcondedata.aliveworkplace.hall.Festivals.END + 500);
+			},
+			List.of(new Step("01_noble_ball_guests", -1, 0, (level, player) -> {
+					var hall = (io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(STATION);
+					long today = io.github.jcondedata.aliveworkplace.hall.Chronicle.day(level) + 1;
+					level.setDayTime(today * 24000 + io.github.jcondedata.aliveworkplace.hall.Festivals.START - 500);
+					hall.setBallTurn(false);
+					io.github.jcondedata.aliveworkplace.hall.Festivals.plan(level, STATION, hall, today, 0); // the first festival: a plain one
+					boolean first = io.github.jcondedata.aliveworkplace.hall.NobleBalls.isBall(hall, today);
+					hall.setFestivalDay(-1);
+					io.github.jcondedata.aliveworkplace.hall.Festivals.plan(level, STATION, hall, today, 0); // the next: the ball
+					Showcase.check(!first && io.github.jcondedata.aliveworkplace.hall.NobleBalls.isBall(hall, today), "every other festival is a Noble's Ball");
+					level.setDayTime(today * 24000 + io.github.jcondedata.aliveworkplace.hall.Festivals.START + 200);
+					io.github.jcondedata.aliveworkplace.hall.Festivals.round(level, STATION, hall, 6);
+					var square = io.github.jcondedata.aliveworkplace.hall.Festivals.square(level, STATION);
+					Showcase.check(square.equals(STATION), "the guests gather at the hall (no Manor): " + square);
+					var hero = player.getEffect(net.minecraft.world.effect.MobEffects.HERO_OF_THE_VILLAGE);
+					Showcase.check(hero != null && hero.getDuration() > io.github.jcondedata.aliveworkplace.hall.Festivals.END - io.github.jcondedata.aliveworkplace.hall.Festivals.START,
+						"the player is a Hero of the Village for the night: " + (hero == null ? "none" : hero.getDuration() + " ticks"));
+				}, 40),
+				new Step("02_noble_ball_fireworks", -1, 0, (level, player) -> {
+					long today = io.github.jcondedata.aliveworkplace.hall.Chronicle.day(level);
+					level.setDayTime(today * 24000 + io.github.jcondedata.aliveworkplace.hall.Festivals.FIREWORKS + 100);
+					for (int i = 0; i < 6; i++) {
+						io.github.jcondedata.aliveworkplace.hall.Festivals.launch(level, STATION.offset(-4 + i * 2, 1, 4 + (i % 2) * 2),
+							io.github.jcondedata.aliveworkplace.hall.NobleBalls.GOLD);
+					}
+					Villager lady = level.getEntitiesOfClass(Villager.class, new net.minecraft.world.phys.AABB(STATION).inflate(16),
+						v -> v.getCustomName() != null && v.getCustomName().getString().equals("Lady Wren")).stream().findFirst().orElse(null);
+					Showcase.check(lady != null && io.github.jcondedata.aliveworkplace.hall.Festivals.mood(level, lady) == io.github.jcondedata.aliveworkplace.hall.NobleBalls.MOOD,
+						"the guests came to the ball: +15 mood");
+				}, 50),
+				new Step("03_noble_ball_takings", 0, 6, (level, player) -> {
+					io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.open(player, STATION);
+					var census = io.github.jcondedata.aliveworkplace.hall.VillageHalls.census(level, STATION);
+					var lines = io.github.jcondedata.aliveworkplace.hall.Treasury.taxLines(level, STATION, census.workers(), census.jobless());
+					Showcase.check(lines.size() == 5, "the name tag splits the takings by class: " + lines.size() + " lines");
+				}, 30)),
+			(level, player) -> player.containerMenu instanceof ChoiceMenu m && m.getType() == ModBlocks.VILLAGE_HALL_MENU));
 		SCREENS.put("hall_treasury", new Screen("the hall's treasury was collected, the village protected and its screen opened from a Village Ledger",
 			new Vec3(2.5, -58.4, 4.5), TARGET,
 			(level, player) -> {

@@ -17,6 +17,11 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Added
+- **What each class gives, for 1.8** (34.7, off until 1.8 is finished): taxes by class (Peasant ×1, Artisan ×1.5,
+  Burgher ×2.5, Noble ×4, +10% a want; the hall's name tag shows the split), Artisan crafters 10% faster, Burgher
+  scholars 15% faster, a caravan route and a market trader more with 3 Burgher households, +3% wellbeing a Noble
+  household (9% at most), and a **Noble's Ball** in place of every other festival (wine, the store's best food, gold
+  fireworks, +15 mood for 3 days, Hero of the Village for the night).
 - **Classes at the Village Hall for 1.8** (34.6, off until 1.8 is finished): the hall gets a Classes tab (how many
   households of each class) and page (each class's needs and wants with how many households have them, what the class
   gives, and who is closest to rising with what they lack); the people list shows each villager's class and household

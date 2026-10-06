@@ -3655,7 +3655,7 @@ on a real world.
   Done when: `ClassHallGameTests` check the page's counts and the tips against a staged village; `langcheck.py` is
   clean; scene `classes` (a household rising at dawn, then the hall's Classes page) passes; the README gets a Classes
   section.
-- [ ] **34.7** **What each class gives.** From the `effects` in the class files:
+- [x] **34.7** (review: pending 2026-10-06) **What each class gives.** From the `effects` in the class files:
   - **taxes** (`Treasury.takings`): each worker pays `treasuryPerWorker` × their class's factor (Peasant 1, Artisan
     1.5, Burgher 2.5, Noble 4), 10% more for each want they have; a Noble without a job pays like a worker. A Peasant
     pays exactly today's rate, so no village takes in less than before; the name tag's tooltip shows the split by
@@ -4876,3 +4876,13 @@ item waits.
   Artisans need only a varied diet, then the real ladder is put back for the page), README "Classes". Still waiting:
   chatter for wine, clothes, the Gazette and the tavern (34.9+ goods) and the Guidebook's Classes page (after 26.2a).
   Luxury names are `luxury.<namespace>.<id>` lang keys (a data pack's without one reads as its id, "Test Trinket").
+- **34.7 (2026-10-06, decisions):** `people/ClassPerks` reads the class files' effects; `work_pace` and `research_pace`
+  are one `Pace` source ("their class (Artisan)") under the shared cap, and both apply to the class and every class
+  above (a Noble scholar is no slower than a Burgher one; the design note gave "or better" only to `work_pace`). The
+  village's households by class are counted with the hall's people (`VillageNeeds.count`), in memory. Wants had are a
+  new `wants` field on `class_standing` (default 0), counted at dawn. Waiting on other items, each degrading quietly:
+  the Burghers' trader sells a Townhouse or Manor blueprint only once 34.15/34.16 put them in the library (until then
+  the extra trader comes without it); the ball's venue is a finished Manor's middle until 34.16 says where its ballroom
+  is, else the hall; the wine served is the `#aliveworkplace:ball_wine` tag (Vintage Wine, Berry Wine, Cider, all
+  optional entries until 34.9 adds them). `ballTurn` flips on every festival in a village with a Noble, so
+  `replace_every` other than 2 reads as 2.

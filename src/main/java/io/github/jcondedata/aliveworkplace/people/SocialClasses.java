@@ -85,13 +85,19 @@ public final class SocialClasses implements ResourceManagerReloadListener {
 	 * Where a villager stood at their last dawn ({@code class_standing}, 34.6): the day, how many needs of their class they
 	 * lacked, and their last rise (+1) or fall (-1) and its day. Read by their mood; all 0 when absent.
 	 */
-	public record Standing(long day, int missing, long turnDay, int turn) {
+	public record Standing(long day, int missing, long turnDay, int turn, int wants) {
 		public static final Codec<Standing> CODEC = RecordCodecBuilder.create(i -> i.group(
 			Codec.LONG.optionalFieldOf("day", 0L).forGetter(Standing::day),
 			Codec.INT.optionalFieldOf("missing", 0).forGetter(Standing::missing),
 			Codec.LONG.optionalFieldOf("turn_day", 0L).forGetter(Standing::turnDay),
-			Codec.INT.optionalFieldOf("turn", 0).forGetter(Standing::turn)
+			Codec.INT.optionalFieldOf("turn", 0).forGetter(Standing::turn),
+			Codec.INT.optionalFieldOf("wants", 0).forGetter(Standing::wants)
 		).apply(i, Standing::new));
+
+		/** A standing with no wants had (saves from before 34.7, and tests). */
+		public Standing(long day, int missing, long turnDay, int turn) {
+			this(day, missing, turnDay, turn, 0);
+		}
 	}
 
 	/** "Rose in the world" and "came down in the world": this much mood, for {@link #TURN_DAYS} days. */
@@ -388,6 +394,10 @@ public final class SocialClasses implements ResourceManagerReloadListener {
 				current = c; // a couple of two classes lives as the higher, and is held to its needs
 			}
 		}
+		boolean legend = household.members().stream().anyMatch(ClassPerks::isLegend);
+		if (legend && !ladder.isEmpty()) {
+			current = ladder.get(ladder.size() - 1); // 34.7: a Legend's household lives among the Nobles, held to their needs
+		}
 		if (current == null) {
 			return null;
 		}
@@ -400,8 +410,8 @@ public final class SocialClasses implements ResourceManagerReloadListener {
 		// The day's luxuries (34.4) come before the needs are checked: one taken at dawn holds today.
 		Luxuries.take(level, household.members(), current, village);
 		Progress lead = progress(household.lead());
-		SocialClass next = step(current, 1);
-		SocialClass below = step(current, -1);
+		SocialClass next = legend ? null : step(current, 1);
+		SocialClass below = legend ? null : step(current, -1);
 		boolean ownHeld = ClassNeeds.allHold(current.needs(), household.members(), village);
 		boolean nextHeld = next != null && ClassNeeds.allHold(next.needs(), household.members(), village);
 		int met = nextHeld ? lead.met() + 1 : 0;
@@ -422,14 +432,20 @@ public final class SocialClasses implements ResourceManagerReloadListener {
 				lacking++;
 			}
 		}
+		int wants = 0;
+		for (ClassNeeds.Need want : after.wants()) {
+			if (ClassNeeds.holds(want, household.members(), village)) {
+				wants++;
+			}
+		}
 		int turn = after.tier() > current.tier() ? 1 : after.tier() < current.tier() ? -1 : 0;
 		List<UUID> who = new ArrayList<>();
 		for (Villager v : household.members()) {
 			ModAttachments.SOCIAL_CLASS.set(v, after.id());
 			ModAttachments.CLASS_PROGRESS.set(v, new Progress(met, missed, progress(v).fed(), today));
 			Standing was = ModAttachments.CLASS_STANDING.get(v);
-			ModAttachments.CLASS_STANDING.set(v, turn != 0 ? new Standing(today, lacking, today, turn)
-				: new Standing(today, lacking, was == null ? 0 : was.turnDay(), was == null ? 0 : was.turn()));
+			ModAttachments.CLASS_STANDING.set(v, turn != 0 ? new Standing(today, lacking, today, turn, wants)
+				: new Standing(today, lacking, was == null ? 0 : was.turnDay(), was == null ? 0 : was.turn(), wants));
 			who.add(v.getUUID());
 		}
 		if (after == current) {

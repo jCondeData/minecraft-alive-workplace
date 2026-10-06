@@ -143,6 +143,7 @@ public final class VillageHallScreen {
 		nameLore.add(line(Component.translatable("screen.aliveworkplace.hall.treasury",
 			io.github.jcondedata.aliveworkplace.work.Money.describe((long) treasury * io.github.jcondedata.aliveworkplace.work.Money.DOLLARS_PER_EMERALD, treasury)),
 			treasury > 0 ? ChatFormatting.GREEN : ChatFormatting.GRAY));
+		nameLore.addAll(Treasury.taxLines(level, hall, census.workers(), census.jobless())); // the takings by class (34.7)
 		if (VillageProtection.ENABLED && level.getBlockEntity(hall) instanceof VillageHallBlockEntity owned) {
 			nameLore.add(line(owned.isProtected()
 				? Component.translatable("screen.aliveworkplace.hall.protected", owned.ownerName())
@@ -466,7 +467,8 @@ public final class VillageHallScreen {
 			ItemStack icon = icon(colours != null ? colours.banner() : new ItemStack(sending ? Items.CHEST_MINECART : Items.MINECART), other.name().copy(),
 				sending ? ChatFormatting.GREEN : ChatFormatting.WHITE, lore.toArray(Component[]::new));
 			menu.button(slot++, icon, p -> {
-				int max = VillageRanks.caravanRoutes(VillageRanks.of(level, hall));
+				int max = VillageRanks.caravanRoutes(VillageRanks.of(level, hall))
+					+ io.github.jcondedata.aliveworkplace.people.ClassPerks.caravanRoutes(level, hall); // 3 Burgher households: one more (34.7)
 				boolean on = data.toggleRoute(hall, other.hall(), max);
 				boolean wasOn = sending;
 				Chat.actionBar(p, Component.translatable(on ? "message.aliveworkplace.hall.route_started"

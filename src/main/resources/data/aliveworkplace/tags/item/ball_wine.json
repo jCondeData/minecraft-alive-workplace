@@ -1,0 +1,8 @@
+{
+  "replace": false,
+  "values": [
+    {"id": "aliveworkplace:vintage_wine", "required": false},
+    {"id": "aliveworkplace:berry_wine", "required": false},
+    {"id": "aliveworkplace:cider", "required": false}
+  ]
+}

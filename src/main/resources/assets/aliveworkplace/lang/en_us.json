@@ -1192,10 +1192,10 @@
   "class.aliveworkplace.gives.jobs": "Can take up: %s",
   "class.aliveworkplace.gives.work_pace": "Crafting jobs work %s%% faster",
   "class.aliveworkplace.gives.research_pace": "Scholars research %s%% faster",
-  "class.aliveworkplace.gives.caravan_routes": "+%s caravan route for every %s households",
-  "class.aliveworkplace.gives.market_traders": "+%s market trader for every %s households",
+  "class.aliveworkplace.gives.caravan_routes": "+%s caravan route once the village has %s such households",
+  "class.aliveworkplace.gives.market_traders": "+%s market trader once the village has %s such households",
   "class.aliveworkplace.gives.wellbeing": "+%s%% village wellbeing each, up to %s%%",
-  "class.aliveworkplace.gives.festival": "One festival in every %s is a Noble Ball",
+  "class.aliveworkplace.gives.festival": "One festival in every %s is a Noble's Ball",
   "class.aliveworkplace.gives.other": "An effect from a data pack (%s)",
   "luxury.aliveworkplace.work_clothes": "Work Clothes",
   "luxury.aliveworkplace.cider": "Cider",
@@ -3566,5 +3566,11 @@
   "command.aliveworkplace.quests.track_hover": "Show this quest at the top of your screen",
   "command.aliveworkplace.quests.untrack_hover": "Stop showing this quest",
   "command.aliveworkplace.quests.untracked": "You're no longer tracking a quest.",
-  "command.aliveworkplace.quests.gone": "That quest isn't open any more."
+  "command.aliveworkplace.quests.gone": "That quest isn't open any more.",
+  "pace.aliveworkplace.source.class": "their class (%s)",
+  "screen.aliveworkplace.hall.tax_by_class": "Daily takings by class:",
+  "screen.aliveworkplace.hall.tax_class": "%s: %s pay %s emeralds",
+  "message.aliveworkplace.festival.ball_today": "%s holds a Noble's Ball tonight! Guests gather at the Manor or the hall after work: wine, the best of the store, and gold fireworks at dusk.",
+  "message.aliveworkplace.festival.ball_tomorrow": "%s holds a Noble's Ball tomorrow, after work: wine, the best of the store, and gold fireworks at dusk.",
+  "chronicle.aliveworkplace.ball": "The Noble's Ball: %s came, %s dined on the store's best and %s raised a glass of wine"
 }

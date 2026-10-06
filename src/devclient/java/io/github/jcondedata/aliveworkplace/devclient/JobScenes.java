@@ -2194,8 +2194,7 @@ final class JobScenes {
 				new Step("03_befriended", -1, 0, (level, player) -> {
 					// The Ranger leads the wild Pikachu to the Pasture Block: the player's Pokémon now, in the pasture
 					BlockPos pen = STATION.offset(-4, 0, 1);
-					var pikachu = level.getEntitiesOfClass(com.cobblemon.mod.common.entity.pokemon.PokemonEntity.class, new net.minecraft.world.phys.AABB(STATION).inflate(8),
-						e -> e.getPokemon().getSpecies().getResourceIdentifier().getPath().equals("pikachu")).get(0);
+					net.minecraft.world.entity.Entity pikachu = WildPokemon.nearest(level, STATION, 8, "pikachu");
 					subject.teleportTo(pen.getX() + 1.5, pen.getY(), pen.getZ() + 1.5);
 					var result = io.github.jcondedata.aliveworkplace.legend.PokemonRanger.befriend(level, STATION, subject, pikachu, pen);
 					Showcase.check(result == io.github.jcondedata.aliveworkplace.legend.WildPokemon.Befriended.PASTURED, "the Pikachu went into the pasture: " + result);

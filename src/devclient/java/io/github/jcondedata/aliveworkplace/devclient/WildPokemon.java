@@ -2,7 +2,10 @@ package io.github.jcondedata.aliveworkplace.devclient;
 
 import com.cobblemon.mod.common.api.pokemon.PokemonProperties;
 import com.cobblemon.mod.common.entity.pokemon.PokemonEntity;
+import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.phys.AABB;
 
 /**
  * Cobblemon-typed scene helpers (B59). The screenshot client also runs without Cobblemon, and the JVM verifier loads a
@@ -20,5 +23,15 @@ final class WildPokemon {
 		pokemon.setPos(x, y, z);
 		pokemon.setNoAi(true);
 		level.addFreshEntity(pokemon);
+	}
+
+	/**
+	 * The first Pokémon of a species within {@code radius} blocks of {@code centre}, typed as a plain {@link Entity} so
+	 * that callers in {@link JobScenes} hold no Cobblemon type (B59; the Ranger scene's PokemonEntity local crashed
+	 * every scene without Cobblemon again on 2026-10-06).
+	 */
+	static Entity nearest(ServerLevel level, BlockPos centre, double radius, String species) {
+		return level.getEntitiesOfClass(PokemonEntity.class, new AABB(centre).inflate(radius),
+			e -> e.getPokemon().getSpecies().getResourceIdentifier().getPath().equals(species)).get(0);
 	}
 }

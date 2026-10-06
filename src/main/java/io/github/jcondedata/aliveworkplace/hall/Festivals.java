@@ -156,6 +156,14 @@ public final class Festivals {
 		}
 	}
 
+	/** A festival on {@code day} (a story arc's ending, 31.4), told to the players about; nothing if one is already set. */
+	public static void schedule(ServerLevel level, BlockPos hall, VillageHallBlockEntity entity, long day) {
+		if (entity.festivalDay() >= day) {
+			return;
+		}
+		plan(level, hall, entity, day);
+	}
+
 	/** Sets the festival for {@code day} and tells the players about. */
 	static void plan(ServerLevel level, BlockPos hall, VillageHallBlockEntity entity, long day) {
 		plan(level, hall, entity, day, 0);

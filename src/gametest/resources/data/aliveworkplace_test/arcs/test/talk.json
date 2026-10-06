@@ -1,0 +1,11 @@
+{
+  "name": "A Word with the Elder",
+  "trigger": {"chance": 0},
+  "roles": {"elder": {"villager": "any"}},
+  "chapters": [
+    {
+      "name": "The elder waits",
+      "quests": [{"objectives": [{"type": "talk", "villager": "elder", "says": "Thank you for coming."}]}]
+    }
+  ]
+}

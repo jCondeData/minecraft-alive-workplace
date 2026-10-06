@@ -22,7 +22,9 @@ public final class Chronicle {
 		MARKET(Items.EMERALD), CARAVAN(Items.CHEST_MINECART), RAID(Items.ZOMBIE_HEAD), RANK(Items.FIREWORK_ROCKET),
 		FESTIVAL(Items.CAKE), WEDDING(Items.POPPY), PROTECTION(Items.SHIELD), EDICT(Items.LECTERN), LEGEND(Items.NETHER_STAR), PLANS(Items.MAP),
 		SIGHTING(Items.SPYGLASS), BANNER(Items.WHITE_BANNER),
-		REFORM(Items.WRITABLE_BOOK), GUILD(Items.PAPER);
+		REFORM(Items.WRITABLE_BOOK), GUILD(Items.PAPER),
+		/** A story arc's chapters and endings (31.4). */
+		STORY(Items.BOOK);
 
 		public final Item icon;
 

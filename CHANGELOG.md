@@ -17,6 +17,13 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Added
+- **The story arc engine for 1.5** (31.4; the stories themselves come in later updates): a village can live through
+  a story told in chapters over several days. Each chapter is announced in chat and written in the chronicle, puts up
+  its quests (in the journal's new **Story** tab, chapters done ticked), can build something out in the wild once a
+  player comes near, bring in named foes with a boss bar, and has the villagers talking about it; a chapter whose time
+  runs out ends the story badly. Stories are data (`data/<namespace>/arcs/<id>.json`), survive a restart at any
+  moment, and come with settings `storyArcs`, `arcCooldownDays` (8), `arcsAtOnce` (3) and `disabledArcs`. Operators
+  get `/workplace story start <arc>`, `next` and `stop`. A new quest goal, **talk** to a villager the story names.
 - **The luxury workshop engine for 1.8** (34.5, nothing to see until the four new makers arrive): luxury recipes are
   data files (`data/<namespace>/luxury_recipes/<id>.json`: the job, the level, the makings by item or tag, what comes
   out and how long it takes). A maker fills the store's stock orders first, then makes whatever the village store has

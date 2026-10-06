@@ -16,5 +16,7 @@ the same commit) and checked by the QA lane (ROADMAP 22.9). Pages are filled in 
 
 ## Pages
 
-None written yet. First twelve planned: Builder, Villager jobs, Village Hall, Steward, Roads and walls, Edicts, Guilds,
+- [Builder](builder.md): the villager who builds blueprints.
+
+Still to write of the first twelve: Villager jobs, Village Hall, Steward, Roads and walls, Edicts, Guilds,
 Legends, Pokemon partners, Classes, Elders, Config switches.

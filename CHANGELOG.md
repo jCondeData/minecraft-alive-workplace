@@ -17,6 +17,11 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Added
+- **Classes at the Village Hall for 1.8** (34.6, off until 1.8 is finished): the hall gets a Classes tab (how many
+  households of each class) and page (each class's needs and wants with how many households have them, what the class
+  gives, and who is closest to rising with what they lack); the people list shows each villager's class and household
+  ("Burgher · married to Tomas") with the needs of their class and the next one ticked; the food icon lists the
+  luxuries in store; and "What next?" gives up to three class tips, most households first.
 - **A household's rise and fall is felt for 1.8** (part of 34.6, off until 1.8 is finished): a household that
   rises gets golden sparkles and a chime at their door, a chat line to players within 32 blocks, a line in the hall's
   Chronicle and "rose in the world" (+10 mood for 2 days); one that falls gets a Chronicle line and "came down in the

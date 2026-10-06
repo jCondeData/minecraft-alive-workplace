@@ -115,6 +115,8 @@ final class JobScenes {
 	/** Villagers the scenes hand from staging to a later step (the scholar, the screen scenes' villager). */
 	private static volatile Villager scholar;
 	private static volatile Villager subject;
+	/** classes (34.6): the couple first, then three Peasants. */
+	private static final List<Villager> classPeople = new java.util.concurrent.CopyOnWriteArrayList<>();
 	/** curfew: the villagers who go to bed at dusk. */
 	private static final List<Villager> curfewSleepers = new java.util.concurrent.CopyOnWriteArrayList<>();
 	/** conscription: the villagers called up, and the raiders they beat back. */
@@ -2851,6 +2853,70 @@ final class JobScenes {
 					}
 				}, 30)),
 			(level, player) -> player.containerMenu instanceof ChoiceMenu));
+		// Classes at the Village Hall (ROADMAP 34.6): a Peasant couple rises to Artisan at dawn (golden sparkles at their door,
+		// a chime, the chat line), then the hall's Classes tab and page with the real ladder's needs counted.
+		SCREENS.put("classes", new Screen("a Peasant couple rose to Artisan at dawn with golden sparkles and a chat line, and the hall's Classes page counts each class's needs",
+			new Vec3(2.5, -58.4, 4.5), TARGET,
+			(level, player) -> {
+				level.setBlockAndUpdate(STATION, ModBlocks.VILLAGE_HALL.defaultBlockState()
+					.setValue(io.github.jcondedata.aliveworkplace.hall.VillageHallBlock.FACING, Direction.SOUTH));
+				io.github.jcondedata.aliveworkplace.people.SocialClasses.ENABLED = true;
+				classPeople.clear();
+				String[] names = {"Odo", "Pia", "Ann", "Bo", "Cy"};
+				for (int i = 0; i < names.length; i++) {
+					Villager v = bornSceneVillager(level, new BlockPos(-2 + i, -60, 3), names[i], false);
+					io.github.jcondedata.aliveworkplace.people.SocialClasses.seed(v, io.github.jcondedata.aliveworkplace.people.SocialClasses.get(
+						io.github.jcondedata.aliveworkplace.AliveWorkplace.id("peasant")));
+					// Odo, Pia and Ann eat a varied diet; Bo and Cy only bread.
+					io.github.jcondedata.aliveworkplace.registry.ModAttachments.RECENT_MEALS.set(v, i < 3
+						? List.of(net.minecraft.resources.ResourceLocation.withDefaultNamespace("bread"), net.minecraft.resources.ResourceLocation.withDefaultNamespace("baked_potato"), net.minecraft.resources.ResourceLocation.withDefaultNamespace("cooked_cod"))
+						: List.of(net.minecraft.resources.ResourceLocation.withDefaultNamespace("bread"), net.minecraft.resources.ResourceLocation.withDefaultNamespace("bread"), net.minecraft.resources.ResourceLocation.withDefaultNamespace("bread")));
+					classPeople.add(v);
+				}
+				Villager odo = classPeople.get(0);
+				Villager pia = classPeople.get(1);
+				io.github.jcondedata.aliveworkplace.registry.ModAttachments.PARTNER.set(odo,
+					new io.github.jcondedata.aliveworkplace.people.Couples.Partner(pia.getUUID(), pia.getDisplayName(), 1, true));
+				io.github.jcondedata.aliveworkplace.registry.ModAttachments.PARTNER.set(pia,
+					new io.github.jcondedata.aliveworkplace.people.Couples.Partner(odo.getUUID(), odo.getDisplayName(), 1, true));
+				io.github.jcondedata.aliveworkplace.hall.VillageNeeds.check(level, STATION);
+			},
+			List.of(new Step("01_classes_rise", -1, 0, (level, player) -> {
+					// Dawn. The scene's Artisans need only a varied diet (the real ones also want a home, services and work
+					// clothes, which take days to set up): the couple has had it two dawns running, and rises.
+					level.setDayTime((level.getDayTime() / 24000 + 1) * 24000);
+					var files = io.github.jcondedata.aliveworkplace.people.SocialClasses.files(level.getServer().getResourceManager());
+					var real = new java.util.HashMap<>(files);
+					files.put(io.github.jcondedata.aliveworkplace.AliveWorkplace.id("artisan"), com.google.gson.JsonParser.parseString(
+						"{\"tier\": 1, \"tax\": 1.5, \"name\": {\"translate\": \"class.aliveworkplace.artisan\"}, \"needs\": [{\"type\": \"diet\", \"kind\": \"varied\"}]}"));
+					io.github.jcondedata.aliveworkplace.people.SocialClasses.load(files);
+					long today = io.github.jcondedata.aliveworkplace.hall.Chronicle.day(level);
+					List<Villager> couple = classPeople.subList(0, 2);
+					io.github.jcondedata.aliveworkplace.people.SocialClasses.check(level, STATION, couple, today - 1, 8);
+					var rise = io.github.jcondedata.aliveworkplace.people.SocialClasses.check(level, STATION, couple, today, 8);
+					Showcase.check(rise.changes().size() == 1 && rise.changes().get(0).rose(), "the couple rose to Artisan at dawn: " + rise.changes());
+					io.github.jcondedata.aliveworkplace.people.SocialClasses.load(real); // the real ladder for the page
+				}, 12),
+				new Step("02_classes_tab", -2, 6, (level, player) -> {
+					io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.open(player, STATION);
+					pickedSlot = io.github.jcondedata.aliveworkplace.hall.HallPages.slot(io.github.jcondedata.aliveworkplace.hall.ClassesPage.PAGE);
+					var counts = io.github.jcondedata.aliveworkplace.hall.ClassesPage.counts(level, STATION);
+					Showcase.check(counts.values().stream().mapToInt(Integer::intValue).sum() == 4, "four households counted on the tab: " + counts.values());
+				}, 30),
+				new Step("03_classes_page", -2, 6, (level, player) -> {
+					io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.open(player, STATION);
+					if (player.containerMenu instanceof ChoiceMenu m) {
+						m.press(io.github.jcondedata.aliveworkplace.hall.HallPages.slot(io.github.jcondedata.aliveworkplace.hall.ClassesPage.PAGE), player);
+						pickedSlot = -1;
+						for (int slot = io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW; slot < ChoiceMenu.SIZE; slot++) {
+							if (m.icon(slot).getHoverName().getString().equals("Burgher")) {
+								pickedSlot = slot; // the Burgher button: the Artisan couple closest to rising, and what they lack
+							}
+						}
+						Showcase.check(pickedSlot >= 0, "the Classes page has a Burgher button");
+					}
+				}, 30)),
+			(level, player) -> player.containerMenu instanceof ChoiceMenu m && m.getType() == ModBlocks.VILLAGE_HALL_MENU));
 		SCREENS.put("hall_treasury", new Screen("the hall's treasury was collected, the village protected and its screen opened from a Village Ledger",
 			new Vec3(2.5, -58.4, 4.5), TARGET,
 			(level, player) -> {

@@ -400,6 +400,33 @@ entry per JSON file; a pack adds its own beside ours, and a broken file is skipp
 **Settings** (`config/aliveworkplace.json`, see the table below): `steward`, `stewardMaxOpenBuilds`, `stewardSelfRun`,
 `stewardRoads`, `caravanRoads`, `caravanRoadReach`, `stewardWalls`, `stewardRenewal`.
 
+## Classes
+
+*Part of 1.8, Classes and luxuries: off until that expansion is finished.*
+
+Every household in a village with a hall (one villager, or a married couple) lives as a **class**: Peasant, Artisan,
+Burgher or Noble. Each class has **needs** (a better home, days fed from the store, a varied diet, services such as a
+school or chapel near home, a building like the Market Square, the village's rank, beauty, and luxuries such as Work
+Clothes or Berry Wine taken from the village store) and **wants** (extras). A household that meets the next class's
+needs two dawns running **rises**: golden sparkles and a chime at their door, a chat line to players within 32 blocks,
+a line in the Chronicle and "rose in the world" (+10 mood for 2 days). One that lacks a need of its own class three
+dawns running **comes down in the world** (-10). Every villager's mood also has "has what their class needs" (+5), or
+-5 for each need lacking (at most -15).
+
+At the Village Hall:
+- the **Classes** tab says how many households of each class there are. Its page has a button per class: each need and
+  want with how many households have it ("A varied diet: 2 of 4", counted over the class and the one below it), what
+  the class gives (its tax, the jobs it opens, its effects), and the households closest to rising into it with what
+  they lack;
+- the people list says each villager's class and household ("Burgher · married to Tomas") and ticks the needs of their
+  class and of the next one;
+- the food icon lists the luxuries in store;
+- **What next?** gives up to three class tips, most households first ("2 Peasant households want A varied diet to rise
+  to Artisan").
+
+Classes are data: `data/<namespace>/classes/<id>.json` (a data pack can replace ours, add its own or switch one off).
+**Settings:** `villageClasses`, `classRiseDays`, `classFallDays`.
+
 ## Edicts
 
 A village's owner proclaims **edicts** at the Village Hall (its **Book of Edicts**, or sneak-right-click with a

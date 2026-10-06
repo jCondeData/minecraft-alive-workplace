@@ -245,4 +245,145 @@ public class ClassHallGameTests implements net.fabricmc.fabric.api.gametest.v1.F
 		}
 		helper.succeed();
 	}
+
+	private static List<String> lore(net.minecraft.world.item.ItemStack stack) {
+		net.minecraft.world.item.component.ItemLore lore = stack.get(net.minecraft.core.component.DataComponents.LORE);
+		return lore == null ? List.of() : lore.lines().stream().map(Component::getString).toList();
+	}
+
+	/** The Classes button on the class page that names {@code cls}, or empty. */
+	private static net.minecraft.world.item.ItemStack classButton(io.github.jcondedata.aliveworkplace.work.ChoiceMenu menu, String cls) {
+		for (int slot = io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW; slot < io.github.jcondedata.aliveworkplace.work.ChoiceMenu.SIZE; slot++) {
+			net.minecraft.world.item.ItemStack icon = menu.icon(slot);
+			if (!icon.isEmpty() && icon.getHoverName().getString().equals(cls)) {
+				return icon;
+			}
+		}
+		return net.minecraft.world.item.ItemStack.EMPTY;
+	}
+
+	/**
+	 * A staged village (34.6): three Peasant households (Ann eats a varied diet, Bo and Cy only bread) and an Artisan couple
+	 * (Dee and Eli). The Classes tab says how many of each; the page counts each need over the class and the one below
+	 * ("A varied diet: 3 of 4"), says what each class gives and who is closest to rising with what they lack; "What next?"
+	 * gets the class tips, most households first; the people list says "Artisan · married to Eli" and ticks the needs; the
+	 * food icon lists the luxuries in store.
+	 */
+	//$ gametest_batch AREA '"classHallPage"'
+	@GameTest(template = AREA, batch = "classHallPage")
+	public void theClassesPageCountsAStagedVillage(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		village(helper);
+		helper.setBlock(new BlockPos(19, 2, 19), ModBlocks.STOREHOUSE);
+		helper.setBlock(new BlockPos(19, 2, 17), net.minecraft.world.level.block.Blocks.CHEST);
+		net.minecraft.world.Container chest = helper.getBlockEntity(new BlockPos(19, 2, 17));
+		chest.setItem(0, new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.DISC_FRAGMENT_5, 3));
+		ladder(VARIED, CITY, PLAIN);
+		Villager ann = villager(helper, new BlockPos(3, 2, 3), "Ann");
+		Villager bo = villager(helper, new BlockPos(5, 2, 3), "Bo");
+		Villager cy = villager(helper, new BlockPos(7, 2, 3), "Cy");
+		Villager dee = villager(helper, new BlockPos(3, 2, 7), "Dee");
+		Villager eli = villager(helper, new BlockPos(5, 2, 7), "Eli");
+		ModAttachments.PARTNER.set(dee, new Couples.Partner(eli.getUUID(), eli.getDisplayName(), 1, true));
+		ModAttachments.PARTNER.set(eli, new Couples.Partner(dee.getUUID(), dee.getDisplayName(), 1, true));
+		for (Villager v : List.of(ann, bo, cy)) {
+			SocialClasses.seed(v, SocialClasses.get(ours("peasant")));
+		}
+		for (Villager v : List.of(dee, eli)) {
+			SocialClasses.seed(v, SocialClasses.get(ours("artisan")));
+			eats(v, "bread", "baked_potato", "cooked_cod");
+		}
+		eats(ann, "bread", "baked_potato", "cooked_cod");
+		eats(bo, "bread", "bread", "bread");
+		eats(cy, "bread", "bread", "bread");
+		BlockPos at = helper.absolutePos(HALL);
+		ServerPlayer player = helper.makeMockServerPlayerInLevel();
+
+		// The survey behind the page.
+		List<io.github.jcondedata.aliveworkplace.hall.ClassesPage.Row> rows = io.github.jcondedata.aliveworkplace.hall.ClassesPage.survey(level, at);
+		helper.assertTrue(rows.size() == 3 && rows.get(0).households() == 3 && rows.get(1).households() == 1 && rows.get(2).households() == 0,
+			"3 Peasant households, 1 Artisan (the couple), 0 Burgher: " + rows.stream().map(r -> r.households()).toList());
+		io.github.jcondedata.aliveworkplace.hall.ClassesPage.NeedCount varied = rows.get(1).counts().get(0);
+		helper.assertTrue(varied.have() == 2 && varied.of() == 4, "a varied diet: Ann and the couple of 4 households: " + varied);
+		List<io.github.jcondedata.aliveworkplace.hall.ClassesPage.Close> closest = rows.get(1).closest();
+		helper.assertTrue(closest.size() == 3 && closest.get(0).household().lead() == ann && closest.get(0).lacking().isEmpty()
+			&& closest.get(1).lacking().size() == 1, "Ann is closest to Artisan (lacks nothing), then Bo and Cy lacking one: " + closest);
+
+		// The tab's tooltip on the hall's screen.
+		io.github.jcondedata.aliveworkplace.work.ChoiceMenu menu = io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.forTest(player, at);
+		int tab = io.github.jcondedata.aliveworkplace.hall.HallPages.slot(io.github.jcondedata.aliveworkplace.hall.ClassesPage.PAGE);
+		helper.assertTrue(tab >= 0, "the Classes tab is in the page row");
+		List<String> tip = lore(menu.icon(tab));
+		helper.assertTrue(menu.icon(tab).getHoverName().getString().equals("Classes") && tip.contains("Peasant households: 3")
+			&& tip.contains("Artisan households: 1") && tip.contains("Burgher households: 0"), "the tab counts each class: " + tip);
+		// The food icon: the test luxury (a disc fragment) in the store.
+		List<String> food = lore(menu.icon(3));
+		helper.assertTrue(food.contains("Luxuries in store: Test Trinket ×3"), "the food icon lists the luxuries in store: " + food);
+
+		// The page.
+		menu.press(tab, player);
+		List<String> artisan = lore(classButton(menu, "Artisan"));
+		helper.assertTrue(artisan.contains("Households: 1") && artisan.contains("  A varied diet: 2 of 4")
+			&& artisan.contains("Counted over the 4 households who are Artisan or Peasant"), "the Artisan button counts its need: " + artisan);
+		helper.assertTrue(artisan.contains("Pays 1.5× the tax") && artisan.contains("Closest to becoming Artisan:")
+			&& artisan.contains("  Ann: has everything, rising at a dawn soon") && artisan.contains("  Bo: lacks A varied diet"),
+			"what the Artisans give, and who's closest: " + artisan);
+		List<String> burgher = lore(classButton(menu, "Burgher"));
+		helper.assertTrue(burgher.contains("  The village a City or bigger: 0 of 1") && burgher.contains("  A plain diet: 1 of 1")
+			&& burgher.stream().anyMatch(l -> l.contains("Dee") && l.contains("Eli") && l.endsWith(": lacks The village a City or bigger")), "the Burgher button: " + burgher);
+		List<String> peasant = lore(classButton(menu, "Peasant"));
+		helper.assertTrue(peasant.contains("Households: 3") && peasant.contains("Needs nothing: everyone starts here"), "the Peasant button: " + peasant);
+
+		// "What next?": most households first.
+		List<io.github.jcondedata.aliveworkplace.hall.ClassesPage.ClassTip> tips = io.github.jcondedata.aliveworkplace.hall.ClassesPage.classTips(level, at);
+		helper.assertTrue(tips.size() == 2 && tips.get(0).households() == 2 && tips.get(1).households() == 1, "two tips, 2 households first: " + tips);
+		List<String> advice = io.github.jcondedata.aliveworkplace.hall.VillageAdvice.tips(level, at).stream()
+			.filter(t -> t.key().startsWith("class")).map(t -> t.title().getString() + " | " + t.how().getString()).toList();
+		helper.assertTrue(advice.size() == 2 && advice.get(0).equals("2 Peasant households want A varied diet to rise to Artisan | Keep 3 kinds of meal in the store")
+			&& advice.get(1).startsWith("1 Artisan household wants The village a City or bigger to rise to Burgher | Grow the village into a City"),
+			"the class tips read: " + advice);
+
+		// The people list: class and household, and the needs ticked.
+		List<String> dees = lore(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.person(level, at, dee));
+		helper.assertTrue(dees.contains("Artisan · married to Eli") && dees.stream().filter(l -> l.toLowerCase().contains("married to eli")).count() == 1, "Dee's class line: " + dees);
+		helper.assertTrue(dees.contains("Artisan needs:") && dees.contains("  ✔ A varied diet") && dees.contains("To become Burgher:")
+			&& dees.contains("  ✘ The village a City or bigger") && dees.contains("  ✔ A plain diet"), "Dee's needs, ticked: " + dees);
+		List<String> bos = lore(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.person(level, at, bo));
+		helper.assertTrue(bos.contains("Peasant · a household of one") && bos.contains("To become Artisan:") && bos.contains("  ✘ A varied diet"), "Bo's lines: " + bos);
+
+		// Classes off: the tab says so, and nobody's class shows.
+		SocialClasses.ENABLED = false;
+		helper.assertTrue(lore(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.forTest(player, at).icon(tab)).contains("Village classes are switched off")
+			&& io.github.jcondedata.aliveworkplace.hall.ClassesPage.classTips(level, at).isEmpty()
+			&& io.github.jcondedata.aliveworkplace.hall.ClassesPage.classLine(dee) == null
+			&& lore(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.forTest(player, at).icon(3)).stream().noneMatch(l -> l.startsWith("Luxuries")), "villageClasses off");
+		List.of(ann, bo, cy, dee, eli).forEach(Villager::discard);
+		player.discard();
+		helper.succeed();
+	}
+
+	/** Every sentence the page and tips can show has text, and every class need and effect of ours has a name. */
+	//$ gametest_batch 'FabricGameTest.EMPTY_STRUCTURE' '"classHallWords"'
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE, batch = "classHallWords")
+	public void everyClassLineHasWords(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		SocialClasses.load(SocialClasses.files(level.getServer().getResourceManager()));
+		helper.assertTrue(SocialClasses.ladder().size() == 4, "our four classes load");
+		for (SocialClasses.SocialClass c : SocialClasses.ladder()) {
+			for (ClassNeeds.Need need : c.needs()) {
+				for (Component line : List.of(io.github.jcondedata.aliveworkplace.hall.ClassesPage.needName(need), io.github.jcondedata.aliveworkplace.hall.ClassesPage.how(need))) {
+					String text = line.getString();
+					helper.assertTrue(!text.contains("aliveworkplace.") && !text.isBlank(), c.id() + " need " + need.type() + " reads: " + text);
+				}
+			}
+			for (ClassNeeds.Need need : c.wants()) {
+				String text = io.github.jcondedata.aliveworkplace.hall.ClassesPage.needName(need).getString();
+				helper.assertTrue(!text.contains("aliveworkplace."), c.id() + " want reads: " + text);
+			}
+			for (Component g : io.github.jcondedata.aliveworkplace.hall.ClassesPage.gives(c)) {
+				helper.assertTrue(!g.getString().contains("aliveworkplace.") && !g.getString().contains("data pack"), c.id() + " gives: " + g.getString());
+			}
+		}
+		helper.succeed();
+	}
 }

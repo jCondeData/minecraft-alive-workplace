@@ -491,6 +491,11 @@ SCENES = [
       "the quest journal opened on its four tabs, a quest was tracked (its bar at the top of the screen) and a quest map was held", 50,
       [("01_journal_tabs", "The journal: Village, Personal, Story and Bounties"), ("02_journal_tracked", "A tracked quest's bar at the top"),
        ("03_quest_map", "A quest map, the place marked with a red X")]),
+    # Classes at the Village Hall (ROADMAP 34.6): a household rises at dawn, then the hall's Classes tab and page
+    S("classes", "Village Hall", "Classes: a household rises, and the Classes page",
+      "a Peasant couple rose to Artisan at dawn with golden sparkles and a chat line, and the hall's Classes page counts each class's needs", 45,
+      [("01_classes_rise", "Odo and Pia rise to Artisan at dawn"), ("02_classes_tab", "The Classes tab: households of each class"),
+       ("03_classes_page", "The Burgher button: needs counted, what it gives, who's closest")]),
     S("hall_treasury", "Village Hall", "The treasury, protection and the Village Ledger",
       "the treasury was collected, the village protected and the hall opened from a Village Ledger", 60,
       [("01_hall_treasury", "Treasury and protection"), ("02_hall_collected", "Collected"), ("03_ledger_held", "Village Ledger"),

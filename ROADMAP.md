@@ -3636,7 +3636,7 @@ on a real world.
   and stops at 8, keeps to its level, waits for an aged input (the day moved on in the test), asks for missing
   makings on the board, fills a stock order first, and a datapack recipe adds a new good with no code. Nothing to see
   yet: `--no-review`.
-- [ ] **34.6** **Classes at the Village Hall.** What the player sees:
+- [x] **34.6** (review: pending 2026-10-06) **Classes at the Village Hall.** What the player sees:
   - a **Classes** button on the hall's screen (its tooltip: how many households of each class); its page has a button
     per class listing each need and want with how many households have it ("Fine Clothes: 2 of 5"), what the class
     gives, and the households closest to rising with what they lack;
@@ -4868,3 +4868,11 @@ item waits.
   (counts, what each class gives, closest to rising), class and household in the people list and the villager page's
   needs, the food icon's luxuries tooltip, the What next? class tips, chatter for wine, clothes, the Gazette and the
   tavern (they wait for 34.9+ goods), the scene `classes`, the README section and the Guidebook page (after 26.2a).
+- 2026-10-06 (34.6, done; lane d): the hall's Classes tab and page (`hall/ClassesPage`, registered only once M34 is
+  finished; counts each need over the households of the class and the one below, "Fine Clothes: 2 of 5"), the people
+  list's class line and the needs of their class and the next ticked, the food icon's luxuries in store (shown with
+  classes on), up to three "What next?" class tips (most households first; the how-line is per kind of need, not yet
+  naming each luxury's maker, which arrives with 34.9+), scene `classes` (the rise is staged with a scene ladder whose
+  Artisans need only a varied diet, then the real ladder is put back for the page), README "Classes". Still waiting:
+  chatter for wine, clothes, the Gazette and the tavern (34.9+ goods) and the Guidebook's Classes page (after 26.2a).
+  Luxury names are `luxury.<namespace>.<id>` lang keys (a data pack's without one reads as its id, "Test Trinket").

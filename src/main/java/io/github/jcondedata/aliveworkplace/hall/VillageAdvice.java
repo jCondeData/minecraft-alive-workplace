@@ -40,6 +40,9 @@ public final class VillageAdvice {
 		}
 
 		public Component how() {
+			if ((key.equals("class") || key.equals("class_one")) && args.length == 5 && args[4] instanceof Component how) {
+				return how; // a class tip (34.6) brings its how: one per kind of need
+			}
 			return Component.translatable("advice.aliveworkplace." + key + ".how", args);
 		}
 	}
@@ -107,6 +110,8 @@ public final class VillageAdvice {
 		if (homes.grown() >= MIN_FOR_HOMES && homes.plain() * 2L > homes.grown()) {
 			tips.add(new Tip("homes", Items.OAK_DOOR, homes.plain(), homes.grown(), Homes.TIER_2_MOOD, Homes.TIER_3_MOOD));
 		}
+		// Classes (34.6): up to three needs the households below a class lack to rise, most households first.
+		tips.addAll(ClassesPage.adviceTips(level, hall));
 		if (level.getBlockEntity(hall) instanceof VillageHallBlockEntity entity) {
 			tips.addAll(civic(level, hall, entity, census));
 		}

@@ -200,7 +200,10 @@ public final class VillageNeeds {
 		int lit = 0;
 		int guards = 0;
 		int cheerful = 0;
-		for (Villager villager : level.getEntitiesOfClass(Villager.class, VillageHalls.area(hall), Villager::isAlive)) {
+		List<Villager> everyone = level.getEntitiesOfClass(Villager.class, VillageHalls.area(hall), Villager::isAlive);
+		// The village's households by class (34.7): its Nobles' wellbeing, and the Burghers' routes and traders.
+		io.github.jcondedata.aliveworkplace.people.ClassPerks.Sums classes = io.github.jcondedata.aliveworkplace.people.ClassPerks.tally(level, hall, everyone);
+		for (Villager villager : everyone) {
 			villagers++;
 			if (!villager.isBaby()) {
 				adults++;
@@ -236,7 +239,8 @@ public final class VillageNeeds {
 		VillageHallBlockEntity hallEntity = level.getBlockEntity(hall) instanceof VillageHallBlockEntity treeHall ? treeHall : null;
 		float wellbeing = Math.min(1f, Math.max(io.github.jcondedata.aliveworkplace.research.TreeEffects.wellbeingFloor(hallEntity),
 			wellbeing(fedShare, housedShare, safe) + 0.1f * hearth + Decorations.bonus(beauty) + cheer
-				+ io.github.jcondedata.aliveworkplace.research.TreeEffects.wellbeing(hallEntity)));
+				+ io.github.jcondedata.aliveworkplace.research.TreeEffects.wellbeing(hallEntity)
+				+ io.github.jcondedata.aliveworkplace.people.ClassPerks.wellbeing(classes)));
 		return new Needs(adults, fed, villagers, housed, lit, guards, beauty, wellbeing);
 	}
 

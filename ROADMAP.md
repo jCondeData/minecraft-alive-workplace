@@ -3638,7 +3638,7 @@ on a real world.
   and stops at 8, keeps to its level, waits for an aged input (the day moved on in the test), asks for missing
   makings on the board, fills a stock order first, and a datapack recipe adds a new good with no code. Nothing to see
   yet: `--no-review`.
-- [ ] **34.6** **Classes at the Village Hall.** What the player sees:
+- [x] **34.6** (review: pending 2026-10-06) **Classes at the Village Hall.** What the player sees:
   - a **Classes** button on the hall's screen (its tooltip: how many households of each class); its page has a button
     per class listing each need and want with how many households have it ("Fine Clothes: 2 of 5"), what the class
     gives, and the households closest to rising with what they lack;
@@ -3657,7 +3657,7 @@ on a real world.
   Done when: `ClassHallGameTests` check the page's counts and the tips against a staged village; `langcheck.py` is
   clean; scene `classes` (a household rising at dawn, then the hall's Classes page) passes; the README gets a Classes
   section.
-- [ ] **34.7** **What each class gives.** From the `effects` in the class files:
+- [x] **34.7** (review: pending 2026-10-06) **What each class gives.** From the `effects` in the class files:
   - **taxes** (`Treasury.takings`): each worker pays `treasuryPerWorker` × their class's factor (Peasant 1, Artisan
     1.5, Burgher 2.5, Noble 4), 10% more for each want they have; a Noble without a job pays like a worker. A Peasant
     pays exactly today's rate, so no village takes in less than before; the name tag's tooltip shows the split by
@@ -3678,7 +3678,7 @@ on a real world.
   Done when: `ClassPerkGameTests` (the takings for a staged mix of classes and wants, never below the old formula for
   Peasants; the crafter pace staying within the cap; wellbeing capped at 9%; the ball replacing one festival in two)
   pass; scene `noble_ball` passes; README updated.
-- [ ] **34.8** **Higher jobs need higher classes.** The `jobs` list in each class file names the jobs a villager must
+- [x] **34.8** (review: pending 2026-10-06) **Higher jobs need higher classes.** The `jobs` list in each class file names the jobs a villager must
   be that class or higher to take. To start: **Artisan**: Tinkerer, Chef, Netherworker, Nurse, Teacher, Shopkeeper,
   Innkeeper, Printer and, with Cobblemon, Ball Smith, Move Tutor, Pokémon Trader, Fossil Scientist; **Burgher**:
   Scholar, Undertaker, Jeweller, Trainer Leader; **Noble**: none yet (kept for M29's Legends and M33's offices).
@@ -4874,3 +4874,37 @@ item waits.
   its maximum, nobody's or the hall owner's (another player's pasture is never filled). A calm is checked at the damage
   gate (a calmed Alpha's blows on villagers and players inside any village are cancelled and its target dropped); a
   walk that takes longer than 2 minutes is given up for the day.
+- 2026-10-05 (34.6, partial; lane d): landed the rise and fall effects (`Chronicle.Kind.CLASS`, sparkles at the lead's
+  bed as "their door", `AMETHYST_BLOCK_CHIME`, the chat line within 32 blocks), the moods (saved as `class_standing`
+  at each dawn: needs lacking and the last turn; a standing older than yesterday's dawn adds nothing) and chatter
+  `class_rose`/`class_fell`, with `ClassHallGameTests`. Still to do for 34.6: the hall's Classes button and page
+  (counts, what each class gives, closest to rising), class and household in the people list and the villager page's
+  needs, the food icon's luxuries tooltip, the What next? class tips, chatter for wine, clothes, the Gazette and the
+  tavern (they wait for 34.9+ goods), the scene `classes`, the README section and the Guidebook page (after 26.2a).
+- 2026-10-06 (34.6, done; lane d): the hall's Classes tab and page (`hall/ClassesPage`, registered only once M34 is
+  finished; counts each need over the households of the class and the one below, "Fine Clothes: 2 of 5"), the people
+  list's class line and the needs of their class and the next ticked, the food icon's luxuries in store (shown with
+  classes on), up to three "What next?" class tips (most households first; the how-line is per kind of need, not yet
+  naming each luxury's maker, which arrives with 34.9+), scene `classes` (the rise is staged with a scene ladder whose
+  Artisans need only a varied diet, then the real ladder is put back for the page), README "Classes". Still waiting:
+  chatter for wine, clothes, the Gazette and the tavern (34.9+ goods) and the Guidebook's Classes page (after 26.2a).
+  Luxury names are `luxury.<namespace>.<id>` lang keys (a data pack's without one reads as its id, "Test Trinket").
+- **34.7 (2026-10-06, decisions):** `people/ClassPerks` reads the class files' effects; `work_pace` and `research_pace`
+  are one `Pace` source ("their class (Artisan)") under the shared cap, and both apply to the class and every class
+  above (a Noble scholar is no slower than a Burgher one; the design note gave "or better" only to `work_pace`). The
+  village's households by class are counted with the hall's people (`VillageNeeds.count`), in memory. Wants had are a
+  new `wants` field on `class_standing` (default 0), counted at dawn. Waiting on other items, each degrading quietly:
+  the Burghers' trader sells a Townhouse or Manor blueprint only once 34.15/34.16 put them in the library (until then
+  the extra trader comes without it); the ball's venue is a finished Manor's middle until 34.16 says where its ballroom
+  is, else the hall; the wine served is the `#aliveworkplace:ball_wine` tag (Vintage Wine, Berry Wine, Cider, all
+  optional entries until 34.9 adds them). `ballTurn` flips on every festival in a village with a Noble, so
+  `replace_every` other than 2 reads as 2.
+- **34.8 (2026-10-06, decisions):** `people/ClassJobs` reads the class files' `jobs` (the lowest class naming a job is
+  what it needs). A villager with no class yet (unseeded, until 34.22) is never gated, so no village loses hires before
+  seeding; a Legend counts as the top class. "A village with a hall" is the nearest hall within `VillageHalls.RADIUS`.
+  Besides the four ways in the spec, the Steward's morning jobs (`StewardJobs.plan`) skip jobs above a villager's class
+  too. A jobless villager taking a modded block by themselves (vanilla's own job search) isn't gated, as the spec lists
+  only the four ways (most of these jobs share a block with a vanilla job, which is the one taken by itself). The
+  Printer and Jeweller are in the Artisan and Burgher files already and are gated once 34.11/34.12 add them. A hired
+  traveller's class is given only in a village with a hall. The refusal reads "Dara is Peasant class; Scholar needs
+  Burgher or better" (no "a"/"an" before names a data pack may change).

@@ -207,6 +207,11 @@ public final class Moods {
 			score += banquet.points();
 			good.add(banquet.reason());
 		}
+		// Their class (34.6): a rise or fall of the last days, and the needs of their class had or lacking.
+		for (io.github.jcondedata.aliveworkplace.legend.LegendPowers.MoodReason c : SocialClasses.moods(villager, io.github.jcondedata.aliveworkplace.hall.Chronicle.day(level))) {
+			score += c.points();
+			(c.points() >= 0 ? good : bad).add(c.reason());
+		}
 		if (!level.getEntitiesOfClass(Villager.class, villager.getBoundingBox().inflate(COMPANY_RANGE), v -> v != villager && v.isAlive()).isEmpty()) {
 			score += 5;
 			good.add(reason("company"));

@@ -47,12 +47,32 @@ public final class Treasury {
 
 	/** A day's takings, in hundredths of an emerald. */
 	public static int takings(int workers, float wellbeing, VillageRanks.Rank rank) {
+		return takings((float) workers, wellbeing, rank);
+	}
+
+	/**
+	 * A day's takings from {@code shares} worker shares (34.7: a Peasant worker is 1, an Artisan 1.5, a Burgher 2.5, a
+	 * Noble 4, each 10% more a want they have; {@link io.github.jcondedata.aliveworkplace.people.ClassPerks#tax}), in
+	 * hundredths of an emerald.
+	 */
+	public static int takings(float shares, float wellbeing, VillageRanks.Rank rank) {
 		double w = Math.max(0, Math.min(1, wellbeing));
-		return (int) Math.round(workers * CENTS_PER_WORKER * (0.5 + w) * (1 + 0.25 * rank.ordinal()));
+		return (int) Math.round(shares * CENTS_PER_WORKER * (0.5 + w) * (1 + 0.25 * rank.ordinal()));
+	}
+
+	/** The hall's round with the village's {@code workers} and {@code jobless}: their class shares (34.7) are the takings. */
+	public static void round(ServerLevel level, BlockPos hall, VillageHallBlockEntity entity, java.util.List<net.minecraft.world.entity.npc.Villager> workers,
+		java.util.List<net.minecraft.world.entity.npc.Villager> jobless) {
+		round(level, hall, entity, io.github.jcondedata.aliveworkplace.people.ClassPerks.tax(workers, jobless).shares());
 	}
 
 	/** The hall's round: a new day's takings go in (once a day). */
 	public static void round(ServerLevel level, BlockPos hall, VillageHallBlockEntity entity, int workers) {
+		round(level, hall, entity, (float) workers);
+	}
+
+	/** The hall's round from {@code shares} worker shares: a new day's takings go in (once a day). */
+	public static void round(ServerLevel level, BlockPos hall, VillageHallBlockEntity entity, float workers) {
 		long day = Chronicle.day(level);
 		long last = entity.lastTaxDay();
 		if (last >= day) {
@@ -75,6 +95,34 @@ public final class Treasury {
 		}
 		entity.setTreasury((int) Math.max(before, Math.min(cap, held + add)));
 		entity.addTreasuryTotal(entity.treasury() - before);
+	}
+
+	/**
+	 * The hall's name tag tooltip lines on the takings by class (34.7): "Daily takings by class:" then "Artisan: 2 pay
+	 * 0.3 emeralds" for each class with payers; none with classes off.
+	 */
+	public static java.util.List<Component> taxLines(ServerLevel level, BlockPos hall, java.util.List<net.minecraft.world.entity.npc.Villager> workers,
+		java.util.List<net.minecraft.world.entity.npc.Villager> jobless) {
+		java.util.List<Component> out = new java.util.ArrayList<>();
+		if (!io.github.jcondedata.aliveworkplace.people.SocialClasses.ENABLED || !(level.getBlockEntity(hall) instanceof VillageHallBlockEntity entity)) {
+			return out;
+		}
+		io.github.jcondedata.aliveworkplace.people.ClassPerks.Tax tax = io.github.jcondedata.aliveworkplace.people.ClassPerks.tax(workers, jobless);
+		float wellbeing = entity.needs() == null ? 0.5f : entity.needs().wellbeing();
+		for (java.util.Map.Entry<net.minecraft.resources.ResourceLocation, Float> e : tax.byClass().entrySet()) {
+			int payers = tax.payers().getOrDefault(e.getKey(), 0);
+			io.github.jcondedata.aliveworkplace.people.SocialClasses.SocialClass c = io.github.jcondedata.aliveworkplace.people.SocialClasses.get(e.getKey());
+			if (payers <= 0 || c == null) {
+				continue;
+			}
+			if (out.isEmpty()) {
+				out.add(VillageHallScreen.line("screen.aliveworkplace.hall.tax_by_class", ChatFormatting.GOLD));
+			}
+			int cents = takings(e.getValue(), wellbeing, entity.rank());
+			out.add(VillageHallScreen.line(Component.translatable("screen.aliveworkplace.hall.tax_class", c.name(), payers,
+				String.format(java.util.Locale.ROOT, "%.2f", cents / 100.0)), ChatFormatting.GRAY));
+		}
+		return out;
 	}
 
 	/** Whole emeralds waiting at the hall at {@code hall}. */

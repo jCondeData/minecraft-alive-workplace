@@ -42,6 +42,7 @@ public final class LegendsPage {
 		HallPages.register(PAGE, LegendsPage::tab, LegendsPage::header, (menu, level, hall, viewer) -> {
 			fill(menu, level, hall);
 			io.github.jcondedata.aliveworkplace.hall.Anthems.button(menu, level, hall); // the anthem's button (29.19), top right
+			PokemonProfessor.button(menu, level, hall); // the village Pokédex (29.21), beside it, with Cobblemon
 		});
 	}
 

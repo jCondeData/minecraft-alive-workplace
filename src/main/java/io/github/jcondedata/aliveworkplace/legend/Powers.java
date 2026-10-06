@@ -31,6 +31,8 @@ public final class Powers {
 		BardLaureate.register();
 		Beastmaster.register();
 		Founder.register();
+		PokemonProfessor.register();
+		PokemonRanger.register();
 	}
 
 	/** Adds a named power (each Legend item adds its own). */

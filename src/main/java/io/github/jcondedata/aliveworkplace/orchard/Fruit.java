@@ -59,7 +59,13 @@ public final class Fruit {
 			level.setBlock(pos, state.setValue(CocoaBlock.AGE, 0), Block.UPDATE_CLIENTS); // the pod grows back
 			level.playSound(null, pos, SoundEvents.WOOD_HIT, SoundSource.BLOCKS, 0.6f, 1.2f);
 		} else if (COBBLEMON && PokemonFruit.EXTENSION.call(f -> f.isRipe(state), false)) {
-			out.addAll(PokemonFruit.EXTENSION.call(f -> f.pick(level, pos, picker), List.<ItemStack>of()));
+			boolean berries = PokemonFruit.EXTENSION.call(f -> f.isBerryPlant(state), false);
+			List<ItemStack> picked = PokemonFruit.EXTENSION.call(f -> f.pick(level, pos, picker), List.<ItemStack>of());
+			out.addAll(picked);
+			int extra = berries && !picked.isEmpty() ? io.github.jcondedata.aliveworkplace.legend.PokemonProfessor.extraBerries(picker) : 0;
+			if (extra > 0) {
+				out.add(picked.get(0).copyWithCount(extra)); // Berry Science (29.21): one more berry from each plant
+			}
 			level.playSound(null, pos, SoundEvents.SWEET_BERRY_BUSH_PICK_BERRIES, SoundSource.BLOCKS, 0.8f, 1.1f);
 		}
 		return out;

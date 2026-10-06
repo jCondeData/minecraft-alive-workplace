@@ -1,0 +1,205 @@
+{
+  "legend": "aliveworkplace:pokemon_professor",
+  "icon": "minecraft:spyglass",
+  "requires": [
+    "cobblemon"
+  ],
+  "name": {
+    "translate": "research.aliveworkplace.pokedex.name"
+  },
+  "topics": [
+    {
+      "id": "field_notes",
+      "icon": "minecraft:writable_book",
+      "name": {
+        "translate": "research.aliveworkplace.pokedex.field_notes"
+      },
+      "description": {
+        "translate": "research.aliveworkplace.pokedex.field_notes.desc"
+      },
+      "levels": 2,
+      "cost": [
+        {
+          "minecraft:paper": 8,
+          "minecraft:book": 2,
+          "minecraft:emerald": 4,
+          "minecraft:feather": 4
+        },
+        {
+          "minecraft:paper": 16,
+          "minecraft:book": 4,
+          "minecraft:emerald": 8,
+          "minecraft:feather": 8
+        }
+      ],
+      "points": 60,
+      "unlock": {
+        "counter": "pokedex_species",
+        "at": 15
+      },
+      "effects": [
+        {
+          "type": "aliveworkplace:flag",
+          "name": "field_notes"
+        }
+      ]
+    },
+    {
+      "id": "kinship_studies",
+      "icon": "minecraft:lead",
+      "name": {
+        "translate": "research.aliveworkplace.pokedex.kinship_studies"
+      },
+      "description": {
+        "translate": "research.aliveworkplace.pokedex.kinship_studies.desc"
+      },
+      "levels": 1,
+      "cost": [
+        {
+          "minecraft:paper": 12,
+          "minecraft:book": 3,
+          "minecraft:emerald": 8,
+          "minecraft:lead": 2
+        }
+      ],
+      "points": 80,
+      "unlock": {
+        "counter": "pokedex_species",
+        "at": 25
+      },
+      "effects": [
+        {
+          "type": "aliveworkplace:flag",
+          "name": "kinship_studies"
+        }
+      ]
+    },
+    {
+      "id": "breeding_records",
+      "icon": "minecraft:egg",
+      "name": {
+        "translate": "research.aliveworkplace.pokedex.breeding_records"
+      },
+      "description": {
+        "translate": "research.aliveworkplace.pokedex.breeding_records.desc"
+      },
+      "levels": 2,
+      "cost": [
+        {
+          "minecraft:paper": 12,
+          "minecraft:book": 3,
+          "minecraft:emerald": 8,
+          "minecraft:egg": 8
+        },
+        {
+          "minecraft:paper": 20,
+          "minecraft:book": 5,
+          "minecraft:emerald": 12,
+          "minecraft:egg": 16
+        }
+      ],
+      "points": 80,
+      "unlock": {
+        "counter": "pokedex_species",
+        "at": 35
+      },
+      "effects": [
+        {
+          "type": "aliveworkplace:flag",
+          "name": "breeding_records"
+        }
+      ]
+    },
+    {
+      "id": "berry_science",
+      "icon": "minecraft:sweet_berries",
+      "name": {
+        "translate": "research.aliveworkplace.pokedex.berry_science"
+      },
+      "description": {
+        "translate": "research.aliveworkplace.pokedex.berry_science.desc"
+      },
+      "levels": 1,
+      "cost": [
+        {
+          "minecraft:paper": 16,
+          "minecraft:book": 4,
+          "minecraft:emerald": 10,
+          "minecraft:sweet_berries": 16
+        }
+      ],
+      "points": 90,
+      "unlock": {
+        "counter": "pokedex_species",
+        "at": 45
+      },
+      "effects": [
+        {
+          "type": "aliveworkplace:flag",
+          "name": "berry_science"
+        }
+      ]
+    },
+    {
+      "id": "evolution_studies",
+      "icon": "minecraft:amethyst_shard",
+      "name": {
+        "translate": "research.aliveworkplace.pokedex.evolution_studies"
+      },
+      "description": {
+        "translate": "research.aliveworkplace.pokedex.evolution_studies.desc"
+      },
+      "levels": 1,
+      "cost": [
+        {
+          "minecraft:paper": 20,
+          "minecraft:book": 6,
+          "minecraft:emerald": 16,
+          "minecraft:amethyst_shard": 8
+        }
+      ],
+      "points": 120,
+      "unlock": {
+        "counter": "pokedex_species",
+        "at": 60
+      },
+      "effects": [
+        {
+          "type": "aliveworkplace:flag",
+          "name": "evolution_studies"
+        }
+      ]
+    },
+    {
+      "id": "regional_survey",
+      "icon": "minecraft:map",
+      "name": {
+        "translate": "research.aliveworkplace.pokedex.regional_survey"
+      },
+      "description": {
+        "translate": "research.aliveworkplace.pokedex.regional_survey.desc"
+      },
+      "levels": 1,
+      "cost": [
+        {
+          "minecraft:paper": 24,
+          "minecraft:book": 8,
+          "minecraft:emerald": 20,
+          "minecraft:compass": 1,
+          "minecraft:spyglass": 1
+        }
+      ],
+      "points": 150,
+      "unlock": {
+        "counter": "pokedex_species",
+        "at": 80
+      },
+      "effects": [
+        {
+          "type": "aliveworkplace:flag",
+          "name": "regional_survey"
+        }
+      ]
+    }
+  ]
+}

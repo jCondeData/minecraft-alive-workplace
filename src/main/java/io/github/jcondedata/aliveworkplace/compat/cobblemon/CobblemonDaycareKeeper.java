@@ -286,9 +286,9 @@ public final class CobblemonDaycareKeeper implements DaycareKeepers.Breeding {
 		info.set(DataComponents.LORE, lore(
 			Component.translatable("screen.aliveworkplace.daycare_keeper.info", DaycareKeepers.MAX_PAIRS).withStyle(ChatFormatting.GRAY),
 			Component.translatable("screen.aliveworkplace.daycare_keeper.pairs", pairs.size(), DaycareKeepers.MAX_PAIRS).withStyle(ChatFormatting.DARK_GRAY),
-			Component.translatable("screen.aliveworkplace.daycare_keeper.odds", DaycareKeepers.chance(DaycareKeepers.VERY_WELL, keeper.getVillagerData().getLevel()),
-				DaycareKeepers.chance(DaycareKeepers.WELL, keeper.getVillagerData().getLevel()),
-				DaycareKeepers.chance(DaycareKeepers.SO_SO, keeper.getVillagerData().getLevel())).withStyle(ChatFormatting.DARK_GRAY)));
+			Component.translatable("screen.aliveworkplace.daycare_keeper.odds", DaycareKeepers.chance(keeper, DaycareKeepers.VERY_WELL),
+				DaycareKeepers.chance(keeper, DaycareKeepers.WELL),
+				DaycareKeepers.chance(keeper, DaycareKeepers.SO_SO)).withStyle(ChatFormatting.DARK_GRAY)));
 		menu.button(INFO, info, null);
 		// Row 1: your pair
 		DaycareKeepers.Pair mine = pairs.stream().filter(p -> p.owner().equals(player.getUUID())).findFirst().orElse(null);
@@ -382,7 +382,7 @@ public final class CobblemonDaycareKeeper implements DaycareKeepers.Breeding {
 			Component.translatable("screen.aliveworkplace.daycare_keeper.get_along." + DaycareKeepers.GET_ALONG[along])
 				.withStyle(along == DaycareKeepers.NOT_AT_ALL ? ChatFormatting.RED : ChatFormatting.LIGHT_PURPLE));
 		icon.set(DataComponents.LORE, lore(Component.translatable("screen.aliveworkplace.daycare_keeper.chance",
-			DaycareKeepers.chance(along, keeper.getVillagerData().getLevel())).withStyle(ChatFormatting.GRAY)));
+			DaycareKeepers.chance(keeper, along)).withStyle(ChatFormatting.GRAY)));
 		return icon;
 	}
 

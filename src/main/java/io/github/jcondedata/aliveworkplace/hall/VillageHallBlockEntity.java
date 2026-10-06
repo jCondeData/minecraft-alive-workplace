@@ -46,6 +46,8 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 	private io.github.jcondedata.aliveworkplace.legend.LegendGuests.State legendGuests = io.github.jcondedata.aliveworkplace.legend.LegendGuests.State.EMPTY;
 	/** The Seer's dawn foretelling (29.16): tonight's raid, the next festival and market days, tomorrow's guest; empty in older halls. */
 	private io.github.jcondedata.aliveworkplace.legend.Seer.State seer = io.github.jcondedata.aliveworkplace.legend.Seer.State.EMPTY;
+	/** The village Pokédex (29.21, the Pokémon Professor): every species ever kept in its pastures, in the order logged; empty in older halls. */
+	private final java.util.LinkedHashSet<String> pokedex = new java.util.LinkedHashSet<>();
 	private long founderMoodDay;
 	/** The Founder (29.23): Masters whose Founder's mood failed (comma-joined UUIDs), whether the Founder was made, the last wagon day. */
 	private String founderTried = "";
@@ -174,6 +176,7 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 			TradeFairs.round(server, pos, hall);
 			Banquets.round(server, pos, hall);
 			Anthems.round(server, pos, hall);
+			io.github.jcondedata.aliveworkplace.legend.PokemonProfessor.round(server, pos, hall); // the village Pokédex (29.21)
 			io.github.jcondedata.aliveworkplace.guard.VillageRaids.tick(server, pos, census.villagers(), census.guards(), hall.lastRaidDay, day -> {
 				hall.lastRaidDay = day;
 				hall.setChanged();
@@ -633,6 +636,25 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 		setChanged();
 	}
 
+	/** The species in the village Pokédex (29.21), in the order they were logged. */
+	public java.util.Set<String> pokedex() {
+		return java.util.Collections.unmodifiableSet(pokedex);
+	}
+
+	/** Logs {@code species} in the village Pokédex; returns the ones that were new, each logged once. */
+	public java.util.List<String> logPokedex(java.util.Collection<String> species) {
+		java.util.List<String> added = new java.util.ArrayList<>();
+		for (String s : species) {
+			if (pokedex.add(s)) {
+				added.add(s);
+			}
+		}
+		if (!added.isEmpty()) {
+			setChanged();
+		}
+		return added;
+	}
+
 	/** The day the Founder's mood came (0: not yet). */
 	public long founderMoodDay() {
 		return founderMoodDay;
@@ -805,6 +827,11 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 		festivalCrowd = Nbt.getInt(tag, "festivalCrowd");
 		legendGuests = io.github.jcondedata.aliveworkplace.legend.LegendGuests.State.load(tag);
 		seer = io.github.jcondedata.aliveworkplace.legend.Seer.State.load(tag);
+		pokedex.clear();
+		net.minecraft.nbt.ListTag dex = Nbt.getList(tag, "pokedex", net.minecraft.nbt.Tag.TAG_STRING);
+		for (int i = 0; i < dex.size(); i++) {
+			pokedex.add(Nbt.stringAt(dex, i));
+		}
 		founderMoodDay = Nbt.getLong(tag, "founderMoodDay");
 		founderTried = Nbt.getString(tag, "founderTried");
 		founderMade = Nbt.getBoolean(tag, "founderMade");
@@ -910,6 +937,11 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 		tag.putInt("festivalCrowd", festivalCrowd);
 		legendGuests.save(tag);
 		seer.save(tag);
+		if (!pokedex.isEmpty()) {
+			net.minecraft.nbt.ListTag dex = new net.minecraft.nbt.ListTag();
+			pokedex.forEach(sp -> dex.add(net.minecraft.nbt.StringTag.valueOf(sp)));
+			tag.put("pokedex", dex);
+		}
 		tag.putLong("founderMoodDay", founderMoodDay);
 		tag.putString("founderTried", founderTried);
 		tag.putBoolean("founderMade", founderMade);

@@ -36,16 +36,16 @@ import net.minecraft.gametest.framework.GameTestHelper;
  * moment (synchronously, so no other test sees it) and put the defaults back after.
  */
 public class ExpansionGateGameTests implements FabricGameTest {
-	/** Every switch of an unfinished expansion (M27 steward; M28 Pokémon jobs and shows; M29 Legends; M30 civic items; M34 classes). */
+	/** Every switch of an unfinished expansion (M27 steward; M28 Pokémon jobs and shows; M29 Legends; M30 civic items; M31 friendship; M34 classes). */
 	static final List<String> GATED_SWITCHES = List.of("steward", "stewardSelfRun", "stewardRoads", "caravanRoads", "stewardWalls", "stewardRenewal",
 		"partnerShows", "nurseHealingMachine", "berryBreeders", "campCooks", "habitatKeepers", "habitatSightings",
 		"daycareKeepers", "gemGrowers", "villageHabitats", "pokemonVillageHouses", "festivalCup",
 		"legends", "legendNeeds", "legendSites", "strangeMoods",
 		"villageEdicts", "workHorns", "villageBanners", "cradles", "harvestIdols", "tonics", "guilds",
-		"villageClasses", "vintners");
+		"villageClasses", "friendship", "storyArcs", "vintners");
 	/** The numbers that belong to them (hidden from the screen with them). */
 	static final List<String> GATED_NUMBERS = List.of("stewardMaxOpenBuilds", "caravanRoadReach", "giftedChance", "edictMinDays", "guildsPerRank",
-		"classRiseDays", "classFallDays", "cupEveryFestivals");
+		"classRiseDays", "classFallDays", "cupEveryFestivals", "arcCooldownDays", "arcsAtOnce");
 
 	/** A config file as 0.139.0 wrote it: every switch on. */
 	static String oldConfig() {
@@ -84,6 +84,8 @@ public class ExpansionGateGameTests implements FabricGameTest {
 		map.put("Tonics", () -> Tonics.ENABLED);
 		map.put("Guilds", () -> io.github.jcondedata.aliveworkplace.hall.Guilds.ENABLED);
 		map.put("Vintners", () -> io.github.jcondedata.aliveworkplace.vintner.Vintners.ENABLED);
+		map.put("Friendship", () -> io.github.jcondedata.aliveworkplace.story.Friendship.ENABLED);
+		map.put("Arcs", () -> io.github.jcondedata.aliveworkplace.story.Arcs.ENABLED);
 		return map;
 	}
 
@@ -115,7 +117,7 @@ public class ExpansionGateGameTests implements FabricGameTest {
 			});
 			protection[0] = VillageProtection.ENABLED;
 		});
-		helper.assertTrue(!Expansions.M27 && !Expansions.M28 && !Expansions.M29 && !Expansions.M30 && !Expansions.M34,
+		helper.assertTrue(!Expansions.M27 && !Expansions.M28 && !Expansions.M29 && !Expansions.M30 && !Expansions.M31 && !Expansions.M34,
 			"a milestone was marked complete: move its switches out of this test");
 		helper.assertTrue(on.isEmpty(), "a 0.139.0 config turned on unfinished expansions: " + on);
 		helper.assertTrue(protection[0], "a finished feature's switch (villageProtection) should still work");
@@ -154,8 +156,8 @@ public class ExpansionGateGameTests implements FabricGameTest {
 			if (!screen.contains("villageProtection") || !screen.contains("maxWorkPace") || !screen.contains("seasonDays")) {
 				problems.add("a finished option left the screen: " + screen);
 			}
-			if (screen.size() != 72 - GATED_SWITCHES.size() - GATED_NUMBERS.size()) {
-				problems.add("expected " + (72 - GATED_SWITCHES.size() - GATED_NUMBERS.size()) + " options on the screen, found "
+			if (screen.size() != 76 - GATED_SWITCHES.size() - GATED_NUMBERS.size()) {
+				problems.add("expected " + (76 - GATED_SWITCHES.size() - GATED_NUMBERS.size()) + " options on the screen, found "
 					+ screen.size());
 			}
 			empty.setBoolean("tonics", true);
@@ -200,7 +202,7 @@ public class ExpansionGateGameTests implements FabricGameTest {
 		for (String name : GATED_SWITCHES) {
 			helper.assertTrue(new WorkplaceConfig().getBoolean(name), name + " should default on in GameTests");
 		}
-		helper.assertTrue(WorkplaceConfig.optionNames().size() == 72, "every option on the screen in GameTests");
+		helper.assertTrue(WorkplaceConfig.optionNames().size() == 76, "every option on the screen in GameTests");
 		helper.succeed();
 	}
 }

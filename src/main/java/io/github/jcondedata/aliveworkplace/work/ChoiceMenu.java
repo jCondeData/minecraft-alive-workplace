@@ -29,6 +29,8 @@ public class ChoiceMenu extends ChestMenu {
 
 	private final SimpleContainer icons;
 	private final Predicate<Player> valid;
+	@Nullable
+	private final ServerPlayer viewer;
 	private final Map<Integer, Consumer<ServerPlayer>> actions = new HashMap<>();
 	/** Whether the button being pressed was shift-clicked (buttons that count up or down take bigger steps). */
 	private boolean shift;
@@ -37,6 +39,13 @@ public class ChoiceMenu extends ChestMenu {
 		super(type, id, inventory, icons, ROWS);
 		this.icons = icons;
 		this.valid = valid;
+		this.viewer = inventory.player instanceof ServerPlayer p ? p : null;
+	}
+
+	/** The player the menu is shown to (null on a client's copy). */
+	@Nullable
+	public ServerPlayer viewer() {
+		return viewer;
 	}
 
 	/** Opens an empty menu for {@code player}, lets {@code fill} lay out the buttons and returns it (or null). */

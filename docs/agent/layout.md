@@ -124,7 +124,13 @@ Moved out of CLAUDE.md (2026-09-29) to keep that file short. Update this map whe
   `Rewards` (one small record per type, read from and saved as its JSON), `Quest` (an open quest: a snapshot of its file with
   progress, helpers, posted and due), `Stories` (the `aliveworkplace_stories` saved data per dimension, keyed by hall; the
   board's morning post, hand-ins, kills, battles, waits; moves the hall's old `quests` in). `hall/VillageQuests` passes its
-  public calls on to it. Its conditions are in `rules/` (`food_below`, `cobblemon`, `chance`, `quest_done`, `not`)
+  public calls on to it. Its conditions are in `rules/` (`food_below`, `cobblemon`, `chance`, `quest_done`, `not`). `Friendship` (31.5): the
+  `friendship` attachment on named villagers, the favours (`favour`), `add` for gifts and heart events, the hearts
+  look-up and the hall's tooltip lines
+  public calls on to it. Its conditions are in `rules/` (`food_below`, `cobblemon`, `chance`, `quest_done`, `not`).
+  Story arcs (31.4): `Arcs` (loader of `data/<ns>/arcs/<id>.json` and `arc_spawns/`, the trigger, the chapters' round,
+  start/next/stop), `ArcEffects` (the effects, `place` and `spawn`, the 40-tick proximity check, `talk`), `ArcState` (a
+  running arc, saved in the hall's entry of `aliveworkplace_stories`)
 - `work/` — shared by all jobs: `Village` (workers near each other share chests; off in gametests unless a test turns
   it on with `Leftovers.village(helper, 48)`, which turns it off again when the test ends), `Requests` (what workers are waiting for: the board, lumberjacks' wanted wood), `Walker` (movement + reach), `WorkerStatus` (overhead status for jobs without a saved site), `Jobs.employ`,
   `ChoiceMenu` (a server-side chest screen of buttons: menus without client code), `DeskPackages` (WORK for jobs players visit),

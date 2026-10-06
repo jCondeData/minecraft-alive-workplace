@@ -1,0 +1,38 @@
+{
+  "name": "The Test of Three",
+  "trigger": {"chance": 1.0},
+  "chapters": [
+    {
+      "name": "A quiet day",
+      "intro": ["Nothing happens today, and that is the point."],
+      "on_start": [{"type": "chronicle", "line": "The test of three began."}],
+      "complete": [],
+      "delay_days": 1
+    },
+    {
+      "name": "Apples wanted",
+      "intro": ["The cook needs apples for the test."],
+      "chatter": ["Have you seen any apples about?"],
+      "quests": [{"name": "Apples for the test", "objectives": [{"type": "bring", "item": "minecraft:apple", "count": 2}]}],
+      "time_limit_days": 2,
+      "on_fail": [
+        {"type": "announce", "text": "Nobody brought the apples."},
+        {"type": "village_mood", "points": -5, "days": 2, "reason": "No apples"},
+        {"type": "end_arc", "ending": "failed"}
+      ]
+    },
+    {
+      "name": "Grubb",
+      "intro": ["Grubb the Rotten shambles in from the fields."],
+      "on_start": [
+        {"type": "spawn", "entity": "minecraft:zombie", "key": "grubb", "name": "Grubb the Rotten",
+         "gear": {"head": "minecraft:iron_helmet"}, "health": 10, "boss_bar": true, "restrict": 4, "offset": [4, 4]}
+      ],
+      "quests": [{"objectives": [{"type": "kill", "entity": "role:grubb", "count": 1}]}]
+    }
+  ],
+  "ending": [
+    {"type": "treasury", "emeralds": 5},
+    {"type": "flag", "flag": "test_done", "days": 3}
+  ]
+}

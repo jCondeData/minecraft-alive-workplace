@@ -22,6 +22,19 @@ asks for the steps, `latest.log` and any crash report).
   three days old (Journeyman) for the village store, with purple splashes at the vat; the three drinks are drinkable
   (the bottle comes back), are the households' wine luxuries and are served at the Noble's Ball. Trades, Grass, Bug and
   Fairy partners, an outfit, config `vintners`.
+- **Friendship with villagers** (31.5; switched on with the rest of 1.5): every named villager in a village with a hall keeps ten hearts for
+  each player. Trading with them (+5), finishing a hall quest they posted (+40), handing in what they wait for (+10),
+  coming to their wedding (+30) or a festival with them (+10) count once a day each; killing a monster that just hurt
+  them (+15) counts every time; hitting them costs 50 (once a minute). Look at a named villager within 6 blocks and
+  the action bar shows "Dara ♥♥♥♡♡♡♡♡♡♡"; hearts puff over them when they go up; the hall's list shows your hearts
+  and their two best friends. Quest files can reward `friendship`. Setting `friendship` (on); hearts never fade.
+- **The story arc engine for 1.5** (31.4; the stories themselves come in later updates): a village can live through
+  a story told in chapters over several days. Each chapter is announced in chat and written in the chronicle, puts up
+  its quests (in the journal's new **Story** tab, chapters done ticked), can build something out in the wild once a
+  player comes near, bring in named foes with a boss bar, and has the villagers talking about it; a chapter whose time
+  runs out ends the story badly. Stories are data (`data/<namespace>/arcs/<id>.json`), survive a restart at any
+  moment, and come with settings `storyArcs`, `arcCooldownDays` (8), `arcsAtOnce` (3) and `disabledArcs`. Operators
+  get `/workplace story start <arc>`, `next` and `stop`. A new quest goal, **talk** to a villager the story names.
 - **Players in the Cup** (28.20): with Cobblemon, a signed-up player's bout is called in chat with a bell and a
   clickable [I'm ready]; click it inside the Arena within two minutes or lose by walkover. Then it's a real battle
   (against a villager, the Leader or their delegate as the trainer; against a player, Cobblemon's own PvP battle) in
@@ -118,6 +131,7 @@ asks for the steps, `latest.log` and any crash report).
   lost: a Steward, a Legend or an edict comes back as it was when its expansion is released.
 
 ### Fixed
+- The settings screen's steward renewal switch now reads "Steward Renewals", so its label fits its button (B87).
 - **Foretold raids now come from the side the Seer named** (B82): raiders could gather near the edge of the foretold
   side and spread out across it, so a player told "south-east" might see them come from the east. They now gather
   well inside that side, spread out less in a small village, and look further out on the same side when the ground

@@ -154,7 +154,16 @@ public final class Festivals {
 			if (hero == null || hero.getAmplifier() == 0 && hero.getDuration() < left) {
 				player.addEffect(new MobEffectInstance(MobEffects.HERO_OF_THE_VILLAGE, left, 0, true, true));
 			}
+			io.github.jcondedata.aliveworkplace.story.Friendship.onFestival(level, hall, player); // at the festival with them (31.5)
 		}
+	}
+
+	/** A festival on {@code day} (a story arc's ending, 31.4), told to the players about; nothing if one is already set. */
+	public static void schedule(ServerLevel level, BlockPos hall, VillageHallBlockEntity entity, long day) {
+		if (entity.festivalDay() >= day) {
+			return;
+		}
+		plan(level, hall, entity, day);
 	}
 
 	/** Sets the festival for {@code day} and tells the players about. */

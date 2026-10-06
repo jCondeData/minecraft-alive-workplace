@@ -295,6 +295,61 @@ public class EdictBookGameTests implements FabricGameTest {
 		});
 	}
 
+	/**
+	 * QA (B78 boundaries, qa-1006-0433): six guilds fill the row with no page button (the sixth sits where the button
+	 * would be); a seventh brings paging in, and nobody is lost or shown twice across its two pages.
+	 */
+	//$ gametest_ticks_batch AREA '100' '"qaEdictBookGuildBoundary"'
+	@GameTest(template = AREA, timeoutTicks = 100, batch = "qaEdictBookGuildBoundary")
+	public void qaSixGuildsHaveNoPageButtonAndSevenPage(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		ServerPlayer player = player(helper);
+		VillageHallBlockEntity entity = hall(helper);
+		Leftovers.after(helper, () -> {
+			entity.setGuilds(List.of());
+			Guilds.forget();
+		});
+		helper.runAfterDelay(5, () -> {
+			BlockPos hall = helper.absolutePos(HALL);
+			entity.setOwner(player.getUUID(), player.getGameProfile().getName());
+			entity.setRank(VillageRanks.Rank.CITY);
+			entity.setEdicts(List.of());
+			List<ResourceLocation> ids = Guilds.all().keySet().stream().sorted().toList();
+			long day = Chronicle.day(helper.getLevel());
+			List<Guilds.Charter> charters = new ArrayList<>();
+			for (int i = 0; i < 6; i++) {
+				charters.add(new Guilds.Charter(ids.get(i % ids.size()), UUID.randomUUID(), "Master " + i, day, Optional.empty()));
+			}
+			entity.setGuilds(charters);
+			Guilds.forget();
+			ChoiceMenu menu = EdictBook.forTest(player, hall);
+			ItemStack last = menu.icon(EdictBook.MORE_GUILDS);
+			helper.assertTrue(!last.is(Items.ARROW) && lore(last).get(0).equals("Guild Master: Master 5"),
+				"six guilds: the row's last slot should be the sixth guild, not a page button: " + last + " " + lore(last));
+
+			charters.add(new Guilds.Charter(ids.get(6 % ids.size()), UUID.randomUUID(), "Master 6", day, Optional.empty()));
+			entity.setGuilds(charters);
+			Guilds.forget();
+			menu = EdictBook.forTest(player, hall);
+			List<String> seen = new ArrayList<>();
+			String[] shown = {"Showing guilds 1 to 5 of 7", "Showing guilds 6 to 7 of 7"};
+			for (int page = 0; page < 2; page++) {
+				ItemStack more = menu.icon(EdictBook.MORE_GUILDS);
+				helper.assertTrue(more.is(Items.ARROW) && lore(more).contains(shown[page]), "seven guilds, page " + page + ": " + more + " " + lore(more));
+				for (int x = 0; x < EdictBook.GUILDS_PER_PAGE; x++) {
+					ItemStack icon = menu.icon(EdictBook.FIRST_GUILD + x);
+					if (!icon.is(Items.LIGHT_GRAY_STAINED_GLASS_PANE)) seen.add(lore(icon).get(0));
+				}
+				click(menu, EdictBook.MORE_GUILDS, player);
+			}
+			List<String> want = new ArrayList<>();
+			for (int i = 0; i < 7; i++) want.add("Guild Master: Master " + i);
+			helper.assertTrue(seen.equals(want), "seven guilds, each once in order: " + seen);
+			helper.assertTrue(lore(menu.icon(EdictBook.MORE_GUILDS)).contains(shown[0]), "after page two, back to page one");
+			helper.succeed();
+		});
+	}
+
 	private static ServerPlayer player(GameTestHelper helper) {
 		ServerPlayer player = helper.makeMockServerPlayerInLevel();
 		ServerLevel level = helper.getLevel();

@@ -46,6 +46,7 @@ def framed_item(b, x, y, z, facing, item=None):
     dx, dz = DIRS[facing]
     nbt = Compound({
         "id": String("minecraft:item_frame"),
+        "TileX": Int(x), "TileY": Int(y), "TileZ": Int(z),  # its own block, as vanilla saves it (StructureTemplateMixin)
         "Facing": Byte({"north": 2, "south": 3, "west": 4, "east": 5}[facing]),
     })
     if item:

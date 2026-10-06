@@ -775,13 +775,22 @@ public class FieldWork extends Behavior<Villager> {
 	/** Walks to the chests and takes seeds (the kind there is most of, and some of each other kind) or a hoe; true once done. */
 	private boolean fetch(ServerLevel level, Villager villager, BlockPos station, BuilderBag bag, boolean seeds) {
 		List<BlockPos> supplies = SupplyContainers.find(level, station, null);
-		BlockPos chest = SupplyContainers.firstMatching(level, supplies, seeds ? FieldWork::isSeed : FieldWork::isHoe);
+		java.util.function.Predicate<ItemStack> wanted = seeds ? FieldWork::isSeed : FieldWork::isHoe;
+		BlockPos chest = SupplyContainers.firstMatching(level, supplies, wanted);
+		// Our own chests are ours; a village-mate's (a storehouse) keep what the builds near them still need (B84: farmers
+		// took a Farmstead's seeds, carrots and potatoes from the storehouse to sow, and the build waited for days).
+		io.github.jcondedata.aliveworkplace.build.BuildReserve reserve = io.github.jcondedata.aliveworkplace.build.BuildReserve.NONE;
 		if (chest == null) {
 			// Another worker in the village may have some.
-			io.github.jcondedata.aliveworkplace.work.Village.Find elsewhere = io.github.jcondedata.aliveworkplace.work.Village.find(level, villager, station, null, seeds ? FieldWork::isSeed : FieldWork::isHoe);
-			if (elsewhere != null) {
-				supplies = elsewhere.stash().chests();
-				chest = elsewhere.chest();
+			for (io.github.jcondedata.aliveworkplace.work.Village.Stash stash : io.github.jcondedata.aliveworkplace.work.Village.stashes(level, villager, station, null)) {
+				io.github.jcondedata.aliveworkplace.build.BuildReserve theirs = io.github.jcondedata.aliveworkplace.build.BuildReserve.cached(level, stash.chests());
+				BlockPos found = SupplyContainers.firstMatching(level, stash.chests(), theirs.unreserved(level, wanted));
+				if (found != null) {
+					supplies = stash.chests();
+					chest = found;
+					reserve = theirs;
+					break;
+				}
 			}
 		}
 		if (chest == null) {
@@ -795,12 +804,14 @@ public class FieldWork extends Behavior<Villager> {
 		if (!walker.walkTo(level, villager, chest, 3.0)) {
 			return false;
 		}
-		ItemStack got = SupplyContainers.takeOne(level, supplies, seeds ? FieldWork::isSeed : FieldWork::isHoe);
+		ItemStack got = SupplyContainers.takeOne(level, supplies, reserve.unreserved(level, wanted));
 		if (got.isEmpty()) {
 			return true;
 		}
 		if (seeds) {
-			int more = SupplyContainers.extract(level, supplies, got.getItem(), keepOf(got) - 1);
+			int more = reserve == io.github.jcondedata.aliveworkplace.build.BuildReserve.NONE
+				? SupplyContainers.extract(level, supplies, got.getItem(), keepOf(got) - 1)
+				: reserve.extract(level, got.getItem(), keepOf(got) - 1);
 			bag.addAll(got.getItem(), 1 + more);
 			// And some of every other kind there, so a mixed field (wheat here, sugar cane by the water) gets sown.
 			for (java.util.Map.Entry<Item, Long> e : SupplyContainers.contents(level, supplies).entrySet()) {
@@ -808,7 +819,9 @@ public class FieldWork extends Behavior<Villager> {
 				if (e.getKey() != got.getItem() && isSeed(kind)) {
 					int want = keepOf(kind) - bag.count(e.getKey());
 					if (want > 0) {
-						bag.addAll(e.getKey(), SupplyContainers.extract(level, supplies, e.getKey(), Math.min(want, bag.spaceFor(e.getKey()))));
+						int n = Math.min(want, bag.spaceFor(e.getKey()));
+						bag.addAll(e.getKey(), reserve == io.github.jcondedata.aliveworkplace.build.BuildReserve.NONE
+							? SupplyContainers.extract(level, supplies, e.getKey(), n) : reserve.extract(level, e.getKey(), n));
 					}
 				}
 			}

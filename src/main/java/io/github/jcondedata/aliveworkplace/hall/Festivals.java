@@ -240,11 +240,13 @@ public final class Festivals {
 	/** The feast: every grown villager eats from the store, everyone is remembered as having come. */
 	public static void feast(ServerLevel level, BlockPos hall) {
 		Anthems.play(level, hall, "festival"); // the Bard Laureate's anthem (29.19)
-		List<BlockPos> store = VillageNeeds.store(level, hall);
+		io.github.jcondedata.aliveworkplace.build.BuildReserve store = io.github.jcondedata.aliveworkplace.build.BuildReserve.of(level,
+			VillageNeeds.store(level, hall)); // B84: never what a build near the store still needs
 		long today = Chronicle.day(level);
 		int villagers = 0;
 		int fed = 0;
 		boolean bannered = underBanner(level, hall);
+		net.minecraft.world.item.Item dish = io.github.jcondedata.aliveworkplace.cup.CupDays.dish(level, hall); // a Cup's dish first (28.19)
 		boolean ball = NobleBalls.today(level, hall);
 		List<Villager> guests = level.getEntitiesOfClass(Villager.class, VillageHalls.area(hall), Villager::isAlive);
 		for (Villager villager : guests) {
@@ -253,8 +255,8 @@ public final class Festivals {
 			if (bannered) {
 				ModAttachments.FESTIVAL_BANNER_DAY.set(villager, today);
 			}
-			// At a ball, the store's best food first (34.7).
-			if (!villager.isBaby() && (ball && NobleBalls.feast(level, villager, store) || VillageNeeds.eat(level, villager, store))) {
+			// At a ball, the store's best food first (34.7); a Cup's dish first (28.19).
+			if (!villager.isBaby() && (ball && NobleBalls.feast(level, villager, store) || VillageNeeds.eat(level, villager, store, dish))) {
 				fed++;
 			}
 		}
@@ -302,6 +304,10 @@ public final class Festivals {
 
 	/** Where the festival is: the village's bell nearest the hall, else the hall. */
 	public static BlockPos square(ServerLevel level, BlockPos hall) {
+		java.util.Optional<BlockPos> ring = io.github.jcondedata.aliveworkplace.cup.CupDays.ring(level, hall); // a Cup's day: the Arena's ring (28.19)
+		if (ring.isPresent()) {
+			return ring.get();
+		}
 		if (NobleBalls.today(level, hall)) {
 			return NobleBalls.venue(level, hall); // the Manor, else the hall (34.7)
 		}
@@ -357,6 +363,9 @@ public final class Festivals {
 	 * dances now and then. Returns whether they are at the square.
 	 */
 	static boolean gatherAt(ServerLevel level, Villager villager, BlockPos square) {
+		if (villager.isPassenger()) {
+			return square.closerToCenterThan(villager.position(), 24); // seated (in a Cup's stands, 28.19): there
+		}
 		Activity activity = villager.getBrain().getActiveNonCoreActivity().orElse(null);
 		if (activity != Activity.IDLE && activity != Activity.MEET && activity != Activity.PLAY) {
 			return false;
@@ -378,15 +387,20 @@ public final class Festivals {
 		return launch(level, at, COLORS);
 	}
 
-	/** A firework from {@code at}, in two or three of {@code COLORS}. */
-	public static FireworkRocketEntity launch(ServerLevel level, BlockPos at, int[] COLORS) {
+	/** A firework from {@code at}, in two or three of {@code colours} (a Cup theme's, 28.19). */
+	public static FireworkRocketEntity launch(ServerLevel level, BlockPos at, List<Integer> colours) {
+		return launch(level, at, colours.isEmpty() ? COLORS : colours.stream().mapToInt(Integer::intValue).toArray());
+	}
+
+	/** A firework from {@code at}, in two or three of {@code palette}. */
+	public static FireworkRocketEntity launch(ServerLevel level, BlockPos at, int[] palette) {
 		ItemStack rocket = new ItemStack(Items.FIREWORK_ROCKET);
 		FireworkExplosion.Shape[] shapes = {FireworkExplosion.Shape.LARGE_BALL, FireworkExplosion.Shape.SMALL_BALL, FireworkExplosion.Shape.STAR,
 			FireworkExplosion.Shape.BURST};
-		int a = COLORS[level.random.nextInt(COLORS.length)];
-		int b = COLORS[level.random.nextInt(COLORS.length)];
+		int a = palette[level.random.nextInt(palette.length)];
+		int b = palette[level.random.nextInt(palette.length)];
 		rocket.set(DataComponents.FIREWORKS, new Fireworks(1 + level.random.nextInt(2), List.of(new FireworkExplosion(
-			shapes[level.random.nextInt(shapes.length)], IntList.of(a, b), IntList.of(COLORS[level.random.nextInt(COLORS.length)]),
+			shapes[level.random.nextInt(shapes.length)], IntList.of(a, b), IntList.of(palette[level.random.nextInt(palette.length)]),
 			level.random.nextBoolean(), level.random.nextBoolean()))));
 		FireworkRocketEntity firework = new FireworkRocketEntity(level, at.getX() + 0.5, at.getY() + 0.5, at.getZ() + 0.5, rocket);
 		level.addFreshEntity(firework);

@@ -22,6 +22,20 @@ asks for the steps, `latest.log` and any crash report).
   three days old (Journeyman) for the village store, with purple splashes at the vat; the three drinks are drinkable
   (the bottle comes back), are the households' wine luxuries and are served at the Noble's Ball. Trades, Grass, Bug and
   Fairy partners, an outfit, config `vintners`.
+- **Players in the Cup** (28.20): with Cobblemon, a signed-up player's bout is called in chat with a bell and a
+  clickable [I'm ready]; click it inside the Arena within two minutes or lose by walkover. Then it's a real battle
+  (against a villager, the Leader or their delegate as the trainer; against a player, Cobblemon's own PvP battle) in
+  the theme's format and level and with its rules, with healed copies so nobody gains experience or keeps damage. Only
+  the party's first eligible Pokémon go, and the player is told who stayed home and why. Fleeing loses. [Watch] on the
+  Cup page and the Arena's notice board shows a running bout from the stands. Each win pays 100,000 (500,000 more for
+  the final, half again at a City host; emeralds without CobbleDollars).
+- **Cup day** (28.19): on a Festival Cup's day the far villages' entrants walk in from their village's side as delegates
+  ("Dara of Eastholm", in a Trainer Leader's outfit; real Leaders left at home are away at the Cup and take no
+  challenges), the market's traders hold a fair on the Arena's fair lane selling the theme's wares, from noon the
+  villagers sit in the stands, eat the feast (the theme's dish first) and cheer their village's wins while the bard plays
+  the theme's disc; after the final, fireworks in the theme's colours, Hero of the Village and the festival's mood, and
+  the Cup goes into every circuit village's chronicle (gold ingot). Bouts left at the end time are settled as
+  exhibitions; a host that isn't loaded puts its Cup off (8 days at most); no Arena or `festivalCup` off: a plain festival.
 - **Higher jobs need higher classes, for 1.8** (34.8, off until 1.8 is finished): in a village with a hall, the
   Tinkerer, Chef, Netherworker, Nurse, Teacher, Shopkeeper, Innkeeper and the Cobblemon trades need an Artisan, and the
   Scholar, Undertaker and Trainer Leader a Burgher, when the job is taken (its item, the hall's free workstations, now
@@ -73,6 +87,13 @@ asks for the steps, `latest.log` and any crash report).
   once when the quest goes up.
 
 ### Fixed
+- **No more log error when a traveller's camp is set down** (B68): the map's item frame on the camp's barrel is saved
+  with the block it hangs on, and structures placed by the mod or by vanilla now hang their frames and paintings on the
+  block where they land, so "Block-attached entity at invalid position" is no longer logged. Players saw nothing wrong.
+- **A build's crops stay in the village store** (B84): villagers no longer eat, cook or sow the carrots, potatoes and
+  seeds a build site near the store still needs (meals, feasts, banquets, a new family's meals, farmers and chefs taking
+  from the storehouse). A Steward's Farmstead finishes instead of waiting for materials for days; food a build doesn't
+  need is eaten as before, and a site frees its share when it finishes or is cancelled.
 - **Builders no longer lose an anvil** (B91): a builder working alongside another could set an anvil (or sand,
   gravel, concrete powder) down before the floor under it was laid; it fell, and the build then waited for an anvil
   that was gone. They now leave such a block until there is something under it.

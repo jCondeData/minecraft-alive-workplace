@@ -100,8 +100,14 @@ public final class MarketDays {
 
 	/** The traders come to the square at {@code square}. */
 	public static List<WanderingTrader> hold(ServerLevel level, BlockPos hall, BlockPos square) {
+		return hold(level, hall, square, 0, t -> {
+		});
+	}
+
+	/** The traders come to {@code square}, {@code extra} more than a market day, each fitted out by {@code each} too (a Cup's fair, 28.19). */
+	public static List<WanderingTrader> hold(ServerLevel level, BlockPos hall, BlockPos square, int extra, java.util.function.Consumer<WanderingTrader> each) {
 		List<WanderingTrader> traders = new ArrayList<>();
-		int count = traders(level, hall);
+		int count = traders(level, hall) + extra;
 		// The class traders (34.7) come last, each with a grand-house blueprint to sell as well.
 		List<io.github.jcondedata.aliveworkplace.people.ClassPerks.Offer> grand = io.github.jcondedata.aliveworkplace.people.ClassPerks.marketOffers(level, hall);
 		int classTraders = Math.min(count, io.github.jcondedata.aliveworkplace.people.ClassPerks.marketTraders(level, hall));
@@ -117,6 +123,7 @@ public final class MarketDays {
 			trader.setDespawnDelay(Curfew.marketStay(level, hall, STAY)); // Curfew: gone by dusk
 			trader.setWanderTarget(square);
 			addBlueprintOffer(level, trader);
+			each.accept(trader);
 			if (i >= count - classTraders) {
 				addGrandOffer(level, trader, grand);
 			}

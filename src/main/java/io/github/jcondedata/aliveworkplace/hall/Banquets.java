@@ -2,7 +2,7 @@ package io.github.jcondedata.aliveworkplace.hall;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import io.github.jcondedata.aliveworkplace.build.SupplyContainers;
+import io.github.jcondedata.aliveworkplace.build.BuildReserve;
 import io.github.jcondedata.aliveworkplace.legend.BanquetPower;
 import io.github.jcondedata.aliveworkplace.legend.LegendPowers;
 import io.github.jcondedata.aliveworkplace.mc.Chat;
@@ -129,7 +129,8 @@ public final class Banquets {
 	public static Feast feast(ServerLevel level, BlockPos hall, VillageHallBlockEntity entity, BanquetPower power) {
 		long today = Chronicle.day(level);
 		entity.setBanquet(today, true);
-		List<BlockPos> store = VillageNeeds.store(level, hall);
+		BuildReserve store = BuildReserve.of(level,
+			VillageNeeds.store(level, hall)); // B84: never what a build near the store still needs
 		Set<Item> served = new HashSet<>();
 		int came = 0;
 		int fed = 0;
@@ -176,13 +177,13 @@ public final class Banquets {
 	}
 
 	/** One meal from the store: a kind this guest hasn't had tonight and nobody has, else one they haven't, else any. */
-	private static ItemStack serve(ServerLevel level, List<BlockPos> store, Set<Item> served, Set<Item> mine) {
-		ItemStack meal = SupplyContainers.takeOne(level, store, s -> VillageNeeds.isMeal(s) && !mine.contains(s.getItem()) && !served.contains(s.getItem()));
+	private static ItemStack serve(ServerLevel level, BuildReserve store, Set<Item> served, Set<Item> mine) {
+		ItemStack meal = store.takeOne(level, s -> VillageNeeds.isMeal(s) && !mine.contains(s.getItem()) && !served.contains(s.getItem()));
 		if (meal.isEmpty()) {
-			meal = SupplyContainers.takeOne(level, store, s -> VillageNeeds.isMeal(s) && !mine.contains(s.getItem()));
+			meal = store.takeOne(level, s -> VillageNeeds.isMeal(s) && !mine.contains(s.getItem()));
 		}
 		if (meal.isEmpty()) {
-			meal = SupplyContainers.takeOne(level, store, VillageNeeds::isMeal);
+			meal = store.takeOne(level, VillageNeeds::isMeal);
 		}
 		io.github.jcondedata.aliveworkplace.build.MaterialLedger.eaten(meal); // a soak's count (27.22); nothing when empty
 		return meal;

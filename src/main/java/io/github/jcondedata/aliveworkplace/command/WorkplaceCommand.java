@@ -73,6 +73,19 @@ public final class WorkplaceCommand {
 						com.mojang.brigadier.arguments.StringArgumentType.getString(ctx, "kind")) ? 1 : 0)))
 			.then(Commands.literal("mail")
 				.executes(WorkplaceCommand::trackMail))
+			.then(Commands.literal("cup") // the Festival Cup's [I'm ready] and [Watch] (28.20)
+				.then(Commands.literal("ready")
+					.executes(ctx -> {
+						net.minecraft.server.level.ServerPlayer p = ctx.getSource().getPlayerOrException();
+						io.github.jcondedata.aliveworkplace.mc.Chat.system(p, io.github.jcondedata.aliveworkplace.cup.CupMatches.ready(p));
+						return 1;
+					}))
+				.then(Commands.literal("watch")
+					.executes(ctx -> {
+						net.minecraft.server.level.ServerPlayer p = ctx.getSource().getPlayerOrException();
+						io.github.jcondedata.aliveworkplace.mc.Chat.system(p, io.github.jcondedata.aliveworkplace.cup.CupMatches.watch(p));
+						return 1;
+					})))
 			.then(Commands.literal("quests") // the quest journal in chat (31.3)
 				.executes(ctx -> quests(ctx.getSource().getPlayerOrException(), null, false))
 				.then(Commands.literal("untrack")

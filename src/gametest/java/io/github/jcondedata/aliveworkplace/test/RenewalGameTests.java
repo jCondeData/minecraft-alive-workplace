@@ -72,6 +72,10 @@ public class RenewalGameTests implements net.fabricmc.fabric.api.gametest.v1.Fab
 	/** The village, its one zone in {@code style} with the renew switch {@code renew}. */
 	private static Village village(GameTestHelper helper, String style, boolean renew) {
 		Leftovers.clear(helper);
+		// a hall another batch left near here would be nearer the old house than this one: the renewal is then refused as
+		// another village's (renewFar failed so in a full run, next to villageHallCountsTheVillage's spot)
+		Leftovers.halls(helper);
+		Leftovers.players(helper);
 		ServerLevel level = helper.getLevel();
 		helper.setDayTime(2000);
 		BlockPos a = helper.absolutePos(BlockPos.ZERO);

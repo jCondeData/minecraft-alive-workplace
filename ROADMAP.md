@@ -2796,7 +2796,7 @@ let the player strike back at their camps. Fire, drought and plague each get a j
 has a switch and a peaceful setting. It builds on guard/VillageRaids, BanditCamps, Gates, GuardRally, Mercenaries, the
 Rally Banner and the defence blueprints (tools/blueprints/defence.py).
 
-- [ ] **32.1** **Design note.** `docs/design/M32.md`: what the player sees (the threat ladder: monsters from 8
+- [x] **32.1** (review: pending 2026-10-06) **Design note.** `docs/design/M32.md`: what the player sees (the threat ladder: monsters from 8
   villagers, bandits at Village rank, the enemy of the village's own land from Town, sieges led by the captain himself
   at City; a siege night minute by minute; the warning timeline; a march on a lair; each disaster and its job), the
   two data formats (a raider culture and a disaster, one full example file each), the new config keys and the hall's
@@ -4344,6 +4344,18 @@ item waits.
 - (Sessions: anything that needs the owner, and the link to the latest Full test report. Handoffs go here through
   `sessions.py handoff "<in progress, next, traps>" --as <you>`, which keeps one per kind of session (chat, night):
   carry over anything still true from the previous one.)
+- 2026-10-06 (32.1, question for the owner; lane b): may M32's threats damage builder-made buildings on the live
+  server? Rams break only the gate blocks (fence gates, doors, iron bars) of finished wall and gate builds, and a village
+  fire burns only blocks the builders placed; never a player's own blocks, and the builders always put them back.
+  Default, which lanes build with: yes (`siegeDamage` true). The other choice: `siegeDamage` false on his server, so
+  gates hold and a village fire burns out without destroying anything. Jesse: yes/no. Design note `docs/design/M32.md`
+  ("For the owner to decide"), with a mock-up of the Defence page (`docs/design/M32-defence.png`).
+- 2026-10-06 (32.1, decisions; lane b): raids come from the standing lair, else monsters from the edge (today's rule as
+  data); the threat clock keeps the next two nights rolled per hall, and the Seer reads it instead of rolling its own;
+  `siegeDamage` also covers village fire; the new switches (`raiderCultures`, `sieges`, `siegeDamage`, `disasters`,
+  `threatLevel`, `firewardens`, `wellKeepers`, `physicians`) sit behind a new `Expansions.M32`, while 32.2/32.3's engine
+  work runs under `villageRaids`/`banditCamps` with today's numbers; "builder-made" is a block at a finished build's
+  blueprint position still matching it (`MaterialRules.matches`). Details and every saved field in M32.md.
 - 2026-10-05 (B76, decision; lane b): the unfinished expansions are gated in one place, `Expansions` (core): a flag
   per milestone (M27, M28, M29, M30, all `false` now). Each of its config switches defaults to that flag and
   `WorkplaceConfig.apply` ANDs the switch with it, so a 0.139.0 file holding `true` still leaves the feature off, and its

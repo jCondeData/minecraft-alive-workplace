@@ -745,6 +745,23 @@ public final class ModVillagers {
 		)
 	);
 
+	/**
+	 * Presses cider and wines at a cauldron, its vat (ROADMAP 34.9): only ever by sweet berries, glow berries or an apple,
+	 * with config {@code vintners}. A jobless villager by a cauldron still becomes a Leatherworker, which vanilla registers first.
+	 */
+	public static final VillagerProfession VINTNER = Registry.register(
+		BuiltInRegistries.VILLAGER_PROFESSION,
+		AliveWorkplace.id("vintner"),
+		new VillagerProfession(
+			"vintner",
+			holder -> holder.is(net.minecraft.world.entity.ai.village.poi.PoiTypes.LEATHERWORKER),
+			holder -> holder.is(net.minecraft.world.entity.ai.village.poi.PoiTypes.LEATHERWORKER),
+			ImmutableSet.of(),
+			ImmutableSet.of(),
+			SoundEvents.HONEY_BLOCK_SLIDE
+		)
+	);
+
 	/** Revives fossils for players, for a price (only with Cobblemon installed). */
 	public static final VillagerProfession FOSSIL_SCIENTIST = Registry.register(
 		BuiltInRegistries.VILLAGER_PROFESSION,
@@ -799,7 +816,7 @@ public final class ModVillagers {
 			|| profession == BEEKEEPER || profession == FLORIST || profession == RANCHER || profession == TEACHER || profession == INNKEEPER || profession == UNDERTAKER || profession == SCHOLAR
 			|| profession == SIFTER || profession == TINKERER || profession == NETHERWORKER || profession == COMPOSTER
 			|| profession == BERRY_BREEDER || profession == CAMP_COOK || profession == HABITAT_KEEPER || profession == GEM_GROWER
-			|| profession == DAYCARE_KEEPER;
+			|| profession == DAYCARE_KEEPER || profession == VINTNER;
 	}
 
 	/**

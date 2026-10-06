@@ -161,10 +161,11 @@ public final class VillageGrowth {
 		baby.setAge(-24000);
 		io.github.jcondedata.aliveworkplace.people.Families.born(baby, mother, father);
 		level.addFreshEntityWithPassengers(baby);
-		List<BlockPos> store = VillageNeeds.store(level, hall);
+		io.github.jcondedata.aliveworkplace.build.BuildReserve store = io.github.jcondedata.aliveworkplace.build.BuildReserve.of(level,
+			VillageNeeds.store(level, hall)); // B84: never what a build near the store still needs
 		int meals = familyMeals(level, hall);
 		for (int i = 0; i < meals; i++) {
-			net.minecraft.world.item.ItemStack meal = SupplyContainers.takeOne(level, store, VillageNeeds::isMeal);
+			net.minecraft.world.item.ItemStack meal = store.takeOne(level, VillageNeeds::isMeal);
 			if (meal.isEmpty()) {
 				break;
 			}

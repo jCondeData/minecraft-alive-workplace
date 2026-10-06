@@ -35,6 +35,9 @@ public final class Quest {
 	/** The player who last moved it on (paid when a {@code wait} finishes it in the round). */
 	@Nullable
 	public UUID last;
+	/** The story arc that posted it (31.4), or null. */
+	@Nullable
+	public String arc;
 
 	public Quest(UUID id, ResourceLocation file, String giver, Optional<Component> name, String poster, long posted, long due,
 				 List<Objectives.Objective> objectives, int[] progress, List<Rewards.Reward> rewards) {
@@ -109,6 +112,9 @@ public final class Quest {
 		if (last != null) {
 			Nbt.putUuid(tag, "last", last);
 		}
+		if (arc != null) {
+			tag.putString("arc", arc);
+		}
 		return tag;
 	}
 
@@ -138,6 +144,9 @@ public final class Quest {
 		}
 		if (Nbt.hasUuid(tag, "last")) {
 			quest.last = Nbt.getUuid(tag, "last");
+		}
+		if (tag.contains("arc")) {
+			quest.arc = Nbt.getString(tag, "arc");
 		}
 		return quest;
 	}

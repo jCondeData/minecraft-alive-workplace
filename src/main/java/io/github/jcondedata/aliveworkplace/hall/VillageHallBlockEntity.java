@@ -62,6 +62,9 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 	private long festivalDay = -1;
 	private long feastDay = -1;
 	private long festivalCalled = -100;
+	/** Whether the next festival is a Noble's Ball (34.7: every other one in a village with a Noble), and the day of the last ball (-100: none). */
+	private boolean ballTurn;
+	private long ballDay = -100;
 	/** The village's own Habitat Block (ROADMAP 28.14), or null. */
 	@org.jetbrains.annotations.Nullable
 	private net.minecraft.core.BlockPos habitat;
@@ -177,7 +180,7 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 			Services.round(server, pos, hall, census.workers()); // the day's service list (34.3), before the class check reads it
 			io.github.jcondedata.aliveworkplace.people.SocialClasses.round(server, pos, hall); // the dawn class check (34.2)
 			if (Treasury.ENABLED) {
-				Treasury.round(server, pos, hall, census.workers().size());
+				Treasury.round(server, pos, hall, census.workers(), census.jobless()); // by class (34.7)
 			}
 			PlayerBank.round(server, pos, hall);
 			TradeFairs.round(server, pos, hall);
@@ -444,6 +447,24 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 
 	public void setHabitat(@org.jetbrains.annotations.Nullable net.minecraft.core.BlockPos pos) {
 		habitat = pos == null ? null : pos.immutable();
+		setChanged();
+	}
+
+	public boolean ballTurn() {
+		return ballTurn;
+	}
+
+	public void setBallTurn(boolean turn) {
+		ballTurn = turn;
+		setChanged();
+	}
+
+	public long ballDay() {
+		return ballDay;
+	}
+
+	public void setBallDay(long day) {
+		ballDay = day;
 		setChanged();
 	}
 
@@ -815,6 +836,8 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 		festivalDay = tag.contains("festivalDay") ? Nbt.getLong(tag, "festivalDay") : -1;
 		feastDay = tag.contains("feastDay") ? Nbt.getLong(tag, "feastDay") : -1;
 		festivalCalled = tag.contains("festivalCalled") ? Nbt.getLong(tag, "festivalCalled") : -100;
+		ballTurn = tag.contains("ballTurn") && Nbt.getBoolean(tag, "ballTurn");
+		ballDay = tag.contains("ballDay") ? Nbt.getLong(tag, "ballDay") : -100;
 		habitat = tag.contains("habitat") ? net.minecraft.core.BlockPos.of(Nbt.getLong(tag, "habitat")) : null;
 		festivalMissed = tag.contains("festivalMissed") ? Nbt.getLong(tag, "festivalMissed") : -1;
 		treasury = Nbt.getInt(tag, "treasury");
@@ -923,6 +946,8 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 		tag.putLong("festivalDay", festivalDay);
 		tag.putLong("feastDay", feastDay);
 		tag.putLong("festivalCalled", festivalCalled);
+		tag.putBoolean("ballTurn", ballTurn);
+		tag.putLong("ballDay", ballDay);
 		if (habitat != null) {
 			tag.putLong("habitat", habitat.asLong());
 		}

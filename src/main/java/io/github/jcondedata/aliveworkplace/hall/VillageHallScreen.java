@@ -143,6 +143,7 @@ public final class VillageHallScreen {
 		nameLore.add(line(Component.translatable("screen.aliveworkplace.hall.treasury",
 			io.github.jcondedata.aliveworkplace.work.Money.describe((long) treasury * io.github.jcondedata.aliveworkplace.work.Money.DOLLARS_PER_EMERALD, treasury)),
 			treasury > 0 ? ChatFormatting.GREEN : ChatFormatting.GRAY));
+		nameLore.addAll(Treasury.taxLines(level, hall, census.workers(), census.jobless())); // the takings by class (34.7)
 		if (VillageProtection.ENABLED && level.getBlockEntity(hall) instanceof VillageHallBlockEntity owned) {
 			nameLore.add(line(owned.isProtected()
 				? Component.translatable("screen.aliveworkplace.hall.protected", owned.ownerName())
@@ -180,10 +181,15 @@ public final class VillageHallScreen {
 				census.freeBeds() > 0 ? ChatFormatting.GREEN : ChatFormatting.YELLOW),
 			Cradles.status(level, hall)), null);
 		int kinds = VillageHalls.mealKinds(level, hall);
-		menu.button(FOOD, icon(Items.BREAD, Component.translatable("screen.aliveworkplace.hall.food", census.food()), ChatFormatting.WHITE,
-			line("screen.aliveworkplace.hall.food_where", ChatFormatting.GRAY),
+		List<Component> foodLore = new ArrayList<>(List.of(line("screen.aliveworkplace.hall.food_where", ChatFormatting.GRAY),
 			line(Component.translatable("screen.aliveworkplace.hall.meal_kinds", kinds, io.github.jcondedata.aliveworkplace.people.Diet.VARIED_KINDS),
-				kinds >= io.github.jcondedata.aliveworkplace.people.Diet.VARIED_KINDS ? ChatFormatting.GREEN : ChatFormatting.YELLOW)), null);
+				kinds >= io.github.jcondedata.aliveworkplace.people.Diet.VARIED_KINDS ? ChatFormatting.GREEN : ChatFormatting.YELLOW)));
+		Component luxuries = ClassesPage.luxuriesLine(level, hall); // the luxuries in store (34.6), with classes on
+		if (luxuries != null) {
+			foodLore.add(luxuries);
+		}
+		menu.button(FOOD, icon(Items.BREAD, Component.translatable("screen.aliveworkplace.hall.food", census.food()), ChatFormatting.WHITE,
+			foodLore.toArray(Component[]::new)), null);
 		List<Component> guardLore = new ArrayList<>();
 		guardLore.add(line(census.guards() > 0 ? "screen.aliveworkplace.hall.guarded" : "screen.aliveworkplace.hall.unguarded",
 			census.guards() > 0 ? ChatFormatting.GRAY : ChatFormatting.YELLOW));
@@ -303,12 +309,14 @@ public final class VillageHallScreen {
 		});
 		pageRow(menu, level, hall);
 		int slot = FIRST_PERSON;
+		// One read of the village for every class need the list ticks (34.6).
+		io.github.jcondedata.aliveworkplace.people.ClassNeeds.Village classes = new io.github.jcondedata.aliveworkplace.people.ClassNeeds.Village(level, hall, Chronicle.day(level));
 		for (Villager villager : people.subList(shown * PER_PAGE, Math.min(people.size(), (shown + 1) * PER_PAGE))) {
 			boolean jobless = census.jobless().contains(villager) && io.github.jcondedata.aliveworkplace.legend.Legends.of(villager).isEmpty();
 			if (slot == PREVIOUS) {
 				slot++;
 			}
-			menu.button(slot++, person(level, hall, villager), p -> {
+			menu.button(slot++, person(level, hall, villager, classes, menu.viewer()), p -> {
 				if (jobless && villager.getVillagerData().getProfession() != net.minecraft.world.entity.npc.VillagerProfession.NITWIT) {
 					renderJobs(menu, level, hall, villager, shown);
 					menu.broadcastChanges();
@@ -321,7 +329,7 @@ public final class VillageHallScreen {
 
 	/** The page row: a tab for each registered page, light glass after them. */
 	private static void pageRow(ChoiceMenu menu, ServerLevel level, BlockPos hall) {
-		List<HallPages.Page> pages = HallPages.all();
+		List<HallPages.Page> pages = HallPages.shown();
 		for (int i = 0; i < 9; i++) {
 			if (i < pages.size()) {
 				HallPages.Page page = pages.get(i);
@@ -368,6 +376,18 @@ public final class VillageHallScreen {
 			}
 			Component job = Component.translatable("entity.minecraft.villager." + station.profession().name());
 			Item item = level.getBlockState(station.pos()).getBlock().asItem();
+			// A job above their class (34.8) is greyed, with the class it needs; a click says why.
+			Component refusal = io.github.jcondedata.aliveworkplace.people.ClassJobs.refusal(hall, villager, station.profession());
+			if (refusal != null) {
+				io.github.jcondedata.aliveworkplace.people.SocialClasses.SocialClass need = io.github.jcondedata.aliveworkplace.people.ClassJobs.needed(station.profession());
+				menu.button(slot++, icon(item == Items.AIR ? Items.PAPER : item, job.copy(), ChatFormatting.DARK_GRAY,
+					line(where(hall, station.pos()), ChatFormatting.GRAY),
+					line(Component.translatable("screen.aliveworkplace.hall.job_needs_class", need.name()), ChatFormatting.RED)), p -> {
+					Chat.actionBar(p, refusal.copy().withStyle(ChatFormatting.YELLOW));
+					level.playSound(null, p.blockPosition(), SoundEvents.VILLAGER_NO, SoundSource.NEUTRAL, 0.8f, 1f);
+				});
+				continue;
+			}
 			menu.button(slot++, icon(item == Items.AIR ? Items.PAPER : item, job.copy(), ChatFormatting.WHITE,
 				line(where(hall, station.pos()), ChatFormatting.GRAY),
 				line(Component.translatable("screen.aliveworkplace.hall.give_job", villager.getDisplayName(), job), ChatFormatting.GREEN)), p -> {
@@ -459,7 +479,8 @@ public final class VillageHallScreen {
 			ItemStack icon = icon(colours != null ? colours.banner() : new ItemStack(sending ? Items.CHEST_MINECART : Items.MINECART), other.name().copy(),
 				sending ? ChatFormatting.GREEN : ChatFormatting.WHITE, lore.toArray(Component[]::new));
 			menu.button(slot++, icon, p -> {
-				int max = VillageRanks.caravanRoutes(VillageRanks.of(level, hall));
+				int max = VillageRanks.caravanRoutes(VillageRanks.of(level, hall))
+					+ io.github.jcondedata.aliveworkplace.people.ClassPerks.caravanRoutes(level, hall); // 3 Burgher households: one more (34.7)
 				boolean on = data.toggleRoute(hall, other.hall(), max);
 				boolean wasOn = sending;
 				Chat.actionBar(p, Component.translatable(on ? "message.aliveworkplace.hall.route_started"
@@ -599,6 +620,17 @@ public final class VillageHallScreen {
 
 	/** A villager: their workstation (stacked as high as their level), name, level, what they're doing and waiting for. */
 	public static ItemStack person(ServerLevel level, BlockPos hall, Villager villager) {
+		return person(level, hall, villager, (ServerPlayer) null);
+	}
+
+	/** The same, with {@code viewer}'s hearts and the villager's best friends among the players (31.5). */
+	public static ItemStack person(ServerLevel level, BlockPos hall, Villager villager, @org.jetbrains.annotations.Nullable ServerPlayer viewer) {
+		return person(level, hall, villager, new io.github.jcondedata.aliveworkplace.people.ClassNeeds.Village(level, hall, Chronicle.day(level)), viewer);
+	}
+
+	/** {@link #person}, reading the village for the class needs from {@code classes} (one read shared by the whole list). */
+	public static ItemStack person(ServerLevel level, BlockPos hall, Villager villager, io.github.jcondedata.aliveworkplace.people.ClassNeeds.Village classes,
+		@org.jetbrains.annotations.Nullable ServerPlayer viewer) {
 		boolean working = villager.getBrain().getMemory(MemoryModuleType.JOB_SITE).isPresent()
 			&& villager.getVillagerData().getProfession() != net.minecraft.world.entity.npc.VillagerProfession.NONE;
 		Item station = working ? workstation(level, villager) : Items.PAPER;
@@ -672,9 +704,25 @@ public final class VillageHallScreen {
 			lore.add(line(Component.translatable("screen.aliveworkplace.hall.child_of", parents.mother(), parents.father()), ChatFormatting.GRAY));
 		}
 		io.github.jcondedata.aliveworkplace.people.Couples.Partner partner = io.github.jcondedata.aliveworkplace.people.Couples.partner(villager);
-		if (partner != null) {
+		// Their class and household, "Burgher · married to Tomas" (34.6), in place of the plain "married to" line.
+		Component classLine = ClassesPage.classLine(villager);
+		if (classLine != null) {
+			lore.add(line(classLine, ChatFormatting.GOLD));
+		}
+		// A worker below their job's class keeps it (34.8): the hall marks them.
+		io.github.jcondedata.aliveworkplace.people.SocialClasses.SocialClass above = io.github.jcondedata.aliveworkplace.people.ClassJobs.above(villager);
+		if (above != null) {
+			lore.add(line(Component.translatable("screen.aliveworkplace.hall.job_above_class",
+				io.github.jcondedata.aliveworkplace.work.Stations.name(villager.getVillagerData().getProfession()), above.name()), ChatFormatting.YELLOW));
+		}
+		if (partner != null && (classLine == null || !partner.married())) {
 			lore.add(line(Component.translatable(partner.married() ? "screen.aliveworkplace.hall.married_to" : "screen.aliveworkplace.hall.courting",
 				partner.name()), ChatFormatting.LIGHT_PURPLE));
+		}
+		lore.addAll(ClassesPage.needLines(villager, classes));
+		// "Your hearts: ♥♥♥♡♡♡♡♡♡♡", "Best friends: Jesse, Alex" (31.5).
+		for (Component friends : io.github.jcondedata.aliveworkplace.story.Friendship.hallLines(villager, viewer)) {
+			lore.add(line(friends, ChatFormatting.LIGHT_PURPLE));
 		}
 		if (io.github.jcondedata.aliveworkplace.school.Schools.isSchooled(villager)) {
 			lore.add(line("screen.aliveworkplace.hall.schooled", ChatFormatting.GRAY));

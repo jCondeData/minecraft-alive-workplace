@@ -100,6 +100,16 @@ public final class WorkplaceConfig {
 	public boolean villageTreasury = true;
 	/** Village Halls post quests for players (the quest engine, 31.2); off: no new quests, open ones can still be finished. */
 	public boolean villageQuests = true;
+	/** Named villagers keep a friendship with each player, shown in hearts (ROADMAP 31.5). Off: no points, no hearts shown; saved friendship stays. */
+	public boolean friendship = Expansions.on(Expansions.M31);
+	/** Story arcs (31.4) unfold in villages, chapter by chapter. Off: none starts, and a running one ends quietly at its next round. */
+	public boolean storyArcs = Expansions.on(Expansions.M31);
+	/** Days between two story arcs in one village (also before a village's first). */
+	public int arcCooldownDays = 8;
+	/** Story arcs running at once on the whole server (side arcs not counted); 0: none. */
+	public int arcsAtOnce = 3;
+	/** Story arc ids that never start ({@code bandit_king} or {@code pack:id}); a running one ends at its next round. File only. */
+	public List<String> disabledArcs = new ArrayList<>();
 	/** A Village Hall's owner may protect the village from other players (a setting on the hall, off until they turn it on). */
 	public boolean villageProtection = true;
 	/** Pokémon pastured by a workstation are seen helping at work (with Cobblemon): they carry, water, spark... */
@@ -137,6 +147,8 @@ public final class WorkplaceConfig {
 	public int classRiseDays = 2;
 	/** Dawns running a need of their own class must fail for a household to fall one class. */
 	public int classFallDays = 3;
+	/** Villagers at a cauldron can be made Vintners with sweet berries, glow berries or an apple (ROADMAP 34.9). Off: no Vintner job, and Vintners already hired stand idle. */
+	public boolean vintners = Expansions.on(Expansions.M34);
 	/** Villagers at a composter can be made Berry Breeders with a Cobblemon berry (ROADMAP 28.9). Off: no Berry Breeder job. */
 	public boolean berryBreeders = Expansions.on(Expansions.M28);
 	/** A Journeyman Builder (or higher) by a Village Hall can be made its Steward with the hall's City Plan (ROADMAP 27.5). Off: no new Stewards, and those appointed stand idle. */
@@ -260,6 +272,8 @@ public final class WorkplaceConfig {
 		"villageGrowthCap", 0, 500,
 		"maxWorkPace", 100, 400,
 		"edictMinDays", 0, 30,
+		"arcCooldownDays", 0, 60,
+		"arcsAtOnce", 0, 20,
 		"guildsPerRank", 1, 4,
 		"classRiseDays", 1, 30,
 		"classFallDays", 1, 30,
@@ -287,6 +301,9 @@ public final class WorkplaceConfig {
 			caps.add(v == null ? DEFAULT_MYTHIC_CAP.get(i) : clamp(v, 0, 10));
 		}
 		mythicLegendCap = caps;
+		if (disabledArcs == null) {
+			disabledArcs = new ArrayList<>();
+		}
 	}
 
 	/** The Mythic Legend caps by rank (Hamlet, Village, Town, City) when the file doesn't say. */
@@ -408,6 +425,7 @@ public final class WorkplaceConfig {
 		io.github.jcondedata.aliveworkplace.habitat.VillageHabitats.ENABLED = villageHabitats && Expansions.on(Expansions.M28);
 		io.github.jcondedata.aliveworkplace.world.VillageHouses.POKEMON_JOBS = pokemonVillageHouses && Expansions.on(Expansions.M28);
 		io.github.jcondedata.aliveworkplace.gem.GemGrowers.ENABLED = gemGrowers && Expansions.on(Expansions.M28);
+		io.github.jcondedata.aliveworkplace.vintner.Vintners.ENABLED = vintners && Expansions.on(Expansions.M34);
 		io.github.jcondedata.aliveworkplace.daycare.DaycareKeepers.ENABLED = daycareKeepers && Expansions.on(Expansions.M28);
 		io.github.jcondedata.aliveworkplace.cup.Cups.ENABLED = festivalCup && Expansions.on(Expansions.M28);
 		io.github.jcondedata.aliveworkplace.cup.Cups.EVERY = cupEveryFestivals;
@@ -426,6 +444,13 @@ public final class WorkplaceConfig {
 		io.github.jcondedata.aliveworkplace.hall.Treasury.ENABLED = villageTreasury && System.getProperty("fabric-api.gametest") == null;
 		io.github.jcondedata.aliveworkplace.hall.VillageProtection.ENABLED = villageProtection;
 		io.github.jcondedata.aliveworkplace.story.Stories.ENABLED = villageQuests;
+		io.github.jcondedata.aliveworkplace.story.Friendship.ENABLED = friendship && Expansions.on(Expansions.M31);
+		io.github.jcondedata.aliveworkplace.story.Arcs.ENABLED = storyArcs && Expansions.on(Expansions.M31);
+		// Off in gametests (an arc rolled by chance would start under a test's hall); the arc tests start theirs.
+		io.github.jcondedata.aliveworkplace.story.Arcs.AUTO = System.getProperty("fabric-api.gametest") == null;
+		io.github.jcondedata.aliveworkplace.story.Arcs.COOLDOWN_DAYS = arcCooldownDays;
+		io.github.jcondedata.aliveworkplace.story.Arcs.AT_ONCE = arcsAtOnce;
+		io.github.jcondedata.aliveworkplace.story.Arcs.DISABLED = disabledArcs.stream().filter(java.util.Objects::nonNull).collect(java.util.stream.Collectors.toUnmodifiableSet());
 		io.github.jcondedata.aliveworkplace.legend.Legends.ENABLED = legends && Expansions.on(Expansions.M29);
 		io.github.jcondedata.aliveworkplace.legend.LegendSites.ENABLED = legendSites && Expansions.on(Expansions.M29);
 		// Off in gametests (a round could seize a test's Master); the strange mood tests turn it on.

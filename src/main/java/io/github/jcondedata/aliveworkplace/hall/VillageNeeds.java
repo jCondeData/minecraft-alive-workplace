@@ -1,6 +1,7 @@
 package io.github.jcondedata.aliveworkplace.hall;
 
 import io.github.jcondedata.aliveworkplace.AliveWorkplace;
+import io.github.jcondedata.aliveworkplace.build.BuildReserve;
 import io.github.jcondedata.aliveworkplace.build.SupplyContainers;
 import io.github.jcondedata.aliveworkplace.registry.ModAttachments;
 import io.github.jcondedata.aliveworkplace.registry.ModVillagers;
@@ -141,6 +142,7 @@ public final class VillageNeeds {
 	public static Needs check(ServerLevel level, BlockPos hall) {
 		long now = level.getGameTime();
 		List<BlockPos> store = null;
+		BuildReserve reserve = null;
 		VillageHallBlockEntity entity = level.getBlockEntity(hall) instanceof VillageHallBlockEntity e ? e : null;
 		List<Villager> everyone = level.getEntitiesOfClass(Villager.class, VillageHalls.area(hall), Villager::isAlive);
 		io.github.jcondedata.aliveworkplace.people.Names.nameEveryone(everyone);
@@ -157,9 +159,10 @@ public final class VillageNeeds {
 			} else if (now - meal >= io.github.jcondedata.aliveworkplace.people.Traits.mealEvery(villager, DAY)) {
 				if (store == null) {
 					store = store(level, hall);
+					reserve = BuildReserve.of(level, store); // B84: what the builds near the store still need stays there
 				}
-				if (eat(level, villager, store) && entity != null) {
-					eatMore(level, entity, villager, store);
+				if (eat(level, villager, reserve) && entity != null) {
+					eatMore(level, entity, villager, reserve);
 				}
 			}
 		}
@@ -172,6 +175,11 @@ public final class VillageNeeds {
 	 * reaches a whole one (if the store is out, that meal is gone uneaten). Returns the extra meals taken.
 	 */
 	public static int eatMore(ServerLevel level, VillageHallBlockEntity hall, Villager villager, List<BlockPos> store) {
+		return eatMore(level, hall, villager, BuildReserve.of(level, store));
+	}
+
+	/** {@link #eatMore(ServerLevel, VillageHallBlockEntity, Villager, List)}, leaving what {@code store} keeps back for builds. */
+	public static int eatMore(ServerLevel level, VillageHallBlockEntity hall, Villager villager, BuildReserve store) {
 		int percent = CivicEffects.of(hall).foodUse(villager);
 		if (percent <= 0) {
 			return 0;
@@ -180,7 +188,7 @@ public final class VillageNeeds {
 		int taken = 0;
 		while (count >= 100) {
 			count -= 100;
-			ItemStack extra = SupplyContainers.takeOne(level, store, VillageNeeds::isMeal);
+			ItemStack extra = store.takeOne(level, VillageNeeds::isMeal);
 			if (!extra.isEmpty()) {
 				io.github.jcondedata.aliveworkplace.build.MaterialLedger.eaten(extra);
 				taken++;
@@ -200,7 +208,10 @@ public final class VillageNeeds {
 		int lit = 0;
 		int guards = 0;
 		int cheerful = 0;
-		for (Villager villager : level.getEntitiesOfClass(Villager.class, VillageHalls.area(hall), Villager::isAlive)) {
+		List<Villager> everyone = level.getEntitiesOfClass(Villager.class, VillageHalls.area(hall), Villager::isAlive);
+		// The village's households by class (34.7): its Nobles' wellbeing, and the Burghers' routes and traders.
+		io.github.jcondedata.aliveworkplace.people.ClassPerks.Sums classes = io.github.jcondedata.aliveworkplace.people.ClassPerks.tally(level, hall, everyone);
+		for (Villager villager : everyone) {
 			villagers++;
 			if (!villager.isBaby()) {
 				adults++;
@@ -236,7 +247,8 @@ public final class VillageNeeds {
 		VillageHallBlockEntity hallEntity = level.getBlockEntity(hall) instanceof VillageHallBlockEntity treeHall ? treeHall : null;
 		float wellbeing = Math.min(1f, Math.max(io.github.jcondedata.aliveworkplace.research.TreeEffects.wellbeingFloor(hallEntity),
 			wellbeing(fedShare, housedShare, safe) + 0.1f * hearth + Decorations.bonus(beauty) + cheer
-				+ io.github.jcondedata.aliveworkplace.research.TreeEffects.wellbeing(hallEntity)));
+				+ io.github.jcondedata.aliveworkplace.research.TreeEffects.wellbeing(hallEntity)
+				+ io.github.jcondedata.aliveworkplace.people.ClassPerks.wellbeing(classes)));
 		return new Needs(adults, fed, villagers, housed, lit, guards, beauty, wellbeing);
 	}
 
@@ -275,12 +287,28 @@ public final class VillageNeeds {
 		return new ArrayList<>(chests);
 	}
 
-	/** {@code villager} eats one meal from the store; false if there's nothing to eat. */
+	/**
+	 * {@code villager} eats one meal from the store; false if there's nothing to eat. Never what a build site near the
+	 * store still needs (B84: the village ate a Farmstead's carrots and potatoes and the build waited for days).
+	 */
 	public static boolean eat(ServerLevel level, Villager villager, List<BlockPos> store) {
+		return eat(level, villager, BuildReserve.of(level, store));
+	}
+
+	/** {@link #eat(ServerLevel, Villager, List)} with what the store keeps back for builds already worked out. */
+	public static boolean eat(ServerLevel level, Villager villager, BuildReserve store) {
+		return eat(level, villager, store, null);
+	}
+
+	/** {@link #eat(ServerLevel, Villager, BuildReserve)}, {@code first} first if the store has it (a Cup's dish, 28.19). */
+	public static boolean eat(ServerLevel level, Villager villager, BuildReserve store, @org.jetbrains.annotations.Nullable net.minecraft.world.item.Item first) {
+		ItemStack meal = first == null ? ItemStack.EMPTY : store.takeOne(level, s -> s.is(first));
 		// Something they haven't had lately, if the store has it (see Diet).
-		ItemStack meal = SupplyContainers.takeOne(level, store, s -> isMeal(s) && !io.github.jcondedata.aliveworkplace.people.Diet.hadLately(villager, s));
 		if (meal.isEmpty()) {
-			meal = SupplyContainers.takeOne(level, store, VillageNeeds::isMeal);
+			meal = store.takeOne(level, s -> isMeal(s) && !io.github.jcondedata.aliveworkplace.people.Diet.hadLately(villager, s));
+		}
+		if (meal.isEmpty()) {
+			meal = store.takeOne(level, VillageNeeds::isMeal);
 		}
 		if (meal.isEmpty()) {
 			return false;

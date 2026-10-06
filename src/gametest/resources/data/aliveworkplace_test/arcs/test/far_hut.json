@@ -1,0 +1,20 @@
+{
+  "name": "The Far Hut",
+  "trigger": {"chance": 0},
+  "chapters": [
+    {
+      "name": "Something out there",
+      "on_start": [
+        {"type": "place", "key": "hut", "template": "aliveworkplace_test:test_hut", "rule": {"offset": [40, 0]}},
+        {"type": "give_map", "at": "hut"}
+      ],
+      "complete": [],
+      "needs_flags": ["hut_done"],
+      "delay_days": 5
+    },
+    {
+      "name": "Later",
+      "complete": []
+    }
+  ]
+}

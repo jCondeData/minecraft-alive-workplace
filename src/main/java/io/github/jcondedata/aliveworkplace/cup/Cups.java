@@ -159,7 +159,7 @@ public final class Cups {
 	/** The village's delegate, live: its senior Trainer Leader, else its best Trainer; null if it has neither. */
 	@Nullable
 	public static Caravans.Leader liveDelegate(ServerLevel level, BlockPos hall) {
-		List<Villager> trainers = level.getEntitiesOfClass(Villager.class, VillageHalls.area(hall), v -> v.isAlive() && Trainers.isTrainer(v));
+		List<Villager> trainers = level.getEntitiesOfClass(Villager.class, VillageHalls.area(hall), v -> v.isAlive() && Trainers.isTrainer(v) && !CupDays.isDelegate(v));
 		Villager best = trainers.stream().min(seniority()).orElse(null);
 		return best == null ? null : record(best);
 	}
@@ -215,7 +215,7 @@ public final class Cups {
 		}
 		if (level.isLoaded(host)) {
 			List<Villager> mine = level.getEntitiesOfClass(Villager.class, VillageHalls.area(host), v -> v.isAlive() && Trainers.isTrainer(v)
-				&& !in.contains(v.getUUID()));
+				&& !CupDays.isDelegate(v) && !in.contains(v.getUUID()));
 			mine.sort(seniority());
 			for (int i = 0; i < mine.size() && i < HOST_TRAINERS && out.size() < capacity; i++) {
 				Caravans.Leader t = record(mine.get(i));
@@ -288,6 +288,7 @@ public final class Cups {
 			caravans.setLeader(hall, liveDelegate(level, hall));
 		}
 		CupBouts.payBanked(level, hall); // 28.18: XP its trainers earned at a Cup while the village was away
+		CupDays.writeNotes(level, hall); // 28.19: a Cup's chronicle entry from while the village was away
 		if (!canHost(level, hall)) {
 			return;
 		}
@@ -304,9 +305,7 @@ public final class Cups {
 		}
 		CupThemes.Theme theme = CupThemes.get(cup.theme);
 		if (cup.day >= 0 && cup.closed && now >= (cup.day - 1) * DAY + theme.end()) {
-			if (cup.bout != null) {
-				CupBouts.stop(level, hall, cup); // the day is over (28.19 settles a bout left)
-			}
+			CupDays.settle(level, hall, cup); // the day is over: any bout left is settled as an exhibition (28.19)
 			over(cup);
 			theme = CupThemes.get(cup.theme);
 			if (theme == null) {
@@ -314,7 +313,7 @@ public final class Cups {
 				return;
 			}
 		}
-		if (!cup.closed) {
+		if (!cup.closed && cup.postponed == 0) { // a Cup put off keeps its new day (28.19)
 			cup.day = upcoming(hall, entity, now, theme);
 		}
 		long today = io.github.jcondedata.aliveworkplace.hall.Chronicle.day(level);
@@ -345,7 +344,7 @@ public final class Cups {
 	}
 
 	/** The Cup's day is over: the next one, with the next theme in order. */
-	static void over(CupData.Cup cup) {
+	public static void over(CupData.Cup cup) {
 		cup.lastTheme = cup.theme;
 		CupThemes.Theme next = CupThemes.next(cup.theme);
 		cup.theme = next == null ? null : next.id();
@@ -356,6 +355,9 @@ public final class Cups {
 		cup.entrants.clear();
 		cup.bracket.clear();
 		cup.results.clear();
+		cup.postponed = 0;
+		cup.cheered = 0;
+		cup.finaleTime = -1;
 	}
 
 	/** Tells the players in the host's circuit villages. */

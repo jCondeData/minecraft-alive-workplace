@@ -1,0 +1,4 @@
+{
+  "name": "Broken on purpose",
+  "chapters": [{"name": "Bad", "on_start": [{"type": "no_such_effect"}]}]
+}

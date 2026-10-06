@@ -29,6 +29,58 @@ asks for the steps, `latest.log` and any crash report).
   and Poké Balls. Each has its makers and their biomes, the biomes and jobs that want it, and a bundle priced like
   vanilla's villager trades where there is one (20 wheat, 6 bread, 18 wool, 24 paper, 4 iron ingots for an emerald).
   Raids raise demand for arms, arrows and remedies for 3 days, and remedies while villagers are ill.
+- **The Vintner, for 1.8** (34.9, off until 1.8 is finished): sneak-right-click a villager by a cauldron with sweet
+  berries, glow berries or an apple. They press Cider (Novice), Berry Wine (Apprentice) and Vintage Wine from Berry Wine
+  three days old (Journeyman) for the village store, with purple splashes at the vat; the three drinks are drinkable
+  (the bottle comes back), are the households' wine luxuries and are served at the Noble's Ball. Trades, Grass, Bug and
+  Fairy partners, an outfit, config `vintners`.
+- **Friendship with villagers** (31.5; switched on with the rest of 1.5): every named villager in a village with a hall keeps ten hearts for
+  each player. Trading with them (+5), finishing a hall quest they posted (+40), handing in what they wait for (+10),
+  coming to their wedding (+30) or a festival with them (+10) count once a day each; killing a monster that just hurt
+  them (+15) counts every time; hitting them costs 50 (once a minute). Look at a named villager within 6 blocks and
+  the action bar shows "Dara ♥♥♥♡♡♡♡♡♡♡"; hearts puff over them when they go up; the hall's list shows your hearts
+  and their two best friends. Quest files can reward `friendship`. Setting `friendship` (on); hearts never fade.
+- **The story arc engine for 1.5** (31.4; the stories themselves come in later updates): a village can live through
+  a story told in chapters over several days. Each chapter is announced in chat and written in the chronicle, puts up
+  its quests (in the journal's new **Story** tab, chapters done ticked), can build something out in the wild once a
+  player comes near, bring in named foes with a boss bar, and has the villagers talking about it; a chapter whose time
+  runs out ends the story badly. Stories are data (`data/<namespace>/arcs/<id>.json`), survive a restart at any
+  moment, and come with settings `storyArcs`, `arcCooldownDays` (8), `arcsAtOnce` (3) and `disabledArcs`. Operators
+  get `/workplace story start <arc>`, `next` and `stop`. A new quest goal, **talk** to a villager the story names.
+- **Players in the Cup** (28.20): with Cobblemon, a signed-up player's bout is called in chat with a bell and a
+  clickable [I'm ready]; click it inside the Arena within two minutes or lose by walkover. Then it's a real battle
+  (against a villager, the Leader or their delegate as the trainer; against a player, Cobblemon's own PvP battle) in
+  the theme's format and level and with its rules, with healed copies so nobody gains experience or keeps damage. Only
+  the party's first eligible Pokémon go, and the player is told who stayed home and why. Fleeing loses. [Watch] on the
+  Cup page and the Arena's notice board shows a running bout from the stands. Each win pays 100,000 (500,000 more for
+  the final, half again at a City host; emeralds without CobbleDollars).
+- **Cup day** (28.19): on a Festival Cup's day the far villages' entrants walk in from their village's side as delegates
+  ("Dara of Eastholm", in a Trainer Leader's outfit; real Leaders left at home are away at the Cup and take no
+  challenges), the market's traders hold a fair on the Arena's fair lane selling the theme's wares, from noon the
+  villagers sit in the stands, eat the feast (the theme's dish first) and cheer their village's wins while the bard plays
+  the theme's disc; after the final, fireworks in the theme's colours, Hero of the Village and the festival's mood, and
+  the Cup goes into every circuit village's chronicle (gold ingot). Bouts left at the end time are settled as
+  exhibitions; a host that isn't loaded puts its Cup off (8 days at most); no Arena or `festivalCup` off: a plain festival.
+- **Higher jobs need higher classes, for 1.8** (34.8, off until 1.8 is finished): in a village with a hall, the
+  Tinkerer, Chef, Netherworker, Nurse, Teacher, Shopkeeper, Innkeeper and the Cobblemon trades need an Artisan, and the
+  Scholar, Undertaker and Trainer Leader a Burgher, when the job is taken (its item, the hall's free workstations, now
+  greyed with the class, a grown child, the Steward). Hired travellers arrive as Peasants, Artisans or Burghers by
+  level. Nobody is fired: a worker below their job's class keeps it and the hall marks them.
+- **What each class gives, for 1.8** (34.7, off until 1.8 is finished): taxes by class (Peasant ×1, Artisan ×1.5,
+  Burgher ×2.5, Noble ×4, +10% a want; the hall's name tag shows the split), Artisan crafters 10% faster, Burgher
+  scholars 15% faster, a caravan route and a market trader more with 3 Burgher households, +3% wellbeing a Noble
+  household (9% at most), and a **Noble's Ball** in place of every other festival (wine, the store's best food, gold
+  fireworks, +15 mood for 3 days, Hero of the Village for the night).
+- **Classes at the Village Hall for 1.8** (34.6, off until 1.8 is finished): the hall gets a Classes tab (how many
+  households of each class) and page (each class's needs and wants with how many households have them, what the class
+  gives, and who is closest to rising with what they lack); the people list shows each villager's class and household
+  ("Burgher · married to Tomas") with the needs of their class and the next one ticked; the food icon lists the
+  luxuries in store; and "What next?" gives up to three class tips, most households first.
+- **A household's rise and fall is felt for 1.8** (part of 34.6, off until 1.8 is finished): a household that
+  rises gets golden sparkles and a chime at their door, a chat line to players within 32 blocks, a line in the hall's
+  Chronicle and "rose in the world" (+10 mood for 2 days); one that falls gets a Chronicle line and "came down in the
+  world" (-10 for 2 days). Moods add "has what their class needs" (+5) or -5 for each need lacking (at most -15), and
+  villagers talk of their rise or fall (three lines each).
 - **The luxury workshop engine for 1.8** (34.5, nothing to see until the four new makers arrive): luxury recipes are
   data files (`data/<namespace>/luxury_recipes/<id>.json`: the job, the level, the makings by item or tag, what comes
   out and how long it takes). A maker fills the store's stock orders first, then makes whatever the village store has
@@ -65,9 +117,20 @@ asks for the steps, `latest.log` and any crash report).
   piece a second instead of all in one tick, and one planning second looks up the Blueprint Tables once (every 5
   seconds at most) instead of once per wish. Nothing a player sees changes. City benchmark: p95 0.49 → 0.38 ms a tick,
   his planning's server time about halved, and planning is no longer the slowest call.
+- **No more log error when a traveller's camp is set down** (B68): the map's item frame on the camp's barrel is saved
+  with the block it hangs on, and structures placed by the mod or by vanilla now hang their frames and paintings on the
+  block where they land, so "Block-attached entity at invalid position" is no longer logged. Players saw nothing wrong.
+- **A build's crops stay in the village store** (B84): villagers no longer eat, cook or sow the carrots, potatoes and
+  seeds a build site near the store still needs (meals, feasts, banquets, a new family's meals, farmers and chefs taking
+  from the storehouse). A Steward's Farmstead finishes instead of waiting for materials for days; food a build doesn't
+  need is eaten as before, and a site frees its share when it finishes or is cancelled.
 - **Builders no longer lose an anvil** (B91): a builder working alongside another could set an anvil (or sand,
   gravel, concrete powder) down before the floor under it was laid; it fell, and the build then waited for an anvil
   that was gone. They now leave such a block until there is something under it.
+- **A Steward's wall and old-house renewals get built** (B86): an approved wall line past the builders' reach from
+  their tables never opened a piece, and the roads took every free builder ahead of it; wall pieces now go to any
+  free builder of the village, the roads and the wall take turns, and an old house at the village's edge is renewed
+  too. When he approves everything himself, a renewal takes the free slot ahead of the day's homes.
 
 ## 0.140.0 — 2026-10-05
 
@@ -85,6 +148,7 @@ asks for the steps, `latest.log` and any crash report).
   lost: a Steward, a Legend or an edict comes back as it was when its expansion is released.
 
 ### Fixed
+- The settings screen's steward renewal switch now reads "Steward Renewals", so its label fits its button (B87).
 - **Foretold raids now come from the side the Seer named** (B82): raiders could gather near the edge of the foretold
   side and spread out across it, so a player told "south-east" might see them come from the east. They now gather
   well inside that side, spread out less in a small village, and look further out on the same side when the ground

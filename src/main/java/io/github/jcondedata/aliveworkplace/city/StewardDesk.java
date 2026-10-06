@@ -540,6 +540,19 @@ public final class StewardDesk {
 
 	/** Which builder would build {@code proposal}: the nearest idle one whose bench reaches it, else the one with the shortest queue. */
 	public static Optional<Builder> builderFor(ServerLevel level, BlockPos hall, Proposal proposal) {
+		return builderFor(level, hall, proposal, false);
+	}
+
+	/**
+	 * As {@link #builderFor(ServerLevel, BlockPos, Proposal)}; with {@code far}, when no bench reaches it, any builder of the
+	 * village (B86: an old house at the village's edge stands in the village, if past every bench's reach).
+	 */
+	public static Optional<Builder> builderFor(ServerLevel level, BlockPos hall, Proposal proposal, boolean far) {
+		Optional<Builder> near = builderFor(level, hall, proposal, Builders.MAX_SITE_DISTANCE);
+		return near.isEmpty() && far ? builderFor(level, hall, proposal, Double.MAX_VALUE) : near;
+	}
+
+	private static Optional<Builder> builderFor(ServerLevel level, BlockPos hall, Proposal proposal, double reach) {
 		Optional<Blueprint> blueprint = BlueprintLibrary.get(level, proposal.blueprint());
 		if (blueprint.isEmpty()) {
 			return Optional.empty();
@@ -549,7 +562,7 @@ public final class StewardDesk {
 		int bestQueue = Integer.MAX_VALUE;
 		for (Villager v : builders(level, hall)) {
 			BlockPos bench = Builders.benchPos(v).orElseThrow();
-			if (Math.sqrt(centre.distSqr(bench)) > Builders.MAX_SITE_DISTANCE) {
+			if (Math.sqrt(centre.distSqr(bench)) > reach) {
 				continue;
 			}
 			BuildSite active = Builders.activeSite(level, v);
@@ -690,10 +703,16 @@ public final class StewardDesk {
 		return p.isJobs() ? StewardJobs.line(level, hall, p.jobs()) : p.name();
 	}
 
-	/** Approves every proposal it can, in order; the names of those started or queued. */
+	/**
+	 * Approves every proposal it can, a wall and a renewal first, then the rest in order; the names of those started or
+	 * queued. B86: a Hamlet has one build open at a time, and a renewal (re-proposed after it lapses, so always behind the
+	 * day's homes) never got the free slot; both come at most every few days, so going first never starves the homes.
+	 */
 	public static List<Component> approveAll(ServerLevel level, BlockPos hall, @Nullable ServerPlayer player) {
 		List<Component> started = new ArrayList<>();
-		for (Proposal p : of(level, hall).proposals()) {
+		List<Proposal> order = of(level, hall).proposals().stream()
+			.sorted(Comparator.comparingInt(p -> p.wall().isPresent() || p.isRenewal() ? 0 : 1)).toList();
+		for (Proposal p : order) {
 			Component name = told(level, hall, p);
 			if (approve(level, hall, player, p.id()).ok()) {
 				started.add(name);

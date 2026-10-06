@@ -56,7 +56,9 @@ public final class Chatter {
 		Map.entry("reformed_long_shifts", 2), Map.entry("reformed_free_bread", 2), Map.entry("reformed_large_families", 2),
 		Map.entry("reformed_open_gates", 2), Map.entry("reformed_festival_season", 2), Map.entry("reformed_tithe", 2),
 		Map.entry("reformed_curfew", 2), Map.entry("reformed_conscription", 2),
-		Map.entry("rush", 2), Map.entry("tonic", 2), Map.entry("guild", 2), Map.entry("colours", 2));
+		Map.entry("rush", 2), Map.entry("tonic", 2), Map.entry("guild", 2), Map.entry("colours", 2),
+		// A household's rise or fall (34.6), from the mood reason
+		Map.entry("class_rose", 3), Map.entry("class_fell", 3));
 	private static final Map<UUID, Long> LAST = new HashMap<>();
 
 	public static void init() {
@@ -135,6 +137,9 @@ public final class Chatter {
 		}
 		news.addAll(legendTopics(level, villager, hall));
 		news.addAll(civicTopics(level, villager, hall));
+		if (!io.github.jcondedata.aliveworkplace.story.Arcs.chatter(level, hall).isEmpty()) {
+			news.add("arc"); // a story arc's chapter is the talk of the village (31.4)
+		}
 		topics.addAll(news);
 		topics.addAll(news);
 		Moods.Mood mood = Moods.of(villager);
@@ -254,6 +259,10 @@ public final class Chatter {
 			return null;
 		}
 		String topic = topics.get(level.random.nextInt(topics.size()));
+		if (topic.equals("arc")) {
+			List<String> lines = io.github.jcondedata.aliveworkplace.story.Arcs.chatter(level, hall);
+			return Component.translatable(lines.get(level.random.nextInt(lines.size()))).withStyle(ChatFormatting.ITALIC);
+		}
 		int variant = level.random.nextInt(VARIANTS.getOrDefault(topic, 1));
 		Object arg = switch (topic) {
 			case "hello" -> player.getDisplayName();

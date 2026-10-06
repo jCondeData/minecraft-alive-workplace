@@ -134,7 +134,7 @@ stay in the list, ticked, so their numbers stay unique.
 - [ ] **B65** ConscriptionGameTests noWorkDuringARaidNorTheMorningAfterUntilNoon failed once in lane-c-1005-0332's local full build (06:05Z, main + 23.10a): 'back at work in the raid'; passed in the next full build, and a 27.11 subagent saw it fail once too. Expected: passes every run. Test: the repeat generator on that test (found by lane-c-1005-0332, 2026-10-05)
 - [x] **B66** (approved auto 2026-10-05) (verified 2026-10-05: crew-speed test: nightly repeats 0 of 3 failed [run 37297003813], CI build 684 green with the B66 fix [e61a5e7], and in this run's ship builds) B50 is back after its fix (90808c7): BuilderCrewGameTests.aCrewBuildsInAboutTheTimeOfOneBuilderDividedByItsSize failed in qa-1005-0533's local full build of main a026511 + qa/b46-b53-1005 (2026-10-05 06:25Z): 'a crew of 4 took 1868 ticks, 44% of the 4200 ticks alone (at most 42%)'; crew of 2 took 50%. It blocked that ship. Expected: passes every run (find what the slow 4-crew runs wait on, as 90808c7 did for the stuck lead). Test: the test itself, repeated 10x with RepeatNewTests (QA lane: test-only flake that turns main red) (found by qa-1005-0533, 2026-10-05)
 - [x] **B67** (approved auto 2026-10-05) (verified 2026-10-05: flake fixes: no failure of the fletcher, air-mail, lamp or Pathfinder tests in the 10 CI builds on main since 78b6a27/c8aeabb [15:34Z-18:26Z, the only reds were countryWorkplaceBuilt_farmstead=B77 and one seer flake] nor in this run's two full ship builds) B57's fix (bf4d409, clear leftovers) didn't hold: PartnersForgeCompatTests aPidgeyBringsAFeatherToTheFletcher was the 1 failed compat test in CI run 37271696140 on main f0594ec (2026-10-05 06:23Z, which includes bf4d409), turning main red; the next run passed. CI's log doesn't print the assertion message (the gametest-report artifact has it). Same test as the still-open B48. Expected: passes every run; look past leftover guards (e.g. the fletcher's sticks or string taken by another worker within Village.RADIUS 48, or the guard's own bow choice). Test: the test itself in a few full compat runs (QA lane: test-only flake that turns main red) (found by qa-1005-0633, 2026-10-05)
-- [ ] **B68** Setting a traveller's camp down (29.9, legend/traveller_camp.nbt) logs an ERROR each time: 'Block-attached entity at invalid position: BlockPos{x=0, y=0, z=0}' (3x in every full GameTest run, from LegendSitesGameTests; the nightly log audit counts it). The camp's item frame is saved without TileX/TileY/TileZ (tools/blueprints/legend_sites.py). The frame and its map still appear (QaLegendCampGameTests, shipped), so players see nothing; only the log. Expected: no ERROR when a camp is placed (write TileX/Y/Z from blockPos in the generator, as vanilla's templates do). Test: logaudit.py after runGameTest, batch legendSitesPlace (found by qa-1005-0633, 2026-10-05) Status (qa-1006-0034): the generator fix won't work: BlockAttachedEntity.readAdditionalSaveData compares TileX/Y/Z with the entity's Pos, which StructureTemplate.placeEntities has already set to world coordinates, so template-relative TileX (as any vanilla template saved elsewhere) still logs unless the camp lands within 16 blocks of 0,0,0. The fix is in mod code (LegendSites, around placeInWorld at line 299: place the camp without its entities and add the frame itself, or a StructureProcessor that rewrites TileX/Y/Z to the world spot), so it's a build lane's, not QA's.
+- [x] **B68** (approved auto 2026-10-06) Setting a traveller's camp down (29.9, legend/traveller_camp.nbt) logs an ERROR each time: 'Block-attached entity at invalid position: BlockPos{x=0, y=0, z=0}' (3x in every full GameTest run, from LegendSitesGameTests; the nightly log audit counts it). The camp's item frame is saved without TileX/TileY/TileZ (tools/blueprints/legend_sites.py). The frame and its map still appear (QaLegendCampGameTests, shipped), so players see nothing; only the log. Expected: no ERROR when a camp is placed (write TileX/Y/Z from blockPos in the generator, as vanilla's templates do). Test: logaudit.py after runGameTest, batch legendSitesPlace (found by qa-1005-0633, 2026-10-05) Status (qa-1006-0034): the generator fix won't work: BlockAttachedEntity.readAdditionalSaveData compares TileX/Y/Z with the entity's Pos, which StructureTemplate.placeEntities has already set to world coordinates, so template-relative TileX (as any vanilla template saved elsewhere) still logs unless the camp lands within 16 blocks of 0,0,0. The fix is in mod code (LegendSites, around placeInWorld at line 299: place the camp without its entities and add the frame itself, or a StructureProcessor that rewrites TileX/Y/Z to the world spot), so it's a build lane's, not QA's.
 - [x] **B69** (approved auto 2026-10-05) (verified 2026-10-05: B46: QaB46GameTests [two restarts in a row hold 24%, a save without shown_progress loads] + B46GameTests pass; B69: QaB69FrontWalkGameTests, all 5 styles, villagers walking the guard house's front walk row reach the door from both corners: 5/5 fail on the pre-fix templates [stuck beside the flower box], pass on main twice and in a full build [1014/1014]; B73: 'Refresh active project' on main leaves git diff unchanged. Tests on qa/b46-b69-1005 [ship blocked by the B57 flake]) Village houses (all five styles, tools/blueprints/village.py village_house) have head-height top-half trapdoor flower boxes beside the front steps at (2,1,1) and (6,1,1). Vanilla pathfinding treats any trapdoor as open ground, so a villager walking along the front wall to the door gets stuck against one for good (seen with the guard of workplaceBuilt_guard_house: 3 in 20 runs). The 12 buildable workplace copies got upside-down stair sills instead (27.11); the worldgen village houses still have the trapdoors. (found by lane-c-1005-0633, 2026-10-05)
 - [x] **B70** (approved auto 2026-10-05) (verified 2026-10-05: Refresh active project on main d519846 + qa/flakes-1005 left git diff unchanged [only the branch's own edits]; QaImportEdgesGameTests swap line keeps timeoutTicks) 'Refresh active project' changes QaImportEdgesGameTests.java: its //$ gametest swap line drops timeoutTicks = 400, so git diff isn't clean after a refresh (seen by lane-d-1005-0632 on 30.16, 2026-10-05). Expected: refresh leaves git diff unchanged (fix the swap line). Test: ./gradlew "Refresh active project" then git diff (found by lane-d-1005-0632, 2026-10-05)
 - [x] **B71** (approved auto 2026-10-05) (verified 2026-10-05: flake fixes: no failure of the fletcher, air-mail, lamp or Pathfinder tests in the 10 CI builds on main since 78b6a27/c8aeabb [15:34Z-18:26Z, the only reds were countryWorkplaceBuilt_farmstead=B77 and one seer flake] nor in this run's two full ship builds) StewardCivicRulesGameTests twoDarkBedsGetAStreetLampByTheDarkestBed failed once and turned main red (CI run 37289855963 on a2294ed9, 2026-10-05 09:30Z, the only failure of 962; the next runs passed). CI's log names only the test, not the assertion. Likely cause (not confirmed): VillageAdvice.darkBeds counts every HOME POI within VillageHalls.RADIUS 64 of the hall, so a bed left by another test's area within 64 blocks makes 'darkBeds.size() == 2' fail, or two equally dark beds tie in the sort. Expected: passes every run (count only this test's beds, e.g. a smaller radius for the test or assert on the test's own beds). Test: the test itself, repeated with RepeatNewTests (QA lane: test-only flake that turned main red) (found by qa-1005-0934, 2026-10-05)
@@ -144,16 +144,18 @@ stay in the list, ticked, so their numbers stay unique.
 - [x] **B75** (approved auto 2026-10-05) (verified 2026-10-05: flake fixes: no failure of the fletcher, air-mail, lamp or Pathfinder tests in the 10 CI builds on main since 78b6a27/c8aeabb [15:34Z-18:26Z, the only reds were countryWorkplaceBuilt_farmstead=B77 and one seer flake] nor in this run's two full ship builds) PathfinderGameTests.expeditionLeadsWaitsAndCatchesUp failed on CI build 37305086133 (main 2cafe50, 2026-10-05 11:46Z) and turned main red; passed in lane-a-1005-1233's local runGameTest on 4d1ee21. The next CI run (4d1ee21) was red from B66 instead. Expected: passes every run. Test: the repeat generator on that test (found by lane-a-1005-1233, 2026-10-05)
 - [x] **B76** (urgent: owner 2026-10-05, before more players update to 0.139.0) (approved auto 2026-10-05) (verified 2026-10-05: ExpansionGateGameTests' 3 tests [0.139.0 config with switches on stays off, unfinished switches default off and hidden, tests can open the gates] passed in a local full build on a8af069; M27-M30 and M34 flags false in Expansions; no new tests) Unfinished expansions are switched ON by default, against the ROADMAP rule that they stay off until their milestone is complete: WorkplaceConfig defaults legends, legendNeeds, legendSites, strangeMoods (M29), villageEdicts, workHorns, villageBanners, cradles, harvestIdols, tonics (M30), steward, stewardSelfRun (M27), berryBreeders, campCooks, habitatKeepers, daycareKeepers, gemGrowers, habitatSightings, villageHabitats (M28) to true, so 0.139.0 (released 2026-10-05) ships M27-M30 half-built and on. Expected: each unfinished milestone's switches default to false (new worlds and configs that never set them), and the release that completes a milestone turns its switches on. Check which switch belongs to which milestone before changing; GameTests set the switch they need. Owner (2026-10-05): switched off to avoid bugs; when a whole expansion (e.g. all of 1.1) is done, its release turns it back on. Configs that 0.139.0 already wrote to disk hold `true` for these switches, so a new default alone won't turn them off on his server: gate each unfinished milestone in code (e.g. a per-milestone 'complete' flag the switch is ANDed with), not only by the config default, and test that a 0.139.0 config with the switch true still leaves the feature off. (found by speed-1005-1232, 2026-10-05) (found by speed-1005-1232, 2026-10-05)
 - [x] **B77** (approved auto 2026-10-05) (verified 2026-10-06: repeat runs on 4011e5d: aConscriptSavedMidRaid, aRaidForetold, aTwoBedHome [no teleport] 10x each pass; CountryWorkplaces [farmstead] and StewardGameTests pass; new SeerGameTests.everyRaidForetoldComesFromTheSideTold [24 foretold raids at radius 16 and 20] passes and fails with the B82 fix reverted; full build green twice in ship) CountryWorkplacesGameTests countryWorkplaceBuilt_farmstead (27.14) failed in qa-1005-1434's ship build (main d519846 + compat-test-only changes, 2026-10-05 15:07Z, 1 of 1048): 'no harvest in the Farmstead's chests (harvested 36)' at the time-out: the farmer harvested 36 crops but none were in a container within the house's 15x13 footprint at y 1. Not yet known whether a player would see it (harvest kept in his inventory, put in a chest elsewhere, or taken by another worker) or it is the test's timing. Expected: the Farmstead farmer's harvest reaches its chests every run. Test: countryWorkplaceBuilt_farmstead, a few runGameTest runs (found by qa-1005-1434, 2026-10-05) (found by qa-1005-1434, 2026-10-05)
-- [x] **B78** (review: pending 2026-10-05) The Book of Edicts' guild row lists only 6 guilds, but a City can now hold up to 12 guilds (30.17-30.20), so the rest are never shown. Expected: every guild of the village on the Book's guild row (paged or wrapped). Test: GuildsScene / EdictBook guild row with more than 6 guilds (found by lane-d-1005-1533, 2026-10-05)
+- [x] **B78** (approved 2026-10-06) The Book of Edicts' guild row lists only 6 guilds, but a City can now hold up to 12 guilds (30.17-30.20), so the rest are never shown. Expected: every guild of the village on the Book's guild row (paged or wrapped). Test: GuildsScene / EdictBook guild row with more than 6 guilds (found by lane-d-1005-1533, 2026-10-05)
 - [x] **B79** (approved auto 2026-10-05) (verified 2026-10-06: repeat runs on 4011e5d: aConscriptSavedMidRaid, aRaidForetold, aTwoBedHome [no teleport] 10x each pass; CountryWorkplaces [farmstead] and StewardGameTests pass; new SeerGameTests.everyRaidForetoldComesFromTheSideTold [24 foretold raids at radius 16 and 20] passes and fails with the B82 fix reverted; full build green twice in ship) Renewal (27.21): villagers whose old home was renewed may not walk to their new beds on their own. RenewalGameTests' two-bed test teleports both villagers to the new beds before night, because without it they lost the bed memory (the 27.21 subagent's guess: they couldn't path to it in the test village). Expected: after a home is renewed, its villagers keep their claim on the new beds and walk there and sleep without help. Test: the two-bed renewal test without the teleport (found by lane-c-1005-1833, 2026-10-05)
 - [ ] **B80** RoadGameTests.aHalfBuiltSegmentSurvivesSaveAndReloadAndRoadsLeaveTheRankAlone (batch roadReload, 27.15) fails 'the road opened 0 segments, not 1' in every run of a trimmed suite (Caravan, StewardSafety, ResearchTrees, Road, Wall, CityPlanRoad GameTests; 5 of 5), while it passes in the full suite: it depends on test order, likely a leftover finished-building record or site on its line from an earlier batch (as CaravanRoadGameTests had, fixed in f88686b2 by forgetting finished records round the area). Expected: passes in any order. Test: runGameTest with those classes only (QA lane: test-only) (found by lane-c-1005-1833, 2026-10-05)
 - [x] **B81** (approved auto 2026-10-05) (verified 2026-10-06: repeat runs on 4011e5d: aConscriptSavedMidRaid, aRaidForetold, aTwoBedHome [no teleport] 10x each pass; CountryWorkplaces [farmstead] and StewardGameTests pass; new SeerGameTests.everyRaidForetoldComesFromTheSideTold [24 foretold raids at radius 16 and 20] passes and fails with the B82 fix reverted; full build green twice in ship) ConscriptionGameTests.aConscriptSavedMidRaidLoadsWithoutTheSword failed on main CI build 696 (7b40b9c5, 2026-10-05 19:41Z), its only failure, turning main red: 'armed: 3 minecraft:wheat / 0 minecraft:air' (after the save and reload mid-raid the conscript holds wheat, no sword). Builds 695 and 697-699 were cancelled by the runner at about 15 min (no concurrency or timeout in build.yml), so they say nothing. Expected: passes every run; a player would see a conscript reloaded mid-raid holding the wrong item, so check whether the test or the mod drops the sword. Test: the test repeated with the repeat generator (found by red duty) (found by lane-c-1005-1833, 2026-10-05)
 - [x] **B82** (approved auto 2026-10-05) (verified 2026-10-06: repeat runs on 4011e5d: aConscriptSavedMidRaid, aRaidForetold, aTwoBedHome [no teleport] 10x each pass; CountryWorkplaces [farmstead] and StewardGameTests pass; new SeerGameTests.everyRaidForetoldComesFromTheSideTold [24 foretold raids at radius 16 and 20] passes and fails with the B82 fix reverted; full build green twice in ship) SeerGameTests.aRaidForetoldComesAndNoneWhenNoneIs (29.16) failed in qa-1005-2033's full build (main a8af069 + a test-message change, 2026-10-05 21:04Z, 1 failure in the suite): 'foretold from the south-east, came from the east'. From reading VillageRaids (not proven): a foretold raid gathers at angle +-FORETOLD_SPREAD (0.3 rad, 17 deg) at 0.6x VillageHalls.RADIUS, then each raider is placed +-3 blocks round that point, and the test takes the raiders' centre to the nearest eighth (+-22.5 deg), so the centre can cross into the next eighth; with a small RADIUS (PeopleGameTests sets 16) the 3-block scatter alone is about 15 deg. A player may hear 'south-east' and see raiders come from the east-south-east. Expected: raiders always gather well inside the eighth told (smaller spread, or the spread and scatter scaled to the distance), and the test passes every run. Test: aRaidForetoldComesAndNoneWhenNoneIs repeated 10x with the repeat generator (found by qa-1005-2033, 2026-10-05)
 - [x] **B83** (approved auto 2026-10-05) (verified 2026-10-06: repeat runs on 4011e5d: aConscriptSavedMidRaid, aRaidForetold, aTwoBedHome [no teleport] 10x each pass; CountryWorkplaces [farmstead] and StewardGameTests pass; new SeerGameTests.everyRaidForetoldComesFromTheSideTold [24 foretold raids at radius 16 and 20] passes and fails with the B82 fix reverted; full build green twice in ship) StewardGameTests.aStewardFromAnOldSaveKeepsHisJob fails on main: CI build 707 (5f158519) failed with exactly this 1 GameTest (message not in the CI listing). Expected: a Steward appointed before 27.1a keeps his job and his hall through a save and reload. Test: ./gradlew runGameTest (StewardGameTests) (found by lane-d-1005-2132, 2026-10-05)
-- [ ] **B84** **A Steward's Farmstead never finishes: the village eats its crops** (27.22's city run): the Farmstead's carrots, potatoes and wheat seeds sit in the storehouse for its builder, but villagers eat a meal from the same store each day (VillageNeeds.eat, which prefers food they haven't had lately) and pick up the seeds from trampled crops, so the build waits for materials for days (8 stalls in 2 in-game days; ledger carrot -9, potato -8, wheat_seeds -18) and holds one of the Steward's open-build slots. Fix idea: a meal never takes items a build site still needs (BuildSite materials reserved), or crop blocks are placed last. Repro: CITY=true tools/packtest/run.sh (found by lane-c-1005-2132, 2026-10-05)
+- [x] **B84** (approved auto 2026-10-06) **A Steward's Farmstead never finishes: the village eats its crops** (27.22's city run): the Farmstead's carrots, potatoes and wheat seeds sit in the storehouse for its builder, but villagers eat a meal from the same store each day (VillageNeeds.eat, which prefers food they haven't had lately) and pick up the seeds from trampled crops, so the build waits for materials for days (8 stalls in 2 in-game days; ledger carrot -9, potato -8, wheat_seeds -18) and holds one of the Steward's open-build slots. Fix idea: a meal never takes items a build site still needs (BuildSite materials reserved), or crop blocks are placed last. Repro: CITY=true tools/packtest/run.sh (found by lane-c-1005-2132, 2026-10-05)
 - [x] **B85** (approved auto 2026-10-06) **The Steward's planning costs too much a tick, with one 0.7 s spike** (27.22's city run, CITY=true PERF=true tools/packtest/run.sh): his planning runs every second at the hall, so 1 tick in 20 carries it and the p95 lands on that edge: 0.46, 0.05 and 0.59 ms in three runs (target under 0.5 ms), p99 about 1.2 ms; and the first planning call took 710 ms (an 882 ms tick, slowest call: planning at tick 3186), likely the first rules, blueprint or plot-search load. Fix ideas: spread his planning over ticks (wishes once a morning, the desk every few seconds), warm the blueprints off the tick; the City result line names the slowest call. (found by lane-c-1005-2132, 2026-10-05) Fixed (lane-a-1006-0033): planning split over the second (wishes and plot searches on tick 0, the desk on tick 10), the morning ranking counts the village a piece a second (Facts.warm), the plot signature keeps its parts (tables looked up every 100 ticks at most, builds only when a site comes or goes). City run: p95 0.494 -> 0.378 ms, p99 0.926 -> 0.895 ms, Steward planning samples 56 -> 30, worst call now "roads and walls" 74.9 ms at tick 2685 (VillageHallBlockEntity's round, not planning).
-- [ ] **B86** **In Run the village the wall and the old-house renewal never start** (27.22's city run): after a raid on record the Steward's palisade was approved on day 1, but in 6 in-game days no wall piece opened (0 standing), and his proposal 'Renew the old house 54 blocks north-west as a Stone House' stayed on the desk all week, never approved by himself, while 14 other builds (6 buildings, 8 road segments) went up. A Hamlet allows one open build at a time, so walls and renewals may simply never get a turn behind homes and roads: check Walls.round's 'no building waits' rule and approveAll's order. Repro: CITY=true tools/packtest/run.sh, the City result line's wall and desk parts. (found by lane-c-1005-2132, 2026-10-05)
+- [x] **B86** (approved auto 2026-10-06) **In Run the village the wall and the old-house renewal never start** (27.22's city run): after a raid on record the Steward's palisade was approved on day 1, but in 6 in-game days no wall piece opened (0 standing), and his proposal 'Renew the old house 54 blocks north-west as a Stone House' stayed on the desk all week, never approved by himself, while 14 other builds (6 buildings, 8 road segments) went up. A Hamlet allows one open build at a time, so walls and renewals may simply never get a turn behind homes and roads: check Walls.round's 'no building waits' rule and approveAll's order. Repro: CITY=true tools/packtest/run.sh, the City result line's wall and desk parts. (found by lane-c-1005-2132, 2026-10-05) Cause (2026-10-06, from the code and the run's layout, not yet seen in a City run): the City run's wall line (60 out) and old house (54 out) lie past every bench's 48-block reach, so Walls.round and Renewals.approve never found a builder (NO_BUILDER, the proposal left on the desk); the roads' round also ran first in the hall's tick and took every free builder, and approveAll put a lapsed-and-re-proposed renewal behind the day's homes. Fixed: wall pieces and renewals fall back to any builder of the village, roads and wall take turns (Walls.wallsTurn), approveAll takes walls and renewals first. GameTests: WallGameTests wallFar/wallTurns, RenewalGameTests renewTurn/renewFar. The CITY packtest confirmation (CITY=true tools/packtest/run.sh) is left to the QA lane / nightly.
 - [ ] **B87** **The config screen's 'Stewards Renew Old Houses: ON/OFF' label is wider than its button** (27.21, 20cd5485; showcase scene config fails on 5f15851, run 37375753016: 'every setting has a button whose label fits (68 settings)'). Players see the text overflow the button. Expected: every config label fits its button (shorter en_us text, e.g. 'Steward Renewals', or a wider button). Test: SCENE=config tools/screenshots/run.sh (found by qa-1005-2233, 2026-10-05) (found by qa-1005-2233, 2026-10-05)
+- [ ] **B86** **In Run the village the wall and the old-house renewal never start** (27.22's city run): after a raid on record the Steward's palisade was approved on day 1, but in 6 in-game days no wall piece opened (0 standing), and his proposal 'Renew the old house 54 blocks north-west as a Stone House' stayed on the desk all week, never approved by himself, while 14 other builds (6 buildings, 8 road segments) went up. A Hamlet allows one open build at a time, so walls and renewals may simply never get a turn behind homes and roads: check Walls.round's 'no building waits' rule and approveAll's order. Repro: CITY=true tools/packtest/run.sh, the City result line's wall and desk parts. (found by lane-c-1005-2132, 2026-10-05)
+- [x] **B87** (approved auto 2026-10-06) **The config screen's 'Stewards Renew Old Houses: ON/OFF' label is wider than its button** (27.21, 20cd5485; showcase scene config fails on 5f15851, run 37375753016: 'every setting has a button whose label fits (68 settings)'). Players see the text overflow the button. Expected: every config label fits its button (shorter en_us text, e.g. 'Steward Renewals', or a wider button). Test: SCENE=config tools/screenshots/run.sh (found by qa-1005-2233, 2026-10-05) (found by qa-1005-2233, 2026-10-05)
 - [ ] **B88** Showcase scenes failing with no open bug (full showcase run 37375753016 on main 5f15851, 116 pass / 29 fail; beyond B43/B62/B72/B80-B86): bridges, caravan_road, steward_safety, old_houses, steward_civic, partners_all, research_trees, legend_architect, legend_bard, legend_beastmaster, legend_founder, guilds, village_habitat (reasons on the showcase page / showcase.json). Most were added by recent items (27.x, 29.x); each needs triage: scene setup (QA lane) or the mod (its item's lane). Expected: every scene passes. Test: SCENE=<name> tools/screenshots/run.sh (found by qa-1005-2233, 2026-10-05) (found by qa-1005-2233, 2026-10-05)
 - [ ] **B89** PartnersForgeCompatTests.airMailKeepsThePidgeyWithinItsPasturesRange failed on main CI build 714 (acc0ea16, 2026-10-05 23:05Z), its only failure, and passed in build 715 a minute later on near-identical code: a flake in the compat suite (test-only, QA lane). Expected: passes every run. Test: the test repeated 10x with the repeat generator under runCompatGameTest (found by red duty) (found by lane-d-1005-2132, 2026-10-05)
 - [ ] **B90** Pidgey compat tests turn main red twice in a row: CI build 718 (1ab7d600) PartnersForgeCompatTests.aPidgeyTakesTheAirmailUpAndLandsBackEmptyHanded 'the Pidgey didn't land back: y -55.87, took off at -58.91'; build 719 (fffbc8e9) PastureCompatTests.butcherMilksAMiltankAndBrushesAPidgey 'no feathers from the Pidgey' (old B24). Both after 29.21/29.22 (Professor, Ranger). Expected: both pass every run. Test: those two tests, repeated in runCompatGameTest (red duty) (found by lane-a-1006-0033, 2026-10-06)
@@ -317,6 +319,19 @@ Before polishing, make sure nothing regresses unnoticed.
   the client itself. Done when: a push that changes one scene films only that scene, and `docs/agent/tools.md` says how
   to read the result.
 
+
+- [ ] **22.9** **The wiki: how everything works, kept true** (owner, 2026-10-06). `docs/wiki/`, plain markdown that GitHub
+  shows as pages: `README.md` is the index; one page per feature or system (what a player sees; how it works in a few
+  paragraphs; every config switch with its default; every saved field with its default; the commands, items, blocks
+  and jobs; the decisions made and why, with the roadmap id; known limits; the tests and scenes that prove it). Written
+  for the owner first, in plain words, then the lanes. Who keeps it true: **the lane that builds or changes a feature
+  updates its page in the same commit** (sessions.md, build loop step 5); **the QA lane checks it**: for every item it
+  verifies, it reads the page against the behaviour its tests proved and fixes or files a bug, and when nothing is
+  waiting it backfills one missing page per run, oldest milestone first. Done when: `docs/wiki/README.md` and the page
+  format exist; `tools/modtest/wikicheck.py` fails the build when a page names a config key, item id or lang key that
+  no longer exists, or a ticked item with a player-visible change has no page; the first twelve pages are written
+  (Builder, Villager jobs, Village Hall, Steward, Roads and walls, Edicts, Guilds, Legends, Pokemon partners, Classes,
+  Elders, Config switches) and the digest links the wiki; the QA lane's step list in sessions.md says so.
 ## Milestone 23: Builders never need babysitting (priority 1)
 
 MineColonies players' most common complaints are builders that get stuck, don't say what they need, stop when
@@ -766,7 +781,7 @@ and an old vanilla village slowly rebuilds itself one house at a time. It answer
   - as 27.13: in `StarterBlueprints` and the table, clean in `check.py`, built by a builder in a GameTest with its
     worker taking the block, the farmer working the field and the fisherman fishing from the jetty; the rules' tests;
   - a gallery package and their builds in showcase scene `gallery`.
-- [x] **27.15** (review: pending 2026-10-05) **Roads.** The roads on the plan get built, and every new building joins them. Road styles are data:
+- [x] **27.15** (approved 2026-10-06) **Roads.** The roads on the plan get built, and every new building joins them. Road styles are data:
   `data/aliveworkplace/road_styles/<name>.json` holds one style: the surface blocks for the middle and the edges
   (weighted mixes, as STYLE.md's), the slab and stairs for steps, the bridge's deck, rail and pillar blocks, its lamp
   and lantern post (27.16). One shipped style per blueprint style: **As drawn** (dirt path, coarse dirt and gravel
@@ -789,7 +804,7 @@ and an old vanilla village slowly rebuilds itself one house at a time. It answer
     its line is gone round and left standing; a half-built segment survives save and reload; roads leave the village's
     rank and building count unchanged; a new building's lane joins the street;
   - showcase scene `roads`: a GIF of a street being laid between two houses.
-- [x] **27.16** (review: pending 2026-10-05) **Lamps, bridges and steps.**
+- [x] **27.16** (approved 2026-10-06) **Lamps, bridges and steps.**
   - **Lamps:** the road style's lamp (the Street Lamp blueprint in the road's style, a styled id) every 16 blocks on
     alternate sides of streets and avenues and at every crossing, never in front of a door; lanes get a lantern post
     (the style's fence, two high, a lantern on top) every 12 blocks. Lamps count as Street Lamps for beauty
@@ -804,7 +819,7 @@ and an old vanilla village slowly rebuilds itself one house at a time. It answer
     is bridged with 2 pillars and villagers walk over it; a 20-wide gap is refused with the desk's note; stairs on a
     slope of one in one;
   - showcase scene `bridges`: a GIF of a bridge going up over a river, and the street lit at night.
-- [x] **27.17** (review: pending 2026-10-05) **Roads between villages.** For each caravan route (`Caravans`), the village builds its half of a road
+- [x] **27.17** (approved 2026-10-06) **Roads between villages.** For each caravan route (`Caravans`), the village builds its half of a road
   to the other village: a street from the end of its nearest road toward the other hall, in the style of the zone it
   starts from, planned only in loaded chunks (no chunk tickets for roads), up to `caravanRoadReach` (256) blocks or
   halfway, whichever is less. The other village builds the other half, and the two are joined when they come within
@@ -816,7 +831,7 @@ and an old vanilla village slowly rebuilds itself one house at a time. It answer
     builds 256 blocks and a milestone naming it; an unloaded chunk pauses the planning without an error, and it goes
     on when loaded; a finished road shortens the caravan's trip;
   - showcase scene `caravan_road`: a GIF along the road from one village to the other.
-- [x] **27.18** (review: pending 2026-10-05) **Walls along the wall line.** Once the village has been raided in the last 7 days, or a bandit camp
+- [x] **27.18** (approved 2026-10-06) **Walls along the wall line.** Once the village has been raided in the last 7 days, or a bandit camp
   is near, the Steward proposes its wall: along the plan's wall line, or, when none is drawn, a line of his own (round
   the zones, 4 blocks out), shown on the plan for approval. Walls are kits, as data:
   `data/aliveworkplace/wall_kits/<name>.json` holds one kit: a segment, a corner tower, a gate and the rank it needs.
@@ -834,7 +849,7 @@ and an old vanilla village slowly rebuilds itself one house at a time. It answer
     gets no wall proposal; the rank's building count goes up by one for the whole wall; the Palisade Tower is clean in
     `check.py` and a builder builds it;
   - showcase scene `walls`: a GIF of a palisade going up round a small village, and its gate shut at night.
-- [x] **27.19** (review: pending 2026-10-05) **Safe by design.** Everything the Steward builds passes one check (`steward/StewardSafety`), and his
+- [x] **27.19** (approved 2026-10-06) **Safe by design.** Everything the Steward builds passes one check (`steward/StewardSafety`), and his
   sites are careful on their own:
   - only inside his own village's zones of the right kind: never in Keep Clear, never nearer another hall, never in a
     protected village whose owner isn't his hall's owner;
@@ -852,7 +867,7 @@ and an old vanilla village slowly rebuilds itself one house at a time. It answer
   missing materials of two waiting sites; proposals stop while two sites wait and start again once supplied; the
   ledger survives save and reload; a chaos run (the tester skill's `ChaosTests`, 3 seeds) of a self-run village breaks
   no block a player placed.
-- [x] **27.20** (review: pending 2026-10-05) **Old houses, found and measured.** In zones with "renew old houses" on, the Steward looks for houses
+- [x] **27.20** (approved 2026-10-06) **Old houses, found and measured.** In zones with "renew old houses" on, the Steward looks for houses
   no builder built: a bed or a workstation (by its point of interest) that isn't in a finished build (`Homes.at`,
   `BuildSiteManager.finishedAt`), and the house round it, measured by a flood fill over built blocks (not terrain,
   plants or natural trees: at most 2000 blocks and 20×16×20, 256 blocks a tick). Keyed on blocks, never on the
@@ -866,7 +881,7 @@ and an old vanilla village slowly rebuilds itself one house at a time. It answer
   vanilla plains house (placed from its template as a fixture) is found and its box measured exactly; the same shape
   in deepslate and quartz isn't; one with a chest isn't; one a player changed since 1.1 isn't; the fill never passes
   256 blocks in a tick.
-- [x] **27.21** (review: pending 2026-10-05) **Old villages renewed.** One old house at a time (at most one every 2 days in a village), the Steward
+- [x] **27.21** (approved 2026-10-06) **Old villages renewed.** One old house at a time (at most one every 2 days in a village), the Steward
   rebuilds it in its zone's style: "Renew the old house 14 blocks west as a Stone House (Cherry)". Renewal lists are
   data: `data/aliveworkplace/steward_renewal/<name>.json` holds one: the kind of old house (a home, or a job's point
   of interest) and the buildings to try, in order. Shipped lists: homes (Starter Cottage, Stone House, Terrace: the
@@ -886,7 +901,7 @@ and an old vanilla village slowly rebuilds itself one house at a time. It answer
     there; a save and reload between the take-down and the rebuild; a renewal cancelled after the take-down leaves the
     plot to be proposed again;
   - showcase scene `renewal`: a time-lapse GIF of a vanilla village house becoming a Stone House in Cherry.
-- [x] **27.22** (review: pending 2026-10-05) **A village from a plan (the 1.1 yardstick).** The whole milestone at once, as 23.1 is for builders: a
+- [x] **27.22** (approved 2026-10-06) **A village from a plan (the 1.1 yardstick).** The whole milestone at once, as 23.1 is for builders: a
   plains village with a hall, a Steward, 3 builders, a stocked storehouse and 12 villagers; a plan with Homes,
   Workshops, Farms, Market, Gardens and Keep Clear zones, two streets and a wall line; Run the village for 6 in-game
   days. Run it as a pack-server scenario (`tools/packtest`) for the numbers and as a screenshot scene for the
@@ -1047,7 +1062,7 @@ here adds a new kind of speed bonus (the new jobs get the partners' existing one
     full); a jobless villager left by a machine for 2400 ticks doesn't take it;
   - a builder builds both tiers (GameTest), and the renders are in the package;
   - showcase scene `pokemon_center` (stills of both tiers, a GIF of the healing).
-  - [x] **28.7a** (review: pending 2026-10-05) Change from the owner (2026-10-05): Approved, but add more Pokémon Center variants later (more looks for the tiers).
+  - [x] **28.7a** (approved 2026-10-06) Change from the owner (2026-10-05): Approved, but add more Pokémon Center variants later (more looks for the tiers).
 - [x] **28.8** (approved 2026-10-05) **The Camp Cook.** Stand a villager by a Campfire Pot (Cobblemon's campfire with a pot on it; POI when
   Cobblemon registers `cobblemon:campfire`) and sneak-right-click them with Hearty Grains. Never taken by a jobless
   villager. Config `campCooks` (true).
@@ -1207,7 +1222,7 @@ here adds a new kind of speed bonus (the new jobs get the partners' existing one
     biome's pool, and a forced spawn round brings a Pokémon from that pool within its range; breaking the garden
     removes the block with no drop; on 1.7.3 nothing is placed and the keeper's page says it needs Cobblemon 1.8;
   - showcase scene `village_habitat`, filmed with `-Pcobblemon18=true`.
-- [x] **28.15** (review: pending 2026-10-05) **Villages grow them.** With Cobblemon, villages (the pools that grow trainer's houses) sometimes grow
+- [x] **28.15** (approved 2026-10-06) **Villages grow them.** With Cobblemon, villages (the pools that grow trainer's houses) sometimes grow
   five new houses, each in the five village styles through `tools/blueprints/village.py`'s `village_house` fit-outs,
   each with exactly one job block and its villager already in the job (an entity in the template): a **Pokémon Center**
   (a counter with a Healing Machine and a PC; a nurse), a **Camp Kitchen** (a cook), a **Berry Nursery** (a breeder), a
@@ -1217,7 +1232,7 @@ here adds a new kind of speed bonus (the new jobs get the partners' existing one
   Done when: `generate.py` writes the 25 templates (no `structure_void`, B5), renders checked; a `VillageGameTests`
   test per house places it with its villager, who has the job and stands in open space (B6); `SCENE=village` shows one
   in a Cobblemon village.
-- [x] **28.16** (review: pending 2026-10-05) **The Arena.** Three tiers (architect skill, an original design, renders), in the Blueprint Table with
+- [x] **28.16** (approved 2026-10-06) **The Arena.** Three tiers (architect skill, an original design, renders), in the Blueprint Table with
   Cobblemon only and sold by an Expert Trainer Leader:
   - **Arena**: a 15×9 battle ring (a packed-mud floor, white lines and a centre circle), a trainer's box on a dais at
     each end with a lamp post, benches along one long side for 12 villagers, two banner poles, a notice board; at most
@@ -1234,7 +1249,7 @@ here adds a new kind of speed bonus (the new jobs get the partners' existing one
 
   Done when: a builder finishes each tier (GameTest); `Arenas.find` is right in 4 rotations and mirrored (GameTest);
   showcase scene `arena` (each tier, front and from above).
-- [x] **28.17** (review: pending 2026-10-05) **The Festival Cup: calendar, themes and entrants.** No battles yet; config `festivalCup` (true),
+- [x] **28.17** (approved 2026-10-06) **The Festival Cup: calendar, themes and entrants.** No battles yet; config `festivalCup` (true),
   `cupEveryFestivals` (1; owner, 28.1a).
   - Hosts: a village with a hall, a finished Arena, Cobblemon and at least Village rank holds every festival as
     a Cup (every `cupEveryFestivals`th). Its circuit: the host and every village with a hall it has a trade route with,
@@ -1263,7 +1278,7 @@ here adds a new kind of speed bonus (the new jobs get the partners' existing one
   Trainer, the players' rights and caps), seeding and byes for 3, 5, 8 and 11 entrants, the Leader record written and
   read while the village is unloaded, the Cup state saved and reloaded, a malformed theme file logged and skipped; and
   showcase scene `cup_page`.
-- [x] **28.18** (review: pending 2026-10-05) **Cup bouts between villagers.** A round starts when the last round's bouts are done; a bout between
+- [x] **28.18** (approved 2026-10-06) **Cup bouts between villagers.** A round starts when the last round's bouts are done; a bout between
   two villager entrants is an exhibition at the ring:
   - Teams: `CobblemonTrainers.team` gets a themed variant: the same seeded pool, filtered by the theme's types, stage
     and labels, as many as the theme brings, trained by the trainer's tier as now. A delegate (28.19) uses its Leader's
@@ -1282,7 +1297,7 @@ here adds a new kind of speed bonus (the new jobs get the partners' existing one
   Done when: GameTests: the bout is the same for the same seed; the chart is sane (Water on Fire 2×, Normal on Ghost
   0×); a bout between two trainers ends with a winner and every Pokémon entity gone; a themed team follows the theme; a
   delegate's banked XP reaches the real Leader on load; showcase scene `cup_bout` with its GIF.
-- [ ] **28.19** **Cup day.** The Cup is the host's festival, from morning to the final:
+- [x] **28.19** (review: pending 2026-10-06) **Cup day.** The Cup is the host's festival, from morning to the final:
   - Delegates: from 1000 the far villages' entrants arrive, each a visiting villager with its Leader's name, a Trainer
     Leader's outfit and "of <village>", walking in from the village edge on the side its home lies, to the Arena
     (attachment `CUP_DELEGATE`: home hall, the Leader's UUID, tier; never takes a job or a bed; leaves at dawn out of
@@ -1306,7 +1321,7 @@ here adds a new kind of speed bonus (the new jobs get the partners' existing one
   from their homes' side and are gone by dawn, villagers are in the stands for the final, the fair sells the theme's
   wares, every circuit hall's chronicle has the entry; with `festivalCup` off it's a plain festival; showcase scene
   `cup_day` (the whole day, sped up) with its GIF.
-- [ ] **28.20** **Players in the Cup.** A signed-up player's bout is called in chat with a clickable [I'm ready] and a
+- [x] **28.20** (review: pending 2026-10-06) **Players in the Cup.** A signed-up player's bout is called in chat with a clickable [I'm ready] and a
   bell; they have two minutes inside the Arena to click it, or lose by walkover (so does a player who's offline).
   - Against a villager: a real Cobblemon battle with the delegate or host trainer as `VillagerTrainerActor`, in the
     theme's format (singles or doubles), its level adjust and Showdown rules (the theme's level replaces RCT's level
@@ -1675,7 +1690,7 @@ MarketDays) and research/.
   village; each riddle takes its answer and refuses others, with the hint after two misses; the guest arrives; every
   topic's effect and the exclusive last pick; the hut's render in the review package; showcase scene `legend_sage`
   (the hut, a riddle, the Ancient Lore tab).
-- [x] **29.15** (review: pending 2026-10-05) **The Golem Smith (Legendary).** Comes: inspired (29.10): a Master Tinkerer in a happy village with 4
+- [x] **29.15** (approved 2026-10-06) **The Golem Smith (Legendary).** Comes: inspired (29.10): a Master Tinkerer in a happy village with 4
   iron golems; the materials come from a pool of a diamond, a block of copper, a block of redstone, a blaze rod, a
   breeze rod, an amethyst shard and an echo shard, and the Masterwork is a heavy core named "The Heart of <name>".
   Trade: Tinkerer. Likes: wine. Powers (`golem_forge`): from the chests by their smithing table they build one golem
@@ -1701,7 +1716,7 @@ MarketDays) and research/.
   it is an ordinary golem. A farmhand tends the fields of farmers within 48 blocks (Field Marker or adopted farms),
   picks only crops and nether wart, and carries up to 9 stacks to the chests by that farmer's composter. A new golem
   stands on solid ground beside the Smith (never on a roof). The hall's line for each golem is on the guards button.
-- [x] **29.16** (review: pending 2026-10-05) **The Seer (Rare).** Comes: a guest at the village's finished Chapel at midnight under a full moon, 1
+- [x] **29.16** (approved 2026-10-06) **The Seer (Rare).** Comes: a guest at the village's finished Chapel at midnight under a full moon, 1
   time in 2 (29.8); born to a Cleric (29.7). Trade: `aliveworkplace:legend`; by day they keep to the Chapel. Likes:
   jewels. Powers:
   - **foretelling** (`foretell`), each dawn, to the village's players in chat and on the hall's "What next?": whether
@@ -1716,7 +1731,7 @@ MarketDays) and research/.
   Seer comes only at midnight, at a full moon, to a Chapel; a raid foretold at dawn comes that night and none comes
   when none is foretold (fixed `RandomSource`); the festival and market days told are right; a blessed wedding's mood
   and baby; showcase scene `legend_seer` (GIF: the arrival under the full moon, the dawn foretelling in chat).
-- [x] **29.17** (review: pending 2026-10-05) **The Merchant Prince (Legendary).** Comes: found as a castaway by a shipwreck (29.9) once the
+- [x] **29.17** (approved 2026-10-06) **The Merchant Prince (Legendary).** Comes: found as a castaway by a shipwreck (29.9) once the
   village's treasury has taken in 500 emeralds all told (`treasury_total`) and it sends caravans on 3 routes. Trade:
   `aliveworkplace:legend`; they keep to the Village Hall and the Market Square. Likes: wine. Powers:
   - **the bank** (`bank`): the treasury earns 2% a day on what it holds and holds twice as much; players deposit
@@ -1733,7 +1748,7 @@ MarketDays) and research/.
   cap; deposits and withdrawals with interest, kept through a reload, never more than 10 stacks; a fair with 6 traders
   plus one per linked village; the caravan pay; showcase scene `legend_merchant_prince` (the bank page, a GIF of the
   fair).
-- [x] **29.18** (review: pending 2026-10-05) **The Grand Chef (Rare).** Comes: inspired (29.10): a Master Chef in a happy village whose store has 8
+- [x] **29.18** (approved 2026-10-06) **The Grand Chef (Rare).** Comes: inspired (29.10): a Master Chef in a happy village whose store has 8
   kinds of meal (`VillageHalls.mealKinds`); the materials come from a pool of a golden apple, a glistering melon
   slice, a golden carrot, a honeycomb, glow berries, chorus fruit and a pufferfish, and the Masterwork is a cake named
   for the village ("The Thornholm Midsummer Cake"). Also a guest at the inn on the same condition, and born to a Chef
@@ -1747,7 +1762,7 @@ MarketDays) and research/.
   Outfit: a tall white toque and a gold ladle at the apron. Done when: GameTests: a banquet takes two meals each; the
   mood; two births a day for 3 days with free beds, and one a day after; chefs faster; showcase scene
   `legend_grand_chef` (GIF: the banquet).
-- [x] **29.19** (review: pending 2026-10-05) **The Bard Laureate (Rare).** Comes: a guest at a festival once 30 villagers come to it (29.8); born
+- [x] **29.19** (approved 2026-10-06) **The Bard Laureate (Rare).** Comes: a guest at a festival once 30 villagers come to it (29.8); born
   to a Bard (29.7). Trade: Bard. Likes: books. Powers:
   - **the anthem** (`anthem`): when they settle they compose the village's anthem, 16 notes on one instrument (harp,
     flute, bell, chime, guitar or xylophone) made from the village's name, so it never changes, kept in the hall. It
@@ -1761,7 +1776,7 @@ MarketDays) and research/.
   Outfit: a green doublet, a lute on the back and a laurel wreath. Done when: GameTests: the same name always gives
   the same anthem and another name a different one; it is saved and played at each event (the sounds counted); the
   work-song pace only while they sing; showcase scene `legend_bard` (GIF with the notes).
-- [x] **29.20** (review: pending 2026-10-05) **The Beastmaster (Rare).** Comes: found as a prisoner in a pillager outpost (29.9) once the village
+- [x] **29.20** (approved 2026-10-06) **The Beastmaster (Rare).** Comes: found as a prisoner in a pillager outpost (29.9) once the village
   has a ranch: 10 animals within 16 blocks of a Rancher's, Butcher's or Shepherd's workstation; born to a Rancher
   (29.7). Trade: Rancher. Likes: clothes. Powers:
   - **war dogs** (`war_dogs`): with bones in their chest they tame a wolf for each guard without one (the village's
@@ -1775,7 +1790,7 @@ MarketDays) and research/.
   and is replaced 2 days after it dies; a foal's stats are at least its best parent's and never over vanilla's
   highest; cavalry picks the bred horses; showcase scene `legend_beastmaster` (GIF: a guard and a war dog against
   zombies).
-- [x] **29.21** (review: pending 2026-10-05) **The Pokémon Professor (Legendary, with Cobblemon).** Comes: a guest at the inn once the village's
+- [x] **29.21** (approved 2026-10-06) **The Pokémon Professor (Legendary, with Cobblemon).** Comes: a guest at the inn once the village's
   Pasture Blocks hold 25 Pokémon of 10 types (the condition `pastured_pokemon`, through a new extension point
   `legend/PokemonCensus` filled in `compat/cobblemon/`; without Cobblemon the file doesn't load). Trade:
   `aliveworkplace:legend`, at a lectern. Likes: books. Powers:
@@ -1792,7 +1807,7 @@ MarketDays) and research/.
   Outfit: a white lab coat. Done when: compat GameTests (`runCompatGameTest`): the census; hints that match the
   Pokémon's real IVs, nature, ability and EVs; each species logged once; every topic's unlock and effect; without
   Cobblemon nothing loads or errors; showcase scene `legend_professor` (Cobblemon: the hints, the Pokédex tab).
-- [x] **29.22** (review: pending 2026-10-05) **The Pokémon Ranger (Rare, with Cobblemon).** Comes: a guest at the Village Hall, 1 time in 3 a
+- [x] **29.22** (approved 2026-10-06) **The Pokémon Ranger (Rare, with Cobblemon).** Comes: a guest at the Village Hall, 1 time in 3 a
   morning, while an Alpha Pokémon is within 96 blocks of the hall (Cobblemon's own Alpha mark if the installed version
   has one, checked with the engineer skill's `api.py`; otherwise a wild Pokémon of level 50 or more): the condition
   `alpha_near`, through a new extension point `legend/WildPokemon` filled in `compat/cobblemon/`. Trade:
@@ -1808,7 +1823,7 @@ MarketDays) and research/.
   an Alpha (or the level-50 stand-in) near; a calmed Alpha doesn't attack a villager; a befriended Pokémon belongs to
   the owner and is in the pasture, and a banned species never is; nothing loads without Cobblemon; showcase scene
   `legend_ranger`.
-- [x] **29.23** (review: pending 2026-10-05) **The Founder (Mythic).** Comes: inspired (29.10), always, at the village's first rise to City: its
+- [x] **29.23** (approved 2026-10-06) **The Founder (Mythic).** Comes: inspired (29.10), always, at the village's first rise to City: its
   most experienced Master (the most XP) is seized by the Founder's mood and asks for a block of gold, a block of
   emeralds and a diamond. The Masterwork is **The Charter of <village>**, a written book of the village's story drawn
   from its chronicle (its founding, each rank, its Legends, its first wedding, the raids it beat), signed by the
@@ -2105,7 +2120,7 @@ the Village Hall (`VillageNeeds`, `VillageQuests`, `VillageRanks`, `Festivals`, 
   ferrymen, bards, trainers, tutors or traders. Done when: a GameTest per tonic (its maker makes it, one of its jobs is
   25% faster with it, a job outside its list refuses it); the four icons pass `lint.py` and are shown in slots and in
   hand in the review package; the `tonics` scene films all six.
-- [x] **30.17** (review: pending 2026-10-05) **Guild Charters, the Guildhall and the Builders' Guild.**
+- [x] **30.17** (approved 2026-10-06) **Guild Charters, the Guildhall and the Builders' Guild.**
   - The **Guild Charter**, an item of its own (pixel-art: a rolled charter with a red seal), crafted from three paper,
     an emerald, a gold ingot and red dye. Sneak-right-click a Master of a trade with it in a village of Village rank or
     more: they become the **Guild Master** of that trade's guild (attachment `guild_master`; the hall's list and their
@@ -2129,7 +2144,7 @@ the Village Hall (`VillageNeeds`, `VillageQuests`, `VillageRanks`, `Festivals`, 
   faster, 5 helpers at one build); succession when the master dies; a builder builds the Guildhall I and II in a test;
   the renders checked against `STYLE.md` in the review package; showcase scene `guildhall`: the Guildhall II with its
   Guild Master inside, and the Builders' Guild on the Book's last row.
-- [x] **30.18** (review: pending 2026-10-05) **The Miners', Smiths' and Woodsmen's Guilds.** A data file each; members work 15% faster:
+- [x] **30.18** (approved 2026-10-06) **The Miners', Smiths' and Woodsmen's Guilds.** A data file each; members work 15% faster:
   - **Miners' Guild** (Miners, Sifters, Netherworkers): pickaxes, and the netherworker's gear, wear half as fast;
   - **Smiths' Guild** (Armorers, Toolsmiths, Weaponsmiths, Tinkerers, Ball Smiths): every material a weaponsmith
     mends with puts back a third of the durability instead of a quarter (`MendingWork.PER_UNIT`);
@@ -2138,7 +2153,7 @@ the Village Hall (`VillageNeeds`, `VillageQuests`, `VillageRanks`, `Festivals`, 
   New effects: `tool_wear` and `mend_per_unit`. Done when: a GameTest per guild with its numbers, founded and not
   (durability lost over 20 blocks dug, 20 logs cut and 10 fish caught; what one ingot puts back); showcase scene
   `guilds`: each Guild Master's status and the guilds' row of the Book.
-- [x] **30.19** (review: pending 2026-10-05) **The Harvest, Herders' and Scholars' Guilds.** A data file each; members work 15% faster:
+- [x] **30.19** (approved 2026-10-06) **The Harvest, Herders' and Scholars' Guilds.** A data file each; members work 15% faster:
   - **Harvest Guild** (Farmers, Orchard Keepers, Florists, Beekeepers, Composters, Chefs): the village's own farms and
     the orchard keepers' rounds reach 24 blocks instead of 16;
   - **Herders' Guild** (Shepherds, Butchers, Ranchers): every herd may be 4 bigger (shepherds and ranchers breed up to
@@ -2148,7 +2163,7 @@ the Village Hall (`VillageNeeds`, `VillageQuests`, `VillageRanks`, `Festivals`, 
 
   New effects: `work_reach`, `herd_size`, `research_cost`. Done when: GameTests for each number, founded and not; the
   `guilds` scene gains their rows.
-- [x] **30.20** (review: pending 2026-10-05) **The Healers', Merchants', Wardens' and Trainers' Guilds.** A data file each:
+- [x] **30.20** (approved 2026-10-06) **The Healers', Merchants', Wardens' and Trainers' Guilds.** A data file each:
   - **Healers' Guild** (Nurses, Clerics, Undertakers): members work 15% faster; the village's ill get well in two days
     instead of three, and nurses and undertakers look 48 blocks out instead of 32;
   - **Merchants' Guild** (Shopkeepers, Innkeepers, Ferrymen, Postmen, Porters): members work 15% faster; travellers
@@ -2162,7 +2177,7 @@ the Village Hall (`VillageNeeds`, `VillageQuests`, `VillageRanks`, `Festivals`, 
   `work_radius`, `hire_price`, `carry`, `train_up_to`, `strength`, `lesson_price`, `trainer_xp`. Done when: GameTests
   for each number, founded and not; the Trainers' Guild absent without Cobblemon and working in the compat suite; the
   `guilds` scene gains their rows.
-- [x] **30.21** (review: pending 2026-10-05) **Edicts and civic items in the village's life.**
+- [x] **30.21** (approved 2026-10-06) **Edicts and civic items in the village's life.**
   - Chatter (`people/Chatter`): two lines for each edict in force and two for each reformed one ("Long shifts again...
     my back.", "The shift bell's rung. Home we go."), and lines for a rush, a tonic, a guild and the village's colours;
   - "What next?" (`VillageAdvice`): a free edict slot; a reform step waiting on the quest page; Festival Season with a
@@ -2243,7 +2258,7 @@ write their own stories; nothing waits forever on a player.
   - a quest file in the gametest datapack is posted and completes; a broken file is skipped with one log line naming
     it (added to `allow.txt`); `/reload` picks up a changed file;
   - `villageQuests` off: no new quests, and nothing else changes.
-- [x] **31.3** (review: pending 2026-10-05) **The quest journal, tracking and quest maps.** The hall's Quests page becomes a journal with four tabs
+- [x] **31.3** (approved 2026-10-06) **The quest journal, tracking and quest maps.** The hall's Quests page becomes a journal with four tabs
   along the top: **Village** (the daily quests), **Personal** (requests from villagers who are your friends, 31.9),
   **Story** (the village's arc, 31.4) and **Bounties** (31.13); a tab whose item hasn't landed yet says so in grey.
   Each quest shows who asked, one line per objective with its progress, the reward and the days left, and has two
@@ -2262,7 +2277,7 @@ write their own stories; nothing waits forever on a player.
     `reach` counts inside its radius and not outside; the map's marker sits on the found place; the lookup runs once
     per quest (a counter);
   - showcase scene `quest_journal`: the four tabs, a tracked bar on screen, a quest map in hand.
-- [ ] **31.4** **The story arc engine.** Arcs are data, `data/<namespace>/arcs/<id>.json`, one arc per file: a
+- [x] **31.4** (review: pending 2026-10-06) **The story arc engine.** Arcs are data, `data/<namespace>/arcs/<id>.json`, one arc per file: a
   `trigger` (conditions, a chance a day), the `chapters` in order and an `ending`. A chapter has a name, intro lines
   for chat and the chronicle, `on_start` effects, its quests (ids or written inline), when it's done (all of them, any
   one, or the ones named), `delay_days` before the next, a `time_limit_days` with what happens on failure, and chatter
@@ -2293,7 +2308,7 @@ write their own stories; nothing waits forever on a player.
   - a far `place` waits until a player comes near, then places once;
   - no more than `arcsAtOnce` arcs run; with `storyArcs` off no arc starts and a running one ends at its next round;
   - showcase scene `story_arc`: the announcement, the Story tab, the chronicle.
-- [ ] **31.5** **Friendship.** Every named villager in a hall's village keeps a friendship with each player: 0 to 1000
+- [x] **31.5** (review: pending 2026-10-06) **Friendship.** Every named villager in a hall's village keeps a friendship with each player: 0 to 1000
   points, ten hearts of 100. It's saved on the villager, in a new attachment `friendship` (empty by default): player →
   points, the last gift's day, gifts this week, heart events told. Favours, each once a day per villager unless said:
   - trading with them: +5;
@@ -2796,7 +2811,7 @@ let the player strike back at their camps. Fire, drought and plague each get a j
 has a switch and a peaceful setting. It builds on guard/VillageRaids, BanditCamps, Gates, GuardRally, Mercenaries, the
 Rally Banner and the defence blueprints (tools/blueprints/defence.py).
 
-- [ ] **32.1** **Design note.** `docs/design/M32.md`: what the player sees (the threat ladder: monsters from 8
+- [x] **32.1** (review: pending 2026-10-06) **Design note.** `docs/design/M32.md`: what the player sees (the threat ladder: monsters from 8
   villagers, bandits at Village rank, the enemy of the village's own land from Town, sieges led by the captain himself
   at City; a siege night minute by minute; the warning timeline; a march on a lair; each disaster and its job), the
   two data formats (a raider culture and a disaster, one full example file each), the new config keys and the hall's
@@ -3144,7 +3159,7 @@ guards who ride to each other's aid. Between players come trade pacts, alliances
 feuds that only turn to war on a PvP server. It all builds on what exists: hall/Caravans, the Village Ledger and
 treasury, travel posts, mail, village protection and the Settler's Wagon (camp/).
 
-- [x] **33.1** (review: pending 2026-10-05) **Design note.** `docs/design/M33.md`, sent to the owner as a review package (lanes don't wait for his
+- [x] **33.1** (approved 2026-10-06) **Design note.** `docs/design/M33.md`, sent to the owner as a review package (lanes don't wait for his
   reply): what the player sees in each part, with a mock-up of the hall's new Trade page and its tabs (Routes, Prices,
   Pacts, Realm, Colonies); the data formats (`data/aliveworkplace/trade_goods/<good>.json`,
   `data/aliveworkplace/realm_research/<topic>.json`, realm edicts in M30's edict format); the config switches
@@ -3563,7 +3578,7 @@ into elders who retire and teach, and every family has a tree. It builds on `peo
 switches on for every village of the owner's live server at once, so it ends with a careful migration and a rehearsal
 on a real world.
 
-- [x] **34.1** (review: pending 2026-10-05) **Design note.** `docs/design/M34.md`: what the player sees (the class ladder, a household rising at
+- [x] **34.1** (approved 2026-10-06) **Design note.** `docs/design/M34.md`: what the player sees (the class ladder, a household rising at
   dawn, the four luxury trades and their goods, villagers dressed by class, grander homes, elders, family trees, and
   the first week after the update); the data formats with one example file each (`classes/`, `services/`,
   `luxuries/`, `luxury_recipes/`, `homes/` under `data/aliveworkplace/`); every config switch; every new saved field
@@ -3638,7 +3653,7 @@ on a real world.
   and stops at 8, keeps to its level, waits for an aged input (the day moved on in the test), asks for missing
   makings on the board, fills a stock order first, and a datapack recipe adds a new good with no code. Nothing to see
   yet: `--no-review`.
-- [ ] **34.6** **Classes at the Village Hall.** What the player sees:
+- [x] **34.6** (review: pending 2026-10-06) **Classes at the Village Hall.** What the player sees:
   - a **Classes** button on the hall's screen (its tooltip: how many households of each class); its page has a button
     per class listing each need and want with how many households have it ("Fine Clothes: 2 of 5"), what the class
     gives, and the households closest to rising with what they lack;
@@ -3657,7 +3672,7 @@ on a real world.
   Done when: `ClassHallGameTests` check the page's counts and the tips against a staged village; `langcheck.py` is
   clean; scene `classes` (a household rising at dawn, then the hall's Classes page) passes; the README gets a Classes
   section.
-- [ ] **34.7** **What each class gives.** From the `effects` in the class files:
+- [x] **34.7** (review: pending 2026-10-06) **What each class gives.** From the `effects` in the class files:
   - **taxes** (`Treasury.takings`): each worker pays `treasuryPerWorker` × their class's factor (Peasant 1, Artisan
     1.5, Burgher 2.5, Noble 4), 10% more for each want they have; a Noble without a job pays like a worker. A Peasant
     pays exactly today's rate, so no village takes in less than before; the name tag's tooltip shows the split by
@@ -3678,7 +3693,7 @@ on a real world.
   Done when: `ClassPerkGameTests` (the takings for a staged mix of classes and wants, never below the old formula for
   Peasants; the crafter pace staying within the cap; wellbeing capped at 9%; the ball replacing one festival in two)
   pass; scene `noble_ball` passes; README updated.
-- [ ] **34.8** **Higher jobs need higher classes.** The `jobs` list in each class file names the jobs a villager must
+- [x] **34.8** (review: pending 2026-10-06) **Higher jobs need higher classes.** The `jobs` list in each class file names the jobs a villager must
   be that class or higher to take. To start: **Artisan**: Tinkerer, Chef, Netherworker, Nurse, Teacher, Shopkeeper,
   Innkeeper, Printer and, with Cobblemon, Ball Smith, Move Tutor, Pokémon Trader, Fossil Scientist; **Burgher**:
   Scholar, Undertaker, Jeweller, Trainer Leader; **Noble**: none yet (kept for M29's Legends and M33's offices).
@@ -3692,7 +3707,7 @@ on a real world.
   `ClassJobGameTests` cover each way of taking a job, a grandfathered worker keeping their job across a reload, a
   hired Expert arriving as a Burgher, and no gate with `villageClasses` off; scene `class_jobs` (a Peasant refused
   the Scholar's paper, a Burgher taking it) passes; the README's job table gets a Class column.
-- [ ] **34.9** **Vintner.** A new job: stand a villager by a **cauldron** and sneak-right-click them with **sweet
+- [x] **34.9** (review: pending 2026-10-06) **Vintner.** A new job: stand a villager by a **cauldron** and sneak-right-click them with **sweet
   berries, glow berries or an apple** (a new line in `Stations`; the cauldron's Leatherworker and Sifter stay). The
   cauldron is their vat (purple splashes and a squelch while pressing), and through 34.5 they make:
   - **Cider**: 3 apples and a glass bottle (Novice);
@@ -3818,10 +3833,21 @@ on a real world.
   (120) grown days a villager is an **elder**: the hall says so ("Elder · grown 131 days"), they wear the elder look
   (34.18), walk 15% slower (`Walker`), and their mood gets "a quiet old age" (+5) when they're fed and housed. The
   chronicle notes it ("Bram is an elder now"), and elders have four chatter lines of their own ("In my day this was
-  all fields."). Config `villagerAges`. Elders never die of old age: the owner's call, default no (`elderPassing`
-  off; if he says yes, an elder passes in their sleep after 40 elder days and leaves a grave). Done when:
+  all fields."). Config `villagerAges`. Owner's call (2026-10-06): elders DO pass in their sleep after 40 elder days and leave a grave
+  (`elderPassing` on), unless made ageless by 34.19a. Done when:
   `LifeStageGameTests` (an elder after the configured days with the clock moved on, the slower walk, the mood reason,
   a reload keeping the day, a child growing up getting today) pass; scene `elders` passes.
+- [ ] **34.19a** **The Evergreen Charm: ageless elders** (owner, 2026-10-06: "make an elder eternal if they have good
+  traits by building a specific item and giving it to them, so you don't lose good villagers"). A new item, the
+  **Evergreen Charm** (pixel-art: a small gold-and-green leaf pendant; a rare craft: a totem of undying, a golden
+  apple, 2 emeralds and a heart of the sea, our decision, tune in play). Sneak-right-click an elder with it: they
+  become **Ageless** (attachment `ageless`, saved, default false): they never pass, keep the elder look with a gold
+  leaf badge on the hall, keep the slower walk, still retire and mentor (34.20), and the chronicle says so ("Bram
+  will never leave us"). Only an elder with **good traits** is accepted, else refused with the reason: Master level
+  in their trade, or Gifted (29.x), or a Legend, or a Mood of 80 or more for the last 20 days. One charm, one villager;
+  it is used up. Config `agelessElders` (true). With `elderPassing` off nobody needs one. Done when: GameTests
+  (accepted for each good trait, refused for a plain elder and for a non-elder, the charm used up, ageless surviving
+  40+ elder days and a reload, the passing of a non-ageless elder with a grave) pass; scene `ageless_elder` passes.
 - [ ] **34.20** **Retirement and apprentices.** An elder with a job retires once someone can take over, at most one
   villager a village every 3 days:
   - the successor is their own grown child without a job, else any jobless grown villager of a class the job allows
@@ -4340,6 +4366,7 @@ item waits.
   3-hour runs (owner: longer if need be); lane C is off; the QA lane runs overnight only; reviews never block; the evening digest releases daily.
 
 ## Notes / blocked
+- **Owner approved every decision in the 2026-10-05 decision notes as written** (chat, 2026-10-06): 27.15-34.1 and B78, including 28.7 (Cobblemon's nurse keeps working), 28.16 (Arena at level 4), 27.16 (bridge deck one block above the bank) and the 33.1 defaults (real-week leaderboard, no tribute, owner-only treasury from 33.5, colonies at City). He will review the wiki (22.9) at the next digest and send notes.
 
 - (Sessions: anything that needs the owner, and the link to the latest Full test report. Handoffs go here through
   `sessions.py handoff "<in progress, next, traps>" --as <you>`, which keeps one per kind of session (chat, night):
@@ -4353,6 +4380,18 @@ item waits.
   `#c:is_snowy`, "windswept hills" `#minecraft:is_hill`. Several-item goods use `aliveworkplace:trade/<good>` item tags
   (Cobblemon's with `required: false`); Timber, Coal and Wool use vanilla's tags. The 33.2 tests now count only the six
   test goods (`TradeGoodsDataGameTests.goodsFrom`), since the real goods would crowd their top 3.
+- 2026-10-06 (32.1, question for the owner; lane b): may M32's threats damage builder-made buildings on the live
+  server? Rams break only the gate blocks (fence gates, doors, iron bars) of finished wall and gate builds, and a village
+  fire burns only blocks the builders placed; never a player's own blocks, and the builders always put them back.
+  Default, which lanes build with: yes (`siegeDamage` true). The other choice: `siegeDamage` false on his server, so
+  gates hold and a village fire burns out without destroying anything. Jesse: yes/no. Design note `docs/design/M32.md`
+  ("For the owner to decide"), with a mock-up of the Defence page (`docs/design/M32-defence.png`).
+- 2026-10-06 (32.1, decisions; lane b): raids come from the standing lair, else monsters from the edge (today's rule as
+  data); the threat clock keeps the next two nights rolled per hall, and the Seer reads it instead of rolling its own;
+  `siegeDamage` also covers village fire; the new switches (`raiderCultures`, `sieges`, `siegeDamage`, `disasters`,
+  `threatLevel`, `firewardens`, `wellKeepers`, `physicians`) sit behind a new `Expansions.M32`, while 32.2/32.3's engine
+  work runs under `villageRaids`/`banditCamps` with today's numbers; "builder-made" is a block at a finished build's
+  blueprint position still matching it (`MaterialRules.matches`). Details and every saved field in M32.md.
 - 2026-10-05 (B76, decision; lane b): the unfinished expansions are gated in one place, `Expansions` (core): a flag
   per milestone (M27, M28, M29, M30, all `false` now). Each of its config switches defaults to that flag and
   `WorkplaceConfig.apply` ANDs the switch with it, so a 0.139.0 file holding `true` still leaves the feature off, and its
@@ -4872,3 +4911,71 @@ item waits.
   its maximum, nobody's or the hall owner's (another player's pasture is never filled). A calm is checked at the damage
   gate (a calmed Alpha's blows on villagers and players inside any village are cancelled and its target dropped); a
   walk that takes longer than 2 minutes is given up for the day.
+- 2026-10-06 (31.4, decisions; lane c): the arc engine reads `threat` but doesn't gate on it yet: 32.21 (the threat
+  level, At peace) hasn't landed, so whoever builds 32.21 adds the check in `Arcs.tryStart` (the comment marks the
+  spot). A chapter's `intro` takes a lang key or a text component (a pack may write `{"text": ...}`); `chatter` lines
+  are lang keys. `place` rules: `ring`, `road` (a share along the hall's nearest caravan route), `biome`, `after` (with
+  `distance`) and `offset` ([x, z] from the hall, for packs and tests); `count` places `key`, `key#2`... (one
+  `<key>_done` flag when all are built). A spot that has no clear natural ground within 32 blocks is given up with a
+  log line and its `<key>_done` set, so no chapter waits on it forever. Spawn groups are `data/<ns>/arc_spawns/<id>.json`
+  (`{"mobs": [...]}`). A mob dying to anything counts as dead (not put back) and sets `<key>_dead`. Flags set with
+  `days` also outlive the arc in the village (`Stories.villageFlag`, for the Bandit King's "no camps for 10 days").
+- 2026-10-06 (28.19, decisions; lane b): the Cup's afternoon off counts villagers at work too (the stands fill from
+  noon with every grown villager who isn't resting; for the final, children as well); entrants, delegates and the bard
+  never sit. An Arena I has no fair lane, so its fair is held by the notice board. The bard's disc plays once, at noon,
+  where the bard is if they reached the ring, else at the ring. A Cup put off keeps its new day through the host's
+  rounds; called off after 8 days, the next Cup is set from the calendar. The Cup's chronicle entry for a circuit
+  village that isn't loaded is kept in `aliveworkplace_cups` and written, with the Cup's day, at its next hall round.
+- 2026-10-06 (28.20, decisions; lane b): without Cobblemon a bout with a player is never called (no Cup bouts start
+  at all then): it's settled at the theme's end as before, a player not at the ring losing by walkover, else the bout's
+  seed deciding. "Inside the Arena" for [I'm ready] is within 24 blocks of the ring; the call goes to the player
+  wherever they are, and an offline player has the same two minutes. Both players absent: the second in the bracket
+  loses. A player whose party has nobody eligible loses by walkover when the battle would start; a villager entrant
+  with no body at the ring (neither the Leader nor a delegate there) loses by walkover. A battle that ends with no
+  result (a restart, `/stopbattle`) is called again with a fresh two minutes; one that can't start (the player is
+  already in a battle) asks for [I'm ready] again. The purse is paid on every win, walkovers too, if the winner is
+  online; 100,000 is 1,000 emeralds at the default `dollarsPerEmerald` of 100. The battle's level is Cobblemon's level
+  adjust (the theme's level); RCT's caps are not applied to Cup teams. [Watch] on the notice board: right-clicking
+  the board (within 2 blocks) while a player bout is fought prints the bout with a [Watch] button.
+- 2026-10-05 (34.6, partial; lane d): landed the rise and fall effects (`Chronicle.Kind.CLASS`, sparkles at the lead's
+  bed as "their door", `AMETHYST_BLOCK_CHIME`, the chat line within 32 blocks), the moods (saved as `class_standing`
+  at each dawn: needs lacking and the last turn; a standing older than yesterday's dawn adds nothing) and chatter
+  `class_rose`/`class_fell`, with `ClassHallGameTests`. Still to do for 34.6: the hall's Classes button and page
+  (counts, what each class gives, closest to rising), class and household in the people list and the villager page's
+  needs, the food icon's luxuries tooltip, the What next? class tips, chatter for wine, clothes, the Gazette and the
+  tavern (they wait for 34.9+ goods), the scene `classes`, the README section and the Guidebook page (after 26.2a).
+- 2026-10-06 (34.6, done; lane d): the hall's Classes tab and page (`hall/ClassesPage`, registered only once M34 is
+  finished; counts each need over the households of the class and the one below, "Fine Clothes: 2 of 5"), the people
+  list's class line and the needs of their class and the next ticked, the food icon's luxuries in store (shown with
+  classes on), up to three "What next?" class tips (most households first; the how-line is per kind of need, not yet
+  naming each luxury's maker, which arrives with 34.9+), scene `classes` (the rise is staged with a scene ladder whose
+  Artisans need only a varied diet, then the real ladder is put back for the page), README "Classes". Still waiting:
+  chatter for wine, clothes, the Gazette and the tavern (34.9+ goods) and the Guidebook's Classes page (after 26.2a).
+  Luxury names are `luxury.<namespace>.<id>` lang keys (a data pack's without one reads as its id, "Test Trinket").
+- **34.7 (2026-10-06, decisions):** `people/ClassPerks` reads the class files' effects; `work_pace` and `research_pace`
+  are one `Pace` source ("their class (Artisan)") under the shared cap, and both apply to the class and every class
+  above (a Noble scholar is no slower than a Burgher one; the design note gave "or better" only to `work_pace`). The
+  village's households by class are counted with the hall's people (`VillageNeeds.count`), in memory. Wants had are a
+  new `wants` field on `class_standing` (default 0), counted at dawn. Waiting on other items, each degrading quietly:
+  the Burghers' trader sells a Townhouse or Manor blueprint only once 34.15/34.16 put them in the library (until then
+  the extra trader comes without it); the ball's venue is a finished Manor's middle until 34.16 says where its ballroom
+  is, else the hall; the wine served is the `#aliveworkplace:ball_wine` tag (Vintage Wine, Berry Wine, Cider, all
+  optional entries until 34.9 adds them). `ballTurn` flips on every festival in a village with a Noble, so
+  `replace_every` other than 2 reads as 2.
+- **34.8 (2026-10-06, decisions):** `people/ClassJobs` reads the class files' `jobs` (the lowest class naming a job is
+  what it needs). A villager with no class yet (unseeded, until 34.22) is never gated, so no village loses hires before
+  seeding; a Legend counts as the top class. "A village with a hall" is the nearest hall within `VillageHalls.RADIUS`.
+  Besides the four ways in the spec, the Steward's morning jobs (`StewardJobs.plan`) skip jobs above a villager's class
+  too. A jobless villager taking a modded block by themselves (vanilla's own job search) isn't gated, as the spec lists
+  only the four ways (most of these jobs share a block with a vanilla job, which is the one taken by itself). The
+  Printer and Jeweller are in the Artisan and Burgher files already and are gated once 34.11/34.12 add them. A hired
+  traveller's class is given only in a village with a hall. The refusal reads "Dara is Peasant class; Scholar needs
+  Burgher or better" (no "a"/"an" before names a data pack may change).
+- **34.9 (2026-10-06, decisions):** the Vintner has a config switch, `vintners`, gated with M34 like `villageClasses`.
+  Sweet berries, glow berries and an apple also pick the Orchard Keeper at a composter: the station by the villager
+  decides (the nearest free one), and a villager already an Orchard Keeper (or a Vintner) isn't switched by the same
+  fruit, as `Stations.picks` has always done. Drinks are `mc/DrinkItem` (food, and the bottle given back by hand, as
+  1.21.2 moves that to a component). The wines are in `not_villager_food` (households take them as luxuries, never as
+  meals). Trades: makings bought at every level (apples, sweet berries, bottles, glow berries, apples); Cider sold at
+  Novice, Berry Wine at Apprentice and Expert, Vintage Wine at Journeyman and Master. Not done here: the "What next?"
+  tip naming the Vintner (34.6 left that how-line generic).

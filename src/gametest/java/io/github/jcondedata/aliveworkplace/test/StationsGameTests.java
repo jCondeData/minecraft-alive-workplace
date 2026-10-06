@@ -53,6 +53,7 @@ public class StationsGameTests implements FabricGameTest {
 			new Row(Blocks.SMITHING_TABLE, Items.IRON_INGOT, VillagerProfession.TOOLSMITH),
 			new Row(Blocks.CAULDRON, Items.GRAVEL, ModVillagers.SIFTER),
 			new Row(Blocks.CAULDRON, Items.LEATHER, VillagerProfession.LEATHERWORKER),
+			new Row(Blocks.CAULDRON, Items.APPLE, ModVillagers.VINTNER),
 			new Row(Blocks.LECTERN, Items.PAPER, ModVillagers.SCHOLAR),
 			new Row(Blocks.LECTERN, Items.BOOK, ModVillagers.TEACHER),
 			new Row(Blocks.LECTERN, Items.LAPIS_LAZULI, VillagerProfession.LIBRARIAN),

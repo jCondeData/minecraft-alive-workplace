@@ -171,7 +171,9 @@ public final class Stations {
 			job(() -> ModVillagers.BALL_SMITH, cobblemon(p -> p.endsWith("_apricorn"))))),
 		new Station(is(PoiTypes.LEATHERWORKER), Blocks.CAULDRON, List.of(
 			job(() -> VillagerProfession.LEATHERWORKER, any(Items.LEATHER)),
-			job(() -> ModVillagers.SIFTER, any(Items.GRAVEL, Items.SAND, Items.RED_SAND, Items.SOUL_SAND)))),
+			job(() -> ModVillagers.SIFTER, any(Items.GRAVEL, Items.SAND, Items.RED_SAND, Items.SOUL_SAND)),
+			// sweet berries, glow berries or an apple (34.9), with config vintners on
+			job(() -> ModVillagers.VINTNER, io.github.jcondedata.aliveworkplace.vintner.Vintners::isFruit))),
 		new Station(is(PoiTypes.LIBRARIAN), Blocks.LECTERN, List.of(
 			job(() -> VillagerProfession.LIBRARIAN, any(Items.LAPIS_LAZULI)),
 			job(() -> ModVillagers.SCHOLAR, any(Items.PAPER)),
@@ -392,6 +394,13 @@ public final class Stations {
 	static InteractionResult take(ServerPlayer player, Villager villager, BlockPos station, VillagerProfession profession) {
 		if (!Friends.mayCommand(player, villager)) {
 			return Hiring.hire(player, villager, Component.empty()); // refuses, and says whose they are
+		}
+		// Higher jobs need higher classes (34.8): "Dara is a Peasant; a Scholar must be a Burgher".
+		Component refusal = io.github.jcondedata.aliveworkplace.people.ClassJobs.refusal((ServerLevel) villager.level(), villager, profession);
+		if (refusal != null) {
+			villager.level().playSound(null, villager, net.minecraft.sounds.SoundEvents.VILLAGER_NO, net.minecraft.sounds.SoundSource.NEUTRAL, 1f, 1f);
+			Chat.chat(player, refusal.copy().withStyle(ChatFormatting.YELLOW));
+			return InteractionResult.CONSUME;
 		}
 		Component who = villager.getDisplayName(); // before: an unnamed villager is called by their job
 		assign((ServerLevel) villager.level(), villager, station, profession);

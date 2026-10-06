@@ -240,7 +240,7 @@ public final class VillageHalls {
 	}
 
 	/** "Oakbrook", "Ashford"... always the same for the same spot. */
-	static Component madeUpName(BlockPos hall) {
+	public static Component madeUpName(BlockPos hall) {
 		long seed = hall.asLong() * 0x9E3779B97F4A7C15L;
 		int first = (int) Math.floorMod(seed >>> 17, (long) FIRST_HALVES);
 		int second = (int) Math.floorMod(seed >>> 41, (long) SECOND_HALVES);

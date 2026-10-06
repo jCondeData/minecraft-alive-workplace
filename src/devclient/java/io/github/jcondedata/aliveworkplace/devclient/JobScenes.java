@@ -115,6 +115,8 @@ final class JobScenes {
 	/** Villagers the scenes hand from staging to a later step (the scholar, the screen scenes' villager). */
 	private static volatile Villager scholar;
 	private static volatile Villager subject;
+	/** classes (34.6): the couple first, then three Peasants. */
+	private static final List<Villager> classPeople = new java.util.concurrent.CopyOnWriteArrayList<>();
 	/** curfew: the villagers who go to bed at dusk. */
 	private static final List<Villager> curfewSleepers = new java.util.concurrent.CopyOnWriteArrayList<>();
 	/** conscription: the villagers called up, and the raiders they beat back. */
@@ -412,6 +414,13 @@ final class JobScenes {
 			ScreenshotHarness.hover(player, scholar.position().add(1.5, 1.2, 3), 160, 15);
 			io.github.jcondedata.aliveworkplace.research.ResearchScreen.open(player, scholar);
 		}, 19, 6)));
+		SCENES.put("vintner", job("the vintner pressed cider in the cauldron, purple splashes and all", 2400, (level, player) -> {
+			// ROADMAP 34.9: a cauldron picked with an apple; apples and glass bottles in the chest. The Novice presses Cider
+			// at the vat (purple splashes, a squelch) and puts the bottles in the chest.
+			picked(level, player, STATION, Blocks.CAULDRON, Items.APPLE);
+			Container c = chest(level, chestPos(), new ItemStack(Items.APPLE, 9), new ItemStack(Items.GLASS_BOTTLE, 3));
+			return l -> c.countItem(io.github.jcondedata.aliveworkplace.registry.ModItems.CIDER) >= 2;
+		}));
 		SCENES.put("sifter", job("the sifter sifted gravel into loot", 1800, (level, player) -> {
 			Villager v = picked(level, player, STATION, Blocks.WATER_CAULDRON.defaultBlockState().setValue(BlockStateProperties.LEVEL_CAULDRON, 3), Items.GRAVEL);
 			chest(level, chestPos(), new ItemStack(Items.GRAVEL, 40));
@@ -2335,6 +2344,108 @@ final class JobScenes {
 					player.teleportTo(level, player.getX(), player.getY(), player.getZ(), player.getYRot(), 70f); // (look down at it)
 				}, 40)),
 			(level, player) -> true));
+		// Friendship (ROADMAP 31.5): a trade and a quest done for Dara put hearts on, shown in the action bar while the
+		// player looks at her, with a puff of hearts; the hall's tooltip shows your hearts and her best friends.
+		SCREENS.put("friendship", new Screen("a trade and a quest done for Dara raised the player's hearts in the action bar, and the hall's tooltip shows them",
+			new Vec3(1.5, -60, 4.5), new Vec3(1.5, -58.8, 1.5),
+			(level, player) -> {
+				level.setBlockAndUpdate(STATION, ModBlocks.VILLAGE_HALL.defaultBlockState()
+					.setValue(io.github.jcondedata.aliveworkplace.hall.VillageHallBlock.FACING, Direction.SOUTH));
+				Villager dara = EntityType.VILLAGER.spawn(level, new BlockPos(1, -60, 1), MobSpawnType.COMMAND);
+				dara.setNoAi(true);
+				dara.setYRot(0);
+				dara.setYHeadRot(0);
+				dara.setYBodyRot(0);
+				dara.setVillagerData(dara.getVillagerData().setProfession(VillagerProfession.FARMER).setLevel(2));
+				dara.setCustomName(Component.literal("Dara"));
+				subject = dara;
+			},
+			List.of(new Step("01_trade_hearts", -1, 0, (level, player) -> {
+					// The hall's POI is only registered after the staging tick: look Dara's hall up again now (B72).
+					io.github.jcondedata.aliveworkplace.hall.CivicEffects.forget();
+					Villager dara = subject;
+					io.github.jcondedata.aliveworkplace.story.Friendship.add(dara, player, 255); // the days before
+					io.github.jcondedata.aliveworkplace.story.Friendship.add(dara, java.util.UUID.nameUUIDFromBytes("Ana".getBytes()), "Ana", 430);
+					dara.setTradingPlayer(player);
+					dara.notifyTrade(new net.minecraft.world.item.trading.MerchantOffer(new net.minecraft.world.item.trading.ItemCost(Items.EMERALD, 1),
+						new ItemStack(Items.BREAD, 6), 12, 1, 0.05f));
+					dara.setTradingPlayer(null);
+					Component line = io.github.jcondedata.aliveworkplace.story.Friendship.lookLine(player);
+					Showcase.check(io.github.jcondedata.aliveworkplace.story.Friendship.points(dara, player.getUUID()) == 260
+						&& line != null && line.getString().equals("Dara ♥♥♡♡♡♡♡♡♡♡"), "a trade with Dara: +5, two hearts in the action bar: " + line);
+				}, 40),
+				new Step("02_quest_hearts", -1, 0, (level, player) -> {
+					Villager dara = subject;
+					long now = level.getGameTime();
+					var quest = new io.github.jcondedata.aliveworkplace.story.Quest(java.util.UUID.randomUUID(),
+						io.github.jcondedata.aliveworkplace.AliveWorkplace.id("daily/want_bread"), "hall", java.util.Optional.empty(), "Dara", now,
+						now + 3 * io.github.jcondedata.aliveworkplace.hall.VillageNeeds.DAY,
+						List.of(new io.github.jcondedata.aliveworkplace.story.Objectives.Bring("minecraft:bread", 4, "hall", java.util.Optional.empty())),
+						new int[1], List.of(new io.github.jcondedata.aliveworkplace.story.Rewards.Money_(3, 0, 0, false)));
+					io.github.jcondedata.aliveworkplace.story.Stories.post(level, STATION, quest);
+					player.getInventory().add(new ItemStack(Items.BREAD, 4));
+					int given = io.github.jcondedata.aliveworkplace.story.Stories.handIn(player, STATION, quest.id);
+					Component line = io.github.jcondedata.aliveworkplace.story.Friendship.lookLine(player);
+					Showcase.check(given == 4 && io.github.jcondedata.aliveworkplace.story.Friendship.points(dara, player.getUUID()) == 310
+						&& line != null && line.getString().equals("Dara ♥♥♥♡♡♡♡♡♡♡"), "Dara's bread quest done: +50, three hearts and a puff: " + line);
+				}, 40),
+				new Step("03_hall_tooltip", io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_PERSON, 6, (level, player) -> {
+					io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.open(player, STATION);
+					boolean shown = player.containerMenu instanceof ChoiceMenu m && m.icon(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_PERSON)
+						.getOrDefault(net.minecraft.core.component.DataComponents.LORE, net.minecraft.world.item.component.ItemLore.EMPTY).lines().stream()
+						.anyMatch(l -> l.getString().equals("Your hearts: ♥♥♥♡♡♡♡♡♡♡"));
+					Showcase.check(shown, "the hall's tooltip for Dara shows your hearts and her best friends");
+				}, 30)),
+			(level, player) -> subject != null && io.github.jcondedata.aliveworkplace.story.Friendship.points(subject, player.getUUID()) >= 310));
+		// A story arc (ROADMAP 31.4): the chapter told in chat as it begins, the hall's Story tab (the first chapter ticked,
+		// the second running with its quest) and the chronicle's STORY lines. The mod ships no arcs of its own yet, so the
+		// scene reads a small one here, as a data pack would.
+		SCREENS.put("story_arc", new Screen("a story arc began: its chapters told in chat, the Story tab with the first chapter ticked and the second running, and the chronicle",
+			new Vec3(2.5, -58.4, 4.5), TARGET,
+			(level, player) -> {
+				level.setBlockAndUpdate(STATION, ModBlocks.VILLAGE_HALL.defaultBlockState()
+					.setValue(io.github.jcondedata.aliveworkplace.hall.VillageHallBlock.FACING, Direction.SOUTH));
+				com.google.gson.JsonObject json = com.google.gson.JsonParser.parseString("""
+					{"name": {"text": "The Long Winter"},
+					 "chapters": [
+					  {"name": {"text": "The first snow"},
+					   "intro": [{"text": "Snow came early this year, and the woodpile behind the hall is thin."}],
+					   "complete": []},
+					  {"name": {"text": "Wood for the winter"},
+					   "intro": [{"text": "The village asks for logs before the frost sets in."}],
+					   "quests": [{"name": {"text": "Logs for the woodpile"}, "objectives": [{"type": "bring", "item": "minecraft:oak_log", "count": 32}]}],
+					   "time_limit_days": 4},
+					  {"name": {"text": "The frozen pass"}, "complete": []}]}
+					""").getAsJsonObject();
+				var arc = io.github.jcondedata.aliveworkplace.story.Arcs.read(io.github.jcondedata.aliveworkplace.AliveWorkplace.id("showcase/long_winter"), json);
+				io.github.jcondedata.aliveworkplace.story.Arcs.add(arc);
+				io.github.jcondedata.aliveworkplace.story.Arcs.stopAll(level, STATION);
+				var started = io.github.jcondedata.aliveworkplace.story.Arcs.start(level, STATION, arc);
+				Showcase.check(started != null && started.chapter == 1 && started.started, "the arc began and moved on to its second chapter");
+			},
+			List.of(new Step("01_story_announced", -1, 0, (level, player) ->
+					Showcase.check(io.github.jcondedata.aliveworkplace.story.Arcs.running(level, STATION) != null, "the chapters were told in chat"), 40),
+				new Step("02_story_tab", io.github.jcondedata.aliveworkplace.hall.QuestJournal.CHAPTER_ROW + 2, 6, (level, player) -> {
+					io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.open(player, STATION);
+					if (player.containerMenu instanceof ChoiceMenu m) {
+						m.press(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.QUESTS, player);
+						m.press(io.github.jcondedata.aliveworkplace.hall.QuestJournal.Tab.STORY.slot, player);
+						Showcase.check(m.icon(io.github.jcondedata.aliveworkplace.hall.QuestJournal.CHAPTER_ROW + 1).is(Items.ENCHANTED_BOOK)
+							&& m.icon(io.github.jcondedata.aliveworkplace.hall.QuestJournal.CHAPTER_ROW + 2).is(Items.WRITABLE_BOOK)
+							&& m.icon(io.github.jcondedata.aliveworkplace.hall.QuestJournal.STORY_QUEST_SLOTS[0]).is(Items.OAK_LOG),
+							"the Story tab ticks the first chapter and shows the second with its quest");
+					}
+				}, 30),
+				new Step("03_story_chronicle", io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW, 6, (level, player) -> {
+					io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.open(player, STATION);
+					if (player.containerMenu instanceof ChoiceMenu m) {
+						m.press(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.CHRONICLE, player);
+					}
+					Showcase.check(level.getBlockEntity(STATION) instanceof io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity hall
+						&& hall.chronicle().stream().anyMatch(e -> e.kind() == io.github.jcondedata.aliveworkplace.hall.Chronicle.Kind.STORY),
+						"the chronicle keeps the story's chapters");
+				}, 30)),
+			(level, player) -> true));
 		// Long Shifts proclaimed (ROADMAP 30.3): the builder's line in the hall's list says "long shifts" and 20% faster,
 		// and the chronicle keeps the proclamation.
 		SCREENS.put("long_shifts", new Screen("Long Shifts was proclaimed: the hall's list shows the \"long shifts\" mood and the chronicle keeps it",
@@ -2851,6 +2962,165 @@ final class JobScenes {
 					}
 				}, 30)),
 			(level, player) -> player.containerMenu instanceof ChoiceMenu));
+		// Classes at the Village Hall (ROADMAP 34.6): a Peasant couple rises to Artisan at dawn (golden sparkles at their door,
+		// a chime, the chat line), then the hall's Classes tab and page with the real ladder's needs counted.
+		SCREENS.put("classes", new Screen("a Peasant couple rose to Artisan at dawn with golden sparkles and a chat line, and the hall's Classes page counts each class's needs",
+			new Vec3(2.5, -58.4, 4.5), TARGET,
+			(level, player) -> {
+				level.setBlockAndUpdate(STATION, ModBlocks.VILLAGE_HALL.defaultBlockState()
+					.setValue(io.github.jcondedata.aliveworkplace.hall.VillageHallBlock.FACING, Direction.SOUTH));
+				io.github.jcondedata.aliveworkplace.people.SocialClasses.ENABLED = true;
+				classPeople.clear();
+				String[] names = {"Odo", "Pia", "Ann", "Bo", "Cy"};
+				for (int i = 0; i < names.length; i++) {
+					Villager v = bornSceneVillager(level, new BlockPos(-2 + i, -60, 3), names[i], false);
+					io.github.jcondedata.aliveworkplace.people.SocialClasses.seed(v, io.github.jcondedata.aliveworkplace.people.SocialClasses.get(
+						io.github.jcondedata.aliveworkplace.AliveWorkplace.id("peasant")));
+					// Odo, Pia and Ann eat a varied diet; Bo and Cy only bread.
+					io.github.jcondedata.aliveworkplace.registry.ModAttachments.RECENT_MEALS.set(v, i < 3
+						? List.of(net.minecraft.resources.ResourceLocation.withDefaultNamespace("bread"), net.minecraft.resources.ResourceLocation.withDefaultNamespace("baked_potato"), net.minecraft.resources.ResourceLocation.withDefaultNamespace("cooked_cod"))
+						: List.of(net.minecraft.resources.ResourceLocation.withDefaultNamespace("bread"), net.minecraft.resources.ResourceLocation.withDefaultNamespace("bread"), net.minecraft.resources.ResourceLocation.withDefaultNamespace("bread")));
+					classPeople.add(v);
+				}
+				Villager odo = classPeople.get(0);
+				Villager pia = classPeople.get(1);
+				io.github.jcondedata.aliveworkplace.registry.ModAttachments.PARTNER.set(odo,
+					new io.github.jcondedata.aliveworkplace.people.Couples.Partner(pia.getUUID(), pia.getDisplayName(), 1, true));
+				io.github.jcondedata.aliveworkplace.registry.ModAttachments.PARTNER.set(pia,
+					new io.github.jcondedata.aliveworkplace.people.Couples.Partner(odo.getUUID(), odo.getDisplayName(), 1, true));
+				io.github.jcondedata.aliveworkplace.hall.VillageNeeds.check(level, STATION);
+			},
+			List.of(new Step("01_classes_rise", -1, 0, (level, player) -> {
+					// Dawn. The scene's Artisans need only a varied diet (the real ones also want a home, services and work
+					// clothes, which take days to set up): the couple has had it two dawns running, and rises.
+					level.setDayTime((level.getDayTime() / 24000 + 1) * 24000);
+					var files = io.github.jcondedata.aliveworkplace.people.SocialClasses.files(level.getServer().getResourceManager());
+					var real = new java.util.HashMap<>(files);
+					files.put(io.github.jcondedata.aliveworkplace.AliveWorkplace.id("artisan"), com.google.gson.JsonParser.parseString(
+						"{\"tier\": 1, \"tax\": 1.5, \"name\": {\"translate\": \"class.aliveworkplace.artisan\"}, \"needs\": [{\"type\": \"diet\", \"kind\": \"varied\"}]}"));
+					io.github.jcondedata.aliveworkplace.people.SocialClasses.load(files);
+					long today = io.github.jcondedata.aliveworkplace.hall.Chronicle.day(level);
+					List<Villager> couple = classPeople.subList(0, 2);
+					io.github.jcondedata.aliveworkplace.people.SocialClasses.check(level, STATION, couple, today - 1, 8);
+					var rise = io.github.jcondedata.aliveworkplace.people.SocialClasses.check(level, STATION, couple, today, 8);
+					Showcase.check(rise.changes().size() == 1 && rise.changes().get(0).rose(), "the couple rose to Artisan at dawn: " + rise.changes());
+					io.github.jcondedata.aliveworkplace.people.SocialClasses.load(real); // the real ladder for the page
+				}, 12),
+				new Step("02_classes_tab", -2, 6, (level, player) -> {
+					io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.open(player, STATION);
+					pickedSlot = io.github.jcondedata.aliveworkplace.hall.HallPages.slot(io.github.jcondedata.aliveworkplace.hall.ClassesPage.PAGE);
+					var counts = io.github.jcondedata.aliveworkplace.hall.ClassesPage.counts(level, STATION);
+					Showcase.check(counts.values().stream().mapToInt(Integer::intValue).sum() == 4, "four households counted on the tab: " + counts.values());
+				}, 30),
+				new Step("03_classes_page", -2, 6, (level, player) -> {
+					io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.open(player, STATION);
+					if (player.containerMenu instanceof ChoiceMenu m) {
+						m.press(io.github.jcondedata.aliveworkplace.hall.HallPages.slot(io.github.jcondedata.aliveworkplace.hall.ClassesPage.PAGE), player);
+						pickedSlot = -1;
+						for (int slot = io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW; slot < ChoiceMenu.SIZE; slot++) {
+							if (m.icon(slot).getHoverName().getString().equals("Burgher")) {
+								pickedSlot = slot; // the Burgher button: the Artisan couple closest to rising, and what they lack
+							}
+						}
+						Showcase.check(pickedSlot >= 0, "the Classes page has a Burgher button");
+					}
+				}, 30)),
+			(level, player) -> player.containerMenu instanceof ChoiceMenu m && m.getType() == ModBlocks.VILLAGE_HALL_MENU));
+		// Higher jobs need higher classes (ROADMAP 34.8): by a lectern in a village with a hall, Dara, a Peasant, is handed
+		// the Scholar's paper and refused ("Dara is Peasant class; Scholar needs Burgher or better"); Bram, a Burgher, takes it.
+		SCREENS.put("class_jobs", new Screen("a Peasant was refused the Scholar's paper (the job needs a Burgher), and a Burgher took it",
+			new Vec3(2.5, -58.4, 4.5), TARGET,
+			(level, player) -> {
+				level.setBlockAndUpdate(STATION.offset(-6, 0, -4), ModBlocks.VILLAGE_HALL.defaultBlockState()
+					.setValue(io.github.jcondedata.aliveworkplace.hall.VillageHallBlock.FACING, Direction.SOUTH));
+				level.setBlockAndUpdate(STATION, Blocks.LECTERN.defaultBlockState());
+				io.github.jcondedata.aliveworkplace.people.SocialClasses.ENABLED = true;
+				classPeople.clear();
+				String[] names = {"Dara", "Bram"};
+				String[] classes = {"peasant", "burgher"};
+				for (int i = 0; i < names.length; i++) {
+					Villager v = bornSceneVillager(level, new BlockPos(-1 + 2 * i, -60, 2), names[i], false);
+					io.github.jcondedata.aliveworkplace.people.SocialClasses.seed(v, io.github.jcondedata.aliveworkplace.people.SocialClasses.get(
+						io.github.jcondedata.aliveworkplace.AliveWorkplace.id(classes[i])));
+					classPeople.add(v);
+				}
+			},
+			List.of(new Step("01_class_jobs_refused", -1, 0, (level, player) -> {
+					Villager dara = classPeople.get(0);
+					player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, new net.minecraft.world.item.ItemStack(Items.PAPER));
+					io.github.jcondedata.aliveworkplace.work.Stations.choose(player, dara, new net.minecraft.world.item.ItemStack(Items.PAPER));
+					Showcase.check(dara.getVillagerData().getProfession() == net.minecraft.world.entity.npc.VillagerProfession.NONE,
+						"the Peasant was refused the Scholar's job: " + dara.getVillagerData().getProfession());
+				}, 30),
+				new Step("02_class_jobs_taken", -1, 0, (level, player) -> {
+					Villager bram = classPeople.get(1);
+					io.github.jcondedata.aliveworkplace.work.Stations.choose(player, bram, new net.minecraft.world.item.ItemStack(Items.PAPER));
+					Showcase.check(bram.getVillagerData().getProfession() == ModVillagers.SCHOLAR,
+						"the Burgher took the Scholar's job: " + bram.getVillagerData().getProfession());
+				}, 40)),
+			(level, player) -> classPeople.size() == 2 && classPeople.get(1).getVillagerData().getProfession() == ModVillagers.SCHOLAR));
+		// The Noble's Ball (ROADMAP 34.7): a village with a Noble household holds a ball in place of every other festival.
+		// The guests gather at the hall (no Manor yet), gold fireworks go up at dusk, the player is a Hero of the Village
+		// for the night, and the hall's name tag shows the day's takings by class.
+		SCREENS.put("noble_ball", new Screen("the village's Noble household turned the festival into a Noble's Ball: guests at the hall, gold fireworks at dusk, the player a Hero for the night, and the takings split by class",
+			new Vec3(2.5, -58.4, 4.5), TARGET,
+			(level, player) -> {
+				level.setBlockAndUpdate(STATION, ModBlocks.VILLAGE_HALL.defaultBlockState()
+					.setValue(io.github.jcondedata.aliveworkplace.hall.VillageHallBlock.FACING, Direction.SOUTH));
+				io.github.jcondedata.aliveworkplace.people.SocialClasses.ENABLED = true;
+				var hall = (io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(STATION);
+				hall.setRank(io.github.jcondedata.aliveworkplace.hall.VillageRanks.Rank.HAMLET);
+				hall.setFestivalDay(-1);
+				String[] names = {"Lady Wren", "Odo", "Pia", "Ann", "Bo", "Cy"};
+				String[] classes = {"noble", "burgher", "artisan", "artisan", "peasant", "peasant"};
+				for (int i = 0; i < names.length; i++) {
+					Villager v = bornSceneVillager(level, new BlockPos(-3 + i, -60, 3), names[i], false);
+					v.setVillagerData(v.getVillagerData().setProfession(i == 0 ? net.minecraft.world.entity.npc.VillagerProfession.NONE
+						: i == 1 ? net.minecraft.world.entity.npc.VillagerProfession.LIBRARIAN : i < 4 ? ModVillagers.CARPENTER : net.minecraft.world.entity.npc.VillagerProfession.FARMER));
+					io.github.jcondedata.aliveworkplace.people.SocialClasses.seed(v, io.github.jcondedata.aliveworkplace.people.SocialClasses.get(
+						io.github.jcondedata.aliveworkplace.AliveWorkplace.id(classes[i])));
+				}
+				io.github.jcondedata.aliveworkplace.hall.VillageNeeds.check(level, STATION); // counts the households by class
+				// The evening before, so no round plans a festival before the pictures ask for one.
+				level.setDayTime((level.getDayTime() / 24000) * 24000 + io.github.jcondedata.aliveworkplace.hall.Festivals.END + 500);
+			},
+			List.of(new Step("01_noble_ball_guests", -1, 0, (level, player) -> {
+					var hall = (io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(STATION);
+					long today = io.github.jcondedata.aliveworkplace.hall.Chronicle.day(level) + 1;
+					level.setDayTime(today * 24000 + io.github.jcondedata.aliveworkplace.hall.Festivals.START - 500);
+					hall.setBallTurn(false);
+					io.github.jcondedata.aliveworkplace.hall.Festivals.plan(level, STATION, hall, today, 0); // the first festival: a plain one
+					boolean first = io.github.jcondedata.aliveworkplace.hall.NobleBalls.isBall(hall, today);
+					hall.setFestivalDay(-1);
+					io.github.jcondedata.aliveworkplace.hall.Festivals.plan(level, STATION, hall, today, 0); // the next: the ball
+					Showcase.check(!first && io.github.jcondedata.aliveworkplace.hall.NobleBalls.isBall(hall, today), "every other festival is a Noble's Ball");
+					level.setDayTime(today * 24000 + io.github.jcondedata.aliveworkplace.hall.Festivals.START + 200);
+					io.github.jcondedata.aliveworkplace.hall.Festivals.round(level, STATION, hall, 6);
+					var square = io.github.jcondedata.aliveworkplace.hall.Festivals.square(level, STATION);
+					Showcase.check(square.equals(STATION), "the guests gather at the hall (no Manor): " + square);
+					var hero = player.getEffect(net.minecraft.world.effect.MobEffects.HERO_OF_THE_VILLAGE);
+					Showcase.check(hero != null && hero.getDuration() > io.github.jcondedata.aliveworkplace.hall.Festivals.END - io.github.jcondedata.aliveworkplace.hall.Festivals.START,
+						"the player is a Hero of the Village for the night: " + (hero == null ? "none" : hero.getDuration() + " ticks"));
+				}, 40),
+				new Step("02_noble_ball_fireworks", -1, 0, (level, player) -> {
+					long today = io.github.jcondedata.aliveworkplace.hall.Chronicle.day(level);
+					level.setDayTime(today * 24000 + io.github.jcondedata.aliveworkplace.hall.Festivals.FIREWORKS + 100);
+					for (int i = 0; i < 6; i++) {
+						io.github.jcondedata.aliveworkplace.hall.Festivals.launch(level, STATION.offset(-4 + i * 2, 1, 4 + (i % 2) * 2),
+							io.github.jcondedata.aliveworkplace.hall.NobleBalls.GOLD);
+					}
+					Villager lady = level.getEntitiesOfClass(Villager.class, new net.minecraft.world.phys.AABB(STATION).inflate(16),
+						v -> v.getCustomName() != null && v.getCustomName().getString().equals("Lady Wren")).stream().findFirst().orElse(null);
+					Showcase.check(lady != null && io.github.jcondedata.aliveworkplace.hall.Festivals.mood(level, lady) == io.github.jcondedata.aliveworkplace.hall.NobleBalls.MOOD,
+						"the guests came to the ball: +15 mood");
+				}, 50),
+				new Step("03_noble_ball_takings", 0, 6, (level, player) -> {
+					io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.open(player, STATION);
+					var census = io.github.jcondedata.aliveworkplace.hall.VillageHalls.census(level, STATION);
+					var lines = io.github.jcondedata.aliveworkplace.hall.Treasury.taxLines(level, STATION, census.workers(), census.jobless());
+					Showcase.check(lines.size() == 5, "the name tag splits the takings by class: " + lines.size() + " lines");
+				}, 30)),
+			(level, player) -> player.containerMenu instanceof ChoiceMenu m && m.getType() == ModBlocks.VILLAGE_HALL_MENU));
 		SCREENS.put("hall_treasury", new Screen("the hall's treasury was collected, the village protected and its screen opened from a Village Ledger",
 			new Vec3(2.5, -58.4, 4.5), TARGET,
 			(level, player) -> {

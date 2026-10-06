@@ -268,21 +268,30 @@ public class CrafterWork extends Behavior<Villager> {
 		}
 		if (timer % 10 == 0) {
 			villager.swing(InteractionHand.MAIN_HAND);
-			level.playSound(null, station, kind == Crafting.Kind.STONECUTTING ? SoundEvents.UI_STONECUTTER_TAKE_RESULT
-				: kind == Crafting.Kind.KITCHEN ? SoundEvents.CAMPFIRE_CRACKLE : kind == Crafting.Kind.WORKSHOP ? SoundEvents.CHAIN_HIT : SoundEvents.WOOD_HIT,
-				SoundSource.BLOCKS, 0.5f, 0.9f + level.random.nextFloat() * 0.2f);
-			if (kind == Crafting.Kind.WORKSHOP) {
-				level.sendParticles(net.minecraft.core.particles.ParticleTypes.SMALL_FLAME, station.getX() + 0.5, station.getY() + 1.05,
-					station.getZ() + 0.5, 2, 0.15, 0.02, 0.15, 0.005);
-			}
-			if (kind == Crafting.Kind.KITCHEN) {
-				level.sendParticles(net.minecraft.core.particles.ParticleTypes.CAMPFIRE_COSY_SMOKE, station.getX() + 0.5, station.getY() + 1.1,
-					station.getZ() + 0.5, 1, 0.1, 0.05, 0.1, 0.01);
-			}
+			workEffects(level, station);
 		}
 		if (--timer > 0) {
 			return;
 		}
+		finishCraft(level, villager, station, bag, crafts);
+	}
+
+	/** The sound and particles of the work at the station, every half second while crafting (a trade may have its own). */
+	protected void workEffects(ServerLevel level, BlockPos station) {
+		level.playSound(null, station, kind == Crafting.Kind.STONECUTTING ? SoundEvents.UI_STONECUTTER_TAKE_RESULT
+			: kind == Crafting.Kind.KITCHEN ? SoundEvents.CAMPFIRE_CRACKLE : kind == Crafting.Kind.WORKSHOP ? SoundEvents.CHAIN_HIT : SoundEvents.WOOD_HIT,
+			SoundSource.BLOCKS, 0.5f, 0.9f + level.random.nextFloat() * 0.2f);
+		if (kind == Crafting.Kind.WORKSHOP) {
+			level.sendParticles(net.minecraft.core.particles.ParticleTypes.SMALL_FLAME, station.getX() + 0.5, station.getY() + 1.05,
+				station.getZ() + 0.5, 2, 0.15, 0.02, 0.15, 0.005);
+		}
+		if (kind == Crafting.Kind.KITCHEN) {
+			level.sendParticles(net.minecraft.core.particles.ParticleTypes.CAMPFIRE_COSY_SMOKE, station.getX() + 0.5, station.getY() + 1.1,
+				station.getZ() + 0.5, 1, 0.1, 0.05, 0.1, 0.01);
+		}
+	}
+
+	private void finishCraft(ServerLevel level, Villager villager, BlockPos station, BuilderBag bag, int crafts) {
 		List<ItemStack> extra = apply(bag, job.plan());
 		if (extra != null) {
 			extra.forEach(stack -> Block.popResource(level, station.above(), stack));

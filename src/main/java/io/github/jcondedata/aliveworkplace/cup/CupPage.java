@@ -31,6 +31,8 @@ public final class CupPage {
 	public static final int SIGN_UP = CARD + 3;
 	public static final int WITHDRAW = CARD + 4;
 	public static final int BRACKET = CARD + 6;
+	/** [Watch] while a player bout is fought (28.20). */
+	public static final int WATCH = CARD + 7;
 	public static final int CHAMPIONS = CARD + 8;
 	/** The circuit's villages (a row), the players signed up (a row), the seeds (a row). */
 	public static final int CIRCUIT_ROW = CARD + 9;
@@ -96,6 +98,10 @@ public final class CupPage {
 			bracket.isEmpty() ? VillageHallScreen.line(Component.translatable("screen.aliveworkplace.cup.why.few", Cups.MIN_ENTRANTS), ChatFormatting.YELLOW)
 				: VillageHallScreen.line(Component.translatable("screen.aliveworkplace.cup.byes", bracket.size(), Cups.byes(bracket)), ChatFormatting.GRAY)), null);
 		champions(menu, level, cup);
+		if (CupMatches.running(level, host) != null) {
+			menu.button(WATCH, VillageHallScreen.icon(Items.ENDER_EYE, Component.translatable("screen.aliveworkplace.cup.watch"), ChatFormatting.AQUA,
+				VillageHallScreen.line("screen.aliveworkplace.cup.watch_hint", ChatFormatting.GRAY)), p -> act(menu, level, hall, p, (l, pl) -> CupMatches.watch(pl)));
+		}
 		int slot = CIRCUIT_ROW;
 		for (BlockPos village : Cups.circuit(level, host)) {
 			CupData.Entrant sent = entrants.stream().filter(e -> e.village().equals(village) && e.kind() != CupData.Kind.PLAYER

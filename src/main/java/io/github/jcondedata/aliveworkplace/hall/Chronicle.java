@@ -22,7 +22,7 @@ public final class Chronicle {
 		MARKET(Items.EMERALD), CARAVAN(Items.CHEST_MINECART), RAID(Items.ZOMBIE_HEAD), RANK(Items.FIREWORK_ROCKET),
 		FESTIVAL(Items.CAKE), WEDDING(Items.POPPY), PROTECTION(Items.SHIELD), EDICT(Items.LECTERN), LEGEND(Items.NETHER_STAR), PLANS(Items.MAP),
 		SIGHTING(Items.SPYGLASS), BANNER(Items.WHITE_BANNER),
-		REFORM(Items.WRITABLE_BOOK), GUILD(Items.PAPER),
+		REFORM(Items.WRITABLE_BOOK), GUILD(Items.PAPER), CUP(Items.GOLD_INGOT),
 		/** A household rose or came down in the world (34.6). */
 		CLASS(Items.GOLD_INGOT);
 
@@ -65,6 +65,13 @@ public final class Chronicle {
 	/** Writes {@code text} into the chronicle of the hall at {@code hall} (the quest engine, 31.2). */
 	public static void atHall(ServerLevel level, BlockPos hall, Kind kind, Component text) {
 		record(level, hall, kind, text, true);
+	}
+
+	/** Writes {@code text} into the chronicle of the hall at {@code hall}, dated {@code day} (a Cup's entry written when the village next loads, 28.19). */
+	public static void atHall(ServerLevel level, BlockPos hall, Kind kind, Component text, long day) {
+		if (level.getBlockEntity(hall) instanceof VillageHallBlockEntity entity) {
+			entity.addToChronicle(new Entry(day, kind, text));
+		}
 	}
 
 	private Chronicle() {

@@ -17,9 +17,8 @@ import net.minecraft.world.item.Items;
 
 /**
  * QA (qa-1005-0633): the traveller's camp beside a ruined portal (ROADMAP 29.9, tools/blueprints/legend_sites.py) has
- * "a barrel with a map on it": an item frame holding a map, saved in traveller_camp.nbt. The frame is saved without
- * TileX/TileY/TileZ, so placing the camp logs vanilla's "Block-attached entity at invalid position" once; this checks the
- * frame still hangs there with its map after its survival checks.
+ * "a barrel with a map on it": an item frame holding a map, saved in traveller_camp.nbt; this checks the frame still
+ * hangs there with its map after its survival checks (B68, where it hangs: LegendSitesGameTests).
  */
 public class QaLegendCampGameTests {
 	private static final String AREA = "aliveworkplace_test:huge_area";

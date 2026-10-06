@@ -3818,10 +3818,21 @@ on a real world.
   (120) grown days a villager is an **elder**: the hall says so ("Elder · grown 131 days"), they wear the elder look
   (34.18), walk 15% slower (`Walker`), and their mood gets "a quiet old age" (+5) when they're fed and housed. The
   chronicle notes it ("Bram is an elder now"), and elders have four chatter lines of their own ("In my day this was
-  all fields."). Config `villagerAges`. Elders never die of old age: the owner's call, default no (`elderPassing`
-  off; if he says yes, an elder passes in their sleep after 40 elder days and leaves a grave). Done when:
+  all fields."). Config `villagerAges`. Owner's call (2026-10-06): elders DO pass in their sleep after 40 elder days and leave a grave
+  (`elderPassing` on), unless made ageless by 34.19a. Done when:
   `LifeStageGameTests` (an elder after the configured days with the clock moved on, the slower walk, the mood reason,
   a reload keeping the day, a child growing up getting today) pass; scene `elders` passes.
+- [ ] **34.19a** **The Evergreen Charm: ageless elders** (owner, 2026-10-06: "make an elder eternal if they have good
+  traits by building a specific item and giving it to them, so you don't lose good villagers"). A new item, the
+  **Evergreen Charm** (pixel-art: a small gold-and-green leaf pendant; a rare craft: a totem of undying, a golden
+  apple, 2 emeralds and a heart of the sea, our decision, tune in play). Sneak-right-click an elder with it: they
+  become **Ageless** (attachment `ageless`, saved, default false): they never pass, keep the elder look with a gold
+  leaf badge on the hall, keep the slower walk, still retire and mentor (34.20), and the chronicle says so ("Bram
+  will never leave us"). Only an elder with **good traits** is accepted, else refused with the reason: Master level
+  in their trade, or Gifted (29.x), or a Legend, or a Mood of 80 or more for the last 20 days. One charm, one villager;
+  it is used up. Config `agelessElders` (true). With `elderPassing` off nobody needs one. Done when: GameTests
+  (accepted for each good trait, refused for a plain elder and for a non-elder, the charm used up, ageless surviving
+  40+ elder days and a reload, the passing of a non-ageless elder with a grave) pass; scene `ageless_elder` passes.
 - [ ] **34.20** **Retirement and apprentices.** An elder with a job retires once someone can take over, at most one
   villager a village every 3 days:
   - the successor is their own grown child without a job, else any jobless grown villager of a class the job allows

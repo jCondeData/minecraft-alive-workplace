@@ -146,6 +146,9 @@ public final class VillageMaps {
 		counts.forEach((kind, n) -> lore.add(Component.translatable("item.aliveworkplace.village_map.legend",
 			Component.translatable("color.minecraft." + kind.color.getName()), Component.translatable("item.aliveworkplace.village_map." + kind.key()), n)
 			.withStyle(ChatFormatting.DARK_GRAY)));
+		for (Component held : io.github.jcondedata.aliveworkplace.cup.CupChampions.holderLines(level, hall)) { // the Cups it holds (28.21)
+			lore.add(held.copy().withStyle(ChatFormatting.GOLD));
+		}
 		stack.set(DataComponents.LORE, new ItemLore(lore));
 		return stack;
 	}

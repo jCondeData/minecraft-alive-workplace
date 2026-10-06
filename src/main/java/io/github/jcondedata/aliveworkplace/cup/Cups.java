@@ -223,7 +223,21 @@ public final class Cups {
 				out.add(new CupData.Entrant(CupData.Kind.HOST_TRAINER, t.id(), t.name(), t.tier(), t.xp(), host));
 			}
 		}
-		return seed(out);
+		return seed(out, CupChampions.defending(cup, out));
+	}
+
+	/** Seeds as {@link #seed(List)}, with the defending champion ({@code defending}, if entered) first. */
+	public static List<CupData.Entrant> seed(List<CupData.Entrant> entrants, @Nullable UUID defending) {
+		List<CupData.Entrant> out = seed(entrants);
+		if (defending != null) {
+			for (int i = 0; i < out.size(); i++) {
+				if (out.get(i).id().equals(defending)) {
+					out.add(0, out.remove(i));
+					break;
+				}
+			}
+		}
+		return out;
 	}
 
 	/** Seeds: the villages' Leaders and Trainers by tier (a Leader first at a tier, then experience), then players, then the host's Trainers. */
@@ -289,6 +303,7 @@ public final class Cups {
 		}
 		CupBouts.payBanked(level, hall); // 28.18: XP its trainers earned at a Cup while the village was away
 		CupDays.writeNotes(level, hall); // 28.19: a Cup's chronicle entry from while the village was away
+		CupChampions.round(level, hall); // 28.21: the Cup banner up over a holder (one away at the final too), down when the title passed
 		if (!canHost(level, hall)) {
 			return;
 		}

@@ -53,8 +53,14 @@ public final class CupData extends SavedData {
 	public record Result(int round, UUID winner, UUID loser) {
 	}
 
-	/** A Cup won: on {@code day}, which theme, the champion's name and village. */
-	public record Champion(long day, ResourceLocation theme, String name, BlockPos village) {
+	/**
+	 * A Cup won: on {@code day}, which theme, the champion's name and village, and who it was (null in saves from before
+	 * 28.21), for the defending champion's seed.
+	 */
+	public record Champion(long day, ResourceLocation theme, String name, BlockPos village, @Nullable UUID id) {
+		public Champion(long day, ResourceLocation theme, String name, BlockPos village) {
+			this(day, theme, name, village, null);
+		}
 	}
 
 	/** A host's Cup. */
@@ -126,6 +132,26 @@ public final class CupData extends SavedData {
 
 	private final Map<BlockPos, Cup> cups = new LinkedHashMap<>();
 
+	/** The Cup banners flying (28.21), by the hall of the village that holds the Cup: where they were put up. */
+	private final Map<BlockPos, List<BlockPos>> banners = new LinkedHashMap<>();
+
+	/** Where the Cup banners of the village round {@code hall} were put up (empty: none fly). */
+	public List<BlockPos> banners(BlockPos hall) {
+		return List.copyOf(banners.getOrDefault(hall, List.of()));
+	}
+
+	/** Records the Cup banners of the village round {@code hall} (none: forgets them). */
+	public void setBanners(BlockPos hall, List<BlockPos> at) {
+		if (at.isEmpty()) {
+			if (banners.remove(hall) == null) {
+				return;
+			}
+		} else {
+			banners.put(hall.immutable(), at.stream().map(BlockPos::immutable).toList());
+		}
+		setDirty();
+	}
+
 	public static CupData get(ServerLevel level) {
 		return level.getDataStorage().computeIfAbsent(new SavedData.Factory<>(CupData::new, CupData::load, null), NAME);
 	}
@@ -195,6 +221,9 @@ public final class CupData extends SavedData {
 				ct.putString("theme", c.theme().toString());
 				ct.putString("name", c.name());
 				ct.putLong("village", c.village().asLong());
+				if (c.id() != null) {
+					ct.putUUID("id", c.id());
+				}
 				champions.add(ct);
 			}
 			t.put("champions", champions);
@@ -223,6 +252,14 @@ public final class CupData extends SavedData {
 			noteList.add(nt);
 		}));
 		tag.put("notes", noteList);
+		ListTag bannerList = new ListTag();
+		banners.forEach((hall, at) -> at.forEach(pos -> {
+			CompoundTag bt = new CompoundTag();
+			bt.putLong("hall", hall.asLong());
+			bt.putLong("pos", pos.asLong());
+			bannerList.add(bt);
+		}));
+		tag.put("banners", bannerList);
 		return tag;
 	}
 
@@ -305,7 +342,8 @@ public final class CupData extends SavedData {
 				CompoundTag ct = Nbt.compoundAt(champions, j);
 				ResourceLocation theme = id(Nbt.getString(ct, "theme"));
 				if (theme != null) {
-					cup.champions.add(new Champion(Nbt.getLong(ct, "day"), theme, Nbt.getString(ct, "name"), BlockPos.of(Nbt.getLong(ct, "village"))));
+					cup.champions.add(new Champion(Nbt.getLong(ct, "day"), theme, Nbt.getString(ct, "name"), BlockPos.of(Nbt.getLong(ct, "village")),
+						ct.hasUUID("id") ? ct.getUUID("id") : null)); // 28.21; older saves have no id
 				}
 			}
 			if (t.contains("bout")) { // 28.18; older saves have none
@@ -327,6 +365,13 @@ public final class CupData extends SavedData {
 		for (int i = 0; i < noteList.size(); i++) {
 			CompoundTag nt = Nbt.compoundAt(noteList, i);
 			data.notes.computeIfAbsent(BlockPos.of(Nbt.getLong(nt, "hall")), k -> new ArrayList<>()).add(new Note(Nbt.getLong(nt, "day"), Nbt.getString(nt, "text")));
+		}
+		ListTag bannerList = Nbt.getList(tag, "banners", Tag.TAG_COMPOUND); // 28.21; older saves have none
+		for (int i = 0; i < bannerList.size(); i++) {
+			CompoundTag bt = Nbt.compoundAt(bannerList, i);
+			List<BlockPos> at = new ArrayList<>(data.banners.getOrDefault(BlockPos.of(Nbt.getLong(bt, "hall")), List.of()));
+			at.add(BlockPos.of(Nbt.getLong(bt, "pos")));
+			data.banners.put(BlockPos.of(Nbt.getLong(bt, "hall")), List.copyOf(at));
 		}
 		return data;
 	}

@@ -207,6 +207,12 @@ public final class Moods {
 			score += banquet.points();
 			good.add(banquet.reason());
 		}
+		// The Festival Cup their village holds (28.21).
+		io.github.jcondedata.aliveworkplace.legend.LegendPowers.MoodReason cup = io.github.jcondedata.aliveworkplace.cup.CupChampions.mood(level, villager);
+		if (cup != null) {
+			score += cup.points();
+			good.add(cup.reason());
+		}
 		// Their class (34.6): a rise or fall of the last days, and the needs of their class had or lacking.
 		for (io.github.jcondedata.aliveworkplace.legend.LegendPowers.MoodReason c : SocialClasses.moods(villager, io.github.jcondedata.aliveworkplace.hall.Chronicle.day(level))) {
 			score += c.points();

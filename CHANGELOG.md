@@ -35,6 +35,12 @@ asks for the steps, `latest.log` and any crash report).
   runs out ends the story badly. Stories are data (`data/<namespace>/arcs/<id>.json`), survive a restart at any
   moment, and come with settings `storyArcs`, `arcCooldownDays` (8), `arcsAtOnce` (3) and `disabledArcs`. Operators
   get `/workplace story start <arc>`, `next` and `stop`. A new quest goal, **talk** to a villager the story names.
+- **Champions** (28.21): the Festival Cup's champion's village holds the Cup until the next champion is crowned there.
+  It's named on its hall's name tag, in other halls' trade-route lists and on its Village Map ("Holders of the
+  Thornholm Cup"). The Cup banner, a trophy pattern of our own (`aliveworkplace:cup`) in the theme's colours, flies on
+  its Arena III's champion's pole or on top of its Village Hall, and comes down when the title passes. Its villagers
+  are proud of it (+5 mood), the winning Leader gets two more win bonuses of trainer XP, and the defending champion is
+  seeded first at the next Cup.
 - **Players in the Cup** (28.20): with Cobblemon, a signed-up player's bout is called in chat with a bell and a
   clickable [I'm ready]; click it inside the Arena within two minutes or lose by walkover. Then it's a real battle
   (against a villager, the Leader or their delegate as the trainer; against a player, Cobblemon's own PvP battle) in

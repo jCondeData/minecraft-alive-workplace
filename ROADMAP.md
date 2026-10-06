@@ -1339,7 +1339,7 @@ here adds a new kind of speed bonus (the new jobs get the partners' existing one
   doubles theme, at the theme's level; a win moves them on and pays; an absent player loses by walkover after two
   minutes; fleeing counts as a loss; a bout between two players starts with both teams; showcase scene `cup_match`
   (the battle at the ring, the stands behind).
-- [ ] **28.21** **Champions.** When the final ends:
+- [x] **28.21** (review: pending 2026-10-06) **Champions.** When the final ends:
   - The champion's village holds the Cup until the host's next Cup: its name goes on the roll of champions (Cup page),
     in every circuit village's chronicle, on its hall's name tooltip, in other halls' trade-route lists and on the
     Village Map's legend ("holders of the Thornholm Cup").
@@ -4928,6 +4928,15 @@ item waits.
   online; 100,000 is 1,000 emeralds at the default `dollarsPerEmerald` of 100. The battle's level is Cobblemon's level
   adjust (the theme's level); RCT's caps are not applied to Cup teams. [Watch] on the notice board: right-clicking
   the board (within 2 blocks) while a player bout is fought prints the bout with a [Watch] button.
+- 2026-10-06 (28.21, decisions; lane b): the title passes only when a new champion is crowned at that host; a Cup
+  not held (too few entrants, called off) leaves the holder. With `festivalCup` off nobody holds a Cup: banners come down
+  at each holder's next round, no pride, no holder lines (back when it's on). "On top of its Village Hall" is a standing
+  banner on the hall block if two blocks above it are free, else on the roof over it (24 blocks up at most); only an
+  Arena whose nearest hall is the holder's carries its banner (a neighbour's Arena III never does). The banner's colours
+  are the theme's firework colours as the nearest dyes (the cup in the first, the field in the second: gold on red for
+  the Grand Cup); the pattern isn't on the loom. The defending champion is the last champion if entered (champions now
+  keep their id; older saves fall back), else the holder village's villager entrant. A delegate champion's two bonuses
+  are banked like its bout XP. A Cup banner broken by hand goes back up at the holder's next hall round.
 - 2026-10-05 (34.6, partial; lane d): landed the rise and fall effects (`Chronicle.Kind.CLASS`, sparkles at the lead's
   bed as "their door", `AMETHYST_BLOCK_CHIME`, the chat line within 32 blocks), the moods (saved as `class_standing`
   at each dawn: needs lacking and the last turn; a standing older than yesterday's dawn adds nothing) and chatter

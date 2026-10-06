@@ -568,7 +568,9 @@ public final class CupDays {
 		CupData.get(level).setDirty();
 		CupData.Result last = cup.results.stream().max(java.util.Comparator.comparingInt(CupData.Result::round)).orElse(null);
 		CupData.Entrant runnerUp = last == null ? null : CupBouts.entrant(cup, last.loser(), host);
-		cup.champions.add(new CupData.Champion(cup.day, theme.id(), champ.display().getString(), champ.village().immutable()));
+		CupData.Champion before = CupChampions.holder(cup);
+		cup.champions.add(new CupData.Champion(cup.day, theme.id(), champ.display().getString(), champ.village().immutable(), champ.id()));
+		CupChampions.crowned(level, host, champ, before == null ? null : before.village()); // 28.21: the title, the banner, the bonus
 		Component themeName = Component.translatable(theme.name());
 		Component hostName = CupBouts.villageName(level, host);
 		Component champVillage = CupBouts.villageName(level, champ.village());

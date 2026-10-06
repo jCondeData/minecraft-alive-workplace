@@ -278,6 +278,12 @@ SCENES = [
       "two delegates came, the fair sold the theme's wares, villagers sat in the stands for the final, the chronicle has the Cup and the delegates left by dawn", 90,
       [("01_fair", "The fair"), ("02_delegate_arrives", "A delegate walks in"), ("03_stands", "The stands"),
        ("04_champion", "The champion's fireworks")]),
+    # The Cup's champions (ROADMAP 28.21): the Cup banner on Arena III's champion's pole over the holder, then on top of
+    # Ashford's hall when the title passes, the roll of champions and "Holders of the Thornholm Cup" on Ashford's hall
+    S("cup_champions", "Trainer Leader", "The Festival Cup's champions",
+      "the Cup banner flew on the champion's pole, came down when the title passed and stood on the new holder's hall, which names it holder", 40,
+      [("01_pole_banner", "The Cup banner on the champion's pole"), ("02_hall_banner", "The banner over the new holder's hall"),
+       ("03_roll_of_champions", "The roll of champions"), ("04_holders_tooltip", "Holders of the Thornholm Cup")], cobblemon=True),
     S("leader", "Trainer Leader", "Challenging the Trainer Leader", "the Trainer Leader took the challenge", 90,
       [("01_leader", "At the podium"), ("02_leader_battle", "The battle starts")], cobblemon=True),
     S("tutor", "Move Tutor", "The Move Tutor's lessons", "the lesson screen opened", 60,

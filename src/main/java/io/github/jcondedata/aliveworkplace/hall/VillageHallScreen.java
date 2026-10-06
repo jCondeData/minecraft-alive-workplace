@@ -144,6 +144,9 @@ public final class VillageHallScreen {
 			io.github.jcondedata.aliveworkplace.work.Money.describe((long) treasury * io.github.jcondedata.aliveworkplace.work.Money.DOLLARS_PER_EMERALD, treasury)),
 			treasury > 0 ? ChatFormatting.GREEN : ChatFormatting.GRAY));
 		nameLore.addAll(Treasury.taxLines(level, hall, census.workers(), census.jobless())); // the takings by class (34.7)
+		for (Component held : io.github.jcondedata.aliveworkplace.cup.CupChampions.hallLines(level, hall)) { // the Cups it holds (28.21)
+			nameLore.add(line(held, ChatFormatting.GOLD));
+		}
 		if (VillageProtection.ENABLED && level.getBlockEntity(hall) instanceof VillageHallBlockEntity owned) {
 			nameLore.add(line(owned.isProtected()
 				? Component.translatable("screen.aliveworkplace.hall.protected", owned.ownerName())
@@ -468,6 +471,9 @@ public final class VillageHallScreen {
 				}
 			} else {
 				lore.add(line(Component.translatable("screen.aliveworkplace.hall.route_wants_nothing"), ChatFormatting.DARK_GRAY));
+			}
+			for (Component held : io.github.jcondedata.aliveworkplace.cup.CupChampions.holderLines(level, other.hall())) { // 28.21
+				lore.add(line(held, ChatFormatting.GOLD));
 			}
 			if (receiving) {
 				lore.add(line(Component.translatable("screen.aliveworkplace.hall.route_receiving"), ChatFormatting.AQUA));

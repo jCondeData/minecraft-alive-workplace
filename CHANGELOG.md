@@ -28,9 +28,20 @@ asks for the steps, `latest.log` and any crash report).
   (`data/aliveworkplace/type_chart.json`); 90 seconds at most. The winner goes on, both trainers earn trainer XP (kept
   for a far village's Leader until it next loads) and everyone at the Arena reads the result. Bouts with players come
   with 28.20.
+- **The quest journal, tracking and quest maps** (31.3, part of 1.5, off until 1.5 is finished): the hall's Quests page
+  becomes a journal with Village, Personal, Story and Bounties tabs; each quest shows who asked, its steps with their
+  progress, the reward and the days left. Track a quest (a click, or shift-click) to see it as a boss bar at the top of
+  your screen, for you only; `/workplace quests` lists your quests in chat with [Track]. Quest files gain the objective
+  `reach` (go near a structure, a biome or a point) and the reward `map` (a map with the place marked), the place found
+  once when the quest goes up.
 ## 0.140.0 — 2026-10-05
 
 ### Changed
+- **Village quests run on a new quest engine** (31.2): the hall's daily quests are now data files
+  (`data/<namespace>/quests/<group>/<id>.json`) that data packs can add to, switch off or change (`/reload` reads them
+  again), with the same odds, numbers and rewards as before. Quests already up on a hall move over with their progress
+  the first time the hall is loaded. New setting **Village Quests** (on); off, no new quests go up and open ones can
+  still be finished.
 - **Expansions still being built are off until the release that finishes them** (B76): 0.139.0 switched on parts of
   1.1 to 1.4 that aren't done yet. The Steward (1.1); partner shows, the nurse at the Healing Machine and the Berry
   Breeder, Camp Cook, Habitat Keeper, Daycare Keeper and Gem Grower jobs (1.2); Legends, the Gifted and strange moods
@@ -58,6 +69,24 @@ asks for the steps, `latest.log` and any crash report).
 - **A farmer's carrots and potatoes reach the chests** (B77): a village farmer kept up to 32 of each in his bag as
   seed stock, so a Farmstead's field could be harvested without anything landing in its chest. He now takes them from the
   chests to plant with, like seeds, and puts the whole harvest away.
+- **The Pokémon Professor** (29.21, with Cobblemon), a Legendary Legend in a white lab coat with pens in the pocket:
+  a guest at the inn once the village's Pasture Blocks hold 25 Pokémon of 10 types. Likes books. Right-click them with
+  an empty hand and hover over a Pokémon of your party: each stat's IV in words (No good to Best), its EVs, the stats
+  its nature raises and lowers, and whether it has its hidden ability (a click puts it in chat). While they live in
+  the village, every species kept in its pastures is logged in the **village Pokédex** (a book on the hall's Legends
+  page counts them), and their **Pokédex** research opens as it grows: Field Notes (15 species: partners help 5% more
+  a level), Kinship Studies (25: one more partner per worker), Breeding Records (35: daycare eggs 20% sooner a level),
+  Berry Science (45: orchard keepers pick one more berry from each berry plant), Evolution Studies (60: the Professor
+  sells one evolution stone a day for 8 emeralds) and Regional Survey (80: the hints give exact IVs and EVs). Without
+  Cobblemon the Professor never comes.
+- **The Pokémon Ranger** (29.22, with Cobblemon), a Rare Legend in a red field vest with a capture styler on the wrist:
+  a guest at the Village Hall, 1 morning in 3, while a wild Alpha Pokémon (or, as Cobblemon 1.7 gives no wild Pokémon
+  its Alpha mark, a wild one of level 50 or more) is within 96 blocks of the hall. Likes clothes. Each morning they walk
+  to an Alpha near the hall and calm it (sparkles, a chime): it never again hurts a villager or player in the village,
+  saved for good. Once a day they befriend a wild Pokémon within 64 blocks (never a legendary, mythical, Ultra Beast or
+  paradox one) and lead it to a village Pasture Block with room, where it joins as the hall owner's Pokémon (through
+  their PC, as Cobblemon does; it stays in the PC while the owner is away), with a line in the chronicle. None when the
+  pastures are full or the hall has no owner. Without Cobblemon the Ranger never comes.
 - **The Founder** (29.23), a Mythic Legend in a burgundy mantle with a gold chain of office, who keeps their own
   trade: at the village's first rise to City (only the first), its most experienced Master is seized by the Founder's
   mood and asks for a block of gold, a block of emeralds and a diamond. Their Masterwork is **The Charter of
@@ -200,6 +229,16 @@ asks for the steps, `latest.log` and any crash report).
   Leaders, Move Tutors, Pokémon Traders, Fossil Scientists): lessons and revivals cost a fifth less, trainers rank up a
   quarter faster. Guild files may carry `fabric:load_conditions`. New guild perks for packs: `recovery_days`,
   `work_radius`, `hire_price`, `carry`, `train_up_to`, `strength`, `lesson_price` and `trainer_xp`.
+
+### Dev
+- **The 1.1 yardstick: a village from a plan** (27.22): `CITY=true tools/packtest/run.sh` lays out a plains village on
+  the real pack server (a hall, a Steward in Run the village, 3 builders, a stocked storehouse, 12 villagers, an old
+  vanilla house; Homes, Workshops, Farms, Market, Gardens and Keep Clear, two streets and a wall line) and lets the
+  Steward run it for 6 in-game days, then prints one `City result:` line: builds started and finished, any outside its
+  zone or in Keep Clear, stalls, every item whose count is off, and what the Steward's work costs a tick (p50, p95, p99,
+  worst; `PERF=true` adds a profile). The new `city_timelapse` showcase scene films the same village growing. The
+  README has a "Villages that build themselves" section, and the Guide Book an "A village from a plan" page that shows
+  once 1.1 is on.
 
 ## 0.139.0 — 2026-10-05
 

@@ -27,6 +27,11 @@ public final class Expansions {
 	 * {@code villageBanners}, {@code cradles}, {@code harvestIdols}, {@code tonics}.
 	 */
 	public static final boolean M30 = false;
+	/**
+	 * Milestone 31, Quests become stories (1.5). The daily quests ({@code villageQuests}) aren't behind it; the journal's
+	 * tabs, Track and {@code /workplace quests} are (design note M31, "The expansion gate").
+	 */
+	public static final boolean M31 = false;
 	/** Milestone 34, Classes and luxuries (1.8): {@code villageClasses}, {@code classRiseDays}, {@code classFallDays}. */
 	public static final boolean M34 = false;
 

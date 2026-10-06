@@ -17,6 +17,8 @@ Skipping class somepack:broken
 Unknown class need type no_such_need
 # ServiceGameTests feeds the service loader a file with neither jobs nor blueprints to prove it is skipped.
 Skipping service aliveworkplace_test:broken
+# QuestEngineGameTests feeds the quest file loader a broken file to prove it is skipped with one line naming it.
+Skipping quest file aliveworkplace_test:quests/test/broken
 
 # --- other mods in the compat test server (dev environment, not our code) ---
 # Modded entities have no DataFixerUpper schema; every mod's entity logs this once.

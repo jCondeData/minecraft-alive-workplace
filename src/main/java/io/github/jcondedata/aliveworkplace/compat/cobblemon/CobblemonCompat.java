@@ -130,6 +130,11 @@ public final class CobblemonCompat {
 			public List<ItemStack> pick(ServerLevel level, BlockPos pos, Entity picker) {
 				return CobblemonOrchard.pick(level, pos, picker);
 			}
+
+			@Override
+			public boolean isBerryPlant(BlockState state) {
+				return CobblemonOrchard.isBerryPlant(state);
+			}
 		});
 		FossilLab.EXTENSION.register("cobblemon", new FossilLab() {
 			@Override
@@ -194,6 +199,8 @@ public final class CobblemonCompat {
 		io.github.jcondedata.aliveworkplace.daycare.DaycareKeepers.Breeding.EXTENSION.register("cobblemon", new CobblemonDaycareKeeper()); // 28.12
 		io.github.jcondedata.aliveworkplace.cup.CupBattlers.EXTENSION.register("cobblemon", new CobblemonCupBouts()); // 28.18
 		CobblemonCupBouts.init();
+		io.github.jcondedata.aliveworkplace.legend.PokemonCensus.EXTENSION.register("cobblemon", new CobblemonProfessor()); // 29.21
+		io.github.jcondedata.aliveworkplace.legend.WildPokemon.EXTENSION.register("cobblemon", new CobblemonRanger()); // 29.22
 	}
 
 	private CobblemonCompat() {

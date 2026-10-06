@@ -27,6 +27,11 @@ public final class CobblemonOrchard {
 		return false;
 	}
 
+	// A Cobblemon berry plant (not an apricorn).
+	public static boolean isBerryPlant(BlockState state) {
+		return state.getBlock() instanceof BerryBlock;
+	}
+
 	// True if this is Cobblemon fruit at all (ripe or not).
 	public static boolean isFruit(BlockState state) {
 		return state.getBlock() instanceof ApricornBlock || state.getBlock() instanceof BerryBlock;

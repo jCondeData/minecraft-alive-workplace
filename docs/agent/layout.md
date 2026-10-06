@@ -118,6 +118,11 @@ Moved out of CLAUDE.md (2026-09-29) to keep that file short. Update this map whe
 - `smith/` — the ball smith: `BallRecipes` (Cobblemon ball recipes by tag and tier), `BallSmithWork`, `BallSmithPackages`
 - `orchard/` — the orchard keeper: `Fruit` (what's ripe, picking it), `OrchardWork`, `OrchardPackages`; Cobblemon apricorns and
   berry plants in `compat/cobblemon/CobblemonOrchard`
+- `story/` — the quest engine (M31, 31.2): `QuestFiles` (loader of `data/<ns>/quests/<group>/<id>.json`), `Objectives` and
+  `Rewards` (one small record per type, read from and saved as its JSON), `Quest` (an open quest: a snapshot of its file with
+  progress, helpers, posted and due), `Stories` (the `aliveworkplace_stories` saved data per dimension, keyed by hall; the
+  board's morning post, hand-ins, kills, battles, waits; moves the hall's old `quests` in). `hall/VillageQuests` passes its
+  public calls on to it. Its conditions are in `rules/` (`food_below`, `cobblemon`, `chance`, `quest_done`, `not`)
 - `work/` — shared by all jobs: `Village` (workers near each other share chests; off in gametests unless a test turns
   it on with `Leftovers.village(helper, 48)`, which turns it off again when the test ends), `Requests` (what workers are waiting for: the board, lumberjacks' wanted wood), `Walker` (movement + reach), `WorkerStatus` (overhead status for jobs without a saved site), `Jobs.employ`,
   `ChoiceMenu` (a server-side chest screen of buttons: menus without client code), `DeskPackages` (WORK for jobs players visit),

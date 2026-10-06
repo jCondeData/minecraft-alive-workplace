@@ -884,7 +884,7 @@ and an old vanilla village slowly rebuilds itself one house at a time. It answer
     there; a save and reload between the take-down and the rebuild; a renewal cancelled after the take-down leaves the
     plot to be proposed again;
   - showcase scene `renewal`: a time-lapse GIF of a vanilla village house becoming a Stone House in Cherry.
-- [ ] **27.22** **A village from a plan (the 1.1 yardstick).** The whole milestone at once, as 23.1 is for builders: a
+- [x] **27.22** (review: pending 2026-10-05) **A village from a plan (the 1.1 yardstick).** The whole milestone at once, as 23.1 is for builders: a
   plains village with a hall, a Steward, 3 builders, a stocked storehouse and 12 villagers; a plan with Homes,
   Workshops, Farms, Market, Gardens and Keep Clear zones, two streets and a wall line; Run the village for 6 in-game
   days. Run it as a pack-server scenario (`tools/packtest`) for the numbers and as a screenshot scene for the
@@ -897,6 +897,16 @@ and an old vanilla village slowly rebuilds itself one house at a time. It answer
     renewal, the data folders for packs, every new config key in the table), and the In-Game Guidebook has its page
     if 26.2a has landed (else a note on 26.2a);
   - showcase scene `city_timelapse`: the village growing into its plan, the GIF that leads the 1.1 release notes.
+  - Status (lane-c-1005-2132): built. `command/CitySoak` (`/workplace city`, benchmark servers only) and
+    `CITY=true [PERF=true] tools/packtest/run.sh`; the Steward's cost meter `city/StewardCost`; the ledger counts meals
+    eaten from the store. Pack server, 2026-10-05, run 3: 14/14 of his builds finished (6 buildings, 8 road segments) in
+    6 days, all in their zones, none in Keep Clear, 0 stalls, items off none (133 meals counted); Steward cost p50
+    0.005, **p95 0.591** (0.05 and 0.46 in runs 2 and 1), p99 1.2, worst 882 ms (planning, 710 ms, first call): the
+    p95 target is missed in 1 of 3 runs, B85. Runs 1-2 found B84 (the village eats a Farmstead's crops). The wall
+    (approved day 1) and the old house's renewal never got a turn in a Hamlet: B86. README "Villages that build
+    themselves" and every M27 key in the config table; Guide Book page `city_plan` (shown once M27 is on);
+    `city_timelapse` in the harness and scenes.py, not filmed locally (the nightly films it). `docs/performance.md` has
+    the three runs. CitySoakGameTests (3) pass.
 
 Depends on: nothing.
 
@@ -1763,7 +1773,7 @@ MarketDays) and research/.
   and is replaced 2 days after it dies; a foal's stats are at least its best parent's and never over vanilla's
   highest; cavalry picks the bred horses; showcase scene `legend_beastmaster` (GIF: a guard and a war dog against
   zombies).
-- [ ] **29.21** **The Pokémon Professor (Legendary, with Cobblemon).** Comes: a guest at the inn once the village's
+- [x] **29.21** (review: pending 2026-10-05) **The Pokémon Professor (Legendary, with Cobblemon).** Comes: a guest at the inn once the village's
   Pasture Blocks hold 25 Pokémon of 10 types (the condition `pastured_pokemon`, through a new extension point
   `legend/PokemonCensus` filled in `compat/cobblemon/`; without Cobblemon the file doesn't load). Trade:
   `aliveworkplace:legend`, at a lectern. Likes: books. Powers:
@@ -1780,7 +1790,7 @@ MarketDays) and research/.
   Outfit: a white lab coat. Done when: compat GameTests (`runCompatGameTest`): the census; hints that match the
   Pokémon's real IVs, nature, ability and EVs; each species logged once; every topic's unlock and effect; without
   Cobblemon nothing loads or errors; showcase scene `legend_professor` (Cobblemon: the hints, the Pokédex tab).
-- [ ] **29.22** **The Pokémon Ranger (Rare, with Cobblemon).** Comes: a guest at the Village Hall, 1 time in 3 a
+- [x] **29.22** (review: pending 2026-10-05) **The Pokémon Ranger (Rare, with Cobblemon).** Comes: a guest at the Village Hall, 1 time in 3 a
   morning, while an Alpha Pokémon is within 96 blocks of the hall (Cobblemon's own Alpha mark if the installed version
   has one, checked with the engineer skill's `api.py`; otherwise a wild Pokémon of level 50 or more): the condition
   `alpha_near`, through a new extension point `legend/WildPokemon` filled in `compat/cobblemon/`. Trade:
@@ -2188,7 +2198,7 @@ Bandit King, The Sickness, The Lost Caravan and The Professor's Thesis. It build
 `hall/Caravans` and `people/Sickness`. Everything a player can be asked to do is a data file, so server owners can
 write their own stories; nothing waits forever on a player.
 
-- [ ] **31.1** **Design note.** `docs/design/M31.md`: what the player sees (hearts on a villager, wrapping and giving
+- [x] **31.1** (approved auto 2026-10-05) **Design note.** `docs/design/M31.md`: what the player sees (hearts on a villager, wrapping and giving
   a gift, a heart event, a personal request asked and done, the journal and its tracker bar, a title in chat, the
   bounty board, one arc chapter by chapter); every data format below with one example file each (`quests/`, `arcs/`,
   `villager_tastes/`, `heart_events/`, `bounties/`); every config key with its default; every new saved field with its
@@ -2198,7 +2208,7 @@ write their own stories; nothing waits forever on a player.
   never clashes with trading or picking a job). Sent to the owner as a review package; lanes don't wait for his reply.
   Done when: the note is on `main` with every config key and saved field of this milestone and its default, and the
   package is sent.
-- [ ] **31.2** **The quest engine.** A new `story/` package. Quests are data,
+- [x] **31.2** (approved auto 2026-10-05) **The quest engine.** A new `story/` package. Quests are data,
   `data/<namespace>/quests/<group>/<id>.json`, loaded with `Platform.onDataReload` the way `ranch/PokemonChores` loads
   its files. One file is one quest: who gives it (`hall`, `villager`, `bounty` or `arc`), `weight`, `conditions`,
   `objectives`, `rewards`, the `days` it stays up and whether it's `repeatable`. The first toolbox, each piece a small
@@ -2231,7 +2241,7 @@ write their own stories; nothing waits forever on a player.
   - a quest file in the gametest datapack is posted and completes; a broken file is skipped with one log line naming
     it (added to `allow.txt`); `/reload` picks up a changed file;
   - `villageQuests` off: no new quests, and nothing else changes.
-- [ ] **31.3** **The quest journal, tracking and quest maps.** The hall's Quests page becomes a journal with four tabs
+- [x] **31.3** (review: pending 2026-10-05) **The quest journal, tracking and quest maps.** The hall's Quests page becomes a journal with four tabs
   along the top: **Village** (the daily quests), **Personal** (requests from villagers who are your friends, 31.9),
   **Story** (the village's arc, 31.4) and **Bounties** (31.13); a tab whose item hasn't landed yet says so in grey.
   Each quest shows who asked, one line per objective with its progress, the reward and the days left, and has two
@@ -3132,7 +3142,7 @@ guards who ride to each other's aid. Between players come trade pacts, alliances
 feuds that only turn to war on a PvP server. It all builds on what exists: hall/Caravans, the Village Ledger and
 treasury, travel posts, mail, village protection and the Settler's Wagon (camp/).
 
-- [ ] **33.1** **Design note.** `docs/design/M33.md`, sent to the owner as a review package (lanes don't wait for his
+- [x] **33.1** (review: pending 2026-10-05) **Design note.** `docs/design/M33.md`, sent to the owner as a review package (lanes don't wait for his
   reply): what the player sees in each part, with a mock-up of the hall's new Trade page and its tabs (Routes, Prices,
   Pacts, Realm, Colonies); the data formats (`data/aliveworkplace/trade_goods/<good>.json`,
   `data/aliveworkplace/realm_research/<topic>.json`, realm edicts in M30's edict format); the config switches
@@ -4807,6 +4817,34 @@ item waits.
   nugget". Also decided there: the Noble's class file repeats the Burgher's food and diet (34.2 lists none), the
   Burgher's "one more service" excludes the market (the Market Square is its own `building` need), and new chronicle
   kind `LIFE` for elders, retirements and generations beside 34.6's `CLASS`.
+- 2026-10-05 (29.21, decisions; lane a): the Pokémon Professor. **Field Notes** "partners help 5% more a level" is
+  read as each partner's help growing by a twentieth a level (one partner takes 15% off a job, 15.75% at I, 16.5% at
+  II), not 5 more points. **Breeding Records** "eggs 20% sooner" shortens the wait: the keeper's dawn odds are divided
+  by 0.8 (I) or 0.6 (II), at most 100% (50% becomes 63% and 83%). The hints give EVs in words too (no, a few, some, a
+  lot of, full EVs), so **Regional Survey**'s "exact IVs and EVs" has something to change; IVs use the games' judge
+  words (0 No good, 1-15 Decent, 16-25 Pretty good, 26-29 Very good, 30 Fantastic, 31 Best). The village Pokédex logs
+  species only while a Professor lives in the village (it is their power), at the hall's round, from the Pokémon
+  tethered to Pasture Blocks inside the hall's area; the count shows as a book on the hall's Legends page (slot 7, by
+  the anthem) and as the research counter `pokedex_species`. **Evolution Studies**: one stone a day per Professor, the
+  day's stone going round Cobblemon's ten evolution stones, bought from the hints screen. Hints open on a right-click
+  with an empty hand; the Pokédex tab stays on the sneak-right-click every tradeless Legend has. The Pokédex topics
+  only need their species count (the spec names no topic prerequisites), and pay in vanilla items so the file never
+  fails to parse without Cobblemon.
 - **qa handoff** (qa-1005-1034, 2026-10-05 11:27Z): qa-1005-1034: verified B46, B69, B73. Unshipped: qa/b46-b69-1005 (QaB46GameTests, QaB69FrontWalkGameTests; its ship build passed 1014/1014 gametests but failed on the compat flake B74 = B57 again): ship it once B74 is fixed (or retry ship). qa/import-swap-1005 is obsolete (B73 fixed on main). B50 and B57 not verified: read nightly run 37297003813 (on 5b489b7, after both fixes) for the crew test and the Pidgey test's repeats; B57 recurred (B74). qa/placing-1005 still waits on B71. Next QA: B50 from the nightly, B72 scene setup, then 21.2, M23.
 - **lane-c handoff** (lane-c-1005-1532, 2026-10-05 18:13Z): wip/lane-c (ce73d6ed) = main as of 17:55Z + 27.15, 27.16, B67, B71 (old wip, B75 dup fix dropped for main's Pathfinder.hold), 27.17 caravan roads, 27.18 walls, 27.19 Steward safety, all ticked. Full build: compile, devclient and 1117/1118 GameTests pass; CaravanRoadGameTests.twoVillages120ApartBuildBothHalvesAndTheyMeet fails in the full suite (passed alone 16/16 and in 79-test targeted runs; likely batch interference with 27.18/27.19 or chunk tickets). Next run: git switch wip/lane-c, fix that test, merge main, full build (compat not yet run), push to main. Trap: worktree subagents leave Gradle daemons; stop them or full runs get OOM-killed.
 - **lane-c handoff** (lane-c-1005-1833, 2026-10-05 20:59Z): lane-c-1005-1833 (21:01Z): landed on main 2f801600: 27.15-27.19 (old wip/lane-c, M27-gated), 27.20 old houses, 27.21 renewal, B79 (ladder to upstairs beds), CaravanRoad test isolation fix. Local full build green (1169+151) before merging lane a's 29.x, pushed without rebuilding that merge (clean, no config changes). Next: 27.22 (the 1.1 yardstick), then 31.x. Red duty notes: main CI 695/697-699 were cancelled by the runner at ~15 min (infra), 696 failed only ConscriptionGameTests.aConscriptSavedMidRaidLoadsWithoutTheSword (B81). wip/lane-c is now stale (all merged); B80 is test-order (QA).
+- 2026-10-05 (31.2, decision; lane c): the quest engine moves the hall's old daily quests into `aliveworkplace_stories`
+  (by id, safe to repeat; also on a hand-in, kill or page view, so a quest set on the hall is never missed). M30's
+  reform steps stay in the hall's own `quests` list for now: `Reforms` and its GameTests read and write that list
+  directly (25 places), so moving them is left to the item that brings the journal (31.22's reform rewards or the
+  journal item), which can move them the same way. Open quests save their objectives and rewards as their JSON
+  (strings in NBT), so a changed file never changes a quest already up. `days: "festival"` (31.9) isn't read yet: a file
+  using it is skipped with its log line until 31.9 adds it.
+- 2026-10-05 (29.22, decisions; lane a): the Pokémon Ranger. Cobblemon 1.7.3 has an Alpha mark (`cobblemon:mark_alpha`)
+  but nothing gives it to wild Pokémon, so a wild Pokémon is an Alpha with that mark (worn or potential) **or** at level
+  50 or more (the stand-in), whichever the installed version has. Cobblemon lets a Pokémon out in a pasture only for an
+  online trainer (`tether` needs the player), so when the hall owner is away the befriended Pokémon goes into their PC
+  and stays there (chronicle says so) rather than waiting for them. "With room" is a pasture with fewer Pokémon than
+  its maximum, nobody's or the hall owner's (another player's pasture is never filled). A calm is checked at the damage
+  gate (a calmed Alpha's blows on villagers and players inside any village are cancelled and its target dropped); a
+  walk that takes longer than 2 minutes is given up for the day.

@@ -12,6 +12,8 @@
 #   SOAK=true tools/packtest/run.sh            # the builder soak (23.1; SOAK_DAYS=n for longer): /workplace soak, then 2 in-game days at
 #                                              # full speed (/tick sprint); prints the "Soak result:" line and the stalls
 #   SOAK=true DEBUG=true ...                   # the same, with the builders' [builder N] lines in the log
+#   CITY=true [PERF=true] tools/packtest/run.sh   # 27.22, the 1.1 yardstick: a village from a plan, its Steward running it for
+#                                              # 6 in-game days (CITY_DAYS=n); prints the "City result:" line, PERF=true adds a profile
 #   SOAK=true SOAK_SPLIT=true ...              # 23.5: each builder's materials split between at most 3 chests by its
 #                                              # bench and the village storehouses (with porters) it must find itself
 # Needs ~6 GB of RAM and ~1 GB of disk; takes ~5 minutes. Output: build/packtest/server/server.log
@@ -64,7 +66,7 @@ rm -f console && mkfifo console
 sleep 100000 > console &
 KEEP=$!
 JAVA_OPTS=""
-if [ "${PERF:-false}" = "true" ] || [ "${SOAK:-false}" = "true" ]; then JAVA_OPTS="-Daliveworkplace.benchmark=true"; fi
+if [ "${PERF:-false}" = "true" ] || [ "${SOAK:-false}" = "true" ] || [ "${CITY:-false}" = "true" ]; then JAVA_OPTS="-Daliveworkplace.benchmark=true"; fi
 # DEBUG=true: the builders log what they are doing every 2 seconds ([builder N] lines), to look into a stall.
 if [ "${DEBUG:-false}" = "true" ]; then JAVA_OPTS="$JAVA_OPTS -Daliveworkplace.debug=true"; fi
 java -Xmx5G -Xms1G $JAVA_OPTS -jar fabric-server-launch.jar nogui < console > server.log 2>&1 &
@@ -92,7 +94,7 @@ if [ "${SITES_ONLY:-false}" = "true" ]; then
 fi
 
 # Performance mode: the same area idle, then full of workers; tick times and a profile of the server thread.
-if [ "${PERF:-false}" = "true" ]; then
+if [ "${PERF:-false}" = "true" ] && [ "${CITY:-false}" != "true" ]; then
   PLOTS="${PLOTS:-20}"            # per village; two workers a plot
   VILLAGES="${VILLAGES:-1}"       # 25.1's benchmark: VILLAGES=3 PLOTS=25 is 150 workers in three villages 400 blocks apart
   ROWS=$(( (PLOTS + 4) / 5 ))
@@ -162,6 +164,46 @@ if [ "${SOAK:-false}" = "true" ]; then
   echo "--- stalls: $(grep -c "Builder stalled" server.log || true)"
   grep -q "Soak result: \([0-9]*\)/\1 builds finished.*; 0 stalls; items off: none" server.log || { echo "The soak did not pass."; exit 1; }
   exit 0
+fi
+
+# City mode (27.22, the 1.1 yardstick): a plains village with a Steward in Run the village, 3 builders, a stocked
+# storehouse, 12 villagers and a full plan, run for 6 in-game days at full speed (/tick sprint), then up to 2 more for the
+# builders to finish what he started. Passes only when every build he started finished, none outside its zone or in
+# Keep Clear, no stall, no item off, and the Steward's p95 cost a tick is under 0.5 ms. With PERF=true it also records
+# a 120-second profile of the server thread while he works (tools/packtest/perf.py).
+if [ "${CITY:-false}" = "true" ]; then
+  CITY_DAYS="${CITY_DAYS:-6}"
+  say "forceload add 920 920 1080 1080" 60
+  say "execute positioned 1000 75 1000 run workplace city $CITY_DAYS" 40
+  say "tick sprint $(( (CITY_DAYS + 2) * 24000 ))" 5
+  if [ "${PERF:-false}" = "true" ]; then
+    jcmd $PID JFR.start name=city settings=profile duration=120s filename="$PWD/city.jfr" > /dev/null || true
+  fi
+  for _ in $(seq 1 ${CITY_MINUTES:-60}); do
+    sleep 60
+    grep -q "City result:" server.log && break
+    kill -0 $PID 2>/dev/null || break
+  done
+  say "tick sprint stop" 3
+  say "stop" 30
+  kill $KEEP 2>/dev/null || true
+  wait $PID 2>/dev/null || true
+  echo "--- city (full log: $SERVER/server.log)"
+  grep -E "City:|City result:|Builder stalled|Sprint completed|Crash|Exception" server.log | grep -v "No data fixer" || true
+  if [ "${PERF:-false}" = "true" ] && [ -f city.jfr ]; then python3 ../../../tools/packtest/perf.py city.jfr; fi
+  python3 - server.log <<'EOF'
+import re, sys
+line = next((l for l in open(sys.argv[1], errors="replace") if "City result:" in l), None)
+if line is None:
+    sys.exit("No City result line: the run didn't end.")
+m = re.search(r"City result: (\d+)/(\d+) builds", line)
+p95 = float(re.search(r"p95 ([\d.]+) ms", line).group(1))
+ok = (m and m.group(1) == m.group(2) and int(m.group(2)) > 0 and "Keep Clear: none;" in line
+      and re.search(r"; 0 stalls; items off: none;", line) and p95 < 0.5)
+print("City passed." if ok else "The city run did not pass.")
+sys.exit(0 if ok else 1)
+EOF
+  exit $?
 fi
 
 # 3. Our content in the pack: blueprints, templates, villages with our houses.

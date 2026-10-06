@@ -58,6 +58,8 @@ public final class Legends implements ResourceManagerReloadListener {
 		Platform.get().onServerTick(LegendSites::tick);
 		GolemSmith.init(); // the Golem Smith's golems (29.15)
 		Beastmaster.init(); // the Beastmaster's war dogs (29.20)
+		PokemonProfessor.init(); // the village Pokédex's research counter (29.21)
+		PokemonRanger.init(); // calmed Alphas never hurt anyone in a village (29.22)
 		Platform.get().onPlayerLeave(player -> Pathfinder.forgetOffer(player.getUUID()));
 		Platform.get().allowBreakBlock((level, player, pos, state) -> !(level instanceof net.minecraft.server.level.ServerLevel server)
 			|| LegendSites.onBreak(server, player, pos, state));
@@ -216,6 +218,7 @@ public final class Legends implements ResourceManagerReloadListener {
 			LegendNeeds.tick(villager);
 			Seer.tick(villager); // the Seer's motes at night, and the Chapel by day (29.16)
 			BardLaureate.tick(villager); // the Bard Laureate's work songs (29.19)
+			PokemonRanger.tick(villager); // the Pokémon Ranger's walks to Alphas and wild Pokémon (29.22)
 		}
 		if (ENABLED && villager.tickCount % 10 == 0 && ModAttachments.WAR_DOG.has(villager)) {
 			Beastmaster.dogTick(villager); // a guard's war dog at heel or at their foe (29.20)

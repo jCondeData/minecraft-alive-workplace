@@ -105,37 +105,19 @@ public final class VillageQuests {
 		}
 	}
 
-	/** Things a village can always use, how many it asks for and what it pays (emeralds). */
-	private record Want(Item item, int count, int reward) {
+	/**
+	 * The hall's daily round: the quest engine's round (old quests move in, overdue ones come down, a new one goes up in
+	 * the morning; ROADMAP 31.2), then the reform steps fall due.
+	 */
+	public static void tick(ServerLevel level, BlockPos hall, VillageHallBlockEntity entity) {
+		io.github.jcondedata.aliveworkplace.story.Stories.round(level, hall, entity);
+		Reforms.round(level, hall, entity);
 	}
 
-	private static final List<Want> WANTS = List.of(
-		new Want(Items.WHITE_WOOL, 16, 3), new Want(Items.IRON_INGOT, 8, 5), new Want(Items.OAK_LOG, 32, 3), new Want(Items.GLASS, 16, 3),
-		new Want(Items.TORCH, 32, 2), new Want(Items.LEATHER, 8, 3), new Want(Items.COAL, 16, 3), new Want(Items.BREAD, 16, 3),
-		new Want(Items.BOOK, 4, 4), new Want(Items.GOLD_INGOT, 4, 5));
-
-	/** The hall's daily round: old quests come down, in the morning a new one goes up if there's room, and reform steps fall due. */
-	public static void tick(ServerLevel level, BlockPos hall, VillageHallBlockEntity entity) {
-		long now = level.getGameTime();
-		List<Quest> quests = new ArrayList<>(entity.quests());
-		boolean changed = quests.removeIf(q -> q.daily() && now - q.posted() >= LASTS);
-		long day = level.getDayTime() / 24000;
-		if (daily(quests).size() < MAX_OPEN && level.getDayTime() % 24000 < 3000 && entity.lastQuestDay() < day) {
-			Quest quest = make(level, hall);
-			if (quest != null) {
-				float factor = VillageRanks.questRewardFactor(entity.rank());
-				quest = new Quest(quest.id(), quest.kind(), quest.item(), quest.count(), quest.progress(), Math.round(quest.reward() * factor), quest.posted(),
-					quest.poster(), quest.deliverTo());
-				quests.add(quest);
-				entity.setLastQuestDay(day);
-				changed = true;
-				announce(level, hall, quest);
-			}
-		}
-		if (changed) {
-			entity.setQuests(quests);
-		}
-		Reforms.round(level, hall, entity);
+	/** The hall's open daily quests as its page shows them (from the quest engine; old ones moved in first). */
+	public static List<Quest> open(ServerLevel level, BlockPos hall) {
+		return io.github.jcondedata.aliveworkplace.story.Stories.view(io.github.jcondedata.aliveworkplace.story.Stories.open(level, hall).stream()
+			.filter(q -> q.giver.equals("hall")).toList());
 	}
 
 	/** The daily quests among {@code quests} (reform steps left out). */
@@ -143,52 +125,15 @@ public final class VillageQuests {
 		return quests.stream().filter(Quest::daily).toList();
 	}
 
-	/** A new quest for the village round {@code hall}: what a worker's waiting for, food, monsters, a battle, or a want. */
+	/**
+	 * A new quest for the village round {@code hall}, as the board would post it (the quest engine's choice from the
+	 * {@code daily/} files: what a worker's waiting for, food, monsters, a battle, or a want), before the rank factor.
+	 */
 	@Nullable
 	public static Quest make(ServerLevel level, BlockPos hall) {
-		long now = level.getGameTime();
-		VillageHalls.Census census = VillageHalls.census(level, hall);
-		List<Villager> people = census.workers();
-		String someone = people.isEmpty() ? "" : name(people.get(level.random.nextInt(people.size())));
-		// What a worker is waiting for (plain items only: those can be counted and handed in)
-		for (Requests.Request request : census.requests()) {
-			if (request.item() != null && request.item() != Items.AIR) {
-				int count = Math.min(64, Math.max(1, request.count()));
-				return new Quest(UUID.randomUUID(), Kind.BRING, key(request.item()), count, 0, Math.max(2, Math.min(10, 2 + count / 8)), now,
-					name(request.worker()), Optional.of(request.station()));
-			}
-		}
-		if (census.food() < 16) {
-			return new Quest(UUID.randomUUID(), Kind.BRING, key(Items.BREAD), 16, 0, 4, now, someone, Optional.empty());
-		}
-		List<Kind> kinds = new ArrayList<>(List.of(Kind.BRING, Kind.SLAY));
-		if (io.github.jcondedata.aliveworkplace.trainer.Trainers.COBBLEMON && people.stream().anyMatch(io.github.jcondedata.aliveworkplace.trainer.Trainers::isTrainer)) {
-			kinds.add(Kind.BATTLE);
-		}
-		return switch (kinds.get(level.random.nextInt(kinds.size()))) {
-			case SLAY -> new Quest(UUID.randomUUID(), Kind.SLAY, "minecraft:air", MONSTERS, 0, 6, now, someone, Optional.empty());
-			case BATTLE -> new Quest(UUID.randomUUID(), Kind.BATTLE, "minecraft:air", 1, 0, 8, now, someone, Optional.empty());
-			default -> {
-				Want want = WANTS.get(level.random.nextInt(WANTS.size()));
-				yield new Quest(UUID.randomUUID(), Kind.BRING, key(want.item()), want.count(), 0, want.reward(), now, someone, Optional.empty());
-			}
-		};
-	}
-
-	private static String key(Item item) {
-		return BuiltInRegistries.ITEM.getKey(item).toString();
-	}
-
-	private static String name(Villager villager) {
-		return villager.getDisplayName().getString();
-	}
-
-	private static void announce(ServerLevel level, BlockPos hall, Quest quest) {
-		Component text = Component.translatable("message.aliveworkplace.quest.posted", VillageHalls.name(level, hall), describe(quest))
-			.withStyle(ChatFormatting.GOLD);
-		for (ServerPlayer player : level.getPlayers(p -> p.distanceToSqr(hall.getCenter()) < (double) VillageHalls.RADIUS * VillageHalls.RADIUS)) {
-			Chat.chat(player, text);
-		}
+		io.github.jcondedata.aliveworkplace.story.Quest quest = io.github.jcondedata.aliveworkplace.story.Stories.make(level, hall, 1f, level.random);
+		List<Quest> view = quest == null ? List.of() : io.github.jcondedata.aliveworkplace.story.Stories.view(List.of(quest));
+		return view.isEmpty() ? null : view.get(0);
 	}
 
 	/** "Bring 16 Bread", "Clear out 8 monsters", "Beat one of the village's trainers"; a reform step leads with its reform. */
@@ -214,6 +159,10 @@ public final class VillageQuests {
 		ServerLevel level = Players.level(player);
 		if (!(level.getBlockEntity(hall) instanceof VillageHallBlockEntity entity)) {
 			return 0;
+		}
+		int engine = io.github.jcondedata.aliveworkplace.story.Stories.handIn(player, hall, questId);
+		if (engine >= 0) {
+			return engine;
 		}
 		Quest quest = entity.quests().stream().filter(q -> q.id().equals(questId)).findFirst().orElse(null);
 		if (quest == null || quest.kind() != Kind.BRING) {
@@ -270,25 +219,28 @@ public final class VillageQuests {
 		quest.reform().ifPresent(r -> Reforms.stepDone(level, hall, entity, r, player));
 	}
 
-	/** A player killed a monster: it counts towards the nearest village's clearing-out quest. */
+	/** A player killed something: it counts towards the quests it matches (the engine's), and a monster towards reform steps. */
 	public static void onKill(ServerLevel level, LivingEntity killed, DamageSource source) {
-		if (!(killed instanceof Enemy) || !(source.getEntity() instanceof ServerPlayer player)) {
+		if (!(source.getEntity() instanceof ServerPlayer player)) {
 			return;
 		}
-		count(level, killed.blockPosition(), Kind.SLAY, player);
+		io.github.jcondedata.aliveworkplace.story.Stories.onKill(level, killed, player);
+		if (killed instanceof Enemy) {
+			count(level, killed.blockPosition(), Kind.SLAY, player);
+		}
 	}
 
-	/** A player beat a village trainer: it counts towards that village's battle quest. */
+	/** A player beat a village trainer: it counts towards that village's battle quest and battle reform steps. */
 	public static void onTrainerBeaten(ServerLevel level, Villager trainer, ServerPlayer player) {
+		io.github.jcondedata.aliveworkplace.story.Stories.onBattle(level, trainer.blockPosition(), player);
 		count(level, trainer.blockPosition(), Kind.BATTLE, player);
 	}
 
 	private static void count(ServerLevel level, BlockPos where, Kind kind, ServerPlayer player) {
 		VillageHalls.nearest(level, where).ifPresent(hall -> {
 			if (level.getBlockEntity(hall) instanceof VillageHallBlockEntity entity) {
-				// The first daily quest of that kind, and every reform step of it on the page (a lifted edict's waits).
+				// Every reform step of that kind on the page (a lifted edict's waits); daily quests are the engine's.
 				List<Quest> counted = new ArrayList<>();
-				daily(entity.quests()).stream().filter(q -> q.kind() == kind).findFirst().ifPresent(counted::add);
 				Reforms.shown(entity).stream().filter(q -> q.kind() == kind).forEach(counted::add);
 				for (Quest q : counted) {
 					entity.quests().stream().filter(o -> o.id().equals(q.id())).findFirst().ifPresent(o -> progress(level, hall, entity, o, 1, player));

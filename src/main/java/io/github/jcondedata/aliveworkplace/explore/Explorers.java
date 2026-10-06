@@ -132,7 +132,7 @@ public final class Explorers {
 	}
 
 	/** The map marker for a place: the village or temple icons vanilla maps use, a red X for the rest. */
-	static Holder<MapDecorationType> marker(Holder<Structure> structure) {
+	public static Holder<MapDecorationType> marker(Holder<Structure> structure) {
 		String path = structure.unwrapKey().map(k -> Ids.of(k).getPath()).orElse("");
 		if (path.contains("village")) {
 			return path.contains("desert") ? MapDecorationTypes.DESERT_VILLAGE : path.contains("savanna") ? MapDecorationTypes.SAVANNA_VILLAGE
@@ -158,14 +158,14 @@ public final class Explorers {
 	}
 
 	/** "Plains Village", "Ruined Portal": ours in the language file, or made from the id for other mods' places. */
-	static Component placeName(Holder<Structure> structure) {
+	public static Component placeName(Holder<Structure> structure) {
 		ResourceLocation id = structure.unwrapKey().map(ResourceKey::location).orElse(AliveWorkplace.id("unknown"));
 		String key = "structure." + id.getNamespace() + "." + id.getPath().replace('/', '.');
 		return Component.translatableWithFallback(key, pretty(id.getPath()));
 	}
 
 	/** "village/plains_town" → "Plains Town". */
-	static String pretty(String path) {
+	public static String pretty(String path) {
 		String last = path.substring(path.lastIndexOf('/') + 1);
 		StringBuilder out = new StringBuilder();
 		for (String word : last.split("_")) {

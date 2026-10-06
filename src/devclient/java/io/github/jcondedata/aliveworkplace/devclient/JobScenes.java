@@ -109,6 +109,9 @@ final class JobScenes {
 				  BiPredicate<ServerLevel, ServerPlayer> ok) {
 	}
 
+	/** The quest the {@code quest_journal} scene tracks (31.3), from staging to its step. */
+	private static final java.util.UUID[] SCENE_QUEST = new java.util.UUID[1];
+
 	/** Villagers the scenes hand from staging to a later step (the scholar, the screen scenes' villager). */
 	private static volatile Villager scholar;
 	private static volatile Villager subject;
@@ -2096,6 +2099,99 @@ final class JobScenes {
 					Showcase.check(!io.github.jcondedata.aliveworkplace.legend.LegendSites.isCaptive(subject), "breaking a bar freed the prisoner");
 				}, 60)),
 			(level, player) -> true));
+		SCREENS.put("legend_professor", new Screen("the Pokémon Professor in a white lab coat by the hall, hints about the player's party, and the Pokédex research tab",
+			new Vec3(0.5, -58.0, 6.5), new Vec3(0.5, -59.5, 0.5),
+			(level, player) -> {
+				// ROADMAP 29.21: a Village Hall with the Pokémon Professor settled beside it; 22 species already in the
+				// village Pokédex, and three Pokémon in the player's party.
+				level.setBlockAndUpdate(STATION, ModBlocks.VILLAGE_HALL.defaultBlockState()
+					.setValue(io.github.jcondedata.aliveworkplace.hall.VillageHallBlock.FACING, Direction.SOUTH));
+				var hall = (io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(STATION);
+				hall.setOwner(player.getUUID(), player.getGameProfile().getName());
+				var legend = io.github.jcondedata.aliveworkplace.legend.Legends.get(io.github.jcondedata.aliveworkplace.legend.PokemonProfessor.ID).orElseThrow();
+				subject = EntityType.VILLAGER.spawn(level, STATION.south(2), MobSpawnType.COMMAND);
+				subject.setNoAi(true);
+				subject.setYRot(0);
+				subject.setYHeadRot(0);
+				io.github.jcondedata.aliveworkplace.legend.Legends.make(level, subject, legend, "showcase");
+				io.github.jcondedata.aliveworkplace.legend.LegendPowers.forget();
+				List<String> species = new java.util.ArrayList<>();
+				for (String s : List.of("bulbasaur", "charmander", "squirtle", "pikachu", "eevee", "machop", "geodude", "pidgey", "rattata", "oddish",
+					"psyduck", "growlithe", "abra", "magnemite", "gastly", "onix", "cubone", "chansey", "miltank", "mareep", "wooper", "snorlax")) {
+					species.add("cobblemon:" + s);
+				}
+				hall.logPokedex(species);
+				party(player, "bulbasaur level=12 nature=adamant ability=chlorophyll", "pikachu level=8 nature=timid", "eevee level=5 nature=hardy");
+				level.setDayTime(level.getDayTime() / 24000L * 24000L + 6000L);
+			},
+			List.of(new Step("01_professor", -1, 6, (level, player) ->
+					Showcase.check(io.github.jcondedata.aliveworkplace.legend.PokemonProfessor.isProfessor(subject), "the Professor settled by the hall"), 40),
+				new Step("02_professor_hints", io.github.jcondedata.aliveworkplace.compat.cobblemon.CobblemonProfessor.FIRST_PARTY_SLOT, 6, (level, player) -> {
+					// Right-clicked with an empty hand: the party, the Bulbasaur's hints in its tooltip
+					player.setItemInHand(InteractionHand.MAIN_HAND, ItemStack.EMPTY);
+					io.github.jcondedata.aliveworkplace.legend.PokemonProfessor.open(player, subject);
+					Showcase.check(player.containerMenu instanceof ChoiceMenu m
+						&& m.icon(io.github.jcondedata.aliveworkplace.compat.cobblemon.CobblemonProfessor.FIRST_PARTY_SLOT).get(net.minecraft.core.component.DataComponents.LORE) != null,
+						"the hints screen shows the party with its hints");
+				}, 40),
+				new Step("03_pokedex_tab", io.github.jcondedata.aliveworkplace.research.ResearchScreen.TOPIC_SLOTS[1], 6, (level, player) -> {
+					// The Pokédex tab: Field Notes I done, Kinship Studies being researched (22 species: both open)
+					var tree = io.github.jcondedata.aliveworkplace.research.ResearchTrees.get(io.github.jcondedata.aliveworkplace.legend.PokemonProfessor.TREE).orElseThrow();
+					var state = new io.github.jcondedata.aliveworkplace.research.Research.State(Map.of(tree.key() + "/field_notes", 1),
+						java.util.Optional.empty(), 0, false);
+					state = io.github.jcondedata.aliveworkplace.research.ResearchTrees.choose(state, tree, tree.topic("kinship_studies").orElseThrow());
+					var hall = (io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(STATION);
+					hall.setResearch(io.github.jcondedata.aliveworkplace.research.ResearchTrees.withProgress(state, tree, 40));
+					io.github.jcondedata.aliveworkplace.research.ResearchScreen.openForLegend(player, subject);
+					Showcase.check(player.containerMenu instanceof ChoiceMenu m
+						&& m.icon(io.github.jcondedata.aliveworkplace.research.ResearchScreen.TAB_SLOTS[1]).is(Items.SPYGLASS), "the Pokédex opened on its own tab");
+				}, 40)),
+			(level, player) -> player.containerMenu instanceof ChoiceMenu));
+		SCREENS.put("legend_ranger", new Screen("the Pokémon Ranger in a red vest and capture styler by the hall, an Alpha calmed with sparkles, and a wild Pikachu befriended into the owner's pasture",
+			new Vec3(0.5, -57.5, 7.5), new Vec3(0.5, -59.5, -1.5),
+			(level, player) -> {
+				// ROADMAP 29.22: a Village Hall owned by the player with the Pokémon Ranger settled beside it, a wild
+				// level-60 Machamp (the Alpha stand-in) to the east, a Pasture Block to the west and a wild Pikachu by it.
+				level.setBlockAndUpdate(STATION, ModBlocks.VILLAGE_HALL.defaultBlockState()
+					.setValue(io.github.jcondedata.aliveworkplace.hall.VillageHallBlock.FACING, Direction.SOUTH));
+				var hall = (io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(STATION);
+				hall.setOwner(player.getUUID(), player.getGameProfile().getName());
+				net.minecraft.world.level.block.Block pasture = net.minecraft.core.registries.BuiltInRegistries.BLOCK.get(
+					io.github.jcondedata.aliveworkplace.registry.ModVillagers.PASTURE_BLOCK);
+				BlockState bottom = pastureHalf(ScreenshotHarness.standing(pasture.defaultBlockState()), "bottom");
+				BlockPos pen = STATION.offset(-4, 0, 1);
+				level.setBlockAndUpdate(pen, bottom);
+				level.setBlockAndUpdate(pen.above(), pastureHalf(bottom, "top"));
+				var legend = io.github.jcondedata.aliveworkplace.legend.Legends.get(io.github.jcondedata.aliveworkplace.legend.PokemonRanger.ID).orElseThrow();
+				subject = EntityType.VILLAGER.spawn(level, STATION.south(2), MobSpawnType.COMMAND);
+				subject.setNoAi(true);
+				subject.setYRot(0);
+				subject.setYHeadRot(0);
+				io.github.jcondedata.aliveworkplace.legend.Legends.make(level, subject, legend, "showcase");
+				io.github.jcondedata.aliveworkplace.legend.LegendPowers.forget();
+				WildPokemon.spawnStill(level, "machamp level=60", STATION.getX() + 4.5, STATION.getY(), STATION.getZ() + 2.5);
+				WildPokemon.spawnStill(level, "pikachu level=10", STATION.getX() - 2.5, STATION.getY(), STATION.getZ() + 3.5);
+				level.setDayTime(level.getDayTime() / 24000L * 24000L + 2000L);
+			},
+			List.of(new Step("01_ranger", -1, 0, (level, player) ->
+					Showcase.check(io.github.jcondedata.aliveworkplace.legend.PokemonRanger.working(subject), "the Ranger settled by the hall"), 40),
+				new Step("02_alpha_calmed", -1, 0, (level, player) -> {
+					// The Ranger beside the Machamp: sparkles and a calm chime, and it's calmed for good
+					var alpha = io.github.jcondedata.aliveworkplace.legend.PokemonRanger.alphaToCalm(level, STATION, subject).orElseThrow();
+					subject.teleportTo(alpha.getX() - 1.5, alpha.getY(), alpha.getZ());
+					io.github.jcondedata.aliveworkplace.legend.PokemonRanger.calm(level, STATION, subject, alpha);
+					Showcase.check(io.github.jcondedata.aliveworkplace.legend.PokemonRanger.calmed(alpha), "the Alpha was calmed");
+				}, 40),
+				new Step("03_befriended", -1, 0, (level, player) -> {
+					// The Ranger leads the wild Pikachu to the Pasture Block: the player's Pokémon now, in the pasture
+					BlockPos pen = STATION.offset(-4, 0, 1);
+					var pikachu = level.getEntitiesOfClass(com.cobblemon.mod.common.entity.pokemon.PokemonEntity.class, new net.minecraft.world.phys.AABB(STATION).inflate(8),
+						e -> e.getPokemon().getSpecies().getResourceIdentifier().getPath().equals("pikachu")).get(0);
+					subject.teleportTo(pen.getX() + 1.5, pen.getY(), pen.getZ() + 1.5);
+					var result = io.github.jcondedata.aliveworkplace.legend.PokemonRanger.befriend(level, STATION, subject, pikachu, pen);
+					Showcase.check(result == io.github.jcondedata.aliveworkplace.legend.WildPokemon.Befriended.PASTURED, "the Pikachu went into the pasture: " + result);
+				}, 60)),
+			(level, player) -> true));
 		SCREENS.put("legend_sage", new Screen("the Old Sage's hut, a riddle asked and a wrong answer refused with a hint, and the Ancient Lore tab",
 			new Vec3(0.5, -53.0, 13.5), new Vec3(0.5, -59.5, -6.5),
 			(level, player) -> {
@@ -2194,6 +2290,51 @@ final class JobScenes {
 					io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.open(player, STATION), 30),
 				step("05_hall_festival", io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FESTIVAL, 6)),
 			(level, player) -> player.containerMenu instanceof ChoiceMenu m && m.getType() == ModBlocks.VILLAGE_HALL_MENU)); // the hall's own screen (30.4a)
+		// The quest journal (ROADMAP 31.3): the four tabs, a tracked quest's bar on screen, a quest map in hand.
+		SCREENS.put("quest_journal", new Screen("the quest journal's four tabs, a tracked quest's bar at the top of the screen and a quest map in hand",
+			new Vec3(2.5, -58.4, 4.5), TARGET,
+			(level, player) -> {
+				level.setBlockAndUpdate(STATION, ModBlocks.VILLAGE_HALL.defaultBlockState()
+					.setValue(io.github.jcondedata.aliveworkplace.hall.VillageHallBlock.FACING, Direction.SOUTH));
+				long now = level.getGameTime();
+				long due = now + 3 * io.github.jcondedata.aliveworkplace.hall.VillageNeeds.DAY;
+				var slay = new io.github.jcondedata.aliveworkplace.story.Quest(java.util.UUID.randomUUID(), io.github.jcondedata.aliveworkplace.AliveWorkplace.id("daily/slay"),
+					"hall", java.util.Optional.empty(), "Ana", now, due, List.of(new io.github.jcondedata.aliveworkplace.story.Objectives.Kill("monster", 6, false)),
+					new int[] {2}, List.of(new io.github.jcondedata.aliveworkplace.story.Rewards.Money_(8, 0, 0, false)));
+				var spot = io.github.jcondedata.aliveworkplace.story.Places.point(STATION.offset(120, 0, -80));
+				var scout = new io.github.jcondedata.aliveworkplace.story.Quest(java.util.UUID.randomUUID(), io.github.jcondedata.aliveworkplace.AliveWorkplace.id("daily/scout"),
+					"hall", java.util.Optional.empty(), "Bram", now, due, List.of(new io.github.jcondedata.aliveworkplace.story.Objectives.Reach(spot, 16),
+					new io.github.jcondedata.aliveworkplace.story.Objectives.Bring("minecraft:iron_ingot", 4, "hall", java.util.Optional.empty())),
+					new int[] {0, 0}, List.of(new io.github.jcondedata.aliveworkplace.story.Rewards.MapReward(spot)));
+				io.github.jcondedata.aliveworkplace.story.Stories.post(level, STATION, slay);
+				io.github.jcondedata.aliveworkplace.story.Stories.post(level, STATION, scout);
+				SCENE_QUEST[0] = slay.id;
+			},
+			List.of(new Step("01_journal_tabs", io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.QUEST_SLOTS[1], 6, (level, player) -> {
+					io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.open(player, STATION);
+					if (player.containerMenu instanceof ChoiceMenu m) {
+						m.press(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.QUESTS, player);
+						Showcase.check(m.icon(io.github.jcondedata.aliveworkplace.hall.QuestJournal.Tab.BOUNTIES.slot).is(Items.CROSSBOW)
+							&& !m.icon(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.QUEST_SLOTS[1]).isEmpty(), "the journal shows its four tabs and both quests");
+					}
+				}, 30),
+				new Step("02_journal_tracked", -1, 0, (level, player) -> {
+					io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.open(player, STATION);
+					if (player.containerMenu instanceof ChoiceMenu m) {
+						m.press(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.QUESTS, player);
+						m.press(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.QUEST_SLOTS[0], player); // a click tracks the slaying quest
+					}
+					player.closeContainer();
+					Showcase.check(io.github.jcondedata.aliveworkplace.story.QuestTracker.isTracked(player, SCENE_QUEST[0])
+						&& io.github.jcondedata.aliveworkplace.story.QuestTracker.bar(player) != null, "the slaying quest is tracked and its bar is up");
+				}, 40),
+				new Step("03_quest_map", -1, 0, (level, player) -> {
+					var spot = io.github.jcondedata.aliveworkplace.story.Places.point(STATION.offset(120, 0, -80));
+					player.setItemInHand(InteractionHand.MAIN_HAND, io.github.jcondedata.aliveworkplace.story.Places.map(level, spot));
+					Showcase.check(player.getMainHandItem().is(Items.FILLED_MAP), "a quest map in hand");
+					player.teleportTo(level, player.getX(), player.getY(), player.getZ(), player.getYRot(), 70f); // (look down at it)
+				}, 40)),
+			(level, player) -> true));
 		// Long Shifts proclaimed (ROADMAP 30.3): the builder's line in the hall's list says "long shifts" and 20% faster,
 		// and the chronicle keeps the proclamation.
 		SCREENS.put("long_shifts", new Screen("Long Shifts was proclaimed: the hall's list shows the \"long shifts\" mood and the chronicle keeps it",

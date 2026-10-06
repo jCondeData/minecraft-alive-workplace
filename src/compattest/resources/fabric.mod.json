@@ -32,7 +32,9 @@
 			"io.github.jcondedata.aliveworkplace.compat.PartnersForgeCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.PartnersAllCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.GuildTrainersCompatTests",
-			"io.github.jcondedata.aliveworkplace.compat.CupBoutCompatTests"
+			"io.github.jcondedata.aliveworkplace.compat.CupBoutCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.ProfessorCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.RangerCompatTests"
 		]
 	},
 	"depends": {

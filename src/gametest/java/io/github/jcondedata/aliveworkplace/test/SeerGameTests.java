@@ -304,6 +304,62 @@ public class SeerGameTests implements net.fabricmc.fabric.api.gametest.v1.Fabric
 		}));
 	}
 
+	/**
+	 * QA (B82): every raid foretold comes from the side told, not only the first: twelve foretold raids, each from its own
+	 * dawn's RandomSource, at a small village radius (16, as PeopleGameTests uses) and at 20.
+	 */
+	//$ gametest_ticks_batch AREA '100' '"seerRaidSides"'
+	@GameTest(template = AREA, timeoutTicks = 100, batch = "seerRaidSides")
+	public void everyRaidForetoldComesFromTheSideTold(GameTestHelper helper) {
+		List<BlueprintData.Placement> recorded = new ArrayList<>();
+		setUp(helper, recorded);
+		helper.runAfterDelay(2, () -> staged(helper, List.of(), seer -> {
+			ServerLevel level = helper.getLevel();
+			BlockPos hall = helper.absolutePos(HALL);
+			VillageHallBlockEntity entity = entity(helper);
+			VillageRaids.MIN_VILLAGERS = 2;
+			settledSeer(helper, seer, HALL.east(2));
+			for (int i = 0; i < 3; i++) {
+				villager(helper, HALL.south(2).east(i));
+			}
+			List<String> wrong = new ArrayList<>();
+			int raids = 0;
+			long day = 2;
+			for (int radius : new int[] {16, 20}) {
+				VillageHalls.RADIUS = radius;
+				int villagers = VillageHalls.census(level, hall).villagers();
+				int seen = 0;
+				for (long seed = 1; seed < 400 && seen < 12; seed++, day++) {
+					entity.setLastRaidDay(-100);
+					at(level, day, 300);
+					LegendGuests.round(level, hall, RandomSource.create(seed * 7919L));
+					Seer.State told = entity.seer();
+					if (!told.raid()) {
+						continue;
+					}
+					seen++;
+					String side = told.night().side(hall).getString();
+					at(level, day, told.raidAt() + 1);
+					VillageRaids.tick(level, hall, villagers, 0, entity.lastRaidDay(), entity::setLastRaidDay);
+					helper.assertTrue(VillageRaids.active(hall).isPresent(), "the raid foretold didn't come (radius " + radius + ", seed " + seed + ")");
+					List<Mob> raiders = VillageRaids.raiders(level, hall);
+					helper.assertTrue(!raiders.isEmpty(), "a raid with no raiders (radius " + radius + ", seed " + seed + ")");
+					Vec3 middle = raiders.stream().map(Mob::position).reduce(Vec3.ZERO, Vec3::add).scale(1.0 / raiders.size());
+					String came = Pathfinder.direction(hall, BlockPos.containing(middle)).getString();
+					if (!came.equals(side)) {
+						wrong.add("radius " + radius + " seed " + seed + ": told " + side + ", came " + came);
+					}
+					raiders.forEach(Mob::discard);
+					VillageRaids.forget(hall);
+				}
+				raids += seen;
+				helper.assertTrue(seen == 12, "only " + seen + " raids foretold at radius " + radius);
+			}
+			helper.assertTrue(wrong.isEmpty(), wrong.size() + " of " + raids + " raids came from another side: " + wrong);
+			helper.succeed();
+		}));
+	}
+
 	/** The next festival and market day told at dawn are the days they come; the next day's guest told is the one who comes. */
 	//$ gametest_ticks_batch AREA '100' '"seerDays"'
 	@GameTest(template = AREA, timeoutTicks = 100, batch = "seerDays")

@@ -1,0 +1,32 @@
+{
+  "name": {
+    "translate": "good.aliveworkplace.glass"
+  },
+  "icon": "minecraft:glass",
+  "items": [
+    "#aliveworkplace:trade/glass"
+  ],
+  "bundle": 8,
+  "base_price": 100,
+  "made_by": {
+    "jobs": [
+      "minecraft:mason"
+    ],
+    "biomes": [
+      "#c:is_desert",
+      "#minecraft:is_beach"
+    ]
+  },
+  "wanted_in": {
+    "biomes": [
+      "#minecraft:is_forest",
+      "#minecraft:is_taiga",
+      "#c:is_snowy"
+    ],
+    "jobs": [
+      "aliveworkplace:builder"
+    ]
+  },
+  "food": false,
+  "order": 12
+}

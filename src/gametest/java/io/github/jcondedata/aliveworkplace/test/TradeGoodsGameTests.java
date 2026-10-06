@@ -62,10 +62,14 @@ public class TradeGoodsGameTests implements net.fabricmc.fabric.api.gametest.v1.
 	private static final ResourceLocation REMEDIES = ResourceLocation.fromNamespaceAndPath("aliveworkplace_test", "test_remedies");
 	private static final ResourceLocation TEST_HUT = ResourceLocation.fromNamespaceAndPath("aliveworkplace_test", "test_hut");
 
-	/** A hall at {@link #HALL} with a small village radius, alone in its batch; put back when the test ends. */
+	/**
+	 * A hall at {@link #HALL} with a small village radius, alone in its batch; put back when the test ends. Only the six
+	 * test goods count while it runs (33.3's real goods would crowd their top 3 and add their own raid demand).
+	 */
 	private static BlockPos hall(GameTestHelper helper) {
 		Leftovers.clear(helper);
 		Leftovers.halls(helper);
+		TradeGoodsDataGameTests.goodsFrom(helper, "aliveworkplace_test");
 		int radius = VillageHalls.RADIUS;
 		VillageHalls.RADIUS = 8;
 		Leftovers.after(helper, () -> VillageHalls.RADIUS = radius);

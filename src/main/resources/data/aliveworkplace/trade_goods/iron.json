@@ -1,0 +1,32 @@
+{
+  "name": {
+    "translate": "good.aliveworkplace.iron"
+  },
+  "icon": "minecraft:iron_ingot",
+  "items": [
+    "#aliveworkplace:trade/iron"
+  ],
+  "bundle": 4,
+  "base_price": 100,
+  "made_by": {
+    "jobs": [
+      "aliveworkplace:miner",
+      "minecraft:armorer"
+    ],
+    "biomes": [
+      "#minecraft:is_mountain",
+      "#minecraft:is_hill",
+      "minecraft:stony_peaks"
+    ]
+  },
+  "wanted_in": {
+    "jobs": [
+      "minecraft:armorer",
+      "minecraft:toolsmith",
+      "minecraft:weaponsmith",
+      "aliveworkplace:tinkerer"
+    ]
+  },
+  "food": false,
+  "order": 15
+}

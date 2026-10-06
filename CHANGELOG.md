@@ -23,6 +23,12 @@ asks for the steps, `latest.log` and any crash report).
   and a price for every good that moves a third of the way toward supply and demand each dawn, between half and twice
   the base. A beaten raid (night, bandit or vanilla) raises demand for arms for a few days. Kept with the village's
   caravan entry, so old saves load unchanged. Config `villageEconomy` (off until 1.7).
+- **The 28 trade goods for 1.7** (33.3, nothing to see until the price board): Grain, Bread, Roots, Fish, Meat, Fine
+  Meals, Fruit, Honey and Bone Meal; Timber, Stone, Glass, Bricks and Clay, Coal, Iron and Gold; Wool, Leather, Dyes and
+  Flowers, Paper, Tools, Arms and Armour, Arrows, Remedies and Nether Goods; and, only with Cobblemon, Apricorns, Berries
+  and Poké Balls. Each has its makers and their biomes, the biomes and jobs that want it, and a bundle priced like
+  vanilla's villager trades where there is one (20 wheat, 6 bread, 18 wool, 24 paper, 4 iron ingots for an emerald).
+  Raids raise demand for arms, arrows and remedies for 3 days, and remedies while villagers are ill.
 - **The luxury workshop engine for 1.8** (34.5, nothing to see until the four new makers arrive): luxury recipes are
   data files (`data/<namespace>/luxury_recipes/<id>.json`: the job, the level, the makings by item or tag, what comes
   out and how long it takes). A maker fills the store's stock orders first, then makes whatever the village store has

@@ -1,0 +1,31 @@
+{
+  "name": {
+    "translate": "good.aliveworkplace.honey"
+  },
+  "icon": "minecraft:honey_bottle",
+  "items": [
+    "#aliveworkplace:trade/honey"
+  ],
+  "bundle": 4,
+  "base_price": 100,
+  "made_by": {
+    "jobs": [
+      "aliveworkplace:beekeeper"
+    ],
+    "biomes": [
+      "#c:is_flower_forest",
+      "minecraft:meadow",
+      "minecraft:cherry_grove",
+      "#c:is_plains"
+    ]
+  },
+  "wanted_in": {
+    "jobs": [
+      "aliveworkplace:nurse",
+      "aliveworkplace:chef",
+      "minecraft:cleric"
+    ]
+  },
+  "food": true,
+  "order": 8
+}

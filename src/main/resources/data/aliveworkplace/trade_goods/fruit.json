@@ -1,0 +1,32 @@
+{
+  "name": {
+    "translate": "good.aliveworkplace.fruit"
+  },
+  "icon": "minecraft:apple",
+  "items": [
+    "#aliveworkplace:trade/fruit"
+  ],
+  "bundle": 12,
+  "base_price": 100,
+  "made_by": {
+    "jobs": [
+      "aliveworkplace:orchard_keeper"
+    ],
+    "biomes": [
+      "#minecraft:is_forest",
+      "#minecraft:is_taiga"
+    ]
+  },
+  "wanted_in": {
+    "biomes": [
+      "#c:is_desert",
+      "#c:is_snowy"
+    ],
+    "jobs": [
+      "aliveworkplace:chef",
+      "aliveworkplace:composter"
+    ]
+  },
+  "food": true,
+  "order": 7
+}

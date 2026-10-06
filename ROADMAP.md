@@ -3182,7 +3182,7 @@ treasury, travel posts, mail, village protection and the Settler's Wagon (camp/)
     and twice its base; a raid event raises demand for its days only;
   - the new keys survive save and reload, and a village entry saved before this item loads with empty lists;
   - with `villageEconomy` off nothing is worked out and `caravansCarryWhatAnotherVillageNeeds` passes unchanged.
-- [ ] **33.3** **The trade goods.** 28 data files (prices follow vanilla's villager trades where there is one; biomes
+- [x] **33.3** (approved auto 2026-10-06) **The trade goods.** 28 data files (prices follow vanilla's villager trades where there is one; biomes
   as vanilla and `c:` biome tags; a tag of ours where a good is several items): food and farm goods first, then
   building materials (Timber to Gold), crafts (Wool to Nether Goods) and three goods that load only with Cobblemon,
   each behind a `fabric:load_conditions` like the explorer's Cobblemon loot:
@@ -4344,6 +4344,15 @@ item waits.
 - (Sessions: anything that needs the owner, and the link to the latest Full test report. Handoffs go here through
   `sessions.py handoff "<in progress, next, traps>" --as <you>`, which keeps one per kind of session (chat, night):
   carry over anything still true from the previous one.)
+- 2026-10-06 (33.3, decisions; lane a): the 28 goods keep the roadmap's counts where they differ from vanilla's
+  villager trades (checked in 1.21.1's `VillagerTrades`): Stone 64 (a mason buys 20 stone), Glass 8 (a librarian sells
+  4, a cartographer buys 11 panes), Fruit 12 (a farmer sells 4 apples; a butcher buys 10 sweet berries), Nether Goods 8
+  (a cleric buys 22 nether wart, a mason 12 quartz). Remedies match any `minecraft:potion` (the engine counts stock by
+  item, without potion contents), so 33.5's board should sell potions of healing and regeneration and its icon a
+  healing potion. "Mountains" are vanilla's `#minecraft:is_mountain` (meadows and cherry groves included), "snowy lands"
+  `#c:is_snowy`, "windswept hills" `#minecraft:is_hill`. Several-item goods use `aliveworkplace:trade/<good>` item tags
+  (Cobblemon's with `required: false`); Timber, Coal and Wool use vanilla's tags. The 33.2 tests now count only the six
+  test goods (`TradeGoodsDataGameTests.goodsFrom`), since the real goods would crowd their top 3.
 - 2026-10-05 (B76, decision; lane b): the unfinished expansions are gated in one place, `Expansions` (core): a flag
   per milestone (M27, M28, M29, M30, all `false` now). Each of its config switches defaults to that flag and
   `WorkplaceConfig.apply` ANDs the switch with it, so a 0.139.0 file holding `true` still leaves the feature off, and its

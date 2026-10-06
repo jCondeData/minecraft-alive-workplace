@@ -34,7 +34,8 @@
 			"io.github.jcondedata.aliveworkplace.compat.GuildTrainersCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.CupBoutCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.ProfessorCompatTests",
-			"io.github.jcondedata.aliveworkplace.compat.RangerCompatTests"
+			"io.github.jcondedata.aliveworkplace.compat.RangerCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.TradeGoodsCompatTests"
 		]
 	},
 	"depends": {

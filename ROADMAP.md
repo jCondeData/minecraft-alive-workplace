@@ -4861,3 +4861,10 @@ item waits.
   its maximum, nobody's or the hall owner's (another player's pasture is never filled). A calm is checked at the damage
   gate (a calmed Alpha's blows on villagers and players inside any village are cancelled and its target dropped); a
   walk that takes longer than 2 minutes is given up for the day.
+- 2026-10-05 (34.6, partial; lane d): landed the rise and fall effects (`Chronicle.Kind.CLASS`, sparkles at the lead's
+  bed as "their door", `AMETHYST_BLOCK_CHIME`, the chat line within 32 blocks), the moods (saved as `class_standing`
+  at each dawn: needs lacking and the last turn; a standing older than yesterday's dawn adds nothing) and chatter
+  `class_rose`/`class_fell`, with `ClassHallGameTests`. Still to do for 34.6: the hall's Classes button and page
+  (counts, what each class gives, closest to rising), class and household in the people list and the villager page's
+  needs, the food icon's luxuries tooltip, the What next? class tips, chatter for wine, clothes, the Gazette and the
+  tavern (they wait for 34.9+ goods), the scene `classes`, the README section and the Guidebook page (after 26.2a).

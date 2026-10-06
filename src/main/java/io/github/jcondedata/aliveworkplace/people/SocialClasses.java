@@ -81,6 +81,28 @@ public final class SocialClasses implements ResourceManagerReloadListener {
 		).apply(i, Progress::new));
 	}
 
+	/**
+	 * Where a villager stood at their last dawn ({@code class_standing}, 34.6): the day, how many needs of their class they
+	 * lacked, and their last rise (+1) or fall (-1) and its day. Read by their mood; all 0 when absent.
+	 */
+	public record Standing(long day, int missing, long turnDay, int turn) {
+		public static final Codec<Standing> CODEC = RecordCodecBuilder.create(i -> i.group(
+			Codec.LONG.optionalFieldOf("day", 0L).forGetter(Standing::day),
+			Codec.INT.optionalFieldOf("missing", 0).forGetter(Standing::missing),
+			Codec.LONG.optionalFieldOf("turn_day", 0L).forGetter(Standing::turnDay),
+			Codec.INT.optionalFieldOf("turn", 0).forGetter(Standing::turn)
+		).apply(i, Standing::new));
+	}
+
+	/** "Rose in the world" and "came down in the world": this much mood, for {@link #TURN_DAYS} days. */
+	public static final int TURN_MOOD = 10;
+	public static final int TURN_DAYS = 2;
+	/** "Has what their class needs" (+5), or -5 for each need lacking, at most {@link #LACKING_MOST}. */
+	public static final int NEED_MOOD = 5;
+	public static final int LACKING_MOST = 15;
+	/** How far a rise is heard: players this close to the household's door get a chat line. */
+	public static final int TELL_RANGE = 32;
+
 	/** A household that rose or fell at a dawn. */
 	public record Change(List<UUID> who, ResourceLocation from, ResourceLocation to) {
 		public boolean rose() {
@@ -394,13 +416,94 @@ public final class SocialClasses implements ResourceManagerReloadListener {
 			met = 0;
 			missed = 0;
 		}
+		int lacking = 0;
+		for (ClassNeeds.Need need : after.needs()) {
+			if (!ClassNeeds.holds(need, household.members(), village)) {
+				lacking++;
+			}
+		}
+		int turn = after.tier() > current.tier() ? 1 : after.tier() < current.tier() ? -1 : 0;
 		List<UUID> who = new ArrayList<>();
 		for (Villager v : household.members()) {
 			ModAttachments.SOCIAL_CLASS.set(v, after.id());
 			ModAttachments.CLASS_PROGRESS.set(v, new Progress(met, missed, progress(v).fed(), today));
+			Standing was = ModAttachments.CLASS_STANDING.get(v);
+			ModAttachments.CLASS_STANDING.set(v, turn != 0 ? new Standing(today, lacking, today, turn)
+				: new Standing(today, lacking, was == null ? 0 : was.turnDay(), was == null ? 0 : was.turn()));
 			who.add(v.getUUID());
 		}
-		return after == current ? null : new Change(List.copyOf(who), current.id(), after.id());
+		if (after == current) {
+			return null;
+		}
+		turned(level, village.hall, household, after, turn > 0);
+		return new Change(List.copyOf(who), current.id(), after.id());
+	}
+
+	/**
+	 * Tells the village a household rose or came down in the world (34.6): a chronicle line either way; a rise also gets
+	 * golden sparkles and a chime at their door (where the lead sleeps) and a chat line to players within {@link #TELL_RANGE}.
+	 */
+	static void turned(ServerLevel level, BlockPos hall, Households.Household household, SocialClass now, boolean rose) {
+		Component who = names(household.members());
+		Chronicle.record(level, hall, Chronicle.Kind.CLASS,
+			Component.translatable(rose ? "chronicle.aliveworkplace.class.rose" : "chronicle.aliveworkplace.class.fell", who, now.name()));
+		if (!rose) {
+			return;
+		}
+		Villager lead = household.lead();
+		BlockPos bed = VillageNeeds.bed(level, lead);
+		BlockPos door = bed != null ? bed : lead.blockPosition();
+		level.sendParticles(net.minecraft.core.particles.ParticleTypes.WAX_ON, door.getX() + 0.5, door.getY() + 1.2, door.getZ() + 0.5, 24, 0.6, 0.6, 0.6, 0.05);
+		for (Villager v : household.members()) {
+			level.sendParticles(net.minecraft.core.particles.ParticleTypes.WAX_ON, v.getX(), v.getEyeY() + 0.3, v.getZ(), 10, 0.3, 0.3, 0.3, 0.05);
+		}
+		level.playSound(null, door, net.minecraft.sounds.SoundEvents.AMETHYST_BLOCK_CHIME, net.minecraft.sounds.SoundSource.NEUTRAL, 2f, 1.2f);
+		Component line = Component.translatable("message.aliveworkplace.class.rose", who, now.name()).withStyle(net.minecraft.ChatFormatting.GOLD);
+		for (net.minecraft.server.level.ServerPlayer player : listeners(level, door)) {
+			io.github.jcondedata.aliveworkplace.mc.Chat.chat(player, line);
+		}
+	}
+
+	/** The players who hear of a rise at {@code door}: within {@link #TELL_RANGE} blocks. */
+	public static List<net.minecraft.server.level.ServerPlayer> listeners(ServerLevel level, BlockPos door) {
+		List<net.minecraft.server.level.ServerPlayer> out = new ArrayList<>();
+		for (net.minecraft.server.level.ServerPlayer player : level.players()) {
+			if (player.isAlive() && player.distanceToSqr(door.getX() + 0.5, door.getY() + 0.5, door.getZ() + 0.5) <= TELL_RANGE * TELL_RANGE) {
+				out.add(player);
+			}
+		}
+		return out;
+	}
+
+	/** A household's names: "Odo", "Odo and Pia". */
+	static Component names(List<Villager> members) {
+		Component first = members.get(0).getDisplayName();
+		return members.size() < 2 ? first : Component.translatable("class.aliveworkplace.household.two", first, members.get(1).getDisplayName());
+	}
+
+	/**
+	 * The class moods of {@code villager} on {@code today} (34.6): "rose in the world" (+10) or "came down in the world"
+	 * (-10) for {@link #TURN_DAYS} days, and from their last dawn (today's or yesterday's) "has what their class needs"
+	 * (+5) or -5 for each need lacking, at most -15. None with classes off or no class.
+	 */
+	public static List<io.github.jcondedata.aliveworkplace.legend.LegendPowers.MoodReason> moods(Villager villager, long today) {
+		Standing s = ModAttachments.CLASS_STANDING.get(villager);
+		if (!ENABLED || s == null || !ModAttachments.SOCIAL_CLASS.has(villager)) {
+			return List.of();
+		}
+		List<io.github.jcondedata.aliveworkplace.legend.LegendPowers.MoodReason> out = new ArrayList<>();
+		if (s.turn() != 0 && today >= s.turnDay() && today - s.turnDay() < TURN_DAYS) {
+			out.add(new io.github.jcondedata.aliveworkplace.legend.LegendPowers.MoodReason(
+				Component.translatable(s.turn() > 0 ? "mood.aliveworkplace.reason.class_rose" : "mood.aliveworkplace.reason.class_fell"),
+				s.turn() > 0 ? TURN_MOOD : -TURN_MOOD));
+		}
+		if (today >= s.day() && today - s.day() <= 1) {
+			out.add(s.missing() == 0
+				? new io.github.jcondedata.aliveworkplace.legend.LegendPowers.MoodReason(Component.translatable("mood.aliveworkplace.reason.class_needs_met"), NEED_MOOD)
+				: new io.github.jcondedata.aliveworkplace.legend.LegendPowers.MoodReason(
+					Component.translatable("mood.aliveworkplace.reason.class_lacking", s.missing()), -Math.min(LACKING_MOST, NEED_MOOD * s.missing())));
+		}
+		return out;
 	}
 
 	/**

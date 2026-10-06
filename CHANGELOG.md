@@ -17,6 +17,12 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Added
+- **The trade goods engine for 1.7** (33.2, nothing to see until the price board): trade goods are data files
+  (`data/<namespace>/trade_goods/<good>.json`). Once a day, in its hall's round, each village works out up to 3 goods
+  it's known for and 3 it's short of (from its workers' jobs, its biome, its Storehouses and what its workers wait for)
+  and a price for every good that moves a third of the way toward supply and demand each dawn, between half and twice
+  the base. A beaten raid (night, bandit or vanilla) raises demand for arms for a few days. Kept with the village's
+  caravan entry, so old saves load unchanged. Config `villageEconomy` (off until 1.7).
 - **The luxury workshop engine for 1.8** (34.5, nothing to see until the four new makers arrive): luxury recipes are
   data files (`data/<namespace>/luxury_recipes/<id>.json`: the job, the level, the makings by item or tag, what comes
   out and how long it takes). A maker fills the store's stock orders first, then makes whatever the village store has

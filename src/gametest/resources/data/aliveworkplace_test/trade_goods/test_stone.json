@@ -1,0 +1,9 @@
+{
+  "name": {"text": "Test Stone"},
+  "items": ["minecraft:cobblestone", "minecraft:stone"],
+  "bundle": 64,
+  "base_price": 100,
+  "made_by": {"jobs": ["aliveworkplace:miner"], "biomes": ["#minecraft:is_mountain"]},
+  "wanted_in": {"biomes": ["minecraft:swamp"], "jobs": ["aliveworkplace:builder"]},
+  "order": 11
+}

@@ -3161,7 +3161,7 @@ treasury, travel posts, mail, village protection and the Settler's Wagon (camp/)
   realm" README section that each item adds to; and the owner's open calls with the defaults used meanwhile (the
   leaderboard on a real week, Sunday 19:00 server time; no tribute in wars; collecting the treasury owner-only, see
   33.5). Done when: the note is on `main` and its review package is sent.
-- [ ] **33.2** **Trade goods: what a village is known for and short of.** The engine (new package `trade/`). Trade
+- [x] **33.2** (approved auto 2026-10-06) **Trade goods: what a village is known for and short of.** The engine (new package `trade/`). Trade
   goods are data: `data/aliveworkplace/trade_goods/<good>.json`, loaded through `Platform.onDataReload` so datapacks
   and `/reload` work. One file is one good: its name key and icon, its items (an item or an item tag), a bundle size,
   a base price in hundredths of an emerald a bundle, `made_by` (professions and biome tags), `wanted_in` (biome tags,

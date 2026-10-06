@@ -77,6 +77,7 @@ public final class AliveWorkplace {
 		io.github.jcondedata.aliveworkplace.people.SocialClasses.init();
 		io.github.jcondedata.aliveworkplace.hall.Services.init(); // services nearby (34.3)
 		io.github.jcondedata.aliveworkplace.people.Luxuries.init(); // luxuries from the village store (34.4)
+		io.github.jcondedata.aliveworkplace.trade.TradeGoods.init(); // trade goods (33.2)
 		io.github.jcondedata.aliveworkplace.craft.LuxuryRecipes.init(); // the luxury workshops' recipes (34.5)
 		io.github.jcondedata.aliveworkplace.people.Tonics.init();
 		io.github.jcondedata.aliveworkplace.city.StewardRules.init();

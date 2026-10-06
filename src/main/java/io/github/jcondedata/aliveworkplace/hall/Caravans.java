@@ -93,6 +93,8 @@ public final class Caravans {
 		final Map<BlockPos, Leader> leaders = new LinkedHashMap<>();
 		/** Trainer XP a village's entrants earned at a Festival Cup while away (28.18), by village and trainer, until the village next loads. */
 		final Map<BlockPos, Map<java.util.UUID, Integer>> banked = new LinkedHashMap<>();
+		/** Each village's trade goods (33.2): known for, short of, prices; none until its hall's daily count. */
+		final Map<BlockPos, io.github.jcondedata.aliveworkplace.trade.Market> markets = new LinkedHashMap<>();
 
 		public static Data get(ServerLevel level) {
 			return level.getDataStorage().computeIfAbsent(new SavedData.Factory<>(Data::new, Data::load, null), NAME);
@@ -142,7 +144,24 @@ public final class Caravans {
 			halves.remove(hall);
 			halves.values().forEach(to -> to.remove(hall));
 			leaders.remove(hall);
+			markets.remove(hall);
 			setDirty();
+		}
+
+		/** The village's trade goods as its hall's last daily count left them (33.2); empty before the first. */
+		public io.github.jcondedata.aliveworkplace.trade.Market market(BlockPos hall) {
+			return markets.getOrDefault(hall, io.github.jcondedata.aliveworkplace.trade.Market.EMPTY);
+		}
+
+		/** Writes the village's trade goods (33.2); a village not on the list keeps none. */
+		public void setMarket(BlockPos hall, io.github.jcondedata.aliveworkplace.trade.Market market) {
+			if (!villages.containsKey(hall)) {
+				return;
+			}
+			io.github.jcondedata.aliveworkplace.trade.Market old = market.isEmpty() ? markets.remove(hall) : markets.put(hall.immutable(), market);
+			if (!market.equals(old == null ? io.github.jcondedata.aliveworkplace.trade.Market.EMPTY : old)) {
+				setDirty();
+			}
 		}
 
 		/** The villages {@code hall} has a trade route with, either way (27.17: each builds its half of the road). */
@@ -306,6 +325,7 @@ public final class Caravans {
 					lt.putBoolean("leader", leader.leader());
 					t.put("leader", lt);
 				}
+				market(v.hall()).save(t); // 33.2
 				list.add(t);
 			}
 			tag.put("villages", list);
@@ -367,6 +387,10 @@ public final class Caravans {
 				if (lt.hasUUID("id")) {
 					data.leaders.put(hall, new Leader(lt.getUUID("id"), Nbt.getString(lt, "name"), Nbt.getInt(lt, "tier"), Nbt.getInt(lt, "xp"),
 						Nbt.getBoolean(lt, "leader")));
+				}
+				io.github.jcondedata.aliveworkplace.trade.Market market = io.github.jcondedata.aliveworkplace.trade.Market.load(t); // 33.2; older saves have none
+				if (!market.isEmpty()) {
+					data.markets.put(hall, market);
 				}
 			}
 			ListTag road = Nbt.getList(tag, "road", Tag.TAG_COMPOUND);
@@ -433,7 +457,7 @@ public final class Caravans {
 	}
 
 	/** The chests by the village's Storehouses (where caravans load and unload). */
-	static List<BlockPos> storehouse(ServerLevel level, BlockPos hall) {
+	public static List<BlockPos> storehouse(ServerLevel level, BlockPos hall) {
 		Set<BlockPos> chests = new LinkedHashSet<>();
 		level.getPoiManager().findAll(h -> h.is(ModVillagers.STOREHOUSE_POI), p -> true, hall, VillageHalls.RADIUS, PoiManager.Occupancy.ANY)
 			.forEach(s -> chests.addAll(SupplyContainers.find(level, s.immutable(), null)));

@@ -32,6 +32,8 @@ public final class Expansions {
 	 * tabs, Track and {@code /workplace quests} are (design note M31, "The expansion gate").
 	 */
 	public static final boolean M31 = false;
+	/** Milestone 33, From village to realm (1.7): {@code villageEconomy}. */
+	public static final boolean M33 = false;
 	/** Milestone 34, Classes and luxuries (1.8): {@code villageClasses}, {@code classRiseDays}, {@code classFallDays}. */
 	public static final boolean M34 = false;
 
@@ -59,6 +61,7 @@ public final class Expansions {
 			case "legends", "legendNeeds", "legendSites", "strangeMoods", "giftedChance" -> M29;
 			case "villageEdicts", "edictMinDays", "workHorns", "villageBanners", "cradles", "harvestIdols", "tonics", "guilds",
 				"guildsPerRank" -> M30;
+			case "villageEconomy" -> M33;
 			case "villageClasses", "classRiseDays", "classFallDays" -> M34;
 			default -> null;
 		};

@@ -294,6 +294,7 @@ public final class VillageRaids {
 
 	private static void end(ServerLevel level, BlockPos hall, Raid raid, boolean fled) {
 		ACTIVE.remove(hall);
+		io.github.jcondedata.aliveworkplace.trade.TradeGoods.event(level, hall, io.github.jcondedata.aliveworkplace.trade.TradeGoods.RAID); // 33.2: arms wanted for a few days
 		Component name = VillageHalls.name(level, hall);
 		for (ServerPlayer player : players(level, hall)) {
 			Chat.chat(player, Component.translatable(fled ? "message.aliveworkplace.raid.fled" : "message.aliveworkplace.raid.won", name)

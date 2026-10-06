@@ -52,6 +52,9 @@ public final class ModAttachments {
 	/** On a wild Alpha Pokémon: a Pokémon Ranger (29.22) calmed it, for good. Absent: never calmed. */
 	public static final Attachment<Boolean> RANGER_CALMED = Attachment.saved("ranger_calmed", com.mojang.serialization.Codec.BOOL);
 
+	/** A Festival Cup delegate (28.19), a visitor standing in for a far village's entrant: home hall, the Leader's UUID, tier, host, the Cup's day. Absent: not one. */
+	public static final Attachment<io.github.jcondedata.aliveworkplace.cup.CupDays.Delegate> CUP_DELEGATE = Attachment.saved("cup_delegate", io.github.jcondedata.aliveworkplace.cup.CupDays.Delegate.CODEC);
+
 	/** A villager's gift (29.6): a gift's id, or {@code none}. Absent: the UUID roll decides ({@code Gifted.of}). */
 	/** The guild this villager leads and its village's hall (ROADMAP 30.17); absent: they lead none. */
 	public static final Attachment<io.github.jcondedata.aliveworkplace.hall.Guilds.Master> GUILD_MASTER = Attachment.saved("guild_master", io.github.jcondedata.aliveworkplace.hall.Guilds.Master.CODEC);

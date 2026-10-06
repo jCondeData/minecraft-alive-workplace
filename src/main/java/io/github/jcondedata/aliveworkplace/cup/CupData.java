@@ -83,6 +83,42 @@ public final class CupData extends SavedData {
 		/** The bout being fought at the ring (28.18), or null. */
 		@Nullable
 		public CupBout bout;
+		/** The Cup's day (28.19): how many days it has been put off (its host wasn't loaded that morning). */
+		public int postponed;
+		/** The days (28.19) the delegates came, the fair was held, the feast and the bard's disc, and the champion was cheered; -1: not yet. */
+		public long delegatesDay = -1;
+		public long fairDay = -1;
+		public long feastDay = -1;
+		public long finaleDay = -1;
+		/** When (time of day) the champion was cheered, for the stands to empty after. */
+		public long finaleTime = -1;
+		/** How many of the results the stands have cheered. */
+		public int cheered;
+	}
+
+	/** A chronicle entry for a circuit village that wasn't loaded (28.19): the day and the entry, written when it next loads. */
+	public record Note(long day, String json) {
+	}
+
+	private final Map<BlockPos, List<Note>> notes = new LinkedHashMap<>();
+
+	/** Keeps {@code note} for the village round {@code hall} until it loads. */
+	public void note(BlockPos hall, Note note) {
+		notes.computeIfAbsent(hall.immutable(), k -> new ArrayList<>()).add(note);
+		setDirty();
+	}
+
+	/** Takes the notes kept for {@code hall}. */
+	public List<Note> takeNotes(BlockPos hall) {
+		List<Note> out = notes.remove(hall);
+		if (out != null) {
+			setDirty();
+		}
+		return out == null ? List.of() : out;
+	}
+
+	public List<Note> notes(BlockPos hall) {
+		return List.copyOf(notes.getOrDefault(hall, List.of()));
 	}
 
 	private final Map<BlockPos, Cup> cups = new LinkedHashMap<>();
@@ -162,9 +198,25 @@ public final class CupData extends SavedData {
 			if (cup.bout != null) {
 				t.put("bout", cup.bout.save());
 			}
+			t.putInt("postponed", cup.postponed);
+			t.putLong("delegatesDay", cup.delegatesDay);
+			t.putLong("fairDay", cup.fairDay);
+			t.putLong("feastDay", cup.feastDay);
+			t.putLong("finaleDay", cup.finaleDay);
+			t.putLong("finaleTime", cup.finaleTime);
+			t.putInt("cheered", cup.cheered);
 			list.add(t);
 		});
 		tag.put("cups", list);
+		ListTag noteList = new ListTag();
+		notes.forEach((hall, kept) -> kept.forEach(n -> {
+			CompoundTag nt = new CompoundTag();
+			nt.putLong("hall", hall.asLong());
+			nt.putLong("day", n.day());
+			nt.putString("text", n.json());
+			noteList.add(nt);
+		}));
+		tag.put("notes", noteList);
 		return tag;
 	}
 
@@ -253,6 +305,19 @@ public final class CupData extends SavedData {
 			if (t.contains("bout")) { // 28.18; older saves have none
 				cup.bout = CupBout.load(Nbt.getCompound(t, "bout"));
 			}
+			// 28.19; older saves have none
+			cup.postponed = Nbt.getInt(t, "postponed");
+			cup.delegatesDay = t.contains("delegatesDay") ? Nbt.getLong(t, "delegatesDay") : -1;
+			cup.fairDay = t.contains("fairDay") ? Nbt.getLong(t, "fairDay") : -1;
+			cup.feastDay = t.contains("feastDay") ? Nbt.getLong(t, "feastDay") : -1;
+			cup.finaleDay = t.contains("finaleDay") ? Nbt.getLong(t, "finaleDay") : -1;
+			cup.finaleTime = t.contains("finaleTime") ? Nbt.getLong(t, "finaleTime") : -1;
+			cup.cheered = Nbt.getInt(t, "cheered");
+		}
+		ListTag noteList = Nbt.getList(tag, "notes", Tag.TAG_COMPOUND);
+		for (int i = 0; i < noteList.size(); i++) {
+			CompoundTag nt = Nbt.compoundAt(noteList, i);
+			data.notes.computeIfAbsent(BlockPos.of(Nbt.getLong(nt, "hall")), k -> new ArrayList<>()).add(new Note(Nbt.getLong(nt, "day"), Nbt.getString(nt, "text")));
 		}
 		return data;
 	}

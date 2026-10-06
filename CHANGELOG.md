@@ -17,6 +17,13 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Added
+- **Cup day** (28.19): on a Festival Cup's day the far villages' entrants walk in from their village's side as delegates
+  ("Dara of Eastholm", in a Trainer Leader's outfit; real Leaders left at home are away at the Cup and take no
+  challenges), the market's traders hold a fair on the Arena's fair lane selling the theme's wares, from noon the
+  villagers sit in the stands, eat the feast (the theme's dish first) and cheer their village's wins while the bard plays
+  the theme's disc; after the final, fireworks in the theme's colours, Hero of the Village and the festival's mood, and
+  the Cup goes into every circuit village's chronicle (gold ingot). Bouts left at the end time are settled as
+  exhibitions; a host that isn't loaded puts its Cup off (8 days at most); no Arena or `festivalCup` off: a plain festival.
 - **The luxury workshop engine for 1.8** (34.5, nothing to see until the four new makers arrive): luxury recipes are
   data files (`data/<namespace>/luxury_recipes/<id>.json`: the job, the level, the makings by item or tag, what comes
   out and how long it takes). A maker fills the store's stock orders first, then makes whatever the village store has

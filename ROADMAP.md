@@ -1280,7 +1280,7 @@ here adds a new kind of speed bonus (the new jobs get the partners' existing one
   Done when: GameTests: the bout is the same for the same seed; the chart is sane (Water on Fire 2×, Normal on Ghost
   0×); a bout between two trainers ends with a winner and every Pokémon entity gone; a themed team follows the theme; a
   delegate's banked XP reaches the real Leader on load; showcase scene `cup_bout` with its GIF.
-- [ ] **28.19** **Cup day.** The Cup is the host's festival, from morning to the final:
+- [x] **28.19** (review: pending 2026-10-06) **Cup day.** The Cup is the host's festival, from morning to the final:
   - Delegates: from 1000 the far villages' entrants arrive, each a visiting villager with its Leader's name, a Trainer
     Leader's outfit and "of <village>", walking in from the village edge on the side its home lies, to the Arena
     (attachment `CUP_DELEGATE`: home hall, the Leader's UUID, tier; never takes a job or a bed; leaves at dawn out of
@@ -4861,3 +4861,9 @@ item waits.
   its maximum, nobody's or the hall owner's (another player's pasture is never filled). A calm is checked at the damage
   gate (a calmed Alpha's blows on villagers and players inside any village are cancelled and its target dropped); a
   walk that takes longer than 2 minutes is given up for the day.
+- 2026-10-06 (28.19, decisions; lane b): the Cup's afternoon off counts villagers at work too (the stands fill from
+  noon with every grown villager who isn't resting; for the final, children as well); entrants, delegates and the bard
+  never sit. An Arena I has no fair lane, so its fair is held by the notice board. The bard's disc plays once, at noon,
+  where the bard is if they reached the ring, else at the ring. A Cup put off keeps its new day through the host's
+  rounds; called off after 8 days, the next Cup is set from the calendar. The Cup's chronicle entry for a circuit
+  village that isn't loaded is kept in `aliveworkplace_cups` and written, with the Cup's day, at its next hall round.

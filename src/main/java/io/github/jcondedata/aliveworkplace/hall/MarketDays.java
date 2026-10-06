@@ -99,8 +99,14 @@ public final class MarketDays {
 
 	/** The traders come to the square at {@code square}. */
 	public static List<WanderingTrader> hold(ServerLevel level, BlockPos hall, BlockPos square) {
+		return hold(level, hall, square, 0, t -> {
+		});
+	}
+
+	/** The traders come to {@code square}, {@code extra} more than a market day, each fitted out by {@code each} too (a Cup's fair, 28.19). */
+	public static List<WanderingTrader> hold(ServerLevel level, BlockPos hall, BlockPos square, int extra, java.util.function.Consumer<WanderingTrader> each) {
 		List<WanderingTrader> traders = new ArrayList<>();
-		int count = traders(level, hall);
+		int count = traders(level, hall) + extra;
 		for (int i = 0; i < count; i++) {
 			BlockPos spot = spot(level, square, i);
 			if (spot == null) {
@@ -113,6 +119,7 @@ public final class MarketDays {
 			trader.setDespawnDelay(Curfew.marketStay(level, hall, STAY)); // Curfew: gone by dusk
 			trader.setWanderTarget(square);
 			addBlueprintOffer(level, trader);
+			each.accept(trader);
 			traders.add(trader);
 		}
 		if (traders.isEmpty()) {

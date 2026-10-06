@@ -293,8 +293,16 @@ public final class VillageNeeds {
 
 	/** {@link #eat(ServerLevel, Villager, List)} with what the store keeps back for builds already worked out. */
 	public static boolean eat(ServerLevel level, Villager villager, BuildReserve store) {
+		return eat(level, villager, store, null);
+	}
+
+	/** {@link #eat(ServerLevel, Villager, BuildReserve)}, {@code first} first if the store has it (a Cup's dish, 28.19). */
+	public static boolean eat(ServerLevel level, Villager villager, BuildReserve store, @org.jetbrains.annotations.Nullable net.minecraft.world.item.Item first) {
+		ItemStack meal = first == null ? ItemStack.EMPTY : store.takeOne(level, s -> s.is(first));
 		// Something they haven't had lately, if the store has it (see Diet).
-		ItemStack meal = store.takeOne(level, s -> isMeal(s) && !io.github.jcondedata.aliveworkplace.people.Diet.hadLately(villager, s));
+		if (meal.isEmpty()) {
+			meal = store.takeOne(level, s -> isMeal(s) && !io.github.jcondedata.aliveworkplace.people.Diet.hadLately(villager, s));
+		}
 		if (meal.isEmpty()) {
 			meal = store.takeOne(level, VillageNeeds::isMeal);
 		}

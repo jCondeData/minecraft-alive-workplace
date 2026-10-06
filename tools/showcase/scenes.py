@@ -266,6 +266,12 @@ SCENES = [
       "both trainers' Pokémon came out beside the ring, the bout ended with a winner on the Cup's results, and no Pokémon was left at the ring", 110,
       [("01_bout_start", "Both Pokémon out"), ("bout_*@middle", "Trading moves"), ("02_bout_result", "The result"),
        ("03_ring_cleared", "The ring cleared")], cobblemon=True),
+    # The Cup's day (ROADMAP 28.19), sped up: the delegates walk in from their villages' side, the fair on the Arena's fair
+    # lane with the theme's wares, the stands at noon, the champion's fireworks, the delegates gone by dawn
+    S("cup_day", "Trainer Leader", "A Festival Cup's day, morning to champion",
+      "two delegates came, the fair sold the theme's wares, villagers sat in the stands for the final, the chronicle has the Cup and the delegates left by dawn", 90,
+      [("01_fair", "The fair"), ("02_delegate_arrives", "A delegate walks in"), ("03_stands", "The stands"),
+       ("04_champion", "The champion's fireworks")]),
     S("leader", "Trainer Leader", "Challenging the Trainer Leader", "the Trainer Leader took the challenge", 90,
       [("01_leader", "At the podium"), ("02_leader_battle", "The battle starts")], cobblemon=True),
     S("tutor", "Move Tutor", "The Move Tutor's lessons", "the lesson screen opened", 60,

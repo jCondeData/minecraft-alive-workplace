@@ -374,7 +374,7 @@ public final class CupBouts {
 
 	/** Keeps a trainer who's at the Arena in their box, facing the ring. */
 	private static void toBox(ServerLevel level, CupBout bout, int s, boolean start) {
-		if (!(level.getEntity(bout.trainers[s]) instanceof Villager v) || !v.isAlive() || v.isSleeping()) {
+		if (!(CupDays.standIn(level, bout.trainers[s], bout.ring) instanceof Villager v) || !v.isAlive() || v.isSleeping()) {
 			return;
 		}
 		Vec3 box = Vec3.atBottomCenterOf(bout.boxes[s]);
@@ -425,6 +425,7 @@ public final class CupBouts {
 			if (v != null && !v.name().getString().isEmpty()) {
 				return v.name();
 			}
+			return VillageHalls.madeUpName(hall); // never loads the village's chunk to read its hall (28.19)
 		}
 		return VillageHalls.name(level, hall);
 	}

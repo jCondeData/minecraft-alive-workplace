@@ -2291,7 +2291,7 @@ write their own stories; nothing waits forever on a player.
   - a far `place` waits until a player comes near, then places once;
   - no more than `arcsAtOnce` arcs run; with `storyArcs` off no arc starts and a running one ends at its next round;
   - showcase scene `story_arc`: the announcement, the Story tab, the chronicle.
-- [ ] **31.5** **Friendship.** Every named villager in a hall's village keeps a friendship with each player: 0 to 1000
+- [x] **31.5** (review: pending 2026-10-06) **Friendship.** Every named villager in a hall's village keeps a friendship with each player: 0 to 1000
   points, ten hearts of 100. It's saved on the villager, in a new attachment `friendship` (empty by default): player →
   points, the last gift's day, gifts this week, heart events told. Favours, each once a day per villager unless said:
   - trading with them: +5;

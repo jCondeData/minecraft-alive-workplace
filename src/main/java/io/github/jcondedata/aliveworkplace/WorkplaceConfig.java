@@ -100,6 +100,8 @@ public final class WorkplaceConfig {
 	public boolean villageTreasury = true;
 	/** Village Halls post quests for players (the quest engine, 31.2); off: no new quests, open ones can still be finished. */
 	public boolean villageQuests = true;
+	/** Named villagers keep a friendship with each player, shown in hearts (ROADMAP 31.5). Off: no points, no hearts shown; saved friendship stays. */
+	public boolean friendship = Expansions.on(Expansions.M31);
 	/** A Village Hall's owner may protect the village from other players (a setting on the hall, off until they turn it on). */
 	public boolean villageProtection = true;
 	/** Pokémon pastured by a workstation are seen helping at work (with Cobblemon): they carry, water, spark... */
@@ -423,6 +425,7 @@ public final class WorkplaceConfig {
 		io.github.jcondedata.aliveworkplace.hall.Treasury.ENABLED = villageTreasury && System.getProperty("fabric-api.gametest") == null;
 		io.github.jcondedata.aliveworkplace.hall.VillageProtection.ENABLED = villageProtection;
 		io.github.jcondedata.aliveworkplace.story.Stories.ENABLED = villageQuests;
+		io.github.jcondedata.aliveworkplace.story.Friendship.ENABLED = friendship && Expansions.on(Expansions.M31);
 		io.github.jcondedata.aliveworkplace.legend.Legends.ENABLED = legends && Expansions.on(Expansions.M29);
 		io.github.jcondedata.aliveworkplace.legend.LegendSites.ENABLED = legendSites && Expansions.on(Expansions.M29);
 		// Off in gametests (a round could seize a test's Master); the strange mood tests turn it on.

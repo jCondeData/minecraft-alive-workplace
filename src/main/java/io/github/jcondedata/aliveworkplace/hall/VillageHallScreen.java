@@ -308,7 +308,7 @@ public final class VillageHallScreen {
 			if (slot == PREVIOUS) {
 				slot++;
 			}
-			menu.button(slot++, person(level, hall, villager), p -> {
+			menu.button(slot++, person(level, hall, villager, menu.viewer()), p -> {
 				if (jobless && villager.getVillagerData().getProfession() != net.minecraft.world.entity.npc.VillagerProfession.NITWIT) {
 					renderJobs(menu, level, hall, villager, shown);
 					menu.broadcastChanges();
@@ -599,6 +599,11 @@ public final class VillageHallScreen {
 
 	/** A villager: their workstation (stacked as high as their level), name, level, what they're doing and waiting for. */
 	public static ItemStack person(ServerLevel level, BlockPos hall, Villager villager) {
+		return person(level, hall, villager, null);
+	}
+
+	/** The same, with {@code viewer}'s hearts and the villager's best friends among the players (31.5). */
+	public static ItemStack person(ServerLevel level, BlockPos hall, Villager villager, @org.jetbrains.annotations.Nullable ServerPlayer viewer) {
 		boolean working = villager.getBrain().getMemory(MemoryModuleType.JOB_SITE).isPresent()
 			&& villager.getVillagerData().getProfession() != net.minecraft.world.entity.npc.VillagerProfession.NONE;
 		Item station = working ? workstation(level, villager) : Items.PAPER;
@@ -675,6 +680,10 @@ public final class VillageHallScreen {
 		if (partner != null) {
 			lore.add(line(Component.translatable(partner.married() ? "screen.aliveworkplace.hall.married_to" : "screen.aliveworkplace.hall.courting",
 				partner.name()), ChatFormatting.LIGHT_PURPLE));
+		}
+		// "Your hearts: ♥♥♥♡♡♡♡♡♡♡", "Best friends: Jesse, Alex" (31.5).
+		for (Component friends : io.github.jcondedata.aliveworkplace.story.Friendship.hallLines(villager, viewer)) {
+			lore.add(line(friends, ChatFormatting.LIGHT_PURPLE));
 		}
 		if (io.github.jcondedata.aliveworkplace.school.Schools.isSchooled(villager)) {
 			lore.add(line("screen.aliveworkplace.hall.schooled", ChatFormatting.GRAY));

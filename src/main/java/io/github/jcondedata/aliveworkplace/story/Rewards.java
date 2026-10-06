@@ -34,7 +34,8 @@ import org.jetbrains.annotations.Nullable;
 
 /**
  * The rewards a quest file may pay (ROADMAP 31.2), by type: each a small record read from its JSON and written back the
- * same way. Money and items go to whoever finished the quest; the rest go to the village.
+ * same way. Money and items go to whoever finished the quest; friendship to whoever the reward names; the rest go to the
+ * village.
  */
 public final class Rewards {
 	/** One reward. {@link #resolve} fixes it when the quest goes up (money times the rank factor). */
@@ -48,6 +49,11 @@ public final class Rewards {
 		}
 
 		void give(ServerLevel level, BlockPos hall, @Nullable ServerPlayer finisher);
+
+		/** Pays it for {@code quest} (a reward that needs the quest's giver or helpers overrides this). */
+		default void give(ServerLevel level, BlockPos hall, @Nullable ServerPlayer finisher, Quest quest) {
+			give(level, hall, finisher);
+		}
 	}
 
 	private static final Map<String, Function<JsonObject, Reward>> KINDS = new LinkedHashMap<>();
@@ -61,6 +67,7 @@ public final class Rewards {
 			j.has("reason") ? text(j.get("reason")) : Component.translatable("mood.aliveworkplace.reason.quest")));
 		register("treasury", j -> new Treasury(Objectives.positive(j, "emeralds")));
 		register("map", j -> new MapReward(Places.read(j.get("place"))));
+		register("friendship", FriendshipReward::read);
 	}
 
 	public static void register(String type, Function<JsonObject, Reward> reader) {
@@ -321,6 +328,71 @@ public final class Rewards {
 			JsonObject o = new JsonObject();
 			o.addProperty("type", type());
 			o.add("place", place.json());
+			return o;
+		}
+	}
+
+	/**
+	 * {@code friendship} (31.5): {@code points} of friendship with the quest's giver ({@code to}: {@code giver}, its
+	 * poster) or a villager of the village by name (an arc's role, 31.4), for the finisher ({@code who}: {@code finisher})
+	 * or everyone credited with progress ({@code helpers}).
+	 */
+	public record FriendshipReward(int points, String to, String who) implements Reward {
+		static FriendshipReward read(JsonObject json) {
+			int points = GsonHelper.getAsInt(json, "points");
+			String to = GsonHelper.getAsString(json, "to", "giver");
+			String who = GsonHelper.getAsString(json, "who", "finisher");
+			if (!who.equals("finisher") && !who.equals("helpers")) {
+				throw new IllegalArgumentException("'who' must be finisher or helpers, not '" + who + "'");
+			}
+			if (to.isEmpty()) {
+				throw new IllegalArgumentException("empty 'to'");
+			}
+			return new FriendshipReward(points, to, who);
+		}
+
+		@Override
+		public String type() {
+			return "friendship";
+		}
+
+		@Override
+		public void give(ServerLevel level, BlockPos hall, @Nullable ServerPlayer finisher) {
+			// Without the quest there's no giver to name.
+		}
+
+		@Override
+		public void give(ServerLevel level, BlockPos hall, @Nullable ServerPlayer finisher, Quest quest) {
+			net.minecraft.world.entity.npc.Villager villager = Friendship.named(level, hall, to.equals("giver") ? quest.poster : to);
+			if (villager == null) {
+				return;
+			}
+			if (who.equals("helpers")) {
+				java.util.Set<java.util.UUID> paid = new java.util.HashSet<>();
+				for (java.util.UUID helper : quest.helpers.keySet()) {
+					ServerPlayer online = level.getServer().getPlayerList().getPlayer(helper);
+					if (online != null) {
+						Friendship.add(villager, online, points);
+					} else {
+						Friendship.add(villager, helper, "", points);
+					}
+					paid.add(helper);
+				}
+				if (finisher != null && !paid.contains(finisher.getUUID())) {
+					Friendship.add(villager, finisher, points);
+				}
+			} else if (finisher != null) {
+				Friendship.add(villager, finisher, points);
+			}
+		}
+
+		@Override
+		public JsonObject json() {
+			JsonObject o = new JsonObject();
+			o.addProperty("type", type());
+			o.addProperty("points", points);
+			o.addProperty("to", to);
+			o.addProperty("who", who);
 			return o;
 		}
 	}

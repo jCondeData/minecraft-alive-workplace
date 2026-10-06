@@ -29,7 +29,7 @@ public final class Expansions {
 	public static final boolean M30 = false;
 	/**
 	 * Milestone 31, Quests become stories (1.5). The daily quests ({@code villageQuests}) aren't behind it; the journal's
-	 * tabs, Track and {@code /workplace quests} are (design note M31, "The expansion gate").
+	 * tabs, Track and {@code /workplace quests} are (design note M31, "The expansion gate"), and so is {@code friendship}.
 	 */
 	public static final boolean M31 = false;
 	/** Milestone 34, Classes and luxuries (1.8): {@code villageClasses}, {@code classRiseDays}, {@code classFallDays}. */
@@ -59,6 +59,7 @@ public final class Expansions {
 			case "legends", "legendNeeds", "legendSites", "strangeMoods", "giftedChance" -> M29;
 			case "villageEdicts", "edictMinDays", "workHorns", "villageBanners", "cradles", "harvestIdols", "tonics", "guilds",
 				"guildsPerRank" -> M30;
+			case "friendship" -> M31;
 			case "villageClasses", "classRiseDays", "classFallDays" -> M34;
 			default -> null;
 		};

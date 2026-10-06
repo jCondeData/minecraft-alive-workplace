@@ -2335,6 +2335,59 @@ final class JobScenes {
 					player.teleportTo(level, player.getX(), player.getY(), player.getZ(), player.getYRot(), 70f); // (look down at it)
 				}, 40)),
 			(level, player) -> true));
+		// Friendship (ROADMAP 31.5): a trade and a quest done for Dara put hearts on, shown in the action bar while the
+		// player looks at her, with a puff of hearts; the hall's tooltip shows your hearts and her best friends.
+		SCREENS.put("friendship", new Screen("a trade and a quest done for Dara raised the player's hearts in the action bar, and the hall's tooltip shows them",
+			new Vec3(1.5, -60, 4.5), new Vec3(1.5, -58.8, 1.5),
+			(level, player) -> {
+				level.setBlockAndUpdate(STATION, ModBlocks.VILLAGE_HALL.defaultBlockState()
+					.setValue(io.github.jcondedata.aliveworkplace.hall.VillageHallBlock.FACING, Direction.SOUTH));
+				Villager dara = EntityType.VILLAGER.spawn(level, new BlockPos(1, -60, 1), MobSpawnType.COMMAND);
+				dara.setNoAi(true);
+				dara.setYRot(0);
+				dara.setYHeadRot(0);
+				dara.setYBodyRot(0);
+				dara.setVillagerData(dara.getVillagerData().setProfession(VillagerProfession.FARMER).setLevel(2));
+				dara.setCustomName(Component.literal("Dara"));
+				subject = dara;
+			},
+			List.of(new Step("01_trade_hearts", -1, 0, (level, player) -> {
+					// The hall's POI is only registered after the staging tick: look Dara's hall up again now (B72).
+					io.github.jcondedata.aliveworkplace.hall.CivicEffects.forget();
+					Villager dara = subject;
+					io.github.jcondedata.aliveworkplace.story.Friendship.add(dara, player, 255); // the days before
+					io.github.jcondedata.aliveworkplace.story.Friendship.add(dara, java.util.UUID.nameUUIDFromBytes("Ana".getBytes()), "Ana", 430);
+					dara.setTradingPlayer(player);
+					dara.notifyTrade(new net.minecraft.world.item.trading.MerchantOffer(new net.minecraft.world.item.trading.ItemCost(Items.EMERALD, 1),
+						new ItemStack(Items.BREAD, 6), 12, 1, 0.05f));
+					dara.setTradingPlayer(null);
+					Component line = io.github.jcondedata.aliveworkplace.story.Friendship.lookLine(player);
+					Showcase.check(io.github.jcondedata.aliveworkplace.story.Friendship.points(dara, player.getUUID()) == 260
+						&& line != null && line.getString().equals("Dara ♥♥♡♡♡♡♡♡♡♡"), "a trade with Dara: +5, two hearts in the action bar: " + line);
+				}, 40),
+				new Step("02_quest_hearts", -1, 0, (level, player) -> {
+					Villager dara = subject;
+					long now = level.getGameTime();
+					var quest = new io.github.jcondedata.aliveworkplace.story.Quest(java.util.UUID.randomUUID(),
+						io.github.jcondedata.aliveworkplace.AliveWorkplace.id("daily/want_bread"), "hall", java.util.Optional.empty(), "Dara", now,
+						now + 3 * io.github.jcondedata.aliveworkplace.hall.VillageNeeds.DAY,
+						List.of(new io.github.jcondedata.aliveworkplace.story.Objectives.Bring("minecraft:bread", 4, "hall", java.util.Optional.empty())),
+						new int[1], List.of(new io.github.jcondedata.aliveworkplace.story.Rewards.Money_(3, 0, 0, false)));
+					io.github.jcondedata.aliveworkplace.story.Stories.post(level, STATION, quest);
+					player.getInventory().add(new ItemStack(Items.BREAD, 4));
+					int given = io.github.jcondedata.aliveworkplace.story.Stories.handIn(player, STATION, quest.id);
+					Component line = io.github.jcondedata.aliveworkplace.story.Friendship.lookLine(player);
+					Showcase.check(given == 4 && io.github.jcondedata.aliveworkplace.story.Friendship.points(dara, player.getUUID()) == 310
+						&& line != null && line.getString().equals("Dara ♥♥♥♡♡♡♡♡♡♡"), "Dara's bread quest done: +50, three hearts and a puff: " + line);
+				}, 40),
+				new Step("03_hall_tooltip", io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_PERSON, 6, (level, player) -> {
+					io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.open(player, STATION);
+					boolean shown = player.containerMenu instanceof ChoiceMenu m && m.icon(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_PERSON)
+						.getOrDefault(net.minecraft.core.component.DataComponents.LORE, net.minecraft.world.item.component.ItemLore.EMPTY).lines().stream()
+						.anyMatch(l -> l.getString().equals("Your hearts: ♥♥♥♡♡♡♡♡♡♡"));
+					Showcase.check(shown, "the hall's tooltip for Dara shows your hearts and her best friends");
+				}, 30)),
+			(level, player) -> subject != null && io.github.jcondedata.aliveworkplace.story.Friendship.points(subject, player.getUUID()) >= 310));
 		// Long Shifts proclaimed (ROADMAP 30.3): the builder's line in the hall's list says "long shifts" and 20% faster,
 		// and the chronicle keeps the proclamation.
 		SCREENS.put("long_shifts", new Screen("Long Shifts was proclaimed: the hall's list shows the \"long shifts\" mood and the chronicle keeps it",

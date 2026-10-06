@@ -17,6 +17,12 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Added
+- **Friendship with villagers** (31.5; switched on with the rest of 1.5): every named villager in a village with a hall keeps ten hearts for
+  each player. Trading with them (+5), finishing a hall quest they posted (+40), handing in what they wait for (+10),
+  coming to their wedding (+30) or a festival with them (+10) count once a day each; killing a monster that just hurt
+  them (+15) counts every time; hitting them costs 50 (once a minute). Look at a named villager within 6 blocks and
+  the action bar shows "Dara ♥♥♥♡♡♡♡♡♡♡"; hearts puff over them when they go up; the hall's list shows your hearts
+  and their two best friends. Quest files can reward `friendship`. Setting `friendship` (on); hearts never fade.
 - **The luxury workshop engine for 1.8** (34.5, nothing to see until the four new makers arrive): luxury recipes are
   data files (`data/<namespace>/luxury_recipes/<id>.json`: the job, the level, the makings by item or tag, what comes
   out and how long it takes). A maker fills the store's stock orders first, then makes whatever the village store has

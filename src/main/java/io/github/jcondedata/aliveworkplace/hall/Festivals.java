@@ -153,6 +153,7 @@ public final class Festivals {
 			if (hero == null || hero.getAmplifier() == 0 && hero.getDuration() < left) {
 				player.addEffect(new MobEffectInstance(MobEffects.HERO_OF_THE_VILLAGE, left, 0, true, true));
 			}
+			io.github.jcondedata.aliveworkplace.story.Friendship.onFestival(level, hall, player); // at the festival with them (31.5)
 		}
 	}
 

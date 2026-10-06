@@ -154,6 +154,7 @@ public final class Couples {
 			b.getDisplayName()));
 		io.github.jcondedata.aliveworkplace.legend.Seer.bless(level, hall, a, b, square); // at the Chapel with the Seer there (29.16)
 		io.github.jcondedata.aliveworkplace.hall.Anthems.play(level, hall, "wedding"); // the Bard Laureate's anthem (29.19)
+		io.github.jcondedata.aliveworkplace.story.Friendship.onWedding(level, hall, a, b); // the guests' friendship (31.5)
 	}
 
 	/** Where weddings are held: the village's finished Chapel, else its bell. */

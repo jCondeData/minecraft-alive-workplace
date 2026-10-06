@@ -276,6 +276,7 @@ public final class Stories {
 		}
 		if (given > 0) {
 			inventory.setChanged();
+			Friendship.onHandIn(level, hall, quest, player); // 31.5: the one who asked counts it a favour
 			progress(level, hall, entity, quest, index, given, player);
 		}
 		return given;
@@ -357,8 +358,9 @@ public final class Stories {
 		Chronicle.atHall(level, hall, Chronicle.Kind.QUEST, Component.translatable("chronicle.aliveworkplace.quest",
 			player != null ? player.getDisplayName() : Component.translatable("chronicle.aliveworkplace.someone"), quest.title()));
 		for (Rewards.Reward r : quest.rewards) {
-			r.give(level, hall, player);
+			r.give(level, hall, player, quest);
 		}
+		Friendship.onQuestDone(level, hall, quest, player); // 31.5: the poster's friendship
 		if (player != null) {
 			int emeralds = quest.emeralds();
 			Chat.chat(player, (emeralds > 0

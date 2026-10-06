@@ -340,6 +340,8 @@ public final class ModAttachments {
 	public static final Attachment<net.minecraft.resources.ResourceLocation> SOCIAL_CLASS = Attachment.saved("social_class", net.minecraft.resources.ResourceLocation.CODEC);
 	/** Their progress on the class ladder (34.2): dawns met and missed, days fed running, the last dawn counted. Absent: all 0. */
 	public static final Attachment<io.github.jcondedata.aliveworkplace.people.SocialClasses.Progress> CLASS_PROGRESS = Attachment.saved("class_progress", io.github.jcondedata.aliveworkplace.people.SocialClasses.Progress.CODEC);
+	/** Where they stood at their last dawn (34.6): the needs of their class they lacked and their last rise or fall. Absent: nothing known yet. */
+	public static final Attachment<io.github.jcondedata.aliveworkplace.people.SocialClasses.Standing> CLASS_STANDING = Attachment.saved("class_standing", io.github.jcondedata.aliveworkplace.people.SocialClasses.Standing.CODEC);
 	/** Luxury id to the day they last had one (34.4 fills it; a {@code luxury} class need reads it). Absent: none had. */
 	public static final Attachment<java.util.Map<net.minecraft.resources.ResourceLocation, Long>> LUXURIES_HAD = Attachment.saved("luxuries_had", com.mojang.serialization.Codec.unboundedMap(net.minecraft.resources.ResourceLocation.CODEC, com.mojang.serialization.Codec.LONG));
 

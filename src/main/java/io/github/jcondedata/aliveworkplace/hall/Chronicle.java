@@ -22,7 +22,9 @@ public final class Chronicle {
 		MARKET(Items.EMERALD), CARAVAN(Items.CHEST_MINECART), RAID(Items.ZOMBIE_HEAD), RANK(Items.FIREWORK_ROCKET),
 		FESTIVAL(Items.CAKE), WEDDING(Items.POPPY), PROTECTION(Items.SHIELD), EDICT(Items.LECTERN), LEGEND(Items.NETHER_STAR), PLANS(Items.MAP),
 		SIGHTING(Items.SPYGLASS), BANNER(Items.WHITE_BANNER),
-		REFORM(Items.WRITABLE_BOOK), GUILD(Items.PAPER), CUP(Items.GOLD_INGOT);
+		REFORM(Items.WRITABLE_BOOK), GUILD(Items.PAPER), CUP(Items.GOLD_INGOT),
+		/** A household rose or came down in the world (34.6). */
+		CLASS(Items.GOLD_INGOT);
 
 		public final Item icon;
 

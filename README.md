@@ -400,6 +400,58 @@ entry per JSON file; a pack adds its own beside ours, and a broken file is skipp
 **Settings** (`config/aliveworkplace.json`, see the table below): `steward`, `stewardMaxOpenBuilds`, `stewardSelfRun`,
 `stewardRoads`, `caravanRoads`, `caravanRoadReach`, `stewardWalls`, `stewardRenewal`.
 
+## Classes
+
+*Part of 1.8, Classes and luxuries: off until that expansion is finished.*
+
+Every household in a village with a hall (one villager, or a married couple) lives as a **class**: Peasant, Artisan,
+Burgher or Noble. Each class has **needs** (a better home, days fed from the store, a varied diet, services such as a
+school or chapel near home, a building like the Market Square, the village's rank, beauty, and luxuries such as Work
+Clothes or Berry Wine taken from the village store) and **wants** (extras). A household that meets the next class's
+needs two dawns running **rises**: golden sparkles and a chime at their door, a chat line to players within 32 blocks,
+a line in the Chronicle and "rose in the world" (+10 mood for 2 days). One that lacks a need of its own class three
+dawns running **comes down in the world** (-10). Every villager's mood also has "has what their class needs" (+5), or
+-5 for each need lacking (at most -15).
+
+At the Village Hall:
+- the **Classes** tab says how many households of each class there are. Its page has a button per class: each need and
+  want with how many households have it ("A varied diet: 2 of 4", counted over the class and the one below it), what
+  the class gives (its tax, the jobs it opens, its effects), and the households closest to rising into it with what
+  they lack;
+- the people list says each villager's class and household ("Burgher · married to Tomas") and ticks the needs of their
+  class and of the next one;
+- the food icon lists the luxuries in store;
+- **What next?** gives up to three class tips, most households first ("2 Peasant households want A varied diet to rise
+  to Artisan").
+
+What each class gives:
+- **Taxes:** each worker pays the treasury's daily share times their class's factor (Peasant 1, Artisan 1.5, Burgher
+  2.5, Noble 4), 10% more for each want they have; a Noble without a job pays like a worker. A Peasant pays exactly
+  what every worker paid before, so no village takes in less. The hall's name tag shows the day's takings by class.
+- **Artisans:** crafters who are Artisans or better (carpenter, mason, tinkerer, chef, leatherworker, toolsmith and the
+  luxury trades) work 10% faster, within the usual 2× pace cap.
+- **Burghers:** Burgher scholars research 15% faster. With 3 Burgher households (or better) the village may send one
+  more caravan route, and market day brings one more trader, who also sells a grand-house blueprint (the Townhouse or
+  the Manor, once they're in the Blueprint Table) for 12 emeralds.
+- **Nobles:** each Noble household lifts the village's wellbeing 3% (9% at most), and every other festival is a
+  **Noble's Ball**: the guests gather at the Manor (or else the hall), wine and the store's best food are served, gold
+  fireworks go up at dusk, everyone who came is happier (+15) for 3 days, and players there are Heroes of the Village
+  for the night.
+- **Legends** live among the Nobles: held to the Noble's needs and counted with them.
+
+**Higher jobs need higher classes.** Some jobs can only be taken by a villager of a class or better (the Class column
+in *All the jobs at a glance*): the Tinkerer, Chef, Netherworker, Nurse, Teacher, Shopkeeper, Innkeeper, Printer and,
+with Cobblemon, the Ball Smith, Move Tutor, Pokémon Trader and Fossil Scientist need an Artisan; the Scholar,
+Undertaker, Jeweller and Trainer Leader a Burgher. Vanilla jobs are open to everyone. The rule counts when a job is
+taken: picking it with its item ("Dara is Peasant class; Scholar needs Burgher or better"), the hall's list of free
+workstations (greyed, with the class it needs), a grown child taking up a parent's trade and the Steward's morning
+jobs. A hired traveller arrives with the class of their level (Apprentice: Peasant, Journeyman: Artisan, Expert:
+Burgher). Nobody is ever fired: a worker below their job's class keeps it at the usual pace, and the hall's people
+list marks them. Outside a village with a hall, or with `villageClasses` off, no job needs a class.
+
+Classes are data: `data/<namespace>/classes/<id>.json` (a data pack can replace ours, add its own or switch one off).
+**Settings:** `villageClasses`, `classRiseDays`, `classFallDays`.
+
 ## Edicts
 
 A village's owner proclaims **edicts** at the Village Hall (its **Book of Edicts**, or sneak-right-click with a
@@ -513,56 +565,56 @@ Chests (or barrels) within 8 blocks of the workstation are where they take tools
 goes. The old job blocks (the Builder's Bench, the Fruit Basket...) can't be crafted any more, but the ones already
 placed keep working, so old worlds are fine.
 
-| Job | Workstation | In the chests nearby | Then |
-| --- | --- | --- | --- |
-| Builder | Blueprint Table | the building materials | hand them a placed blueprint |
-| Miner | Blast Furnace + a pickaxe | pickaxes, torches (ladders for a shaft) | hand them a marked Quarry Marker |
-| Lumberjack | Fletching Table + an axe | axes (saplings, bone meal) | nothing — or a Field Marker for a tree farm |
-| Orchard Keeper | Composter + sweet berries, glow berries or an apple | berries and seeds to plant, a hoe | nothing — or a Field Marker for an orchard |
-| Farmer | Composter (vanilla) | seeds, a hoe, bone meal | a Field Marker (blank: their own farm) |
-| Beekeeper | Beehive or Bee Nest + a glass bottle or shears | glass bottles or shears, flowers | nothing (beehives within 16 blocks) |
-| Florist | Composter + a small flower | bone meal (flowers to pot) | nothing (grass round the composter) |
-| Scholar | Lectern + paper | paper, books, emeralds | sneak-right-click: pick the research |
-| Sifter | Cauldron + gravel, sand, red sand or soul sand | gravel, sand, dirt or soul sand | nothing |
-| Tinkerer | Smithing Table + redstone | coal (iron ingots to mend golems) | nothing (uses the builders' ore) |
-| Composter | Composter + bone meal | scraps: seeds, saplings, leaves, crop waste, rotten flesh | nothing |
-| Berry Breeder (with Cobblemon) | Composter + any Cobblemon berry | berries, Growth and Surprise Mulch | sneak-right-click: pick a goal in the berry book (a Field Marker for a plot of her own) |
-| Camp Cook (with Cobblemon) | Campfire Pot (Cobblemon's campfire with a pot on it) + Hearty Grains | the makings of her dishes (Hearty Grains, Vivichoke, apricorns, milk, honey, berries for seasoning) | nothing (a Storehouse's stock orders for the order-only treats) |
-| Habitat Keeper (with Cobblemon) | Pasture Block (Cobblemon's) + a honey bottle | Poké Snacks (or the Camp Cook's), honey bottles, Saccharine saplings | Field Markers for her lure spots (optional) |
-| Gem Grower | Stonecutter + an amethyst shard | tumblestones or Type Gem Blocks to plant (with Cobblemon), glass and shards for Blank TMs (1.8) | sneak-right-click: pick which gem beds she keeps |
-| Daycare Keeper (with Cobblemon) | Pasture Block (Cobblemon's) + an egg | emeralds (or CobbleDollars) to collect eggs | right-click: leave a pair, collect eggs |
-| Netherworker | Cartography Table + netherrack | food (a pickaxe, an axe, a sword, a chestplate, fire resistance) | nothing (a Nether portal within 32 blocks) |
-| Undertaker | Brewing Stand + a golden apple, an enchanted golden apple or a totem | golden apples, healing potions or totems | nothing (graves within 32 blocks) |
-| Innkeeper | Shop Counter + a bed | — | nothing (hire the travellers who come to stay) |
-| Teacher | Lectern + a book | — | nothing (children within 32 blocks) |
-| Rancher | Smoker + a saddle or a golden carrot | golden carrots, hay, saddles, horse armor (berries) | nothing (horses within 16 blocks) |
-| Fisherman | Barrel (vanilla) | spare rods (coal for a smoker) | hand them a fishing rod |
-| Porter | Storehouse | empty chests: the village's store | nothing |
-| Carpenter | Crafting Table + planks | — (uses the builders' wood) | nothing |
-| Mason | Stonecutter (vanilla) | — (uses the builders' stone) | nothing |
-| Leatherworker (dyer) | Cauldron (vanilla) | — (uses the builders' wool, flowers, powder...) | nothing |
-| Chef | Smoker + raw beef, pork, chicken, mutton, rabbit, cod, salmon or a potato | the makings: wheat, raw meat and fish, potatoes... | nothing |
-| Armorer (smelter) | Blast Furnace (vanilla) | ore and coal (or nothing: they fetch it) | nothing — or sneak-right-click with coal to hire them |
-| Toolsmith | Smithing Table (vanilla) | diamonds, if you want diamond tools | nothing — or sneak-right-click with an iron ingot to hire them |
-| Weaponsmith | Grindstone (vanilla) | worn gear to mend (and what mends it: ingots, planks...) | nothing — or sneak-right-click with an iron ingot to hire them |
-| Fletcher | Fletching Table (vanilla) | sticks, string, iron (glowstone for spectral arrows) | nothing — or sneak-right-click with flint to hire them |
-| Shepherd | Loom (vanilla) | shears, wheat | nothing — or sneak-right-click with shears to hire them |
-| Butcher (herder) | Smoker (vanilla) | empty buckets, wheat/carrots/seeds (with Cobblemon: bottles, a brush, bone meal) | nothing — or sneak-right-click with a lead to hire them |
-| Cleric (alchemist) | Brewing Stand (vanilla) | nether wart, glistering melon, ghast tears, blaze powder, bottles | nothing — or sneak-right-click with a glass bottle to hire them |
-| Librarian (scribe) | Lectern (vanilla), and an Enchanting Table | lapis | nothing — or sneak-right-click with lapis to hire them |
-| Cartographer (explorer) | Cartography Table (vanilla) | food (bread, cooked meat...), a sword or axe, empty maps | nothing — or sneak-right-click with a compass to hire them |
-| Postman | Mailbox + paper | — | Mailboxes for mail; Delivery Notes for hauling |
-| Guard | Grindstone + a sword | weapons, armor, a bow or crossbow and arrows | nothing |
-| Nurse | Brewing Stand + a honey bottle | — | right-click them to be healed |
-| Shopkeeper | Shop Counter | the goods to sell | set the prices in the counter |
-| Ferryman | Travel Post | — | buy a Travel Ticket from them |
-| Bard | Jukebox + a music disc | music discs | nothing |
-| Trainer (Cobblemon) | Training Post | — | right-click them to battle |
-| Trainer Leader (Cobblemon) | Training Post + a block of gold | — | right-click them to battle, once a day |
-| Move Tutor (Cobblemon) | Training Post + a book | — | right-click them for lessons |
-| Ball Smith (Cobblemon) | Smithing Table + an apricorn | apricorns and copper, iron, gold or diamonds | sneak-right-click them to choose the balls |
-| Pokémon Trader (Cobblemon) | Shop Counter + a Poké Ball | — | right-click them to trade |
-| Fossil Scientist (Cobblemon) | Cobblemon's Fossil Analyzer + a fossil | — | hand them a fossil |
+| Job | Workstation | In the chests nearby | Then | Class |
+| --- | --- | --- | --- | --- |
+| Builder | Blueprint Table | the building materials | hand them a placed blueprint | any |
+| Miner | Blast Furnace + a pickaxe | pickaxes, torches (ladders for a shaft) | hand them a marked Quarry Marker | any |
+| Lumberjack | Fletching Table + an axe | axes (saplings, bone meal) | nothing — or a Field Marker for a tree farm | any |
+| Orchard Keeper | Composter + sweet berries, glow berries or an apple | berries and seeds to plant, a hoe | nothing — or a Field Marker for an orchard | any |
+| Farmer | Composter (vanilla) | seeds, a hoe, bone meal | a Field Marker (blank: their own farm) | any |
+| Beekeeper | Beehive or Bee Nest + a glass bottle or shears | glass bottles or shears, flowers | nothing (beehives within 16 blocks) | any |
+| Florist | Composter + a small flower | bone meal (flowers to pot) | nothing (grass round the composter) | any |
+| Scholar | Lectern + paper | paper, books, emeralds | sneak-right-click: pick the research | Burgher |
+| Sifter | Cauldron + gravel, sand, red sand or soul sand | gravel, sand, dirt or soul sand | nothing | any |
+| Tinkerer | Smithing Table + redstone | coal (iron ingots to mend golems) | nothing (uses the builders' ore) | Artisan |
+| Composter | Composter + bone meal | scraps: seeds, saplings, leaves, crop waste, rotten flesh | nothing | any |
+| Berry Breeder (with Cobblemon) | Composter + any Cobblemon berry | berries, Growth and Surprise Mulch | sneak-right-click: pick a goal in the berry book (a Field Marker for a plot of her own) | any |
+| Camp Cook (with Cobblemon) | Campfire Pot (Cobblemon's campfire with a pot on it) + Hearty Grains | the makings of her dishes (Hearty Grains, Vivichoke, apricorns, milk, honey, berries for seasoning) | nothing (a Storehouse's stock orders for the order-only treats) | any |
+| Habitat Keeper (with Cobblemon) | Pasture Block (Cobblemon's) + a honey bottle | Poké Snacks (or the Camp Cook's), honey bottles, Saccharine saplings | Field Markers for her lure spots (optional) | any |
+| Gem Grower | Stonecutter + an amethyst shard | tumblestones or Type Gem Blocks to plant (with Cobblemon), glass and shards for Blank TMs (1.8) | sneak-right-click: pick which gem beds she keeps | any |
+| Daycare Keeper (with Cobblemon) | Pasture Block (Cobblemon's) + an egg | emeralds (or CobbleDollars) to collect eggs | right-click: leave a pair, collect eggs | any |
+| Netherworker | Cartography Table + netherrack | food (a pickaxe, an axe, a sword, a chestplate, fire resistance) | nothing (a Nether portal within 32 blocks) | Artisan |
+| Undertaker | Brewing Stand + a golden apple, an enchanted golden apple or a totem | golden apples, healing potions or totems | nothing (graves within 32 blocks) | Burgher |
+| Innkeeper | Shop Counter + a bed | — | nothing (hire the travellers who come to stay) | Artisan |
+| Teacher | Lectern + a book | — | nothing (children within 32 blocks) | Artisan |
+| Rancher | Smoker + a saddle or a golden carrot | golden carrots, hay, saddles, horse armor (berries) | nothing (horses within 16 blocks) | any |
+| Fisherman | Barrel (vanilla) | spare rods (coal for a smoker) | hand them a fishing rod | any |
+| Porter | Storehouse | empty chests: the village's store | nothing | any |
+| Carpenter | Crafting Table + planks | — (uses the builders' wood) | nothing | any |
+| Mason | Stonecutter (vanilla) | — (uses the builders' stone) | nothing | any |
+| Leatherworker (dyer) | Cauldron (vanilla) | — (uses the builders' wool, flowers, powder...) | nothing | any |
+| Chef | Smoker + raw beef, pork, chicken, mutton, rabbit, cod, salmon or a potato | the makings: wheat, raw meat and fish, potatoes... | nothing | Artisan |
+| Armorer (smelter) | Blast Furnace (vanilla) | ore and coal (or nothing: they fetch it) | nothing — or sneak-right-click with coal to hire them | any |
+| Toolsmith | Smithing Table (vanilla) | diamonds, if you want diamond tools | nothing — or sneak-right-click with an iron ingot to hire them | any |
+| Weaponsmith | Grindstone (vanilla) | worn gear to mend (and what mends it: ingots, planks...) | nothing — or sneak-right-click with an iron ingot to hire them | any |
+| Fletcher | Fletching Table (vanilla) | sticks, string, iron (glowstone for spectral arrows) | nothing — or sneak-right-click with flint to hire them | any |
+| Shepherd | Loom (vanilla) | shears, wheat | nothing — or sneak-right-click with shears to hire them | any |
+| Butcher (herder) | Smoker (vanilla) | empty buckets, wheat/carrots/seeds (with Cobblemon: bottles, a brush, bone meal) | nothing — or sneak-right-click with a lead to hire them | any |
+| Cleric (alchemist) | Brewing Stand (vanilla) | nether wart, glistering melon, ghast tears, blaze powder, bottles | nothing — or sneak-right-click with a glass bottle to hire them | any |
+| Librarian (scribe) | Lectern (vanilla), and an Enchanting Table | lapis | nothing — or sneak-right-click with lapis to hire them | any |
+| Cartographer (explorer) | Cartography Table (vanilla) | food (bread, cooked meat...), a sword or axe, empty maps | nothing — or sneak-right-click with a compass to hire them | any |
+| Postman | Mailbox + paper | — | Mailboxes for mail; Delivery Notes for hauling | any |
+| Guard | Grindstone + a sword | weapons, armor, a bow or crossbow and arrows | nothing | any |
+| Nurse | Brewing Stand + a honey bottle | — | right-click them to be healed | Artisan |
+| Shopkeeper | Shop Counter | the goods to sell | set the prices in the counter | Artisan |
+| Ferryman | Travel Post | — | buy a Travel Ticket from them | any |
+| Bard | Jukebox + a music disc | music discs | nothing | any |
+| Trainer (Cobblemon) | Training Post | — | right-click them to battle | any |
+| Trainer Leader (Cobblemon) | Training Post + a block of gold | — | right-click them to battle, once a day | Burgher |
+| Move Tutor (Cobblemon) | Training Post + a book | — | right-click them for lessons | Artisan |
+| Ball Smith (Cobblemon) | Smithing Table + an apricorn | apricorns and copper, iron, gold or diamonds | sneak-right-click them to choose the balls | Artisan |
+| Pokémon Trader (Cobblemon) | Shop Counter + a Poké Ball | — | right-click them to trade | Artisan |
+| Fossil Scientist (Cobblemon) | Cobblemon's Fossil Analyzer + a fossil | — | hand them a fossil | Artisan |
 
 Sneak-right-click a builder, miner, lumberjack, orchard keeper, farmer, fisherman or postman with an empty hand to see
 what they're doing and how to stop them. Each job's section below says how to start it; the recipes for our own blocks

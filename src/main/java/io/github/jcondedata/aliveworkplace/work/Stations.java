@@ -393,6 +393,13 @@ public final class Stations {
 		if (!Friends.mayCommand(player, villager)) {
 			return Hiring.hire(player, villager, Component.empty()); // refuses, and says whose they are
 		}
+		// Higher jobs need higher classes (34.8): "Dara is a Peasant; a Scholar must be a Burgher".
+		Component refusal = io.github.jcondedata.aliveworkplace.people.ClassJobs.refusal((ServerLevel) villager.level(), villager, profession);
+		if (refusal != null) {
+			villager.level().playSound(null, villager, net.minecraft.sounds.SoundEvents.VILLAGER_NO, net.minecraft.sounds.SoundSource.NEUTRAL, 1f, 1f);
+			Chat.chat(player, refusal.copy().withStyle(ChatFormatting.YELLOW));
+			return InteractionResult.CONSUME;
+		}
 		Component who = villager.getDisplayName(); // before: an unnamed villager is called by their job
 		assign((ServerLevel) villager.level(), villager, station, profession);
 		villager.level().playSound(null, villager, net.minecraft.sounds.SoundEvents.VILLAGER_YES, net.minecraft.sounds.SoundSource.NEUTRAL, 1f, 1f);

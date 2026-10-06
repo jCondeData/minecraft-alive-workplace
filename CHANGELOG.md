@@ -31,6 +31,26 @@ asks for the steps, `latest.log` and any crash report).
   the theme's disc; after the final, fireworks in the theme's colours, Hero of the Village and the festival's mood, and
   the Cup goes into every circuit village's chronicle (gold ingot). Bouts left at the end time are settled as
   exhibitions; a host that isn't loaded puts its Cup off (8 days at most); no Arena or `festivalCup` off: a plain festival.
+- **Higher jobs need higher classes, for 1.8** (34.8, off until 1.8 is finished): in a village with a hall, the
+  Tinkerer, Chef, Netherworker, Nurse, Teacher, Shopkeeper, Innkeeper and the Cobblemon trades need an Artisan, and the
+  Scholar, Undertaker and Trainer Leader a Burgher, when the job is taken (its item, the hall's free workstations, now
+  greyed with the class, a grown child, the Steward). Hired travellers arrive as Peasants, Artisans or Burghers by
+  level. Nobody is fired: a worker below their job's class keeps it and the hall marks them.
+- **What each class gives, for 1.8** (34.7, off until 1.8 is finished): taxes by class (Peasant ×1, Artisan ×1.5,
+  Burgher ×2.5, Noble ×4, +10% a want; the hall's name tag shows the split), Artisan crafters 10% faster, Burgher
+  scholars 15% faster, a caravan route and a market trader more with 3 Burgher households, +3% wellbeing a Noble
+  household (9% at most), and a **Noble's Ball** in place of every other festival (wine, the store's best food, gold
+  fireworks, +15 mood for 3 days, Hero of the Village for the night).
+- **Classes at the Village Hall for 1.8** (34.6, off until 1.8 is finished): the hall gets a Classes tab (how many
+  households of each class) and page (each class's needs and wants with how many households have them, what the class
+  gives, and who is closest to rising with what they lack); the people list shows each villager's class and household
+  ("Burgher · married to Tomas") with the needs of their class and the next one ticked; the food icon lists the
+  luxuries in store; and "What next?" gives up to three class tips, most households first.
+- **A household's rise and fall is felt for 1.8** (part of 34.6, off until 1.8 is finished): a household that
+  rises gets golden sparkles and a chime at their door, a chat line to players within 32 blocks, a line in the hall's
+  Chronicle and "rose in the world" (+10 mood for 2 days); one that falls gets a Chronicle line and "came down in the
+  world" (-10 for 2 days). Moods add "has what their class needs" (+5) or -5 for each need lacking (at most -15), and
+  villagers talk of their rise or fall (three lines each).
 - **The luxury workshop engine for 1.8** (34.5, nothing to see until the four new makers arrive): luxury recipes are
   data files (`data/<namespace>/luxury_recipes/<id>.json`: the job, the level, the makings by item or tag, what comes
   out and how long it takes). A maker fills the store's stock orders first, then makes whatever the village store has

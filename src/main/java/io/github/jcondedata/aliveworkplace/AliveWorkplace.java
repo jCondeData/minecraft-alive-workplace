@@ -77,6 +77,7 @@ public final class AliveWorkplace {
 		io.github.jcondedata.aliveworkplace.hall.Edicts.init();
 		io.github.jcondedata.aliveworkplace.hall.Guilds.init();
 		io.github.jcondedata.aliveworkplace.people.SocialClasses.init();
+		io.github.jcondedata.aliveworkplace.hall.ClassesPage.init(); // the hall's Classes page (34.6)
 		io.github.jcondedata.aliveworkplace.hall.Services.init(); // services nearby (34.3)
 		io.github.jcondedata.aliveworkplace.people.Luxuries.init(); // luxuries from the village store (34.4)
 		io.github.jcondedata.aliveworkplace.craft.LuxuryRecipes.init(); // the luxury workshops' recipes (34.5)

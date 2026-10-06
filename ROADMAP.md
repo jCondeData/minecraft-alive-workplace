@@ -317,6 +317,19 @@ Before polishing, make sure nothing regresses unnoticed.
   the client itself. Done when: a push that changes one scene films only that scene, and `docs/agent/tools.md` says how
   to read the result.
 
+
+- [ ] **22.9** **The wiki: how everything works, kept true** (owner, 2026-10-06). `docs/wiki/`, plain markdown that GitHub
+  shows as pages: `README.md` is the index; one page per feature or system (what a player sees; how it works in a few
+  paragraphs; every config switch with its default; every saved field with its default; the commands, items, blocks
+  and jobs; the decisions made and why, with the roadmap id; known limits; the tests and scenes that prove it). Written
+  for the owner first, in plain words, then the lanes. Who keeps it true: **the lane that builds or changes a feature
+  updates its page in the same commit** (sessions.md, build loop step 5); **the QA lane checks it**: for every item it
+  verifies, it reads the page against the behaviour its tests proved and fixes or files a bug, and when nothing is
+  waiting it backfills one missing page per run, oldest milestone first. Done when: `docs/wiki/README.md` and the page
+  format exist; `tools/modtest/wikicheck.py` fails the build when a page names a config key, item id or lang key that
+  no longer exists, or a ticked item with a player-visible change has no page; the first twelve pages are written
+  (Builder, Villager jobs, Village Hall, Steward, Roads and walls, Edicts, Guilds, Legends, Pokemon partners, Classes,
+  Elders, Config switches) and the digest links the wiki; the QA lane's step list in sessions.md says so.
 ## Milestone 23: Builders never need babysitting (priority 1)
 
 MineColonies players' most common complaints are builders that get stuck, don't say what they need, stop when

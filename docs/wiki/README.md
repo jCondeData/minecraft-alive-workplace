@@ -1,0 +1,20 @@
+# Alive Workplace wiki
+
+How everything in the mod works, in plain words. Kept true by the lane that builds a feature (its page is updated in
+the same commit) and checked by the QA lane (ROADMAP 22.9). Pages are filled in as the first twelve are written.
+
+## Page format
+
+1. **What a player sees**: a few sentences, the way the player would tell it.
+2. **How it works**: short paragraphs; numbers with their reasons.
+3. **Switches**: every config key, its default, what it does.
+4. **Saved data**: every saved field and its default.
+5. **Items, blocks, jobs, commands**.
+6. **Decisions**: what was chosen and why, with the roadmap id (and who approved it).
+7. **Known limits**.
+8. **Proof**: the GameTests and showcase scenes.
+
+## Pages
+
+None written yet. First twelve planned: Builder, Villager jobs, Village Hall, Steward, Roads and walls, Edicts, Guilds,
+Legends, Pokemon partners, Classes, Elders, Config switches.

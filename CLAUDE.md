@@ -43,7 +43,7 @@ item; don't read ROADMAP.md whole (it's over 4,000 lines).
    test; never weaken or delete a test.
 4. Visible to a player: add its scene to the harness and `tools/showcase/scenes.py` (GitHub films it after the push;
    don't film locally unless debugging), then `sessions.py done <id> --review`. Not visible: `sessions.py done <id>`.
-5. CHANGELOG line under *Unreleased*, one local commit with the work and its tick (stage files by name). Every 2-3
+5. CHANGELOG line under *Unreleased* and the feature's page in `docs/wiki/` (22.9), one local commit with the work and its tick (stage files by name). Every 2-3
    features, `./gradlew --max-workers=1 build` green, then push to `main`. Push refused: `git pull --no-rebase`, build
    again only if the pull brought in code, push. The commit message says what's done and what's next.
 6. Next item straight away. No claims, landings, handoff or bookkeeping commits.

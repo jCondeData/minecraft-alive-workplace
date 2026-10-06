@@ -15,9 +15,12 @@ import io.github.jcondedata.aliveworkplace.hall.VillageRanks;
 import io.github.jcondedata.aliveworkplace.mc.Ids;
 import java.util.ArrayList;
 import java.util.BitSet;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.WeakHashMap;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Vec3i;
@@ -523,6 +526,11 @@ public final class Walls {
 			}
 			Villager builder = Roads.builderFor(level, hall, piece.box(), false);
 			if (builder == null) {
+				// B86: a wall rings the village, often past every bench's reach (60 blocks out in the City run, the reach
+				// 48): any idle builder of the village walks out to it, as for a road to another village
+				builder = Roads.builderFor(level, hall, piece.box(), true);
+			}
+			if (builder == null) {
 				return; // nobody free: wait
 			}
 			UUID owner = entity.owner() != null ? entity.owner() : builder.getUUID();
@@ -531,10 +539,46 @@ public final class Walls {
 			site.setStewardHall(hall);
 			site.setLevelGround(false); // a wall follows the ground; its foundation fills under it
 			taken.add(piece.box());
+			TURNS.computeIfAbsent(level, l -> new HashMap<>()).put(hall.immutable(), Turn.WALL);
 			if (++opened >= MAX_OPEN) {
 				return;
 			}
 		}
+	}
+
+	/**
+	 * Who took the village's last free builder, the roads or the wall (B86). Both rounds run in the same tick, the roads'
+	 * first, so without turns the roads took every builder and no wall piece opened until every road was built. Not
+	 * saved: after a restart the roads go first once.
+	 */
+	enum Turn {
+		ROAD, WALL, ROAD_YIELDED
+	}
+
+	private static final Map<ServerLevel, Map<BlockPos, Turn>> TURNS = new WeakHashMap<>();
+
+	/**
+	 * Asked by the roads' round before it gives a free builder a segment: true when it is the wall's turn (the roads took
+	 * the last one and the wall has a piece to open), and the roads wait this round so the wall's round, right after,
+	 * takes the builder. If the wall didn't take him, the roads don't wait again until they've opened another segment.
+	 */
+	static boolean wallsTurn(ServerLevel level, BlockPos hall, VillageHallBlockEntity entity) {
+		Map<BlockPos, Turn> turns = TURNS.computeIfAbsent(level, l -> new HashMap<>());
+		Turn turn = turns.getOrDefault(hall, Turn.WALL);
+		if (turn != Turn.ROAD || !ENABLED || entity.plan().wall().isEmpty() || !entity.plan().wall().get().approved()
+			|| openSites(level, hall).size() >= MAX_OPEN || unbuilt(level, hall).isEmpty()) {
+			if (turn == Turn.ROAD_YIELDED) {
+				turns.put(hall.immutable(), Turn.WALL); // the wall had its turn and didn't use it: the roads go on
+			}
+			return false;
+		}
+		turns.put(hall.immutable(), Turn.ROAD_YIELDED);
+		return true;
+	}
+
+	/** Noted by the roads' round when it opens a segment: the wall's turn next. */
+	static void roadOpened(ServerLevel level, BlockPos hall) {
+		TURNS.computeIfAbsent(level, l -> new HashMap<>()).put(hall.immutable(), Turn.ROAD);
 	}
 
 	/** Every tick, from the hall's tick: every second, a wall site may open. */

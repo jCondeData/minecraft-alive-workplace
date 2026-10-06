@@ -17,6 +17,11 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Added
+- **The Vintner, for 1.8** (34.9, off until 1.8 is finished): sneak-right-click a villager by a cauldron with sweet
+  berries, glow berries or an apple. They press Cider (Novice), Berry Wine (Apprentice) and Vintage Wine from Berry Wine
+  three days old (Journeyman) for the village store, with purple splashes at the vat; the three drinks are drinkable
+  (the bottle comes back), are the households' wine luxuries and are served at the Noble's Ball. Trades, Grass, Bug and
+  Fairy partners, an outfit, config `vintners`.
 - **Friendship with villagers** (31.5; switched on with the rest of 1.5): every named villager in a village with a hall keeps ten hearts for
   each player. Trading with them (+5), finishing a hall quest they posted (+40), handing in what they wait for (+10),
   coming to their wedding (+30) or a festival with them (+10) count once a day each; killing a monster that just hurt
@@ -105,6 +110,10 @@ asks for the steps, `latest.log` and any crash report).
 - **Builders no longer lose an anvil** (B91): a builder working alongside another could set an anvil (or sand,
   gravel, concrete powder) down before the floor under it was laid; it fell, and the build then waited for an anvil
   that was gone. They now leave such a block until there is something under it.
+- **A Steward's wall and old-house renewals get built** (B86): an approved wall line past the builders' reach from
+  their tables never opened a piece, and the roads took every free builder ahead of it; wall pieces now go to any
+  free builder of the village, the roads and the wall take turns, and an old house at the village's edge is renewed
+  too. When he approves everything himself, a renewal takes the free slot ahead of the day's homes.
 
 ## 0.140.0 — 2026-10-05
 

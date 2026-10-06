@@ -171,7 +171,9 @@ public final class Stations {
 			job(() -> ModVillagers.BALL_SMITH, cobblemon(p -> p.endsWith("_apricorn"))))),
 		new Station(is(PoiTypes.LEATHERWORKER), Blocks.CAULDRON, List.of(
 			job(() -> VillagerProfession.LEATHERWORKER, any(Items.LEATHER)),
-			job(() -> ModVillagers.SIFTER, any(Items.GRAVEL, Items.SAND, Items.RED_SAND, Items.SOUL_SAND)))),
+			job(() -> ModVillagers.SIFTER, any(Items.GRAVEL, Items.SAND, Items.RED_SAND, Items.SOUL_SAND)),
+			// sweet berries, glow berries or an apple (34.9), with config vintners on
+			job(() -> ModVillagers.VINTNER, io.github.jcondedata.aliveworkplace.vintner.Vintners::isFruit))),
 		new Station(is(PoiTypes.LIBRARIAN), Blocks.LECTERN, List.of(
 			job(() -> VillagerProfession.LIBRARIAN, any(Items.LAPIS_LAZULI)),
 			job(() -> ModVillagers.SCHOLAR, any(Items.PAPER)),

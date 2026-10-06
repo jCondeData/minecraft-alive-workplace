@@ -625,13 +625,14 @@ public final class Roads {
 					continue;
 				}
 				Villager builder = builderFor(level, hall, segment.get().box(), road.caravan());
-				if (builder == null || !save(level, segment.get().blueprint())) {
-					return; // nobody free: wait
+				if (builder == null || Walls.wallsTurn(level, hall, entity) || !save(level, segment.get().blueprint())) {
+					return; // nobody free, or the wall's turn for him (B86): wait
 				}
 				UUID owner = entity.owner() != null ? entity.owner() : builder.getUUID();
 				String ownerName = entity.owner() != null ? entity.ownerName() : "";
 				BuildSite site = Builders.start(level, builder, owner, ownerName, id, segment.get().placement());
 				site.setLevelGround(false); // a road is laid on the ground as it is, not levelled round
+				Walls.roadOpened(level, hall);
 				taken.add(id);
 				if (++opened >= MAX_OPEN) {
 					return;

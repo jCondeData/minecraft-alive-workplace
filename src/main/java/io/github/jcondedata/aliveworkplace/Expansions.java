@@ -34,7 +34,7 @@ public final class Expansions {
 	 * {@code arcCooldownDays}, {@code arcsAtOnce} (31.4).
 	 */
 	public static final boolean M31 = false;
-	/** Milestone 34, Classes and luxuries (1.8): {@code villageClasses}, {@code classRiseDays}, {@code classFallDays}. */
+	/** Milestone 34, Classes and luxuries (1.8): {@code villageClasses}, {@code classRiseDays}, {@code classFallDays}, {@code vintners}. */
 	public static final boolean M34 = false;
 
 	/**
@@ -63,7 +63,7 @@ public final class Expansions {
 				"guildsPerRank" -> M30;
 			case "friendship" -> M31;
 			case "storyArcs", "arcCooldownDays", "arcsAtOnce" -> M31;
-			case "villageClasses", "classRiseDays", "classFallDays" -> M34;
+			case "villageClasses", "classRiseDays", "classFallDays", "vintners" -> M34;
 			default -> null;
 		};
 	}

@@ -1,0 +1,9 @@
+{
+  "fabric:load_conditions": [{"condition": "fabric:all_mods_loaded", "values": ["cobblemon"]}],
+  "job": "aliveworkplace:vintner",
+  "level": 2,
+  "inputs": [{"tag": "#cobblemon:berries", "count": 4}, {"item": "minecraft:glass_bottle", "count": 1}],
+  "output": {"id": "aliveworkplace:berry_wine", "count": 1},
+  "ticks": 80,
+  "enabled": true
+}

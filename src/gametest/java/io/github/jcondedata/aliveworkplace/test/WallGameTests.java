@@ -332,6 +332,71 @@ public class WallGameTests implements FabricGameTest {
 		});
 	}
 
+	/** B86: a wall line past every bench's reach (60 blocks out in the City run, the reach 48) still gets its pieces opened. */
+	//$ gametest_ticks_batch AREA '40' '"wallFar"'
+	@GameTest(template = AREA, timeoutTicks = 40, batch = "wallFar")
+	public void aWallPastEveryBenchsReachStillOpensAPiece(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		Village v = village(helper, new BlockPos(14, 2, 14));
+		v.entity().setPlan(CityPlan.EMPTY.withWall(square(12).approvedWith("palisade")));
+		boolean was = Walls.ENABLED;
+		int reach = Builders.MAX_SITE_DISTANCE;
+		try {
+			Walls.ENABLED = true;
+			Builders.MAX_SITE_DISTANCE = 4;
+			helper.assertTrue(!Walls.unbuilt(level, v.hall()).isEmpty(), "setup: the wall has nothing to build");
+			Walls.round(level, v.hall(), v.entity());
+			List<BuildSite> open = Walls.openSites(level, v.hall());
+			helper.assertTrue(open.size() == 1, open.size() + " wall sites opened past the benches' reach, not 1");
+			helper.assertTrue(v.builders().get(0).getUUID().equals(open.get(0).builder()), "the village's builder isn't on the wall piece");
+		} finally {
+			Walls.ENABLED = was;
+			Builders.MAX_SITE_DISTANCE = reach;
+		}
+		helper.succeed();
+	}
+
+	/**
+	 * B86: an approved road and an approved wall, one builder. The roads' round runs first in the hall's tick, so it took
+	 * every free builder and no wall piece opened until every road was built; now they take turns, each piece and segment
+	 * finished before the next round.
+	 */
+	//$ gametest_ticks_batch AREA '100' '"wallTurns"'
+	@GameTest(template = AREA, timeoutTicks = 100, batch = "wallTurns")
+	public void theRoadsAndTheWallTakeTurnsWithAFreeBuilder(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		Village v = village(helper, new BlockPos(14, 2, 14));
+		CityPlan.Road lane = new CityPlan.Road(List.of(p(-8, 6), p(8, 6), p(8, -8)), CityPlan.Road.LANE, "", true);
+		v.entity().setPlan(CityPlan.EMPTY.withWall(square(12).approvedWith("palisade")).addRoad(lane));
+		boolean was = Walls.ENABLED;
+		try {
+			Walls.ENABLED = true;
+			io.github.jcondedata.aliveworkplace.city.Roads.routeNow(level, v.hall());
+			helper.assertTrue(v.entity().plan().roads().get(0).segments() >= 2, "setup: the lane is only "
+				+ v.entity().plan().roads().get(0).segments() + " segment(s)");
+			StringBuilder order = new StringBuilder();
+			for (int round = 0; round < 6; round++) {
+				// as the hall's tick runs them: the roads' round, then the wall's
+				io.github.jcondedata.aliveworkplace.city.Roads.round(level, v.hall(), v.entity());
+				Walls.round(level, v.hall(), v.entity());
+				List<BuildSite> roads = io.github.jcondedata.aliveworkplace.city.Roads.openSegments(level, v.hall());
+				List<BuildSite> walls = Walls.openSites(level, v.hall());
+				helper.assertTrue(roads.size() + walls.size() == 1, "round " + round + ": " + roads.size() + " segments and " + walls.size()
+					+ " wall pieces open with one builder");
+				order.append(roads.isEmpty() ? 'W' : 'R');
+				// the builder finishes it (gone from the sites, as a finished site is)
+				for (BuildSite site : roads.isEmpty() ? walls : roads) {
+					BuildSiteManager.get(level).remove(site.id());
+				}
+			}
+			String went = order.toString();
+			helper.assertTrue(!went.contains("RR") && !went.contains("WW"), "the builder went to " + went + " (R a road, W the wall), not in turns");
+		} finally {
+			Walls.ENABLED = was;
+		}
+		helper.succeed();
+	}
+
 	// ---- the village ------------------------------------------------------------------------------------------
 
 	private record Village(BlockPos hall, VillageHallBlockEntity entity, ServerPlayer owner, List<Villager> builders, Villager steward) {

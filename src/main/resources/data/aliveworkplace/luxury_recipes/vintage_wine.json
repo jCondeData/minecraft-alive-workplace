@@ -1,0 +1,8 @@
+{
+  "job": "aliveworkplace:vintner",
+  "level": 3,
+  "inputs": [{"item": "aliveworkplace:berry_wine", "count": 1, "min_age_days": 3}],
+  "output": {"id": "aliveworkplace:vintage_wine", "count": 1},
+  "ticks": 100,
+  "enabled": true
+}

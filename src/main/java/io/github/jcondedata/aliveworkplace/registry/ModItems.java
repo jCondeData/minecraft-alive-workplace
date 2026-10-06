@@ -39,6 +39,13 @@ public final class ModItems {
 	public static final io.github.jcondedata.aliveworkplace.people.TonicItem SCHOLARS_INFUSION = Reg.item("scholars_infusion", io.github.jcondedata.aliveworkplace.people.TonicItem::new, new Item.Properties().stacksTo(16));
 	public static final io.github.jcondedata.aliveworkplace.people.TonicItem HARVEST_CORDIAL = Reg.item("harvest_cordial", io.github.jcondedata.aliveworkplace.people.TonicItem::new, new Item.Properties().stacksTo(16));
 	public static final io.github.jcondedata.aliveworkplace.people.TonicItem WOODSMANS_BROTH = Reg.item("woodsmans_broth", io.github.jcondedata.aliveworkplace.people.TonicItem::new, new Item.Properties().stacksTo(16));
+	/** The Vintner's drinks (ROADMAP 34.9): luxuries the households want, and drinkable (the bottle comes back). */
+	public static final io.github.jcondedata.aliveworkplace.mc.DrinkItem CIDER = Reg.item("cider", io.github.jcondedata.aliveworkplace.mc.DrinkItem::new,
+		io.github.jcondedata.aliveworkplace.mc.DrinkItem.drink(2, 0.4f, null));
+	public static final io.github.jcondedata.aliveworkplace.mc.DrinkItem BERRY_WINE = Reg.item("berry_wine", io.github.jcondedata.aliveworkplace.mc.DrinkItem::new,
+		io.github.jcondedata.aliveworkplace.mc.DrinkItem.drink(3, 0.5f, null));
+	public static final io.github.jcondedata.aliveworkplace.mc.DrinkItem VINTAGE_WINE = Reg.item("vintage_wine", io.github.jcondedata.aliveworkplace.mc.DrinkItem::new,
+		io.github.jcondedata.aliveworkplace.mc.DrinkItem.drink(4, 0.6f, new net.minecraft.world.effect.MobEffectInstance(net.minecraft.world.effect.MobEffects.REGENERATION, 100)));
 	public static final io.github.jcondedata.aliveworkplace.guard.RallyBannerItem RALLY_BANNER = Reg.item("rally_banner", io.github.jcondedata.aliveworkplace.guard.RallyBannerItem::new, new Item.Properties().stacksTo(1));
 
 	/** Marks out a quarry for a Miner. */
@@ -97,6 +104,9 @@ public final class ModItems {
 				output.accept(SCHOLARS_INFUSION);
 				output.accept(HARVEST_CORDIAL);
 				output.accept(WOODSMANS_BROTH);
+				output.accept(CIDER);
+				output.accept(BERRY_WINE);
+				output.accept(VINTAGE_WINE);
 				output.accept(CITY_PLAN);
 				output.accept(QUARRY_MARKER);
 				output.accept(FIELD_MARKER);

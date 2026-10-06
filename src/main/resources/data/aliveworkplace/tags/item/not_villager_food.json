@@ -11,6 +11,9 @@
     "minecraft:suspicious_stew",
     "minecraft:cake",
     "minecraft:honey_bottle",
+    "aliveworkplace:cider",
+    "aliveworkplace:berry_wine",
+    "aliveworkplace:vintage_wine",
     {
       "id": "#cobblemon:berries",
       "required": false

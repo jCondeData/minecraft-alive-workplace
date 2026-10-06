@@ -38,6 +38,7 @@ public final class ModTrades {
 		campCookTrades();
 		habitatKeeperTrades();
 		gemGrowerTrades();
+		vintnerTrades();
 		daycareKeeperTrades();
 		trainerLeaderTrades();
 		Platform.get().addTrades(ModVillagers.BARD, 1, offers -> {
@@ -623,6 +624,33 @@ public final class ModTrades {
 	 * Gem Growers (28.11; work without Cobblemon): amethyst shards (Novice), tumblestones (Apprentice, with Cobblemon), the
 	 * Gem Grotto's blueprint (Journeyman, 28.13), a Type Gem (Expert, Cobblemon 1.8), and on the way glass, spyglasses and tinted glass.
 	 */
+	/**
+	 * Vintners (34.9): at every level they buy their makings (apples, sweet and glow berries, glass bottles) and sell the
+	 * drinks of their level: Cider (Novice), Berry Wine (Apprentice), Vintage Wine (Journeyman and up).
+	 */
+	private static void vintnerTrades() {
+		Platform.get().addTrades(ModVillagers.VINTNER, 1, offers -> {
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.APPLE, 12), new ItemStack(Items.EMERALD), 16, 2, 0.05f));
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 1), new ItemStack(ModItems.CIDER, 2), 12, 1, 0.05f));
+		});
+		Platform.get().addTrades(ModVillagers.VINTNER, 2, offers -> {
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.SWEET_BERRIES, 24), new ItemStack(Items.EMERALD), 16, 5, 0.05f));
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 2), new ItemStack(ModItems.BERRY_WINE), 12, 5, 0.05f));
+		});
+		Platform.get().addTrades(ModVillagers.VINTNER, 3, offers -> {
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.GLASS_BOTTLE, 9), new ItemStack(Items.EMERALD), 16, 10, 0.05f));
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 5), new ItemStack(ModItems.VINTAGE_WINE), 8, 10, 0.05f));
+		});
+		Platform.get().addTrades(ModVillagers.VINTNER, 4, offers -> {
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.GLOW_BERRIES, 16), new ItemStack(Items.EMERALD), 16, 15, 0.05f));
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 3), new ItemStack(ModItems.BERRY_WINE, 2), 12, 15, 0.05f));
+		});
+		Platform.get().addTrades(ModVillagers.VINTNER, 5, offers -> {
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.APPLE, 8), new ItemStack(Items.EMERALD), 16, 30, 0.05f));
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 8), new ItemStack(ModItems.VINTAGE_WINE, 2), 6, 30, 0.05f));
+		});
+	}
+
 	private static void gemGrowerTrades() {
 		Platform.get().addTrades(ModVillagers.GEM_GROWER, 1, offers -> {
 			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 1), new ItemStack(Items.AMETHYST_SHARD, 4), 16, 1, 0.05f));

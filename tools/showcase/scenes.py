@@ -266,6 +266,17 @@ SCENES = [
       "both trainers' Pokémon came out beside the ring, the bout ended with a winner on the Cup's results, and no Pokémon was left at the ring", 110,
       [("01_bout_start", "Both Pokémon out"), ("bout_*@middle", "Trading moves"), ("02_bout_result", "The result"),
        ("03_ring_cleared", "The ring cleared")], cobblemon=True),
+    # Players in the Cup (ROADMAP 28.20): the player's bout called in chat with [I'm ready], Mewtwo left out under the
+    # Grand Cup's rules, a real Cobblemon battle at the ring with the stands behind, and the win and purse read out
+    S("cup_match", "Trainer Leader", "A player's Festival Cup bout",
+      "the player's bout was called, a real battle started at the ring with only the eligible Pokémon, and the win is on the Cup's results", 60,
+      [("01_call", "The call, with [I'm ready]"), ("02_battle", "The battle at the ring"), ("03_result", "The win and the purse")], cobblemon=True),
+    # The Cup's day (ROADMAP 28.19), sped up: the delegates walk in from their villages' side, the fair on the Arena's fair
+    # lane with the theme's wares, the stands at noon, the champion's fireworks, the delegates gone by dawn
+    S("cup_day", "Trainer Leader", "A Festival Cup's day, morning to champion",
+      "two delegates came, the fair sold the theme's wares, villagers sat in the stands for the final, the chronicle has the Cup and the delegates left by dawn", 90,
+      [("01_fair", "The fair"), ("02_delegate_arrives", "A delegate walks in"), ("03_stands", "The stands"),
+       ("04_champion", "The champion's fireworks")]),
     S("leader", "Trainer Leader", "Challenging the Trainer Leader", "the Trainer Leader took the challenge", 90,
       [("01_leader", "At the podium"), ("02_leader_battle", "The battle starts")], cobblemon=True),
     S("tutor", "Move Tutor", "The Move Tutor's lessons", "the lesson screen opened", 60,
@@ -499,6 +510,21 @@ SCENES = [
       "a story arc began (its chapters told in chat), the Story tab showed the first chapter ticked and the second with its quest, and the chronicle kept them", 50,
       [("01_story_announced", "The chapters told in chat as they begin"), ("02_story_tab", "The Story tab: chapter 1 ticked, chapter 2 running with its quest"),
        ("03_story_chronicle", "The chronicle's story lines")]),
+    # Classes at the Village Hall (ROADMAP 34.6): a household rises at dawn, then the hall's Classes tab and page
+    S("classes", "Village Hall", "Classes: a household rises, and the Classes page",
+      "a Peasant couple rose to Artisan at dawn with golden sparkles and a chat line, and the hall's Classes page counts each class's needs", 45,
+      [("01_classes_rise", "Odo and Pia rise to Artisan at dawn"), ("02_classes_tab", "The Classes tab: households of each class"),
+       ("03_classes_page", "The Burgher button: needs counted, what it gives, who's closest")]),
+    # Higher jobs need higher classes (ROADMAP 34.8): a Peasant refused the Scholar's paper, a Burgher taking it
+    S("class_jobs", "Village Hall", "Higher jobs need higher classes",
+      "a Peasant was refused the Scholar's paper (the job needs a Burgher), and a Burgher took it", 30,
+      [("01_class_jobs_refused", "Dara, a Peasant, is refused: a Scholar must be a Burgher"),
+       ("02_class_jobs_taken", "Bram, a Burgher, becomes the Scholar")]),
+    # What each class gives (ROADMAP 34.7): the Noble's Ball in place of every other festival, and the takings by class
+    S("noble_ball", "Village Hall", "The Noble's Ball, and the takings by class",
+      "the village's Noble household turned the festival into a Noble's Ball: guests at the hall, gold fireworks at dusk, the player a Hero for the night, and the takings split by class", 45,
+      [("01_noble_ball_guests", "The ball: the guests gather at the hall"), ("02_noble_ball_fireworks", "Gold fireworks at dusk"),
+       ("03_noble_ball_takings", "The name tag: the day's takings by class")]),
     S("hall_treasury", "Village Hall", "The treasury, protection and the Village Ledger",
       "the treasury was collected, the village protected and the hall opened from a Village Ledger", 60,
       [("01_hall_treasury", "Treasury and protection"), ("02_hall_collected", "Collected"), ("03_ledger_held", "Village Ledger"),

@@ -147,7 +147,8 @@ public final class Festivals {
 			entity.setFeastDay(today);
 			feast(level, hall);
 		}
-		int left = (int) (Curfew.festivalEnd(entity) - timeOfDay(level));
+		// At a Noble's Ball (34.7) the players are Heroes of the Village for the night, till morning.
+		int left = NobleBalls.isBall(entity, today) ? (int) (VillageNeeds.DAY - timeOfDay(level)) : (int) (Curfew.festivalEnd(entity) - timeOfDay(level));
 		for (ServerPlayer player : level.getPlayers(p -> VillageHalls.area(hall).contains(p.position()))) {
 			MobEffectInstance hero = player.getEffect(MobEffects.HERO_OF_THE_VILLAGE);
 			if (hero == null || hero.getAmplifier() == 0 && hero.getDuration() < left) {
@@ -171,11 +172,13 @@ public final class Festivals {
 	}
 
 	/** Sets the festival for {@code day} and tells the players about, with what the treasury {@code paid} for it (emeralds). */
-	static void plan(ServerLevel level, BlockPos hall, VillageHallBlockEntity entity, long day, int paid) {
+	public static void plan(ServerLevel level, BlockPos hall, VillageHallBlockEntity entity, long day, int paid) {
 		entity.setFestivalDay(day);
 		boolean today = day == Chronicle.day(level);
 		Component name = VillageHalls.name(level, hall);
-		Component message = paid > 0 ? io.github.jcondedata.aliveworkplace.work.Words.counted("message.aliveworkplace.festival.today_paid", paid, name, paid)
+		boolean ball = NobleBalls.decide(level, hall, entity, day); // every other festival in a village with a Noble (34.7)
+		Component message = ball ? Component.translatable(today ? "message.aliveworkplace.festival.ball_today" : "message.aliveworkplace.festival.ball_tomorrow", name)
+			: paid > 0 ? io.github.jcondedata.aliveworkplace.work.Words.counted("message.aliveworkplace.festival.today_paid", paid, name, paid)
 			: Component.translatable(today ? "message.aliveworkplace.festival.today" : "message.aliveworkplace.festival.tomorrow", name);
 		for (ServerPlayer player : nearby(level, hall)) {
 			Chat.chat(player, message.copy().withStyle(ChatFormatting.GOLD));
@@ -246,20 +249,32 @@ public final class Festivals {
 	/** The feast: every grown villager eats from the store, everyone is remembered as having come. */
 	public static void feast(ServerLevel level, BlockPos hall) {
 		Anthems.play(level, hall, "festival"); // the Bard Laureate's anthem (29.19)
-		List<BlockPos> store = VillageNeeds.store(level, hall);
+		io.github.jcondedata.aliveworkplace.build.BuildReserve store = io.github.jcondedata.aliveworkplace.build.BuildReserve.of(level,
+			VillageNeeds.store(level, hall)); // B84: never what a build near the store still needs
 		long today = Chronicle.day(level);
 		int villagers = 0;
 		int fed = 0;
 		boolean bannered = underBanner(level, hall);
-		for (Villager villager : level.getEntitiesOfClass(Villager.class, VillageHalls.area(hall), Villager::isAlive)) {
+		net.minecraft.world.item.Item dish = io.github.jcondedata.aliveworkplace.cup.CupDays.dish(level, hall); // a Cup's dish first (28.19)
+		boolean ball = NobleBalls.today(level, hall);
+		List<Villager> guests = level.getEntitiesOfClass(Villager.class, VillageHalls.area(hall), Villager::isAlive);
+		for (Villager villager : guests) {
 			villagers++;
 			ModAttachments.FESTIVAL_DAY.set(villager, today);
 			if (bannered) {
 				ModAttachments.FESTIVAL_BANNER_DAY.set(villager, today);
 			}
-			if (!villager.isBaby() && VillageNeeds.eat(level, villager, store)) {
+			// At a ball, the store's best food first (34.7); a Cup's dish first (28.19).
+			if (!villager.isBaby() && (ball && NobleBalls.feast(level, villager, store) || VillageNeeds.eat(level, villager, store, dish))) {
 				fed++;
 			}
+		}
+		if (ball) {
+			int wine = NobleBalls.serve(level, guests, store);
+			Chronicle.record(level, hall, Chronicle.Kind.FESTIVAL, Component.translatable("chronicle.aliveworkplace.ball", villagers, fed, wine));
+			level.playSound(null, hall, SoundEvents.VILLAGER_CELEBRATE, SoundSource.NEUTRAL, 1.5f, 1.1f);
+			level.playSound(null, square(level, hall), SoundEvents.NOTE_BLOCK_CHIME.value(), SoundSource.NEUTRAL, 1.5f, 1.2f);
+			return;
 		}
 		Chronicle.record(level, hall, Chronicle.Kind.FESTIVAL, fed > 0
 			? Component.translatable("chronicle.aliveworkplace.festival", villagers, fed)
@@ -273,14 +288,15 @@ public final class Festivals {
 	 */
 	public static boolean enjoyedLately(ServerLevel level, Villager villager) {
 		Long day = ModAttachments.FESTIVAL_DAY.get(villager);
-		int days = (bannered(villager) ? BANNER_MOOD_DAYS : MOOD_DAYS)
+		int days = (NobleBalls.cameToBall(villager) ? Math.max(NobleBalls.MOOD_DAYS, bannered(villager) ? BANNER_MOOD_DAYS : 0)
+			: bannered(villager) ? BANNER_MOOD_DAYS : MOOD_DAYS)
 			* (io.github.jcondedata.aliveworkplace.research.TreeEffects.flag(villager, "golden_age") ? 2 : 1); // twice as long in a Golden Age (29.14)
 		return day != null && Chronicle.day(level) - day <= days;
 	}
 
 	/** How much {@code villager}'s last festival lifts their mood now: {@link #MOOD}, {@link #BANNER_MOOD} under the banner, 0 if it's past. */
 	public static int mood(ServerLevel level, Villager villager) {
-		return !enjoyedLately(level, villager) ? 0 : bannered(villager) ? BANNER_MOOD : MOOD;
+		return !enjoyedLately(level, villager) ? 0 : bannered(villager) ? BANNER_MOOD : NobleBalls.cameToBall(villager) ? NobleBalls.MOOD : MOOD;
 	}
 
 	/** True if {@code villager}'s last festival flew the village's banner (30.13). */
@@ -297,6 +313,13 @@ public final class Festivals {
 
 	/** Where the festival is: the village's bell nearest the hall, else the hall. */
 	public static BlockPos square(ServerLevel level, BlockPos hall) {
+		java.util.Optional<BlockPos> ring = io.github.jcondedata.aliveworkplace.cup.CupDays.ring(level, hall); // a Cup's day: the Arena's ring (28.19)
+		if (ring.isPresent()) {
+			return ring.get();
+		}
+		if (NobleBalls.today(level, hall)) {
+			return NobleBalls.venue(level, hall); // the Manor, else the hall (34.7)
+		}
 		return level.getPoiManager().findClosest(h -> h.is(PoiTypes.MEETING), hall, VillageHalls.RADIUS, PoiManager.Occupancy.ANY).orElse(hall);
 	}
 
@@ -321,7 +344,8 @@ public final class Festivals {
 			if (timeOfDay(level) >= FIREWORKS && level.getBlockEntity(hall) instanceof VillageHallBlockEntity held && Curfew.fireworks(held)
 				&& level.random.nextFloat() < 0.4f) {
 				BlockPos column = square.offset(level.random.nextInt(13) - 6, 0, level.random.nextInt(13) - 6);
-				launch(level, level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, column));
+				launch(level, level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, column),
+					NobleBalls.today(level, hall) ? NobleBalls.GOLD : COLORS); // gold at a ball (34.7)
 			}
 		}
 	}
@@ -348,6 +372,9 @@ public final class Festivals {
 	 * dances now and then. Returns whether they are at the square.
 	 */
 	static boolean gatherAt(ServerLevel level, Villager villager, BlockPos square) {
+		if (villager.isPassenger()) {
+			return square.closerToCenterThan(villager.position(), 24); // seated (in a Cup's stands, 28.19): there
+		}
 		Activity activity = villager.getBrain().getActiveNonCoreActivity().orElse(null);
 		if (activity != Activity.IDLE && activity != Activity.MEET && activity != Activity.PLAY) {
 			return false;
@@ -366,13 +393,23 @@ public final class Festivals {
 
 	/** A firework from {@code at}, in two or three of the festival's colours. */
 	public static FireworkRocketEntity launch(ServerLevel level, BlockPos at) {
+		return launch(level, at, COLORS);
+	}
+
+	/** A firework from {@code at}, in two or three of {@code colours} (a Cup theme's, 28.19). */
+	public static FireworkRocketEntity launch(ServerLevel level, BlockPos at, List<Integer> colours) {
+		return launch(level, at, colours.isEmpty() ? COLORS : colours.stream().mapToInt(Integer::intValue).toArray());
+	}
+
+	/** A firework from {@code at}, in two or three of {@code palette}. */
+	public static FireworkRocketEntity launch(ServerLevel level, BlockPos at, int[] palette) {
 		ItemStack rocket = new ItemStack(Items.FIREWORK_ROCKET);
 		FireworkExplosion.Shape[] shapes = {FireworkExplosion.Shape.LARGE_BALL, FireworkExplosion.Shape.SMALL_BALL, FireworkExplosion.Shape.STAR,
 			FireworkExplosion.Shape.BURST};
-		int a = COLORS[level.random.nextInt(COLORS.length)];
-		int b = COLORS[level.random.nextInt(COLORS.length)];
+		int a = palette[level.random.nextInt(palette.length)];
+		int b = palette[level.random.nextInt(palette.length)];
 		rocket.set(DataComponents.FIREWORKS, new Fireworks(1 + level.random.nextInt(2), List.of(new FireworkExplosion(
-			shapes[level.random.nextInt(shapes.length)], IntList.of(a, b), IntList.of(COLORS[level.random.nextInt(COLORS.length)]),
+			shapes[level.random.nextInt(shapes.length)], IntList.of(a, b), IntList.of(palette[level.random.nextInt(palette.length)]),
 			level.random.nextBoolean(), level.random.nextBoolean()))));
 		FireworkRocketEntity firework = new FireworkRocketEntity(level, at.getX() + 0.5, at.getY() + 0.5, at.getZ() + 0.5, rocket);
 		level.addFreshEntity(firework);

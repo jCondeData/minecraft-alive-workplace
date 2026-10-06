@@ -514,7 +514,12 @@ public class CupGameTests implements FabricGameTest {
 			trainer(helper, new BlockPos(12, 2, 12), true, 4, "Mira");
 			Cups.round(level, hall, entity);
 			CupData.Cup cup = CupData.get(level).existing(hall);
+			// Reopened as a new Cup is (Cups.over): early on day 1 the round sets today's Cup and closes it at once, too few
+			// entrants, and that "no Cup" verdict mustn't outlive the reopening (B91: the card said so after closing again).
 			cup.closed = false;
+			cup.noCup = "";
+			cup.entrants.clear();
+			cup.bracket.clear();
 			cup.toldOpen = -1;
 			menu = io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.forTest(player, hall);
 			tab = menu.icon(HallPages.slot(CupPage.PAGE));

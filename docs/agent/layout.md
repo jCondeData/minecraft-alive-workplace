@@ -71,8 +71,10 @@ Moved out of CLAUDE.md (2026-09-29) to keep that file short. Update this map whe
   the top of the page (`(level, hall) -> ItemStack`, a named icon with lore); `content` fills the page's rows from
   `VillageHallScreen.FIRST_ROW` (slot 18) to slot 53 (`(menu, level, hall, viewer) -> menu.button(slot, icon, action)`).
   The hall draws the tab in the third row (`VillageHallScreen.PAGE_ROW`, slots 18-26, in registration order, up to
-  `HallPages.MAX` = 9), and the page with a back button (slot 0), the header (slot 4) and a divider. The calendar is the
-  first page (`Seasons.init`). Test a page with `VillageHallScreen.forTest` and `menu.press(HallPages.slot(id), player)`
+  `HallPages.ROW` = 9), and the page with a back button (slot 0), the header (slot 4) and a divider. The calendar is the
+  first page (`Seasons.init`). The row keeps six tabs for other features and add-ons besides the mod's first three
+  (calendar, Legends, Cup): the mod's later pages register with `HallPages.registerSpare` (Classes, 34.6), whose tab
+  gives way, newest first, when `register`'s pages fill the row (`HallPages.shown()` is the row; `slot` is then -1). Test a page with `VillageHallScreen.forTest` and `menu.press(HallPages.slot(id), player)`
   (see `HallPagesGameTests`); the hall's screenshot scene shows the row.
 - **The village calendar** (ROADMAP 22.6): `Seasons` — four seasons of `Seasons.DAYS` days (config `seasonDays`,
   default 16), the same for the whole world (the overworld's day), each with a festival on its middle day.

@@ -52,6 +52,9 @@ public final class ModAttachments {
 	/** On a wild Alpha Pokémon: a Pokémon Ranger (29.22) calmed it, for good. Absent: never calmed. */
 	public static final Attachment<Boolean> RANGER_CALMED = Attachment.saved("ranger_calmed", com.mojang.serialization.Codec.BOOL);
 
+	/** A Festival Cup delegate (28.19), a visitor standing in for a far village's entrant: home hall, the Leader's UUID, tier, host, the Cup's day. Absent: not one. */
+	public static final Attachment<io.github.jcondedata.aliveworkplace.cup.CupDays.Delegate> CUP_DELEGATE = Attachment.saved("cup_delegate", io.github.jcondedata.aliveworkplace.cup.CupDays.Delegate.CODEC);
+
 	/** A villager's gift (29.6): a gift's id, or {@code none}. Absent: the UUID roll decides ({@code Gifted.of}). */
 	/** The guild this villager leads and its village's hall (ROADMAP 30.17); absent: they lead none. */
 	public static final Attachment<io.github.jcondedata.aliveworkplace.hall.Guilds.Master> GUILD_MASTER = Attachment.saved("guild_master", io.github.jcondedata.aliveworkplace.hall.Guilds.Master.CODEC);
@@ -337,6 +340,8 @@ public final class ModAttachments {
 	public static final Attachment<net.minecraft.resources.ResourceLocation> SOCIAL_CLASS = Attachment.saved("social_class", net.minecraft.resources.ResourceLocation.CODEC);
 	/** Their progress on the class ladder (34.2): dawns met and missed, days fed running, the last dawn counted. Absent: all 0. */
 	public static final Attachment<io.github.jcondedata.aliveworkplace.people.SocialClasses.Progress> CLASS_PROGRESS = Attachment.saved("class_progress", io.github.jcondedata.aliveworkplace.people.SocialClasses.Progress.CODEC);
+	/** Where they stood at their last dawn (34.6): the needs of their class they lacked and their last rise or fall. Absent: nothing known yet. */
+	public static final Attachment<io.github.jcondedata.aliveworkplace.people.SocialClasses.Standing> CLASS_STANDING = Attachment.saved("class_standing", io.github.jcondedata.aliveworkplace.people.SocialClasses.Standing.CODEC);
 	/** Luxury id to the day they last had one (34.4 fills it; a {@code luxury} class need reads it). Absent: none had. */
 	public static final Attachment<java.util.Map<net.minecraft.resources.ResourceLocation, Long>> LUXURIES_HAD = Attachment.saved("luxuries_had", com.mojang.serialization.Codec.unboundedMap(net.minecraft.resources.ResourceLocation.CODEC, com.mojang.serialization.Codec.LONG));
 

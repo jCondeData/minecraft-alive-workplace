@@ -89,6 +89,7 @@ public class SavedDataGameTests implements FabricGameTest {
 		samples.put("GIFTED", "aliveworkplace:night_owl");
 		samples.put("SOCIAL_CLASS", io.github.jcondedata.aliveworkplace.AliveWorkplace.id("burgher"));
 		samples.put("CLASS_PROGRESS", new io.github.jcondedata.aliveworkplace.people.SocialClasses.Progress(1, 2, 3, 57L));
+		samples.put("CLASS_STANDING", new io.github.jcondedata.aliveworkplace.people.SocialClasses.Standing(58L, 2, 57L, -1));
 		samples.put("LUXURIES_HAD", Map.of(io.github.jcondedata.aliveworkplace.AliveWorkplace.id("berry_wine"), 55L));
 		samples.put("LEGEND", new io.github.jcondedata.aliveworkplace.legend.LegendData(net.minecraft.resources.ResourceLocation.parse("aliveworkplace:master_architect"),
 			"legend.aliveworkplace.master_architect.name.2", true, Optional.of(new BlockPos(5, 70, -9)), 12, 15, Map.of("home", 2), 14, 9, "visit"));
@@ -115,6 +116,8 @@ public class SavedDataGameTests implements FabricGameTest {
 			Map.of("minecraft:diamond", 1), Map.of("00000000-0000-0000-0000-000000000007", 1), 11, 20));
 		samples.put("WORN_OUT", new io.github.jcondedata.aliveworkplace.hall.WorkHorn.WornOut(48_000L, 24_000L));
 		samples.put("TONIC", new io.github.jcondedata.aliveworkplace.people.Tonics.Drunk("aliveworkplace:miners_brew", 48_000L));
+		samples.put("CUP_DELEGATE", new io.github.jcondedata.aliveworkplace.cup.CupDays.Delegate(new BlockPos(300, 64, -120), A, 2,
+			new BlockPos(10, 64, 20), 72_000L));
 		return samples;
 	}
 

@@ -31,13 +31,15 @@ def _keep_world_ground(b):
 
 
 def _map_on(b, x, y, z):
-    """An item frame lying on top of the block below (x, y, z), with an empty map in it."""
+    """An item frame lying on top of the block below (x, y, z), with an empty map in it. TileX/Y/Z name the frame's
+    own block, as vanilla saves them; placing the structure moves them to the world (StructureTemplateMixin)."""
     b.entities = getattr(b, "entities", [])
     b.entities.append(Compound({
         "pos": List[Double]([Double(x + 0.5), Double(y + 0.03125), Double(z + 0.5)]),
         "blockPos": List[Int]([Int(x), Int(y), Int(z)]),
         "nbt": Compound({
             "id": String("minecraft:item_frame"),
+            "TileX": Int(x), "TileY": Int(y), "TileZ": Int(z),
             "Facing": Byte(1),
             "Item": Compound({"id": String("minecraft:map"), "count": Int(1)}),
             "ItemRotation": Byte(1),

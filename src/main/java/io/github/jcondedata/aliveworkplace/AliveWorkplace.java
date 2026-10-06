@@ -67,6 +67,8 @@ public final class AliveWorkplace {
 		io.github.jcondedata.aliveworkplace.cup.CupPage.init();
 		io.github.jcondedata.aliveworkplace.cup.TypeChart.init(); // 28.18: the bouts' type chart, and the bouts at the ring
 		io.github.jcondedata.aliveworkplace.cup.CupBouts.init();
+		io.github.jcondedata.aliveworkplace.cup.CupMatches.init(); // 28.20
+		io.github.jcondedata.aliveworkplace.cup.CupDays.init(); // 28.19: the Cup's day
 		io.github.jcondedata.aliveworkplace.hall.HarvestIdols.init();
 		io.github.jcondedata.aliveworkplace.people.Chatter.init();
 		io.github.jcondedata.aliveworkplace.hall.VillageProtection.init();
@@ -75,6 +77,7 @@ public final class AliveWorkplace {
 		io.github.jcondedata.aliveworkplace.hall.Edicts.init();
 		io.github.jcondedata.aliveworkplace.hall.Guilds.init();
 		io.github.jcondedata.aliveworkplace.people.SocialClasses.init();
+		io.github.jcondedata.aliveworkplace.hall.ClassesPage.init(); // the hall's Classes page (34.6)
 		io.github.jcondedata.aliveworkplace.hall.Services.init(); // services nearby (34.3)
 		io.github.jcondedata.aliveworkplace.people.Luxuries.init(); // luxuries from the village store (34.4)
 		io.github.jcondedata.aliveworkplace.craft.LuxuryRecipes.init(); // the luxury workshops' recipes (34.5)

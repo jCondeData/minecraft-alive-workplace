@@ -78,7 +78,8 @@ public final class Trainers {
 	/** The leader who takes challenges in this village (the most experienced one within {@link #VILLAGE} blocks). */
 	static Villager seniorLeader(Villager leader) {
 		Villager best = leader;
-		for (Villager other : leader.level().getEntitiesOfClass(Villager.class, leader.getBoundingBox().inflate(VILLAGE), Trainers::isLeader)) {
+		for (Villager other : leader.level().getEntitiesOfClass(Villager.class, leader.getBoundingBox().inflate(VILLAGE),
+				v -> isLeader(v) && !io.github.jcondedata.aliveworkplace.cup.CupDays.isDelegate(v))) {
 			if (other.getVillagerXp() > best.getVillagerXp()
 				|| other.getVillagerXp() == best.getVillagerXp() && other.getUUID().compareTo(best.getUUID()) < 0) {
 				best = other;
@@ -89,6 +90,11 @@ public final class Trainers {
 
 	/** Right-click on a trainer: challenge them. */
 	public static void challenge(ServerPlayer player, Villager trainer) {
+		Component away = io.github.jcondedata.aliveworkplace.cup.CupDays.noChallenge((ServerLevel) trainer.level(), trainer);
+		if (away != null) { // 28.19: a Leader away at the Cup, or a delegate there for it
+			Chat.actionBar(player, away.copy().withStyle(ChatFormatting.YELLOW));
+			return;
+		}
 		if (!COBBLEMON) {
 			Chat.actionBar(player, Component.translatable("message.aliveworkplace.trainer.no_cobblemon").withStyle(ChatFormatting.GRAY));
 			return;

@@ -62,6 +62,9 @@ asks for the steps, `latest.log` and any crash report).
   seeds a build site near the store still needs (meals, feasts, banquets, a new family's meals, farmers and chefs taking
   from the storehouse). A Steward's Farmstead finishes instead of waiting for materials for days; food a build doesn't
   need is eaten as before, and a site frees its share when it finishes or is cancelled.
+- **Builders no longer lose an anvil** (B91): a builder working alongside another could set an anvil (or sand,
+  gravel, concrete powder) down before the floor under it was laid; it fell, and the build then waited for an anvil
+  that was gone. They now leave such a block until there is something under it.
 
 ## 0.140.0 — 2026-10-05
 

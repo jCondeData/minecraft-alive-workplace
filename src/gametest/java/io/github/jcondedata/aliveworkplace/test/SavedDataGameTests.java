@@ -115,6 +115,8 @@ public class SavedDataGameTests implements FabricGameTest {
 			Map.of("minecraft:diamond", 1), Map.of("00000000-0000-0000-0000-000000000007", 1), 11, 20));
 		samples.put("WORN_OUT", new io.github.jcondedata.aliveworkplace.hall.WorkHorn.WornOut(48_000L, 24_000L));
 		samples.put("TONIC", new io.github.jcondedata.aliveworkplace.people.Tonics.Drunk("aliveworkplace:miners_brew", 48_000L));
+		samples.put("CUP_DELEGATE", new io.github.jcondedata.aliveworkplace.cup.CupDays.Delegate(new BlockPos(300, 64, -120), A, 2,
+			new BlockPos(10, 64, 20), 72_000L));
 		return samples;
 	}
 

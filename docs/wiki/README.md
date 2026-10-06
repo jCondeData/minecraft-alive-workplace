@@ -18,5 +18,5 @@ the same commit) and checked by the QA lane (ROADMAP 22.9). Pages are filled in 
 
 - [Builder](builder.md): the villager who builds blueprints.
 
-Still to write of the first twelve: Builder, Villager jobs, Village Hall, Steward, Roads and walls, Edicts, Guilds,
+Still to write of the first twelve: Villager jobs, Village Hall, Steward, Roads and walls, Edicts, Guilds,
 Legends, Pokemon partners, Classes, Elders, Config switches.

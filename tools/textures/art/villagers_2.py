@@ -1200,9 +1200,124 @@ def founder():
     return [path]
 
 
+def pokemon_professor():
+    """The Pokemon Professor (29.21): a long white lab coat to the shins, pale linen and never pure white, with white
+    sleeves and turned-back cuffs, wide lapels open over a blue shirt and a red tie, a pocket on the right below the
+    crossed arms with a red and a blue pen clipped in it, and the coat's centre seam and fold shadows down the front; a vent up the back.
+    A gold circlet at the brow marks the Legend."""
+    t = vg.VillagerTexture()
+    coat = Ramp(["#a6a59b", "#c6c5bc", "#dddcd4", "#ebeae3", "#f5f4ee"], name="labcoat")
+    vg.robe(t, coat, length=18, folds=False, sleeves_too=True, body_too=True, noise=0)
+    vg.sleeves(t, coat, cuff=coat[1], noise=0)
+    for side in SIDES:                                   # the Legend's gold circlet at the brow
+        f = t.face("head", side)
+        for x in range(f.w):
+            f.put(x, 2, GOLD[2] if side in ("front", "west") else GOLD[1])
+    hf = t.face("head", "front")
+    hf.put(3, 2, GOLD[3])
+    hf.put(4, 2, GOLD[3])
+    jf = t.face("jacket", "front")
+    shirt = Ramp(["#3c5a86", "#56769f", "#7493b8"], name="shirt")
+    tie = Ramp(["#8e1f24", "#b3302f", "#cf4a3f"], name="tie")
+    paint(jf, ((3, 0), (4, 0)), shirt[2])                # the shirt's collar, lit
+    paint(jf, ((3, y) for y in range(1, 6)), shirt[1])   # the shirt in the open front
+    paint(jf, ((4, y) for y in range(1, 6)), shirt[0])
+    paint(jf, ((3, 1), (4, 1)), tie[2])                  # the tie's knot, then the blade down the shirt
+    paint(jf, ((3, 2), (4, 2), (4, 3), (4, 4)), tie[1])
+    paint(jf, ((3, 3), (3, 4)), tie[0])
+    jf.put(4, 5, tie[0])
+    paint(jf, ((2, 0), (5, 0)), coat[4])                 # the lapels: lit edges folding out from the neck
+    paint(jf, ((2, 1), (2, 2), (2, 3), (2, 4), (2, 5)), coat[3])
+    paint(jf, ((5, 1), (5, 2), (5, 3), (5, 4), (5, 5)), coat[2])
+    paint(jf, ((1, 1), (6, 1)), coat[2])
+    paint(jf, ((2, 6), (5, 6)), coat[1])                 # where the lapels close
+    paint(jf, ((3, y) for y in range(6, 18)), coat[1])   # the coat's closing seam, buttoned
+    for y in (7, 9, 14):
+        jf.put(4, y, coat[0])
+    paint(jf, ((0, 12), (1, 12), (2, 12)), coat[1])      # the pocket on the right (under the crossed arms, where it
+    paint(jf, ((x, y) for x in range(3) for y in (13, 14)), coat[2])  # shows), and a red and a blue pen in it
+    paint(jf, ((x, 15) for x in range(3)), coat[1])
+    jf.put(0, 11, "#cf4a3f")
+    jf.put(0, 12, "#8e1f24")
+    jf.put(2, 11, "#56769f")
+    jf.put(2, 12, "#2c4468")
+    paint(jf, ((x, 17) for x in range(jf.w)), coat[1])   # the hem's shadow
+    for side in ("west", "east"):                        # side pockets' seams
+        f = t.face("jacket", side)
+        paint(f, ((x, 12) for x in range(1, 4)), coat[1])
+        paint(f, ((x, 17) for x in range(f.w)), coat[1])
+    jb = t.face("jacket", "back")                        # the back vent from the hem to the hips
+    paint(jb, ((3, y) for y in range(12, 18)), coat[0])
+    paint(jb, ((4, y) for y in range(12, 18)), coat[2])
+    paint(jb, ((x, 17) for x in range(jb.w)), coat[1])  # the hem's shadow
+    path = ASSETS / "textures" / "entity" / "villager" / "legend" / "pokemon_professor.png"
+    t.save(path)
+    return [path]
+
+
+def pokemon_ranger():
+    """The Pokemon Ranger (29.22): a red field vest, open over a navy shirt, with black side panels and trim, a pocket
+    flap on each side of the chest and a yellow stripe across the back; khaki shirt sleeves rolled to the forearm, and on
+    the right wrist the capture styler: a grey casing with a cyan screen and a lit red button, worn over the crossed arms
+    where it shows from the front. A gold circlet at the brow marks the Legend; a brown satchel strap across the back."""
+    t = vg.VillagerTexture()
+    red = Ramp(["#6e1a1a", "#9a2624", "#bf3a2e", "#d85a40"], name="ranger red")
+    black = Ramp(["#1e1e24", "#2e2e36", "#40404a"], name="trim")
+    navy = Ramp(["#1e2a48", "#2c3c62", "#40547e"], name="navy shirt")
+    khaki = Ramp(["#7a6a46", "#9c8a5e", "#baa878", "#d0c090"], name="khaki")
+    yellow = Ramp(["#b88a1a", "#e0b028", "#f2cc4a"], name="stripe")
+    styler = Ramp(["#3a3e44", "#5c6268", "#868c92", "#aab0b4"], name="styler")
+    cyan = ["#2a8aa8", "#5cc8e0"]
+    for side in SIDES:                                   # the Legend's gold circlet at the brow
+        f = t.face("head", side)
+        for x in range(f.w):
+            f.put(x, 2, GOLD[2] if side in ("front", "west") else GOLD[1])
+    hf = t.face("head", "front")
+    hf.put(3, 2, GOLD[3])
+    hf.put(4, 2, GOLD[3])
+    vg.robe(t, navy, length=16, folds=False, sleeves_too=False, body_too=True, noise=0)
+    vg.vest(t, red, length=11, open_front=True, noise=0)
+    jf = t.face("jacket", "front")
+    paint(jf, ((3, y) for y in range(0, 11)), navy[1])   # the shirt in the open front, its collar lit
+    paint(jf, ((4, y) for y in range(0, 11)), navy[0])
+    paint(jf, ((3, 0), (4, 0)), navy[2])
+    paint(jf, ((2, y) for y in range(0, 11)), black[2])  # the vest's black front edges
+    paint(jf, ((5, y) for y in range(0, 11)), black[1])
+    paint(jf, ((0, 3), (1, 3)), red[0])                  # a chest pocket flap each side, buttoned
+    paint(jf, ((6, 3), (7, 3)), red[0])
+    jf.put(0, 4, red[3])
+    jf.put(7, 4, red[2])
+    paint(jf, ((x, 10) for x in range(jf.w) if x not in (3, 4)), black[0])   # the vest's hem
+    for side in ("west", "east"):                        # black side panels under the arms
+        f = t.face("jacket", side)
+        paint(f, ((x, y) for x in (1, 2) for y in range(1, 10)), black[1] if side == "west" else black[0])
+        paint(f, ((x, 10) for x in range(f.w)), black[0])
+    jb = t.face("jacket", "back")                        # the yellow stripe across the back, the hem, the strap
+    paint(jb, ((x, 5) for x in range(jb.w)), yellow[1])
+    paint(jb, ((x, 4) for x in range(jb.w)), yellow[2])
+    paint(jb, ((x, 10) for x in range(jb.w)), black[0])
+    strap_diagonal(jb, 0, 0, 7, 9, LEATHER[1], width=1)
+    vg.sleeves(t, khaki, cuff=khaki[3], noise=0)         # rolled khaki sleeves
+    mid = t.face("arms_middle", "front")                 # the capture styler on the right wrist, seen over the crossed arms
+    for y in range(mid.h):
+        for x in range(0, 3):
+            mid.put(x, y, styler[2] if y == 0 else styler[1] if y < mid.h - 1 else styler[0])
+    mid.put(0, 1, cyan[1])                               # its screen
+    mid.put(1, 1, cyan[1])
+    mid.put(0, 2, cyan[0])
+    mid.put(1, 2, cyan[0])
+    mid.put(2, 2, "#e04a3a")                             # the lit button
+    for side in ("front", "west", "east", "back"):       # the styler's band round the right arm at the wrist
+        f = t.face("arm", side)
+        paint(f, ((x, f.h - 2) for x in range(f.w)), styler[1] if side in ("front", "west") else styler[0])
+    path = ASSETS / "textures" / "entity" / "villager" / "legend" / "pokemon_ranger.png"
+    t.save(path)
+    return [path]
+
+
 DRAW = [orchard_keeper, berry_breeder, camp_cook, habitat_keeper, daycare_keeper, gem_grower, pokemon_trader, porter, postman, rancher, scholar, shopkeeper, sifter, teacher, tinkerer,
         trainer, trainer_leader, tutor, undertaker, steward, legend, legend_placeholder, master_architect, pathfinder, old_sage, seer, golem_smith,
-        merchant_prince, grand_chef, bard_laureate, beastmaster, founder]
+        merchant_prince, grand_chef, bard_laureate, beastmaster, founder, pokemon_professor, pokemon_ranger]
 
 if __name__ == "__main__":
     run(DRAW)

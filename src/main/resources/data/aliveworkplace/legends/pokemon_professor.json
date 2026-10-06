@@ -1,0 +1,23 @@
+{
+  "requires": ["cobblemon"],
+  "rarity": "legendary",
+  "job": "aliveworkplace:legend",
+  "title": "legend.aliveworkplace.pokemon_professor.title",
+  "lore": "legend.aliveworkplace.pokemon_professor.lore",
+  "names": [
+    "legend.aliveworkplace.pokemon_professor.name.1",
+    "legend.aliveworkplace.pokemon_professor.name.2",
+    "legend.aliveworkplace.pokemon_professor.name.3"
+  ],
+  "conditions": [
+    {"type": "pastured_pokemon", "count": 25, "types": 10}
+  ],
+  "arrive": [
+    {"way": "visit", "place": "inn"}
+  ],
+  "needs": {"luxury": "books"},
+  "powers": [
+    {"type": "pokemon_hints"},
+    {"type": "pokedex"}
+  ]
+}

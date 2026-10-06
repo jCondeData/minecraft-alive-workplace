@@ -38,6 +38,8 @@ public final class Conditions {
 		register("chance", Chance::read);
 		register("quest_done", QuestDone::read);
 		register("not", j -> new Not(parse(j.getAsJsonObject("condition"))));
+		register("pastured_pokemon", PasturedPokemon::read);
+		register("alpha_near", AlphaNear::read);
 	}
 
 	public static void register(String type, Function<JsonObject, Condition> reader) {

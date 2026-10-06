@@ -171,15 +171,24 @@ public final class Partners {
 
 	/** How much of the usual time the job takes with its helpers (1 without any; never below {@link #FLOOR}). */
 	public static float factor(Villager villager) {
-		return Math.max(FLOOR, 1f - PER_PARTNER * Math.min(max(villager), helpers(villager).size()));
+		int helping = Math.min(max(villager), helpers(villager).size());
+		if (helping == 0) {
+			return 1f;
+		}
+		// Field Notes (the Pokédex tree, 29.21): each partner helps 5% more a level
+		return Math.max(FLOOR, 1f - PER_PARTNER * helping * (1f + io.github.jcondedata.aliveworkplace.legend.PokemonProfessor.partnerBonus(villager)));
 	}
 
 	/** The least time a job can take with helpers, as a share of the usual. */
 	public static final float FLOOR = 0.4f;
 
-	/** Partners a worker can have: {@link #MAX}, and one more for each level of the village's Kinship research. */
+	/**
+	 * Partners a worker can have: {@link #MAX}, one more for each level of the village's Kinship research, and one more
+	 * with the Pokédex tree's Kinship Studies (29.21).
+	 */
 	public static int max(Villager villager) {
-		return MAX + io.github.jcondedata.aliveworkplace.research.Research.level(villager, io.github.jcondedata.aliveworkplace.research.Research.Topic.KINSHIP);
+		return MAX + io.github.jcondedata.aliveworkplace.research.Research.level(villager, io.github.jcondedata.aliveworkplace.research.Research.Topic.KINSHIP)
+			+ io.github.jcondedata.aliveworkplace.legend.PokemonProfessor.extraPartners(villager);
 	}
 
 	/** "Machop", "Machop and Geodude", "Machop, Geodude and Onix". */

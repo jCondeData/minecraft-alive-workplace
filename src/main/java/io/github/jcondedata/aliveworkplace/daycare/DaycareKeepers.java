@@ -108,6 +108,11 @@ public final class DaycareKeepers {
 		return base == 0 ? 0 : base + (level >= 4 ? 10 : 0);
 	}
 
+	/** {@code keeper}'s chance (percent) of an egg at dawn for a pair that gets along {@code getAlong}: her level, and the village's Breeding Records (29.21). */
+	public static int chance(Villager keeper, int getAlong) {
+		return io.github.jcondedata.aliveworkplace.legend.PokemonProfessor.eggOdds(keeper, chance(getAlong, keeper.getVillagerData().getLevel()));
+	}
+
 	/** The day number (a new one starts at dawn). */
 	public static long day(ServerLevel level) {
 		return Math.floorDiv(level.getDayTime(), 24000L);
@@ -134,7 +139,7 @@ public final class DaycareKeepers {
 			}
 			int eggs = pair.eggs();
 			if (ENABLED && breeding != null) {
-				int odds = chance(breeding.getAlong(level, pair), keeper.getVillagerData().getLevel());
+				int odds = chance(keeper, breeding.getAlong(level, pair));
 				for (long d = Math.max(pair.day(), today - MAX_EGGS); d < today && eggs < MAX_EGGS; d++) {
 					if (odds > 0 && random.nextInt(100) < odds) {
 						eggs++;

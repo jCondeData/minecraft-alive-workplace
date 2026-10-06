@@ -2403,7 +2403,7 @@ public class ScreenshotHarness implements ClientModInitializer {
 			pointAt(mc, 0); // the first offer
 		}
 		if (tick == 100) {
-			Showcase.check(mc.screen instanceof net.minecraft.client.gui.screens.inventory.AbstractContainerScreen<?>, "the trade screen opened");
+			Showcase.check(mc.screen instanceof io.github.jcondedata.aliveworkplace.client.PokemonTradeScreen, "the trade screen opened");
 			shot(mc, "01_trader_offer");
 			pointAt(mc, 19); // the Pokémon that fits
 		}
@@ -2414,8 +2414,31 @@ public class ScreenshotHarness implements ClientModInitializer {
 		}
 		if (tick == 140) {
 			shot(mc, "03_trader_refused");
+			// The first click on the Pokémon that fits: pressed in, and the screen asks for the second (28.23).
+			server.execute(() -> {
+				ServerPlayer player = server.getPlayerList().getPlayers().get(0);
+				if (player.containerMenu instanceof io.github.jcondedata.aliveworkplace.work.ChoiceMenu menu) {
+					menu.press(19, player);
+				}
+			});
+			pointAt(mc, 19);
 		}
-		if (tick == 150) {
+		if (tick == 160) {
+			shot(mc, "04_trader_confirm");
+			server.execute(() -> {
+				ServerPlayer player = server.getPlayerList().getPlayers().get(0);
+				if (player.containerMenu instanceof io.github.jcondedata.aliveworkplace.work.ChoiceMenu menu) {
+					menu.press(19, player);
+				}
+			});
+			pointAt(mc, 8); // the trader's book
+		}
+		if (tick == 180) {
+			mc.getToasts().clear();
+			Showcase.check(mc.screen instanceof io.github.jcondedata.aliveworkplace.client.PokemonTradeScreen, "the trade went through on the trade screen");
+			shot(mc, "05_trader_traded");
+		}
+		if (tick == 190) {
 			mc.stop();
 		}
 	}
@@ -2431,6 +2454,12 @@ public class ScreenshotHarness implements ClientModInitializer {
 		if (mc.screen instanceof io.github.jcondedata.aliveworkplace.client.VillageHallMenuScreen hall) {
 			// The hall's own screen (ROADMAP 30.4a) puts its buttons where its drawing does, not on a chest's grid.
 			int[] at = hall.centre(slot);
+			setMouse(mc, at[0] * scale, at[1] * scale);
+			return;
+		}
+		if (mc.screen instanceof io.github.jcondedata.aliveworkplace.client.PokemonTradeScreen trades) {
+			// The Pokémon Trader's own screen (28.23): cards and a party panel, not a chest's grid.
+			int[] at = trades.centre(slot);
 			setMouse(mc, at[0] * scale, at[1] * scale);
 			return;
 		}

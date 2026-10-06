@@ -11,6 +11,8 @@ import com.cobblemon.mod.common.item.PokemonItem;
 import com.cobblemon.mod.common.pokemon.Pokemon;
 import com.cobblemon.mod.common.pokemon.Species;
 import io.github.jcondedata.aliveworkplace.mc.Chat;
+import io.github.jcondedata.aliveworkplace.registry.ModBlocks;
+import io.github.jcondedata.aliveworkplace.trader.PokemonTradeView;
 import io.github.jcondedata.aliveworkplace.trader.PokemonTraders;
 import io.github.jcondedata.aliveworkplace.work.ChoiceMenu;
 import java.util.ArrayList;
@@ -42,9 +44,10 @@ public final class CobblemonTraders {
 	private static final int[] MIN_LEVEL = {5, 15, 25, 35, 50};
 	private static final int[] MAX_LEVEL = {15, 25, 35, 50, 70};
 	private static final Set<String> NOT_FOR_TRADE = Set.of("legendary", "mythical", "ultra_beast", "paradox");
-	// Row 1: offers; row 3: your party.
-	public static final int FIRST_PARTY_SLOT = 18;
-	private static final int INFO = 8;
+	// The trader's own screen (28.23, PokemonTradeView): offers, their balls, the info book, your party, the cards' costs
+	// and the status line, each in its slot.
+	public static final int FIRST_PARTY_SLOT = PokemonTradeView.PARTY;
+	private static final int INFO = PokemonTradeView.INFO;
 	private static final Vector4f GREYED = new Vector4f(0.35f, 0.35f, 0.35f, 1f);
 
 	// One of the day's offers: their Pokémon (species, level, shiny) for yours of {@code wanted} type, level
@@ -166,7 +169,7 @@ public final class CobblemonTraders {
 			return;
 		}
 		State state = new State();
-		ChoiceMenu.open(player, PokemonTraders.title(trader),
+		ChoiceMenu.openOn(ModBlocks.POKEMON_TRADER_MENU, player, PokemonTraders.title(trader),
 			p -> trader.isAlive() && !trader.isSleeping() && p.isAlive() && p.distanceTo(trader) <= PokemonTraders.REACH,
 			menu -> render(menu, player, trader, state));
 	}
@@ -177,10 +180,14 @@ public final class CobblemonTraders {
 		return ChoiceMenu.detached(player, menu -> render(menu, player, trader, state));
 	}
 
-	// Row 1: the offers (and info). Row 2: a divider. Row 3: your party, greyed out when it won't do.
+	// The offers as cards (the Pokémon, its ball and what it costs), the info book, your party (greyed out when it won't
+	// do) and a line saying what to do next.
 	private static void render(ChoiceMenu menu, ServerPlayer player, Villager trader, State state) {
 		menu.clearButtons();
 		List<Offer> offers = offers(trader);
+		if (offers.size() > PokemonTradeView.MAX_OFFERS) {
+			offers = offers.subList(0, PokemonTradeView.MAX_OFFERS);
+		}
 		state.offer = Math.max(0, Math.min(offers.size() - 1, state.offer));
 		boolean done = PokemonTraders.tradedToday(trader, player.getUUID());
 		for (int i = 0; i < offers.size(); i++) {
@@ -199,7 +206,15 @@ public final class CobblemonTraders {
 			if (i == state.offer) {
 				icon.set(DataComponents.ENCHANTMENT_GLINT_OVERRIDE, true);
 			}
-			menu.button(i, icon, p -> {
+			Pokemon shown = offer.create();
+			ItemStack ball = shown.getCaughtBall().stack(1);
+			ball.set(DataComponents.CUSTOM_NAME, plain(Component.translatable("screen.aliveworkplace.pokemon_trader.ball",
+				ball.getItem().getName(ball)).withStyle(ChatFormatting.WHITE)));
+			menu.button(PokemonTradeView.BALLS + i, ball, null);
+			menu.button(PokemonTradeView.COSTS + i, named(Items.PAPER, offer.wantedSpecies() != null
+				? Component.translatable("screen.aliveworkplace.pokemon_trader.cost_species", offer.wantedSpecies().getTranslatedName(), offer.minLevel())
+				: Component.translatable("screen.aliveworkplace.pokemon_trader.cost", offer.wanted().getDisplayName(), offer.minLevel())), null);
+			menu.button(PokemonTradeView.OFFERS + i, icon, p -> {
 				state.offer = index;
 				state.pending = null;
 				render(menu, player, trader, state);
@@ -209,13 +224,15 @@ public final class CobblemonTraders {
 		info.set(DataComponents.LORE, lore(
 			Component.translatable("message.aliveworkplace.pokemon_trader.info").withStyle(ChatFormatting.GRAY),
 			done ? Component.translatable("message.aliveworkplace.pokemon_trader.come_back").withStyle(ChatFormatting.RED)
-				: Component.translatable("message.aliveworkplace.pokemon_trader.one_a_day").withStyle(ChatFormatting.DARK_GRAY)));
+				: Component.translatable("screen.aliveworkplace.pokemon_trader.pick").withStyle(ChatFormatting.DARK_GRAY)));
 		menu.button(INFO, info, null);
-		menu.divider(1);
 		if (offers.isEmpty()) {
+			menu.button(PokemonTradeView.STATUS, named(Items.PAPER, Component.translatable("screen.aliveworkplace.pokemon_trader.no_offers")), null);
 			return;
 		}
 		Offer offer = offers.get(state.offer);
+		Component status = done ? Component.translatable("message.aliveworkplace.pokemon_trader.come_back")
+			: Component.translatable("screen.aliveworkplace.pokemon_trader.pick");
 		List<Pokemon> party = new ArrayList<>();
 		for (Pokemon pokemon : Cobblemon.INSTANCE.getStorage().getParty(player)) {
 			party.add(pokemon);
@@ -236,6 +253,10 @@ public final class CobblemonTraders {
 					? Component.translatable("message.aliveworkplace.pokemon_trader.held_item").withStyle(ChatFormatting.DARK_GRAY) : null));
 			if (pending) {
 				icon.set(DataComponents.ENCHANTMENT_GLINT_OVERRIDE, true);
+				if (refusal == null) {
+					status = Component.translatable("message.aliveworkplace.pokemon_trader.confirm", pokemon.getDisplayName(false),
+						offer.species().getTranslatedName());
+				}
 			}
 			menu.button(FIRST_PARTY_SLOT + i, icon, refusal != null ? null : p -> {
 				if (!pokemon.getUuid().equals(state.pending)) {
@@ -247,6 +268,7 @@ public final class CobblemonTraders {
 				render(menu, player, trader, state);
 			});
 		}
+		menu.button(PokemonTradeView.STATUS, named(Items.PAPER, status), null);
 	}
 
 	// Swaps {@code yours} for the offer's Pokémon (the second click).

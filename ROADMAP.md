@@ -1385,7 +1385,7 @@ here adds a new kind of speed bonus (the new jobs get the partners' existing one
   day of helping and never twice a day; `langcheck.py` is clean; showcase scene `cup_themes` (each theme's Cup page and
   fair).
 
-- [ ] **28.23** **A custom screen for Pokémon trades (owner, 2026-10-05).** The Pokémon Trader's offers use vanilla's
+- [x] **28.23** (review: pending 2026-10-06) **A custom screen for Pokémon trades (owner, 2026-10-05).** The Pokémon Trader's offers use vanilla's
   plain trading screen. Give them a screen of their own, like the Village Hall's (30.4a): the Trader's offers as cards
   showing the Pokémon (name, level, ball, shiny mark) next to what it costs, the player's party on the other side so
   a trade can be picked from it, and a plain "no offers today" state. Same look as the other workstation screens

@@ -48,6 +48,11 @@ public final class ModBlocks {
 		Registry.register(BuiltInRegistries.MENU, AliveWorkplace.id("village_hall"),
 			new net.minecraft.world.inventory.MenuType<>(io.github.jcondedata.aliveworkplace.work.ChoiceView::new, net.minecraft.world.flag.FeatureFlags.VANILLA_SET));
 
+	/** The Pokémon Trader's screen (ROADMAP 28.23): a ChoiceMenu on the server, drawn by the client's own trade screen. */
+	public static final net.minecraft.world.inventory.MenuType<io.github.jcondedata.aliveworkplace.trader.PokemonTradeView> POKEMON_TRADER_MENU =
+		Registry.register(BuiltInRegistries.MENU, AliveWorkplace.id("pokemon_trader"),
+			new net.minecraft.world.inventory.MenuType<>(io.github.jcondedata.aliveworkplace.trader.PokemonTradeView::new, net.minecraft.world.flag.FeatureFlags.VANILLA_SET));
+
 	/** Workstation for the Postman profession: they collect and deliver mail within 64 blocks of it. */
 	public static final BuildersBenchBlock POSTAL_DESK = Reg.block("postal_desk", BuildersBenchBlock::new, BlockBehaviour.Properties.ofFullCopy(Blocks.CARTOGRAPHY_TABLE));
 

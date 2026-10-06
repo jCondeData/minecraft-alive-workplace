@@ -17,6 +17,9 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Added
+- **A trade screen of the Pokémon Trader's own** (28.23): the day's offers as cards (the Pokémon, its level, ball and
+  shiny mark, and what it costs) beside your party, drawn like the Village Hall's screen, with a pressed-in button and
+  "click again" line before a trade and a plain "no offers today" state.
 - **The eight Festival Cup themes** (28.22): Blossom, Little, Sun (doubles), Workers', Harvest, Lantern (dusk to
   dawn), Frost and Grand, in that order, each with its own rules, fair wares, feast dish, firework colours and disc.
   Villager trainers' teams and players' eligibility follow the theme. For the Workers' Cup, every pastured Pokémon now

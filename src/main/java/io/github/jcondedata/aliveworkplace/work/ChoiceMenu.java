@@ -63,6 +63,12 @@ public class ChoiceMenu extends ChestMenu {
 		return open(io.github.jcondedata.aliveworkplace.registry.ModBlocks.VILLAGE_HALL_MENU, player, title, valid, fill);
 	}
 
+	/** The same, shown on the screen registered for {@code type} (the Pokémon Trader's, 28.23). */
+	@Nullable
+	public static ChoiceMenu openOn(MenuType<?> type, ServerPlayer player, Component title, Predicate<Player> valid, Consumer<ChoiceMenu> fill) {
+		return open(type, player, title, valid, fill);
+	}
+
 	@Nullable
 	private static ChoiceMenu open(MenuType<?> type, ServerPlayer player, Component title, Predicate<Player> valid, Consumer<ChoiceMenu> fill) {
 		ChoiceMenu[] opened = new ChoiceMenu[1];

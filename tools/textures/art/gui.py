@@ -86,7 +86,47 @@ def village_hall_gui():
     return [path]
 
 
-DRAW = [village_hall_gui]
+# The Pokémon Trader's screen (ROADMAP 28.23): textures/gui/pokemon_trader.png, read by the client's PokemonTradeScreen.
+# - the window (256x156 at 0,0): the same vanilla container panel, a sunken offers panel on the left (6..160, 16..150)
+#   that holds up to four offer cards, a sunken party panel on the right (164..250, 28..80) for the party's two rows of
+#   three buttons, and an etched line over the status text;
+# - the buttons (18x18 at 0,176 / 18,176 / 36,176): plain, hovered, and pressed in (the Pokémon waiting for the second
+#   click), the last drawn sunken like a slot, as vanilla shows a toggled button;
+# - the offer cards (150x30 at 0,194 and 0,224): a raised card, plain and picked (lit, white-edged like a hovered
+#   button). The card's own button and ball are drawn by the screen on top.
+TW, TH = 256, 156
+
+
+def _pressed(img, ox, oy):
+    _rect(img, ox + 1, oy, ox + 17, oy + 18, BLACK)
+    _rect(img, ox, oy + 1, ox + 18, oy + 17, BLACK)
+    _sunk(img, ox + 1, oy + 1, ox + 17, oy + 17)
+
+
+def _card(img, ox, oy, picked):
+    fill = HOVER if picked else PANEL
+    edge = WHITE if picked else BLACK
+    _panel(img, ox, oy, ox + 150, oy + 30, fill=fill, edge=edge, bevel=1)
+
+
+def pokemon_trader_gui():
+    img = Image.new("RGBA", (256, 256), (0, 0, 0, 0))
+    _panel(img, 0, 0, TW, TH)
+    _sunk(img, 6, 16, 160, 150, DEEP)
+    _sunk(img, 164, 28, 250, 80, DEEP)
+    _etch(img, 165, 249, 84)
+    _button(img, 0, 176, False)
+    _button(img, 18, 176, True)
+    _pressed(img, 36, 176)
+    _card(img, 0, 194, False)
+    _card(img, 0, 224, True)
+    path = ASSETS / "textures" / "gui" / "pokemon_trader.png"
+    path.parent.mkdir(parents=True, exist_ok=True)
+    img.save(path)
+    return [path]
+
+
+DRAW = [village_hall_gui, pokemon_trader_gui]
 
 if __name__ == "__main__":
     run(DRAW)

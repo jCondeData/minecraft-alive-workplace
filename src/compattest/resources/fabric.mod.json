@@ -35,6 +35,7 @@
 			"io.github.jcondedata.aliveworkplace.compat.CupBoutCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.CupMatchCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.CupThemesCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.PokemonTradeScreenCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.ProfessorCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.RangerCompatTests"
 		]

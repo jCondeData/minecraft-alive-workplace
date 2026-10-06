@@ -50,6 +50,8 @@ public class CupGameTests implements FabricGameTest {
 	private static final String AREA = "aliveworkplace_test:huge_area";
 	private static final BlockPos HALL = new BlockPos(15, 2, 15);
 	private static final ResourceLocation GRAND = AliveWorkplace.id("grand_cup");
+	/** The first theme in order (28.22): a host's first Cup. */
+	private static final ResourceLocation BLOSSOM = AliveWorkplace.id("blossom_cup");
 
 	// ---------------------------------------------------------------- helpers
 
@@ -343,7 +345,7 @@ public class CupGameTests implements FabricGameTest {
 			trainer(helper, new BlockPos(15, 2, 12), false, 1, "Ned");
 			Cups.round(level, hall, entity);
 			CupData.Cup cup = CupData.get(level).existing(hall);
-			helper.assertTrue(cup != null && GRAND.equals(cup.theme) && cup.day >= 0, "no Cup set: " + (cup == null ? null : cup.theme + " " + cup.day));
+			helper.assertTrue(cup != null && BLOSSOM.equals(cup.theme) && cup.day >= 0, "no Cup set: " + (cup == null ? null : cup.theme + " " + cup.day));
 			cup.closed = false;
 
 			ServerPlayer owner = helper.makeMockServerPlayerInLevel();
@@ -463,7 +465,7 @@ public class CupGameTests implements FabricGameTest {
 			cup.toldOpen = cup.day;
 			CompoundTag tag = CupData.get(level).save(new CompoundTag(), level.registryAccess());
 			CupData.Cup back = CupData.load(tag, level.registryAccess()).existing(hall);
-			helper.assertTrue(back != null && GRAND.equals(back.theme) && back.day == cup.day && back.closed && back.themePicked
+			helper.assertTrue(back != null && cup.theme.equals(back.theme) && back.day == cup.day && back.closed && back.themePicked
 				&& back.lastTheme.equals(cup.lastTheme) && back.toldOpen == cup.day && back.toldEvening == cup.toldEvening, "the Cup reloaded: " + back);
 			helper.assertTrue(back.signups.equals(cup.signups) && back.entrants.equals(cup.entrants) && back.bracket.equals(cup.bracket)
 				&& back.results.equals(cup.results) && back.champions.equals(cup.champions), "lists reloaded: " + back.bracket + " " + back.champions);
@@ -521,6 +523,10 @@ public class CupGameTests implements FabricGameTest {
 			cup.entrants.clear();
 			cup.bracket.clear();
 			cup.toldOpen = -1;
+			// a host's first Cup takes the first theme in order; after a Frost Cup, the Grand Cup comes next
+			helper.assertTrue(BLOSSOM.equals(cup.theme) && !cup.themePicked, "the first Cup's theme: " + cup.theme);
+			cup.lastTheme = AliveWorkplace.id("frost_cup");
+			cup.theme = GRAND;
 			menu = io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.forTest(player, hall);
 			tab = menu.icon(HallPages.slot(CupPage.PAGE));
 			helper.assertTrue(lore(tab).contains("Next: the Grand Cup, day " + cup.day), "tab " + lore(tab));
@@ -559,8 +565,8 @@ public class CupGameTests implements FabricGameTest {
 			has(helper, seed, "Trainer Leader of " + village);
 
 			// the buttons
-			menu.press(CupPage.THEME, player); // nobody owns the hall: anyone may pick (one theme: it stays)
-			helper.assertTrue(cup.themePicked && GRAND.equals(cup.theme), "theme pick");
+			menu.press(CupPage.THEME, player); // nobody owns the hall: anyone may pick (after the last theme, the first again)
+			helper.assertTrue(cup.themePicked && BLOSSOM.equals(cup.theme), "theme pick: " + cup.theme);
 			has(helper, menu.icon(CupPage.THEME), "Picked by the host's owner");
 			menu.press(CupPage.SIGN_UP, player);
 			helper.assertTrue(cup.signups.size() == 1 && cup.signups.get(0).player().equals(player.getUUID()), "sign up: " + cup.signups);
@@ -574,7 +580,7 @@ public class CupGameTests implements FabricGameTest {
 			ServerPlayer owner = helper.makeMockServerPlayerInLevel();
 			entity.setOwner(owner.getUUID(), "Owner");
 			helper.assertTrue(Cups.nextTheme(level, hall, player).getString().equals("Only the host village's owner may pick the Cup's theme"), "owner only");
-			helper.assertTrue(Cups.nextTheme(level, hall, owner).getString().equals("The next Cup will be the Grand Cup"), "owner picks");
+			helper.assertTrue(Cups.nextTheme(level, hall, owner).getString().equals("The next Cup will be the Little Cup"), "owner picks");
 			menu = page(player, hall);
 			has(helper, menu.icon(CupPage.SIGN_UP), "Only its owner and the owner's friends may stand for this village");
 

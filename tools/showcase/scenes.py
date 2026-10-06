@@ -284,6 +284,12 @@ SCENES = [
       "the Cup banner flew on the champion's pole, came down when the title passed and stood on the new holder's hall, which names it holder", 40,
       [("01_pole_banner", "The Cup banner on the champion's pole"), ("02_hall_banner", "The banner over the new holder's hall"),
        ("03_roll_of_champions", "The roll of champions"), ("04_holders_tooltip", "Holders of the Thornholm Cup")], cobblemon=True),
+    # The eight Cup themes (ROADMAP 28.22): for each theme in order, the host's Cup page with that theme's card and rules,
+    # then a fair trader's trades with the theme's wares
+    S("cup_themes", "Trainer Leader", "The eight Festival Cup themes",
+      "each of the eight themes' Cup page shows its card and rules, and its fair sells its wares", 50,
+      [("0*_page@spread", "The themes' Cup pages"), ("01_blossom_cup_fair", "The Blossom Cup's fair"),
+       ("04_workers_cup_page", "The Workers' Cup's rules"), ("08_grand_cup_fair", "The Grand Cup's fair")], cobblemon=True),
     S("leader", "Trainer Leader", "Challenging the Trainer Leader", "the Trainer Leader took the challenge", 90,
       [("01_leader", "At the podium"), ("02_leader_battle", "The battle starts")], cobblemon=True),
     S("tutor", "Move Tutor", "The Move Tutor's lessons", "the lesson screen opened", 60,

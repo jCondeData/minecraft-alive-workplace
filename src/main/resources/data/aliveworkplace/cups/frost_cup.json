@@ -1,0 +1,50 @@
+{
+  "name": "cup.aliveworkplace.frost_cup",
+  "order": 7,
+  "format": "singles",
+  "level": 50,
+  "bring": 3,
+  "types": [
+    "ice",
+    "steel",
+    "dragon"
+  ],
+  "stage": "any",
+  "banned": [
+    "legendary",
+    "mythical",
+    "ultra_beast",
+    "paradox"
+  ],
+  "rules": [],
+  "start": 6000,
+  "end": 18000,
+  "wares": [
+    {
+      "item": "cobblemon:never_melt_ice",
+      "price": 8
+    },
+    {
+      "item": "cobblemon:metal_coat",
+      "price": 12
+    },
+    {
+      "item": "cobblemon:dragon_fang",
+      "price": 10
+    },
+    {
+      "item": "cobblemon:ice_stone",
+      "price": 12
+    },
+    {
+      "item": "cobblemon:razor_claw",
+      "price": 12
+    }
+  ],
+  "dish": "cobblemon:smoked_tail_curry",
+  "fireworks": [
+    "#3AB3DA",
+    "#F9FFFE"
+  ],
+  "disc": "minecraft:music_disc_strad"
+}

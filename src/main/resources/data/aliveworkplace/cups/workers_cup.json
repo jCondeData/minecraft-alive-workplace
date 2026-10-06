@@ -1,0 +1,48 @@
+{
+  "name": "cup.aliveworkplace.workers_cup",
+  "order": 4,
+  "format": "singles",
+  "level": 50,
+  "bring": 3,
+  "types": [],
+  "stage": "any",
+  "banned": [
+    "legendary",
+    "mythical",
+    "ultra_beast",
+    "paradox"
+  ],
+  "rules": [],
+  "start": 6000,
+  "end": 18000,
+  "partner_days": 3,
+  "worker_types": true,
+  "wares": [
+    {
+      "item": "cobblemon:black_belt",
+      "price": 8
+    },
+    {
+      "item": "cobblemon:hard_stone",
+      "price": 6
+    },
+    {
+      "item": "cobblemon:metal_coat",
+      "price": 12
+    },
+    {
+      "item": "cobblemon:soft_sand",
+      "price": 6
+    },
+    {
+      "item": "cobblemon:power_weight",
+      "price": 14
+    }
+  ],
+  "dish": "cobblemon:pewter_crunchies",
+  "fireworks": [
+    "#F5C542",
+    "#835432"
+  ],
+  "disc": "minecraft:music_disc_mall"
+}

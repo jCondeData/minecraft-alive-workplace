@@ -1,0 +1,50 @@
+{
+  "name": "cup.aliveworkplace.lantern_cup",
+  "order": 6,
+  "format": "singles",
+  "level": 50,
+  "bring": 3,
+  "types": [
+    "ghost",
+    "dark",
+    "psychic"
+  ],
+  "stage": "any",
+  "banned": [
+    "legendary",
+    "mythical",
+    "ultra_beast",
+    "paradox"
+  ],
+  "rules": [],
+  "start": 12000,
+  "end": 0,
+  "wares": [
+    {
+      "item": "cobblemon:spell_tag",
+      "price": 8
+    },
+    {
+      "item": "cobblemon:black_glasses",
+      "price": 8
+    },
+    {
+      "item": "cobblemon:twisted_spoon",
+      "price": 8
+    },
+    {
+      "item": "cobblemon:dusk_stone",
+      "price": 12
+    },
+    {
+      "item": "cobblemon:reaper_cloth",
+      "price": 14
+    }
+  ],
+  "dish": "cobblemon:sinister_tea",
+  "fireworks": [
+    "#8932B8",
+    "#F9FFFE"
+  ],
+  "disc": "minecraft:music_disc_13"
+}

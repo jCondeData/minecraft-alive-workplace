@@ -1,0 +1,54 @@
+{
+  "name": "cup.aliveworkplace.sun_cup",
+  "order": 3,
+  "format": "doubles",
+  "level": 50,
+  "bring": 4,
+  "types": [
+    "fire",
+    "water",
+    "electric"
+  ],
+  "stage": "any",
+  "banned": [
+    "legendary",
+    "mythical",
+    "ultra_beast",
+    "paradox"
+  ],
+  "rules": [],
+  "start": 6000,
+  "end": 18000,
+  "wares": [
+    {
+      "item": "cobblemon:charcoal_stick",
+      "price": 8
+    },
+    {
+      "item": "cobblemon:mystic_water",
+      "price": 8
+    },
+    {
+      "item": "cobblemon:magnet",
+      "price": 8
+    },
+    {
+      "item": "cobblemon:fire_stone",
+      "price": 12
+    },
+    {
+      "item": "cobblemon:water_stone",
+      "price": 12
+    },
+    {
+      "item": "cobblemon:thunder_stone",
+      "price": 12
+    }
+  ],
+  "dish": "cobblemon:lava_cookie",
+  "fireworks": [
+    "#F9801D",
+    "#3C44AA"
+  ],
+  "disc": "minecraft:music_disc_blocks"
+}

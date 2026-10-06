@@ -1,0 +1,50 @@
+{
+  "name": "cup.aliveworkplace.blossom_cup",
+  "order": 1,
+  "format": "singles",
+  "level": 50,
+  "bring": 3,
+  "types": [
+    "grass",
+    "bug",
+    "fairy"
+  ],
+  "stage": "any",
+  "banned": [
+    "legendary",
+    "mythical",
+    "ultra_beast",
+    "paradox"
+  ],
+  "rules": [],
+  "start": 6000,
+  "end": 18000,
+  "wares": [
+    {
+      "item": "cobblemon:miracle_seed",
+      "price": 8
+    },
+    {
+      "item": "cobblemon:silver_powder",
+      "price": 8
+    },
+    {
+      "item": "cobblemon:fairy_feather",
+      "price": 8
+    },
+    {
+      "item": "cobblemon:leaf_stone",
+      "price": 12
+    },
+    {
+      "item": "cobblemon:shiny_stone",
+      "price": 14
+    }
+  ],
+  "dish": "cobblemon:flower_sweet",
+  "fireworks": [
+    "#F38BAA",
+    "#5DBB3F"
+  ],
+  "disc": "minecraft:music_disc_chirp"
+}

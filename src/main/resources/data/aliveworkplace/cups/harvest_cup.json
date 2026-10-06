@@ -1,0 +1,50 @@
+{
+  "name": "cup.aliveworkplace.harvest_cup",
+  "order": 5,
+  "format": "singles",
+  "level": 50,
+  "bring": 3,
+  "types": [
+    "ground",
+    "rock",
+    "normal"
+  ],
+  "stage": "any",
+  "banned": [
+    "legendary",
+    "mythical",
+    "ultra_beast",
+    "paradox"
+  ],
+  "rules": [],
+  "start": 6000,
+  "end": 18000,
+  "wares": [
+    {
+      "item": "cobblemon:soft_sand",
+      "price": 6
+    },
+    {
+      "item": "cobblemon:hard_stone",
+      "price": 6
+    },
+    {
+      "item": "cobblemon:silk_scarf",
+      "price": 8
+    },
+    {
+      "item": "cobblemon:sun_stone",
+      "price": 12
+    },
+    {
+      "item": "cobblemon:big_root",
+      "price": 10
+    }
+  ],
+  "dish": "cobblemon:leek_and_potato_stew",
+  "fireworks": [
+    "#F9801D",
+    "#F5C542"
+  ],
+  "disc": "minecraft:music_disc_far"
+}

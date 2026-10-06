@@ -1,0 +1,46 @@
+{
+  "name": "cup.aliveworkplace.little_cup",
+  "order": 2,
+  "format": "singles",
+  "level": 5,
+  "bring": 3,
+  "types": [],
+  "stage": "first",
+  "banned": [
+    "legendary",
+    "mythical",
+    "ultra_beast",
+    "paradox"
+  ],
+  "rules": [],
+  "start": 6000,
+  "end": 18000,
+  "wares": [
+    {
+      "item": "cobblemon:eviolite",
+      "price": 16
+    },
+    {
+      "item": "cobblemon:everstone",
+      "price": 6
+    },
+    {
+      "item": "cobblemon:oval_stone",
+      "price": 8
+    },
+    {
+      "item": "cobblemon:link_cable",
+      "price": 14
+    },
+    {
+      "item": "cobblemon:exp_candy_xs",
+      "price": 4
+    }
+  ],
+  "dish": "cobblemon:casteliacone",
+  "fireworks": [
+    "#FFD83D",
+    "#F9FFFE"
+  ],
+  "disc": "minecraft:music_disc_cat"
+}

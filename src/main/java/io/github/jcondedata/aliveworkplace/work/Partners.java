@@ -32,6 +32,56 @@ public final class Partners {
 	}
 
 	private static final Map<Villager, Cached> CACHE = new WeakHashMap<>();
+	/** The day each worker last had its partners counted (the Workers' Cup's counter, ROADMAP 28.22). */
+	private static final Map<Villager, Long> COUNTED = new WeakHashMap<>();
+
+	/** Every type some job's partners may be (the Workers' Cup's villager trainers field these). */
+	public static Set<String> allTypes() {
+		Set<String> out = new java.util.TreeSet<>();
+		for (VillagerProfession profession : net.minecraft.core.registries.BuiltInRegistries.VILLAGER_PROFESSION) {
+			out.addAll(types(profession));
+		}
+		return out;
+	}
+
+	/**
+	 * Counts today for each Pokémon helping this villager at work (the Workers' Cup, ROADMAP 28.22): each pastured partner
+	 * gets one more day on a counter in its own saved data, never twice the same day, however many workers it helps.
+	 * Only while the villager is at work (its brain's work activity) and has partners helping.
+	 */
+	public static void countDay(Villager villager) {
+		if (!COBBLEMON || !(villager.level() instanceof ServerLevel level)
+			|| !villager.getBrain().isActive(net.minecraft.world.entity.schedule.Activity.WORK)) {
+			return;
+		}
+		long day = io.github.jcondedata.aliveworkplace.hall.Chronicle.day(level);
+		synchronized (COUNTED) {
+			Long last = COUNTED.get(villager);
+			if (last != null && last == day) {
+				return;
+			}
+		}
+		Set<String> types = types(villager.getVillagerData().getProfession());
+		BlockPos site = villager.getBrain().getMemory(MemoryModuleType.JOB_SITE)
+			.filter(p -> p.dimension() == level.dimension()).map(GlobalPos::pos).orElse(null);
+		if (types.isEmpty() || site == null) {
+			return;
+		}
+		int max = max(villager);
+		int counted = PokemonPartners.EXTENSION.call(p -> p.countPartnerDay(level, site, RADIUS, types, max, day), 0);
+		if (counted > 0) {
+			synchronized (COUNTED) {
+				COUNTED.put(villager, day);
+			}
+		}
+	}
+
+	/** Forget which workers were counted today (tests). */
+	public static void forgetCounted() {
+		synchronized (COUNTED) {
+			COUNTED.clear();
+		}
+	}
 
 	/** Lower-case Pokémon types that help with this job (empty: no job Pokémon can help with). */
 	public static Set<String> types(VillagerProfession profession) {
@@ -178,6 +228,7 @@ public final class Partners {
 		if (helping == 0) {
 			return 1f;
 		}
+		countDay(villager);
 		// Field Notes (the Pokédex tree, 29.21): each partner helps 5% more a level
 		return Math.max(FLOOR, 1f - PER_PARTNER * helping * (1f + io.github.jcondedata.aliveworkplace.legend.PokemonProfessor.partnerBonus(villager)));
 	}

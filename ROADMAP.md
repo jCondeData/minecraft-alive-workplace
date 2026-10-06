@@ -1355,7 +1355,7 @@ here adds a new kind of speed bonus (the new jobs get the partners' existing one
   champion is crowned; the mood reason is there for holders and gone after; the chronicle line is in every circuit
   hall; a far champion gets its banner when it loads; the pattern passes `lint.py`; showcase scene `cup_champions`
   (the banner over the hall, the roll of champions).
-- [ ] **28.22** **The eight Cup themes.** Each a data file in `data/aliveworkplace/cups/` with its rules, wares,
+- [x] **28.22** (review: pending 2026-10-06) **The eight Cup themes.** Each a data file in `data/aliveworkplace/cups/` with its rules, wares,
   dish, fireworks and disc; delegates' and host trainers' teams follow it (28.18), and so does players' eligibility
   (28.20). Discs are vanilla's. In order:
   1. **Blossom Cup**: Grass, Bug and Fairy; singles; level 50; bring 3. Wares: Miracle Seed, Silver Powder, Fairy
@@ -4937,6 +4937,14 @@ item waits.
   the Grand Cup); the pattern isn't on the loom. The defending champion is the last champion if entered (champions now
   keep their id; older saves fall back), else the holder village's villager entrant. A delegate champion's two bonuses
   are banked like its bout XP. A Cup banner broken by hand goes back up at the holder's next hall round.
+- 2026-10-06 (28.22, decisions; lane b): the Workers' Cup's "types `Partners.types` lists" is every type some job's
+  partners are (`Partners.allTypes`: all but Ghost today). A partner's day is counted when its worker uses the partner
+  bonus for a job step while its brain is at work (not when a page shows the helpers). Stage `first` now means a first
+  stage that can still evolve (the Cup page already said so; it used to let Tauros in). The Lantern Cup's file ends at
+  dawn (`"end": 0`, read as 24000). Only the Grand Cup names Showdown clauses (the spec lists none for the others). New
+  theme fields `partner_days` and `worker_types` default to none. Two tests that assumed the Grand Cup was the only
+  theme now expect the Blossom Cup first. Test-only: `CupMatchCompatTests` leaves the loaded themes in an unordered
+  map after it runs (`CupThemes.next` order then wrong until `/reload`); `CupThemesCompatTests` sorts by `order` itself.
 - 2026-10-05 (34.6, partial; lane d): landed the rise and fall effects (`Chronicle.Kind.CLASS`, sparkles at the lead's
   bed as "their door", `AMETHYST_BLOCK_CHIME`, the chat line within 32 blocks), the moods (saved as `class_standing`
   at each dawn: needs lacking and the last turn; a standing older than yesterday's dawn adds nothing) and chatter

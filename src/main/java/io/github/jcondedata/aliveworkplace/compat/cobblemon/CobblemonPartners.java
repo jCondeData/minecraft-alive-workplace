@@ -38,6 +38,43 @@ public final class CobblemonPartners {
 			.toList();
 	}
 
+	// The Workers' Cup's counter (ROADMAP 28.22), kept in the Pokémon's own persistent data (Cobblemon saves it with the
+	// Pokémon): how many days it has helped a villager at work, and the last day counted (so never twice a day).
+	public static final String PARTNER_DAYS = "aliveworkplace_partner_days";
+	public static final String PARTNER_DAY = "aliveworkplace_partner_day";
+
+	// Counts {@code day} for the helping Pokémon (as {@link #helpers} finds them) not yet counted that day; how many helped.
+	public static int countPartnerDay(ServerLevel level, BlockPos center, int radius, Set<String> types, int max, long day) {
+		AABB box = new AABB(center).inflate(radius);
+		Vec3 middle = Vec3.atCenterOf(center);
+		List<PokemonEntity> helping = level.getEntitiesOfClass(PokemonEntity.class, box, e -> e.isAlive() && e.getTethering() != null && fits(e.getPokemon(), types))
+			.stream()
+			.sorted(Comparator.comparingDouble(e -> e.distanceToSqr(middle)))
+			.limit(max)
+			.toList();
+		for (PokemonEntity e : helping) {
+			countDay(e.getPokemon(), day);
+		}
+		return helping.size();
+	}
+
+	// One more day on the Pokémon's counter, unless {@code day} was already counted; true if it was added.
+	public static boolean countDay(Pokemon pokemon, long day) {
+		net.minecraft.nbt.CompoundTag data = pokemon.getPersistentData();
+		if (data.contains(PARTNER_DAY) && io.github.jcondedata.aliveworkplace.mc.Nbt.getLong(data, PARTNER_DAY) >= day) {
+			return false;
+		}
+		data.putLong(PARTNER_DAY, day);
+		data.putInt(PARTNER_DAYS, io.github.jcondedata.aliveworkplace.mc.Nbt.getInt(data, PARTNER_DAYS) + 1);
+		pokemon.onChange(null); // its store saves the change
+		return true;
+	}
+
+	// How many days the Pokémon has helped a villager at work.
+	public static int partnerDays(Pokemon pokemon) {
+		return io.github.jcondedata.aliveworkplace.mc.Nbt.getInt(pokemon.getPersistentData(), PARTNER_DAYS);
+	}
+
 	// The pastured Pokémon within {@code radius} of {@code center} with one of {@code types}, nearest first, at most {@code max}.
 	public static List<io.github.jcondedata.aliveworkplace.work.PokemonPartners.Fighter> fighters(ServerLevel level, BlockPos center, int radius, Set<String> types, int max) {
 		AABB box = new AABB(center).inflate(radius);

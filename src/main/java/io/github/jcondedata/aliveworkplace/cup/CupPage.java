@@ -180,6 +180,12 @@ public final class CupPage {
 		if (!theme.stage().equals("any")) {
 			out.add(Component.translatable("screen.aliveworkplace.cup.rules.stage." + theme.stage()));
 		}
+		if (theme.partnerDays() > 0) {
+			out.add(Component.translatable("screen.aliveworkplace.cup.rules.partner_days", theme.partnerDays()));
+		}
+		if (theme.workerTypes()) {
+			out.add(Component.translatable("screen.aliveworkplace.cup.rules.worker_types"));
+		}
 		if (!theme.banned().isEmpty()) {
 			net.minecraft.network.chat.MutableComponent banned = Component.empty();
 			for (int i = 0; i < theme.banned().size(); i++) {

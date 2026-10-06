@@ -41,6 +41,16 @@ public final class CobblemonCompat {
 			}
 
 			@Override
+			public int countPartnerDay(ServerLevel level, BlockPos center, int radius, Set<String> types, int max, long day) {
+				return CobblemonPartners.countPartnerDay(level, center, radius, types, max, day);
+			}
+
+			@Override
+			public int partnerDays(Entity entity) {
+				return entity instanceof com.cobblemon.mod.common.entity.pokemon.PokemonEntity p ? CobblemonPartners.partnerDays(p.getPokemon()) : 0;
+			}
+
+			@Override
 			public void useMove(ServerLevel level, LivingEntity pokemon, LivingEntity target, String type) {
 				CobblemonPartners.useMove(level, pokemon, target, type);
 			}

@@ -27,7 +27,9 @@ import org.jetbrains.annotations.Nullable;
  * the level every Pokémon battles at, how many each trainer brings, the allowed types (none listed: any), the stage
  * (first, final or any), the banned labels, the Showdown rules, when the bouts start and must end (time of day; noon to
  * midnight unless it says), the fair's wares (item and price in emeralds), the feast dish, the firework colours and the
- * bard's disc. Items are kept as ids (a theme may name Cobblemon's, which a game without Cobblemon doesn't have). A file
+ * bard's disc. The Workers' Cup (28.22) adds {@code partner_days} (a player's Pokémon must have helped a villager at work on
+ * that many days, see {@code work/Partners}) and {@code worker_types} (villager trainers field the types the jobs' partners
+ * are: {@code Partners.allTypes}). Items are kept as ids (a theme may name Cobblemon's, which a game without Cobblemon doesn't have). A file
  * that can't be read is logged and skipped.
  */
 public final class CupThemes implements ResourceManagerReloadListener {
@@ -46,9 +48,27 @@ public final class CupThemes implements ResourceManagerReloadListener {
 	/** A theme. {@code types} empty: any type. */
 	public record Theme(ResourceLocation id, String name, int order, String format, int level, int bring, List<String> types, String stage,
 		List<String> banned, List<String> rules, long start, long end, List<Ware> wares, ResourceLocation dish, List<Integer> fireworks,
-		ResourceLocation disc) {
+		ResourceLocation disc, int partnerDays, boolean workerTypes) {
+		/** A theme without the Workers' Cup's rules. */
+		public Theme(ResourceLocation id, String name, int order, String format, int level, int bring, List<String> types, String stage,
+			List<String> banned, List<String> rules, long start, long end, List<Ware> wares, ResourceLocation dish, List<Integer> fireworks,
+			ResourceLocation disc) {
+			this(id, name, order, format, level, bring, types, stage, banned, rules, start, end, wares, dish, fireworks, disc, 0, false);
+		}
+
 		public boolean doubles() {
 			return format.equals("doubles");
+		}
+
+		/** The types villager trainers' teams are drawn from (lower case; empty: any). */
+		public java.util.Set<String> trainerTypes() {
+			java.util.Set<String> out = new java.util.TreeSet<>();
+			if (workerTypes) {
+				out.addAll(io.github.jcondedata.aliveworkplace.work.Partners.allTypes());
+			} else {
+				types.forEach(t -> out.add(t.toLowerCase(Locale.ROOT)));
+			}
+			return out;
 		}
 	}
 
@@ -139,8 +159,10 @@ public final class CupThemes implements ResourceManagerReloadListener {
 			throw new IllegalArgumentException("no firework colours");
 		}
 		ResourceLocation disc = location(json, "disc");
+		int partnerDays = integer(json, "partner_days", 0, 0, 1000);
+		boolean workerTypes = json.has("worker_types") && json.get("worker_types").getAsBoolean();
 		return new Theme(id, name, order, format, level, bring, List.copyOf(types), stage, List.copyOf(banned), List.copyOf(rules), start, end,
-			List.copyOf(wares), dish, List.copyOf(fireworks), disc);
+			List.copyOf(wares), dish, List.copyOf(fireworks), disc, partnerDays, workerTypes);
 	}
 
 	private static String string(JsonObject json, String key, @Nullable String fallback) {

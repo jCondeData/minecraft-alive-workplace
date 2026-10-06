@@ -44,6 +44,19 @@ public interface PokemonPartners {
 	/** Whether {@code entity} is a Pokémon in a pasture. */
 	boolean isPastured(Entity entity);
 
+	/**
+	 * The Workers' Cup's counter (ROADMAP 28.22): adds {@code day} to each of up to {@code max} pastured Pokémon of
+	 * {@code types} near {@code center} that hasn't had it counted yet; returns how many Pokémon were helping.
+	 */
+	default int countPartnerDay(ServerLevel level, BlockPos center, int radius, Set<String> types, int max, long day) {
+		return 0;
+	}
+
+	/** How many days this Pokémon (an entity) has helped a villager at work (the Workers' Cup); 0 if it isn't one. */
+	default int partnerDays(Entity entity) {
+		return 0;
+	}
+
 	// Partner shows (ROADMAP 28.3, PartnerShows): a pastured partner seen helping at work.
 
 	/** Whether a pastured Pokémon may do a show now: never in battle, ridden, carrying someone or otherwise busy. */

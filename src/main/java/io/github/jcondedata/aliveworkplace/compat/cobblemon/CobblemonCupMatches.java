@@ -120,7 +120,7 @@ public final class CobblemonCupMatches implements CupBattles {
 			if (p == null) {
 				continue;
 			}
-			Component why = whyNot(p.getSpecies(), theme, types);
+			Component why = whyNot(p, theme, types);
 			if (why == null && out.size() >= theme.bring()) {
 				why = Component.translatable("message.aliveworkplace.cup.why_count", theme.bring());
 			}
@@ -133,19 +133,24 @@ public final class CobblemonCupMatches implements CupBattles {
 		return out;
 	}
 
-	// Why a species may not go under a theme (a banned label, the stage, not one of its types), or null if it may.
-	static Component whyNot(Species species, CupThemes.Theme theme, Set<String> types) {
+	// Why a Pokémon may not go under a theme (a banned label, the stage, not one of its types, too few days helping a
+	// villager at work for the Workers' Cup), or null if it may.
+	static Component whyNot(Pokemon pokemon, CupThemes.Theme theme, Set<String> types) {
+		Species species = pokemon.getSpecies();
 		for (String label : theme.banned()) {
 			if (species.getLabels().contains(label)) {
 				return Component.translatable("message.aliveworkplace.cup.why_banned",
 					Component.translatableWithFallback("screen.aliveworkplace.cup.label." + label, label.replace('_', ' ')));
 			}
 		}
-		if (theme.stage().equals("first") && species.getPreEvolution() != null) {
+		if (theme.stage().equals("first") && (species.getPreEvolution() != null || species.getEvolutions().isEmpty())) {
 			return Component.translatable("message.aliveworkplace.cup.why_first");
 		}
 		if (theme.stage().equals("final") && !species.getEvolutions().isEmpty()) {
 			return Component.translatable("message.aliveworkplace.cup.why_final");
+		}
+		if (theme.partnerDays() > 0 && CobblemonPartners.partnerDays(pokemon) < theme.partnerDays()) {
+			return Component.translatable("message.aliveworkplace.cup.why_partner", theme.partnerDays(), CobblemonPartners.partnerDays(pokemon));
 		}
 		if (!types.isEmpty()) {
 			for (ElementalType type : species.getStandardForm().getTypes()) {

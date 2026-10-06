@@ -1,20 +1,22 @@
 package io.github.jcondedata.aliveworkplace.devclient;
 
+import io.github.jcondedata.aliveworkplace.AliveWorkplace;
 import io.github.jcondedata.aliveworkplace.blueprint.BlueprintData;
 import io.github.jcondedata.aliveworkplace.blueprint.StarterBlueprints;
 import io.github.jcondedata.aliveworkplace.build.BuildSiteManager;
 import io.github.jcondedata.aliveworkplace.cup.CupData;
+import io.github.jcondedata.aliveworkplace.cup.CupDays;
 import io.github.jcondedata.aliveworkplace.cup.CupPage;
+import io.github.jcondedata.aliveworkplace.cup.CupThemes;
 import io.github.jcondedata.aliveworkplace.cup.Cups;
 import io.github.jcondedata.aliveworkplace.hall.Caravans;
 import io.github.jcondedata.aliveworkplace.hall.HallPages;
 import io.github.jcondedata.aliveworkplace.hall.VillageHallBlock;
 import io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity;
 import io.github.jcondedata.aliveworkplace.hall.VillageHallScreen;
-import io.github.jcondedata.aliveworkplace.hall.VillageHalls;
 import io.github.jcondedata.aliveworkplace.hall.VillageRanks;
-import io.github.jcondedata.aliveworkplace.registry.ModBlocks;
 import io.github.jcondedata.aliveworkplace.registry.ModVillagers;
+import io.github.jcondedata.aliveworkplace.registry.ModBlocks;
 import io.github.jcondedata.aliveworkplace.work.ChoiceMenu;
 import java.util.List;
 import java.util.UUID;
@@ -29,20 +31,22 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.npc.Villager;
+import net.minecraft.world.entity.npc.WanderingTrader;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.block.Mirror;
 import net.minecraft.world.level.block.Rotation;
 
 /**
- * SCENE=cup_page (ROADMAP 28.17): a Town with a finished Arena hosts the Grand Cup. Its circuit is the host and two
- * trade partners far off (their Trainer Leaders read from the caravans' list); the host's Leader Mira and two Trainers
- * stand by the hall. The player opens the hall's Cup page, signs up, and the page shows the Cup's card with its rules,
- * the circuit and who each village sends, the player on the list, the seeds and the roll of champions.
+ * SCENE=cup_themes (ROADMAP 28.22): the eight Cup themes in order. For each, a Town host's Cup page shows that theme's
+ * card with its rules, then a fair trader opens their trades: the theme's wares, for emeralds.
  */
-final class CupPageScene {
+final class CupThemesScene {
 	private static final BlockPos HALL = new BlockPos(0, -60, 3);
+	static final List<String> THEMES = List.of("blossom_cup", "little_cup", "sun_cup", "workers_cup", "harvest_cup", "lantern_cup", "frost_cup", "grand_cup");
+	private static final int START = 90;
+	private static final int EACH = 60;
 	private int tick;
-	private volatile boolean signed;
+	private WanderingTrader trader;
 
 	void tick(Minecraft mc) {
 		MinecraftServer server = mc.getSingleplayerServer();
@@ -64,50 +68,67 @@ final class CupPageScene {
 		if (tick == 60) {
 			server.execute(() -> stage(server));
 		}
-		if (tick == 90) {
-			server.execute(() -> {
-				ServerPlayer player = server.getPlayerList().getPlayers().get(0);
-				VillageHallScreen.open(player, HALL);
-			});
+		if (tick < START) {
+			return;
 		}
-		if (tick == 105) {
+		int i = (tick - START) / EACH;
+		int t = (tick - START) % EACH;
+		if (i >= THEMES.size()) {
+			if (t == 5) {
+				mc.stop();
+			}
+			return;
+		}
+		String name = THEMES.get(i);
+		String prefix = String.format("%02d_%s", i + 1, name);
+		CupThemes.Theme theme = CupThemes.get(AliveWorkplace.id(name));
+		if (t == 0) {
+			Showcase.check(theme != null, name + " is loaded");
+			if (theme == null) {
+				return;
+			}
 			server.execute(() -> {
 				ServerPlayer player = server.getPlayerList().getPlayers().get(0);
+				player.closeContainer();
+				CupData.Cup cup = CupData.get(server.overworld()).cup(HALL);
+				cup.theme = theme.id();
+				cup.closed = false;
+				VillageHallScreen.open(player, HALL);
 				if (player.containerMenu instanceof ChoiceMenu m) {
 					m.press(HallPages.slot(CupPage.PAGE), player);
-					m.press(CupPage.SIGN_UP, player);
-					CupData.Cup cup = CupData.get(server.overworld()).existing(HALL);
-					signed = cup != null && cup.signups.stream().anyMatch(s -> s.player().equals(player.getUUID()));
-					Showcase.check(m.icon(CupPage.CARD).getHoverName().getString().equals("Grand Cup"), "the Cup page shows the Grand Cup's card ("
-						+ m.icon(CupPage.CARD).getHoverName().getString() + ")");
+					String card = m.icon(CupPage.CARD).getHoverName().getString();
+					Showcase.check(card.equals(Component.translatable(theme.name()).getString()), "the Cup page shows the " + name + " card (" + card + ")");
 				}
 			});
 		}
-		if (tick == 120) {
-			Showcase.check(signed, "the player signed up from the Cup page");
+		if (t == 12) {
 			ScreenshotHarness.pointAt(mc, CupPage.CARD);
 		}
-		if (tick == 135) {
-			ScreenshotHarness.shot(mc, "01_cup_card");
-			ScreenshotHarness.pointAt(mc, CupPage.CIRCUIT_ROW + 1);
+		if (t == 25) {
+			ScreenshotHarness.shot(mc, prefix + "_page");
+			server.execute(() -> {
+				ServerPlayer player = server.getPlayerList().getPlayers().get(0);
+				player.closeContainer();
+				ServerLevel level = server.overworld();
+				if (trader != null) {
+					trader.discard();
+				}
+				trader = EntityType.WANDERING_TRADER.spawn(level, HALL.offset(0, 0, 3), MobSpawnType.COMMAND);
+				trader.setNoAi(true);
+				trader.getOffers().clear();
+				trader.getOffers().addAll(CupDays.offers(theme));
+				Showcase.check(trader.getOffers().size() == theme.wares().size(), "the " + name + " fair sells " + trader.getOffers().size() + " of its "
+					+ theme.wares().size() + " wares");
+				trader.setTradingPlayer(player);
+				trader.openTradingScreen(player, Component.translatable("screen.aliveworkplace.cup.fair", Component.translatable(theme.name())), 1);
+			});
 		}
-		if (tick == 150) {
-			ScreenshotHarness.shot(mc, "02_cup_circuit");
-			ScreenshotHarness.pointAt(mc, CupPage.CHAMPIONS);
-		}
-		if (tick == 165) {
-			ScreenshotHarness.shot(mc, "03_cup_champions");
-			ScreenshotHarness.pointAt(mc, CupPage.SEEDS_ROW);
-		}
-		if (tick == 180) {
-			ScreenshotHarness.shot(mc, "04_cup_seeds");
-		}
-		if (tick == 195) {
-			mc.stop();
+		if (t == 45) {
+			ScreenshotHarness.shot(mc, prefix + "_fair");
 		}
 	}
 
-	/** The host (a Town with an Arena on record), Mira and two Trainers, two far partners with Leaders on record, two past champions. */
+	/** The host: a Town with an Arena II on record, its Leader Mira, and one trade partner with a Leader on record. */
 	private void stage(MinecraftServer server) {
 		ServerLevel level = server.overworld();
 		level.setBlockAndUpdate(HALL, ModBlocks.VILLAGE_HALL.defaultBlockState().setValue(VillageHallBlock.FACING, Direction.SOUTH));
@@ -116,36 +137,20 @@ final class CupPageScene {
 		hall.setCustomName(Component.literal("Thornholm"));
 		BuildSiteManager.get(level).recordFinished(StarterBlueprints.ARENA_2.id(),
 			new BlueprintData.Placement(level.dimension().location(), HALL.offset(8, 0, 4), Rotation.NONE, Mirror.NONE), UUID.randomUUID());
-		Cups.COBBLEMON = true; // the scene runs with Cobblemon; this only makes sure a run without it still shows the page
+		Cups.COBBLEMON = true;
 		Caravans.Data data = Caravans.Data.get(level);
 		data.setWants(HALL, Component.literal("Thornholm"), List.of());
 		BlockPos ashford = new BlockPos(600, -60, -200);
-		BlockPos bramble = new BlockPos(-900, -60, 500);
 		data.setWants(ashford, Component.literal("Ashford"), List.of());
-		data.setWants(bramble, Component.literal("Bramblewick"), List.of());
 		data.toggleRoute(HALL, ashford, 5);
-		data.toggleRoute(bramble, HALL, 5);
 		data.setLeader(ashford, new Caravans.Leader(UUID.nameUUIDFromBytes("oren".getBytes()), "Oren", 5, 420, true));
-		data.setLeader(bramble, new Caravans.Leader(UUID.nameUUIDFromBytes("tess".getBytes()), "Tess", 3, 90, false));
-		villager(level, HALL.offset(-2, 0, 3), true, 4, "Mira");
-		villager(level, HALL.offset(0, 0, 4), false, 3, "Ren");
-		villager(level, HALL.offset(2, 0, 3), false, 2, "Pip");
+		Villager mira = EntityType.VILLAGER.spawn(level, HALL.offset(-2, 0, 3), MobSpawnType.COMMAND);
+		mira.setVillagerData(mira.getVillagerData().setProfession(ModVillagers.TRAINER_LEADER).setLevel(4));
+		mira.setCustomName(Component.literal("Mira"));
+		mira.setNoAi(true);
 		Cups.round(level, HALL, hall);
 		CupData.Cup cup = CupData.get(level).cup(HALL);
-		cup.closed = false;
-		cup.lastTheme = io.github.jcondedata.aliveworkplace.AliveWorkplace.id("frost_cup"); // 28.22: after a Frost Cup, the Grand Cup
-		cup.theme = io.github.jcondedata.aliveworkplace.AliveWorkplace.id("grand_cup");
-		cup.champions.add(new CupData.Champion(9, io.github.jcondedata.aliveworkplace.AliveWorkplace.id("grand_cup"), "Oren", ashford));
-		cup.champions.add(new CupData.Champion(17, io.github.jcondedata.aliveworkplace.AliveWorkplace.id("grand_cup"), "Mira", HALL));
+		Showcase.check(AliveWorkplace.id("blossom_cup").equals(cup.theme), "a host's first Cup is the Blossom Cup (" + cup.theme + ")");
 		CupData.get(level).setDirty();
-		Showcase.check(Cups.circuit(level, HALL).size() == 3, "the circuit is the host and its two trade partners");
-		Showcase.check(VillageHalls.name(level, HALL).getString().equals("Thornholm"), "the host is Thornholm");
-	}
-
-	private static void villager(ServerLevel level, BlockPos at, boolean leader, int lvl, String name) {
-		Villager v = EntityType.VILLAGER.spawn(level, at, MobSpawnType.COMMAND);
-		v.setVillagerData(v.getVillagerData().setProfession(leader ? ModVillagers.TRAINER_LEADER : ModVillagers.TRAINER).setLevel(lvl));
-		v.setCustomName(Component.literal(name));
-		v.setNoAi(true);
 	}
 }

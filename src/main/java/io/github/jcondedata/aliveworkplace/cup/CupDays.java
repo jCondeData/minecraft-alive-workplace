@@ -427,14 +427,19 @@ public final class CupDays {
 	/** The fair at the Arena's fair lane (by the notice board in an Arena I): the market's traders and two more, selling the theme's wares too. */
 	static List<WanderingTrader> fair(ServerLevel level, BlockPos host, Arenas.Arena arena, CupThemes.Theme theme) {
 		BlockPos lane = arena.fairLane().orElse(arena.noticeBoard());
-		return MarketDays.hold(level, host, lane, FAIR_EXTRA, trader -> {
-			for (CupThemes.Ware w : theme.wares()) {
-				Item item = item(w.item());
-				if (item != null) {
-					trader.getOffers().add(new MerchantOffer(new ItemCost(Items.EMERALD, w.price()), new ItemStack(item), 4, 1, 0.05f));
-				}
+		return MarketDays.hold(level, host, lane, FAIR_EXTRA, trader -> trader.getOffers().addAll(offers(theme)));
+	}
+
+	/** What each trader at the fair sells besides their own: the theme's wares (any whose item this game lacks left out), for emeralds. */
+	public static List<MerchantOffer> offers(CupThemes.Theme theme) {
+		List<MerchantOffer> out = new ArrayList<>();
+		for (CupThemes.Ware w : theme.wares()) {
+			Item item = item(w.item());
+			if (item != null) {
+				out.add(new MerchantOffer(new ItemCost(Items.EMERALD, w.price()), new ItemStack(item), 4, 1, 0.05f));
 			}
-		});
+		}
+		return out;
 	}
 
 	/** The feast (the theme's dish first) and the bard's disc at the ring. */

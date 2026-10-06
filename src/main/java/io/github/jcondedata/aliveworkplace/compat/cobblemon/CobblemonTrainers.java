@@ -155,14 +155,13 @@ public final class CobblemonTrainers {
 	}
 
 	// The trainer's team for a Festival Cup (ROADMAP 28.18): the same seeded pool, filtered by the theme's types (none
-	// listed: any), stage (first, final or any) and banned labels, as many as the theme brings, all at the theme's level
+	// listed: any; the Workers' Cup: Partners.allTypes), stage (first, final or any) and banned labels, as many as the theme brings, all at the theme's level
 	// (Cobblemon's level adjust), trained by the trainer's tier as at home. A delegate passes its Leader's UUID, so it
 	// fields the same team.
 	public static List<Pokemon> team(UUID trainer, int tier, io.github.jcondedata.aliveworkplace.cup.CupThemes.Theme theme) {
 		int t = Math.max(1, Math.min(5, tier)) - 1;
 		Random random = new Random(trainer.getMostSignificantBits() ^ trainer.getLeastSignificantBits() ^ (31L * t));
-		Set<String> types = new java.util.HashSet<>();
-		theme.types().forEach(type -> types.add(type.toLowerCase(java.util.Locale.ROOT)));
+		Set<String> types = theme.trainerTypes(); // the Workers' Cup: the types the jobs' partners are
 		List<Species> pool = new ArrayList<>();
 		for (Species species : PokemonSpecies.getImplemented()) {
 			if (fitsTheme(species, theme, types)) {
@@ -189,7 +188,8 @@ public final class CobblemonTrainers {
 		}
 		boolean basic = species.getPreEvolution() == null;
 		boolean finalForm = species.getEvolutions().isEmpty();
-		if (theme.stage().equals("first") && !basic || theme.stage().equals("final") && !finalForm) {
+		// first: a first stage that can still evolve (the Little Cup); final: fully evolved
+		if (theme.stage().equals("first") && (!basic || finalForm) || theme.stage().equals("final") && !finalForm) {
 			return false;
 		}
 		if (types.isEmpty()) {

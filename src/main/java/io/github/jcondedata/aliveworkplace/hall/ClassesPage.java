@@ -63,10 +63,13 @@ public final class ClassesPage {
 	public record Row(SocialClass social, int households, List<NeedCount> counts, List<Close> closest) {
 	}
 
-	/** Adds the Classes tab, once 1.8 (Milestone 34) is finished: until then no hall shows it. */
+	/**
+	 * Adds the Classes tab, once 1.8 (Milestone 34) is finished: until then no hall shows it. It's a spare page: it gives
+	 * its tab up to other features' pages rather than take one of the six kept for them (22.5).
+	 */
 	public static void init() {
 		if (io.github.jcondedata.aliveworkplace.Expansions.on(io.github.jcondedata.aliveworkplace.Expansions.M34)) {
-			HallPages.register(PAGE, ClassesPage::tab, ClassesPage::header, ClassesPage::fill);
+			HallPages.registerSpare(PAGE, ClassesPage::tab, ClassesPage::header, ClassesPage::fill);
 		}
 	}
 

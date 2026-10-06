@@ -329,7 +329,7 @@ public final class VillageHallScreen {
 
 	/** The page row: a tab for each registered page, light glass after them. */
 	private static void pageRow(ChoiceMenu menu, ServerLevel level, BlockPos hall) {
-		List<HallPages.Page> pages = HallPages.all();
+		List<HallPages.Page> pages = HallPages.shown();
 		for (int i = 0; i < 9; i++) {
 			if (i < pages.size()) {
 				HallPages.Page page = pages.get(i);

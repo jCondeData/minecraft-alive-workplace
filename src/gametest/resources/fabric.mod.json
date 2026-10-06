@@ -150,6 +150,7 @@
 			"io.github.jcondedata.aliveworkplace.test.CupGameTests",
 			"io.github.jcondedata.aliveworkplace.test.CupBoutGameTests",
 			"io.github.jcondedata.aliveworkplace.test.CupDayGameTests",
+			"io.github.jcondedata.aliveworkplace.test.CupMatchGameTests",
 			"io.github.jcondedata.aliveworkplace.test.PieceLooksGameTests",
 			"io.github.jcondedata.aliveworkplace.test.LegendNeedsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.GiftedGameTests",

@@ -72,6 +72,7 @@ public class ScreenshotHarness implements ClientModInitializer {
 	private final LegendsHallScene legendsHall = new LegendsHallScene();
 	private final CupPageScene cupPage = new CupPageScene();
 	private final CupBoutScene cupBout = new CupBoutScene();
+	private final CupMatchScene cupMatch = new CupMatchScene();
 	private final CupDayScene cupDay = new CupDayScene();
 	private final GiftedScene gifted = new GiftedScene();
 	private final WorkHornScene workHorn = new WorkHornScene();
@@ -221,6 +222,10 @@ public class ScreenshotHarness implements ClientModInitializer {
 		}
 		if ("cup_bout".equals(System.getProperty("aliveworkplace.scene"))) {
 			cupBout.tick(mc);
+			return;
+		}
+		if ("cup_match".equals(System.getProperty("aliveworkplace.scene"))) {
+			cupMatch.tick(mc);
 			return;
 		}
 		if ("cup_day".equals(System.getProperty("aliveworkplace.scene"))) {

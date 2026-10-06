@@ -17,6 +17,13 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Added
+- **Players in the Cup** (28.20): with Cobblemon, a signed-up player's bout is called in chat with a bell and a
+  clickable [I'm ready]; click it inside the Arena within two minutes or lose by walkover. Then it's a real battle
+  (against a villager, the Leader or their delegate as the trainer; against a player, Cobblemon's own PvP battle) in
+  the theme's format and level and with its rules, with healed copies so nobody gains experience or keeps damage. Only
+  the party's first eligible Pokémon go, and the player is told who stayed home and why. Fleeing loses. [Watch] on the
+  Cup page and the Arena's notice board shows a running bout from the stands. Each win pays 100,000 (500,000 more for
+  the final, half again at a City host; emeralds without CobbleDollars).
 - **Cup day** (28.19): on a Festival Cup's day the far villages' entrants walk in from their village's side as delegates
   ("Dara of Eastholm", in a Trainer Leader's outfit; real Leaders left at home are away at the Cup and take no
   challenges), the market's traders hold a fair on the Arena's fair lane selling the theme's wares, from noon the

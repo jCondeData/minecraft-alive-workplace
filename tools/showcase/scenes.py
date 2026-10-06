@@ -266,6 +266,11 @@ SCENES = [
       "both trainers' Pokémon came out beside the ring, the bout ended with a winner on the Cup's results, and no Pokémon was left at the ring", 110,
       [("01_bout_start", "Both Pokémon out"), ("bout_*@middle", "Trading moves"), ("02_bout_result", "The result"),
        ("03_ring_cleared", "The ring cleared")], cobblemon=True),
+    # Players in the Cup (ROADMAP 28.20): the player's bout called in chat with [I'm ready], Mewtwo left out under the
+    # Grand Cup's rules, a real Cobblemon battle at the ring with the stands behind, and the win and purse read out
+    S("cup_match", "Trainer Leader", "A player's Festival Cup bout",
+      "the player's bout was called, a real battle started at the ring with only the eligible Pokémon, and the win is on the Cup's results", 60,
+      [("01_call", "The call, with [I'm ready]"), ("02_battle", "The battle at the ring"), ("03_result", "The win and the purse")], cobblemon=True),
     # The Cup's day (ROADMAP 28.19), sped up: the delegates walk in from their villages' side, the fair on the Arena's fair
     # lane with the theme's wares, the stands at noon, the champion's fireworks, the delegates gone by dawn
     S("cup_day", "Trainer Leader", "A Festival Cup's day, morning to champion",

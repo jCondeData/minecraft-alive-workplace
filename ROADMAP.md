@@ -1306,7 +1306,7 @@ here adds a new kind of speed bonus (the new jobs get the partners' existing one
   from their homes' side and are gone by dawn, villagers are in the stands for the final, the fair sells the theme's
   wares, every circuit hall's chronicle has the entry; with `festivalCup` off it's a plain festival; showcase scene
   `cup_day` (the whole day, sped up) with its GIF.
-- [ ] **28.20** **Players in the Cup.** A signed-up player's bout is called in chat with a clickable [I'm ready] and a
+- [x] **28.20** (review: pending 2026-10-06) **Players in the Cup.** A signed-up player's bout is called in chat with a clickable [I'm ready] and a
   bell; they have two minutes inside the Arena to click it, or lose by walkover (so does a player who's offline).
   - Against a villager: a real Cobblemon battle with the delegate or host trainer as `VillagerTrainerActor`, in the
     theme's format (singles or doubles), its level adjust and Showdown rules (the theme's level replaces RCT's level
@@ -4869,3 +4869,14 @@ item waits.
   where the bard is if they reached the ring, else at the ring. A Cup put off keeps its new day through the host's
   rounds; called off after 8 days, the next Cup is set from the calendar. The Cup's chronicle entry for a circuit
   village that isn't loaded is kept in `aliveworkplace_cups` and written, with the Cup's day, at its next hall round.
+- 2026-10-06 (28.20, decisions; lane b): without Cobblemon a bout with a player is never called (no Cup bouts start
+  at all then): it's settled at the theme's end as before, a player not at the ring losing by walkover, else the bout's
+  seed deciding. "Inside the Arena" for [I'm ready] is within 24 blocks of the ring; the call goes to the player
+  wherever they are, and an offline player has the same two minutes. Both players absent: the second in the bracket
+  loses. A player whose party has nobody eligible loses by walkover when the battle would start; a villager entrant
+  with no body at the ring (neither the Leader nor a delegate there) loses by walkover. A battle that ends with no
+  result (a restart, `/stopbattle`) is called again with a fresh two minutes; one that can't start (the player is
+  already in a battle) asks for [I'm ready] again. The purse is paid on every win, walkovers too, if the winner is
+  online; 100,000 is 1,000 emeralds at the default `dollarsPerEmerald` of 100. The battle's level is Cobblemon's level
+  adjust (the theme's level); RCT's caps are not applied to Cup teams. [Watch] on the notice board: right-clicking
+  the board (within 2 blocks) while a player bout is fought prints the bout with a [Watch] button.

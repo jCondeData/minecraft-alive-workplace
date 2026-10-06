@@ -231,7 +231,7 @@ public final class CupDays {
 			Optional<Arenas.Arena> found = Arenas.find(level, host);
 			if (found.isEmpty()) { // the Arena is gone: a plain festival
 				cup.noCup = "screen.aliveworkplace.cup.why.arena";
-				if (cup.bout != null) {
+				if (cup.bout != null || cup.call != null) {
 					CupBouts.stop(level, host, cup);
 				}
 				data.setDirty();
@@ -635,7 +635,7 @@ public final class CupDays {
 	 * at once by the bout's seed; a player not at the ring loses by walkover), then the champion cheered.
 	 */
 	public static void settle(ServerLevel level, BlockPos host, CupData.Cup cup) {
-		if (cup.bout != null) {
+		if (cup.bout != null || cup.call != null) {
 			CupBouts.stop(level, host, cup);
 		}
 		if (!cup.closed || !cup.noCup.isEmpty() || cup.bracket.isEmpty() || !Cups.ENABLED) {

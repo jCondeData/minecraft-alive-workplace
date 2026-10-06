@@ -83,6 +83,9 @@ public final class CupData extends SavedData {
 		/** The bout being fought at the ring (28.18), or null. */
 		@Nullable
 		public CupBout bout;
+		/** The bout with a player called at the ring (28.20), or null. */
+		@Nullable
+		public CupMatches.Call call;
 		/** The Cup's day (28.19): how many days it has been put off (its host wasn't loaded that morning). */
 		public int postponed;
 		/** The days (28.19) the delegates came, the fair was held, the feast and the bard's disc, and the champion was cheered; -1: not yet. */
@@ -198,6 +201,9 @@ public final class CupData extends SavedData {
 			if (cup.bout != null) {
 				t.put("bout", cup.bout.save());
 			}
+			if (cup.call != null) {
+				t.put("call", cup.call.save());
+			}
 			t.putInt("postponed", cup.postponed);
 			t.putLong("delegatesDay", cup.delegatesDay);
 			t.putLong("fairDay", cup.fairDay);
@@ -304,6 +310,9 @@ public final class CupData extends SavedData {
 			}
 			if (t.contains("bout")) { // 28.18; older saves have none
 				cup.bout = CupBout.load(Nbt.getCompound(t, "bout"));
+			}
+			if (t.contains("call")) { // 28.20; older saves have none
+				cup.call = CupMatches.Call.load(Nbt.getCompound(t, "call"));
 			}
 			// 28.19; older saves have none
 			cup.postponed = Nbt.getInt(t, "postponed");

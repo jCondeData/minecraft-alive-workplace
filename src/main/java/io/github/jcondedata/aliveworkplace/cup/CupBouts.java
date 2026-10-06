@@ -34,7 +34,8 @@ import org.jetbrains.annotations.Nullable;
  * in their box, their Pokémon come out one at a time beside the ring (real Pokémon, through {@link CupBattlers}: never
  * catchable, gone on load), face each other and take turns. Afterwards the winner goes on, both trainers get trainer XP
  * (the win bonus to the winner; a trainer who isn't here has it banked on their village's caravans' entry, paid when
- * that village next loads) and everyone at the Arena reads the result. Bouts with a player wait for 28.20.
+ * that village next loads) and everyone at the Arena reads the result. A bout with a player is called and fought as a
+ * real battle ({@link CupMatches}, 28.20) when Cobblemon is installed; without it, it waits for the theme's end.
  */
 public final class CupBouts {
 	/** Players this close to the ring read the bout. */
@@ -83,6 +84,12 @@ public final class CupBouts {
 					tickBout(level, host, cup);
 					data.setDirty();
 				}
+			} else if (cup.call != null) {
+				if (!Cups.ENABLED) {
+					stop(level, host, cup);
+				} else if (level.getGameTime() % CupMatches.TICK_EVERY == 0) {
+					CupMatches.tick(level, host, cup);
+				}
 			} else if (Cups.ENABLED && level.getGameTime() % 20 == 0) {
 				startNext(level, host, cup);
 			}
@@ -99,8 +106,9 @@ public final class CupBouts {
 	}
 
 	/**
-	 * The next bout to fight: the first undecided pair of the earliest round still going, of two villagers (a pair with a
-	 * player waits for 28.20); null while none can be fought or once the final is decided.
+	 * The next bout to fight: the first undecided pair of the earliest round still going (a pair with a player only when
+	 * {@link CupBattles} is filled in: it waits for the theme's end otherwise); null while none can be fought or once the
+	 * final is decided.
 	 */
 	@Nullable
 	public static Pairing next(CupData.Cup cup) {
@@ -124,7 +132,7 @@ public final class CupBouts {
 				}
 				done = false;
 				winners.add(null);
-				if (pending == null && a.kind() != CupData.Kind.PLAYER && b.kind() != CupData.Kind.PLAYER) {
+				if (pending == null && (a.kind() != CupData.Kind.PLAYER && b.kind() != CupData.Kind.PLAYER || CupBattles.EXTENSION.present())) {
 					pending = new Pairing(round, a, b);
 				}
 			}
@@ -191,6 +199,10 @@ public final class CupBouts {
 			return;
 		}
 		Arenas.Arena a = arena.get();
+		if (CupMatches.withPlayer(pairing)) { // 28.20: a player's bout is called, and fought as a real battle
+			CupMatches.call(level, host, cup, pairing, a.ring(), a.boxes().get(0), a.boxes().get(1));
+			return;
+		}
 		begin(level, host, cup, new CupBout(pairing.a().id(), pairing.b().id(), team(pairing.a(), theme), team(pairing.b(), theme), pairing.round(),
 			CupBout.seed(host, cup.day, pairing.round(), pairing.a().id(), pairing.b().id()), a.ring(), a.boxes().get(0), a.boxes().get(1)));
 	}
@@ -318,6 +330,7 @@ public final class CupBouts {
 	public static void stop(ServerLevel level, BlockPos host, CupData.Cup cup) {
 		CupBout bout = cup.bout;
 		cup.bout = null;
+		cup.call = null; // a called player bout ends without a result too (its battle, if any, no longer counts)
 		Shown[] shown = OUT.remove(key(level, host));
 		if (shown != null) {
 			for (Shown sh : shown) {

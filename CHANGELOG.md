@@ -60,6 +60,11 @@ asks for the steps, `latest.log` and any crash report).
   once when the quest goes up.
 
 ### Fixed
+- **The Steward's planning costs the server less** (B85): his planning at the hall is split over the second (his
+  wishes and their plot searches, then his desk half a second later), the morning's ranking counts the village a
+  piece a second instead of all in one tick, and one planning second looks up the Blueprint Tables once (every 5
+  seconds at most) instead of once per wish. Nothing a player sees changes. City benchmark: p95 0.49 → 0.38 ms a tick,
+  his planning's server time about halved, and planning is no longer the slowest call.
 - **Builders no longer lose an anvil** (B91): a builder working alongside another could set an anvil (or sand,
   gravel, concrete powder) down before the floor under it was laid; it fell, and the build then waited for an anvil
   that was gone. They now leave such a block until there is something under it.

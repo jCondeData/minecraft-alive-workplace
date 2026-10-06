@@ -219,6 +219,42 @@ public final class Plots {
 	/** Columns each hall's searches read in the level's last tick. */
 	private static final Map<ServerLevel, Map<BlockPos, Integer>> LAST_TICK = new WeakHashMap<>();
 
+	/**
+	 * B85: what each hall's signature is made of, kept between asks. One planning second asks for every build wish's plot
+	 * and every searching proposal's, and the Blueprint Table lookup over the plan's area was most of his planning. Now
+	 * the plan's part is worked out again only when the plan changes, the builds' only when a site or finished building
+	 * comes or goes ({@link BuildSiteManager#changes}, and at least every {@link #BUILDS_EVERY} ticks), and the tables
+	 * are looked up at most every {@link #TABLES_EVERY} ticks.
+	 */
+	private static final class Signed {
+		@Nullable
+		CityPlan plan;
+		long planPart;
+		@Nullable
+		BuildSiteManager sites;
+		int changes;
+		long buildsAt = NEVER;
+		long buildsPart;
+		long tablesAt = NEVER;
+		List<BlockPos> tables = List.of();
+		long tablesPart;
+	}
+
+	private static final long NEVER = Long.MIN_VALUE;
+	/** How long a hall's Blueprint Tables are trusted before they're looked up again: a table put down or broken is noticed within 5 seconds. */
+	public static final int TABLES_EVERY = 100;
+	/** How long the build outlines are trusted while no site or finished building comes or goes (a blueprint's size changes only with an upload or a datapack). */
+	static final int BUILDS_EVERY = 1200;
+	private static final Map<ServerLevel, Map<BlockPos, Signed>> SIGNED = new WeakHashMap<>();
+	/** How many times a hall's Blueprint Tables have been looked up (tests: the lookups are bounded). */
+	private static int tableLookups;
+
+	/** The builds of one area as read at one tick, so the searches one planning second starts read them once. */
+	private record BuildsRead(BoundingBox area, long gameTime, BuildSiteManager sites, int changes, List<Build> builds) {
+	}
+
+	private static final Map<ServerLevel, BuildsRead> BUILDS_READ = new WeakHashMap<>();
+
 	public static void init() {
 		Platform.get().onLevelTick(level -> {
 			long cost = StewardCost.start(); // 27.22
@@ -244,7 +280,7 @@ public final class Plots {
 		Key key = new Key(hall.immutable(), request);
 		Entry entry = searches.get(key);
 		if (entry == null || entry.signature != signature) {
-			entry = new Entry(signature, new Search(level, hall, plan, request), level.getGameTime());
+			entry = new Entry(signature, new Search(level, hall, plan, request, true), level.getGameTime());
 			searches.put(key, entry);
 		}
 		entry.asked = level.getGameTime();
@@ -298,19 +334,87 @@ public final class Plots {
 	 * in its area. Any change makes the next request search again.
 	 */
 	static long signature(ServerLevel level, BlockPos hall, CityPlan plan) {
-		long sig = plan.zones().hashCode() * 31L + plan.roads().hashCode();
-		int half = CityPlan.half();
-		BoundingBox area = new BoundingBox(hall.getX() - half - CLEAR, level.getMinBuildHeight(), hall.getZ() - half - CLEAR,
-			hall.getX() + half + CLEAR, level.getMaxBuildHeight(), hall.getZ() + half + CLEAR);
-		long builds = 0;
-		for (Build b : builds(level, area)) {
-			builds += b.near().hashCode() * 17L + b.base().hashCode() * 7L + b.mirror().ordinal();
+		Signed s = signed(level, hall);
+		long now = level.getGameTime();
+		if (s.plan != plan) {
+			s.plan = plan;
+			s.planPart = plan.zones().hashCode() * 31L + plan.roads().hashCode();
 		}
-		long tables = 0;
-		for (BlockPos t : tables(level, hall)) {
-			tables += t.asLong() * 13L;
+		BuildSiteManager sites = BuildSiteManager.get(level);
+		if (s.sites != sites || s.changes != sites.changes() || stale(s.buildsAt, now, BUILDS_EVERY)) {
+			int half = CityPlan.half();
+			BoundingBox area = new BoundingBox(hall.getX() - half - CLEAR, level.getMinBuildHeight(), hall.getZ() - half - CLEAR,
+				hall.getX() + half + CLEAR, level.getMaxBuildHeight(), hall.getZ() + half + CLEAR);
+			long builds = 0;
+			for (Build b : builds(level, area)) {
+				builds += b.near().hashCode() * 17L + b.base().hashCode() * 7L + b.mirror().ordinal();
+			}
+			s.sites = sites;
+			s.changes = sites.changes();
+			s.buildsAt = now;
+			s.buildsPart = builds;
 		}
-		return (sig * 31L + builds) * 31L + tables;
+		if (stale(s.tablesAt, now, TABLES_EVERY)) {
+			lookUpTables(level, hall, s);
+		}
+		return (s.planPart * 31L + s.buildsPart) * 31L + s.tablesPart;
+	}
+
+	private static Signed signed(ServerLevel level, BlockPos hall) {
+		return SIGNED.computeIfAbsent(level, l -> new HashMap<>()).computeIfAbsent(hall.immutable(), h -> new Signed());
+	}
+
+	private static boolean stale(long at, long now, int every) {
+		return at == NEVER || now < at || now - at >= every;
+	}
+
+	private static void lookUpTables(ServerLevel level, BlockPos hall, Signed s) {
+		tableLookups++;
+		s.tables = tables(level, hall);
+		s.tablesAt = level.getGameTime();
+		long sum = 0;
+		for (BlockPos t : s.tables) {
+			sum += t.asLong() * 13L;
+		}
+		s.tablesPart = sum;
+	}
+
+	/** The hall's Blueprint Tables, looked up at most once a tick for all the searches it starts in that tick. */
+	static List<BlockPos> tablesThisTick(ServerLevel level, BlockPos hall) {
+		Signed s = signed(level, hall);
+		if (s.tablesAt != level.getGameTime()) {
+			lookUpTables(level, hall, s);
+		}
+		return s.tables;
+	}
+
+	/** {@link #builds}, read once a tick for one area while no site or finished building comes or goes. */
+	static List<Build> buildsThisTick(ServerLevel level, BoundingBox area) {
+		BuildSiteManager sites = BuildSiteManager.get(level);
+		BuildsRead last = BUILDS_READ.get(level);
+		if (last != null && last.gameTime() == level.getGameTime() && last.area().equals(area) && last.sites() == sites && last.changes() == sites.changes()) {
+			return last.builds();
+		}
+		List<Build> builds = List.copyOf(builds(level, area));
+		BUILDS_READ.put(level, new BuildsRead(area, level.getGameTime(), sites, sites.changes(), builds));
+		return builds;
+	}
+
+	/** Forgets the hall's searches and what its signature was made of (tests, and a hall broken). */
+	public static void forget(ServerLevel level, BlockPos hall) {
+		Map<Key, Entry> searches = SEARCHES.get(level);
+		if (searches != null) {
+			searches.keySet().removeIf(k -> k.hall().equals(hall));
+		}
+		Map<BlockPos, Signed> signed = SIGNED.get(level);
+		if (signed != null) {
+			signed.remove(hall);
+		}
+	}
+
+	/** How many times the halls' Blueprint Tables have been looked up since the server started. */
+	public static int tableLookups() {
+		return tableLookups;
 	}
 
 	/** Builder job sites near the hall's plan: Blueprint Tables and Builder's Benches. */
@@ -399,6 +503,11 @@ public final class Plots {
 		private int budget;
 
 		Search(ServerLevel level, BlockPos hall, CityPlan plan, Request request) {
+			this(level, hall, plan, request, false);
+		}
+
+		/** {@code shared}: the searches one planning second starts read the tables and builds once between them (B85). */
+		Search(ServerLevel level, BlockPos hall, CityPlan plan, Request request, boolean shared) {
 			this.level = level;
 			this.hall = hall.immutable();
 			this.request = request;
@@ -428,10 +537,11 @@ public final class Plots {
 					paintRoad(a, b, r.width(), side);
 				}
 			}
-			tables = tables(level, hall);
+			tables = shared ? tablesThisTick(level, hall) : tables(level, hall);
 			int half = CityPlan.half();
-			builds = builds(level, new BoundingBox(hall.getX() - half - SAME_RANGE, level.getMinBuildHeight(), hall.getZ() - half - SAME_RANGE,
-				hall.getX() + half + SAME_RANGE, level.getMaxBuildHeight(), hall.getZ() + half + SAME_RANGE));
+			BoundingBox near = new BoundingBox(hall.getX() - half - SAME_RANGE, level.getMinBuildHeight(), hall.getZ() - half - SAME_RANGE,
+				hall.getX() + half + SAME_RANGE, level.getMaxBuildHeight(), hall.getZ() + half + SAME_RANGE);
+			builds = shared ? buildsThisTick(level, near) : builds(level, near);
 			spots = spots();
 		}
 

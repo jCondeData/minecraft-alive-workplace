@@ -85,12 +85,17 @@ public final class NobleBalls {
 
 	/** Each grown guest's glass of wine and the store's best food; returns how many were served wine. */
 	public static int serve(ServerLevel level, List<Villager> guests, List<BlockPos> store) {
+		return serve(level, guests, io.github.jcondedata.aliveworkplace.build.BuildReserve.of(level, store));
+	}
+
+	/** {@link #serve(ServerLevel, List, List)}, never taking what a build near the store still needs (B84). */
+	public static int serve(ServerLevel level, List<Villager> guests, io.github.jcondedata.aliveworkplace.build.BuildReserve store) {
 		int wine = 0;
 		for (Villager v : guests) {
 			if (v.isBaby()) {
 				continue;
 			}
-			ItemStack glass = SupplyContainers.takeOne(level, store, s -> s.is(WINE));
+			ItemStack glass = store.takeOne(level, s -> s.is(WINE));
 			if (!glass.isEmpty()) {
 				wine++;
 				level.sendParticles(new ItemParticleOption(ParticleTypes.ITEM, glass), v.getX(), v.getEyeY() - 0.2, v.getZ(), 6, 0.15, 0.1, 0.15, 0.05);
@@ -118,11 +123,26 @@ public final class NobleBalls {
 
 	/** {@code villager} eats the store's best food at the ball; false if the store has none. */
 	public static boolean feast(ServerLevel level, Villager villager, List<BlockPos> store) {
-		Item best = bestMeal(level, store);
+		return feast(level, villager, io.github.jcondedata.aliveworkplace.build.BuildReserve.of(level, store));
+	}
+
+	/** {@link #feast(ServerLevel, Villager, List)}, never eating what a build near the store still needs (B84). */
+	public static boolean feast(ServerLevel level, Villager villager, io.github.jcondedata.aliveworkplace.build.BuildReserve store) {
+		Item best = null;
+		int most = -1;
+		for (Map.Entry<Item, Long> e : SupplyContainers.contents(level, store.chests()).entrySet()) {
+			ItemStack stack = new ItemStack(e.getKey());
+			FoodProperties food = stack.get(DataComponents.FOOD);
+			if (food != null && VillageNeeds.isMeal(stack) && food.nutrition() > most && store.spare(level, e.getKey()) > 0) {
+				most = food.nutrition();
+				best = e.getKey();
+			}
+		}
 		if (best == null) {
 			return false;
 		}
-		ItemStack meal = SupplyContainers.takeOne(level, store, s -> s.is(best));
+		Item chosen = best;
+		ItemStack meal = store.takeOne(level, s -> s.is(chosen));
 		if (meal.isEmpty()) {
 			return false;
 		}

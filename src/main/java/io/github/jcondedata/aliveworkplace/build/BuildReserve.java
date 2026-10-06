@@ -130,6 +130,11 @@ public final class BuildReserve {
 		return new BuildReserve(chests, Map.copyOf(out));
 	}
 
+	/** The store's chests. */
+	public List<BlockPos> chests() {
+		return chests;
+	}
+
 	/** How many of {@code item}'s family are kept back, by family key. */
 	public int reserved(Item item) {
 		return reserved.getOrDefault(MaterialFamilies.key(item), 0);

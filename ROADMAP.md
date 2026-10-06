@@ -4364,6 +4364,7 @@ item waits.
   3-hour runs (owner: longer if need be); lane C is off; the QA lane runs overnight only; reviews never block; the evening digest releases daily.
 
 ## Notes / blocked
+- **Owner approved every decision in the 2026-10-05 decision notes as written** (chat, 2026-10-06): 27.15-34.1 and B78, including 28.7 (Cobblemon's nurse keeps working), 28.16 (Arena at level 4), 27.16 (bridge deck one block above the bank) and the 33.1 defaults (real-week leaderboard, no tribute, owner-only treasury from 33.5, colonies at City). He will review the wiki (22.9) at the next digest and send notes.
 
 - (Sessions: anything that needs the owner, and the link to the latest Full test report. Handoffs go here through
   `sessions.py handoff "<in progress, next, traps>" --as <you>`, which keeps one per kind of session (chat, night):

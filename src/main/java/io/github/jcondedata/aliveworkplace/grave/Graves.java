@@ -153,6 +153,7 @@ public final class Graves {
 			}
 		}
 		villager.refreshBrain(level);
+		ModAttachments.REVIVED.set(villager, true); // back from the grave: something to tell a friend (31.7)
 		level.sendParticles(ParticleTypes.TOTEM_OF_UNDYING, villager.getX(), villager.getY() + 1.0, villager.getZ(), 40, 0.4, 0.8, 0.4, 0.3);
 		level.playSound(null, pos, SoundEvents.TOTEM_USE, SoundSource.NEUTRAL, 0.6f, 1.1f);
 		io.github.jcondedata.aliveworkplace.hall.Chronicle.record(level, pos, io.github.jcondedata.aliveworkplace.hall.Chronicle.Kind.REVIVED, Component.translatable("chronicle.aliveworkplace.revived", villager.getDisplayName()));

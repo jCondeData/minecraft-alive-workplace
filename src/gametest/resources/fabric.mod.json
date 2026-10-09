@@ -180,6 +180,7 @@
 			"io.github.jcondedata.aliveworkplace.test.FriendshipGameTests",
 			"io.github.jcondedata.aliveworkplace.test.GiftGameTests",
 			"io.github.jcondedata.aliveworkplace.test.FriendshipLookQaGameTests",
+			"io.github.jcondedata.aliveworkplace.test.HeartEventGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QuestJournalGameTests",
 			"io.github.jcondedata.aliveworkplace.test.StoryArcGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaWardingGameTests",

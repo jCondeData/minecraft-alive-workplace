@@ -2476,6 +2476,66 @@ final class JobScenes {
 					Showcase.check(shown, "the hall's tooltip for Dara says when her name day is");
 				}, 30)),
 			(level, player) -> subject != null && io.github.jcondedata.aliveworkplace.story.Friendship.points(subject, player.getUUID()) >= 335));
+		// A heart event (ROADMAP 31.7): at two hearts Dara, born in the village, walks up to the player, faces them and
+		// tells where she comes from, line by line over her head and in grey in the chat; told, it's in the chronicle and
+		// on her life story page (a shift-click on her in the hall's list).
+		SCREENS.put("heart_event", new Screen("at two hearts Dara walked up and told where she comes from; it's in the chronicle and on her life story page",
+			new Vec3(1.5, -60, 6.5), new Vec3(1.5, -58.8, 3.5),
+			(level, player) -> {
+				level.setBlockAndUpdate(STATION, ModBlocks.VILLAGE_HALL.defaultBlockState()
+					.setValue(io.github.jcondedata.aliveworkplace.hall.VillageHallBlock.FACING, Direction.SOUTH));
+				Villager dara = EntityType.VILLAGER.spawn(level, new BlockPos(1, -60, 1), MobSpawnType.COMMAND);
+				dara.setNoAi(true); // (she waits here until the scene begins)
+				dara.setYRot(0);
+				dara.setYHeadRot(0);
+				dara.setYBodyRot(0);
+				dara.setVillagerData(dara.getVillagerData().setProfession(VillagerProfession.FARMER).setLevel(2));
+				dara.setCustomName(Component.literal("Dara"));
+				io.github.jcondedata.aliveworkplace.registry.ModAttachments.PARENTS.set(dara,
+					new io.github.jcondedata.aliveworkplace.people.Families.Parents(Component.literal("Mira"), Component.literal("Tomas"), "", "", true));
+				subject = dara;
+			},
+			List.of(new Step("01_walks_up", -1, 0, (level, player) -> {
+					// The hall's POI is only registered after the staging tick: look Dara's hall up again now (B72).
+					io.github.jcondedata.aliveworkplace.hall.CivicEffects.forget();
+					Villager dara = subject;
+					dara.setNoAi(false);
+					io.github.jcondedata.aliveworkplace.story.Friendship.add(dara, player, 200); // two hearts: she has something to tell
+					var event = io.github.jcondedata.aliveworkplace.story.HeartEvents.pending(level, dara, player.getUUID());
+					Showcase.check(event != null && event.id().getPath().equals("born_here"),
+						"at two hearts Dara, born here, has \"Where I come from\" to tell: " + (event == null ? null : event.id()));
+				}, 25),
+				new Step("02_telling", -1, 0, null, 80),
+				new Step("03_told", -1, 0, (level, player) -> {
+					Villager dara = subject;
+					var telling = io.github.jcondedata.aliveworkplace.story.HeartEvents.telling(dara);
+					double off = Math.sqrt(dara.distanceToSqr(player));
+					Showcase.check(telling != null && telling.said >= 1 && off <= io.github.jcondedata.aliveworkplace.story.HeartEvents.TALK_RANGE + 0.5,
+						"Dara walked up to the player and began her story: " + (telling == null ? "not telling" : telling.said + " lines") + ", "
+							+ String.format("%.1f", off) + " blocks off");
+				}, 165),
+				new Step("04_life_story", io.github.jcondedata.aliveworkplace.story.LifeStory.SECTIONS, 6, (level, player) -> {
+					Villager dara = subject;
+					String me = player.getGameProfile().getName();
+					String village = io.github.jcondedata.aliveworkplace.hall.VillageHalls.name(level, STATION).getString();
+					boolean told = io.github.jcondedata.aliveworkplace.story.Friendship.of(dara).bond(player.getUUID()).told().equals(List.of("aliveworkplace:born_here"))
+						&& io.github.jcondedata.aliveworkplace.story.Friendship.points(dara, player.getUUID()) == 220;
+					boolean chronicled = level.getBlockEntity(STATION) instanceof io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity hall
+						&& hall.chronicle().stream().anyMatch(e -> e.kind() == io.github.jcondedata.aliveworkplace.hall.Chronicle.Kind.FRIEND
+							&& e.text().getString().equals("Dara told " + me + " about growing up in " + village));
+					Showcase.check(told && chronicled, "told to the end: +20 friendship, and the chronicle says Dara told " + me + " about growing up in " + village);
+					// Her life story: a shift-click on her in the hall's list, as the client sends it.
+					io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.open(player, STATION);
+					boolean page = false;
+					if (player.containerMenu instanceof ChoiceMenu m) {
+						m.clicked(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_PERSON, 0, net.minecraft.world.inventory.ClickType.QUICK_MOVE, player);
+						page = m.icon(4).getHoverName().getString().equals("The life story of Dara")
+							&& m.icon(io.github.jcondedata.aliveworkplace.story.LifeStory.SECTIONS).getHoverName().getString().equals("Born in " + village + " to Mira and Tomas");
+					}
+					Showcase.check(page, "a shift-click on Dara in the hall's list opens her life story, with what she told as its first line");
+				}, 40)),
+			(level, player) -> subject != null
+				&& !io.github.jcondedata.aliveworkplace.story.Friendship.of(subject).bond(player.getUUID()).told().isEmpty()));
 		// A story arc (ROADMAP 31.4): the chapter told in chat as it begins, the hall's Story tab (the first chapter ticked,
 		// the second running with its quest) and the chronicle's STORY lines. The mod ships no arcs of its own yet, so the
 		// scene reads a small one here, as a data pack would.

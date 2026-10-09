@@ -85,7 +85,8 @@ public final class Chatter {
 				continue;
 			}
 			List<Villager> near = level.getEntitiesOfClass(Villager.class, player.getBoundingBox().inflate(NEAR, 4, NEAR),
-				v -> v.isAlive() && !v.isSleeping() && offWork(v, now) && player.hasLineOfSight(v));
+				v -> v.isAlive() && !v.isSleeping() && offWork(v, now) && player.hasLineOfSight(v)
+					&& io.github.jcondedata.aliveworkplace.story.HeartEvents.telling(v) == null); // not while walking up to tell a heart event (31.7)
 			if (near.isEmpty()) {
 				continue;
 			}
@@ -103,13 +104,15 @@ public final class Chatter {
 	}
 
 	/** Off work: not showing a work line, and not working, hiding or fleeing. */
-	static boolean offWork(Villager villager, long now) {
-		if (WorkerStatus.get(villager, now) != null) {
-			return false;
-		}
+	public static boolean offWork(Villager villager, long now) {
+		return WorkerStatus.get(villager, now) == null && !busy(villager);
+	}
+
+	/** Working, hiding or fleeing (whatever line is over their head). */
+	public static boolean busy(Villager villager) {
 		Activity activity = villager.getBrain().getActiveNonCoreActivity().orElse(null);
-		return activity != Activity.WORK && activity != Activity.PANIC && activity != Activity.HIDE && activity != Activity.PRE_RAID
-			&& activity != Activity.RAID;
+		return activity == Activity.WORK || activity == Activity.PANIC || activity == Activity.HIDE || activity == Activity.PRE_RAID
+			|| activity == Activity.RAID;
 	}
 
 	/** What the villager talks about now: village news first (twice as likely), then their mood, then hello. */

@@ -2380,7 +2380,7 @@ write their own stories; nothing waits forever on a player.
     over ours;
   - both textures pass `lint.py`; the recipes are in the recipe book; a README section;
   - showcase scene `gifts` (GIF: wrapping, giving, the hearts).
-- [ ] **31.7** **Heart events and life stories.** At 2, 4, 6, 8 and 10 hearts a villager has something to tell you.
+- [x] **31.7** (review: pending 2026-10-09) **Heart events and life stories.** At 2, 4, 6, 8 and 10 hearts a villager has something to tell you.
   The next time you're within 8 blocks while they're off work (`Chatter.offWork`), they walk up, face you and tell it
   in three to five lines over their head (`WorkerStatus`, one every 3 seconds), each also in your chat in grey so it
   can be read again; walk away halfway and they start again next time. Each event is told once per player, adds +20
@@ -4373,6 +4373,17 @@ item waits.
 - (Sessions: anything that needs the owner, and the link to the latest Full test report. Handoffs go here through
   `sessions.py handoff "<in progress, next, traps>" --as <you>`, which keeps one per kind of session (chat, night):
   carry over anything still true from the previous one.)
+- 2026-10-09 (31.7 Heart events, decisions; lane c, nothing for the owner unless he disagrees): villagers have no
+  recorded gender, so the chronicle says "Dara told Jesse how they came to Thornholm" where the spec's example says
+  "she". One event per heart level and player: of the events whose conditions hold, the one with the most conditions is
+  told, then the first by id (a pack's closer-fitting story replaces ours, it isn't told as well). "Here before the
+  hall" is everyone with no parents on record who was neither hired nor revived; someone revived tells the grave story
+  whatever else is true. A third new attachment, `hired_day`, keeps the day a traveller was hired (those hired before
+  say "a day nobody wrote down"). A villager who can't get within 3.5 blocks in 5 seconds tells it from where they
+  stand; while telling they stay by the player, and small talk leaves them alone. The life story opens on a shift-click
+  for named villagers only; the personal request (31.9) adds its part through `LifeStory.section`, and until then the
+  page shows nothing for it. A telling isn't saved (a restart is like walking off). The FRIEND kind's icon is a pink
+  tulip (`docs/wiki/heart-events.md`, Decisions).
 - 2026-10-09 (31.6 Gifts, decisions; lane c, nothing for the owner unless he disagrees): the Gift recipe is a special
   recipe as the spec says ("like vanilla's map cloning"), and Minecraft never lists special recipes on the recipe book's
   pages, so only Gift Wrap's recipe shows there; the Gift has the same unlock advancement as our other recipes and the

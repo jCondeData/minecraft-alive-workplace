@@ -568,6 +568,28 @@ specific as each other, the kinder one). A data pack replaces one of our files b
 (`aliveworkplace:everyone`, `building`, `mining`, `land`, `animals`, `kitchen`, `learning`, `healing`, `arms`, `trade`,
 `music`, `pokemon`, `no_trade`, `trait/<trait>`), or adds files of its own.
 
+### Heart events and life stories
+
+At **2, 4, 6, 8 and 10 hearts** a villager has something to tell you. The next time you're within 8 blocks while
+they're off work, they walk up, face you and tell it: three to five lines over their head, one every 3 seconds, each
+also in your chat in grey so you can read it again. Walk away halfway and they start again next time. Each is told
+once per player, adds 20 friendship and goes into the village's chronicle ("Dara told Jesse about growing up in
+Thornholm").
+
+**Shift-click** someone on the Village Hall's list for their **life story**: your hearts with them, their name day,
+their family and partner, and one line for everything they've told anyone.
+
+The first stories, at 2 hearts, are **Where I come from**: villagers born in the village name both their parents,
+travellers tell of the inn and the day they were hired, those who were here before the hall remember the village
+without a name, and anyone brought back from a grave tells what they remember of it. `heartEvents` in the config
+turns the telling off.
+
+Events are data, `data/<namespace>/heart_events/<id>.json`: the `hearts`, a `when` with conditions on the villager
+(`born`, `hired`, `revived`, `jobs`, `married`, `courting`, `widowed`, `parent`, `trait`, `mood`, `rank`), three to five
+`lines` as lang keys, and the `chronicle` and `story` lines' keys. The lines get the villager, you, the village, their
+mother, father, partner, children and the day they were hired as `%1$s` to `%8$s`. Details:
+[docs/wiki/heart-events.md](docs/wiki/heart-events.md).
+
 ## Legends
 
 Now and then a village that has earned it gains a **Legend**: one named villager, a Master of their trade, with powers

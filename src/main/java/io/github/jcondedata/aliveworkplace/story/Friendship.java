@@ -129,6 +129,16 @@ public final class Friendship {
 			return new Bond(name, points, giftDay, giftWeek, giftsWeek, favours, tick, told);
 		}
 
+		/** A heart event told to the end (31.7): its id, once. */
+		public Bond withTold(String name, String event) {
+			if (told.contains(event)) {
+				return this;
+			}
+			List<String> list = new ArrayList<>(told);
+			list.add(event);
+			return new Bond(name.isEmpty() ? this.name : name, points, giftDay, giftWeek, giftsWeek, favours, hitTick, list);
+		}
+
 		/** A gift taken on {@code day}, the {@code count}th of {@code week} (31.6). */
 		public Bond withGift(String name, long day, long week, int count) {
 			return new Bond(name.isEmpty() ? this.name : name, points, day, week, count, favours, hitTick, told);
@@ -350,6 +360,13 @@ public final class Friendship {
 		Data data = of(villager);
 		ModAttachments.FRIENDSHIP.set(villager, data.with(player.getUUID(),
 			data.bond(player.getUUID()).withGift(player.getGameProfile().getName(), day, week, count)));
+	}
+
+	/** Notes that {@code villager} told {@code player} the heart event {@code event} to the end (31.7, {@link HeartEvents}). */
+	public static void told(Villager villager, ServerPlayer player, String event) {
+		Data data = of(villager);
+		ModAttachments.FRIENDSHIP.set(villager, data.with(player.getUUID(),
+			data.bond(player.getUUID()).withTold(player.getGameProfile().getName(), event)));
 	}
 
 	/** {@code player} hit {@code villager}: {@link #HIT_COST} off, at most once a minute. Returns the change made. */

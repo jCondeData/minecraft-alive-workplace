@@ -26,7 +26,10 @@ import net.minecraft.world.level.saveddata.SavedData;
  * <li>{@code raids}: {@code hall}, {@code culture} (default {@code aliveworkplace:monsters}), {@code raiders} (how many
  * came), {@code began} (game time);</li>
  * <li>{@code clock}: per {@code hall}, {@code rolled} (the last day whose dusk was rolled; default -1: rolls at the
- * next dusk) and {@code attacks}: {@code day}, {@code culture}, {@code angle}, {@code at} (the hour, day time).</li>
+ * next dusk) and {@code attacks}: {@code day}, {@code culture}, {@code angle}, {@code at} (the hour, day time);</li>
+ * <li>{@code history} (32.3): per {@code hall}, its last {@link #REMEMBERED} attacks, oldest first: {@code day},
+ * {@code culture}, {@code came}, {@code fell}, {@code fled} (the last raiders left at the end of their hours; false:
+ * the village fought them all off).</li>
  * </ul>
  */
 public final class ThreatData extends SavedData {
@@ -43,6 +46,13 @@ public final class ThreatData extends SavedData {
 	public record Attack(long day, ResourceLocation culture, double angle, long at) {
 	}
 
+	/** An attack that is over: the day it came, whose, how many came and fell, and whether the last of them fled. */
+	public record Past(long day, ResourceLocation culture, int came, int fell, boolean fled) {
+	}
+
+	/** How many past attacks a hall remembers (the Defence page shows the last three). */
+	public static final int REMEMBERED = 3;
+
 	/** One hall's clock. */
 	static final class Clock {
 		long rolled = -1;
@@ -54,6 +64,7 @@ public final class ThreatData extends SavedData {
 
 	private final Map<BlockPos, Under> raids = new LinkedHashMap<>();
 	private final Map<BlockPos, Clock> clocks = new LinkedHashMap<>();
+	private final Map<BlockPos, List<Past>> history = new LinkedHashMap<>();
 
 	public static ThreatData get(ServerLevel level) {
 		ThreatData data = level.getDataStorage().computeIfAbsent(new SavedData.Factory<>(ThreatData::new, ThreatData::load, null), NAME);
@@ -166,6 +177,32 @@ public final class ThreatData extends SavedData {
 		}
 	}
 
+	// The attacks that are over.
+
+	/** The last attacks on the village round {@code hall}, newest first (at most {@link #REMEMBERED}). */
+	public List<Past> past(BlockPos hall) {
+		List<Past> list = new ArrayList<>(history.getOrDefault(hall, List.of()));
+		Collections.reverse(list);
+		return list;
+	}
+
+	/** An attack on the village round {@code hall} is over: it's remembered, and the oldest forgotten. */
+	public void remember(BlockPos hall, Past attack) {
+		List<Past> list = history.computeIfAbsent(hall.immutable(), h -> new ArrayList<>());
+		list.add(attack);
+		while (list.size() > REMEMBERED) {
+			list.remove(0);
+		}
+		setDirty();
+	}
+
+	/** Forgets the attacks on the village round {@code hall} (the hall is gone; tests). */
+	public void forgetPast(BlockPos hall) {
+		if (history.remove(hall) != null) {
+			setDirty();
+		}
+	}
+
 	// Saving.
 
 	@Override
@@ -198,6 +235,24 @@ public final class ThreatData extends SavedData {
 			halls.add(c);
 		}
 		tag.put("clock", halls);
+		ListTag pasts = new ListTag();
+		for (Map.Entry<BlockPos, List<Past>> e : history.entrySet()) {
+			CompoundTag h = new CompoundTag();
+			h.putLong("hall", e.getKey().asLong());
+			ListTag attacks = new ListTag();
+			for (Past past : e.getValue()) {
+				CompoundTag a = new CompoundTag();
+				a.putLong("day", past.day());
+				a.putString("culture", past.culture().toString());
+				a.putInt("came", past.came());
+				a.putInt("fell", past.fell());
+				a.putBoolean("fled", past.fled());
+				attacks.add(a);
+			}
+			h.put("attacks", attacks);
+			pasts.add(h);
+		}
+		tag.put("history", pasts);
 		return tag;
 	}
 
@@ -211,6 +266,21 @@ public final class ThreatData extends SavedData {
 	public void read(CompoundTag tag) {
 		raids.clear();
 		clocks.clear();
+		history.clear();
+		ListTag pasts = Nbt.getList(tag, "history", Tag.TAG_COMPOUND);
+		for (int i = 0; i < pasts.size(); i++) {
+			CompoundTag h = Nbt.compoundAt(pasts, i);
+			if (!Nbt.has(h, "hall", Tag.TAG_LONG)) {
+				continue;
+			}
+			List<Past> list = new ArrayList<>();
+			ListTag attacks = Nbt.getList(h, "attacks", Tag.TAG_COMPOUND);
+			for (int j = Math.max(0, attacks.size() - REMEMBERED); j < attacks.size(); j++) {
+				CompoundTag a = Nbt.compoundAt(attacks, j);
+				list.add(new Past(Nbt.getLong(a, "day"), culture(a), Nbt.getInt(a, "came"), Nbt.getInt(a, "fell"), Nbt.getBoolean(a, "fled")));
+			}
+			history.put(BlockPos.of(Nbt.getLong(h, "hall")), list);
+		}
 		ListTag list = Nbt.getList(tag, "raids", Tag.TAG_COMPOUND);
 		for (int i = 0; i < list.size(); i++) {
 			CompoundTag r = Nbt.compoundAt(list, i);

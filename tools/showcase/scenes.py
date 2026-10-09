@@ -538,6 +538,11 @@ SCENES = [
       "the village's Noble household turned the festival into a Noble's Ball: guests at the hall, gold fireworks at dusk, the player a Hero for the night, and the takings split by class", 45,
       [("01_noble_ball_guests", "The ball: the guests gather at the hall"), ("02_noble_ball_fireworks", "Gold fireworks at dusk"),
        ("03_noble_ball_takings", "The name tag: the day's takings by class")]),
+    # The Defence page (ROADMAP 32.3): the guards icon opens it; the lair, its named captain, its strength, the last attacks
+    S("defence_page", "Village Hall", "The Defence page: the bandit camp and its chief",
+      "the hall's guards icon opened the Defence page: the bandit camp, its named chief, its strength and the last attacks", 45,
+      [("01_defence_page", "The camp's chief, by name"), ("02_defence_strength", "The camp's strength"),
+       ("03_defence_attacks", "The last attacks")]),
     S("hall_treasury", "Village Hall", "The treasury, protection and the Village Ledger",
       "the treasury was collected, the village protected and the hall opened from a Village Ledger", 60,
       [("01_hall_treasury", "Treasury and protection"), ("02_hall_collected", "Collected"), ("03_ledger_held", "Village Ledger"),

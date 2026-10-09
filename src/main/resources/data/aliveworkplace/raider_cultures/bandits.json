@@ -11,20 +11,29 @@
   "captain": {
     "entity": "minecraft:vindicator",
     "gear": { "head": "minecraft:iron_helmet", "chest": "minecraft:iron_chestplate" },
-    "health": 36
+    "health": 36,
+    "names": "threat.aliveworkplace.bandits.names",
+    "title": "threat.aliveworkplace.bandits.title"
   },
   "tactics": [],
-  "lair": { "structure": "aliveworkplace:camp/bandit_camp", "strength": 6, "growth": 1, "max": 10, "home_max": 8 },
+  "lair": { "structure": "aliveworkplace:camp/bandit_camp", "strength": 6, "growth": 1, "max": 10, "home_max": 8, "icon": "minecraft:campfire" },
   "loot": "aliveworkplace:chests/bandit_camp",
   "messages": {
     "raid": "message.aliveworkplace.raid.bandits",
     "camp": "message.aliveworkplace.bandits.camp",
-    "broken": "message.aliveworkplace.bandits.broken_up"
+    "broken": "message.aliveworkplace.bandits.broken_up",
+    "raid_named": "message.aliveworkplace.raid.bandits_named",
+    "camp_named": "message.aliveworkplace.bandits.camp_named",
+    "broken_named": "message.aliveworkplace.bandits.broken_up_named"
   },
   "chronicle": {
     "raid": "chronicle.aliveworkplace.bandit_raid",
     "camp": "chronicle.aliveworkplace.bandit_camp",
     "broken": "chronicle.aliveworkplace.bandit_camp_broken",
-    "broken_by": "chronicle.aliveworkplace.bandit_camp_broken_by"
+    "broken_by": "chronicle.aliveworkplace.bandit_camp_broken_by",
+    "raid_named": "chronicle.aliveworkplace.bandit_raid_named",
+    "camp_named": "chronicle.aliveworkplace.bandit_camp_named",
+    "broken_named": "chronicle.aliveworkplace.bandit_camp_broken_named",
+    "broken_by_named": "chronicle.aliveworkplace.bandit_camp_broken_by_named"
   }
 }

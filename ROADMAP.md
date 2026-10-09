@@ -2855,7 +2855,7 @@ Rally Banner and the defence blueprints (tools/blueprints/defence.py).
   - a raid saved and loaded half-way (a saved-data round trip) is still on and ends at dawn as before;
   - the clock's attack starts at the next dusk, a day after the roll (a GameTest setting the day time);
   - a culture switched off in the config is never picked. Nothing new to see: lands with `--no-review`.
-- [ ] **32.3** **Lairs for every culture.** `threat/Lairs` takes over `BanditCamps`: any culture with a `lair` makes
+- [x] **32.3** (review: pending 2026-10-09) **Lairs for every culture.** `threat/Lairs` takes over `BanditCamps`: any culture with a `lair` makes
   camp 80–104 blocks from the hall (today's site rules; cultures that need water or a portal add theirs in their own
   item), at most one per village, with 5 days' rest after one is broken. The saved data keeps its old name and reads
   old camps as `bandits` lairs (each new field with a default from the culture's file). New for every lair, bandit

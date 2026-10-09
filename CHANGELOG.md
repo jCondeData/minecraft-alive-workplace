@@ -16,6 +16,18 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+### Added
+- **Lairs for every raider culture, for 1.6** (32.3, off until 1.6 is finished): the bandit camp's chief now has a
+  name ("Chief Harl Ashgrave", one of twenty) over his head and in every message and chronicle line, and the camp has a
+  strength (6, one more a day, 10 at most): a raid takes its raiders from it, those alive at dawn rejoin, the dead are
+  gone, so a camp that lost a costly night is weak. Any datapack culture with a `lair` makes camp the same way.
+- **The Defence page, for 1.6** (32.3): the guards icon on the Village Hall opens it: the camp, its captain, its
+  strength, roughly where it lies, the days it has stood, and the last three attacks and how they ended.
+
+### Changed
+- Bandit camps saved by older versions load as they were (their file keeps its name); nothing changes in play until
+  1.6 is finished.
+
 ## 0.141.0 — 2026-10-09
 
 ### Added

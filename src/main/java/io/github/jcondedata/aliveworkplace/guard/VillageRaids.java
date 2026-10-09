@@ -6,6 +6,7 @@ import io.github.jcondedata.aliveworkplace.hall.VillageNeeds;
 import io.github.jcondedata.aliveworkplace.mc.Chat;
 import io.github.jcondedata.aliveworkplace.threat.Conditions;
 import io.github.jcondedata.aliveworkplace.threat.Culture;
+import io.github.jcondedata.aliveworkplace.threat.Lairs;
 import io.github.jcondedata.aliveworkplace.threat.ThreatData;
 import io.github.jcondedata.aliveworkplace.threat.Threats;
 import java.util.ArrayList;
@@ -42,8 +43,9 @@ import org.jetbrains.annotations.Nullable;
  * whole area). {@code villageRaids} in the config turns our raids off.
  *
  * <p>Who comes is data (ROADMAP 32.2, {@code threat/}): {@link #start} takes the culture of the lair standing by the
- * village (the bandit camp), or else picks one by weight among the cultures whose {@code where} fits (the monsters),
- * and spawns its roster. Raids under way are kept in the saved {@link ThreatData}, so a restart mid-raid carries on.
+ * village ({@link Lairs}, 32.3: the bandit camp), or else picks one by weight among the cultures whose {@code where}
+ * fits (the monsters), and spawns its roster. A raid from a lair takes its raiders from the lair's strength: never more
+ * than the band it has at home; those alive when the raid ends rejoin it, the dead are gone. Raids under way are kept in the saved {@link ThreatData}, so a restart mid-raid carries on.
  * <b>The threat clock:</b> at dusk, in the hall's round, each hall rolls the attack for the <i>next</i> night (with
  * {@link #chance} and {@link #REST_DAYS}), so there is a day in which a warning can be given; the attack then comes
  * that night at its hour, unless its culture was switched off or its lair broken up meanwhile.
@@ -120,11 +122,11 @@ public final class VillageRaids {
 
 	/**
 	 * The chance a night that the village of {@code villagers} round {@code hall} is raided: {@link #nightlyChance}, twice
-	 * that with a bandit camp near (bandits come from their camp), times {@link Threats#chanceFactor} (the {@code curfew}
+	 * that with a lair near (its raiders come from their camp), times {@link Threats#chanceFactor} (the {@code curfew}
 	 * effects' {@code raids}: Curfew, 30.9, half as likely; research's {@code raid_chance}, 29.11; whatever else adds itself).
 	 */
 	public static float chance(ServerLevel level, BlockPos hall, int villagers) {
-		return nightlyChance(villagers) * (BanditCamps.near(level, hall).isPresent() ? 2 : 1) * Threats.chanceFactor(level, hall);
+		return nightlyChance(villagers) * (Lairs.near(level, hall).isPresent() ? 2 : 1) * Threats.chanceFactor(level, hall);
 	}
 
 	/** The chance a night that a village of {@code villagers} is raided. */
@@ -151,13 +153,13 @@ public final class VillageRaids {
 			// Most raiders leave at dawn; a culture whose hours are until_noon stays through the morning.
 			boolean over = culture.map(c -> c.hours() == Culture.Hours.UNTIL_NOON).orElse(false) ? time >= 6000 && time < 13500 : !isNight(level);
 			if (left.isEmpty()) {
-				end(level, hall, raid, false);
+				end(level, hall, raid, false, 0);
 			} else if (over && level.getGameTime() - raid.began() > 1200) {
 				left.forEach(m -> {
 					level.sendParticles(net.minecraft.core.particles.ParticleTypes.POOF, m.getX(), m.getY() + 0.5, m.getZ(), 10, 0.3, 0.5, 0.3, 0.02);
 					m.discard();
 				});
-				end(level, hall, raid, true);
+				end(level, hall, raid, true, left.size());
 			} else {
 				culture.ifPresent(c -> Threats.tactics(c).forEach(t -> t.round(level, hall, c, left)));
 			}
@@ -201,9 +203,9 @@ public final class VillageRaids {
 		}
 	}
 
-	/** Whether a lair of {@code culture} stands by the village round {@code hall} (today the bandits' camp is the only lair). */
+	/** Whether a lair of {@code culture} stands by the village round {@code hall}. */
 	static boolean lairOf(ServerLevel level, BlockPos hall, Culture culture) {
-		return culture.id().equals(BanditCamps.CULTURE) && BanditCamps.near(level, hall).isPresent();
+		return Lairs.of(level, hall, culture.id()).isPresent();
 	}
 
 	/**
@@ -212,8 +214,9 @@ public final class VillageRaids {
 	 * ({@link Threats#pick}). Only cultures the config leaves on; empty when there is none.
 	 */
 	public static Optional<Culture> cultureFor(ServerLevel level, BlockPos hall, int villagers, RandomSource random) {
-		if (BanditCamps.near(level, hall).isPresent()) {
-			Optional<Culture> lair = Threats.on(BanditCamps.CULTURE);
+		Optional<Lairs.Lair> standing = Lairs.near(level, hall);
+		if (standing.isPresent()) {
+			Optional<Culture> lair = Threats.on(standing.get().culture());
 			if (lair.isPresent()) {
 				return lair;
 			}
@@ -263,7 +266,7 @@ public final class VillageRaids {
 	/**
 	 * Rolls tonight's raid on the village of {@code villagers} round {@code hall} ahead, as the hall's night rounds would:
 	 * none while raids are off or within {@link #REST_DAYS} of the last, else with {@link #chance} for the night. The side
-	 * is the bandit camp's when there is one near, else any of the eight; the hour falls between nightfall and well
+	 * is the lair's when there is one near, else any of the eight; the hour falls between nightfall and well
 	 * before dawn.
 	 */
 	public static Night rollNight(ServerLevel level, BlockPos hall, int villagers, long lastRaidDay, net.minecraft.util.RandomSource random) {
@@ -274,7 +277,7 @@ public final class VillageRaids {
 	static Night roll(ServerLevel level, BlockPos hall, int villagers, long lastRaidDay, long day, RandomSource random) {
 		float roll = random.nextFloat();
 		double eighth = Math.PI / 4;
-		Optional<BanditCamps.Camp> camp = BanditCamps.near(level, hall);
+		Optional<Lairs.Lair> camp = Lairs.near(level, hall);
 		double angle = camp.map(c -> Math.atan2(c.pos().getZ() - hall.getZ(), c.pos().getX() - hall.getX()))
 			.orElseGet(() -> random.nextInt(8) * eighth);
 		angle = Math.round(angle / eighth) * eighth; // the middle of its eighth, so the side told is the side they come from
@@ -310,11 +313,22 @@ public final class VillageRaids {
 	 * Starts a raid by {@code culture} on the village round {@code hall} now, gathering on the side {@code angle} (NaN:
 	 * where the culture's {@code arrival} says): its roster in its shares (picked with {@code random}), each with its
 	 * role's gear. As many come as ever: 3 and one more for every 4 villagers, plus up to 4 in iron for a village with
-	 * guards, at most {@link #MAX_RAIDERS}. Null if they found nowhere to gather.
+	 * guards, at most {@link #MAX_RAIDERS}; from the culture's lair by the village, no more than the band it has at home
+	 * ({@link Lairs#raidSize}), and they are out of it till the raid ends. Null if they found nowhere to gather, or the
+	 * lair has nobody to send.
 	 */
 	@Nullable
 	public static Raid start(ServerLevel level, BlockPos hall, int villagers, int guards, double angle, Culture culture, RandomSource random) {
-		Optional<BanditCamps.Camp> camp = BanditCamps.near(level, hall).filter(c -> culture.id().equals(BanditCamps.CULTURE));
+		Optional<Lairs.Lair> camp = Lairs.of(level, hall, culture.id());
+		int plain = Math.min(MAX_RAIDERS, 3 + villagers / 4);
+		int size = Math.min(MAX_RAIDERS, plain + Math.min(4, guards / 2)); // (those past the plain ones come in iron)
+		if (camp.isPresent()) {
+			size = Lairs.raidSize(camp.get(), size);
+			if (size <= 0) {
+				return null; // after a costly night the lair has nobody to send
+			}
+		}
+		int raiders = size;
 		boolean foretold = !Double.isNaN(angle);
 		boolean portal = false;
 		BlockPos gather = null;
@@ -337,12 +351,10 @@ public final class VillageRaids {
 		BlockPos from = gather;
 		boolean atPortal = portal;
 		int scatter = foretold ? scatter(VillageHalls.RADIUS * 0.6) : 3;
-		int plain = Math.min(MAX_RAIDERS, 3 + villagers / 4);
-		int armored = Math.min(4, guards / 2);
 		List<Villager> targets = level.getEntitiesOfClass(Villager.class, new AABB(hall).inflate(VillageHalls.RADIUS, 16, VillageHalls.RADIUS),
 			Villager::isAlive);
 		List<Mob> spawned = new ArrayList<>();
-		for (int i = 0; i < Math.min(MAX_RAIDERS, plain + armored); i++) {
+		for (int i = 0; i < raiders; i++) {
 			Culture.Member member = culture.pick(random);
 			Mob mob = Threats.create(level, member);
 			if (mob == null) {
@@ -354,7 +366,10 @@ public final class VillageRaids {
 			mob.finalizeSpawn(level, level.getCurrentDifficultyAt(at), MobSpawnType.EVENT, null);
 			Threats.outfit(level, mob, culture, member);
 			if (camp.isPresent()) {
-				mob.addTag(BanditCamps.TAG); // one of the camp's band
+				mob.addTag(Lairs.TAG); // one of the lair's band
+				if (culture.id().equals(BanditCamps.CULTURE)) {
+					mob.addTag(BanditCamps.TAG);
+				}
 			}
 			if (atPortal) {
 				mob.setPortalCooldown(); // they came out of it: it doesn't take them back
@@ -378,20 +393,33 @@ public final class VillageRaids {
 			return null;
 		}
 		Raid raid = begin(level, hall, culture.id(), spawned.size());
+		if (camp.isPresent()) {
+			Lairs.sent(level, hall, spawned.size());
+		}
 		ringTheBell(level, hall);
 		level.playSound(null, gather, SoundEvents.RAID_HORN.value(), SoundSource.HOSTILE, 8f, 1f);
 		Component name = VillageHalls.name(level, hall);
+		// A lair's raid is its captain's: his name is in the horn's message and in the chronicle (32.3).
+		Optional<Lairs.Lair> named = camp.filter(Lairs::named);
+		Component said = named.isPresent()
+			? Lairs.message(named.get(), "raid", true, spawned.size(), name, Lairs.captainName(named.get()))
+			: Component.translatable(culture.messages().key("raid", "message.aliveworkplace.raid.begins"), spawned.size(), name);
 		for (ServerPlayer player : players(level, hall)) {
-			Chat.chat(player, Component.translatable(culture.messages().key("raid", "message.aliveworkplace.raid.begins"), spawned.size(), name)
-				.withStyle(ChatFormatting.RED));
+			Chat.chat(player, said.copy().withStyle(ChatFormatting.RED));
 		}
-		Chronicle.record(level, hall, Chronicle.Kind.RAID, Component.translatable(culture.chronicle().key("raid", "chronicle.aliveworkplace.raid"), spawned.size()));
+		Chronicle.record(level, hall, Chronicle.Kind.RAID, named.isPresent()
+			? Lairs.chronicle(named.get(), "raid", true, spawned.size(), Lairs.captainName(named.get()))
+			: Component.translatable(culture.chronicle().key("raid", "chronicle.aliveworkplace.raid"), spawned.size()));
 		Threats.tactics(culture).forEach(t -> t.begin(level, hall, culture, spawned));
 		return raid;
 	}
 
-	private static void end(ServerLevel level, BlockPos hall, ThreatData.Under raid, boolean fled) {
-		ThreatData.get(level).end(hall);
+	/** The raid is over: {@code survivors} of its raiders were still about (they fled; 0 when it was fought off). */
+	private static void end(ServerLevel level, BlockPos hall, ThreatData.Under raid, boolean fled, int survivors) {
+		ThreatData data = ThreatData.get(level);
+		data.end(hall);
+		data.remember(hall, new ThreatData.Past(Chronicle.day(level), raid.culture(), raid.raiders(), Math.max(0, raid.raiders() - survivors), fled));
+		Lairs.back(level, hall, raid.culture(), survivors); // those alive rejoin their lair, the dead are gone
 		Threats.get(raid.culture()).ifPresent(c -> Threats.tactics(c).forEach(t -> t.end(level, hall, c, fled)));
 		Component name = VillageHalls.name(level, hall);
 		for (ServerPlayer player : players(level, hall)) {

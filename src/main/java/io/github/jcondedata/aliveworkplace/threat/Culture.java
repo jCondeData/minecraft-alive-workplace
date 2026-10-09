@@ -30,12 +30,17 @@ import org.jetbrains.annotations.Nullable;
  * {@code ram}, {@code climber}, {@code healer}) and {@code gear} per slot ({@code head}, {@code chest}, {@code legs},
  * {@code feet}, {@code mainhand}, {@code offhand}: an item id, or {@code ominous_banner}); {@code name}, the lang key
  * of what its raiders are called;</li>
- * <li>{@code captain}: {@code entity}, {@code gear}, {@code health} (extra) and {@code names} (the lang key of his
- * list of names);</li>
+ * <li>{@code captain}: {@code entity}, {@code gear}, {@code health} (extra), {@code names} (the lang key of his list
+ * of names: {@code <names>.1} to {@code <names>.20}) and {@code title} (the lang key of what goes before the name:
+ * "Chief" of "Chief Harl Ashgrave");</li>
  * <li>{@code tactics}: names the engine looks up ({@link Threats#registerTactic}); one it doesn't know is skipped;</li>
- * <li>{@code lair}: {@code structure}, {@code strength} (and {@code growth} a day, {@code max}, {@code home_max});</li>
- * <li>{@code loot} (a loot table), {@code messages} and {@code chronicle}: a key prefix ({@code <prefix>.raid}), or
- * the keys themselves by event ({@code {"raid": "message.aliveworkplace.raid.begins"}}).</li>
+ * <li>{@code lair}: {@code structure}, {@code strength} (and {@code growth} a day, {@code max}, {@code home_max}) and
+ * {@code icon} (the item that stands for it on the hall's Defence page; a campfire when it names none);</li>
+ * <li>{@code loot} (a loot table: the chests of its lair hold it), {@code messages} and {@code chronicle}: a key prefix
+ * ({@code <prefix>.raid}), or the keys themselves by event ({@code {"raid": "message.aliveworkplace.raid.begins"}}).
+ * The events: {@code raid}; for a lair {@code camp}, {@code broken} and (chronicle) {@code broken_by}; and, once the
+ * lair's captain has a name, {@code raid_named}, {@code camp_named}, {@code broken_named} and {@code broken_by_named},
+ * which get his name as well ({@code threat/Lairs}, 32.3).</li>
  * </ul>
  * Ours may leave the namespace off an id. A key that isn't known is logged and ignored.
  */
@@ -79,12 +84,15 @@ public record Culture(ResourceLocation id, Conditions where, int weight, Arrival
 	public record Member(ResourceLocation entity, int share, Role role, Map<EquipmentSlot, String> gear) {
 	}
 
-	/** The captain: his mob, gear, extra health and (once he has one) the lang key of his list of names. */
-	public record Captain(ResourceLocation entity, Map<EquipmentSlot, String> gear, double health, Optional<String> names) {
+	/** The captain: his mob, gear, extra health, the lang key of his list of names and that of his title ("Chief"). */
+	public record Captain(ResourceLocation entity, Map<EquipmentSlot, String> gear, double health, Optional<String> names, Optional<String> title) {
 	}
 
-	/** The lair: its structure, the band's strength when founded, what it gains a day, its most, and how many stand at home. */
-	public record Lair(ResourceLocation structure, int strength, int growth, int max, int homeMax) {
+	/**
+	 * The lair: its structure, the band's strength when founded, what it gains a day, its most, how many stand at home,
+	 * and the item that stands for it on the Defence page.
+	 */
+	public record Lair(ResourceLocation structure, int strength, int growth, int max, int homeMax, ResourceLocation icon) {
 	}
 
 	/** Lang keys by event ({@code raid}, {@code camp}, {@code broken}, …): the culture's own, else {@code <prefix>.<event>}. */
@@ -149,7 +157,8 @@ public record Culture(ResourceLocation id, Conditions where, int weight, Arrival
 			if (health < 0 || health > 1000) {
 				throw new IllegalArgumentException("the captain's extra health can't be " + health);
 			}
-			captain = Optional.of(new Captain(entity(c), gear(c), health, Optional.ofNullable(c.has("names") ? c.get("names").getAsString() : null)));
+			captain = Optional.of(new Captain(entity(c), gear(c), health, Optional.ofNullable(c.has("names") ? c.get("names").getAsString() : null),
+				Optional.ofNullable(c.has("title") ? c.get("title").getAsString() : null)));
 		}
 		List<String> tactics = new ArrayList<>();
 		if (json.has("tactics")) {
@@ -166,8 +175,12 @@ public record Culture(ResourceLocation id, Conditions where, int weight, Arrival
 			}
 			int strength = integer(l, "strength", null, 1, 64);
 			int max = integer(l, "max", strength, strength, 64);
+			ResourceLocation icon = l.has("icon") ? location(l.get("icon").getAsString(), "icon") : ResourceLocation.withDefaultNamespace("campfire");
+			if (!BuiltInRegistries.ITEM.containsKey(icon)) {
+				throw new IllegalArgumentException("no such item: " + icon);
+			}
 			lair = Optional.of(new Lair(location(l.get("structure").getAsString(), "structure"), strength, integer(l, "growth", 0, 0, 64), max,
-				integer(l, "home_max", Math.min(8, max), 1, 16)));
+				integer(l, "home_max", Math.min(8, max), 1, 16), icon));
 			if (l.has("loot")) {
 				loot = Optional.of(location(l.get("loot").getAsString(), "loot"));
 			}

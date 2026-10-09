@@ -23,7 +23,7 @@ raid from their camp until their chief falls. Two things changed under the same 
 - **Who comes.** While a lair stands by the village, its culture raids (the bandit camp: bandits). Otherwise a culture
   is picked by `weight` among those switched on, without a lair, whose `where` fits the village.
 - **How many.** As before: 3, one more for every 4 villagers, plus up to 4 in iron (helmet and chestplate) for a village
-  with guards, 16 at most. Each raider is picked from the roster by its share and gets its role's gear, which never
+  with guards, 16 at most; from a lair, no more than the band it has at home (32.3, [Lairs](lairs.md)). Each raider is picked from the roster by its share and gets its role's gear, which never
   drops.
 - **The threat clock.** At dusk (18:00, day time 12000) the hall's round rolls the next night: the chance is the usual
   one (15% at 8 villagers, +1% a villager, at most 35%; twice that with a bandit camp; times the chance hook below), and
@@ -51,11 +51,11 @@ raid from their camp until their chief falls. Two things changed under the same 
 | `roster` | a list of `entity`, `share` (1 to 1000), `role` (`melee`, `ranged`, `ram`, `climber`, `healer`; `melee` if left out) and `gear` | the file is skipped |
 | `gear` | slot (`head`, `chest`, `legs`, `feet`, `mainhand`, `offhand`) → an item id, or `ominous_banner` | what the mob spawns with |
 | `name` | the lang key of what its raiders are called | unnamed |
-| `captain` | `entity`, `gear`, `health` (extra health), `names` (the lang key of his list of names) | no captain |
+| `captain` | `entity`, `gear`, `health` (extra health), `names` (the lang key of his list of names: `<names>.1` to `<names>.20`) and `title` (the lang key of what goes before it); see [Lairs](lairs.md) | no captain |
 | `tactics` | names such as `ram_gates`, `ladders`, `sand_ramps`, `plunder`, `hex`; one the mod doesn't know (yet) is skipped | none |
-| `lair` | `structure`, `strength`, and `growth` a day (0), `max` (the strength), `home_max` (8); a culture with a lair raids only from its lair | no lair |
-| `loot` | a loot table (also read from `lair.loot`) | none |
-| `messages`, `chronicle` | a key prefix (`<prefix>.raid`), or the keys by event: `{"raid": "…"}` | the monsters' lines |
+| `lair` | `structure`, `strength`, and `growth` a day (0), `max` (the strength), `home_max` (8), `icon` (an item, for the Defence page; a campfire); a culture with a lair raids only from its lair ([Lairs](lairs.md)) | no lair |
+| `loot` | a loot table (also read from `lair.loot`): the chests of its lair hold it | none |
+| `messages`, `chronicle` | a key prefix (`<prefix>.raid`), or the keys by event: `{"raid": "…"}`; a lair's events are on [Lairs](lairs.md) | the monsters' lines |
 
 Ids of the mod's own things may leave the namespace off. A key the reader doesn't know is ignored with a line in the
 log. A file that can't be read (not JSON, an unknown mob or item, an empty roster, a wrong `role`, `arrival`, `hours`,
@@ -106,7 +106,8 @@ An example, a pack's desert raiders:
   `attacks`, each with `day`, `culture` (monsters if missing), `angle` (the side) and `at` (the hour; nightfall if
   missing).
 
-The hall's `lastRaidDay` and the bandit camps' file (`aliveworkplace_bandit_camps`) are as they were.
+The hall's `lastRaidDay` is as it was. The bandit camps' file (`aliveworkplace_bandit_camps`) became the lairs' file in
+32.3, and `aliveworkplace_threats` gained `history` (the last three attacks per hall): see [Lairs](lairs.md).
 
 ## Items, blocks, jobs, commands
 
@@ -124,7 +125,7 @@ None.
 - 32.2: `villageRaids` stays the switch of all raids by chance, as it always was, and also switches `monsters` off;
   `banditCamps` also switches `bandits` off.
 - 32.2: today's lang keys stay as they are, so a culture names its lines either by prefix or key by key.
-- 32.2: the bandits' `captain` has no `names` yet; the list of names comes with 32.3.
+- 32.2: the bandits' `captain` had no `names` yet; 32.3 gave him his twenty.
 
 ## Known limits
 
@@ -132,8 +133,8 @@ None.
 - A village whose chunks aren't loaded at dusk doesn't roll that day.
 - `coast` is checked when the clock rolls (once a day), not cached.
 - `shore` and `portal` arrivals pick a place only; wading in from a ship and the piglins' outpost come with their
-  cultures (32.8, 32.10). The lair's `strength`, the `loot` table and the captain's `names` are read but not used until
-  32.3.
+  cultures (32.8, 32.10). The lair's `strength`, the `loot` table and the captain's `names` are used from 32.3 on
+  ([Lairs](lairs.md)).
 
 ## Proof
 

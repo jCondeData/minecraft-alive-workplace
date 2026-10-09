@@ -3724,7 +3724,7 @@ on a real world.
   band. Luxury files `cider`, `berry_wine`, `vintage_wine`. Done when: `VintnerGameTests` (picked by each item at a
   cauldron, each wine made from stocked chests, vintage waiting its 3 days) pass; both outfits pass `lint.py` and the
   `OutfitGameTests`; scene `vintner` passes; a README section and job-table row.
-- [ ] **34.10** **Tailor.** A new job: stand a villager by a **loom** and sneak-right-click them with **string** (the
+- [x] **34.10** (review: pending 2026-10-09) **Tailor.** A new job: stand a villager by a **loom** and sneak-right-click them with **string** (the
   loom's Shepherd stays, back with shears). They take the shepherds' wool and the dyers' coloured wool from the
   village and make:
   - **Work Clothes**: 3 wool of any colour, 2 leather and a string (Novice);
@@ -5013,4 +5013,18 @@ item waits.
   meals). Trades: makings bought at every level (apples, sweet berries, bottles, glow berries, apples); Cider sold at
   Novice, Berry Wine at Apprentice and Expert, Vintage Wine at Journeyman and Master. Not done here: the "What next?"
   tip naming the Vintner (34.6 left that how-line generic).
+- **34.10 (2026-10-09, decisions; lane d):** the Tailor has a config switch, `tailors`, gated with M34 like `vintners`.
+  The loom is now a shared station (`Stations`): shears pick its Shepherd, so sneak-right-clicking a jobless villager by
+  a loom with shears makes them a Shepherd (shears still hire a Shepherd, and still pick the Beekeeper at a hive: the
+  nearest free block decides); with `tailors` off the loom's tooltip names only the Shepherd (`Stations.available`).
+  Luxury recipe inputs got `"mix": true` (a tag's count made up of several of its items together): Work Clothes
+  (`#minecraft:wool`) and Fine Clothes (the new tag `aliveworkplace:dyed_wool`, every wool but white) mix colours, while
+  Noble Robes are four recipes (`noble_robes_purple`/`_blue`/`_red`/`_black`, as the design note lists them), each five
+  of one item. "The dyers' coloured wool": the Tailor takes wool from their own chests, the store and the village's
+  stashes, and with dye and white wool to hand dyes it themselves (the engine's two steps down); the Leatherworker
+  still dyes only for builders and isn't a stash (`Village.takesPart`), which 34.10 leaves alone. Each garment is a
+  need every 8 days (design note). Trades: wool, string, leather, black wool and string bought at levels 1 to 5; Work
+  Clothes sold at Novice, Fine Clothes at Apprentice and Expert, Noble Robes at Journeyman and Master. The clothes are
+  plain items (16 to a stack): wearing them is 34.17/34.18's class outfits. The Vintner's cauldron tooltip still names
+  the Vintner with `vintners` off (not changed here).
 - **qa handoff** (qa-1009-2234, 2026-10-09 23:14Z): qa-1009-2234: main had no code pushes from 2026-10-06 06:37Z until today's 0.141.0 release commit; CI on main green (build 746, but 114 min). B93 SOLVED IN DIAGNOSIS: the 13 -> 110 min full build is Friendship.lookedAt (31.5) loading chunks for the suite's left-over mock players (see B93's status); failing test on tests/friendship-look-chunks-1009, 3-line mod fix named there and tried locally. Whoever is next on red duty or a build lane: apply it and merge that branch first, it unblocks ship, the nightly (cancelled 4 nights running at its 5 h limit, so no flake sweep, log audit, pack boot, soak, mutation or repeats results exist since 10-06) and the showcase (jobs hit their limit). Verified B87 from the showcase (config scene passes); dropped its duplicate open line. Filed the new failing showcase scenes as one triage bug. Nothing shipped: no passing tests were written this run. Next QA run: once B93's fix is on main, ship qa/ branches again, verify B60/B80/B84/B86/B91 and start on M27. Traps: the container restarted mid-run (background Gradle runs die, files stay); Maven Central 429s needed 10 Gradle tries on a cold cache (a 20 s retry loop); never pkill -f; local main in this container is a stale branch, work from origin/main; a 28-sample look after the fix showed LegendSites.scan at 32% of the server thread for about a minute (maybe one test, not looked into).

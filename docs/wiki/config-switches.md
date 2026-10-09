@@ -101,6 +101,7 @@ range is in brackets.
 | `classRiseDays` | 2 (1 to 30) | 1.8 | Dawns running the next class's needs must hold for a household to rise one class. |
 | `classFallDays` | 3 (1 to 30) | 1.8 | Dawns running a need of their own class must fail for a household to fall one class. |
 | `vintners` | on | 1.8 | Villagers at a cauldron can be made Vintners with sweet berries, glow berries or an apple. Off: no Vintner job, and Vintners already hired stand idle. |
+| `tailors` | on | 1.8 | Villagers at a loom can be made Tailors with string. Off: no Tailor job, and Tailors already hired stand idle. |
 | `villagerAges` | on | 1.8 | Grown villagers count their days and become elders (a slower walk, a quiet old age, their own talk). Off: nobody is an elder, so nobody passes; the day each grew up stays saved. See [Elders](elders.md). |
 | `villagerElderDays` | 120 (20 to 1000) | 1.8 | Grown days before a villager is an elder. |
 | `elderPassing` | on | 1.8 | Elders pass in their sleep after 40 elder days and leave a grave. Off: nobody dies of old age, and an Evergreen Charm is refused as not needed. |

@@ -46,6 +46,10 @@ public final class ModItems {
 		io.github.jcondedata.aliveworkplace.mc.DrinkItem.drink(3, 0.5f, null));
 	public static final io.github.jcondedata.aliveworkplace.mc.DrinkItem VINTAGE_WINE = Reg.item("vintage_wine", io.github.jcondedata.aliveworkplace.mc.DrinkItem::new,
 		io.github.jcondedata.aliveworkplace.mc.DrinkItem.drink(4, 0.6f, new net.minecraft.world.effect.MobEffectInstance(net.minecraft.world.effect.MobEffects.REGENERATION, 100)));
+	/** The Tailor's clothes (ROADMAP 34.10): luxuries the households want, a set to a stack of 16. */
+	public static final Item WORK_CLOTHES = Reg.item("work_clothes", Item::new, new Item.Properties().stacksTo(16));
+	public static final Item FINE_CLOTHES = Reg.item("fine_clothes", Item::new, new Item.Properties().stacksTo(16));
+	public static final Item NOBLE_ROBES = Reg.item("noble_robes", Item::new, new Item.Properties().stacksTo(16));
 	/** The Evergreen Charm (ROADMAP 34.19a): sneak-right-click an elder with good traits and they never pass of old age. */
 	public static final io.github.jcondedata.aliveworkplace.people.EvergreenCharmItem EVERGREEN_CHARM = Reg.item("evergreen_charm", io.github.jcondedata.aliveworkplace.people.EvergreenCharmItem::new, new Item.Properties().stacksTo(1).rarity(net.minecraft.world.item.Rarity.RARE));
 	public static final io.github.jcondedata.aliveworkplace.guard.RallyBannerItem RALLY_BANNER = Reg.item("rally_banner", io.github.jcondedata.aliveworkplace.guard.RallyBannerItem::new, new Item.Properties().stacksTo(1));
@@ -109,6 +113,9 @@ public final class ModItems {
 				output.accept(CIDER);
 				output.accept(BERRY_WINE);
 				output.accept(VINTAGE_WINE);
+				output.accept(WORK_CLOTHES);
+				output.accept(FINE_CLOTHES);
+				output.accept(NOBLE_ROBES);
 				output.accept(EVERGREEN_CHARM);
 				output.accept(CITY_PLAN);
 				output.accept(QUARRY_MARKER);

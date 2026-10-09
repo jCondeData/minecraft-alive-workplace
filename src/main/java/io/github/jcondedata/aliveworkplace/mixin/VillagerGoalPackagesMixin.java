@@ -47,6 +47,8 @@ abstract class VillagerGoalPackagesMixin {
 			cir.setReturnValue(io.github.jcondedata.aliveworkplace.city.StewardWork.packages(speed));
 		} else if (profession == ModVillagers.VINTNER) {
 			cir.setReturnValue(io.github.jcondedata.aliveworkplace.vintner.VintnerWork.packages(speed));
+		} else if (profession == ModVillagers.TAILOR) {
+			cir.setReturnValue(io.github.jcondedata.aliveworkplace.tailor.TailorWork.packages(speed));
 		} else if (profession == ModVillagers.SIFTER) {
 			cir.setReturnValue(io.github.jcondedata.aliveworkplace.sift.SifterPackages.work(speed));
 		} else if (profession == ModVillagers.SCHOLAR) {

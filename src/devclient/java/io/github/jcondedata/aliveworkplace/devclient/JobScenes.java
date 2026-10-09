@@ -421,6 +421,14 @@ final class JobScenes {
 			Container c = chest(level, chestPos(), new ItemStack(Items.APPLE, 9), new ItemStack(Items.GLASS_BOTTLE, 3));
 			return l -> c.countItem(io.github.jcondedata.aliveworkplace.registry.ModItems.CIDER) >= 2;
 		}));
+		SCENES.put("tailor", job("the tailor sewed work clothes at the loom", 2400, (level, player) -> {
+			// ROADMAP 34.10: a loom picked with string; wool of three colours, leather and string in the chest. The Novice
+			// sews Work Clothes at the loom (it clacks, snips of thread fly) and puts them in the chest.
+			picked(level, player, STATION, Blocks.LOOM, Items.STRING);
+			Container c = chest(level, chestPos(), new ItemStack(Items.WHITE_WOOL, 5), new ItemStack(Items.BROWN_WOOL, 3),
+				new ItemStack(Items.LIGHT_GRAY_WOOL, 1), new ItemStack(Items.LEATHER, 6), new ItemStack(Items.STRING, 3));
+			return l -> c.countItem(io.github.jcondedata.aliveworkplace.registry.ModItems.WORK_CLOTHES) >= 2;
+		}));
 		SCENES.put("sifter", job("the sifter sifted gravel into loot", 1800, (level, player) -> {
 			Villager v = picked(level, player, STATION, Blocks.WATER_CAULDRON.defaultBlockState().setValue(BlockStateProperties.LEVEL_CAULDRON, 3), Items.GRAVEL);
 			chest(level, chestPos(), new ItemStack(Items.GRAVEL, 40));

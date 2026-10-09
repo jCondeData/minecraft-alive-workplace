@@ -40,6 +40,12 @@ asks for the steps, `latest.log` and any crash report).
   dawn), Frost and Grand, in that order, each with its own rules, fair wares, feast dish, firework colours and disc.
   Villager trainers' teams and players' eligibility follow the theme. For the Workers' Cup, every pastured Pokémon now
   counts the days it helped a villager at work (once a day); it needs 3.
+- **The Tailor, for 1.8** (34.10, off until 1.8 is finished): sneak-right-click a villager by a loom with string (shears
+  bring the Shepherd back). They sew Work Clothes (Novice: 3 wool of any colours, 2 leather, a string), Fine Clothes
+  (Apprentice: 4 dyed wool but white, a string, 2 gold nuggets) and Noble Robes (Journeyman: 5 wool of one rich colour,
+  a rabbit hide, a gold ingot) for the village store: the clothes the Artisans, Burghers and Nobles need. Trades, Bug
+  and Normal partners, an outfit, config `tailors`. A loom's tooltip now names its jobs, and shears make a jobless
+  villager by a loom its Shepherd.
 - **The Vintner, for 1.8** (34.9, off until 1.8 is finished): sneak-right-click a villager by a cauldron with sweet
   berries, glow berries or an apple. They press Cider (Novice), Berry Wine (Apprentice) and Vintage Wine from Berry Wine
   three days old (Journeyman) for the village store, with purple splashes at the vat; the three drinks are drinkable

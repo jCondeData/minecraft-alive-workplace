@@ -174,6 +174,11 @@ public final class Stations {
 			job(() -> ModVillagers.SIFTER, any(Items.GRAVEL, Items.SAND, Items.RED_SAND, Items.SOUL_SAND)),
 			// sweet berries, glow berries or an apple (34.9), with config vintners on
 			job(() -> ModVillagers.VINTNER, io.github.jcondedata.aliveworkplace.vintner.Vintners::isFruit))),
+		// The loom (34.10): a jobless villager still takes it as a Shepherd; string picks the Tailor (with config tailors
+		// on), shears bring the Shepherd back
+		new Station(is(PoiTypes.SHEPHERD), Blocks.LOOM, List.of(
+			job(() -> VillagerProfession.SHEPHERD, any(Items.SHEARS)),
+			job(() -> ModVillagers.TAILOR, io.github.jcondedata.aliveworkplace.tailor.Tailors::isString))),
 		new Station(is(PoiTypes.LIBRARIAN), Blocks.LECTERN, List.of(
 			job(() -> VillagerProfession.LIBRARIAN, any(Items.LAPIS_LAZULI)),
 			job(() -> ModVillagers.SCHOLAR, any(Items.PAPER)),
@@ -463,8 +468,11 @@ public final class Stations {
 		return PoiTypes.forState(block.defaultBlockState()).flatMap(h -> ALL.stream().filter(s -> s.poi().test(h)).findFirst());
 	}
 
-	/** Whether {@code job} can be had in this game (the Pokémon jobs need Cobblemon). */
+	/** Whether {@code job} can be had in this game (the Pokémon jobs need Cobblemon, the Tailor config {@code tailors}). */
 	public static boolean available(Job job) {
+		if (job.profession().get() == ModVillagers.TAILOR && !io.github.jcondedata.aliveworkplace.tailor.Tailors.ENABLED) {
+			return false; // the loom's tooltip names only the Shepherd then
+		}
 		ResourceLocation id = BuiltInRegistries.VILLAGER_PROFESSION.getKey(job.profession().get());
 		return !COBBLEMON_JOBS.contains(id.getPath()) || io.github.jcondedata.aliveworkplace.platform.Platform.get().isModLoaded("cobblemon");
 	}

@@ -599,7 +599,8 @@ placed keep working, so old worlds are fine.
 | Toolsmith | Smithing Table (vanilla) | diamonds, if you want diamond tools | nothing — or sneak-right-click with an iron ingot to hire them | any |
 | Weaponsmith | Grindstone (vanilla) | worn gear to mend (and what mends it: ingots, planks...) | nothing — or sneak-right-click with an iron ingot to hire them | any |
 | Fletcher | Fletching Table (vanilla) | sticks, string, iron (glowstone for spectral arrows) | nothing — or sneak-right-click with flint to hire them | any |
-| Shepherd | Loom (vanilla) | shears, wheat | nothing — or sneak-right-click with shears to hire them | any |
+| Shepherd | Loom (vanilla; shears bring a Tailor back to it) | shears, wheat | nothing — or sneak-right-click with shears to hire them | any |
+| Tailor | Loom + string | wool, leather, string (for the finer clothes: dyed wool, gold nuggets, a rabbit hide, a gold ingot) | nothing (keeps the village store in clothes) | any |
 | Butcher (herder) | Smoker (vanilla) | empty buckets, wheat/carrots/seeds (with Cobblemon: bottles, a brush, bone meal) | nothing — or sneak-right-click with a lead to hire them | any |
 | Cleric (alchemist) | Brewing Stand (vanilla) | nether wart, glistering melon, ghast tears, blaze powder, bottles | nothing — or sneak-right-click with a glass bottle to hire them | any |
 | Librarian (scribe) | Lectern (vanilla), and an Enchanting Table | lapis | nothing — or sneak-right-click with lapis to hire them | any |
@@ -1288,6 +1289,28 @@ is short of goes on the requests board. You can drink them too: Cider fills 2 hu
 gives 5 seconds of Regeneration, and the bottle comes back. Vintners buy apples, berries and bottles and sell the drinks
 of their level; Grass, Bug and Fairy Pokémon help them. The recipes are data (`data/<namespace>/luxury_recipes/`), so a
 data pack can add more. Config `vintners` (on once 1.8 is finished).
+
+## Tailors
+
+*Part of 1.8, Classes and luxuries: off until that expansion is finished.*
+
+Put a chest by a **loom**, stand a villager beside it and sneak-right-click them with **string**: they become a
+**Tailor** (a jobless villager still takes a loom as a Shepherd, and shears bring the Shepherd back). While they sew,
+the loom clacks and snips of thread fly. They keep the village store in 8 of each garment they can make, from their own
+chests, the store and the village's chests: the shepherds' wool, and whatever coloured wool lies there. With dye and
+white wool to hand they dye it themselves.
+
+| Garment | Made from | Level | Wanted by |
+|---|---|---|---|
+| **Work Clothes** | 3 wool of any colours, 2 leather and a string | Novice | Artisans, every 8 days (a need) |
+| **Fine Clothes** | 4 dyed wool of any colours but white, a string and 2 gold nuggets | Apprentice | Burghers, every 8 days (a need) |
+| **Noble Robes** | 5 wool of one rich colour (purple, blue, red or black), a rabbit hide and a gold ingot | Journeyman | Nobles, every 8 days (a need) |
+
+Work Clothes and Fine Clothes may mix colours; Noble Robes are cut from one cloth, so 3 purple and 2 blue make none.
+The porters carry the clothes to the store, and what the Tailor is short of goes on the requests board. Tailors buy
+wool, string and leather and sell the clothes of their level; Bug and Normal Pokémon help them. The recipes are data
+(`data/<namespace>/luxury_recipes/`; an input with `"mix": true` takes any of a tag's items together), so a data pack can
+add more. Config `tailors` (on once 1.8 is finished).
 
 ## Daycare Keepers (with Cobblemon)
 Stand a villager by a **Pasture Block** and sneak-right-click them with an **egg**: they become a **Daycare Keeper**.

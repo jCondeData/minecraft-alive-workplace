@@ -160,6 +160,9 @@ public final class Partners {
 		if (profession == ModVillagers.VINTNER) {
 			return Set.of("grass", "bug", "fairy"); // Bellsprout, Combee, Cutiefly...: the fruit is picked over and pressed quicker
 		}
+		if (profession == ModVillagers.TAILOR) {
+			return Set.of("bug", "normal"); // Spinarak, Sewaddle, Leavanny, Cinccino...: thread spun and cloth held taut
+		}
 		if (profession == ModVillagers.DAYCARE_KEEPER) {
 			return Set.of("normal", "fairy"); // Chansey, Blissey, Togekiss...: they keep the pairs company
 		}

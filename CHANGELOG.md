@@ -16,6 +16,8 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+## 0.141.0 — 2026-10-09
+
 ### Added
 - **The Evergreen Charm, for 1.8** (34.19a, off until 1.8 is finished): a gold-and-green leaf pendant crafted from a
   totem of undying, a golden apple, 2 emeralds and a heart of the sea. Sneak-right-click an elder with it and they

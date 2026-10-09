@@ -16,6 +16,11 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+### Fixed
+- **The hearts look-up no longer loads chunks** (B93): a player standing where nothing is loaded made the server read
+  that chunk from disk every half second, which slowed every tick (and the test suite from 13 to about 80 minutes).
+  Out there, no hearts are shown.
+
 ## 0.141.0 — 2026-10-09
 
 ### Added

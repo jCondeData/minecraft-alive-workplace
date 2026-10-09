@@ -24,6 +24,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -222,12 +223,24 @@ public final class Friendship {
 			heartRow(points));
 	}
 
-	/** The named villager {@code player} looks at within {@link #LOOK_RANGE} blocks (one ray along their look), or null. */
+	/**
+	 * The named villager {@code player} looks at within {@link #LOOK_RANGE} blocks (one ray along their look), or null.
+	 * Never loads a chunk (B93): the server tick asks for every player, and a ray through a chunk that isn't loaded read
+	 * it from disk on the server thread each time, so a player standing where nothing is loaded sees no hearts.
+	 */
 	@Nullable
 	public static Villager lookedAt(ServerPlayer player) {
 		ServerLevel level = player.serverLevel();
 		Vec3 eye = player.getEyePosition();
 		Vec3 end = eye.add(player.getViewVector(1f).scale(LOOK_RANGE));
+		// LOOK_RANGE is under a chunk, so the ray only crosses the chunks of its two ends and the two beside their corner
+		int x0 = Mth.floor(eye.x) >> 4;
+		int z0 = Mth.floor(eye.z) >> 4;
+		int x1 = Mth.floor(end.x) >> 4;
+		int z1 = Mth.floor(end.z) >> 4;
+		if (!level.hasChunk(x0, z0) || !level.hasChunk(x1, z1) || !level.hasChunk(x0, z1) || !level.hasChunk(x1, z0)) {
+			return null;
+		}
 		HitResult block = level.clip(new ClipContext(eye, end, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, player));
 		if (block.getType() != HitResult.Type.MISS) {
 			end = block.getLocation();

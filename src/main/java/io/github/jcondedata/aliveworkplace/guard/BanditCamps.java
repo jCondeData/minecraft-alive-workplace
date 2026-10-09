@@ -56,9 +56,15 @@ import org.jetbrains.annotations.Nullable;
  * the village's night raids come from it, bandits (pillagers and vindicators) rather than monsters, twice as often, and
  * the villagers feel less safe. Kill the chief and the camp is broken up: the rest of the band scatters, the chest in
  * the chief's tent is yours, and the chronicle remembers who did it. {@code banditCamps} in the config turns them off.
+ *
+ * <p>The bandits are a raider culture ({@link #CULTURE}, {@code raider_cultures/bandits.json}, ROADMAP 32.2): its
+ * {@code where} says which villages they camp by (Village rank), its roster who raids, its captain what the chief is
+ * and wears. The camp is their lair.
  */
 public final class BanditCamps {
 	public static boolean ENABLED = true;
+	/** The raider culture whose lair a bandit camp is. */
+	public static final ResourceLocation CULTURE = io.github.jcondedata.aliveworkplace.threat.Threats.BANDITS;
 	public static final ResourceLocation CAMP = AliveWorkplace.id("camp/bandit_camp");
 	public static final String TAG = "aliveworkplace_bandit";
 	public static final String CHIEF_TAG = "aliveworkplace_bandit_chief";
@@ -72,7 +78,7 @@ public final class BanditCamps {
 	static final int KEEP = 14;
 	/** How much less safe the villagers feel while a camp stands (share of the safety score kept). */
 	public static final float SAFETY = 0.6f;
-	/** The chief's extra health. */
+	/** The chief's extra health, when the bandits' culture names no captain. */
 	static final double CHIEF_HEALTH = 36;
 
 	/** In the camp's blueprint: the fire, where the chief stands (in his tent) and where his men do. */
@@ -109,7 +115,7 @@ public final class BanditCamps {
 			}
 			return;
 		}
-		if (!ENABLED || VillageRanks.of(level, hall).ordinal() < VillageRanks.Rank.VILLAGE.ordinal()) {
+		if (!ENABLED || !comesTo(level, hall)) {
 			return;
 		}
 		long day = Chronicle.day(level);
@@ -124,6 +130,19 @@ public final class BanditCamps {
 				found(level, hall, site);
 			}
 		}
+	}
+
+	/**
+	 * Whether bandits may make camp by the village round {@code hall}: their culture is switched on and its {@code where}
+	 * holds (Village rank or more, as its file says); without the file, the same rule.
+	 */
+	static boolean comesTo(ServerLevel level, BlockPos hall) {
+		var threats = io.github.jcondedata.aliveworkplace.threat.Threats.get(CULTURE);
+		if (threats.isEmpty()) {
+			return io.github.jcondedata.aliveworkplace.threat.Threats.enabled(CULTURE)
+				&& VillageRanks.of(level, hall).ordinal() >= VillageRanks.Rank.VILLAGE.ordinal();
+		}
+		return io.github.jcondedata.aliveworkplace.threat.Threats.fits(level, hall, threats.get(), () -> VillageHalls.census(level, hall).villagers());
 	}
 
 	/**
@@ -241,7 +260,11 @@ public final class BanditCamps {
 	/** A bandit (a pillager or, if {@code axe}, a vindicator), or the chief (a vindicator in iron), staying round {@code camp}. */
 	@Nullable
 	static Mob spawn(ServerLevel level, BlockPos at, BlockPos camp, boolean chief, boolean axe) {
-		Mob mob = (axe ? EntityType.VINDICATOR : EntityType.PILLAGER).create(level);
+		// The chief is his culture's captain: its mob, gear and extra health (a vindicator in iron, when the file is gone).
+		var captain = chief ? io.github.jcondedata.aliveworkplace.threat.Threats.get(CULTURE).flatMap(io.github.jcondedata.aliveworkplace.threat.Culture::captain)
+			: Optional.<io.github.jcondedata.aliveworkplace.threat.Culture.Captain>empty();
+		Mob mob = captain.isPresent() ? io.github.jcondedata.aliveworkplace.threat.Threats.create(level, captain.get().entity())
+			: (axe ? EntityType.VINDICATOR : EntityType.PILLAGER).create(level);
 		if (mob == null) {
 			return null;
 		}
@@ -255,13 +278,18 @@ public final class BanditCamps {
 		mob.setCustomName(Component.translatable(chief ? "entity.aliveworkplace.bandit_chief" : "entity.aliveworkplace.bandit"));
 		if (chief) {
 			mob.addTag(CHIEF_TAG);
-			mob.setItemSlot(EquipmentSlot.HEAD, new ItemStack(Items.IRON_HELMET));
-			mob.setItemSlot(EquipmentSlot.CHEST, new ItemStack(Items.IRON_CHESTPLATE));
-			mob.setDropChance(EquipmentSlot.HEAD, 0f);
-			mob.setDropChance(EquipmentSlot.CHEST, 0f);
+			if (captain.isPresent()) {
+				io.github.jcondedata.aliveworkplace.threat.Threats.equip(level, mob, captain.get().gear());
+			} else {
+				mob.setItemSlot(EquipmentSlot.HEAD, new ItemStack(Items.IRON_HELMET));
+				mob.setItemSlot(EquipmentSlot.CHEST, new ItemStack(Items.IRON_CHESTPLATE));
+				mob.setDropChance(EquipmentSlot.HEAD, 0f);
+				mob.setDropChance(EquipmentSlot.CHEST, 0f);
+			}
 			var health = mob.getAttribute(Attributes.MAX_HEALTH);
-			if (health != null) {
-				health.addPermanentModifier(new AttributeModifier(AliveWorkplace.id("bandit_chief"), CHIEF_HEALTH, AttributeModifier.Operation.ADD_VALUE));
+			double extra = captain.map(io.github.jcondedata.aliveworkplace.threat.Culture.Captain::health).orElse(CHIEF_HEALTH);
+			if (health != null && extra > 0) {
+				health.addPermanentModifier(new AttributeModifier(AliveWorkplace.id("bandit_chief"), extra, AttributeModifier.Operation.ADD_VALUE));
 				mob.setHealth(mob.getMaxHealth());
 			}
 		}
@@ -269,19 +297,6 @@ public final class BanditCamps {
 			pathfinder.restrictTo(camp, KEEP);
 		}
 		level.addFreshEntityWithPassengers(mob);
-		return mob;
-	}
-
-	/** A bandit raider for a night raid on the village (see {@link VillageRaids}): named, but not kept to the camp. */
-	static Mob raider(ServerLevel level) {
-		Mob mob = (level.random.nextFloat() < 0.5f ? EntityType.VINDICATOR : EntityType.PILLAGER).create(level);
-		if (mob != null) {
-			mob.addTag(TAG);
-			if (mob instanceof Raider raider) {
-				raider.setCanJoinRaid(false);
-			}
-			mob.setCustomName(Component.translatable("entity.aliveworkplace.bandit"));
-		}
 		return mob;
 	}
 

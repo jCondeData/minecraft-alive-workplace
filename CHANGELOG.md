@@ -112,6 +112,15 @@ asks for the steps, `latest.log` and any crash report).
   `reach` (go near a structure, a biome or a point) and the reward `map` (a map with the place marked), the place found
   once when the quest goes up.
 
+### Changed
+- **Raids run on a new threat engine** (32.2), the base of 1.6's threats. Monster and bandit raids look and count as
+  before, but who raids is now data (`data/aliveworkplace/raider_cultures/monsters.json` and `bandits.json`; a datapack
+  can add cultures of its own, with their own mobs, gear and lands). Two things work differently: a raid under way now
+  **survives a server restart** (it used to be forgotten, and never ended properly), and a raid is now **decided at
+  dusk for the next night**, so the first night after updating is quiet. Breaking up a bandit camp before the bandits'
+  hour calls their attack off. Guards now fight anything a raid brings, hoglins included. New setting `raiderCultures`
+  (in the file only): every culture and whether it may come; `villageRaids` and `banditCamps` work as before.
+
 ### Fixed
 - **No more log error when a traveller's camp is set down** (B68): the map's item frame on the camp's barrel is saved
   with the block it hangs on, and structures placed by the mod or by vanilla now hang their frames and paintings on the

@@ -1,0 +1,30 @@
+{
+  "where": { "min_rank": "village" },
+  "weight": 10,
+  "arrival": "lair",
+  "hours": "night",
+  "name": "entity.aliveworkplace.bandit",
+  "roster": [
+    { "entity": "minecraft:pillager", "share": 50, "role": "ranged" },
+    { "entity": "minecraft:vindicator", "share": 50, "role": "melee" }
+  ],
+  "captain": {
+    "entity": "minecraft:vindicator",
+    "gear": { "head": "minecraft:iron_helmet", "chest": "minecraft:iron_chestplate" },
+    "health": 36
+  },
+  "tactics": [],
+  "lair": { "structure": "aliveworkplace:camp/bandit_camp", "strength": 6, "growth": 1, "max": 10, "home_max": 8 },
+  "loot": "aliveworkplace:chests/bandit_camp",
+  "messages": {
+    "raid": "message.aliveworkplace.raid.bandits",
+    "camp": "message.aliveworkplace.bandits.camp",
+    "broken": "message.aliveworkplace.bandits.broken_up"
+  },
+  "chronicle": {
+    "raid": "chronicle.aliveworkplace.bandit_raid",
+    "camp": "chronicle.aliveworkplace.bandit_camp",
+    "broken": "chronicle.aliveworkplace.bandit_camp_broken",
+    "broken_by": "chronicle.aliveworkplace.bandit_camp_broken_by"
+  }
+}

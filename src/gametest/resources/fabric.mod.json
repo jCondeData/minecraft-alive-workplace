@@ -124,6 +124,7 @@
 			"io.github.jcondedata.aliveworkplace.test.TreasuryEdictGameTests",
 			"io.github.jcondedata.aliveworkplace.test.CampGameTests",
 			"io.github.jcondedata.aliveworkplace.test.RaidGameTests",
+			"io.github.jcondedata.aliveworkplace.test.ThreatGameTests",
 			"io.github.jcondedata.aliveworkplace.test.SifterGameTests",
 			"io.github.jcondedata.aliveworkplace.test.StationsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.StationsSpecGameTests",

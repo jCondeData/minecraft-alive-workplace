@@ -2823,7 +2823,7 @@ Rally Banner and the defence blueprints (tools/blueprints/defence.py).
   wooden builds; never a player's own blocks, and the builders always put them back); meanwhile the default is yes.
   Sent as a review package with a mock-up of the hall's Defence page; lanes don't wait for his reply. Done when: the
   note is on `main` and the package is sent.
-- [ ] **32.2** **The threat engine: raider cultures as data.** A new package `threat/` (add it to
+- [x] **32.2** (approved auto 2026-10-09) **The threat engine: raider cultures as data.** A new package `threat/` (add it to
   `docs/agent/layout.md`); `guard/VillageRaids` and `BanditCamps` keep their public methods and call into it, so their
   callers and tests don't change. `threat/Threats` loads `data/aliveworkplace/raider_cultures/<id>.json` (through
   `Platform.onDataReload`); one file is one culture:

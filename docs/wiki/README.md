@@ -19,6 +19,7 @@ the same commit) and checked by the QA lane (ROADMAP 22.9). Pages are filled in 
 - [Builder](builder.md): the villager who builds blueprints.
 - [The Festival Cup](festival-cup.md): its champions, the Cup banner and the holders' pride (28.21).
 - [The Pokémon Trader](pokemon-trader.md): the day's Pokémon offers and the trader's own trade screen (28.23).
+- [Raids and threats](raids.md): raider cultures as data, the threat clock, raids that survive a restart (32.2).
 
 Still to write of the first twelve: Villager jobs, Village Hall, Steward, Roads and walls, Edicts, Guilds,
 Legends, Pokemon partners, Classes, Elders, Config switches.

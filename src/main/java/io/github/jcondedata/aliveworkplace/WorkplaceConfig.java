@@ -90,6 +90,13 @@ public final class WorkplaceConfig {
 	public boolean villageRaids = true;
 	/** Bandits make camp near villages of Village rank or more now and then, and raid them until their chief falls. */
 	public boolean banditCamps = true;
+	/**
+	 * Every raider culture (ROADMAP 32.2) and whether it's on: ours by name ({@code monsters}), a datapack's by its id
+	 * ({@code pack:id}). One set to false is never picked. In the file only (a map isn't on the settings screen); a
+	 * culture the file doesn't list is added, on, when the world's data loads. {@code villageRaids} and
+	 * {@code banditCamps} still switch {@code monsters} and {@code bandits}.
+	 */
+	public Map<String, Boolean> raiderCultures = defaultCultures();
 	/** Villages with a Village Hall hold a festival every eight days (players can still call one with a cake). */
 	public boolean festivals = true;
 	/** Villagers near a player now and then say something about their day, over their heads. */
@@ -302,6 +309,56 @@ public final class WorkplaceConfig {
 		if (disabledArcs == null) {
 			disabledArcs = new ArrayList<>();
 		}
+		Map<String, Boolean> cultures = defaultCultures();
+		if (raiderCultures != null) {
+			raiderCultures.forEach((id, on) -> {
+				if (id != null) {
+					cultures.put(id, on == null || on);
+				}
+			});
+		}
+		raiderCultures = cultures;
+	}
+
+	/** The cultures the mod ships, all on. */
+	private static Map<String, Boolean> defaultCultures() {
+		Map<String, Boolean> map = new LinkedHashMap<>();
+		map.put("monsters", true);
+		map.put("bandits", true);
+		return map;
+	}
+
+	/**
+	 * Lists every culture of {@code ids} in the file in {@code configDir} (a new one is on), so the file names them all;
+	 * the file is rewritten only when one was missing.
+	 */
+	public static void listCultures(Path configDir, java.util.Collection<String> ids) {
+		WorkplaceConfig config = load(configDir);
+		config.clamp();
+		boolean added = false;
+		for (String id : ids) {
+			added |= config.raiderCultures.putIfAbsent(id, true) == null;
+		}
+		if (added || !Files.exists(configDir.resolve(FILE))) {
+			config.save(configDir);
+		}
+	}
+
+	/** The cultures switched off: those set to false in {@code raiderCultures}, and ours whose own switch is off. */
+	public java.util.Set<String> culturesOff() {
+		java.util.Set<String> off = new java.util.TreeSet<>();
+		raiderCultures.forEach((id, on) -> {
+			if (!on) {
+				off.add(id);
+			}
+		});
+		if (!villageRaids) {
+			off.add("monsters");
+		}
+		if (!banditCamps) {
+			off.add("bandits");
+		}
+		return java.util.Collections.unmodifiableSet(off);
 	}
 
 	/** The Mythic Legend caps by rank (Hamlet, Village, Town, City) when the file doesn't say. */
@@ -435,6 +492,8 @@ public final class WorkplaceConfig {
 		io.github.jcondedata.aliveworkplace.hall.MarketDays.ENABLED = marketDays && System.getProperty("fabric-api.gametest") == null;
 		io.github.jcondedata.aliveworkplace.guard.VillageRaids.ENABLED = villageRaids && System.getProperty("fabric-api.gametest") == null;
 		io.github.jcondedata.aliveworkplace.guard.BanditCamps.ENABLED = banditCamps && System.getProperty("fabric-api.gametest") == null;
+		// Which cultures may come at all (32.2); the two switches above stay the chance-driven raids' and camps' own.
+		io.github.jcondedata.aliveworkplace.threat.Threats.DISABLED = culturesOff();
 		io.github.jcondedata.aliveworkplace.hall.Festivals.ENABLED = festivals && System.getProperty("fabric-api.gametest") == null;
 		io.github.jcondedata.aliveworkplace.people.Chatter.ENABLED = villagerChatter && System.getProperty("fabric-api.gametest") == null;
 		io.github.jcondedata.aliveworkplace.people.Couples.ENABLED = villagerCouples && System.getProperty("fabric-api.gametest") == null;

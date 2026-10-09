@@ -21,6 +21,9 @@ Skipping service aliveworkplace_test:broken
 Skipping quest file aliveworkplace_test:quests/test/broken
 # StoryArcGameTests' pack has an arc with an unknown effect type, to prove it is skipped with one line naming it.
 Skipping story arc aliveworkplace_test:arcs/test/broken
+# ThreatGameTests' pack and the test itself feed the raider culture loader broken files (and one with keys it doesn't know) to prove each is logged and skipped.
+Skipping raider culture (aliveworkplace_test|testpack):raider_cultures/bad_
+Raider culture testpack:odd_keys: the (key|condition) '.*' isn't known and is ignored
 
 # --- other mods in the compat test server (dev environment, not our code) ---
 # Modded entities have no DataFixerUpper schema; every mod's entity logs this once.

@@ -762,6 +762,23 @@ public final class ModVillagers {
 		)
 	);
 
+	/**
+	 * Sews clothes at a loom (ROADMAP 34.10): only ever by string, with config {@code tailors}. A jobless villager by a
+	 * loom still becomes a Shepherd, which vanilla registers first.
+	 */
+	public static final VillagerProfession TAILOR = Registry.register(
+		BuiltInRegistries.VILLAGER_PROFESSION,
+		AliveWorkplace.id("tailor"),
+		new VillagerProfession(
+			"tailor",
+			holder -> holder.is(net.minecraft.world.entity.ai.village.poi.PoiTypes.SHEPHERD),
+			holder -> holder.is(net.minecraft.world.entity.ai.village.poi.PoiTypes.SHEPHERD),
+			ImmutableSet.of(),
+			ImmutableSet.of(),
+			SoundEvents.VILLAGER_WORK_SHEPHERD
+		)
+	);
+
 	/** Revives fossils for players, for a price (only with Cobblemon installed). */
 	public static final VillagerProfession FOSSIL_SCIENTIST = Registry.register(
 		BuiltInRegistries.VILLAGER_PROFESSION,
@@ -816,7 +833,7 @@ public final class ModVillagers {
 			|| profession == BEEKEEPER || profession == FLORIST || profession == RANCHER || profession == TEACHER || profession == INNKEEPER || profession == UNDERTAKER || profession == SCHOLAR
 			|| profession == SIFTER || profession == TINKERER || profession == NETHERWORKER || profession == COMPOSTER
 			|| profession == BERRY_BREEDER || profession == CAMP_COOK || profession == HABITAT_KEEPER || profession == GEM_GROWER
-			|| profession == DAYCARE_KEEPER || profession == VINTNER;
+			|| profession == DAYCARE_KEEPER || profession == VINTNER || profession == TAILOR;
 	}
 
 	/**

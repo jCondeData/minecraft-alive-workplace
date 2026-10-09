@@ -152,7 +152,7 @@ public final class Crafting {
 				int times = Math.min(MAX_CRAFTS, (count + recipe.count() - 1) / recipe.count());
 				List<Slot> slots = new ArrayList<>();
 				for (LuxuryRecipes.Input input : recipe.inputs()) {
-					slots.add(new Slot(input.options(), input.count(), input.minAgeDays() <= 0));
+					slots.add(new Slot(input.options(), input.count(), input.minAgeDays() <= 0, input.mix()));
 				}
 				Pool trial = pool.copy();
 				List<Step> trialSteps = new ArrayList<>();
@@ -215,12 +215,50 @@ public final class Crafting {
 			slots.merge(options, 1, Integer::sum);
 		}
 		List<Slot> list = new ArrayList<>();
-		slots.forEach((options, n) -> list.add(new Slot(options, n, true)));
+		slots.forEach((options, n) -> list.add(new Slot(options, n, true, false)));
 		return pick(level, kind, list, times, pool, steps, depth, allowed);
 	}
 
-	/** One making of a recipe: one of {@code options}, {@code count} a craft; {@code makeable}: it may be made from further down. */
-	private record Slot(List<Item> options, int count, boolean makeable) {
+	/**
+	 * One making of a recipe: one of {@code options}, {@code count} a craft; {@code makeable}: it may be made from further
+	 * down; {@code mix}: several of the options may make up the count together (a luxury recipe's "3 wool of any colour").
+	 */
+	private record Slot(List<Item> options, int count, boolean makeable, boolean mix) {
+	}
+
+	/**
+	 * A mixed slot: every craft takes the same mix (so a step still says what one craft takes), the best-stocked options
+	 * first; what's still short is made from further down, as one of the options. False if it can't be filled.
+	 */
+	private static boolean pickMix(ServerLevel level, Kind kind, Slot slot, int times, Pool pool, List<Step> steps, int depth,
+			Predicate<LuxuryRecipes.Recipe> allowed, Map<Item, Integer> perCraft) {
+		List<Item> options = new ArrayList<>(slot.options());
+		Map<Item, Long> stock = new HashMap<>();
+		options.forEach(o -> stock.put(o, pool.have(o)));
+		options.sort((a, b) -> Long.compare(stock.get(b), stock.get(a))); // a stable sort: ties stay in the tag's order
+		int left = slot.count();
+		for (Item option : options) {
+			int each = (int) Math.min(left, stock.get(option) / times);
+			if (each > 0) {
+				pool.use(option, (long) each * times);
+				perCraft.merge(option, each, Integer::sum);
+				left -= each;
+			}
+			if (left == 0) {
+				return true;
+			}
+		}
+		if (depth > 0 && slot.makeable()) {
+			for (Item option : slot.options()) {
+				long need = (long) left * times;
+				if (make(level, kind, option, (int) (need - pool.have(option)), pool, steps, depth - 1, allowed) && pool.have(option) >= need) {
+					pool.use(option, need);
+					perCraft.merge(option, left, Integer::sum);
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 
 	/** Picks an item for each slot made {@code times} times (from the pool, or made from further down) and uses them up. */
@@ -232,6 +270,12 @@ public final class Crafting {
 		}
 		Map<Item, Integer> perCraft = new LinkedHashMap<>();
 		for (Slot slot : slots) {
+			if (slot.mix()) {
+				if (!pickMix(level, kind, slot, times, pool, steps, depth, allowed, perCraft)) {
+					return null;
+				}
+				continue;
+			}
 			long need = (long) slot.count() * times;
 			Item pick = null;
 			long best = 0;

@@ -379,15 +379,18 @@ public class ClassGameTests implements net.fabricmc.fabric.api.gametest.v1.Fabri
 		helper.succeed();
 	}
 
-	/** {@code luxury}: never before the luxuries (34.4); then one had less than its {@code every_days} ago. */
+	/** {@code luxury}: never for a luxury with no file (34.4); then one had less than its {@code every_days} ago. */
 	//$ gametest_batch AREA '"classNeedLuxury"'
 	@GameTest(template = AREA, batch = "classNeedLuxury")
 	public void luxuryNeedReadsLuxuriesHad(GameTestHelper helper) {
 		village(helper);
 		Villager v = villager(helper, new BlockPos(4, 2, 4), "Nell");
 		ClassNeeds.Need clothes = need("{\"type\": \"luxury\", \"id\": \"aliveworkplace:work_clothes\"}");
-		ModAttachments.LUXURIES_HAD.set(v, Map.of(ours("work_clothes"), 20L));
-		helper.assertTrue(!ClassNeeds.holds(clothes, v, at(helper, 20)), "a luxury need never holds before 34.4");
+		// (Work Clothes have their luxury file since 34.10, so the luxury with no file is one that never gets any)
+		net.minecraft.resources.ResourceLocation unfiled = net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("aliveworkplace_test", "no_such_luxury");
+		ClassNeeds.Need nothing = need("{\"type\": \"luxury\", \"id\": \"aliveworkplace_test:no_such_luxury\"}");
+		ModAttachments.LUXURIES_HAD.set(v, Map.of(ours("work_clothes"), 20L, unfiled, 20L));
+		helper.assertTrue(!ClassNeeds.holds(nothing, v, at(helper, 20)), "a luxury with no file held, had today");
 		ClassNeeds.luxuryEvery = id -> id.equals(ours("work_clothes")) ? 8 : 0;
 		helper.assertTrue(ClassNeeds.holds(clothes, v, at(helper, 27)), "had 7 days ago, every 8");
 		helper.assertTrue(!ClassNeeds.holds(clothes, v, at(helper, 28)), "had 8 days ago, every 8: due again");

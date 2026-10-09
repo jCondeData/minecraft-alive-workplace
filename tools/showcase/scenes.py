@@ -30,7 +30,7 @@ GROUPS = [
     "Carpenter", "Mason", "Leatherworker (dyer)", "Chef", "Armorer (smelter)", "Toolsmith", "Weaponsmith", "Fletcher",
     "Shepherd", "Butcher (herder)", "Cleric (alchemist)", "Librarian (scribe)", "Cartographer (explorer)", "Postman",
     "Guard", "Nurse", "Shopkeeper", "Ferryman", "Bard", "Trainer", "Trainer Leader", "Move Tutor", "Ball Smith",
-    "Pokémon Trader", "Fossil Scientist", "Berry Breeder", "Steward", "Camp Cook", "Gem Grower", "Vintner", "Habitat Keeper", "Daycare Keeper", "Village Hall", "Legends", "Everyone at work", "Build families",
+    "Pokémon Trader", "Fossil Scientist", "Berry Breeder", "Steward", "Camp Cook", "Gem Grower", "Vintner", "Tailor", "Habitat Keeper", "Daycare Keeper", "Village Hall", "Legends", "Everyone at work", "Build families",
 ]
 
 START, WORKING, DONE = ("01_start", "Start"), ("work_*@middle", "At work"), ("03_done", "Done")
@@ -99,6 +99,7 @@ SCENES = [
     job("scholar", "Scholar", "Research at the lectern", "the scholar finished a level of research", 150,
         [("04_research_screen", "Research screen")]),
     job("vintner", "Vintner", "Pressing cider at the cauldron", "the vintner pressed cider in the cauldron, purple splashes and all"),
+    job("tailor", "Tailor", "Sewing work clothes at the loom", "the tailor sewed work clothes at the loom"),
     job("sifter", "Sifter", "Sifting gravel", "the sifter sifted gravel into loot"),
     job("tinkerer", "Tinkerer", "Mending an iron golem", "the tinkerer mended the iron golem"),
     job("composter", "Composter", "Turning scraps into bone meal", "the composter made bone meal"),

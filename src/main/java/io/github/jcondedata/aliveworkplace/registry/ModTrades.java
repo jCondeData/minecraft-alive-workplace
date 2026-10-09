@@ -39,6 +39,7 @@ public final class ModTrades {
 		habitatKeeperTrades();
 		gemGrowerTrades();
 		vintnerTrades();
+		tailorTrades();
 		daycareKeeperTrades();
 		trainerLeaderTrades();
 		Platform.get().addTrades(ModVillagers.BARD, 1, offers -> {
@@ -648,6 +649,33 @@ public final class ModTrades {
 		Platform.get().addTrades(ModVillagers.VINTNER, 5, offers -> {
 			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.APPLE, 8), new ItemStack(Items.EMERALD), 16, 30, 0.05f));
 			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 8), new ItemStack(ModItems.VINTAGE_WINE, 2), 6, 30, 0.05f));
+		});
+	}
+
+	/**
+	 * Tailors (34.10): at every level they buy their makings (wool, string, leather) and sell the clothes of their level:
+	 * Work Clothes (Novice), Fine Clothes (Apprentice), Noble Robes (Journeyman and up).
+	 */
+	private static void tailorTrades() {
+		Platform.get().addTrades(ModVillagers.TAILOR, 1, offers -> {
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.WHITE_WOOL, 18), new ItemStack(Items.EMERALD), 16, 2, 0.05f));
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 3), new ItemStack(ModItems.WORK_CLOTHES), 12, 1, 0.05f));
+		});
+		Platform.get().addTrades(ModVillagers.TAILOR, 2, offers -> {
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.STRING, 20), new ItemStack(Items.EMERALD), 16, 5, 0.05f));
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 6), new ItemStack(ModItems.FINE_CLOTHES), 12, 5, 0.05f));
+		});
+		Platform.get().addTrades(ModVillagers.TAILOR, 3, offers -> {
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.LEATHER, 6), new ItemStack(Items.EMERALD), 16, 10, 0.05f));
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 14), new ItemStack(ModItems.NOBLE_ROBES), 8, 10, 0.05f));
+		});
+		Platform.get().addTrades(ModVillagers.TAILOR, 4, offers -> {
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.BLACK_WOOL, 18), new ItemStack(Items.EMERALD), 16, 15, 0.05f));
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 10), new ItemStack(ModItems.FINE_CLOTHES, 2), 12, 15, 0.05f));
+		});
+		Platform.get().addTrades(ModVillagers.TAILOR, 5, offers -> {
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.STRING, 14), new ItemStack(Items.EMERALD), 16, 30, 0.05f));
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 12), new ItemStack(ModItems.NOBLE_ROBES), 6, 30, 0.05f));
 		});
 	}
 

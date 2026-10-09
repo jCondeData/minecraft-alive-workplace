@@ -4,7 +4,7 @@ Every household in a village with a hall lives as a class: Peasant, Artisan, Bur
 needs and the household rises; lack your own and it falls. Part of 1.8 (Classes and luxuries): off until that
 expansion is finished, and several of its pieces are not built yet (see Known limits).
 
-Roadmap items: 34.1, 34.6, 34.7, 34.8, 34.9
+Roadmap items: 34.1, 34.6, 34.7, 34.8, 34.9, 34.10
 
 ## What a player sees
 
@@ -36,6 +36,12 @@ their job's class keeps it, and the hall's list marks them.
 **The Vintner (34.9).** Stand a villager by a cauldron and sneak-right-click them with sweet berries, glow berries
 or an apple. A Novice presses Cider, an Apprentice Berry Wine, and Vintage Wine waits three days to age. The drinks
 are luxuries the households take from the store, and players can drink them (the bottle comes back).
+
+**The Tailor (34.10).** Stand a villager by a loom and sneak-right-click them with string (shears bring the Shepherd
+back). A Novice sews Work Clothes from 3 wool of any colours, 2 leather and a string; an Apprentice Fine Clothes from
+4 dyed wool (any colours but white), a string and 2 gold nuggets; a Journeyman Noble Robes from 5 wool of one rich
+colour (purple, blue, red or black), a rabbit hide and a gold ingot. The clothes are the luxuries the Artisans,
+Burghers and Nobles need, every 8 days.
 
 ## How it works
 
@@ -72,6 +78,7 @@ level (Apprentice: Peasant, Journeyman: Artisan, Expert: Burgher).
 | `classRiseDays` | 2 (1 to 30) | Dawns running the next class's needs must hold to rise |
 | `classFallDays` | 3 (1 to 30) | Dawns running a need of their own class must fail to fall |
 | `vintners` | on from 1.8 | Off: no Vintner job, and Vintners already hired stand idle |
+| `tailors` | on from 1.8 | Off: no Tailor job, and Tailors already hired stand idle |
 
 ## Saved data
 
@@ -85,9 +92,11 @@ Ball. Households and the village's sums by class are never saved: they are worke
 ## Items, blocks, jobs, commands
 
 - Class ids: `aliveworkplace:peasant`, `aliveworkplace:artisan`, `aliveworkplace:burgher`, `aliveworkplace:noble`.
-- Job: Vintner (`aliveworkplace:vintner`), at a cauldron.
+- Jobs: Vintner (`aliveworkplace:vintner`), at a cauldron; Tailor (`aliveworkplace:tailor`), at a loom.
 - Items: Cider (`aliveworkplace:cider`), Berry Wine (`aliveworkplace:berry_wine`), Vintage Wine
-  (`aliveworkplace:vintage_wine`).
+  (`aliveworkplace:vintage_wine`), Work Clothes (`aliveworkplace:work_clothes`), Fine Clothes
+  (`aliveworkplace:fine_clothes`), Noble Robes (`aliveworkplace:noble_robes`).
+- Item tag: `dyed_wool` in `data/aliveworkplace/tags/item/` (every wool but white: what Fine Clothes take).
 - Texts: `class.aliveworkplace.peasant`, `class.aliveworkplace.artisan`, `class.aliveworkplace.burgher`,
   `class.aliveworkplace.noble`.
 - No commands.
@@ -101,12 +110,15 @@ Ball. Households and the village's sums by class are never saved: they are worke
 - Design note: the Burgher's "a school and one more service" is two needs, and the Market Square is a building
   need, so the market doesn't double as the "one more".
 - Design note: a luxury is taken at dawn before the needs are checked, so one taken that dawn counts that day.
+- 34.10: Work Clothes and Fine Clothes may mix wool colours; Noble Robes need all five of one colour. The Tailor takes
+  wool from the village's chests and the store, and dyes white wool themselves when dye is to hand: the dyer still
+  only dyes for builders.
 
 ## Known limits
 
-- **Nobody can rise yet with the mod's own data.** The Artisan class needs Work Clothes, and the Tailor who makes
-  them (34.10) isn't built; the same goes for Fine Clothes, the Gazette, the rings and the Noble's goods (34.10 to
-  34.12). Only the three wines have luxury files today, and a luxury without a file is a need that never holds.
+- **Nobody can rise past Artisan yet with the mod's own data.** The Burgher needs the Gazette and the Noble an
+  Emerald Brooch, and the Printer and Jeweller who make them (34.11, 34.12) aren't built. The three wines and the
+  three sets of clothes have luxury files today, and a luxury without a file is a need that never holds.
 - Villagers have no class until their village is seeded, and seeding (34.22) isn't built: on a real world every
   villager is still without a class, and the job gate doesn't apply to them.
 - The grander homes (34.15, 34.16), class outfits (34.17, 34.18), elders and family trees are not built.
@@ -116,6 +128,6 @@ Ball. Households and the village's sums by class are never saved: they are worke
 
 GameTests: `ClassGameTests` (16: the four files are the ladder, each kind of need, one step a day), `ClassHallGameTests`
 (6), `ClassPerkGameTests` (7), `ClassJobGameTests` (7), `ServiceGameTests` (8), `LuxuryGameTests` (7),
-`LuxuryWorkGameTests` (7), `VintnerGameTests` (10).
+`LuxuryWorkGameTests` (7), `VintnerGameTests` (10), `TailorGameTests` (10).
 
-Showcase scenes: `classes` (a household rises, and the Classes page), `class_jobs`, `noble_ball`, `vintner`.
+Showcase scenes: `classes` (a household rises, and the Classes page), `class_jobs`, `noble_ball`, `vintner`, `tailor`.

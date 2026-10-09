@@ -1,0 +1,8 @@
+{
+  "job": "aliveworkplace:tailor",
+  "level": 3,
+  "inputs": [{"item": "minecraft:blue_wool", "count": 5}, {"item": "minecraft:rabbit_hide", "count": 1}, {"item": "minecraft:gold_ingot", "count": 1}],
+  "output": {"id": "aliveworkplace:noble_robes", "count": 1},
+  "ticks": 140,
+  "enabled": true
+}

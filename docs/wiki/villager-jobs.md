@@ -3,7 +3,7 @@
 How a villager gets a job in this mod, what every job has in common (chests, levels, pace, status lines), and the
 list of all the jobs with the block and item that start each.
 
-Roadmap items: 21.1a, 21.1c, 24.1, 30.2, 28.8, 28.9, 28.10, 28.11, 28.12
+Roadmap items: 21.1a, 21.1c, 24.1, 30.2, 28.8, 28.9, 28.10, 28.11, 28.12, 34.10
 
 ## What a player sees
 
@@ -30,6 +30,7 @@ sneak-right-clicking a worker with an empty hand shows their status.
 | Beekeeper | Beehive or Bee Nest + a glass bottle or shears | any |
 | Sifter | Cauldron + gravel, sand, red sand or soul sand | any |
 | Vintner | Cauldron + sweet berries, glow berries or an apple | any |
+| Tailor | Loom + string | any |
 | Leatherworker (dyer) | Cauldron (vanilla) | any |
 | Scholar | Lectern + paper | Burgher |
 | Teacher | Lectern + a book | Artisan |
@@ -120,6 +121,7 @@ worker looks for a path in one go; farther walks are made in legs.
 | `workplaceKeepWorkLoaded` | true | Game rule: builds and quarries keep running while their player is online |
 | `workplaceVillageFarms` | true | Game rule: a village farmer with no field takes on the farm by their composter |
 | `vintners` | on from 1.8 | The Vintner job |
+| `tailors` | on from 1.8 | The Tailor job |
 | `berryBreeders` | on from 1.2 | The Berry Breeder job |
 | `campCooks` | on from 1.2 | The Camp Cook job |
 | `habitatKeepers` | on from 1.2 | The Habitat Keeper job |
@@ -162,7 +164,8 @@ and so on). Status lines and the requests board are not saved: workers post agai
 
 - A job needs a free block of its kind within about 4 blocks of the villager when it is picked.
 - Jobs given by order (a player's pick, the Steward) aren't held back by the worker cap.
-- The five Pokémon jobs, the Gem Grower and the Vintner are behind their expansions' switches until 1.2 and 1.8.
+- The five Pokémon jobs, the Gem Grower, the Vintner and the Tailor are behind their expansions' switches until 1.2
+  and 1.8.
 - This page lists how each job starts, not what it does: jobs without a wiki page yet are in the README.
 
 ## Proof
@@ -174,4 +177,4 @@ same block), `StationsSpecGameTests` (17), `StationsBugGameTests` (12), `Station
 
 Showcase scenes: `stations` (one composter, four jobs), `staff` (every workstation with its villager), `outfits`
 (every outfit, and as a zombie), `berry_breeder`, `camp_cook`, `habitat_keeper`, `daycare_keeper`, `gem_grower`,
-`vintner`.
+`vintner`, `tailor`.

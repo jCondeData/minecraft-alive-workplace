@@ -17,6 +17,14 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Added
+- **The Evergreen Charm, for 1.8** (34.19a, off until 1.8 is finished): a gold-and-green leaf pendant crafted from a
+  totem of undying, a golden apple, 2 emeralds and a heart of the sea. Sneak-right-click an elder with it and they
+  become Ageless: they never pass away, the chronicle says "Bram will never leave us" and their card on the hall's list
+  wears a gold leaf badge. Only an elder who is a Master of their trade, Gifted, a Legend, or has been happy (mood 80 or
+  more) for 20 days running takes it; anyone else refuses with the reason and you keep the charm. With it comes the
+  ground it stands on: villagers who grow up count their days, are elders after 120 (`villagerElderDays`), and pass away
+  in their sleep after 40 elder days, leaving a grave an Undertaker can bring them back from; the hall's list warns ten
+  days ahead. Config `villagerAges`, `elderPassing`, `agelessElders`.
 - **A trade screen of the Pokémon Trader's own** (28.23): the day's offers as cards (the Pokémon, its level, ball and
   shiny mark, and what it costs) beside your party, drawn like the Village Hall's screen, with a pressed-in button and
   "click again" line before a trade and a plain "no offers today" state.

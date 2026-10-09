@@ -49,8 +49,8 @@ public final class Graves {
 		}
 		VillagerProfession job = villager.getVillagerData().getProfession();
 		boolean worker = job != VillagerProfession.NONE && job != VillagerProfession.NITWIT;
-		if (!worker && !villager.hasCustomName()) {
-			return null;
+		if (!worker && !villager.hasCustomName() && !io.github.jcondedata.aliveworkplace.people.LifeStages.isElder(villager)) {
+			return null; // (an elder always gets one, with or without a job: 34.19)
 		}
 		BlockPos spot = spot(level, villager.blockPosition());
 		if (spot == null) {
@@ -157,6 +157,7 @@ public final class Graves {
 		level.playSound(null, pos, SoundEvents.TOTEM_USE, SoundSource.NEUTRAL, 0.6f, 1.1f);
 		io.github.jcondedata.aliveworkplace.hall.Chronicle.record(level, pos, io.github.jcondedata.aliveworkplace.hall.Chronicle.Kind.REVIVED, Component.translatable("chronicle.aliveworkplace.revived", villager.getDisplayName()));
 		io.github.jcondedata.aliveworkplace.legend.LegendSlots.onRevived(level, was, villager); // a Legend back as they were
+		io.github.jcondedata.aliveworkplace.people.LifeStages.onRevived(level, villager); // an elder whose time had come has 40 more days (34.19a)
 		return villager;
 	}
 

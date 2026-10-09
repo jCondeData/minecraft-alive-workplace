@@ -81,6 +81,7 @@
 			"io.github.jcondedata.aliveworkplace.test.BerryBreederGameTests",
 			"io.github.jcondedata.aliveworkplace.test.GemGrowerGameTests",
 			"io.github.jcondedata.aliveworkplace.test.VintnerGameTests",
+			"io.github.jcondedata.aliveworkplace.test.AgelessElderGameTests",
 			"io.github.jcondedata.aliveworkplace.test.DaycareKeeperGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaHallPagesSeasonsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.B38GameTests",

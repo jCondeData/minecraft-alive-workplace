@@ -181,6 +181,8 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 			if (Treasury.ENABLED) {
 				Treasury.round(server, pos, hall, census.workers(), census.jobless()); // by class (34.7)
 			}
+			// Happy days counted, and an elder whose time has come passes in the night (34.19, 34.19a).
+			io.github.jcondedata.aliveworkplace.people.LifeStages.round(server, pos, java.util.stream.Stream.concat(census.workers().stream(), census.jobless().stream()).toList());
 			PlayerBank.round(server, pos, hall);
 			TradeFairs.round(server, pos, hall);
 			Banquets.round(server, pos, hall);

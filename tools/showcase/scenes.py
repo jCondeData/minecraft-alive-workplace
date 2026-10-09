@@ -499,6 +499,13 @@ SCENES = [
       "three villagers by the hall talked of Long Shifts while it was in force, then of The Shift Bell once it was reformed", 30,
       [("01_village_talk_long_shifts", "Long Shifts in force: \"Long shifts again... my back.\""),
        ("02_village_talk_shift_bell", "Reformed: \"The shift bell's rung. Home we go.\"")]),
+    # The Evergreen Charm (ROADMAP 34.19a): an ordinary elder refuses it, a Master takes it and outlives his days; the other leaves a grave
+    S("ageless_elder", "Village Hall", "The Evergreen Charm: an ageless elder",
+      "Bram's card on the hall's list showed an elder two days from his time, the charm's tooltip said what it does, Dara (an ordinary elder) refused it and the player kept it, Bram (a Master farmer) took it and it was used up, the chronicle said he will never leave us, and after 45 elder days Dara passed in the night and left a grave while Bram stayed, his card wearing the gold leaf badge", 40,
+      [("03_ageless_elder_refused", "Dara, an ordinary elder, won't take it: the reason, and the charm kept"),
+       ("04_ageless_elder_accepted", "Bram, a Master, takes it: he will never leave us"),
+       ("05_ageless_elder_night", "45 elder days on, at nightfall: Dara's grave, and Bram still here"),
+       ("06_ageless_elder_badge", "Bram's card now: the gold leaf badge")]),
     S("tonics", "Village Hall", "Tonics: all six",
       "the miner drank the Miner's Brew she was offered and her status line showed her 25% faster with 19 minutes left; a Toolsmith, a Scholar, an Orchard Keeper and a Lumberjack drank the four new tonics", 40,
       [("01_tonics_offer", "Dara the miner, and Miner's Brew in hand"), ("02_tonics_tooltip", "What the brew does, for whom, who makes it"),

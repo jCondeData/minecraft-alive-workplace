@@ -145,6 +145,14 @@ public final class WorkplaceConfig {
 	public int classRiseDays = 2;
 	/** Dawns running a need of their own class must fail for a household to fall one class. */
 	public int classFallDays = 3;
+	/** Grown villagers count their days and become elders (ROADMAP 34.19). Off: nobody is an elder, so nobody passes of old age; the day they grew up stays saved. */
+	public boolean villagerAges = Expansions.on(Expansions.M34);
+	/** Grown days before a villager is an elder. */
+	public int villagerElderDays = 120;
+	/** An elder passes away in the night after 40 elder days and leaves a grave (owner, 2026-10-06). Off: elders never die of old age. */
+	public boolean elderPassing = Expansions.on(Expansions.M34);
+	/** An Evergreen Charm makes an elder with good traits ageless (ROADMAP 34.19a). Off: charms are refused; elders already ageless stay so. */
+	public boolean agelessElders = Expansions.on(Expansions.M34);
 	/** Villagers at a cauldron can be made Vintners with sweet berries, glow berries or an apple (ROADMAP 34.9). Off: no Vintner job, and Vintners already hired stand idle. */
 	public boolean vintners = Expansions.on(Expansions.M34);
 	/** Villagers at a composter can be made Berry Breeders with a Cobblemon berry (ROADMAP 28.9). Off: no Berry Breeder job. */
@@ -275,6 +283,7 @@ public final class WorkplaceConfig {
 		"guildsPerRank", 1, 4,
 		"classRiseDays", 1, 30,
 		"classFallDays", 1, 30,
+		"villagerElderDays", 20, 1000,
 		"giftedChance", 0, 1000,
 		"seasonDays", 1, 120,
 		"treasuryPerWorker", 0, 500,
@@ -393,6 +402,10 @@ public final class WorkplaceConfig {
 		io.github.jcondedata.aliveworkplace.people.Tonics.ENABLED = tonics && Expansions.on(Expansions.M30);
 		io.github.jcondedata.aliveworkplace.hall.Guilds.ENABLED = guilds && Expansions.on(Expansions.M30);
 		io.github.jcondedata.aliveworkplace.hall.Guilds.PER_RANK = guildsPerRank;
+		io.github.jcondedata.aliveworkplace.people.LifeStages.AGES = villagerAges && Expansions.on(Expansions.M34);
+		io.github.jcondedata.aliveworkplace.people.LifeStages.ELDER_DAYS = villagerElderDays;
+		io.github.jcondedata.aliveworkplace.people.LifeStages.PASSING = elderPassing && Expansions.on(Expansions.M34);
+		io.github.jcondedata.aliveworkplace.people.LifeStages.AGELESS = agelessElders && Expansions.on(Expansions.M34);
 		// Off in gametests (a hall round could move a test's household a class); the class tests turn it on.
 		io.github.jcondedata.aliveworkplace.people.SocialClasses.ENABLED = villageClasses && Expansions.on(Expansions.M34) && System.getProperty("fabric-api.gametest") == null;
 		io.github.jcondedata.aliveworkplace.people.SocialClasses.RISE_DAYS = classRiseDays;

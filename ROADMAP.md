@@ -3839,7 +3839,7 @@ on a real world.
   (`elderPassing` on), unless made ageless by 34.19a. Done when:
   `LifeStageGameTests` (an elder after the configured days with the clock moved on, the slower walk, the mood reason,
   a reload keeping the day, a child growing up getting today) pass; scene `elders` passes.
-- [ ] **34.19a** **The Evergreen Charm: ageless elders** (owner, 2026-10-06: "make an elder eternal if they have good
+- [x] **34.19a** (review: pending 2026-10-09) **The Evergreen Charm: ageless elders** (owner, 2026-10-06: "make an elder eternal if they have good
   traits by building a specific item and giving it to them, so you don't lose good villagers"). A new item, the
   **Evergreen Charm** (pixel-art: a small gold-and-green leaf pendant; a rare craft: a totem of undying, a golden
   apple, 2 emeralds and a heart of the sea, our decision, tune in play). Sneak-right-click an elder with it: they
@@ -4373,6 +4373,18 @@ item waits.
 - (Sessions: anything that needs the owner, and the link to the latest Full test report. Handoffs go here through
   `sessions.py handoff "<in progress, next, traps>" --as <you>`, which keeps one per kind of session (chat, night):
   carry over anything still true from the previous one.)
+- 2026-10-09 (34.19a, decisions; lane d): 34.19 (elders) was not built yet, so 34.19a built the part of it the charm
+  stands on, in `people/LifeStages`, with the names of the design note: the `adult_since` attachment (written when a
+  child grows up in `Families.round`), `isElder` from `villagerElderDays`, the passing after 40 elder days with a grave
+  (`elderPassing`), the hall's "Elder · grown N days" line, the chronicle kind `LIFE`, and the config switches
+  `villagerAges`, `villagerElderDays`, `elderPassing`, `agelessElders` (all behind `Expansions.M34`). **34.19 still
+  owes**: the elder look, the 15% slower walk, the "quiet old age" mood, the chatter, the "is an elder now" chronicle
+  line and `LifeStageGameTests`; it should build on `LifeStages`, not beside it. Our choices: charms off leaves
+  ageless elders ageless; `elderPassing` off refuses the charm as not needed (kept); "mood 80 for the last 20 days" is
+  20 counted days running (new attachment `happy_streak`); an elder an Undertaker brings back gets 40 more days
+  (`passed_day`), else they would pass again the same night; an elder always leaves a grave, job or not; the hall's
+  card warns from 10 days before. For 34.20: a retired Master must still count as a Master for the charm. Details:
+  `docs/wiki/elders.md`.
 - 2026-10-06 (32.1, question for the owner; lane b): may M32's threats damage builder-made buildings on the live
   server? Rams break only the gate blocks (fence gates, doors, iron bars) of finished wall and gate builds, and a village
   fire burns only blocks the builders placed; never a player's own blocks, and the builders always put them back.

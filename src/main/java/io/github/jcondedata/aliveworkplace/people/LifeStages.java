@@ -48,9 +48,14 @@ import org.jetbrains.annotations.Nullable;
  * days (the {@code happy_streak} attachment, counted once a day in the hall's round). Anyone else refuses with the
  * reason and the player keeps the charm.
  *
- * <p>Whether someone is an elder is never saved: it is worked out from {@code adult_since}. This class holds the part
- * of 34.19 the charm needs (the count, the passing, the hall's lines); the elder look, the slower walk, the mood and
- * the chatter are 34.18 and 34.19's.
+ * <p>An elder walks 15% slower ({@link #walk} and {@link #ELDER_WALK}, asked by {@code work/Walker}), has "a quiet old age"
+ * ({@link #QUIET_OLD_AGE +5}) in their mood when fed and housed ({@code Moods}), four chatter lines of their own
+ * ({@code Chatter}'s topic {@code elder}), and the chronicle notes the day they became one ("Bram is an elder now",
+ * once: the {@code elder_noted} attachment).
+ *
+ * <p>Whether someone is an elder is never saved: it is worked out from {@code adult_since}. The elder <b>look</b> is
+ * 34.18's (a client render layer): it should draw it for whoever {@link #stage} calls an {@link Stage#ELDER}, and send
+ * its packet from {@link #becameElder}, the one place a villager's stage is seen to change.
  */
 public final class LifeStages {
 	/** {@code villagerAges} in the config. Off: nobody is an elder (so nobody passes); {@code adult_since} is still kept. */
@@ -61,6 +66,13 @@ public final class LifeStages {
 	public static boolean PASSING = true;
 	/** {@code agelessElders}. Off: Evergreen Charms are refused; those already ageless stay so. */
 	public static boolean AGELESS = true;
+	/**
+	 * What an elder's walk target is multiplied by, for a walk 15% slower over the ground: a mob's pace goes with the
+	 * square of its speed ({@code Mob.setSpeed} also sets how hard it pushes forward), and 0.922 squared is 0.85.
+	 */
+	public static final float ELDER_WALK = 0.922f;
+	/** What "a quiet old age" adds to the mood of an elder who is fed and housed. */
+	public static final int QUIET_OLD_AGE = 5;
 	/** Elder days before an elder passes. */
 	public static final int PASSING_DAYS = 40;
 	/** The mood, and the days running, that make an elder worth a charm. */
@@ -130,6 +142,26 @@ public final class LifeStages {
 		return villager.level() instanceof ServerLevel level && isElder(villager, Chronicle.day(level));
 	}
 
+	/** A villager's stage of life. */
+	public enum Stage {
+		CHILD, GROWN, ELDER
+	}
+
+	/** {@code villager}'s stage of life on {@code day} (what 34.18's elder look is drawn from). */
+	public static Stage stage(Villager villager, long day) {
+		return villager.isBaby() ? Stage.CHILD : isElder(villager, day) ? Stage.ELDER : Stage.GROWN;
+	}
+
+	/** Walk target multiplier ({@link #ELDER_WALK}): an elder, ageless or not, walks 15% slower. */
+	public static float walk(Villager villager) {
+		return isElder(villager) ? ELDER_WALK : 1f;
+	}
+
+	/** Whether {@code villager} has the mood reason "a quiet old age" on {@code day}: an elder who is fed and has a bed. */
+	public static boolean quietOldAge(Villager villager, long day, boolean fed, boolean housed) {
+		return fed && housed && isElder(villager, day);
+	}
+
 	/** Days {@code villager} has been an elder, on {@code day}; -1 for anyone else. */
 	public static long elderDays(Villager villager, long day) {
 		return isElder(villager, day) ? grownDays(villager, day) - ELDER_DAYS : -1;
@@ -158,7 +190,10 @@ public final class LifeStages {
 
 	// --- The hall's round -----------------------------------------------------------------------------------------
 
-	/** The hall's round: each grown villager's happy days are counted once a day, and an elder whose time has come passes in the night. */
+	/**
+	 * The hall's round: each grown villager's happy days are counted once a day, the chronicle notes who has become an
+	 * elder, and an elder whose time has come passes in the night.
+	 */
 	public static void round(ServerLevel level, BlockPos hall, List<Villager> grown) {
 		long day = Chronicle.day(level);
 		for (Villager villager : List.copyOf(grown)) {
@@ -166,9 +201,24 @@ public final class LifeStages {
 				continue;
 			}
 			countMood(villager, day);
+			if (isElder(villager, day) && !ModAttachments.ELDER_NOTED.getOrElse(villager, false)) {
+				becameElder(level, hall, villager);
+			}
 			if (daysLeft(villager, day) == 0 && resting(level, villager)) {
 				pass(level, villager);
 			}
+		}
+	}
+
+	/**
+	 * {@code villager} is an elder from today (seen once, in the hall's round; with the village not loaded that day, the
+	 * next time it is): the chronicle notes it, unless an Evergreen Charm already wrote them in as one. 34.18's packet
+	 * with the elder look goes out from here.
+	 */
+	private static void becameElder(ServerLevel level, BlockPos hall, Villager villager) {
+		ModAttachments.ELDER_NOTED.set(villager, true);
+		if (!isAgeless(villager)) {
+			Chronicle.atHall(level, hall, Chronicle.Kind.LIFE, Component.translatable("chronicle.aliveworkplace.elder", villager.getDisplayName()));
 		}
 	}
 

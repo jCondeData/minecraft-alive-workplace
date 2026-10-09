@@ -16,6 +16,12 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+### Added
+- **Elders, for 1.8** (34.19, off until 1.8 is finished): after 120 grown days a villager is an elder. The chronicle
+  notes the day ("Bram is an elder now"), they walk 15% slower on their work's errands, their mood has "a quiet old
+  age" (+5) while they are fed and have a bed, and off work they have four lines of their own ("In my day this was all
+  fields."). The elder look comes later, with the class outfits (34.18). `villagerAges` turns elders off.
+
 ## 0.141.0 — 2026-10-09
 
 ### Added

@@ -2,11 +2,11 @@
 
 Life stages for villagers: after a long grown life a villager becomes an elder and, in time, passes in their sleep,
 unless a player gives a good elder an Evergreen Charm. Part of 1.8 (Classes and luxuries): off for players until 1.8
-is finished. Built so far: ages, the passing and the charm (34.19a, on the part of 34.19 it needs). Still planned and
-not in the game: the elder look (34.18), the slower walk, the "quiet old age" mood and the elders' chatter (34.19),
-retirement and mentoring (34.20) and the seeding of everyone's age (34.22); this page grows with them.
+is finished. Built so far: ages, the slower walk, the "quiet old age" mood, the elders' chatter and the chronicle's note
+(34.19), the passing and the charm (34.19a). Still planned and not in the game: the elder look (34.18), retirement and
+mentoring (34.20) and the seeding of everyone's age (34.22); this page grows with them.
 
-Roadmap items: 34.19a
+Roadmap items: 34.19, 34.19a
 
 <!-- Lanes: add each id to the line above in the commit that builds it (34.19, 34.20), and put the new config keys,
      saved fields, tests and scenes in backticks so wikicheck.py checks them. -->
@@ -14,7 +14,20 @@ Roadmap items: 34.19a
 ## What a player sees
 
 A villager who grew up in a village with a Village Hall counts their days. After 120 grown days they are an **elder**:
-their card on the hall's list says "Elder · grown 131 days". Forty elder days later their time comes: they pass away in
+their card on the hall's list says "Elder · grown 131 days", and the chronicle notes the day ("Bram is an elder now").
+An elder:
+
+- **walks 15% slower** wherever their work takes them (a builder to the site, a miner to the quarry, a courier on the
+  round): beside a younger villager on the same path they fall behind;
+- has **"a quiet old age"** (+5) in their mood while they are fed and have a bed of their own; it is the first reason on
+  their card ("Happy (80): a quiet old age, fed, a bed of their own, ..."). A hungry elder, or one with no bed, has none;
+- **talks like one**. Off work and near a player, an elder now and then says one of four lines of their own: "In my day
+  this was all fields.", "I've seen more harvests than you've had hot dinners.", "These knees knew every path in the
+  village, once.", "Sit a while. The young ones are always in a hurry."
+
+They do not look any different yet: the elder look comes with the class outfits (34.18).
+
+Forty elder days later their time comes: they pass away in
 their sleep (or, with no bed, once night has fallen) and leave a grave. The village is told in chat, the chronicle
 notes it ("Bram passed away in their sleep, an elder"), and an Undertaker can bring them back for another 40 days.
 From ten days before, the card warns: "Their time comes in 5 days (an Evergreen Charm keeps them)", then "Their time
@@ -42,6 +55,15 @@ undying, a golden apple, 2 emeralds and a heart of the sea (any arrangement). Sn
   round (`Families.round`). Whether someone is an elder is never saved: it is `today - adult_since >= villagerElderDays`
   (`people/LifeStages`). A villager with no `adult_since` (everyone in a world from before 1.8, until 34.22 seeds them)
   is never an elder and never passes.
+- **The chronicle's note.** The hall's round writes "Bram is an elder now" (kind `LIFE`) the first time it sees them
+  as an elder, and marks them `elder_noted` so it is written once: on the day itself, or, if the village wasn't loaded
+  that day, the next time it is. An elder an Evergreen Charm already wrote into the chronicle gets no second line.
+- **The walk.** `work/Walker` multiplies every walk it asks for by `LifeStages.walk`: 0.922 for an elder. A mob's pace
+  goes with the square of that number, so 0.922 is 15% less ground in the same time (0.85 would be 28% less). It slows
+  the walks our jobs ask for; a stroll the game itself decides on (wandering, going to bed) keeps vanilla's pace.
+- **The mood.** `Moods` adds 5 for an elder who is fed (ate within their day) and has a bed. Because it lifts the mood,
+  it also helps an elder towards the 20 happy days below.
+- **The talk.** `Chatter` has the topic `elder` (four lines), as likely as any village news.
 - **Good traits**, the first that holds: a Legend; Gifted (29.x); Master level (5) in a real trade (not jobless, not a
   nitwit); or 20 **happy days**. Happy days are counted in the hall's round, once a day per villager: a mood of 80 or
   more adds one, a lower mood starts again from 0. Days nobody counted (the village not loaded, moods off) neither add
@@ -52,13 +74,15 @@ undying, a golden apple, 2 emeralds and a heart of the sea (any arrangement). Sn
   left; an elder always gets a grave, even with no job and no name.
 - **Brought back.** An elder whose time had come and whom an Undertaker revives gets `passed_day` = that day and 40 more
   days from it (otherwise they would pass again the same night and waste the golden apple). A charm clears it.
-- **Ageless** is one saved flag. It only stops the passing.
+- **Ageless** is one saved flag. It only stops the passing: an ageless elder keeps the slower walk, the quiet old age
+  and the talk.
 
 ## Switches
 
 All four belong to 1.8 (`Expansions.M34`): off for players, whatever the file says, until 1.8 is finished.
 
-- `villagerAges` (true): villagers become elders. Off: nobody is an elder, so nobody passes; `adult_since` is kept.
+- `villagerAges` (true): villagers become elders. Off: nobody is an elder, so nobody is slowed, has the quiet old age,
+  talks like one or passes; `adult_since` is kept, so turning it on again makes them the elders they were all along.
 - `villagerElderDays` (120, 20 to 1000): grown days before a villager is an elder.
 - `elderPassing` (true; owner, 2026-10-06): elders pass after 40 elder days. Off: nobody dies of old age, and a charm is
   refused as not needed.
@@ -71,7 +95,8 @@ On the villager (attachments; every one optional, so older saves load unchanged)
 - `adult_since` (absent: age unknown, never an elder);
 - `ageless` (absent: false);
 - `happy_streak`: {`days` 0, `day` 0}, the happy days running and the last day counted (absent: none);
-- `passed_day` (absent: never brought back from old age).
+- `passed_day` (absent: never brought back from old age);
+- `elder_noted` (absent: the chronicle hasn't noted them as an elder yet).
 
 The chronicle has a new kind, `LIFE` (a clock); an older version reads an unknown kind as `FOUNDED`.
 
@@ -86,6 +111,10 @@ The chronicle has a new kind, `LIFE` (a clock); an older version reads an unknow
 
 - 34.19 (owner, 2026-10-06): elders do pass in their sleep after 40 elder days and leave a grave. The design note
   `docs/design/M34.md` had this off by default; the owner turned it on.
+- 34.19: "15% slower" is measured over the ground, not in the walk target's number (see "The walk").
+- 34.19: "a quiet old age" is listed first among the good reasons, since the card shows only four reasons.
+- 34.19: the chronicle's note is written once per villager for good: if `villagerElderDays` is raised and lowered again,
+  nobody is announced twice.
 - 34.19a (owner, 2026-10-06): an elder with good traits can be made eternal with a crafted item; the recipe is ours to
   tune in play.
 - 34.19a: with `agelessElders` off, elders already ageless stay so. Turning a switch off should never cost a player a
@@ -100,9 +129,11 @@ The chronicle has a new kind, `LIFE` (a clock); an older version reads an unknow
 
 ## Known limits
 
-- Planned, not built, so no player sees it and nothing tests it (34.19): the elder look, a 15% slower walk, the mood
-  reason "a quiet old age" (+5) for a fed and housed elder, the chronicle line "Bram is an elder now" and four elder
-  chatter lines.
+- Planned, not built, so no player sees it and nothing tests it (34.18): the elder look. Nothing of 34.17 or 34.18
+  (the class outfits' render layer and its packet) exists yet, so an elder looks like any villager of their trade.
+  34.18 should draw the look for whoever `LifeStages.stage` calls an elder, and send its packet where the chronicle's
+  note is written (`LifeStages.becameElder`).
+- Only the walks our jobs ask for are slower (through `Walker`); vanilla's own strolls are not.
 - Planned, not built (34.20): an elder with a job retires once a successor can take over (their own grown child
   without a job, else any jobless grown villager whose class the job allows, see [Classes](classes.md)), at most one
   villager a village every 3 days; the retired elder mentors a Novice or Apprentice of their old trade. An elder will
@@ -115,6 +146,15 @@ The chronicle has a new kind, `LIFE` (a clock); an older version reads an unknow
 
 ## Proof
 
+- GameTests: `LifeStageGameTests`: the world's clock moved on to grown day 119 (not an elder) and 120 (an elder, the
+  hall's line, the chronicle's note once), and 30 configured days (`aVillagerIsAnElderAfterTheConfiguredDays`); the walk
+  target every worker gets, an ageless elder's too, and two villagers walking side by side for 60 ticks, the elder
+  covering 80 to 90% of the ground (`anElderWalksSlower`); the mood 5 higher than a younger villager's same day, first on
+  the card, gone when hungry or without a bed, and the four lines word for word (`aFedAndHousedElderHasAQuietOldAge`);
+  a reload, an older save's villager, an elder made ageless before this version (`aReloadKeepsTheDay`); a child grown up
+  in the hall's own round, and an elder noted by it (`aChildGrowingUpIsGrownFromToday`); `villagerAges` off and on again
+  (`withVillagerAgesOffNobodyIsAnElder`).
+- Showcase scene: `elders` (the day Bram becomes one, his card, his line, the walk beside young Tom).
 - GameTests: `AgelessElderGameTests`: the recipe, tooltip and config (`theCharmIsCraftedAndExplainsItself`); a Master
   through the sneak-right-click, then a Gifted villager, a Legend and a 20-happy-day elder, the charm used up, the gold
   badge, the chronicle, a second charm refused, creative keeps it (`anElderWithAGoodTraitTakesTheCharm`); every refusal

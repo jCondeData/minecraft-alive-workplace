@@ -506,6 +506,12 @@ SCENES = [
        ("04_ageless_elder_accepted", "Bram, a Master, takes it: he will never leave us"),
        ("05_ageless_elder_night", "45 elder days on, at nightfall: Dara's grave, and Bram still here"),
        ("06_ageless_elder_badge", "Bram's card now: the gold leaf badge")]),
+    # Elders (ROADMAP 34.19): the day Bram becomes one, his card, his talk, and his slower walk beside a young villager
+    S("elders", "Village Hall", "Elders: a quiet old age",
+      "a day on, Bram had been grown 120 days and the chronicle said \"Bram is an elder now\" once; his card on the hall's list said \"Elder · grown 120 days\" with \"a quiet old age\" first in his mood (fed, a bed of his own); he said \"In my day this was all fields.\"; and walking side by side with young Tom he covered about 15% less ground in the same time", 35,
+      [("01_elders_card", "Bram's card: an elder, grown 120 days, with a quiet old age"),
+       ("02_elders_talk", "\"In my day this was all fields.\""),
+       ("03_elders_walk", "The same walk, side by side: Bram, the elder, falls behind Tom")]),
     S("tonics", "Village Hall", "Tonics: all six",
       "the miner drank the Miner's Brew she was offered and her status line showed her 25% faster with 19 minutes left; a Toolsmith, a Scholar, an Orchard Keeper and a Lumberjack drank the four new tonics", 40,
       [("01_tonics_offer", "Dara the miner, and Miner's Brew in hand"), ("02_tonics_tooltip", "What the brew does, for whom, who makes it"),

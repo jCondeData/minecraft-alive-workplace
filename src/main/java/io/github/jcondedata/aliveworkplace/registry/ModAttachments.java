@@ -356,6 +356,8 @@ public final class ModAttachments {
 	public static final Attachment<io.github.jcondedata.aliveworkplace.people.LifeStages.Streak> HAPPY_STREAK = Attachment.saved("happy_streak", io.github.jcondedata.aliveworkplace.people.LifeStages.Streak.CODEC);
 	/** The day an Undertaker brought back an elder whose time had come (34.19a): they have 40 more days from it. Absent: never. */
 	public static final Attachment<Long> PASSED_DAY = Attachment.saved("passed_day", com.mojang.serialization.Codec.LONG);
+	/** The chronicle has noted that they became an elder (34.19: "Bram is an elder now", once). Absent: not yet. */
+	public static final Attachment<Boolean> ELDER_NOTED = Attachment.saved("elder_noted", com.mojang.serialization.Codec.BOOL);
 
 	public static void init() {
 	}

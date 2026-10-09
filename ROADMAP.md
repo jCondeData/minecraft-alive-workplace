@@ -3830,7 +3830,7 @@ on a real world.
   from 34.17 replace v1 as they come. Done when: a GameTest checks the packet goes out on tracking and on a change;
   scene `class_outfits` (the four classes side by side in three jobs each, plus an elder, in daylight) passes with
   every job still readable; the shots are in the review package.
-- [ ] **34.19** **Life stages: elders.** Grown villagers count their days: `adult_since` (saved: the day they grew
+- [x] **34.19** (review: pending 2026-10-09) **Life stages: elders.** Grown villagers count their days: `adult_since` (saved: the day they grew
   up; set in `Families.round` when a child grows up, seeded for everyone else by 34.22). After `villagerElderDays`
   (120) grown days a villager is an **elder**: the hall says so ("Elder · grown 131 days"), they wear the elder look
   (34.18), walk 15% slower (`Walker`), and their mood gets "a quiet old age" (+5) when they're fed and housed. The
@@ -4373,6 +4373,19 @@ item waits.
 - (Sessions: anything that needs the owner, and the link to the latest Full test report. Handoffs go here through
   `sessions.py handoff "<in progress, next, traps>" --as <you>`, which keeps one per kind of session (chat, night):
   carry over anything still true from the previous one.)
+- 2026-10-09 (34.19, decisions and a hand-over to 34.18; lane d): built on `people/LifeStages`: the slower walk, "a
+  quiet old age", the chronicle's "is an elder now", the four chatter lines, `LifeStageGameTests`, scene `elders`.
+  **The elder look is not built**: nothing of 34.17/34.18 exists (no render layer, no packet, no outfit art), so an
+  elder looks like any villager. **For 34.18**: draw the look for whoever `LifeStages.stage(villager, day)` calls
+  `ELDER` (ageless ones too), and send the life-stage packet from `LifeStages.becameElder` (the one place a stage is
+  seen to change; a child growing up is `Families.round`), then add an elder's look to scene `elders`. Our choices:
+  "15% slower" is over the ground, so the walk target is multiplied by 0.922, not 0.85 (a mob's pace goes with the
+  square of its speed: `Mob.setSpeed` also sets its forward push; 0.85 works out to 28% slower); only walks asked through
+  `Walker` are slowed, vanilla's own strolls are not; "a quiet old age" is listed first of the good reasons because
+  the hall's card shows four; the chronicle's note is once per villager for good (new saved attachment `elder_noted`,
+  absent in older saves), written the first time the hall's round sees them as an elder, and not for an elder a charm
+  already wrote in. Seen on the way, not changed: the Nimble trait's "15% faster" multiplies the walk target by 1.15,
+  which by the same square is about 32% faster over the ground. Details: `docs/wiki/elders.md`.
 - 2026-10-09 (34.19a, decisions; lane d): 34.19 (elders) was not built yet, so 34.19a built the part of it the charm
   stands on, in `people/LifeStages`, with the names of the design note: the `adult_since` attachment (written when a
   child grows up in `Families.round`), `isElder` from `villagerElderDays`, the passing after 40 elder days with a grave

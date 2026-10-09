@@ -49,6 +49,7 @@ public final class Walker {
 	 * Asks vanilla's walking behaviour to take the villager to {@code pos}. It drops the target when it arrives or when it
 	 * finds no path; after a failed path the next try waits {@link #RETRY_TICKS} (instead of a fresh path search every
 	 * tick: pathfinding is most of what villagers cost), and getting unstuck is left to the hop. Returns the new wait.
+	 * The nimble get a faster walk, and elders one 15% slower over the ground ({@code LifeStages.walk}, 34.19).
 	 */
 	public static int requestWalk(Villager villager, BlockPos pos, float speed, int closeEnough, int retryWait) {
 		var brain = villager.getBrain();
@@ -59,7 +60,8 @@ public final class Walker {
 		if (brain.hasMemoryValue(MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE) && retryWait + 1 < RETRY_TICKS) {
 			return retryWait + 1;
 		}
-		brain.setMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(pos, speed * io.github.jcondedata.aliveworkplace.people.Traits.speed(villager), closeEnough));
+		brain.setMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(pos, speed * io.github.jcondedata.aliveworkplace.people.Traits.speed(villager)
+			* io.github.jcondedata.aliveworkplace.people.LifeStages.walk(villager), closeEnough));
 		return 0;
 	}
 

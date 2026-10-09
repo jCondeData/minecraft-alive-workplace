@@ -228,6 +228,11 @@ public final class Friendship {
 		ServerLevel level = player.serverLevel();
 		Vec3 eye = player.getEyePosition();
 		Vec3 end = eye.add(player.getViewVector(1f).scale(LOOK_RANGE));
+		// Never load a chunk for a glance: clip() loads the chunks along the ray on the server thread (B93: players
+		// standing in unloaded chunks made every tick up to 25 times slower).
+		if (!level.isLoaded(BlockPos.containing(eye)) || !level.isLoaded(BlockPos.containing(end))) {
+			return null;
+		}
 		HitResult block = level.clip(new ClipContext(eye, end, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, player));
 		if (block.getType() != HitResult.Type.MISS) {
 			end = block.getLocation();

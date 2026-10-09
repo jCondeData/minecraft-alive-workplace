@@ -322,7 +322,7 @@ Before polishing, make sure nothing regresses unnoticed.
   to read the result.
 
 
-- [ ] **22.9** **The wiki: how everything works, kept true** (owner, 2026-10-06). `docs/wiki/`, plain markdown that GitHub
+- [x] **22.9** (approved auto 2026-10-09) **The wiki: how everything works, kept true** (owner, 2026-10-06). `docs/wiki/`, plain markdown that GitHub
   shows as pages: `README.md` is the index; one page per feature or system (what a player sees; how it works in a few
   paragraphs; every config switch with its default; every saved field with its default; the commands, items, blocks
   and jobs; the decisions made and why, with the roadmap id; known limits; the tests and scenes that prove it). Written

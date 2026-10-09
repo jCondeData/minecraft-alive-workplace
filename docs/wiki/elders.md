@@ -1,8 +1,15 @@
 # Elders and the Evergreen Charm
 
-ROADMAP 34.19a (the charm and the passing), on the part of 34.19 it needs. Part of 1.8 (Classes and luxuries): off for
-players until 1.8 is finished. The elder look (34.18), the slower walk, the "quiet old age" mood and the elders' chatter
-(34.19), retirement (34.20) and the seeding of everyone's age (34.22) are not built yet; this page grows with them.
+Life stages for villagers: after a long grown life a villager becomes an elder and, in time, passes in their sleep,
+unless a player gives a good elder an Evergreen Charm. Part of 1.8 (Classes and luxuries): off for players until 1.8
+is finished. Built so far: ages, the passing and the charm (34.19a, on the part of 34.19 it needs). Still planned and
+not in the game: the elder look (34.18), the slower walk, the "quiet old age" mood and the elders' chatter (34.19),
+retirement and mentoring (34.20) and the seeding of everyone's age (34.22); this page grows with them.
+
+Roadmap items: 34.19a
+
+<!-- Lanes: add each id to the line above in the commit that builds it (34.19, 34.20), and put the new config keys,
+     saved fields, tests and scenes in backticks so wikicheck.py checks them. -->
 
 ## What a player sees
 
@@ -77,6 +84,8 @@ The chronicle has a new kind, `LIFE` (a clock); an older version reads an unknow
 
 ## Decisions
 
+- 34.19 (owner, 2026-10-06): elders do pass in their sleep after 40 elder days and leave a grave. The design note
+  `docs/design/M34.md` had this off by default; the owner turned it on.
 - 34.19a (owner, 2026-10-06): an elder with good traits can be made eternal with a crafted item; the recipe is ours to
   tune in play.
 - 34.19a: with `agelessElders` off, elders already ageless stay so. Turning a switch off should never cost a player a
@@ -91,6 +100,13 @@ The chronicle has a new kind, `LIFE` (a clock); an older version reads an unknow
 
 ## Known limits
 
+- Planned, not built, so no player sees it and nothing tests it (34.19): the elder look, a 15% slower walk, the mood
+  reason "a quiet old age" (+5) for a fed and housed elder, the chronicle line "Bram is an elder now" and four elder
+  chatter lines.
+- Planned, not built (34.20): an elder with a job retires once a successor can take over (their own grown child
+  without a job, else any jobless grown villager whose class the job allows, see [Classes](classes.md)), at most one
+  villager a village every 3 days; the retired elder mentors a Novice or Apprentice of their old trade. An elder will
+  never retire while holding something for a player or a build.
 - Until 34.22 seeds ages, only children who grow up from now on ever become elders.
 - A Master who retires (34.20) and loses their level would stop counting as a Master; 34.20 must keep the old level
   or its own flag for this check.

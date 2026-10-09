@@ -2396,6 +2396,86 @@ final class JobScenes {
 					Showcase.check(shown, "the hall's tooltip for Dara shows your hearts and her best friends");
 				}, 30)),
 			(level, player) -> subject != null && io.github.jcondedata.aliveworkplace.story.Friendship.points(subject, player.getUUID()) >= 310));
+		// Gifts (ROADMAP 31.6): Gift Wrap and a Golden Carrot on the crafting grid make a Gift; Dara the farmer unwraps
+		// it (her line over her head and in chat, bits of carrot, hearts), her hearts go up in the action bar, and the
+		// hall's tooltip says when her name day is.
+		SCREENS.put("gifts", new Screen("a Golden Carrot wrapped on the crafting grid and given to Dara: she loved it, her hearts went up, and the hall's tooltip says when her name day is",
+			new Vec3(1.5, -60, 4.5), new Vec3(1.5, -58.8, 1.5),
+			(level, player) -> {
+				level.setBlockAndUpdate(STATION, ModBlocks.VILLAGE_HALL.defaultBlockState()
+					.setValue(io.github.jcondedata.aliveworkplace.hall.VillageHallBlock.FACING, Direction.SOUTH));
+				level.setBlockAndUpdate(new BlockPos(3, -60, 3), net.minecraft.world.level.block.Blocks.CRAFTING_TABLE.defaultBlockState());
+				Villager dara = EntityType.VILLAGER.spawn(level, new BlockPos(1, -60, 1), MobSpawnType.COMMAND);
+				dara.setNoAi(true);
+				dara.setYRot(0);
+				dara.setYHeadRot(0);
+				dara.setYBodyRot(0);
+				dara.setVillagerData(dara.getVillagerData().setProfession(VillagerProfession.FARMER).setLevel(2));
+				dara.setCustomName(Component.literal("Dara"));
+				subject = dara;
+			},
+			List.of(new Step("01_wrapping", -1, 0, (level, player) -> {
+					// The hall's POI is only registered after the staging tick: look Dara's hall up again now (B72).
+					io.github.jcondedata.aliveworkplace.hall.CivicEffects.forget();
+					io.github.jcondedata.aliveworkplace.story.Friendship.add(subject, player, 255); // the days before
+					BlockPos table = new BlockPos(3, -60, 3);
+					player.openMenu(new net.minecraft.world.SimpleMenuProvider((id, inventory, p) -> new net.minecraft.world.inventory.CraftingMenu(id, inventory,
+						net.minecraft.world.inventory.ContainerLevelAccess.create(level, table)), Component.translatable("container.crafting")));
+					boolean wrapped = false;
+					if (player.containerMenu instanceof net.minecraft.world.inventory.CraftingMenu menu) {
+						menu.getSlot(1).set(new ItemStack(io.github.jcondedata.aliveworkplace.registry.ModItems.GIFT_WRAP));
+						menu.getSlot(2).set(new ItemStack(Items.GOLDEN_CARROT));
+						menu.broadcastChanges();
+						ItemStack result = menu.getSlot(0).getItem();
+						wrapped = result.is(io.github.jcondedata.aliveworkplace.registry.ModItems.GIFT)
+							&& io.github.jcondedata.aliveworkplace.story.Gifts.contents(result).is(Items.GOLDEN_CARROT);
+					}
+					Showcase.check(wrapped, "Gift Wrap and a Golden Carrot on the crafting grid make a Gift holding the carrot");
+				}, 40),
+				new Step("02_giving", -1, 0, (level, player) -> {
+					Villager dara = subject;
+					// Take the Gift off the grid as a shift-click does (that signs it), and give it to Dara.
+					if (player.containerMenu instanceof net.minecraft.world.inventory.CraftingMenu menu) {
+						menu.quickMoveStack(player, 0);
+					}
+					player.closeContainer();
+					ItemStack gift = ItemStack.EMPTY;
+					for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
+						if (player.getInventory().getItem(i).is(io.github.jcondedata.aliveworkplace.registry.ModItems.GIFT)) {
+							gift = player.getInventory().removeItemNoUpdate(i);
+						}
+					}
+					boolean signed = io.github.jcondedata.aliveworkplace.story.Gifts.from(gift).equals(player.getGameProfile().getName());
+					player.setItemInHand(InteractionHand.MAIN_HAND, gift);
+					var result = io.github.jcondedata.aliveworkplace.story.Gifts.give(player, dara, player.getMainHandItem());
+					int expected = io.github.jcondedata.aliveworkplace.story.Tastes.Band.LOVED.points
+						* (result.nameDay() ? io.github.jcondedata.aliveworkplace.story.Gifts.NAME_DAY_FACTOR : 1);
+					Showcase.check(signed && result.outcome() == io.github.jcondedata.aliveworkplace.story.Gifts.Outcome.GIVEN
+						&& result.band() == io.github.jcondedata.aliveworkplace.story.Tastes.Band.LOVED && result.change() == expected
+						&& player.getMainHandItem().isEmpty() && result.line().getString().contains("Golden Carrot"),
+						"the Gift is from the player, and Dara the farmer loved her Golden Carrot (+" + expected + "): " + result.line().getString());
+				}, 40),
+				new Step("03_hearts", -1, 0, (level, player) -> {
+					Villager dara = subject;
+					int points = io.github.jcondedata.aliveworkplace.story.Friendship.points(dara, player.getUUID());
+					Component line = io.github.jcondedata.aliveworkplace.story.Friendship.lookLine(player);
+					// A second gift the same day is turned down, with a line.
+					player.setItemInHand(InteractionHand.MAIN_HAND, io.github.jcondedata.aliveworkplace.story.Gifts.wrap(new ItemStack(Items.CAKE), player.getGameProfile().getName()));
+					var again = io.github.jcondedata.aliveworkplace.story.Gifts.give(player, dara, player.getMainHandItem());
+					Showcase.check(points >= 335 && line != null && line.getString().startsWith("Dara ♥♥♥")
+						&& again.outcome() == io.github.jcondedata.aliveworkplace.story.Gifts.Outcome.DAY_LIMIT
+						&& player.getMainHandItem().is(io.github.jcondedata.aliveworkplace.registry.ModItems.GIFT),
+						"her hearts went up in the action bar (" + (line == null ? null : line.getString()) + "), and a second gift the same day is handed back: "
+							+ again.line().getString());
+				}, 40),
+				new Step("04_hall_name_day", io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_PERSON, 6, (level, player) -> {
+					io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.open(player, STATION);
+					boolean shown = player.containerMenu instanceof ChoiceMenu m && m.icon(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_PERSON)
+						.getOrDefault(net.minecraft.core.component.DataComponents.LORE, net.minecraft.world.item.component.ItemLore.EMPTY).lines().stream()
+						.anyMatch(l -> l.getString().startsWith("Name day: "));
+					Showcase.check(shown, "the hall's tooltip for Dara says when her name day is");
+				}, 30)),
+			(level, player) -> subject != null && io.github.jcondedata.aliveworkplace.story.Friendship.points(subject, player.getUUID()) >= 335));
 		// A story arc (ROADMAP 31.4): the chapter told in chat as it begins, the hall's Story tab (the first chapter ticked,
 		// the second running with its quest) and the chronicle's STORY lines. The mod ships no arcs of its own yet, so the
 		// scene reads a small one here, as a data pack would.

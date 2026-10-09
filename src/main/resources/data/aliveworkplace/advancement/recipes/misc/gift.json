@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "aliveworkplace:gift"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    },
+    "has_gift_wrap": {
+      "conditions": {
+        "items": [
+          {
+            "items": "aliveworkplace:gift_wrap"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_gift_wrap"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "aliveworkplace:gift"
+    ]
+  }
+}

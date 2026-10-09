@@ -285,7 +285,7 @@ public final class Chatter {
 	}
 
 	/** {@code villager} turns to {@code player} and says {@code line} (over their head, for a few seconds). */
-	static void say(ServerLevel level, Villager villager, ServerPlayer player, Component line) {
+	public static void say(ServerLevel level, Villager villager, ServerPlayer player, Component line) {
 		Component name = villager.hasCustomName() ? villager.getCustomName() : villager.getType().getDescription();
 		WorkerStatus.set(villager, name.copy().withStyle(ChatFormatting.GRAY), -1f, line);
 		villager.getBrain().setMemory(MemoryModuleType.LOOK_TARGET, new EntityTracker(player, true));

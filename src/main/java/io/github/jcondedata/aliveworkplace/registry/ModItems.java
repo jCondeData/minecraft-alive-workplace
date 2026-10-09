@@ -76,6 +76,13 @@ public final class ModItems {
 	public static final net.minecraft.world.item.crafting.RecipeSerializer<io.github.jcondedata.aliveworkplace.hall.VillageBannerItem.Recipe> VILLAGE_BANNER_RECIPE = Registry.register(
 		BuiltInRegistries.RECIPE_SERIALIZER, AliveWorkplace.id("village_banner"), io.github.jcondedata.aliveworkplace.hall.VillageBannerItem.RECIPE);
 
+	/** Gift Wrap (31.6): paper, string and any dye make four; wrapped round any one item it makes a Gift. */
+	public static final Item GIFT_WRAP = Reg.item("gift_wrap", Item::new, new Item.Properties());
+	/** The Gift (31.6): an item in Gift Wrap, for a named villager (story/Gifts). */
+	public static final io.github.jcondedata.aliveworkplace.story.GiftItem GIFT = Reg.item("gift", io.github.jcondedata.aliveworkplace.story.GiftItem::new, new Item.Properties().stacksTo(1));
+	public static final net.minecraft.world.item.crafting.RecipeSerializer<io.github.jcondedata.aliveworkplace.story.GiftItem.Recipe> GIFT_RECIPE = Registry.register(
+		BuiltInRegistries.RECIPE_SERIALIZER, AliveWorkplace.id("gift"), io.github.jcondedata.aliveworkplace.story.GiftItem.RECIPE);
+
 	public static final CreativeModeTab TAB = Registry.register(
 		BuiltInRegistries.CREATIVE_MODE_TAB,
 		AliveWorkplace.id("main"),
@@ -98,6 +105,7 @@ public final class ModItems {
 				output.accept(ModBlocks.CRADLE);
 				output.accept(ModBlocks.HARVEST_IDOL);
 				output.accept(VILLAGE_BANNER);
+				output.accept(GIFT_WRAP);
 				output.accept(MINERS_BREW);
 				output.accept(BUILDERS_TEA);
 				output.accept(SMITHS_DRAUGHT);

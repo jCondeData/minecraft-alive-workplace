@@ -43,7 +43,8 @@ import org.jetbrains.annotations.Nullable;
  *
  * <p>Other features add points through {@link #add} (gifts, heart events) or {@link #favour} (a favour of
  * {@link Favour}, once a day). Looking at a named villager within {@link #LOOK_RANGE} blocks shows your hearts in the
- * action bar; the hall's tooltip shows them with the villager's two best friends ({@link #hallLines}). Config
+ * action bar; the hall's tooltip shows them with the villager's name day ({@link Gifts}) and their two best friends
+ * ({@link #hallLines}). Config
  * {@code friendship} off: no points move and no hearts are shown; what's saved stays.
  */
 public final class Friendship {
@@ -126,6 +127,11 @@ public final class Friendship {
 
 		public Bond withHit(long tick) {
 			return new Bond(name, points, giftDay, giftWeek, giftsWeek, favours, tick, told);
+		}
+
+		/** A gift taken on {@code day}, the {@code count}th of {@code week} (31.6). */
+		public Bond withGift(String name, long day, long week, int count) {
+			return new Bond(name.isEmpty() ? this.name : name, points, day, week, count, favours, hitTick, told);
 		}
 	}
 
@@ -264,6 +270,10 @@ public final class Friendship {
 		if (viewer != null) {
 			lines.add(Component.translatable("screen.aliveworkplace.hall.your_hearts", heartRow(points(villager, viewer.getUUID()))));
 		}
+		// "Name day: in 12 days" (31.6): a gift counts three times that day.
+		if (villager.level() instanceof ServerLevel level) {
+			lines.add(Gifts.nameDayLine(villager, Chronicle.day(level)));
+		}
 		List<Bond> best = bestFriends(villager, 2);
 		if (!best.isEmpty()) {
 			MutableComponent names = Component.empty();
@@ -326,6 +336,16 @@ public final class Friendship {
 			ModAttachments.FRIENDSHIP.set(villager, data.with(player.getUUID(), data.bond(player.getUUID()).withFavour(favour.id(), today)));
 		}
 		return change;
+	}
+
+	/**
+	 * Notes that {@code villager} took a gift from {@code player} on {@code day}, their {@code count}th of {@code week}
+	 * (31.6, {@link Gifts}: one a day, two a week). Kept whatever the gift did to the points.
+	 */
+	public static void gifted(Villager villager, ServerPlayer player, long day, long week, int count) {
+		Data data = of(villager);
+		ModAttachments.FRIENDSHIP.set(villager, data.with(player.getUUID(),
+			data.bond(player.getUUID()).withGift(player.getGameProfile().getName(), day, week, count)));
 	}
 
 	/** {@code player} hit {@code villager}: {@link #HIT_COST} off, at most once a minute. Returns the change made. */

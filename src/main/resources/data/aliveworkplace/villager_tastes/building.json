@@ -1,0 +1,23 @@
+{
+  "for": {
+    "family": [
+      "aliveworkplace:builder",
+      "aliveworkplace:carpenter",
+      "minecraft:mason",
+      "aliveworkplace:tinkerer",
+      "minecraft:leatherworker"
+    ]
+  },
+  "loved": [
+    "aliveworkplace:blueprint",
+    "minecraft:spyglass"
+  ],
+  "liked": [
+    "minecraft:bricks",
+    "minecraft:brick",
+    "minecraft:glass",
+    "minecraft:lantern",
+    "minecraft:soul_lantern",
+    "#minecraft:planks"
+  ]
+}

@@ -2332,7 +2332,7 @@ write their own stories; nothing waits forever on a player.
   - screenshots of the action bar and the hall tooltip; showcase scene `friendship` (a trade, a quest done, the hearts
     going up);
   - `friendship` off: no points, no hearts shown, nothing else changes.
-- [ ] **31.6** **Gifts.** Two new items, drawn with the pixel-art skill the way vanilla draws its kind: **Gift Wrap**
+- [x] **31.6** (review: pending 2026-10-09) **Gifts.** Two new items, drawn with the pixel-art skill the way vanilla draws its kind: **Gift Wrap**
   (paper, string and any dye make 4) and the wrapped **Gift** (Gift Wrap and any one item in the crafting grid: a
   special recipe like vanilla's map cloning; the item is kept inside as a data component, and the tooltip says "From
   Jesse" and not what's inside). Right-click a named villager with a Gift: they unwrap it (the item's particles, a
@@ -4373,6 +4373,15 @@ item waits.
 - (Sessions: anything that needs the owner, and the link to the latest Full test report. Handoffs go here through
   `sessions.py handoff "<in progress, next, traps>" --as <you>`, which keeps one per kind of session (chat, night):
   carry over anything still true from the previous one.)
+- 2026-10-09 (31.6 Gifts, decisions; lane c, nothing for the owner unless he disagrees): the Gift recipe is a special
+  recipe as the spec says ("like vanilla's map cloning"), and Minecraft never lists special recipes on the recipe book's
+  pages, so only Gift Wrap's recipe shows there; the Gift has the same unlock advancement as our other recipes and the
+  README gives its recipe in words. Also decided: on a name day a disliked or hated gift costs three times as much too;
+  a gift that can't move the points still uses up the day; with no chest and no store the item goes into the villager's
+  own pockets (dropped at their feet only if those are full); a named villager in no hall's village turns a Gift down
+  like an unnamed one; a worker's Bottle o' Enchanting is used up; between two taste files as specific as each other the
+  kinder band wins; "bricks", "lanterns", "golden apples" and Clever's "books" are read generously
+  (`docs/wiki/gifts.md`, Decisions).
 - 2026-10-06 (32.1, question for the owner; lane b): may M32's threats damage builder-made buildings on the live
   server? Rams break only the gate blocks (fence gates, doors, iron bars) of finished wall and gate builds, and a village
   fire burns only blocks the builders placed; never a player's own blocks, and the builders always put them back.

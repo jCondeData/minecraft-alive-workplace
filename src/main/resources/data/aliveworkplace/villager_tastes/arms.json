@@ -1,0 +1,18 @@
+{
+  "for": {
+    "family": [
+      "aliveworkplace:guard",
+      "minecraft:fletcher"
+    ]
+  },
+  "loved": [
+    "minecraft:shield",
+    "minecraft:crossbow",
+    "minecraft:diamond_sword"
+  ],
+  "liked": [
+    "minecraft:arrow",
+    "minecraft:flint",
+    "minecraft:iron_ingot"
+  ]
+}

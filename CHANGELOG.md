@@ -16,6 +16,8 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+## 0.141.0 — 2026-10-09
+
 ### Added
 - **A trade screen of the Pokémon Trader's own** (28.23): the day's offers as cards (the Pokémon, its level, ball and
   shiny mark, and what it costs) beside your party, drawn like the Village Hall's screen, with a pressed-in button and

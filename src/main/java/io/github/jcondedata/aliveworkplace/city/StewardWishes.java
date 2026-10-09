@@ -85,7 +85,7 @@ public final class StewardWishes {
 	}
 
 	public static void init() {
-		StewardWork.PLANNER = StewardWishes::plan;
+		StewardWork.PLANNER = PLANNER;
 		Plots.init();
 		OldHouses.init();
 		StewardDesk.init();
@@ -170,18 +170,111 @@ public final class StewardWishes {
 		entity.setStewardWishes(new State(state.day(), state.wishes().stream().filter(w -> !w.rule().equals(rule)).toList(), used));
 	}
 
-	/** {@link StewardWork#PLANNER}: at the hall, he ranks the day's wishes once and says the first. */
+	/**
+	 * {@link StewardWork#PLANNER}: all at once, {@link #plan}; spread over the second (B85), his wishes and their plot
+	 * searches on the second's first tick and his desk half a second later.
+	 */
+	static final StewardWork.Planner PLANNER = new StewardWork.Planner() {
+		@Override
+		public Component plan(ServerLevel level, Villager steward, BlockPos hall) {
+			return StewardWishes.plan(level, steward, hall);
+		}
+
+		@Override
+		public Component plan(ServerLevel level, Villager steward, BlockPos hall, int part) {
+			if (part != 0 && part != StewardWork.SECOND_PART) {
+				return null;
+			}
+			if (StewardDesk.mode(level, hall) == CityPlan.Mode.REST) {
+				return resting();
+			}
+			// the morning's count goes on in part 0 only; the desk waits for today's wishes
+			if (part == 0 ? !rankSpread(level, hall) : of(level, hall).day() != day(level)) {
+				return Component.translatable("message.aliveworkplace.steward.state.reading"); // counting the village first
+			}
+			if (part == 0) {
+				requestPlots(level, hall);
+			} else {
+				StewardDesk.plan(level, steward, hall);
+			}
+			return line(level, hall);
+		}
+	};
+
+	/** B85: the morning's count of the village so far, a piece a planning second, for the day it is for. */
+	private static final class Warming {
+		final long day;
+		final StewardConditions.Facts facts;
+		int counted;
+
+		Warming(long day, StewardConditions.Facts facts) {
+			this.day = day;
+			this.facts = facts;
+		}
+	}
+
+	private static final Map<ServerLevel, Map<BlockPos, Warming>> WARMING = new java.util.WeakHashMap<>();
+
+	/**
+	 * B85: {@link #rankIfDue} spread over the morning's first planning seconds: each call counts one piece of the village
+	 * ({@link StewardConditions.Facts#warm}), and the call after the last ranks the wishes from those counts. True once
+	 * today's wishes are ranked. Nothing of it is saved: after a restart the count simply starts again.
+	 */
+	static boolean rankSpread(ServerLevel level, BlockPos hall) {
+		if (!(level.getBlockEntity(hall) instanceof VillageHallBlockEntity entity)) {
+			return false;
+		}
+		long day = day(level);
+		State state = entity.stewardWishes();
+		Map<BlockPos, Warming> warming = WARMING.computeIfAbsent(level, l -> new HashMap<>());
+		if (state.day() == day) {
+			warming.remove(hall);
+			return true;
+		}
+		Warming w = warming.get(hall);
+		if (w == null || w.day != day) {
+			w = new Warming(day, StewardConditions.Facts.of(level, hall.immutable()));
+			warming.put(hall.immutable(), w);
+		}
+		if (w.counted < StewardConditions.Facts.PIECES) {
+			w.facts.warm(w.counted++);
+			return false;
+		}
+		warming.remove(hall);
+		entity.setStewardWishes(new State(day, rank(StewardRules.all(), w.facts, state, day), state.used()));
+		return true;
+	}
+
+	/** At the hall, he ranks the day's wishes once, keeps their plots searched, works his desk and says the first wish. */
 	static Component plan(ServerLevel level, Villager steward, BlockPos hall) {
 		if (StewardDesk.mode(level, hall) == CityPlan.Mode.REST) {
-			return Component.translatable("message.aliveworkplace.steward.state.resting"); // Rest (27.8): he plans nothing
+			return resting();
 		}
-		rankIfDue(level, hall);
-		List<Wish> wishes = of(level, hall).wishes();
-		for (Wish wish : wishes) {
-			plotFor(level, hall, wish).ifPresent(request -> Plots.request(level, hall, request)); // the morning's plots (27.7), kept till the plan changes
-		}
+		wishes(level, hall);
 		StewardDesk.plan(level, steward, hall); // proposals on his desk, or builds started in Run the village (27.8)
-		wishes = of(level, hall).wishes();
+		return line(level, hall);
+	}
+
+	private static Component resting() {
+		return Component.translatable("message.aliveworkplace.steward.state.resting"); // Rest (27.8): he plans nothing
+	}
+
+	/** The day's wishes ranked once, and each build wish's plot searched (27.7), kept till the plan changes. */
+	private static void wishes(ServerLevel level, BlockPos hall) {
+		rankIfDue(level, hall);
+		requestPlots(level, hall);
+	}
+
+	/** Each of today's build wishes has its plot searched (27.7), the search kept till the plan changes. */
+	private static void requestPlots(ServerLevel level, BlockPos hall) {
+		for (Wish wish : of(level, hall).wishes()) {
+			plotFor(level, hall, wish).ifPresent(request -> Plots.request(level, hall, request));
+		}
+	}
+
+	/** His line: the first of today's wishes, or that he's reading. */
+	private static Component line(ServerLevel level, BlockPos hall) {
+		List<Wish> wishes = of(level, hall).wishes();
 		if (wishes.isEmpty()) {
 			return Component.translatable("message.aliveworkplace.steward.state.reading");
 		}

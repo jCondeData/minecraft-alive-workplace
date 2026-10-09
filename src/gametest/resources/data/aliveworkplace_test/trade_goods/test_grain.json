@@ -1,0 +1,10 @@
+{
+  "name": {"text": "Test Grain"},
+  "items": ["minecraft:wheat"],
+  "bundle": 20,
+  "base_price": 100,
+  "made_by": {"jobs": ["minecraft:farmer"], "biomes": ["minecraft:plains", "#minecraft:is_savanna"]},
+  "wanted_in": {"biomes": ["minecraft:snowy_plains", "minecraft:desert"], "jobs": ["aliveworkplace:chef", "aliveworkplace:rancher"]},
+  "food": true,
+  "order": 1
+}

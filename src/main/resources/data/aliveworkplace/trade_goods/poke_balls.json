@@ -1,0 +1,32 @@
+{
+  "fabric:load_conditions": [
+    {
+      "condition": "fabric:all_mods_loaded",
+      "values": [
+        "cobblemon"
+      ]
+    }
+  ],
+  "name": {
+    "translate": "good.aliveworkplace.poke_balls"
+  },
+  "icon": "cobblemon:poke_ball",
+  "items": [
+    "#aliveworkplace:trade/poke_balls"
+  ],
+  "bundle": 8,
+  "base_price": 100,
+  "made_by": {
+    "jobs": [
+      "aliveworkplace:ball_smith"
+    ]
+  },
+  "wanted_in": {
+    "jobs": [
+      "aliveworkplace:trainer",
+      "aliveworkplace:pokemon_trader"
+    ]
+  },
+  "food": false,
+  "order": 42
+}

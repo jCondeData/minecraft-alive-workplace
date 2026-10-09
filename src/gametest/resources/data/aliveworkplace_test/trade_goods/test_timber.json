@@ -1,0 +1,10 @@
+{
+  "name": {"text": "Test Timber"},
+  "icon": "minecraft:oak_log",
+  "items": ["#minecraft:logs"],
+  "bundle": 16,
+  "base_price": 100,
+  "made_by": {"jobs": ["aliveworkplace:lumberjack"], "biomes": ["#minecraft:is_forest", "minecraft:dark_forest"]},
+  "wanted_in": {"biomes": ["minecraft:desert", "#minecraft:is_badlands"], "jobs": ["aliveworkplace:builder", "aliveworkplace:carpenter"]},
+  "order": 10
+}

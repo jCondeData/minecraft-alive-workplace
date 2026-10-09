@@ -24,6 +24,18 @@ asks for the steps, `latest.log` and any crash report).
   dawn), Frost and Grand, in that order, each with its own rules, fair wares, feast dish, firework colours and disc.
   Villager trainers' teams and players' eligibility follow the theme. For the Workers' Cup, every pastured Pokémon now
   counts the days it helped a villager at work (once a day); it needs 3.
+- **The trade goods engine for 1.7** (33.2, nothing to see until the price board): trade goods are data files
+  (`data/<namespace>/trade_goods/<good>.json`). Once a day, in its hall's round, each village works out up to 3 goods
+  it's known for and 3 it's short of (from its workers' jobs, its biome, its Storehouses and what its workers wait for)
+  and a price for every good that moves a third of the way toward supply and demand each dawn, between half and twice
+  the base. A beaten raid (night, bandit or vanilla) raises demand for arms for a few days. Kept with the village's
+  caravan entry, so old saves load unchanged. Config `villageEconomy` (off until 1.7).
+- **The 28 trade goods for 1.7** (33.3, nothing to see until the price board): Grain, Bread, Roots, Fish, Meat, Fine
+  Meals, Fruit, Honey and Bone Meal; Timber, Stone, Glass, Bricks and Clay, Coal, Iron and Gold; Wool, Leather, Dyes and
+  Flowers, Paper, Tools, Arms and Armour, Arrows, Remedies and Nether Goods; and, only with Cobblemon, Apricorns, Berries
+  and Poké Balls. Each has its makers and their biomes, the biomes and jobs that want it, and a bundle priced like
+  vanilla's villager trades where there is one (20 wheat, 6 bread, 18 wool, 24 paper, 4 iron ingots for an emerald).
+  Raids raise demand for arms, arrows and remedies for 3 days, and remedies while villagers are ill.
 - **The Vintner, for 1.8** (34.9, off until 1.8 is finished): sneak-right-click a villager by a cauldron with sweet
   berries, glow berries or an apple. They press Cider (Novice), Berry Wine (Apprentice) and Vintage Wine from Berry Wine
   three days old (Journeyman) for the village store, with purple splashes at the vat; the three drinks are drinkable
@@ -113,6 +125,11 @@ asks for the steps, `latest.log` and any crash report).
   once when the quest goes up.
 
 ### Fixed
+- **The Steward's planning costs the server less** (B85): his planning at the hall is split over the second (his
+  wishes and their plot searches, then his desk half a second later), the morning's ranking counts the village a
+  piece a second instead of all in one tick, and one planning second looks up the Blueprint Tables once (every 5
+  seconds at most) instead of once per wish. Nothing a player sees changes. City benchmark: p95 0.49 → 0.38 ms a tick,
+  his planning's server time about halved, and planning is no longer the slowest call.
 - **No more log error when a traveller's camp is set down** (B68): the map's item frame on the camp's barrel is saved
   with the block it hangs on, and structures placed by the mod or by vanilla now hang their frames and paintings on the
   block where they land, so "Block-attached entity at invalid position" is no longer logged. Players saw nothing wrong.

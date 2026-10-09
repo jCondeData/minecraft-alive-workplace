@@ -1,0 +1,28 @@
+{
+  "name": {
+    "translate": "good.aliveworkplace.gold"
+  },
+  "icon": "minecraft:gold_ingot",
+  "items": [
+    "#aliveworkplace:trade/gold"
+  ],
+  "bundle": 3,
+  "base_price": 100,
+  "made_by": {
+    "jobs": [
+      "aliveworkplace:miner"
+    ],
+    "biomes": [
+      "#minecraft:is_badlands"
+    ]
+  },
+  "wanted_in": {
+    "jobs": [
+      "aliveworkplace:tinkerer",
+      "aliveworkplace:undertaker",
+      "aliveworkplace:ball_smith"
+    ]
+  },
+  "food": false,
+  "order": 16
+}

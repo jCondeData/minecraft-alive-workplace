@@ -1,0 +1,25 @@
+{
+  "name": {
+    "translate": "good.aliveworkplace.fine_meals"
+  },
+  "icon": "minecraft:pumpkin_pie",
+  "items": [
+    "#aliveworkplace:trade/fine_meals"
+  ],
+  "bundle": 4,
+  "base_price": 100,
+  "made_by": {
+    "jobs": [
+      "aliveworkplace:chef"
+    ]
+  },
+  "wanted_in": {
+    "jobs": [
+      "aliveworkplace:innkeeper",
+      "aliveworkplace:nurse",
+      "aliveworkplace:bard"
+    ]
+  },
+  "food": true,
+  "order": 6
+}

@@ -1,0 +1,34 @@
+{
+  "name": {
+    "translate": "good.aliveworkplace.dyes_and_flowers"
+  },
+  "icon": "minecraft:poppy",
+  "items": [
+    "#aliveworkplace:trade/dyes_and_flowers"
+  ],
+  "bundle": 12,
+  "base_price": 100,
+  "made_by": {
+    "jobs": [
+      "aliveworkplace:florist",
+      "minecraft:leatherworker"
+    ],
+    "biomes": [
+      "#c:is_flower_forest",
+      "minecraft:meadow",
+      "minecraft:cherry_grove",
+      "minecraft:sunflower_plains"
+    ]
+  },
+  "wanted_in": {
+    "biomes": [
+      "#c:is_desert",
+      "#c:is_snowy"
+    ],
+    "jobs": [
+      "minecraft:leatherworker"
+    ]
+  },
+  "food": false,
+  "order": 22
+}

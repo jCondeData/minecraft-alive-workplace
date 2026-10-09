@@ -238,7 +238,9 @@ public final class LifeStages {
 		if (streak != null && streak.day() >= day) {
 			return;
 		}
-		Moods.Mood mood = Moods.of(villager);
+		// A reading of its own, not the remembered mood: the hall's round must not fix what the villager's mood reads as
+		// (their talk, their pace) for the next ten seconds, nor count a day from a mood worked out before it.
+		Moods.Mood mood = Moods.fresh(villager);
 		if (mood == null) {
 			return;
 		}

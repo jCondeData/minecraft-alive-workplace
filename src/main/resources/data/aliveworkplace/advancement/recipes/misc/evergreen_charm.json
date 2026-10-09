@@ -17,6 +17,26 @@
       },
       "trigger": "minecraft:inventory_changed"
     },
+    "has_golden_apple": {
+      "conditions": {
+        "items": [
+          {
+            "items": "minecraft:golden_apple"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_emerald": {
+      "conditions": {
+        "items": [
+          {
+            "items": "minecraft:emerald"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
     "has_heart_of_the_sea": {
       "conditions": {
         "items": [
@@ -32,6 +52,8 @@
     [
       "has_the_recipe",
       "has_totem_of_undying",
+      "has_golden_apple",
+      "has_emerald",
       "has_heart_of_the_sea"
     ]
   ],

@@ -61,6 +61,19 @@ public final class Moods {
 		return mood;
 	}
 
+	/**
+	 * {@code villager}'s mood worked out this moment (null as for {@link #of}), neither read from what is remembered nor
+	 * remembered: for a reading that is kept elsewhere (the day's count of happy days), which must not decide what the
+	 * mood reads as for the next {@link #KEEP_TICKS} ticks.
+	 */
+	@org.jetbrains.annotations.Nullable
+	public static Mood fresh(Villager villager) {
+		if (!ENABLED || villager.isBaby() || !(villager.level() instanceof ServerLevel level)) {
+			return null;
+		}
+		return VillageHalls.nearest(level, villager.blockPosition()).isPresent() ? work(level, villager) : null;
+	}
+
 	/** Works out {@code villager}'s mood now. */
 	public static Mood work(ServerLevel level, Villager villager) {
 		long now = level.getGameTime();

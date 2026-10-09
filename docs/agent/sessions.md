@@ -40,7 +40,9 @@ the full build runs once per 2-3 features.
 2. **You are the coordinator; each feature is built by a fresh subagent.** For each item, start one `Agent`
    (general-purpose, no model override: it uses yours) with a self-contained prompt: the item id, "read CLAUDE.md and
    `sessions.py show <id>`, build its whole Done when, write its GameTests and run only them with `runGameTest`, add
-   its showcase scene to the harness and `tools/showcase/scenes.py` if a player sees it, add the CHANGELOG line, update the feature's page in docs/wiki/ (22.9), tick
+   its showcase scene to the harness and `tools/showcase/scenes.py` if a player sees it, add the CHANGELOG line, update the feature's page in `docs/wiki/` in the same commit (roadmap 22.9: what changed for a
+   player, its switches, saved fields, decisions, tests and scenes, in the format of `docs/wiki/README.md`; add the
+   item's id to the page's "Roadmap items:" line; `python3 tools/modtest/wikicheck.py` must pass, and `build` runs it), tick
    it (`sessions.py done <id> --review` if a player sees it, else `done <id>`), commit locally with the work and the
    tick (stage files by name), don't push, and reply in 5 lines: what was built, files, tests, anything left". Keep
    your own context small: read its reply, not its files. One feature per subagent; two only if both are tiny.
@@ -155,10 +157,16 @@ test to ship, not a bug. Each run, after checking CI and the nightly issue:
    `sessions.py bug "<what, expected>; Test: <name> on tests/<topic>"`. The builder who fixes it merges that branch.
 4. `sessions.py verify <ids> --as qa-… --note "<n tests, what they cover; mutants; scenes>"` for every item with no
    open bug. An item with a bug stays unverified until the fix lands; then verify it with the fix.
-5. The wiki (roadmap 22.9): for each item you verify, read its page in `docs/wiki/` against what the tests proved and fix
-   any sentence that is wrong or missing (a missing page is written now); `wikicheck.py` must pass.
-   When nothing is waiting: backfill one missing wiki page, then the release check if one is due, then the QA milestone's own items (Milestone 21's full
-   check, 22.x), then hunting flakes from the nightly results.
+5. **The wiki** (roadmap 22.9, `docs/wiki/README.md`): the lane that built an item updated its page in the same commit;
+   you check it. For every item you verify, read its page against the behaviour your tests proved, sentence by
+   sentence. A sentence that is wrong or missing: fix the page (ship it with your tests). The page is right and the
+   mod is wrong: file a bug (`sessions.py bug`). No page: write it now and add the item's id to its "Roadmap items:"
+   line. `python3 tools/modtest/wikicheck.py` must pass (the build runs it as `checkWiki`).
+   When nothing is waiting: **backfill one missing wiki page per run, oldest milestone first** (the ids in
+   `tools/modtest/wiki_baseline.txt`: write the page from the code, lang file, tests and scenes, add the ids to its
+   line, link it in the index, then `wikicheck.py --prune`; never add to the baseline), then the release check if one
+   is due, then the QA milestone's own items (Milestone 21's full check, 22.x), then hunting flakes from the nightly
+   results.
 6. Before you stop: `python3 tools/agent/usage.py --log --as <you> --note "<what you verified>"`.
 
 **The release check** (before a version bump, when the chat or a digest asks): every item since the last release is
@@ -178,7 +186,9 @@ the new jar and nothing is lost. Report it in the Notes.
      showcase page, or the item's text for a document) and send it; never just list it.
   2. Send one short report. **It opens with the progress bars** (owner, 2026-10-05, asked twice): paste the output of
      `python3 tools/agent/progress.py` as a code block, one line per stage (1.1 to 2.0), and say how each moved since the last
-     digest. Then what landed since the last digest (one line each), what the QA lane found overnight, the
+     digest. **Link the wiki** (roadmap 22.9; it is the last line `progress.py` prints, keep it):
+     https://github.com/jCondeData/minecraft-alive-workplace/tree/main/docs/wiki, and name the pages written or
+     changed since the last digest. Then what landed since the last digest (one line each), what the QA lane found overnight, the
      lanes' health (a lane with no push in 3 hours, a red run on `main`), releases, and only the decisions that are
      his.
   3. **The evening digest releases** (CLAUDE.md "Releasing") when something new landed since the last release,

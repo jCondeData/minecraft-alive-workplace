@@ -1,5 +1,9 @@
 # Builder
 
+The flagship job: a villager who builds blueprints, block by block, from the chests by their bench.
+
+Roadmap items: 23.1, 23.1a, 23.1b, 23.3, 23.4, 23.8
+
 ## 1. What a player sees
 
 You put a Builder's Bench down, and a villager without a job takes it and becomes a Builder. You give that villager a
@@ -104,9 +108,9 @@ claims and trip counts.
 
 ## 5. Items, blocks, jobs, commands
 
-- Block: Builder's Bench (`builders_bench`), the job block. Profession: Builder (`entity.minecraft.villager.builder`).
-- Items: Blueprint (`blueprint`; "Blueprint: %s" when named), Blank Blueprint (`blank_blueprint`, bought from
-  villagers for emeralds), Builder's Tea (`builders_tea`). The Blueprint Table makes and uploads blueprints.
+- Block: Builder's Bench (`aliveworkplace:builders_bench`), the job block. Profession: Builder (`entity.minecraft.villager.builder`).
+- Items: Blueprint (`aliveworkplace:blueprint`; "Blueprint: %s" when named), Blank Blueprint (`aliveworkplace:blank_blueprint`, bought from
+  villagers for emeralds), Builder's Tea (`aliveworkplace:builders_tea`). The Blueprint Table makes and uploads blueprints.
 - Hand over: right-click the Builder with a Blueprint. Sneak-right-click with an empty hand: status.
 - Commands: `/workplace blueprints`, `/workplace blueprint`, `/workplace import`, `/workplace sites`,
   `/workplace cancel <site>` (the blueprint stays placed; hand it back to carry on), `/workplace friend add|remove|list`,

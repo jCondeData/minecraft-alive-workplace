@@ -2,6 +2,8 @@
 
 Needs Cobblemon. ROADMAP 28.x (the trader), 28.23 (its own trade screen).
 
+Roadmap items: 28.23
+
 ## What a player sees
 
 A villager working at a Trade Board becomes a Pokémon Trader. Right-click one with an empty hand and their trade screen

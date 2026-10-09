@@ -374,6 +374,19 @@ tasks {
     }
     named("check") { dependsOn(checkLayers) }
 
+    /**
+     * The wiki stays true (ROADMAP 22.9): tools/modtest/wikicheck.py fails when a page in docs/wiki/ names a config key,
+     * id, lang key, test or scene that no longer exists, or a ticked player-visible roadmap item has no page. It reads
+     * only checked-in files and takes under a second, so it always runs. Needs python3 (GitHub's runners have it).
+     */
+    val checkWiki by registering(Exec::class) {
+        group = "verification"
+        description = "Fails if docs/wiki names something that no longer exists, or a ticked player-visible item has no page"
+        workingDir = rootProject.projectDir
+        commandLine("python3", "tools/modtest/wikicheck.py")
+    }
+    named("check") { dependsOn(checkWiki) }
+
     /** Writes the compile classpath for the minecraft-mod-engineer skill's api.py (per-node API lookups). */
     register("apiClasspath") {
         group = "help"

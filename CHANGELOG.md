@@ -128,6 +128,10 @@ asks for the steps, `latest.log` and any crash report).
   free builder of the village, the roads and the wall take turns, and an old house at the village's edge is renewed
   too. When he approves everything himself, a renewal takes the free slot ahead of the day's homes.
 
+### Dev
+
+- **The wiki** (22.9): `docs/wiki/` explains how each feature works in plain words (the first twelve pages: Builder, Villager jobs, Village Hall, Steward, Roads and walls, Edicts, Guilds, Legends, Pokémon partners, Classes, Elders, Config switches), and the build now fails when a page names a setting, item, text, test or scene that no longer exists, or a finished player-visible feature has no page.
+
 ## 0.140.0 — 2026-10-05
 
 ### Changed

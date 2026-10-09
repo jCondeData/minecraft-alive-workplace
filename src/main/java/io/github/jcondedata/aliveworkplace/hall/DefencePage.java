@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Optional;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -115,24 +116,40 @@ public final class DefencePage {
 		spec.filter(s -> s.growth() > 0).ifPresent(s -> strength.add(VillageHallScreen.line(
 			Component.translatable("screen.aliveworkplace.defence.grows", s.growth(), s.max()), ChatFormatting.YELLOW)));
 		strength.add(VillageHallScreen.line("screen.aliveworkplace.defence.strength_hint", ChatFormatting.DARK_GRAY));
-		menu.button(STRENGTH, VillageHallScreen.icon(new ItemStack(Items.CROSSBOW, Math.max(1, Math.min(64, lair.strength()))),
+		menu.button(STRENGTH, VillageHallScreen.icon(counted(Items.CROSSBOW, lair.strength()),
 			Component.translatable("screen.aliveworkplace.defence.strength", lair.strength()), ChatFormatting.WHITE, strength.toArray(Component[]::new)), null);
 		menu.button(WHERE, VillageHallScreen.icon(Items.MAP, roughly(hall, lair.pos()).copy(), ChatFormatting.WHITE,
 			VillageHallScreen.line("screen.aliveworkplace.defence.where_hint", ChatFormatting.GRAY)), null);
 		long days = Math.max(0, Chronicle.day(level) - lair.day());
-		menu.button(STOOD, VillageHallScreen.icon(new ItemStack(Items.CLOCK, (int) Math.max(1, Math.min(64, days))),
+		menu.button(STOOD, VillageHallScreen.icon(counted(Items.CLOCK, days),
 			days == 0 ? Component.translatable("screen.aliveworkplace.defence.stood_today") : Words.counted("screen.aliveworkplace.defence.stood", days, days),
 			ChatFormatting.WHITE, VillageHallScreen.line(Component.translatable("screen.aliveworkplace.defence.stood_since", lair.day()), ChatFormatting.GRAY)), null);
 	}
 
 	/** One past attack: its culture's icon counting those who came, the day and who, how many fell and how it ended. */
 	private static ItemStack attack(ThreatData.Past past) {
-		return VillageHallScreen.icon(new ItemStack(icon(past.culture()), Math.max(1, Math.min(64, past.came()))),
+		return VillageHallScreen.icon(counted(icon(past.culture()), past.came()),
 			Component.translatable("screen.aliveworkplace.defence.attack", past.day(), Lairs.cultureName(past.culture())), ChatFormatting.WHITE,
 			VillageHallScreen.line(Component.translatable("screen.aliveworkplace.defence.attack_count", past.came(), past.fell()), ChatFormatting.GRAY),
 			past.fled() ? VillageHallScreen.line(Words.counted("screen.aliveworkplace.defence.attack_fled", past.came() - past.fell(), past.came() - past.fell()),
 					ChatFormatting.YELLOW)
 				: VillageHallScreen.line("screen.aliveworkplace.defence.attack_won", ChatFormatting.GREEN));
+	}
+
+	/**
+	 * An icon that counts {@code count} (1 to 64) whatever its item: a crossbow or a clock stacks to 1, and the menu's
+	 * container cuts a stack down to its item's size, so these icons are allowed 64 (and, as nothing that wears out may
+	 * stack, lose their durability).
+	 */
+	private static ItemStack counted(Item item, long count) {
+		ItemStack icon = new ItemStack(item);
+		if (icon.getMaxStackSize() < 64) {
+			icon.remove(DataComponents.MAX_DAMAGE);
+			icon.remove(DataComponents.DAMAGE);
+			icon.set(DataComponents.MAX_STACK_SIZE, 64);
+		}
+		icon.setCount((int) Math.max(1, Math.min(64, count)));
+		return icon;
 	}
 
 	/** The item that stands for a culture: its lair's {@code icon}, or a zombie's head for raiders from nowhere. */

@@ -234,6 +234,10 @@ public final class Friendship {
 		ServerLevel level = player.serverLevel();
 		Vec3 eye = player.getEyePosition();
 		Vec3 end = eye.add(player.getViewVector(1f).scale(LOOK_RANGE));
+		// Never load a chunk for a look (B93): clip() would, on the server thread, for a player in an unloaded chunk.
+		if (!level.hasChunksAt(BlockPos.containing(eye), BlockPos.containing(end))) {
+			return null;
+		}
 		HitResult block = level.clip(new ClipContext(eye, end, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, player));
 		if (block.getType() != HitResult.Type.MISS) {
 			end = block.getLocation();

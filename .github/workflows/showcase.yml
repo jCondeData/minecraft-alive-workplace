@@ -2,6 +2,9 @@
 #   https://jcondedata.github.io/minecraft-alive-workplace/
 # Plain GitHub Actions (free for this public repo): no Claude session, no Claude usage.
 #
+# selftest  the tools' own tests (tools/showcase/test_showcase*.py). A failure turns the run red but stops no filming:
+#         nothing waits for this job. (They used to run inside plan as `a > /dev/null && b > /dev/null`, where the
+#         shell's -e doesn't see a failing a, so two checks failed unseen for days: B100.)
 # plan    splits the scenes (tools/showcase/scenes.py) into shards of about half an hour, balanced with last night's times
 # scenes  one job per shard, in parallel: tools/showcase/shard.py runs each scene in the real client under Xvfb and
 #         judges it (tools/showcase/process.py): pass only if its job visibly did its work and no picture looks broken
@@ -66,7 +69,6 @@ jobs:
         run: |
           curl -fsSL -o last.json https://jcondedata.github.io/minecraft-alive-workplace/showcase.json || rm -f last.json
           python3 tools/showcase/scenes.py check
-          python3 tools/showcase/test_showcase.py > /dev/null && python3 tools/showcase/test_showcase_keys.py > /dev/null
           python3 tools/showcase/test_scenes_changed.py > /dev/null
           scenes=all
           if [ "$EVENT" = workflow_dispatch ] && [ -n "$(echo "$ASKED" | tr -d ' ,')" ]; then
@@ -93,6 +95,21 @@ jobs:
           echo "scenes=$only" >> "$GITHUB_OUTPUT"
           if [ "$matrix" = '{"include":[]}' ]; then echo "any=false" >> "$GITHUB_OUTPUT"; else echo "any=true" >> "$GITHUB_OUTPUT"; fi
           echo "$matrix" | python3 -m json.tool
+
+  selftest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+      - name: Pillow and numpy for the tools' own tests
+        run: sudo apt-get update -q && sudo apt-get install -yq python3-pil python3-numpy > /dev/null
+      - name: The showcase tools' own tests (only the failures are printed)
+        run: |
+          status=0
+          python3 tools/showcase/test_showcase.py > selftest.log || status=1
+          python3 tools/showcase/test_showcase_keys.py > selftest_keys.log || status=1
+          grep -hv '^ok' selftest.log selftest_keys.log || true
+          exit $status
 
   scenes:
     needs: plan

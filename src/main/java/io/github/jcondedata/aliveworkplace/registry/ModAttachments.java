@@ -358,6 +358,12 @@ public final class ModAttachments {
 	public static final Attachment<Long> PASSED_DAY = Attachment.saved("passed_day", com.mojang.serialization.Codec.LONG);
 	/** The chronicle has noted that they became an elder (34.19: "Bram is an elder now", once). Absent: not yet. */
 	public static final Attachment<Boolean> ELDER_NOTED = Attachment.saved("elder_noted", com.mojang.serialization.Codec.BOOL);
+	/** Brought back from a grave (31.7), set by {@code Graves.revive}. Absent: never, or revived before 31.7. */
+	public static final Attachment<Boolean> REVIVED = Attachment.saved("revived", com.mojang.serialization.Codec.BOOL);
+	/** The partner a villager lost (31.7): their id and name, kept by {@code Couples.onDeath}. Absent: none, or widowed before 31.7. */
+	public static final Attachment<io.github.jcondedata.aliveworkplace.people.Couples.LatePartner> LATE_PARTNER = Attachment.saved("late_partner", io.github.jcondedata.aliveworkplace.people.Couples.LatePartner.CODEC);
+	/** The day a traveller was hired from an inn (31.7). Absent: not hired, or hired before 31.7. */
+	public static final Attachment<Long> HIRED_DAY = Attachment.saved("hired_day", com.mojang.serialization.Codec.LONG);
 
 	public static void init() {
 	}

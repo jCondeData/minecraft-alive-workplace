@@ -1,0 +1,22 @@
+{
+  "for": {
+    "family": [
+      "aliveworkplace:miner",
+      "minecraft:armorer",
+      "minecraft:toolsmith",
+      "minecraft:weaponsmith",
+      "aliveworkplace:sifter",
+      "aliveworkplace:netherworker"
+    ]
+  },
+  "loved": [
+    "minecraft:amethyst_shard",
+    "minecraft:gold_ingot",
+    "minecraft:netherite_scrap"
+  ],
+  "liked": [
+    "minecraft:iron_ingot",
+    "minecraft:coal",
+    "minecraft:raw_copper"
+  ]
+}

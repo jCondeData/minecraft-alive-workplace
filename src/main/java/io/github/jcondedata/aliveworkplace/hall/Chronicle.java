@@ -28,7 +28,9 @@ public final class Chronicle {
 		/** A villager's life stages (34.19, 34.19a): an elder made ageless. */
 		LIFE(Items.CLOCK),
 		/** A story arc's chapters and endings (31.4). */
-		STORY(Items.BOOK);
+		STORY(Items.BOOK),
+		/** A villager told a player something of their life (a heart event, 31.7). */
+		FRIEND(Items.PINK_TULIP);
 
 		public final Item icon;
 

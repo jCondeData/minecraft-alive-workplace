@@ -1,0 +1,11 @@
+{
+  "hearts": 2,
+  "when": {
+    "born": true
+  },
+  "lines": [
+    "heart_event.aliveworkplace.born_here.1"
+  ],
+  "chronicle": "chronicle.aliveworkplace.heart_event.born_here",
+  "story": "life_story.aliveworkplace.born_here"
+}

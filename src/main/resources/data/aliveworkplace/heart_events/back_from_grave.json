@@ -1,0 +1,15 @@
+{
+  "hearts": 2,
+  "when": {
+    "revived": true
+  },
+  "lines": [
+    "heart_event.aliveworkplace.back_from_grave.1",
+    "heart_event.aliveworkplace.back_from_grave.2",
+    "heart_event.aliveworkplace.back_from_grave.3",
+    "heart_event.aliveworkplace.back_from_grave.4",
+    "heart_event.aliveworkplace.back_from_grave.5"
+  ],
+  "chronicle": "chronicle.aliveworkplace.heart_event.back_from_grave",
+  "story": "life_story.aliveworkplace.back_from_grave"
+}

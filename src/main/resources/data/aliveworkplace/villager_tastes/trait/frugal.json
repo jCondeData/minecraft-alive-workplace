@@ -1,0 +1,12 @@
+{
+  "for": {
+    "trait": "frugal"
+  },
+  "loved": [
+    "minecraft:emerald",
+    "minecraft:gold_ingot"
+  ],
+  "disliked": [
+    "minecraft:cake"
+  ]
+}

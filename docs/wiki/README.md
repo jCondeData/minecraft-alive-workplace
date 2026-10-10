@@ -10,6 +10,9 @@ How everything in the mod works, in plain words: written for the owner first, th
 - [Builder](builder.md): the villager who builds blueprints.
 - [Pokémon partners](pokemon-partners.md): pastured Pokémon that help at work, and are seen doing it (Cobblemon).
 - [The Pokémon Trader](pokemon-trader.md): the day's Pokémon offers and the trader's own trade screen (Cobblemon).
+- [Gifts](gifts.md): Gift Wrap, the Gift, what villagers think of it, name days and taste files (31.6).
+- [Heart events and life stories](heart-events.md): what villagers tell their friends, the life story page and
+  event files (31.7).
 - [The price board](price-board.md): the hall's Trade page, what a village is known for and short of, and its prices (33.4).
 
 **The village**

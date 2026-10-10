@@ -136,6 +136,15 @@ public final class ModComponents {
 			.networkSynchronized(io.github.jcondedata.aliveworkplace.craft.LuxuryRecipes.MadeDay.STREAM_CODEC).build()
 	);
 
+	/** What a Gift holds: the wrapped item and who wrapped it (31.6). */
+	public static final DataComponentType<io.github.jcondedata.aliveworkplace.story.Gifts.Wrapped> GIFT = Registry.register(
+		BuiltInRegistries.DATA_COMPONENT_TYPE,
+		AliveWorkplace.id("gift"),
+		DataComponentType.<io.github.jcondedata.aliveworkplace.story.Gifts.Wrapped>builder()
+			.persistent(io.github.jcondedata.aliveworkplace.story.Gifts.Wrapped.CODEC)
+			.networkSynchronized(io.github.jcondedata.aliveworkplace.story.Gifts.Wrapped.STREAM_CODEC).build()
+	);
+
 	public static void init() {
 	}
 

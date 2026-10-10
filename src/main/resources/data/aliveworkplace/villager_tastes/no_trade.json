@@ -1,0 +1,15 @@
+{
+  "for": {
+    "family": [
+      "minecraft:none",
+      "minecraft:nitwit"
+    ]
+  },
+  "loved": [
+    "minecraft:emerald"
+  ],
+  "liked": [
+    "minecraft:bread",
+    "#minecraft:beds"
+  ]
+}

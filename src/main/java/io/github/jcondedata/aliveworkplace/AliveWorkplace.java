@@ -80,6 +80,7 @@ public final class AliveWorkplace {
 		io.github.jcondedata.aliveworkplace.hall.ClassesPage.init(); // the hall's Classes page (34.6)
 		io.github.jcondedata.aliveworkplace.hall.Services.init(); // services nearby (34.3)
 		io.github.jcondedata.aliveworkplace.people.Luxuries.init(); // luxuries from the village store (34.4)
+		io.github.jcondedata.aliveworkplace.trade.TradeGoods.init(); // trade goods (33.2)
 		io.github.jcondedata.aliveworkplace.craft.LuxuryRecipes.init(); // the luxury workshops' recipes (34.5)
 		io.github.jcondedata.aliveworkplace.people.Tonics.init();
 		io.github.jcondedata.aliveworkplace.city.StewardRules.init();
@@ -89,6 +90,9 @@ public final class AliveWorkplace {
 		io.github.jcondedata.aliveworkplace.story.QuestFiles.init(); // the quest engine's files (31.2)
 		io.github.jcondedata.aliveworkplace.story.QuestTracker.init(); // tracked quests as boss bars, reach objectives (31.3)
 		io.github.jcondedata.aliveworkplace.story.Friendship.init(); // friendship: favours, hits, the hearts look-up (31.5)
+		io.github.jcondedata.aliveworkplace.story.Tastes.init(); // what villagers think of a gift, as data (31.6)
+		io.github.jcondedata.aliveworkplace.story.Gifts.init(); // giving a Gift to a named villager (31.6)
+		io.github.jcondedata.aliveworkplace.story.HeartEvents.init(); // what villagers tell their friends, as data (31.7)
 		io.github.jcondedata.aliveworkplace.story.Arcs.init(); // story arcs: their files, placements and mobs, talk (31.4)
 		io.github.jcondedata.aliveworkplace.hall.Anthems.init(); // the anthem's player (29.19)
 		io.github.jcondedata.aliveworkplace.legend.Gifted.init();

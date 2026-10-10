@@ -22,6 +22,10 @@ the same commit) and checked by the QA lane (ROADMAP 22.9). Pages are filled in 
 - [Raids and threats](raids.md): raider cultures as data, the threat clock, raids that survive a restart (32.2).
 - [Lairs and the Defence page](lairs.md): a camp for every culture, named captains, the camp's strength, the hall's
   Defence page (32.3).
+- [Gifts](gifts.md): Gift Wrap, the Gift, what villagers think of it, name days and taste files (31.6).
+- [Heart events and life stories](heart-events.md): what villagers tell their friends, the life story page and
+  event files (31.7).
+- [The price board](price-board.md): the hall's Trade page, what a village is known for and short of, and its prices (33.4).
 
 Still to write of the first twelve: Villager jobs, Village Hall, Steward, Roads and walls, Edicts, Guilds,
 Legends, Pokemon partners, Classes, Elders, Config switches.

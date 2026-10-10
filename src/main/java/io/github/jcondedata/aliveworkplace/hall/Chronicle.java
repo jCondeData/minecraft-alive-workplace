@@ -26,7 +26,9 @@ public final class Chronicle {
 		/** A household rose or came down in the world (34.6). */
 		CLASS(Items.GOLD_INGOT),
 		/** A story arc's chapters and endings (31.4). */
-		STORY(Items.BOOK);
+		STORY(Items.BOOK),
+		/** A villager told a player something of their life (a heart event, 31.7). */
+		FRIEND(Items.PINK_TULIP);
 
 		public final Item icon;
 

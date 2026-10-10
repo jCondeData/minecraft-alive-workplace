@@ -1,0 +1,11 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "#c:dyes",
+      "required": false
+    },
+    "#minecraft:small_flowers",
+    "#minecraft:tall_flowers"
+  ]
+}

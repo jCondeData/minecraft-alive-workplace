@@ -1,0 +1,29 @@
+{
+  "name": {
+    "translate": "good.aliveworkplace.bone_meal"
+  },
+  "icon": "minecraft:bone_meal",
+  "items": [
+    "minecraft:bone_meal"
+  ],
+  "bundle": 16,
+  "base_price": 100,
+  "made_by": {
+    "jobs": [
+      "aliveworkplace:composter"
+    ]
+  },
+  "wanted_in": {
+    "biomes": [
+      "#c:is_desert",
+      "#minecraft:is_badlands"
+    ],
+    "jobs": [
+      "minecraft:farmer",
+      "aliveworkplace:florist",
+      "aliveworkplace:orchard_keeper"
+    ]
+  },
+  "food": false,
+  "order": 9
+}

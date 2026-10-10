@@ -1,0 +1,34 @@
+{
+  "name": {
+    "translate": "good.aliveworkplace.arrows"
+  },
+  "icon": "minecraft:arrow",
+  "items": [
+    "#aliveworkplace:trade/arrows"
+  ],
+  "bundle": 16,
+  "base_price": 100,
+  "made_by": {
+    "jobs": [
+      "minecraft:fletcher"
+    ],
+    "biomes": [
+      "#minecraft:is_forest",
+      "#c:is_plains"
+    ]
+  },
+  "wanted_in": {
+    "jobs": [
+      "aliveworkplace:guard"
+    ]
+  },
+  "food": false,
+  "events": [
+    {
+      "event": "aliveworkplace:raid",
+      "demand": 2,
+      "days": 3
+    }
+  ],
+  "order": 26
+}

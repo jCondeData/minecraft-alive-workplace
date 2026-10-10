@@ -52,6 +52,14 @@ public final class Couples {
 		).apply(i, Partner::new));
 	}
 
+	/** The partner a villager lost (31.7): who they were, for the stories the one left behind tells. */
+	public record LatePartner(UUID id, Component name) {
+		public static final Codec<LatePartner> CODEC = RecordCodecBuilder.create(i -> i.group(
+			UUIDUtil.CODEC.fieldOf("id").forGetter(LatePartner::id),
+			ComponentSerialization.CODEC.fieldOf("name").forGetter(LatePartner::name)
+		).apply(i, LatePartner::new));
+	}
+
 	@Nullable
 	public static Partner partner(Villager villager) {
 		return ModAttachments.PARTNER.get(villager);
@@ -178,6 +186,7 @@ public final class Couples {
 		if (other instanceof Villager partner && ModAttachments.PARTNER.has(partner)) {
 			ModAttachments.PARTNER.remove(partner);
 			ModAttachments.WIDOWED_DAY.set(partner, Chronicle.day(level));
+			ModAttachments.LATE_PARTNER.set(partner, new LatePartner(villager.getUUID(), villager.getDisplayName().copy())); // who they lost (31.7)
 		}
 	}
 

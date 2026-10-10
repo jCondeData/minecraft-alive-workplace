@@ -1,0 +1,31 @@
+{
+  "name": {
+    "translate": "good.aliveworkplace.roots"
+  },
+  "icon": "minecraft:carrot",
+  "items": [
+    "#aliveworkplace:trade/roots"
+  ],
+  "bundle": 22,
+  "base_price": 100,
+  "made_by": {
+    "jobs": [
+      "minecraft:farmer"
+    ],
+    "biomes": [
+      "#minecraft:is_taiga",
+      "#c:is_plains"
+    ]
+  },
+  "wanted_in": {
+    "biomes": [
+      "#c:is_desert",
+      "#minecraft:is_beach"
+    ],
+    "jobs": [
+      "aliveworkplace:chef"
+    ]
+  },
+  "food": true,
+  "order": 3
+}

@@ -907,9 +907,9 @@ public final class StewardDesk {
 		List<Proposal> proposed = of(level, hall).proposals();
 		return VillageAdvice.upgradable(level, hall).stream()
 			.filter(f -> blueprint.isEmpty() || StewardConditions.family(f.structure()).equals(StewardConditions.family(blueprint.get())))
-			.filter(f -> !addsBeds || StewardConditions.addsBeds(level, f.structure()))
 			.filter(f -> sites.stream().noneMatch(s -> s.placement().equals(f.placement())))
 			.filter(f -> proposed.stream().noneMatch(p -> p.placement().equals(f.placement())))
+			.filter(f -> !addsBeds || StewardConditions.addsBeds(level, f.structure())) // B85: the costly check last
 			.findFirst();
 	}
 

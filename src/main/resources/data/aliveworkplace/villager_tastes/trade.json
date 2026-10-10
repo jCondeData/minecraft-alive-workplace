@@ -1,0 +1,22 @@
+{
+  "for": {
+    "family": [
+      "aliveworkplace:shopkeeper",
+      "aliveworkplace:innkeeper",
+      "aliveworkplace:ferryman",
+      "aliveworkplace:postman",
+      "aliveworkplace:porter"
+    ]
+  },
+  "loved": [
+    "minecraft:emerald_block",
+    "minecraft:filled_map",
+    "minecraft:saddle"
+  ],
+  "liked": [
+    "minecraft:paper",
+    "#minecraft:boats",
+    "minecraft:lantern",
+    "minecraft:soul_lantern"
+  ]
+}

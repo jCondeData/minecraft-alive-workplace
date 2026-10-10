@@ -109,6 +109,8 @@ public final class WorkplaceConfig {
 	public boolean villageQuests = true;
 	/** Named villagers keep a friendship with each player, shown in hearts (ROADMAP 31.5). Off: no points, no hearts shown; saved friendship stays. */
 	public boolean friendship = Expansions.on(Expansions.M31);
+	/** Villagers tell their friends about their lives at 2, 4, 6, 8 and 10 hearts (heart events, 31.7). Off: nobody starts telling; what was told stays. */
+	public boolean heartEvents = Expansions.on(Expansions.M31);
 	/** Story arcs (31.4) unfold in villages, chapter by chapter. Off: none starts, and a running one ends quietly at its next round. */
 	public boolean storyArcs = Expansions.on(Expansions.M31);
 	/** Days between two story arcs in one village (also before a village's first). */
@@ -146,6 +148,8 @@ public final class WorkplaceConfig {
 	public int guildsPerRank = 1;
 	/** Days an edict stays in force before it can be lifted. */
 	public int edictMinDays = 3;
+	/** Villages work out once a day what goods they're known for and short of, and a price for each (ROADMAP 33.2). Off: nothing is worked out; what was stays saved. */
+	public boolean villageEconomy = Expansions.on(Expansions.M33);
 	/** Households in villages with a hall climb the class ladder (ROADMAP 34.2). Off: no classes; classes and progress stay saved. */
 	public boolean villageClasses = Expansions.on(Expansions.M34);
 	/** Dawns running the next class's needs must hold for a household to rise one class. */
@@ -453,6 +457,7 @@ public final class WorkplaceConfig {
 		// Off in gametests (a hall round could move a test's household a class); the class tests turn it on.
 		io.github.jcondedata.aliveworkplace.people.SocialClasses.ENABLED = villageClasses && Expansions.on(Expansions.M34) && System.getProperty("fabric-api.gametest") == null;
 		io.github.jcondedata.aliveworkplace.people.SocialClasses.RISE_DAYS = classRiseDays;
+		io.github.jcondedata.aliveworkplace.trade.Economy.ENABLED = villageEconomy && Expansions.on(Expansions.M33);
 		io.github.jcondedata.aliveworkplace.people.SocialClasses.FALL_DAYS = classFallDays;
 		io.github.jcondedata.aliveworkplace.hall.HarvestIdols.ENABLED = harvestIdols && Expansions.on(Expansions.M30);
 		io.github.jcondedata.aliveworkplace.explore.ExplorerWork.RANGE = explorerRange;
@@ -503,6 +508,7 @@ public final class WorkplaceConfig {
 		io.github.jcondedata.aliveworkplace.hall.VillageProtection.ENABLED = villageProtection;
 		io.github.jcondedata.aliveworkplace.story.Stories.ENABLED = villageQuests;
 		io.github.jcondedata.aliveworkplace.story.Friendship.ENABLED = friendship && Expansions.on(Expansions.M31);
+		io.github.jcondedata.aliveworkplace.story.HeartEvents.ENABLED = heartEvents && Expansions.on(Expansions.M31);
 		io.github.jcondedata.aliveworkplace.story.Arcs.ENABLED = storyArcs && Expansions.on(Expansions.M31);
 		// Off in gametests (an arc rolled by chance would start under a test's hall); the arc tests start theirs.
 		io.github.jcondedata.aliveworkplace.story.Arcs.AUTO = System.getProperty("fabric-api.gametest") == null;

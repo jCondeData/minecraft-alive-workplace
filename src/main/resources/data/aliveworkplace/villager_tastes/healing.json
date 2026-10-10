@@ -1,0 +1,19 @@
+{
+  "for": {
+    "family": [
+      "aliveworkplace:nurse",
+      "minecraft:cleric",
+      "aliveworkplace:undertaker"
+    ]
+  },
+  "loved": [
+    "minecraft:glistering_melon_slice",
+    "minecraft:ghast_tear",
+    "minecraft:totem_of_undying"
+  ],
+  "liked": [
+    "minecraft:potion",
+    "minecraft:honey_bottle",
+    "minecraft:golden_carrot"
+  ]
+}

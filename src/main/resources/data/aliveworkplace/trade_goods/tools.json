@@ -1,0 +1,26 @@
+{
+  "name": {
+    "translate": "good.aliveworkplace.tools"
+  },
+  "icon": "minecraft:iron_pickaxe",
+  "items": [
+    "#aliveworkplace:trade/tools"
+  ],
+  "bundle": 1,
+  "base_price": 200,
+  "made_by": {
+    "jobs": [
+      "minecraft:toolsmith"
+    ]
+  },
+  "wanted_in": {
+    "jobs": [
+      "aliveworkplace:miner",
+      "aliveworkplace:lumberjack",
+      "minecraft:farmer",
+      "aliveworkplace:builder"
+    ]
+  },
+  "food": false,
+  "order": 24
+}

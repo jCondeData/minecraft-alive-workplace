@@ -139,6 +139,10 @@ public final class VillageHallScreen {
 			nameLore.add(line(Component.translatable("screen.aliveworkplace.hall.rank_next", next.title(), next.villagers, score.villagers(), next.buildings,
 				score.buildings(), next.research, score.research()), ChatFormatting.YELLOW));
 		}
+		Component goods = io.github.jcondedata.aliveworkplace.trade.TradePage.knownAndShort(level, hall); // 33.4
+		if (goods != null) {
+			nameLore.add(line(goods, ChatFormatting.YELLOW));
+		}
 		int treasury = Treasury.emeralds(level, hall);
 		nameLore.add(line(Component.translatable("screen.aliveworkplace.hall.treasury",
 			io.github.jcondedata.aliveworkplace.work.Money.describe((long) treasury * io.github.jcondedata.aliveworkplace.work.Money.DOLLARS_PER_EMERALD, treasury)),
@@ -237,8 +241,14 @@ public final class VillageHallScreen {
 			menu.broadcastChanges();
 		});
 		int routes = Caravans.Data.get(level).routesFrom(hall).size();
+		List<Component> routesLore = new ArrayList<>();
+		routesLore.add(line(Component.translatable("screen.aliveworkplace.hall.routes_hint"), ChatFormatting.GRAY));
+		if (io.github.jcondedata.aliveworkplace.trade.TradePage.shown()) { // the Trade page (33.4): the minecart names its tabs
+			routesLore.add(line(Component.translatable("screen.aliveworkplace.hall.trade_tabs", io.github.jcondedata.aliveworkplace.trade.TradePage.tabNames()),
+				ChatFormatting.GRAY));
+		}
 		menu.button(ROUTES, icon(Items.CHEST_MINECART, Component.translatable("screen.aliveworkplace.hall.routes", routes), ChatFormatting.WHITE,
-			line(Component.translatable("screen.aliveworkplace.hall.routes_hint"), ChatFormatting.GRAY)), p -> {
+			routesLore.toArray(Component[]::new)), p -> {
 			renderRoutes(menu, level, hall);
 			menu.broadcastChanges();
 		});
@@ -328,7 +338,11 @@ public final class VillageHallScreen {
 				slot++;
 			}
 			menu.button(slot++, person(level, hall, villager, classes, menu.viewer()), p -> {
-				if (jobless && villager.getVillagerData().getProfession() != net.minecraft.world.entity.npc.VillagerProfession.NITWIT) {
+				if (menu.shiftClicked() && villager.hasCustomName()) {
+					// Their life story (31.7): hearts, name day, family, partner and what they've told.
+					io.github.jcondedata.aliveworkplace.story.LifeStory.render(menu, level, hall, villager, shown, p);
+					menu.broadcastChanges();
+				} else if (jobless && villager.getVillagerData().getProfession() != net.minecraft.world.entity.npc.VillagerProfession.NITWIT) {
 					renderJobs(menu, level, hall, villager, shown);
 					menu.broadcastChanges();
 				} else {
@@ -445,15 +459,40 @@ public final class VillageHallScreen {
 		}
 	}
 
+	/**
+	 * The trade routes page. With the village economy on it's the Routes tab of the hall's Trade page (33.4), which has
+	 * the same title, list and way back; off, the page as it always was.
+	 */
 	public static void renderRoutes(ChoiceMenu menu, ServerLevel level, BlockPos hall) {
+		if (io.github.jcondedata.aliveworkplace.trade.TradePage.shown()) {
+			io.github.jcondedata.aliveworkplace.trade.TradePage.render(menu, level, hall, io.github.jcondedata.aliveworkplace.trade.TradePage.Tab.ROUTES,
+				() -> refresh(menu, level, hall, 0), menu.viewer());
+			return;
+		}
 		menu.clearButtons();
 		menu.button(0, icon(Items.ARROW, Component.translatable("screen.aliveworkplace.hall.back"), ChatFormatting.WHITE), p -> refresh(menu, level, hall, 0));
-		Caravans.Data data = Caravans.Data.get(level);
-		long onTheRoad = data.onTheRoad().stream().filter(s -> s.from().equals(hall) || s.to().equals(hall)).count();
-		menu.button(4, icon(Items.CHEST_MINECART, Component.translatable("screen.aliveworkplace.hall.routes_title", VillageHalls.name(level, hall)),
-			ChatFormatting.GOLD, line(Component.translatable("screen.aliveworkplace.hall.routes_about", Caravans.KEEP, Caravans.CARGO_STACKS), ChatFormatting.GRAY),
-			line(Component.translatable("screen.aliveworkplace.hall.routes_road", onTheRoad), ChatFormatting.GRAY)), null);
+		menu.button(4, routesHeader(level, hall), null);
 		menu.divider(1);
+		routesList(menu, level, hall, () -> {
+			renderRoutes(menu, level, hall);
+			menu.broadcastChanges();
+		});
+	}
+
+	/** The routes page's title (and the Routes tab of the Trade page): what caravans do and how many are on the road. */
+	public static ItemStack routesHeader(ServerLevel level, BlockPos hall) {
+		long onTheRoad = Caravans.Data.get(level).onTheRoad().stream().filter(s -> s.from().equals(hall) || s.to().equals(hall)).count();
+		return icon(Items.CHEST_MINECART, Component.translatable("screen.aliveworkplace.hall.routes_title", VillageHalls.name(level, hall)),
+			ChatFormatting.GOLD, line(Component.translatable("screen.aliveworkplace.hall.routes_about", Caravans.KEEP, Caravans.CARGO_STACKS), ChatFormatting.GRAY),
+			line(Component.translatable("screen.aliveworkplace.hall.routes_road", onTheRoad), ChatFormatting.GRAY));
+	}
+
+	/**
+	 * The routes list, from {@link #FIRST_ROW} on: the villages this one can trade with; a click starts or stops sending
+	 * them what they need, then {@code again} lays the page out again.
+	 */
+	public static void routesList(ChoiceMenu menu, ServerLevel level, BlockPos hall, Runnable again) {
+		Caravans.Data data = Caravans.Data.get(level);
 		List<Caravans.Village> neighbours = Caravans.neighbours(level, hall);
 		java.util.Optional<io.github.jcondedata.aliveworkplace.legend.CaravanPayPower> pay = io.github.jcondedata.aliveworkplace.legend.CaravanPayPower.of(level, hall);
 		int slot = FIRST_ROW;
@@ -500,8 +539,7 @@ public final class VillageHallScreen {
 				Chat.actionBar(p, Component.translatable(on ? "message.aliveworkplace.hall.route_started"
 					: wasOn ? "message.aliveworkplace.hall.route_stopped" : "message.aliveworkplace.hall.route_full", other.name(), max)
 					.withStyle(on ? ChatFormatting.GREEN : ChatFormatting.YELLOW));
-				renderRoutes(menu, level, hall);
-				menu.broadcastChanges();
+				again.run();
 			});
 		}
 		if (neighbours.isEmpty()) {
@@ -625,6 +663,11 @@ public final class VillageHallScreen {
 		lore.add(line(Component.translatable("screen.aliveworkplace.hall.quest_days", days), ChatFormatting.DARK_GRAY));
 		hint(quest, viewer, lore);
 		return icon(item, VillageQuests.describe(quest).copy(), ChatFormatting.GOLD, lore.toArray(Component[]::new));
+	}
+
+	/** Back to the hall's list at {@code page} (from a page laid out elsewhere, like a life story). */
+	public static void showList(ChoiceMenu menu, ServerLevel level, BlockPos hall, int page) {
+		refresh(menu, level, hall, page);
 	}
 
 	private static void refresh(ChoiceMenu menu, ServerLevel level, BlockPos hall, int page) {
@@ -766,6 +809,9 @@ public final class VillageHallScreen {
 			&& legendName == null;
 		lore.add(line(canBeGivenAJob ? "screen.aliveworkplace.hall.jobless_click" : "screen.aliveworkplace.hall.click_to_find",
 			canBeGivenAJob ? ChatFormatting.GREEN : ChatFormatting.DARK_GRAY));
+		if (villager.hasCustomName()) {
+			lore.add(line("screen.aliveworkplace.hall.life_story_hint", ChatFormatting.DARK_GRAY)); // shift-click: their life story (31.7)
+		}
 		icon.set(DataComponents.LORE, new ItemLore(lore));
 		return icon;
 	}

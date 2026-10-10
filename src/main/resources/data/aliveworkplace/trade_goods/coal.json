@@ -1,0 +1,32 @@
+{
+  "name": {
+    "translate": "good.aliveworkplace.coal"
+  },
+  "icon": "minecraft:coal",
+  "items": [
+    "#minecraft:coals"
+  ],
+  "bundle": 15,
+  "base_price": 100,
+  "made_by": {
+    "jobs": [
+      "aliveworkplace:miner"
+    ],
+    "biomes": [
+      "#minecraft:is_mountain"
+    ]
+  },
+  "wanted_in": {
+    "biomes": [
+      "#c:is_snowy"
+    ],
+    "jobs": [
+      "minecraft:armorer",
+      "aliveworkplace:chef",
+      "minecraft:mason",
+      "minecraft:fisherman"
+    ]
+  },
+  "food": false,
+  "order": 14
+}

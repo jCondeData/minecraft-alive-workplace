@@ -1,0 +1,31 @@
+{
+  "name": {
+    "translate": "good.aliveworkplace.arms_and_armour"
+  },
+  "icon": "minecraft:iron_sword",
+  "items": [
+    "#aliveworkplace:trade/arms_and_armour"
+  ],
+  "bundle": 1,
+  "base_price": 300,
+  "made_by": {
+    "jobs": [
+      "minecraft:armorer",
+      "minecraft:weaponsmith"
+    ]
+  },
+  "wanted_in": {
+    "jobs": [
+      "aliveworkplace:guard"
+    ]
+  },
+  "food": false,
+  "events": [
+    {
+      "event": "aliveworkplace:raid",
+      "demand": 2,
+      "days": 3
+    }
+  ],
+  "order": 25
+}

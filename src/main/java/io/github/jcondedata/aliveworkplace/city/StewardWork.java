@@ -60,9 +60,25 @@ public class StewardWork extends Behavior<Villager> {
 	 */
 	public static Planner PLANNER = (level, steward, hall) -> Component.translatable("message.aliveworkplace.steward.state.reading");
 
+	/** How often he plans at the hall: every second. */
+	public static final int PLAN_EVERY = 20;
+	/** B85: the tick of the second that carries the second part of his planning (the first part goes on tick 0). */
+	public static final int SECOND_PART = PLAN_EVERY / 2;
+
 	@FunctionalInterface
 	public interface Planner {
+		/** All his planning at once (tests and commands; at the hall he plans {@linkplain #plan(ServerLevel, Villager, BlockPos, int) spread over the second}). */
 		Component plan(ServerLevel level, Villager steward, BlockPos hall);
+
+		/**
+		 * B85: the same planning spread over the second, so no single tick carries all of it: {@code part} 0 (the tick
+		 * that is a multiple of {@link #PLAN_EVERY}) and {@link #SECOND_PART}, half a second later. Returns his line, or
+		 * null to keep the last one. A planner with no parts does it all at part 0.
+		 */
+		@org.jetbrains.annotations.Nullable
+		default Component plan(ServerLevel level, Villager steward, BlockPos hall, int part) {
+			return part == 0 ? plan(level, steward, hall) : null;
+		}
 	}
 
 	public static ImmutableList<Pair<Integer, ? extends BehaviorControl<? super Villager>>> packages(float speed) {
@@ -81,7 +97,14 @@ public class StewardWork extends Behavior<Villager> {
 	/** Ticks on the way to the current stop: a stop he can't reach is given up after {@link #GIVE_UP}. */
 	private int travel;
 	static final int GIVE_UP = 600;
-	private Component line = Component.empty();
+	/** His line over his head while planning, as shown (null until he first plans at the hall). */
+	@org.jetbrains.annotations.Nullable
+	private Component line;
+	/** The title over his head ("Steward of Oakvale"), worked out once a second rather than every tick (B85). */
+	@org.jetbrains.annotations.Nullable
+	private Component title;
+	@org.jetbrains.annotations.Nullable
+	private BlockPos titleHall;
 
 	public StewardWork() {
 		super(ImmutableMap.of(
@@ -130,7 +153,10 @@ public class StewardWork extends Behavior<Villager> {
 		if (hall == null) {
 			return;
 		}
-		Component title = Component.translatable("message.aliveworkplace.steward.title", VillageHalls.name(level, hall));
+		if (title == null || gameTime % PLAN_EVERY == 0 || !hall.equals(titleHall)) {
+			title = Component.translatable("message.aliveworkplace.steward.title", VillageHalls.name(level, hall));
+			titleHall = hall.immutable();
+		}
 		if (!roundDone(level, villager)) {
 			if (stops == null) {
 				long cost = StewardCost.start(); // 27.22
@@ -177,16 +203,25 @@ public class StewardWork extends Behavior<Villager> {
 			WorkerStatus.set(villager, title, -1f, Component.translatable("message.aliveworkplace.steward.state.back").withStyle(ChatFormatting.GRAY));
 			return;
 		}
-		if (gameTime % 20 == 0 || line.getString().isEmpty()) {
+		int part = (int) (gameTime % PLAN_EVERY);
+		boolean first = line == null;
+		if (first || part == 0 || part == SECOND_PART) {
 			long cost = StewardCost.start(); // 27.22
 			try {
-				line = PLANNER.plan(level, villager, hall);
+				// B85: spread over the second (the first time, its first part straight away)
+				Component next = PLANNER.plan(level, villager, hall, first ? 0 : part);
+				if (next != null) {
+					line = next.copy().withStyle(ChatFormatting.GRAY);
+				}
 			} finally {
-				StewardCost.stop(cost, "planning");
+				StewardCost.stop(cost, first || part == 0 ? "planning" : "planning (desk)");
 			}
 		}
+		if (line == null) {
+			return;
+		}
 		villager.getLookControl().setLookAt(hall.getX() + 0.5, hall.getY() + 0.5, hall.getZ() + 0.5);
-		WorkerStatus.set(villager, title, -1f, line.copy().withStyle(ChatFormatting.GRAY));
+		WorkerStatus.set(villager, title, -1f, line);
 	}
 
 	private static final double HALL_REACH = 2.5;

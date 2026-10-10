@@ -1,0 +1,32 @@
+{
+  "name": {
+    "translate": "good.aliveworkplace.paper"
+  },
+  "icon": "minecraft:paper",
+  "items": [
+    "minecraft:paper"
+  ],
+  "bundle": 24,
+  "base_price": 100,
+  "made_by": {
+    "jobs": [
+      "minecraft:librarian",
+      "minecraft:cartographer"
+    ],
+    "biomes": [
+      "#c:is_swamp",
+      "#minecraft:is_jungle",
+      "#minecraft:is_river"
+    ]
+  },
+  "wanted_in": {
+    "jobs": [
+      "aliveworkplace:scholar",
+      "aliveworkplace:teacher",
+      "minecraft:librarian",
+      "aliveworkplace:postman"
+    ]
+  },
+  "food": false,
+  "order": 23
+}

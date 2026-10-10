@@ -29,7 +29,8 @@ public final class Expansions {
 	public static final boolean M30 = false;
 	/**
 	 * Milestone 31, Quests become stories (1.5). The daily quests ({@code villageQuests}) aren't behind it; the journal's
-	 * tabs, Track and {@code /workplace quests} are (design note M31, "The expansion gate"), and so is {@code friendship}.
+	 * tabs, Track and {@code /workplace quests} are (design note M31, "The expansion gate"), and so are {@code friendship}
+	 * and {@code heartEvents} (31.7).
 	 * tabs, Track and {@code /workplace quests} are (design note M31, "The expansion gate"), and {@code storyArcs},
 	 * {@code arcCooldownDays}, {@code arcsAtOnce} (31.4).
 	 */
@@ -40,6 +41,8 @@ public final class Expansions {
 	 * M32, "The expansion gate").
 	 */
 	public static final boolean M32 = false;
+	/** Milestone 33, From village to realm (1.7): {@code villageEconomy}. */
+	public static final boolean M33 = false;
 	/** Milestone 34, Classes and luxuries (1.8): {@code villageClasses}, {@code classRiseDays}, {@code classFallDays}, {@code vintners}. */
 	public static final boolean M34 = false;
 
@@ -67,7 +70,8 @@ public final class Expansions {
 			case "legends", "legendNeeds", "legendSites", "strangeMoods", "giftedChance" -> M29;
 			case "villageEdicts", "edictMinDays", "workHorns", "villageBanners", "cradles", "harvestIdols", "tonics", "guilds",
 				"guildsPerRank" -> M30;
-			case "friendship" -> M31;
+			case "villageEconomy" -> M33;
+			case "friendship", "heartEvents" -> M31;
 			case "storyArcs", "arcCooldownDays", "arcsAtOnce" -> M31;
 			case "villageClasses", "classRiseDays", "classFallDays", "vintners" -> M34;
 			default -> null;

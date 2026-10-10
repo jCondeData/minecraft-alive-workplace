@@ -151,8 +151,18 @@ public class LifeStageGameTests implements FabricGameTest {
 		// Side by side over real ground, the same 60 ticks at a steady walk: the elder covers 15% less of it.
 		int[] ticks = new int[1];
 		double[] from = new double[2];
+		// What the elder's walk was asked at, tick by tick (a failure says when it changed and what the villager was then).
+		StringBuilder asked = new StringBuilder();
+		float[] last = {Float.NaN};
 		helper.onEachTick(() -> {
 			ticks[0]++;
+			float now = bram.getBrain().getMemory(MemoryModuleType.WALK_TARGET).map(t -> t.getSpeedModifier()).orElse(-1f);
+			if (now != last[0] && asked.length() < 2000) {
+				last[0] = now;
+				asked.append(" [tick ").append(ticks[0]).append(": ").append(now).append(", elder ").append(LifeStages.isElder(bram))
+					.append(", ages ").append(LifeStages.AGES).append('/').append(LifeStages.ELDER_DAYS).append(", grown ").append(LifeStages.grownDays(bram, Chronicle.day(level)))
+					.append(", nav ").append(bram.getNavigation().isDone() ? "idle" : "walking").append(", z ").append(Math.round(bram.getZ() * 100) / 100.0).append(']');
+			}
 			if (ticks[0] <= 100) {
 				bramWalk.walkTo(level, bram, bramGoal, 1.5);
 				tomWalk.walkTo(level, tom, tomGoal, 1.5);
@@ -165,7 +175,7 @@ public class LifeStageGameTests implements FabricGameTest {
 		helper.runAfterDelay(100, () -> {
 			double elder = bram.getZ() - from[0];
 			double young = tom.getZ() - from[1];
-			String went = "in 60 ticks the elder went " + elder + " blocks, the younger villager " + young + " (" + Math.round(100 * elder / young) + "%)";
+			String went = "in 60 ticks the elder went " + elder + " blocks, the younger villager " + young + " (" + Math.round(100 * elder / young) + "%); the elder's walk target:" + asked;
 			org.slf4j.LoggerFactory.getLogger("LifeStageGameTests").info("[elder walk] {}", went);
 			helper.assertTrue(young > 3, "the younger villager hardly walked: " + went);
 			// 15% slower: 85% of the ground, give or take the steps of a path.

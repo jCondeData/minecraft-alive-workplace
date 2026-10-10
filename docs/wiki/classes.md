@@ -30,8 +30,14 @@ At the Village Hall:
 
 **Higher jobs need higher classes (34.8).** The Tinkerer, Chef, Netherworker, Nurse, Teacher, Shopkeeper, Innkeeper
 and, with Cobblemon, the Ball Smith, Move Tutor, Pokémon Trader and Fossil Scientist need an Artisan; the Scholar,
-Undertaker and Trainer Leader a Burgher. Vanilla jobs are open to everyone. Nobody is ever fired: a worker below
+Undertaker, Jeweller and Trainer Leader a Burgher. Vanilla jobs are open to everyone. Nobody is ever fired: a worker below
 their job's class keeps it, and the hall's list marks them.
+
+**The Jeweller (34.12).** Stand a villager by a stonecutter and sneak-right-click them with a gold nugget (a clay
+ball brings the Mason back; an amethyst shard picks the Gem Grower). A Burgher's job. A Novice makes the Amethyst Ring
+from 2 amethyst shards and 2 copper ingots; an Apprentice the Emerald Brooch from an emerald and 3 gold nuggets; a
+Journeyman the Gold Circlet from 2 gold ingots, an emerald and an amethyst shard. The ring is a Burgher's want and
+the brooch a Noble's need, every 16 days; the circlet a Noble's want, every 32.
 
 **The Vintner (34.9).** Stand a villager by a cauldron and sneak-right-click them with sweet berries, glow berries
 or an apple. A Novice presses Cider, an Apprentice Berry Wine, and Vintage Wine waits three days to age. The drinks
@@ -77,6 +83,7 @@ level (Apprentice: Peasant, Journeyman: Artisan, Expert: Burgher).
 | `villageClasses` | on from 1.8 | Off: no classes, no job gate, no class taxes; what is saved stays |
 | `classRiseDays` | 2 (1 to 30) | Dawns running the next class's needs must hold to rise |
 | `classFallDays` | 3 (1 to 30) | Dawns running a need of their own class must fail to fall |
+| `jewellers` | on from 1.8 | Off: no Jeweller job, and Jewellers already hired stand idle |
 | `vintners` | on from 1.8 | Off: no Vintner job, and Vintners already hired stand idle |
 | `tailors` | on from 1.8 | Off: no Tailor job, and Tailors already hired stand idle |
 
@@ -96,6 +103,9 @@ Ball. Households and the village's sums by class are never saved: they are worke
 - Items: Cider (`aliveworkplace:cider`), Berry Wine (`aliveworkplace:berry_wine`), Vintage Wine
   (`aliveworkplace:vintage_wine`), Work Clothes (`aliveworkplace:work_clothes`), Fine Clothes
   (`aliveworkplace:fine_clothes`), Noble Robes (`aliveworkplace:noble_robes`).
+- The Jeweller (`aliveworkplace:jeweller`), at a stonecutter, and their pieces: the Amethyst Ring
+  (`aliveworkplace:amethyst_ring`), the Emerald Brooch (`aliveworkplace:emerald_brooch`) and the Gold Circlet
+  (`aliveworkplace:gold_circlet`).
 - Item tag: `dyed_wool` in `data/aliveworkplace/tags/item/` (every wool but white: what Fine Clothes take).
 - Texts: `class.aliveworkplace.peasant`, `class.aliveworkplace.artisan`, `class.aliveworkplace.burgher`,
   `class.aliveworkplace.noble`.
@@ -110,15 +120,17 @@ Ball. Households and the village's sums by class are never saved: they are worke
 - Design note: the Burgher's "a school and one more service" is two needs, and the Market Square is a building
   need, so the market doesn't double as the "one more".
 - Design note: a luxury is taken at dawn before the needs are checked, so one taken that dawn counts that day.
+- 34.12: the Jeweller is picked with a gold nugget, not the roadmap's amethyst shard: the shard at a stonecutter has
+  picked the Gem Grower since 28.11 (design note `docs/design/M34.md`; the owner can still change it).
 - 34.10: Work Clothes and Fine Clothes may mix wool colours; Noble Robes need all five of one colour. The Tailor takes
   wool from the village's chests and the store, and dyes white wool themselves when dye is to hand: the dyer still
   only dyes for builders.
 
 ## Known limits
 
-- **Nobody can rise past Artisan yet with the mod's own data.** The Burgher needs the Gazette and the Noble an
-  Emerald Brooch, and the Printer and Jeweller who make them (34.11, 34.12) aren't built. The three wines and the
-  three sets of clothes have luxury files today, and a luxury without a file is a need that never holds.
+- **Nobody can rise past Artisan yet with the mod's own data.** The Burgher needs the Gazette, and the Printer who
+  makes it (34.11) isn't built. The three wines, the three sets of clothes and the three pieces of jewellery have
+  luxury files today, and a luxury without a file is a need that never holds.
 - Villagers have no class until their village is seeded, and seeding (34.22) isn't built: on a real world every
   villager is still without a class, and the job gate doesn't apply to them.
 - The grander homes (34.15, 34.16), class outfits (34.17, 34.18), elders and family trees are not built.
@@ -128,6 +140,6 @@ Ball. Households and the village's sums by class are never saved: they are worke
 
 GameTests: `ClassGameTests` (16: the four files are the ladder, each kind of need, one step a day), `ClassHallGameTests`
 (6), `ClassPerkGameTests` (7), `ClassJobGameTests` (7), `ServiceGameTests` (8), `LuxuryGameTests` (7),
-`LuxuryWorkGameTests` (7), `VintnerGameTests` (10), `TailorGameTests` (10).
+`LuxuryWorkGameTests` (7), `JewellerGameTests` (10), `VintnerGameTests` (10), `TailorGameTests` (10).
 
-Showcase scenes: `classes` (a household rises, and the Classes page), `class_jobs`, `noble_ball`, `vintner`, `tailor`.
+Showcase scenes: `classes` (a household rises, and the Classes page), `class_jobs`, `noble_ball`, `jeweller`, `vintner`, `tailor`.

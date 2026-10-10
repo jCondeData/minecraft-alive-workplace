@@ -39,7 +39,7 @@ public class ExpansionGateGameTests implements FabricGameTest {
 	/** Every switch of an unfinished expansion (M27 steward; M28 Pokémon jobs and shows; M29 Legends; M30 civic items; M31 friendship; M34 classes). */
 	static final List<String> GATED_SWITCHES = List.of("steward", "stewardSelfRun", "stewardRoads", "caravanRoads", "stewardWalls", "stewardRenewal",
 		"partnerShows", "nurseHealingMachine", "berryBreeders", "campCooks", "habitatKeepers", "habitatSightings",
-		"daycareKeepers", "gemGrowers", "villageHabitats", "pokemonVillageHouses", "festivalCup",
+		"daycareKeepers", "gemGrowers", "jewellers", "villageHabitats", "pokemonVillageHouses", "festivalCup",
 		"legends", "legendNeeds", "legendSites", "strangeMoods",
 		"villageEdicts", "workHorns", "villageBanners", "cradles", "harvestIdols", "tonics", "guilds",
 		"villageClasses", "friendship", "storyArcs", "vintners", "tailors", "villagerAges", "elderPassing", "agelessElders");
@@ -70,6 +70,7 @@ public class ExpansionGateGameTests implements FabricGameTest {
 		map.put("HabitatKeepers.SIGHTINGS", () -> HabitatKeepers.SIGHTINGS);
 		map.put("DaycareKeepers", () -> DaycareKeepers.ENABLED);
 		map.put("GemGrowers", () -> GemGrowers.ENABLED);
+		map.put("Jewellers", () -> io.github.jcondedata.aliveworkplace.jeweller.Jewellers.ENABLED);
 		map.put("VillageHabitats", () -> VillageHabitats.ENABLED);
 		map.put("Cups", () -> io.github.jcondedata.aliveworkplace.cup.Cups.ENABLED);
 		map.put("VillageHouses.POKEMON_JOBS", () -> io.github.jcondedata.aliveworkplace.world.VillageHouses.POKEMON_JOBS);
@@ -160,8 +161,8 @@ public class ExpansionGateGameTests implements FabricGameTest {
 			if (!screen.contains("villageProtection") || !screen.contains("maxWorkPace") || !screen.contains("seasonDays")) {
 				problems.add("a finished option left the screen: " + screen);
 			}
-			if (screen.size() != 81 - GATED_SWITCHES.size() - GATED_NUMBERS.size()) {
-				problems.add("expected " + (81 - GATED_SWITCHES.size() - GATED_NUMBERS.size()) + " options on the screen, found "
+			if (screen.size() != 82 - GATED_SWITCHES.size() - GATED_NUMBERS.size()) {
+				problems.add("expected " + (82 - GATED_SWITCHES.size() - GATED_NUMBERS.size()) + " options on the screen, found "
 					+ screen.size());
 			}
 			empty.setBoolean("tonics", true);
@@ -206,7 +207,7 @@ public class ExpansionGateGameTests implements FabricGameTest {
 		for (String name : GATED_SWITCHES) {
 			helper.assertTrue(new WorkplaceConfig().getBoolean(name), name + " should default on in GameTests");
 		}
-		helper.assertTrue(WorkplaceConfig.optionNames().size() == 81, "every option on the screen in GameTests");
+		helper.assertTrue(WorkplaceConfig.optionNames().size() == 82, "every option on the screen in GameTests");
 		helper.succeed();
 	}
 }

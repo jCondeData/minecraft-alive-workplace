@@ -37,6 +37,7 @@ public final class ModTrades {
 		stewardTrades();
 		campCookTrades();
 		habitatKeeperTrades();
+		jewellerTrades();
 		gemGrowerTrades();
 		vintnerTrades();
 		tailorTrades();
@@ -676,6 +677,33 @@ public final class ModTrades {
 		Platform.get().addTrades(ModVillagers.TAILOR, 5, offers -> {
 			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.STRING, 14), new ItemStack(Items.EMERALD), 16, 30, 0.05f));
 			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 12), new ItemStack(ModItems.NOBLE_ROBES), 6, 30, 0.05f));
+		});
+	}
+
+	/**
+	 * Jewellers (34.12): at every level they buy their makings (amethyst, copper, gold) and sell the jewellery of their
+	 * level: the Amethyst Ring (Novice), the Emerald Brooch (Apprentice), the Gold Circlet (Journeyman and up).
+	 */
+	private static void jewellerTrades() {
+		Platform.get().addTrades(ModVillagers.JEWELLER, 1, offers -> {
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.AMETHYST_SHARD, 12), new ItemStack(Items.EMERALD), 16, 2, 0.05f));
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 4), new ItemStack(ModItems.AMETHYST_RING), 12, 1, 0.05f));
+		});
+		Platform.get().addTrades(ModVillagers.JEWELLER, 2, offers -> {
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.COPPER_INGOT, 10), new ItemStack(Items.EMERALD), 16, 5, 0.05f));
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 9), new ItemStack(ModItems.EMERALD_BROOCH), 12, 5, 0.05f));
+		});
+		Platform.get().addTrades(ModVillagers.JEWELLER, 3, offers -> {
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.GOLD_INGOT, 3), new ItemStack(Items.EMERALD), 12, 10, 0.05f));
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 20), new ItemStack(ModItems.GOLD_CIRCLET), 6, 10, 0.05f));
+		});
+		Platform.get().addTrades(ModVillagers.JEWELLER, 4, offers -> {
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.GOLD_NUGGET, 24), new ItemStack(Items.EMERALD), 12, 15, 0.05f));
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 16), new ItemStack(ModItems.EMERALD_BROOCH, 2), 8, 15, 0.05f));
+		});
+		Platform.get().addTrades(ModVillagers.JEWELLER, 5, offers -> {
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.AMETHYST_SHARD, 10), new ItemStack(Items.EMERALD), 16, 30, 0.05f));
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 17), new ItemStack(ModItems.GOLD_CIRCLET), 6, 30, 0.05f));
 		});
 	}
 

@@ -1506,6 +1506,13 @@ final class JobScenes {
 			return l -> !l.getBlockState(budding.above()).is(Blocks.AMETHYST_CLUSTER) && l.getBlockState(budding).is(Blocks.BUDDING_AMETHYST)
 				&& c.countItem(Items.AMETHYST_SHARD) >= 4 && io.github.jcondedata.aliveworkplace.gem.GemGrowers.isGrower(grower);
 		}));
+		SCENES.put("jeweller", job("the jeweller made amethyst rings at the stonecutter", 2400, (level, player) -> {
+			// ROADMAP 34.12: a stonecutter picked with a gold nugget; amethyst shards and copper ingots in the chest. The
+			// Novice makes Amethyst Rings at the stonecutter (it rings, gold filings fly) and puts them in the chest.
+			picked(level, player, STATION, Blocks.STONECUTTER, Items.GOLD_NUGGET);
+			Container c = chest(level, chestPos(), new ItemStack(Items.AMETHYST_SHARD, 6), new ItemStack(Items.COPPER_INGOT, 6));
+			return l -> c.countItem(io.github.jcondedata.aliveworkplace.registry.ModItems.AMETHYST_RING) >= 2;
+		}));
 		SCENES.put("habitat_keeper", job("the habitat keeper set out a snack, slathered the log and spotted a shiny Eevee", 2400, (level, player) -> {
 			// ROADMAP 28.10: Cobblemon's Pasture Block picked with a honey bottle; Poké Snacks and a honey bottle in the
 			// chest; a lure spot marked behind the pasture, a Saccharine log beside it, and a shiny wild Eevee nearby. She

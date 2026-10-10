@@ -61,6 +61,7 @@ public final class Expansions {
 			case "legends", "legendNeeds", "legendSites", "strangeMoods", "giftedChance" -> M29;
 			case "villageEdicts", "edictMinDays", "workHorns", "villageBanners", "cradles", "harvestIdols", "tonics", "guilds",
 				"guildsPerRank" -> M30;
+			case "jewellers" -> M34; // the Jeweller (34.12), with the rest of Classes and luxuries below
 			case "friendship" -> M31;
 			case "storyArcs", "arcCooldownDays", "arcsAtOnce" -> M31;
 			case "villageClasses", "classRiseDays", "classFallDays", "vintners", "tailors", "villagerAges", "villagerElderDays",

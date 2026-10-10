@@ -1,0 +1,8 @@
+{
+  "job": "aliveworkplace:jeweller",
+  "level": 2,
+  "inputs": [{"item": "minecraft:emerald", "count": 1}, {"item": "minecraft:gold_nugget", "count": 3}],
+  "output": {"id": "aliveworkplace:emerald_brooch", "count": 1},
+  "ticks": 100,
+  "enabled": true
+}

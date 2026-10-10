@@ -729,6 +729,23 @@ public final class ModVillagers {
 	);
 
 	/**
+	 * Makes jewellery at a stonecutter (ROADMAP 34.12): only ever by a gold nugget, with config {@code jewellers}. A
+	 * jobless villager by a stonecutter still becomes a Mason, which vanilla registers first.
+	 */
+	public static final VillagerProfession JEWELLER = Registry.register(
+		BuiltInRegistries.VILLAGER_PROFESSION,
+		AliveWorkplace.id("jeweller"),
+		new VillagerProfession(
+			"jeweller",
+			holder -> holder.is(net.minecraft.world.entity.ai.village.poi.PoiTypes.MASON),
+			holder -> holder.is(net.minecraft.world.entity.ai.village.poi.PoiTypes.MASON),
+			ImmutableSet.of(),
+			ImmutableSet.of(),
+			SoundEvents.VILLAGER_WORK_MASON
+		)
+	);
+
+	/**
 	 * Tends the gem beds round a stonecutter (ROADMAP 28.11): only ever by an amethyst shard, with config {@code gemGrowers}.
 	 * A jobless villager by a stonecutter still becomes a Mason, which vanilla registers first.
 	 */
@@ -831,7 +848,7 @@ public final class ModVillagers {
 			|| profession == TRAINER || profession == TRAINER_LEADER || profession == TUTOR || profession == POKEMON_TRADER
 			|| profession == ORCHARD_KEEPER || profession == BALL_SMITH || profession == PORTER || profession == CARPENTER || profession == CHEF || profession == FOSSIL_SCIENTIST
 			|| profession == BEEKEEPER || profession == FLORIST || profession == RANCHER || profession == TEACHER || profession == INNKEEPER || profession == UNDERTAKER || profession == SCHOLAR
-			|| profession == SIFTER || profession == TINKERER || profession == NETHERWORKER || profession == COMPOSTER
+			|| profession == SIFTER || profession == TINKERER || profession == NETHERWORKER || profession == COMPOSTER || profession == JEWELLER
 			|| profession == BERRY_BREEDER || profession == CAMP_COOK || profession == HABITAT_KEEPER || profession == GEM_GROWER
 			|| profession == DAYCARE_KEEPER || profession == VINTNER || profession == TAILOR;
 	}

@@ -3756,7 +3756,7 @@ on a real world.
   pages built from a staged hall's chronicle and quests, a scholar using printed books, the quest paid on delivery)
   pass; both outfits pass `lint.py`; scene `printer` (the Gazette opened and read) passes; a README section and
   job-table row.
-- [ ] **34.12** **Jeweller.** A new job: stand a villager by a **stonecutter** and sneak-right-click them with an
+- [x] **34.12** (review: pending 2026-10-09) **Jeweller.** A new job: stand a villager by a **stonecutter** and sneak-right-click them with an
   **amethyst shard** (the stonecutter's Mason stays, back with cobblestone). Through 34.5 they make:
   - **Amethyst Ring**: 2 amethyst shards and 2 copper ingots (Novice);
   - **Emerald Brooch**: an emerald and 3 gold nuggets (Apprentice);
@@ -5013,6 +5013,18 @@ item waits.
   meals). Trades: makings bought at every level (apples, sweet berries, bottles, glow berries, apples); Cider sold at
   Novice, Berry Wine at Apprentice and Expert, Vintage Wine at Journeyman and Master. Not done here: the "What next?"
   tip naming the Vintner (34.6 left that how-line generic).
+- **34.12 (2026-10-09, decisions; lane d):** the Jeweller is **picked with a gold nugget**, the default 34.1's note
+  set (above, and `docs/design/M34.md`): the item text's amethyst shard has picked the Gem Grower at a stonecutter
+  since 28.11, and the Mason comes back with a clay ball, not cobblestone. `JewellerGameTests` reads "picked with a
+  gold nugget", and checks the shard still gives the Gem Grower. **Owner's call if he wants the shard instead** (the Gem
+  Grower would then need another item). Config switch `jewellers`, gated with M34 like `tailors`; with it off the
+  stonecutter's tooltip names the Mason and the Gem Grower only. Luxury files as the design note lists them: the ring
+  and the brooch every 16 days, the circlet every 32. The engine may craft a making one step down (a gold ingot into
+  nuggets for a brooch), as it does for every luxury maker. Trades: amethyst shards, copper ingots, gold ingots, gold
+  nuggets and shards bought at levels 1 to 5; the ring sold at Novice, the brooch at Apprentice and Expert, the circlet
+  at Journeyman and Master. The three pieces are plain items (16 to a stack) and were not added to the Legends' stand-in
+  tag `luxury/jewels` (27's "a liked luxury" still takes shards and emeralds), as 34.9 and 34.10 left `wine` and
+  `clothes` alone: one item should move all four tags. The Jeweller's Workshop is 34.14.
 - **34.10 (2026-10-09, decisions; lane d):** the Tailor has a config switch, `tailors`, gated with M34 like `vintners`.
   The loom is now a shared station (`Stations`): shears pick its Shepherd, so sneak-right-clicking a jobless villager by
   a loom with shears makes them a Shepherd (shears still hire a Shepherd, and still pick the Beekeeper at a hive: the

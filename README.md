@@ -582,6 +582,7 @@ placed keep working, so old worlds are fine.
 | Camp Cook (with Cobblemon) | Campfire Pot (Cobblemon's campfire with a pot on it) + Hearty Grains | the makings of her dishes (Hearty Grains, Vivichoke, apricorns, milk, honey, berries for seasoning) | nothing (a Storehouse's stock orders for the order-only treats) | any |
 | Habitat Keeper (with Cobblemon) | Pasture Block (Cobblemon's) + a honey bottle | Poké Snacks (or the Camp Cook's), honey bottles, Saccharine saplings | Field Markers for her lure spots (optional) | any |
 | Vintner | Cauldron + sweet berries, glow berries or an apple | apples, sweet or glow berries (with Cobblemon any berry), glass bottles | nothing (keeps the village store in Cider and wines) | any |
+| Jeweller | Stonecutter + a gold nugget | amethyst shards, copper ingots, emeralds, gold nuggets and ingots | nothing (keeps the village store in jewellery) | Burgher |
 | Gem Grower | Stonecutter + an amethyst shard | tumblestones or Type Gem Blocks to plant (with Cobblemon), glass and shards for Blank TMs (1.8) | sneak-right-click: pick which gem beds she keeps | any |
 | Daycare Keeper (with Cobblemon) | Pasture Block (Cobblemon's) + an egg | emeralds (or CobbleDollars) to collect eggs | right-click: leave a pair, collect eggs | any |
 | Netherworker | Cartography Table + netherrack | food (a pickaxe, an axe, a sword, a chestplate, fire resistance) | nothing (a Nether portal within 32 blocks) | Artisan |
@@ -1266,6 +1267,27 @@ makings for. The beds are data files (`data/<namespace>/gem_beds/<name>.json`: w
 which blocks grow and which is ripe), so a data pack can add more. She sells amethyst shards, then tumblestones, and Type
 Gems at Expert (1.8); Rock and Steel Pokémon help her, and a Rock partner taps each ripe cluster loose. Config
 `gemGrowers` (on).
+
+## Jewellers
+
+*Part of 1.8, Classes and luxuries: off until that expansion is finished.*
+
+Put a chest by a **stonecutter**, stand a villager beside it and sneak-right-click them with a **gold nugget**: they
+become a **Jeweller** (a jobless villager still takes a stonecutter as a Mason; a clay ball brings the Mason back and an
+amethyst shard the Gem Grower). In a village with a hall and classes the Jeweller must be a Burgher or better. While
+they work, the stonecutter rings and filings of gold fly. They keep the village store in 8 of each piece they can
+make, from their own chests, the store and the village's chests (the gem growers' shards among them).
+
+| Piece | Made from | Level | Wanted by |
+|---|---|---|---|
+| **Amethyst Ring** | 2 amethyst shards and 2 copper ingots | Novice | Burghers, every 16 days (a want) |
+| **Emerald Brooch** | an emerald and 3 gold nuggets | Apprentice | Nobles, every 16 days (a need) |
+| **Gold Circlet** | 2 gold ingots, an emerald and an amethyst shard | Journeyman | Nobles, every 32 days (a want) |
+
+The porters carry the jewellery to the store, and what the Jeweller is short of goes on the requests board. Jewellers
+buy amethyst shards, copper and gold and sell the jewellery of their level; Rock, Steel and Fairy Pokémon help them.
+The recipes are data (`data/<namespace>/luxury_recipes/`), so a data pack can add more. Config `jewellers` (on once 1.8
+is finished).
 
 ## Vintners
 

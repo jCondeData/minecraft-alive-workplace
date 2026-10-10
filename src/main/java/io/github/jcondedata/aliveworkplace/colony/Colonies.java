@@ -161,6 +161,7 @@ public final class Colonies {
 		Platform.get().clientbound(Answer.TYPE, Answer.CODEC);
 		Platform.get().serverbound(Choose.TYPE, Choose.CODEC, Colonies::clicked);
 		TradePage.register(TradePage.Tab.COLONIES, Colonies::tabIcon, Colonies::tab, () -> ENABLED);
+		Settlers.init();
 	}
 
 	// ---- buying the charter ---------------------------------------------------------------------------------------------
@@ -468,10 +469,33 @@ public final class Colonies {
 		RealmData.Order order = data.orderOf(mother);
 		if (order != null) {
 			Component name = order.name().orElse(Component.translatable("screen.aliveworkplace.colonies.unnamed"));
+			// 33.9: where the order has got to ("On the road to Newbrook, there in 2 minutes"), who goes and what they carry
+			List<Component> about = new ArrayList<>();
+			about.add(VillageHallScreen.line(Component.translatable("screen.aliveworkplace.colonies.on_road_where", VillageHallScreen.where(hall, order.spot()), village),
+				ChatFormatting.GRAY));
+			about.add(VillageHallScreen.line(Settlers.status(level, order), ChatFormatting.GOLD));
+			about.addAll(Settlers.lines(level, order));
 			menu.button(ON_ROAD, VillageHallScreen.icon(Items.LEATHER_BOOTS, Component.translatable("screen.aliveworkplace.colonies.on_road", name),
-				ChatFormatting.YELLOW,
-				VillageHallScreen.line(Component.translatable("screen.aliveworkplace.colonies.on_road_where", VillageHallScreen.where(hall, order.spot()), village),
-					ChatFormatting.GRAY)), null);
+				ChatFormatting.YELLOW, about.toArray(Component[]::new)), null);
+			if (!order.gone()) {
+				boolean may = entity != null && viewer != null && VillageProtection.mayRule(level, entity, viewer);
+				menu.button(Settlers.CALL_OFF, VillageHallScreen.icon(Items.BARRIER, Component.translatable("screen.aliveworkplace.colonies.call_off"),
+					may ? ChatFormatting.RED : ChatFormatting.GRAY,
+					VillageHallScreen.line(may ? Component.translatable("screen.aliveworkplace.colonies.call_off_how")
+						: Component.translatable("screen.aliveworkplace.colonies.call_off_owner", entity == null ? "" : entity.ownerName()), ChatFormatting.GRAY)), p -> {
+					VillageHallBlockEntity now = level.getBlockEntity(hall) instanceof VillageHallBlockEntity e ? e : null;
+					if (now == null || !VillageProtection.mayRule(level, now, p)) {
+						level.playSound(null, p.blockPosition(), SoundEvents.VILLAGER_NO, SoundSource.PLAYERS, 0.6f, 1f);
+						Chat.chat(p, Component.translatable("message.aliveworkplace.colony.call_off_not_yours", village, now == null ? "" : now.ownerName())
+							.withStyle(ChatFormatting.RED));
+					} else if (Settlers.callOff(level, hall, p)) {
+						Chat.chat(p, Component.translatable("message.aliveworkplace.colony.called_off", name, village).withStyle(ChatFormatting.YELLOW));
+					} else {
+						Chat.chat(p, Component.translatable("message.aliveworkplace.colony.too_late", name).withStyle(ChatFormatting.RED));
+					}
+					again.run();
+				});
+			}
 		}
 
 		int slot = FOUNDED;

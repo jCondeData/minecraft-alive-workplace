@@ -622,6 +622,10 @@ public final class Caravans {
 				out.merge(item, r.count(), Math::max);
 			}
 		}
+		// 33.9: the supplies the colony's settlers still wait for
+		for (Map.Entry<Item, Integer> e : io.github.jcondedata.aliveworkplace.colony.Settlers.wants(level, hall).entrySet()) {
+			out.merge(e.getKey(), e.getValue(), Math::max);
+		}
 		// 27.19: what the Steward's waiting builds miss
 		for (Map.Entry<Item, Integer> e : io.github.jcondedata.aliveworkplace.city.StewardSafety.shoppingList(level, hall)) {
 			out.merge(e.getKey(), e.getValue(), Math::max);

@@ -357,6 +357,13 @@ SCENES = [
       "256 to 1,024 blocks out and the circles round the other halls; a click put the red cross 612 blocks north-east, and the tooltip says so", 75,
       [("01_colonies_tab", "The Colonies tab: a charter for 32 emeralds, the treasury pays 20"), ("02_colony_map", "The charter's map: banners, the ring, a place pointed at"),
        ("03_colony_spot", "A click: the red cross, 612 blocks north-east"), ("04_colony_tooltip", "The charter's tooltip names the spot")]),
+    # The settlers set out (ROADMAP 33.9): the order at the hall, the gathering, the walk out, on the road
+    S("colony_departure", "Realm", "The settlers set out for the colony",
+      "the owner right-clicked Thornholm's hall with the Colony Charter: Dara and Tomas volunteered and the Storehouse gave their supplies; "
+      "they gathered at the hall, the bell rang and they walked out toward the spot, and once out of sight the Colonies tab read "
+      "\"On the road to Newbrook\"", 95,
+      [("01_colony_order", "The Colonies tab: the order getting ready, with its call-off"), ("02_settlers_gathered", "The settlers gathered at the hall"),
+       ("03_walking_out", "The bell has rung: they walk out toward the spot"), ("04_on_the_road", "On the road to Newbrook")]),
     # House looks (ROADMAP 23.10a): the leader picks another style's outside for a village house; the builder rebuilds it
     S("piece_look", "Village Hall", "House looks: a new outside for a village house",
       "the hall's Builds button opened House looks, the Guard House's view showed the five outsides, and choosing the desert one had the builder rebuild its outside", 140,

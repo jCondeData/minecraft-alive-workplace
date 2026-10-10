@@ -2,7 +2,7 @@
 
 ROADMAP 33.8 (part of 1.7, "From village to realm"; off until 1.7 is released). A City can found a sister village.
 This page is the first step: buying the Colony Charter at the hall and choosing, on its map, where the colony goes.
-Sending the settlers (33.9) and the colony's first day (33.10) come next and get their own pages.
+Sending the settlers is on [its own page](colony-settlers.md) (33.9); the colony's first day (33.10) comes next.
 
 Roadmap items: 33.8
 
@@ -109,7 +109,7 @@ All 33.8, lane a, 2026-10-10 (also in ROADMAP's Notes):
 
 ## Known limits
 
-- The charter does nothing more yet: no settlers leave until 33.9, and no colony is founded until 33.10.
+- Right-clicking the hall with the charter sends the settlers ([33.9](colony-settlers.md)); no colony is founded until 33.10.
 - A hall placed less than a round ago isn't on the map yet and doesn't keep a colony 128 blocks away.
 - The map shows only what the server has loaded when you open it: far from players that is parchment. It isn't
   redrawn while it is open.

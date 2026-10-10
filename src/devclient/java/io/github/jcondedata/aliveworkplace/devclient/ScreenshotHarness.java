@@ -70,6 +70,7 @@ public class ScreenshotHarness implements ClientModInitializer {
 	private final WordsScene words = new WordsScene();
 	private final CityPlanScene cityPlan = new CityPlanScene();
 	private final ColonyCharterScene colonyCharter = new ColonyCharterScene();
+	private final ColonyDepartureScene colonyDeparture = new ColonyDepartureScene();
 	private final LegendsHallScene legendsHall = new LegendsHallScene();
 	private final CupPageScene cupPage = new CupPageScene();
 	private final CupBoutScene cupBout = new CupBoutScene();
@@ -219,6 +220,10 @@ public class ScreenshotHarness implements ClientModInitializer {
 		}
 		if ("colony_charter".equals(System.getProperty("aliveworkplace.scene"))) {
 			colonyCharter.tick(mc);
+			return;
+		}
+		if ("colony_departure".equals(System.getProperty("aliveworkplace.scene"))) {
+			colonyDeparture.tick(mc);
 			return;
 		}
 		if ("legends_hall".equals(System.getProperty("aliveworkplace.scene"))) {

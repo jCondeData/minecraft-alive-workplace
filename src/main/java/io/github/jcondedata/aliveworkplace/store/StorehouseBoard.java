@@ -63,7 +63,8 @@ public final class StorehouseBoard {
 		menu.clearButtons();
 		List<BlockPos> store = SupplyContainers.find(level, storehouse, null);
 		long items = SupplyContainers.contents(level, store).values().stream().mapToLong(Long::longValue).sum();
-		List<Requests.Request> requests = Requests.near(level, storehouse, Porters.owner(level, storehouse));
+		List<Requests.Request> requests = new ArrayList<>(Requests.near(level, storehouse, Porters.owner(level, storehouse)));
+		requests.addAll(io.github.jcondedata.aliveworkplace.colony.Settlers.requests(level, storehouse)); // 33.9: the settlers' missing supplies
 		ItemStack info = new ItemStack(Items.WRITABLE_BOOK);
 		info.set(DataComponents.CUSTOM_NAME, plain(Component.translatable("screen.aliveworkplace.storehouse.info"), ChatFormatting.GOLD));
 		info.set(DataComponents.LORE, new ItemLore(List.of(

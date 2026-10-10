@@ -83,7 +83,7 @@ public class ColonyCharterItem extends Item {
 	public InteractionResult useOn(UseOnContext context) {
 		Level level = context.getLevel();
 		if (level.getBlockState(context.getClickedPos()).is(ModBlocks.VILLAGE_HALL)) {
-			return InteractionResult.PASS; // the hall is where the settlers are sent from (33.9), never a spot
+			return InteractionResult.PASS; // the hall is where the settlers are sent from (Settlers.send, through the hall block), never a spot
 		}
 		if (level instanceof ServerLevel && context.getPlayer() instanceof ServerPlayer player) {
 			Colonies.Chosen chosen = Colonies.choose(player, context.getItemInHand(), player.blockPosition());

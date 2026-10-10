@@ -6,16 +6,21 @@ import io.github.jcondedata.aliveworkplace.AliveWorkplace;
 import io.github.jcondedata.aliveworkplace.mc.Nbt;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.GlobalPos;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.UUIDUtil;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentSerialization;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.level.saveddata.SavedData;
 import org.jetbrains.annotations.Nullable;
 
@@ -33,12 +38,19 @@ public final class RealmData extends SavedData {
 	public static final String GATHERING = "gathering";
 	public static final String ON_ROAD = "on_road";
 
+	/** Between the two (33.9): the settlers are gathering at the hall, then walking out of the village. */
+	public static final String MUSTER = "muster";
+	public static final String LEAVING = "leaving";
+
 	/**
 	 * A colony order: the mother village, the spot, the colony's name (none: one is made up on arrival), where it has got
 	 * to, when the settlers leave and arrive (game time; 0 until known) and what was paid, in hundredths of an emerald,
-	 * for a refund. 33.9 adds the settlers and supplies, each with an empty default.
+	 * for a refund. 33.9 adds, each with an empty default: when it was given, who volunteered (while they still walk the
+	 * village) and which of them is the colony's builder, the supplies taken out of the Storehouses, and the settlers
+	 * themselves once on the road, saved the way a grave keeps a villager.
 	 */
-	public record Order(GlobalPos mother, BlockPos spot, Optional<Component> name, String state, long leaves, long arrives, int cost) {
+	public record Order(GlobalPos mother, BlockPos spot, Optional<Component> name, String state, long leaves, long arrives, int cost,
+						long ordered, List<UUID> volunteers, Optional<UUID> builder, Map<Item, Integer> supplies, List<CompoundTag> settlers) {
 		public static final Codec<Order> CODEC = RecordCodecBuilder.create(i -> i.group(
 			GlobalPos.CODEC.fieldOf("mother").forGetter(Order::mother),
 			BlockPos.CODEC.fieldOf("spot").forGetter(Order::spot),
@@ -46,8 +58,39 @@ public final class RealmData extends SavedData {
 			Codec.STRING.optionalFieldOf("state", GATHERING).forGetter(Order::state),
 			Codec.LONG.optionalFieldOf("leaves", 0L).forGetter(Order::leaves),
 			Codec.LONG.optionalFieldOf("arrives", 0L).forGetter(Order::arrives),
-			Codec.INT.optionalFieldOf("cost", 0).forGetter(Order::cost)
+			Codec.INT.optionalFieldOf("cost", 0).forGetter(Order::cost),
+			Codec.LONG.optionalFieldOf("ordered", 0L).forGetter(Order::ordered),
+			UUIDUtil.CODEC.listOf().optionalFieldOf("volunteers", List.of()).forGetter(Order::volunteers),
+			UUIDUtil.CODEC.optionalFieldOf("builder").forGetter(Order::builder),
+			Codec.unboundedMap(BuiltInRegistries.ITEM.byNameCodec(), Codec.INT).optionalFieldOf("supplies", Map.of()).forGetter(Order::supplies),
+			CompoundTag.CODEC.listOf().optionalFieldOf("settlers", List.of()).forGetter(Order::settlers)
 		).apply(i, Order::new));
+
+		/** An order as 33.8 knew it: nobody chosen, nothing taken. */
+		public Order(GlobalPos mother, BlockPos spot, Optional<Component> name, String state, long leaves, long arrives, int cost) {
+			this(mother, spot, name, state, leaves, arrives, cost, 0L, List.of(), Optional.empty(), Map.of(), List.of());
+		}
+
+		public Order withState(String state, long leaves, long arrives) {
+			return new Order(mother, spot, name, state, leaves, arrives, cost, ordered, volunteers, builder, supplies, settlers);
+		}
+
+		public Order withVolunteers(List<UUID> volunteers) {
+			return new Order(mother, spot, name, state, leaves, arrives, cost, ordered, List.copyOf(volunteers), builder, supplies, settlers);
+		}
+
+		public Order withSupplies(Map<Item, Integer> supplies) {
+			return new Order(mother, spot, name, state, leaves, arrives, cost, ordered, volunteers, builder, Map.copyOf(supplies), settlers);
+		}
+
+		public Order withSettlers(List<CompoundTag> settlers) {
+			return new Order(mother, spot, name, state, leaves, arrives, cost, ordered, volunteers, builder, supplies, List.copyOf(settlers));
+		}
+
+		/** Whether the settlers have left the village (the order can't be called off any more). */
+		public boolean gone() {
+			return state.equals(LEAVING) || state.equals(ON_ROAD);
+		}
 	}
 
 	/** A colony founded: its mother village, its own hall and the day. */

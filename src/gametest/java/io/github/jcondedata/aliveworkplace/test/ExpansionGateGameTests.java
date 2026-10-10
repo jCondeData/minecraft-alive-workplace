@@ -42,7 +42,7 @@ public class ExpansionGateGameTests implements FabricGameTest {
 		"daycareKeepers", "gemGrowers", "villageHabitats", "pokemonVillageHouses", "festivalCup",
 		"legends", "legendNeeds", "legendSites", "strangeMoods",
 		"villageEdicts", "workHorns", "villageBanners", "cradles", "harvestIdols", "tonics", "guilds",
-		"villageEconomy", "villageClasses", "friendship", "storyArcs", "vintners");
+		"villageEconomy", "villageClasses", "friendship", "heartEvents", "storyArcs", "vintners");
 	/** The numbers that belong to them (hidden from the screen with them). */
 	static final List<String> GATED_NUMBERS = List.of("stewardMaxOpenBuilds", "caravanRoadReach", "giftedChance", "edictMinDays", "guildsPerRank",
 		"classRiseDays", "classFallDays", "cupEveryFestivals", "arcCooldownDays", "arcsAtOnce");
@@ -86,6 +86,7 @@ public class ExpansionGateGameTests implements FabricGameTest {
 		map.put("Economy", () -> io.github.jcondedata.aliveworkplace.trade.Economy.ENABLED);
 		map.put("Vintners", () -> io.github.jcondedata.aliveworkplace.vintner.Vintners.ENABLED);
 		map.put("Friendship", () -> io.github.jcondedata.aliveworkplace.story.Friendship.ENABLED);
+		map.put("HeartEvents", () -> io.github.jcondedata.aliveworkplace.story.HeartEvents.ENABLED);
 		map.put("Arcs", () -> io.github.jcondedata.aliveworkplace.story.Arcs.ENABLED);
 		return map;
 	}
@@ -157,8 +158,8 @@ public class ExpansionGateGameTests implements FabricGameTest {
 			if (!screen.contains("villageProtection") || !screen.contains("maxWorkPace") || !screen.contains("seasonDays")) {
 				problems.add("a finished option left the screen: " + screen);
 			}
-			if (screen.size() != 77 - GATED_SWITCHES.size() - GATED_NUMBERS.size()) {
-				problems.add("expected " + (77 - GATED_SWITCHES.size() - GATED_NUMBERS.size()) + " options on the screen, found "
+			if (screen.size() != 78 - GATED_SWITCHES.size() - GATED_NUMBERS.size()) {
+				problems.add("expected " + (78 - GATED_SWITCHES.size() - GATED_NUMBERS.size()) + " options on the screen, found "
 					+ screen.size());
 			}
 			empty.setBoolean("tonics", true);
@@ -203,7 +204,7 @@ public class ExpansionGateGameTests implements FabricGameTest {
 		for (String name : GATED_SWITCHES) {
 			helper.assertTrue(new WorkplaceConfig().getBoolean(name), name + " should default on in GameTests");
 		}
-		helper.assertTrue(WorkplaceConfig.optionNames().size() == 77, "every option on the screen in GameTests");
+		helper.assertTrue(WorkplaceConfig.optionNames().size() == 78, "every option on the screen in GameTests");
 		helper.succeed();
 	}
 }

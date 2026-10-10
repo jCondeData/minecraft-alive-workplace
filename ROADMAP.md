@@ -2332,7 +2332,7 @@ write their own stories; nothing waits forever on a player.
   - screenshots of the action bar and the hall tooltip; showcase scene `friendship` (a trade, a quest done, the hearts
     going up);
   - `friendship` off: no points, no hearts shown, nothing else changes.
-- [ ] **31.6** **Gifts.** Two new items, drawn with the pixel-art skill the way vanilla draws its kind: **Gift Wrap**
+- [x] **31.6** (review: pending 2026-10-09) **Gifts.** Two new items, drawn with the pixel-art skill the way vanilla draws its kind: **Gift Wrap**
   (paper, string and any dye make 4) and the wrapped **Gift** (Gift Wrap and any one item in the crafting grid: a
   special recipe like vanilla's map cloning; the item is kept inside as a data component, and the tooltip says "From
   Jesse" and not what's inside). Right-click a named villager with a Gift: they unwrap it (the item's particles, a
@@ -2380,7 +2380,7 @@ write their own stories; nothing waits forever on a player.
     over ours;
   - both textures pass `lint.py`; the recipes are in the recipe book; a README section;
   - showcase scene `gifts` (GIF: wrapping, giving, the hearts).
-- [ ] **31.7** **Heart events and life stories.** At 2, 4, 6, 8 and 10 hearts a villager has something to tell you.
+- [x] **31.7** (review: pending 2026-10-09) **Heart events and life stories.** At 2, 4, 6, 8 and 10 hearts a villager has something to tell you.
   The next time you're within 8 blocks while they're off work (`Chatter.offWork`), they walk up, face you and tell it
   in three to five lines over their head (`WorkerStatus`, one every 3 seconds), each also in your chat in grey so it
   can be read again; walk away halfway and they start again next time. Each event is told once per player, adds +20
@@ -4375,6 +4375,26 @@ item waits.
 - (Sessions: anything that needs the owner, and the link to the latest Full test report. Handoffs go here through
   `sessions.py handoff "<in progress, next, traps>" --as <you>`, which keeps one per kind of session (chat, night):
   carry over anything still true from the previous one.)
+- 2026-10-09 (31.7 Heart events, decisions; lane c, nothing for the owner unless he disagrees): villagers have no
+  recorded gender, so the chronicle says "Dara told Jesse how they came to Thornholm" where the spec's example says
+  "she". One event per heart level and player: of the events whose conditions hold, the one with the most conditions is
+  told, then the first by id (a pack's closer-fitting story replaces ours, it isn't told as well). "Here before the
+  hall" is everyone with no parents on record who was neither hired nor revived; someone revived tells the grave story
+  whatever else is true. A third new attachment, `hired_day`, keeps the day a traveller was hired (those hired before
+  say "a day nobody wrote down"). A villager who can't get within 3.5 blocks in 5 seconds tells it from where they
+  stand; while telling they stay by the player, and small talk leaves them alone. The life story opens on a shift-click
+  for named villagers only; the personal request (31.9) adds its part through `LifeStory.section`, and until then the
+  page shows nothing for it. A telling isn't saved (a restart is like walking off). The FRIEND kind's icon is a pink
+  tulip (`docs/wiki/heart-events.md`, Decisions).
+- 2026-10-09 (31.6 Gifts, decisions; lane c, nothing for the owner unless he disagrees): the Gift recipe is a special
+  recipe as the spec says ("like vanilla's map cloning"), and Minecraft never lists special recipes on the recipe book's
+  pages, so only Gift Wrap's recipe shows there; the Gift has the same unlock advancement as our other recipes and the
+  README gives its recipe in words. Also decided: on a name day a disliked or hated gift costs three times as much too;
+  a gift that can't move the points still uses up the day; with no chest and no store the item goes into the villager's
+  own pockets (dropped at their feet only if those are full); a named villager in no hall's village turns a Gift down
+  like an unnamed one; a worker's Bottle o' Enchanting is used up; between two taste files as specific as each other the
+  kinder band wins; "bricks", "lanterns", "golden apples" and Clever's "books" are read generously
+  (`docs/wiki/gifts.md`, Decisions).
 - 2026-10-06 (33.3, decisions; lane a): the 28 goods keep the roadmap's counts where they differ from vanilla's
   villager trades (checked in 1.21.1's `VillagerTrades`): Stone 64 (a mason buys 20 stone), Glass 8 (a librarian sells
   4, a cartographer buys 11 panes), Fruit 12 (a farmer sells 4 apples; a butcher buys 10 sweet berries), Nether Goods 8

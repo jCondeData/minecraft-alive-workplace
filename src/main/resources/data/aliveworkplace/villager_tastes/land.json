@@ -1,0 +1,23 @@
+{
+  "for": {
+    "family": [
+      "aliveworkplace:lumberjack",
+      "aliveworkplace:orchard_keeper",
+      "minecraft:farmer",
+      "aliveworkplace:florist",
+      "aliveworkplace:beekeeper",
+      "aliveworkplace:composter"
+    ]
+  },
+  "loved": [
+    "minecraft:golden_carrot",
+    "minecraft:honeycomb",
+    "minecraft:sunflower"
+  ],
+  "liked": [
+    "minecraft:apple",
+    "minecraft:bone_meal",
+    "minecraft:wheat_seeds",
+    "#minecraft:saplings"
+  ]
+}

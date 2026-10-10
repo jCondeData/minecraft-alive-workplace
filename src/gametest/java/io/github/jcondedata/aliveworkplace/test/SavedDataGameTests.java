@@ -120,6 +120,7 @@ public class SavedDataGameTests implements FabricGameTest {
 			new BlockPos(10, 64, 20), 72_000L));
 		samples.put("FRIENDSHIP", new io.github.jcondedata.aliveworkplace.story.Friendship.Data(Map.of(A,
 			new io.github.jcondedata.aliveworkplace.story.Friendship.Bond("Jesse", 120, 40L, 5L, 2, Map.of("chat", 41L), 900L, List.of("heart_2")))));
+		samples.put("LATE_PARTNER", new io.github.jcondedata.aliveworkplace.people.Couples.LatePartner(B, Component.literal("Odo")));
 		return samples;
 	}
 

@@ -1,0 +1,17 @@
+{
+  "hearts": 2,
+  "when": {
+    "born": false,
+    "hired": true,
+    "revived": false
+  },
+  "lines": [
+    "heart_event.aliveworkplace.traveller.1",
+    "heart_event.aliveworkplace.traveller.2",
+    "heart_event.aliveworkplace.traveller.3",
+    "heart_event.aliveworkplace.traveller.4",
+    "heart_event.aliveworkplace.traveller.5"
+  ],
+  "chronicle": "chronicle.aliveworkplace.heart_event.traveller",
+  "story": "life_story.aliveworkplace.traveller"
+}

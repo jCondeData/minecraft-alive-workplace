@@ -1,0 +1,22 @@
+{
+  "for": {
+    "family": [
+      "aliveworkplace:scholar",
+      "aliveworkplace:teacher",
+      "minecraft:librarian",
+      "minecraft:cartographer"
+    ]
+  },
+  "loved": [
+    "minecraft:enchanted_book",
+    "minecraft:written_book",
+    "minecraft:filled_map"
+  ],
+  "liked": [
+    "minecraft:book",
+    "minecraft:paper",
+    "minecraft:feather",
+    "minecraft:ink_sac",
+    "minecraft:compass"
+  ]
+}

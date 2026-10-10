@@ -57,6 +57,25 @@ asks for the steps, `latest.log` and any crash report).
   three days old (Journeyman) for the village store, with purple splashes at the vat; the three drinks are drinkable
   (the bottle comes back), are the households' wine luxuries and are served at the Noble's Ball. Trades, Grass, Bug and
   Fairy partners, an outfit, config `vintners`.
+- **Heart events and life stories** (31.7; switched on with the rest of 1.5): at 2, 4, 6, 8 and 10 hearts a villager
+  has something to tell you. When you're within 8 blocks and they're off work they walk up, face you and tell it in
+  three to five lines over their head, one every 3 seconds, each also in your chat in grey; walk away halfway and they
+  start again next time. Told once per player, it adds 20 friendship, writes a line in the chronicle ("Dara told Jesse
+  about growing up in Thornholm") and becomes part of their **life story**: shift-click someone on the hall's list for
+  their page (your hearts, name day, family, partner and the story so far). The first set, at 2 hearts, is **Where I
+  come from**: born here (names both parents), came as a traveller (the inn and the day they were hired), here before
+  the hall, and back from the grave. Events are data (`data/<ns>/heart_events/<id>.json`: hearts, conditions on the
+  villager's facts, lines, the chronicle line); a broken file is skipped with a warning. Config `heartEvents` (true).
+  Villagers revived, widowed or hired from now on remember it (`revived`, `late_partner`, `hired_day`).
+- **Gifts** (31.6; switched on with the rest of 1.5): two new items, **Gift Wrap** (paper, string and any dye make 4)
+  and the **Gift** (Gift Wrap and any one item on the crafting grid; the tooltip says "From Jesse", not what's inside).
+  Right-click a named villager with a Gift: they unwrap it, say how they like it over their head and in your chat, and
+  your friendship changes (loved +80, liked +45, neutral +20, disliked −20, hated −40); the item goes into their
+  chests. One gift a day and two a week per villager; on their **name day** (every 28 days, shown in the hall's list)
+  a gift counts three times. A Bottle o' Enchanting is liked and gives a worker 15 XP. Villagers without a name shake
+  their head; with `friendship` off a Gift is handed back unopened. Tastes are data
+  (`data/<namespace>/villager_tastes/<id>.json`: for everyone, a job, a family of jobs or a trait; the most specific
+  file that names an item wins), with a first set for everyone, twelve job families and the eight traits.
 - **Friendship with villagers** (31.5; switched on with the rest of 1.5): every named villager in a village with a hall keeps ten hearts for
   each player. Trading with them (+5), finishing a hall quest they posted (+40), handing in what they wait for (+10),
   coming to their wedding (+30) or a festival with them (+10) count once a day each; killing a monster that just hurt

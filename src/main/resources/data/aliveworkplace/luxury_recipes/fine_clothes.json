@@ -1,0 +1,8 @@
+{
+  "job": "aliveworkplace:tailor",
+  "level": 2,
+  "inputs": [{"tag": "#aliveworkplace:dyed_wool", "count": 4, "mix": true}, {"item": "minecraft:string", "count": 1}, {"item": "minecraft:gold_nugget", "count": 2}],
+  "output": {"id": "aliveworkplace:fine_clothes", "count": 1},
+  "ticks": 100,
+  "enabled": true
+}

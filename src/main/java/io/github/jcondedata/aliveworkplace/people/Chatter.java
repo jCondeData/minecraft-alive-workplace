@@ -31,7 +31,7 @@ import org.jetbrains.annotations.Nullable;
 /**
  * Chatter: now and then a villager near a player says something, in a line over their head — what their mood is made of
  * (hungry, no bed of their own, a varied diet, a job they like), what's going on in the village (a festival, bandits
- * camped nearby, a raid, illness), or just hello. At most one line every {@link #EVERY} ticks near each player, only
+ * camped nearby, a raid, illness), an elder's memories, or just hello. At most one line every {@link #EVERY} ticks near each player, only
  * from villagers off work (a worker's line shows what they're doing), and only in villages with a Village Hall.
  * {@code villagerChatter} in the config turns it off.
  */
@@ -59,6 +59,8 @@ public final class Chatter {
 		Map.entry("rush", 2), Map.entry("tonic", 2), Map.entry("guild", 2), Map.entry("colours", 2),
 		// A household's rise or fall (34.6), from the mood reason
 		Map.entry("class_rose", 3), Map.entry("class_fell", 3),
+		// An elder's own lines (34.19)
+		Map.entry("elder", 4),
 		// The village's trade (33.4): a good that sells well elsewhere, a glut at home, something dear
 		Map.entry("trade_sells_well", 3), Map.entry("trade_glut", 3), Map.entry("trade_dear", 3));
 	private static final Map<UUID, Long> LAST = new HashMap<>();
@@ -87,7 +89,8 @@ public final class Chatter {
 				continue;
 			}
 			List<Villager> near = level.getEntitiesOfClass(Villager.class, player.getBoundingBox().inflate(NEAR, 4, NEAR),
-				v -> v.isAlive() && !v.isSleeping() && offWork(v, now) && player.hasLineOfSight(v));
+				v -> v.isAlive() && !v.isSleeping() && offWork(v, now) && player.hasLineOfSight(v)
+					&& io.github.jcondedata.aliveworkplace.story.HeartEvents.telling(v) == null); // not while walking up to tell a heart event (31.7)
 			if (near.isEmpty()) {
 				continue;
 			}
@@ -105,13 +108,15 @@ public final class Chatter {
 	}
 
 	/** Off work: not showing a work line, and not working, hiding or fleeing. */
-	static boolean offWork(Villager villager, long now) {
-		if (WorkerStatus.get(villager, now) != null) {
-			return false;
-		}
+	public static boolean offWork(Villager villager, long now) {
+		return WorkerStatus.get(villager, now) == null && !busy(villager);
+	}
+
+	/** Working, hiding or fleeing (whatever line is over their head). */
+	public static boolean busy(Villager villager) {
 		Activity activity = villager.getBrain().getActiveNonCoreActivity().orElse(null);
-		return activity != Activity.WORK && activity != Activity.PANIC && activity != Activity.HIDE && activity != Activity.PRE_RAID
-			&& activity != Activity.RAID;
+		return activity == Activity.WORK || activity == Activity.PANIC || activity == Activity.HIDE || activity == Activity.PRE_RAID
+			|| activity == Activity.RAID;
 	}
 
 	/** What the villager talks about now: village news first (twice as likely), then their mood, then hello. */
@@ -133,6 +138,9 @@ public final class Chatter {
 		}
 		if (villager.isBaby()) {
 			news.add("child");
+		}
+		if (LifeStages.isElder(villager, Chronicle.day(level))) {
+			news.add("elder"); // "In my day this was all fields." (34.19)
 		}
 		if (Sickness.isIll(villager)) {
 			news.add("ill");
@@ -295,7 +303,7 @@ public final class Chatter {
 	}
 
 	/** {@code villager} turns to {@code player} and says {@code line} (over their head, for a few seconds). */
-	static void say(ServerLevel level, Villager villager, ServerPlayer player, Component line) {
+	public static void say(ServerLevel level, Villager villager, ServerPlayer player, Component line) {
 		Component name = villager.hasCustomName() ? villager.getCustomName() : villager.getType().getDescription();
 		WorkerStatus.set(villager, name.copy().withStyle(ChatFormatting.GRAY), -1f, line);
 		villager.getBrain().setMemory(MemoryModuleType.LOOK_TARGET, new EntityTracker(player, true));

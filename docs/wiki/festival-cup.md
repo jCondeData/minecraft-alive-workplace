@@ -2,6 +2,8 @@
 
 Needs Cobblemon. ROADMAP 28.16 to 28.22.
 
+Roadmap items: 28.16, 28.17, 28.18, 28.19, 28.20, 28.21, 28.22
+
 ## What a player sees
 
 A village with a Village Hall, a finished Arena and at least Village rank holds its festivals as a Festival Cup. The

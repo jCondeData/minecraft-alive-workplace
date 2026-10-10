@@ -1,0 +1,15 @@
+{
+  "for": {
+    "family": [
+      "aliveworkplace:bard"
+    ]
+  },
+  "loved": [
+    "#c:music_discs",
+    "minecraft:goat_horn"
+  ],
+  "liked": [
+    "minecraft:note_block",
+    "minecraft:amethyst_shard"
+  ]
+}

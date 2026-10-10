@@ -174,13 +174,20 @@ public final class Stations {
 			job(() -> ModVillagers.SIFTER, any(Items.GRAVEL, Items.SAND, Items.RED_SAND, Items.SOUL_SAND)),
 			// sweet berries, glow berries or an apple (34.9), with config vintners on
 			job(() -> ModVillagers.VINTNER, io.github.jcondedata.aliveworkplace.vintner.Vintners::isFruit))),
+		// The loom (34.10): a jobless villager still takes it as a Shepherd; string picks the Tailor (with config tailors
+		// on), shears bring the Shepherd back
+		new Station(is(PoiTypes.SHEPHERD), Blocks.LOOM, List.of(
+			job(() -> VillagerProfession.SHEPHERD, any(Items.SHEARS)),
+			job(() -> ModVillagers.TAILOR, io.github.jcondedata.aliveworkplace.tailor.Tailors::isString))),
 		new Station(is(PoiTypes.LIBRARIAN), Blocks.LECTERN, List.of(
 			job(() -> VillagerProfession.LIBRARIAN, any(Items.LAPIS_LAZULI)),
 			job(() -> ModVillagers.SCHOLAR, any(Items.PAPER)),
 			job(() -> ModVillagers.TEACHER, any(Items.BOOK)))),
 		new Station(is(PoiTypes.CARTOGRAPHER), Blocks.CARTOGRAPHY_TABLE, List.of(
 			job(() -> VillagerProfession.CARTOGRAPHER, any(Items.COMPASS)),
-			job(() -> ModVillagers.NETHERWORKER, any(Items.NETHERRACK)))),
+			job(() -> ModVillagers.NETHERWORKER, any(Items.NETHERRACK)),
+			// an ink sac (34.11), with config printers on
+			job(() -> ModVillagers.PRINTER, io.github.jcondedata.aliveworkplace.printer.Printers::isInk))),
 		new Station(is(PoiTypes.CLERIC), Blocks.BREWING_STAND, List.of(
 			job(() -> VillagerProfession.CLERIC, any(Items.GLASS_BOTTLE)),
 			job(() -> ModVillagers.NURSE, any(Items.HONEY_BOTTLE)),
@@ -193,7 +200,9 @@ public final class Stations {
 		// The stonecutter (28.11): a jobless villager still takes it as a Mason; an amethyst shard picks the Gem Grower
 		new Station(is(PoiTypes.MASON), Blocks.STONECUTTER, List.of(
 			job(() -> VillagerProfession.MASON, any(Items.CLAY_BALL)),
-			job(() -> ModVillagers.GEM_GROWER, io.github.jcondedata.aliveworkplace.gem.GemGrowers::isShard))),
+			job(() -> ModVillagers.GEM_GROWER, io.github.jcondedata.aliveworkplace.gem.GemGrowers::isShard),
+			// a gold nugget (34.12), with config jewellers on
+			job(() -> ModVillagers.JEWELLER, io.github.jcondedata.aliveworkplace.jeweller.Jewellers::isNugget))),
 		new Station(is(PoiTypes.WEAPONSMITH), Blocks.GRINDSTONE, List.of(
 			job(() -> VillagerProfession.WEAPONSMITH, any(Items.IRON_INGOT)),
 			job(() -> ModVillagers.GUARD, tag(ItemTags.SWORDS)))),
@@ -463,8 +472,17 @@ public final class Stations {
 		return PoiTypes.forState(block.defaultBlockState()).flatMap(h -> ALL.stream().filter(s -> s.poi().test(h)).findFirst());
 	}
 
-	/** Whether {@code job} can be had in this game (the Pokémon jobs need Cobblemon). */
+	/** Whether {@code job} can be had in this game (the Pokémon jobs need Cobblemon, the Tailor config {@code tailors}). */
 	public static boolean available(Job job) {
+		if (job.profession().get() == ModVillagers.JEWELLER && !io.github.jcondedata.aliveworkplace.jeweller.Jewellers.ENABLED) {
+			return false; // config jewellers off: the stonecutter's tooltip names the Mason and the Gem Grower only
+		}
+		if (job.profession().get() == ModVillagers.TAILOR && !io.github.jcondedata.aliveworkplace.tailor.Tailors.ENABLED) {
+			return false; // the loom's tooltip names only the Shepherd then
+		}
+		if (job.profession().get() == ModVillagers.PRINTER && !io.github.jcondedata.aliveworkplace.printer.Printers.ENABLED) {
+			return false; // the cartography table's tooltip leaves the Printer out then
+		}
 		ResourceLocation id = BuiltInRegistries.VILLAGER_PROFESSION.getKey(job.profession().get());
 		return !COBBLEMON_JOBS.contains(id.getPath()) || io.github.jcondedata.aliveworkplace.platform.Platform.get().isModLoaded("cobblemon");
 	}

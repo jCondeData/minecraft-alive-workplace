@@ -126,7 +126,9 @@ Moved out of CLAUDE.md (2026-09-29) to keep that file short. Update this map whe
   board's morning post, hand-ins, kills, battles, waits; moves the hall's old `quests` in). `hall/VillageQuests` passes its
   public calls on to it. Its conditions are in `rules/` (`food_below`, `cobblemon`, `chance`, `quest_done`, `not`). `Friendship` (31.5): the
   `friendship` attachment on named villagers, the favours (`favour`), `add` for gifts and heart events, the hearts
-  look-up and the hall's tooltip lines
+  look-up and the hall's tooltip lines. Heart events (31.7): `HeartEvents` (loader of `data/<ns>/heart_events/<id>.json`, the
+  conditions `When`, who has what to tell (`pending`), the telling itself every 10 ticks: walk up, a line every 60
+  ticks, `finish`) and `LifeStory` (the page a shift-click on the hall's list opens; `section` lets a feature add a part)
   public calls on to it. Its conditions are in `rules/` (`food_below`, `cobblemon`, `chance`, `quest_done`, `not`).
   Story arcs (31.4): `Arcs` (loader of `data/<ns>/arcs/<id>.json` and `arc_spawns/`, the trigger, the chapters' round,
   start/next/stop), `ArcEffects` (the effects, `place` and `spawn`, the 40-tick proximity check, `talk`), `ArcState` (a

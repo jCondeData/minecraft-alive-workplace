@@ -18,7 +18,7 @@ import net.minecraft.world.entity.npc.VillagerProfession;
 /**
  * Moods: in a village with a Village Hall every grown villager has a mood, 0 to 100, from their own day — fed or hungry,
  * a bed of their own or not (and how fine a house it's in, see {@link Homes}), a job, ill or well, cheerful by nature,
- * decorations near home, company. The hall's list
+ * decorations near home, company, a quiet old age (an elder, fed and housed). The hall's list
  * shows it with the reasons. Unhappy villagers (under {@link #UNHAPPY}) work 15% slower; happy ones ({@link #HAPPY} and
  * up) 7% faster. {@code villagerMoods} in the config turns it off.
  */
@@ -61,18 +61,33 @@ public final class Moods {
 		return mood;
 	}
 
+	/**
+	 * {@code villager}'s mood worked out this moment (null as for {@link #of}), neither read from what is remembered nor
+	 * remembered: for a reading that is kept elsewhere (the day's count of happy days), which must not decide what the
+	 * mood reads as for the next {@link #KEEP_TICKS} ticks.
+	 */
+	@org.jetbrains.annotations.Nullable
+	public static Mood fresh(Villager villager) {
+		if (!ENABLED || villager.isBaby() || !(villager.level() instanceof ServerLevel level)) {
+			return null;
+		}
+		return VillageHalls.nearest(level, villager.blockPosition()).isPresent() ? work(level, villager) : null;
+	}
+
 	/** Works out {@code villager}'s mood now. */
 	public static Mood work(ServerLevel level, Villager villager) {
 		long now = level.getGameTime();
 		int score = 50;
 		List<Component> good = new ArrayList<>();
 		List<Component> bad = new ArrayList<>();
+		boolean fed = false;
 		if (VillageNeeds.isHungry(villager, now)) {
 			score -= 20;
 			bad.add(reason("hungry"));
 		} else if (ModAttachments.LAST_MEAL.has(villager)) {
 			score += 15;
 			good.add(reason("fed"));
+			fed = true;
 		}
 		switch (Diet.of(villager)) {
 			case VARIED -> {
@@ -98,6 +113,11 @@ public final class Moods {
 		} else {
 			score -= 15;
 			bad.add(reason("no_bed"));
+		}
+		// An elder who is fed and housed (34.19): first of the good reasons, so the hall's card shows it.
+		if (LifeStages.quietOldAge(villager, io.github.jcondedata.aliveworkplace.hall.Chronicle.day(level), fed, bed != null)) {
+			score += LifeStages.QUIET_OLD_AGE;
+			good.add(0, reason("quiet_old_age"));
 		}
 		VillagerProfession job = villager.getVillagerData().getProfession();
 		if (job == VillagerProfession.NONE) {

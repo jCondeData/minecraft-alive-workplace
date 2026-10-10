@@ -89,6 +89,7 @@ public final class Families {
 		}
 		if (!parents.grownUp()) {
 			ModAttachments.PARENTS.set(villager, parents.grown());
+			LifeStages.setAdultSince(villager, Chronicle.day(level)); // grown up today (34.19)
 			io.github.jcondedata.aliveworkplace.legend.BornGifts.Outcome born = io.github.jcondedata.aliveworkplace.legend.BornGifts.grownUp(level, hall, villager, parents, random);
 			if (born.legend() != null) {
 				Chronicle.record(level, hall, Chronicle.Kind.LEGEND, io.github.jcondedata.aliveworkplace.legend.BornGifts.legendLine(villager, parents, born.legend()));

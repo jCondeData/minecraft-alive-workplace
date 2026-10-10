@@ -729,6 +729,23 @@ public final class ModVillagers {
 	);
 
 	/**
+	 * Makes jewellery at a stonecutter (ROADMAP 34.12): only ever by a gold nugget, with config {@code jewellers}. A
+	 * jobless villager by a stonecutter still becomes a Mason, which vanilla registers first.
+	 */
+	public static final VillagerProfession JEWELLER = Registry.register(
+		BuiltInRegistries.VILLAGER_PROFESSION,
+		AliveWorkplace.id("jeweller"),
+		new VillagerProfession(
+			"jeweller",
+			holder -> holder.is(net.minecraft.world.entity.ai.village.poi.PoiTypes.MASON),
+			holder -> holder.is(net.minecraft.world.entity.ai.village.poi.PoiTypes.MASON),
+			ImmutableSet.of(),
+			ImmutableSet.of(),
+			SoundEvents.VILLAGER_WORK_MASON
+		)
+	);
+
+	/**
 	 * Tends the gem beds round a stonecutter (ROADMAP 28.11): only ever by an amethyst shard, with config {@code gemGrowers}.
 	 * A jobless villager by a stonecutter still becomes a Mason, which vanilla registers first.
 	 */
@@ -759,6 +776,40 @@ public final class ModVillagers {
 			ImmutableSet.of(),
 			ImmutableSet.of(),
 			SoundEvents.HONEY_BLOCK_SLIDE
+		)
+	);
+
+	/**
+	 * Sews clothes at a loom (ROADMAP 34.10): only ever by string, with config {@code tailors}. A jobless villager by a
+	 * loom still becomes a Shepherd, which vanilla registers first.
+	 */
+	public static final VillagerProfession TAILOR = Registry.register(
+		BuiltInRegistries.VILLAGER_PROFESSION,
+		AliveWorkplace.id("tailor"),
+		new VillagerProfession(
+			"tailor",
+			holder -> holder.is(net.minecraft.world.entity.ai.village.poi.PoiTypes.SHEPHERD),
+			holder -> holder.is(net.minecraft.world.entity.ai.village.poi.PoiTypes.SHEPHERD),
+			ImmutableSet.of(),
+			ImmutableSet.of(),
+			SoundEvents.VILLAGER_WORK_SHEPHERD
+		)
+	);
+
+	/**
+	 * Prints books, the Village Gazette and Illuminated Books at a cartography table (ROADMAP 34.11): only ever by an ink
+	 * sac, with config {@code printers}. A jobless villager by the table still becomes a Cartographer.
+	 */
+	public static final VillagerProfession PRINTER = Registry.register(
+		BuiltInRegistries.VILLAGER_PROFESSION,
+		AliveWorkplace.id("printer"),
+		new VillagerProfession(
+			"printer",
+			holder -> holder.is(net.minecraft.world.entity.ai.village.poi.PoiTypes.CARTOGRAPHER),
+			holder -> holder.is(net.minecraft.world.entity.ai.village.poi.PoiTypes.CARTOGRAPHER),
+			ImmutableSet.of(),
+			ImmutableSet.of(),
+			SoundEvents.VILLAGER_WORK_CARTOGRAPHER
 		)
 	);
 
@@ -814,9 +865,9 @@ public final class ModVillagers {
 			|| profession == TRAINER || profession == TRAINER_LEADER || profession == TUTOR || profession == POKEMON_TRADER
 			|| profession == ORCHARD_KEEPER || profession == BALL_SMITH || profession == PORTER || profession == CARPENTER || profession == CHEF || profession == FOSSIL_SCIENTIST
 			|| profession == BEEKEEPER || profession == FLORIST || profession == RANCHER || profession == TEACHER || profession == INNKEEPER || profession == UNDERTAKER || profession == SCHOLAR
-			|| profession == SIFTER || profession == TINKERER || profession == NETHERWORKER || profession == COMPOSTER
+			|| profession == SIFTER || profession == TINKERER || profession == NETHERWORKER || profession == COMPOSTER || profession == JEWELLER
 			|| profession == BERRY_BREEDER || profession == CAMP_COOK || profession == HABITAT_KEEPER || profession == GEM_GROWER
-			|| profession == DAYCARE_KEEPER || profession == VINTNER;
+			|| profession == DAYCARE_KEEPER || profession == VINTNER || profession == TAILOR || profession == PRINTER;
 	}
 
 	/**

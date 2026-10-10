@@ -334,7 +334,11 @@ public final class VillageHallScreen {
 				slot++;
 			}
 			menu.button(slot++, person(level, hall, villager, classes, menu.viewer()), p -> {
-				if (jobless && villager.getVillagerData().getProfession() != net.minecraft.world.entity.npc.VillagerProfession.NITWIT) {
+				if (menu.shiftClicked() && villager.hasCustomName()) {
+					// Their life story (31.7): hearts, name day, family, partner and what they've told.
+					io.github.jcondedata.aliveworkplace.story.LifeStory.render(menu, level, hall, villager, shown, p);
+					menu.broadcastChanges();
+				} else if (jobless && villager.getVillagerData().getProfession() != net.minecraft.world.entity.npc.VillagerProfession.NITWIT) {
 					renderJobs(menu, level, hall, villager, shown);
 					menu.broadcastChanges();
 				} else {
@@ -675,6 +679,11 @@ public final class VillageHallScreen {
 		return icon(item, VillageQuests.describe(quest).copy(), ChatFormatting.GOLD, lore.toArray(Component[]::new));
 	}
 
+	/** Back to the hall's list at {@code page} (from a page laid out elsewhere, like a life story). */
+	public static void showList(ChoiceMenu menu, ServerLevel level, BlockPos hall, int page) {
+		refresh(menu, level, hall, page);
+	}
+
 	private static void refresh(ChoiceMenu menu, ServerLevel level, BlockPos hall, int page) {
 		render(menu, level, hall, page);
 		menu.broadcastChanges();
@@ -713,6 +722,10 @@ public final class VillageHallScreen {
 		}
 		if (working) {
 			lore.add(line(levelLine(villager), ChatFormatting.GRAY));
+		}
+		// "Elder · grown 131 days" (34.19), and the gold leaf badge of an ageless one (34.19a).
+		for (io.github.jcondedata.aliveworkplace.people.LifeStages.HallLine stage : io.github.jcondedata.aliveworkplace.people.LifeStages.hallLines(level, villager)) {
+			lore.add(line(stage.text(), stage.gold() ? ChatFormatting.GOLD : ChatFormatting.GRAY));
 		}
 		List<io.github.jcondedata.aliveworkplace.people.Traits.Trait> traits = io.github.jcondedata.aliveworkplace.people.Traits.of(villager);
 		if (!traits.isEmpty()) {
@@ -814,6 +827,9 @@ public final class VillageHallScreen {
 			&& legendName == null;
 		lore.add(line(canBeGivenAJob ? "screen.aliveworkplace.hall.jobless_click" : "screen.aliveworkplace.hall.click_to_find",
 			canBeGivenAJob ? ChatFormatting.GREEN : ChatFormatting.DARK_GRAY));
+		if (villager.hasCustomName()) {
+			lore.add(line("screen.aliveworkplace.hall.life_story_hint", ChatFormatting.DARK_GRAY)); // shift-click: their life story (31.7)
+		}
 		icon.set(DataComponents.LORE, new ItemLore(lore));
 		return icon;
 	}

@@ -102,6 +102,8 @@ public final class WorkplaceConfig {
 	public boolean villageQuests = true;
 	/** Named villagers keep a friendship with each player, shown in hearts (ROADMAP 31.5). Off: no points, no hearts shown; saved friendship stays. */
 	public boolean friendship = Expansions.on(Expansions.M31);
+	/** Villagers tell their friends about their lives at 2, 4, 6, 8 and 10 hearts (heart events, 31.7). Off: nobody starts telling; what was told stays. */
+	public boolean heartEvents = Expansions.on(Expansions.M31);
 	/** Story arcs (31.4) unfold in villages, chapter by chapter. Off: none starts, and a running one ends quietly at its next round. */
 	public boolean storyArcs = Expansions.on(Expansions.M31);
 	/** Days between two story arcs in one village (also before a village's first). */
@@ -147,8 +149,20 @@ public final class WorkplaceConfig {
 	public int classRiseDays = 2;
 	/** Dawns running a need of their own class must fail for a household to fall one class. */
 	public int classFallDays = 3;
+	/** Grown villagers count their days and become elders (ROADMAP 34.19). Off: nobody is an elder, so nobody passes of old age; the day they grew up stays saved. */
+	public boolean villagerAges = Expansions.on(Expansions.M34);
+	/** Grown days before a villager is an elder. */
+	public int villagerElderDays = 120;
+	/** An elder passes away in the night after 40 elder days and leaves a grave (owner, 2026-10-06). Off: elders never die of old age. */
+	public boolean elderPassing = Expansions.on(Expansions.M34);
+	/** An Evergreen Charm makes an elder with good traits ageless (ROADMAP 34.19a). Off: charms are refused; elders already ageless stay so. */
+	public boolean agelessElders = Expansions.on(Expansions.M34);
 	/** Villagers at a cauldron can be made Vintners with sweet berries, glow berries or an apple (ROADMAP 34.9). Off: no Vintner job, and Vintners already hired stand idle. */
 	public boolean vintners = Expansions.on(Expansions.M34);
+	/** Villagers at a loom can be made Tailors with string (ROADMAP 34.10). Off: no Tailor job, and Tailors already hired stand idle. */
+	public boolean tailors = Expansions.on(Expansions.M34);
+	/** Villagers at a cartography table can be made Printers with an ink sac (ROADMAP 34.11). Off: no Printer job, Printers already hired stand idle, and no Spread the news quest goes up. */
+	public boolean printers = Expansions.on(Expansions.M34);
 	/** Villagers at a composter can be made Berry Breeders with a Cobblemon berry (ROADMAP 28.9). Off: no Berry Breeder job. */
 	public boolean berryBreeders = Expansions.on(Expansions.M28);
 	/** A Journeyman Builder (or higher) by a Village Hall can be made its Steward with the hall's City Plan (ROADMAP 27.5). Off: no new Stewards, and those appointed stand idle. */
@@ -175,6 +189,8 @@ public final class WorkplaceConfig {
 	public boolean daycareKeepers = Expansions.on(Expansions.M28);
 	/** Villagers at a stonecutter can be made Gem Growers with an amethyst shard (ROADMAP 28.11). Off: no Gem Grower job. */
 	public boolean gemGrowers = Expansions.on(Expansions.M28);
+	/** Villagers at a stonecutter can be made Jewellers with a gold nugget (ROADMAP 34.12). Off: no Jeweller job, and Jewellers already hired stand idle. */
+	public boolean jewellers = Expansions.on(Expansions.M34);
 	/** Habitat Keepers tell the village of shiny, rare and Alpha wild Pokémon near their pasture (ROADMAP 28.10). */
 	public boolean habitatSightings = Expansions.on(Expansions.M28);
 	/** An Expert Habitat Keeper puts one Habitat Block in a finished Habitat Garden, with Cobblemon 1.8 (ROADMAP 28.14). Off: none founded. */
@@ -277,6 +293,7 @@ public final class WorkplaceConfig {
 		"guildsPerRank", 1, 4,
 		"classRiseDays", 1, 30,
 		"classFallDays", 1, 30,
+		"villagerElderDays", 20, 1000,
 		"giftedChance", 0, 1000,
 		"seasonDays", 1, 120,
 		"treasuryPerWorker", 0, 500,
@@ -395,6 +412,10 @@ public final class WorkplaceConfig {
 		io.github.jcondedata.aliveworkplace.people.Tonics.ENABLED = tonics && Expansions.on(Expansions.M30);
 		io.github.jcondedata.aliveworkplace.hall.Guilds.ENABLED = guilds && Expansions.on(Expansions.M30);
 		io.github.jcondedata.aliveworkplace.hall.Guilds.PER_RANK = guildsPerRank;
+		io.github.jcondedata.aliveworkplace.people.LifeStages.AGES = villagerAges && Expansions.on(Expansions.M34);
+		io.github.jcondedata.aliveworkplace.people.LifeStages.ELDER_DAYS = villagerElderDays;
+		io.github.jcondedata.aliveworkplace.people.LifeStages.PASSING = elderPassing && Expansions.on(Expansions.M34);
+		io.github.jcondedata.aliveworkplace.people.LifeStages.AGELESS = agelessElders && Expansions.on(Expansions.M34);
 		// Off in gametests (a hall round could move a test's household a class); the class tests turn it on.
 		io.github.jcondedata.aliveworkplace.people.SocialClasses.ENABLED = villageClasses && Expansions.on(Expansions.M34) && System.getProperty("fabric-api.gametest") == null;
 		io.github.jcondedata.aliveworkplace.people.SocialClasses.RISE_DAYS = classRiseDays;
@@ -424,8 +445,11 @@ public final class WorkplaceConfig {
 		io.github.jcondedata.aliveworkplace.habitat.HabitatKeepers.SIGHTINGS = habitatSightings && Expansions.on(Expansions.M28);
 		io.github.jcondedata.aliveworkplace.habitat.VillageHabitats.ENABLED = villageHabitats && Expansions.on(Expansions.M28);
 		io.github.jcondedata.aliveworkplace.world.VillageHouses.POKEMON_JOBS = pokemonVillageHouses && Expansions.on(Expansions.M28);
+		io.github.jcondedata.aliveworkplace.jeweller.Jewellers.ENABLED = jewellers && Expansions.on(Expansions.M34);
 		io.github.jcondedata.aliveworkplace.gem.GemGrowers.ENABLED = gemGrowers && Expansions.on(Expansions.M28);
 		io.github.jcondedata.aliveworkplace.vintner.Vintners.ENABLED = vintners && Expansions.on(Expansions.M34);
+		io.github.jcondedata.aliveworkplace.tailor.Tailors.ENABLED = tailors && Expansions.on(Expansions.M34);
+		io.github.jcondedata.aliveworkplace.printer.Printers.ENABLED = printers && Expansions.on(Expansions.M34);
 		io.github.jcondedata.aliveworkplace.daycare.DaycareKeepers.ENABLED = daycareKeepers && Expansions.on(Expansions.M28);
 		io.github.jcondedata.aliveworkplace.cup.Cups.ENABLED = festivalCup && Expansions.on(Expansions.M28);
 		io.github.jcondedata.aliveworkplace.cup.Cups.EVERY = cupEveryFestivals;
@@ -445,6 +469,7 @@ public final class WorkplaceConfig {
 		io.github.jcondedata.aliveworkplace.hall.VillageProtection.ENABLED = villageProtection;
 		io.github.jcondedata.aliveworkplace.story.Stories.ENABLED = villageQuests;
 		io.github.jcondedata.aliveworkplace.story.Friendship.ENABLED = friendship && Expansions.on(Expansions.M31);
+		io.github.jcondedata.aliveworkplace.story.HeartEvents.ENABLED = heartEvents && Expansions.on(Expansions.M31);
 		io.github.jcondedata.aliveworkplace.story.Arcs.ENABLED = storyArcs && Expansions.on(Expansions.M31);
 		// Off in gametests (an arc rolled by chance would start under a test's hall); the arc tests start theirs.
 		io.github.jcondedata.aliveworkplace.story.Arcs.AUTO = System.getProperty("fabric-api.gametest") == null;

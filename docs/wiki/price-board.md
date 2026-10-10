@@ -2,6 +2,8 @@
 
 ROADMAP 33.2 to 33.4 (part of 1.7, "From village to realm"; off until 1.7 is released).
 
+Roadmap items: 33.2, 33.3, 33.4
+
 ## What a player sees
 
 The minecart in the Village Hall's divider opens the **Trade** page. Its first row is a row of tabs. **Routes** is the

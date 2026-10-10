@@ -1,0 +1,21 @@
+{
+  "for": {
+    "family": [
+      "minecraft:shepherd",
+      "minecraft:butcher",
+      "aliveworkplace:rancher",
+      "minecraft:fisherman"
+    ]
+  },
+  "loved": [
+    "minecraft:saddle",
+    "minecraft:name_tag"
+  ],
+  "liked": [
+    "minecraft:wheat",
+    "minecraft:hay_block",
+    "minecraft:cod",
+    "minecraft:salmon",
+    "minecraft:lead"
+  ]
+}

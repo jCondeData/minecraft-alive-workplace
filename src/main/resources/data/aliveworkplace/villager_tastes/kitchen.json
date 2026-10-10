@@ -1,0 +1,18 @@
+{
+  "for": {
+    "family": [
+      "aliveworkplace:chef"
+    ]
+  },
+  "loved": [
+    "minecraft:glow_berries",
+    "minecraft:golden_carrot"
+  ],
+  "liked": [
+    "minecraft:egg",
+    "minecraft:milk_bucket",
+    "minecraft:sugar",
+    "minecraft:cocoa_beans",
+    "#c:foods/raw_meat"
+  ]
+}

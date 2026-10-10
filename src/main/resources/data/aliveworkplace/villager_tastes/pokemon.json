@@ -1,0 +1,21 @@
+{
+  "for": {
+    "family": [
+      "aliveworkplace:trainer",
+      "aliveworkplace:trainer_leader",
+      "aliveworkplace:tutor",
+      "aliveworkplace:ball_smith",
+      "aliveworkplace:pokemon_trader",
+      "aliveworkplace:fossil_scientist"
+    ]
+  },
+  "loved": [
+    "cobblemon:rare_candy",
+    "cobblemon:ultra_ball"
+  ],
+  "liked": [
+    "cobblemon:poke_ball",
+    "cobblemon:exp_candy_s",
+    "#cobblemon:berries"
+  ]
+}

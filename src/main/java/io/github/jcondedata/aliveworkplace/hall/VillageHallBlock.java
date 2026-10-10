@@ -126,6 +126,14 @@ public class VillageHallBlock extends BaseEntityBlock {
 			}
 			return ItemInteractionResult.sidedSuccess(level.isClientSide());
 		}
+		if (stack.is(io.github.jcondedata.aliveworkplace.registry.ModItems.GAZETTE)) {
+			// Another village's Gazette, asked for here by its Spread the news quest (34.11); any other opens the hall as usual.
+			if (level instanceof net.minecraft.server.level.ServerLevel server && player instanceof ServerPlayer serverPlayer
+				&& io.github.jcondedata.aliveworkplace.printer.Gazette.deliver(server, serverPlayer, stack, pos)) {
+				return ItemInteractionResult.SUCCESS;
+			}
+			return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+		}
 		if (!stack.is(Items.NAME_TAG) || !stack.has(DataComponents.CUSTOM_NAME)) {
 			return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
 		}

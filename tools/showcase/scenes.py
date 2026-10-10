@@ -30,7 +30,7 @@ GROUPS = [
     "Carpenter", "Mason", "Leatherworker (dyer)", "Chef", "Armorer (smelter)", "Toolsmith", "Weaponsmith", "Fletcher",
     "Shepherd", "Butcher (herder)", "Cleric (alchemist)", "Librarian (scribe)", "Cartographer (explorer)", "Postman",
     "Guard", "Nurse", "Shopkeeper", "Ferryman", "Bard", "Trainer", "Trainer Leader", "Move Tutor", "Ball Smith",
-    "Pokémon Trader", "Fossil Scientist", "Berry Breeder", "Steward", "Camp Cook", "Gem Grower", "Vintner", "Habitat Keeper", "Daycare Keeper", "Village Hall", "Realm", "Legends", "Everyone at work", "Build families",
+    "Pokémon Trader", "Fossil Scientist", "Berry Breeder", "Steward", "Camp Cook", "Gem Grower", "Jeweller", "Vintner", "Tailor", "Printer", "Habitat Keeper", "Daycare Keeper", "Village Hall", "Realm", "Legends", "Everyone at work", "Build families",
 ]
 
 START, WORKING, DONE = ("01_start", "Start"), ("work_*@middle", "At work"), ("03_done", "Done")
@@ -99,6 +99,9 @@ SCENES = [
     job("scholar", "Scholar", "Research at the lectern", "the scholar finished a level of research", 150,
         [("04_research_screen", "Research screen")]),
     job("vintner", "Vintner", "Pressing cider at the cauldron", "the vintner pressed cider in the cauldron, purple splashes and all"),
+    job("tailor", "Tailor", "Sewing work clothes at the loom", "the tailor sewed work clothes at the loom"),
+    job("printer", "Printer", "Printing the Village Gazette", "the printer printed the Village Gazette at the cartography table", 150,
+        [("04_gazette_read", "The Gazette, opened and read")]),
     job("sifter", "Sifter", "Sifting gravel", "the sifter sifted gravel into loot"),
     job("tinkerer", "Tinkerer", "Mending an iron golem", "the tinkerer mended the iron golem"),
     job("composter", "Composter", "Turning scraps into bone meal", "the composter made bone meal"),
@@ -308,6 +311,7 @@ SCENES = [
         cobblemon=True),
     job("gem_grower", "Gem Grower", "A ripe amethyst cluster picked, the budding block kept",
         "the gem grower picked the ripe amethyst cluster and left the budding amethyst", 150),
+    job("jeweller", "Jeweller", "Making amethyst rings at the stonecutter", "the jeweller made amethyst rings at the stonecutter"),
     job("habitat_keeper", "Habitat Keeper", "A snack set out, a log slathered, a shiny spotted",
         "the habitat keeper set out a snack, slathered the log and spotted a shiny Eevee", 150, cobblemon=True),
     # Village-wide
@@ -517,6 +521,19 @@ SCENES = [
       "three villagers by the hall talked of Long Shifts while it was in force, then of The Shift Bell once it was reformed", 30,
       [("01_village_talk_long_shifts", "Long Shifts in force: \"Long shifts again... my back.\""),
        ("02_village_talk_shift_bell", "Reformed: \"The shift bell's rung. Home we go.\"")]),
+    # The Evergreen Charm (ROADMAP 34.19a): an ordinary elder refuses it, a Master takes it and outlives his days; the other leaves a grave
+    S("ageless_elder", "Village Hall", "The Evergreen Charm: an ageless elder",
+      "Bram's card on the hall's list showed an elder two days from his time, the charm's tooltip said what it does, Dara (an ordinary elder) refused it and the player kept it, Bram (a Master farmer) took it and it was used up, the chronicle said he will never leave us, and after 45 elder days Dara passed in the night and left a grave while Bram stayed, his card wearing the gold leaf badge", 40,
+      [("03_ageless_elder_refused", "Dara, an ordinary elder, won't take it: the reason, and the charm kept"),
+       ("04_ageless_elder_accepted", "Bram, a Master, takes it: he will never leave us"),
+       ("05_ageless_elder_night", "45 elder days on, at nightfall: Dara's grave, and Bram still here"),
+       ("06_ageless_elder_badge", "Bram's card now: the gold leaf badge")]),
+    # Elders (ROADMAP 34.19): the day Bram becomes one, his card, his talk, and his slower walk beside a young villager
+    S("elders", "Village Hall", "Elders: a quiet old age",
+      "a day on, Bram had been grown 120 days and the chronicle said \"Bram is an elder now\" once; his card on the hall's list said \"Elder · grown 120 days\" with \"a quiet old age\" first in his mood (fed, a bed of his own); he said \"In my day this was all fields.\"; and walking side by side with young Tom he covered about 15% less ground in the same time", 35,
+      [("01_elders_card", "Bram's card: an elder, grown 120 days, with a quiet old age"),
+       ("02_elders_talk", "\"In my day this was all fields.\""),
+       ("03_elders_walk", "The same walk, side by side: Bram, the elder, falls behind Tom")]),
     S("tonics", "Village Hall", "Tonics: all six",
       "the miner drank the Miner's Brew she was offered and her status line showed her 25% faster with 19 minutes left; a Toolsmith, a Scholar, an Orchard Keeper and a Lumberjack drank the four new tonics", 40,
       [("01_tonics_offer", "Dara the miner, and Miner's Brew in hand"), ("02_tonics_tooltip", "What the brew does, for whom, who makes it"),
@@ -537,6 +554,16 @@ SCENES = [
       "a trade and a quest done for Dara put hearts on: the action bar shows them while you look at her, and the hall's tooltip shows your hearts and her best friends", 45,
       [("01_trade_hearts", "A trade: Dara's hearts in the action bar"), ("02_quest_hearts", "Her quest done: a third heart, with a puff"),
        ("03_hall_tooltip", "The hall: your hearts and her best friends")]),
+    # Gifts (ROADMAP 31.6): wrapping on the crafting grid, giving, the hearts, the name day in the hall's tooltip
+    S("gifts", "Village Hall", "Gifts: wrap an item and give it to a villager",
+      "Gift Wrap and a Golden Carrot on the crafting grid made a Gift; Dara the farmer unwrapped it and loved it, her hearts went up in the action bar, and the hall's tooltip says when her name day is", 55,
+      [("01_wrapping", "Gift Wrap and a Golden Carrot make a Gift"), ("02_giving", "Dara unwraps it: her line, bits of carrot, hearts"),
+       ("03_hearts", "Her hearts went up; a second gift the same day is handed back"), ("04_hall_name_day", "The hall: when her name day is")]),
+    # Heart events (ROADMAP 31.7): at two hearts Dara walks up and tells where she comes from; her life story page
+    S("heart_event", "Village Hall", "A heart event: Dara tells where she comes from",
+      "at two hearts Dara walked up to the player, faced them and told where she comes from, line by line over her head and in the chat; it went into the chronicle and onto her life story page", 60,
+      [("01_walks_up", "Two hearts: Dara sets out towards you"), ("02_telling", "She tells it, a line every three seconds"),
+       ("03_told", "The last line, each also in the chat in grey"), ("04_life_story", "Shift-click her in the hall: her life story")]),
     S("story_arc", "Village Hall", "A story arc: its chapters told, the Story tab and the chronicle",
       "a story arc began (its chapters told in chat), the Story tab showed the first chapter ticked and the second with its quest, and the chronicle kept them", 50,
       [("01_story_announced", "The chapters told in chat as they begin"), ("02_story_tab", "The Story tab: chapter 1 ticked, chapter 2 running with its quest"),

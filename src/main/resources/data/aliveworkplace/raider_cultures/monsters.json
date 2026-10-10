@@ -1,0 +1,14 @@
+{
+  "where": { "min_villagers": 8 },
+  "weight": 10,
+  "arrival": "edge",
+  "hours": "night",
+  "roster": [
+    { "entity": "minecraft:zombie", "share": 50, "role": "melee" },
+    { "entity": "minecraft:skeleton", "share": 30, "role": "ranged" },
+    { "entity": "minecraft:spider", "share": 20, "role": "climber" }
+  ],
+  "tactics": [],
+  "messages": { "raid": "message.aliveworkplace.raid.begins" },
+  "chronicle": { "raid": "chronicle.aliveworkplace.raid" }
+}
